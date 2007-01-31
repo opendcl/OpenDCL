@@ -1,0 +1,131 @@
+// Methods_Animate.cpp : implementation file
+//
+
+#include "stdafx.h"
+#include "Methods_Animate.h"
+#include "DclControlObject.h"
+#include "ArgumentsRetrieval.h"
+#include "ArxProject.h"
+#include "MethodLexicon.h"
+#include "ControlTypes.h"
+
+
+const TCHAR s1[] = _T("\\");
+const TCHAR s2[] = _T("/");
+const TCHAR s3[] = _T(".avi");
+
+
+int AnimateCtrl_Load()
+{
+	CString sFileName;
+	
+	CDclControlObject *pArx = GetLispInput(sAnimate_Load, sFileName);
+	
+	if (pArx == NULL)	
+	{
+		// return nil
+		acedRetInt(-1);
+		return 0;
+	}
+	
+	CAnimateCtrl *pCtrl = (CAnimateCtrl*)pArx->m_pWnd;
+	
+	if (_tcsicmp(sFileName.Right(4), s3) != 0)
+		sFileName += s3;
+
+	TCHAR fullpathNew[256]; 
+	if (acedFindFile(sFileName, fullpathNew) != RTNORM)
+	{
+		const CProject *pProject = pArx->GetOwnerProject();
+		if (pProject)
+		{
+			CString sAvi = sFileName;
+			int n = pProject->m_ShortFileName.Find(s1);
+			if (n == -1)
+				n = pProject->m_ShortFileName.Find(s2);
+
+			int nNext = n;
+			while (nNext > -1)
+			{
+				nNext = pProject->m_ShortFileName.Find(s1, n+1);
+				if (nNext == -1)
+					nNext = pProject->m_ShortFileName.Find(s2, n+1);
+				if (nNext > -1)
+					n = nNext;	
+			}
+
+			sAvi = pProject->m_ShortFileName.Right(n+1) + sAvi;
+			if (_tcsicmp(sAvi.Left(4), s3) != 0)
+				sAvi += s3;
+
+			sFileName = sAvi;
+		}
+		else
+			sFileName = fullpathNew;
+	}	
+	else
+		sFileName = fullpathNew;
+
+	
+	
+	pCtrl->Open(sFileName);
+	
+	acedRetVoid();
+	return 0;
+}
+
+
+int AnimateCtrl_Seek()
+{
+	int nFrame;
+	CDclControlObject *pArx = GetLispInput(sAnimate_Load, nFrame);
+	
+	if (pArx == NULL)	
+	{
+		// return nil
+		acedRetInt(-1);
+		return 0;
+	}
+	
+	CAnimateCtrl *pCtrl = (CAnimateCtrl*)pArx->m_pWnd;
+	pCtrl->Seek(nFrame);
+	
+	acedRetVoid();
+	return 0;
+} 
+int AnimateCtrl_Close()
+{
+	int nArg;
+	CWnd *pControl = GetControlPointer(CtlTabStrip, sAnimate_Close, &nArg);
+
+	if (pControl == NULL)
+	{		
+		acedRetInt(-1);
+		return 0;
+	}
+	
+
+	((CAnimateCtrl*)pControl)->Close();
+	
+	acedRetVoid();
+	return 0;
+}
+
+
+int AnimateCtrl_Stop()
+{	
+	int nArg;
+	CWnd *pControl = GetControlPointer(CtlTabStrip, sAnimate_Stop, &nArg);
+
+	if (pControl == NULL)
+	{		
+		acedRetInt(-1);
+		return 0;
+	}
+	
+
+	((CAnimateCtrl*)pControl)->Stop();
+	
+	acedRetVoid();
+	return 0;
+}

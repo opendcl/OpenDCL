@@ -1,0 +1,196 @@
+[Method]
+Close
+[Prefix]
+Odcl_Form_
+[Desc]
+This method will close the indicated dialog. This method returns a list indicating the last upper left coordinates of Modal or Modeless dialog boxes.
+[Arguments]
+ProjectFileName
+
+
+[Method]
+UpdateVarNames 
+[Prefix]
+Odcl_
+[Desc]
+This method is used to update the VarNames in the current drawing so that they may be used to call a dialog box.
+[Arguments]
+
+[Method]
+CloseAll
+[Prefix]
+Odcl_Form_
+[Desc]
+This method will close all dialogs requested.  Warning this method will close all dialogs, even those created by another third party. Please use with caution. \par   0 	Closes all dialog boxes. \par   1 	Closes all Modal dialog boxes. \par   2 	Closes all Modeless dialog boxes. \par   4 	Closes all Dockable. 
+\par   8 	Closes all File Dialog Boxes. 
+[Arguments]
+DialogBitStyle
+[as Integer]
+
+
+[Method]
+LoadProject
+[Prefix]
+Odcl_
+[Desc]
+This method loads the requested project into memory for later use. If you specify a T after the file name the odc file will be reloaded, but only if it is an .odc file. If you are loading the ods distribution file, the file will not be reloaded.
+The file passed will be searched for if no path is included in the file name.  If a path is included in the file name, the entire path is assumed to be correct.
+[Arguments]
+FileName
+[as Integer]
+\i [Optional] \i0 Reload
+[as T]
+
+
+
+[Method]
+Enable
+[Prefix]
+Odcl_Form_
+[Desc]
+This method will disable or enable a dialog box, or config tab (but not the dockable form) to be enabled or disabled. 0 = Disabled, 1 or T = Enabled. When using this call with a Modal dialog box ensure you have the means re-enable the dialog box otherwise AutoCAD will be permantly locked.
+[Arguments]
+ProjectFileName
+Enabled
+[as Integer]
+
+
+[Method]
+IsEnabled
+[Prefix]
+Odcl_Form_
+[Desc]
+This method will return T if the form is enabled and Nil if the form is disabled.
+[Arguments]
+ProjectFileName
+
+
+[Method]
+Center
+[Prefix]
+Odcl_Form_
+[Desc]
+This method will center only modal dialogs requested to the center of the screen.
+[Arguments]
+ProjectFileName
+
+
+[Method]
+GetHwnd
+[Prefix]
+Odcl_Form_
+[Desc]
+This method will return the Hwnd value of the dialog box. This may be required by an ActiveX control.
+[Arguments]
+ProjectFileName
+
+
+[Method]
+GetTitleBarText
+[Prefix]
+Odcl_Form_
+[Desc]
+This method will retrieve the title bar text or config tab text of the dialog requested. 
+[Arguments Return] as String
+ProjectFileName
+
+
+[Method]
+GetRectangle
+[Prefix]
+Odcl_Form_
+[Desc]
+This method returns a list indicating the left, top, width and height values of the dialog box.
+[Arguments Return] as List
+ProjectFileName
+
+
+[Method]
+GetControlArea
+[Prefix]
+Odcl_Form_
+[Desc]
+This method returns a list indicating the width and height of the dialog box's client area.  This would be the area of the dialog box excluding the title bar and border of the dialog box.
+[Arguments Return] as List
+ProjectFileName
+
+
+[Method]
+IsActive
+[Prefix]
+Odcl_Form_
+[Desc]
+All dialog boxes that are displayed are referenced in an active dialog list.  To find out if a dialog box is active, (as in the case where a secondary Modeless dialog box has been closed by the user and you need to know if you should call the Odcl_Form_Close method) use this method to query the active dialog list for the dialog box you need to ensure is present.
+[Arguments Return] as T or Nil
+ProjectFileName
+
+
+[Method]
+IsFloating
+[Prefix]
+Odcl_Form_
+[Desc]
+This method is for dockable forms only. It will indicate if the dockable form is (T) floating or (Nil) docked to the AutoCAD frame.
+[Arguments Return] as T or Nil
+ProjectFileName
+
+
+[Method]
+Resize
+[Prefix]
+Odcl_Form_
+[Desc]
+This method will resize a dialog box.
+[Arguments]
+ProjectFileName
+Width
+[as Integer]
+Height
+[as Integer]
+
+[Method]
+SetDialogMinMaxSizes
+[Prefix]
+Odcl_Form_
+[Desc]
+This method sets the minimum and maximum extents allowed for a specified dialog box.
+[Arguments]
+ProjectFileName
+MinWidth
+[as Integer]
+MinHeight
+[as Integer]
+MaxWidth
+[as Integer]
+MaxHeight
+[as Integer]
+
+
+[Method]
+SetTitleBarText
+[Prefix]
+Odcl_Form_
+[Desc]
+This method will change the title bar text of any modal or modeless dockable dialog box indicated.
+[Arguments]
+ProjectFileName
+NewText
+[as String]
+
+
+[Method]
+Show
+[Prefix]
+Odcl_Form_
+[Desc]
+This method displays a dialog box that has already been loaded, to the screen. This method auto detects the style of the dialog box and displays it in the correct mode. \par \par \b *Important  Notes: \b0 \par \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-720\li720 The optional upper left coordinates only affect Modal and Modeless dialog boxes only. \par {\pntext\f1\'B7\tab} If the dialog box being shown is a modal dialog box, this method will wait until the user has exited the dialog box before AutoLisp will be allowed to continue on (for AutoCAD 2000 and 2002). \par{\pntext\f1\'B7\tab}Do not call this method from within a MouseDown event of any control.  Microsoft's underlying technology requires the MouseUp event and this will not happen if this method is called from a MouseDown event. What goes down must come up, and calling this method will fire the MouseUp event to the new dialog box causing an error. \par \pard
+[Arguments]
+ProjectFileName
+\i [Optional] \i0 UpperLeftXCoordinate
+[as Integer]
+\i [Optional] \i0 UpperLeftYCoordinate
+[as Integer]
+
+
+
+[End of File]

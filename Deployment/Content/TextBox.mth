@@ -1,0 +1,152 @@
+[Method]
+Undo
+[Prefix]
+Odcl_TextBox_
+[Desc]
+This method calls the system undo function in the TextBox.
+[Arguments]
+ProjectFileName
+
+
+[Method]
+SetTabStops
+[Prefix]
+Odcl_TextBox_
+[Desc]
+This method sets the tab stop positions in a multiple-line TextBox.
+[Arguments]
+ProjectFileName
+Units
+[as Integer]
+
+
+
+[Method]
+ReplaceSel
+[Prefix]
+Odcl_TextBox_
+[Desc]
+This method replaces the currently selected text in a TextBox with the specified text.
+[Arguments]
+ProjectFileName
+NewText
+[as String]
+
+
+
+[Method]
+GetModify
+[Prefix]
+Odcl_TextBox_
+[Desc]
+This method returns a T if the contents of an edit control have been modified, or a NIL if the TextBox has not been modified.
+[Arguments Return] as T or Nil
+ProjectFileName
+LineNumber
+[as Interger]
+
+
+
+[Method]
+GetSel
+[Prefix]
+Odcl_TextBox_
+[Desc]
+This method returns the starting and ending character positions of the current selection in a TextBox.
+[Arguments Return] as List of Integers
+ProjectFileName
+
+[Method]
+SetSel
+[Prefix]
+Odcl_TextBox_
+[Desc]
+This method highlights a selection of text in a TextBox by the indicated start and end positions.
+[Arguments]
+ProjectFileName
+FirstChar
+[as Integer]
+LastChar
+[as Integer]
+
+
+[Method]
+LineScroll
+[Prefix]
+Odcl_TextBox_
+[Desc]
+This method scrolls to the indicated line in a multiple line TextBox.
+[Arguments]
+ProjectFileName
+LineNumber
+[as Interger]
+
+
+[Method]
+GetLine
+[Prefix]
+Odcl_TextBox_
+[Desc]
+This method gets a line of text from a TextBox.
+[Arguments Return] as String
+ProjectFileName
+LineNumber
+[as Interger]
+
+
+
+[Method]
+GetLineLength
+[Prefix]
+Odcl_TextBox_
+[Desc]
+This method returns the length of a line in a TextBox.
+[Arguments Return] as Integer
+ProjectFileName
+LineNumber
+[as Interger]
+
+
+[Method]
+GetLineCount
+[Prefix]
+Odcl_TextBox_
+[Desc]
+This method counts the number of lines in a multiple-line TextBox.
+[Arguments Return] as Integer
+ProjectFileName
+
+
+[Method]
+GetFirstVisibleLine
+[Prefix]
+Odcl_TextBox_
+[Desc]
+This method returns the line number of the first visible line in a multiple line TextBox.
+[Arguments Return] as Integer
+ProjectFileName
+
+
+
+[Method]
+SetFilter
+[Prefix]
+Odcl_TextBox_
+[Desc]
+This method retrieves the filter string used by a TextBox control to filter the text entered by the user. \par \par For example a setting of "0123456789" for the \cf1 FilterStringCollection \cf0 argument will tell the TextBox to only accept keyboard keys of that are in the string.
+[Arguments]
+ProjectFileName
+FilterStringCollection
+[as String]
+
+
+[Method]
+GetFilter
+[Prefix]
+Odcl_TextBox_
+[Desc]
+This method sets the filter string used by a TextBox control to filter the text entered by the user.
+[Arguments Return] as String
+ProjectFileName
+
+[End of File]

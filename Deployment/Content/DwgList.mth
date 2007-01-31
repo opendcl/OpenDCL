@@ -1,0 +1,244 @@
+[Method]
+Dir
+[Prefix]
+Odcl_DwgList_
+[Desc]
+This method list all Dwg files in the specified directory.
+[Arguments]
+ProjectFileName
+sDirectory
+[as String]
+
+
+[Method]
+GetDir
+[Prefix]
+Odcl_DwgList_
+[Desc]
+This method retrieve the current directory.
+[Arguments]
+ProjectFileName
+[as String]
+
+[Method]
+GetFileName
+[Prefix]
+Odcl_DwgList_
+[Desc]
+This method retrieve the full file name of the currently select file or directory.
+[Arguments]
+ProjectFileName
+[as String]
+
+
+[Method]
+SetRowHeight 
+[Prefix]
+Odcl_DwgList_
+[Desc]
+This method will change the height of each Dwg file item so the thumbnail preview image height will be updated.
+[Arguments]
+ProjectFileName
+nRowHeight
+[asInteger]
+
+
+[Method]
+GetType
+[Prefix]
+Odcl_DwgList_
+[Desc]
+This method list all Dwg files in the specified directory.
+[Arguments]
+ProjectFileName
+sDirectory
+[as String]
+
+
+[Method]
+GetText
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method will retrieve the type of file indicated. If a 0 is returned, the file is a directory, 1 will indicate a Dwg file.
+[Arguments Return] as Integer
+ProjectFileName
+nIndex
+[as Integer]
+
+
+
+[Method]
+GetSelectedItems
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method will return a list of all selected items in the ListBox. This method is useful only for ListBoxes with multiple selection.
+[Arguments Return] as List of Strings
+ProjectFileName
+
+
+
+[Method]
+GetSelectedNths
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method will return a list of all indexes of the selected items in the ListBox. This method is useful only for ListBoxes with multiple selection.
+[Arguments Return] as List of Integers
+ProjectFileName
+
+
+[Method]
+GetCount
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method will return the total number of list items.
+[Arguments Return] as Integer
+ProjectFileName
+
+
+[Method]
+SetCurSel
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method will set the currently selected list item in a single selection ListBox. Pass in a -1 if you wish to deselect the current selection.
+[Arguments]
+ProjectFileName
+nIndex
+[as Integer]
+
+
+[Method]
+GetCurSel
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method will return the index of the currently selected list item in a single selection ListBox. -1 will be returned if nothing is selected.
+[Arguments Return] as Integer
+ProjectFileName
+
+
+[Method]
+GetTopIndex
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method retrieves the index of the first visible item in a ListBox.
+[Arguments Return] as Integer
+ProjectFileName
+
+[Method]
+SetTopIndex
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method ensures that the indicated ListBox item is visible. If it's not the ListBox is scrolled to ensure the item is visible.
+[Arguments]
+ProjectFileName
+nIndex
+[as Integer]
+
+
+
+
+[Method]
+SetSel
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method will set the indicated list item in a multiple selection ListBox as selected or unselected. 
+[Arguments]
+ProjectFileName
+nIndex
+[as Integer]
+nIsSelected
+[as Integer: 0 = Not Selected, 1 = Selected]
+
+
+[Method]
+GetSel
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method is used to determine if an item in the list box is currently selected.  This method is useful in a multiple selection ListBox. 
+[Arguments Return] as Integer
+ProjectFileName
+nIndex
+[as Integer]
+
+
+[Method]
+SetFocusIndex
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method sets the focus rectangle of the ListBox to show around item at the specified index in a multiple selection ListBox.
+[Arguments]
+ProjectFileName
+nIndex
+[as Integer]
+
+
+[Method]
+GetFocusIndex
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method returns the index of the list item that has the focus rectangle in a multiple selection ListBox around it.
+[Arguments Return] as Integer
+ProjectFileName
+
+
+[Method]
+GetSelCount
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method returns the number of list items currently selected in a multiple selection ListBox.
+[Arguments Return] as Integer
+ProjectFileName
+
+
+[Method]
+SelItemRange
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method selects or deselects a range of list items in a multiple selection ListBox.
+[Arguments]
+ProjectFileName
+nStartIndex 
+[as Integer]
+nEndIndex 
+[as Integer]
+nIsSelected
+[as Integer: 0 = Not Selected, 1 = Selected]
+
+
+
+[Method]
+SetAnchorIndex
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method sets the anchor list item in a multiple selection ListBox to begin an extended selection.
+[Arguments]
+ProjectFileName
+nIndex
+[as Integer]
+
+
+[Method]
+GetAnchorIndex
+[Prefix]
+Odcl_ListBox_
+[Desc]
+This method retrieves the index of the current anchor list item in a ListBox.
+[Arguments Return] as Integer
+ProjectFileName
+
+
+[End of File]

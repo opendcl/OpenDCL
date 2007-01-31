@@ -1,0 +1,155 @@
+[Method]
+GetCurSel
+[Prefix]
+Odcl_Month_
+[Desc]
+This method returns the currently selected date.
+[Arguments Return] as List
+ProjectFileName
+
+
+[Method]
+GetMonthRangeStart
+[Prefix]
+Odcl_Month_
+[Desc]
+This method gets the lowest allowable date limit of the MonthCalender.
+[Arguments Return] as List
+ProjectFileName
+
+
+[Method]
+GetMonthRangeEnd
+[Prefix]
+Odcl_Month_
+[Desc]
+This method gets the largest allowable date limit of the MonthCalender.
+[Arguments Return] as List
+ProjectFileName
+
+
+[Method]
+GetRangeStart
+[Prefix]
+Odcl_Month_
+[Desc]
+This method gets the current minimum dates set in the MonthCalender.
+[Arguments Return] as List
+ProjectFileName
+
+
+
+[Method]
+GetRangeEnd
+[Prefix]
+Odcl_Month_
+[Desc]
+This method gets the current maximum dates set in the MonthCalender.
+[Arguments Return] as List
+ProjectFileName
+
+
+[Method]
+GetSelRangeStart
+[Prefix]
+Odcl_Month_
+[Desc]
+This method gets the lowest selected date of the MonthCalender.
+[Arguments Return] as List
+ProjectFileName
+
+
+
+[Method]
+GetSelRangeEnd
+[Prefix]
+Odcl_Month_
+[Desc]
+This method gets the highest selected date of the MonthCalender.
+[Arguments Return] as List
+ProjectFileName
+
+
+[Method]
+GetToday
+[Prefix]
+Odcl_Month_
+[Desc]
+This method returns today’s date.
+[Arguments Return] as List
+ProjectFileName
+
+
+
+[Method]
+SetCurSel
+[Prefix]
+Odcl_Month_
+[Desc]
+This method sets the currently selected date for a MonthCalender.
+[Arguments]
+ProjectFileName
+[Begin List]
+Year
+[as Integer]
+Month
+[as Integer]
+Day
+[as Integer]
+[End List]
+
+
+[Method]
+SetRange
+[Prefix]
+Odcl_Month_
+[Desc]
+This method sets the lowest and highest allowable dates for the MonthCalender.
+[Arguments]
+ProjectFileName
+[Begin List]
+LowerYear
+[as Integer]
+Month
+[as Integer]
+Day
+[as Integer]
+[End List]
+[Begin List]
+HigherYear
+[as Integer]
+Month
+[as Integer]
+Day
+[as Integer]
+[End List]
+
+
+
+[Method]
+SetSelRange
+[Prefix]
+Odcl_Month_
+[Desc]
+This method sets the selection for the MonthCalender to the indicated date range.
+[Arguments]
+ProjectFileName
+[Begin List]
+LowerYear
+[as Integer]
+Month
+[as Integer]
+Day
+[as Integer]
+[End List]
+[Begin List]
+HigherYear
+[as Integer]
+Month
+[as Integer]
+Day
+[as Integer]
+[End List]
+
+
+[End of File]

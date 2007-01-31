@@ -1,0 +1,93 @@
+[Method]
+GetFileName
+[Prefix]
+Odcl_FileDlg_
+[Desc]
+This method retrieves the currently selected file(s).
+[Arguments Return] as String
+ProjectFileName
+
+
+[Method]
+GetFileTitle
+[Prefix]
+Odcl_FileDlg_
+[Desc]
+This method retrieves the currently selected file(s)' title.
+[Arguments Return] as String
+ProjectFileName
+
+[Method]
+GetFileExt
+[Prefix]
+Odcl_FileDlg_
+[Desc]
+This method retrieves the extension that is currently selected.
+[Arguments Return] as String
+ProjectFileName
+
+
+[Method]
+GetFolderPath
+[Prefix]
+Odcl_FileDlg_
+[Desc]
+This method retrieves the currently selected folder path.
+[Arguments Return] as String
+ProjectFileName
+
+[Method]
+GetFolderName
+[Prefix]
+Odcl_FileDlg_
+[Desc]
+This method retrieves the currently selected folder name.
+[Arguments Return] as String
+ProjectFileName
+
+
+[Method]
+GetPathName
+[Prefix]
+Odcl_FileDlg_
+[Desc]
+This method retrieves the currently selected file(s)' path name.
+[Arguments Return] as String
+ProjectFileName
+
+
+[Method]
+GetSelectionCount
+[Prefix]
+Odcl_FileDlg_
+[Desc]
+This method retrieves the current selection count.
+[Arguments Return] as Integer
+ProjectFileName
+
+
+
+[Method]
+GetFileNameList
+[Prefix]
+Odcl_FileDlg_
+[Desc]
+This method retrieves the current file selection list.
+[Arguments Return] as List
+ProjectFileName
+
+
+
+[Method]
+SetOkButtonText
+[Prefix]
+Odcl_FileDlg_
+[Desc]
+This method will change the text of OK button.
+[Arguments]
+ProjectFileName
+
+
+
+
+[End of File]

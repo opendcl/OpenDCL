@@ -1,0 +1,78 @@
+[Method]
+ForceUpdateNow
+[Prefix]
+Odcl_Control_
+[Desc]
+This method is used to force a control to update itself instead of waiting for any major processes to be completed.
+[Arguments]
+ProjectFileName
+
+[Method]
+GetCurPos
+[Prefix]
+Odcl_Control_
+[Desc]
+This method will return a list indicating the current left, top, width and height of the control querried.
+[Arguments Return] as List
+ProjectFileName
+
+[Method]
+SetFocus
+[Prefix]
+Odcl_Control_
+[Desc]
+This method will force the indicated control to take focus. \par \par \b1 Note: \b0 But do not use it from the OnInitial event, rather use the Odcl_Control_ZOrder to force the control to the top of the Tab/ZOrder list. This will allow the control to recieve focus first when the dialog box is displayed.
+[Arguments]
+ProjectFileName
+
+
+[Method]
+GetFocus
+[Prefix]
+Odcl_
+[Desc]
+This method will return a list indicating the project name, dialog box name and the name of the control that has the current focus. If the control name is blank than the dialog box has the focus.
+[Arguments Return] as List of Strings 
+
+
+[Method]
+SetPos
+[Prefix]
+Odcl_Control_
+[Desc]
+This method will move a control to the new position specified.  When repositioning the control, optional width and height parameters can be specified.
+[Arguments]
+ProjectFileName
+Left
+[as Integer]
+Top
+[as Integer]
+\i[Optional] \i0 Width
+[as Integer]
+\i[Optional] \i0 Height
+[as Integer]
+
+
+[Method]
+ZOrder
+[Prefix]
+Odcl_Control_
+[Desc]
+This method will move the control to the front of all controls or behind all controls. \par      \cf1 Direction \cf0 = \b1 0 \b0 (Move to the \b1 Bottom \b0 of the Tab/ZOrder list) \par      \cf1 Direction \cf0 = \b1 1 \b0 (Move to the \b1 Top \b0 of the Tab/ZOrder list)
+[Arguments]
+ProjectFileName
+Direction
+[as Integer]
+
+
+[Method]
+GetHwnd
+[Prefix]
+Odcl_Control_
+[Desc]
+This method will return the Hwnd value of the control. This may be required by an ActiveX control.
+[Arguments Return] as Integer
+ProjectFileName
+
+
+[End of File]

@@ -1,0 +1,274 @@
+// scbarg.cpp : implementation file
+//
+
+/////////////////////////////////////////////////////////////////////////
+//
+// CSizingControlBarG           Version 2.43
+// 
+// Created: Jan 24, 1998        Last Modified: August 03, 2000
+//
+// See the official site at www.datamekanix.com for documentation and
+// the latest news.
+//
+/////////////////////////////////////////////////////////////////////////
+// Copyright (C) 1998-2000 by Cristi Posea. All rights reserved.
+//
+// This code is free for personal and commercial use, providing this 
+// notice remains intact in the source files and all eventual changes are
+// clearly marked with comments.
+//
+// You must obtain the author's consent before you can include this code
+// in a software library.
+//
+// No warrantee of any kind, express or implied, is included with this
+// software; use at your own risk, responsibility for damages (if any) to
+// anyone resulting from the use of this software rests entirely with the
+// user.
+//
+// Send bug reports, bug fixes, enhancements, requests, flames, etc. to
+// cristi@datamekanix.com or post them at the message board at the site.
+/////////////////////////////////////////////////////////////////////////
+
+#include "stdafx.h"
+#include "scbarg.h"
+#include "sizecbar.h"
+
+
+void Draw3dRect(HDC hdc, LPCRECT lpRect,
+	COLORREF clrTopLeft, COLORREF clrBottomRight)
+{
+	Draw3dRect(hdc, lpRect->left, lpRect->top, lpRect->right - lpRect->left,
+		lpRect->bottom - lpRect->top, clrTopLeft, clrBottomRight);
+}
+
+void Draw3dRect(HDC hdc, int x, int y, int cx, int cy,
+	COLORREF clrTopLeft, COLORREF clrBottomRight)
+{
+	FillSolidRect(hdc, x, y, cx - 1, 1, clrTopLeft);
+	FillSolidRect(hdc, x, y, 1, cy - 1, clrTopLeft);
+	FillSolidRect(hdc, x + cx, y, -1, cy, clrBottomRight);
+	FillSolidRect(hdc, x, y + cy, cx, -1, clrBottomRight);
+}
+
+void FillSolidRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clr)
+{
+	::SetBkColor(hdc, clr);
+	CRect rect(x, y, x + cx, y + cy);
+	::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &rect, NULL, 0, NULL);
+}
+
+
+/////////////////////////////////////////////////////////////////////////
+// CSizingControlBarG
+
+IMPLEMENT_DYNAMIC(CSizingControlBarG, baseCSizingControlBarG);
+
+CSizingControlBarG::CSizingControlBarG()
+{
+    m_cyGripper = 12;
+}
+
+CSizingControlBarG::~CSizingControlBarG()
+{
+}
+
+BEGIN_MESSAGE_MAP(CSizingControlBarG, baseCSizingControlBarG)
+    //{{AFX_MSG_MAP(CSizingControlBarG)
+    ON_WM_NCLBUTTONUP()
+    ON_WM_NCHITTEST()
+    //}}AFX_MSG_MAP
+    ON_MESSAGE(WM_SETTEXT, OnSetText)
+END_MESSAGE_MAP()
+
+/////////////////////////////////////////////////////////////////////////
+// CSizingControlBarG message handlers
+
+/////////////////////////////////////////////////////////////////////////
+// Mouse Handling
+//
+
+void CSizingControlBarG::OnNcLButtonUp(UINT nHitTest, CPoint point)
+{
+    if (nHitTest == HTCLOSE)
+        m_pDockSite->ShowControlBar(this, FALSE, FALSE); // hide
+
+    baseCSizingControlBarG::OnNcLButtonUp(nHitTest, point);
+}
+
+void CSizingControlBarG::NcCalcClient(LPRECT pRc, UINT nDockBarID)
+{
+    CRect rcBar(pRc); // save the bar rect
+
+    // subtract edges
+    baseCSizingControlBarG::NcCalcClient(pRc, nDockBarID);
+
+    if (!HasGripper())
+        return;
+
+    CRect rc(pRc); // the client rect as calculated by the base class
+
+    BOOL bHorz = (nDockBarID == AFX_IDW_DOCKBAR_TOP) ||
+                 (nDockBarID == AFX_IDW_DOCKBAR_BOTTOM);
+
+    if (bHorz)
+        rc.DeflateRect(m_cyGripper, 0, 0, 0);
+    else
+        rc.DeflateRect(0, m_cyGripper, 0, 0);
+
+    // set position for the "x" (hide bar) button
+    CPoint ptOrgBtn;
+    if (bHorz)
+        ptOrgBtn = CPoint(rc.left - 13, rc.top);
+    else
+        ptOrgBtn = CPoint(rc.right - 12, rc.top - 13);
+
+    m_biHide.Move(ptOrgBtn - rcBar.TopLeft());
+
+    *pRc = rc;
+}
+
+void CSizingControlBarG::NcPaintGripper(CDC* pDC, CRect rcClient)
+{
+    if (!HasGripper())
+        return;
+
+	try{
+    // paints a simple "two raised lines" gripper
+    // override this if you want a more sophisticated gripper
+    CRect gripper = rcClient;
+    CRect rcbtn = m_biHide.GetRect();
+    BOOL bHorz = IsHorzDocked();
+
+    gripper.DeflateRect(1, 1);
+    if (bHorz)
+    {   // gripper at left
+        gripper.left -= m_cyGripper;
+        gripper.right = gripper.left + 3;
+        gripper.top = rcbtn.bottom + 3;
+    }
+    else
+    {   // gripper at top
+        gripper.top -= m_cyGripper;
+        gripper.bottom = gripper.top + 3;
+        gripper.right = rcbtn.left - 3;
+    }
+
+    pDC->Draw3dRect(gripper, ::GetSysColor(COLOR_BTNHIGHLIGHT),
+        ::GetSysColor(COLOR_BTNSHADOW));
+
+    gripper.OffsetRect(bHorz ? 3 : 0, bHorz ? 0 : 3);
+
+    pDC->Draw3dRect(gripper, ::GetSysColor(COLOR_BTNHIGHLIGHT),
+        ::GetSysColor(COLOR_BTNSHADOW));
+
+    m_biHide.Paint(pDC->m_hDC);
+	}
+	catch(...){}
+}
+
+LRESULT CSizingControlBarG::OnNcHitTest(CPoint point)
+{
+    CRect rcBar;
+	if (IsWindow(m_hWnd))
+		GetWindowRect(rcBar);
+
+    UINT nRet = baseCSizingControlBarG::OnNcHitTest(point);
+    if (nRet != HTCLIENT)
+        return nRet;
+
+    CRect rc = m_biHide.GetRect();
+    rc.OffsetRect(rcBar.TopLeft());
+    if (rc.PtInRect(point))
+        return HTCLOSE;
+
+    return HTCLIENT;
+}
+
+/////////////////////////////////////////////////////////////////////////
+// CSizingControlBarG implementation helpers
+
+void CSizingControlBarG::OnUpdateCmdUI(CFrameWnd* pTarget,
+                                      BOOL bDisableIfNoHndler)
+{
+    UNUSED_ALWAYS(bDisableIfNoHndler);
+    UNUSED_ALWAYS(pTarget);
+
+    if (!HasGripper())
+        return;
+
+    BOOL bNeedPaint = FALSE;
+
+    CPoint pt;
+    ::GetCursorPos(&pt);
+    BOOL bHit = (OnNcHitTest(pt) == HTCLOSE);
+    BOOL bLButtonDown = (::GetKeyState(VK_LBUTTON) < 0);
+
+    BOOL bWasPushed = m_biHide.bPushed;
+    m_biHide.bPushed = bHit && bLButtonDown;
+
+    BOOL bWasRaised = m_biHide.bRaised;
+    m_biHide.bRaised = bHit && !bLButtonDown;
+
+    bNeedPaint |= (m_biHide.bPushed ^ bWasPushed) ||
+                  (m_biHide.bRaised ^ bWasRaised);
+
+    if (bNeedPaint)
+        SendMessage(WM_NCPAINT);
+}
+
+/////////////////////////////////////////////////////////////////////////
+// CSCBButton
+
+CSCBButton::CSCBButton()
+{
+    bRaised = FALSE;
+    bPushed = FALSE;
+}
+
+
+void CSCBButton::Paint(HDC hdc)
+{
+    CRect rc = GetRect();
+
+	try{
+    if (bPushed)
+        Draw3dRect(hdc, rc, ::GetSysColor(COLOR_BTNSHADOW),
+            ::GetSysColor(COLOR_BTNHIGHLIGHT));
+    else
+        if (bRaised)
+            Draw3dRect(hdc, rc, ::GetSysColor(COLOR_BTNHIGHLIGHT),
+                ::GetSysColor(COLOR_BTNSHADOW));
+
+    COLORREF clrOldTextColor = GetTextColor(hdc);
+    SetTextColor(hdc, ::GetSysColor(COLOR_BTNTEXT));
+    int nPrevBkMode = SetBkMode(hdc, TRANSPARENT);
+    CFont font;
+    int ppi = GetDeviceCaps(hdc, LOGPIXELSX);
+    int pointsize = MulDiv(60, 96, ppi); // 6 points at 96 ppi
+    font.CreatePointFont(pointsize, _T("Marlett"));
+
+	// setup the font			
+	HGDIOBJ oldfont = SelectObject(hdc, font.m_hObject);
+    
+	CString sText = _T("r");
+    TextOut(hdc, ptOrg.x + 2, ptOrg.y + 2, sText, sText.GetLength()); 
+
+    SelectObject(hdc, oldfont);
+    SetBkMode(hdc, nPrevBkMode);
+    SetTextColor(hdc, clrOldTextColor);
+	}
+	catch(...)
+	{
+	}
+}
+
+BOOL CSizingControlBarG::HasGripper() const
+{
+#if defined(_SCB_MINIFRAME_CAPTION) || !defined(_SCB_REPLACE_MINIFRAME)
+    // if the miniframe has a caption, don't display the gripper
+    if (IsFloating())
+        return FALSE;
+#endif //_SCB_MINIFRAME_CAPTION
+
+    return TRUE;
+}

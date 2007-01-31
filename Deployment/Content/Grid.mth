@@ -1,0 +1,774 @@
+[Method]
+AddColumns
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method adds columns to a Grid control. Complete control of each column has been provided with this method, the width, justification, and optional image from the image list can or must be specified for each control. Because this method asks you to specify the insertion index, columns don't have to be added at the end, but if necessary can be added in the beginning or the middle of the existing columns. 
+\par \par The column justification is to be set using:
+\par 0	Left
+\par 1	Center
+\par 2	Right
+\par \par \b Please Note:\b0 \par Because the Grid control was design exclusively for Internet Explorer, the justification for the first column will only display left justification.  We wish this design intent of Microsoft's was not so, but unfortunately this is how Mircosoft provides the control.
+\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
+          (List (List x y ...) (List x y ...) ...)
+\par We have found ObjectARX does not always like lists created as follows:
+\par          '(x y ...) (x y ...) ... 
+\par \par \b Note:\b0 If the grid has columns added using the properties wizzard, this function will not add any new colums.
+[Arguments]
+ProjectFileName
+[Begin List]
+[Begin List]
+nColIndex
+[as Integer]
+sColText
+[as String]
+nJustification
+[as Integer]
+nColWidth
+[as Integer]
+\i[Optional] nImageListIndex \i0
+[as Integer]
+[End List]
+...
+[End List]
+
+
+[Method]
+AddRow
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method adds a new item to the end of a Grid control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list. Use \cf1 Odcl_Grid_SetItemImage \cf0 to set the icons of any column cell.
+\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
+          (List x y ...)
+\par We have found ObjectARX does not always like lists created as follows:
+\par          '(x y ...)
+\par 
+\par \b Also Note:\b0 The style of the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
+\par \par \b \b For example \b0\b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 Odcl_Grid_AddString \cf0 or \cf2 Odcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
+[Arguments Return] as Integer
+ProjectFileName
+[Begin List]
+\i[Optional] nImageIndex ...\i0
+[as Integer]
+sText
+[as String]
+\i[Optional] sColText1 sColText2 sColText3 ...\i0
+[as String]
+[End List]
+
+[Method]
+AddString
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method adds a new row to the end of a Grid control and fills in each of the cells using a single string. 
+The string is to have a seperator that identifies what parts of the strings belong in which cell. 
+If the sSeperator argument of this function is not specified, "\t" will be assumed.
+
+\par \par \b1 Please note: \b0 This functions does not give you the ability to specify image icons to be display in any cell, the function \cf2 Odcl_Grid_SetItemImage \cf0 should be used after this funtion is called to assign image icons in the cells.
+\par 
+\par \b Also Note:\b0 The style of the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
+\par \par \b For example \b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 Odcl_Grid_AddString \cf0 or \cf2 Odcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
+[Arguments Return] as Integer
+ProjectFileName
+sString
+[as String]
+\i[Optional]  sSeperator\i0
+[as String]
+
+[Method]
+InsertString
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method inserts a new row in the specified position of a Grid control and fills in each of the cells using a single string. 
+The string is to have a seperator that identifies what parts of the strings belong in which cell. 
+If the sSeperator argument of this function is not specified, "\t" will be assumed.
+
+\par \par \b1 Please note: \b0 This functions does not give you the ability to specify image icons to be display in any cell, the function \cf2 Odcl_Grid_SetItemImage \cf0 should be used after this funtion is called to assign image icons in the cells.
+\par 
+\par \b Also Note:\b0 The style of the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
+\par \par \b For example \b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 Odcl_Grid_AddString \cf0 or \cf2 Odcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
+[Arguments Return] as Integer
+ProjectFileName
+nIndex
+[as Integer]
+sString
+[as String]
+\i[Optional]  sSeperator\i0
+[as String]
+
+
+[Method]
+GetColumnImage
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method returns the image of a column header in a Grid control. 
+[Arguments Return] as Integer
+ProjectFileName
+nColumn
+[as Integer]
+
+
+[Method]
+SetColumnImage
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method sets the image of a column header in a Grid control. Set to -1 to show now images.
+[Arguments]
+ProjectFileName
+nColumn
+[as Integer]
+nImageIndex
+[as Integer]
+
+
+[Method]
+GetColumnCount
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method returns number of a columns in a Grid control. 
+[Arguments Return] as Integer
+ProjectFileName
+
+[Method]
+GetRowCount
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method returns number of rows in a Grid control. 
+[Arguments Return] as Integer
+ProjectFileName
+
+[Method]
+InsertRow
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method inserts a new item anywhere in a Grid control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list.  Use \cf2 Odcl_Grid_SetItemImage \cf0 to set the icons of any column cell.
+\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
+          (List (List x y ...) (List x y ...) ...)
+\par We have found ObjectARX does not always like lists created as follows:
+\par          '(x y ...) (x y ...) ... 
+\par 
+\par \b Also Note:\b0 The style of the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
+\par \par \b For example \b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 Odcl_Grid_AddString \cf0 or \cf2 Odcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
+[Arguments Return] as Integer
+ProjectFileName
+nInsertRowIndex
+[as Integer]
+[Begin List]
+nImageIndex
+[as Integer]
+sText
+[as String]
+\i[Optional] sColText1 sColText2 sColText3 ...\i0
+[as String]
+[End List]
+
+
+[Method]
+FillList
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will clear and fill a Grid control with multiple rows and will fill in the cells in each row according to how many columns have been previously setup. 
+\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
+          (List (List x y ...) (List x y ...) ...)
+\par We have found ObjectARX does not always like lists created as follows:
+\par          '(x y ...) (x y ...) ... 
+[Arguments]
+ProjectFileName
+[Begin List]
+[Begin List]
+sItemText1
+[as String]
+\i[Optional] \i0 nImageListIndex1 
+[as Integer]
+sCol2Text
+[as String]
+\i[Optional] \i0 nImageListIndex2
+[as Integer]
+sCol3Text
+[as String]
+\i[Optional] \i0 nImageListIndex3
+[as Integer]
+...
+[End List]
+...
+[End List]
+
+
+[Method]
+SelCurCell
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will force a cell to be selected and will also scroll the Grid to ensure the item is displayed. Pass in a -2 if you wish to deselect the current selection.
+[Arguments]
+ProjectFileName
+nRow
+[as Integer]
+nColumn
+[as Integer]
+
+
+[Method]
+SelCurRow
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will force an entire row to be selected and will also scroll the Grid to ensure the row is visible. Pass in a -1 if you wish to deselect the current selection.
+[Arguments]
+ProjectFileName
+nRow
+[as Integer]
+
+
+
+[Method]
+GetCurSel
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will return the current row and column indexes of the currently selected cell. If the column index is -1 and the row index is 0 or above, this indicates the entire row is selected.
+[Arguments]
+ProjectFileName
+nIndex
+[as Integer]
+
+
+[Method]
+Clear
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will clear the Grid of all its items.
+[Arguments]
+ProjectFileName
+
+
+[Method]
+DeleteRow
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will delete the specified row from the Grid control.
+[Arguments]
+ProjectFileName
+nRow
+[as Integer]
+
+
+[Method]
+DeleteColumn
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will delete the specified column from the Grid control.
+\b Note:\b0 A column can only be deleted if that column was not added using the properties wizard. A value of (-1 -1) means now cell has been selected.
+[Arguments]
+ProjectFileName
+nIndex
+[as Integer]
+
+
+[Method]
+SetItemData
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will set the associated item data for the row. The item data will only accept integer values.
+\par \b Note:\b0 The item data can only be set per individual row and not per cell.
+[Arguments]
+ProjectFileName
+nIndex
+[as Integer]
+IntegerData
+[as Integer]
+
+
+[Method]
+GetItemData
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will retrieve the associated item data for the indicated list item.
+[Arguments Return] as Integer
+ProjectFileName
+nIndex
+[as Integer]
+
+
+[Method]
+GetItemText
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will return the text of an item in a Grid control. 
+[Arguments Return] as String
+ProjectFileName
+nRowIndex
+[as Integer]
+\i[Optional] \i0 nColIndex 
+[as Integer]
+
+
+[Method]
+GetRowItems
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will return a list containing the text of a specified row in a Grid control. 
+[Arguments Return] as List of Strings
+ProjectFileName
+nRowIndex
+[as Integer]
+
+
+[Method]
+GetColumnItems
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will return a list containing the strings of a specified column in a Grid control.
+[Arguments Return] as List of Strings
+ProjectFileName
+nColIndex
+[as Integer]
+
+
+
+[Method]
+SetItemText
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will set the text of an item in a Grid control. 
+[Arguments]
+ProjectFileName
+NewText
+[as String]
+nRowIndex
+[as Integer]
+\i[Optional] \i0 nColIndex 
+[as Integer]
+
+
+
+[Method]
+GetColWidth
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will return the width of a column.
+[Arguments Return] as Integer
+ProjectFileName
+nColIndex
+[as Integer]
+
+
+[Method]
+SetColWidth
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will set the width of a column.
+[Arguments]
+ProjectFileName
+nColIndex
+[as Integer]
+nColWidth
+[as Integer]
+
+
+[Method]
+CalcColWidth
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will calculate the minimum required width of a column to ensure the entire text will appear.
+[Arguments Return] as Integer
+ProjectFileName
+sColText
+[as String]
+
+
+
+
+[Method]
+GetItemImage
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will retrieve the image of an item in a Grid control. 
+[Arguments Return] as Integer
+ProjectFileName
+nRowIndex 
+[as Integer]
+\i[Optional] \i0 nColIndex
+[as Integer]
+
+
+[Method]
+SetItemImage
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will set the image of an item in a Grid control. 
+\cf0 may need to be used, otherwise it's not required for any other style of Grid. This method is not available for the BlockList control.
+[Arguments]
+ProjectFileName
+nRowIndex
+[as Integer]
+\i[Optional] \i0 nColIndex
+[as Integer]
+nNewImage
+[as Integer]
+
+
+[Method]
+SortTextItems
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will sort the columns in ascending or descending order, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
+[Arguments]
+ProjectFileName
+nColIndex
+[as Integer]
+bAscending
+[as Integer, T or Nil] (1 or T = Ascending, 0 or Nil = Descending) 
+
+
+[Method]
+SortNumericItems
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will sort the columns in ascending or descending order using a numeric comparison, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
+[Arguments]
+ProjectFileName
+nColIndex
+[as Integer]
+bAscending
+[as Integer, T or Nil] (1 or T = Ascending, 0 or Nil = Descending) 
+
+
+
+
+[Method]
+ShowTextBox
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will activate a text box to edit a cell. 
+The style argument accepts a numeric value that indicated the style of the text box to be used. The values are as shown below:
+\par 
+\par 	 6 - Strings	
+\par 	 7 - AngleUnits	
+\par 	 8 - Integers	
+\par 	 9 - Units		
+\par 	10 - UpperCase	
+\par 	11 - LowerCase	
+\par 	12 - Password	
+\par 	13 - MultiLine	
+\par 	14 - Currency	
+\par 	15 - Date		
+\par 	16 - Time		
+\par 	17 - Percentage	
+\par 
+\par \b Note:\b0 If the style does not match the pre-assigned value for the cell or column, then the pre-assigned value will be used.
+[Arguments]
+ProjectFileName
+nRow
+[as Integer]
+nCol
+[as Integer]
+nStyle
+[as Integer]
+
+
+[Method]
+ShowComboBox
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will activate a combo box to edit a cell. 
+The style argument accepts a numeric value that indicated the style of the drop down list to be used. The values are as shown below:
+\par 
+\par 	18 - DropDown
+\par 	19 - ArrowHeads
+\par 	20 - Acad Colors
+\par 	21 - TextStyle List
+\par 	22 - PlotStyle Names
+\par 	23 - PlotStyle Tables
+\par 	24 - Plotter List	
+\par 	25 - Fonts		
+\par 	26 - Drive List
+\par 	27 - Layer List	
+\par 	28 - DimStyle List
+\par 	36 - Strings Combo
+\par 	37 - AngleUnits Combo
+\par 	38 - Integers Combo
+\par 	39 - Units Combo	
+\par 	40 - UpperCase Combo
+\par 	41 - LowerCase Combo
+\par 
+\par \b Note:\b0 If the style does not match the pre-assigned value for the cell or column, then the pre-assigned value will be used.
+[Arguments]
+ProjectFileName
+nRow
+[as Integer]
+nCol
+[as Integer]
+nStyle
+[as Integer]
+[Begin List]
+DropDownItem
+[as String]
+[End List]
+
+
+
+[Method]
+ShowImageComboBox
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will activate an image combo box to edit a cell. 
+[Arguments]
+ProjectFileName
+nRow
+[as Integer]
+nCol
+[as Integer]
+[Begin List]
+nImageIndex
+[as Integer]
+DropDownItem
+[as String]
+[End List]
+
+
+
+[Method]
+ShowEllipsesButton
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will display an ellipses button on the right side of a cell. An ellipses button is a button with 3 dots (...) on it.
+[Arguments]
+ProjectFileName
+nRow
+[as Integer]
+nCol
+[as Integer]
+
+
+[Method]
+ShowPickButton
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will display an pick button on the right side of a cell. 
+[Arguments]
+ProjectFileName
+nRow
+[as Integer]
+nCol
+[as Integer]
+
+
+
+
+
+[Method]
+SetItemStyle
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will set the editing style of a single cell. The styles that are available are as shown below.
+\par 	
+\par 	 0 - Decide at run time
+\par 	 1 - Check Boxes
+\par 	 2 - Option Buttons
+\par 	 3 - Switchable Icons
+\par 	 4 - Ellipses Buttons
+\par 	 5 - Pick Buttons	
+\par 	 6 - Strings	
+\par 	 7 - AngleUnits	
+\par 	 8 - Integers	
+\par 	 9 - Units		
+\par 	10 - UpperCase	
+\par 	11 - LowerCase	
+\par 	12 - Password	
+\par 	13 - MultiLine	
+\par 	14 - Currency	
+\par 	15 - Date		
+\par 	16 - Time		
+\par 	17 - Percentage	
+\par 	18 - DropDown
+\par 	19 - ArrowHeads
+\par 	20 - Acad Colors
+\par 	21 - TextStyle List
+\par 	22 - PlotStyle Names
+\par 	23 - PlotStyle Tables
+\par 	24 - Plotter List	
+\par 	25 - Fonts		
+\par 	26 - Drive List
+\par 	27 - Layer List	
+\par 	28 - DimStyle List
+\par 	29 - ImageDrop List
+\par 	30 - AcadColor Cell
+\par 	31 - TrueColor Cell
+\par 	32 - LineWeight Cell
+\par 	33 - Linetype Cell	
+\par 	34 - Directories
+\par 	35 - Files
+\par 	36 - Strings Combo
+\par 	37 - AngleUnits Combo
+\par 	38 - Integers Combo
+\par 	39 - Units Combo	
+\par 	40 - UpperCase Combo
+\par 	41 - LowerCase Combo
+
+\par \par \b Note:\b0 For the style: 3 - Switchable Icons, the last two arguements (nData1 and nData2) that must be passed in, identify the two images from the image list that are to be used.
+
+\par \par \b Note:\b0 For the style: 15 - Date, the last argument (nData1) that can be passed in is the identifying date format.  0 through 9 are the allowable arguments.
+
+\par \par \b Note:\b0 For the style: 16 - Time, the last argument (nData1) that can be passed in is the identifying time format.  0 through 5 are the allowable arguments.
+
+\par \par \b Note:\b0 For the style: 35 - Files Cell, the last argument (sString) that can be a string identifying the file extensions to look for. If not found, "dwg;dxf" will be assumed.
+
+\par \par \b Note:\b0 The style change only governs the behavior of the cell and what happens when the user clicks on the cell.
+
+\par \par \b For example \b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 Odcl_Grid_AddString \cf0 or \cf2 Odcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
+
+\par \par \b For example \b0if you set the style 38 - Integers Combo, all the items to be added to the drop list must be as strings. You are responcible to ensure the correct text is added.
+[Arguments]
+ProjectFileName
+nRow
+[as Integer]
+nCol
+[as Integer]
+nStyle
+[as Integer]
+\i[Optional] nData1 \i0
+[as Integer]
+\i[Optional] nData2 \i0
+[as Integer]
+\i[Optional] sString \i0
+[as Integer]
+
+
+[Method]
+ShowItemDlg
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will activate a specified cell editing dialog.
+The style argument accepts a numeric value that indicated the style of the dialog box to be used. The values are as shown below:
+\par 
+\par 	30 - Acad Color Dlg
+\par 	31 - True Color Dlg
+\par 	32 - LineWeight Dlg
+\par 	33 - Linetype Dlg	
+\par 	34 - Directory Dlg
+\par 	35 - Files Dlg	
+\par 
+\par \b Note:\b0 If the style does not match the pre-assigned value for the cell or column, then the pre-assigned value will be used.
+[Arguments]
+ProjectFileName
+nRow
+[as Integer]
+nCol
+[as Integer]
+nStyle
+[as Integer]
+
+
+
+[Method]
+ToggleItemImages
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will toggle the image displayed in a cell if that cell's style or columns style is set to 3 - Switchable Icons.
+[Arguments]
+ProjectFileName
+nRow
+[as Integer]
+nCol
+[as Integer]
+
+
+[Method]
+GetItemCheck
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will indicate if a cell of style 1 - Check Boxes or 2 - Option Buttons has been checked off.
+[Arguments Return] as Integer
+ProjectFileName
+nRow
+[as Integer]
+nCol
+[as Integer]
+
+
+
+[Method]
+SetItemCheck
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will set a cell of style 1 - Check Boxes or 2 - Option Buttons as checked or unchecked. A value of 1 = checked and 0 = unchecked.
+[Arguments]
+ProjectFileName
+nRow
+[as Integer]
+nCol
+[as Integer]
+nChecked
+[as Integer]
+
+
+
+[Method]
+SetItemDropList
+[Prefix]
+Odcl_Grid_
+[Desc]
+This method will set the drop down lists for cells with the styles. If the column has been preset with list items, this function will override that list(s) for the specified cell only.
+\par 
+\par \b Note:\b0 The style set to the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
+\par 
+\par \b For example \b0if you set the style 38 - Integers Combo, all the items to be added to the drop list must be as strings. You are responcible to ensure the correct text is added.
+[Arguments]
+ProjectFileName
+nRow
+[as Integer]
+nCol
+[as Integer]
+Strings
+[as List of Strings]
+\i[Optional] nImageIndexes \i0
+[as List of Integers]
+
+
+[Method]
+CancelItemEdit
+[Prefix]
+Odcl_ListView_
+[Desc]
+This method will cancel the editing of a cell. This is useful when you wish to ensure that some items may be edited while others may not.  This method is not available for BlockList controls.
+[Arguments]
+ProjectFileName
+
+
+[End of File]

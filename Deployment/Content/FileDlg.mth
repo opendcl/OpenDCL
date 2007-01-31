@@ -1,0 +1,97 @@
+[Method]
+Close
+[Prefix]
+Odcl_Form_
+[Desc]
+This method will close the indicated dialog. This method returns a list indicating the last upper left coordinates of Modal or Modeless dialog boxes.
+[Arguments Return] as List
+ProjectFileName
+
+
+[Method]
+CloseAll
+[Prefix]
+Odcl_Form_
+[Desc]
+This method will close all dialogs requested.  Warning this method will close all dialogs, even those created by another third party. Please use with caution. \par   0 	Closes all dialog boxes. \par   1 	Closes all Modal dialog boxes. \par   2 	Closes all Modeless dialog boxes. \par   4 	Closes all Dockable dialog boxes. \par   8 	Closes all File dialog boxes.
+[Arguments]
+DialogBitStyle
+[as Integer]
+
+
+[Method]
+LoadProject
+[Prefix]
+Odcl_
+[Desc]
+This method loads the requested project into memory for later use. If you specify a T after the file name the odc file will be reloaded. If you are loading the ods distribution file, the file will not be reloaded.
+[Arguments]
+FileName
+[as Integer]
+\i [Optional] \i0 Reload
+[as T]
+
+
+
+[Method]
+GetTitleBarText
+[Prefix]
+Odcl_Form_
+[Desc]
+This method will retrieve the title bar text or config tab text of the dialog requested. 
+[Arguments Return] as String
+ProjectFileName
+
+
+[Method]
+GetRectangle
+[Prefix]
+Odcl_Form_
+[Desc]
+This method returns a list indicating the left, top, width and height values of the dialog box.
+[Arguments Return] as List
+ProjectFileName
+
+
+[Method]
+GetControlArea
+[Prefix]
+Odcl_Form_
+[Desc]
+This method returns a list indicating the width and height of the dialog box’s client area.  This would be the area of the dialog box excluding the title bar and border of the dialog box.
+[Arguments Return] as List
+ProjectFileName
+
+
+[Method]
+IsActive
+[Prefix]
+Odcl_Form_
+[Desc]
+All dialog boxes that are displayed are referenced in an active dialog list.  To find out if a dialog box is active, (as in the case where a secondary Modeless dialog box has been closed by the user and you need to know if you should call the Odcl_Form_Close method) use this method to query the active dialog list for the dialog box you need to ensure is present.
+[Arguments Return] as T or Nil
+ProjectFileName
+
+
+[Method]
+SetTitleBarText
+[Prefix]
+Odcl_Form_
+[Desc]
+This method will change the title bar text of any modal or modeless dockable dialog box indicated.
+[Arguments]
+ProjectFileName
+NewText
+[as String]
+
+
+[Method]
+Show
+[Prefix]
+Odcl_Form_
+[Desc]
+This method displays a dialog box that has already been loaded, to the screen and will return the selected files. If a Nil is return, the user did not select any files or canceled. If the property \b1 MultipleSelection \b0 is set to true a list will be returned holding the file(s) selected. \par \par \b *Important  Notes: \b0 \par \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-720\li720 This method will wait until the user has exited the dialog box before AutoLisp will be allowed to continue on. \par{\pntext\f1\'B7\tab}Do not call this method from within a MouseDown event of any control.  Microsoft’s underlying technology requires the MouseUp event and this will not happen if this method is called from a MouseDown event. What goes down must come up, and calling this method will fire the MouseUp event to the new dialog box causing an error. \par \pard
+[Arguments Return] as String or List
+ProjectFileName
+
+[End of File]

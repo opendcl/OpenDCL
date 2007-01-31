@@ -1,0 +1,129 @@
+[Method]
+CountItems
+[Prefix]
+Odcl_ListView_
+[Desc]
+This method will return total number of items in the ListView control.
+[Arguments Return] as Integer
+ProjectFileName
+
+
+[Method]
+SetCurSel
+[Prefix]
+Odcl_ListView_
+[Desc]
+This method will force an item to be selected and will also scroll the ListView to ensure the item is displayed. Pass in a -1 if you wish to deselect the current selection.
+[Arguments]
+ProjectFileName
+nIndex
+[as Integer]
+
+
+[Method]
+Arrange
+[Prefix]
+Odcl_ListView_
+[Desc]
+This method will format the layout of all the items in the ListView control. \par
+\par \pard\fi-1100\li1100 0   \b Left\b0 \tab Aligns items along the left edge of the ListView
+\par \pard\fi-1100\li1100 1   \b Top\b0 \tab Aligns items along the top edge of the ListView
+\par \pard\fi-1100\li1100 2   \b Default\b0 \tab Aligns items according to the ListView\rquote s current alignment styles (the default value).
+\par \pard\fi-1100\li1100 3   \b GridSnap\b0 \tab Snaps all icons to the nearest grid position 
+\par \pard\fi-0\li0
+[Arguments]
+ProjectFileName
+nStyle
+[as Integer]
+
+
+
+[Method]
+GetSelCount
+[Prefix]
+Odcl_ListView_
+[Desc]
+This method will return the selected item count.
+[Arguments Return] as Integer
+ProjectFileName
+
+
+[Method]
+GetItemText
+[Prefix]
+Odcl_ListView_
+[Desc]
+This method will return the text of an item in a ListView control. 
+[Arguments Return] as String
+ProjectFileName
+nRowIndex
+[as Integer]
+
+
+[Method]
+GetSelectedItems
+[Prefix]
+Odcl_ListView_
+[Desc]
+This method will return a list of all selected items in the ListView control. 
+[Arguments Return] as List as Strings
+ProjectFileName
+
+[Method]
+GetSelectedNths
+[Prefix]
+Odcl_ListView_
+[Desc]
+This method will return a list of all indexes of the selected items in the ListView control. 
+[Arguments Return] as List of Integers
+ProjectFileName
+
+
+[Method]
+SortTextItems
+[Prefix]
+Odcl_ListView_
+[Desc]
+This method will sort the columns in ascending or descending order, based on the column index provided.  
+[Arguments]
+ProjectFileName
+bAscending
+[as Integer, T or Nil] (1 or T = Ascending, 0 or Nil = Descending) 
+
+
+
+[Method]
+LoadDwg
+[Prefix]
+Odcl_BlockList_
+[Desc]
+This method will load an external Dwg file and list the blocks available in it. 
+[Arguments]
+ProjectFileName
+sFileName
+[as String]
+
+
+
+[Method]
+Reset
+[Prefix]
+Odcl_BlockList_
+[Desc]
+This method will reset the BlockList to display the blocks of the current Dwg file.
+[Arguments]
+ProjectFileName
+
+
+
+[Method]
+GetFileName
+[Prefix]
+Odcl_BlockList_
+[Desc]
+This method will return the file name of the external loaded Dwg file. If Nil is returned no external Dwg file was loaded.
+[Arguments Return] as String or Nil
+ProjectFileName
+
+
+[End of File]
