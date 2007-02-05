@@ -1,6 +1,6 @@
 #pragma once
 
 
-class CPropertyObject;
+#include "PropertyObject.h"
 
-typedef CList<CPropertyObject*> CPropertyList;
+typedef CList< RefCountedPtr< CPropertyObject > > CPropertyList;

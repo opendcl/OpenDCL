@@ -9,9 +9,9 @@
 /////////////////////////////////////////////////////////////////////////////
 // CDialogControl
 
-CDialogControl::CDialogControl( CDclControlObject* pControl, CWnd* pWnd )
-: mpControl( pControl )
-, mpWnd( pWnd )
+CDialogControl::CDialogControl( CDclControlObject* pTemplate, RefCountedPtr< CWnd > pControl )
+: mpTemplate( pTemplate )
+, mpControl( pControl )
 {
 }
 
@@ -21,19 +21,19 @@ CDialogControl::~CDialogControl()
 
 long CDialogControl::GetDclControlType() const
 {
-	return mpControl? mpControl->GetType() : 0;
+	return mpTemplate? mpTemplate->GetType() : 0;
 }
 
 CString CDialogControl::GetKeyName() const
 {
-	if( mpControl )
-		return mpControl->GetKeyName();
+	if( mpTemplate )
+		return mpTemplate->GetKeyName();
 	return CString();
 }
 
 CString CDialogControl::GetKeyPath() const
 {
-	if( mpControl )
-		return mpControl->GetKeyPath();
+	if( mpTemplate )
+		return mpTemplate->GetKeyPath();
 	return CString();
 }

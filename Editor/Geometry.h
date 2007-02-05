@@ -6,8 +6,8 @@
 #include "Resource.h"
 #include "GeometryImage.h"
 #include "Splitter.h"
+#include "PropertyObject.h"
 
-class CPropertyObject;
 class CDclControlObject;
 class CDclFormObject;
 
@@ -37,10 +37,10 @@ public:
 	CComboBox	m_Left;
 	CGeometryImage	m_ExampleImage;
 	//}}AFX_DATA
-	CPropertyObject *m_pUseTopFromBottom;
-	CPropertyObject *m_pUseBottomFromBottom;
-	CPropertyObject *m_pUseLeftFromRight;
-	CPropertyObject *m_pUseRightFromRight;
+	RefCountedPtr< CPropertyObject > m_pUseTopFromBottom;
+	RefCountedPtr< CPropertyObject > m_pUseBottomFromBottom;
+	RefCountedPtr< CPropertyObject > m_pUseLeftFromRight;
+	RefCountedPtr< CPropertyObject > m_pUseRightFromRight;
 
 	CDclControlObject *m_pControl;
 	CDclFormObject  *m_pDclForm;

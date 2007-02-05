@@ -70,7 +70,7 @@ public:
 	void Setup();
 	void ResizeControls(int cx=-1, int cy=-1);
 	HTREEITEM LoadOleObjectIntoTree(const CDclControlObject *pControl);
-	void SearchMethods(CPropertyObject *pProp);
+	void SearchMethods(RefCountedPtr< CPropertyObject > pProp);
 	void LoadAllAssociatedOleObjects(CDclControlObject *pControl);
 	void LoadInfoTree(const CDclControlObject *pControl, HTREEITEM hParentItem, int nIndex);
 	void SelectionChanged(HTREEITEM hItem);

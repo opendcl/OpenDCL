@@ -17,7 +17,7 @@ CFontCollection::~CFontCollection()
 	{
 		CFont* pFont = mFonts.RemoveTail();
 		pFont->DeleteObject();
-		//delete pFont;
+		delete pFont;
 	}
 }
 
@@ -34,7 +34,7 @@ const CFont * CFontCollection::GetFont(CDclControlObject *pControl, CWnd *pWnd)
 	stTargetFont.lfUnderline = pControl->GetBoolProperty(nLabelUnderline);
 	stTargetFont.lfStrikeOut = pControl->GetBoolProperty(nLabelStrikeOut);
 	BOOL bFontSizeStyle = pControl->GetBoolProperty(nFontSizeStyle);
-	CPropertyObject *pFontSizeStyle = pControl->GetPropertyObject(nFontSizeStyle); //this is odd [ORW]
+	RefCountedPtr< CPropertyObject > pFontSizeStyle = pControl->GetPropertyObject(nFontSizeStyle); //this is odd [ORW]
 	if( bFontSizeStyle || pFontSizeStyle )
 	{
 		HWND hwndControl = (pWnd? pWnd->m_hWnd : NULL);

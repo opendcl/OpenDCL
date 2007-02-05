@@ -29,7 +29,7 @@ public:
 	int m_nCtrl;
 	int m_SelectedStyle;
 	CImageList m_ImageList;
-	CPropertyObject *m_pStyle;
+	RefCountedPtr< CPropertyObject > m_pStyle;
 	void DisplayDesc(int nSetting);
 
 // Overrides

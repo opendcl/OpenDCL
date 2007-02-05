@@ -24,8 +24,6 @@ const TCHAR sTopLeftY[] = _T("nTopLeftY");
 CSnapDlg::CSnapDlg(CDclFormObject* pSourceForm, UINT idd, CWnd* pParent /*=NULL*/)
 : CDialog(idd, pParent)
 , mpSourceForm( pSourceForm )
-, mControlPane( pSourceForm )
-, mpControl( NULL )
 {
 	//{{AFX_DATA_INIT(CSnapDlg)
 		// NOTE: the ClassWizard will add member initialization here
@@ -129,7 +127,7 @@ void CSnapDlg::SaveSize()
 	CWinApp* pApp = AfxGetApp();
 	CRect rcThis;
 	GetWindowRect(&rcThis);
-    CString sProfileName = m_sProjectName + sUnderScore + m_sDialogName; 
+	CString sProfileName = mpSourceForm->GetKeyPath(); 
 
 	if (IsWindow(m_hWnd))
 	{
@@ -147,7 +145,7 @@ CRect CSnapDlg::ReadRect()
 	
 	CRect rcRet;
 	CWinApp* pApp = AfxGetApp();
-	CString sProfileName = m_sProjectName + sUnderScore + m_sDialogName; 
+	CString sProfileName = mpSourceForm->GetKeyPath();
     
     rcRet.left = pApp->GetProfileInt(sProfileName, sTopLeftX, nDefaultSize);
     rcRet.top = pApp->GetProfileInt(sProfileName, sTopLeftY, nDefaultSize);
@@ -196,7 +194,7 @@ CSize CSnapDlg::ReadSize()
 {	
 	CSize szRet;
 	CWinApp* pApp = AfxGetApp();
-	CString sProfileName = m_sProjectName + sUnderScore + m_sDialogName; 
+	CString sProfileName = mpSourceForm->GetKeyPath(); 
     
     szRet.cx = pApp->GetProfileInt(sProfileName, sSizeWidth, nDefaultSize);
 	szRet.cy = pApp->GetProfileInt(sProfileName, sSizeHeight, nDefaultSize);
@@ -289,3 +287,9 @@ LRESULT CSnapDlg::OnNcHitTest(CPoint point)
 	return CDialog::OnNcHitTest(point);
 }
 
+
+void CSnapDlg::PostNcDestroy() 
+{
+	CDialog::PostNcDestroy();
+	delete this;
+}

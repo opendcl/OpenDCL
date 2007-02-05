@@ -59,24 +59,15 @@
 #include "ControlTypes.h"
 #include "DclFormObject.h"
 #include "ArxWorkspace.h"
+#include "ArxControlPane.h"
 
-
-const int EditFilter_String		= 0;
-const int EditFilter_Angle		= 1;
-const int EditFilter_Integer	= 2;
-const int EditFilter_Numeric	= 3;
-const int EditFilter_Symbol		= 4;
-const int EditFilter_UpperCase	= 5;
-const int EditFilter_LowerCase	= 6;
-const int EditFilter_Password	= 7;
-const int EditFilter_Multiline	= 8;
 
 const int nBufSize = 100;
 const int nFalse = 0;
 const TCHAR sT[] = _T("T");
-const TCHAR sSetPropertry [] = _T("Odcl_SetProperty_");
+const TCHAR sSetPropertry [] = _T("Odcl_Control_Set");
 
-bool SetPropertyObject(CPropertyObject *pProperty, struct resbuf *ListData, CDclControlObject *pArxObject);
+bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, struct resbuf *ListData, CDclControlObject *pArxObject);
 
 
 
@@ -100,12 +91,12 @@ bool SetCtrlProperty(PropertyId id)
 	if (pArxObject == NULL)
 		return false;
 
-	CPropertyObject *pProperty = pArxObject->GetPropertyObject(id);
+	RefCountedPtr< CPropertyObject > pProperty = pArxObject->GetPropertyObject(id);
 	if (pProperty == NULL)
 		return false;
 
 	// get the control
-	CWnd *pControl = pArxObject->m_pWnd;
+	CWnd *pControl = pArxObject->GetWindow();
 	if (pControl == NULL)		
 		return false;
 
@@ -135,7 +126,7 @@ bool GetCtrlProperty(PropertyId id)
 	if (pArxObject == NULL)
 		return false;
 
-	CPropertyObject *pProperty = pArxObject->GetPropertyObject(id);
+	RefCountedPtr< CPropertyObject > pProperty = pArxObject->GetPropertyObject(id);
 	if (pProperty == NULL)
 		return false;
 
@@ -143,30 +134,30 @@ bool GetCtrlProperty(PropertyId id)
 	if (id == nWidth)
 	{
 		CRect rc;
-		pArxObject->m_pWnd->GetWindowRect(rc);
+		pArxObject->GetWindow()->GetWindowRect(rc);
 		acedRetInt(rc.Width());
 		return true;
 	}
 	else if (id == nHeight)
 	{
 		CRect rc;
-		pArxObject->m_pWnd->GetWindowRect(rc);
+		pArxObject->GetWindow()->GetWindowRect(rc);
 		acedRetInt(rc.Height());
 		return true;
 	}
 	else if (id == nTop)
 	{
 		CRect rc;
-		pArxObject->m_pWnd->GetWindowRect(rc);
-		pArxObject->m_pWnd->GetParent()->ScreenToClient(rc);
+		pArxObject->GetWindow()->GetWindowRect(rc);
+		pArxObject->GetWindow()->GetParent()->ScreenToClient(rc);
 		acedRetInt(rc.top);
 		return true;
 	}
 	else if (id == nLeft)
 	{
 		CRect rc;
-		pArxObject->m_pWnd->GetWindowRect(rc);
-		pArxObject->m_pWnd->GetParent()->ScreenToClient(rc);
+		pArxObject->GetWindow()->GetWindowRect(rc);
+		pArxObject->GetWindow()->GetParent()->ScreenToClient(rc);
 		acedRetInt(rc.top);
 		return true;
 	}
@@ -177,7 +168,7 @@ bool GetCtrlProperty(PropertyId id)
 	// property for it's value
 	if (id == nValue && pArxObject->GetType() == CtlOptionButton)
 	{
-		int nCheckValue = ((VdclRadioButton*)pArxObject->m_pWnd)->GetCheck();
+		int nCheckValue = ((VdclRadioButton*)pArxObject->GetWindow())->GetCheck();
 		// this is important, nValue must equal 1 because it may return another value
 		if (nCheckValue == 1)
 			pProperty->SetBooleanValue(true);
@@ -196,7 +187,7 @@ bool GetCtrlProperty(PropertyId id)
 	return true;
 }
 
-bool SetPropertyObject(CPropertyObject *pProperty, struct resbuf *ListData, CDclControlObject *pCtrl)
+bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, struct resbuf *ListData, CDclControlObject *pCtrl)
 {
 	// here we are going to accept any numeric value for a text property and convert it to text.
 	// just to make it easier for the programmers.
@@ -324,9 +315,9 @@ int SetProperty()
 		}
 	}
 	nArgs++;
-	int nPropertyId = GetPropertyId(sPropNameArg);
+	PropertyId nPropertyId = GetPropertyId(sPropNameArg);
 	
-	CPropertyObject *pProperty = pArxObject->GetPropertyObject(nPropertyId);
+	RefCountedPtr< CPropertyObject > pProperty = pArxObject->GetPropertyObject(nPropertyId);
 
 	if (pProperty == NULL)
 	{
@@ -336,7 +327,7 @@ int SetProperty()
 	}
 
 	// get the argument sent by AutoLISP and return it as a CPropertyObject pointer
-	CPropertyObject *pPropArg = GetPropertyArgument(nArgs, sSetProperty);
+	RefCountedPtr< CPropertyObject > pPropArg = GetPropertyArgument(nArgs, sSetProperty);
 
 	if (pPropArg == NULL)
 	{
@@ -349,16 +340,13 @@ int SetProperty()
 	{
 		// set this up latter to tell the user what was received and what it expected
 		theWorkspace.DisplayAlert(CString(ErrorWrongArgTypeForProp) + ErrorForControl + pArxObject->GetStrProperty(nName));
-		delete pPropArg;
 		// return a negitive value to indicate to the calling autolisp function that the call failed
 		acedRetInt(-1);
 		return 0;
 	}
 
-	delete pPropArg;
-
 	// get the control
-	CWnd *pControl = pArxObject->m_pWnd;
+	CWnd *pControl = pArxObject->GetWindow();
 	
 	if (pControl == NULL)		
 	{
@@ -434,51 +422,51 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 			// get the next argument required
 			CString sPropertyName = ListData->resval.rstring;
 		
-			int nPropertyId = GetPropertyId(sPropertyName);
+			PropertyId nPropertyId = GetPropertyId(sPropertyName);
 
-			CPropertyObject *pProperty = pArxObject->GetPropertyObject(nPropertyId);
+			RefCountedPtr< CPropertyObject > pProperty = pArxObject->GetPropertyObject(nPropertyId);
 								
 			ListData = ListData->rbnext;
 
-			CPropertyObject oProperty;
+			RefCountedPtr< CPropertyObject > pNewProperty;
 
 			switch (ListData->restype)
 			{	
 				case RTREAL:
 				case RTANG:
 					{
-						oProperty.SetType(PropDouble);
+						pNewProperty = new CPropertyObject(PropDouble);
 						// get the first argument required
-						oProperty.SetDoubleValue(ListData->resval.rreal);				
+						pNewProperty->SetDoubleValue(ListData->resval.rreal);				
 						break;
 					}
 				case RTSHORT:
 				case RTLONG:
 					{
-						oProperty.SetType(PropLong);
+						pNewProperty = new CPropertyObject(PropLong);
 						// get the first argument required
-						oProperty.SetLongValue(ListData->resval.rint);
+						pNewProperty->SetLongValue(ListData->resval.rint);
 						break;
 					}
 				case RTSTR:
 					{
-						oProperty.SetType(PropString);
+						pNewProperty = new CPropertyObject(PropString);
 						// get the first argument required
-						oProperty.SetStringValue(ListData->resval.rstring);				
+						pNewProperty->SetStringValue(ListData->resval.rstring);				
 						break;
 					}
 				case RTT:
 					{
-						oProperty.SetType(PropBool);
+						pNewProperty = new CPropertyObject(PropBool);
 						// get the first argument required
-						oProperty.SetBooleanValue(true);				
+						pNewProperty->SetBooleanValue(true);				
 						break;
 					}
 				case RTNIL:
 					{
-						oProperty.SetType(PropBool);
+						pNewProperty = new CPropertyObject(PropBool);
 						// get the first argument required
-						oProperty.SetBooleanValue(false);				
+						pNewProperty->SetBooleanValue(false);				
 						break;
 					}
 				default:
@@ -492,7 +480,7 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 						break;
 					}
 			}
-			if (!SetPropertyObject(pProperty, &oProperty))
+			if (!SetPropertyObject(pProperty, pNewProperty))
 			{
 				// set this up latter to tell the user what was received and what it expected
 				theWorkspace.DisplayAlert(CString(ErrorWrongArgTypeForProp) + ErrorForControl + pArxObject->GetStrProperty(nName));
@@ -510,7 +498,7 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 	return true;
 }
 
-bool SetPropertyObject(CPropertyObject *pProperty, CPropertyObject *pPropArg, CDclControlObject *pCtrl)
+bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, RefCountedPtr< CPropertyObject > pPropArg, CDclControlObject *pCtrl)
 {
 	// here we are going to accept any numeric value for a text property and convert it to text.
 	// just to make it easier for the programmers.
@@ -587,7 +575,7 @@ bool SetPropertyObject(CPropertyObject *pProperty, CPropertyObject *pPropArg, CD
 	else if (pProperty->GetType() == pPropArg->GetType())
 	{
 		// if pass then set the property
-		pProperty->SetProperty(pPropArg->GetStdProperty());
+		pProperty->SetStringValue(pPropArg->GetStdProperty());
 	}
 	else if (pProperty->GetType() == PropBool && pPropArg->GetType() == PropLong)
 	{
@@ -618,14 +606,11 @@ bool SetPropertyObject(CPropertyObject *pProperty, CPropertyObject *pPropArg, CD
 	return true;
 
 }
-void UpdateControl(CWnd *pControl,CPropertyObject *pProperty, CDclControlObject *pArxObject, int nPropertyId)
+void UpdateControl(CWnd *pControl,RefCountedPtr< CPropertyObject > pProperty, CDclControlObject *pArxObject, PropertyId nPropertyId)
 {
 	CRect rcThisControl;
 	pControl->GetWindowRect(&rcThisControl);
-	
-	
-	CControlPane ctrlPane(pArxObject->GetOwnerForm());
-	ctrlPane.m_pParentDlg = pControl->GetParent();
+	CArxControlPane ctrlPane(pArxObject->GetOwnerForm(), pControl->GetParent());
 	
 	switch (pProperty->GetID())
 	{
@@ -646,7 +631,6 @@ void UpdateControl(CWnd *pControl,CPropertyObject *pProperty, CDclControlObject 
 	// and set it's size properly
 	case nLabelSize:
 		{
-		ctrlPane.m_pFontCollection = &theWorkspace.GetFontCollection();
 		ctrlPane.UpdateProperty(pArxObject, pArxObject->m_Id, nLabelName);
 		break;
 		}
@@ -657,7 +641,6 @@ void UpdateControl(CWnd *pControl,CPropertyObject *pProperty, CDclControlObject 
 	case nLabelBold:
 	case nLabelStrikeOut:
 		{
-		ctrlPane.m_pFontCollection = &theWorkspace.GetFontCollection();
 		// call the method to update the control
 		ctrlPane.UpdateProperty(pArxObject, pArxObject->m_Id, nLabelName);
 		break;
@@ -688,41 +671,41 @@ int GetProperty()
 		return 0;
 	}
 
-	int nPropertyId = GetPropertyId(sPropNameArg);
+	PropertyId nPropertyId = GetPropertyId(sPropNameArg);
 
 	// here we need to do special position lookups for width, height, left and top properties.
 	if (nPropertyId == nWidth)
 	{
 		CRect rc;
-		pArxObject->m_pWnd->GetWindowRect(rc);
+		pArxObject->GetWindow()->GetWindowRect(rc);
 		acedRetInt(rc.Width());
 		return 0;
 	}
 	else if (nPropertyId == nHeight)
 	{
 		CRect rc;
-		pArxObject->m_pWnd->GetWindowRect(rc);
+		pArxObject->GetWindow()->GetWindowRect(rc);
 		acedRetInt(rc.Height());
 		return 0;
 	}
 	else if (nPropertyId == nTop)
 	{
 		CRect rc;
-		pArxObject->m_pWnd->GetWindowRect(rc);
-		pArxObject->m_pWnd->GetParent()->ScreenToClient(rc);
+		pArxObject->GetWindow()->GetWindowRect(rc);
+		pArxObject->GetWindow()->GetParent()->ScreenToClient(rc);
 		acedRetInt(rc.top);
 		return 0;
 	}
 	else if (nPropertyId == nLeft)
 	{
 		CRect rc;
-		pArxObject->m_pWnd->GetWindowRect(rc);
-		pArxObject->m_pWnd->GetParent()->ScreenToClient(rc);
+		pArxObject->GetWindow()->GetWindowRect(rc);
+		pArxObject->GetWindow()->GetParent()->ScreenToClient(rc);
 		acedRetInt(rc.top);
 		return 0;
 	}
 
-	CPropertyObject *pProperty = pArxObject->GetPropertyObject(nPropertyId);
+	RefCountedPtr< CPropertyObject > pProperty = pArxObject->GetPropertyObject(nPropertyId);
 
 	// if this control is a radio or option button
 	// and the request property is the value
@@ -731,7 +714,7 @@ int GetProperty()
 	if (nPropertyId == nValue &&
 		pArxObject->GetType() == CtlOptionButton)
 	{
-		int nValue = ((VdclRadioButton*)pArxObject->m_pWnd)->GetCheck();
+		int nValue = ((VdclRadioButton*)pArxObject->GetWindow())->GetCheck();
 		// this is important, nValue must equal 1 because it may return another value
 		if (nValue == 1)
 			pProperty->SetBooleanValue(true);
@@ -751,7 +734,7 @@ int GetProperty()
 
 }
 
-void SetReturnValue(int nType, CPropertyObject *pProperty)
+void SetReturnValue(int nType, RefCountedPtr< CPropertyObject > pProperty)
 {
 	if (nType == PropBool)
 	{
@@ -795,7 +778,7 @@ int SetControlFocus()
 	}
 
 	// get the control
-	CWnd *pControl = pArxObject->m_pWnd;
+	CWnd *pControl = pArxObject->GetWindow();
 	if (pControl == NULL)		
 	{
 		acedRetInt(-1);
@@ -827,7 +810,7 @@ int ZOrder()
 	}
 	
 	// get the control
-	CWnd *pControl = pArxObject->m_pWnd;
+	CWnd *pControl = pArxObject->GetWindow();
 
 	int nZOrder;
 	if (!GetIntArgument(nArg, &nZOrder, sZOrder) || pControl == NULL)
@@ -860,7 +843,7 @@ int Control_GetCurPos()
 	}
 	
 	// get the control
-	CWnd *pControl = pArxObject->m_pWnd;//GetControlPointer(pArxObject->GetType(), sZOrder);
+	CWnd *pControl = pArxObject->GetWindow();//GetControlPointer(pArxObject->GetType(), sZOrder);
 	
 	if (pControl == NULL)
 	{
@@ -954,7 +937,7 @@ bool DoSetPosByPtrList()
 		nTopValue = (int)ListData->resval.rpoint[1];		
 
 		CRect rcCtrl;
-		pControl->m_pWnd->GetWindowRect(&rcCtrl);
+		pControl->GetWindow()->GetWindowRect(&rcCtrl);
 		nHeightValue = rcCtrl.Height();
 		nWidthValue	= rcCtrl.Width();
 
@@ -964,7 +947,7 @@ bool DoSetPosByPtrList()
 			nLeftValue + nWidthValue,
 			nTopValue + nHeightValue);
 
-		pControl->m_pWnd->MoveWindow(rcNew, pControl->m_pWnd->IsWindowVisible());
+		pControl->GetWindow()->MoveWindow(rcNew, pControl->GetWindow()->IsWindowVisible());
 		
 	}
 	else if (ListData->restype != RTLB) 
@@ -1020,7 +1003,7 @@ bool DoSetPosByPtrList()
 		{
 			bListEndFound = true;
 			CRect rcCtrl;
-			pControl->m_pWnd->GetWindowRect(&rcCtrl);
+			pControl->GetWindow()->GetWindowRect(&rcCtrl);
 			nHeightValue = rcCtrl.Height();
 			nWidthValue	= rcCtrl.Width();
 		}
@@ -1074,7 +1057,7 @@ bool DoSetPosByPtrList()
 			nLeftValue + nWidthValue,
 			nTopValue + nHeightValue);
 
-		pControl->m_pWnd->MoveWindow(rcNew, pControl->m_pWnd->IsWindowVisible());
+		pControl->GetWindow()->MoveWindow(rcNew, pControl->GetWindow()->IsWindowVisible());
 		return true;
 	}
 	else if (ListData->restype == RTLB) 
@@ -1190,7 +1173,7 @@ bool DoSetPosByPtrList()
 			{
 				bListEndFound = true;
 				CRect rcCtrl;
-				pControl->m_pWnd->GetWindowRect(&rcCtrl);
+				pControl->GetWindow()->GetWindowRect(&rcCtrl);
 				nHeightValue = rcCtrl.Height();
 				nWidthValue	= rcCtrl.Width();
 			}
@@ -1244,7 +1227,7 @@ bool DoSetPosByPtrList()
 				nTopValue + nHeightValue);
 
 			
-			pControl->m_pWnd->MoveWindow(rcNew, pControl->m_pWnd->IsWindowVisible());
+			pControl->GetWindow()->MoveWindow(rcNew, pControl->GetWindow()->IsWindowVisible());
 				
 			if (bListEndFound == false)
 			{
@@ -1425,7 +1408,7 @@ bool DoSetPosByList()
 			{
 				bListEndFound = true;
 				CRect rcCtrl;
-				pControl->m_pWnd->GetWindowRect(&rcCtrl);
+				pControl->GetWindow()->GetWindowRect(&rcCtrl);
 				nHeightValue = rcCtrl.Height();
 				nWidthValue	= rcCtrl.Width();
 			}
@@ -1479,7 +1462,7 @@ bool DoSetPosByList()
 				nTopValue + nHeightValue);
 
 			
-			pControl->m_pWnd->MoveWindow(rcNew, pControl->m_pWnd->IsWindowVisible());
+			pControl->GetWindow()->MoveWindow(rcNew, pControl->GetWindow()->IsWindowVisible());
 				
 			if (bListEndFound == false)
 			{
@@ -1517,7 +1500,7 @@ int ForceUpdateNow()
 	}
 	
 	// get the control
-	CWnd *pControl = pArxObject->m_pWnd;
+	CWnd *pControl = pArxObject->GetWindow();
 
 	pControl->RedrawWindow();
 
@@ -1530,7 +1513,7 @@ int ShowToolTip()
 	CPoint pt(-1,-1);
 	CDclControlObject *pArxObject = GetLispInput(sShowToolTip, pt);
 
-	CWnd *pControl  = pArxObject->m_pWnd;
+	CWnd *pControl  = pArxObject->GetWindow();
 
 	if (pt.x == -1 && pt.y == -1)
 	{

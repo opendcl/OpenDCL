@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Resource.h"
-#include "ControlPane.h"
+#include "ArxDialogObject.h"
 
 class CDclFormObject;
 class CDclControlObject;
@@ -13,50 +13,53 @@ class CControlobject;
 class CFontCollection;
 
 
+class CConfigTabPaneX : public CArxDialogObject
+{
+	friend class CfgTabPane;
+	CfgTabPane* mpOwner;
+protected:
+	CConfigTabPaneX( CfgTabPane& Owner, CDclFormObject* pDclForm );
+	~CConfigTabPaneX();
+
+	virtual DclFormType GetType() const;
+	virtual bool IsModeless() const { return true; }
+	virtual bool IsDockable() const { return false; }
+	virtual bool IsResizable() const { return true; }
+	virtual HWND GetHWnd() const;
+	virtual bool IsDirty() const;
+	virtual bool SetDirty( bool bDirty = true );
+	virtual void CloseDialog(int nStatus) const;
+};
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CfgTabPane dialog
 
 class CfgTabPane : public CAcUiTabChildDialog
 {
-protected:
-	CDclFormObject* mpSourceForm;
-	CControlPane mControlPane;
-	CDclControlObject* mpControl;
+	CConfigTabPaneX mDialogX;
 
-public:
-	CDclControlObject	*m_ArxControl;
-	CString				m_sProjectName;
-	CString				m_sDialogName;
-	CList<CArxDialogControl*> m_ControlCol;
-	CFontCollection		*m_pFontCollection;
+	enum { IDD = IDD_CFGTAB };
 
 	// Construction
 public:
-	CfgTabPane(CDclFormObject* pSourceForm, CWnd *pParent = NULL, HINSTANCE hDialogResource = NULL) ;
+	CfgTabPane(CDclFormObject* pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL) ;
 	virtual ~CfgTabPane();
 
-	//Attributes
-	const CDclFormObject* GetSourceForm() const { return mpSourceForm; }
-	CDclFormObject* GetSourceForm() { return mpSourceForm; }
-	const CControlPane& GetControlPane() const { return mControlPane; }
-	CControlPane& GetControlPane() { return mControlPane; }
-	const CDclControlObject* GetControl() const { return mpControl; }
-	CDclControlObject* GetControl() { return mpControl; }
+public:
+	CDialogObject& GetDialogObject() { return mDialogX; }
+	const CDialogObject& GetDialogObject() const { return mDialogX; }
 
 	//virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual void OnMainDialogAPPLY();
   virtual void OnMainDialogCancel();
   virtual void OnMainDialogOK();
   virtual BOOL OnMainDialogHelp();    
-
 	virtual void OnTabActivation (BOOL bActivate) ;
 	virtual BOOL OnTabChanging () ;
 
-	// Dialog Data
-	enum { IDD = IDD_CFGTAB };
-
 	// Overrides
-	protected:
+protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual void PostNcDestroy();
 

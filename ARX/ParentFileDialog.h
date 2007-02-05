@@ -10,36 +10,44 @@ class CDclControlObject;
 class CDclFormObject;
 
 
+struct FileDialogParams
+{
+	FileDialogParams( BOOL bOpen, LPCTSTR pszExt, LPCTSTR pszFile, DWORD flags, LPCTSTR pszFilter )
+		: bOpenFileDialog( bOpen )
+		, sDefaultExtension( pszExt )
+		, sFilename( pszFile )
+		, dwFlags( flags )
+		, sFilterList( pszFilter )
+		{}
+	/*in*/ BOOL bOpenFileDialog;
+	/*in*/ CString sDefaultExtension;
+	/*in-out*/ CString sFilename;
+	/*in*/ DWORD dwFlags;
+	/*in*/ CString sFilterList;
+	/*out*/ CStringArray rsFilenames;
+};
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CParentFileDialog dialog
 
 class CParentFileDialog : public CFileDialog
 {
-	DECLARE_DYNAMIC(CParentFileDialog)
-
-protected:
-	CDclFormObject* mpSourceForm;
-	CControlPane mControlPane;
-	CDclControlObject* mpControl;
 	CParentDlg mParentDlg;
+	CString msTitle;
+	CString msFilterList;
+	FileDialogParams* mpParams;
 
 public:
 	bool				m_bInvokeWithSendString;
-	CFontCollection		*m_pFontCollection;	
-	CString				m_sProjectName;
-	CString				m_sDialogName;
-	CDclControlObject	*m_pFileDlgProps;
-	CStringArray		*m_pStrList;
-	CString				m_sFileName;
-	CString				m_sPathName;
-	CString				m_sFileTitle;
-	CString				m_sFolderPath;
 
 	CRect m_rcThis;
 	CRect m_rcParent;
-	CWnd  *m_pParent;
+
+	enum { IDD = IDD_CUSTOM_FILE_DIALOG };
 
 public:
+	CParentFileDialog( CDclFormObject* pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
 	CParentFileDialog(
 		CDclFormObject* pSourceForm,
 		BOOL bOpenFileDialog, // TRUE for FileOpen, FALSE for FileSaveAs
@@ -48,26 +56,17 @@ public:
 		DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 		LPCTSTR lpszFilter = NULL,
 		CWnd* pParentWnd = NULL);
+protected:
+	void InitializeFromParams( CDclFormObject* pSourceForm, DialogParams* pParams = NULL );
 
 	//Attributes
-	const CDclFormObject* GetSourceForm() const { return mpSourceForm; }
-	CDclFormObject* GetSourceForm() { return mpSourceForm; }
-	const CControlPane& GetControlPane() const { return mControlPane; }
-	CControlPane& GetControlPane() { return mControlPane; }
-	const CDclControlObject* GetControl() const { return mpControl; }
-	CDclControlObject* GetControl() { return mpControl; }
+public:
 	const CParentDlg& GetParentDlg() const { return mParentDlg; }
 	CParentDlg& GetParentDlg() { return mParentDlg; }
+	CDialogObject& GetDialogObject() { return mParentDlg.GetDialogObject(); }
+	const CDialogObject& GetDialogObject() const { return mParentDlg.GetDialogObject(); }
 
-
-	void SetDclForm(CDclFormObject *pDclFormObject);
-	BOOL ReadListViewNames();
 	void CloseNow();
-
-// Dialog Data
-	enum { IDD = IDD_CUSTOM_FILE_DIALOG };
-
-	void StoreFileList();
 	void CtrlModifyStyle(int nCtrl);
 
 protected:	
@@ -78,10 +77,20 @@ protected:
 	virtual BOOL OnFileNameOK();	
 	virtual void OnFolderChange();
 	virtual void OnTypeChange();
-	//{{AFX_MSG(CParentFileDialog)
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
-	//}}AFX_MSG
+
+	//custom file dialog messages
+	afx_msg LRESULT OnGetFileName( WPARAM wParam, LPARAM lParam );
+	afx_msg LRESULT OnGetFileTitle( WPARAM wParam, LPARAM lParam );
+	afx_msg LRESULT OnGetFileExt( WPARAM wParam, LPARAM lParam );
+	afx_msg LRESULT OnGetFilePath( WPARAM wParam, LPARAM lParam );
+	afx_msg LRESULT OnGetFolderPath( WPARAM wParam, LPARAM lParam );
+	afx_msg LRESULT OnGetFolderName( WPARAM wParam, LPARAM lParam );
+	afx_msg LRESULT OnGetSelectedFileCount( WPARAM wParam, LPARAM lParam );
+	afx_msg LRESULT OnGetSelectedFiles( WPARAM wParam, LPARAM lParam );
+
+protected:	
 	DECLARE_MESSAGE_MAP()
 };

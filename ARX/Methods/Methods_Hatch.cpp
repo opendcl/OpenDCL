@@ -58,7 +58,7 @@ int Hatch_SetPattern()
 		return 0;
 	}
 
-	CGsPreviewCtrl *pBlock = (CGsPreviewCtrl*)pArx->m_pWnd;
+	CGsPreviewCtrl *pBlock = (CGsPreviewCtrl*)pArx->GetWindow();
 	
 	if (pBlock != NULL)
 	{

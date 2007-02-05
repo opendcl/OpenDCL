@@ -126,8 +126,8 @@ void VdclTab::SetupTabs()
 	m_Child.DeleteAllItems();
 
 	// get the tab's lists
-	CPropertyObject *pTabsCaptionProperty = m_ArxControl->GetPropertyObject(nTabsCaption);
-	CPropertyObject *pTabsTTTProperty = m_ArxControl->GetPropertyObject(nTabsTTT);
+	RefCountedPtr< CPropertyObject > pTabsCaptionProperty = m_ArxControl->GetPropertyObject(nTabsCaption);
+	RefCountedPtr< CPropertyObject > pTabsTTTProperty = m_ArxControl->GetPropertyObject(nTabsTTT);
 
 	int nTabQty = pTabsCaptionProperty->CountList();
 	int nImageListIndex = m_ArxControl->GetImageListIndex();
@@ -246,7 +246,7 @@ void VdclTab::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult)
 	nCurrentSelectedTab = tcItem.lParam;	
 
 	// get the tool tip text property
-	CPropertyObject *pTabsTTTProperty = m_ArxControl->GetPropertyObject(nTabsTTT);
+	RefCountedPtr< CPropertyObject > pTabsTTTProperty = m_ArxControl->GetPropertyObject(nTabsTTT);
 	// get the tool tip object
 	CToolTipCtrl* ThisToolTip = m_Child.GetToolTips();
 
@@ -320,14 +320,15 @@ void VdclTab::SetPaneVisibility(int nCurrentSelectedTab, BOOL bShow, BOOL bFireE
 			m_rcPos.Height() - 3);
 
 		// move the tab pane
-		pActualTabPage->GetControlPane().m_PanePos.left = 0;
-		pActualTabPage->GetControlPane().m_PanePos.top = 0;
-		pActualTabPage->GetControlPane().m_PanePos.right = rcNewRect.Width();
-		pActualTabPage->GetControlPane().m_PanePos.bottom = rcNewRect.Height();
+		CRect& PanePos = pActualTabPage->GetControlPane().GetPaneWindowRect();
+		PanePos.left = 0;
+		PanePos.top = 0;
+		PanePos.right = rcNewRect.Width();
+		PanePos.bottom = rcNewRect.Height();
 
 		// set the position member for use by other methods
 		// like the SetProperty for sizes.
-		pActualTabPage->GetControlPane().GetSourceForm()->m_rcPos = pActualTabPage->GetControlPane().m_PanePos;
+		pActualTabPage->GetControlPane().GetSourceForm()->m_rcPos = PanePos;
 		
 		// call the sizechanged method of the tab pane so that it's controls may move as well
 		pActualTabPage->GetControlPane().SizeChanged(rcNewRect.Width(), rcNewRect.Height());
@@ -451,10 +452,7 @@ void VdclTab::DestroyChildren()
 			CTabTracker *pTab = m_ArxTabsList.GetAt(pos);
 
 			if (pTab != NULL)
-			{				
-				pTab->m_pTabPage->GetControlPane().m_pParentDlg = GetParent();
 				pTab->m_pTabPage->GetControlPane().CleanUpControls();				
-			}
 			if (pTab->m_pTabPage)
 			{
 				pTab->m_pTabPage->DestroyWindow();
@@ -509,12 +507,11 @@ BOOL VdclTab::PreTranslateMessage(MSG* pMsg)
 	{
 		if (!m_ToolTipsUpdated)
 		{
-			CPropertyObject *pTabsTTTProperty = m_ArxControl->GetPropertyObject(nTabsTTT);
+			RefCountedPtr< CPropertyObject > pTabsTTTProperty = m_ArxControl->GetPropertyObject(nTabsTTT);
 			int nTabQty = pTabsTTTProperty->CountList();
 			for (int i = 0; i < nTabQty; i++)
 			{
-				POSITION pos = pTabsTTTProperty->m_stringList.FindIndex(i);		
-				CString sText = pTabsTTTProperty->m_stringList.GetAt(pos);		
+				CString sText = pTabsTTTProperty->GetStringArrayPtr()->at(i);		
 				m_ToolTip.UpdateTipText((LPCTSTR)sText, &m_Child, i);
 			}
 			m_ToolTipsUpdated = true;

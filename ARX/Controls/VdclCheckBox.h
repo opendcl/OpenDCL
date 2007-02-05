@@ -54,5 +54,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 private:
 	CDclControlObject *m_ArxControl;
-	CPropertyObject *m_pValue;
+	RefCountedPtr< CPropertyObject > m_pValue;
 };

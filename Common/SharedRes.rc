@@ -373,6 +373,11 @@ BEGIN
     IDS_PROP_ShowTypeLabel  "ShowTypeLabel"
 END
 
+STRINGTABLE 
+BEGIN
+    IDS_AXMETHODS           "(Object Browser)"
+END
+
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 

@@ -23,7 +23,7 @@ public:
 	int m_nLargeChange;
 	int m_nSmallChange;
 	int m_hPos;
-	CPropertyObject *m_pValueProp;
+	RefCountedPtr< CPropertyObject > m_pValueProp;
 	bool m_bInvokeWithSendString;
 // Operations
 public:

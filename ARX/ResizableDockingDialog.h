@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Resource.h"
-#include "ControlPane.h"
+#include "ArxDialogObject.h"
 
 class CDialogControl;
 class CDclFormObject;
@@ -14,58 +14,59 @@ class CFontCollection;
 class CAcadDocReactor;
 
 
+class CResizableDockingDialogX : public CArxDialogObject
+{
+	friend class CResizableDockingDialog;
+	CResizableDockingDialog* mpOwner;
+protected:
+	CResizableDockingDialogX( CResizableDockingDialog& Owner, CDclFormObject* pDclForm );
+	~CResizableDockingDialogX();
+
+	virtual DclFormType GetType() const;
+	virtual bool IsModeless() const { return true; }
+	virtual bool IsDockable() const { return true; }
+	virtual bool IsResizable() const { return true; }
+	virtual HWND GetHWnd() const;
+	virtual bool IsFloating() const;
+	virtual bool CreateModeless() const;
+	virtual void CloseDialog(int nStatus) const;
+	virtual bool GetWindowRect( CRect& rcDlg ) const;
+	virtual bool GetClientRect( CRect& rcDlg ) const;
+};
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CResizableDockingDialog dialog
 
 class CResizableDockingDialog : public CAdUiDockControlBar
 {
-	DECLARE_DYNAMIC(CResizableDockingDialog);
+	CResizableDockingDialogX mDialogX;
 
-protected:
-	CDclFormObject* mpSourceForm;
-	CControlPane mControlPane;
-	CDclControlObject* mpControl;
+	//DECLARE_DYNAMIC(CResizableDockingDialog);
 
 public:
-	CString				m_sProjectName;
-	CString				m_sDialogName;
-	CList<CArxDialogControl*>			m_ControlCol;
-	CFontCollection		*m_pFontCollection;
 	CAcadDocReactor		*m_pDocToModReactor;
 	bool				m_bClosing;
 
+	enum { IDD = 13101 };
+
 // Construction
 public:
-	CResizableDockingDialog( CDclFormObject* pSourceForm );
+	CResizableDockingDialog( CDclFormObject* pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
 	virtual ~CResizableDockingDialog();
 
-	//Attributes
-	const CDclFormObject* GetSourceForm() const { return mpSourceForm; }
-	CDclFormObject* GetSourceForm() { return mpSourceForm; }
-	const CControlPane& GetControlPane() const { return mControlPane; }
-	CControlPane& GetControlPane() { return mControlPane; }
-	const CDclControlObject* GetControl() const { return mpControl; }
-	CDclControlObject* GetControl() { return mpControl; }
-
+public:
+	CDialogObject& GetDialogObject() { return mDialogX; }
+	const CDialogObject& GetDialogObject() const { return mDialogX; }
 
 public:
-	void SetDclForm(CDclFormObject *pDclFormObject);
 	void GetClientArea(CRect &rect);
-	
-	void CleanupDockable();
-// Dialog Data
-	//{{AFX_DATA(CResizableDockingDialog)
-	enum { IDD = 13101 };
-	//}}AFX_DATA
-
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CResizableDockingDialog)
 	public:
 	virtual BOOL Create(CWnd*pParent, LPCTSTR lpszTitle, CRect rect);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
+
 private:
 	// this override is to make the any control
 	// that extends beyond the dockbar to be
@@ -77,17 +78,16 @@ private:
 	virtual void OnUserSizing(UINT nSide, LPRECT pRect);
 	virtual void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight);	
 	virtual void SizeChanged (CRect *lpRect, BOOL bFloating, int flags);
+	virtual bool OnClosing();
+	virtual BOOL AddCustomMenuItems(LPARAM hMenu);
 	
 // Implementation
 protected:
-
-	// Generated message map functions
-	//{{AFX_MSG(CResizableDockingDialog)	
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnDestroy();
 	afx_msg void PostNcDestroy();
-	//}}AFX_MSG
+
+protected:
 	DECLARE_MESSAGE_MAP()
-	virtual bool OnClosing();
-	virtual BOOL AddCustomMenuItems(LPARAM hMenu);
 };

@@ -134,7 +134,7 @@ BOOL CGeometry::OnInitDialog()
 	m_Right.SetItemData(0, 0);
 	m_Right.SetItemData(1, 1);
 
-	CDclControlObject::collection Splitters;
+	CList< CDclControlObject* > Splitters;
 	m_pDclForm->FindControls(CtlSplitter, Splitters);
 	POSITION pos = Splitters.GetHeadPosition();
 	while (pos != NULL)

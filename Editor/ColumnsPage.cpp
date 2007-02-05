@@ -131,67 +131,47 @@ BOOL CColumnsPage::OnInitDialog()
 	rc.bottom = rc.top + 300;
 	m_Style.MoveWindow(rc);
 
-	int nCount = m_pColCaptions->m_stringList.GetCount();
-
-	POSITION pos = m_pColCaptions->m_stringList.GetHeadPosition();
-	while (pos != NULL)
-	{
-		CColumnData data;
-		int n = m_ColData.Add(data);
-		m_ColData[n].m_Caption = m_pColCaptions->m_stringList.GetAt(pos);
-		m_pColCaptions->m_stringList.GetNext(pos);
-	}
- 
-  int i;
+	size_t nCount = m_pColCaptions->GetStringArrayPtr()->size();
+  size_t i;
 	for (i=0; i<nCount; i++)
 	{
-	
-		//pos = m_pColCaptions->m_stringList.FindIndex(i);
-		//if (pos != NULL)
-			//m_ColData[i].m_Caption = m_pColCaptions->m_stringList.GetAt(pos);
+		m_ColData[i].m_Caption = m_pColCaptions->GetStringArrayPtr()->at(i);
 
 		// copy width data
-		m_ColData[i].m_Width = m_pColWidths->m_intList[i];
+		m_ColData[i].m_Width = m_pColWidths->GetIntArrayPtr()->at(i);
 		
 		// copy image data
-		m_ColData[i].m_Image = m_pColImages->m_intList[i];
+		m_ColData[i].m_Image = m_pColImages->GetIntArrayPtr()->at(i);
 		
 		// copy style data
-		m_ColData[i].m_Style = m_pColStyles->m_intList[i];
+		m_ColData[i].m_Style = m_pColStyles->GetIntArrayPtr()->at(i);
 		
 		// copy the alignment data
-		m_ColData[i].m_Alignment = m_pColAlignment->m_intList[i];
+		m_ColData[i].m_Alignment = m_pColAlignment->GetIntArrayPtr()->at(i);
 
 		// copy the default data
-		m_ColData[i].m_Default = m_pColDefault->m_intList[i];
+		m_ColData[i].m_Default = m_pColDefault->GetIntArrayPtr()->at(i);
 
 		// copy the alternate data
-		m_ColData[i].m_Alternate = m_pColAlternate->m_intList[i];
+		m_ColData[i].m_Alternate = m_pColAlternate->GetIntArrayPtr()->at(i);
 	
 		// copy string array data.
-		pos = m_pColListItems->m_stringArrayList.FindIndex(i);
-		if (pos != NULL)
-		{		
-			if (m_pColListItems->m_stringArrayList.GetAt(pos) != NULL)
-			{			
-				if (m_pColListItems->m_stringArrayList.GetAt(pos)->GetSize() > 0)
-				{
-					m_ColData[i].m_ListItems.Copy(*m_pColListItems->m_stringArrayList.GetAt(pos));				
-				}
-			}
+		m_ColData[i].m_ListItems.RemoveAll();
+		for( size_t idxL = 0; idxL < m_pColListItems->GetStringArrayListPtr()->size(); idxL++)
+		{
+			PropVal::TCStringArray& rStr = m_pColListItems->GetStringArrayListPtr()->at(idxL);
+			for( size_t idx = 0; idx < rStr.size(); idx++)
+				m_ColData[i].m_ListItems.Add(rStr[idx]);
 		}
 	
 		// copy int array data
-		pos = m_pColImageItems->m_intArrayList.FindIndex(i);
-		if (pos != NULL)
-		{		
-			if (m_pColImageItems->m_intArrayList.GetAt(pos) != NULL)
-			{			
-				if (m_pColImageItems->m_intArrayList.GetAt(pos)->GetSize() > 0)
-				{
-					m_ColData[i].m_ImageItems.Copy(*m_pColImageItems->m_intArrayList.GetAt(pos));
-				}			
-			}
+		for( size_t k = 0; k < m_pColImageItems->GetIntArrayListPtr()->size(); k++)
+		{
+			PropVal::TIntArray& rIntV = m_pColImageItems->GetIntArrayListPtr()->at(k);
+			CArray< int, int > rInt;
+			for(size_t idx = 0; idx < rIntV.size(); idx++)
+				rInt.Add(rIntV[idx]);
+			m_ColData[i].m_ImageItems.Copy(rInt);
 		}
 	
 	}
@@ -216,7 +196,7 @@ BOOL CColumnsPage::OnInitDialog()
 		pHeader->SetImageList(&m_pImageListPage->m_ImageList);
 
 
-	for (i=0; i<m_pColWidths->m_intList.GetSize(); i++)
+	for (size_t i=0; i<m_pColWidths->GetIntArrayPtr()->size(); i++)
 	{
 		m_nIndex = i;		
 		m_List.InsertColumn(i, CString(), LVCFMT_LEFT, m_ColData[i].m_Width);
@@ -234,57 +214,45 @@ BOOL CColumnsPage::OnInitDialog()
 
 void CColumnsPage::CommitLists()
 {
-	m_pColCaptions->m_stringList.RemoveAll();
-	m_pColWidths->m_intList.RemoveAll();
-	m_pColImages->m_intList.RemoveAll();
-	m_pColStyles->m_intList.RemoveAll();
-	m_pColAlignment->m_intList.RemoveAll();
-	m_pColDefault->m_intList.RemoveAll();
-	m_pColAlternate->m_intList.RemoveAll();
+	m_pColCaptions->clear();
+	m_pColWidths->clear();
+	m_pColImages->clear();
+	m_pColStyles->clear();
+	m_pColAlignment->clear();
+	m_pColDefault->clear();
+	m_pColAlternate->clear();
 
-	POSITION pos = m_pColListItems->m_stringArrayList.GetHeadPosition();
-
-	while (pos != NULL)
-	{		
-		delete m_pColListItems->m_stringArrayList.GetNext(pos);		
-	}
-	m_pColListItems->m_stringArrayList.RemoveAll();
-	
-	pos = m_pColImageItems->m_intArrayList.GetHeadPosition();
-
-	while (pos != NULL)
-	{		
-		delete m_pColImageItems->m_intArrayList.GetNext(pos);		
-	}
-	m_pColImageItems->m_intArrayList.RemoveAll();
+	m_pColListItems->clear();
+	m_pColImageItems->clear();
 	
 	CHeaderCtrl *pHeader = m_List.GetHeaderCtrl();
 
 	// copy all the data over to the property data holderes of the control
 	for (int i=0; i<pHeader->GetItemCount(); i++)
 	{
-		m_pColCaptions->m_stringList.AddTail(m_ColData[i].m_Caption);
+		m_pColCaptions->GetStringArrayPtr()->push_back(m_ColData[i].m_Caption);
 	
-		m_pColWidths->m_intList.Add(m_ColData[i].m_Width);
+		m_pColWidths->GetIntArrayPtr()->push_back(m_ColData[i].m_Width);
 	
-		m_pColImages->m_intList.Add(m_ColData[i].m_Image);
+		m_pColImages->GetIntArrayPtr()->push_back(m_ColData[i].m_Image);
 	
-		m_pColStyles->m_intList.Add(m_ColData[i].m_Style);
+		m_pColStyles->GetIntArrayPtr()->push_back(m_ColData[i].m_Style);
 	
-		m_pColAlignment->m_intList.Add(m_ColData[i].m_Alignment);
+		m_pColAlignment->GetIntArrayPtr()->push_back(m_ColData[i].m_Alignment);
 
-		m_pColDefault->m_intList.Add(m_ColData[i].m_Default);
+		m_pColDefault->GetIntArrayPtr()->push_back(m_ColData[i].m_Default);
 		
-		m_pColAlternate->m_intList.Add(m_ColData[i].m_Alternate);
+		m_pColAlternate->GetIntArrayPtr()->push_back(m_ColData[i].m_Alternate);
 		
-		CStringArray *psList = new CStringArray();
-		psList->Copy(m_ColData[i].m_ListItems);
-		m_pColListItems->m_stringArrayList.AddTail(psList);
+		PropVal::TCStringArray rStr;
+		for( int idx = 0; idx < m_ColData[i].m_ListItems.GetSize(); idx++ )
+			rStr.push_back(m_ColData[i].m_ListItems[idx]);
+		m_pColListItems->GetStringArrayListPtr()->push_back(rStr);
 	
-
-		CArray<int, int> *psIntList = new CArray<int, int>;
-		psIntList->Copy(m_ColData[i].m_ImageItems);
-		m_pColImageItems->m_intArrayList.AddTail(psIntList);
+		PropVal::TIntArray rInt;
+		for( int idx = 0; idx < m_ColData[i].m_ImageItems.GetSize(); idx++ )
+			rInt.push_back(m_ColData[i].m_ImageItems[idx]);
+		m_pColImageItems->GetIntArrayListPtr()->push_back(rInt);
 	}
 }
 

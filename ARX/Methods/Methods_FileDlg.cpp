@@ -20,9 +20,9 @@ int FileDlgGetFileName()
 		// return nil
 		acedRetInt(-1);
 		return 0;
-	}	
+	}
 
-	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->m_pWnd;
+	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->GetWindow();
 	acedRetStr(pFileDlg->GetFileName());
 	return 0;
 }
@@ -38,7 +38,7 @@ int FileDlgGetFileTitle()
 		return 0;
 	}	
 
-	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->m_pWnd;
+	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->GetWindow();
 	acedRetStr(pFileDlg->GetFileTitle());
 	
 	return 0;
@@ -55,7 +55,7 @@ int FileDlgGetFileExt()
 		return 0;
 	}	
 
-	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->m_pWnd;
+	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->GetWindow();
 	acedRetStr(pFileDlg->GetFileExt());
 	return 0;
 }
@@ -72,25 +72,8 @@ int FileDlgGetPathName()
 		return 0;
 	}	
 
-	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->m_pWnd;
-	acedRetStr(pFileDlg->m_sFolderPath);	
-	return 0;
-}
-int FileDlgGetSelectionCount()
-{
-	int nArg=0;
-	CDclControlObject *pControl = GetControlArxObject(sFileDlgGetSelectionCount, &nArg);
-	
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}	
-
-	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->m_pWnd;
-	pFileDlg->ReadListViewNames();
-	acedRetInt(pFileDlg->m_pStrList->GetSize());
+	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->GetWindow();
+	acedRetStr(pFileDlg->GetPathName());	
 	return 0;
 }
 int FileDlgGetFolderPath()
@@ -105,12 +88,10 @@ int FileDlgGetFolderPath()
 		return 0;
 	}	
 
-	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->m_pWnd;
+	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->GetWindow();
 	acedRetStr(pFileDlg->GetFolderPath());
 	return 0;
 }
-
-const TCHAR sDirSep = _T('\\');
 	
 int FileDlgGetFolderName()
 {
@@ -124,14 +105,30 @@ int FileDlgGetFolderName()
 		return 0;
 	}	
 
-	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->m_pWnd;
-	CString test =pFileDlg->m_sFolderPath;
-	int n = test.ReverseFind(sDirSep);
-	test = test.Mid(n+1);
-	acedRetStr(test);
+	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->GetWindow();
+	acedRetStr(pFileDlg->GetFolderPath().MakeReverse().SpanExcluding(_T("\\/:")).MakeReverse());
 	return 0;
 }
 
+int FileDlgGetSelectionCount()
+{
+	int nArg=0;
+	CDclControlObject *pControl = GetControlArxObject(sFileDlgGetSelectionCount, &nArg);
+	
+	if (pControl == NULL)
+	{
+		// return nil
+		acedRetInt(-1);
+		return 0;
+	}	
+
+	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->GetWindow();
+	UINT cFiles = 0;
+	for( POSITION pos = pFileDlg->GetStartPosition(); pos; pFileDlg->GetNextPathName( pos ) )
+		++cFiles;
+	acedRetInt(cFiles);
+	return 0;
+}
 int FileDlgGetFileNameList()
 {
 	int nArg=0;
@@ -144,42 +141,29 @@ int FileDlgGetFileNameList()
 		return 0;
 	}	
 
-	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->m_pWnd;
-	pFileDlg->ReadListViewNames();
+	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->GetWindow();
 
-	int nCount = pFileDlg->m_pStrList->GetSize();
-
-	if (nCount == 0)
+	struct resbuf* prbFileList = NULL;
+	struct resbuf* prbTail = NULL;
+	POSITION pos = pFileDlg->GetStartPosition();
+	while( pos )
 	{
-		acedRetNil();
-		return 0;
-	}
-	if (nCount == 1)
-	{
-		acedRetStr(pFileDlg->GetFileName());
-		return 0;
-	}
-	
-	// Convert the array to a list that can be returned
-	struct resbuf* rbpRetList = acutNewRb(RTSTR);
-	struct resbuf* rbpTail = rbpRetList;
- 
-	for (int i=0; i<nCount; i++)
-	{
-		// get the text name of the selected line number
-		CString sFileName = pFileDlg->m_pStrList->GetAt(i);
-		
-		acutNewString(sFileName, rbpTail->resval.rstring);
-		if ((i+1) < nCount)
+		resbuf* prbFile = acutNewRb(RTSTR);
+		acutNewString(pFileDlg->GetNextPathName(pos), prbFile->resval.rstring);
+		if (!prbTail)
 		{
-			rbpTail->rbnext = acutNewRb(RTSTR);
-			rbpTail = rbpTail->rbnext;
+			prbFileList = prbFile;
+			prbTail = prbFileList;
 		}
- 
+		else
+		{
+			prbTail->rbnext = prbFile;
+			prbTail = prbTail->rbnext;
+		}
 	}
+	acedRetList(prbFileList);
+	acutRelRb(prbFileList);
 
-	acedRetList(rbpRetList);
-	acutRelRb(rbpRetList);
 	return 0;
 }
 
@@ -203,7 +187,7 @@ int FileDlgSetOkButtonText()
 		return 0;
 	}
 
-	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->m_pWnd;
+	CParentFileDialog *pFileDlg = (CParentFileDialog*)pControl->GetWindow();
 	
 	pFileDlg->GetParent()->GetDlgItem(IDOK)->SetWindowText(sCaption);
 	acedRetNil();

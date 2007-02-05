@@ -405,8 +405,6 @@ BOOL OdclListCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 	}
 
 	m_ArxControl = pControl;
-	m_ArxControl->m_pWnd = this;
-	
 	return RetVal;
 	
 }

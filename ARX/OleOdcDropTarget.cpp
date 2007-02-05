@@ -14,6 +14,7 @@
 #include "PropertyIds.h"
 #include "DropSource.h"
 #include "ControlTypes.h"
+#include "Project.h"
 
 
 BOOL acedStartOverrideDropTarget(COleDropTarget* pTarget);
@@ -443,11 +444,11 @@ DROPEFFECT COleOdcDropTarget::OnDragOver(CWnd* pWnd, COleDataObject*
 		HTREEITEM	hitem;
 		UINT		flags = 0;
 
-		hitem = ((VdclTree*)m_pThisArxControl->m_pWnd)->m_ChildTree.HitTest(point, &flags);
+		hitem = ((VdclTree*)m_pThisArxControl->GetWindow())->m_ChildTree.HitTest(point, &flags);
 
 		if (hitem != NULL && (TVHT_ONITEM & flags))
 		{
-			((VdclTree*)m_pThisArxControl->m_pWnd)->m_ChildTree.SelectDropTarget(hitem);
+			((VdclTree*)m_pThisArxControl->GetWindow())->m_ChildTree.SelectDropTarget(hitem);
 			ASSERT(pmyTreeCtrl->GetDropHilightItem() == hItem);
 		}
 	}
@@ -473,7 +474,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 	bool bUseSendString = true;
 	
 	if (m_pParent->GetParent()->IsKindOf(RUNTIME_CLASS(CParentFileDialog)) ||
-		m_pParent->GetParent()->IsKindOf(RUNTIME_CLASS(CParentDlg)))
+			m_pParent->GetParent()->IsKindOf(RUNTIME_CLASS(CParentDlg)))
 	{
 		bUseSendString = false;
 	}
@@ -484,7 +485,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 
 	if (m_pThisArxControl->GetType() == CtlDwgList)
 	{
-		CDwgDirList *pDwgList = (CDwgDirList*)pControl->m_pWnd;
+		CDwgDirList *pDwgList = (CDwgDirList*)pControl->GetWindow();
 	}
 	
 	if (m_pThisArxControl->GetType() == CtlTree)
@@ -492,7 +493,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 		HTREEITEM	hitem;
 		UINT		flags = 0;
 		CString		sTreeItemKey = "";
-		VdclTree *pTree = (VdclTree*)m_pThisArxControl->m_pWnd;
+		VdclTree *pTree = (VdclTree*)m_pThisArxControl->GetWindow();
 
 		if ((hitem = pTree->m_ChildTree.HitTest(point, &flags)) != NULL)
 		{
@@ -525,8 +526,8 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 				// From Control
 				InvokeMethod3StringsLong(
 					m_pThisArxControl->GetStrProperty(nDragnDropFromControl), 
-					pControl->m_sProjectName,
-					pControl->m_sDialogName,
+					pControl->GetOwnerProject()->GetKeyName(),
+					pControl->GetOwnerForm()->GetKeyName(),
 					pControl->GetStrProperty(nName),
 					(long)hitem,
 					m_pThisArxControl->GetLngProperty(nEventInvoke));
@@ -536,8 +537,8 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 				// From Control
 				InvokeMethod4Strings(
 					m_pThisArxControl->GetStrProperty(nDragnDropFromControl), 
-					pControl->m_sProjectName,
-					pControl->m_sDialogName,
+					pControl->GetOwnerProject()->GetKeyName(),
+					pControl->GetOwnerForm()->GetKeyName(),
 					pControl->GetStrProperty(nName),
 					sTreeItemKey,
 					m_pThisArxControl->GetLngProperty(nEventInvoke));
@@ -560,8 +561,8 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 			// From Control
 			InvokeMethod3StringsPoint(
 				m_pThisArxControl->GetStrProperty(nDragnDropFromControl), 
-				pControl->m_sProjectName,
-				pControl->m_sDialogName,
+				pControl->GetOwnerProject()->GetKeyName(),
+				pControl->GetOwnerForm()->GetKeyName(),
 				pControl->GetStrProperty(nName),
 				point,
 				m_pThisArxControl->GetLngProperty(nEventInvoke));
@@ -669,7 +670,7 @@ void CopyArxObjectToClipboard(CDclControlObject *pControl)
 		::GlobalUnlock(hData);
 	#endif
 
-		if (pControl->m_pWnd->OpenClipboard())
+		if (pControl->GetWindow()->OpenClipboard())
 	{
 		
 		::SetClipboardData(m_nClipboardFormat, hData);

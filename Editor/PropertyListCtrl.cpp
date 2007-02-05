@@ -12,7 +12,7 @@
 #include "PropertyIds.h"
 #include "ControlHolder.h"
 #include "AxContainer.h"
-#include "AxPropertyDescriptor.h"
+#include "AxInterfaceDescriptor.h"
 #include "ColourPopup.h"
 #include "VarUtils.h"
 #include "ControlTypes.h"
@@ -387,7 +387,7 @@ void CPropertyListCtrl::SetFont(CFont *pFont)
 }
 
 
-void CPropertyListCtrl::UpdateControls(int nPropId) 
+void CPropertyListCtrl::UpdateControls(PropertyId nPropId) 
 {
 	m_pView->RefreshChildControl(m_pControl, nPropId);
 }
@@ -402,29 +402,26 @@ void CPropertyListCtrl::OnSize(UINT nType, int cx, int cy)
 		m_Button.ShowWindow(FALSE);
 		m_Edit.ShowWindow(FALSE);
 	}
-	
 	SetScrollBar();
-		
 }
-
 
 void CPropertyListCtrl::Refresh() 
 {
 	RePaint();
-
 }
+
 void CPropertyListCtrl::RefreshGrid(HDC hdc) 
 {
+	int nCount = m_PropertyList.GetCount();
+	if (nCount <= 0)
+		return;
+
 	try
 	{
 		CRect rcPropArea;
 		GetClientRect(&rcPropArea);
 		
-		int nCount = m_PropertyList.GetCount();
 		int nTopIndexIndex = nNotSet;
-
-		if (nCount <= 0)
-			return;
 
 		if (m_SelectedIndex >= nCount)
 			m_SelectedIndex = nCount - 1;
@@ -460,9 +457,7 @@ void CPropertyListCtrl::RefreshGrid(HDC hdc)
 			m_ScrollBarNeeded = TRUE;
 		}
 		else
-		{
 			m_ScrollBarNeeded = FALSE;
-		}
 
 		SetScrollBar();
 		
@@ -474,7 +469,7 @@ void CPropertyListCtrl::RefreshGrid(HDC hdc)
 			if (pos != NULL)
 			{
 				// get the property Name text
-				CPropertyObject *pProperty = m_PropertyList.GetAt(pos);
+				RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetAt(pos);
 
 				int nDrawStyle;
 				
@@ -669,7 +664,7 @@ BOOL CPropertyListCtrl::ImageListAddPicture(CPictureHolder *NewPicture, CImageLi
 }
 
 
-CPropertyObject* CPropertyListCtrl::GetPropertyObject(short PropertyIndex) 
+RefCountedPtr< CPropertyObject > CPropertyListCtrl::GetPropertyObject(short PropertyIndex) 
 {
 	if (m_PropertyList.GetCount() == 0)
 		return NULL;
@@ -678,7 +673,7 @@ CPropertyObject* CPropertyListCtrl::GetPropertyObject(short PropertyIndex)
 	if (pos == NULL)
 		return NULL;
 
-	CPropertyObject *pPropertyObject = m_PropertyList.GetAt(pos);
+	RefCountedPtr< CPropertyObject > pPropertyObject = m_PropertyList.GetAt(pos);
 
 	return pPropertyObject;
 }
@@ -686,12 +681,12 @@ CPropertyObject* CPropertyListCtrl::GetPropertyObject(short PropertyIndex)
 void CPropertyListCtrl::ClearImageListPropery(short DclFormIndex, short ArxControlIndex, short PropertyIndex) 
 {
 	// create a new DclFormObject object and point it at the object in the list
-	CPropertyObject *pPropertyObject = GetPropertyObject(PropertyIndex);
+	RefCountedPtr< CPropertyObject > pPropertyObject = GetPropertyObject(PropertyIndex);
 	
 	// check if the indexes were correct
 	if (pPropertyObject != NULL)
 	{
-		if (pPropertyObject->m_ImageListIndex > nNotSet)
+		if (pPropertyObject->GetShortValue() > nNotSet)
 		{
 			// get requested dcl form
 			CDclFormObject *pDclForm = GetDclFormObject(DclFormIndex);
@@ -702,7 +697,7 @@ void CPropertyListCtrl::ClearImageListPropery(short DclFormIndex, short ArxContr
 				POSITION pos;
 			
 				// get the position of the image list index
-				pos = pDclForm->m_ImageListCollection.FindIndex(pPropertyObject->m_ImageListIndex);
+				pos = pDclForm->m_ImageListCollection.FindIndex(pPropertyObject->GetShortValue());
 					
 				// get the image list object
 				CImageListObject *pImageList = pDclForm->m_ImageListCollection.GetAt(pos);
@@ -721,7 +716,7 @@ void CPropertyListCtrl::ClearImageListPropery(short DclFormIndex, short ArxContr
 short CPropertyListCtrl::AddPictureToImageList(short DclFormIndex, short ArxControlIndex, short PropertyIndex, LPPICTUREDISP newPicture) 
 {
 	// create a new property object and point it at the object in the list
-	CPropertyObject *pPropertyObject = GetPropertyObject(PropertyIndex);
+	RefCountedPtr< CPropertyObject > pPropertyObject = GetPropertyObject(PropertyIndex);
 	
 	// check if the indexes were correct
 	if (pPropertyObject == NULL)
@@ -744,7 +739,7 @@ short CPropertyListCtrl::AddPictureToImageList(short DclFormIndex, short ArxCont
 		else
 		{				
 			// get the position of the image list index
-			POSITION pos = pDclForm->m_ImageListCollection.FindIndex(pPropertyObject->m_ImageListIndex);
+			POSITION pos = pDclForm->m_ImageListCollection.FindIndex(pPropertyObject->GetShortValue());
 	
 			// get the image list object
 			CImageListObject *pImageList = pDclForm->m_ImageListCollection.GetAt(pos);
@@ -763,12 +758,12 @@ short CPropertyListCtrl::AddPictureToImageList(short DclFormIndex, short ArxCont
 void CPropertyListCtrl::InitImageList(short DclFormIndex, short ArxControlIndex, short PropertyIndex, short ImageWidth, short ImageHeight) 
 {
 	// create a new DclFormObject object and point it at the object in the list
-	CPropertyObject *pPropertyObject = GetPropertyObject(PropertyIndex);
+	RefCountedPtr< CPropertyObject > pPropertyObject = GetPropertyObject(PropertyIndex);
 	
 	// check if the indexes were correct
 	if (pPropertyObject != NULL)
 	{	
-		if (pPropertyObject->m_ImageListIndex == nNotSet)
+		if (pPropertyObject->GetShortValue() == nNotSet)
 		{					
 			// create new image list object
 			CImageListObject *pImageList = new CImageListObject;
@@ -786,31 +781,17 @@ void CPropertyListCtrl::InitImageList(short DclFormIndex, short ArxControlIndex,
 				pDclForm->m_ImageListCollection.AddTail(pImageList);
 					
 				// assign the index to the property object
-				pPropertyObject->m_ImageListIndex = pDclForm->m_ImageListCollection.GetCount() - 1;
+				pPropertyObject->SetShortValue(pDclForm->m_ImageListCollection.GetCount() - 1);
 			}
 		}
 	}
-	
 }
-
-
-
-
 
 void CPropertyListCtrl::ClearProject() 
 {
 	m_ProjectList.ClearProject();
 	CPropertyListCtrl::ClearPictures();
-	
-
 }
-
-
-            
-
-
-
-
 
 void CPropertyListCtrl::ClearPictures() 
 {
@@ -852,7 +833,7 @@ short CPropertyListCtrl::CountPictures()
 LPPICTUREDISP CPropertyListCtrl::GetImageListPicture(short DclFormIndex, short ArxControlIndex, short PropertyIndex, short ImageIndex) 
 {
 	// create a new DclFormObject object and point it at the object in the list
-	CPropertyObject *pPropertyObject = GetPropertyObject(PropertyIndex);
+	RefCountedPtr< CPropertyObject > pPropertyObject = GetPropertyObject(PropertyIndex);
 	
 	// check if the indexes were correct
 	if (pPropertyObject == NULL)
@@ -868,8 +849,8 @@ LPPICTUREDISP CPropertyListCtrl::GetImageListPicture(short DclFormIndex, short A
 		return NULL;
 	
 	// get the position of the image list index
-	int nImageIndex = pPropertyObject->m_ImageListIndex;
-	POSITION pos = pDclForm->m_ImageListCollection.FindIndex(pPropertyObject->m_ImageListIndex);
+	int nImageIndex = pPropertyObject->GetShortValue();
+	POSITION pos = pDclForm->m_ImageListCollection.FindIndex(pPropertyObject->GetShortValue());
 			
 	// if the object is null return a blank picture
 	if (pos == NULL)
@@ -903,7 +884,7 @@ LPPICTUREDISP CPropertyListCtrl::GetImageListPicture(short DclFormIndex, short A
 long CPropertyListCtrl::GetImageListPictureWidth(short DclFormIndex, short ArxControlIndex, short PropertyIndex) 
 {
 	// create a new DclFormObject object and point it at the object in the list
-	CPropertyObject *pPropertyObject = GetPropertyObject(PropertyIndex);
+	RefCountedPtr< CPropertyObject > pPropertyObject = GetPropertyObject(PropertyIndex);
 	
 	// check if the indexes were correct
 	if (pPropertyObject == NULL)
@@ -921,7 +902,7 @@ long CPropertyListCtrl::GetImageListPictureWidth(short DclFormIndex, short ArxCo
 		else
 		{		
 			// get the position of the image list index
-			POSITION pos = pDclForm->m_ImageListCollection.FindIndex(pPropertyObject->m_ImageListIndex);
+			POSITION pos = pDclForm->m_ImageListCollection.FindIndex(pPropertyObject->GetShortValue());
 					
 			// get the image list object
 			CImageListObject *pImageList = pDclForm->m_ImageListCollection.GetAt(pos);
@@ -937,7 +918,7 @@ long CPropertyListCtrl::GetImageListPictureWidth(short DclFormIndex, short ArxCo
 long CPropertyListCtrl::GetImageListPictureHeight(short DclFormIndex, short ArxControlIndex, short PropertyIndex) 
 {
 	// create a new DclFormObject object and point it at the object in the list
-	CPropertyObject *pPropertyObject = GetPropertyObject(PropertyIndex);
+	RefCountedPtr< CPropertyObject > pPropertyObject = GetPropertyObject(PropertyIndex);
 	
 	// check if the indexes were correct
 	if (pPropertyObject == NULL)
@@ -955,7 +936,7 @@ long CPropertyListCtrl::GetImageListPictureHeight(short DclFormIndex, short ArxC
 		else
 		{		
 			// get the position of the image list index
-			POSITION pos = pDclForm->m_ImageListCollection.FindIndex(pPropertyObject->m_ImageListIndex);
+			POSITION pos = pDclForm->m_ImageListCollection.FindIndex(pPropertyObject->GetShortValue());
 					
 			// get the image list object
 			CImageListObject *pImageList = pDclForm->m_ImageListCollection.GetAt(pos);
@@ -1114,7 +1095,7 @@ void CPropertyListCtrl::DisplayProperties(CDclControlObject *pControl)
 	POSITION posProp = pControl->m_PropertyList.GetHeadPosition();
 	while (posProp != NULL)
 	{
-		CPropertyObject* pProp = pControl->m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProp = pControl->m_PropertyList.GetNext(posProp);
 		if (!pProp->IsHidden()) // if not a hidden property add it to the property list
 			m_PropertyList.AddTail(pProp);
 	}
@@ -1125,7 +1106,7 @@ void CPropertyListCtrl::DisplayProperties(CDclControlObject *pControl)
 		m_SelectedIndex = m_PropertyList.GetCount() - 1;
 
 	// get the property selected
-    CPropertyObject *pPropSelected = GetPropertyObject(m_SelectedIndex);
+    RefCountedPtr< CPropertyObject > pPropSelected = GetPropertyObject(m_SelectedIndex);
 					
 	if (pPropSelected == NULL)
 	{
@@ -1261,12 +1242,12 @@ void CPropertyListCtrl::DoSetupInputType(int nNewSelectedIndex)
 		if (pos == NULL)
 			return;
 
-		CPropertyObject* pProp = m_PropertyList.GetAt(pos);
+		RefCountedPtr< CPropertyObject > pProp = m_PropertyList.GetAt(pos);
 		
 		// if this is an ActiveX property of type BOOL then
 		if (pProp->GetType() == PropActiveXProp)
 		{
-			VARTYPE varType = pProp->GetActiveXProperyType();
+			VARTYPE varType = pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyType();
 			switch (varType)
 			{
 				case VT_BOOL:		
@@ -1305,11 +1286,12 @@ void CPropertyListCtrl::DoSetupInputType(int nNewSelectedIndex)
 					//pProp->GetType() = PropActiveXRunTime;
 					break;				
 			}
-			if (pProp->GetActiveXProperyGuid() == GUID_COLOR)
+			if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == GUID_COLOR)
 				nType = PropOLEColor;
-			if (pProp->GetActiveXProperyGuid() == IID_IPictureDisp)
+			if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IPictureDisp)
 				nType = PropPicture;
-			if (pProp->GetActiveXProperyGuid() == IID_IFont || pProp->GetActiveXProperyGuid() == IID_IFontDisp)
+			if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFont ||
+					pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFontDisp)
 			{
 				if (m_Button.GetButtonStyle() != nDotsImage)
 				{
@@ -1327,7 +1309,7 @@ void CPropertyListCtrl::DoSetupInputType(int nNewSelectedIndex)
 			}
 					
 			// if an enum is required
-			if(pProp->GetActiveXEnum())
+			if(pProp->GetAxInterfaceDescriptorPtr()->GetActiveXEnum())
 				nType = PropEnum;
 		}
 		else
@@ -1419,7 +1401,7 @@ void CPropertyListCtrl::DoSetupInputType(int nNewSelectedIndex)
 					if (pProp->GetType() == PropActiveXProp)
 					{
 						pAxCtrl = (CControlHolder*)m_pControl->m_pCtrlHolder;	
-						sText = pProp->GetActiveXPropery(pAxCtrl->GetActiveXCtrl());
+						sText = pProp->GetAxInterfaceDescriptorPtr()->GetActiveXPropery(pAxCtrl->GetActiveXCtrl());
 					}
 					else
 						// get the property text.
@@ -1433,38 +1415,46 @@ void CPropertyListCtrl::DoSetupInputType(int nNewSelectedIndex)
 							break;
 						case PropDouble:
 							m_Edit.m_sFilter = theWorkspace.LoadResourceString(IDS_DOUBLEFILTER);
+							break;
+						case PropActiveXPropPages:
+						case PropActiveXProp:
+						case PropActiveXEnum:
+						case PropActiveXEvent:
+						case PropActiveXRunTime:
+						case PropActiveXMethods:
+							switch (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyType())
+							{
+								case VT_DATE:
+									m_Edit.m_sFilter = theWorkspace.LoadResourceString(IDS_DATEFILTER);
+									break;	
+								case VT_I2:
+								case VT_I4:
+								case VT_INT:
+									m_Edit.m_sFilter = theWorkspace.LoadResourceString(IDS_LONGFILTER);
+									break;
+								case VT_R4:
+								case VT_R8:
+								case VT_DECIMAL:
+								case VT_CY:
+									m_Edit.m_sFilter = theWorkspace.LoadResourceString(IDS_DOUBLEFILTER);
+									break;						
+								case VT_UINT:
+								case VT_UI2:
+								case VT_UI4:
+									m_Edit.m_sFilter = theWorkspace.LoadResourceString(IDS_UINTFILTER);
+									break;				
+								case VT_UI1:
+								case VT_I1:
+									m_Edit.m_sFilter = LTOA(10);
+									break;				
+								
+							}
+							break;
 						default:
 							m_Edit.m_sFilter = theWorkspace.LoadResourceString(IDS_ANYFILTER);
 							break;						
 					}
 					// set the string keyboard filter according to the type of ActiveX property
-					switch (pProp->GetActiveXProperyType())
-					{
-						case VT_DATE:
-							m_Edit.m_sFilter = theWorkspace.LoadResourceString(IDS_DATEFILTER);
-							break;	
-						case VT_I2:
-						case VT_I4:
-						case VT_INT:
-							m_Edit.m_sFilter = theWorkspace.LoadResourceString(IDS_LONGFILTER);
-							break;
-						case VT_R4:
-						case VT_R8:
-						case VT_DECIMAL:
-						case VT_CY:
-							m_Edit.m_sFilter = theWorkspace.LoadResourceString(IDS_DOUBLEFILTER);
-							break;						
-						case VT_UINT:
-						case VT_UI2:
-						case VT_UI4:
-							m_Edit.m_sFilter = theWorkspace.LoadResourceString(IDS_UINTFILTER);
-							break;				
-						case VT_UI1:
-						case VT_I1:
-							m_Edit.m_sFilter = LTOA(10);
-							break;				
-						
-					}
 					// set the original value
 					m_Edit.m_OriginalValue = sText;
 					// set the AxContainer so the edit box can update the property correctly.
@@ -1810,7 +1800,7 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 			pos = m_PropertyList.FindIndex(nRow);
 			
 			// get the property Name text
-			CPropertyObject *pProperty = m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetAt(pos);
 			
 			// get the property desc name.
 			CellText = pProperty->GetName();			
@@ -1822,7 +1812,7 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 			if (pos == NULL)
 				return;
 			// get the property Name text
-			CPropertyObject *pProperty = m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetAt(pos);
 
 			switch (pProperty->GetType())				
 			{
@@ -1893,20 +1883,20 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 					CAxContainer *pCtrl = ((CControlHolder*)m_pControl->m_pCtrlHolder)->GetActiveXCtrl();
 					
 					// only properties with one or none parameters may be edited during design time
-					if (pProperty->GetActiveXParamQty() > 1)
+					if (pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXParamQty() > 1)
 					{
 						// so we need to set and display the property as a run time only property
 						//CellText = theWorkspace.LoadResourceString(IDS_RUNTIME);
 						//pProperty->GetType() = PropActiveXRunTime;
 					}
 					else
-						CellText = pProperty->GetActiveXPropery(pCtrl);
+						CellText = pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXPropery(pCtrl);
 
-					if (!CellText.IsEmpty() && pProperty->GetActiveXEnum())
+					if (!CellText.IsEmpty() && pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXEnum())
 					{
-						CellText = pProperty->GetActiveXEnumDesc(CellText);
+						CellText = pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXEnumDesc(CellText);
 					}
-					if (pProperty->GetActiveXProperyGuid() == IID_IPictureDisp)
+					if (pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IPictureDisp)
 					{
 						CString sTest;
 						sTest = theWorkspace.LoadResourceString(IDS_RUNTIME);
@@ -1914,10 +1904,10 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 							CellText = theWorkspace.LoadResourceString(IDS_PICTUREDESC);
 					}
 					// if the property is a color then
-					else if (pProperty->GetActiveXProperyGuid() == GUID_COLOR)
+					else if (pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == GUID_COLOR)
 					{
 						// get the color
-						unsigned long ulColor = pCtrl->GetColor(pProperty->GetActiveXGetProperyId());
+						unsigned long ulColor = pCtrl->GetColor(pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXGetProperyId());
 						COLORREF color;
 						OleTranslateColor(ulColor, NULL, &color);
 
@@ -1943,12 +1933,12 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 	
 						return;
 					}
-					if (pProperty->GetActiveXProperyType() == VT_DISPATCH)
+					if (pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXProperyType() == VT_DISPATCH)
 					{
-						if (pProperty->GetActiveXProperyGuid() != IID_IPictureDisp &&
-							pProperty->GetActiveXProperyGuid() != GUID_COLOR &&
-							pProperty->GetActiveXProperyGuid() != IID_IFontDisp &&
-							pProperty->GetActiveXProperyGuid() != IID_IFont)
+						if (pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() != IID_IPictureDisp &&
+							pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() != GUID_COLOR &&
+							pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() != IID_IFontDisp &&
+							pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() != IID_IFont)
 						{
 							/*if (m_pControl->IsMicrosoftActiveXCtrl() == TRUE &&
 								(pProperty->GetName() == "ImageList" || pProperty->GetName() == "HotImageList" || pProperty->GetName() == "DisabledImageList" || pProperty->GetName() == "Icons" || pProperty->GetName() == "SmallIcons"))
@@ -2055,7 +2045,7 @@ CRect CPropertyListCtrl::ChangeSelectedItem(int nNewSelectionIndex)
 
 	CString CellText;
 	// get the property selected
-    CPropertyObject *pProp = GetPropertyObject(m_SelectedIndex);
+    RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
 	// fire the cell changed event to notify parent of the new cell selected,
 	// pass it the property ID and the caption text
 	UpdatePropHelpCtrls(pProp);
@@ -2088,7 +2078,7 @@ int CPropertyListCtrl::GetSelectedIndex(long y)
 void CPropertyListCtrl::OnButtonPressed()
 {
 	// get the property object
-	CPropertyObject* pProp = GetPropertyObject(m_SelectedIndex);
+	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
 	int nCalcHeight = n100;
 
 	if (m_Button.GetButtonStyle() != nDropDownImage)
@@ -2126,22 +2116,23 @@ void CPropertyListCtrl::OnButtonPressed()
 		case PropActiveXProp:
 		{			
 			// get the Ole dispatch property type			
-			if (pProp->GetActiveXProperyGuid() == IID_IFontDisp || pProp->GetActiveXProperyGuid() == IID_IFont)
+			if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFontDisp ||
+					pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFont)
 			{				
-				pProp->DoActiveXFontPropDlg(((CControlHolder*)m_pControl->m_pCtrlHolder)->GetActiveXCtrl());	
+				pProp->GetAxInterfaceDescriptorPtr()->DoActiveXFontPropDlg(((CControlHolder*)m_pControl->m_pCtrlHolder)->GetActiveXCtrl());	
 			}
-			else if (pProp->GetActiveXProperyGuid() == IID_IPictureDisp)
+			else if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IPictureDisp)
 			{
 				DISPID dispid;
 				WORD flag;
-				if (pProp->m_pAxPropPutRef != NULL)
+				if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef())
 				{
-					dispid = pProp->m_pAxPropPutRef->Id;
+					dispid = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Id;
 					flag = DISPATCH_PROPERTYPUTREF;
 				}
-				if (pProp->m_pAxPropPut != NULL)
+				if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
 				{
-					dispid = pProp->m_pAxPropPut->Id;
+					dispid = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->Id;
 					flag = DISPATCH_PROPERTYPUT;
 				}
 				CString sFileName = GetOnePictureFile();
@@ -2169,11 +2160,11 @@ void CPropertyListCtrl::OnButtonPressed()
 		case PropActiveXProp:
 			{
 			
-			if (pProp->GetActiveXProperyGuid() == GUID_COLOR)
+			if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == GUID_COLOR)
 				{
 			
 				CControlHolder *pCtrl = (CControlHolder*)m_pControl->m_pCtrlHolder;
-				unsigned long ulColor = pCtrl->GetColor(pProp->GetActiveXGetProperyId());
+				unsigned long ulColor = pCtrl->GetColor(pProp->GetAxInterfaceDescriptorPtr()->GetActiveXGetProperyId());
 				COLORREF color;
 				OleTranslateColor(ulColor, NULL, &color);
 
@@ -2330,7 +2321,7 @@ int CPropertyListCtrl::SetListBox()
 {
 	if (m_pModeless == NULL) return 0;
 	// get the property object
-	CPropertyObject* pProp = GetPropertyObject(m_SelectedIndex);
+	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
 	
 	// set the list box to point to the property object
 	m_pModeless->SetPropertyPointer(pProp);
@@ -2343,7 +2334,7 @@ int CPropertyListCtrl::SetListBox()
 	{
 		m_pModeless->m_pAxContainer = (CControlHolder*)m_pControl->m_pCtrlHolder;
 	
-		switch (pProp->GetActiveXProperyType())
+		switch (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyType())
 		{
 		case VT_BOOL:
 		case VT_UI1:
@@ -2353,20 +2344,20 @@ int CPropertyListCtrl::SetListBox()
 		default:
 			{
 				AxPropertyDescriptor *pPropDesc = NULL;
-				if (pProp->m_pAxPropGet != NULL)
+				if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet())
 				{
-					if (pProp->m_pAxPropGet->NumEnum > 0)
-						pPropDesc = pProp->m_pAxPropGet;
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet()->NumEnum > 0)
+						pPropDesc = pProp->GetAxInterfaceDescriptorPtr()->GetPropGet();
 				}
-				else if (pProp->m_pAxProp != NULL)
+				else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp())
 				{
-					if (pProp->m_pAxProp->NumEnum > 0)
-						pPropDesc = pProp->m_pAxProp;			
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetProp()->NumEnum > 0)
+						pPropDesc = pProp->GetAxInterfaceDescriptorPtr()->GetProp();			
 				}
-				else if (pProp->m_pAxPropPut != NULL)
+				else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
 				{
-					if (pProp->m_pAxPropPut->NumEnum > 0)
-						pPropDesc = pProp->m_pAxPropPut;
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->NumEnum > 0)
+						pPropDesc = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
 				}	
 				if (pPropDesc)
 				{
@@ -2378,7 +2369,7 @@ int CPropertyListCtrl::SetListBox()
 			break;
 		case VT_DISPATCH:
 		case VT_UNKNOWN:
-			if (pProp->GetActiveXProperyGuid() == IID_IPictureDisp)
+			if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IPictureDisp)
 			{
 				sEnumDesc = theWorkspace.LoadResourceString(IDS_NONE);
 				m_pModeless->AddString(sEnumDesc);
@@ -2994,7 +2985,7 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 				{
 					AddPicture(nNewID, pMaskedPic);
 					// get the property
-					CPropertyObject *pProp = GetPropertyObject(m_SelectedIndex);
+					RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
 					// set the property
 					pProp->SetLongValue(nNewID);			
 
@@ -3050,7 +3041,7 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 			// load the picture
 			LoadPicture(sFileName, nNewID, TRUE);
 			// get the property
-			CPropertyObject *pProp = GetPropertyObject(m_SelectedIndex);
+			RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
 			if (pProp != NULL)
 			{
 				// set the property
@@ -3071,20 +3062,20 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 		}
 
 		// get the property
-		CPropertyObject *pProp = GetPropertyObject(m_SelectedIndex);
+		RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
 
 		if (pProp != NULL)
 		{
 			// call the method to inform the parent that a value has changed
 			PropertyHasChanged(pProp->GetID());
 
-			if (pProp->GetActiveXProperyGuid() == IID_IPictureDisp)
+			if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IPictureDisp)
 			{
 				CControlHolder *pCtrl = (CControlHolder*)m_pControl->m_pCtrlHolder;
-				if (pProp->m_pAxPropPut != NULL)
-					pCtrl->GetActiveXCtrl()->LoadPicture(pProp->m_pAxPropPut->Id, nNewID);
-				else if (pProp->m_pAxPropPutRef != NULL)
-					pCtrl->GetActiveXCtrl()->LoadPicture(pProp->m_pAxPropPutRef->Id, nNewID);	
+				if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
+					pCtrl->GetActiveXCtrl()->LoadPicture(pProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->Id, nNewID);
+				else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef())
+					pCtrl->GetActiveXCtrl()->LoadPicture(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Id, nNewID);	
 			}
 
 		}
@@ -3097,7 +3088,7 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 }
 
 
-void CPropertyListCtrl::PropertyHasChanged(int nId)
+void CPropertyListCtrl::PropertyHasChanged(PropertyId nId)
 {
 	// inform the parrent that a property has changed
 	FirePropertyChanged(nId);
@@ -3279,16 +3270,16 @@ CString CPropertyListCtrl::GetOnePictureFile()
 }
 
 
-BOOL CPropertyListCtrl::SetDclParent(short Index, LPCTSTR ParentName, short TabIndex) 
+BOOL CPropertyListCtrl::SetDclParent(short nIndex, LPCTSTR sParentName, short nTabIndex) 
 {
-	CDclFormObject* pNewDclForm = GetDclFormObject(Index);
+	CDclFormObject* pNewDclForm = GetDclFormObject(nIndex);
 
 	if (pNewDclForm == NULL)
 		return FALSE;
 
 	// retreive the string name value required.
-	pNewDclForm->m_ParentName = ParentName;
-	pNewDclForm->m_TabIndex = TabIndex;
+	pNewDclForm->SetParentForm(sParentName);
+	pNewDclForm->SetTabIndex(nTabIndex);
 	return TRUE;
 }
 
@@ -3301,7 +3292,7 @@ short CPropertyListCtrl::GetDclParentsTabIndex(short Index)
 	if (pNewDclForm != NULL)
 	{
 		// retreive the string name value required.
-		nReturn = pNewDclForm->m_TabIndex;
+		nReturn = pNewDclForm->GetTabIndex();
 	}
 	else
 	{
@@ -3596,7 +3587,7 @@ void CPropertyListCtrl::DefaultFontDlg()
 {
 	CPropertySheet Dlg;
 	CFontPropertyPage *pFontPage = NULL;
-	CPropertyObject *pProp = NULL;
+	RefCountedPtr< CPropertyObject > pProp = NULL;
 	
 
 	pFontPage = new CFontPropertyPage;
@@ -3773,7 +3764,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	CFontPropertyPage *pFontPage = NULL;
 	CButtonStyles *pButtonPage = NULL;
 	CImageListPage *pImageListPage = NULL;
-	CPropertyObject *pProp = NULL;
+	RefCountedPtr< CPropertyObject > pProp = NULL;
 	CTabsPane *pTabs = NULL;
 	CSortTabs *pSortTabs = NULL;
 	CColumnsPage *pColumnsPage = NULL;
@@ -4072,7 +4063,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	{
 	}
 	// update the control no matter what, just incase the user pressed the apply button then cancel
-	UpdateControls(nNotSet);
+	UpdateControls(nInvalidPropertyId);
 }
 
 void CPropertyListCtrl::ShowAsFree() 
@@ -4270,38 +4261,33 @@ void CPropertyListCtrl::OnEnterPressed()
 		m_SelectedIndex = nNewSelectedIndex;
 	}
 }
-void CPropertyListCtrl::FirePropertyChanged(short ChangedPropertyID)
+
+void CPropertyListCtrl::FirePropertyChanged(PropertyId ChangedPropertyID)
 {
 	UpdateControls(ChangedPropertyID);
 }
+
 void CPropertyListCtrl::FireInvokeImageList(short PropertyIndex, long PropertyID)
 {
 	ShowPropertyDlg(false, true);
 }
-void CPropertyListCtrl::UpdatePropHelpCtrls(CPropertyObject *pProp)
+
+void CPropertyListCtrl::UpdatePropHelpCtrls(RefCountedPtr< CPropertyObject > pProp)
 {
 	// set the property name
 	m_pPropTitle->SetWindowText(pProp->GetName());
-	
 	m_pPropDesc->SetWindowText(pProp->GetDocumentationDesc());
-	int nCount = m_pPropDesc->GetLineCount();
-	CDC *pDC = m_pPropDesc->GetDC();
-	CString sText;
-	sText = theWorkspace.LoadResourceString(IDS_NONE);
-	CSize sz = pDC->GetTextExtent(sText);
-	CRect rc;
-	m_pPropDesc->GetWindowRect(&rc);
 }
+
 void CPropertyListCtrl::FireScrolling()
 {
-	
 }
+
 void CPropertyListCtrl::FireInvokeFontPane()
 {
 	ShowPropertyDlg(true);
 }
 	
-
 void CPropertyListCtrl::OnPaint() 
 {
 	try

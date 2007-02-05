@@ -4,9 +4,9 @@
 #pragma once
 
 #include "FormVarNameUpdate.h"
+#include "PropertyObject.h"
 
 class CObjectDCLView;
-class CPropertyObject;
 class CControlHolder;
 
 #define nNotSet		-1
@@ -15,6 +15,7 @@ class CControlHolder;
 #define nCharBackSp	8	
 #define nAnsweredYes 6
 
+#pragma warning(disable:4150)
 
 /////////////////////////////////////////////////////////////////////////////
 // CPropertyEdit window
@@ -31,7 +32,7 @@ public:
 	CString m_OriginalValue;
 	CString m_sFilter;
 	bool m_bAllowReturn;
-	CPropertyObject	*m_pProp;
+	RefCountedPtr< CPropertyObject > m_pProp;
 	CControlHolder *m_pAxContainer;
 	CDclControlObject	*m_pControl;
 	CObjectDCLView		*m_pView;

@@ -220,7 +220,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\ArxControlPane.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\ArxDialogControl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\ArxDialogObject.cpp"
 				>
 			</File>
 			<File
@@ -264,10 +272,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ControlPane.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\CurrencyEdit.cpp"
 				>
 			</File>
@@ -277,10 +281,6 @@
 			</File>
 			<File
 				RelativePath="..\DateTimeHolder.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\DialogObject.cpp"
 				>
 			</File>
 			<File
@@ -473,7 +473,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\ArxControlPane.h"
+				>
+			</File>
+			<File
 				RelativePath="..\ArxDialogControl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ArxDialogObject.h"
 				>
 			</File>
 			<File
@@ -517,10 +525,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ControlPane.h"
-				>
-			</File>
-			<File
 				RelativePath="..\CurrencyEdit.h"
 				>
 			</File>
@@ -530,10 +534,6 @@
 			</File>
 			<File
 				RelativePath="..\DateTimeHolder.h"
-				>
-			</File>
-			<File
-				RelativePath="..\DialogObject.h"
 				>
 			</File>
 			<File
@@ -1354,6 +1354,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\AxInterfaceDescriptor.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\AxInterfaceDescriptor.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\AxMethodDescriptor.cpp"
 				>
 			</File>
@@ -1426,6 +1434,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\ControlPane.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\ControlPane.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\ControlTypes.h"
 				>
 			</File>
@@ -1451,6 +1467,14 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\DialogControl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\DialogObject.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\DialogObject.h"
 				>
 			</File>
 			<File
@@ -1736,5 +1760,9 @@
 		</Filter>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="\ObjectDCL\Build\ARX\ARX.rc"
+		/>
 	</Globals>
 </VisualStudioProject>

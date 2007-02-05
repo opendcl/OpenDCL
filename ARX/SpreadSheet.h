@@ -125,13 +125,13 @@ public:
 	bool m_bShowHighlight;
 	
 	
-	CPropertyObject *m_pColCaptions;	
-	CPropertyObject *m_pColWidths;	
-	CPropertyObject *m_pColImages;	
-	CPropertyObject *m_pColStyles;	
-	CPropertyObject *m_pColAlignment;	
-	CPropertyObject *m_pColDefault;	
-	CPropertyObject *m_pColAlternate;	
+	RefCountedPtr< CPropertyObject > m_pColCaptions;	
+	RefCountedPtr< CPropertyObject > m_pColWidths;	
+	RefCountedPtr< CPropertyObject > m_pColImages;	
+	RefCountedPtr< CPropertyObject > m_pColStyles;	
+	RefCountedPtr< CPropertyObject > m_pColAlignment;	
+	RefCountedPtr< CPropertyObject > m_pColDefault;	
+	RefCountedPtr< CPropertyObject > m_pColAlternate;	
 
 	CImageList		*m_pArrowImages;
 	CImageList		*m_pFontImages;

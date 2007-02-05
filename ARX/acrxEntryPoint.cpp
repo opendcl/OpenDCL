@@ -72,6 +72,7 @@
 #include "AcadColorTable.h"
 #include "LineWeightDlg.h"
 #include "LinetypeDlg.h"
+#include "ParentFileDialog.h"
 
 
 //-----------------------------------------------------------------------------
@@ -490,8 +491,8 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 };
 
 
-// Helper function to process lisp arguments
-bool RetrieveFormFromArgs( resbuf*& pArgs, CDclFormObject*& pForm )
+// Helper function to process lisp arguments (returns false to signal an argument exception)
+bool RetrieveFormFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDclFormObject*& pForm )
 {
 	if (!pArgs)
 		return false; //arguments expected
@@ -499,9 +500,10 @@ bool RetrieveFormFromArgs( resbuf*& pArgs, CDclFormObject*& pForm )
 	pForm = NULL;
 	switch (pArgs->restype)	
 	{
-	case RTNIL:
-		pForm = NULL;
-		break;
+	// Uncomment this code to accept nil arguments without generating an exception
+	//case RTNIL:
+	//	pForm = NULL;
+	//	break;
 	case RTSHORT:
 		pForm = (CDclFormObject*)pArgs->resval.rint;
 		break;
@@ -531,12 +533,12 @@ bool RetrieveFormFromArgs( resbuf*& pArgs, CDclFormObject*& pForm )
 }
 
 
-bool RetrieveDialogFromArgs( resbuf*& pArgs, CDialogObject*& pDialog )
+bool RetrieveDialogFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDialogObject*& pDialog )
 {
 	CDclFormObject* pForm = NULL;
 	if (!RetrieveFormFromArgs (pArgs, pForm))
 		return false;
-	pDialog = theArxWorkspace.FindDialog (pForm);
+	pDialog = pForm? pForm->GetFormInstance() : NULL;
 	return true;
 }
 
@@ -656,15 +658,14 @@ public:
 				assert( nRet == AcRx::kRetOK );
 				return AcRx::kRetOK;
 			}
-			size_t ctProp = mPropIds.size();
-			if( nFunctionCode >= ADSPROPFUNCBASE && nFunctionCode < ADSPROPFUNCBASE + ctProp )
+			if( nFunctionCode >= ADSPROPFUNCBASE && nFunctionCode < ADSPROPFUNCBASE + nMaxPropertyId )
 			{
 				bool bSuccess = GetCtrlProperty( static_cast<PropertyId>(nFunctionCode - ADSPROPFUNCBASE) );
 				assert( bSuccess == true );
 				return AcRx::kRetOK;
 			}
-			int nSetPropertyBase = ADSPROPFUNCBASE + ctProp;
-			if( nFunctionCode >= nSetPropertyBase && nFunctionCode < nSetPropertyBase + ctProp )
+			int nSetPropertyBase = ADSPROPFUNCBASE + nMaxPropertyId;
+			if( nFunctionCode >= nSetPropertyBase && nFunctionCode < nSetPropertyBase + nMaxPropertyId )
 			{
 				bool bSuccess = SetCtrlProperty( static_cast<PropertyId>(nFunctionCode - nSetPropertyBase) );
 				assert( bSuccess == true );
@@ -689,17 +690,19 @@ public:
 			}
 
 			//register general property get and set functions
-			int ctProp = mPropIds.size();
 			static const CString sGetPrefix = sPrefix + _T("Control_get");
 			static const CString sSetPrefix = sPrefix + _T("Control_set");
 			for( T_PropertyIdSet::const_iterator iter = mPropIds.begin(); iter != mPropIds.end(); ++iter )
 			{
 				PropertyId id = *iter;
-				CString sPropName( GetPropertyName( id ) );
-				acedDefun( sGetPrefix + sPropName, ADSPROPFUNCBASE + id );
-				acedDefun( sSetPrefix + sPropName, ADSPROPFUNCBASE + id + ctProp );
-				acedRegFunc( ads_odcl_GetCtrlProperty, ADSPROPFUNCBASE + id );
-				acedRegFunc( ads_odcl_SetCtrlProperty, ADSPROPFUNCBASE + id + ctProp );
+				LPCTSTR pszPropName = GetPropertyName( id );
+				if( pszPropName )
+				{
+					acedDefun( sGetPrefix + pszPropName, ADSPROPFUNCBASE + id );
+					acedDefun( sSetPrefix + pszPropName, ADSPROPFUNCBASE + id + nMaxPropertyId );
+					acedRegFunc( ads_odcl_GetCtrlProperty, ADSPROPFUNCBASE + id );
+					acedRegFunc( ads_odcl_SetCtrlProperty, ADSPROPFUNCBASE + id + nMaxPropertyId );
+				}
 			}
 		}
 		return (retCode) ;
@@ -826,7 +829,10 @@ public:
 		CProject *pProject = theArxWorkspace.LoadProjectFile(pszFilename, pszKeyName, bReload);
 		if (pProject == NULL)
 		{
-			theWorkspace.DisplayAlert (CString(ErrorProjectFile) + pszFilename + ErrorWasNotFound + ErrorInaDirectory);
+			CString sAlertMsg;
+			sAlertMsg.Format( _T("Project failed to load or reload!\r\nThe file could not be read, or the project ")
+												_T("is already loaded and has active dialogs.\r\n\r\n[%s]"), pszFilename );
+			theWorkspace.DisplayAlert( sAlertMsg );
 			return RSRSLT; 
 		}
 		theArxWorkspace.UpdateGlobalVariables();
@@ -1016,11 +1022,12 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		const CDialogObject *pDialog = theArxWorkspace.FindDialog( mpDclToBeShown );
+		const CDialogObject *pDialog = mpDclToBeShown->GetFormInstance();
 		if( !pDialog )
 			return RSERR; //called on invalid dialog
 
-		pDialog->m_pModalDialog->EndDialog(MB_OK); //end the modal dialog
+		if( !pDialog->IsModeless() )
+			pDialog->CloseDialog(mnDoneDialogValue); //end the modal dialog
 
 		return (RSRSLT) ;
 	}
@@ -1046,7 +1053,8 @@ public:
 		acutRelRb(prbResult);
 
 		// call method to display the requested form
-		int nDialogId = theArxWorkspace.ActivateDclForm(mpDclToBeShown, mptToBeShown.x, mptToBeShown.y);
+		DialogParams params( mptToBeShown, CRect() );
+		int nDialogId = theArxWorkspace.ActivateDclForm(mpDclToBeShown, &params);
 	
 		acedRetInt(mnDoneDialogValue);
 
@@ -1092,13 +1100,13 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
-		if (pCtrl->m_pWnd == NULL)
+		if (pCtrl->GetWindow() == NULL)
 		{ //the control has not been created yet
-			CPropertyObject *pProp = pCtrl->GetPropertyObject(nList);
+			RefCountedPtr< CPropertyObject > pProp = pCtrl->GetPropertyObject(nList);
 			assert(pProp != NULL);
 			if (!pProp)
 				return RSERR;
-			pProp->m_stringList.RemoveAll();
+			pProp->GetStringArrayPtr()->clear();
 		}
 		else
 		{ //we are changing an already created control
@@ -1107,19 +1115,19 @@ public:
 			case CtlListBox:
 				{
 					if (mnListOperation == 3)
-						((CListBox*)pCtrl->m_pWnd)->ResetContent();
+						((CListBox*)pCtrl->GetWindow())->ResetContent();
 					break;
 				}
 			case CtlComboBox:
 				{
 					if (mnListOperation == 3)
-						((CComboBox*)pCtrl->m_pWnd)->ResetContent();
+						((CComboBox*)pCtrl->GetWindow())->ResetContent();
 					break;
 				}
 			case CtlListView:
 				{
 					if (mnListOperation == 3)
-						((CListCtrl*)pCtrl->m_pWnd)->DeleteAllItems();
+						((CListCtrl*)pCtrl->GetWindow())->DeleteAllItems();
 					break;
 				}
 			}
@@ -1157,13 +1165,13 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
-		if (pCtrl->m_pWnd == NULL)
+		if (pCtrl->GetWindow() == NULL)
 		{ //the control has not been created yet
-			CPropertyObject *pProp = pCtrl->GetPropertyObject(nList);
+			RefCountedPtr< CPropertyObject > pProp = pCtrl->GetPropertyObject(nList);
 			assert(pProp != NULL);
 			if (!pProp)
 				return RSERR;
-			pProp->m_stringList.AddTail(pszValue);
+			pProp->GetStringArrayPtr()->push_back(pszValue);
 		}
 		else
 		{ //we are changing an already created control
@@ -1171,7 +1179,7 @@ public:
 			{
 			case CtlListBox:
 				{
-					CListBox *pListBox = (CListBox*)pCtrl->m_pWnd;
+					CListBox *pListBox = (CListBox*)pCtrl->GetWindow();
 					if (mnListOperation == 1)
 					{
 						int nIndex = pListBox->GetCurSel();
@@ -1184,7 +1192,7 @@ public:
 				}
 			case CtlComboBox:
 				{
-					CComboBox *pComboBox = (CComboBox*)pCtrl->m_pWnd;
+					CComboBox *pComboBox = (CComboBox*)pCtrl->GetWindow();
 					if (mnListOperation == 1)
 					{
 						int nIndex = pComboBox->GetCurSel();
@@ -1197,7 +1205,7 @@ public:
 				}
 			case CtlListView:
 				{
-					CListCtrl *pListCtrl = (CListCtrl*)pCtrl->m_pWnd;
+					CListCtrl *pListCtrl = (CListCtrl*)pCtrl->GetWindow();
 					if (mnListOperation == 1)
 					{
 						int nIndex = -1;
@@ -1362,8 +1370,8 @@ public:
 			return RSERR;
 
 		pCtrl->SetStrProperty(nText, pszValue);
-		if (pCtrl->m_pWnd)
-			pCtrl->m_pWnd->SetWindowText(pszValue);
+		if (pCtrl->GetWindow())
+			pCtrl->GetWindow()->SetWindowText(pszValue);
 
 		return (RSRSLT) ;
 	}
@@ -1395,7 +1403,7 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
-		if (pCtrl->m_pWnd == NULL)
+		if (pCtrl->GetWindow() == NULL)
 		{ //the control has not been created yet
 			switch (nValue)
 			{
@@ -1418,25 +1426,25 @@ public:
 			case 0:
 				{
 					pCtrl->SetBoolProperty(nEnabled, true);
-					pCtrl->m_pWnd->EnableWindow(TRUE);
+					pCtrl->GetWindow()->EnableWindow(TRUE);
 					break;
 				}		
 			case 1:
 				{
 					pCtrl->SetBoolProperty(nEnabled, false);
-					pCtrl->m_pWnd->EnableWindow(FALSE);
+					pCtrl->GetWindow()->EnableWindow(FALSE);
 					break;
 				}
 			case 2:
 				{
-					pCtrl->m_pWnd->SetFocus();
+					pCtrl->GetWindow()->SetFocus();
 					break;
 				}		
 			case 3:
 				{
 					if (pCtrl->GetType() == CtlTextBox)
 					{
-						CEdit *pEdit = (CEdit*)pCtrl->m_pWnd;
+						CEdit *pEdit = (CEdit*)pCtrl->GetWindow();
 						pEdit->SetSel(0, -1);
 					}
 					break;
@@ -1445,7 +1453,7 @@ public:
 				{
 					if (pCtrl->GetType() == CtlSlideView)
 					{
-						CSlideHolder *pSlide = (CSlideHolder*)pCtrl->m_pWnd;
+						CSlideHolder *pSlide = (CSlideHolder*)pCtrl->GetWindow();
 						pSlide->m_bSelectedRect = !pSlide->m_bSelectedRect;
 						pSlide->Invalidate();
 					}
@@ -1476,14 +1484,14 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
-		if (pCtrl->m_pWnd == NULL)
+		if (pCtrl->GetWindow() == NULL)
 		{ //the control has not been created yet
 			acedRetStr(pCtrl->GetStrProperty(nText));
 		}
 		else
 		{ //we are changing an already created control
 			CString sValue;
-			pCtrl->m_pWnd->GetWindowText(sValue);
+			pCtrl->GetWindow()->GetWindowText(sValue);
 			acedRetStr(sValue);
 		}
 
@@ -1519,7 +1527,7 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
-		((CSlideHolder*)pCtrl->m_pWnd)->Clear();
+		((CSlideHolder*)pCtrl->GetWindow())->Clear();
 
 		return (RSRSLT) ;
 	}
@@ -1600,7 +1608,7 @@ public:
 			break;
 		}
 
-		((CSlideHolder*)pCtrl->m_pWnd)->DrawLine(nStartX, nStartY, nEndX, nEndY, nLineColor);
+		((CSlideHolder*)pCtrl->GetWindow())->DrawLine(nStartX, nStartY, nEndX, nEndY, nLineColor);
 
 		return (RSRSLT) ;
 	}
@@ -1681,7 +1689,7 @@ public:
 			break;
 		}
 
-		((CSlideHolder*)pCtrl->m_pWnd)->DrawFillRect(nStartX, nStartY, nStartX + nEndX, nStartY + nEndY, nLineColor);
+		((CSlideHolder*)pCtrl->GetWindow())->DrawFillRect(nStartX, nStartY, nStartX + nEndX, nStartY + nEndY, nLineColor);
 
 		return (RSRSLT) ;
 	}
@@ -1706,7 +1714,7 @@ public:
 			return RSERR;
 
 		CRect rc;
-		((CSlideHolder*)pCtrl->m_pWnd)->GetClientRect(&rc);
+		((CSlideHolder*)pCtrl->GetWindow())->GetClientRect(&rc);
 		acedRetInt(rc.Width());
 
 		return (RSRSLT) ;
@@ -1732,7 +1740,7 @@ public:
 			return RSERR;
 
 		CRect rc;
-		((CSlideHolder*)pCtrl->m_pWnd)->GetClientRect(&rc);
+		((CSlideHolder*)pCtrl->GetWindow())->GetClientRect(&rc);
 		acedRetInt(rc.Height());
 
 		return (RSRSLT) ;
@@ -1757,7 +1765,7 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
-		((CSlideHolder*)pCtrl->m_pWnd)->CopyDC();
+		((CSlideHolder*)pCtrl->GetWindow())->CopyDC();
 
 		return (RSRSLT) ;
 	}
@@ -1835,7 +1843,7 @@ public:
 				acedRetInt(-1);
 				return RSRSLT;
 			}
-			((CSlideHolder*)pCtrl->m_pWnd)->DrawASlide(nX, nY, nWidth, nHeight, sPath);
+			((CSlideHolder*)pCtrl->GetWindow())->DrawASlide(nX, nY, nWidth, nHeight, sPath);
 		}
 		else
 		{ //displaying a slide library
@@ -1851,7 +1859,7 @@ public:
 				acedRetInt(-1);
 				return RSRSLT;
 			}
-			((CSlideHolder*)pCtrl->m_pWnd)->DrawASlide(nX, nY, nWidth, nHeight, sPath, sLibName);
+			((CSlideHolder*)pCtrl->GetWindow())->DrawASlide(nX, nY, nWidth, nHeight, sPath, sLibName);
 		}
 
 		return (RSRSLT) ;
@@ -1992,11 +2000,47 @@ public:
 		pDclObject->EnsureIsLoaded();
 
 		// call method to display the requested form
-		int nDialogId = theArxWorkspace.ActivateDclForm(pDclObject, nX, nY, pszDefaultDirectory, pszDefaultFileName);
+		FileDialogParams fdp( TRUE, NULL, NULL, 0, NULL );
+		bool bHasFileParams = (pszDefaultDirectory || pszDefaultFileName);
+		if( bHasFileParams )
+		{
+			CString sFilename = pszDefaultDirectory;
+			if( !sFilename.IsEmpty() && !sFilename.Right(1).SpanExcluding( _T("\\/") ).IsEmpty() )
+				sFilename += _T('\\');
+			sFilename += pszDefaultFileName;
+		}
+		DialogParams params( CPoint( nX, nY ), CRect(), bHasFileParams? (LPARAM)&fdp : NULL );
+		int nResult = theArxWorkspace.ActivateDclForm(pDclObject, &params);
 
-		//do not set a return value for Autolisp if a file dialog box
-		if (nDialogId >= 0 && pDclObject->GetType() != VdclFileDialog)
-			acedRetInt(nDialogId);
+		if (nResult >= 0)
+		{
+			if (pDclObject->GetType() == VdclFileDialog)
+			{
+				if( (fdp.dwFlags & OFN_ALLOWMULTISELECT) )
+				{
+					// Convert the array to a list that can be returned
+					struct resbuf* prbRetList = acutNewRb(RTSTR);
+					struct resbuf* prbTail = prbRetList;
+
+					int nCount = fdp.rsFilenames.GetSize();
+					for (int i=0; i<nCount; i++)
+					{
+						// get the text name of the selected line number
+						CString sFileName = fdp.rsFilenames.GetAt(i);
+						prbTail->rbnext = acutNewRb(RTSTR);
+						prbTail = prbTail->rbnext;
+						acutNewString(sFileName, prbTail->resval.rstring);
+					}
+
+					acedRetList(prbRetList);
+					acutRelRb(prbRetList);
+				}
+				else
+					acedRetStr( fdp.sFilename );
+			}
+			else
+				acedRetInt(nResult);
+		}
 
 		return (RSRSLT) ;
 	}
@@ -2036,29 +2080,15 @@ public:
 				return RSERR; //too many arguments
 		}
 
-		switch (pDialog->nType)
+		if (nWidth <= 0 || nHeight <= 0)
 		{
-		case VdclModal:
-			{
-				if (nWidth <= 0 || nHeight <= 0)
-					pDialog->m_pModalDialog->CenterDialog();
-				else
-					pDialog->m_pModalDialog->CenterDialog(nX, nY);
-				break;
-			}
-		case VdclModeless:
-			{
-				if (nWidth <= 0 || nHeight <= 0)
-					pDialog->m_pModelessDialog->CenterDialog();
-				else
-					pDialog->m_pModelessDialog->CenterDialog(nX, nY);
-				break;
-			}
-		default:
-			{
-				theWorkspace.DisplayAlert(ErrorFormCannotCenter);
-				break;
-			}
+			if( pDialog->CenterDialog() )
+				acedRetT();
+		}
+		else
+		{
+			if( pDialog->CenterAndResizeDialog( nX, nY ) )
+				acedRetT();
 		}
 
 		return (RSRSLT) ;
@@ -2076,13 +2106,13 @@ public:
 			return RSRSLT; //dialog not found
 
 		//optional arguments
-		int nWidth = -1;
-		int nHeight = -1;
+		int nNewWidth = -1;
+		int nNewHeight = -1;
 		if (pArgs)
 		{
 			if (pArgs->restype == RTSHORT)
 			{
-				nWidth = pArgs->resval.rint;
+				nNewWidth = pArgs->resval.rint;
 				pArgs = pArgs->rbnext; //move to the next argument
 
 				if (!pArgs)
@@ -2090,7 +2120,7 @@ public:
 
 				if (pArgs->restype != RTSHORT)
 					return RSERR; //wrong argument type
-				nHeight = pArgs->resval.rint;
+				nNewHeight = pArgs->resval.rint;
 			}
 			else
 				return RSERR; //wrong argument type
@@ -2099,22 +2129,10 @@ public:
 				return RSERR; //too many arguments
 		}
 
-		nWidth += iWidthAdjustment;
-		nHeight += iHeightAdjustment;
-		
-		switch (pDialog->nType)
-		{
-		case VdclModal:
-			{
-				pDialog->m_pModalDialog->ResizeDialog(nWidth, nHeight);
-				break;
-			}
-		case VdclModeless:
-			{
-				pDialog->m_pModelessDialog->ResizeDialog(nWidth, nHeight);
-				break;
-			}
-		}
+		nNewWidth += iWidthAdjustment;
+		nNewHeight += iHeightAdjustment;
+		if( pDialog->ResizeDialog( nNewWidth, nNewHeight ) )
+			acedRetT();
 
 		return (RSRSLT) ;
 	}
@@ -2133,24 +2151,8 @@ public:
 		if (pArgs)
 			return RSERR; //too many arguments
 
-		switch (pDialog->nType)
-		{
-		case VdclModal:
-			{
-				pDialog->m_pModalDialog->SetFocus();
-				break;
-			}
-		case VdclModeless:
-			{
-				pDialog->m_pModelessDialog->SetFocus();
-				break;
-			}
-		default:
-			{
-				theWorkspace.DisplayAlert(ErrorFormCannotFocus);
-				break;
-			}
-		}
+		if (pDialog->SetFocus())
+			acedRetT();
 
 		return (RSRSLT) ;
 	}
@@ -2167,23 +2169,19 @@ public:
 			return RSRSLT; //dialog not found
 
 		//optional arguments
-		bool bHide;
+		bool bHide = true;
 		if (pArgs)
 		{
 			bHide = (pArgs->restype != RTNIL);
+			if( bHide && pArgs->restype == RTSHORT && pArgs->resval.rint == 0 )
+				bHide = false; //special case (for legacy behavior): a zero integer is interpreted as unhide
 
 			if (pArgs->rbnext)
 				return RSERR; //too many arguments
 		}
 
-		switch (pDialog->nType)
-		{
-		case VdclModeless:
-			{
-				pDialog->m_pModelessDialog->ShowWindow(bHide? SW_HIDE : SW_SHOW);
-				break;
-			}
-		}
+		if (pDialog->Show( !bHide ))
+			acedRetT();
 
 		return (RSRSLT) ;
 	}
@@ -2202,51 +2200,7 @@ public:
 		if (pArgs)
 			return RSERR; //too many arguments
 
-		switch (pDialog->nType)
-		{
-		case VdclDockable:
-			{
-				if (pDialog->m_pResizableDockingDialog != NULL)
-				{
-					pDialog->m_pResizableDockingDialog->CloseWindow();
-					theArxWorkspace.RemoveDialog(pDialog);	
-				}
-				else if (pDialog->m_pDockingDialog != NULL)
-				{
-					pDialog->m_pDockingDialog->CloseWindow();
-					theArxWorkspace.RemoveDialog(pDialog);	
-				}
-				break;
-			}
-		case VdclModeless:
-			{
-				if (!InvokeCancelMethod(pDialog->m_pModelessDialog->GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false))	
-				{
-					if (pDialog->m_pModelessDialog->QueryForClose())
-					{
-						pDialog->m_pModelessDialog->m_bAboutToClose = true;
-						pDialog->m_pModelessDialog->SaveSize();
-						pDialog->m_pModelessDialog->AboutToClose();
-						pDialog->m_pModelessDialog->CloseWindow();
-						pDialog->m_pModelessDialog->DestroyWindow();
-						theArxWorkspace.RemoveDialog(pDialog);	
-					}
-				}
-				break;
-			}
-		case VdclModal:
-			{
-				pDialog->m_pModalDialog->EndDialog(MB_OK);
-				break;
-			}
-		case VdclFileDialog:
-			{
-				pDialog->m_pFileDialog->GetParentDlg().EndDialog(IDOK);
-				pDialog->m_pFileDialog->GetParentDlg().SendMessage(WM_CLOSE, 0, 0);
-				pDialog->m_pFileDialog->GetParent()->SendMessage(NM_CLICK, (WPARAM)IDCANCEL, 0);
-				break;
-			}
-		}
+		pDialog->CloseDialog();
 
 		return (RSRSLT) ;
 	}
@@ -2266,52 +2220,18 @@ public:
 			return RSERR; //too many arguments
 
 		CRect rcDlg(0, 0, 0, 0);
-		switch (pDialog->nType)
+		if( pDialog->GetWindowRect( rcDlg ) )
 		{
-		case VdclModal:
-			{
-				pDialog->m_pModalDialog->GetWindowRect(&rcDlg);
-				break;
-			}
-		case VdclFileDialog:		
-			{
-				pDialog->m_pFileDialog->GetWindowRect(&rcDlg);
-				break;
-			}
-		case VdclDockable:
-			{
-				if (pDialog->m_pDockingDialog != NULL)
-				{
-					if (pDialog->m_pDockingDialog->IsFloating())
-						pDialog->m_pDockingDialog->GetFloatingRect(&rcDlg);
-					else
-						pDialog->m_pDockingDialog->GetClientArea(rcDlg);
-				}
-				else
-				{
-					if (pDialog->m_pResizableDockingDialog->IsFloating())
-						pDialog->m_pResizableDockingDialog->GetFloatingRect(&rcDlg);
-					else
-						pDialog->m_pResizableDockingDialog->GetClientArea(rcDlg);
-				}			
-				break;
-			}
-		case VdclModeless:
-			{
-				pDialog->m_pModelessDialog->GetWindowRect(&rcDlg);
-				break;
-			}
+			resbuf rbHeight = {NULL, RTSHORT};
+			rbHeight.resval.rint = rcDlg.Height();
+			resbuf rbWidth = {&rbHeight, RTSHORT};
+			rbWidth.resval.rint = rcDlg.Width();
+			resbuf rbTop = {&rbWidth, RTSHORT};
+			rbTop.resval.rint = rcDlg.top;
+			resbuf rbLeft = {&rbTop, RTSHORT};
+			rbLeft.resval.rint = rcDlg.left;
+			acedRetList(&rbLeft);		
 		}
-
-		resbuf rbHeight = {NULL, RTSHORT};
-		rbHeight.resval.rint = rcDlg.Height();
-		resbuf rbWidth = {&rbHeight, RTSHORT};
-		rbWidth.resval.rint = rcDlg.Width();
-		resbuf rbTop = {&rbWidth, RTSHORT};
-		rbTop.resval.rint = rcDlg.top;
-		resbuf rbLeft = {&rbTop, RTSHORT};
-		rbLeft.resval.rint = rcDlg.left;
-		acedRetList(&rbLeft);		
 
 		return (RSRSLT) ;
 	}
@@ -2331,38 +2251,14 @@ public:
 			return RSERR; //too many arguments
 
 		CRect rcDlg(0, 0, 0, 0);
-		switch (pDialog->nType)
+		if (pDialog->GetClientRect(rcDlg))
 		{
-		case VdclModal:
-			{
-				pDialog->m_pModalDialog->GetClientRect(&rcDlg);
-				break;
-			}
-		case VdclFileDialog:		
-			{
-				pDialog->m_pFileDialog->GetClientRect(&rcDlg);
-				break;
-			}
-		case VdclDockable:
-			{
-				if (pDialog->m_pDockingDialog != NULL)
-					pDialog->m_pDockingDialog->GetClientArea(rcDlg);
-				else
-					pDialog->m_pResizableDockingDialog->GetClientArea(rcDlg);
-				break;
-			}
-		case VdclModeless:
-			{
-				pDialog->m_pModelessDialog->GetClientRect(&rcDlg);
-				break;
-			}
+			resbuf rbHeight = {NULL, RTSHORT};
+			rbHeight.resval.rint = rcDlg.Height();
+			resbuf rbWidth = {&rbHeight, RTSHORT};
+			rbWidth.resval.rint = rcDlg.Width();
+			acedRetList(&rbWidth);		
 		}
-
-		resbuf rbHeight = {NULL, RTSHORT};
-		rbHeight.resval.rint = rcDlg.Height();
-		resbuf rbWidth = {&rbHeight, RTSHORT};
-		rbWidth.resval.rint = rcDlg.Width();
-		acedRetList(&rbWidth);		
 
 		return (RSRSLT) ;
 	}
@@ -2402,16 +2298,7 @@ public:
 		if (pArgs)
 			return RSERR; //too many arguments
 
-		bool bFloating = true;
-		if (pDialog->nType == VdclDockable)
-		{
-			if (pDialog->m_pDockingDialog != NULL)
-				bFloating = pDialog->m_pDockingDialog->IsFloating();
-			else
-				bFloating = pDialog->m_pResizableDockingDialog->IsFloating();
-		}
-		
-		if (bFloating)
+		if (pDialog->IsFloating())
 			acedRetT();
 		else
 			acedRetNil();
@@ -2433,44 +2320,8 @@ public:
 		if (pArgs)
 			return RSERR; //too many arguments
 
-		switch (pDialog->nType)
-		{
-		case VdclDockable:
-			{
-				if (IsWindow(pDialog->m_pDockingDialog->m_hWnd))
-					acedRetT();
-				if (IsWindow(pDialog->m_pResizableDockingDialog->m_hWnd))
-					acedRetT();
-				break;
-			}
-		case VdclModal:
-			{
-				if (IsWindow(pDialog->m_pModalDialog->m_hWnd))
-					acedRetT();
-				break;
-			}
-		case VdclModeless:
-			{
-				if (IsWindow(pDialog->m_pModelessDialog->m_hWnd))
-				{
-					if (pDialog->m_pModelessDialog->IsWindowVisible() == TRUE)
-						acedRetT();
-				}
-				break;
-			}
-		case VdclFileDialog:
-			{
-				if (IsWindow(pDialog->m_pFileDialog->m_hWnd))
-					acedRetT();
-				break;
-			}
-		case VdclConfigTab:
-			{
-				if (IsWindow(pDialog->m_pConfigTabPane->m_hWnd))
-					acedRetT();
-				break;
-			}
-		}
+		if (pDialog->GetHWnd()/* && CWnd::FromHandle( pDialog->GetHWnd() )->IsWindowVisible()*/)
+			acedRetT();
 
 		return (RSRSLT) ;
 	}
@@ -2489,13 +2340,8 @@ public:
 		if (pArgs)
 			return RSERR; //too many arguments
 
-		if (pDialog->nType == VdclConfigTab)
-		{
-			if (pDialog->m_pConfigTabPane->IsDirty() == 1)
-				acedRetT();
-			else
-				acedRetVoid();
-		}
+		if (pDialog->IsDirty())
+			acedRetT();
 
 		return (RSRSLT) ;
 	}
@@ -2514,8 +2360,8 @@ public:
 		if (pArgs)
 			return RSERR; //too many arguments
 
-		if (pDialog->nType == VdclConfigTab)
-			pDialog->m_pConfigTabPane->SetDirty();
+		if (pDialog->SetDirty())
+			acedRetT();
 
 		return (RSRSLT) ;
 	}
@@ -2550,7 +2396,7 @@ public:
 		if (pArgs)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pPropObj = pDialog->m_pDialogObject->GetControlProperties();
+		CDclControlObject* pPropObj = pDialog->GetSourceForm()->GetControlProperties();
 		assert(pPropObj != NULL);
 		if(pPropObj)
 			acedRetStr(pPropObj->GetStrProperty(nTitleBarText));
@@ -2581,48 +2427,9 @@ public:
 				return RSERR; //too many arguments
 		}
 
-		switch (pDialog->nType)
-		{
-		case VdclDockable:
-			{
-				CDclControlObject *pPropObj = pDialog->m_pDialogObject->GetControlProperties();
-				pPropObj->SetStrProperty(nTitleBarText, pszTitle);
-				if (pDialog->m_pDockingDialog != NULL)
-					pDialog->m_pDockingDialog->SetWindowText(pszTitle);
-				else
-					pDialog->m_pResizableDockingDialog->SetWindowText(pszTitle);				
-				acedRetT();
-				break;
-			}
-		case VdclModeless:
-			{
-				CDclControlObject *pPropObj = pDialog->m_pDialogObject->GetControlProperties();
-				pPropObj->SetStrProperty(nTitleBarText, pszTitle);
-				pDialog->m_pModelessDialog->SetWindowText(pszTitle);
-				acedRetT();
-				break;
-			}
-		case VdclModal:
-			{
-				CDclControlObject *pPropObj = pDialog->m_pDialogObject->GetControlProperties();
-				pPropObj->SetStrProperty(nTitleBarText, pszTitle);
-				pDialog->m_pModalDialog->SetWindowText(pszTitle);
-				acedRetT();
-				break;
-			}
-			{
-				CDclControlObject *pPropObj = pDialog->m_pDialogObject->GetControlProperties();
-				pPropObj->SetStrProperty(nTitleBarText, pszTitle);
-				pDialog->m_pFileDialog->SetWindowText(pszTitle);
-				acedRetT();
-				break;
-			}
-		case VdclConfigTab:
-			{
-				theWorkspace.DisplayAlert(ErrorCnfgTabText);
-				break;
-			}
-		}
+		CDclControlObject *pPropObj = pDialog->GetSourceForm()->GetControlProperties();
+		pPropObj->SetStrProperty(nTitleBarText, pszTitle);
+		::SetWindowText( pDialog->GetHWnd(), pszTitle );
 
 		return (RSRSLT) ;
 	}
@@ -2763,56 +2570,8 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		switch (pDialog->nType)
-		{
-		case VdclDockable:
-			{
-				theWorkspace.DisplayAlert(ErrorDockFormMinMaxSizes);
-				return RSERR;
-				break;
-			}
-		case VdclModeless:
-			{
-				CDclControlObject *pPropObj = pDialog->m_pDialogObject->GetControlProperties();
-				assert(pPropObj != NULL);
-				if (pPropObj)
-				{
-					pPropObj->SetLngProperty(nMinDialogWidth, nMinWidth);
-					pPropObj->SetLngProperty(nMinDialogHeight, nMinHeight);
-					pPropObj->SetLngProperty(nMaxDialogWidth, nMaxWidth);
-					pPropObj->SetLngProperty(nMaxDialogHeight, nMaxHeight);
-				}
-				pDialog->m_pModelessDialog->SetDialogMaxExtents (nMaxWidth, nMaxHeight);
-				pDialog->m_pModelessDialog->SetDialogMinExtents (nMinWidth, nMinHeight);
-				break;
-			}
-		case VdclModal:
-			{
-				CDclControlObject *pPropObj = pDialog->m_pDialogObject->GetControlProperties();
-				assert(pPropObj != NULL);
-				if (pPropObj)
-				{
-					pPropObj->SetLngProperty(nMinDialogWidth, nMinWidth);
-					pPropObj->SetLngProperty(nMinDialogHeight, nMinHeight);
-					pPropObj->SetLngProperty(nMaxDialogWidth, nMaxWidth);
-					pPropObj->SetLngProperty(nMaxDialogHeight, nMaxHeight);
-				}
-				pDialog->m_pModalDialog->SetDialogMaxExtents (nMaxWidth, nMaxHeight);
-				pDialog->m_pModalDialog->SetDialogMinExtents (nMinWidth, nMinHeight);
-				break;
-			}
-		VdclConfigTab:
-			{
-				theWorkspace.DisplayAlert(ErrorCnfgTabText);
-				return RSERR;
-				break;
-			}
-		default:
-			{
-				return RSERR; //invalid form type
-				break;
-			}
-		}
+		if (pDialog->SetMinMaxSize(CSize(nMinWidth, nMinHeight), CSize(nMaxWidth, nMaxHeight)))
+			acedRetT();
 
 		return (RSRSLT) ;
 	}
@@ -2831,7 +2590,7 @@ public:
 		if (pArgs)
 			return RSERR; //too many arguments
 
-		acedRetLong((LONG)pDialog->GetFormHWnd());
+		acedRetLong((LONG)pDialog->GetHWnd());
 
 		return (RSRSLT) ;
 	}
@@ -2850,7 +2609,7 @@ public:
 		if (pArgs)
 			return RSERR; //too many arguments
 
-		if (IsWindowEnabled(pDialog->GetFormHWnd()))
+		if (IsWindowEnabled(pDialog->GetHWnd()))
 			acedRetT();
 
 		return (RSRSLT) ;
@@ -2870,7 +2629,7 @@ public:
 		if (pArgs)
 			return RSERR; //too many arguments
 
-		if (IsWindowVisible(pDialog->GetFormHWnd()))
+		if (IsWindowVisible(pDialog->GetHWnd()))
 			acedRetT();
 
 		return (RSRSLT) ;
@@ -2900,7 +2659,7 @@ public:
 				return RSERR; //too many arguments
 		}
 
-		EnableWindow(pDialog->GetFormHWnd(), bEnable);
+		EnableWindow(pDialog->GetHWnd(), bEnable);
 
 		return (RSRSLT) ;
 	}
@@ -3075,7 +2834,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		acedRetLong((LONG)pControl->m_pWnd->m_hWnd);
+		acedRetLong((LONG)pControl->GetWindow()->m_hWnd);
 
 		return (RSRSLT) ;
 	}
@@ -4015,8 +3774,7 @@ int CARXApp::ads_odcl_GetCtrlProperty(void)
 {
 	acedRetNil();
 	int nFunctionCode = acedGetFunCode();
-	size_t ctProp = theRxApp.GetPropertyIdCount();
-	if( nFunctionCode < ADSPROPFUNCBASE || nFunctionCode >= ADSPROPFUNCBASE + ctProp )
+	if( nFunctionCode < ADSPROPFUNCBASE || nFunctionCode >= ADSPROPFUNCBASE + nMaxPropertyId )
 		return RSERR;
 	GetCtrlProperty( static_cast<PropertyId>(nFunctionCode - ADSPROPFUNCBASE) );
 	return RSRSLT;
@@ -4027,9 +3785,8 @@ int CARXApp::ads_odcl_SetCtrlProperty(void)
 {
 	acedRetNil();
 	int nFunctionCode = acedGetFunCode();
-	size_t ctProp = theRxApp.GetPropertyIdCount();
-	int nSetPropertyBase = ADSPROPFUNCBASE + ctProp;
-	if( nFunctionCode < nSetPropertyBase || nFunctionCode >= nSetPropertyBase + ctProp )
+	int nSetPropertyBase = ADSPROPFUNCBASE + nMaxPropertyId;
+	if( nFunctionCode < nSetPropertyBase || nFunctionCode >= nSetPropertyBase + nMaxPropertyId )
 		return RSERR;
 	SetCtrlProperty( static_cast<PropertyId>(nFunctionCode - nSetPropertyBase) );
 	return RSRSLT;

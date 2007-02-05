@@ -29,7 +29,7 @@ public:
 	CPPToolTip m_ToolTip;
 	
 	bool m_bInvokeWithSendString;
-	CPropertyObject *m_pTextProp;
+	RefCountedPtr< CPropertyObject > m_pTextProp;
 	void SetDragnDrop(BOOL bRegister);
 	CComboBox		*m_pGridDropList;
 // Implementation

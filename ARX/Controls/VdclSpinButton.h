@@ -21,10 +21,10 @@ public:
 // Attributes
 public:
 	bool m_bInvokeWithSendString;
-	CPropertyObject *m_pValueProp;
-	CPropertyObject *m_pWrapProp;
-	CPropertyObject *m_pMinProp;
-	CPropertyObject *m_pMaxProp;
+	RefCountedPtr< CPropertyObject > m_pValueProp;
+	RefCountedPtr< CPropertyObject > m_pWrapProp;
+	RefCountedPtr< CPropertyObject > m_pMinProp;
+	RefCountedPtr< CPropertyObject > m_pMaxProp;
 	int m_Pos;
 // Operations
 public:

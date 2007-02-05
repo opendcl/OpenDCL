@@ -167,17 +167,16 @@ BOOL CObjectDCLDoc::OnSaveDocument(LPCTSTR lpszPathName)
 
 void CObjectDCLDoc::RenameUntitledGlobalVars(CString sPathName) 
 {
-	CString sShortName = sPathName;
-	sShortName.MakeReverse();
-	sShortName = sShortName.SpanExcluding(_T("\\/:")).MakeReverse();
-	sShortName = sShortName.SpanExcluding(_T("."));
+	CString sShortName = sPathName.MakeReverse().SpanExcluding(_T("\\/:")).MakeReverse().SpanExcluding(_T("."));
+	if (sShortName.IsEmpty())
+		return;
 
 	POSITION pos = activeProject->GetDclFormList().GetHeadPosition();
 	while (pos != NULL)
 	{
 		CDclFormObject *pDcl = activeProject->GetDclFormList().GetNext(pos);
 		if (pDcl != NULL)
-			pDcl->UpdateGlobalVariable(sShortName);
+			pDcl->UpdateGlobalVariableName(sShortName);
 	}
 
 	// force the redraw of the property list box so any (VarName) will be updated.

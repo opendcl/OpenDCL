@@ -5,8 +5,29 @@
 
 #include "SnapDlg.h"
 #include "Resource.h"
+#include "ArxDialogObject.h"
 
 class CDclFormObject;
+
+
+class CModalDialogX : public CArxDialogObject
+{
+	friend class CModalVDcl;
+	CModalVDcl* mpOwner;
+protected:
+	CModalDialogX( CModalVDcl& Owner, CDclFormObject* pDclForm );
+	~CModalDialogX();
+
+	virtual DclFormType GetType() const;
+	virtual bool IsModeless() const { return false; }
+	virtual bool IsDockable() const { return false; }
+	virtual bool IsResizable() const { return true; }
+	virtual HWND GetHWnd() const;
+	virtual void CloseDialog(int nStatus) const;
+	virtual INT_PTR DoModal();
+	//virtual bool Show(bool bShow = true) { return false; }
+	virtual bool SetMinMaxSize( const CSize& min, const CSize& max );
+};
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -14,56 +35,44 @@ class CDclFormObject;
 
 class CModalVDcl : public CSnapDlg
 {
+	CModalDialogX mDialogX;
+	int mnX;
+	int mnY;
+
+	enum { IDD = IDD_MODALDIALOG };
+
 // Construction
 public:
-	CModalVDcl(CDclFormObject* pSourceForm, CWnd* pParent = NULL, int nX = -1, int nY = -1);   // standard constructor
+	CModalVDcl(CDclFormObject* pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL);
 	~CModalVDcl();
 
 public:
+	CDialogObject& GetDialogObject() { return mDialogX; }
+	const CDialogObject& GetDialogObject() const { return mDialogX; }
 	void SizeDialog();
 	void CloseDialog();
 	void SetTitleBarIcon(int nPictureID);
 	void SetDclForm(CDclFormObject *pDclFormObject);
-	void CenterDialog();
-	void CenterDialog(int nNewWidth, int nNewHeight);
-	void ResizeDialog(int nNewWidth, int nNewHeight);
 	bool QueryForClose();
-	
-	// this back ground CStatic is used to hide some controls
-	// that the system somehow added in on very infrequent occations
-	//CStatic				m_BackGround;
-	int m_nX;
-	int m_nY;
-// Dialog Data
-	//{{AFX_DATA(CModalVDcl)
-	enum { IDD = IDD_MODALDIALOG };
-	//}}AFX_DATA
-	
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CModalVDcl)
-	public:
+public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	protected:
 	virtual void OnOK();
 	virtual void OnCancel();
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
-
-	// Generated message map functions
-	//{{AFX_MSG(CModalVDcl)
 	virtual BOOL OnInitDialog();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
 	afx_msg void OnClose();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-	//}}AFX_MSG
 	afx_msg BOOL OnNotify_ToolTipText(UINT  id, NMHDR *pNMHDR, LRESULT *pResult);
 
+protected:
 	DECLARE_MESSAGE_MAP()
 };

@@ -14,16 +14,18 @@ class CDclControlObject;
 
 class VdclStatic : public CStatic
 {
-// Construction
+// Attributes
 public:
-	VdclStatic();
 	CBrush *m_pStaticBrush;		
 	COLORREF m_ForeColor;
 	COLORREF m_BkColor;
 	bool m_bTransparent;
-// Attributes
-public:
 	bool m_bInvokeWithSendString;
+
+// Construction
+public:
+	VdclStatic();
+	~VdclStatic();
 
 // Operations
 public:
@@ -56,7 +58,6 @@ public:
 
 // Implementation
 public:
-	virtual ~VdclStatic();
 
 	// Generated message map functions
 protected:

@@ -17,6 +17,7 @@
 #include "AxMethodDescriptor.h"
 #include "AxPropertyDescriptor.h"
 #include "AxEventDescriptor.h"
+#include "AxInterfaceDescriptor.h"
 #include "AxContainer.h"
 #include "ControlHolder.h"
 #include "LoadArgs.h"
@@ -161,8 +162,6 @@ HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(const CDclControlObject *pContro
 	if (pControl->GetType() == CtlActiveX)
 	{
 		CString sName = pControl->GetActiveXTypeName();
-		if (sName.IsEmpty())
-			sName = pControl->m_Name;
 		hItem = m_ListBox.InsertItem(sName, TVI_ROOT, TVI_SORT);
 	}
 	else
@@ -218,30 +217,30 @@ void CObjectBrowser::LoadAllAssociatedOleObjects(CDclControlObject *pControl)
 	// do loop to inspect all property objects
 	while (pos != NULL)
 	{
-		CPropertyObject *pProp = pControl->m_PropertyList.GetNext(pos);
+		RefCountedPtr< CPropertyObject > pProp = pControl->m_PropertyList.GetNext(pos);
 		if (pProp != NULL)
 		{
 			SearchMethods(pProp);
 			CDclControlObject *pOleObject = NULL;
 			// check events
-			pOleObject = activeProject->GetOleObject(pProp->m_pAxEvent);			
+			pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetEvent());			
 			if (pOleObject != NULL)
 				LoadOleObjectIntoTree(pOleObject);			
 			
 			// check each property pointer type
-			pOleObject = activeProject->GetOleObject(pProp->m_pAxProp);			
+			pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetProp());
 			if (pOleObject != NULL)
 				LoadOleObjectIntoTree(pOleObject);			
 			
-			pOleObject = activeProject->GetOleObject(pProp->m_pAxPropGet);			
+			pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetPropGet());			
 			if (pOleObject != NULL)
 				LoadOleObjectIntoTree(pOleObject);			
 			
-			pOleObject = activeProject->GetOleObject(pProp->m_pAxPropPut);			
+			pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetPropPut());			
 			if (pOleObject != NULL)
 				LoadOleObjectIntoTree(pOleObject);			
 			
-			pOleObject = activeProject->GetOleObject(pProp->m_pAxPropPutRef);			
+			pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef());			
 			if (pOleObject != NULL)
 				LoadOleObjectIntoTree(pOleObject);			
 		}
@@ -249,24 +248,16 @@ void CObjectBrowser::LoadAllAssociatedOleObjects(CDclControlObject *pControl)
 }
 
 
-void CObjectBrowser::SearchMethods(CPropertyObject *pProp) 
+void CObjectBrowser::SearchMethods(RefCountedPtr< CPropertyObject > pProp) 
 {
-	if (pProp->m_pMethods == NULL)
+	if (!pProp->GetAxInterfaceDescriptorPtr()->GetMethods())
 		return;
 
-	POSITION pos = pProp->m_pMethods->GetHeadPosition();
-	// do loop to inspect all property objects
-	while (pos != NULL)
+	for (size_t idx = pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->size(); idx > 0; --idx)
 	{
-		AxMethodDescriptor *pMethod = pProp->m_pMethods->GetNext(pos);
-		if (pProp != NULL)
-		{
-			
-			CDclControlObject *pOleObject = activeProject->GetOleObject(pMethod);
-			
-			if (pOleObject != NULL)
-				LoadOleObjectIntoTree(pOleObject);			
-		}
+		CDclControlObject *pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->at(idx));
+		if (pOleObject != NULL)
+			LoadOleObjectIntoTree(pOleObject);			
 	}
 }
 
@@ -278,7 +269,7 @@ void CObjectBrowser::LoadInfoTree(const CDclControlObject *pControl, HTREEITEM h
 		POSITION pos = pControl->m_PropertyList.FindIndex(i);
 		if (pos != NULL)
 		{			
-			CPropertyObject *pProp = pControl->m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pProp = pControl->m_PropertyList.GetAt(pos);
 			if (pProp != NULL)
 			{
 				switch (pProp->GetType())
@@ -291,20 +282,16 @@ void CObjectBrowser::LoadInfoTree(const CDclControlObject *pControl, HTREEITEM h
 					break;
 				case PropActiveXMethods:
 					{
-						if (pProp->m_pMethods != NULL)
+						int nCount = pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->size();
+						if (nCount > 0)
 						{
 							nMethodIndex = i;
-							int nCount = pProp->m_pMethods->GetCount();
 							for (int j=0; j<nCount; j++)
 							{
-								POSITION pos = pProp->m_pMethods->FindIndex(j);
-								if (pos != NULL)
-								{
-									CString sTitle = pProp->m_pMethods->GetAt(pos)->Name;								
-									HTREEITEM hItem = m_ListBox.InsertItem(sTitle, hParentItem, TVI_SORT);
-									m_ListBox.SetItemData(hItem, j);
-									m_ListBox.SetItemImage(hItem, 3, 3);
-								}
+								CString sTitle = pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->at(j)->Name;								
+								HTREEITEM hItem = m_ListBox.InsertItem(sTitle, hParentItem, TVI_SORT);
+								m_ListBox.SetItemData(hItem, j);
+								m_ListBox.SetItemImage(hItem, 3, 3);
 							}
 						}
 					break;
@@ -770,7 +757,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 
 	if (pos != NULL)
 	{			
-		CPropertyObject *pProp = pControl->m_PropertyList.GetAt(pos);
+		RefCountedPtr< CPropertyObject > pProp = pControl->m_PropertyList.GetAt(pos);
 		if (pProp != NULL)
 		{
 			CString sTitle;
@@ -918,12 +905,13 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				if (nThisItemData > nNotSet)
 				{
 					sTitle = theWorkspace.LoadResourceString(IDS_METHOD);
-					sDesc = pProp->GetAxMethodDesc(nThisItemData);
-					sVarType = GetTypeName(pProp->GetAxMethodReturnType(nThisItemData), pProp->GetAxMethod(nThisItemData));
+					sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodDesc(nThisItemData);
+					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData),
+																 pProp->GetAxInterfaceDescriptorPtr()->GetAxMethod(nThisItemData));
 					
 					// here we need to put in OleObject closing instructions if required.
-					if (pProp->GetAxMethodReturnType(nThisItemData) == VT_DISPATCH ||
-						pProp->GetAxMethodReturnType(nThisItemData) == VT_UNKNOWN)
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_DISPATCH ||
+						pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_UNKNOWN)
 					{
 						if (!sDesc.IsEmpty())
 							sDesc += theWorkspace.LoadResourceString(IDS_PARPAR);						
@@ -954,14 +942,14 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					sDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_CF0B0);
 					m_sClipBoardDefun2 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE);
 					
-					int nCount = pProp->GetAxMethodParams(nThisItemData);
+					int nCount = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParams(nThisItemData);
 					for (int i=0; i<nCount; i++)
 					{
 						// add the argument name
-						sDefun1 += theWorkspace.LoadResourceString(IDS_CF12) + pProp->GetAxMethodParamName(nThisItemData, i);
-						m_sClipBoardDefun2 += CString(theWorkspace.LoadResourceString(IDS_SPACE)) + pProp->GetAxMethodParamName(nThisItemData, i); 
+						sDefun1 += theWorkspace.LoadResourceString(IDS_CF12) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i);
+						m_sClipBoardDefun2 += CString(theWorkspace.LoadResourceString(IDS_SPACE)) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i); 
 						// add the [as ...]
-						sArgType = pProp->GetAxMethodParamVarType(nThisItemData, i);
+						sArgType = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamVarType(nThisItemData, i);
 				
 						if (sArgType == CString())
 						{
@@ -1013,7 +1001,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 			else if (pProp->GetType() == PropActiveXEvent)
 			{
 				sTitle = theWorkspace.LoadResourceString(IDS_EVENTTITLE);
-				sDesc = pProp->m_pAxEvent->DocumentationDesc;
+				sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->DocumentationDesc;
 
 				if (!pProp->GetStringValue().IsEmpty())
 				{
@@ -1070,56 +1058,56 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				sDesc = pProp->GetDocumentationDesc();
 				
 				// get a pointer to the get AxPropertyDescriptor struct 
- 				if (pProp->m_pAxPropGet != NULL)
+ 				if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet())
 				{
-					if (pProp->m_pAxPropGet->invKind == INVOKE_PROPERTYGET)
-						pAxPropGet = pProp->m_pAxPropGet;
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet()->invKind == INVOKE_PROPERTYGET)
+						pAxPropGet = pProp->GetAxInterfaceDescriptorPtr()->GetPropGet();
 					else
-						pAxPropPut = pProp->m_pAxPropGet;
+						pAxPropPut = pProp->GetAxInterfaceDescriptorPtr()->GetPropGet();
 				}
-				if (pProp->m_pAxPropPutRef != NULL)
+				if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef())
 				{
-					if (pProp->m_pAxPropPutRef->invKind == INVOKE_PROPERTYPUTREF)
-						pAxPropPut = pProp->m_pAxPropPutRef;
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->invKind == INVOKE_PROPERTYPUTREF)
+						pAxPropPut = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 					else
-						pAxPropGet = pProp->m_pAxPropPutRef;
+						pAxPropGet = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 				}
-				if (pProp->m_pAxPropPut != NULL)
+				if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
 				{
-					if (pProp->m_pAxPropPut->invKind == INVOKE_PROPERTYPUT)
-						pAxPropPut = pProp->m_pAxPropPut;
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->invKind == INVOKE_PROPERTYPUT)
+						pAxPropPut = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
 					else
-						pAxPropGet = pProp->m_pAxPropPut;
+						pAxPropGet = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
 				}
-				if (pProp->m_pAxProp != NULL)
+				if (pProp->GetAxInterfaceDescriptorPtr()->GetProp())
 				{
-					if (pProp->m_pAxProp->invKind == INVOKE_PROPERTYGET)
-						pAxPropGet = pProp->m_pAxProp;
-					else if (pProp->m_pAxProp->invKind == INVOKE_PROPERTYPUTREF)
-						pAxPropPut = pProp->m_pAxProp;
-					else if (pProp->m_pAxProp->invKind == INVOKE_PROPERTYPUT)
-						pAxPropPut = pProp->m_pAxProp;
-					else //if (pProp->m_pAxProp->invKind == INVOKE_FUNC)
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetProp()->invKind == INVOKE_PROPERTYGET)
+						pAxPropGet = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
+					else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp()->invKind == INVOKE_PROPERTYPUTREF)
+						pAxPropPut = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
+					else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp()->invKind == INVOKE_PROPERTYPUT)
+						pAxPropPut = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
+					else //if (pProp->GetAxInterfaceDescriptorPtr()->GetProp()->invKind == INVOKE_FUNC)
 					{
 						CAxContainer *pAxCtrl = ((CControlHolder*)m_pControl->m_pCtrlHolder)->GetActiveXCtrl();
 						CString sValue;
-						HRESULT hr = pAxCtrl->GetProperty(pProp->m_pAxProp, sValue);
+						HRESULT hr = pAxCtrl->GetProperty(pProp->GetAxInterfaceDescriptorPtr()->GetProp(), sValue);
 						if (FAILED(hr))
 						{
-							pAxPropPut = pProp->m_pAxProp;
+							pAxPropPut = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 						}
 						else								
-							pAxPropGet = pProp->m_pAxProp;					
+							pAxPropGet = pProp->GetAxInterfaceDescriptorPtr()->GetProp();					
 					}
 				}
 				
 				// do a special override for the color set properties
-				if (pAxPropPut != NULL && pProp->GetActiveXProperyGuid() == GUID_COLOR)
+				if (pAxPropPut != NULL && pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == GUID_COLOR)
 				{
 					sDefun1 = theWorkspace.LoadResourceString(IDS_PARCF2) + sOleObject + theWorkspace.LoadResourceString(IDS_SETCOLOR) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3B1) + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTEB0);
 					m_sClipBoardDefun1 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_SETCOLOR2) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_QUOTE) + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE) + theWorkspace.LoadResourceString(IDS_SPACE);
 		
-					sVarType = GetTypeName(pProp->GetActiveXProperyType(), NULL, pAxPropPut);
+					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyType(), NULL, pAxPropPut);
 		
 					sDefun1 += theWorkspace.LoadResourceString(IDS_REDCOLORDESC2);
 					m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_REDCOLORDESC);
@@ -1136,17 +1124,17 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				}
 					
 				// if a put property
-				if (pAxPropPut != NULL && pProp->GetActiveXProperyGuid() != GUID_COLOR)
+				if (pAxPropPut != NULL && pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() != GUID_COLOR)
 				{
 					// lets set the put property
 					sDefun1 = theWorkspace.LoadResourceString(IDS_PARCF2) + sOleObject + theWorkspace.LoadResourceString(IDS_SETPROP3) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3BQ);
 					m_sClipBoardDefun1 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_SETPROP4) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_QUOTE);
 
-					sVarType = GetTypeName(pProp->GetActiveXProperyType(), NULL, pAxPropPut);
+					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyType(), NULL, pAxPropPut);
 		
 					if (sVarType == theWorkspace.LoadResourceString(IDS_PROP_PICTURE))
 					{
-						if (pProp->GetActiveXProperyGuid() == IID_IPictureDisp)
+						if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IPictureDisp)
 						{
 							CString sLoad;
 							sExtraText = theWorkspace.LoadResourceString(IDS_PICTURESHORTCUT);
@@ -1160,8 +1148,8 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					}
 					
 					// here we need to put in OleObject closing instructions if required.
-					if (pProp->GetActiveXProperyType() == VT_DISPATCH ||
-						pProp->GetActiveXProperyType() == VT_UNKNOWN)
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyType() == VT_DISPATCH ||
+						pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyType() == VT_UNKNOWN)
 					{
 						if (!sDesc.IsEmpty())
 							sDesc += theWorkspace.LoadResourceString(IDS_PARPAR);
@@ -1236,7 +1224,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				// if a get property
 				if (pAxPropGet != NULL)
 				{
-					sVarType = GetTypeName(pProp->GetActiveXProperyType(), NULL, pAxPropGet);
+					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyType(), NULL, pAxPropGet);
 
 					// lets set the get property
 					sDefun2 = theWorkspace.LoadResourceString(IDS_PARSETVALUE) + sOleObject + theWorkspace.LoadResourceString(IDS_GETPROPCF0CF3) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3B2);
@@ -1245,12 +1233,12 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					m_sClipBoardDefun2 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE);
 
 					// get a pointer to the get AxPropertyDescriptor struct 
-					if (pProp->m_pAxPropGet != NULL)
-						pAxPropGet = pProp->m_pAxPropGet;
-					else if (pProp->m_pAxProp != NULL)
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet())
+						pAxPropGet = pProp->GetAxInterfaceDescriptorPtr()->GetPropGet();
+					else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp())
 					{
-						if (pProp->m_pAxProp->invKind != INVOKE_PROPERTYPUT && pProp->m_pAxProp->invKind != INVOKE_PROPERTYPUTREF)
-							pAxPropGet = pProp->m_pAxProp;
+						if (pProp->GetAxInterfaceDescriptorPtr()->GetProp()->invKind != INVOKE_PROPERTYPUT && pProp->GetAxInterfaceDescriptorPtr()->GetProp()->invKind != INVOKE_PROPERTYPUTREF)
+							pAxPropGet = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 					}
 
 					// lets add the arguments
@@ -1764,7 +1752,7 @@ CString CObjectBrowser::GetTypeName( VARTYPE vt, AxMethodDescriptor *pMethod, Ax
 			if (pOleObject != NULL)
 			{
 				LoadOleObjectIntoTree(pOleObject);
-				return pOleObject->m_Name;
+				return pOleObject->GetActiveXTypeName();
 			}
 		}
 		else
@@ -1773,7 +1761,7 @@ CString CObjectBrowser::GetTypeName( VARTYPE vt, AxMethodDescriptor *pMethod, Ax
 			if (pOleObject != NULL)
 			{
 				LoadOleObjectIntoTree(pOleObject);
-				return pOleObject->m_Name;
+				return pOleObject->GetActiveXTypeName();
 			}			
 		}
 	}

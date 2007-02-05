@@ -8,9 +8,9 @@ class CImageListPage;
 
 #include "Resource.h"
 #include "ListHeader.h"
+#include "PropertyObject.h"
 
 class CImageListPage;
-class CPropertyObject;
 class CDclFormObject;
 class CDclControlObject;
 class CObjectDCLView;
@@ -87,15 +87,15 @@ public:
 	
 	bool bUsesRowHeader;
 	
-	CPropertyObject *m_pColCaptions;	
-	CPropertyObject *m_pColWidths;	
-	CPropertyObject *m_pColImages;	
-	CPropertyObject *m_pColStyles;	
-	CPropertyObject *m_pColAlignment;	
-	CPropertyObject *m_pColDefault;	
-	CPropertyObject *m_pColAlternate;	
-	CPropertyObject *m_pColListItems;	
-	CPropertyObject *m_pColImageItems;	
+	RefCountedPtr< CPropertyObject > m_pColCaptions;	
+	RefCountedPtr< CPropertyObject > m_pColWidths;	
+	RefCountedPtr< CPropertyObject > m_pColImages;	
+	RefCountedPtr< CPropertyObject > m_pColStyles;	
+	RefCountedPtr< CPropertyObject > m_pColAlignment;	
+	RefCountedPtr< CPropertyObject > m_pColDefault;	
+	RefCountedPtr< CPropertyObject > m_pColAlternate;	
+	RefCountedPtr< CPropertyObject > m_pColListItems;	
+	RefCountedPtr< CPropertyObject > m_pColImageItems;	
 
 	CArray<CColumnData, CColumnData> m_ColData;										 
 	

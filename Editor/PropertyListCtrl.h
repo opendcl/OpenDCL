@@ -80,8 +80,8 @@ public:
 // Operations
 public:
 	void SetFont(CFont *pFont);
-	void UpdateControls(int nPropId);
-	void PropertyHasChanged(int nId);
+	void UpdateControls(PropertyId nPropId);
+	void PropertyHasChanged(PropertyId nId);
 	void SetScrollBar();
 	void ClearArea(HDC hdc);
 	void RePaint();
@@ -93,7 +93,7 @@ public:
 	CString QueryForLispFileName();
 	BOOL SaveDistributionFile(CProjectCollection *pProjectHolder);
 	BOOL OpenProjectFile(LPCTSTR FileName, CProject *pProject);
-	CPropertyObject* GetPropertyObject(short PropertyIndex);
+	RefCountedPtr< CPropertyObject > GetPropertyObject(short PropertyIndex);
 	void EditObjectbrowser();
 	
 
@@ -195,9 +195,9 @@ public:
 	CString GetOnePictureFile();
 	void SearchPictureRefs(CDclFormObject *pDclObject);
 	
-	void FirePropertyChanged(short ChangedPropertyID);		
+	void FirePropertyChanged(PropertyId ChangedPropertyID);		
 	void FireInvokeImageList(short PropertyIndex, long PropertyID);
-	void UpdatePropHelpCtrls(CPropertyObject *pProp);
+	void UpdatePropHelpCtrls(RefCountedPtr< CPropertyObject > pProp);
 	void FireScrolling();
 	void FireInvokeFontPane();	
 };

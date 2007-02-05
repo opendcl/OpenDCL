@@ -27,7 +27,7 @@ public:
 	//}}AFX_DATA
 
 	int m_SelectedStyle;
-	CPropertyObject *m_pStyle;
+	RefCountedPtr< CPropertyObject > m_pStyle;
 	void DisplayDesc(int nSetting);
 
 // Overrides

@@ -73,9 +73,8 @@ void CZOrderListCtrl::AddControlToList(CString sName, int nType)
 	lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;
 	lvItem.iItem = GetItemCount();
 	lvItem.iSubItem = 0;
-	TCHAR sValue [nValueSize];
-	lstrcpy(sValue, sName);
-	lvItem.pszText = sValue;
+	lvItem.pszText = sName.LockBuffer();
+	lvItem.cchTextMax = sName.GetLength() + 1;
 	if (nType == nType100)
 		lvItem.iImage = m_ImageList.GetImageCount() -1;
 	else
@@ -84,9 +83,8 @@ void CZOrderListCtrl::AddControlToList(CString sName, int nType)
 	
 	// insert the row item
 	int nIndex = InsertItem(&lvItem);
-	
+	assert(nIndex > -1);
 	SetItemData(nIndex, nType);
-	int n = GetItemCount();
 }
 
 void CZOrderListCtrl::RemoveControlFromList(CString sName)

@@ -893,7 +893,7 @@ int OptionList_SetTttTitle()
 	CArray<long, long> m_TttTitleColorList;
 	CStringArray m_TttAviList;
 	*/
-	COptionListBox* pOptionLst = (COptionListBox*)pArx->m_pWnd;
+	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
 	
 	if (nItem < pOptionLst->m_TttTitleList.GetCount())
 		pOptionLst->m_TttTitleList[nItem] = sText;
@@ -936,7 +936,7 @@ int OptionList_SetTttTitleColor()
 	CArray<long, long> m_TttTitleColorList;
 	CStringArray m_TttAviList;
 	*/
-	COptionListBox* pOptionLst = (COptionListBox*)pArx->m_pWnd;
+	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
 	
 	if (nItem < pOptionLst->m_TttTitleColorList.GetCount())
 		pOptionLst->m_TttTitleColorList[nItem] = nColor;
@@ -979,7 +979,7 @@ int OptionList_SetTttTitleLine()
 	CArray<long, long> m_TttTitleColorList;
 	CStringArray m_TttAviList;
 	*/
-	COptionListBox* pOptionLst = (COptionListBox*)pArx->m_pWnd;
+	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
 	
 	if (nItem < pOptionLst->m_TttLineList.GetCount())
 		pOptionLst->m_TttLineList[nItem] = nLine;
@@ -1021,7 +1021,7 @@ int OptionList_SetTttMain()
 	CArray<long, long> m_TttTitleColorList;
 	CStringArray m_TttAviList;
 	*/
-	COptionListBox* pOptionLst = (COptionListBox*)pArx->m_pWnd;
+	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
 	
 	if (nItem < pOptionLst->m_TttMainList.GetCount())
 		pOptionLst->m_TttMainList[nItem] = sText;
@@ -1063,7 +1063,7 @@ int OptionList_SetTttPicture()
 	CArray<long, long> m_TttTitleColorList;
 	CStringArray m_TttAviList;
 	*/
-	COptionListBox* pOptionLst = (COptionListBox*)pArx->m_pWnd;
+	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
 	
 	if (nItem < pOptionLst->m_TttPictureList.GetCount())
 		pOptionLst->m_TttPictureList[nItem] = nPicture;
@@ -1098,7 +1098,7 @@ int OptionList_SetTttAvi()
 	if (pArx->GetType() != CtlOptionList)	
 		return 0;
 
-	COptionListBox* pOptionLst = (COptionListBox*)pArx->m_pWnd;
+	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
 	
 	if (nItem < pOptionLst->m_TttAviList.GetCount())
 		pOptionLst->m_TttAviList[nItem] = sAvi;

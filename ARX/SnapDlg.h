@@ -18,17 +18,10 @@ class CDialogControl;
 
 class CSnapDlg : public CDialog
 {
-protected:
 	CDclFormObject* mpSourceForm;
-	CControlPane mControlPane;
-	CDclControlObject* mpControl;
 
 public:
 	HICON				m_hIconAcad;
-	CString				m_sProjectName;
-	CString				m_sDialogName;
-	CList<CArxDialogControl*>			m_ControlCol;
-	CFontCollection		*m_pFontCollection;
 	
 	int					m_nMinWidth;
 	int					m_nMinHeight;
@@ -42,14 +35,6 @@ public:
 // Construction
 public:
 	CSnapDlg(CDclFormObject* pSourceForm, UINT idd, CWnd* pParent = NULL);	// standard constructor
-
-	//Attributes
-	const CDclFormObject* GetSourceForm() const { return mpSourceForm; }
-	CDclFormObject* GetSourceForm() { return mpSourceForm; }
-	const CControlPane& GetControlPane() const { return mControlPane; }
-	CControlPane& GetControlPane() { return mControlPane; }
-	const CDclControlObject* GetControl() const { return mpControl; }
-	CDclControlObject* GetControl() { return mpControl; }
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
@@ -68,6 +53,7 @@ public:
 	void UpdateGripPos();
 
 	// Generated message map functions
+protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
@@ -78,5 +64,8 @@ public:
 #else
   afx_msg LRESULT OnNcHitTest(CPoint point);
 #endif
+	afx_msg void PostNcDestroy();
+
+protected:
 	DECLARE_MESSAGE_MAP()
 };

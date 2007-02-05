@@ -42,7 +42,7 @@ int ComboBoxEx_AddString()
 		return 0;
 	}
 	
-	VdclComboBoxEx *pCombo = (VdclComboBoxEx*)pArx->m_pWnd;
+	VdclComboBoxEx *pCombo = (VdclComboBoxEx*)pArx->GetWindow();
 	
 	if (nSelectedImage == -1)
 		nSelectedImage = nImage;
@@ -577,7 +577,7 @@ int ComboBoxEx_GetItem()
 		return 0;
 	}
 
-	CComboBoxEx *pCtrl = (CComboBoxEx*)pArx->m_pWnd;
+	CComboBoxEx *pCtrl = (CComboBoxEx*)pArx->GetWindow();
 	
 	
 	COMBOBOXEXITEM cbi;

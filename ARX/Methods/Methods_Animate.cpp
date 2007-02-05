@@ -28,7 +28,7 @@ int AnimateCtrl_Load()
 		return 0;
 	}
 	
-	CAnimateCtrl *pCtrl = (CAnimateCtrl*)pArx->m_pWnd;
+	CAnimateCtrl *pCtrl = (CAnimateCtrl*)pArx->GetWindow();
 	
 	if (_tcsicmp(sFileName.Right(4), s3) != 0)
 		sFileName += s3;
@@ -87,7 +87,7 @@ int AnimateCtrl_Seek()
 		return 0;
 	}
 	
-	CAnimateCtrl *pCtrl = (CAnimateCtrl*)pArx->m_pWnd;
+	CAnimateCtrl *pCtrl = (CAnimateCtrl*)pArx->GetWindow();
 	pCtrl->Seek(nFrame);
 	
 	acedRetVoid();

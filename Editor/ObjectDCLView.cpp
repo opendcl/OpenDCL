@@ -32,13 +32,13 @@
 #include "PurchaseMode.h"
 #include "OleFont.h"
 #include "AxPropertyDescriptor.h"
+#include "AxInterfaceDescriptor.h"
 #include "ObjectDCL.h"
 #include "EditorWorkspace.h"
 #include "SharedRes.h"
 
-#define nCustom 2
 
-LPCTSTR gpszCliboardFormatName = _T("CArxControlObjectList");
+LPCTSTR gpszCliboardFormatName = _T("ODCL.Clipboard.Controls");
 
 
 static CString LTOA(int nVal)
@@ -120,7 +120,7 @@ static CDclControlObject* GetArxControlObject(CDclFormObject *pDclForm, short Ar
 }
 
 
-static short AddControlStdProperty(CDclControlObject *pArxControlObject, short nID, LPCTSTR strValue, PropertyTypes ValueType, bool bHidden = false) 
+static short AddControlStdProperty(CDclControlObject *pArxControlObject, PropertyId nID, LPCTSTR strValue, PropertyType ValueType, bool bHidden = false) 
 {
 	short sReturnValue;
 	
@@ -129,7 +129,7 @@ static short AddControlStdProperty(CDclControlObject *pArxControlObject, short n
 	// if the property was not found add it
 	if (nPropIndex > nNotSet)
 	{
-		CPropertyObject* pPropertyObect = pArxControlObject->GetPropertyObject(nID);
+		RefCountedPtr< CPropertyObject > pPropertyObect = pArxControlObject->GetPropertyObject(nID);
 		pPropertyObect->SetHidden(bHidden);
 	}
 	// if the property was not found add it
@@ -139,11 +139,10 @@ static short AddControlStdProperty(CDclControlObject *pArxControlObject, short n
 		POSITION InsertPos = pArxControlObject->FindPropertyInsertPos(nID, (bHidden == TRUE));
 	
 		// create new property object pointer to pass to AddTail method
-		CPropertyObject* pPropertyObect = new CPropertyObject;
+		RefCountedPtr< CPropertyObject > pPropertyObect = new CPropertyObject( ValueType, 0, nID );
 		
 		// assign values
-		pPropertyObect->SetID(nID);
-		pPropertyObect->AddProperty(ValueType, strValue);
+		pPropertyObect->SetStringValue(strValue);
 		pPropertyObect->SetHidden(bHidden);
 
 		// reset the name to the new value
@@ -160,7 +159,7 @@ static short AddControlStdProperty(CDclControlObject *pArxControlObject, short n
 }
 
 
-static short AddControlHiddenProperty(CDclControlObject *pArxObject, short nID, LPCTSTR strValue, PropertyTypes ValueType) 
+static short AddControlHiddenProperty(CDclControlObject *pArxObject, PropertyId nID, LPCTSTR strValue, PropertyType ValueType) 
 {
 	return AddControlStdProperty(pArxObject, nID, strValue, ValueType, TRUE);
 }
@@ -178,7 +177,7 @@ static short AddControlPropertyListItem(CDclControlObject *pArxObject, short Pro
 		return 0;
 	
 	// set the pass pointer to point at the object in the list	
-	CPropertyObject *pPropertyObject = pArxObject->m_PropertyList.GetAt(PropPos);
+	RefCountedPtr< CPropertyObject > pPropertyObject = pArxObject->m_PropertyList.GetAt(PropPos);
 	
 	// check if the indexes were correct
 	if (pPropertyObject == NULL)
@@ -206,7 +205,7 @@ static short AddControlPropertyListItem(CDclControlObject *pArxObject, short Pro
 		return 0;
 	
 	// set the pass pointer to point at the object in the list
-	CPropertyObject *pPropertyObject = pArxObject->m_PropertyList.GetAt(PropPos);
+	RefCountedPtr< CPropertyObject > pPropertyObject = pArxObject->m_PropertyList.GetAt(PropPos);
 	
 	// check if the indexes were correct
 	if (pPropertyObject == NULL)
@@ -214,7 +213,7 @@ static short AddControlPropertyListItem(CDclControlObject *pArxObject, short Pro
 		return nNotSet;
 	
 	// add the new string item
-	pPropertyObject->m_intList.Add(nNewValue);
+	pPropertyObject->GetIntArrayPtr()->push_back(nNewValue);
 
 	// set the return value to equal the control type
 	return 0;
@@ -260,10 +259,8 @@ static CString FindTabCaption(CDclFormObject *pDclTab)
 			CDclFormObject *pDcl = activeProject->GetDclFormList().GetAt(pos);
 			if (pDcl != NULL)
 			{
-				if (pDclTab->m_ParentName == pDcl->m_UniqueName)
-				{					
-					return FindTabCaption2(pDcl, pDclTab->m_TabIndex);
-				}
+				if (pDclTab->GetParentName() == pDcl->GetUniqueName())
+					return FindTabCaption2(pDcl, pDclTab->GetTabIndex());
 			}			
 		}
 	}
@@ -273,14 +270,26 @@ static CString FindTabCaption(CDclFormObject *pDclTab)
 
 class CClipboardObject : public CObject
 {
+	DECLARE_SERIAL(CClipboardObject);
 public:
 	CClipboardObject() {}
-	virtual ~CClipboardObject() {}
+	virtual ~CClipboardObject()
+	{
+		mControls.RemoveAll();
+		mImageListCollection.RemoveAll();
+	}
 
-	CList< CDclControlObject* > mControls;
-	CList<CImageListObject*> m_ImageListCollection;	
+	CTypedPtrList< CObList, CDclControlObject* > mControls;
+	CTypedPtrList< CObList, CImageListObject* > mImageListCollection;	
+
+	virtual void Serialize(CArchive& ar)
+	{
+		CObject::Serialize( ar );
+		mControls.Serialize(ar);
+		mImageListCollection.Serialize(ar);
+	}
 };
-
+IMPLEMENT_SERIAL(CClipboardObject, CObject, 1);
 
 /////////////////////////////////////////////////////////////////////////////
 // CObjectDCLView
@@ -1826,7 +1835,7 @@ void CObjectDCLView::InsertControl(CRect rcPos, ControlTypes nCtrlToInsert)
 }
 int CObjectDCLView::GetNextControlId()
 {
-	int nHighest = nControlStartId;
+	UINT nHighest = nControlStartId;
 
 	POSITION pos = m_pThisDclForm->GetControlList().GetHeadPosition();
 	while (pos != NULL)
@@ -2043,7 +2052,7 @@ int CObjectDCLView::GetDclFormIndex()
 		if (pos != NULL)
 		{
 			CDclFormObject *m_pThisDclForm = activeProject->GetDclFormList().GetAt(pos);
-			if (m_pThisDclForm->m_UniqueName == m_DclFormName)
+			if (m_pThisDclForm->GetUniqueName() == m_DclFormName)
 			{
 				return nCount;
 			}
@@ -3191,12 +3200,12 @@ void CObjectDCLView::CreateGraphicButton(CControlHolder *pParent, CDclControlObj
 			CString sText;
 			sText = theWorkspace.LoadResourceString(IDS_25);
 	
-			CPropertyObject *pPropHeight = pArxObject->GetPropertyObject(nHeight);
-			pPropHeight->SetProperty(sText);
+			RefCountedPtr< CPropertyObject > pPropHeight = pArxObject->GetPropertyObject(nHeight);
+			pPropHeight->SetStringValue(sText);
 
 			sText = theWorkspace.LoadResourceString(IDS_26);
-			CPropertyObject *pPropWidth = pArxObject->GetPropertyObject(nWidth);
-			pPropWidth->SetProperty(sText);
+			RefCountedPtr< CPropertyObject > pPropWidth = pArxObject->GetPropertyObject(nWidth);
+			pPropWidth->SetStringValue(sText);
 			rc.bottom = rc.top + nBtnHeight;
 			rc.right = rc.left + nBtnWidth;
 			//pPropHeight = NULL;
@@ -3648,19 +3657,19 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 	if (nType == CtlOptionList)
 	{
 		AddControlStdProperty(pArxObject, nBtnCaption, sList, PropStringArray);
-		CPropertyObject *pProp = pArxObject->GetPropertyObject(nBtnCaption);
+		RefCountedPtr< CPropertyObject > pProp = pArxObject->GetPropertyObject(nBtnCaption);
 
 		// this control must have at least two options, but here we are adding three default option values
 		// so the user can see an example of what we are talking about.
-		if (pProp->m_stringList.GetCount() == 0)
+		if (pProp->GetStringArrayPtr()->empty())
 		{
 			CString sOption;		
 			sOption = theWorkspace.LoadResourceString(IDS_OPTION1);
-			pProp->m_stringList.AddTail(sOption);
+			pProp->GetStringArrayPtr()->push_back(sOption);
 			sOption = theWorkspace.LoadResourceString(IDS_OPTION2);
-			pProp->m_stringList.AddTail(sOption);
+			pProp->GetStringArrayPtr()->push_back(sOption);
 			sOption = theWorkspace.LoadResourceString(IDS_OPTION3);
-			pProp->m_stringList.AddTail(sOption);
+			pProp->GetStringArrayPtr()->push_back(sOption);
 		}
 		AddControlStdProperty(pArxObject, nBtnTTText, sList, PropStringArray);
 	}
@@ -4389,23 +4398,21 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 		AddControlPropertyListItem(pArxObject, PropIndex, 1);
 		AddControlPropertyListItem(pArxObject, PropIndex, 1);
 
-		CPropertyObject *pProp;
+		RefCountedPtr< CPropertyObject > pProp;
 		if (pArxObject->GetPropertyObject(nColumnListItems) == NULL)
 		{
 			PropIndex = AddControlHiddenProperty(pArxObject, nColumnListItems, sList, PropStringArrayList);
 			pProp = pArxObject->GetPropertyObject(nColumnListItems);
-			CStringArray *pData = NULL;
-			pProp->m_stringArrayList.AddTail(pData);
-			pProp->m_stringArrayList.AddTail(pData);
+			pProp->GetStringArrayListPtr()->push_back(PropVal::TCStringArray());
+			pProp->GetStringArrayListPtr()->push_back(PropVal::TCStringArray());
 		}
 
 		if (pArxObject->GetPropertyObject(nColumnListImages) == NULL)
 		{		
 			PropIndex = AddControlHiddenProperty(pArxObject, nColumnListImages, sList, PropIntArrayList);
 			pProp = pArxObject->GetPropertyObject(nColumnListImages);
-			CArray<int, int> *pData = NULL;
-			pProp->m_intArrayList.AddTail(pData);
-			pProp->m_intArrayList.AddTail(pData);
+			pProp->GetIntArrayListPtr()->push_back(PropVal::TIntArray());
+			pProp->GetIntArrayListPtr()->push_back(PropVal::TIntArray());
 		}
 	}
 
@@ -4427,7 +4434,7 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 	// add the nTabStyle property
 	if (nType == CtlTabStrip)
 	{
-		AddControlStdProperty(pArxObject, nTabStyle, LTOA(0), PropEnum);
+		AddControlStdProperty(pArxObject, nTabStyle, _T("0"), PropEnum);
 	}
 
 	// add the nText property
@@ -4451,9 +4458,9 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 	// add the nSplitterStyle property
 	if (nType == CtlSplitter)
 	{
-		AddControlStdProperty(pArxObject, nSplitterStyle, LTOA(0), PropEnum);
-		AddControlStdProperty(pArxObject, nSplitterMin, LTOA(30), PropLong);
-		AddControlStdProperty(pArxObject, nSplitterMax, LTOA(30), PropLong);		
+		AddControlStdProperty(pArxObject, nSplitterStyle, _T("0"), PropEnum);
+		AddControlStdProperty(pArxObject, nSplitterMin, _T("30"), PropLong);
+		AddControlStdProperty(pArxObject, nSplitterMax, _T("30"), PropLong);		
 	}
 
 
@@ -4485,7 +4492,7 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 				AddControlStdProperty(pArxObject, nToolTipPicture, sNone, PropPicture);
 				AddControlStdProperty(pArxObject, nToolTipAviFileName, CString(), PropString);
 				AddControlStdProperty(pArxObject, nToolTipLine, sFalse, PropBool);
-				AddControlStdProperty(pArxObject, nToolTipTitleColor, LTOA(0), PropLong);
+				AddControlStdProperty(pArxObject, nToolTipTitleColor, _T("0"), PropLong);
 				
 				break;
 				}
@@ -4493,11 +4500,11 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 	}
 	
 	// add the nTop property
-	AddControlStdProperty(pArxObject, nTop, LTOA(0), PropLong);
+	AddControlStdProperty(pArxObject, nTop, _T("0"), PropLong);
 
 	if (nType != CtlFileDlgCtrl)
 		// add top from bottom geometry management
-		AddControlStdProperty(pArxObject, nTopFromBottom, LTOA(0), PropLong);
+		AddControlStdProperty(pArxObject, nTopFromBottom, _T("0"), PropLong);
 
 	// add the nURLAddress property
 	if (nType == CtlStaticURL)
@@ -4508,10 +4515,10 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 	if (nType != CtlFileDlgCtrl)
 	{
 		// add the geometry management booleans
-		AddControlStdProperty(pArxObject, nUseBottomFromBottom, LTOA(0), PropLong);
-		AddControlStdProperty(pArxObject, nUseLeftFromRight, LTOA(0), PropLong);	
-		AddControlStdProperty(pArxObject, nUseRightFromRight, LTOA(0), PropLong);
-		AddControlStdProperty(pArxObject, nUseTopFromBottom, LTOA(0), PropLong);
+		AddControlStdProperty(pArxObject, nUseBottomFromBottom, _T("0"), PropLong);
+		AddControlStdProperty(pArxObject, nUseLeftFromRight, _T("0"), PropLong);	
+		AddControlStdProperty(pArxObject, nUseRightFromRight, _T("0"), PropLong);
+		AddControlStdProperty(pArxObject, nUseTopFromBottom, _T("0"), PropLong);
 	}
 
 	// add the nUseTabStops property
@@ -4529,15 +4536,15 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 			AddControlStdProperty(pArxObject, nValue, sFalse, PropBool);
 			break;
 		case CtlRoundSlider:
-			AddControlStdProperty(pArxObject, nValue, LTOA(0), PropLong);
+			AddControlStdProperty(pArxObject, nValue, _T("0"), PropLong);
 			break;
 		case CtlSlider:
 		case CtlScrollBar:
 		case CtlSpinButton:
-			AddControlStdProperty(pArxObject, nValue, LTOA(1), PropLong);
+			AddControlStdProperty(pArxObject, nValue, _T("1"), PropLong);
 			break;
 		case CtlProgress:
-			AddControlStdProperty(pArxObject, nValue, LTOA(0), PropLong);
+			AddControlStdProperty(pArxObject, nValue, _T("0"), PropLong);
 			break;
 		default:			
 			break;
@@ -5094,7 +5101,7 @@ void CObjectDCLView::AddHiddenProperties(CDclControlObject *pArxObject, short nT
 		}
 	}	
 }
-void CObjectDCLView::RefreshChildControl(CDclControlObject *pArxObject, int ChangedPropertyID)
+void CObjectDCLView::RefreshChildControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID)
 {
 	if (pArxObject == NULL)
 		return;
@@ -5117,7 +5124,7 @@ void CObjectDCLView::RefreshChildControl(CDclControlObject *pArxObject, int Chan
 			case CtlGraphicButton:
 			{
 				// refresh all properties without creating a new child control
-				ChangedPropertyID = nRefreshAllProperties;
+				ChangedPropertyID = (PropertyId)nRefreshAllProperties;
 				break;
 			}
 		}
@@ -5382,7 +5389,7 @@ void CObjectDCLView::CheckAutoSizeProp(CDclControlObject *pArxObject, CControlHo
 
 
 
-void CObjectDCLView::UpdateProperty(int nID, CDclControlObject *pArxObject, CControlHolder *pParent)
+void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObject, CControlHolder *pParent)
 {
 	if (pParent == NULL)
 		return;
@@ -5391,7 +5398,7 @@ void CObjectDCLView::UpdateProperty(int nID, CDclControlObject *pArxObject, CCon
 	if (pControl == NULL)
 		return;
 		
-	CPropertyObject *pProp = pArxObject->GetPropertyObject(nID);
+	RefCountedPtr< CPropertyObject > pProp = pArxObject->GetPropertyObject(nID);
 	// set the appropriate property
 	switch(nID)
 	{
@@ -5573,7 +5580,7 @@ void CObjectDCLView::UpdateProperty(int nID, CDclControlObject *pArxObject, CCon
 		{
 			((COptionListBox*)pControl)->ResetContent();					
 			CString sListItem;
-			CPropertyObject *pPropList = pArxObject->GetPropertyObject(nBtnCaption);
+			RefCountedPtr< CPropertyObject > pPropList = pArxObject->GetPropertyObject(nBtnCaption);
 			int nDefSelection = pArxObject->GetLngProperty(nDefSelIndex) ;
 			for (int i = 0; i < pPropList->CountList(); i++)
 			{				
@@ -5955,7 +5962,7 @@ void CObjectDCLView::UpdateProperty(int nID, CDclControlObject *pArxObject, CCon
 				((COptionListBox*)pControl)->m_RowHeight = (short)pArxObject->GetLngProperty(nRowHeight);
 				((COptionListBox*)pControl)->ResetContent();					
 				CString sListItem;
-				CPropertyObject *pPropList = pArxObject->GetPropertyObject(nBtnCaption);
+				RefCountedPtr< CPropertyObject > pPropList = pArxObject->GetPropertyObject(nBtnCaption);
 				int nDefSelection = pArxObject->GetLngProperty(nDefSelIndex) ;
 				for (int i = 0; i < pPropList->CountList(); i++)
 				{				
@@ -6224,7 +6231,7 @@ void CObjectDCLView::UpdateChildControl(CDclControlObject *pArxObject, CControlH
 	
 		if (pos != NULL)
 		{
-			CPropertyObject *pProp = pArxObject->m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pProp = pArxObject->m_PropertyList.GetAt(pos);
 			if (pProp != NULL)
 				UpdateProperty(pProp->GetID(), pArxObject, pParent);
 		}
@@ -6271,7 +6278,7 @@ void CObjectDCLView::CopyControlToClipBoard()
 	if (pos != NULL)
 	{
 		CImageListObject *pImageListObj = m_pThisDclForm->m_ImageListCollection.GetAt(pos);
-		ClipBoardObject.m_ImageListCollection.AddTail(pImageListObj);
+		ClipBoardObject.mImageListCollection.AddTail(pImageListObj);
 	}
 
 	for (int i=0; i<m_SelectedList.GetCount(); i++)
@@ -6292,7 +6299,7 @@ void CObjectDCLView::CopyControlToClipBoard()
 					if (pos != NULL)
 					{
 						CImageListObject *pImageListObj = m_pThisDclForm->m_ImageListCollection.GetAt(pos);
-						ClipBoardObject.m_ImageListCollection.AddTail(pImageListObj);
+						ClipBoardObject.mImageListCollection.AddTail(pImageListObj);
 					}
 				}
 			}
@@ -6428,7 +6435,7 @@ void CObjectDCLView::UpdateFont(CString sName)
 	else
 	{	
 		// get the  property object
-		CPropertyObject *pProp = m_SelectedControl.m_pArxObject->GetPropertyObject(nLabelName);
+		RefCountedPtr< CPropertyObject > pProp = m_SelectedControl.m_pArxObject->GetPropertyObject(nLabelName);
 		
 		if (pProp != NULL)
 		{
@@ -6472,7 +6479,7 @@ void CObjectDCLView::UpdateFont(CString sName)
 				else
 				{		
 					// get the  property object
-					CPropertyObject *pProp = pSelControl->m_pArxObject->GetPropertyObject(nLabelName);
+					RefCountedPtr< CPropertyObject > pProp = pSelControl->m_pArxObject->GetPropertyObject(nLabelName);
 					
 					if (pProp != NULL)
 					{
@@ -6504,8 +6511,8 @@ void CObjectDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool b
 	CString	sFontName;
 	try
 	{
-		CPropertyObject *pProp;
-		CPropertyObject *pFontProp = NULL;
+		RefCountedPtr< CPropertyObject > pProp;
+		RefCountedPtr< CPropertyObject > pFontProp = NULL;
 		CDclControlObject *pCtrl = pSelControl->m_pArxObject;
 		POSITION pos = pCtrl->m_PropertyList.GetHeadPosition();
 	
@@ -6514,7 +6521,8 @@ void CObjectDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool b
 			pProp = pCtrl->m_PropertyList.GetNext(pos);
 			if (pProp->GetType() == PropActiveXProp)
 			{
-				if (pProp->GetActiveXProperyGuid() == IID_IFontDisp || pProp->GetActiveXProperyGuid() == IID_IFont)
+				if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFontDisp ||
+						pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFont)
 				{
 					pFontProp = pProp;
 					break;
@@ -6526,12 +6534,12 @@ void CObjectDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool b
 		
 		CAxContainer *axContainer = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
 		COleFont font;
-		if (pFontProp->m_pAxPropGet != NULL)
-			font = axContainer->GetFont(pFontProp->m_pAxPropGet->Id);
-		else if (pFontProp->m_pAxProp != NULL)
-			font = axContainer->GetFont(pFontProp->m_pAxProp->Id);
-		else if (pFontProp->m_pAxPropPut != NULL)
-			font = axContainer->GetFont(pFontProp->m_pAxPropPut->Id);
+		if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropGet())
+			font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropGet()->Id);
+		else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetProp())
+			font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetProp()->Id);
+		else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
+			font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->Id);
 		else
 			return;
 
@@ -6584,12 +6592,12 @@ void CObjectDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool b
 		font.SetItalic(m_bItalic);
 		font.SetStrikethrough(m_bStrike);		
 
-		if (pFontProp->m_pAxPropPut != NULL)
-			axContainer->SetFont(pFontProp->m_pAxPropPut->Id, font);
-		else if (pFontProp->m_pAxProp != NULL)
-			axContainer->SetFont(pFontProp->m_pAxProp->Id, font);
-		else if (pFontProp->m_pAxPropGet != NULL)
-			axContainer->SetFont(pFontProp->m_pAxPropGet->Id, font);
+		if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
+			axContainer->SetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->Id, font);
+		else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetProp())
+			axContainer->SetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetProp()->Id, font);
+		else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropGet())
+			axContainer->SetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropGet()->Id, font);
 		
 	}
 	catch (...)
@@ -6598,14 +6606,14 @@ void CObjectDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool b
 	}
 
 }
-void CObjectDCLView::UpdateFontBool(bool bBool, int nId)
+void CObjectDCLView::UpdateFontBool(bool bBool, PropertyId nId)
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 		m_SelectedControl.m_pArxObject == NULL ||
 		m_SelectedControl.m_pControl == NULL)
 		return;
 
-	CPropertyObject *pProp = NULL;
+	RefCountedPtr< CPropertyObject > pProp = NULL;
 	
 	GetDocument()->SetModifiedFlag(TRUE);
 
@@ -6714,7 +6722,7 @@ void CObjectDCLView::UpdateFontSize(int nSize)
 	else
 	{
 		// get the  property object
-		CPropertyObject *pProp = m_SelectedControl.m_pArxObject->GetPropertyObject(nLabelSize);
+		RefCountedPtr< CPropertyObject > pProp = m_SelectedControl.m_pArxObject->GetPropertyObject(nLabelSize);
 
 		if (pProp != NULL)
 		{
@@ -6757,7 +6765,7 @@ void CObjectDCLView::UpdateFontSize(int nSize)
 				else
 				{				
 					// get the  property object
-					CPropertyObject *pProp = pSelControl->m_pArxObject->GetPropertyObject(nLabelSize);
+					RefCountedPtr< CPropertyObject > pProp = pSelControl->m_pArxObject->GetPropertyObject(nLabelSize);
 					
 					if (pProp != NULL)
 					{
@@ -6783,11 +6791,11 @@ void CObjectDCLView::UpdateFontSize(int nSize)
 	}	
 }
 
+
 void CObjectDCLView::PasteFromClipBoard()
 {
-			
 	CClipboardObject ClipBoardObject; 
-			
+
 	// CG: This block was added by the Clipboard Assistant component
 	if (OpenClipboard())
 	{
@@ -6848,6 +6856,7 @@ void CObjectDCLView::PasteFromClipBoard()
 		{
 			// get current clipboard control
 			CDclControlObject* pCopyOfArxControlObject = ClipBoardObject.mControls.GetNext(pos);
+			pCopyOfArxControlObject->SetOwner(m_pThisDclForm);
 					
 			ClearEventProperties(pCopyOfArxControlObject);
 			if (pCopyOfArxControlObject->GetType() == CtlFileDlgCtrl)
@@ -7954,7 +7963,7 @@ void CObjectDCLView::UndoAction()
 	
 }
 
-void CObjectDCLView::UpdateControl(CDclControlObject *pArxObject, short ChangedPropertyID) 
+void CObjectDCLView::UpdateControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID) 
 {
 	
 	if (m_pThisDclForm == NULL)
@@ -8107,7 +8116,7 @@ void CObjectDCLView::RefreshControlsWithPictures()
 			if (pArxObject != NULL)
 			{
 				if (pArxObject->GetPropertyObject(nPicture) != NULL)
-					RefreshChildControl(pArxObject, nNotSet);
+					RefreshChildControl(pArxObject, nInvalidPropertyId);
 			}
 		}
 	}
@@ -8534,9 +8543,9 @@ void CObjectDCLView::AddTabPanes()
 	{
 		CDclFormObject* pNewDclForm = new CDclFormObject( pProject, VdclTabForm );
 		// assign the unique name and dcl form type to the dcl form object
-		pNewDclForm->m_UniqueName = pApp->CreateUniqueName();
-		pNewDclForm->m_ParentName = m_pThisDclForm->m_UniqueName;
-		pNewDclForm->m_TabIndex = i;
+		pNewDclForm->SetUniqueName(pApp->CreateUniqueName());
+		pNewDclForm->SetParentForm(m_pThisDclForm);
+		pNewDclForm->SetTabIndex(i);
 		
 		// add the new Dcl form object
 		pProject->GetDclFormList().AddTail(pNewDclForm);
@@ -8569,23 +8578,24 @@ CDclFormObject * CObjectDCLView::AddSingleTabPane(int nIndex)
 	{
 		pNewDclForm = new CDclFormObject( pProject, VdclTabForm );
 		// assign the unique name and dcl form type to the dcl form object
-		pNewDclForm->m_UniqueName = pApp->CreateUniqueName();
-		pNewDclForm->m_ParentName = m_pThisDclForm->m_UniqueName;
-		pNewDclForm->m_TabIndex = nIndex;
+		pNewDclForm->SetUniqueName(pApp->CreateUniqueName());
+		pNewDclForm->SetParentForm(m_pThisDclForm);
+		pNewDclForm->SetTabIndex(nIndex);
 		
-		POSITION pos = pProject->GetDclTabChildFormPos(m_pThisDclForm->m_UniqueName, nIndex);
-		
-		if (pos == NULL)
-			// add the new Dcl form object
-			pProject->GetDclFormList().AddTail(pNewDclForm);
+		POSITION pos = pProject->GetDclFormList().GetHeadPosition();
+		while (pos)
+		{
+			CDclFormObject* pForm = pProject->GetDclFormList().GetNext(pos);
+			if (pForm->GetParentName() == m_pThisDclForm->GetUniqueName() && pForm->GetTabIndex() == nIndex)
+				break;
+		}
+		if (pos)
+			pProject->GetDclFormList().InsertBefore(pos, pNewDclForm);
 		else
-			// add the new Dcl form object
-			pProject->GetDclFormList().InsertAfter(pos, pNewDclForm);
-		
-		// make the call to add the properties to the new dcl form object.
-		//pApp->AddDclFormProperties(pNewDclForm, VdclTabForm);
+			pProject->GetDclFormList().AddTail(pNewDclForm);
 		
 		CDclControlObject *pDclProperties = pNewDclForm->GetControlProperties();
+		assert( pDclProperties != NULL );
 		if (pDclProperties != NULL)
 		{
 			pDclProperties->SetLngProperty(nHeight, GetSelectedTabClientHeight());
@@ -8612,12 +8622,12 @@ bool CObjectDCLView::CanRemoveChildTabPane(int nIndex)
 	// create a pointer to pass to the list to insert
 	CProject *pProject = activeProject;
 	
-	CPropertyObject *pProp = m_SelectedControl.m_pArxObject->GetPropertyObject(nTabsCaption);
+	RefCountedPtr< CPropertyObject > pProp = m_SelectedControl.m_pArxObject->GetPropertyObject(nTabsCaption);
 
 	POSITION pos = pProject->GetDclFormList().FindIndex(nIndex);
 	if (pos != NULL)
 	{
-		CDclFormObject *pTabForm = pProject->GetDclTabChildForm(m_pThisDclForm->m_UniqueName, nIndex);
+		CDclFormObject *pTabForm = pProject->GetDclTabChildForm(m_pThisDclForm->GetUniqueName(), nIndex);
 		
 		if (pTabForm->GetControlList().GetCount() > 1)		
 		{
@@ -8678,29 +8688,25 @@ void CObjectDCLView::ResizeChildTabPanes()
 	// create a pointer to pass to the list to insert
 	CProject *pProject = activeProject;
 	
-	CPropertyObject *pProp = m_SelectedControl.m_pArxObject->GetPropertyObject(nTabsCaption);
+	RefCountedPtr< CPropertyObject > pProp = m_SelectedControl.m_pArxObject->GetPropertyObject(nTabsCaption);
 
-	for (int i=0; i<pProp->m_stringList.GetCount(); i++)
+	for (size_t i=0; i<pProp->GetStringArrayPtr()->size(); i++)
 	{
-		CDclFormObject *pTabForm = pProject->GetDclTabChildForm(m_pThisDclForm->m_UniqueName, i);
+		CDclFormObject *pTabForm = pProject->GetDclTabChildForm(m_pThisDclForm->GetUniqueName(), i);
 		CDclControlObject *pDclProperties = pTabForm->GetControlProperties();
 		int nNewHeight = GetSelectedTabClientHeight();
 		int nNewWidth = GetSelectedTabClientWidth();
 		pDclProperties->SetLngProperty(nHeight, nNewHeight);
 		pDclProperties->SetLngProperty(nWidth, nNewWidth);
 		if (pTabForm->m_pMdiChildWnd != NULL)
-		{
 			pTabForm->m_pMdiChildWnd->SetWindowPos(NULL, nNotSet, nNotSet, nNewWidth, nNewHeight, SWP_NOMOVE);
-		}
 	}	
 }
 
 void CObjectDCLView::FireShowPropertyWizard(CDclControlObject *pArxControl)
 {
 	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.m_pControl != NULL)
-	{
 		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.ShowPropertyDlg();
-	}
 }
 
 	
@@ -8709,10 +8715,7 @@ void CObjectDCLView::FireShowPropertyWizard(CDclControlObject *pArxControl)
 void CObjectDCLView::OnProperties() 
 {
 	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.m_pControl != NULL)
-	{
 		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.ShowPropertyDlg();
-	}
-		
 }
 
 

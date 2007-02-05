@@ -12,6 +12,7 @@
 #include "OleFont.h"
 #include "AxContainer.h"
 #include "AxPropertyDescriptor.h"
+#include "AxInterfaceDescriptor.h"
 #include "ToolBox.h"
 #include "EditorWorkspace.h"
 #include "SharedRes.h"
@@ -209,15 +210,16 @@ void CMainFrameToolBar::SetFontToolBar(CDclControlObject *pCtrl)
 		CY cyFontSize;
 		try
 		{
-			CPropertyObject *pProp;
-			CPropertyObject *pFontProp = NULL;
+			RefCountedPtr< CPropertyObject > pProp;
+			RefCountedPtr< CPropertyObject > pFontProp = NULL;
 			POSITION pos = pCtrl->m_PropertyList.GetHeadPosition();
 			while (pos != NULL)
 			{
 				pProp = pCtrl->m_PropertyList.GetNext(pos);
 				if (pProp->GetType() == PropActiveXProp)
 				{
-					if (pProp->GetActiveXProperyGuid() == IID_IFontDisp || pProp->GetActiveXProperyGuid() == IID_IFont)
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFontDisp ||
+							pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFont)
 					{
 						pFontProp = pProp;
 						break;
@@ -229,12 +231,12 @@ void CMainFrameToolBar::SetFontToolBar(CDclControlObject *pCtrl)
 
 			CAxContainer *axContainer = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
 			COleFont font;
-			if (pFontProp->m_pAxPropGet != NULL)
-				font = axContainer->GetFont(pFontProp->m_pAxPropGet->Id);
-			else if (pFontProp->m_pAxProp != NULL)
-				font = axContainer->GetFont(pFontProp->m_pAxProp->Id);
-			else if (pFontProp->m_pAxPropPut != NULL)
-				font = axContainer->GetFont(pFontProp->m_pAxPropPut->Id);
+			if (pFontProp->GetAxInterfaceDescriptorPtr()->GetProp())
+				font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetProp()->Id);
+			else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetProp())
+				font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetProp()->Id);
+			else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
+				font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->Id);
 			else
 				return;
 
@@ -359,15 +361,16 @@ void CMainFrameToolBar::AddFontToToolBar(CDclControlObject *pCtrl)
 		CY cyFontSize;
 		try
 		{
-			CPropertyObject *pProp;
-			CPropertyObject *pFontProp = NULL;
+			RefCountedPtr< CPropertyObject > pProp;
+			RefCountedPtr< CPropertyObject > pFontProp = NULL;
 			POSITION pos = pCtrl->m_PropertyList.GetHeadPosition();
 			while (pos != NULL)
 			{
 				pProp = pCtrl->m_PropertyList.GetNext(pos);
 				if (pProp->GetType() == PropActiveXProp)
 				{
-					if (pProp->GetActiveXProperyGuid() == IID_IFontDisp || pProp->GetActiveXProperyGuid() == IID_IFont)
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFontDisp ||
+							pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFont)
 					{
 						pFontProp = pProp;
 						break;
@@ -379,12 +382,12 @@ void CMainFrameToolBar::AddFontToToolBar(CDclControlObject *pCtrl)
 
 			CAxContainer *axContainer = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
 			COleFont font;
-			if (pFontProp->m_pAxPropGet != NULL)
-				font = axContainer->GetFont(pFontProp->m_pAxPropGet->Id);
-			else if (pFontProp->m_pAxProp != NULL)
-				font = axContainer->GetFont(pFontProp->m_pAxProp->Id);
-			else if (pFontProp->m_pAxPropPut != NULL)
-				font = axContainer->GetFont(pFontProp->m_pAxPropPut->Id);
+			if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropGet())
+				font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropGet()->Id);
+			else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetProp())
+				font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetProp()->Id);
+			else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
+				font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->Id);
 			else
 				return;
 

@@ -131,9 +131,6 @@ BOOL OdclEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	InitToolTip();
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-
-	pControl->m_pWnd = this;
-
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
 	{
 	case 1:

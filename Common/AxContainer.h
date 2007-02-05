@@ -48,7 +48,7 @@ public:
 	CPPToolTip& GetToolTip() { return mToolTip; }
 	
 	void TryToFireAxEvent(UINT idCtrl, AFX_EVENT* pEvent);
-	void FireAxEvent(UINT idCtrl, CPropertyObject *pProp, AFX_EVENT* pEvent);
+	void FireAxEvent(UINT idCtrl, RefCountedPtr< CPropertyObject > pProp, AFX_EVENT* pEvent);
 
 	BOOL Create(CLSID clsid, LPCTSTR lpszWindowName, DWORD dwStyle,
 		const RECT& rect, CWnd* pParentWnd, UINT nID,

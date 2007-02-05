@@ -115,22 +115,19 @@ void CTabsPane::Setup()
 	// create a pointer to pass to the list to insert
 	CProject *pProject = activeProject;
 	
-	for (int i=0; i<m_pTabCaptions->m_stringList.GetCount(); i++)
+	for (size_t i=0; i<m_pTabCaptions->GetStringArrayPtr()->size(); i++)
 	{
 		CTabInfo *pTab = new CTabInfo(i);
 		
 		// get a pointer to the child dcl form pane for later use
-		pTab->m_pChildForm = pProject->GetDclTabChildForm(m_pView->m_pThisDclForm->m_UniqueName, i);
+		pTab->m_pChildForm = pProject->GetDclTabChildForm(m_pView->m_pThisDclForm->GetUniqueName(), i);
 
 		// add the caption
-		pos = m_pTabCaptions->m_stringList.FindIndex(i);
-		if (pos != NULL)
-			pTab->m_sCaption = m_pTabCaptions->m_stringList.GetAt(pos);
+		pTab->m_sCaption = m_pTabCaptions->GetStringArrayPtr()->at(i);
 
 		// add the tool tip text
-		pos = m_pTabTTT->m_stringList.FindIndex(i);
-		if (pos != NULL)
-			pTab->m_sToolTipText = m_pTabTTT->m_stringList.GetAt(pos);
+		if (i < m_pTabTTT->GetStringArrayPtr()->size())
+			pTab->m_sToolTipText = m_pTabTTT->GetStringArrayPtr()->at(i);
 
 		m_TabList.AddTail(pTab);
 	}
@@ -279,9 +276,9 @@ BOOL CTabsPane::OnApply()
 		}
 
 		// reset the tab info lists
-		m_pTabCaptions->m_stringList.RemoveAll();
-		m_pTabTTT->m_stringList.RemoveAll();
-		//m_pTabImages->m_stringList.RemoveAll();
+		m_pTabCaptions->GetStringArrayPtr()->clear();
+		m_pTabTTT->GetStringArrayPtr()->clear();
+		//m_pTabImages->clear();
 
 		// repopulate the tab info lists
 		for (int i=0; i<m_TabList.GetCount(); i++)
@@ -291,8 +288,8 @@ BOOL CTabsPane::OnApply()
 			if (pos != NULL)
 			{
 				CTabInfo *pTab = m_TabList.GetAt(pos);
-				m_pTabCaptions->m_stringList.AddTail(pTab->m_sCaption);
-				m_pTabTTT->m_stringList.AddTail(pTab->m_sToolTipText);
+				m_pTabCaptions->GetStringArrayPtr()->push_back(pTab->m_sCaption);
+				m_pTabTTT->GetStringArrayPtr()->push_back(pTab->m_sToolTipText);
 
 				// if this is a new tab, add it to the dcl forms
 				if (pTab->m_OriginalIndex == -1)
@@ -300,12 +297,12 @@ BOOL CTabsPane::OnApply()
 					pTab->m_pChildForm = m_pView->AddSingleTabPane(i);
 					pTab->m_OriginalIndex = i;
 				}
-				pTab->m_pChildForm->m_TabIndex = i;
+				pTab->m_pChildForm->SetTabIndex(i);
 			}	
 		}
 		
 		// call the method to update the control itself
-		m_pView->RefreshChildControl(m_pControl, -2);
+		m_pView->RefreshChildControl(m_pControl, (PropertyId)-2);
 		m_pView->ResizeChildTabPanes();
 		theEditorWorkspace.GetProjectTreeCtrl()->CleanupParents();
 

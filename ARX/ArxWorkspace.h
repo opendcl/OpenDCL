@@ -15,6 +15,7 @@ class CArxProject;
 class CDclFormObject;
 class AxPropertyDescriptor;
 class AxMethodDescriptor;
+struct DialogParams;
 
 
 #define theArxWorkspace (*(CArxWorkspace*)&theWorkspace)
@@ -23,12 +24,9 @@ class AxMethodDescriptor;
 class CArxWorkspace : public CWorkspace
 {
 	CList<CDialogObject*> mDialogs;
-	ULONG mnNextFormId; //constantly incrementd unique form id
 	CArxProjectCollection mProjects;
 	CStringList	mOdsProjects;
 	CAcadDocReactor mDocReactor;
-
-	UINT mnSnapDlgId; //used by CSnapDlg
 
 public:
 	CArxWorkspace();
@@ -51,7 +49,7 @@ public:
 	CDclFormObject* FindDclFormControl( HWND hwndControl, /*out*/ CString& sControlName ) const;
 	//CDialogObject* FindDialog( LPCTSTR pszFormName ) const;
 	CDialogObject* FindDialog( LPCTSTR pszProjectName, LPCTSTR pszDialogName ) const;
-	CDialogObject* FindDialog( const CDclFormObject* pDclForm ) const;
+	//CDialogObject* FindDialog( const CDclFormObject* pDclForm ) const;
 	CDclControlObject* FindControl( LPCTSTR pszProject, LPCTSTR pszDialog, LPCTSTR pszControl ) const;
 	//const CArxProject* GetDclFormProject( LPCTSTR pszFormName ) const;
 	//const CArxProject* GetDialogProject( LPCTSTR pszDialogName ) const;
@@ -61,9 +59,9 @@ public:
 	//Project management
 	bool AddProject( CArxProject* pProject );
 	bool RemoveProject( CProject* pProject );
-	bool RemoveDialog( CDialogObject* pDialog );
-	bool RemoveDialog( CDclFormObject* pDclForm );
 	bool RemoveProject( LPCTSTR pszKeyName );
+	bool RegisterDialog( CDialogObject* pDialog );
+	bool UnregisterDialog( CDialogObject* pDialog );
 	CArxProject* LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKeyName = NULL, bool bReload = false );
 
 	//Services
@@ -71,8 +69,7 @@ public:
 	bool IsModalFormOpen() const;
 	HWND GetTopmostModalForm() const;
 	ULONG CountOpenModalForms() const;
-	int ActivateDclForm( CDclFormObject* pDclObject, int nX, int nY,
-											 LPCTSTR pszDefaultDirectory = NULL, LPCTSTR pszDefaultFileName = NULL );
+	int ActivateDclForm( CDclFormObject* pDclObject, DialogParams* pParams );
 	void CloseAllDialogs( DWORD dwMask = (DWORD)-1 );
 	bool UpdateGlobalVariables() const;
 	bool OnExtendTabbedDialog( CAdUiTabExtensionManager* pTabXM );
@@ -80,8 +77,6 @@ public:
 
 	//Attributes
 	CString GetActiveProjectName() const;
-	UINT GetSnapDlgId() { return mnSnapDlgId; }
-	UINT GetNextFormId() { return mnNextFormId++; }
 
 	const CList<CDialogObject*>& GetDialogList() const { return mDialogs; }
 	CList<CDialogObject*>& GetDialogList() { return mDialogs; }

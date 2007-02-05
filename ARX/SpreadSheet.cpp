@@ -290,7 +290,6 @@ BOOL CSpreadSheet::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 	}
 
 	m_ArxControl = pControl;
-	m_ArxControl->m_pWnd = this;
 	
 	m_pColCaptions = m_ArxControl->GetPropertyObject(nColumnCaptions);	
 	m_pColWidths = m_ArxControl->GetPropertyObject(nColumnWidths);	
@@ -334,7 +333,7 @@ void CSpreadSheet::SetColumn(int nIndex)
 	// add bmaps to each header item
 	pHdrCtrl->GetItem(nIndex, &curItem);
 	
-	if (m_pColImages->m_intList[nIndex] == -1)
+	if (m_pColImages->GetIntArrayPtr()->at(nIndex) == -1)
 	{
 		curItem.mask= HDI_TEXT | HDI_FORMAT;
 		curItem.iImage = -1;
@@ -342,14 +341,14 @@ void CSpreadSheet::SetColumn(int nIndex)
 	else
 	{
 		curItem.mask= HDI_TEXT | HDI_IMAGE | HDI_FORMAT;
-		curItem.iImage= m_pColImages->m_intList[nIndex];
+		curItem.iImage= m_pColImages->GetIntArrayPtr()->at(nIndex);
 	}
 	
-	CString sCaption = m_pColCaptions->m_stringList.GetAt(m_pColCaptions->m_stringList.FindIndex(nIndex));
+	CString sCaption = m_pColCaptions->GetStringArrayPtr()->at(nIndex);
 	pStrTemp = sCaption.GetBuffer(sCaption.GetLength());
 	curItem.pszText = pStrTemp;
 	
-	switch(m_pColAlignment->m_intList[nIndex])
+	switch(m_pColAlignment->GetIntArrayPtr()->at(nIndex))
 	{					
 	case 1:
 		curItem.fmt= HDF_CENTER | HDF_STRING;
@@ -362,7 +361,7 @@ void CSpreadSheet::SetColumn(int nIndex)
 		break;
 	}
 
-	if (m_pColImages->m_intList[nIndex] == -1)
+	if (m_pColImages->GetIntArrayPtr()->at(nIndex) == -1)
 	{
 		// do nothing
 	}
@@ -376,9 +375,9 @@ void CSpreadSheet::SetColumn(int nIndex)
 
 void CSpreadSheet::SetupColumns()
 {		
-	for (int i=0; i<m_pColWidths->m_intList.GetSize(); i++)
+	for (int i=0; i<m_pColWidths->GetIntArrayPtr()->size(); i++)
 	{
-		InsertColumn(i, m_pColCaptions->GetStringItem(i), LVCFMT_LEFT, m_pColWidths->m_intList[i]);
+		InsertColumn(i, m_pColCaptions->GetStringItem(i), LVCFMT_LEFT, m_pColWidths->GetIntArrayPtr()->at(i));
 		SetColumn(i);
 	}
 }
@@ -746,16 +745,16 @@ void CSpreadSheet::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	rcIcon.top += 1;
 
-	if (m_pColDefault->m_intList.GetSize() > 0)
+	if (m_pColDefault->GetIntArrayPtr()->size() > 0)
 	{
 		if (nCellStyle == Grid_SwitchableIcons &&
-			lvi.iImage != m_pColDefault->m_intList[0] &&
-			lvi.iImage != m_pColAlternate->m_intList[0])
+			lvi.iImage != m_pColDefault->GetIntArrayPtr()->at(0) &&
+			lvi.iImage != m_pColAlternate->GetIntArrayPtr()->at(0))
 		{
-			if (lvi.iImage < m_pColDefault->m_intList[0])
-				lvi.iImage = m_pColDefault->m_intList[0];
-			if (lvi.iImage > m_pColAlternate->m_intList[0])
-				lvi.iImage = m_pColAlternate->m_intList[0];						
+			if (lvi.iImage < m_pColDefault->GetIntArrayPtr()->at(0))
+				lvi.iImage = m_pColDefault->GetIntArrayPtr()->at(0);
+			if (lvi.iImage > m_pColAlternate->GetIntArrayPtr()->at(0))
+				lvi.iImage = m_pColAlternate->GetIntArrayPtr()->at(0);						
 		}
 	}
 
@@ -906,12 +905,12 @@ void CSpreadSheet::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 			
 
 		// if this cell is to use switchable image icons...
-		if (m_pColDefault->m_intList.GetSize() > nColumn)
+		if (m_pColDefault->GetIntArrayPtr()->size() > nColumn)
 		{
 			// if switchable icons are to be drawn.
 			if (nCellStyle == Grid_SwitchableIcons &&
-				nCellImage != m_pColDefault->m_intList[nColumn] &&
-				nCellImage != m_pColAlternate->m_intList[nColumn])
+				nCellImage != m_pColDefault->GetIntArrayPtr()->at(nColumn) &&
+				nCellImage != m_pColAlternate->GetIntArrayPtr()->at(nColumn))
 			{
 				_Style *pData = GetCellData(lvi.iItem, nColumn);
 				if (pData != NULL)
@@ -927,21 +926,21 @@ void CSpreadSheet::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 					}					
 					else
 					{
-						if (nCellImage < m_pColDefault->m_intList[nColumn])
-								nCellImage = m_pColDefault->m_intList[nColumn];
-							if (nCellImage > m_pColAlternate->m_intList[nColumn])
+						if (nCellImage < m_pColDefault->GetIntArrayPtr()->at(nColumn))
+								nCellImage = m_pColDefault->GetIntArrayPtr()->at(nColumn);
+							if (nCellImage > m_pColAlternate->GetIntArrayPtr()->at(nColumn))
 							{
-								nCellImage = m_pColAlternate->m_intList[nColumn];
+								nCellImage = m_pColAlternate->GetIntArrayPtr()->at(nColumn);
 							}
 					}
 				}
 				else
 				{
-					if (nCellImage < m_pColDefault->m_intList[nColumn])
-							nCellImage = m_pColDefault->m_intList[nColumn];
-						if (nCellImage > m_pColAlternate->m_intList[nColumn])
+					if (nCellImage < m_pColDefault->GetIntArrayPtr()->at(nColumn))
+							nCellImage = m_pColDefault->GetIntArrayPtr()->at(nColumn);
+						if (nCellImage > m_pColAlternate->GetIntArrayPtr()->at(nColumn))
 						{
-							nCellImage = m_pColAlternate->m_intList[nColumn];
+							nCellImage = m_pColAlternate->GetIntArrayPtr()->at(nColumn);
 						}
 				}
 								
@@ -1425,27 +1424,26 @@ void CSpreadSheet::GetImageDropListItems(int nRow, int nCol, int &nImage, CStrin
 	}
 	else
 	{
-		CPropertyObject *pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
-		CPropertyObject *pPropImages = m_ArxControl->GetPropertyObject(nColumnListImages);
-		POSITION pos = pProp->m_stringArrayList.FindIndex(nCol);
-		if (pos != NULL && pProp->m_stringArrayList.GetAt(pos) != NULL)
+		RefCountedPtr< CPropertyObject > pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
+		RefCountedPtr< CPropertyObject > pPropImages = m_ArxControl->GetPropertyObject(nColumnListImages);
+		if (nCol < pProp->GetStringArrayListPtr()->size())
 		{
-			CStringArray *pStrings = pProp->m_stringArrayList.GetAt(pos);
-			CArray<int,int> *pInts = pPropImages->m_intArrayList.GetAt(pPropImages->m_intArrayList.FindIndex(nCol));
-			for (int i=0; i<pStrings->GetSize(); i++)
+			PropVal::TCStringArray& rStrings = pProp->GetStringArrayListPtr()->at(nCol);
+			PropVal::TIntArray& rInts = pPropImages->GetIntArrayListPtr()->at(nCol);
+			for (int i=0; i<rStrings.size(); i++)
 			{
-				if (_tcsicmp(sText, pStrings->GetAt(i)) == 0)
+				if (_tcsicmp(sText, rStrings[i]) == 0)
 				{
-					sText = pStrings->GetAt(i);
-					if (i < pInts->GetSize())
+					sText = rStrings[i];
+					if (i < rInts.size())
 					{
-						nImage = pInts->GetAt(i);
+						nImage = rInts[i];
 						return;
 					}
 				}
 			}
-			nImage = pInts->GetAt(0);
-			sText = pStrings->GetAt(0);
+			nImage = rInts[0];
+			sText = rStrings[0];
 		}
 	}
 }
@@ -2143,8 +2141,8 @@ void CSpreadSheet::OnLButtonDown(UINT nFlags, CPoint point)
 			
 			if (GetCellData(nRow, nCol) == NULL)
 			{
-				nDefImage = m_pColDefault->m_intList[nCol];	
-				nAltImage = m_pColAlternate->m_intList[nCol];	
+				nDefImage = m_pColDefault->GetIntArrayPtr()->at(nCol);	
+				nAltImage = m_pColAlternate->GetIntArrayPtr()->at(nCol);	
 			}
 			else
 			{
@@ -2310,8 +2308,8 @@ void CSpreadSheet::OnLButtonDblClk(UINT nFlags, CPoint point)
 		
 		if (GetCellData(nRow, nCol) == NULL)
 		{
-			nDefImage = m_pColDefault->m_intList[nCol];	
-			nAltImage = m_pColAlternate->m_intList[nCol];	
+			nDefImage = m_pColDefault->GetIntArrayPtr()->at(nCol);	
+			nAltImage = m_pColAlternate->GetIntArrayPtr()->at(nCol);	
 		}
 		else
 		{
@@ -2498,8 +2496,8 @@ int CSpreadSheet::GetCellStyle(int nRow, int nCol)
 	}
 
 	// now if the overriding cell style was not set,
-	if (nCol < m_pColStyles->m_intList.GetCount())
-		return m_pColStyles->m_intList[nCol];
+	if (nCol < m_pColStyles->GetIntArrayPtr()->size())
+		return m_pColStyles->GetIntArrayPtr()->at(nCol);
 
 	return 0;
 }
@@ -2569,7 +2567,7 @@ void CSpreadSheet::EditCellNow(UINT nChar/* = 0 */)
 		m_nRowSelected, m_nColSelected,
 		m_bInvokeWithSendString);
 
-	if (m_nColSelected >= m_pColStyles->m_intList.GetSize())
+	if (m_nColSelected >= m_pColStyles->GetIntArrayPtr()->size())
 		return;	
 
 	switch (GetCurCellStyle())
@@ -2622,21 +2620,12 @@ void CSpreadSheet::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 		{
 			ShowTextBox(m_nRowSelected,	m_nColSelected, nStyle, nChar);
 			
-			CPropertyObject *pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
+			RefCountedPtr< CPropertyObject > pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
 			
 			if (GetCellData(m_nRowSelected,	m_nColSelected) != NULL)
-			{
 				ShowComboBox(m_nRowSelected, m_nColSelected, 2, GetCellData(m_nRowSelected, m_nColSelected)->sStrings);
-			}
-			else
-			{
-				POSITION pos = pProp->m_stringArrayList.FindIndex(m_nColSelected);
-
-				if (pos != NULL && pProp->m_stringArrayList.GetAt(pos) != NULL)
-				{
-					ShowComboBox(m_nRowSelected, m_nColSelected, 2, *pProp->m_stringArrayList.GetAt(pos));
-				}	
-			}
+			else if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
+					ShowComboBox(m_nRowSelected, m_nColSelected, 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(m_nColSelected)));
 			VdclAngleEdit *pText = (VdclAngleEdit *)m_pTextBox[nStyle-36];
 				
 			CComboBoxHolder *pHolder = (CComboBoxHolder*)m_pComboBox[2];
@@ -2652,20 +2641,12 @@ void CSpreadSheet::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 		{
 			ShowTextBox(m_nRowSelected,	m_nColSelected, nStyle, nChar);
 			
-			CPropertyObject *pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
-			POSITION pos = pProp->m_stringArrayList.FindIndex(m_nColSelected);
+			RefCountedPtr< CPropertyObject > pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
 
 			if (GetCellData(m_nRowSelected,	m_nColSelected) != NULL)
-			{
 				ShowComboBox(m_nRowSelected, m_nColSelected, 2, GetCellData(m_nRowSelected, m_nColSelected)->sStrings);
-			}
-			else
-			{
-				if (pos != NULL && pProp->m_stringArrayList.GetAt(pos) != NULL)
-				{
-					ShowComboBox(m_nRowSelected, m_nColSelected, 2, *pProp->m_stringArrayList.GetAt(pos));
-				}
-			}
+			else if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
+				ShowComboBox(m_nRowSelected, m_nColSelected, 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(m_nColSelected)));
 
 			VdclNumericEdit *pText = (VdclNumericEdit *)m_pTextBox[nStyle-36];
 			
@@ -2683,20 +2664,12 @@ void CSpreadSheet::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 		{
 			ShowTextBox(m_nRowSelected,	m_nColSelected, nStyle, nChar);
 			
-			CPropertyObject *pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
-			POSITION pos = pProp->m_stringArrayList.FindIndex(m_nColSelected);
+			RefCountedPtr< CPropertyObject > pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
 
 			if (GetCellData(m_nRowSelected,	m_nColSelected) != NULL)
-			{
 				ShowComboBox(m_nRowSelected, m_nColSelected, 2, GetCellData(m_nRowSelected, m_nColSelected)->sStrings);
-			}
-			else
-			{
-				if (pos != NULL && pProp->m_stringArrayList.GetAt(pos) != NULL)
-				{
-					ShowComboBox(m_nRowSelected, m_nColSelected, 2, *pProp->m_stringArrayList.GetAt(pos));
-				}
-			}
+			else if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
+				ShowComboBox(m_nRowSelected, m_nColSelected, 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(m_nColSelected)));
 			
 			OdclEdit *pText = (OdclEdit *)m_pTextBox[nStyle-36];
 			
@@ -2716,20 +2689,12 @@ void CSpreadSheet::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 		{
 			ShowTextBox(m_nRowSelected,	m_nColSelected, nStyle, nChar);
 			
-			CPropertyObject *pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
-			POSITION pos = pProp->m_stringArrayList.FindIndex(m_nColSelected);
+			RefCountedPtr< CPropertyObject > pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
 
 			if (GetCellData(m_nRowSelected,	m_nColSelected) != NULL)
-			{
 				ShowComboBox(m_nRowSelected, m_nColSelected, 2, GetCellData(m_nRowSelected, m_nColSelected)->sStrings);
-			}
-			else
-			{
-				if (pos != NULL && pProp->m_stringArrayList.GetAt(pos) != NULL)
-				{
-					ShowComboBox(m_nRowSelected, m_nColSelected, 2, *pProp->m_stringArrayList.GetAt(pos));
-				}
-			}
+			else if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
+				ShowComboBox(m_nRowSelected, m_nColSelected, 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(m_nColSelected)));
 			
 			OdclEdit *pText = NULL;
 			switch(nStyle)
@@ -2789,19 +2754,11 @@ void CSpreadSheet::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 			break;			
 	case Grid_DropDown:
 		{
-			CPropertyObject *pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
+			RefCountedPtr< CPropertyObject > pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
 			if (GetCellData(m_nRowSelected,	m_nColSelected) != NULL)
-			{
 				ShowComboBox(m_nRowSelected, m_nColSelected, 2, GetCellData(m_nRowSelected, m_nColSelected)->sStrings);
-			}
-			else
-			{
-				POSITION pos = pProp->m_stringArrayList.FindIndex(m_nColSelected);
-				if (pos != NULL && pProp->m_stringArrayList.GetAt(pos) != NULL)
-				{
-					ShowComboBox(m_nRowSelected, m_nColSelected, 2, *pProp->m_stringArrayList.GetAt(pos));
-				}
-			}
+			else if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
+				ShowComboBox(m_nRowSelected, m_nColSelected, 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(m_nColSelected)));
 		break;
 		}
 	case Grid_ImageDropList:
@@ -2816,16 +2773,18 @@ void CSpreadSheet::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 			}
 			else
 			{
-				CPropertyObject *pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
-				CPropertyObject *pPropImages = m_ArxControl->GetPropertyObject(nColumnListImages);
-				POSITION pos = pProp->m_stringArrayList.FindIndex(m_nColSelected);
-				if (pos != NULL && pProp->m_stringArrayList.GetAt(pos) != NULL)
+				RefCountedPtr< CPropertyObject > pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
+				RefCountedPtr< CPropertyObject > pPropImages = m_ArxControl->GetPropertyObject(nColumnListImages);
+				if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
 				{
-					CArray<int,int> *pInts = pPropImages->m_intArrayList.GetAt(pPropImages->m_intArrayList.FindIndex(m_nColSelected));
+					PropVal::TIntArray& rInts = pPropImages->GetIntArrayListPtr()->at(m_nColSelected);
+					CArray< int, int > rInt;
+					for(int idx = 0; idx < rInts.size(); idx++)
+						rInt.Add(rInts[idx]);
 					ShowImageComboBox(m_nRowSelected, 
 							m_nColSelected,
-							*pProp->m_stringArrayList.GetAt(pos),
-							*pInts);
+							PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(m_nColSelected)),
+							rInt);
 				}
 			}
 		break;
@@ -3024,13 +2983,9 @@ void CSpreadSheet::DoFileDlg(int nStyle)
 			}
 			else
 			{			
-				CPropertyObject *pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
-		
-				POSITION pos = pProp->m_stringArrayList.FindIndex(m_nColSelected);
-				if (pos != NULL && pProp->m_stringArrayList.GetAt(pos) != NULL)
-				{
-					sFileExt = pProp->m_stringArrayList.GetAt(pos)->GetAt(0);
-				}
+				RefCountedPtr< CPropertyObject > pProp = m_ArxControl->GetPropertyObject(nColumnListItems);	
+				if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
+					sFileExt = pProp->GetStringArrayListPtr()->at(m_nColSelected)[0];
 			}
 			if (acedGetFileD(sFile, sFile, sFileExt, 8, result) == RTNORM)
 			{
@@ -3551,7 +3506,7 @@ void CSpreadSheet::ShowTextBox(int nRow, int nCol, int nStyle, UINT nChar/* = 0 
 
 			if (GetCellData(nRow, nCol) == NULL)
 			{
-				nDataStyle = m_pColImages->m_intList[nCol];
+				nDataStyle = m_pColImages->GetIntArrayPtr()->at(nCol);
 			}
 			else
 			{

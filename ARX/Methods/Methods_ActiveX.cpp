@@ -7,6 +7,7 @@
 #include "AxContainer.h"
 #include "AxMethodDescriptor.h"
 #include "AxPropertyDescriptor.h"
+#include "AxInterfaceDescriptor.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "ArgumentsRetrieval.h"
@@ -14,10 +15,9 @@
 #include "ErrorLexicon.h"
 #include "MethodLexicon.h"
 #include "AcadColorTable.h"
-//#include "LispFunctions.h"
 
 
-void acedRetOleVar(COleVariant &varGet, CPropertyObject *pProp = NULL, AxMethodDescriptor *pMethod = NULL, CAxContainer *pAxContainer = NULL, AxPropertyDescriptor *pAxProp = NULL);
+void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp = NULL, AxMethodDescriptor *pMethod = NULL, CAxContainer *pAxContainer = NULL, AxPropertyDescriptor *pAxProp = NULL);
 
 
 //*****************************************************************************
@@ -112,7 +112,6 @@ int SetAxObjColorProperty()
 			acedRetVoid();
 			return 0; 
 		}
-		
 	}
 	
 	if (ListData == NULL)
@@ -123,28 +122,20 @@ int SetAxObjColorProperty()
 
 	CDclControlObject *pControl = (CDclControlObject*) lObject;
 
-	CPropertyObject *pProp = pControl->FindProperty(sPropNameArg);
+	RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty(sPropNameArg);
 	int nParams;
-	AxPropertyDescriptor *pAxProp = NULL;
-	if (pProp->m_pAxPropPutRef != NULL &&
-		(pProp->m_pAxPropPutRef->Type == VT_DISPATCH || 
-		 pProp->m_pAxPropPutRef->Type == VT_UNKNOWN ||
-		 pProp->m_pAxPropPutRef->Type == VT_VOID))
-	{
-		pAxProp = pProp->m_pAxPropPutRef;
-	}
-	else if (pProp->m_pAxPropPut != NULL)
-	{
-		pAxProp = pProp->m_pAxPropPut;
-	}
-	else if (pProp->m_pAxPropPutRef != NULL)
-	{
-		pAxProp = pProp->m_pAxPropPutRef;
-	}
-	else if (pProp->m_pAxProp != NULL)
-	{
-		pAxProp = pProp->m_pAxProp;
-	}
+	RefCountedPtr< AxPropertyDescriptor > pAxProp = NULL;
+	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() &&
+		(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_DISPATCH || 
+		 pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_UNKNOWN ||
+		 pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_VOID))
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef())
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp())
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 	
 	nParams = pAxProp->NumParams;
 	// here we are ensuring that there is at least one parameters to be passed in. 
@@ -155,7 +146,6 @@ int SetAxObjColorProperty()
 		//pAxProp->NumParams = nParams;
 		pAxProp->CallingArgs[0] = pAxProp->Type;
 	}
-	
 
 	// get the AcxtiveX control
 	CAxContainer *axContainer = pControl->m_pAxWnd;
@@ -354,28 +344,28 @@ int SetAxObjectPictureProperty()
 	}
 		
 	CDclControlObject *pControl = (CDclControlObject*) lObject;
-	CPropertyObject *pProp = pControl->FindProperty(sPropNameArg);
+	RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty(sPropNameArg);
 
 	AxPropertyDescriptor *pAxProp = NULL;
 	
-	if (pProp->m_pAxPropPutRef != NULL &&
-		(pProp->m_pAxPropPutRef->Type == VT_DISPATCH || 
-		 pProp->m_pAxPropPutRef->Type == VT_UNKNOWN ||
-		 pProp->m_pAxPropPutRef->Type == VT_VOID))
+	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() &&
+		(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_DISPATCH || 
+		 pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_UNKNOWN ||
+		 pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_VOID))
 	{
-		pAxProp = pProp->m_pAxPropPutRef;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 	}
-	else if (pProp->m_pAxPropPut != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
 	{
-		pAxProp = pProp->m_pAxPropPut;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
 	}
-	else if (pProp->m_pAxPropPutRef != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef())
 	{
-		pAxProp = pProp->m_pAxPropPutRef;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 	}
-	else if (pProp->m_pAxProp != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp())
 	{
-		pAxProp = pProp->m_pAxProp;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 	}
 	
 	if (ListData->restype == RTSTR)
@@ -663,7 +653,7 @@ int GetAxObjectProperty()
 	
 
 	CDclControlObject *pControl = (CDclControlObject*) lObject;
-	CPropertyObject *pProp = pControl->FindProperty(sPropNameArg);
+	RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty(sPropNameArg);
 	if (pProp == NULL)
 	{
 		theWorkspace.DisplayAlert(CString ("The ActiveX get property \"") + sPropNameArg + "\" is not a member of this ActiveX object.");
@@ -673,21 +663,21 @@ int GetAxObjectProperty()
 
 	int nParams;
 	AxPropertyDescriptor *pAxProp = NULL;
-	if (pProp->m_pAxPropGet != NULL)
+	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet())
 	{
-		pAxProp = pProp->m_pAxPropGet;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropGet();
 	}
-	else if (pProp->m_pAxPropPutRef != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef())
 	{
-		pAxProp = pProp->m_pAxPropPutRef;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 	}
-	else if (pProp->m_pAxPropPut != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
 	{
-		pAxProp = pProp->m_pAxPropPut;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
 	}
-	else if (pProp->m_pAxProp != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp())
 	{
-		pAxProp = pProp->m_pAxProp;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 	}
 	
 	nParams = pAxProp->NumParams;
@@ -856,7 +846,7 @@ int SetAxObjectProperty()
         return 0; 
 	}
 
-	CPropertyObject *pProp = pControl->FindProperty(sPropNameArg);
+	RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty(sPropNameArg);
 	if (pProp == NULL)
 	{
 		acedRetVoid();
@@ -865,24 +855,24 @@ int SetAxObjectProperty()
 
 	int nParams;
 	AxPropertyDescriptor *pAxProp = NULL;
-	if (pProp->m_pAxPropPutRef != NULL &&
-		(pProp->m_pAxPropPutRef->Type == VT_DISPATCH || 
-		 pProp->m_pAxPropPutRef->Type == VT_UNKNOWN ||
-		 pProp->m_pAxPropPutRef->Type == VT_VOID))
+	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() &&
+		(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_DISPATCH || 
+		 pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_UNKNOWN ||
+		 pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_VOID))
 	{
-		pAxProp = pProp->m_pAxPropPutRef;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 	}
-	else if (pProp->m_pAxPropPut != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
 	{
-		pAxProp = pProp->m_pAxPropPut;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
 	}
-	else if (pProp->m_pAxPropPutRef != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef())
 	{
-		pAxProp = pProp->m_pAxPropPutRef;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 	}
-	else if (pProp->m_pAxProp != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp())
 	{
-		pAxProp = pProp->m_pAxProp;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 	}
 	
 	nParams = pAxProp->NumParams;
@@ -1053,7 +1043,7 @@ int DoAxObjectMethod()
 
 /* broken [ORW]
 	CDclControlObject *pControl = (CDclControlObject*) lObject;
-	CPropertyObject *pProp = pControl->GetMethods();
+	RefCountedPtr< CPropertyObject > pProp = pControl->GetMethods();
 	int nParams;
 	
 	if (pProp->m_Type != PropActiveXMethods)
@@ -1171,7 +1161,7 @@ int SetAxColorProperty()
         return 0; 
 	}
 
-	CPropertyObject *pProp = pControl->FindProperty(sPropNameArg);
+	RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty(sPropNameArg);
 	if (pProp == NULL)
 	{
 		acedRetVoid();
@@ -1180,24 +1170,24 @@ int SetAxColorProperty()
 
 	int nParams;
 	AxPropertyDescriptor *pAxProp = NULL;
-	if (pProp->m_pAxPropPutRef != NULL &&
-		(pProp->m_pAxPropPutRef->Type == VT_DISPATCH || 
-		 pProp->m_pAxPropPutRef->Type == VT_UNKNOWN ||
-		 pProp->m_pAxPropPutRef->Type == VT_VOID))
+	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL &&
+		(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_DISPATCH || 
+		 pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_UNKNOWN ||
+		 pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_VOID))
 	{
-		pAxProp = pProp->m_pAxPropPutRef;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 	}
-	else if (pProp->m_pAxPropPut != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut() != NULL)
 	{
-		pAxProp = pProp->m_pAxPropPut;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
 	}
-	else if (pProp->m_pAxPropPutRef != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL)
 	{
-		pAxProp = pProp->m_pAxPropPutRef;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 	}
-	else if (pProp->m_pAxProp != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp() != NULL)
 	{
-		pAxProp = pProp->m_pAxProp;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 	}
 	
 	nParams = pAxProp->NumParams;
@@ -1211,7 +1201,7 @@ int SetAxColorProperty()
 	}
 	
 	// get the AcxtiveX control
-	CAxContainer *axContainer = pControl->m_pAxWnd;
+	CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
 	IDispatch *pDisp = axContainer->GetOleIDispatch();
 	
 	long lRed = 0;
@@ -1322,27 +1312,27 @@ int SetAxPictureProperty()
 	}
 
 
-	CPropertyObject *pProp = pControl->FindProperty(sPropNameArg);
+	RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty(sPropNameArg);
 	int nParams;
 	AxPropertyDescriptor *pAxProp = NULL;
-	if (pProp->m_pAxPropPutRef != NULL &&
-		(pProp->m_pAxPropPutRef->Type == VT_DISPATCH || 
-		 pProp->m_pAxPropPutRef->Type == VT_UNKNOWN ||
-		 pProp->m_pAxPropPutRef->Type == VT_VOID))
+	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL &&
+		(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_DISPATCH || 
+		 pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_UNKNOWN ||
+		 pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_VOID))
 	{
-		pAxProp = pProp->m_pAxPropPutRef;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 	}
-	else if (pProp->m_pAxPropPut != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut() != NULL)
 	{
-		pAxProp = pProp->m_pAxPropPut;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
 	}
-	else if (pProp->m_pAxPropPutRef != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL)
 	{
-		pAxProp = pProp->m_pAxPropPutRef;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 	}
-	else if (pProp->m_pAxProp != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp() != NULL)
 	{
-		pAxProp = pProp->m_pAxProp;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 	}
 	
 	nParams = pAxProp->NumParams;
@@ -1358,7 +1348,7 @@ int SetAxPictureProperty()
 	
 
 	// get the AcxtiveX control
-	CAxContainer *axContainer = pControl->m_pAxWnd;
+	CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
 	IDispatch *pDisp = axContainer->GetOleIDispatch();
 		
 	if (ListData->restype == RTSTR)
@@ -1437,27 +1427,27 @@ int SetAxProperty()
 	}
 
 
-	CPropertyObject *pProp = pControl->FindProperty(sPropNameArg);
+	RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty(sPropNameArg);
 	int nParams;
 	AxPropertyDescriptor *pAxProp = NULL;
-	if (pProp->m_pAxPropPutRef != NULL &&
-		(pProp->m_pAxPropPutRef->Type == VT_DISPATCH || 
-		 pProp->m_pAxPropPutRef->Type == VT_UNKNOWN ||
-		 pProp->m_pAxPropPutRef->Type == VT_VOID))
+	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL &&
+		(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_DISPATCH || 
+		 pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_UNKNOWN ||
+		 pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_VOID))
 	{
-		pAxProp = pProp->m_pAxPropPutRef;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 	}
-	else if (pProp->m_pAxPropPut != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut() != NULL)
 	{
-		pAxProp = pProp->m_pAxPropPut;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
 	}
-	else if (pProp->m_pAxPropPutRef != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL)
 	{
-		pAxProp = pProp->m_pAxPropPutRef;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 	}
-	else if (pProp->m_pAxProp != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp() != NULL)
 	{
-		pAxProp = pProp->m_pAxProp;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 	}
 	
 	nParams = pAxProp->NumParams;
@@ -1500,7 +1490,7 @@ int SetAxProperty()
 
 
 	// get the AcxtiveX control
-	CAxContainer *axContainer = pControl->m_pAxWnd;
+	CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
 	
 	if (nParams == 1)
 	{
@@ -1568,27 +1558,27 @@ int SetFlexGridColorProperty()
   }
 
 
-  CPropertyObject *pProp = pControl->FindProperty(sPropNameArg);
+  RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty(sPropNameArg);
   int nParams;
   AxPropertyDescriptor *pAxProp = NULL;
-  if (pProp->m_pAxPropPutRef != NULL &&
-    (pProp->m_pAxPropPutRef->Type == VT_DISPATCH || 
-    pProp->m_pAxPropPutRef->Type == VT_UNKNOWN ||
-    pProp->m_pAxPropPutRef->Type == VT_VOID))
+  if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL &&
+    (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_DISPATCH || 
+    pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_UNKNOWN ||
+    pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Type == VT_VOID))
   {
-    pAxProp = pProp->m_pAxPropPutRef;
+    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
   }
-  else if (pProp->m_pAxPropPut != NULL)
+  else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut() != NULL)
   {
-    pAxProp = pProp->m_pAxPropPut;
+    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
   }
-  else if (pProp->m_pAxPropPutRef != NULL)
+  else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL)
   {
-    pAxProp = pProp->m_pAxPropPutRef;
+    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
   }
-  else if (pProp->m_pAxProp != NULL)
+  else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp() != NULL)
   {
-    pAxProp = pProp->m_pAxProp;
+    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
   }
 
   nParams = pAxProp->NumParams;
@@ -1603,7 +1593,7 @@ int SetFlexGridColorProperty()
   unsigned int iColor = (unsigned int)dColor;
 
   // get the AcxtiveX control
-  CAxContainer *axContainer = pControl->m_pAxWnd;
+  CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
 
   axContainer->SetFlexGridColorProperty(pAxProp, iColor);
   acedRetVoid();
@@ -1655,20 +1645,20 @@ int GetAxProperty()
 		ListData = ListData->rbnext;
 	}
 
-	CPropertyObject *pProp = pControl->FindProperty(sPropNameArg);
+	RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty(sPropNameArg);
 	int nParams;
 	AxPropertyDescriptor *pAxProp = NULL;
-	if (pProp->m_pAxPropGet != NULL)
+	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet() != NULL)
 	{
-		pAxProp = pProp->m_pAxPropGet;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropGet();
 	}
-	else if (pProp->m_pAxPropPutRef != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL)
 	{
-		pAxProp = pProp->m_pAxPropPutRef;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
 	}
-	else if (pProp->m_pAxProp != NULL)
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp() != NULL)
 	{
-		pAxProp = pProp->m_pAxProp;
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 	}
 	
 	nParams = pAxProp->NumParams;
@@ -1701,7 +1691,7 @@ int GetAxProperty()
 
 
 	// get the AcxtiveX control
-	CAxContainer *axContainer = pControl->m_pAxWnd;
+	CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
 	
 	COleVariant varGet;
 	// call the set property method to set the property
@@ -1756,20 +1746,20 @@ int GetFlexGridColorProperty()
     ListData = ListData->rbnext;
   }
 
-  CPropertyObject *pProp = pControl->FindProperty(sPropNameArg);
+  RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty(sPropNameArg);
   int nParams;
   AxPropertyDescriptor *pAxProp = NULL;
-  if (pProp->m_pAxPropGet != NULL)
+  if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet() != NULL)
   {
-    pAxProp = pProp->m_pAxPropGet;
+    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropGet();
   }
-  else if (pProp->m_pAxPropPutRef != NULL)
+  else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL)
   {
-    pAxProp = pProp->m_pAxPropPutRef;
+    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
   }
-  else if (pProp->m_pAxProp != NULL)
+  else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp() != NULL)
   {
-    pAxProp = pProp->m_pAxProp;
+    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
   }
 
   nParams = pAxProp->NumParams;
@@ -1801,7 +1791,7 @@ int GetFlexGridColorProperty()
   }
 
   // get the AcxtiveX control
-  CAxContainer *axContainer = pControl->m_pAxWnd;
+  CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
 
   //Return the color
   unsigned int iColor = axContainer->GetFlexGridColorProperty(pAxProp);
@@ -1855,7 +1845,7 @@ int DoAxMethod()
 	}
 
 /*
-	CPropertyObject *pProp = pControl->GetMethods();
+	RefCountedPtr< CPropertyObject > pProp = pControl->GetMethods();
 	int nParams;
 	
 	if (pProp->m_Type != PropActiveXMethods)
@@ -1913,7 +1903,7 @@ int DoAxMethod()
 
 
 	// get the AcxtiveX control
-	CAxContainer *axContainer = pControl->m_pAxWnd;
+	CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
 	
 	COleVariant varGet;
 	// call the set property method to set the property
@@ -1935,7 +1925,7 @@ int DoAxMethod()
 // Returns:	int
 // 
 //*****************************************************************************
-void acedRetOleVar(COleVariant &varGet, CPropertyObject *pProp, AxMethodDescriptor *pMethod, CAxContainer *pAxContainer, AxPropertyDescriptor *pAxProp)
+void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp, AxMethodDescriptor *pMethod, CAxContainer *pAxContainer, AxPropertyDescriptor *pAxProp)
 {
 	struct resbuf RetVal;
 			
@@ -2049,14 +2039,14 @@ void acedRetOleVar(COleVariant &varGet, CPropertyObject *pProp, AxMethodDescript
 					pObject = theArxWorkspace.GetArxControlFor(pMethod);
 				else if (pProp != NULL)
 				{
-					if (pProp->m_pAxPropGet != NULL)
-						pObject = theArxWorkspace.GetArxControlFor(pProp->m_pAxPropGet);
-					else if (pProp->m_pAxProp != NULL)
-						pObject = theArxWorkspace.GetArxControlFor(pProp->m_pAxProp);
-					else if (pProp->m_pAxPropPut != NULL)
-						pObject = theArxWorkspace.GetArxControlFor(pProp->m_pAxPropPut);
-					else if (pProp->m_pAxPropPutRef != NULL)
-						pObject = theArxWorkspace.GetArxControlFor(pProp->m_pAxPropPutRef);					
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet())
+						pObject = theArxWorkspace.GetArxControlFor(pProp->GetAxInterfaceDescriptorPtr()->GetPropGet());
+					else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp())
+						pObject = theArxWorkspace.GetArxControlFor(pProp->GetAxInterfaceDescriptorPtr()->GetProp());
+					else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
+						pObject = theArxWorkspace.GetArxControlFor(pProp->GetAxInterfaceDescriptorPtr()->GetPropPut());
+					else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef())
+						pObject = theArxWorkspace.GetArxControlFor(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef());					
 				}
 				COleDispatchDriver *pNewDispatch = new COleDispatchDriver(varGet.pdispVal);
 				//pNewDispatch->m_pParentAxContainer = pAxContainer;

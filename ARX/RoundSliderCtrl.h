@@ -36,7 +36,7 @@ public:
 	int		m_nPos;
 	CFont	*m_pFont;
 	bool m_bInvokeWithSendString;
-	CPropertyObject *m_pValueProp;
+	RefCountedPtr< CPropertyObject > m_pValueProp;
 public:
 	//DECLARE_DYNAMIC(CRoundSliderCtrl)
 

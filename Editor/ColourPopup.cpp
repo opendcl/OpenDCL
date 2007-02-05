@@ -36,6 +36,7 @@
 #include "ColourPopup.h"
 #include "WinColorDlg.h"
 #include "AxContainer.h"
+#include "AxInterfaceDescriptor.h"
 #include "ControlHolder.h"
 #include "PropertyObject.h"
 
@@ -108,7 +109,7 @@ CColourPopup::CColourPopup()
 CColourPopup::CColourPopup(CPoint p, COLORREF crColour, CWnd* pParentWnd,
                            LPCTSTR szDefaultText /* = NULL */,
                            LPCTSTR szCustomText  /* = NULL */,
-						   CPropertyObject *pProp /*= NULL */,
+						   RefCountedPtr< CPropertyObject > pProp /*= NULL */,
 						   CControlHolder *pAxCtrl /* = NULL */)
 {
     Initialise();
@@ -783,7 +784,7 @@ void CColourPopup::EndSelection(int nMessage)
 	{
 		if (m_pProp != NULL && m_pAxCtrl != NULL)
 		{
-			m_pAxCtrl->SetColor(m_pProp->GetActiveXSetProperyId(), m_crColour);
+			m_pAxCtrl->SetColor(m_pProp->GetAxInterfaceDescriptorPtr()->GetActiveXSetProperyId(), m_crColour);
 			m_pParent->Invalidate();
 		}
 	}

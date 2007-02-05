@@ -6,17 +6,1005 @@
 #include "AxPropertyDescriptor.h"
 #include "AxEventDescriptor.h"
 #include "AxMethodDescriptor.h"
+#include "AxInterfaceDescriptor.h"
 #include "AxContainer.h"
 #include "Filing.h"
 #include "OleFont.h"
 #include "VarUtils.h"
 #include "Workspace.h"
 #include "Project.h"
+#include "SharedRes.h"
+#include "PropertyIds.h"
 
 static const int nNotSet = -1;
 static const int nDePropResStringOffset = 210;
 static const int nDePropDescResStringOffset = 2100;
 static const int MAX_CALLING_ARGUMENTS = 16;
+
+
+namespace PropVal
+{
+
+class CPropertyValue : public CPropertyValueBase
+{
+	DWORD mdwSubtype;
+protected:
+	friend class CPropertyObject;
+	CPropertyValue() {}
+public:
+	virtual ~CPropertyValue() {}
+
+	//attributes
+	virtual PropertyType GetType() const = 0;
+	virtual DWORD SetSubtype( DWORD dwFlags ) { DWORD dwOld = mdwSubtype; mdwSubtype = dwFlags; return dwOld; }
+	virtual DWORD GetSubtype() const { return mdwSubtype; }
+
+	//operations
+	virtual void clear() = 0;
+
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const = 0;
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) = 0;
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const = 0;
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) = 0;
+};
+
+}; //namespace PropVal
+
+
+
+class CPropertyValueInvalid : public PropVal::CPropertyValue
+{
+	friend class CPropertyObject;
+protected:
+	CPropertyValueInvalid() {}
+public:
+	virtual PropertyType GetType() const { return PropInvalid; }
+	virtual void clear() {}
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { return statOK; }
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const { fprintf(pFile, "PropInvalid"); return statOK; }
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) { return statOK; }
+};
+
+class CPropertyValueLong : public PropVal::CPropertyValue
+{
+	long mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueLong() : mValue( -1 ) {}
+public:
+	virtual PropertyType GetType() const { return PropLong; }
+	virtual void clear() { mValue = -1; }
+
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropLong");
+			writeLong( pFile, mValue );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			return readLong( sFile, mValue )? statOK : statInvalidFormat;
+		}
+
+	virtual bool GetValue( long& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const long& v ) { mValue = v; return true; }
+	virtual bool GetValue( CString& v ) const { v.Format(_T("%d"), mValue); return true; }
+	virtual bool SetValue( const CString& v ) { mValue = _tstol(v); return true; }
+	virtual bool SetValue( const LPCTSTR v ) { mValue = _tstol(v); return true; }
+};
+
+class CPropertyValueString : public PropVal::CPropertyValue
+{
+	CString mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueString() : mValue() {}
+public:
+	virtual PropertyType GetType() const { return PropString; }
+	virtual void clear() { mValue.Empty(); }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropString");
+			writeString( pFile, mValue );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			return readString( sFile, mValue )? statOK : statInvalidFormat;
+		}
+
+	virtual bool GetValue( long& v ) const { v = _tstol(mValue); return true; }
+	virtual bool SetValue( const long& v ) { mValue.Format(_T("%d"), v); return true; }
+	virtual bool GetValue( CString& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const CString& v ) { mValue = v; return true; }
+	virtual bool SetValue( const LPCTSTR v ) { mValue = v; return true; }
+};
+
+class CPropertyValueDouble : public PropVal::CPropertyValue
+{
+	double mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueDouble() : mValue( 0 ) {}
+public:
+	virtual PropertyType GetType() const { return PropDouble; }
+	virtual void clear() { mValue = 0; }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropDouble");
+			writeDouble( pFile, mValue );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			return readDouble( sFile, mValue )? statOK : statInvalidFormat;
+		}
+
+	virtual bool GetValue( double& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const double& v ) { mValue = v; return true; }
+	virtual bool GetValue( CString& v ) const { v.Format(_T("%f"), mValue); return true; }
+	virtual bool SetValue( const CString& v ) { mValue = _tstof(v); return true; }
+	virtual bool SetValue( const LPCTSTR v ) { mValue = _tstof(v); return true; }
+};
+
+class CPropertyValueBool : public PropVal::CPropertyValue
+{
+	bool mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueBool() : mValue( false ) {}
+public:
+	virtual PropertyType GetType() const { return PropBool; }
+	virtual void clear() { mValue = false; }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+	{
+		BOOL bVal = mValue? TRUE : FALSE;
+		ar << bVal;
+		return statOK;
+	}
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+	{
+		BOOL bVal;
+		ar >> bVal;
+		mValue = (bVal != FALSE);
+		return statOK;
+	}
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropBool");
+			writeBool( pFile, mValue );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			return readBool( sFile, mValue )? statOK : statInvalidFormat;
+		}
+
+	virtual bool GetValue( bool& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const bool& v ) { mValue = v; return true; }
+	virtual bool GetValue( CString& v ) const { v = (mValue? _T("True") : _T("False")); return true; }
+	virtual bool SetValue( const CString& v ) { mValue = (v.CompareNoCase(_T("True")) == 0); return true; }
+	virtual bool SetValue( const LPCTSTR v ) { mValue = (lstrcmpi(v, _T("True")) == 0); return true; }
+};
+
+class CPropertyValueEnum : public PropVal::CPropertyValue
+{
+	long mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueEnum() : mValue( -1 ) {}
+public:
+	virtual PropertyType GetType() const { return PropEnum; }
+	virtual void clear() { mValue = -1; }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropEnum");
+			writeLong( pFile, mValue );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			return readLong( sFile, mValue )? statOK : statInvalidFormat;
+		}
+
+	virtual bool GetValue( long& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const long& v ) { mValue = v; return true; }
+	virtual bool GetValue( CString& v ) const { v.Format(_T("%d"), mValue); return true; }
+	virtual bool SetValue( const CString& v ) { mValue = _tstol(v); return true; }
+	virtual bool SetValue( const LPCTSTR v ) { mValue = _tstol(v); return true; }
+};
+
+class CPropertyValueEvent : public PropVal::CPropertyValue
+{
+	CString mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueEvent() {}
+public:
+	virtual PropertyType GetType() const { return PropEvent; }
+	virtual void clear() { mValue.Empty(); }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropEvent");
+			writeString( pFile, mValue );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			return readString( sFile, mValue )? statOK : statInvalidFormat;
+		}
+
+	virtual bool GetValue( CString& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const CString& v ) { mValue = v; return true; }
+	virtual bool SetValue( const LPCTSTR v ) { mValue = v; return true; }
+};
+
+class CPropertyValuePicture : public PropVal::CPropertyValue
+{
+	long mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValuePicture() : mValue( -1 ) {}
+public:
+	virtual PropertyType GetType() const { return PropPicture; }
+	virtual void clear() { mValue = -1; }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropPicture");
+			writeLong( pFile, mValue );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			return readLong( sFile, mValue )? statOK : statInvalidFormat;
+		}
+
+	virtual bool GetValue( long& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const long& v ) { mValue = v; return true; }
+	virtual bool GetValue( CString& v ) const { v.Format(_T("%d"), mValue); return true; }
+	virtual bool SetValue( const CString& v ) { mValue = _tstol(v); return true; }
+	virtual bool SetValue( const LPCTSTR v ) { mValue = _tstol(v); return true; }
+};
+
+class CPropertyValueCustom : public PropVal::CPropertyValue
+{
+	friend class CPropertyObject;
+protected:
+	CPropertyValueCustom() {}
+public:
+	virtual PropertyType GetType() const { return PropCustom; }
+	virtual void clear() {}
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { return statOK; }
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const { fprintf(pFile, "PropCustom"); return statOK; }
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) { return statOK; }
+};
+
+class CPropertyValueImageList : public PropVal::CPropertyValue
+{
+	short mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueImageList() : mValue( -1 ) {}
+public:
+	virtual PropertyType GetType() const { return PropImageList; }
+	virtual void clear() { mValue = -1; }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropImageList");
+			writeShort( pFile, mValue );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			return readShort( sFile, mValue )? statOK : statInvalidFormat;
+		}
+
+	virtual bool GetValue( short& v ) const { v = short(mValue); return true; }
+	virtual bool SetValue( const short& v ) { mValue = v; return true; }
+	virtual bool GetValue( long& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const long& v ) { mValue = short(v); return true; }
+};
+
+class CPropertyValueOLEColor : public PropVal::CPropertyValue
+{
+	OLE_COLOR mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueOLEColor() {}
+public:
+	virtual PropertyType GetType() const { return PropOLEColor; }
+	virtual void clear() { mValue = -1; }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropOLEColor");
+			writeDWORD( pFile, mValue );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			return readDWORD( sFile, mValue )? statOK : statInvalidFormat;
+		}
+
+	virtual bool GetValue( unsigned long& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const unsigned long& v ) { mValue = v; return true; }
+};
+
+class CPropertyValueStringArray : public PropVal::CPropertyValue
+{
+	PropVal::TCStringArrayPtr mValue;
+	CString msName; //not filed
+	friend class CPropertyObject;
+protected:
+	CPropertyValueStringArray() {}
+public:
+	virtual PropertyType GetType() const { return PropStringArray; }
+	virtual void clear() { mValue->clear(); }
+	virtual size_t size() { return mValue->size(); }
+
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+		{ //changing from CStringList to std::vector< CString > in version 6 [ORW]
+			if (nVersion <= 5)
+			{
+				CStringList listStr;
+				unsigned long nSize = const_cast<CPropertyValueStringArray*>(this)->mValue->size();
+				for(size_t idx = 0; idx < nSize; ++idx)
+					listStr.AddTail( const_cast<CPropertyValueStringArray*>(this)->mValue->at(idx) );
+				listStr.Serialize(ar);
+			}
+			else
+			{
+				unsigned long nSize = const_cast<CPropertyValueStringArray*>(this)->mValue->size();
+				ar << unsigned long(nSize);
+				for(size_t idx = 0; idx < nSize; ++idx)
+					ar << CString(const_cast<CPropertyValueStringArray*>(this)->mValue->at(idx));
+			}
+			return statOK;
+		}
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+		{ //changing from CStringList to std::vector< CString > in version 6 [ORW]
+			clear();
+			if (nVersion <= 5)
+			{
+				CStringList listStr;
+				listStr.Serialize(ar);
+				POSITION pos = listStr.GetHeadPosition();
+				while(pos)
+					mValue->push_back( listStr.GetNext(pos) );
+			}
+			else
+			{
+				unsigned long nSize;
+				ar >> nSize;
+				for(size_t idx = 0; idx < nSize; ++idx)
+				{
+					CString sVal;
+					ar >> sVal;
+					mValue->push_back(sVal);
+				}
+			}
+			return statOK;
+		}
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropStringArray");
+			int nSize = (int)const_cast<CPropertyValueStringArray*>(this)->mValue->size();
+			writeInt(pFile, nSize);
+			for (int idx = 0; idx < nSize; idx++)
+				writeString(pFile, const_cast<CPropertyValueStringArray*>(this)->mValue->at(idx));
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			clear();
+      int iCount;
+      if (!readInt(sFile, iCount)) return statInvalidFormat;
+      for (int i = 0; i < iCount; i++) {
+        CString str;
+        if (!readString(sFile, str)) return statInvalidFormat;
+        mValue->push_back(str);
+      }
+			return statOK;
+		}
+
+	virtual bool GetValue( CString& v ) const { v = msName; return true; }
+	virtual bool SetValue( const CString& v ) { msName = v; return true; }
+	virtual bool SetValue( const LPCTSTR v ) { msName = v; return true; }
+	virtual bool GetValue( PropVal::TCStringArrayPtr& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const PropVal::TCStringArrayPtr& v ) { mValue = v; return true; }
+};
+
+class CPropertyValueIntArray : public PropVal::CPropertyValue
+{
+	PropVal::TIntArrayPtr mValue;
+	CString msName; //not filed
+	friend class CPropertyObject;
+protected:
+	CPropertyValueIntArray() {}
+public:
+	virtual PropertyType GetType() const { return PropIntArray; }
+	virtual void clear() { mValue->clear(); }
+	virtual size_t size() { return mValue->size(); }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+		{ //changing from CArray< int, int > to std::vector< int > in version 6 [ORW]
+			if (nVersion <= 5)
+			{
+				CArray< int, int > rInt;
+				unsigned long nSize = const_cast<CPropertyValueIntArray*>(this)->mValue->size();
+				for(size_t idx = 0; idx < nSize; ++idx)
+					rInt.Add(const_cast<CPropertyValueIntArray*>(this)->mValue->at(idx));
+				rInt.Serialize(ar);
+			}
+			else
+			{
+				unsigned long nSize = const_cast<CPropertyValueIntArray*>(this)->mValue->size();
+				ar << unsigned long(nSize);
+				for(size_t idx = 0; idx < nSize; ++idx)
+					ar << int(const_cast<CPropertyValueIntArray*>(this)->mValue->at(idx));
+			}
+			return statOK;
+		}
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+		{ //changing from CArray< int, int > to std::vector< int > in version 6 [ORW]
+			clear();
+			if (nVersion <= 5)
+			{
+				if (nVersion <= 4)
+				{
+					CStringArray rStr;
+					rStr.Serialize(ar);
+					for(size_t idx = 0; idx < mValue->size(); ++idx)
+						mValue->push_back(_tstol(rStr[idx]));
+				}
+				else
+				{
+					CArray< int, int > rInt;
+					rInt.Serialize(ar);
+					for(size_t idx = 0; idx < mValue->size(); ++idx)
+						mValue->push_back(rInt[idx]);
+				}
+			}
+			else
+			{
+				unsigned long nSize;
+				ar >> nSize;
+				for(size_t idx = 0; idx < nSize; ++idx)
+				{
+					int nVal;
+					ar >> nVal;
+					mValue->push_back(nVal);
+				}
+			}
+			return statOK;
+		}
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropIntArray");
+			int nSize = (int)const_cast<CPropertyValueIntArray*>(this)->mValue->size();
+			writeInt(pFile, nSize);
+      for (int i = 0; i < nSize; i++) {
+        writeInt(pFile, const_cast<CPropertyValueIntArray*>(this)->mValue->at(i));
+      }
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			clear();
+      int iCount;
+      if (!readInt(sFile, iCount)) return statInvalidFormat;
+      for (int i = 0; i < iCount; i++) {
+        int intValue;
+        if (!readInt(sFile, intValue)) return statInvalidFormat;
+        mValue->push_back(intValue);
+      }
+			return statOK;
+		}
+
+	virtual bool GetValue( CString& v ) const { v = msName; return true; }
+	virtual bool SetValue( const CString& v ) { msName = v; return true; }
+	virtual bool SetValue( const LPCTSTR v ) { msName = v; return true; }
+	virtual bool GetValue( PropVal::TIntArrayPtr& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const PropVal::TIntArrayPtr& v ) { mValue = v; return true; }
+};
+
+class CPropertyValueActiveXPropPages : public PropVal::CPropertyValue
+{
+	PropVal::TAxInterfaceDescriptorPtr mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueActiveXPropPages() {}
+public:
+	virtual PropertyType GetType() const { return PropActiveXPropPages; }
+	virtual void clear() { mValue->clear(); }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+		{
+			const_cast<CPropertyValueActiveXPropPages*>(this)->mValue->Serialize( ar, nVersion );
+			return statOK;
+		}
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { mValue->Serialize( ar, nVersion ); return statOK; }
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropActiveXPropPages");
+			const_cast<CPropertyValueActiveXPropPages*>(this)->mValue->WriteToTextFile( pFile );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			switch( nVersion )
+			{
+				case 5: return mValue->ReadFromTextFile5( sFile );
+			};
+			return statInvalidFormat;
+		}
+
+	virtual bool GetValue( PropVal::TAxInterfaceDescriptorPtr& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const PropVal::TAxInterfaceDescriptorPtr& v ) { mValue = v; return true; }
+};
+
+class CPropertyValueActiveXProp : public PropVal::CPropertyValue
+{
+	CString msName;
+	PropVal::TAxInterfaceDescriptorPtr mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueActiveXProp() {}
+public:
+	virtual PropertyType GetType() const { return PropActiveXProp; }
+	virtual void clear() { msName.Empty(); mValue->clear(); }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+		{
+			ar << msName;
+			const_cast<CPropertyValueActiveXProp*>(this)->mValue->Serialize( ar, nVersion );
+			return statOK;
+		}
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+		{
+			ar >> msName;
+			mValue->Serialize( ar, nVersion );
+			return statOK;
+		}
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropActiveXProp");
+			const_cast<CPropertyValueActiveXProp*>(this)->mValue->WriteToTextFile( pFile );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			switch( nVersion )
+			{
+				case 5: return mValue->ReadFromTextFile5( sFile );
+			};
+			return statInvalidFormat;
+		}
+
+	virtual bool GetValue( CString& v ) const { v = msName; return true; }
+	virtual bool SetValue( const CString& v ) { msName = v; return true; }
+	virtual bool SetValue( const LPCTSTR v ) { msName = v; return true; }
+	virtual bool GetValue( PropVal::TAxInterfaceDescriptorPtr& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const PropVal::TAxInterfaceDescriptorPtr& v ) { mValue = v; return true; }
+};
+
+class CPropertyValueActiveXEnum : public PropVal::CPropertyValue
+{
+	PropVal::TAxInterfaceDescriptorPtr mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueActiveXEnum() {}
+public:
+	virtual PropertyType GetType() const { return PropActiveXEnum; }
+	virtual void clear() { mValue->clear(); }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+		{
+			const_cast<CPropertyValueActiveXEnum*>(this)->mValue->Serialize( ar, nVersion );
+			return statOK;
+		}
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+		{
+			mValue->Serialize( ar, nVersion );
+			return statOK;
+		}
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropActiveXEnum");
+			const_cast<CPropertyValueActiveXEnum*>(this)->mValue->WriteToTextFile( pFile );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			switch( nVersion )
+			{
+				case 5: return mValue->ReadFromTextFile5( sFile );
+			};
+			return statInvalidFormat;
+		}
+
+	virtual bool GetValue( PropVal::TAxInterfaceDescriptorPtr& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const PropVal::TAxInterfaceDescriptorPtr& v ) { mValue = v; return true; }
+};
+
+class CPropertyValueActiveXEvent : public PropVal::CPropertyValue
+{
+	CString msName;
+	PropVal::TAxInterfaceDescriptorPtr mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueActiveXEvent() {}
+public:
+	virtual PropertyType GetType() const { return PropActiveXEvent; }
+	virtual void clear() { msName.Empty(); mValue->clear(); }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+		{
+			ar << msName;
+			const_cast<CPropertyValueActiveXEvent*>(this)->mValue->Serialize( ar, nVersion );
+			return statOK;
+		}
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+		{
+			ar >> msName;
+			mValue->Serialize( ar, nVersion );
+			return statOK;
+		}
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropActiveXEvent");
+			writeString(pFile, msName);
+			const_cast<CPropertyValueActiveXEvent*>(this)->mValue->WriteToTextFile( pFile );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			msName.Empty();
+			readString(sFile, msName);
+			switch( nVersion )
+			{
+				case 5: return mValue->ReadFromTextFile5( sFile );
+			};
+			return statInvalidFormat;
+		}
+
+	virtual bool GetValue( CString& v ) const { v = msName; return true; }
+	virtual bool SetValue( const CString& v ) { msName = v; return true; }
+	virtual bool SetValue( const LPCTSTR v ) { msName = v; return true; }
+	virtual bool GetValue( PropVal::TAxInterfaceDescriptorPtr& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const PropVal::TAxInterfaceDescriptorPtr& v ) { mValue = v; return true; }
+};
+
+class CPropertyValueActiveXRunTime : public PropVal::CPropertyValue
+{
+	PropVal::TAxInterfaceDescriptorPtr mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueActiveXRunTime() {}
+public:
+	virtual PropertyType GetType() const { return PropActiveXRunTime; }
+	virtual void clear() { mValue->clear(); }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+		{
+			const_cast<CPropertyValueActiveXRunTime*>(this)->mValue->Serialize( ar, nVersion );
+			return statOK;
+		}
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+		{
+			mValue->Serialize( ar, nVersion );
+			return statOK;
+		}
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropActiveXRunTime");
+			const_cast<CPropertyValueActiveXRunTime*>(this)->mValue->WriteToTextFile( pFile );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			switch( nVersion )
+			{
+				case 5: return mValue->ReadFromTextFile5( sFile );
+			};
+			return statInvalidFormat;
+		}
+
+	virtual bool GetValue( PropVal::TAxInterfaceDescriptorPtr& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const PropVal::TAxInterfaceDescriptorPtr& v ) { mValue = v; return true; }
+};
+
+class CPropertyValueActiveXMethods : public PropVal::CPropertyValue
+{
+	PropVal::TAxInterfaceDescriptorPtr mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueActiveXMethods() {}
+public:
+	virtual PropertyType GetType() const { return PropActiveXMethods; }
+	virtual void clear() { mValue->clear(); }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+		{
+			const_cast<CPropertyValueActiveXMethods*>(this)->mValue->Serialize( ar, nVersion );
+			return statOK;
+		}
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+		{
+			mValue->Serialize( ar, nVersion );
+			return statOK;
+		}
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropActiveXMethods");
+			const_cast<CPropertyValueActiveXMethods*>(this)->mValue->WriteToTextFile( pFile );
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			switch( nVersion )
+			{
+				case 5: return mValue->ReadFromTextFile5( sFile );
+			};
+			return statInvalidFormat;
+		}
+
+	virtual bool GetValue( PropVal::TAxInterfaceDescriptorPtr& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const PropVal::TAxInterfaceDescriptorPtr& v ) { mValue = v; return true; }
+};
+
+class CPropertyValueStringArrayList : public PropVal::CPropertyValue
+{
+	PropVal::TCStringArrayListPtr mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueStringArrayList() {}
+public:
+	virtual PropertyType GetType() const { return PropStringArrayList; }
+	virtual void clear() { mValue->clear(); }
+	virtual size_t size() { return mValue->size(); }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+		{ //changing from CTypedPtrList< CObList, CStringArray* > to std::vector< std::vector< CString > > in version 6 [ORW]
+			if (nVersion <= 5)
+			{
+				CTypedPtrList< CObList, CStringArray* > rsStringArrayList;
+				PropVal::TCStringArrayList::const_iterator pos = const_cast<CPropertyValueStringArrayList*>(this)->mValue->begin();
+				while (pos !=  const_cast<CPropertyValueStringArrayList*>(this)->mValue->end())
+				{
+					const PropVal::TCStringArray& rStr = *pos++;
+					CStringArray* prsNew = new CStringArray;
+					for(size_t idx = 0; idx < rStr.size(); ++idx)
+						prsNew->Add(rStr[idx]);
+					rsStringArrayList.AddTail(prsNew);
+				}
+				rsStringArrayList.Serialize(ar);
+				POSITION posS = rsStringArrayList.GetHeadPosition();
+				while (posS)
+					delete rsStringArrayList.GetNext(posS);
+			}
+			else
+			{
+				ar << unsigned long(const_cast<CPropertyValueStringArrayList*>(this)->mValue->size());
+				PropVal::TCStringArrayList::const_iterator pos = const_cast<CPropertyValueStringArrayList*>(this)->mValue->begin();
+				while(pos != const_cast<CPropertyValueStringArrayList*>(this)->mValue->end())
+				{
+					const PropVal::TCStringArray& rStr = *pos++;
+					unsigned long nSize = rStr.size();
+					ar << unsigned long(nSize);
+					for(size_t idx = 0; idx < nSize; ++idx)
+						ar << rStr[idx];
+				}
+			}
+			return statOK;
+		}
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+		{ //changing from CArray< int, int > to std::vector< int > in version 6 [ORW]
+			clear();
+			if (nVersion <= 5)
+			{ //changing from CTypedPtrList< CObList, CStringArray* > to std::vector< std::vector< CString > > in version 6 [ORW]
+				CTypedPtrList< CObList, CStringArray* > rsStringArrayList;
+				rsStringArrayList.Serialize(ar);
+				POSITION pos = rsStringArrayList.GetHeadPosition();
+				while (pos)
+				{
+					CStringArray* prStr = rsStringArrayList.GetNext(pos);
+					mValue->push_back( PropVal::TCStringArray() );
+					PropVal::TCStringArray& rStr = mValue->back();
+					for( int idx = 0; idx < prStr->GetSize(); ++idx )
+						rStr.push_back(prStr->GetAt(idx));
+					delete prStr;
+				}
+			}
+			else
+			{
+				unsigned long nSizeL;
+				ar >> nSizeL;
+				for( size_t idxL = 0; idxL < nSizeL; ++idxL)
+				{
+					unsigned long nSize;
+					ar >> nSize;
+					mValue->push_back( PropVal::TCStringArray() );
+					PropVal::TCStringArray& rStr = mValue->back();
+					for( size_t idx = 0; idx < nSize; ++idx)
+					{
+						CString Str;
+						ar >> Str;
+						rStr.push_back(Str);
+					}
+				}
+			}
+			return statOK;
+		}
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropStringArrayList");
+      writeInt(pFile, (int)const_cast<CPropertyValueStringArrayList*>(this)->mValue->size());
+			PropVal::TCStringArrayList::const_iterator pos = const_cast<CPropertyValueStringArrayList*>(this)->mValue->begin();
+      while (pos != const_cast<CPropertyValueStringArrayList*>(this)->mValue->end())
+      {
+				const PropVal::TCStringArray& rStr = *pos++;
+        writeInt(pFile, (int)rStr.size());
+        for (size_t i = 0; i < rStr.size(); ++i)
+          writeString(pFile, rStr[i]);
+      }
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			clear();
+      int iArrayCount;
+      if (!readInt(sFile, iArrayCount)) return statInvalidFormat;
+      for (int i = 0; i < iArrayCount; i++) {
+				mValue->push_back( PropVal::TCStringArray() );
+				PropVal::TCStringArray& rStr = mValue->back();
+        int iStringCount;
+        if (!readInt(sFile, iStringCount)) return statInvalidFormat;
+        if (iStringCount != -1) {
+          for (int j = 0; j < iStringCount; j++) {
+            CString str;
+            if (!readString(sFile, str)) return statInvalidFormat;
+            rStr.push_back(str);
+          }
+        }
+      }
+			return statOK;
+		}
+
+	virtual bool GetValue( PropVal::TCStringArrayListPtr& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const PropVal::TCStringArrayListPtr& v ) { mValue = v; return true; }
+};
+
+class CPropertyValueIntArrayList : public PropVal::CPropertyValue
+{
+	PropVal::TIntArrayListPtr mValue;
+	friend class CPropertyObject;
+protected:
+	CPropertyValueIntArrayList() {}
+public:
+	virtual PropertyType GetType() const { return PropIntArrayList; }
+	virtual void clear() { mValue->clear(); }
+	virtual size_t size() { return mValue->size(); }
+	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+		{ //changing from CList< CArray< int, int >* > to std::vector< std::vector< int > > in version 6 [ORW]
+			if (nVersion <= 5)
+			{
+				CList< CArray< int, int >* > rlistInt;
+				PropVal::TIntArrayList::const_iterator posL = const_cast<CPropertyValueIntArrayList*>(this)->mValue->begin();
+				while(posL != const_cast<CPropertyValueIntArrayList*>(this)->mValue->end())
+				{
+					const PropVal::TIntArray& rIntV = *posL++;
+					CArray< int, int >* prInt = new CArray< int, int >;
+					rlistInt.AddTail( prInt );
+					unsigned long nSize = prInt->GetSize();
+					for(size_t idx = 0; idx < nSize; ++idx)
+						prInt->Add(rIntV[idx]);
+				}
+				rlistInt.Serialize(ar);
+				POSITION pos = rlistInt.GetHeadPosition();
+				while(pos)
+					delete rlistInt.GetNext(pos);
+			}
+			else
+			{
+				ar << unsigned long(const_cast<CPropertyValueIntArrayList*>(this)->mValue->size());
+				PropVal::TIntArrayList::const_iterator pos = const_cast<CPropertyValueIntArrayList*>(this)->mValue->begin();
+				while (pos != const_cast<CPropertyValueIntArrayList*>(this)->mValue->end())
+				{
+					const PropVal::TIntArray& rInt = *pos++;
+					unsigned long nSize = rInt.size();
+					ar << unsigned long(nSize);
+					for (size_t idx = 0; idx < nSize; ++idx)
+						ar << int(rInt[idx]);
+				}
+			}
+			return statOK;
+		}
+	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+		{ //changing from CList< CArray< int, int >* > to std::vector< std::vector< int > > in version 6 [ORW]
+			clear();
+			if (nVersion <= 5)
+			{
+				CList< CArray< int, int >* > rlistInt;
+				rlistInt.Serialize(ar);
+				POSITION posL = rlistInt.GetHeadPosition();
+				while(posL)
+				{
+					const CArray< int, int >* prInt = rlistInt.GetNext(posL);
+					mValue->push_back( PropVal::TIntArray() );
+					PropVal::TIntArray& rIntV = mValue->back();
+					for(size_t idx = 0; idx < (size_t)prInt->GetSize(); idx++)
+						rIntV.push_back(prInt->GetAt(idx));
+					delete prInt;
+				}
+			}
+			else
+			{
+				unsigned long nSize;
+				ar >> nSize;
+				for(size_t idx = 0; idx < nSize; idx++)
+				{
+					unsigned long nSize;
+					ar >> nSize;
+					mValue->push_back( PropVal::TIntArray() );
+					PropVal::TIntArray& rIntV = mValue->back();
+					for(size_t idx = 0; idx < nSize; idx++)
+					{
+						int nVal;
+						ar >> nVal;
+						rIntV.push_back(nVal);
+					}
+				}
+			}
+			return statOK;
+		}
+	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+		{
+			fprintf(pFile, "PropIntArrayList");
+      writeInt(pFile, (int)const_cast<CPropertyValueIntArrayList*>(this)->mValue->size());
+			PropVal::TIntArrayList::const_iterator pos = const_cast<CPropertyValueIntArrayList*>(this)->mValue->begin();
+      while (pos != const_cast<CPropertyValueIntArrayList*>(this)->mValue->end())
+      {
+				const PropVal::TIntArray& rInt = *pos++;
+        writeInt(pFile, (int)rInt.size());
+        for (size_t i = 0; i < rInt.size(); ++i)
+          writeInt(pFile, rInt[i]);
+      }
+			return statOK;
+		}
+	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+		{
+			clear();
+      int nCounter;
+      if (!readInt(sFile, nCounter)) return statInvalidFormat;;
+      for (int i=0; i<nCounter; i++)
+      {
+        mValue->push_back(PropVal::TIntArray());
+				PropVal::TIntArray& rInt = mValue->back();
+        int nCounter2;
+        if (!readInt(sFile, nCounter2)) return statInvalidFormat;;
+        for (int j=0; j<nCounter2; j++)
+        {		
+          int nItem;
+          if (!readInt(sFile, nItem)) return statInvalidFormat;;
+          rInt.push_back(nItem);
+        }
+      }
+			return statOK;
+		}
+
+	virtual bool GetValue( PropVal::TIntArrayListPtr& v ) const { v = mValue; return true; }
+	virtual bool SetValue( const PropVal::TIntArrayListPtr& v ) { mValue = v; return true; }
+};
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -25,876 +1013,344 @@ static const int MAX_CALLING_ARGUMENTS = 16;
 IMPLEMENT_SERIAL(CPropertyObject, CObject, 1)
 
 CPropertyObject::CPropertyObject()
-: mType( PropInvalid )
-, mbHidden( false )
-, mnID( -1 )
-, mOLEColor( 0 )
-, mlLong( 0 )
-, mbBoolean( false )
-, mdblDouble( 0 )
+: mbHidden( false )
+, mnID( nInvalidPropertyId )
 {	
-	m_ImageListIndex = nNotSet;
-	m_pAxProp = NULL;
-	m_pAxPropGet = NULL;
-	m_pAxPropPut = NULL;
-	m_pAxPropPutRef = NULL;
-	m_pAxEvent = NULL;
-	m_pMethods = NULL;
+	SetType( PropInvalid );
+	SetSubtype( 0 );
 }
 
-CPropertyObject::CPropertyObject(PropertyTypes type)
-: mType( type )
-, mbHidden( false )
-, mnID( -1 )
-, mOLEColor( 0 )
-, mlLong( 0 )
-, mbBoolean( false )
-, mdblDouble( 0 )
+CPropertyObject::CPropertyObject(PropertyType type, DWORD dwSubtype /*= 0*/, PropertyId nID /*= -1*/ )
+: mbHidden( false )
+, mnID( nID )
 {	
-	m_ImageListIndex = nNotSet;
-	m_pAxProp = NULL;
-	m_pAxPropGet = NULL;
-	m_pAxPropPut = NULL;
-	m_pAxPropPutRef = NULL;
-	m_pAxEvent = NULL;
-	m_pMethods = NULL;
+	SetType( type );
+	SetSubtype( dwSubtype );
 }
 
 CPropertyObject::~CPropertyObject()
 {
-	if (m_pAxProp != NULL)
+}
+
+void CPropertyObject::SetType( PropertyType type )
+{
+	if( mpValue && type == mpValue->GetType() )
+		return; //no-op
+	switch( type )
 	{
-		delete m_pAxProp;
-		m_pAxProp = NULL;
-	}
-
-	if (m_pAxEvent != NULL)
-		delete m_pAxEvent;
-
-	if (m_pAxPropGet != NULL)
-		delete m_pAxPropGet;
-
-	if (m_pAxPropPut != NULL)
-		delete m_pAxPropPut;
-
-	if (m_pAxPropPutRef != NULL)
-		delete m_pAxPropPutRef;
-
-	if (m_pMethods != NULL)
-	{
-		POSITION pos = m_pMethods->GetHeadPosition();
-		while (pos != NULL)
-		{
-			AxMethodDescriptor *pAxMethod = m_pMethods->GetHead();
-			m_pMethods->RemoveAt(pos);
-			pos = m_pMethods->GetHeadPosition();
-			delete pAxMethod;
-		}
-		delete m_pMethods;
-		m_pMethods = NULL;
-	}
+	case PropLong:
+		mpValue = new CPropertyValueLong;
+		break;
+	case PropString:
+		mpValue = new CPropertyValueString;
+		break;
+	case PropDouble:
+		mpValue = new CPropertyValueDouble;
+		break;
+	case PropBool:
+		mpValue = new CPropertyValueBool;
+		break;
+	case PropEnum:
+		mpValue = new CPropertyValueEnum;
+		break;
+	case PropEvent:
+		mpValue = new CPropertyValueEvent;
+		break;
+	case PropPicture:
+		mpValue = new CPropertyValuePicture;
+		break;
+	case PropCustom:
+		mpValue = new CPropertyValueCustom;
+		break;
+	case PropImageList:
+		mpValue = new CPropertyValueImageList;
+		break;
+	case PropOLEColor:
+		mpValue = new CPropertyValueOLEColor;
+		break;
+	case PropStringArray:
+		mpValue = new CPropertyValueStringArray;
+		break;
+	case PropIntArray:
+		mpValue = new CPropertyValueIntArray;
+		break;
+	case PropActiveXPropPages:
+		mpValue = new CPropertyValueActiveXPropPages;
+		break;
+	case PropActiveXProp:
+		mpValue = new CPropertyValueActiveXProp;
+		break;
+	case PropActiveXEnum:
+		mpValue = new CPropertyValueActiveXEnum;
+		break;
+	case PropActiveXEvent:
+		mpValue = new CPropertyValueActiveXEvent;
+		break;
+	case PropActiveXRunTime:
+		mpValue = new CPropertyValueActiveXRunTime;
+		break;
+	case PropActiveXMethods:
+		mpValue = new CPropertyValueActiveXMethods;
+		break;
+	case PropStringArrayList:
+		mpValue = new CPropertyValueStringArrayList;
+		break;
+	case PropIntArrayList:
+		mpValue = new CPropertyValueIntArrayList;
+		break;
+	default:
+		mpValue = new CPropertyValueInvalid;
+		break;
+	};
+	assert( mpValue != NULL );
 }
 
-const CString& CPropertyObject::GetStringValue() const
+CString CPropertyObject::GetStringValue() const
 {
-	assert(mType == PropString || mType == PropEvent);
-	return msStringValue;
+	CString sValue;
+	bool bSuccess = mpValue->GetValue( sValue );
+	assert( bSuccess == true );
+	return sValue;
 }
 
-void CPropertyObject::SetStringValue( LPCTSTR pszValue )
+bool CPropertyObject::SetStringValue( LPCTSTR pszValue )
 {
-	assert(mType == PropString || mType == PropEvent);
-	msStringValue = pszValue;
+	bool bSuccess = mpValue->SetValue( pszValue );
+	assert( bSuccess == true || (!pszValue || !*pszValue) ); //ignore failure on empty strings
+	return bSuccess;
 }
 
-const OLE_COLOR& CPropertyObject::GetOLEColorValue() const
+OLE_COLOR CPropertyObject::GetOLEColorValue() const
 {
-	assert(mType == PropOLEColor);
-	return mOLEColor;
+	OLE_COLOR dwValue;
+	bool bSuccess = mpValue->GetValue( dwValue );
+	assert( bSuccess == true );
+	return dwValue;
 }
 
-void CPropertyObject::SetOLEColorValue( const OLE_COLOR& dwColor )
+bool CPropertyObject::SetOLEColorValue( const OLE_COLOR& dwColor )
 {
-	assert(mType == PropOLEColor);
-	mOLEColor = dwColor;
+	bool bSuccess = mpValue->SetValue( dwColor );
+	assert( bSuccess == true );
+	return bSuccess;
 }
 
-const long& CPropertyObject::GetLongValue() const
+long CPropertyObject::GetLongValue() const
 {
-	assert(mType == PropLong || mType == PropEnum || mType == PropPicture);
-	return mlLong;
+	long lValue;
+	bool bSuccess = mpValue->GetValue( lValue );
+	assert( bSuccess == true );
+	return lValue;
 }
 
-void CPropertyObject::SetLongValue( long lValue )
+bool CPropertyObject::SetLongValue( long lValue )
 {
-	assert(mType == PropLong || mType == PropEnum || mType == PropPicture);
-	mlLong = lValue;
+	bool bSuccess = mpValue->SetValue( lValue );
+	assert( bSuccess == true );
+	return bSuccess;
 }
 
 bool CPropertyObject::GetBooleanValue() const
 {
-	assert(mType == PropBool);
-	return mbBoolean;
+	bool bValue;
+	bool bSuccess = mpValue->GetValue( bValue );
+	assert( bSuccess == true );
+	return bValue;
 }
 
-void CPropertyObject::SetBooleanValue( bool bValue )
+bool CPropertyObject::SetBooleanValue( bool bValue )
 {
-	assert(mType == PropBool);
-	mbBoolean = bValue;
+	bool bSuccess = mpValue->SetValue( bValue );
+	assert( bSuccess == true );
+	return bSuccess;
 }
 
 double CPropertyObject::GetDoubleValue() const
 {
-	assert(mType == PropDouble);
-	return mdblDouble;
+	double dblValue;
+	bool bSuccess = mpValue->GetValue( dblValue );
+	assert( bSuccess == true );
+	return dblValue;
 }
 
-void CPropertyObject::SetDoubleValue( double dblValue )
+bool CPropertyObject::SetDoubleValue( double dblValue )
 {
-	assert(mType == PropDouble);
-	mdblDouble = dblValue;
+	bool bSuccess = mpValue->SetValue( dblValue );
+	assert( bSuccess == true );
+	return bSuccess;
 }
 
-CString CPropertyObject::GetActiveXEnumDesc(CString sValue)
+short CPropertyObject::GetShortValue() const
 {
-	AxPropertyDescriptor *pProp;
-	bool bFoundEnum = false;
-	int nThisValue;
-
-	if (!sValue.IsEmpty())
-	{
-		nThisValue = _tstol(sValue);
-	}
-	
-	if (m_pAxPropGet != NULL)
-	{
-		if (m_pAxPropGet->NumEnum > 0)
-		{
-			bFoundEnum = true;
-			pProp = m_pAxPropGet;
-		}			
-	}
-	else if (m_pAxProp != NULL)
-	{
-		if (m_pAxProp->NumEnum > 0)
-		{
-			bFoundEnum = true;
-			pProp = m_pAxProp;			
-		}
-	}
-	else if (m_pAxPropPut != NULL)
-	{
-		if (m_pAxPropPut->NumEnum > 0)
-		{
-			bFoundEnum = true;
-			pProp = m_pAxPropPut;
-		}
-	}	
-
-	if (pProp == NULL)
-	{
-		CString sValue;
-		sValue.Format(_T("%d"), nThisValue);
-		return sValue;
-	}
-
-	if (bFoundEnum)
-	{
-		for (int i = 0; i<pProp->NumEnum; i++)
-		{
-			if (VariantToString(pProp->ArrEnum[i].Var) == sValue)				
-				return sValue + _T('-') + pProp->ArrEnum[i].Name;		
-		}
-	}
-	return CString();
+	short nValue;
+	bool bSuccess = mpValue->GetValue( nValue );
+	assert( bSuccess == true );
+	return nValue;
 }
 
-bool CPropertyObject::GetActiveXEnum(/*CListBoxDlg *pListBox*/)
+bool CPropertyObject::SetShortValue( short idxValue )
 {
-	AxPropertyDescriptor *pProp;
-	//bool bFoundEnum = false;
-
-	//if (pListBox == NULL)
-	//{
-		if (m_pAxPropGet != NULL)
-		{
-			pProp = m_pAxPropGet;
-			if (pProp->NumEnum > 0)
-				return true;
-		}
-		else if (m_pAxProp != NULL)
-		{
-			pProp = m_pAxProp;
-			if (pProp->NumEnum > 0)
-				return true;
-		}
-		else if (m_pAxPropPut != NULL)
-		{
-			pProp = m_pAxPropPut;
-			if (pProp->NumEnum > 0)
-				return true;
-		}
-		return false;
-	//}
-	//else
-	//{
-	//	if (m_pAxPropGet != NULL)
-	//	{
-	//		if (m_pAxPropGet->NumEnum > 0)
-	//		{
-	//			bFoundEnum = true;
-	//			pProp = m_pAxPropGet;
-	//		}			
-	//	}
-	//    else if (m_pAxProp != NULL)
-	//	{
-	//		if (m_pAxProp->NumEnum > 0)
-	//		{
-	//			bFoundEnum = true;
-	//			pProp = m_pAxProp;			
-	//		}
-	//	}
-	//	else if (m_pAxPropPut != NULL)
-	//	{
-	//		if (m_pAxPropPut->NumEnum > 0)
-	//		{
-	//			bFoundEnum = true;
-	//			pProp = m_pAxPropPut;
-	//		}
-	//	}	
-	//	if (pProp == NULL)
-	//		return false;
-	//}
-	//if (bFoundEnum)
-	//{
-	//	for (int i=0; i<pProp->NumEnum; i++)
-	//		pListBox->AddString(VariantToString(pProp->ArrEnum[i].Var) + _T('-') + pProp->ArrEnum[i].Name);
-	//}
-	//return true;
+	bool bSuccess = mpValue->SetValue( idxValue );
+	assert( bSuccess == true );
+	return bSuccess;
 }
 
-CString CPropertyObject::GetActiveXEnumValue(int nEnumIndex)
-{	
-	AxPropertyDescriptor *pProp = NULL;
-	if (m_pAxPropGet != NULL)
-	{
-		pProp = m_pAxPropGet;					
-	}
-	else if (m_pAxProp != NULL)
-	{
-		pProp = m_pAxProp;
-	}
-	else if (m_pAxPropPut != NULL)
-	{
-		pProp = m_pAxPropPut;
-	}	
-	if (pProp == NULL)
-		return CString();
-
-	return VariantToString(pProp->ArrEnum[nEnumIndex].Var);
-}
-
-CString CPropertyObject::GetActiveXPropery(CAxContainer *axContainer)
+const PropVal::TCStringArrayPtr CPropertyObject::GetStringArrayPtr() const
 {
-	HRESULT hr = - 1;
-	HRESULT hrGet = - 1;
-	HRESULT hrPut = - 1;
-	CString sResult;
-
-	if (m_pAxPropGet != NULL)
-	{
-		if (m_pAxPropGet->Type == VT_DISPATCH ||
-			m_pAxPropGet->Type == VT_UNKNOWN)
-			return CString();
-		hrGet = axContainer->GetProperty(m_pAxPropGet, sResult);
-		if (FAILED(hrGet))
-		{
-			return CString();
-			//mType = PropActiveXRunTime;
-		}
-	
-	}
-	else if (m_pAxProp != NULL)
-	{
-		hr = axContainer->GetProperty(m_pAxProp, sResult);
-		if (FAILED(hr))
-		{
-			//sResult = theWorkspace.LoadResourceString(IDS_RUNTIME);
-			//mType = PropActiveXRunTime;
-		}
-	}
-	else if (m_pAxPropPutRef != NULL)
-	{
-		hrGet = axContainer->GetProperty(m_pAxPropPutRef, sResult);
-		if (FAILED(hrGet))
-		{
-			//sResult = theWorkspace.LoadResourceString(IDS_RUNTIME);
-			//mType = PropActiveXRunTime;
-		}
-	
-	}
-	else if (m_pAxPropPut != NULL)
-	{
-		//sResult = theWorkspace.LoadResourceString(IDS_RUNTIME);
-		//mType = PropActiveXRunTime;		
-	}
-	
-	return sResult;
+	PropVal::TCStringArrayPtr v;
+	bool bSuccess = mpValue->GetValue( v );
+	assert( bSuccess == true );
+	return v;
 }
 
-int CPropertyObject::GetActiveXParamQty()
+PropVal::TCStringArrayPtr CPropertyObject::GetStringArrayPtr()
 {
-	int nQtyGet = 0;
-	int nQty = 0;
-	int nQtyPut = 0;
-	if (m_pAxPropGet != NULL)
-	{
-		nQtyGet = m_pAxPropGet->NumParams;
-		if (nQtyGet > 0)
-			return nQtyGet;
-	}
-	if (m_pAxProp != NULL)
-	{
-		nQty = m_pAxProp->NumParams;
-		if (m_pAxProp->invKind == INVOKE_PROPERTYGET && nQty > 0)
-		{
-			//mType = PropActiveXRunTime;
-			return nQty;
-		}
-	}
-	if (m_pAxPropPut != NULL)
-	{
-		nQtyPut = m_pAxPropPut->NumParams;
-	}
-
-	if (nQtyGet > nQty && nQtyGet > nQtyPut)
-		return nQtyGet;
-	
-	else if (nQty > nQtyGet && nQty > nQtyPut)
-		return nQty;
-	
-	else if (nQtyPut > nQty && nQtyPut > nQtyGet)
-		return nQtyPut;
-	
-	else
-		return 0;
+	PropVal::TCStringArrayPtr v;
+	bool bSuccess = mpValue->GetValue( v );
+	assert( bSuccess == true );
+	return v;
 }
 
-void CPropertyObject::DoActiveXFontPropDlg(CAxContainer *axContainer)
-{	
-	try
-	{
-		COleFont font;
-		if (m_pAxPropGet != NULL)
-			font = axContainer->GetFont(m_pAxPropGet->Id);
-		else if (m_pAxProp != NULL)
-			font = axContainer->GetFont(m_pAxProp->Id);
-		else if (m_pAxPropPut != NULL)
-			font = axContainer->GetFont(m_pAxPropPut->Id);
-		else
-			return;
-
-		CString		sFontName = font.GetName();
-		CY			cyFontSize = font.GetSize();
-		BOOL		bFontBold = font.GetBold();
-		BOOL		bFontUnderLine = font.GetUnderline();
-		BOOL		bFontItalic = font.GetItalic();
-		BOOL		bFontStrikethrough = font.GetStrikethrough();
-		short		nFontWeight = font.GetWeight();
-		short		nFontCharset = font.GetCharset();
-				
-		LOGFONT lf;
-		memset(&lf, 0, sizeof(LOGFONT));
-
-		COleCurrency size = COleCurrency( 10 / cyFontSize.Lo, 
-		  (10 % cyFontSize.Lo) / 1000);
-
-		int nH = size.m_cur.Lo;
-		HDC hdc = ::GetDC(GetDesktopWindow());
-		lf.lfHeight = -::MulDiv(cyFontSize.Lo,
-							GetDeviceCaps(hdc, LOGPIXELSY), 72);
-
-		lf.lfHeight = lf.lfHeight / 1000;
-		lf.lfWidth = 0;
-		lstrcpy(lf.lfFaceName, sFontName);
-		lf.lfItalic = bFontItalic;
-		lf.lfStrikeOut = bFontStrikethrough;
-		lf.lfUnderline = bFontUnderLine;
-		lf.lfWeight = nFontWeight;
-		
-		CFontDialog dlg(&lf);
-		INT_PTR nResult = dlg.DoModal();
-
-		if( nResult != IDOK )
-			return;
-
-		font.SetName(dlg.m_cf.lpLogFont->lfFaceName );
-		font.SetSize( COleCurrency( dlg.m_cf.iPointSize / 10, 1000 * (dlg.m_cf.iPointSize % 10) ));
-		font.SetWeight(short( dlg.m_cf.lpLogFont->lfWeight ));	
-		font.SetUnderline(dlg.m_cf.lpLogFont->lfUnderline);
-		font.SetItalic(dlg.m_cf.lpLogFont->lfItalic);
-		font.SetStrikethrough(dlg.m_cf.lpLogFont->lfStrikeOut);		
-		
-		if (m_pAxPropPut != NULL)
-			axContainer->SetFont(m_pAxPropPut->Id, font);
-		else if (m_pAxProp != NULL)
-			axContainer->SetFont(m_pAxProp->Id, font);
-		else if (m_pAxPropGet != NULL)
-			axContainer->SetFont(m_pAxPropGet->Id, font);
-		
-	}
-	catch(...)
-	{
-	}
-}
-
-
-void CPropertyObject::SetActiveXPropery(CAxContainer *axContainer, CString sNewValue)
+bool CPropertyObject::SetStringArrayPtr( PropVal::TCStringArrayPtr pValue )
 {
-	if (m_pAxPropPut != NULL)
-		axContainer->SetProperty(m_pAxPropPut, sNewValue);
-	else if (m_pAxPropPutRef != NULL)
-		axContainer->SetProperty(m_pAxPropPutRef, sNewValue);
-	else if (m_pAxProp != NULL)
-		axContainer->SetProperty(m_pAxProp, sNewValue);
-	
-	
+	bool bSuccess = mpValue->SetValue( pValue );
+	assert( bSuccess == true );
+	return bSuccess;
 }
 
-CString CPropertyObject::GetName()
+const PropVal::TCStringArrayListPtr CPropertyObject::GetStringArrayListPtr() const
 {
-	if (mType == PropActiveXMethods)
-	{
-		//CString sName;
-		//sName = theWorkspace.LoadResourceString(IDS_AXMETHODS);
-		//return sName;
-		return _T("(Object Browser)");
-	}
-	if (mType >= PropActiveXProp)
-	{		
-		if (m_pAxPropGet != NULL)
-			return m_pAxPropGet->Name;
-		else if (m_pAxProp != NULL)
-			return m_pAxProp->Name;
-		else if (m_pAxPropPut != NULL)
-			return m_pAxPropPut->Name;
-		else if (m_pAxPropPutRef != NULL)
-			return m_pAxPropPutRef->Name;
-		else if (m_pAxEvent != NULL)
-			return m_pAxEvent->Name;
-		return CString();
-	}		
-	else
-	{
-		CString sDesc;
-		sDesc = theWorkspace.LoadResourceString(mnID + nDePropResStringOffset);
-		return sDesc;
-	}
-}
-	
-CString CPropertyObject::GetDocumentationDesc()
-{
-	if (mType >= PropActiveXProp)
-	{		
-		if (m_pAxPropGet != NULL)
-			return m_pAxPropGet->DocumentationDesc;
-		else if (m_pAxPropPut != NULL)
-			return m_pAxPropPut->DocumentationDesc;
-		else if (m_pAxPropPutRef != NULL)
-			return m_pAxPropPutRef->DocumentationDesc;
-		else if (m_pAxProp != NULL)
-			return m_pAxProp->DocumentationDesc;
-		
-	}
-	else
-	{
-		CString sDesc;
-		sDesc = theWorkspace.LoadResourceString(mnID + nDePropDescResStringOffset);
-		return sDesc;
-	}
-	return CString();
+	PropVal::TCStringArrayListPtr v;
+	bool bSuccess = mpValue->GetValue( v );
+	assert( bSuccess == true );
+	return v;
 }
 
-CString CPropertyObject::GetAxMethodDesc(int nIndex)
+PropVal::TCStringArrayListPtr CPropertyObject::GetStringArrayListPtr()
 {
-	if (m_pMethods != NULL)		
-	{
-		POSITION pos = m_pMethods->FindIndex(nIndex);
-		if (pos != NULL)
-		{			
-			CString sDesc = m_pMethods->GetAt(pos)->Desc;
-			return sDesc;
-		}
-	}
-	return CString();
+	PropVal::TCStringArrayListPtr v;
+	bool bSuccess = mpValue->GetValue( v );
+	assert( bSuccess == true );
+	return v;
 }
 
-
-
-int CPropertyObject::GetAxMethodParams(int nIndex)
+bool CPropertyObject::SetStringArrayListPtr( PropVal::TCStringArrayListPtr pValue )
 {
-	if (m_pMethods != NULL)		
-	{
-		POSITION pos = m_pMethods->FindIndex(nIndex);
-		if (pos != NULL)
-		{			
-			return m_pMethods->GetAt(pos)->nParamQty;
-		}
-	}
-	return 0;
+	bool bSuccess = mpValue->SetValue( pValue );
+	assert( bSuccess == true );
+	return bSuccess;
 }
 
-CString CPropertyObject::GetAxMethodParamName(int nIndex, int nParam)
+const PropVal::TIntArrayPtr CPropertyObject::GetIntArrayPtr() const
 {
-	if (m_pMethods != NULL)		
-	{
-		POSITION pos = m_pMethods->FindIndex(nIndex);
-		if (pos != NULL)
-		{			
-			return m_pMethods->GetAt(pos)->CallingArgNames[nParam];
-		}
-	}
-	return CString();
+	PropVal::TIntArrayPtr v;
+	bool bSuccess = mpValue->GetValue( v );
+	assert( bSuccess == true );
+	return v;
 }
 
-VARTYPE CPropertyObject::GetAxMethodReturnType(int nIndex)
+PropVal::TIntArrayPtr CPropertyObject::GetIntArrayPtr()
 {
-	if (m_pMethods != NULL)		
-	{
-		POSITION pos = m_pMethods->FindIndex(nIndex);
-		if (pos != NULL)
-		{			
-			return m_pMethods->GetAt(pos)->ReturnType;
-		}
-	}
-	return 0;
+	PropVal::TIntArrayPtr v;
+	bool bSuccess = mpValue->GetValue( v );
+	assert( bSuccess == true );
+	return v;
 }
 
-
-AxMethodDescriptor * CPropertyObject::GetAxMethod(int nIndex)
+bool CPropertyObject::SetIntArrayPtr( PropVal::TIntArrayPtr pValue )
 {
-	if (m_pMethods != NULL)		
-	{
-		POSITION pos = m_pMethods->FindIndex(nIndex);
-		if (pos != NULL)
-		{			
-			return m_pMethods->GetAt(pos);
-		}
-	}
-	return NULL;
+	bool bSuccess = mpValue->SetValue( pValue );
+	assert( bSuccess == true );
+	return bSuccess;
 }
 
-CString CPropertyObject::GetAxMethodParamVarType(int nIndex, int nParam)
+const PropVal::TIntArrayListPtr CPropertyObject::GetIntArrayListPtr() const
 {
-	AxMethodDescriptor *pAxMethod = NULL;
-	if (m_pMethods != NULL)		
-	{
-		POSITION pos = m_pMethods->FindIndex(nIndex);
-		if (pos != NULL)
-		{			
-			pAxMethod = m_pMethods->GetAt(pos);
-			return VARTYPEtoString(pAxMethod->CallingArgs[nParam]);
-		}
-	}
-	return CString();
+	PropVal::TIntArrayListPtr v;
+	bool bSuccess = mpValue->GetValue( v );
+	return v;
 }
 
-GUID CPropertyObject::GetAxMethodParamGUID(int nIndex, int nParam)
+PropVal::TIntArrayListPtr CPropertyObject::GetIntArrayListPtr()
 {
-	GUID guid;
-	::memset(&guid, 0, sizeof(GUID));	
-	if (m_pMethods != NULL)		
-	{
-		POSITION pos = m_pMethods->FindIndex(nIndex);
-		if (pos != NULL)
-		{			
-			return m_pMethods->GetAt(pos)->CallingArgClsids[nParam];
-		}
-	}
-	return guid;
+	PropVal::TIntArrayListPtr v;
+	bool bSuccess = mpValue->GetValue( v );
+	assert( bSuccess == true );
+	return v;
 }
 
-void CPropertyObject::SetActiveXProperyName(CString sName)
+bool CPropertyObject::SetIntArrayListPtr( PropVal::TIntArrayListPtr pValue )
 {
-	
-}
-	
-VARTYPE CPropertyObject::GetActiveXProperyType()
-{
-	VARTYPE vReturn = 0;
-	if (m_pAxPropGet != NULL)
-		vReturn = m_pAxPropGet->Type;
-	else if (m_pAxProp != NULL)
-		vReturn = m_pAxProp->Type;
-	else if (m_pAxPropPut != NULL)
-		vReturn = (VARTYPE) m_pAxPropPut->Type;
-	else if (m_pAxPropPutRef != NULL)
-		vReturn = (VARTYPE) m_pAxPropPutRef->Type;
-
-	return vReturn;
+	bool bSuccess = mpValue->SetValue( pValue );
+	assert( bSuccess == true );
+	return bSuccess;
 }
 
-GUID CPropertyObject::GetActiveXProperyGuid()
+const PropVal::TAxInterfaceDescriptorPtr CPropertyObject::GetAxInterfaceDescriptorPtr() const
 {
-	if (m_pAxPropGet != NULL)
-		return m_pAxPropGet->Guid;
-	else if (m_pAxProp != NULL)
-		return m_pAxProp->Guid;
-	else if (m_pAxPropPut != NULL)
-		return m_pAxPropPut->Guid;
-	else if (m_pAxPropPutRef != NULL)
-		return m_pAxPropPutRef->Guid;
-
-	GUID guid;
-	::memset(&guid, 0, sizeof(GUID));	
-	return guid;
+	PropVal::TAxInterfaceDescriptorPtr v;
+	bool bSuccess = mpValue->GetValue( v );
+	assert( bSuccess == true );
+	return v;
 }
 
-DISPID CPropertyObject::GetActiveXGetProperyId()
+PropVal::TAxInterfaceDescriptorPtr CPropertyObject::GetAxInterfaceDescriptorPtr()
 {
-	if (m_pAxPropGet != NULL)
-		return m_pAxPropGet->Id;
-	else if (m_pAxProp != NULL)
-		return m_pAxProp->Id;
-	else if (m_pAxPropPut != NULL)
-		return m_pAxPropPut->Id;
-	else if (m_pAxPropPutRef != NULL)
-		return m_pAxPropPutRef->Id;
-
-	DISPID dispid;
-	::memset(&dispid, 0, sizeof(DISPID));	
-	return dispid;
+	PropVal::TAxInterfaceDescriptorPtr v;
+	bool bSuccess = mpValue->GetValue( v );
+	//assert( bSuccess == true ); //this method is called frequently on arbitrary properties; assert is meaningless
+	return v;
 }
 
-DISPID CPropertyObject::GetActiveXSetProperyId()
+bool CPropertyObject::SetAxInterfaceDescriptorPtr( PropVal::TAxInterfaceDescriptorPtr pValue )
 {
-	if (m_pAxPropPut != NULL)
-		return m_pAxPropPut->Id;
-	else if (m_pAxPropPutRef != NULL)
-		return m_pAxPropPutRef->Id;
-	else if (m_pAxProp != NULL)
-		return m_pAxProp->Id;
-	else if (m_pAxPropGet != NULL)
-		return m_pAxPropGet->Id;
-	
-	DISPID dispid;
-	::memset(&dispid, 0, sizeof(DISPID));	
-	return dispid;
-}
-
-void CPropertyObject::Copy(CPropertyObject *other)
-{
-	mType = other->mType;
-	mnID = other->mnID;
-	mbHidden = other->mbHidden;
-
-	mOLEColor = other->mOLEColor;
-	msStringValue = other->msStringValue;
-	mlLong = other->mlLong;
-	mdblDouble = other->mdblDouble;
-	mbBoolean = other->mbBoolean;
-	
-	m_pAxProp = other->m_pAxProp;
-	m_pAxPropGet = other->m_pAxPropGet;
-	m_pAxPropPut = other->m_pAxPropPut;
-	m_pAxPropPutRef = other->m_pAxPropPutRef;
-	m_pAxEvent = other->m_pAxEvent;
-	m_pMethods = other->m_pMethods;
-
-	
-	POSITION pos;
-	CString pItem;
-	int nCount = 0;
-	
-	// do a loop to copy all the string items over to the string list of this object
-	while(nCount < other->m_stringList.GetCount())
-	{
-		// set the position variable to be equal the index to passing to the GetAt method
-		pos = other->m_stringList.FindIndex(nCount);	
-
-		// create a new String list item and point it at the object in the list
-		pItem = other->m_stringList.GetAt(pos);
-		m_stringList.AddTail(pItem);
-		nCount++;
-	}
-
-	pos = other->m_stringArrayList.GetHeadPosition();
-
-	// do a loop to copy all the string items over to the string list of this object
-	while (pos != NULL)
-	{
-		CStringArray *pStringArray = NULL;
-
-		if (other->m_stringArrayList.GetAt(pos) != NULL)
-		{
-			pStringArray = new CStringArray();
-
-			pStringArray->Copy(*other->m_stringArrayList.GetAt(pos));			
-		}
-		
-		m_stringArrayList.AddTail(pStringArray);
-
-		other->m_stringArrayList.GetNext(pos);		
-	}
-	
-	pos = other->m_intArrayList.GetHeadPosition();
-
-	// do a loop to copy all the string items over to the string list of this object
-	while (pos != NULL)
-	{
-		CArray<int, int> *pIntArray = NULL;
-
-		if (other->m_intArrayList.GetAt(pos) != NULL)
-		{
-			pIntArray = new CArray<int, int>;
-
-			pIntArray->Copy(*other->m_intArrayList.GetAt(pos));			
-		}
-		
-		m_intArrayList.AddTail(pIntArray);
-
-		other->m_intArrayList.GetNext(pos);		
-	}
-	
-
-	for (int i=0; i<m_intList.GetSize(); i++)
-	{
-		m_intList.Add(other->m_intList[i]);
-	}
-
-	m_ImageListIndex = nNotSet;
-}
-
-void CPropertyObject::AddProperty(PropertyTypes ValueType, CString strValue)
-{
-	mType = ValueType;
-	SetProperty(strValue);
+	bool bSuccess = mpValue->SetValue( pValue );
+	assert( bSuccess == true );
+	return bSuccess;
 }
 
 void CPropertyObject::AddStringItem(CString NewString)
 {
-	if (mType == PropIntArray)
-	{
-		m_intList.Add(_tstol(NewString));
-	}
-	else
-	{		
-		m_stringList.AddTail(NewString);
-	}
-}
-
-void CPropertyObject::ClearList()
-{
-	POSITION pos = m_stringArrayList.GetHeadPosition();
-
-	while (pos != NULL)
-	{
-		if (m_stringArrayList.GetAt(pos) != NULL)
-		{		
-			delete m_stringArrayList.GetAt(pos);
-		}
-		m_stringArrayList.GetNext(pos);
-	}
-	m_stringArrayList.RemoveAll();
-
-	pos = m_intArrayList.GetHeadPosition();
-
-	while (pos != NULL)
-	{
-		if (m_intArrayList.GetAt(pos) != NULL)
-		{		
-			delete m_intArrayList.GetAt(pos);
-		}
-		m_intArrayList.GetNext(pos);
-	}
-	m_intArrayList.RemoveAll();
-
-	m_stringList.RemoveAll();
-	m_intList.RemoveAll();
-	
-
-	if (m_pAxPropPutRef != NULL)
-	{
-		if (m_pAxPropPutRef->ArrEnum != NULL)
-		{
-			delete [] m_pAxPropPutRef->ArrEnum;
-			m_pAxPropPutRef->ArrEnum = NULL;
-		}		
-		delete m_pAxPropPutRef;
-		
-	}
-	if (m_pAxPropPut != NULL)
-	{
-		if (m_pAxPropPut->ArrEnum != NULL)
-		{
-			delete [] m_pAxPropPut->ArrEnum;
-			m_pAxPropPut->ArrEnum = NULL;
-		}		
-		delete m_pAxPropPut;
-		
-	}
-	if (m_pAxPropGet != NULL)
-	{
-		if (m_pAxPropGet->ArrEnum != NULL)
-		{
-			delete [] m_pAxPropGet->ArrEnum;
-			m_pAxPropGet->ArrEnum = NULL;
-		}		
-		delete m_pAxPropGet;		
-		
-	}
-	if (m_pAxProp != NULL)
-	{
-		if (m_pAxProp->ArrEnum != NULL)
-		{
-			delete [] m_pAxProp->ArrEnum;
-			m_pAxProp->ArrEnum = NULL;
-		}		
-		delete m_pAxProp;
-		
-	}
-	m_pAxPropPutRef = NULL;
-	m_pAxPropPut = NULL;
-	m_pAxPropGet = NULL;
-	m_pAxProp = NULL;
+	if (GetType() == PropIntArray)
+		GetIntArrayPtr()->push_back(_tstol(NewString));
+	else if( GetType() == PropStringArray)
+		GetStringArrayPtr()->push_back(NewString);
 }
 
 INT_PTR CPropertyObject::CountList()
 {
-	
-	if (m_intArrayList.GetCount() > 0)
-		return m_intArrayList.GetCount();
+	return mpValue->size();
+}
 
-	if (m_stringArrayList.GetCount() > 0)
-		return m_stringArrayList.GetCount();
+CString CPropertyObject::GetName()
+{
+	if (GetType() == PropActiveXMethods)
+		return theWorkspace.LoadResourceString(IDS_AXMETHODS); //"(Object Browsr)"
+	return theWorkspace.LoadResourceString(GetID() + nDePropResStringOffset);
+}
 
-	if (m_intList.GetSize() > 0)
-		return m_intList.GetSize();
-
-	if (m_stringList.GetCount() > 0)
-		return m_stringList.GetCount();
-
-	return 0;
+CString CPropertyObject::GetDocumentationDesc()
+{
+	CString sDesc;
+	PropVal::TAxInterfaceDescriptorPtr v;
+	if( mpValue->GetValue( v ) )
+		sDesc = GetAxInterfaceDescriptorPtr()->GetDocumentationDesc();
+	if( sDesc.IsEmpty() )
+		sDesc = theWorkspace.LoadResourceString(mnID + nDePropDescResStringOffset);
+	return sDesc;
 }
 
 CString CPropertyObject::GetStringItem(short ListIndex)
 {
 	// create a position variable to hold the converted ListIndex
-	POSITION Pos;
 	CString pItem;
 	
-	if(ListIndex < m_stringList.GetCount())
-	{
-		// set the position variable to be equal the index to passing to the GetAt method
-		Pos = m_stringList.FindIndex(ListIndex);	
-
-		// create a new String list item and point it at the object in the list
-		pItem = m_stringList.GetAt(Pos);
-	}
-	else if(ListIndex < m_intList.GetSize())
+	if(size_t(ListIndex) < GetStringArrayPtr()->size())
+		pItem = GetStringArrayPtr()->at(ListIndex);
+	else if(size_t(ListIndex) < GetIntArrayPtr()->size())
 	{
 		// create a new String list item and point it at the object in the list
-		pItem.Format(_T("%d"), m_intList[ListIndex]);
+		pItem.Format(_T("%d"), GetIntArrayPtr()->at(ListIndex));
 	}
 	else
 	{
@@ -907,24 +1363,24 @@ CString CPropertyObject::GetStringItem(short ListIndex)
 CString CPropertyObject::GetStdProperty()
 {		
 	CString RetString;
-	switch (mType)
+	switch (GetType())
 	{
 	case PropEnum:	
 	case PropPicture:
 	case PropLong:	
 		{
-		RetString.Format(_T("%d"), mlLong);
+		RetString.Format(_T("%d"), GetLongValue());
 		break;
 		}
 	case PropEvent:
 	case PropString:
 		{
-		RetString = msStringValue;
+		RetString = GetStringValue();
 		break;
 		}
 	case PropDouble:
 		{
-		RetString.Format(_T("%.8f"), mdblDouble);
+		RetString.Format(_T("%.8f"), GetDoubleValue());
 		break;
 		}
 	case PropBool:
@@ -940,382 +1396,6 @@ CString CPropertyObject::GetStdProperty()
 	return RetString;
 }
 
-void CPropertyObject::SetProperty(CString strValue)
-{
-	theWorkspace.SetModified(true);
-
-	switch (mType)
-	{
-	case PropEnum:
-	case PropLong:		
-	case PropPicture:
-		{
-		mlLong = _tstol(strValue);
-		break;
-		}
-	case PropEvent:
-	case PropString:
-		{
-		msStringValue = strValue;	
-		break;
-		}
-	case PropDouble:
-		{
-		mdblDouble = _tstof(strValue);
-		break;
-		}
-	case PropBool:
-		{
-		mbBoolean = (strValue.CompareNoCase(_T("TRUE")) == 0);
-		break;
-		}		
-	case PropImageList:
-		m_ImageListIndex = nNotSet;
-		break;
-	case PropOLEColor:
-		mOLEColor = strValue.IsEmpty()? RGB(0,0,255) : RGB(0,0,0);
-		break;
-	}			
-
-}
-
-IOStatus CPropertyObject::WriteActiveXPropToTextFile(FILE* pFile, AxPropertyDescriptor *axProp) const
-{
-  int i=0;
-  LONG Id = (LONG)axProp->Id;
-  writeLong(pFile, Id);
-  writeString(pFile, axProp->Name);
-  writeString(pFile, axProp->DocumentationDesc);
-  writeVARTYPE(pFile, axProp->Type);
-  writeBOOL(pFile, axProp->IsArray);
-  writeBOOL(pFile, axProp->CanSet);
-  writeCLSID(pFile, axProp->Guid);
-  writeInt(pFile, axProp->NumEnum);
-  writeInt(pFile, axProp->NumParams);
-  int iKind = axProp->invKind;
-  writeInt(pFile, iKind);
-  if (axProp->NumEnum > 0)
-  {
-    for (i=0; i<axProp->NumEnum; i++)
-    {
-      writeString(pFile, axProp->ArrEnum[i].Name);
-      COleVariant var = axProp->ArrEnum[i].Var;
-      writeOleVariant(pFile, var);
-    }
-  }		
-  for (i = 0; i<axProp->NumParams; i++)
-  {
-    writeVARTYPE(pFile, axProp->CallingArgs[i]);
-    writeString(pFile, axProp->CallingArgNames[i]);
-    writeCLSID(pFile, axProp->CallingArgClsids[i]);
-  }
-	return statOK;
-}
-
-void CPropertyObject::SerializeActiveXProp(CArchive& ar, AxPropertyDescriptor *axProp, int nPropertyVersion)
-{
-	int i=0;
-	if (ar.IsStoring())
-	{
-		LONG Id = (LONG)axProp->Id;
-		ar << Id;
-		ar << axProp->Name;
-		ar << axProp->DocumentationDesc;
-		ar << axProp->Type;
-		ar << axProp->IsArray;
-		ar << axProp->CanSet;
-		SerializeCLSID(ar, axProp->Guid);
-		ar << axProp->NumEnum;
-		ar << axProp->NumParams;
-		int iKind = axProp->invKind;
-		ar << iKind;
-		if (axProp->NumEnum > 0)
-		{
-			for (i=0; i<axProp->NumEnum; i++)
-			{
-				ar << axProp->ArrEnum[i].Name;
-				COleVariant var = axProp->ArrEnum[i].Var;
-				ar << var;
-			}
-		}		
-		for (i = 0; i<axProp->NumParams; i++)
-		{
-			ar << axProp->CallingArgs[i];
-			ar << axProp->CallingArgNames[i];
-			SerializeCLSID(ar, axProp->CallingArgClsids[i]);
-		}
-	}
-	else
-	{
-		LONG Id;
-		ar >> Id; axProp->Id = Id;
-		ar >> axProp->Name;
-		ar >> axProp->DocumentationDesc;
-
-
-		ar >> axProp->Type; 
-		ar >> axProp->IsArray;
-		ar >> axProp->CanSet;
-		
-		SerializeCLSID(ar, axProp->Guid);		
-		ar >> axProp->NumEnum;
-		ar >> axProp->NumParams;
-		int iKind;
-		ar >> iKind;
-		switch(iKind)
-		{
-			case INVOKE_FUNC:
-				axProp->invKind = INVOKE_FUNC;
-				break;
-			case INVOKE_PROPERTYGET:
-				axProp->invKind = INVOKE_PROPERTYGET;
-				break;
-			case INVOKE_PROPERTYPUT:
-				axProp->invKind = INVOKE_PROPERTYPUT;
-				break;
-			case INVOKE_PROPERTYPUTREF:
-				axProp->invKind = INVOKE_PROPERTYPUTREF;
-				break;
-			default:
-				axProp->invKind = (INVOKEKIND)iKind;
-				break;
-		}
-		if (axProp->NumEnum > 0)
-		{
-			axProp->ArrEnum = new AxPropertyEnum[axProp->NumEnum];
-			for (i=0; i<axProp->NumEnum; i++)
-			{
-				ar >> axProp->ArrEnum[i].Name;
-				COleVariant var;
-				ar >> var; 
-        axProp->ArrEnum[i].Var = var;
-			}
-		}
-		for (i = 0; i<axProp->NumParams; i++)
-		{
-			ar >> axProp->CallingArgs[i];
-			ar >> axProp->CallingArgNames[i];
-			if (nPropertyVersion >= 4)
-				SerializeCLSID(ar, axProp->CallingArgClsids[i]);
-		}
-	}
-
-}
-
-IOStatus CPropertyObject::WriteActiveXInfoToTextFile(FILE* pFile) const
-{
-  BOOL bProp;
-  BOOL bPropGet;
-  BOOL bPropPut;
-  BOOL bPropPutRef;
-  BOOL bPropEvent;
-  BOOL bPropMethod;
-
-  bProp = (m_pAxProp != NULL);
-  writeBOOL(pFile, bProp);
-  if (bProp)
-    WriteActiveXPropToTextFile(pFile, m_pAxProp);
-
-  bPropGet = (m_pAxPropGet != NULL);
-  writeBOOL(pFile, bPropGet);
-  if (bPropGet)
-    WriteActiveXPropToTextFile(pFile, m_pAxPropGet);
-
-  bPropPut = (m_pAxPropPut != NULL);
-  writeBOOL(pFile, bPropPut);
-  if (bPropPut)
-    WriteActiveXPropToTextFile(pFile, m_pAxPropPut);
-
-  bPropPutRef = (m_pAxPropPutRef != NULL);
-  writeBOOL(pFile, bPropPutRef);
-  if (bPropPutRef)
-    WriteActiveXPropToTextFile(pFile, m_pAxPropPutRef);
-
-  bPropEvent = (m_pAxEvent != NULL);
-  writeBOOL(pFile, bPropEvent);
-
-  if (m_pAxEvent != NULL)
-  {
-    writeDISPID(pFile, m_pAxEvent->Id);
-    writeString(pFile, m_pAxEvent->Name);
-    writeString(pFile, m_pAxEvent->DocumentationDesc);
-    writeInt(pFile, m_pAxEvent->nArgs);
-    for (int i=0; i<MAX_CALLING_ARGUMENTS; i++)
-    {
-      writeVARTYPE(pFile, m_pAxEvent->CallingArgs[i]);
-      writeString(pFile, m_pAxEvent->CallingArgNames[i]);
-      writeCLSID(pFile, m_pAxEvent->CallingArgClsids[i]);
-  }
-    writeString(pFile, m_pAxEvent->Params);
-  }
-  bPropMethod = (m_pMethods != NULL);
-  writeBOOL(pFile, bPropMethod);
-  if (m_pMethods != NULL)
-  {
-    int nCount = (int)m_pMethods->GetCount(); 
-    writeInt(pFile, nCount);
-
-    // set start position for navigating objects
-    POSITION pos = m_pMethods->GetHeadPosition();
-
-    // do loop to navigate objects
-    while (pos != NULL)
-    {
-      // get current object
-      AxMethodDescriptor* pMethod = m_pMethods->GetNext(pos);
-
-      // put object into archive
-      pMethod->WriteToTextFile(pFile);
-    }
-  }
-	return statOK;
-}
-
-void CPropertyObject::SerializeActiveXInfo(CArchive& ar, int nPropertyVersion)
-{
-	BOOL bProp;
-	BOOL bPropGet;
-	BOOL bPropPut;
-	BOOL bPropPutRef;
-	BOOL bPropEvent;
-	BOOL bPropMethod;
-
-	if (ar.IsStoring())
-	{
-		bProp = (m_pAxProp != NULL);
-		ar << bProp;
-		if (bProp)
-			SerializeActiveXProp(ar, m_pAxProp, nPropertyVersion);
-
-		bPropGet = (m_pAxPropGet != NULL);
-		ar << bPropGet;
-		if (bPropGet)
-			SerializeActiveXProp(ar, m_pAxPropGet, nPropertyVersion);
-
-		bPropPut = (m_pAxPropPut != NULL);
-		ar << bPropPut;
-		if (bPropPut)
-			SerializeActiveXProp(ar, m_pAxPropPut, nPropertyVersion);
-
-		bPropPutRef = (m_pAxPropPutRef != NULL);
-		ar << bPropPutRef;
-		if (bPropPutRef)
-			SerializeActiveXProp(ar, m_pAxPropPutRef, nPropertyVersion);
-
-		bPropEvent = (m_pAxEvent != NULL);
-		ar << bPropEvent;
-
-		if (m_pAxEvent != NULL)
-		{
-			ar << m_pAxEvent->Id;
-			ar << m_pAxEvent->Name;
-			ar << m_pAxEvent->DocumentationDesc;
-			ar << m_pAxEvent->nArgs;
-			for (int i=0; i<MAX_CALLING_ARGUMENTS; i++)
-			{
-				 ar << m_pAxEvent->CallingArgs[i];
-				 ar << m_pAxEvent->CallingArgNames[i];
-				 SerializeCLSID(ar, m_pAxEvent->CallingArgClsids[i]);
-			}				
-			ar << m_pAxEvent->Params;
-		}
-		bPropMethod = (m_pMethods != NULL);
-		ar << bPropMethod;
-		if (m_pMethods != NULL)
-		{
-			int nCount = (int)m_pMethods->GetCount(); 
-			ar << nCount;
-
-			// set start position for navigating objects
-			POSITION pos = m_pMethods->GetHeadPosition();
-
-			// do loop to navigate objects
-			while (pos != NULL)
-			{
-				// get current object
-				AxMethodDescriptor* pMethod = m_pMethods->GetNext(pos);
-
-				// put object into archive
-				pMethod->Serialize(ar);				
-			}
-		}
-	}
-	else
-	{
-		ar >> bProp;
-		if (bProp)
-		{
-			m_pAxProp = new AxPropertyDescriptor;
-			SerializeActiveXProp(ar, m_pAxProp, nPropertyVersion);
-		}
-
-		ar >> bPropGet;
-		if (bPropGet)
-		{
-			m_pAxPropGet = new AxPropertyDescriptor;
-			SerializeActiveXProp(ar, m_pAxPropGet, nPropertyVersion);
-		}
-
-		ar >> bPropPut;
-		if (bPropPut)
-		{
-			m_pAxPropPut = new AxPropertyDescriptor;
-			SerializeActiveXProp(ar, m_pAxPropPut, nPropertyVersion);
-		}
-
-		ar >> bPropPutRef;
-		if (bPropPutRef)
-		{
-			m_pAxPropPutRef = new AxPropertyDescriptor;
-			SerializeActiveXProp(ar, m_pAxPropPutRef, nPropertyVersion);
-		}
-
-		ar >> bPropEvent;
-		if (bPropEvent)
-		{
-			m_pAxEvent = new AxEventDescriptor;
-			ar >> m_pAxEvent->Id;
-			ar >> m_pAxEvent->Name;
-			ar >> m_pAxEvent->DocumentationDesc;
-
-
-			ar >> m_pAxEvent->nArgs;
-			for (int i=0; i<MAX_CALLING_ARGUMENTS; i++)
-			{
-				 ar >> m_pAxEvent->CallingArgs[i];
-				 ar >> m_pAxEvent->CallingArgNames[i];
-
-
-				 if (nPropertyVersion >= 4)
-					SerializeCLSID(ar, m_pAxEvent->CallingArgClsids[i]);
-		}
-			ar >> m_pAxEvent->Params;
-		}
-		ar >> bPropMethod;
-		if (bPropMethod)
-		{
-			m_pMethods = new CList<AxMethodDescriptor*>;
-			int nCount;
-		
-			ar >> nCount;		
-
-			m_pMethods->RemoveAll();
-			
-			// do loop to navigate objects
-			while (nCount-- > 0)
-			{
-				// get current object
-				AxMethodDescriptor* pMethod = new AxMethodDescriptor;
-				
-				// get object from archive
-				pMethod->Serialize(ar);
-		
-				// add that ArxControlObject to the list object
-				m_pMethods->AddTail(pMethod);		
-			}
-		}
-	}
-}
 
 IOStatus CPropertyObject::WriteToTextFile(FILE* pFile) const
 {
@@ -1323,154 +1403,17 @@ IOStatus CPropertyObject::WriteToTextFile(FILE* pFile) const
   int nThisVersion = 5;
   writeInt(pFile, nThisVersion);
   writeInt(pFile, mnID);
-  writeInt(pFile, mType);
+  writeInt(pFile, GetType());
   // store the flag that indicates this property is to be hidden
   writeBOOL(pFile, mbHidden);
-
-  fprintf(pFile, "\n");
-  switch (mType) {
-    case PropEnum: fprintf(pFile, "PropEnum"); break;
-    case PropPicture: fprintf(pFile, "PropPicture"); break;
-    case PropLong: fprintf(pFile, "PropLong"); break;
-    case PropEvent: fprintf(pFile, "PropEvent"); break;
-    case PropString: fprintf(pFile, "PropString"); break;
-    case PropDouble: fprintf(pFile, "PropDouble"); break;
-    case PropBool: fprintf(pFile, "PropBool"); break;
-    case PropOLEColor: fprintf(pFile, "PropOLEColor"); break;
-    case PropStringArrayList: fprintf(pFile, "PropStringArrayList"); break;
-    case PropIntArrayList: fprintf(pFile, "PropIntArrayList"); break;
-    case PropStringArray: fprintf(pFile, "PropStringArray"); break;
-    case PropIntArray: fprintf(pFile, "PropIntArray"); break;
-    case PropImageList: fprintf(pFile, "PropImageList"); break;
-    case PropActiveXEvent: fprintf(pFile, "PropActiveXEvent"); break;
-    case PropActiveXProp: fprintf(pFile, "PropActiveXProp"); break;
-    case PropActiveXPropPages: fprintf(pFile, "PropActiveXPropPages"); break;
-    case PropActiveXEnum: fprintf(pFile, "PropActiveXEnum"); break;
-    case PropActiveXRunTime: fprintf(pFile, "PropActiveXRunTime"); break;
-    case PropActiveXMethods: fprintf(pFile, "PropActiveXMethods"); break;
-  }
-
-  switch (mType)
-  {
-    case PropEnum:
-    case PropPicture:
-    case PropLong:
-      {
-        writeLong(pFile, mlLong);
-        break;
-      }
-    case PropEvent:
-    case PropString:
-      {
-        writeString(pFile, msStringValue);
-        break;
-      }
-    case PropDouble:
-      {
-        writeDouble(pFile, mdblDouble);
-        break;
-      }
-    case PropBool:
-      {
-        writeBOOL(pFile, mbBoolean);
-        break;
-      }
-    case PropOLEColor:
-      {
-        writeDWORD(pFile, mOLEColor);
-        break;
-      }
-    case PropStringArrayList:
-      {
-        writeInt(pFile, (int)m_stringArrayList.GetCount());
-        for (POSITION pos = m_stringArrayList.GetHeadPosition(); pos != NULL; m_stringArrayList.GetNext(pos)) {
-          CStringArray* stringArray = m_stringArrayList.GetAt(pos);
-          if (stringArray != NULL) {
-            writeInt(pFile, (int)stringArray->GetCount());
-            for (int i = 0; i < stringArray->GetCount(); i++) {
-              writeString(pFile, stringArray->GetAt(i));
-            }
-          } else {
-            writeInt(pFile, -1);
-          }
-        }
-        break;
-      }
-    case PropIntArrayList:
-      {
-        writeInt(pFile, (int)m_intArrayList.GetCount());
-        POSITION pos = m_intArrayList.GetHeadPosition();
-
-        while (pos != NULL)
-        {
-          CArray<int, int> *pIntArray = m_intArrayList.GetNext(pos);
-
-          if (pIntArray == NULL)
-          {
-            writeInt(pFile, 0);
-          }
-          else
-          {
-            writeInt(pFile, (int)pIntArray->GetSize());
-            for (int j=0; j < pIntArray->GetSize(); j++)
-            {			
-              writeInt(pFile, pIntArray->GetAt(j));
-            }
-          }		
-        }
-        break;
-      }
-    case PropStringArray:
-      {
-        writeInt(pFile, (int)m_stringList.GetCount());
-        for (POSITION pos = m_stringList.GetHeadPosition(); pos != NULL; m_stringList.GetNext(pos)) {
-          writeString(pFile, m_stringList.GetAt(pos));
-        }
-        break;
-      }
-    case PropIntArray:
-      {
-        writeInt(pFile, (int)m_intList.GetCount());
-        for (int i = 0; i < m_intList.GetCount(); i++) {
-          writeInt(pFile, m_intList.GetAt(i));
-        }
-        break;
-      }			
-    case PropImageList:
-      {
-        writeShort(pFile, m_ImageListIndex);
-        break;
-      }	
-    case PropActiveXEvent:
-      {
-        writeString(pFile, msStringValue);
-        // call the method to save the activeX info
-        WriteActiveXInfoToTextFile(pFile);
-        break;
-      }
-    case PropActiveXProp:
-      writeString(pFile, msStringValue);
-      // call the method to save the activeX info
-      WriteActiveXInfoToTextFile(pFile);
-      break;
-    case PropActiveXPropPages:			
-    case PropActiveXEnum:
-    case PropActiveXRunTime:
-    case PropActiveXMethods:
-      {
-        // call the method to save the activeX info
-        WriteActiveXInfoToTextFile(pFile);
-        break;
-      }	
-  }
-	return statOK;
+	return mpValue->FileOut(pFile, nThisVersion);
 }
+
 
 void CPropertyObject::Serialize(CArchive& ar)
 {
 	ULONG nThisVersion = GetCurrentSaveVersion();
 	CObject::Serialize( ar );
-	
 	if (ar.IsStoring())
 	{
 		ar << unsigned long(nThisVersion);
@@ -1478,106 +1421,12 @@ void CPropertyObject::Serialize(CArchive& ar)
 			ar << long(mnID);
 		else
 			ar << short(mnID);
-		ar << long(mType);
+		ar << long(GetType());
 		if (nThisVersion <= 5) //changing from BOOL to bool in version 6 [ORW]
 			ar << BOOL(mbHidden); // store the flag that indicates this property is to be hidden
 		else
 			ar << bool(mbHidden); // store the flag that indicates this property is to be hidden
-		
-		switch (mType)
-		{
-		case PropEnum:
-		case PropPicture:
-		case PropLong:
-			{
-			ar << mlLong;
-			break;
-			}
-		case PropEvent:
-		case PropString:
-			{
-			ar << msStringValue;			
-			break;
-			}
-		case PropDouble:
-			{
-			ar << mdblDouble;
-			break;
-			}
-		case PropBool:
-			{
-				if (nThisVersion <= 5) //changing from BOOL to bool in version 6 [ORW]
-					ar << BOOL(mbBoolean);
-				else
-					ar << bool(mbBoolean);
-				break;
-			}
-		case PropOLEColor:
-			{
-			ar << mOLEColor;
-			break;
-			}
-		case PropStringArrayList:
-			{
-			m_stringArrayList.Serialize(ar);
-			break;
-			}
-		case PropIntArrayList:
-			{
-			ar << (DWORD)m_intArrayList.GetCount();
-			POSITION pos = m_intArrayList.GetHeadPosition();
-			while (pos != NULL)
-			{
-				CArray<int, int> *pIntArray = m_intArrayList.GetNext(pos);
-				if (pIntArray == NULL)
-					ar << (DWORD)0;
-				else
-				{
-					ar << (DWORD)pIntArray->GetSize();
-					for (int j=0; j<pIntArray->GetSize(); j++)
-						ar << pIntArray->GetAt(j);
-				}				
-			}
-			break;
-			}
-		case PropStringArray:
-			{
-			m_stringList.Serialize(ar);
-			break;
-			}
-		case PropIntArray:
-			{
-			m_intList.Serialize(ar);
-			break;
-			}			
-		case PropImageList:
-			{
-			ar << m_ImageListIndex;
-			break;
-			}	
-		case PropActiveXEvent:
-			{
-			ar << msStringValue;
-			// call the method to save the activeX info
-			SerializeActiveXInfo(ar, nThisVersion);
-			break;
-			}
-		case PropActiveXProp:
-			ar << msStringValue;
-			// call the method to save the activeX info
-			SerializeActiveXInfo(ar, nThisVersion);
-			break;
-		case PropActiveXPropPages:			
-		case PropActiveXEnum:
-		case PropActiveXRunTime:
-		case PropActiveXMethods:
-			{
-			// call the method to save the activeX info
-			SerializeActiveXInfo(ar, nThisVersion);
-			break;
-			}	
-		}
-		
+		mpValue->FileOut(ar, nThisVersion);
 	}
 	else
 	{
@@ -1589,13 +1438,17 @@ void CPropertyObject::Serialize(CArchive& ar)
 		{
 			long lID;
 			ar >> long(lID);
-			mnID = (short)lID;
+			mnID = (PropertyId)lID;
 		}
 		else
-			ar >> short(mnID);
+		{
+			short nID;
+			ar >> short(nID);
+			mnID = (PropertyId)nID;
+		}
 		long lType;
 		ar >> long(lType);
-		mType = (PropertyTypes)lType;
+		SetType( (PropertyType)lType );
 		if (nThisVersion <= 5) //changing from BOOL to bool in version 6 [ORW]
 		{
 			BOOL bHidden;
@@ -1604,125 +1457,9 @@ void CPropertyObject::Serialize(CArchive& ar)
 		}
 		else
 			ar >> bool(mbHidden); // get the flag that indicates this property is to be hidden
-		if (mType == PropActiveXRunTime)
+		if (GetType() == PropActiveXRunTime)
 			mbHidden = true; // if this property is a run time only activeX property, set it as hidden.
-
-		switch (mType)
-		{
-		case PropEnum:
-		case PropPicture:
-		case PropLong:
-			{
-			ar >> mlLong;
-			break;
-			}
-		case PropEvent:
-		case PropString:
-			{
-			ar >> msStringValue;
-			break;
-			}
-		case PropDouble:
-			{
-			ar >> mdblDouble;
-			break;
-			}
-		case PropBool:
-			{
-				if (nThisVersion <= 5) //changing from BOOL to bool in version 6 [ORW]
-				{
-					BOOL bVal;
-					ar >> BOOL(bVal);// get the flag that indicates this property is to be hidden
-					mbBoolean = (bVal != FALSE);
-				}
-				else
-					ar >> bool(mbBoolean);
-				break;
-			}
-		case PropOLEColor:
-			{
-			ar >> mOLEColor;
-			break;
-			}
-		case PropStringArrayList:
-			{
-			m_stringArrayList.Serialize(ar);
-			break;
-			}		
-		case PropIntArrayList:
-			{
-			int nCounter;
-			ar >> nCounter;
-			for (int i=0; i<nCounter; i++)
-			{
-				CArray<int, int> *pIntArray = NULL;
-				int nCounter2;
-				ar >> nCounter2;
-				if (nCounter2 > 0)
-				{
-					pIntArray = new CArray<int, int>;
-					for (int j=0; j<nCounter2; j++)
-					{		
-						int nItem;
-						ar >> nItem;
-						pIntArray->Add(nItem);
-					}
-				}	
-				m_intArrayList.AddTail(pIntArray);
-			}
-			break;
-			}
-		case PropStringArray:
-			{
-			m_stringList.Serialize(ar);
-			break;
-			}		
-		case PropIntArray:
-			{
-				if (nThisVersion <= 4)
-				{
-					m_stringList.Serialize(ar);
-					POSITION pos = m_stringList.GetHeadPosition();
-					while (pos != NULL)
-						m_intList.Add(_tstol(m_stringList.GetNext(pos)));
-					m_stringList.RemoveAll();
-				}
-				else
-					m_intList.Serialize(ar);
-			break;
-			}			
-		case PropImageList:
-			{
-			ar >> m_ImageListIndex;
-			break;
-			}
-
-		case PropActiveXEvent:
-			{
-			ar >> msStringValue;
-			// call the method to save the activeX info
-			SerializeActiveXInfo(ar, nThisVersion);
-			break;
-			}
-		case PropActiveXProp:
-			// if this is the new file version than load the activeX info
-			if (nThisVersion >= 3)
-				ar >> msStringValue;
-			// if this is the new file version than load the activeX info
-			if (nThisVersion >= 2)
-				SerializeActiveXInfo(ar, nThisVersion);			
-			break;	
-		case PropActiveXPropPages:
-		case PropActiveXEnum:
-		case PropActiveXRunTime:
-		case PropActiveXMethods:			
-			{
-			// if this is the new file version than load the activeX info
-			if (nThisVersion >= 2)
-				SerializeActiveXInfo(ar, nThisVersion);
-			break;
-			}			
-		}		
+		mpValue->FileIn(ar, nThisVersion);
 	}	
 }
 
@@ -1743,298 +1480,19 @@ IOStatus CPropertyObject::ReadFromTextFile(std::ifstream &sFile)
 
 IOStatus CPropertyObject::ReadFromTextFile5(std::ifstream &sFile)
 {
-  if (!readShort(sFile, mnID)) return statInvalidFormat;
+	int nID;
+  if (!readInt(sFile, nID)) return statInvalidFormat;
+	mnID = (PropertyId)nID;
 	int nType;
   if (!readInt(sFile, nType)) return statInvalidFormat;
-	mType = (PropertyTypes)nType;
+	SetType( (PropertyType)nType );
   // get the flag that indicates this property is to be hidden
   if (!readBool(sFile, mbHidden)) return statInvalidFormat;
 
   // if this property is a run time only activeX property, set it as hidden.
-  if (mType == PropActiveXRunTime)
+  if (GetType() == PropActiveXRunTime)
     mbHidden = true;
 
   CString sType = readLine(sFile);
-
-  switch (mType)
-  {
-  case PropEnum:
-  case PropPicture:
-  case PropLong:
-    {
-      if (!readLong(sFile, mlLong)) return statInvalidFormat;
-      break;
-    }
-  case PropEvent:
-  case PropString:
-    {
-      if (!readString(sFile, msStringValue)) return statInvalidFormat;
-      break;
-    }
-  case PropDouble:
-    {
-      if (!readDouble(sFile, mdblDouble)) return statInvalidFormat;
-      break;
-    }
-  case PropBool:
-    {
-			BOOL bValue;
-      if (!readBOOL(sFile, bValue)) return statInvalidFormat;
-			mbBoolean = (bValue != FALSE);
-      break;
-    }
-  case PropOLEColor:
-    {
-      DWORD dwordColor;
-      if (!readDWORD(sFile, dwordColor)) return statInvalidFormat;
-      mOLEColor = dwordColor;
-      break;
-    }
-  case PropStringArrayList:
-    {
-      int iArrayCount;
-      if (!readInt(sFile, iArrayCount)) return statInvalidFormat;
-
-      for (int i = 0; i < iArrayCount; i++) {
-        CStringArray* stringArray = NULL;
-        int iStringCount;
-        if (!readInt(sFile, iStringCount)) return statInvalidFormat;
-        if (iStringCount != -1) {
-          stringArray = new CStringArray;
-          for (int j = 0; j < iStringCount; j++) {
-            CString str;
-            if (!readString(sFile, str)) return statInvalidFormat;
-
-            stringArray->Add(str);
-          }
-        } else {
-          stringArray = NULL;
-        }
-        m_stringArrayList.AddTail(stringArray);
-      }
-      break;
-    }		
-  case PropIntArrayList:
-    {
-      int nCounter;
-      if (!readInt(sFile, nCounter)) return statInvalidFormat;;
-
-      for (int i=0; i<nCounter; i++)
-      {
-        CArray<int, int> *pIntArray = NULL;
-
-        int nCounter2;
-
-        if (!readInt(sFile, nCounter2)) return statInvalidFormat;;
-
-        if (nCounter2 > 0)
-        {
-          pIntArray = new CArray<int, int>;
-
-          for (int j=0; j<nCounter2; j++)
-          {		
-            int nItem;
-            if (!readInt(sFile, nItem)) return statInvalidFormat;;
-            pIntArray->Add(nItem);
-          }
-        }	
-        m_intArrayList.AddTail(pIntArray);
-      }
-      break;
-    }
-  case PropStringArray:
-    {
-      int iCount;
-      if (!readInt(sFile, iCount)) return statInvalidFormat;
-      for (int i = 0; i < iCount; i++) {
-        CString str;
-        if (!readString(sFile, str)) return statInvalidFormat;
-        m_stringList.AddTail(str);
-      }
-      break;
-    }		
-  case PropIntArray:
-    {
-      int iCount;
-      if (!readInt(sFile, iCount)) return statInvalidFormat;
-      for (int i = 0; i < iCount; i++) {
-        int intValue;
-        if (!readInt(sFile, intValue)) return statInvalidFormat;
-        m_intList.Add(intValue);
-      }
-      break;
-    }			
-  case PropImageList:
-    {
-      if (!readShort(sFile, m_ImageListIndex)) return statInvalidFormat;;
-      break;
-    }
-  case PropActiveXEvent:
-    {
-      if (!readString(sFile, msStringValue)) return statInvalidFormat;;
-      // call the method to save the activeX info
-      if (!ReadActiveXInfoFromTextFile5(sFile)) return statInvalidFormat;
-      break;
-    }
-  case PropActiveXProp:
-    {
-      if (!readString(sFile, msStringValue)) return statInvalidFormat;
-			IOStatus stat = ReadActiveXInfoFromTextFile5(sFile);
-      if (stat != statOK) return stat;
-      break;	
-    }
-  case PropActiveXPropPages:
-  case PropActiveXEnum:
-  case PropActiveXRunTime:
-  case PropActiveXMethods:			
-    {
-			IOStatus stat = ReadActiveXInfoFromTextFile5(sFile);
-      if (stat != statOK) return stat;
-      break;
-    }			
-  }		
-  return statOK;
-}
-
-IOStatus CPropertyObject::ReadActiveXPropFromTextFile5(std::ifstream &sFile, AxPropertyDescriptor *axProp)
-{
-  LONG Id;
-  if (!readLong(sFile, Id)) return statInvalidFormat;
-  axProp->Id = Id;
-  if (!readString(sFile, axProp->Name)) return statInvalidFormat;
-  if (!readString(sFile, axProp->DocumentationDesc)) return statInvalidFormat;
-
-  if (!readVARTYPE(sFile, axProp->Type)) return statInvalidFormat;
-  if (!readBOOL(sFile, axProp->IsArray)) return statInvalidFormat;
-  if (!readBOOL(sFile, axProp->CanSet)) return statInvalidFormat;
-
-  if (!readCLSID(sFile, axProp->Guid)) return statInvalidFormat;
-  if (!readInt(sFile, axProp->NumEnum)) return statInvalidFormat;
-  if (!readInt(sFile, axProp->NumParams)) return statInvalidFormat;
-  int iKind;
-  if (!readInt(sFile, iKind)) return statInvalidFormat;
-  switch(iKind)
-  {
-  case INVOKE_FUNC:
-    axProp->invKind = INVOKE_FUNC;
-    break;
-  case INVOKE_PROPERTYGET:
-    axProp->invKind = INVOKE_PROPERTYGET;
-    break;
-  case INVOKE_PROPERTYPUT:
-    axProp->invKind = INVOKE_PROPERTYPUT;
-    break;
-  case INVOKE_PROPERTYPUTREF:
-    axProp->invKind = INVOKE_PROPERTYPUTREF;
-    break;
-  default:
-    axProp->invKind = (INVOKEKIND)iKind;
-    break;
-  }
-  if (axProp->NumEnum > 0)
-  {
-    axProp->ArrEnum = new AxPropertyEnum[axProp->NumEnum];
-    for (int i=0; i<axProp->NumEnum; i++)
-    {
-      if (!readString(sFile, axProp->ArrEnum[i].Name)) return statInvalidFormat;
-      COleVariant var;
-      if (!readOleVariant(sFile, var)) return statInvalidFormat;
-      axProp->ArrEnum[i].Var = var;
-    }
-  }
-  for (int i = 0; i<axProp->NumParams; i++)
-  {
-    if (!readVARTYPE(sFile, axProp->CallingArgs[i])) return statInvalidFormat;
-    if (!readString(sFile, axProp->CallingArgNames[i])) return statInvalidFormat;
-    if (!readCLSID(sFile, axProp->CallingArgClsids[i])) return statInvalidFormat;
-  }
-
-  return statOK;
-}
-
-IOStatus CPropertyObject::ReadActiveXInfoFromTextFile5(std::ifstream &sFile) 
-{
-  BOOL bProp;
-  BOOL bPropGet;
-  BOOL bPropPut;
-  BOOL bPropPutRef;
-  BOOL bPropEvent;
-  BOOL bPropMethod;
-
-  if (!readBOOL(sFile, bProp)) return statInvalidFormat;
-  if (bProp)
-  {
-    m_pAxProp = new AxPropertyDescriptor;
-		IOStatus stat = ReadActiveXPropFromTextFile5(sFile, m_pAxProp);
-    if (stat != statOK) return stat;
-  }
-
-  if (!readBOOL(sFile, bPropGet)) return statInvalidFormat;
-  if (bPropGet)
-  {
-    m_pAxPropGet = new AxPropertyDescriptor;
-		IOStatus stat = ReadActiveXPropFromTextFile5(sFile, m_pAxPropGet);
-    if (stat != statOK) return stat;
-  }
-
-  if (!readBOOL(sFile, bPropPut)) return statInvalidFormat;
-  if (bPropPut)
-  {
-    m_pAxPropPut = new AxPropertyDescriptor;
-		IOStatus stat = ReadActiveXPropFromTextFile5(sFile, m_pAxPropPut);
-    if (stat != statOK) return stat;
-  }
-
-  if (!readBOOL(sFile, bPropPutRef)) return statInvalidFormat;
-  if (bPropPutRef)
-  {
-    m_pAxPropPutRef = new AxPropertyDescriptor;
-		IOStatus stat = ReadActiveXPropFromTextFile5(sFile, m_pAxPropPutRef);
-    if (stat != statOK) return stat;
-  }
-
-  if (!readBOOL(sFile, bPropEvent)) return statInvalidFormat;
-  if (bPropEvent)
-  {
-    m_pAxEvent = new AxEventDescriptor;
-    if (!readDISPID(sFile, m_pAxEvent->Id)) return statInvalidFormat;
-    if (!readString(sFile, m_pAxEvent->Name)) return statInvalidFormat;
-    if (!readString(sFile, m_pAxEvent->DocumentationDesc)) return statInvalidFormat;
-
-    if (!readInt(sFile, m_pAxEvent->nArgs)) return statInvalidFormat;
-    for (int i=0; i<MAX_CALLING_ARGUMENTS; i++) {
-      if (!readVARTYPE(sFile, m_pAxEvent->CallingArgs[i])) return statInvalidFormat;
-      CString temp;
-      if (!readString(sFile, temp)) return statInvalidFormat;
-      m_pAxEvent->CallingArgNames[i] = temp;
-      if (!readCLSID(sFile, m_pAxEvent->CallingArgClsids[i])) return statInvalidFormat;
-    }
-    if (!readString(sFile, m_pAxEvent->Params)) return statInvalidFormat;
-  }
-  if (!readBOOL(sFile, bPropMethod)) return statInvalidFormat;
-  if (bPropMethod)
-  {
-    m_pMethods = new CList<AxMethodDescriptor*>;
-    int nCount;
-
-    if (!readInt(sFile, nCount)) return statInvalidFormat;
-
-    m_pMethods->RemoveAll();
-
-    // do loop to navigate objects
-    while (nCount-- > 0)
-    {
-      // get current object
-      AxMethodDescriptor* pMethod = new AxMethodDescriptor;
-
-      // get object from archive
-			IOStatus stat = pMethod->ReadFromTextFile(sFile);
-      if (stat != statOK) return stat;
-
-      // add that ArxControlObject to the list object
-      m_pMethods->AddTail(pMethod);		
-    }
-  }
-
-  return statOK;
+	return mpValue->FileIn(sFile, 5);
 }

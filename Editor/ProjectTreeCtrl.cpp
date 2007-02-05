@@ -47,9 +47,9 @@ static CString FindTabCaption(CDclFormObject *pDclTab)
 			CDclFormObject *pDcl = activeProject->GetDclFormList().GetAt(pos);
 			if (pDcl != NULL)
 			{
-				if (pDclTab->m_ParentName == pDcl->m_UniqueName)
+				if (pDclTab->GetParentName() == pDcl->GetUniqueName())
 				{					
-					return FindTabCaption2(pDcl, pDclTab->m_TabIndex);
+					return FindTabCaption2(pDcl, pDclTab->GetTabIndex());
 				}
 			}			
 		}
@@ -377,7 +377,7 @@ HTREEITEM CProjectTreeCtrl::FindTabParent(CDclFormObject *pDclTab)
 			CDclFormObject *pDcl = mpProject->GetDclFormList().GetAt(pos);
 			if (pDcl != NULL)
 			{
-				if (pDclTab->m_ParentName == pDcl->m_UniqueName)
+				if (pDclTab->GetParentName() == pDcl->GetUniqueName())
 				{
 					return pDcl->m_htiTreeItem;
 				}

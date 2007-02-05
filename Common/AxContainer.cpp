@@ -6,6 +6,7 @@
 #include "AxPropertyDescriptor.h"
 #include "AxEventDescriptor.h"
 #include "AxMethodDescriptor.h"
+#include "AxInterfaceDescriptor.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "OleLicenseKey.h"
@@ -208,7 +209,7 @@ void CAxContainer::GetRefGuid(AxPropertyDescriptor* pAProp, ITypeInfo* TheInfo, 
 			case TKIND_DISPATCH: // font, etc.
 				pAProp->Type = VT_DISPATCH;
 				pAProp->Guid = pTA->guid;
-				activeProject->AddOleObject(pTA->guid, this); // add this OLE object
+				mpParent->GetProject()->AddOleObject(pTA->guid, this); // add this OLE object
 				break;
 			case TKIND_ENUM: {
 					VARDESC *pVarDesc;
@@ -590,11 +591,9 @@ UINT CAxContainer::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo *TheI
 				axEventDesc->Params = FuncDescToString(TheInfo, pFuncDesc, bUseAsType);
 
 				// create the new property
-				CPropertyObject *pProp = new CPropertyObject();
+				RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropActiveXEvent);
 				// set the pointer to the ActiveX's Get property CMethodInfo object
-				pProp->m_pAxEvent = axEventDesc;
-				// set the property type as an PropEvent
-				pProp->SetType(PropActiveXEvent);
+				pProp->GetAxInterfaceDescriptorPtr()->GetEvent() = axEventDesc;
 				// set the property as hidden so it won't show up in the property list, 
 				// but in the events list instead.
 				pProp->SetHidden(true);
@@ -627,18 +626,16 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 	int NumberFuncs = 0;
 	int i,j;
 
-	CPropertyObject *pProp = NULL;
+	RefCountedPtr< CPropertyObject >pProp;
 	TYPEATTR *TheAttr;
 	
 	// create the new property
-	pProp = new CPropertyObject();
+	pProp = new CPropertyObject(PropActiveXMethods);
 	// get the head position
 	POSITION pos = pControl->m_PropertyList.GetHeadPosition();
 	// move forward once so it is placed after the (ActiveX PropertyObject) property list item
 	// and add the new property
 	pos = pControl->m_PropertyList.InsertAfter(pos, pProp);
-	// set the type as the ActiveX methods
-	pProp->SetType(PropActiveXMethods);
 	// set the id of the control
 	pProp->SetID(nObjectBrowser);
 	
@@ -668,10 +665,6 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 			return 0;
 		
 		
-		// now allocate some space
-		if(nNumberMethods)	{
-			pProp->m_pMethods = new CList<AxMethodDescriptor*>; 
-		}
 		// Array properties are functions
 	   i = 0; 
 	   for(j = 0; j < NumberFuncs; j++) { 
@@ -754,7 +747,7 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 					}					
 					else if (CanSet == true || pAxMethod->Id == -552) 
 					{
-						pProp->m_pMethods->AddTail(pAxMethod);
+						pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->push_back(pAxMethod);
 					}
 					else
 					{
@@ -790,32 +783,31 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 
 static void AddAxProp(CDclControlObject *pControl, long lId, CString sName, CString sDesc, VARTYPE vt, bool bGet=true, bool bSet=true)
 {
-	CPropertyObject *pProp = new CPropertyObject();
+	RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropActiveXProp);
 	// create the activeX property descriptor that the CPropertyObject object will hold
-	AxPropertyDescriptor *axPropPut = new AxPropertyDescriptor;
-	AxPropertyDescriptor *axPropGet = new AxPropertyDescriptor;
 	
 	if (bSet)
 	{
+		AxPropertyDescriptor *axPropPut = new AxPropertyDescriptor;
 		axPropPut->Id = lId;
 		axPropPut->Name = sName;
 		axPropPut->DocumentationDesc = sDesc;
 		axPropPut->invKind = INVOKE_PROPERTYPUT;
 		axPropPut->Type = vt;
-		pProp->m_pAxPropPut = axPropPut;	
+		pProp->GetAxInterfaceDescriptorPtr()->GetPropPut() = axPropPut;	
 	}
 
 	if (bGet)
 	{
+		AxPropertyDescriptor *axPropGet = new AxPropertyDescriptor;
 		axPropGet->Id = lId;
 		axPropGet->Name = sName;
 		axPropGet->DocumentationDesc = sDesc;
 		axPropGet->invKind = INVOKE_PROPERTYGET;
 		axPropGet->Type = vt;
-		pProp->m_pAxPropGet = axPropGet;	
+		pProp->GetAxInterfaceDescriptorPtr()->GetPropGet() = axPropGet;	
 	}
 
-	pProp->SetType(PropActiveXProp);
 	pControl->m_PropertyList.AddTail(pProp);
 	
 }
@@ -862,19 +854,19 @@ BOOL CAxContainer::ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID c
 	
 	if (clsid == IID_IFont)
 	{
-		pControl->m_Name = "Font";					
+		pControl->SetAxTypeName( _T("Font") );
 		SetupFont(pControl);
 		return TRUE;
 	}
 	if (clsid == IID_IFontDisp)
 	{
-		pControl->m_Name = "Font";					
+		pControl->SetAxTypeName( _T("Font") );
 		SetupFont(pControl);
 		return TRUE;
 	}
 	if (clsid == IID_IPictureDisp)
 	{
-		pControl->m_Name = "Picture";						
+		pControl->SetAxTypeName( _T("Picture") );
 		SetupPicture(pControl);
 		return TRUE;
 	}
@@ -902,14 +894,11 @@ BOOL CAxContainer::ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID c
 					m_pTypeLib->GetDocumentation(lIter, &bstrName, &bstrDoc, NULL, NULL);
 					if(bstrName)
 					{
-						pControl->m_Name = bstrName;
-						//::SysFreeString(bstrName);
+						pControl->SetAxTypeName( CString(bstrName) );
+						::SysFreeString(bstrName);
 					}
-					/*if(bstrDoc)
-					{
-						//pControl->m_OleObjectDescription = bstrDoc;
-//						::SysFreeString(bstrDoc);
-					}*/					
+					if(bstrDoc)
+						::SysFreeString(bstrDoc);
 				}				
 			}			
 		}               
@@ -1066,15 +1055,13 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 				// we do this so that the CPropertyObject will hold all INVOKE_PROPERTYGET, 
 				// INVOKE_PROPERTYPUT and INVOKE_PROPERTYPUTREF ActiveX properties of the same 
 				// name inside one CPropertyObject object.
-				CPropertyObject *pProp = pControl->FindProperty(axPropDesc->Name);
+				RefCountedPtr< CPropertyObject >pProp = pControl->FindProperty(axPropDesc->Name);
 				
 				// default the insertion flag to false so this property won't be inserted more than once					
 				bool bInsert = false;
 				
 				if (pProp == NULL)	
 				{
-					// create the new property
-					pProp = new CPropertyObject();
 					// since this property type has not yet been created set the flag so this CPropertyObject
 					// will get inserted into the property list
 					bInsert = true;
@@ -1082,14 +1069,14 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 				
 				if (axPropDesc->CanSet == FALSE)
 				{
-					pProp->SetType(PropActiveXRunTime);
+					pProp = new CPropertyObject(PropActiveXRunTime);
 					pProp->SetHidden(true);
 				}
 				else					
 					// set the property type as an ActiveX property pointer/holder/handler
-					pProp->SetType(PropActiveXProp);
+					pProp = new CPropertyObject(PropActiveXProp);
 				
-				pProp->m_pAxProp = axPropDesc;				
+				pProp->GetAxInterfaceDescriptorPtr()->GetProp() = axPropDesc;				
 				if (axPropDesc->NumParams > 1)
 				{
 					pProp->SetType(PropActiveXRunTime); 
@@ -1233,37 +1220,35 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 						// we do this so that the CPropertyObject will hold all INVOKE_PROPERTYGET, 
 						// INVOKE_PROPERTYPUT and INVOKE_PROPERTYPUTREF ActiveX properties of the same 
 						// name inside one CPropertyObject object.
-						CPropertyObject *pProp = pControl->FindProperty(axPropDesc->Name);
+						RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty(axPropDesc->Name);
 						
 						// default the insertion flag to false so this property won't be inserted more than once					
 						bool bInsert = false;
 						
 						if (pProp == NULL)	
 						{
-							// create the new property
-							pProp = new CPropertyObject();
 							// since this property type has not yet been created set the flag so this CPropertyObject
 							// will get inserted into the property list
 							bInsert = true;
 						}
 						
 						// set the ActiveX property name
-						pProp->SetActiveXProperyName(axPropDesc->Name);
+						pProp->GetAxInterfaceDescriptorPtr()->SetActiveXProperyName(axPropDesc->Name);
 						
 						// set the property type as an ActiveX property pointer/holder/handler
 						if (axPropDesc->CanSet == FALSE)
 						{
-							pProp->SetType(PropActiveXRunTime);
+							pProp = new CPropertyObject(PropActiveXRunTime);
 							pProp->SetHidden(true);
 						}
 						else
-							pProp->SetType(PropActiveXProp);
+							pProp = new CPropertyObject(PropActiveXProp);
 						
 					
 						// set the pointer to the ActiveX's Get property CMethodInfo object
 						if (axPropDesc->invKind == INVOKE_PROPERTYGET)
 						{
-							pProp->m_pAxPropGet = axPropDesc;
+							pProp->GetAxInterfaceDescriptorPtr()->GetPropGet() = axPropDesc;
 							if (axPropDesc->NumParams > 0)
 							{
 								pProp->SetType(PropActiveXRunTime);						
@@ -1272,7 +1257,7 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 						}
 						else if (axPropDesc->invKind == INVOKE_PROPERTYPUT)
 						{
-							pProp->m_pAxPropPut = axPropDesc;
+							pProp->GetAxInterfaceDescriptorPtr()->GetPropPut() = axPropDesc;
 							if (axPropDesc->NumParams > 1)
 							{
 								pProp->SetType(PropActiveXRunTime);	
@@ -1281,16 +1266,16 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 						}
 						else if (axPropDesc->invKind == INVOKE_PROPERTYPUTREF)
 						{
-							pProp->m_pAxPropPutRef = axPropDesc;
+							pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() = axPropDesc;
 							if (axPropDesc->NumParams > 1)
 							{
 								pProp->SetType(PropActiveXRunTime);	
 								pProp->SetHidden(true);
 							}
 						}
-						else if (pProp->m_pAxProp == NULL)
+						else if (!pProp->GetAxInterfaceDescriptorPtr()->GetProp())
 						{
-							pProp->m_pAxProp = axPropDesc;						
+							pProp->GetAxInterfaceDescriptorPtr()->GetProp() = axPropDesc;						
 							if (axPropDesc->NumParams > 0 && axPropDesc->invKind == INVOKE_PROPERTYGET)
 							{
 								pProp->SetType(PropActiveXRunTime);	
@@ -1487,8 +1472,6 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, int nID,
 		::SysFreeString(bstrLicenseKey);
 	if (pOleStreamFile != NULL)
 		delete pOleStreamFile;
-
-	pControl->m_pWnd = this;
 
 	switch (pControl->GetLngProperty(nEventInvoke))
 	{
@@ -2121,13 +2104,13 @@ void CAxContainer::LoadPicture(DISPID dispid, int nId)
 	}
 	
 	// set start position for navigating Pictures
-	POSITION pos = activeProject->GetPictureList().GetHeadPosition();
+	POSITION pos = mpParent->GetProject()->GetPictureList().GetHeadPosition();
 
 	// do loop to navigate Pictures
 	while (pos != NULL)
 	{
 		// get current Picture in list
-		const CPictureObject* pPicture = activeProject->GetPictureList().GetNext(pos);
+		const CPictureObject* pPicture = mpParent->GetProject()->GetPictureList().GetNext(pos);
 		
 		if (pPicture->GetID() == nId)
 		{

@@ -20,21 +20,6 @@
 #include "ControlTypes.h"
 #include "Workspace.h"
 
-const int CmboStyle_Combo		= 0;
-const int CmboStyle_Simple		= 1;
-const int CmboStyle_DropDown	= 2;
-const int CmboStyle_ArrowHead	= 3;
-const int CmboStyle_Color		= 4;
-const int CmboStyle_LineWeight	= 5;
-const int CmboStyle_PlotNames	= 6;
-const int CmboStyle_PlotTables	= 7;
-const int CmboStyle_FontDropList	= 8;
-const int CmboStyle_FontSimpleList	= 9;
-const int CmboStyle_Plotters		= 10;
-const int CmboStyle_PlotterPaperSizes = 11;
-const int CmboStyle_DirPicker = 12;
-const int CmboStyle_Layers = 13;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // Methods_ComboBox
@@ -61,7 +46,7 @@ int ComboBox_AddPath()
 
 	
 	CString sPath;
-	CWnd *pControl = pArxObject->m_pWnd;
+	CWnd *pControl = pArxObject->GetWindow();
 
 	if (!GetStringArgument(nArg, &sPath, sComboBox_AddPath) || pControl == NULL)
 	{
@@ -100,7 +85,7 @@ int ComboBox_AddColor()
 
 	
 	int nColorIndex;
-	CWnd *pControl = pArxObject->m_pWnd;
+	CWnd *pControl = pArxObject->GetWindow();
 
 	if (!GetIntArgument(nArg, &nColorIndex, sComboBox_AddColor) || pControl == NULL)
 	{
@@ -139,7 +124,7 @@ int ComboBox_FindLineWeight()
 
 	
 	int nColorIndex;
-	CWnd *pControl = pArxObject->m_pWnd;
+	CWnd *pControl = pArxObject->GetWindow();
 
 	if (!GetIntArgument(nArg, &nColorIndex, sComboBox_FindLineWeight) || pControl == NULL)
 	{
@@ -181,7 +166,7 @@ int ComboBox_FindColor()
 
 	
 	int nColorIndex;
-	CWnd *pControl = pArxObject->m_pWnd;
+	CWnd *pControl = pArxObject->GetWindow();
 
 	if (!GetIntArgument(nArg, &nColorIndex, sComboBox_FindColor) || pControl == NULL)
 	{
@@ -743,7 +728,7 @@ int ComboBox_GetDir()
 		acedRetNil();
 		return 0;
 	}
-	CWnd *pControl = pArxObject->m_pWnd;
+	CWnd *pControl = pArxObject->GetWindow();
 	if (pControl == NULL)
 	{
 		acedRetNil();
@@ -763,7 +748,7 @@ int ComboBox_Dir()
 		acedRetNil();
 		return 0;
 	}
-	CWnd *pControl = pArxObject->m_pWnd;
+	CWnd *pControl = pArxObject->GetWindow();
 	if (pControl == NULL)
 	{
 		acedRetNil();

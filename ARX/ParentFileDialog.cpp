@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "ParentFileDialog.h"
+#include "DialogObject.h"
 #include "DclFormObject.h"
 #include "PropertyIds.h"
 #include "Project.h"
@@ -10,6 +11,7 @@
 #include "InvokeMethod.h"
 #include "ArxDialogControl.h"
 #include "DclControlObject.h"
+#include "ControlTypes.h"
 
 
 bool IsWindows98orLater()
@@ -23,10 +25,66 @@ bool IsWindows98orLater()
 		( (osvi.dwMajorVersion == 4) && (osvi.dwMinorVersion > 0) ) );
 }
 
+
+static DWORD GetFileDlgFlags( CDclControlObject* pDclProperties, CDclControlObject* pFileDlgProperties )
+{
+	assert (pFileDlgProperties != NULL);
+	DWORD dwFlags = OFN_EXPLORER| OFN_ENABLEHOOK|OFN_ENABLETEMPLATE;
+
+	if (pFileDlgProperties->GetLngProperty(nFileDlgStyle) == 1) // as open
+	{
+		if (pFileDlgProperties->GetBoolProperty(nShowReadOnlyCheckBox) == FALSE)
+			dwFlags |= OFN_HIDEREADONLY;
+
+		if (pFileDlgProperties->GetBoolProperty(nAsReadOnly) == TRUE)
+			dwFlags |= OFN_READONLY;
+
+		if (pFileDlgProperties->GetBoolProperty(nMultiSelect) == TRUE)
+			dwFlags |= OFN_ALLOWMULTISELECT;
+
+		if (pFileDlgProperties->GetBoolProperty(nFileMustExist) == TRUE)
+			dwFlags |= OFN_FILEMUSTEXIST;
+		
+		if (pFileDlgProperties->GetBoolProperty(nCreationPrompt) == TRUE)
+			dwFlags |= OFN_CREATEPROMPT;
+	}
+
+	if (pFileDlgProperties->GetLngProperty(nFileDlgStyle) == 0) // as save
+	{
+		dwFlags |= OFN_HIDEREADONLY;
+
+		if (pFileDlgProperties->GetBoolProperty(nOverWritePrompt) == TRUE)
+			dwFlags |= OFN_OVERWRITEPROMPT;	
+	}
+
+	if (pFileDlgProperties->GetBoolProperty(nShowHelp) == TRUE)
+		dwFlags |= OFN_SHOWHELP;
+
+	if (pFileDlgProperties->GetBoolProperty(nExtCanBeDiff) == TRUE)
+		dwFlags |= OFN_EXTENSIONDIFFERENT;
+
+	if (pFileDlgProperties->GetBoolProperty(nPathMustExist) == TRUE)
+		dwFlags |= OFN_PATHMUSTEXIST;	
+		
+	if (pDclProperties->GetBoolProperty(nResizable) == TRUE)
+		dwFlags |= OFN_ENABLESIZING;
+
+	return dwFlags;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CParentFileDialog
 
-IMPLEMENT_DYNAMIC(CParentFileDialog, CFileDialog)
+CParentFileDialog::CParentFileDialog( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+: CFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent )
+, mParentDlg( pSourceForm, pParent )
+, mpParams( pParams? (FileDialogParams*)pParams->lpData : NULL )
+//, mprsFilenames( NULL )
+{
+	SetTemplate(IDD_CUSTOM_FILE_DIALOG, IDD_CUSTOM_FILE_DIALOG);
+	InitializeFromParams( pSourceForm, pParams );
+}
 
 CParentFileDialog::CParentFileDialog(CDclFormObject* pSourceForm,
 																		 BOOL bOpenFileDialog,
@@ -36,30 +94,66 @@ CParentFileDialog::CParentFileDialog(CDclFormObject* pSourceForm,
 																		 LPCTSTR lpszFilter,
 																		 CWnd* pParentWnd)
 :	CFileDialog(bOpenFileDialog, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd)
-, mpSourceForm( pSourceForm )
-, mControlPane( pSourceForm )
-, mpControl( NULL )
-, mParentDlg( pSourceForm )
+, mParentDlg( pSourceForm, pParentWnd )
+, mpParams( NULL )
+//, mprsFilenames( NULL )
 {
-	m_pParent = pParentWnd;
 	SetTemplate(IDD_CUSTOM_FILE_DIALOG, IDD_CUSTOM_FILE_DIALOG);
+	InitializeFromParams( pSourceForm );
+}
+
+void CParentFileDialog::InitializeFromParams( CDclFormObject* pSourceForm, DialogParams* pParams /*= NULL*/ )
+{
+	FileDialogParams* pFileDlgParams = pParams? (FileDialogParams*)pParams->lpData : NULL;
+	OPENFILENAME& ofn = GetOFN();
+	if( pSourceForm )
+	{
+		CDclControlObject* pFileDlgProperties = pSourceForm->FindFirstControlOfType(CtlFileDlgCtrl);
+		if (pFileDlgProperties)
+		{
+			CDclControlObject* pDclProperties = pSourceForm->GetControlProperties();
+			m_bOpenFileDialog = (pFileDlgProperties->GetLngProperty(nFileDlgStyle) != 0? TRUE : FALSE);
+			ofn.Flags |= GetFileDlgFlags(pDclProperties, pFileDlgProperties);
+			msTitle = pDclProperties->GetStrProperty(nTitleBarText);
+			if( !msTitle.IsEmpty() )
+				ofn.lpstrTitle = msTitle.LockBuffer();
+		}
+		msFilterList = pFileDlgProperties->GetStrProperty(nFilter);
+		if( pFileDlgParams && !pFileDlgParams->sFilterList.IsEmpty() )
+			msFilterList = pFileDlgParams->sFilterList;
+		if( !msFilterList.IsEmpty() )
+		{
+			msFilterList.Replace(_T('|'), _T('\0'));
+			ofn.lpstrFilter = msFilterList.LockBuffer();
+		}
+		if( pFileDlgParams )
+		{ //if we got params, add them to the design time properties
+			//m_bOpenFileDialog = pFileDlgParams->bOpenFileDialog; //always use design time property
+			pFileDlgParams->dwFlags |= ofn.Flags; //keep the flags we have so far, just add the new ones
+			ofn.Flags = pFileDlgParams->dwFlags;
+			ofn.lpstrDefExt = pFileDlgParams->sDefaultExtension.LockBuffer();
+			DWORD cchBuffer = (ofn.Flags & OFN_ALLOWMULTISELECT)? (0x8000 / sizeof(TCHAR)) : MAX_PATH;
+			ofn.lpstrFile = pFileDlgParams->sFilename.GetBuffer( cchBuffer );
+			ofn.nMaxFile = cchBuffer;
+		}
+	}
 }
 
 
 BEGIN_MESSAGE_MAP(CParentFileDialog, CFileDialog)
-	//{{AFX_MSG_MAP(CParentFileDialog)
 	ON_WM_HELPINFO()
 	ON_WM_PAINT()
-	//}}AFX_MSG_MAP
+	ON_MESSAGE(WM_FILEDLG_GETFILENAME, OnGetFileName)
+	ON_MESSAGE(WM_FILEDLG_GETFILETITLE, OnGetFileTitle)
+	ON_MESSAGE(WM_FILEDLG_GETFILEEXT, OnGetFileExt)
+	ON_MESSAGE(WM_FILEDLG_GETFILEPATH, OnGetFilePath)
+	ON_MESSAGE(WM_FILEDLG_GETFOLDERPATH, OnGetFolderPath)
+	ON_MESSAGE(WM_FILEDLG_GETFOLDERNAME, OnGetFolderName)
+	ON_MESSAGE(WM_FILEDLG_GETSELECTEDFILECOUNT, OnGetSelectedFileCount)
+	ON_MESSAGE(WM_FILEDLG_GETSELECTEDFILES, OnGetSelectedFiles)
 	ON_COMMAND(ID_HELP, OnHelp)
 END_MESSAGE_MAP()
 
-//
-void CParentFileDialog::SetDclForm(CDclFormObject *mpSourceFormObject)
-{
-	// set the internal pointer to equal the object passed
-	mpSourceForm = mpSourceFormObject;
-}
 
 void CParentFileDialog::CtrlModifyStyle(int nCtrl) 
 {	
@@ -67,12 +161,15 @@ void CParentFileDialog::CtrlModifyStyle(int nCtrl)
 	
 	ModifyStyle(NULL, WS_CLIPSIBLINGS, 0);
 }
+
 BOOL CParentFileDialog::OnInitDialog() 
 {
 	mParentDlg.SubclassWindow(GetParent()->m_hWnd);
 
+	CDclControlObject* pProps = mParentDlg.GetDialogObject().GetSourceForm()->GetControlProperties();
+
 	// here we need to set the style of the dialog box according to it is to be resizable or not
-	if (mpSourceForm->GetControlProperties()->GetBoolProperty(nResizable) == FALSE)
+	if (pProps->GetBoolProperty(nResizable) == FALSE)
 		// set as not resizable
 		mParentDlg.ModifyStyle(WS_THICKFRAME, DS_MODALFRAME, 0);
 	else
@@ -97,22 +194,22 @@ BOOL CParentFileDialog::OnInitDialog()
 	CWnd* pWnd =GetDlgItem(1119);
 
 	int nHeightOffset = 0;
-	if (mpSourceForm->GetControlProperties()->GetBoolProperty(nResizable) == FALSE)
+	if (pProps->GetBoolProperty(nResizable) == FALSE)
 		nHeightOffset = 10;
 	
 
 	CRect rcCtrls;
 	pWnd->GetWindowRect(&rcCtrls);
 	pWnd->SetWindowPos(NULL, 
-		m_pFileDlgProps->GetLngProperty(nLeft), 
-		m_pFileDlgProps->GetLngProperty(nTop), 
+		pProps->GetLngProperty(nLeft), 
+		pProps->GetLngProperty(nTop), 
 		rcCtrls.Width(),
 		rcCtrls.Height(), 
 		SWP_NOZORDER | SWP_NOACTIVATE);
 
 	CRect rcRet;
 	CWinApp* pApp = AfxGetApp();
-	CString sProfileName = m_sProjectName + "_" + m_sDialogName; 
+	CString sProfileName = mParentDlg.GetDialogObject().GetSourceForm()->GetKeyPath();
     
     rcRet.left = pApp->GetProfileInt(sProfileName, _T("nTopLeftX"), -1);
     rcRet.top = pApp->GetProfileInt(sProfileName, _T("nTopLeftY"), -1);
@@ -126,8 +223,8 @@ BOOL CParentFileDialog::OnInitDialog()
 		int nScreenWidth = ::GetSystemMetrics(SM_CXSCREEN);
 		int nScreenHeight = ::GetSystemMetrics(SM_CYSCREEN);
 
-		int nParentWidth = mParentDlg.GetSourceForm()->GetControlProperties()->GetLngProperty(nWidth);
-		int nParentHeight = mParentDlg.GetSourceForm()->GetControlProperties()->GetLngProperty(nHeight);			
+		int nParentWidth = pProps->GetLngProperty(nWidth);
+		int nParentHeight = pProps->GetLngProperty(nHeight);			
 
 		CPoint pt;
 		// get the left and top values to center the form on the screen	
@@ -154,9 +251,9 @@ BOOL CParentFileDialog::OnInitDialog()
 
 	
 	// here we need to hide specified controls
-	if (m_pFileDlgProps->GetBoolProperty(nShowOK) == FALSE)
+	if (pProps->GetBoolProperty(nShowOK) == FALSE)
 		HideControl(IDOK);
-	if (m_pFileDlgProps->GetBoolProperty(nShowCancel) == FALSE)
+	if (pProps->GetBoolProperty(nShowCancel) == FALSE)
 		HideControl(IDCANCEL);
 
 	if(IsWindows98orLater())
@@ -168,14 +265,14 @@ BOOL CParentFileDialog::OnInitDialog()
 	}
 
 	
-	if (m_pFileDlgProps->GetBoolProperty(nShowTypeComboBox) == FALSE)
+	if (pProps->GetBoolProperty(nShowTypeComboBox) == FALSE)
 		HideControl(cmb1);
-	if (m_pFileDlgProps->GetBoolProperty(nShowNameTextBox) == FALSE)
+	if (pProps->GetBoolProperty(nShowNameTextBox) == FALSE)
 		HideControl(edt1);
 
-	if (m_pFileDlgProps->GetBoolProperty(nShowTypeLabel) == FALSE)
+	if (pProps->GetBoolProperty(nShowTypeLabel) == FALSE)
 		HideControl(stc2);
-	if (m_pFileDlgProps->GetBoolProperty(nShowNameLabel) == FALSE)
+	if (pProps->GetBoolProperty(nShowNameLabel) == FALSE)
 		HideControl(stc3);
 
 	CtrlModifyStyle(cmb1);
@@ -189,23 +286,20 @@ BOOL CParentFileDialog::OnInitDialog()
 	CRect rcThis;
 	mParentDlg.GetClientRect(&rcThis);
 
-	mParentDlg.GetControlPane().m_pControlCol = &mParentDlg.m_ControlCol;
-	mParentDlg.GetControlPane().m_pFontCollection = m_pFontCollection;
-	mParentDlg.GetControlPane().m_PanePos = rcThis;	
-	mParentDlg.GetControlPane().m_pParentDlg = &mParentDlg;
+	CControlPane& CtrlPane = mParentDlg.GetDialogObject().GetControlPane();
+	CtrlPane.GetPaneWindowRect() = rcThis;	
 
-	mParentDlg.GetControlPane().m_sProjectName = m_sProjectName;
-	mParentDlg.GetControlPane().m_sDialogName = m_sDialogName;	
 	// call method to create the controls
-	mParentDlg.GetControlPane().CreateControls(mpSourceForm, 1000);
+	UINT nID = 1000;
+	CtrlPane.CreateControls(mParentDlg.GetDialogObject().GetSourceForm(), nID);
 
 	// resize the control pane so all offsets are set correctly
-	mParentDlg.GetControlPane().SizeChanged(rcThis.Width(),rcThis.Height());	
+	CtrlPane.SizeChanged(rcThis.Width(),rcThis.Height());	
 	
-	CArxDialogControl *pCtrlObj = new CArxDialogControl(m_pFileDlgProps, this);
-	mParentDlg.m_ControlCol.AddTail(pCtrlObj);
+	CArxDialogControl *pCtrlObj = new CArxDialogControl(pProps, this);
+	mParentDlg.GetDialogObject().GetControlPane().AddControl(pCtrlObj);
 	
-	switch (mParentDlg.GetSourceForm()->GetControlProperties()->GetLngProperty(nEventInvoke))
+	switch (pProps->GetLngProperty(nEventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -216,7 +310,7 @@ BOOL CParentFileDialog::OnInitDialog()
 	}
 
 	
-	if (mpSourceForm->GetControlProperties()->GetBoolProperty(nResizable) == TRUE)
+	if (pProps->GetBoolProperty(nResizable) == TRUE)
 		mParentDlg.m_bShowGrip = true;
 	else
 		mParentDlg.m_bShowGrip = false;
@@ -232,67 +326,17 @@ BOOL CParentFileDialog::OnInitDialog()
 	//mParentDlg.UpdateGripPos();
 
 	// call methods to invoke the OnInitDialog event
-	InvokeMethod(mParentDlg.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventInitialize), m_bInvokeWithSendString);
+	InvokeMethod(pProps->GetStrProperty(nFormEventInitialize), m_bInvokeWithSendString);
 
 	GetWindowRect(&rcThis);
 	// call methods to invoke the event
 	InvokeMethodIntInt(
-		mParentDlg.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 
+		pProps->GetStrProperty(nFormEventSize), 
 		rcThis.Width(),
 		rcThis.Height(),
 		false);	
-
-
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
-}
-
-
-BOOL CParentFileDialog::ReadListViewNames()
-{
-	// Okay, this is the big hack of the sample, I admit it.
-	// With some creative use of the Spy++ utility, you will
-	// find that the listview is not actually ID = lst1 as
-	// documented in some references, but is actually a child
-	// of dlg item ID = lst2
-	
-	// WARNING! Although this is a non-intrusive customization,
-	// it does rely on unpublished (but easily obtainable)
-	// information. The Windows common file dialog box implementation
-	// may be subject to change in future versions of the
-	// operating systems, and may even be modified by updates of
-	// future Microsoft applications. This code could break in such
-	// a case. It is intended to be a demonstration of one way of
-	// extending the standard functionality of the common dialog boxes.
-
-	CWnd* pWnd = GetParent()->GetDlgItem(lst2);
-	if (pWnd == NULL)
-		return FALSE;
-	
-	CListCtrl* wndLst1 = (CListCtrl*)(pWnd->GetDlgItem(1));
-
-	UINT nSelected = wndLst1->GetSelectedCount();
-	if (!nSelected)
-		// nothing selected -- don't retrieve list
-		return FALSE;
-
-	CString strDirectory = GetFolderPath();
-
-	// reset the list
-	m_pStrList->RemoveAll();
-	m_pStrList->SetSize(0,1);
-
-	// /\ 4.2: undocumented, but non-implementation
-	CString strItemText;
-	// Could this iteration code be cleaner?
-	for (int nItem = wndLst1->GetNextItem(-1,LVNI_SELECTED); 
-			nSelected-- > 0; nItem = wndLst1->GetNextItem(nItem, LVNI_SELECTED))
-	{
-		strItemText = wndLst1->GetItemText(nItem,0);
-
-		m_pStrList->Add(strItemText);
-	}	
-	return TRUE;
 }
 
 
@@ -339,7 +383,6 @@ BOOL CParentFileDialog::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 		return TRUE;
 		break;
 	}
-	//return TRUE;   // not handled
 	return FALSE;   // not handled
 }
 
@@ -351,13 +394,14 @@ void CParentFileDialog::OnSelectionChanged()
 	
 	CListCtrl* wndLst1 = (CListCtrl*)(pWnd->GetDlgItem(1));
 	
+	CDclControlObject* pProps = mParentDlg.GetDialogObject().GetSourceForm()->GetControlProperties();
 	int nSelCount = wndLst1->GetSelectedCount();
 	
 	POSITION pos = wndLst1->GetFirstSelectedItemPosition();
 	if (pos == NULL || nSelCount == 0)
 	{
 		// call methods to invoke the event
-		InvokeMethodIntString(m_pFileDlgProps->GetStrProperty(nEventSelChanged), -1, CString(), m_bInvokeWithSendString);		
+		InvokeMethodIntString(pProps->GetStrProperty(nEventSelChanged), -1, CString(), m_bInvokeWithSendString);		
 		return;
 	}
 	else
@@ -367,26 +411,26 @@ void CParentFileDialog::OnSelectionChanged()
 			CString sItemText = GetPathName();
 	
 			// call methods to invoke the event
-			InvokeMethodIntString(m_pFileDlgProps->GetStrProperty(nEventSelChanged), nSelCount, sItemText, m_bInvokeWithSendString);			
+			InvokeMethodIntString(pProps->GetStrProperty(nEventSelChanged), nSelCount, sItemText, m_bInvokeWithSendString);			
 		}
 		else 
 		{
 			// call methods to invoke the event
-			InvokeMethodIntString(m_pFileDlgProps->GetStrProperty(nEventSelChanged), nSelCount, CString(), m_bInvokeWithSendString);			
+			InvokeMethodIntString(pProps->GetStrProperty(nEventSelChanged), nSelCount, CString(), m_bInvokeWithSendString);			
 		}
 	}
 }
 
 BOOL CParentFileDialog::OnFileNameOK()
 {	
-	CString sFileName;
-	
-	m_sFileName = GetFileName();
-	m_sPathName = GetPathName();
-	m_sFileTitle = GetFileTitle();
-	m_sFolderPath = GetFolderPath();
-	StoreFileList();
-
+	if( mpParams )
+	{
+		mpParams->sFilename = GetPathName();
+		mpParams->rsFilenames.RemoveAll();
+		POSITION pos = GetStartPosition();
+		while( pos )
+			mpParams->rsFilenames.Add( GetNextPathName( pos ) );
+	}
 	return FALSE;
 }
 
@@ -397,30 +441,25 @@ void CParentFileDialog::OnTypeChange()
 	CWnd *pCmbo = GetParent()->GetDlgItem(cmb1);
 	
 	((CComboBox*)pCmbo)->GetWindowText(sText);
-	InvokeMethodString(m_pFileDlgProps->GetStrProperty(nEventOnTypeChange), sText, m_bInvokeWithSendString);
+	CDclControlObject* pProps = mParentDlg.GetDialogObject().GetSourceForm()->GetControlProperties();
+	InvokeMethodString(pProps->GetStrProperty(nEventOnTypeChange), sText, m_bInvokeWithSendString);
 }
 
 BOOL CParentFileDialog::OnHelpInfo(HELPINFO* pHelpInfo) 
 {
 	return TRUE; 
 }
+
 void CParentFileDialog::OnHelp()
 {
-	InvokeMethod(m_pFileDlgProps->GetStrProperty(nEventOnHelp), m_bInvokeWithSendString);
-	
+	CDclControlObject* pProps = mParentDlg.GetDialogObject().GetSourceForm()->GetControlProperties();
+	InvokeMethod(pProps->GetStrProperty(nEventOnHelp), m_bInvokeWithSendString);
 }
 
 void CParentFileDialog::OnFolderChange()
 {
-	m_sFolderPath = GetFolderPath();
-	
-	InvokeMethodString(m_pFileDlgProps->GetStrProperty(nEventFolderChanged), m_sFolderPath, m_bInvokeWithSendString);
-
-}
-
-void CParentFileDialog::StoreFileList()
-{
-	ReadListViewNames();
+	CDclControlObject* pProps = mParentDlg.GetDialogObject().GetSourceForm()->GetControlProperties();
+	InvokeMethodString(pProps->GetStrProperty(nEventFolderChanged), GetFolderPath(), m_bInvokeWithSendString);
 }
 
 
@@ -440,4 +479,91 @@ void CParentFileDialog::CloseNow()
 {
 	OnOK();
 	//mParentDlg.EndDialog(IDOK);
+}
+
+LRESULT CParentFileDialog::OnGetFileName( WPARAM wParam, LPARAM lParam )
+{
+	CString sFileName = GetFileName();
+	UINT_PTR cchFileName = sFileName.GetLength();
+	if( wParam <= cchFileName )
+		return 0;
+	lstrcpy( (LPTSTR)lParam, sFileName );
+	return (LRESULT)cchFileName;
+}
+
+LRESULT CParentFileDialog::OnGetFileTitle( WPARAM wParam, LPARAM lParam )
+{
+	CString sFileTitle = GetFileTitle();
+	UINT_PTR cchFileTitle = sFileTitle.GetLength();
+	if( wParam <= cchFileTitle )
+		return 0;
+	lstrcpy( (LPTSTR)lParam, sFileTitle );
+	return (LRESULT)cchFileTitle;
+}
+
+LRESULT CParentFileDialog::OnGetFileExt( WPARAM wParam, LPARAM lParam )
+{
+	CString sFileExt = GetFileExt();
+	UINT_PTR cchFileExt = sFileExt.GetLength();
+	if( wParam <= cchFileExt )
+		return 0;
+	lstrcpy( (LPTSTR)lParam, sFileExt );
+	return (LRESULT)cchFileExt;
+}
+
+LRESULT CParentFileDialog::OnGetFilePath( WPARAM wParam, LPARAM lParam )
+{
+	CString sFilePath = GetPathName();
+	UINT_PTR cchFilePath = sFilePath.GetLength();
+	if( wParam <= cchFilePath )
+		return 0;
+	lstrcpy( (LPTSTR)lParam, sFilePath );
+	return (LRESULT)cchFilePath;
+}
+
+LRESULT CParentFileDialog::OnGetFolderPath( WPARAM wParam, LPARAM lParam )
+{
+	CString sFolderPath = GetFolderPath();
+	UINT_PTR cchFolderPath = sFolderPath.GetLength();
+	if( wParam <= cchFolderPath )
+		return 0;
+	lstrcpy( (LPTSTR)lParam, sFolderPath );
+	return (LRESULT)cchFolderPath;
+}
+
+LRESULT CParentFileDialog::OnGetFolderName( WPARAM wParam, LPARAM lParam )
+{
+	CString sFolderName = GetFolderPath().MakeReverse().SpanExcluding(_T("\\/:")).MakeReverse();
+	UINT_PTR cchFolderName = sFolderName.GetLength();
+	if( wParam <= cchFolderName )
+		return 0;
+	lstrcpy( (LPTSTR)lParam, sFolderName );
+	return (LRESULT)cchFolderName;
+}
+
+LRESULT CParentFileDialog::OnGetSelectedFileCount( WPARAM wParam, LPARAM lParam )
+{
+	UINT cFiles = 0;
+	for( POSITION pos = GetStartPosition(); pos; GetNextPathName( pos ) )
+		++cFiles;
+	return (LRESULT)cFiles;
+}
+
+LRESULT CParentFileDialog::OnGetSelectedFiles( WPARAM wParam, LPARAM lParam )
+{
+	LPTSTR pszCursor = (LPTSTR)lParam;
+	POSITION pos = GetStartPosition();
+	while( pos )
+	{
+		CString sPath = GetNextPathName( pos );
+		UINT_PTR cchPath = sPath.GetLength();
+		if( wParam <= cchPath )
+			return 0; //not enough space
+		lstrcpyn( pszCursor, sPath, cchPath );
+		pszCursor += cchPath++;
+		*pszCursor++ = _T('|'); //separator
+		wParam -= cchPath;
+	}
+	*--pszCursor = _T('\0');
+	return pszCursor - (LPTSTR)lParam; //return number of characters copied, not including trailing NULL
 }

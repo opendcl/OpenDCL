@@ -67,7 +67,7 @@ void CFormVarNameUpdate::OnOK()
 		// then we must update the controls on the form, if required.
 		if (m_CtrlCheck == TRUE)
 		{
-			GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.m_pDclForm->ForceUpdateGlobalVariable(m_sDclFormName);
+			GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.m_pDclForm->ForceUpdateGlobalVariableName(m_sDclFormName);
 		}
 		// Now finally we must refresh the property list box. 
 		// if we place this above drawing errors can occure.

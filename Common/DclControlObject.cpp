@@ -6,28 +6,29 @@
 #include "PropertyObject.h"
 #include "ImageListObject.h"
 #include "AxContainer.h"
+#include "AxInterfaceDescriptor.h"
 #include "Filing.h"
 #include "PurchaseMode.h"
 #include "Workspace.h"
 #include "Project.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
+#include "DialogControl.h"
 
 
 static const int nNotSet = -1;
 
 
-static void AddControlProperty(CDclControlObject *pControl, int nID, LPCTSTR strValue, PropertyTypes ValueType)
+static void AddControlProperty(CDclControlObject *pControl, PropertyId nID, LPCTSTR strValue, PropertyType ValueType)
 {
 	// find the insert position for this new property
 	POSITION InsertPos = pControl->FindPropertyInsertPos(nID, false);
 
 	// create new property object pointer to pass to AddTail method
-	CPropertyObject* pPropertyObect = new CPropertyObject;
+	RefCountedPtr< CPropertyObject > pPropertyObect = new CPropertyObject( ValueType, 0, nID );
 
 	// assign values
-	pPropertyObect->SetID(nID);
-	pPropertyObect->AddProperty(ValueType, strValue);
+	pPropertyObect->SetStringValue(strValue);
 	pPropertyObect->SetHidden(false);
 
 	// reset the name to the new value
@@ -45,15 +46,13 @@ IMPLEMENT_SERIAL(CDclControlObject, CObject, 1)
 
 CDclControlObject::CDclControlObject()
 : mpOwner( NULL )
+, mpDlgControl( NULL )
 {
 	m_nTotalBytes = 0;
-	m_nIsMicrosoftActiveX = nNotSet;
-	m_AxTypeName.Empty();
 	m_rcOldPosition.SetRect(0,0,0,0);
 	mType = CtlFormPropHolder;
 	m_Id = nNotSet;
 	m_Delete = FALSE;
-	m_bControlCreated = false;
 	m_pCtrlHolder = NULL;
 	m_sLicenseKey.Empty();
 	m_sBaseCode.Empty();
@@ -80,20 +79,17 @@ CDclControlObject::CDclControlObject()
   m_pUseBottomOffset = NULL;
 
 	m_bEventsAsAction = false;
-	m_pWnd = NULL;
 }
 
 CDclControlObject::CDclControlObject(CDclFormObject* pOwner)
 : mpOwner( pOwner )
+, mpDlgControl( NULL )
 {
 	m_nTotalBytes = 0;
-	m_nIsMicrosoftActiveX = nNotSet;
-	m_AxTypeName.Empty();
 	m_rcOldPosition.SetRect(0,0,0,0);
 	mType = CtlFormPropHolder;
 	m_Id = nNotSet;
 	m_Delete = FALSE;
-	m_bControlCreated = false;
 	m_pCtrlHolder = NULL;
 	m_sLicenseKey.Empty();
 	m_sBaseCode.Empty();
@@ -120,23 +116,20 @@ CDclControlObject::CDclControlObject(CDclFormObject* pOwner)
   m_pUseBottomOffset = NULL;
 
 	m_bEventsAsAction = false;
-	m_pWnd = NULL;
 }
 
 CDclControlObject::CDclControlObject(ControlTypes type, CDclFormObject* pOwner, LPCTSTR pszName /*= NULL*/)
 : mpOwner( pOwner )
 , mType( type )
+, mpDlgControl( NULL )
 {
 	if( pszName )
 		SetStrProperty(nName, pszName);
 	m_nTotalBytes = 0;
-	m_nIsMicrosoftActiveX = nNotSet;
-	m_AxTypeName.Empty();
 	m_rcOldPosition.SetRect(0,0,0,0);
 	m_Id = nNotSet;
 	m_Delete = FALSE;
 	m_PropertyList.RemoveAll();
-	m_bControlCreated = false;
 	m_pCtrlHolder = NULL;
 	m_sLicenseKey.Empty();
 	m_sBaseCode.Empty();
@@ -163,7 +156,6 @@ CDclControlObject::CDclControlObject(ControlTypes type, CDclFormObject* pOwner, 
   m_pUseBottomOffset = NULL;
 
 	m_bEventsAsAction = false;
-	m_pWnd = NULL;
 }
 
 CDclControlObject::~CDclControlObject()
@@ -220,9 +212,9 @@ CDclControlObject::~CDclControlObject()
 //	while (nCount >= 0)
 //	{
 //		
-//		CPropertyObject *pDestProp = new CPropertyObject;
+//		RefCountedPtr< CPropertyObject > pDestProp = new CPropertyObject;
 //		pos = other.m_PropertyList.FindIndex(nCount);
-//		CPropertyObject *pSourceProp = other.m_PropertyList.GetAt(pos);
+//		RefCountedPtr< CPropertyObject > pSourceProp = other.m_PropertyList.GetAt(pos);
 //		pDestProp->Copy(pSourceProp);
 //		m_PropertyList.AddTail(pDestProp);
 //		nCount--;
@@ -252,15 +244,31 @@ CDclControlObject::~CDclControlObject()
 //
 //	while (nCount < other->m_PropertyList.GetCount())
 //	{		
-//		CPropertyObject *pDestProp = new CPropertyObject;
+//		RefCountedPtr< CPropertyObject > pDestProp = new CPropertyObject;
 //		pos = other->m_PropertyList.FindIndex(nCount);
-//		CPropertyObject *pSourceProp = other->m_PropertyList.GetAt(pos);
+//		RefCountedPtr< CPropertyObject > pSourceProp = other->m_PropertyList.GetAt(pos);
 //		pDestProp->Copy(pSourceProp);
 //		m_PropertyList.AddTail(pDestProp);
 //		nCount++;
 //	}
 //
 //}
+
+
+CWnd* CDclControlObject::GetWindow() const
+{
+	return mpDlgControl? mpDlgControl->GetWindow() : NULL;
+}
+
+
+void CDclControlObject::SetControlInstance( CDialogControl* pDlgControl )
+{
+	//note: an assertion here indicates more than 1 instance of the control; perhaps 
+	//an earlier instance didn't get destroyed when it should have been?
+	assert( mpDlgControl == NULL || pDlgControl == NULL );
+	mpDlgControl = pDlgControl;
+}
+
 
 void CDclControlObject::SaveToStream(CAxContainer *pCtrl)
 {
@@ -314,14 +322,14 @@ IOStatus CDclControlObject::WriteToTextFile(FILE* pFile, const CString &fileName
 
   int nThisVersion = 6;
   writeInt(pFile, nThisVersion);
-  writeString(pFile, m_Name);
+  writeString(pFile, msAxTypeName);
   writeLong(pFile, mType);
   writeShort(pFile, m_ClientHeight);
   //m_PurchaseState = nCurrentPurchaseMode;
   writeInt(pFile, m_PurchaseState);
 
   // just added.
-  writeInt(pFile, m_Id);
+  writeULONG(pFile, ULONG(m_Id));
 
   // serialize the image if it exists
   if (m_pImageList != NULL)
@@ -390,7 +398,7 @@ IOStatus CDclControlObject::WriteToTextFile(FILE* pFile, const CString &fileName
   while (pos != NULL)
   {
     // get current object
-    CPropertyObject* pProp = m_PropertyList.GetNext(pos);
+    RefCountedPtr< CPropertyObject > pProp = m_PropertyList.GetNext(pos);
 
     // put object into archive
     pProp->WriteToTextFile(pFile);
@@ -411,7 +419,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 	if (ar.IsStoring())
 	{
 		ar << unsigned long(nThisVersion);
-		ar << m_Name;
+		ar << msAxTypeName;
 		ar << long(mType);
 		ar << m_ClientHeight;
 		m_PurchaseState = nCurrentPurchaseMode;
@@ -481,24 +489,13 @@ void CDclControlObject::Serialize(CArchive& ar)
 				pException->Delete();
 			}
 		}
-		// set counter for ArxControls
-		nCount = (WORD)m_PropertyList.GetCount();
-
-		ar << nCount;
-
-		// set start position for navigating objects
+		// write property list
+		ar << (WORD)m_PropertyList.GetCount();
 		pos = m_PropertyList.GetHeadPosition();
-		// do loop to navigate objects
 		while (pos != NULL)
 		{
-			// get current object
-			CPropertyObject* pProp = m_PropertyList.GetNext(pos);
-
-			// put object into archive
+			RefCountedPtr< CPropertyObject > pProp = m_PropertyList.GetNext(pos);
 			pProp->Serialize(ar);
-			
-			// increment counter
-			nCount--;
 		}
 	}
 	else
@@ -509,9 +506,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
 
 		m_rcOldPosition.SetRect(0,0,0,0);
-		m_AxTypeName.Empty();
-		m_nIsMicrosoftActiveX = nNotSet;
-		ar >> m_Name;
+		ar >> msAxTypeName;
 		long lType;
 		ar >> lType;
 		mType = (ControlTypes)lType;
@@ -519,9 +514,9 @@ void CDclControlObject::Serialize(CArchive& ar)
 		ar >> m_PurchaseState;
 
 		if (nThisVersion >= 6)
-		{
 			ar >> m_Id;
-		}
+		delete m_pImageList;
+		m_pImageList = NULL;
 		if (nThisVersion >= 5)
 		{
 			ar >> bImageList;
@@ -578,13 +573,9 @@ void CDclControlObject::Serialize(CArchive& ar)
 
 						nDisplacement.QuadPart = 0;
 						m_pStream->Seek( nDisplacement, STREAM_SEEK_SET, NULL );						
-						
-						
 					}
 					else
-					{
 						m_pStream = NULL;
-					}
 				}
 				catch( CFileException* pException )
 				{
@@ -598,23 +589,15 @@ void CDclControlObject::Serialize(CArchive& ar)
 		{
 			// get counter for objects
 			ar >> nCount;		
-
 			m_PropertyList.RemoveAll();
-			
-			// do loop to navigate objects
 			while (nCount-- > 0)
 			{
-				// get current object
-				CPropertyObject* pProp = new CPropertyObject;
-				
-				// get object from archive
+				RefCountedPtr< CPropertyObject > pProp = new CPropertyObject( PropInvalid );
 				pProp->Serialize(ar);
-		
-				// add that ArxControlObject to the list object
 				m_PropertyList.AddTail(pProp);		
 			}
 
-			// here were are going to add the font of this object to the font collection
+			// here we are going to add the font of this object to the font collection
 			// before any pictures are loaded or any dialogs are displayed.
 			theWorkspace.GetFontCollection().GetFont(this, NULL);
 
@@ -656,112 +639,54 @@ void CDclControlObject::Serialize(CArchive& ar)
 		while (nCount > 0)
 		{		
 			pos = m_PropertyList.FindIndex(nCount);
-			CPropertyObject *pSourceProp = m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pSourceProp = m_PropertyList.GetAt(pos);
 			
 			
 			if (mType == CtlGrid)
 			{
 				if (pSourceProp->GetID() == nDragnDropToAutoCAD)
-				{
 					m_PropertyList.RemoveAt(pos);
-					delete pSourceProp;					
-				}
 				if (pSourceProp->GetID() == nDragnDropFromControl)
-				{
 					m_PropertyList.RemoveAt(pos);
-					delete pSourceProp;					
-				}
 				if (pSourceProp->GetID() == nDragnDropFromAutoCAD)
-				{
 					m_PropertyList.RemoveAt(pos);
-					delete pSourceProp;					
-				}
 				if (pSourceProp->GetID() == nDragnDropBegin)
-				{
 					m_PropertyList.RemoveAt(pos);
-					delete pSourceProp;					
-				}
 				if (pSourceProp->GetID() == nDragnDropAllowBegin)
-				{
 					m_PropertyList.RemoveAt(pos);
-					delete pSourceProp;					
-				}
 				if (pSourceProp->GetID() == nDragnDropAllowDrop)
-				{
 					m_PropertyList.RemoveAt(pos);
-					delete pSourceProp;					
-				}
 				if (pSourceProp->GetID() == nEventReturnPressed)
-				{
 					m_PropertyList.RemoveAt(pos);
-					delete pSourceProp;					
-				}
 			}
 			
 			if (pSourceProp->GetID() == nAcadColor && mType == CtlFrame)
-			{
 				m_PropertyList.RemoveAt(pos);
-				delete pSourceProp;					
-			}
 			if (pSourceProp->GetID() == nForeColor && mType == CtlFrame)
-			{
 				m_PropertyList.RemoveAt(pos);
-				delete pSourceProp;					
-			}
 			if (pSourceProp->GetID() == nTabOrder)
-			{
 				m_PropertyList.RemoveAt(pos);
-				delete pSourceProp;					
-			}
 			if (pSourceProp->GetID() == nLabelColor)
-			{
 				m_PropertyList.RemoveAt(pos);
-				delete pSourceProp;					
-			}
 			if (pSourceProp->GetID() == nEventDblClicked && mType == CtlStdButton)
-			{
 				m_PropertyList.RemoveAt(pos);
-				delete pSourceProp;					
-			}
 			if (pSourceProp->GetID() == nEventDblClicked && mType == CtlGraphicButton)
-			{
 				m_PropertyList.RemoveAt(pos);
-				delete pSourceProp;					
-			}
 			
 			/*if (pSourceProp->GetID() == nComboBoxStyle && mType == CtlComboBox)
-			{
-				pSourceProp->GetLongValue() = 2
-			}*/
+					pSourceProp->GetLongValue() = 2;*/
 			if (pSourceProp->GetID() == nHScrollBar && mType == CtlListBox)
-			{
 				m_PropertyList.RemoveAt(pos);
-				delete pSourceProp;					
-			}
-			if (pSourceProp->GetID() == nAllowOrbiting &&
-				pSourceProp->GetType() == PropBool
-				)
-			{
+			if (pSourceProp->GetID() == nAllowOrbiting && pSourceProp->GetType() == PropBool)
 				m_PropertyList.RemoveAt(pos);
-				delete pSourceProp;					
-			}
 			
 			if (pSourceProp->GetID() == nToolTipText && mType == CtlLabel)
-			{
 				m_PropertyList.RemoveAt(pos);
-				delete pSourceProp;					
-			}
 			
 			if (pSourceProp->GetID() == nTabLabelAlign)
-			{
 				m_PropertyList.RemoveAt(pos);
-				delete pSourceProp;					
-			}
 			if (pSourceProp->GetID() == nTabSelected)
-			{
 				m_PropertyList.RemoveAt(pos);
-				delete pSourceProp;					
-			}
 			
 			nCount--;
 		}
@@ -787,15 +712,12 @@ INT_PTR CDclControlObject::CountPropertyListItems(int nID)
 		// get position
 		pos = m_PropertyList.FindIndex(nCount);
 		// get current PropertyObject
-		CPropertyObject* pProperty = m_PropertyList.GetNext(pos);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(pos);
 		// if the name of property matches
 		if (pProperty->GetID() == nID)
 		{
 			// return the value			
-			if (pProperty->m_intList.GetSize() > 0)
-				return pProperty->m_intList.GetSize();
-			else
-				return pProperty->m_stringList.GetCount();
+			return pProperty->CountList();
 		}
 		// increment counter
 		nCount++;
@@ -823,23 +745,21 @@ CString CDclControlObject::GetPropertyListItem(int nID, int nIndex)
 		// get position
 		pos = m_PropertyList.FindIndex(nCount);
 		// get current PropertyObject
-		CPropertyObject* pProperty = m_PropertyList.GetNext(pos);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(pos);
 		// if the name of property matches
 		if (pProperty->GetID() == nID)
 		{
-			if (pProperty->m_intList.GetSize() > 0)
+			if (pProperty->GetType() == PropStringArray)
 			{
-				// return the value			
-				CString sValue;
-				sValue.Format(_T("%d"), pProperty->m_intList[nIndex]);
-				return sValue;
+				if ((size_t)nIndex < pProperty->GetStringArrayPtr()->size())
+					return pProperty->GetStringArrayPtr()->at(nIndex);
+				else
+					return CString();
 			}
-			if (pProperty->m_stringList.GetCount() > 0)
-			{
-				// return the value			
-				POSITION pos = pProperty->m_stringList.FindIndex(nIndex);
-				return pProperty->m_stringList.GetAt(pos);
-			}
+			CString sValue;
+			if ((size_t)nIndex < pProperty->GetIntArrayPtr()->size())
+				sValue.Format(_T("%d"), pProperty->GetIntArrayPtr()->at(nIndex));
+			return sValue;
 		}
 		// increment counter
 		nCount++;
@@ -849,24 +769,24 @@ CString CDclControlObject::GetPropertyListItem(int nID, int nIndex)
 	return CString();
 }
 
-CPropertyObject* CDclControlObject::GetPropertyObject(int nID) const
+RefCountedPtr< CPropertyObject > CDclControlObject::GetPropertyObject(PropertyId nID) const
 {
 	POSITION posProp = m_PropertyList.GetHeadPosition();
 	while (posProp)
 	{
-		CPropertyObject* pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
 		if (pProperty && pProperty->GetID() == nID)
 			return pProperty;
 	}
 	return NULL;
 }
 
-CPropertyObject* CDclControlObject::GetActiveXPropertyObject(CString sName) const
+RefCountedPtr< CPropertyObject > CDclControlObject::GetActiveXPropertyObject(CString sName) const
 {
 	POSITION posProp = m_PropertyList.GetHeadPosition();
 	while (posProp)
 	{
-		CPropertyObject* pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
 		if (pProperty && pProperty->GetName() == sName)
 			return pProperty;
 	}
@@ -875,19 +795,20 @@ CPropertyObject* CDclControlObject::GetActiveXPropertyObject(CString sName) cons
 
 bool CDclControlObject::UpdateGlobalVariable(CString sDclFormName, LPCTSTR pszProjectName /*= NULL*/)	
 {
-	CPropertyObject *pPropVar = GetPropertyObject(nGlobalVarName);
-	CPropertyObject *pPropName = GetPropertyObject(nName);
+	RefCountedPtr< CPropertyObject > pPropVar = GetPropertyObject(nGlobalVarName);
+	RefCountedPtr< CPropertyObject > pPropName = GetPropertyObject(nName);
 	
-	// if not nGlobalVarName exists, we must exit here.
+	// if no nGlobalVarName exists, we must exit here.
 	if (pPropVar == NULL)
 		return false;
 
 	CString sUnitled = _T("Untitled"); //should use empty string to represent untitled [ORW]
-	if (pPropVar->GetStringValue().Left(sUnitled.GetLength()) == sUnitled)
+	CString sVarName = pPropVar->GetStringValue();
+	if (sVarName.Left(1) == _T("_") || sVarName.Left(sUnitled.GetLength()) == sUnitled)
 	{
 		CString sProjectName( pszProjectName );
 		if (sProjectName.IsEmpty())
-			sProjectName = activeProject->GetBaseName();
+			sProjectName = mpOwner->GetProject()->GetKeyName();
 
 		if (mType <= 0 || mType > CtlFileDlgCtrl) 
 			// create the name for a dialog box
@@ -902,8 +823,8 @@ bool CDclControlObject::UpdateGlobalVariable(CString sDclFormName, LPCTSTR pszPr
 
 void CDclControlObject::ForceUpdateGlobalVariable(CString sDclFormName)	
 {
-	CPropertyObject *pPropVar = GetPropertyObject(nGlobalVarName);
-	CPropertyObject *pPropName = GetPropertyObject(nName);
+	RefCountedPtr< CPropertyObject > pPropVar = GetPropertyObject(nGlobalVarName);
+	RefCountedPtr< CPropertyObject > pPropName = GetPropertyObject(nName);
 	
 	// if no nGlobalVarName exists, we must exit here.
 	if (pPropVar == NULL)
@@ -911,10 +832,10 @@ void CDclControlObject::ForceUpdateGlobalVariable(CString sDclFormName)
 
 	if (mType <= 0 || mType > CtlFileDlgCtrl) 
 		// create the name for a dialog box
-		pPropVar->SetStringValue(activeProject->GetKeyName() + _T('_') + pPropName->GetStringValue());
+		pPropVar->SetStringValue(mpOwner->GetProject()->GetKeyName() + _T('_') + pPropName->GetStringValue());
 	else	
 		// create the name for a control
-		pPropVar->SetStringValue(activeProject->GetKeyName() + _T('_') + sDclFormName + _T('_') + pPropName->GetStringValue());	
+		pPropVar->SetStringValue(mpOwner->GetProject()->GetKeyName() + _T('_') + sDclFormName + _T('_') + pPropName->GetStringValue());	
 }
 
 void CDclControlObject::SetStrProperty(int nID, CString sValue)	
@@ -935,7 +856,7 @@ void CDclControlObject::SetStrProperty(int nID, CString sValue)
 		// get position
 		pos = m_PropertyList.FindIndex(nCount);
 		// get current PropertyObject
-		CPropertyObject* pProperty = m_PropertyList.GetNext(pos);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(pos);
 		// if the name of property matches
 		if (pProperty->GetID() == nID)
 		{
@@ -951,15 +872,9 @@ void CDclControlObject::SetStrProperty(int nID, CString sValue)
 
 }
 
-BOOL CDclControlObject::IsMicrosoftActiveXCtrl() const
+bool CDclControlObject::IsMicrosoftActiveXCtrl() const
 {	
 	CString sName;
-	
-	if (m_nIsMicrosoftActiveX == 1)
-		return TRUE;
-	if (m_nIsMicrosoftActiveX == 0)
-		return TRUE;
-
 	try
 	{
 		// get the ProgId
@@ -969,19 +884,17 @@ BOOL CDclControlObject::IsMicrosoftActiveXCtrl() const
 	}
 	catch(...)
 	{
-		return FALSE;
+		return false;
 	}
-
-	const_cast<CDclControlObject*>(this)->m_nIsMicrosoftActiveX = ((sName.Left(9) == _T("Microsoft")));
-	return m_nIsMicrosoftActiveX;
+	return (sName.Left(9) == _T("Microsoft"));
 }
 
 CString CDclControlObject::GetActiveXTypeName() const
 {
 	CString sName;
 	
-	if (!m_AxTypeName.IsEmpty())
-		return m_AxTypeName;
+	if (!msAxTypeName.IsEmpty())
+		return msAxTypeName;
 
 	try
 	{
@@ -1003,7 +916,7 @@ CString CDclControlObject::GetActiveXTypeName() const
 	sName = sName.SpanExcluding(_T("."));
 	sName.MakeReverse();
 	
-	const_cast<CDclControlObject*>(this)->m_AxTypeName = sName;
+	const_cast<CDclControlObject*>(this)->msAxTypeName = sName; //cache it
 	return sName;
 }
 
@@ -1012,7 +925,7 @@ CString CDclControlObject::GetStrProperty(int nID) const
 	POSITION posProp = m_PropertyList.GetHeadPosition();
 	while (posProp)
 	{
-		CPropertyObject* pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
 			return pProperty->GetStdProperty();
@@ -1025,10 +938,10 @@ long CDclControlObject::GetImageListIndex()
 	POSITION posProp = m_PropertyList.GetHeadPosition();
 	while (posProp)
 	{
-		CPropertyObject* pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nImageList)
-			return pProperty->m_ImageListIndex;
+			return pProperty->GetShortValue();
 	}
 	return nNotSet;
 }
@@ -1039,11 +952,11 @@ void CDclControlObject::SetImageListIndex(int nIndex)
 	POSITION posProp = m_PropertyList.GetHeadPosition();
 	while (posProp)
 	{
-		CPropertyObject* pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nImageList)
 		{
-			pProperty->m_ImageListIndex = nIndex;
+			pProperty->SetShortValue(nIndex);
 			return;
 		}
 	}
@@ -1055,7 +968,7 @@ long CDclControlObject::GetLngProperty(int nID) const
 	POSITION posProp = m_PropertyList.GetHeadPosition();
 	while (posProp)
 	{
-		CPropertyObject* pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
 		{
@@ -1077,7 +990,7 @@ void CDclControlObject::SetLngProperty(int nID, long lValue)
 	POSITION posProp = m_PropertyList.GetHeadPosition();
 	while (posProp)
 	{
-		CPropertyObject* pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
 		{
@@ -1086,9 +999,11 @@ void CDclControlObject::SetLngProperty(int nID, long lValue)
 			if (pProperty->GetType() == PropBool)
 			{
 				TraceFmt( _T("* 'PropLong' value written to 'PropBool' property (ID: %d)! [%s]\r\n"), nID, _T(__FUNCTION__));
-				return pProperty->SetBooleanValue(lValue != 0);
+				pProperty->SetBooleanValue(lValue != 0);
+				return;
 			}
-			return pProperty->SetLongValue(lValue);
+			pProperty->SetLongValue(lValue);
+			return;
 		}
 	}
 }
@@ -1098,10 +1013,13 @@ void CDclControlObject::SetColorProperty(int nID, COLORREF color)
 	POSITION posProp = m_PropertyList.GetHeadPosition();
 	while (posProp)
 	{
-		CPropertyObject* pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
-			return pProperty->SetOLEColorValue(color);
+		{
+			pProperty->SetOLEColorValue(color);
+			return;
+		}
 	}
 }
 
@@ -1110,7 +1028,7 @@ COLORREF CDclControlObject::GetColorProperty(int nID) const
 	POSITION posProp = m_PropertyList.GetHeadPosition();
 	while (posProp)
 	{
-		CPropertyObject* pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
 			return pProperty->GetOLEColorValue();
@@ -1123,10 +1041,13 @@ void CDclControlObject::SetBoolProperty(int nID, bool bValue)
 	POSITION posProp = m_PropertyList.GetHeadPosition();
 	while (posProp)
 	{
-		CPropertyObject* pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
-			return pProperty->SetBooleanValue(bValue);
+		{
+			pProperty->SetBooleanValue(bValue);
+			return;
+		}
 	}
 }
 	
@@ -1135,7 +1056,7 @@ bool CDclControlObject::GetBoolProperty(int nID) const
 	POSITION posProp = m_PropertyList.GetHeadPosition();
 	while (posProp)
 	{
-		CPropertyObject* pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
 		{
@@ -1167,7 +1088,7 @@ short CDclControlObject::FindPropertyIndex(int nID) const
 		// get position
 		pos = m_PropertyList.FindIndex(nCount);
 		// get current PropertyObject
-		CPropertyObject* pProperty = m_PropertyList.GetAt(pos);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetAt(pos);
 		// if the name of property matches
 		if (pProperty->GetID() == nID)
 		{
@@ -1199,12 +1120,12 @@ short CDclControlObject::FindPropertyIndex(int nID) const
 	return nNotSet;
 }
 
-CPropertyObject* CDclControlObject::FindProperty(CString sName)
+RefCountedPtr< CPropertyObject > CDclControlObject::FindProperty(CString sName)
 {
 	POSITION posProp = m_PropertyList.GetHeadPosition();
 	while (posProp)
 	{
-		CPropertyObject* pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetName() == sName)
 			return pProperty;
@@ -1245,7 +1166,7 @@ POSITION CDclControlObject::FindPropertyInsertPos(CString sName, bool bHidden) c
 			return NULL;
 
 		// get current PropertyObject
-		CPropertyObject* pProperty = m_PropertyList.GetAt(pos);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetAt(pos);
 		
 		ThisPropText = pProperty->GetName();
 		// if the name of property matches
@@ -1276,9 +1197,8 @@ void CDclControlObject::ClearProperties()
 	POSITION posProp = m_PropertyList.GetHeadPosition();
 	while (posProp)
 	{
-		CPropertyObject* pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
 		assert(pProperty != NULL);
-		delete pProperty;
 	}
 	m_PropertyList.RemoveAll();
 }
@@ -1297,7 +1217,7 @@ void CDclControlObject::ResetProperty(int nId)
 		pos = m_PropertyList.FindIndex(nCount);
 		
 		// get current property
-		CPropertyObject* pPropObject = m_PropertyList.GetAt(pos);
+		RefCountedPtr< CPropertyObject > pPropObject = m_PropertyList.GetAt(pos);
 		if (pPropObject->GetID() == nId)
 		{
 			// clear any lists in this control
@@ -1323,13 +1243,10 @@ void CDclControlObject::RemoveProperty(int nId)
 		pos = m_PropertyList.FindIndex(nCount);
 		
 		// get current property
-		CPropertyObject* pPropObject = m_PropertyList.GetAt(pos);
+		RefCountedPtr< CPropertyObject > pPropObject = m_PropertyList.GetAt(pos);
 		if (pPropObject->GetID() == nId)
 		{
-			// clear any lists in this control
-			pPropObject->ClearList();
 			m_PropertyList.RemoveAt(pos);
-			delete pPropObject;
 			return;
 		}
 		// increment counter
@@ -1353,7 +1270,7 @@ void CDclControlObject::ClearR14Events()
 		if (pos != NULL)
 		{
 			// get current property
-			CPropertyObject* pPropObject = m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pPropObject = m_PropertyList.GetAt(pos);
 			
 			if (mType == CtlTextBox)
 			{
@@ -1368,7 +1285,6 @@ void CDclControlObject::ClearR14Events()
 				case nEventReturnPressed:
 				case nEventInvoke:
 					m_PropertyList.RemoveAt(pos);
-					delete pPropObject;
 					break;
 				}
 			}
@@ -1376,7 +1292,6 @@ void CDclControlObject::ClearR14Events()
 			{
 			case nDragnDropFromAutoCAD:
 				m_PropertyList.RemoveAt(pos);
-				delete pPropObject;
 				break;
 			}
 		}
@@ -1390,7 +1305,8 @@ void CDclControlObject::ClearR14Events()
 IOStatus CDclControlObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
 {
   CString sObject;
-  if (readLine(sFile) != "CDclControlObject") return statInvalidFormat;
+	CString sClassname = readLine(sFile);
+  if ( sClassname != "CDclControlObject" && sClassname != "CArxControlObject") return statInvalidFormat;
   int iVersion;
   if (!readInt(sFile, iVersion)) return statInvalidFormat;
 
@@ -1408,19 +1324,21 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
 //#ifdef EDITOR
   // clear these temp storage variables
   m_rcOldPosition.SetRect(0,0,0,0);
-  m_AxTypeName.IsEmpty();
-  m_nIsMicrosoftActiveX = nNotSet;
 //#endif
 
-  if (!readString(sFile, m_Name)) return statInvalidFormat;
+  if (!readString(sFile, msAxTypeName)) return statInvalidFormat;
 	long lType;
   if (!readLong(sFile, lType)) return statInvalidFormat;
 	mType = (ControlTypes)lType;
   if (!readShort(sFile, m_ClientHeight)) return statInvalidFormat;
   if (!readInt(sFile, m_PurchaseState)) return statInvalidFormat;
 
-  if (!readInt(sFile, m_Id)) return statInvalidFormat;
+	ULONG ulID;
+  if (!readInt(sFile, (int&)ulID)) return statInvalidFormat;
+	m_Id = UINT(ulID);
 
+	delete m_pImageList;
+	m_pImageList = NULL;
   bool bImageList;
   if (!readBool(sFile, bImageList)) return statInvalidFormat;
   if (bImageList) {
@@ -1484,7 +1402,7 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
   while (nCount-- > 0)
   {
     // get current object
-    CPropertyObject* pProp = new CPropertyObject;
+    RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropInvalid);
 
     // get object from archive
 		IOStatus stat = pProp->ReadFromTextFile(sFile);

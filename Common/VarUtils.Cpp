@@ -146,6 +146,8 @@ CString VARTYPEtoString(VARTYPE vt)
 	case VT_UNKNOWN:
 	case VT_DISPATCH:
 		{
+			// * Commented below and just return "OLE Object", otherwise it won't work in "Common" folder [ORW]
+			//
 			//if (pProperty == NULL && pMethod == NULL)
 			//	return _T("OLE Object");
 			//else if (pProperty != NULL)

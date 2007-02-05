@@ -409,6 +409,7 @@ CPictureObject* CPictureObject::CreatePictureObject(short nID, LPPICTUREDISP New
 	return pPicture;
 }
 
+/*
 void CPictureObject::SaveSS(CStgFile &FileStg, CDocument *pDoc) const
 {
 	CString sValue;
@@ -447,6 +448,7 @@ CPictureObject* CPictureObject::ReadSS(int nID, CStgFile &FileStg, CDocument *pD
 
 	return pPicture;
 }
+*/
 
 IOStatus CPictureObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
 {
@@ -981,6 +983,7 @@ void CPictureObject::EnsurePictureIsLoaded()
 	m_bLoaded = true;
 }
 
+/*
 CPictureObject* CPictureObject::ReadSS(int nID, CStgFile &FileStg)
 {
 	CString sID;
@@ -1019,3 +1022,4 @@ void CPictureObject::SaveSS(CStgFile &FileStg) const
 
 	FileStg.Close();	// close the stream
 }
+*/

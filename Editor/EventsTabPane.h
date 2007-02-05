@@ -5,6 +5,7 @@
 class CDclControlObject;
 class CDclFormObject;
 class CObjectDCLView;
+enum PropertyId;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -38,7 +39,7 @@ public:
 	void CopyToClipboard();
 	void UpdateEvents(CDclFormObject *pDclForm, CDclControlObject *pControl);
 	void AddAnyActiveXEvents();
-	void TryToAddEvent(int nEvent);
+	void TryToAddEvent(PropertyId nEvent);
 	void ClearEvents();
 	void SetDefunPreview();
 	CString GetDefunArguments();

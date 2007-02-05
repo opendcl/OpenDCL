@@ -49,17 +49,16 @@ static CString StripPathFromFileName( LPCTSTR pszFilePath )
 	return sShortName;
 }
 
-static void AddControlProperty(CDclControlObject *pControl, int nID, LPCTSTR strValue, PropertyTypes ValueType)
+static void AddControlProperty(CDclControlObject *pControl, PropertyId nID, LPCTSTR strValue, PropertyType ValueType)
 {
 	// find the insert position for this new property
 	POSITION InsertPos = pControl->FindPropertyInsertPos(nID, false);
 
 	// create new property object pointer to pass to AddTail method
-	CPropertyObject* pPropertyObect = new CPropertyObject;
+	RefCountedPtr< CPropertyObject > pPropertyObect = new CPropertyObject( ValueType, 0, nID );
 
 	// assign values
-	pPropertyObect->SetID(nID);
-	pPropertyObect->AddProperty(ValueType, strValue);
+	pPropertyObect->SetStringValue(strValue);
 	pPropertyObect->SetHidden(false);
 
 	// reset the name to the new value
@@ -150,6 +149,17 @@ CProject::~CProject()
 void CProject::SetPurchaseMode(int nPurchaseMode)
 {
   m_PurchaseState = nPurchaseMode;
+}
+
+void CProject::SetKeyName( LPCTSTR pszKeyName )
+{
+	if( !pszKeyName )
+		return;
+	{
+		CString sKey = pszKeyName;
+		sKey.Replace(_T(' '), _T('_'));
+		msKeyName = sKey;
+	}
 }
 
 CString CProject::QueryForLispFileName() 
@@ -325,11 +335,11 @@ void CProject::AddOleObject(const CLSID& clsid, CAxContainer *pAxCont)
   COleControlObject *pObject = new COleControlObject( this, clsid );
 
   if (clsid == IID_IPictureDisp)
-    pObject->m_Name = theWorkspace.LoadResourceString(IDS_PROP_PICTURE);
+    pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_PROP_PICTURE) );
   else if (pObject->m_clsid == IID_IFontDisp)
-    pObject->m_Name = theWorkspace.LoadResourceString(IDS_PROP_LABEL_NAME);
+    pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_PROP_LABEL_NAME) );
   else if (pObject->m_clsid == GUID_COLOR)
-    pObject->m_Name = theWorkspace.LoadResourceString(IDS_COLOR);
+    pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_COLOR) );
   mOleControls.AddTail(pObject);	
   pAxCont->ExtractComponentsFromTLB(pObject, clsid);
 }
@@ -373,11 +383,11 @@ CString CProject::GetOleObjectName(const AxPropertyDescriptor *pProperty)
     if (pObject != NULL)
     {
       if (pObject->m_clsid == pProperty->Guid)
-        return pObject->m_Name;
+				return pObject->GetAxTypeName();
       for (int i=0; i<MAX_CALLING_ARGUMENTS; i++)
       {
         if (pObject->m_clsid == pProperty->CallingArgClsids[i])
-          return pObject->m_Name;
+          return pObject->GetAxTypeName();
       }	
     }
   }
@@ -483,57 +493,29 @@ CDclFormObject* CProject::GetDclForm(CString DclFormName)
 }
 
 
-CDclFormObject* CProject::GetParentDclForm(CString ParentName)
+CDclFormObject* CProject::GetParentDclForm(CString sParentName)
 {
-  POSITION pos;
-  int nCount = 0;
-
-  while (nCount < mDclForms.GetCount())
-  {
-    // always get the first index when clearing a list
-    pos = mDclForms.FindIndex(nCount);
-
-    // get the object
-    CDclFormObject *pDclForm = mDclForms.GetAt(pos);
-
-    // if this dcl form's name matches the one queried for
-    if (pDclForm->m_UniqueName == ParentName)
-      // return the dcl form pointer
+	POSITION pos = mDclForms.GetHeadPosition();
+	while (pos)
+	{
+		CDclFormObject* pDclForm = mDclForms.GetNext(pos);
+    if (pDclForm->GetUniqueName() == sParentName)
       return pDclForm;
-
-    // increment the counter to include the next object
-    nCount++;
-  }
+	}
   return NULL;
 }
 
 
 CDclFormObject* CProject::GetDclTabChildForm(CString sDclParentUniqueName, int nTabIndex)
 {
-  POSITION pos;
-  int nCount = 0;
-  int nIndex = 0;
-
-  while (nCount < mDclForms.GetCount())
-  {
-    // always get the first index when clearing a list
-    pos = mDclForms.FindIndex(nCount);
-
-    // get the object
-    CDclFormObject *pDclForm = mDclForms.GetAt(pos);
-
-    // if this dcl form's name matches the one queried for
-    if (pDclForm->m_ParentName == sDclParentUniqueName)
-    {
-      if (pDclForm->m_TabIndex == nTabIndex)
-        // return the dcl form pointer
-        return pDclForm;
-      nIndex++;
-    }
-
-    // increment the counter to include the next object
-    nCount++;
-  }
+	POSITION pos = mDclForms.GetHeadPosition();
+	while (pos)
+	{
+		CDclFormObject* pDclForm = mDclForms.GetNext(pos);
+    if (pDclForm->GetParentName() == sDclParentUniqueName && pDclForm->GetTabIndex() == nTabIndex)
+      return pDclForm;
+	}
+  return NULL;
   return NULL;
 }
 
@@ -560,36 +542,6 @@ int CProject::CountDeletedForms()
   }
 
   return nDeleted;
-}
-
-
-POSITION CProject::GetDclTabChildFormPos(CString sDclParentUniqueName, int nTabIndex)
-{
-  POSITION pos;
-  int nCount = 0;
-  int nIndex = 0;
-
-  while (nCount < mDclForms.GetCount())
-  {
-    // always get the first index when clearing a list
-    pos = mDclForms.FindIndex(nCount);
-
-    // get the object
-    CDclFormObject *pDclForm = mDclForms.GetAt(pos);
-
-    // if this dcl form's name matches the one queried for
-    if (pDclForm->m_ParentName == sDclParentUniqueName)
-    {
-      if (nIndex == nTabIndex)
-        // return the dcl form pointer
-        return pos;
-      nIndex++;
-    }
-
-    // increment the counter to include the next object
-    nCount++;
-  }
-  return NULL;
 }
 
 
@@ -665,6 +617,14 @@ bool CProject::GetPictureSize( UINT nID, CSize& size ) const
 	}
 	return false;
 }
+
+
+// This class is used for deserializing OLE controls from versions 8 and 9 project archives
+// (the class must have the same name as the original, since the original code used MFC's
+// (typesafe serialization mechanism, which writes the class name to the archive) [ORW]
+class CArxControlObject : public COleControlObject
+{ CArxControlObject() : COleControlObject( NULL ) {} DECLARE_SERIAL(CArxControlObject); };
+	IMPLEMENT_SERIAL(CArxControlObject, CObject, 1);
 
 
 void CProject::Serialize(CArchive& ar)
@@ -752,11 +712,14 @@ void CProject::Serialize(CArchive& ar)
 		else if (m_LispFileName == (sNone + sExt))
 			m_LispFileName = sNone; //drop the extraneous extension
 
-		CString sOriginalProjectPath;
+		CString sKeyName;
     if (nThisVersion >= 5)
-      ar >> sOriginalProjectPath; //this is ignored, unless we need to use the filename for a project key
-		if (msKeyName.IsEmpty())
-			msKeyName = StripPathFromFileName(sOriginalProjectPath).SpanExcluding(_T(">"));
+      ar >> sKeyName; //this is the project key name (may be a full path in older files)
+		else
+			sKeyName = m_LispFileName;
+		sKeyName = StripPathFromFileName(sKeyName).SpanExcluding(_T("."));
+		sKeyName.Replace( _T(' '), _T('_') );
+		SetKeyName( sKeyName );
 
     if (nThisVersion >= 6)
     {
@@ -767,7 +730,7 @@ void CProject::Serialize(CArchive& ar)
 			sExt = theWorkspace.LoadResourceString(IDS_DOTODS);
       if (m_DistFileName.Right(4).CompareNoCase(sExt) != 0 /*.ods*/ && m_DistFileName != sNone /* "<None>"*/)
         m_DistFileName += sExt;
-			else if (m_DistFileName == (sNone + sExt))
+			else if (m_DistFileName == sExt || m_DistFileName == (sNone + sExt))
 				m_DistFileName = sNone; //drop the extraneous extension
     }
     else
@@ -807,8 +770,20 @@ void CProject::Serialize(CArchive& ar)
     }		
     if (nThisVersion >= 7)
       m_ActiveXFiles.Serialize(ar);
-    if (nThisVersion >= 8)
+    if (nThisVersion > 9)
       mOleControls.Serialize(ar);
+    else if (nThisVersion >= 8)
+		{
+			POSITION pos = mOleControls.GetHeadPosition();
+			while (pos)
+				delete mOleControls.GetNext(pos);
+			mOleControls.RemoveAll();
+			CTypedPtrList< CObList, CArxControlObject* > listControls;
+			listControls.Serialize(ar);
+			pos = listControls.GetHeadPosition();
+			while (pos)
+				mOleControls.AddTail(listControls.GetNext(pos));
+		}
 
 
     if (nThisVersion >= 9)
@@ -919,6 +894,7 @@ void CProject::SaveDistFile()
   }
 }
 
+/*
 void CProject::SaveSS(CStgFile &FileStg, CDocument *pDoc)
 {
   //FileStg.Open( _T("projectData.inf"), CFile::modeCreate | CFile::modeWrite); 
@@ -1050,10 +1026,16 @@ void CProject::ReadSS(CStgFile &FileStg, CDocument *pDoc)
   sNone = theWorkspace.LoadResourceString(IDS_NONE);
   sNone = sNone.Left(5);
 
-  if (strResult.Right(4) != sText /*.lsp*/ && strResult != sNone /*"<None"*/)
+  if (strResult.Right(4) != sText && strResult != sNone)
     m_LispFileName += sText;
 
-  ar >> msKeyName;
+	CString sKeyName;
+  ar >> sKeyName;
+	if( sKeyName.IsEmpty() )
+		sKeyName = m_LispFileName;
+	sKeyName = StripPathFromFileName(sKeyName).SpanExcluding(_T("."));
+	sKeyName.Replace( _T(' '), _T('_') );
+	SetKeyName( sKeyName );
 
   sText = theWorkspace.LoadResourceString(IDS_DOTODS);
 
@@ -1062,7 +1044,7 @@ void CProject::ReadSS(CStgFile &FileStg, CDocument *pDoc)
   // lets check here if we need to add the ods file extension
   strResult = m_DistFileName;
   strResult.MakeLower();
-  if (strResult.Right(4) != sText && strResult != sText /* "<none>"*/)
+  if (strResult.Right(4) != sText && strResult != sText)
     m_DistFileName += sText;
 
 
@@ -1145,6 +1127,7 @@ void CProject::ReadSS(CStgFile &FileStg, CDocument *pDoc)
     }
   }
 }
+*/
 
 IOStatus CProject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
 {
@@ -1179,11 +1162,15 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
   if (strResult != sNone && strResult.Right(4).CompareNoCase(_T(".lsp")) != 0)
     m_LispFileName += _T(".lsp");
 
-  // this is the original project file path; just ignore it, unless we need a project key
-	CString sOriginalProjectPath;
-  if (!readString(sFile, sOriginalProjectPath)) return statInvalidFormat;
-	if (msKeyName.IsEmpty())
-		msKeyName = StripPathFromFileName(sOriginalProjectPath);
+  // this is the original project file path; use it to construct the project key
+	CString sKeyName;
+  if (!readString(sFile, sKeyName)) return statInvalidFormat;
+	if (!sKeyName.IsEmpty())
+	{
+		sKeyName = StripPathFromFileName(sKeyName).SpanExcluding(_T("."));
+		sKeyName.Replace( _T(' '), _T('_') );
+		SetKeyName( sKeyName );
+	}
 
   // this is used for a distribution file with multiple projects in it.
   if (!readString(sFile, m_DistFileName)) return statInvalidFormat;
@@ -1383,7 +1370,7 @@ IOStatus CProject::WriteToFile( LPCTSTR pszFilePath )
 			return statFileNotFound;
 		{
 			CArchiveEx archSave(&DestFile, CArchive::store, NULL, _T("ObjectDCL"), TRUE);
-			activeProject->Serialize(archSave);
+			Serialize(archSave);
 			archSave.Close();
 		}
 		DestFile.Flush();

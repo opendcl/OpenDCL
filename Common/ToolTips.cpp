@@ -81,12 +81,12 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip, CDclControlObject *pControl
 {		
 	//const CArxProject *pProjectList = theArxWorkspace.GetDialogProject(pControl->m_sDialogName);
 		
-	CPropertyObject *pToolTipText = pControl->GetPropertyObject(nToolTipText);	
-	CPropertyObject *pToolTipLine = pControl->GetPropertyObject(nToolTipLine);	
-	CPropertyObject *pToolTipBody = pControl->GetPropertyObject(nToolTipBody);	
-	CPropertyObject *pToolTipPicture = pControl->GetPropertyObject(nToolTipPicture);	
-	CPropertyObject *pToolTipAvi = pControl->GetPropertyObject(nToolTipAviFileName);
-	CPropertyObject *pToolTipTitleColor = pControl->GetPropertyObject(nToolTipTitleColor);
+	RefCountedPtr< CPropertyObject > pToolTipText = pControl->GetPropertyObject(nToolTipText);	
+	RefCountedPtr< CPropertyObject > pToolTipLine = pControl->GetPropertyObject(nToolTipLine);	
+	RefCountedPtr< CPropertyObject > pToolTipBody = pControl->GetPropertyObject(nToolTipBody);	
+	RefCountedPtr< CPropertyObject > pToolTipPicture = pControl->GetPropertyObject(nToolTipPicture);	
+	RefCountedPtr< CPropertyObject > pToolTipAvi = pControl->GetPropertyObject(nToolTipAviFileName);
+	RefCountedPtr< CPropertyObject > pToolTipTitleColor = pControl->GetPropertyObject(nToolTipTitleColor);
 
 	if (pToolTipTitleColor == NULL || pToolTipText == NULL)
 		return;

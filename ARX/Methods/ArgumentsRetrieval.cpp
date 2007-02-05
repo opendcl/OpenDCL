@@ -703,7 +703,7 @@ CWnd * GetControlPointer(int nControlType, CString sMethod, int *pnArgs)
 			return NULL;
 		}
 		
-		return pArxObject->m_pWnd;
+		return pArxObject->GetWindow();
 	}
 	else
 	{		
@@ -719,7 +719,7 @@ CWnd * GetControlPointer(int nControlType, CString sMethod, int *pnArgs)
 		return NULL;
 	}
 	
-	return pArxObject->m_pWnd;
+	return pArxObject->GetWindow();
 }
 CWnd * GetControlPointer(int nControlType, CString sMethod, CDclFormObject *pDclObject)
 {
@@ -916,10 +916,10 @@ CDclControlObject * GetControlArxObject(CString sMethod, int *pnArgs)
 // Parameters:  
 //		[nIndex]:  [0 based argument index]
 // 
-// Returns:	CPropertyObject *
+// Returns:	RefCountedPtr< CPropertyObject > 
 // 
 //*****************************************************************************
-CPropertyObject * GetPropertyArgument(int nIndex, CString sMethod)
+RefCountedPtr< CPropertyObject > GetPropertyArgument(int nIndex, CString sMethod)
 {
 	struct resbuf *ListData;
 
@@ -946,49 +946,49 @@ CPropertyObject * GetPropertyArgument(int nIndex, CString sMethod)
 		return NULL;
 	}
 	
-	CPropertyObject *pProperty = new CPropertyObject;
+	RefCountedPtr< CPropertyObject > pProperty;
 
 	switch (ListData->restype)
 	{	
 		case RTREAL:
 		case RTANG:
 			{
-				pProperty->SetType(PropDouble);
+				pProperty = new CPropertyObject(PropDouble);
 				// get the first argument required
 				pProperty->SetDoubleValue(ListData->resval.rreal);
 				break;
 			}
 		case RTSHORT:
 			{
-				pProperty->SetType(PropLong);
+				pProperty = new CPropertyObject(PropLong);
 				// get the first argument required
 				pProperty->SetLongValue(ListData->resval.rint);
 				break;
 			}
 		case RTLONG:
 			{
-				pProperty->SetType(PropLong);
+				pProperty = new CPropertyObject(PropLong);
 				// get the first argument required
 				pProperty->SetLongValue(ListData->resval.rlong);
 				break;
 			}
 		case RTSTR:
 			{
-				pProperty->SetType(PropString);
+				pProperty = new CPropertyObject(PropString);
 				// get the first argument required
 				pProperty->SetStringValue(ListData->resval.rstring);
 				break;
 			}
 		case RTT:
 			{
-				pProperty->SetType(PropBool);
+				pProperty = new CPropertyObject(PropBool);
 				// get the first argument required
 				pProperty->SetBooleanValue(true);				
 				break;
 			}
 		case RTNIL:
 			{
-				pProperty->SetType(PropBool);
+				pProperty = new CPropertyObject(PropBool);
 				// get the first argument required
 				pProperty->SetBooleanValue(false);				
 				break;
@@ -999,7 +999,6 @@ CPropertyObject * GetPropertyArgument(int nIndex, CString sMethod)
 				theWorkspace.DisplayAlert(
 					CString(ErrorInappropriateFound)
 					+ sMethod); 			
-				delete pProperty;
 				return NULL; 
 				break;
 			}		

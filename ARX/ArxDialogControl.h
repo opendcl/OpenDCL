@@ -13,13 +13,14 @@ protected:
 	CString	msLispSymbolName; //the lisp symbol name used for this control
 	
 public:
-	CArxDialogControl( CDclControlObject* pControl, CWnd* pWnd );
+	CArxDialogControl( CDclControlObject* pTemplate, RefCountedPtr< CWnd > pControl );
 	virtual ~CArxDialogControl();
 
 	// Properties
+public:
 	const CString& GetLispSymbolName() const { return msLispSymbolName; }
 
 	// Implementation
 public:
-	void CreateGlobalVariables() const;
+	virtual void CreateGlobalVariables() const;
 };

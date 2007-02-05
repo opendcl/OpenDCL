@@ -53,10 +53,10 @@ public:
 	CGripRect m_GripRect7;
 	CGripRect m_GripRect8;
 
-	CPropertyObject *m_pLeftProp;
-	CPropertyObject *m_pTopProp;
-	CPropertyObject *m_pWidthProp;
-	CPropertyObject *m_pHeightProp;
+	RefCountedPtr< CPropertyObject > m_pLeftProp;
+	RefCountedPtr< CPropertyObject > m_pTopProp;
+	RefCountedPtr< CPropertyObject > m_pWidthProp;
+	RefCountedPtr< CPropertyObject > m_pHeightProp;
 
 // Operations
 public:

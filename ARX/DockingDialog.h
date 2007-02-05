@@ -4,8 +4,8 @@
 #pragma once
 
 #include "AcUiDock.h"
-#include "ControlPane.h"
 #include "Resource.h"
+#include "ArxDialogObject.h"
 
 class CFontCollection;
 class CAcadDocReactor;
@@ -13,23 +13,36 @@ class CDialogControl;
 class CDclFormObject;
 class CDclControlObject;
 
+
+class CDockingDialogX : public CArxDialogObject
+{
+	friend class CDockingDialog;
+	CDockingDialog* mpOwner;
+protected:
+	CDockingDialogX( CDockingDialog& Owner, CDclFormObject* pDclForm );
+	~CDockingDialogX();
+
+	virtual DclFormType GetType() const;
+	virtual bool IsModeless() const { return true; }
+	virtual bool IsDockable() const { return true; }
+	virtual bool IsResizable() const { return false; }
+	virtual HWND GetHWnd() const;
+	virtual bool IsFloating() const;
+	virtual bool CreateModeless() const;
+	virtual void CloseDialog(int nStatus) const;
+	virtual bool GetWindowRect( CRect& rcDlg ) const;
+	virtual bool GetClientRect( CRect& rcDlg ) const;
+};
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CDockingDialog dialog
 
 class CDockingDialog : public CAdUiDockControlBar
 {
-	DECLARE_DYNAMIC(CDockingDialog);
-
-protected:
-	CDclFormObject* mpSourceForm;
-	CControlPane mControlPane;
-	CDclControlObject* mpControl;
+	CDockingDialogX mDialogX;
 
 public:
-	CString				m_sProjectName;
-	CString				m_sDialogName;
-	CList<CArxDialogControl*>			m_ControlCol;
-	CFontCollection		*m_pFontCollection;
 	CAcadDocReactor		*m_pDocToModReactor;
 
 	bool				m_bClosing;
@@ -40,30 +53,22 @@ public:
 	bool				m_bDockingSizeAdjusted;
 	bool				m_bFloatingSizeAdjusted;
 
-// Construction
-public:
-	CDockingDialog( CDclFormObject* pSourceForm );
-	virtual ~CDockingDialog();
-
-	//Attributes
-public:
-	const CDclFormObject* GetSourceForm() const { return mpSourceForm; }
-	CDclFormObject* GetSourceForm() { return mpSourceForm; }
-	const CControlPane& GetControlPane() const { return mControlPane; }
-	CControlPane& GetControlPane() { return mControlPane; }
-	const CDclControlObject* GetControl() const { return mpControl; }
-	CDclControlObject* GetControl() { return mpControl; }
-
-public:
-	void SetDclForm(CDclFormObject *pDclFormObject);
-	void GetClientArea(CRect &rect);
-	void CleanupDockable();
-
-	// Dialog Data
 	enum { IDD = 13100 };
 
+// Construction
+public:
+	CDockingDialog( CDclFormObject* pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
+	virtual ~CDockingDialog();
+
+public:
+	CDialogObject& GetDialogObject() { return mDialogX; }
+	const CDialogObject& GetDialogObject() const { return mDialogX; }
+
+public:
+	void GetClientArea(CRect &rect);
+
 // Overrides
-	public:
+public:
 	virtual BOOL Create(CWnd*pParent, LPCTSTR lpszTitle, CRect rect);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
@@ -81,17 +86,16 @@ private:
 	virtual CSize CalcDockedSize();
 	virtual void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight);	
 	virtual void SizeChanged (CRect *lpRect, BOOL bFloating, int flags);
+	virtual bool OnClosing();
+	virtual BOOL AddCustomMenuItems(LPARAM hMenu);
 
 // Implementation
 protected:
-
-	// Generated message map functions
-	//{{AFX_MSG(CDockingDialog)	
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnDestroy();
 	afx_msg void PostNcDestroy();
-	//}}AFX_MSG
+
+protected:
 	DECLARE_MESSAGE_MAP()
-	virtual bool OnClosing();
-	virtual BOOL AddCustomMenuItems(LPARAM hMenu);
 };

@@ -32,8 +32,8 @@ public:
 	int m_nHighestId;
 	int m_SelectedPic;
 	int m_SelectedStyle;
-	CPropertyObject *m_pStyle;
-	CPropertyObject *m_pPicture;
+	RefCountedPtr< CPropertyObject > m_pStyle;
+	RefCountedPtr< CPropertyObject > m_pPicture;
 	void DisplayDesc(int nSetting);
 
 

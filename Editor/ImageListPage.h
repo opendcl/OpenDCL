@@ -6,8 +6,8 @@
 class CImageListObject;
 
 #include "Resource.h"
+#include "PropertyObject.h"
 
-class CPropertyObject;
 class CDclFormObject;
 class CImageListObject;
 
@@ -31,7 +31,7 @@ public:
 	CListCtrl	m_PicList;
 	//}}AFX_DATA
 
-	CPropertyObject *m_pImageListIndex;
+	RefCountedPtr< CPropertyObject > m_pImageListIndex;
 	CDclFormObject *m_pDclForm;
 	CImageListObject *m_pImageListObj;
 	CImageList m_ImageList;

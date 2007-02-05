@@ -14,6 +14,7 @@ class CFontCollection;
 class CDclFormObject;
 class CControlHolder;
 enum ControlTypes;
+enum PropertyId;
 
 
 #define IDC_CONTROLHOLDER 220
@@ -66,8 +67,6 @@ enum ControlTypes;
 
 #define nDeGridSpacing 8
 #define nNotSet -1
-
-#define nFormEventOnOk 251
 
 
 typedef CList<CSelectedControl*> CSelectedCol;
@@ -137,7 +136,7 @@ public:
 	void OnLostFocus();
 	BOOL CanUndo();
 	void UndoAction();
-	void UpdateControl(CDclControlObject *pArxObject, short ChangedPropertyID);
+	void UpdateControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID);
 	short ResetDclFormIndex();
 	void CheckPictureRefs();
 	void SelectControl(short nArxControlIndex);
@@ -148,7 +147,7 @@ public:
 	void UpdateZOrderList();
 	void UpdateFont(CString sName);
 	void UpdateFontSize(int nSize);
-	void UpdateFontBool(bool bBool, int nId);
+	void UpdateFontBool(bool bBool, PropertyId nId);
 	void UpdateAxFont(CSelectedControl *pSelControl, int nId, bool bBool, int nSize = 0, CString sName = "");
 	// tab pane functions
 	void AddTabPanes();
@@ -258,8 +257,8 @@ public:
 	void AddProperties		(CDclControlObject *pArxObject, short nType, CString Name);
 
 public:
-	void UpdateProperty(int nID, CDclControlObject *pArxObject, CControlHolder *pParent);
-	void RefreshChildControl(CDclControlObject *pArxObject, int ChangedPropertyID);
+	void UpdateProperty(PropertyId nID, CDclControlObject *pArxObject, CControlHolder *pParent);
+	void RefreshChildControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID);
 	void ResizeChildControl(CDclControlObject *pArxObject);
 	void CheckAutoSizeProp(CDclControlObject *pArxObject, CControlHolder *pParent);
 	void ResetImageList(CWnd *pControl, int nID, CDclControlObject *pArxObject);

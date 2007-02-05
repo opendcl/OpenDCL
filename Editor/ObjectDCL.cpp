@@ -72,9 +72,9 @@ static CString FindTabCaption(CDclFormObject *pDclTab)
 			CDclFormObject *pDcl = pDclTab->GetProject()->GetDclFormList().GetAt(pos);
 			if (pDcl != NULL)
 			{
-				if (pDclTab->m_ParentName == pDcl->m_UniqueName)
+				if (pDclTab->GetParentName() == pDcl->GetUniqueName())
 				{					
-					return FindTabCaption2(pDcl, pDclTab->m_TabIndex);
+					return FindTabCaption2(pDcl, pDclTab->GetTabIndex());
 				}
 			}			
 		}
@@ -83,7 +83,7 @@ static CString FindTabCaption(CDclFormObject *pDclTab)
 }
 
 
-static short AddControlStdProperty(CDclControlObject *pControlObject, short nID, LPCTSTR strValue, PropertyTypes ValueType, bool bHidden = false) 
+static short AddControlStdProperty(CDclControlObject *pControlObject, PropertyId nID, LPCTSTR strValue, PropertyType ValueType, bool bHidden = false) 
 {
 	short sReturnValue;
 	
@@ -92,7 +92,7 @@ static short AddControlStdProperty(CDclControlObject *pControlObject, short nID,
 	// if the property was not found add it
 	if (nPropIndex > nNotSet)
 	{
-		CPropertyObject* pPropertyObect = pControlObject->GetPropertyObject(nID);
+		RefCountedPtr< CPropertyObject > pPropertyObect = pControlObject->GetPropertyObject(nID);
 		pPropertyObect->SetHidden(bHidden);
 	}
 	// if the property was not found add it
@@ -102,11 +102,11 @@ static short AddControlStdProperty(CDclControlObject *pControlObject, short nID,
 		POSITION InsertPos = pControlObject->FindPropertyInsertPos(nID, (bHidden == TRUE));
 	
 		// create new property object pointer to pass to AddTail method
-		CPropertyObject* pPropertyObect = new CPropertyObject;
+		RefCountedPtr< CPropertyObject > pPropertyObect = new CPropertyObject( ValueType, 0, nID );
 		
 		// assign values
-		pPropertyObect->SetID(nID);
-		pPropertyObect->AddProperty(ValueType, strValue);
+		if( strValue && *strValue )
+			pPropertyObect->SetStringValue(strValue);
 		pPropertyObect->SetHidden(bHidden);
 
 		// reset the name to the new value
@@ -123,7 +123,7 @@ static short AddControlStdProperty(CDclControlObject *pControlObject, short nID,
 }
 
 
-static short AddControlHiddenProperty(CDclControlObject *pControl, short nID, LPCTSTR strValue, PropertyTypes ValueType) 
+static short AddControlHiddenProperty(CDclControlObject *pControl, PropertyId nID, LPCTSTR strValue, PropertyType ValueType) 
 {
 	return AddControlStdProperty(pControl, nID, strValue, ValueType, TRUE);
 }
@@ -551,7 +551,7 @@ CObjectDCLView* CObjectDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 
 	if (pDclForm->GetType() == VdclTabForm)
 	{
-		CDclFormObject *pParent = activeProject->GetParentDclForm(pDclForm->m_ParentName);
+		CDclFormObject *pParent = activeProject->GetParentDclForm(pDclForm->GetParentName());
 		if (pParent != NULL)
 		{
 			CDclControlObject* pTabCtrl = pParent->FindFirstControlOfType(CtlTabStrip);
@@ -923,7 +923,7 @@ CDclFormObject* CObjectDCLApp::AddNewDclForm(DclFormType nType)
 	CDclFormObject* pNewDclForm = new CDclFormObject( activeProject, nType );
 	
 	// assign the unique name and dcl form type to the dcl form object
-	pNewDclForm->m_UniqueName = CreateUniqueName();
+	pNewDclForm->SetUniqueName(CreateUniqueName());
 	
 	// add the new Dcl form object
 	activeProject->GetDclFormList().AddTail(pNewDclForm);
@@ -950,14 +950,14 @@ void CObjectDCLApp::AddDclFormProperties(CDclFormObject *pNewDclForm, DclFormTyp
 	CProject *pProject = activeProject;
 
 	// create a new arx object to hold the new dcl form's properties
-	CDclControlObject* pArxPropertyObject = pNewDclForm->CreateControlProperties();
+	CDclControlObject* pArxPropertyObject = pNewDclForm->GetControlProperties();
 
 	// lets create a name for the new dcl form
 	int nCount = pProject->GetDclFormList().GetCount();
 	
 	sText = theWorkspace.LoadResourceString(IDS_DCLFORM);
 
-    CString sCaption = sText + LTOA(nCount);
+	CString sCaption = sText + LTOA(nCount);
 
     // add standard properties
 	// add the name property
@@ -1353,9 +1353,7 @@ void CObjectDCLApp::OnHelpFinder()
 	{
 		CDclFormObject DclForm(NULL, (DclFormType)-2); // -2 to indicate bonus functions
 		CDclControlObject ArxObject((ControlTypes)-2, &DclForm); // -2 to indicate bonus functions
-		CPropertyObject *pProp = new CPropertyObject;
-		pProp->SetID(nName);
-		pProp->SetType((PropertyTypes)-1);
+		RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropInvalid, 0, nName);
 		ArxObject.m_PropertyList.AddTail(pProp);
 		
 		CObjectBrowser Dlg(m_pMainFrame);

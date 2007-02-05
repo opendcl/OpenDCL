@@ -5,6 +5,7 @@
 
 #include "Resource.h"
 #include "SnapDlg.h"
+#include "ArxDialogObject.h"
 
 class CAcadDocReactor;
 
@@ -18,54 +19,69 @@ class CAcadDocReactor;
 #endif
 
 
+class CModelessDialogX : public CArxDialogObject
+{
+	friend class CModelessDlg;
+	CModelessDlg* mpOwner;
+protected:
+	CModelessDialogX( CModelessDlg& Owner, CDclFormObject* pDclForm );
+	~CModelessDialogX();
+
+	virtual DclFormType GetType() const;
+	virtual bool IsModeless() const { return true; }
+	virtual bool IsDockable() const { return false; }
+	virtual bool IsResizable() const;
+	virtual HWND GetHWnd() const;
+	virtual bool CreateModeless() const;
+	virtual void CloseDialog(int nStatus) const;
+	virtual bool SetMinMaxSize( const CSize& min, const CSize& max );
+};
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CModelessDlg dialog
 
 class CModelessDlg : public CSnapDlg
 {
-// Construction	
-public:
-	CModelessDlg(CDclFormObject* pSourceForm, CWnd* pParent = NULL, int nX = -1, int nY = -1);
+	CModelessDialogX mDialogX;
+	int mnX;
+	int mnY;
+	bool mbResizable;
 
-public:
-	void SizeDialog ();
-	void SetTitleBarIcon(int nPictureID);
-	void SetDclForm(CDclFormObject *pDclFormObject);		
-	void CenterDialog();
-	void CenterDialog(int nNewWidth, int nNewHeight);
-	void ResizeDialog(int nNewWidth, int nNewHeight);
-	void AboutToClose();
-	bool QueryForClose();
-	void FireCloseEvent();
 	bool				m_bClosing;
 	bool				m_bAboutToClose;
 	CAcadDocReactor		*m_pDocToModReactor;
-	int m_nX;
-	int m_nY;
 	bool m_bAsModal;
 	
-// Dialog Data
-	//{{AFX_DATA(CModelessDlg)
 	enum { IDD = IDD_RESIZEABLE };
-		// NOTE: the ClassWizard will add data members here
-	//}}AFX_DATA
 
+// Construction	
+public:
+	CModelessDlg( CDclFormObject* pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL );
+	~CModelessDlg();
+
+public:
+	CDialogObject& GetDialogObject() { return mDialogX; }
+	const CDialogObject& GetDialogObject() const { return mDialogX; }
+
+public:
+	bool IsResizable() const { return mbResizable; }
+
+	void SizeDialog ();
+	void SetTitleBarIcon(int nPictureID);
+	void AboutToClose();
+	bool QueryForClose();
+	void FireCloseEvent();
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CModelessDlg)
-	public:
+public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
+protected:
 	virtual void OnOK();
 	virtual void OnCancel();
-	//}}AFX_VIRTUAL
 
-// Implementation
+	// Implementation
 protected:
-
-	// Generated message map functions
-	//{{AFX_MSG(CModelessDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnClose();
 	afx_msg LONG onAcadKeepFocus(UINT, LONG);
@@ -77,6 +93,7 @@ protected:
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
-	//}}AFX_MSG
+
+protected:
 	DECLARE_MESSAGE_MAP()
 };

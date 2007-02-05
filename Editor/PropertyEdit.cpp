@@ -20,6 +20,7 @@
 #include "ProjectTreeCtrl.h"
 #include "PropertyTabPane.h"
 #include "MainFrm.h"
+#include "AxInterfaceDescriptor.h"
 
 
 static const TCHAR *sAllChars = _T("*");
@@ -103,7 +104,7 @@ void CPropertyEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	
 	if (nChar == nCharEsc)
 	{
-		m_pProp->SetProperty(m_OriginalValue);
+		m_pProp->SetStringValue(m_OriginalValue);
 		SetWindowText(m_OriginalValue);
 	}
 	if (m_sFilter.GetLength() == 0 ||
@@ -148,7 +149,7 @@ void CPropertyEdit::CommitValue()
 	GetWindowText(sText);
 	if (m_pAxContainer != NULL)
 	{
-		m_pProp->SetActiveXPropery(m_pAxContainer->GetActiveXCtrl(), sText);
+		m_pProp->GetAxInterfaceDescriptorPtr()->SetActiveXPropery(m_pAxContainer->GetActiveXCtrl(), sText);
 	}
 	else if (m_pControl->m_Id != CtlFormPropHolder)
 	{
@@ -171,7 +172,7 @@ void CPropertyEdit::CommitValue()
 		}
 		
 		// set the property value
-		m_pProp->SetProperty(sText);	
+		m_pProp->SetStringValue(sText);	
 
 		// lets update the control if the property is not a position property
 		if (m_pProp->GetID() != nLeft &&
@@ -214,7 +215,7 @@ void CPropertyEdit::CommitValue()
 				pChildFrm->SetWindowText(sText);
 			}
 		}
-		m_pProp->SetProperty(sText);	
+		m_pProp->SetStringValue(sText);	
 	}
 }
 
@@ -346,7 +347,7 @@ void CPropertyEdit::CommitList()
 {
 	
 	// clear the list
-	m_pProp->ClearList();
+	m_pProp->clear();
 
 	// get each list item from the CEdit and add it to the list
 	for (int i=0; i<GetLineCount(); i++)

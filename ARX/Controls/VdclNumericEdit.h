@@ -25,7 +25,7 @@ public:
 	bool			m_bFocusClick;
 	CString m_sFilter;
 	bool m_bInvokeWithSendString;
-	CPropertyObject *m_pTextProp;
+	RefCountedPtr< CPropertyObject > m_pTextProp;
 	
 // Operations
 public:

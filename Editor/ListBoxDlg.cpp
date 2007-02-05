@@ -9,6 +9,7 @@
 #include "DclControlObject.h"
 #include "PropertyIds.h"
 #include "AxPropertyDescriptor.h"
+#include "AxInterfaceDescriptor.h"
 #include "AxContainer.h"
 #include "ControlHolder.h"
 #include "ChildFrm.h"
@@ -63,7 +64,7 @@ void CListBoxDlg::OnSelchangeListbox()
 	// watch for ActiveX properties to be set
 	if (nType == PropActiveXProp)
 	{
-		switch (m_pPropObject->GetActiveXProperyType())
+		switch (m_pPropObject->GetAxInterfaceDescriptorPtr()->GetActiveXProperyType())
 		{
 		case VT_BOOL:
 		case VT_UI1:
@@ -81,8 +82,8 @@ void CListBoxDlg::OnSelchangeListbox()
 		}
 	}
 
-	char Value[80];
-	_ltoa(m_ListBox.GetCurSel(), Value, 10);
+	TCHAR Value[80];
+	_ltot(m_ListBox.GetCurSel(), Value, 10);
 	
 
 	switch (nType)
@@ -101,10 +102,10 @@ void CListBoxDlg::OnSelchangeListbox()
 			{
 				DISPID dispid;
 				// get the DISPID
-				if (m_pPropObject->m_pAxPropPutRef != NULL)
-					dispid = m_pPropObject->m_pAxPropPutRef->Id;
-				else if (m_pPropObject->m_pAxPropPut != NULL)
-					dispid = m_pPropObject->m_pAxPropPut->Id;
+				if (m_pPropObject->GetAxInterfaceDescriptorPtr()->GetPropPutRef())
+					dispid = m_pPropObject->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Id;
+				else if (m_pPropObject->GetAxInterfaceDescriptorPtr()->GetPropPut())
+					dispid = m_pPropObject->GetAxInterfaceDescriptorPtr()->GetPropPut()->Id;
 				
 				CAxContainer *pAxCont = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
 				IDispatch *pDisp = pAxCont->GetOleIDispatch();
@@ -118,11 +119,13 @@ void CListBoxDlg::OnSelchangeListbox()
 		{
 		if (m_pAxContainer != NULL)
 		{
-			m_pPropObject->SetActiveXPropery(m_pAxContainer->GetActiveXCtrl(), m_pPropObject->GetActiveXEnumValue(m_ListBox.GetCurSel()));
+			m_pPropObject->GetAxInterfaceDescriptorPtr()->SetActiveXPropery(
+				m_pAxContainer->GetActiveXCtrl(),
+				m_pPropObject->GetAxInterfaceDescriptorPtr()->GetActiveXEnumValue(m_ListBox.GetCurSel()));
 		}	
 		else
 		{
-			m_pPropObject->SetProperty(Value);
+			m_pPropObject->SetStringValue(Value);
 		}
 		break;
 		}
@@ -133,7 +136,7 @@ void CListBoxDlg::OnSelchangeListbox()
 		{
 		case 0:
 		{
-			m_pPropObject->SetProperty("0");
+			m_pPropObject->SetStringValue("0");
 			if (m_pControl->m_Id == -1)
 			{
 				CChildFrame *pChildFrm = (CChildFrame*) m_pView->GetParentFrame();				
@@ -150,7 +153,7 @@ void CListBoxDlg::OnSelchangeListbox()
 		{
 			CString sPictureID;
 			m_ListBox.GetText(nSelected, sPictureID);
-			m_pPropObject->SetProperty(sPictureID);
+			m_pPropObject->SetStringValue(sPictureID);
 
 			if (m_pControl->m_Id == -1)
 			{
@@ -173,11 +176,11 @@ void CListBoxDlg::OnSelchangeListbox()
 		
 		if (m_pAxContainer != NULL)
 		{
-			m_pPropObject->SetActiveXPropery(m_pAxContainer->GetActiveXCtrl(), sValue);
+			m_pPropObject->GetAxInterfaceDescriptorPtr()->SetActiveXPropery(m_pAxContainer->GetActiveXCtrl(), sValue);
 		}
 		else
 		{
-			m_pPropObject->SetProperty(sValue);
+			m_pPropObject->SetStringValue(sValue);
 			if (m_pPropObject->GetID() == nResizable)
 			{
 				if (m_ListBox.GetCurSel() == 0)
@@ -237,7 +240,7 @@ void CListBoxDlg::OnKillfocusListbox()
 	}
 }
 
-void CListBoxDlg::SetPropertyPointer(CPropertyObject *pPropObject)
+void CListBoxDlg::SetPropertyPointer(RefCountedPtr< CPropertyObject > pPropObject)
 {
 	m_pPropObject = pPropObject;	
 }

@@ -10,6 +10,7 @@
 #include "Resource.h"
 #include "PropertyObject.h"
 #include "AxEventDescriptor.h"
+#include "AxInterfaceDescriptor.h"
 #include "ObjectDCLView.h"
 #include "Project.h"
 #include "EditorWorkspace.h"
@@ -247,49 +248,43 @@ void CEventsTabPane::AddAnyActiveXEvents()
 		if (pos != NULL)
 		{
 			// get the event property object
-			CPropertyObject *pProp = m_pControl->m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pProp = m_pControl->m_PropertyList.GetAt(pos);
 			
 			// if the event exists, add it
-			if (pProp != NULL)
+			if (pProp != NULL && pProp->GetType() == PropActiveXEvent)
 			{
-				if (pProp->GetType() == PropActiveXEvent)
+				CString sName = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->Name;
+				if (!sName.IsEmpty())
 				{
-					if (pProp->m_pAxEvent != NULL)
-					{
-						int hItem = m_EventsTree.AddString(pProp->m_pAxEvent->Name);
-						m_EventsTree.SetItemData(hItem, i);
-
-						// if the event has been set...
-						if (pProp->GetStringValue().GetLength() > 0)
-						{
-							// set the event tree item as checked.
-							m_EventsTree.SetCheck(hItem, TRUE);
-						}
-					}
+					int hItem = m_EventsTree.AddString(sName);
+					m_EventsTree.SetItemData(hItem, i);
+					if (pProp->GetSubtype() & 1) // if the event has been set...
+						m_EventsTree.SetCheck(hItem, TRUE); // set the event tree item as checked.
 				}
-			}			
+			}
 		}
 	}    
 }
-void CEventsTabPane::TryToAddEvent(int nEvent) 
+
+void CEventsTabPane::TryToAddEvent(PropertyId nEventId) 
 {
 	if (m_pDclForm == NULL)
 		return;
 	
-	UINT ResStringId = nEvent + 210;	
+	UINT ResStringId = nEventId + 210;	
 	// there is a special case for grid cell editing.
-	if (nEvent == nEventEndLabelEdit)
+	if (nEventId == nEventEndLabelEdit)
 		ResStringId = 5226;
 	   
 	CString DefaultEventDeclaration;	
 	// get the event property object
-	CPropertyObject *pProp = m_pControl->GetPropertyObject(nEvent);
+	RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyObject(nEventId);
 	
 	// if the event exists, add it
 	if (pProp != NULL)
 	{
 		CString EventName;
-    if (nEvent != nFormEventOnOk) {
+    if (nEventId != nFormEventOnOk) {
       EventName = theWorkspace.LoadResourceString(ResStringId);
     } else {
       EventName = "Ok";
@@ -307,7 +302,7 @@ void CEventsTabPane::TryToAddEvent(int nEvent)
 		}	
 
 		int hItem = m_EventsTree.AddString(EventName);
-		m_EventsTree.SetItemData(hItem, nEvent);
+		m_EventsTree.SetItemData(hItem, nEventId);
 
 		// if the event has been set...
 		if (pProp->GetStringValue().GetLength() > 0)
@@ -439,24 +434,21 @@ CString CEventsTabPane::GetDefunArguments()
 	// get the arx control Id
 	int nArxControlType = m_pControl->GetType();
 
-	if (m_pControl->GetType() != CtlActiveX)
-		LoadArgsNDesc(nEventId, m_pDclForm->GetType(), nArxControlType, sArgs, strDesc, m_pControl);
+	if (nArxControlType != CtlActiveX)
+		LoadArgsNDesc(nEventId, nArxControlType, nArxControlType, sArgs, strDesc, m_pControl);
 	else
 	{
 		POSITION pos = m_pControl->m_PropertyList.FindIndex(nEventId);
 		if (pos != NULL)
 		{
-			CPropertyObject *pProp = m_pControl->m_PropertyList.GetAt(pos);
-			if (pProp->m_pAxEvent != NULL)
+			RefCountedPtr< CPropertyObject > pProp = m_pControl->m_PropertyList.GetAt(pos);
+			strDesc = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->DocumentationDesc;
+			int ctCallingArgs = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->nArgs;
+			for (int i = 0; i < ctCallingArgs; i++)
 			{
-				strDesc = pProp->m_pAxEvent->DocumentationDesc;
-				for (int i=0; i<pProp->m_pAxEvent->nArgs; i++)
-				{
-					sArgs += pProp->m_pAxEvent->CallingArgNames[i];
-					if (i < pProp->m_pAxEvent->nArgs-1)
-						sArgs += " ";
-				}
-				
+				sArgs += pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->CallingArgNames[i];
+				if (i < ctCallingArgs - 1)
+					sArgs += " ";
 			}
 		}
 	}
@@ -707,7 +699,7 @@ void CEventsTabPane::OnSelchangeEventstree()
 		}
 		else
 		{
-			m_pDclForm = activeProject->GetParentDclForm(m_pDclForm->m_ParentName);
+			m_pDclForm = activeProject->GetParentDclForm(m_pDclForm->GetParentName());
 			sDclFormName = m_pDclForm->GetKeyName();
 		}
 	}
@@ -844,7 +836,7 @@ void CEventsTabPane::SetEvent(int nEventId, CString sEventDefun)
 		POSITION pos = m_pControl->m_PropertyList.FindIndex(nEventId);
 		if (pos != NULL)
 		{
-			CPropertyObject *pProp = m_pControl->m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pProp = m_pControl->m_PropertyList.GetAt(pos);
 			pProp->SetStringValue( sEventDefun );
 		}
 	}
@@ -859,7 +851,7 @@ CString CEventsTabPane::GetEvent(int nEventId)
 		POSITION pos = m_pControl->m_PropertyList.FindIndex(nEventId);
 		if (pos != NULL)
 		{
-			CPropertyObject *pProp = m_pControl->m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pProp = m_pControl->m_PropertyList.GetAt(pos);
 			return pProp->GetStringValue();
 		}
 	}

@@ -24,8 +24,9 @@
 #define CPN_SELENDOK         WM_USER + 1004        // Colour Picker end OK
 #define CPN_SELENDCANCEL     WM_USER + 1005        // Colour Picker end (cancelled)
 
+#include "PropertyObject.h"
+
 // forward declaration
-class CPropertyObject;
 class CControlHolder;
 
 // To hold the colours and their names
@@ -44,12 +45,12 @@ public:
     CColourPopup();
     CColourPopup(CPoint p, COLORREF crColour, CWnd* pParentWnd,
                  LPCTSTR szDefaultText = NULL, LPCTSTR szCustomText = NULL,
-				 CPropertyObject *pProp = NULL, CControlHolder *pAxCtrl = NULL);
+				 RefCountedPtr< CPropertyObject > pProp = NULL, CControlHolder *pAxCtrl = NULL);
     void Initialise();
 
 // Attributes
 public:
-	CPropertyObject *m_pProp;
+	RefCountedPtr< CPropertyObject > m_pProp;
 	CControlHolder *m_pAxCtrl;
 // Operations
 public:

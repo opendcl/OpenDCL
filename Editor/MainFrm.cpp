@@ -429,8 +429,6 @@ void CMainFrame::OnDestroy()
 	m_TreeImageList.DeleteImageList();
 	theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
 	activeProject->ClearProject();
-	
-
 }
 
 BOOL CMainFrame::DestroyWindow() 
@@ -624,7 +622,7 @@ void CMainFrame::OnRemove()
 		return;
 
 	// get the unique name so we can delete any child tab panes/forms
-	CString sUniqueName = pDclForm->m_UniqueName;
+	CString sUniqueName = pDclForm->GetUniqueName();
 
 	CDocument* pDoc = pProjTree->GetDocument();
 	if( pDoc )
@@ -637,7 +635,7 @@ void CMainFrame::OnRemove()
 		CDclFormObject *pThisForm = pProject->GetDclFormList().GetNext(pos);
 		
 		// if this is the form to delete or a child of the form
-		if (pThisForm == pDclForm || pThisForm->m_ParentName == sUniqueName)
+		if (pThisForm == pDclForm || pThisForm->GetParentName() == sUniqueName)
 		{
 			if (pThisForm->m_htiTreeItem != NULL) // if the tab has a tree item (which it should)
 				pProjTree->DeleteItem(pThisForm->m_htiTreeItem); // delete the item.

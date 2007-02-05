@@ -18,30 +18,147 @@ const int nBottomAdjustment = 5;
 const int nHeightOffset = 2;
 
 
+// CDockingDialogX interface implementation
+CDockingDialogX::CDockingDialogX( CDockingDialog& Owner, CDclFormObject* pDclForm )
+: CArxDialogObject( pDclForm, &Owner )
+, mpOwner( &Owner )
+{
+}
+
+CDockingDialogX::~CDockingDialogX()
+{
+}
+
+DclFormType CDockingDialogX::GetType() const
+{
+	return VdclDockable;
+}
+
+HWND CDockingDialogX::GetHWnd() const
+{
+	return mpOwner->m_hWnd;
+}
+
+bool CDockingDialogX::IsFloating() const
+{
+	return (mpOwner->IsFloating() != FALSE);
+}
+
+bool CDockingDialogX::CreateModeless() const
+{
+	CMDIFrameWnd* pAcadFrame = acedGetAcadFrame();
+	CDclControlObject* pProps = mpSourceForm->GetControlProperties();
+	int nDocHeight = pProps->GetLngProperty(nHeight);
+	DWORD dwDockableSides = 0;
+	DWORD dwDefaultDockableSide = 0;
+
+	switch (pProps->GetLngProperty(nDockableSides))
+	{
+	case 1:
+		// set the form to only dock on the top side
+		dwDockableSides = CBRS_ALIGN_TOP;
+		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
+		nDocHeight += 8;
+		break;
+	case 2:
+		// set the form to only dock on the bottom side
+		dwDockableSides = CBRS_ALIGN_BOTTOM;
+		dwDefaultDockableSide = AFX_IDW_DOCKBAR_BOTTOM;
+		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
+		break;
+	case 3:
+		// set the form to only dock on the top or bottom sides
+		dwDockableSides = CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;				
+		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
+		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
+		break;
+	case 4:
+		// set the form to only dock on the any side
+		dwDockableSides = AFX_IDW_DOCKBAR_TOP | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP;				
+		dwDefaultDockableSide = CBRS_ALIGN_LEFT;
+		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
+		break;
+	case 5:
+		// set the form to only dock on the any side
+		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;
+		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
+		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
+		break;
+	default:
+		// set the form to only dock on the left or right sides
+		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT;
+		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
+		break;
+	}
+
+	CRect rect = CFrameWnd::rectDefault;
+	if (rect.left < 0)
+		rect.left = 0;
+	if (rect.top < 0)
+		rect.top = 0;				
+	rect.bottom = rect.top + nDocHeight;
+	rect.right = rect.left + pProps->GetLngProperty(nWidth);
+
+	mpOwner->Create( pAcadFrame, _T("ObjectDCLDock"), rect);		
+	if (mpSourceForm->GetUUIDAsString().IsEmpty())
+	{
+		UUID uuid;
+		UuidCreate(&uuid);
+		mpOwner->SetToolID (&uuid);
+	}
+	else
+	{
+    UUID uuid = mpSourceForm->GetUUID();
+		mpOwner->SetToolID (&uuid);
+	}			
+	// set the form to only dock on the set side(s)
+	mpOwner->EnableDocking(dwDockableSides);
+	// loads the dockable form but does not display it
+	mpOwner->RestoreControlBar(dwDefaultDockableSide);
+	return true;
+}
+
+void CDockingDialogX::CloseDialog(int nStatus) const
+{
+	mpOwner->EndModalLoop(nStatus); //set the status
+	mpOwner->SendMessage(WM_CLOSE);
+	if( ::IsWindow(mpOwner->m_hWnd) )
+		mpOwner->DestroyWindow();
+}
+
+bool CDockingDialogX::GetWindowRect( CRect& rcDlg ) const
+{
+	if (mpOwner->IsFloating())
+		mpOwner->GetFloatingRect(&rcDlg);
+	else
+		mpOwner->GetClientArea(rcDlg);
+	return true;
+}
+
+bool CDockingDialogX::GetClientRect( CRect& rcDlg ) const
+{
+	mpOwner->GetClientArea(rcDlg);
+	return true;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CDockingDialog dialog
 
-IMPLEMENT_DYNAMIC(CDockingDialog, CAdUiDockControlBar)
-
-CDockingDialog::CDockingDialog( CDclFormObject* pSourceForm )
+CDockingDialog::CDockingDialog( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CAdUiDockControlBar()
-, mpSourceForm( pSourceForm )
-, mControlPane( pSourceForm )
-, mpControl( NULL )
+, mDialogX( *this, pSourceForm )
 {
-	//{{AFX_DATA_INIT(CDockingDialog)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
 	m_bDockingSizeAdjusted = false;
 	m_bFloatingSizeAdjusted = false;
 	m_bClosing = false;
 	m_pDocToModReactor = NULL;
 }
 
+
 CDockingDialog::~CDockingDialog()
 {
 }
-
 
 
 BEGIN_MESSAGE_MAP(CDockingDialog, CAdUiDockControlBar)
@@ -61,12 +178,12 @@ BOOL CDockingDialog::Create(CWnd* pParent, LPCTSTR lpszTitle, CRect rect)
   CString title = lpszTitle;
 	CString strWndClass;
 	strWndClass = AfxRegisterWndClass (CS_DBLCLKS, LoadCursor (NULL, IDC_ARROW));	
-    if (!CAdUiDockControlBar::Create (strWndClass,
-									   title,
-									   WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN,
-									   rect,
-                                       pParent, 
-									   IDD_DIALOGBAR_UI))
+	if (!CAdUiDockControlBar::Create (strWndClass,
+									 title,
+									 WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN,
+									 rect,
+																		 pParent, 
+									 IDD_DIALOGBAR_UI))
 	{
 		return FALSE;
 	}
@@ -83,19 +200,19 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect rectThis;
 	
 	// get the form's properties
-	CDclControlObject* pFormProps = mpSourceForm->GetControlProperties();
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	// set the window text
-	SetWindowText(pFormProps->GetStrProperty(nTitleBarText));
+	SetWindowText(pProps->GetStrProperty(nTitleBarText));
 	
 	// setup the rect default rect 
 	rectThis.top = 0;
 	rectThis.left = 0;
 	
 	// get the width
-	int nCtlWidth = pFormProps->GetLngProperty(nWidth);
+	int nCtlWidth = pProps->GetLngProperty(nWidth);
 
 	// get the height
-	int nCtlHeight = pFormProps->GetLngProperty(nHeight);
+	int nCtlHeight = pProps->GetLngProperty(nHeight);
 	
 	// set the rect for the control pane to be created
 	CRect rcThis;
@@ -103,37 +220,28 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect rcWnd;
 	GetWindowRect(&rcWnd);
 
-	if (mpSourceForm->m_bUsesClientRect == TRUE && IsFloating())
+	if (mDialogX.GetSourceForm()->m_bUsesClientRect == TRUE && IsFloating())
 	{
 		nCtlHeight += rcWnd.Height() - rcThis.Height();
 		nCtlWidth += rcWnd.Width() - rcThis.Width();
 	}
 	rectThis.right = nCtlWidth;
 	rectThis.bottom = nCtlHeight;
-
-	// create the control pane that will display the controls
-	mControlPane.m_pControlCol = &m_ControlCol;
-	mControlPane.m_pFontCollection = m_pFontCollection;
-	mControlPane.m_PanePos = rcThis;
-	mControlPane.m_pParentDlg = this;
-	mControlPane.m_bInvokeWithSendString = true;
+	mDialogX.GetControlPane().GetPaneWindowRect() = rcThis;
 	// call method to create the controls
-	mControlPane.CreateControls(mpSourceForm, 1000);
-	
-	mControlPane.m_sDialogName = mpSourceForm->GetKeyName();
-	mControlPane.m_sProjectName = mControlPane.GetProject()->GetKeyName();
+	UINT nID = 1000;
+	mDialogX.GetControlPane().CreateControls(mDialogX.GetSourceForm(), nID);
 
-
-	if (pFormProps->GetLngProperty(nMaxDialogWidth) > -1)
+	if (pProps->GetLngProperty(nMaxDialogWidth) > -1)
 	{
 		long lMinHeight;
 		long lMinWidth;
 		GetFloatingMinSize(&lMinHeight, &lMinWidth);
-		lMinWidth = pFormProps->GetLngProperty(nMinDialogWidth);
+		lMinWidth = pProps->GetLngProperty(nMinDialogWidth);
 	}
 	
 	// add the doc reactor if required for an event
-	CString sEventDefun = pFormProps->GetStrProperty(nDocEventActivated);
+	CString sEventDefun = pProps->GetStrProperty(nDocEventActivated);
 	if (sEventDefun.GetLength() > 0)
 	{
 		m_pDocToModReactor = new CAcadDocReactor();
@@ -143,12 +251,12 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}	
 
 	// call methods to invoke the event
-	InvokeMethod(pFormProps->GetStrProperty(nFormEventInitialize), true);	
+	InvokeMethod(pProps->GetStrProperty(nFormEventInitialize), true);	
 	
 	GetWindowRect(&rcThis);
 	// call methods to invoke the event
 	InvokeMethodIntInt(
-		pFormProps->GetStrProperty(nFormEventSize), 
+		pProps->GetStrProperty(nFormEventSize), 
 		rcThis.Width(),
 		rcThis.Height(),
 		false);	
@@ -161,12 +269,6 @@ void CDockingDialog::GetClientArea(CRect &rect)
 	GetUsedRect(rect);
 }
 
-void CDockingDialog::SetDclForm(CDclFormObject *mpSourceFormObject)
-{
-	// set the internal pointer to equal the object passed
-	mpSourceForm = mpSourceFormObject;
-}
-
 
 void CDockingDialog::SizeChanged (CRect *lpRect, BOOL bFloating, int flags) 
 {
@@ -177,18 +279,18 @@ void CDockingDialog::SizeChanged (CRect *lpRect, BOOL bFloating, int flags)
 		lpRect->bottom += nBottomAdjustment;
 
 		// resize the control pane so all offsets are set correctly
-		mControlPane.m_PanePos.left = lpRect->left;
-		mControlPane.m_PanePos.top = lpRect->top;
-		mControlPane.SizeChanged(lpRect->Width(), lpRect->Height() - nHeightOffset);
+		mDialogX.GetControlPane().GetPaneWindowRect().left = lpRect->left;
+		mDialogX.GetControlPane().GetPaneWindowRect().top = lpRect->top;
+		mDialogX.GetControlPane().SizeChanged(lpRect->Width(), lpRect->Height() - nHeightOffset);
 		
 		// call methods to invoke the event
+		CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 		InvokeMethodIntInt(
-			mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventSize), 
+			pProps->GetStrProperty(nFormEventSize), 
 			lpRect->Width(), 
 			lpRect->Height() - nHeightOffset,
 			true);	
 	}
-	
 }
 
 void CDockingDialog::OnShowWindow(BOOL bShow, UINT nStatus) 
@@ -196,8 +298,8 @@ void CDockingDialog::OnShowWindow(BOOL bShow, UINT nStatus)
 	CAdUiDockControlBar::OnShowWindow(bShow, nStatus);
 	
 	// call methods to invoke the event
-	InvokeMethod(mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventShow), true);	
-		
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	InvokeMethod(pProps->GetStrProperty(nFormEventShow), true);	
 }
 
 bool CDockingDialog::CanFrameworkTakeFocus ()
@@ -206,30 +308,21 @@ bool CDockingDialog::CanFrameworkTakeFocus ()
 	return false;
 }
 
-void CDockingDialog::CleanupDockable() 
-{
-	if (m_pDocToModReactor != NULL)
-	{
-		acDocManager->removeReactor(m_pDocToModReactor);
-		delete m_pDocToModReactor;
-		m_pDocToModReactor = NULL;
-	}
-	mControlPane.CleanUpControls();
-	mControlPane.m_pParentDlg = NULL;
-}
-
 void CDockingDialog::PostNcDestroy() 
 {
-	CleanupDockable();
 	CAdUiDockControlBar::PostNcDestroy();
+	delete this;
 }
 
 bool CDockingDialog::OnClosing()
 {
 	m_bClosing = true;
+	CAdUiDockControlBar::OnClosing();
 	// call methods to invoke the event
-	InvokeMethod(mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventClose), true);	
-	return CAdUiDockControlBar::OnClosing();
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	InvokeMethod(pProps->GetStrProperty(nFormEventClose), true);
+	PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
+	return true;
 }
 
 //*****************************************************************************
@@ -283,13 +376,11 @@ void CDockingDialog::OnUserSizing(UINT nSide, LPRECT pRect)
 {	
 	// pass on OnUserSizing method
 	CAdUiDockControlBar::OnUserSizing(nSide, pRect);
-		
 
 	CRect FloatingRect;
 	CAdUiDockControlBar::GetFloatingRect(&FloatingRect);
 
-	pRect->right = pRect->left + mpSourceForm->GetControlProperties()->GetLngProperty(nWidth);
-	
+	pRect->right = pRect->left + mDialogX.GetSourceForm()->GetControlProperties()->GetLngProperty(nWidth);
 }
 
 
@@ -316,7 +407,7 @@ CSize CDockingDialog::CalcFloatingSize()
 	
 	RetSize.cy = FloatingRect.Height();
 
-	RetSize.cx = mpSourceForm->GetControlProperties()->GetLngProperty(nWidth);
+	RetSize.cx = mDialogX.GetSourceForm()->GetControlProperties()->GetLngProperty(nWidth);
 	
 	return RetSize;
 }
@@ -340,11 +431,11 @@ CSize CDockingDialog::CalcDynamicLayout( int nLength, DWORD dwMode )
 	if(CDockingDialog::IsFloating())
 	{	
 		RetSize = CDockingDialog::CalcFloatingSize();
-		RetSize.cx = mpSourceForm->GetControlProperties()->GetLngProperty(nWidth);;
+		RetSize.cx = mDialogX.GetSourceForm()->GetControlProperties()->GetLngProperty(nWidth);;
 	}
 	else
 	{		
-		RetSize.cx = mpSourceForm->GetControlProperties()->GetLngProperty(nWidth);;
+		RetSize.cx = mDialogX.GetSourceForm()->GetControlProperties()->GetLngProperty(nWidth);;
 		RetSize.cy = m_DockedHeight;
 	}
 	
@@ -375,10 +466,10 @@ CSize CDockingDialog::CalcDockedSize()
 	CPoint posMouse;
 	GetCursorPos(&posMouse);
 	
-	m_DockedWidth = mpSourceForm->GetControlProperties()->GetLngProperty(nWidth);
+	m_DockedWidth = mDialogX.GetSourceForm()->GetControlProperties()->GetLngProperty(nWidth);
 	
 	/*
-	int nThisHeight = mpSourceForm->GetControlProperties()->GetLngProperty(nHeight);
+	int nThisHeight = mDialogX.GetSourceForm()->GetControlProperties()->GetLngProperty(nHeight);
 
 	
 	int nTitleBarHeight = ::GetSystemMetrics(SM_CYSMCAPTION);
@@ -457,9 +548,9 @@ void CDockingDialog::GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight)
 BOOL CDockingDialog::PreTranslateMessage(MSG* pMsg) 
 {
 	if (pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
-    {
+  {
 		if	(pMsg->message == WM_KEYDOWN &&
-			(pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_CANCEL))
+				(pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_CANCEL))
 		{
 			HWND hItem = ::GetDlgItem(m_hWnd, IDCANCEL);
 			if (hItem == NULL || ::IsWindowEnabled(hItem))
@@ -468,22 +559,21 @@ BOOL CDockingDialog::PreTranslateMessage(MSG* pMsg)
 				return TRUE;
 			}
 		}
-		try
-		{
-			CWnd *pCtrl = CWnd::FromHandle(pMsg->hwnd);
-			POSITION pos = m_ControlCol.GetHeadPosition();
-			while (pos != NULL)
-			{
-				CArxDialogControl *pCtrlObj = m_ControlCol.GetNext(pos);
-				// if this is the control and it is an ActiveX control
-				if (pCtrlObj->GetWindow() == pCtrl && pCtrlObj->GetDclControlType() == CtlActiveX)
-					return CWnd::PreTranslateMessage(pMsg);
-			}
-		}
-		catch(...)
-		{
-		}
-    }	
-	
+		CControlPane::TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
+		if( pControl && pControl->GetDclControlType() )
+			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
+  }	
 	return CAdUiDockControlBar::PreTranslateMessage(pMsg);
+}
+
+void CDockingDialog::OnDestroy() 
+{
+	if (m_pDocToModReactor != NULL)
+	{
+		acDocManager->removeReactor(m_pDocToModReactor);
+		delete m_pDocToModReactor;
+		m_pDocToModReactor = NULL;
+	}
+	mDialogX.GetControlPane().CleanUpControls();
+	CAdUiDockControlBar::OnDestroy();
 }

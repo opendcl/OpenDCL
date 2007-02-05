@@ -38,13 +38,13 @@ public:
 	//}}AFX_DATA
 	
 	CString sObjectDCLProf;
-	CPropertyObject *m_pFontName;
-	CPropertyObject *m_pFontSize;
-	CPropertyObject *m_pFontStrikeOut;
-	CPropertyObject *m_pFontUnderline;
-	CPropertyObject *m_pFontBold;
-	CPropertyObject *m_pFontItalic;
-	CPropertyObject *m_pFontSizeStyle;
+	RefCountedPtr< CPropertyObject > m_pFontName;
+	RefCountedPtr< CPropertyObject > m_pFontSize;
+	RefCountedPtr< CPropertyObject > m_pFontStrikeOut;
+	RefCountedPtr< CPropertyObject > m_pFontUnderline;
+	RefCountedPtr< CPropertyObject > m_pFontBold;
+	RefCountedPtr< CPropertyObject > m_pFontItalic;
+	RefCountedPtr< CPropertyObject > m_pFontSizeStyle;
 
 // Overrides
 	// ClassWizard generate virtual function overrides

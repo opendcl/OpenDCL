@@ -547,7 +547,7 @@ int BlockView_SetView()
 		return 0;
 	}
 
-	CGsPreviewCtrl *pControl = (CGsPreviewCtrl*)pArxObject->m_pWnd;
+	CGsPreviewCtrl *pControl = (CGsPreviewCtrl*)pArxObject->GetWindow();
 	
 	ListData = ListData->rbnext;
 	

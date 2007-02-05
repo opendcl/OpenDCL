@@ -54,9 +54,9 @@ int Grid_AddColumn()
 	int nImageIndex = -1;
 	int nArg=0;
 	CDclControlObject *pArx = GetControlArxObject(sGrid_AddColumn, &nArg);
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;	
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();	
 	
-    CPropertyObject *m_pColCaptions = pArx->GetPropertyObject(nColumnCaptions);	
+    RefCountedPtr< CPropertyObject > m_pColCaptions = pArx->GetPropertyObject(nColumnCaptions);	
 
 
 	pGridCtrl->m_ArxControl = pArx;
@@ -368,7 +368,7 @@ int Grid_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
 	int nArg=0;
 	//CWnd *pControl = GetControlPointer(CtlListView, sMethodName, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sMethodName, &nArg);
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;	
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();	
 	pGridCtrl->m_ArxControl = pArx;
 
 	if (pArx == NULL)
@@ -526,7 +526,7 @@ int Grid_Clear()
 	int nArg=0;
 	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_Clear);
 	CDclControlObject *pArx = GetControlArxObject(sGrid_Clear, &nArg);
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;	
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();	
 	pGridCtrl->m_ArxControl = pArx;
 
 	if (pArx == NULL)		
@@ -573,7 +573,7 @@ int Grid_GetItemData()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 
 	
@@ -612,7 +612,7 @@ int Grid_GetItemImage()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 
 	// return the count
@@ -645,7 +645,7 @@ int Grid_SetItemData()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 
 	_RowData *pData = pGridCtrl->GetRowData(nIndex);
@@ -687,7 +687,7 @@ int Grid_GetItemText()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 		
 	// return the count
@@ -719,7 +719,7 @@ int Grid_GetRow()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 		
 	// Convert the array to a list that can be returned
@@ -785,7 +785,7 @@ int Grid_GetColumn()
 		acedRetInt(-1);
 		return 0;
 	}
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	// Convert the array to a list that can be returned
@@ -851,7 +851,7 @@ int Grid_SetItemText()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 		
 	pGridCtrl->SetItemText(nRowIndex, nColIndex, sNewText);
@@ -890,7 +890,7 @@ int Grid_Cell_SetStyle()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 
 	pGridCtrl->SetCellStyle(nRow, nCol, nStyle);
@@ -951,7 +951,7 @@ int Grid_HitPointTest()
 		return 0;
 	}
 	
-	CSpreadSheet *pGrid = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGrid = (CSpreadSheet*)pArx->GetWindow();
 	pGrid->m_ArxControl = pArx;
 	
 	CPoint pt(nX, nY);
@@ -980,7 +980,7 @@ int Grid_Cell_SetDropList()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 
 	if (pGridCtrl->GetCellData(nRow, nCol) != NULL)
@@ -1044,7 +1044,7 @@ int Grid_SetItemImage()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 		
 	pGridCtrl->SetItemImage(nArg1, nArg2, nArg3);
@@ -1071,7 +1071,7 @@ int Grid_GetColWidth()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_GetColWidth, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sGrid_GetColWidth, &nArg);
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 
 	int nColIndex;
@@ -1114,7 +1114,7 @@ int Grid_SetColWidth()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 
 	pGridCtrl->SetColumnWidth(nColIndex, nNewWidth);
@@ -1143,7 +1143,7 @@ int Grid_CalcColumnWidth()
 		
 	if (pArx != NULL)
 	{
-		CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+		CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 		pGridCtrl->m_ArxControl = pArx;
 	
 		acedRetInt(pGridCtrl->GetStringWidth(sText)*0.5*3);
@@ -1176,7 +1176,7 @@ int Grid_DeleteItems()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 
 	_RowData *pData = pGridCtrl->GetRowData(nRow);
@@ -1214,7 +1214,7 @@ int Grid_DeleteColumns()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 
 	// get the second argument required
@@ -1225,7 +1225,7 @@ int Grid_DeleteColumns()
 		_RowData *pCells = pGridCtrl->GetRowData(i);
 
 		if (nCol < pCells->m_Cells.GetSize() && 
-			nCol > pGridCtrl->m_pColCaptions->m_stringList.GetCount()-1)
+			nCol > pGridCtrl->m_pColCaptions->GetStringArrayPtr()->size()-1)
 			pCells->m_Cells.RemoveAt(nCol);
 	}
 	
@@ -1252,7 +1252,7 @@ int Grid_FillGrid()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_FillGrid, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sGrid_FillGrid, &nArg);
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL)
@@ -1442,7 +1442,7 @@ int Grid_GetSelectedCell()
 {
 	int nArg=0;
 	CDclControlObject *pArx = GetControlArxObject(sGrid_GetSelectedCell, &nArg);
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL)
@@ -1461,7 +1461,7 @@ int Grid_CancelLabelEdit()
 {	
 	int nArg = 0;
 	CDclControlObject *pArx = GetControlArxObject(sGrid_CancelLabelEdit, &nArg);
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL)
@@ -1487,7 +1487,7 @@ int Grid_SortColTextItems()
 
 	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_SortTextItems, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sGrid_SortTextItems, &nArg);
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL || !GetIntArgument(nArg, &nCol, sGrid_SortTextItems))	
@@ -1523,7 +1523,7 @@ int Grid_SortColNumericItems()
 
 	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_SortNumericItems, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sGrid_SortNumericItems, &nArg);
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL || !GetIntArgument(nArg, &nCol, sGrid_SortNumericItems))	
@@ -1580,7 +1580,7 @@ int Grid_SetColumnImage()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 
 	CHeaderCtrl *pHeader = pGridCtrl->GetHeaderCtrl();
@@ -1643,7 +1643,7 @@ int Grid_GetColumnImage()
 		return 0;
 	}
 	
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 
 	CHeaderCtrl *pHeader = pGridCtrl->GetHeaderCtrl();
@@ -1666,7 +1666,7 @@ int Grid_GetCount()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_SetItemImage, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sGrid_GetCount, &nArg);
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 
 	if (pArx == NULL)	
@@ -1694,7 +1694,7 @@ int Grid_GetColumnCount()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 		
 	CHeaderCtrl *pHeader = pGridCtrl->GetHeaderCtrl();
@@ -1731,7 +1731,7 @@ int Grid_SelCurCell()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	pGridCtrl->SetCurSel(nRow, nCol);
@@ -1755,7 +1755,7 @@ int Grid_SelCurRow()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	pGridCtrl->SetCurSel(nRow, -1);
@@ -1779,18 +1779,18 @@ int Grid_Cell_TextBox()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 
 	int nChar = 0;
 
 	// ensure the programmer does not try to show a combo box style that
 	// does not match the col pre-assigned setting.
-	if (pGridCtrl->m_pColStyles->m_intList.GetCount()-1 > nCol)
+	if (pGridCtrl->m_pColStyles->GetIntArrayPtr()->size()-1 > nCol)
 	{
-		if (pGridCtrl->m_pColStyles->m_intList[nCol] != nStyle &&
-			pGridCtrl->m_pColStyles->m_intList[nCol] != 0)
-			nStyle = pGridCtrl->m_pColStyles->m_intList[nCol];
+		if (pGridCtrl->m_pColStyles->GetIntArrayPtr()->at(nCol) != nStyle &&
+			pGridCtrl->m_pColStyles->GetIntArrayPtr()->at(nCol) != 0)
+			nStyle = pGridCtrl->m_pColStyles->GetIntArrayPtr()->at(nCol);
 	}
 	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
 
@@ -1897,11 +1897,11 @@ int Grid_Cell_ComboBox()
 
 		// ensure the programmer does not try to show a combo box style that
 		// does not match the col pre-assigned setting.
-		if (pList->m_pColStyles->m_intList.GetCount()-1 > nCol)
+		if (pList->m_pColStyles->GetIntArrayPtr()->size()-1 > nCol)
 		{
-			if (pList->m_pColStyles->m_intList[nCol] != nStyle &&
-				pList->m_pColStyles->m_intList[nCol] != 0)
-				nStyle = pList->m_pColStyles->m_intList[nCol];
+			if (pList->m_pColStyles->GetIntArrayPtr()->at(nCol) != nStyle &&
+				pList->m_pColStyles->GetIntArrayPtr()->at(nCol) != 0)
+				nStyle = pList->m_pColStyles->GetIntArrayPtr()->at(nCol);
 		}
 		
 		
@@ -2021,10 +2021,10 @@ int Grid_Cell_ImageComboBox()
 	
 	// ensure the programmer does not try to show a combo box style that
 	// does not match the col pre-assigned setting.
-	if (pGridCtrl->m_pColStyles->m_intList.GetCount()-1 > nCol)
+	if (pGridCtrl->m_pColStyles->GetIntArrayPtr()->size()-1 > nCol)
 	{
-		if (pGridCtrl->m_pColStyles->m_intList[nCol] != Grid_ImageDropList && 
-			pGridCtrl->m_pColStyles->m_intList[nCol] != 0)
+		if (pGridCtrl->m_pColStyles->GetIntArrayPtr()->at(nCol) != Grid_ImageDropList && 
+			pGridCtrl->m_pColStyles->GetIntArrayPtr()->at(nCol) != 0)
 		{
 			acedRetVoid();
 			return 0;
@@ -2065,7 +2065,7 @@ int Grid_Cell_EllipsesButton()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
@@ -2098,7 +2098,7 @@ int Grid_Cell_PickButton()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
@@ -2131,7 +2131,7 @@ int Grid_Cell_DoCellDlg()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
@@ -2160,7 +2160,7 @@ int Grid_GetCheck()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
@@ -2193,7 +2193,7 @@ int Grid_SetCheck()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
@@ -2221,7 +2221,7 @@ int Grid_Cell_ToggleImages()
 		return 0;
 	}
 
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();
 	pGridCtrl->m_ArxControl = pArx;
 	
 	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
@@ -2236,13 +2236,13 @@ int Grid_Cell_ToggleImages()
 	
 	int nImage = pGridCtrl->GetItemImage(nRow, nCol);
 
-	if (nImage == pGridCtrl->m_pColDefault->m_intList[nCol] || nImage == -1)
+	if (nImage == pGridCtrl->m_pColDefault->GetIntArrayPtr()->at(nCol) || nImage == -1)
 	{
-		pGridCtrl->SetItemImage(nRow, nCol, pGridCtrl->m_pColAlternate->m_intList[nCol]);
+		pGridCtrl->SetItemImage(nRow, nCol, pGridCtrl->m_pColAlternate->GetIntArrayPtr()->at(nCol));
 	}
 	else
 	{
-		pGridCtrl->SetItemImage(nRow, nCol, pGridCtrl->m_pColDefault->m_intList[nCol]);
+		pGridCtrl->SetItemImage(nRow, nCol, pGridCtrl->m_pColDefault->GetIntArrayPtr()->at(nCol));
 	}
 
 	acedRetVoid();
@@ -2276,7 +2276,7 @@ int Grid_AddString()
 		return 0;		
 	}
 	
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;	
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();	
 	pGridCtrl->m_ArxControl = pArx;
 
 	int nStart = 0;
@@ -2361,7 +2361,7 @@ int Grid_InsertString()
 		return 0;		
 	}
 	
-	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->m_pWnd;	
+	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();	
 	pGridCtrl->m_ArxControl = pArx;
 
 	int nStart = 0;

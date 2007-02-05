@@ -119,7 +119,7 @@ int VdclListBox::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CClrListBox::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
-	CPropertyObject *pListProperty = m_ArxControl->GetPropertyObject(nList);
+	RefCountedPtr< CPropertyObject > pListProperty = m_ArxControl->GetPropertyObject(nList);
 
 	for (int i = 0; i < pListProperty->CountList(); i++)
 	{

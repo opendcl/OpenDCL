@@ -149,6 +149,7 @@ public:
 	const CList< CDclFormObject* >& GetDclFormList() const { return mDclForms; }
 	CList< CDclFormObject* >& GetDclFormList() { return mDclForms; }
 	const CString& GetKeyName() const { return msKeyName; }
+	void SetKeyName( LPCTSTR pszKeyName );
 
 	//Services
 
@@ -159,7 +160,6 @@ public:
 	CDclFormObject* GetDclForm(CString DclFormName);
 	void ClearR14Events();
 	CDclFormObject* GetDclTabChildForm(CString sDclParentUniqueName, int nTabIndex);
-	POSITION GetDclTabChildFormPos(CString sDclParentUniqueName, int nTabIndex);
 	CDclFormObject* GetParentDclForm(CString ParentName);
 	CString QueryForLispFileName();
 	CString QueryForOdsFileName();

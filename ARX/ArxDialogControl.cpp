@@ -11,12 +11,11 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxDialogControl
 
-CArxDialogControl::CArxDialogControl( CDclControlObject *pControl, CWnd *pWnd )
-: CDialogControl( pControl, pWnd )
+CArxDialogControl::CArxDialogControl( CDclControlObject* pTemplate, RefCountedPtr< CWnd > pControl )
+: CDialogControl( pTemplate, pControl )
 {
-	msLispSymbolName = mpControl->GetStrProperty( nGlobalVarName );
-	//if( msLispSymbolName.IsEmpty() )
-	//	msLispSymbolName = GetKeyPath();
+	pTemplate->SetControlInstance( this );
+	msLispSymbolName = mpTemplate->GetStrProperty( nGlobalVarName );
 	CreateGlobalVariables();
 }
 
@@ -27,10 +26,11 @@ CArxDialogControl::~CArxDialogControl()
 		resbuf rbNil = {NULL, RTNIL};
 		acedPutSym( msLispSymbolName, &rbNil );
 	}
+	mpTemplate->SetControlInstance( NULL );
 }
 
 void CArxDialogControl::CreateGlobalVariables() const
 {
 	if( !msLispSymbolName.IsEmpty() )
-		SetVariable( msLispSymbolName, (long)mpControl );
+		SetVariable( msLispSymbolName, (long)mpTemplate );
 }

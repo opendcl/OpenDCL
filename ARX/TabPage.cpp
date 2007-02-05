@@ -8,10 +8,10 @@
 /////////////////////////////////////////////////////////////////////////////
 // CTabPage property page
 
-CTabPage::CTabPage( CDclFormObject* pSourceForm )
+CTabPage::CTabPage( CDclFormObject* pSourceForm, CWnd* pHostDlg )
 : CDialog(CTabPage::IDD)
 , mpSourceForm( pSourceForm )
-, mControlPane( pSourceForm )
+, mControlPane( pSourceForm, this )
 {
 	//{{AFX_DATA_INIT(CTabPage)
 		// NOTE: the ClassWizard will add member initialization here

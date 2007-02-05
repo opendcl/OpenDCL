@@ -735,8 +735,9 @@ void VdclTree::OnDeleteitem(NMHDR* pNMHDR, LRESULT* pResult)
 	NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
 	
 	// get the selected item
-	TV_ITEM SelectedItem = pNMTreeView->itemNew;
+	TV_ITEM SelectedItem = pNMTreeView->itemOld;
 	
+	assert((SelectedItem.mask & TVIF_HANDLE) == TVIF_HANDLE);
 	//bool bFoundParent = false;
 	CString sKey = Get_hItemKey(SelectedItem.hItem);
 

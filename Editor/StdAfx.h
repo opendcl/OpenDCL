@@ -70,6 +70,8 @@
 
 #include <assert.h>
 
+#include "RefCountedPtr.h"
+
 
 #define _elements(ARRAY) ((sizeof(ARRAY))/(sizeof(ARRAY[0])))
 #define _stringify(x) #x

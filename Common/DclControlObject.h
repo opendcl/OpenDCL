@@ -6,7 +6,9 @@
 
 class CImageListObject;
 class CAxContainer;
+class CDialogControl;
 enum IOStatus;
+enum PropertyId;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -14,23 +16,22 @@ enum IOStatus;
 
 class CDclControlObject : public CObject
 {
-public:
-	typedef CList< CDclControlObject* > collection;
-
 // Attributes
 protected:
 	CDclFormObject* mpOwner;
 	ControlTypes mType;
+	CDialogControl* mpDlgControl; //informational pointer to the one and only instance of this control (or NULL)
+	CString msAxTypeName; //this should be moved to AxContainer -- unfortunately it's filed from here [ORW]
 
 public:
 	CPropertyList m_PropertyList;
-	int m_Id;
+	UINT m_Id;
 	int m_Index;
-	CString m_Name;
+
+	//runtime state
 	BOOL m_Delete;
 	short m_ClientHeight;
 	int m_PurchaseState;
-	bool m_bControlCreated;
 	CWnd *m_pCtrlHolder;
 	CRect m_rcOldPosition;
 	CImageListObject *m_pImageList;
@@ -38,9 +39,6 @@ public:
 
 	//ARX only
 	bool m_bEventsAsAction;
-	CWnd* m_pWnd;
-	CString m_sProjectName;
-	CString m_sDialogName;
 
 	// ActiveX members
 	BOOL	m_bLicenseChecked;
@@ -48,11 +46,6 @@ public:
 	CString m_sBaseCode;
 	CLSID   m_clsid;
 	ULONG	m_nTotalBytes;
-	CString m_AxTypeName;
-	int	m_nIsMicrosoftActiveX;
-	
-	CString GetActiveXTypeName() const;
-	BOOL IsMicrosoftActiveXCtrl() const;
 
 	//storage stream
 	CComPtr<IStream> m_pStream;
@@ -62,22 +55,22 @@ public:
 
 // position pointers
 public:
-	CPropertyObject *m_pVisible;
+	RefCountedPtr< CPropertyObject > m_pVisible;
 
-	CPropertyObject *m_pLeft;
-	CPropertyObject *m_pTop;
-	CPropertyObject *m_pWidth;
-	CPropertyObject *m_pHeight;
+	RefCountedPtr< CPropertyObject > m_pLeft;
+	RefCountedPtr< CPropertyObject > m_pTop;
+	RefCountedPtr< CPropertyObject > m_pWidth;
+	RefCountedPtr< CPropertyObject > m_pHeight;
 
-	CPropertyObject *m_pOffsetLeft;
-	CPropertyObject *m_pOffsetTop;
-	CPropertyObject *m_pOffsetRight;
-	CPropertyObject *m_pOffsetBottom;
+	RefCountedPtr< CPropertyObject > m_pOffsetLeft;
+	RefCountedPtr< CPropertyObject > m_pOffsetTop;
+	RefCountedPtr< CPropertyObject > m_pOffsetRight;
+	RefCountedPtr< CPropertyObject > m_pOffsetBottom;
 
-	CPropertyObject *m_pUseLeftOffset;
-	CPropertyObject *m_pUseTopOffset;
-	CPropertyObject *m_pUseRightOffset;
-	CPropertyObject *m_pUseBottomOffset;
+	RefCountedPtr< CPropertyObject > m_pUseLeftOffset;
+	RefCountedPtr< CPropertyObject > m_pUseTopOffset;
+	RefCountedPtr< CPropertyObject > m_pUseRightOffset;
+	RefCountedPtr< CPropertyObject > m_pUseBottomOffset;
 
 protected:
 	CDclControlObject();
@@ -85,21 +78,29 @@ protected:
 public:
 	CDclControlObject(CDclFormObject* pOwner);
 	CDclControlObject(ControlTypes type, CDclFormObject* pOwner, LPCTSTR pszName = NULL);
+	virtual ~CDclControlObject();
 
 	//2007-01-30 [ORW]: save version set to 6 (no change from ObjectDCL 3)
 	ULONG GetCurrentSaveVersion() const { return 6; }
 
 // Operations
 public:
+	CWnd* GetWindow() const;
+	const CDialogControl* GetControlInstance() const { return mpDlgControl; }
+	CDialogControl* GetControlInstance() { return mpDlgControl; }
+	void SetControlInstance( CDialogControl* pDlgControl );
+	void SetOwner( CDclFormObject* pNewOwner ) { assert( pNewOwner != NULL ); mpOwner = pNewOwner; }
 	//CDclControlObject(CDclControlObject const & other);
 	//virtual CDclControlObject operator=(CDclControlObject const & other);
 	POSITION FindPropertyInsertPos(CString sName, bool bHidden) const;
+	const CString& GetAxTypeName() const { return msAxTypeName; }
+	void SetAxTypeName( LPCTSTR pszAxTypeName ) { msAxTypeName = pszAxTypeName; }
 
 // Implementation
 public:
 	bool UpdateGlobalVariable(CString sDclFormName, LPCTSTR pszProjectName = NULL);
 	void ForceUpdateGlobalVariable(CString sDclFormName);
-	CPropertyObject* FindProperty(CString sName);
+	RefCountedPtr< CPropertyObject > FindProperty(CString sName);
 	void RemoveProperty(int nId);
 	void ResetProperty(int nId);
 	INT_PTR CountPropertyListItems(int nID);
@@ -117,17 +118,18 @@ public:
 	bool GetBoolProperty(int nID) const;
 	void SetColorProperty(int nID, COLORREF color);
 	COLORREF GetColorProperty(int nID) const;
-	CPropertyObject* GetPropertyObject(int nID) const;
-	CPropertyObject* GetActiveXPropertyObject(CString sName) const;
+	RefCountedPtr< CPropertyObject > GetPropertyObject(PropertyId nID) const;
+	RefCountedPtr< CPropertyObject > GetActiveXPropertyObject(CString sName) const;
 	void ClearProperties();
 	void ClearR14Events();
-	virtual ~CDclControlObject();
 
 	//Attributes
 	virtual CDclFormObject* GetOwnerForm() { return mpOwner; }
 	virtual const CDclFormObject* GetOwnerForm() const { return mpOwner; }
 	virtual CProject* GetOwnerProject() { return mpOwner? mpOwner->GetProject() : NULL; }
 	virtual const CProject* GetOwnerProject() const { return mpOwner? mpOwner->GetProject() : NULL; }
+	CString GetActiveXTypeName() const;
+	bool IsMicrosoftActiveXCtrl() const;
 
 	//File I/O
 	virtual void Serialize(CArchive& ar);	

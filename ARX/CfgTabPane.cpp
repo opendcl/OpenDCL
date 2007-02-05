@@ -1,25 +1,4 @@
-//
-// (C) Copyright 1998-1999 by Autodesk, Inc. 
-//
-// Permission to use, copy, modify, and distribute this software in
-// object code form for any purpose and without fee is hereby granted, 
-// provided that the above copyright notice appears in all copies and 
-// that both that copyright notice and the limited warranty and
-// restricted rights notice below appear in all supporting 
-// documentation.
-//
-// AUTODESK PROVIDES THIS PROGRAM "AS IS" AND WITH ALL FAULTS. 
-// AUTODESK SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTY OF
-// MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE.  AUTODESK, INC. 
-// DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
-// UNINTERRUPTED OR ERROR FREE.
-//
-// Use, duplication, or disclosure by the U.S. Government is subject to 
-// restrictions set forth in FAR 52.227-19 (Commercial Computer
-// Software - Restricted Rights) and DFAR 252.227-7013(c)(1)(ii)
-// (Rights in Technical Data and Computer Software), as applicable.
-//
-// Tab1.cpp : implementation file
+// CfgTabPane.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -32,16 +11,50 @@
 #include "ArxProject.h"
 
 
+// CConfigTabPaneX interface implementation
+CConfigTabPaneX::CConfigTabPaneX( CfgTabPane& Owner, CDclFormObject* pDclForm )
+: CArxDialogObject( pDclForm, &Owner )
+, mpOwner( &Owner )
+{
+}
+
+CConfigTabPaneX::~CConfigTabPaneX()
+{
+}
+
+DclFormType CConfigTabPaneX::GetType() const
+{
+	return VdclConfigTab;
+}
+
+HWND CConfigTabPaneX::GetHWnd() const
+{
+	return mpOwner->m_hWnd;
+}
+
+bool CConfigTabPaneX::IsDirty() const
+{
+	return mpOwner->IsDirty();
+}
+
+bool CConfigTabPaneX::SetDirty( bool bDirty )
+{
+	mpOwner->SetDirty( bDirty );
+	return true;
+}
+
+void CConfigTabPaneX::CloseDialog(int nStatus) const
+{
+	mpOwner->GetMainDialog()->EndDialog( nStatus );
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CfgTabPane dialog
 
-CfgTabPane::CfgTabPane(CDclFormObject* pSourceForm,
-											 CWnd* pParent /*=NULL*/,
-											 HINSTANCE hInstance /*=NULL*/)
-: CAcUiTabChildDialog (pParent, hInstance) 
-, mpSourceForm( pSourceForm )
-, mControlPane( pSourceForm )
-, mpControl( NULL )
+CfgTabPane::CfgTabPane( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+: CAcUiTabChildDialog( pParent, pParams? (HINSTANCE)pParams->lpData : NULL ) 
+, mDialogX( *this, pSourceForm )
 {
 }
 
@@ -88,8 +101,7 @@ BOOL CfgTabPane::OnInitDialog()
 	CRect rectThis;
 	
 	// get the form's properties
-	CDclControlObject* pControlObject = mpSourceForm->GetControlProperties();
-	m_ArxControl = pControlObject;
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	
 	GetWindowRect(&rectThis);
 	// setup the rect default rect 
@@ -117,31 +129,23 @@ BOOL CfgTabPane::OnInitDialog()
 	CRect rcThis(0,0, nCtlWidth, nCtlHeight);
 	
 	// create the control pane that will display the controls
-	mControlPane.m_pControlCol = &m_ControlCol;
-	mControlPane.m_pFontCollection = m_pFontCollection;
-	mControlPane.m_PanePos = rcThis;
-	mControlPane.m_pParentDlg = this;
+	mDialogX.GetControlPane().GetPaneWindowRect() = rcThis;
 
 	// call method to create the controls
-	mControlPane.CreateControls(mpSourceForm, 1000);
+	UINT nID = 1000;
+	mDialogX.GetControlPane().CreateControls(mDialogX.GetSourceForm(), nID);
 
 	CRect rcClient;
 	GetClientRect(&rcClient);
 	// resize the control pane so all offsets are set correctly
-	mControlPane.SizeChanged(rcClient.Width(),rcClient.Height());	
+	mDialogX.GetControlPane().SizeChanged(rcClient.Width(),rcClient.Height());	
 	
 	// call methods to invoke the event
-	InvokeMethod(
-		m_ArxControl->GetStrProperty(nFormEventInitialize), 
-		false);	
+	InvokeMethod(pProps->GetStrProperty(nFormEventInitialize), false);	
 
 	GetWindowRect(&rcThis);
 	// call methods to invoke the event
-	InvokeMethodIntInt(
-		m_ArxControl->GetStrProperty(nFormEventSize), 
-		rcThis.Width(),
-		rcThis.Height(),
-		false);	
+	InvokeMethodIntInt(pProps->GetStrProperty(nFormEventSize), rcThis.Width(), rcThis.Height(), false);	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
@@ -151,20 +155,16 @@ void CfgTabPane::OnMainDialogOK()
 // This function is called when the main dialog OK button is pressed.
 {
 	// call methods to invoke the event
-	InvokeMethod(
-		m_ArxControl->GetStrProperty(nCfgEventOK), 
-		false);	
-
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	InvokeMethod(pProps->GetStrProperty(nCfgEventOK), false);	
 }
 
 void CfgTabPane::OnMainDialogAPPLY()
 // This function is called when the main dialog Apply button is pressed.
 {
 	// call methods to invoke the event
-	InvokeMethod(
-		m_ArxControl->GetStrProperty(nCfgEventApply), 
-		false);	
-
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	InvokeMethod(pProps->GetStrProperty(nCfgEventApply), false);	
 }
 
 /*BOOL PreTranslateMessage(MSG* pMsg)
@@ -177,30 +177,25 @@ void CfgTabPane::OnMainDialogCancel()
 // This function is called when the main dialog CANCEL button is pressed.
 {
     // call methods to invoke the event
-	InvokeMethod(
-		m_ArxControl->GetStrProperty(nCfgEventCancel), 
-		false);	
-
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	InvokeMethod(pProps->GetStrProperty(nCfgEventCancel), false);	
 }
 
 BOOL CfgTabPane::OnMainDialogHelp()
 // This function is called when the main dialog HELP button is pressed
 // and this is the active tab.
 {
-    // call methods to invoke the event
-	InvokeMethod(
-		m_ArxControl->GetStrProperty(nCfgEventHelp), 
-		false);	
-
-
-    // Return TRUE if handled.
-    return TRUE;
+  // call methods to invoke the event
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	InvokeMethod(pProps->GetStrProperty(nCfgEventHelp), false);	
+  // Return TRUE if handled.
+  return TRUE;
 }
 
 void CfgTabPane::PostNcDestroy() 
 {
 	CAcUiTabExtension::PostNcDestroy();
-	theArxWorkspace.RemoveDialog(mpSourceForm);
+	delete this;
 }
 
 
@@ -212,31 +207,14 @@ void CfgTabPane::OnShowWindow(BOOL bShow, UINT nStatus)
 	
 	GetWindowRect(&rectThis);
 
-	mControlPane.SizeChanged(rectThis.Width(),rectThis.Height());	
+	mDialogX.GetControlPane().SizeChanged(rectThis.Width(),rectThis.Height());	
 	// call methods to invoke the event
-	InvokeMethod(
-		m_ArxControl->GetStrProperty(nFormEventShow), 
-		false);	
-
-	
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	InvokeMethod( pProps->GetStrProperty(nFormEventShow), false);	
 }
 
 void CfgTabPane::OnDestroy() 
 {
-	for (int i=0; i<m_ControlCol.GetCount(); i++)
-	{
-		POSITION pos = m_ControlCol.FindIndex(i);
-		if (pos != NULL)
-		{
-			CArxDialogControl *pCtrl = m_ControlCol.GetAt(pos);
-			m_ControlCol.RemoveAt(pos);
-			delete pCtrl;
-		}
-	}
-	mControlPane.CleanUpControls();
-	mControlPane.m_pParentDlg = NULL;
-	
+	mDialogX.GetControlPane().CleanUpControls();
 	CAcUiTabExtension::OnDestroy();
-	
-		
 }

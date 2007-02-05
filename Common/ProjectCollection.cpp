@@ -104,7 +104,7 @@ void CProjectCollection::Serialize(CArchive& ar)
 				CDclFormObject *pDcl = pProject->GetDclFormList().GetNext(dclPos);
 				assert(pDcl != NULL);
 				if(pDcl)
-					pDcl->AddControlFonts(fontCol);
+					pDcl->GetControlFonts(fontCol);
 			}			
 		}
 		

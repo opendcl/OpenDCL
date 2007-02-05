@@ -481,7 +481,7 @@ void CSplitter::SavePlacement()
 {
 	CWinApp* pApp = AfxGetApp();
 
-	CString sProfileName = m_pControlPane->m_sProjectName + sUnderScore + m_pControlPane->m_sDialogName + m_ArxControl->GetStrProperty(nName); 
+	CString sProfileName = m_ArxControl->GetKeyPath(); 
 
 	if (IsWindow(m_hWnd) && m_pLeft != NULL)
 	{
@@ -497,7 +497,7 @@ CPoint CSplitter::ReadPlacement()
 	CPoint szRet;
 	CWinApp* pApp = AfxGetApp();
 	
-	CString sProfileName = m_pControlPane->GetProject()->GetKeyName() + sUnderScore + m_pControlPane->m_sDialogName + m_ArxControl->GetStrProperty(nName); 
+	CString sProfileName = m_ArxControl->GetKeyPath(); 
     
 	szRet.x = pApp->GetProfileInt(sProfileName, sTopLeftX, -1);
 	szRet.y = pApp->GetProfileInt(sProfileName, sTopLeftY, -1);

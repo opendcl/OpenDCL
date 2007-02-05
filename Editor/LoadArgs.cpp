@@ -11,8 +11,6 @@
 #include "DclFormObject.h"
 
 
-#define nFormEventOnOk 251
-
 void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString &sArgs, CString &sDesc, const CDclControlObject *pControl)
 {
 	// here we need to test the event defun id type to see what arguments need to be added.

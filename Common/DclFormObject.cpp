@@ -16,17 +16,14 @@
 static const int nNotSet = -1;
 
 
-static void AddControlProperty(CDclControlObject *pControl, int nID, LPCTSTR strValue, PropertyTypes ValueType)
+static void AddControlProperty(CDclControlObject *pControl, PropertyId nID, LPCTSTR strValue, PropertyType ValueType)
 {
 	// find the insert position for this new property
 	POSITION InsertPos = pControl->FindPropertyInsertPos(nID, false);
 
 	// create new property object pointer to pass to AddTail method
-	CPropertyObject* pPropertyObect = new CPropertyObject;
-
-	// assign values
-	pPropertyObect->SetID(nID);
-	pPropertyObect->AddProperty(ValueType, strValue);
+	RefCountedPtr< CPropertyObject > pPropertyObect = new CPropertyObject( ValueType, 0, nID );
+	pPropertyObect->SetStringValue(strValue);
 	pPropertyObect->SetHidden(false);
 
 	// reset the name to the new value
@@ -45,11 +42,13 @@ IMPLEMENT_SERIAL(CDclFormObject, CObject, 1)
 CDclFormObject::CDclFormObject()
 : mpProject( NULL )
 , mType( VdclInvalid )
+, mnTabIndex( -1 )
+, mpParentForm( NULL )
+, mpDlgObject( NULL )
 {
 	m_pChildWnd = NULL;
 	m_pMdiChildWnd = NULL;
 	m_htiTreeItem = NULL;
-	m_TabIndex = nNotSet;
 	m_bDeleted = false;
 	m_bLoaded = false;
 }
@@ -57,19 +56,48 @@ CDclFormObject::CDclFormObject()
 CDclFormObject::CDclFormObject( CProject* Project, DclFormType type /*= VdclInvalid*/ )
 : mpProject( Project )
 , mType( type )
+, mnTabIndex( -1 )
+, mpParentForm( NULL )
+, mpDlgObject( NULL )
 {
 	m_pChildWnd = NULL;
 	m_pMdiChildWnd = NULL;
 	m_htiTreeItem = NULL;
-	m_TabIndex = nNotSet;
 	m_bDeleted = false;
 	m_bLoaded = false;
+	CreateControlProperties();
 }
 
 CDclFormObject::~CDclFormObject()
 {
 }
 
+
+void CDclFormObject::SetParentForm( CDclFormObject* pParentForm )
+{
+	mpParentForm = pParentForm;
+	if( pParentForm )
+		msUniqueName = pParentForm->GetUniqueName();
+}
+
+
+void CDclFormObject::SetParentForm( LPCTSTR pszParentUniqueName )
+{
+	CString sNewParentName = pszParentUniqueName;
+	if( sNewParentName.IsEmpty() )
+		return; //calling with an empty name is an error; use the other SetParentForm() to clear the parent
+	CDclFormObject* pParentForm = mpProject->GetParentDclForm( sNewParentName );
+	if( pParentForm )
+		SetParentForm( pParentForm );
+}
+
+void CDclFormObject::SetFormInstance( CDialogObject* pDlgObject )
+{
+	//note: an assertion here indicates more than 1 instance of the form; perhaps 
+	//an earlier instance didn't get destroyed when it should have been?
+	assert( mpDlgObject == NULL || pDlgObject == NULL );
+	mpDlgObject = pDlgObject;
+}
 
 bool CDclFormObject::DeleteControl(long nIndex)
 {
@@ -168,38 +196,37 @@ int CDclFormObject::CountDeletedControls() const
 	return nDeleted;
 }
 
-void CDclFormObject::UpdateGlobalVariable(CString sProjectName)	
+void CDclFormObject::UpdateGlobalVariableName( LPCTSTR pszRootName /*= NULL*/ )	
 {	
-	if (mDclControls.GetCount() <= 1)
-		return;
-
-	CPropertyObject *pPropName = GetControlProperties()->GetPropertyObject(nName);
+	if( pszRootName )
+		mpProject->SetKeyName( pszRootName );
+	CString sRootName = mpProject->GetKeyName();
+	CString sFormName = GetKeyName();
+	RefCountedPtr< CPropertyObject > pPropName = GetControlProperties()->GetPropertyObject(nName);
+	if( pPropName )
+	{
+		RefCountedPtr< CPropertyObject > pPropGlobalVarName = GetControlProperties()->GetPropertyObject(nGlobalVarName);
+		if( pPropGlobalVarName )
+			pPropGlobalVarName->SetStringValue( sRootName + _T('_') + sFormName );
+	}
 	
 	POSITION pos = mDclControls.GetHeadPosition();
+	mDclControls.GetNext(pos); //skip the form properties control
 	while(pos != NULL)
 	{
 		CDclControlObject *pCtrl = mDclControls.GetNext(pos);
-		if (pCtrl != NULL && pPropName != NULL)
-		{
-			pCtrl->UpdateGlobalVariable(pPropName->GetStringValue(), sProjectName);
-		}
+		assert( pCtrl != NULL );
+		if( pCtrl != NULL )
+			pCtrl->ForceUpdateGlobalVariable(sFormName);
 	}
 }
 
-void CDclFormObject::ForceUpdateGlobalVariable(CString sFormName)	
+void CDclFormObject::ForceUpdateGlobalVariableName( LPCTSTR pszFormName )	
 {	
-	if (mDclControls.GetCount() <= 1)
-		return;
-	
-	POSITION pos = mDclControls.GetHeadPosition();
-	while(pos != NULL)
-	{
-		CDclControlObject *pCtrl = mDclControls.GetNext(pos);
-		if (pCtrl != NULL)
-		{
-			pCtrl->ForceUpdateGlobalVariable(sFormName);
-		}
-	}
+	RefCountedPtr< CPropertyObject > pPropName = GetControlProperties()->GetPropertyObject(nName);
+	if( pPropName )
+		pPropName->SetStringValue( pszFormName );
+	UpdateGlobalVariableName();
 }
 
 int CDclFormObject::CountDeletedImageLists() const
@@ -251,13 +278,14 @@ long CDclFormObject::GetDclFormTitleBarIcon()
 }
 
 
+/*
 void CDclFormObject::SaveSS(int n, int nType, CStgFile &FileStg, CDocument *pDoc)
 {
 	CString sKey;
 	sKey.Format(_T("%d.dialog%d"), n, nType);
 	FileStg.Open( sKey, CFile::modeCreate | CFile::modeWrite); 
 
-	CArchiveEx arDcl(&FileStg, CArchive::store | CArchive::bNoFlushOnDelete, NULL, activeProject->GetPassword(), TRUE);
+	CArchiveEx arDcl(&FileStg, CArchive::store | CArchive::bNoFlushOnDelete, NULL, mpProject->GetPassword(), TRUE);
 	arDcl.m_pDocument = pDoc;
 	arDcl.m_bForceFlat = FALSE;
 
@@ -269,26 +297,24 @@ void CDclFormObject::SaveSS(int n, int nType, CStgFile &FileStg, CDocument *pDoc
 	FileStg.Close();	// close the stream
 }
 
-CDclFormObject* CDclFormObject::ReadSS(int n, int nType, CStgFile &FileStg, CDocument *pDoc)
+bool CDclFormObject::ReadSS(CDclFormObject* pTargetForm, int n, int nType, CStgFile &FileStg, CDocument *pDoc)
 {
 	CString sKey;
 	sKey.Format(_T("%d.dialog%d"), n, nType);
 	FileStg.Open( sKey, CFile::modeRead | CFile::shareDenyWrite); 
 
-	CArchiveEx arDcl(&FileStg, CArchive::load | CArchive::bNoFlushOnDelete, NULL, activeProject->GetPassword(), TRUE);
-	
-	// get current Dcl form
-	CDclFormObject* pDclForm = new CDclFormObject;
+	CArchiveEx arDcl(&FileStg, CArchive::load | CArchive::bNoFlushOnDelete, NULL, mpProject ->GetPassword(), TRUE);
 		
 	// get dcl form into archive
-	pDclForm->Serialize(arDcl);
+	pTargetForm->Serialize(arDcl);
 		
 	arDcl.Close();			
 
 	FileStg.Close();	// close the stream
 
-	return pDclForm;
+	return true;
 }
+*/
 
 IOStatus CDclFormObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
 {
@@ -302,19 +328,19 @@ IOStatus CDclFormObject::WriteToTextFile(FILE* pFile, const CString &fileName) c
   writeString(pFile, msName);
   writeLong(pFile, mType);
 
-  writeString(pFile, m_UniqueName);
-  writeString(pFile, m_ParentName);
-  writeShort(pFile, m_TabIndex);
+  writeString(pFile, msUniqueName);
+  writeString(pFile, GetParentName());
+  writeShort(pFile, mnTabIndex);
 
-  if (m_UUID.GetLength() == 0)
+  if (msUUID.GetLength() == 0)
   {
     UUID uuid;
     unsigned char *pUUID;
     UuidCreate(&uuid);
     UuidToStringA(&uuid, &pUUID);
-    const_cast<CDclFormObject*>(this)->m_UUID = CString(pUUID);
+    const_cast<CDclFormObject*>(this)->msUUID = CString(pUUID);
   }
-  writeString(pFile, m_UUID);
+  writeString(pFile, msUUID);
   writeBOOL(pFile, m_bUsesClientRect);
 
   // set counter for ArxControls
@@ -378,11 +404,11 @@ void CDclFormObject::Serialize(CArchive& ar)
 		ar << msName;
 		ar << mType;
 		
-		ar << m_UniqueName;
-		ar << m_ParentName;
-		ar << m_TabIndex;
+		ar << msUniqueName;
+		ar << CString(GetParentName());
+		ar << mnTabIndex;
 
-		if (m_UUID.GetLength() == 0)
+		if (msUUID.GetLength() == 0)
 		{
 			UUID uuid;
 		#ifdef _UNICODE
@@ -392,9 +418,9 @@ void CDclFormObject::Serialize(CArchive& ar)
 		#endif
 			UuidCreate(&uuid);
 			UuidToString(&uuid, &pUUID);
-			m_UUID = (LPCTSTR)pUUID;
+			msUUID = (LPCTSTR)pUUID;
 		}
-		ar << m_UUID;
+		ar << msUUID;
 		ar << m_bUsesClientRect;
 
 		// set counter for ArxControls
@@ -456,13 +482,15 @@ void CDclFormObject::Serialize(CArchive& ar)
 			mType = VdclInvalid;
 		else
 			mType = (DclFormType)lType;
-		ar >> m_UniqueName;
-		ar >> m_ParentName;
-		ar >> m_TabIndex;
+		ar >> msUniqueName;
+		CString sParentName;
+		ar >> sParentName;
+		SetParentForm( sParentName );
+		ar >> mnTabIndex;
 
 		if (nThisVersion >= 2)
 		{
-			ar >> m_UUID;
+			ar >> msUUID;
 		}
 
 		if (nThisVersion >= 4)
@@ -480,9 +508,9 @@ void CDclFormObject::Serialize(CArchive& ar)
 
 		mDclControls.RemoveAll();
 
-		// set start position for navigating arx controls
-		pos = mDclControls.GetHeadPosition();
-		// do loop to navigate ArxControls
+
+
+		// do loop to add controls
 		while (nCount-- > 0)
 		{
 			// get current ArxControlObject
@@ -498,12 +526,11 @@ void CDclFormObject::Serialize(CArchive& ar)
 			
 			if (mType == VdclModal)
 			{				
-				CPropertyObject* pProp = pControl->GetPropertyObject(nEventInvoke);
+				RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nEventInvoke);
 				if (pProp != NULL)
 				{
 					POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
 					pControl->m_PropertyList.RemoveAt(pos);
-					delete pProp;
 				}
 			}
 		}
@@ -539,10 +566,10 @@ void CDclFormObject::Serialize(CArchive& ar)
 					// get current ArxControlObject
 					CDclControlObject* pControl = mDclControls.GetNext(pos);
 					
-					CPropertyObject *pImageProp = pControl->GetPropertyObject(nImageList); 
-					if (pImageProp != NULL && pImageProp->m_ImageListIndex >= 0)
+					RefCountedPtr< CPropertyObject > pImageProp = pControl->GetPropertyObject(nImageList); 
+					if (pImageProp != NULL && pImageProp->GetShortValue() >= 0)
 					{
-						POSITION pos2 = m_ImageListCollection.FindIndex(pImageProp->m_ImageListIndex);
+						POSITION pos2 = m_ImageListCollection.FindIndex(pImageProp->GetShortValue());
 						if (pos2 != NULL)
 						{
 							CImageListObject *pImageList = m_ImageListCollection.GetAt(pos2);
@@ -565,12 +592,11 @@ void CDclFormObject::Serialize(CArchive& ar)
 			{
 			case VdclModal:
 				{				
-				CPropertyObject* pProp = pControl->GetPropertyObject(nEventInvoke);
+				RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nEventInvoke);
 				if (pProp != NULL)
 				{
 					POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
 					pControl->m_PropertyList.RemoveAt(pos);
-					delete pProp;
 				}
 				//break;  This break was missing -- maybe intentional, I can't tell for sure [ORW]
 				}
@@ -592,26 +618,23 @@ void CDclFormObject::Serialize(CArchive& ar)
 				if (pControl->GetPropertyObject(nResizable) == NULL )
 					AddControlProperty(pControl, nResizable, _T("True"), PropBool);
 
-				CPropertyObject* pProp = pControl->GetPropertyObject(nMinDialogWidth);
+				RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nMinDialogWidth);
 				if (pProp != NULL)
 				{
 					POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
 					pControl->m_PropertyList.RemoveAt(pos);
-					delete pProp;
 				}
 				pProp = pControl->GetPropertyObject(nMinDialogHeight);
 				if (pProp != NULL)
 				{
 					POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
 					pControl->m_PropertyList.RemoveAt(pos);
-					delete pProp;
 				}
 				pProp = pControl->GetPropertyObject(nMaxDialogWidth);
 				if (pProp != NULL)
 				{
 					POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
 					pControl->m_PropertyList.RemoveAt(pos);
-					delete pProp;
 				}
 				
 				break;		
@@ -672,7 +695,7 @@ void CDclFormObject::EnsureIsLoaded()
 	
 	FileStg.Open(m_sSubFileName, CFile::modeRead | CFile::shareDenyWrite); 
 
-	CArchiveEx arDcl(&FileStg, CArchive::load | CArchive::bNoFlushOnDelete, NULL, activeProject->GetPassword(), TRUE);
+	CArchiveEx arDcl(&FileStg, CArchive::load | CArchive::bNoFlushOnDelete, NULL, mpProject->GetPassword(), TRUE);
 	
 	// get dcl form into archive
 	Serialize(arDcl);
@@ -796,11 +819,13 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 		mType = VdclInvalid;
 	else
 		mType = (DclFormType)lType;
-  if (!readString(sFile, m_UniqueName)) return statInvalidFormat;
-  if (!readString(sFile, m_ParentName)) return statInvalidFormat;
-  if (!readShort(sFile, m_TabIndex)) return statInvalidFormat;
+  if (!readString(sFile, msUniqueName)) return statInvalidFormat;
+	CString sParentName;
+  if (!readString(sFile, sParentName)) return statInvalidFormat;
+	SetParentForm( sParentName );
+  if (!readShort(sFile, mnTabIndex)) return statInvalidFormat;
 
-  if (!readString(sFile, m_UUID)) return statInvalidFormat;
+  if (!readString(sFile, msUUID)) return statInvalidFormat;
   if (!readBOOL(sFile, m_bUsesClientRect)) return statInvalidFormat;
 
   // get counter for arx controls
@@ -825,12 +850,11 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 
     if (mType == VdclModal)
     {				
-      CPropertyObject* pProp = pControl->GetPropertyObject(nEventInvoke);
+      RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nEventInvoke);
       if (pProp != NULL)
       {
         POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
         pControl->m_PropertyList.RemoveAt(pos);
-        delete pProp;
       }
     }
   }
@@ -863,10 +887,10 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
   //  {
   //    // get current ArxControlObject
   //    CDclControlObject* pControl = mDclControls.GetNext(pos);
-  //    CPropertyObject *pImageProp = pControl->GetPropertyObject(nImageList); 
-  //    if (pImageProp != NULL && pImageProp->m_ImageListIndex >= 0)
+  //    RefCountedPtr< CPropertyObject > pImageProp = pControl->GetPropertyObject(nImageList); 
+  //    if (pImageProp != NULL && pImageProp->GetShortValue() >= 0)
   //    {
-  //      POSITION pos2 = m_ImageListCollection.FindIndex(pImageProp->m_ImageListIndex);
+  //      POSITION pos2 = m_ImageListCollection.FindIndex(pImageProp->GetShortValue());
   //      if (pos2 != NULL)
   //      {
   //        CImageListObject *pImageList = m_ImageListCollection.GetAt(pos2);
@@ -889,12 +913,11 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
     {
     case VdclModal:
       {				
-        CPropertyObject* pProp = pControl->GetPropertyObject(nEventInvoke);
+        RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nEventInvoke);
         if (pProp != NULL)
         {
           POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
           pControl->m_PropertyList.RemoveAt(pos);
-          delete pProp;
         }
       }
     case VdclModeless:
@@ -918,26 +941,23 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
         if (pControl->GetPropertyObject(nResizable) == NULL)
           AddControlProperty(pControl, nResizable, sTrue, PropBool);
 
-        CPropertyObject* pProp = pControl->GetPropertyObject(nMinDialogWidth);
+        RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nMinDialogWidth);
         if (pProp != NULL)
         {
           POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
           pControl->m_PropertyList.RemoveAt(pos);
-          delete pProp;
         }
         pProp = pControl->GetPropertyObject(nMinDialogHeight);
         if (pProp != NULL)
         {
           POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
           pControl->m_PropertyList.RemoveAt(pos);
-          delete pProp;
         }
         pProp = pControl->GetPropertyObject(nMaxDialogWidth);
         if (pProp != NULL)
         {
           POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
           pControl->m_PropertyList.RemoveAt(pos);
-          delete pProp;
         }
 
         break;		
@@ -948,36 +968,29 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
   return statOK;
 }
 
-UUID CDclFormObject::getUUID() const
+UUID CDclFormObject::GetUUID() const
 {
   UUID uuid;
 #ifdef _UNICODE
-  UuidFromString((RPC_WSTR)(LPCWSTR)m_UUID, &uuid);
+  UuidFromString((RPC_WSTR)(LPCWSTR)msUUID, &uuid);
 #else
-  UuidFromString((RPC_CSTR)(LPCSTR)m_UUID, &uuid);
+  UuidFromString((RPC_CSTR)(LPCSTR)msUUID, &uuid);
 #endif
   return uuid;
 }
 
 CString CDclFormObject::GetKeyName() const
 {
-	if (mType == VdclTabForm)
-	{
-		POSITION pos = mpProject->GetDclFormList().GetHeadPosition();
-		while (pos != NULL)
-		{
-			CDclFormObject *pDcl = mpProject->GetDclFormList().GetNext(pos);
-			if (pDcl != NULL)
-			{
-				if (this->m_ParentName == pDcl->m_UniqueName)
-					return pDcl->GetKeyName();
-			}			
-		}
-	}
-	const CDclControlObject* pControl = GetControlProperties();
-	if (!pControl)
-		return CString(); //properties have not yet been added
-	return pControl->GetStrProperty(nName);
+	const CDclControlObject* pControlProps = GetControlProperties();
+	assert( pControlProps != NULL );
+	if (!pControlProps)
+		return CString(); //properties have not yet been added!
+	CString sControlName = pControlProps->GetStrProperty(nName);
+	if( sControlName.IsEmpty() )
+		sControlName = msUniqueName;
+	if( mpParentForm )
+		sControlName = mpParentForm->GetKeyName() + _T('_') + sControlName;
+	return sControlName;
 }
 
 CString CDclFormObject::GetKeyPath() const
@@ -1058,7 +1071,7 @@ bool CDclFormObject::FindControls( ControlTypes eType, CList< CDclControlObject*
 	return true;
 }
 
-bool CDclFormObject::AddControlFonts( CFontCollection& Fonts ) const
+bool CDclFormObject::GetControlFonts( CFontCollection& Fonts ) const
 {
 	POSITION posControl = mDclControls.GetHeadPosition();
 	while (posControl != NULL)
@@ -1078,7 +1091,7 @@ void CDclFormObject::ZOrderFrontAddTabControls()
 	while (pos)
 	{
 		CDclControlObject *pControl = mDclControls.GetNext(pos);
-		CWnd* pWnd = pControl->m_pWnd; //pParent->GetDlgItem(pControl->m_Id);
+		CWnd* pWnd = pControl->GetWindow(); //pParent->GetDlgItem(pControl->m_Id);
 		if (pWnd != NULL)
 			pWnd->SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
 	}

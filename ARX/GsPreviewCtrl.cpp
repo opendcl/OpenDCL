@@ -397,7 +397,7 @@ void CGsPreviewCtrl::init(HMODULE hRes, bool bCreateModel)
         //a device with standard autocad color palette
         mpDevice = mpManager->createAutoCADDevice(m_hWnd);
 // m_pLog->WriteString("\r\ninit 7");
-		CPropertyObject *pAcadColor = m_ArxControl->GetPropertyObject(nAcadColor);
+		RefCountedPtr< CPropertyObject > pAcadColor = m_ArxControl->GetPropertyObject(nAcadColor);
 		// m_pLog->WriteString("\r\ninit 8");
 		if (pAcadColor)
 		{

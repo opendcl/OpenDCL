@@ -28,7 +28,6 @@ VdclStatic::VdclStatic()
 
 VdclStatic::~VdclStatic()
 {
-
 }
 
 

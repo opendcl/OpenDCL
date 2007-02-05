@@ -35,7 +35,7 @@ int TextBox_SetFilter()
 		return 0;
 	}
 
-	CWnd *pControl = pArxObject->m_pWnd;
+	CWnd *pControl = pArxObject->GetWindow();
 
 	CString sFilter;
 	if (!GetStringArgument(nArg, &sFilter, sTextBox_SetFilter) || pControl == NULL)

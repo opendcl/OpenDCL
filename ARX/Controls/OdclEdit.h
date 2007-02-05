@@ -28,7 +28,7 @@ public:
 	bool			m_bFocusClick;
 	bool			m_bAllowReturn;
 	bool			m_bInvokeWithSendString;
-	CPropertyObject *m_pTextProp;
+	RefCountedPtr< CPropertyObject > m_pTextProp;
 	CString			m_sFilter;
 
 	CComboBox		*m_pGridDropList;

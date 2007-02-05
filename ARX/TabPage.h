@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Resource.h"
-#include "ControlPane.h"
+#include "ArxControlPane.h"
 
 class CDclFormObject;
 
@@ -16,11 +16,13 @@ class CTabPage : public CDialog
 {
 protected:
 	CDclFormObject* mpSourceForm;
-	CControlPane mControlPane;
+	CArxControlPane mControlPane;
+
+	enum { IDD = IDD_TABPAGE2 };
 
 // Construction
 public:
-	CTabPage( CDclFormObject* pSourceForm );
+	CTabPage( CDclFormObject* pSourceForm, CWnd* pHostDlg );
 	~CTabPage();
 
 	//Attributes
@@ -29,32 +31,19 @@ public:
 	const CControlPane& GetControlPane() const { return mControlPane; }
 	CControlPane& GetControlPane() { return mControlPane; }
 
-
-// Dialog Data
-	//{{AFX_DATA(CTabPage)
-	enum { IDD = IDD_TABPAGE2 };
-		// NOTE - ClassWizard will add data members here.
-		//    DO NOT EDIT what you see in these blocks of generated code !
-	//}}AFX_DATA
-
-
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CTabPage)
-	public:
+public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
+
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
 	virtual void OnOK();
 	virtual void OnCancel();	
-	// Generated message map functions
-	//{{AFX_MSG(CTabPage)
-	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
 
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+
+protected:
+	DECLARE_MESSAGE_MAP()
 };

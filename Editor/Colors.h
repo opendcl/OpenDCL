@@ -4,12 +4,11 @@
 #pragma once
 
 #include "Resource.h"
+#include "PropertyObject.h"
 #include "AcadColorEdit.h"
 #include "ColorPickerCB.h"
 #include "ColorListBox.h"
 #include "ColorPatch.h"
-
-class CPropertyObject;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -32,7 +31,7 @@ public:
 	CColorPatch		m_Color;
 	//}}AFX_DATA
 
-	CPropertyObject *m_pColor;
+	RefCountedPtr< CPropertyObject > m_pColor;
 	CString			m_sTitle;
 	void DisplayColor();
 

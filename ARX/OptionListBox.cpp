@@ -325,7 +325,7 @@ int COptionListBox::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CClrListBox::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
-	CPropertyObject *pListProperty = m_ArxControl->GetPropertyObject(nBtnCaption);
+	RefCountedPtr< CPropertyObject > pListProperty = m_ArxControl->GetPropertyObject(nBtnCaption);
 	m_RowHeight = (short)m_ArxControl->GetLngProperty(nRowHeight);
 	m_CurSel = (short)m_ArxControl->GetLngProperty(nDefSelIndex);
 	CRect rc;

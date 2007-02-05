@@ -77,6 +77,9 @@ class RefCountedPtr
 private:
 	RefCounter<T>* pW;
 
+protected:
+	bool isNull() const { return (pW? false : true); }
+
 public:
 	RefCountedPtr<T>()
 	: pW( NULL )
@@ -118,10 +121,10 @@ public:
 		}
 
 public:
-	operator T* () const { return pW? *pW : NULL; }
+	operator const T* () const { return pW? *pW : NULL; }
 	operator T* () { return pW? *pW : NULL; }
 
-  T* operator->() const { return pW? *pW : NULL; }
+  const T* operator->() const { return pW? *pW : NULL; }
   T* operator->() { return pW? *pW : NULL; }
 
 	bool operator < ( const RefCountedPtr<T>& Right ) const
@@ -130,4 +133,35 @@ public:
 		}
 
 	void Lock() { if( pW ) pW->Lock(); }
+};
+
+
+//interface to a ref-counted pointer that automatically constructs and returns a new T
+//if it is dereferenced or operator-> is called on a NULL pointer
+template< class T >
+class RefCountedAutoConstructPtr : public RefCountedPtr<T>
+{
+private:
+	typedef RefCountedPtr<T> _base;
+
+public:
+	RefCountedAutoConstructPtr<T>() {}
+	RefCountedAutoConstructPtr<T>( T* pTarget ) : _base( pTarget ) {}
+	virtual ~RefCountedAutoConstructPtr<T>(void) {}
+
+	// copy and assignment
+	RefCountedAutoConstructPtr<T>(const RefCountedAutoConstructPtr<T> & src) : _base( src ) {}
+	RefCountedAutoConstructPtr<T>(const _base & src) : _base( src ) {}
+	RefCountedAutoConstructPtr<T>& operator=(const RefCountedAutoConstructPtr<T> & src) { _base::operator=( src ); return *this; }
+	RefCountedAutoConstructPtr<T>& operator=(const _base & src) { _base::operator=( src ); return *this; }
+	T* operator=(T* src) { return _base::operator=( src ); }
+
+public:
+	operator const T* () const { return isNull()? _base::operator=( new T ) : _base::operator T*(); }
+	operator T* () { return isNull()? _base::operator=( new T ) : _base::operator T*(); }
+
+  const T* operator->() const { return isNull()? _base::operator=( new T ) : _base::operator T*(); }
+  T* operator->() { return isNull()? _base::operator=( new T ) : _base::operator T*(); }
+
+	operator bool() const { return !isNull(); } //enable null testing without dereferencing
 };

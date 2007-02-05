@@ -5,11 +5,11 @@
 
 #include "Resource.h"
 #include "PictureBox.h"
+#include "PropertyObject.h"
 
 class CDclFormObject;
 class CDclControlObject;
 class CObjectDCLView;
-class CPropertyObject;
 
 // class for holding information about ActiveX methods so we do not
 // have to keep going back to typeinfo
@@ -56,9 +56,9 @@ public:
 
 	CDclFormObject *m_pDclForm;
 	CDclControlObject *m_pControl;
-	CPropertyObject *m_pTabCaptions;	
-	CPropertyObject *m_pTabTTT;	
-	CPropertyObject *m_pTabImages;	
+	RefCountedPtr< CPropertyObject > m_pTabCaptions;	
+	RefCountedPtr< CPropertyObject > m_pTabTTT;	
+	RefCountedPtr< CPropertyObject > m_pTabImages;	
 	CTabInfoList m_TabList;
 	CTabInfoList m_DeletedTabList;
 	CObjectDCLView *m_pView;

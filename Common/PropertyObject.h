@@ -1,14 +1,15 @@
 #pragma once
 
-#include "RefCountedPtr.h"
+#include <vector>
 
 class AxPropertyDescriptor;
 class AxEventDescriptor;
 class AxMethodDescriptor;
-class CAxContainer;
+class AxInterfaceDescriptor;
 enum IOStatus;
+enum PropertyId;
 
-enum PropertyTypes
+enum PropertyType
 {
 	PropInvalid = -1,
 	PropLong = 1,
@@ -34,120 +35,177 @@ enum PropertyTypes
 };
 
 
+namespace PropVal
+{
+	typedef std::vector< CString > TCStringArray;
+	typedef RefCountedAutoConstructPtr< TCStringArray > TCStringArrayPtr;
+	typedef std::vector< TCStringArray > TCStringArrayList;
+	typedef RefCountedAutoConstructPtr< TCStringArrayList > TCStringArrayListPtr;
+	typedef std::vector< int > TIntArray;
+	typedef RefCountedAutoConstructPtr< TIntArray > TIntArrayPtr;
+	typedef std::vector< TIntArray > TIntArrayList;
+	typedef RefCountedAutoConstructPtr< TIntArrayList > TIntArrayListPtr;
+	typedef RefCountedAutoConstructPtr< AxInterfaceDescriptor > TAxInterfaceDescriptorPtr;
+
+
+
+	class ConvertedCStringArray : public CStringArray
+	{
+	public:
+		ConvertedCStringArray( const TCStringArray& Src )
+		{
+			for( size_t idx = 0; idx < Src.size(); idx++ )
+				Add( Src[idx] );
+		}
+	};
+
+
+	class CPropertyValueBase
+	{
+	protected:
+		friend class CPropertyObject;
+		CPropertyValueBase() {}
+	public:
+		virtual ~CPropertyValueBase() {}
+
+		//attributes
+		virtual PropertyType GetType() const = 0;
+		virtual DWORD GetSubtype() const { return 0; }
+		virtual DWORD SetSubtype(DWORD dwSubtype) { return 0; }
+
+		//simple types
+		virtual bool GetValue( short& v ) const { return false; }
+		virtual bool SetValue( const short& v ) { return false; }
+		virtual bool GetValue( unsigned short& v ) const { return false; }
+		virtual bool SetValue( const unsigned short& v ) { return false; }
+		virtual bool GetValue( long& v ) const { return false; }
+		virtual bool SetValue( const long& v ) { return false; }
+		virtual bool GetValue( unsigned long& v ) const { return false; }
+		virtual bool SetValue( const unsigned long& v ) { return false; }
+		virtual bool GetValue( bool& v ) const { return false; }
+		virtual bool SetValue( const bool& v ) { return false; }
+		virtual bool GetValue( double& v ) const { return false; }
+		virtual bool SetValue( const double& v ) { return false; }
+		virtual bool GetValue( CString& v ) const { return false; }
+		virtual bool SetValue( const CString& v ) { return false; }
+		virtual bool SetValue( const LPCTSTR v ) { return false; }
+		//virtual bool GetValue( OLE_COLOR& v ) const { return false; }
+		//virtual bool SetValue( const OLE_COLOR& v ) { return false; }
+
+		//complex types
+		virtual bool GetValue( TCStringArrayPtr& v ) const { return false; }
+		virtual bool SetValue( const TCStringArrayPtr& v ) { return false; }
+		virtual bool GetValue( TCStringArrayListPtr& v ) const { return false; }
+		virtual bool SetValue( const TCStringArrayListPtr& v ) { return false; }
+		virtual bool GetValue( TIntArrayPtr& v ) const { return false; }
+		virtual bool SetValue( const TIntArrayPtr& v ) { return false; }
+		virtual bool GetValue( TIntArrayListPtr& v ) const { return false; }
+		virtual bool SetValue( const TIntArrayListPtr& v ) { return false; }
+		virtual bool GetValue( TAxInterfaceDescriptorPtr& v ) const { return false; }
+		virtual bool SetValue( const TAxInterfaceDescriptorPtr& v ) { return false; }
+
+		//operations
+		virtual void clear() = 0;
+		virtual size_t size() { return 0; }
+
+		//filing
+		virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const = 0;
+		virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) = 0;
+		virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const = 0;
+		virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) = 0;
+	};
+};
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CPropertyObject
 
 class CPropertyObject : public CObject
 {
+	RefCountedPtr< PropVal::CPropertyValueBase > mpValue;
+
 protected:
-	PropertyTypes mType;
 	bool mbHidden;
-	short mnID;
-	CString msStringValue;
-	OLE_COLOR mOLEColor;
-	long mlLong;
-	bool mbBoolean;
-	double mdblDouble;
-
-public:
-	CStringList		 m_stringList;
-	CList<CStringArray*> m_stringArrayList;
-	CList<CArray<int, int>*>	 m_intArrayList;
-	CArray<int, int> m_intList;
-	short			 m_ImageListIndex;
-
-	//ActiveX Attributes
-public:
-	AxPropertyDescriptor *m_pAxProp;
-	AxPropertyDescriptor *m_pAxPropGet;
-	AxPropertyDescriptor *m_pAxPropPut;
-	AxPropertyDescriptor *m_pAxPropPutRef;
-	AxEventDescriptor    *m_pAxEvent;
-	CList<AxMethodDescriptor*> *m_pMethods;
+	PropertyId mnID;
 
 	//Construction
-public:
+protected:
+	friend class RefCounter< CPropertyObject >; //so that objects of this class are always reference counted
 	CPropertyObject();
-	CPropertyObject(PropertyTypes type);
 	virtual ~CPropertyObject();
-
-	//Attributes
 public:
-	PropertyTypes GetType() const { return mType; }
-	void SetType( PropertyTypes type ) { mType = type; }
-	bool IsHidden() const { return mbHidden; }
-	void SetHidden( bool bHidden = true ) { mbHidden = bHidden; }
-	short GetID() const { return mnID; }
-	void SetID( short nID ) { mnID = nID; }
-	const CString& GetStringValue() const;
-	void SetStringValue( LPCTSTR pszValue );
-	const OLE_COLOR& GetOLEColorValue() const;
-	void SetOLEColorValue( const OLE_COLOR& dwColor );
-	const long& GetLongValue() const;
-	void SetLongValue( long lValue );
-	const long& GetEnumValue() const { return GetLongValue(); }
-	void SetEnumValue( int nValue ) { SetLongValue( (long)nValue ); }
-	bool GetBooleanValue() const;
-	void SetBooleanValue( bool bValue );
-	double GetDoubleValue() const;
-	void SetDoubleValue( double dblValue );
+	CPropertyObject(PropertyType type, DWORD dwSubtype = 0, PropertyId nID = (PropertyId)-1);
 
 	//2007-01-30 [ORW]: save version set to 5 (no change from ObjectDCL 3)
 	ULONG GetCurrentSaveVersion() const { return 5; }
 
+	//Attributes
+protected:
+	RefCountedPtr< PropVal::CPropertyValueBase > GetValue() const { return mpValue; }
+public:
+	PropertyType GetType() const { return mpValue->GetType(); }
+	void SetType( PropertyType type );
+	DWORD GetSubtype() const { return mpValue->GetSubtype(); }
+	void SetSubtype( DWORD flags ) { mpValue->SetSubtype( flags ); }
+	bool IsHidden() const { return mbHidden; }
+	void SetHidden( bool bHidden = true ) { mbHidden = bHidden; }
+	PropertyId GetID() const { return mnID; }
+	void SetID( PropertyId nID ) { mnID = nID; }
+
+	//simple value access
+	CString GetStringValue() const;
+	bool SetStringValue( LPCTSTR pszValue );
+	OLE_COLOR GetOLEColorValue() const;
+	bool SetOLEColorValue( const OLE_COLOR& dwColor );
+	long GetLongValue() const;
+	bool SetLongValue( long lValue );
+	long GetEnumValue() const { return GetLongValue(); }
+	bool SetEnumValue( int nValue ) { SetLongValue( (long)nValue ); }
+	bool GetBooleanValue() const;
+	bool SetBooleanValue( bool bValue );
+	double GetDoubleValue() const;
+	bool SetDoubleValue( double dblValue );
+	short GetShortValue() const;
+	bool SetShortValue( short idxValue );
+
+	//complex value access
+	const PropVal::TCStringArrayPtr GetStringArrayPtr() const;
+	PropVal::TCStringArrayPtr GetStringArrayPtr();
+	bool SetStringArrayPtr( PropVal::TCStringArrayPtr pValue );
+	const PropVal::TCStringArrayListPtr GetStringArrayListPtr() const;
+	PropVal::TCStringArrayListPtr GetStringArrayListPtr();
+	bool SetStringArrayListPtr( PropVal::TCStringArrayListPtr pValue );
+	const PropVal::TIntArrayPtr GetIntArrayPtr() const;
+	PropVal::TIntArrayPtr GetIntArrayPtr();
+	bool SetIntArrayPtr( PropVal::TIntArrayPtr pValue );
+	const PropVal::TIntArrayListPtr GetIntArrayListPtr() const;
+	PropVal::TIntArrayListPtr GetIntArrayListPtr();
+	bool SetIntArrayListPtr( PropVal::TIntArrayListPtr pValue );
+	const PropVal::TAxInterfaceDescriptorPtr GetAxInterfaceDescriptorPtr() const;
+	PropVal::TAxInterfaceDescriptorPtr GetAxInterfaceDescriptorPtr();
+	bool SetAxInterfaceDescriptorPtr( PropVal::TAxInterfaceDescriptorPtr pValue );
+
 	//Operations
 public:
-
+	void clear() { if( mpValue ) mpValue->clear(); }
 	
 	//Implementation
 public:
-	GUID GetActiveXProperyGuid();
-	DISPID GetActiveXGetProperyId();
-	DISPID GetActiveXSetProperyId();
-	int GetActiveXParamQty();
-	void SetActiveXPropery(CAxContainer *axContainer, CString sNewValue);
-	void SetActiveXProperyName(CString sName);	
-	CString GetActiveXPropery(CAxContainer *axContainer);
-	VARTYPE GetActiveXProperyType();
-	bool GetActiveXEnum(/*CListBoxDlg *pListBox = NULL*/);
-	CString GetActiveXEnumDesc(CString sValue);
-	CString GetActiveXEnumValue(int nEnumIndex);
-	void DoActiveXFontPropDlg(CAxContainer *axContainer);
-	CString GetAxMethodDesc(int nIndex);
-	int GetAxMethodParams(int nIndex);
-	GUID GetAxMethodParamGUID(int nIndex, int nParam);
-	CString GetAxMethodParamName(int nIndex, int nParam);
-	CString GetAxMethodParamVarType(int nIndex, int nParam);
-	VARTYPE GetAxMethodReturnType(int nIndex);
-	AxMethodDescriptor *GetAxMethod(int nIndex);
 	
 	CString GetName();
 	CString GetDocumentationDesc();
-	void Copy(CPropertyObject *other);
-	void AddProperty(PropertyTypes ValueType, CString strValue);
 	CString GetStdProperty();
 	
 	void AddStringItem(CString NewString);
-	void ClearList();
 	INT_PTR CountList();
 	CString GetStringItem(short ListIndex);
 
-protected:
-
-public:
-	void SetProperty(CString strValue);
-
 	//File I/O
+public:
 	virtual void Serialize(CArchive& ar);
-	virtual void SerializeActiveXInfo(CArchive& ar, int nPropertyVersion);
-	virtual void SerializeActiveXProp(CArchive& ar, AxPropertyDescriptor *axProp, int nPropertyVersion);	
   IOStatus WriteToTextFile(FILE* pFile) const;
-  IOStatus WriteActiveXInfoToTextFile(FILE* pFile) const;
-  IOStatus WriteActiveXPropToTextFile(FILE* pFile, AxPropertyDescriptor *axProp) const;
   IOStatus ReadFromTextFile(std::ifstream &sFile);
   IOStatus ReadFromTextFile5(std::ifstream &sFile);
-  IOStatus ReadActiveXInfoFromTextFile5(std::ifstream &sFile);
-  IOStatus ReadActiveXPropFromTextFile5(std::ifstream &sFile, AxPropertyDescriptor *axProp);
 
 protected:
 	DECLARE_SERIAL(CPropertyObject)

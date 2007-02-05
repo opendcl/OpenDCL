@@ -1,11 +1,12 @@
 #pragma once
 
-#define nName 1
 
 enum PropertyId
 {
 	nInvalidPropertyId = -1,
-	nMinPropertyId = 3, //skipping nName and nCustom defined in Project.h
+	nName = 1,
+	nCustom = 2,
+	nMinPropertyId = 3, //skipping nName and nCustom
 	nAutoSize				= 3,
 	nBorderStyle			= 4,
 	nButtonStyle			= 5,
@@ -251,5 +252,6 @@ enum PropertyId
 	nMinutesText			= 248,
 	nDisplaySeconds			= 249,
 	nDisplayPercentage		= 250,
-	nMaxPropertyId	= 250,
+	nFormEventOnOk = 251,
+	nMaxPropertyId	= 251,
 };

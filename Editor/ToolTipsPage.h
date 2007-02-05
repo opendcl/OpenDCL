@@ -8,8 +8,6 @@
 #include "PPToolTip.h"
 #include "ButtonST.h"
 #include "ColourPicker.h"
-//#include "FontCombo.h"
-//#include "FontSizes.h"
 #include "AutoRichEditCtrl.h"
 
 class CPropertyObject;
@@ -46,12 +44,12 @@ public:
 	int m_SelectedPic;
 	int m_nHighestId;
 	
-	CPropertyObject *m_pToolTipText;	
-	CPropertyObject *m_pToolTipLine;	
-	CPropertyObject *m_pToolTipBody;	
-	CPropertyObject *m_pToolTipPicture;	
-	CPropertyObject *m_pToolTipAvi;	
-	CPropertyObject *m_pToolTipTitleColor;
+	RefCountedPtr< CPropertyObject > m_pToolTipText;	
+	RefCountedPtr< CPropertyObject > m_pToolTipLine;	
+	RefCountedPtr< CPropertyObject > m_pToolTipBody;	
+	RefCountedPtr< CPropertyObject > m_pToolTipPicture;	
+	RefCountedPtr< CPropertyObject > m_pToolTipAvi;	
+	RefCountedPtr< CPropertyObject > m_pToolTipTitleColor;
 
 	void Commit();
 	CString GetHtmlText();

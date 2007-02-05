@@ -21,7 +21,7 @@ public:
 // Attributes
 public:
 	bool m_bInvokeWithSendString;
-	CPropertyObject *m_pValueProp;
+	RefCountedPtr< CPropertyObject > m_pValueProp;
 // Operations
 public:
 	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
