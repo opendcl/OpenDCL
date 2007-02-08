@@ -17,7 +17,7 @@ CHAR SldHeader[17] = "AutoCAD Slide\013\010\026";
 
 struct CxSlideEntry
 {
-	TCHAR Name[32];
+	CHAR Name[32];
 	DWORD Offset;
 };
 
@@ -114,16 +114,16 @@ bool CxAcadSlide::Load(CString filename, bool slb, CString slbSldName)
 		do {
 			file.Read(&sldentry, sizeof(CxSlideEntry));
 			TRACE("Slide entry for: %s, offset: %i\n", sldentry.Name, sldentry.Offset);
-			namelen = _tcslen(sldentry.Name);
+			namelen = lstrlenA(sldentry.Name);
 		}
-		while((slbSldName.CompareNoCase(sldentry.Name) != 0) && (namelen > 0));
+		while((slbSldName.CompareNoCase(CString(sldentry.Name)) != 0) && (namelen > 0));
 		
 		if(namelen > 0)
 		{
 			CxSlideEntry next;
 			// read next entry for offset info
 			file.Read(&next, sizeof(CxSlideEntry));
-			if(_tcslen(next.Name) > 0)
+			if(lstrlenA(next.Name) > 0)
 				size = next.Offset - sldentry.Offset;
 			else
 				size = DWORD(file.GetLength()) - sldentry.Offset - 31;

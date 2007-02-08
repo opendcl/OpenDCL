@@ -53,7 +53,7 @@ void CPropertiesTabPane::OnSize(UINT nType, int cx, int cy)
 	m_ControlDesc.MoveWindow(rcTitle, TRUE);
 		
 	CRect rcList (0,nTitleHeight,cx,cy-nPropertyListHeight);
-	m_PropertyList.MoveWindow(rcList, TRUE);
+	mPropListCtrl.MoveWindow(rcList, TRUE);
 
 	CRect rcPropertyTitle (0,cy-nPropertyListHeight - 1,cx,cy);
 	m_PropertyTitle.MoveWindow(rcPropertyTitle, TRUE);	
@@ -81,13 +81,13 @@ BOOL CPropertiesTabPane::OnInitDialog()
 	
 	CRect rc(0,0,2,2);	
 	
-	m_PropertyList.Create(rc, this, nPropertyListID);
+	mPropListCtrl.Create(rc, this, nPropertyListID);
 	
 	m_ControlDesc.SetWindowText(CString());
 	m_PropertyTitle.SetWindowText(CString());
 
-	m_PropertyList.m_pPropTitle = &m_PropertyTitle;
-	m_PropertyList.m_pPropDesc = &m_PropertyDesc;
+	mPropListCtrl.m_pPropTitle = &m_PropertyTitle;
+	mPropListCtrl.m_pPropDesc = &m_PropertyDesc;
 
 	m_PropertyDesc.SetFont(m_ControlDesc.GetFont());
 
@@ -98,7 +98,7 @@ BOOL CPropertiesTabPane::OnInitDialog()
 	CString sFont;
 	sFont = theWorkspace.LoadResourceString(IDS_DEFAULTFONT);
 	lstrcpy(lf.lfFaceName, sFont);
-	CDC *pDC = m_PropertyList.GetDC();
+	CDC *pDC = mPropListCtrl.GetDC();
 
 	// create font size as scaled
 	lf.lfHeight = -::MulDiv(nDeFontSize, pDC->GetDeviceCaps(LOGPIXELSY), nDePixels);
@@ -132,7 +132,7 @@ BOOL CPropertiesTabPane::PreTranslateMessage(MSG* pMsg)
 {
 	if (pMsg->message== WM_KEYDOWN )
 	{
-		if (pMsg->wParam==VK_RETURN && !m_PropertyList.m_Edit.IsWindowVisible())
+		if (pMsg->wParam==VK_RETURN && !mPropListCtrl.m_Edit.IsWindowVisible())
 		{
 			pMsg->wParam = NULL;
 			pMsg->message = NULL;

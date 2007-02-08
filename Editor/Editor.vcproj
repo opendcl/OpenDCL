@@ -189,7 +189,6 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
-				ProgramDatabaseFile=".\Release/ObjectDCL.pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -874,10 +873,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\RefCountedPtr.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Resource.h"
 				>
 			</File>
@@ -1440,6 +1435,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Common\DclFormTypes.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Common\DialogControl.cpp"
 				>
 			</File>
@@ -1581,6 +1580,10 @@
 			</File>
 			<File
 				RelativePath="..\Common\PurchaseMode.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\RefCountedPtr.h"
 				>
 			</File>
 			<File

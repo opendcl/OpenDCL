@@ -32,6 +32,10 @@ CSnapDlg::CSnapDlg(CDclFormObject* pSourceForm, UINT idd, CWnd* pParent /*=NULL*
 	m_hIconAcad = NULL;
 }
 
+CSnapDlg::~CSnapDlg()
+{
+}
+
 void CSnapDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
@@ -286,7 +290,6 @@ LRESULT CSnapDlg::OnNcHitTest(CPoint point)
 	
 	return CDialog::OnNcHitTest(point);
 }
-
 
 void CSnapDlg::PostNcDestroy() 
 {

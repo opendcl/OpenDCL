@@ -180,7 +180,7 @@ void CObjectDCLDoc::RenameUntitledGlobalVars(CString sPathName)
 	}
 
 	// force the redraw of the property list box so any (VarName) will be updated.
-	theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.Invalidate();
+	theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
 }
 
 void CObjectDCLDoc::OnFileClose() 

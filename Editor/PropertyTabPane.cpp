@@ -95,7 +95,7 @@ int CPropertyTabPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_TabCtrl.SetFont(&m_font);
 	m_EventsTabPane.SetFont(&m_font);
 	m_PropertiesTabPane.SetFont(&m_font);
-	m_PropertiesTabPane.m_PropertyList.SetFont(&m_font);
+	m_PropertiesTabPane.GetPropertiesCtrl().SetFont(&m_font);
 	m_PropertiesTabPane.ShowWindow(TRUE);
 	m_EventsTabPane.ShowWindow(FALSE);
 	return 0;
@@ -190,11 +190,11 @@ void CPropertyTabPane::DisplaySelectedControlProperties(CDclControlObject *pCont
 	// set the control description text
 	m_PropertiesTabPane.m_ControlDesc.SetWindowText(sName);
 	// set the CView pointer for updating controls
-	m_PropertiesTabPane.m_PropertyList.m_pView = pView;	
+	m_PropertiesTabPane.GetPropertiesCtrl().m_pView = pView;	
 	// set the dcl form pointer for the property pages if they are to be called.
-	m_PropertiesTabPane.m_PropertyList.m_pDclForm = pView->m_pThisDclForm;
+	m_PropertiesTabPane.GetPropertiesCtrl().m_pDclForm = pView->m_pThisDclForm;
 	// display the properties of the control
-	m_PropertiesTabPane.m_PropertyList.DisplayProperties(pControl);
+	m_PropertiesTabPane.GetPropertiesCtrl().DisplayProperties(pControl);
 
 	// set the CView pointer for updating controls
 	m_EventsTabPane.ClearEvents();
@@ -209,7 +209,7 @@ void CPropertyTabPane::ClearControlProperties()
 	// call the method to clear the propery grid
 	if (IsWindow(m_PropertiesTabPane.m_ControlDesc.m_hWnd))
 	{
-		m_PropertiesTabPane.m_PropertyList.ClearGrid();
+		m_PropertiesTabPane.GetPropertiesCtrl().ClearGrid();
 		m_PropertiesTabPane.m_ControlDesc.SetWindowText(_T(""));
 		m_PropertiesTabPane.m_PropertyDesc.SetWindowText(_T(""));
 		m_PropertiesTabPane.m_PropertyTitle.SetWindowText(_T(""));
@@ -222,7 +222,7 @@ BOOL CPropertyTabPane::PreTranslateMessage(MSG* pMsg)
 {
 	if (pMsg->message== WM_KEYDOWN )
 	{
-		if (pMsg->wParam==VK_RETURN && !m_PropertiesTabPane.m_PropertyList.m_Edit.IsWindowVisible())
+		if (pMsg->wParam==VK_RETURN && !m_PropertiesTabPane.GetPropertiesCtrl().m_Edit.IsWindowVisible())
 		{
 			pMsg->wParam = NULL;
 			pMsg->message = NULL;

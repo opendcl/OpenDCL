@@ -354,8 +354,7 @@ LRESULT COptionListBox::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 	m_bMouseTracking = FALSE;    
 	m_nLastHighlighted = -1;
 	RedrawWindow();
-	return TRUE;
-	
+	return FALSE;
 }
 
 void COptionListBox::OnMouseMove(UINT nFlags, CPoint point) 

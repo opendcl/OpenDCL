@@ -15,10 +15,20 @@ const int nReturnChar = 13;
 const int nHardReturnChar = 10;
 
 
+DWORD CAcadSlideControl::GetWndStyle() const
+{
+	DWORD dwStyle = CArxDialogControl::GetWndStyle();
+	return (dwStyle | BS_OWNERDRAW);
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CSlideHolder
 
-CSlideHolder::CSlideHolder()
+CSlideHolder::CSlideHolder( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID )
+: mControlX( pTemplate, &Pane, this )
+, mpSourceControl( pTemplate )
+, mpControlPane( &Pane )
 {
 	m_bMouseTracking = FALSE;
 	m_bHasFocus = false;
@@ -26,8 +36,7 @@ CSlideHolder::CSlideHolder()
 	// No tooltip created
 	m_ToolTip.m_hWnd = NULL;
 	m_hbmMem = NULL;
-	
-	
+	Create( Pane.GetHostDialog(), nID );
 }
 
 CSlideHolder::~CSlideHolder()
@@ -60,6 +69,7 @@ BEGIN_MESSAGE_MAP(CSlideHolder, CButton)
 	ON_WM_KEYUP()
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_SYSCOLORCHANGE()
+	ON_MESSAGE(WM_MOUSELEAVE, OnMouseLeave)   	
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -68,57 +78,32 @@ END_MESSAGE_MAP()
 // CSlideHolder message handlers
 
 
-BOOL CSlideHolder::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID)
-					 
-{	
-	BOOL RetVal;
-	CRect ArxRect;
-	// set the arx control pointer
-    m_ArxControl = pControl;
-	
-	// get the rectangle of the new control
-	ArxRect.top = pControl->m_pTop->GetLongValue();
-	ArxRect.left = pControl->m_pLeft->GetLongValue();
-	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
-	
-	DWORD dwStyle = WS_CHILD|WS_VISIBLE|WS_CLIPSIBLINGS|WS_GROUP;
-	
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
-		dwStyle = dwStyle | WS_TABSTOP;
-	else
-		dwStyle = dwStyle | WS_GROUP;
-
-	RetVal = CButton::Create(
-		CString(),
-		dwStyle | BS_OWNERDRAW,
-		ArxRect,
-		pParentWnd, 
-		nID);
-	
-	
+bool CSlideHolder::Create( CWnd* pParentWnd, UINT nID )
+{
+	bool bSuccess =
+		CButton::Create( NULL,
+										 mControlX.GetWndStyle(),
+										 mControlX.GetWndRect(),
+										 pParentWnd,
+										 nID );
 	VERIFY(CWnd::SubclassDlgItem(nID, pParentWnd));
 
-	
-	int nColor = m_ArxControl->GetLngProperty(nAcadColor);
-	COLORREF rgb = GetRGBColor(nColor);
-	
-	m_SlideControl.SetBackColor(rgb);
+	if( bSuccess && !mControlX.ApplyPropertiesEnum() )
+		bSuccess = false;
+
+	int nColor = mpSourceControl->GetLngProperty(nAcadColor);
+	mSlideCtrl.SetBackColor( GetRGBColor(nColor) );
+	SetAcadColor( nColor );
 
 	InitToolTip();
-	SetToolTipEx(this, m_ToolTip, pControl);
+	SetToolTipEx(this, m_ToolTip, mpSourceControl);
 
-	switch (m_ArxControl->GetLngProperty(nEventInvoke))
-	{
-	case 1:
+	if( mpSourceControl->GetLngProperty(nEventInvoke) == 1 )
 		m_bInvokeWithSendString = true;
-		break;
-	default:
+	else
 		m_bInvokeWithSendString = false;
-		break;
-	}
 
-	return RetVal;
+	return bSuccess;
 }
 
 void CSlideHolder::OnPaint() 
@@ -137,12 +122,6 @@ void CSlideHolder::OnPaint()
         memdc.CreateCompatibleDC( pdc );
         // Select the bitmap into the DC
         poldbmp = memdc.SelectObject( CBitmap::FromHandle(m_hbmMem) );
-		
-		if (!GetParent()->IsWindowVisible())		
-		{
-			memdc.SelectObject( poldbmp );
-			return;
-		}
 
         // Copy (BitBlt) bitmap from memory DC to screen DC
         pdc->BitBlt( 0, 0,
@@ -159,7 +138,7 @@ void CSlideHolder::OnPaint()
 	
 	CDC* pdc = BeginPaint(&ps);
 
-	PaintCrontrol(pdc);
+	PaintControl(pdc);
 	
 	EndPaint(&ps);
 	
@@ -176,10 +155,10 @@ void CSlideHolder::OnPaint()
 
 		if (pFocusWnd != this)
 			// call methods to invoke the event
-			InvokeMethodInt(m_ArxControl->GetStrProperty(nEventPaint), 0, m_bInvokeWithSendString);
+			InvokeMethodInt(mpSourceControl->GetStrProperty(nEventPaint), 0, m_bInvokeWithSendString);
 		else
 			// call methods to invoke the event
-			InvokeMethodInt(m_ArxControl->GetStrProperty(nEventPaint), 1, m_bInvokeWithSendString);
+			InvokeMethodInt(mpSourceControl->GetStrProperty(nEventPaint), 1, m_bInvokeWithSendString);
 	}
 
 	
@@ -193,7 +172,7 @@ void CSlideHolder::SetAcadColor(long nColor)
 			
 		CDC *pdc = CWnd::GetDC();
 
-		PaintCrontrol(pdc);
+		PaintControl(pdc);
 
 		pdc->Detach();
 	}
@@ -207,11 +186,11 @@ bool CSlideHolder::SetFileName(CString sFileName, bool slb, CString slbSldName)
 	bool bReturn;
 	if (slb)
 	{		 
-		bReturn = m_SlideControl.Load(sFileName, slb, slbSldName);	
+		bReturn = mSlideCtrl.Load(sFileName, slb, slbSldName);	
 	}
 	else
 	{
-		bReturn = m_SlideControl.Load(sFileName, false, CString());
+		bReturn = mSlideCtrl.Load(sFileName, false, CString());
 	}
 
 	if (bReturn)
@@ -230,8 +209,8 @@ void CSlideHolder::Clear()
 		m_hbmMem = NULL;
 	}
 	m_bSelectedRect = false;
-	m_SlideControl.FreeData();
-	m_SlideControl.m_FileName = CString();
+	mSlideCtrl.FreeData();
+	mSlideCtrl.m_FileName = CString();
 
 	try
 	{
@@ -242,7 +221,7 @@ void CSlideHolder::Clear()
 	}
 }
 
-void CSlideHolder::PaintCrontrol(CDC *pdc)
+void CSlideHolder::PaintControl(CDC *pdc)
 {
 	
 	CRect rcCell;
@@ -259,7 +238,7 @@ void CSlideHolder::PaintCrontrol(CDC *pdc)
 	// delete the brush
 	CellBrush.DeleteObject();
 	
-	if (m_SlideControl.m_FileName.GetLength() > 0)
+	if (mSlideCtrl.m_FileName.GetLength() > 0)
 	{
 		try
 		{
@@ -267,7 +246,7 @@ void CSlideHolder::PaintCrontrol(CDC *pdc)
 			double dH;
 			double dW;
 
-			dFactor = (double)m_SlideControl.m_Height / (double)m_SlideControl.m_Width;
+			dFactor = (double)mSlideCtrl.m_Height / (double)mSlideCtrl.m_Width;
 			dH = dFactor;
 			dW = 1.0;
 
@@ -277,7 +256,7 @@ void CSlideHolder::PaintCrontrol(CDC *pdc)
 			// if the calc height is too large
 			if (nDrawHeight > nThisHeight)
 			{
-				dFactor = (double)m_SlideControl.m_Width / (double)m_SlideControl.m_Height;
+				dFactor = (double)mSlideCtrl.m_Width / (double)mSlideCtrl.m_Height;
 				dH = 1.0;
 				dW = dFactor;
 
@@ -296,7 +275,7 @@ void CSlideHolder::PaintCrontrol(CDC *pdc)
 			// if the calc width is too large
 			if (nDrawWidth > nThisWidth)
 			{
-				dFactor = (double)m_SlideControl.m_Height / (double)m_SlideControl.m_Width;
+				dFactor = (double)mSlideCtrl.m_Height / (double)mSlideCtrl.m_Width;
 				dH = dFactor;
 				dW = 1.0;
 
@@ -309,7 +288,7 @@ void CSlideHolder::PaintCrontrol(CDC *pdc)
 				rcCell.bottom = nThisHeight - rcCell.top;
 			}
 			// draw the slide
-			m_SlideControl.Draw(pdc, rcCell);
+			mSlideCtrl.Draw(pdc, rcCell);
 		}
 		catch(...)
 		{
@@ -397,7 +376,7 @@ int CSlideHolder::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CSlideHolder::OnRButtonDblClk(UINT nFlags, CPoint point) 
 {
 	 InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDblClick),
+		mpSourceControl->GetStrProperty(nEventMouseDblClick),
 		2,
 		nFlags,
 		point.x,
@@ -405,11 +384,11 @@ void CSlideHolder::OnRButtonDblClk(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(nEventRDblClick),
+		mpSourceControl->GetStrProperty(nEventRDblClick),
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnRMouseEvent),
+		mpSourceControl->GetStrProperty(nOnRMouseEvent),
 		2,
 		nFlags,
 		point.x,
@@ -422,7 +401,7 @@ void CSlideHolder::OnRButtonDblClk(UINT nFlags, CPoint point)
 void CSlideHolder::OnRButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseUp),
+		mpSourceControl->GetStrProperty(nEventMouseUp),
 		2,
 		nFlags,
 		point.x,
@@ -430,12 +409,12 @@ void CSlideHolder::OnRButtonUp(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(nEventRClick),
+		mpSourceControl->GetStrProperty(nEventRClick),
 		m_bInvokeWithSendString);	
 	
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnRMouseEvent),
+		mpSourceControl->GetStrProperty(nOnRMouseEvent),
 		1,
 		nFlags,
 		point.x,
@@ -456,20 +435,20 @@ void CSlideHolder::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	else
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);
+		InvokeMethod(mpSourceControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);
 	}
 	
 }
 
 void CSlideHolder::OnClicked() 
 {
-	if (m_ArxControl->m_bEventsAsAction)
+	if (mpSourceControl->m_bEventsAsAction)
 	{
 		GetParent()->GetParent()->EnableWindow(TRUE);
 		int stat;
 		struct resbuf *result = NULL, *list;    
 
-		CString sText = m_ArxControl->GetStrProperty(nEventClicked);
+		CString sText = mpSourceControl->GetStrProperty(nEventClicked);
 		
 		list = acutBuildList(RTSTR, sText, 0);
 		if (list != NULL) 
@@ -487,7 +466,7 @@ void CSlideHolder::OnClicked()
 	else
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);	
+		InvokeMethod(mpSourceControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);	
 	}
 	
 }
@@ -495,7 +474,7 @@ void CSlideHolder::OnClicked()
 void CSlideHolder::OnDoubleclicked() 
 {
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventDblClicked), m_bInvokeWithSendString);	
+	InvokeMethod(mpSourceControl->GetStrProperty(nEventDblClicked), m_bInvokeWithSendString);	
 	
 	
 }
@@ -513,8 +492,8 @@ void CSlideHolder::OnDestroy()
 	}
 	
 	m_bSelectedRect = false;
-	m_SlideControl.FreeData();
-	m_SlideControl.m_FileName = CString();
+	mSlideCtrl.FreeData();
+	mSlideCtrl.m_FileName = CString();
 
 
 	CButton::OnDestroy();
@@ -540,7 +519,7 @@ void CSlideHolder::OnSetFocus(CWnd* pOldWnd)
 	pdc->Detach();
 	
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpSourceControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
 	
 }
 
@@ -549,13 +528,13 @@ void CSlideHolder::OnKillFocus(CWnd* pNewWnd)
 	CButton::OnKillFocus(pNewWnd);
 	
 	CDC *pdc = GetDC();
-	m_pParentPane->SetGrphcBtnsParents(true);
+	mpControlPane->SetGrphcBtnsParents(true);
 	// draw the solid rectangle
 	pdc->DrawFocusRect(m_rcFocus);
 	pdc->Detach();	
 	m_bHasFocus = false;
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpSourceControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
 	
 }
 
@@ -719,7 +698,7 @@ void CSlideHolder::SetDragnDrop(BOOL bRegister)
 	if (bRegister == TRUE)
 	{
 		BOOL success = m_DropTarget.Register(this);
-		m_DropTarget.m_pThisArxControl = m_ArxControl;
+		m_DropTarget.m_pThisArxControl = mpSourceControl;
 		m_DropTarget.m_pParent = this;
     }
 	else
@@ -731,16 +710,16 @@ void CSlideHolder::SetDragnDrop(BOOL bRegister)
 void CSlideHolder::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	SetFocus();
-	if (m_ArxControl->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
+	if (mpSourceControl->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
 	{
-		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
+		BeginDragnDrop(mpSourceControl, point, m_bInvokeWithSendString);
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);	
+		InvokeMethod(mpSourceControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);	
 		return;
 	}
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDown),
+		mpSourceControl->GetStrProperty(nEventMouseDown),
 		1,
 		nFlags,
 		point.x,
@@ -748,7 +727,7 @@ void CSlideHolder::OnLButtonDown(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnLMouseEvent),
+		mpSourceControl->GetStrProperty(nOnLMouseEvent),
 		0,
 		nFlags,
 		point.x,
@@ -761,7 +740,7 @@ void CSlideHolder::OnLButtonDown(UINT nFlags, CPoint point)
 void CSlideHolder::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseUp),
+		mpSourceControl->GetStrProperty(nEventMouseUp),
 		1,
 		nFlags,
 		point.x,
@@ -769,7 +748,7 @@ void CSlideHolder::OnLButtonUp(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnLMouseEvent),
+		mpSourceControl->GetStrProperty(nOnLMouseEvent),
 		1,
 		nFlags,
 		point.x,
@@ -782,7 +761,7 @@ void CSlideHolder::OnLButtonUp(UINT nFlags, CPoint point)
 void CSlideHolder::OnMButtonDblClk(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDblClick),
+		mpSourceControl->GetStrProperty(nEventMouseDblClick),
 		4,
 		nFlags,
 		point.x,
@@ -790,7 +769,7 @@ void CSlideHolder::OnMButtonDblClk(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnMMouseEvent),
+		mpSourceControl->GetStrProperty(nOnMMouseEvent),
 		2,
 		nFlags,
 		point.x,
@@ -804,7 +783,7 @@ void CSlideHolder::OnMButtonDown(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDown),
+		mpSourceControl->GetStrProperty(nEventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -812,7 +791,7 @@ void CSlideHolder::OnMButtonDown(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnMMouseEvent),
+		mpSourceControl->GetStrProperty(nOnMMouseEvent),
 		0,
 		nFlags,
 		point.x,
@@ -825,7 +804,7 @@ void CSlideHolder::OnMButtonDown(UINT nFlags, CPoint point)
 void CSlideHolder::OnMButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseUp),
+		mpSourceControl->GetStrProperty(nEventMouseUp),
 		4,
 		nFlags,
 		point.x,
@@ -833,7 +812,7 @@ void CSlideHolder::OnMButtonUp(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnMMouseEvent),
+		mpSourceControl->GetStrProperty(nOnMMouseEvent),
 		1,
 		nFlags,
 		point.x,
@@ -854,9 +833,8 @@ void CSlideHolder::OnMouseMove(UINT nFlags, CPoint point)
 	{
 		m_bMouseTracking = FALSE;        	
 		m_bHasFocus = false;
-		SetFocus();
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventMouseMovedOff), m_bInvokeWithSendString);
-		CWnd::OnMouseMove(nFlags, point);
+		InvokeMethod(mpSourceControl->GetStrProperty(nEventMouseMovedOff), m_bInvokeWithSendString);
+		CButton::OnMouseMove(nFlags, point);
 		return;
 	}
 
@@ -870,12 +848,12 @@ void CSlideHolder::OnMouseMove(UINT nFlags, CPoint point)
 		if (::_TrackMouseEvent(&tme))                
 			m_bMouseTracking = TRUE;
 		InvokeMethod(
-			m_ArxControl->GetStrProperty(nEventMouseEntered),
+			mpSourceControl->GetStrProperty(nEventMouseEntered),
 			m_bInvokeWithSendString);
 	}
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		mpSourceControl->GetStrProperty(nEventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -889,7 +867,7 @@ void CSlideHolder::OnMouseMove(UINT nFlags, CPoint point)
 BOOL CSlideHolder::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDblClick),
+		mpSourceControl->GetStrProperty(nEventMouseDblClick),
 		nFlags,
 		zDelta,
 		pt.x,
@@ -903,7 +881,7 @@ BOOL CSlideHolder::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 void CSlideHolder::OnRButtonDown(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDown),
+		mpSourceControl->GetStrProperty(nEventMouseDown),
 		2,
 		nFlags,
 		point.x,
@@ -911,7 +889,7 @@ void CSlideHolder::OnRButtonDown(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnRMouseEvent),
+		mpSourceControl->GetStrProperty(nOnRMouseEvent),
 		0,
 		nFlags,
 		point.x,
@@ -926,7 +904,7 @@ void CSlideHolder::OnRButtonDown(UINT nFlags, CPoint point)
 void CSlideHolder::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(nEventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(mpSourceControl->GetStrProperty(nEventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 	
 	CButton::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -934,7 +912,7 @@ void CSlideHolder::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CSlideHolder::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(nEventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(mpSourceControl->GetStrProperty(nEventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 	
 	
 	CButton::OnKeyUp(nChar, nRepCnt, nFlags);
@@ -943,17 +921,17 @@ void CSlideHolder::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 LRESULT CSlideHolder::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventMouseMovedOff), m_bInvokeWithSendString);
+	InvokeMethod(mpSourceControl->GetStrProperty(nEventMouseMovedOff), m_bInvokeWithSendString);
 	
 	m_bMouseTracking = FALSE;        
-	return TRUE;
+	return FALSE;
 	
 }
 
 void CSlideHolder::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDblClick),
+		mpSourceControl->GetStrProperty(nEventMouseDblClick),
 		1,
 		nFlags,
 		point.x,
@@ -962,7 +940,7 @@ void CSlideHolder::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnLMouseEvent),
+		mpSourceControl->GetStrProperty(nOnLMouseEvent),
 		2,
 		nFlags,
 		point.x,
@@ -976,7 +954,13 @@ void CSlideHolder::OnSysColorChange()
 {
 	CButton::OnSysColorChange();
 	
-	m_BkColor = GetRGBColor(m_ArxControl->GetLngProperty(nAcadColor));	
+	m_BkColor = GetRGBColor(mpSourceControl->GetLngProperty(nAcadColor));	
 	
 	Invalidate();	
+}
+
+void CSlideHolder::PostNcDestroy() 
+{
+	CButton::PostNcDestroy();
+	delete this;
 }

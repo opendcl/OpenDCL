@@ -212,10 +212,10 @@ void CMainFrameToolBar::SetFontToolBar(CDclControlObject *pCtrl)
 		{
 			RefCountedPtr< CPropertyObject > pProp;
 			RefCountedPtr< CPropertyObject > pFontProp = NULL;
-			POSITION pos = pCtrl->m_PropertyList.GetHeadPosition();
+			POSITION pos = pCtrl->GetPropertyList().GetHeadPosition();
 			while (pos != NULL)
 			{
-				pProp = pCtrl->m_PropertyList.GetNext(pos);
+				pProp = pCtrl->GetPropertyList().GetNext(pos);
 				if (pProp->GetType() == PropActiveXProp)
 				{
 					if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFontDisp ||
@@ -363,10 +363,10 @@ void CMainFrameToolBar::AddFontToToolBar(CDclControlObject *pCtrl)
 		{
 			RefCountedPtr< CPropertyObject > pProp;
 			RefCountedPtr< CPropertyObject > pFontProp = NULL;
-			POSITION pos = pCtrl->m_PropertyList.GetHeadPosition();
+			POSITION pos = pCtrl->GetPropertyList().GetHeadPosition();
 			while (pos != NULL)
 			{
-				pProp = pCtrl->m_PropertyList.GetNext(pos);
+				pProp = pCtrl->GetPropertyList().GetNext(pos);
 				if (pProp->GetType() == PropActiveXProp)
 				{
 					if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFontDisp ||

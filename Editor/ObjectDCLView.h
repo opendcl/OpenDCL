@@ -13,7 +13,7 @@
 class CFontCollection;
 class CDclFormObject;
 class CControlHolder;
-enum ControlTypes;
+enum ControlType;
 enum PropertyId;
 
 
@@ -117,7 +117,7 @@ public:
 	void CalcControlOffsetDistances(CDclControlObject *pArxObject, CRect &rcCtrl);
 	void MoveThisInPosition();
 	void DrawActiveXCtrl(CDclControlObject *pCtrl, CDC* pDC);
-	void InsertControl(CRect rcPos, ControlTypes nCtrlToInsert);
+	void InsertControl(CRect rcPos, ControlType nCtrlToInsert);
 	void PreDestroy();
 	void OnGridSpacingChanged();
 	void OnControlToInsertChanged();

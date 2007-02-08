@@ -70,21 +70,6 @@ CString CArxWorkspace::GetActiveProjectName() const
 	return sShortFileName;
 }
 
-bool CArxWorkspace::IsProjectUnloadable( const CProject* pProject ) const
-{
-	if( mOdsProjects.Find( CString( pProject->GetKeyName() ).MakeLower() ) )
-		return false; //can unload a project that is part of an ODS distribution
-	POSITION posDialog = mDialogs.GetHeadPosition();
-	while( posDialog != NULL )
-	{
-		CDialogObject* pDialog = mDialogs.GetNext( posDialog );
-		assert( pDialog != NULL );
-		if( pDialog->GetProject() == pProject )
-			return false; //can't unload while a dialog is using the project
-	}
-	return true;
-}
-
 bool CArxWorkspace::IsModalFormOpen() const
 {
 	POSITION posDialog = mDialogs.GetHeadPosition();
@@ -149,10 +134,25 @@ bool CArxWorkspace::AddProject( CArxProject* pProject )
 	return true;
 }
 
-bool CArxWorkspace::RemoveProject( CProject *pProject )
+bool CArxWorkspace::UnloadProject( CProject *pProject, bool bForce )
 {
-	if( !IsProjectUnloadable( pProject ) )
-		return false;
+	POSITION posForm = pProject->GetDclFormList().GetHeadPosition();
+	while( posForm )
+	{
+		CDclFormObject* pForm = pProject->GetDclFormList().GetNext( posForm );
+		assert( pForm != NULL );
+		if( !pForm )
+			continue;
+		CDialogObject* pDialog = pForm->GetFormInstance();
+		if( pDialog )
+		{
+			if( !bForce )
+				return false;
+			pDialog->CloseDialog(); //there is an active dialog using this form
+			if( pForm->GetFormInstance() )
+				return false; //for some reason the form didn't close
+		}
+	}
 	POSITION posProject = mProjects.mProjectCollection.GetHeadPosition();
 	while( posProject != NULL )
 	{
@@ -248,35 +248,29 @@ bool CArxWorkspace::AddExtensionTab( CDclFormObject* pDclForm, CAdUiTabExtension
 		return false; //need to register the tab extension manager first!
 	if( pDclForm->GetFormInstance() )
 		return true; //it's already there
+	assert( pDclForm->GetType() == VdclConfigTab );
 
-	CDialogObject* pDialog = CArxDialogObject::Create( VdclConfigTab, pDclForm );
-	CString sTabCaption = pDialog->GetSourceForm()->GetControlProperties()->GetStrProperty(nCfgTabCaption);
+	CDialogObject* pDialog = CArxDialogObject::Create( pDclForm );
+	assert( pDialog != NULL );
+	if( !pDialog )
+		return false;
+	//if( !pDialog->CreateModeless() ) //when this call returns, pDialog is no longer safe! [ORW]
+	//	return false;
+	CString sTabCaption = pDclForm->GetControlProperties()->GetStrProperty(nCfgTabCaption);
 	if (!pTabXM->AddTab(_hdllInstance,
 											IDD_CFGTAB,
 											sTabCaption,
-											(CAdUiTabChildDialog*)CWnd::FromHandle(pDialog->GetHWnd())))
+											(CAdUiTabChildDialog*)pDialog->GetWindow()))
 		return false;
 	return true;
 }
 
-bool CArxWorkspace::RemoveProject( LPCTSTR pszKeyName )
+bool CArxWorkspace::UnloadProject( LPCTSTR pszKeyName, bool bForce )
 {
-	POSITION posProject = mProjects.mProjectCollection.GetHeadPosition();
-	while( posProject != NULL )
-	{
-		POSITION posAt = posProject;
-		const CProject* pProject = mProjects.mProjectCollection.GetNext( posProject );
-		assert( pProject != NULL );
-		if( pProject->GetKeyName().CompareNoCase( pszKeyName ) == 0 )
-		{
-			if( !IsProjectUnloadable( pProject ) )
-				return false;
-			mProjects.mProjectCollection.RemoveAt( posAt );
-			delete pProject;
-			return true;
-		}
-	}
-	return true;
+	CProject* pProject = FindProject( pszKeyName );
+	if( !pProject )
+		return true; //project is not loaded
+	return UnloadProject( pProject, bForce );
 }
 
 //CDclFormObject* CArxWorkspace::FindDialog( LPCTSTR pszFormName ) const
@@ -452,8 +446,8 @@ CArxProject* CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKey
 	
 	if( bReload )
 	{
-		if( !RemoveProject( sKeyName ) )
-			return NULL; //project cannot be reloaded while it's in use
+		if( !UnloadProject( sKeyName, true ) )
+			return NULL; //project could not be unloaded for some reason
 	}
 	else
 	{
@@ -547,7 +541,7 @@ int CArxWorkspace::ActivateDclForm( CDclFormObject* pDclForm, DialogParams* pPar
 	if( !pParent)
 		pParent = CWnd::FromHandle(adsw_acadMainWnd());
 
-	CDialogObject* pDialog = CArxDialogObject::Create( pDclForm->GetType(), pDclForm, pParent, pParams );
+	CDialogObject* pDialog = CArxDialogObject::Create( pDclForm, pParent, pParams );
 	assert( pDialog != NULL );
 	if( !pDialog )
 		return -1;

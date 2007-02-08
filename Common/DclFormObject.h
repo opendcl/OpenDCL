@@ -1,23 +1,13 @@
 #pragma once
 
+#include "DclFormTypes.h"
 #include "ImageListObject.h"
 
 class CProject;
 class CDclControlObject;
 class CFontCollection;
 class CDialogObject;
-enum ControlTypes;
-
-enum DclFormType
-{
-	VdclInvalid = -1,
-	VdclModal		= 0,
-	VdclModeless	= 1,
-	VdclDockable	= 2,
-	VdclConfigTab	= 3,
-	VdclTabForm	= 4,
-	VdclFileDialog = 5,
-};
+enum ControlType;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -90,9 +80,9 @@ protected:
 public:
 	void ClearControls();
 	CDclControlObject* FindControl( LPCTSTR pszControlName ) const;
-	CDclControlObject* FindControl( LPCTSTR pszControlName, ControlTypes eType ) const;
-	CDclControlObject* FindFirstControlOfType( ControlTypes eType ) const;
-	bool FindControls( ControlTypes eType, CList< CDclControlObject* >& Results ) const;
+	CDclControlObject* FindControl( LPCTSTR pszControlName, ControlType eType ) const;
+	CDclControlObject* FindFirstControlOfType( ControlType eType ) const;
+	bool FindControls( ControlType eType, CList< CDclControlObject* >& Results ) const;
 	bool GetControlFonts( CFontCollection& Fonts ) const;
 	void ZOrderFrontAddTabControls();
 	void UpdateGlobalVariableName( LPCTSTR pszRootName = NULL );

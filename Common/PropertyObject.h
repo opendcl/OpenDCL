@@ -127,6 +127,10 @@ class CPropertyObject : public CObject
 protected:
 	bool mbHidden;
 	PropertyId mnID;
+#ifdef _DEBUG
+private:
+	PropertyType mType; //used for inspecting type at runtime while debugging
+#endif
 
 	//Construction
 protected:

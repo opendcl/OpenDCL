@@ -30,7 +30,7 @@ class CPropertyValue : public CPropertyValueBase
 	DWORD mdwSubtype;
 protected:
 	friend class CPropertyObject;
-	CPropertyValue() {}
+	CPropertyValue() : mdwSubtype( 0 ) {}
 public:
 	virtual ~CPropertyValue() {}
 
@@ -46,6 +46,25 @@ public:
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) = 0;
 	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const = 0;
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) = 0;
+};
+
+class CNamedPropertyValue : public CPropertyValueBase
+{
+protected:
+	CString msDisplayName; //this is the name displayed in the property grid for complex property values
+protected:
+	friend class CPropertyObject;
+	CNamedPropertyValue() : CPropertyValueBase() {}
+public:
+	virtual ~CNamedPropertyValue() {}
+
+	//operations
+	virtual void clear() { msDisplayName.Empty(); }
+
+	//simple types
+	virtual bool GetValue( CString& v ) const { v = msDisplayName; return true; }
+	virtual bool SetValue( const CString& v ) { msDisplayName = v; return true; }
+	virtual bool SetValue( const LPCTSTR v ) { msDisplayName = v; return true; }
 };
 
 }; //namespace PropVal
@@ -91,6 +110,8 @@ public:
 
 	virtual bool GetValue( long& v ) const { v = mValue; return true; }
 	virtual bool SetValue( const long& v ) { mValue = v; return true; }
+	virtual bool GetValue( unsigned long& v ) const { v = (unsigned long)mValue; return true; }
+	virtual bool SetValue( const unsigned long& v ) { mValue = (long)v; return true; }
 	virtual bool GetValue( CString& v ) const { v.Format(_T("%d"), mValue); return true; }
 	virtual bool SetValue( const CString& v ) { mValue = _tstol(v); return true; }
 	virtual bool SetValue( const LPCTSTR v ) { mValue = _tstol(v); return true; }
@@ -293,7 +314,7 @@ public:
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) { return statOK; }
 };
 
-class CPropertyValueImageList : public PropVal::CPropertyValue
+class CPropertyValueImageList : public PropVal::CNamedPropertyValue
 {
 	short mValue;
 	friend class CPropertyObject;
@@ -301,7 +322,7 @@ protected:
 	CPropertyValueImageList() : mValue( -1 ) {}
 public:
 	virtual PropertyType GetType() const { return PropImageList; }
-	virtual void clear() { mValue = -1; }
+	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue = -1; }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
 	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
@@ -347,16 +368,15 @@ public:
 	virtual bool SetValue( const unsigned long& v ) { mValue = v; return true; }
 };
 
-class CPropertyValueStringArray : public PropVal::CPropertyValue
+class CPropertyValueStringArray : public PropVal::CNamedPropertyValue
 {
 	PropVal::TCStringArrayPtr mValue;
-	CString msName; //not filed
 	friend class CPropertyObject;
 protected:
 	CPropertyValueStringArray() {}
 public:
 	virtual PropertyType GetType() const { return PropStringArray; }
-	virtual void clear() { mValue->clear(); }
+	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue->clear(); }
 	virtual size_t size() { return mValue->size(); }
 
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
@@ -424,23 +444,19 @@ public:
 			return statOK;
 		}
 
-	virtual bool GetValue( CString& v ) const { v = msName; return true; }
-	virtual bool SetValue( const CString& v ) { msName = v; return true; }
-	virtual bool SetValue( const LPCTSTR v ) { msName = v; return true; }
 	virtual bool GetValue( PropVal::TCStringArrayPtr& v ) const { v = mValue; return true; }
 	virtual bool SetValue( const PropVal::TCStringArrayPtr& v ) { mValue = v; return true; }
 };
 
-class CPropertyValueIntArray : public PropVal::CPropertyValue
+class CPropertyValueIntArray : public PropVal::CNamedPropertyValue
 {
 	PropVal::TIntArrayPtr mValue;
-	CString msName; //not filed
 	friend class CPropertyObject;
 protected:
 	CPropertyValueIntArray() {}
 public:
 	virtual PropertyType GetType() const { return PropIntArray; }
-	virtual void clear() { mValue->clear(); }
+	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue->clear(); }
 	virtual size_t size() { return mValue->size(); }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
 		{ //changing from CArray< int, int > to std::vector< int > in version 6 [ORW]
@@ -470,14 +486,14 @@ public:
 				{
 					CStringArray rStr;
 					rStr.Serialize(ar);
-					for(size_t idx = 0; idx < mValue->size(); ++idx)
+					for(INT_PTR idx = 0; idx < rStr.GetCount(); ++idx)
 						mValue->push_back(_tstol(rStr[idx]));
 				}
 				else
 				{
 					CArray< int, int > rInt;
 					rInt.Serialize(ar);
-					for(size_t idx = 0; idx < mValue->size(); ++idx)
+					for(INT_PTR idx = 0; idx < rInt.GetCount(); ++idx)
 						mValue->push_back(rInt[idx]);
 				}
 			}
@@ -517,14 +533,11 @@ public:
 			return statOK;
 		}
 
-	virtual bool GetValue( CString& v ) const { v = msName; return true; }
-	virtual bool SetValue( const CString& v ) { msName = v; return true; }
-	virtual bool SetValue( const LPCTSTR v ) { msName = v; return true; }
 	virtual bool GetValue( PropVal::TIntArrayPtr& v ) const { v = mValue; return true; }
 	virtual bool SetValue( const PropVal::TIntArrayPtr& v ) { mValue = v; return true; }
 };
 
-class CPropertyValueActiveXPropPages : public PropVal::CPropertyValue
+class CPropertyValueActiveXPropPages : public PropVal::CNamedPropertyValue
 {
 	PropVal::TAxInterfaceDescriptorPtr mValue;
 	friend class CPropertyObject;
@@ -532,7 +545,7 @@ protected:
 	CPropertyValueActiveXPropPages() {}
 public:
 	virtual PropertyType GetType() const { return PropActiveXPropPages; }
-	virtual void clear() { mValue->clear(); }
+	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue->clear(); }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
 		{
 			const_cast<CPropertyValueActiveXPropPages*>(this)->mValue->Serialize( ar, nVersion );
@@ -558,36 +571,38 @@ public:
 	virtual bool SetValue( const PropVal::TAxInterfaceDescriptorPtr& v ) { mValue = v; return true; }
 };
 
-class CPropertyValueActiveXProp : public PropVal::CPropertyValue
+class CPropertyValueActiveXProp : public PropVal::CNamedPropertyValue
 {
-	CString msName;
 	PropVal::TAxInterfaceDescriptorPtr mValue;
 	friend class CPropertyObject;
 protected:
 	CPropertyValueActiveXProp() {}
 public:
 	virtual PropertyType GetType() const { return PropActiveXProp; }
-	virtual void clear() { msName.Empty(); mValue->clear(); }
+	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue->clear(); }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
 		{
-			ar << msName;
+			ar << msDisplayName;
 			const_cast<CPropertyValueActiveXProp*>(this)->mValue->Serialize( ar, nVersion );
 			return statOK;
 		}
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
 		{
-			ar >> msName;
+			ar >> msDisplayName;
 			mValue->Serialize( ar, nVersion );
 			return statOK;
 		}
 	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
 		{
 			fprintf(pFile, "PropActiveXProp");
+			writeString(pFile, msDisplayName);
 			const_cast<CPropertyValueActiveXProp*>(this)->mValue->WriteToTextFile( pFile );
 			return statOK;
 		}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
+			msDisplayName.Empty();
+			if (!readString(sFile, msDisplayName)) return statInvalidFormat;
 			switch( nVersion )
 			{
 				case 5: return mValue->ReadFromTextFile5( sFile );
@@ -595,14 +610,11 @@ public:
 			return statInvalidFormat;
 		}
 
-	virtual bool GetValue( CString& v ) const { v = msName; return true; }
-	virtual bool SetValue( const CString& v ) { msName = v; return true; }
-	virtual bool SetValue( const LPCTSTR v ) { msName = v; return true; }
 	virtual bool GetValue( PropVal::TAxInterfaceDescriptorPtr& v ) const { v = mValue; return true; }
 	virtual bool SetValue( const PropVal::TAxInterfaceDescriptorPtr& v ) { mValue = v; return true; }
 };
 
-class CPropertyValueActiveXEnum : public PropVal::CPropertyValue
+class CPropertyValueActiveXEnum : public PropVal::CNamedPropertyValue
 {
 	PropVal::TAxInterfaceDescriptorPtr mValue;
 	friend class CPropertyObject;
@@ -610,7 +622,7 @@ protected:
 	CPropertyValueActiveXEnum() {}
 public:
 	virtual PropertyType GetType() const { return PropActiveXEnum; }
-	virtual void clear() { mValue->clear(); }
+	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue->clear(); }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
 		{
 			const_cast<CPropertyValueActiveXEnum*>(this)->mValue->Serialize( ar, nVersion );
@@ -640,39 +652,38 @@ public:
 	virtual bool SetValue( const PropVal::TAxInterfaceDescriptorPtr& v ) { mValue = v; return true; }
 };
 
-class CPropertyValueActiveXEvent : public PropVal::CPropertyValue
+class CPropertyValueActiveXEvent : public PropVal::CNamedPropertyValue
 {
-	CString msName;
 	PropVal::TAxInterfaceDescriptorPtr mValue;
 	friend class CPropertyObject;
 protected:
 	CPropertyValueActiveXEvent() {}
 public:
 	virtual PropertyType GetType() const { return PropActiveXEvent; }
-	virtual void clear() { msName.Empty(); mValue->clear(); }
+	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue->clear(); }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
 		{
-			ar << msName;
+			ar << msDisplayName;
 			const_cast<CPropertyValueActiveXEvent*>(this)->mValue->Serialize( ar, nVersion );
 			return statOK;
 		}
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
 		{
-			ar >> msName;
+			ar >> msDisplayName;
 			mValue->Serialize( ar, nVersion );
 			return statOK;
 		}
 	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
 		{
 			fprintf(pFile, "PropActiveXEvent");
-			writeString(pFile, msName);
+			writeString(pFile, msDisplayName);
 			const_cast<CPropertyValueActiveXEvent*>(this)->mValue->WriteToTextFile( pFile );
 			return statOK;
 		}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
-			msName.Empty();
-			readString(sFile, msName);
+			msDisplayName.Empty();
+			if (!readString(sFile, msDisplayName)) return statInvalidFormat;
 			switch( nVersion )
 			{
 				case 5: return mValue->ReadFromTextFile5( sFile );
@@ -680,14 +691,11 @@ public:
 			return statInvalidFormat;
 		}
 
-	virtual bool GetValue( CString& v ) const { v = msName; return true; }
-	virtual bool SetValue( const CString& v ) { msName = v; return true; }
-	virtual bool SetValue( const LPCTSTR v ) { msName = v; return true; }
 	virtual bool GetValue( PropVal::TAxInterfaceDescriptorPtr& v ) const { v = mValue; return true; }
 	virtual bool SetValue( const PropVal::TAxInterfaceDescriptorPtr& v ) { mValue = v; return true; }
 };
 
-class CPropertyValueActiveXRunTime : public PropVal::CPropertyValue
+class CPropertyValueActiveXRunTime : public PropVal::CNamedPropertyValue
 {
 	PropVal::TAxInterfaceDescriptorPtr mValue;
 	friend class CPropertyObject;
@@ -695,7 +703,7 @@ protected:
 	CPropertyValueActiveXRunTime() {}
 public:
 	virtual PropertyType GetType() const { return PropActiveXRunTime; }
-	virtual void clear() { mValue->clear(); }
+	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue->clear(); }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
 		{
 			const_cast<CPropertyValueActiveXRunTime*>(this)->mValue->Serialize( ar, nVersion );
@@ -725,7 +733,7 @@ public:
 	virtual bool SetValue( const PropVal::TAxInterfaceDescriptorPtr& v ) { mValue = v; return true; }
 };
 
-class CPropertyValueActiveXMethods : public PropVal::CPropertyValue
+class CPropertyValueActiveXMethods : public PropVal::CNamedPropertyValue
 {
 	PropVal::TAxInterfaceDescriptorPtr mValue;
 	friend class CPropertyObject;
@@ -733,7 +741,7 @@ protected:
 	CPropertyValueActiveXMethods() {}
 public:
 	virtual PropertyType GetType() const { return PropActiveXMethods; }
-	virtual void clear() { mValue->clear(); }
+	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue->clear(); }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
 		{
 			const_cast<CPropertyValueActiveXMethods*>(this)->mValue->Serialize( ar, nVersion );
@@ -763,7 +771,7 @@ public:
 	virtual bool SetValue( const PropVal::TAxInterfaceDescriptorPtr& v ) { mValue = v; return true; }
 };
 
-class CPropertyValueStringArrayList : public PropVal::CPropertyValue
+class CPropertyValueStringArrayList : public PropVal::CNamedPropertyValue
 {
 	PropVal::TCStringArrayListPtr mValue;
 	friend class CPropertyObject;
@@ -771,7 +779,7 @@ protected:
 	CPropertyValueStringArrayList() {}
 public:
 	virtual PropertyType GetType() const { return PropStringArrayList; }
-	virtual void clear() { mValue->clear(); }
+	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue->clear(); }
 	virtual size_t size() { return mValue->size(); }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
 		{ //changing from CTypedPtrList< CObList, CStringArray* > to std::vector< std::vector< CString > > in version 6 [ORW]
@@ -818,6 +826,10 @@ public:
 				while (pos)
 				{
 					CStringArray* prStr = rsStringArrayList.GetNext(pos);
+					if (!prStr) //some old files contain NULL pointers!
+						continue;
+					if (IsBadReadPtr(prStr, sizeof(CStringArray)))
+						continue; //ignore bogus values
 					mValue->push_back( PropVal::TCStringArray() );
 					PropVal::TCStringArray& rStr = mValue->back();
 					for( int idx = 0; idx < prStr->GetSize(); ++idx )
@@ -884,7 +896,7 @@ public:
 	virtual bool SetValue( const PropVal::TCStringArrayListPtr& v ) { mValue = v; return true; }
 };
 
-class CPropertyValueIntArrayList : public PropVal::CPropertyValue
+class CPropertyValueIntArrayList : public PropVal::CNamedPropertyValue
 {
 	PropVal::TIntArrayListPtr mValue;
 	friend class CPropertyObject;
@@ -892,77 +904,38 @@ protected:
 	CPropertyValueIntArrayList() {}
 public:
 	virtual PropertyType GetType() const { return PropIntArrayList; }
-	virtual void clear() { mValue->clear(); }
+	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue->clear(); }
 	virtual size_t size() { return mValue->size(); }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
 		{ //changing from CList< CArray< int, int >* > to std::vector< std::vector< int > > in version 6 [ORW]
-			if (nVersion <= 5)
+			ar << unsigned long(const_cast<CPropertyValueIntArrayList*>(this)->mValue->size());
+			PropVal::TIntArrayList::const_iterator pos = const_cast<CPropertyValueIntArrayList*>(this)->mValue->begin();
+			while (pos != const_cast<CPropertyValueIntArrayList*>(this)->mValue->end())
 			{
-				CList< CArray< int, int >* > rlistInt;
-				PropVal::TIntArrayList::const_iterator posL = const_cast<CPropertyValueIntArrayList*>(this)->mValue->begin();
-				while(posL != const_cast<CPropertyValueIntArrayList*>(this)->mValue->end())
-				{
-					const PropVal::TIntArray& rIntV = *posL++;
-					CArray< int, int >* prInt = new CArray< int, int >;
-					rlistInt.AddTail( prInt );
-					unsigned long nSize = prInt->GetSize();
-					for(size_t idx = 0; idx < nSize; ++idx)
-						prInt->Add(rIntV[idx]);
-				}
-				rlistInt.Serialize(ar);
-				POSITION pos = rlistInt.GetHeadPosition();
-				while(pos)
-					delete rlistInt.GetNext(pos);
-			}
-			else
-			{
-				ar << unsigned long(const_cast<CPropertyValueIntArrayList*>(this)->mValue->size());
-				PropVal::TIntArrayList::const_iterator pos = const_cast<CPropertyValueIntArrayList*>(this)->mValue->begin();
-				while (pos != const_cast<CPropertyValueIntArrayList*>(this)->mValue->end())
-				{
-					const PropVal::TIntArray& rInt = *pos++;
-					unsigned long nSize = rInt.size();
-					ar << unsigned long(nSize);
-					for (size_t idx = 0; idx < nSize; ++idx)
-						ar << int(rInt[idx]);
-				}
+				const PropVal::TIntArray& rInt = *pos++;
+				unsigned long nSize = rInt.size();
+				ar << unsigned long(nSize);
+				for (size_t idx = 0; idx < nSize; ++idx)
+					ar << int(rInt[idx]);
 			}
 			return statOK;
 		}
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
 		{ //changing from CList< CArray< int, int >* > to std::vector< std::vector< int > > in version 6 [ORW]
 			clear();
-			if (nVersion <= 5)
-			{
-				CList< CArray< int, int >* > rlistInt;
-				rlistInt.Serialize(ar);
-				POSITION posL = rlistInt.GetHeadPosition();
-				while(posL)
-				{
-					const CArray< int, int >* prInt = rlistInt.GetNext(posL);
-					mValue->push_back( PropVal::TIntArray() );
-					PropVal::TIntArray& rIntV = mValue->back();
-					for(size_t idx = 0; idx < (size_t)prInt->GetSize(); idx++)
-						rIntV.push_back(prInt->GetAt(idx));
-					delete prInt;
-				}
-			}
-			else
+			unsigned long nSize;
+			ar >> nSize;
+			for(size_t idx = 0; idx < nSize; idx++)
 			{
 				unsigned long nSize;
 				ar >> nSize;
+				mValue->push_back( PropVal::TIntArray() );
+				PropVal::TIntArray& rIntV = mValue->back();
 				for(size_t idx = 0; idx < nSize; idx++)
 				{
-					unsigned long nSize;
-					ar >> nSize;
-					mValue->push_back( PropVal::TIntArray() );
-					PropVal::TIntArray& rIntV = mValue->back();
-					for(size_t idx = 0; idx < nSize; idx++)
-					{
-						int nVal;
-						ar >> nVal;
-						rIntV.push_back(nVal);
-					}
+					int nVal;
+					ar >> nVal;
+					rIntV.push_back(nVal);
 				}
 			}
 			return statOK;
@@ -1102,6 +1075,10 @@ void CPropertyObject::SetType( PropertyType type )
 		mpValue = new CPropertyValueInvalid;
 		break;
 	};
+#ifdef _DEBUG
+	mType = type; //used for inspecting type at runtime while debugging
+#endif
+
 	assert( mpValue != NULL );
 }
 

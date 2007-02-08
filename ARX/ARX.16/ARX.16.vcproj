@@ -1425,6 +1425,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\DclFormTypes.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\DialogControl.cpp"
 				>
 			</File>

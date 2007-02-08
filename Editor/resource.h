@@ -615,7 +615,9 @@
 #define ID_TOOLBOX_ACTIVEX              12844
 #define ID_TOOLBOX_DWGLIST              12845
 #define ID_BUTTON12846                  12846
+#define ID_TOOLBOX_ANIMATE              12846
 #define ID_BUTTON12847                  12847
+#define ID_TOOLBOX_IMAGECOMBOBOX        12847
 #define ID_TOOLBOX_GRID                 12848
 #define ID_TOOLBOX_SPLITTER             12849
 #define ID_TOOLBOX_HATCH                12850
@@ -913,14 +915,15 @@
 #define IDS_FILEDLGSTYLE_1              19502
 #define IDS_DRAGSTYLE_0                 19601
 #define IDS_DRAGSTYLE_1                 19602
+#define ID_TOOLBOX_ANIMATION            40002
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        102
-#define _APS_NEXT_COMMAND_VALUE         40002
+#define _APS_NEXT_COMMAND_VALUE         40003
 #define _APS_NEXT_CONTROL_VALUE         1001
-#define _APS_NEXT_SYMED_VALUE           101
+#define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

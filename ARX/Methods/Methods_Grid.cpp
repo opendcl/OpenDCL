@@ -497,7 +497,7 @@ int Grid_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
 	for (i=1; i<sTextArray.GetSize(); i++)
 	{
 		pGridCtrl->SetItemText(nInsertIndex, i, sTextArray[i]);
-		pGridCtrl->SetItemImage(nInsertIndex, i, nIntArray[i]);
+		pGridCtrl->SetItemImage(nInsertIndex, i, (i < nIntArray.GetSize())? nIntArray[i] : nIntArray[0]);
 	}
 	
 	// clear the text array

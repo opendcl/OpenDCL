@@ -55,6 +55,7 @@ CColumnsPage::CColumnsPage() : CPropertyPage(CColumnsPage::IDD)
 	//}}AFX_DATA_INIT
 
 	m_bChangingIndex = false;
+	m_nIndex = 0;
 
 }
 
@@ -132,8 +133,8 @@ BOOL CColumnsPage::OnInitDialog()
 	m_Style.MoveWindow(rc);
 
 	size_t nCount = m_pColCaptions->GetStringArrayPtr()->size();
-  size_t i;
-	for (i=0; i<nCount; i++)
+  m_ColData.SetSize(nCount);
+	for (size_t i=0; i<nCount; i++)
 	{
 		m_ColData[i].m_Caption = m_pColCaptions->GetStringArrayPtr()->at(i);
 
@@ -195,18 +196,17 @@ BOOL CColumnsPage::OnInitDialog()
 	if (pHeader->GetImageList() == NULL)
 		pHeader->SetImageList(&m_pImageListPage->m_ImageList);
 
+	m_Spin.SetRange(0, nCount-1);
 
-	for (size_t i=0; i<m_pColWidths->GetIntArrayPtr()->size(); i++)
+	for (INT_PTR i = 0; i< m_ColData.GetCount(); i++)
 	{
-		m_nIndex = i;		
-		m_List.InsertColumn(i, CString(), LVCFMT_LEFT, m_ColData[i].m_Width);
+		int nWidth = m_ColData[i].m_Width;
+		m_nIndex = i;
+		m_List.InsertColumn(i, _T(""), LVCFMT_LEFT, nWidth);
 		SetColumn(i);
 	}
 
 	SetControls(0);
-
-	m_Spin.SetRange(0, nCount-1);
-	m_Spin.SetPos(0);
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
@@ -437,12 +437,8 @@ void CColumnsPage::SetControls(int nIndex)
 
 	TCHAR value[80];
 	_ltot(m_nIndex, value, 10);
-	if (!m_bChangingIndex)
-	{
-		m_IndexEdit.SetWindowText(value);
-	}
+	m_IndexEdit.SetWindowText(value);
 	_ltot(m_ColData[m_nIndex].m_Width, value, 10);	
-	
 
 	m_WidthTextBox.SetWindowText(value);
 	m_bChangingIndex = true;
@@ -791,7 +787,6 @@ void CColumnsPage::SetColumn(int nIndex)
 {
 	
 	HD_ITEM curItem;
-	LPTSTR  pStrTemp;
 	CHeaderCtrl* pHdrCtrl= NULL;
 
 	// retrieve embedded header control			
@@ -819,8 +814,7 @@ void CColumnsPage::SetColumn(int nIndex)
 	}
 
 
-	pStrTemp = m_ColData[m_nIndex].m_Caption.GetBuffer(m_ColData[m_nIndex].m_Caption.GetLength());
-	curItem.pszText = pStrTemp;
+	curItem.pszText = m_ColData[m_nIndex].m_Caption.LockBuffer();
 
 
 	switch(m_ColData[m_nIndex].m_Alignment)
@@ -846,7 +840,7 @@ void CColumnsPage::SetColumn(int nIndex)
 	}
 
 	pHdrCtrl->SetItem(nIndex, &curItem);
-
+	m_ColData[m_nIndex].m_Caption.UnlockBuffer();
 
 }
 

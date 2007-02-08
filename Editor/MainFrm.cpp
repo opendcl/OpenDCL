@@ -334,7 +334,7 @@ void CMainFrame::CreatePropertyDockingBar()
 	m_PropertyTabPane.Create(IDD_OBJECTDCL_FORM, &m_wndPropertyBar);
 	m_PropertyTabPane.ShowWindow(TRUE);
 	
-	//theWorkspace.GetProjectList().AddHead(m_PropertyTabPane.m_PropertiesTabPane.m_PropertyList.m_ProjectList);
+	//theWorkspace.GetProjectList().AddHead(m_PropertyTabPane.m_PropertiesTabPane.GetPropertyList().m_ProjectList);
 	// --- end instant bar creation and child setup ---
 	m_wndPropertyBar.SetBarStyle(m_wndProjectTreeBar.GetBarStyle() |
 		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);

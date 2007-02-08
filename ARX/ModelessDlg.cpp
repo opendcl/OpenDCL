@@ -508,8 +508,8 @@ BOOL CModelessDlg::PreTranslateMessage(MSG* pMsg)
 				return TRUE;
 			}
 		}
-		CControlPane::TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
-		if( pControl && pControl->GetDclControlType() )
+		TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
+		if( pControl && pControl->GetControlType() )
 			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
 	}
 

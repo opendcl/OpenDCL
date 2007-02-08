@@ -95,8 +95,8 @@ void ReadExternalDWGfile(CString sPath, CString sFile, acedDwgPoint ptPoint, boo
 	AcApDocument* pDoc = acDocManager->curDocument();
 
 	// give the command bar focus
-	CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-	CmdBarWnd->SetFocus();		
+	//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+	//CmdBarWnd->SetFocus();		
 
 	// send cancel string to current document
 	es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);		
@@ -250,9 +250,9 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 			//acedGetAcadFrame()->SetActiveWindow();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			if (CmdBarWnd != NULL)
-				CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//if (CmdBarWnd != NULL)
+			//	CmdBarWnd->SetFocus();		
 
 			InvokeMethodPoint3D(
 				sEventDefun,
@@ -277,9 +277,9 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 		acedGetAcadFrame()->SetActiveWindow();
 
 		// give the command bar focus
-		CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-		if (CmdBarWnd != NULL)
-			CmdBarWnd->SetFocus();		
+		//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+		//if (CmdBarWnd != NULL)
+		//	CmdBarWnd->SetFocus();		
 
 		
 	    return -1; // calls OnDrop();
@@ -336,9 +336,9 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 		acedGetAcadFrame()->SetActiveWindow();
 
 		// give the command bar focus
-		CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-		if (CmdBarWnd != NULL)
-			CmdBarWnd->SetFocus();		
+		//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+		//if (CmdBarWnd != NULL)
+		//	CmdBarWnd->SetFocus();		
 
 		
 	}

@@ -41,6 +41,7 @@ HWND CModalDialogX::GetHWnd() const
 void CModalDialogX::CloseDialog(int nStatus) const
 {
 	mpOwner->EndDialog( nStatus );
+	mpOwner->DestroyWindow(); //just to be sure
 }
 
 INT_PTR CModalDialogX::DoModal()
@@ -468,8 +469,8 @@ BOOL CModalVDcl::PreTranslateMessage(MSG* pMsg)
 				return TRUE;
 			}
 		}
-		CControlPane::TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
-		if( pControl && pControl->GetDclControlType() )
+		TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
+		if( pControl && pControl->GetControlType() )
 			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
 
     //This currently does not work terribly well. But I would like it to, so I am leaving

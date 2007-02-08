@@ -19,14 +19,14 @@ class CDclControlObject : public CObject
 // Attributes
 protected:
 	CDclFormObject* mpOwner;
-	ControlTypes mType;
+	ControlType mType;
 	CDialogControl* mpDlgControl; //informational pointer to the one and only instance of this control (or NULL)
 	CString msAxTypeName; //this should be moved to AxContainer -- unfortunately it's filed from here [ORW]
+	CPropertyList mProperties;
 
 public:
-	CPropertyList m_PropertyList;
-	UINT m_Id;
 	int m_Index;
+	int m_Id;
 
 	//runtime state
 	BOOL m_Delete;
@@ -77,7 +77,7 @@ protected:
 	CDclControlObject(const CDclControlObject& other); //declared protected to prevent copy construction
 public:
 	CDclControlObject(CDclFormObject* pOwner);
-	CDclControlObject(ControlTypes type, CDclFormObject* pOwner, LPCTSTR pszName = NULL);
+	CDclControlObject(ControlType type, CDclFormObject* pOwner, LPCTSTR pszName = NULL);
 	virtual ~CDclControlObject();
 
 	//2007-01-30 [ORW]: save version set to 6 (no change from ObjectDCL 3)
@@ -89,7 +89,11 @@ public:
 	const CDialogControl* GetControlInstance() const { return mpDlgControl; }
 	CDialogControl* GetControlInstance() { return mpDlgControl; }
 	void SetControlInstance( CDialogControl* pDlgControl );
+	const CDclFormObject* GetOwner() const { return mpOwner; }
+	CDclFormObject* GetOwner() { return mpOwner; }
 	void SetOwner( CDclFormObject* pNewOwner ) { assert( pNewOwner != NULL ); mpOwner = pNewOwner; }
+	const CPropertyList& GetPropertyList() const { return mProperties; }
+	CPropertyList& GetPropertyList() { return mProperties; }
 	//CDclControlObject(CDclControlObject const & other);
 	//virtual CDclControlObject operator=(CDclControlObject const & other);
 	POSITION FindPropertyInsertPos(CString sName, bool bHidden) const;
@@ -141,7 +145,7 @@ public:
 public:
 	CString GetKeyName() const;
 	CString GetKeyPath() const;
-	ControlTypes GetType() const { return mType; }
+	ControlType GetType() const { return mType; }
 
 protected:
 	DECLARE_SERIAL(CDclControlObject)

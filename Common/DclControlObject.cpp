@@ -33,9 +33,9 @@ static void AddControlProperty(CDclControlObject *pControl, PropertyId nID, LPCT
 
 	// reset the name to the new value
 	if (InsertPos == NULL)
-		pControl->m_PropertyList.AddTail(pPropertyObect);
+		pControl->GetPropertyList().AddTail(pPropertyObect);
 	else
-		pControl->m_PropertyList.InsertAfter(InsertPos, pPropertyObect);
+		pControl->GetPropertyList().InsertAfter(InsertPos, pPropertyObect);
 }
 
 
@@ -51,7 +51,6 @@ CDclControlObject::CDclControlObject()
 	m_nTotalBytes = 0;
 	m_rcOldPosition.SetRect(0,0,0,0);
 	mType = CtlFormPropHolder;
-	m_Id = nNotSet;
 	m_Delete = FALSE;
 	m_pCtrlHolder = NULL;
 	m_sLicenseKey.Empty();
@@ -79,6 +78,7 @@ CDclControlObject::CDclControlObject()
   m_pUseBottomOffset = NULL;
 
 	m_bEventsAsAction = false;
+	m_Id = -1;
 }
 
 CDclControlObject::CDclControlObject(CDclFormObject* pOwner)
@@ -88,7 +88,6 @@ CDclControlObject::CDclControlObject(CDclFormObject* pOwner)
 	m_nTotalBytes = 0;
 	m_rcOldPosition.SetRect(0,0,0,0);
 	mType = CtlFormPropHolder;
-	m_Id = nNotSet;
 	m_Delete = FALSE;
 	m_pCtrlHolder = NULL;
 	m_sLicenseKey.Empty();
@@ -116,9 +115,10 @@ CDclControlObject::CDclControlObject(CDclFormObject* pOwner)
   m_pUseBottomOffset = NULL;
 
 	m_bEventsAsAction = false;
+	m_Id = -1;
 }
 
-CDclControlObject::CDclControlObject(ControlTypes type, CDclFormObject* pOwner, LPCTSTR pszName /*= NULL*/)
+CDclControlObject::CDclControlObject(ControlType type, CDclFormObject* pOwner, LPCTSTR pszName /*= NULL*/)
 : mpOwner( pOwner )
 , mType( type )
 , mpDlgControl( NULL )
@@ -127,9 +127,8 @@ CDclControlObject::CDclControlObject(ControlTypes type, CDclFormObject* pOwner, 
 		SetStrProperty(nName, pszName);
 	m_nTotalBytes = 0;
 	m_rcOldPosition.SetRect(0,0,0,0);
-	m_Id = nNotSet;
 	m_Delete = FALSE;
-	m_PropertyList.RemoveAll();
+	GetPropertyList().RemoveAll();
 	m_pCtrlHolder = NULL;
 	m_sLicenseKey.Empty();
 	m_sBaseCode.Empty();
@@ -156,6 +155,7 @@ CDclControlObject::CDclControlObject(ControlTypes type, CDclFormObject* pOwner, 
   m_pUseBottomOffset = NULL;
 
 	m_bEventsAsAction = false;
+	m_Id = -1;
 }
 
 CDclControlObject::~CDclControlObject()
@@ -181,11 +181,11 @@ CDclControlObject::~CDclControlObject()
 //	m_pImageList = new CImageListObject;
 //	m_pImageList->Copy(other.m_pImageList);	
 //	POSITION pos;
-//	INT_PTR nCount = other.m_PropertyList.GetCount()-1;
+//	INT_PTR nCount = other.GetPropertyList().GetCount()-1;
 //	while (nCount >= 0)
 //	{
-//		pos = other.m_PropertyList.FindIndex(nCount);
-//		m_PropertyList.AddTail(other.m_PropertyList.GetAt(pos));
+//		pos = other.GetPropertyList().FindIndex(nCount);
+//		GetPropertyList().AddTail(other.GetPropertyList().GetAt(pos));
 //		nCount--;
 //	}
 //}
@@ -208,15 +208,15 @@ CDclControlObject::~CDclControlObject()
 //	m_pImageList = new CImageListObject;
 //	m_pImageList->Copy(other.m_pImageList);	
 //	POSITION pos;
-//	INT_PTR nCount = other.m_PropertyList.GetCount()-1;
+//	INT_PTR nCount = other.GetPropertyList().GetCount()-1;
 //	while (nCount >= 0)
 //	{
 //		
 //		RefCountedPtr< CPropertyObject > pDestProp = new CPropertyObject;
-//		pos = other.m_PropertyList.FindIndex(nCount);
-//		RefCountedPtr< CPropertyObject > pSourceProp = other.m_PropertyList.GetAt(pos);
+//		pos = other.GetPropertyList().FindIndex(nCount);
+//		RefCountedPtr< CPropertyObject > pSourceProp = other.GetPropertyList().GetAt(pos);
 //		pDestProp->Copy(pSourceProp);
-//		m_PropertyList.AddTail(pDestProp);
+//		GetPropertyList().AddTail(pDestProp);
 //		nCount--;
 //	}
 //
@@ -242,13 +242,13 @@ CDclControlObject::~CDclControlObject()
 //	POSITION pos;
 //	int nCount = 0;
 //
-//	while (nCount < other->m_PropertyList.GetCount())
+//	while (nCount < other->GetPropertyList().GetCount())
 //	{		
 //		RefCountedPtr< CPropertyObject > pDestProp = new CPropertyObject;
-//		pos = other->m_PropertyList.FindIndex(nCount);
-//		RefCountedPtr< CPropertyObject > pSourceProp = other->m_PropertyList.GetAt(pos);
+//		pos = other->GetPropertyList().FindIndex(nCount);
+//		RefCountedPtr< CPropertyObject > pSourceProp = other->GetPropertyList().GetAt(pos);
 //		pDestProp->Copy(pSourceProp);
-//		m_PropertyList.AddTail(pDestProp);
+//		GetPropertyList().AddTail(pDestProp);
 //		nCount++;
 //	}
 //
@@ -257,7 +257,7 @@ CDclControlObject::~CDclControlObject()
 
 CWnd* CDclControlObject::GetWindow() const
 {
-	return mpDlgControl? mpDlgControl->GetWindow() : NULL;
+	return mpDlgControl? mpDlgControl->GetControl() : NULL;
 }
 
 
@@ -329,7 +329,7 @@ IOStatus CDclControlObject::WriteToTextFile(FILE* pFile, const CString &fileName
   writeInt(pFile, m_PurchaseState);
 
   // just added.
-  writeULONG(pFile, ULONG(m_Id));
+  writeULONG(pFile, ULONG(GetControlInstance()->GetControlId()));
 
   // serialize the image if it exists
   if (m_pImageList != NULL)
@@ -388,17 +388,17 @@ IOStatus CDclControlObject::WriteToTextFile(FILE* pFile, const CString &fileName
     }
   }
   // set counter for ArxControls
-  nCount = (int)m_PropertyList.GetCount();
+  nCount = (int)GetPropertyList().GetCount();
 
   writeInt(pFile, nCount);
 
   // set start position for navigating objects
-  pos = m_PropertyList.GetHeadPosition();
+  pos = GetPropertyList().GetHeadPosition();
   // do loop to navigate objects
   while (pos != NULL)
   {
     // get current object
-    RefCountedPtr< CPropertyObject > pProp = m_PropertyList.GetNext(pos);
+    RefCountedPtr< CPropertyObject > pProp = GetPropertyList().GetNext(pos);
 
     // put object into archive
     pProp->WriteToTextFile(pFile);
@@ -490,11 +490,11 @@ void CDclControlObject::Serialize(CArchive& ar)
 			}
 		}
 		// write property list
-		ar << (WORD)m_PropertyList.GetCount();
-		pos = m_PropertyList.GetHeadPosition();
+		ar << (WORD)GetPropertyList().GetCount();
+		pos = GetPropertyList().GetHeadPosition();
 		while (pos != NULL)
 		{
-			RefCountedPtr< CPropertyObject > pProp = m_PropertyList.GetNext(pos);
+			RefCountedPtr< CPropertyObject > pProp = GetPropertyList().GetNext(pos);
 			pProp->Serialize(ar);
 		}
 	}
@@ -509,7 +509,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 		ar >> msAxTypeName;
 		long lType;
 		ar >> lType;
-		mType = (ControlTypes)lType;
+		mType = (ControlType)lType;
 		ar >> m_ClientHeight;
 		ar >> m_PurchaseState;
 
@@ -589,12 +589,14 @@ void CDclControlObject::Serialize(CArchive& ar)
 		{
 			// get counter for objects
 			ar >> nCount;		
-			m_PropertyList.RemoveAll();
+			GetPropertyList().RemoveAll();
 			while (nCount-- > 0)
 			{
 				RefCountedPtr< CPropertyObject > pProp = new CPropertyObject( PropInvalid );
 				pProp->Serialize(ar);
-				m_PropertyList.AddTail(pProp);		
+				//TraceFmt( _T("Read property [%08X, type = %d, id = %d], string value = %s\r\n"),
+				//					(ULONG)&*pProp, (int)pProp->GetType(), (int)pProp->GetID(), (CString sVal; (LPCTSTR)pProp->GetStringValue() );
+				GetPropertyList().AddTail(pProp);		
 			}
 
 			// here we are going to add the font of this object to the font collection
@@ -622,7 +624,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 
 	if (nThisVersion == 1)
 	{
-		m_PropertyList.Serialize(ar);
+		GetPropertyList().Serialize(ar);
 		// here were are going to add the font of this object to the font collection
 		// before any pictures are loaded or any dialogs are displayed.
 		theWorkspace.GetFontCollection().GetFont(this, NULL);
@@ -635,58 +637,58 @@ void CDclControlObject::Serialize(CArchive& ar)
 	if (!ar.IsStoring())
 	{
 		POSITION pos;
-		INT_PTR nCount = m_PropertyList.GetCount() - 1;
+		INT_PTR nCount = GetPropertyList().GetCount() - 1;
 		while (nCount > 0)
 		{		
-			pos = m_PropertyList.FindIndex(nCount);
-			RefCountedPtr< CPropertyObject > pSourceProp = m_PropertyList.GetAt(pos);
+			pos = GetPropertyList().FindIndex(nCount);
+			RefCountedPtr< CPropertyObject > pSourceProp = GetPropertyList().GetAt(pos);
 			
 			
 			if (mType == CtlGrid)
 			{
 				if (pSourceProp->GetID() == nDragnDropToAutoCAD)
-					m_PropertyList.RemoveAt(pos);
+					GetPropertyList().RemoveAt(pos);
 				if (pSourceProp->GetID() == nDragnDropFromControl)
-					m_PropertyList.RemoveAt(pos);
+					GetPropertyList().RemoveAt(pos);
 				if (pSourceProp->GetID() == nDragnDropFromAutoCAD)
-					m_PropertyList.RemoveAt(pos);
+					GetPropertyList().RemoveAt(pos);
 				if (pSourceProp->GetID() == nDragnDropBegin)
-					m_PropertyList.RemoveAt(pos);
+					GetPropertyList().RemoveAt(pos);
 				if (pSourceProp->GetID() == nDragnDropAllowBegin)
-					m_PropertyList.RemoveAt(pos);
+					GetPropertyList().RemoveAt(pos);
 				if (pSourceProp->GetID() == nDragnDropAllowDrop)
-					m_PropertyList.RemoveAt(pos);
+					GetPropertyList().RemoveAt(pos);
 				if (pSourceProp->GetID() == nEventReturnPressed)
-					m_PropertyList.RemoveAt(pos);
+					GetPropertyList().RemoveAt(pos);
 			}
 			
 			if (pSourceProp->GetID() == nAcadColor && mType == CtlFrame)
-				m_PropertyList.RemoveAt(pos);
+				GetPropertyList().RemoveAt(pos);
 			if (pSourceProp->GetID() == nForeColor && mType == CtlFrame)
-				m_PropertyList.RemoveAt(pos);
+				GetPropertyList().RemoveAt(pos);
 			if (pSourceProp->GetID() == nTabOrder)
-				m_PropertyList.RemoveAt(pos);
+				GetPropertyList().RemoveAt(pos);
 			if (pSourceProp->GetID() == nLabelColor)
-				m_PropertyList.RemoveAt(pos);
+				GetPropertyList().RemoveAt(pos);
 			if (pSourceProp->GetID() == nEventDblClicked && mType == CtlStdButton)
-				m_PropertyList.RemoveAt(pos);
+				GetPropertyList().RemoveAt(pos);
 			if (pSourceProp->GetID() == nEventDblClicked && mType == CtlGraphicButton)
-				m_PropertyList.RemoveAt(pos);
+				GetPropertyList().RemoveAt(pos);
 			
 			/*if (pSourceProp->GetID() == nComboBoxStyle && mType == CtlComboBox)
 					pSourceProp->GetLongValue() = 2;*/
 			if (pSourceProp->GetID() == nHScrollBar && mType == CtlListBox)
-				m_PropertyList.RemoveAt(pos);
+				GetPropertyList().RemoveAt(pos);
 			if (pSourceProp->GetID() == nAllowOrbiting && pSourceProp->GetType() == PropBool)
-				m_PropertyList.RemoveAt(pos);
+				GetPropertyList().RemoveAt(pos);
 			
 			if (pSourceProp->GetID() == nToolTipText && mType == CtlLabel)
-				m_PropertyList.RemoveAt(pos);
+				GetPropertyList().RemoveAt(pos);
 			
 			if (pSourceProp->GetID() == nTabLabelAlign)
-				m_PropertyList.RemoveAt(pos);
+				GetPropertyList().RemoveAt(pos);
 			if (pSourceProp->GetID() == nTabSelected)
-				m_PropertyList.RemoveAt(pos);
+				GetPropertyList().RemoveAt(pos);
 			
 			nCount--;
 		}
@@ -704,15 +706,15 @@ INT_PTR CDclControlObject::CountPropertyListItems(int nID)
 	nCount = 0;
 
 	// set start position for navigating Properties
-	pos = m_PropertyList.GetHeadPosition();
+	pos = GetPropertyList().GetHeadPosition();
 
 	// do loop to navigate Arx Controls	
-	while (nCount < m_PropertyList.GetCount())
+	while (nCount < GetPropertyList().GetCount())
 	{
 		// get position
-		pos = m_PropertyList.FindIndex(nCount);
+		pos = GetPropertyList().FindIndex(nCount);
 		// get current PropertyObject
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(pos);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(pos);
 		// if the name of property matches
 		if (pProperty->GetID() == nID)
 		{
@@ -737,15 +739,15 @@ CString CDclControlObject::GetPropertyListItem(int nID, int nIndex)
 	nCount = 0;
 
 	// set start position for navigating Properties
-	pos = m_PropertyList.GetHeadPosition();
+	pos = GetPropertyList().GetHeadPosition();
 
 	// do loop to navigate Arx Controls	
-	while (nCount < m_PropertyList.GetCount())
+	while (nCount < GetPropertyList().GetCount())
 	{
 		// get position
-		pos = m_PropertyList.FindIndex(nCount);
+		pos = GetPropertyList().FindIndex(nCount);
 		// get current PropertyObject
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(pos);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(pos);
 		// if the name of property matches
 		if (pProperty->GetID() == nID)
 		{
@@ -771,10 +773,10 @@ CString CDclControlObject::GetPropertyListItem(int nID, int nIndex)
 
 RefCountedPtr< CPropertyObject > CDclControlObject::GetPropertyObject(PropertyId nID) const
 {
-	POSITION posProp = m_PropertyList.GetHeadPosition();
+	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		if (pProperty && pProperty->GetID() == nID)
 			return pProperty;
 	}
@@ -783,10 +785,10 @@ RefCountedPtr< CPropertyObject > CDclControlObject::GetPropertyObject(PropertyId
 
 RefCountedPtr< CPropertyObject > CDclControlObject::GetActiveXPropertyObject(CString sName) const
 {
-	POSITION posProp = m_PropertyList.GetHeadPosition();
+	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		if (pProperty && pProperty->GetName() == sName)
 			return pProperty;
 	}
@@ -848,15 +850,15 @@ void CDclControlObject::SetStrProperty(int nID, CString sValue)
 	nCount = 0;
 
 	// set start position for navigating Properties
-	pos = m_PropertyList.GetHeadPosition();
+	pos = GetPropertyList().GetHeadPosition();
 
 	// do loop to navigate Arx Controls	
-	while (nCount < m_PropertyList.GetCount())
+	while (nCount < GetPropertyList().GetCount())
 	{
 		// get position
-		pos = m_PropertyList.FindIndex(nCount);
+		pos = GetPropertyList().FindIndex(nCount);
 		// get current PropertyObject
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(pos);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(pos);
 		// if the name of property matches
 		if (pProperty->GetID() == nID)
 		{
@@ -922,10 +924,10 @@ CString CDclControlObject::GetActiveXTypeName() const
 
 CString CDclControlObject::GetStrProperty(int nID) const
 {
-	POSITION posProp = m_PropertyList.GetHeadPosition();
+	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
 			return pProperty->GetStdProperty();
@@ -935,10 +937,10 @@ CString CDclControlObject::GetStrProperty(int nID) const
 
 long CDclControlObject::GetImageListIndex()
 {
-	POSITION posProp = m_PropertyList.GetHeadPosition();
+	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nImageList)
 			return pProperty->GetShortValue();
@@ -949,10 +951,10 @@ long CDclControlObject::GetImageListIndex()
 
 void CDclControlObject::SetImageListIndex(int nIndex)
 {	
-	POSITION posProp = m_PropertyList.GetHeadPosition();
+	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nImageList)
 		{
@@ -965,10 +967,10 @@ void CDclControlObject::SetImageListIndex(int nIndex)
 
 long CDclControlObject::GetLngProperty(int nID) const
 {
-	POSITION posProp = m_PropertyList.GetHeadPosition();
+	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
 		{
@@ -987,10 +989,10 @@ long CDclControlObject::GetLngProperty(int nID) const
 
 void CDclControlObject::SetLngProperty(int nID, long lValue)
 {
-	POSITION posProp = m_PropertyList.GetHeadPosition();
+	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
 		{
@@ -1010,10 +1012,10 @@ void CDclControlObject::SetLngProperty(int nID, long lValue)
 
 void CDclControlObject::SetColorProperty(int nID, COLORREF color)
 {
-	POSITION posProp = m_PropertyList.GetHeadPosition();
+	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
 		{
@@ -1025,10 +1027,10 @@ void CDclControlObject::SetColorProperty(int nID, COLORREF color)
 
 COLORREF CDclControlObject::GetColorProperty(int nID) const
 {
-	POSITION posProp = m_PropertyList.GetHeadPosition();
+	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
 			return pProperty->GetOLEColorValue();
@@ -1038,10 +1040,10 @@ COLORREF CDclControlObject::GetColorProperty(int nID) const
 
 void CDclControlObject::SetBoolProperty(int nID, bool bValue)
 {
-	POSITION posProp = m_PropertyList.GetHeadPosition();
+	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
 		{
@@ -1053,10 +1055,10 @@ void CDclControlObject::SetBoolProperty(int nID, bool bValue)
 	
 bool CDclControlObject::GetBoolProperty(int nID) const
 {
-	POSITION posProp = m_PropertyList.GetHeadPosition();
+	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
 		{
@@ -1083,28 +1085,28 @@ short CDclControlObject::FindPropertyIndex(int nID) const
 	nCount = 0;
 
 	// do loop to navigate Arx Controls	
-	while (nCount < m_PropertyList.GetCount())
+	while (nCount < GetPropertyList().GetCount())
 	{
 		// get position
-		pos = m_PropertyList.FindIndex(nCount);
+		pos = GetPropertyList().FindIndex(nCount);
 		// get current PropertyObject
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetAt(pos);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetAt(pos);
 		// if the name of property matches
 		if (pProperty->GetID() == nID)
 		{
 			if (nID == nObjectBrowser && nCount > 4)
 			{
-				const_cast<CDclControlObject*>(this)->m_PropertyList.RemoveAt(pos);
-				pos = m_PropertyList.GetHeadPosition();
-				const_cast<CDclControlObject*>(this)->m_PropertyList.InsertAfter(pos, pProperty);
+				const_cast<CDclControlObject*>(this)->GetPropertyList().RemoveAt(pos);
+				pos = GetPropertyList().GetHeadPosition();
+				const_cast<CDclControlObject*>(this)->GetPropertyList().InsertAfter(pos, pProperty);
 				return 1;
 			}
 			if (nID == nGlobalVarName && nCount > 5)
 			{
-				const_cast<CDclControlObject*>(this)->m_PropertyList.RemoveAt(pos);
-				pos = m_PropertyList.GetHeadPosition();
-				m_PropertyList.GetNext(pos);
-				const_cast<CDclControlObject*>(this)->m_PropertyList.InsertAfter(pos, pProperty);
+				const_cast<CDclControlObject*>(this)->GetPropertyList().RemoveAt(pos);
+				pos = GetPropertyList().GetHeadPosition();
+				GetPropertyList().GetNext(pos);
+				const_cast<CDclControlObject*>(this)->GetPropertyList().InsertAfter(pos, pProperty);
 				return 2;
 			}
 
@@ -1122,10 +1124,10 @@ short CDclControlObject::FindPropertyIndex(int nID) const
 
 RefCountedPtr< CPropertyObject > CDclControlObject::FindProperty(CString sName)
 {
-	POSITION posProp = m_PropertyList.GetHeadPosition();
+	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetName() == sName)
 			return pProperty;
@@ -1136,7 +1138,7 @@ RefCountedPtr< CPropertyObject > CDclControlObject::FindProperty(CString sName)
 POSITION CDclControlObject::FindPropertyInsertPos(int nID, bool bHidden) const
 {
 	if (nID == nObjectBrowser)
-		return m_PropertyList.GetHeadPosition();		
+		return GetPropertyList().GetHeadPosition();		
 
 	CString QueryPropText;
 	int nResourceId = nID + 210; //hardcoding the property start index, need to fix that [ORW]
@@ -1152,7 +1154,7 @@ POSITION CDclControlObject::FindPropertyInsertPos(CString sName, bool bHidden) c
 	CString QueryPropText = sName;
 	
 	// set counter for Properties begining at the end of the list
-	INT_PTR nCount = m_PropertyList.GetCount() - 1;
+	INT_PTR nCount = GetPropertyList().GetCount() - 1;
 	
 	if (nCount == nNotSet)
 		return NULL;
@@ -1161,12 +1163,12 @@ POSITION CDclControlObject::FindPropertyInsertPos(CString sName, bool bHidden) c
 	while (nCount >= 0)
 	{
 		// get position
-		pos = m_PropertyList.FindIndex(nCount);
+		pos = GetPropertyList().FindIndex(nCount);
 		if (pos == NULL)
 			return NULL;
 
 		// get current PropertyObject
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetAt(pos);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetAt(pos);
 		
 		ThisPropText = pProperty->GetName();
 		// if the name of property matches
@@ -1190,17 +1192,17 @@ void CDclControlObject::ClearProperties()
 	// delete the image list item if it exists
 	if (m_pImageList != NULL)
 	{
-		delete m_pImageList;
+		//delete m_pImageList; //causes exception when unloading grid with images -- I didn't check why, just commented this [ORW]
 		m_pImageList = NULL;
 	}
 
-	POSITION posProp = m_PropertyList.GetHeadPosition();
+	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		assert(pProperty != NULL);
 	}
-	m_PropertyList.RemoveAll();
+	GetPropertyList().RemoveAll();
 }
 
 void CDclControlObject::ResetProperty(int nId)
@@ -1209,15 +1211,15 @@ void CDclControlObject::ResetProperty(int nId)
 	POSITION pos;	
 		
 	// set counter for CPropertyObject
-	int nCount = m_PropertyList.GetCount()-1;
+	int nCount = GetPropertyList().GetCount()-1;
 
 	while(nCount >= 0)
 	{
 		// get position
-		pos = m_PropertyList.FindIndex(nCount);
+		pos = GetPropertyList().FindIndex(nCount);
 		
 		// get current property
-		RefCountedPtr< CPropertyObject > pPropObject = m_PropertyList.GetAt(pos);
+		RefCountedPtr< CPropertyObject > pPropObject = GetPropertyList().GetAt(pos);
 		if (pPropObject->GetID() == nId)
 		{
 			// clear any lists in this control
@@ -1235,18 +1237,18 @@ void CDclControlObject::RemoveProperty(int nId)
 	POSITION pos;	
 		
 	// set counter for CPropertyObject
-	int nCount = m_PropertyList.GetCount()-1;
+	int nCount = GetPropertyList().GetCount()-1;
 
 	while(nCount >= 0)
 	{
 		// get position
-		pos = m_PropertyList.FindIndex(nCount);
+		pos = GetPropertyList().FindIndex(nCount);
 		
 		// get current property
-		RefCountedPtr< CPropertyObject > pPropObject = m_PropertyList.GetAt(pos);
+		RefCountedPtr< CPropertyObject > pPropObject = GetPropertyList().GetAt(pos);
 		if (pPropObject->GetID() == nId)
 		{
-			m_PropertyList.RemoveAt(pos);
+			GetPropertyList().RemoveAt(pos);
 			return;
 		}
 		// increment counter
@@ -1260,17 +1262,17 @@ void CDclControlObject::ClearR14Events()
 	POSITION pos;	
 		
 	// set counter for CPropertyObject
-	int nCount = m_PropertyList.GetCount()-1;
+	int nCount = GetPropertyList().GetCount()-1;
 
 	while(nCount >= 0)
 	{
 		// get position
-		pos = m_PropertyList.FindIndex(nCount);
+		pos = GetPropertyList().FindIndex(nCount);
 		
 		if (pos != NULL)
 		{
 			// get current property
-			RefCountedPtr< CPropertyObject > pPropObject = m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pPropObject = GetPropertyList().GetAt(pos);
 			
 			if (mType == CtlTextBox)
 			{
@@ -1284,14 +1286,14 @@ void CDclControlObject::ClearR14Events()
 				case nEventKeyUp:
 				case nEventReturnPressed:
 				case nEventInvoke:
-					m_PropertyList.RemoveAt(pos);
+					GetPropertyList().RemoveAt(pos);
 					break;
 				}
 			}
 			switch (pPropObject->GetID())
 			{
 			case nDragnDropFromAutoCAD:
-				m_PropertyList.RemoveAt(pos);
+				GetPropertyList().RemoveAt(pos);
 				break;
 			}
 		}
@@ -1329,7 +1331,7 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
   if (!readString(sFile, msAxTypeName)) return statInvalidFormat;
 	long lType;
   if (!readLong(sFile, lType)) return statInvalidFormat;
-	mType = (ControlTypes)lType;
+	mType = (ControlType)lType;
   if (!readShort(sFile, m_ClientHeight)) return statInvalidFormat;
   if (!readInt(sFile, m_PurchaseState)) return statInvalidFormat;
 
@@ -1396,7 +1398,7 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
   int nCount;
   if (!readInt(sFile, nCount)) return statInvalidFormat;
 
-  m_PropertyList.RemoveAll();
+  GetPropertyList().RemoveAll();
 
   // do loop to navigate objects
   while (nCount-- > 0)
@@ -1409,7 +1411,7 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
     if (stat != statOK) return stat;
 
     // add that ArxControlObject to the list object
-    m_PropertyList.AddTail(pProp);		
+    GetPropertyList().AddTail(pProp);		
   }
 
   // here were are going to add the font of this object to the font collection

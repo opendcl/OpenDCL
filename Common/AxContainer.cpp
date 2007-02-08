@@ -599,7 +599,7 @@ UINT CAxContainer::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo *TheI
 				pProp->SetHidden(true);
 				
 				// add the property to the property list
-				pControl->m_PropertyList.AddTail(pProp);
+				pControl->GetPropertyList().AddTail(pProp);
 				
 				TheInfo->ReleaseFuncDesc( pFuncDesc ) ;
  			}
@@ -632,10 +632,10 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 	// create the new property
 	pProp = new CPropertyObject(PropActiveXMethods);
 	// get the head position
-	POSITION pos = pControl->m_PropertyList.GetHeadPosition();
+	POSITION pos = pControl->GetPropertyList().GetHeadPosition();
 	// move forward once so it is placed after the (ActiveX PropertyObject) property list item
 	// and add the new property
-	pos = pControl->m_PropertyList.InsertAfter(pos, pProp);
+	pos = pControl->GetPropertyList().InsertAfter(pos, pProp);
 	// set the id of the control
 	pProp->SetID(nObjectBrowser);
 	
@@ -808,7 +808,7 @@ static void AddAxProp(CDclControlObject *pControl, long lId, CString sName, CStr
 		pProp->GetAxInterfaceDescriptorPtr()->GetPropGet() = axPropGet;	
 	}
 
-	pControl->m_PropertyList.AddTail(pProp);
+	pControl->GetPropertyList().AddTail(pProp);
 	
 }
 static void SetupFont(CDclControlObject *pControl)
@@ -1096,10 +1096,10 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 					// check where the property is to be inserted.
 					if (pos == NULL)
 						// add the property to the property list
-						pControl->m_PropertyList.AddTail(pProp);
+						pControl->GetPropertyList().AddTail(pProp);
 					else					
 						// add the property to the property list
-						pControl->m_PropertyList.InsertAfter(pos, pProp);
+						pControl->GetPropertyList().InsertAfter(pos, pProp);
 				}
 			
 			 }
@@ -1294,10 +1294,10 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 							// check where the property is to be inserted.
 							if (pos == NULL)
 								// add the property to the property list
-								pControl->m_PropertyList.AddTail(pProp);
+								pControl->GetPropertyList().AddTail(pProp);
 							else					
 								// add the property to the property list
-								pControl->m_PropertyList.InsertAfter(pos, pProp);						
+								pControl->GetPropertyList().InsertAfter(pos, pProp);						
 						}
 					}
 				}

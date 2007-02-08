@@ -34,10 +34,8 @@ public:
 
 // Construction
 public:
-	CSnapDlg(CDclFormObject* pSourceForm, UINT idd, CWnd* pParent = NULL);	// standard constructor
-
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+	CSnapDlg(CDclFormObject* pSourceForm, UINT idd, CWnd* pParent = NULL);
+	virtual ~CSnapDlg();
 
 // Implementation
 protected:
@@ -54,6 +52,7 @@ public:
 
 	// Generated message map functions
 protected:
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg void OnCaptureChanged(CWnd *pWnd);

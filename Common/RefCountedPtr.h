@@ -10,38 +10,19 @@
 // class CMyObject;
 // RefCountedPtr< MyObject > pMyObject;
 
-template< class T >
-class RefCounter
+class RefCounterBase
 {
 private:
-	T* pT;
 	ULONG ctRef;
 
 public:
-	RefCounter<T>( T* pTarget ) : pT( pTarget ), ctRef( 1 )
-		{
-		}
-	virtual ~RefCounter<T>(void)
-		{
-			delete pT;
-		}
+	RefCounterBase() : ctRef( 1 ) {}
+	virtual ~RefCounterBase(void) {}
 
 private:
 	// prevent copy and assignment
-	RefCounter<T>(RefCounter<T> & src);
-	RefCounter<T>& operator=(RefCounter<T> & src);
-
-public:
-	operator const T* () const { return pT; }
-	operator T* () { return pT; }
-
-  const T* operator->() const { return pT; }
-  T* operator->() { return pT; }
-
-	bool operator ==( const RefCounter<T>& src ) const
-		{
-			return (*pT == *src.pT);
-		}
+	RefCounterBase(RefCounterBase & src);
+	RefCounterBase& operator=(RefCounterBase & src);
 
 	// reference counting
 public:
@@ -64,6 +45,44 @@ public:
 		{
 			ctRef = ~0;
 		}
+	RefCounterBase* Copy()
+		{
+			AddRef();
+			return this;
+		}
+};
+
+template< typename T >
+class RefCounter : public RefCounterBase
+{
+private:
+	T* pT;
+
+public:
+	RefCounter<T>( T* pTarget ) : pT( pTarget ) {}
+	virtual ~RefCounter<T>(void) { delete pT; }
+
+private:
+	// prevent copy and assignment
+	RefCounter<T>(RefCounter<T> & src);
+	RefCounter<T>& operator=(RefCounter<T> & src);
+
+public:
+	bool isNull() const { return (pT? false : true); }
+
+	operator const T* () const { return pT; }
+	operator T* () { return pT; }
+
+  const T* operator->() const { return pT; }
+  T* operator->() { return pT; }
+
+	bool operator ==( const RefCounter<T>& src ) const
+		{
+			return (*pT == *src.pT);
+		}
+
+	// reference counting
+public:
 	RefCounter<T>* Copy()
 		{
 			AddRef();
@@ -71,35 +90,32 @@ public:
 		}
 };
 
-template< class T >
+template< typename T, typename _R = RefCounter<T> >
 class RefCountedPtr
 {
 private:
-	RefCounter<T>* pW;
-
-protected:
-	bool isNull() const { return (pW? false : true); }
+	_R* pW;
 
 public:
-	RefCountedPtr<T>()
+	RefCountedPtr<T,_R>()
 	: pW( NULL )
 		{
 		}
-	RefCountedPtr<T>( T* pTarget )
-	: pW( pTarget? new RefCounter<T>( pTarget ) : NULL )
+	RefCountedPtr<T,_R>( T* pTarget )
+	: pW( pTarget? new _R( pTarget ) : NULL )
 		{
 		}
-	virtual ~RefCountedPtr<T>(void)
+	virtual ~RefCountedPtr<T,_R>(void)
 		{
 			if( pW )
 				pW->Release();
 		}
 
 	// copy and assignment
-	RefCountedPtr<T>(const RefCountedPtr<T> & src)
+	RefCountedPtr<T,_R>(const RefCountedPtr<T,_R> & src)
 	: pW( src.pW? src.pW->Copy() : NULL )
 		{}
-	RefCountedPtr<T>& operator=(const RefCountedPtr<T> & src)
+	RefCountedPtr<T,_R>& operator=(const RefCountedPtr<T,_R> & src)
 		{
 			if( !pW || !src.pW || (*pW != *src.pW) )
 			{
@@ -115,10 +131,13 @@ public:
 			{
 				if( pW )
 					pW->Release();
-				pW = src? new RefCounter<T>( src ) : NULL;
+				pW = src? new _R( src ) : NULL;
 			}
 			return pW? *pW : NULL;
 		}
+
+protected:
+	bool isNull() const { return (!pW || pW->isNull()); }
 
 public:
 	operator const T* () const { return pW? *pW : NULL; }
@@ -127,7 +146,7 @@ public:
   const T* operator->() const { return pW? *pW : NULL; }
   T* operator->() { return pW? *pW : NULL; }
 
-	bool operator < ( const RefCountedPtr<T>& Right ) const
+	bool operator < ( const RefCountedPtr<T,_R>& Right ) const
 		{
 			return ((const T*)(*this) < (const T*)Right);
 		}
@@ -138,7 +157,7 @@ public:
 
 //interface to a ref-counted pointer that automatically constructs and returns a new T
 //if it is dereferenced or operator-> is called on a NULL pointer
-template< class T >
+template< typename T >
 class RefCountedAutoConstructPtr : public RefCountedPtr<T>
 {
 private:
@@ -163,5 +182,5 @@ public:
   const T* operator->() const { return isNull()? _base::operator=( new T ) : _base::operator T*(); }
   T* operator->() { return isNull()? _base::operator=( new T ) : _base::operator T*(); }
 
-	operator bool() const { return !isNull(); } //enable null testing without dereferencing
+	operator bool() const { return !(!pW || pW->isNull()); } //enable null testing without dereferencing
 };

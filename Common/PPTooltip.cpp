@@ -3230,40 +3230,29 @@ void CPPToolTip::AddTool(PPTOOLTIP_INFO ti)
 /////////////////////////////////////////////////////////////////////////////
 int CPPToolTip::FindTool(CPoint & pt) 
 { 
-	try
-	{
-		HWND hWnd = GetWndFromPoint(pt, m_nStyles & PPTOOLTIP_SHOW_DISABLED); 
-		
-		if (hWnd == NULL)
-			return PPTOOLTIP_TOOL_NOEXIST;
-		
-		CWnd *pWnd = CWnd::FromHandle(hWnd);
-		if (pWnd == NULL)
-			return PPTOOLTIP_TOOL_NOEXIST;
-		hWnd = pWnd->GetParent()->m_hWnd;
+	HWND hWnd = GetWndFromPoint(pt, m_nStyles & PPTOOLTIP_SHOW_DISABLED); 
+	if (hWnd == NULL)
+		return PPTOOLTIP_TOOL_NOEXIST;
 
-		PPTOOLTIP_INFO pToolInfo;  
-		int nSize = m_arrTools.GetSize(); 
-		CPoint ptClient;  
-		// Find the window under the cursor 
-		m_pParentWnd->ClientToScreen(&pt); 
-		for (int i = 0; i < nSize; i++) 
+	hWnd = ::GetParent(hWnd);
+	if (hWnd == NULL)
+		return PPTOOLTIP_TOOL_NOEXIST;
+
+	PPTOOLTIP_INFO pToolInfo;  
+	int nSize = m_arrTools.GetSize(); 
+	// Find the tool
+	assert(m_pParentWnd != NULL);
+	m_pParentWnd->ClientToScreen(&pt); 
+	for (int i = 0; i < nSize; i++) 
+	{ 
+		pToolInfo = m_arrTools.GetAt(i); 
+		if (hWnd == pToolInfo.hWnd)  
 		{ 
-			pToolInfo = m_arrTools.GetAt(i); 
-			if (hWnd == pToolInfo.hWnd)  
-			{ 
-				ptClient = pt; 
-				::ScreenToClient(hWnd, &ptClient); 
-  				if (pToolInfo.rectBounds.PtInRect(ptClient) || pToolInfo.rectBounds.IsRectEmpty()) 
-				{
-					return i;  
-				}
-			}
+			CPoint ptClient = pt;  
+			::ScreenToClient(hWnd, &ptClient); 
+			if (pToolInfo.rectBounds.PtInRect(ptClient) || pToolInfo.rectBounds.IsRectEmpty()) 
+				return i;  
 		}
-	}
-	catch(...)
-	{
-	
 	}
 	return PPTOOLTIP_TOOL_NOEXIST;
 }
@@ -3284,16 +3273,16 @@ int CPPToolTip::FindTool(CPoint & pt)
 int CPPToolTip::FindTool(CWnd * pWnd, LPCRECT lpRect /* = NULL */)
 {
 	HWND hWnd = pWnd->GetSafeHwnd();
+	if (hWnd == NULL)
+		return PPTOOLTIP_TOOL_NOEXIST;
 	PPTOOLTIP_INFO pToolInfo;
 	int nSize = m_arrTools.GetSize();
-    for (int i = 0; i < nSize; i++)
-    {
-        pToolInfo = m_arrTools.GetAt(i);
-		
-        if (hWnd == pToolInfo.hWnd) 
-			if ((NULL == lpRect) || (lpRect == pToolInfo.rectBounds))
+  for (int i = 0; i < nSize; i++)
+  {
+    pToolInfo = m_arrTools.GetAt(i);
+    if (hWnd == pToolInfo.hWnd && ((NULL == lpRect) || (lpRect == pToolInfo.rectBounds)))
 			return i;
-    }
+  }
 	return PPTOOLTIP_TOOL_NOEXIST;
 }
 
@@ -3313,13 +3302,12 @@ int CPPToolTip::FindTool(UINT nIDTool)
 {
 	PPTOOLTIP_INFO pToolInfo;
 	int nSize = m_arrTools.GetSize();
-    for (int i = 0; i < nSize; i++)
-    {
-        pToolInfo = m_arrTools.GetAt(i);
-		
-        if (nIDTool == pToolInfo.nIDTool)
+  for (int i = 0; i < nSize; i++)
+  {
+    pToolInfo = m_arrTools.GetAt(i);
+    if (nIDTool == pToolInfo.nIDTool)
 			return i;
-    }
+  }
 	return PPTOOLTIP_TOOL_NOEXIST;
 }
 

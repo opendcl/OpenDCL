@@ -64,12 +64,7 @@ bool CArxProject::UpdateGlobalVariables() const
 			// Get the variable name
 			CString sVarName = pDclForm->GetControlProperties()->GetStrProperty(nGlobalVarName);
 			if (sVarName.IsEmpty())
-			{
 				sVarName = pDclForm->GetKeyPath();
-				//CString sName = pDclForm->GetControlProperties()->GetStrProperty(nName);
-				//if (!sName.IsEmpty())
-				//	sVarName = pProject->GetKeyName() + _T('_') + sName;
-			}
 			if (!sVarName.IsEmpty())
 				SetVariable(sVarName, (long)pDclForm);
 		}

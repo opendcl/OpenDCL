@@ -27,9 +27,9 @@ CFontCollection    FontCollection.h/cpp     : collection of CFont objects that d
 CImageListObject   ImageListObject.h/cpp    : collection of images (either icons or bitmaps) used by a control
 
 CWorkspace         Workspace.h/cpp          : global data (projects, fonts, and client-specific data)
-CDialogObject      DialogObject.h/cpp       : instantiated DCL form holder manager class
-CControlPane       ControlPane.h/cpp        : instantiated DCL form (i.e. it has a window handle)
-CDialogControl     DialogControl.h/cpp      : an instance of a DCL control
+CDialogObject      DialogObject.h/cpp       : instantiated DCL form interface (analagous to CDclFormObject)
+CControlPane       ControlPane.h/cpp        : owns and manages a list of controls (can be nested via tab pages)
+CDialogControl     DialogControl.h/cpp      : instantiated DCL control interface (analagous to CDclControlObject)
 
 The ObjectDCL editor defines CEditorProject and CEditorWorkspace that customize and extend the common
 CProject/CWorkspace classes. Likewise, the ARX modules define CArxProject/CArxWorkspace to customize and 
@@ -50,9 +50,9 @@ and never change, but dialogs and most controls can change their names at runtim
 reason it is important to not cache element names, but always query for them at the time they are needed.
 
 * For now, the element name is returned by a function called GetKeyName(). The function GetKeyPath() returns 
-the complete "path" for the control by concatenating the names of the owning project, the parent control, 
+the complete "path" for the control by concatenating the names of the owning project, the parent form, 
 and the subject control. It would make sense to define a standard name rendition interface as a generic base 
-class that all named objects derive from. This I leave as an exercise for the future.
+class that all named objects derive from or export. This I leave as an exercise for the future.
 */
 
 #include "Workspace.h"
@@ -67,8 +67,13 @@ class AxMethodDescriptor;
 class AxEventDescriptor;
 class CAxContainer;
 
-#define activeProject (theWorkspacePtr()->GetActiveProject()) //shortcut to the active project
-extern CWorkspace* theWorkspacePtr(); //from Workspace.h
+#define activeProject (theWorkspacePtr()->GetActiveProject()) //shortcut to the active project*
+//* The concept of an active project is only useful in the editor, and even there, it is used only 
+//because there is no reliable system in place that allows every project element to identify 
+//its containing project. In the future this should be rectified in the editor in the same way it 
+//has been in the ARX modules (by requiring every element to be able to identify its owner), thus 
+//removing the primary limitation preventing the editor from handling multiple simultaneous 
+//projects.  2007-02-07 [ORW]
 
 
 //Error status returned by file I/O functions
@@ -93,6 +98,7 @@ protected:
 	CList<COleControlObject*> mOleControls;
 	CList< CDclControlObject* > mClipBoard;
 	CString msKeyName;
+	CString msProjectFilePath;
 	
 public:		
 	CString sDclFormCopiedFrom;
@@ -126,6 +132,8 @@ protected:
 public:
 	virtual LPCTSTR GetPassword() const { return _T("d32afd3aw3aq3fdaw3"); }
 	virtual const CString& GetBaseName() const { return m_ShortFileName; } //this should return the project file base name
+	virtual const CString& GetProjectFilePath() const { return msProjectFilePath; }
+	virtual bool IsInUse() const;
 
 	HBITMAP GetBitmap( UINT nID, CSize& sz ) const;
 	HICON GetIcon( UINT nID ) const;

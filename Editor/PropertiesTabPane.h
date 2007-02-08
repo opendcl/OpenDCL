@@ -19,39 +19,38 @@
 
 class CPropertiesTabPane : public CDialog
 {
+	CPropertyListCtrl	mPropListCtrl;
+
+	enum { IDD = IDD_TABPAGE_PROPERTIES };
+
+public:
+	CStatic				m_PropertyTitle;
+	CEdit				m_PropertyDesc;
+	CStatic				m_ControlDesc;
+	CFont				m_font;
+	bool m_bInitialized;
+
 // Construction
 public:
 	CPropertiesTabPane(CWnd* pParent = NULL);   // standard constructor
 
-// Dialog Data
-	//{{AFX_DATA(CPropertiesTabPane)
-	enum { IDD = IDD_TABPAGE_PROPERTIES };
-	CStatic				m_PropertyTitle;
-	CPropertyListCtrl	m_PropertyList;
-	CEdit				m_PropertyDesc;
-	CStatic				m_ControlDesc;
-	CFont				m_font;
-	//}}AFX_DATA
-	bool m_bInitialized;
+public:
+	const CPropertyListCtrl& GetPropertiesCtrl() const { return mPropListCtrl; }
+	CPropertyListCtrl& GetPropertiesCtrl() { return mPropListCtrl; }
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CPropertiesTabPane)
-	public:
+public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
-
-	// Generated message map functions
-	//{{AFX_MSG(CPropertiesTabPane)
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
-	//}}AFX_MSG
+
+protected:
 	DECLARE_MESSAGE_MAP()
 };

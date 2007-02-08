@@ -1,12 +1,13 @@
-// ControlTypes.h : header file
+// ControlType.h : header file
 //
 
 #pragma once
 
 
-enum ControlTypes
+enum ControlType
 {
 	CtlFormPropHolder = -1,
+	CtlInvalid = 0,
 	CtlLabel = 2,
 	CtlStdButton = 3,
 	CtlGraphicButton = 4,

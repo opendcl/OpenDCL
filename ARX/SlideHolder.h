@@ -6,9 +6,25 @@
 #include "CxAcadSlide.h"
 #include "OleOdcDropTarget.h"
 #include "PPToolTip.h"
+#include "ArxDialogControl.h"
 
 class CControlPane;
 class CDclControlObject;
+
+
+class CAcadSlideControl : public CArxDialogControl
+{
+public:
+	CAcadSlideControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pWnd )
+		: CArxDialogControl( pTemplate, pPane, pWnd ) {}
+	virtual ~CAcadSlideControl() {}
+
+	// attributes
+	virtual DWORD GetWndStyle() const; //get window style from properties
+
+	// operations
+	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
+};
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -16,24 +32,39 @@ class CDclControlObject;
 
 class CSlideHolder : public CButton
 {
-// Construction
-public:
-	CSlideHolder();
+protected:
+	CAcadSlideControl mControlX;
+	CDclControlObject* mpSourceControl;	
+	CControlPane* mpControlPane;
+	CxAcadSlide mSlideCtrl;
 
-// Attributes
 public:
-	
 	CPPToolTip  		m_ToolTip;	
 	bool				m_bInvokeWithSendString;	
 	CRect				m_rcFocus;
 	bool				m_bSelectedRect;
 	COLORREF			m_HighlightColor;
 	HBITMAP				m_hbmMem;
-	CControlPane		*m_pParentPane;
 	COLORREF			m_BkColor;
 	BOOL				m_bMouseTracking;
 	bool				m_bHasFocus;
+	COleOdcDropTarget m_DropTarget;
+
+// Construction
+public:
+	CSlideHolder( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID );
+	virtual ~CSlideHolder();
+
+// Interface
+public:
+	CArxDialogControl& GetDialogControl() { return mControlX; }
+	const CArxDialogControl& GetDialogControl() const { return mControlX; }
+
 // Operations
+public:
+	virtual bool Create( CWnd* pParentWnd, UINT nID );
+
+// Implementation
 public:
 	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
 	void InitToolTip();
@@ -48,31 +79,16 @@ public:
 	void Clear();
 	void CopyDC();
 	void SetDragnDrop(BOOL bRegister);
-
-// Implementation
-public:
-	//*****
-    // COleOdcDropTarget, derived from COleDropTarget gives us
-    // the functionality to be an OLE drop target.
-    //*****
-    COleOdcDropTarget m_DropTarget;
+private:
+	void PaintControl(CDC *pdc);
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CSlideHolder)
-	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
-
-// Implementation
 public:
-	virtual ~CSlideHolder();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 	// Generated message map functions
 protected:
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);	
-	//{{AFX_MSG(CSlideHolder)
 	afx_msg void OnPaint();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnRButtonDblClk(UINT nFlags, CPoint point);
@@ -96,11 +112,8 @@ protected:
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnSysColorChange();
-	//}}AFX_MSG
+	afx_msg void PostNcDestroy();
+
+protected:
 	DECLARE_MESSAGE_MAP()
-private:
-	void PaintCrontrol(CDC *pdc);
-	//CString m_ClassName;
-	CxAcadSlide m_SlideControl;
-	CDclControlObject *m_ArxControl;	
 };

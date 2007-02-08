@@ -58,8 +58,8 @@ CString FireCancel(CString sLispFunction)
 	AcApDocument* pDoc = acDocManager->curDocument();
 
 	// give the command bar focus
-	CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-	CmdBarWnd->SetFocus();		
+	//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+	//CmdBarWnd->SetFocus();		
 
 	// send cancel string to current document
 	es = acDocManager->sendStringToExecute(pDoc, CancelStr, false, true, false);
@@ -136,8 +136,8 @@ void InvokeMethodStringInt(CString sLispFunction, CString sString, int nInt, boo
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -193,8 +193,8 @@ void InvokeMethodStringLong(CString sLispFunction, CString sString, long lLong, 
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -246,8 +246,8 @@ void InvokeMethodLong(CString sLispFunction, long lLong, bool UseSendString)
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -305,8 +305,8 @@ void InvokeMethodStringIntInt(CString sLispFunction, CString sString, int nInt1,
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -386,8 +386,8 @@ void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc)
 				pDoc = pThisDoc;
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 			
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, bShowCommand);
@@ -437,8 +437,8 @@ void InvokeMethodIntString(CString sLispFunction, int nInt, CString sString, boo
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -493,8 +493,8 @@ void InvokeMethodIntList(CString sLispFunction, int nInt, CStringList *pList, bo
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -564,8 +564,8 @@ void InvokeMethodString(CString sLispFunction, CString sString, bool UseSendStri
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -619,8 +619,8 @@ void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString)
 
 			
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -673,8 +673,8 @@ void InvokeMethodIntInt(CString sLispFunction, int nInt1, int nInt2, bool UseSen
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -733,8 +733,8 @@ void InvokeMethodIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -789,8 +789,8 @@ void InvokeMethodIntIntIntInt(CString sLispFunction, int nInt1, int nInt2, int n
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -840,8 +840,8 @@ void InvokeMethodStringString(CString sLispFunction, CString sString1, CString s
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -889,8 +889,8 @@ void InvokeMethod3Strings(CString sLispFunction, CString sString1, CString sStri
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -940,8 +940,8 @@ void InvokeMethod4Strings(CString sLispFunction, CString sString1, CString sStri
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -1010,8 +1010,8 @@ void InvokeMethod3StringsPoint(
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -1082,8 +1082,8 @@ void InvokeMethod3StringsLong(
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -1143,8 +1143,8 @@ void InvokeMethodPoint(
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);
@@ -1223,8 +1223,8 @@ void InvokeMethodPoint3D(
 			AcApDocument* pDoc = acDocManager->curDocument();
 
 			// give the command bar focus
-			CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-			CmdBarWnd->SetFocus();		
+			//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+			//CmdBarWnd->SetFocus();		
 
 			// send cancel string to current document
 			es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);

@@ -63,9 +63,9 @@ static void AddControlProperty(CDclControlObject *pControl, PropertyId nID, LPCT
 
 	// reset the name to the new value
 	if (InsertPos == NULL)
-		pControl->m_PropertyList.AddTail(pPropertyObect);
+		pControl->GetPropertyList().AddTail(pPropertyObect);
 	else
-		pControl->m_PropertyList.InsertAfter(InsertPos, pPropertyObect);
+		pControl->GetPropertyList().InsertAfter(InsertPos, pPropertyObect);
 }
 
 
@@ -619,9 +619,25 @@ bool CProject::GetPictureSize( UINT nID, CSize& size ) const
 }
 
 
+bool CProject::IsInUse() const
+{
+	POSITION pos = mDclForms.GetHeadPosition();
+	while( pos )
+	{
+		CDclFormObject* pForm = mDclForms.GetNext( pos );
+		assert( pForm != NULL );
+		if( !pForm )
+			continue;
+		if( pForm->GetFormInstance() )
+			return true; //there is an active dialog using this form
+	}
+	return false;
+}
+
+
 // This class is used for deserializing OLE controls from versions 8 and 9 project archives
 // (the class must have the same name as the original, since the original code used MFC's
-// (typesafe serialization mechanism, which writes the class name to the archive) [ORW]
+// typesafe serialization mechanism, which writes the class name to the archive) [ORW]
 class CArxControlObject : public COleControlObject
 { CArxControlObject() : COleControlObject( NULL ) {} DECLARE_SERIAL(CArxControlObject); };
 	IMPLEMENT_SERIAL(CArxControlObject, CObject, 1);
@@ -715,7 +731,7 @@ void CProject::Serialize(CArchive& ar)
 		CString sKeyName;
     if (nThisVersion >= 5)
       ar >> sKeyName; //this is the project key name (may be a full path in older files)
-		else
+		if (sKeyName.IsEmpty())
 			sKeyName = m_LispFileName;
 		sKeyName = StripPathFromFileName(sKeyName).SpanExcluding(_T("."));
 		sKeyName.Replace( _T(' '), _T('_') );
@@ -1304,6 +1320,8 @@ IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 		if (!SrcFile)
 			return statFail;
 
+		msProjectFilePath = SrcFile.GetFilePath();
+
 		//Check the first line -- if it is "ObjectDCL Project", then it is a text file.
 		char szTextFileSignature[] = "ObjectDCL Project";
 		char szLine1[sizeof(szTextFileSignature)];
@@ -1372,6 +1390,7 @@ IOStatus CProject::WriteToFile( LPCTSTR pszFilePath )
 			CArchiveEx archSave(&DestFile, CArchive::store, NULL, _T("ObjectDCL"), TRUE);
 			Serialize(archSave);
 			archSave.Close();
+			msProjectFilePath = DestFile.GetFilePath();
 		}
 		DestFile.Flush();
 	}

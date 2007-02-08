@@ -1092,10 +1092,10 @@ void CPropertyListCtrl::DisplayProperties(CDclControlObject *pControl)
 
 	// clear the property list
 	m_PropertyList.RemoveAll();
-	POSITION posProp = pControl->m_PropertyList.GetHeadPosition();
+	POSITION posProp = pControl->GetPropertyList().GetHeadPosition();
 	while (posProp != NULL)
 	{
-		RefCountedPtr< CPropertyObject > pProp = pControl->m_PropertyList.GetNext(posProp);
+		RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetNext(posProp);
 		if (!pProp->IsHidden()) // if not a hidden property add it to the property list
 			m_PropertyList.AddTail(pProp);
 	}

@@ -65,6 +65,7 @@
 const int nBufSize = 100;
 const int nFalse = 0;
 const TCHAR sT[] = _T("T");
+const TCHAR sGetPropertry [] = _T("Odcl_Control_Get");
 const TCHAR sSetPropertry [] = _T("Odcl_Control_Set");
 
 bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, struct resbuf *ListData, CDclControlObject *pArxObject);
@@ -119,7 +120,7 @@ bool SetCtrlProperty(PropertyId id)
 //*****************************************************************************
 bool GetCtrlProperty(PropertyId id)
 {
-	CString sProp = CString(sSetPropertry) + GetPropertyName(id);
+	CString sProp = CString(sGetPropertry) + GetPropertyName(id);
 
 	CDclControlObject *pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sProp, pArxObject);
@@ -158,7 +159,7 @@ bool GetCtrlProperty(PropertyId id)
 		CRect rc;
 		pArxObject->GetWindow()->GetWindowRect(rc);
 		pArxObject->GetWindow()->GetParent()->ScreenToClient(rc);
-		acedRetInt(rc.top);
+		acedRetInt(rc.left);
 		return true;
 	}
 
@@ -606,11 +607,10 @@ bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, RefCountedPtr
 	return true;
 
 }
-void UpdateControl(CWnd *pControl,RefCountedPtr< CPropertyObject > pProperty, CDclControlObject *pArxObject, PropertyId nPropertyId)
+void UpdateControl(CWnd *pControl,RefCountedPtr< CPropertyObject > pProperty, CDclControlObject *pTemplate, PropertyId nPropertyId)
 {
 	CRect rcThisControl;
 	pControl->GetWindowRect(&rcThisControl);
-	CArxControlPane ctrlPane(pArxObject->GetOwnerForm(), pControl->GetParent());
 	
 	switch (pProperty->GetID())
 	{
@@ -624,14 +624,17 @@ void UpdateControl(CWnd *pControl,RefCountedPtr< CPropertyObject > pProperty, CD
 	case nHeight:
 		{
 		// call the method to update the control
-		ctrlPane.ResetControlsPos2(pArxObject);
+			pTemplate->GetControlInstance()->GetControlPane()->ResetControlsPos2(pTemplate);
 		break;
 		}
 	// if the font size property has been found pass it the font name only
 	// and set it's size properly
 	case nLabelSize:
 		{
-		ctrlPane.UpdateProperty(pArxObject, pArxObject->m_Id, nLabelName);
+			CArxDialogControl::UpdateProperty(pTemplate,
+																				pTemplate->GetControlInstance()->GetControlPane(),
+																				pTemplate->GetControlInstance()->GetControlId(),
+																				nLabelName);
 		break;
 		}
 	// if a font property has been found pass it the font name only
@@ -642,14 +645,20 @@ void UpdateControl(CWnd *pControl,RefCountedPtr< CPropertyObject > pProperty, CD
 	case nLabelStrikeOut:
 		{
 		// call the method to update the control
-		ctrlPane.UpdateProperty(pArxObject, pArxObject->m_Id, nLabelName);
+		CArxDialogControl::UpdateProperty(pTemplate,
+																			pTemplate->GetControlInstance()->GetControlPane(),
+																			pTemplate->GetControlInstance()->GetControlId(),
+																			nLabelName);
 		break;
 		}
 	default:
 		{
 			
 		// call the method to update the control
-		ctrlPane.UpdateProperty(pArxObject, pArxObject->m_Id, nPropertyId);
+		CArxDialogControl::UpdateProperty(pTemplate,
+																			pTemplate->GetControlInstance()->GetControlPane(),
+																			pTemplate->GetControlInstance()->GetControlId(),
+																			nPropertyId);
 		break;
 		}
 	}

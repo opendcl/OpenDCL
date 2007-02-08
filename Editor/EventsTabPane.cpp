@@ -241,14 +241,14 @@ void CEventsTabPane::AddAnyActiveXEvents()
 	CString DefaultEventDeclaration;
 
 	
-	for (int i = 0; i < m_pControl->m_PropertyList.GetCount(); i++)
+	for (int i = 0; i < m_pControl->GetPropertyList().GetCount(); i++)
 	{
-		POSITION pos = m_pControl->m_PropertyList.FindIndex(i);
+		POSITION pos = m_pControl->GetPropertyList().FindIndex(i);
 
 		if (pos != NULL)
 		{
 			// get the event property object
-			RefCountedPtr< CPropertyObject > pProp = m_pControl->m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetAt(pos);
 			
 			// if the event exists, add it
 			if (pProp != NULL && pProp->GetType() == PropActiveXEvent)
@@ -438,10 +438,10 @@ CString CEventsTabPane::GetDefunArguments()
 		LoadArgsNDesc(nEventId, nArxControlType, nArxControlType, sArgs, strDesc, m_pControl);
 	else
 	{
-		POSITION pos = m_pControl->m_PropertyList.FindIndex(nEventId);
+		POSITION pos = m_pControl->GetPropertyList().FindIndex(nEventId);
 		if (pos != NULL)
 		{
-			RefCountedPtr< CPropertyObject > pProp = m_pControl->m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetAt(pos);
 			strDesc = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->DocumentationDesc;
 			int ctCallingArgs = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->nArgs;
 			for (int i = 0; i < ctCallingArgs; i++)
@@ -625,7 +625,8 @@ void CEventsTabPane::OnAddtolisp()
 		// if the file name has not been set.
 		if (activeProject->m_LispFileName.GetLength() == 0)
 		{
-			activeProject->m_LispFileName = theEditorWorkspace.GetMainFrame()->m_PropertyTabPane.m_PropertiesTabPane.m_PropertyList.QueryForLispFileName();
+			activeProject->m_LispFileName =
+				theEditorWorkspace.GetMainFrame()->m_PropertyTabPane.m_PropertiesTabPane.GetPropertiesCtrl().QueryForLispFileName();
 			// set the lisp file name
 			if (activeProject->m_LispFileName.GetLength() == 0)
 				// if the user canceled. Exit here
@@ -833,10 +834,10 @@ void CEventsTabPane::SetEvent(int nEventId, CString sEventDefun)
 {
 	if (m_pControl->GetType() == CtlActiveX)
 	{
-		POSITION pos = m_pControl->m_PropertyList.FindIndex(nEventId);
+		POSITION pos = m_pControl->GetPropertyList().FindIndex(nEventId);
 		if (pos != NULL)
 		{
-			RefCountedPtr< CPropertyObject > pProp = m_pControl->m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetAt(pos);
 			pProp->SetStringValue( sEventDefun );
 		}
 	}
@@ -848,10 +849,10 @@ CString CEventsTabPane::GetEvent(int nEventId)
 {
 	if (m_pControl->GetType() == CtlActiveX)
 	{
-		POSITION pos = m_pControl->m_PropertyList.FindIndex(nEventId);
+		POSITION pos = m_pControl->GetPropertyList().FindIndex(nEventId);
 		if (pos != NULL)
 		{
-			RefCountedPtr< CPropertyObject > pProp = m_pControl->m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetAt(pos);
 			return pProp->GetStringValue();
 		}
 	}

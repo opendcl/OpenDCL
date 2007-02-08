@@ -12,6 +12,8 @@
 #include "InvokeMethod.h"
 #include "SpreadSheet.h"
 #include "Workspace.h"
+#include "ControlPane.h"
+#include "ControlTypes.h"
 
 // Constant and should not be changed unless 
 // image IDB_GLYPH is changed
@@ -19,13 +21,34 @@
 #define dwFlags PRINTER_ENUM_CONNECTIONS | PRINTER_ENUM_LOCAL
 
 
+CRect CPrinterComboControl::GetWndRect() const
+{
+	CRect rectCombo = CArxDialogControl::GetWndRect();
+	long nListHeight = mpTemplate->GetLngProperty(nDropDownHeight);
+	if( nListHeight < 40 )
+		nListHeight = 40;
+	rectCombo.bottom += nHeight;
+	return rectCombo;
+}
+
+DWORD CPrinterComboControl::GetWndStyle() const
+{
+	DWORD dwStyle = CArxDialogControl::GetWndStyle();
+	dwStyle |= WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE | CBS_HASSTRINGS |
+						ES_AUTOHSCROLL | WS_CLIPCHILDREN | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED;
+	if (mpTemplate->GetBoolProperty(nSorted) == TRUE)
+		dwStyle |= CBS_SORT;		
+	return dwStyle;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CPrinterComboBox
 
-static CComboBox* gpNullPaperSizeCombo = NULL;
-
-CPrinterComboBox::CPrinterComboBox()
-: mpPaperSizesCombo( gpNullPaperSizeCombo )
+CPrinterComboBox::CPrinterComboBox( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID )
+: mControlX( pTemplate, &Pane, this )
+, mpSourceControl( pTemplate )
+, mpControlPane( &Pane )
 {
 	// No tooltip created
 	m_ToolTip.m_hWnd = NULL;
@@ -42,11 +65,13 @@ CPrinterComboBox::CPrinterComboBox()
 	hIcon = (HICON)::LoadImage(hRes, MAKEINTRESOURCE(IDI_PLOTTER), IMAGE_ICON, 0, 0, 0);
 	m_img.Add(hIcon);
 	DestroyIcon(hIcon);
-
+	Create( Pane.GetHostDialog(), nID );
 }
 
-CPrinterComboBox::CPrinterComboBox( CComboBox*& pPaperSizesCombo )
-: mpPaperSizesCombo( pPaperSizesCombo )
+CPrinterComboBox::CPrinterComboBox( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID, CRect rc )
+: mControlX( pTemplate, &Pane, this )
+, mpSourceControl( pTemplate )
+, mpControlPane( &Pane )
 {
 	// No tooltip created
 	m_ToolTip.m_hWnd = NULL;
@@ -63,11 +88,27 @@ CPrinterComboBox::CPrinterComboBox( CComboBox*& pPaperSizesCombo )
 	hIcon = (HICON)::LoadImage(hRes, MAKEINTRESOURCE(IDI_PLOTTER), IMAGE_ICON, 0, 0, 0);
 	m_img.Add(hIcon);
 	DestroyIcon(hIcon);
-
+	Create( Pane.GetHostDialog(), nID, rc );
 }
 
 CPrinterComboBox::~CPrinterComboBox()
 {
+}
+
+CComboBox* CPrinterComboBox::FindPaperSizesCombo() const
+{
+	const CControlPane::TDialogControls& rControls = mpControlPane->GetControlsList();
+	size_t ctMax = rControls.size();
+	for( size_t idx = 0; idx < ctMax; ++idx )
+	{
+		TDialogControlPtr pControl = rControls[idx];
+		if (pControl->GetControlType() == CtlComboBox)
+		{
+			if( pControl->GetTemplate()->GetLngProperty(nComboBoxStyle) == CmboStyle_PlotterPaperSizes )
+				return (CComboBox*)&*pControl;
+		}
+	}
+	return NULL;
 }
 
 
@@ -85,84 +126,32 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CPrinterComboBox message handlers
 
-BOOL CPrinterComboBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
+bool CPrinterComboBox::Create( CWnd* pParentWnd, UINT nID )
 {
-	BOOL RetVal;
-	DWORD dwStyle;
-	CRect ArxRect;
-
-	// set the arx control pointer
-    m_ArxControl = pControl;
-	
-	// get the rectangle of the new control
-	ArxRect.top = pControl->m_pTop->GetLongValue();
-	ArxRect.left = pControl->m_pLeft->GetLongValue();
-	pControl->SetLngProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
-	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
-	
-		if (ArxRect.Height() < 40)
-	{
-		ArxRect.bottom = ArxRect.top + 60;
-	}
-
-	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE | WS_CLIPSIBLINGS
-			  | CBS_HASSTRINGS | ES_AUTOHSCROLL | WS_CLIPCHILDREN | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED;
-	
-	if (pControl->GetBoolProperty(nSorted) == TRUE)
-		dwStyle = dwStyle | CBS_SORT;		
-
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
-		dwStyle = dwStyle | WS_TABSTOP;
-	else
-		dwStyle = dwStyle | WS_GROUP;
-
-	RetVal = CComboBox::Create( dwStyle, ArxRect, pParentWnd, nID );
-
-
-	VERIFY(CComboBox::SubclassDlgItem(nID, pParentWnd));
-	InitToolTip();
-	SetToolTipEx(this, m_ToolTip, pControl);
-
-
-	switch (m_ArxControl->GetLngProperty(nEventInvoke))
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
-
-	return RetVal;
+	return Create( pParentWnd, nID, mControlX.GetWndRect() );
 }
 
-BOOL CPrinterComboBox::Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT nID) 
+bool CPrinterComboBox::Create( CWnd* pParentWnd, UINT nID, CRect rc )
 {
-	BOOL RetVal;
-	DWORD dwStyle;
+	bool bSuccess =
+		CComboBox::Create( mControlX.GetWndStyle(),
+											 rc,
+											 pParentWnd,
+											 nID );
+	VERIFY(CWnd::SubclassDlgItem(nID, pParentWnd));
 
-	if (rc.Height() < 100)
-		rc.bottom = rc.top + 100;
+	if( bSuccess && !mControlX.ApplyPropertiesEnum() )
+		bSuccess = false;
 
-	// set the arx control pointer
-    m_ArxControl = NULL;
-		
-	dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_CLIPSIBLINGS
-			  | CBS_HASSTRINGS | ES_AUTOHSCROLL | WS_CLIPCHILDREN;
-	
-	dwStyle = dwStyle | CBS_SORT;		
+	InitToolTip();
+	SetToolTipEx(this, m_ToolTip, mpSourceControl);
 
-	dwStyle = dwStyle | WS_GROUP;
+	if( mpSourceControl->GetLngProperty(nEventInvoke) == 1 )
+		m_bInvokeWithSendString = true;
+	else
+		m_bInvokeWithSendString = false;
 
-	dwStyle = dwStyle | CBS_DROPDOWNLIST;
-	
-	RetVal = CComboBox::Create( dwStyle, rc, pParentWnd, nID );
-
-	VERIFY(CComboBox::SubclassDlgItem(nID, pParentWnd));
-	
-	return RetVal;
+	return bSuccess;
 }
 
 int CPrinterComboBox::OnCreate(LPCREATESTRUCT lpCreateStruct) 
@@ -269,7 +258,7 @@ BOOL CPrinterComboBox::PreTranslateMessage(MSG* pMsg)
 	
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
 	{
-		if (m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
+		if (mpSourceControl->GetBoolProperty(nReturnAsTab) == TRUE)
 			pMsg->wParam = VK_TAB;
 		
 	}
@@ -281,9 +270,9 @@ BOOL CPrinterComboBox::PreTranslateMessage(MSG* pMsg)
 void CPrinterComboBox::OnMouseMove(UINT nFlags, CPoint point) 
 {
 
-	if (m_ArxControl)
+	if (mpSourceControl)
 		InvokeMethodIntIntInt(
-			m_ArxControl->GetStrProperty(nEventMouseMove),
+			mpSourceControl->GetStrProperty(nEventMouseMove),
 			nFlags,
 			point.x,
 			point.y,
@@ -295,9 +284,9 @@ void CPrinterComboBox::OnMouseMove(UINT nFlags, CPoint point)
 
 void CPrinterComboBox::OnSetFocus(CWnd* pOldWnd) 
 {
-	if (m_ArxControl)
+	if (mpSourceControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+		InvokeMethod(mpSourceControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
 
 	CComboBox::OnSetFocus(pOldWnd);	
 	
@@ -305,9 +294,9 @@ void CPrinterComboBox::OnSetFocus(CWnd* pOldWnd)
 
 void CPrinterComboBox::OnKillFocus(CWnd* pNewWnd) 
 {
-	if (m_ArxControl)
+	if (mpSourceControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+		InvokeMethod(mpSourceControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
 
 
 
@@ -325,44 +314,36 @@ void CPrinterComboBox::OnSelchange()
 	GetLBText(nSel, sString.GetBuffer(nTextLength));
 	sString.ReleaseBuffer();
 
-	if (mpPaperSizesCombo == NULL && m_ArxControl)
+	if( mpSourceControl )
 	{
-		InvokeMethodIntString(m_ArxControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-		m_ArxControl->SetStrProperty(nText, sString);
-		return;
-	}
+		CComboBox* pPaperSizesCombo = FindPaperSizesCombo();
+		if( !pPaperSizesCombo )
+		{
+			InvokeMethodIntString(mpSourceControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
+			mpSourceControl->SetStrProperty(nText, sString);
+			return;
+		}
 
-	if (m_ArxControl)
-	{
 		BeginWaitCursor();
-
 		// get current document
 		AcApDocument* pDoc = acDocManager->curDocument();
-
-		Acad::ErrorStatus es = acDocManager->lockDocument(
-									pDoc,
-									AcAp::kWrite,
-									NULL,
-									NULL,
-									false);
-
-		
+		Acad::ErrorStatus es = acDocManager->lockDocument( pDoc, AcAp::kWrite, NULL, NULL, false);
 
 		// Get layout manager pointer
-	AcApLayoutManager *pLayoutManager = (AcApLayoutManager*)acdbHostApplicationServices()->layoutManager();
-	assert(pLayoutManager != NULL);
+		AcApLayoutManager *pLayoutManager = (AcApLayoutManager*)acdbHostApplicationServices()->layoutManager();
+		assert(pLayoutManager != NULL);
 
-	CString sLayout = pLayoutManager->findActiveLayout(true);
-	   
-	// Get the specific layout
-	AcDbLayout *pLayout = pLayoutManager->findLayoutNamed(sLayout,true);
-	if (pLayout == NULL) 
-		return;
-	   
-	pLayout->setPlotSettingsName(sString);
+		CString sLayout = pLayoutManager->findActiveLayout(true);
+		   
+		// Get the specific layout
+		AcDbLayout *pLayout = pLayoutManager->findLayoutNamed(sLayout,true);
+		if (pLayout == NULL) 
+			return;
+		   
+		es = pLayout->setPlotSettingsName(sString);
+		if (es != Acad::eOk)
+			return;
 
-	if (es != Acad::eOk)
-		return;
 		// Get the plot settings validator
 		AcDbPlotSettingsValidator *pPlotSettingsValidator = acdbHostApplicationServices()->plotSettingsValidator();
 		assert( pPlotSettingsValidator != NULL );
@@ -371,15 +352,15 @@ void CPrinterComboBox::OnSelchange()
 		if (nSel == 0)
 		{
 			pPlotSettingsValidator->setPlotCfgName(pLayout,_T("None"),_T("none_user_media"));
-			if (mpPaperSizesCombo)
-				mpPaperSizesCombo->ResetContent();
+			if (pPaperSizesCombo)
+				pPaperSizesCombo->ResetContent();
 			pLayout->close();
 			es = acDocManager->unlockDocument(pDoc);
 			EndWaitCursor();
-			if (m_ArxControl)
+			if (mpSourceControl)
 			{
-				InvokeMethodIntString(m_ArxControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-				m_ArxControl->SetStrProperty(nText, sString);
+				InvokeMethodIntString(mpSourceControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
+				mpSourceControl->SetStrProperty(nText, sString);
 			}
 			return;
 		}
@@ -393,16 +374,14 @@ void CPrinterComboBox::OnSelchange()
 	    
 		AcArray<const TCHAR*> mediaList;
 		pPlotSettingsValidator->canonicalMediaNameList(pLayout, mediaList);
-		if (mpPaperSizesCombo)
+
+		pPaperSizesCombo->ResetContent();
+		for (int i=0; i<mediaList.length(); i++)
 		{
-			mpPaperSizesCombo->ResetContent();
-			for (int i=0; i<mediaList.length(); i++)
-			{
-				CString value = mediaList[i];
-				const TCHAR * Value;
-				pPlotSettingsValidator->getLocaleMediaName(pLayout, i,Value);
-				mpPaperSizesCombo->AddString(Value);
-			}
+			CString value = mediaList[i];
+			const TCHAR * Value;
+			pPlotSettingsValidator->getLocaleMediaName(pLayout, i,Value);
+			pPaperSizesCombo->AddString(Value);
 		}
 
 		pLayout->close();
@@ -410,14 +389,11 @@ void CPrinterComboBox::OnSelchange()
 		es = acDocManager->unlockDocument(pDoc);
 
 		EndWaitCursor();
-	}
-	if (m_ArxControl)
-	{
-		InvokeMethodIntString(m_ArxControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-		m_ArxControl->SetStrProperty(nText, sString);
-	}
 
-	if (m_ArxControl == NULL)
+		InvokeMethodIntString(mpSourceControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
+		mpSourceControl->SetStrProperty(nText, sString);
+	}
+	else
 	{		
 		// Send Notification to parent of ListView ctrl
 		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent()->GetParent();
@@ -441,8 +417,8 @@ void CPrinterComboBox::OnDestroy()
 CString CPrinterComboBox::GetPlottersPath()
 {
 	CString sChar;
-	CString sAcadPrefix = "";
-	CString sCompile = "";
+	CString sAcadPrefix;
+	CString sCompile;
 	struct resbuf rb; 
 
 	acedGetVar(_T("ACADPREFIX"), &rb); 
@@ -452,20 +428,20 @@ CString CPrinterComboBox::GetPlottersPath()
 	for (int i=0; i<sAcadPrefix.GetLength(); i++)
 	{
 		sChar = sAcadPrefix.Mid(i,1);
-		if (sChar != ";")
+		if (sChar != _T(";"))
 			sCompile = sCompile + sChar;
 		else
 		{
-			if (sCompile.Right(5) == "fonts")
+			if (sCompile.Right(5) == _T("fonts"))
 			{
-				sCompile = sCompile.Left(sCompile.GetLength()-5) + "Plotters";
+				sCompile = sCompile.Left(sCompile.GetLength()-5) + _T("Plotters");
 				return sCompile;
 			}
-			sCompile = "";
+			sCompile.Empty();
 		}
 
 	}
-	return "";
+	return CString();
 }
 
 
@@ -521,4 +497,10 @@ void CPrinterComboBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	
 	// Restore State of context
 	pDC->RestoreDC(nIndexDC);	
+}
+
+void CPrinterComboBox::PostNcDestroy() 
+{
+	CComboBox::PostNcDestroy();
+	delete this;
 }

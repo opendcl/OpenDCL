@@ -4,9 +4,23 @@
 #pragma once
 
 #include "PPToolTip.h"
+#include "ArxDialogControl.h"
 
 class CDclControlObject;
 class CControlPane;
+
+
+class CPrinterComboControl : public CArxDialogControl
+{
+public:
+	CPrinterComboControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pWnd )
+		: CArxDialogControl( pTemplate, pPane, pWnd ) {}
+	virtual ~CPrinterComboControl() {}
+
+	// attributes
+	virtual CRect GetWndRect() const; //get window position from properties
+	virtual DWORD GetWndStyle() const; //get window style from properties
+};
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -14,53 +28,58 @@ class CControlPane;
 
 class CPrinterComboBox : public CComboBox
 {
-// Construction
-public:
-	CPrinterComboBox();
-	CPrinterComboBox( CComboBox*& pPaperSizesCombo );
+protected:
+	CPrinterComboControl mControlX;
+	CDclControlObject* mpSourceControl;	
+	CControlPane* mpControlPane;
 
-// Attributes
 public:
 	bool		m_bInvokeWithSendString;
 	CImageList	m_img;
-	CComboBox*& mpPaperSizesCombo; //hokey kludge so the printer combo can update the paper size combo [ORW]
-// ListCtrl edit data members
+
+	// ListCtrl edit data members
 	bool m_bESC;
-	virtual BOOL Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT nID);
+
+// Construction
+public:
+	CPrinterComboBox( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID );
+	CPrinterComboBox( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID, CRect rc );
+	virtual ~CPrinterComboBox();
+
+// Interface
+public:
+	CArxDialogControl& GetDialogControl() { return mControlX; }
+	const CArxDialogControl& GetDialogControl() const { return mControlX; }
 
 // Operations
+public:
+	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual bool Create( CWnd* pParentWnd, UINT nID, CRect rc );
+
+// Implementation
 public:
 	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
 	void InitToolTip();
 	CPPToolTip m_ToolTip;
 	int CreatePrinterList();
 	CString GetPlottersPath();
+protected:
+	CComboBox* FindPaperSizesCombo() const;
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CPrinterComboBox)
-	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDIS);
-	//}}AFX_VIRTUAL
 
-// Implementation
-public:
-	virtual ~CPrinterComboBox();
-
-	// Generated message map functions
 protected:
-	//{{AFX_MSG(CPrinterComboBox)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnSelchange();
 	afx_msg void OnDestroy();
-	//}}AFX_MSG
+	afx_msg void PostNcDestroy();
 
+protected:
 	DECLARE_MESSAGE_MAP()
-private:
-	CDclControlObject *m_ArxControl;
 };

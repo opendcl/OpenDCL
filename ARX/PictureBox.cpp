@@ -1570,8 +1570,7 @@ LRESULT CPictureBox::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventMouseMovedOff), m_bInvokeWithSendString);
 	
 	m_bMouseTracking = FALSE;        
-	return TRUE;
-	
+	return FALSE;
 }
 
 

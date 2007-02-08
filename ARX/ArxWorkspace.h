@@ -58,14 +58,13 @@ public:
 
 	//Project management
 	bool AddProject( CArxProject* pProject );
-	bool RemoveProject( CProject* pProject );
-	bool RemoveProject( LPCTSTR pszKeyName );
+	bool UnloadProject( CProject* pProject, bool bForce = false );
+	bool UnloadProject( LPCTSTR pszKeyName, bool bForce = false );
 	bool RegisterDialog( CDialogObject* pDialog );
 	bool UnregisterDialog( CDialogObject* pDialog );
 	CArxProject* LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKeyName = NULL, bool bReload = false );
 
 	//Services
-	bool IsProjectUnloadable( const CProject* pProject ) const;
 	bool IsModalFormOpen() const;
 	HWND GetTopmostModalForm() const;
 	ULONG CountOpenModalForms() const;

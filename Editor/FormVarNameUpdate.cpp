@@ -67,7 +67,7 @@ void CFormVarNameUpdate::OnOK()
 		// then we must update the controls on the form, if required.
 		if (m_CtrlCheck == TRUE)
 		{
-			GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.m_pDclForm->ForceUpdateGlobalVariableName(m_sDclFormName);
+			GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pDclForm->ForceUpdateGlobalVariableName(m_sDclFormName);
 		}
 		// Now finally we must refresh the property list box. 
 		// if we place this above drawing errors can occure.
@@ -78,7 +78,7 @@ void CFormVarNameUpdate::OnOK()
 				// and refresh the projectlist ctrl.
 				GetPropertyTabs()->DisplaySelectedControlProperties(
 					m_pControl, 
-					GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.m_pView);
+					GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pView);
 			}
 			catch(...)
 			{
@@ -91,7 +91,7 @@ void CFormVarNameUpdate::OnOK()
 	CDialog::OnOK();
 
 	// and refresh the projectlist ctrl.
-	GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.SetFocus();
+	GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().SetFocus();
 }
 
 void CFormVarNameUpdate::OnCancel() 
@@ -100,7 +100,7 @@ void CFormVarNameUpdate::OnCancel()
 	m_pControl = NULL;	
 	theEditorWorkspace.GetMainFrame()->EnableWindow(TRUE);
 	// and refresh the projectlist ctrl.
-	GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.SetFocus();
+	GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().SetFocus();
 	CDialog::OnCancel();
 }
 

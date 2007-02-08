@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "ParentFileDialog.h"
 #include "DialogObject.h"
-#include "DclFormObject.h"
+#include "DclFormTypes.h"
 #include "PropertyIds.h"
 #include "Project.h"
 #include "DialogControl.h"
@@ -296,8 +296,8 @@ BOOL CParentFileDialog::OnInitDialog()
 	// resize the control pane so all offsets are set correctly
 	CtrlPane.SizeChanged(rcThis.Width(),rcThis.Height());	
 	
-	CArxDialogControl *pCtrlObj = new CArxDialogControl(pProps, this);
-	mParentDlg.GetDialogObject().GetControlPane().AddControl(pCtrlObj);
+	CArxDialogControl *pCtrlObj = new CArxDialogControl(pProps, &CtrlPane, this);
+	CtrlPane.AddControl(pCtrlObj);
 	
 	switch (pProps->GetLngProperty(nEventInvoke))
 	{

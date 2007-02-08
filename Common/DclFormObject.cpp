@@ -28,9 +28,9 @@ static void AddControlProperty(CDclControlObject *pControl, PropertyId nID, LPCT
 
 	// reset the name to the new value
 	if (InsertPos == NULL)
-		pControl->m_PropertyList.AddTail(pPropertyObect);
+		pControl->GetPropertyList().AddTail(pPropertyObect);
 	else
-		pControl->m_PropertyList.InsertAfter(InsertPos, pPropertyObect);
+		pControl->GetPropertyList().InsertAfter(InsertPos, pPropertyObect);
 }
 
 
@@ -508,8 +508,6 @@ void CDclFormObject::Serialize(CArchive& ar)
 
 		mDclControls.RemoveAll();
 
-
-
 		// do loop to add controls
 		while (nCount-- > 0)
 		{
@@ -519,21 +517,23 @@ void CDclFormObject::Serialize(CArchive& ar)
 			// get dcl form into archive
 			pControl->Serialize(ar);
 
-			//pControl->ForceUpdateGlobalVariable(msName);
-	
 			// add that ArxControlObject to the list object
 			mDclControls.AddTail(pControl);	
+			pControl->ForceUpdateGlobalVariable(GetKeyName());
 			
 			if (mType == VdclModal)
 			{				
 				RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nEventInvoke);
 				if (pProp != NULL)
 				{
-					POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
-					pControl->m_PropertyList.RemoveAt(pos);
+					POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
+					pControl->GetPropertyList().RemoveAt(pos);
 				}
 			}
 		}
+
+		//ensure that we have a form properties control at the head of the list
+		CreateControlProperties();
 
 		if (nThisVersion >= 3)
 		{		
@@ -595,8 +595,8 @@ void CDclFormObject::Serialize(CArchive& ar)
 				RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nEventInvoke);
 				if (pProp != NULL)
 				{
-					POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
-					pControl->m_PropertyList.RemoveAt(pos);
+					POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
+					pControl->GetPropertyList().RemoveAt(pos);
 				}
 				//break;  This break was missing -- maybe intentional, I can't tell for sure [ORW]
 				}
@@ -621,20 +621,20 @@ void CDclFormObject::Serialize(CArchive& ar)
 				RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nMinDialogWidth);
 				if (pProp != NULL)
 				{
-					POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
-					pControl->m_PropertyList.RemoveAt(pos);
+					POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
+					pControl->GetPropertyList().RemoveAt(pos);
 				}
 				pProp = pControl->GetPropertyObject(nMinDialogHeight);
 				if (pProp != NULL)
 				{
-					POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
-					pControl->m_PropertyList.RemoveAt(pos);
+					POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
+					pControl->GetPropertyList().RemoveAt(pos);
 				}
 				pProp = pControl->GetPropertyObject(nMaxDialogWidth);
 				if (pProp != NULL)
 				{
-					POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
-					pControl->m_PropertyList.RemoveAt(pos);
+					POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
+					pControl->GetPropertyList().RemoveAt(pos);
 				}
 				
 				break;		
@@ -853,8 +853,8 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
       RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nEventInvoke);
       if (pProp != NULL)
       {
-        POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
-        pControl->m_PropertyList.RemoveAt(pos);
+        POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
+        pControl->GetPropertyList().RemoveAt(pos);
       }
     }
   }
@@ -916,8 +916,8 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
         RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nEventInvoke);
         if (pProp != NULL)
         {
-          POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
-          pControl->m_PropertyList.RemoveAt(pos);
+          POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
+          pControl->GetPropertyList().RemoveAt(pos);
         }
       }
     case VdclModeless:
@@ -944,20 +944,20 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
         RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nMinDialogWidth);
         if (pProp != NULL)
         {
-          POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
-          pControl->m_PropertyList.RemoveAt(pos);
+          POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
+          pControl->GetPropertyList().RemoveAt(pos);
         }
         pProp = pControl->GetPropertyObject(nMinDialogHeight);
         if (pProp != NULL)
         {
-          POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
-          pControl->m_PropertyList.RemoveAt(pos);
+          POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
+          pControl->GetPropertyList().RemoveAt(pos);
         }
         pProp = pControl->GetPropertyObject(nMaxDialogWidth);
         if (pProp != NULL)
         {
-          POSITION pos = pControl->m_PropertyList.Find(pProp, NULL);
-          pControl->m_PropertyList.RemoveAt(pos);
+          POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
+          pControl->GetPropertyList().RemoveAt(pos);
         }
 
         break;		
@@ -1008,7 +1008,6 @@ CDclControlObject* CDclFormObject::CreateControlProperties()
 	if( !mDclControls.IsEmpty() )
 		return mDclControls.GetHead();
 	CDclControlObject* pProps = new CDclControlObject(this);
-	pProps->m_Id = CtlFormPropHolder;
 	mDclControls.AddHead(pProps);
 	return pProps;
 }
@@ -1039,7 +1038,7 @@ CDclControlObject* CDclFormObject::FindControl( LPCTSTR pszControlName ) const
 	return NULL;
 }
 
-CDclControlObject* CDclFormObject::FindControl( LPCTSTR pszControlName, ControlTypes eType ) const
+CDclControlObject* CDclFormObject::FindControl( LPCTSTR pszControlName, ControlType eType ) const
 {
 	CDclControlObject* pControl = FindControl( pszControlName );
 	if( pControl && pControl->GetType() == eType )
@@ -1047,7 +1046,7 @@ CDclControlObject* CDclFormObject::FindControl( LPCTSTR pszControlName, ControlT
 	return NULL;
 }
 
-CDclControlObject* CDclFormObject::FindFirstControlOfType( ControlTypes eType ) const
+CDclControlObject* CDclFormObject::FindFirstControlOfType( ControlType eType ) const
 {
 	POSITION pos = mDclControls.GetHeadPosition();
 	while (pos != NULL)
@@ -1059,7 +1058,7 @@ CDclControlObject* CDclFormObject::FindFirstControlOfType( ControlTypes eType ) 
 	return NULL;
 }
 
-bool CDclFormObject::FindControls( ControlTypes eType, CList< CDclControlObject* >& Results ) const
+bool CDclFormObject::FindControls( ControlType eType, CList< CDclControlObject* >& Results ) const
 {
 	POSITION pos = mDclControls.GetHeadPosition();
 	while (pos != NULL)

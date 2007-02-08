@@ -241,14 +241,14 @@ void CPropertyEdit::UpdateVarName()
 			// do a complete update of the (VarName)
 			m_pControl->ForceUpdateGlobalVariable(sDclFormName);
 			// and refresh the projectlist ctrl.
-			theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.Invalidate();
+			theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
 		}
 		else
 		{
 			if (!m_pDlg)
 			{
 				m_pDlg = new CFormVarNameUpdate;
-				m_pDlg->Create(IDD_FORMVARNAMEUPDATE_DIALOG, &theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList);
+				m_pDlg->Create(IDD_FORMVARNAMEUPDATE_DIALOG, &theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl());
 			}
 			m_pDlg->m_sDclFormName = sDclFormName;
 			m_pDlg->m_pControl = m_pControl;
@@ -275,7 +275,7 @@ void CPropertyEdit::UpdateVarName()
 			// and refresh the projectlist ctrl.
 			theEditorWorkspace.GetPropertyTabs()->DisplaySelectedControlProperties(
 					m_pControl, 
-					theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.m_pView);
+					theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pView);
 		}	
 	}
 }
@@ -449,7 +449,7 @@ void CPropertyEdit::SetNameProp()
 		CDclFormObject *pDclForm = activeProject->GetDclForm(sText);
 		
 		// if an identical form has been found and it's not this one
-		if (pDclForm != NULL && pDclForm != theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.m_pDclForm)
+		if (pDclForm != NULL && pDclForm != theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pDclForm)
 		{
 			SetWindowText(m_pProp->GetStringValue());
 			sMsg = theWorkspace.LoadResourceString(IDS_FORMBADNAME);

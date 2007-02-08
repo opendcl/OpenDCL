@@ -212,12 +212,12 @@ HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(const CDclControlObject *pContro
 
 void CObjectBrowser::LoadAllAssociatedOleObjects(CDclControlObject *pControl) 
 {
-	POSITION pos = pControl->m_PropertyList.GetHeadPosition();
+	POSITION pos = pControl->GetPropertyList().GetHeadPosition();
 
 	// do loop to inspect all property objects
 	while (pos != NULL)
 	{
-		RefCountedPtr< CPropertyObject > pProp = pControl->m_PropertyList.GetNext(pos);
+		RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetNext(pos);
 		if (pProp != NULL)
 		{
 			SearchMethods(pProp);
@@ -263,13 +263,13 @@ void CObjectBrowser::SearchMethods(RefCountedPtr< CPropertyObject > pProp)
 
 void CObjectBrowser::LoadInfoTree(const CDclControlObject *pControl, HTREEITEM hParentItem, int nIndex) 
 {
-	int nCount = pControl->m_PropertyList.GetCount();
+	int nCount = pControl->GetPropertyList().GetCount();
 	for (int i = 0; i<nCount; i++)
 	{
-		POSITION pos = pControl->m_PropertyList.FindIndex(i);
+		POSITION pos = pControl->GetPropertyList().FindIndex(i);
 		if (pos != NULL)
 		{			
-			RefCountedPtr< CPropertyObject > pProp = pControl->m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetAt(pos);
 			if (pProp != NULL)
 			{
 				switch (pProp->GetType())
@@ -736,11 +736,11 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 
 	if (nImage == 3/* a method*/)
 	{
-		pos = pControl->m_PropertyList.FindIndex(nMethodIndex);
+		pos = pControl->GetPropertyList().FindIndex(nMethodIndex);
 	}
 	else
 	{
-		pos = pControl->m_PropertyList.FindIndex(nThisItemData);
+		pos = pControl->GetPropertyList().FindIndex(nThisItemData);
 	}
 
 	if (pos == NULL && pControl->GetType() == -2)
@@ -757,7 +757,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 
 	if (pos != NULL)
 	{			
-		RefCountedPtr< CPropertyObject > pProp = pControl->m_PropertyList.GetAt(pos);
+		RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetAt(pos);
 		if (pProp != NULL)
 		{
 			CString sTitle;

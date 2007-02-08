@@ -767,87 +767,13 @@ public:
 	// ----- ads_loadproject symbol (do not rename)
 	static int ads_odcl_loadproject(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszFilename = pArgs->resval.rstring;
-		pArgs = pArgs->rbnext; //move to the next argument
-
-		//optional arguments
-		bool bReload = false;
-		LPCTSTR pszKeyName = NULL;
-		if (pArgs)
-		{
-			bReload = (pArgs->restype != RTNIL);
-			pArgs = pArgs->rbnext; //move to the next argument
-
-			if (pArgs)
-			{
-				if (pArgs->restype != RTSTR)
-					return RSERR; //wrong argument type
-				pszKeyName = pArgs->resval.rstring;
-
-				if (pArgs->rbnext != NULL)
-					return RSERR; //too many arguments
-			}
-		}
-
-/* These gymnastics look superfluous to me, so I commented them out pending further investigation [ORW]
-		CString sTempFile = sFullFileName;
-		sTempFile.MakeLower();
-
-		if (sTempFile.Left(1) == "c")
-			sTempFile = sFullFileName;
-		else
-		{
-			TCHAR lpPathBuffer[4096];
-
-			::GetTempPath(4096, lpPathBuffer);
-			
-			sTempFile = lpPathBuffer;
-			
-			CString sFileName = sFullFileName;
-			//!CHANGED! 9-24-04 SRM
-			//Wasnt finding paths with '/' in them
-			sFileName.Replace('/', '\\');
-			
-			int n=0;
-			while ((n = sFileName.Find(_T("\\"))) > -1)
-			{
-				sFileName = sFileName.Mid(n+1);
-			}
-			sTempFile += sFileName; 
-
-			::DeleteFile(sTempFile);
-		}
-*/
-
-		CProject *pProject = theArxWorkspace.LoadProjectFile(pszFilename, pszKeyName, bReload);
-		if (pProject == NULL)
-		{
-			CString sAlertMsg;
-			sAlertMsg.Format( _T("Project failed to load or reload!\r\nThe file could not be read, or the project ")
-												_T("is already loaded and has active dialogs.\r\n\r\n[%s]"), pszFilename );
-			theWorkspace.DisplayAlert( sAlertMsg );
-			return RSRSLT; 
-		}
-		theArxWorkspace.UpdateGlobalVariables();
-		acedRetT();
-
-		//if (pProject->m_PurchaseState == nSchoolMode)
-		//	acutPrintf(_T("\nObjectDCL Student version."));
-
-		return (RSRSLT) ;
+		return ads_odcl_project_load();
 	}
 
 	// ----- ads_odcl_load_dialog symbol (do not rename)
 	static int ads_odcl_load_dialog(void)
 	{
-		return ads_odcl_loadproject() ;
+		return ads_odcl_project_load () ;
 	}
 
 	// ----- ads_odcl_sendstring symbol (do not rename)
@@ -868,9 +794,9 @@ public:
 		if (pDoc)
 		{
 			// give the command line focus {I'm not sure why this is necessary or desirable [ORW]}
-			CWnd* wndCommandLine = acedGetAcadDockCmdLine();
-			if( wndCommandLine )
-				wndCommandLine->SetFocus();		
+			//CWnd* wndCommandLine = acedGetAcadDockCmdLine();
+			//if( wndCommandLine )
+			//	wndCommandLine->SetFocus();		
 
 			// send the string to the current document
 			acDocManager->sendStringToExecute(pDoc, pszStringToSend, false, true, false);
@@ -989,22 +915,7 @@ public:
 	// ----- ads_odcl_unload_dialog symbol (do not rename)
 	static int ads_odcl_unload_dialog(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTLONG)
-			return RSERR; //wrong argument type
-		CProject* pProject = (CProject*)pArgs->resval.rlong;
-		assert (pProject != NULL);
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		if (theArxWorkspace.RemoveProject(pProject))
-			acedRetT();
-
-		return (RSRSLT) ;
+		return ads_odcl_project_unload();
 	}
 
 	// ----- ads_odcl_done_dialog symbol (do not rename)
@@ -3756,6 +3667,158 @@ public:
 
 		return (RSRSLT) ;
 	}
+
+	// ----- ads_odcl_project_load symbol (do not rename)
+	static int ads_odcl_project_load(void)
+	{
+		struct resbuf *pArgs =acedGetArgs () ;
+
+		if (pArgs == NULL)
+			return RSERR; //argument expected
+
+		if (pArgs->restype != RTSTR)
+			return RSERR; //wrong argument type
+		LPCTSTR pszFilename = pArgs->resval.rstring;
+		pArgs = pArgs->rbnext; //move to the next argument
+
+		//optional arguments
+		bool bReload = false;
+		LPCTSTR pszKeyName = NULL;
+		if (pArgs)
+		{
+			bReload = (pArgs->restype != RTNIL);
+			pArgs = pArgs->rbnext; //move to the next argument
+
+			if (pArgs)
+			{
+				if (pArgs->restype != RTSTR)
+					return RSERR; //wrong argument type
+				pszKeyName = pArgs->resval.rstring;
+
+				if (pArgs->rbnext != NULL)
+					return RSERR; //too many arguments
+			}
+		}
+
+/* These gymnastics look superfluous to me, so I commented them out pending further investigation [ORW]
+		CString sTempFile = sFullFileName;
+		sTempFile.MakeLower();
+
+		if (sTempFile.Left(1) == "c")
+			sTempFile = sFullFileName;
+		else
+		{
+			TCHAR lpPathBuffer[4096];
+
+			::GetTempPath(4096, lpPathBuffer);
+			
+			sTempFile = lpPathBuffer;
+			
+			CString sFileName = sFullFileName;
+			//!CHANGED! 9-24-04 SRM
+			//Wasnt finding paths with '/' in them
+			sFileName.Replace('/', '\\');
+			
+			int n=0;
+			while ((n = sFileName.Find(_T("\\"))) > -1)
+			{
+				sFileName = sFileName.Mid(n+1);
+			}
+			sTempFile += sFileName; 
+
+			::DeleteFile(sTempFile);
+		}
+*/
+
+		CProject *pProject = theArxWorkspace.LoadProjectFile(pszFilename, pszKeyName, bReload);
+		if (pProject == NULL)
+		{
+			CString sAlertMsg;
+			sAlertMsg.Format( _T("Project failed to load or reload!\r\nThe file could not be read, or the project ")
+												_T("is already loaded and has active dialogs.\r\n\r\n[%s]"), pszFilename );
+			theWorkspace.DisplayAlert( sAlertMsg );
+			return RSRSLT; 
+		}
+		theArxWorkspace.UpdateGlobalVariables();
+		acedRetStr( pProject->GetProjectFilePath() );
+
+		//if (pProject->m_PurchaseState == nSchoolMode)
+		//	acutPrintf(_T("\nObjectDCL Student version."));
+
+		return (RSRSLT) ;
+	}
+
+	// ----- ads_odcl_project_unload symbol (do not rename)
+	static int ads_odcl_project_unload(void)
+	{
+		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
+
+		CProject* pProject = NULL;
+		if (pArgs->restype == RTLONG)
+			pProject = (CProject*)pArgs->resval.rlong;
+		else if( pArgs->restype == RTSTR )
+			pProject = theArxWorkspace.FindProject( pArgs->resval.rstring );
+		else
+			return RSERR; //wrong argument type
+
+		if( !pProject )
+			return RSERR; //too many arguments
+
+		//optional arguments
+		bool bForce = false;
+		LPCTSTR pszKeyName = NULL;
+		if (pArgs)
+		{
+			bForce = (pArgs->restype != RTNIL);
+
+			if (pArgs->rbnext != NULL)
+				return RSERR; //too many arguments
+		}
+
+		if (theArxWorkspace.UnloadProject(pProject, bForce))
+			acedRetT();
+
+		return (RSRSLT) ;
+	}
+
+	// ----- ads_odcl_project_saveas symbol (do not rename)
+	static int ads_odcl_project_saveas(void)
+	{
+		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
+
+		CProject* pProject = NULL;
+		if (pArgs->restype == RTLONG)
+			pProject = (CProject*)pArgs->resval.rlong;
+		else if( pArgs->restype == RTSTR )
+			pProject = theArxWorkspace.FindProject( pArgs->resval.rstring );
+		else
+			return RSERR; //wrong argument type
+
+		if( !pProject )
+			return RSERR; //too many arguments
+
+		pArgs = pArgs->rbnext;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
+
+		LPCTSTR pszFilename = NULL;
+		if( pArgs->restype == RTSTR )
+			pszFilename = pArgs->resval.rstring;
+		else
+			return RSERR; //wrong argument type
+
+		if (pArgs->rbnext)
+			return RSERR; //too many arguments
+
+		if (pProject->WriteToFile(pszFilename) == statOK)
+			acedRetT();
+
+		return (RSRSLT) ;
+	}
 } ;
 
 CString CARXApp::msDialogToBeShown;
@@ -3866,3 +3929,6 @@ ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_xpixelstotwips, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_ypixelstotwips, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getcolorvalue, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_registeractivexcontrol, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_load, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_unload, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_saveas, true)

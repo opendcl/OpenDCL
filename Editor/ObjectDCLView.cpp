@@ -74,18 +74,20 @@ static CDclControlObject* FindArxControlObject(CDclFormObject *pDclForm, CString
 }
 
 
-static short AddControl(CDclFormObject *pDclForm, CString Name, ControlTypes Type)
+static short AddControl(CDclFormObject *pDclForm, CString Name, ControlType Type)
 {
 	
 	short sReturnValue;
 	
 	// create a Arx Control pointer to pass to the list to insert
-	CDclControlObject* pNewArxControl = new CDclControlObject(Type, pDclForm, Name);
+	CDclControlObject* pNewControl = new CDclControlObject(Type, pDclForm, Name);
 
 	// add the new Arx Control
-	pDclForm->GetControlList().AddTail(pNewArxControl);
+	pDclForm->GetControlList().AddTail(pNewControl);
 	// set return value and subtract 1 to create propper index
 	sReturnValue = pDclForm->GetControlCount() - 1;
+	if (pNewControl->m_Id < 0)
+		pNewControl->m_Id = sReturnValue;
 
 	return sReturnValue;
 
@@ -122,9 +124,7 @@ static CDclControlObject* GetArxControlObject(CDclFormObject *pDclForm, short Ar
 
 static short AddControlStdProperty(CDclControlObject *pArxControlObject, PropertyId nID, LPCTSTR strValue, PropertyType ValueType, bool bHidden = false) 
 {
-	short sReturnValue;
-	
-	int nPropIndex = pArxControlObject->FindPropertyIndex(nID);
+	short nPropIndex = pArxControlObject->FindPropertyIndex(nID);
 
 	// if the property was not found add it
 	if (nPropIndex > nNotSet)
@@ -147,15 +147,12 @@ static short AddControlStdProperty(CDclControlObject *pArxControlObject, Propert
 
 		// reset the name to the new value
 		if (InsertPos == NULL)
-			pArxControlObject->m_PropertyList.AddTail(pPropertyObect);
+			pArxControlObject->GetPropertyList().AddTail(pPropertyObect);
 		else
-			pArxControlObject->m_PropertyList.InsertAfter(InsertPos, pPropertyObect);
+			pArxControlObject->GetPropertyList().InsertAfter(InsertPos, pPropertyObect);
 		
 	}
-	// set return variable to equal propery count to indicate completion
-	sReturnValue = pArxControlObject->m_PropertyList.GetCount() - 1;
-
-	return sReturnValue;
+	return nPropIndex;
 }
 
 
@@ -171,13 +168,13 @@ static short AddControlPropertyListItem(CDclControlObject *pArxObject, short Pro
 	POSITION PropPos;
 
 	// set the position variable to be equal the index to passing to the GetAt method
-	PropPos = pArxObject->m_PropertyList.FindIndex(PropertyIndex);	
+	PropPos = pArxObject->GetPropertyList().FindIndex(PropertyIndex);	
 
 	if (PropPos == NULL)
 		return 0;
 	
 	// set the pass pointer to point at the object in the list	
-	RefCountedPtr< CPropertyObject > pPropertyObject = pArxObject->m_PropertyList.GetAt(PropPos);
+	RefCountedPtr< CPropertyObject > pPropertyObject = pArxObject->GetPropertyList().GetAt(PropPos);
 	
 	// check if the indexes were correct
 	if (pPropertyObject == NULL)
@@ -199,13 +196,13 @@ static short AddControlPropertyListItem(CDclControlObject *pArxObject, short Pro
 	POSITION PropPos;
 
 	// set the position variable to be equal the index to passing to the GetAt method
-	PropPos = pArxObject->m_PropertyList.FindIndex(PropertyIndex);	
+	PropPos = pArxObject->GetPropertyList().FindIndex(PropertyIndex);	
 
 	if (PropPos == NULL)
 		return 0;
 	
 	// set the pass pointer to point at the object in the list
-	RefCountedPtr< CPropertyObject > pPropertyObject = pArxObject->m_PropertyList.GetAt(PropPos);
+	RefCountedPtr< CPropertyObject > pPropertyObject = pArxObject->GetPropertyList().GetAt(PropPos);
 	
 	// check if the indexes were correct
 	if (pPropertyObject == NULL)
@@ -1760,11 +1757,11 @@ void CObjectDCLView::InsertControl(CRect rcPos)
 	if (theEditorWorkspace.GetToolBox()->m_nSelectedCtrl < CtlLabel)
 		return;
 
-	InsertControl(rcPos, (ControlTypes)theEditorWorkspace.GetToolBox()->m_nSelectedCtrl);
+	InsertControl(rcPos, (ControlType)theEditorWorkspace.GetToolBox()->m_nSelectedCtrl);
 }
 
 
-void CObjectDCLView::InsertControl(CRect rcPos, ControlTypes nCtrlToInsert)
+void CObjectDCLView::InsertControl(CRect rcPos, ControlType nCtrlToInsert)
 {
 	short nArxIndex;
 	CString sControlName;
@@ -1835,7 +1832,7 @@ void CObjectDCLView::InsertControl(CRect rcPos, ControlTypes nCtrlToInsert)
 }
 int CObjectDCLView::GetNextControlId()
 {
-	UINT nHighest = nControlStartId;
+	int nHighest = nControlStartId;
 
 	POSITION pos = m_pThisDclForm->GetControlList().GetHeadPosition();
 	while (pos != NULL)
@@ -6225,13 +6222,13 @@ void CObjectDCLView::UpdateChildControl(CDclControlObject *pArxObject, CControlH
 	POSITION pos;
 	int nCount = 0;
 	pArxObject->m_pCtrlHolder->ShowWindow(FALSE);
-	while(nCount < pArxObject->m_PropertyList.GetCount())
+	while(nCount < pArxObject->GetPropertyList().GetCount())
 	{
-		pos = pArxObject->m_PropertyList.FindIndex(nCount);
+		pos = pArxObject->GetPropertyList().FindIndex(nCount);
 	
 		if (pos != NULL)
 		{
-			RefCountedPtr< CPropertyObject > pProp = pArxObject->m_PropertyList.GetAt(pos);
+			RefCountedPtr< CPropertyObject > pProp = pArxObject->GetPropertyList().GetAt(pos);
 			if (pProp != NULL)
 				UpdateProperty(pProp->GetID(), pArxObject, pParent);
 		}
@@ -6514,11 +6511,11 @@ void CObjectDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool b
 		RefCountedPtr< CPropertyObject > pProp;
 		RefCountedPtr< CPropertyObject > pFontProp = NULL;
 		CDclControlObject *pCtrl = pSelControl->m_pArxObject;
-		POSITION pos = pCtrl->m_PropertyList.GetHeadPosition();
+		POSITION pos = pCtrl->GetPropertyList().GetHeadPosition();
 	
 		while (pos != NULL)
 		{
-			pProp = pCtrl->m_PropertyList.GetNext(pos);
+			pProp = pCtrl->GetPropertyList().GetNext(pos);
 			if (pProp->GetType() == PropActiveXProp)
 			{
 				if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFontDisp ||
@@ -7415,9 +7412,9 @@ void CObjectDCLView::OnSize(UINT nType, int cx, int cy)
 		AdjustOffsets(rc.Width(), rc.Height());
 
 		CPropertyTabPane* pPropTabs = theEditorWorkspace.GetPropertyTabs();
-		if (pPropTabs->m_PropertiesTabPane.m_PropertyList.m_pView == this)
+		if (pPropTabs->m_PropertiesTabPane.GetPropertiesCtrl().m_pView == this)
 		{
-			pPropTabs->m_PropertiesTabPane.m_PropertyList.Invalidate();
+			pPropTabs->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
 		}
 	}
 	InvalidateRect(&m_rcGripRect);
@@ -8233,7 +8230,7 @@ void CObjectDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView*
 
 	if (pDeactiveView == pActivateView)
 	{
-		if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.m_pControl != m_SelectedControl.m_pArxObject)
+		if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pControl != m_SelectedControl.m_pArxObject)
 		{
 			CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
 			pZOrderList->ClearList(this);
@@ -8470,7 +8467,7 @@ void CObjectDCLView::FireControlSelected(CDclControlObject *pArxControl)
 		ShowGripRects(TRUE, rc);	
 	}
 	else
-		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.DisplayVaries();
+		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().DisplayVaries();
 
 	m_StandardCursorID = false;
 	theEditorWorkspace.GetToolBox()->m_nSelectedCtrl = 1;
@@ -8705,8 +8702,8 @@ void CObjectDCLView::ResizeChildTabPanes()
 
 void CObjectDCLView::FireShowPropertyWizard(CDclControlObject *pArxControl)
 {
-	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.m_pControl != NULL)
-		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.ShowPropertyDlg();
+	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pControl != NULL)
+		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().ShowPropertyDlg();
 }
 
 	
@@ -8714,8 +8711,8 @@ void CObjectDCLView::FireShowPropertyWizard(CDclControlObject *pArxControl)
 
 void CObjectDCLView::OnProperties() 
 {
-	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.m_pControl != NULL)
-		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.ShowPropertyDlg();
+	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pControl != NULL)
+		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().ShowPropertyDlg();
 }
 
 
@@ -8792,9 +8789,9 @@ void CObjectDCLView::OnDraw(CDC* pDC)
 
 void CObjectDCLView::OnEditObjectbrowser() 
 {
-	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.m_pControl != NULL)
+	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pControl != NULL)
 	{
-		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.m_PropertyList.EditObjectbrowser();
+		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().EditObjectbrowser();
 	}
 	
 }

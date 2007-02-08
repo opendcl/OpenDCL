@@ -111,13 +111,13 @@ static short AddControlStdProperty(CDclControlObject *pControlObject, PropertyId
 
 		// reset the name to the new value
 		if (InsertPos == NULL)
-			pControlObject->m_PropertyList.AddTail(pPropertyObect);
+			pControlObject->GetPropertyList().AddTail(pPropertyObect);
 		else
-			pControlObject->m_PropertyList.InsertAfter(InsertPos, pPropertyObect);
+			pControlObject->GetPropertyList().InsertAfter(InsertPos, pPropertyObect);
 		
 	}
 	// set return variable to equal propery count to indicate completion
-	sReturnValue = pControlObject->m_PropertyList.GetCount() - 1;
+	sReturnValue = pControlObject->GetPropertyList().GetCount() - 1;
 
 	return sReturnValue;
 }
@@ -1352,9 +1352,9 @@ void CObjectDCLApp::OnHelpFinder()
 	if (Dlg.m_nType == 4)
 	{
 		CDclFormObject DclForm(NULL, (DclFormType)-2); // -2 to indicate bonus functions
-		CDclControlObject ArxObject((ControlTypes)-2, &DclForm); // -2 to indicate bonus functions
+		CDclControlObject ArxObject((ControlType)-2, &DclForm); // -2 to indicate bonus functions
 		RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropInvalid, 0, nName);
-		ArxObject.m_PropertyList.AddTail(pProp);
+		ArxObject.GetPropertyList().AddTail(pProp);
 		
 		CObjectBrowser Dlg(m_pMainFrame);
 

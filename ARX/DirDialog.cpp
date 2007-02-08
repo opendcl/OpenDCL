@@ -76,7 +76,6 @@ BOOL CDirDialog::DoBrowse(CWnd *pwndParent)
 
     if (!m_strInitDir.IsEmpty ())
     {
-        OLECHAR       olePath[MAX_PATH];
         ULONG         chEaten;
         ULONG         dwAttributes;
         HRESULT       hr;
@@ -89,18 +88,12 @@ BOOL CDirDialog::DoBrowse(CWnd *pwndParent)
             //
             // IShellFolder::ParseDisplayName requires the file name be in Unicode.
             //
-#ifndef _UNICODE
-            MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, m_strInitDir.GetBuffer(MAX_PATH), -1,
-                                olePath, MAX_PATH);
-#endif
-
-            m_strInitDir.ReleaseBuffer (-1);
             //
             // Convert the path to an ITEMIDLIST.
             //
             hr = pDesktopFolder->ParseDisplayName(NULL,
                                                 NULL,
-                                                olePath,
+                                                CStringW( m_strInitDir ).LockBuffer(),
                                                 &chEaten,
                                                 &pidl,
                                                 &dwAttributes);

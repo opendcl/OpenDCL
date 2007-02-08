@@ -4179,12 +4179,10 @@ void CSpreadSheet::ShowComboBox(int nRow, int nCol, int nStyle, CStringArray &sS
 			// get or create the control.
 			if (m_pComboBox[nStyle] == NULL)
 			{
-				pComboBox = new CPrinterComboBox;
-				
 				pHolder->Create(sCellText, WS_CHILD, rc, this, 120+nStyle);
-				
+				CRect rcWnd(15-nColWidth,-2, rc.Width()+2, 350);
+				pComboBox = new CPrinterComboBox( *m_pParentCtrlPane, NULL, 410, rcWnd );
 				pHolder->pComboBox = pComboBox;
-				pComboBox->Create(nStyle, CRect(15-nColWidth,-2, rc.Width()+2, 350), pHolder, 410);
 				pComboBox->SetFont(GetFont());
 				
 				pHolder->m_nStyle = nStyle;

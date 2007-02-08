@@ -1,0 +1,141 @@
+Bugs fixed:
+Modeless dialog location
+ActiveX get property
+SetFocus for dialogs
+
+Object DCL Errors
+
+TabControl1 -> dcl_Tab_SetTabText  	 
+Odcl_Tab_SetTabText method genenerate error:
+Exception in Odcl_Tab_SetTabText
+Unhandled Exception C0000005 (Access Violation Writing
+0x000e) at address 773C48Ceh
+(Could not reproduce)
+
+
+Data Grid: crashes with ARX dated 8/2/05  	 
+When ODCL first came out as open source I found that
+the ARX that I was using was old (dated 6/17/04) and
+an update was available. At first I was thrilled to
+find that the new ARX (dated 8/2/05) fixed the
+problem where controls that are formatted as "Offset
+from center of dialog" seem to get misplaced.
+Unfortunately, later I discovered that my grid
+controls would crash any time I tried to select a
+cell that is defined as a button (pick-button or
+ellipse).
+The error message is:
+Exception in Odcl_Form_Show ARX Command.
+Unhandled Exception C0000005 (Access Violation
+Writing 0x00d0) at address EAC8DBh.
+
+
+
+Changing the title bar icon  	 
+Looks like changing the TitleBarIcon propery of forms
+is not working. If this is difficult to fix, can we
+change the default to use the AutoCAD 2007 icon
+instead of the 2002 icon?
+(Icons work!)
+
+
+
+Dockable/modeless Forms and Command Line Window  	 
+Hello everybody,
+I'm having a peculiar problem:
+When using an ObjectDCL Dockable form, my Command
+line window does not work correctly. i.e. when I
+press F2 the command line window shows on the Windows
+taskbar, but the window is not viewable.
+I have tried this on a vanilla (Autocad) profile and
+have the same results.
+The problem can be duplicated using the DemoDockable
+command within demo.lsp that ships with ObjectDCL.
+Has anybody had this problem before, and does anybody
+have a solution?
+TIA for any help/advice
+Matt Taylor
+(COuld not reproduce)
+
+
+
+DataGrid: Text not editable if added using Odcl_Grid_AddRow.  	 
+See attached demonstration files: BUGS.LSP and
+BUGS.ODC
+
+
+
+DataGrid: Odcl_Grid_AddString ignores blank values.  	 
+See attached demonstration files: BUGS.LSP and
+BUGS.ODC
+
+
+
+DataGrid: Linetype cell returns blank string when canceled.  	 
+linetype cell should leave existing data intact if
+linetype dialog is canceled. Instead, it replaces
+existing data with a blank string.
+
+
+DataGrid: Can't apply style to column added at run time.  	 
+Let me re-phrase that...you CAN add a column at run
+time BUT if you try to apply a style after the row
+data has been added, the style will NOT take effect
+unless a blank column is created at design time. For
+example, you need 4 columns...you must create at
+least 4 blank columns at design time or styles will
+not be applied. This means if you write a program
+where the number of columns keeps increasing (as I
+have) then you must add some finite number of columns
+at design time (thus creating an ugly
+software "limit" for the end user). I created 100
+blank columns for my program. I have to assign a
+width of 0 to all the unused columns so the
+horizontal slider appears correctly...quite messy!!!!
+
+
+DataGrid: Editor crashes when adding columns to datagrid.  	
+Editor crashes when adding columns to datagrid if all
+existing columns were deleted. If you delete all the
+columns, then close the dialog, re-open the dialog,
+ODCL crashes next time you try to add a column.
+
+
+DataGrid: Can't suppress BYLAYER and BYBLOCK  	 
+When using the color or linetype grid style it is not
+possible to suppress the BYLAYER and BYBLOCK
+options. This is a MUST when creating a new layer in
+autocad because BYLAYER and BYBLOCK values cannot be
+applied to layers, only object. This is why the
+autolisp function acad_colordlg provides this feature.
+
+Huh? 1 - PicutreBox - When an image is placed she is copied with the extension.png whenever a new section of ObjectDCL is called former. test.jpg, test.png, teste1png. teste2.png...  
+Probably not 2 - when I try to change the image ObjectDCL.exe doesn't work if the files png are extinguished.  
+X 3 - the TitleBaricon control is not working.  
+X 4 - below an example of the control Odcl_PictureBox_LoadPictureFile that worked well.  
+(defun c:DclForm1_PictureBox2_OnPaint (nHasFocus /)  
+(Odcl_PictureBox_LoadPictureFile  
+Joyce_DclForm1_PictureBox2  
+C:\\ObjectDCL-Fonte\\ObjectDCLBin\\Novo-Editor\\Imagens\\joyce-red.jpg "  
+) ;_ end of Odcl_PictureBox_LoadPictureFile  
+)  
+No 5 - is it possible to place in the control of ToolTips with just a line as it was the old? 
+
+I did some tests for Acad 2007 it looks good for now :-). I noticed that all controls where I need add images list (ListView, ImageCombo, TreeControl) directly doesn’t work. I understand they are not under your consideration in this time, but for future, is possible to do loading images in run time mode as for PictureBox control (Odcl_PictureBox_LoadPictureFile)?  
+
+writeImageList is failing.
+
+
+Grid
+ Odcl_Grid_SetItemStyle
+ Cell type:
+ 3 - Switchable Icons    don’t work
+ 4 - Ellipses Buttons     Error after pressing the button
+ 5 - Pick Buttons               Error after pressing on the cell
+ 29 - ImageDrop List       OK (without image,only text) images don’t work 
+ Odcl_Grid_SetColumnImage  don’t work
+ Odcl_Grid_SetItemText     don’t work
+
+HtmlControl
+ Odcl_Html_GetOffline->Actually returns T or nil, not 1 or 0
+ Odcl_Html_GetHtmlDocument->Fixed!?, but only sometimes, so be careful. Load HTML in init, works fine?
