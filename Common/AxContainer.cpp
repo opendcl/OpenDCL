@@ -1535,7 +1535,7 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RE
 	COleStreamFile *pOleStreamFile = NULL;
 	
 	// if properties have been set already.
-	if (!bAddPropInfo && !pControl->m_pStream)
+	if (!bAddPropInfo && pControl->m_pStream != NULL)
 	{		
 		pOleStreamFile = new COleStreamFile(pControl->GetLoadStream());
 	}
