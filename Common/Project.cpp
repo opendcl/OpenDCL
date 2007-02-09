@@ -791,10 +791,10 @@ void CProject::Serialize(CArchive& ar)
     }		
     if (nThisVersion >= 7)
       m_ActiveXFiles.Serialize(ar);
-    if (nThisVersion > 9)
+
+    if (nThisVersion >= 9) {
       mOleControls.Serialize(ar);
-    else if (nThisVersion >= 8)
-		{
+    } else {
 			POSITION pos = mOleControls.GetHeadPosition();
 			while (pos)
 				delete mOleControls.GetNext(pos);
@@ -802,7 +802,7 @@ void CProject::Serialize(CArchive& ar)
 			CTypedPtrList< CObList, CArxControlObject* > listControls;
 			listControls.Serialize(ar);
 			pos = listControls.GetHeadPosition();
-			while (pos)
+			while (pos) 
 				mOleControls.AddTail(listControls.GetNext(pos));
 		}
 
@@ -1360,8 +1360,8 @@ IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 		}
 		catch(...)
 		{
-			SrcFile.Close();
-			return statInvalidFormat;
+ 			SrcFile.Close();
+ 			return statInvalidFormat;
 		}
 	}
 	catch(...)
