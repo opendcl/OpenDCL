@@ -140,7 +140,7 @@ public:
 	bool GetPictureSize( UINT nID, CSize& size ) const; //return true if found
 
 	//Centralized File I/O
-	virtual DWORD GetCurrentProjectFileFormatVersion() const { return 10; }
+	virtual DWORD GetCurrentProjectFileFormatVersion() const { return 11; }
 	virtual IOStatus ReadFromFile( LPCTSTR pszFilePath ); //read a project from all supported file formats
 	virtual IOStatus WriteToFile( LPCTSTR pszFilePath ); //write in the current project file format
 protected:

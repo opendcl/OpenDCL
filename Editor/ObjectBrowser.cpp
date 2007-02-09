@@ -1748,7 +1748,7 @@ CString CObjectBrowser::GetTypeName( VARTYPE vt, AxMethodDescriptor *pMethod, Ax
 	{
 		if (pProperty != NULL)
 		{
-			const CDclControlObject *pOleObject = theWorkspace.GetArxControlFor(pProperty);
+			const CDclControlObject *pOleObject = theWorkspace.GetDclControlFor(pProperty);
 			if (pOleObject != NULL)
 			{
 				LoadOleObjectIntoTree(pOleObject);
@@ -1757,7 +1757,7 @@ CString CObjectBrowser::GetTypeName( VARTYPE vt, AxMethodDescriptor *pMethod, Ax
 		}
 		else
 		{
-			const CDclControlObject *pOleObject = theWorkspace.GetArxControlFor(pMethod);
+			const CDclControlObject *pOleObject = theWorkspace.GetDclControlFor(pMethod);
 			if (pOleObject != NULL)
 			{
 				LoadOleObjectIntoTree(pOleObject);

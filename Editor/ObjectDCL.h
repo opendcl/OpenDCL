@@ -105,7 +105,7 @@ public:
 	virtual BOOL InitInstance();
 	virtual int ExitInstance();
 	//virtual BOOL SaveAllModified();
-	//BOOL				CloseDocument();
+	BOOL				CloseDocument();
 	CMDIChildWnd*		CreateOrActivateFrame(CDocument* pDoc, CSize ViewSize, bool bResizable);
 	//}}AFX_VIRTUAL
 

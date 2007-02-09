@@ -34,6 +34,12 @@ CEditorWorkspace::CEditorWorkspace()
 
 CEditorWorkspace::~CEditorWorkspace()
 {
+	delete mpActiveProject;
+
+	//cleanup the mess
+	std::list< CProject* >::iterator iter = mDiscardedProjects.begin();
+	while( iter != mDiscardedProjects.end() )
+		delete *iter++;
 }
 
 CMainFrame* CEditorWorkspace::GetMainFrame() const
@@ -48,6 +54,16 @@ CProject* CEditorWorkspace::GetActiveProject() const
 {
 	return mpActiveProject;
 }
+
+void CEditorWorkspace::SetActiveProject( CEditorProject* pProject )
+{
+	//leave the discarded project stranded until shutdown until all the memory management issues are resolved [ORW]
+	if( mpActiveProject )
+		mDiscardedProjects.push_back( mpActiveProject );
+	//delete mpActiveProject;
+	mpActiveProject = pProject;
+}
+
 
 void CEditorWorkspace::SetModified( bool bModified )
 {
@@ -103,14 +119,14 @@ CString CEditorWorkspace::GetActiveProjectName() const
 	return sShortFileName;
 }
 
-const CDclControlObject* CEditorWorkspace::GetArxControlFor( const AxPropertyDescriptor* pProperty ) const
+const CDclControlObject* CEditorWorkspace::GetDclControlFor( const AxPropertyDescriptor* pProperty ) const
 {
 	if( !mpActiveProject )
 		return NULL;
 	return mpActiveProject->GetOleObject( pProperty );
 }
 
-const CDclControlObject* CEditorWorkspace::GetArxControlFor( const AxMethodDescriptor* pMethod ) const
+const CDclControlObject* CEditorWorkspace::GetDclControlFor( const AxMethodDescriptor* pMethod ) const
 {
 	if( !mpActiveProject )
 		return NULL;

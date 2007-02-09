@@ -602,16 +602,17 @@ BEGIN
     LTEXT           "",IDC_COLORPATCH,133,74,102,49,0,WS_EX_STATICEDGE
 END
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 235, 74
+IDD_ABOUTBOX DIALOGEX 0, 0, 235, 118
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     ICON            59,IDC_STATIC,11,17,20,20
-    LTEXT           "ObjectDCL 4.0 [Alpha]",IDC_STATIC,40,10,119,8,SS_NOPREFIX
-    LTEXT           "Copyright 2007",IDC_STATIC,40,25,119,8
+    CTEXT           "OpenDCL 4.0 [Alpha]",IDC_STATIC,57,10,93,8,SS_NOPREFIX
+    LTEXT           "Copyright 2007",IDC_STATIC,40,86,188,8
     DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
-    LTEXT           "http://sourceforge.net/projects/objectdcl",IDC_STATIC,40,47,188,20
+    LTEXT           "http://sourceforge.net/projects/opendcl",IDC_STATIC,40,100,188,11
+    CTEXT           "",IDC_APPVERSION,57,24,93,8
 END
 
 IDD_BLANKDIALOG DIALOG  0, 0, 5, 5
@@ -1634,8 +1635,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,0,7
- PRODUCTVERSION 4,0,0,7
+ FILEVERSION 4,0,0,8
+ PRODUCTVERSION 4,0,0,8
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1651,12 +1652,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "ObjectDCL Dialog Editor"
-            VALUE "FileVersion", "4, 0, 0, 7"
+            VALUE "FileVersion", "4, 0, 0, 8"
             VALUE "InternalName", "ObjectDCL"
             VALUE "LegalCopyright", "Copyright © 2007"
             VALUE "OriginalFilename", "ObjectDCL.exe"
             VALUE "ProductName", "ObjectDCL"
-            VALUE "ProductVersion", "4, 0, 0, 7"
+            VALUE "ProductVersion", "4, 0, 0, 8"
         END
     END
     BLOCK "VarFileInfo"
@@ -1869,7 +1870,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 228
         TOPMARGIN, 7
-        BOTTOMMARGIN, 67
+        BOTTOMMARGIN, 111
     END
 END
 #endif    // APSTUDIO_INVOKED

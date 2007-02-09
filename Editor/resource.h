@@ -418,6 +418,7 @@
 #define IDS_PICTURESHORTCUT             818
 #define IDR_OBJECTTYPE_STD              1000
 #define IDR_OBJECTTYPE_LT               1001
+#define IDC_APPVERSION                  1001
 #define IDR_OBJECTTYPE_R14              1002
 #define IDC_PICTURE                     1007
 #define IDC_PICTURELIST                 1008
@@ -923,7 +924,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        102
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

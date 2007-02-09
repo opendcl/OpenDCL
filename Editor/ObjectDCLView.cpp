@@ -871,6 +871,8 @@ bool CObjectDCLView::CheckControlsForSelection(CPoint point, UINT nFlags, bool b
 			if (pArxObject != NULL && pArxObject->m_Delete == FALSE)
 			{
 				CControlHolder *pControl = (CControlHolder*)pArxObject->m_pCtrlHolder;
+				if (!pControl)
+					continue;
 				// get the control's position
 				CRect rcCtrl;
 				pControl->GetWindowRect(&rcCtrl);
@@ -8236,26 +8238,28 @@ void CObjectDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView*
 			pZOrderList->ClearList(this);
 		}		
 	}
+	else
+		((CObjectDCLView*)pDeactiveView)->m_pThisDclForm = NULL;
 
 	if (pActivateView != NULL)
 	{
 		pToolBox->SetActiveView(pActivateView);
 		theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetActiveView(pActivateView);
 
-		if (((CObjectDCLView*)pActivateView)->m_pThisDclForm != NULL)
-		{
-			try
-			{
-				pDeactiveView->GetParentFrame()->SetWindowText(((CObjectDCLView*)pActivateView)->m_pThisDclForm->GetDclFormTitle());			
-				if (m_pThisDclForm->GetType() != VdclTabForm)
-					pDeactiveView->GetParentFrame()->SetWindowText(m_pThisDclForm->GetDclFormTitle());// set the title bar text
-				else
-					pDeactiveView->GetParentFrame()->SetWindowText(FindTabCaption(m_pThisDclForm));// set the title bar text
-			}
-			catch(...)
-			{
-			}
-		}		
+		//if (((CObjectDCLView*)pActivateView)->m_pThisDclForm != NULL)
+		//{
+		//	try
+		//	{
+		//		pDeactiveView->GetParentFrame()->SetWindowText(((CObjectDCLView*)pActivateView)->m_pThisDclForm->GetDclFormTitle());			
+		//		if (m_pThisDclForm->GetType() != VdclTabForm)
+		//			pDeactiveView->GetParentFrame()->SetWindowText(m_pThisDclForm->GetDclFormTitle());// set the title bar text
+		//		else
+		//			pDeactiveView->GetParentFrame()->SetWindowText(FindTabCaption(m_pThisDclForm));// set the title bar text
+		//	}
+		//	catch(...)
+		//	{
+		//	}
+		//}		
 	}
 	else
 	{
@@ -8276,17 +8280,17 @@ void CObjectDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView*
 	
 	CView::OnActivateView(bActivate, pActivateView, pDeactiveView);
 
-	if (pActivateView != NULL)
-	{
-		if (((CObjectDCLView*)pDeactiveView)->m_pThisDclForm != NULL)
-		{
-			pDeactiveView->GetParentFrame()->SetWindowText(((CObjectDCLView*)pDeactiveView)->m_pThisDclForm->GetDclFormTitle());			
-			if (m_pThisDclForm->GetType() != VdclTabForm)
-				pDeactiveView->GetParentFrame()->SetWindowText(m_pThisDclForm->GetDclFormTitle()); // set the title bar text
-			else
-				pDeactiveView->GetParentFrame()->SetWindowText(FindTabCaption(m_pThisDclForm));// set the title bar text
-		}		
-	}
+	//if (pActivateView != NULL)
+	//{
+	//	if (((CObjectDCLView*)pDeactiveView)->m_pThisDclForm != NULL)
+	//	{
+	//		pDeactiveView->GetParentFrame()->SetWindowText(((CObjectDCLView*)pDeactiveView)->m_pThisDclForm->GetDclFormTitle());			
+	//		if (m_pThisDclForm->GetType() != VdclTabForm)
+	//			pDeactiveView->GetParentFrame()->SetWindowText(m_pThisDclForm->GetDclFormTitle()); // set the title bar text
+	//		else
+	//			pDeactiveView->GetParentFrame()->SetWindowText(FindTabCaption(m_pThisDclForm));// set the title bar text
+	//	}		
+	//}
 	if (pActivateView == this)
 		UpdateZOrderList();
 }
@@ -8690,6 +8694,8 @@ void CObjectDCLView::ResizeChildTabPanes()
 	for (size_t i=0; i<pProp->GetStringArrayPtr()->size(); i++)
 	{
 		CDclFormObject *pTabForm = pProject->GetDclTabChildForm(m_pThisDclForm->GetUniqueName(), i);
+		if (!pTabForm)
+			continue;
 		CDclControlObject *pDclProperties = pTabForm->GetControlProperties();
 		int nNewHeight = GetSelectedTabClientHeight();
 		int nNewWidth = GetSelectedTabClientWidth();

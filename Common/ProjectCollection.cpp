@@ -23,25 +23,16 @@ CProjectCollection::~CProjectCollection()
 
 void CProjectCollection::ClearProjects()
 {
-	POSITION pos;
-	int nCount = 0;
-
-	while (nCount < mProjectCollection.GetCount())
+	POSITION pos = mProjectCollection.GetHeadPosition();
+	while (pos)
 	{
-		// always get the first index when clearing a list
-		pos = mProjectCollection.FindIndex(0);
-		// get the object
-		CProject *pProject = mProjectCollection.GetAt(pos);
-		// remove the object from the list
-		mProjectCollection.RemoveAt(pos);
-		// clear everything in this object
+		CProject *pProject = mProjectCollection.GetNext(pos);
 		pProject->ClearProject();
-		// delete the object from memory
 		delete pProject;
-		// increment the counter to include the next object
-		nCount++;
 	}
+	mProjectCollection.RemoveAll();
 }
+
 CProject* CProjectCollection::GetProject(CString ProjectName)
 {
 	POSITION pos;

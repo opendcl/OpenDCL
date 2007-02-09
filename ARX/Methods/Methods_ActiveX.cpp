@@ -2036,17 +2036,17 @@ void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp, 
 				const CDclControlObject *pObject = NULL;
 				
 				if (pMethod != NULL)
-					pObject = theArxWorkspace.GetArxControlFor(pMethod);
+					pObject = theArxWorkspace.GetDclControlFor(pMethod);
 				else if (pProp != NULL)
 				{
 					if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet())
-						pObject = theArxWorkspace.GetArxControlFor(pProp->GetAxInterfaceDescriptorPtr()->GetPropGet());
+						pObject = theArxWorkspace.GetDclControlFor(pProp->GetAxInterfaceDescriptorPtr()->GetPropGet());
 					else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp())
-						pObject = theArxWorkspace.GetArxControlFor(pProp->GetAxInterfaceDescriptorPtr()->GetProp());
+						pObject = theArxWorkspace.GetDclControlFor(pProp->GetAxInterfaceDescriptorPtr()->GetProp());
 					else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
-						pObject = theArxWorkspace.GetArxControlFor(pProp->GetAxInterfaceDescriptorPtr()->GetPropPut());
+						pObject = theArxWorkspace.GetDclControlFor(pProp->GetAxInterfaceDescriptorPtr()->GetPropPut());
 					else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef())
-						pObject = theArxWorkspace.GetArxControlFor(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef());					
+						pObject = theArxWorkspace.GetDclControlFor(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef());					
 				}
 				COleDispatchDriver *pNewDispatch = new COleDispatchDriver(varGet.pdispVal);
 				//pNewDispatch->m_pParentAxContainer = pAxContainer;

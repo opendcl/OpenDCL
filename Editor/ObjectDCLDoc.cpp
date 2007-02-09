@@ -85,10 +85,9 @@ BOOL CObjectDCLDoc::OnNewDocument()
 	theEditorWorkspace.GetMainFrame()->m_wndToolBar.EnableWindow(TRUE);
 	CProjectTreeCtrl* pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
 	ASSERT(pProjTree != NULL);
-	CProject* pProject = activeProject;
-	if (pProject)
-		pProject->ClearProject();
-	pProjTree->SetupProjectTree(pProject);
+	CEditorProject* pProject = new CEditorProject( m_strTitle );
+	theEditorWorkspace.SetActiveProject( pProject );
+	pProjTree->SetupProjectTree( pProject );
 	pProjTree->SetDocument(this);
 	theEditorWorkspace.SetActiveDocument(this); //kludge [ORW]
 
@@ -109,7 +108,8 @@ BOOL CObjectDCLDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	// begin reading
 	CWaitCursor wait;
 
-	CProject* pProject = activeProject;
+	CEditorProject* pProject = new CEditorProject;
+	theEditorWorkspace.SetActiveProject( pProject );
 	IOStatus stat = pProject->ReadFromFile( lpszPathName );
 	if( stat != statOK )
 	{

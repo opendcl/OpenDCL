@@ -399,7 +399,7 @@ CArxProject* CArxWorkspace::GetProjectFor( const CDclFormObject *pDclObject ) co
 	return static_cast<CArxProject*>(pProject);
 }
 
-const CDclControlObject* CArxWorkspace::GetArxControlFor( const AxPropertyDescriptor* pProperty ) const
+const CDclControlObject* CArxWorkspace::GetDclControlFor( const AxPropertyDescriptor* pProperty ) const
 {
 	POSITION pos = mProjects.mProjectCollection.GetHeadPosition();
 	while (pos != NULL)
@@ -415,7 +415,7 @@ const CDclControlObject* CArxWorkspace::GetArxControlFor( const AxPropertyDescri
 	return NULL;
 }
 
-const CDclControlObject* CArxWorkspace::GetArxControlFor( const AxMethodDescriptor* pMethod ) const
+const CDclControlObject* CArxWorkspace::GetDclControlFor( const AxMethodDescriptor* pMethod ) const
 {
 	POSITION pos = mProjects.mProjectCollection.GetHeadPosition();
 	while (pos != NULL)
@@ -471,7 +471,7 @@ CArxProject* CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKey
 		return NULL; //file not found
 
 	// create a new project
-	CArxProject* pProject = new CArxProject( sKeyName );
+	CArxProject* pProject = new CArxProject( pszKeyName );
 	if (pProject->ReadFromFile(sFoundFile) != statOK || //failed to read file
 			pProject->GetDclFormList().GetCount() == 0) //file had nothing in it
 	{		

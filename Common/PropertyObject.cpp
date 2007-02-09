@@ -816,10 +816,10 @@ public:
 			return statOK;
 		}
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
-		{ //changing from CArray< int, int > to std::vector< int > in version 6 [ORW]
+		{ //changing from CTypedPtrList< CObList, CStringArray* > to std::vector< std::vector< CString > > in version 6 [ORW]
 			clear();
 			if (nVersion <= 5)
-			{ //changing from CTypedPtrList< CObList, CStringArray* > to std::vector< std::vector< CString > > in version 6 [ORW]
+			{
 				CTypedPtrList< CObList, CStringArray* > rsStringArrayList;
 				rsStringArrayList.Serialize(ar);
 				POSITION pos = rsStringArrayList.GetHeadPosition();

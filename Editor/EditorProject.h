@@ -11,6 +11,7 @@ class CEditorProject : public CProject
 {
 public:
 	CEditorProject();
+	CEditorProject( LPCTSTR pszKeyName );
 	virtual ~CEditorProject();
 
 protected:

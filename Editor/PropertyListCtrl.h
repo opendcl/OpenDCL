@@ -185,7 +185,6 @@ public:
 	void OnButtonPressed();	
 	void OnEnterPressed();	
 	CString GetPictureFile(LPCTSTR Filter);
-	CEditorProject m_ProjectList;
 
 public:	
 	CDclControlObject* GetArxControlObject(short DclFormIndex, short ArxControlIndex);

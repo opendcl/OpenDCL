@@ -320,6 +320,8 @@ protected:
 	//{{AFX_MSG(CAboutDlg)
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	virtual BOOL OnInitDialog();
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
@@ -345,6 +347,23 @@ void CObjectDCLApp::OnAppAbout()
 {
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
+}
+
+BOOL CAboutDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	DWORD dwMajor;
+	DWORD dwMinor;
+	DWORD dwThird;
+	DWORD dwFourth;
+	theWorkspace.GetModuleVersionInfo( dwMajor, dwMinor, dwThird, dwFourth );
+	CString sAppVersion;
+	sAppVersion.Format( _T("%d.%d.%d.%d"), dwMajor, dwMinor, dwThird, dwFourth );
+	SetDlgItemText( IDC_APPVERSION, sAppVersion );
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -397,6 +416,7 @@ void CObjectDCLApp::OnFileNew()
 void CObjectDCLApp::OnFileOpen() 
 {
 	CWinApp::OnFileOpen();
+	CloseDocument();
 /*
 	//CString newName;
 	//if (!DoPromptFileName(newName, IDS_OPENPROJECTFILE,
@@ -484,7 +504,6 @@ BOOL CObjectDCLApp::OnOpenRecentFile(UINT nID)
 */
 }
 
-/*
 BOOL CObjectDCLApp::CloseDocument()
 {
 	// Find first doc template
@@ -515,7 +534,6 @@ BOOL CObjectDCLApp::CloseDocument()
 	}
     return TRUE;
 }
-*/
 
 CMDIChildWnd* CObjectDCLApp::CreateOrActivateFrame(CDocument* pDoc, CSize ViewSize, bool bResizable)
 {
@@ -566,6 +584,7 @@ CObjectDCLView* CObjectDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 	CObjectDCLView* pNewView = (CObjectDCLView*)pNewFrame->GetActiveView();
 
 	// set the dcl pointers
+	pNewView->m_pThisDclForm = pDclForm;
 	pDclForm->m_pChildWnd = pNewView;
 	pDclForm->m_pMdiChildWnd = pNewFrame;
 

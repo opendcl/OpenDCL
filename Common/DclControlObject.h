@@ -81,7 +81,8 @@ public:
 	virtual ~CDclControlObject();
 
 	//2007-01-30 [ORW]: save version set to 6 (no change from ObjectDCL 3)
-	ULONG GetCurrentSaveVersion() const { return 6; }
+	//2007-02-08 [ORW]: save version set to 7 (eliminate MFC serialized classes)
+	ULONG GetCurrentSaveVersion() const { return 7; }
 
 // Operations
 public:

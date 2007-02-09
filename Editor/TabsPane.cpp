@@ -292,8 +292,9 @@ BOOL CTabsPane::OnApply()
 				m_pTabTTT->GetStringArrayPtr()->push_back(pTab->m_sToolTipText);
 
 				// if this is a new tab, add it to the dcl forms
-				if (pTab->m_OriginalIndex == -1)
+				if (!pTab->m_pChildForm)
 				{
+					assert( pTab->m_OriginalIndex == -1 || pTab->m_OriginalIndex == i );
 					pTab->m_pChildForm = m_pView->AddSingleTabPane(i);
 					pTab->m_OriginalIndex = i;
 				}

@@ -269,7 +269,7 @@ CString CProject::QueryForOdsFileName()
 
 void CProject::ClearProject()
 {
-  //msKeyName.Empty(); this should remain unchanged for the life of the project
+  //msKeyName.Empty(); //this should remain unchanged for the life of the project!
 	m_DistFileName.Empty();
 	m_LispFileName.Empty();
 	m_ShortFileName.Empty();
@@ -280,8 +280,7 @@ void CProject::ClearProject()
 	m_bFreeVersion = false;
 	m_nAutoCADVersion = theWorkspace.GetMinSupportedAcadVersion();
 
-
-  // clear dcl forms
+	// clear dcl forms
   POSITION posDclForm = mDclForms.GetHeadPosition();	
 	while (posDclForm)
 	{
@@ -298,11 +297,11 @@ void CProject::ClearProject()
 		try{ delete mPictures.GetNext(posPicture); } catch(...){}
 	mPictures.RemoveAll();
 
-  // clear arx controls
-  POSITION posArxControl = mOleControls.GetHeadPosition();	
-	while (posArxControl)
+  // clear OLE controls
+  POSITION posOleControl = mOleControls.GetHeadPosition();	
+	while (posOleControl)
 	{
-    CDclControlObject* pControl = mOleControls.GetNext(posArxControl);
+    CDclControlObject* pControl = mOleControls.GetNext(posOleControl);
 		if (pControl)
 		{
 			pControl->ClearProperties();
@@ -725,17 +724,23 @@ void CProject::Serialize(CArchive& ar)
     sNone = theWorkspace.LoadResourceString(IDS_NONE);
     if (m_LispFileName.Right(4).CompareNoCase(sExt) != 0 /*.lsp*/ && m_LispFileName != sNone /*"<None>"*/)
       m_LispFileName += sExt;
-		else if (m_LispFileName == (sNone + sExt))
+		else if (m_LispFileName == sExt || m_LispFileName == (sNone + sExt))
 			m_LispFileName = sNone; //drop the extraneous extension
 
 		CString sKeyName;
-    if (nThisVersion >= 5)
-      ar >> sKeyName; //this is the project key name (may be a full path in older files)
-		if (sKeyName.IsEmpty())
-			sKeyName = m_LispFileName;
-		sKeyName = StripPathFromFileName(sKeyName).SpanExcluding(_T("."));
-		sKeyName.Replace( _T(' '), _T('_') );
-		SetKeyName( sKeyName );
+    if (nThisVersion >= 11)
+      ar >> sKeyName; //this is the project key name
+    else
+		{
+			if (nThisVersion >= 5)
+				ar >> sKeyName; //this is the full project file path as saved
+			else
+				sKeyName = m_LispFileName;
+			sKeyName = StripPathFromFileName(sKeyName).SpanExcluding(_T("."));
+			sKeyName.Replace( _T(' '), _T('_') );
+		}
+		if( msKeyName.IsEmpty() ) //if it's already set, don't change it
+			SetKeyName( sKeyName );
 
     if (nThisVersion >= 6)
     {
@@ -1312,7 +1317,6 @@ IOStatus CProject::ReadFromTextFile( LPCTSTR lpszFilePath )
 
 IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 {
-	ClearProject();
 	CFile SrcFile;
 	try
 	{

@@ -519,7 +519,8 @@ void CDclFormObject::Serialize(CArchive& ar)
 
 			// add that ArxControlObject to the list object
 			mDclControls.AddTail(pControl);	
-			pControl->ForceUpdateGlobalVariable(GetKeyName());
+
+			//pControl->ForceUpdateGlobalVariable(GetKeyName());
 			
 			if (mType == VdclModal)
 			{				
@@ -712,76 +713,41 @@ void CDclFormObject::EnsureIsLoaded()
 
 void CDclFormObject::ClearControls()
 {
-	// create a position variable to hold the counter increment
-	POSITION pos;	
-		
-	// set counter for clipboard
-	int nCount = mDclControls.GetCount()- 1;
-	
-	while(nCount >= 0)
+	POSITION posControl = mDclControls.GetTailPosition();
+	while(posControl)
 	{
-		// get position
-		pos = mDclControls.FindIndex(nCount);
-		// get current property
-		CDclControlObject* pControlForm = mDclControls.GetAt(pos);
-		if (pControlForm != NULL)
-		{
-			// clear properties in this control
-			pControlForm->ClearProperties();
-
-			mDclControls.RemoveAt(pos);
-			delete pControlForm;
-		}
-		// increment counter
-		nCount--;
+		CDclControlObject* pCtrl = mDclControls.GetPrev(posControl);
+		assert( pCtrl != NULL );
+		assert( pCtrl->GetControlInstance() == NULL ); //there should be no outstanding control instances!
+		delete pCtrl;
 	}
-			
-	// set counter for clipboard
-	int nImageCount = m_ImageListCollection.GetCount()- 1;
-	while(nImageCount >= 0)
+	mDclControls.RemoveAll();
+
+	POSITION posImage = m_ImageListCollection.GetTailPosition();
+	while(posImage)
 	{
-		// get pos position
-		pos = m_ImageListCollection.FindIndex(nImageCount);
-	
-		// get current property
-		CImageListObject* pImageList = m_ImageListCollection.GetAt(pos);
-		// clear properties in this control
-		pImageList->m_ImageSize.cx = 0;
-		pImageList->m_ImageSize.cy = 0;
-		pImageList->m_ImageList.DeleteImageList();
-		m_ImageListCollection.RemoveAt(pos);
-		try
+		CImageListObject* pImageList = m_ImageListCollection.GetPrev(posImage);
+		assert( pImageList != NULL );
+		if( pImageList )
 		{
+			pImageList->m_ImageSize.cx = 0;
+			pImageList->m_ImageSize.cy = 0;
+			pImageList->m_ImageList.DeleteImageList();
 			delete pImageList;
 		}
-		catch(...)
-		{
-		}
-		// increment counter
-		nImageCount--;
 	}
+	m_ImageListCollection.RemoveAll();
 }
 
 void CDclFormObject::ClearR14Events()
 {
-	// create a position variable to hold the counter increment
-	POSITION pos;	
-		
-	// set counter for clipboard
-	int nCount = mDclControls.GetCount()- 1;
-	
-	while(nCount >= 0)
+	POSITION pos = mDclControls.GetTailPosition();
+	while(pos != NULL)
 	{
-		// get position
-		pos = mDclControls.FindIndex(nCount);
-		
-		// get current property
-		CDclControlObject* pControlForm = mDclControls.GetAt(pos);
-		// clear properties in this control
-		pControlForm->ClearR14Events();
-		
-		// increment counter
-		nCount--;
+		CDclControlObject* pCtrl = mDclControls.GetPrev(pos);
+		assert( pCtrl != NULL );
+		if( pCtrl )
+			pCtrl->ClearR14Events();
 	}
 
 	if (mType == VdclDockable)
@@ -789,7 +755,6 @@ void CDclFormObject::ClearR14Events()
 		CDclControlObject* pControlForm = GetControlProperties();
 		pControlForm->RemoveProperty(nResizable);
 	}
-	
 }
 
 IOStatus CDclFormObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
@@ -987,9 +952,12 @@ CString CDclFormObject::GetKeyName() const
 		return CString(); //properties have not yet been added!
 	CString sControlName = pControlProps->GetStrProperty(nName);
 	if( sControlName.IsEmpty() )
-		sControlName = msUniqueName;
-	if( mpParentForm )
-		sControlName = mpParentForm->GetKeyName() + _T('_') + sControlName;
+	{
+		if( mpParentForm )
+			sControlName = mpParentForm->GetKeyName();
+		else
+			sControlName = msUniqueName;
+	}
 	return sControlName;
 }
 

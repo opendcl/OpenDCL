@@ -14,6 +14,10 @@ CEditorProject::CEditorProject()
 {
 }
 
+CEditorProject::CEditorProject( LPCTSTR pszKeyName )
+: CProject( pszKeyName )
+{
+}
 
 CEditorProject::~CEditorProject()
 {

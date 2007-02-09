@@ -210,7 +210,6 @@ CPropertyListCtrl::CPropertyListCtrl()
       m_Cursor,
       ::GetSysColorBrush(COLOR_WINDOW),
       NULL);
-	  
 }
 
 
@@ -337,10 +336,6 @@ int CPropertyListCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CWnd::OnCreate(lpCreateStruct) == nNotSet)
 		return nNotSet;
-	
-	m_ProjectList.m_bFreeVersion = false;
-
-	theEditorWorkspace.SetActiveProject(&m_ProjectList);
 
 	// fix up 3D styles
 	ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
@@ -789,23 +784,23 @@ void CPropertyListCtrl::InitImageList(short DclFormIndex, short ArxControlIndex,
 
 void CPropertyListCtrl::ClearProject() 
 {
-	m_ProjectList.ClearProject();
+	theEditorWorkspace.SetActiveProject( new CEditorProject );
 	CPropertyListCtrl::ClearPictures();
 }
 
 void CPropertyListCtrl::ClearPictures() 
 {
 	// get the count of the list
-	int nPictCount = m_ProjectList.GetPictureList().GetCount();
+	int nPictCount = activeProject->GetPictureList().GetCount();
 	
 	while(nPictCount >= 0)
 	{
-		POSITION pos = m_ProjectList.GetPictureList().FindIndex(nPictCount);
+		POSITION pos = activeProject->GetPictureList().FindIndex(nPictCount);
 
 		if (pos != NULL)
 		{
 			// get the object at this position
-			CPictureObject *pPicture = m_ProjectList.GetPictureList().GetAt(pos);
+			CPictureObject *pPicture = activeProject->GetPictureList().GetAt(pos);
 			if (pPicture != NULL)
 			{
 				// delete the pointer to cleanup the memory
@@ -815,7 +810,7 @@ void CPropertyListCtrl::ClearPictures()
 		// de-increment the counter
 		nPictCount--;
 	}
-	m_ProjectList.GetPictureList().RemoveAll();
+	activeProject->GetPictureList().RemoveAll();
 	
 }
 
@@ -824,7 +819,7 @@ void CPropertyListCtrl::ClearPictures()
 
 short CPropertyListCtrl::CountPictures() 
 {	
-	return m_ProjectList.GetPictureList().GetCount();
+	return activeProject->GetPictureList().GetCount();
 }
 
 
@@ -959,15 +954,15 @@ CDclControlObject* CPropertyListCtrl::GetArxControlObject(short DclFormIndex, sh
 
 	CDclControlObject *pRetObject;
 	bool bRetVal;
- 	if(m_ProjectList.GetDclFormList().GetCount() > DclFormIndex)
+ 	if(activeProject->GetDclFormList().GetCount() > DclFormIndex)
 	{
 		// create a position variable to hold the converted DclFormIndex
 		POSITION FormPos;
 			
 		// set the position variable to be equal the index to passing to the GetAt method
-		FormPos = m_ProjectList.GetDclFormList().FindIndex(DclFormIndex);	
+		FormPos = activeProject->GetDclFormList().FindIndex(DclFormIndex);	
 		// create a new DclFormObject object and point it at the object in the list
-		CDclFormObject* pNewDclForm = m_ProjectList.GetDclFormList().GetAt(FormPos);	
+		CDclFormObject* pNewDclForm = activeProject->GetDclFormList().GetAt(FormPos);	
 		
 
 		if(pNewDclForm->GetControlList().GetCount() >= ArxControlIndex)
@@ -1001,15 +996,15 @@ CDclFormObject* CPropertyListCtrl::GetDclFormObject(short DclFormIndex)
 	bool bRetVal;
 
 	
-	if(m_ProjectList.GetDclFormList().GetCount() > DclFormIndex)
+	if(activeProject->GetDclFormList().GetCount() > DclFormIndex)
 	{
 		// set the position variable to be equal the index to passing to the GetAt method
-		POSITION pos = m_ProjectList.GetDclFormList().FindIndex(DclFormIndex);	
+		POSITION pos = activeProject->GetDclFormList().FindIndex(DclFormIndex);	
 		
 		if (pos == NULL)
 			return NULL;
 		// set the pass pointer to point at the object in the list
-		pRetObject = m_ProjectList.GetDclFormList().GetAt(pos);
+		pRetObject = activeProject->GetDclFormList().GetAt(pos);
 		
 		bRetVal = true;
 	}
@@ -1135,12 +1130,12 @@ void CPropertyListCtrl::OnDestroy()
 LPPICTUREDISP CPropertyListCtrl::GetPicture(short Index) 
 {
 	//CPictureHolder hPicture;
-	if(m_ProjectList.GetPictureList().GetCount() > Index)
+	if(activeProject->GetPictureList().GetCount() > Index)
 	{
-		POSITION pos = m_ProjectList.GetPictureList().FindIndex(Index);
+		POSITION pos = activeProject->GetPictureList().FindIndex(Index);
 		if (pos != NULL)
 		{
-			CPictureObject *pPic = m_ProjectList.GetPictureList().GetAt(pos);
+			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
 			if (pPic != NULL)
 			{
 				return pPic->GetPicture().GetPictureDispatch();
@@ -2377,18 +2372,18 @@ int CPropertyListCtrl::SetListBox()
 				sEnumDesc = theWorkspace.LoadResourceString(IDS_ADD);
 				m_pModeless->AddString(sEnumDesc);
 
-				if (m_ProjectList.GetPictureList().GetCount() > 0)
+				if (activeProject->GetPictureList().GetCount() > 0)
 				{
 					// set counter for Pictures
 					int nCount = 0;
 				
 					// do loop to navigate Pictures
-					while (nCount < m_ProjectList.GetPictureList().GetCount())
+					while (nCount < activeProject->GetPictureList().GetCount())
 					{
-						POSITION pos = m_ProjectList.GetPictureList().FindIndex(nCount);
+						POSITION pos = activeProject->GetPictureList().FindIndex(nCount);
 						if (pos != NULL)
 						{
-							CPictureObject *pPic = m_ProjectList.GetPictureList().GetAt(pos);
+							CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
 							if (pPic != NULL)
 							{
 								char Value[80];
@@ -2453,18 +2448,18 @@ int CPropertyListCtrl::SetListBox()
 			sEnumDesc = theWorkspace.LoadResourceString(IDS_ADD);
 			m_pModeless->AddString(sEnumDesc);
 
-			if (m_ProjectList.GetPictureList().GetCount() > 0)
+			if (activeProject->GetPictureList().GetCount() > 0)
 			{
 				// set counter for Pictures
 				int nCount = 0;
 			
 				// do loop to navigate Pictures
-				while (nCount < m_ProjectList.GetPictureList().GetCount())
+				while (nCount < activeProject->GetPictureList().GetCount())
 				{
-					POSITION pos = m_ProjectList.GetPictureList().FindIndex(nCount);
+					POSITION pos = activeProject->GetPictureList().FindIndex(nCount);
 					if (pos != NULL)
 					{
-						CPictureObject *pPic = m_ProjectList.GetPictureList().GetAt(pos);
+						CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
 						if (pPic != NULL)
 						{
 							m_pModeless->AddString(LTOA(pPic->GetID()));
@@ -2619,7 +2614,7 @@ int CPropertyListCtrl::SetListBox()
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_FILTERSTYLE_3);
 					m_pModeless->AddString(sEnumDesc);
 					
-					if (m_ProjectList.m_nAutoCADVersion == n2000 && !m_ProjectList.m_bFreeVersion)
+					if (activeProject->m_nAutoCADVersion == n2000 && !activeProject->m_bFreeVersion)
 					{											
 						sEnumDesc = theWorkspace.LoadResourceString(IDS_FILTERSTYLE_4);
 						m_pModeless->AddString(sEnumDesc);
@@ -3022,12 +3017,12 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 			int nLargestPicId = 0;
 
 			// find the largest current picture Id
-			for (int i=0; i<m_ProjectList.GetPictureList().GetCount(); i++)
+			for (int i=0; i<activeProject->GetPictureList().GetCount(); i++)
 			{
-				POSITION pos = m_ProjectList.GetPictureList().FindIndex(i);
+				POSITION pos = activeProject->GetPictureList().FindIndex(i);
 				if (pos != NULL)
 				{
-					CPictureObject *pPic = m_ProjectList.GetPictureList().GetAt(pos);
+					CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
 					if (pPic != NULL)
 					{
 						if (nLargestPicId <= pPic->GetID())
@@ -3195,12 +3190,12 @@ short CPropertyListCtrl::GetPictureID(short Index)
 {
 	short nResult = 0;
 	
-	if(m_ProjectList.GetPictureList().GetCount() > Index)
+	if(activeProject->GetPictureList().GetCount() > Index)
 	{		
-		POSITION pos = m_ProjectList.GetPictureList().FindIndex(Index);
+		POSITION pos = activeProject->GetPictureList().FindIndex(Index);
 		if (pos != NULL)
 		{
-			CPictureObject *pPic = m_ProjectList.GetPictureList().GetAt(pos);
+			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
 			if (pPic != NULL)
 			{
 				// set return value to the name
@@ -3219,12 +3214,12 @@ short CPropertyListCtrl::GetPictureID(short Index)
 
 void CPropertyListCtrl::SetPictureID(short Index, short nID) 
 {
-	if(m_ProjectList.GetPictureList().GetCount() > Index)
+	if(activeProject->GetPictureList().GetCount() > Index)
 	{
-		POSITION pos = m_ProjectList.GetPictureList().FindIndex(Index);
+		POSITION pos = activeProject->GetPictureList().FindIndex(Index);
 		if (pos != NULL)
 		{
-			CPictureObject *pPic = m_ProjectList.GetPictureList().GetAt(pos);
+			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
 			if (pPic != NULL)
 			{
 				// set the picture name
@@ -3395,13 +3390,13 @@ void CPropertyListCtrl::SetLispFileName(CString sFileName)
 	// conert the LPCTSTR to a CString
 	CString sFile = sFileName;
 	
-	m_ProjectList.m_LispFileName = sFile;
+	activeProject->m_LispFileName = sFile;
 	if (sFile.GetLength() == 0)
 	{
 		sFile = QueryForLispFileName();
 	}
 	
-	m_ProjectList.m_LispFileName = sFile;
+	activeProject->m_LispFileName = sFile;
 }
 
 CString CPropertyListCtrl::QueryForLispFileName() 
@@ -3440,7 +3435,7 @@ CString CPropertyListCtrl::QueryForLispFileName()
 	}
 
 	// update the lsp file name
-	m_ProjectList.m_LispFileName = strResult;
+	activeProject->m_LispFileName = strResult;
 
 	return strResult;	
 }
@@ -3564,12 +3559,12 @@ void CPropertyListCtrl::SearchPictureRefs(CDclFormObject *pDclObject)
 void CPropertyListCtrl::CheckPictureRefs() 
 {
 	// do loops to search every picture id property and ensure it's id is still valid
-	for (int i=0; i<m_ProjectList.GetDclFormList().GetCount(); i++)
+	for (int i=0; i<activeProject->GetDclFormList().GetCount(); i++)
 	{
-		POSITION pos = m_ProjectList.GetDclFormList().FindIndex(i);
+		POSITION pos = activeProject->GetDclFormList().FindIndex(i);
 		if (pos != NULL)
 		{
-			CDclFormObject *pDclObject = m_ProjectList.GetDclFormList().GetAt(pos);
+			CDclFormObject *pDclObject = activeProject->GetDclFormList().GetAt(pos);
 			if (pDclObject != NULL)
 			{
 				// call method search this dcl form's controls for invalide picture id's
@@ -3635,7 +3630,7 @@ BOOL CPropertyListCtrl::IsPictureValid(LPPICTUREDISP NewPicture)
 
 void CPropertyListCtrl::SetPurchaseMode(short nPurchaseMode) 
 {
-	m_ProjectList.SetPurchaseMode(nPurchaseMode);
+	activeProject->SetPurchaseMode(nPurchaseMode);
 
 }
 
@@ -3680,12 +3675,12 @@ CString CPropertyListCtrl::ImportOdcl(LPCTSTR sFileName)
 
 	// find the largest current picture Id
 	int i;
-  for (i=0; i<m_ProjectList.GetPictureList().GetCount(); i++)
+  for (i=0; i<activeProject->GetPictureList().GetCount(); i++)
 	{
-		POSITION pos = m_ProjectList.GetPictureList().FindIndex(i);
+		POSITION pos = activeProject->GetPictureList().FindIndex(i);
 		if (pos != NULL)
 		{
-			CPictureObject *pPic = m_ProjectList.GetPictureList().GetAt(pos);
+			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
 			if (pPic != NULL)
 			{
 				if (nLargestPicId <= pPic->GetID())
@@ -3697,10 +3692,10 @@ CString CPropertyListCtrl::ImportOdcl(LPCTSTR sFileName)
 	// find the smallest new picture Id
 	for (i=0; i<tmpProject.GetPictureList().GetCount(); i++)
 	{
-		POSITION pos = m_ProjectList.GetPictureList().FindIndex(i);
+		POSITION pos = activeProject->GetPictureList().FindIndex(i);
 		if (pos != NULL)
 		{
-			CPictureObject *pPic = m_ProjectList.GetPictureList().GetAt(pos);
+			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
 			if (pPic != NULL)
 			{
 				if (nSmallestNewPicId >= pPic->GetID() || nSmallestNewPicId <= 0)
@@ -3723,7 +3718,7 @@ CString CPropertyListCtrl::ImportOdcl(LPCTSTR sFileName)
 				pPic->SetID( pPic->GetID() + nLargestPicId );
 				
 				// move this picture over to the existing picture list
-				m_ProjectList.GetPictureList().AddTail(pPic);
+				activeProject->GetPictureList().AddTail(pPic);
 			}
 		}
 	}
@@ -3738,7 +3733,7 @@ CString CPropertyListCtrl::ImportOdcl(LPCTSTR sFileName)
 			pForm->IncrementPictureId(nLargestPicId);
 			
 			// move this picture over to the existing picture list
-			m_ProjectList.GetDclFormList().AddTail(pForm);
+			activeProject->GetDclFormList().AddTail(pForm);
 
 		}
 	}
@@ -4068,21 +4063,21 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 
 void CPropertyListCtrl::ShowAsFree() 
 {	
-	m_ProjectList.m_bFreeVersion = true;
+	activeProject->m_bFreeVersion = true;
 }
 
 void CPropertyListCtrl::SetAutoCADVersion(DWORD nVersion) 
 {
-	m_ProjectList.m_nAutoCADVersion = nVersion;
+	activeProject->m_nAutoCADVersion = nVersion;
 
 	if (nCurrentPurchaseMode != nPurchasedR14Pro)
-		m_ProjectList.ClearR14Events();
+		activeProject->ClearR14Events();
 
 }
 
 DWORD CPropertyListCtrl::GetAutoCADVersion() 
 {
-	return m_ProjectList.m_nAutoCADVersion;
+	return activeProject->m_nAutoCADVersion;
 }
 
 void CPropertyListCtrl::CreateDistributionFile() 
