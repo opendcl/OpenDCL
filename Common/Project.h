@@ -6,7 +6,8 @@ General Project Structure and Nomenclature Notes -- 2007-01-28 [ORW]
 The logical hierarchy of an ObjectDCL project starts with the project itself at the top. The project contains 
 one or more forms, and these in turn contain one or more controls. The original code tended to use the words  
 dialog and form interchangeably, but in code that I've rewritten I use "dialog" to refer to an instantiated 
-form (i.e. a dialog window on the screen), and the word "form" when referring to the project definition data.
+form (i.e. a dialog window on the screen), and "form" or "template" when referring to the form definition 
+data.
 
 Forms can be nested, therefore a nested form is a valid kind of control -- or said another way, forms are 
 also controls. All controls (including forms) contain a collection of named properties. Some properties 
@@ -18,7 +19,7 @@ change at runtime in an instance of the control.
 The important classes that represent the different elements of a project are:
 
 CProject           Project.h/cpp            : a single project
-CDclFormObject     DclFormObject/h/cpp      : a single form
+CDclFormObject     DclFormObject.h/cpp      : a single form
 CDclControlObject  DclControlObject.h/cpp   : a single control (which may contain child controls)
 CPropertyObject    PropertyObject.h/cpp     : a single property
 
@@ -27,15 +28,15 @@ CFontCollection    FontCollection.h/cpp     : collection of CFont objects that d
 CImageListObject   ImageListObject.h/cpp    : collection of images (either icons or bitmaps) used by a control
 
 CWorkspace         Workspace.h/cpp          : global data (projects, fonts, and client-specific data)
-CDialogObject      DialogObject.h/cpp       : instantiated DCL form interface (analagous to CDclFormObject)
-CControlPane       ControlPane.h/cpp        : owns and manages a list of controls (can be nested via tab pages)
-CDialogControl     DialogControl.h/cpp      : instantiated DCL control interface (analagous to CDclControlObject)
+CDialogObject      DialogObject.h/cpp       : instantiated ODCL form interface (analagous to CDclFormObject)
+CControlPane       ControlPane.h/cpp        : manages a collection of control windows (can be nested via tab pages)
+CDialogControl     DialogControl.h/cpp      : instantiated ODCL control interface (analagous to CDclControlObject)
 
 The ObjectDCL editor defines CEditorProject and CEditorWorkspace that customize and extend the common
 CProject/CWorkspace classes. Likewise, the ARX modules define CArxProject/CArxWorkspace to customize and 
 extend the common classes with ARX-specific data and services.
 
-To prevent name collisions, ObjectDCL uses a case-insensitive three-tier naming system to name a speific 
+To prevent name collisions, ObjectDCL uses a case-insensitive three-tier naming system to name a specific 
 control instance:
 <project-name>_<form-name>_<control-name>
 
@@ -127,7 +128,8 @@ protected:
 	void Initialize();
 
 	//2007-01-30 [ORW]: save version set to 9 (no change from ObjectDCL 3)
-	ULONG GetCurrentSaveVersion() const { return 9; }
+	//2007-02-09 [ORW]: save version set to 10
+	ULONG GetCurrentSaveVersion() const { return 10; }
 
 public:
 	virtual LPCTSTR GetPassword() const { return _T("d32afd3aw3aq3fdaw3"); }

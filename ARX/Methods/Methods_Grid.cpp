@@ -56,7 +56,7 @@ int Grid_AddColumn()
 	CDclControlObject *pArx = GetControlArxObject(sGrid_AddColumn, &nArg);
 	CSpreadSheet *pGridCtrl = (CSpreadSheet*)pArx->GetWindow();	
 	
-    RefCountedPtr< CPropertyObject > m_pColCaptions = pArx->GetPropertyObject(nColumnCaptions);	
+  RefCountedPtr< CPropertyObject > m_pColCaptions = pArx->GetPropertyObject(nColumnCaptions);	
 
 
 	pGridCtrl->m_ArxControl = pArx;

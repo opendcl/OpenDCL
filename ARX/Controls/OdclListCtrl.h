@@ -5,7 +5,10 @@
 
 #include "PPTooltip.h"
 #include "OleOdcDropTarget.h"
+#include "ArxDialogControl.h"
+#include "PropertyObject.h"
 
+class OdclListCtrl;
 class CControlPane;
 class CAcadDocReactor;
 class CAcadBlockReactor;
@@ -53,44 +56,82 @@ protected:
 };
 
 
+class CListViewControlX : public CArxDialogControl
+{
+	bool mbBlockList;
+
+public:
+	CListViewControlX( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pWnd )
+		: CArxDialogControl( pTemplate, pPane, pWnd ), mbBlockList( false ) {}
+	virtual ~CListViewControlX() {}
+
+	const OdclListCtrl* GetControl() const { return (OdclListCtrl*)mpControl; }
+	OdclListCtrl* GetControl() { return (OdclListCtrl*)mpControl; }
+
+	virtual bool IsBlockList() const { return mbBlockList; }
+
+	// attributes
+	virtual DWORD GetWndStyle() const; //get window style from properties
+
+	// operations
+	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
+	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
+	virtual bool OnApplyImageList( RefCountedPtr< CPropertyObject > pProp );
+};
+
+
 /////////////////////////////////////////////////////////////////////////////
 // OdclListCtrl window
 
 class OdclListCtrl : public CListCtrl
 {
-// Construction
-public:
-	OdclListCtrl();
+protected:
+	CListViewControlX mControlX;
+	CDclControlObject* mpSourceControl;	
+	CControlPane* mpControlPane;
+	RefCountedPtr< CImageList > mpCtrlImageList;
 
-// Attributes
 public:
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	CPPToolTip m_ToolTip;
-	
-	// Needed to make this control an OLE data SOURCE (see OnLButtonDown)
-    COleDataSource m_COleDataSource;
-    
+  COleDataSource m_COleDataSource; // Needed to make this control an OLE data SOURCE (see OnLButtonDown)
+  COleOdcDropTarget m_DropTarget;
 	bool m_bInvokeWithSendString;
 	CDclControlObject	*m_ArxControl;
 	CAcadDocReactor		*m_pDocToModReactor;
 	CAcadBlockReactor	*m_pBlockReactor;	
-	CImageList			*m_pBlockImageList;
+	//CImageList			*m_pBlockImageList;
 	CControlPane		*m_pParentCtrlPane;
 	CString				m_sProjectName;
 	CString				m_sDialogName;
 	int					m_nEditSubItem;
 	CLVEdit				m_LVEdit;
-	CImageList			m_DefaultImageList;
-	bool				m_bEditCells;
+	//CImageList			m_DefaultImageList;
+	//bool				m_bEditCells;
 
 	// BlockList Attributes
 	AcDbDatabase		*m_pLoadedDwg;
 	CString				m_FileName;
-	
-	
+
+// Construction
+public:
+	OdclListCtrl( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID );
+	virtual ~OdclListCtrl();
+
+// Interface
+public:
+	CArxDialogControl& GetDialogControl() { return mControlX; }
+	const CArxDialogControl& GetDialogControl() const { return mControlX; }
+	RefCountedPtr< CImageList > GetCtrlImageList() const { return mpCtrlImageList; }
+	void SetCtrlImageList( RefCountedPtr< CImageList > pImageList ) { mpCtrlImageList = pImageList; }
+
 // Operations
 public:
+	virtual bool Create( CWnd* pParentWnd, UINT nID );
+
+// Implementation
+public:
+	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
+	void InitToolTip();
 	bool LoadDwg(CString sFileName);
 	void SetAcadColor(long nColor);
 	void RefreshBlockList();
@@ -102,29 +143,12 @@ public:
 	void SetItemImage( int nRow, int nCol, int nImage);
 	void SetItemTextImage(int nRow, int nCol, CString sText, int nImage);
 
-// Implementation
-public:
-	//*****
-    // COleOdcDropTarget, derived from COleDropTarget gives us
-    // the functionality to be an OLE drop target.
-    //*****
-    COleOdcDropTarget m_DropTarget;
-
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(OdclListCtrl)
-	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
-
-// Implementation
 public:
-	virtual ~OdclListCtrl();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 	// Generated message map functions
 protected:
-	//{{AFX_MSG(OdclListCtrl)
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
@@ -150,7 +174,8 @@ protected:
 	afx_msg void OnOdstatechanged(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	//}}AFX_MSG
+	afx_msg void PostNcDestroy();
 
+protected:
 	DECLARE_MESSAGE_MAP()
 };

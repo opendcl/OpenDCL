@@ -380,10 +380,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\PropertyNames.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\ResizableDockingDialog.cpp"
 				>
 			</File>
@@ -630,10 +626,6 @@
 			</File>
 			<File
 				RelativePath="..\ProgressTimeToComplete.h"
-				>
-			</File>
-			<File
-				RelativePath="..\PropertyNames.h"
 				>
 			</File>
 			<File
@@ -1627,6 +1619,14 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\PropertyList.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\PropertyNames.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\PropertyNames.h"
 				>
 			</File>
 			<File

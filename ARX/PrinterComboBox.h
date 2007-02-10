@@ -10,12 +10,12 @@ class CDclControlObject;
 class CControlPane;
 
 
-class CPrinterComboControl : public CArxDialogControl
+class CPrinterComboControlX : public CArxDialogControl
 {
 public:
-	CPrinterComboControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pWnd )
+	CPrinterComboControlX( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pWnd )
 		: CArxDialogControl( pTemplate, pPane, pWnd ) {}
-	virtual ~CPrinterComboControl() {}
+	virtual ~CPrinterComboControlX() {}
 
 	// attributes
 	virtual CRect GetWndRect() const; //get window position from properties
@@ -29,7 +29,7 @@ public:
 class CPrinterComboBox : public CComboBox
 {
 protected:
-	CPrinterComboControl mControlX;
+	CPrinterComboControlX mControlX;
 	CDclControlObject* mpSourceControl;	
 	CControlPane* mpControlPane;
 

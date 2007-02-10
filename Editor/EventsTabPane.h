@@ -43,8 +43,8 @@ public:
 	void ClearEvents();
 	void SetDefunPreview();
 	CString GetDefunArguments();
-	void SetEvent(int nEventId, CString sEventDefun);
-	CString GetEvent(int nEventId);
+	void SetEvent(PropertyId nEventId, CString sEventDefun);
+	CString GetEvent(PropertyId nEventId);
 
 // Overrides
 	// ClassWizard generated virtual function overrides

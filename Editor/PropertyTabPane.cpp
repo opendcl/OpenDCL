@@ -8,8 +8,8 @@
 #include "ControlName.h"
 #include "ControlTypes.h"
 #include "ObjectDCLView.h"
+#include "PropertyIds.h"
 
-#define nName					 1
 #define IDC_TABCTRL 109
 
 

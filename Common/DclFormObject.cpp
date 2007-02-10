@@ -99,6 +99,17 @@ void CDclFormObject::SetFormInstance( CDialogObject* pDlgObject )
 	mpDlgObject = pDlgObject;
 }
 
+RefCountedPtr< CImageList > CDclFormObject::GetImageList( size_t index ) const
+{
+	if( index >= (size_t)m_ImageListCollection.GetCount() )
+		return NULL;
+	//returning a new copy for now, but once the imagelist collection is converted to a collection of 
+	//ref counted pointers, this should be changed to return a pointer to the original imagelist [ORW]
+	CImageList* pImageList = new CImageList;
+	pImageList->Create( &m_ImageListCollection.GetAt( m_ImageListCollection.FindIndex( index ) )->m_ImageList );
+	return pImageList;
+}
+
 bool CDclFormObject::DeleteControl(long nIndex)
 {
 	POSITION pos = mDclControls.FindIndex(nIndex);
@@ -558,7 +569,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 					m_ImageListCollection.AddTail(pImage);
 				}
 			}
-			if (nCount > 0)
+			if (!m_ImageListCollection.IsEmpty())
 			{
 				pos = mDclControls.GetHeadPosition();
 				// do loop to navigate ArxControls

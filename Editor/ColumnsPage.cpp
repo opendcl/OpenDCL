@@ -26,24 +26,28 @@ CColumnData::CColumnData()
 CColumnData::~CColumnData()
 {
 }
-CColumnData::CColumnData(CColumnData *pOther)
-{
-}
-CColumnData::CColumnData(CColumnData &Other)
-{
-}
 
-CColumnData CColumnData::operator=(CColumnData const & other) 
+CColumnData& CColumnData::operator=(const CColumnData &Other)
 {
-	m_Width = other.m_Width;	
-	m_Image = other.m_Image;	
-	m_Style = other.m_Style;	
-	m_Alignment = other.m_Alignment;	
-	m_Default = other.m_Default;	
-	m_Alternate = other.m_Alternate;
-
+	m_Width = Other.m_Width;	
+	m_Image = Other.m_Image;	
+	m_Style = Other.m_Style;	
+	m_Alignment = Other.m_Alignment;	
+	m_Default = Other.m_Default;	
+	m_Alternate = Other.m_Alternate;
 	return *this;
 }
+
+CColumnData::CColumnData(const CColumnData &Other)
+{
+	m_Width = Other.m_Width;	
+	m_Image = Other.m_Image;	
+	m_Style = Other.m_Style;	
+	m_Alignment = Other.m_Alignment;	
+	m_Default = Other.m_Default;	
+	m_Alternate = Other.m_Alternate;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CColumnsPage property page
 
@@ -53,10 +57,8 @@ CColumnsPage::CColumnsPage() : CPropertyPage(CColumnsPage::IDD)
 {
 	//{{AFX_DATA_INIT(CColumnsPage)
 	//}}AFX_DATA_INIT
-
 	m_bChangingIndex = false;
-	m_nIndex = 0;
-
+	m_nIndex = -1;
 }
 
 CColumnsPage::~CColumnsPage()
@@ -133,7 +135,7 @@ BOOL CColumnsPage::OnInitDialog()
 	m_Style.MoveWindow(rc);
 
 	size_t nCount = m_pColCaptions->GetStringArrayPtr()->size();
-  m_ColData.SetSize(nCount);
+	m_ColData.SetSize(nCount);
 	for (size_t i=0; i<nCount; i++)
 	{
 		m_ColData[i].m_Caption = m_pColCaptions->GetStringArrayPtr()->at(i);
@@ -176,16 +178,8 @@ BOOL CColumnsPage::OnInitDialog()
 		}
 	
 	}
-
-	m_Disabled.ShowWindow(TRUE);
-	m_Image.ShowWindow(FALSE);
-	m_Disabled.EnableWindow(FALSE);
-	m_Image.ShowWindow(TRUE);
-	m_WidthTextBox.EnableWindow(FALSE);
-	m_FileExt.ShowWindow(FALSE);
 	m_Style.SetDroppedWidth(170);
 	
-	OnSetActive();
 
 	int nID = m_List.GetHeaderCtrl()->GetDlgCtrlID();
 
@@ -196,8 +190,6 @@ BOOL CColumnsPage::OnInitDialog()
 	if (pHeader->GetImageList() == NULL)
 		pHeader->SetImageList(&m_pImageListPage->m_ImageList);
 
-	m_Spin.SetRange(0, nCount-1);
-
 	for (INT_PTR i = 0; i< m_ColData.GetCount(); i++)
 	{
 		int nWidth = m_ColData[i].m_Width;
@@ -206,7 +198,8 @@ BOOL CColumnsPage::OnInitDialog()
 		SetColumn(i);
 	}
 
-	SetControls(0);
+	m_nIndex = (m_ColData.GetCount() > 0? 0 : -1);
+	OnSetActive();
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
@@ -295,98 +288,75 @@ BOOL CColumnsPage::OnSetActive()
 	m_Image.ResetContent();
 	m_Default.ResetContent();
 	m_Alternate.ResetContent();
-	if (!IsImageListValid())
-		return CPropertyPage::OnSetActive();
-
-	m_Image.SetImageList(&m_pImageListPage->m_ImageList);
-	m_Default.SetImageList(&m_pImageListPage->m_ImageList);	
-	m_Alternate.SetImageList(&m_pImageListPage->m_ImageList);
-	
-	m_pImageListPage->m_ImageList.SetBkColor(RGB(255,255,255));
-	int i;
-	for (i=0; i<m_pImageListPage->m_ImageList.GetImageCount(); i++)
+	if (IsImageListValid())
 	{
-		TCHAR value[80];
-		_ltot(i, value, 10);
+		m_Image.SetImageList(&m_pImageListPage->m_ImageList);
+		m_Default.SetImageList(&m_pImageListPage->m_ImageList);	
+		m_Alternate.SetImageList(&m_pImageListPage->m_ImageList);
 		
+		m_pImageListPage->m_ImageList.SetBkColor(RGB(255,255,255));
+		int i;
+		for (i=0; i<m_pImageListPage->m_ImageList.GetImageCount(); i++)
+		{
+			TCHAR value[80];
+			_ltot(i, value, 10);
+			
+			COMBOBOXEXITEM cbi;
+
+			cbi.mask = CBEIF_IMAGE | //CBEIF_OVERLAY |
+			 CBEIF_TEXT | CBEIF_SELECTEDIMAGE;
+
+			cbi.iItem = i;
+			cbi.pszText = value;
+			cbi.cchTextMax = lstrlen(value);
+			cbi.iImage = i;
+			cbi.iSelectedImage = i;
+			cbi.iOverlay = i;
+			cbi.iIndent = 0;
+
+			m_Image.InsertItem(&cbi);
+			m_Default.InsertItem(&cbi);
+			m_Alternate.InsertItem(&cbi);
+		}
+
 		COMBOBOXEXITEM cbi;
 
-		cbi.mask = CBEIF_IMAGE | //CBEIF_OVERLAY |
-		 CBEIF_TEXT | CBEIF_SELECTEDIMAGE;
+		cbi.mask = //CBEIF_OVERLAY |
+		 CBEIF_TEXT ;
 
+		CString value;
+		value = theWorkspace.LoadResourceString(IDS_NONE);
 		cbi.iItem = i;
-		cbi.pszText = value;
+		cbi.pszText = (LPTSTR)(LPCTSTR)value;
 		cbi.cchTextMax = lstrlen(value);
-		cbi.iImage = i;
-		cbi.iSelectedImage = i;
+		cbi.iImage = -1;
+		cbi.iSelectedImage = -1;
 		cbi.iOverlay = i;
 		cbi.iIndent = 0;
-
 		m_Image.InsertItem(&cbi);
-		m_Default.InsertItem(&cbi);
-		m_Alternate.InsertItem(&cbi);
+		m_Image.SetCurSel(nSel);
+		m_Default.SetCurSel(nSel2);
+		m_Alternate.SetCurSel(nSel3);
 	}
-
-	COMBOBOXEXITEM cbi;
-
-	cbi.mask = //CBEIF_OVERLAY |
-	 CBEIF_TEXT ;
-
-	CString value;
-	value = theWorkspace.LoadResourceString(IDS_NONE);
-	cbi.iItem = i;
-	cbi.pszText = (LPTSTR)(LPCTSTR)value;
-	cbi.cchTextMax = lstrlen(value);
-	cbi.iImage = -1;
-	cbi.iSelectedImage = -1;
-	cbi.iOverlay = i;
-	cbi.iIndent = 0;
-	m_Image.InsertItem(&cbi);
-	m_Image.SetCurSel(nSel);
-	m_Default.SetCurSel(nSel2);
-	m_Alternate.SetCurSel(nSel3);
+	SetControls(m_nIndex);
 	return CPropertyPage::OnSetActive();
 }
 
 void CColumnsPage::OnInsert() 
 {
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-
-	CHeaderCtrl *pHeader = m_List.GetHeaderCtrl();
-
-	m_nIndex = m_List.InsertColumn(pHeader->GetItemCount(), CString(), LVCFMT_LEFT, 100);
+	int nIndex = m_List.InsertColumn(m_ColData.GetCount(), CString(), LVCFMT_LEFT, 100);
 
 	// add the data to the list arrays
 	CColumnData data;
-	int n = m_ColData.Add(data);	
-	
-	m_ColData[n].m_Width = 100;	
-	m_ColData[n].m_Image = -1;	
-	m_ColData[n].m_Style = 0;	
-	m_ColData[n].m_Alignment = 0;	
-	m_ColData[n].m_Default = 0;	
-	m_ColData[n].m_Alternate = 0;
-
-	if (m_nIndex == 0 && pHeader->GetItemCount() == 0)
-	{
-		m_Spin.EnableWindow(FALSE);
-		m_Alignment.EnableWindow(FALSE);
-	}
-	else
-	{
-		m_Spin.EnableWindow(TRUE);
-		m_Spin.SetBuddy(&m_IndexEdit);
-		m_Alignment.EnableWindow(TRUE);		
-	}
-
-	m_Spin.SetRange(0, m_nIndex);
-	m_Spin.SetPos(m_nIndex);
-	
-	SetControls(m_nIndex);
-
+	data.m_Width = 100;	
+	data.m_Image = -1;	
+	data.m_Style = 0;	
+	data.m_Alignment = 0;	
+	data.m_Default = 0;	
+	data.m_Alternate = 0;
+	int nColumnDataSize = m_ColData.Add(data);
+	assert( nColumnDataSize == nIndex );
+	SetControls(nIndex);
 	m_Text.SetFocus();
 	SetModified();
 }
@@ -396,15 +366,48 @@ const TCHAR sDwg[] = _T("dwg;dxf");
 void CColumnsPage::SetControls(int nIndex)
 {
 	m_nIndex = nIndex;
-	m_bChangingIndex = true;
-	
-	CHeaderCtrl *pHeader = m_List.GetHeaderCtrl();
-	
-	if (pHeader == NULL)
+	INT_PTR nColCount = m_ColData.GetCount();
+	m_Spin.SetRange(0, nColCount> 0? nColCount - 1 : 0);
+
+	m_Times.ShowWindow(FALSE);
+	m_Dates.ShowWindow(FALSE);
+	m_DropListBtn.ShowWindow(FALSE);
+	m_FileExt.ShowWindow(FALSE);
+	m_DefLabel.ShowWindow(FALSE);
+	m_Default.ShowWindow(FALSE);
+	m_AltLabel.ShowWindow(FALSE);
+	m_Alternate.ShowWindow(FALSE);
+	if (nIndex < 0)
+	{
+		m_Spin.EnableWindow(FALSE);
+		m_Alignment.EnableWindow(FALSE);
+		m_Spin.SetBuddy(NULL);
+		m_Disabled.EnableWindow(FALSE);
+		m_IndexEdit.ShowWindow(FALSE);
+		m_Image.EnableWindow(FALSE);
+		m_WidthTextBox.EnableWindow(FALSE);
+		m_Text.EnableWindow(FALSE);
+		m_Style.EnableWindow(FALSE);
+		GetDlgItem(IDC_DELETE)->EnableWindow(FALSE);
 		return;
+	}
+
+	if( nIndex >= m_ColData.GetCount() )
+		nIndex = m_ColData.GetCount();
+	GetDlgItem(IDC_DELETE)->EnableWindow(TRUE);
+	m_IndexEdit.ShowWindow(TRUE);
+	m_Spin.EnableWindow(m_ColData.GetCount() > 1);
+	m_Spin.SetBuddy(&m_IndexEdit);
+	m_Image.EnableWindow(TRUE);
+	m_Alignment.EnableWindow(TRUE);		
 
 	// now setup the controls correctly.	
-	m_Spin.SetPos(m_nIndex);
+	m_bChangingIndex = true;
+
+	if (m_ColData[nIndex].m_Image >= m_Image.GetCount())
+		m_ColData[nIndex].m_Image = -1;
+
+	m_Spin.SetPos(nIndex);
 	if (IsImageListValid())
 	{
 		m_Disabled.ShowWindow(FALSE);
@@ -415,58 +418,34 @@ void CColumnsPage::SetControls(int nIndex)
 		m_Disabled.ShowWindow(TRUE);
 		m_Image.ShowWindow(FALSE);
 	}
-	if (pHeader->GetItemCount() > 0)
-	{
-		m_Spin.EnableWindow(TRUE);
-		m_Spin.SetBuddy(&m_IndexEdit);		
-	}
 	m_Alignment.EnableWindow(TRUE);		
 	m_WidthTextBox.EnableWindow(TRUE);
 	m_Text.EnableWindow(TRUE);
-	if (!bUsesRowHeader || m_nIndex > 0)
-	{
+	if (!bUsesRowHeader || nIndex > 0)
 		m_Style.EnableWindow(TRUE);
-	}
 	else
-	{
 		m_Style.EnableWindow(FALSE);
-		m_Style.SetCurSel(0);
-	}
-	m_Style.SetCurSel(0);
+
 	m_Text.SetLimitText(256);
 
 	TCHAR value[80];
-	_ltot(m_nIndex, value, 10);
+	_ltot(nIndex, value, 10);
 	m_IndexEdit.SetWindowText(value);
-	_ltot(m_ColData[m_nIndex].m_Width, value, 10);	
 
+	_ltot(m_ColData[nIndex].m_Width, value, 10);	
 	m_WidthTextBox.SetWindowText(value);
-	m_bChangingIndex = true;
-	m_Text.SetWindowText(m_ColData[m_nIndex].m_Caption);
-	m_bChangingIndex = false;
-	m_Style.SetCurSel(m_ColData[m_nIndex].m_Style);
-	m_Alignment.SetCurSel(m_ColData[m_nIndex].m_Alignment);
-	if (m_ColData[m_nIndex].m_Style == 3)
-	{
-		if (m_ColData[m_nIndex].m_Image >= pHeader->GetImageList()->GetImageCount())
-			m_ColData[m_nIndex].m_Image = -1;
-	}
-	m_Image.SetCurSel(m_ColData[m_nIndex].m_Image);
 
-	m_Times.ShowWindow(FALSE);
-	m_Dates.ShowWindow(FALSE);
-	m_DropListBtn.ShowWindow(FALSE);
-	m_DefLabel.ShowWindow(FALSE);
-	m_FileExt.ShowWindow(FALSE);
-	switch(m_ColData[m_nIndex].m_Style)
+	m_Text.SetWindowText(m_ColData[nIndex].m_Caption);
+	m_Style.SetCurSel(m_ColData[nIndex].m_Style);
+	m_Alignment.SetCurSel(m_ColData[nIndex].m_Alignment);
+
+	switch(m_ColData[nIndex].m_Style)
 	{
 		case 15:
 		{
-			if (m_ColData[m_nIndex].m_Image == -1)
-			{
-				m_ColData[m_nIndex].m_Image = 0;
-			}
-			m_Dates.SetCurSel(m_ColData[m_nIndex].m_Image);
+			if (m_ColData[nIndex].m_Image == -1)
+				m_ColData[nIndex].m_Image = 0;
+			m_Dates.SetCurSel(m_ColData[nIndex].m_Image);
 			m_Dates.ShowWindow(TRUE);			
 			CString sLoad;
 			sLoad = theWorkspace.LoadResourceString(IDS_DATEFORMAT);
@@ -476,11 +455,9 @@ void CColumnsPage::SetControls(int nIndex)
 		}
 		case 16:
 		{
-			if (m_ColData[m_nIndex].m_Image == -1)
-			{
-				m_ColData[m_nIndex].m_Image = 0;
-			}
-			m_Times.SetCurSel(m_ColData[m_nIndex].m_Image);
+			if (m_ColData[nIndex].m_Image == -1)
+				m_ColData[nIndex].m_Image = 0;
+			m_Times.SetCurSel(m_ColData[nIndex].m_Image);
 			m_Times.ShowWindow(TRUE);
 			CString sLoad;
 			sLoad = theWorkspace.LoadResourceString(IDS_TIMEFORMAT);
@@ -509,8 +486,8 @@ void CColumnsPage::SetControls(int nIndex)
 				m_Alternate.ShowWindow(TRUE);
 				m_DefLabel.ShowWindow(TRUE);
 				m_AltLabel.ShowWindow(TRUE);
-				m_Default.SetCurSel(m_ColData[m_nIndex].m_Default);
-				m_Alternate.SetCurSel(m_ColData[m_nIndex].m_Alternate);
+				m_Default.SetCurSel(m_ColData[nIndex].m_Default);
+				m_Alternate.SetCurSel(m_ColData[nIndex].m_Alternate);
 				CString sLoad;
 				sLoad = theWorkspace.LoadResourceString(IDS_DEFICON);
 				m_DefLabel.SetWindowText(sLoad);
@@ -532,10 +509,8 @@ void CColumnsPage::SetControls(int nIndex)
 			m_FileExt.ShowWindow(TRUE);			
 			m_DefLabel.ShowWindow(TRUE);
 
-			if (m_ColData[m_nIndex].m_ListItems.GetSize() > 0)
-			{
-				m_FileExt.SetWindowText(m_ColData[m_nIndex].m_ListItems.GetAt(0));
-			}
+			if (m_ColData[nIndex].m_ListItems.GetSize() > 0)
+				m_FileExt.SetWindowText(m_ColData[nIndex].m_ListItems.GetAt(0));
 			break;
 		}
 		default:
@@ -549,6 +524,7 @@ void CColumnsPage::SetControls(int nIndex)
 			break;			
 		}
 	}
+	m_Image.SetCurSel(m_ColData[nIndex].m_Image);
 
 	m_bChangingIndex = false;
 }
@@ -874,12 +850,6 @@ void CColumnsPage::OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult)
 
 	NM_UPDOWN* pNMUpDown = (NM_UPDOWN*)pNMHDR;
 	
-	// set the changing now flag
-	m_bChangingIndex = true;
-
-	// reset the changing now flag
-	m_bChangingIndex = false;
-	
 	*pResult = 0;
 }
 
@@ -912,10 +882,7 @@ void CColumnsPage::OnDelete()
 	}
 
 	if (m_nIndex >= m_ColData.GetSize()) 
-		m_nIndex = m_ColData.GetSize();
-	
-	m_Spin.SetRange(0, m_nIndex);
-	m_Spin.SetPos(m_nIndex);
+		m_nIndex = m_ColData.GetSize() - 1;
 
 	SetControls(m_nIndex);
 	SetModified();
@@ -1072,21 +1039,6 @@ void CColumnsPage::OnChangeFileext()
 
 void CColumnsPage::OnChangeIndexEdit() 
 {
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-
-	
-	m_bChangingIndex = true;
-	CString sIndex;
-	m_IndexEdit.GetWindowText(sIndex);
-	m_nIndex = _tstol(sIndex);
-	SetControls(m_nIndex);
-	m_Text.SetFocus();
-
-	m_bChangingIndex = false;
-	
 }
 
 void CColumnsPage::OnSetfocusIndexEdit() 

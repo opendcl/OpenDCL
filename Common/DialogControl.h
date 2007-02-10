@@ -67,7 +67,7 @@ control's PostNcDestroy() function.
 //There are two pointer types defined to help solve the problem of determining the correct way to 
 //destroy a CDialogObject instance at runtime (see above). Once all controls are ported to the new 
 //style, TDialogControlPtr can be changed back to a plain pointer as shown below and the current 
-//typedef for TDialogControlPtr can be removed along with the TDialogControlLockedPtr class. In 
+//typedef for TDialogControlPtr can be removed along with the TDialogControlLockedPtr class.
 //typedef CDialogControl* TDialogControlPtr;
 typedef RefCountedPtr< class CDialogControl > TDialogControlPtr;
 
@@ -146,4 +146,5 @@ public:
 	// handlers for specific properties
 	virtual bool OnApplyBorderStyle( RefCountedPtr< CPropertyObject > pProp ); //nBorder
 	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ); //nCaption
+	virtual bool OnApplyImageList( RefCountedPtr< CPropertyObject > pProp ); //nImageList
 };

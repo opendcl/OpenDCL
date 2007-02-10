@@ -415,8 +415,8 @@ void CObjectDCLApp::OnFileNew()
 
 void CObjectDCLApp::OnFileOpen() 
 {
-	CWinApp::OnFileOpen();
 	CloseDocument();
+	CWinApp::OnFileOpen();
 /*
 	//CString newName;
 	//if (!DoPromptFileName(newName, IDS_OPENPROJECTFILE,

@@ -113,9 +113,20 @@ void CProjectCollection::Serialize(CArchive& ar)
 			LOGFONT stFont;
 			fontCol.GetFontList().GetNext(pos)->GetLogFont(&stFont);		
 			BOOL bSizeStyle = (stFont.lfHeight > 0);
-			
+
+			LONG lFontSize = 0;
+			if( !bSizeStyle )
+			{
+				HDC hDC = ::GetDC( NULL );
+				int nPixelsY = GetDeviceCaps( hDC, LOGPIXELSY );
+				::ReleaseDC( NULL, hDC );
+				lFontSize = -::MulDiv( stFont.lfHeight,	nPixelsY, 72 );
+			}
+			else
+				lFontSize = stFont.lfHeight;
+
 			ar << CStringA(stFont.lfFaceName); //writing in MBCS format
-			ar << (LONG)(bSizeStyle? stFont.lfHeight : -stFont.lfHeight); //need to "MulDiv" using device res [ORW]
+			ar << lFontSize;
 			ar << (BOOL)(stFont.lfWeight == FW_BOLD);
 			ar << (BOOL)stFont.lfItalic;
 			ar << (BOOL)stFont.lfUnderline;

@@ -83,13 +83,13 @@ BOOL CObjectDCLDoc::OnNewDocument()
 	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_FontSizes.EnableWindow(TRUE);
 	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_Buttons.EnableWindow(TRUE);
 	theEditorWorkspace.GetMainFrame()->m_wndToolBar.EnableWindow(TRUE);
-	CProjectTreeCtrl* pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
-	ASSERT(pProjTree != NULL);
 	CEditorProject* pProject = new CEditorProject( m_strTitle );
 	theEditorWorkspace.SetActiveProject( pProject );
+	theEditorWorkspace.SetActiveDocument(this); //kludge [ORW]
+	CProjectTreeCtrl* pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
+	ASSERT(pProjTree != NULL);
 	pProjTree->SetupProjectTree( pProject );
 	pProjTree->SetDocument(this);
-	theEditorWorkspace.SetActiveDocument(this); //kludge [ORW]
 
 	CToolBarCtrl *pCtrl = &theEditorWorkspace.GetMainFrame()->m_wndToolBar.GetToolBarCtrl();
 	pCtrl->EnableButton(ID_ADDMODAL, TRUE);
@@ -110,6 +110,7 @@ BOOL CObjectDCLDoc::OnOpenDocument(LPCTSTR lpszPathName)
 
 	CEditorProject* pProject = new CEditorProject;
 	theEditorWorkspace.SetActiveProject( pProject );
+	theEditorWorkspace.SetActiveDocument(this); //kludge [ORW]
 	IOStatus stat = pProject->ReadFromFile( lpszPathName );
 	if( stat != statOK )
 	{
@@ -125,6 +126,7 @@ BOOL CObjectDCLDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	CProjectTreeCtrl* pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
 	ASSERT(pProjTree != NULL);
 	pProjTree->SetupProjectTree(pProject);
+	pProjTree->SetDocument(this);
 
   CToolBarCtrl *pCtrl = &theEditorWorkspace.GetMainFrame()->m_wndToolBar.GetToolBarCtrl();
   pCtrl->EnableButton(ID_ADDMODAL, TRUE);

@@ -644,7 +644,7 @@ class CArxControlObject : public COleControlObject
 
 void CProject::Serialize(CArchive& ar)
 {
-  ULONG nThisVersion = 9;
+  ULONG nThisVersion = GetCurrentSaveVersion();
 
   CObject::Serialize(ar);
   // create a position variable to hold the counter increment
@@ -653,7 +653,7 @@ void CProject::Serialize(CArchive& ar)
 
   if (ar.IsStoring())
   {
-    ar << 9;
+    ar << GetCurrentSaveVersion();
     ar << m_bHasPassword;
     ar << m_sPassword;
     ar << m_LispFileName;
@@ -728,7 +728,7 @@ void CProject::Serialize(CArchive& ar)
 			m_LispFileName = sNone; //drop the extraneous extension
 
 		CString sKeyName;
-    if (nThisVersion >= 11)
+    if (nThisVersion >= 10)
       ar >> sKeyName; //this is the project key name
     else
 		{
@@ -791,10 +791,10 @@ void CProject::Serialize(CArchive& ar)
     }		
     if (nThisVersion >= 7)
       m_ActiveXFiles.Serialize(ar);
-
-    if (nThisVersion >= 9) {
+    if (nThisVersion > 9)
       mOleControls.Serialize(ar);
-    } else {
+    else if (nThisVersion >= 8)
+		{
 			POSITION pos = mOleControls.GetHeadPosition();
 			while (pos)
 				delete mOleControls.GetNext(pos);
@@ -802,7 +802,7 @@ void CProject::Serialize(CArchive& ar)
 			CTypedPtrList< CObList, CArxControlObject* > listControls;
 			listControls.Serialize(ar);
 			pos = listControls.GetHeadPosition();
-			while (pos) 
+			while (pos)
 				mOleControls.AddTail(listControls.GetNext(pos));
 		}
 
@@ -835,44 +835,41 @@ void CProject::Serialize(CArchive& ar)
         }
       }
     }
+		else
+		{
+			try
+			{
+				mPictures.Serialize(ar);
+			}
+			catch(...)
+			{
+				// do nothing
+			}
+		}
+
+		// this has been added to cleanup picture objects with a blank picture.
+		nCount = mPictures.GetCount() - 1;
+		for (int i=nCount; i>= 0; i--)
+		{
+			pos = mPictures.FindIndex(i);
+			if (pos != NULL)
+			{
+				CPictureObject *pPict = mPictures.GetAt(pos);
+
+				if (pPict == NULL)
+					mPictures.RemoveAt(pos);
+				if (pPict != NULL)
+				{
+					if (pPict->GetID() <= -1 || pPict->GetID() >= 3000) //was nPicIdToHight, moved to common
+					{
+						delete pPict;
+						mPictures.RemoveAt(pos);
+					}
+				}
+			}
+		}
   }
 
-  if (nThisVersion < 9)
-  {
-    try
-    {
-      mPictures.Serialize(ar);
-    }
-    catch(...)
-    {
-      // do nothing
-    }
-  }
-
-  // this has been added to cleanup picture objects with a blank picture.
-  if (!ar.IsStoring())
-  {
-    nCount = mPictures.GetCount() - 1;
-    for (int i=nCount; i>= 0; i--)
-    {
-      pos = mPictures.FindIndex(i);
-      if (pos != NULL)
-      {
-        CPictureObject *pPict = mPictures.GetAt(pos);
-
-        if (pPict == NULL)
-          mPictures.RemoveAt(pos);
-        if (pPict != NULL)
-        {
-          if (pPict->GetID() <= -1 || pPict->GetID() >= 3000) //was nPicIdToHight, moved to common
-          {
-            delete pPict;
-            mPictures.RemoveAt(pos);
-          }
-        }
-      }
-    }
-  }
 }
 
 void CProject::SaveDistFile()
@@ -1360,8 +1357,8 @@ IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 		}
 		catch(...)
 		{
- 			SrcFile.Close();
- 			return statInvalidFormat;
+			SrcFile.Close();
+			return statInvalidFormat;
 		}
 	}
 	catch(...)

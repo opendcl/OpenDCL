@@ -46,7 +46,7 @@ public:
 
 	void SetTooltipText( LPCTSTR pszText );
 	CPPToolTip& GetToolTip() { return mToolTip; }
-	
+
 	void TryToFireAxEvent(UINT idCtrl, AFX_EVENT* pEvent);
 	void FireAxEvent(UINT idCtrl, RefCountedPtr< CPropertyObject > pProp, AFX_EVENT* pEvent);
 
@@ -56,6 +56,7 @@ public:
 		BSTR bstrLicKey = NULL)
 	{ return CreateControl(clsid, lpszWindowName, dwStyle, rect, pParentWnd, nID,
 		pPersist, bStorage, bstrLicKey); }
+	void InitToolTip();
 
 	HRESULT SaveToStream( IStream* pStream );
 	

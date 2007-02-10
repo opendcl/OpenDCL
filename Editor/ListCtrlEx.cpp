@@ -62,29 +62,25 @@ void CListCtrlEx::OnSize(UINT nType, int cx, int cy)
 void CListCtrlEx::SetupColumns(CDclControlObject *pControl)
 {	
 	while (m_Child.GetItemCount() > 0)
-	{
 		m_Child.DeleteItem(0);
-	}
 
 	RefCountedPtr< CPropertyObject > pColCaptions = pControl->GetPropertyObject(nColumnCaptions);
 	RefCountedPtr< CPropertyObject > pColWidths = pControl->GetPropertyObject(nColumnWidths);
 	RefCountedPtr< CPropertyObject > pColAlign = pControl->GetPropertyObject(nColumnAlignments);
 	RefCountedPtr< CPropertyObject > pColImage = pControl->GetPropertyObject(nColumnImages);
-	
-	CString str;
-	HDITEM  hdi;
-	
+
 	for (int i = 0; i < pColCaptions->CountList(); i++)
 	{				
+		HDITEM  hdi;
 		hdi.mask = HDI_TEXT | HDI_WIDTH | HDI_FORMAT ;
 		hdi.cxy = pColWidths->GetIntArrayPtr()->at(i);
 		hdi.fmt = HDF_STRING;
 
 		if (pColAlign->GetIntArrayPtr()->at(i) == 0)
 			hdi.fmt = hdi.fmt | HDF_LEFT;
-		else if (pColAlign->GetIntArrayPtr()->at(i) == 0)
+		else if (pColAlign->GetIntArrayPtr()->at(i) == 2)
 			hdi.fmt = hdi.fmt | HDF_CENTER;
-		else if (pColAlign->GetIntArrayPtr()->at(i) == 0)
+		else if (pColAlign->GetIntArrayPtr()->at(i) == 1)
 			hdi.fmt = hdi.fmt | HDF_RIGHT;
 
 		if (pColImage->GetIntArrayPtr()->at(i) > -1)
@@ -93,10 +89,8 @@ void CListCtrlEx::SetupColumns(CDclControlObject *pControl)
 			hdi.fmt = hdi.fmt | HDF_IMAGE;
 			hdi.iImage = pColImage->GetIntArrayPtr()->at(i);			
 		}
-
-		str = pColCaptions->GetStringItem(i);
-		hdi.pszText = str.GetBuffer(0);
-
+		CString sCaption = pColCaptions->GetStringItem(i);
+		hdi.pszText = sCaption.LockBuffer();
 		m_Child.InsertItem(i, &hdi);
 	}
 }

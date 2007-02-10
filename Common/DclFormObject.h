@@ -60,7 +60,6 @@ public:
 // Operations
 public:
 	bool DeleteControl(long nIndex);
-
 	void ClearR14Events();
 	void IncrementPictureId(int nIdIncrement);
 	int CountDeletedControls() const;
@@ -111,6 +110,7 @@ public:
 	void SetParentForm( LPCTSTR pszParentUniqueName );
 	short GetTabIndex() const { return mnTabIndex; }
 	void SetTabIndex( short nIndex ) { mnTabIndex = nIndex; }
+	RefCountedPtr< CImageList > GetImageList( size_t index ) const;
 
 	//File I/O
 public:

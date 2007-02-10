@@ -41,7 +41,7 @@ HWND CModalDialogX::GetHWnd() const
 void CModalDialogX::CloseDialog(int nStatus) const
 {
 	mpOwner->EndDialog( nStatus );
-	mpOwner->DestroyWindow(); //just to be sure
+	mpOwner->SendMessage(WM_CLOSE, 0, 0); //just to make sure
 }
 
 INT_PTR CModalDialogX::DoModal()

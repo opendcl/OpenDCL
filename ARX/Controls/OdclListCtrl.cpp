@@ -13,6 +13,7 @@
 #include "InvokeMethod.h"
 #include "ToolTips.h"
 #include "Workspace.h"
+#include "ControlPane.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -60,10 +61,9 @@ void CLVEdit::OnSetfocus()
 	m_pParent->InvalidateRect(m_rcOldPos);
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// OdclListCtrl
 
-WORD DibNumColors (VOID FAR * pv)
+//utility functions
+static WORD DibNumColors (VOID FAR * pv)
 {
     INT                 bits;
     LPBITMAPINFOHEADER  lpbi;
@@ -87,7 +87,6 @@ WORD DibNumColors (VOID FAR * pv)
     }
 }
 
-//utility functions
 static WORD PaletteSize (VOID FAR * pv)
 {
     LPBITMAPINFOHEADER lpbi;
@@ -138,6 +137,7 @@ static HBITMAP BitmapFromDib (
     GlobalUnlock(hdib);
     return hbm;
 }
+
 static HANDLE readDibFromMemory(LPVOID pDibSrc)
 {
     LPBITMAPINFOHEADER pbmih = (LPBITMAPINFOHEADER)pDibSrc;
@@ -155,10 +155,252 @@ static HANDLE readDibFromMemory(LPVOID pDibSrc)
     return hdib;
 }
 
-OdclListCtrl::OdclListCtrl()
+
+bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
+{
+	bool bFailed = false;
+	switch( pProp->GetID() )
+	{
+	case nBlockListStyle:
+		{
+			mbBlockList = true;
+
+			//create a default icon for blocks without a preview image
+			CImageList* pBlockViewImageList = new CImageList();
+			pBlockViewImageList->Create( 32,32, ILC_COLOR4, 1, 1 );
+			pBlockViewImageList->SetBkColor( GetControl()->GetBkColor() );
+
+			HICON hIcon = (HICON)::LoadImage( _hdllInstance, MAKEINTRESOURCE(IDI_LARGEBLOCK), IMAGE_ICON, 0, 0, 0 );
+			pBlockViewImageList->Add( hIcon );
+			DestroyIcon( hIcon );
+			delete GetControl()->SetImageList( pBlockViewImageList, LVSIL_NORMAL );
+			delete GetControl()->SetImageList( pBlockViewImageList, LVSIL_SMALL );
+			break;
+		}
+	case nListViewStyle:
+		{
+			break;
+		}
+	case nIconXSpacing:
+		{
+			int nImageListIconSizeX = 0;
+			if( mpTemplate->GetPropertyObject( nBlockListStyle ) )
+				nImageListIconSizeX = 32;
+			else
+			{
+				RefCountedPtr< CImageList > pImageList;
+				RefCountedPtr< CPropertyObject > pPropImageList = mpTemplate->GetPropertyObject( nImageList );
+				if( pPropImageList )
+					pImageList = mpTemplate->GetOwner()->GetImageList( pPropImageList->GetShortValue() );
+				if( pImageList )
+				{
+					int cY;
+					::ImageList_GetIconSize( *pImageList, &nImageListIconSizeX, &cY );
+				}
+			}
+			CSize sizeIconSpacing( mpControl->SendMessage( LVM_GETITEMSPACING ) );
+			sizeIconSpacing.cx = pProp->GetLongValue() + nImageListIconSizeX;
+			GetControl()->SetIconSpacing( sizeIconSpacing );
+			break;
+		}
+	case nIconYSpacing:
+		{
+			int nImageListIconSizeY = 0;
+			if( mpTemplate->GetPropertyObject( nBlockListStyle ) )
+				nImageListIconSizeY = 32;
+			else
+			{
+				RefCountedPtr< CImageList > pImageList;
+				RefCountedPtr< CPropertyObject > pPropImageList = mpTemplate->GetPropertyObject( nImageList );
+				if( pPropImageList )
+					pImageList = mpTemplate->GetOwner()->GetImageList( pPropImageList->GetShortValue() );
+				if( pImageList )
+				{
+					int cX;
+					::ImageList_GetIconSize( *pImageList, &cX, &nImageListIconSizeY );
+				}
+			}
+			CSize sizeIconSpacing( mpControl->SendMessage( LVM_GETITEMSPACING ) );
+			sizeIconSpacing.cy = pProp->GetLongValue() + nImageListIconSizeY;
+			GetControl()->SetIconSpacing( sizeIconSpacing );
+			break;
+		}
+	case nGridLines:
+		{
+			if( pProp->GetBooleanValue() )
+				GetControl()->SetExtendedStyle( GetControl()->GetExtendedStyle() | LVS_EX_GRIDLINES );
+			else
+				GetControl()->SetExtendedStyle( GetControl()->GetExtendedStyle() & ~LVS_EX_GRIDLINES );
+			break;
+		}
+	case nFullRowSelect:
+		{
+			if( pProp->GetBooleanValue() )
+				GetControl()->SetExtendedStyle( GetControl()->GetExtendedStyle() | LVS_EX_FULLROWSELECT );
+			else
+				GetControl()->SetExtendedStyle( GetControl()->GetExtendedStyle() & ~LVS_EX_FULLROWSELECT );
+			break;
+		}
+	case nColumnCaptions:
+		{
+			CHeaderCtrl* pHdrCtrl = GetControl()->GetHeaderCtrl();
+			PropVal::TCStringArrayPtr prsCaption = pProp->GetStringArrayPtr();
+			size_t idx = prsCaption->size();
+			while( idx > 0 )
+			{
+				CString sCaption = prsCaption->at(--idx);
+				HDITEM hdi;
+				hdi.mask = HDI_TEXT;
+				hdi.pszText = sCaption.LockBuffer();
+				if( !pHdrCtrl->SetItem( idx, &hdi ) )
+					bFailed = true;
+			}
+			break;
+		}
+	case nColumnWidths:
+		{
+			CHeaderCtrl* pHdrCtrl = GetControl()->GetHeaderCtrl();
+			PropVal::TIntArrayPtr prInt = pProp->GetIntArrayPtr();
+			size_t idx = prInt->size();
+			while( idx > 0 )
+			{
+				HDITEM hdi;
+				hdi.mask = HDI_WIDTH;
+				hdi.cxy = prInt->at(--idx);
+				if( !pHdrCtrl->SetItem( idx, &hdi ) )
+					bFailed = true;
+			}
+			break;
+		}
+	case nColumnAlignments:
+		{
+			CHeaderCtrl* pHdrCtrl = GetControl()->GetHeaderCtrl();
+			PropVal::TIntArrayPtr prInt = pProp->GetIntArrayPtr();
+			size_t idx = prInt->size();
+			while( idx > 0 )
+			{
+				HDITEM hdi;
+				hdi.mask = HDI_FORMAT;
+				hdi.fmt = prInt->at(--idx);
+				if( !pHdrCtrl->SetItem( idx, &hdi ) )
+					bFailed = true;
+			}
+			break;
+		}
+	case nColumnImages:
+		{
+			CHeaderCtrl* pHdrCtrl = GetControl()->GetHeaderCtrl();
+			PropVal::TIntArrayPtr prInt = pProp->GetIntArrayPtr();
+			size_t idx = prInt->size();
+			while( idx > 0 )
+			{
+				HDITEM hdi;
+				hdi.mask = HDI_IMAGE;
+				hdi.iImage = prInt->at(--idx);
+				if( !pHdrCtrl->SetItem( idx, &hdi ) )
+					bFailed = true;
+			}
+			break;
+		}
+	}
+	return !bFailed;
+}
+
+DWORD CListViewControlX::GetWndStyle() const
+{
+	DWORD dwStyle = CArxDialogControl::GetWndStyle();
+
+	switch( mpTemplate->GetLngProperty( nBlockListStyle ) ) //returns -1 if not found
+	{
+	case 0:
+		dwStyle |= (LVS_ICON | LVS_NOCOLUMNHEADER);
+		break;
+	case 1:
+		dwStyle |= (LVS_LIST| LVS_NOCOLUMNHEADER);
+		break;
+	case -1:
+		{ //block list style property not found, so it is not a blockview list
+			dwStyle |= LVS_SHAREIMAGELISTS; //normal listview always uses a shared image list
+			LONG fListViewStyle = mpTemplate->GetLngProperty( nListViewStyle ); //returns -1 if not found
+			switch( fListViewStyle )
+			{
+			case 0:
+				dwStyle |= (LVS_ICON | LVS_NOCOLUMNHEADER);
+				break;
+			case 1:
+				dwStyle |= (LVS_SMALLICON | LVS_NOCOLUMNHEADER);
+				break;
+			case 2:
+				dwStyle |= (LVS_LIST | LVS_NOCOLUMNHEADER);
+				break;
+			default:
+				dwStyle |= (LVS_REPORT);
+				if( !mpTemplate->GetBoolProperty( nColHeader ) )
+					dwStyle |= (LVS_NOCOLUMNHEADER);
+				break;
+			}
+			if( fListViewStyle < 4 && mpTemplate->GetBoolProperty( nEditLabels ) )
+				dwStyle |= (LVS_EDITLABELS);			
+			break;
+		}
+	}
+
+	switch( mpTemplate->GetLngProperty( nListViewSort ) )
+	{
+	case 1:
+		dwStyle |= (LVS_SORTDESCENDING);
+		break;
+	case 2:
+		dwStyle |= (LVS_SORTASCENDING);
+		break;
+	}
+	
+	switch( mpTemplate->GetLngProperty( nListViewIconAlign ) )
+	{
+	case 0:
+		// I know that 0 = left in the property list box in the editor, but the top must be set so
+		// the list scrolls top to bottom, this would make better sense to the user
+		dwStyle |= (LVS_ALIGNTOP);
+		break;
+	case 1:
+		// I know that 1 = top in the property list box in the editor, but the top must be set so
+		// the list scrolls left to right, this would make better sense to the user
+		dwStyle |= (LVS_ALIGNLEFT);
+		break;
+	}
+
+	if( mpTemplate->GetBoolProperty( nAutoArrange ) )
+		dwStyle |= (LVS_AUTOARRANGE);	
+	if( !mpTemplate->GetBoolProperty( nLabelWrap ) )
+		dwStyle |= (LVS_NOLABELWRAP);
+	if( mpTemplate->GetBoolProperty( nShowSelectAlways ) )
+		dwStyle |= (LVS_SHOWSELALWAYS);
+	if( !mpTemplate->GetBoolProperty( nMultiSelect ) )
+		dwStyle |= (LVS_SINGLESEL);
+
+	return dwStyle;
+}
+
+bool CListViewControlX::OnApplyImageList( RefCountedPtr< CPropertyObject > pProp )
+{
+	RefCountedPtr< CImageList > pImageList = mpTemplate->GetOwner()->GetImageList( pProp->GetShortValue() );
+	GetControl()->SetCtrlImageList( pImageList );
+	pImageList->SetBkColor( GetControl()->GetBkColor() );
+	delete GetControl()->SetImageList( pImageList, TVSIL_NORMAL );
+	delete GetControl()->SetImageList( pImageList, LVSIL_SMALL );
+	return true;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// OdclListCtrl
+
+OdclListCtrl::OdclListCtrl( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID )
+: mControlX( pTemplate, &Pane, this )
+, mpSourceControl( pTemplate )
+, mpControlPane( &Pane )
 {
 	m_pDocToModReactor = NULL;
-	m_pBlockImageList = NULL;
 	m_pBlockReactor = NULL;
 	
 	// No tooltip created
@@ -166,32 +408,57 @@ OdclListCtrl::OdclListCtrl()
 
 	m_pLoadedDwg = NULL;
 	m_FileName = CString();
-	
-	
 
+	Create( Pane.GetHostDialog(), nID );
 }
 
 OdclListCtrl::~OdclListCtrl()
 {
 	if (m_pDocToModReactor != NULL)
-	{
 		delete m_pDocToModReactor;
-		m_pDocToModReactor = NULL;
-	}
-
 	if (m_pBlockReactor != NULL)
-	{
 		delete m_pBlockReactor;
-		m_pBlockReactor = NULL;
-	}
-	
-	if (m_pBlockImageList != NULL)
-	{
-		m_pBlockImageList->DeleteImageList();
-		delete m_pBlockImageList;
-		m_pBlockImageList = NULL;
-	}
+}
 
+bool OdclListCtrl::Create( CWnd* pParentWnd, UINT nID )
+{
+	bool bSuccess =
+		CListCtrl::Create( mControlX.GetWndStyle(),
+											 mControlX.GetWndRect(),
+											 pParentWnd,
+											 nID );
+	VERIFY(CWnd::SubclassDlgItem(nID, pParentWnd));
+
+	if( bSuccess && !mControlX.ApplyPropertiesEnum() )
+		bSuccess = false;
+
+	if( mControlX.IsBlockList() )
+	{
+		// create the new reactors
+		m_pDocToModReactor = new CAcadDocReactor( this );
+		m_pBlockReactor = new CAcadBlockReactor( this );
+
+		// activate the reactors
+		acDocManager->addReactor( m_pDocToModReactor );
+		acedEditor->addReactor( m_pBlockReactor );
+
+		// call the method to populate the block list control
+		RefreshBlockList();
+	}
+	else
+		SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
+
+	SetAcadColor( mpSourceControl->GetLngProperty( nAcadColor ) );
+
+	InitToolTip();
+	SetToolTipEx(this, m_ToolTip, mpSourceControl);
+
+	if( mpSourceControl->GetLngProperty(nEventInvoke) == 1 )
+		m_bInvokeWithSendString = true;
+	else
+		m_bInvokeWithSendString = false;
+
+	return bSuccess;
 }
 
 
@@ -225,189 +492,9 @@ BEGIN_MESSAGE_MAP(OdclListCtrl, CListCtrl)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
+
 /////////////////////////////////////////////////////////////////////////////
 // OdclListCtrl message handlers
-
-BOOL OdclListCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID) 
-{
-	BOOL RetVal;
-	DWORD dwStyle;
-	CRect ArxRect;
-
-	// set the arx control pointer
-    m_ArxControl = pControl;
-
-	// get the rectangle of the new control
-	ArxRect.top = pControl->m_pTop->GetLongValue();
-	ArxRect.left = pControl->m_pLeft->GetLongValue();
-	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
-	
-	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
-	
-
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
-		dwStyle = dwStyle | WS_TABSTOP;
-	else
-		dwStyle = dwStyle | WS_GROUP;
-
-	int nPropBlockListStyle = pControl->GetLngProperty(nBlockListStyle);
-	
-	if (nPropBlockListStyle > -1)
-	{
-		dwStyle = dwStyle | LVS_ICON | LVS_NOCOLUMNHEADER;		
-	}
-	else
-	{	
-		// a -1 will be returned if not found
-		switch (pControl->GetLngProperty(nListViewStyle))
-		{
-		case 0:
-			dwStyle = dwStyle | LVS_ICON| LVS_NOCOLUMNHEADER; 
-			break;
-		case 1:
-			dwStyle = dwStyle | LVS_SMALLICON | LVS_NOCOLUMNHEADER;
-			break;
-		case 2:
-			dwStyle = dwStyle | LVS_LIST | LVS_NOCOLUMNHEADER;
-			break;
-		default:
-			{
-			dwStyle = dwStyle | LVS_REPORT;
-			if (m_ArxControl->GetBoolProperty(nColHeader) == FALSE)
-				dwStyle = dwStyle | LVS_NOCOLUMNHEADER;
-		
-			break;
-			}
-		}
-	}
-	
-	// a -1 will be returned if not found
-	switch (pControl->GetLngProperty(nBlockListStyle))
-	{
-	case 0:
-		dwStyle = dwStyle | LVS_ICON | LVS_NOCOLUMNHEADER; //
-		break;
-	case 1:
-		dwStyle = dwStyle | LVS_LIST| LVS_NOCOLUMNHEADER;
-		break;
-	}
-	
-
-	switch (pControl->GetLngProperty(nListViewSort))
-	{
-	case 1:
-		dwStyle = dwStyle | LVS_SORTDESCENDING;
-		break;
-	case 2:
-		dwStyle = dwStyle | LVS_SORTASCENDING;
-		break;
-	}
-	
-	switch (pControl->GetLngProperty(nListViewIconAlign))
-	{
-	case 0:
-		// I know that 0 = left in the property list box in the editor, but the top must be set so
-		// the list scrolls top to bottom, this would make better sense to the user
-		dwStyle = dwStyle | LVS_ALIGNTOP;
-		break;
-	case 1:
-		// I know that 1 = top in the property list box in the editor, but the top must be set so
-		// the list scrolls left to right, this would make better sense to the user
-		dwStyle = dwStyle | LVS_ALIGNLEFT;
-		break;
-	}
-	
-	if (pControl->GetBoolProperty(nAutoArrange))
-		dwStyle = dwStyle | LVS_AUTOARRANGE;	
-	if (!m_ArxControl->GetBoolProperty(nLabelWrap))
-		dwStyle = dwStyle | LVS_NOLABELWRAP;
-	if (m_ArxControl->GetBoolProperty(nShowSelectAlways))
-		dwStyle = dwStyle | LVS_SHOWSELALWAYS;
-	if (!m_ArxControl->GetBoolProperty(nMultiSelect))
-		dwStyle = dwStyle | LVS_SINGLESEL;
-	if (pControl->GetLngProperty(nBlockListStyle) == -1)
-	{
-		//if (pControl->GetBoolProperty(nEditLabels) == TRUE)
-		if (pControl->GetLngProperty(nListViewStyle) < 4)
-		{
-			if (pControl->GetBoolProperty(nEditLabels))
-				dwStyle = dwStyle | LVS_EDITLABELS;			
-		}
-		else
-		{
-			m_bEditCells = pControl->GetBoolProperty(nEditLabels);
-		}
-	}
-	RetVal = CListCtrl::Create( dwStyle, ArxRect, pParentWnd, nID );
-	VERIFY(CListCtrl::SubclassDlgItem(nID, pParentWnd));
-	
-	if (pControl->GetBoolProperty(nGridLines))
-		SetExtendedStyle(GetExtendedStyle()|LVS_EX_GRIDLINES);
-
-	if (pControl->GetBoolProperty(nFullRowSelect))
-		SetExtendedStyle(GetExtendedStyle()|LVS_EX_FULLROWSELECT);
-
-	
-	if (nPropBlockListStyle <= -1)
-	{
-		// set the extended list view styles
-		SetExtendedStyle(GetExtendedStyle()|LVS_EX_SUBITEMIMAGES);
-	}
-	if (nPropBlockListStyle > -1)
-	{
-		m_pBlockImageList = new CImageList();
-		m_pBlockImageList->Create(32,32, ILC_COLOR4, 1, 1);
-		m_pBlockImageList->SetBkColor(GetBkColor());
-		HMODULE hRes = _hdllInstance;
-		// get the default icon
-		HICON hIcon = (HICON)::LoadImage(hRes, MAKEINTRESOURCE(IDI_LARGEBLOCK), IMAGE_ICON, 0, 0, 0);
-  	
-		// add the default icon
-		m_pBlockImageList->Add(hIcon);
-		DestroyIcon(hIcon);
-		// set the image list so the block items will display an image
-		SetImageList(m_pBlockImageList, LVSIL_NORMAL);
-		SetImageList(m_pBlockImageList, LVSIL_SMALL);
-		
-		// creat the new the reactors
-		m_pDocToModReactor = new CAcadDocReactor(this);
-		m_pBlockReactor = new CAcadBlockReactor(this);
-		
-		// activate the reactor
-		acDocManager->addReactor(m_pDocToModReactor);
-		acedEditor->addReactor(m_pBlockReactor);
-		
-        
-		// set the icon spacing
-		CListCtrl::SetIconSpacing(
-			m_ArxControl->GetLngProperty(nIconXSpacing) + 32,
-			m_ArxControl->GetLngProperty(nIconYSpacing) + 32);
-		
-		// call the method to populate the block list control
-		RefreshBlockList();
-
-		
-	}	
-
-	InitToolTip();
-	SetToolTipEx(this, m_ToolTip, pControl);
-
-
-	switch (m_ArxControl->GetLngProperty(nEventInvoke))
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
-
-	m_ArxControl = pControl;
-	return RetVal;
-	
-}
 
 CString _ltoa(int nVal)
 {
@@ -416,19 +503,13 @@ CString _ltoa(int nVal)
 	return value;
 }
 
-
-
 void OdclListCtrl::SetAcadColor(long nColor)
 {
 	COLORREF crBkColor = GetRGBColor(nColor);
 	SetBkColor(crBkColor);
 	SetTextBkColor(crBkColor);
-
 	Invalidate();
-
 }
-
-
 
 void OdclListCtrl::OnDestroy() 
 {
@@ -468,22 +549,7 @@ void OdclListCtrl::OnDestroy()
 		delete m_pBlockReactor;
 		m_pBlockReactor = NULL;
 	}
-		
-	
-	
-	if (m_pBlockImageList != NULL)
-	{
-		SetImageList(NULL, LVSIL_NORMAL);
-		SetImageList(NULL, LVSIL_SMALL);
-		
-		m_pBlockImageList->DeleteImageList();
-		delete m_pBlockImageList;
-		m_pBlockImageList = NULL;
-	}
-
-	
 	CListCtrl::OnDestroy();
-		
 }
 
 
@@ -568,7 +634,9 @@ int OdclListCtrl::extractPreview(const AcDbBlockTableRecord* pBTR)
 		HBITMAP hBitmap = BitmapFromDib(hDib,NULL);
 		if(hBitmap) 
 		{
-			ret = m_pBlockImageList->Add(CBitmap::FromHandle(hBitmap), RGB(255,0,255));
+			CBitmap* pbmpImage = CBitmap::FromHandle(hBitmap);
+			GetImageList(LVSIL_SMALL)->Add(pbmpImage, RGB(255,0,255));
+			ret = GetImageList(LVSIL_NORMAL)->Add(pbmpImage, RGB(255,0,255));
 			::DeleteObject(hBitmap);
 		}
 		if(hDib)
@@ -1505,7 +1573,6 @@ void OdclListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 }
 
 
-
 void OdclListCtrl::OnOdstatechanged(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	NMLVODSTATECHANGE* pStateChanged = (NMLVODSTATECHANGE*)pNMHDR;
@@ -1523,4 +1590,10 @@ void OdclListCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	if( GetFocus() != this ) SetFocus();
 	CListCtrl::OnHScroll(nSBCode, nPos, pScrollBar);
+}
+
+void OdclListCtrl::PostNcDestroy() 
+{
+	CListCtrl::PostNcDestroy();
+	delete this;
 }

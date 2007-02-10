@@ -83,6 +83,7 @@ bool CDialogControl::ApplyPropertiesEnum()
 		{
 		case nBorderStyle: if( !OnApplyBorderStyle( pProp ) ) bSuccess = false; break;
 		case nCaption: if( !OnApplyBorderStyle( pProp ) ) bSuccess = false; break;
+		case nImageList: if( !OnApplyImageList( pProp ) ) bSuccess = false; break;
 		default: if( !OnApplyProperty( pProp ) ) bSuccess = false; break;
 		}
 	}
@@ -99,10 +100,15 @@ bool CDialogControl::OnApplyBorderStyle( RefCountedPtr< CPropertyObject > pProp 
 	switch( pProp->GetLongValue() )
 	{
 	case 0:
+		mpControl->ModifyStyle( WS_BORDER, 0, SWP_FRAMECHANGED );
+		break;
 	case 1:
+		mpControl->ModifyStyle( WS_BORDER, 0, SWP_FRAMECHANGED );
+		mpControl->ModifyStyleEx( WS_EX_STATICEDGE, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED );
+		break;
 	case 2:
 		mpControl->ModifyStyle( WS_BORDER, 0, SWP_FRAMECHANGED );
-		mpControl->ModifyStyleEx( WS_EX_STATICEDGE | WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED );
+		mpControl->ModifyStyleEx( WS_EX_CLIENTEDGE, WS_EX_STATICEDGE, SWP_FRAMECHANGED );
 		break;
 	}
 	return true;
@@ -112,4 +118,9 @@ bool CDialogControl::OnApplyCaption( RefCountedPtr< CPropertyObject > pProp )
 {
 	mpControl->SetWindowText( pProp->GetStringValue() );
 	return true;
+}
+
+bool CDialogControl::OnApplyImageList( RefCountedPtr< CPropertyObject > pProp )
+{
+	return false;
 }

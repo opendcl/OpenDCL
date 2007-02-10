@@ -182,21 +182,8 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
 		}	
-	case CtlListView:
-		{
-			OdclListCtrl *pControl = new OdclListCtrl;
-			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
-		}	
-	
-	case CtlBlockList:
-		{
-			OdclListCtrl *pControl = new OdclListCtrl;
-			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
-		}	
+	case CtlListView: return TDialogControlLockedPtr((new OdclListCtrl( *pPane, pTemplate, nID ))->GetDialogControl());
+	case CtlBlockList: return TDialogControlLockedPtr((new OdclListCtrl( *pPane, pTemplate, nID ))->GetDialogControl());
 	
 	case CtlCheckBox:
 		{
@@ -766,15 +753,15 @@ void CArxDialogControl::ResetImageList(CDclControlObject *pArxObject, CWnd *pCon
 {
 	CImageListObject *pImageListObject = NULL;
 
-	if (pArxObject->m_pImageList == NULL && pArxObject->GetType() == CtlListView)
-	{
-		int nListCtrlStyle = pArxObject->GetLngProperty(nListViewStyle);
-		OdclListCtrl* pListCtrl = (OdclListCtrl*)pControl;
-		pListCtrl->m_DefaultImageList.Create(1,pArxObject->GetLngProperty(nRowHeight),ILC_COLOR, 1, 1);	
-		pListCtrl->SetImageList(&pListCtrl->m_DefaultImageList, TVSIL_NORMAL);
-		pListCtrl->SetImageList(&pListCtrl->m_DefaultImageList, LVSIL_SMALL);
-		return;
-	}
+	//if (pArxObject->m_pImageList == NULL && pArxObject->GetType() == CtlListView)
+	//{
+	//	int nListCtrlStyle = pArxObject->GetLngProperty(nListViewStyle);
+	//	OdclListCtrl* pListCtrl = (OdclListCtrl*)pControl;
+	//	pListCtrl->m_DefaultImageList.Create(1,pArxObject->GetLngProperty(nRowHeight),ILC_COLOR, 1, 1);	
+	//	pListCtrl->SetImageList(&pListCtrl->m_DefaultImageList, TVSIL_NORMAL);
+	//	pListCtrl->SetImageList(&pListCtrl->m_DefaultImageList, LVSIL_SMALL);
+	//	return;
+	//}
 	
 	if (pArxObject->m_pImageList == NULL && pArxObject->GetType() == CtlGrid)
 	{
@@ -832,26 +819,26 @@ void CArxDialogControl::ResetImageList(CDclControlObject *pArxObject, CWnd *pCon
 			((VdclComboBoxEx*)pControl)->SetImageList(&pImageListObject->m_ImageList);
 			break;
 		}
-		case CtlListView:
-		{
-			int nListCtrlStyle = pArxObject->GetLngProperty(nListViewStyle);
-			((OdclListCtrl*)pControl)->SetImageList(&pImageListObject->m_ImageList, TVSIL_NORMAL);
-			((OdclListCtrl*)pControl)->SetImageList(&pImageListObject->m_ImageList, LVSIL_SMALL);
-			
-			pImageListObject->m_ImageList.SetBkColor(((OdclListCtrl*)pControl)->GetBkColor());
-			
-			int cx, cy;
-			::ImageList_GetIconSize(pImageListObject->m_ImageList, &cx, &cy);
-			
-			if (nListCtrlStyle == 0 && nListCtrlStyle == 1)
-			{
-				// set the icon spacing
-				((OdclListCtrl*)pControl)->SetIconSpacing(
-					pArxObject->GetLngProperty(nIconXSpacing) + cx,
-					pArxObject->GetLngProperty(nIconYSpacing) + cy);
-			}
-			break;
-		}
+		//case CtlListView:
+		//{
+		//	int nListCtrlStyle = pArxObject->GetLngProperty(nListViewStyle);
+		//	((OdclListCtrl*)pControl)->SetImageList(&pImageListObject->m_ImageList, TVSIL_NORMAL);
+		//	((OdclListCtrl*)pControl)->SetImageList(&pImageListObject->m_ImageList, LVSIL_SMALL);
+		//	
+		//	pImageListObject->m_ImageList.SetBkColor(((OdclListCtrl*)pControl)->GetBkColor());
+		//	
+		//	int cx, cy;
+		//	::ImageList_GetIconSize(pImageListObject->m_ImageList, &cx, &cy);
+		//	
+		//	if (nListCtrlStyle == 0 && nListCtrlStyle == 1)
+		//	{
+		//		// set the icon spacing
+		//		((OdclListCtrl*)pControl)->SetIconSpacing(
+		//			pArxObject->GetLngProperty(nIconXSpacing) + cx,
+		//			pArxObject->GetLngProperty(nIconYSpacing) + cy);
+		//	}
+		//	break;
+		//}
 		case CtlGrid:
 		{
 			if (pImageListObject->m_ImageList.m_hImageList != NULL)
@@ -1077,7 +1064,7 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 				break;
 			case CtlListView:		
 			case CtlBlockList:				
-				((OdclListCtrl*)pControlWnd)->SetAcadColor(pControl->GetLngProperty(nAcadColor));
+				//((OdclListCtrl*)pControlWnd)->SetAcadColor(pControl->GetLngProperty(nAcadColor));
 				break;
 				
 			case CtlLabel:

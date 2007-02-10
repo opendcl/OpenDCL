@@ -14,6 +14,7 @@
 #include "PropertyIds.h"
 #include "ControlTypes.h"
 #include "DialogControl.h"
+#include "PropertyNames.h"
 
 
 static const int nNotSet = -1;
@@ -128,7 +129,6 @@ CDclControlObject::CDclControlObject(ControlType type, CDclFormObject* pOwner, L
 	m_nTotalBytes = 0;
 	m_rcOldPosition.SetRect(0,0,0,0);
 	m_Delete = FALSE;
-	GetPropertyList().RemoveAll();
 	m_pCtrlHolder = NULL;
 	m_sLicenseKey.Empty();
 	m_sBaseCode.Empty();
@@ -429,17 +429,9 @@ void CDclControlObject::Serialize(CArchive& ar)
 		ar << m_Id;
 
 		// serialize the image if it exists
+		ar << BOOL(m_pImageList != NULL);
 		if (m_pImageList != NULL)
-		{
-			bImageList = TRUE;
-			ar << bImageList;					
 			m_pImageList->Serialize(ar);
-		}
-		else
-		{
-			bImageList = FALSE;			
-			ar << bImageList;		
-		}
 			
 		if (mType == CtlActiveX)
 		{
@@ -696,7 +688,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 	
 }
 
-INT_PTR CDclControlObject::CountPropertyListItems(int nID)
+INT_PTR CDclControlObject::CountPropertyListItems(PropertyId nID)
 {
 	// create a position variable to hold the counter increment
 	POSITION pos;	
@@ -729,7 +721,7 @@ INT_PTR CDclControlObject::CountPropertyListItems(int nID)
 	return nNotSet;
 }
 
-CString CDclControlObject::GetPropertyListItem(int nID, int nIndex)
+CString CDclControlObject::GetPropertyListItem(PropertyId nID, int nIndex)
 {
 	// create a position variable to hold the counter increment
 	POSITION pos;	
@@ -840,7 +832,7 @@ void CDclControlObject::ForceUpdateGlobalVariable(CString sDclFormName)
 		pPropVar->SetStringValue(mpOwner->GetProject()->GetKeyName() + _T('_') + sDclFormName + _T('_') + pPropName->GetStringValue());	
 }
 
-void CDclControlObject::SetStrProperty(int nID, CString sValue)	
+void CDclControlObject::SetStrProperty(PropertyId nID, CString sValue)	
 {
 	// create a position variable to hold the counter increment
 	POSITION pos;	
@@ -922,7 +914,7 @@ CString CDclControlObject::GetActiveXTypeName() const
 	return sName;
 }
 
-CString CDclControlObject::GetStrProperty(int nID) const
+CString CDclControlObject::GetStrProperty(PropertyId nID) const
 {
 	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
@@ -949,7 +941,7 @@ long CDclControlObject::GetImageListIndex()
 }
 
 
-void CDclControlObject::SetImageListIndex(int nIndex)
+void CDclControlObject::SetImageListIndex(PropertyId nIndex)
 {	
 	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
@@ -965,7 +957,7 @@ void CDclControlObject::SetImageListIndex(int nIndex)
 }
 
 
-long CDclControlObject::GetLngProperty(int nID) const
+long CDclControlObject::GetLngProperty(PropertyId nID) const
 {
 	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
@@ -987,7 +979,7 @@ long CDclControlObject::GetLngProperty(int nID) const
 	return nNotSet;
 }
 
-void CDclControlObject::SetLngProperty(int nID, long lValue)
+void CDclControlObject::SetLngProperty(PropertyId nID, long lValue)
 {
 	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
@@ -1010,7 +1002,7 @@ void CDclControlObject::SetLngProperty(int nID, long lValue)
 	}
 }
 
-void CDclControlObject::SetColorProperty(int nID, COLORREF color)
+void CDclControlObject::SetColorProperty(PropertyId nID, COLORREF color)
 {
 	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
@@ -1025,7 +1017,7 @@ void CDclControlObject::SetColorProperty(int nID, COLORREF color)
 	}
 }
 
-COLORREF CDclControlObject::GetColorProperty(int nID) const
+COLORREF CDclControlObject::GetColorProperty(PropertyId nID) const
 {
 	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
@@ -1038,7 +1030,7 @@ COLORREF CDclControlObject::GetColorProperty(int nID) const
 	return RGB(0,0,0);
 }
 
-void CDclControlObject::SetBoolProperty(int nID, bool bValue)
+void CDclControlObject::SetBoolProperty(PropertyId nID, bool bValue)
 {
 	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
@@ -1053,7 +1045,7 @@ void CDclControlObject::SetBoolProperty(int nID, bool bValue)
 	}
 }
 	
-bool CDclControlObject::GetBoolProperty(int nID) const
+bool CDclControlObject::GetBoolProperty(PropertyId nID) const
 {
 	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
@@ -1075,7 +1067,7 @@ bool CDclControlObject::GetBoolProperty(int nID) const
 	return false;
 }
 
-short CDclControlObject::FindPropertyIndex(int nID) const
+short CDclControlObject::FindPropertyIndex(PropertyId nID) const
 {
 	// create a position variable to hold the counter increment
 	POSITION pos;	
@@ -1135,15 +1127,11 @@ RefCountedPtr< CPropertyObject > CDclControlObject::FindProperty(CString sName)
 	return NULL;
 }
 
-POSITION CDclControlObject::FindPropertyInsertPos(int nID, bool bHidden) const
+POSITION CDclControlObject::FindPropertyInsertPos(PropertyId nID, bool bHidden) const
 {
 	if (nID == nObjectBrowser)
 		return GetPropertyList().GetHeadPosition();		
-
-	CString QueryPropText;
-	int nResourceId = nID + 210; //hardcoding the property start index, need to fix that [ORW]
-	QueryPropText = theWorkspace.LoadResourceString(nResourceId);
-	return FindPropertyInsertPos(QueryPropText, bHidden);
+	return FindPropertyInsertPos(GetPropertyName(nID), bHidden);
 }
 
 POSITION CDclControlObject::FindPropertyInsertPos(CString sName, bool bHidden) const
@@ -1205,7 +1193,7 @@ void CDclControlObject::ClearProperties()
 	GetPropertyList().RemoveAll();
 }
 
-void CDclControlObject::ResetProperty(int nId)
+void CDclControlObject::ResetProperty(PropertyId nId)
 {
 	// create a position variable to hold the counter increment
 	POSITION pos;	
@@ -1231,7 +1219,7 @@ void CDclControlObject::ResetProperty(int nId)
 	}
 }
 
-void CDclControlObject::RemoveProperty(int nId)
+void CDclControlObject::RemoveProperty(PropertyId nId)
 {
 	// create a position variable to hold the counter increment
 	POSITION pos;	

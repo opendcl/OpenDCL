@@ -12,12 +12,12 @@ class CControlPane;
 class CDclControlObject;
 
 
-class CAcadSlideControl : public CArxDialogControl
+class CAcadSlideControlX : public CArxDialogControl
 {
 public:
-	CAcadSlideControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pWnd )
+	CAcadSlideControlX( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pWnd )
 		: CArxDialogControl( pTemplate, pPane, pWnd ) {}
-	virtual ~CAcadSlideControl() {}
+	virtual ~CAcadSlideControlX() {}
 
 	// attributes
 	virtual DWORD GetWndStyle() const; //get window style from properties
@@ -33,7 +33,7 @@ public:
 class CSlideHolder : public CButton
 {
 protected:
-	CAcadSlideControl mControlX;
+	CAcadSlideControlX mControlX;
 	CDclControlObject* mpSourceControl;	
 	CControlPane* mpControlPane;
 	CxAcadSlide mSlideCtrl;

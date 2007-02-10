@@ -404,11 +404,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RES\IDR_MAIN.ICO"
+				RelativePath="..\Common\Res\idr_main.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\idr_main.ico"
+				RelativePath=".\RES\IDR_MAIN.ICO"
 				>
 			</File>
 			<File
@@ -1568,6 +1568,14 @@
 			</File>
 			<File
 				RelativePath="..\Common\PropertyList.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\PropertyNames.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\PropertyNames.h"
 				>
 			</File>
 			<File

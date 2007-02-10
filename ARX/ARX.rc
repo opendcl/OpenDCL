@@ -97,7 +97,7 @@ FONT 8, "MS Sans Serif"
 BEGIN
 END
 
-IDD_MODALDIALOG DIALOGEX 0, 0, 69, 18
+IDD_MODALDIALOG DIALOGEX 0, 0, 78, 18
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
@@ -165,8 +165,8 @@ IDI_FOLDER2             ICON                    "Res\\Folder2.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,0,8
- PRODUCTVERSION 4,0,0,8
+ FILEVERSION 4,0,0,9
+ PRODUCTVERSION 4,0,0,9
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -182,12 +182,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "ObjectDCL ARX Interface"
-            VALUE "FileVersion", "4, 0, 0, 8"
+            VALUE "FileVersion", "4, 0, 0, 9"
             VALUE "InternalName", "ARX"
             VALUE "LegalCopyright", "Copyright © 2007"
             VALUE "OriginalFilename", "ObjectDCL.arx"
             VALUE "ProductName", "ObjectDCL"
-            VALUE "ProductVersion", "4, 0, 0, 8"
+            VALUE "ProductVersion", "4, 0, 0, 9"
         END
     END
     BLOCK "VarFileInfo"

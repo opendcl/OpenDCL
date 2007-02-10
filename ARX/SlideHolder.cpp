@@ -15,7 +15,7 @@ const int nReturnChar = 13;
 const int nHardReturnChar = 10;
 
 
-DWORD CAcadSlideControl::GetWndStyle() const
+DWORD CAcadSlideControlX::GetWndStyle() const
 {
 	DWORD dwStyle = CArxDialogControl::GetWndStyle();
 	return (dwStyle | BS_OWNERDRAW);
@@ -41,6 +41,34 @@ CSlideHolder::CSlideHolder( CControlPane& Pane, CDclControlObject* pTemplate, UI
 
 CSlideHolder::~CSlideHolder()
 {
+}
+
+bool CSlideHolder::Create( CWnd* pParentWnd, UINT nID )
+{
+	bool bSuccess =
+		CButton::Create( NULL,
+										 mControlX.GetWndStyle(),
+										 mControlX.GetWndRect(),
+										 pParentWnd,
+										 nID );
+	VERIFY(CWnd::SubclassDlgItem(nID, pParentWnd));
+
+	if( bSuccess && !mControlX.ApplyPropertiesEnum() )
+		bSuccess = false;
+
+	int nColor = mpSourceControl->GetLngProperty(nAcadColor);
+	mSlideCtrl.SetBackColor( GetRGBColor(nColor) );
+	SetAcadColor( nColor );
+
+	InitToolTip();
+	SetToolTipEx(this, m_ToolTip, mpSourceControl);
+
+	if( mpSourceControl->GetLngProperty(nEventInvoke) == 1 )
+		m_bInvokeWithSendString = true;
+	else
+		m_bInvokeWithSendString = false;
+
+	return bSuccess;
 }
 
 
@@ -76,35 +104,6 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CSlideHolder message handlers
-
-
-bool CSlideHolder::Create( CWnd* pParentWnd, UINT nID )
-{
-	bool bSuccess =
-		CButton::Create( NULL,
-										 mControlX.GetWndStyle(),
-										 mControlX.GetWndRect(),
-										 pParentWnd,
-										 nID );
-	VERIFY(CWnd::SubclassDlgItem(nID, pParentWnd));
-
-	if( bSuccess && !mControlX.ApplyPropertiesEnum() )
-		bSuccess = false;
-
-	int nColor = mpSourceControl->GetLngProperty(nAcadColor);
-	mSlideCtrl.SetBackColor( GetRGBColor(nColor) );
-	SetAcadColor( nColor );
-
-	InitToolTip();
-	SetToolTipEx(this, m_ToolTip, mpSourceControl);
-
-	if( mpSourceControl->GetLngProperty(nEventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
-
-	return bSuccess;
-}
 
 void CSlideHolder::OnPaint() 
 {

@@ -908,16 +908,17 @@ int SetAxObjectProperty()
 				break;
 		}
 	}
+
 /* broken, needs to be fixed [ORW]
 	if (nParams == 1)
 	{		
 		// call the set property method to set the property
-		axContainer->SetAxProperty(pAxProp, &argList[0]);
+		pControl->SetAxProperty(pAxProp, &argList[0]);
 	}
 	else
 	{
 		COleVariant varGet;
-		InvokeAxHelperV(axContainer-GetIDispatch(), pAxProp, DISPATCH_PROPERTYPUT,
+		InvokeAxHelperV(pControl->GetIDispatch(), pAxProp, DISPATCH_PROPERTYPUT,
 			pAxProp->Type, &varGet, pAxProp, &argList, nParams);
 	}
 */

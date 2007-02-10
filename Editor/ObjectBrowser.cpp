@@ -456,22 +456,21 @@ void CObjectBrowser::LoadInfoTree(const CDclControlObject *pControl, HTREEITEM h
 
 void CObjectBrowser::LoadMethods(CString sFileName, HTREEITEM hParentItem)
 {
-	
-	// look in the application directory for the method file
-	char drive[_MAX_DRIVE];
-	char dir[_MAX_DIR];
-	char fname[_MAX_FNAME];
-	char ext[_MAX_EXT];
-	const char *path = _pgmptr ;
-	_splitpath(path, drive, dir, fname, ext );
-
-	
-	CString sMethodFile = CString(drive) + dir + sFileName;
+	CString sMethodFile = sFileName;
 	CFileFind find;
 	if (!find.FindFile(sMethodFile, 0))
-		return;
+	{
+		// look in the application directory for the method file
+		TCHAR drive[_MAX_DRIVE];
+		TCHAR dir[_MAX_DIR];
+		TCHAR fname[_MAX_FNAME];
+		TCHAR ext[_MAX_EXT];
+		const TCHAR *path = _tpgmptr ;
+		_tsplitpath(path, drive, dir, fname, ext );
+		if (!find.FindFile(CString(drive) + dir + sMethodFile, 0))
+			return;
+	}
 	
-	// here we are going to write out to the lisp file.
 	CStdioFile fout(sMethodFile,
 		CFile::shareDenyWrite|CFile::modeRead);
 	
@@ -514,19 +513,20 @@ CString CObjectBrowser::StripMethodNameOfBarckets(CString sMethodName)
 bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CString &sTitle, CString &sDesc, CString &sDefun1)
 {
 	CString sFuncName;
-	// look in the application directory for the method file
-	char drive[_MAX_DRIVE];
-	char dir[_MAX_DIR];
-	char fname[_MAX_FNAME];
-	char ext[_MAX_EXT];
-	const char *path = _pgmptr ;
-	_splitpath(path, drive, dir, fname, ext );
-
-	
-	CString sMethodFile = CString(drive) + dir + sFileName;
+	CString sMethodFile = sFileName;
 	CFileFind find;
 	if (!find.FindFile(sMethodFile, 0))
-		return false;
+	{
+		// look in the application directory for the method file
+		TCHAR drive[_MAX_DRIVE];
+		TCHAR dir[_MAX_DIR];
+		TCHAR fname[_MAX_FNAME];
+		TCHAR ext[_MAX_EXT];
+		const TCHAR *path = _tpgmptr ;
+		_tsplitpath(path, drive, dir, fname, ext );
+		if (!find.FindFile(CString(drive) + dir + sMethodFile, 0))
+			return false;
+	}
 	
 	// here we are going to write out to the lisp file.
 	CStdioFile fout(sMethodFile,
@@ -782,7 +782,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 						if (m_pDclForm->GetType() == VdclFileDialog)
 							LoadFullMethod(theWorkspace.LoadResourceString(IDS_FILEDLGMTH), sItemText, sTitle, sDesc, sDefun1);	
 						else if (pControl->GetType() == -2)
-							LoadFullMethod("BonusFunctions.mth", sItemText, sTitle, sDesc, sDefun1);	
+							LoadFullMethod(_T("BonusFunctions.mth"), sItemText, sTitle, sDesc, sDefun1);	
 						else
 							LoadFullMethod(theWorkspace.LoadResourceString(IDS_FORMSMTH), sItemText, sTitle, sDesc, sDefun1);	
 					}
@@ -801,7 +801,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 						{
 						
 						case CtlFileDlgCtrl:
-							LoadFullMethod("FileDlgCtrl.mth", sItemText, sTitle, sDesc, sDefun1);
+							LoadFullMethod(_T("FileDlgCtrl.mth"), sItemText, sTitle, sDesc, sDefun1);
 							break;
 
 						case CtlTabStrip:
@@ -817,26 +817,26 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 							break;
 	
 						case CtlGrid:
-							LoadFullMethod("Grid.mth", sItemText, sTitle, sDesc, sDefun1);
+							LoadFullMethod(_T("Grid.mth"), sItemText, sTitle, sDesc, sDefun1);
 							break;
 	
 						case -1: // a form
 							if (m_pDclForm->GetType() == VdclFileDialog && pControl->GetType() != CtlFileDlgCtrl)
-								LoadFullMethod("FileDlg.mth", sItemText, sTitle, sDesc, sDefun1);
+								LoadFullMethod(_T("FileDlg.mth"), sItemText, sTitle, sDesc, sDefun1);
 							else
-								LoadFullMethod("Forms.mth", sItemText, sTitle, sDesc, sDefun1);
+								LoadFullMethod(_T("Forms.mth"), sItemText, sTitle, sDesc, sDefun1);
 							break;
 
 						case -2: // bonus functions
-							LoadFullMethod("BonusFunctions.mth", sItemText, sTitle, sDesc, sDefun1);
+							LoadFullMethod(_T("BonusFunctions.mth"), sItemText, sTitle, sDesc, sDefun1);
 							break;
 
 						case CtlImageComboBox:
-							LoadFullMethod("ImageComboBox.mth", sItemText, sTitle, sDesc, sDefun1);
+							LoadFullMethod(_T("ImageComboBox.mth"), sItemText, sTitle, sDesc, sDefun1);
 							break;
 	
 						case CtlAnimate:
-							LoadFullMethod("AnimationCtrl.mth", sItemText, sTitle, sDesc, sDefun1);
+							LoadFullMethod(_T("AnimationCtrl.mth"), sItemText, sTitle, sDesc, sDefun1);
 							break;
 	
 						case CtlDwgList:

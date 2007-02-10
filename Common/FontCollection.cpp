@@ -34,8 +34,7 @@ const CFont * CFontCollection::GetFont(CDclControlObject *pControl, CWnd *pWnd)
 	stTargetFont.lfUnderline = pControl->GetBoolProperty(nLabelUnderline);
 	stTargetFont.lfStrikeOut = pControl->GetBoolProperty(nLabelStrikeOut);
 	BOOL bFontSizeStyle = pControl->GetBoolProperty(nFontSizeStyle);
-	RefCountedPtr< CPropertyObject > pFontSizeStyle = pControl->GetPropertyObject(nFontSizeStyle); //this is odd [ORW]
-	if( bFontSizeStyle || pFontSizeStyle )
+	if( bFontSizeStyle )
 	{
 		HWND hwndControl = (pWnd? pWnd->m_hWnd : NULL);
 		HDC hDC = ::GetDC( hwndControl );

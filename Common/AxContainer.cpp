@@ -1483,24 +1483,23 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, int nID,
 		break;
 	}
 
-	//These functions are only available in the ARX module. I'm just commenting them out for now. [ORW]
-	//InitToolTip();
-	//SetToolTipEx(this, m_ToolTip, pControl);
+	InitToolTip();
+	SetToolTipEx(this, mToolTip, pControl);
 
 	return TRUE;
 }
-//
-//
-//void CAxContainer::InitToolTip()
-//{
-//	if (m_ToolTip.m_hWnd == NULL)
-//	{
-//		// Create ToolTip control
-//		m_ToolTip.Create(this);
-//		// Create inactive
-//		m_ToolTip.Activate(FALSE);
-//	}
-//} // End of InitToolTip
+
+
+void CAxContainer::InitToolTip()
+{
+	if (mToolTip.m_hWnd == NULL)
+	{
+		// Create ToolTip control
+		mToolTip.Create(this);
+		// Create inactive
+		mToolTip.Activate(FALSE);
+	}
+} // End of InitToolTip
 
 
 BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RECT& rect, int nID, CWnd *pParent, bool bAddPropInfo)
@@ -1535,10 +1534,8 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RE
 	COleStreamFile *pOleStreamFile = NULL;
 	
 	// if properties have been set already.
-	if (!bAddPropInfo && pControl->m_pStream != NULL)
-	{		
+	if (!bAddPropInfo && pControl->m_pStream)
 		pOleStreamFile = new COleStreamFile(pControl->GetLoadStream());
-	}
 
 	TRY
 	{

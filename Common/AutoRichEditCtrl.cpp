@@ -73,9 +73,9 @@ DWORD CALLBACK CAutoRichEditCtrl::CBStreamIn(DWORD dwCookie, LPBYTE pbBuff, LONG
 
 	CString *pstr = reinterpret_cast<CString*>(dwCookie);
 
-	if (pstr->GetLength() * sizeof((*pstr)[0]) < (ULONG)cb)
+	if (pstr->GetLength() * sizeof(TCHAR) < (ULONG)cb)
 	{
-		*pcb = pstr->GetLength() * sizeof(pstr[0]);
+		*pcb = pstr->GetLength() * sizeof(TCHAR);
 		memcpy(pbBuff, (LPCTSTR) *pstr, *pcb);
 		pstr->Empty();
 	}
@@ -83,7 +83,7 @@ DWORD CALLBACK CAutoRichEditCtrl::CBStreamIn(DWORD dwCookie, LPBYTE pbBuff, LONG
 	{
 		*pcb = cb;
 		memcpy(pbBuff, (LPCTSTR) *pstr, *pcb);
-		*pstr = pstr->Right(pstr->GetLength() - cb / sizeof((*pstr)[0]));
+		*pstr = pstr->Right(pstr->GetLength() - cb / sizeof(TCHAR));
 	}
 	///
 

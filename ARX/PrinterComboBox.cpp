@@ -21,7 +21,7 @@
 #define dwFlags PRINTER_ENUM_CONNECTIONS | PRINTER_ENUM_LOCAL
 
 
-CRect CPrinterComboControl::GetWndRect() const
+CRect CPrinterComboControlX::GetWndRect() const
 {
 	CRect rectCombo = CArxDialogControl::GetWndRect();
 	long nListHeight = mpTemplate->GetLngProperty(nDropDownHeight);
@@ -31,7 +31,7 @@ CRect CPrinterComboControl::GetWndRect() const
 	return rectCombo;
 }
 
-DWORD CPrinterComboControl::GetWndStyle() const
+DWORD CPrinterComboControlX::GetWndStyle() const
 {
 	DWORD dwStyle = CArxDialogControl::GetWndStyle();
 	dwStyle |= WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE | CBS_HASSTRINGS |

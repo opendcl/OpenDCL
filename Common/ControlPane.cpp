@@ -184,7 +184,8 @@ void CControlPane::SetGrphcBtnsParents(CDclControlObject *pGrphcBtn, CDclControl
 			//
 		}*/
 	}
-	pGrphcBtn->GetWindow()->ShowWindow(pGrphcBtn->m_pVisible->GetBooleanValue());
+	if (pGrphcBtn->GetWindow())
+		pGrphcBtn->GetWindow()->ShowWindow(pGrphcBtn->m_pVisible->GetBooleanValue());
 }
 
 void CControlPane::SizeChanged(int cx, int cy, bool bRefreshOthers)

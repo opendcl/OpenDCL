@@ -329,7 +329,7 @@ void CEventsTabPane::OnChangeDefunedit()
 		m_DefunEdit.GetWindowText(sDefunEditText);
 
 		// get the event id from the curent selection
-		int nEventId = m_EventsTree.GetItemData(hItem);
+		PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(hItem);
 
 		// we need to know if the event has been checked
 		BOOL bChecked = m_EventsTree.GetCheck(hItem);
@@ -358,7 +358,7 @@ void CEventsTabPane::SetDefunPreview()
 	if (hItem != -1)
 	{
 		// get the event id from the curent selection
-		int nEventId = m_EventsTree.GetItemData(hItem);
+		PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(hItem);
 
 		// get the defun name
 		CString sEventDefun = GetEvent(nEventId);
@@ -536,7 +536,7 @@ void CEventsTabPane::OnAddcancel()
 		m_DefunEdit.GetWindowText(sDefunEditText);
 
 		// get the event id from the curent selection
-		int nEventId = m_EventsTree.GetItemData(hItem);
+		PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(hItem);
 
 		// add the ^C^C to the defun name
 		sDefunEditText = CString("^c^c") + sDefunEditText;
@@ -595,12 +595,12 @@ void CEventsTabPane::OnAddtolisp()
 	}
 
 	// get the current event selection
-	int hItem = m_EventsTree.GetCurSel();
+	PropertyId hItem = (PropertyId)m_EventsTree.GetCurSel();
 	
 	if (hItem != -1)
 	{
 		// get the event id from the curent selection
-		int nEventId = m_EventsTree.GetItemData(hItem);
+		PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(hItem);
 
 		// get the new defun name from the edit box
 		m_DefunPreview.GetWindowText(sDefunPreview);
@@ -751,7 +751,7 @@ void CEventsTabPane::OnSelchangeEventstree()
 	sEventDeclaration = sEventDeclaration + sItemText;
 
 	// get the posible event defun string from the property
-	CString sEventDefun = GetEvent(m_EventsTree.GetItemData(m_EventsTree.GetCurSel())); 
+	CString sEventDefun = GetEvent((PropertyId)m_EventsTree.GetItemData(m_EventsTree.GetCurSel())); 
 
 	// if the property was not previously set, set it to the default name
 	if (sEventDefun.GetLength() == 0)
@@ -770,7 +770,7 @@ void CEventsTabPane::OnCheckChanged()
 
 	int nCheck = m_EventsTree.GetCheck(m_EventsTree.GetCurSel());
 
-	int nEventId = m_EventsTree.GetItemData(m_EventsTree.GetCurSel());
+	PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(m_EventsTree.GetCurSel());
 	if (nCheck == 1)
 	{	
 		// create the defun now
@@ -819,7 +819,7 @@ void CEventsTabPane::OnCheckChanged()
 		sEventDeclaration = sEventDeclaration + sItemText;
 
 		// get the posible event defun string from the property
-		sEventDefun = GetEvent(m_EventsTree.GetItemData(m_EventsTree.GetCurSel())); 
+		sEventDefun = GetEvent((PropertyId)m_EventsTree.GetItemData(m_EventsTree.GetCurSel())); 
 
 		// if the property was not previously set, set it to the default name
 		if (sEventDefun.GetLength() == 0)
@@ -830,7 +830,7 @@ void CEventsTabPane::OnCheckChanged()
 	
 }
 
-void CEventsTabPane::SetEvent(int nEventId, CString sEventDefun)
+void CEventsTabPane::SetEvent(PropertyId nEventId, CString sEventDefun)
 {
 	if (m_pControl->GetType() == CtlActiveX)
 	{
@@ -845,7 +845,7 @@ void CEventsTabPane::SetEvent(int nEventId, CString sEventDefun)
 		// set the property to the new defun name
 		m_pControl->SetStrProperty(nEventId, sEventDefun); 
 }
-CString CEventsTabPane::GetEvent(int nEventId)
+CString CEventsTabPane::GetEvent(PropertyId nEventId)
 {
 	if (m_pControl->GetType() == CtlActiveX)
 	{

@@ -22,9 +22,8 @@ class CColumnData : public CObject
 public:
 	CColumnData();
 	~CColumnData();
-	CColumnData(CColumnData *pOther);
-	CColumnData(CColumnData &Other);
-	CColumnData operator=(CColumnData const & other);
+	CColumnData(const CColumnData &Other);
+	CColumnData& operator=(const CColumnData& other);
 public:
 	CString m_Caption;	
 	int		m_Width;	
