@@ -6,13 +6,13 @@
 #include "Workspace.h"
 #include "ArxProjectCollection.h"
 #include "AcadDocReactor.h"
+#include "OleControlObject.h"
 
 
 class CMainFrame;
 class CProject;
 class CDialogObject;
 class CArxProject;
-class CDclFormObject;
 class AxPropertyDescriptor;
 class AxMethodDescriptor;
 struct DialogParams;
@@ -35,8 +35,8 @@ public:
 public:
 	//CWorkspace overrides
 	virtual CProject* GetActiveProject() const;
-	virtual const CDclControlObject* GetDclControlFor( const AxPropertyDescriptor* pProperty ) const;
-	virtual const CDclControlObject* GetDclControlFor( const AxMethodDescriptor* pMethod ) const;
+	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxPropertyDescriptor* pProperty ) const;
+	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxMethodDescriptor* pMethod ) const;
 	virtual CString LoadResourceString(int nResId, HMODULE hmodRes = NULL) const;
 	virtual bool DisplayAlert( LPCTSTR pszMessage ) const; //display alert dialog; returns true if displayed, false if suppressed
 	virtual bool DisplayStatus( LPCTSTR pszMessage ) const; //display modeless status message; returns true if displayed, false if suppressed

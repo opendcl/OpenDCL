@@ -399,7 +399,7 @@ CArxProject* CArxWorkspace::GetProjectFor( const CDclFormObject *pDclObject ) co
 	return static_cast<CArxProject*>(pProject);
 }
 
-const CDclControlObject* CArxWorkspace::GetDclControlFor( const AxPropertyDescriptor* pProperty ) const
+RefCountedPtr< COleControlObject > CArxWorkspace::GetOleControlFor( const AxPropertyDescriptor* pProperty ) const
 {
 	POSITION pos = mProjects.mProjectCollection.GetHeadPosition();
 	while (pos != NULL)
@@ -407,7 +407,7 @@ const CDclControlObject* CArxWorkspace::GetDclControlFor( const AxPropertyDescri
 		CProject* pProject = mProjects.mProjectCollection.GetNext(pos);
 		if (pProject != NULL)
 		{
-			CDclControlObject *pObject = pProject->GetOleObject(pProperty);
+			RefCountedPtr< COleControlObject > pObject = pProject->GetOleObject(pProperty);
 			if (pObject != NULL)
 				return pObject;
 		}
@@ -415,7 +415,7 @@ const CDclControlObject* CArxWorkspace::GetDclControlFor( const AxPropertyDescri
 	return NULL;
 }
 
-const CDclControlObject* CArxWorkspace::GetDclControlFor( const AxMethodDescriptor* pMethod ) const
+RefCountedPtr< COleControlObject > CArxWorkspace::GetOleControlFor( const AxMethodDescriptor* pMethod ) const
 {
 	POSITION pos = mProjects.mProjectCollection.GetHeadPosition();
 	while (pos != NULL)
@@ -423,7 +423,7 @@ const CDclControlObject* CArxWorkspace::GetDclControlFor( const AxMethodDescript
 		CProject* pProject = mProjects.mProjectCollection.GetNext(pos);
 		if (pProject != NULL)
 		{
-			CDclControlObject *pObject = pProject->GetOleObject(pMethod);
+			RefCountedPtr< COleControlObject > pObject = pProject->GetOleObject(pMethod);
 			if (pObject != NULL)
 				return pObject;
 		}

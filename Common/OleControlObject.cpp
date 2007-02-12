@@ -19,3 +19,8 @@ COleControlObject::COleControlObject( CProject* pOwner, const CLSID& clsid )
 {
 	m_clsid = clsid;
 }
+
+
+COleControlObject::~COleControlObject()
+{
+}

@@ -1,4 +1,4 @@
-// AxMethodDescriptor.cpp : implementation file
+// OleLicenseKey.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -7,101 +7,88 @@
 
 BOOL RequestLicenseKey(CString &strLicenseKey, CLSID clsid)
 {
-     USES_CONVERSION;
-	CString sText;
-		  	     
-	 BSTR bstrLicenseKey;
-     LPCLASSFACTORY2 pClassFactory;
-     BOOL bValidKeyReturned = FALSE;
+	CComBSTR bstrLicenseKey;
+	LPCLASSFACTORY2 pClassFactory;
 
 	// Create an instance of the object and query it for
 	//  the IClassFactory2 interface.
 	if (SUCCEEDED(CoGetClassObject(clsid, CLSCTX_INPROC_SERVER, NULL, IID_IClassFactory2, (LPVOID *)(&pClassFactory))))
 	{
-	 LICINFO licinfo;
+		LICINFO licinfo;
 
-	 // Check to see if this object has a runtime License key.
-	 if (SUCCEEDED(pClassFactory->GetLicInfo(&licinfo)))
-	 {
-	   if (licinfo.fRuntimeKeyAvail)
-	   {
-		 HRESULT hr;
-
-		 // The object has a runtime License key, so request it.
-		 hr = pClassFactory->RequestLicKey(0, &bstrLicenseKey);
-
-		if (SUCCEEDED(hr))
+		// Check to see if this object has a runtime License key.
+		if (SUCCEEDED(pClassFactory->GetLicInfo(&licinfo)))
 		{
-			if(bstrLicenseKey == NULL)
+			if (licinfo.fRuntimeKeyAvail)
 			{
-				//sText = theWorkspace.LoadResourceString(IDS_OBJRETURNED);
-				//bstrLicenseKey = sText.AllocSysString();
-				bstrLicenseKey = ::SysAllocString(L"<Object returned a NULL license key>");
+			HRESULT hr;
+
+			// The object has a runtime License key, so request it.
+			hr = pClassFactory->RequestLicKey(0, &bstrLicenseKey);
+
+			if (SUCCEEDED(hr))
+			{
+				if(!bstrLicenseKey)
+				{
+					strLicenseKey = ::SysAllocString(L"<Object returned a NULL license key>");
+					return FALSE;
+				}
+				else
+				{
+					strLicenseKey = bstrLicenseKey;
+					return TRUE;
+				}
 			}
 			else
-				// You have the license key.
-				bValidKeyReturned = TRUE;
+			 // Requesting the License key failed.
+			 switch(hr)
+			 {
+				case E_NOTIMPL:
+					strLicenseKey = L"<The object's class factory does not support run-time license keys>";
+					return FALSE;
+					break;
+
+				case E_UNEXPECTED:
+					strLicenseKey = L"<An unexpected error occurred when requesting the run-time license key>";
+					return FALSE;
+					break;
+
+				case E_OUTOFMEMORY:
+					strLicenseKey = L"<The object's class factory was unable to allocate the license key>";
+					return FALSE;
+					break;
+
+				case CLASS_E_NOTLICENSED:
+					strLicenseKey = L"<The object's class factory supports run-time licensing, but the current machine\r\n"
+													L"itself is not licensed. Thus, a run-time key is not available on this machine>";
+					return FALSE;
+					break;
+
+				default:
+					strLicenseKey = L"<An unknown error occurred when requesting the license key>";
+					return FALSE;
+					break;
+				}
+			}
+			else
+			{
+				strLicenseKey = L"<The object has no runtime license key>";
+				return FALSE;
+			}
 		}
 		else
-		   // Requesting the License key failed.
-		   switch(hr)
-		   {
-			 case E_NOTIMPL:
-				 {
-		
-			   bstrLicenseKey = ::SysAllocString(
-					 L"<The object's class factory does not support"
-					 L" run-time license keys>");
-			   break;
-				 }
+		{
+	   strLicenseKey = L"<Unable to get the licensing capabilities of the object's class factory>";
+		 return FALSE;
+		}
 
-			 case E_UNEXPECTED:
-			   bstrLicenseKey = ::SysAllocString(
-					 L"<An unexpected error occurred when requesting the"
-					 L" run-time license key>");
-			   break;
-
-			 case E_OUTOFMEMORY:
-			   bstrLicenseKey = ::SysAllocString(
-					 L"<The object's class factory was unable to allocate"
-					 L" the license key>");
-			   break;
-
-			 case CLASS_E_NOTLICENSED:
-			   bstrLicenseKey = ::SysAllocString(
-					 L"<The object's class factory supports run-time"
-					 L" licensing, but the current machine\r\nitself is"
-					 L" not licensed. Thus, a run-time key is not"
-					 L" available on this machine>");
-			   break;
-
-			 default:
-			   bstrLicenseKey = ::SysAllocString(
-					 L"<An unknown error occurred when requesting the"
-					 L" license key>");
-		   }
-	   }
-	   else
-		 bstrLicenseKey = ::SysAllocString(
-		   L"<The object has no runtime license key>");
-	 }
-	 else
-	   bstrLicenseKey = ::SysAllocString(
-			 L"<Unable to get the licensing capabilities of the object's"
-			 L" class factory>");
-
-	 // Make sure you release the reference to the class factory.
-	 pClassFactory->Release();
+		// Make sure you release the reference to the class factory.
+		pClassFactory->Release();
 	}
 	else
-	 bstrLicenseKey = ::SysAllocString(
-	   L"<Unable to get the IClassFactory2 interface from the"
-	   L" specified object>");
-    
-	strLicenseKey = bstrLicenseKey;
-	//::SysFreeString(bstrLicenseKey);
-
-	// Return a BOOL specifying whether or not you were able to get a
-	// valid license key.
-	return bValidKeyReturned;
+	{
+		strLicenseKey = L"<Unable to get the IClassFactory2 interface from the specified object>";
+		return FALSE;
+	}
+	return FALSE;
 }

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "FontCollection.h"
+#include "OleControlObject.h"
 
 class CProject;
-class CDclControlObject;
 class AxPropertyDescriptor;
 class AxMethodDescriptor;
 
@@ -39,8 +39,8 @@ public:
 	virtual void SetModified( bool bModified ) {}
 	virtual CProject* GetActiveProject() const = 0; //must be overridden in derived class
 	virtual CDocument* GetActiveDocument() const { return NULL; }
-	virtual const CDclControlObject* GetDclControlFor( const AxPropertyDescriptor* pProperty ) const = 0;
-	virtual const CDclControlObject* GetDclControlFor( const AxMethodDescriptor* pMethod ) const = 0;
+	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxPropertyDescriptor* pProperty ) const = 0;
+	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxMethodDescriptor* pMethod ) const = 0;
 	virtual CString FindFile( LPCTSTR pszFilePath ) const;
 
 	bool GetModuleVersionInfo( DWORD& dwMajor, DWORD&dwMinor, DWORD& dwThird, DWORD& dwFourth, HMODULE hmodTarget = NULL ) const;

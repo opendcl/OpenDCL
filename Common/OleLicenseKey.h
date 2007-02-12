@@ -1,4 +1,4 @@
 #pragma once
 
 
-BOOL RequestLicenseKey(CString &strLicenseKey, CLSID clsid);
+BOOL RequestLicenseKey(CString& strLicenseKey, CLSID clsid);

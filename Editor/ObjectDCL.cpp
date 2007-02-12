@@ -1371,18 +1371,16 @@ void CObjectDCLApp::OnHelpFinder()
 	if (Dlg.m_nType == 4)
 	{
 		CDclFormObject DclForm(NULL, (DclFormType)-2); // -2 to indicate bonus functions
-		CDclControlObject ArxObject((ControlType)-2, &DclForm); // -2 to indicate bonus functions
+		RefCountedPtr< COleControlObject > pOleControl = new COleControlObject(NULL); // -2 to indicate bonus functions
 		RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropInvalid, 0, nName);
-		ArxObject.GetPropertyList().AddTail(pProp);
+		pOleControl->GetPropertyList().AddTail(pProp);
 		
 		CObjectBrowser Dlg(m_pMainFrame);
 
-		Dlg.m_pControl = &ArxObject;
+		Dlg.m_pControl = pOleControl;
 		Dlg.m_pDclForm = &DclForm;
 		Dlg.m_sDclFormName = CString();
 
 		Dlg.DoModal();
-
-		ArxObject.ClearProperties();
 	}
 }

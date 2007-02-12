@@ -119,14 +119,14 @@ CString CEditorWorkspace::GetActiveProjectName() const
 	return sShortFileName;
 }
 
-const CDclControlObject* CEditorWorkspace::GetDclControlFor( const AxPropertyDescriptor* pProperty ) const
+RefCountedPtr< COleControlObject > CEditorWorkspace::GetOleControlFor( const AxPropertyDescriptor* pProperty ) const
 {
 	if( !mpActiveProject )
 		return NULL;
 	return mpActiveProject->GetOleObject( pProperty );
 }
 
-const CDclControlObject* CEditorWorkspace::GetDclControlFor( const AxMethodDescriptor* pMethod ) const
+RefCountedPtr< COleControlObject > CEditorWorkspace::GetOleControlFor( const AxMethodDescriptor* pMethod ) const
 {
 	if( !mpActiveProject )
 		return NULL;

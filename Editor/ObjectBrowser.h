@@ -5,8 +5,9 @@
 
 #include "ResizableDialog.h"
 #include "AutoRichEditCtrl.h"
+#include "OleControlObject.h"
+#include <vector>
 
-class CDclControlObject;
 class CDclFormObject;
 class CPropertyObject;
 class AxMethodDescriptor;
@@ -50,7 +51,7 @@ public:
 	CTreeCtrl			m_ListBox;
 	//}}AFX_DATA
 	CImageList			m_ImageList;
-	CDclControlObject	*m_pControl;
+	RefCountedPtr< COleControlObject > m_pControl;
 	CDclFormObject		*m_pDclForm;
 	CString				m_sDclFormName;
 	CString				m_sClipBoardDefun1;
@@ -58,7 +59,7 @@ public:
 	CString				m_sClipBoardDefun3;
 	
 	int					nMethodIndex;
-	CList<const CDclControlObject*> m_OleObjectList;
+	std::vector< RefCountedPtr< COleControlObject > > m_OleObjectList;
 	
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -69,10 +70,10 @@ public:
 public:
 	void Setup();
 	void ResizeControls(int cx=-1, int cy=-1);
-	HTREEITEM LoadOleObjectIntoTree(const CDclControlObject *pControl);
+	HTREEITEM LoadOleObjectIntoTree(RefCountedPtr< COleControlObject > pControl);
 	void SearchMethods(RefCountedPtr< CPropertyObject > pProp);
 	void LoadAllAssociatedOleObjects(CDclControlObject *pControl);
-	void LoadInfoTree(const CDclControlObject *pControl, HTREEITEM hParentItem, int nIndex);
+	void LoadInfoTree(RefCountedPtr< COleControlObject > pControl, HTREEITEM hParentItem, int nIndex);
 	void SelectionChanged(HTREEITEM hItem);
 	void LoadMethods(CString sFileName, HTREEITEM hParentItem);
 	bool LoadFullMethod(CString sFileName, CString sMethodName, CString &sTitle, CString &sDesc, CString &sDefun1);

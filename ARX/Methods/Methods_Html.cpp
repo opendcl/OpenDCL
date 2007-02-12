@@ -194,7 +194,7 @@ int Html_GetOffline()
 
 	BOOL bOffline = ((CHtmlCtrl*)pControl)->GetOffline();
 
-	if (bOffline == 1)
+	if (bOffline)
 		acedRetT();
 	else
 		acedRetNil();
@@ -234,7 +234,7 @@ int Html_GetBusy()
 	BOOL bBusy = ((CHtmlCtrl*)pControl)->GetBusy();
 
 	// return nil
-	if (bBusy == 1)
+	if (bBusy)
 		acedRetT();
 	else
 		acedRetNil();

@@ -12,26 +12,49 @@ enum IOStatus;
 // Struct for holding information about an OLE object's interface
 class AxInterfaceDescriptor
 {
-public:
-	RefCountedPtr< AxPropertyDescriptor > mpProp;
-	RefCountedPtr< AxPropertyDescriptor > mpPropGet;
-	RefCountedPtr< AxPropertyDescriptor > mpPropPut;
-	RefCountedPtr< AxPropertyDescriptor > mpPropPutRef;
-	RefCountedPtr< AxEventDescriptor > mpEvent;
-	RefCountedPtr< std::vector< RefCountedPtr< AxMethodDescriptor > > > mpMethods;
+	AxPropertyDescriptor* mpProp;
+	AxPropertyDescriptor* mpPropGet;
+	AxPropertyDescriptor* mpPropPut;
+	AxPropertyDescriptor* mpPropPutRef;
+	AxEventDescriptor* mpEvent;
+	std::vector< RefCountedPtr< AxMethodDescriptor > >* mpMethods;
 
 public:
-	AxInterfaceDescriptor() {}
+	AxInterfaceDescriptor()
+		: mpProp( NULL )
+		, mpPropGet( NULL )
+		, mpPropPut( NULL )
+		, mpPropPutRef( NULL )
+		, mpEvent( NULL )
+		, mpMethods( NULL )
+		{}
 	~AxInterfaceDescriptor() {}
 
 	//Attributes
 public:
-	RefCountedAutoConstructPtr< AxPropertyDescriptor > GetProp() { return mpProp; }
-	RefCountedAutoConstructPtr< AxPropertyDescriptor > GetPropGet() { return mpPropGet; }
-	RefCountedAutoConstructPtr< AxPropertyDescriptor > GetPropPut() { return mpPropPut; }
-	RefCountedAutoConstructPtr< AxPropertyDescriptor > GetPropPutRef() { return mpPropPutRef; }
-	RefCountedAutoConstructPtr< AxEventDescriptor > GetEvent() { return mpEvent; }
-	RefCountedAutoConstructPtr< std::vector< RefCountedPtr< AxMethodDescriptor > > > GetMethods() { return mpMethods; }
+	AxPropertyDescriptor*& GetProp()
+		{ return mpProp; }
+	void SetProp( AxPropertyDescriptor* pProp )
+		{ mpProp = pProp; }
+	AxPropertyDescriptor*& GetPropGet()
+		{ return mpPropGet; }
+	void SetPropGet( AxPropertyDescriptor* pProp )
+		{ mpPropGet = pProp; }
+	AxPropertyDescriptor*& GetPropPut()
+		{ return mpPropPut; }
+	void SetPropPut( AxPropertyDescriptor* pProp )
+		{ mpPropPut = pProp; }
+	AxPropertyDescriptor*& GetPropPutRef()
+		{ return mpPropPutRef; }
+	void SetPropPutRef( AxPropertyDescriptor* pProp )
+		{ mpPropPutRef = pProp; }
+	AxEventDescriptor*& GetEvent() { return mpEvent; }
+	void SetEvent( AxEventDescriptor* pEvent )
+		{ mpEvent = pEvent; }
+	std::vector< RefCountedPtr< AxMethodDescriptor > >*& GetMethods()
+		{ return mpMethods; }
+	void SetMethods( std::vector< RefCountedPtr< AxMethodDescriptor > >* pMethods )
+		{ mpMethods = pMethods; }
 
 	//Operations
 public:
@@ -39,14 +62,13 @@ public:
 
 	//Old functions moved here from CPropertyObject
 public:
-	CString GetName();
+	CString GetName() const;
 	CString GetDocumentationDesc();
 	GUID GetActiveXProperyGuid();
 	DISPID GetActiveXGetProperyId();
 	DISPID GetActiveXSetProperyId();
 	int GetActiveXParamQty();
 	void SetActiveXPropery(CAxContainer *axContainer, CString sNewValue);
-	void SetActiveXProperyName(CString sName);	
 	CString GetActiveXPropery(CAxContainer *axContainer);
 	VARTYPE GetActiveXProperyType();
 	bool GetActiveXEnum();

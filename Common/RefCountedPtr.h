@@ -56,11 +56,14 @@ template< typename T >
 class RefCounter : public RefCounterBase
 {
 private:
-	T* pT;
+	T pT;
 
 public:
-	RefCounter<T>( T* pTarget ) : pT( pTarget ) {}
-	virtual ~RefCounter<T>(void) { delete pT; }
+	RefCounter<T>( T pTarget )
+		: pT( pTarget )
+		{}
+	virtual ~RefCounter<T>(void)
+		{ delete pT; }
 
 private:
 	// prevent copy and assignment
@@ -68,18 +71,21 @@ private:
 	RefCounter<T>& operator=(RefCounter<T> & src);
 
 public:
-	bool isNull() const { return (pT? false : true); }
+	bool isNull() const
+		{ return (pT? false : true); }
 
-	operator const T* () const { return pT; }
-	operator T* () { return pT; }
+	operator const T () const
+		{ return pT; }
+	operator T ()
+		{ return pT; }
 
-  const T* operator->() const { return pT; }
-  T* operator->() { return pT; }
+  const T operator->() const
+		{ return pT; }
+  T operator->()
+		{ return pT; }
 
 	bool operator ==( const RefCounter<T>& src ) const
-		{
-			return (*pT == *src.pT);
-		}
+		{ return (*pT == *src.pT); }
 
 	// reference counting
 public:
@@ -90,21 +96,20 @@ public:
 		}
 };
 
-template< typename T, typename _R = RefCounter<T> >
+template< typename T, typename R = RefCounter<T*> >
 class RefCountedPtr
 {
-private:
+protected:
+	typedef R _R;
 	_R* pW;
 
 public:
 	RefCountedPtr<T,_R>()
 	: pW( NULL )
-		{
-		}
+		{}
 	RefCountedPtr<T,_R>( T* pTarget )
 	: pW( pTarget? new _R( pTarget ) : NULL )
-		{
-		}
+		{}
 	virtual ~RefCountedPtr<T,_R>(void)
 		{
 			if( pW )
@@ -117,7 +122,7 @@ public:
 		{}
 	RefCountedPtr<T,_R>& operator=(const RefCountedPtr<T,_R> & src)
 		{
-			if( !pW || !src.pW || (*pW != *src.pW) )
+			if( !pW || !src.pW || (pW != src.pW) )
 			{
 				if( pW )
 					pW->Release();
@@ -125,26 +130,28 @@ public:
 			}
 			return *this;
 		}
-	T* operator=(T* src)
+	T* operator=(const T* src)
 		{
 			if( !pW || !src || (*pW != src) )
 			{
 				if( pW )
 					pW->Release();
-				pW = src? new _R( src ) : NULL;
+				pW = src? new _R( const_cast<T*>(src) ) : NULL;
 			}
-			return pW? *pW : NULL;
+			if( pW )
+				return *pW;
+			return NULL;
 		}
 
 protected:
 	bool isNull() const { return (!pW || pW->isNull()); }
 
 public:
-	operator const T* () const { return pW? *pW : NULL; }
-	operator T* () { return pW? *pW : NULL; }
+	operator const T* () const { if( pW ) return *pW; return NULL; }
+	operator T* () { if( pW ) return *pW; return NULL; }
 
-  const T* operator->() const { return pW? *pW : NULL; }
-  T* operator->() { return pW? *pW : NULL; }
+  const T* operator->() const { if( pW ) return *pW; return NULL; }
+  T* operator->() { if( pW ) return *pW; return NULL; }
 
 	bool operator < ( const RefCountedPtr<T,_R>& Right ) const
 		{
@@ -152,35 +159,4 @@ public:
 		}
 
 	void Lock() { if( pW ) pW->Lock(); }
-};
-
-
-//interface to a ref-counted pointer that automatically constructs and returns a new T
-//if it is dereferenced or operator-> is called on a NULL pointer
-template< typename T >
-class RefCountedAutoConstructPtr : public RefCountedPtr<T>
-{
-private:
-	typedef RefCountedPtr<T> _base;
-
-public:
-	RefCountedAutoConstructPtr<T>() {}
-	RefCountedAutoConstructPtr<T>( T* pTarget ) : _base( pTarget ) {}
-	virtual ~RefCountedAutoConstructPtr<T>(void) {}
-
-	// copy and assignment
-	RefCountedAutoConstructPtr<T>(const RefCountedAutoConstructPtr<T> & src) : _base( src ) {}
-	RefCountedAutoConstructPtr<T>(const _base & src) : _base( src ) {}
-	RefCountedAutoConstructPtr<T>& operator=(const RefCountedAutoConstructPtr<T> & src) { _base::operator=( src ); return *this; }
-	RefCountedAutoConstructPtr<T>& operator=(const _base & src) { _base::operator=( src ); return *this; }
-	T* operator=(T* src) { return _base::operator=( src ); }
-
-public:
-	operator const T* () const { return isNull()? _base::operator=( new T ) : _base::operator T*(); }
-	operator T* () { return isNull()? _base::operator=( new T ) : _base::operator T*(); }
-
-  const T* operator->() const { return isNull()? _base::operator=( new T ) : _base::operator T*(); }
-  T* operator->() { return isNull()? _base::operator=( new T ) : _base::operator T*(); }
-
-	operator bool() const { return !(!pW || pW->isNull()); } //enable null testing without dereferencing
 };

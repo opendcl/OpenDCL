@@ -242,8 +242,7 @@ void CAxContainer::GetRefGuid(AxPropertyDescriptor* pAProp, ITypeInfo* TheInfo, 
 }
 
 
-static void PerPropertyBrowsing(LPOLEOBJECT pIObject,
-								AxPropertyDescriptor* pAProp)
+static void PerPropertyBrowsing(LPOLEOBJECT pIObject, AxPropertyDescriptor* pAProp)
 {
 	if ((pAProp->Type != VT_I2) &&
 		(pAProp->Type != VT_UI2) &&
@@ -534,10 +533,10 @@ UINT CAxContainer::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo *TheI
 	   for(int i = 0; i < (int) nNumberEvents; i++) { 
 			if(SUCCEEDED(TheInfo->GetFuncDesc( i, &pFuncDesc )))
 			{  
-				BSTR            bstrName;
-				BSTR            bstrDesc;
+				CComBSTR            bstrName;
+				CComBSTR            bstrDesc;
 				// create a new event desc object
-				AxEventDescriptor *axEventDesc = new AxEventDescriptor;
+				std::auto_ptr< AxEventDescriptor > axEventDesc( new AxEventDescriptor );
 
 				axEventDesc->Id = pFuncDesc->memid;
 				if (SUCCEEDED(TheInfo->GetDocumentation(pFuncDesc->memid, &bstrName,
@@ -545,45 +544,37 @@ UINT CAxContainer::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo *TheI
 				{   
 					axEventDesc->Name =  bstrName;
 					axEventDesc->DocumentationDesc = bstrDesc;
-				    //SysFreeString(bstrName); 
-					//SysFreeString(bstrDesc);
 				}
-				/*
-				// declare the names BSTR pointer
-				BSTR* pbstrNames;
-				UINT nNames;
-				// setup the names BSTR pointers
-				pbstrNames = (BSTR*)alloca( (pFuncDesc->cParams+1)*sizeof( BSTR ) );
-				*/
+
 				BSTR pbstrNames[MAX_CALLING_ARGUMENTS+1];
 				UINT nNames;
-				
-				for( int iName = 0; iName < int(UINT( pFuncDesc->cParams+1)); iName++ )
-				{
+				for( UINT iName = 0; iName < MAX_CALLING_ARGUMENTS+1; iName++ )
 					pbstrNames[iName] = NULL;
-				}
-				
 				TheInfo->GetNames(pFuncDesc->memid, pbstrNames, pFuncDesc->cParams+1, &nNames);
 
 				axEventDesc->nArgs = pFuncDesc->cParams;
 				// copy data types
 				ASSERT(pFuncDesc->cParams < MAX_CALLING_ARGUMENTS);
-			    for (int n = 0 ; n < pFuncDesc->cParams; n++ )
+				for (UINT n = 0 ; n < (UINT)pFuncDesc->cParams + 1; n++ )
 				{
-					const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
-					BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
-					VARTYPE vt = ((bNotByVal) ? e.tdesc.lptdesc->vt : e.tdesc.vt);
+					if( n < (UINT)pFuncDesc->cParams )
+					{
+						const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
+						BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
+						VARTYPE vt = ((bNotByVal) ? e.tdesc.lptdesc->vt : e.tdesc.vt);
 
-					if (vt == VT_USERDEFINED) 
-						SetRefType(
-							vt, 
-							TheInfo,
-							(bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype,
-							&axEventDesc->CallingArgClsids[n]);
+						if (vt == VT_USERDEFINED) 
+							SetRefType(
+								vt, 
+								TheInfo,
+								(bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype,
+								&axEventDesc->CallingArgClsids[n]);
 
-					axEventDesc->CallingArgs[n] = vt;
-					if( pbstrNames[n] != NULL )	
-						axEventDesc->CallingArgNames[n] = CString(pbstrNames[n+1]);
+						axEventDesc->CallingArgs[n] = vt;
+						if( pbstrNames[n] != NULL )	
+							axEventDesc->CallingArgNames[n] = CString(pbstrNames[n+1]);
+					}
+					SysFreeString( pbstrNames[n] );
 				}
 				axEventDesc->CallingArgs[pFuncDesc->cParams] = 0;
 
@@ -593,7 +584,7 @@ UINT CAxContainer::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo *TheI
 				// create the new property
 				RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropActiveXEvent);
 				// set the pointer to the ActiveX's Get property CMethodInfo object
-				pProp->GetAxInterfaceDescriptorPtr()->GetEvent() = axEventDesc;
+				pProp->GetAxInterfaceDescriptorPtr()->SetEvent( axEventDesc.release() );
 				// set the property as hidden so it won't show up in the property list, 
 				// but in the events list instead.
 				pProp->SetHidden(true);
@@ -626,7 +617,7 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 	int NumberFuncs = 0;
 	int i,j;
 
-	RefCountedPtr< CPropertyObject >pProp;
+	RefCountedPtr< CPropertyObject > pProp;
 	TYPEATTR *TheAttr;
 	
 	// create the new property
@@ -640,16 +631,18 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 	pProp->SetID(nObjectBrowser);
 	
 
-	if(TheInfo)	 {
+	if(TheInfo)
+	{
 		if(SUCCEEDED(TheInfo->GetTypeAttr(&TheAttr))) {
 			NumberFuncs = TheAttr->cFuncs;
 			TheInfo->ReleaseTypeAttr(TheAttr);
 		}
 		// first count those functions which are methods as
 		// determined by INVOKEKIND == DISPATCH_METHOD
-	   FUNCDESC *pFuncDesc;
-	   nNumberMethods = 0;  
-	   for(i = 0; i < NumberFuncs; i++) { 
+		FUNCDESC *pFuncDesc;
+		nNumberMethods = 0;  
+		for(i = 0; i < NumberFuncs; i++)
+		{ 
 			if(SUCCEEDED(TheInfo->GetFuncDesc( i, &pFuncDesc )))
 			{  
 				if ((pFuncDesc->invkind == DISPATCH_METHOD) && 
@@ -658,33 +651,32 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 					 nNumberMethods++;
 
 				TheInfo->ReleaseFuncDesc( pFuncDesc ) ;
- 			}
+			}
 		}
 
-	    if (nNumberMethods == 0)
+    if (nNumberMethods == 0)
 			return 0;
-		
+
+		std::auto_ptr< std::vector< RefCountedPtr< AxMethodDescriptor > > > prMethods( new std::vector< RefCountedPtr< AxMethodDescriptor > > );
 		
 		// Array properties are functions
-	   i = 0; 
-	   for(j = 0; j < NumberFuncs; j++) { 
+		i = 0; 
+		for(j = 0; j < NumberFuncs; j++)
+		{ 
 			if(SUCCEEDED(TheInfo->GetFuncDesc( j, &pFuncDesc )))
 			{  
-				CString test;
-				BSTR  bstr;
+				CComBSTR  bstr;
 				TheInfo->GetDocumentation(pFuncDesc->memid, &bstr, NULL, NULL, NULL);
-				test = bstr;
-				//SysFreeString( bstr) ;
 				
 				// Only count methods not GET/SET properties
 				if ((pFuncDesc->invkind == DISPATCH_METHOD) &&
 					(pFuncDesc->cParams < MAX_CALLING_ARGUMENTS) &&
 					((LONG) pFuncDesc->memid < (LONG) (1<<16))) 
 				{
-					AxMethodDescriptor *pAxMethod = new AxMethodDescriptor;
-				    bool CanSet = true; 
-		    		BSTR  bstrName; 
-					BSTR  bstrDesc; 
+					RefCountedPtr< AxMethodDescriptor > pAxMethod = new AxMethodDescriptor;
+				  bool CanSet = true; 
+		    	CComBSTR  bstrName; 
+					CComBSTR  bstrDesc; 
 					pAxMethod->Id = pFuncDesc->memid;
 					if (SUCCEEDED(TheInfo->GetDocumentation(pFuncDesc->memid, 
 						&bstrName,&bstrDesc,NULL,NULL ))) 
@@ -701,32 +693,31 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 					
 					BSTR pbstrNames[MAX_CALLING_ARGUMENTS+1];
 					UINT nNames;
-
-					for( int iName = 0; iName < int(UINT( pFuncDesc->cParams+1)); iName++ )
-					{
+					for( UINT iName = 0; iName < MAX_CALLING_ARGUMENTS+1; iName++ )
 						pbstrNames[iName] = NULL;
-					}
-					
 					TheInfo->GetNames(pFuncDesc->memid, pbstrNames, pFuncDesc->cParams+1, &nNames);
 
 					// loop through the parameters
-					for ( int n = 0 ; n < pFuncDesc->cParams; n++ )
+					for ( UINT n = 0 ; n < (UINT)pFuncDesc->cParams + 1; n++ )
 					{
-						const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
-						BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
-						VARTYPE vt = ((bNotByVal) ? e.tdesc.lptdesc->vt : e.tdesc.vt);
+						if( n < (UINT)pFuncDesc->cParams )
+						{
+							const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
+							BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
+							VARTYPE vt = ((bNotByVal) ? e.tdesc.lptdesc->vt : e.tdesc.vt);
 
-						if (vt == VT_USERDEFINED) 
-							SetRefType(
-								vt, 
-								TheInfo,
-								(bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype,
-								&pAxMethod->CallingArgClsids[n]);
+							if (vt == VT_USERDEFINED) 
+								SetRefType(
+									vt, 
+									TheInfo,
+									(bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype,
+									&pAxMethod->CallingArgClsids[n]);
 
-						pAxMethod->CallingArgs[n]  = vt;
-						if( pbstrNames[n] != NULL )							
-							pAxMethod->CallingArgNames[n] = CString(pbstrNames[n+1]);
-						
+							pAxMethod->CallingArgs[n]  = vt;
+							if( pbstrNames[n] != NULL )							
+								pAxMethod->CallingArgNames[n] = CString(pbstrNames[n+1]);
+						}
+						SysFreeString( pbstrNames[n] );
 					}
 					pAxMethod->CallingArgs[pFuncDesc->cParams] = 0;
 					
@@ -742,20 +733,8 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 						CanSet = false; 
 
 					if (pAxMethod->Name.Left(1) == _T('_')) 
-					{
-						delete pAxMethod;
-					}					
-					else if (CanSet == true || pAxMethod->Id == -552) 
-					{
-						pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->push_back(pAxMethod);
-					}
-					else
-					{
-						delete pAxMethod;
 						pAxMethod = NULL;
-					}
-					
-					if (pAxMethod != NULL)
+					else if (CanSet == true || pAxMethod->Id == -552) 
 					{
 						if (vt == VT_USERDEFINED) 
 						{
@@ -765,8 +744,8 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 								(bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype,
 								&pAxMethod->ReturnGuid);						
 						}
-
 						pAxMethod->ReturnType = vt;
+						prMethods->push_back(pAxMethod);
 					}
 					i++;
 				}  // if(pFuncDesc->i
@@ -775,6 +754,7 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 		}
 		// All done
 		TheInfo->Release();
+		pProp->GetAxInterfaceDescriptorPtr()->SetMethods( prMethods.release() );
 	} // if(TheInfo)
 	
 	return nNumberMethods;
@@ -788,24 +768,24 @@ static void AddAxProp(CDclControlObject *pControl, long lId, CString sName, CStr
 	
 	if (bSet)
 	{
-		AxPropertyDescriptor *axPropPut = new AxPropertyDescriptor;
+		AxPropertyDescriptor* axPropPut( new AxPropertyDescriptor );
 		axPropPut->Id = lId;
 		axPropPut->Name = sName;
 		axPropPut->DocumentationDesc = sDesc;
 		axPropPut->invKind = INVOKE_PROPERTYPUT;
 		axPropPut->Type = vt;
-		pProp->GetAxInterfaceDescriptorPtr()->GetPropPut() = axPropPut;	
+		pProp->GetAxInterfaceDescriptorPtr()->SetPropPut( axPropPut );	
 	}
 
 	if (bGet)
 	{
-		AxPropertyDescriptor *axPropGet = new AxPropertyDescriptor;
+		AxPropertyDescriptor* axPropGet( new AxPropertyDescriptor );
 		axPropGet->Id = lId;
 		axPropGet->Name = sName;
 		axPropGet->DocumentationDesc = sDesc;
 		axPropGet->invKind = INVOKE_PROPERTYGET;
 		axPropGet->Type = vt;
-		pProp->GetAxInterfaceDescriptorPtr()->GetPropGet() = axPropGet;	
+		pProp->GetAxInterfaceDescriptorPtr()->SetPropGet( axPropGet );	
 	}
 
 	pControl->GetPropertyList().AddTail(pProp);
@@ -835,7 +815,7 @@ BOOL CAxContainer::ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID c
 {
 	
 	long lTypeInfoCount = 0;
-	BSTR bstrName = NULL;
+	CComBSTR bstrName;
 	BOOL bSuccess = TRUE;
 
 
@@ -890,15 +870,10 @@ BOOL CAxContainer::ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID c
 					ExtractPropertyInfo(pControl, TheInfo, TRUE);
 					ExtractMethodInfo(pControl, TheInfo);	
 					
-					BSTR bstrDoc = NULL;
+					CComBSTR bstrDoc;
 					m_pTypeLib->GetDocumentation(lIter, &bstrName, &bstrDoc, NULL, NULL);
 					if(bstrName)
-					{
 						pControl->SetAxTypeName( CString(bstrName) );
-						::SysFreeString(bstrName);
-					}
-					if(bstrDoc)
-						::SysFreeString(bstrDoc);
 				}				
 			}			
 		}               
@@ -912,7 +887,7 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, LPOLEOBJECT 
 {
 
 	ITypeInfo *TheInfo = NULL;
-    ObjectTypeInfoProperties(pIObject,&TheInfo);
+	ObjectTypeInfoProperties(pIObject,&TheInfo);
 
 	// extract the type library for later use.
 	TheInfo->GetContainingTypeLib(&m_pTypeLib, &m_nTypeLibCount);	
@@ -965,13 +940,13 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 	   //sHeight = theWorkspace.LoadResourceString(IDS_PROP_HEIGHT);
 	   for(i = 0; i < NSingleProperties; i++) { 
 			if(SUCCEEDED(TheInfo->GetVarDesc( i, &pVarDesc ))) {
-	   			BSTR  bstrName;
-				BSTR  bstrDesc;
+				CComBSTR  bstrName;
+				CComBSTR  bstrDesc;
 				
 				//TheInfo->GetFuncDesc(i, &pFuncDesc);
 			
 				// create the activeX property descriptor that the CPropertyObject object will hold
-				AxPropertyDescriptor *axPropDesc = new AxPropertyDescriptor;
+				std::auto_ptr< AxPropertyDescriptor > axPropDesc( new AxPropertyDescriptor );
 				
 				axPropDesc->Id = pVarDesc->memid;
 				axPropDesc->invKind = pFuncDesc->invkind;
@@ -1008,46 +983,43 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 
 					axPropDesc->CanSet = TRUE;
 					
-						BSTR pbstrNames[MAX_CALLING_ARGUMENTS+1];
-						UINT nNames;
+					BSTR pbstrNames[MAX_CALLING_ARGUMENTS+1];
+					UINT nNames;
+					for( int iName = 0; iName < int(UINT( nParams+1)); iName++ )
+						pbstrNames[iName] = NULL;
+					TheInfo->GetNames(memid, pbstrNames, MAX_CALLING_ARGUMENTS+1, &nNames);
 
-						for( int iName = 0; iName < int(UINT( nParams+1)); iName++ )
+					// loop through the parameters
+					for ( UINT n = 0 ; n < (UINT)pFuncDesc->cParams + 1; n++ )
+					{
+						if( n < (UINT)pFuncDesc->cParams )
 						{
-							pbstrNames[iName] = NULL;
+							const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
+							BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
+							VARTYPE vt = ((bNotByVal) ? e.tdesc.lptdesc->vt : e.tdesc.vt);
+
+							if (vt == VT_USERDEFINED) 
+								SetRefType(vt, TheInfo,
+									(bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype, 
+									&axPropDesc->CallingArgClsids[n]);
+
+							axPropDesc->CallingArgs[n]  = vt;
+							if( pbstrNames[n] != NULL )	
+								axPropDesc->CallingArgNames[n] = CString(pbstrNames[n+1]);
 						}
-						
-						TheInfo->GetNames(memid, pbstrNames, nParams+1, &nNames);
-
-						// loop through the parameters
-						for ( int n = 0 ; n < nParams; n++ )
-						{
-							if (n < MAX_CALLING_ARGUMENTS)
-							{						
-								const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
-								BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
-								VARTYPE vt = ((bNotByVal) ? e.tdesc.lptdesc->vt : e.tdesc.vt);
-
-								if (vt == VT_USERDEFINED) 
-									SetRefType(vt, TheInfo,
-										(bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype, 
-										&axPropDesc->CallingArgClsids[n]);
-
-								axPropDesc->CallingArgs[n]  = vt;
-								if( pbstrNames[n] != NULL )	
-									axPropDesc->CallingArgNames[n] = CString(pbstrNames[n+1]);
-							}
-						}
-						
-						axPropDesc->CallingArgs[nParams] = 0;
+						SysFreeString( pbstrNames[n] );
+					}
+					
+					axPropDesc->CallingArgs[nParams] = 0;
 
 					if (pVarDesc->wVarFlags & (VARFLAG_FNONBROWSABLE|VARFLAG_FHIDDEN))
 						axPropDesc->CanSet = FALSE;
 
-					PerPropertyBrowsing(pIObject, axPropDesc); // HRS
+					PerPropertyBrowsing(pIObject, axPropDesc.get()); // HRS
 					if (axPropDesc->Type == VT_USERDEFINED)
-						GetRefGuid(axPropDesc, TheInfo, // HRS
+						GetRefGuid(axPropDesc.get(), TheInfo, // HRS
 							(bNotByVal ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype),
-							axPropDesc);
+							axPropDesc.get());
 				}
 				TheInfo->ReleaseVarDesc( pVarDesc ) ;
 
@@ -1076,7 +1048,8 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 					// set the property type as an ActiveX property pointer/holder/handler
 					pProp = new CPropertyObject(PropActiveXProp);
 				
-				pProp->GetAxInterfaceDescriptorPtr()->GetProp() = axPropDesc;				
+				pProp->SetStringValue( axPropDesc->Name );
+				pProp->GetAxInterfaceDescriptorPtr()->SetProp( axPropDesc.release() );
 				if (axPropDesc->NumParams > 1)
 				{
 					pProp->SetType(PropActiveXRunTime); 
@@ -1089,7 +1062,7 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 				if (bInsert)
 				{
 					// get the position where we are to add the property
-					POSITION pos = pControl->FindPropertyInsertPos(axPropDesc->Name, false);
+					POSITION pos = pControl->FindPropertyInsertPos(pProp->GetName(), false);
 					
 					// if the property is NOT an illegal property we can include it in the list to be displayed 
 					// in the CPropertyListCtrl control.
@@ -1109,21 +1082,18 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 	   for(j = 0; j < NumberFuncs; j++) { 
 			if(SUCCEEDED(TheInfo->GetFuncDesc( j, &pFuncDesc )))
 			{  
-				CString test;
-				BSTR  bstrName;
-				BSTR  bstrDesc;
+				CComBSTR bstrName;
+				CComBSTR  bstrDesc;
 				bool bCanInsert = true;
 				TheInfo->GetDocumentation(pFuncDesc->memid, &bstrName, NULL, NULL, NULL);
-				test = bstrName;
-				//SysFreeString( bstrName ) ;
 						
 				// Only count methods are GET/SET properties
 				if (pFuncDesc->invkind == DISPATCH_PROPERTYGET ||
 					pFuncDesc->invkind == DISPATCH_PROPERTYPUT ||
 					pFuncDesc->invkind == DISPATCH_PROPERTYPUTREF)
 				{
-		    		// create the activeX property descriptor that the CPropertyObject object will hold
-				    AxPropertyDescriptor *axPropDesc = new AxPropertyDescriptor;
+					// create the activeX property descriptor that the CPropertyObject object will hold
+					std::auto_ptr< AxPropertyDescriptor > axPropDesc( new AxPropertyDescriptor );
 				
 					axPropDesc->Id = pFuncDesc->memid;
 					if (SUCCEEDED(TheInfo->GetDocumentation(pFuncDesc->memid, &bstrName,
@@ -1135,50 +1105,39 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 						axPropDesc->DocumentationDesc = bstrDesc;
 						
 						if (axPropDesc->Name == sWidth)
-						{
 							axPropDesc->Name = sWidth + _T('2');
-						}
 						if (axPropDesc->Name == sHeight)
-						{
 							axPropDesc->Name = sHeight + _T('2');
-						}
 
 						if (axPropDesc->Name == _T("FontSize"))
 						{
 							if (axPropDesc->DocumentationDesc == _T(""))
 								axPropDesc->DocumentationDesc = _T("Indicates the size of the font to be used. ");
-						
 							axPropDesc->DocumentationDesc += _T("\\par \\par \\b1Note: \\b0 To properly calculate the font size, multiply your new font size by 10000.");
 						}
 					
-						BSTR pbstrNames[MAX_CALLING_ARGUMENTS+1];
+						BSTR pbstrNames[MAX_CALLING_ARGUMENTS + 1];
 						UINT nNames;
-
-						for( int iName = 0; iName < int(UINT( pFuncDesc->cParams+1)); iName++ )
-						{
+						for( UINT iName = 0; iName < MAX_CALLING_ARGUMENTS+1; iName++ )
 							pbstrNames[iName] = NULL;
-						}
-						
-						TheInfo->GetNames(pFuncDesc->memid, pbstrNames, pFuncDesc->cParams+1, &nNames);
+						TheInfo->GetNames(pFuncDesc->memid, pbstrNames, MAX_CALLING_ARGUMENTS + 1, &nNames);
 
 						// loop through the parameters
-						for ( int n = 0 ; n < pFuncDesc->cParams; n++ )
+						for ( UINT n = 0 ; n < nNames; n++ )
 						{
-							if (n < MAX_CALLING_ARGUMENTS)
-							{						
-								const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
-								BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
-								VARTYPE vt = ((bNotByVal) ? e.tdesc.lptdesc->vt : e.tdesc.vt);
+							const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
+							BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
+							VARTYPE vt = ((bNotByVal) ? e.tdesc.lptdesc->vt : e.tdesc.vt);
 
-								if (vt == VT_USERDEFINED) 
-									SetRefType(vt, TheInfo,
-										(bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype, 
-										&axPropDesc->CallingArgClsids[n]);
+							if (vt == VT_USERDEFINED) 
+								SetRefType(vt, TheInfo,
+									(bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype, 
+									&axPropDesc->CallingArgClsids[n]);
 
-								axPropDesc->CallingArgs[n]  = vt;
-								if( pbstrNames[n] != NULL )	
-									axPropDesc->CallingArgNames[n] = CString(pbstrNames[n+1]);
-							}
+							axPropDesc->CallingArgs[n]  = vt;
+							if( pbstrNames[n] != NULL && n < nNames - 1 )	
+								axPropDesc->CallingArgNames[n] = CString(pbstrNames[n+1]);
+							SysFreeString( pbstrNames[n] ) ;
 						}						
 
 						axPropDesc->CallingArgs[pFuncDesc->cParams] = 0;
@@ -1188,8 +1147,6 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 						axPropDesc->Type = (bNotByVal ? e.tdesc.lptdesc->vt : e.tdesc.vt);
 						// This is not strictly true - might be method
 						axPropDesc->IsArray = TRUE;
-					    //SysFreeString( bstrName ) ;
-						//SysFreeString( bstrDesc ) ;	
 						axPropDesc->CanSet = TRUE;
 						// if the flags are set to this combination we can add it but not show it in the 
 						// property list box
@@ -1199,110 +1156,91 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 						// it's for internal use only.
 						if (pFuncDesc->wFuncFlags == FUNCFLAG_FHIDDEN)
 							bCanInsert = false; 
-						PerPropertyBrowsing(pIObject, axPropDesc);
+						PerPropertyBrowsing(pIObject, axPropDesc.get());
 						if (axPropDesc->Type == VT_USERDEFINED)
-							GetRefGuid(axPropDesc, TheInfo, 
+							GetRefGuid(axPropDesc.get(), TheInfo, 
 							(bNotByVal ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype),
-							axPropDesc);
+							axPropDesc.get());
 					}
 					i++;
 
 					// some properties we just plain can't add.
-					if (!bCanInsert)
-					{
-						delete axPropDesc;
-					}
-					
-					// some properties we just plain can't add.
 					if (bCanInsert)
 					{
+						// default the insertion flag to false so this property won't be inserted more than once					
+						bool bInsert = false;
+						
 						// find an instance of the property with the name of the one we have.
 						// we do this so that the CPropertyObject will hold all INVOKE_PROPERTYGET, 
 						// INVOKE_PROPERTYPUT and INVOKE_PROPERTYPUTREF ActiveX properties of the same 
 						// name inside one CPropertyObject object.
 						RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty(axPropDesc->Name);
 						
-						// default the insertion flag to false so this property won't be inserted more than once					
-						bool bInsert = false;
-						
 						if (pProp == NULL)	
 						{
 							// since this property type has not yet been created set the flag so this CPropertyObject
 							// will get inserted into the property list
 							bInsert = true;
+						
+							// set the property type as an ActiveX property pointer/holder/handler
+							if (axPropDesc->CanSet == FALSE)
+							{
+								pProp = new CPropertyObject(PropActiveXRunTime);
+								pProp->SetHidden(true);
+							}
+							else
+								pProp = new CPropertyObject(PropActiveXProp);
+							pProp->SetStringValue(axPropDesc->Name);
 						}
-						
-						// set the ActiveX property name
-						pProp->GetAxInterfaceDescriptorPtr()->SetActiveXProperyName(axPropDesc->Name);
-						
-						// set the property type as an ActiveX property pointer/holder/handler
-						if (axPropDesc->CanSet == FALSE)
-						{
-							pProp = new CPropertyObject(PropActiveXRunTime);
-							pProp->SetHidden(true);
-						}
-						else
-							pProp = new CPropertyObject(PropActiveXProp);
-						
 					
-						// set the pointer to the ActiveX's Get property CMethodInfo object
-						if (axPropDesc->invKind == INVOKE_PROPERTYGET)
+						switch( axPropDesc->invKind )
 						{
-							pProp->GetAxInterfaceDescriptorPtr()->GetPropGet() = axPropDesc;
+						case INVOKE_PROPERTYGET:
 							if (axPropDesc->NumParams > 0)
 							{
 								pProp->SetType(PropActiveXRunTime);						
 								pProp->SetHidden(true);
 							}
-						}
-						else if (axPropDesc->invKind == INVOKE_PROPERTYPUT)
-						{
-							pProp->GetAxInterfaceDescriptorPtr()->GetPropPut() = axPropDesc;
+							pProp->GetAxInterfaceDescriptorPtr()->SetPropGet( axPropDesc.release() );
+							break;
+						case INVOKE_PROPERTYPUT:
 							if (axPropDesc->NumParams > 1)
 							{
 								pProp->SetType(PropActiveXRunTime);	
 								pProp->SetHidden(true);
 							}
-						}
-						else if (axPropDesc->invKind == INVOKE_PROPERTYPUTREF)
-						{
-							pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() = axPropDesc;
+							pProp->GetAxInterfaceDescriptorPtr()->SetPropPut( axPropDesc.release() );
+							break;
+						case INVOKE_PROPERTYPUTREF:
 							if (axPropDesc->NumParams > 1)
 							{
 								pProp->SetType(PropActiveXRunTime);	
 								pProp->SetHidden(true);
 							}
+							pProp->GetAxInterfaceDescriptorPtr()->SetPropPutRef( axPropDesc.release() );
+							break;
+						default:
+							if (!pProp->GetAxInterfaceDescriptorPtr()->GetProp())
+								pProp->GetAxInterfaceDescriptorPtr()->SetProp( axPropDesc.release() );
+							break;
 						}
-						else if (!pProp->GetAxInterfaceDescriptorPtr()->GetProp())
-						{
-							pProp->GetAxInterfaceDescriptorPtr()->GetProp() = axPropDesc;						
-							if (axPropDesc->NumParams > 0 && axPropDesc->invKind == INVOKE_PROPERTYGET)
-							{
-								pProp->SetType(PropActiveXRunTime);	
-								pProp->SetHidden(true);
-							}
-						}
-						
 						// here we insert the property
 						if (bInsert)
 						{
 							// get the position where we are to add the property
-							POSITION pos = pControl->FindPropertyInsertPos(axPropDesc->Name, false);
+							POSITION pos = pControl->FindPropertyInsertPos(pProp->GetAxInterfaceDescriptorPtr()->GetName(), false);
 							
 							// if the property is NOT an illegal property we can include it in the list to be displayed 
 							// in the CPropertyListCtrl control.
 							// check where the property is to be inserted.
 							if (pos == NULL)
-								// add the property to the property list
 								pControl->GetPropertyList().AddTail(pProp);
 							else					
-								// add the property to the property list
 								pControl->GetPropertyList().InsertAfter(pos, pProp);						
 						}
 					}
 				}
 				TheInfo->ReleaseFuncDesc( pFuncDesc ) ;
-
  			}
 		}
 		// All done

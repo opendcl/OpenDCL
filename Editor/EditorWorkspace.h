@@ -8,12 +8,12 @@
 
 class CProjectTreeCtrl;
 class CMainFrame;
-class CProject;
 class CEditorProject;
 class CToolBox;
 class CPropertyTabPane;
 class CZOrderListCtrl;
 class CObjectDCLDoc;
+class COleControlObject;
 
 
 #define theEditorWorkspace (*(CEditorWorkspace*)&theWorkspace)
@@ -34,8 +34,8 @@ public:
 
 public:
 	virtual CProject* GetActiveProject() const;
-	virtual const CDclControlObject* GetDclControlFor( const AxPropertyDescriptor* pProperty ) const;
-	virtual const CDclControlObject* GetDclControlFor( const AxMethodDescriptor* pMethod ) const;
+	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxPropertyDescriptor* pProperty ) const;
+	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxMethodDescriptor* pMethod ) const;
 	virtual void SetModified( bool bModified );
 
 	//Attributes

@@ -298,18 +298,7 @@ void CProject::ClearProject()
 	mPictures.RemoveAll();
 
   // clear OLE controls
-  POSITION posOleControl = mOleControls.GetHeadPosition();	
-	while (posOleControl)
-	{
-    CDclControlObject* pControl = mOleControls.GetNext(posOleControl);
-		if (pControl)
-		{
-			pControl->ClearProperties();
-			pControl->ClearStream();
-		}
-    delete pControl;
-	}
-	mOleControls.RemoveAll();
+	mOleControls.clear();
 
 	mClipBoard.RemoveAll();
   m_ActiveXFiles.RemoveAll();
@@ -339,16 +328,16 @@ void CProject::AddOleObject(const CLSID& clsid, CAxContainer *pAxCont)
     pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_PROP_LABEL_NAME) );
   else if (pObject->m_clsid == GUID_COLOR)
     pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_COLOR) );
-  mOleControls.AddTail(pObject);	
+  mOleControls.push_back(pObject);	
   pAxCont->ExtractComponentsFromTLB(pObject, clsid);
 }
 
 bool CProject::HasOleObject(const CLSID& clsid)
 {
-  POSITION pos = mOleControls.GetHeadPosition();
-  while (pos != NULL)
+	std::vector< RefCountedPtr< COleControlObject > >::const_iterator pos = mOleControls.begin();
+  while (pos != mOleControls.end())
   {
-    CDclControlObject *pObject = mOleControls.GetNext(pos);
+    RefCountedPtr< COleControlObject > pObject = *pos++;
 		assert( pObject != NULL );
     if (pObject != NULL && pObject->m_clsid == clsid)
       return true;
@@ -356,12 +345,12 @@ bool CProject::HasOleObject(const CLSID& clsid)
   return false;
 }
 
-CDclControlObject* CProject::GetOleObject(const CLSID& clsid)
+RefCountedPtr< COleControlObject > CProject::GetOleObject(const CLSID& clsid)
 {
-  POSITION pos = mOleControls.GetHeadPosition();
-  while (pos != NULL)
+	std::vector< RefCountedPtr< COleControlObject > >::const_iterator pos = mOleControls.begin();
+  while (pos != mOleControls.end())
   {
-    CDclControlObject *pObject = mOleControls.GetNext(pos);
+    RefCountedPtr< COleControlObject > pObject = *pos++;
 		assert( pObject != NULL );
     if (pObject != NULL && pObject->m_clsid == clsid)
       return pObject;
@@ -374,10 +363,10 @@ CString CProject::GetOleObjectName(const AxPropertyDescriptor *pProperty)
   if (pProperty == NULL)
     return CString();
 
-  POSITION pos = mOleControls.GetHeadPosition();
-  while (pos != NULL)
+	std::vector< RefCountedPtr< COleControlObject > >::iterator pos = mOleControls.begin();
+  while (pos != mOleControls.end())
   {
-    CDclControlObject *pObject = mOleControls.GetNext(pos);
+    RefCountedPtr< COleControlObject > pObject = *pos++;
 		assert( pObject != NULL );
     if (pObject != NULL)
     {
@@ -394,15 +383,15 @@ CString CProject::GetOleObjectName(const AxPropertyDescriptor *pProperty)
 }
 
 
-CDclControlObject *CProject::GetOleObject(const AxEventDescriptor *pEvent)
+RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxEventDescriptor *pEvent)
 {	
   if (pEvent == NULL)
     return NULL;
 
-  POSITION pos = mOleControls.GetHeadPosition();
-  while (pos != NULL)
+	std::vector< RefCountedPtr< COleControlObject > >::iterator pos = mOleControls.begin();
+  while (pos != mOleControls.end())
   {
-    CDclControlObject *pObject = mOleControls.GetNext(pos);
+    RefCountedPtr< COleControlObject > pObject = *pos++;
 		assert( pObject != NULL );
     if (pObject != NULL)
     {
@@ -419,15 +408,15 @@ CDclControlObject *CProject::GetOleObject(const AxEventDescriptor *pEvent)
   return NULL;
 }
 
-CDclControlObject *CProject::GetOleObject(const AxPropertyDescriptor *pProperty)
+RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxPropertyDescriptor *pProperty)
 {	
   if (pProperty == NULL)
     return NULL;
 
-  POSITION pos = mOleControls.GetHeadPosition();
-  while (pos != NULL)
+	std::vector< RefCountedPtr< COleControlObject > >::iterator pos = mOleControls.begin();
+  while (pos != mOleControls.end())
   {
-    CDclControlObject *pObject = mOleControls.GetNext(pos);
+    RefCountedPtr< COleControlObject > pObject = *pos++;
 		assert( pObject != NULL );
     if (pObject != NULL)
     {
@@ -443,15 +432,15 @@ CDclControlObject *CProject::GetOleObject(const AxPropertyDescriptor *pProperty)
   return NULL;
 }
 
-CDclControlObject *CProject::GetOleObject(const AxMethodDescriptor *pMethod)
+RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxMethodDescriptor *pMethod)
 {	
   if (pMethod == NULL)
     return NULL;
 
-  POSITION pos = mOleControls.GetHeadPosition();
-  while (pos != NULL)
+	std::vector< RefCountedPtr< COleControlObject > >::iterator pos = mOleControls.begin();
+  while (pos != mOleControls.end())
   {
-    CDclControlObject *pObject = mOleControls.GetNext(pos);
+    RefCountedPtr< COleControlObject > pObject = *pos++;
 		assert( pObject != NULL );
     if (pObject != NULL)
     {
@@ -684,28 +673,20 @@ void CProject::Serialize(CArchive& ar)
       }
     }
 
-    m_ActiveXFiles.Serialize(ar);
-    mOleControls.Serialize(ar);
+		unsigned long ctAxFiles = unsigned long(m_ActiveXFiles.GetCount());
+		ar << ctAxFiles;
+		for( unsigned long idx = 0; idx < ctAxFiles; ++idx )
+			ar << m_ActiveXFiles.GetAt( idx );
 
-    // set counter 
-    nCount = (short)mPictures.GetCount();
-    ar << nCount;		
+		unsigned long ctOleControls = unsigned long(mOleControls.size());
+		ar << ctOleControls;
+		for( unsigned long idx = 0; idx < ctOleControls; ++idx )
+			mOleControls.at( idx )->Serialize( ar );
 
-    // set start position for navigating images
+    ar << unsigned long(mPictures.GetCount());		
     pos = mPictures.GetHeadPosition();
-
-    // do loop to navigate images
     while (pos != NULL)
-    {
-      // get current image
-      CPictureObject* pPictureObj = mPictures.GetNext(pos);
-
-      // put image into archive
-      pPictureObj->Serialize(ar);
-      // increment counter
-      nCount--;			
-    }
-
+      mPictures.GetNext(pos)->Serialize(ar);
   }
   else
   {		
@@ -777,33 +758,52 @@ void CProject::Serialize(CArchive& ar)
     // do loop to navigate dcl forms
     while (nCount-- > 0)
     {
-      // get current Dcl form
       CDclFormObject* pDclForm = new CDclFormObject( this );
-
-      // get dcl form into archive
       pDclForm->Serialize(ar);
-
 			//pDclForm->UpdateGlobalVariable(GetKeyName());
-
-      // add this dcl form to the list object
       mDclForms.AddTail(pDclForm);
+    }
 
-    }		
+		m_ActiveXFiles.RemoveAll();
     if (nThisVersion >= 7)
-      m_ActiveXFiles.Serialize(ar);
-    if (nThisVersion > 9)
-      mOleControls.Serialize(ar);
-    else if (nThisVersion >= 8)
 		{
-			POSITION pos = mOleControls.GetHeadPosition();
-			while (pos)
-				delete mOleControls.GetNext(pos);
-			mOleControls.RemoveAll();
-			CTypedPtrList< CObList, CArxControlObject* > listControls;
-			listControls.Serialize(ar);
-			pos = listControls.GetHeadPosition();
-			while (pos)
-				mOleControls.AddTail(listControls.GetNext(pos));
+			if( nThisVersion <= 9 )
+				m_ActiveXFiles.Serialize(ar);
+			else
+			{
+				unsigned long ctAxFiles;
+				ar >> ctAxFiles;
+				for( unsigned long idx = 0; idx < ctAxFiles; ++idx )
+				{
+					CString sFile;
+					ar >> sFile;
+					m_ActiveXFiles.Add( sFile );
+				}
+			}
+		}
+
+		mOleControls.clear();
+    if (nThisVersion >= 8)
+		{
+			if (nThisVersion <= 9)
+			{
+				CTypedPtrList< CObList, CArxControlObject* > listControls;
+				listControls.Serialize(ar);
+				pos = listControls.GetHeadPosition();
+				while (pos)
+					mOleControls.push_back(listControls.GetNext(pos));
+			}
+			else
+			{
+				unsigned long ctOleControls;
+				ar >> ctOleControls;
+				for( unsigned long idx = 0; idx < ctOleControls; ++idx )
+				{
+					COleControlObject* pOleControl = new COleControlObject( this );
+					pOleControl->Serialize( ar );
+					mOleControls.push_back( pOleControl );
+				}
+			}
 		}
 
 
@@ -1232,7 +1232,7 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
     COleControlObject* pOleControl = new COleControlObject( this );
 		IOStatus stat = pOleControl->ReadFromTextFile(sFile, fileName);
     if (stat != statOK) return stat;
-    mOleControls.AddTail(pOleControl);
+    mOleControls.push_back(pOleControl);
   }
 
   // set counter

@@ -94,6 +94,7 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
   if (!readBOOL(sFile, bProp)) return statInvalidFormat;
   if (bProp)
   {
+		delete mpProp;
     mpProp = new AxPropertyDescriptor;
 		IOStatus stat = ReadPropFromTextFile5(sFile, *mpProp);
     if (stat != statOK) return stat;
@@ -102,6 +103,7 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
   if (!readBOOL(sFile, bPropGet)) return statInvalidFormat;
   if (bPropGet)
   {
+		delete mpPropGet;
     mpPropGet = new AxPropertyDescriptor;
 		IOStatus stat = ReadPropFromTextFile5(sFile, *mpPropGet);
     if (stat != statOK) return stat;
@@ -110,6 +112,7 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
   if (!readBOOL(sFile, bPropPut)) return statInvalidFormat;
   if (bPropPut)
   {
+		delete mpPropPut;
     mpPropPut = new AxPropertyDescriptor;
 		IOStatus stat = ReadPropFromTextFile5(sFile, *mpPropPut);
     if (stat != statOK) return stat;
@@ -118,6 +121,7 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
   if (!readBOOL(sFile, bPropPutRef)) return statInvalidFormat;
   if (bPropPutRef)
   {
+		delete mpPropPutRef;
     mpPropPutRef = new AxPropertyDescriptor;
 		IOStatus stat = ReadPropFromTextFile5(sFile, *mpPropPutRef);
     if (stat != statOK) return stat;
@@ -126,7 +130,8 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
   if (!readBOOL(sFile, bPropEvent)) return statInvalidFormat;
   if (bPropEvent)
   {
-    mpEvent = new AxEventDescriptor;
+		delete mpEvent;
+		mpEvent = new AxEventDescriptor;
     if (!readDISPID(sFile, mpEvent->Id)) return statInvalidFormat;
     if (!readString(sFile, mpEvent->Name)) return statInvalidFormat;
     if (!readString(sFile, mpEvent->DocumentationDesc)) return statInvalidFormat;
@@ -144,6 +149,7 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
   if (!readBOOL(sFile, bPropMethod)) return statInvalidFormat;
   if (bPropMethod)
   {
+		delete mpMethods;
 		mpMethods = new std::vector< RefCountedPtr< AxMethodDescriptor > >;
     int nCount;
 
@@ -153,14 +159,14 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
     while (nCount-- > 0)
     {
       // get current object
-			RefCountedPtr< AxMethodDescriptor > pMethod = new AxMethodDescriptor;
+			std::auto_ptr< AxMethodDescriptor > pMethod( new AxMethodDescriptor );
 
       // get object from archive
 			IOStatus stat = pMethod->ReadFromTextFile(sFile);
-      if (stat != statOK) return stat;
+			if (stat != statOK) return stat;
 
       // add that ArxControlObject to the list object
-      mpMethods->push_back(pMethod);		
+			mpMethods->push_back(pMethod.release());		
     }
   }
 
@@ -234,7 +240,7 @@ IOStatus AxInterfaceDescriptor::WriteToTextFile(FILE* pFile) const
   bPropEvent = (mpEvent != NULL);
   writeBOOL(pFile, bPropEvent);
 
-  if (mpEvent != NULL)
+  if (mpEvent)
   {
     writeDISPID(pFile, mpEvent->Id);
     writeString(pFile, mpEvent->Name);
@@ -250,7 +256,7 @@ IOStatus AxInterfaceDescriptor::WriteToTextFile(FILE* pFile) const
   }
   bPropMethod = (mpMethods != NULL);
   writeBOOL(pFile, bPropMethod);
-  if (mpMethods != NULL)
+  if (mpMethods)
   {
     int nCount = (int)mpMethods->size(); 
     writeInt(pFile, nCount);
@@ -415,34 +421,39 @@ void AxInterfaceDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 		ar >> bProp;
 		if (bProp)
 		{
+			delete mpProp;
 			mpProp = new AxPropertyDescriptor;
-			SerializeProp(ar, *mpProp, nPropertyVersion);
+			SerializeProp(ar, *(AxPropertyDescriptor*)mpProp, nPropertyVersion);
 		}
 
 		ar >> bPropGet;
 		if (bPropGet)
 		{
+			delete mpPropGet;
 			mpPropGet = new AxPropertyDescriptor;
-			SerializeProp(ar, *mpPropGet, nPropertyVersion);
+			SerializeProp(ar, *(AxPropertyDescriptor*)mpPropGet, nPropertyVersion);
 		}
 
 		ar >> bPropPut;
 		if (bPropPut)
 		{
+			delete mpPropPut;
 			mpPropPut = new AxPropertyDescriptor;
-			SerializeProp(ar, *mpPropPut, nPropertyVersion);
+			SerializeProp(ar, *(AxPropertyDescriptor*)mpPropPut, nPropertyVersion);
 		}
 
 		ar >> bPropPutRef;
 		if (bPropPutRef)
 		{
+			delete mpPropPutRef;
 			mpPropPutRef = new AxPropertyDescriptor;
-			SerializeProp(ar, *mpPropPutRef, nPropertyVersion);
+			SerializeProp(ar, *(AxPropertyDescriptor*)mpPropPutRef, nPropertyVersion);
 		}
 
 		ar >> bPropEvent;
 		if (bPropEvent)
 		{
+			delete mpEvent;
 			mpEvent = new AxEventDescriptor;
 			ar >> mpEvent->Id;
 			ar >> mpEvent->Name;
@@ -690,16 +701,7 @@ void AxInterfaceDescriptor::DoActiveXFontPropDlg(CAxContainer *axContainer)
 				
 		LOGFONT lf;
 		memset(&lf, 0, sizeof(LOGFONT));
-
-		COleCurrency size = COleCurrency( 10 / cyFontSize.Lo, 
-		  (10 % cyFontSize.Lo) / 1000);
-
-		int nH = size.m_cur.Lo;
-		HDC hdc = ::GetDC(GetDesktopWindow());
-		lf.lfHeight = -::MulDiv(cyFontSize.Lo,
-							GetDeviceCaps(hdc, LOGPIXELSY), 72);
-
-		lf.lfHeight = lf.lfHeight / 1000;
+		lf.lfHeight = ::MulDiv( ::MulDiv(cyFontSize.Lo, GetDeviceCaps(::GetDC(NULL), LOGPIXELSY), 72), -1, 10000 );
 		lf.lfWidth = 0;
 		lstrcpy(lf.lfFaceName, sFontName);
 		lf.lfItalic = bFontItalic;
@@ -812,11 +814,6 @@ GUID AxInterfaceDescriptor::GetAxMethodParamGUID(size_t nIndex, int nParam)
 	::memset(&guid, 0, sizeof(GUID));	
 	return guid;
 }
-
-void AxInterfaceDescriptor::SetActiveXProperyName(CString sName)
-{
-	
-}
 	
 VARTYPE AxInterfaceDescriptor::GetActiveXProperyType()
 {
@@ -881,17 +878,17 @@ DISPID AxInterfaceDescriptor::GetActiveXSetProperyId()
 	return dispid;
 }
 
-CString AxInterfaceDescriptor::GetName()
+CString AxInterfaceDescriptor::GetName() const
 {
 	if (mpPropGet != NULL)
 		return mpPropGet->Name;
-	else if (mpProp != NULL)
+	if (mpProp != NULL)
 		return mpProp->Name;
-	else if (mpPropPut != NULL)
+	if (mpPropPut != NULL)
 		return mpPropPut->Name;
-	else if (mpPropPutRef != NULL)
+	if (mpPropPutRef != NULL)
 		return mpPropPutRef->Name;
-	else if (mpEvent != NULL)
+	if (mpEvent != NULL)
 		return mpEvent->Name;
 	return CString();
 }

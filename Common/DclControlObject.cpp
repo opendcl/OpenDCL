@@ -288,6 +288,7 @@ void CDclControlObject::SaveToStream(CAxContainer *pCtrl)
 	ASSERT( SUCCEEDED( hr ) );
 	ASSERT( iSeekPtr.QuadPart > 0 );
 #endif
+	m_pStream = pStream;
 }
 
 IStream *CDclControlObject::GetLoadStream()
@@ -586,6 +587,18 @@ void CDclControlObject::Serialize(CArchive& ar)
 			{
 				RefCountedPtr< CPropertyObject > pProp = new CPropertyObject( PropInvalid );
 				pProp->Serialize(ar);
+				if( pProp->GetName().IsEmpty() )
+				{
+					switch( pProp->GetType() )
+					{
+					case PropActiveXProp:
+					case PropActiveXEnum:
+					case PropActiveXEvent:
+					case PropActiveXRunTime:
+					case PropActiveXMethods:
+						pProp->SetStringValue( pProp->GetAxInterfaceDescriptorPtr()->GetName() );
+					}
+				}
 				//TraceFmt( _T("Read property [%08X, type = %d, id = %d], string value = %s\r\n"),
 				//					(ULONG)&*pProp, (int)pProp->GetType(), (int)pProp->GetID(), (CString sVal; (LPCTSTR)pProp->GetStringValue() );
 				GetPropertyList().AddTail(pProp);		
@@ -906,8 +919,7 @@ CString CDclControlObject::GetActiveXTypeName() const
 	}
 
 	sName.MakeReverse();
-	sName = sName.SpanIncluding(_T("0123456789."));
-	sName = sName.SpanExcluding(_T("."));
+	sName = sName.Right(sName.GetLength() - sName.SpanIncluding(_T("0123456789.")).GetLength()).SpanExcluding(_T("."));
 	sName.MakeReverse();
 	
 	const_cast<CDclControlObject*>(this)->msAxTypeName = sName; //cache it
@@ -1184,12 +1196,15 @@ void CDclControlObject::ClearProperties()
 		m_pImageList = NULL;
 	}
 
+#ifdef _DEBUG
 	POSITION posProp = GetPropertyList().GetHeadPosition();
 	while (posProp)
 	{
 		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		assert(pProperty != NULL);
+		assert(!IsBadWritePtr(pProperty, sizeof(CPropertyObject)));
 	}
+#endif
 	GetPropertyList().RemoveAll();
 }
 
@@ -1397,6 +1412,19 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
     // get object from archive
 		IOStatus stat = pProp->ReadFromTextFile(sFile);
     if (stat != statOK) return stat;
+
+		if( pProp->GetName().IsEmpty() )
+		{
+			switch( pProp->GetType() )
+			{
+			case PropActiveXProp:
+			case PropActiveXEnum:
+			case PropActiveXEvent:
+			case PropActiveXRunTime:
+			case PropActiveXMethods:
+				pProp->SetStringValue( pProp->GetAxInterfaceDescriptorPtr()->GetName() );
+			}
+		}
 
     // add that ArxControlObject to the list object
     GetPropertyList().AddTail(pProp);		

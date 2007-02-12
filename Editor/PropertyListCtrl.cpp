@@ -374,13 +374,12 @@ int CPropertyListCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	return 0;
 }
+
 void CPropertyListCtrl::SetFont(CFont *pFont)
 {
 	m_pFont = pFont;
 	m_Edit.SetFont(m_pFont);
-	
 }
-
 
 void CPropertyListCtrl::UpdateControls(PropertyId nPropId) 
 {
@@ -1098,7 +1097,7 @@ void CPropertyListCtrl::DisplayProperties(CDclControlObject *pControl)
 	// if the selected index is greater than the available properties for this control	
 	if (m_SelectedIndex > m_PropertyList.GetCount() - 1)
 		// set the selected index to 0
-		m_SelectedIndex = m_PropertyList.GetCount() - 1;
+		m_SelectedIndex = 0;
 
 	// get the property selected
     RefCountedPtr< CPropertyObject > pPropSelected = GetPropertyObject(m_SelectedIndex);
@@ -1209,7 +1208,7 @@ void CPropertyListCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CPropertyListCtrl::DoSetupInputType(int nNewSelectedIndex)
 {
-	int nType;
+	int nType = nNotSet;
 
 	if (m_PropertyList.GetCount() == 0)
 		return;
@@ -1816,18 +1815,12 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 					CString sEnumDesc;
 					UINT enumId;
 					if (pProperty->GetID() == nAlternateOrient)
-					{
-						enumId = nOrientation * n100;
-					}
+						enumId = nOrientation * 100;
 					else
-					{
-						enumId = pProperty->GetID() * n100;
-					}
+						enumId = pProperty->GetID() * 100;
 
 					if (pProperty->GetID() == nSplitterStyle)
-					{
 						enumId = IDS_SPLITTERStyle_0 - 1;
-					}
 					
 					enumId = enumId + pProperty->GetLongValue() + 1;
 					sEnumDesc = theWorkspace.LoadResourceString(enumId);
@@ -2074,7 +2067,7 @@ void CPropertyListCtrl::OnButtonPressed()
 {
 	// get the property object
 	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
-	int nCalcHeight = n100;
+	int nCalcHeight = 100;
 
 	if (m_Button.GetButtonStyle() != nDropDownImage)
 	{		
@@ -2614,7 +2607,7 @@ int CPropertyListCtrl::SetListBox()
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_FILTERSTYLE_3);
 					m_pModeless->AddString(sEnumDesc);
 					
-					if (activeProject->m_nAutoCADVersion == n2000 && !activeProject->m_bFreeVersion)
+					if (activeProject->m_nAutoCADVersion == 2000 && !activeProject->m_bFreeVersion)
 					{											
 						sEnumDesc = theWorkspace.LoadResourceString(IDS_FILTERSTYLE_4);
 						m_pModeless->AddString(sEnumDesc);
@@ -2942,7 +2935,7 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 		// remove the popup list box
 		m_PopUpCreated = FALSE;
 		CString sText;
-		int nNewID = n100;
+		int nNewID = 100;
 		
 		if (m_pModeless->m_ListBox.GetCurSel() >= 2)
 		{
@@ -3064,7 +3057,8 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 			// call the method to inform the parent that a value has changed
 			PropertyHasChanged(pProp->GetID());
 
-			if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IPictureDisp)
+			if (pProp->GetAxInterfaceDescriptorPtr() &&
+					pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IPictureDisp)
 			{
 				CControlHolder *pCtrl = (CControlHolder*)m_pControl->m_pCtrlHolder;
 				if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
@@ -3575,16 +3569,11 @@ void CPropertyListCtrl::CheckPictureRefs()
 	
 }
 
-
-
-
 void CPropertyListCtrl::DefaultFontDlg() 
 {
 	CPropertySheet Dlg;
 	CFontPropertyPage *pFontPage = NULL;
 	RefCountedPtr< CPropertyObject > pProp = NULL;
-	
-
 	pFontPage = new CFontPropertyPage;
 	
 	// set the title
@@ -4325,7 +4314,8 @@ void CPropertyListCtrl::EditObjectbrowser()
 	if (pApp->m_pCtrlHelp == NULL)
 	{
 		CObjectBrowser Dlg;
-		Dlg.m_pControl = m_pControl;
+		Dlg.m_pControl.Lock();
+		Dlg.m_pControl = (COleControlObject*)m_pControl;
 		Dlg.m_pDclForm = m_pDclForm;
 		Dlg.m_sDclFormName = m_pDclForm->GetKeyName();
 		Dlg.DoModal();
@@ -4335,21 +4325,19 @@ void CPropertyListCtrl::EditObjectbrowser()
 	if (m_pIntelHelp == NULL)
 	{
 		m_pIntelHelp = new CObjectBrowser();
-		m_pIntelHelp->m_pControl = m_pControl;
+		m_pIntelHelp->m_pControl.Lock();
+		m_pIntelHelp->m_pControl = (COleControlObject*)m_pControl;
 		m_pIntelHelp->m_pDclForm = m_pDclForm;
 		m_pIntelHelp->m_sDclFormName = m_pDclForm->GetKeyName();
 		m_pIntelHelp->Create(MAKEINTRESOURCE(IDD_OBJECTBROWSER), AfxGetApp()->m_pMainWnd);
 	}
 	else
 	{
-		m_pIntelHelp->m_pControl = m_pControl;
+		m_pIntelHelp->m_pControl.Lock();
+		m_pIntelHelp->m_pControl = (COleControlObject*)m_pControl;
 		m_pIntelHelp->m_pDclForm = m_pDclForm;
 		m_pIntelHelp->m_sDclFormName = m_pDclForm->GetKeyName();
 		m_pIntelHelp->Setup();
 	}
-
-
 	m_pIntelHelp->ShowWindow(TRUE);
-
-	
 }

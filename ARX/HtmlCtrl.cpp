@@ -283,9 +283,6 @@ void CHtmlCtrl::LoadHtmlCode(CString sHtmlCode)
 	LPDISPATCH pDisp = NULL;
 	HGLOBAL hHTMLText;
 	
-	if (sHtmlCode.GetLength() == 0) 
-		sHtmlCode = "<html><h1>Stream Test</h1><p>This HTML content is/being loaded from a stream.</html>";
-	
 	// Is this the DocumentComplete event for the top frame window?
     // Check COM identity: compare IUnknown interface pointers.
     hr = m_pBrowserApp->QueryInterface( IID_IUnknown,  (void**)&pUnkBrowser );
@@ -295,10 +292,11 @@ void CHtmlCtrl::LoadHtmlCode(CString sHtmlCode)
 		// This is the DocumentComplete event for the top frame - page is loaded!
 		// Create a stream containing the HTML.
 		// Alternatively, this stream may have been passed to us.
-		hHTMLText = GlobalAlloc( GPTR, sHtmlCode.GetLength()+1);
+		int cchHtml = sHtmlCode.GetLength() + 1;
+		hHTMLText = GlobalAlloc( GPTR, sizeof(TCHAR) * cchHtml );
 		if ( hHTMLText )
 		{
-			lstrcpy( (TCHAR*)hHTMLText, sHtmlCode );
+			lstrcpyn( (TCHAR*)hHTMLText, sHtmlCode, cchHtml );
 			hr = CreateStreamOnHGlobal( hHTMLText, TRUE, &pStream );
 			if ( SUCCEEDED(hr) )
 			{
@@ -306,7 +304,6 @@ void CHtmlCtrl::LoadHtmlCode(CString sHtmlCode)
 			   LoadWebBrowserFromStream(m_pBrowserApp, pStream);
 			   pStream->Release();
 			}
-			GlobalFree( hHTMLText );
 		}
     }
 
@@ -395,8 +392,8 @@ void CHtmlCtrl::ReplaceText(CString sOldText, CString sNewText)
 		newhtml.AppendBSTR(html);
 		lpTxtRange->pasteHTML(newhtml);
 				
-		lpTxtRange->moveStart((BSTR)CComBSTR("Character"),1,&t);
-		lpTxtRange->moveEnd((BSTR)CComBSTR("Textedit"),1,&t);
+		lpTxtRange->moveStart((BSTR)CComBSTR(L"Character"),1,&t);
+		lpTxtRange->moveEnd((BSTR)CComBSTR(L"Textedit"),1,&t);
 	}
 
 	lpTxtRange->Release();
@@ -413,12 +410,12 @@ CString CHtmlCtrl::GetHtmlText()
 	lpDispatch = GetHtmlDocument();
 	
 	if (lpDispatch == NULL)
-		return "";
+		return CString();
 
 	lpDispatch->QueryInterface(IID_IHTMLDocument2, (void**)&lpHtmlDocument);
 	lpDispatch->Release();
   if (lpHtmlDocument == NULL) {
-    return "";
+    return CString();
   }
 
 	IHTMLElement *lpBodyElm;
@@ -428,28 +425,25 @@ CString CHtmlCtrl::GetHtmlText()
 	lpHtmlDocument->get_body(&lpBodyElm);
 	lpHtmlDocument->Release();
   if (lpBodyElm == NULL) {
-    return "";
+    return CString();
   }
 	lpBodyElm->QueryInterface(IID_IHTMLBodyElement,(void**)&lpBody);
 	lpBodyElm->Release();
   if (lpBody == NULL) {
-    return "";
+    return CString();
   }
 
   lpBody->createTextRange(&lpTxtRange);
 	lpBody->Release();
   if (lpTxtRange == NULL) {
-    return "";
+    return CString();
   }
 
 	CComBSTR html;
 	
 	HRESULT hr = lpTxtRange->get_htmlText(&html);
 	lpTxtRange->Release();
-	CString sRetString;
-	sRetString = html;
-	
-	return sRetString;
+	return (LPCWSTR)html;
 }
 
 

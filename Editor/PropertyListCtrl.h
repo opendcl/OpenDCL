@@ -48,9 +48,6 @@ class CColourPopup;
 #define nDeValueSize 80
 #define nDeLargestPicId 99
 
-#define n100 100
-#define n2000 2000
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CPropertyListCtrl : See PropertyListCtl.cpp for implementation.

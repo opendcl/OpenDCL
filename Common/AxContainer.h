@@ -70,7 +70,7 @@ public:
 	UINT ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *TheInfo);
 
 	IDispatch *GetChildIDispatch(DISPID dispid);
-	void GetRefGuid(AxPropertyDescriptor* pAProp, ITypeInfo* TheInfo, HREFTYPE hreftype, AxPropertyDescriptor *pProperty = NULL);
+	void GetRefGuid( AxPropertyDescriptor* pAProp, ITypeInfo* TheInfo, HREFTYPE hreftype, AxPropertyDescriptor *pProperty = NULL);
 	BOOL ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID clsid);
 
 	void Initialize();

@@ -38,14 +38,10 @@ enum PropertyType
 namespace PropVal
 {
 	typedef std::vector< CString > TCStringArray;
-	typedef RefCountedAutoConstructPtr< TCStringArray > TCStringArrayPtr;
 	typedef std::vector< TCStringArray > TCStringArrayList;
-	typedef RefCountedAutoConstructPtr< TCStringArrayList > TCStringArrayListPtr;
 	typedef std::vector< int > TIntArray;
-	typedef RefCountedAutoConstructPtr< TIntArray > TIntArrayPtr;
 	typedef std::vector< TIntArray > TIntArrayList;
-	typedef RefCountedAutoConstructPtr< TIntArrayList > TIntArrayListPtr;
-	typedef RefCountedAutoConstructPtr< AxInterfaceDescriptor > TAxInterfaceDescriptorPtr;
+	//typedef AxInterfaceDescriptor* TAxInterfaceDescriptorPtr;
 
 
 
@@ -93,20 +89,20 @@ namespace PropVal
 		//virtual bool SetValue( const OLE_COLOR& v ) { return false; }
 
 		//complex types
-		virtual bool GetValue( TCStringArrayPtr& v ) const { return false; }
-		virtual bool SetValue( const TCStringArrayPtr& v ) { return false; }
-		virtual bool GetValue( TCStringArrayListPtr& v ) const { return false; }
-		virtual bool SetValue( const TCStringArrayListPtr& v ) { return false; }
-		virtual bool GetValue( TIntArrayPtr& v ) const { return false; }
-		virtual bool SetValue( const TIntArrayPtr& v ) { return false; }
-		virtual bool GetValue( TIntArrayListPtr& v ) const { return false; }
-		virtual bool SetValue( const TIntArrayListPtr& v ) { return false; }
-		virtual bool GetValue( TAxInterfaceDescriptorPtr& v ) const { return false; }
-		virtual bool SetValue( const TAxInterfaceDescriptorPtr& v ) { return false; }
+		virtual bool GetValue( TCStringArray* const*& v ) const { return false; }
+		virtual bool GetValue( TCStringArray**& v ) { return false; }
+		virtual bool GetValue( TCStringArrayList* const*& v ) const { return false; }
+		virtual bool GetValue( TCStringArrayList**& v ) { return false; }
+		virtual bool GetValue( TIntArray* const*& v ) const { return false; }
+		virtual bool GetValue( TIntArray**& v ) { return false; }
+		virtual bool GetValue( TIntArrayList* const*& v ) const { return false; }
+		virtual bool GetValue( TIntArrayList**& v ) { return false; }
+		virtual bool GetValue( AxInterfaceDescriptor* const*& v ) const { return false; }
+		virtual bool GetValue( AxInterfaceDescriptor**& v ) { return false; }
 
 		//operations
 		virtual void clear() = 0;
-		virtual size_t size() { return 0; }
+		virtual size_t size() const { return 0; }
 
 		//filing
 		virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const = 0;
@@ -134,7 +130,7 @@ private:
 
 	//Construction
 protected:
-	friend class RefCounter< CPropertyObject >; //so that objects of this class are always reference counted
+	friend class RefCounter< CPropertyObject* >; //so that objects of this class are always reference counted
 	CPropertyObject();
 	virtual ~CPropertyObject();
 public:
@@ -174,21 +170,16 @@ public:
 	bool SetShortValue( short idxValue );
 
 	//complex value access
-	const PropVal::TCStringArrayPtr GetStringArrayPtr() const;
-	PropVal::TCStringArrayPtr GetStringArrayPtr();
-	bool SetStringArrayPtr( PropVal::TCStringArrayPtr pValue );
-	const PropVal::TCStringArrayListPtr GetStringArrayListPtr() const;
-	PropVal::TCStringArrayListPtr GetStringArrayListPtr();
-	bool SetStringArrayListPtr( PropVal::TCStringArrayListPtr pValue );
-	const PropVal::TIntArrayPtr GetIntArrayPtr() const;
-	PropVal::TIntArrayPtr GetIntArrayPtr();
-	bool SetIntArrayPtr( PropVal::TIntArrayPtr pValue );
-	const PropVal::TIntArrayListPtr GetIntArrayListPtr() const;
-	PropVal::TIntArrayListPtr GetIntArrayListPtr();
-	bool SetIntArrayListPtr( PropVal::TIntArrayListPtr pValue );
-	const PropVal::TAxInterfaceDescriptorPtr GetAxInterfaceDescriptorPtr() const;
-	PropVal::TAxInterfaceDescriptorPtr GetAxInterfaceDescriptorPtr();
-	bool SetAxInterfaceDescriptorPtr( PropVal::TAxInterfaceDescriptorPtr pValue );
+	const PropVal::TCStringArray* GetStringArrayPtr() const;
+	PropVal::TCStringArray* GetStringArrayPtr();
+	const PropVal::TCStringArrayList* GetStringArrayListPtr() const;
+	PropVal::TCStringArrayList* GetStringArrayListPtr();
+	const PropVal::TIntArray* GetIntArrayPtr() const;
+	PropVal::TIntArray* GetIntArrayPtr();
+	const PropVal::TIntArrayList* GetIntArrayListPtr() const;
+	PropVal::TIntArrayList* GetIntArrayListPtr();
+	const AxInterfaceDescriptor* GetAxInterfaceDescriptorPtr() const;
+	AxInterfaceDescriptor* GetAxInterfaceDescriptorPtr();
 
 	//Operations
 public:

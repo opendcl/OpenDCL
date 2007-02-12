@@ -57,6 +57,7 @@ class that all named objects derive from or export. This I leave as an exercise 
 */
 
 #include "Workspace.h"
+#include <vector>
 
 class CDclFormObject;
 class CDclControlObject;
@@ -96,7 +97,7 @@ class CProject : public CObject
 protected:		
 	CList<CPictureObject*> mPictures;
 	CList< CDclFormObject* > mDclForms;
-	CList<COleControlObject*> mOleControls;
+	std::vector< RefCountedPtr< COleControlObject > > mOleControls;
 	CList< CDclControlObject* > mClipBoard;
 	CString msKeyName;
 	CString msProjectFilePath;
@@ -180,10 +181,10 @@ public:
 	void AddOleObject(const CLSID& clsid, CAxContainer *pAxCont);
 	bool HasOleObject(const CLSID& clsid);
 	CString GetOleObjectName(const AxPropertyDescriptor *pProperty);
-	CDclControlObject *GetOleObject(const CLSID& clsid);
-	CDclControlObject *GetOleObject(const AxPropertyDescriptor *pProperty);
-	CDclControlObject *GetOleObject(const AxMethodDescriptor *pProperty);
-	CDclControlObject *GetOleObject(const AxEventDescriptor *pEvent);
+	RefCountedPtr< COleControlObject > GetOleObject(const CLSID& clsid);
+	RefCountedPtr< COleControlObject > GetOleObject(const AxPropertyDescriptor *pProperty);
+	RefCountedPtr< COleControlObject > GetOleObject(const AxMethodDescriptor *pProperty);
+	RefCountedPtr< COleControlObject > GetOleObject(const AxEventDescriptor *pEvent);
 
 public:
 	virtual void Serialize(CArchive& ar);   // overridden for document i/o

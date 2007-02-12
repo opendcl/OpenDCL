@@ -145,13 +145,13 @@ void CObjectBrowser::Setup()
 	
 }
 
-HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(const CDclControlObject *pControl) 
+HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(RefCountedPtr< COleControlObject > pControl) 
 {
-	POSITION pos = m_OleObjectList.GetHeadPosition();
+	std::vector< RefCountedPtr< COleControlObject > >::const_iterator pos = m_OleObjectList.begin();
 	// lets make sure we do not insert any OleObjects more than once.
-	while (pos != NULL)
+	while (pos != m_OleObjectList.end())
 	{
-		const CDclControlObject *pObject = m_OleObjectList.GetNext(pos);
+		RefCountedPtr< COleControlObject > pObject = *pos++;
 		if (pObject == pControl)
 			return NULL;
 	}
@@ -194,12 +194,12 @@ HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(const CDclControlObject *pContro
 			hItem = m_ListBox.InsertItem(GetControlName(pControl->GetType()), TVI_ROOT, TVI_SORT);
 	}
 		
-	int nCount = m_OleObjectList.GetCount();
+	size_t nCount = m_OleObjectList.size();
 	// set the item data to the index where the main m_pControl object goes.
 	m_ListBox.SetItemData(hItem, nCount);
 
 	// here we are going to hold the pointers to the ole object's arx control object info holders
-	m_OleObjectList.AddTail(pControl);
+	m_OleObjectList.push_back(pControl);
 	
 	// set the image index as the OleObject icon
 	m_ListBox.SetItemImage(hItem, 5, 5);
@@ -220,29 +220,33 @@ void CObjectBrowser::LoadAllAssociatedOleObjects(CDclControlObject *pControl)
 		RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetNext(pos);
 		if (pProp != NULL)
 		{
-			SearchMethods(pProp);
-			CDclControlObject *pOleObject = NULL;
-			// check events
-			pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetEvent());			
-			if (pOleObject != NULL)
-				LoadOleObjectIntoTree(pOleObject);			
-			
-			// check each property pointer type
-			pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetProp());
-			if (pOleObject != NULL)
-				LoadOleObjectIntoTree(pOleObject);			
-			
-			pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetPropGet());			
-			if (pOleObject != NULL)
-				LoadOleObjectIntoTree(pOleObject);			
-			
-			pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetPropPut());			
-			if (pOleObject != NULL)
-				LoadOleObjectIntoTree(pOleObject);			
-			
-			pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef());			
-			if (pOleObject != NULL)
-				LoadOleObjectIntoTree(pOleObject);			
+			AxInterfaceDescriptor* pAxDesc = pProp->GetAxInterfaceDescriptorPtr();
+			if( pAxDesc )
+			{
+				SearchMethods(pProp);
+				RefCountedPtr< COleControlObject > pOleObject;
+				// check events
+				pOleObject = activeProject->GetOleObject(pAxDesc->GetEvent());
+				if (pOleObject != NULL)
+					LoadOleObjectIntoTree(pOleObject);
+				
+				// check each property pointer type
+				pOleObject = activeProject->GetOleObject(pAxDesc->GetProp());
+				if (pOleObject != NULL)
+					LoadOleObjectIntoTree(pOleObject);
+				
+				pOleObject = activeProject->GetOleObject(pAxDesc->GetPropGet());
+				if (pOleObject != NULL)
+					LoadOleObjectIntoTree(pOleObject);
+				
+				pOleObject = activeProject->GetOleObject(pAxDesc->GetPropPut());
+				if (pOleObject != NULL)
+					LoadOleObjectIntoTree(pOleObject);
+				
+				pOleObject = activeProject->GetOleObject(pAxDesc->GetPropPutRef());
+				if (pOleObject != NULL)
+					LoadOleObjectIntoTree(pOleObject);
+			}
 		}
 	}
 }
@@ -250,18 +254,18 @@ void CObjectBrowser::LoadAllAssociatedOleObjects(CDclControlObject *pControl)
 
 void CObjectBrowser::SearchMethods(RefCountedPtr< CPropertyObject > pProp) 
 {
-	if (!pProp->GetAxInterfaceDescriptorPtr()->GetMethods())
+	if (!pProp->GetAxInterfaceDescriptorPtr() || pProp->GetAxInterfaceDescriptorPtr()->GetMethods())
 		return;
 
 	for (size_t idx = pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->size(); idx > 0; --idx)
 	{
-		CDclControlObject *pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->at(idx));
+		RefCountedPtr< COleControlObject > pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->at(idx));
 		if (pOleObject != NULL)
 			LoadOleObjectIntoTree(pOleObject);			
 	}
 }
 
-void CObjectBrowser::LoadInfoTree(const CDclControlObject *pControl, HTREEITEM hParentItem, int nIndex) 
+void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, HTREEITEM hParentItem, int nIndex) 
 {
 	int nCount = pControl->GetPropertyList().GetCount();
 	for (int i = 0; i<nCount; i++)
@@ -717,9 +721,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 
 	int nThisItemData = m_ListBox.GetItemData(hParent);
 
-	pos = m_OleObjectList.FindIndex(nThisItemData);
-	const CDclControlObject *pControl = m_OleObjectList.GetAt(pos);
-	
+	RefCountedPtr< COleControlObject > pControl = m_OleObjectList.at(nThisItemData);
 	if (pControl == NULL)
 		return;
 
@@ -735,25 +737,19 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 	nThisItemData = m_ListBox.GetItemData(hItem);
 
 	if (nImage == 3/* a method*/)
-	{
 		pos = pControl->GetPropertyList().FindIndex(nMethodIndex);
-	}
 	else
-	{
 		pos = pControl->GetPropertyList().FindIndex(nThisItemData);
-	}
 
-	if (pos == NULL && pControl->GetType() == -2)
-	{			
-		CString sItemText;
-		CString sTitle;
-		CString sDesc;
-		CString sVarType;
-		CString sDefun1;
-		CString sDefun2;
-	
-		
-	}
+	//if (pos == NULL && pControl->GetType() == -2)
+	//{			
+	//	CString sItemText;
+	//	CString sTitle;
+	//	CString sDesc;
+	//	CString sVarType;
+	//	CString sDefun1;
+	//	CString sDefun2;
+	//}
 
 	if (pos != NULL)
 	{			
@@ -1623,18 +1619,15 @@ void CObjectBrowser::OnCopy1()
 void CObjectBrowser::OnDestroy() 
 {
 	CResizableDialog::OnDestroy();
-	
-	// clean up the list but do not delete the contents they are also held in another list
-	// that will delete them later.
-	m_OleObjectList.RemoveAll();
+	m_OleObjectList.clear();
 }
 
 void CObjectBrowser::OnSize(UINT nType, int cx, int cy) 
 {
 	CResizableDialog::OnSize(nType, cx, cy);
-
 	ResizeControls(cx, cy);
 }
+
 void CObjectBrowser::ResizeControls(int cx, int cy) 
 {
 	int nCopyCount = 0;
@@ -1748,7 +1741,7 @@ CString CObjectBrowser::GetTypeName( VARTYPE vt, AxMethodDescriptor *pMethod, Ax
 	{
 		if (pProperty != NULL)
 		{
-			const CDclControlObject *pOleObject = theWorkspace.GetDclControlFor(pProperty);
+			RefCountedPtr< COleControlObject > pOleObject = theWorkspace.GetOleControlFor(pProperty);
 			if (pOleObject != NULL)
 			{
 				LoadOleObjectIntoTree(pOleObject);
@@ -1757,7 +1750,7 @@ CString CObjectBrowser::GetTypeName( VARTYPE vt, AxMethodDescriptor *pMethod, Ax
 		}
 		else
 		{
-			const CDclControlObject *pOleObject = theWorkspace.GetDclControlFor(pMethod);
+			RefCountedPtr< COleControlObject > pOleObject = theWorkspace.GetOleControlFor(pMethod);
 			if (pOleObject != NULL)
 			{
 				LoadOleObjectIntoTree(pOleObject);

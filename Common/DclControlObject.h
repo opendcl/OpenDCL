@@ -74,7 +74,8 @@ public:
 
 protected:
 	CDclControlObject();
-	CDclControlObject(const CDclControlObject& other); //declared protected to prevent copy construction
+	CDclControlObject(const CDclControlObject&); //declared protected to prevent copy construction
+	CDclControlObject& operator=( const CDclControlObject& ); //declared protected to prevent copy construction
 public:
 	CDclControlObject(CDclFormObject* pOwner);
 	CDclControlObject(ControlType type, CDclFormObject* pOwner, LPCTSTR pszName = NULL);

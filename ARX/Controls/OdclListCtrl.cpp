@@ -244,7 +244,7 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 	case nColumnCaptions:
 		{
 			CHeaderCtrl* pHdrCtrl = GetControl()->GetHeaderCtrl();
-			PropVal::TCStringArrayPtr prsCaption = pProp->GetStringArrayPtr();
+			PropVal::TCStringArray* prsCaption = pProp->GetStringArrayPtr();
 			size_t idx = prsCaption->size();
 			while( idx > 0 )
 			{
@@ -260,7 +260,7 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 	case nColumnWidths:
 		{
 			CHeaderCtrl* pHdrCtrl = GetControl()->GetHeaderCtrl();
-			PropVal::TIntArrayPtr prInt = pProp->GetIntArrayPtr();
+			PropVal::TIntArray* prInt = pProp->GetIntArrayPtr();
 			size_t idx = prInt->size();
 			while( idx > 0 )
 			{
@@ -275,7 +275,7 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 	case nColumnAlignments:
 		{
 			CHeaderCtrl* pHdrCtrl = GetControl()->GetHeaderCtrl();
-			PropVal::TIntArrayPtr prInt = pProp->GetIntArrayPtr();
+			PropVal::TIntArray* prInt = pProp->GetIntArrayPtr();
 			size_t idx = prInt->size();
 			while( idx > 0 )
 			{
@@ -290,7 +290,7 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 	case nColumnImages:
 		{
 			CHeaderCtrl* pHdrCtrl = GetControl()->GetHeaderCtrl();
-			PropVal::TIntArrayPtr prInt = pProp->GetIntArrayPtr();
+			PropVal::TIntArray* prInt = pProp->GetIntArrayPtr();
 			size_t idx = prInt->size();
 			while( idx > 0 )
 			{
