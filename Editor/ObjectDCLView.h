@@ -150,7 +150,7 @@ public:
 	void UpdateFontBool(bool bBool, PropertyId nId);
 	void UpdateAxFont(CSelectedControl *pSelControl, int nId, bool bBool, int nSize = 0, CString sName = "");
 	// tab pane functions
-	void AddTabPanes();
+	//void AddTabPanes();
 	bool IsTabsEnabled();
 	void ResizeChildTabPanes();
 	CDclFormObject * AddSingleTabPane(int nIndex);
@@ -190,9 +190,8 @@ public:
 	void OnMouseButtonDown(UINT nFlags, CPoint point);
 	void AdjustOffsets(int cx, int cy);
 	CSize GetControlSize(CWnd *pControl, int nControlType);
-	void ArxControlZOrder(CDclControlObject *pArxObject, short ZOrder);
 	CRect CalcResizeRect(int nQuadrant, CPoint point);
-	CWnd * AddCWndControl(int nArxIndex, CDclControlObject *pArxObject, int nControlToInsert, CString sControlName, CRect rcPos, bool bForceUpdate);
+	CWnd* AddCWndControl(CDclControlObject* pDclControl, CRect rcPos, bool bForceUpdate);
 	void NullDrawRect();
 	void PaintBackGround(HDC hdc);
 	int RoundToGridPattern(int Value);
@@ -214,7 +213,7 @@ public:
 // control creation operations
 public:
 	void InsertControl		(CRect rcPos);
-	bool CreateChildControl	(CControlHolder *pParent, CDclControlObject *pArxObject, int nControlToInsert, bool bForceUpdate = false);
+	bool CreateChildControl	(CControlHolder *pParent, CDclControlObject *pDclControl, bool bForceUpdate = false);
 	void CreateHatch		(CControlHolder *pParent, CDclControlObject *pArxObject);
 	void CreateLabel		(CControlHolder *pParent, CDclControlObject *pArxObject);
 	void CreateImageComboBox(CControlHolder *pParent, CDclControlObject *pArxObject);
@@ -254,7 +253,7 @@ public:
 
 	void SetupTreeControl	(CTreeCtrl *pControl);
 	void AddHiddenProperties(CDclControlObject *pArxObject, short nType, CString Name);
-	void AddProperties		(CDclControlObject *pArxObject, short nType, CString Name);
+	void AddProperties(CDclControlObject *pDclControl);
 
 public:
 	void UpdateProperty(PropertyId nID, CDclControlObject *pArxObject, CControlHolder *pParent);
@@ -263,7 +262,6 @@ public:
 	void CheckAutoSizeProp(CDclControlObject *pArxObject, CControlHolder *pParent);
 	void ResetImageList(CWnd *pControl, int nID, CDclControlObject *pArxObject);
 	void UpdateChildControl(CDclControlObject *pArxObject, CControlHolder *pParent);
-	void UpdateArxControlZOrder(CDclControlObject *pArxObject, short ZOrder);
 
 	void FireControlSelected(CDclControlObject *pControl);
 	void FireShowFormGrips(BOOL bVisible);

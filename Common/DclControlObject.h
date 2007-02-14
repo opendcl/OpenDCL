@@ -106,26 +106,37 @@ public:
 public:
 	bool UpdateGlobalVariable(CString sDclFormName, LPCTSTR pszProjectName = NULL);
 	void ForceUpdateGlobalVariable(CString sDclFormName);
+	RefCountedPtr< CPropertyObject > GetPropertyObject(PropertyId nID) const;
+	RefCountedPtr< CPropertyObject > GetActiveXPropertyObject(CString sName) const;
 	RefCountedPtr< CPropertyObject > FindProperty(CString sName);
 	void RemoveProperty(PropertyId nId);
 	void ResetProperty(PropertyId nId);
-	INT_PTR CountPropertyListItems(PropertyId nID);
-	CString GetPropertyListItem(PropertyId nID, int nIndex);
+	size_t CountPropertyListItems(PropertyId nID);
+	CString GetPropertyListItem(PropertyId nID, size_t nIndex);
 	long GetImageListIndex();
 	void SetImageListIndex(PropertyId nIndex);
 	//void Copy(CDclControlObject *other);
 	short FindPropertyIndex(PropertyId nID) const;
 	POSITION FindPropertyInsertPos(PropertyId nID, bool bHidden) const;
+
+	bool SetStringProperty( PropertyId nID, LPCTSTR pszValue );
+	RefCountedPtr< CPropertyObject > AddStringProperty( PropertyId nID,
+																											PropertyType type = PropString,
+																											LPCTSTR pszValue = NULL );
+	bool SetBooleanProperty( PropertyId nID, bool bValue = true );
+	RefCountedPtr< CPropertyObject > AddBooleanProperty( PropertyId nID,
+																											 PropertyType type = PropBool,
+																											 bool bValue = true );
+	bool SetLongProperty( PropertyId nID, long lValue = -1 );
+	RefCountedPtr< CPropertyObject > AddLongProperty( PropertyId nID,
+																										PropertyType type = PropLong,
+																										long lValue = -1 );
+
 	CString GetStrProperty(PropertyId nID) const;
-	void SetStrProperty(PropertyId nID, CString sValue);
 	long GetLngProperty(PropertyId nID) const;
-	void SetLngProperty(PropertyId nID, long lValue);	
-	void SetBoolProperty(PropertyId nID, bool bValue);
 	bool GetBoolProperty(PropertyId nID) const;
 	void SetColorProperty(PropertyId nID, COLORREF color);
 	COLORREF GetColorProperty(PropertyId nID) const;
-	RefCountedPtr< CPropertyObject > GetPropertyObject(PropertyId nID) const;
-	RefCountedPtr< CPropertyObject > GetActiveXPropertyObject(CString sName) const;
 	void ClearProperties();
 	void ClearR14Events();
 
@@ -151,4 +162,14 @@ public:
 
 protected:
 	DECLARE_SERIAL(CDclControlObject)
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual void dump( bool bDeep = true ) const;
+#endif
+
+#ifdef _DEBUG
+public:
+	virtual void dumpDebugger( bool bDeep = true ) const;
+#endif
 };

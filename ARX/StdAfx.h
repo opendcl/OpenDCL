@@ -37,6 +37,7 @@
 
 #pragma pack (push, 8)
 #pragma warning(disable: 4786 4996)
+#pragma warning(disable: 4995)
 //#pragma warning(disable: 4098)
 
 //-----------------------------------------------------------------------------
@@ -174,9 +175,17 @@ public:
 };
 
 
+//Include diagnostic functionality in all build configurations by default
+#ifndef _NO_DIAGNOSTIC
+#define _DIAGNOSTIC
+#include "Diagnostic.h"
+#endif //_NO_DIAGNOSTIC
+
+
 //-----------------------------------------------------------------------------
 //----- Debugging helpers
 #ifdef _DEBUG
+
 inline void _cdecl Trace( LPCTSTR pszTraceOutput ) { ::OutputDebugString( pszTraceOutput ); }
 inline void _cdecl TraceFmt( LPCTSTR pszTraceOutputFmt, ... )
 	{

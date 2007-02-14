@@ -5,6 +5,8 @@
 
 #pragma once
 
+#pragma warning(disable: 4995)
+
 #define STRICT
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
@@ -81,9 +83,17 @@
 #define _L(s) _L_token(s)
 
 
+//Include diagnostic functionality in all build configurations by default
+#ifndef _NO_DIAGNOSTIC
+#define _DIAGNOSTIC
+#include "Diagnostic.h"
+#endif //_NO_DIAGNOSTIC
+
+
 //-----------------------------------------------------------------------------
 //----- Debugging helpers
 #ifdef _DEBUG
+
 inline void _cdecl Trace( LPCTSTR pszTraceOutput ) { ::OutputDebugString( pszTraceOutput ); }
 inline void _cdecl TraceFmt( LPCTSTR pszTraceOutputFmt, ... )
 	{

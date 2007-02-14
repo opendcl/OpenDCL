@@ -643,29 +643,10 @@ void CControlPane::ResetControlsPos2(CDclControlObject *pArxObject, int cx, int 
 		return;
 
 	// get the offset boolean flags
-	int nLeftFromRight = 0;
-	if (pArxObject->m_pUseLeftOffset->GetType() == PropBool)
-		nLeftFromRight = pArxObject->m_pUseLeftOffset->GetBooleanValue();
-	else
-		nLeftFromRight = pArxObject->m_pUseLeftOffset->GetLongValue();
-
-	int nRightFromRight = 0;
-	if (pArxObject->m_pUseRightOffset->GetType() == PropBool)
-		nRightFromRight = pArxObject->m_pUseRightOffset->GetBooleanValue();
-	else
-		nRightFromRight = pArxObject->m_pUseRightOffset->GetLongValue();
-
-	int nTopFromBottom = 0;
-	if (pArxObject->m_pUseRightOffset->GetType() == PropBool)
-		nTopFromBottom = pArxObject->m_pUseTopOffset->GetBooleanValue();
-	else
-		nTopFromBottom = pArxObject->m_pUseTopOffset->GetLongValue();
-
-	int nBottomFromBottom = 0;
-	if (pArxObject->m_pUseRightOffset->GetType() == PropBool)
-		nBottomFromBottom = pArxObject->m_pUseBottomOffset->GetBooleanValue();
-	else
-		nBottomFromBottom = pArxObject->m_pUseBottomOffset->GetLongValue();
+	int nLeftFromRight = pArxObject->m_pUseLeftOffset->GetLongValue();
+	int nRightFromRight = pArxObject->m_pUseRightOffset->GetLongValue();
+	int nTopFromBottom = pArxObject->m_pUseTopOffset->GetLongValue();
+	int nBottomFromBottom = pArxObject->m_pUseBottomOffset->GetLongValue();
 	
 	// get the control being moved			
 	CWnd *pControl = pArxObject->GetWindow();

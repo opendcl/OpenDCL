@@ -108,7 +108,7 @@ void AddTab(VdclTab *pControl, const CDclFormObject *pDclTab, int nTabIndex)
 	RefCountedPtr< CPropertyObject > pTabsTTTProperty = pControl->m_ArxControl->GetPropertyObject(nTabsTTT);
 	RefCountedPtr< CPropertyObject > pTabsImageProperty = pControl->m_ArxControl->GetPropertyObject(nTabsImageList);
 
-	int nTabQty = pTabsCaptionProperty->CountList();
+	size_t nTabQty = pTabsCaptionProperty->size();
 	//for (int i = 0; i < nTabQty; i++)
 	//{
 	//	// get the tag caption

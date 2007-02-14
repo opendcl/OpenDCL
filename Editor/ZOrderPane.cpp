@@ -413,7 +413,7 @@ void CZOrderPane::OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResul
 
 	LPTOOLTIPTEXT lpTTT = (LPTOOLTIPTEXT)pNotifyStruct;
 
-	_tcscpy(lpTTT->szText,(LPCTSTR)toolTipText);
+	lstrcpyn(lpTTT->szText,toolTipText, _elements(lpTTT->szText));
 }
 
 BOOL CZOrderPane::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) 

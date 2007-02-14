@@ -703,7 +703,7 @@ void AxInterfaceDescriptor::DoActiveXFontPropDlg(CAxContainer *axContainer)
 		memset(&lf, 0, sizeof(LOGFONT));
 		lf.lfHeight = ::MulDiv( ::MulDiv(cyFontSize.Lo, GetDeviceCaps(::GetDC(NULL), LOGPIXELSY), 72), -1, 10000 );
 		lf.lfWidth = 0;
-		lstrcpy(lf.lfFaceName, sFontName);
+		lstrcpyn(lf.lfFaceName, sFontName, _elements(lf.lfFaceName));
 		lf.lfItalic = bFontItalic;
 		lf.lfStrikeOut = bFontStrikethrough;
 		lf.lfUnderline = bFontUnderLine;
@@ -892,3 +892,44 @@ CString AxInterfaceDescriptor::GetName() const
 		return mpEvent->Name;
 	return CString();
 }
+
+#ifdef _DIAGNOSTIC
+LPCTSTR AxInterfaceDescriptor::toString() const
+{
+	CString sProp;
+	sProp.Format( _T("Prop: %s"), mpProp? mpProp->toString() : _T("<null>") );
+	CString sPropGet;
+	sPropGet.Format( _T("PropGet: %s"), mpPropGet? mpPropGet->toString() : _T("<null>") );
+	CString sPropPut;
+	sPropPut.Format( _T("PropPut: %s"), mpPropPut? mpPropPut->toString() : _T("<null>") );
+	CString sPropPutRef;
+	sPropPutRef.Format( _T("PropPutRef: %s"), mpPropPutRef? mpPropPutRef->toString() : _T("<null>") );
+	CString sEvent;
+	sEvent.Format( _T("Event: %s"), mpEvent? mpEvent->toString() : _T("<null>") );
+	CString sMethods = _T("Methods: {");
+	if( mpMethods )
+	{
+		if( mpMethods->size() == 0 )
+			sMethods += _T("<empty>");
+		else
+		{
+			sMethods += _T("{");
+			sMethods += mpMethods->at(0)->toString();
+			for( size_t idx = 1; idx < mpMethods->size(); ++idx )
+			{
+				sMethods += _T("},{");
+				sMethods += mpMethods->at(idx)->toString();
+			}
+			sMethods += _T("}");
+		}
+	}
+	else
+		sMethods += _T("<null>");
+	sMethods += _T("}");
+	static CString sVal;
+	sVal.Format( _T("{%s, %s, %s, %s, %s, %s}"),
+							(LPCTSTR)sProp, (LPCTSTR)sPropGet, (LPCTSTR)sPropPut, (LPCTSTR)sPropPutRef,
+							(LPCTSTR)sEvent, (LPCTSTR)sMethods );
+	return sVal;
+}
+#endif

@@ -536,7 +536,7 @@ void CPictureFolder::SearchPictureRefs(CDclFormObject *pDclObject)
 			{
 				if (!FindPictureId(nPictureId))
 				{
-					pControl->SetLngProperty(nPicture, 0);
+					pControl->SetLongProperty(nPicture, 0);
 				}
 			}
 			int nPressedPictureId = pControl->GetLngProperty(nPressedPicture);
@@ -544,7 +544,7 @@ void CPictureFolder::SearchPictureRefs(CDclFormObject *pDclObject)
 			{
 				if (!FindPictureId(nPressedPictureId))
 				{
-					pControl->SetLngProperty(nPressedPicture, 0);
+					pControl->SetLongProperty(nPressedPicture, 0);
 				}
 			}
 			int nIconId = pControl->GetLngProperty(nIcon);
@@ -552,7 +552,7 @@ void CPictureFolder::SearchPictureRefs(CDclFormObject *pDclObject)
 			{
 				if (!FindPictureId(nIconId))
 				{
-					pControl->SetLngProperty(nIcon, 0);
+					pControl->SetLongProperty(nIcon, 0);
 				}
 			}
 		}

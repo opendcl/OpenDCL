@@ -119,7 +119,7 @@ void CToolBox::OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 
 	LPTOOLTIPTEXT lpTTT = (LPTOOLTIPTEXT)pNotifyStruct;
 
-	_tcscpy(lpTTT->szText,(LPCTSTR)toolTipText);
+	lstrcpyn(lpTTT->szText,toolTipText, _elements(lpTTT->szText));
 }
 
 CString CToolBox::NeedText( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )

@@ -621,32 +621,15 @@ void CMainFrame::OnRemove()
 	if (!pDclForm->CanWeDeleteForm())
 		return;
 
-	// get the unique name so we can delete any child tab panes/forms
-	CString sUniqueName = pDclForm->GetUniqueName();
+	if (pDclForm->m_htiTreeItem != NULL) // if the tab has a tree item (which it should)
+		pProjTree->DeleteItem(pDclForm->m_htiTreeItem); // delete the item.
+	pDclForm->GetProject()->DeleteForm( pDclForm ); //pDclForm is invalid after this call!
 
 	CDocument* pDoc = pProjTree->GetDocument();
 	if( pDoc )
 		pDoc->SetModifiedFlag();
 
-	POSITION pos = pProject->GetDclFormList().GetHeadPosition();
-	while (pos != NULL)
-	{
-		POSITION posThis = pos;
-		CDclFormObject *pThisForm = pProject->GetDclFormList().GetNext(pos);
-		
-		// if this is the form to delete or a child of the form
-		if (pThisForm == pDclForm || pThisForm->GetParentName() == sUniqueName)
-		{
-			if (pThisForm->m_htiTreeItem != NULL) // if the tab has a tree item (which it should)
-				pProjTree->DeleteItem(pThisForm->m_htiTreeItem); // delete the item.
-			if (pThisForm->m_pMdiChildWnd != NULL) // if the tab as a view open
-				pThisForm->m_pMdiChildWnd->DestroyWindow(); // close the view
-			pThisForm->ClearControls(); // call the method to clear the object
-			delete pThisForm; // delete the object
-			pProject->GetDclFormList().RemoveAt(posThis); // and remove it's pointer from the list
-			pProjTree->CleanupParents();
-		}
-	}
+	pProjTree->CleanupParents();
 }
 
 void CMainFrame::OnSetautolispfilename() 

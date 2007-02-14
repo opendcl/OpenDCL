@@ -22,6 +22,7 @@ public:
 
 public:
 	AxMethodDescriptor(void);
+	virtual ~AxMethodDescriptor(void);
 
 	//File I/O
 	virtual void Serialize(CArchive& ar);
@@ -31,4 +32,8 @@ public:
 
 protected:
 	DECLARE_SERIAL(AxMethodDescriptor)
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toString() const;
+#endif
 };

@@ -33,8 +33,12 @@ public:
 public:
 	AxPropertyDescriptor(void);
 	AxPropertyDescriptor(const AxPropertyDescriptor *other);
-	~AxPropertyDescriptor(void);
+	virtual ~AxPropertyDescriptor(void);
 
 protected:
 	DECLARE_SERIAL(AxPropertyDescriptor)
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toString() const;
+#endif
 };

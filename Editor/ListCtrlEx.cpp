@@ -69,7 +69,7 @@ void CListCtrlEx::SetupColumns(CDclControlObject *pControl)
 	RefCountedPtr< CPropertyObject > pColAlign = pControl->GetPropertyObject(nColumnAlignments);
 	RefCountedPtr< CPropertyObject > pColImage = pControl->GetPropertyObject(nColumnImages);
 
-	for (int i = 0; i < pColCaptions->CountList(); i++)
+	for (size_t i = 0; i < pColCaptions->size(); i++)
 	{				
 		HDITEM  hdi;
 		hdi.mask = HDI_TEXT | HDI_WIDTH | HDI_FORMAT ;

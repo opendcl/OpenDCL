@@ -550,7 +550,7 @@ void CColumnsPage::OnChangeText()
 
 	pHeader->GetItem(m_nIndex, &hdi);
    
-	lstrcpy(hdi.pszText, sText);
+	lstrcpyn(hdi.pszText, sText, _elements(lpBuffer));
 	pHeader->SetItem(m_nIndex, &hdi);
 	
 	m_ColData[m_nIndex].m_Caption = sText;

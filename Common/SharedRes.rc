@@ -7,8 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
-
+#include "afxres.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -65,18 +64,21 @@ BEGIN
     IDS_THE                 "The"
     IDS_RESETPROP           " control had an error while trying to load the stored properties.\nSo the properties have been reset to allow the control to be inserted."
     IDS_NOTLICENCEDAX       "This ActiveX control could not be inserted because it's licensing was not correctly setup."
+    IDS_BORDERSTYLE_0       "0 - None"
+    IDS_BORDERSTYLE_1       "1 - ClientEdge"
+    IDS_BORDERSTYLE_2       "2 - StaticEdge"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_ODCFILTER           "ObjectDCL Projects (*.odc)|*.odc||"
+    IDS_ODCFILTER           "OpenDCL Projects (*.odc)|*.odc||"
 END
 
 STRINGTABLE 
 BEGIN
     IDS_DOTLSP              ".lsp"
     IDS_DOTODS              ".ods"
-    IDS_ODSFILTER           "ObjectDCL Distribution Files (*.ods)|*.ods||"
+    IDS_ODSFILTER           "OpenDCL Distribution Files (*.ods)|*.ods||"
     IDS_COLOR               "Color"
     IDS_OleObject           "OleObject"
     IDS_THEFILE             "The file "
@@ -340,9 +342,6 @@ END
 STRINGTABLE 
 BEGIN
     IDS_PROP_DOCDEFAULT     "DockingDefault"
-    IDS_BORDERSTYLE_0       "0 - None"
-    IDS_BORDERSTYLE_1       "1 - ClientEdge"
-    IDS_BORDERSTYLE_2       "2 - StaticEdge"
     IDS_PROP_EVENTINVOKE    "EventInvoke"
     IDS_PROP_RETURNASTAB    "ReturnAsTab"
     IDS_PROP_SINGLEEXPANED  "SingleExpanded"
@@ -388,8 +387,7 @@ END
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-
-
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

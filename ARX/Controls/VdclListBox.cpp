@@ -121,20 +121,15 @@ int VdclListBox::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	RefCountedPtr< CPropertyObject > pListProperty = m_ArxControl->GetPropertyObject(nList);
 
-	for (int i = 0; i < pListProperty->CountList(); i++)
-	{
+	for (size_t i = 0; i < pListProperty->size(); i++)
 		CClrListBox::AddString(pListProperty->GetStringItem(i));
-	}
 
 	return 0;
 }
 
 void VdclListBox::OnDestroy() 
 {
-
 	CClrListBox::OnDestroy();
-	
-	
 }
 
 void VdclListBox::OnMouseMove(UINT nFlags, CPoint point) 

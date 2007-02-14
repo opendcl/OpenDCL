@@ -64,7 +64,7 @@ BOOL VdclComboBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 
 	if (pControl->GetLngProperty(nComboBoxStyle) != 1)
 	{
-		pControl->SetLngProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
+		pControl->SetLongProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
 	}
 
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
@@ -199,7 +199,7 @@ void VdclComboBox::OnEditchange()
 		CString sTestText = m_ArxControl->GetStrProperty(nText);
 		if (sTestText != sText && m_ArxControl)
 		{
-			m_ArxControl->SetStrProperty(nText, sText);
+			m_ArxControl->SetStringProperty(nText, sText);
 			// call methods to invoke the event
 			InvokeMethodString(m_ArxControl->GetStrProperty(nEventEditChanged), sText, m_bInvokeWithSendString);
 		}
@@ -273,7 +273,7 @@ void VdclComboBox::OnSelchange()
 		{	
 			
 			InvokeMethodIntString(m_ArxControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-			m_ArxControl->SetStrProperty(nText, sString);
+			m_ArxControl->SetStringProperty(nText, sString);
 		
 		}
 	}
@@ -306,7 +306,7 @@ void VdclComboBox::OnEditupdate()
 		CString sTestText = m_ArxControl->GetStrProperty(nText);
 		if (sTestText != sText)
 		{
-			m_ArxControl->SetStrProperty(nText, sText);
+			m_ArxControl->SetStringProperty(nText, sText);
 			// call methods to invoke the event
 			InvokeMethodString(m_ArxControl->GetStrProperty(nEventEditChanged), sText, m_bInvokeWithSendString);
 		}

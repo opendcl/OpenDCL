@@ -13,11 +13,6 @@ static const CLSID _afx_CLSID_StdPicture2_V1 =
 static LPCTSTR gszPicture = _T(".pic");
 static LPCTSTR gszPassword = _T("d32afd3aw3aq3fdaw3");
 
-const int nPictureObjectVersion1 = 1;
-const int nPictureObjectVersion2 = 2;
-const int nPictureObjectVersion3 = 3;
-const int nPictureObjectVersion4 = 4;
-const int nPictureObjectVersion5 = 5;
 const COLORREF rgbLightGrey = RGB(192, 192, 192);
 
 #define HIMETRIC_INCH	2540
@@ -454,7 +449,7 @@ IOStatus CPictureObject::WriteToTextFile(FILE* pFile, const CString &fileName) c
 {
   //savebug
   fprintf(pFile, "\nCPictureObject");
-	writeInt(pFile, nPictureObjectVersion3);
+	writeInt(pFile, int(GetCurrentSaveVersion()));
 	
 	writeInt(pFile, m_nID);
 	writeInt(pFile, m_Height);
@@ -499,7 +494,7 @@ void CPictureObject::Serialize(CArchive& ar)
 
   if (ar.IsStoring())
   {
-    ar << nPictureObjectVersion3;
+    ar << GetCurrentSaveVersion();
 
     ar << m_nID;
     ar << m_Height;
@@ -555,11 +550,14 @@ void CPictureObject::Serialize(CArchive& ar)
   {
     try
     {
-      int nThisVersion;
+      unsigned long nThisVersion;
       ar >> nThisVersion;
 
+			if( nThisVersion > GetCurrentSaveVersion() )
+				AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
+
       ar >> m_nID;
-      if (nThisVersion == nPictureObjectVersion1)
+      if (nThisVersion == 1)
       {
         CImageList tempImage;
         tempImage.Read(&ar);
@@ -573,26 +571,19 @@ void CPictureObject::Serialize(CArchive& ar)
       ar >> m_Height;
       ar >> m_Width;
       int nPictureType = 0;
-      if (nThisVersion == nPictureObjectVersion3 || nThisVersion == nPictureObjectVersion4)
+      if (nThisVersion == 3 || nThisVersion == 4 || nThisVersion >= 6)
         ar >> nPictureType;
 
-      if ((nPictureType != -1 && nThisVersion == nPictureObjectVersion2) ||
-        (nPictureType >= 0 && nThisVersion == nPictureObjectVersion3))
+      if ((nPictureType != -1 && nThisVersion == 2) || (nPictureType >= 0 && nThisVersion == 3))
       {
         short nPicType;
         ar >> nPicType;
         if (nPicType != nPictureType)
-        {
           nPicType = nPictureType;				
-        }
         if (nPicType <= 0)
-        {
           m_nID = -1;
-        }
 
-        if (nPicType == PICTYPE_BITMAP || 
-          nPicType == PICTYPE_METAFILE ||
-          nPicType == PICTYPE_ENHMETAFILE)
+        if (nPicType == PICTYPE_BITMAP || nPicType == PICTYPE_METAFILE || nPicType == PICTYPE_ENHMETAFILE)
         {	
 
           VARIANT var;
@@ -606,6 +597,7 @@ void CPictureObject::Serialize(CArchive& ar)
             m_hPicture.SetPictureDispatch((IPictureDisp*)var.pdispVal);
             OleVar.Clear();
             HRESULT hr = VariantClear(&var);
+						m_bLoaded = true;
           }
           catch(...)
           {
@@ -613,7 +605,6 @@ void CPictureObject::Serialize(CArchive& ar)
             OleVar.Clear();
             HRESULT hr = VariantClear(&var);
           }
-
         }
         else if (PICTYPE_ICON == nPicType)
         {
@@ -624,10 +615,11 @@ void CPictureObject::Serialize(CArchive& ar)
             HICON hIcon = tempImage.ExtractIcon(0);
             m_hPicture.CreateFromIcon(hIcon, TRUE);			
             tempImage.DeleteImageList();
+						m_bLoaded = true;
           }
         }
       }
-      if (nPictureType > 0 && nThisVersion == nPictureObjectVersion4)
+      if (nPictureType > 0 && nThisVersion == 4)
       {
         short nPicType;
         ar >> nPicType;
@@ -639,6 +631,7 @@ void CPictureObject::Serialize(CArchive& ar)
 					CString sPropName;
 					sPropName.Format(_T("%d"), m_nID);
           PX_Picture(&px, sPropName, m_hPicture);
+					m_bLoaded = true;
         }
         else if (PICTYPE_ICON == nPicType)
         {
@@ -649,10 +642,11 @@ void CPictureObject::Serialize(CArchive& ar)
             HICON hIcon = tempImage.ExtractIcon(0);
             m_hPicture.CreateFromIcon(hIcon, TRUE);			
             tempImage.DeleteImageList();
+						m_bLoaded = true;
           }
         }
       }
-      if (nPictureType > 0 && nThisVersion == nPictureObjectVersion5)
+      if (nPictureType > 0 && nThisVersion == 5)
       {
         short nPicType;
         ar >> nPicType;
@@ -664,6 +658,7 @@ void CPictureObject::Serialize(CArchive& ar)
 					CString sPropName;
 					sPropName.Format(_T("%d"), m_nID);
           PX_Picture(&px, sPropName, m_hPicture);
+					m_bLoaded = true;
         }
         else if (PICTYPE_ICON == nPicType)
         {
@@ -674,6 +669,7 @@ void CPictureObject::Serialize(CArchive& ar)
             HICON hIcon = tempImage.ExtractIcon(0);
             m_hPicture.CreateFromIcon(hIcon, TRUE);			
             tempImage.DeleteImageList();
+						m_bLoaded = true;
           }
         }
       }
@@ -683,7 +679,6 @@ void CPictureObject::Serialize(CArchive& ar)
       // do nothing
     }
   }
-
 }
 
 IOStatus CPictureObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
@@ -962,22 +957,32 @@ void CPictureObject::EnsurePictureIsLoaded()
 		return;
 
 	CStgFile FileStg;
+	try
+	{
+		FileStg.OpenStg(m_sFileName);
 
-	FileStg.OpenStg(m_sFileName);
+		CString sID;
+		sID.Format(_T("%d"), m_nID);
+		FileStg.Open(sID + gszPicture, CFile::modeRead | CFile::shareDenyWrite); 
 
-	CString sID;
-	sID.Format(_T("%d"), m_nID);
-	FileStg.Open(sID + gszPicture, CFile::modeRead | CFile::shareDenyWrite); 
-
-	CArchiveEx ar(&FileStg, CArchive::load | CArchive::bNoFlushOnDelete, NULL, gszPassword, TRUE);
-	
-	// get dcl form into archive
-	Serialize(ar);
+		try
+		{
+			CArchiveEx ar(&FileStg, CArchive::load | CArchive::bNoFlushOnDelete, NULL, gszPassword, TRUE);
 		
-	ar.Close();			
+			// get dcl form into archive
+			Serialize(ar);
+			
+			ar.Close();
+		}
+		catch( ... )
+		{
+		}
+	}
+	catch( ... )
+	{
+	}
 
 	FileStg.Close();	// close the stream
-
 	FileStg.CloseStg(); // close the storage file
 
 	m_bLoaded = true;

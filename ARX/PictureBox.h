@@ -43,7 +43,7 @@ public:
 	void DrawFocusRect(int sX, int sY, int eX, int eY);
 	void DrawRect(int sX, int sY, int eX, int eY, COLORREF rgb);
 	void GetTextExtent(CString sText);
-	void PaintAnIcon(int sX, int sY, int nPictureID, int nEnabled, int nUseMask);
+	void PaintPicture(int sX, int sY, int nPictureID, int nEnabled, int nUseMask);
 	void LoadPictureFile(LPCTSTR szFile, bool bStretch = false);
 	void CopyDC();
 	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);

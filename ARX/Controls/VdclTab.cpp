@@ -129,10 +129,10 @@ void VdclTab::SetupTabs()
 	RefCountedPtr< CPropertyObject > pTabsCaptionProperty = m_ArxControl->GetPropertyObject(nTabsCaption);
 	RefCountedPtr< CPropertyObject > pTabsTTTProperty = m_ArxControl->GetPropertyObject(nTabsTTT);
 
-	int nTabQty = pTabsCaptionProperty->CountList();
+	size_t nTabQty = pTabsCaptionProperty->size();
 	int nImageListIndex = m_ArxControl->GetImageListIndex();
 
-  int i;
+  size_t i;
 	for (i = 0; i < nTabQty; i++)
 	{
 		CString Tab = m_ArxControl->GetPropertyListItem(nTabsCaption, i);
@@ -255,7 +255,7 @@ void VdclTab::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult)
 	SetPaneVisibility(nCurrentSelectedTab, TRUE, TRUE);
 	
 	// get the tooltip text for the selected tab
-	if (pTabsTTTProperty->CountList() < nCurrentSelectedTab)
+	if ((int)pTabsTTTProperty->size() < nCurrentSelectedTab)
 		sTTT = pTabsTTTProperty->GetStringItem(nCurrentSelectedTab);
 	
 	// update the tooltip
@@ -508,8 +508,8 @@ BOOL VdclTab::PreTranslateMessage(MSG* pMsg)
 		if (!m_ToolTipsUpdated)
 		{
 			RefCountedPtr< CPropertyObject > pTabsTTTProperty = m_ArxControl->GetPropertyObject(nTabsTTT);
-			int nTabQty = pTabsTTTProperty->CountList();
-			for (int i = 0; i < nTabQty; i++)
+			size_t nTabQty = pTabsTTTProperty->size();
+			for (size_t i = 0; i < nTabQty; i++)
 			{
 				CString sText = pTabsTTTProperty->GetStringArrayPtr()->at(i);		
 				m_ToolTip.UpdateTipText((LPCTSTR)sText, &m_Child, i);

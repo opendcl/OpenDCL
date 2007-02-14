@@ -657,7 +657,7 @@ void CMainFrameToolBar::OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * 
 
 	LPTOOLTIPTEXT lpTTT = (LPTOOLTIPTEXT)pNotifyStruct;
 
-	_tcscpy(lpTTT->szText,(LPCTSTR)toolTipText);
+	lstrcpyn(lpTTT->szText,toolTipText, _elements(lpTTT->szText));
 }
 
 BOOL CMainFrameToolBar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult) 

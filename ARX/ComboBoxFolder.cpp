@@ -278,7 +278,7 @@ BOOL CComboBoxFolder::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 	// get the rectangle of the new control
 	ArxRect.top = pControl->m_pTop->GetLongValue();
 	ArxRect.left = pControl->m_pLeft->GetLongValue();
-	pControl->SetLngProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
+	pControl->SetLongProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
 	ArxRect.bottom = 300 + ArxRect.top;
@@ -349,7 +349,7 @@ long CComboBoxFolder::OnSelectItemChange(WPARAM w, LPARAM l)
 	{
 		InvokeMethodString(m_ArxControl->GetStrProperty(nEventSelChanged), sLispSafePath, m_bInvokeWithSendString);
 
-		m_ArxControl->SetStrProperty(nText, path);
+		m_ArxControl->SetStringProperty(nText, path);
 	}
 
 	// now lets clear the control and repopulate it so the old path is removed correctly

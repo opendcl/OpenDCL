@@ -1512,7 +1512,7 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 				{
 					CString sListItem;
 					((CListBox *)pControlWnd)->ResetContent();					
-					for (int i = 0; i < pProp->CountList(); i++)
+					for (size_t i = 0; i < pProp->size(); i++)
 					{				
 						sListItem = pProp->GetStringItem(i);
 						if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
@@ -1526,7 +1526,7 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 					{
 						CString sListItem;
 						((CComboBox *)pControlWnd)->ResetContent();
-						for (int i = 0; i < pProp->CountList(); i++)
+						for (size_t i = 0; i < pProp->size(); i++)
 						{			
 							sListItem = pProp->GetStringItem(i);
 							if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)

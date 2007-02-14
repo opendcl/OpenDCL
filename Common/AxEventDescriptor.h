@@ -18,7 +18,12 @@ public:
 
   // constructor
   AxEventDescriptor(void);
+  virtual ~AxEventDescriptor(void);
 
 protected:
 	DECLARE_SERIAL(AxEventDescriptor)
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toString() const;
+#endif
 };

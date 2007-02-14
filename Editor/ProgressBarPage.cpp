@@ -87,20 +87,20 @@ BOOL CProgressBarPage::OnApply()
 	CString sValue;
 	
 	m_Minute.GetWindowText(sValue);
-	m_pArxCtrl->SetStrProperty(nMinuteText, sValue);
+	m_pArxCtrl->SetStringProperty(nMinuteText, sValue);
 
 	m_Minutes.GetWindowText(sValue);
-	m_pArxCtrl->SetStrProperty(nMinutesText, sValue);
+	m_pArxCtrl->SetStringProperty(nMinutesText, sValue);
 
 	m_Second.GetWindowText(sValue);
-	m_pArxCtrl->SetStrProperty(nSecondText, sValue);
+	m_pArxCtrl->SetStringProperty(nSecondText, sValue);
 	
 	m_Seconds.GetWindowText(sValue);
-	m_pArxCtrl->SetStrProperty(nSecondsText, sValue);
+	m_pArxCtrl->SetStringProperty(nSecondsText, sValue);
 	
-	m_pArxCtrl->SetBoolProperty(nDisplayPercentage, m_Percentage.GetCheck() != 0);
+	m_pArxCtrl->SetBooleanProperty(nDisplayPercentage, m_Percentage.GetCheck() != 0);
 	
-	m_pArxCtrl->SetBoolProperty(nDisplaySeconds, m_Time.GetCheck() != 0);
+	m_pArxCtrl->SetBooleanProperty(nDisplaySeconds, m_Time.GetCheck() != 0);
 
 
 	return CPropertyPage::OnApply();

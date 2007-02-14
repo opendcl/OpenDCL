@@ -569,12 +569,16 @@ CObjectDCLView* CObjectDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 
 	if (pDclForm->GetType() == VdclTabForm)
 	{
-		CDclFormObject *pParent = activeProject->GetParentDclForm(pDclForm->GetParentName());
+		CDclFormObject *pParent = pDclForm->GetParentForm();
 		if (pParent != NULL)
 		{
 			CDclControlObject* pTabCtrl = pParent->FindFirstControlOfType(CtlTabStrip);
-			StartupSize.cx = pTabCtrl->GetLngProperty(nWidth);			
-			StartupSize.cy = pTabCtrl->m_ClientHeight + GetSystemMetrics(SM_CYCAPTION);
+			assert( pTabCtrl != NULL );
+			if( pTabCtrl )
+			{
+				StartupSize.cx = pTabCtrl->GetLngProperty(nWidth);			
+				StartupSize.cy = pTabCtrl->m_ClientHeight + GetSystemMetrics(SM_CYCAPTION);
+			}
 		}
 		else 
 			return NULL;
@@ -790,7 +794,7 @@ BOOL CObjectDCLApp::SaveDistributionFile(CProjectCollection *pProjectHolder)
 			return FALSE;
 		}
 		
-		CArchiveEx arExt(&ThisFile, CArchive::store | CArchive::bNoFlushOnDelete, NULL, sTitle, TRUE);
+		CArchiveEx arExt(&ThisFile, CArchive::store | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
 		// Serialize the control
 		pProjectHolder->Serialize(arExt);
 		arExt.Close();
@@ -939,22 +943,14 @@ CObjectDCLView* CObjectDCLApp::AddDclFormAndView(DclFormType nType)
 CDclFormObject* CObjectDCLApp::AddNewDclForm(DclFormType nType) 
 {
 	// create a pointer to pass to the list to insert
-	CDclFormObject* pNewDclForm = new CDclFormObject( activeProject, nType );
-	
-	// assign the unique name and dcl form type to the dcl form object
-	pNewDclForm->SetUniqueName(CreateUniqueName());
-	
-	// add the new Dcl form object
-	activeProject->GetDclFormList().AddTail(pNewDclForm);
-	
-	// make the call to add the properties to the new dcl form object.
-	AddDclFormProperties(pNewDclForm, nType);
-	
-	// add the new dcl form to the project tree so it's shown there
-	CProjectTreeCtrl *pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
-	pProjTree->AddFormToTree(pNewDclForm, true);
-
-	// return the new dcl form object
+	CDclFormObject* pNewDclForm = activeProject->AddForm( nType );
+	if( pNewDclForm )
+	{	
+		AddDclFormProperties(pNewDclForm, nType); //add properties to the new dcl form object
+		CProjectTreeCtrl *pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
+		if( pProjTree )
+			pProjTree->AddFormToTree(pNewDclForm, true); //add the new dcl form to the project tree
+	}
 	return pNewDclForm;
 }
 
@@ -1125,22 +1121,6 @@ void CObjectDCLApp::AddDclFormProperties(CDclFormObject *pNewDclForm, DclFormTyp
 		AddControlStdProperty(pArxPropertyObject, nWidth, LTOA(nDeModelessWidth), PropLong);
 		break;
 	}	 
-}
-
-CString CObjectDCLApp::CreateUniqueName() 
-{
-	CString sUniqueName;
-	UUID uuid;
-#ifdef _UNICODE
-	RPC_WSTR pUUID;
-#else
-	RPC_CSTR pUUID;
-#endif
-	UuidCreate(&uuid);
-	UuidToString(&uuid, &pUUID);
-	sUniqueName = (LPCTSTR)pUUID;
-
-	return sUniqueName;
 }
 
 void CObjectDCLApp::OnToolsDefaultfont() 

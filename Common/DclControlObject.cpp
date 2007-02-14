@@ -15,6 +15,7 @@
 #include "ControlTypes.h"
 #include "DialogControl.h"
 #include "PropertyNames.h"
+#include "AcadColorTable.h"
 
 
 static const int nNotSet = -1;
@@ -125,7 +126,7 @@ CDclControlObject::CDclControlObject(ControlType type, CDclFormObject* pOwner, L
 , mpDlgControl( NULL )
 {
 	if( pszName )
-		SetStrProperty(nName, pszName);
+		AddStringProperty(nName, PropString, pszName);
 	m_nTotalBytes = 0;
 	m_rcOldPosition.SetRect(0,0,0,0);
 	m_Delete = FALSE;
@@ -600,7 +601,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 					}
 				}
 				//TraceFmt( _T("Read property [%08X, type = %d, id = %d], string value = %s\r\n"),
-				//					(ULONG)&*pProp, (int)pProp->GetType(), (int)pProp->GetID(), (CString sVal; (LPCTSTR)pProp->GetStringValue() );
+				//					(ULONG)&*pProp, (int)pProp->GetType(), (int)pProp->GetID(), (LPCTSTR)pProp->GetStringValue() );
 				GetPropertyList().AddTail(pProp);		
 			}
 
@@ -701,78 +702,34 @@ void CDclControlObject::Serialize(CArchive& ar)
 	
 }
 
-INT_PTR CDclControlObject::CountPropertyListItems(PropertyId nID)
+size_t CDclControlObject::CountPropertyListItems(PropertyId nID)
 {
-	// create a position variable to hold the counter increment
-	POSITION pos;	
-	int nCount;
-	
-	// set counter for Properties
-	nCount = 0;
-
-	// set start position for navigating Properties
-	pos = GetPropertyList().GetHeadPosition();
-
-	// do loop to navigate Arx Controls	
-	while (nCount < GetPropertyList().GetCount())
+	POSITION pos = GetPropertyList().GetHeadPosition();	
+	while (pos)
 	{
-		// get position
-		pos = GetPropertyList().FindIndex(nCount);
-		// get current PropertyObject
 		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(pos);
-		// if the name of property matches
 		if (pProperty->GetID() == nID)
-		{
-			// return the value			
-			return pProperty->CountList();
-		}
-		// increment counter
-		nCount++;
+			return pProperty->size(); // return the value
 	}
-	nCount = 0;
-	////ASSERT(nCount == 0);
-	return nNotSet;
+	return 0;
 }
 
-CString CDclControlObject::GetPropertyListItem(PropertyId nID, int nIndex)
+CString CDclControlObject::GetPropertyListItem(PropertyId nID, size_t nIndex)
 {
-	// create a position variable to hold the counter increment
-	POSITION pos;	
-	int nCount;
-	
-	// set counter for Properties
-	nCount = 0;
-
-	// set start position for navigating Properties
-	pos = GetPropertyList().GetHeadPosition();
-
-	// do loop to navigate Arx Controls	
-	while (nCount < GetPropertyList().GetCount())
+	POSITION pos = GetPropertyList().GetHeadPosition();	
+	while (pos)
 	{
-		// get position
-		pos = GetPropertyList().FindIndex(nCount);
-		// get current PropertyObject
 		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(pos);
-		// if the name of property matches
 		if (pProperty->GetID() == nID)
 		{
-			if (pProperty->GetType() == PropStringArray)
-			{
-				if ((size_t)nIndex < pProperty->GetStringArrayPtr()->size())
-					return pProperty->GetStringArrayPtr()->at(nIndex);
-				else
-					return CString();
-			}
 			CString sValue;
-			if ((size_t)nIndex < pProperty->GetIntArrayPtr()->size())
-				sValue.Format(_T("%d"), pProperty->GetIntArrayPtr()->at(nIndex));
+			if (pProperty->GetType() == PropStringArray && nIndex < pProperty->size())
+				sValue = pProperty->GetStringArrayPtr()->at(nIndex);
+			else if( pProperty->GetType() == PropIntArray && nIndex < pProperty->size() )
+				sValue.Format( _T("%d"), pProperty->GetIntArrayPtr()->at(nIndex) );
 			return sValue;
 		}
-		// increment counter
-		nCount++;
 	}
-	nCount = 0;
-	////ASSERT(nCount == 0);
 	return CString();
 }
 
@@ -845,38 +802,70 @@ void CDclControlObject::ForceUpdateGlobalVariable(CString sDclFormName)
 		pPropVar->SetStringValue(mpOwner->GetProject()->GetKeyName() + _T('_') + sDclFormName + _T('_') + pPropName->GetStringValue());	
 }
 
-void CDclControlObject::SetStrProperty(PropertyId nID, CString sValue)	
+bool CDclControlObject::SetStringProperty( PropertyId nID, LPCTSTR pszValue )	
 {
-	// create a position variable to hold the counter increment
-	POSITION pos;	
-	int nCount;
-	
-	// set counter for Properties
-	nCount = 0;
+	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject( nID );
+	if( !pProp )
+		return false;
+	return pProp->SetStringValue( pszValue );
+}
 
-	// set start position for navigating Properties
-	pos = GetPropertyList().GetHeadPosition();
-
-	// do loop to navigate Arx Controls	
-	while (nCount < GetPropertyList().GetCount())
+RefCountedPtr< CPropertyObject > CDclControlObject::AddStringProperty( PropertyId nID,
+																																			 PropertyType type /*= PropString*/,
+																																			 LPCTSTR pszValue /*= NULL*/ )
+{
+	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject( nID );
+	if( !pProp )
 	{
-		// get position
-		pos = GetPropertyList().FindIndex(nCount);
-		// get current PropertyObject
-		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(pos);
-		// if the name of property matches
-		if (pProperty->GetID() == nID)
-		{
-			// set the value			
-			pProperty->SetStringValue(sValue);
-			return;
-		}
-		// increment counter
-		nCount++;
+		pProp = new CPropertyObject( type, 0, nID );
+		GetPropertyList().AddTail( pProp );
 	}
-	nCount = 0;
-	////ASSERT(nCount == 0);
+	pProp->SetStringValue( pszValue );
+	return pProp;
+}
 
+bool CDclControlObject::SetBooleanProperty( PropertyId nID, bool bValue /*= true*/ )	
+{
+	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject( nID );
+	if( !pProp )
+		return false;
+	return pProp->SetBooleanValue( bValue );
+}
+
+RefCountedPtr< CPropertyObject > CDclControlObject::AddBooleanProperty( PropertyId nID,
+																																				PropertyType type /*= PropBool*/,
+																																				bool bValue /*= true*/ )
+{
+	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject( nID );
+	if( !pProp )
+	{
+		pProp = new CPropertyObject( type, 0, nID );
+		GetPropertyList().AddTail( pProp );
+	}
+	pProp->SetBooleanValue( bValue );
+	return pProp;
+}
+
+bool CDclControlObject::SetLongProperty( PropertyId nID, long lValue /*= -1*/ )	
+{
+	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject( nID );
+	if( !pProp )
+		return false;
+	return pProp->SetLongValue( lValue );
+}
+
+RefCountedPtr< CPropertyObject > CDclControlObject::AddLongProperty( PropertyId nID,
+																																		 PropertyType type /*= PropLong*/,
+																																		 long lValue /*= -1*/ )
+{
+	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject( nID );
+	if( !pProp )
+	{
+		pProp = new CPropertyObject( type, 0, nID );
+		GetPropertyList().AddTail( pProp );
+	}
+	pProp->SetLongValue( lValue );
+	return pProp;
 }
 
 bool CDclControlObject::IsMicrosoftActiveXCtrl() const
@@ -991,29 +980,6 @@ long CDclControlObject::GetLngProperty(PropertyId nID) const
 	return nNotSet;
 }
 
-void CDclControlObject::SetLngProperty(PropertyId nID, long lValue)
-{
-	POSITION posProp = GetPropertyList().GetHeadPosition();
-	while (posProp)
-	{
-		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
-		assert(pProperty != NULL);
-		if (pProperty->GetID() == nID)
-		{
-			//some boolean properties are read and written as longs,
-			//so that case gets special handling here [ORW]
-			if (pProperty->GetType() == PropBool)
-			{
-				TraceFmt( _T("* 'PropLong' value written to 'PropBool' property (ID: %d)! [%s]\r\n"), nID, _T(__FUNCTION__));
-				pProperty->SetBooleanValue(lValue != 0);
-				return;
-			}
-			pProperty->SetLongValue(lValue);
-			return;
-		}
-	}
-}
-
 void CDclControlObject::SetColorProperty(PropertyId nID, COLORREF color)
 {
 	POSITION posProp = GetPropertyList().GetHeadPosition();
@@ -1037,24 +1003,9 @@ COLORREF CDclControlObject::GetColorProperty(PropertyId nID) const
 		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
 		assert(pProperty != NULL);
 		if (pProperty->GetID() == nID)
-			return pProperty->GetOLEColorValue();
+			return GetRGBColor(pProperty->GetLongValue());
 	}
 	return RGB(0,0,0);
-}
-
-void CDclControlObject::SetBoolProperty(PropertyId nID, bool bValue)
-{
-	POSITION posProp = GetPropertyList().GetHeadPosition();
-	while (posProp)
-	{
-		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
-		assert(pProperty != NULL);
-		if (pProperty->GetID() == nID)
-		{
-			pProperty->SetBooleanValue(bValue);
-			return;
-		}
-	}
 }
 	
 bool CDclControlObject::GetBoolProperty(PropertyId nID) const
@@ -1471,3 +1422,39 @@ CString CDclControlObject::GetKeyPath() const
 		sPath = mpOwner->GetKeyPath() + _T('_') + sPath;
 	return sPath;
 }
+
+
+#ifdef _DIAGNOSTIC
+void CDclControlObject::dump( bool bDeep /*= true*/ ) const
+{
+	CString sInstance;
+	if( mpDlgControl )
+		sInstance.Format( _T(" (DlgControl: %s)"), asString( mpDlgControl ) );
+	CString sOut;
+	sOut.Format( _T("CDclControlobject [%s: %s%s]\r\n"), asString( mType ), GetKeyPath(), (LPCTSTR)sInstance );
+	theWorkspace.DisplayStatus( sOut );
+	if( !bDeep )
+		return;
+	for( INT_PTR idx = 0; idx < mProperties.GetCount(); ++idx )
+	{
+		CString sProp;
+		sProp.Format( _T("  #%4s: %s\r\n"), asString( idx ), mProperties.GetAt( mProperties.FindIndex( idx ) )->toString() );
+		theWorkspace.DisplayStatus( sProp );
+	}
+}
+#endif
+
+
+#ifdef _DEBUG
+void CDclControlObject::dumpDebugger( bool bDeep /*= true*/ ) const
+{
+	CString sInstance;
+	if( mpDlgControl )
+		sInstance.Format( _T(" (DlgControl: %s)"), asString( mpDlgControl ) );
+	TraceFmt( _T("CDclControlobject [%s: %s%s]\r\n"), asString( mType ), GetKeyPath(), (LPCTSTR)sInstance );
+	if( !bDeep )
+		return;
+	for( INT_PTR idx = 0; idx < mProperties.GetCount(); ++idx )
+		TraceFmt( _T("  #%4s: %s\r\n"), asString( idx ), mProperties.GetAt( mProperties.FindIndex( idx ) )->toString() );
+}
+#endif

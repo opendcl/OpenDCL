@@ -49,6 +49,22 @@ static CString StripPathFromFileName( LPCTSTR pszFilePath )
 	return sShortName;
 }
 
+
+static CString CreateUniqueName() 
+{
+	CString sUniqueName;
+	UUID uuid;
+#ifdef _UNICODE
+	RPC_WSTR pUUID;
+#else
+	RPC_CSTR pUUID;
+#endif
+	UuidCreate(&uuid);
+	UuidToString(&uuid, &pUUID);
+	sUniqueName = (LPCTSTR)pUUID;
+	return sUniqueName;
+}
+
 static void AddControlProperty(CDclControlObject *pControl, PropertyId nID, LPCTSTR strValue, PropertyType ValueType)
 {
 	// find the insert position for this new property
@@ -155,11 +171,49 @@ void CProject::SetKeyName( LPCTSTR pszKeyName )
 {
 	if( !pszKeyName )
 		return;
+	CString sKey = pszKeyName;
+	sKey.Replace(_T(' '), _T('|'));
+	msKeyName = sKey;
+}
+
+void CProject::DeleteForm( CDclFormObject*& pDclForm )
+{
+	//use the unique name to find and delete any child tab page forms
+	POSITION pos = mDclForms.GetHeadPosition();
+	while( pos )
 	{
-		CString sKey = pszKeyName;
-		sKey.Replace(_T(' '), _T('_'));
-		msKeyName = sKey;
+		POSITION posAt = pos;
+		CDclFormObject* pThisForm = mDclForms.GetNext( pos );
+		assert( pThisForm != NULL );
+		CDclFormObject* pParentForm = pThisForm->GetParentForm();
+		if( pParentForm == pDclForm )
+		{
+			if( pThisForm->m_pMdiChildWnd ) // if the tab as a view open
+				pThisForm->m_pMdiChildWnd->DestroyWindow(); // close the view
+			delete pThisForm; // delete the object
+			pDclForm = NULL;
+			mDclForms.RemoveAt( posAt ); // and remove it from the list
+		}
 	}
+}
+
+CDclFormObject* CProject::AddForm( DclFormType nType )
+{
+	CDclFormObject* pNewDclForm = new CDclFormObject( this, nType );
+	pNewDclForm->SetUniqueName( CreateUniqueName() );
+	mDclForms.AddTail( pNewDclForm );
+	return pNewDclForm;
+}
+
+CDclFormObject* CProject::AddForm( DclFormType nType, CDclFormObject* pParentForm )
+{
+	assert( pParentForm != NULL );
+	assert( pParentForm->GetProject() == this );
+	CDclFormObject* pNewDclForm = new CDclFormObject( this, nType );
+	pNewDclForm->SetUniqueName( pParentForm->GetUniqueName() );
+	pNewDclForm->SetParentForm( pParentForm );
+	mDclForms.AddTail( pNewDclForm );
+	return pNewDclForm;
 }
 
 CString CProject::QueryForLispFileName() 
@@ -648,29 +702,23 @@ void CProject::Serialize(CArchive& ar)
     ar << m_LispFileName;
     ar << msKeyName; //project key
     ar << m_DistFileName;
-    // set counter for Dcl forms
-    nCount = (short)mDclForms.GetCount() - CountDeletedForms();
-    ar << nCount;		
+
+    ar << unsigned long(mDclForms.GetCount() - CountDeletedForms());
     m_PurchaseState = nCurrentPurchaseMode;
     ar << m_PurchaseState;
     ar << m_nAutoCADVersion;
 
-    // set start position for navigating dcl forms
     pos = mDclForms.GetHeadPosition();
-
-    // do loop to navigate dcl forms
     while (pos != NULL)
     {
-      // get current Dcl form
-      CDclFormObject* pDclFormForm = mDclForms.GetNext(pos);
-
-      if (!pDclFormForm->m_bDeleted)
-      {
-        // put dcl form into archive
-        pDclFormForm->Serialize(ar);
-        // increment counter
-        nCount--;
-      }
+      CDclFormObject* pDclForm = mDclForms.GetNext(pos);
+      if (!pDclForm->m_bDeleted)
+			{
+        pDclForm->Serialize(ar);
+			#ifdef _DEBUG
+				pDclForm->dumpDebugger( false );
+			#endif
+			}
     }
 
 		unsigned long ctAxFiles = unsigned long(m_ActiveXFiles.GetCount());
@@ -746,8 +794,17 @@ void CProject::Serialize(CArchive& ar)
     }
 
     // get counter for dcl forms
-    ar >> nCount;
-    ar >> m_PurchaseState;
+		unsigned long ctForms = 0;
+		if( nThisVersion < 11 )
+		{
+			short nCount;
+			ar >> nCount;
+			ctForms = (unsigned long)nCount;
+		}
+		else
+			ar >> ctForms;
+		
+		ar >> m_PurchaseState;
 
     if (nThisVersion >= 4)
       ar >> m_nAutoCADVersion;
@@ -756,12 +813,24 @@ void CProject::Serialize(CArchive& ar)
       m_nAutoCADVersion = theWorkspace.GetMinSupportedAcadVersion();
 
     // do loop to navigate dcl forms
-    while (nCount-- > 0)
+    while (ctForms-- > 0)
     {
       CDclFormObject* pDclForm = new CDclFormObject( this );
       pDclForm->Serialize(ar);
+
+			//Some projects for whatever reason have parentless tab page forms. This code removes those 
+			//forms so they don't confuse the project list in the editor. [ORW]
+			if( pDclForm->GetType() == VdclTabForm && !pDclForm->GetParentForm() )
+			{
+				delete pDclForm;
+				continue;
+			}
+
 			//pDclForm->UpdateGlobalVariable(GetKeyName());
       mDclForms.AddTail(pDclForm);
+		#ifdef _DEBUG
+			pDclForm->dumpDebugger( false );
+		#endif
     }
 
 		m_ActiveXFiles.RemoveAll();
@@ -810,14 +879,24 @@ void CProject::Serialize(CArchive& ar)
     if (nThisVersion >= 9)
     {
       // set counter
-      ar >> nCount;
+			unsigned long nCount;
+
+			if( nThisVersion >= 10 )
+				ar >> nCount;
+			else
+			{
+				short sCount;
+				ar >> sCount;
+				nCount = (unsigned long)sCount;
+			}
 
       mPictures.RemoveAll();
 
 
       // do loop to navigate images
-      while (nCount-- > 0)
+      while (nCount > 0)
       {
+				--nCount;
         // get current images
         CPictureObject* pPictureObj = new CPictureObject;
 
@@ -887,9 +966,6 @@ void CProject::SaveDistFile()
     CFileException Exception;
     CFile ThisFile;
 
-    CString sTitle;
-    sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
     // open then file
     if ( !ThisFile.Open(m_DistFileName, CFile::modeCreate | CFile::shareExclusive | CFile::modeWrite, &Exception) )
     {
@@ -898,11 +974,11 @@ void CProject::SaveDistFile()
       CString sText;
       sText = theWorkspace.LoadResourceString(IDS_COULDNOTOPEN);
 
-      MessageBox (::GetActiveWindow(), sTheFile + m_DistFileName + sText, sTitle, NULL);
+      MessageBox (::GetActiveWindow(), sTheFile + m_DistFileName + sText, theWorkspace.LoadResourceString(IDR_MAINFRAME), NULL);
       return;
     }
 
-    CArchiveEx ar(&ThisFile, CArchive::store | CArchive::bNoFlushOnDelete, NULL, sTitle, TRUE);
+    CArchiveEx ar(&ThisFile, CArchive::store | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
 
     // Serialize the control
     phProjects.Serialize(ar);
@@ -1404,3 +1480,40 @@ IOStatus CProject::WriteToFile( LPCTSTR pszFilePath )
 #endif //SAVE_IN_TEXT_FORMAT
 	return statOK;
 }
+
+
+#ifdef _DIAGNOSTIC
+void CProject::dump( bool bDeep /*= true*/ ) const
+{
+	CString sOut;
+	sOut.Format( _T("############################################################\r\n")
+							 _T("CProject [%s] (%s forms, %s images, %s ActiveX controls)\r\n"),
+							 GetKeyName(), asString( mDclForms.GetCount() ), asString( mPictures.GetCount() ),
+							 asString( mOleControls.size() ) );
+	theWorkspace.DisplayStatus( sOut );
+	if( !bDeep )
+		return;
+	POSITION pos = mDclForms.GetHeadPosition();
+	while( pos )
+		mDclForms.GetNext( pos )->dump( true );
+	sOut.Format( _T("#####    End of project [%s]    #####\r\n"), GetKeyName() );
+	theWorkspace.DisplayStatus( sOut );
+}
+#endif
+
+
+#ifdef _DEBUG
+void CProject::dumpDebugger( bool bDeep /*= true*/ ) const
+{
+	TraceFmt( _T("############################################################\r\n")
+						_T("CProject [%s] (%s forms, %s images, %s ActiveX controls)\r\n"),
+						GetKeyName(), asString( mDclForms.GetCount() ), asString( mPictures.GetCount() ),
+						asString( mOleControls.size() ) );
+	if( !bDeep )
+		return;
+	POSITION pos = mDclForms.GetHeadPosition();
+	while( pos )
+		mDclForms.GetNext( pos )->dumpDebugger( true );
+	TraceFmt( _T("#####    End of project [%s]    #####\r\n"), GetKeyName() );
+}
+#endif

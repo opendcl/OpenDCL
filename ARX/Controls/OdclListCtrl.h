@@ -96,7 +96,6 @@ public:
   COleDataSource m_COleDataSource; // Needed to make this control an OLE data SOURCE (see OnLButtonDown)
   COleOdcDropTarget m_DropTarget;
 	bool m_bInvokeWithSendString;
-	CDclControlObject	*m_ArxControl;
 	CAcadDocReactor		*m_pDocToModReactor;
 	CAcadBlockReactor	*m_pBlockReactor;	
 	//CImageList			*m_pBlockImageList;

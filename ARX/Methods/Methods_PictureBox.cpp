@@ -2653,10 +2653,10 @@ int PictureBox_DrawText()
 
 }
 
-int PictureBox_PaintAnIcon()
+int PictureBox_PaintPicture()
 {
 	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_PaintAnIcon, &nArg);
+	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_PaintPicture, &nArg);
 	
 	if (pControl == NULL)
 	{
@@ -2722,14 +2722,14 @@ int PictureBox_PaintAnIcon()
 				{
 					
 					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_PaintAnIcon);	
+					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_PaintPicture);	
 					acedRetInt(-1);  return 0; 
 				}
 				if (ListData->restype != RTSHORT) 
 				{
 					
 					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintAnIcon);	
+					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintPicture);	
 					acedRetInt(-1);  return 0; 
 				}
 				// get the first argument required
@@ -2741,14 +2741,14 @@ int PictureBox_PaintAnIcon()
 				{
 					
 					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_PaintAnIcon);	
+					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_PaintPicture);	
 					acedRetInt(-1);  return 0; 
 				}
 				if (ListData->restype != RTSHORT) 
 				{
 					
 					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintAnIcon);	
+					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintPicture);	
 					acedRetInt(-1);  return 0; 
 				}
 				
@@ -2761,7 +2761,7 @@ int PictureBox_PaintAnIcon()
 				{
 					
 					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_PaintAnIcon);	
+					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_PaintPicture);	
 					acedRetInt(-1);  return 0; 
 				}
 			
@@ -2769,7 +2769,7 @@ int PictureBox_PaintAnIcon()
 				{
 					
 					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintAnIcon);	
+					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintPicture);	
 					acedRetInt(-1);  return 0; 
 				}
 				// get the third argument required
@@ -2788,7 +2788,7 @@ int PictureBox_PaintAnIcon()
 					ListData->restype != RTNIL) 
 				{					
 					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintAnIcon);	
+					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintPicture);	
 					acedRetInt(-1);  return 0; 
 				}
 				else if (ListData->restype == RTSHORT) 
@@ -2819,7 +2819,7 @@ int PictureBox_PaintAnIcon()
 					ListData->restype != RTNIL) 
 				{
 					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintAnIcon);	
+					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintPicture);	
 					acedRetInt(-1);  return 0; 
 				}
 				else if (ListData->restype == RTSHORT) 
@@ -2839,7 +2839,7 @@ int PictureBox_PaintAnIcon()
 					// advance to the next list item
 					ListData = ListData->rbnext;
 
-				((CPictureBox*)pControl)->PaintAnIcon(
+				((CPictureBox*)pControl)->PaintPicture(
 						sX, 
 						sY, 
 						nPictureID,
@@ -2850,7 +2850,7 @@ int PictureBox_PaintAnIcon()
 				{
 					
 					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sPictureBox_PaintAnIcon);	
+					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sPictureBox_PaintPicture);	
 					acedRetInt(-1);  return 0; 
 				}			
 			}
@@ -2860,7 +2860,7 @@ int PictureBox_PaintAnIcon()
 	{	
 		
 		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_PaintAnIcon);			
+		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_PaintPicture);			
         acedRetInt(-1);  return 0; 
 	}
 

@@ -117,8 +117,8 @@ void PropNameMap::Initialize()
 		tstring sName( theWorkspace.LoadResourceString( GetPropertyNameResourceId( id ) ) );
 		if( !sName.empty() )
 		{
-			mmapNameToId[toLString( sName )] = id;
 			mmapIdToName[id] = sName;
+			mmapNameToId[toLString( sName )] = id;
 		}
 	}
 	mbInitialized = true;

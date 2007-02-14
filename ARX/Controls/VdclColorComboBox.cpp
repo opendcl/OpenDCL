@@ -58,7 +58,7 @@ BOOL VdclColorComboBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UI
 	// get the rectangle of the new control
 	ArxRect.top = pControl->m_pTop->GetLongValue();
 	ArxRect.left = pControl->m_pLeft->GetLongValue();
-	pControl->SetLngProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
+	pControl->SetLongProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
 	
@@ -180,7 +180,7 @@ void VdclColorComboBox::OnSelchange()
 	if (m_ArxControl)
 	{
 		InvokeMethodIntString(m_ArxControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-		m_ArxControl->SetStrProperty(nText, sString);
+		m_ArxControl->SetStringProperty(nText, sString);
 	}
 
 	if (m_ArxControl == NULL)

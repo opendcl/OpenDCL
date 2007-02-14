@@ -46,6 +46,16 @@ public:
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) = 0;
 	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const = 0;
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) = 0;
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toString() const
+		{
+			static TCHAR buf[1024];
+			_sntprintf( buf, _elements(buf), _T("[%s/%s] %s"), asString( GetType() ), asString( mdwSubtype ), toStringPropVal() );
+			return buf;
+		}
+	virtual LPCTSTR toStringPropVal() const = 0;
+#endif
 };
 
 class CNamedPropertyValue : public CPropertyValueBase
@@ -65,6 +75,16 @@ public:
 	virtual bool GetValue( CString& v ) const { v = msDisplayName; return true; }
 	virtual bool SetValue( const CString& v ) { msDisplayName = v; return true; }
 	virtual bool SetValue( const LPCTSTR v ) { msDisplayName = v; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toString() const
+		{
+			static TCHAR buf[1024];
+			_sntprintf( buf, _elements(buf), _T("[%s/%s/\"%s\"] %s"), asString( GetType() ), asString( GetSubtype() ), (LPCTSTR)msDisplayName, toStringPropVal() );
+			return buf;
+		}
+	virtual LPCTSTR toStringPropVal() const = 0;
+#endif
 };
 
 }; //namespace PropVal
@@ -83,6 +103,10 @@ public:
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { return statOK; }
 	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const { fprintf(pFile, "PropInvalid"); return statOK; }
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) { return statOK; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return _T("<void value>"); }
+#endif
 };
 
 class CPropertyValueLong : public PropVal::CPropertyValue
@@ -115,6 +139,10 @@ public:
 	virtual bool GetValue( CString& v ) const { v.Format(_T("%d"), mValue); return true; }
 	virtual bool SetValue( const CString& v ) { mValue = _tstol(v); return true; }
 	virtual bool SetValue( const LPCTSTR v ) { mValue = _tstol(v); return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+#endif
 };
 
 class CPropertyValueString : public PropVal::CPropertyValue
@@ -144,6 +172,15 @@ public:
 	virtual bool GetValue( CString& v ) const { v = mValue; return true; }
 	virtual bool SetValue( const CString& v ) { mValue = v; return true; }
 	virtual bool SetValue( const LPCTSTR v ) { mValue = v; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const
+		{
+			static TCHAR buf[1024];
+			_sntprintf( buf, _elements(buf), _T("\"%s\""), (LPCTSTR)mValue );
+			return buf;
+		}
+#endif
 };
 
 class CPropertyValueDouble : public PropVal::CPropertyValue
@@ -173,6 +210,10 @@ public:
 	virtual bool GetValue( CString& v ) const { v.Format(_T("%f"), mValue); return true; }
 	virtual bool SetValue( const CString& v ) { mValue = _tstof(v); return true; }
 	virtual bool SetValue( const LPCTSTR v ) { mValue = _tstof(v); return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+#endif
 };
 
 class CPropertyValueBool : public PropVal::CPropertyValue
@@ -210,9 +251,14 @@ public:
 
 	virtual bool GetValue( bool& v ) const { v = mValue; return true; }
 	virtual bool SetValue( const bool& v ) { mValue = v; return true; }
+	virtual bool GetValue( long& v ) const { v = mValue? 1 : 0; return true; }
 	virtual bool GetValue( CString& v ) const { v = (mValue? _T("True") : _T("False")); return true; }
 	virtual bool SetValue( const CString& v ) { mValue = (v.CompareNoCase(_T("True")) == 0); return true; }
 	virtual bool SetValue( const LPCTSTR v ) { mValue = (lstrcmpi(v, _T("True")) == 0); return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+#endif
 };
 
 class CPropertyValueEnum : public PropVal::CPropertyValue
@@ -242,6 +288,10 @@ public:
 	virtual bool GetValue( CString& v ) const { v.Format(_T("%d"), mValue); return true; }
 	virtual bool SetValue( const CString& v ) { mValue = _tstol(v); return true; }
 	virtual bool SetValue( const LPCTSTR v ) { mValue = _tstol(v); return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+#endif
 };
 
 class CPropertyValueEvent : public PropVal::CPropertyValue
@@ -269,6 +319,10 @@ public:
 	virtual bool GetValue( CString& v ) const { v = mValue; return true; }
 	virtual bool SetValue( const CString& v ) { mValue = v; return true; }
 	virtual bool SetValue( const LPCTSTR v ) { mValue = v; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return (LPCTSTR)mValue; }
+#endif
 };
 
 class CPropertyValuePicture : public PropVal::CPropertyValue
@@ -298,6 +352,10 @@ public:
 	virtual bool GetValue( CString& v ) const { v.Format(_T("%d"), mValue); return true; }
 	virtual bool SetValue( const CString& v ) { mValue = _tstol(v); return true; }
 	virtual bool SetValue( const LPCTSTR v ) { mValue = _tstol(v); return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+#endif
 };
 
 class CPropertyValueCustom : public PropVal::CPropertyValue
@@ -312,6 +370,10 @@ public:
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { return statOK; }
 	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const { fprintf(pFile, "PropCustom"); return statOK; }
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) { return statOK; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return _T("<Custom>"); }
+#endif
 };
 
 class CPropertyValueImageList : public PropVal::CNamedPropertyValue
@@ -340,6 +402,10 @@ public:
 	virtual bool SetValue( const short& v ) { mValue = v; return true; }
 	virtual bool GetValue( long& v ) const { v = mValue; return true; }
 	virtual bool SetValue( const long& v ) { mValue = short(v); return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+#endif
 };
 
 class CPropertyValueOLEColor : public PropVal::CPropertyValue
@@ -366,6 +432,10 @@ public:
 
 	virtual bool GetValue( unsigned long& v ) const { v = mValue; return true; }
 	virtual bool SetValue( const unsigned long& v ) { mValue = v; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return asString( mValue ); }
+#endif
 };
 
 class CPropertyValueStringArray : public PropVal::CNamedPropertyValue
@@ -452,6 +522,10 @@ public:
 
 	virtual bool GetValue( PropVal::TCStringArray* const*& v ) const { v = &mpValue; return true; }
 	virtual bool GetValue( PropVal::TCStringArray**& v ) { v = &mpValue; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return mpValue? asString( *mpValue ) : _T("<null>"); }
+#endif
 };
 
 class CPropertyValueIntArray : public PropVal::CNamedPropertyValue
@@ -550,6 +624,10 @@ public:
 
 	virtual bool GetValue( PropVal::TIntArray* const*& v ) const { v = &mpValue; return true; }
 	virtual bool GetValue( PropVal::TIntArray**& v ) { v = &mpValue; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return mpValue? asString( *mpValue ) : _T("<null>"); }
+#endif
 };
 
 class CPropertyValueActiveXPropPages : public PropVal::CNamedPropertyValue
@@ -601,6 +679,15 @@ public:
 
 	virtual bool GetValue( AxInterfaceDescriptor* const*& v ) const { v = &mpValue; return true; }
 	virtual bool GetValue( AxInterfaceDescriptor**& v ) { v = &mpValue; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const
+		{
+			if( !mpValue )
+				return _T("<null>");
+			return mpValue->toString();
+		}
+#endif
 };
 
 class CPropertyValueActiveXProp : public PropVal::CNamedPropertyValue
@@ -656,6 +743,15 @@ public:
 
 	virtual bool GetValue( AxInterfaceDescriptor* const*& v ) const { v = &mpValue; return true; }
 	virtual bool GetValue( AxInterfaceDescriptor**& v ) { v = &mpValue; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const
+		{
+			if( !mpValue )
+				return _T("<null>");
+			return mpValue->toString();
+		}
+#endif
 };
 
 class CPropertyValueActiveXEnum : public PropVal::CNamedPropertyValue
@@ -706,6 +802,15 @@ public:
 
 	virtual bool GetValue( AxInterfaceDescriptor* const*& v ) const { v = &mpValue; return true; }
 	virtual bool GetValue( AxInterfaceDescriptor**& v ) { v = &mpValue; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const
+		{
+			if( !mpValue )
+				return _T("<null>");
+			return mpValue->toString();
+		}
+#endif
 };
 
 class CPropertyValueActiveXEvent : public PropVal::CNamedPropertyValue
@@ -761,6 +866,15 @@ public:
 
 	virtual bool GetValue( AxInterfaceDescriptor* const*& v ) const { v = &mpValue; return true; }
 	virtual bool GetValue( AxInterfaceDescriptor**& v ) { v = &mpValue; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const
+		{
+			if( !mpValue )
+				return _T("<null>");
+			return mpValue->toString();
+		}
+#endif
 };
 
 class CPropertyValueActiveXRunTime : public PropVal::CNamedPropertyValue
@@ -811,6 +925,15 @@ public:
 
 	virtual bool GetValue( AxInterfaceDescriptor* const*& v ) const { v = &mpValue; return true; }
 	virtual bool GetValue( AxInterfaceDescriptor**& v ) { v = &mpValue; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const
+		{
+			if( !mpValue )
+				return _T("<null>");
+			return mpValue->toString();
+		}
+#endif
 };
 
 class CPropertyValueActiveXMethods : public PropVal::CNamedPropertyValue
@@ -823,6 +946,7 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropActiveXMethods; }
 	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
+	virtual size_t size() const { return ((mpValue && mpValue->GetMethods())? mpValue->GetMethods()->size() : 0); }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
 		{
 			if( !mpValue )
@@ -861,6 +985,15 @@ public:
 
 	virtual bool GetValue( AxInterfaceDescriptor* const*& v ) const { v = &mpValue; return true; }
 	virtual bool GetValue( AxInterfaceDescriptor**& v ) { v = &mpValue; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const
+		{
+			if( !mpValue )
+				return _T("<null>");
+			return mpValue->toString();
+		}
+#endif
 };
 
 class CPropertyValueStringArrayList : public PropVal::CNamedPropertyValue
@@ -1002,6 +1135,10 @@ public:
 
 	virtual bool GetValue( PropVal::TCStringArrayList* const*& v ) const { v = &mpValue; return true; }
 	virtual bool GetValue( PropVal::TCStringArrayList**& v ) { v = &mpValue; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return mpValue? asString( *mpValue ) : _T("<null>"); }
+#endif
 };
 
 class CPropertyValueIntArrayList : public PropVal::CNamedPropertyValue
@@ -1096,6 +1233,10 @@ public:
 
 	virtual bool GetValue( PropVal::TIntArrayList* const*& v ) const { v = &mpValue; return true; }
 	virtual bool GetValue( PropVal::TIntArrayList**& v ) { v = &mpValue; return true; }
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toStringPropVal() const { return mpValue? asString( *mpValue ) : _T("<null>"); }
+#endif
 };
 
 
@@ -1241,7 +1382,19 @@ long CPropertyObject::GetLongValue() const
 
 bool CPropertyObject::SetLongValue( long lValue )
 {
-	bool bSuccess = mpValue->SetValue( lValue );
+	bool bSuccess = false;
+	if( GetType() == PropBool )
+	{	//special case handling for control positioning properties that can be either long or boolean
+		if( lValue == 0 || lValue == 1 )
+			bSuccess = mpValue->SetValue( (lValue != 0) );
+		else
+		{
+			SetType( PropLong );
+			bSuccess = mpValue->SetValue( lValue );
+		}
+	}
+	else
+		bSuccess = mpValue->SetValue( lValue );
 	assert( bSuccess == true );
 	return bSuccess;
 }
@@ -1397,7 +1550,7 @@ void CPropertyObject::AddStringItem(CString NewString)
 		GetStringArrayPtr()->push_back(NewString);
 }
 
-INT_PTR CPropertyObject::CountList()
+size_t CPropertyObject::size() const
 {
 	return mpValue->size();
 }
@@ -1586,3 +1739,14 @@ IOStatus CPropertyObject::ReadFromTextFile5(std::ifstream &sFile)
   CString sType = readLine(sFile);
 	return mpValue->FileIn(sFile, 5);
 }
+
+#ifdef _DIAGNOSTIC
+LPCTSTR CPropertyObject::toString() const
+{
+	LPCTSTR pszHidden = mbHidden? _T(" (hidden)") : _T("");
+	static TCHAR buf[1024];
+	_sntprintf( buf, _elements(buf), _T("Property [%20s]%s = %s"),
+							asString( mnID ), pszHidden, (mpValue? mpValue->toString() : _T("<null>")) );
+	return buf;
+}
+#endif

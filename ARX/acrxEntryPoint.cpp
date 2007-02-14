@@ -89,8 +89,20 @@ static LPCTSTR gpszDclEventsLspFileName = _T("DclEvents.lsp");
 static LPCTSTR gpszOnActionEventLispFunction = _T("(defun c:OnActionEvent_%s()%s)(princ)\n");
 
 
+#ifdef _DIAGNOSTIC
+static int DumpProject(void);
+static int DumpForm(void);
+static int DumpControl(void);
+#endif //_DIAGNOSTIC
+
+
 static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHandler) (); } grAdsFunctionTable[] =
 {
+#ifdef _DIAGNOSTIC
+	{_T("Project_Dump"),	DumpProject},
+	{_T("Form_Dump"),			DumpForm},
+	{_T("Control_Dump"),	DumpControl},
+#endif //_DIAGNOSTIC
 	// binary file read write calls
 	{_T("OpenBin"),				OpenBinFile},
 	{_T("WriteBin"),			WriteBinFile},
@@ -406,7 +418,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{sPictureBox_DrawWrappedText,	PictureBox_DrawWrappedText},
 	{sPictureBox_DrawText,			PictureBox_DrawText},
 	{sPictureBox_GetTextExtent,		PictureBox_GetTextExtent},
-	{sPictureBox_PaintAnIcon,		PictureBox_PaintAnIcon},
+	{sPictureBox_PaintPicture,		PictureBox_PaintPicture},
 	{sPictureBox_DrawPoint,			PictureBox_DrawPoint},
 	{sPictureBox_LoadPictureFile,	PictureBox_LoadPictureFile},
 	{sPictureBox_DrawFocusRect,		PictureBox_DrawFocusRect},
@@ -492,6 +504,31 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 
 
 // Helper function to process lisp arguments (returns false to signal an argument exception)
+bool RetrieveProjectFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CProject*& pProject )
+{
+	if (!pArgs)
+		return false; //arguments expected
+
+	pProject = NULL;
+	switch (pArgs->restype)	
+	{
+	case RTSHORT:
+		pProject = (CProject*)pArgs->resval.rint;
+		break;
+	case RTLONG:
+		pProject = (CProject*)pArgs->resval.rlong;
+		break;
+	case RTSTR:
+		pProject = theArxWorkspace.FindProject( pArgs->resval.rstring );
+		break;
+	default:
+		return false; //wrong argument type
+	}
+	pArgs = pArgs->rbnext; //move to the next argument
+	return true;
+}
+
+
 bool RetrieveFormFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDclFormObject*& pForm )
 {
 	if (!pArgs)
@@ -523,6 +560,57 @@ bool RetrieveFormFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDclFormObject*& p
 			if (pArgs->restype != RTSTR)
 				return false; //wrong argument type
 			pForm = theArxWorkspace.GetForm(pszProjectName, pArgs->resval.rstring);
+			break;
+		}
+	default:
+		return false; //wrong argument type
+	}
+	pArgs = pArgs->rbnext; //move to the next argument
+	return true;
+}
+
+
+bool RetrieveControlFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDclControlObject*& pControl )
+{
+	if (!pArgs)
+		return false; //arguments expected
+
+	pControl = NULL;
+	switch (pArgs->restype)	
+	{
+	// Uncomment this code to accept nil arguments without generating an exception
+	//case RTNIL:
+	//	pForm = NULL;
+	//	break;
+	case RTSHORT:
+		pControl = (CDclControlObject*)pArgs->resval.rint;
+		break;
+	case RTLONG:
+		pControl = (CDclControlObject*)pArgs->resval.rlong;
+		break;
+	case RTSTR:
+		{
+			LPCTSTR pszProjectName = pArgs->resval.rstring;
+			if (!pszProjectName)
+				return false; //invalid argument
+
+			pArgs = pArgs->rbnext; //move to the next argument
+			if (!pArgs)
+				return false; //not enough arguments
+
+			if (pArgs->restype != RTSTR)
+				return false; //wrong argument type
+			LPCTSTR pszFormName = pArgs->resval.rstring;
+			if (!pszFormName)
+				return false; //invalid argument
+
+			pArgs = pArgs->rbnext; //move to the next argument
+			if (!pArgs)
+				return false; //not enough arguments
+
+			if (pArgs->restype != RTSTR)
+				return false; //wrong argument type
+			pControl = theArxWorkspace.FindControl(pszProjectName, pszFormName, pArgs->resval.rstring);
 			break;
 		}
 	default:
@@ -690,13 +778,13 @@ public:
 			}
 
 			//register general property get and set functions
-			static const CString sGetPrefix = sPrefix + _T("Control_get");
-			static const CString sSetPrefix = sPrefix + _T("Control_set");
+			static const CString sGetPrefix = sPrefix + _T("Control_Get");
+			static const CString sSetPrefix = sPrefix + _T("Control_Set");
 			for( T_PropertyIdSet::const_iterator iter = mPropIds.begin(); iter != mPropIds.end(); ++iter )
 			{
 				PropertyId id = *iter;
 				LPCTSTR pszPropName = GetPropertyName( id );
-				if( pszPropName )
+				if( pszPropName && *pszPropName != _T('(') )
 				{
 					acedDefun( sGetPrefix + pszPropName, ADSPROPFUNCBASE + id );
 					acedDefun( sSetPrefix + pszPropName, ADSPROPFUNCBASE + id + nMaxPropertyId );
@@ -893,7 +981,7 @@ public:
 		mpDclToBeShown->EnsureIsLoaded();
 
 		CDclControlObject *pProps = mpDclToBeShown->GetControlProperties();
-		pProps->SetStrProperty(nFormEventInitialize, msActionToBeShown);
+		pProps->SetStringProperty(nFormEventInitialize, msActionToBeShown);
 		
 		TCHAR lpPathBuffer[MAX_PATH];
 		::GetTempPath(MAX_PATH, lpPathBuffer);
@@ -1208,29 +1296,29 @@ public:
 		case CtlOptionButton:
 		case CtlSlideView:
 			{
-				pCtrl->SetStrProperty(nEventClicked, sAction);
+				pCtrl->SetStringProperty(nEventClicked, sAction);
 				break;
 			}
 		case CtlTextBox:
 			{
-				pCtrl->SetStrProperty(nEventEditChanged, sAction);
+				pCtrl->SetStringProperty(nEventEditChanged, sAction);
 				break;
 			}		
 		case CtlGrid:
 		case CtlListView:
 			{
-				pCtrl->SetStrProperty(nEventClicked, sAction);
+				pCtrl->SetStringProperty(nEventClicked, sAction);
 				break;
 			}
 		case CtlComboBox:
 		case CtlListBox:
 			{
-				pCtrl->SetStrProperty(nEventSelChanged, sAction);
+				pCtrl->SetStringProperty(nEventSelChanged, sAction);
 				break;
 			}	
 		case CtlScrollBar:
 			{
-				pCtrl->SetStrProperty(nEventScroll, sAction);
+				pCtrl->SetStringProperty(nEventScroll, sAction);
 				break;
 			}
 		}
@@ -1280,7 +1368,7 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
-		pCtrl->SetStrProperty(nText, pszValue);
+		pCtrl->SetStringProperty(nText, pszValue);
 		if (pCtrl->GetWindow())
 			pCtrl->GetWindow()->SetWindowText(pszValue);
 
@@ -1320,12 +1408,12 @@ public:
 			{
 			case 0:
 				{
-					pCtrl->SetBoolProperty(nEnabled, true);
+					pCtrl->SetBooleanProperty(nEnabled, true);
 					break;
 				}		
 			case 1:
 				{
-					pCtrl->SetBoolProperty(nEnabled, false);
+					pCtrl->SetBooleanProperty(nEnabled, false);
 					break;
 				}		
 			}
@@ -1336,13 +1424,13 @@ public:
 			{
 			case 0:
 				{
-					pCtrl->SetBoolProperty(nEnabled, true);
+					pCtrl->SetBooleanProperty(nEnabled, true);
 					pCtrl->GetWindow()->EnableWindow(TRUE);
 					break;
 				}		
 			case 1:
 				{
-					pCtrl->SetBoolProperty(nEnabled, false);
+					pCtrl->SetBooleanProperty(nEnabled, false);
 					pCtrl->GetWindow()->EnableWindow(FALSE);
 					break;
 				}
@@ -1900,7 +1988,7 @@ public:
 		//	CString sTitle = pCtrl->GetStrProperty(nTitleBarText);
 		//	if (sTitle.Left(7) != sStudent)
 		//		sTitle = CString(_T("Student Version - ")) + sTitle;
-		//	pCtrl->SetStrProperty(nTitleBarText, sTitle);
+		//	pCtrl->SetStringProperty(nTitleBarText, sTitle);
 
 		//	if (pDclObject->GetType() == VdclDockable)
 		//	{
@@ -1991,7 +2079,7 @@ public:
 				return RSERR; //too many arguments
 		}
 
-		if (nWidth <= 0 || nHeight <= 0)
+		if (nX <= 0 || nY <= 0)
 		{
 			if( pDialog->CenterDialog() )
 				acedRetT();
@@ -2339,7 +2427,7 @@ public:
 		}
 
 		CDclControlObject *pPropObj = pDialog->GetSourceForm()->GetControlProperties();
-		pPropObj->SetStrProperty(nTitleBarText, pszTitle);
+		pPropObj->SetStringProperty(nTitleBarText, pszTitle);
 		::SetWindowText( pDialog->GetHWnd(), pszTitle );
 
 		return (RSRSLT) ;
@@ -3854,6 +3942,89 @@ int CARXApp::ads_odcl_SetCtrlProperty(void)
 	SetCtrlProperty( static_cast<PropertyId>(nFunctionCode - nSetPropertyBase) );
 	return RSRSLT;
 }
+
+
+#ifdef _DIAGNOSTIC
+
+static int DumpProject(void)
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CProject* pProject = NULL;
+	if (!RetrieveProjectFromArgs (pArgs, pProject))
+		return RSERR; //invalid input
+
+	if (!pProject)
+		return RSRSLT; //project not found
+
+	//optional arguments
+	bool bDeep = false;
+	if (pArgs)
+	{
+		bDeep = (pArgs->restype != RTNIL);
+
+		if (pArgs->rbnext != NULL)
+			return RSERR; //too many arguments
+	}
+
+	pProject->dump( bDeep );
+
+	return RSRSLT;
+}
+
+static int DumpForm(void)
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDclFormObject* pForm = NULL;
+	if (!RetrieveFormFromArgs (pArgs, pForm))
+		return RSERR; //invalid input
+
+	if (!pForm)
+		return RSRSLT; //form not found
+
+	//optional arguments
+	bool bDeep = false;
+	if (pArgs)
+	{
+		bDeep = (pArgs->restype != RTNIL);
+
+		if (pArgs->rbnext != NULL)
+			return RSERR; //too many arguments
+	}
+
+	pForm->dump( bDeep );
+
+	return RSRSLT;
+}
+
+static int DumpControl(void)
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDclControlObject* pControl = NULL;
+	if (!RetrieveControlFromArgs (pArgs, pControl))
+		return RSERR; //invalid input
+
+	if (!pControl)
+		return RSRSLT; //control not found
+
+	//optional arguments
+	bool bDeep = false;
+	if (pArgs)
+	{
+		bDeep = (pArgs->restype != RTNIL);
+
+		if (pArgs->rbnext != NULL)
+			return RSERR; //too many arguments
+	}
+
+	pControl->dump( bDeep );
+
+	return RSRSLT;
+}
+
+#endif //_DIAGNOSTIC
 
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getversion, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getversionex, true)

@@ -60,8 +60,8 @@ bool CDialogObject::ResizeDialog( long nNewWidth, long nNewHeight )
 {
 	if( !IsResizable() )
 		return false;
-	mpSourceForm->GetControlProperties()->SetLngProperty(nWidth, nNewWidth);
-	mpSourceForm->GetControlProperties()->SetLngProperty(nHeight, nNewHeight);
+	mpSourceForm->GetControlProperties()->SetLongProperty(nWidth, nNewWidth);
+	mpSourceForm->GetControlProperties()->SetLongProperty(nHeight, nNewHeight);
 	BOOL bSuccess = ::SetWindowPos(GetHWnd(), NULL, 0, 0, nNewWidth, nNewHeight,
 																 SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER );
 	GetControlPane().SizeChanged(nNewWidth, nNewHeight);
@@ -72,8 +72,8 @@ bool CDialogObject::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 {
 	if( !IsResizable() )
 		return false;
-	mpSourceForm->GetControlProperties()->SetLngProperty(nWidth, nNewWidth);
-	mpSourceForm->GetControlProperties()->SetLngProperty(nHeight, nNewHeight);
+	mpSourceForm->GetControlProperties()->SetLongProperty(nWidth, nNewWidth);
+	mpSourceForm->GetControlProperties()->SetLongProperty(nHeight, nNewHeight);
 	CPoint pt;
 	// get the left and top values to center the form on the screen	
 	pt.y =  (::GetSystemMetrics(SM_CYSCREEN) - nNewHeight) / 2;
@@ -105,10 +105,10 @@ bool CDialogObject::SetMinMaxSize( const CSize& min, const CSize& max )
 	assert(pPropObj != NULL);
 	if (pPropObj)
 	{
-		pPropObj->SetLngProperty(nMinDialogWidth, min.cx);
-		pPropObj->SetLngProperty(nMinDialogHeight, min.cy);
-		pPropObj->SetLngProperty(nMaxDialogWidth, max.cx);
-		pPropObj->SetLngProperty(nMaxDialogHeight, max.cy);
+		pPropObj->SetLongProperty(nMinDialogWidth, min.cx);
+		pPropObj->SetLongProperty(nMinDialogHeight, min.cy);
+		pPropObj->SetLongProperty(nMaxDialogWidth, max.cx);
+		pPropObj->SetLongProperty(nMaxDialogHeight, max.cy);
 	}
 	return true;
 }

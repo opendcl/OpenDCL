@@ -51,9 +51,6 @@ int ListCtrl_AddColumn()
 	int nImageIndex = -1;
 	int nArg=0;
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_AddColumn, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();	
-	
-	pListCtrl->m_ArxControl = pArx;
 
 	if (pArx == NULL)
 	{
@@ -61,7 +58,8 @@ int ListCtrl_AddColumn()
 		return 0;		
 	}
 
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();	
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
@@ -354,8 +352,6 @@ int ListCtrl_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
 	int nArg=0;
 	//CWnd *pControl = GetControlPointer(CtlListView, sMethodName, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sMethodName, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();	
-	pListCtrl->m_ArxControl = pArx;
 
 	if (pArx == NULL)
 	{
@@ -363,8 +359,9 @@ int ListCtrl_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
 		return 0;		
 	}
 
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();	
 
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
@@ -505,8 +502,6 @@ int ListCtrl_Clear()
 	int nArg=0;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_Clear);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_Clear, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();	
-	pListCtrl->m_ArxControl = pArx;
 
 	if (pArx == NULL)		
 	{
@@ -515,7 +510,8 @@ int ListCtrl_Clear()
 		return 0;
 	}
 
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();	
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
@@ -528,9 +524,7 @@ int ListCtrl_Clear()
 	{
 		// Delete all of the columns.
 		while (pListCtrl->GetHeaderCtrl()->GetItemCount() > 0)
-		{
 		   pListCtrl->DeleteColumn(0);
-		}
 	}
 
 	// return nil
@@ -554,8 +548,6 @@ int ListCtrl_CountItems()
 	int nArg=0;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_CountItems);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_CountItems, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	if (pArx == NULL)		
 	{
@@ -565,6 +557,7 @@ int ListCtrl_CountItems()
 	}
 	
 	// return the count
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	acedRetInt(pListCtrl->GetItemCount());
 	return 0;
 }
@@ -585,8 +578,6 @@ int ListCtrl_GetSelectedCount()
 	int nArg=0;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_GetSelectedCount);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_GetSelectedCount, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	if (pArx == NULL)		
 	{
@@ -596,6 +587,7 @@ int ListCtrl_GetSelectedCount()
 	}
 		
 	// return the count
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	acedRetInt(pListCtrl->GetSelectedCount());
 	return 0;
 }
@@ -617,8 +609,6 @@ int ListCtrl_GetItemData()
 	int nArg=0;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_GetItemData, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_GetItemData, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	int nIndex;
 	if (pArx == NULL || !GetIntArgument(nArg, &nIndex, sListCtrl_GetItemData))	
@@ -628,7 +618,8 @@ int ListCtrl_GetItemData()
 		return 0;
 	}
 		
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
@@ -656,8 +647,6 @@ int ListCtrl_GetItemImage()
 	int nArg=0;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_GetItemImage, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_GetItemImage, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	int nIndex = 0;
 	int nColIndex = 0;
@@ -669,7 +658,7 @@ int ListCtrl_GetItemImage()
 		return 0;
 	}
 	
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
@@ -679,6 +668,7 @@ int ListCtrl_GetItemImage()
 		nColIndex = 0;
 	
 	// return the count
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	acedRetInt(pListCtrl->GetItemImage(nIndex, nColIndex));
 	return 0;
 }
@@ -702,15 +692,14 @@ int ListCtrl_SetItemData()
 	int nArg=0;
 	//CWnd *pControl = GetArgsControlIntInt(CtlListView,sListCtrl_SetItemData, nIndex, nItemData);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_SetItemData, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
-	if (pArx == NULL || pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx == NULL || pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
 	}
 
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	pListCtrl->SetItemData(nIndex, nItemData);
 	// return nil
 	acedRetVoid();
@@ -734,8 +723,6 @@ int ListCtrl_GetItemText()
 	int nArg=0;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_GetItemText, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_GetItemText, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	int nRowIndex;
 	int nColIndex;
@@ -750,6 +737,7 @@ int ListCtrl_GetItemText()
 		nColIndex = 0;
 		
 	// return the count
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	acedRetStr(pListCtrl->GetItemText(nRowIndex, nColIndex));
 	return 0;
 }
@@ -772,8 +760,6 @@ int ListCtrl_GetRow()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_GetRow, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_GetRow, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	int nRowIndex;
 	if (pArx == NULL || !GetIntArgument(nArg, &nRowIndex, sListCtrl_GetRow))	
@@ -788,6 +774,7 @@ int ListCtrl_GetRow()
 	struct resbuf* rbpTail = rbpRetList;
  
 	// Get the indexes of all the selected items.
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	int nCount = pListCtrl->GetItemCount();
 
 	// if nothing selected
@@ -840,8 +827,6 @@ int ListCtrl_LoadDwg()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_LoadDwg, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_LoadDwg, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	CString sFileName;
 	if (pArx == NULL || !GetStringArgument(nArg, &sFileName, sListCtrl_LoadDwg))	
@@ -850,12 +835,13 @@ int ListCtrl_LoadDwg()
 		acedRetInt(-1);
 		return 0;
 	}
-	if (pListCtrl->m_ArxControl->GetType() != CtlBlockList)
+	if (pArx->GetType() != CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
 	}
 
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	pListCtrl->LoadDwg(sFileName);
 
 	acedRetVoid();
@@ -879,8 +865,6 @@ int ListCtrl_Reset()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_Reset, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_Reset, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	if (pArx == NULL)	
 	{
@@ -888,13 +872,14 @@ int ListCtrl_Reset()
 		acedRetInt(-1);
 		return 0;
 	}
-	if (pListCtrl->m_ArxControl->GetType() != CtlBlockList)
+	if (pArx->GetType() != CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
 	}
 
 	// if a drawing has been previously loaded
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	if (pListCtrl->m_pLoadedDwg)
 	{
 		// delete it.
@@ -926,9 +911,6 @@ int ListCtrl_GetFileName()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_GetFileName, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_GetFileName, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
-
 
 	if (pArx == NULL)	
 	{
@@ -936,13 +918,14 @@ int ListCtrl_GetFileName()
 		acedRetInt(-1);
 		return 0;
 	}
-	if (pListCtrl->m_ArxControl->GetType() != CtlBlockList)
+	if (pArx->GetType() != CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
 	}
 
 	// if a drawing has been previously loaded
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	if (pListCtrl->m_pLoadedDwg)
 	{
 		acedRetStr(pListCtrl->m_FileName);
@@ -970,9 +953,6 @@ int ListCtrl_GetColumn()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_GetColumn, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_GetColumn, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
-
 
 	int nColumnIndex;
 	if (pArx == NULL || !GetIntArgument(nArg, &nColumnIndex, sListCtrl_GetColumn))	
@@ -987,6 +967,7 @@ int ListCtrl_GetColumn()
 	struct resbuf* rbpTail = rbpRetList;
  
 	// Get the indexes of all the selected items.
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	int nCount = pListCtrl->GetItemCount();
 	// get the column count
 	int nColumnCount = pListCtrl->GetHeaderCtrl()->GetItemCount();
@@ -1036,8 +1017,6 @@ int ListCtrl_SetItemText()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_SetItemText, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_SetItemText, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	int nRowIndex;
 	int nColIndex;
@@ -1050,7 +1029,7 @@ int ListCtrl_SetItemText()
 		return 0;
 	}
 	
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
@@ -1066,6 +1045,7 @@ int ListCtrl_SetItemText()
 	if (!FindOptionalIntArgument(nArg, &nColIndex, sListCtrl_GetItemText))
 		nColIndex = 0;
 		
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	pListCtrl->SetItemText(nRowIndex, nColIndex, sNewText);
 	
 	acedRetVoid();
@@ -1091,8 +1071,6 @@ int ListCtrl_SetItemImage()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_SetItemImage, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_SetItemImage, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	int nArg1;
 	int nArg2;
@@ -1105,7 +1083,7 @@ int ListCtrl_SetItemImage()
 		return 0;
 	}
 	
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
@@ -1124,6 +1102,7 @@ int ListCtrl_SetItemImage()
 		nArg2 = 0;
 	}
 		
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	pListCtrl->SetItemImage(nArg1, nArg2, nArg3);
 
 	
@@ -1148,8 +1127,6 @@ int ListCtrl_GetColWidth()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_GetColWidth, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_GetColWidth, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	int nColIndex;
 	
@@ -1160,12 +1137,13 @@ int ListCtrl_GetColWidth()
 		return 0;
 	}
 	
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
 	}
 
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	acedRetInt(pListCtrl->GetColumnWidth(nColIndex));
 	return 0;
 }
@@ -1190,10 +1168,8 @@ int ListCtrl_SetColWidth()
 	int nNewWidth = 0;
 	//CWnd *pControl = GetArgsControlIntInt(CtlListView, sListCtrl_SetColWidth, nColIndex, nNewWidth);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_SetColWidth, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
-	if (pArx == NULL || pListCtrl->m_ArxControl->GetType() == CtlBlockList) 	
+	if (pArx == NULL || pArx->GetType() == CtlBlockList) 	
 	{
 		// return nil
 		acedRetInt(-1);
@@ -1215,6 +1191,7 @@ int ListCtrl_SetColWidth()
 		return 0;
 	}
 	
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	pListCtrl->SetColumnWidth(nColIndex, nNewWidth);
 
 	acedRetVoid();
@@ -1237,8 +1214,6 @@ int ListCtrl_SetCurSel()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_SetCurSel, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_SetCurSel, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	int nIndex;
 	
@@ -1249,6 +1224,7 @@ int ListCtrl_SetCurSel()
 		return 0;
 	}
 
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	if (nIndex > -1)
 	{
 		pListCtrl->SetItem(nIndex, 0, LVIF_STATE, NULL, 0, LVIS_SELECTED, LVIS_SELECTED, 0);		
@@ -1283,25 +1259,23 @@ int ListCtrl_CalcColumnWidth()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_CalcColumnWidth, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_CalcColumnWidth, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 	
 	CString sText;
 	
 	if (pArx == NULL || !GetStringArgument(nArg, &sText, sListCtrl_CalcColumnWidth))
 	{
-		
 		acedRetInt(-1);
 		return 0;
 	}
 
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
 	}
 
-    acedRetInt(int(pListCtrl->GetStringWidth(sText)*0.5*3));
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
+	acedRetInt(int(pListCtrl->GetStringWidth(sText)*0.5*3));
 
 	return 0;
 }
@@ -1321,9 +1295,6 @@ int ListCtrl_Arrange()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_Arrange, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_Arrange, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
-	
 
 	int nArrangeStyle;
 	
@@ -1348,6 +1319,7 @@ int ListCtrl_Arrange()
 		nArrangeStyle = LVA_SNAPTOGRID;
 		break;
 	}
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	pListCtrl->Arrange(nArrangeStyle);
 
 	acedRetVoid();
@@ -1370,8 +1342,6 @@ int ListCtrl_DeleteItems()
 	struct resbuf *ListData;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_DeleteItems, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_DeleteItems, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL)
 	{
@@ -1379,7 +1349,7 @@ int ListCtrl_DeleteItems()
 		return 0;		
 	}
 
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
@@ -1407,6 +1377,7 @@ int ListCtrl_DeleteItems()
 	}
 
 	// do loop to get all the strings passed by AutoLisp
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	bool bDoLoop = true;
 	while (bDoLoop)
 	{
@@ -1469,8 +1440,6 @@ int ListCtrl_DeleteColumns()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_DeleteColumns, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_DeleteColumns, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL)
 	{
@@ -1478,7 +1447,7 @@ int ListCtrl_DeleteColumns()
 		return 0;		
 	}
 
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
@@ -1506,6 +1475,7 @@ int ListCtrl_DeleteColumns()
 	}
 
 	// do loop to get all the strings passed by AutoLisp
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	bool bDoLoop = true;
 	while (bDoLoop)
 	{
@@ -1550,6 +1520,7 @@ int ListCtrl_DeleteColumns()
 	acedRetVoid();
 	return 0;
 }
+
 //*****************************************************************************
 // 
 // Method: ListCtrl_FillGrid()
@@ -1570,8 +1541,6 @@ int ListCtrl_FillGrid()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_FillGrid, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_FillGrid, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL)
 	{
@@ -1579,7 +1548,7 @@ int ListCtrl_FillGrid()
 		return 0;		
 	}
 
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
@@ -1605,6 +1574,7 @@ int ListCtrl_FillGrid()
 	bool bDoLoop = true;
 
 	// delete all the items
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	pListCtrl->DeleteAllItems();
 	
 	// get the count before the addition of any rows
@@ -1766,8 +1736,6 @@ int ListCtrl_GetSelectedItems()
 	int nArg=0;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_GetSelectedItems);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_GetSelectedItems, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL)
 	{
@@ -1776,13 +1744,11 @@ int ListCtrl_GetSelectedItems()
 		return 0;
 	}
 
-	
 	// Convert the array to a list that can be returned
 	struct resbuf* rbpRetList = acutNewRb(RTSTR);
 	struct resbuf* rbpTail = rbpRetList;
-
 	
-	
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	POSITION pos = pListCtrl->GetFirstSelectedItemPosition();
 	if (pos == NULL)
 	{
@@ -1816,8 +1782,6 @@ int ListCtrl_GetSelectedNths()
 	int nArg=0;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_GetSelectedNths);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_GetSelectedNths, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL)
 	{
@@ -1826,12 +1790,12 @@ int ListCtrl_GetSelectedNths()
 		return 0;
 	}
 
-	
 	// Convert the array to a list that can be returned
 	//struct resbuf* rbpRetList = acutNewRb(RTSTR);
 	//struct resbuf* rbpTail = rbpRetList;
 	struct resbuf *pRBList = NULL, *pRB = NULL, *pRBTrav = NULL;
 	
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	int nCount = 0;
 	POSITION pos = pListCtrl->GetFirstSelectedItemPosition();
 	if (pos == NULL)
@@ -1880,21 +1844,19 @@ int ListCtrl_StartLabelEdit()
 	int nArg = 0;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_StartLabelEdit, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_StartLabelEdit, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 	
 	int nItem = 0;
 	int nSubItem = 0;
 
 	if (pArx == NULL || !GetIntArgument(nArg, &nItem, sListCtrl_StartLabelEdit))
 	{
-		
 		acedRetInt(-1);
 		return 0;
 	}
 	
-	if (pListCtrl->m_ArxControl->GetType() == CtlListView)
+	if (pArx->GetType() == CtlListView)
 	{
+		OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 		// Make sure the focus is set to the list view control.
 		pListCtrl->SetFocus();
 
@@ -1902,8 +1864,6 @@ int ListCtrl_StartLabelEdit()
 
 		// Show the edit control on the label of the indicated item
 		CEdit *pEdit = pListCtrl->EditLabel(nItem);
-		
-		
 	}
 	acedRetVoid();
 	return 0;
@@ -1916,21 +1876,18 @@ int ListCtrl_CancelLabelEdit()
 	int nArg=0;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_CancelLabelEdit);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_CancelLabelEdit, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL)
 	{
-		
 		acedRetInt(-1);
 		return 0;
 	}
 	
-	if (pListCtrl->m_ArxControl->GetType() == CtlListView)
+	if (pArx->GetType() == CtlListView)
 	{
+		OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 		// Make sure the focus is set to the list view control.
 		CEdit *pEdit = pListCtrl->GetEditControl();
-
 		pEdit->ShowWindow(FALSE);
 	}
 	acedRetVoid();
@@ -1946,8 +1903,6 @@ int ListCtrl_SortColTextItems()
 
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_SortTextItems, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_SortTextItems, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL || !GetIntArgument(nArg, &nCol, sListCtrl_SortTextItems))	
 	{
@@ -1964,6 +1919,7 @@ int ListCtrl_SortColTextItems()
 
     try
 	{
+		OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 		pListCtrl->SortTextItems(nCol, nAscending);
 	}
 	catch(...)
@@ -1982,8 +1938,6 @@ int ListCtrl_SortColNumericItems()
 
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_SortNumericItems, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_SortNumericItems, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL || !GetIntArgument(nArg, &nCol, sListCtrl_SortNumericItems))	
 	{
@@ -2000,6 +1954,7 @@ int ListCtrl_SortColNumericItems()
 
 	try
 	{
+		OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 		pListCtrl->SortNumericItems(nCol, nAscending);
 	}
 	catch(...)
@@ -2019,8 +1974,6 @@ int ListCtrl_HitPointTest()
 
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_HitPointTest, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_HitPointTest, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 	
 	if (pArx == NULL || !GetIntArgument(nArg, &nX, sListCtrl_HitPointTest))	
 	{
@@ -2040,6 +1993,7 @@ int ListCtrl_HitPointTest()
 	CPoint pt(nX, nY);
 	UINT Flags;
 
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	int nRow = pListCtrl->HitTest(pt, &Flags);
 	
 	LVHITTESTINFO lvhti;
@@ -2082,8 +2036,6 @@ int ListCtrl_SetColumnImage()
 {
 	int nArg;
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_SetColumnImage, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	int nCol;
 	int nImage;
@@ -2095,7 +2047,7 @@ int ListCtrl_SetColumnImage()
 		return 0;
 	}
 	
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
@@ -2108,6 +2060,7 @@ int ListCtrl_SetColumnImage()
 		return 0;
 	}
 		
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	CHeaderCtrl *pHeader = pListCtrl->GetHeaderCtrl();
 
 	if (pHeader == NULL)
@@ -2160,8 +2113,6 @@ int ListCtrl_GetColumnImage()
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_SetItemImage, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_GetColumnImage, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	int nCol;
 	int nImage;
@@ -2173,12 +2124,13 @@ int ListCtrl_GetColumnImage()
 		return 0;
 	}
 	
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
 	}
 		
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	CHeaderCtrl *pHeader = pListCtrl->GetHeaderCtrl();
 
 	HDITEM item;
@@ -2196,13 +2148,12 @@ int ListCtrl_GetColumnImage()
 	acedRetInt(nImage);
 	return 0;
 }
+
 int ListCtrl_GetCount()
 {
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_SetItemImage, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_GetCount, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	if (pArx == NULL)	
 	{
@@ -2211,22 +2162,22 @@ int ListCtrl_GetCount()
 		return 0;
 	}
 	
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
 	}
 		
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	acedRetInt(pListCtrl->GetItemCount());
 	return 0;
 }
+
 int ListCtrl_GetColumnCount()
 {
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sListCtrl_SetItemImage, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_GetColumnCount, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
-	pListCtrl->m_ArxControl = pArx;
 
 	if (pArx == NULL)	
 	{
@@ -2235,12 +2186,13 @@ int ListCtrl_GetColumnCount()
 		return 0;
 	}
 	
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
 	}
 		
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	CHeaderCtrl *pHeader = pListCtrl->GetHeaderCtrl();
 
 	acedRetInt(pHeader->GetItemCount());
@@ -2269,8 +2221,6 @@ int ListCtrl_AddString()
 	int nInsertIndex;
 
 	CDclControlObject *pArx = GetControlArxObject(sListCtrl_AddString, &nArg);
-	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();	
-	pListCtrl->m_ArxControl = pArx;
 
 	if (pArx == NULL)
 	{
@@ -2278,7 +2228,7 @@ int ListCtrl_AddString()
 		return 0;		
 	}
 
-	if (pListCtrl->m_ArxControl->GetType() == CtlBlockList)
+	if (pArx->GetType() == CtlBlockList)
 	{
 		acedRetInt(-1); 
 		return 0;
@@ -2294,10 +2244,9 @@ int ListCtrl_AddString()
 	nArg++;
 	
 	if (!FindOptionalStringArgument(nArg, &sDivider, sListCtrl_AddString))
-	{
 		sDivider = sSeperator;
-	}
 
+	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();	
 	int nStart = 0;
 	int nNext = sStringArg.Find(sDivider, nStart);
 	int nCol = 0;
@@ -2359,8 +2308,6 @@ int ListCtrl_AddString()
 		if (nNext == -1 && sStringArg.GetLength() > 0)
 			nNext = sStringArg.GetLength();
 	}
-
-	
 
 	acedRetInt(nInsertIndex);
 	return 0;

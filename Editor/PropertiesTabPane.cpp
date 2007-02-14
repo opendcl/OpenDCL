@@ -97,7 +97,7 @@ BOOL CPropertiesTabPane::OnInitDialog()
 	memset(&lf, 0, sizeof(LOGFONT));
 	CString sFont;
 	sFont = theWorkspace.LoadResourceString(IDS_DEFAULTFONT);
-	lstrcpy(lf.lfFaceName, sFont);
+	lstrcpyn(lf.lfFaceName, sFont, _elements(lf.lfFaceName));
 	CDC *pDC = mPropListCtrl.GetDC();
 
 	// create font size as scaled

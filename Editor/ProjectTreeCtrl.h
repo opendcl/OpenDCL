@@ -54,7 +54,7 @@ public:
 	HTREEITEM FindTabParent(class CDclFormObject *pDclTab);
 	void RemoveViewPointer(CView *pView);
 	void AddFormToTree(CDclFormObject *pDcl, bool bForceShow);
-	void DeleteChildTab(HTREEITEM hChild);
+	void RemoveChildren(HTREEITEM hParent);
 	void CleanupParents();
 	void AddActiveXFileTree(CString sFileName);
 

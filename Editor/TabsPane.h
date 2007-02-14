@@ -29,6 +29,8 @@ public:
 };
 
 typedef CList<CTabInfo*> CTabInfoList;
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CTabsPane dialog
 
@@ -63,7 +65,8 @@ public:
 	CTabInfoList m_DeletedTabList;
 	CObjectDCLView *m_pView;
 
-	void UpdateCtrls();
+	void UpdateTabInfo();
+	void UpdateFrame();
 
 // Overrides
 	// ClassWizard generated virtual function overrides

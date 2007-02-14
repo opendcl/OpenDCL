@@ -2206,11 +2206,8 @@ void CPropertyListCtrl::OnButtonPressed()
 						break;						
 				}
 				CString sText;
-				for (int i=0; i<pProp->CountList(); i++)
-				{
-					sText = sText + pProp->GetStringItem(i) + theWorkspace.LoadResourceString(IDS_RN);
-					
-				}
+				for (size_t i = 0; i < pProp->size(); i++)
+					sText += pProp->GetStringItem(i) + theWorkspace.LoadResourceString(IDS_RN);
 				// set the original value
 				m_Edit.m_OriginalValue = sText;
 				// allow the edit box to accept returns
@@ -3085,68 +3082,11 @@ void CPropertyListCtrl::PropertyHasChanged(PropertyId nId)
 
 void CPropertyListCtrl::DeleteFlaggedControls(short DclFormIndex) 
 {
-	// create a position variable to hold the counter increment
-	POSITION pos;	
-	int nCount;
-	
 	CDclFormObject *pDclForm = CPropertyListCtrl::GetDclFormObject(DclFormIndex);
-	
 	if (pDclForm == NULL)
 		return;
-
-	if (pDclForm->CountDeletedControls() == 0)
-		return;
-
-	// set counter for ArxControls
-	nCount = pDclForm->GetControlList().GetCount()-1;
-
-	// do loop to navigate Arx Controls 
-	// (note the greater then 1 is to skip the first
-	// control which actually holds the properties for 
-	// the form
-	while (nCount > 0)
-	{	
-		// set start position for navigating ArxControls
-		pos = pDclForm->GetControlList().FindIndex(nCount);
-	
-		// get current ArxControlObject
-		CDclControlObject* pControl = pDclForm->GetControlList().GetAt(pos);
-
-		if (pControl->m_Delete == TRUE)
-		{
-			pDclForm->GetControlList().RemoveAt(pos);
-			delete pControl; // deleting this avoids memory leaks
-		}
-		// increment counter
-		nCount--;
-	}
-	ASSERT(nCount == 1);
-			
-	// set counter for m_ImageListCollection
-	int nImagelistCount = pDclForm->m_ImageListCollection.GetCount()-1;
-		
-	if (nImagelistCount == 0)
-		return;
-
-	// do loop to navigate m_ImageListCollection
-	while (nImagelistCount >= 0)
-	{
-		// set start position for navigating CImageListObject
-		pos = pDclForm->m_ImageListCollection.FindIndex(nImagelistCount);
-	
-		// get current m_ImageListCollection
-		CImageListObject* pImageListObject = pDclForm->m_ImageListCollection.GetAt(pos);
-
-		if (pImageListObject->m_Delete == TRUE)
-		{
-			pDclForm->m_ImageListCollection.RemoveAt(pos);
-			delete pImageListObject; // deleting this avoids memory leaks
-		}
-
-		// increment counter
-		nImagelistCount--;
-	}
-	
+	pDclForm->PurgeDeletedControls();
+	pDclForm->PurgeDeletedImageLists();
 }
 
 CString CPropertyListCtrl::GetPictureFile(LPCTSTR Filter)
@@ -3524,25 +3464,19 @@ void CPropertyListCtrl::SearchPictureRefs(CDclFormObject *pDclObject)
 			if (nPictureId > nNotSet)
 			{
 				if (!FindPictureId(nPictureId))
-				{
-					pControl->SetLngProperty(nPicture, 0);
-				}
+					pControl->SetLongProperty(nPicture, 0);
 			}
 			int nPressedPictureId = pControl->GetLngProperty(nPressedPicture);
 			if (nPressedPictureId > nNotSet)
 			{
 				if (!FindPictureId(nPressedPictureId))
-				{
-					pControl->SetLngProperty(nPressedPicture, 0);
-				}
+					pControl->SetLongProperty(nPressedPicture, 0);
 			}
 			int nIconId = pControl->GetLngProperty(nIcon);
 			if (nIconId > nNotSet)
 			{
 				if (!FindPictureId(nIconId))
-				{
-					pControl->SetLngProperty(nIcon, 0);
-				}
+					pControl->SetLongProperty(nIcon, 0);
 			}
 		}
 	}
@@ -3624,116 +3558,116 @@ void CPropertyListCtrl::SetPurchaseMode(short nPurchaseMode)
 }
 
 
-CString CPropertyListCtrl::ImportOdcl(LPCTSTR sFileName) 
-{
-	CString strResult;
-	// declare file variables
-	CFileException Exception;
-	CFile ThisFile;
-
-	// open then file
-	if (!ThisFile.Open(sFileName, CFile::modeRead | CFile::shareDenyWrite, &Exception))
-	{
-		return strResult.AllocSysString();
-	}
-
-	CProject tmpProject;
-
-	CString sTitle;
-	sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-	
-	CArchiveEx ar(&ThisFile, CArchive::load | CArchive::bNoFlushOnDelete, NULL, sTitle, TRUE);
-	
-	try
-	{
-		// Deserialize the control
-		tmpProject.Serialize(ar);
-	}
-	catch(...)
-	{
-		ar.Close();
-		return CString();
-	}
-		
-	ar.Close();
-
-	ThisFile.Close();
-	POSITION pos;
-	int nLargestPicId = 0;
-	int nSmallestNewPicId = 0;
-
-	// find the largest current picture Id
-	int i;
-  for (i=0; i<activeProject->GetPictureList().GetCount(); i++)
-	{
-		POSITION pos = activeProject->GetPictureList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
-			if (pPic != NULL)
-			{
-				if (nLargestPicId <= pPic->GetID())
-					nLargestPicId = pPic->GetID();		
-			}
-		}
-	}
-	
-	// find the smallest new picture Id
-	for (i=0; i<tmpProject.GetPictureList().GetCount(); i++)
-	{
-		POSITION pos = activeProject->GetPictureList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
-			if (pPic != NULL)
-			{
-				if (nSmallestNewPicId >= pPic->GetID() || nSmallestNewPicId <= 0)
-					nSmallestNewPicId = pPic->GetID();
-			}
-		}		
-	}
-	// calc the difference
-  	nLargestPicId = nLargestPicId - nSmallestNewPicId + 1;
-	
-	// do loop to copy all picture objects
-	for (i=0; i<tmpProject.GetPictureList().GetCount(); i++)
-	{
-		POSITION pos = tmpProject.GetPictureList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CPictureObject *pPic = tmpProject.GetPictureList().GetAt(pos);
-			if (pPic != NULL)
-			{
-				pPic->SetID( pPic->GetID() + nLargestPicId );
-				
-				// move this picture over to the existing picture list
-				activeProject->GetPictureList().AddTail(pPic);
-			}
-		}
-	}
-	
-	// do loop to copy all dcl form objects
-	for (i=0; i<tmpProject.GetDclFormList().GetCount(); i++)
-	{
-		pos = tmpProject.GetDclFormList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CDclFormObject *pForm = tmpProject.GetDclFormList().GetAt(pos);
-			pForm->IncrementPictureId(nLargestPicId);
-			
-			// move this picture over to the existing picture list
-			activeProject->GetDclFormList().AddTail(pForm);
-
-		}
-	}
-
-	tmpProject.GetDclFormList().RemoveAll();
-	tmpProject.GetPictureList().RemoveAll();
-	
-	strResult = tmpProject.m_sPassword;
-	
-	return strResult;
-}
+//CString CPropertyListCtrl::ImportOdcl(LPCTSTR sFileName) 
+//{
+//	CString strResult;
+//	// declare file variables
+//	CFileException Exception;
+//	CFile ThisFile;
+//
+//	// open then file
+//	if (!ThisFile.Open(sFileName, CFile::modeRead | CFile::shareDenyWrite, &Exception))
+//	{
+//		return strResult.AllocSysString();
+//	}
+//
+//	CProject tmpProject;
+//
+//	CString sTitle;
+//	sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
+//	
+//	CArchiveEx ar(&ThisFile, CArchive::load | CArchive::bNoFlushOnDelete, NULL, sTitle, TRUE);
+//	
+//	try
+//	{
+//		// Deserialize the control
+//		tmpProject.Serialize(ar);
+//	}
+//	catch(...)
+//	{
+//		ar.Close();
+//		return CString();
+//	}
+//		
+//	ar.Close();
+//
+//	ThisFile.Close();
+//	POSITION pos;
+//	int nLargestPicId = 0;
+//	int nSmallestNewPicId = 0;
+//
+//	// find the largest current picture Id
+//	int i;
+//  for (i=0; i<activeProject->GetPictureList().GetCount(); i++)
+//	{
+//		POSITION pos = activeProject->GetPictureList().FindIndex(i);
+//		if (pos != NULL)
+//		{
+//			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
+//			if (pPic != NULL)
+//			{
+//				if (nLargestPicId <= pPic->GetID())
+//					nLargestPicId = pPic->GetID();		
+//			}
+//		}
+//	}
+//	
+//	// find the smallest new picture Id
+//	for (i=0; i<tmpProject.GetPictureList().GetCount(); i++)
+//	{
+//		POSITION pos = activeProject->GetPictureList().FindIndex(i);
+//		if (pos != NULL)
+//		{
+//			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
+//			if (pPic != NULL)
+//			{
+//				if (nSmallestNewPicId >= pPic->GetID() || nSmallestNewPicId <= 0)
+//					nSmallestNewPicId = pPic->GetID();
+//			}
+//		}		
+//	}
+//	// calc the difference
+//  	nLargestPicId = nLargestPicId - nSmallestNewPicId + 1;
+//	
+//	// do loop to copy all picture objects
+//	for (i=0; i<tmpProject.GetPictureList().GetCount(); i++)
+//	{
+//		POSITION pos = tmpProject.GetPictureList().FindIndex(i);
+//		if (pos != NULL)
+//		{
+//			CPictureObject *pPic = tmpProject.GetPictureList().GetAt(pos);
+//			if (pPic != NULL)
+//			{
+//				pPic->SetID( pPic->GetID() + nLargestPicId );
+//				
+//				// move this picture over to the existing picture list
+//				activeProject->GetPictureList().AddTail(pPic);
+//			}
+//		}
+//	}
+//	
+//	// do loop to copy all dcl form objects
+//	for (i=0; i<tmpProject.GetDclFormList().GetCount(); i++)
+//	{
+//		pos = tmpProject.GetDclFormList().FindIndex(i);
+//		if (pos != NULL)
+//		{
+//			CDclFormObject *pForm = tmpProject.GetDclFormList().GetAt(pos);
+//			pForm->IncrementPictureId(nLargestPicId);
+//			
+//			// move this picture over to the existing picture list
+//			activeProject->GetDclFormList().AddTail(pForm);
+//
+//		}
+//	}
+//
+//	tmpProject.GetDclFormList().RemoveAll();
+//	tmpProject.GetPictureList().RemoveAll();
+//	
+//	strResult = tmpProject.m_sPassword;
+//	
+//	return strResult;
+//}
 
 
 void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive) 
@@ -4171,7 +4105,7 @@ BOOL CPropertyListCtrl::SaveDistributionFile(CProjectCollection *pProjectHolder)
 			return FALSE;
 		}
 
-		CArchiveEx ar(&ThisFile, CArchive::store | CArchive::bNoFlushOnDelete, NULL, sTitle, TRUE);
+		CArchiveEx ar(&ThisFile, CArchive::store | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
 	
 		// Serialize the control
 		pProjectHolder->Serialize(ar);
@@ -4200,7 +4134,7 @@ BOOL CPropertyListCtrl::OpenProjectFile(LPCTSTR FileName, CProject *pProject)
 	sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
 
 		
-	CArchiveEx ar(&ThisFile, CArchive::load | CArchive::bNoFlushOnDelete, NULL, sTitle, TRUE);
+	CArchiveEx ar(&ThisFile, CArchive::load | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
 					
 	try
 	{
@@ -4314,8 +4248,8 @@ void CPropertyListCtrl::EditObjectbrowser()
 	if (pApp->m_pCtrlHelp == NULL)
 	{
 		CObjectBrowser Dlg;
-		Dlg.m_pControl.Lock();
 		Dlg.m_pControl = (COleControlObject*)m_pControl;
+		Dlg.m_pControl.Lock();
 		Dlg.m_pDclForm = m_pDclForm;
 		Dlg.m_sDclFormName = m_pDclForm->GetKeyName();
 		Dlg.DoModal();
@@ -4325,16 +4259,16 @@ void CPropertyListCtrl::EditObjectbrowser()
 	if (m_pIntelHelp == NULL)
 	{
 		m_pIntelHelp = new CObjectBrowser();
-		m_pIntelHelp->m_pControl.Lock();
 		m_pIntelHelp->m_pControl = (COleControlObject*)m_pControl;
+		m_pIntelHelp->m_pControl.Lock();
 		m_pIntelHelp->m_pDclForm = m_pDclForm;
 		m_pIntelHelp->m_sDclFormName = m_pDclForm->GetKeyName();
 		m_pIntelHelp->Create(MAKEINTRESOURCE(IDD_OBJECTBROWSER), AfxGetApp()->m_pMainWnd);
 	}
 	else
 	{
-		m_pIntelHelp->m_pControl.Lock();
 		m_pIntelHelp->m_pControl = (COleControlObject*)m_pControl;
+		m_pIntelHelp->m_pControl.Lock();
 		m_pIntelHelp->m_pDclForm = m_pDclForm;
 		m_pIntelHelp->m_sDclFormName = m_pDclForm->GetKeyName();
 		m_pIntelHelp->Setup();

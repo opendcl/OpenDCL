@@ -211,9 +211,6 @@
 #define IDS_PROP_EVENTSCROLLED          398
 #define IDS_PROP_DOCSIDES               399
 #define IDS_PROP_DOCDEFAULT             400
-#define IDS_BORDERSTYLE_0               401
-#define IDS_BORDERSTYLE_1               402
-#define IDS_BORDERSTYLE_2               403
 #define IDS_PROP_EVENTINVOKE            404
 #define IDS_PROP_RETURNASTAB            405
 #define IDS_PROP_SINGLEEXPANED          406
@@ -242,6 +239,9 @@
 #define IDS_THE                         10001
 #define IDS_RESETPROP                   10002
 #define IDS_NOTLICENCEDAX               10003
+#define IDS_BORDERSTYLE_0               10004
+#define IDS_BORDERSTYLE_1               10005
+#define IDS_BORDERSTYLE_2               10006
 
 // Next default values for new objects
 // 

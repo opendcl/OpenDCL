@@ -393,7 +393,7 @@ void CPictureBox::Clear()
 {
 	m_pPicture = NULL;
 	m_PictureID = 0;
-	m_ArxControl->SetLngProperty(nPicture, m_PictureID);
+	m_ArxControl->SetLongProperty(nPicture, m_PictureID);
 	// set the picture ID to a value that indicates it's blank
 	
 	if (m_pPictureHolder)
@@ -1153,7 +1153,7 @@ void CPictureBox::DrawHatchRect(int sX, int sY, int eX, int eY, COLORREF rgb, in
 }
 
 
-void CPictureBox::PaintAnIcon(int sX, int sY, int nPictureID, int nEnabled, int nUseMask)
+void CPictureBox::PaintPicture(int sX, int sY, int nPictureID, int nEnabled, int nUseMask)
 {
 	HDC hdc = ::GetDC(m_hWnd);
 

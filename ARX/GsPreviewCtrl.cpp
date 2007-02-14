@@ -492,7 +492,7 @@ void CGsPreviewCtrl::SetAcadColor(long nColor)
 	else if (nColor == -23 && bTilemode)
 		nColor = -22;
 
-	m_ArxControl->SetLngProperty(nAcadColor, nColor);
+	m_ArxControl->SetLongProperty(nAcadColor, nColor);
 
 	m_pStaticBrush = new CBrush();
 	m_BackColor = GetRGBColor(nColor);
@@ -2191,7 +2191,8 @@ void CGsPreviewCtrl::DisplayTheBlock(
 		eMode = AcGsView::k2DOptimized;
 		
 		AcGsView * pCurView  = acgsGetGsView (nVPNum, false);
-		pCurView->setMode(eMode);
+		if( pCurView )
+			pCurView->setMode(eMode);
 	}
 
 	try

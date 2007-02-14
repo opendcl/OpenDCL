@@ -41,8 +41,6 @@ namespace PropVal
 	typedef std::vector< TCStringArray > TCStringArrayList;
 	typedef std::vector< int > TIntArray;
 	typedef std::vector< TIntArray > TIntArrayList;
-	//typedef AxInterfaceDescriptor* TAxInterfaceDescriptorPtr;
-
 
 
 	class ConvertedCStringArray : public CStringArray
@@ -109,6 +107,11 @@ namespace PropVal
 		virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) = 0;
 		virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const = 0;
 		virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) = 0;
+
+	#ifdef _DIAGNOSTIC
+	public:
+		virtual LPCTSTR toString() const = 0;
+	#endif
 	};
 };
 
@@ -184,6 +187,7 @@ public:
 	//Operations
 public:
 	void clear() { if( mpValue ) mpValue->clear(); }
+	size_t size() const;
 	
 	//Implementation
 public:
@@ -193,7 +197,6 @@ public:
 	CString GetStdProperty();
 	
 	void AddStringItem(CString NewString);
-	INT_PTR CountList();
 	CString GetStringItem(short ListIndex);
 
 	//File I/O
@@ -205,4 +208,8 @@ public:
 
 protected:
 	DECLARE_SERIAL(CPropertyObject)
+
+#ifdef _DIAGNOSTIC
+	virtual LPCTSTR toString() const;
+#endif
 };

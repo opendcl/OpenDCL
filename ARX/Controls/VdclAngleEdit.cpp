@@ -172,7 +172,7 @@ void VdclAngleEdit::OnChange()
 		CString sTestText = m_ArxControl->GetStrProperty(nText);
 		if (sTestText != sText)
 		{
-			m_ArxControl->SetStrProperty(nText, sText);
+			m_ArxControl->SetStringProperty(nText, sText);
 			// call methods to invoke the event
 			if (m_ArxControl)
 				InvokeMethodString(m_ArxControl->GetStrProperty(nEventEditChanged), sText, m_bInvokeWithSendString);

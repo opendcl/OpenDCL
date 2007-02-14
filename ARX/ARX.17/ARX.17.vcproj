@@ -1458,6 +1458,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\Diagnostic.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\DialogControl.cpp"
 				>
 			</File>

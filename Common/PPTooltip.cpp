@@ -2950,7 +2950,7 @@ BOOL CPPToolTip::SetFont(LPCTSTR lpszFaceName, int nSizePoints /* = 8 */,
 	LOGFONT lf;
 	memset (&lf, 0, sizeof(LOGFONT));
 
-	_tcscpy (lf.lfFaceName, lpszFaceName);
+	lstrcpyn (lf.lfFaceName, lpszFaceName, _elements(lf.lfFaceName));
 	lf.lfHeight = -MulDiv (nSizePoints, GetDeviceCaps (pDC->m_hDC, LOGPIXELSY), 72);
 	lf.lfUnderline = bUnderline;
 	lf.lfWeight = bBold ? FW_BOLD : FW_NORMAL;

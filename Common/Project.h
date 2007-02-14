@@ -95,7 +95,7 @@ enum IOStatus
 class CProject : public CObject
 {
 protected:		
-	CList<CPictureObject*> mPictures;
+	CList< CPictureObject* > mPictures;
 	CList< CDclFormObject* > mDclForms;
 	std::vector< RefCountedPtr< COleControlObject > > mOleControls;
 	CList< CDclControlObject* > mClipBoard;
@@ -130,7 +130,8 @@ protected:
 
 	//2007-01-30 [ORW]: save version set to 9 (no change from ObjectDCL 3)
 	//2007-02-09 [ORW]: save version set to 10
-	ULONG GetCurrentSaveVersion() const { return 10; }
+	//2007-02-14 [ORW]: save version set to 11 (form count changed from short to unsigned long)
+	ULONG GetCurrentSaveVersion() const { return 11; }
 
 public:
 	virtual LPCTSTR GetPassword() const { return _T("d32afd3aw3aq3fdaw3"); }
@@ -158,12 +159,14 @@ public:
 	const CList<CPictureObject*>& GetPictureList() const { return mPictures; }
 	CList<CPictureObject*>& GetPictureList() { return mPictures; }
 	const CList< CDclFormObject* >& GetDclFormList() const { return mDclForms; }
-	CList< CDclFormObject* >& GetDclFormList() { return mDclForms; }
+	//CList< CDclFormObject* >& GetDclFormList() { return mDclForms; }
 	const CString& GetKeyName() const { return msKeyName; }
 	void SetKeyName( LPCTSTR pszKeyName );
 
 	//Services
-
+	virtual void DeleteForm( CDclFormObject*& pDclForm );
+	virtual CDclFormObject* AddForm( DclFormType nType );
+	virtual CDclFormObject* AddForm( DclFormType nType, CDclFormObject* pParentForm );
 
 	//from old CProjectList
 	void ClearProject();
@@ -191,4 +194,14 @@ public:
 
 protected:
 	DECLARE_SERIAL(CProject)
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual void dump( bool bDeep = true ) const;
+#endif
+
+#ifdef _DEBUG
+public:
+	virtual void dumpDebugger( bool bDeep = true ) const;
+#endif
 };

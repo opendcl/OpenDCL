@@ -59,7 +59,15 @@ public:
 
 // Operations
 public:
-	bool DeleteControl(long nIndex);
+	void AddControl( CDclControlObject* pDclControl );
+	CDclControlObject* AddControl( ControlType type, LPCTSTR pszKeyName );
+	void DeleteControl( CDclControlObject*& pDclControl );
+	void PurgeDeletedControls();
+	void PurgeDeletedImageLists();
+	bool ReorderControl( CDclControlObject* pDclControl, bool bToFront, bool bDeferReindexing = false );
+	bool ReorderControl( CDclControlObject* pDclControl, size_t idxNew, bool bDeferReindexing = false );
+	void ReindexControls();
+
 	void ClearR14Events();
 	void IncrementPictureId(int nIdIncrement);
 	int CountDeletedControls() const;
@@ -97,7 +105,7 @@ public:
 	void SetFormInstance( CDialogObject* pDlgObject );
 	INT_PTR GetControlCount() const;
 	const CList< CDclControlObject* >& GetControlList() const { return mDclControls; }
-	CList< CDclControlObject* >& GetControlList() { return mDclControls; }
+	//CList< CDclControlObject* >& GetControlList() { return mDclControls; }
 	const CDclControlObject* GetControlProperties() const;
 	CDclControlObject* GetControlProperties();
 	UUID GetUUID() const;
@@ -106,6 +114,7 @@ public:
 	void SetUniqueName( LPCTSTR pszName ) { msUniqueName = pszName; }
 	CString GetParentName() const { return mpParentForm? mpParentForm->GetUniqueName() : CString(); }
 	const CDclFormObject* GetParentForm() const { return mpParentForm; }
+	CDclFormObject* GetParentForm() { return mpParentForm; }
 	void SetParentForm( CDclFormObject* pParentForm );
 	void SetParentForm( LPCTSTR pszParentUniqueName );
 	short GetTabIndex() const { return mnTabIndex; }
@@ -126,4 +135,14 @@ public:
 
 protected:
 	DECLARE_SERIAL(CDclFormObject)
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual void dump( bool bDeep = true ) const;
+#endif
+
+#ifdef _DEBUG
+public:
+	virtual void dumpDebugger( bool bDeep = true ) const;
+#endif
 };

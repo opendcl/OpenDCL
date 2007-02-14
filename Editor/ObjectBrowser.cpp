@@ -254,10 +254,8 @@ void CObjectBrowser::LoadAllAssociatedOleObjects(CDclControlObject *pControl)
 
 void CObjectBrowser::SearchMethods(RefCountedPtr< CPropertyObject > pProp) 
 {
-	if (!pProp->GetAxInterfaceDescriptorPtr() || pProp->GetAxInterfaceDescriptorPtr()->GetMethods())
-		return;
-
-	for (size_t idx = pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->size(); idx > 0; --idx)
+	size_t idx = pProp->size();
+	while( idx-- > 0 )
 	{
 		RefCountedPtr< COleControlObject > pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->at(idx));
 		if (pOleObject != NULL)
@@ -286,7 +284,7 @@ void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, H
 					break;
 				case PropActiveXMethods:
 					{
-						int nCount = pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->size();
+						int nCount = pProp->size();
 						if (nCount > 0)
 						{
 							nMethodIndex = i;
@@ -1577,7 +1575,7 @@ void CObjectBrowser::OnCopy2()
 		EmptyClipboard();
 		clipbuffer = GlobalAlloc(GMEM_DDESHARE, (source.GetLength()+1) * sizeof(TCHAR));
 		buffer = (TCHAR*)GlobalLock(clipbuffer);
-		lstrcpy(buffer, LPCTSTR(source));
+		lstrcpyn(buffer, LPCTSTR(source), source.GetLength() + 1);
 		GlobalUnlock(clipbuffer);
 		SetClipboardData(CF_TEXT,clipbuffer);
 		CloseClipboard();
@@ -1608,7 +1606,7 @@ void CObjectBrowser::OnCopy1()
 		EmptyClipboard();
 		clipbuffer = GlobalAlloc(GMEM_DDESHARE, (source.GetLength()+1) * sizeof(TCHAR));
 		buffer = (TCHAR*)GlobalLock(clipbuffer);
-		lstrcpy(buffer, LPCTSTR(source));
+		lstrcpyn(buffer, LPCTSTR(source), source.GetLength() + 1);
 		GlobalUnlock(clipbuffer);
 		SetClipboardData(CF_TEXT,clipbuffer);
 		CloseClipboard();
@@ -1727,7 +1725,7 @@ void CObjectBrowser::OnCopy3()
 		EmptyClipboard();
 		clipbuffer = GlobalAlloc(GMEM_DDESHARE, (source.GetLength()+1) * sizeof(TCHAR));
 		buffer = (TCHAR*)GlobalLock(clipbuffer);
-		lstrcpy(buffer, LPCTSTR(source));
+		lstrcpyn(buffer, LPCTSTR(source), source.GetLength() + 1);
 		GlobalUnlock(clipbuffer);
 		SetClipboardData(CF_TEXT,clipbuffer);
 		CloseClipboard();

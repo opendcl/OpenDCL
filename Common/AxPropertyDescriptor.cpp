@@ -39,3 +39,13 @@ AxPropertyDescriptor::~AxPropertyDescriptor(void)
 	if (ArrEnum != NULL)
 		delete [] ArrEnum;
 }
+
+#ifdef _DIAGNOSTIC
+LPCTSTR AxPropertyDescriptor::toString() const
+{
+	static TCHAR buf[1024];
+	_sntprintf( buf, _elements(buf), _T("{DISPID: %s, \"%s\", \"%s\"}"),
+							asString( Id ), (LPCTSTR)Name, (LPCTSTR)DocumentationDesc );
+	return buf;
+}
+#endif

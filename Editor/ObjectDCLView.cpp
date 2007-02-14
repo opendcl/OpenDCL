@@ -74,32 +74,6 @@ static CDclControlObject* FindArxControlObject(CDclFormObject *pDclForm, CString
 }
 
 
-static short AddControl(CDclFormObject *pDclForm, CString Name, ControlType Type)
-{
-	
-	short sReturnValue;
-	
-	// create a Arx Control pointer to pass to the list to insert
-	CDclControlObject* pNewControl = new CDclControlObject(Type, pDclForm, Name);
-
-	// add the new Arx Control
-	pDclForm->GetControlList().AddTail(pNewControl);
-	// set return value and subtract 1 to create propper index
-	sReturnValue = pDclForm->GetControlCount() - 1;
-	if (pNewControl->m_Id < 0)
-		pNewControl->m_Id = sReturnValue;
-
-	return sReturnValue;
-
-}
-
-
-static void RemoveControl(CDclFormObject *pDclForm, short nIndex)
-{
-	pDclForm->DeleteControl(nIndex);
-}
-
-
 static CDclControlObject* GetArxControlObject(CDclFormObject *pDclForm, short ArxControlIndex)
 {
 	CDclControlObject *pRetObject;
@@ -121,100 +95,34 @@ static CDclControlObject* GetArxControlObject(CDclFormObject *pDclForm, short Ar
 	return pRetObject;
 }
 
-
-static short AddControlStdProperty(CDclControlObject *pArxControlObject, PropertyId nID, LPCTSTR strValue, PropertyType ValueType, bool bHidden = false) 
+static bool AddControlPropertyListItem( RefCountedPtr< CPropertyObject > pProp, LPCTSTR pszNewValue ) 
 {
-	short nPropIndex = pArxControlObject->FindPropertyIndex(nID);
-
-	// if the property was not found add it
-	if (nPropIndex > nNotSet)
-	{
-		RefCountedPtr< CPropertyObject > pPropertyObect = pArxControlObject->GetPropertyObject(nID);
-		pPropertyObect->SetHidden(bHidden);
-	}
-	// if the property was not found add it
-	if (nPropIndex == nNotSet)
-	{
-		// find the insert position for this new property
-		POSITION InsertPos = pArxControlObject->FindPropertyInsertPos(nID, (bHidden == TRUE));
-	
-		// create new property object pointer to pass to AddTail method
-		RefCountedPtr< CPropertyObject > pPropertyObect = new CPropertyObject( ValueType, 0, nID );
-		
-		// assign values
-		pPropertyObect->SetStringValue(strValue);
-		pPropertyObect->SetHidden(bHidden);
-
-		// reset the name to the new value
-		if (InsertPos == NULL)
-			pArxControlObject->GetPropertyList().AddTail(pPropertyObect);
-		else
-			pArxControlObject->GetPropertyList().InsertAfter(InsertPos, pPropertyObect);
-		
-	}
-	return nPropIndex;
+	if( !pProp )
+		return false;
+	assert( pProp->GetStringArrayPtr() != NULL );
+	pProp->GetStringArrayPtr()->push_back( pszNewValue );
+	return true;
 }
 
-
-static short AddControlHiddenProperty(CDclControlObject *pArxObject, PropertyId nID, LPCTSTR strValue, PropertyType ValueType) 
+static bool AddControlPropertyListItem( RefCountedPtr< CPropertyObject > pProp, int nNewValue ) 
 {
-	return AddControlStdProperty(pArxObject, nID, strValue, ValueType, TRUE);
+	if( !pProp )
+		return false;
+	assert( pProp->GetIntArrayPtr() != NULL );
+	pProp->GetIntArrayPtr()->push_back( nNewValue );
+	return true;
 }
 
-
-static short AddControlPropertyListItem(CDclControlObject *pArxObject, short PropertyIndex, LPCTSTR strNewItem) 
+static RefCountedPtr< CPropertyObject > AddControlHiddenProperty( CDclControlObject* pDclControl,
+																																	PropertyId nID,
+																																	LPCTSTR pszValue,
+																																	PropertyType type )
 {
-	// create a position variable to hold the converted ArxControlIndex
-	POSITION PropPos;
-
-	// set the position variable to be equal the index to passing to the GetAt method
-	PropPos = pArxObject->GetPropertyList().FindIndex(PropertyIndex);	
-
-	if (PropPos == NULL)
-		return 0;
-	
-	// set the pass pointer to point at the object in the list	
-	RefCountedPtr< CPropertyObject > pPropertyObject = pArxObject->GetPropertyList().GetAt(PropPos);
-	
-	// check if the indexes were correct
-	if (pPropertyObject == NULL)
-		// return failed indicator
-		return nNotSet;
-	
-	// add the new string item
-	pPropertyObject->AddStringItem(strNewItem);
-
-	// set the return value to equal the control type
-	return 0;
-	
-}
-
-
-static short AddControlPropertyListItem(CDclControlObject *pArxObject, short PropertyIndex, int nNewValue) 
-{
-	// create a position variable to hold the converted ArxControlIndex
-	POSITION PropPos;
-
-	// set the position variable to be equal the index to passing to the GetAt method
-	PropPos = pArxObject->GetPropertyList().FindIndex(PropertyIndex);	
-
-	if (PropPos == NULL)
-		return 0;
-	
-	// set the pass pointer to point at the object in the list
-	RefCountedPtr< CPropertyObject > pPropertyObject = pArxObject->GetPropertyList().GetAt(PropPos);
-	
-	// check if the indexes were correct
-	if (pPropertyObject == NULL)
-		// return failed indicator
-		return nNotSet;
-	
-	// add the new string item
-	pPropertyObject->GetIntArrayPtr()->push_back(nNewValue);
-
-	// set the return value to equal the control type
-	return 0;
-	
+	RefCountedPtr< CPropertyObject > pProp = pDclControl->AddStringProperty( nID, type, pszValue );
+	assert( pProp != NULL );
+	if( pProp )
+		pProp->SetHidden();
+	return pProp;
 }
 
 
@@ -1048,11 +956,11 @@ bool CObjectDCLView::StoreControlsPosition(CSelectedControl *pSelectedControl)
 	}
 
 	// set the position properties
-	pSelectedControl->m_pArxObject->SetLngProperty(nLeft, rcCtrl.left);
-	pSelectedControl->m_pArxObject->SetLngProperty(nTop, rcCtrl.top);
+	pSelectedControl->m_pArxObject->SetLongProperty(nLeft, rcCtrl.left);
+	pSelectedControl->m_pArxObject->SetLongProperty(nTop, rcCtrl.top);
 	
-	pSelectedControl->m_pArxObject->SetLngProperty(nWidth, rcCtrl.Width());
-	pSelectedControl->m_pArxObject->SetLngProperty(nHeight, rcCtrl.Height());
+	pSelectedControl->m_pArxObject->SetLongProperty(nWidth, rcCtrl.Width());
+	pSelectedControl->m_pArxObject->SetLongProperty(nHeight, rcCtrl.Height());
 
 	CalcControlOffsetDistances(pSelectedControl->m_pArxObject, rcCtrl);
 
@@ -1103,49 +1011,44 @@ void CObjectDCLView::CalcControlOffsetDistances(CDclControlObject *pArxObject, C
 
 	int lBottomFromBottom = 0;
 	if (pArxObject->m_pUseLeftOffset)
-	{
-		if (pArxObject->m_pUseRightOffset->GetType() == PropBool)
-			lBottomFromBottom = pArxObject->m_pUseBottomOffset->GetBooleanValue();
-		else
-			lBottomFromBottom = pArxObject->m_pUseBottomOffset->GetLongValue();
-	}
+		lBottomFromBottom = pArxObject->m_pUseBottomOffset->GetLongValue();
 
 	// set the offset position properties
 	if (lLeftFromRight == 0 || lLeftFromRight == 1)
-		pArxObject->SetLngProperty(nLeftFromRight, rcThis.Width() - nTheLeft);
+		pArxObject->SetLongProperty(nLeftFromRight, rcThis.Width() - nTheLeft);
 	else if (nLeftFromRight == 2)
-		pArxObject->SetLngProperty(nLeftFromRight, nTheLeft - (rcThis.Width()/2));
+		pArxObject->SetLongProperty(nLeftFromRight, nTheLeft - (rcThis.Width()/2));
 	else
 	{
 		CRect rc = GetSplitterRect(lLeftFromRight);
-		pArxObject->SetLngProperty(nLeftFromRight, nTheLeft - rc.left);
+		pArxObject->SetLongProperty(nLeftFromRight, nTheLeft - rc.left);
 	}
 	
 
 	if (lRightFromRight == 0 || lRightFromRight == 1)
-		pArxObject->SetLngProperty(nTopFromBottom, rcThis.Height() - nTheTop);
+		pArxObject->SetLongProperty(nTopFromBottom, rcThis.Height() - nTheTop);
 	else
 	{
 		CRect rc = GetSplitterRect(lRightFromRight);
-		pArxObject->SetLngProperty(nTopFromBottom, nTheTop - rc.top);
+		pArxObject->SetLongProperty(nTopFromBottom, nTheTop - rc.top);
 	}
 
 
 	if (lTopFromBottom == 0 || lTopFromBottom == 1)
-		pArxObject->SetLngProperty(nRightFromRight, rcThis.Width() - nTheLeft - nTheWidth);
+		pArxObject->SetLongProperty(nRightFromRight, rcThis.Width() - nTheLeft - nTheWidth);
 	else
 	{
 		CRect rc = GetSplitterRect(lTopFromBottom);
-		pArxObject->SetLngProperty(nRightFromRight, nTheLeft + nTheWidth - rc.left);	
+		pArxObject->SetLongProperty(nRightFromRight, nTheLeft + nTheWidth - rc.left);	
 	}
 	
 
 	if (lBottomFromBottom == 0 || lBottomFromBottom == 1)
-		pArxObject->SetLngProperty(nBottomFromBottom, rcThis.Height() - nTheTop - nTheHeight);
+		pArxObject->SetLongProperty(nBottomFromBottom, rcThis.Height() - nTheTop - nTheHeight);
 	else
 	{
 		CRect rc = GetSplitterRect(lBottomFromBottom);
-		pArxObject->SetLngProperty(nBottomFromBottom, (nTheTop + nTheHeight)-rc.top);
+		pArxObject->SetLongProperty(nBottomFromBottom, (nTheTop + nTheHeight)-rc.top);
 	}
 }
 
@@ -1765,8 +1668,6 @@ void CObjectDCLView::InsertControl(CRect rcPos)
 
 void CObjectDCLView::InsertControl(CRect rcPos, ControlType nCtrlToInsert)
 {
-	short nArxIndex;
-	CString sControlName;
 
 	// if the dcl form is not valid, exit here
 	if (m_pThisDclForm == NULL)
@@ -1774,47 +1675,39 @@ void CObjectDCLView::InsertControl(CRect rcPos, ControlType nCtrlToInsert)
 	
 	GetDocument()->SetModifiedFlag(TRUE);
 	
+	// get the next available name for the control
+	CString sControlName;
 	if (nCtrlToInsert == CtlFileDlgCtrl)
-		// get the next available name for the control
 		sControlName = GetControlName(nCtrlToInsert);
 	else
-		// get the next available name for the control
 		sControlName = FindNextControlName(GetControlName(nCtrlToInsert));
-
-	// call the method to add the control to project list class
-	nArxIndex = AddControl(m_pThisDclForm, sControlName, nCtrlToInsert);
 	
-	CDclControlObject *pArxObject = GetArxControlObject(m_pThisDclForm, nArxIndex);
-	
-	pArxObject->m_PurchaseState = activeProject->m_PurchaseState;
+	CDclControlObject *pDclControl = m_pThisDclForm->AddControl( nCtrlToInsert, sControlName );
+	assert( pDclControl != NULL );
 
 	// call the method to add the new control
-	CWnd *pControl = AddCWndControl(nArxIndex, pArxObject, nCtrlToInsert, sControlName, rcPos, true);
+	CWnd *pControl = AddCWndControl( pDclControl, rcPos, true );
 	if (pControl == NULL)
 	{
-		RemoveControl(m_pThisDclForm, nArxIndex);
+		m_pThisDclForm->DeleteControl( pDclControl ); //pDclControl is invalid after this call!
 		UpdateZOrderList();
 		return;
 	}
 	
 	// add the event to the undo list
-	CUndoActions *pUndo = new CUndoActions(
-		uaInsert,
-		pArxObject,
-		pControl);
+	CUndoActions *pUndo = new CUndoActions( uaInsert, pDclControl, pControl );
 	m_UndoList.AddTail(pUndo);
-	
-	
-	m_SelectedControl.m_pArxObject = pArxObject;
+
+	m_SelectedControl.m_pArxObject = pDclControl;
 	m_SelectedControl.m_pControl = pControl;
-	m_SelectedControl.m_nIndex = nArxIndex;
+	m_SelectedControl.m_nIndex = pDclControl->m_Index;
 	pControl->GetWindowRect(&rcPos);
 	ScreenToClient(rcPos);
 	ShowGripRects(TRUE, rcPos);
 	ClearSelection();
 
 	// Fire the control was inserted event to let the parent know
-	FireControlInserted(pArxObject, nCtrlToInsert);
+	FireControlInserted(pDclControl, nCtrlToInsert);
 
 	// call this method to hide the sizing controls
 	// and move them to the top of the z-order
@@ -1825,101 +1718,79 @@ void CObjectDCLView::InsertControl(CRect rcPos, ControlType nCtrlToInsert)
 	CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
 	pZOrderList->m_pView = this;
 	pZOrderList->ClearSelection();
-	pZOrderList->AddControlToList(pArxObject->GetStrProperty(nName), pArxObject->GetType());
-	pZOrderList->SelectItem(pArxObject->GetStrProperty(nName), true);
+	pZOrderList->AddControlToList(pDclControl->GetStrProperty(nName), pDclControl->GetType());
+	pZOrderList->SelectItem(pDclControl->GetStrProperty(nName), true);
 	// call the method to setup the fonts in the font tool bar.
-	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar(pArxObject);
-	
-	
+	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar(pDclControl);
 }
+
 int CObjectDCLView::GetNextControlId()
 {
 	int nHighest = nControlStartId;
-
 	POSITION pos = m_pThisDclForm->GetControlList().GetHeadPosition();
 	while (pos != NULL)
 	{
 		CDclControlObject *pCtrl = m_pThisDclForm->GetControlList().GetNext(pos);
-
-		if (pCtrl->m_Id == -1)
-		{
-			pCtrl->m_Id = m_ControlId;
-			m_ControlId++;
-		}
-
 		if (pCtrl->m_Id > nHighest)
-		{
 			nHighest = pCtrl->m_Id;
-		}
 	}
-
-	return nHighest+1;
+	return nHighest + 1;
 }
 
-CWnd * CObjectDCLView::AddCWndControl(int nArxIndex, CDclControlObject *pArxObject, int nControlToInsert, CString sControlName, CRect rcPos, bool bForceUpdate)
+CWnd* CObjectDCLView::AddCWndControl( CDclControlObject* pDclControl, CRect rcPos, bool bForceUpdate )
 {
 	// add the properties to the project list class for the requested control
-	if (nArxIndex >= 0)
-	{
-		AddProperties(
-			pArxObject,
-			nControlToInsert,
-			sControlName);
-	}
+	if (pDclControl->m_Id >= 0)
+		AddProperties( pDclControl );
 	else
 		return NULL;
 
-	pArxObject->m_Index = nArxIndex;
 	if (rcPos.Width() >= 0 &&
 		rcPos.Height() > 0)
 	{
 		// set the position properties
-		pArxObject->SetLngProperty(nLeft, rcPos.left);
-		pArxObject->SetLngProperty(nTop, rcPos.top);
-		pArxObject->SetLngProperty(nWidth, rcPos.Width());
-		pArxObject->SetLngProperty(nHeight, rcPos.Height());
+		pDclControl->SetLongProperty(nLeft, rcPos.left);
+		pDclControl->SetLongProperty(nTop, rcPos.top);
+		pDclControl->SetLongProperty(nWidth, rcPos.Width());
+		pDclControl->SetLongProperty(nHeight, rcPos.Height());
 	}
 	else
 	{
 		// set the position properties
-		rcPos.left = pArxObject->GetLngProperty(nLeft);
-		rcPos.top = pArxObject->GetLngProperty(nTop);
-		rcPos.right = rcPos.left + pArxObject->GetLngProperty(nWidth);
-		rcPos.bottom = rcPos.top + pArxObject->GetLngProperty(nHeight);
+		rcPos.left = pDclControl->GetLngProperty(nLeft);
+		rcPos.top = pDclControl->GetLngProperty(nTop);
+		rcPos.right = rcPos.left + pDclControl->GetLngProperty(nWidth);
+		rcPos.bottom = rcPos.top + pDclControl->GetLngProperty(nHeight);
 	}
 
 	CRect rcThis;
 	GetClientRect(&rcThis);
 	
 	// set the offset position properties
-	CalcControlOffsetDistances(pArxObject, rcPos);
+	CalcControlOffsetDistances(pDclControl, rcPos);
 	
 	// create a new control holder
 	CControlHolder *pControl = new CControlHolder;
 	
-	if (pArxObject->m_Id == -1)
-	{
+	if (pDclControl->m_Id == -1)
 		m_ControlId = GetNextControlId();
-	}
 	
 	// create an ordinary control
-	pControl->Create(WS_CHILD|WS_CLIPSIBLINGS, rcPos, this, pArxObject->m_Id);
+	pControl->Create(WS_CHILD|WS_CLIPSIBLINGS, rcPos, this, m_ControlId);
 	
 	
-	if (nControlToInsert != CtlActiveX)
-	{
+	if (pDclControl->GetType() != CtlActiveX)
 		pControl->SetFont(GetFont());
-	}
 	pControl->ShowWindow(FALSE);
 
-	pArxObject->m_pCtrlHolder = pControl;
+	pDclControl->m_pCtrlHolder = pControl;
 
 	// set the member var's
-	pControl->m_pLeftProp = pArxObject->GetPropertyObject(nLeft);
-	pControl->m_pTopProp = pArxObject->GetPropertyObject(nTop);
-	pControl->m_pWidthProp = pArxObject->GetPropertyObject(nWidth);
-	pControl->m_pHeightProp = pArxObject->GetPropertyObject(nHeight);
-	pControl->m_ControlType = nControlToInsert;
+	pControl->m_pLeftProp = pDclControl->GetPropertyObject(nLeft);
+	pControl->m_pTopProp = pDclControl->GetPropertyObject(nTop);
+	pControl->m_pWidthProp = pDclControl->GetPropertyObject(nWidth);
+	pControl->m_pHeightProp = pDclControl->GetPropertyObject(nHeight);
+	pControl->m_ControlType = pDclControl->GetType();
 	
 	if (IsWindow(pControl->m_hWnd))
 	{
@@ -1929,26 +1800,26 @@ CWnd * CObjectDCLView::AddCWndControl(int nArxIndex, CDclControlObject *pArxObje
 	
 	
 	// call method to add the control
-	if (!CreateChildControl(pControl, pArxObject, nControlToInsert, bForceUpdate))
+	if (!CreateChildControl(pControl, pDclControl, bForceUpdate))
 	{
 		delete pControl;
 		return NULL;
 	}
 
 	// if the activeX control's name has not been set yet, we must do it here
-	if (nControlToInsert == CtlActiveX)
+	if (pDclControl->GetType() == CtlActiveX)
 	{
-		CString sName = pArxObject->GetStrProperty(nName);
+		CString sName = pDclControl->GetStrProperty(nName);
 		if (sName.IsEmpty())
 			// lets get the correct name set here.
-			pArxObject->SetStrProperty(nName,  FindNextControlName(pArxObject->GetActiveXTypeName()));		
+			pDclControl->SetStringProperty(nName,  FindNextControlName(pDclControl->GetActiveXTypeName()));		
 	}
 	
 	if (IsWindow(pControl->m_hWnd))
 		// set the new control to the top of the Z-order
 		pControl->SetWindowPos(&CWnd::wndTop, 0,0,nNotSet,nNotSet, SWP_NOSIZE|SWP_NOMOVE);
 	
-	if (pArxObject->m_Delete == TRUE)
+	if (pDclControl->m_Delete == TRUE)
 	{
 		// to delete first we are going to move it off the visible area
 		CRect rc(nm100,nm100,nm99,nm99);
@@ -1971,6 +1842,7 @@ CWnd * CObjectDCLView::AddCWndControl(int nArxIndex, CDclControlObject *pArxObje
 
 	return pControl;
 }
+
 int CObjectDCLView::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
 	if (CView::OnCreate(lpCreateStruct) == nNotSet)
@@ -2145,21 +2017,17 @@ void CObjectDCLView::ClearControls()
 	if (m_pThisDclForm->GetType() < nNotSet || m_pThisDclForm->GetType() > 5)
 		return;
 
-	if (m_pThisDclForm->GetControlList().GetCount() == 0)
-		return;
-
 	POSITION pos = m_pThisDclForm->GetControlList().GetHeadPosition();
 	while (pos != NULL)
 	{
 		CDclControlObject *pCtrl = m_pThisDclForm->GetControlList().GetNext(pos);
-		
-		CControlHolder *pControl = (CControlHolder*)pCtrl->m_pCtrlHolder;
-		if (pControl != NULL)
+		CControlHolder *pCtrlHolder = (CControlHolder*)pCtrl->m_pCtrlHolder;
+		if (pCtrlHolder != NULL)
 		{
-			ClearChildControls(pControl);
+			ClearChildControls(pCtrlHolder);
 			try{
-				pControl->DestroyWindow();
-				delete pControl;			
+				pCtrlHolder->DestroyWindow();
+				delete pCtrlHolder;			
 			}
 			catch(...)
 			{}
@@ -2185,127 +2053,127 @@ void CObjectDCLView::ClearChildControls(CControlHolder *pParentControl)
 	pParentControl->m_ControlId = nNotSet;
 }
 
-bool CObjectDCLView::CreateChildControl(CControlHolder *pParent, CDclControlObject *pArxObject, int nControlToInsert, bool bForceUpdate)
+bool CObjectDCLView::CreateChildControl(CControlHolder *pParent, CDclControlObject *pDclControl, bool bForceUpdate)
 {
-	pParent->m_pArxObject = pArxObject;
+	pParent->m_pArxObject = pDclControl;
 	// create the appropriate control to display
-	switch(nControlToInsert)
+	switch(pDclControl->GetType())
 	{		
 		case CtlLabel:
-			CreateLabel(pParent, pArxObject);
+			CreateLabel(pParent, pDclControl);
 			break;
 		case CtlStdButton:
-			CreateButton(pParent, pArxObject);
+			CreateButton(pParent, pDclControl);
 			break;
 		case CtlGraphicButton:
-			CreateGraphicButton(pParent, pArxObject);
+			CreateGraphicButton(pParent, pDclControl);
 			break;
 		case CtlFrame:
-			CreateFrame(pParent, pArxObject);
+			CreateFrame(pParent, pDclControl);
 			break;
 		case CtlTextBox:
-			CreateTextBox(pParent, pArxObject);
+			CreateTextBox(pParent, pDclControl);
 			break;
 		case CtlCheckBox:
-			CreateCheckBox(pParent, pArxObject);
+			CreateCheckBox(pParent, pDclControl);
 			break;
 		case CtlOptionButton:
-			CreateOptionButton(pParent, pArxObject);
+			CreateOptionButton(pParent, pDclControl);
 			break;
 		case CtlComboBox:
-			CreateComboBox(pParent, pArxObject);
+			CreateComboBox(pParent, pDclControl);
 			break;
 		case CtlListBox:
-			CreateListBox(pParent, pArxObject);
+			CreateListBox(pParent, pDclControl);
 			break;
 		case CtlScrollBar:
-			CreateScrollBar(pParent, pArxObject);
+			CreateScrollBar(pParent, pDclControl);
 			break;
 		case CtlSlider:
-			CreateSlider(pParent, pArxObject);
+			CreateSlider(pParent, pDclControl);
 			break;
 		case CtlPictureBox:
-			CreatePictureBox(pParent, pArxObject);
+			CreatePictureBox(pParent, pDclControl);
 			break;
 		case CtlTabStrip:
-			CreateTabStrip(pParent, pArxObject);
+			CreateTabStrip(pParent, pDclControl);
 			break;
 		case CtlMonth:
-			CreateMonthCal(pParent, pArxObject);
+			CreateMonthCal(pParent, pDclControl);
 			break;
 		case CtlImageComboBox:
-			CreateImageComboBox(pParent, pArxObject);
+			CreateImageComboBox(pParent, pDclControl);
 			break;
 		case CtlAnimate:
-			CreateAnimate(pParent, pArxObject);			
+			CreateAnimate(pParent, pDclControl);			
 			break;		
 		case Ctl3DRect:
-			Create3DRect(pParent, pArxObject);
+			Create3DRect(pParent, pDclControl);
 			break;
 		case CtlProgress:
-			CreateProgress(pParent, pArxObject);
+			CreateProgress(pParent, pDclControl);
 			break;
 		case CtlSpinButton:
-			CreateSpinButton(pParent, pArxObject);
+			CreateSpinButton(pParent, pDclControl);
 			break;
 		case CtlStaticURL:
-			CreateStaticURL(pParent, pArxObject);
+			CreateStaticURL(pParent, pDclControl);
 			break;
 		case CtlRoundSlider:
-			CreateRoundSlider(pParent, pArxObject);
+			CreateRoundSlider(pParent, pDclControl);
 			break;			
 		case CtlBlockView:
-			CreateBlockView(pParent, pArxObject);
+			CreateBlockView(pParent, pDclControl);
 			break;			
 		case CtlSlideView:
-			CreateSlideView(pParent, pArxObject);
+			CreateSlideView(pParent, pDclControl);
 			break;			
 		case CtlTree:
-			CreateTree(pParent, pArxObject);
+			CreateTree(pParent, pDclControl);
 			break;
 		case CtlHtmlCtrl:
-			CreateHtmlCtrl(pParent, pArxObject);
+			CreateHtmlCtrl(pParent, pDclControl);
 			break;
 		case CtlDwgPreview:
-			CreateDwgPreview(pParent, pArxObject);
+			CreateDwgPreview(pParent, pDclControl);
 			break;	
 		case CtlGrid:
-			CreateGrid(pParent, pArxObject);
+			CreateGrid(pParent, pDclControl);
 			break;	
 		case CtlListView:
-			CreateListView(pParent, pArxObject);
+			CreateListView(pParent, pDclControl);
 			break;	
 		case CtlBlockList:
-			CreateBlockList(pParent, pArxObject);
+			CreateBlockList(pParent, pDclControl);
 			break;	
 		case CtlOptionList:
-			CreateOptionList(pParent, pArxObject);			
+			CreateOptionList(pParent, pDclControl);			
 			break;
 		case CtlActiveX:
 			{
 				bool bCreated;
-				bCreated = CreateActiveX(pParent, pArxObject, bForceUpdate);			
+				bCreated = CreateActiveX(pParent, pDclControl, bForceUpdate);			
 				if (!bCreated)
 					return bCreated;
 				break;
 			}
 		case CtlDwgList:
-			CreateDwgDirList(pParent, pArxObject);			
+			CreateDwgDirList(pParent, pDclControl);			
 			break;
 		case CtlSplitter:
-			CreateSplitter(pParent, pArxObject);
+			CreateSplitter(pParent, pDclControl);
 			break;
 		case CtlHatch:
-			CreateHatch(pParent, pArxObject);
+			CreateHatch(pParent, pDclControl);
 			break;			
 		case CtlFileDlgCtrl:
-			CreateFileDlgCtrls(pParent, pArxObject);			
+			CreateFileDlgCtrls(pParent, pDclControl);			
 			break;
 	}
 	
- 	UpdateChildControl(pArxObject, pParent);
+ 	UpdateChildControl(pDclControl, pParent);
 	// check to see if autosize should resize the control
-	CheckAutoSizeProp(pArxObject, pParent);
+	CheckAutoSizeProp(pDclControl, pParent);
 	
 	return true;
 	
@@ -2413,7 +2281,7 @@ bool CObjectDCLView::CreateActiveX(CControlHolder *pParent, CDclControlObject *p
 	// lets get the correct name set here.
 	if (bForceUpdate)
 	{
-		pArxObject->SetStrProperty(nName,  FindNextControlName(pArxObject->GetActiveXTypeName()));		
+		pArxObject->SetStringProperty(nName, FindNextControlName(pArxObject->GetActiveXTypeName()));		
 		pArxObject->ForceUpdateGlobalVariable(m_pThisDclForm->GetKeyName());
 	}
 	return true;
@@ -2460,26 +2328,17 @@ void CObjectDCLView::CreateSpinButton(CControlHolder *pParent, CDclControlObject
 	
 	if (rcThis.Width() >= rcThis.Height())
 	{
-		pArxObject->SetLngProperty(nOrientation, 0);
+		pArxObject->SetLongProperty(nOrientation, 0);
 		dwStyle = dwStyle | UDS_HORZ;
 	}
 	else
-	{
-		pArxObject->SetLngProperty(nOrientation, 1);
-	}
-	
+		pArxObject->SetLongProperty(nOrientation, 1);
 
 	CSpinButtonCtrl *pControl = new CSpinButtonCtrl;
-	m_ControlCreated = pControl->Create(
-		dwStyle,
-		rc, 
-		pParent,
-		pParent->GetId());
+	m_ControlCreated = pControl->Create( dwStyle, rc, pParent, pParent->GetId() );
 	
 	pControl->MoveWindow(rc, TRUE);
 	pControl->ShowWindow(TRUE);
-	
-	
 }
 
 
@@ -2491,12 +2350,7 @@ void CObjectDCLView::CreateStaticURL(CControlHolder *pParent, CDclControlObject 
 	
 	CStaticLink *pControl = new CStaticLink;
 	pControl->m_pControl = pArxObject;
-	m_ControlCreated = pControl->Create(
-		CString(),
-		rc, 
-		pParent,
-		pParent->GetId());
-	
+	m_ControlCreated = pControl->Create( CString(), rc, pParent, pParent->GetId());
 }
 
 void CObjectDCLView::CreateProgress(CControlHolder *pParent, CDclControlObject *pArxObject)
@@ -2611,7 +2465,7 @@ void CObjectDCLView::CreateImageComboBox(CControlHolder *pParent, CDclControlObj
 			if (sName != sText)
 			{
 				pControl->SetWindowText(sName);
-				pArxObject->SetStrProperty(nText, sName);
+				pArxObject->SetStringProperty(nText, sName);
 			}
 			break;
 		}	
@@ -2752,7 +2606,6 @@ void CObjectDCLView::CreateTabStrip(CControlHolder *pParent, CDclControlObject *
 		rc, 
 		pParent,
 		pParent->GetId());
-	
 }
 
 void CObjectDCLView::CreatePictureBox(CControlHolder *pParent, CDclControlObject *pArxObject)
@@ -2808,12 +2661,12 @@ void CObjectDCLView::CreateSlider(CControlHolder *pParent, CDclControlObject *pA
 	
 	if (rcThis.Width() >= rcThis.Height())
 	{
-		pArxObject->SetLngProperty(nOrientation, 0);
+		pArxObject->SetLongProperty(nOrientation, 0);
 		dwStyle = dwStyle | TBS_HORZ;
 	}
 	else
 	{
-		pArxObject->SetLngProperty(nOrientation, 1);
+		pArxObject->SetLongProperty(nOrientation, 1);
 		dwStyle = dwStyle | TBS_VERT;
 	}
 	
@@ -2845,12 +2698,12 @@ void CObjectDCLView::CreateScrollBar(CControlHolder *pParent, CDclControlObject 
 	
 	if (rcThis.Width() >= rcThis.Height())
 	{
-		pArxObject->SetLngProperty(nOrientation, 0);
+		pArxObject->SetLongProperty(nOrientation, 0);
 		dwStyle = dwStyle | SBS_HORZ;
 	}
 	else
 	{
-		pArxObject->SetLngProperty(nOrientation, 1);
+		pArxObject->SetLongProperty(nOrientation, 1);
 		dwStyle = dwStyle | SBS_VERT;
 	}
 	
@@ -2949,7 +2802,7 @@ void CObjectDCLView::CreateComboBox(CControlHolder *pParent, CDclControlObject *
 
 	
 	if (pArxObject->GetLngProperty(nComboBoxStyle) == nComboStyle12)
-		pArxObject->SetLngProperty(nDropDownHeight, nComboDropHeight);
+		pArxObject->SetLongProperty(nDropDownHeight, nComboDropHeight);
 		
 	switch (pArxObject->GetLngProperty(nComboBoxStyle))
 	{
@@ -2998,7 +2851,7 @@ void CObjectDCLView::CreateComboBox(CControlHolder *pParent, CDclControlObject *
 			if (sName != sText)
 			{
 				pControl->SetWindowText(sName);
-				pArxObject->SetStrProperty(nText, sName);
+				pArxObject->SetStringProperty(nText, sName);
 			}
 			
 			
@@ -3020,7 +2873,7 @@ void CObjectDCLView::CreateComboBox(CControlHolder *pParent, CDclControlObject *
 			sDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_0 + 9);
 			sDesc = sDesc.Mid(4);
 
-			pArxObject->SetStrProperty(nText, sDesc);
+			pArxObject->SetStringProperty(nText, sDesc);
 			pControl->SetWindowText(sDesc);			
 			
 			// get the size after insertion
@@ -3046,7 +2899,7 @@ void CObjectDCLView::CreateComboBox(CControlHolder *pParent, CDclControlObject *
 			else
 				sDesc = sDesc.Mid(4);
 
-			pArxObject->SetStrProperty(nText, sDesc);
+			pArxObject->SetStringProperty(nText, sDesc);
 			pControl->SetWindowText(sDesc);
 			
 			// get the size after insertion
@@ -3056,7 +2909,7 @@ void CObjectDCLView::CreateComboBox(CControlHolder *pParent, CDclControlObject *
 		}
 	}
 
-	pArxObject->SetLngProperty(nHeight, rcAfter.Height());
+	pArxObject->SetLongProperty(nHeight, rcAfter.Height());
 	//pParent->MoveWindow(rcThis, TRUE);
 }
 
@@ -3456,7 +3309,7 @@ void CObjectDCLView::CreateDwgThumbNail(CControlHolder *pParent, CDclControlObje
 		
 }
 
-void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, CString Name)
+void CObjectDCLView::AddProperties( CDclControlObject *pDclControl )
 {
 	CString sTrue;
 	CString sFalse;
@@ -3468,101 +3321,85 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 	sTrue = theWorkspace.LoadResourceString(IDS_TRUE);
 	sFalse = theWorkspace.LoadResourceString(IDS_FALSE);
 		
+	ControlType nType = pDclControl->GetType();
 
 	CRect rcThis;
-	
 	GetWindowRect(&rcThis);
 	
 	// add the name property
-	AddControlStdProperty(pArxObject, nName, Name, PropString);
-
+	pDclControl->AddStringProperty( nName, PropString, pDclControl->GetKeyName() );
 
 	// do not add the object browser to the list here if it's an ActiveX control
 	// because the CControlHolder will add it for us there instead.
 	if (nType != CtlActiveX)
-		// add the nOb4jectBrowser property
-		AddControlStdProperty(pArxObject, nObjectBrowser, CString(), PropActiveXMethods);
+		// add the nObjectBrowser property
+		pDclControl->AddStringProperty( nObjectBrowser, PropActiveXMethods );
 
 	CString sUnderscore;
 	sUnderscore = theWorkspace.LoadResourceString(IDS_UNDERSCORE);
 
-	
 	// add the GlobalVarName property
-	CString sVarName = theEditorWorkspace.GetActiveProjectName() + sUnderscore + m_pThisDclForm->GetKeyName() + sUnderscore + Name;
-	AddControlStdProperty(pArxObject, nGlobalVarName, sVarName, PropString);
+	pDclControl->AddStringProperty( nGlobalVarName, PropString, pDclControl->GetKeyPath() );
 	
 	if (nType == CtlActiveX)
 		// add the ActiveX property pages property (to display the button)
-		AddControlStdProperty(pArxObject, nActiveXPropPages, CString(), PropActiveXPropPages);
-	
+		pDclControl->AddStringProperty( nActiveXPropPages, PropActiveXPropPages );
+
 	// add the Custom property (to display the button)
-	AddControlStdProperty(pArxObject, nCustom, CString(), PropCustom);
-	
-	
+	pDclControl->AddStringProperty( nCustom, PropCustom );
+
 	// add the nAsReadOnly property
 	if (nType == CtlFileDlgCtrl)
-	{
-		AddControlStdProperty(pArxObject, nAsReadOnly, sFalse, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nAsReadOnly, PropBool, false );
 
 	// add the nAutoHScroll property
 	if (nType == CtlTextBox)
-	{
-		AddControlStdProperty(pArxObject, nAutoHScroll, sTrue, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nAutoHScroll, PropBool, true );
 
 	// add the nRowHeader property
 	if (nType == CtlGrid)
-	{
-		AddControlStdProperty(pArxObject, nRowHeader, sTrue, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nRowHeader, PropBool, true );
 
 	// add the AutoSize property
-	switch (nType)
-	{
-		case CtlPictureBox:
-			AddControlStdProperty(pArxObject, nAutoSize, sFalse, PropBool);
-			break;
-	}
+	if (nType == CtlPictureBox)
+		pDclControl->AddBooleanProperty( nAutoSize, PropBool, false );
 
 	// add the nAutoVScroll property
 	if (nType == CtlTextBox)
-	{
-		AddControlStdProperty(pArxObject, nAutoVScroll, sTrue, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nAutoVScroll, PropBool, true );
+
 	// add the nAutoWrap property
 	if (nType == CtlSpinButton)
-	{
-		AddControlStdProperty(pArxObject, nAutoWrap, sFalse, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nAutoWrap, PropBool, false );
 
 	if (nType == CtlHatch)
-		AddControlStdProperty(pArxObject, nHatchScale, LTOA(5), PropDouble);
+		pDclControl->AddStringProperty( nHatchScale, PropDouble, _T("5") );
 		
 	// add the nAcadColor property
 	switch (nType)
 	{
 		case CtlHatch:
-			AddControlStdProperty(pArxObject, nAcadColor, LTOA(nModalSpace), PropLong);
-			AddControlStdProperty(pArxObject, nForeColor, LTOA(7), PropLong);
+			pDclControl->AddLongProperty( nHatchScale, PropDouble, 5 );
+			pDclControl->AddLongProperty( nAcadColor, PropLong, nModalSpace );
+			pDclControl->AddLongProperty( nForeColor, PropLong, 7 );
 			break;
 		case CtlBlockView:
 		case CtlDwgPreview:
-			AddControlStdProperty(pArxObject, nAcadColor, LTOA(nModalSpace), PropLong);
+			pDclControl->AddLongProperty( nAcadColor, PropLong, nModalSpace );
 			break;
 		case CtlPictureBox:
 		case CtlListView:
 		case CtlBlockList:
-			AddControlStdProperty(pArxObject, nAcadColor, LTOA(nWindowColor), PropLong);
+			pDclControl->AddLongProperty( nAcadColor, PropLong, nWindowColor );
 			break;
 		case CtlGrid:
-			AddControlStdProperty(pArxObject, nAcadColor, LTOA(nWindowColor), PropLong);
-			AddControlStdProperty(pArxObject, nAlternateColor, LTOA(nWindowColor), PropLong);
-			AddControlStdProperty(pArxObject, nAlternateOrient, LTOA(0), PropEnum);
+			pDclControl->AddLongProperty( nAcadColor, PropLong, nWindowColor );
+			pDclControl->AddLongProperty( nAlternateColor, PropLong, nWindowColor );
+			pDclControl->AddLongProperty( nAlternateOrient, PropEnum, 0 );
 			break;
 			
 		case CtlSlideView:
-			AddControlStdProperty(pArxObject, nAcadColor, LTOA(nModalSpace), PropLong);
+			pDclControl->AddLongProperty( nAcadColor, PropLong, nModalSpace );
 			break;
 		
 		case CtlOptionList:
@@ -3572,8 +3409,8 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 		case CtlOptionButton:
 			if (!IsVersionFree())
 			{
-				AddControlStdProperty(pArxObject, nForeColor, LTOA(nButtonText), PropLong);
-				AddControlStdProperty(pArxObject, nAcadColor, LTOA(nButtonFace), PropLong);
+				pDclControl->AddLongProperty( nForeColor, PropLong, nButtonText );
+				pDclControl->AddLongProperty( nAcadColor, PropLong, nButtonFace );
 			}
 			break;
 
@@ -3582,14 +3419,14 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 		case CtlDwgList:
 			if (!IsVersionFree())
 			{
-				AddControlStdProperty(pArxObject, nForeColor, LTOA(nButtonText), PropLong);
-				AddControlStdProperty(pArxObject, nAcadColor, LTOA(nWindowColor), PropLong);
+				pDclControl->AddLongProperty( nForeColor, PropLong, nButtonText );
+				pDclControl->AddLongProperty( nAcadColor, PropLong, nWindowColor );
 			}
 			break;
 
 		case CtlStaticURL:
-			AddControlStdProperty(pArxObject, nForeColor, LTOA(nBlueColor), PropLong);
-			AddControlStdProperty(pArxObject, nAcadColor, LTOA(nButtonFace), PropLong);
+			pDclControl->AddLongProperty( nForeColor, PropLong, nBlueColor );
+			pDclControl->AddLongProperty( nAcadColor, PropLong, nButtonFace );
 			break;		
 	}
 	
@@ -3597,27 +3434,22 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 	// add the nBeginGroup property
 	if (nType == CtlProgress)
 	{
-		AddControlStdProperty(pArxObject, nSecondText, _T("second remaining"), PropString);
-		AddControlStdProperty(pArxObject, nSecondsText, _T("seconds remaining"), PropString);
-		AddControlStdProperty(pArxObject, nMinuteText, _T("minute"), PropString);
-		AddControlStdProperty(pArxObject, nMinutesText, _T("minutes"), PropString);
-		AddControlStdProperty(pArxObject, nDisplaySeconds, sFalse, PropBool);
-		AddControlStdProperty(pArxObject, nDisplayPercentage, sTrue, PropBool);
+		pDclControl->AddStringProperty( nSecondText, PropString, _T("second remaining") );
+		pDclControl->AddStringProperty( nSecondsText, PropString, _T("seconds remaining") );
+		pDclControl->AddStringProperty( nMinuteText, PropString, _T("minute") );
+		pDclControl->AddStringProperty( nMinutesText, PropString, _T("minutes") );
+		pDclControl->AddBooleanProperty( nDisplaySeconds, PropString, false );
+		pDclControl->AddBooleanProperty( nDisplayPercentage, PropString, true );
 	}
 
 	// add the nBeginGroup property
 	if (nType == CtlOptionButton)
-	{
-		AddControlStdProperty(pArxObject, nBeginGroup, sFalse, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nBeginGroup, PropBool, false );
 
 	// add the nBlockName property
 	if (nType == CtlBlockView)
-	{
-		AddControlStdProperty(pArxObject, nBlockName, CString(), PropString);
-	}
+		pDclControl->AddStringProperty( nBlockName, PropString );
 
-	
 	// add the nBorderStyle property
 	switch (nType)
 	{
@@ -3627,12 +3459,12 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 		case Ctl3DRect:
 		case CtlDwgPreview:
 		case CtlProgress:
-			AddControlStdProperty(pArxObject, nBorderStyle, LTOA(2), PropEnum);
+			pDclControl->AddLongProperty( nBorderStyle, PropEnum, 2 );
 			break;		
 		case CtlLabel:
 		case CtlAnimate:
 		case CtlOptionList:
-			AddControlStdProperty(pArxObject, nBorderStyle, LTOA(0), PropEnum);
+			pDclControl->AddLongProperty( nBorderStyle, PropEnum, 0 );
 			break;
 		case CtlListBox:
 		case CtlDwgList:
@@ -3643,34 +3475,29 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 		case CtlListView:
 		case CtlGrid:
 		case CtlBlockList:
-			AddControlStdProperty(pArxObject, nBorderStyle, LTOA(1), PropEnum);
+			pDclControl->AddLongProperty( nBorderStyle, PropEnum, 1 );
 			break;
 		default:
 			break;
 	}
 	if (nType != CtlFileDlgCtrl)
 		// add top from bottom geometry management
-		AddControlStdProperty(pArxObject, nBottomFromBottom, LTOA(0), PropLong);
+		pDclControl->AddLongProperty( nBottomFromBottom, PropLong, 0 );
 	
 	// add the nToolBarButtonsCaption property
 	if (nType == CtlOptionList)
 	{
-		AddControlStdProperty(pArxObject, nBtnCaption, sList, PropStringArray);
-		RefCountedPtr< CPropertyObject > pProp = pArxObject->GetPropertyObject(nBtnCaption);
+		RefCountedPtr< CPropertyObject > pProp = pDclControl->AddStringProperty( nBtnCaption, PropStringArray, sList );
 
 		// this control must have at least two options, but here we are adding three default option values
 		// so the user can see an example of what we are talking about.
 		if (pProp->GetStringArrayPtr()->empty())
 		{
-			CString sOption;		
-			sOption = theWorkspace.LoadResourceString(IDS_OPTION1);
-			pProp->GetStringArrayPtr()->push_back(sOption);
-			sOption = theWorkspace.LoadResourceString(IDS_OPTION2);
-			pProp->GetStringArrayPtr()->push_back(sOption);
-			sOption = theWorkspace.LoadResourceString(IDS_OPTION3);
-			pProp->GetStringArrayPtr()->push_back(sOption);
+			pProp->GetStringArrayPtr()->push_back(theWorkspace.LoadResourceString(IDS_OPTION1));
+			pProp->GetStringArrayPtr()->push_back(theWorkspace.LoadResourceString(IDS_OPTION2));
+			pProp->GetStringArrayPtr()->push_back(theWorkspace.LoadResourceString(IDS_OPTION3));
 		}
-		AddControlStdProperty(pArxObject, nBtnTTText, sList, PropStringArray);
+		pDclControl->AddStringProperty( nBtnTTText, PropStringArray, sList );
 	}
 	
 
@@ -3683,10 +3510,10 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 		case CtlCheckBox:
 		case CtlOptionButton:
 		case CtlStaticURL:
-			AddControlStdProperty(pArxObject, nCaption, Name, PropString);
+			pDclControl->AddStringProperty( nCaption, PropString, pDclControl->GetKeyName() );
 			break;
 		case CtlGraphicButton:
-			AddControlStdProperty(pArxObject, nCaption, CString(), PropString);
+			pDclControl->AddStringProperty( nCaption, PropString );
 			break;
 		default:
 			break;
@@ -3697,140 +3524,111 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 	{
 		case CtlListView:		
 		case CtlGrid:
-			AddControlStdProperty(pArxObject, nColHeader, sTrue, PropBool);
+			pDclControl->AddBooleanProperty( nColHeader, PropBool, true );
 			break;
 	}	
 
 	// add the nColumnPropWidth property
 	if (nType == CtlListBox)
-	{
-		AddControlStdProperty(pArxObject, nColumnWidth, LTOA(nDeColWidth), PropLong);
-	}
+		pDclControl->AddLongProperty( nColumnWidth, PropLong, nDeColWidth );
 
 	// add the nCreationPrompt property
 	if (nType == CtlFileDlgCtrl)
-	{
-		AddControlStdProperty(pArxObject, nCreationPrompt, sTrue, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nCreationPrompt, PropBool, true );
 
 	// add the nDefSelIndex property
 	if (nType == CtlOptionList)
-	{
-		AddControlStdProperty(pArxObject, nDefSelIndex, LTOA(0), PropLong);
-	}
+		pDclControl->AddLongProperty( nDefSelIndex, PropLong, 0 );
 	
 	// add the nDisableNoScroll property
 	if (nType == CtlListBox || nType == CtlDwgList)
-	{
-		AddControlStdProperty(pArxObject, nDisableNoScroll, sFalse, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nDisableNoScroll, PropBool, false );
 	
 	if (!IsVersionFree())
 	{
 		// add the DragnDrop properties
 		switch (nType)		
 		{	
-			case CtlBlockList:
-				AddControlStdProperty(pArxObject, nDragnDropAllowBegin, sTrue, PropBool);
-				break;
-			case CtlDwgList:
-				if (nCurrentPurchaseMode != nPurchasedR14Pro)
-				{
-					AddControlStdProperty(pArxObject, nDragnDropAllowBegin, sTrue, PropBool);
-					AddControlStdProperty(pArxObject, nInsertOrXref, LTOA(0), PropEnum);				
-				}
-				break;
-				
-			case CtlListView:	
-			case CtlLabel:	
-			case CtlStdButton:	
-			case CtlGraphicButton:	
-			case CtlPictureBox:	
-			case CtlTree:	
-			case CtlBlockView:	
-			case CtlHatch:
-			case CtlSlideView:	
-			case CtlDwgPreview:	
-			case CtlListBox:
-				AddControlStdProperty(pArxObject, nDragnDropAllowBegin, sFalse, PropBool);
-				AddControlStdProperty(pArxObject, nDragnDropAllowDrop, sTrue, PropBool);
-				break;				
-			case CtlTextBox:	
-				AddControlStdProperty(pArxObject, nDragnDropAllowDrop, sTrue, PropBool);
-				break;
+		case CtlBlockList:
+			pDclControl->AddBooleanProperty( nDragnDropAllowBegin, PropBool, true );
+			break;
+		case CtlDwgList:
+			if (nCurrentPurchaseMode != nPurchasedR14Pro)
+			{
+				pDclControl->AddBooleanProperty( nDragnDropAllowBegin, PropBool, true );
+				pDclControl->AddLongProperty( nInsertOrXref, PropEnum, 0 );
+			}
+			break;
+			
+		case CtlListView:	
+		case CtlLabel:	
+		case CtlStdButton:	
+		case CtlGraphicButton:	
+		case CtlPictureBox:	
+		case CtlTree:	
+		case CtlBlockView:	
+		case CtlHatch:
+		case CtlSlideView:	
+		case CtlDwgPreview:	
+		case CtlListBox:
+			pDclControl->AddBooleanProperty( nDragnDropAllowBegin, PropBool, false );
+			pDclControl->AddBooleanProperty( nDragnDropAllowDrop, PropBool, true );
+			break;				
+		case CtlTextBox:	
+			pDclControl->AddBooleanProperty( nDragnDropAllowDrop, PropBool, true );
+			break;
 		}
 	}
 	
 		
 	// add the nDropDownPropHeight property
-	if (nType == CtlComboBox ||
-		nType == CtlImageComboBox)	
-	{	
-		AddControlStdProperty(pArxObject, nDropDownHeight, LTOA(nDeDropHeight), PropLong);
-	}
+	if (nType == CtlComboBox || nType == CtlImageComboBox)	
+		pDclControl->AddLongProperty( nDropDownHeight, PropLong, nDeDropHeight );
 
 	// add the nEditLabels property
 	switch (nType)		
 	{	
 	case CtlTree:
-		AddControlStdProperty(pArxObject, nEditLabels, sFalse, PropBool);
+		pDclControl->AddBooleanProperty( nEditLabels, PropBool, false );
 	case CtlListView:
-		AddControlStdProperty(pArxObject, nEditLabels, sTrue, PropBool);
+		pDclControl->AddBooleanProperty( nEditLabels, PropBool, true );
 		break;	
 	}
 
 	if (nType != CtlActiveX && nType != CtlFileDlgCtrl)
 		// add the Enabled property
-		AddControlStdProperty(pArxObject, nEnabled, sTrue, PropBool);
+		pDclControl->AddBooleanProperty( nEnabled, PropBool, true );
 
 	// add the nEventInvoke property
 	if (nCurrentPurchaseMode != nPurchasedR14Pro && m_pThisDclForm != NULL)
 	{
 		CDclFormObject* pDclForm = m_pThisDclForm;
 		
-		if (pDclForm->GetType() == VdclModal)
-		{
-			// do not add the property.
-		}
+		if (m_pThisDclForm->GetType() == VdclModal)
+		{} // do not add the property.
 		else if (nType == CtlTextBox)
-		{
-			AddControlStdProperty(pArxObject, nEventInvoke, LTOA(0), PropEnum);
-		}
-		else if (pDclForm->GetType() == VdclDockable || pDclForm->GetType() == VdclModeless)
-		{
-			AddControlStdProperty(pArxObject, nEventInvoke, LTOA(1), PropEnum);	
-		}
+			pDclControl->AddLongProperty( nEventInvoke, PropEnum, 0 );
+		else if (m_pThisDclForm->GetType() == VdclDockable || m_pThisDclForm->GetType() == VdclModeless)
+			pDclControl->AddLongProperty( nEventInvoke, PropEnum, 1 );
 		else
-		{
-			AddControlStdProperty(pArxObject, nEventInvoke, LTOA(0), PropEnum);	
-		}
+			pDclControl->AddLongProperty( nEventInvoke, PropEnum, 0 );
 	}
 	
 	// add the nExtCanBeDiff property
 	if (nType == CtlFileDlgCtrl)
-	{
-		AddControlStdProperty(pArxObject, nExtCanBeDiff, sFalse, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nExtCanBeDiff, PropBool, false );
 	
 	// add the nFileMustExist property
 	if (nType == CtlFileDlgCtrl)
-	{
-		AddControlStdProperty(pArxObject, nFileMustExist, sTrue, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nFileMustExist, PropBool, true );
 	
 	// add the nFilter property
 	if (nType == CtlFileDlgCtrl)
-	{
-		CString sFilter;
-		sFilter = theWorkspace.LoadResourceString(IDS_FILEDLGFILTERDEF);
-		AddControlStdProperty(pArxObject, nFilter, sFilter, PropString);
-	}
+		pDclControl->AddStringProperty( nFilter, PropString, theWorkspace.LoadResourceString(IDS_FILEDLGFILTERDEF) );
 	
 	// add the nFilterStyle property
 	if (nType == CtlTextBox)
-	{
-		AddControlStdProperty(pArxObject, nFilterStyle, LTOA(0), PropEnum);
-	}
+		pDclControl->AddLongProperty( nFilterStyle, PropEnum, 0 );
 
 	// add the Font properties
 	switch (nType)		
@@ -3856,54 +3654,46 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 	case CtlStaticURL:
 	case CtlRoundSlider:		
 	case CtlOptionList:
-		{
-		AddControlStdProperty(pArxObject, nLabelName, activeProject->m_sDefaultFontName, PropString);
+		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
 		break;
-		}
 	}
 
 	// add the nGridLines & nFullRowSelect properties
 	if (nType == CtlListView)
 	{
-		AddControlStdProperty(pArxObject, nFullRowSelect, sFalse, PropBool);
-		AddControlStdProperty(pArxObject, nGridLines, sFalse, PropBool);
+		pDclControl->AddBooleanProperty( nFullRowSelect, PropBool, false );
+		pDclControl->AddBooleanProperty( nGridLines, PropBool, false );
 	}
 
 	if (nType == CtlGrid)
-	{
-		AddControlStdProperty(pArxObject, nGridLines, sTrue, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nGridLines, PropBool, true );
 
-	
 	// add the nHasButtons property
 	if (nType == CtlTree)
-	{
-		AddControlStdProperty(pArxObject, nHasButtons, sTrue, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nHasButtons, PropBool, true );
+
 	// add the nHasLines property
 	if (nType == CtlTree)
-	{
-		AddControlStdProperty(pArxObject, nHasLines, sTrue, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nHasLines, PropBool, true );
 
 	// add the nPropHeight property
-	AddControlStdProperty(pArxObject, nHeight, LTOA(rcThis.Height()), PropLong);
+	pDclControl->AddLongProperty( nHeight, PropLong, rcThis.Height() );
 
 	// add the nHScrollBar property
 	switch (nType)
 	{
-		case CtlTextBox:	
-		AddControlStdProperty(pArxObject, nHScrollBar, sFalse, PropBool);
+	case CtlTextBox:	
+		pDclControl->AddBooleanProperty( nHScrollBar, PropBool, false );
 		break;
 	}
 
 	// add the nIconXSpacing property
 	switch (nType)
 	{
-		case CtlListView:	
-		case CtlBlockList:	
-		AddControlStdProperty(pArxObject, nIconXSpacing, LTOA(nDeIconSpacing), PropLong);
-		AddControlStdProperty(pArxObject, nIconYSpacing, LTOA(nDeIconHeight), PropLong);
+	case CtlListView:	
+	case CtlBlockList:	
+		pDclControl->AddLongProperty( nIconXSpacing, PropLong, nDeIconSpacing );
+		pDclControl->AddLongProperty( nIconYSpacing, PropLong, nDeIconHeight );
 		break;
 	}
 
@@ -3911,666 +3701,542 @@ void CObjectDCLView::AddProperties(CDclControlObject *pArxObject, short nType, C
 	// add the nLabelWrap property
 	switch (nType)
 	{
-		case CtlListView:	
-		case CtlGrid:	
-		case CtlBlockList:	
-			AddControlStdProperty(pArxObject, nLabelWrap, sTrue, PropBool);
-			break;
+	case CtlListView:	
+	case CtlGrid:	
+	case CtlBlockList:	
+		pDclControl->AddBooleanProperty( nLabelWrap, PropBool, true );
+		break;
 	}
 	// add the nListViewIconAlign property
 	switch (nType)
 	{
-		case CtlListView:	
-		case CtlBlockList:	
-			AddControlStdProperty(pArxObject, nListViewIconAlign, LTOA(0), PropEnum);
-			break;
+	case CtlListView:	
+	case CtlBlockList:	
+		pDclControl->AddLongProperty( nListViewIconAlign, PropEnum, 0 );
+		break;
 	}
 	// add the nAutoArrange property
 	switch (nType)
 	{
-		case CtlListView:	
-			AddControlStdProperty(pArxObject, nAutoArrange, sFalse, PropBool);
-			break;
-		case CtlBlockList:	
-			AddControlStdProperty(pArxObject, nAutoArrange, sTrue, PropBool);
-			break;
+	case CtlListView:	
+		pDclControl->AddBooleanProperty( nAutoArrange, PropBool, false );
+		break;
+	case CtlBlockList:	
+		pDclControl->AddBooleanProperty( nAutoArrange, PropBool, true );
+		break;
 	}
 	
 	
 	// add the nImageList property
 	switch (nType)
 	{
-		case CtlTree:
-		case CtlListView:
-		case CtlGrid:
-		case CtlImageComboBox:
-			{
-				CString sImageList;
-				sImageList = theWorkspace.LoadResourceString(IDS_IMAGELIST);
-				AddControlStdProperty(pArxObject, nImageList, sImageList, PropImageList);
-				break;
-			}
-		default:
-			break;
+	case CtlTree:
+	case CtlListView:
+	case CtlGrid:
+	case CtlImageComboBox:
+		pDclControl->AddStringProperty( nImageList, PropImageList, theWorkspace.LoadResourceString(IDS_IMAGELIST) );
+		break;
 	}
 
-	
 	// add the nIndent property
 	if (nType == CtlTree)
-	{
-		AddControlStdProperty(pArxObject, nIndent, LTOA(nDeTreeIndent), PropLong);
-	}
+		pDclControl->AddLongProperty( nIndent, PropLong, nDeTreeIndent );
 	
 	// add the nInterfaceMode property
 	if (nType == CtlBlockView)
-	{
-		AddControlStdProperty(pArxObject, nAllowOrbiting, LTOA(1), PropEnum);
-	}
+		pDclControl->AddLongProperty( nAllowOrbiting, PropEnum, 1 );
 
 	// add the nIsTabStop property
 	switch (nType)
 	{
-		case CtlStdButton:
-		case CtlGraphicButton:
-		case CtlTextBox:
-		case CtlCheckBox:
-		case CtlOptionButton:
-		case CtlComboBox:
-		case CtlListBox:
-		case CtlDwgList:
-		case CtlListView:
-		case CtlGrid:
-		case CtlBlockList:
-		case CtlScrollBar:
-		case CtlSlider:
-		case CtlPictureBox:
-		case CtlMonth:
-		case CtlTree:
-		case CtlSpinButton:
-		case CtlStaticURL:
-		case CtlRoundSlider:
-		case CtlHtmlCtrl:
-		case CtlDwgPreview:
-		case CtlImageComboBox:
-		case CtlSlideView:
-		case CtlBlockView:			
-		case CtlHatch:
-		case CtlOptionList:		
-		case CtlActiveX:
-			{
-				AddControlStdProperty(pArxObject, nIsTabStop, sTrue, PropBool);
-				break;
-			}
+	case CtlStdButton:
+	case CtlGraphicButton:
+	case CtlTextBox:
+	case CtlCheckBox:
+	case CtlOptionButton:
+	case CtlComboBox:
+	case CtlListBox:
+	case CtlDwgList:
+	case CtlListView:
+	case CtlGrid:
+	case CtlBlockList:
+	case CtlScrollBar:
+	case CtlSlider:
+	case CtlPictureBox:
+	case CtlMonth:
+	case CtlTree:
+	case CtlSpinButton:
+	case CtlStaticURL:
+	case CtlRoundSlider:
+	case CtlHtmlCtrl:
+	case CtlDwgPreview:
+	case CtlImageComboBox:
+	case CtlSlideView:
+	case CtlBlockView:			
+	case CtlHatch:
+	case CtlOptionList:		
+	case CtlActiveX:
+		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
+		break;
 	}
 	
 
 	// add the nItemData property
 	switch (nType)
 	{
-		case CtlListBox:
-		case CtlComboBox:
-			AddControlStdProperty(pArxObject, nItemData, sList, PropIntArray);
-			break;			
-		default:
-			break;
+	case CtlListBox:
+	case CtlComboBox:
+		pDclControl->AddStringProperty( nItemData, PropIntArray, sList );
+		break;			
 	}
 	
 	// add the nJustification property
 	switch (nType)
 	{
-		case CtlTextBox:
-		case CtlLabel:	
-			AddControlStdProperty(pArxObject, nJustification, LTOA(0), PropEnum);
-			break;
-		default:
-			break;
+	case CtlTextBox:
+	case CtlLabel:	
+		pDclControl->AddLongProperty( nJustification, PropEnum, 0 );
+		break;
 	}
-	/*
+
 	// add the nTabLabelAlign property
-	if (nType == CtlTabStrip)
-	{
-		AddControlStdProperty(pArxObject, nTabLabelAlign, LTOA(1), PropEnum); 
-	}
-	*/
+	//if (nType == CtlTabStrip)
+	//	pDclControl->AddLongProperty( nTabLabelAlign, PropEnum, 1 );
+
 	// add the nLargeChange property
 	switch (nType)
 	{
-		case CtlSlider:
-		case CtlScrollBar:
-			AddControlStdProperty(pArxObject, nLargeChange, LTOA(nDeLargeChange), PropLong);
-			break;
-		default:
-			break;
+	case CtlSlider:
+	case CtlScrollBar:
+		pDclControl->AddLongProperty( nLargeChange, PropLong, nDeLargeChange );
+		break;
 	}
 
 	// add the nLeft property
-	AddControlStdProperty(pArxObject, nLeft, LTOA(0), PropLong);
+	pDclControl->AddLongProperty( nLeft, PropLong, 0 );
 	
+	// add top from bottom geometry management
 	if (nType != CtlFileDlgCtrl)
-		// add top from bottom geometry management
-		AddControlStdProperty(pArxObject, nLeftFromRight, LTOA(0), PropLong);
+		pDclControl->AddLongProperty( nLeftFromRight, PropLong, 0 );
 
 	// add the nLimitText property
 	switch (nType)
 	{
-		case CtlTextBox:
-			AddControlStdProperty(pArxObject, nLimitText, LTOA(nDeTextLimit), PropLong);;
-			break;
-		case CtlComboBox:
-		case CtlImageComboBox:
-			AddControlStdProperty(pArxObject, nLimitText, LTOA(nDeTextLimitCB), PropLong);;
-			break;
+	case CtlTextBox:
+		pDclControl->AddLongProperty( nLimitText, PropLong, nDeTextLimit );
+		break;
+	case CtlComboBox:
+	case CtlImageComboBox:
+		pDclControl->AddLongProperty( nLimitText, PropLong, nDeTextLimitCB );
+		break;
 	}
 
 	// add the nLinesAtRoot property
 	if (nType == CtlTree)
-	{
-		AddControlStdProperty(pArxObject, nLinesAtRoot, sTrue, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nLinesAtRoot, PropBool, true );
 
 	// add the nURLLinkType property
 	if (nType == CtlStaticURL)
-	{
-		AddControlStdProperty(pArxObject, nURLLinkType, LTOA(0), PropEnum);
-	}
-	
+		pDclControl->AddLongProperty( nURLLinkType, PropEnum, 0 );
 
 	// add the List property
 	switch (nType)
 	{
-		case CtlListBox:
-		case CtlComboBox:
-			AddControlStdProperty(pArxObject, nList, sList, PropStringArray);
-			break;			
-		default:
-			break;
+	case CtlListBox:
+	case CtlComboBox:
+		pDclControl->AddStringProperty( nList, PropStringArray, sList );
+		break;			
 	}
 	
 	// add the nMarginLeft & nMarginRight property
 	if (nType == CtlTextBox)
 	{
-		AddControlStdProperty(pArxObject, nMarginLeft, LTOA(0), PropLong);
-		AddControlStdProperty(pArxObject, nMarginRight, LTOA(0), PropLong);
+		pDclControl->AddLongProperty( nMarginLeft, PropLong, 0 );
+		pDclControl->AddLongProperty( nMarginRight, PropLong, 0 );
 	}
 	
 	// add the MaxValue property
 	switch (nType)
 	{
-		case CtlSlider:
-		case CtlScrollBar:
-		case CtlProgress:
-		case CtlSpinButton:
-			AddControlStdProperty(pArxObject, nMaxValue, LTOA(nDeMaxVal), PropLong);
-			break;
-		default:
-			break;
+	case CtlSlider:
+	case CtlScrollBar:
+	case CtlProgress:
+	case CtlSpinButton:
+		pDclControl->AddLongProperty( nMaxValue, PropLong, nDeMaxVal );
+		break;
 	}
 	
 	// add the nMinTabWidth property
 	if (nType == CtlTabStrip)
-	{
-		AddControlStdProperty(pArxObject, nMinTabWidth, LTOA(nDeMinTabWidth), PropLong);
-	}
+		pDclControl->AddLongProperty( nMinTabWidth, PropLong, nDeMinTabWidth );
+
 	// add the MinValue property
 	switch (nType)
 	{
-		case CtlSlider:
-		case CtlScrollBar:
-		case CtlProgress:
-		case CtlSpinButton:
-			AddControlStdProperty(pArxObject, nMinValue, LTOA(1), PropLong);
-			break;
-		
-		default:
-			break;
+	case CtlSlider:
+	case CtlScrollBar:
+	case CtlProgress:
+	case CtlSpinButton:
+		pDclControl->AddLongProperty( nMinValue, PropLong, 1 );
+		break;
 	}
 	
 	// add the nMultiColumn property
 	if (nType == CtlListBox)
-	{
-		AddControlStdProperty(pArxObject, nMultiColumn, sFalse, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nMultiColumn, PropBool, false );
 	
 	// add the MultiRow property
 	if (nType == CtlTabStrip)
-	{
-		AddControlStdProperty(pArxObject, nMultiRow, sFalse, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nMultiRow, PropBool, false );
 
 	// add the nMultiSelection property
 	switch (nType)
 	{
-		case CtlMonth:
-			AddControlStdProperty(pArxObject, nMultiSelection, LTOA(1), PropLong);
-			break;
-		case CtlListView:
-		case CtlBlockList:
-			AddControlStdProperty(pArxObject, nMultiSelect, sFalse, PropBool);
-			break;
-		case CtlFileDlgCtrl:
-			AddControlStdProperty(pArxObject, nMultiSelect, sFalse, PropBool);
+	case CtlMonth:
+		pDclControl->AddLongProperty( nMultiSelection, PropLong, 1 );
+		break;
+	case CtlListView:
+	case CtlBlockList:
+		pDclControl->AddBooleanProperty( nMultiSelect, PropBool, false );
+		break;
+	case CtlFileDlgCtrl:
+		pDclControl->AddBooleanProperty( nMultiSelect, PropBool, false );
+		break;
 	}
 	
 	// add the nFileMustExist property
 	if (nType == CtlFileDlgCtrl)
-	{
-		AddControlStdProperty(pArxObject, nFileMustExist, sTrue, PropBool);
-	}
-	
+		pDclControl->AddBooleanProperty( nFileMustExist, PropBool, true );
+
 	// add the nNoIntegralHeight property
 	switch (nType)
 	{
-		case CtlListBox:
-		case CtlOptionList:
-			{
-			AddControlStdProperty(pArxObject, nNoIntegralHeight, sTrue, PropBool);
-			break;
-			}
+	case CtlListBox:
+	case CtlOptionList:
+		pDclControl->AddBooleanProperty( nNoIntegralHeight, PropBool, true );
+		break;
 	}
 
 	// add the nOrientation property
 	switch (nType)
 	{
-			//AddControlStdProperty(pArxObject, nOrientation, LTOA(1), PropEnum);
-			//break;
-		case CtlSpinButton:			
-		case CtlProgress:	
-		case CtlSlider:
-		case CtlScrollBar:	
-			{
-			if (rcThis.Width() >= rcThis.Height())
-				AddControlStdProperty(pArxObject, nOrientation, LTOA(0), PropEnum);
-			else
-				AddControlStdProperty(pArxObject, nOrientation, LTOA(1), PropEnum);
-			break;
-			}
+	case CtlSpinButton:			
+	case CtlProgress:	
+	case CtlSlider:
+	case CtlScrollBar:	
+		pDclControl->AddLongProperty( nOrientation, PropEnum, (rcThis.Width() >= rcThis.Height())? 0 : 1 );
+		break;
 	}
 
 	// add the nOverWritePrompt property
 	if (nType == CtlFileDlgCtrl)
-	{
-		AddControlStdProperty(pArxObject, nOverWritePrompt, sTrue, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nOverWritePrompt, PropBool, true );
 
 	// add the nPathMustExist property
 	if (nType == CtlFileDlgCtrl)
-	{
-		AddControlStdProperty(pArxObject, nPathMustExist, sTrue, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nPathMustExist, PropBool, true );
 
 	// add the nPicture property
 	switch (nType)
 	{
-		case CtlGraphicButton:
-		case CtlPictureBox:
-		{
-			CString sNone;
-			sNone = theWorkspace.LoadResourceString(IDS_NONE);		
-
-			AddControlStdProperty(pArxObject, nPicture, sNone, PropPicture);
-			break;
-		}
+	case CtlGraphicButton:
+	case CtlPictureBox:
+		pDclControl->AddStringProperty( nPicture, PropPicture, theWorkspace.LoadResourceString(IDS_NONE) );
+		break;
 	}
 	// add the nPressedPicture property
 	switch (nType)
 	{
-		case CtlGraphicButton:
-		{
-			CString sNone;
-			sNone = theWorkspace.LoadResourceString(IDS_NONE);		
-
-			AddControlStdProperty(pArxObject, nPressedPicture, sNone, PropPicture);
-			break;
-		}
+	case CtlGraphicButton:
+		pDclControl->AddStringProperty( nPressedPicture, PropPicture, theWorkspace.LoadResourceString(IDS_NONE) );
+		break;
 	}
 	
 	// add the nReadOnly property
 	if (nType == CtlTextBox)
-		AddControlStdProperty(pArxObject, nReadOnly, sFalse, PropBool);
+		pDclControl->AddBooleanProperty( nReadOnly, PropBool, false );
 	
 	// add the nRenderMode property
 	if (nType == CtlBlockView)
-	{
-		AddControlStdProperty(pArxObject, nRenderMode, LTOA(nDeRenderMode), PropEnum);
-	}
+		pDclControl->AddLongProperty( nRenderMode, PropEnum, nDeRenderMode );
 	
 	// add the nRetrunAsTab property
 	if (nType == CtlTextBox || nType == CtlComboBox || nType == CtlImageComboBox)
-	{
-		AddControlStdProperty(pArxObject, nReturnAsTab, sFalse, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nReturnAsTab, PropBool, false );
 	
+	// add top from bottom geometry management
 	if (nType != CtlFileDlgCtrl)
-		// add top from bottom geometry management
-		AddControlStdProperty(pArxObject, nRightFromRight, LTOA(0), PropLong);
+		pDclControl->AddLongProperty( nRightFromRight, PropLong, 0 );
 
 	// add the nSelectStyle property
 	if (nType == CtlListBox || nType == CtlDwgList)
-	{
-		AddControlStdProperty(pArxObject, nSelectStyle, LTOA(0), PropEnum);
-	}
+		pDclControl->AddLongProperty( nSelectStyle, PropEnum, 0 );
 
 	// add the nShow... properties
 	if (nType == CtlFileDlgCtrl)
 	{
-		AddControlStdProperty(pArxObject, nShowCancel, sTrue, PropBool);
-		AddControlStdProperty(pArxObject, nShowHelp, sTrue, PropBool);
-		AddControlStdProperty(pArxObject, nShowNameLabel, sTrue, PropBool);
-		AddControlStdProperty(pArxObject, nShowNameTextBox, sTrue, PropBool);
-		AddControlStdProperty(pArxObject, nShowOK, sTrue, PropBool);
-		AddControlStdProperty(pArxObject, nShowReadOnlyCheckBox, sTrue, PropBool);
-		AddControlStdProperty(pArxObject, nShowTypeComboBox, sTrue, PropBool);
-		AddControlStdProperty(pArxObject, nShowTypeLabel, sTrue, PropBool);
+		pDclControl->AddBooleanProperty( nShowCancel, PropBool, true );
+		pDclControl->AddBooleanProperty( nShowHelp, PropBool, true );
+		pDclControl->AddBooleanProperty( nShowNameLabel, PropBool, true );
+		pDclControl->AddBooleanProperty( nShowNameTextBox, PropBool, true );
+		pDclControl->AddBooleanProperty( nShowOK, PropBool, true );
+		pDclControl->AddBooleanProperty( nShowReadOnlyCheckBox, PropBool, true );
+		pDclControl->AddBooleanProperty( nShowTypeComboBox, PropBool, true );
+		pDclControl->AddBooleanProperty( nShowTypeLabel, PropBool, true );
 	}
 
 	// add the nShowOrbitCirlces property
 	if (nType == CtlBlockView)
-	{
-		AddControlStdProperty(pArxObject, nShowOrbitCirlces, sFalse, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nShowOrbitCirlces, PropBool, false );
 
 	// add the nShowSelectAlways property
 	switch (nType)
 	{
-		case CtlTree:
-		case CtlListView:
-		case CtlBlockList:
-		AddControlStdProperty(pArxObject, nShowSelectAlways, sFalse, PropBool);
+	case CtlTree:
+	case CtlListView:
+	case CtlBlockList:
+		pDclControl->AddBooleanProperty( nShowSelectAlways, PropBool, false );
+		break;
 	}
 
 	// add the nShowTicks property
 	if (nType == CtlSlider)
-	{
-		AddControlStdProperty(pArxObject, nShowTicks, sTrue, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nShowTicks, PropBool, true );
 	
 	// add the nSingleExpanded property
 	if (nType == CtlTree)
-	{
-		AddControlStdProperty(pArxObject, nSingleExpanded, sFalse, PropBool);
-	}
-	
-	
-	
+		pDclControl->AddBooleanProperty( nSingleExpanded, PropBool, false );
+
 	// add the nSmallChange property
 	switch (nType)
 	{
-		case CtlSlider:
-		case CtlScrollBar:
-			AddControlStdProperty(pArxObject, nSmallChange, LTOA(1), PropLong);
-			break;
-		default:
-			break;
+	case CtlSlider:
+	case CtlScrollBar:
+		pDclControl->AddLongProperty( nSmallChange, PropLong, 1 );
+		break;
 	}
 	
 	// add the nSmoothProgress property
 	if (nType == CtlProgress)
-	{
-		AddControlStdProperty(pArxObject, nSmoothProgress, sFalse, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nSmoothProgress, PropBool, false );
 	
 	// add the Sorted property
 	switch (nType)
 	{
-		case CtlListBox:
-		case CtlComboBox:
-		case CtlImageComboBox:
-			AddControlStdProperty(pArxObject, nSorted, sFalse, PropBool);
-			break;
-		case CtlListView:
-		case CtlGrid:
-			AddControlStdProperty(pArxObject, nListViewSort, LTOA(0), PropEnum);	
-			break;
-		case CtlBlockList:
-			AddControlStdProperty(pArxObject, nListViewSort, LTOA(2), PropEnum);	
-			break;
-		default:
-			break;
+	case CtlListBox:
+	case CtlComboBox:
+	case CtlImageComboBox:
+		pDclControl->AddBooleanProperty( nSorted, PropBool, false );
+		break;
+	case CtlListView:
+	case CtlGrid:
+		pDclControl->AddLongProperty( nListViewSort, PropEnum, 0 );
+		break;
+	case CtlBlockList:
+		pDclControl->AddLongProperty( nListViewSort, PropEnum, 2 );
+		break;
 	}
 
 	// add the ButtonStyle property
 	if (nType == CtlGraphicButton)
-	{
-		AddControlStdProperty(pArxObject, nButtonStyle, LTOA(0), PropEnum);
-	}
+		pDclControl->AddLongProperty( nButtonStyle, PropEnum, 0 );
 	
 	// add the nComboBoxStyle property
-	if (nType == CtlComboBox ||
-		nType == CtlImageComboBox)
-	{
-		AddControlStdProperty(pArxObject, nComboBoxStyle, LTOA(0), PropEnum);
-	}
-	
+	if (nType == CtlComboBox || nType == CtlImageComboBox)
+		pDclControl->AddLongProperty( nComboBoxStyle, PropEnum, 0 );
+
 	// add the nListViewStyle property
 	if (nType == CtlListView)
-	{
-		AddControlStdProperty(pArxObject, nListViewStyle, LTOA(3), PropEnum);
-	}
+		pDclControl->AddLongProperty( nListViewStyle, PropEnum, 3 );
 
 	// add the nBlockListStyle property
 	if (nType == CtlBlockList)
-	{
-		AddControlStdProperty(pArxObject, nBlockListStyle, LTOA(0), PropEnum);
-	}	
-	
+		pDclControl->AddLongProperty( nBlockListStyle, PropEnum, 0 );
+
 	// add the nFileDlgStyle property
 	if (nType == CtlFileDlgCtrl)
-	{
-		AddControlStdProperty(pArxObject, nFileDlgStyle, LTOA(1), PropEnum);
-	}	
-	
+		pDclControl->AddLongProperty( nFileDlgStyle, PropEnum, 1 );
+
 	// add the nRowHeight property
 	if (nType == CtlOptionList)
-	{
-		AddControlStdProperty(pArxObject, nRowHeight, LTOA(nDeRowHeight), PropLong);
-	}
-	
+		pDclControl->AddLongProperty( nRowHeight, PropLong, nDeRowHeight );
+
 	if (nType == CtlGrid)
 	{
-		AddControlStdProperty(pArxObject, nRowHeight, LTOA(18), PropLong);
+		pDclControl->AddLongProperty( nRowHeight, PropLong, 18 );
 
-		int PropIndex = AddControlHiddenProperty(pArxObject, nColumnCaptions, sList, PropStringArray);		
-		AddControlPropertyListItem(pArxObject, PropIndex, theWorkspace.LoadResourceString(IDS_COL1));
-		AddControlPropertyListItem(pArxObject, PropIndex, theWorkspace.LoadResourceString(IDS_COL2));
+		RefCountedPtr< CPropertyObject > pProp = AddControlHiddenProperty(pDclControl, nColumnCaptions, sList, PropStringArray);		
+		AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_COL1));
+		AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_COL2));
 
-		PropIndex = AddControlHiddenProperty(pArxObject, nColumnAlignments, sList, PropIntArray);		
-		AddControlPropertyListItem(pArxObject, PropIndex, 0);
-		AddControlPropertyListItem(pArxObject, PropIndex, 0);
+		pProp = AddControlHiddenProperty(pDclControl, nColumnAlignments, sList, PropIntArray);		
+		AddControlPropertyListItem(pProp, 0);
+		AddControlPropertyListItem(pProp, 0);
 
-		PropIndex = AddControlHiddenProperty(pArxObject, nColumnImages, sList, PropIntArray);
-		AddControlPropertyListItem(pArxObject, PropIndex, -1);
-		AddControlPropertyListItem(pArxObject, PropIndex, -1);
+		pProp = AddControlHiddenProperty(pDclControl, nColumnImages, sList, PropIntArray);
+		AddControlPropertyListItem(pProp, -1);
+		AddControlPropertyListItem(pProp, -1);
 
-		PropIndex = AddControlHiddenProperty(pArxObject, nColumnWidths, sList, PropIntArray);
-		AddControlPropertyListItem(pArxObject, PropIndex, 100);
-		AddControlPropertyListItem(pArxObject, PropIndex, 100);
+		pProp = AddControlHiddenProperty(pDclControl, nColumnWidths, sList, PropIntArray);
+		AddControlPropertyListItem(pProp, 100);
+		AddControlPropertyListItem(pProp, 100);
 
-		PropIndex = AddControlHiddenProperty(pArxObject, nColumnStyles, sList, PropIntArray);
-		AddControlPropertyListItem(pArxObject, PropIndex, 0);
-		AddControlPropertyListItem(pArxObject, PropIndex, 0);
+		pProp = AddControlHiddenProperty(pDclControl, nColumnStyles, sList, PropIntArray);
+		AddControlPropertyListItem(pProp, 0);
+		AddControlPropertyListItem(pProp, 0);
 
-		PropIndex = AddControlHiddenProperty(pArxObject, nColumnDefaultImages, sList, PropIntArray);
-		AddControlPropertyListItem(pArxObject, PropIndex, 0);
-		AddControlPropertyListItem(pArxObject, PropIndex, 0);
+		pProp = AddControlHiddenProperty(pDclControl, nColumnDefaultImages, sList, PropIntArray);
+		AddControlPropertyListItem(pProp, 0);
+		AddControlPropertyListItem(pProp, 0);
 
-		PropIndex = AddControlHiddenProperty(pArxObject, nColumnAlternateImages, sList, PropIntArray);
-		AddControlPropertyListItem(pArxObject, PropIndex, 1);
-		AddControlPropertyListItem(pArxObject, PropIndex, 1);
+		pProp = AddControlHiddenProperty(pDclControl, nColumnAlternateImages, sList, PropIntArray);
+		AddControlPropertyListItem(pProp, 1);
+		AddControlPropertyListItem(pProp, 1);
 
-		RefCountedPtr< CPropertyObject > pProp;
-		if (pArxObject->GetPropertyObject(nColumnListItems) == NULL)
+		if (pDclControl->GetPropertyObject(nColumnListItems) == NULL)
 		{
-			PropIndex = AddControlHiddenProperty(pArxObject, nColumnListItems, sList, PropStringArrayList);
-			pProp = pArxObject->GetPropertyObject(nColumnListItems);
+			pProp = AddControlHiddenProperty(pDclControl, nColumnListItems, sList, PropStringArrayList);
 			pProp->GetStringArrayListPtr()->push_back(PropVal::TCStringArray());
 			pProp->GetStringArrayListPtr()->push_back(PropVal::TCStringArray());
 		}
 
-		if (pArxObject->GetPropertyObject(nColumnListImages) == NULL)
+		if (pDclControl->GetPropertyObject(nColumnListImages) == NULL)
 		{		
-			PropIndex = AddControlHiddenProperty(pArxObject, nColumnListImages, sList, PropIntArrayList);
-			pProp = pArxObject->GetPropertyObject(nColumnListImages);
+			pProp = AddControlHiddenProperty(pDclControl, nColumnListImages, sList, PropIntArrayList);
 			pProp->GetIntArrayListPtr()->push_back(PropVal::TIntArray());
 			pProp->GetIntArrayListPtr()->push_back(PropVal::TIntArray());
 		}
 	}
-
-
 
 	// add the nRowHeight property
 	if (nType == CtlDwgList)
-	{
-		AddControlStdProperty(pArxObject, nRowHeight, LTOA(nDeRowHeightDwg), PropLong);
-	}
+		pDclControl->AddLongProperty( nRowHeight, PropLong, nDeRowHeightDwg );
 
 	// add the nTabFixedWidth property
 	if (nType == CtlTabStrip)
-	{
-		AddControlStdProperty(pArxObject, nTabFixedWidth, sFalse, PropBool);
-	}
+		pDclControl->AddBooleanProperty( nTabFixedWidth, PropBool, false );
 
-	
 	// add the nTabStyle property
 	if (nType == CtlTabStrip)
-	{
-		AddControlStdProperty(pArxObject, nTabStyle, _T("0"), PropEnum);
-	}
+		pDclControl->AddLongProperty( nTabStyle, PropEnum, 0 );
 
 	// add the nText property
 	switch (nType)
 	{
-		case CtlTextBox:
-		case CtlComboBox:
-		case CtlImageComboBox:
-			AddControlStdProperty(pArxObject, nText, Name, PropString);
-			break;
-		default:
-			break;
+	case CtlTextBox:
+	case CtlComboBox:
+	case CtlImageComboBox:
+		pDclControl->AddStringProperty( nText, PropString, pDclControl->GetKeyName() );
+		break;
 	}
 	
 	// add the nTickFrequency property
 	if (nType == CtlSlider)
-	{
-		AddControlStdProperty(pArxObject, nTickFrequency, LTOA(nDeTickFrequency), PropLong);
-	}
+		pDclControl->AddLongProperty( nTickFrequency, PropLong, nDeTickFrequency );
 
 	// add the nSplitterStyle property
 	if (nType == CtlSplitter)
 	{
-		AddControlStdProperty(pArxObject, nSplitterStyle, _T("0"), PropEnum);
-		AddControlStdProperty(pArxObject, nSplitterMin, _T("30"), PropLong);
-		AddControlStdProperty(pArxObject, nSplitterMax, _T("30"), PropLong);		
+		pDclControl->AddLongProperty( nSplitterStyle, PropEnum, 0 );
+		pDclControl->AddLongProperty( nSplitterMin, PropLong, 30 );
+		pDclControl->AddLongProperty( nSplitterMax, PropLong, 30 );
 	}
-
 
 	if (!IsVersionFree())
 	{
 		// add the nToolTipText property
 		switch (nType)
 		{
-			// in not these controls 
-			case Ctl3DRect:
-			case CtlSplitter:
-			case CtlFrame:
-			case CtlLabel:
-			case CtlHtmlCtrl:
-			case CtlScrollBar:
-			case CtlSpinButton:
-			case CtlTabStrip:
-			case CtlOptionList:
-			case CtlFileDlgCtrl:
-			case CtlAnimate:
-				break;
-			default: // then add the tool tip text property
-				{
-				CString sNone;
-				sNone = theWorkspace.LoadResourceString(IDS_NONE);		
-
-				AddControlStdProperty(pArxObject, nToolTipText, CString(), PropString);
-				AddControlStdProperty(pArxObject, nToolTipBody, CString(), PropString);
-				AddControlStdProperty(pArxObject, nToolTipPicture, sNone, PropPicture);
-				AddControlStdProperty(pArxObject, nToolTipAviFileName, CString(), PropString);
-				AddControlStdProperty(pArxObject, nToolTipLine, sFalse, PropBool);
-				AddControlStdProperty(pArxObject, nToolTipTitleColor, _T("0"), PropLong);
-				
-				break;
-				}
+		// in not these controls 
+		case Ctl3DRect:
+		case CtlSplitter:
+		case CtlFrame:
+		case CtlLabel:
+		case CtlHtmlCtrl:
+		case CtlScrollBar:
+		case CtlSpinButton:
+		case CtlTabStrip:
+		case CtlOptionList:
+		case CtlFileDlgCtrl:
+		case CtlAnimate:
+			break;
+		default: // then add the tool tip text property
+			pDclControl->AddStringProperty( nToolTipText, PropString );
+			pDclControl->AddStringProperty( nToolTipBody, PropString );
+			pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString(IDS_NONE) );
+			pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
+			pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
+			pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+			break;
 		}
 	}
 	
 	// add the nTop property
-	AddControlStdProperty(pArxObject, nTop, _T("0"), PropLong);
+	pDclControl->AddLongProperty( nTop, PropLong, 0 );
 
+	// add top from bottom geometry management
 	if (nType != CtlFileDlgCtrl)
-		// add top from bottom geometry management
-		AddControlStdProperty(pArxObject, nTopFromBottom, _T("0"), PropLong);
+		pDclControl->AddLongProperty( nTopFromBottom, PropLong, 0 );
 
 	// add the nURLAddress property
 	if (nType == CtlStaticURL)
-	{
-		AddControlStdProperty(pArxObject, nURLAddress, CString(), PropString);
-	}
+		pDclControl->AddStringProperty( nURLAddress, PropString );
 	
 	if (nType != CtlFileDlgCtrl)
 	{
 		// add the geometry management booleans
-		AddControlStdProperty(pArxObject, nUseBottomFromBottom, _T("0"), PropLong);
-		AddControlStdProperty(pArxObject, nUseLeftFromRight, _T("0"), PropLong);	
-		AddControlStdProperty(pArxObject, nUseRightFromRight, _T("0"), PropLong);
-		AddControlStdProperty(pArxObject, nUseTopFromBottom, _T("0"), PropLong);
+		pDclControl->AddLongProperty( nUseBottomFromBottom, PropBool, 0 );
+		pDclControl->AddLongProperty( nUseLeftFromRight, PropBool, 0 );
+		pDclControl->AddLongProperty( nUseRightFromRight, PropBool, 0 );
+		pDclControl->AddLongProperty( nUseTopFromBottom, PropBool, 0 );
 	}
 
 	// add the nUseTabStops property
 	if (nType == CtlListBox)
-	{
-		AddControlStdProperty(pArxObject, nUseTabStops, sFalse, PropBool);
-	}
-	
+		pDclControl->AddBooleanProperty( nUseTabStops, PropBool, false );
 
 	// add the nValue property
 	switch (nType)
 	{
-		case CtlCheckBox:
-		case CtlOptionButton:
-			AddControlStdProperty(pArxObject, nValue, sFalse, PropBool);
-			break;
-		case CtlRoundSlider:
-			AddControlStdProperty(pArxObject, nValue, _T("0"), PropLong);
-			break;
-		case CtlSlider:
-		case CtlScrollBar:
-		case CtlSpinButton:
-			AddControlStdProperty(pArxObject, nValue, _T("1"), PropLong);
-			break;
-		case CtlProgress:
-			AddControlStdProperty(pArxObject, nValue, _T("0"), PropLong);
-			break;
-		default:			
-			break;
+	case CtlCheckBox:
+	case CtlOptionButton:
+		pDclControl->AddBooleanProperty( nValue, PropBool, false );
+		break;
+	case CtlRoundSlider:
+		pDclControl->AddLongProperty( nValue, PropLong, 0 );
+		break;
+	case CtlSlider:
+	case CtlScrollBar:
+	case CtlSpinButton:
+		pDclControl->AddLongProperty( nValue, PropLong, 1 );
+		break;
+	case CtlProgress:
+		pDclControl->AddLongProperty( nValue, PropLong, 0 );
+		break;
 	}
 
+	// add the nVisible property
 	if (nType != CtlFileDlgCtrl)
-		// add the nVisible property
-		AddControlStdProperty(pArxObject, nVisible, sTrue, PropBool);
+		pDclControl->AddBooleanProperty( nVisible, PropBool, true );
 
 	// add the nVScrollBar property
 	switch (nType)
 	{
-		case CtlListBox:
-		case CtlTextBox:
-			AddControlStdProperty(pArxObject, nVScrollBar, sFalse, PropBool);			
-			break;
-		case CtlDwgList:
-		case CtlOptionList:
-			AddControlStdProperty(pArxObject, nVScrollBar, sTrue, PropBool);			
-			break;
+	case CtlListBox:
+	case CtlTextBox:
+		pDclControl->AddBooleanProperty( nVScrollBar, PropBool, false );
+		break;
+	case CtlDwgList:
+	case CtlOptionList:
+		pDclControl->AddBooleanProperty( nVScrollBar, PropBool, true );
+		break;
 	}
 
 	// add the nPropWidth property
-	AddControlStdProperty(pArxObject, nWidth, LTOA(rcThis.Width()), PropLong);
+	pDclControl->AddLongProperty( nWidth, PropLong, rcThis.Width() );
 
 	// call method to add all the hidden properties
-	AddHiddenProperties(pArxObject, nType, Name);
+	AddHiddenProperties(pDclControl, nType, pDclControl->GetKeyName());
 
 }
 
@@ -4617,24 +4283,15 @@ void CObjectDCLView::AddHiddenProperties(CDclControlObject *pArxObject, short nT
 	// add the nTabsCaption property
 	if (nType == CtlTabStrip)
 	{
-		int PropIndex = AddControlHiddenProperty(pArxObject, nTabsCaption, sList, PropStringArray);
-		CString sTabCaption;
-		
-		sTabCaption = theWorkspace.LoadResourceString(IDS_TAB1);
-		AddControlPropertyListItem(pArxObject, PropIndex, sTabCaption);
-		
-		sTabCaption = theWorkspace.LoadResourceString(IDS_TAB2);
-		AddControlPropertyListItem(pArxObject, PropIndex, sTabCaption);
-		
-		sTabCaption = theWorkspace.LoadResourceString(IDS_TAB3);
-		AddControlPropertyListItem(pArxObject, PropIndex, sTabCaption);
+		RefCountedPtr< CPropertyObject > pProp = AddControlHiddenProperty(pArxObject, nTabsCaption, sList, PropStringArray);
+		//AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_TAB1));
+		//AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_TAB2));
+		//AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_TAB3));
 
 		AddControlHiddenProperty(pArxObject, nTabsImageList, sList, PropIntArray);
 		AddControlHiddenProperty(pArxObject, nTabsTTT, sList, PropStringArray);
-		
 	}
 
-	
 	// add the nEventNavigateComplete property
 	if (nType == CtlHtmlCtrl)
 	{
@@ -5161,7 +4818,7 @@ void CObjectDCLView::RefreshChildControl(CDclControlObject *pArxObject, Property
 			{
 				CWnd *pOldControl = pParent->GetChildControl();
 				//nOldId = pParent->GetId();
-				CreateChildControl(pParent, pArxObject, pArxObject->GetType(), false);
+				CreateChildControl(pParent, pArxObject, false);
 				// call the method to update the arx control's property that was requested to be changed
 				ResizeChildControl(pArxObject);
 				// if the program made it this far, destroy the previous control
@@ -5297,11 +4954,11 @@ void CObjectDCLView::CheckAutoSizeProp(CDclControlObject *pArxObject, CControlHo
 				break;
 			}
 			
-			pArxObject->SetLngProperty(
+			pArxObject->SetLongProperty(
 				nWidth,
 				((CGraphicButton*)pControl)->m_cxIcon + nBorderAddition
 				);
-			pArxObject->SetLngProperty(
+			pArxObject->SetLongProperty(
 				nHeight,
 				((CGraphicButton*)pControl)->m_cyIcon + nBorderAddition
 				);
@@ -5333,11 +4990,11 @@ void CObjectDCLView::CheckAutoSizeProp(CDclControlObject *pArxObject, CControlHo
 				nBorderAddition = 2;
 				break;
 			}
-			pArxObject->SetLngProperty(
+			pArxObject->SetLongProperty(
 				nWidth,
 				((CPictureBox*)pControl)->m_cxIcon + nBorderAddition
 				);
-			pArxObject->SetLngProperty(
+			pArxObject->SetLongProperty(
 				nHeight,
 				((CPictureBox*)pControl)->m_cyIcon + nBorderAddition
 				);
@@ -5365,10 +5022,10 @@ void CObjectDCLView::CheckAutoSizeProp(CDclControlObject *pArxObject, CControlHo
 			if (pCtrlSize.cx != pArxObject->GetLngProperty(nWidth) ||
 				pCtrlSize.cy != pArxObject->GetLngProperty(nHeight))
 			{
-				pArxObject->SetLngProperty(
+				pArxObject->SetLongProperty(
 					nWidth,
 					pCtrlSize.cx);
-				pArxObject->SetLngProperty(
+				pArxObject->SetLongProperty(
 					nHeight,
 					pCtrlSize.cy
 					);
@@ -5581,7 +5238,7 @@ void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObjec
 			CString sListItem;
 			RefCountedPtr< CPropertyObject > pPropList = pArxObject->GetPropertyObject(nBtnCaption);
 			int nDefSelection = pArxObject->GetLngProperty(nDefSelIndex) ;
-			for (int i = 0; i < pPropList->CountList(); i++)
+			for (size_t i = 0; i < pPropList->size(); i++)
 			{				
 				sListItem = pPropList->GetStringItem(i);
 				if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
@@ -5790,7 +5447,7 @@ void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObjec
 			CString sListItem;
 			((COptionListBox*)pControl)->ResetContent();					
 			int nDefSelection = pArxObject->GetLngProperty(nDefSelIndex) ;
-			for (int i = 0; i < pProp->CountList(); i++)
+			for (size_t i = 0; i < pProp->size(); i++)
 			{				
 				sListItem = pProp->GetStringItem(i);
 				if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
@@ -5820,7 +5477,7 @@ void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObjec
 				{
 					CString sListItem;
 					((CAcadColorListBox *)pControl)->ResetContent();					
-					for (int i = 0; i < pProp->CountList(); i++)
+					for (size_t i = 0; i < pProp->size(); i++)
 					{				
 						sListItem = pProp->GetStringItem(i);
 						if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
@@ -5832,7 +5489,7 @@ void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObjec
 				{
 					CString sListItem;
 					((CComboBox *)pControl)->ResetContent();
-					for (int i = 0; i < pProp->CountList(); i++)
+					for (size_t i = 0; i < pProp->size(); i++)
 					{			
 						sListItem = pProp->GetStringItem(i);
 						if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
@@ -5899,7 +5556,7 @@ void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObjec
 			if (((CSplitter *)pControl)->m_nStyle <= 0)
 			{
 				((CSplitter *)pControl)->m_nStyle = 0;
-				pArxObject->SetLngProperty(nSplitterStyle, 0);
+				pArxObject->SetLongProperty(nSplitterStyle, 0);
 			}
 			pControl->Invalidate();
 			break;
@@ -5963,7 +5620,7 @@ void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObjec
 				CString sListItem;
 				RefCountedPtr< CPropertyObject > pPropList = pArxObject->GetPropertyObject(nBtnCaption);
 				int nDefSelection = pArxObject->GetLngProperty(nDefSelIndex) ;
-				for (int i = 0; i < pPropList->CountList(); i++)
+				for (size_t i = 0; i < pPropList->size(); i++)
 				{				
 					sListItem = pPropList->GetStringItem(i);
 					if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
@@ -5981,7 +5638,7 @@ void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObjec
 		}
 
 		case nTabsCaption:
-		case nTabsImageList:
+		//case nTabsImageList:
 		{
 			try
 			{
@@ -6085,7 +5742,7 @@ void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObjec
 			if (nTextLimit > nNotSet) 
 			{
 				sNewText = sNewText.Left(nTextLimit);
-				pArxObject->SetStrProperty(nText, sNewText);
+				pArxObject->SetStringProperty(nText, sNewText);
 			}
 
 			pControl->SetWindowText(sNewText);
@@ -6909,27 +6566,21 @@ void CObjectDCLView::PasteFromClipBoard()
 			
 			if (bContinue)
 				continue;
-			CString sControlName;
 
-			
 			//if the copy destination is the same as the source
 			if (activeProject->sDclFormCopiedFrom == m_pThisDclForm->GetKeyName())
 			{
 				// make the control be offset by nControlOffset
-				pCopyOfArxControlObject->SetLngProperty(nLeft, pCopyOfArxControlObject->GetLngProperty(nLeft) + nControlOffset);
-				pCopyOfArxControlObject->SetLngProperty(nTop, pCopyOfArxControlObject->GetLngProperty(nTop) + nControlOffset);
+				pCopyOfArxControlObject->SetLongProperty(nLeft, pCopyOfArxControlObject->GetLngProperty(nLeft) + nControlOffset);
+				pCopyOfArxControlObject->SetLongProperty(nTop, pCopyOfArxControlObject->GetLngProperty(nTop) + nControlOffset);
 		
 				// get the next available name for the control
-				sControlName = FindNextControlName(GetControlName(pCopyOfArxControlObject->GetType()));	
-				pCopyOfArxControlObject->SetStrProperty(nName, sControlName);			
-				pCopyOfArxControlObject->ForceUpdateGlobalVariable(m_pThisDclForm->GetKeyName());
+				CString sControlName = FindNextControlName(GetControlName(pCopyOfArxControlObject->GetType()));	
+				pCopyOfArxControlObject->SetStringProperty(nName, sControlName);			
+				pCopyOfArxControlObject->ForceUpdateGlobalVariable(sControlName);
 			}
 			else
-			{
-				// get the existing control name
-				sControlName = pCopyOfArxControlObject->GetStrProperty(nName);
 				pCopyOfArxControlObject->ForceUpdateGlobalVariable(m_pThisDclForm->GetKeyName());
-			}
 			
 			CRect rcThis;
 			GetClientRect(&rcThis);
@@ -6940,7 +6591,7 @@ void CObjectDCLView::PasteFromClipBoard()
 			{
 				int nCtrlWidth = pCopyOfArxControlObject->GetLngProperty(nWidth);
 				nCtrlLeft = rcThis.Width() - nCtrlWidth;
-				pCopyOfArxControlObject->SetLngProperty(nLeft, nCtrlLeft);
+				pCopyOfArxControlObject->SetLongProperty(nLeft, nCtrlLeft);
 			}
 			
 			// check to make sure the control in inside the form
@@ -6949,16 +6600,15 @@ void CObjectDCLView::PasteFromClipBoard()
 			{
 				int nCtrlWidth = pCopyOfArxControlObject->GetLngProperty(nHeight);
 				nCtrlTop = rcThis.Height() - nCtrlWidth;
-				pCopyOfArxControlObject->SetLngProperty(nTop, nCtrlTop);
+				pCopyOfArxControlObject->SetLongProperty(nTop, nCtrlTop);
 			}
 
 			// add current clipboard control to DclFormObject
-			m_pThisDclForm->GetControlList().AddTail(pCopyOfArxControlObject);
+			m_pThisDclForm->AddControl(pCopyOfArxControlObject);
 			
-			int nNewArxIndex = m_pThisDclForm->GetControlList().GetCount()-1;
 			CRect rcPos(0,0,0,0);
 			// call the method to add the CWnd control 
-			CWnd *pControl = AddCWndControl(nNewArxIndex, pCopyOfArxControlObject, pCopyOfArxControlObject->GetType(), sControlName, rcPos, true);
+			CWnd *pControl = AddCWndControl(pCopyOfArxControlObject, rcPos, true);
 			if (pControl == NULL)
 				return;
 			
@@ -7318,10 +6968,10 @@ void CObjectDCLView::CompletedDragResize(int nQuadrant, CPoint point)
 	rcPos.bottom = rcPos.top + rcChild.Height();
 
 	// set the position properties
-	m_SelectedControl.m_pArxObject->SetLngProperty(nLeft, rcPos.left);
-	m_SelectedControl.m_pArxObject->SetLngProperty(nTop, rcPos.top);
-	m_SelectedControl.m_pArxObject->SetLngProperty(nWidth, rcPos.Width());
-	m_SelectedControl.m_pArxObject->SetLngProperty(nHeight, rcPos.Height());
+	m_SelectedControl.m_pArxObject->SetLongProperty(nLeft, rcPos.left);
+	m_SelectedControl.m_pArxObject->SetLongProperty(nTop, rcPos.top);
+	m_SelectedControl.m_pArxObject->SetLongProperty(nWidth, rcPos.Width());
+	m_SelectedControl.m_pArxObject->SetLongProperty(nHeight, rcPos.Height());
 		
 	CRect rcThis;
 	GetClientRect(&rcThis);
@@ -7330,10 +6980,10 @@ void CObjectDCLView::CompletedDragResize(int nQuadrant, CPoint point)
 	// set the offset position properties
 	CalcControlOffsetDistances(m_SelectedControl.m_pArxObject, rcPos);
 	/*
-	m_SelectedControl.m_pArxObject->SetLngProperty(nLeftFromRight, rcThis.Width() - rcPos.left);
-	m_SelectedControl.m_pArxObject->SetLngProperty(nTopFromBottom, rcThis.Height() - rcPos.top);
-	m_SelectedControl.m_pArxObject->SetLngProperty(nRightFromRight, rcThis.Width() - rcPos.right);
-	m_SelectedControl.m_pArxObject->SetLngProperty(nBottomFromBottom, rcThis.Height() - rcPos.bottom);
+	m_SelectedControl.m_pArxObject->SetLongProperty(nLeftFromRight, rcThis.Width() - rcPos.left);
+	m_SelectedControl.m_pArxObject->SetLongProperty(nTopFromBottom, rcThis.Height() - rcPos.top);
+	m_SelectedControl.m_pArxObject->SetLongProperty(nRightFromRight, rcThis.Width() - rcPos.right);
+	m_SelectedControl.m_pArxObject->SetLongProperty(nBottomFromBottom, rcThis.Height() - rcPos.bottom);
 	*/
 
 
@@ -7355,7 +7005,7 @@ void CObjectDCLView::CompletedDragResize(int nQuadrant, CPoint point)
 
 void CObjectDCLView::UpdateClientHeight(CDclControlObject* pArxObject, CWnd *pControl) 
 {
-	int nCount = 0;
+	size_t nCount = 0;
 	int nBottom = 0;
 
 	if (m_SelectedControl.m_pArxObject == NULL)
@@ -7405,8 +7055,8 @@ void CObjectDCLView::OnSize(UINT nType, int cx, int cy)
 
 		GetClientRect(&rc);
 		 
-		pDclProps->SetLngProperty(nWidth, rc.Width());
-		pDclProps->SetLngProperty(nHeight, rc.Height());
+		pDclProps->SetLongProperty(nWidth, rc.Width());
+		pDclProps->SetLongProperty(nHeight, rc.Height());
 		m_pThisDclForm->m_bUsesClientRect = TRUE;
 
 		GetParentFrame()->GetWindowRect(&rc);
@@ -7459,10 +7109,10 @@ void CObjectDCLView::AdjustOffsets(int cx, int cy)
 				// set the offset position properties
 				CalcControlOffsetDistances(pArxObject, rcPos);
 				/*
-				pArxObject->SetLngProperty(nLeftFromRight, rcThis.Width() - rcPos.left);
-				pArxObject->SetLngProperty(nTopFromBottom, rcThis.Height() - rcPos.top);
-				pArxObject->SetLngProperty(nRightFromRight, rcThis.Width() - rcPos.right);
-				pArxObject->SetLngProperty(nBottomFromBottom, rcThis.Height() - rcPos.bottom);
+				pArxObject->SetLongProperty(nLeftFromRight, rcThis.Width() - rcPos.left);
+				pArxObject->SetLongProperty(nTopFromBottom, rcThis.Height() - rcPos.top);
+				pArxObject->SetLongProperty(nRightFromRight, rcThis.Width() - rcPos.right);
+				pArxObject->SetLongProperty(nBottomFromBottom, rcThis.Height() - rcPos.bottom);
 				*/
 			}
 		}
@@ -7511,16 +7161,12 @@ void CObjectDCLView::ZOrdedSelectedControls(short direction)
 	}
 	
 	if (direction == 0)
-	{
 		m_SelectedControl.m_pControl->SetWindowPos(&CWnd::wndTop, 0,0,nNotSet,nNotSet, SWP_NOSIZE|SWP_NOMOVE);		
-	}
 	else
-	{
 		m_SelectedControl.m_pControl->SetWindowPos(&CWnd::wndBottom, 0,0,nNotSet,nNotSet, SWP_NOSIZE|SWP_NOMOVE);
-	}
 	
 	// call method to adjust the control's placement
-	ArxControlZOrder(m_SelectedControl.m_pArxObject, direction);
+	m_pThisDclForm->ReorderControl( m_SelectedControl.m_pArxObject, (direction != 0) );
 	
 	for (int i=0; i<m_SelectedList.GetCount(); i++)
 	{
@@ -7536,64 +7182,14 @@ void CObjectDCLView::ZOrdedSelectedControls(short direction)
 						pSelControl->m_pControl->SetWindowPos(&CWnd::wndTop, 0,0,nNotSet,nNotSet, SWP_NOSIZE|SWP_NOMOVE);
 					else
 						pSelControl->m_pControl->SetWindowPos(&CWnd::wndBottom, 0,0,nNotSet,nNotSet, SWP_NOSIZE|SWP_NOMOVE);
-					
 					// call method to adjust the control's placement
-					ArxControlZOrder(pSelControl->m_pArxObject, direction);
+					m_pThisDclForm->ReorderControl( pSelControl->m_pArxObject, (direction != 0) );
 				}
 			}
 		}
 	}
 	MoveGripRectsForward();
 	UpdateZOrderList();
-	
-}
-void CObjectDCLView::ArxControlZOrder(CDclControlObject *pArxObject, short ZOrder) 
-{
-	BOOL bReturnValue;
-	
-	// create a position variable to hold the converted ArxControlIndex
-	POSITION ControlPos;
-	
-	// set the position variable to be equal the index to passing to the GetAt method
-	ControlPos = m_pThisDclForm->GetControlList().Find(pArxObject, NULL);
-	
-	// create a new ArxControlObject object and point it at the object in the list
-	CDclControlObject* pArxControlObject = m_pThisDclForm->GetControlList().GetAt(ControlPos);
-
-	// if move to front then
-	if(ZOrder == 0)
-	{
-		// remove the Control at the old location
-		m_pThisDclForm->GetControlList().RemoveAt(ControlPos);
-		// insert a copy of the control in at the end of the list
-		// for when populating the form it will show up last or at the front of all the controls
-		m_pThisDclForm->GetControlList().AddTail(pArxControlObject);
-		// set return value to TRUE to indicate completion
-		bReturnValue = TRUE;			
-	}			
-	// if move to back then
-	else 
-	{
-		// remove the Control at the old location
-		m_pThisDclForm->GetControlList().RemoveAt(ControlPos);	
-		// insert a copy of the control in at the end of the list
-		// for when populating the form it will show up first or at the back of all the controls
-		POSITION FrontPos = m_pThisDclForm->GetControlList().GetHeadPosition();
-		m_pThisDclForm->GetControlList().InsertAfter(FrontPos, pArxControlObject);
-		// set return value to TRUE to indicate completion
-		bReturnValue = TRUE;					
-
-	}
-
-	int nCount = 1;
-	while (nCount < m_pThisDclForm->GetControlList().GetCount())
-	{
-		POSITION CtrlPos = m_pThisDclForm->GetControlList().FindIndex(nCount);
-		CDclControlObject* pArxObject = m_pThisDclForm->GetControlList().GetAt(CtrlPos);
-		pArxObject->m_Index = nCount;
-		nCount++;
-	}
-
 }
 
 CSize CObjectDCLView::GetControlSize(CWnd *pControl, int nControlType)
@@ -7737,29 +7333,23 @@ void CObjectDCLView::DisplayControls(CDclFormObject *pDclForm)
 				if (bMoveControl == true)
 				{
 					// update the postion properties
-					pArxObject->SetLngProperty(nLeft, rcPos.left);
-					pArxObject->SetLngProperty(nTop, rcPos.top);
-					pArxObject->SetLngProperty(nWidth, rcPos.Width());
-					pArxObject->SetLngProperty(nHeight, rcPos.Height());
+					pArxObject->SetLongProperty(nLeft, rcPos.left);
+					pArxObject->SetLongProperty(nTop, rcPos.top);
+					pArxObject->SetLongProperty(nWidth, rcPos.Width());
+					pArxObject->SetLongProperty(nHeight, rcPos.Height());
 					// set the offset position properties
 					CalcControlOffsetDistances(pArxObject, rcPos);
 					/*
-					pArxObject->SetLngProperty(nLeftFromRight, rcThis.Width() - rcPos.left);
-					pArxObject->SetLngProperty(nTopFromBottom, rcThis.Height() - rcPos.top);
-					pArxObject->SetLngProperty(nRightFromRight, rcThis.Width() - rcPos.right);
-					pArxObject->SetLngProperty(nBottomFromBottom, rcThis.Height() - rcPos.bottom);
+					pArxObject->SetLongProperty(nLeftFromRight, rcThis.Width() - rcPos.left);
+					pArxObject->SetLongProperty(nTopFromBottom, rcThis.Height() - rcPos.top);
+					pArxObject->SetLongProperty(nRightFromRight, rcThis.Width() - rcPos.right);
+					pArxObject->SetLongProperty(nBottomFromBottom, rcThis.Height() - rcPos.bottom);
 					*/
 				}
 				
 				
 				// call the method to add the new control
-				CWnd *pControl = AddCWndControl(
-					i,
-					pArxObject,
-					pArxObject->GetType(),
-					pArxObject->GetStrProperty(nName), 
-					rcPos,
-					false);
+				CWnd *pControl = AddCWndControl( pArxObject, rcPos, false);
 				if (pControl == NULL)
 				{
 					HideGrips();
@@ -7794,8 +7384,8 @@ void CObjectDCLView::DisplayControls(CDclFormObject *pDclForm)
 	GetClientRect(&rc);
 		 
 	CDclControlObject *pDclProps = m_pThisDclForm->GetControlProperties();
-	pDclProps->SetLngProperty(nWidth, rc.Width());
-	pDclProps->SetLngProperty(nHeight, rc.Height());
+	pDclProps->SetLongProperty(nWidth, rc.Width());
+	pDclProps->SetLongProperty(nHeight, rc.Height());
 	m_pThisDclForm->m_bUsesClientRect = TRUE;
 
 //	MoveThisInPosition();
@@ -7874,7 +7464,7 @@ void CObjectDCLView::UndoAction()
 			{
 			case uaFontName:
 				{
-				pUndoAction->m_pArxObject->SetStrProperty(nLabelName, pUndoAction->sString);
+				pUndoAction->m_pArxObject->SetStringProperty(nLabelName, pUndoAction->sString);
 				
 				// call the method to update the control
 				UpdateProperty(nLabelName, pUndoAction->m_pArxObject, (CControlHolder*)pUndoAction->m_pArxObject->m_pCtrlHolder);
@@ -7883,7 +7473,7 @@ void CObjectDCLView::UndoAction()
 				}
 			case uaFontSize:
 				{
-				pUndoAction->m_pArxObject->SetLngProperty(nLabelSize, pUndoAction->lLong);
+				pUndoAction->m_pArxObject->SetLongProperty(nLabelSize, pUndoAction->lLong);
 				
 				// call the method to update the control
 				UpdateProperty(nLabelName, pUndoAction->m_pArxObject, (CControlHolder*)pUndoAction->m_pArxObject->m_pCtrlHolder);
@@ -7893,10 +7483,10 @@ void CObjectDCLView::UndoAction()
 			case uaMoved:
 				{
 				pUndoAction->m_pControl->MoveWindow(pUndoAction->rcPos, TRUE);
-				pUndoAction->m_pArxObject->SetLngProperty(nLeft, pUndoAction->rcPos.left);
-				pUndoAction->m_pArxObject->SetLngProperty(nTop, pUndoAction->rcPos.top);
-				pUndoAction->m_pArxObject->SetLngProperty(nWidth, pUndoAction->rcPos.Width());
-				pUndoAction->m_pArxObject->SetLngProperty(nHeight, pUndoAction->rcPos.Height());
+				pUndoAction->m_pArxObject->SetLongProperty(nLeft, pUndoAction->rcPos.left);
+				pUndoAction->m_pArxObject->SetLongProperty(nTop, pUndoAction->rcPos.top);
+				pUndoAction->m_pArxObject->SetLongProperty(nWidth, pUndoAction->rcPos.Width());
+				pUndoAction->m_pArxObject->SetLongProperty(nHeight, pUndoAction->rcPos.Height());
 				if (m_SelectedControl.m_nIndex == pUndoAction->m_pArxObject->m_Index)
 					ShowGripRects(TRUE, pUndoAction->rcPos);
 				break;
@@ -8134,74 +7724,10 @@ void CObjectDCLView::ZOrderUpdateOfSelCtrl(short ZIndex)
 	}
 			
 	// call method to adjust the control's placement
-	UpdateArxControlZOrder(m_SelectedControl.m_pArxObject, ZIndex);
+	m_pThisDclForm->ReorderControl( m_SelectedControl.m_pArxObject, size_t(ZIndex) );
 
 	MoveGripRectsForward();
 	UpdateZOrderList();
-}
-
-void CObjectDCLView::UpdateArxControlZOrder(CDclControlObject *pArxObject, short ZOrder) 
-{
-	
-	// create a position variable to hold the converted ArxControlIndex
-	POSITION ControlPos;
-	
-	// set the position variable to be equal the index to passing to the GetAt method
-	ControlPos = m_pThisDclForm->GetControlList().Find(pArxObject, NULL);
-	
-	// create a new ArxControlObject object and point it at the object in the list
-	CDclControlObject* pArxControlObject = m_pThisDclForm->GetControlList().GetAt(ControlPos);
-
-	// remove the Control at the old location
-	m_pThisDclForm->GetControlList().RemoveAt(ControlPos);
-	
-	
-	int nTotalCount = m_pThisDclForm->GetControlList().GetCount()- 1;
-	int nCount = nTotalCount;
-	int nZOrderCounter = 0;
-	if (ZOrder > nTotalCount)
-		ZOrder = nTotalCount;
-
-	while (nCount >= 0)
-	{
-		// get the current position
-		POSITION CtrlPos = m_pThisDclForm->GetControlList().FindIndex(nCount);
-		
-		if (ZOrder == nZOrderCounter)
-		{
-			// insert a copy of the control in at the end of the list
-			// for when populating the form it will show up last or at the front of all the controls
-			m_pThisDclForm->GetControlList().InsertAfter(CtrlPos, pArxControlObject);
-			pArxControlObject->m_pCtrlHolder->SetWindowPos(&CWnd::wndBottom, 0,0,nNotSet,nNotSet, SWP_NOSIZE|SWP_NOMOVE);		
-		}
-
-		if (nCount > 0)
-		{
-			CDclControlObject* pArxObject = m_pThisDclForm->GetControlList().GetAt(CtrlPos);
-			pArxObject->m_pCtrlHolder->SetWindowPos(&CWnd::wndBottom, 0,0,nNotSet,nNotSet, SWP_NOSIZE|SWP_NOMOVE);				
-		}
-		nCount--;
-		nZOrderCounter++;
-	}
-/*
-		// get the current position
-	POSITION CtrlPos = m_pThisDclForm->GetControlList().FindIndex(m_pThisDclForm->GetControlList().GetCount()nNotSet-ZOrder);
-	// insert a copy of the control in at the end of the list
-	// for when populating the form it will show up last or at the front of all the controls
-	m_pThisDclForm->GetControlList().InsertAfter(CtrlPos, pArxControlObject);
-*/
-
-	nCount = 1;
-	while (nCount < m_pThisDclForm->GetControlList().GetCount())
-	{
-		// get the current position
-		POSITION CtrlPos = m_pThisDclForm->GetControlList().FindIndex(nCount);
-		CDclControlObject* pArxObject = m_pThisDclForm->GetControlList().GetAt(CtrlPos);
-		pArxObject->m_Index = nCount;
-		nCount++;
-	}
-	
-
 }
 
 bool CObjectDCLView::IsTabsEnabled()
@@ -8464,6 +7990,7 @@ void CObjectDCLView::FireControlSelected(CDclControlObject *pArxControl)
 		{
 			m_SelectedControl.m_pArxObject = pArxControl;
 			m_SelectedControl.m_pControl = pArxControl->m_pCtrlHolder;
+			m_SelectedControl.m_nIndex = pArxControl->m_Index;
 		}
 		CRect rc;
 		m_SelectedControl.m_pControl->GetWindowRect(&rc);
@@ -8491,31 +8018,38 @@ void CObjectDCLView::FireShowFormGrips(BOOL bVisible)
 			// if this form is a tab form clear the property list box display
 			theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
 	}
-	
 }
+
 void CObjectDCLView::FirePopUpMenuPlease(long cx, long cy)
 {
 }
+
 void CObjectDCLView::FireTabResized(short nClientHeight)
 {
 }
+
 void CObjectDCLView::FireMouseDownEvent()
 {
 }
+
 void CObjectDCLView::FireTabControlDeleted()
 {
-	// clean up the child tab panes from the Project Tree.
-	HTREEITEM hChild = theEditorWorkspace.GetProjectTreeCtrl()->GetChildItem(m_pThisDclForm->m_htiTreeItem);
-	while (hChild != NULL)
+	theEditorWorkspace.GetProjectTreeCtrl()->RemoveChildren( m_pThisDclForm->m_htiTreeItem );
+	CProject* pProject = m_pThisDclForm->GetProject();
+	POSITION pos = pProject->GetDclFormList().GetHeadPosition();
+	while( pos )
 	{
-		theEditorWorkspace.GetProjectTreeCtrl()->DeleteChildTab(hChild);
-		hChild = theEditorWorkspace.GetProjectTreeCtrl()->GetChildItem(m_pThisDclForm->m_htiTreeItem);
+		CDclFormObject* pDclForm = pProject->GetDclFormList().GetNext( pos );
+		assert( pDclForm != NULL );
+		if( pDclForm && pDclForm->GetParentForm() == m_pThisDclForm )
+			pDclForm->m_bDeleted = true;
 	}
-
 }
+
 void CObjectDCLView::FireSetUndo()
 {
 }
+
 void CObjectDCLView::FireControlInserted(CDclControlObject *pArxControl, long ControlType)
 {
 	// have the property list show the new control
@@ -8525,47 +8059,46 @@ void CObjectDCLView::FireControlInserted(CDclControlObject *pArxControl, long Co
 	m_StandardCursorID = false;
 	theEditorWorkspace.GetToolBox()->m_nSelectedCtrl = 1;
 
+	//This adds three unnamed tab panes when a new tab strip is inserted. I commented this because the 
+	//unnamed panes caused problems with the tab strip not recognizing the panes, and I think it is more 
+	//intuitive to add them manually as desired anyway. 2007-02-13 [ORW]
 	// if a tab was inserted
-	if (ControlType == CtlTabStrip)
-	{
-		AddTabPanes();
-		
-	}
-
+	//if (ControlType == CtlTabStrip)
+	//	AddTabPanes();
 }
 
-void CObjectDCLView::AddTabPanes()
-{
-	CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
-	// create a pointer to pass to the list to insert
-	CProject *pProject = activeProject;
-	
-	for (int i=0; i<3; i++)
-	{
-		CDclFormObject* pNewDclForm = new CDclFormObject( pProject, VdclTabForm );
-		// assign the unique name and dcl form type to the dcl form object
-		pNewDclForm->SetUniqueName(pApp->CreateUniqueName());
-		pNewDclForm->SetParentForm(m_pThisDclForm);
-		pNewDclForm->SetTabIndex(i);
-		
-		// add the new Dcl form object
-		pProject->GetDclFormList().AddTail(pNewDclForm);
-		
-		// make the call to add the properties to the new dcl form object.
-		//pApp->AddDclFormProperties(pNewDclForm, VdclTabForm);
-		
-		CDclControlObject *pDclProperties = pNewDclForm->GetControlProperties();
-		if (pDclProperties != NULL)
-		{
-			pDclProperties->SetLngProperty(nHeight, GetSelectedTabClientHeight());
-			pDclProperties->SetLngProperty(nWidth, GetSelectedTabClientWidth());
-		}
-
-		// add the new dcl form to the project tree so it's shown there
-		CProjectTreeCtrl *pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
-		pProjTree->AddFormToTree(pNewDclForm, true);
-	}	
-}
+//void CObjectDCLView::AddTabPanes()
+//{
+//	CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
+//	// create a pointer to pass to the list to insert
+//	CProject *pProject = activeProject;
+//	
+//	for (int i=0; i<3; i++)
+//	{
+//		CDclFormObject* pNewDclForm = new CDclFormObject( pProject, VdclTabForm );
+//		// assign the unique name and dcl form type to the dcl form object
+//		pNewDclForm->SetUniqueName(pApp->CreateUniqueName());
+//		pNewDclForm->SetParentForm(m_pThisDclForm);
+//		pNewDclForm->SetTabIndex(i);
+//		
+//		// add the new Dcl form object
+//		pProject->GetDclFormList().AddTail(pNewDclForm);
+//		
+//		// make the call to add the properties to the new dcl form object.
+//		pApp->AddDclFormProperties(pNewDclForm, VdclTabForm);
+//		
+//		CDclControlObject *pDclProperties = pNewDclForm->GetControlProperties();
+//		if (pDclProperties != NULL)
+//		{
+//			pDclProperties->SetLongProperty(nHeight, GetSelectedTabClientHeight());
+//			pDclProperties->SetLongProperty(nWidth, GetSelectedTabClientWidth());
+//		}
+//
+//		// add the new dcl form to the project tree so it's shown there
+//		CProjectTreeCtrl *pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
+//		pProjTree->AddFormToTree(pNewDclForm, true);
+//	}	
+//}
 
 
 CDclFormObject * CObjectDCLView::AddSingleTabPane(int nIndex)
@@ -8577,30 +8110,33 @@ CDclFormObject * CObjectDCLView::AddSingleTabPane(int nIndex)
 	
 	try
 	{
-		pNewDclForm = new CDclFormObject( pProject, VdclTabForm );
-		// assign the unique name and dcl form type to the dcl form object
-		pNewDclForm->SetUniqueName(pApp->CreateUniqueName());
-		pNewDclForm->SetParentForm(m_pThisDclForm);
-		pNewDclForm->SetTabIndex(nIndex);
-		
-		POSITION pos = pProject->GetDclFormList().GetHeadPosition();
-		while (pos)
-		{
-			CDclFormObject* pForm = pProject->GetDclFormList().GetNext(pos);
-			if (pForm->GetParentName() == m_pThisDclForm->GetUniqueName() && pForm->GetTabIndex() == nIndex)
-				break;
-		}
-		if (pos)
-			pProject->GetDclFormList().InsertBefore(pos, pNewDclForm);
-		else
-			pProject->GetDclFormList().AddTail(pNewDclForm);
+		//pNewDclForm = new CDclFormObject( pProject, VdclTabForm );
+		//// assign the unique name and dcl form type to the dcl form object
+		//pNewDclForm->SetUniqueName(pApp->CreateUniqueName());
+		//pNewDclForm->SetParentForm(m_pThisDclForm);
+		//pNewDclForm->SetTabIndex(nIndex);
+		//
+		//POSITION pos = pProject->GetDclFormList().GetHeadPosition();
+		//while (pos)
+		//{
+		//	CDclFormObject* pForm = pProject->GetDclFormList().GetNext(pos);
+		//	if (pForm->GetParentName() == m_pThisDclForm->GetUniqueName() && pForm->GetTabIndex() == nIndex)
+		//		break;
+		//}
+		//if (pos)
+		//	pProject->GetDclFormList().InsertBefore(pos, pNewDclForm);
+		//else
+		//	pProject->GetDclFormList().AddTail(pNewDclForm);
+
+		pNewDclForm = pProject->AddForm( VdclTabForm, m_pThisDclForm );
+		pNewDclForm->SetTabIndex( nIndex );
 		
 		CDclControlObject *pDclProperties = pNewDclForm->GetControlProperties();
 		assert( pDclProperties != NULL );
 		if (pDclProperties != NULL)
 		{
-			pDclProperties->SetLngProperty(nHeight, GetSelectedTabClientHeight());
-			pDclProperties->SetLngProperty(nWidth, GetSelectedTabClientWidth());
+			pDclProperties->SetLongProperty(nHeight, GetSelectedTabClientHeight());
+			pDclProperties->SetLongProperty(nWidth, GetSelectedTabClientWidth());
 		}
 
 		// add the new dcl form to the project tree so it's shown there
@@ -8629,7 +8165,9 @@ bool CObjectDCLView::CanRemoveChildTabPane(int nIndex)
 	if (pos != NULL)
 	{
 		CDclFormObject *pTabForm = pProject->GetDclTabChildForm(m_pThisDclForm->GetUniqueName(), nIndex);
-		
+		assert( pTabForm != NULL );
+		if( !pTabForm )
+			return true;
 		if (pTabForm->GetControlList().GetCount() > 1)		
 		{
 			CString sMsg;
@@ -8649,38 +8187,9 @@ void CObjectDCLView::RemoveChildTabPane(CDclFormObject *pDclForm)
 {
 	if (pDclForm == NULL)
 		return;
-	// create a pointer to pass to the list to insert
-	CProject *pProject = activeProject;
-	
-	POSITION pos = pProject->GetDclFormList().GetHeadPosition();
-	while (pos != NULL)
-	{
-		CDclFormObject *pTabForm = pProject->GetDclFormList().GetAt(pos);
-		
-		if (pTabForm == pDclForm)
-		{
-			// if the tab has a tree item (which it should)
-			if (pTabForm->m_htiTreeItem != NULL)
-			{
-				// delete the item.
-				theEditorWorkspace.GetProjectTreeCtrl()->DeleteItem(pTabForm->m_htiTreeItem);
-			}
-			// if the tab as a view open
-			if (pTabForm->m_pMdiChildWnd != NULL)
-			{
-				// close the view
-				pTabForm->m_pMdiChildWnd->DestroyWindow();
-			}
-			// call the method to clear the object
-			pTabForm->ClearControls();		
-			// delete the object
-			delete pTabForm;
-			// and remove it's pointer from the list
-			pProject->GetDclFormList().RemoveAt(pos);		
-			return;
-		}
-		pProject->GetDclFormList().GetNext(pos);
-	}	
+	if (pDclForm->m_htiTreeItem != NULL)
+		theEditorWorkspace.GetProjectTreeCtrl()->DeleteItem(pDclForm->m_htiTreeItem);
+	pDclForm->GetProject()->DeleteForm( pDclForm );
 }
 
 void CObjectDCLView::ResizeChildTabPanes()
@@ -8699,8 +8208,8 @@ void CObjectDCLView::ResizeChildTabPanes()
 		CDclControlObject *pDclProperties = pTabForm->GetControlProperties();
 		int nNewHeight = GetSelectedTabClientHeight();
 		int nNewWidth = GetSelectedTabClientWidth();
-		pDclProperties->SetLngProperty(nHeight, nNewHeight);
-		pDclProperties->SetLngProperty(nWidth, nNewWidth);
+		pDclProperties->SetLongProperty(nHeight, nNewHeight);
+		pDclProperties->SetLongProperty(nWidth, nNewWidth);
 		if (pTabForm->m_pMdiChildWnd != NULL)
 			pTabForm->m_pMdiChildWnd->SetWindowPos(NULL, nNotSet, nNotSet, nNewWidth, nNewHeight, SWP_NOMOVE);
 	}	

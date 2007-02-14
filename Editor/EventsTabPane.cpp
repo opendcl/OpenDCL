@@ -567,7 +567,7 @@ void CEventsTabPane::CopyToClipboard()
 		EmptyClipboard();
 		clipbuffer = GlobalAlloc(GMEM_DDESHARE, (source.GetLength()+1) * sizeof(TCHAR));
 		buffer = (TCHAR*)GlobalLock(clipbuffer);
-		lstrcpy(buffer, LPCTSTR(source));
+		lstrcpyn(buffer, source, source.GetLength() + 1);
 		GlobalUnlock(clipbuffer);
 		SetClipboardData(CF_TEXT,clipbuffer);
 		CloseClipboard();
@@ -700,7 +700,7 @@ void CEventsTabPane::OnSelchangeEventstree()
 		}
 		else
 		{
-			m_pDclForm = activeProject->GetParentDclForm(m_pDclForm->GetParentName());
+			m_pDclForm = m_pDclForm->GetParentForm();
 			sDclFormName = m_pDclForm->GetKeyName();
 		}
 	}
@@ -843,8 +843,9 @@ void CEventsTabPane::SetEvent(PropertyId nEventId, CString sEventDefun)
 	}
 	else
 		// set the property to the new defun name
-		m_pControl->SetStrProperty(nEventId, sEventDefun); 
+		m_pControl->SetStringProperty(nEventId, sEventDefun); 
 }
+
 CString CEventsTabPane::GetEvent(PropertyId nEventId)
 {
 	if (m_pControl->GetType() == CtlActiveX)

@@ -330,7 +330,7 @@ int COptionListBox::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_CurSel = (short)m_ArxControl->GetLngProperty(nDefSelIndex);
 	CRect rc;
 	GetClientRect(&rc);
-	int nCount = pListProperty->CountList();
+	size_t nCount = pListProperty->size();
 	for (int i = 0; i < nCount; i++)
 	{
 		int nIndex = AddString(pListProperty->GetStringItem(i));		

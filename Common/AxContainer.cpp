@@ -605,7 +605,6 @@ UINT CAxContainer::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo *TheI
 UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, LPOLEOBJECT pIObject)
 {
 	ITypeInfo *TheInfo = NULL;
-    TheInfo = NULL;    
 	ObjectTypeInfoProperties(pIObject,&TheInfo);
 	return ExtractMethodInfo(pControl, TheInfo);
 }

@@ -4,9 +4,9 @@
 enum PropertyId
 {
 	nInvalidPropertyId = -1,
+	nMinPropertyId = 1,
 	nName = 1,
 	nCustom = 2,
-	nMinPropertyId = 3, //skipping nName and nCustom
 	nAutoSize				= 3,
 	nBorderStyle			= 4,
 	nButtonStyle			= 5,

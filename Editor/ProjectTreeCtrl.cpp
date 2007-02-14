@@ -39,18 +39,16 @@ static CString FindTabCaption2(CDclFormObject *pDclTab, int nTabIndex)
 static CString FindTabCaption(CDclFormObject *pDclTab)
 {
 	// do loop to add all the tree items
-	for (int i=0; i<activeProject->GetDclFormList().GetCount(); i++)
+	for (int i=0; i<pDclTab->GetProject()->GetDclFormList().GetCount(); i++)
 	{
-		POSITION pos = activeProject->GetDclFormList().FindIndex(i);
+		POSITION pos = pDclTab->GetProject()->GetDclFormList().FindIndex(i);
 		if (pos != NULL)
 		{
-			CDclFormObject *pDcl = activeProject->GetDclFormList().GetAt(pos);
+			CDclFormObject *pDcl = pDclTab->GetProject()->GetDclFormList().GetAt(pos);
 			if (pDcl != NULL)
 			{
 				if (pDclTab->GetParentName() == pDcl->GetUniqueName())
-				{					
 					return FindTabCaption2(pDcl, pDclTab->GetTabIndex());
-				}
 			}			
 		}
 	}
@@ -140,43 +138,25 @@ void CProjectTreeCtrl::RemoveViewPointer(CView *pView)
 {
 	if(!mpProject)
 		return;
-	for (int i=0; i<mpProject->GetDclFormList().GetCount(); i++)
+	POSITION pos = mpProject->GetDclFormList().GetHeadPosition();
+	while( pos )
 	{
-		POSITION pos = mpProject->GetDclFormList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CDclFormObject *pDcl = mpProject->GetDclFormList().GetAt(pos);
-			if (pDcl->m_pMdiChildWnd == (CChildFrame*)pView->GetParentFrame())
-			{
-				pDcl->m_pMdiChildWnd = NULL;
-			}
-		}
+		CDclFormObject* pDclForm = mpProject->GetDclFormList().GetNext( pos );
+		assert( pDclForm != NULL );
+		if( pDclForm->m_pMdiChildWnd == (CChildFrame*)pView->GetParentFrame() )
+			pDclForm->m_pMdiChildWnd = NULL;
 	}
 }
 
-void CProjectTreeCtrl::DeleteChildTab(HTREEITEM hChild)
+void CProjectTreeCtrl::RemoveChildren(HTREEITEM hParent)
 {
-	if (hChild == NULL)
+	if( !hParent )
 		return;
-	
-	try
+	HTREEITEM hChild = GetChildItem( hParent );
+	while (hChild != NULL)
 	{
-		for (int i=0; i<mpProject->GetDclFormList().GetCount(); i++)
-		{
-			POSITION pos = mpProject->GetDclFormList().FindIndex(i);
-			if (pos != NULL)
-			{
-				CDclFormObject *pDcl = mpProject->GetDclFormList().GetAt(pos);
-				if (pDcl->m_htiTreeItem == hChild)
-				{
-					pDcl->m_bDeleted = true;
-				}
-			}
-		}
-		DeleteItem(hChild);
-	}
-	catch(...)
-	{
+		DeleteItem( hChild );
+		hChild = GetChildItem( hParent );
 	}
 }
 
@@ -188,16 +168,13 @@ void CProjectTreeCtrl::SetupProjectTree(CProject* pProject /*= NULL*/)
 
 	if(mpProject)
 	{
-		// do loop to add all the tree items
-		for (int i=0; i<mpProject->GetDclFormList().GetCount(); i++)
+		POSITION pos = mpProject->GetDclFormList().GetHeadPosition();
+		while( pos )
 		{
-			POSITION pos = mpProject->GetDclFormList().FindIndex(i);
-			if (pos != NULL)
-			{
-				CDclFormObject *pDcl = mpProject->GetDclFormList().GetAt(pos);
-				if (pDcl != NULL)
-					AddFormToTree(pDcl, false);
-			}
+			CDclFormObject* pDclForm = mpProject->GetDclFormList().GetNext( pos );
+			assert( pDclForm != NULL );
+			if( pDclForm )
+				AddFormToTree( pDclForm, false );
 		}
 	}
 	
@@ -368,24 +345,11 @@ void CProjectTreeCtrl::AddFormToTree(CDclFormObject *pDcl, bool bForceShow)
 
 HTREEITEM CProjectTreeCtrl::FindTabParent(CDclFormObject *pDclTab)
 {
-	// do loop to add all the tree items
-	for (int i=0; i<mpProject->GetDclFormList().GetCount(); i++)
-	{
-		POSITION pos = mpProject->GetDclFormList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CDclFormObject *pDcl = mpProject->GetDclFormList().GetAt(pos);
-			if (pDcl != NULL)
-			{
-				if (pDclTab->GetParentName() == pDcl->GetUniqueName())
-				{
-					return pDcl->m_htiTreeItem;
-				}
-			}			
-		}
-	}
-
-	return NULL;
+	CDclFormObject* pParentForm = pDclTab->GetParentForm();
+	assert( pParentForm != NULL );
+	if( !pParentForm )
+		return NULL;
+	return pParentForm->m_htiTreeItem;
 }
 
 void CProjectTreeCtrl::CleanupParents()

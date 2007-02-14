@@ -28,7 +28,7 @@ public:
 		, mpEvent( NULL )
 		, mpMethods( NULL )
 		{}
-	~AxInterfaceDescriptor() {}
+	virtual ~AxInterfaceDescriptor() {}
 
 	//Attributes
 public:
@@ -93,4 +93,9 @@ protected:
 	virtual void SerializeProp(CArchive& ar, AxPropertyDescriptor& axProp, int nPropertyVersion);	
   IOStatus WritePropToTextFile(FILE* pFile, const AxPropertyDescriptor& axProp) const;
   IOStatus ReadPropFromTextFile5(std::ifstream &sFile, AxPropertyDescriptor& axProp);
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual LPCTSTR toString() const;
+#endif
 };

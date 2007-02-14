@@ -212,9 +212,7 @@ void CImageListContents::OnUpdate()
 	lvItem.iItem = nItem;
 	lvItem.iSubItem = 0;	
 	lvItem.iImage = nSel;	
-	TCHAR sValue [256];
-	lstrcpy(sValue, sText);		
-	lvItem.pszText = sValue;
+	lvItem.pszText = sText.LockBuffer();
 
 	m_TheList.SetItem(&lvItem);
 

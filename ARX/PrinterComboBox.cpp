@@ -320,7 +320,7 @@ void CPrinterComboBox::OnSelchange()
 		if( !pPaperSizesCombo )
 		{
 			InvokeMethodIntString(mpSourceControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-			mpSourceControl->SetStrProperty(nText, sString);
+			mpSourceControl->SetStringProperty(nText, sString);
 			return;
 		}
 
@@ -360,7 +360,7 @@ void CPrinterComboBox::OnSelchange()
 			if (mpSourceControl)
 			{
 				InvokeMethodIntString(mpSourceControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-				mpSourceControl->SetStrProperty(nText, sString);
+				mpSourceControl->SetStringProperty(nText, sString);
 			}
 			return;
 		}
@@ -391,7 +391,7 @@ void CPrinterComboBox::OnSelchange()
 		EndWaitCursor();
 
 		InvokeMethodIntString(mpSourceControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-		mpSourceControl->SetStrProperty(nText, sString);
+		mpSourceControl->SetStringProperty(nText, sString);
 	}
 	else
 	{		

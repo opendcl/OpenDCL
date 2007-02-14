@@ -238,7 +238,7 @@ void OdclEdit::OnChange()
 		if (sTestText != sText)
 		{
 			//AfxMessageBox(m_ArxControl->GetStrProperty(nEventEditChanged));
-			m_ArxControl->SetStrProperty(nText, sText);
+			m_ArxControl->SetStringProperty(nText, sText);
 			// call methods to invoke the event
 			InvokeMethodString(m_ArxControl->GetStrProperty(nEventEditChanged), sText, m_bInvokeWithSendString);
 		}

@@ -1135,7 +1135,7 @@ void CSizingControlBar::LoadState(LPCTSTR lpszProfileName)
     CWinApp* pApp = AfxGetApp();
 
     TCHAR szSection[256];
-    wsprintf(szSection, _T("%s-SCBar-%d"), lpszProfileName,
+    _sntprintf(szSection, _elements(szSection), _T("%s-SCBar-%d"), lpszProfileName,
         GetDlgCtrlID());
 
     m_szHorz.cx = max(m_szMinHorz.cx, (int) pApp->GetProfileInt(
@@ -1164,7 +1164,7 @@ void CSizingControlBar::SaveState(LPCTSTR lpszProfileName)
     CWinApp* pApp = AfxGetApp();
 
     TCHAR szSection[256];
-    wsprintf(szSection, _T("%s-SCBar-%d"), lpszProfileName,
+    _sntprintf(szSection, _elements(szSection), _T("%s-SCBar-%d"), lpszProfileName,
         GetDlgCtrlID());
 
     pApp->WriteProfileInt(szSection, _T("sizeHorzCX"), m_szHorz.cx);

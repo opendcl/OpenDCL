@@ -184,7 +184,7 @@ void VdclComboBoxEx::OnEditchange()
 		CString sTestText = m_ArxControl->GetStrProperty(nText);
 		if (sTestText != sText)
 		{
-			m_ArxControl->SetStrProperty(nText, sText);
+			m_ArxControl->SetStringProperty(nText, sText);
 			// call methods to invoke the event
 			InvokeMethodString(m_ArxControl->GetStrProperty(nEventEditChanged), sText, m_bInvokeWithSendString);
 		}
@@ -240,7 +240,7 @@ void VdclComboBoxEx::OnSelchange()
 	if (m_ArxControl)
 	{
 		InvokeMethodIntString(m_ArxControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-		m_ArxControl->SetStrProperty(nText, sString);
+		m_ArxControl->SetStringProperty(nText, sString);
 	}
 	
 	if (m_ArxControl == NULL && !m_bESC)
@@ -264,7 +264,7 @@ void VdclComboBoxEx::OnEditupdate()
 		CString sTestText = m_ArxControl->GetStrProperty(nText);
 		if (sTestText != sText)
 		{
-			m_ArxControl->SetStrProperty(nText, sText);
+			m_ArxControl->SetStringProperty(nText, sText);
 			// call methods to invoke the event
 			InvokeMethodString(m_ArxControl->GetStrProperty(nEventEditChanged), sText, m_bInvokeWithSendString);
 		}

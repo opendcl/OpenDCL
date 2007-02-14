@@ -95,7 +95,7 @@ BOOL OdclLayerCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 
 	if (pControl->GetLngProperty(nComboBoxStyle) != 1)
 	{
-		pControl->SetLngProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
+		pControl->SetLongProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
 	}
 
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
@@ -254,7 +254,7 @@ void OdclLayerCombo::OnSelchange()
 	if (m_ArxControl)
 	{
 		InvokeMethodIntString(m_ArxControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-		m_ArxControl->SetStrProperty(nText, sString);
+		m_ArxControl->SetStringProperty(nText, sString);
 	}
 
 	if (m_ArxControl == NULL)

@@ -588,7 +588,7 @@ void CDwgDirList::SetRowHeight(int nTheRowHeight)
 		if (nData >= 1)
 			SetItemHeight(i, m_RowHeight);
 	}
-	m_ArxControl->SetLngProperty(nRowHeight, m_RowHeight);
+	m_ArxControl->SetLongProperty(nRowHeight, m_RowHeight);
 	Invalidate();
 }
 

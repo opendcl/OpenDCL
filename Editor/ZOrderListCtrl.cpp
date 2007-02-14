@@ -491,36 +491,18 @@ void CZOrderListCtrl::DoZOrderUpdate()
 		}
 	}
 
-	
-	
-	// add dcl form prop arx ctrl object holder to the front of the list
-	ControlList.AddHead(pDclFormPropHolder);
-
-		
-	// first before we reorder the controls we must reset the list so we can repopulate in the correct new order
-	m_pView->m_pThisDclForm->GetControlList().RemoveAll();
-
-	// here we need to loop thru the temp control list to repopulate the now empty dcl form control list
-	for (i=0; i<ControlList.GetCount(); i++)
+	pos = ControlList.GetHeadPosition();
+	while( pos )
 	{
-		pos = ControlList.FindIndex(i);
-		if (pos != NULL)
-		{
-			// get the control
-			pCtrlObject = ControlList.GetAt(pos);
-			
-			// and add it to the dcl form's list.
-			m_pView->m_pThisDclForm->GetControlList().AddTail(pCtrlObject);
-
-			// here we are going to get the control holder to zorder movement
-			CControlHolder *pControl = (CControlHolder*)m_pView->GetDlgItem(pCtrlObject->m_Id);
-
-			if (pControl != NULL)
-				// move this control to the front of the Zorder. This is ok because we do it to every control to get the correct zorder position set.
-				pControl->SetWindowPos(&CWnd::wndTop, 0,0,nNotSet,nNotSet, SWP_NOSIZE|SWP_NOMOVE);
-		}
+		CDclControlObject* pDclControl = ControlList.GetNext( pos );
+		m_pView->m_pThisDclForm->ReorderControl( pDclControl, false, true );
+		CControlHolder* pControlWnd = (CControlHolder*)m_pView->GetDlgItem(pDclControl->m_Id);
+		assert( pControlWnd != NULL );
+		if( pControlWnd )
+			// move this control to the front of the Zorder. This is ok because we do it to every control to get the correct zorder position set.
+			pControlWnd->SetWindowPos( &CWnd::wndTop, 0, 0, nNotSet, nNotSet, SWP_NOSIZE | SWP_NOMOVE );
 	}
-
+	m_pView->m_pThisDclForm->ReindexControls();
 	m_pView->MoveGripRectsForward();
 	m_pView->SetFocus();
 }

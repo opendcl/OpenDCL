@@ -17,6 +17,10 @@ AxMethodDescriptor::AxMethodDescriptor(void) : Id( 0 ), ReturnType( 0 ), nParamQ
 		::memset(&CallingArgClsids[i], 0, sizeof(CLSID));			
 }
 
+AxMethodDescriptor::~AxMethodDescriptor(void)
+{
+}
+
 IOStatus AxMethodDescriptor::WriteToTextFile(FILE* pFile) const
 {
   int nThisVersion = 2;
@@ -121,3 +125,14 @@ IOStatus AxMethodDescriptor::ReadFromTextFile2(std::ifstream &sFile)
   }
   return statOK;
 }
+
+
+#ifdef _DIAGNOSTIC
+LPCTSTR AxMethodDescriptor::toString() const
+{
+	static TCHAR buf[1024];
+	_sntprintf( buf, _elements(buf), _T("{DISPID: %s, \"%s\", \"%s\", \"%s\"}"),
+							asString( Id ), (LPCTSTR)Name, (LPCTSTR)Desc, (LPCTSTR)Params );
+	return buf;
+}
+#endif

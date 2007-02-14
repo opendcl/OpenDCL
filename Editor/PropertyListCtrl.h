@@ -148,7 +148,7 @@ public:
 	afx_msg void DefaultFontDlg();
 	afx_msg BOOL IsPictureValid(LPPICTUREDISP NewPicture);
 	afx_msg void SetPurchaseMode(short nPurchaseMode);
-	afx_msg CString ImportOdcl(LPCTSTR sFileName);
+	//afx_msg CString ImportOdcl(LPCTSTR sFileName);
 	afx_msg void ShowPropertyDlg(bool bFontActive = false, bool bImageListActive = false);
 	afx_msg void ShowAsFree();
 	afx_msg void SetAutoCADVersion(DWORD nVersion);
