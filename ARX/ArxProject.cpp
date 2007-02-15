@@ -49,24 +49,31 @@ bool CArxProject::OnExtendTabbedDialog( CAdUiTabExtensionManager* pTabXM ) const
 }
 
 
-bool CArxProject::UpdateGlobalVariables() const
+bool CArxProject::SetProjectLispSymbols( bool bResetToNil /*= false*/ ) const
 {
 	POSITION posDclForm = mDclForms.GetHeadPosition();
-	while (posDclForm != NULL)
+	while( posDclForm != NULL )
 	{
-		CDclFormObject *pDclForm = mDclForms.GetNext(posDclForm);
+		CDclFormObject *pDclForm = mDclForms.GetNext( posDclForm );
 		assert( pDclForm != NULL);
 		if( !pDclForm )
 			continue;
+		if( pDclForm->GetParentForm() )
+			continue; //ignore child forms, since they will use the same name as their parent
 		CDclControlObject* pPropertiesControl = pDclForm->GetControlProperties();
 		if( pPropertiesControl )
 		{
 			// Get the variable name
-			CString sVarName = pDclForm->GetControlProperties()->GetStrProperty(nGlobalVarName);
-			if (sVarName.IsEmpty())
+			CString sVarName = pDclForm->GetControlProperties()->GetStrProperty( nGlobalVarName );
+			if( sVarName.IsEmpty() )
 				sVarName = pDclForm->GetKeyPath();
-			if (!sVarName.IsEmpty())
-				SetVariable(sVarName, (long)pDclForm);
+			if( !sVarName.IsEmpty() )
+			{
+				if( bResetToNil )
+					theArxWorkspace.ResetLispSymbol( sVarName );
+				else
+					theArxWorkspace.SetLispSymbol( sVarName, (long)pDclForm );
+			}
 		}
 	}
 	return true;

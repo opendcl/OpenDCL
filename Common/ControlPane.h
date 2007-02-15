@@ -86,7 +86,6 @@ public:
 	bool CreateControls( CDclFormObject* pDclForm, UINT& nId );
 	void AddControl( TDialogControlPtr pControl );
 
-	void UpdateGlobalVariables();
 	void SizeChanged(int cx, int cy, bool bRefreshOthers = false);
 	void ShowWindow(BOOL bShow);
 	void ShowPictureBoxes(BOOL bShow);
@@ -112,6 +111,7 @@ public:
 	virtual CWnd* FindControl(CString sControlName, int nControlType) const = 0;
 	virtual class CThemeHelperST* GetThemeHelper() = 0;
 	virtual bool CreateTabPanes(CDclFormObject* pTemplate, CWnd *pTabControl, UINT& nId, CRect rcTab) = 0;
+	virtual void SetGlobalLispSymbols( bool bResetToNil = false ) {}
 
 protected:
 	virtual TDialogControlPtr CreateNewDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID ) = 0;

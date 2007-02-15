@@ -812,15 +812,21 @@ bool CDclControlObject::SetStringProperty( PropertyId nID, LPCTSTR pszValue )
 
 RefCountedPtr< CPropertyObject > CDclControlObject::AddStringProperty( PropertyId nID,
 																																			 PropertyType type /*= PropString*/,
-																																			 LPCTSTR pszValue /*= NULL*/ )
+																																			 LPCTSTR pszValue /*= NULL*/,
+																																			 bool bResetExisting /*= false*/ )
 {
 	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject( nID );
 	if( !pProp )
 	{
 		pProp = new CPropertyObject( type, 0, nID );
 		GetPropertyList().AddTail( pProp );
+		pProp->SetStringValue( pszValue );
 	}
-	pProp->SetStringValue( pszValue );
+	else if( bResetExisting )
+	{
+		pProp->SetType( type );
+		pProp->SetStringValue( pszValue );
+	}
 	return pProp;
 }
 
@@ -834,15 +840,21 @@ bool CDclControlObject::SetBooleanProperty( PropertyId nID, bool bValue /*= true
 
 RefCountedPtr< CPropertyObject > CDclControlObject::AddBooleanProperty( PropertyId nID,
 																																				PropertyType type /*= PropBool*/,
-																																				bool bValue /*= true*/ )
+																																				bool bValue /*= true*/,
+																																				bool bResetExisting /*= false*/ )
 {
 	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject( nID );
 	if( !pProp )
 	{
 		pProp = new CPropertyObject( type, 0, nID );
 		GetPropertyList().AddTail( pProp );
+		pProp->SetBooleanValue( bValue );
 	}
-	pProp->SetBooleanValue( bValue );
+	else if( bResetExisting )
+	{
+		pProp->SetType( type );
+		pProp->SetBooleanValue( bValue );
+	}
 	return pProp;
 }
 
@@ -856,15 +868,21 @@ bool CDclControlObject::SetLongProperty( PropertyId nID, long lValue /*= -1*/ )
 
 RefCountedPtr< CPropertyObject > CDclControlObject::AddLongProperty( PropertyId nID,
 																																		 PropertyType type /*= PropLong*/,
-																																		 long lValue /*= -1*/ )
+																																		 long lValue /*= -1*/,
+																																		 bool bResetExisting /*= false*/ )
 {
 	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject( nID );
 	if( !pProp )
 	{
 		pProp = new CPropertyObject( type, 0, nID );
 		GetPropertyList().AddTail( pProp );
+		pProp->SetLongValue( lValue );
 	}
-	pProp->SetLongValue( lValue );
+	else if( bResetExisting )
+	{
+		pProp->SetType( type );
+		pProp->SetLongValue( lValue );
+	}
 	return pProp;
 }
 

@@ -53,7 +53,7 @@
 #include "VdclTab.h"
 #include "TabPage.h"
 #include "DclFormObject.h"
-#include "Project.h"
+#include "ArxProject.h"
 #include "ToolTips.h"
 
 static const TCHAR *sFilterName = _T("IDB_FILTER";)
@@ -78,7 +78,20 @@ CArxControlPane::CArxControlPane(CDclFormObject* pSourceForm, CWnd* pHostDlg)
 
 CArxControlPane::~CArxControlPane()
 {
+	SetGlobalLispSymbols( true );
 	TraceFmt( _T("< CArxControlPane::~CArxControlPane() [this: %08X]\r\n"), (long)this );
+}
+
+
+void CArxControlPane::SetGlobalLispSymbols( bool bResetToNil /*= false*/ )
+{
+	for( TDialogControls::iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
+	{
+		if( bResetToNil )
+			theArxWorkspace.ResetLispSymbol( (*iter)->GetKeyPath() );
+		else	
+			theArxWorkspace.SetLispSymbol( (*iter)->GetKeyPath(), (long)&**iter );
+	}
 }
 
 TDialogControlPtr CArxControlPane::CreateNewDialogControl( CDclControlObject* pTemplate,

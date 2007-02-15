@@ -4066,45 +4066,45 @@ void CObjectDCLView::AddProperties( CDclControlObject *pDclControl )
 		pDclControl->AddLongProperty( nRowHeight, PropLong, 18 );
 
 		RefCountedPtr< CPropertyObject > pProp = AddControlHiddenProperty(pDclControl, nColumnCaptions, sList, PropStringArray);		
-		AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_COL1));
-		AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_COL2));
+		//AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_COL1));
+		//AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_COL2));
 
 		pProp = AddControlHiddenProperty(pDclControl, nColumnAlignments, sList, PropIntArray);		
-		AddControlPropertyListItem(pProp, 0);
-		AddControlPropertyListItem(pProp, 0);
+		//AddControlPropertyListItem(pProp, 0);
+		//AddControlPropertyListItem(pProp, 0);
 
 		pProp = AddControlHiddenProperty(pDclControl, nColumnImages, sList, PropIntArray);
-		AddControlPropertyListItem(pProp, -1);
-		AddControlPropertyListItem(pProp, -1);
+		//AddControlPropertyListItem(pProp, -1);
+		//AddControlPropertyListItem(pProp, -1);
 
 		pProp = AddControlHiddenProperty(pDclControl, nColumnWidths, sList, PropIntArray);
-		AddControlPropertyListItem(pProp, 100);
-		AddControlPropertyListItem(pProp, 100);
+		//AddControlPropertyListItem(pProp, 100);
+		//AddControlPropertyListItem(pProp, 100);
 
 		pProp = AddControlHiddenProperty(pDclControl, nColumnStyles, sList, PropIntArray);
-		AddControlPropertyListItem(pProp, 0);
-		AddControlPropertyListItem(pProp, 0);
+		//AddControlPropertyListItem(pProp, 0);
+		//AddControlPropertyListItem(pProp, 0);
 
 		pProp = AddControlHiddenProperty(pDclControl, nColumnDefaultImages, sList, PropIntArray);
-		AddControlPropertyListItem(pProp, 0);
-		AddControlPropertyListItem(pProp, 0);
+		//AddControlPropertyListItem(pProp, 0);
+		//AddControlPropertyListItem(pProp, 0);
 
 		pProp = AddControlHiddenProperty(pDclControl, nColumnAlternateImages, sList, PropIntArray);
-		AddControlPropertyListItem(pProp, 1);
-		AddControlPropertyListItem(pProp, 1);
+		//AddControlPropertyListItem(pProp, 1);
+		//AddControlPropertyListItem(pProp, 1);
 
 		if (pDclControl->GetPropertyObject(nColumnListItems) == NULL)
 		{
 			pProp = AddControlHiddenProperty(pDclControl, nColumnListItems, sList, PropStringArrayList);
-			pProp->GetStringArrayListPtr()->push_back(PropVal::TCStringArray());
-			pProp->GetStringArrayListPtr()->push_back(PropVal::TCStringArray());
+			//pProp->GetStringArrayListPtr()->push_back(PropVal::TCStringArray());
+			//pProp->GetStringArrayListPtr()->push_back(PropVal::TCStringArray());
 		}
 
 		if (pDclControl->GetPropertyObject(nColumnListImages) == NULL)
 		{		
 			pProp = AddControlHiddenProperty(pDclControl, nColumnListImages, sList, PropIntArrayList);
-			pProp->GetIntArrayListPtr()->push_back(PropVal::TIntArray());
-			pProp->GetIntArrayListPtr()->push_back(PropVal::TIntArray());
+			//pProp->GetIntArrayListPtr()->push_back(PropVal::TIntArray());
+			//pProp->GetIntArrayListPtr()->push_back(PropVal::TIntArray());
 		}
 	}
 

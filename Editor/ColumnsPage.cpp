@@ -9,6 +9,7 @@
 #include "DropListContents.h"
 #include "Workspace.h"
 #include "SharedRes.h"
+#include "ObjectDclView.h"
 
 
 CColumnData::CColumnData()
@@ -181,11 +182,10 @@ BOOL CColumnsPage::OnInitDialog()
 	m_Style.SetDroppedWidth(170);
 	
 
-	int nID = m_List.GetHeaderCtrl()->GetDlgCtrlID();
-
-	if (m_List.GetHeaderCtrl()->m_hWnd != NULL)
-         m_HeaderCtrl.SubclassDlgItem(nID, &m_List);
-	CHeaderCtrl *pHeader = m_List.GetHeaderCtrl();
+	CHeaderCtrl* pHeader = m_List.GetHeaderCtrl();
+	int nID = pHeader->GetDlgCtrlID();
+	if (pHeader->m_hWnd != NULL)
+		m_HeaderCtrl.SubclassDlgItem(nID, &m_List);
 
 	if (pHeader->GetImageList() == NULL)
 		pHeader->SetImageList(&m_pImageListPage->m_ImageList);
@@ -247,6 +247,7 @@ void CColumnsPage::CommitLists()
 			rInt.push_back(m_ColData[i].m_ImageItems[idx]);
 		m_pColImageItems->GetIntArrayListPtr()->push_back(rInt);
 	}
+	m_pView->RefreshChildControl(m_pControl, (PropertyId)-2);
 }
 
 BOOL CColumnsPage::OnApply() 
@@ -347,15 +348,17 @@ void CColumnsPage::OnInsert()
 	int nIndex = m_List.InsertColumn(m_ColData.GetCount(), CString(), LVCFMT_LEFT, 100);
 
 	// add the data to the list arrays
-	CColumnData data;
+	m_ColData.SetSize( nIndex + 1 );
+	CColumnData& data = m_ColData[nIndex];
+	CString sCaption;
+	sCaption.Format( theWorkspace.LoadResourceString( IDS_NEWCOLUMNCAPTION ), nIndex );
+	data.m_Caption = sCaption;
 	data.m_Width = 100;	
 	data.m_Image = -1;	
 	data.m_Style = 0;	
 	data.m_Alignment = 0;	
 	data.m_Default = 0;	
 	data.m_Alternate = 0;
-	int nColumnDataSize = m_ColData.Add(data);
-	assert( nColumnDataSize == nIndex );
 	SetControls(nIndex);
 	m_Text.SetFocus();
 	SetModified();
@@ -394,7 +397,7 @@ void CColumnsPage::SetControls(int nIndex)
 
 	if( nIndex >= m_ColData.GetCount() )
 		nIndex = m_ColData.GetCount();
-	GetDlgItem(IDC_DELETE)->EnableWindow(TRUE);
+	GetDlgItem(IDC_DELETE)->EnableWindow(m_ColData.GetCount() > 0);
 	m_IndexEdit.ShowWindow(TRUE);
 	m_Spin.EnableWindow(m_ColData.GetCount() > 1);
 	m_Spin.SetBuddy(&m_IndexEdit);

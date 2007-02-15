@@ -16,9 +16,11 @@ public:
 	CArxProject( LPCTSTR pszKeyName );
 	virtual ~CArxProject();
 
+	//Overrides
+
 	//Services
 	bool OnExtendTabbedDialog( CAdUiTabExtensionManager* pTabXM ) const;
-	bool UpdateGlobalVariables() const;
+	bool SetProjectLispSymbols( bool bResetToNil = false ) const;
 
 protected:
 	DECLARE_SERIAL(CArxProject)

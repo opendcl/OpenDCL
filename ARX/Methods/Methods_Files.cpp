@@ -27,15 +27,12 @@ int FilesDir()
 	nArg++;
 	
 	if (!FindOptionalStringArgument(nArg, &sExtension, sFilesDir))
-	{
 		sExtension = _T("*.*");
-	}
 
 	// get the list of Files
-	if (sDir.Right(1) == "\\")
-		bResult = finder.FindFile(sDir + sExtension);
-	else
-		bResult = finder.FindFile(sDir + "\\" + sExtension);
+	if (sDir.Right(1) != "\\")
+		sDir += _T('\\');
+	bResult = finder.FindFile(sDir + sExtension);
 	
 	// Convert the array to a list that can be returned
 	struct resbuf* rbpRetList = acutNewRb(RTSTR);

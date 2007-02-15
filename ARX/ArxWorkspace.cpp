@@ -130,6 +130,7 @@ bool CArxWorkspace::AddProject( CArxProject* pProject )
 {
 	if( FindProject( pProject->GetKeyName() ) )
 		return false; //can't allow duplicate keys
+	pProject->SetProjectLispSymbols();
 	mProjects.mProjectCollection.AddTail( pProject );
 	return true;
 }
@@ -160,6 +161,7 @@ bool CArxWorkspace::UnloadProject( CProject *pProject, bool bForce )
 		if( pProject == mProjects.mProjectCollection.GetNext( posProject ) )
 		{
 			mProjects.mProjectCollection.RemoveAt( posAt );
+			((CArxProject*)pProject)->SetProjectLispSymbols( true );
 			delete pProject;
 			return true;
 		}
@@ -199,7 +201,34 @@ void CArxWorkspace::CloseAllDialogs( DWORD dwMask /*= (DWORD)-1*/ )
 	}
 }
 
-bool CArxWorkspace::UpdateGlobalVariables() const
+void CArxWorkspace::ResetLispSymbol( LPCTSTR pszLispSymbol ) const
+{
+	if( !pszLispSymbol )
+		return; //no-op
+
+	static struct resbuf rbNIL = { NULL, RTNIL };;
+	acedPutSym( pszLispSymbol, &rbNIL );
+
+#ifdef _DEBUG
+	TraceFmt( _T("Lisp Symbol %s reset to NIL\r\n"), pszLispSymbol );
+#endif
+}
+
+void CArxWorkspace::SetLispSymbol( LPCTSTR pszLispSymbol, long lValue ) const
+{
+	if( !pszLispSymbol )
+		return; //no-op
+
+	struct resbuf rbLong = { NULL, RTLONG };;
+	rbLong.resval.rlong = lValue;
+	acedPutSym( pszLispSymbol, &rbLong );
+
+#ifdef _DEBUG
+	TraceFmt( _T("Lisp Symbol %s set to %08x\r\n"), pszLispSymbol, lValue );
+#endif
+}
+
+bool CArxWorkspace::UpdateGlobalLispSymbols() const
 {
 	bool bFailed = false;
 	POSITION posProject = mProjects.mProjectCollection.GetHeadPosition();
@@ -209,7 +238,7 @@ bool CArxWorkspace::UpdateGlobalVariables() const
 		assert( pProject != NULL);
 		if( !pProject )
 			continue;
-		if( !pProject->UpdateGlobalVariables() )
+		if( !pProject->SetProjectLispSymbols() )
 			bFailed = true;
 	}
 	
@@ -223,8 +252,8 @@ bool CArxWorkspace::UpdateGlobalVariables() const
 			continue;
 		CString sVarName = pDialog->GetSourceForm()->GetControlProperties()->GetStrProperty(nGlobalVarName);
 		if (!sVarName.IsEmpty())
-			SetVariable(sVarName, (long)pDialog->GetSourceForm());
-		pDialog->GetControlPane().UpdateGlobalVariables();
+			SetLispSymbol(sVarName, (long)pDialog->GetSourceForm());
+		pDialog->GetControlPane().SetGlobalLispSymbols();
 	}
 
 	return !bFailed;

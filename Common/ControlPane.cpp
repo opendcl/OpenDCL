@@ -32,12 +32,6 @@ CControlPane::~CControlPane()
 {
 }
 
-void CControlPane::UpdateGlobalVariables()
-{
-	for( TDialogControls::iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
-		(*iter)->CreateGlobalVariables();
-}
-
 void CControlPane::ZOrderFront(CWnd *pControl)
 {
 	if (pControl != NULL)

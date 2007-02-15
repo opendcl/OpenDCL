@@ -39,7 +39,7 @@ void CAcadDocReactor::documentCreated(AcApDocument* pDocCreating)
 	if (rb.resval.rint == 0)
 	{
 		if (m_bRefreshGlobalVariables)
-			theArxWorkspace.UpdateGlobalVariables();
+			theArxWorkspace.UpdateGlobalLispSymbols();
 	}
 		
 }
@@ -57,7 +57,7 @@ void CAcadDocReactor::documentActivated(AcApDocument* pActivatedDoc)
 	if (rb.resval.rint == 0)
 	{
 		if (m_bRefreshGlobalVariables)
-			theArxWorkspace.UpdateGlobalVariables();
+			theArxWorkspace.UpdateGlobalLispSymbols();
 	}
 	if (m_EventDefun.GetLength() > 0)
 		// call methods to invoke the event
@@ -82,7 +82,7 @@ void CAcadDocReactor::documentBecameCurrent(AcApDocument* pDoc)
 			return;
 
 		if (m_bRefreshGlobalVariables)
-			theArxWorkspace.UpdateGlobalVariables();
+			theArxWorkspace.UpdateGlobalLispSymbols();
 	}
 	catch(...)
 	{

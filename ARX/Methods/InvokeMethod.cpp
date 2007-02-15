@@ -333,29 +333,6 @@ void InvokeMethodStringIntInt(CString sLispFunction, CString sString, int nInt1,
 	}
 }
 
-void SetVariable(CString sVarName, long lValue, AcApDocument* pDoc)
-{
-	if (sVarName.IsEmpty())
-		return; //no-op
-
-	struct resbuf *rb = NULL; 
-	rb = acutNewRb(RTLONG);	//	create new resbuf
-
-	// copy the pointer into the rlong
-	rb->resval.rlong = lValue;
-	rb->restype = RTLONG;
-	
-	// create or set the autolisp variable
-	int rc = acedPutSym(sVarName, rb); 
-	acutRelRb(rb);
-
-#ifdef _DEBUG
-	TCHAR buf[1024];
-	_stprintf(buf, _T("Lisp Symbol %s set to %08x\r\n"), sVarName, lValue);
-	OutputDebugString( buf );
-#endif
-}
-
 void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc)
 {
 	if (sLispFunction.GetLength() > 0)

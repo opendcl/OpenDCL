@@ -17,6 +17,7 @@ int OpenBinFile()
 	CString sFileName;
 	CString sArg;
 	CFileException Exception;
+	acedRetNil();
 	
  	//ensure AutoLisp has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
@@ -27,23 +28,15 @@ int OpenBinFile()
 
 	// get the file name
 	if (ListData->restype == RTSTR)
-	{
 		sFileName = ListData->resval.rstring;		
-	}
 	else
-	{
-		acedRetNil();
         return 0; 		
-	}
 
 	// iterate forward to the next required argument
 	ListData = ListData->rbnext;
 
 	if (ListData == NULL)
-	{
-		acedRetNil();
         return 0; 		
-	}
 	
 	// get the read or write argument
 	if (ListData->restype == RTSTR)
@@ -52,30 +45,10 @@ int OpenBinFile()
 		sArg.MakeLower();
 	}
 	else
-	{
-		acedRetNil();
         return 0; 		
-	}
 
-	// if a path in not set, assign one.
-	if (sFileName.Mid(2,1) != ":")
-	{
-		// look in the application directory for the method file
-		char drive[_MAX_DRIVE];
-		char dir[_MAX_DIR];
-		char fname[_MAX_FNAME];
-		char ext[_MAX_EXT];
-		const char *path = _pgmptr ;
-		_splitpath(path, drive, dir, fname, ext );
-		
-		sFileName = CString(drive) + dir + sFileName;
-		CFileFind find;
-		if (!find.FindFile(sFileName, 0) && sArg == "r")
-		{
-			acedRetNil();
-			return 0; 		
-		}		
-	}
+	if( sArg == _T("r") )
+		sFileName = theWorkspace.FindFile( sFileName );
 	
 	CLispFileObject *pFile = new CLispFileObject;	
 
@@ -104,8 +77,7 @@ int OpenBinFile()
 	// set the style flag
 	pFile->m_Style = sArg;
 
-	long lReturn = (long)pFile;
-	acedRetLong(lReturn);
+	acedRetLong((long)pFile);
 	return 0;
 }
 
@@ -115,43 +87,28 @@ int WriteBinFile()
 	struct resbuf *ListData = NULL;
 	CLispFileObject *pFile = NULL;
 	int nLbCount=0;
+	acedRetNil();
 
  	//ensure AutoLisp has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
-	{
-		acedRetNil();
-        return 0; 
-	}
+		return 0; 
 
 	// get the file name
 	if (ListData->restype == RTLONG)
 	{
 		if (ListData->resval.rlong > 0)
-		{
 			pFile = (CLispFileObject*)ListData->resval.rlong;			
-		}
 		else
-		{
-			acedRetNil();
 			return 0; 		
-		}
 	}
 	else
-	{
-		acedRetNil();
-        return 0; 		
-	}
+		return 0; 		
 
 	// iterate forward to the next required argument
 	ListData = ListData->rbnext;
 
 	if (ListData == NULL)
-	{
-		acedRetNil();
 		return 0; 		
-	}
-
-	CArchive &ar = *pFile->m_pArchive;
 
 	while(ListData != NULL)
 	{
@@ -166,7 +123,7 @@ int WriteBinFile()
 			nLbCount++;
 			if (nLbCount == 3)
 			{
-				theWorkspace.DisplayAlert(_T("Lists nested more than two levels deep are only allowed."));
+				theWorkspace.DisplayAlert(_T("Lists nested more than two levels deep are not allowed."));
 				acedRetNil();
 				return 0; 		
 			}
@@ -229,7 +186,6 @@ int WriteBinFile()
 			break;
 		default:
 			{
-			acedRetNil();
 			return 0; 		
 			break;
 			}

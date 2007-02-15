@@ -70,7 +70,9 @@ public:
 	ULONG CountOpenModalForms() const;
 	int ActivateDclForm( CDclFormObject* pDclObject, DialogParams* pParams );
 	void CloseAllDialogs( DWORD dwMask = (DWORD)-1 );
-	bool UpdateGlobalVariables() const;
+	void ResetLispSymbol( LPCTSTR pszLispSymbol ) const;
+	void SetLispSymbol( LPCTSTR pszLispSymbol, long lValue ) const;
+	bool UpdateGlobalLispSymbols() const;
 	bool OnExtendTabbedDialog( CAdUiTabExtensionManager* pTabXM );
 	bool AddExtensionTab( CDclFormObject* pDclForm, CAdUiTabExtensionManager* pTabXM );
 

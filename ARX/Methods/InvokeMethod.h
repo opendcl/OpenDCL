@@ -1,12 +1,8 @@
-#if !defined(AFX_INVOKEMETHOD_H__995FBA73_228A_11D4_AC29_00105AA74EA1__INCLUDED_)
-#define AFX_INVOKEMETHOD_H__995FBA73_228A_11D4_AC29_00105AA74EA1__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 // InvokeMethod.h : header file
 //
-void SetVariable(CString sVarName, long lValue, AcApDocument* pDoc = NULL);
+
+#pragma once
+
 
 CString FireCancel(CString sLispFunction);
 bool InvokeCancelMethod(CString sLispFunction, bool bUserPressedEsc);
@@ -48,5 +44,3 @@ void InvokeMethodPoint3D(
 					CString sLispFunction, 
 					acedDwgPoint ptPoint,
 					bool UseSendString);
-
-#endif // !defined(AFX_INVOKEMETHOD_H__995FBA73_228A_11D4_AC29_00105AA74EA1__INCLUDED_)

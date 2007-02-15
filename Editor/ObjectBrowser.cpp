@@ -458,20 +458,7 @@ void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, H
 
 void CObjectBrowser::LoadMethods(CString sFileName, HTREEITEM hParentItem)
 {
-	CString sMethodFile = sFileName;
-	CFileFind find;
-	if (!find.FindFile(sMethodFile, 0))
-	{
-		// look in the application directory for the method file
-		TCHAR drive[_MAX_DRIVE];
-		TCHAR dir[_MAX_DIR];
-		TCHAR fname[_MAX_FNAME];
-		TCHAR ext[_MAX_EXT];
-		const TCHAR *path = _tpgmptr ;
-		_tsplitpath(path, drive, dir, fname, ext );
-		if (!find.FindFile(CString(drive) + dir + sMethodFile, 0))
-			return;
-	}
+	CString sMethodFile = theWorkspace.FindFile( sFileName );
 	
 	CStdioFile fout(sMethodFile,
 		CFile::shareDenyWrite|CFile::modeRead);
@@ -512,23 +499,11 @@ CString CObjectBrowser::StripMethodNameOfBarckets(CString sMethodName)
 	}
 	return sCompile;
 }
+
 bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CString &sTitle, CString &sDesc, CString &sDefun1)
 {
 	CString sFuncName;
-	CString sMethodFile = sFileName;
-	CFileFind find;
-	if (!find.FindFile(sMethodFile, 0))
-	{
-		// look in the application directory for the method file
-		TCHAR drive[_MAX_DRIVE];
-		TCHAR dir[_MAX_DIR];
-		TCHAR fname[_MAX_FNAME];
-		TCHAR ext[_MAX_EXT];
-		const TCHAR *path = _tpgmptr ;
-		_tsplitpath(path, drive, dir, fname, ext );
-		if (!find.FindFile(CString(drive) + dir + sMethodFile, 0))
-			return false;
-	}
+	CString sMethodFile = theWorkspace.FindFile( sFileName );
 	
 	// here we are going to write out to the lisp file.
 	CStdioFile fout(sMethodFile,

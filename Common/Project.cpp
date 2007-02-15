@@ -178,23 +178,27 @@ void CProject::SetKeyName( LPCTSTR pszKeyName )
 
 void CProject::DeleteForm( CDclFormObject*& pDclForm )
 {
-	//use the unique name to find and delete any child tab page forms
 	POSITION pos = mDclForms.GetHeadPosition();
 	while( pos )
 	{
 		POSITION posAt = pos;
 		CDclFormObject* pThisForm = mDclForms.GetNext( pos );
 		assert( pThisForm != NULL );
+		if( pThisForm == pDclForm )
+			mDclForms.RemoveAt( posAt ); // and remove the form from the list
 		CDclFormObject* pParentForm = pThisForm->GetParentForm();
 		if( pParentForm == pDclForm )
 		{
-			if( pThisForm->m_pMdiChildWnd ) // if the tab as a view open
+			if( pThisForm->m_pMdiChildWnd ) // if the child form has a view open
 				pThisForm->m_pMdiChildWnd->DestroyWindow(); // close the view
 			delete pThisForm; // delete the object
-			pDclForm = NULL;
 			mDclForms.RemoveAt( posAt ); // and remove it from the list
 		}
 	}
+	if( pDclForm->m_pMdiChildWnd ) // if the form has a view open
+		pDclForm->m_pMdiChildWnd->DestroyWindow(); // close the view
+	delete pDclForm; // delete the object
+	pDclForm = NULL;
 }
 
 CDclFormObject* CProject::AddForm( DclFormType nType )

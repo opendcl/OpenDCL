@@ -416,6 +416,7 @@
 #define IDS_RUNTIMENOTALLOWEDCTRL       816
 #define IDS_RUNTIMENOTALLOWEDDLG        817
 #define IDS_PICTURESHORTCUT             818
+#define IDS_NEWCOLUMNCAPTION            819
 #define IDR_OBJECTTYPE_STD              1000
 #define IDR_OBJECTTYPE_LT               1001
 #define IDC_APPVERSION                  1001

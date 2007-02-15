@@ -43,6 +43,7 @@ public:
 	virtual CWnd* FindControl(CString sControlName, int nControlType) const;
 	virtual class CThemeHelperST* GetThemeHelper() { return &mThemeHelper; }
 	virtual bool CreateTabPanes(CDclFormObject* pTemplate, CWnd *pTabControl, UINT& nId, CRect rcTab);
+	virtual void SetGlobalLispSymbols( bool bResetToNil = false );
 
 protected:
 	virtual TDialogControlPtr CreateNewDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID );

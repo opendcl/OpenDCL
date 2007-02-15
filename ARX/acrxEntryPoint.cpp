@@ -3259,7 +3259,7 @@ public:
 		if (pArgs)
 			return RSERR; //no arguments expected
 
-		if (theArxWorkspace.UpdateGlobalVariables())
+		if (theArxWorkspace.UpdateGlobalLispSymbols())
 			acedRetT();
 
 		return (RSRSLT) ;
@@ -3827,7 +3827,6 @@ public:
 			theWorkspace.DisplayAlert( sAlertMsg );
 			return RSRSLT; 
 		}
-		theArxWorkspace.UpdateGlobalVariables();
 		acedRetStr( pProject->GetProjectFilePath() );
 
 		//if (pProject->m_PurchaseState == nSchoolMode)

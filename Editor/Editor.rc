@@ -13,8 +13,7 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "SharedRes.h"
-#include "afxres.h"
-
+#include "afxres.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -523,7 +522,7 @@ CAPTION "Columns"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     GROUPBOX        "Column Designing",IDC_FRAME,0,3,241,96
-    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | WS_BORDER | WS_TABSTOP,0,102,241,30
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SHAREIMAGELISTS | WS_BORDER | WS_TABSTOP,0,102,241,30
     PUSHBUTTON      "Add New Column",IDC_INSERT,83,14,71,13
     CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ARROWKEYS | UDS_HORZ,52,14,25,13
     LTEXT           "Index :",IDC_INDEX,5,16,23,10
@@ -1309,7 +1308,7 @@ BEGIN
     BEGIN
         MENUITEM "&Help Topics",                ID_HELP_FINDER
         MENUITEM SEPARATOR
-        MENUITEM "&About OpenDCL...",         ID_APP_ABOUT
+        MENUITEM "&About OpenDCL...",           ID_APP_ABOUT
     END
 END
 
@@ -1376,7 +1375,7 @@ BEGIN
     BEGIN
         MENUITEM "&Help Topics",                ID_HELP_FINDER
         MENUITEM SEPARATOR
-        MENUITEM "&About OpenDCL...",         ID_APP_ABOUT
+        MENUITEM "&About OpenDCL...",           ID_APP_ABOUT
     END
 END
 
@@ -1439,7 +1438,7 @@ BEGIN
     BEGIN
         MENUITEM "&Help Topics",                ID_HELP_FINDER
         MENUITEM SEPARATOR
-        MENUITEM "&About OpenDCL...",         ID_APP_ABOUT
+        MENUITEM "&About OpenDCL...",           ID_APP_ABOUT
     END
 END
 
@@ -1510,7 +1509,7 @@ BEGIN
     BEGIN
         MENUITEM "&Help Topics",                ID_HELP_FINDER
         MENUITEM SEPARATOR
-        MENUITEM "&About OpenDCL...",         ID_APP_ABOUT
+        MENUITEM "&About OpenDCL...",           ID_APP_ABOUT
     END
 END
 
@@ -1540,7 +1539,7 @@ BEGIN
     BEGIN
         MENUITEM "&Help Topics",                ID_HELP_FINDER
         MENUITEM SEPARATOR
-        MENUITEM "&About OpenDCL...",         ID_APP_ABOUT
+        MENUITEM "&About OpenDCL...",           ID_APP_ABOUT
     END
 END
 
@@ -1636,8 +1635,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,0,11
- PRODUCTVERSION 4,0,0,11
+ FILEVERSION 4,0,0,12
+ PRODUCTVERSION 4,0,0,12
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1653,12 +1652,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "OpenDCL Dialog Editor"
-            VALUE "FileVersion", "4, 0, 0, 11"
+            VALUE "FileVersion", "4, 0, 0, 12"
             VALUE "InternalName", "OpenDCL"
             VALUE "LegalCopyright", "Copyright © 2007"
             VALUE "OriginalFilename", "OpenDCL.exe"
             VALUE "ProductName", "OpenDCL"
-            VALUE "ProductVersion", "4, 0, 0, 11"
+            VALUE "ProductVersion", "4, 0, 0, 12"
         END
     END
     BLOCK "VarFileInfo"
@@ -2151,6 +2150,7 @@ BEGIN
     IDS_RUNTIMENOTALLOWEDDLG 
                             "\\b1 Note: \\b0This property is a design time property and cannot be set using AutoLisp."
     IDS_PICTURESHORTCUT     " \\par \\b1 ShortCut Method: \\b0 OpenDCL has an added method that allows you to directly load a picture from the picture folder or a file. The last argument can be an integer for the picture Id or a string for the file name. \\par \\par (\\cf2 "
+    IDS_NEWCOLUMNCAPTION    "Column %d"
 END
 
 STRINGTABLE 
@@ -3405,8 +3405,7 @@ END
 // Generated from the TEXTINCLUDE 3 resource.
 //
 #include "SharedRes.rc"
-#include "AfxRes.rc"
-
+#include "AfxRes.rc"
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

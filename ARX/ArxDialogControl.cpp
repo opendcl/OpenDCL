@@ -7,7 +7,7 @@
 #include "PropertyIds.h"
 #include "InvokeMethod.h"
 #include "ToolTips.h"
-#include "Workspace.h"
+#include "ArxWorkspace.h"
 
 #include "ControlTypes.h"
 #include "AxContainer.h"
@@ -81,16 +81,13 @@ CArxDialogControl::CArxDialogControl( CDclControlObject* pTemplate, CControlPane
 CArxDialogControl::~CArxDialogControl()
 {
 	if( !msLispSymbolName.IsEmpty() )
-	{
-		resbuf rbNil = {NULL, RTNIL};
-		acedPutSym( msLispSymbolName, &rbNil );
-	}
+		theArxWorkspace.ResetLispSymbol( msLispSymbolName );
 }
 
 void CArxDialogControl::CreateGlobalVariables() const
 {
 	if( !msLispSymbolName.IsEmpty() )
-		SetVariable( msLispSymbolName, (long)mpTemplate );
+		theArxWorkspace.SetLispSymbol( msLispSymbolName, (long)mpTemplate );
 }
 
 //static

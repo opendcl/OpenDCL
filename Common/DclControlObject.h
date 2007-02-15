@@ -122,15 +122,18 @@ public:
 	bool SetStringProperty( PropertyId nID, LPCTSTR pszValue );
 	RefCountedPtr< CPropertyObject > AddStringProperty( PropertyId nID,
 																											PropertyType type = PropString,
-																											LPCTSTR pszValue = NULL );
+																											LPCTSTR pszValue = NULL,
+																											bool bResetExisting = false );
 	bool SetBooleanProperty( PropertyId nID, bool bValue = true );
 	RefCountedPtr< CPropertyObject > AddBooleanProperty( PropertyId nID,
 																											 PropertyType type = PropBool,
-																											 bool bValue = true );
+																											 bool bValue = true,
+																											 bool bResetExisting = false );
 	bool SetLongProperty( PropertyId nID, long lValue = -1 );
 	RefCountedPtr< CPropertyObject > AddLongProperty( PropertyId nID,
 																										PropertyType type = PropLong,
-																										long lValue = -1 );
+																										long lValue = -1,
+																										bool bResetExisting = false );
 
 	CString GetStrProperty(PropertyId nID) const;
 	long GetLngProperty(PropertyId nID) const;

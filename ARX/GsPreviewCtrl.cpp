@@ -1380,16 +1380,11 @@ bool CGsPreviewCtrl::LoadPreviewDwg(
 
 	try
 	{
-		CFileFind finder;
-
 		sFileName.Replace(_T("\\"), _T("/"));
 		sFileName.Replace(_T("//"), _T("/"));
 		
-		BOOL b = finder.FindFile(sFileName);
-		
 		if (acedFindFile(sFileName, fullpath) != RTNORM) 			
 		{				
-		//	acedFindFile(sFileName, fullpath);
 			CString sLoadString;
 			sLoadString = theWorkspace.LoadResourceString(IDS_DWGNOTLOADING);
 			acedAlert(sLoadString + sFileName);
