@@ -17,7 +17,6 @@
 #include "PropertyIds.h"
 
 static const int nNotSet = -1;
-static const int nDePropResStringOffset = 210;
 static const int nDePropDescResStringOffset = 2100;
 static const int MAX_CALLING_ARGUMENTS = 16;
 
@@ -1569,7 +1568,7 @@ CString CPropertyObject::GetName()
 	case PropActiveXRunTime:
 		return GetStringValue();
 	}
-	return theWorkspace.LoadResourceString(GetID() + nDePropResStringOffset);
+	return GetPropertyName(GetID());
 }
 
 CString CPropertyObject::GetDocumentationDesc()
@@ -1665,6 +1664,7 @@ void CPropertyObject::Serialize(CArchive& ar)
 		else
 			ar << short(mnID);
 		ar << long(GetType());
+		ar << DWORD(GetSubtype()); //added in version 7
 		if (nThisVersion <= 5) //changing from BOOL to bool in version 6 [ORW]
 			ar << BOOL(mbHidden); // store the flag that indicates this property is to be hidden
 		else
@@ -1692,6 +1692,13 @@ void CPropertyObject::Serialize(CArchive& ar)
 		long lType;
 		ar >> long(lType);
 		SetType( (PropertyType)lType );
+
+		if( nThisVersion >= 7 )
+		{
+			DWORD dwSubtype;
+			ar >> dwSubtype;
+			SetSubtype( dwSubtype ); //added in version 7
+		}
 		if (nThisVersion <= 5) //changing from BOOL to bool in version 6 [ORW]
 		{
 			BOOL bHidden;
