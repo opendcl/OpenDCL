@@ -1021,7 +1021,7 @@ void CObjectDCLView::CalcControlOffsetDistances(CDclControlObject *pArxObject, C
 	// set the offset position properties
 	if (lLeftFromRight == 0 || lLeftFromRight == 1)
 		pArxObject->SetLongProperty(nLeftFromRight, rcThis.Width() - nTheLeft);
-	else if (nLeftFromRight == 2)
+	else if (lLeftFromRight == 2)
 		pArxObject->SetLongProperty(nLeftFromRight, nTheLeft - (rcThis.Width()/2));
 	else
 	{
