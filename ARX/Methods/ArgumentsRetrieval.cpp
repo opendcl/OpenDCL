@@ -20,7 +20,7 @@ CString LtoString (long nLong)
 	return Value;
 }
 
-CControlPane * GetRequestedControlPane(CString sFileName, CString sDialogName)
+CControlPane* GetRequestedControlPane(CString sFileName, CString sDialogName)
 {
 	CDialogObject* pDialog = theArxWorkspace.FindDialog(sFileName, sDialogName);
 	if (pDialog)
@@ -28,21 +28,44 @@ CControlPane * GetRequestedControlPane(CString sFileName, CString sDialogName)
 	return NULL;
 }
 
-CDclControlObject * GetRequestedArxObject(CString sFileName, CString sDialogName, CString sControlName)
+//CDclControlObject * GetRequestedArxObject(CString sFileName, CString sDialogName, CString sControlName)
+//{
+//	CDialogObject* pDialog = theArxWorkspace.FindDialog(sFileName, sDialogName);
+//	if (!pDialog)
+//		return NULL;
+//	return pDialog->GetControlPane().FindArxObject(sControlName);
+//	//return theArxWorkspace.FindControl(sFileName, sDialogName, sControlName);
+//}
+
+TDialogControlPtr GetRequestedControl( LPCTSTR pszProjectKey, LPCTSTR pszDialogName, LPCTSTR pszControlName,
+																			 ControlType nControlType = CtlInvalid )
 {
-	CDialogObject* pDialog = theArxWorkspace.FindDialog(sFileName, sDialogName);
-	if (!pDialog)
+	CDialogObject *pDialog = theArxWorkspace.FindDialog( pszProjectKey, pszDialogName );
+	if( !pDialog )
 		return NULL;
-	return pDialog->GetControlPane().FindArxObject(sControlName);
-	//return theArxWorkspace.FindControl(sFileName, sDialogName, sControlName);
+	return pDialog->GetControlPane().FindControl( pszControlName, nControlType );
 }
 
-CWnd * GetRequestedControl(CString sFileName, CString sDialogName, CString sControlName, int nControlType)
+CWnd* GetRequestedControlWnd( LPCTSTR pszProjectKey,
+															LPCTSTR pszDialogName,
+															LPCTSTR pszControlName,
+															ControlType nControlType = CtlInvalid )
 {
-	CDialogObject *pDialog = theArxWorkspace.FindDialog(sFileName, sDialogName);
-	if (pDialog)
-		return pDialog->GetControlPane().FindControl(sControlName, nControlType);
-	return NULL;
+	TDialogControlPtr pControl = GetRequestedControl( pszProjectKey, pszDialogName, pszControlName, nControlType );
+	if( !pControl )
+		return NULL;
+	return pControl->GetControl();
+}
+
+CDclControlObject* GetRequestedDclControl( LPCTSTR pszProjectKey,
+																					 LPCTSTR pszDialogName,
+																					 LPCTSTR pszControlName,
+																					 ControlType nControlType = CtlInvalid )
+{
+	TDialogControlPtr pControl = GetRequestedControl( pszProjectKey, pszDialogName, pszControlName, nControlType );
+	if( !pControl )
+		return NULL;
+	return pControl->GetTemplate();
 }
 
 ///////////////////1//////////////////////////////////////////////////////////
@@ -696,14 +719,8 @@ CWnd * GetControlPointer(int nControlType, CString sMethod, int *pnArgs)
 	
 		if (pnArgs != NULL)
 			*pnArgs = 3;
-		CDclControlObject *pArxObject = GetRequestedArxObject(sProject, sDialogBox, sControlName);
 
-		if (pArxObject == NULL)
-		{
-			return NULL;
-		}
-		
-		return pArxObject->GetWindow();
+		return GetRequestedControlWnd(sProject, sDialogBox, sControlName);
 	}
 	else
 	{		
@@ -721,7 +738,8 @@ CWnd * GetControlPointer(int nControlType, CString sMethod, int *pnArgs)
 	
 	return pArxObject->GetWindow();
 }
-CWnd * GetControlPointer(int nControlType, CString sMethod, CDclFormObject *pDclObject)
+
+CWnd * GetControlPointer(ControlType nControlType, CString sMethod, CDclFormObject *pDclObject)
 {
 	CString sProject;
 	CString sDialogBox;
@@ -733,55 +751,15 @@ CWnd * GetControlPointer(int nControlType, CString sMethod, CDclFormObject *pDcl
 	ListData = GetProjectAndFormName(&sProject, &sDialogBox, sMethod);
 	
 	if (ListData == NULL)
-	{
 		return NULL;
-	}
 
 	if (!GetNextString(ListData, &sControlName, 2, sMethod))
 	{
 		theWorkspace.DisplayAlert(CString(ErrorNoControlNameArgument) + sMethod);
-
 		return NULL;
 	}
-	
-	
-	CWnd *pControl = GetRequestedControl(sProject, sDialogBox, sControlName, nControlType);
-	//acutRelRb(ListData);
-	
-	return pControl;
-}
 
-bool GetControlInfo(int nControlType, CString sMethod, CWnd *pParent, CWnd *pControl)
-{
-	CString sProject;
-	CString sDialogBox;
-	CString sControlName;
-	CString sItem;
-	struct resbuf *ListData;
-
-	// call the method to get 2 expected string arguments from AutoLisp
-	ListData = GetProjectAndFormName(&sProject, &sDialogBox, sMethod);
-	
-	if (ListData == NULL)
-	{
-		return false;
-	}
-
-	if (!GetNextString(ListData, &sControlName, 2, sMethod))
-	{
-		theWorkspace.DisplayAlert(CString(ErrorNoControlNameArgument) + sMethod);
-		return false;
-	}
-	
-	pControl = GetRequestedControl(sProject, sDialogBox, sControlName, nControlType);
-	pParent = pControl->GetParent();
-
-	if (pControl == NULL)
-	{
-		return false;
-	}
-	
-	return true;
+	return GetRequestedControlWnd(sProject, sDialogBox, sControlName, nControlType);
 }
 
 //*****************************************************************************
@@ -881,7 +859,7 @@ CDclControlObject * GetControlArxObject(CString sMethod, int *pnArgs)
 	
 		if (pnArgs != NULL)
 			*pnArgs = 3;
-		CDclControlObject *pArxObject = GetRequestedArxObject(sProject, sDialogBox, sControlName);
+		CDclControlObject *pArxObject = GetRequestedDclControl(sProject, sDialogBox, sControlName);
 
 		if (pArxObject == NULL)
 		{
@@ -2194,7 +2172,7 @@ struct resbuf *getLispTargetInput(LPCTSTR sMethod, CDclControlObject *&pArg)
 			return ListData;
 		}
 	
-		CDclControlObject *pArxObject = GetRequestedArxObject(sProject, sDialogBox, sControlName);
+		CDclControlObject *pArxObject = GetRequestedDclControl(sProject, sDialogBox, sControlName);
 
 		if (pArxObject == NULL)
 		{

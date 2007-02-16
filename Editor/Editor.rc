@@ -387,18 +387,16 @@ BEGIN
     LTEXT           "This software is a free version of OpenDCL that provides similar functionality to that of AutoCAD's DCL language. All versions of OpenDCL incorporate new technologies that let you draw in ",IDC_STATIC,17,7,201,25
 END
 
-IDD_FORMVARNAMEUPDATE_DIALOG DIALOG  0, 0, 199, 90
+IDD_FORMVARNAMEUPDATE_DIALOG DIALOGEX 0, 0, 293, 153
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Form Name Update"
-FONT 8, "MS Sans Serif"
+CAPTION "Modify AutoLISP Symbol Names"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "Yes",IDOK,50,69,50,14
-    PUSHBUTTON      "No",IDCANCEL,105,69,50,14
-    LTEXT           "Do you wish to update the (VarName) global variables?",IDC_STATIC,7,7,178,11
-    CONTROL         "Update the Form's (VarName)",IDC_FORMSCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,35,20,138,13
-    CONTROL         "Update the all the child controls' (VarName)",IDC_CTRLCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,35,34,153,13
-    LTEXT           "If the (VarName) is already in used by your AutoLisp code, you will have to update you AutoLisp code.",IDC_STATIC,7,49,185,17
+    DEFPUSHBUTTON   "Yes",IDOK,94,132,50,14
+    PUSHBUTTON      "No",IDCANCEL,149,132,50,14
+    LTEXT           "If you modify the lisp symbol name property, you must change any existing AutoLISP code to use the new symbol names for the form and its controls. Clearing the symbol names reverts to the default symbol names as determined at runtime.",IDC_STATIC,7,7,279,29
+    CONTROL         "Update all controls on the form",IDC_CTRLCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,83,52,203,13
+    LTEXT           "Are you sure you want to change the AutoLISP symbol names?",IDC_STATIC,7,95,279,20
 END
 
 IDD_FORECOLORS DIALOGEX 3, 1, 244, 134
@@ -1294,7 +1292,9 @@ BEGIN
     BEGIN
         MENUITEM "&Default Font",               ID_TOOLS_DEFAULTFONT
         MENUITEM "Grid Spacing",                ID_TOOLS_GRIDSPACING
-        MENUITEM "Event Prefix use ""On""",     ID_TOOLS_EVENTPREFIXUSESON
+        MENUITEM SEPARATOR
+        MENUITEM "Set Lisp Symbol Names",       ID_TOOLS_SETLISPSYMBOLNAMES
+        MENUITEM "Clear Lisp Symbol Names",     ID_TOOLS_CLEARLISPSYMBOLNAMES
     END
     POPUP "&View"
     BEGIN
@@ -1361,7 +1361,9 @@ BEGIN
     BEGIN
         MENUITEM "&Default Font",               ID_TOOLS_DEFAULTFONT
         MENUITEM "Grid Spacing",                ID_TOOLS_GRIDSPACING
-        MENUITEM "Event Prefix use ""On""",     ID_TOOLS_EVENTPREFIXUSESON
+        MENUITEM SEPARATOR
+        MENUITEM "Set Lisp Symbol Names",       ID_TOOLS_SETLISPSYMBOLNAMES
+        MENUITEM "Clear Lisp Symbol Names",     ID_TOOLS_CLEARLISPSYMBOLNAMES
     END
     POPUP "&View"
     BEGIN
@@ -1424,7 +1426,9 @@ BEGIN
     BEGIN
         MENUITEM "&Default Font",               ID_TOOLS_DEFAULTFONT
         MENUITEM "Grid Spacing",                ID_TOOLS_GRIDSPACING
-        MENUITEM "Event Prefix use ""On""",     ID_TOOLS_EVENTPREFIXUSESON
+        MENUITEM SEPARATOR
+        MENUITEM "Set Lisp Symbol Names",       ID_TOOLS_SETLISPSYMBOLNAMES
+        MENUITEM "Clear Lisp Symbol Names",     ID_TOOLS_CLEARLISPSYMBOLNAMES
     END
     POPUP "&View"
     BEGIN
@@ -1491,7 +1495,9 @@ BEGIN
     BEGIN
         MENUITEM "&Default Font",               ID_TOOLS_DEFAULTFONT
         MENUITEM "Grid Spacing",                ID_TOOLS_GRIDSPACING
-        MENUITEM "Event Prefix use ""On""",     ID_TOOLS_EVENTPREFIXUSESON
+        MENUITEM SEPARATOR
+        MENUITEM "Set Lisp Symbol Names",       ID_TOOLS_SETLISPSYMBOLNAMES
+        MENUITEM "Clear Lisp Symbol Names",     ID_TOOLS_CLEARLISPSYMBOLNAMES
         MENUITEM SEPARATOR
         MENUITEM "Events Copy to Clipboard",    ID_TOOLS_EVENTSCOPYTOCLIPBOARD
         MENUITEM "Events Write to Lisp File",   ID_TOOLS_EVENTSWRITETOLISPFILE
@@ -1635,8 +1641,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,0,12
- PRODUCTVERSION 4,0,0,12
+ FILEVERSION 4,0,0,13
+ PRODUCTVERSION 4,0,0,13
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1652,12 +1658,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "OpenDCL Dialog Editor"
-            VALUE "FileVersion", "4, 0, 0, 12"
+            VALUE "FileVersion", "4, 0, 0, 13"
             VALUE "InternalName", "OpenDCL"
             VALUE "LegalCopyright", "Copyright © 2007"
             VALUE "OriginalFilename", "OpenDCL.exe"
             VALUE "ProductName", "OpenDCL"
-            VALUE "ProductVersion", "4, 0, 0, 12"
+            VALUE "ProductVersion", "4, 0, 0, 13"
         END
     END
     BLOCK "VarFileInfo"
@@ -1821,9 +1827,9 @@ BEGIN
     IDD_FORMVARNAMEUPDATE_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 192
+        RIGHTMARGIN, 286
         TOPMARGIN, 7
-        BOTTOMMARGIN, 83
+        BOTTOMMARGIN, 146
     END
 
     IDD_FILEOPENPREVIEW, DIALOG
@@ -2099,7 +2105,7 @@ BEGIN
     IDS_MODALFORM2          "Modal Form"
     IDS_MODELESSFORM2       "Modeless Form"
     IDS_DOCKABLEFORM2       "Dockable Form"
-    IDS_PROBLEMS            "Problems were encounter when trying to load the font list."
+    IDS_PROBLEMS            "Problems were encountered when trying to load the font list."
     IDS_OBJECTDCL           "OpenDCL Font Tab"
     IDS_CONFIGTAB2          "Config Tab"
     IDS_DOT                 "."
@@ -2507,7 +2513,7 @@ BEGIN
     IDS_COPYTOCLIP          "Copy To Clipboard"
     IDS_COPYGETTOCLIP       "Copy Get To Clipboard"
     IDS_RENAMEPROJECT       "The Project is currently named Untitled... Please resave the project as something different. \nIt is not recomended that the AutoLisp code uses an AutoLisp variable starting with the name ""Untitled...""."
-    IDS_UPDATEVARNAMEQ      "Do you wish to update the (VarName) global variable?\nIf the (VarName) is already in used in AutoLisp you will have to update you .lsp file."
+    IDS_UPDATEVARNAMEQ      "If you change the symbol name, you must update any existing AutoLISP code to use the new name.  Are you sure you want to change the AutoLISP symbol name for this control?"
 END
 
 STRINGTABLE 
@@ -2533,13 +2539,6 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_EVENT_FolderChange  "FolderChange"
-    IDS_EVENT_HELP          "Help"
-    IDS_EVENT_TypeChange    "TypeChange"
-END
-
-STRINGTABLE 
-BEGIN
     2304                    "If the file does not exist the dialog control will prompt the user if they want to create a new file."
     2305                    "Sets the default extension."
     2306                    "Allows the user to enter or select a file with a different extension than what is loaded in the Filter ComboBox."
@@ -2556,26 +2555,6 @@ BEGIN
     2317                    "Shows or hides the File Type ComboBox."
     2318                    "Shows or hides the File Type Label."
     IDS_ObjectBrowser       "ObjectBrowser"
-END
-
-STRINGTABLE 
-BEGIN
-    432                     "DragnDropStyle"
-    IDS_PROP_ROWHEADER      "RowHeader"
-    IDS_PROP_INSERTTYPE     "DragnDropStyle"
-    IDS_PROP_INSERTTYPE2    "DragnDropStyle"
-    IDS_PROP_INSERTTYPE3    "DragnDropStyle"
-    IDS_PROP_INSERTTYPE4    "DragnDropStyle"
-    IDS_PROP_INSERTTYPE5    "DragnDropStyle"
-    IDS_PROP_INSERTTYPE6    "DragnDropStyle"
-    IDS_PROP_INSERTTYPE7    "DragnDropStyle"
-    IDS_PROP_INSERTTYPE8    "DragnDropStyle"
-    IDS_PROP_INSERTTYPE9    "DragnDropStyle"
-    IDS_PROP_INSERTTYPE10   "AlternateColor"
-    IDS_PROP_INSERTTYPE11   "AltOrientation"
-    IDS_PROP_INSERTTYPE12   "ToolTipMainText"
-    IDS_PROP_INSERTTYPE13   "ToolTipPicture"
-    IDS_PROP_INSERTTYPE14   "ToolTipAviFileName"
 END
 
 STRINGTABLE 
@@ -2817,18 +2796,6 @@ BEGIN
     IDR_OBJECTTYPE_STD      "\nProject\nOpenDCL\nOpenDCL Projects (*.odc)\n.odc\nOpenDCL.Document\nOpenDCL Project"
     IDR_OBJECTTYPE_LT       "\nProject\nOpenDCL\nOpenDCL Projects (*.odc)\n.odc\nOpenDCL.Document\nOpenDCL Project"
     IDR_OBJECTTYPE_R14      "\nProject\nOpenDCL\nOpenDCL Projects (*.odc)\n.odc\nOpenDCL.Document\nOpenDCL Project"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_PROP_INSERTTYPE15   "ToolTipLine"
-    IDS_PROP_INSERTTYPE16   "ToolTipTitleColor"
-    IDS_PROP_SPLITTERSTYLE  "EdgeStyle"
-    IDS_PROP_INSERTTYPE18   "ClosestInside"
-    IDS_PROP_INSERTTYPE19   "ClosestOutside"
-    IDS_PROP_INSERTTYPE20   "HatchScale"
-    IDS_PROP_INSERTTYPE21   "SplitterMoved"
-    IDS_PROP_INSERTTYPE22   "Caption-Second"
 END
 
 STRINGTABLE 

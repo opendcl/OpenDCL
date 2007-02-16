@@ -366,32 +366,6 @@
 #define IDD_HELPCTRLS                   315
 #define IDI_HATCH                       315
 #define IDD_PROGRESSBAR                 316
-#define IDS_EVENT_FolderChange          429
-#define IDS_EVENT_HELP                  430
-#define IDS_EVENT_TypeChange            431
-#define IDS_PROP_ROWHEADER              433
-#define IDS_PROP_INSERTTYPE             434
-#define IDS_PROP_INSERTTYPE2            435
-#define IDS_PROP_INSERTTYPE3            436
-#define IDS_PROP_INSERTTYPE4            437
-#define IDS_PROP_INSERTTYPE5            438
-#define IDS_PROP_INSERTTYPE6            439
-#define IDS_PROP_INSERTTYPE7            440
-#define IDS_PROP_INSERTTYPE8            441
-#define IDS_PROP_INSERTTYPE9            442
-#define IDS_PROP_INSERTTYPE10           443
-#define IDS_PROP_INSERTTYPE11           444
-#define IDS_PROP_INSERTTYPE12           445
-#define IDS_PROP_INSERTTYPE13           446
-#define IDS_PROP_INSERTTYPE14           447
-#define IDS_PROP_INSERTTYPE15           448
-#define IDS_PROP_INSERTTYPE16           449
-#define IDS_PROP_SPLITTERSTYLE          450
-#define IDS_PROP_INSERTTYPE18           451
-#define IDS_PROP_INSERTTYPE19           452
-#define IDS_PROP_INSERTTYPE20           453
-#define IDS_PROP_INSERTTYPE21           454
-#define IDS_PROP_INSERTTYPE22           455
 #define IDS_BUTTONSTYLE_0               501
 #define IDS_BUTTONSTYLE_1               502
 #define IDS_BUTTONSTYLE_2               503
@@ -652,7 +626,6 @@
 #define ID_DOCK_PROPERTIES              12882
 #define ID_TOOLS_GRIDSPACING            12893
 #define ID_SETDISTFILENAME              12894
-#define ID_TOOLS_EVENTPREFIXUSESON      12895
 #define ID_WINDOW_CLOSEALL              12896
 #define ID_EDIT_OBJECTBROWSER           12897
 #define ID_PROJECTS_ADDFILEDIALOGBOX    12898
@@ -918,13 +891,15 @@
 #define IDS_DRAGSTYLE_0                 19601
 #define IDS_DRAGSTYLE_1                 19602
 #define ID_TOOLBOX_ANIMATION            40002
+#define ID_TOOLS_SETLISPSYMBOLNAMES     40003
+#define ID_TOOLS_CLEARLISPSYMBOLNAMES   40004
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        102
-#define _APS_NEXT_COMMAND_VALUE         40003
+#define _APS_NEXT_COMMAND_VALUE         40005
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           103
 #endif

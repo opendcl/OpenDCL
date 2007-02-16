@@ -331,4 +331,8 @@ public:
 	//}}AFX_MSG
 	
 	DECLARE_MESSAGE_MAP()
+	afx_msg void OnToolsSetlispsymbolnames();
+	afx_msg void OnToolsClearlispsymbolnames();
+	afx_msg void OnUpdateToolsSetlispsymbolnames(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateToolsClearlispsymbolnames(CCmdUI *pCmdUI);
 };

@@ -8,6 +8,7 @@
 
 class CObjectDCLView;
 class CControlHolder;
+class CDclControlObject;
 
 #define nNotSet		-1
 #define nCharReturn 13
@@ -28,7 +29,6 @@ public:
 
 // Attributes
 public:
-	CFormVarNameUpdate *m_pDlg;
 	CString m_OriginalValue;
 	CString m_sFilter;
 	bool m_bAllowReturn;

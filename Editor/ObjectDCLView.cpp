@@ -223,6 +223,10 @@ BEGIN_MESSAGE_MAP(CObjectDCLView, CView)
 	ON_COMMAND(ID_PROPERTIES, OnProperties)
 	ON_COMMAND(ID_EDIT_OBJECTBROWSER, OnEditObjectbrowser)
 	//}}AFX_MSG_MAP
+	ON_COMMAND(ID_TOOLS_SETLISPSYMBOLNAMES, &CObjectDCLView::OnToolsSetlispsymbolnames)
+	ON_COMMAND(ID_TOOLS_CLEARLISPSYMBOLNAMES, &CObjectDCLView::OnToolsClearlispsymbolnames)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_SETLISPSYMBOLNAMES, &CObjectDCLView::OnUpdateToolsSetlispsymbolnames)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_CLEARLISPSYMBOLNAMES, &CObjectDCLView::OnUpdateToolsClearlispsymbolnames)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -271,6 +275,7 @@ CObjectDCLView::~CObjectDCLView()
 		m_pThisDclForm->m_pMdiChildWnd = NULL;
 		m_pThisDclForm = NULL;
 	}
+	m_SelectedControl.Clear();
 		
 	ClearSelection();
 	ClearUndoList();
@@ -1993,6 +1998,7 @@ void CObjectDCLView::PreDestroy()
 	CProjectTreeCtrl *pProjectTree = theEditorWorkspace.GetProjectTreeCtrl();
 	pProjectTree->RemoveViewPointer(this);
 	pProjectTree->SetDocument(NULL);
+	theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().DisplayProperties( NULL );
 
 	// when the view is closed we need to ensure the property list and zorder panes are updated correctly
 	CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
@@ -2280,10 +2286,7 @@ bool CObjectDCLView::CreateActiveX(CControlHolder *pParent, CDclControlObject *p
 
 	// lets get the correct name set here.
 	if (bForceUpdate)
-	{
 		pArxObject->SetStringProperty(nName, FindNextControlName(pArxObject->GetActiveXTypeName()));		
-		pArxObject->ForceUpdateGlobalVariable(m_pThisDclForm->GetKeyName());
-	}
 	return true;
 }
 
@@ -3339,7 +3342,9 @@ void CObjectDCLView::AddProperties( CDclControlObject *pDclControl )
 	sUnderscore = theWorkspace.LoadResourceString(IDS_UNDERSCORE);
 
 	// add the GlobalVarName property
-	pDclControl->AddStringProperty( nGlobalVarName, PropString, pDclControl->GetKeyPath() );
+	// now set to empty string by default  2007-02-15 [ORW]
+	//pDclControl->AddStringProperty( nGlobalVarName, PropString, pDclControl->GetKeyPath() );
+	pDclControl->AddStringProperty( nGlobalVarName );
 	
 	if (nType == CtlActiveX)
 		// add the ActiveX property pages property (to display the button)
@@ -3438,8 +3443,8 @@ void CObjectDCLView::AddProperties( CDclControlObject *pDclControl )
 		pDclControl->AddStringProperty( nSecondsText, PropString, _T("seconds remaining") );
 		pDclControl->AddStringProperty( nMinuteText, PropString, _T("minute") );
 		pDclControl->AddStringProperty( nMinutesText, PropString, _T("minutes") );
-		pDclControl->AddBooleanProperty( nDisplaySeconds, PropString, false );
-		pDclControl->AddBooleanProperty( nDisplayPercentage, PropString, true );
+		pDclControl->AddBooleanProperty( nDisplaySeconds, PropBool, false );
+		pDclControl->AddBooleanProperty( nDisplayPercentage, PropBool, true );
 	}
 
 	// add the nBeginGroup property
@@ -6512,7 +6517,7 @@ void CObjectDCLView::PasteFromClipBoard()
 		{
 			// get current clipboard control
 			CDclControlObject* pCopyOfArxControlObject = ClipBoardObject.mControls.GetNext(pos);
-			pCopyOfArxControlObject->SetOwner(m_pThisDclForm);
+			pCopyOfArxControlObject->SetOwnerForm(m_pThisDclForm);
 					
 			ClearEventProperties(pCopyOfArxControlObject);
 			if (pCopyOfArxControlObject->GetType() == CtlFileDlgCtrl)
@@ -6577,10 +6582,7 @@ void CObjectDCLView::PasteFromClipBoard()
 				// get the next available name for the control
 				CString sControlName = FindNextControlName(GetControlName(pCopyOfArxControlObject->GetType()));	
 				pCopyOfArxControlObject->SetStringProperty(nName, sControlName);			
-				pCopyOfArxControlObject->ForceUpdateGlobalVariable(sControlName);
 			}
-			else
-				pCopyOfArxControlObject->ForceUpdateGlobalVariable(m_pThisDclForm->GetKeyName());
 			
 			CRect rcThis;
 			GetClientRect(&rcThis);
@@ -7065,9 +7067,7 @@ void CObjectDCLView::OnSize(UINT nType, int cx, int cy)
 
 		CPropertyTabPane* pPropTabs = theEditorWorkspace.GetPropertyTabs();
 		if (pPropTabs->m_PropertiesTabPane.GetPropertiesCtrl().m_pView == this)
-		{
 			pPropTabs->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
-		}
 	}
 	InvalidateRect(&m_rcGripRect);
 }	
@@ -8305,8 +8305,29 @@ void CObjectDCLView::OnDraw(CDC* pDC)
 void CObjectDCLView::OnEditObjectbrowser() 
 {
 	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pControl != NULL)
-	{
 		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().EditObjectbrowser();
-	}
-	
+}
+
+void CObjectDCLView::OnToolsSetlispsymbolnames()
+{
+	CFormVarNameUpdate Dlg( m_pThisDclForm, m_pThisDclForm->GetKeyName() );
+	Dlg.DoModal();
+	theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
+}
+
+void CObjectDCLView::OnToolsClearlispsymbolnames()
+{
+	CFormVarNameUpdate Dlg( m_pThisDclForm, NULL );
+	Dlg.DoModal();
+	theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
+}
+
+void CObjectDCLView::OnUpdateToolsSetlispsymbolnames(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable( m_pThisDclForm != NULL );
+}
+
+void CObjectDCLView::OnUpdateToolsClearlispsymbolnames(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable( m_pThisDclForm != NULL );
 }

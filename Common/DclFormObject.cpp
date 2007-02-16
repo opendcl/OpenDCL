@@ -317,37 +317,34 @@ int CDclFormObject::CountDeletedControls() const
 	return nDeleted;
 }
 
-void CDclFormObject::UpdateGlobalVariableName( LPCTSTR pszRootName /*= NULL*/ )	
+void CDclFormObject::SetGlobalVariableName( LPCTSTR pszRootName /*= NULL*/, bool bUpdateChildren /*= true*/ )	
 {	
-	if( pszRootName )
-		mpProject->SetKeyName( pszRootName );
-	CString sRootName = mpProject->GetKeyName();
-	CString sFormName = GetKeyName();
-	RefCountedPtr< CPropertyObject > pPropName = GetControlProperties()->GetPropertyObject(nName);
-	if( pPropName )
-	{
-		RefCountedPtr< CPropertyObject > pPropGlobalVarName = GetControlProperties()->GetPropertyObject(nGlobalVarName);
-		if( pPropGlobalVarName )
-			pPropGlobalVarName->SetStringValue( sRootName + _T('_') + sFormName );
-	}
-	
+	CString sRootName = pszRootName;
+	if( sRootName.IsEmpty() )
+		sRootName = mpProject->GetKeyName();
+	CString sFormName = sRootName + _T('_') + GetKeyName();
+	GetControlProperties()->AddStringProperty( nGlobalVarName, PropString, sFormName, true );
+
+	if( !bUpdateChildren )
+		return;
+
 	POSITION pos = mDclControls.GetHeadPosition();
 	mDclControls.GetNext(pos); //skip the form properties control
-	while(pos != NULL)
-	{
-		CDclControlObject *pCtrl = mDclControls.GetNext(pos);
-		assert( pCtrl != NULL );
-		if( pCtrl != NULL )
-			pCtrl->ForceUpdateGlobalVariable(sFormName);
-	}
+	while( pos )
+		mDclControls.GetNext(pos)->SetGlobalVariableName( sFormName );
 }
 
-void CDclFormObject::ForceUpdateGlobalVariableName( LPCTSTR pszFormName )	
+void CDclFormObject::ClearGlobalVariableName( bool bUpdateChildren /*= true*/ )	
 {	
-	RefCountedPtr< CPropertyObject > pPropName = GetControlProperties()->GetPropertyObject(nName);
-	if( pPropName )
-		pPropName->SetStringValue( pszFormName );
-	UpdateGlobalVariableName();
+	GetControlProperties()->SetStringProperty( nGlobalVarName, NULL );
+
+	if( !bUpdateChildren )
+		return;
+
+	POSITION pos = mDclControls.GetHeadPosition();
+	mDclControls.GetNext(pos); //skip the form properties control
+	while( pos )
+		mDclControls.GetNext(pos)->ClearGlobalVariableName();
 }
 
 int CDclFormObject::CountDeletedImageLists() const

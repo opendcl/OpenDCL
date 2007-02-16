@@ -17,7 +17,7 @@ public:
 
 // Operations
 public:
-	void RenameUntitledGlobalVars(CString sPathName);
+	void SetGlobalVariableNames( LPCTSTR pszRootName );
 
 	// Overrides
 public:

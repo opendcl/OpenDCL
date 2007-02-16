@@ -370,11 +370,52 @@ BEGIN
     IDS_PROP_ShowReadOnlyCheckBox "ShowReadOnlyCheckBox"
     IDS_PROP_ShowTypeComboBox "ShowTypeComboBox"
     IDS_PROP_ShowTypeLabel  "ShowTypeLabel"
+    IDS_EVENT_FolderChange  "FolderChange"
+    IDS_EVENT_HELP          "Help"
+    IDS_EVENT_TypeChange    "TypeChange"
 END
 
 STRINGTABLE 
 BEGIN
     IDS_AXMETHODS           "(Object Browser)"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_INSERTTYPE     "InsertOrXref"
+    IDS_PROP_ROWHEADER      "RowHeader"
+    IDS_PROP_COLUMN_CAPTIONS "ColumnCaptionList"
+    IDS_PROP_COLUMN_ALIGNMENTS "ColumnAlignmentList"
+    IDS_PROP_COLUMN_IMAGES  "ColumnImageList"
+    IDS_PROP_COLUMN_WIDTHS  "ColumnWidthList"
+    IDS_PROP_COLUMN_STYLES  "ColumnStyleList"
+    IDS_PROP_COLUMN_DEFAULTIMAGES "ColumnDefaultImageList"
+    IDS_PROP_COLUMN_ALTERNATEIMAGES "ColumnAlternateImageList"
+    IDS_PROP_COLUMN_LISTITEMS "ColumnListItems"
+    IDS_PROP_COLUMN_LISTIMAGES "ColumnListImages"
+    IDS_PROP_ALTERNATECOLOR "AlternateColor"
+    IDS_PROP_ALTORIENTATION "AltOrientation"
+    IDS_PROP_TOOLTIP_MAINTEXT "ToolTipMainText"
+    IDS_PROP_TOOLTIP_PICTURE "ToolTipPicture"
+    IDS_PROP_TOOLTIP_AVIFILENAME "ToolTipAviFileName"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_TOOLTIP_LINE   "ToolTipLine"
+    IDS_PROP_TOOLTIP_TITLECOLOR "ToolTipTitleColor"
+    IDS_PROP_SPLITTERSTYLE  "EdgeStyle"
+    IDS_PROP_CLOSESTINSIDE  "ClosestInside"
+    IDS_PROP_CLOSESTOUTSIDE "ClosestOutside"
+    IDS_PROP_HATCHSCALE     "HatchScale"
+    IDS_EVENT_SPLITTERMOVED "SplitterMoved"
+    IDS_PROP_CAPTION_SECOND "Caption-Second"
+    IDS_PROP_CAPTION_SECONDS "Caption-Seconds"
+    IDS_PROP_CAPTION_MINUTE "Caption-Minute"
+    IDS_PROP_CAPTION_MINUTES "Caption-Minutes"
+    IDS_PROP_DISPLAYSECONDS "DisplaySeconds"
+    IDS_PROP_DISPLAY_PERCENTAGE "DisplayPercentage"
+    IDS_EVENT_FORM_ONOK     "OK"
 END
 
 #endif    // English (U.S.) resources

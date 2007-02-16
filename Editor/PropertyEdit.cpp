@@ -60,7 +60,6 @@ static CDclControlObject* FindArxControlObject(CDclFormObject *pDclForm, CString
 
 CPropertyEdit::CPropertyEdit()
 {
-	m_pDlg = NULL;
 	m_sFilter = sAllChars;
 	m_bAllowReturn = false; 
 	m_pAxContainer = NULL;
@@ -68,9 +67,6 @@ CPropertyEdit::CPropertyEdit()
 
 CPropertyEdit::~CPropertyEdit()
 {
-	if (!m_pDlg)
-		delete m_pDlg;
-	m_pDlg = NULL;
 }
 
 
@@ -221,63 +217,26 @@ void CPropertyEdit::CommitValue()
 
 void CPropertyEdit::UpdateVarName()
 {
-	CString sNewText;
-	GetWindowText(sNewText);
-	if (m_OriginalValue == sNewText)
-		return;
-
-	CString sDclFormName = m_pView->m_pThisDclForm->GetKeyName();
-			
-	if (m_pControl->GetType() <= 0 || m_pControl->GetType() > CtlFileDlgCtrl)
-	{
-		// get the name for the control
-		CString sControlName = GetControlName(m_pControl->GetType());
-
-		// if the old control name was the original default control name
-		if (m_OriginalValue.Left(sControlName.GetLength()) == sControlName &&
-			(m_OriginalValue.GetLength() == sControlName.GetLength() + 1 ||
-			m_OriginalValue.GetLength() == sControlName.GetLength() + 2))
-		{
-			// do a complete update of the (VarName)
-			m_pControl->ForceUpdateGlobalVariable(sDclFormName);
-			// and refresh the projectlist ctrl.
-			theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
-		}
-		else
-		{
-			if (!m_pDlg)
-			{
-				m_pDlg = new CFormVarNameUpdate;
-				m_pDlg->Create(IDD_FORMVARNAMEUPDATE_DIALOG, &theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl());
-			}
-			m_pDlg->m_sDclFormName = sDclFormName;
-			m_pDlg->m_pControl = m_pControl;
-			m_pDlg->ShowWindow(TRUE);
-			// we have to do this disabling/enabling thing because the DoModal causes an Exception error
-			// and I can't figure out why. Sorry.
-			theEditorWorkspace.GetMainFrame()->EnableWindow(FALSE);
-			m_pDlg->EnableWindow(TRUE);
-		}
-	}
-	else
-	{
-		// get the text for the msg box
-		CString sMsg;
-		CString sTitle;				
-		sMsg = theWorkspace.LoadResourceString(IDS_UPDATEVARNAMEQ);
-		sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
-		// if yes was pressed.
-		if (MessageBox(sMsg, sTitle, MB_YESNO) == nAnsweredYes)
-		{
-			// do a complete update of the (VarName)
-			m_pControl->ForceUpdateGlobalVariable(sDclFormName);
-			// and refresh the projectlist ctrl.
-			theEditorWorkspace.GetPropertyTabs()->DisplaySelectedControlProperties(
-					m_pControl, 
-					theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pView);
-		}	
-	}
+	//no longer prompting to update symbol names because the default is now empty names, so no dependency 
+	//on the form name and no burning need to update when the form name changes   2007-02-15 [ORW]
+	//
+	//if( m_pControl == m_pControl->GetOwnerForm()->GetControlProperties() )
+	//{
+	//	CFormVarNameUpdate Dlg( m_pControl->GetOwnerForm(),
+	//													m_pProp->GetStringValue(),
+	//													&theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl() );
+	//	Dlg.DoModal();
+	//}
+	//else if( MessageBox( theWorkspace.LoadResourceString(IDS_UPDATEVARNAMEQ),
+	//										 theWorkspace.LoadResourceString(IDR_MAINFRAME),
+	//										 MB_YESNO ) == IDYES )
+	//{
+	//	m_pControl->SetGlobalVariableName( m_pProp->GetStringValue() );
+	//	// and refresh the projectlist ctrl.
+	//	theEditorWorkspace.GetPropertyTabs()->DisplaySelectedControlProperties(
+	//			m_pControl, 
+	//			theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pView);
+	//}	
 }
 
 void CPropertyEdit::UpdateSizes()

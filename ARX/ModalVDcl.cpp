@@ -487,7 +487,7 @@ BOOL CModalVDcl::PreTranslateMessage(MSG* pMsg)
           m_ControlCol.GetNext(pos);
           //Find the next enabled, tab-stop control
           while (pos != NULL) {
-            CDialogControl *ctrlAtPos = m_ControlCol.GetNext(pos);
+            TDialogControlPtr ctrlAtPos = m_ControlCol.GetNext(pos);
             if (ctrlAtPos->m_pControl->GetBoolProperty(nIsTabStop) != FALSE 
                 && ctrlAtPos->m_pControl->GetBoolProperty(nIsTabStop) != -1
                 && ctrlAtPos->m_pControl->m_pWnd->IsWindowEnabled()) 
@@ -499,7 +499,7 @@ BOOL CModalVDcl::PreTranslateMessage(MSG* pMsg)
           //Did not find one. Loop back to the beginning and try from there.
           pos = m_ControlCol.GetHeadPosition();
           while (pos != NULL) {
-            CDialogControl *ctrlAtPos = m_ControlCol.GetNext(pos);
+            TDialogControlPtr ctrlAtPos = m_ControlCol.GetNext(pos);
             if (ctrlAtPos->m_pControl->GetBoolProperty(nIsTabStop) != FALSE 
                 && ctrlAtPos->m_pControl->GetBoolProperty(nIsTabStop) != -1
                 && ctrlAtPos->m_pControl->m_pWnd->IsWindowEnabled()) 
@@ -521,7 +521,7 @@ BOOL CModalVDcl::PreTranslateMessage(MSG* pMsg)
           m_ControlCol.GetPrev(pos);
           //Find the previous enabled, tab-stop control
           while (pos != NULL) {
-            CDialogControl *ctrlAtPos = m_ControlCol.GetPrev(pos);
+            TDialogControlPtr ctrlAtPos = m_ControlCol.GetPrev(pos);
             if (ctrlAtPos->m_pControl->GetBoolProperty(nIsTabStop) != FALSE 
                 && ctrlAtPos->m_pControl->GetBoolProperty(nIsTabStop) != -1
                 && ctrlAtPos->m_pControl->m_pWnd->IsWindowEnabled()) 
@@ -533,7 +533,7 @@ BOOL CModalVDcl::PreTranslateMessage(MSG* pMsg)
           //Did not find one. Loop back to the beginning and try from there.
           pos = m_ControlCol.GetTailPosition();
           while (pos != NULL) {
-            CDialogControl *ctrlAtPos = m_ControlCol.GetPrev(pos);
+            TDialogControlPtr ctrlAtPos = m_ControlCol.GetPrev(pos);
             if (ctrlAtPos->m_pControl->GetBoolProperty(nIsTabStop) != FALSE 
                 && ctrlAtPos->m_pControl->GetBoolProperty(nIsTabStop) != -1
                 && ctrlAtPos->m_pControl->m_pWnd->IsWindowEnabled()) 

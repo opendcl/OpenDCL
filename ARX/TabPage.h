@@ -8,6 +8,8 @@
 
 class CDclFormObject;
 
+typedef RefCountedPtr< class CTabPage > TTabPagePtr;
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CTabPage dialog

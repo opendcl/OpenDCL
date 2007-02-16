@@ -47,7 +47,6 @@ BEGIN_MESSAGE_MAP(VdclTree, CStatic)
 	//{{AFX_MSG_MAP(VdclTree)
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
-	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE, OnSelchanged)
 	ON_NOTIFY(NM_CLICK, IDC_TREE, OnClick)
 	ON_NOTIFY(NM_DBLCLK, IDC_TREE, OnDblclk)
 	ON_NOTIFY(NM_KILLFOCUS, IDC_TREE, OnKillfocus)
@@ -554,57 +553,14 @@ bool VdclTree::GetParentInfo(HTREEITEM hItem)
 	
 	return true;
 }
-void VdclTree::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult) 
-{
-	NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
-			*pResult = 0;
-
-
-}
 
 void VdclTree::OnClick(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	// get the selected item
-	NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
-		
-	// get the selected item
-	TV_ITEM SelectedItem = pNMTreeView->itemNew;
-
-	// fire the nEventSelChanged defun if the user clicked on an item
-	if (SelectedItem.hItem != NULL)
-	{
-		//bool bFoundParent = false;
-		CString sKey = Get_hItemKey(SelectedItem.hItem);
-
-		CString sItemText = m_ChildTree.GetItemText(SelectedItem.hItem);   
-			
-		if (sKey != CString())
-		{		
-			
-			// call methods to invoke the event
-			InvokeMethodStringString(
-				m_ArxControl->GetStrProperty(nEventSelChanged),
-				sItemText,
-				sKey,
-				m_bInvokeWithSendString);	
-		}
-		else if (SelectedItem.hItem != NULL)
-		{		
-			// call methods to invoke the event
-			InvokeMethodStringLong(
-				m_ArxControl->GetStrProperty(nEventSelChanged),
-				sItemText,
-				(long)SelectedItem.hItem,
-				m_bInvokeWithSendString);
-		}
-	}
-
 	// call methods to invoke the event
 	InvokeMethod(
 		m_ArxControl->GetStrProperty(nEventClicked),
 		m_bInvokeWithSendString);
 
-	
 	*pResult = 0;
 }
 

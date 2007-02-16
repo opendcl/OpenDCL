@@ -83,49 +83,18 @@ static CString FindTabCaption(CDclFormObject *pDclTab)
 }
 
 
-static short AddControlStdProperty(CDclControlObject *pControlObject, PropertyId nID, LPCTSTR strValue, PropertyType ValueType, bool bHidden = false) 
+static RefCountedPtr< CPropertyObject > AddControlStdProperty(CDclControlObject *pDclControl, PropertyId nID, LPCTSTR pszValue, PropertyType type, bool bHidden = false) 
 {
-	short sReturnValue;
-	
-	int nPropIndex = pControlObject->FindPropertyIndex(nID);
-
-	// if the property was not found add it
-	if (nPropIndex > nNotSet)
-	{
-		RefCountedPtr< CPropertyObject > pPropertyObect = pControlObject->GetPropertyObject(nID);
-		pPropertyObect->SetHidden(bHidden);
-	}
-	// if the property was not found add it
-	if (nPropIndex == nNotSet)
-	{
-		// find the insert position for this new property
-		POSITION InsertPos = pControlObject->FindPropertyInsertPos(nID, (bHidden == TRUE));
-	
-		// create new property object pointer to pass to AddTail method
-		RefCountedPtr< CPropertyObject > pPropertyObect = new CPropertyObject( ValueType, 0, nID );
-		
-		// assign values
-		if( strValue && *strValue )
-			pPropertyObect->SetStringValue(strValue);
-		pPropertyObect->SetHidden(bHidden);
-
-		// reset the name to the new value
-		if (InsertPos == NULL)
-			pControlObject->GetPropertyList().AddTail(pPropertyObect);
-		else
-			pControlObject->GetPropertyList().InsertAfter(InsertPos, pPropertyObect);
-		
-	}
-	// set return variable to equal propery count to indicate completion
-	sReturnValue = pControlObject->GetPropertyList().GetCount() - 1;
-
-	return sReturnValue;
+	RefCountedPtr< CPropertyObject > pProp = pDclControl->AddStringProperty( nID, type, pszValue );
+	if( bHidden )
+		pProp->SetHidden();
+	return pProp;
 }
 
 
-static short AddControlHiddenProperty(CDclControlObject *pControl, PropertyId nID, LPCTSTR strValue, PropertyType ValueType) 
+static RefCountedPtr< CPropertyObject > AddControlHiddenProperty(CDclControlObject *pDclControl, PropertyId nID, LPCTSTR pszValue, PropertyType type) 
 {
-	return AddControlStdProperty(pControl, nID, strValue, ValueType, TRUE);
+	return AddControlStdProperty(pDclControl, nID, pszValue, type, true);
 }
 
 
@@ -154,8 +123,6 @@ BEGIN_MESSAGE_MAP(CObjectDCLApp, CWinApp)
 	ON_COMMAND(ID_TOOLS_DEFAULTFONT, OnToolsDefaultfont)
 	//ON_COMMAND(ID_FILE_CLOSE, OnFileClose)
 	ON_COMMAND(ID_TOOLS_GRIDSPACING, OnToolsGridspacing)
-	ON_COMMAND(ID_TOOLS_EVENTPREFIXUSESON, OnToolsEventprefixuseson)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_EVENTPREFIXUSESON, OnUpdateToolsEventprefixuseson)
 	ON_UPDATE_COMMAND_UI(ID_TOOLS_EVENTSCOPYTOCLIPBOARD, OnUpdateToolsEventscopytoclipboard)
 	ON_UPDATE_COMMAND_UI(ID_TOOLS_EVENTSWRITETOLISPFILE, OnUpdateToolsEventswritetolispfile)
 	ON_COMMAND(ID_TOOLS_EVENTSCOPYTOCLIPBOARD, OnToolsEventscopytoclipboard)
@@ -967,23 +934,17 @@ void CObjectDCLApp::AddDclFormProperties(CDclFormObject *pNewDclForm, DclFormTyp
 	// create a new arx object to hold the new dcl form's properties
 	CDclControlObject* pArxPropertyObject = pNewDclForm->GetControlProperties();
 
+	// add standard properties
+
 	// lets create a name for the new dcl form
-	int nCount = pProject->GetDclFormList().GetCount();
-	
-	sText = theWorkspace.LoadResourceString(IDS_DCLFORM);
+	CString sFormName;
+	sFormName.Format( _T("%s%d"), theWorkspace.LoadResourceString(IDS_DCLFORM), pProject->GetDclFormList().GetCount() );
+	AddControlStdProperty(pArxPropertyObject, nName, sFormName, PropString); // add the name property
 
-	CString sCaption = sText + LTOA(nCount);
-
-    // add standard properties
-	// add the name property
-	AddControlStdProperty(pArxPropertyObject, nName, sCaption, PropString);
-
-	CString sUnderscore;
-	sUnderscore = theWorkspace.LoadResourceString(IDS_UNDERSCORE);
-
-	// add the GlobalVarName property
-	CString sVarName = theEditorWorkspace.GetActiveProjectName() + sUnderscore + sCaption;
-	AddControlStdProperty(pArxPropertyObject, nGlobalVarName, sVarName, PropString);
+	//original ODCL 3 code created a default global lisp symbol name; this has been removed (commented below) 
+	//in favor of an empty value in order to use the default name calculated at runtime   2007-02-15 [ORW]
+	CString sGlobalVarName/* = CString( pProject->GetKeyName() ) + _T('_') + sFormName*/;
+	AddControlStdProperty(pArxPropertyObject, nGlobalVarName, sGlobalVarName, PropString);
 
 	// add the nObjectBrowser property
 	AddControlStdProperty(pArxPropertyObject, nObjectBrowser, CString(), PropActiveXMethods);
@@ -1027,7 +988,7 @@ void CObjectDCLApp::AddDclFormProperties(CDclFormObject *pNewDclForm, DclFormTyp
 		AddControlStdProperty(pArxPropertyObject, nIcon, sText /*"None" */, PropPicture);
             
 		// add TitleBarText property
-		AddControlStdProperty(pArxPropertyObject, nTitleBarText, sCaption, PropString);
+		AddControlStdProperty(pArxPropertyObject, nTitleBarText, sFormName, PropString);
                  
 		// add the events to the property list
 		AddControlHiddenProperty(pArxPropertyObject, nFormEventInitialize, CString(), PropEvent);
@@ -1056,7 +1017,7 @@ void CObjectDCLApp::AddDclFormProperties(CDclFormObject *pNewDclForm, DclFormTyp
 		AddControlStdProperty(pArxPropertyObject, nIcon, sText /*"None" */, PropPicture);
             
 		// add TitleBarText property
-		AddControlStdProperty(pArxPropertyObject, nTitleBarText, sCaption, PropString);
+		AddControlStdProperty(pArxPropertyObject, nTitleBarText, sFormName, PropString);
         
 		// add the events to the property list
 		AddControlHiddenProperty(pArxPropertyObject, nFormEventClose, CString(), PropEvent);
@@ -1082,7 +1043,7 @@ void CObjectDCLApp::AddDclFormProperties(CDclFormObject *pNewDclForm, DclFormTyp
 		}
 		
 		// add TitleBarText property
-		AddControlStdProperty(pArxPropertyObject, nTitleBarText, sCaption, PropString);
+		AddControlStdProperty(pArxPropertyObject, nTitleBarText, sFormName, PropString);
         
 		// add the dockable sides property
 		AddControlStdProperty(pArxPropertyObject, nDockableSides, LTOA(0), PropEnum);
@@ -1100,7 +1061,7 @@ void CObjectDCLApp::AddDclFormProperties(CDclFormObject *pNewDclForm, DclFormTyp
 		break;
 	case VdclConfigTab:
 		// add the caption properties
-		AddControlStdProperty(pArxPropertyObject, nCfgTabCaption, sCaption, PropString);
+		AddControlStdProperty(pArxPropertyObject, nCfgTabCaption, sFormName, PropString);
 		// add the height property with a default height of 380
 		AddControlStdProperty(pArxPropertyObject, nHeight, LTOA(nDeConfigTabHeight), PropLong);
 		// add the height property with a default width of 600
@@ -1173,36 +1134,6 @@ void CObjectDCLApp::OnToolsGridspacing()
 {
 	CGridSpacingDlg Dlg;
 	Dlg.DoModal();
-}
-
-void CObjectDCLApp::OnToolsEventprefixuseson() 
-{
-	
-	CWinApp* pApp = AfxGetApp();
-	CString sProfileName;
-	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
-	CString sText;
-	sText = theWorkspace.LoadResourceString(IDS_EventPrefixUsesON);
-
-    BOOL bUsesOn = pApp->GetProfileInt(sProfileName, sText, TRUE);
-	pApp->WriteProfileInt(sProfileName, sText, !bUsesOn);
-    
-	
-}
-
-void CObjectDCLApp::OnUpdateToolsEventprefixuseson(CCmdUI* pCmdUI) 
-{
-	CWinApp* pApp = AfxGetApp();
-	CString sProfileName;
-	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
-	CString sText;
-	sText = theWorkspace.LoadResourceString(IDS_EventPrefixUsesON);
-
-    BOOL bUsesOn = pApp->GetProfileInt(sProfileName, sText, TRUE);
-    
-	pCmdUI->SetCheck(bUsesOn);	
 }
 
 void CObjectDCLApp::OnUpdateToolsEventscopytoclipboard(CCmdUI* pCmdUI) 

@@ -77,7 +77,7 @@ public:
 	const CRect& GetPaneWindowRect() const { return mPaneWindowPos; }
 	CRect& GetPaneWindowRect() { return mPaneWindowPos; }
 	const TDialogControls& GetControlsList() const { return mControls; }
-	TDialogControls& GetControlsList() { return mControls; }
+	//TDialogControls& GetControlsList() { return mControls; }
 
 // Operations
 public:
@@ -90,7 +90,7 @@ public:
 	void ShowWindow(BOOL bShow);
 	void ShowPictureBoxes(BOOL bShow);
 	void SetGrphcBtnsParents(bool bForceRefresh);
-	void ResetControlsPos2(CDclControlObject *pControl);
+	void ResetControlsPos2( CDclControlObject *pControl);
 
 protected:
 	void SetGrphcBtnsParents(CDclControlObject *pGrphcBtn, CDclControlObject *pOtherBtn, bool bForceRefresh);
@@ -107,10 +107,8 @@ public:
 	virtual void CleanUpControls();
 	virtual bool FindControl(HWND hwndControl, /*out*/ CString& sControlName) const = 0; //if found, returns true & sets sControlName
 	virtual TDialogControlPtr FindControl(HWND hwndControl) const = 0;
-	virtual CDclControlObject* FindArxObject(CString sControlName) const = 0;
-	virtual CWnd* FindControl(CString sControlName, int nControlType) const = 0;
+	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const = 0;
 	virtual class CThemeHelperST* GetThemeHelper() = 0;
-	virtual bool CreateTabPanes(CDclFormObject* pTemplate, CWnd *pTabControl, UINT& nId, CRect rcTab) = 0;
 	virtual void SetGlobalLispSymbols( bool bResetToNil = false ) {}
 
 protected:

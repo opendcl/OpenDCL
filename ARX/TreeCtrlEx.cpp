@@ -180,22 +180,13 @@ void CTreeCtrlEx::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult)
 
 	CString sItemText = GetItemText(SelectedItem.hItem);   
 		
-	if (sKey != CString()) 
+	if (!sKey.IsEmpty()) 
 	{		
 		// call methods to invoke the event
 		InvokeMethodStringString(
 			m_ArxControl->GetStrProperty(nEventSelChanged),
 			sItemText,
 			sKey,
-			m_bInvokeWithSendString);
-	}
-	else if (SelectedItem.hItem != NULL)
-	{		
-		// call methods to invoke the event
-		InvokeMethodStringLong(
-			m_ArxControl->GetStrProperty(nEventSelChanged),
-			sItemText,
-			(long)SelectedItem.hItem,
 			m_bInvokeWithSendString);
 	}
 	SelectDropTarget(SelectedItem.hItem);

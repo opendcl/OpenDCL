@@ -500,184 +500,163 @@ void CPictureObject::Serialize(CArchive& ar)
     ar << m_Height;
     ar << m_Width;
 
-    int nPictureType = m_hPicture.GetType();
+    short nPictureType = m_hPicture.GetType();
     ar << nPictureType;
 
-    if (m_hPicture.GetType() == PICTYPE_BITMAP || 
-      m_hPicture.GetType() == PICTYPE_METAFILE ||
-      m_hPicture.GetType() == PICTYPE_ENHMETAFILE)
-    {
-      short nPicType = m_hPicture.GetType();
-      ar << nPicType;
+		switch( m_hPicture.GetType() )
+		{
+		case PICTYPE_BITMAP:
+		case PICTYPE_METAFILE:
+		case PICTYPE_ENHMETAFILE:
+			{
+				VARIANT var;
+				var.vt = VT_DISPATCH;
+				IPictureDisp *pPicDisp = m_hPicture.GetPictureDispatch();
+				var.pdispVal = pPicDisp;
+				COleVariant OleVar;
+				OleVar.Attach(var);
+				ar << OleVar;
+				var.pdispVal = NULL;
+				OleVar.Clear();
+				HRESULT hr = VariantClear(&var);			
+				break;
+			}
+		case PICTYPE_ICON:
+			{
+				HICON hIconPic = NULL;
+				// get handle of the icon
+				m_hPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hIconPic);
+				m_hIcon = hIconPic;
+				//m_bImageCreated = true;
 
-      //PX_Picture(ar, m_hPicture);
-
-      VARIANT var;
-      var.vt = VT_DISPATCH;
-      IPictureDisp *pPicDisp = m_hPicture.GetPictureDispatch();
-      var.pdispVal = pPicDisp;
-      COleVariant OleVar;
-      OleVar.Attach(var);
-      ar << OleVar;
-      var.pdispVal = NULL;
-      OleVar.Clear();
-      HRESULT hr = VariantClear(&var);			
-
-    }
-    // else if picture is an icon
-    else if (PICTYPE_ICON == m_hPicture.GetType())
-    {
-      short nPicType = PICTYPE_ICON;
-      ar << nPicType;
-
-      HICON hIconPic = NULL;
-      // get handle of the icon
-      m_hPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hIconPic);
-      m_hIcon = hIconPic;
-      //m_bImageCreated = true;
-
-      CImageList ImageList;
-      ImageList.Create(
-        m_Width,
-        m_Height,
-        ILC_COLOR8 | ILC_MASK, 1, 1);
-      ImageList.Add(hIconPic);
-      ImageList.Write(&ar);
-      ImageList.DeleteImageList();
-    }
+				CImageList ImageList;
+				ImageList.Create(
+					m_Width,
+					m_Height,
+					ILC_COLOR8 | ILC_MASK, 1, 1);
+				ImageList.Add(hIconPic);
+				ImageList.Write(&ar);
+				ImageList.DeleteImageList();
+				break;
+			}
+		}
   }
   else	
   {
-    try
+    unsigned long nThisVersion;
+    ar >> nThisVersion;
+
+		if( nThisVersion > GetCurrentSaveVersion() )
+			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
+
+    ar >> m_nID;
+    if (nThisVersion == 1)
     {
-      unsigned long nThisVersion;
-      ar >> nThisVersion;
-
-			if( nThisVersion > GetCurrentSaveVersion() )
-				AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
-
-      ar >> m_nID;
-      if (nThisVersion == 1)
-      {
-        CImageList tempImage;
-        tempImage.Read(&ar);
-        if (tempImage.m_hImageList != NULL)
-        {				
-          m_hIcon = tempImage.ExtractIcon(0);
-          m_hPicture.CreateFromIcon(m_hIcon, TRUE);			
-          tempImage.DeleteImageList();
-        }
-      }
-      ar >> m_Height;
-      ar >> m_Width;
-      int nPictureType = 0;
-      if (nThisVersion == 3 || nThisVersion == 4 || nThisVersion >= 6)
-        ar >> nPictureType;
-
-      if ((nPictureType != -1 && nThisVersion == 2) || (nPictureType >= 0 && nThisVersion == 3))
-      {
-        short nPicType;
-        ar >> nPicType;
-        if (nPicType != nPictureType)
-          nPicType = nPictureType;				
-        if (nPicType <= 0)
-          m_nID = -1;
-
-        if (nPicType == PICTYPE_BITMAP || nPicType == PICTYPE_METAFILE || nPicType == PICTYPE_ENHMETAFILE)
-        {	
-
-          VARIANT var;
-          COleVariant OleVar;
-          OleVar.Attach(var);
-
-          try
-          {		
-            LoadPicture(ar, OleVar);
-            var = OleVar.Detach();	
-            m_hPicture.SetPictureDispatch((IPictureDisp*)var.pdispVal);
-            OleVar.Clear();
-            HRESULT hr = VariantClear(&var);
-						m_bLoaded = true;
-          }
-          catch(...)
-          {
-            var = OleVar.Detach();	
-            OleVar.Clear();
-            HRESULT hr = VariantClear(&var);
-          }
-        }
-        else if (PICTYPE_ICON == nPicType)
-        {
-          CImageList tempImage;
-          tempImage.Read(&ar);
-          if (tempImage.m_hImageList != NULL)
-          {
-            HICON hIcon = tempImage.ExtractIcon(0);
-            m_hPicture.CreateFromIcon(hIcon, TRUE);			
-            tempImage.DeleteImageList();
-						m_bLoaded = true;
-          }
-        }
-      }
-      if (nPictureType > 0 && nThisVersion == 4)
-      {
-        short nPicType;
-        ar >> nPicType;
-        if (nPicType == PICTYPE_BITMAP || 
-          nPicType == PICTYPE_METAFILE ||
-          nPicType == PICTYPE_ENHMETAFILE)
-        {		
-          CArchivePropExchange px(ar);
-					CString sPropName;
-					sPropName.Format(_T("%d"), m_nID);
-          PX_Picture(&px, sPropName, m_hPicture);
-					m_bLoaded = true;
-        }
-        else if (PICTYPE_ICON == nPicType)
-        {
-          CImageList tempImage;
-          tempImage.Read(&ar);
-          if (tempImage.m_hImageList != NULL)
-          {
-            HICON hIcon = tempImage.ExtractIcon(0);
-            m_hPicture.CreateFromIcon(hIcon, TRUE);			
-            tempImage.DeleteImageList();
-						m_bLoaded = true;
-          }
-        }
-      }
-      if (nPictureType > 0 && nThisVersion == 5)
-      {
-        short nPicType;
-        ar >> nPicType;
-        if (nPicType == PICTYPE_BITMAP || 
-          nPicType == PICTYPE_METAFILE ||
-          nPicType == PICTYPE_ENHMETAFILE)
-        {		
-          CArchivePropExchange px(ar);
-					CString sPropName;
-					sPropName.Format(_T("%d"), m_nID);
-          PX_Picture(&px, sPropName, m_hPicture);
-					m_bLoaded = true;
-        }
-        else if (PICTYPE_ICON == nPicType)
-        {
-          CImageList tempImage;
-          tempImage.Read(&ar);
-          if (tempImage.m_hImageList != NULL)
-          {
-            HICON hIcon = tempImage.ExtractIcon(0);
-            m_hPicture.CreateFromIcon(hIcon, TRUE);			
-            tempImage.DeleteImageList();
-						m_bLoaded = true;
-          }
-        }
+      CImageList tempImage;
+      tempImage.Read(&ar);
+      if (tempImage.m_hImageList != NULL)
+      {				
+        m_hIcon = tempImage.ExtractIcon(0);
+        m_hPicture.CreateFromIcon(m_hIcon, TRUE);			
+        tempImage.DeleteImageList();
       }
     }
-    catch(...)
+    ar >> m_Height;
+    ar >> m_Width;
+		if( nThisVersion == 1 )
+			return;
+
+    short nPictureType = 0;
+    if (nThisVersion == 3 || nThisVersion == 4 || nThisVersion == 6 )
+		{
+			int nDuplicatePictureType;
+      ar >> nDuplicatePictureType;
+			ar >> nPictureType;
+			if( nPictureType != nDuplicatePictureType )
+				nPictureType = nDuplicatePictureType;
+		}
+		else
+			ar >> nPictureType;
+
+		if( nPictureType < 0 )
+		{
+      m_nID = -1;
+			return;
+		}
+		
+    if( nThisVersion == 2 || nThisVersion == 3 || nThisVersion >= 6 )
     {
-      // do nothing
-    }
+      switch( nPictureType )
+			{
+			case PICTYPE_BITMAP:
+			case PICTYPE_METAFILE:
+			case PICTYPE_ENHMETAFILE:
+				{
+					VARIANT var;
+					COleVariant OleVar;
+					OleVar.Attach(var);
+					try
+					{		
+						LoadPicture(ar, OleVar);
+						var = OleVar.Detach();	
+						m_hPicture.SetPictureDispatch((IPictureDisp*)var.pdispVal);
+						OleVar.Clear();
+						HRESULT hr = VariantClear(&var);
+						m_bLoaded = true;
+					}
+					catch(...)
+					{
+						var = OleVar.Detach();	
+						OleVar.Clear();
+						VariantClear(&var);
+					}
+					break;
+				}
+			case PICTYPE_ICON:
+				{
+					CImageList tempImage;
+					tempImage.Read(&ar);
+					if (tempImage.m_hImageList != NULL)
+					{
+						HICON hIcon = tempImage.ExtractIcon(0);
+						m_hPicture.CreateFromIcon(hIcon, TRUE);			
+						tempImage.DeleteImageList();
+						m_bLoaded = true;
+					}
+					break;
+				}
+			}
+		}
+    else if( nThisVersion == 4 || nThisVersion == 5 )
+    {
+      switch( nPictureType )
+			{
+			case PICTYPE_BITMAP:
+			case PICTYPE_METAFILE:
+			case PICTYPE_ENHMETAFILE:
+				{
+					CArchivePropExchange px(ar);
+					CString sPropName;
+					sPropName.Format(_T("%d"), m_nID);
+					PX_Picture(&px, sPropName, m_hPicture);
+					m_bLoaded = true;
+					break;
+				}
+			case PICTYPE_ICON:
+				{
+					CImageList tempImage;
+					tempImage.Read(&ar);
+					if (tempImage.m_hImageList != NULL)
+					{
+						HICON hIcon = tempImage.ExtractIcon(0);
+						m_hPicture.CreateFromIcon(hIcon, TRUE);			
+						tempImage.DeleteImageList();
+						m_bLoaded = true;
+					}
+					break;
+				}
+			}
+		}
   }
 }
 

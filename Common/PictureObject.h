@@ -29,7 +29,8 @@ public:
 
 protected:
 	//2007-02-12 [ORW]: save version set to 6 (was originally set to 3, but some code in Serialize() expects 4 or 5)
-	ULONG GetCurrentSaveVersion() const { return 6; }
+	//2007-02-15 [ORW]: save version set to 7 (removed duplicated pic type)
+	ULONG GetCurrentSaveVersion() const { return 7; }
 
 public:
 	int GetID() const { return m_nID; }

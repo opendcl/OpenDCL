@@ -667,167 +667,30 @@ void CEventsTabPane::OnAddtolisp()
 
 void CEventsTabPane::OnSelchangeEventstree() 
 {
-	CString sItemText;
-	CString sDclFormName;
-	BOOL bUsesOn;
-
 	if (m_pDclForm == NULL)
-	{		
 		return;
-	}
-	
 	
 	int hItem = m_EventsTree.GetCurSel();
-
 	if (hItem == -1)
 		return;
 
 	// get the selected item's text
+	CString sItemText;
 	m_EventsTree.GetText(hItem, sItemText);   		
-		
-	int nCheck = m_EventsTree.GetCheck(hItem);
-	
-	if (sItemText.GetLength() == 0)
+	if (sItemText.IsEmpty())
 		return;
-
-	// create the defun now
-	CString sEventDeclaration = theWorkspace.LoadResourceString(IDS_C);
-	try
-	{
-		if (m_pDclForm->GetType() != VdclTabForm)
-		{
-			sDclFormName = m_pDclForm->GetKeyName();
-		}
-		else
-		{
-			m_pDclForm = m_pDclForm->GetParentForm();
-			sDclFormName = m_pDclForm->GetKeyName();
-		}
-	}
-	catch(...)
-	{
-		m_pDclForm = NULL;
-		m_EventsTree.ResetContent();
-		return;
-	}
-
-	if (sDclFormName.GetLength() == 0)
-		return;
-
-	CString sUnderscore;
-	sUnderscore = theWorkspace.LoadResourceString(IDS_UNDERSCORE);
-	
-	sEventDeclaration = sEventDeclaration + sDclFormName + sUnderscore;
-	
-	if (m_pDclForm->GetControlProperties() != m_pControl)
-	{
-		CWinApp* pApp = AfxGetApp();
-		CString sLoadText;
-		sLoadText = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
-		bUsesOn = pApp->GetProfileInt(sLoadText, _T("EventPrefixUsesON"), TRUE);
-    
-		if (bUsesOn == TRUE)
-		{
-			sEventDeclaration = sEventDeclaration + m_pControl->GetStrProperty(nName) + sUnderscore;
-		}		
-		else			
-			sEventDeclaration = sEventDeclaration + m_pControl->GetStrProperty(nName) + sUnderscore;
-	}
-	else
-	{
-		CWinApp* pApp = AfxGetApp();
-		CString sLoadText;
-		sLoadText = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
-		bUsesOn = pApp->GetProfileInt(sLoadText, _T("EventPrefixUsesON"), TRUE);
-    
-		if (bUsesOn == TRUE)
-		{
-			sEventDeclaration = sEventDeclaration;
-		}
-	}
-	
-	sEventDeclaration = sEventDeclaration + sItemText;
-
-	// get the posible event defun string from the property
-	CString sEventDefun = GetEvent((PropertyId)m_EventsTree.GetItemData(m_EventsTree.GetCurSel())); 
-
-	// if the property was not previously set, set it to the default name
-	if (sEventDefun.GetLength() == 0)
-		sEventDefun = sEventDeclaration;
 	
 	// update the defun edit box.
-	m_DefunEdit.SetWindowText(sEventDefun);
+	m_DefunEdit.SetWindowText(GetEvent((PropertyId)m_EventsTree.GetItemData(m_EventsTree.GetCurSel())));
 	
 }
 void CEventsTabPane::OnCheckChanged()
 {
-	CString sDefunEditText;
-	CString sDclFormName;
-	CString sEventDefun;
-	BOOL bUsesOn;
-
-	int nCheck = m_EventsTree.GetCheck(m_EventsTree.GetCurSel());
-
 	PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(m_EventsTree.GetCurSel());
-	if (nCheck == 1)
-	{	
-		// create the defun now
-		CString sItemText;
-		CString sEventDeclaration = theWorkspace.LoadResourceString(IDS_C);
-		try
-		{
-			sDclFormName = m_pDclForm->GetKeyName();
-		}
-		catch(...)
-		{
-			m_pDclForm = NULL;
-			m_EventsTree.ResetContent();
-			return;
-		}
-
-		if (sDclFormName.GetLength() == 0)
-			return;
-
-		CString sUnderscore;
-		sUnderscore = theWorkspace.LoadResourceString(IDS_UNDERSCORE);
-
-		sEventDeclaration = sEventDeclaration + sDclFormName + sUnderscore;
-		
-		if (m_pDclForm->GetControlProperties() != m_pControl)
-		{
-			CWinApp* pApp = AfxGetApp();
-			CString sLoadText;
-			sLoadText = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
-			bUsesOn = pApp->GetProfileInt(sLoadText, _T("EventPrefixUsesON"), TRUE);
-    
-			if (bUsesOn == TRUE)
-			{
-				//sLoadText = theWorkspace.LoadResourceString(IDS_EVENTPREFIXON);
-				sEventDeclaration = sEventDeclaration + m_pControl->GetStrProperty(nName) + sUnderscore;
-			}
-			else
-				sEventDeclaration = sEventDeclaration + m_pControl->GetStrProperty(nName) + sUnderscore;
-		}
-
-		
-		// get the selected item's text
-		m_EventsTree.GetText(m_EventsTree.GetCurSel(), sItemText);   		
-	
-		sEventDeclaration = sEventDeclaration + sItemText;
-
-		// get the posible event defun string from the property
-		sEventDefun = GetEvent((PropertyId)m_EventsTree.GetItemData(m_EventsTree.GetCurSel())); 
-
-		// if the property was not previously set, set it to the default name
-		if (sEventDefun.GetLength() == 0)
-			sEventDefun = sEventDeclaration;
-	}
+	CString sEventDefun;
+	if (m_EventsTree.GetCheck(m_EventsTree.GetCurSel()) == BST_CHECKED)
+		sEventDefun = GetEvent(nEventId);
 	SetEvent(nEventId, sEventDefun);
-
-	
 }
 
 void CEventsTabPane::SetEvent(PropertyId nEventId, CString sEventDefun)
@@ -836,30 +699,37 @@ void CEventsTabPane::SetEvent(PropertyId nEventId, CString sEventDefun)
 	{
 		POSITION pos = m_pControl->GetPropertyList().FindIndex(nEventId);
 		if (pos != NULL)
-		{
-			RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetAt(pos);
-			pProp->SetStringValue( sEventDefun );
-		}
+			m_pControl->GetPropertyList().GetAt(pos)->SetStringValue(sEventDefun);
 	}
 	else
-		// set the property to the new defun name
 		m_pControl->SetStringProperty(nEventId, sEventDefun); 
 }
 
-CString CEventsTabPane::GetEvent(PropertyId nEventId)
+CString CEventsTabPane::GetEvent( PropertyId nEventId )
 {
+	CString sEventSymbol = m_pControl->GetStrProperty( nEventId );
 	if (m_pControl->GetType() == CtlActiveX)
 	{
 		POSITION pos = m_pControl->GetPropertyList().FindIndex(nEventId);
 		if (pos != NULL)
-		{
-			RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetAt(pos);
-			return pProp->GetStringValue();
-		}
+			sEventSymbol = m_pControl->GetPropertyList().GetAt(pos)->GetStringValue();
 	}
 	else
-		// set the property to the new defun name
-		return m_pControl->GetStrProperty(nEventId); 
+		sEventSymbol = m_pControl->GetStrProperty(nEventId); 
+	if( sEventSymbol.IsEmpty() )
+	{
+		CString sEventName;
+		if (m_pDclForm->GetControlProperties() != m_pControl)
+			sEventName = m_pControl->GetKeyPath();
+		else
+			sEventName = m_pDclForm->GetKeyPath();
+		CString sEventItemPrefix;
+		if( AfxGetApp()->GetProfileInt(theWorkspace.LoadResourceString(IDR_MAINFRAME), _T("EventPrefixUsesON"), TRUE) )
+			sEventItemPrefix += _T("On");
+		CString sItemText;
+		m_EventsTree.GetText(m_EventsTree.GetCurSel(), sItemText);
+		sEventSymbol.Format( _T("c:%s_%s%s"), (LPCTSTR)sEventName, (LPCTSTR)sEventItemPrefix, (LPCTSTR)sItemText );
+	}
 
-	return CString();
+	return sEventSymbol;
 }

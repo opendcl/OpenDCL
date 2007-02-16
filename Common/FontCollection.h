@@ -13,6 +13,6 @@ public:
 public:		
 	const CList<CFont*>& GetFontList() const { return mFonts; }
 	CList<CFont*>& GetFontList() { return mFonts; }
-	const CFont * GetFont(CDclControlObject *pControl, CWnd *pWnd);
-	const CFont * GetFont(const CFont *pTargetFont, CWnd *pWnd);
+	CFont* GetFont(CDclControlObject *pControl, CWnd *pWnd);
+	CFont* GetFont(const CFont *pTargetFont, CWnd *pWnd);
 };

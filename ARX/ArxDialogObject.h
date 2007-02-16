@@ -11,7 +11,7 @@ protected:
 	CArxControlPane mControlPane;
 
 public:
-	CArxDialogObject( CDclFormObject* pDclForm, CWnd* pHostDlg );
+	CArxDialogObject( CDclFormObject* pSourceForm, CWnd* pHostDlg );
 	virtual ~CArxDialogObject();
 
 	// Properties

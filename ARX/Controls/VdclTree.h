@@ -79,7 +79,6 @@ protected:
 	//{{AFX_MSG(VdclTree)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
-	afx_msg void OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnClick(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnDblclk(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult);

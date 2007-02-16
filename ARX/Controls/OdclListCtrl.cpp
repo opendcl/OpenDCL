@@ -191,7 +191,7 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 				RefCountedPtr< CImageList > pImageList;
 				RefCountedPtr< CPropertyObject > pPropImageList = mpTemplate->GetPropertyObject( nImageList );
 				if( pPropImageList )
-					pImageList = mpTemplate->GetOwner()->GetImageList( pPropImageList->GetShortValue() );
+					pImageList = mpTemplate->GetOwnerForm()->GetImageList( pPropImageList->GetShortValue() );
 				if( pImageList )
 				{
 					int cY;
@@ -213,7 +213,7 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 				RefCountedPtr< CImageList > pImageList;
 				RefCountedPtr< CPropertyObject > pPropImageList = mpTemplate->GetPropertyObject( nImageList );
 				if( pPropImageList )
-					pImageList = mpTemplate->GetOwner()->GetImageList( pPropImageList->GetShortValue() );
+					pImageList = mpTemplate->GetOwnerForm()->GetImageList( pPropImageList->GetShortValue() );
 				if( pImageList )
 				{
 					int cX;
@@ -383,7 +383,7 @@ DWORD CListViewControlX::GetWndStyle() const
 
 bool CListViewControlX::OnApplyImageList( RefCountedPtr< CPropertyObject > pProp )
 {
-	RefCountedPtr< CImageList > pImageList = mpTemplate->GetOwner()->GetImageList( pProp->GetShortValue() );
+	RefCountedPtr< CImageList > pImageList = mpTemplate->GetOwnerForm()->GetImageList( pProp->GetShortValue() );
 	GetControl()->SetCtrlImageList( pImageList );
 	pImageList->SetBkColor( GetControl()->GetBkColor() );
 	delete GetControl()->SetImageList( pImageList, TVSIL_NORMAL );

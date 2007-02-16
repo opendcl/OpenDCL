@@ -33,8 +33,8 @@ to work correctly with the original controls, thereby allowing the changeover to
 time. For example, when I need to debug a problem or make a change to a specific control, I start by 
 changing the control to use the new system. The steps for changing am old control to use the new 
 system are generally as follows:
-1) Define a class derived from CDialogObject which provides an implementation for the pure virtual 
-functions CreateGlobalVariables() and overrides any virtual functions that require a custom 
+1) Define a class derived from CDialogControl which provides an implementation for the pure virtual 
+function CreateGlobalVariables() and overrides any virtual functions that require a custom 
 implementation. Add a protected member of the new CDialogControl derived class to the control class 
 and name the new member mControlX (ControlX = control interface).
 3) Add public accessors named GetDialogControl for the CDialogControl interface defined by mControlX.
@@ -46,15 +46,15 @@ This step is necessary because the new design gives the window control of the cl
 than the other way around as under the old scheme. Omitting this step will result in memory leaks, but 
 would not otherwise be noticeable.
 5) Add one (or more if needed for optional parameters) Create() member function that uses the services 
-provided by CDialogObject (via the mDialogX member) to create the window. This must be done with great 
-care to ensure that the code logic isn't changed, but merely moved to CDialogControl where possible. 
-The new Create() function should call mControlX.ApplyPropertiesEnum() to apply the design time control 
-properties to the new control window after it is successfully created.
+provided by CDialogControl (via the mControlX member) to create the window. This must be done with 
+great care to ensure that the code logic isn't changed, but merely moved to CDialogControl where 
+possible. The new Create() function should call mControlX.ApplyPropertiesEnum() to apply the design 
+time control properties to the new control window after it is successfully created.
 6) Add a call to Create() in the constructor of the control class to create the control window at 
 construction time rather than requiring a separate call to Create(). This will generally require one 
 constructor overload for every overloaded version of Create().
 7) Change the code for creating a new control to eliminate the extra calls and replace these with a 
-single call to 'new CMyControlClass', then return the CDialogObject interface exported by the revised 
+single call to 'new CMyControlClass', then return the CDialogControl interface exported by the revised 
 control class.
 
 See the comments below for an explanation of how pointers to the new style controls are differentiated 
@@ -65,10 +65,10 @@ control's PostNcDestroy() function.
 
 
 //There are two pointer types defined to help solve the problem of determining the correct way to 
-//destroy a CDialogObject instance at runtime (see above). Once all controls are ported to the new 
+//destroy a CDialogControl instance at runtime (see above). Once all controls are ported to the new 
 //style, TDialogControlPtr can be changed back to a plain pointer as shown below and the current 
 //typedef for TDialogControlPtr can be removed along with the TDialogControlLockedPtr class.
-//typedef CDialogControl* TDialogControlPtr;
+//typedef TDialogControlPtr TDialogControlPtr;
 typedef RefCountedPtr< class CDialogControl > TDialogControlPtr;
 
 
@@ -82,7 +82,7 @@ private:
 	typedef TDialogControlPtr _base;
 
 public:
-	TDialogControlLockedPtr( CDialogControl* pTarget ) : _base( pTarget ) { Lock(); }
+	TDialogControlLockedPtr( TDialogControlPtr pTarget ) : _base( pTarget ) { Lock(); }
 	TDialogControlLockedPtr( CDialogControl& Target ) : _base( &Target ) { Lock(); }
 	virtual ~TDialogControlLockedPtr(void) {}
 
@@ -91,7 +91,7 @@ public:
 	TDialogControlLockedPtr(const _base & src) : _base( src ) {}
 	TDialogControlLockedPtr& operator=(const TDialogControlLockedPtr & src) { _base::operator=( src ); return *this; }
 	TDialogControlLockedPtr& operator=(const _base & src) { _base::operator=( src ); return *this; }
-	CDialogControl* operator=(CDialogControl* src) { return _base::operator=( src ); }
+	TDialogControlPtr operator=(TDialogControlPtr src) { return _base::operator=( src ); }
 };
 
 
@@ -129,7 +129,12 @@ public:
 
 	// Implementation
 public:
-	virtual void CreateGlobalVariables() const = 0;
+
+	// Services
+public:
+	virtual TDialogControlPtr FindControl( HWND hwndControl ) const { return NULL; } //find nested control
+	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const { return NULL; } //find nested control
+
 
 	// Control
 public:
@@ -145,6 +150,8 @@ public:
 
 	// handlers for specific properties
 	virtual bool OnApplyBorderStyle( RefCountedPtr< CPropertyObject > pProp ); //nBorder
+	virtual bool OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp ); //nEnabled
 	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ); //nCaption
+	virtual bool OnApplyCaptionFont( RefCountedPtr< CPropertyObject > pProp ); //nLabelName
 	virtual bool OnApplyImageList( RefCountedPtr< CPropertyObject > pProp ); //nImageList
 };

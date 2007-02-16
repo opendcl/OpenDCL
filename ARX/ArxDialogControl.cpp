@@ -72,22 +72,29 @@ CArxDialogControl::CArxDialogControl( CDclControlObject* pTemplate, CControlPane
 																			CWnd* pControl )
 : CDialogControl( pTemplate, pPane, pControl )
 {
-	msLispSymbolName = mpTemplate->GetStrProperty( nGlobalVarName );
+	msLispSymbolName = pTemplate->GetStrProperty( nGlobalVarName );
 	if( msLispSymbolName.IsEmpty() )
 		msLispSymbolName = pTemplate->GetKeyPath();
-	CreateGlobalVariables();
+	SetLispSymbol();
+	TraceFmt( _T("> CArxDialogControl::CArxDialogControl(%s [%08X], [%08X], %s [HWND: %08X]) [this: %08X]\r\n"),
+						pTemplate->GetKeyPath(), pTemplate, pPane, CString(pControl->GetRuntimeClass()->m_lpszClassName),
+						pControl->m_hWnd, (long)this );
 }
 
 CArxDialogControl::~CArxDialogControl()
 {
-	if( !msLispSymbolName.IsEmpty() )
-		theArxWorkspace.ResetLispSymbol( msLispSymbolName );
+	SetLispSymbol( true );
+	TraceFmt( _T("< CArxDialogControl::~CArxDialogControl() [this: %08X]\r\n"), (long)this );
 }
 
-void CArxDialogControl::CreateGlobalVariables() const
+void CArxDialogControl::SetLispSymbol( bool bResetToNil /*= false*/ ) const
 {
-	if( !msLispSymbolName.IsEmpty() )
+	if( msLispSymbolName.IsEmpty() )
+		return;
+	if( !bResetToNil )
 		theArxWorkspace.SetLispSymbol( msLispSymbolName, (long)mpTemplate );
+	else
+		theArxWorkspace.ResetLispSymbol( msLispSymbolName );
 }
 
 //static
@@ -332,18 +339,8 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			return CreateEditControl(pTemplate, pPane, nID);
 		}			
 	
-	case CtlTabStrip:
-		{
-			VdclTab *pControl = new VdclTab;
-			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			// call method to create the tab panes
-			pPane->CreateTabPanes(pPane->GetSourceForm(), pControl, nID, pControl->m_rcPos);
-			((VdclTab*)pControl)->m_Child.SetCurSel(0);// set the first tab as the selected tab
-			pControl->SetPaneVisibility(0, TRUE);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
-		}		
+	case CtlTabStrip: return TDialogControlLockedPtr((new VdclTab( *pPane, pTemplate, nID ))->GetDialogControl());
+
 	case CtlTree:	
 		{
 			VdclTree *pControl = new VdclTree;
@@ -704,13 +701,13 @@ bool CArxDialogControl::IsSelfPopulatedList(CDclControlObject *pControl)
 //static
 void CArxDialogControl::SetDwgListComboFolderLink(CComboBoxFolder *pComboFolder)
 {
-	POSITION pos = pComboFolder->m_ArxControl->GetOwner()->GetControlList().GetHeadPosition();
+	POSITION pos = pComboFolder->m_ArxControl->GetOwnerForm()->GetControlList().GetHeadPosition();
 	// increment to the next arx object so we will bypass the
 	// arx object that holds the dialog box's properties.
-	CDclControlObject* pControl = pComboFolder->m_ArxControl->GetOwner()->GetControlList().GetNext(pos);
+	CDclControlObject* pControl = pComboFolder->m_ArxControl->GetOwnerForm()->GetControlList().GetNext(pos);
 	while (pos != NULL)
 	{
-		pControl = pComboFolder->m_ArxControl->GetOwner()->GetControlList().GetNext(pos);
+		pControl = pComboFolder->m_ArxControl->GetOwnerForm()->GetControlList().GetNext(pos);
 		if (pControl->GetType() == CtlDwgList && pControl->GetWindow() != NULL)
 		{
 			CDwgDirList *pDwgList = (CDwgDirList*)pControl->GetWindow();
@@ -724,13 +721,13 @@ void CArxDialogControl::SetDwgListComboFolderLink(CComboBoxFolder *pComboFolder)
 //static
 void CArxDialogControl::SetDwgListComboFolderLink(CDwgDirList *pDwgList)
 {
-	POSITION pos = pDwgList->m_ArxControl->GetOwner()->GetControlList().GetHeadPosition();
+	POSITION pos = pDwgList->m_ArxControl->GetOwnerForm()->GetControlList().GetHeadPosition();
 	// increment to the next arx object so we will bypass the
 	// arx object that holds the dialog box's properties.
-	CDclControlObject* pControl = pDwgList->m_ArxControl->GetOwner()->GetControlList().GetNext(pos);
+	CDclControlObject* pControl = pDwgList->m_ArxControl->GetOwnerForm()->GetControlList().GetNext(pos);
 	while (pos != NULL)
 	{
-		pControl = pDwgList->m_ArxControl->GetOwner()->GetControlList().GetNext(pos);
+		pControl = pDwgList->m_ArxControl->GetOwnerForm()->GetControlList().GetNext(pos);
 		if (pControl->GetType() == CtlComboBox && pControl->GetWindow() != NULL)
 		{
 			// check the control type to determine which control to create
@@ -782,11 +779,11 @@ void CArxDialogControl::ResetImageList(CDclControlObject *pArxObject, CWnd *pCon
 			return;
 
 		// exit method if no image lists are available
-		if (pArxObject->GetOwner()->m_ImageListCollection.GetCount() == 0)
+		if (pArxObject->GetOwnerForm()->m_ImageListCollection.GetCount() == 0)
 			return;
 
-		POSITION pos = pArxObject->GetOwner()->m_ImageListCollection.FindIndex(nImageListIndex);
-		CImageListObject *pImageListObject = pArxObject->GetOwner()->m_ImageListCollection.GetAt(pos);
+		POSITION pos = pArxObject->GetOwnerForm()->m_ImageListCollection.FindIndex(nImageListIndex);
+		CImageListObject *pImageListObject = pArxObject->GetOwnerForm()->m_ImageListCollection.GetAt(pos);
 	}	
 	else
 	{
@@ -798,11 +795,11 @@ void CArxDialogControl::ResetImageList(CDclControlObject *pArxObject, CWnd *pCon
 
 	switch (pArxObject->GetType())
 	{
-		case CtlTabStrip:
-		{
-			((VdclTab*)pControl)->m_Child.SetImageList(&pImageListObject->m_ImageList);
-			break;
-		}
+		//case CtlTabStrip:
+		//{
+		//	((VdclTab*)pControl)->GetTabCtrl().SetImageList(&pImageListObject->m_ImageList);
+		//	break;
+		//}
 		case CtlTree:
 		{
 			((VdclTree*)pControl)->m_ChildTree.SetImageList(&pImageListObject->m_ImageList, TVSIL_NORMAL);
@@ -985,12 +982,12 @@ void CArxDialogControl::UpdateFont(CDclControlObject *pArxObject, CWnd *pControl
 		((CPictureBox*)pControl)->SetFont(pFont);		
 		break;
 		}
-	case CtlTabStrip:		
-		{		
-		((VdclTab*)pControl)->m_Child.SetFont(NULL);	
-		((VdclTab*)pControl)->m_Child.SetFont(pFont);		
-		break;
-		}
+	//case CtlTabStrip:		
+	//	{		
+	//	((VdclTab*)pControl)->GetTabCtrl().SetFont(NULL);	
+	//	((VdclTab*)pControl)->GetTabCtrl().SetFont(pFont);		
+	//	break;
+	//	}
 	case CtlMonth:
 		{
 		((OdclMonth*)pControl)->SetFont(pFont);
@@ -1012,12 +1009,12 @@ void CArxDialogControl::UpdateFont(CDclControlObject *pArxObject, CWnd *pControl
 		pControl->RedrawWindow();
 		break;
 		}
-	case CtlListView:	
-	case CtlBlockList:
-		{		
-		((OdclListCtrl*)pControl)->SetFont(pFont);		
-		break;
-		}	
+	//case CtlListView:	
+	//case CtlBlockList:
+	//	{		
+	//	((OdclListCtrl*)pControl)->SetFont(pFont);		
+	//	break;
+	//	}	
 	case CtlGrid:	
 		{		
 		((CSpreadSheet*)pControl)->SetFont(pFont);		
@@ -1342,8 +1339,8 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 				((CSliderCtrl *)pControlWnd)->EnableWindow(pControl->GetBoolProperty(nEnabled));
 			else if (pControl->GetType() == CtlTree)
 				((VdclTree *)pControlWnd)->m_ChildTree.EnableWindow(pControl->GetBoolProperty(nEnabled));
-			else if (pControl->GetType() == CtlTabStrip)
-				((VdclTab *)pControlWnd)->m_Child.EnableWindow(pControl->GetBoolProperty(nEnabled));
+			//else if (pControl->GetType() == CtlTabStrip)
+			//	((VdclTab *)pControlWnd)->GetTabCtrl().EnableWindow(pControl->GetBoolProperty(nEnabled));
 			else if (pControl->GetType() == CtlOptionList)
 			{
 				int nData=0;
@@ -1546,8 +1543,8 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 		case nMinTabWidth:
 		{
 			int n = pControl->GetLngProperty(nMinTabWidth);
-			((VdclTab*)pControlWnd)->m_Child.SetMinTabWidth(pControl->GetLngProperty(nMinTabWidth));
-			((VdclTab*)pControlWnd)->m_Child.RedrawWindow(NULL, NULL, RDW_UPDATENOW);
+			((VdclTab*)pControlWnd)->GetTabCtrl().SetMinTabWidth(pControl->GetLngProperty(nMinTabWidth));
+			((VdclTab*)pControlWnd)->GetTabCtrl().RedrawWindow(NULL, NULL, RDW_UPDATENOW);
 			break;
 		}
 		case nMultiSelection:
@@ -1685,7 +1682,7 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 				TabCtrlItem.mask = TCIF_TEXT|TCIF_IMAGE;			
 			
 			// delete all previos tabs
-			((VdclTab*)pControlWnd)->m_Child.DeleteAllItems();
+			((VdclTab*)pControlWnd)->GetTabCtrl().DeleteAllItems();
 			
 			int nCount = pControl->CountPropertyListItems(nTabsCaption) -1;
 			int nBottom = 0;
@@ -1701,12 +1698,12 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 					TabCtrlItem.iImage = atol(pControl->GetPropertyListItem(nTabsImageList, nCount));
 				
 				// add the new tab
-				//((VdclTab*)pControlWnd)->m_Child.InsertItem( 0, &TabCtrlItem );
+				//((VdclTab*)pControlWnd)->GetTabCtrl().InsertItem( 0, &TabCtrlItem );
 				
 				// get the new items' rectangle
 				CRect rcTab;
-				((VdclTab*)pControlWnd)->m_Child.GetItemRect( 
-					((VdclTab*)pControlWnd)->m_Child.GetItemCount() - 1,
+				((VdclTab*)pControlWnd)->GetTabCtrl().GetItemRect( 
+					((VdclTab*)pControlWnd)->GetTabCtrl().GetItemCount() - 1,
 					&rcTab);
 
 				// if the bottom of pPane->GetHostDialog() tab is greater than the last setting
@@ -1742,25 +1739,25 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 		case nTabLabelAlign:
 		{
 			if (pControl->GetLngProperty(nTabLabelAlign) == 0)
-				((VdclTab*)pControlWnd)->m_Child.ModifyStyle(0, TCS_FORCELABELLEFT, SWP_FRAMECHANGED);
+				((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(0, TCS_FORCELABELLEFT, SWP_FRAMECHANGED);
 			else
-				((VdclTab*)pControlWnd)->m_Child.ModifyStyle(TCS_FORCELABELLEFT, 0, SWP_FRAMECHANGED);
+				((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(TCS_FORCELABELLEFT, 0, SWP_FRAMECHANGED);
 			break;
 		}
 		case nTabFixedWidth:
 		{
 			if (pControl->GetBoolProperty(nTabFixedWidth) == TRUE)
 			{
-				((VdclTab*)pControlWnd)->m_Child.ModifyStyle(0, TCS_FIXEDWIDTH, SWP_FRAMECHANGED);
+				((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(0, TCS_FIXEDWIDTH, SWP_FRAMECHANGED);
 				CRect rc;
-				((VdclTab*)pControlWnd)->m_Child.GetItemRect(0, &rc);
+				((VdclTab*)pControlWnd)->GetTabCtrl().GetItemRect(0, &rc);
 				CSize szTabs;
 				szTabs.cx = pControl->GetLngProperty(nMinTabWidth);
 				szTabs.cy = rc.Height();
-				((VdclTab*)pControlWnd)->m_Child.SetItemSize(szTabs);
+				((VdclTab*)pControlWnd)->GetTabCtrl().SetItemSize(szTabs);
 			}
 			else
-				((VdclTab*)pControlWnd)->m_Child.ModifyStyle(TCS_FIXEDWIDTH, 0, SWP_FRAMECHANGED);
+				((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(TCS_FIXEDWIDTH, 0, SWP_FRAMECHANGED);
 			break;
 		}
 		case nText:

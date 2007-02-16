@@ -6,6 +6,7 @@
 #include "DclControlObject.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
+#include "Workspace.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -82,7 +83,15 @@ bool CDialogControl::ApplyPropertiesEnum()
 		switch( pProp->GetID() )
 		{
 		case nBorderStyle: if( !OnApplyBorderStyle( pProp ) ) bSuccess = false; break;
+		case nEnabled: if( !OnApplyEnabled( pProp ) ) bSuccess = false; break;
 		case nCaption: if( !OnApplyBorderStyle( pProp ) ) bSuccess = false; break;
+		case nLabelName: if( !OnApplyCaptionFont( pProp ) ) bSuccess = false; break;
+		case nLabelSize: break; //font properties are applied en masse in OnApplyCaptionFont()
+		case nLabelBold: break;
+		case nLabelItalic: break;
+		case nLabelUnderline: break;
+		case nLabelStrikeOut: break;
+		case nFontSizeStyle: break;
 		case nImageList: if( !OnApplyImageList( pProp ) ) bSuccess = false; break;
 		default: if( !OnApplyProperty( pProp ) ) bSuccess = false; break;
 		}
@@ -114,9 +123,22 @@ bool CDialogControl::OnApplyBorderStyle( RefCountedPtr< CPropertyObject > pProp 
 	return true;
 }
 
+bool CDialogControl::OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp )
+{
+	mpControl->EnableWindow( pProp->GetBooleanValue() );
+	return true;
+}
+
 bool CDialogControl::OnApplyCaption( RefCountedPtr< CPropertyObject > pProp )
 {
 	mpControl->SetWindowText( pProp->GetStringValue() );
+	return true;
+}
+
+bool CDialogControl::OnApplyCaptionFont( RefCountedPtr< CPropertyObject > pProp )
+{
+	CFont *pFont = theWorkspace.GetFontCollection().GetFont( mpTemplate, mpControl );
+	mpControl->SetFont( theWorkspace.GetFontCollection().GetFont( mpTemplate, mpControl ) );
 	return true;
 }
 

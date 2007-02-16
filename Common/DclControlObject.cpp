@@ -757,50 +757,64 @@ RefCountedPtr< CPropertyObject > CDclControlObject::GetActiveXPropertyObject(CSt
 	return NULL;
 }
 
-bool CDclControlObject::UpdateGlobalVariable(CString sDclFormName, LPCTSTR pszProjectName /*= NULL*/)	
-{
-	RefCountedPtr< CPropertyObject > pPropVar = GetPropertyObject(nGlobalVarName);
-	RefCountedPtr< CPropertyObject > pPropName = GetPropertyObject(nName);
-	
-	// if no nGlobalVarName exists, we must exit here.
-	if (pPropVar == NULL)
-		return false;
-
-	CString sUnitled = _T("Untitled"); //should use empty string to represent untitled [ORW]
-	CString sVarName = pPropVar->GetStringValue();
-	if (sVarName.Left(1) == _T("_") || sVarName.Left(sUnitled.GetLength()) == sUnitled)
-	{
-		CString sProjectName( pszProjectName );
-		if (sProjectName.IsEmpty())
-			sProjectName = mpOwner->GetProject()->GetKeyName();
-
-		if (mType <= 0 || mType > CtlFileDlgCtrl) 
-			// create the name for a dialog box
-			pPropVar->SetStringValue(sProjectName + _T('_') + pPropName->GetStringValue());
-		else
-			// create the name for a control
-			pPropVar->SetStringValue(sProjectName + _T('_') + sDclFormName + _T('_') + pPropName->GetStringValue());
-		return true;
-	}
-	return false;
+void CDclControlObject::SetGlobalVariableName( LPCTSTR pszParentName /*= NULL*/ )	
+{	
+	CString sParentName = pszParentName;
+	if( sParentName.IsEmpty() )
+		sParentName = mpOwner->GetKeyPath();
+	CString sControlName = sParentName + _T('_') + GetKeyName();
+	AddStringProperty( nGlobalVarName, PropString, sControlName, true );
 }
 
-void CDclControlObject::ForceUpdateGlobalVariable(CString sDclFormName)	
-{
-	RefCountedPtr< CPropertyObject > pPropVar = GetPropertyObject(nGlobalVarName);
-	RefCountedPtr< CPropertyObject > pPropName = GetPropertyObject(nName);
-	
-	// if no nGlobalVarName exists, we must exit here.
-	if (pPropVar == NULL)
-		return;
-
-	if (mType <= 0 || mType > CtlFileDlgCtrl) 
-		// create the name for a dialog box
-		pPropVar->SetStringValue(mpOwner->GetProject()->GetKeyName() + _T('_') + pPropName->GetStringValue());
-	else	
-		// create the name for a control
-		pPropVar->SetStringValue(mpOwner->GetProject()->GetKeyName() + _T('_') + sDclFormName + _T('_') + pPropName->GetStringValue());	
+void CDclControlObject::ClearGlobalVariableName()	
+{	
+	SetStringProperty( nGlobalVarName, NULL );
 }
+//
+//bool CDclControlObject::UpdateGlobalVariable(CString sDclFormName, LPCTSTR pszProjectName /*= NULL*/)	
+//{
+//	RefCountedPtr< CPropertyObject > pPropVar = GetPropertyObject(nGlobalVarName);
+//	RefCountedPtr< CPropertyObject > pPropName = GetPropertyObject(nName);
+//	
+//	// if no nGlobalVarName exists, we must exit here.
+//	if (pPropVar == NULL)
+//		return false;
+//
+//	CString sUnitled = _T("Untitled"); //should use empty string to represent untitled [ORW]
+//	CString sVarName = pPropVar->GetStringValue();
+//	if (sVarName.Left(1) == _T("_") || sVarName.Left(sUnitled.GetLength()) == sUnitled)
+//	{
+//		CString sProjectName( pszProjectName );
+//		if (sProjectName.IsEmpty())
+//			sProjectName = mpOwner->GetProject()->GetKeyName();
+//
+//		if (mType <= 0 || mType > CtlFileDlgCtrl) 
+//			// create the name for a dialog box
+//			pPropVar->SetStringValue(sProjectName + _T('_') + pPropName->GetStringValue());
+//		else
+//			// create the name for a control
+//			pPropVar->SetStringValue(sProjectName + _T('_') + sDclFormName + _T('_') + pPropName->GetStringValue());
+//		return true;
+//	}
+//	return false;
+//}
+//
+//void CDclControlObject::ForceUpdateGlobalVariable(CString sDclFormName)	
+//{
+//	RefCountedPtr< CPropertyObject > pPropVar = GetPropertyObject(nGlobalVarName);
+//	RefCountedPtr< CPropertyObject > pPropName = GetPropertyObject(nName);
+//	
+//	// if no nGlobalVarName exists, we must exit here.
+//	if (pPropVar == NULL)
+//		return;
+//
+//	if (mType <= 0 || mType > CtlFileDlgCtrl) 
+//		// create the name for a dialog box
+//		pPropVar->SetStringValue(mpOwner->GetProject()->GetKeyName() + _T('_') + pPropName->GetStringValue());
+//	else	
+//		// create the name for a control
+//		pPropVar->SetStringValue(mpOwner->GetProject()->GetKeyName() + _T('_') + sDclFormName + _T('_') + pPropName->GetStringValue());	
+//}
 
 bool CDclControlObject::SetStringProperty( PropertyId nID, LPCTSTR pszValue )	
 {

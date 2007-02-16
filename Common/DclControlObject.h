@@ -82,18 +82,20 @@ public:
 	virtual ~CDclControlObject();
 
 	//2007-01-30 [ORW]: save version set to 6 (no change from ObjectDCL 3)
-	//2007-02-08 [ORW]: save version set to 7 (eliminate MFC serialized classes)
+	//2007-02-08 [ORW]: save version set to 7 (eliminated serialized MFC classes)
 	ULONG GetCurrentSaveVersion() const { return 7; }
 
-// Operations
+	//Attributes
 public:
 	CWnd* GetWindow() const;
 	const CDialogControl* GetControlInstance() const { return mpDlgControl; }
 	CDialogControl* GetControlInstance() { return mpDlgControl; }
 	void SetControlInstance( CDialogControl* pDlgControl );
-	const CDclFormObject* GetOwner() const { return mpOwner; }
-	CDclFormObject* GetOwner() { return mpOwner; }
-	void SetOwner( CDclFormObject* pNewOwner ) { assert( pNewOwner != NULL ); mpOwner = pNewOwner; }
+	virtual CDclFormObject* GetOwnerForm() { return mpOwner; }
+	virtual const CDclFormObject* GetOwnerForm() const { return mpOwner; }
+	void SetOwnerForm( CDclFormObject* pNewOwner ) { assert( pNewOwner != NULL ); mpOwner = pNewOwner; }
+	virtual CProject* GetOwnerProject() { return mpOwner? mpOwner->GetProject() : NULL; }
+	virtual const CProject* GetOwnerProject() const { return mpOwner? mpOwner->GetProject() : NULL; }
 	const CPropertyList& GetPropertyList() const { return mProperties; }
 	CPropertyList& GetPropertyList() { return mProperties; }
 	//CDclControlObject(CDclControlObject const & other);
@@ -102,10 +104,10 @@ public:
 	const CString& GetAxTypeName() const { return msAxTypeName; }
 	void SetAxTypeName( LPCTSTR pszAxTypeName ) { msAxTypeName = pszAxTypeName; }
 
-// Implementation
+// Operations
 public:
-	bool UpdateGlobalVariable(CString sDclFormName, LPCTSTR pszProjectName = NULL);
-	void ForceUpdateGlobalVariable(CString sDclFormName);
+	void SetGlobalVariableName( LPCTSTR pszParentName = NULL );
+	void ClearGlobalVariableName();
 	RefCountedPtr< CPropertyObject > GetPropertyObject(PropertyId nID) const;
 	RefCountedPtr< CPropertyObject > GetActiveXPropertyObject(CString sName) const;
 	RefCountedPtr< CPropertyObject > FindProperty(CString sName);
@@ -143,11 +145,7 @@ public:
 	void ClearProperties();
 	void ClearR14Events();
 
-	//Attributes
-	virtual CDclFormObject* GetOwnerForm() { return mpOwner; }
-	virtual const CDclFormObject* GetOwnerForm() const { return mpOwner; }
-	virtual CProject* GetOwnerProject() { return mpOwner? mpOwner->GetProject() : NULL; }
-	virtual const CProject* GetOwnerProject() const { return mpOwner? mpOwner->GetProject() : NULL; }
+// Implementation
 	CString GetActiveXTypeName() const;
 	bool IsMicrosoftActiveXCtrl() const;
 

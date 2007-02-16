@@ -21,7 +21,7 @@ CFontCollection::~CFontCollection()
 	}
 }
 
-const CFont * CFontCollection::GetFont(CDclControlObject *pControl, CWnd *pWnd)
+CFont* CFontCollection::GetFont(CDclControlObject *pControl, CWnd *pWnd)
 {
 	if (pControl->GetPropertyObject(nLabelName) == NULL)
 		return NULL;
@@ -82,7 +82,7 @@ const CFont * CFontCollection::GetFont(CDclControlObject *pControl, CWnd *pWnd)
 	return pFont;
 }
 
-const CFont * CFontCollection::GetFont(const CFont *pTargetFont, CWnd *pWnd)
+CFont* CFontCollection::GetFont(const CFont *pTargetFont, CWnd *pWnd)
 {
 	LOGFONT stTargetFont;
 	const_cast<CFont*>(pTargetFont)->GetLogFont( &stTargetFont );

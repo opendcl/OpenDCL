@@ -92,8 +92,8 @@ public:
 	bool FindControls( ControlType eType, CList< CDclControlObject* >& Results ) const;
 	bool GetControlFonts( CFontCollection& Fonts ) const;
 	void ZOrderFrontAddTabControls();
-	void UpdateGlobalVariableName( LPCTSTR pszRootName = NULL );
-	void ForceUpdateGlobalVariableName( LPCTSTR pszFormName );
+	void SetGlobalVariableName( LPCTSTR pszRootName = NULL, bool bUpdateChildren = true );
+	void ClearGlobalVariableName( bool bUpdateChildren = true );
 
 	//Attributes
 public:

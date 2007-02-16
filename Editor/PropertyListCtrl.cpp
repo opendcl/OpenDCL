@@ -783,7 +783,6 @@ void CPropertyListCtrl::InitImageList(short DclFormIndex, short ArxControlIndex,
 
 void CPropertyListCtrl::ClearProject() 
 {
-	theEditorWorkspace.SetActiveProject( new CEditorProject );
 	CPropertyListCtrl::ClearPictures();
 }
 
@@ -1081,6 +1080,7 @@ void CPropertyListCtrl::DisplayProperties(CDclControlObject *pControl)
 	if (pControl == NULL)
 	{
 		ClearGrid();
+		m_Edit.ShowWindow( SW_HIDE );
 		return;
 	}
 
@@ -1812,7 +1812,6 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 			{
 			case PropEnum:
 				{
-					CString sEnumDesc;
 					UINT enumId;
 					if (pProperty->GetID() == nAlternateOrient)
 						enumId = nOrientation * 100;
@@ -1822,43 +1821,32 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 					if (pProperty->GetID() == nSplitterStyle)
 						enumId = IDS_SPLITTERStyle_0 - 1;
 					
-					enumId = enumId + pProperty->GetLongValue() + 1;
-					sEnumDesc = theWorkspace.LoadResourceString(enumId);
-					CellText = sEnumDesc;
+					enumId += pProperty->GetLongValue() + 1;
+					CellText = theWorkspace.LoadResourceString(enumId);
 					break;
 				}
 			case PropStringArray:
 			case PropIntArray:				
 				{
-					CString sEnumDesc;
-					sEnumDesc = theWorkspace.LoadResourceString(IDS_LIST);
-					CellText = sEnumDesc;
+					CellText = theWorkspace.LoadResourceString(IDS_LIST);
 					break;
 				}			
 			case PropImageList:				
 				{
-					CString sEnumDesc;
-					sEnumDesc = theWorkspace.LoadResourceString(IDS_IMAGELIST);
-					CellText = sEnumDesc;
+					CellText = theWorkspace.LoadResourceString(IDS_IMAGELIST);
 					break;
 				}			
 			case PropEvent:				
 				{
-					CString sEnumDesc;
-					sEnumDesc = theWorkspace.LoadResourceString(IDS_EVENT);
-					CellText = sEnumDesc;
+					CellText = theWorkspace.LoadResourceString(IDS_EVENT);
 					break;
 				}	
 			case PropPicture:	
 				{
 					CellText = pProperty->GetStdProperty();
 				
-					if (CellText == LTOA(0))
-					{
-						CString sNone;
-						sNone = theWorkspace.LoadResourceString(IDS_NONE);
-						CellText = sNone;
-					}
+					if (CellText == _T("0"))
+						CellText = theWorkspace.LoadResourceString(IDS_NONE);
 					break;
 				}	
 			case PropActiveXRunTime:
@@ -1881,14 +1869,10 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 						CellText = pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXPropery(pCtrl);
 
 					if (!CellText.IsEmpty() && pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXEnum())
-					{
 						CellText = pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXEnumDesc(CellText);
-					}
 					if (pProperty->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IPictureDisp)
 					{
-						CString sTest;
-						sTest = theWorkspace.LoadResourceString(IDS_RUNTIME);
-						if (CellText != sTest)
+						if (CellText != theWorkspace.LoadResourceString(IDS_RUNTIME))
 							CellText = theWorkspace.LoadResourceString(IDS_PICTUREDESC);
 					}
 					// if the property is a color then

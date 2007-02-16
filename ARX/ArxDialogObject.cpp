@@ -16,16 +16,20 @@
 // CArxDialogObject
 
 
-CArxDialogObject::CArxDialogObject( CDclFormObject* pDclForm, CWnd* pHostDlg )
-: CDialogObject( pDclForm, pHostDlg )
-, mControlPane( pDclForm, pHostDlg )
+CArxDialogObject::CArxDialogObject( CDclFormObject* pSourceForm, CWnd* pHostDlg )
+: CDialogObject( pSourceForm, pHostDlg )
+, mControlPane( pSourceForm, pHostDlg )
 {
 	theArxWorkspace.RegisterDialog( this );
+	TraceFmt( _T("> CArxDialogObject::CArxDialogObject(%s [%08X], %s [HWND: %08X]) [this: %08X]\r\n"),
+						pSourceForm->GetKeyPath(), pSourceForm, CString(pHostDlg->GetRuntimeClass()->m_lpszClassName),
+						pHostDlg->m_hWnd, (long)this );
 }
 
 CArxDialogObject::~CArxDialogObject()
 {
 	theArxWorkspace.UnregisterDialog( this );
+	TraceFmt( _T("< CArxDialogObject::~CArxDialogObject() [this: %08X]\r\n"), (long)this );
 }
 
 //static

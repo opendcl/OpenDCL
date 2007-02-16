@@ -220,6 +220,32 @@ CDclFormObject* CProject::AddForm( DclFormType nType, CDclFormObject* pParentFor
 	return pNewDclForm;
 }
 
+void CProject::SetGlobalVariableNames( LPCTSTR pszRootName /*= NULL*/ )
+{
+	if( pszRootName )
+		SetKeyName( pszRootName );
+	POSITION pos = mDclForms.GetHeadPosition();
+	while( pos )
+	{
+		POSITION posAt = pos;
+		CDclFormObject* pDclForm = mDclForms.GetNext( pos );
+		assert( pDclForm != NULL );
+		pDclForm->SetGlobalVariableName( pszRootName, true );
+	}
+}
+
+void CProject::ClearGlobalVariableNames()
+{
+	POSITION pos = mDclForms.GetHeadPosition();
+	while( pos )
+	{
+		POSITION posAt = pos;
+		CDclFormObject* pDclForm = mDclForms.GetNext( pos );
+		assert( pDclForm != NULL );
+		pDclForm->ClearGlobalVariableName( true );
+	}
+}
+
 CString CProject::QueryForLispFileName() 
 {
   CString strResult;
@@ -880,55 +906,34 @@ void CProject::Serialize(CArchive& ar)
 		}
 
 
-    if (nThisVersion >= 9)
-    {
-      // set counter
-			unsigned long nCount;
-
-			if( nThisVersion >= 10 )
-				ar >> nCount;
-			else
-			{
-				short sCount;
-				ar >> sCount;
-				nCount = (unsigned long)sCount;
-			}
-
-      mPictures.RemoveAll();
-
-
-      // do loop to navigate images
-      while (nCount > 0)
-      {
-				--nCount;
-        // get current images
-        CPictureObject* pPictureObj = new CPictureObject;
-
-        try
-        {	
-          // get image into archive
-          pPictureObj->Serialize(ar);
-
-          // add this image to the list object
-          mPictures.AddTail(pPictureObj);							
-        }
-        catch(...)
-        {
-          // do nothing
-        }
-      }
-    }
-		else
+    if (nThisVersion < 9)
 		{
 			try
 			{
 				mPictures.Serialize(ar);
 			}
-			catch(...)
-			{
-				// do nothing
-			}
+			catch(...) {}
 		}
+		else
+    {
+			unsigned long nCount = 0;
+			if( nThisVersion < 10 )
+			{
+				short sCount;
+				ar >> sCount;
+				nCount = (unsigned long)sCount;
+			}
+			else
+				ar >> nCount;
+
+      mPictures.RemoveAll();
+      while (nCount-- > 0)
+      {
+        CPictureObject* pPictureObj = new CPictureObject;
+        pPictureObj->Serialize(ar);
+        mPictures.AddTail(pPictureObj);							
+      }
+    }
 
 		// this has been added to cleanup picture objects with a blank picture.
 		nCount = mPictures.GetCount() - 1;

@@ -146,8 +146,6 @@ BOOL CObjectDCLDoc::OnSaveDocument(LPCTSTR lpszPathName)
 	}
   CopyFile(sFileName, sFileName + _T(".bak"), FALSE);
 
-  RenameUntitledGlobalVars(lpszPathName);	
-
 	// begin saving.
 	CWaitCursor wait;
 
@@ -167,19 +165,12 @@ BOOL CObjectDCLDoc::OnSaveDocument(LPCTSTR lpszPathName)
 	return TRUE;
 }
 
-void CObjectDCLDoc::RenameUntitledGlobalVars(CString sPathName) 
+void CObjectDCLDoc::SetGlobalVariableNames( LPCTSTR pszRootName )
 {
-	CString sShortName = sPathName.MakeReverse().SpanExcluding(_T("\\/:")).MakeReverse().SpanExcluding(_T("."));
-	if (sShortName.IsEmpty())
-		return;
-
-	POSITION pos = activeProject->GetDclFormList().GetHeadPosition();
-	while (pos != NULL)
-	{
-		CDclFormObject *pDcl = activeProject->GetDclFormList().GetNext(pos);
-		if (pDcl != NULL)
-			pDcl->UpdateGlobalVariableName(sShortName);
-	}
+	if( pszRootName )
+		activeProject->SetGlobalVariableNames( pszRootName );
+	else
+		activeProject->ClearGlobalVariableNames();
 
 	// force the redraw of the property list box so any (VarName) will be updated.
 	theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();

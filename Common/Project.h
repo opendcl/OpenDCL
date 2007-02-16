@@ -167,6 +167,8 @@ public:
 	virtual void DeleteForm( CDclFormObject*& pDclForm );
 	virtual CDclFormObject* AddForm( DclFormType nType );
 	virtual CDclFormObject* AddForm( DclFormType nType, CDclFormObject* pParentForm );
+	virtual void SetGlobalVariableNames( LPCTSTR pszRootName = NULL );
+	virtual void ClearGlobalVariableNames();
 
 	//from old CProjectList
 	void ClearProject();

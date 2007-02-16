@@ -119,8 +119,6 @@ public:
 	afx_msg void OnToolsDefaultfont();
 	afx_msg void OnFileClose();
 	afx_msg void OnToolsGridspacing();
-	afx_msg void OnToolsEventprefixuseson();
-	afx_msg void OnUpdateToolsEventprefixuseson(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateToolsEventscopytoclipboard(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateToolsEventswritetolispfile(CCmdUI* pCmdUI);
 	afx_msg void OnToolsEventscopytoclipboard();

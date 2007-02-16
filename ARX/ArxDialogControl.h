@@ -43,6 +43,6 @@ public:
 	const CString& GetLispSymbolName() const { return msLispSymbolName; }
 
 	// Implementation
-public:
-	virtual void CreateGlobalVariables() const;
+protected:
+	virtual void SetLispSymbol( bool bResetToNil = false ) const;
 };

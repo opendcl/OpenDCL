@@ -168,7 +168,6 @@
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -190,7 +189,6 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
-				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -406,11 +404,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\idr_main.ico"
+				RelativePath=".\RES\IDR_MAIN.ICO"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\IDR_MAIN.ICO"
+				RelativePath="..\Common\Res\idr_main.ico"
 				>
 			</File>
 			<File

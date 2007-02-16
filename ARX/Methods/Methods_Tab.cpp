@@ -38,13 +38,13 @@ int TabControl_SetTabText()
 
 	//  Get the current tab item text.
     tcItem.mask = TCIF_TEXT;
-	((VdclTab*)pControl)->m_Child.GetItem(nNewSelIndex, &tcItem);
+	((VdclTab*)pControl)->GetTabCtrl().GetItem(nNewSelIndex, &tcItem);
 
 	//  Set the new text for the item.
 	tcItem.pszText = pszString.GetBuffer(256);
 
 	//  Set the item in the tab control.
-	((VdclTab*)pControl)->m_Child.SetItem(nNewSelIndex, &tcItem);
+	((VdclTab*)pControl)->GetTabCtrl().SetItem(nNewSelIndex, &tcItem);
 
 	acedRetVoid();
 	return 0;
@@ -106,7 +106,7 @@ int TabControl_SetCurSel()
 	}
 	
 	
-	((VdclTab*)pControl)->SetPaneVisibility(nNewSelIndex, TRUE, TRUE);
+	((VdclTab*)pControl)->ActivateTabPage(nNewSelIndex, TRUE, TRUE);
 	
 	acedRetVoid();
 	return 0;
@@ -140,7 +140,7 @@ int TabControl_GetRowCount()
 	}
 	
 	
-	acedRetInt(((VdclTab*)pControl)->m_Child.GetRowCount());
+	acedRetInt(((VdclTab*)pControl)->GetTabCtrl().GetRowCount());
 	return 0;
 
 }

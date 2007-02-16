@@ -28,7 +28,7 @@ CXPStyleButtonST::CXPStyleButtonST()
 	m_pTheme = NULL;
 	// Don't use flat toolbar-style
 	m_bDrawAsToolbar = FALSE;
-	DrawBorder(FALSE);
+	DrawBorder(FALSE, FALSE); //second parameter must be FALSE to prevent screen flashing due to Invalidate(NULL) [ORW]
 }
 
 CXPStyleButtonST::~CXPStyleButtonST()
