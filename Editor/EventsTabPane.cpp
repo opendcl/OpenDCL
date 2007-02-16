@@ -16,6 +16,7 @@
 #include "EditorWorkspace.h"
 #include "MainFrm.h"
 #include "LoadArgs.h"
+#include "PropertyNames.h"
 
 const int nTreeBottom = 150;
 const int nLabelBottom = 135;
@@ -225,91 +226,55 @@ void CEventsTabPane::UpdateEvents(CDclFormObject *pDclForm, CDclControlObject *p
 	AddAnyActiveXEvents();
 
 	if (IsWindowVisible() && m_EventsTree.GetCount() > 0)
-	{
 		m_EventsTree.SetFocus();
-	}
 	
-	m_DefunEdit.SetWindowText(CString());
+	m_DefunEdit.SetWindowText(NULL);
 }
 
 
 void CEventsTabPane::AddAnyActiveXEvents() 
 {
-	if (m_pDclForm == NULL)
+	if( m_pDclForm == NULL )
 		return;
-	
-	CString DefaultEventDeclaration;
 
-	
-	for (int i = 0; i < m_pControl->GetPropertyList().GetCount(); i++)
+	//The ActiveX event item data is the property item index because a control can have multiple 
+	//ActiveX 'Event' proerties, so the index must be used to determine which property object 
+	//the event is associated with.
+	INT_PTR idxProp = 0;
+	POSITION pos = m_pControl->GetPropertyList().GetHeadPosition();
+	while( pos )
 	{
-		POSITION pos = m_pControl->GetPropertyList().FindIndex(i);
-
-		if (pos != NULL)
-		{
-			// get the event property object
-			RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetAt(pos);
-			
-			// if the event exists, add it
-			if (pProp != NULL && pProp->GetType() == PropActiveXEvent)
+		RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetNext( pos );
+		if( pProp && pProp->GetType() == PropActiveXEvent )
+		{ //the event exists, so add it to the list
+			CString sName = pProp->GetName();
+			if( !sName.IsEmpty() )
 			{
-				CString sName = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->Name;
-				if (!sName.IsEmpty())
-				{
-					int hItem = m_EventsTree.AddString(sName);
-					m_EventsTree.SetItemData(hItem, i);
-					if (pProp->GetSubtype() & 1) // if the event has been set...
-						m_EventsTree.SetCheck(hItem, TRUE); // set the event tree item as checked.
-				}
+				int idxEvent = m_EventsTree.AddString( sName );
+				m_EventsTree.SetItemData( idxEvent, idxProp );
+				if( pProp->GetSubtype() & 1 ) // if the event has been set...
+					m_EventsTree.SetCheck( idxEvent, BST_CHECKED ); // set the event tree item as checked.
 			}
 		}
-	}    
+		idxProp++;
+	}
 }
 
-void CEventsTabPane::TryToAddEvent(PropertyId nEventId) 
+void CEventsTabPane::TryToAddEvent( PropertyId nEventId ) 
 {
-	if (m_pDclForm == NULL)
+	if( m_pDclForm == NULL )
 		return;
-	
-	UINT ResStringId = nEventId + 210;	
-	// there is a special case for grid cell editing.
-	if (nEventId == nEventEndLabelEdit)
-		ResStringId = 5226;
-	   
-	CString DefaultEventDeclaration;	
-	// get the event property object
-	RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyObject(nEventId);
-	
-	// if the event exists, add it
-	if (pProp != NULL)
-	{
-		CString EventName;
-    if (nEventId != nFormEventOnOk) {
-      EventName = theWorkspace.LoadResourceString(ResStringId);
-    } else {
-      EventName = "Ok";
-    }
-		
-		CWinApp* pApp = AfxGetApp();
-		CString sLoadText;
 
-		BOOL bUsesOn = pApp->GetProfileInt(sLoadText, _T("EventPrefixUsesON"), TRUE);
-    
-		if (bUsesOn == TRUE)
-		{
-			sLoadText = theWorkspace.LoadResourceString(IDS_EVENTPREFIXON);
-			EventName = sLoadText + EventName;
-		}	
-
-		int hItem = m_EventsTree.AddString(EventName);
-		m_EventsTree.SetItemData(hItem, nEventId);
-
-		// if the event has been set...
-		if (pProp->GetStringValue().GetLength() > 0)
-			// set the event tree item as checked.
-			m_EventsTree.SetCheck(hItem, TRUE);		
+	RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyObject( nEventId );
+	if( pProp )
+	{ //the event exists, so add it to the list
+		int idxEvent = m_EventsTree.AddString( CString( _T("On") ) + GetPropertyName( nEventId ) );
+		m_EventsTree.SetItemData( idxEvent, nEventId );
+		if( !pProp->GetStringValue().IsEmpty() )
+			m_EventsTree.SetCheck( idxEvent, TRUE ); //if the event has been set, set the event tree item as checked.
 	} 
 }
+
 void CEventsTabPane::OnChangeDefunedit() 
 {
 	CString sDefunEditText;
@@ -693,16 +658,24 @@ void CEventsTabPane::OnCheckChanged()
 	SetEvent(nEventId, sEventDefun);
 }
 
-void CEventsTabPane::SetEvent(PropertyId nEventId, CString sEventDefun)
+void CEventsTabPane::SetEvent( PropertyId nEventId, CString sEventDefun )
 {
 	if (m_pControl->GetType() == CtlActiveX)
 	{
-		POSITION pos = m_pControl->GetPropertyList().FindIndex(nEventId);
+		//if it's an ActiveX event, then nEventId is actually an index into the property list
+		POSITION pos = m_pControl->GetPropertyList().FindIndex( nEventId );
 		if (pos != NULL)
-			m_pControl->GetPropertyList().GetAt(pos)->SetStringValue(sEventDefun);
+		{
+			RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetAt( pos );
+			//use subtype flags bit 0 to indicate whether the event is checked
+			if( sEventDefun.IsEmpty() )
+				pProp->SetSubtype( pProp->GetSubtype() & ~DWORD(1) );
+			else
+				pProp->SetSubtype( pProp->GetSubtype() | 1 );
+		}
 	}
 	else
-		m_pControl->SetStringProperty(nEventId, sEventDefun); 
+		m_pControl->SetStringProperty( nEventId, sEventDefun ); 
 }
 
 CString CEventsTabPane::GetEvent( PropertyId nEventId )
@@ -723,12 +696,9 @@ CString CEventsTabPane::GetEvent( PropertyId nEventId )
 			sEventName = m_pControl->GetKeyPath();
 		else
 			sEventName = m_pDclForm->GetKeyPath();
-		CString sEventItemPrefix;
-		if( AfxGetApp()->GetProfileInt(theWorkspace.LoadResourceString(IDR_MAINFRAME), _T("EventPrefixUsesON"), TRUE) )
-			sEventItemPrefix += _T("On");
 		CString sItemText;
 		m_EventsTree.GetText(m_EventsTree.GetCurSel(), sItemText);
-		sEventSymbol.Format( _T("c:%s_%s%s"), (LPCTSTR)sEventName, (LPCTSTR)sEventItemPrefix, (LPCTSTR)sItemText );
+		sEventSymbol.Format( _T("c:%s_On%s"), (LPCTSTR)sEventName, (LPCTSTR)sItemText );
 	}
 
 	return sEventSymbol;
