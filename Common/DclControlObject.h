@@ -111,6 +111,7 @@ public:
 	RefCountedPtr< CPropertyObject > GetPropertyObject(PropertyId nID) const;
 	RefCountedPtr< CPropertyObject > GetActiveXPropertyObject(CString sName) const;
 	RefCountedPtr< CPropertyObject > FindProperty(CString sName);
+	RefCountedPtr< CPropertyObject > GetMethods();
 	void RemoveProperty(PropertyId nId);
 	void ResetProperty(PropertyId nId);
 	size_t CountPropertyListItems(PropertyId nID);

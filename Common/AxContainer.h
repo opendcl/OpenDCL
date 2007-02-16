@@ -12,6 +12,13 @@ class CControlPane;
 class AxPropertyDescriptor;
 class CPropertyObject;
 
+//[DPR] Recreated helper struct and function
+struct VariantList
+{
+	COleVariant m_Variant[16];
+};
+void InvokeAxHelperV(IDispatch *pDispatch, AxPropertyDescriptor *axProp, WORD wFlags,VARTYPE vtRet, COleVariant *pvRet, AxPropertyDescriptor * pbParamInfo, VariantList *argList, int nParams);
+void DoAxMethod(IDispatch *pDispatch, AxMethodDescriptor *axMethod, VariantList *argList, COleVariant *pVarReturn);
 
 /////////////////////////////////////////////////////////////////////////////
 // CAxContainer window
@@ -77,7 +84,9 @@ public:
 	virtual BOOL CreateCtrl(CLSID Clsid, CDclControlObject *pControl, int nID, CWnd *pParent);
 	virtual BOOL CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RECT& rect, int nID, CWnd *pParent, bool bAddPropInfo);
 	HRESULT GetProperty(AxPropertyDescriptor *axProp, CString &strReturnValue);
+	void GetProperty(AxPropertyDescriptor *axProp, VariantList *argList, COleVariant *pVarReturn);
 	void SetProperty(AxPropertyDescriptor *axProp, CString sNewValue);
+	void SetProperty(AxPropertyDescriptor *axProp, COleVariant varArgument);
 	COleFont GetFont(DISPID dispid);
 	void SetFont(DISPID dispid, LPDISPATCH newValue);
 	unsigned long GetColor(DISPID dispid);
@@ -92,6 +101,10 @@ public:
 	void SetRefImageList(DISPID dispid, LPDISPATCH newValue);
 	void SetImageList(DISPID dispid, LPDISPATCH newValue);
 
+	//[DPR] Recreated functions
+	void CAxContainer::InvokeHelperV(AxPropertyDescriptor *axProp, WORD wFlags,
+		VARTYPE vtRet, COleVariant* pvRet, AxPropertyDescriptor * pbParamInfo, VariantList *argList, int nParams);
+	void DoMethod(AxMethodDescriptor *axMethod, VariantList *argList, COleVariant *pVarReturn);
 // Overrides
 	public:
 

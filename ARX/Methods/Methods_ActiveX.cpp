@@ -16,7 +16,6 @@
 #include "MethodLexicon.h"
 #include "AcadColorTable.h"
 
-
 void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp = NULL, AxMethodDescriptor *pMethod = NULL, CAxContainer *pAxContainer = NULL, AxPropertyDescriptor *pAxProp = NULL);
 
 
@@ -148,7 +147,7 @@ int SetAxObjColorProperty()
 	}
 
 	// get the AcxtiveX control
-	CAxContainer *axContainer = pControl->m_pAxWnd;
+	CAxContainer *axContainer = (CAxContainer*)pControl->GetWindow();
 	//COleDispatchDriver Disp((LPDISPATCH)lDispatch);// axContainer->GetOleIDispatch();
 	
 	long lRed = 0;
@@ -1202,7 +1201,7 @@ int SetAxColorProperty()
 	}
 	
 	// get the AcxtiveX control
-	CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
+	CAxContainer *axContainer = (CAxContainer*)pControl->GetWindow();
 	IDispatch *pDisp = axContainer->GetOleIDispatch();
 	
 	long lRed = 0;
@@ -1345,17 +1344,14 @@ int SetAxPictureProperty()
 		//pAxProp->NumParams = nParams;
 		pAxProp->CallingArgs[0] = pAxProp->Type;
 	}
-	
-	
 
 	// get the AcxtiveX control
-	CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
+	CAxContainer *axContainer = (CAxContainer*)pControl->GetWindow();
 	IDispatch *pDisp = axContainer->GetOleIDispatch();
 		
 	if (ListData->restype == RTSTR)
 	{
-		CString sFileName = ListData->resval.rstring;
-		
+		CString sFileName = ListData->resval.rstring;		
 		// call method to load the picture file.
 		LoadPictureFile(pDisp, pAxProp->Id, sFileName);
 	}
@@ -1371,7 +1367,7 @@ int SetAxPictureProperty()
 	}
 	pDisp->Release();
 	acedRetVoid();
-*/
+	*/
 	return 0;
 }
 
@@ -1390,7 +1386,6 @@ int SetAxPictureProperty()
 //*****************************************************************************
 int SetAxProperty()
 {
-/*
 	CString sPropNameArg;
 	int nArg = 0;
 	int nArgCount=0;
@@ -1459,9 +1454,7 @@ int SetAxProperty()
 		nParams = 1;
 		//pAxProp->NumParams = nParams;
 		pAxProp->CallingArgs[0] = pAxProp->Type;
-	}
-	
-	
+	}	
 	VariantList argList;
 	
 	nArg++;
@@ -1489,9 +1482,10 @@ int SetAxProperty()
 		}
 	}
 
-
-	// get the AcxtiveX control
-	CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
+	//get the AcxtiveX control
+	//[DPR] GetWindow returns a CWnd. For this instance, we know the it will be a CAxContainer, 
+	//so force the cast.
+	CAxContainer *axContainer = (CAxContainer*)pControl->GetWindow();
 	
 	if (nParams == 1)
 	{
@@ -1505,7 +1499,6 @@ int SetAxProperty()
 			pAxProp->Type, &varGet, pAxProp, &argList, nParams);
 	}
 	acedRetVoid();
-*/
 	return 0;
 }
 //*****************************************************************************
@@ -1594,7 +1587,7 @@ int SetFlexGridColorProperty()
   unsigned int iColor = (unsigned int)dColor;
 
   // get the AcxtiveX control
-  CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
+  CAxContainer *axContainer = (CAxContainer*)pControl->GetWindow();
 
   axContainer->SetFlexGridColorProperty(pAxProp, iColor);
   acedRetVoid();
@@ -1615,7 +1608,6 @@ int SetFlexGridColorProperty()
 //*****************************************************************************
 int GetAxProperty()
 {
-/*
 	CString sPropNameArg;
 	int nArg = 0;
 	int nArgCount=0;
@@ -1692,14 +1684,13 @@ int GetAxProperty()
 
 
 	// get the AcxtiveX control
-	CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
+	CAxContainer *axContainer = (CAxContainer*)pControl->GetWindow();
 	
 	COleVariant varGet;
 	// call the set property method to set the property
 	axContainer->GetProperty(pAxProp, &argList, &varGet);
 
 	acedRetOleVar(varGet, pProp, NULL, axContainer, pAxProp);
-*/
 	return 0;
 }
 
@@ -1792,7 +1783,7 @@ int GetFlexGridColorProperty()
   }
 
   // get the AcxtiveX control
-  CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
+  CAxContainer *axContainer = (CAxContainer*)pControl->GetWindow();
 
   //Return the color
   unsigned int iColor = axContainer->GetFlexGridColorProperty(pAxProp);
@@ -1818,10 +1809,7 @@ int DoAxMethod()
 	int nArgCount=0;
 	
 	// call the method to get the property object
-	CDclControlObject *pControl = GetControlArxObject(sDoAxMethod, &nArg);
-	
-
-	
+	CDclControlObject *pControl = GetControlArxObject(sDoAxMethod, &nArg);	
 	if (pControl == NULL || !GetStringArgument(nArg, &sMethodNameArg, sDoAxMethod))
 	{
 		acedRetVoid();
@@ -1845,26 +1833,24 @@ int DoAxMethod()
 		ListData = ListData->rbnext;
 	}
 
-/*
+
 	RefCountedPtr< CPropertyObject > pProp = pControl->GetMethods();
 	int nParams;
 	
-	if (pProp->m_Type != PropActiveXMethods)
+	if (pProp->GetType() != PropActiveXMethods)
 	{
 		acedRetNil();
 		return 0;
 	}
 
-	// here we need to search the methods to find the one requestes.
-	POSITION pos = pProp->m_pMethods->GetHeadPosition();
-	AxMethodDescriptor *pMethod = NULL;
-	while (pos != NULL)
-	{
-		pMethod = pProp->m_pMethods->GetNext(pos);
-		// if this is the method, end the while loop now
-		if (pMethod->Name == sMethodNameArg)
-		{
-			pos = NULL;
+	// here we need to search the methods to find the one requested.
+	std::vector< RefCountedPtr< AxMethodDescriptor > > *vMethods = pProp->GetAxInterfaceDescriptorPtr()->GetMethods();
+	RefCountedPtr< AxMethodDescriptor > pMethod;
+	for (int i = 0; i < vMethods->size(); i++) {
+		RefCountedPtr< AxMethodDescriptor > pMethodCheck = vMethods->at(i);
+		if (pMethodCheck->Name == sMethodNameArg) {
+			pMethod = pMethodCheck;
+			break;
 		}
 	}
 	
@@ -1904,14 +1890,13 @@ int DoAxMethod()
 
 
 	// get the AcxtiveX control
-	CAxContainer *axContainer = pControl->GetAxInterfaceDescriptorPtr()->pWnd;
+	CAxContainer *axContainer = (CAxContainer*)pControl->GetWindow();
 	
 	COleVariant varGet;
 	// call the set property method to set the property
 	axContainer->DoMethod(pMethod, &argList, &varGet);
 	
 	acedRetOleVar(varGet, NULL, pMethod, axContainer);
-*/
 	return 0;
 }
 

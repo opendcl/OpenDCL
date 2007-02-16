@@ -1121,7 +1121,17 @@ RefCountedPtr< CPropertyObject > CDclControlObject::FindProperty(CString sName)
 	}
 	return NULL;
 }
-
+RefCountedPtr< CPropertyObject > CDclControlObject::GetMethods() { 
+	POSITION posProp = GetPropertyList().GetHeadPosition();
+	while (posProp)
+	{
+		RefCountedPtr< CPropertyObject > pProperty = GetPropertyList().GetNext(posProp);
+		assert(pProperty != NULL);
+		if (pProperty->GetType() == PropActiveXMethods)
+			return pProperty;
+	}
+	return NULL;
+}
 POSITION CDclControlObject::FindPropertyInsertPos(PropertyId nID, bool bHidden) const
 {
 	if (nID == nObjectBrowser)

@@ -1563,7 +1563,11 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RE
 
 }
 
-
+//[DPR] Recreated for methods_activex.cpp
+void CAxContainer::GetProperty(AxPropertyDescriptor *axProp, VariantList *argList, COleVariant *pVarReturn)
+{
+	InvokeHelperV(axProp, DISPATCH_PROPERTYGET, axProp->Type, pVarReturn, axProp, argList, axProp->NumParams);
+}
 HRESULT CAxContainer::GetProperty(AxPropertyDescriptor *axProp, CString &strReturnValue)
 {
 	
@@ -1638,22 +1642,19 @@ void CAxContainer::SetBoolProperty(AxPropertyDescriptor *axProp, CString sNewVal
 	COleDispatchDriver pDisp(GetOleIDispatch());
 	pDisp.InvokeHelper(axProp->Id, DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms, bNewValue);
 }
-
-		
-		
 void CAxContainer::SetProperty(AxPropertyDescriptor *axProp, CString sNewValue)
 {
-   USES_CONVERSION;
+	USES_CONVERSION;
 	DISPPARAMS dpParams;
 	int nParams = 1;
 	COleVariant varParams;   
 	CString sTrue;
 			
-    dpParams.cArgs = nParams;
+	dpParams.cArgs = nParams;
 	
 	VARTYPE vt = axProp->CallingArgs[0]; // set the variant type
 		
-    varParams = sNewValue;
+	varParams = sNewValue;
 	if (vt == 0)
 	{
 		vt = axProp->Type;
@@ -1871,28 +1872,27 @@ void CAxContainer::SetProperty(AxPropertyDescriptor *axProp, CString sNewValue)
 	dpParams.cNamedArgs = nParams;
 
    
-   TRY
-   {
+	TRY
+	{
 		IDispatch *m_lpDispatch = NULL;
 		m_lpDispatch = GetOleIDispatch();
 		COleVariant varResult;
 		varResult.Clear();
-		
-		HRESULT hResult = m_lpDispatch->Invoke(axProp->Id, GUID_NULL, LOCALE_USER_DEFAULT, 
-			wFlags, &dpParams, &varResult, NULL, NULL);
-		
-		m_lpDispatch->Release();
-		if( FAILED( hResult ) )
-		{	   
-			 AfxThrowOleException( hResult );
-		}
-   }
-   CATCH( COleException, e )
-   {
-   }
-   END_CATCH
 
-	   // cleanup any arguments that need cleanup
+		HRESULT hResult = m_lpDispatch->Invoke(axProp->Id, GUID_NULL, LOCALE_USER_DEFAULT, 
+		wFlags, &dpParams, &varResult, NULL, NULL);
+
+		m_lpDispatch->Release();
+		if( FAILED( hResult ) ) {	   
+			AfxThrowOleException( hResult );
+		}
+	}
+	CATCH( COleException, e )
+	{
+	}
+	END_CATCH
+
+	// cleanup any arguments that need cleanup
 	if (dpParams.cArgs != 0)
 	{
 		VARIANT* pArg = dpParams.rgvarg + dpParams.cArgs - 1;
@@ -1915,9 +1915,240 @@ void CAxContainer::SetProperty(AxPropertyDescriptor *axProp, CString sNewValue)
 	
 	mpOleControl->SaveToStream(this);
 }
+void CAxContainer::SetProperty(AxPropertyDescriptor *axProp, COleVariant varArgument)
+{
+	//[DPR] SetAxProperty needed a version that passed a COleVariant and not a string, so
+	//I created this version. The bool case at the top is different, and the switch to
+	//convert is different. Otherwise, it is the same as above.
+	USES_CONVERSION;
+	DISPPARAMS dpParams;
+	int nParams = 1;
+	COleVariant varParams;   
+	CString sTrue;
+			
+	dpParams.cArgs = nParams;
+	
+	VARTYPE vt = axProp->CallingArgs[0]; // set the variant type
+		
+	if (vt == VT_BOOL && nParams == 1)
+	{
+		SetBoolProperty(axProp, varArgument);
+		return;
+	}
+
+	varParams = varArgument;
+	if (vt == 0)
+	{
+		vt = axProp->Type;
+	}
+    if (axProp->Type == VT_VOID)
+	{
+		vt = axProp->CallingArgs[0];
+	}
+
+	VARIANT* pArg = new VARIANT[nParams];
+	ASSERT(pArg != NULL);   // should have thrown exception
+	dpParams.rgvarg = pArg;
+	memset(pArg, 0, sizeof(VARIANT) * dpParams.cArgs);
+
+	pArg += dpParams.cArgs - 1;   // params go in opposite order
+	CString sValue;
+
+	for (int i =0; i<nParams; i++)
+	{
+		ASSERT(pArg >= dpParams.rgvarg);
+		if (vt == 0)
+			vt = axProp->Type;
+		pArg->vt = vt;
+		if (pArg->vt & VT_MFCBYREF)
+		{
+			pArg->vt &= ~VT_MFCBYREF;
+			pArg->vt |= VT_BYREF;
+		}
+		switch (pArg->vt)
+		{
+		case VT_UI1:
+			pArg->bVal = varParams.bVal;
+			break;
+		case VT_I2:
+			pArg->iVal =  varParams.iVal;
+			break;
+		case VT_I4:
+			pArg->lVal =  varParams.lVal;
+			break;
+		case VT_R4:
+			pArg->fltVal =  varParams.fltVal;
+			break;
+		case VT_R8:
+			pArg->dblVal =  varParams.dblVal;
+			break;
+		case VT_DATE:
+			pArg->date =  varParams.date;
+			break;
+		case VT_CY:
+			pArg->cyVal =  varParams.cyVal;
+			break;
+		case VT_BSTR:
+			{
+				LPCOLESTR lpsz = varParams.bstrVal;
+				pArg->bstrVal = ::SysAllocString(lpsz);
+				if (lpsz != NULL && pArg->bstrVal == NULL)
+					AfxThrowMemoryException();
+			}
+			break;
+#if !defined(_UNICODE) && !defined(OLE2ANSI)
+		case VT_BSTRA:
+			{
+				//LPCSTR lpsz =  varParams.bstrVal;
+				pArg->bstrVal = varParams.bstrVal;//::SysAllocString(T2COLE(lpsz));
+				if (pArg->bstrVal == NULL)
+					AfxThrowMemoryException();
+				pArg->vt = VT_BSTR;
+			}
+			break;
+#endif
+		case VT_DISPATCH:
+			pArg->pdispVal = varParams.pdispVal;
+			break;
+		case VT_ERROR:
+			pArg->scode = varParams.scode;
+			break;
+		case VT_BOOL:
+			pArg->boolVal = varParams.boolVal;
+			break;
+		case VT_VARIANT:
+			{
+				COleVariant var;
+				//*pArg = varParams;
+				var.Attach(varParams);
+				*pArg = var;
+				//* pArg->pvarVal = varParams;
+				break;
+			}
+		case VT_UNKNOWN:
+			pArg->punkVal = varParams.punkVal;
+			break;
+
+		case VT_I2|VT_BYREF:
+			pArg->piVal = varParams.piVal;
+			break;
+		case VT_UI1|VT_BYREF:
+			pArg->pbVal = varParams.pbVal;
+			break;
+		case VT_I4|VT_BYREF:
+			pArg->plVal = varParams.plVal;
+			break;
+		case VT_R4|VT_BYREF:
+			pArg->pfltVal = varParams.pfltVal;
+			break;
+		case VT_R8|VT_BYREF:
+			pArg->pdblVal = varParams.pdblVal;
+			break;
+		case VT_DATE|VT_BYREF:
+			pArg->pdate = varParams.pdate;
+			break;
+		case VT_CY|VT_BYREF:
+			pArg->pcyVal = varParams.pcyVal;
+			break;
+		case VT_BSTR|VT_BYREF:
+			pArg->pbstrVal = varParams.pbstrVal;
+			break;
+		case VT_DISPATCH|VT_BYREF:
+			pArg->ppdispVal = varParams.ppdispVal;
+			break;
+		case VT_ERROR|VT_BYREF:
+			pArg->pscode = varParams.pscode;
+			break;
+		case VT_BOOL|VT_BYREF:
+			{
+				// coerce BOOL into VARIANT_BOOL
+				//BOOL* pboolVal = va_arg(argList, BOOL*);
+				//*pboolVal = *pboolVal ? MAKELONG(-1, 0) : 0;
+				pArg->pboolVal = varParams.pboolVal;
+			}
+			break;
+		case VT_VARIANT|VT_BYREF:
+			pArg->pvarVal = varParams.pvarVal;
+			break;
+		case VT_UNKNOWN|VT_BYREF:
+			pArg->ppunkVal = varParams.ppunkVal;
+			break;
 
 
+		default:
+			//ASSERT(FALSE);  // unknown type!
+			break;
+		}
+		--pArg; // get ready to fill next argument
+	}
+  //
+  WORD wFlags = axProp->invKind;//INVOKE_PROPERTYPUT;
 
+  if( wFlags != INVOKE_PROPERTYPUT && 
+	    wFlags != DISPATCH_PROPERTYPUT &&
+			wFlags != INVOKE_PROPERTYPUTREF) {
+      wFlags = INVOKE_PROPERTYPUT;
+	}
+   
+	DISPID dispidPropset;
+	if (axProp->invKind == INVOKE_PROPERTYPUT)
+	{
+		dispidPropset =  DISPID_PROPERTYPUT;
+	}
+	else if (axProp->invKind == INVOKE_PROPERTYPUTREF)
+	{
+		dispidPropset =  DISPID_PROPERTYPUT;
+	}
+	else
+	{
+		dispidPropset =  DISPID_PROPERTYPUT;
+	}
+
+	dpParams.rgdispidNamedArgs = &dispidPropset;
+	dpParams.cNamedArgs = nParams;
+
+   
+	TRY
+	{
+		IDispatch *m_lpDispatch = NULL;
+		m_lpDispatch = GetOleIDispatch();
+		COleVariant varResult;
+		varResult.Clear();
+
+		HRESULT hResult = m_lpDispatch->Invoke(axProp->Id, GUID_NULL, LOCALE_USER_DEFAULT, 
+		wFlags, &dpParams, &varResult, NULL, NULL);
+
+		m_lpDispatch->Release();
+		if( FAILED( hResult ) ) {	   
+			AfxThrowOleException( hResult );
+		}
+	}
+	CATCH( COleException, e )
+	{
+	}
+	END_CATCH
+
+	// cleanup any arguments that need cleanup
+	if (dpParams.cArgs != 0)
+	{
+		VARIANT* pArg = dpParams.rgvarg + dpParams.cArgs - 1;
+		for (int i =0; i<nParams; i++)
+		{
+			switch ((VARTYPE)axProp->CallingArgs[i])
+			{
+#if !defined(_UNICODE) && !defined(OLE2ANSI)
+			case VT_BSTRA:
+#endif
+			case VT_BSTR:
+				VariantClear(pArg);
+				break;
+			}
+			--pArg;
+		}
+	}
+	delete[] dpParams.rgvarg;	
+	mpOleControl->SaveToStream(this);
+}
 IDispatch * CAxContainer::GetChildIDispatch(DISPID dispid)
 {
 	LPDISPATCH pDispatch;
@@ -2175,7 +2406,6 @@ void CAxContainer::ShowPropertyPages()
    }
    
    mpOleControl->SaveToStream(this);
-   
 }
 
 HRESULT CAxContainer::SaveToStream( IStream* pStream )
@@ -2274,7 +2504,6 @@ HRESULT CAxContainer::SaveToStream( IStream* pStream )
 	theWorkspace.SetModified(true);
 
    return( S_OK );
-
 }
 
 void CAxContainer::SetRefImageList(DISPID dispid, LPDISPATCH newValue)
@@ -2296,4 +2525,487 @@ void CAxContainer::SetImageList(DISPID dispid, LPDISPATCH newValue)
 void CAxContainer::SetTooltipText( LPCTSTR pszText )
 {
 	SetToolTipEx( this, mToolTip, mpOleControl );
+}
+//[DPR] InvokeHelper functions recreated to allow methods_activex.cpp code to work
+void CAxContainer::InvokeHelperV(AxPropertyDescriptor *axProp, WORD wFlags,
+																 VARTYPE vtRet, COleVariant *pvRet, AxPropertyDescriptor * pbParamInfo, VariantList *argList, int nParams)
+{
+	IDispatch *pDispatch = NULL;
+	pDispatch = GetOleIDispatch();
+	if (pDispatch == NULL) {
+		return;
+	}
+	InvokeAxHelperV(pDispatch, axProp, wFlags,	vtRet, pvRet, pbParamInfo, argList, nParams);
+	pDispatch->Release();	
+	return;
+}
+void InvokeAxHelperV(IDispatch *pDispatch, AxPropertyDescriptor *axProp, WORD wFlags,
+										 VARTYPE vtRet, COleVariant *pvRet, AxPropertyDescriptor * pbParamInfo, VariantList *argList, int nParams)
+{
+	USES_CONVERSION;
+	DISPPARAMS dpParams;
+	memset(&dpParams, 0, sizeof dpParams);
+	dpParams.cArgs = nParams;
+
+	VARIANT* pArg = new VARIANT[nParams];
+	ASSERT(pArg != NULL);   // should have thrown exception
+	dpParams.rgvarg = pArg;
+	memset(pArg, 0, sizeof(VARIANT) * dpParams.cArgs);
+
+	pArg += dpParams.cArgs - 1;   // params go in opposite order
+
+	for (int i =0; i<nParams; i++)
+	{
+		ASSERT(pArg >= dpParams.rgvarg);
+		VARTYPE vt = axProp->CallingArgs[i]; // set the variant type
+		/*if (vt == 0)
+		{
+		vt = pbParamInfo->Type;
+		}
+		*/
+		pArg->vt = vt;
+		if (pArg->vt & VT_MFCBYREF)
+		{
+			pArg->vt &= ~VT_MFCBYREF;
+			pArg->vt |= VT_BYREF;
+		}
+		switch (pArg->vt)
+		{
+		case VT_UI1:
+			pArg->bVal = argList->m_Variant[i].bVal;
+			break;
+		case VT_I2:
+			pArg->iVal =  argList->m_Variant[i].iVal;
+			break;
+		case VT_I4:
+			pArg->lVal =  argList->m_Variant[i].lVal;
+			break;
+		case VT_R4:
+			pArg->fltVal =  argList->m_Variant[i].fltVal;
+			break;
+		case VT_R8:
+			pArg->dblVal =  argList->m_Variant[i].dblVal;
+			break;
+		case VT_DATE:
+			pArg->date =  argList->m_Variant[i].date;
+			break;
+		case VT_CY:
+			pArg->cyVal =  argList->m_Variant[i].cyVal;
+			break;
+		case VT_BSTR:
+			{
+				LPCOLESTR lpsz = argList->m_Variant[i].bstrVal;
+				pArg->bstrVal = ::SysAllocString(lpsz);
+				if (lpsz != NULL && pArg->bstrVal == NULL)
+					AfxThrowMemoryException();
+			}
+			break;
+#if !defined(_UNICODE) && !defined(OLE2ANSI)
+		case VT_BSTRA:
+			{
+				//LPCSTR lpsz =  argList->m_Variant[i].bstrVal;
+				pArg->bstrVal = argList->m_Variant[i].bstrVal;//::SysAllocString(T2COLE(lpsz));
+				if (pArg->bstrVal == NULL)
+					AfxThrowMemoryException();
+				pArg->vt = VT_BSTR;
+			}
+			break;
+#endif
+		case VT_DISPATCH:
+			pArg->pdispVal =  argList->m_Variant[i].pdispVal;
+			break;
+		case VT_ERROR:
+			pArg->scode =  argList->m_Variant[i].scode;
+			break;
+		case VT_BOOL:
+			pArg->boolVal = argList->m_Variant[i].boolVal;
+			break;
+		case VT_VARIANT:
+			*pArg = argList->m_Variant[i];
+			break;
+		case VT_UNKNOWN:
+			pArg->punkVal = argList->m_Variant[i].punkVal;
+			break;
+
+		case VT_I2|VT_BYREF:
+			pArg->piVal = argList->m_Variant[i].piVal;
+			break;
+		case VT_UI1|VT_BYREF:
+			pArg->pbVal = argList->m_Variant[i].pbVal;
+			break;
+		case VT_I4|VT_BYREF:
+			pArg->plVal = argList->m_Variant[i].plVal;
+			break;
+		case VT_R4|VT_BYREF:
+			pArg->pfltVal = argList->m_Variant[i].pfltVal;
+			break;
+		case VT_R8|VT_BYREF:
+			pArg->pdblVal = argList->m_Variant[i].pdblVal;
+			break;
+		case VT_DATE|VT_BYREF:
+			pArg->pdate = argList->m_Variant[i].pdate;
+			break;
+		case VT_CY|VT_BYREF:
+			pArg->pcyVal = argList->m_Variant[i].pcyVal;
+			break;
+		case VT_BSTR|VT_BYREF:
+			pArg->pbstrVal = argList->m_Variant[i].pbstrVal;
+			break;
+		case VT_DISPATCH|VT_BYREF:
+			pArg->ppdispVal = argList->m_Variant[i].ppdispVal;
+			break;
+		case VT_ERROR|VT_BYREF:
+			pArg->pscode = argList->m_Variant[i].pscode;
+			break;
+		case VT_BOOL|VT_BYREF:
+			{
+				// coerce BOOL into VARIANT_BOOL
+				//BOOL* pboolVal = va_arg(argList, BOOL*);
+				//*pboolVal = *pboolVal ? MAKELONG(-1, 0) : 0;
+				pArg->pboolVal = argList->m_Variant[i].pboolVal;
+			}
+			break;
+		case VT_VARIANT|VT_BYREF:
+			pArg->pvarVal = argList->m_Variant[i].pvarVal;
+			break;
+		case VT_UNKNOWN|VT_BYREF:
+			pArg->ppunkVal = argList->m_Variant[i].ppunkVal;
+			break;
+
+		default:
+			ASSERT(FALSE);  // unknown type!
+			break;
+		}
+		--pArg; // get ready to fill next argument
+	}
+	//
+	DISPID dispidPropset = DISPID_PROPERTYPUT;
+	if( wFlags == INVOKE_PROPERTYPUT || wFlags == DISPATCH_PROPERTYPUT)//axProp->invKind == INVOKE_PROPERTYPUT || axProp->invKind == INVOKE_PROPERTYPUTREF)
+	{
+		dpParams.rgdispidNamedArgs = &dispidPropset;
+		dpParams.cNamedArgs = 1;//nParams;
+	}
+	else if( wFlags == INVOKE_PROPERTYGET)
+	{
+		//dpParams.rgdispidNamedArgs = NULL;
+		dpParams.cNamedArgs = 0;
+	}
+	else 
+	{
+		dpParams.rgdispidNamedArgs = NULL;
+		dpParams.cNamedArgs = 0;
+	}
+
+	TRY
+	{
+		COleVariant varResult;
+		varResult.Clear();
+		if (pvRet == NULL)
+			pvRet = &varResult;
+		else
+			pvRet->Clear();
+
+		// initialize EXCEPINFO struct
+		EXCEPINFO excepInfo;
+		memset(&excepInfo, 0, sizeof excepInfo);
+
+		UINT nArgErr = (UINT)-1;  // initialize to invalid arg
+
+		SCODE sc;
+
+		try
+		{
+			sc = pDispatch->Invoke(axProp->Id, IID_NULL, 0, wFlags,
+				&dpParams, pvRet, &excepInfo, &nArgErr);
+		}
+		catch(...)
+		{
+			// cleanup any arguments that need cleanup
+			if (dpParams.cArgs != 0)
+			{
+				VARIANT* pArg = dpParams.rgvarg + dpParams.cArgs - 1;
+				for (int i =0; i<nParams; i++)
+				{
+					switch ((VARTYPE)axProp->CallingArgs[i])
+					{
+#if !defined(_UNICODE) && !defined(OLE2ANSI)
+					case VT_BSTRA:
+#endif
+					case VT_BSTR:
+						VariantClear(pArg);
+						break;
+					}
+					--pArg;
+				}
+			}
+			delete[] dpParams.rgvarg;	
+			return;
+		}
+
+		//HRESULT hResult = pDispatch->Invoke(axProp->Id, GUID_NULL, LOCALE_USER_DEFAULT, 
+		//	wFlags, &dpParams, pvRet, &excepInfo, &nArgErr);
+
+
+		if (FAILED(sc))
+		{
+			theWorkspace.DisplayAlert(CString(_T("The ActiveX get property \"") + axProp->Name + _T("\" failed.")));
+			if (sc != DISP_E_EXCEPTION)
+			{
+				// non-exception error code
+				AfxThrowOleException(sc);
+			}
+
+			// make sure excepInfo is filled in
+			if (excepInfo.pfnDeferredFillIn != NULL)
+				excepInfo.pfnDeferredFillIn(&excepInfo);
+
+			// allocate new exception, and fill it
+			COleDispatchException* pException =
+				new COleDispatchException(NULL, 0, excepInfo.wCode);
+			ASSERT(pException->m_wCode == excepInfo.wCode);
+			if (excepInfo.bstrSource != NULL)
+			{
+				pException->m_strSource = excepInfo.bstrSource;
+				SysFreeString(excepInfo.bstrSource);
+			}
+			if (excepInfo.bstrDescription != NULL)
+			{
+				pException->m_strDescription = excepInfo.bstrDescription;
+				SysFreeString(excepInfo.bstrDescription);
+			}
+			if (excepInfo.bstrHelpFile != NULL)
+			{
+				pException->m_strHelpFile = excepInfo.bstrHelpFile;
+				SysFreeString(excepInfo.bstrHelpFile);
+			}
+			pException->m_dwHelpContext = excepInfo.dwHelpContext;
+			pException->m_scError = excepInfo.scode;
+		}				
+	}
+	CATCH( COleException, e )
+	{
+	}
+	END_CATCH
+
+		// cleanup any arguments that need cleanup
+		if (dpParams.cArgs != 0)
+		{
+			VARIANT* pArg = dpParams.rgvarg + dpParams.cArgs - 1;
+			for (int i =0; i<nParams; i++)
+			{
+				switch ((VARTYPE)axProp->CallingArgs[i])
+				{
+#if !defined(_UNICODE) && !defined(OLE2ANSI)
+			case VT_BSTRA:
+#endif
+			case VT_BSTR:
+				VariantClear(pArg);
+				break;
+				}
+				--pArg;
+			}
+		}
+		delete[] dpParams.rgvarg;	
+}
+void CAxContainer::DoMethod(AxMethodDescriptor *axMethod, VariantList *argList, COleVariant *pVarReturn)
+{
+	IDispatch *pDispatch = NULL;
+	pDispatch = GetOleIDispatch();
+	if (pDispatch == NULL) {
+		return;
+	}
+	DoAxMethod(pDispatch, axMethod, argList, pVarReturn);
+	pDispatch->Release();
+	return;
+}
+void DoAxMethod(IDispatch *pDispatch, AxMethodDescriptor *axMethod, VariantList *argList, COleVariant *pVarReturn)
+{
+	USES_CONVERSION;
+	DISPPARAMS dpParams;
+	memset(&dpParams, 0, sizeof dpParams);
+
+	dpParams.cArgs = axMethod->nParamQty;
+
+	if (axMethod->nParamQty >0)
+	{
+		VARIANT* pArg = new VARIANT[axMethod->nParamQty];
+		ASSERT(pArg != NULL);   // should have thrown exception
+		dpParams.rgvarg = pArg;
+		memset(pArg, 0, sizeof(VARIANT) * dpParams.cArgs);
+
+		pArg += dpParams.cArgs - 1;   // params go in opposite order
+
+		for (int i =0; i<axMethod->nParamQty; i++)
+		{
+			ASSERT(pArg >= dpParams.rgvarg);
+			VARTYPE vt = axMethod->CallingArgs[i]; // set the variant type
+			pArg->vt = vt;
+			if (pArg->vt & VT_MFCBYREF)
+			{
+				pArg->vt &= ~VT_MFCBYREF;
+				pArg->vt |= VT_BYREF;
+			}
+			switch (pArg->vt)
+			{
+			case VT_UI1:
+				pArg->bVal = argList->m_Variant[i].bVal;
+				break;
+			case VT_I2:
+				pArg->iVal =  argList->m_Variant[i].iVal;
+				break;
+			case VT_I4:
+				pArg->lVal =  argList->m_Variant[i].lVal;
+				break;
+			case VT_R4:
+				pArg->fltVal =  argList->m_Variant[i].fltVal;
+				break;
+			case VT_R8:
+				pArg->dblVal =  argList->m_Variant[i].dblVal;
+				break;
+			case VT_DATE:
+				pArg->date =  argList->m_Variant[i].date;
+				break;
+			case VT_CY:
+				pArg->cyVal =  argList->m_Variant[i].cyVal;
+				break;
+			case VT_BSTR:
+				{
+					LPCOLESTR lpsz = argList->m_Variant[i].bstrVal;
+					pArg->bstrVal = ::SysAllocString(lpsz);
+					if (lpsz != NULL && pArg->bstrVal == NULL)
+						AfxThrowMemoryException();
+				}
+				break;
+#if !defined(_UNICODE) && !defined(OLE2ANSI)
+			case VT_BSTRA:
+				{
+					//LPCSTR lpsz =  argList->m_Variant[i].bstrVal;
+					pArg->bstrVal = argList->m_Variant[i].bstrVal;//::SysAllocString(T2COLE(lpsz));
+					if (pArg->bstrVal == NULL)
+						AfxThrowMemoryException();
+					pArg->vt = VT_BSTR;
+				}
+				break;
+#endif
+			case VT_DISPATCH:
+				pArg->pdispVal =  argList->m_Variant[i].pdispVal;
+				break;
+			case VT_ERROR:
+				pArg->scode =  argList->m_Variant[i].scode;
+				break;
+			case VT_BOOL:
+				pArg->boolVal = argList->m_Variant[i].boolVal;
+				break;
+			case VT_VARIANT:
+				*pArg = argList->m_Variant[i];
+				break;
+			case VT_UNKNOWN:
+				pArg->punkVal = argList->m_Variant[i].punkVal;
+				break;
+
+			case VT_I2|VT_BYREF:
+				pArg->piVal = argList->m_Variant[i].piVal;
+				break;
+			case VT_UI1|VT_BYREF:
+				pArg->pbVal = argList->m_Variant[i].pbVal;
+				break;
+			case VT_I4|VT_BYREF:
+				pArg->plVal = argList->m_Variant[i].plVal;
+				break;
+			case VT_R4|VT_BYREF:
+				pArg->pfltVal = argList->m_Variant[i].pfltVal;
+				break;
+			case VT_R8|VT_BYREF:
+				pArg->pdblVal = argList->m_Variant[i].pdblVal;
+				break;
+			case VT_DATE|VT_BYREF:
+				pArg->pdate = argList->m_Variant[i].pdate;
+				break;
+			case VT_CY|VT_BYREF:
+				pArg->pcyVal = argList->m_Variant[i].pcyVal;
+				break;
+			case VT_BSTR|VT_BYREF:
+				pArg->pbstrVal = argList->m_Variant[i].pbstrVal;
+				break;
+			case VT_DISPATCH|VT_BYREF:
+				pArg->ppdispVal = argList->m_Variant[i].ppdispVal;
+				break;
+			case VT_ERROR|VT_BYREF:
+				pArg->pscode = argList->m_Variant[i].pscode;
+				break;
+			case VT_BOOL|VT_BYREF:
+				{
+					// coerce BOOL into VARIANT_BOOL
+					//BOOL* pboolVal = va_arg(argList, BOOL*);
+					//*pboolVal = *pboolVal ? MAKELONG(-1, 0) : 0;
+					pArg->pboolVal = argList->m_Variant[i].pboolVal;
+				}
+				break;
+			case VT_VARIANT|VT_BYREF:
+				pArg->pvarVal = argList->m_Variant[i].pvarVal;
+				break;
+			case VT_UNKNOWN|VT_BYREF:
+				pArg->ppunkVal = argList->m_Variant[i].ppunkVal;
+				break;
+
+			default:
+				ASSERT(FALSE);  // unknown type!
+				break;
+			}
+			--pArg; // get ready to fill next argument
+		}
+	}
+
+	TRY
+	{
+		// initialize return value
+		VARIANT* pvarResult = NULL;
+		VARIANT vaResult;
+		AfxVariantInit(&vaResult);
+		if (pVarReturn != NULL)
+			pvarResult = &vaResult;
+
+		// initialize EXCEPINFO struct
+		EXCEPINFO excepInfo;
+		memset(&excepInfo, 0, sizeof excepInfo);
+
+		UINT nArgErr = (UINT)-1;  // initialize to invalid arg
+
+		// make the call
+		HRESULT hResult = pDispatch->Invoke(axMethod->Id, IID_NULL, 0, DISPATCH_METHOD,
+			&dpParams, pvarResult, &excepInfo, &nArgErr);
+
+		if (pVarReturn != NULL)
+			pVarReturn->Attach(vaResult);
+
+		if( FAILED( hResult ) )
+		{	   
+			theWorkspace.DisplayAlert(CString (_T("The ActiveX method \"") + axMethod->Name + _T("\" failed.")));
+		}
+
+	}
+	CATCH( COleException, e )
+	{
+	}
+	END_CATCH
+
+		// cleanup any arguments that need cleanup
+		if (dpParams.cArgs != 0)
+		{
+			VARIANT* pArg = dpParams.rgvarg + dpParams.cArgs - 1;
+			for (int i =0; i<axMethod->nParamQty; i++)
+			{
+				switch ((VARTYPE)axMethod->CallingArgs[i])
+				{
+#if !defined(_UNICODE) && !defined(OLE2ANSI)
+			case VT_BSTRA:
+#endif
+			case VT_BSTR:
+				VariantClear(pArg);
+				break;
+				}
+				--pArg;
+			}
+		}
+		delete[] dpParams.rgvarg;	
 }
