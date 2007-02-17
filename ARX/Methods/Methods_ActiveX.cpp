@@ -136,15 +136,11 @@ int SetAxObjColorProperty()
 	else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp())
 		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 	
-	nParams = pAxProp->NumParams;
+	nParams = pAxProp->rArgs.size();
 	// here we are ensuring that there is at least one parameters to be passed in. 
 	// Since we are Putting it must have at least one parameter.
 	if (nParams == 0)
-	{
-		nParams = 1;
-		//pAxProp->NumParams = nParams;
-		pAxProp->CallingArgs[0] = pAxProp->Type;
-	}
+		return 0;
 
 	// get the AcxtiveX control
 	CAxContainer *axContainer = (CAxContainer*)pControl->GetWindow();
@@ -679,16 +675,18 @@ int GetAxObjectProperty()
 		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 	}
 	
-	nParams = pAxProp->NumParams;
+	nParams = pAxProp->rArgs.size();
+	if( nParams > 16 )
+		return 0; //the following code has a hardcoded limit of 16 params!
 	
-	COleVariant argList[16];
+	VariantList argList;
 	int nArgCount=0;
 	while (ListData != NULL)
 	{
 		COleVariant Var;
-		if (GetAxPropertyArgument(ListData, sSetProperty, &Var, pAxProp->CallingArgs[nArgCount]))
+		if (GetAxPropertyArgument(ListData, sSetProperty, &Var, pAxProp->rArgs[nArgCount].vt))
 		{
-			argList[nArgCount] = Var;
+			argList.m_Variant[nArgCount] = Var;
 			nArgCount++;			
 		}
 		else
@@ -705,13 +703,15 @@ int GetAxObjectProperty()
 		}
 	}
 
-	/* Not sure how this was supposed to work, but the existing code obviously did not work [ORW]
+	// get the AcxtiveX control
+	CAxContainer *axContainer = (CAxContainer*)pControl->GetWindow();
+	
 	COleVariant varGet;
 	// call the set property method to set the property
-	axContainer->GetAxProperty( pAxProp, &argList, &varGet);
+	axContainer->GetProperty(pAxProp, &argList, &varGet);
 
-	acedRetOleVar(varGet, pProp, NULL, (CAxContainer*)disp->m_pParentAxContainer, pAxProp);
-	*/
+	acedRetOleVar(varGet, pProp, NULL, axContainer, pAxProp);
+
 	return 0;
 }
 
@@ -874,21 +874,20 @@ int SetAxObjectProperty()
 		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 	}
 	
-	nParams = pAxProp->NumParams;
+	nParams = pAxProp->rArgs.size();
 	// here we are ensuring that there is at least one parameters to be passed in. 
 	// Since we are Putting it must have at least one parameter.
 	if (nParams == 0)
-	{
-		nParams = 1;
-		pAxProp->CallingArgs[0] = pAxProp->Type;
-	}	
+		return 0;
+	if (nParams > 16)
+		return 0; //the following code has a hardcoded limit of 16 parameters!
 	
 	COleVariant argList[16];
 	int nArgCount = 0;	
 	while (ListData != NULL)
 	{
 		COleVariant Var;
-		if (GetAxPropertyArgument(ListData, sSetProperty, &Var, pAxProp->CallingArgs[nArgCount]))
+		if (GetAxPropertyArgument(ListData, sSetProperty, &Var, pAxProp->rArgs[nArgCount].vt))
 		{
 			argList[nArgCount] = Var;
 			nArgCount++;			
@@ -1446,22 +1445,19 @@ int SetAxProperty()
 		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 	}
 	
-	nParams = pAxProp->NumParams;
+	nParams = pAxProp->rArgs.size();
 	// here we are ensuring that there is at least one parameters to be passed in. 
 	// Since we are Putting it must have at least one parameter.
 	if (nParams == 0)
-	{
-		nParams = 1;
-		//pAxProp->NumParams = nParams;
-		pAxProp->CallingArgs[0] = pAxProp->Type;
-	}	
+		return 0;
+
 	VariantList argList;
 	
 	nArg++;
 	while (ListData != NULL)
 	{
 		COleVariant Var;
-		if (GetAxPropertyArgument(ListData, sSetProperty, &argList.m_Variant[nArgCount], pAxProp->CallingArgs[nArgCount]))
+		if (GetAxPropertyArgument(ListData, sSetProperty, &argList.m_Variant[nArgCount], pAxProp->rArgs[nArgCount].vt))
 		{
 			//argList.m_Variant[nArgCount] = Var;
 			nArgCount++;			
@@ -1654,7 +1650,7 @@ int GetAxProperty()
 		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
 	}
 	
-	nParams = pAxProp->NumParams;
+	nParams = pAxProp->rArgs.size();
 	
 	VariantList argList;
 	
@@ -1662,7 +1658,7 @@ int GetAxProperty()
 	while (ListData != NULL)
 	{
 		COleVariant Var;
-		if (GetAxPropertyArgument(ListData, sSetProperty, &Var, pAxProp->CallingArgs[nArgCount]))
+		if (GetAxPropertyArgument(ListData, sSetProperty, &Var, pAxProp->rArgs[nArgCount].vt))
 		{
 			argList.m_Variant[nArgCount] = Var;
 			nArgCount++;			

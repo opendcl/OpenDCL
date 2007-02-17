@@ -7,12 +7,19 @@ struct AxPropertyEnum
 	VARIANT Var;
 };
 
+struct AxPropertyArg
+{
+	VARTYPE vt;
+	CString name;
+	CLSID clsid;
+	AxPropertyArg() : vt( VT_EMPTY ) {}
+};
+
 
 // Struct for holding information about ActiveX properties so we do not
 // have to keep goint back to typeinfo
 class AxPropertyDescriptor : public CObject
 {
-	static const int MAX_CALLING_ARGUMENTS = 16;
 public:
 	DISPID Id;
 	CString Name;
@@ -21,14 +28,9 @@ public:
 	BOOL IsArray;
 	BOOL CanSet;
 	GUID Guid;
-	int NumEnum;
-	int NumParams;
 	INVOKEKIND invKind;
-	AxPropertyEnum* ArrEnum;
-	
-	VARTYPE CallingArgs[MAX_CALLING_ARGUMENTS];
-	CString CallingArgNames[MAX_CALLING_ARGUMENTS+1];
-	CLSID   CallingArgClsids[MAX_CALLING_ARGUMENTS];
+	std::vector< AxPropertyEnum > rEnum;
+	std::vector< AxPropertyArg > rArgs;
 
 public:
 	AxPropertyDescriptor(void);

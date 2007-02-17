@@ -100,7 +100,6 @@ public:
 	CPropertyList& GetPropertyList() { return mProperties; }
 	//CDclControlObject(CDclControlObject const & other);
 	//virtual CDclControlObject operator=(CDclControlObject const & other);
-	POSITION FindPropertyInsertPos(CString sName, bool bHidden) const;
 	const CString& GetAxTypeName() const { return msAxTypeName; }
 	void SetAxTypeName( LPCTSTR pszAxTypeName ) { msAxTypeName = pszAxTypeName; }
 
@@ -110,8 +109,8 @@ public:
 	void ClearGlobalVariableName();
 	RefCountedPtr< CPropertyObject > GetPropertyObject(PropertyId nID) const;
 	RefCountedPtr< CPropertyObject > GetActiveXPropertyObject(CString sName) const;
-	RefCountedPtr< CPropertyObject > FindProperty(CString sName);
-	RefCountedPtr< CPropertyObject > GetMethods();
+	RefCountedPtr< CPropertyObject > FindProperty( LPCTSTR pszName ) const;
+	RefCountedPtr< CPropertyObject > GetMethods() const;
 	void RemoveProperty(PropertyId nId);
 	void ResetProperty(PropertyId nId);
 	size_t CountPropertyListItems(PropertyId nID);
@@ -120,7 +119,9 @@ public:
 	void SetImageListIndex(PropertyId nIndex);
 	//void Copy(CDclControlObject *other);
 	short FindPropertyIndex(PropertyId nID) const;
+	POSITION FindPropertyInsertPos( LPCTSTR pszName, bool bHidden ) const;
 	POSITION FindPropertyInsertPos(PropertyId nID, bool bHidden) const;
+	bool InsertNamedProperty( RefCountedPtr< CPropertyObject > pProp );
 
 	bool SetStringProperty( PropertyId nID, LPCTSTR pszValue );
 	RefCountedPtr< CPropertyObject > AddStringProperty( PropertyId nID,

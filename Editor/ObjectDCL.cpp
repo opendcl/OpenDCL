@@ -1166,38 +1166,23 @@ void CObjectDCLApp::OnUpdateToolsEventswritetolispfile(CCmdUI* pCmdUI)
 
 void CObjectDCLApp::OnToolsEventscopytoclipboard() 
 {
-	CWinApp* pApp = AfxGetApp();
-	CString sProfileName;
-	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
+	CString sSection = theWorkspace.LoadResourceString(IDR_MAINFRAME);
+	CString sName = theWorkspace.LoadResourceString(IDS_EventsCopyToClipboard);
+	BOOL bCurrentVal = AfxGetApp()->GetProfileInt(sSection, sName, TRUE);
+	AfxGetApp()->WriteProfileInt(sSection, sName, !bCurrentVal);
 
-	CString sText;
-		
-	sText = theWorkspace.LoadResourceString(IDS_EventPrefixUsesON);
-    BOOL bUsesOn = pApp->GetProfileInt(sProfileName, sText, TRUE);
-	sText = theWorkspace.LoadResourceString(IDS_EventsCopyToClipboard);
-	pApp->WriteProfileInt(sProfileName, sText, !bUsesOn);
-	sText = theWorkspace.LoadResourceString(IDS_EventsWriteToLispFile);
-    pApp->WriteProfileInt(sProfileName, sText, bUsesOn);
-
-	sText = theWorkspace.LoadResourceString(IDS_COPYTOCLIPBOARD);
+	CString sText = theWorkspace.LoadResourceString(IDS_COPYTOCLIPBOARD);
 	theEditorWorkspace.GetPropertyTabs()->m_EventsTabPane.m_AddToLisp.SetWindowText(sText);
 }
 
 void CObjectDCLApp::OnToolsEventswritetolispfile() 
 {
-	CWinApp* pApp = AfxGetApp();
-	CString sProfileName;
-	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
-	CString sText;
-		
-	sText = theWorkspace.LoadResourceString(IDS_EventsWriteToLispFile);    
-    BOOL bUsesOn = pApp->GetProfileInt(sProfileName, sText, TRUE);
-	pApp->WriteProfileInt(sProfileName, sText, !bUsesOn);
-	sText = theWorkspace.LoadResourceString(IDS_EventsCopyToClipboard);
-	pApp->WriteProfileInt(sProfileName, sText, bUsesOn);
+	CString sSection = theWorkspace.LoadResourceString(IDR_MAINFRAME);
+	CString sName = theWorkspace.LoadResourceString(IDS_EventsWriteToLispFile);
+	BOOL bCurrentVal = AfxGetApp()->GetProfileInt(sSection, sName, TRUE);
+	AfxGetApp()->WriteProfileInt(sSection, sName, !bCurrentVal);
     
-	sText = theWorkspace.LoadResourceString(IDS_ADDTOSTRING);
+	CString sText = theWorkspace.LoadResourceString(IDS_ADDTOSTRING);
 	theEditorWorkspace.GetPropertyTabs()->m_EventsTabPane.m_AddToLisp.SetWindowText(sText);	
 }
 

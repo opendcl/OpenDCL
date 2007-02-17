@@ -38,8 +38,12 @@ IOStatus AxInterfaceDescriptor::ReadPropFromTextFile5(std::ifstream &sFile, AxPr
   if (!readBOOL(sFile, axProp.CanSet)) return statInvalidFormat;
 
   if (!readCLSID(sFile, axProp.Guid)) return statInvalidFormat;
-  if (!readInt(sFile, axProp.NumEnum)) return statInvalidFormat;
-  if (!readInt(sFile, axProp.NumParams)) return statInvalidFormat;
+	int ctEnum;
+  if (!readInt(sFile, ctEnum)) return statInvalidFormat;
+	axProp.rEnum.resize( ctEnum );
+	int ctParams;
+  if (!readInt(sFile, ctParams)) return statInvalidFormat;
+	axProp.rArgs.resize( ctParams );
   int iKind;
   if (!readInt(sFile, iKind)) return statInvalidFormat;
   switch(iKind)
@@ -60,22 +64,18 @@ IOStatus AxInterfaceDescriptor::ReadPropFromTextFile5(std::ifstream &sFile, AxPr
     axProp.invKind = (INVOKEKIND)iKind;
     break;
   }
-  if (axProp.NumEnum > 0)
+  for (size_t i=0; i<axProp.rEnum.size(); i++)
   {
-    axProp.ArrEnum = new AxPropertyEnum[axProp.NumEnum];
-    for (int i=0; i<axProp.NumEnum; i++)
-    {
-      if (!readString(sFile, axProp.ArrEnum[i].Name)) return statInvalidFormat;
-      COleVariant var;
-      if (!readOleVariant(sFile, var)) return statInvalidFormat;
-      axProp.ArrEnum[i].Var = var;
-    }
+    if (!readString(sFile, axProp.rEnum[i].Name)) return statInvalidFormat;
+    COleVariant var;
+    if (!readOleVariant(sFile, var)) return statInvalidFormat;
+    axProp.rEnum[i].Var = var;
   }
-  for (int i = 0; i<axProp.NumParams; i++)
+  for (size_t i = 0; i<axProp.rArgs.size(); i++)
   {
-    if (!readVARTYPE(sFile, axProp.CallingArgs[i])) return statInvalidFormat;
-    if (!readString(sFile, axProp.CallingArgNames[i])) return statInvalidFormat;
-    if (!readCLSID(sFile, axProp.CallingArgClsids[i])) return statInvalidFormat;
+    if (!readVARTYPE(sFile, axProp.rArgs[i].vt)) return statInvalidFormat;
+    if (!readString(sFile, axProp.rArgs[i].name)) return statInvalidFormat;
+		if (!readCLSID(sFile, axProp.rArgs[i].clsid)) return statInvalidFormat;
   }
 
   return statOK;
@@ -176,7 +176,6 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
 
 IOStatus AxInterfaceDescriptor::WritePropToTextFile(FILE* pFile, const AxPropertyDescriptor& axProp) const
 {
-  int i=0;
   LONG Id = (LONG)axProp.Id;
   writeLong(pFile, Id);
   writeString(pFile, axProp.Name);
@@ -185,24 +184,21 @@ IOStatus AxInterfaceDescriptor::WritePropToTextFile(FILE* pFile, const AxPropert
   writeBOOL(pFile, axProp.IsArray);
   writeBOOL(pFile, axProp.CanSet);
   writeCLSID(pFile, axProp.Guid);
-  writeInt(pFile, axProp.NumEnum);
-  writeInt(pFile, axProp.NumParams);
+  writeInt(pFile, axProp.rEnum.size());
+  writeInt(pFile, axProp.rArgs.size());
   int iKind = axProp.invKind;
   writeInt(pFile, iKind);
-  if (axProp.NumEnum > 0)
+  for (size_t i=0; i<axProp.rEnum.size(); i++)
   {
-    for (i=0; i<axProp.NumEnum; i++)
-    {
-      writeString(pFile, axProp.ArrEnum[i].Name);
-      COleVariant var = axProp.ArrEnum[i].Var;
-      writeOleVariant(pFile, var);
-    }
-  }		
-  for (i = 0; i<axProp.NumParams; i++)
+    writeString(pFile, axProp.rEnum[i].Name);
+    COleVariant var = axProp.rEnum[i].Var;
+    writeOleVariant(pFile, var);
+  }
+  for (size_t i = 0; i<axProp.rArgs.size(); i++)
   {
-    writeVARTYPE(pFile, axProp.CallingArgs[i]);
-    writeString(pFile, axProp.CallingArgNames[i]);
-    writeCLSID(pFile, axProp.CallingArgClsids[i]);
+    writeVARTYPE(pFile, axProp.rArgs[i].vt);
+		writeString(pFile, axProp.rArgs[i].name);
+		writeCLSID(pFile, axProp.rArgs[i].clsid);
   }
 	return statOK;
 }
@@ -269,7 +265,6 @@ IOStatus AxInterfaceDescriptor::WriteToTextFile(FILE* pFile) const
 
 void AxInterfaceDescriptor::SerializeProp(CArchive& ar, AxPropertyDescriptor& axProp, int nPropertyVersion)
 {
-	int i=0;
 	if (ar.IsStoring())
 	{
 		LONG Id = (LONG)axProp.Id;
@@ -280,24 +275,21 @@ void AxInterfaceDescriptor::SerializeProp(CArchive& ar, AxPropertyDescriptor& ax
 		ar << axProp.IsArray;
 		ar << axProp.CanSet;
 		SerializeCLSID(ar, axProp.Guid);
-		ar << axProp.NumEnum;
-		ar << axProp.NumParams;
+		ar << axProp.rEnum.size();
+		ar << axProp.rArgs.size();
 		int iKind = axProp.invKind;
 		ar << iKind;
-		if (axProp.NumEnum > 0)
+		for (size_t i=0; i<axProp.rEnum.size(); i++)
 		{
-			for (i=0; i<axProp.NumEnum; i++)
-			{
-				ar << axProp.ArrEnum[i].Name;
-				COleVariant var = axProp.ArrEnum[i].Var;
-				ar << var;
-			}
-		}		
-		for (i = 0; i<axProp.NumParams; i++)
+			ar << axProp.rEnum[i].Name;
+			COleVariant var = axProp.rEnum[i].Var;
+			ar << var;
+		}
+		for (size_t i = 0; i<axProp.rArgs.size(); i++)
 		{
-			ar << axProp.CallingArgs[i];
-			ar << axProp.CallingArgNames[i];
-			SerializeCLSID(ar, axProp.CallingArgClsids[i]);
+			ar << axProp.rArgs[i].vt;
+			ar << axProp.rArgs[i].name;
+			SerializeCLSID(ar, axProp.rArgs[i].clsid);
 		}
 	}
 	else
@@ -312,9 +304,13 @@ void AxInterfaceDescriptor::SerializeProp(CArchive& ar, AxPropertyDescriptor& ax
 		ar >> axProp.IsArray;
 		ar >> axProp.CanSet;
 		
-		SerializeCLSID(ar, axProp.Guid);		
-		ar >> axProp.NumEnum;
-		ar >> axProp.NumParams;
+		SerializeCLSID(ar, axProp.Guid);
+		size_t ctEnum;
+		ar >> ctEnum;
+		axProp.rEnum.resize( ctEnum );
+		size_t ctParams;
+		ar >> ctParams;
+		axProp.rArgs.resize( ctParams );
 		int iKind;
 		ar >> iKind;
 		switch(iKind)
@@ -335,23 +331,19 @@ void AxInterfaceDescriptor::SerializeProp(CArchive& ar, AxPropertyDescriptor& ax
 				axProp.invKind = (INVOKEKIND)iKind;
 				break;
 		}
-		if (axProp.NumEnum > 0)
+		for (size_t i=0; i<ctEnum; i++)
 		{
-			axProp.ArrEnum = new AxPropertyEnum[axProp.NumEnum];
-			for (i=0; i<axProp.NumEnum; i++)
-			{
-				ar >> axProp.ArrEnum[i].Name;
-				COleVariant var;
-				ar >> var; 
-        axProp.ArrEnum[i].Var = var;
-			}
+			ar >> axProp.rEnum[i].Name;
+			COleVariant var;
+			ar >> var; 
+      axProp.rEnum[i].Var = var;
 		}
-		for (i = 0; i<axProp.NumParams; i++)
+		for (size_t i = 0; i<ctParams; i++)
 		{
-			ar >> axProp.CallingArgs[i];
-			ar >> axProp.CallingArgNames[i];
+			ar >> axProp.rArgs[i].vt;
+			ar >> axProp.rArgs[i].name;
 			if (nPropertyVersion >= 4)
-				SerializeCLSID(ar, axProp.CallingArgClsids[i]);
+				SerializeCLSID(ar, axProp.rArgs[i].clsid);
 		}
 	}
 
@@ -504,7 +496,7 @@ CString AxInterfaceDescriptor::GetActiveXEnumDesc(CString sValue)
 	
 	if (mpPropGet != NULL)
 	{
-		if (mpPropGet->NumEnum > 0)
+		if (!mpPropGet->rEnum.empty())
 		{
 			bFoundEnum = true;
 			pPropDesc = mpPropGet;
@@ -512,7 +504,7 @@ CString AxInterfaceDescriptor::GetActiveXEnumDesc(CString sValue)
 	}
 	else if (mpProp != NULL)
 	{
-		if (mpProp->NumEnum > 0)
+		if (!mpProp->rEnum.empty())
 		{
 			bFoundEnum = true;
 			pPropDesc = mpProp;			
@@ -520,7 +512,7 @@ CString AxInterfaceDescriptor::GetActiveXEnumDesc(CString sValue)
 	}
 	else if (mpPropPut != NULL)
 	{
-		if (mpPropPut->NumEnum > 0)
+		if (!mpPropPut->rEnum.empty())
 		{
 			bFoundEnum = true;
 			pPropDesc = mpPropPut;
@@ -536,10 +528,10 @@ CString AxInterfaceDescriptor::GetActiveXEnumDesc(CString sValue)
 
 	if (bFoundEnum)
 	{
-		for (int i = 0; i<pPropDesc->NumEnum; i++)
+		for (size_t i = 0; i<pPropDesc->rEnum.size(); i++)
 		{
-			if (VariantToString(pPropDesc->ArrEnum[i].Var) == sValue)				
-				return sValue + _T('-') + pPropDesc->ArrEnum[i].Name;		
+			if (VariantToString(pPropDesc->rEnum[i].Var) == sValue)				
+				return sValue + _T('-') + pPropDesc->rEnum[i].Name;		
 		}
 	}
 	return CString();
@@ -551,19 +543,19 @@ bool AxInterfaceDescriptor::GetActiveXEnum()
 	if (mpPropGet != NULL)
 	{
 		pPropDesc = mpPropGet;
-		if (pPropDesc->NumEnum > 0)
+		if (!pPropDesc->rEnum.empty())
 			return true;
 	}
 	else if (mpProp != NULL)
 	{
 		pPropDesc = mpProp;
-		if (pPropDesc->NumEnum > 0)
+		if (!pPropDesc->rEnum.empty())
 			return true;
 	}
 	else if (mpPropPut != NULL)
 	{
 		pPropDesc = mpPropPut;
-		if (pPropDesc->NumEnum > 0)
+		if (!pPropDesc->rEnum.empty())
 			return true;
 	}
 	return false;
@@ -587,7 +579,7 @@ CString AxInterfaceDescriptor::GetActiveXEnumValue(int nEnumIndex)
 	if (mpProp == NULL)
 		return CString();
 
-	return VariantToString(mpProp->ArrEnum[nEnumIndex].Var);
+	return VariantToString(mpProp->rEnum[nEnumIndex].Var);
 }
 
 CString AxInterfaceDescriptor::GetActiveXPropery(CAxContainer *axContainer)
@@ -645,13 +637,13 @@ int AxInterfaceDescriptor::GetActiveXParamQty()
 	int nQtyPut = 0;
 	if (mpPropGet != NULL)
 	{
-		nQtyGet = mpPropGet->NumParams;
+		nQtyGet = mpPropGet->rArgs.size();
 		if (nQtyGet > 0)
 			return nQtyGet;
 	}
 	if (mpProp != NULL)
 	{
-		nQty = mpProp->NumParams;
+		nQty = mpProp->rArgs.size();
 		if (mpProp->invKind == INVOKE_PROPERTYGET && nQty > 0)
 		{
 			//mType = PropActiveXRunTime;
@@ -660,7 +652,7 @@ int AxInterfaceDescriptor::GetActiveXParamQty()
 	}
 	if (mpPropPut != NULL)
 	{
-		nQtyPut = mpPropPut->NumParams;
+		nQtyPut = mpPropPut->rArgs.size();
 	}
 
 	if (nQtyGet > nQty && nQtyGet > nQtyPut)

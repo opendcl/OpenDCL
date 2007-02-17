@@ -456,9 +456,9 @@ CString CProject::GetOleObjectName(const AxPropertyDescriptor *pProperty)
     {
       if (pObject->m_clsid == pProperty->Guid)
 				return pObject->GetAxTypeName();
-      for (int i=0; i<MAX_CALLING_ARGUMENTS; i++)
+      for (int i = pProperty->rArgs.size() - 1; i >= 0 ; --i)
       {
-        if (pObject->m_clsid == pProperty->CallingArgClsids[i])
+				if (pObject->m_clsid == pProperty->rArgs[i].clsid)
           return pObject->GetAxTypeName();
       }	
     }
@@ -506,9 +506,9 @@ RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxPropertyDescri
     {
       if (pObject->m_clsid == pProperty->Guid)
         return pObject;
-      for (int i=0; i<MAX_CALLING_ARGUMENTS; i++)
-      {
-        if (pObject->m_clsid == pProperty->CallingArgClsids[i])
+      for (int i = pProperty->rArgs.size() - 1; i >= 0; --i)
+			{
+				if (pObject->m_clsid == pProperty->rArgs[i].clsid)
           return pObject;
       }	
     }

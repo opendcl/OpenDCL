@@ -15,10 +15,11 @@ class CPropertyObject;
 //[DPR] Recreated helper struct and function
 struct VariantList
 {
-	COleVariant m_Variant[16];
+	COleVariant m_Variant[256];
 };
 void InvokeAxHelperV(IDispatch *pDispatch, AxPropertyDescriptor *axProp, WORD wFlags,VARTYPE vtRet, COleVariant *pvRet, AxPropertyDescriptor * pbParamInfo, VariantList *argList, int nParams);
 void DoAxMethod(IDispatch *pDispatch, AxMethodDescriptor *axMethod, VariantList *argList, COleVariant *pVarReturn);
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CAxContainer window
@@ -29,10 +30,10 @@ protected:
 	CDclFormObject* mpParent;
 	CDclControlObject* mpOleControl;
 	CPPToolTip mToolTip;
+	CComPtr< ITypeLib > mpTypeLib;
+	UINT mnTypeLibCount;
 
 // Attributes
-	ITypeLib *m_pTypeLib;
-	UINT m_nTypeLibCount;
 	BOOL m_bInvokeWithSendString;
 
 	// this container is used to store COleDispatchDriver's
@@ -70,7 +71,7 @@ public:
 	IDispatch *GetOleIDispatch();
 	IOleObject *GetIOleObject();
 	UINT ExtractPropertyInfo(CDclControlObject *pControl, LPOLEOBJECT pIObject, BOOL bEnumList = FALSE);
-	UINT ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *TheInfo, BOOL bEnumList, LPOLEOBJECT pIObject = NULL);
+	UINT ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo* pTI, BOOL bEnumList, LPOLEOBJECT pIObject = NULL);
 	UINT ExtractEventInfo(CDclControlObject *pControl, LPOLEOBJECT pIObject, BOOL bUseAsType);
 	UINT ExtractEventInfo(CDclControlObject *pControl, ITypeInfo *TheInfo, BOOL bUseAsType);
 	UINT ExtractMethodInfo(CDclControlObject *pControl, LPOLEOBJECT pIObject);
@@ -105,6 +106,7 @@ public:
 	void CAxContainer::InvokeHelperV(AxPropertyDescriptor *axProp, WORD wFlags,
 		VARTYPE vtRet, COleVariant* pvRet, AxPropertyDescriptor * pbParamInfo, VariantList *argList, int nParams);
 	void DoMethod(AxMethodDescriptor *axMethod, VariantList *argList, COleVariant *pVarReturn);
+
 // Overrides
 	public:
 

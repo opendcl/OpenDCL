@@ -13,6 +13,7 @@
 #include "ControlName.h"
 #include "Project.h"
 #include "EditorWorkspace.h"
+#include "PropertyNames.h"
 #include "PropertyObject.h"
 #include "AxMethodDescriptor.h"
 #include "AxPropertyDescriptor.h"
@@ -981,26 +982,21 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 			else if (pProp->GetType() == PropEvent)
 			{
 				sTitle = theWorkspace.LoadResourceString(IDS_EVENTTITLE);
-				CString sEventArgs;
-				CString sEventName;
 
 				// load the event name
-				sEventName = theWorkspace.LoadResourceString(pProp->GetID() + nResPropNameStartVal);
+				CString sEventName = GetPropertyName(pProp->GetID());
 
 				// get the args and desc
+				CString sEventArgs;
 				LoadArgsNDesc(pProp->GetID(), m_pDclForm->GetType(), pControl->GetType(), sEventArgs, sDesc, pControl);
 				
 				sDefun1 = theWorkspace.LoadResourceString(IDS_PAR);
 				if (!pProp->GetStringValue().IsEmpty())
 				{
 					if (!sEventArgs.IsEmpty())
-					{
 						sDefun1 += pProp->GetStringValue() + theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_BRACKETOPEN) + sEventArgs + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET3);						
-					}
 					else
-					{
 						sDefun1 += pProp->GetStringValue() + theWorkspace.LoadResourceString(IDS_DOUBLEBRACKET);						
-					}
 
 					sDefun1 += theWorkspace.LoadResourceString(IDS_PAR);
 				}
@@ -1135,13 +1131,13 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 						m_sClipBoardDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_NEWVAL);
 					}
 					// if the set property does not have arguments
-					else if (pAxPropPut->NumParams == 0)
+					else if (!pAxPropPut->rArgs.empty())
 					{
 						sDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_NEWVAL2);				
 						m_sClipBoardDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_NEWVAL);				
 					}
 					// if it does have argurguments then we must add them
-					else if (pAxPropPut->NumParams > 0)
+					else if (!pAxPropPut->rArgs.empty())
 					{
 						sDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_CF0B0);
 						m_sClipBoardDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE);
@@ -1149,15 +1145,15 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 						// lets add the arguments
 						if (pAxPropPut != NULL)
 						{
-							int nCount = pAxPropPut->NumParams;
-							for (int i=0; i<nCount; i++)
+							size_t nCount = pAxPropPut->rArgs.size();
+							for (size_t i=0; i<nCount; i++)
 							{
-								CString sArg = pAxPropPut->CallingArgNames[i];
+								CString sArg = pAxPropPut->rArgs[i].name;
 								if (sArg.IsEmpty())
 									sArg = theWorkspace.LoadResourceString(IDS_NEWVAL3);
 								sDefun1 += theWorkspace.LoadResourceString(IDS_CF12) + sArg;
 								m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_SPACE) + sArg;
-								sArgType = GetTypeName(pAxPropPut->CallingArgs[i], NULL, pAxPropPut);
+								sArgType = GetTypeName(pAxPropPut->rArgs[i].vt, NULL, pAxPropPut);
 								if (sArgType == CString())
 								{
 									sArgType = theWorkspace.LoadResourceString(IDS_OPTIONALNILASB);
@@ -1211,17 +1207,17 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					}
 
 					// lets add the arguments
-					if (pAxPropGet != NULL && pAxPropGet->NumParams > 0)
+					if (pAxPropGet != NULL && !pAxPropGet->rArgs.empty())
 					{					
-						int nCount = pAxPropGet->NumParams;
-						for (int i=0; i<nCount; i++)
+						size_t nCount = pAxPropGet->rArgs.size();
+						for (size_t i=0; i<nCount; i++)
 						{
-							CString sArg = pAxPropGet->CallingArgNames[i];
+							CString sArg = pAxPropGet->rArgs[i].name;
 							if (sArg.IsEmpty())
 								sArg = theWorkspace.LoadResourceString(IDS_NEWVAL3);
 							sDefun2 += theWorkspace.LoadResourceString(IDS_CF12) + sArg;
 							m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_SPACE) + sArg;
-							sArgType = GetTypeName(pAxPropGet->CallingArgs[i], NULL, pAxPropGet);
+							sArgType = GetTypeName(pAxPropGet->rArgs[i].vt, NULL, pAxPropGet);
 							if (sArgType == CString())
 							{
 								sArgType = theWorkspace.LoadResourceString(IDS_OPTIONALNILASB);

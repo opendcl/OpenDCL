@@ -18,9 +18,469 @@
 #include "PropertyIds.h"
 #include "SharedRes.h"
 #include "ToolTips.h"
+#include <comutil.h>
 
-static const int MAX_CALLING_ARGUMENTS = 16;
 
+static void InvokeAxHelperV(IDispatch *pDispatch, AxPropertyDescriptor *axProp, WORD wFlags,
+										 VARTYPE vtRet, COleVariant *pvRet, AxPropertyDescriptor * pbParamInfo, VariantList *argList, int nParams)
+{
+	USES_CONVERSION;
+	DISPPARAMS dpParams;
+	memset(&dpParams, 0, sizeof dpParams);
+	dpParams.cArgs = nParams;
+
+	VARIANT* pArg = new VARIANT[nParams];
+	ASSERT(pArg != NULL);   // should have thrown exception
+	dpParams.rgvarg = pArg;
+	memset(pArg, 0, sizeof(VARIANT) * dpParams.cArgs);
+
+	pArg += dpParams.cArgs - 1;   // params go in opposite order
+
+	for (int i =0; i<nParams; i++)
+	{
+		ASSERT(pArg >= dpParams.rgvarg);
+		VARTYPE vt = axProp->rArgs[i].vt; // set the variant type
+		/*if (vt == 0)
+		{
+		vt = pbParamInfo->Type;
+		}
+		*/
+		pArg->vt = vt;
+		if (pArg->vt & VT_MFCBYREF)
+		{
+			pArg->vt &= ~VT_MFCBYREF;
+			pArg->vt |= VT_BYREF;
+		}
+		switch (pArg->vt)
+		{
+		case VT_UI1:
+			pArg->bVal = argList->m_Variant[i].bVal;
+			break;
+		case VT_I2:
+			pArg->iVal =  argList->m_Variant[i].iVal;
+			break;
+		case VT_I4:
+			pArg->lVal =  argList->m_Variant[i].lVal;
+			break;
+		case VT_R4:
+			pArg->fltVal =  argList->m_Variant[i].fltVal;
+			break;
+		case VT_R8:
+			pArg->dblVal =  argList->m_Variant[i].dblVal;
+			break;
+		case VT_DATE:
+			pArg->date =  argList->m_Variant[i].date;
+			break;
+		case VT_CY:
+			pArg->cyVal =  argList->m_Variant[i].cyVal;
+			break;
+		case VT_BSTR:
+			{
+				LPCOLESTR lpsz = argList->m_Variant[i].bstrVal;
+				pArg->bstrVal = ::SysAllocString(lpsz);
+				if (lpsz != NULL && pArg->bstrVal == NULL)
+					AfxThrowMemoryException();
+			}
+			break;
+#if !defined(_UNICODE) && !defined(OLE2ANSI)
+		case VT_BSTRA:
+			{
+				//LPCSTR lpsz =  argList->m_Variant[i].bstrVal;
+				pArg->bstrVal = argList->m_Variant[i].bstrVal;//::SysAllocString(T2COLE(lpsz));
+				if (pArg->bstrVal == NULL)
+					AfxThrowMemoryException();
+				pArg->vt = VT_BSTR;
+			}
+			break;
+#endif
+		case VT_DISPATCH:
+			pArg->pdispVal =  argList->m_Variant[i].pdispVal;
+			break;
+		case VT_ERROR:
+			pArg->scode =  argList->m_Variant[i].scode;
+			break;
+		case VT_BOOL:
+			pArg->boolVal = argList->m_Variant[i].boolVal;
+			break;
+		case VT_VARIANT:
+			*pArg = argList->m_Variant[i];
+			break;
+		case VT_UNKNOWN:
+			pArg->punkVal = argList->m_Variant[i].punkVal;
+			break;
+
+		case VT_I2|VT_BYREF:
+			pArg->piVal = argList->m_Variant[i].piVal;
+			break;
+		case VT_UI1|VT_BYREF:
+			pArg->pbVal = argList->m_Variant[i].pbVal;
+			break;
+		case VT_I4|VT_BYREF:
+			pArg->plVal = argList->m_Variant[i].plVal;
+			break;
+		case VT_R4|VT_BYREF:
+			pArg->pfltVal = argList->m_Variant[i].pfltVal;
+			break;
+		case VT_R8|VT_BYREF:
+			pArg->pdblVal = argList->m_Variant[i].pdblVal;
+			break;
+		case VT_DATE|VT_BYREF:
+			pArg->pdate = argList->m_Variant[i].pdate;
+			break;
+		case VT_CY|VT_BYREF:
+			pArg->pcyVal = argList->m_Variant[i].pcyVal;
+			break;
+		case VT_BSTR|VT_BYREF:
+			pArg->pbstrVal = argList->m_Variant[i].pbstrVal;
+			break;
+		case VT_DISPATCH|VT_BYREF:
+			pArg->ppdispVal = argList->m_Variant[i].ppdispVal;
+			break;
+		case VT_ERROR|VT_BYREF:
+			pArg->pscode = argList->m_Variant[i].pscode;
+			break;
+		case VT_BOOL|VT_BYREF:
+			{
+				// coerce BOOL into VARIANT_BOOL
+				//BOOL* pboolVal = va_arg(argList, BOOL*);
+				//*pboolVal = *pboolVal ? MAKELONG(-1, 0) : 0;
+				pArg->pboolVal = argList->m_Variant[i].pboolVal;
+			}
+			break;
+		case VT_VARIANT|VT_BYREF:
+			pArg->pvarVal = argList->m_Variant[i].pvarVal;
+			break;
+		case VT_UNKNOWN|VT_BYREF:
+			pArg->ppunkVal = argList->m_Variant[i].ppunkVal;
+			break;
+
+		default:
+			ASSERT(FALSE);  // unknown type!
+			break;
+		}
+		--pArg; // get ready to fill next argument
+	}
+	//
+	DISPID dispidPropset = DISPID_PROPERTYPUT;
+	if( wFlags == INVOKE_PROPERTYPUT || wFlags == DISPATCH_PROPERTYPUT)//axProp->invKind == INVOKE_PROPERTYPUT || axProp->invKind == INVOKE_PROPERTYPUTREF)
+	{
+		dpParams.rgdispidNamedArgs = &dispidPropset;
+		dpParams.cNamedArgs = 1;//nParams;
+	}
+	else if( wFlags == INVOKE_PROPERTYGET)
+	{
+		//dpParams.rgdispidNamedArgs = NULL;
+		dpParams.cNamedArgs = 0;
+	}
+	else 
+	{
+		dpParams.rgdispidNamedArgs = NULL;
+		dpParams.cNamedArgs = 0;
+	}
+
+	TRY
+	{
+		COleVariant varResult;
+		varResult.Clear();
+		if (pvRet == NULL)
+			pvRet = &varResult;
+		else
+			pvRet->Clear();
+
+		// initialize EXCEPINFO struct
+		EXCEPINFO excepInfo;
+		memset(&excepInfo, 0, sizeof excepInfo);
+
+		UINT nArgErr = (UINT)-1;  // initialize to invalid arg
+
+		SCODE sc;
+
+		try
+		{
+			sc = pDispatch->Invoke(axProp->Id, IID_NULL, 0, wFlags,
+				&dpParams, pvRet, &excepInfo, &nArgErr);
+		}
+		catch(...)
+		{
+			// cleanup any arguments that need cleanup
+			if (dpParams.cArgs != 0)
+			{
+				VARIANT* pArg = dpParams.rgvarg + dpParams.cArgs - 1;
+				for (int i =0; i<nParams; i++)
+				{
+					switch (axProp->rArgs[i].vt)
+					{
+#if !defined(_UNICODE) && !defined(OLE2ANSI)
+					case VT_BSTRA:
+#endif
+					case VT_BSTR:
+						VariantClear(pArg);
+						break;
+					}
+					--pArg;
+				}
+			}
+			delete[] dpParams.rgvarg;	
+			return;
+		}
+
+		//HRESULT hResult = pDispatch->Invoke(axProp->Id, GUID_NULL, LOCALE_USER_DEFAULT, 
+		//	wFlags, &dpParams, pvRet, &excepInfo, &nArgErr);
+
+
+		if (FAILED(sc))
+		{
+			theWorkspace.DisplayAlert(CString(_T("The ActiveX get property \"") + axProp->Name + _T("\" failed.")));
+			if (sc != DISP_E_EXCEPTION)
+			{
+				// non-exception error code
+				AfxThrowOleException(sc);
+			}
+
+			// make sure excepInfo is filled in
+			if (excepInfo.pfnDeferredFillIn != NULL)
+				excepInfo.pfnDeferredFillIn(&excepInfo);
+
+			// allocate new exception, and fill it
+			COleDispatchException* pException =
+				new COleDispatchException(NULL, 0, excepInfo.wCode);
+			ASSERT(pException->m_wCode == excepInfo.wCode);
+			if (excepInfo.bstrSource != NULL)
+			{
+				pException->m_strSource = excepInfo.bstrSource;
+				SysFreeString(excepInfo.bstrSource);
+			}
+			if (excepInfo.bstrDescription != NULL)
+			{
+				pException->m_strDescription = excepInfo.bstrDescription;
+				SysFreeString(excepInfo.bstrDescription);
+			}
+			if (excepInfo.bstrHelpFile != NULL)
+			{
+				pException->m_strHelpFile = excepInfo.bstrHelpFile;
+				SysFreeString(excepInfo.bstrHelpFile);
+			}
+			pException->m_dwHelpContext = excepInfo.dwHelpContext;
+			pException->m_scError = excepInfo.scode;
+		}				
+	}
+	CATCH( COleException, e )
+	{
+	}
+	END_CATCH
+
+		// cleanup any arguments that need cleanup
+		if (dpParams.cArgs != 0)
+		{
+			VARIANT* pArg = dpParams.rgvarg + dpParams.cArgs - 1;
+			for (int i =0; i<nParams; i++)
+			{
+				switch (axProp->rArgs[i].vt)
+				{
+#if !defined(_UNICODE) && !defined(OLE2ANSI)
+			case VT_BSTRA:
+#endif
+			case VT_BSTR:
+				VariantClear(pArg);
+				break;
+				}
+				--pArg;
+			}
+		}
+		delete[] dpParams.rgvarg;	
+}
+
+static void DoAxMethod(IDispatch *pDispatch, AxMethodDescriptor *axMethod, VariantList *argList, COleVariant *pVarReturn)
+{
+	USES_CONVERSION;
+	DISPPARAMS dpParams;
+	memset(&dpParams, 0, sizeof dpParams);
+
+	dpParams.cArgs = axMethod->nParamQty;
+
+	if (axMethod->nParamQty >0)
+	{
+		VARIANT* pArg = new VARIANT[axMethod->nParamQty];
+		ASSERT(pArg != NULL);   // should have thrown exception
+		dpParams.rgvarg = pArg;
+		memset(pArg, 0, sizeof(VARIANT) * dpParams.cArgs);
+
+		pArg += dpParams.cArgs - 1;   // params go in opposite order
+
+		for (int i =0; i<axMethod->nParamQty; i++)
+		{
+			ASSERT(pArg >= dpParams.rgvarg);
+			VARTYPE vt = axMethod->CallingArgs[i]; // set the variant type
+			pArg->vt = vt;
+			if (pArg->vt & VT_MFCBYREF)
+			{
+				pArg->vt &= ~VT_MFCBYREF;
+				pArg->vt |= VT_BYREF;
+			}
+			switch (pArg->vt)
+			{
+			case VT_UI1:
+				pArg->bVal = argList->m_Variant[i].bVal;
+				break;
+			case VT_I2:
+				pArg->iVal =  argList->m_Variant[i].iVal;
+				break;
+			case VT_I4:
+				pArg->lVal =  argList->m_Variant[i].lVal;
+				break;
+			case VT_R4:
+				pArg->fltVal =  argList->m_Variant[i].fltVal;
+				break;
+			case VT_R8:
+				pArg->dblVal =  argList->m_Variant[i].dblVal;
+				break;
+			case VT_DATE:
+				pArg->date =  argList->m_Variant[i].date;
+				break;
+			case VT_CY:
+				pArg->cyVal =  argList->m_Variant[i].cyVal;
+				break;
+			case VT_BSTR:
+				{
+					LPCOLESTR lpsz = argList->m_Variant[i].bstrVal;
+					pArg->bstrVal = ::SysAllocString(lpsz);
+					if (lpsz != NULL && pArg->bstrVal == NULL)
+						AfxThrowMemoryException();
+				}
+				break;
+#if !defined(_UNICODE) && !defined(OLE2ANSI)
+			case VT_BSTRA:
+				{
+					//LPCSTR lpsz =  argList->m_Variant[i].bstrVal;
+					pArg->bstrVal = argList->m_Variant[i].bstrVal;//::SysAllocString(T2COLE(lpsz));
+					if (pArg->bstrVal == NULL)
+						AfxThrowMemoryException();
+					pArg->vt = VT_BSTR;
+				}
+				break;
+#endif
+			case VT_DISPATCH:
+				pArg->pdispVal =  argList->m_Variant[i].pdispVal;
+				break;
+			case VT_ERROR:
+				pArg->scode =  argList->m_Variant[i].scode;
+				break;
+			case VT_BOOL:
+				pArg->boolVal = argList->m_Variant[i].boolVal;
+				break;
+			case VT_VARIANT:
+				*pArg = argList->m_Variant[i];
+				break;
+			case VT_UNKNOWN:
+				pArg->punkVal = argList->m_Variant[i].punkVal;
+				break;
+
+			case VT_I2|VT_BYREF:
+				pArg->piVal = argList->m_Variant[i].piVal;
+				break;
+			case VT_UI1|VT_BYREF:
+				pArg->pbVal = argList->m_Variant[i].pbVal;
+				break;
+			case VT_I4|VT_BYREF:
+				pArg->plVal = argList->m_Variant[i].plVal;
+				break;
+			case VT_R4|VT_BYREF:
+				pArg->pfltVal = argList->m_Variant[i].pfltVal;
+				break;
+			case VT_R8|VT_BYREF:
+				pArg->pdblVal = argList->m_Variant[i].pdblVal;
+				break;
+			case VT_DATE|VT_BYREF:
+				pArg->pdate = argList->m_Variant[i].pdate;
+				break;
+			case VT_CY|VT_BYREF:
+				pArg->pcyVal = argList->m_Variant[i].pcyVal;
+				break;
+			case VT_BSTR|VT_BYREF:
+				pArg->pbstrVal = argList->m_Variant[i].pbstrVal;
+				break;
+			case VT_DISPATCH|VT_BYREF:
+				pArg->ppdispVal = argList->m_Variant[i].ppdispVal;
+				break;
+			case VT_ERROR|VT_BYREF:
+				pArg->pscode = argList->m_Variant[i].pscode;
+				break;
+			case VT_BOOL|VT_BYREF:
+				{
+					// coerce BOOL into VARIANT_BOOL
+					//BOOL* pboolVal = va_arg(argList, BOOL*);
+					//*pboolVal = *pboolVal ? MAKELONG(-1, 0) : 0;
+					pArg->pboolVal = argList->m_Variant[i].pboolVal;
+				}
+				break;
+			case VT_VARIANT|VT_BYREF:
+				pArg->pvarVal = argList->m_Variant[i].pvarVal;
+				break;
+			case VT_UNKNOWN|VT_BYREF:
+				pArg->ppunkVal = argList->m_Variant[i].ppunkVal;
+				break;
+
+			default:
+				ASSERT(FALSE);  // unknown type!
+				break;
+			}
+			--pArg; // get ready to fill next argument
+		}
+	}
+
+	TRY
+	{
+		// initialize return value
+		VARIANT* pvarResult = NULL;
+		VARIANT vaResult;
+		AfxVariantInit(&vaResult);
+		if (pVarReturn != NULL)
+			pvarResult = &vaResult;
+
+		// initialize EXCEPINFO struct
+		EXCEPINFO excepInfo;
+		memset(&excepInfo, 0, sizeof excepInfo);
+
+		UINT nArgErr = (UINT)-1;  // initialize to invalid arg
+
+		// make the call
+		HRESULT hResult = pDispatch->Invoke(axMethod->Id, IID_NULL, 0, DISPATCH_METHOD,
+			&dpParams, pvarResult, &excepInfo, &nArgErr);
+
+		if (pVarReturn != NULL)
+			pVarReturn->Attach(vaResult);
+
+		if( FAILED( hResult ) )
+		{	   
+			theWorkspace.DisplayAlert(CString (_T("The ActiveX method \"") + axMethod->Name + _T("\" failed.")));
+		}
+
+	}
+	CATCH( COleException, e )
+	{
+	}
+	END_CATCH
+
+		// cleanup any arguments that need cleanup
+		if (dpParams.cArgs != 0)
+		{
+			VARIANT* pArg = dpParams.rgvarg + dpParams.cArgs - 1;
+			for (int i =0; i<axMethod->nParamQty; i++)
+			{
+				switch ((VARTYPE)axMethod->CallingArgs[i])
+				{
+#if !defined(_UNICODE) && !defined(OLE2ANSI)
+			case VT_BSTRA:
+#endif
+			case VT_BSTR:
+				VariantClear(pArg);
+				break;
+				}
+				--pArg;
+			}
+		}
+		delete[] dpParams.rgvarg;	
+}
 
 static CString BuildParam(VARTYPE vt, BOOL bUseAsType, BOOL bNotByVal,
 				   LPCTSTR szName, BOOL optional, LPVOID pFunc /*=NULL*/) 
@@ -100,10 +560,10 @@ static CString FuncDescToString(ITypeInfo *lpTypeInfo, FUNCDESC *pFuncDesc,
 	// Get the names of the function and it's parameters into rgbstrNames.
 	// cNames gets the number of parameters + 1.
 	//
-    BSTR rgbstrNames[MAX_CALLING_ARGUMENTS] ;
+    BSTR rgbstrNames[256] ;
     int cNames ;
 	HRESULT hr = lpTypeInfo->GetNames(pFuncDesc->memid,
-		rgbstrNames, MAX_CALLING_ARGUMENTS, (UINT FAR*) &cNames);
+		rgbstrNames, 256, (UINT FAR*) &cNames);
 	if (SUCCEEDED( hr ))
 	{
 	    // For each required parameter
@@ -213,8 +673,7 @@ void CAxContainer::GetRefGuid(AxPropertyDescriptor* pAProp, ITypeInfo* TheInfo, 
 				break;
 			case TKIND_ENUM: {
 					VARDESC *pVarDesc;
-					pAProp->NumEnum = pTA->cVars;
-					pAProp->ArrEnum = new AxPropertyEnum[pTA->cVars];
+					pAProp->rEnum.resize( pTA->cVars );
 					for (int i = 0; i < pTA->cVars; i++) { 
 						if(SUCCEEDED(TheRefType->GetVarDesc( i, &pVarDesc ))) {
 	   						BSTR  bstrName;
@@ -227,8 +686,8 @@ void CAxContainer::GetRefGuid(AxPropertyDescriptor* pAProp, ITypeInfo* TheInfo, 
 								if (i == 0) pAProp->Type = pVarDesc->lpvarValue->vt;
 #endif
 								// bstrName, pVarDesc->lpvarValue;
-								pAProp->ArrEnum[i].Name = bstrName;
-								pAProp->ArrEnum[i].Var = *pVarDesc->lpvarValue;
+								pAProp->rEnum[i].Name = bstrName;
+								pAProp->rEnum[i].Var = *pVarDesc->lpvarValue;
 								//SysFreeString(bstrName);
 							}
 							TheRefType->ReleaseVarDesc(pVarDesc);
@@ -259,7 +718,6 @@ static void PerPropertyBrowsing(LPOLEOBJECT pIObject, AxPropertyDescriptor* pAPr
 	if (!SUCCEEDED(hr))
 		return; // not supported
 
-	int i;
 	CALPOLESTR pStr;
 	CADWORD cadword;
 	hr = pPpb->GetPredefinedStrings(pAProp->Id, &pStr, &cadword);
@@ -272,28 +730,26 @@ static void PerPropertyBrowsing(LPOLEOBJECT pIObject, AxPropertyDescriptor* pAPr
 		goto Cleanup;
 	}
 
-	pAProp->NumEnum = pStr.cElems;
-	pAProp->ArrEnum = new AxPropertyEnum[pAProp->NumEnum];
-	for (i = 0; i < pAProp->NumEnum; i++)
+	pAProp->rEnum.resize( pStr.cElems );
+	for (ULONG i = 0; i < pStr.cElems; i++)
 	{
 		VARIANT vt;
 		hr = pPpb->GetPredefinedValue(pAProp->Id, cadword.pElems[i], &vt); 
 		ASSERT(SUCCEEDED(hr));
 		
-		pAProp->ArrEnum[i].Name = pStr.pElems[i]; //buf;
-		pAProp->ArrEnum[i].Var = vt;
+		pAProp->rEnum[i].Name = pStr.pElems[i]; //buf;
+		pAProp->rEnum[i].Var = vt;
 	}
-
-	pAProp->NumEnum = - pAProp->NumEnum; // - => don't use 0 -, 1 -, etc.
 
 Cleanup:;
 	CoTaskMemFree((void *)cadword.pElems);
-	for (i=0; i < (int) pStr.cElems; i++) 
+	for (ULONG i=0; i < (int) pStr.cElems; i++) 
 		CoTaskMemFree((void *)pStr.pElems[i]);  
 	CoTaskMemFree((void *)pStr.pElems); 
 
 	pPpb->Release();
 }
+
 /*
  * ObjectTypeInfo
  *
@@ -310,33 +766,29 @@ Cleanup:;
  * Return Value:
  *  BOOL            TRUE if successful, FALSE otherwise.
  */
-
-static BOOL ObjectTypeInfo(LPUNKNOWN pObj, LPTYPEINFO *ppITypeInfo)
+static bool ObjectTypeInfo( LPUNKNOWN pObj, LPTYPEINFO* ppTypeInfo )
 {
-    HRESULT             hr;
-    LPPROVIDECLASSINFO  pIProvideClassInfo;
-    
-    if (NULL==pObj || NULL==ppITypeInfo)
-        return FALSE;
+	assert( pObj != NULL );
+	assert( ppTypeInfo != NULL );
+	if( !pObj || !ppTypeInfo )
+		return false;
 
-    *ppITypeInfo=NULL;
+	*ppTypeInfo=NULL;
 
-    /*
-     * Get the object's IProvideClassInfo and call the GetClassInfo
-     * method therein.  This will give us back the ITypeInfo for
-     * the entire object.
-     */
+	//Get the object's IProvideClassInfo and call the GetClassInfo
+	//method therein.  This will give us back the ITypeInfo for
+	//the entire object.
+	CComPtr< IProvideClassInfo > pProviderClassInfo;
+	HRESULT hr= pObj->QueryInterface( IID_IProvideClassInfo, reinterpret_cast< void** >(&pProviderClassInfo) );
+	assert( SUCCEEDED(hr) );
+	if( FAILED(hr) )
+		return false;
 
-    hr=pObj->QueryInterface(IID_IProvideClassInfo
-        , (LPVOID *)&pIProvideClassInfo);
-
-    if (FAILED(hr))
-		return FALSE;
-
-	hr=pIProvideClassInfo->GetClassInfo(ppITypeInfo);
-	pIProvideClassInfo->Release();
-
-    return SUCCEEDED(hr);
+	hr = pProviderClassInfo->GetClassInfo( ppTypeInfo );
+	assert( SUCCEEDED(hr) );
+	if( FAILED(hr) )
+		return false;
+	return true;
 }
 
 /*
@@ -356,156 +808,134 @@ static BOOL ObjectTypeInfo(LPUNKNOWN pObj, LPTYPEINFO *ppITypeInfo)
  *  BOOL            TRUE if the event type lib exists, FALSE
  *                  if not or on any other error.
  */
+static bool ObjectTypeInfoEvents( LPUNKNOWN pObj, LPTYPEINFO* ppInterfaceTypeInfo )
+{
+	assert( pObj != NULL );
+	assert( ppInterfaceTypeInfo != NULL );
+	if( !pObj || !ppInterfaceTypeInfo )
+		return false;
 
-static BOOL ObjectTypeInfoEvents(LPUNKNOWN pObj, LPTYPEINFO *ppITypeInfo)
-    {
-    HRESULT             hr;
-    LPTYPEINFO          pITypeInfoAll;
-    LPTYPEATTR          pTA;
+	*ppInterfaceTypeInfo = NULL;
 
-    if (NULL==pObj || NULL==
-		ppITypeInfo)
-        return FALSE;
+	CComPtr< ITypeInfo > pTypeInfo;
+	if( !ObjectTypeInfo( pObj, &pTypeInfo ) )
+		return false;
 
-    if (!ObjectTypeInfo(pObj, &pITypeInfoAll))
-        return FALSE;
+	//We have the object's overall ITypeInfo in pTypeInfo.
+	//Now get the type attributes which will tell us the number of
+	//individual interfaces in this type library.  We then loop
+	//through the "implementation types" for all those interfaces
+	//calling GetImplTypeFlags, looking for the default source.
 
-    /*
-     * We have the object's overall ITypeInfo in pITypeInfoAll.
-     * Now get the type attributes which will tell us the number of
-     * individual interfaces in this type library.  We then loop
-     * through the "implementation types" for all those interfaces
-     * calling GetImplTypeFlags, looking for the default source.
-     */
+	LPTYPEATTR pTypeAttr = NULL;
+	HRESULT hr = pTypeInfo->GetTypeAttr( &pTypeAttr );
+	assert( SUCCEEDED(hr) );
+	if( FAILED(hr) )
+		return false;
+	UINT ctImplTypes = pTypeAttr->cImplTypes;
+	pTypeInfo->ReleaseTypeAttr( pTypeAttr );
 
-    *ppITypeInfo=NULL;  //Use this to determine success
+	//enumerate the interfaces to find the default source interface
+	for( UINT idxImplType = 0; idxImplType < ctImplTypes; ++idxImplType )
+	{
+		INT fImplType = 0;
+		hr = pTypeInfo->GetImplTypeFlags( idxImplType, &fImplType );
+		assert( SUCCEEDED(hr) );
+		if( FAILED(hr) )
+			continue;
 
-    if (SUCCEEDED(pITypeInfoAll->GetTypeAttr(&pTA)))
-        {
-        UINT        i;
-        int         iFlags;
-
-        for (i=0; i < pTA->cImplTypes; i++)
-            {
-            //Get the implementation type for this interface
-            hr=pITypeInfoAll->GetImplTypeFlags(i, &iFlags);
-
-            if (FAILED(hr))
-                continue;
-
-            if ((iFlags & IMPLTYPEFLAG_FDEFAULT)
-                && (iFlags & IMPLTYPEFLAG_FSOURCE))
-                {
-                HREFTYPE    hRefType=NULL;
-
-                /*
-                 * This is the interface we want.  Get a handle to
-                 * the type description from which we can then get
-                 * the ITypeInfo.
-                 */
-                pITypeInfoAll->GetRefTypeOfImplType(i, &hRefType);
-                hr=pITypeInfoAll->GetRefTypeInfo(hRefType
-                    , ppITypeInfo);
-
-                break;
-                }
-            }
-
-        pITypeInfoAll->ReleaseTypeAttr(pTA);
-        }
-
-    pITypeInfoAll->Release();
-    return (NULL!=*ppITypeInfo);
-    }
+		if( (fImplType & IMPLTYPEFLAG_FDEFAULT) && (fImplType & IMPLTYPEFLAG_FSOURCE) )
+		{
+			//this is the interface we want
+			HREFTYPE hRefType = NULL;
+			hr = pTypeInfo->GetRefTypeOfImplType( idxImplType, &hRefType );
+			assert( SUCCEEDED(hr) );
+			if( FAILED(hr) )
+				continue;
+			hr = pTypeInfo->GetRefTypeInfo( hRefType, ppInterfaceTypeInfo );
+			assert( SUCCEEDED(hr) );
+			if( FAILED(hr) )
+				continue;
+			return true;
+		}
+	}
+	return false;
+}
 
 /*
  * ObjectTypeInfoProperties
  *
  * Purpose:
- *  Retrieves the type property information from an object.  This is
- *  defined to be the "default source" interface in the object's
- *  type library.
+ *  Retrieves the type property information from an object.
  *
  * Parameters:
  *  pObj            LPUNKNOWN of the object
- *  ppITypeInfo     LPTYPEINFO * in which to return the ITypeInfo
+ *  ppTypeInfo      LPTYPEINFO * in which to return the ITypeInfo
  *                  interface for the object's events.
  *
  * Return Value:
  *  BOOL            TRUE if the event type lib exists, FALSE
  *                  if not or on any other error.
  */
-
-static BOOL ObjectTypeInfoProperties(LPUNKNOWN pObj, LPTYPEINFO *ppITypeInfo)
+static bool ObjectTypeInfoProperties( LPUNKNOWN pObj, LPTYPEINFO* ppAxTypeInfo )
 {
-    HRESULT             hr;
-    LPTYPEINFO          pITypeInfoAll;
-    LPTYPEATTR          pTA;
+	assert( pObj != NULL );
+	assert( ppAxTypeInfo != NULL );
+	if( !pObj || !ppAxTypeInfo )
+		return false;
 
-    if (NULL==pObj || NULL==ppITypeInfo)
-        return FALSE;
+	*ppAxTypeInfo = NULL;
 
-    if (!ObjectTypeInfo(pObj, &pITypeInfoAll))
+	CComPtr< ITypeInfo > pTypeInfo;
+	if( !ObjectTypeInfo( pObj, &pTypeInfo ) )
 	{
-		// there is another way to obtain typeinfo
-		// (for simple CCmdTarget based objects)
-		LPDISPATCH pDispatch = NULL;
+		// there is another way to obtain typeinfo for objects that support IDispatch
+		CComPtr< IDispatch > pDispatch;
+		HRESULT hr = pObj->QueryInterface( IID_IDispatch, reinterpret_cast< void** >(&pDispatch) );
+		assert( SUCCEEDED(hr) );
+		if( FAILED(hr) )
+			return false;
 
-		if (FAILED(pObj->QueryInterface(IID_IDispatch, (LPVOID *)&pDispatch)))
-			return FALSE;
-
-		pDispatch->GetTypeInfo(0, ::GetUserDefaultLCID(), ppITypeInfo);
-
-		pDispatch->Release();
-		return (*ppITypeInfo != NULL);
+		hr = pDispatch->GetTypeInfo( 0, ::GetUserDefaultLCID(), ppAxTypeInfo );
+		assert( SUCCEEDED(hr) );
+		if( FAILED(hr) )
+			return false;
+		return true;
 	}
 
-    /*
-     * We have the object's overall ITypeInfo in pITypeInfoAll.
-     * Now get the type attributes which will tell us the number of
-     * individual interfaces in this type library.  We then loop
-     * through the "implementation types" for all those interfaces
-     * calling GetImplTypeFlags, looking for the default source.
-     */
+	LPTYPEATTR pTypeAttr = NULL;
+	HRESULT hr = pTypeInfo->GetTypeAttr( &pTypeAttr );
+	assert( SUCCEEDED(hr) );
+	if( FAILED(hr) )
+		return false;
+	UINT ctImplTypes = pTypeAttr->cImplTypes;
+	pTypeInfo->ReleaseTypeAttr( pTypeAttr );
 
-    *ppITypeInfo=NULL;  //Use this to determine success
+	//enumerate the interfaces to find the default source interface
+	for( UINT idxImplType = 0; idxImplType < ctImplTypes; ++idxImplType )
+	{
+		INT fImplType = 0;
+		hr = pTypeInfo->GetImplTypeFlags( idxImplType, &fImplType );
+		assert( SUCCEEDED(hr) );
+		if( FAILED(hr) )
+			continue;
 
-    if (SUCCEEDED(pITypeInfoAll->GetTypeAttr(&pTA)))
-        {
-        UINT        i;
-        int         iFlags;
-
-        for (i=0; i < pTA->cImplTypes; i++)
-            {
-            //Get the implementation type for this interface
-            hr=pITypeInfoAll->GetImplTypeFlags(i, &iFlags);
-
-            if (FAILED(hr))
-                continue;
-
-            if (!((iFlags & IMPLTYPEFLAG_FDEFAULT)
-                && (iFlags & IMPLTYPEFLAG_FSOURCE)))
-                {
-                HREFTYPE    hRefType=NULL;
-
-                /*
-                 * This is the interface we want.  Get a handle to
-                 * the type description from which we can then get
-                 * the ITypeInfo.
-                 */
-                pITypeInfoAll->GetRefTypeOfImplType(i, &hRefType);
-                hr=pITypeInfoAll->GetRefTypeInfo(hRefType
-                    , ppITypeInfo);
-
-                break;
-                }
-            }
-
-        pITypeInfoAll->ReleaseTypeAttr(pTA);
-        }
-
-    pITypeInfoAll->Release();
-    return (NULL!=*ppITypeInfo);
+		if( (fImplType & IMPLTYPEFLAG_FDEFAULT) && !(fImplType & IMPLTYPEFLAG_FSOURCE) )
+		{
+			//this is the interface we want
+			HREFTYPE hRefType = NULL;
+			hr = pTypeInfo->GetRefTypeOfImplType( idxImplType, &hRefType );
+			assert( SUCCEEDED(hr) );
+			if( FAILED(hr) )
+				continue;
+			hr = pTypeInfo->GetRefTypeInfo( hRefType, ppAxTypeInfo );
+			assert( SUCCEEDED(hr) );
+			if( FAILED(hr) )
+				continue;
+			return true;
+		}
+	}
+	return false;
 }
 
 UINT CAxContainer::ExtractEventInfo(CDclControlObject *pControl, LPOLEOBJECT pIObject, BOOL bUseAsType)
@@ -546,15 +976,15 @@ UINT CAxContainer::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo *TheI
 					axEventDesc->DocumentationDesc = bstrDesc;
 				}
 
-				BSTR pbstrNames[MAX_CALLING_ARGUMENTS+1];
+				BSTR pbstrNames[256+1];
 				UINT nNames;
-				for( UINT iName = 0; iName < MAX_CALLING_ARGUMENTS+1; iName++ )
+				for( UINT iName = 0; iName < 256+1; iName++ )
 					pbstrNames[iName] = NULL;
 				TheInfo->GetNames(pFuncDesc->memid, pbstrNames, pFuncDesc->cParams+1, &nNames);
 
 				axEventDesc->nArgs = pFuncDesc->cParams;
 				// copy data types
-				ASSERT(pFuncDesc->cParams < MAX_CALLING_ARGUMENTS);
+				ASSERT(pFuncDesc->cParams < 256);
 				for (UINT n = 0 ; n < (UINT)pFuncDesc->cParams + 1; n++ )
 				{
 					if( n < (UINT)pFuncDesc->cParams )
@@ -645,7 +1075,7 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 			if(SUCCEEDED(TheInfo->GetFuncDesc( i, &pFuncDesc )))
 			{  
 				if ((pFuncDesc->invkind == DISPATCH_METHOD) && 
-					(pFuncDesc->cParams < MAX_CALLING_ARGUMENTS) &&	// HRS
+					(pFuncDesc->cParams < 256) &&	// HRS
 					((LONG) pFuncDesc->memid < (LONG) (1<<16))) // HRS
 					 nNumberMethods++;
 
@@ -669,7 +1099,7 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 				
 				// Only count methods not GET/SET properties
 				if ((pFuncDesc->invkind == DISPATCH_METHOD) &&
-					(pFuncDesc->cParams < MAX_CALLING_ARGUMENTS) &&
+					(pFuncDesc->cParams < 256) &&
 					((LONG) pFuncDesc->memid < (LONG) (1<<16))) 
 				{
 					RefCountedPtr< AxMethodDescriptor > pAxMethod = new AxMethodDescriptor;
@@ -685,14 +1115,14 @@ UINT CAxContainer::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *The
 					}
 					
 					// copy data types
-				    ASSERT(pFuncDesc->cParams < MAX_CALLING_ARGUMENTS);
+				    ASSERT(pFuncDesc->cParams < 256);
 					
 					// set the number of parameters
 					pAxMethod->nParamQty = pFuncDesc->cParams;
 					
-					BSTR pbstrNames[MAX_CALLING_ARGUMENTS+1];
+					BSTR pbstrNames[256+1];
 					UINT nNames;
-					for( UINT iName = 0; iName < MAX_CALLING_ARGUMENTS+1; iName++ )
+					for( UINT iName = 0; iName < 256+1; iName++ )
 						pbstrNames[iName] = NULL;
 					TheInfo->GetNames(pFuncDesc->memid, pbstrNames, pFuncDesc->cParams+1, &nNames);
 
@@ -818,11 +1248,11 @@ BOOL CAxContainer::ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID c
 	BOOL bSuccess = TRUE;
 
 
-	if (m_pTypeLib == NULL)
+	if (mpTypeLib == NULL)
 		return FALSE;
 	
 	//Get the type information count
-	lTypeInfoCount = m_pTypeLib->GetTypeInfoCount();
+	lTypeInfoCount = mpTypeLib->GetTypeInfoCount();
 
 
 	//Make sure that we have type information
@@ -859,7 +1289,7 @@ BOOL CAxContainer::ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID c
 			ITypeInfo *TheInfo = NULL;
 			TYPEATTR *TheAttr;
 			
-			m_pTypeLib->GetTypeInfo(lIter, &TheInfo);
+			mpTypeLib->GetTypeInfo(lIter, &TheInfo);
 			if (TheInfo != NULL)
 			{
 				TheInfo->GetTypeAttr(&TheAttr);
@@ -870,7 +1300,7 @@ BOOL CAxContainer::ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID c
 					ExtractMethodInfo(pControl, TheInfo);	
 					
 					CComBSTR bstrDoc;
-					m_pTypeLib->GetDocumentation(lIter, &bstrName, &bstrDoc, NULL, NULL);
+					mpTypeLib->GetDocumentation(lIter, &bstrName, &bstrDoc, NULL, NULL);
 					if(bstrName)
 						pControl->SetAxTypeName( CString(bstrName) );
 				}				
@@ -882,370 +1312,237 @@ BOOL CAxContainer::ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID c
 	
 }
 
-UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, LPOLEOBJECT pIObject, BOOL bEnumList /*=FALSE*/)
+UINT CAxContainer::ExtractPropertyInfo( CDclControlObject* pControl, LPOLEOBJECT pIObject, BOOL bEnumList /*=FALSE*/ )
 {
+	CComPtr< ITypeInfo > pTypeInfo;
+	ObjectTypeInfoProperties( pIObject, &pTypeInfo );
 
-	ITypeInfo *TheInfo = NULL;
-	ObjectTypeInfoProperties(pIObject,&TheInfo);
-
-	// extract the type library for later use.
-	TheInfo->GetContainingTypeLib(&m_pTypeLib, &m_nTypeLibCount);	
-	
-	return ExtractPropertyInfo(pControl, TheInfo, bEnumList, pIObject);
+	// extract the containing type library and save it
+	if( FAILED(pTypeInfo->GetContainingTypeLib( &mpTypeLib, &mnTypeLibCount )) )
+		return 0;
+	return ExtractPropertyInfo( pControl, pTypeInfo, bEnumList, pIObject );
 }
 
 
-UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *TheInfo, BOOL bEnumList, LPOLEOBJECT pIObject)
+UINT CAxContainer::ExtractPropertyInfo( CDclControlObject* pControl, ITypeInfo* pTypeInfo, BOOL bEnumList, LPOLEOBJECT pIObject )
 {
-	int nNumberProperties = 0;
-	UINT NSingleProperties;
-	UINT NumberFuncs;
-	UINT i,j;
-	TYPEATTR *TheAttr;
-	
-	
-	if(TheInfo)	 {
-		if(SUCCEEDED(TheInfo->GetTypeAttr(&TheAttr))) {
-			NSingleProperties = TheAttr->cVars;
-			NumberFuncs = TheAttr->cFuncs;
-			TheInfo->ReleaseTypeAttr(TheAttr);
-		}
-		// first count those functions which are methods as
-		// determined by INVOKEKIND == DISPATCH_METHOD
-	   FUNCDESC *pFuncDesc;
-	   nNumberProperties = NSingleProperties;  
-	   for(i = 0; i < NumberFuncs; i++) { 
-			if(SUCCEEDED(TheInfo->GetFuncDesc( i, &pFuncDesc )))
-			{ 
-				// not a method means it is a property 
-				// Only count methods are GET/SET properties
-				if (pFuncDesc->invkind == DISPATCH_PROPERTYGET ||
-					pFuncDesc->invkind == DISPATCH_PROPERTYPUT ||
-					pFuncDesc->invkind == DISPATCH_PROPERTYPUTREF
-					)
-					 nNumberProperties++;
-				TheInfo->ReleaseFuncDesc( pFuncDesc ) ;
- 			}
-		}
-		// now allocate some space
-		if(nNumberProperties == 0)	{
-			return 0;
-		}
-		// All variables are properties
-	   VARDESC *pVarDesc; 
-	   CString sWidth = _T("Width");
-	   //sWidth = theWorkspace.LoadResourceString(IDS_PROP_WIDTH);
-	   CString sHeight = _T("Height");
-	   //sHeight = theWorkspace.LoadResourceString(IDS_PROP_HEIGHT);
-	   for(i = 0; i < NSingleProperties; i++) { 
-			if(SUCCEEDED(TheInfo->GetVarDesc( i, &pVarDesc ))) {
-				CComBSTR  bstrName;
-				CComBSTR  bstrDesc;
-				
-				//TheInfo->GetFuncDesc(i, &pFuncDesc);
-			
-				// create the activeX property descriptor that the CPropertyObject object will hold
-				std::auto_ptr< AxPropertyDescriptor > axPropDesc( new AxPropertyDescriptor );
-				
-				axPropDesc->Id = pVarDesc->memid;
-				axPropDesc->invKind = pFuncDesc->invkind;
-				int nParams = pFuncDesc->cParams;
-				long memid = pFuncDesc->memid;
-				if (SUCCEEDED(TheInfo->GetDocumentation(pVarDesc->memid, &bstrName,
-					&bstrDesc,NULL,NULL )) && bstrName) 
-				{   
-					axPropDesc->Name  =  bstrName;	
-					
-					if (axPropDesc->Name == sWidth)
-					{
-						axPropDesc->Name = sWidth + _T('2');
-					}
-					if (axPropDesc->Name == sHeight)
-					{
-						axPropDesc->Name = sHeight + _T('2');
-					}
-					
-					axPropDesc->DocumentationDesc = bstrDesc;
+	assert( pTypeInfo != NULL );
+	if( !pTypeInfo )
+		return 0;
 
-					if (axPropDesc->Name == _T("FontSize"))
-					{
-						if (axPropDesc->DocumentationDesc == _T(""))
-							axPropDesc->DocumentationDesc = _T("Indicates the size of the font to be used. ");
-						axPropDesc->DocumentationDesc += _T("\\par \\par \\b1Note: \\b0 To properly calculate the font size, multiply your new font size by 10000.");
-					}					
-					
-					ELEMDESC& e = pVarDesc->elemdescVar;
-					BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
-					axPropDesc->Type = (bNotByVal ? e.tdesc.lptdesc->vt : e.tdesc.vt);
-				  //  SysFreeString( bstrName ) ; 
-				//	SysFreeString( bstrDesc ) ; 					 
+	UINT ctProperties = 0;
 
-					axPropDesc->CanSet = TRUE;
-					
-					BSTR pbstrNames[MAX_CALLING_ARGUMENTS+1];
-					UINT nNames;
-					for( int iName = 0; iName < int(UINT( nParams+1)); iName++ )
-						pbstrNames[iName] = NULL;
-					TheInfo->GetNames(memid, pbstrNames, MAX_CALLING_ARGUMENTS+1, &nNames);
+	TYPEATTR* pTypeAttr = NULL;
+	HRESULT hr = pTypeInfo->GetTypeAttr( &pTypeAttr );
+	assert( SUCCEEDED(hr) );
+	if( FAILED(hr) )
+		return 0;
+	UINT ctVars = pTypeAttr->cVars;
+	UINT ctFuncs = pTypeAttr->cFuncs;
+	pTypeInfo->ReleaseTypeAttr( pTypeAttr );
 
-					// loop through the parameters
-					for ( UINT n = 0 ; n < (UINT)pFuncDesc->cParams + 1; n++ )
-					{
-						if( n < (UINT)pFuncDesc->cParams )
-						{
-							const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
-							BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
-							VARTYPE vt = ((bNotByVal) ? e.tdesc.lptdesc->vt : e.tdesc.vt);
+	//Add a new property for each "Var"
+	for( UINT idxVar = 0; idxVar < ctVars; ++idxVar )
+	{
+		VARDESC* pVarDesc = NULL;
+		hr = pTypeInfo->GetVarDesc( idxVar, &pVarDesc );
+		assert( SUCCEEDED(hr) );
+		if( FAILED(hr) )
+			continue;
 
-							if (vt == VT_USERDEFINED) 
-								SetRefType(vt, TheInfo,
-									(bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype, 
-									&axPropDesc->CallingArgClsids[n]);
+		VARTYPE vtVar = pVarDesc->elemdescVar.tdesc.vt;
+		VARTYPE vtProp = ((vtVar == VT_PTR)? pVarDesc->elemdescVar.tdesc.lptdesc->vt : vtVar);
+		MEMBERID memid = pVarDesc->memid;
 
-							axPropDesc->CallingArgs[n]  = vt;
-							if( pbstrNames[n] != NULL )	
-								axPropDesc->CallingArgNames[n] = CString(pbstrNames[n+1]);
-						}
-						SysFreeString( pbstrNames[n] );
-					}
-					
-					axPropDesc->CallingArgs[nParams] = 0;
+		//create the new ActiveX property descriptor that the CPropertyObject will hold
+		std::auto_ptr< AxPropertyDescriptor > pAxPropDesc( new AxPropertyDescriptor );
 
-					if (pVarDesc->wVarFlags & (VARFLAG_FNONBROWSABLE|VARFLAG_FHIDDEN))
-						axPropDesc->CanSet = FALSE;
+		CComBSTR bstrName;
+		CComBSTR bstrDesc;
+		hr = pTypeInfo->GetDocumentation( memid, &bstrName, &bstrDesc, NULL, NULL );
+		assert( SUCCEEDED(hr) );
+		if( SUCCEEDED(hr) )
+		{
+			CString sPropName = bstrName;
+			if( sPropName == _T("Width") )
+				sPropName += _T('2');
+			else if( sPropName == _T("Height") )
+				sPropName += _T('2');
+			pAxPropDesc->Name = sPropName;
+			if( pAxPropDesc->Name == _T("FontSize") )
+			{
+				if( pAxPropDesc->DocumentationDesc.IsEmpty() )
+					pAxPropDesc->DocumentationDesc = _T("Indicates the size of the font to be used. ");
+				pAxPropDesc->DocumentationDesc += _T("\\par \\par \\b1Note: \\b0 To properly calculate the font size, multiply your new font size by 10000.");
+			}
+			pAxPropDesc->DocumentationDesc = bstrDesc;
+			pAxPropDesc->Type = vtProp;
+			pAxPropDesc->CanSet = TRUE;
+			pAxPropDesc->invKind = INVOKE_PROPERTYGET; //just putting something in, not sure what it should be or if it matters [ORW]
+			pTypeInfo->ReleaseVarDesc( pVarDesc );
 
-					PerPropertyBrowsing(pIObject, axPropDesc.get()); // HRS
-					if (axPropDesc->Type == VT_USERDEFINED)
-						GetRefGuid(axPropDesc.get(), TheInfo, // HRS
-							(bNotByVal ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype),
-							axPropDesc.get());
-				}
-				TheInfo->ReleaseVarDesc( pVarDesc ) ;
+			//BSTR pbstrNames[MAX_CALLING_ARGUMENTS+1];
+			//for( int iName = 0; iName < int(UINT( nParams+1)); iName++ )
+			//	pbstrNames[iName] = NULL;
+			//UINT nNames;
+			//TheInfo->GetNames(memid, pbstrNames, MAX_CALLING_ARGUMENTS+1, &nNames);
 
-				// find an instance of the property with the name of the one we have.
-				// we do this so that the CPropertyObject will hold all INVOKE_PROPERTYGET, 
-				// INVOKE_PROPERTYPUT and INVOKE_PROPERTYPUTREF ActiveX properties of the same 
-				// name inside one CPropertyObject object.
-				RefCountedPtr< CPropertyObject >pProp = pControl->FindProperty(axPropDesc->Name);
-				
-				// default the insertion flag to false so this property won't be inserted more than once					
-				bool bInsert = false;
-				
-				if (pProp == NULL)	
+			//// loop through the parameters
+			//for ( UINT n = 0 ; n < nNames; n++ )
+			//{
+			//	if( n < (UINT)pFuncDesc->cParams )
+			//	{
+			//		const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
+			//		BOOL bNotByVal = (pVarDesc->elemdescVar.tdesc.vt == VT_PTR);
+			//		VARTYPE vt = ((bNotByVal) ? pVarDesc->elemdescVar.tdesc.lptdesc->vt : pVarDesc->elemdescVar.tdesc.vt);
+
+			//		if (vt == VT_USERDEFINED) 
+			//			SetRefType(vt, TheInfo,
+			//				(bNotByVal) ? pVarDesc->elemdescVar.tdesc.lptdesc->hreftype : pVarDesc->elemdescVar.tdesc.hreftype, 
+			//				&axPropDesc->CallingArgClsids[n]);
+
+			//		axPropDesc->CallingArgs[n]  = vt;
+			//		if( pbstrNames[n] != NULL && n < nNames - 1 )	
+			//			axPropDesc->CallingArgNames[n] = CString(pbstrNames[n+1]);
+			//	}
+			//	SysFreeString( pbstrNames[n] );
+			//}
+
+			// find an instance of the property with the name of the one we have.
+			// we do this so that the CPropertyObject will hold all INVOKE_PROPERTYGET, 
+			// INVOKE_PROPERTYPUT and INVOKE_PROPERTYPUTREF ActiveX properties of the same 
+			// name inside one CPropertyObject object.
+			RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty( pAxPropDesc->Name );
+			if( !pProp )
+			{ //add a new property object
+				if( !pAxPropDesc->CanSet )
 				{
-					// since this property type has not yet been created set the flag so this CPropertyObject
-					// will get inserted into the property list
-					bInsert = true;
-				}
-				
-				if (axPropDesc->CanSet == FALSE)
-				{
-					pProp = new CPropertyObject(PropActiveXRunTime);
-					pProp->SetHidden(true);
+					pProp = new CPropertyObject( PropActiveXRunTime );
+					pProp->SetHidden();
 				}
 				else					
-					// set the property type as an ActiveX property pointer/holder/handler
-					pProp = new CPropertyObject(PropActiveXProp);
-				
-				pProp->SetStringValue( axPropDesc->Name );
-				pProp->GetAxInterfaceDescriptorPtr()->SetProp( axPropDesc.release() );
-				if (axPropDesc->NumParams > 1)
-				{
-					pProp->SetType(PropActiveXRunTime); 
-					pProp->SetHidden(true);
-				}
-			
-				
-
-				// here we insert the property
-				if (bInsert)
-				{
-					// get the position where we are to add the property
-					POSITION pos = pControl->FindPropertyInsertPos(pProp->GetName(), false);
-					
-					// if the property is NOT an illegal property we can include it in the list to be displayed 
-					// in the CPropertyListCtrl control.
-					// check where the property is to be inserted.
-					if (pos == NULL)
-						// add the property to the property list
-						pControl->GetPropertyList().AddTail(pProp);
-					else					
-						// add the property to the property list
-						pControl->GetPropertyList().InsertAfter(pos, pProp);
-				}
-			
-			 }
-
+					pProp = new CPropertyObject( PropActiveXProp );
+				pProp->SetStringValue( pAxPropDesc->Name );
+				pControl->InsertNamedProperty( pProp );
+			}
+			pProp->GetAxInterfaceDescriptorPtr()->SetProp( pAxPropDesc.release() );
+			++ctProperties;
 		}
-		// Array properties are functions
-	   for(j = 0; j < NumberFuncs; j++) { 
-			if(SUCCEEDED(TheInfo->GetFuncDesc( j, &pFuncDesc )))
-			{  
-				CComBSTR bstrName;
-				CComBSTR  bstrDesc;
-				bool bCanInsert = true;
-				TheInfo->GetDocumentation(pFuncDesc->memid, &bstrName, NULL, NULL, NULL);
-						
-				// Only count methods are GET/SET properties
-				if (pFuncDesc->invkind == DISPATCH_PROPERTYGET ||
-					pFuncDesc->invkind == DISPATCH_PROPERTYPUT ||
-					pFuncDesc->invkind == DISPATCH_PROPERTYPUTREF)
+	}
+
+	//Add a new property for each Get/Put function
+	for( UINT idxFunc = 0; idxFunc < ctFuncs; ++idxFunc )
+	{
+		FUNCDESC* pFuncDesc = NULL;
+		hr = pTypeInfo->GetFuncDesc( idxFunc, &pFuncDesc );
+		assert( SUCCEEDED(hr) );
+		if( FAILED(hr) )
+			continue;
+		if( (pFuncDesc->invkind == DISPATCH_PROPERTYGET ||
+				 pFuncDesc->invkind == DISPATCH_PROPERTYPUT ||
+				 pFuncDesc->invkind == DISPATCH_PROPERTYPUTREF) &&
+				pFuncDesc->wFuncFlags != FUNCFLAG_FHIDDEN )
+		{
+			VARTYPE vtVar = pFuncDesc->elemdescFunc.tdesc.vt;
+			VARTYPE vtProp = ((vtVar == VT_PTR)? pFuncDesc->elemdescFunc.tdesc.lptdesc->vt : vtVar);
+			SHORT ctParams = pFuncDesc->cParams;
+			assert( (pFuncDesc->invkind == DISPATCH_PROPERTYGET && pFuncDesc->cParams == 0) || pFuncDesc->cParams == 1 );
+			MEMBERID memid = pFuncDesc->memid;
+
+			//create the new ActiveX property descriptor that the CPropertyObject will hold
+			std::auto_ptr< AxPropertyDescriptor > pAxPropDesc( new AxPropertyDescriptor );
+
+			CComBSTR bstrName;
+			CComBSTR bstrDesc;
+			hr = pTypeInfo->GetDocumentation( memid, &bstrName, &bstrDesc, NULL, NULL );
+			assert( SUCCEEDED(hr) );
+			if( SUCCEEDED(hr) )
+			{
+				pAxPropDesc->Name = bstrName;
+				pAxPropDesc->DocumentationDesc = bstrDesc;
+				pAxPropDesc->invKind = pFuncDesc->invkind;
+				pAxPropDesc->rArgs.resize( ctParams );
+
+				pAxPropDesc->Type = vtProp;
+				pAxPropDesc->CanSet = (!(pFuncDesc->wFuncFlags & FUNCFLAG_FNONBROWSABLE) &&
+															 ((pFuncDesc->invkind == DISPATCH_PROPERTYGET && pFuncDesc->cParams == 0) ||
+																pFuncDesc->cParams == 1));
+				pAxPropDesc->IsArray = TRUE;
+
+				PerPropertyBrowsing( pIObject, pAxPropDesc.get() );
+				if( pAxPropDesc->Type == VT_USERDEFINED )
+					GetRefGuid( pAxPropDesc.get(), pTypeInfo,
+											(vtVar == VT_PTR)? pFuncDesc->elemdescFunc.tdesc.lptdesc->hreftype : pFuncDesc->elemdescFunc.tdesc.hreftype,
+											pAxPropDesc.get() );
+
+				BSTR* rbstrNames = new BSTR[ctParams + 1];
+				ZeroMemory( rbstrNames, sizeof(BSTR) * (ctParams + 1) );
+				UINT ctNames;
+				hr = pTypeInfo->GetNames( memid, rbstrNames, ctParams + 1, &ctNames );
+				assert( SUCCEEDED(hr) );
+				if( SUCCEEDED(hr) )
 				{
-					// create the activeX property descriptor that the CPropertyObject object will hold
-					std::auto_ptr< AxPropertyDescriptor > axPropDesc( new AxPropertyDescriptor );
-				
-					axPropDesc->Id = pFuncDesc->memid;
-					if (SUCCEEDED(TheInfo->GetDocumentation(pFuncDesc->memid, &bstrName,
-						&bstrDesc,NULL,NULL )) && bstrName) 
-					{   
-						axPropDesc->invKind = pFuncDesc->invkind;
-						axPropDesc->NumParams = pFuncDesc->cParams;
-						axPropDesc->Name = bstrName;
-						axPropDesc->DocumentationDesc = bstrDesc;
-						
-						if (axPropDesc->Name == sWidth)
-							axPropDesc->Name = sWidth + _T('2');
-						if (axPropDesc->Name == sHeight)
-							axPropDesc->Name = sHeight + _T('2');
-
-						if (axPropDesc->Name == _T("FontSize"))
-						{
-							if (axPropDesc->DocumentationDesc == _T(""))
-								axPropDesc->DocumentationDesc = _T("Indicates the size of the font to be used. ");
-							axPropDesc->DocumentationDesc += _T("\\par \\par \\b1Note: \\b0 To properly calculate the font size, multiply your new font size by 10000.");
-						}
-					
-						BSTR pbstrNames[MAX_CALLING_ARGUMENTS + 1];
-						UINT nNames;
-						for( UINT iName = 0; iName < MAX_CALLING_ARGUMENTS+1; iName++ )
-							pbstrNames[iName] = NULL;
-						TheInfo->GetNames(pFuncDesc->memid, pbstrNames, MAX_CALLING_ARGUMENTS + 1, &nNames);
-
-						// loop through the parameters
-						for ( UINT n = 0 ; n < nNames; n++ )
+					// loop through the parameters
+					for ( UINT n = 0 ; n < ctNames; n++ )
+					{
+						if( n < (UINT)ctParams )
 						{
 							const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
-							BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
-							VARTYPE vt = ((bNotByVal) ? e.tdesc.lptdesc->vt : e.tdesc.vt);
-
+							bool bNotByVal = (e.tdesc.vt == VT_PTR);
+							VARTYPE vt = (bNotByVal? e.tdesc.lptdesc->vt : e.tdesc.vt);
 							if (vt == VT_USERDEFINED) 
-								SetRefType(vt, TheInfo,
-									(bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype, 
-									&axPropDesc->CallingArgClsids[n]);
-
-							axPropDesc->CallingArgs[n]  = vt;
-							if( pbstrNames[n] != NULL && n < nNames - 1 )	
-								axPropDesc->CallingArgNames[n] = CString(pbstrNames[n+1]);
-							SysFreeString( pbstrNames[n] ) ;
-						}						
-
-						axPropDesc->CallingArgs[pFuncDesc->cParams] = 0;
-
-						ELEMDESC& e = pFuncDesc->elemdescFunc;
-						BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
-						axPropDesc->Type = (bNotByVal ? e.tdesc.lptdesc->vt : e.tdesc.vt);
-						// This is not strictly true - might be method
-						axPropDesc->IsArray = TRUE;
-						axPropDesc->CanSet = TRUE;
-						// if the flags are set to this combination we can add it but not show it in the 
-						// property list box
-						if (pFuncDesc->wFuncFlags & (FUNCFLAG_FNONBROWSABLE|FUNCFLAG_FHIDDEN))
-							axPropDesc->CanSet = FALSE; 
-						// if this is the setting for the property, we plain just can't show it because
-						// it's for internal use only.
-						if (pFuncDesc->wFuncFlags == FUNCFLAG_FHIDDEN)
-							bCanInsert = false; 
-						PerPropertyBrowsing(pIObject, axPropDesc.get());
-						if (axPropDesc->Type == VT_USERDEFINED)
-							GetRefGuid(axPropDesc.get(), TheInfo, 
-							(bNotByVal ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype),
-							axPropDesc.get());
+								SetRefType( vt, pTypeInfo,
+														(bNotByVal? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
+														&pAxPropDesc->rArgs[n].clsid );
+							pAxPropDesc->rArgs[n].vt = vt;
+							if( !!rbstrNames[n] && n < ctNames - 1 )	
+								pAxPropDesc->rArgs[n].name = (LPCTSTR)bstr_t( rbstrNames[n + 1] );
+						}
 					}
-					i++;
+					for( SHORT idx = ctParams; idx >= 0; --idx )
+						SysFreeString( rbstrNames[idx] );
 
-					// some properties we just plain can't add.
-					if (bCanInsert)
+					// find an instance of the property with the name of the one we have.
+					// we do this so that the CPropertyObject will hold all INVOKE_PROPERTYGET, 
+					// INVOKE_PROPERTYPUT and INVOKE_PROPERTYPUTREF ActiveX properties of the same 
+					// name inside one CPropertyObject object.
+					RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty( pAxPropDesc->Name );
+					if( !pProp )
+					{ //add a new property object
+						if( !pAxPropDesc->CanSet )
+						{
+							pProp = new CPropertyObject( PropActiveXRunTime );
+							pProp->SetHidden();
+						}
+						else
+							pProp = new CPropertyObject( PropActiveXProp );
+						pProp->SetStringValue( pAxPropDesc->Name );
+						pControl->InsertNamedProperty( pProp );
+					}
+					switch( pAxPropDesc->invKind )
 					{
-						// default the insertion flag to false so this property won't be inserted more than once					
-						bool bInsert = false;
-						
-						// find an instance of the property with the name of the one we have.
-						// we do this so that the CPropertyObject will hold all INVOKE_PROPERTYGET, 
-						// INVOKE_PROPERTYPUT and INVOKE_PROPERTYPUTREF ActiveX properties of the same 
-						// name inside one CPropertyObject object.
-						RefCountedPtr< CPropertyObject > pProp = pControl->FindProperty(axPropDesc->Name);
-						
-						if (pProp == NULL)	
-						{
-							// since this property type has not yet been created set the flag so this CPropertyObject
-							// will get inserted into the property list
-							bInsert = true;
-						
-							// set the property type as an ActiveX property pointer/holder/handler
-							if (axPropDesc->CanSet == FALSE)
-							{
-								pProp = new CPropertyObject(PropActiveXRunTime);
-								pProp->SetHidden(true);
-							}
-							else
-								pProp = new CPropertyObject(PropActiveXProp);
-							pProp->SetStringValue(axPropDesc->Name);
-						}
-					
-						switch( axPropDesc->invKind )
-						{
-						case INVOKE_PROPERTYGET:
-							if (axPropDesc->NumParams > 0)
-							{
-								pProp->SetType(PropActiveXRunTime);						
-								pProp->SetHidden(true);
-							}
-							pProp->GetAxInterfaceDescriptorPtr()->SetPropGet( axPropDesc.release() );
-							break;
-						case INVOKE_PROPERTYPUT:
-							if (axPropDesc->NumParams > 1)
-							{
-								pProp->SetType(PropActiveXRunTime);	
-								pProp->SetHidden(true);
-							}
-							pProp->GetAxInterfaceDescriptorPtr()->SetPropPut( axPropDesc.release() );
-							break;
-						case INVOKE_PROPERTYPUTREF:
-							if (axPropDesc->NumParams > 1)
-							{
-								pProp->SetType(PropActiveXRunTime);	
-								pProp->SetHidden(true);
-							}
-							pProp->GetAxInterfaceDescriptorPtr()->SetPropPutRef( axPropDesc.release() );
-							break;
-						default:
-							if (!pProp->GetAxInterfaceDescriptorPtr()->GetProp())
-								pProp->GetAxInterfaceDescriptorPtr()->SetProp( axPropDesc.release() );
-							break;
-						}
-						// here we insert the property
-						if (bInsert)
-						{
-							// get the position where we are to add the property
-							POSITION pos = pControl->FindPropertyInsertPos(pProp->GetAxInterfaceDescriptorPtr()->GetName(), false);
-							
-							// if the property is NOT an illegal property we can include it in the list to be displayed 
-							// in the CPropertyListCtrl control.
-							// check where the property is to be inserted.
-							if (pos == NULL)
-								pControl->GetPropertyList().AddTail(pProp);
-							else					
-								pControl->GetPropertyList().InsertAfter(pos, pProp);						
-						}
+					case INVOKE_PROPERTYGET:
+						pProp->GetAxInterfaceDescriptorPtr()->SetPropGet( pAxPropDesc.release() );
+						break;
+					case INVOKE_PROPERTYPUT:
+						pProp->GetAxInterfaceDescriptorPtr()->SetPropPut( pAxPropDesc.release() );
+						break;
+					case INVOKE_PROPERTYPUTREF:
+						pProp->GetAxInterfaceDescriptorPtr()->SetPropPutRef( pAxPropDesc.release() );
+						break;
+					default:
+						if( !pProp->GetAxInterfaceDescriptorPtr()->GetProp() )
+							pProp->GetAxInterfaceDescriptorPtr()->SetProp( pAxPropDesc.release() );
+						break;
 					}
+					++ctProperties;
 				}
-				TheInfo->ReleaseFuncDesc( pFuncDesc ) ;
- 			}
+				delete [] rbstrNames;
+			}
 		}
-		// All done
-		TheInfo->Release();
+		pTypeInfo->ReleaseFuncDesc( pFuncDesc );
 	}
-	return nNumberProperties;
+	return ctProperties;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1255,9 +1552,9 @@ UINT CAxContainer::ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo *T
 CAxContainer::CAxContainer(CDclFormObject* pParent)
 : mpParent( pParent )
 , mpOleControl( NULL )
+, mpTypeLib( NULL )
+, mnTypeLibCount( 0 )
 {
-	m_nTypeLibCount = 0;
-	m_pTypeLib = NULL;
 	m_bInvokeWithSendString = FALSE;
 }
 
@@ -1566,24 +1863,25 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RE
 //[DPR] Recreated for methods_activex.cpp
 void CAxContainer::GetProperty(AxPropertyDescriptor *axProp, VariantList *argList, COleVariant *pVarReturn)
 {
-	InvokeHelperV(axProp, DISPATCH_PROPERTYGET, axProp->Type, pVarReturn, axProp, argList, axProp->NumParams);
+	InvokeHelperV(axProp, DISPATCH_PROPERTYGET, axProp->Type, pVarReturn, axProp, argList, axProp->rArgs.size());
 }
+
 HRESULT CAxContainer::GetProperty(AxPropertyDescriptor *axProp, CString &strReturnValue)
 {
 	
    DISPPARAMS dpParams;
    HRESULT hResult = -1;
-   UINT iArgErr;
+   UINT iArgErr = 0;
    COleVariant *pvarParams = NULL;
    
-   if (axProp->NumParams > 0)
-		pvarParams = new COleVariant[axProp->NumParams];
+   if (!axProp->rArgs.empty())
+		pvarParams = new COleVariant[axProp->rArgs.size()];
 
    COleVariant varResult;
    IDispatch *pDispatch = NULL;
 
    dpParams.rgvarg = pvarParams;
-   dpParams.cArgs = axProp->NumParams;
+   dpParams.cArgs = axProp->rArgs.size();
 
    dpParams.rgdispidNamedArgs = NULL;
    dpParams.cNamedArgs = 0;
@@ -1642,6 +1940,7 @@ void CAxContainer::SetBoolProperty(AxPropertyDescriptor *axProp, CString sNewVal
 	COleDispatchDriver pDisp(GetOleIDispatch());
 	pDisp.InvokeHelper(axProp->Id, DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms, bNewValue);
 }
+
 void CAxContainer::SetProperty(AxPropertyDescriptor *axProp, CString sNewValue)
 {
 	USES_CONVERSION;
@@ -1652,17 +1951,11 @@ void CAxContainer::SetProperty(AxPropertyDescriptor *axProp, CString sNewValue)
 			
 	dpParams.cArgs = nParams;
 	
-	VARTYPE vt = axProp->CallingArgs[0]; // set the variant type
+	VARTYPE vt = axProp->rArgs[0].vt; // set the variant type
 		
 	varParams = sNewValue;
 	if (vt == 0)
-	{
 		vt = axProp->Type;
-	}
-    if (axProp->Type == VT_VOID)
-	{
-		vt = axProp->CallingArgs[0];
-	}
 
 	VARIANT* pArg = new VARIANT[nParams];
 	ASSERT(pArg != NULL);   // should have thrown exception
@@ -1898,7 +2191,7 @@ void CAxContainer::SetProperty(AxPropertyDescriptor *axProp, CString sNewValue)
 		VARIANT* pArg = dpParams.rgvarg + dpParams.cArgs - 1;
 		for (int i =0; i<nParams; i++)
 		{
-			switch ((VARTYPE)axProp->CallingArgs[i])
+			switch (axProp->rArgs[i].vt)
 			{
 #if !defined(_UNICODE) && !defined(OLE2ANSI)
 			case VT_BSTRA:
@@ -1915,6 +2208,7 @@ void CAxContainer::SetProperty(AxPropertyDescriptor *axProp, CString sNewValue)
 	
 	mpOleControl->SaveToStream(this);
 }
+
 void CAxContainer::SetProperty(AxPropertyDescriptor *axProp, COleVariant varArgument)
 {
 	//[DPR] SetAxProperty needed a version that passed a COleVariant and not a string, so
@@ -1928,7 +2222,7 @@ void CAxContainer::SetProperty(AxPropertyDescriptor *axProp, COleVariant varArgu
 			
 	dpParams.cArgs = nParams;
 	
-	VARTYPE vt = axProp->CallingArgs[0]; // set the variant type
+	VARTYPE vt = axProp->rArgs[0].vt; // set the variant type
 		
 	if (vt == VT_BOOL && nParams == 1)
 	{
@@ -1938,13 +2232,7 @@ void CAxContainer::SetProperty(AxPropertyDescriptor *axProp, COleVariant varArgu
 
 	varParams = varArgument;
 	if (vt == 0)
-	{
 		vt = axProp->Type;
-	}
-    if (axProp->Type == VT_VOID)
-	{
-		vt = axProp->CallingArgs[0];
-	}
 
 	VARIANT* pArg = new VARIANT[nParams];
 	ASSERT(pArg != NULL);   // should have thrown exception
@@ -2134,7 +2422,7 @@ void CAxContainer::SetProperty(AxPropertyDescriptor *axProp, COleVariant varArgu
 		VARIANT* pArg = dpParams.rgvarg + dpParams.cArgs - 1;
 		for (int i =0; i<nParams; i++)
 		{
-			switch ((VARTYPE)axProp->CallingArgs[i])
+			switch (axProp->rArgs[i].vt)
 			{
 #if !defined(_UNICODE) && !defined(OLE2ANSI)
 			case VT_BSTRA:
@@ -2149,6 +2437,7 @@ void CAxContainer::SetProperty(AxPropertyDescriptor *axProp, COleVariant varArgu
 	delete[] dpParams.rgvarg;	
 	mpOleControl->SaveToStream(this);
 }
+
 IDispatch * CAxContainer::GetChildIDispatch(DISPID dispid)
 {
 	LPDISPATCH pDispatch;
@@ -2526,6 +2815,7 @@ void CAxContainer::SetTooltipText( LPCTSTR pszText )
 {
 	SetToolTipEx( this, mToolTip, mpOleControl );
 }
+
 //[DPR] InvokeHelper functions recreated to allow methods_activex.cpp code to work
 void CAxContainer::InvokeHelperV(AxPropertyDescriptor *axProp, WORD wFlags,
 																 VARTYPE vtRet, COleVariant *pvRet, AxPropertyDescriptor * pbParamInfo, VariantList *argList, int nParams)
@@ -2539,274 +2829,7 @@ void CAxContainer::InvokeHelperV(AxPropertyDescriptor *axProp, WORD wFlags,
 	pDispatch->Release();	
 	return;
 }
-void InvokeAxHelperV(IDispatch *pDispatch, AxPropertyDescriptor *axProp, WORD wFlags,
-										 VARTYPE vtRet, COleVariant *pvRet, AxPropertyDescriptor * pbParamInfo, VariantList *argList, int nParams)
-{
-	USES_CONVERSION;
-	DISPPARAMS dpParams;
-	memset(&dpParams, 0, sizeof dpParams);
-	dpParams.cArgs = nParams;
 
-	VARIANT* pArg = new VARIANT[nParams];
-	ASSERT(pArg != NULL);   // should have thrown exception
-	dpParams.rgvarg = pArg;
-	memset(pArg, 0, sizeof(VARIANT) * dpParams.cArgs);
-
-	pArg += dpParams.cArgs - 1;   // params go in opposite order
-
-	for (int i =0; i<nParams; i++)
-	{
-		ASSERT(pArg >= dpParams.rgvarg);
-		VARTYPE vt = axProp->CallingArgs[i]; // set the variant type
-		/*if (vt == 0)
-		{
-		vt = pbParamInfo->Type;
-		}
-		*/
-		pArg->vt = vt;
-		if (pArg->vt & VT_MFCBYREF)
-		{
-			pArg->vt &= ~VT_MFCBYREF;
-			pArg->vt |= VT_BYREF;
-		}
-		switch (pArg->vt)
-		{
-		case VT_UI1:
-			pArg->bVal = argList->m_Variant[i].bVal;
-			break;
-		case VT_I2:
-			pArg->iVal =  argList->m_Variant[i].iVal;
-			break;
-		case VT_I4:
-			pArg->lVal =  argList->m_Variant[i].lVal;
-			break;
-		case VT_R4:
-			pArg->fltVal =  argList->m_Variant[i].fltVal;
-			break;
-		case VT_R8:
-			pArg->dblVal =  argList->m_Variant[i].dblVal;
-			break;
-		case VT_DATE:
-			pArg->date =  argList->m_Variant[i].date;
-			break;
-		case VT_CY:
-			pArg->cyVal =  argList->m_Variant[i].cyVal;
-			break;
-		case VT_BSTR:
-			{
-				LPCOLESTR lpsz = argList->m_Variant[i].bstrVal;
-				pArg->bstrVal = ::SysAllocString(lpsz);
-				if (lpsz != NULL && pArg->bstrVal == NULL)
-					AfxThrowMemoryException();
-			}
-			break;
-#if !defined(_UNICODE) && !defined(OLE2ANSI)
-		case VT_BSTRA:
-			{
-				//LPCSTR lpsz =  argList->m_Variant[i].bstrVal;
-				pArg->bstrVal = argList->m_Variant[i].bstrVal;//::SysAllocString(T2COLE(lpsz));
-				if (pArg->bstrVal == NULL)
-					AfxThrowMemoryException();
-				pArg->vt = VT_BSTR;
-			}
-			break;
-#endif
-		case VT_DISPATCH:
-			pArg->pdispVal =  argList->m_Variant[i].pdispVal;
-			break;
-		case VT_ERROR:
-			pArg->scode =  argList->m_Variant[i].scode;
-			break;
-		case VT_BOOL:
-			pArg->boolVal = argList->m_Variant[i].boolVal;
-			break;
-		case VT_VARIANT:
-			*pArg = argList->m_Variant[i];
-			break;
-		case VT_UNKNOWN:
-			pArg->punkVal = argList->m_Variant[i].punkVal;
-			break;
-
-		case VT_I2|VT_BYREF:
-			pArg->piVal = argList->m_Variant[i].piVal;
-			break;
-		case VT_UI1|VT_BYREF:
-			pArg->pbVal = argList->m_Variant[i].pbVal;
-			break;
-		case VT_I4|VT_BYREF:
-			pArg->plVal = argList->m_Variant[i].plVal;
-			break;
-		case VT_R4|VT_BYREF:
-			pArg->pfltVal = argList->m_Variant[i].pfltVal;
-			break;
-		case VT_R8|VT_BYREF:
-			pArg->pdblVal = argList->m_Variant[i].pdblVal;
-			break;
-		case VT_DATE|VT_BYREF:
-			pArg->pdate = argList->m_Variant[i].pdate;
-			break;
-		case VT_CY|VT_BYREF:
-			pArg->pcyVal = argList->m_Variant[i].pcyVal;
-			break;
-		case VT_BSTR|VT_BYREF:
-			pArg->pbstrVal = argList->m_Variant[i].pbstrVal;
-			break;
-		case VT_DISPATCH|VT_BYREF:
-			pArg->ppdispVal = argList->m_Variant[i].ppdispVal;
-			break;
-		case VT_ERROR|VT_BYREF:
-			pArg->pscode = argList->m_Variant[i].pscode;
-			break;
-		case VT_BOOL|VT_BYREF:
-			{
-				// coerce BOOL into VARIANT_BOOL
-				//BOOL* pboolVal = va_arg(argList, BOOL*);
-				//*pboolVal = *pboolVal ? MAKELONG(-1, 0) : 0;
-				pArg->pboolVal = argList->m_Variant[i].pboolVal;
-			}
-			break;
-		case VT_VARIANT|VT_BYREF:
-			pArg->pvarVal = argList->m_Variant[i].pvarVal;
-			break;
-		case VT_UNKNOWN|VT_BYREF:
-			pArg->ppunkVal = argList->m_Variant[i].ppunkVal;
-			break;
-
-		default:
-			ASSERT(FALSE);  // unknown type!
-			break;
-		}
-		--pArg; // get ready to fill next argument
-	}
-	//
-	DISPID dispidPropset = DISPID_PROPERTYPUT;
-	if( wFlags == INVOKE_PROPERTYPUT || wFlags == DISPATCH_PROPERTYPUT)//axProp->invKind == INVOKE_PROPERTYPUT || axProp->invKind == INVOKE_PROPERTYPUTREF)
-	{
-		dpParams.rgdispidNamedArgs = &dispidPropset;
-		dpParams.cNamedArgs = 1;//nParams;
-	}
-	else if( wFlags == INVOKE_PROPERTYGET)
-	{
-		//dpParams.rgdispidNamedArgs = NULL;
-		dpParams.cNamedArgs = 0;
-	}
-	else 
-	{
-		dpParams.rgdispidNamedArgs = NULL;
-		dpParams.cNamedArgs = 0;
-	}
-
-	TRY
-	{
-		COleVariant varResult;
-		varResult.Clear();
-		if (pvRet == NULL)
-			pvRet = &varResult;
-		else
-			pvRet->Clear();
-
-		// initialize EXCEPINFO struct
-		EXCEPINFO excepInfo;
-		memset(&excepInfo, 0, sizeof excepInfo);
-
-		UINT nArgErr = (UINT)-1;  // initialize to invalid arg
-
-		SCODE sc;
-
-		try
-		{
-			sc = pDispatch->Invoke(axProp->Id, IID_NULL, 0, wFlags,
-				&dpParams, pvRet, &excepInfo, &nArgErr);
-		}
-		catch(...)
-		{
-			// cleanup any arguments that need cleanup
-			if (dpParams.cArgs != 0)
-			{
-				VARIANT* pArg = dpParams.rgvarg + dpParams.cArgs - 1;
-				for (int i =0; i<nParams; i++)
-				{
-					switch ((VARTYPE)axProp->CallingArgs[i])
-					{
-#if !defined(_UNICODE) && !defined(OLE2ANSI)
-					case VT_BSTRA:
-#endif
-					case VT_BSTR:
-						VariantClear(pArg);
-						break;
-					}
-					--pArg;
-				}
-			}
-			delete[] dpParams.rgvarg;	
-			return;
-		}
-
-		//HRESULT hResult = pDispatch->Invoke(axProp->Id, GUID_NULL, LOCALE_USER_DEFAULT, 
-		//	wFlags, &dpParams, pvRet, &excepInfo, &nArgErr);
-
-
-		if (FAILED(sc))
-		{
-			theWorkspace.DisplayAlert(CString(_T("The ActiveX get property \"") + axProp->Name + _T("\" failed.")));
-			if (sc != DISP_E_EXCEPTION)
-			{
-				// non-exception error code
-				AfxThrowOleException(sc);
-			}
-
-			// make sure excepInfo is filled in
-			if (excepInfo.pfnDeferredFillIn != NULL)
-				excepInfo.pfnDeferredFillIn(&excepInfo);
-
-			// allocate new exception, and fill it
-			COleDispatchException* pException =
-				new COleDispatchException(NULL, 0, excepInfo.wCode);
-			ASSERT(pException->m_wCode == excepInfo.wCode);
-			if (excepInfo.bstrSource != NULL)
-			{
-				pException->m_strSource = excepInfo.bstrSource;
-				SysFreeString(excepInfo.bstrSource);
-			}
-			if (excepInfo.bstrDescription != NULL)
-			{
-				pException->m_strDescription = excepInfo.bstrDescription;
-				SysFreeString(excepInfo.bstrDescription);
-			}
-			if (excepInfo.bstrHelpFile != NULL)
-			{
-				pException->m_strHelpFile = excepInfo.bstrHelpFile;
-				SysFreeString(excepInfo.bstrHelpFile);
-			}
-			pException->m_dwHelpContext = excepInfo.dwHelpContext;
-			pException->m_scError = excepInfo.scode;
-		}				
-	}
-	CATCH( COleException, e )
-	{
-	}
-	END_CATCH
-
-		// cleanup any arguments that need cleanup
-		if (dpParams.cArgs != 0)
-		{
-			VARIANT* pArg = dpParams.rgvarg + dpParams.cArgs - 1;
-			for (int i =0; i<nParams; i++)
-			{
-				switch ((VARTYPE)axProp->CallingArgs[i])
-				{
-#if !defined(_UNICODE) && !defined(OLE2ANSI)
-			case VT_BSTRA:
-#endif
-			case VT_BSTR:
-				VariantClear(pArg);
-				break;
-				}
-				--pArg;
-			}
-		}
-		delete[] dpParams.rgvarg;	
-}
 void CAxContainer::DoMethod(AxMethodDescriptor *axMethod, VariantList *argList, COleVariant *pVarReturn)
 {
 	IDispatch *pDispatch = NULL;
@@ -2817,195 +2840,4 @@ void CAxContainer::DoMethod(AxMethodDescriptor *axMethod, VariantList *argList, 
 	DoAxMethod(pDispatch, axMethod, argList, pVarReturn);
 	pDispatch->Release();
 	return;
-}
-void DoAxMethod(IDispatch *pDispatch, AxMethodDescriptor *axMethod, VariantList *argList, COleVariant *pVarReturn)
-{
-	USES_CONVERSION;
-	DISPPARAMS dpParams;
-	memset(&dpParams, 0, sizeof dpParams);
-
-	dpParams.cArgs = axMethod->nParamQty;
-
-	if (axMethod->nParamQty >0)
-	{
-		VARIANT* pArg = new VARIANT[axMethod->nParamQty];
-		ASSERT(pArg != NULL);   // should have thrown exception
-		dpParams.rgvarg = pArg;
-		memset(pArg, 0, sizeof(VARIANT) * dpParams.cArgs);
-
-		pArg += dpParams.cArgs - 1;   // params go in opposite order
-
-		for (int i =0; i<axMethod->nParamQty; i++)
-		{
-			ASSERT(pArg >= dpParams.rgvarg);
-			VARTYPE vt = axMethod->CallingArgs[i]; // set the variant type
-			pArg->vt = vt;
-			if (pArg->vt & VT_MFCBYREF)
-			{
-				pArg->vt &= ~VT_MFCBYREF;
-				pArg->vt |= VT_BYREF;
-			}
-			switch (pArg->vt)
-			{
-			case VT_UI1:
-				pArg->bVal = argList->m_Variant[i].bVal;
-				break;
-			case VT_I2:
-				pArg->iVal =  argList->m_Variant[i].iVal;
-				break;
-			case VT_I4:
-				pArg->lVal =  argList->m_Variant[i].lVal;
-				break;
-			case VT_R4:
-				pArg->fltVal =  argList->m_Variant[i].fltVal;
-				break;
-			case VT_R8:
-				pArg->dblVal =  argList->m_Variant[i].dblVal;
-				break;
-			case VT_DATE:
-				pArg->date =  argList->m_Variant[i].date;
-				break;
-			case VT_CY:
-				pArg->cyVal =  argList->m_Variant[i].cyVal;
-				break;
-			case VT_BSTR:
-				{
-					LPCOLESTR lpsz = argList->m_Variant[i].bstrVal;
-					pArg->bstrVal = ::SysAllocString(lpsz);
-					if (lpsz != NULL && pArg->bstrVal == NULL)
-						AfxThrowMemoryException();
-				}
-				break;
-#if !defined(_UNICODE) && !defined(OLE2ANSI)
-			case VT_BSTRA:
-				{
-					//LPCSTR lpsz =  argList->m_Variant[i].bstrVal;
-					pArg->bstrVal = argList->m_Variant[i].bstrVal;//::SysAllocString(T2COLE(lpsz));
-					if (pArg->bstrVal == NULL)
-						AfxThrowMemoryException();
-					pArg->vt = VT_BSTR;
-				}
-				break;
-#endif
-			case VT_DISPATCH:
-				pArg->pdispVal =  argList->m_Variant[i].pdispVal;
-				break;
-			case VT_ERROR:
-				pArg->scode =  argList->m_Variant[i].scode;
-				break;
-			case VT_BOOL:
-				pArg->boolVal = argList->m_Variant[i].boolVal;
-				break;
-			case VT_VARIANT:
-				*pArg = argList->m_Variant[i];
-				break;
-			case VT_UNKNOWN:
-				pArg->punkVal = argList->m_Variant[i].punkVal;
-				break;
-
-			case VT_I2|VT_BYREF:
-				pArg->piVal = argList->m_Variant[i].piVal;
-				break;
-			case VT_UI1|VT_BYREF:
-				pArg->pbVal = argList->m_Variant[i].pbVal;
-				break;
-			case VT_I4|VT_BYREF:
-				pArg->plVal = argList->m_Variant[i].plVal;
-				break;
-			case VT_R4|VT_BYREF:
-				pArg->pfltVal = argList->m_Variant[i].pfltVal;
-				break;
-			case VT_R8|VT_BYREF:
-				pArg->pdblVal = argList->m_Variant[i].pdblVal;
-				break;
-			case VT_DATE|VT_BYREF:
-				pArg->pdate = argList->m_Variant[i].pdate;
-				break;
-			case VT_CY|VT_BYREF:
-				pArg->pcyVal = argList->m_Variant[i].pcyVal;
-				break;
-			case VT_BSTR|VT_BYREF:
-				pArg->pbstrVal = argList->m_Variant[i].pbstrVal;
-				break;
-			case VT_DISPATCH|VT_BYREF:
-				pArg->ppdispVal = argList->m_Variant[i].ppdispVal;
-				break;
-			case VT_ERROR|VT_BYREF:
-				pArg->pscode = argList->m_Variant[i].pscode;
-				break;
-			case VT_BOOL|VT_BYREF:
-				{
-					// coerce BOOL into VARIANT_BOOL
-					//BOOL* pboolVal = va_arg(argList, BOOL*);
-					//*pboolVal = *pboolVal ? MAKELONG(-1, 0) : 0;
-					pArg->pboolVal = argList->m_Variant[i].pboolVal;
-				}
-				break;
-			case VT_VARIANT|VT_BYREF:
-				pArg->pvarVal = argList->m_Variant[i].pvarVal;
-				break;
-			case VT_UNKNOWN|VT_BYREF:
-				pArg->ppunkVal = argList->m_Variant[i].ppunkVal;
-				break;
-
-			default:
-				ASSERT(FALSE);  // unknown type!
-				break;
-			}
-			--pArg; // get ready to fill next argument
-		}
-	}
-
-	TRY
-	{
-		// initialize return value
-		VARIANT* pvarResult = NULL;
-		VARIANT vaResult;
-		AfxVariantInit(&vaResult);
-		if (pVarReturn != NULL)
-			pvarResult = &vaResult;
-
-		// initialize EXCEPINFO struct
-		EXCEPINFO excepInfo;
-		memset(&excepInfo, 0, sizeof excepInfo);
-
-		UINT nArgErr = (UINT)-1;  // initialize to invalid arg
-
-		// make the call
-		HRESULT hResult = pDispatch->Invoke(axMethod->Id, IID_NULL, 0, DISPATCH_METHOD,
-			&dpParams, pvarResult, &excepInfo, &nArgErr);
-
-		if (pVarReturn != NULL)
-			pVarReturn->Attach(vaResult);
-
-		if( FAILED( hResult ) )
-		{	   
-			theWorkspace.DisplayAlert(CString (_T("The ActiveX method \"") + axMethod->Name + _T("\" failed.")));
-		}
-
-	}
-	CATCH( COleException, e )
-	{
-	}
-	END_CATCH
-
-		// cleanup any arguments that need cleanup
-		if (dpParams.cArgs != 0)
-		{
-			VARIANT* pArg = dpParams.rgvarg + dpParams.cArgs - 1;
-			for (int i =0; i<axMethod->nParamQty; i++)
-			{
-				switch ((VARTYPE)axMethod->CallingArgs[i])
-				{
-#if !defined(_UNICODE) && !defined(OLE2ANSI)
-			case VT_BSTRA:
-#endif
-			case VT_BSTR:
-				VariantClear(pArg);
-				break;
-				}
-				--pArg;
-			}
-		}
-		delete[] dpParams.rgvarg;	
 }

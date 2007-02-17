@@ -91,7 +91,6 @@
 #define IDS_COPYGETTOCLIP               93
 #define IDS_RENAMEPROJECT               94
 #define IDS_UPDATEVARNAMEQ              95
-#define IDS_EVENTPREFIXON               96
 #define IDS_COMBODESC8                  97
 #define IDS_COMBODESC9                  98
 #define IDS_COMBODESC10                 99
@@ -172,7 +171,6 @@
 #define IDS_BACKSLASH                   171
 #define IDS_NONE2                       172
 #define IDS_OPEN                        173
-#define IDS_EventPrefixUsesON           174
 #define IDS_EventsCopyToClipboard       175
 #define IDS_EventsWriteToLispFile       176
 #define IDS_3RDDAY                      177

@@ -13,7 +13,8 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "SharedRes.h"
-#include "afxres.h"
+#include "afxres.h"
+
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -1909,7 +1910,6 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_EVENTPREFIXON       "On"
     IDS_COMBODESC8          "This setting indicates that the combo box will be displayed a list of available fonts in the drop down box."
     IDS_COMBODESC9          "This setting indicates that the combo box will be displayed a list of available fonts as a simple combo box."
     IDS_COMBODESC10         "This setting indicates that the combo box will be displayed a list of available AutoCAD Plotters in the drop down box."
@@ -2588,7 +2588,6 @@ BEGIN
     IDS_BACKSLASH           "\\"
     IDS_NONE2               "None"
     IDS_OPEN                "Open"
-    IDS_EventPrefixUsesON   "EventPrefixUsesON"
     IDS_EventsCopyToClipboard "EventsCopyToClipboard"
 END
 
@@ -3372,7 +3371,8 @@ END
 // Generated from the TEXTINCLUDE 3 resource.
 //
 #include "SharedRes.rc"
-#include "AfxRes.rc"
+#include "AfxRes.rc"
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

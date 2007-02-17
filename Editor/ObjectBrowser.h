@@ -24,7 +24,6 @@ class AxPropertyDescriptor;
 #define nDeButtonHeigth	50
 
 #define nDeIconSize 16
-#define nResPropNameStartVal 210
 #define nNotSet -1
 #define nTitleLength 14
 

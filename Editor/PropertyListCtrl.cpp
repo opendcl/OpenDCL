@@ -2315,23 +2315,23 @@ int CPropertyListCtrl::SetListBox()
 				AxPropertyDescriptor *pPropDesc = NULL;
 				if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet())
 				{
-					if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet()->NumEnum > 0)
+					if (!pProp->GetAxInterfaceDescriptorPtr()->GetPropGet()->rEnum.empty())
 						pPropDesc = pProp->GetAxInterfaceDescriptorPtr()->GetPropGet();
 				}
 				else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp())
 				{
-					if (pProp->GetAxInterfaceDescriptorPtr()->GetProp()->NumEnum > 0)
+					if (!pProp->GetAxInterfaceDescriptorPtr()->GetProp()->rEnum.empty())
 						pPropDesc = pProp->GetAxInterfaceDescriptorPtr()->GetProp();			
 				}
 				else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
 				{
-					if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->NumEnum > 0)
+					if (!pProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->rEnum.empty())
 						pPropDesc = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
 				}	
 				if (pPropDesc)
 				{
-					for (int i=0; i<pPropDesc->NumEnum; i++)
-						m_pModeless->AddString(VariantToString(pPropDesc->ArrEnum[i].Var) + _T('-') + pPropDesc->ArrEnum[i].Name);
+					for (size_t i=0; i<pPropDesc->rEnum.size(); i++)
+						m_pModeless->AddString(VariantToString(pPropDesc->rEnum[i].Var) + _T('-') + pPropDesc->rEnum[i].Name);
 				}
 			}
 			nType = PropEnum;
