@@ -467,19 +467,14 @@ CArxProject* CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKey
 	if( sFilePath.IsEmpty() )
 		return NULL;
 
-	CString sKeyName( pszKeyName );
-	if( sKeyName.IsEmpty() )
-		sKeyName = StripPathFromFileName( sFilePath ).SpanExcluding( _T(".") );
-	assert( !sKeyName.IsEmpty() ); //key should never be empty!
-	sKeyName.Replace( _T(' '), _T('_') );
 	
-	if( bReload )
+	if( !bReload )
 	{
-		if( !UnloadProject( sKeyName, true ) )
-			return NULL; //project could not be unloaded for some reason
-	}
-	else
-	{
+		CString sKeyName( pszKeyName );
+		if( sKeyName.IsEmpty() )
+			sKeyName = StripPathFromFileName( sFilePath ).SpanExcluding( _T(".") );
+		sKeyName.Replace( _T(' '), _T('_') );
+
 		CArxProject* pProject = FindProject( sKeyName );
 		if( pProject )
 			return pProject; //already loaded, just return it
@@ -509,8 +504,15 @@ CArxProject* CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKey
 	}
 	pProject->m_ShortFileName = sFileName;
 	if( sFileName.Right( GetDistributionFileExtension().GetLength() ).CompareNoCase( GetDistributionFileExtension() ) == 0 )
-		mOdsProjects.AddTail( sKeyName.MakeLower() );
-	AddProject( pProject );
+		mOdsProjects.AddTail( CString( pProject->GetKeyName() ).MakeLower() );
+
+	if( bReload )
+		UnloadProject( pProject->GetKeyName(), true );
+	if( !AddProject( pProject ) )
+	{ //couldn't add the new project, probably because of a name collision
+		delete pProject;
+		return NULL;
+	}
 
 	return pProject;
 }

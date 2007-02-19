@@ -1,5 +1,7 @@
 #pragma once
 
+class CAxContainer;
+enum IOStatus;
 
 struct AxPropertyEnum
 {
@@ -18,27 +20,55 @@ struct AxPropertyArg
 
 // Struct for holding information about ActiveX properties so we do not
 // have to keep goint back to typeinfo
-class AxPropertyDescriptor : public CObject
+class AxPropertyDescriptor
 {
-public:
-	DISPID Id;
-	CString Name;
-	CString DocumentationDesc;
-	VARTYPE Type;
-	BOOL IsArray;
-	BOOL CanSet;
-	GUID Guid;
-	INVOKEKIND invKind;
-	std::vector< AxPropertyEnum > rEnum;
-	std::vector< AxPropertyArg > rArgs;
-
-public:
-	AxPropertyDescriptor(void);
-	AxPropertyDescriptor(const AxPropertyDescriptor *other);
-	virtual ~AxPropertyDescriptor(void);
+protected:
+	DISPID mDispId;
+	CString msName;
+	CString msDesc;
+	VARTYPE mType;
+	bool mbArray;
+	bool mbReadOnly;
+	GUID mGuid;
+	INVOKEKIND mInvKind;
+	std::vector< AxPropertyEnum > mrEnum;
+	std::vector< AxPropertyArg > mrArgs;
 
 protected:
-	DECLARE_SERIAL(AxPropertyDescriptor)
+	friend class AxInterfaceDescriptor;
+	AxPropertyDescriptor(void);
+public:
+	AxPropertyDescriptor( DISPID dispid, LPCTSTR pszName, LPCTSTR pszDesc, VARTYPE type, INVOKEKIND kind );
+	AxPropertyDescriptor( VARDESC* pVarDesc, ITypeInfo* pTypeInfo );
+	AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo, CAxContainer* pContainer = NULL, LPOLEOBJECT pIObject = NULL );
+	AxPropertyDescriptor( const AxPropertyDescriptor& Src );
+	virtual ~AxPropertyDescriptor(void);
+
+	// Attributes
+	DISPID GetDispId() const { return mDispId; }
+	const CString& GetName() const { return msName; }
+	const CString& GetDesc() const { return msDesc; }
+	VARTYPE GetType() const { return mType; }
+	bool IsArray() const { return mbArray; }
+	bool IsReadOnly() const { return mbReadOnly; }
+	GUID GetGuid() const { return mGuid; }
+	INVOKEKIND GetInvKind() const { return mInvKind; }
+	const std::vector< AxPropertyEnum >& GetEnum() const { return mrEnum; }
+	const std::vector< AxPropertyArg >& GetArgs() const { return mrArgs; }
+
+	// Operations
+	HRESULT Get( IDispatch* pObjectDisp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult ) const;
+	HRESULT Set( IDispatch* pObjectDisp, VARIANTARG* rvarArgs, UINT ctArgs ) const;
+
+protected:
+	HRESULT PerPropertyBrowsing( LPOLEOBJECT pIObject );
+	HRESULT GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype, CAxContainer* pContainer = NULL );
+
+	// File I/O
+public:
+	void Serialize( CArchive& ar, int nPropertyVersion );
+	IOStatus ReadFromTextFile( std::ifstream &sFile, ULONG nPropertyVersion );
+	IOStatus WriteToTextFile( FILE* pFile ) const;
 
 #ifdef _DIAGNOSTIC
 	virtual LPCTSTR toString() const;

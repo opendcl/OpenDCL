@@ -13,21 +13,31 @@
 /////////////////////////////////////////////////////////////////////////////
 // CImageListPage property page
 
-IMPLEMENT_DYNCREATE(CImageListPage, CPropertyPage)
+//IMPLEMENT_DYNCREATE(CImageListPage, CPropertyPage)
 
-CImageListPage::CImageListPage() : CPropertyPage(CImageListPage::IDD)
+CImageListPage::CImageListPage( CDclControlObject* pDclControl )
+: CPropertyPage(CImageListPage::IDD)
+, mpDclControl( pDclControl )
+, mpImageList( new CImageList )
+, nCurrentWidth( 0 )
+, nCurrentHeight( 0 )
 {
 	//{{AFX_DATA_INIT(CImageListPage)
 	//}}AFX_DATA_INIT
-	m_bImageListCreated = false;
+	//m_bImageListCreated = false;
 	nCurrentWidth = 0;
 	nCurrentHeight = 0;
-	m_pImageListObj = NULL;
+	RefCountedPtr< CImageListObject > pImageList = pDclControl->GetImageList();
+	if( pImageList )
+	{
+		mpImageList->Create( &pImageList->m_ImageList );
+		nCurrentWidth = pImageList->m_ImageSize.cx;
+		nCurrentHeight = pImageList->m_ImageSize.cy;
+	}
 }
 
 CImageListPage::~CImageListPage()
 {
-	m_ImageList.DeleteImageList();
 }
 
 void CImageListPage::DoDataExchange(CDataExchange* pDX)
@@ -73,7 +83,7 @@ void CImageListPage::OnAddimage()
 	BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
 	TCHAR* pc = new TCHAR[MAX_PATH];
 	BrowseWnd.m_ofn.lpstrFile = pc;
-    BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
+	BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
 
 	// call method to invoke the file dialog box
 	int iReturn = BrowseWnd.DoModal();
@@ -192,7 +202,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 		cdc->HIMETRICtoLP(&sizePic);
 
 		// if image list has not been created
-		if (NULL == m_ImageList.m_hImageList)
+		if (NULL == GetImageList().m_hImageList)
 		{			
 			if (nCurrentWidth == 0)
 			{
@@ -201,16 +211,16 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 			}
 
 			// create the image list
-			bRetVal = m_ImageList.Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | ILC_MASK, 0, 1);
-			m_PicList.SetImageList(&m_ImageList, TVSIL_NORMAL);
-			m_PicList.SetImageList(&m_ImageList, LVSIL_SMALL);
+			bRetVal = GetImageList().Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | ILC_MASK, 0, 1);
+			m_PicList.SetImageList(&GetImageList(), TVSIL_NORMAL);
+			m_PicList.SetImageList(&GetImageList(), LVSIL_SMALL);
 			TCHAR Value[80];
 			_ltot(sizePic.cx, Value, 10);
 			m_DispWidth.SetWindowText(Value);
 			_ltot(sizePic.cy, Value, 10);
 			m_DispHeight.SetWindowText(Value);
 			// set the background color of the image list
-			m_ImageList.SetBkColor(RGB(255,255,255));		
+			GetImageList().SetBkColor(RGB(255,255,255));		
 			
 		}
 
@@ -220,7 +230,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 		if (bRetVal)
 		{
 			// add bitmap to imagelist; mask is ignored in this sample
-			nRetVal = m_ImageList.Add(
+			nRetVal = GetImageList().Add(
 				CBitmap::FromHandle(hBitmap),
 				RGB(192, 192, 192) ) ;
 			bRetVal = (nRetVal != -1);			
@@ -248,7 +258,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 		cdc->HIMETRICtoLP(&sizePic);
 
 		// if image list has not been created
-		if (NULL == m_ImageList.m_hImageList)
+		if (NULL == GetImageList().m_hImageList)
 		{
 			if (nCurrentWidth == 0)
 			{
@@ -257,23 +267,23 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 			}
 			
 			// create the image list
-			bRetVal = m_ImageList.Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | ILC_MASK, 1, 1);
-			m_PicList.SetImageList(&m_ImageList, TVSIL_NORMAL);
-			m_PicList.SetImageList(&m_ImageList, LVSIL_SMALL);
+			bRetVal = GetImageList().Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | ILC_MASK, 1, 1);
+			m_PicList.SetImageList(&GetImageList(), TVSIL_NORMAL);
+			m_PicList.SetImageList(&GetImageList(), LVSIL_SMALL);
 			TCHAR Value[80];
 			_ltot(sizePic.cx, Value, 10);
 			m_DispWidth.SetWindowText(Value);
 			_ltot(sizePic.cy, Value, 10);
 			m_DispHeight.SetWindowText(Value);
 			// set the background color of the image list
-			m_ImageList.SetBkColor(RGB(255,192,192));		
+			GetImageList().SetBkColor(RGB(255,192,192));		
 			
 		}
 		
 		if (bRetVal)
 		{
 			// add icon to image list
-			nRetVal = m_ImageList.Add(hIcon);
+			nRetVal = GetImageList().Add(hIcon);
 			bRetVal = (nRetVal != -1);
 		}
 		//DestroyIcon(hIcon);		
@@ -284,7 +294,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 		return bRetVal;
 	}
 	
-	int nImage = m_ImageList.GetImageCount()-1;
+	int nImage = GetImageList().GetImageCount()-1;
 	int nPicIndex = m_PicList.GetItemCount();
 	LV_ITEM lvItem;
 	lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;
@@ -328,7 +338,7 @@ void CImageListPage::OnRemoveimage()
 			}
 	   }
 	}
-	m_ImageList.Remove(nItem);
+	GetImageList().Remove(nItem);
 	
 
 	m_PicList.Arrange(LVA_ALIGNLEFT);
@@ -351,8 +361,7 @@ void CImageListPage::OnRemoveimage()
 	{
 		m_DispHeight.SetWindowText(_T(""));
 		m_DispWidth.SetWindowText(_T(""));
-		m_ImageList.DeleteImageList();
-		m_ImageList.m_hImageList = NULL;
+		mpImageList = new CImageList;
 	}
 
 	if (nItem >= m_PicList.GetItemCount())
@@ -370,36 +379,15 @@ void CImageListPage::OnRemoveimage()
 
 BOOL CImageListPage::OnApply() 
 {
-	if (m_pImageListObj == NULL)
+	if( mpImageList && mpImageList->GetImageCount() > 0 )
 	{
-		m_pImageListObj = new CImageListObject;
-		POSITION pos = m_pDclForm->m_ImageListCollection.AddTail(m_pImageListObj);		
-		
-		m_pImageListIndex->SetLongValue(m_pDclForm->m_ImageListCollection.GetCount()-1);
+		CImageListObject* pNewImageList = new CImageListObject;
+		pNewImageList->m_ImageSize.SetSize( nCurrentWidth, nCurrentHeight );
+		pNewImageList->m_ImageList.Attach( ImageList_Duplicate( mpImageList->m_hImageList ) );
+		mpDclControl->SetImageList( pNewImageList );
 	}
-
-	if (m_pImageListObj->m_ImageList.m_hImageList != NULL)
-	{
-		m_pImageListObj->m_ImageList.DeleteImageList();
-		m_pImageListObj->m_ImageList.m_hImageList = NULL;
-	}
-	
-	if (m_ImageList.m_hImageList != NULL)
-	{
-		if (m_ImageList.GetImageCount() > 0)
-		{
-			//m_pImageListObj->m_ImageList.Create(&m_ImageList);
-			m_pImageListObj->m_ImageList.Create(nCurrentWidth,nCurrentHeight,ILC_COLOR8 | ILC_MASK,0,1);
-			m_pImageListObj->m_ImageSize.cx = nCurrentWidth;
-			m_pImageListObj->m_ImageSize.cy = nCurrentHeight;
-			for (int i=0; i<m_ImageList.GetImageCount(); i++)
-			{
-				HICON hIcon = m_ImageList.ExtractIcon(i);
-				m_pImageListObj->m_ImageList.Add(hIcon);
-				::DestroyIcon(hIcon);
-			}
-		}
-	}
+	else
+		mpDclControl->SetImageList( NULL );
 
 	return CPropertyPage::OnApply();
 }
@@ -408,45 +396,33 @@ BOOL CImageListPage::OnInitDialog()
 {
 	CPropertyPage::OnInitDialog();
 	
-	if (m_pImageListObj != NULL)
+	if (GetImageList().m_hImageList != NULL)
 	{
-		if (m_pImageListObj->m_ImageList.m_hImageList != NULL)
+		TCHAR sValue [80];
+		_ltot(nCurrentWidth, sValue, 10);
+		m_DispWidth.SetWindowText(sValue);
+		_ltot(nCurrentHeight, sValue, 10);
+		m_DispHeight.SetWindowText(sValue);
+
+		m_PicList.SetImageList(&GetImageList(), TVSIL_NORMAL);
+		m_PicList.SetImageList(&GetImageList(), LVSIL_SMALL);
+		
+		//m_PicList.SetIconSpacing(16);
+		for (int i=0; i < GetImageList().GetImageCount(); i++)
 		{
-			TCHAR sValue [80];
-			IMAGEINFO info;
-			m_pImageListObj->m_ImageList.GetImageInfo(0, &info);
-			nCurrentHeight = info.rcImage.bottom - info.rcImage.top;
-			nCurrentWidth = info.rcImage.right - info.rcImage.left;
+			LV_ITEM lvItem;
+			lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;
+			lvItem.iItem = i;
+			lvItem.iSubItem = 0;
+			
+			_ltot(i, sValue, 10);
+			lvItem.pszText = sValue;
+			lvItem.iImage = i;
+			lvItem.iIndent = -1;
 
-			
-			_ltot(nCurrentWidth, sValue, 10);
-			m_DispWidth.SetWindowText(sValue);
-			_ltot(nCurrentHeight, sValue, 10);
-			m_DispHeight.SetWindowText(sValue);
-			
-			
-			m_ImageList.Create(&m_pImageListObj->m_ImageList);
-	
-			m_PicList.SetImageList(&m_ImageList, TVSIL_NORMAL);
-			m_PicList.SetImageList(&m_ImageList, LVSIL_SMALL);
-			
-			//m_PicList.SetIconSpacing(16);
-			for (int i=0; i<m_ImageList.GetImageCount(); i++)
-			{
-				LV_ITEM lvItem;
-				lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;
-				lvItem.iItem = i;
-				lvItem.iSubItem = 0;
-				
-				_ltot(i, sValue, 10);
-				lvItem.pszText = sValue;
-				lvItem.iImage = i;
-				lvItem.iIndent = -1;
-
-				// insert the row item
-				int nInsertIndex = m_PicList.InsertItem(&lvItem);
-				m_PicList.SetItemData(i, i);
-			}
+			// insert the row item
+			int nInsertIndex = m_PicList.InsertItem(&lvItem);
+			m_PicList.SetItemData(i, i);
 		}
 	}
 	return TRUE;  // return TRUE unless you set the focus to a control

@@ -218,8 +218,8 @@ void CMainFrameToolBar::SetFontToolBar(CDclControlObject *pCtrl)
 				pProp = pCtrl->GetPropertyList().GetNext(pos);
 				if (pProp->GetType() == PropActiveXProp)
 				{
-					if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFontDisp ||
-							pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFont)
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFontDisp ||
+							pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFont)
 					{
 						pFontProp = pProp;
 						break;
@@ -230,16 +230,7 @@ void CMainFrameToolBar::SetFontToolBar(CDclControlObject *pCtrl)
 				return;
 
 			CAxContainer *axContainer = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
-			COleFont font;
-			if (pFontProp->GetAxInterfaceDescriptorPtr()->GetProp())
-				font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetProp()->Id);
-			else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetProp())
-				font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetProp()->Id);
-			else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
-				font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->Id);
-			else
-				return;
-
+			COleFont font = axContainer->GetFont( pFontProp->GetAxInterfaceDescriptorPtr()->GetGetDispId());
 			sFontName = font.GetName();
 			cyFontSize = font.GetSize();
 			m_bBold = (font.GetBold() == TRUE);
@@ -369,8 +360,8 @@ void CMainFrameToolBar::AddFontToToolBar(CDclControlObject *pCtrl)
 				pProp = pCtrl->GetPropertyList().GetNext(pos);
 				if (pProp->GetType() == PropActiveXProp)
 				{
-					if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFontDisp ||
-							pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFont)
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFontDisp ||
+							pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFont)
 					{
 						pFontProp = pProp;
 						break;
@@ -381,16 +372,7 @@ void CMainFrameToolBar::AddFontToToolBar(CDclControlObject *pCtrl)
 				return;
 
 			CAxContainer *axContainer = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
-			COleFont font;
-			if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropGet())
-				font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropGet()->Id);
-			else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetProp())
-				font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetProp()->Id);
-			else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
-				font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->Id);
-			else
-				return;
-
+			COleFont font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetGetDispId());
 			sFontName = font.GetName();
 			cyFontSize = font.GetSize();
 			m_bBold = (font.GetBold() == TRUE);

@@ -20,6 +20,7 @@
 #include "ProjectTreeCtrl.h"
 #include "PropertyTabPane.h"
 #include "MainFrm.h"
+#include "AxContainer.h"
 #include "AxInterfaceDescriptor.h"
 
 
@@ -144,10 +145,10 @@ void CPropertyEdit::CommitValue()
 	CString sText;
 	GetWindowText(sText);
 	if (m_pAxContainer != NULL)
-	{
-		m_pProp->GetAxInterfaceDescriptorPtr()->SetActiveXPropery(m_pAxContainer->GetActiveXCtrl(), sText);
-	}
-	else if (m_pControl->m_Id != CtlFormPropHolder)
+		m_pAxContainer->GetActiveXCtrl()->SetProperty(
+			m_pProp->GetAxInterfaceDescriptorPtr()->GetPutDescriptor(),
+			(LPCTSTR)sText );
+	else if (m_pControl->GetType() != CtlFormPropHolder)
 	{
 		// if this property is the nName property
 		if (m_pProp->GetID() == nName)
@@ -180,7 +181,7 @@ void CPropertyEdit::CommitValue()
 			m_pView->RefreshChildControl(m_pControl, m_pProp->GetID());
 		}
 	}
-	else if (m_pControl->m_Id == CtlFormPropHolder)
+	else
 	{
 		if (m_pProp->GetID() == nName)
 		{			
@@ -244,7 +245,7 @@ void CPropertyEdit::UpdateSizes()
 	CString sText;
 	GetWindowText(sText);
 	
-	if (m_pControl->m_Id == CtlFormPropHolder)
+	if (m_pControl->GetType() == CtlFormPropHolder)
 	{	
 		if (m_pProp->GetID() == nWidth)
 		{			
@@ -378,7 +379,7 @@ void CPropertyEdit::SetNameProp()
 	CString sTitle;
 	GetWindowText(sText);
 
-	if (m_pControl->m_Id != CtlFormPropHolder)
+	if (m_pControl->GetType() != CtlFormPropHolder)
 	{
 		CDclControlObject *pFormPropHolder = FindArxControlObject(m_pView->m_pThisDclForm, sText, m_pControl);
 		
@@ -402,8 +403,7 @@ void CPropertyEdit::SetNameProp()
 		CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
 		pZOrderList->RenameControlInList(m_pProp->GetStringValue(), sText);
 	}
-
-	else if (m_pControl->m_Id == CtlFormPropHolder)
+	else
 	{	
 		CDclFormObject *pDclForm = activeProject->GetDclForm(sText);
 		

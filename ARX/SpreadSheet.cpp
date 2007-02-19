@@ -211,9 +211,8 @@ BOOL CSpreadSheet::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
 	
-	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | LVS_OWNERDRAWFIXED | 
-			  WS_CLIPCHILDREN | LVS_SINGLESEL;
+			  WS_CLIPCHILDREN | LVS_SINGLESEL | LVS_SHAREIMAGELISTS;
 
 	m_bEditCells = true;
 

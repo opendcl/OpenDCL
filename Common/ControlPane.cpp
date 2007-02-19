@@ -67,7 +67,7 @@ bool CControlPane::CreateControls(CDclFormObject *pDclForm, UINT& nId)
 			break; //we've reached the properties control at the head of the list, just skip it
 		if (pTemplate->GetType() < 0)
 			continue;
-		UINT idDlg = pTemplate->m_Id;
+		UINT idDlg = pTemplate->GetID();
 		if( idDlg <= 0 || pDclForm->GetType() != CtlSplitter )
 				idDlg = nId++;
 		TDialogControlPtr pControl = CreateNewDialogControl( pTemplate, this, idDlg );

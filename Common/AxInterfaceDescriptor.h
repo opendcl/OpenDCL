@@ -63,20 +63,21 @@ public:
 	//Old functions moved here from CPropertyObject
 public:
 	CString GetName() const;
-	CString GetDocumentationDesc();
-	GUID GetActiveXProperyGuid();
-	DISPID GetActiveXGetProperyId();
-	DISPID GetActiveXSetProperyId();
-	int GetActiveXParamQty();
-	void SetActiveXPropery(CAxContainer *axContainer, CString sNewValue);
-	CString GetActiveXPropery(CAxContainer *axContainer);
-	VARTYPE GetActiveXProperyType();
-	bool GetActiveXEnum();
-	CString GetActiveXEnumDesc(CString sValue);
-	CString GetActiveXEnumValue(int nEnumIndex);
+	CString GetDesc() const;
+	GUID GetGuid() const;
+	VARTYPE GetType() const;
+	size_t GetParamQty() const;
+	DISPID GetGetDispId() const;
+	DISPID GetPutDispId() const;
+	AxPropertyDescriptor* GetGetDescriptor() const;
+	AxPropertyDescriptor* GetPutDescriptor() const;
+	AxPropertyDescriptor* GetEnumDescriptor() const;
+	AxPropertyDescriptor* GetArgDescriptor() const;
+	CString GetEnumDesc(CString sValue) const;
+	CString GetEnumValue(int nEnumIndex) const;
 	void DoActiveXFontPropDlg(CAxContainer *axContainer);
 	CString GetAxMethodDesc(size_t nIndex);
-	int GetAxMethodParams(size_t nIndex);
+	size_t CountAxMethodParams(size_t nIndex);
 	GUID GetAxMethodParamGUID(size_t nIndex, int nParam);
 	CString GetAxMethodParamName(size_t nIndex, int nParam);
 	CString GetAxMethodParamVarType(size_t nIndex, int nParam);
@@ -88,11 +89,6 @@ public:
 	virtual void Serialize(CArchive& ar, int nPropertyVersion);
   IOStatus WriteToTextFile(FILE* pFile) const;
   IOStatus ReadFromTextFile5(std::ifstream &sFile);
-
-protected:
-	virtual void SerializeProp(CArchive& ar, AxPropertyDescriptor& axProp, int nPropertyVersion);	
-  IOStatus WritePropToTextFile(FILE* pFile, const AxPropertyDescriptor& axProp) const;
-  IOStatus ReadPropFromTextFile5(std::ifstream &sFile, AxPropertyDescriptor& axProp);
 
 #ifdef _DIAGNOSTIC
 public:

@@ -784,7 +784,7 @@ void CColourPopup::EndSelection(int nMessage)
 	{
 		if (m_pProp != NULL && m_pAxCtrl != NULL)
 		{
-			m_pAxCtrl->SetColor(m_pProp->GetAxInterfaceDescriptorPtr()->GetActiveXSetProperyId(), m_crColour);
+			m_pAxCtrl->SetColor(m_pProp->GetAxInterfaceDescriptorPtr()->GetPutDispId(), m_crColour);
 			m_pParent->Invalidate();
 		}
 	}

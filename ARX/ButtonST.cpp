@@ -7,11 +7,6 @@
 #include "PictureObject.h"
 #include "AcadColorTable.h"
 #include "Project.h"
-//#include "CxAcadSlide.h"
-//#include "MemDC.h"
-//#include "DropTarget.h"
-//#include "DropSource.h"
-//#include "OleOdcDropTarget.h"
 
 #ifdef	BTNST_USE_SOUND
 #pragma comment(lib, "winmm.lib")

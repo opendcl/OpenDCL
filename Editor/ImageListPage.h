@@ -8,7 +8,7 @@ class CImageListObject;
 #include "Resource.h"
 #include "PropertyObject.h"
 
-class CDclFormObject;
+class CDclControlObject;
 class CImageListObject;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -16,11 +16,16 @@ class CImageListObject;
 
 class CImageListPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CImageListPage)
+	//DECLARE_DYNCREATE(CImageListPage)
+
+	CDclControlObject* mpDclControl;
+	RefCountedPtr< CImageList > mpImageList;
 
 // Construction
+//protected:
+//	CImageListPage();
 public:
-	CImageListPage();
+	CImageListPage( CDclControlObject* pDclControl );
 	~CImageListPage();
 
 // Dialog Data
@@ -31,11 +36,12 @@ public:
 	CListCtrl	m_PicList;
 	//}}AFX_DATA
 
-	RefCountedPtr< CPropertyObject > m_pImageListIndex;
-	CDclFormObject *m_pDclForm;
-	CImageListObject *m_pImageListObj;
-	CImageList m_ImageList;
-	bool m_bImageListCreated;
+	CImageList& GetImageList() { return *mpImageList; }
+
+	//RefCountedPtr< CPropertyObject > m_pImageListIndex;
+	//CDclFormObject *m_pDclForm;
+	//CImageListObject *m_pImageListObj;
+	//bool m_bImageListCreated;
 	void LoadPictureFile(LPCTSTR szFile);
 	BOOL ImageListAddPicture(LPPICTUREDISP iPic);
 	int nCurrentWidth;

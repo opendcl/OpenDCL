@@ -6,4 +6,4 @@
 class CDclControlObject;
 
 
-void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString &sArgs, CString &sDesc, const CDclControlObject *pControl);
+void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CString &sArgs, CString &sDesc);

@@ -745,101 +745,42 @@ void CArxDialogControl::SetDwgListComboFolderLink(CDwgDirList *pDwgList)
 //static
 void CArxDialogControl::ResetImageList(CDclControlObject *pArxObject, CWnd *pControl, int nID)
 {
-	CImageListObject *pImageListObject = NULL;
-
-	//if (pArxObject->m_pImageList == NULL && pArxObject->GetType() == CtlListView)
-	//{
-	//	int nListCtrlStyle = pArxObject->GetLngProperty(nListViewStyle);
-	//	OdclListCtrl* pListCtrl = (OdclListCtrl*)pControl;
-	//	pListCtrl->m_DefaultImageList.Create(1,pArxObject->GetLngProperty(nRowHeight),ILC_COLOR, 1, 1);	
-	//	pListCtrl->SetImageList(&pListCtrl->m_DefaultImageList, TVSIL_NORMAL);
-	//	pListCtrl->SetImageList(&pListCtrl->m_DefaultImageList, LVSIL_SMALL);
-	//	return;
-	//}
-	
-	if (pArxObject->m_pImageList == NULL && pArxObject->GetType() == CtlGrid)
-	{
-		CSpreadSheet* pListCtrl = (CSpreadSheet*)pControl;
-		
-		int n = pArxObject->GetLngProperty(nRowHeight);
-		pListCtrl->m_DefaultImageList.Create(1, n,ILC_COLOR, 1, 1);	
-		pListCtrl->SetImageList(&pListCtrl->m_DefaultImageList, TVSIL_NORMAL);
-		pListCtrl->SetImageList(&pListCtrl->m_DefaultImageList, LVSIL_SMALL);
-
-		pListCtrl->m_DefaultImageList.SetBkColor(::GetSysColor(COLOR_WINDOW));
-		return;
-	}
-
-	if (pArxObject->m_pImageList == NULL)
-	{
-		int nImageListIndex = pArxObject->GetImageListIndex();
-		
-		// exit method if there is no imagelists assigned to mpHostDlg control
-		if (nImageListIndex == -1)
-			return;
-
-		// exit method if no image lists are available
-		if (pArxObject->GetOwnerForm()->m_ImageListCollection.GetCount() == 0)
-			return;
-
-		POSITION pos = pArxObject->GetOwnerForm()->m_ImageListCollection.FindIndex(nImageListIndex);
-		CImageListObject *pImageListObject = pArxObject->GetOwnerForm()->m_ImageListCollection.GetAt(pos);
-	}	
-	else
-	{
-		pImageListObject = pArxObject->m_pImageList;
-	}
-
-	if (pImageListObject == NULL)
-		return;
-
 	switch (pArxObject->GetType())
 	{
-		//case CtlTabStrip:
-		//{
-		//	((VdclTab*)pControl)->GetTabCtrl().SetImageList(&pImageListObject->m_ImageList);
-		//	break;
-		//}
 		case CtlTree:
 		{
-			((VdclTree*)pControl)->m_ChildTree.SetImageList(&pImageListObject->m_ImageList, TVSIL_NORMAL);
-			pImageListObject->m_ImageList.SetBkColor(((VdclTree*)pControl)->m_ChildTree.GetBkColor());
+			RefCountedPtr< CImageListObject > pImageList = pArxObject->GetImageList();
+			if( pImageList )
+			{
+				pImageList->m_ImageList.SetBkColor(((VdclTree*)pControl)->m_ChildTree.GetBkColor());
+				((VdclTree*)pControl)->m_ChildTree.SetImageList(&pImageList->m_ImageList, TVSIL_NORMAL);
+			}
 			break;
 		}
-		
-		
 		case CtlImageComboBox:
 		{	
-			((VdclComboBoxEx*)pControl)->SetImageList(&pImageListObject->m_ImageList);
+			RefCountedPtr< CImageListObject > pImageList = pArxObject->GetImageList();
+			if( pImageList )
+				((VdclComboBoxEx*)pControl)->SetImageList(&pImageList->m_ImageList);
 			break;
 		}
-		//case CtlListView:
-		//{
-		//	int nListCtrlStyle = pArxObject->GetLngProperty(nListViewStyle);
-		//	((OdclListCtrl*)pControl)->SetImageList(&pImageListObject->m_ImageList, TVSIL_NORMAL);
-		//	((OdclListCtrl*)pControl)->SetImageList(&pImageListObject->m_ImageList, LVSIL_SMALL);
-		//	
-		//	pImageListObject->m_ImageList.SetBkColor(((OdclListCtrl*)pControl)->GetBkColor());
-		//	
-		//	int cx, cy;
-		//	::ImageList_GetIconSize(pImageListObject->m_ImageList, &cx, &cy);
-		//	
-		//	if (nListCtrlStyle == 0 && nListCtrlStyle == 1)
-		//	{
-		//		// set the icon spacing
-		//		((OdclListCtrl*)pControl)->SetIconSpacing(
-		//			pArxObject->GetLngProperty(nIconXSpacing) + cx,
-		//			pArxObject->GetLngProperty(nIconYSpacing) + cy);
-		//	}
-		//	break;
-		//}
 		case CtlGrid:
 		{
-			if (pImageListObject->m_ImageList.m_hImageList != NULL)
+			CSpreadSheet* pListCtrl = (CSpreadSheet*)pControl;
+			RefCountedPtr< CImageListObject > pImageList = pArxObject->GetImageList();
+			if (pImageList)
 			{
-				((CSpreadSheet*)pControl)->SetImageList(&pImageListObject->m_ImageList, TVSIL_NORMAL);
-				((CSpreadSheet*)pControl)->SetImageList(&pImageListObject->m_ImageList, LVSIL_SMALL);
-				pImageListObject->m_ImageList.SetBkColor(::GetSysColor(COLOR_BTNFACE));
+				pImageList->m_ImageList.SetBkColor(::GetSysColor(COLOR_BTNFACE));
+				pListCtrl->SetImageList(&pImageList->m_ImageList, TVSIL_NORMAL);
+				pListCtrl->SetImageList(&pImageList->m_ImageList, LVSIL_SMALL);
+			}
+			else
+			{
+				if( !pListCtrl->m_DefaultImageList.m_hImageList )
+					pListCtrl->m_DefaultImageList.Create(1, pArxObject->GetLngProperty(nRowHeight), ILC_COLOR, 1, 1);
+				pListCtrl->m_DefaultImageList.SetBkColor(::GetSysColor(COLOR_WINDOW));
+				pListCtrl->SetImageList(&pListCtrl->m_DefaultImageList, TVSIL_NORMAL);
+				pListCtrl->SetImageList(&pListCtrl->m_DefaultImageList, LVSIL_SMALL);
 			}
 			break;
 		}
@@ -1667,60 +1608,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			}
 			break;
 			
-		}
-		
-		case nTabsCaption:
-		case nTabsImageList:
-		{
-			int nImageListIndex = pControl->GetImageListIndex();
-
-			TC_ITEM TabCtrlItem;
-			CString sTTT;
-			if (nImageListIndex == -1)
-				TabCtrlItem.mask = TCIF_TEXT;
-			else				
-				TabCtrlItem.mask = TCIF_TEXT|TCIF_IMAGE;			
-			
-			// delete all previos tabs
-			((VdclTab*)pControlWnd)->GetTabCtrl().DeleteAllItems();
-			
-			int nCount = pControl->CountPropertyListItems(nTabsCaption) -1;
-			int nBottom = 0;
-			while (nCount >= 0)
-			{
-			/*
-				CString Tab = pControl->GetPropertyListItem(nTabsCaption, nCount);
-				// get the tag caption
-				TabCtrlItem.pszText = Tab.GetBuffer(256);		
-				
-				// set the image list item number is required
-				if (nImageListIndex > -1)
-					TabCtrlItem.iImage = atol(pControl->GetPropertyListItem(nTabsImageList, nCount));
-				
-				// add the new tab
-				//((VdclTab*)pControlWnd)->GetTabCtrl().InsertItem( 0, &TabCtrlItem );
-				
-				// get the new items' rectangle
-				CRect rcTab;
-				((VdclTab*)pControlWnd)->GetTabCtrl().GetItemRect( 
-					((VdclTab*)pControlWnd)->GetTabCtrl().GetItemCount() - 1,
-					&rcTab);
-
-				// if the bottom of pPane->GetHostDialog() tab is greater than the last setting
-				// update the bottom value
-				if (rcTab.bottom > nBottom)
-					nBottom = rcTab.bottom;
-			*/
-				nCount--;
-			}
-			
-			// get the height of the tab control
-			CRect rcTabCtrl;
-			((VdclTab*)pControlWnd)->GetWindowRect(&rcTabCtrl);
-			
-			// subtract the lowest tab bottom to get the control area height
-			pControl->m_ClientHeight = rcTabCtrl.Height() - nBottom;
-			break;
 		}
 		case nTabSelected:
 		{

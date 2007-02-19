@@ -59,6 +59,7 @@ protected:
 class CListViewControlX : public CArxDialogControl
 {
 	bool mbBlockList;
+	CImageList mBlockViewImageList;
 
 public:
 	CListViewControlX( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pWnd )
@@ -76,7 +77,6 @@ public:
 	// operations
 	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
 	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
-	virtual bool OnApplyImageList( RefCountedPtr< CPropertyObject > pProp );
 };
 
 
@@ -89,7 +89,7 @@ protected:
 	CListViewControlX mControlX;
 	CDclControlObject* mpSourceControl;	
 	CControlPane* mpControlPane;
-	RefCountedPtr< CImageList > mpCtrlImageList;
+	CImageList mDefaultImageList;
 
 public:
 	CPPToolTip m_ToolTip;
@@ -104,7 +104,6 @@ public:
 	CString				m_sDialogName;
 	int					m_nEditSubItem;
 	CLVEdit				m_LVEdit;
-	//CImageList			m_DefaultImageList;
 	//bool				m_bEditCells;
 
 	// BlockList Attributes
@@ -120,8 +119,6 @@ public:
 public:
 	CArxDialogControl& GetDialogControl() { return mControlX; }
 	const CArxDialogControl& GetDialogControl() const { return mControlX; }
-	RefCountedPtr< CImageList > GetCtrlImageList() const { return mpCtrlImageList; }
-	void SetCtrlImageList( RefCountedPtr< CImageList > pImageList ) { mpCtrlImageList = pImageList; }
 
 // Operations
 public:

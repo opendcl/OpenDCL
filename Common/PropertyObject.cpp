@@ -18,7 +18,6 @@
 
 static const int nNotSet = -1;
 static const int nDePropDescResStringOffset = 2100;
-static const int MAX_CALLING_ARGUMENTS = 16;
 
 
 namespace PropVal
@@ -1358,7 +1357,7 @@ bool CPropertyObject::SetStringValue( LPCTSTR pszValue )
 
 OLE_COLOR CPropertyObject::GetOLEColorValue() const
 {
-	OLE_COLOR dwValue;
+	OLE_COLOR dwValue = 0;
 	bool bSuccess = mpValue->GetValue( dwValue );
 	assert( bSuccess == true );
 	return dwValue;
@@ -1373,7 +1372,7 @@ bool CPropertyObject::SetOLEColorValue( const OLE_COLOR& dwColor )
 
 long CPropertyObject::GetLongValue() const
 {
-	long lValue;
+	long lValue = -1;
 	bool bSuccess = mpValue->GetValue( lValue );
 	assert( bSuccess == true );
 	return lValue;
@@ -1400,7 +1399,7 @@ bool CPropertyObject::SetLongValue( long lValue )
 
 bool CPropertyObject::GetBooleanValue() const
 {
-	bool bValue;
+	bool bValue = false;
 	bool bSuccess = mpValue->GetValue( bValue );
 	assert( bSuccess == true );
 	return bValue;
@@ -1415,7 +1414,7 @@ bool CPropertyObject::SetBooleanValue( bool bValue )
 
 double CPropertyObject::GetDoubleValue() const
 {
-	double dblValue;
+	double dblValue = 0.0;
 	bool bSuccess = mpValue->GetValue( dblValue );
 	assert( bSuccess == true );
 	return dblValue;
@@ -1430,7 +1429,7 @@ bool CPropertyObject::SetDoubleValue( double dblValue )
 
 short CPropertyObject::GetShortValue() const
 {
-	short nValue;
+	short nValue = -1;
 	bool bSuccess = mpValue->GetValue( nValue );
 	assert( bSuccess == true );
 	return nValue;
@@ -1576,7 +1575,7 @@ CString CPropertyObject::GetDocumentationDesc()
 	CString sDesc;
 	AxInterfaceDescriptor** v;
 	if( mpValue->GetValue( v ) && *v )
-		sDesc = (*v)->GetDocumentationDesc();
+		sDesc = (*v)->GetDesc();
 	if( sDesc.IsEmpty() )
 		sDesc = theWorkspace.LoadResourceString(mnID + nDePropDescResStringOffset);
 	return sDesc;

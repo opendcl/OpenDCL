@@ -9,6 +9,8 @@
 #include "Resource.h"
 #include "Workspace.h"
 
+//#define nChildCtrlIdStart  1100
+
 
 IMPLEMENT_DYNCREATE(CControlHolder, CWnd)
 
@@ -17,7 +19,7 @@ IMPLEMENT_DYNCREATE(CControlHolder, CWnd)
 
 CControlHolder::CControlHolder()
 {
-	m_ControlId = nChildCtrlIdStart;	
+	m_ControlId = -1;	
 	m_bSelected = false;
 	m_pArxObject = NULL;
 	m_bActiveXCtrl = false;
@@ -34,8 +36,7 @@ CControlHolder::~CControlHolder()
 
 int CControlHolder::GetId()
 {
-	m_ControlId++;
-	return m_ControlId;
+	return ++m_ControlId;
 }
 
 
@@ -59,14 +60,16 @@ END_MESSAGE_MAP()
 
 BOOL CControlHolder::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID) 
 {
-	return CStatic::Create(CString(), dwStyle, rect, pParentWnd, nID);
+	BOOL bSuccess = CStatic::Create(CString(), dwStyle, rect, pParentWnd, nID);
+	if( bSuccess )
+		m_ControlId = nID;
+	return bSuccess;
 }
 
 int CControlHolder::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	if (CStatic::OnCreate(lpCreateStruct) == nNotSet)
-		return nNotSet;
-
+	if (CStatic::OnCreate(lpCreateStruct) == -1)
+		return -1;
 	CreateGrips();
 
 	return 0;
@@ -319,21 +322,17 @@ void CControlHolder::OnPaint()
 	CRect rcClient;
 	GetClientRect(&rcClient);
 	
-	IViewObject2 *m_lpViewObject = NULL;
-	IDispatch *pDispatch = NULL;
-	pDispatch = pCtrl->GetOleIDispatch();
-	if (pDispatch == NULL)
-	{
+	CComPtr< IDispatch > pDispatch;
+	if( FAILED(pCtrl->GetOleDispatch( &pDispatch )) )
 		return;
-	}
-	HRESULT hr = pDispatch->QueryInterface(IID_IViewObject2, (void **) &m_lpViewObject);
-	if (!SUCCEEDED(hr))
+
+	CComPtr< IViewObject2 > pViewObject;
+	HRESULT hr = pDispatch->QueryInterface( &pViewObject );
+	if (FAILED(hr))
 		return; // not supported
 
-	if (m_lpViewObject == NULL)
-	{
+	if (pViewObject == NULL)
 		return;
-	}
 
 	RECTL rc;
 	rc.left = rcClient.left;
@@ -341,8 +340,7 @@ void CControlHolder::OnPaint()
 	rc.top = rcClient.top;
 	rc.bottom = rcClient.bottom;
 	
-	m_lpViewObject->Draw( DVASPECT_CONTENT, nNotSet, NULL, NULL, NULL, dc.m_hDC, &rc, NULL, NULL, 0 );
-	
+	pViewObject->Draw( DVASPECT_CONTENT, nNotSet, NULL, NULL, NULL, dc.m_hDC, &rc, NULL, NULL, 0 );
 }
 
 
@@ -356,11 +354,7 @@ void CControlHolder::OnDestroy()
 	m_GripRect6.DestroyWindow();
 	m_GripRect7.DestroyWindow();
 	m_GripRect8.DestroyWindow();
-	
-
 	CStatic::OnDestroy();
-		
-	
 }
 
 CWnd *CControlHolder::GetChildControl() 
@@ -440,9 +434,10 @@ HRESULT CControlHolder::GetProperty(AxPropertyDescriptor *axProp, CString &strRe
 {
 	return GetActiveXCtrl()->GetProperty(axProp, strReturnValue);
 }
-void CControlHolder::SetProperty(AxPropertyDescriptor *axProp, CString sNewValue)
+
+void CControlHolder::SetProperty( AxPropertyDescriptor *axProp, LPCTSTR pszNewValue )
 {
-	GetActiveXCtrl()->SetProperty(axProp, sNewValue);
+	GetActiveXCtrl()->SetProperty( axProp, pszNewValue );
 }
 	
 void CControlHolder::ShowPropertyPages()

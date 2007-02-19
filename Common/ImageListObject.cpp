@@ -14,7 +14,12 @@ CImageListObject::CImageListObject()
 {
 	m_ImageList.m_hImageList = NULL;
 	m_Delete = FALSE;
+}
 
+CImageListObject::CImageListObject( const CImageListObject& Src )
+: m_Delete( FALSE )
+{
+	m_ImageList.m_hImageList = ImageList_Duplicate( Src.m_ImageList );
 }
 
 CImageListObject::~CImageListObject()
@@ -22,12 +27,11 @@ CImageListObject::~CImageListObject()
 	m_ImageList.DeleteImageList();
 }
 
-void CImageListObject::Copy(CImageListObject* other)
+CImageListObject& CImageListObject::operator =( const CImageListObject& Src )
 {
-	m_ImageSize = other->m_ImageSize;
-	
-	m_ImageList.Create(&other->m_ImageList);
-	
+	m_ImageSize = Src.m_ImageSize;
+	m_ImageList.m_hImageList = ImageList_Duplicate( Src.m_ImageList );
+	return *this;
 }
 
 IOStatus CImageListObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)

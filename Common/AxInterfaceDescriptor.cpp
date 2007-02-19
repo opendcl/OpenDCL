@@ -12,8 +12,6 @@
 #include "AxContainer.h"
 #include "OleFont.h"
 
-#define MAX_CALLING_ARGUMENTS 16
-
 
 void AxInterfaceDescriptor::clear()
 {
@@ -23,62 +21,6 @@ void AxInterfaceDescriptor::clear()
 	mpPropPutRef = NULL;
 	mpEvent = NULL;
 	mpMethods = NULL;
-}
-
-IOStatus AxInterfaceDescriptor::ReadPropFromTextFile5(std::ifstream &sFile, AxPropertyDescriptor& axProp)
-{
-  LONG Id;
-  if (!readLong(sFile, Id)) return statInvalidFormat;
-  axProp.Id = Id;
-  if (!readString(sFile, axProp.Name)) return statInvalidFormat;
-  if (!readString(sFile, axProp.DocumentationDesc)) return statInvalidFormat;
-
-  if (!readVARTYPE(sFile, axProp.Type)) return statInvalidFormat;
-  if (!readBOOL(sFile, axProp.IsArray)) return statInvalidFormat;
-  if (!readBOOL(sFile, axProp.CanSet)) return statInvalidFormat;
-
-  if (!readCLSID(sFile, axProp.Guid)) return statInvalidFormat;
-	int ctEnum;
-  if (!readInt(sFile, ctEnum)) return statInvalidFormat;
-	axProp.rEnum.resize( ctEnum );
-	int ctParams;
-  if (!readInt(sFile, ctParams)) return statInvalidFormat;
-	axProp.rArgs.resize( ctParams );
-  int iKind;
-  if (!readInt(sFile, iKind)) return statInvalidFormat;
-  switch(iKind)
-  {
-  case INVOKE_FUNC:
-    axProp.invKind = INVOKE_FUNC;
-    break;
-  case INVOKE_PROPERTYGET:
-    axProp.invKind = INVOKE_PROPERTYGET;
-    break;
-  case INVOKE_PROPERTYPUT:
-    axProp.invKind = INVOKE_PROPERTYPUT;
-    break;
-  case INVOKE_PROPERTYPUTREF:
-    axProp.invKind = INVOKE_PROPERTYPUTREF;
-    break;
-  default:
-    axProp.invKind = (INVOKEKIND)iKind;
-    break;
-  }
-  for (size_t i=0; i<axProp.rEnum.size(); i++)
-  {
-    if (!readString(sFile, axProp.rEnum[i].Name)) return statInvalidFormat;
-    COleVariant var;
-    if (!readOleVariant(sFile, var)) return statInvalidFormat;
-    axProp.rEnum[i].Var = var;
-  }
-  for (size_t i = 0; i<axProp.rArgs.size(); i++)
-  {
-    if (!readVARTYPE(sFile, axProp.rArgs[i].vt)) return statInvalidFormat;
-    if (!readString(sFile, axProp.rArgs[i].name)) return statInvalidFormat;
-		if (!readCLSID(sFile, axProp.rArgs[i].clsid)) return statInvalidFormat;
-  }
-
-  return statOK;
 }
 
 
@@ -96,7 +38,7 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
   {
 		delete mpProp;
     mpProp = new AxPropertyDescriptor;
-		IOStatus stat = ReadPropFromTextFile5(sFile, *mpProp);
+		IOStatus stat = mpProp->ReadFromTextFile(sFile, 5);
     if (stat != statOK) return stat;
   }
 
@@ -105,7 +47,7 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
   {
 		delete mpPropGet;
     mpPropGet = new AxPropertyDescriptor;
-		IOStatus stat = ReadPropFromTextFile5(sFile, *mpPropGet);
+		IOStatus stat = mpPropGet->ReadFromTextFile(sFile, 5);
     if (stat != statOK) return stat;
   }
 
@@ -114,7 +56,7 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
   {
 		delete mpPropPut;
     mpPropPut = new AxPropertyDescriptor;
-		IOStatus stat = ReadPropFromTextFile5(sFile, *mpPropPut);
+		IOStatus stat = mpPropPut->ReadFromTextFile(sFile, 5);
     if (stat != statOK) return stat;
   }
 
@@ -123,7 +65,7 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
   {
 		delete mpPropPutRef;
     mpPropPutRef = new AxPropertyDescriptor;
-		IOStatus stat = ReadPropFromTextFile5(sFile, *mpPropPutRef);
+		IOStatus stat = mpPropPutRef->ReadFromTextFile(sFile, 5);
     if (stat != statOK) return stat;
   }
 
@@ -132,19 +74,8 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
   {
 		delete mpEvent;
 		mpEvent = new AxEventDescriptor;
-    if (!readDISPID(sFile, mpEvent->Id)) return statInvalidFormat;
-    if (!readString(sFile, mpEvent->Name)) return statInvalidFormat;
-    if (!readString(sFile, mpEvent->DocumentationDesc)) return statInvalidFormat;
-
-    if (!readInt(sFile, mpEvent->nArgs)) return statInvalidFormat;
-    for (int i=0; i<MAX_CALLING_ARGUMENTS; i++) {
-      if (!readVARTYPE(sFile, mpEvent->CallingArgs[i])) return statInvalidFormat;
-      CString temp;
-      if (!readString(sFile, temp)) return statInvalidFormat;
-      mpEvent->CallingArgNames[i] = temp;
-      if (!readCLSID(sFile, mpEvent->CallingArgClsids[i])) return statInvalidFormat;
-    }
-    if (!readString(sFile, mpEvent->Params)) return statInvalidFormat;
+		IOStatus stat = mpEvent->ReadFromTextFile(sFile, 5);
+    if (stat != statOK) return stat;
   }
   if (!readBOOL(sFile, bPropMethod)) return statInvalidFormat;
   if (bPropMethod)
@@ -152,55 +83,16 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
 		delete mpMethods;
 		mpMethods = new std::vector< RefCountedPtr< AxMethodDescriptor > >;
     int nCount;
-
     if (!readInt(sFile, nCount)) return statInvalidFormat;
-
-    // do loop to navigate objects
     while (nCount-- > 0)
     {
-      // get current object
 			std::auto_ptr< AxMethodDescriptor > pMethod( new AxMethodDescriptor );
-
-      // get object from archive
 			IOStatus stat = pMethod->ReadFromTextFile(sFile);
 			if (stat != statOK) return stat;
-
-      // add that ArxControlObject to the list object
 			mpMethods->push_back(pMethod.release());		
     }
   }
-
   return statOK;
-}
-
-
-IOStatus AxInterfaceDescriptor::WritePropToTextFile(FILE* pFile, const AxPropertyDescriptor& axProp) const
-{
-  LONG Id = (LONG)axProp.Id;
-  writeLong(pFile, Id);
-  writeString(pFile, axProp.Name);
-  writeString(pFile, axProp.DocumentationDesc);
-  writeVARTYPE(pFile, axProp.Type);
-  writeBOOL(pFile, axProp.IsArray);
-  writeBOOL(pFile, axProp.CanSet);
-  writeCLSID(pFile, axProp.Guid);
-  writeInt(pFile, axProp.rEnum.size());
-  writeInt(pFile, axProp.rArgs.size());
-  int iKind = axProp.invKind;
-  writeInt(pFile, iKind);
-  for (size_t i=0; i<axProp.rEnum.size(); i++)
-  {
-    writeString(pFile, axProp.rEnum[i].Name);
-    COleVariant var = axProp.rEnum[i].Var;
-    writeOleVariant(pFile, var);
-  }
-  for (size_t i = 0; i<axProp.rArgs.size(); i++)
-  {
-    writeVARTYPE(pFile, axProp.rArgs[i].vt);
-		writeString(pFile, axProp.rArgs[i].name);
-		writeCLSID(pFile, axProp.rArgs[i].clsid);
-  }
-	return statOK;
 }
 
 
@@ -216,41 +108,29 @@ IOStatus AxInterfaceDescriptor::WriteToTextFile(FILE* pFile) const
   bProp = (mpProp != NULL);
   writeBOOL(pFile, bProp);
   if (bProp)
-    WritePropToTextFile(pFile, *mpProp);
+    mpProp->WriteToTextFile(pFile);
 
   bPropGet = (mpPropGet != NULL);
   writeBOOL(pFile, bPropGet);
   if (bPropGet)
-    WritePropToTextFile(pFile, *mpPropGet);
+    mpPropGet->WriteToTextFile(pFile);
 
   bPropPut = (mpPropPut != NULL);
   writeBOOL(pFile, bPropPut);
   if (bPropPut)
-    WritePropToTextFile(pFile, *mpPropPut);
+    mpPropPut->WriteToTextFile(pFile);
 
   bPropPutRef = (mpPropPutRef != NULL);
   writeBOOL(pFile, bPropPutRef);
   if (bPropPutRef)
-    WritePropToTextFile(pFile, *mpPropPutRef);
+    mpPropPutRef->WriteToTextFile(pFile);
 
   bPropEvent = (mpEvent != NULL);
   writeBOOL(pFile, bPropEvent);
+  if (bPropEvent)
+    mpEvent->WriteToTextFile(pFile);
 
-  if (mpEvent)
-  {
-    writeDISPID(pFile, mpEvent->Id);
-    writeString(pFile, mpEvent->Name);
-    writeString(pFile, mpEvent->DocumentationDesc);
-    writeInt(pFile, mpEvent->nArgs);
-    for (int i=0; i<MAX_CALLING_ARGUMENTS; i++)
-    {
-      writeVARTYPE(pFile, mpEvent->CallingArgs[i]);
-      writeString(pFile, mpEvent->CallingArgNames[i]);
-      writeCLSID(pFile, mpEvent->CallingArgClsids[i]);
-  }
-    writeString(pFile, mpEvent->Params);
-  }
-  bPropMethod = (mpMethods != NULL);
+	bPropMethod = (mpMethods != NULL);
   writeBOOL(pFile, bPropMethod);
   if (mpMethods)
   {
@@ -260,93 +140,6 @@ IOStatus AxInterfaceDescriptor::WriteToTextFile(FILE* pFile) const
       mpMethods->at(idx)->WriteToTextFile(pFile);
   }
 	return statOK;
-}
-
-
-void AxInterfaceDescriptor::SerializeProp(CArchive& ar, AxPropertyDescriptor& axProp, int nPropertyVersion)
-{
-	if (ar.IsStoring())
-	{
-		LONG Id = (LONG)axProp.Id;
-		ar << Id;
-		ar << axProp.Name;
-		ar << axProp.DocumentationDesc;
-		ar << axProp.Type;
-		ar << axProp.IsArray;
-		ar << axProp.CanSet;
-		SerializeCLSID(ar, axProp.Guid);
-		ar << axProp.rEnum.size();
-		ar << axProp.rArgs.size();
-		int iKind = axProp.invKind;
-		ar << iKind;
-		for (size_t i=0; i<axProp.rEnum.size(); i++)
-		{
-			ar << axProp.rEnum[i].Name;
-			COleVariant var = axProp.rEnum[i].Var;
-			ar << var;
-		}
-		for (size_t i = 0; i<axProp.rArgs.size(); i++)
-		{
-			ar << axProp.rArgs[i].vt;
-			ar << axProp.rArgs[i].name;
-			SerializeCLSID(ar, axProp.rArgs[i].clsid);
-		}
-	}
-	else
-	{
-		LONG Id;
-		ar >> Id; axProp.Id = Id;
-		ar >> axProp.Name;
-		ar >> axProp.DocumentationDesc;
-
-
-		ar >> axProp.Type; 
-		ar >> axProp.IsArray;
-		ar >> axProp.CanSet;
-		
-		SerializeCLSID(ar, axProp.Guid);
-		size_t ctEnum;
-		ar >> ctEnum;
-		axProp.rEnum.resize( ctEnum );
-		size_t ctParams;
-		ar >> ctParams;
-		axProp.rArgs.resize( ctParams );
-		int iKind;
-		ar >> iKind;
-		switch(iKind)
-		{
-			case INVOKE_FUNC:
-				axProp.invKind = INVOKE_FUNC;
-				break;
-			case INVOKE_PROPERTYGET:
-				axProp.invKind = INVOKE_PROPERTYGET;
-				break;
-			case INVOKE_PROPERTYPUT:
-				axProp.invKind = INVOKE_PROPERTYPUT;
-				break;
-			case INVOKE_PROPERTYPUTREF:
-				axProp.invKind = INVOKE_PROPERTYPUTREF;
-				break;
-			default:
-				axProp.invKind = (INVOKEKIND)iKind;
-				break;
-		}
-		for (size_t i=0; i<ctEnum; i++)
-		{
-			ar >> axProp.rEnum[i].Name;
-			COleVariant var;
-			ar >> var; 
-      axProp.rEnum[i].Var = var;
-		}
-		for (size_t i = 0; i<ctParams; i++)
-		{
-			ar >> axProp.rArgs[i].vt;
-			ar >> axProp.rArgs[i].name;
-			if (nPropertyVersion >= 4)
-				SerializeCLSID(ar, axProp.rArgs[i].clsid);
-		}
-	}
-
 }
 
 
@@ -364,40 +157,27 @@ void AxInterfaceDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 		bProp = (mpProp != NULL);
 		ar << bProp;
 		if (bProp)
-			SerializeProp(ar, *mpProp, nPropertyVersion);
+			mpProp->Serialize(ar, nPropertyVersion);
 
 		bPropGet = (mpPropGet != NULL);
 		ar << bPropGet;
 		if (bPropGet)
-			SerializeProp(ar, *mpPropGet, nPropertyVersion);
+			mpPropGet->Serialize(ar, nPropertyVersion);
 
 		bPropPut = (mpPropPut != NULL);
 		ar << bPropPut;
 		if (bPropPut)
-			SerializeProp(ar, *mpPropPut, nPropertyVersion);
+			mpPropPut->Serialize(ar, nPropertyVersion);
 
 		bPropPutRef = (mpPropPutRef != NULL);
 		ar << bPropPutRef;
 		if (bPropPutRef)
-			SerializeProp(ar, *mpPropPutRef, nPropertyVersion);
+			mpPropPutRef->Serialize(ar, nPropertyVersion);
 
 		bPropEvent = (mpEvent != NULL);
 		ar << bPropEvent;
-
-		if (mpEvent != NULL)
-		{
-			ar << mpEvent->Id;
-			ar << mpEvent->Name;
-			ar << mpEvent->DocumentationDesc;
-			ar << mpEvent->nArgs;
-			for (int i=0; i<MAX_CALLING_ARGUMENTS; i++)
-			{
-				 ar << mpEvent->CallingArgs[i];
-				 ar << mpEvent->CallingArgNames[i];
-				 SerializeCLSID(ar, mpEvent->CallingArgClsids[i]);
-			}				
-			ar << mpEvent->Params;
-		}
+		if (bPropEvent)
+			mpEvent->Serialize(ar, nPropertyVersion);
 		bPropMethod = (mpMethods != NULL);
 		ar << bPropMethod;
 		if (mpMethods != NULL)
@@ -405,7 +185,7 @@ void AxInterfaceDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 			short nSize = mpMethods->size();
 			ar << short(nSize);
 			for (int idx = 0; idx < nSize; ++idx)
-				mpMethods->at(idx)->Serialize(ar);
+				mpMethods->at(idx)->Serialize(ar, nPropertyVersion);
 		}
 	}
 	else
@@ -415,7 +195,7 @@ void AxInterfaceDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 		{
 			delete mpProp;
 			mpProp = new AxPropertyDescriptor;
-			SerializeProp(ar, *(AxPropertyDescriptor*)mpProp, nPropertyVersion);
+			mpProp->Serialize(ar, nPropertyVersion);
 		}
 
 		ar >> bPropGet;
@@ -423,7 +203,7 @@ void AxInterfaceDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 		{
 			delete mpPropGet;
 			mpPropGet = new AxPropertyDescriptor;
-			SerializeProp(ar, *(AxPropertyDescriptor*)mpPropGet, nPropertyVersion);
+			mpPropGet->Serialize(ar, nPropertyVersion);
 		}
 
 		ar >> bPropPut;
@@ -431,7 +211,7 @@ void AxInterfaceDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 		{
 			delete mpPropPut;
 			mpPropPut = new AxPropertyDescriptor;
-			SerializeProp(ar, *(AxPropertyDescriptor*)mpPropPut, nPropertyVersion);
+			mpPropPut->Serialize(ar, nPropertyVersion);
 		}
 
 		ar >> bPropPutRef;
@@ -439,7 +219,7 @@ void AxInterfaceDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 		{
 			delete mpPropPutRef;
 			mpPropPutRef = new AxPropertyDescriptor;
-			SerializeProp(ar, *(AxPropertyDescriptor*)mpPropPutRef, nPropertyVersion);
+			mpPropPutRef->Serialize(ar, nPropertyVersion);
 		}
 
 		ar >> bPropEvent;
@@ -447,22 +227,7 @@ void AxInterfaceDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 		{
 			delete mpEvent;
 			mpEvent = new AxEventDescriptor;
-			ar >> mpEvent->Id;
-			ar >> mpEvent->Name;
-			ar >> mpEvent->DocumentationDesc;
-
-
-			ar >> mpEvent->nArgs;
-			for (int i=0; i<MAX_CALLING_ARGUMENTS; i++)
-			{
-				 ar >> mpEvent->CallingArgs[i];
-				 ar >> mpEvent->CallingArgNames[i];
-
-
-				 if (nPropertyVersion >= 4)
-					SerializeCLSID(ar, mpEvent->CallingArgClsids[i]);
-		}
-			ar >> mpEvent->Params;
+			mpEvent->Serialize(ar, nPropertyVersion);
 		}
 		ar >> bPropMethod;
 		if (bPropMethod)
@@ -474,214 +239,75 @@ void AxInterfaceDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 			while (nCount-- > 0)
 			{
 				AxMethodDescriptor* pMethod = new AxMethodDescriptor;
-				pMethod->Serialize(ar);
+				pMethod->Serialize(ar, nPropertyVersion);
 				mpMethods->push_back(pMethod);		
 			}
 		}
 	}
 }
 
-
-
-CString AxInterfaceDescriptor::GetActiveXEnumDesc(CString sValue)
+AxPropertyDescriptor* AxInterfaceDescriptor::GetEnumDescriptor() const
 {
-	AxPropertyDescriptor *pPropDesc;
-	bool bFoundEnum = false;
-	int nThisValue;
+	if (mpPropGet && !mpPropGet->GetEnum().empty())
+		return mpPropGet;
+	if (mpProp && !mpProp->GetEnum().empty())
+		return mpProp;			
+	if (mpPropPut && !mpPropPut->GetEnum().empty())
+		return mpPropPut;
+	if (mpPropPutRef && !mpPropPutRef->GetEnum().empty())
+		return mpPropPutRef;
+	return NULL;
+}
 
-	if (!sValue.IsEmpty())
-	{
-		nThisValue = _tstol(sValue);
-	}
-	
-	if (mpPropGet != NULL)
-	{
-		if (!mpPropGet->rEnum.empty())
-		{
-			bFoundEnum = true;
-			pPropDesc = mpPropGet;
-		}			
-	}
-	else if (mpProp != NULL)
-	{
-		if (!mpProp->rEnum.empty())
-		{
-			bFoundEnum = true;
-			pPropDesc = mpProp;			
-		}
-	}
-	else if (mpPropPut != NULL)
-	{
-		if (!mpPropPut->rEnum.empty())
-		{
-			bFoundEnum = true;
-			pPropDesc = mpPropPut;
-		}
-	}	
-
+CString AxInterfaceDescriptor::GetEnumDesc(CString sValue) const
+{
+	AxPropertyDescriptor* pPropDesc = GetEnumDescriptor();
 	if (pPropDesc == NULL)
-	{
-		CString sValue;
-		sValue.Format(_T("%d"), nThisValue);
 		return sValue;
-	}
 
-	if (bFoundEnum)
+	size_t idx = pPropDesc->GetEnum().size();
+	while (idx-- > 0)
 	{
-		for (size_t i = 0; i<pPropDesc->rEnum.size(); i++)
-		{
-			if (VariantToString(pPropDesc->rEnum[i].Var) == sValue)				
-				return sValue + _T('-') + pPropDesc->rEnum[i].Name;		
-		}
+		if (VariantToString( pPropDesc->GetEnum().at(idx).Var ) == sValue)				
+			return sValue + _T('-') + pPropDesc->GetEnum().at(idx).Name;		
 	}
 	return CString();
 }
 
-bool AxInterfaceDescriptor::GetActiveXEnum()
-{
-	AxPropertyDescriptor *pPropDesc;
-	if (mpPropGet != NULL)
-	{
-		pPropDesc = mpPropGet;
-		if (!pPropDesc->rEnum.empty())
-			return true;
-	}
-	else if (mpProp != NULL)
-	{
-		pPropDesc = mpProp;
-		if (!pPropDesc->rEnum.empty())
-			return true;
-	}
-	else if (mpPropPut != NULL)
-	{
-		pPropDesc = mpPropPut;
-		if (!pPropDesc->rEnum.empty())
-			return true;
-	}
-	return false;
-}
-
-CString AxInterfaceDescriptor::GetActiveXEnumValue(int nEnumIndex)
+CString AxInterfaceDescriptor::GetEnumValue(int nEnumIndex) const
 {	
-	AxPropertyDescriptor *mpProp = NULL;
-	if (mpPropGet != NULL)
-	{
-		mpProp = mpPropGet;					
-	}
-	else if (mpProp != NULL)
-	{
-		mpProp = mpProp;
-	}
-	else if (mpPropPut != NULL)
-	{
-		mpProp = mpPropPut;
-	}	
-	if (mpProp == NULL)
+	AxPropertyDescriptor* pPropDesc = GetEnumDescriptor();
+	if (pPropDesc == NULL)
 		return CString();
-
-	return VariantToString(mpProp->rEnum[nEnumIndex].Var);
+	return VariantToString(pPropDesc->GetEnum().at(nEnumIndex).Var);
 }
 
-CString AxInterfaceDescriptor::GetActiveXPropery(CAxContainer *axContainer)
+AxPropertyDescriptor* AxInterfaceDescriptor::GetArgDescriptor() const
 {
-	HRESULT hr = - 1;
-	HRESULT hrGet = - 1;
-	HRESULT hrPut = - 1;
-	CString sResult;
-
-	if (mpPropGet != NULL)
-	{
-		if (mpPropGet->Type == VT_DISPATCH ||
-			mpPropGet->Type == VT_UNKNOWN)
-			return CString();
-		hrGet = axContainer->GetProperty(mpPropGet, sResult);
-		if (FAILED(hrGet))
-		{
-			return CString();
-			//mType = PropActiveXRunTime;
-		}
-	
-	}
-	else if (mpProp != NULL)
-	{
-		hr = axContainer->GetProperty(mpProp, sResult);
-		if (FAILED(hr))
-		{
-			//sResult = theWorkspace.LoadResourceString(IDS_RUNTIME);
-			//mType = PropActiveXRunTime;
-		}
-	}
-	else if (mpPropPutRef != NULL)
-	{
-		hrGet = axContainer->GetProperty(mpPropPutRef, sResult);
-		if (FAILED(hrGet))
-		{
-			//sResult = theWorkspace.LoadResourceString(IDS_RUNTIME);
-			//mType = PropActiveXRunTime;
-		}
-	
-	}
-	else if (mpPropPut != NULL)
-	{
-		//sResult = theWorkspace.LoadResourceString(IDS_RUNTIME);
-		//mType = PropActiveXRunTime;		
-	}
-	
-	return sResult;
+	if (mpPropGet && !mpPropGet->GetArgs().empty())
+		return mpPropGet;
+	if (mpProp && !mpProp->GetArgs().empty())
+		return mpProp;			
+	if (mpPropPut && !mpPropPut->GetArgs().empty())
+		return mpPropPut;
+	if (mpPropPutRef && !mpPropPutRef->GetArgs().empty())
+		return mpPropPutRef;
+	return NULL;
 }
 
-int AxInterfaceDescriptor::GetActiveXParamQty()
+size_t AxInterfaceDescriptor::GetParamQty() const
 {
-	int nQtyGet = 0;
-	int nQty = 0;
-	int nQtyPut = 0;
-	if (mpPropGet != NULL)
-	{
-		nQtyGet = mpPropGet->rArgs.size();
-		if (nQtyGet > 0)
-			return nQtyGet;
-	}
-	if (mpProp != NULL)
-	{
-		nQty = mpProp->rArgs.size();
-		if (mpProp->invKind == INVOKE_PROPERTYGET && nQty > 0)
-		{
-			//mType = PropActiveXRunTime;
-			return nQty;
-		}
-	}
-	if (mpPropPut != NULL)
-	{
-		nQtyPut = mpPropPut->rArgs.size();
-	}
-
-	if (nQtyGet > nQty && nQtyGet > nQtyPut)
-		return nQtyGet;
-	
-	else if (nQty > nQtyGet && nQty > nQtyPut)
-		return nQty;
-	
-	else if (nQtyPut > nQty && nQtyPut > nQtyGet)
-		return nQtyPut;
-	
-	else
+	AxPropertyDescriptor* pPropDesc = GetArgDescriptor();
+	if (pPropDesc == NULL)
 		return 0;
+	return pPropDesc->GetArgs().size();
 }
 
 void AxInterfaceDescriptor::DoActiveXFontPropDlg(CAxContainer *axContainer)
 {	
 	try
 	{
-		COleFont font;
-		if (mpPropGet != NULL)
-			font = axContainer->GetFont(mpPropGet->Id);
-		else if (mpProp != NULL)
-			font = axContainer->GetFont(mpProp->Id);
-		else if (mpPropPut != NULL)
-			font = axContainer->GetFont(mpPropPut->Id);
-		else
-			return;
-
+		COleFont font = axContainer->GetFont(GetGetDispId());
 		CString		sFontName = font.GetName();
 		CY			cyFontSize = font.GetSize();
 		BOOL		bFontBold = font.GetBold();
@@ -714,72 +340,53 @@ void AxInterfaceDescriptor::DoActiveXFontPropDlg(CAxContainer *axContainer)
 		font.SetItalic(dlg.m_cf.lpLogFont->lfItalic);
 		font.SetStrikethrough(dlg.m_cf.lpLogFont->lfStrikeOut);		
 		
-		if (mpPropPut != NULL)
-			axContainer->SetFont(mpPropPut->Id, font);
-		else if (mpProp != NULL)
-			axContainer->SetFont(mpProp->Id, font);
-		else if (mpPropGet != NULL)
-			axContainer->SetFont(mpPropGet->Id, font);
-		
+		axContainer->SetFont(GetPutDispId(), font);
 	}
 	catch(...)
 	{
 	}
 }
 
-
-void AxInterfaceDescriptor::SetActiveXPropery(CAxContainer *axContainer, CString sNewValue)
-{
-	if (mpPropPut != NULL)
-		axContainer->SetProperty(mpPropPut, sNewValue);
-	else if (mpPropPutRef != NULL)
-		axContainer->SetProperty(mpPropPutRef, sNewValue);
-	else if (mpProp != NULL)
-		axContainer->SetProperty(mpProp, sNewValue);
-	
-	
-}
-
-CString AxInterfaceDescriptor::GetDocumentationDesc()
+CString AxInterfaceDescriptor::GetDesc() const
 {
 	if (mpPropGet != NULL)
-		return mpPropGet->DocumentationDesc;
+		return mpPropGet->GetDesc();
 	else if (mpPropPut != NULL)
-		return mpPropPut->DocumentationDesc;
+		return mpPropPut->GetDesc();
 	else if (mpPropPutRef != NULL)
-		return mpPropPutRef->DocumentationDesc;
+		return mpPropPutRef->GetDesc();
 	else if (mpProp != NULL)
-		return mpProp->DocumentationDesc;
+		return mpProp->GetDesc();
 	return CString();
 }
 
 CString AxInterfaceDescriptor::GetAxMethodDesc(size_t nIndex)
 {
 	if (nIndex < mpMethods->size())
-		return mpMethods->at(nIndex)->Desc;
+		return mpMethods->at(nIndex)->GetDesc();
 	return CString();
 }
 
 
 
-int AxInterfaceDescriptor::GetAxMethodParams(size_t nIndex)
+size_t AxInterfaceDescriptor::CountAxMethodParams( size_t nIndex )
 {
 	if (nIndex < mpMethods->size())
-		return mpMethods->at(nIndex)->nParamQty;
+		return mpMethods->at(nIndex)->GetArgs().size();
 	return 0;
 }
 
 CString AxInterfaceDescriptor::GetAxMethodParamName(size_t nIndex, int nParam)
 {
 	if (nIndex < mpMethods->size())
-		return mpMethods->at(nIndex)->CallingArgNames[nParam];
+		return mpMethods->at(nIndex)->GetArgs().at(nParam).name;
 	return CString();
 }
 
 VARTYPE AxInterfaceDescriptor::GetAxMethodReturnType(size_t nIndex)
 {
 	if (nIndex < mpMethods->size())
-		return mpMethods->at(nIndex)->ReturnType;
+		return mpMethods->at(nIndex)->GetReturnType();
 	return 0;
 }
 
@@ -794,95 +401,97 @@ AxMethodDescriptor * AxInterfaceDescriptor::GetAxMethod(size_t nIndex)
 CString AxInterfaceDescriptor::GetAxMethodParamVarType(size_t nIndex, int nParam)
 {
 	if (nIndex < mpMethods->size())
-		return VARTYPEtoString(mpMethods->at(nIndex)->CallingArgs[nParam]);
+		return VARTYPEtoString(mpMethods->at(nIndex)->GetArgs().at(nParam).vt);
 	return CString();
 }
 
 GUID AxInterfaceDescriptor::GetAxMethodParamGUID(size_t nIndex, int nParam)
 {
 	if (nIndex < mpMethods->size())
-		return mpMethods->at(nIndex)->CallingArgClsids[nParam];
+		return mpMethods->at(nIndex)->GetArgs().at(nParam).clsid;
 	GUID guid;
 	::memset(&guid, 0, sizeof(GUID));	
 	return guid;
 }
 	
-VARTYPE AxInterfaceDescriptor::GetActiveXProperyType()
+VARTYPE AxInterfaceDescriptor::GetType() const
 {
 	VARTYPE vReturn = 0;
 	if (mpPropGet != NULL)
-		vReturn = mpPropGet->Type;
+		vReturn = mpPropGet->GetType();
 	else if (mpProp != NULL)
-		vReturn = mpProp->Type;
+		vReturn = mpProp->GetType();
 	else if (mpPropPut != NULL)
-		vReturn = (VARTYPE) mpPropPut->Type;
+		vReturn = (VARTYPE) mpPropPut->GetType();
 	else if (mpPropPutRef != NULL)
-		vReturn = (VARTYPE) mpPropPutRef->Type;
-
+		vReturn = (VARTYPE) mpPropPutRef->GetType();
 	return vReturn;
 }
 
-GUID AxInterfaceDescriptor::GetActiveXProperyGuid()
+GUID AxInterfaceDescriptor::GetGuid() const
 {
 	if (mpPropGet != NULL)
-		return mpPropGet->Guid;
+		return mpPropGet->GetGuid();
 	else if (mpProp != NULL)
-		return mpProp->Guid;
+		return mpProp->GetGuid();
 	else if (mpPropPut != NULL)
-		return mpPropPut->Guid;
+		return mpPropPut->GetGuid();
 	else if (mpPropPutRef != NULL)
-		return mpPropPutRef->Guid;
-
+		return mpPropPutRef->GetGuid();
 	GUID guid;
 	::memset(&guid, 0, sizeof(GUID));	
 	return guid;
 }
 
-DISPID AxInterfaceDescriptor::GetActiveXGetProperyId()
+DISPID AxInterfaceDescriptor::GetGetDispId() const
 {
 	if (mpPropGet != NULL)
-		return mpPropGet->Id;
-	else if (mpProp != NULL)
-		return mpProp->Id;
-	else if (mpPropPut != NULL)
-		return mpPropPut->Id;
-	else if (mpPropPutRef != NULL)
-		return mpPropPutRef->Id;
-
-	DISPID dispid;
-	::memset(&dispid, 0, sizeof(DISPID));	
-	return dispid;
+		return mpPropGet->GetDispId();
+	if (mpProp != NULL)
+		return mpProp->GetDispId();
+	return 0;
 }
 
-DISPID AxInterfaceDescriptor::GetActiveXSetProperyId()
+DISPID AxInterfaceDescriptor::GetPutDispId() const
 {
 	if (mpPropPut != NULL)
-		return mpPropPut->Id;
+		return mpPropPut->GetDispId();
 	else if (mpPropPutRef != NULL)
-		return mpPropPutRef->Id;
+		return mpPropPutRef->GetDispId();
 	else if (mpProp != NULL)
-		return mpProp->Id;
-	else if (mpPropGet != NULL)
-		return mpPropGet->Id;
-	
-	DISPID dispid;
-	::memset(&dispid, 0, sizeof(DISPID));	
-	return dispid;
+		return mpProp->GetDispId();
+	return 0;
 }
 
 CString AxInterfaceDescriptor::GetName() const
 {
 	if (mpPropGet != NULL)
-		return mpPropGet->Name;
+		return mpPropGet->GetName();
 	if (mpProp != NULL)
-		return mpProp->Name;
+		return mpProp->GetName();
 	if (mpPropPut != NULL)
-		return mpPropPut->Name;
+		return mpPropPut->GetName();
 	if (mpPropPutRef != NULL)
-		return mpPropPutRef->Name;
+		return mpPropPutRef->GetName();
 	if (mpEvent != NULL)
-		return mpEvent->Name;
+		return mpEvent->GetName();
 	return CString();
+}
+
+AxPropertyDescriptor* AxInterfaceDescriptor::GetGetDescriptor() const
+{
+	if (mpPropGet != NULL)
+		return mpPropGet;
+	return mpProp;
+}
+
+AxPropertyDescriptor* AxInterfaceDescriptor::GetPutDescriptor() const
+{
+	if (mpPropPutRef != NULL)
+		return mpPropPutRef;
+	if (mpPropPut != NULL)
+		return mpPropPut;
+	return mpProp;
 }
 
 #ifdef _DIAGNOSTIC

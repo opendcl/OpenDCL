@@ -34,7 +34,6 @@ public:
 	virtual bool OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp );
 	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
 	virtual bool OnApplyCaptionFont( RefCountedPtr< CPropertyObject > pProp );
-	virtual bool OnApplyImageList( RefCountedPtr< CPropertyObject > pProp );
 };
 
 

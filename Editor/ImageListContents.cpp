@@ -54,14 +54,14 @@ BOOL CImageListContents::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	m_Image.SetImageList(&m_pImageListPage->m_ImageList);
-	m_TheList.SetImageList(&m_pImageListPage->m_ImageList, LVSIL_SMALL);
-	m_TheList.SetImageList(&m_pImageListPage->m_ImageList, TVSIL_NORMAL);
+	m_Image.SetImageList(&m_pImageListPage->GetImageList());
+	m_TheList.SetImageList(&m_pImageListPage->GetImageList(), LVSIL_SMALL);
+	m_TheList.SetImageList(&m_pImageListPage->GetImageList(), TVSIL_NORMAL);
 
-	m_pImageListPage->m_ImageList.SetBkColor(RGB(255,255,255));
+	m_pImageListPage->GetImageList().SetBkColor(RGB(255,255,255));
 
 	int i;
-  for (i=0; i<m_pImageListPage->m_ImageList.GetImageCount(); i++)
+  for (i=0; i<m_pImageListPage->GetImageList().GetImageCount(); i++)
 	{
 		COMBOBOXEXITEM cbi;
 

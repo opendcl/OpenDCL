@@ -799,6 +799,7 @@ void CToolBox::OnToolboxActivex()
 	((CObjectDCLView*)m_pActiveView)->m_ActiveXFileName = dlg.m_FileName;
 	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	CString strLicenseKey;
+	CWaitCursor wait;
 	if (RequestLicenseKey(strLicenseKey, dlg.m_clsid) == TRUE)
 		((CObjectDCLView*)m_pActiveView)->m_sLicenseKey = strLicenseKey;
 	else

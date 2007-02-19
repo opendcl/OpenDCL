@@ -6,6 +6,13 @@
 #include "ControlTypes.h"
 
 
+COleControlObject::COleControlObject( ControlType type )
+: CDclControlObject(type, NULL)
+, mpProject( NULL )
+{
+}
+
+
 COleControlObject::COleControlObject( CProject* pOwner )
 : CDclControlObject(CtlActiveX, NULL)
 , mpProject( pOwner )

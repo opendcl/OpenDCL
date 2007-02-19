@@ -28,9 +28,9 @@ BOOL RequestLicenseKey(CString &strLicenseKey, CLSID clsid)
 
 			if (SUCCEEDED(hr))
 			{
-				if(!bstrLicenseKey)
+				if(bstrLicenseKey.Length() == 0)
 				{
-					strLicenseKey = ::SysAllocString(L"<Object returned a NULL license key>");
+					strLicenseKey = L"<Object returned a NULL license key>";
 					return FALSE;
 				}
 				else

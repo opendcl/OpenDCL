@@ -985,6 +985,7 @@ void CObjectDCLApp::AddDclFormProperties(CDclFormObject *pNewDclForm, DclFormTyp
             
 		sText = theWorkspace.LoadResourceString(IDS_NONE2);
 		// add Icon property
+		AddControlStdProperty(pArxPropertyObject, nImageList, theWorkspace.LoadResourceString(IDS_IMAGELIST), PropImageList);
 		AddControlStdProperty(pArxPropertyObject, nIcon, sText /*"None" */, PropPicture);
             
 		// add TitleBarText property
@@ -1014,6 +1015,7 @@ void CObjectDCLApp::AddDclFormProperties(CDclFormObject *pNewDclForm, DclFormTyp
             
 		sText = theWorkspace.LoadResourceString(IDS_NONE2);
 		// add Icon property
+		AddControlStdProperty(pArxPropertyObject, nImageList, theWorkspace.LoadResourceString(IDS_IMAGELIST), PropImageList);
 		AddControlStdProperty(pArxPropertyObject, nIcon, sText /*"None" */, PropPicture);
             
 		// add TitleBarText property
@@ -1267,7 +1269,7 @@ void CObjectDCLApp::OnHelpFinder()
 	if (Dlg.m_nType == 4)
 	{
 		CDclFormObject DclForm(NULL, (DclFormType)-2); // -2 to indicate bonus functions
-		RefCountedPtr< COleControlObject > pOleControl = new COleControlObject(NULL); // -2 to indicate bonus functions
+		RefCountedPtr< COleControlObject > pOleControl = new COleControlObject( (ControlType)-2 ); // -2 to indicate bonus functions
 		RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropInvalid, 0, nName);
 		pOleControl->GetPropertyList().AddTail(pProp);
 		
@@ -1275,7 +1277,7 @@ void CObjectDCLApp::OnHelpFinder()
 
 		Dlg.m_pControl = pOleControl;
 		Dlg.m_pDclForm = &DclForm;
-		Dlg.m_sDclFormName = CString();
+		Dlg.m_sDclFormName.Empty();
 
 		Dlg.DoModal();
 	}

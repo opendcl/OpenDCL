@@ -2912,6 +2912,7 @@ public:
 		if (!pszCaption)
 			return RSERR; //invalid argument
 
+		//optional arguments
 		LPCTSTR pszInitialFolder = NULL;
 		pArgs = pArgs->rbnext;
 		if (pArgs)

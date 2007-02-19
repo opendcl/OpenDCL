@@ -237,3 +237,150 @@ CString VariantToString( const VARIANT& var )
 
    return( strResult );
 }
+
+
+void SetRefType(VARTYPE &vtType, ITypeInfo* TheInfo, HREFTYPE hreftype, CLSID *pClsid /*= NULL*/)
+{
+	ITypeInfo *TheRefType = NULL;
+	if ((hreftype != -1) &&
+		SUCCEEDED(TheInfo->GetRefTypeInfo(hreftype, &TheRefType)))
+	{
+		LPTYPEATTR pTA;
+		if (SUCCEEDED(TheRefType->GetTypeAttr(&pTA)))
+		{
+			switch (pTA->typekind)
+			{
+			case TKIND_ALIAS: // color, etc.
+				if ((pTA->tdescAlias.vt == VT_USERDEFINED) && (hreftype < VT_USERDEFINED))
+					vtType = (VARTYPE) hreftype;
+				else
+					vtType = pTA->tdescAlias.vt;
+
+				if (vtType == VT_USERDEFINED)
+					SetRefType(vtType, TheRefType, 
+						(pTA->tdescAlias.vt == VT_PTR) ? 
+							pTA->tdescAlias.lptdesc->hreftype : pTA->tdescAlias.hreftype, pClsid);
+				break;
+			case TKIND_DISPATCH: // font, etc.
+				vtType = VT_DISPATCH;
+				if (pClsid != NULL)
+					*pClsid = pTA->guid;
+				break;
+			case TKIND_ENUM: {
+				vtType = VT_I4; // better than nothing
+				VARDESC *pVarDesc;
+				if (pTA->cVars > 0) { // try to determine real type
+					if(SUCCEEDED(TheRefType->GetVarDesc(0, &pVarDesc ))) {
+#ifdef MAINWIN
+						vtType = pVarDesc->lpvarValue->n2.vt;
+#else
+						vtType = pVarDesc->lpvarValue->vt;
+#endif
+						TheRefType->ReleaseVarDesc(pVarDesc);
+					}
+				}
+				} break;
+			}
+		}
+		TheRefType->Release();
+	}
+}
+
+
+static CString BuildParam(VARTYPE vt, BOOL bUseAsType, BOOL bNotByVal,
+													LPCTSTR szName, BOOL optional, LPVOID pFunc /*=NULL*/) 
+{
+	// it looks like this function ws never implemenetd. [ORW]
+	return VARTYPEtoString(vt);
+}
+
+
+CString FuncDescToString( ITypeInfo *lpTypeInfo, FUNCDESC *pFuncDesc, bool bUseAsType )
+{
+    ASSERT(lpTypeInfo);
+	BOOL bError = FALSE;
+	
+	short cParams = pFuncDesc->cParams ;
+	short cParamsOpt = (short)abs(pFuncDesc->cParamsOpt) ;
+
+	// Get the names of the function and it's parameters into rgbstrNames.
+	// cNames gets the number of parameters + 1.
+	//
+    BSTR rgbstrNames[256] ;
+    int cNames ;
+	HRESULT hr = lpTypeInfo->GetNames(pFuncDesc->memid,
+		rgbstrNames, 256, (UINT FAR*) &cNames);
+	if (SUCCEEDED( hr ))
+	{
+	    // For each required parameter
+	    //
+		CString lpsz;
+#ifdef _WIN32
+		char szBuf[256];    // NUU
+#endif
+    int n;	    
+    for (n = 0 ; n < cParams - cParamsOpt ; n++ )
+	    {
+	        if (n+1 < cNames)
+			{
+#ifdef _WIN32
+				WideCharToMultiByte(0,0,rgbstrNames[n+1],-1,
+					szBuf,256,NULL,NULL);
+				lpsz = (LPCSTR) szBuf;
+#else
+	            lpsz = rgbstrNames[n+1] ;
+#endif
+			}
+	        else
+	            lpsz.Empty();
+	        
+			// HRS
+			const ELEMDESC& e = pFuncDesc->lprgelemdescParam[n];
+			BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
+			VARTYPE vt = (bNotByVal ? e.tdesc.lptdesc->vt : e.tdesc.vt);
+			if (vt == VT_USERDEFINED) 
+				SetRefType(vt, lpTypeInfo,
+					(bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype);
+			CString sDecl = BuildParam(vt, bUseAsType, bNotByVal, lpsz, FALSE, NULL);
+	        if (sDecl.IsEmpty()) bError = TRUE;
+			//sParams += sDecl;
+        
+	        //if (n+1 < cNames)
+	          //  SysFreeString( rgbstrNames[n+1] ) ;
+            
+	        
+	    }
+    
+	    // For each optional parameter
+	    //
+	    for (n = cParams - cParamsOpt ; n < cParams ; n++)
+	    {
+	        if (n+1 < cNames) 
+			{
+#ifdef _WIN32
+				WideCharToMultiByte(0,0,rgbstrNames[n+1],-1,
+					szBuf,256,NULL,NULL);
+				lpsz = (LPCSTR) szBuf;
+#else
+	            lpsz = rgbstrNames[n+1] ;
+#endif
+			}
+	        else
+	            lpsz.Empty();
+        
+			// HRS
+			const ELEMDESC& e = pFuncDesc->lprgelemdescParam[n];
+			BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
+			VARTYPE vt = (bNotByVal ? e.tdesc.lptdesc->vt : e.tdesc.vt);
+			CString sDecl = BuildParam(vt, bUseAsType, bNotByVal, lpsz, TRUE, NULL);
+
+			// bError = TRUE; // optional parameters not supported
+	        if (sDecl.IsEmpty()) bError = TRUE;
+			//sParams += sDecl;
+
+			//if (n+1 < cNames)
+	          //  SysFreeString( rgbstrNames[n+1] ) ;
+	    }
+	}
+	return _T("");
+}

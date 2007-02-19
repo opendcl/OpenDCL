@@ -6,7 +6,9 @@ enum IOStatus;
 class CImageListObject : public CObject
 {
 public:
+	CImageListObject( const CImageListObject& Src );
 	CImageListObject();
+	virtual ~CImageListObject();
 
 // Attributes
 public:
@@ -15,13 +17,12 @@ public:
 	BOOL m_Delete;
 // Operations
 public:
-	void Copy(CImageListObject* other);
+	CImageListObject& operator =( const CImageListObject& Src );
 
 // Implementation
-public:
-	virtual ~CImageListObject();
 
 	//File I/O
+public:
 	virtual void Serialize(CArchive& ar);
   IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
   IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName);

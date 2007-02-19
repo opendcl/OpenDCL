@@ -188,7 +188,7 @@ BOOL CColumnsPage::OnInitDialog()
 		m_HeaderCtrl.SubclassDlgItem(nID, &m_List);
 
 	if (pHeader->GetImageList() == NULL)
-		pHeader->SetImageList(&m_pImageListPage->m_ImageList);
+		pHeader->SetImageList(&m_pImageListPage->GetImageList());
 
 	for (INT_PTR i = 0; i< m_ColData.GetCount(); i++)
 	{
@@ -270,13 +270,13 @@ bool CColumnsPage::IsImageListValid()
 		if (m_pImageListPage->m_hWnd == NULL)
 			return false;
 		
-		if (m_pImageListPage->m_ImageList.m_hImageList == NULL)
+		if (m_pImageListPage->GetImageList().m_hImageList == NULL)
 			return false;
 	}
 	else
 		return false;
-	m_List.SetImageList(&m_pImageListPage->m_ImageList, TVSIL_NORMAL);
-	m_List.SetImageList(&m_pImageListPage->m_ImageList, LVSIL_SMALL);
+	m_List.SetImageList(&m_pImageListPage->GetImageList(), TVSIL_NORMAL);
+	m_List.SetImageList(&m_pImageListPage->GetImageList(), LVSIL_SMALL);
 	return true;
 }
 
@@ -291,13 +291,14 @@ BOOL CColumnsPage::OnSetActive()
 	m_Alternate.ResetContent();
 	if (IsImageListValid())
 	{
-		m_Image.SetImageList(&m_pImageListPage->m_ImageList);
-		m_Default.SetImageList(&m_pImageListPage->m_ImageList);	
-		m_Alternate.SetImageList(&m_pImageListPage->m_ImageList);
+		CImageList* pImageList = &m_pImageListPage->GetImageList();
+		m_Image.SetImageList(pImageList);
+		m_Default.SetImageList(pImageList);	
+		m_Alternate.SetImageList(pImageList);
 		
-		m_pImageListPage->m_ImageList.SetBkColor(RGB(255,255,255));
+		pImageList->SetBkColor(RGB(255,255,255));
 		int i;
-		for (i=0; i<m_pImageListPage->m_ImageList.GetImageCount(); i++)
+		for (i=0; i < pImageList->GetImageCount(); i++)
 		{
 			TCHAR value[80];
 			_ltot(i, value, 10);
@@ -653,13 +654,13 @@ void CColumnsPage::OnSelchangeStyle()
 			return;
 		}
 
-		if (m_pImageListPage->m_ImageList.m_hImageList == NULL)
+		if (m_pImageListPage->GetImageList().m_hImageList == NULL)
 		{
 			m_Style.SetCurSel(0);
 			return;
 		}
 
-		if (m_pImageListPage->m_ImageList.GetImageCount() == 0)
+		if (m_pImageListPage->GetImageList().GetImageCount() == 0)
 		{
 			m_Style.SetCurSel(0);
 			return;
@@ -838,7 +839,7 @@ void CColumnsPage::OnSelchangeImage()
 	CHeaderCtrl *pHeader = m_List.GetHeaderCtrl();
 	
 	if (pHeader->GetImageList() == NULL)
-		pHeader->SetImageList(&m_pImageListPage->m_ImageList);
+		pHeader->SetImageList(&m_pImageListPage->GetImageList());
 	
 	SetColumn(m_nIndex);
 	SetModified();

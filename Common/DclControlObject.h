@@ -16,6 +16,8 @@ enum PropertyId;
 
 class CDclControlObject : public CObject
 {
+	friend class CDclFormObject;
+
 // Attributes
 protected:
 	CDclFormObject* mpOwner;
@@ -23,10 +25,11 @@ protected:
 	CDialogControl* mpDlgControl; //informational pointer to the one and only instance of this control (or NULL)
 	CString msAxTypeName; //this should be moved to AxContainer -- unfortunately it's filed from here [ORW]
 	CPropertyList mProperties;
+	RefCountedPtr< CImageListObject > mpImageList;
+	int mnID;
+	int midxZOrder;
 
 public:
-	int m_Index;
-	int m_Id;
 
 	//runtime state
 	BOOL m_Delete;
@@ -34,7 +37,6 @@ public:
 	int m_PurchaseState;
 	CWnd *m_pCtrlHolder;
 	CRect m_rcOldPosition;
-	CImageListObject *m_pImageList;
 	CAxContainer* m_pAxWnd;
 
 	//ARX only
@@ -102,25 +104,32 @@ public:
 	//virtual CDclControlObject operator=(CDclControlObject const & other);
 	const CString& GetAxTypeName() const { return msAxTypeName; }
 	void SetAxTypeName( LPCTSTR pszAxTypeName ) { msAxTypeName = pszAxTypeName; }
+	int GetID() const { return mnID; }
+	int GetZOrder() const { return midxZOrder; }
+
+protected: //for use by parent form only
+	void SetID( int nID ) { mnID = nID; }
+	void SetZOrder( int idxZOrder ) { midxZOrder = idxZOrder; }
 
 // Operations
 public:
 	void SetGlobalVariableName( LPCTSTR pszParentName = NULL );
 	void ClearGlobalVariableName();
-	RefCountedPtr< CPropertyObject > GetPropertyObject(PropertyId nID) const;
-	RefCountedPtr< CPropertyObject > GetActiveXPropertyObject(CString sName) const;
-	RefCountedPtr< CPropertyObject > FindProperty( LPCTSTR pszName ) const;
+	RefCountedPtr< CPropertyObject > GetPropertyObject( PropertyId nID ) const;
+	RefCountedPtr< CPropertyObject > FindPropertyObject( LPCTSTR pszName ) const;
 	RefCountedPtr< CPropertyObject > GetMethods() const;
 	void RemoveProperty(PropertyId nId);
 	void ResetProperty(PropertyId nId);
 	size_t CountPropertyListItems(PropertyId nID);
 	CString GetPropertyListItem(PropertyId nID, size_t nIndex);
-	long GetImageListIndex();
-	void SetImageListIndex(PropertyId nIndex);
+	RefCountedPtr< CImageListObject > GetImageList() const { return mpImageList; }
+	void SetImageList( RefCountedPtr< CImageListObject > pImageList ) { mpImageList = pImageList; }
+	//long GetImageListIndex();
+	//void SetImageListIndex(PropertyId nIndex);
 	//void Copy(CDclControlObject *other);
 	short FindPropertyIndex(PropertyId nID) const;
 	POSITION FindPropertyInsertPos( LPCTSTR pszName, bool bHidden ) const;
-	POSITION FindPropertyInsertPos(PropertyId nID, bool bHidden) const;
+	POSITION FindPropertyInsertPos( PropertyId nID, bool bHidden ) const;
 	bool InsertNamedProperty( RefCountedPtr< CPropertyObject > pProp );
 
 	bool SetStringProperty( PropertyId nID, LPCTSTR pszValue );

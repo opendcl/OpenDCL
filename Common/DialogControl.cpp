@@ -92,7 +92,6 @@ bool CDialogControl::ApplyPropertiesEnum()
 		case nLabelUnderline: break;
 		case nLabelStrikeOut: break;
 		case nFontSizeStyle: break;
-		case nImageList: if( !OnApplyImageList( pProp ) ) bSuccess = false; break;
 		default: if( !OnApplyProperty( pProp ) ) bSuccess = false; break;
 		}
 	}
@@ -140,9 +139,4 @@ bool CDialogControl::OnApplyCaptionFont( RefCountedPtr< CPropertyObject > pProp 
 	CFont *pFont = theWorkspace.GetFontCollection().GetFont( mpTemplate, mpControl );
 	mpControl->SetFont( theWorkspace.GetFontCollection().GetFont( mpTemplate, mpControl ) );
 	return true;
-}
-
-bool CDialogControl::OnApplyImageList( RefCountedPtr< CPropertyObject > pProp )
-{
-	return false;
 }

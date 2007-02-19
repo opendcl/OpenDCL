@@ -276,7 +276,7 @@ void CModelessDlg::AboutToClose()
 
 bool CModelessDlg::QueryForClose() 
 {
-	if (mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose) == "")
+	if (mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose).IsEmpty())
 		return true;
 	return !(InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false));	
 }

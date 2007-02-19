@@ -33,3 +33,5 @@ LPCTSTR VTToString( VARTYPE vt );
 int VTToVTI( VARTYPE vt );
 CString VARTYPEtoString(VARTYPE vt);
 CString VariantToString( const VARIANT& var );
+void SetRefType(VARTYPE &vtType, ITypeInfo* TheInfo, HREFTYPE hreftype, CLSID *pClsid = NULL);
+CString FuncDescToString( ITypeInfo *lpTypeInfo, FUNCDESC *pFuncDesc, bool bUseAsType );

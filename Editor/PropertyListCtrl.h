@@ -123,12 +123,12 @@ public:
 	afx_msg void ClearProject();
 	afx_msg void ClearPictures();
 	afx_msg short CountPictures();
-	afx_msg short AddPictureToImageList(short DclFormIndex, short ArxControlIndex, short PropertyIndex, LPPICTUREDISP newPicture);
-	afx_msg void ClearImageListPropery(short DclFormIndex, short ArxControlIndex, short PropertyIndex);
-	afx_msg void InitImageList(short DclFormIndex, short ArxControlIndex, short PropertyIndex, short ImageWidth, short ImageHeight);	
-	afx_msg LPPICTUREDISP GetImageListPicture(short DclFormIndex, short ArxControlIndex, short PropertyIndex, short ImageIndex);
-	afx_msg long GetImageListPictureWidth(short DclFormIndex, short ArxControlIndex, short PropertyIndex);
-	afx_msg long GetImageListPictureHeight(short DclFormIndex, short ArxControlIndex, short PropertyIndex);
+	//afx_msg short AddPictureToImageList(short DclFormIndex, short ArxControlIndex, short PropertyIndex, LPPICTUREDISP newPicture);
+	//afx_msg void ClearImageListPropery(short DclFormIndex, short ArxControlIndex, short PropertyIndex);
+	//afx_msg void InitImageList(short DclFormIndex, short ArxControlIndex, short PropertyIndex, short ImageWidth, short ImageHeight);	
+	//afx_msg LPPICTUREDISP GetImageListPicture(short DclFormIndex, short ArxControlIndex, short PropertyIndex, short ImageIndex);
+	//afx_msg long GetImageListPictureWidth(short DclFormIndex, short ArxControlIndex, short PropertyIndex);
+	//afx_msg long GetImageListPictureHeight(short DclFormIndex, short ArxControlIndex, short PropertyIndex);
 	afx_msg void ClearGrid();
 	afx_msg void DisplayProperties(CDclControlObject *pControl);
 	afx_msg LPPICTUREDISP GetPicture(short Index);

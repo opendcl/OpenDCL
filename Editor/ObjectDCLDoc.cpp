@@ -149,6 +149,7 @@ BOOL CObjectDCLDoc::OnSaveDocument(LPCTSTR lpszPathName)
 	// begin saving.
 	CWaitCursor wait;
 
+	activeProject->SetKeyName( lpszPathName ); //updating the key name *before* saving
 	if (activeProject->WriteToFile(sFileName) != statOK)
 	{
 		ReportSaveLoadException(sFileName, NULL, TRUE, AFX_IDP_FAILED_TO_OPEN_DOC);

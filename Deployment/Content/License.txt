@@ -1,0 +1,109 @@
+OpenDCL for AutoCAD
+
+Copyright (C) 2007 various authors
+See GNU-GPL.txt for license terms and conditions
+
+==================================================================
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.
+==================================================================
+
+
+                            CREDITS
+------------------------------------------------------------------
+
+OpenDCL is based on ObjectDCL, a commercial application by 3rd 
+Day Software that was released as open source under the GNU 
+General Public License in 2006 by owner Chad Wanless. OpenDCL 
+represents the combined work of the original authors and the 
+following individuals who contributed in various ways to the 
+OpenDCL open source project on SourceForge at:
+http://www.sourceforge.net/projects/opendcl
+
+Credits include SOurceForge handles with real names in 
+parentheses when available.
+
+PROGRAMMING
+owenwengerd (Owen Wengerd)
+davidrobison (David Robison)
+
+BETA TESTING
+bazzacad (Barry Ralphs)
+davic_jg_white (David White)
+domenicomaria
+funkitect
+jmaeding (James Maeding)
+kerrybrown (Kerry Brown)
+seros (Mateusz Jacak)
+svelasquez (Sebastião Velasquez)
+zeeboy (Doug Barense)
+
+
+Some OpenDCL components are based on copyrighted source code 
+licensed from third parties. Thanks to the following for their 
+valuable contributions to OpenDCL:
+
+Davide Calabro' (davide_calabro@yahoo.com)
+CCeXDIb device independent bitmap class
+CButtonST hot tracking button class
+CXPStyleButtonST XP style hot tracking button
+CThemeHelperST XP themes helper class
+CLayeredWindowHelperST semi-transparent (layered) window class
+
+Cristi Posea (www.datamekanix.com)
+CSizingControlBar class for docking control bars
+
+Daniel Frey (Daniel.Frey@hew-kabel-cdt.com)
+CRoundSliderCtrl round slider control class
+including code from Chris Maunder (chrismaunder@codeguru.com)
+
+Jorge Lodos (lodos@cigb.edu.cu)
+CPreviewFileDlg MFC file dialog with preview window
+CDib helper class for reading and displaying DIB images
+CDIBStatic static control for displaying a bitmap image
+
+Chris Maunder (chrismaunder@codeguru.com)
+CColourPicker, CColourPopup classes for displaying color 
+swatches for selection
+
+James R. Twine
+CColorPickerCB combo box for color selection
+
+Paramax Technology Limited
+CTipWnd tooltip window control
+
+Paolo Messina (ppescher@yahoo.com)
+CResizableDialog manges control repositioning during resizing
+
+Eugene Pustovoyt
+CPPToolTip MFC tooltip class
+
+Keith Rule (keithr@europa.com)
+CMemDC memory device context for image manipulation
+
+Jeremy Iverson (jeremy@dragonmount.net)
+CAutoRichEditCtrl MFC rich text control
+
+Mike Scanlon (mrs3691@megahertz.njit.edu)
+CSnapDlg MFC dialog base class
+
+Smaller Animals Software, Inc. (http://www.smalleranimals.com)
+CSADirRead class for finding files and subdirectories
+
+Ian J Hart
+CNumEdit numeric input edit box
+CCurrencyEdit currency input edit box
+CPercentageEdit percentage input edit box
+

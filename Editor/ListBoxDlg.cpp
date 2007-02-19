@@ -64,7 +64,7 @@ void CListBoxDlg::OnSelchangeListbox()
 	// watch for ActiveX properties to be set
 	if (nType == PropActiveXProp)
 	{
-		switch (m_pPropObject->GetAxInterfaceDescriptorPtr()->GetActiveXProperyType())
+		switch (m_pPropObject->GetAxInterfaceDescriptorPtr()->GetType())
 		{
 		case VT_BOOL:
 		case VT_UI1:
@@ -103,14 +103,16 @@ void CListBoxDlg::OnSelchangeListbox()
 				DISPID dispid;
 				// get the DISPID
 				if (m_pPropObject->GetAxInterfaceDescriptorPtr()->GetPropPutRef())
-					dispid = m_pPropObject->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->Id;
+					dispid = m_pPropObject->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->GetDispId();
 				else if (m_pPropObject->GetAxInterfaceDescriptorPtr()->GetPropPut())
-					dispid = m_pPropObject->GetAxInterfaceDescriptorPtr()->GetPropPut()->Id;
+					dispid = m_pPropObject->GetAxInterfaceDescriptorPtr()->GetPropPut()->GetDispId();
 				
 				CAxContainer *pAxCont = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
-				IDispatch *pDisp = pAxCont->GetOleIDispatch();
+				CComPtr< IDispatch > pDisp;
+				pAxCont->GetOleDispatch( &pDisp );
 				// set the image list now.
-				m_pAxContainer->GetActiveXCtrl()->SetImageList( dispid, pDisp);
+				//huh? setting the control dispatch as the image list? that can't be right. [ORW]
+				m_pAxContainer->GetActiveXCtrl()->SetImageList( dispid, pDisp );
 			}
 		}
 		break;
@@ -118,15 +120,11 @@ void CListBoxDlg::OnSelchangeListbox()
 	case PropEnum:
 		{
 		if (m_pAxContainer != NULL)
-		{
-			m_pPropObject->GetAxInterfaceDescriptorPtr()->SetActiveXPropery(
-				m_pAxContainer->GetActiveXCtrl(),
-				m_pPropObject->GetAxInterfaceDescriptorPtr()->GetActiveXEnumValue(m_ListBox.GetCurSel()));
-		}	
+			m_pAxContainer->GetActiveXCtrl()->SetProperty(
+				m_pPropObject->GetAxInterfaceDescriptorPtr()->GetGetDescriptor(),
+				m_pPropObject->GetAxInterfaceDescriptorPtr()->GetEnumValue(m_ListBox.GetCurSel()) );
 		else
-		{
 			m_pPropObject->SetStringValue(Value);
-		}
 		break;
 		}
 	case PropPicture:
@@ -136,8 +134,8 @@ void CListBoxDlg::OnSelchangeListbox()
 		{
 		case 0:
 		{
-			m_pPropObject->SetStringValue("0");
-			if (m_pControl->m_Id == -1)
+			m_pPropObject->SetLongValue(0);
+			if (m_pControl->GetID() == -1)
 			{
 				CChildFrame *pChildFrm = (CChildFrame*) m_pView->GetParentFrame();				
 				pChildFrm->SetTitleBarIcon(0);
@@ -155,7 +153,7 @@ void CListBoxDlg::OnSelchangeListbox()
 			m_ListBox.GetText(nSelected, sPictureID);
 			m_pPropObject->SetStringValue(sPictureID);
 
-			if (m_pControl->m_Id == -1)
+			if (m_pControl->GetID() == -1)
 			{
 				CChildFrame *pChildFrm = (CChildFrame*) m_pView->GetParentFrame();				
 				pChildFrm->SetTitleBarIcon(_tstol(sPictureID));
@@ -175,9 +173,9 @@ void CListBoxDlg::OnSelchangeListbox()
 			sValue = theWorkspace.LoadResourceString(IDS_FALSE);
 		
 		if (m_pAxContainer != NULL)
-		{
-			m_pPropObject->GetAxInterfaceDescriptorPtr()->SetActiveXPropery(m_pAxContainer->GetActiveXCtrl(), sValue);
-		}
+			m_pAxContainer->GetActiveXCtrl()->SetProperty(
+				m_pPropObject->GetAxInterfaceDescriptorPtr()->GetPutDescriptor(),
+				(LPCTSTR)sValue );
 		else
 		{
 			m_pPropObject->SetStringValue(sValue);

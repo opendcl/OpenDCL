@@ -34,6 +34,33 @@ static void AddControlProperty(CDclControlObject *pControl, PropertyId nID, LPCT
 }
 
 
+//moving all image lists from the form to individual controls while reading older ODC files
+static void MoveImageListsToControls( std::vector< CImageListObject* >& rImageLists, CDclFormObject* pDclForm )
+{
+	POSITION pos = pDclForm->GetControlList().GetHeadPosition();
+	while( pos )
+	{
+		CDclControlObject* pDclControl = pDclForm->GetControlList().GetNext( pos );
+		POSITION posProp = pDclControl->GetPropertyList().GetHeadPosition();
+		while( posProp )
+		{
+			RefCountedPtr< CPropertyObject > pProp = pDclControl->GetPropertyList().GetNext( posProp ); 
+			if( pProp->GetType() == PropImageList )
+			{//we have a winner
+				short idx = pProp->GetShortValue();
+				if( idx >= 0 && (size_t)idx < rImageLists.size() )
+					pDclControl->SetImageList( new CImageListObject( *rImageLists.at( idx ) ) );
+				pDclControl->RemoveProperty( pProp->GetID() );
+				break; //stop looking and ignore any additional PropImageList properties, since there should only be one
+			}
+		}
+	}
+	size_t idx = rImageLists.size();
+	while( idx-- > 0 )
+		delete rImageLists.at( idx );
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CDclFormObject
 
@@ -100,25 +127,14 @@ void CDclFormObject::SetFormInstance( CDialogObject* pDlgObject )
 	mpDlgObject = pDlgObject;
 }
 
-RefCountedPtr< CImageList > CDclFormObject::GetImageList( size_t index ) const
-{
-	if( index >= (size_t)m_ImageListCollection.GetCount() )
-		return NULL;
-	//returning a new copy for now, but once the imagelist collection is converted to a collection of 
-	//ref counted pointers, this should be changed to return a pointer to the original imagelist [ORW]
-	CImageList* pImageList = new CImageList;
-	pImageList->Create( &m_ImageListCollection.GetAt( m_ImageListCollection.FindIndex( index ) )->m_ImageList );
-	return pImageList;
-}
-
 
 void CDclFormObject::AddControl( CDclControlObject* pDclControl )
 {
 	mDclControls.AddTail( pDclControl );
 	INT_PTR idxNewControl = mDclControls.GetCount() - 1;
-	pDclControl->m_Index = idxNewControl;
-	if( pDclControl->m_Id < 0 )
-		pDclControl->m_Id = idxNewControl;
+	pDclControl->SetZOrder( idxNewControl );
+	if( pDclControl->GetID() < 0 )
+		pDclControl->SetID( idxNewControl );
 	pDclControl->m_PurchaseState = mpProject->m_PurchaseState;
 }
 
@@ -137,12 +153,12 @@ void CDclFormObject::DeleteControl( CDclControlObject*& pDclControl )
 	if( pos )
 	{
 		POSITION posDelete = pos;
-		INT_PTR idxCurrent = pDclControl->m_Index;
+		INT_PTR idxCurrent = pDclControl->GetZOrder();
 		do //reindex remaining controls
 		{
 			CDclControlObject* pDclControl = mDclControls.GetNext( pos );
 			assert( pDclControl != NULL );
-			pDclControl->m_Index = idxCurrent++;
+			pDclControl->SetZOrder( idxCurrent++ );
 		}
 		while( pos );
 		mDclControls.RemoveAt( posDelete );
@@ -165,25 +181,22 @@ void CDclFormObject::PurgeDeletedControls()
 			mDclControls.RemoveAt(posAt);
 			delete pDclControl;
 		}
-		pDclControl->m_Index = idxCurrent++;
+		pDclControl->SetZOrder( idxCurrent++ );
 	}
 }
 
 
 void CDclFormObject::PurgeDeletedImageLists()
 {
-	POSITION pos = m_ImageListCollection.GetHeadPosition();
-	while( pos )
+	if( mImageLists.empty() )
+		return;
+	std::vector< CImageListObject >::iterator iter = mImageLists.end();
+	do
 	{
-		POSITION posAt = pos;
-		CImageListObject* pImageList = m_ImageListCollection.GetNext( pos );
-		assert( pImageList != NULL );
-		if( pImageList && pImageList->m_Delete )
-		{
-			m_ImageListCollection.RemoveAt(posAt);
-			delete pImageList;
-		}
+		if( --iter->m_Delete )
+			mImageLists.erase( iter );
 	}
+	while( iter != mImageLists.begin() );
 }
 
 
@@ -235,7 +248,7 @@ void CDclFormObject::ReindexControls()
 	{
 		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
 		assert( pDclControl != NULL );
-		pDclControl->m_Index = idxCurrent++;
+		pDclControl->SetZOrder( idxCurrent++ );
 	}
 }
 
@@ -347,30 +360,16 @@ void CDclFormObject::ClearGlobalVariableName( bool bUpdateChildren /*= true*/ )
 		mDclControls.GetNext(pos)->ClearGlobalVariableName();
 }
 
-int CDclFormObject::CountDeletedImageLists() const
+size_t CDclFormObject::CountDeletedImageLists() const
 {
-	// set counter for m_ImageListCollection
-	INT_PTR nCount = m_ImageListCollection.GetCount();
-	int nDeleted = 0;
-
-	// set start position for navigating m_ImageListCollection
-	POSITION pos = m_ImageListCollection.GetHeadPosition();
-	
-	// do loop to navigate m_ImageListCollection
-	while (pos != NULL)
+	size_t ctDeleted = 0;
+	size_t idx = mImageLists.size();
+	while( idx-- > 0 )
 	{
-		// get current m_ImageListCollection
-		CImageListObject* pImageListObject = m_ImageListCollection.GetNext(pos);
-
-		if (pImageListObject->m_Delete)
-			nDeleted++;
-
-		// increment counter
-		nCount--;
+		if( mImageLists.at( idx ).m_Delete )
+			++ctDeleted;
 	}
-	//ASSERT(nCount == 0);
-
-	return nDeleted;
+	return ctDeleted;
 }
 
 
@@ -480,29 +479,6 @@ IOStatus CDclFormObject::WriteToTextFile(FILE* pFile, const CString &fileName) c
       pControl->WriteToTextFile(pFile, fileName);
     }
   }		
-
-  // set counter for Image lists
-  nCount = (int)m_ImageListCollection.GetCount();
-  writeInt(pFile, nCount);
-
-  // set start position for navigating ArxControls
-  pos = m_ImageListCollection.GetHeadPosition();
-
-  // do loop to navigate images
-  while (pos != NULL)
-  {
-    // get current Imagelist
-    CImageListObject* pImage = m_ImageListCollection.GetNext(pos);
-
-    if (pImage == NULL || pImage->m_Delete < 0 || pImage->m_Delete > 1) {
-      writeBool(pFile, true);
-    } else
-    {
-      writeBool(pFile, false);
-      // put dcl form into archive
-      pImage->WriteToTextFile(pFile, fileName);
-    }
-  }
 	return statOK;
 }
 
@@ -512,7 +488,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 	// create a position variable to hold the counter increment
 	POSITION pos;	
 	short nCount;
-	DWORD nThisVersion = 4;
+	DWORD nThisVersion = GetCurrentSaveVersion();
 
 	if (ar.IsStoring())
 	{
@@ -560,31 +536,6 @@ void CDclFormObject::Serialize(CArchive& ar)
 				pControl->Serialize(ar);
 			}
 		}		
-		
-		// set counter for Image lists
-		nCount = (WORD)m_ImageListCollection.GetCount();
-
-		ar << nCount;
-
-		// set start position for navigating ArxControls
-		pos = m_ImageListCollection.GetHeadPosition();
-		
-		// do loop to navigate Arx Controls
-		while (pos != NULL)
-		{
-			// get current magelist
-			CImageListObject* pImage = m_ImageListCollection.GetNext(pos);
-
-			if (pImage == NULL || pImage->m_Delete < 0 || pImage->m_Delete > 1)				
-				ar << TRUE;
-			else
-			{
-				ar << FALSE;
-				// put dcl form into archive
-				pImage->Serialize(ar);
-			}
-		}				
-		
 	}
 	else
 	{	
@@ -654,53 +605,42 @@ void CDclFormObject::Serialize(CArchive& ar)
 		//ensure that we have a form properties control at the head of the list
 		CreateControlProperties();
 
-		if (nThisVersion >= 3)
-		{		
-			ar >> nCount;
-
-			// do loop to navigate Image Lists
-			while (nCount-- > 0)
+		if( nThisVersion < 5 ) //removed image list collection at version 5
+		{
+			std::vector< CImageListObject* > rImageLists;
+			if (nThisVersion == 3 || nThisVersion == 4)
 			{
-				BOOL bNull;
-				ar >> bNull;
-
-				if (bNull == FALSE)
+				short ctImageLists;
+				ar >> ctImageLists;
+				for( size_t idx = 0; idx < (size_t)ctImageLists; ++idx )
 				{
-					// create a new image list object
-					CImageListObject* pImage = new CImageListObject;
-
-					// put dcl form into archive
-					pImage->Serialize(ar);
-
-					// add that ImageList to the list object
-					m_ImageListCollection.AddTail(pImage);
+					BOOL bNull;
+					ar >> bNull;
+					if( bNull )
+						continue;
+					CImageListObject* pImageList = new CImageListObject;
+					pImageList->Serialize( ar );
+					rImageLists.push_back( pImageList );
 				}
 			}
-			if (!m_ImageListCollection.IsEmpty())
+			else // nThisVersion < 3
 			{
-				pos = mDclControls.GetHeadPosition();
-				// do loop to navigate ArxControls
-				while (pos != NULL)
+				CTypedPtrList< CObList, CImageListObject* > ImageLists;
+				ImageLists.Serialize(ar);
+				POSITION pos = ImageLists.GetHeadPosition();
+				while( pos )
 				{
-					// get current ArxControlObject
-					CDclControlObject* pControl = mDclControls.GetNext(pos);
-					
-					RefCountedPtr< CPropertyObject > pImageProp = pControl->GetPropertyObject(nImageList); 
-					if (pImageProp != NULL && pImageProp->GetShortValue() >= 0)
+					POSITION posAt = pos;
+					CImageListObject* pImageList = ImageLists.GetNext( pos );
+					if( pImageList )
 					{
-						POSITION pos2 = m_ImageListCollection.FindIndex(pImageProp->GetShortValue());
-						if (pos2 != NULL)
-						{
-							CImageListObject *pImageList = m_ImageListCollection.GetAt(pos2);
-							if (pImageList != NULL)
-							{
-								pControl->m_pImageList = new CImageListObject;
-								pControl->m_pImageList->Copy(pImageList);
-							}
-						}
+						rImageLists.push_back( pImageList );
+						ImageLists.RemoveAt( posAt );
 					}
-				}			
+				}
 			}
+			if( !rImageLists.empty() )
+				MoveImageListsToControls( rImageLists, this ); //moving all control image lists to the individual controls
 		}
 		
 		if (mDclControls.GetCount() > 0)
@@ -761,9 +701,6 @@ void CDclFormObject::Serialize(CArchive& ar)
 			}
 		}
 	}
-
-	if (nThisVersion <= 2)	
-		m_ImageListCollection.Serialize(ar);
 }
 
 
@@ -840,21 +777,6 @@ void CDclFormObject::ClearControls()
 		delete pCtrl;
 	}
 	mDclControls.RemoveAll();
-
-	POSITION posImage = m_ImageListCollection.GetTailPosition();
-	while(posImage)
-	{
-		CImageListObject* pImageList = m_ImageListCollection.GetPrev(posImage);
-		assert( pImageList != NULL );
-		if( pImageList )
-		{
-			pImageList->m_ImageSize.cx = 0;
-			pImageList->m_ImageSize.cy = 0;
-			pImageList->m_ImageList.DeleteImageList();
-			delete pImageList;
-		}
-	}
-	m_ImageListCollection.RemoveAll();
 }
 
 void CDclFormObject::ClearR14Events()
@@ -942,50 +864,29 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
     }
   }
 
-  if (!readInt(sFile, nCount)) return statInvalidFormat;
-  // do loop to navigate Image Lists
-  while (nCount-- > 0)
-  {
-    BOOL bNull;
-    if (!readBOOL(sFile, bNull)) return statInvalidFormat;
-
-    if (bNull == FALSE)
-    {
-      // create a new image list object
-      CImageListObject* pImage = new CImageListObject;
-
-			IOStatus stat = pImage->ReadFromTextFile(sFile, fileName);
-			if (stat != statOK) return stat;
-
-      // add that ImageList to the list object
-      m_ImageListCollection.AddTail(pImage);
-    }
-  }
-	//This code will never execute; was it supposed to? [ORW]
-  //if (nCount > 0)
-  //{
-  //  pos = mDclControls.GetHeadPosition();
-  //  // do loop to navigate ArxControls
-  //  while (pos != NULL)
-  //  {
-  //    // get current ArxControlObject
-  //    CDclControlObject* pControl = mDclControls.GetNext(pos);
-  //    RefCountedPtr< CPropertyObject > pImageProp = pControl->GetPropertyObject(nImageList); 
-  //    if (pImageProp != NULL && pImageProp->GetShortValue() >= 0)
-  //    {
-  //      POSITION pos2 = m_ImageListCollection.FindIndex(pImageProp->GetShortValue());
-  //      if (pos2 != NULL)
-  //      {
-  //        CImageListObject *pImageList = m_ImageListCollection.GetAt(pos2);
-  //        if (pImageList != NULL)
-  //        {
-  //          pControl->m_pImageList = new CImageListObject;
-  //          pControl->m_pImageList->Copy(pImageList);
-  //        }
-  //      }
-  //    }
-  //  }			
-  //}
+	int ctImageLists;
+  if (!readInt(sFile, ctImageLists)) return statInvalidFormat;
+	std::vector< CImageListObject* > rImageLists;
+	for( size_t idx = 0; idx < (size_t)ctImageLists; ++idx )
+	{
+		BOOL bNull;
+		if (!readBOOL(sFile, bNull)) return statInvalidFormat;
+		if( bNull )
+			continue;
+		CImageListObject* pImageList = new CImageListObject;
+		IOStatus stat = pImageList->ReadFromTextFile( sFile, fileName );
+    if (stat != statOK)
+		{
+			delete pImageList;
+			size_t idx = rImageLists.size();
+			while( idx-- > 0 )
+				delete rImageLists.at( idx );
+			return stat;
+		}
+		rImageLists.push_back( pImageList );
+	}
+	if( !rImageLists.empty() )
+		MoveImageListsToControls( rImageLists, this ); //moving all control image lists to the individual controls
 
 #ifdef EDITOR
   if (mDclControls.GetCount() > 0)
@@ -1176,7 +1077,7 @@ void CDclFormObject::ZOrderFrontAddTabControls()
 	while (pos)
 	{
 		CDclControlObject *pControl = mDclControls.GetNext(pos);
-		CWnd* pWnd = pControl->GetWindow(); //pParent->GetDlgItem(pControl->m_Id);
+		CWnd* pWnd = pControl->GetWindow();
 		if (pWnd != NULL)
 			pWnd->SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
 	}

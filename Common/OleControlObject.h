@@ -15,6 +15,7 @@ protected:
 	COleControlObject( const COleControlObject& ); //declared protected to prevent copy construction
 	COleControlObject& operator=( const COleControlObject& ); //declared protected to prevent copy construction
 public:
+	COleControlObject( ControlType type ); //special constructor used for temporary controls used in the object browser
 	COleControlObject( CProject* pOwner );
 	COleControlObject( CProject* pOwner, const CLSID& clsid );
 	~COleControlObject();

@@ -166,15 +166,14 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 			mbBlockList = true;
 
 			//create a default icon for blocks without a preview image
-			CImageList* pBlockViewImageList = new CImageList();
-			pBlockViewImageList->Create( 32,32, ILC_COLOR4, 1, 1 );
-			pBlockViewImageList->SetBkColor( GetControl()->GetBkColor() );
+			mBlockViewImageList.Create( 32, 32, ILC_COLOR4, 1, 1 );
+			mBlockViewImageList.SetBkColor( GetControl()->GetBkColor() );
 
 			HICON hIcon = (HICON)::LoadImage( _hdllInstance, MAKEINTRESOURCE(IDI_LARGEBLOCK), IMAGE_ICON, 0, 0, 0 );
-			pBlockViewImageList->Add( hIcon );
+			mBlockViewImageList.Add( hIcon );
 			DestroyIcon( hIcon );
-			delete GetControl()->SetImageList( pBlockViewImageList, LVSIL_NORMAL );
-			delete GetControl()->SetImageList( pBlockViewImageList, LVSIL_SMALL );
+			GetControl()->SetImageList( &mBlockViewImageList, LVSIL_NORMAL );
+			GetControl()->SetImageList( &mBlockViewImageList, LVSIL_SMALL );
 			break;
 		}
 	case nListViewStyle:
@@ -188,15 +187,9 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 				nImageListIconSizeX = 32;
 			else
 			{
-				RefCountedPtr< CImageList > pImageList;
-				RefCountedPtr< CPropertyObject > pPropImageList = mpTemplate->GetPropertyObject( nImageList );
-				if( pPropImageList )
-					pImageList = mpTemplate->GetOwnerForm()->GetImageList( pPropImageList->GetShortValue() );
+				RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
 				if( pImageList )
-				{
-					int cY;
-					::ImageList_GetIconSize( *pImageList, &nImageListIconSizeX, &cY );
-				}
+					nImageListIconSizeX = pImageList->m_ImageSize.cx;
 			}
 			CSize sizeIconSpacing( mpControl->SendMessage( LVM_GETITEMSPACING ) );
 			sizeIconSpacing.cx = pProp->GetLongValue() + nImageListIconSizeX;
@@ -210,15 +203,9 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 				nImageListIconSizeY = 32;
 			else
 			{
-				RefCountedPtr< CImageList > pImageList;
-				RefCountedPtr< CPropertyObject > pPropImageList = mpTemplate->GetPropertyObject( nImageList );
-				if( pPropImageList )
-					pImageList = mpTemplate->GetOwnerForm()->GetImageList( pPropImageList->GetShortValue() );
+				RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
 				if( pImageList )
-				{
-					int cX;
-					::ImageList_GetIconSize( *pImageList, &cX, &nImageListIconSizeY );
-				}
+					nImageListIconSizeY = pImageList->m_ImageSize.cy;
 			}
 			CSize sizeIconSpacing( mpControl->SendMessage( LVM_GETITEMSPACING ) );
 			sizeIconSpacing.cy = pProp->GetLongValue() + nImageListIconSizeY;
@@ -381,16 +368,6 @@ DWORD CListViewControlX::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CListViewControlX::OnApplyImageList( RefCountedPtr< CPropertyObject > pProp )
-{
-	RefCountedPtr< CImageList > pImageList = mpTemplate->GetOwnerForm()->GetImageList( pProp->GetShortValue() );
-	GetControl()->SetCtrlImageList( pImageList );
-	pImageList->SetBkColor( GetControl()->GetBkColor() );
-	delete GetControl()->SetImageList( pImageList, TVSIL_NORMAL );
-	delete GetControl()->SetImageList( pImageList, LVSIL_SMALL );
-	return true;
-}
-
 
 /////////////////////////////////////////////////////////////////////////////
 // OdclListCtrl
@@ -428,6 +405,22 @@ bool OdclListCtrl::Create( CWnd* pParentWnd, UINT nID )
 											 pParentWnd,
 											 nID );
 	VERIFY(CWnd::SubclassDlgItem(nID, pParentWnd));
+
+	RefCountedPtr< CImageListObject > pImageList = mpSourceControl->GetImageList();
+	if( pImageList )
+	{
+		pImageList->m_ImageList.SetBkColor( GetBkColor() );
+		SetImageList( &pImageList->m_ImageList, TVSIL_NORMAL );
+		SetImageList( &pImageList->m_ImageList, LVSIL_SMALL );
+	}
+	else
+	{ //create a default image list
+		if( !mDefaultImageList.m_hImageList )
+			mDefaultImageList.Create( 1, mpSourceControl->GetLngProperty( nRowHeight ), ILC_COLOR, 1, 1 );
+		mDefaultImageList.SetBkColor( GetBkColor() );
+		SetImageList( &mDefaultImageList, TVSIL_NORMAL );
+		SetImageList( &mDefaultImageList, LVSIL_SMALL );
+	}
 
 	if( bSuccess && !mControlX.ApplyPropertiesEnum() )
 		bSuccess = false;

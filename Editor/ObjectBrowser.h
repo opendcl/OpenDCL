@@ -76,7 +76,7 @@ public:
 	void SelectionChanged(HTREEITEM hItem);
 	void LoadMethods(CString sFileName, HTREEITEM hParentItem);
 	bool LoadFullMethod(CString sFileName, CString sMethodName, CString &sTitle, CString &sDesc, CString &sDefun1);
-	CString StripMethodNameOfBarckets(CString sMethodName);
+	CString StripMethodNameOfBrackets(CString sMethodName);
 	CString GetTypeName( VARTYPE vt, AxMethodDescriptor* pMethod = NULL, AxPropertyDescriptor* pProperty = NULL );
 
 // Implementation

@@ -38,11 +38,13 @@ IMPLEMENT_SERIAL(CDclControlObject, CObject, 1)
 
 CDclControlObject::CDclControlObject()
 : mpOwner( NULL )
+, mType( CtlFormPropHolder )
 , mpDlgControl( NULL )
+, mnID( -1 )
+, midxZOrder( -1 )
 {
 	m_nTotalBytes = 0;
 	m_rcOldPosition.SetRect(0,0,0,0);
-	mType = CtlFormPropHolder;
 	m_Delete = FALSE;
 	m_pCtrlHolder = NULL;
 	m_sLicenseKey.Empty();
@@ -50,7 +52,7 @@ CDclControlObject::CDclControlObject()
 	m_bLicenseChecked = FALSE;
 	::memset(&m_clsid, 0, sizeof(GUID));	
 	m_pStream = NULL;	
-	m_pImageList = NULL;
+	m_pAxWnd = NULL;
 
   m_pVisible = NULL;
 
@@ -70,16 +72,17 @@ CDclControlObject::CDclControlObject()
   m_pUseBottomOffset = NULL;
 
 	m_bEventsAsAction = false;
-	m_Id = -1;
 }
 
 CDclControlObject::CDclControlObject(CDclFormObject* pOwner)
 : mpOwner( pOwner )
+, mType( CtlFormPropHolder )
 , mpDlgControl( NULL )
+, mnID( -1 )
+, midxZOrder( -1 )
 {
 	m_nTotalBytes = 0;
 	m_rcOldPosition.SetRect(0,0,0,0);
-	mType = CtlFormPropHolder;
 	m_Delete = FALSE;
 	m_pCtrlHolder = NULL;
 	m_sLicenseKey.Empty();
@@ -87,7 +90,7 @@ CDclControlObject::CDclControlObject(CDclFormObject* pOwner)
 	m_bLicenseChecked = FALSE;
 	::memset(&m_clsid, 0, sizeof(GUID));	
 	m_pStream = NULL;	
-	m_pImageList = NULL;
+	m_pAxWnd = NULL;
 
   m_pVisible = NULL;
 
@@ -107,13 +110,14 @@ CDclControlObject::CDclControlObject(CDclFormObject* pOwner)
   m_pUseBottomOffset = NULL;
 
 	m_bEventsAsAction = false;
-	m_Id = -1;
 }
 
 CDclControlObject::CDclControlObject(ControlType type, CDclFormObject* pOwner, LPCTSTR pszName /*= NULL*/)
 : mpOwner( pOwner )
 , mType( type )
 , mpDlgControl( NULL )
+, mnID( -1 )
+, midxZOrder( -1 )
 {
 	if( pszName )
 		AddStringProperty(nName, PropString, pszName);
@@ -126,7 +130,7 @@ CDclControlObject::CDclControlObject(ControlType type, CDclFormObject* pOwner, L
 	m_bLicenseChecked = FALSE;
 	::memset(&m_clsid, 0, sizeof(GUID));	
 	m_pStream = NULL;	
-	m_pImageList = NULL;
+	m_pAxWnd = NULL;
 
   m_pVisible = NULL;
 
@@ -146,7 +150,6 @@ CDclControlObject::CDclControlObject(ControlType type, CDclFormObject* pOwner, L
   m_pUseBottomOffset = NULL;
 
 	m_bEventsAsAction = false;
-	m_Id = -1;
 }
 
 CDclControlObject::~CDclControlObject()
@@ -154,96 +157,6 @@ CDclControlObject::~CDclControlObject()
 	ClearProperties();
 	ClearStream();
 }
-
-//CDclControlObject::CDclControlObject(CDclControlObject const & other) 
-//: mpOwner( other.GetOwnerForm() )
-//{
-//	m_rcOldPosition.SetRect(0,0,0,0);
-//	m_nIsMicrosoftActiveX = other.m_nIsMicrosoftActiveX;
-//	m_AxTypeName = other.m_AxTypeName;
-//    m_Id = other.m_Id;
-//	m_Name = other.m_Name;
-//    mType = other.mType;
-//	m_clsid = other.m_clsid;
-//	m_sBaseCode = other.m_sBaseCode;
-//	m_sLicenseKey = other.m_sLicenseKey;
-//	m_bLicenseChecked = other.m_bLicenseChecked;
-//	m_nTotalBytes = other.m_nTotalBytes;
-//	m_pImageList = new CImageListObject;
-//	m_pImageList->Copy(other.m_pImageList);	
-//	POSITION pos;
-//	INT_PTR nCount = other.mProperties.GetCount()-1;
-//	while (nCount >= 0)
-//	{
-//		pos = other.mProperties.FindIndex(nCount);
-//		mProperties.AddTail(other.mProperties.GetAt(pos));
-//		nCount--;
-//	}
-//}
-//
-//CDclControlObject CDclControlObject::operator=(CDclControlObject const & other) 
-//{
-//	mpOwner = other.GetOwnerForm();
-//	m_rcOldPosition.SetRect(0,0,0,0);
-//	m_nIsMicrosoftActiveX = other.m_nIsMicrosoftActiveX;
-//	m_AxTypeName = other.m_AxTypeName;
-//    m_Id = other.m_Id;
-//	m_Name = other.m_Name;
-//    mType = other.mType;
-//
-//	m_clsid = other.m_clsid;
-//	m_sBaseCode = other.m_sBaseCode;
-//	m_sLicenseKey = other.m_sLicenseKey;
-//	m_bLicenseChecked = other.m_bLicenseChecked;
-//	m_nTotalBytes = other.m_nTotalBytes;
-//	m_pImageList = new CImageListObject;
-//	m_pImageList->Copy(other.m_pImageList);	
-//	POSITION pos;
-//	INT_PTR nCount = other.mProperties.GetCount()-1;
-//	while (nCount >= 0)
-//	{
-//		
-//		RefCountedPtr< CPropertyObject > pDestProp = new CPropertyObject;
-//		pos = other.mProperties.FindIndex(nCount);
-//		RefCountedPtr< CPropertyObject > pSourceProp = other.mProperties.GetAt(pos);
-//		pDestProp->Copy(pSourceProp);
-//		mProperties.AddTail(pDestProp);
-//		nCount--;
-//	}
-//
-//    return *this;
-//}
-//
-//void CDclControlObject::Copy(CDclControlObject *other) 
-//{
-//	m_rcOldPosition.SetRect(0,0,0,0);
-//	m_nIsMicrosoftActiveX = other->m_nIsMicrosoftActiveX;
-//	m_AxTypeName = other->m_AxTypeName;
-//    m_Id = other->m_Id;
-//	m_Name = other->m_Name;
-//    mType = other->mType;
-//
-//	m_clsid = other->m_clsid;
-//	m_sBaseCode = other->m_sBaseCode;
-//	m_sLicenseKey = other->m_sLicenseKey;
-//	m_bLicenseChecked = other->m_bLicenseChecked;
-//	m_nTotalBytes = other->m_nTotalBytes;
-//	m_pImageList = new CImageListObject;
-//	m_pImageList->Copy(other->m_pImageList);
-//	POSITION pos;
-//	int nCount = 0;
-//
-//	while (nCount < other->mProperties.GetCount())
-//	{		
-//		RefCountedPtr< CPropertyObject > pDestProp = new CPropertyObject;
-//		pos = other->mProperties.FindIndex(nCount);
-//		RefCountedPtr< CPropertyObject > pSourceProp = other->mProperties.GetAt(pos);
-//		pDestProp->Copy(pSourceProp);
-//		mProperties.AddTail(pDestProp);
-//		nCount++;
-//	}
-//
-//}
 
 
 CWnd* CDclControlObject::GetWindow() const
@@ -319,16 +232,14 @@ IOStatus CDclControlObject::WriteToTextFile(FILE* pFile, const CString &fileName
   writeShort(pFile, m_ClientHeight);
   //m_PurchaseState = nCurrentPurchaseMode;
   writeInt(pFile, m_PurchaseState);
-
-  // just added.
-  writeULONG(pFile, ULONG(GetControlInstance()->GetControlId()));
+  writeInt(pFile, mnID);
 
   // serialize the image if it exists
-  if (m_pImageList != NULL)
+  if (mpImageList != NULL)
   {
     bImageList = TRUE;
     writeBOOL(pFile, bImageList);	
-    m_pImageList->WriteToTextFile(pFile, fileName);
+    mpImageList->WriteToTextFile(pFile, fileName);
   }
   else
   {
@@ -416,14 +327,12 @@ void CDclControlObject::Serialize(CArchive& ar)
 		ar << m_ClientHeight;
 		m_PurchaseState = nCurrentPurchaseMode;
 		ar << m_PurchaseState;
-
-		// just added.
-		ar << m_Id;
+		ar << mnID;
 
 		// serialize the image if it exists
-		ar << BOOL(m_pImageList != NULL);
-		if (m_pImageList != NULL)
-			m_pImageList->Serialize(ar);
+		ar << BOOL(mpImageList != NULL);
+		if (mpImageList != NULL)
+			mpImageList->Serialize(ar);
 			
 		if (mType == CtlActiveX)
 		{
@@ -498,16 +407,15 @@ void CDclControlObject::Serialize(CArchive& ar)
 		ar >> m_PurchaseState;
 
 		if (nThisVersion >= 6)
-			ar >> m_Id;
-		delete m_pImageList;
-		m_pImageList = NULL;
+			ar >> mnID;
+		mpImageList = NULL;
 		if (nThisVersion >= 5)
 		{
 			ar >> bImageList;
 			if (bImageList == TRUE)
 			{
-				m_pImageList = new CImageListObject();
-				m_pImageList->Serialize(ar);				
+				mpImageList = new CImageListObject();
+				mpImageList->Serialize(ar);				
 			}
 		}
 
@@ -723,7 +631,7 @@ CString CDclControlObject::GetPropertyListItem(PropertyId nID, size_t nIndex)
 	return CString();
 }
 
-RefCountedPtr< CPropertyObject > CDclControlObject::GetPropertyObject(PropertyId nID) const
+RefCountedPtr< CPropertyObject > CDclControlObject::GetPropertyObject( PropertyId nID ) const
 {
 	POSITION posProp = mProperties.GetHeadPosition();
 	while (posProp)
@@ -735,13 +643,13 @@ RefCountedPtr< CPropertyObject > CDclControlObject::GetPropertyObject(PropertyId
 	return NULL;
 }
 
-RefCountedPtr< CPropertyObject > CDclControlObject::GetActiveXPropertyObject(CString sName) const
+RefCountedPtr< CPropertyObject > CDclControlObject::FindPropertyObject( LPCTSTR pszName ) const
 {
 	POSITION posProp = mProperties.GetHeadPosition();
 	while (posProp)
 	{
 		RefCountedPtr< CPropertyObject > pProperty = mProperties.GetNext(posProp);
-		if (pProperty && pProperty->GetName() == sName)
+		if (pProperty && pProperty->GetName() == pszName)
 			return pProperty;
 	}
 	return NULL;
@@ -950,36 +858,6 @@ CString CDclControlObject::GetStrProperty(PropertyId nID) const
 	return CString();
 }
 
-long CDclControlObject::GetImageListIndex()
-{
-	POSITION posProp = mProperties.GetHeadPosition();
-	while (posProp)
-	{
-		RefCountedPtr< CPropertyObject > pProperty = mProperties.GetNext(posProp);
-		assert(pProperty != NULL);
-		if (pProperty->GetID() == nImageList)
-			return pProperty->GetShortValue();
-	}
-	return nNotSet;
-}
-
-
-void CDclControlObject::SetImageListIndex(PropertyId nIndex)
-{	
-	POSITION posProp = mProperties.GetHeadPosition();
-	while (posProp)
-	{
-		RefCountedPtr< CPropertyObject > pProperty = mProperties.GetNext(posProp);
-		assert(pProperty != NULL);
-		if (pProperty->GetID() == nImageList)
-		{
-			pProperty->SetShortValue(nIndex);
-			return;
-		}
-	}
-}
-
-
 long CDclControlObject::GetLngProperty(PropertyId nID) const
 {
 	POSITION posProp = mProperties.GetHeadPosition();
@@ -1099,19 +977,6 @@ short CDclControlObject::FindPropertyIndex(PropertyId nID) const
 	return nNotSet;
 }
 
-RefCountedPtr< CPropertyObject > CDclControlObject::FindProperty( LPCTSTR pszName ) const
-{
-	POSITION pos = mProperties.GetHeadPosition();
-	while( pos )
-	{
-		RefCountedPtr< CPropertyObject > pProp = mProperties.GetNext( pos );
-		assert( pProp != NULL );
-		if( pProp->GetName() == pszName )
-			return pProp;
-	}
-	return NULL;
-}
-
 RefCountedPtr< CPropertyObject > CDclControlObject::GetMethods() const
 { 
 	POSITION posProp = mProperties.GetHeadPosition();
@@ -1168,13 +1033,6 @@ bool CDclControlObject::InsertNamedProperty( RefCountedPtr< CPropertyObject > pP
 
 void CDclControlObject::ClearProperties()
 {
-	// delete the image list item if it exists
-	if (m_pImageList != NULL)
-	{
-		//delete m_pImageList; //causes exception when unloading grid with images -- I didn't check why, just commented this [ORW]
-		m_pImageList = NULL;
-	}
-
 #ifdef _DEBUG
 	POSITION posProp = mProperties.GetHeadPosition();
 	while (posProp)
@@ -1316,18 +1174,14 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
 	mType = (ControlType)lType;
   if (!readShort(sFile, m_ClientHeight)) return statInvalidFormat;
   if (!readInt(sFile, m_PurchaseState)) return statInvalidFormat;
+  if (!readInt(sFile, mnID)) return statInvalidFormat;
 
-	ULONG ulID;
-  if (!readInt(sFile, (int&)ulID)) return statInvalidFormat;
-	m_Id = UINT(ulID);
-
-	delete m_pImageList;
-	m_pImageList = NULL;
+	mpImageList = NULL;
   bool bImageList;
   if (!readBool(sFile, bImageList)) return statInvalidFormat;
   if (bImageList) {
-    m_pImageList = new CImageListObject();
-		IOStatus stat = m_pImageList->ReadFromTextFile(sFile, fileName);
+    mpImageList = new CImageListObject();
+		IOStatus stat = mpImageList->ReadFromTextFile(sFile, fileName);
     if (stat != statOK) return stat;
   }
 

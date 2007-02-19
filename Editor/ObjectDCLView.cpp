@@ -180,18 +180,14 @@ public:
 	CClipboardObject() {}
 	virtual ~CClipboardObject()
 	{
-		mControls.RemoveAll();
-		mImageListCollection.RemoveAll();
 	}
 
 	CTypedPtrList< CObList, CDclControlObject* > mControls;
-	CTypedPtrList< CObList, CImageListObject* > mImageListCollection;	
 
 	virtual void Serialize(CArchive& ar)
 	{
 		CObject::Serialize( ar );
 		mControls.Serialize(ar);
-		mImageListCollection.Serialize(ar);
 	}
 };
 IMPLEMENT_SERIAL(CClipboardObject, CObject, 1);
@@ -639,7 +635,7 @@ void CObjectDCLView::SelectControl(CString sName)
 	{
 		m_SelectedControl.m_pArxObject = pArxObject;	
 		m_SelectedControl.m_pControl = pControl;
-		m_SelectedControl.m_nIndex = pArxObject->m_Index;
+		m_SelectedControl.m_nIndex = pArxObject->GetZOrder();
 		ClearSelection();
 		CRect rcCtrl;
 		pControl->GetWindowRect(&rcCtrl);
@@ -654,7 +650,7 @@ void CObjectDCLView::SelectControl(CString sName)
 			CSelectedControl *pSelection = new CSelectedControl;
 			pSelection->m_pArxObject = pArxObject;
 			pSelection->m_pControl = pControl;
-			pSelection->m_nIndex = pArxObject->m_Index;
+			pSelection->m_nIndex = pArxObject->GetZOrder();
 			m_SelectedList.AddTail(pSelection);
 			pControl->SetSelected(TRUE);			
 			FireControlSelected(NULL);
@@ -678,6 +674,9 @@ bool CObjectDCLView::CheckControlsForSelection(CRect rcSelArea, bool bLookForOne
 			if (pArxObject != NULL && pArxObject->m_Delete == FALSE)
 			{
 				CControlHolder *pControl = (CControlHolder*)pArxObject->m_pCtrlHolder;
+				assert( pControl != NULL );
+				if( !pControl )
+					continue;
 				// get the control's position
 				CRect rcCtrl;
 				pControl->GetWindowRect(&rcCtrl);
@@ -686,37 +685,37 @@ bool CObjectDCLView::CheckControlsForSelection(CRect rcSelArea, bool bLookForOne
 				bool bCrosses = false;
 				// check if the left selection rect crosses this control
 				if (rcSelArea.left > rcCtrl.left &&
-					rcSelArea.left < rcCtrl.right &&
-					rcSelArea.top < rcCtrl.bottom &&
-					rcSelArea.bottom > rcCtrl.top)
+						rcSelArea.left < rcCtrl.right &&
+						rcSelArea.top < rcCtrl.bottom &&
+						rcSelArea.bottom > rcCtrl.top)
 					bCrosses = true;
 				
 				// check if the right selection rect crosses this control
 				if (rcSelArea.right < rcCtrl.right &&
-					rcSelArea.right > rcCtrl.left &&
-					rcSelArea.top < rcCtrl.bottom &&
-					rcSelArea.bottom > rcCtrl.top)
+						rcSelArea.right > rcCtrl.left &&
+						rcSelArea.top < rcCtrl.bottom &&
+						rcSelArea.bottom > rcCtrl.top)
 					bCrosses = true;
 				
 				// check if the top selection rect crosses this control
 				if (rcSelArea.right > rcCtrl.right &&
-					rcSelArea.left < rcCtrl.right &&
-					rcSelArea.top < rcCtrl.bottom &&
-					rcSelArea.top > rcCtrl.top)
+						rcSelArea.left < rcCtrl.right &&
+						rcSelArea.top < rcCtrl.bottom &&
+						rcSelArea.top > rcCtrl.top)
 					bCrosses = true;
 
 				// check if the bottom selection rect crosses this control
 				if (rcSelArea.right > rcCtrl.right &&
-					rcSelArea.left < rcCtrl.right &&
-					rcSelArea.bottom < rcCtrl.bottom &&
-					rcSelArea.bottom > rcCtrl.top)
+						rcSelArea.left < rcCtrl.right &&
+						rcSelArea.bottom < rcCtrl.bottom &&
+						rcSelArea.bottom > rcCtrl.top)
 					bCrosses = true;
 
 				// check if this control is inside the selection rect
 				if (rcSelArea.right > rcCtrl.right &&
-					rcSelArea.left < rcCtrl.left &&
-					rcSelArea.bottom > rcCtrl.bottom &&
-					rcSelArea.top < rcCtrl.top)
+						rcSelArea.left < rcCtrl.left &&
+						rcSelArea.bottom > rcCtrl.bottom &&
+						rcSelArea.top < rcCtrl.top)
 					bCrosses = true;
 
 				// is the point inside the control
@@ -1070,7 +1069,7 @@ CRect CObjectDCLView::GetSplitterRect(int nId)
 		CDclControlObject *pCtrl = m_pThisDclForm->GetControlList().GetNext(pos);
 
 		if (pCtrl->GetType() == CtlSplitter &&
-			pCtrl->m_Id == nId)
+			pCtrl->GetID() == nId)
 		{
 			rc.SetRect(
 				pCtrl->GetLngProperty(nLeft),
@@ -1513,7 +1512,7 @@ bool CObjectDCLView::IsInSelection(CDclControlObject *pArxObject)
 		if (pos != NULL)
 		{
 			CSelectedControl *pSelControl = m_SelectedList.GetAt(pos);			
-			if (pSelControl->m_pArxObject->m_Id == pArxObject->m_Id)
+			if (pSelControl->m_pArxObject->GetID() == pArxObject->GetID())
 			{
 				return true;
 			}
@@ -1705,7 +1704,7 @@ void CObjectDCLView::InsertControl(CRect rcPos, ControlType nCtrlToInsert)
 
 	m_SelectedControl.m_pArxObject = pDclControl;
 	m_SelectedControl.m_pControl = pControl;
-	m_SelectedControl.m_nIndex = pDclControl->m_Index;
+	m_SelectedControl.m_nIndex = pDclControl->GetZOrder();
 	pControl->GetWindowRect(&rcPos);
 	ScreenToClient(rcPos);
 	ShowGripRects(TRUE, rcPos);
@@ -1731,24 +1730,24 @@ void CObjectDCLView::InsertControl(CRect rcPos, ControlType nCtrlToInsert)
 
 int CObjectDCLView::GetNextControlId()
 {
-	int nHighest = nControlStartId;
+	int nHighest = -1;
 	POSITION pos = m_pThisDclForm->GetControlList().GetHeadPosition();
 	while (pos != NULL)
 	{
 		CDclControlObject *pCtrl = m_pThisDclForm->GetControlList().GetNext(pos);
-		if (pCtrl->m_Id > nHighest)
-			nHighest = pCtrl->m_Id;
+		if (pCtrl->GetID() > nHighest)
+			nHighest = pCtrl->GetID();
 	}
-	return nHighest + 1;
+	return nHighest + nControlStartId + 1;
 }
 
 CWnd* CObjectDCLView::AddCWndControl( CDclControlObject* pDclControl, CRect rcPos, bool bForceUpdate )
 {
 	// add the properties to the project list class for the requested control
-	if (pDclControl->m_Id >= 0)
-		AddProperties( pDclControl );
-	else
+	if (pDclControl->GetID() < 0)
 		return NULL;
+
+	AddProperties( pDclControl );
 
 	if (rcPos.Width() >= 0 &&
 		rcPos.Height() > 0)
@@ -1777,8 +1776,10 @@ CWnd* CObjectDCLView::AddCWndControl( CDclControlObject* pDclControl, CRect rcPo
 	// create a new control holder
 	CControlHolder *pControl = new CControlHolder;
 	
-	if (pDclControl->m_Id == -1)
+	if (pDclControl->GetID() == -1)
 		m_ControlId = GetNextControlId();
+	else
+		m_ControlId = pDclControl->GetID() + nControlStartId;
 	
 	// create an ordinary control
 	pControl->Create(WS_CHILD|WS_CLIPSIBLINGS, rcPos, this, m_ControlId);
@@ -2045,18 +2046,15 @@ void CObjectDCLView::ClearControls()
 
 void CObjectDCLView::ClearChildControls(CControlHolder *pParentControl) 
 {
-	for (int i=nControlStartId; i<=pParentControl->m_ControlId; i++)
+	if (pParentControl->m_ControlType == CtlActiveX)
+		pParentControl->m_pArxObject->SaveToStream(pParentControl->GetActiveXCtrl());
+	CWnd* pChild = pParentControl->GetChildControl();
+	if( pChild )
 	{
-		CWnd *pControl = pParentControl->GetDlgItem(i);
-		if( pControl )
-		{
-			if (pParentControl->m_ControlType == CtlActiveX)
-				pParentControl->m_pArxObject->SaveToStream(pParentControl->GetActiveXCtrl());			
-			pControl->DestroyWindow();			
-			delete pControl;
-		}
+		pChild->DestroyWindow();
+		delete pChild;
 	}
-	pParentControl->m_ControlId = nNotSet;
+	pParentControl->m_ControlId = -1;
 }
 
 bool CObjectDCLView::CreateChildControl(CControlHolder *pParent, CDclControlObject *pDclControl, bool bForceUpdate)
@@ -3735,6 +3733,8 @@ void CObjectDCLView::AddProperties( CDclControlObject *pDclControl )
 	// add the nImageList property
 	switch (nType)
 	{
+	case CtlGraphicButton:
+	case CtlPictureBox:
 	case CtlTree:
 	case CtlListView:
 	case CtlGrid:
@@ -5647,14 +5647,11 @@ void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObjec
 		{
 			try
 			{
-				int nImageListIndex = pArxObject->GetImageListIndex();
+				bool bHasImageList = (pArxObject->GetImageList() != NULL);
 
 				TC_ITEM TabCtrlItem;
 				CString sTTT;
-				if (nImageListIndex == nNotSet)
-					TabCtrlItem.mask = TCIF_TEXT;
-				else				
-					TabCtrlItem.mask = TCIF_TEXT|TCIF_IMAGE;			
+				TabCtrlItem.mask = TCIF_TEXT;
 				
 				// delete all previos tabs
 				((CTabCtrl*)pControl)->DeleteAllItems();
@@ -5668,8 +5665,11 @@ void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObjec
 					TabCtrlItem.pszText = Tab.GetBuffer(nDeTextLimitCB);		
 					
 					// set the image list item number is required
-					if (nImageListIndex > nNotSet)
+					if (bHasImageList)
+					{
+						TabCtrlItem.mask |= TCIF_IMAGE;
 						TabCtrlItem.iImage = _tstol(pArxObject->GetPropertyListItem(nTabsImageList, nCount));
+					}
 					
 					// add the new tab
 					((CTabCtrl*)pControl)->InsertItem( 0, &TabCtrlItem );
@@ -5816,66 +5816,30 @@ void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObjec
 
 void CObjectDCLView::ResetImageList(CWnd *pControl, int nID, CDclControlObject *pArxObject)
 {
-	CImageListObject *pImageListObject = NULL;
-	int nImageListIndex = pArxObject->GetImageListIndex();
-	
-	if (pArxObject->GetType() == CtlGrid)
-	{
-		if (pArxObject->m_pImageList == NULL)
-		{				
-			POSITION pos = m_pThisDclForm->m_ImageListCollection.FindIndex(pArxObject->GetLngProperty(nImageList));
-			if (pos != NULL)
-			{
-				CImageListObject *pImageListObj = m_pThisDclForm->m_ImageListCollection.GetAt(pos);
-				((CListCtrlEx*)pControl)->m_Child.SetImageList(&pImageListObj->m_ImageList);
-			}				
-		}
-		else
-		{
-			((CListCtrlEx*)pControl)->m_Child.SetImageList(&pArxObject->m_pImageList->m_ImageList);
-		}
-	}
-
-	// exit method if there is no imagelists assigned to this control
-	if (nImageListIndex == nNotSet)
-		return;
-
-	
-	if (m_pThisDclForm->m_ImageListCollection.IsEmpty() == TRUE)
-		return;
-	
-	// exit method if no image lists are available
-	if (m_pThisDclForm->m_ImageListCollection.GetCount() == 0)
-		return;
-
-	if (pArxObject->m_pImageList == NULL)
-	{
-		POSITION pos = m_pThisDclForm->m_ImageListCollection.FindIndex(nImageListIndex);
-		if (pos != NULL)
-			CImageListObject *pImageListObject = m_pThisDclForm->m_ImageListCollection.GetAt(pos);			
-		else
-			return;
-	}	
-	else
-	{
-		pImageListObject = pArxObject->m_pImageList;
-	}
 	switch (pArxObject->GetType())
 	{
 		case CtlTabStrip:
 		{
-			try
-			{
-				((CTabCtrl*)pControl)->SetImageList(&pImageListObject->m_ImageList);
-			}
-			catch(...)
-			{
-			}
+			RefCountedPtr< CImageListObject > pImageList = pArxObject->GetImageList();
+			if (pImageList)
+				((CTabCtrl*)pControl)->SetImageList(&pImageList->m_ImageList);
+			break;
+		}
+		case CtlGrid:
+		{
+			RefCountedPtr< CImageListObject > pImageList = pArxObject->GetImageList();
+			if (pImageList)
+				((CListCtrlEx*)pControl)->m_Child.SetImageList(&pImageList->m_ImageList);
 			break;
 		}
 		case CtlTree:
 		{
-			//((CTreeCtrl*)pControl)->SetImageList(&pImageListObject->m_ImageList);
+			RefCountedPtr< CImageListObject > pImageList = pArxObject->GetImageList();
+			if (pImageList)
+			{
+				((CTreeCtrl*)pControl)->SetImageList(&pImageList->m_ImageList, TVSIL_NORMAL);
+				((CTreeCtrl*)pControl)->SetImageList(&pImageList->m_ImageList, TVSIL_STATE);
+			}
 			break;
 		}
 	}
@@ -5933,37 +5897,15 @@ void CObjectDCLView::CopyControlToClipBoard()
 	activeProject->sDclFormCopiedFrom = m_pThisDclForm->GetKeyName();
 
 	ClipBoardObject.mControls.AddTail(m_SelectedControl.m_pArxObject);
-	int nImageListIndex = m_SelectedControl.m_pArxObject->GetImageListIndex();
-	
-	POSITION pos = m_pThisDclForm->m_ImageListCollection.FindIndex(nImageListIndex);
-	if (pos != NULL)
-	{
-		CImageListObject *pImageListObj = m_pThisDclForm->m_ImageListCollection.GetAt(pos);
-		ClipBoardObject.mImageListCollection.AddTail(pImageListObj);
-	}
 
-	for (int i=0; i<m_SelectedList.GetCount(); i++)
+	POSITION pos = m_SelectedList.GetHeadPosition();
+	while (pos)
 	{
-		POSITION pos = m_SelectedList.FindIndex(i);
-		if (pos != NULL)
+		CSelectedControl *pSelControl = m_SelectedList.GetNext(pos);
+		if (pSelControl != NULL)
 		{
-			CSelectedControl *pSelControl = m_SelectedList.GetAt(pos);
-			if (pSelControl != NULL)
-			{
-				if (pSelControl->m_nIndex > nNotSet)	
-				{
-					ClipBoardObject.mControls.AddTail(pSelControl->m_pArxObject);
-
-					nImageListIndex = pSelControl->m_pArxObject->GetImageListIndex();
-	
-					POSITION pos = m_pThisDclForm->m_ImageListCollection.FindIndex(nImageListIndex);
-					if (pos != NULL)
-					{
-						CImageListObject *pImageListObj = m_pThisDclForm->m_ImageListCollection.GetAt(pos);
-						ClipBoardObject.mImageListCollection.AddTail(pImageListObj);
-					}
-				}
-			}
+			if (pSelControl->m_nIndex > -1)	
+				ClipBoardObject.mControls.AddTail(pSelControl->m_pArxObject);
 		}
 	}
 
@@ -5985,14 +5927,10 @@ void CObjectDCLView::CopyControlToClipBoard()
 
 	if (OpenClipboard())
 	{
-		
 		::SetClipboardData(m_nClipboardFormat, hData);
 		CloseClipboard();
 	}
-
-
 }
-
 
 
 void CObjectDCLView::DeleteSelectedControls() 
@@ -6182,8 +6120,8 @@ void CObjectDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool b
 			pProp = pCtrl->GetPropertyList().GetNext(pos);
 			if (pProp->GetType() == PropActiveXProp)
 			{
-				if (pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFontDisp ||
-						pProp->GetAxInterfaceDescriptorPtr()->GetActiveXProperyGuid() == IID_IFont)
+				if (pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFontDisp ||
+						pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFont)
 				{
 					pFontProp = pProp;
 					break;
@@ -6194,16 +6132,7 @@ void CObjectDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool b
 			return;
 		
 		CAxContainer *axContainer = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
-		COleFont font;
-		if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropGet())
-			font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropGet()->Id);
-		else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetProp())
-			font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetProp()->Id);
-		else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
-			font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->Id);
-		else
-			return;
-
+		COleFont font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetGetDispId());
 		CString	sFontName = font.GetName();
 		CY cyFontSize = font.GetSize();
 		BOOL m_bBold = font.GetBold();
@@ -6252,14 +6181,7 @@ void CObjectDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool b
 		font.SetUnderline(m_bUnderline);
 		font.SetItalic(m_bItalic);
 		font.SetStrikethrough(m_bStrike);		
-
-		if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut())
-			axContainer->SetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropPut()->Id, font);
-		else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetProp())
-			axContainer->SetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetProp()->Id, font);
-		else if (pFontProp->GetAxInterfaceDescriptorPtr()->GetPropGet())
-			axContainer->SetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPropGet()->Id, font);
-		
+		axContainer->SetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetPutDispId(), font);
 	}
 	catch (...)
 	{
@@ -6627,14 +6549,14 @@ void CObjectDCLView::PasteFromClipBoard()
 			{
 				m_SelectedControl.m_pArxObject = pCopyOfArxControlObject;
 				m_SelectedControl.m_pControl = pControl;
-				m_SelectedControl.m_nIndex = pCopyOfArxControlObject->m_Index;				
+				m_SelectedControl.m_nIndex = pCopyOfArxControlObject->GetZOrder();				
 			}
 			else
 			{
 				CSelectedControl *pSelCtrl = new CSelectedControl;
 				pSelCtrl->m_pArxObject = pCopyOfArxControlObject;
 				pSelCtrl->m_pControl = pControl;				
-				pSelCtrl->m_nIndex = pCopyOfArxControlObject->m_Index;
+				pSelCtrl->m_nIndex = pCopyOfArxControlObject->GetZOrder();
 				((CControlHolder*)pControl)->SetSelected(TRUE);
 				m_SelectedList.AddTail(pSelCtrl);
 			}			
@@ -6916,7 +6838,9 @@ void CObjectDCLView::CompletedDragResize(int nQuadrant, CPoint point)
 	rcPos.bottom -= 3;
 		
 	CWnd *pControl = ((CControlHolder*)m_SelectedControl.m_pControl)->GetChildControl();
-	
+	assert( pControl != NULL );
+	if( !pControl )
+		return;
 
 	CRect rcOldPos;
 	m_SelectedControl.m_pControl->GetWindowRect(rcOldPos);
@@ -7487,7 +7411,7 @@ void CObjectDCLView::UndoAction()
 				pUndoAction->m_pArxObject->SetLongProperty(nTop, pUndoAction->rcPos.top);
 				pUndoAction->m_pArxObject->SetLongProperty(nWidth, pUndoAction->rcPos.Width());
 				pUndoAction->m_pArxObject->SetLongProperty(nHeight, pUndoAction->rcPos.Height());
-				if (m_SelectedControl.m_nIndex == pUndoAction->m_pArxObject->m_Index)
+				if (m_SelectedControl.m_nIndex == pUndoAction->m_pArxObject->GetZOrder())
 					ShowGripRects(TRUE, pUndoAction->rcPos);
 				break;
 				}
@@ -7621,7 +7545,7 @@ void CObjectDCLView::SelectControl(short nArxControlIndex)
 	
 	m_SelectedControl.m_pArxObject = pArxObject;
 	m_SelectedControl.m_pControl = pControl;
-	m_SelectedControl.m_nIndex = pArxObject->m_Index;
+	m_SelectedControl.m_nIndex = pArxObject->GetZOrder();
 	ClearSelection();
 
 	CRect rcCtrl;
@@ -7990,7 +7914,7 @@ void CObjectDCLView::FireControlSelected(CDclControlObject *pArxControl)
 		{
 			m_SelectedControl.m_pArxObject = pArxControl;
 			m_SelectedControl.m_pControl = pArxControl->m_pCtrlHolder;
-			m_SelectedControl.m_nIndex = pArxControl->m_Index;
+			m_SelectedControl.m_nIndex = pArxControl->GetZOrder();
 		}
 		CRect rc;
 		m_SelectedControl.m_pControl->GetWindowRect(&rc);

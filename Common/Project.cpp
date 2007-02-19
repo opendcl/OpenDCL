@@ -24,7 +24,6 @@
 #include <fstream>
 #include <stdio.h>
 
-#define MAX_CALLING_ARGUMENTS 16
 
 #define RELEASE(lpUnk) do \
 	{ if ((lpUnk) != NULL) { (lpUnk)->Release(); (lpUnk) = NULL; } } while (0)
@@ -172,6 +171,7 @@ void CProject::SetKeyName( LPCTSTR pszKeyName )
 	if( !pszKeyName )
 		return;
 	CString sKey = pszKeyName;
+	sKey = sKey.MakeReverse().SpanExcluding( _T("\\/:") ).MakeReverse().SpanExcluding( _T(".") );
 	sKey.Replace(_T(' '), _T('|'));
 	msKeyName = sKey;
 }
@@ -444,25 +444,9 @@ RefCountedPtr< COleControlObject > CProject::GetOleObject(const CLSID& clsid)
 
 CString CProject::GetOleObjectName(const AxPropertyDescriptor *pProperty)
 {
-  if (pProperty == NULL)
-    return CString();
-
-	std::vector< RefCountedPtr< COleControlObject > >::iterator pos = mOleControls.begin();
-  while (pos != mOleControls.end())
-  {
-    RefCountedPtr< COleControlObject > pObject = *pos++;
-		assert( pObject != NULL );
-    if (pObject != NULL)
-    {
-      if (pObject->m_clsid == pProperty->Guid)
-				return pObject->GetAxTypeName();
-      for (int i = pProperty->rArgs.size() - 1; i >= 0 ; --i)
-      {
-				if (pObject->m_clsid == pProperty->rArgs[i].clsid)
-          return pObject->GetAxTypeName();
-      }	
-    }
-  }
+	RefCountedPtr< COleControlObject > pOleControl = GetOleObject( pProperty );
+	if( pOleControl )
+		pOleControl->GetAxTypeName();
   return theWorkspace.LoadResourceString(IDS_OleObject);
 }
 
@@ -479,11 +463,11 @@ RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxEventDescripto
 		assert( pObject != NULL );
     if (pObject != NULL)
     {
-      for (int i=0; i<MAX_CALLING_ARGUMENTS; i++)
+      for (size_t idx = 0; idx < pEvent->GetArgs().size(); ++idx)
       {
-        if (pEvent->CallingArgs[i] == VT_DISPATCH || pEvent->CallingArgs[i] == VT_UNKNOWN)
+        if (pEvent->GetArgs().at(idx).vt == VT_DISPATCH || pEvent->GetArgs().at(idx).vt == VT_UNKNOWN)
         {
-          if (pObject->m_clsid == pEvent->CallingArgClsids[i] )
+          if (pObject->m_clsid == pEvent->GetArgs().at(idx).clsid )
             return pObject;
         }
       }	
@@ -504,11 +488,12 @@ RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxPropertyDescri
 		assert( pObject != NULL );
     if (pObject != NULL)
     {
-      if (pObject->m_clsid == pProperty->Guid)
+      if (pObject->m_clsid == pProperty->GetGuid())
         return pObject;
-      for (int i = pProperty->rArgs.size() - 1; i >= 0; --i)
-			{
-				if (pObject->m_clsid == pProperty->rArgs[i].clsid)
+			size_t idx = pProperty->GetArgs().size();
+      while (idx-- > 0)
+      {
+				if (pObject->m_clsid == pProperty->GetArgs().at(idx).clsid)
           return pObject;
       }	
     }
@@ -528,11 +513,11 @@ RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxMethodDescript
 		assert( pObject != NULL );
     if (pObject != NULL)
     {
-      if (pObject->m_clsid == pMethod->ReturnGuid)
+      if (pObject->m_clsid == pMethod->GetReturnGuid())
         return pObject;
-      for (int i=0; i<MAX_CALLING_ARGUMENTS+1; i++)
+      for (size_t idx = 0; idx < pMethod->GetArgs().size(); ++idx)
       {
-        if (pObject->m_clsid == pMethod->CallingArgClsids[i])
+				if (pObject->m_clsid == pMethod->GetArgs().at(idx).clsid)
           return pObject;
       }	
     }

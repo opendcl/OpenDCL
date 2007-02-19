@@ -11,7 +11,7 @@
 #include "DclFormObject.h"
 
 
-void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString &sArgs, CString &sDesc, const CDclControlObject *pControl)
+void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CString &sArgs, CString &sDesc)
 {
 	// here we need to test the event defun id type to see what arguments need to be added.
 	switch (nEventId)
@@ -19,19 +19,19 @@ void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString 
 	case nEventSplitterMoved:
 		sDesc = theWorkspace.LoadResourceString(5224);
 		
-		if (nArxControlType == CtlSplitter)
+		if (pControl->GetType() == CtlSplitter)
 			sArgs = theWorkspace.LoadResourceString(1331);			
 		break;
 
 	case nEventBtnClicked:
 		sDesc = theWorkspace.LoadResourceString(5000);
 		
-		if (nArxControlType == CtlGrid)
+		if (pControl->GetType() == CtlGrid)
 			sArgs = theWorkspace.LoadResourceString(1187);			
 		break;
     
 	case nEventClicked:
-		switch( nArxControlType)
+		switch( pControl->GetType())
 		{
 		case CtlCheckBox:
 		case CtlOptionButton:
@@ -70,7 +70,7 @@ void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString 
 		break;
 
 	case nEventDblClicked:
-		switch( nArxControlType)
+		switch( pControl->GetType())
 		{
 		case CtlListView:
 		case CtlGrid:
@@ -88,7 +88,7 @@ void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString 
       
 	case nEventSelChanged:
     
-		switch( nArxControlType)
+		switch( pControl->GetType())
 		{
 		case CtlGrid:
 			{
@@ -172,7 +172,7 @@ void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString 
 		break;
     
 	case nEventBeginLabelEdit:
-		switch( nArxControlType)
+		switch( pControl->GetType())
 		{
 		case CtlGrid:
 			sArgs = theWorkspace.LoadResourceString(1187);			
@@ -193,7 +193,7 @@ void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString 
 	   break;
     
 	case nEventEndLabelEdit:
-       switch( nArxControlType)
+       switch( pControl->GetType())
 	   {		   
 	   case CtlGrid:
 			sArgs = theWorkspace.LoadResourceString(1187);			
@@ -221,7 +221,7 @@ void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString 
 		break;
     
 	case nEventKeyDown:
-		switch( nArxControlType)
+		switch( pControl->GetType())
 		{
         case CtlBlockList:
 		case CtlListView:
@@ -290,7 +290,7 @@ void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString 
 		   break;
       
     case nEventSelChanging:
-		switch( nArxControlType)
+		switch( pControl->GetType())
 		{
 		case CtlTabStrip:
 			sArgs = theWorkspace.LoadResourceString(1206);
@@ -303,7 +303,7 @@ void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString 
 		break;
     
 	case nEventChanged:
-        switch( nArxControlType)
+        switch( pControl->GetType())
 		{
 		case CtlTabStrip:
 			sArgs = theWorkspace.LoadResourceString(1206);
@@ -349,7 +349,7 @@ void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString 
 		break;
       
 	case nFormEventClose:
-		switch( DclFormType)
+		switch( pControl->GetOwnerForm()->GetType() )
 		{
 		case VdclFileDialog:
 		case VdclModal:
@@ -426,7 +426,7 @@ void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString 
 		break;
       
 	case nDragnDropFromControl:
-        switch(nArxControlType)
+        switch(pControl->GetType())
 		{
 		case CtlTree:
 			sArgs = theWorkspace.LoadResourceString(1214);
@@ -438,9 +438,9 @@ void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString 
         sDesc = theWorkspace.LoadResourceString(5049);
 		break;
 	case nDragnDropFromAutoCAD:
-		if (DclFormType == VdclFileDialog)
+		if (pControl->GetOwnerForm()->GetType() == VdclFileDialog)
 		{
-			switch( nArxControlType)
+			switch( pControl->GetType())
 			{
 			case CtlTree:
 				sArgs = theWorkspace.LoadResourceString(1216);			
@@ -452,9 +452,9 @@ void LoadArgsNDesc(int nEventId, int DclFormType,  int nArxControlType, CString 
 			sDesc = theWorkspace.LoadResourceString(5222);
 		}
 		
-		if (DclFormType != VdclFileDialog)
+		if (pControl->GetOwnerForm()->GetType() != VdclFileDialog)
 		{
-			switch( nArxControlType)
+			switch( pControl->GetType())
 			{
 			case CtlTree:
 				sArgs = theWorkspace.LoadResourceString(1216);			

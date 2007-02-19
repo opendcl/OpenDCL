@@ -6,8 +6,8 @@
 
 enum ControlType
 {
-	CtlFormPropHolder = 1,
 	CtlInvalid = 0,
+	CtlFormPropHolder = 1,
 	CtlLabel = 2,
 	CtlStdButton = 3,
 	CtlGraphicButton = 4,

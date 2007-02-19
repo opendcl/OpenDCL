@@ -67,12 +67,6 @@ bool CTabControlX::OnApplyCaptionFont( RefCountedPtr< CPropertyObject > pProp )
 	return true;
 }
 
-bool CTabControlX::OnApplyImageList( RefCountedPtr< CPropertyObject > pProp )
-{
-	GetControl()->GetTabCtrl().SetImageList( mpTemplate->GetOwnerForm()->GetImageList( pProp->GetShortValue() ) );
-	return true;
-}
-
 
 /////////////////////////////////////////////////////////////////////////////
 // VdclTab
@@ -114,6 +108,10 @@ bool VdclTab::Create( CWnd* pParentWnd, UINT nID )
 	if( !mTabCtrl.Create( mControlX.GetWndStyle(), rectTabCtrl, this, IDC_TAB ) )
 		bSuccess = false;
 	VERIFY(mTabCtrl.SubclassDlgItem(IDC_TAB, this));
+
+	RefCountedPtr< CImageListObject > pImageList = mpSourceControl->GetImageList();
+	if( pImageList )
+		mTabCtrl.SetImageList( &pImageList->m_ImageList );
 
 	if( bSuccess && !mControlX.ApplyPropertiesEnum() )
 		bSuccess = false;
@@ -160,9 +158,7 @@ const CControlPane* VdclTab::GetTabControlPaneAt( size_t nIndex ) const
 void VdclTab::SetupTabs()
 {
 	CString sText;
-	TC_ITEM TabCtrlItem;
 	CString sTTT;
-	TabCtrlItem.mask = TCIF_TEXT;
 	
 	// delete all previos tabs
 	mTabCtrl.DeleteAllItems();
@@ -172,40 +168,32 @@ void VdclTab::SetupTabs()
 	RefCountedPtr< CPropertyObject > pTabsTTTProperty = mpSourceControl->GetPropertyObject(nTabsTTT);
 
 	size_t nTabQty = pTabsCaptionProperty->size();
-	int nImageListIndex = mpSourceControl->GetImageListIndex();
-
-  size_t i;
-	for (i = 0; i < nTabQty; i++)
+	for (size_t i = 0; i < nTabQty; i++)
 	{
-		CString Tab = mpSourceControl->GetPropertyListItem(nTabsCaption, i);
-					
+		TC_ITEM TabCtrlItem;
+		TabCtrlItem.mask = TCIF_TEXT | TCIF_PARAM;
+		TabCtrlItem.lParam = (LPARAM)i;
+
 		// get the tag caption
-		TabCtrlItem.pszText = Tab.GetBuffer(256);
+		CString Tab = mpSourceControl->GetPropertyListItem(nTabsCaption, i);
+		TabCtrlItem.pszText = Tab.LockBuffer();
 
 		// set the image list item number is required
-		if (nImageListIndex > -1)
+		RefCountedPtr< CImageListObject > pImageList = mpSourceControl->GetImageList();
+		if (pImageList)
+		{
 			TabCtrlItem.iImage = _ttol(mpSourceControl->GetPropertyListItem(nTabsImageList, i));
+			TabCtrlItem.mask |= TCIF_IMAGE;
+		}
 					
 		// add the new tab
 		mTabCtrl.InsertItem(i, &TabCtrlItem );
-
-		//  Get the current tab item text.
-		TC_ITEM tcItem;
-		tcItem.mask = TCIF_PARAM;
-		mTabCtrl.GetItem(i, &tcItem);
-		
-		tcItem.lParam = (short)i;
-		
-		mTabCtrl.SetItemExtra(sizeof(short));
-		//  Set the item in the tab control.
-		mTabCtrl.SetItem(i, &tcItem);
-
 	}
 	
 	InitToolTip();
 	mTabCtrl.SetToolTips(&m_ToolTip);
 	
-	for (i = 0; i < nTabQty; i++)
+	for (size_t i = 0; i < nTabQty; i++)
 	{
 		CRect r;
 		sText = mpSourceControl->GetPropertyListItem(nTabsTTT, i);
@@ -213,11 +201,8 @@ void VdclTab::SetupTabs()
 		m_ToolTip.AddTool(&mTabCtrl, sText, &r, i);
 	}
 
-	
-   // Activate the tooltip control.
+	// Activate the tooltip control.
    m_ToolTip.Activate(TRUE);
-	
-
 }
 
 
@@ -261,15 +246,10 @@ void VdclTab::ShowTab(int nIndex)
 	// add the new tab
 	mTabCtrl.InsertItem(nIndex, sTab, nImage);
 
-	//  Get the current tab item text.
+	//  Set the item in the tab control.
 	TC_ITEM tcItem;
 	tcItem.mask = TCIF_PARAM;
-	mTabCtrl.GetItem(nIndex, &tcItem);
-	
-	tcItem.lParam = (short)nIndex;
-	
-	mTabCtrl.SetItemExtra(sizeof(short));
-	//  Set the item in the tab control.
+	tcItem.lParam = (LPARAM)nIndex;
 	mTabCtrl.SetItem(nIndex, &tcItem);
 
 }

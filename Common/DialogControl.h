@@ -153,5 +153,4 @@ public:
 	virtual bool OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp ); //nEnabled
 	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ); //nCaption
 	virtual bool OnApplyCaptionFont( RefCountedPtr< CPropertyObject > pProp ); //nLabelName
-	virtual bool OnApplyImageList( RefCountedPtr< CPropertyObject > pProp ); //nImageList
 };

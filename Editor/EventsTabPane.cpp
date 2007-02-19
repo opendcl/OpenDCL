@@ -238,7 +238,7 @@ void CEventsTabPane::AddAnyActiveXEvents()
 		return;
 
 	//The ActiveX event item data is the property item index because a control can have multiple 
-	//ActiveX 'Event' proerties, so the index must be used to determine which property object 
+	//ActiveX 'Event' properties, so the index must be used to determine which property object 
 	//the event is associated with.
 	INT_PTR idxProp = 0;
 	POSITION pos = m_pControl->GetPropertyList().GetHeadPosition();
@@ -268,7 +268,7 @@ void CEventsTabPane::TryToAddEvent( PropertyId nEventId )
 	RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyObject( nEventId );
 	if( pProp )
 	{ //the event exists, so add it to the list
-		int idxEvent = m_EventsTree.AddString( CString( _T("On") ) + GetPropertyName( nEventId ) );
+		int idxEvent = m_EventsTree.AddString( GetPropertyName( nEventId ) );
 		m_EventsTree.SetItemData( idxEvent, nEventId );
 		if( !pProp->GetStringValue().IsEmpty() )
 			m_EventsTree.SetCheck( idxEvent, TRUE ); //if the event has been set, set the event tree item as checked.
@@ -311,107 +311,68 @@ void CEventsTabPane::OnChangeDefunedit()
 
 void CEventsTabPane::SetDefunPreview()
 {
-	CString sStringPreview = "(defun ";
-
-	if (m_pDclForm == NULL)
+	if( !m_pDclForm )
 		return;
-	
+
+	CString sPreview;
 
 	// get the current event selection
 	int hItem = m_EventsTree.GetCurSel();
-	
-	if (hItem != -1)
+	if( hItem != -1 )
 	{
 		// get the event id from the curent selection
-		PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(hItem);
+		PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData( hItem );
 
 		// get the defun name
-		CString sEventDefun = GetEvent(nEventId);
+		CString sEventDefun = GetEvent( nEventId );
+		if( sEventDefun.IsEmpty() )
+			m_DefunEdit.GetWindowText( sEventDefun );
 
-		if (sEventDefun.IsEmpty())
-		{
-			m_DefunEdit.GetWindowText(sEventDefun);
-		}
 		// if the ^C^C has been added, remove it for the defun preview
-		if (sEventDefun.Left(4) == "^c^c" || sEventDefun.Left(4) == "^C^C")
-			sEventDefun = sEventDefun.Right(sEventDefun.GetLength() - 4);
-
-		// add the defun name
-		sStringPreview = sStringPreview + sEventDefun + " ("; 
+		if( sEventDefun.Left(4).CompareNoCase( _T("^c^c") ) == 0 )
+			sEventDefun = sEventDefun.Mid( 4 );
 		
 		// get the arguments
 		CString sArgs = GetDefunArguments();
+		sArgs += _T(" /");
 
-		if (!sArgs.IsEmpty())
-			sArgs += " /";
-
-		// if arguments are found add them to the defun
-		if (sArgs.GetLength() > 0)
-		{
-			sStringPreview = sStringPreview + sArgs;
-		}
-
-		// close the argument bracket.
-		sStringPreview = sStringPreview + ")";
-
-		// start the next line
-		sStringPreview = sStringPreview + "\r\n";
-
+		CString sDefunBody;
 		if (nEventId == nDragnDropFromAutoCAD && m_pDclForm->GetType() != VdclFileDialog)
-		{
-			// add the code to get the current AutoCAD selection set in AutoLisp
-			sStringPreview = sStringPreview 
-                +"     (setq ssDragnDropSelectionSet (ssget \"P\"))"
-				// start the next line
-				+ "\r\n"
-				// end the setq bracket
-				+ ")";
-		}
+			sDefunBody = _T("     (setq ssDragnDropSelectionSet (ssget \"P\"))"); //get the 'Previous' selection set
 		else
 		{
 			// add the default message box to show the programmer the event has not been updated
-			sStringPreview = sStringPreview  
-				+ "     (Odcl_MessageBox \"To Do: code must be added to " 
-				// add the control name here
-				+ m_pControl->GetStrProperty(nName) + "\" \"To do\")";
+			sDefunBody.Format( _T("     (Odcl_MessageBox \"To Do: code must be added to event handler\\r\\n%s\" \"To do\")"),
+												 sEventDefun );
 		}
 
-		// start the next line
-		sStringPreview = sStringPreview + "\r\n";
-
-		// close the defun bracket.
-		sStringPreview = sStringPreview + ")";
-
-
-		// set the preview control's text
-		m_DefunPreview.SetWindowText(sStringPreview);
+		sPreview.Format( _T("(defun %s (%s)\r\n%s\r\n)\r\n"), (LPCTSTR)sEventDefun, (LPCTSTR)sArgs, (LPCTSTR)sDefunBody );
 	}
+
+	m_DefunPreview.SetWindowText( sPreview ); // set the preview control's text
 }
 
 CString CEventsTabPane::GetDefunArguments()
 {
-	CString sArgs = CString();
-	CString strDesc= CString();
+	CString sArgs;
+	CString strDesc;
 	
 	// get the event id from the curent selection
 	int nEventId = m_EventsTree.GetItemData(m_EventsTree.GetCurSel());
 
-	// get the arx control Id
-	int nArxControlType = m_pControl->GetType();
-
-	if (nArxControlType != CtlActiveX)
-		LoadArgsNDesc(nEventId, nArxControlType, nArxControlType, sArgs, strDesc, m_pControl);
+	if (m_pControl->GetType() != CtlActiveX)
+		LoadArgsNDesc((PropertyId)nEventId, m_pControl, sArgs, strDesc);
 	else
 	{
 		POSITION pos = m_pControl->GetPropertyList().FindIndex(nEventId);
 		if (pos != NULL)
 		{
 			RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetAt(pos);
-			strDesc = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->DocumentationDesc;
-			int ctCallingArgs = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->nArgs;
+			strDesc = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetDesc();
+			int ctCallingArgs = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetArgs().size();
 			for (int i = 0; i < ctCallingArgs; i++)
 			{
-				sArgs += pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->CallingArgNames[i];
+				sArgs += pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetArgs().at( i ).name;
 				if (i < ctCallingArgs - 1)
 					sArgs += " ";
 			}
@@ -680,14 +641,8 @@ void CEventsTabPane::SetEvent( PropertyId nEventId, CString sEventDefun )
 
 CString CEventsTabPane::GetEvent( PropertyId nEventId )
 {
-	CString sEventSymbol = m_pControl->GetStrProperty( nEventId );
-	if (m_pControl->GetType() == CtlActiveX)
-	{
-		POSITION pos = m_pControl->GetPropertyList().FindIndex(nEventId);
-		if (pos != NULL)
-			sEventSymbol = m_pControl->GetPropertyList().GetAt(pos)->GetStringValue();
-	}
-	else
+	CString sEventSymbol;
+	if (m_pControl->GetType() != CtlActiveX)
 		sEventSymbol = m_pControl->GetStrProperty(nEventId); 
 	if( sEventSymbol.IsEmpty() )
 	{

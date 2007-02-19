@@ -4,11 +4,12 @@
 // to when its reference count reaches zero. Creating a copy of the pointer class increments the reference 
 // count, thus ensuring that the object stays alive as long as there are any outstanding pointers to it.
 //
-// by Owen Wengerd, 2007-01-29
+// Copyright 2007 Owen Wengerd (http://www.manusoft.com)
+// Licensed to OpenDCL under terms of GNU General Public License
 //
 // Usage:
 // class CMyObject;
-// RefCountedPtr< MyObject > pMyObject;
+// RefCountedPtr< MyObject > pMyObject = new CMyObject;
 
 class RefCounterBase
 {

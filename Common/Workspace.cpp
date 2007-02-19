@@ -87,7 +87,7 @@ bool CWorkspace::GetModuleVersionInfo( DWORD& dwMajor, DWORD&dwMinor, DWORD& dwT
 CString CWorkspace::FindFile( LPCTSTR pszFilePath ) const
 {
 	CString sPath;
-	SearchPath( NULL, pszFilePath, NULL, MAX_PATH, sPath.GetBuffer( MAX_PATH ), NULL );
+	DWORD ctPath = SearchPath( NULL, pszFilePath, NULL, MAX_PATH, sPath.GetBuffer( MAX_PATH ), NULL );
 	sPath.ReleaseBuffer();
 	return sPath;
 }

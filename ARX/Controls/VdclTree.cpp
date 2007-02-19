@@ -156,8 +156,8 @@ void VdclTree::OnDestroy()
 {
 	m_bDeleting = true;
 	Clear();
-	m_ChildTree.DeleteAllItems();	
 	m_ChildTree.SetImageList(NULL, TVSIL_NORMAL);
+	m_ChildTree.DeleteAllItems();	
 	CStatic::OnDestroy();
 	
 }

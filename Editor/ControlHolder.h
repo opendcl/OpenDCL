@@ -6,7 +6,6 @@
 
 #include "GripRect.h"
 
-#define nChildCtrlIdStart  100
 #define nGripSizeConst  7
 #define nNotSet -1
 #define nDeGridIDCounter 80
@@ -75,7 +74,7 @@ public:
 	unsigned long GetColor(DISPID dispid);
 	
 	HRESULT GetProperty(AxPropertyDescriptor *axProp, CString &strReturnValue);
-	void SetProperty(AxPropertyDescriptor *axProp, CString sNewValue);
+	void SetProperty( AxPropertyDescriptor *axProp, LPCTSTR pszNewValue );
 
 	void ShowPropertyPages();
 

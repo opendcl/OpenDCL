@@ -12,14 +12,6 @@ class CControlPane;
 class AxPropertyDescriptor;
 class CPropertyObject;
 
-//[DPR] Recreated helper struct and function
-struct VariantList
-{
-	COleVariant m_Variant[256];
-};
-void InvokeAxHelperV(IDispatch *pDispatch, AxPropertyDescriptor *axProp, WORD wFlags,VARTYPE vtRet, COleVariant *pvRet, AxPropertyDescriptor * pbParamInfo, VariantList *argList, int nParams);
-void DoAxMethod(IDispatch *pDispatch, AxMethodDescriptor *axMethod, VariantList *argList, COleVariant *pVarReturn);
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CAxContainer window
@@ -32,15 +24,10 @@ protected:
 	CPPToolTip mToolTip;
 	CComPtr< ITypeLib > mpTypeLib;
 	UINT mnTypeLibCount;
+	CComPtr< IDispatch > mpDispatch; //cache the IDispatch and keep it alive for the lifetime of the container
 
 // Attributes
 	BOOL m_bInvokeWithSendString;
-
-	// this container is used to store COleDispatchDriver's
-	// this is done because if we dont any IDispatch's sent back will become NULL by the time the 
-	// next ActiveX method or property is called on it.
-	CList< COleDispatchDriver* > mOleDispatchDrivers; // this needs to be eliminated [ORW]
-
 
 // Construction
 public:
@@ -68,26 +55,20 @@ public:
 
 	HRESULT SaveToStream( IStream* pStream );
 	
-	IDispatch *GetOleIDispatch();
-	IOleObject *GetIOleObject();
-	UINT ExtractPropertyInfo(CDclControlObject *pControl, LPOLEOBJECT pIObject, BOOL bEnumList = FALSE);
-	UINT ExtractPropertyInfo(CDclControlObject *pControl, ITypeInfo* pTI, BOOL bEnumList, LPOLEOBJECT pIObject = NULL);
-	UINT ExtractEventInfo(CDclControlObject *pControl, LPOLEOBJECT pIObject, BOOL bUseAsType);
-	UINT ExtractEventInfo(CDclControlObject *pControl, ITypeInfo *TheInfo, BOOL bUseAsType);
-	UINT ExtractMethodInfo(CDclControlObject *pControl, LPOLEOBJECT pIObject);
-	UINT ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo *TheInfo);
+	HRESULT GetOleDispatch( IDispatch** ppDispatch );
+	HRESULT GetOleObject( IOleObject** ppOleObject );
+	UINT ExtractPropertyInfo( CDclControlObject *pControl, LPOLEOBJECT pIObject, bool bEnumList = false );
+	UINT ExtractPropertyInfo( CDclControlObject *pControl, ITypeInfo* pTI, LPOLEOBJECT pIObject = NULL, bool bEnumList = false );
+	UINT ExtractEventInfo( CDclControlObject *pControl, LPOLEOBJECT pIObject, bool bUseAsType );
+	UINT ExtractEventInfo( CDclControlObject *pControl, ITypeInfo* pTypeInfo, bool bUseAsType );
+	UINT ExtractMethodInfo( CDclControlObject *pControl, LPOLEOBJECT pIObject );
+	UINT ExtractMethodInfo( CDclControlObject *pControl, ITypeInfo* pTypeInfo );
 
 	IDispatch *GetChildIDispatch(DISPID dispid);
-	void GetRefGuid( AxPropertyDescriptor* pAProp, ITypeInfo* TheInfo, HREFTYPE hreftype, AxPropertyDescriptor *pProperty = NULL);
-	BOOL ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID clsid);
 
 	void Initialize();
 	virtual BOOL CreateCtrl(CLSID Clsid, CDclControlObject *pControl, int nID, CWnd *pParent);
 	virtual BOOL CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RECT& rect, int nID, CWnd *pParent, bool bAddPropInfo);
-	HRESULT GetProperty(AxPropertyDescriptor *axProp, CString &strReturnValue);
-	void GetProperty(AxPropertyDescriptor *axProp, VariantList *argList, COleVariant *pVarReturn);
-	void SetProperty(AxPropertyDescriptor *axProp, CString sNewValue);
-	void SetProperty(AxPropertyDescriptor *axProp, COleVariant varArgument);
 	COleFont GetFont(DISPID dispid);
 	void SetFont(DISPID dispid, LPDISPATCH newValue);
 	unsigned long GetColor(DISPID dispid);
@@ -97,22 +78,18 @@ public:
 	void SetPicture(DISPID dispid, LPDISPATCH newValue, WORD flag);
 	BOOL GetPropertyPageCLSIDs( CArray< CLSID, CLSID& >& aclsidPages );
 	void ShowPropertyPages();
-	void SetBoolProperty(AxPropertyDescriptor *axProp, CString sNewValue);
 
 	void SetRefImageList(DISPID dispid, LPDISPATCH newValue);
 	void SetImageList(DISPID dispid, LPDISPATCH newValue);
 
-	//[DPR] Recreated functions
-	void CAxContainer::InvokeHelperV(AxPropertyDescriptor *axProp, WORD wFlags,
-		VARTYPE vtRet, COleVariant* pvRet, AxPropertyDescriptor * pbParamInfo, VariantList *argList, int nParams);
-	void DoMethod(AxMethodDescriptor *axMethod, VariantList *argList, COleVariant *pVarReturn);
-
-// Overrides
-	public:
-
-// Implementation
+	//ActiveX Helpers
 public:
-	void AddDispatchDriver( COleDispatchDriver* pDriver ) { mOleDispatchDrivers.AddTail(pDriver); }
+	HRESULT GetProperty(AxPropertyDescriptor* axProp, CString &strReturnValue);
+	HRESULT GetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
+	HRESULT SetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs );
+	HRESULT SetProperty( AxPropertyDescriptor* axProp, COleVariant varArg );
+	HRESULT Invoke( AxMethodDescriptor* axMethod, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
+	BOOL ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID clsid);
 
 	// Generated message map functions
 protected:

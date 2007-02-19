@@ -2,36 +2,50 @@
 
 enum IOStatus;
 
+struct AxMethodArg
+{
+	VARTYPE vt;
+	CString name;
+	CLSID clsid;
+	AxMethodArg() : vt( VT_EMPTY ) {}
+};
+
 
 // class for holding information about ActiveX methods so we do not
 // have to keep goint back to typeinfo
-class AxMethodDescriptor : public CObject
+class AxMethodDescriptor
 {
-	static const int MAX_CALLING_ARGUMENTS = 16;
-public:
-	DISPID Id;
-	CString Name;
-	CString Params;
-	CString Desc;
-	VARTYPE ReturnType;
-	GUID ReturnGuid;	
-	VARTYPE CallingArgs[MAX_CALLING_ARGUMENTS];
-	CString CallingArgNames[MAX_CALLING_ARGUMENTS+1];
-	CLSID   CallingArgClsids[MAX_CALLING_ARGUMENTS];
-	int nParamQty;
+	DISPID mDispId;
+	CString msName;
+	CString msDesc;
+	CString msParams;
+	VARTYPE mReturnType;
+	GUID mReturnGuid;	
+	std::vector< AxMethodArg > mrArgs;
 
-public:
+protected:
+	friend class AxInterfaceDescriptor;
 	AxMethodDescriptor(void);
+public:
+	AxMethodDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo, bool bUseAsType = true );
 	virtual ~AxMethodDescriptor(void);
 
+	// Attributes
+	DISPID GetDispId() const { return mDispId; }
+	const CString& GetName() const { return msName; }
+	const CString& GetDesc() const { return msDesc; }
+	VARTYPE GetReturnType() const { return mReturnType; }
+	GUID GetReturnGuid() const { return mReturnGuid; }
+	const std::vector< AxMethodArg >& GetArgs() const { return mrArgs; }
+
+	//Operations
+	HRESULT Invoke( IDispatch* pObjectDisp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult ) const;
+
 	//File I/O
-	virtual void Serialize(CArchive& ar);
+	virtual void Serialize(CArchive& ar, int nPropertyVersion);
   IOStatus WriteToTextFile(FILE* pFile) const;
   IOStatus ReadFromTextFile(std::ifstream &sFile);
   IOStatus ReadFromTextFile2(std::ifstream &sFile);
-
-protected:
-	DECLARE_SERIAL(AxMethodDescriptor)
 
 #ifdef _DIAGNOSTIC
 	virtual LPCTSTR toString() const;

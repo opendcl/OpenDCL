@@ -148,17 +148,17 @@ BOOL CGeometry::OnInitDialog()
 			{
 				int n;
 				n = m_Top.AddString(pCtrl->GetStrProperty(nName));
-				m_Top.SetItemData(n, pCtrl->m_Id);
+				m_Top.SetItemData(n, pCtrl->GetID());
 				n = m_Bottom.AddString(pCtrl->GetStrProperty(nName));
-				m_Bottom.SetItemData(n, pCtrl->m_Id);
+				m_Bottom.SetItemData(n, pCtrl->GetID());
 			}
 			else
 			{
 				int n;
 				n = m_Left.AddString(pCtrl->GetStrProperty(nName));
-				m_Left.SetItemData(n, pCtrl->m_Id);
+				m_Left.SetItemData(n, pCtrl->GetID());
 				n = m_Right.AddString(pCtrl->GetStrProperty(nName));
-				m_Right.SetItemData(n, pCtrl->m_Id);
+				m_Right.SetItemData(n, pCtrl->GetID());
 			}
 		}
 	}

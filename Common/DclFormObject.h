@@ -25,6 +25,7 @@ protected:
 	DclFormType mType;
 	CString msName;
 	CDialogObject* mpDlgObject; //informational pointer to the one and only instance of this form (or NULL)
+	std::vector< CImageListObject > mImageLists;
 
 	//for managing tab hierarchy and order
 	CDclFormObject* mpParentForm;
@@ -34,7 +35,6 @@ protected:
 
 // Attributes
 public:
-	CList<CImageListObject*> m_ImageListCollection;	
 	bool m_bDeleted;
 	BOOL m_bUsesClientRect;
 	bool m_bLoaded;
@@ -55,7 +55,8 @@ public:
 	virtual ~CDclFormObject();
 
 	//2007-01-30 [ORW]: save version set to 4 (no change from ObjectDCL 3)
-	ULONG GetCurrentSaveVersion() const { return 4; }
+	//2007-02-19 [ORW]: save version set to 5 (image list collection removed from form object)
+	ULONG GetCurrentSaveVersion() const { return 5; }
 
 // Operations
 public:
@@ -72,7 +73,7 @@ public:
 	void IncrementPictureId(int nIdIncrement);
 	int CountDeletedControls() const;
 	bool CanWeDeleteForm() const;
-	int CountDeletedImageLists() const;
+	size_t CountDeletedImageLists() const;
 	CString GetDclFormTitle() const;
 	long GetDclFormTitleBarIcon();
 	void EnsureIsLoaded();
@@ -119,7 +120,6 @@ public:
 	void SetParentForm( LPCTSTR pszParentUniqueName );
 	short GetTabIndex() const { return mnTabIndex; }
 	void SetTabIndex( short nIndex ) { mnTabIndex = nIndex; }
-	RefCountedPtr< CImageList > GetImageList( size_t index ) const;
 
 	//File I/O
 public:

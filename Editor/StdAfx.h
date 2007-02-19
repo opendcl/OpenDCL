@@ -56,6 +56,7 @@
 #include <atlbase.h>
 #include <atlconv.h>
 #include <atlimage.h>
+#include <comutil.h>
 
 
 #pragma warning( disable: 4310 )  // Cast truncates constant value
