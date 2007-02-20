@@ -8,6 +8,7 @@
 
 class CDclFormObject;
 class CPictureObject;
+class CProject;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -15,9 +16,11 @@ class CPictureObject;
 
 class CPictureFolder : public CDialog
 {
+	CProject* mpProject;
+
 // Construction
 public:
-	CPictureFolder(CWnd* pParent = NULL);   // standard constructor
+	CPictureFolder(CProject* pProject, CWnd* pParent = NULL);   // standard constructor
 	
 
 // Dialog Data

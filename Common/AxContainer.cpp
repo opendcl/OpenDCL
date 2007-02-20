@@ -253,7 +253,6 @@ UINT CAxContainer::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo* pTyp
 		{
 			RefCountedPtr< CPropertyObject > pProp = new CPropertyObject( PropActiveXEvent );
 			pProp->SetHidden();
-			pProp->SetStringValue( pAxEventDesc->GetName() );
 			pControl->GetPropertyList().AddTail( pProp );
 			++ctEvents;
 			pProp->GetAxInterfaceDescriptorPtr()->SetEvent( pAxEventDesc.release() );

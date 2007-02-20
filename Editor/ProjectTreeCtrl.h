@@ -42,7 +42,8 @@ public:
 	HTREEITEM GetOdsFileParentTreeItem() const { return mhtiOdsFileParent; }
 	HTREEITEM GetOdsFileTreeItem() const { return mhtiOdsFile; }
 	HTREEITEM GetAxFilesParentTreeItem() const { return mhtiAxFilesParent; }
-	void SetAutoLispFilename( LPCTSTR pszLispFilename ) { SetItemText(mhtiAutoLispFile, pszLispFilename); }
+	void SetAutoLispFilename( LPCTSTR pszLispFilename );
+	void SetOdsFilename( LPCTSTR pszOdsFilename );
 	void SetupProjectTree( CProject* pProject = NULL );
 	CProject* GetProject() const { return mpProject; }
 	CObjectDCLDoc* GetDocument() const { return mpDocument; }

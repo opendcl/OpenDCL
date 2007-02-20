@@ -110,7 +110,7 @@ void CImageListPage::OnAddimage()
 	
 	int nCount = m_FileList.GetCount();
 	SetModified();
-	
+	GetDlgItem( IDC_REMOVEIMAGE )->EnableWindow( TRUE );
 }
 
 void CImageListPage::LoadPictureFile(LPCTSTR szFile)
@@ -323,26 +323,18 @@ void CImageListPage::OnRemoveimage()
 	int nItem=-1;
 	POSITION pos = m_PicList.GetFirstSelectedItemPosition();
 	if (pos == NULL)
-	{
 		return;
-	}
-	else
+	while (pos)
 	{
-	   while (pos)
-	   {
-			nItem = m_PicList.GetNextSelectedItem(pos);
-			
-			if (nItem != -1)
-			{
-				m_PicList.DeleteItem(nItem);
-			}
-	   }
+		nItem = m_PicList.GetNextSelectedItem(pos);
+		if (nItem != -1)
+			m_PicList.DeleteItem(nItem);
+		GetImageList().Remove(nItem);
 	}
-	GetImageList().Remove(nItem);
 	
 
 	m_PicList.Arrange(LVA_ALIGNLEFT);
-	for (int i=0; i<m_PicList.GetItemCount(); i++)
+	for (int i=0; i < m_PicList.GetItemCount(); i++)
 	{
 		TCHAR Value[80];
 		_ltot(i, Value, 10);
@@ -362,10 +354,11 @@ void CImageListPage::OnRemoveimage()
 		m_DispHeight.SetWindowText(_T(""));
 		m_DispWidth.SetWindowText(_T(""));
 		mpImageList = new CImageList;
+		GetDlgItem( IDC_REMOVEIMAGE )->EnableWindow( FALSE );
 	}
 
 	if (nItem >= m_PicList.GetItemCount())
-		nItem--;
+		nItem = m_PicList.GetItemCount() - 1;
 	if (nItem >= 0)
 	{
 		m_PicList.SetFocus();
@@ -379,7 +372,7 @@ void CImageListPage::OnRemoveimage()
 
 BOOL CImageListPage::OnApply() 
 {
-	if( mpImageList && mpImageList->GetImageCount() > 0 )
+	if( mpImageList && mpImageList->m_hImageList && mpImageList->GetImageCount() > 0 )
 	{
 		CImageListObject* pNewImageList = new CImageListObject;
 		pNewImageList->m_ImageSize.SetSize( nCurrentWidth, nCurrentHeight );
@@ -425,6 +418,8 @@ BOOL CImageListPage::OnInitDialog()
 			m_PicList.SetItemData(i, i);
 		}
 	}
+	else
+		GetDlgItem( IDC_REMOVEIMAGE )->EnableWindow( FALSE );
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }

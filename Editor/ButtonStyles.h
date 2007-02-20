@@ -6,6 +6,7 @@
 #include "Resource.h"
 #include "PictureBox.h"
 
+class CDclControlObject;
 class CPropertyObject;
 
 
@@ -14,37 +15,35 @@ class CPropertyObject;
 
 class CButtonStyles : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CButtonStyles)
-
-// Construction
-public:
-	CButtonStyles();
-	~CButtonStyles();
-
-// Dialog Data
-	//{{AFX_DATA(CButtonStyles)
-	enum { IDD = IDD_BUTTONSTYLES };
+	CDclControlObject* mpControl;
 	CPictureBox	m_Picture;
 	CListBox	m_PicList;
 	CStatic	m_Desc;
-	//}}AFX_DATA
 
 	int m_nHighestId;
 	int m_SelectedPic;
 	int m_SelectedStyle;
+
+public:
 	RefCountedPtr< CPropertyObject > m_pStyle;
 	RefCountedPtr< CPropertyObject > m_pPicture;
+
+protected:
+	enum { IDD = IDD_BUTTONSTYLES };
+
+// Construction
+public:
+	CButtonStyles( CDclControlObject* pControl );
+	~CButtonStyles();
+
+public:
 	void DisplayDesc(int nSetting);
 
-
 // Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CButtonStyles)
-	public:
+public:
 	virtual BOOL OnApply();
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
@@ -58,7 +57,7 @@ protected:
 	afx_msg void OnSelchangePiclist();
 	afx_msg void OnStyle5();
 	virtual BOOL OnInitDialog();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
 
+protected:
+	DECLARE_MESSAGE_MAP()
 };

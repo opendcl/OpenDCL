@@ -100,8 +100,6 @@ public:
 	virtual const CProject* GetOwnerProject() const { return mpOwner? mpOwner->GetProject() : NULL; }
 	const CPropertyList& GetPropertyList() const { return mProperties; }
 	CPropertyList& GetPropertyList() { return mProperties; }
-	//CDclControlObject(CDclControlObject const & other);
-	//virtual CDclControlObject operator=(CDclControlObject const & other);
 	const CString& GetAxTypeName() const { return msAxTypeName; }
 	void SetAxTypeName( LPCTSTR pszAxTypeName ) { msAxTypeName = pszAxTypeName; }
 	int GetID() const { return mnID; }
@@ -124,9 +122,6 @@ public:
 	CString GetPropertyListItem(PropertyId nID, size_t nIndex);
 	RefCountedPtr< CImageListObject > GetImageList() const { return mpImageList; }
 	void SetImageList( RefCountedPtr< CImageListObject > pImageList ) { mpImageList = pImageList; }
-	//long GetImageListIndex();
-	//void SetImageListIndex(PropertyId nIndex);
-	//void Copy(CDclControlObject *other);
 	short FindPropertyIndex(PropertyId nID) const;
 	POSITION FindPropertyInsertPos( LPCTSTR pszName, bool bHidden ) const;
 	POSITION FindPropertyInsertPos( PropertyId nID, bool bHidden ) const;
@@ -156,7 +151,7 @@ public:
 	void ClearProperties();
 	void ClearR14Events();
 
-// Implementation
+	//Implementation
 	CString GetActiveXTypeName() const;
 	bool IsMicrosoftActiveXCtrl() const;
 
@@ -166,7 +161,7 @@ public:
   IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName);
   IOStatus ReadFromTextFile6(std::ifstream &sFile, const CString &fileName);
 	
-// Name rendition
+	//Name rendition
 public:
 	CString GetKeyName() const;
 	CString GetKeyPath() const;
@@ -177,6 +172,7 @@ protected:
 
 #ifdef _DIAGNOSTIC
 public:
+	virtual LPCTSTR toString() const;
 	virtual void dump( bool bDeep = true ) const;
 #endif
 

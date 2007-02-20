@@ -160,6 +160,21 @@ void CProjectTreeCtrl::RemoveChildren(HTREEITEM hParent)
 	}
 }
 
+void CProjectTreeCtrl::SetAutoLispFilename( LPCTSTR pszLispFilename )
+{
+	CString sLispFilename = pszLispFilename;
+	if( sLispFilename.IsEmpty() )
+		sLispFilename = theWorkspace.LoadResourceString(IDS_NONE);
+	SetItemText(mhtiAutoLispFile, sLispFilename);
+}
+
+void CProjectTreeCtrl::SetOdsFilename( LPCTSTR pszOdsFilename )
+{
+	CString sOdsFilename = pszOdsFilename;
+	if( sOdsFilename.IsEmpty() )
+		sOdsFilename = theWorkspace.LoadResourceString(IDS_NONE);
+	SetItemText(mhtiOdsFile, sOdsFilename);
+}
 
 void CProjectTreeCtrl::SetupProjectTree(CProject* pProject /*= NULL*/)
 {
@@ -184,10 +199,10 @@ void CProjectTreeCtrl::SetupProjectTree(CProject* pProject /*= NULL*/)
 	mhtiAutoLispFileParent = InsertItem(sText);
 	SetItemImage(mhtiAutoLispFileParent, 1,1);
 
-	if (!mpProject || mpProject->m_LispFileName.IsEmpty())
+	if (!mpProject || mpProject->GetLispFileName().IsEmpty())
 		sText = theWorkspace.LoadResourceString(IDS_NONE);
 	else
-		sText = mpProject->m_LispFileName;
+		sText = mpProject->GetLispFileName();
 	// add the autolisp file name itself
 	mhtiAutoLispFile = InsertItem(sText, mhtiAutoLispFileParent);
 	SetItemImage(mhtiAutoLispFile, 6,6);	
@@ -197,10 +212,10 @@ void CProjectTreeCtrl::SetupProjectTree(CProject* pProject /*= NULL*/)
 	mhtiOdsFileParent = InsertItem(sText);
 	SetItemImage(mhtiOdsFileParent, 1,1);
 
-	if (!mpProject || mpProject->m_DistFileName.IsEmpty())
+	if (!mpProject || mpProject->GetDistFileName().IsEmpty())
 		sText = theWorkspace.LoadResourceString(IDS_NONE);
 	else
-		sText = mpProject->m_DistFileName;
+		sText = mpProject->GetDistFileName();
 	// add the distribution file name itself
 	mhtiOdsFile = InsertItem(sText, mhtiOdsFileParent);
 	SetItemImage(mhtiOdsFile, 7,7);
@@ -226,35 +241,18 @@ void CProjectTreeCtrl::ClearTree()
 
 void CProjectTreeCtrl::AddActiveXFileTree(CString sFileName)
 {
-	bool bAlreadyLoaded = false;
-
 	if (sFileName.GetLength() == 0)
 		return;
 
 	sFileName = StripPathFromFileName(sFileName);
 
-	
-	// do a loop to ensure we don't add files more than once.
-	for (int i=0; i<activeProject->m_ActiveXFiles.GetSize(); i++)
-	{
-		// if the file is already in the list, set the flag not to add it again.
-		if (activeProject->m_ActiveXFiles[i] == sFileName)
-			bAlreadyLoaded = true;
-	}
-	// if the active file has not been added already.
-	if (!bAlreadyLoaded)
-		// then add it.
-		activeProject->m_ActiveXFiles.Add(sFileName);
-	else
-		// if the file has already been loaded we need to exit here so it won't show up twice in the tree control
-		return;
+	if( !mpProject->AddActiveXFile( sFileName ) )
+		return; //it's already in the list
 
 	// add the parent tree item
 	if (mhtiAxFilesParent == NULL)
 	{
-		CString sText;
-		sText = theWorkspace.LoadResourceString(IDS_AXFILEPARENT);
-		mhtiAxFilesParent = InsertItem(sText, TVI_ROOT, TVI_SORT);
+		mhtiAxFilesParent = InsertItem(theWorkspace.LoadResourceString(IDS_AXFILEPARENT), TVI_ROOT, TVI_SORT);
 		SetItemImage(mhtiAxFilesParent, 1,1);
 	}	
 	

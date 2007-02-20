@@ -101,25 +101,24 @@ protected:
 	CList< CDclControlObject* > mClipBoard;
 	CString msKeyName;
 	CString msProjectFilePath;
+	CString msBaseFileName; //the project file base name (no path, no extension)
+	CStringArray mrsActiveXFiles;
+	CString msLispFileName;
+	CString msDistFileName;
+
+	CString msPassword;
+	bool mbHasPassword;
+	DWORD mnAutoCADVersion;
+	DWORD mnPurchaseState;
+	bool mbFreeVersion;
 	
 public:		
-	CString sDclFormCopiedFrom;
-	CString m_LoadSingleDialog;
-	DWORD m_PurchaseState;
-	BOOL m_bHasPassword;
-	CString m_sPassword;
-	CString m_LispFileName;
-	CString m_DistFileName;
-	CString m_ShortFileName;	
-	CStringArray m_ActiveXFiles;
-	bool m_bFreeVersion;
 	CString m_sDefaultFontName;
 	long m_nDefaultFontSize;
 	BOOL m_bDefaultFontItalic;
 	BOOL m_bDefaultFontUnderLine;
 	BOOL m_bDefaultFontBold;
 	BOOL m_bDefaultFontSizeStyle;
-	DWORD m_nAutoCADVersion;
 
 public:
 	CProject();
@@ -135,13 +134,13 @@ protected:
 
 public:
 	virtual LPCTSTR GetPassword() const { return _T("d32afd3aw3aq3fdaw3"); }
-	virtual const CString& GetBaseName() const { return m_ShortFileName; } //this should return the project file base name
-	virtual const CString& GetProjectFilePath() const { return msProjectFilePath; }
 	virtual bool IsInUse() const;
+	virtual DWORD GetPurchaseState() const { return mnPurchaseState; }
 
 	HBITMAP GetBitmap( UINT nID, CSize& sz ) const;
 	HICON GetIcon( UINT nID ) const;
 	bool GetPictureSize( UINT nID, CSize& size ) const; //return true if found
+	CPictureObject* FindPicture( UINT nID ) const;
 
 	//Centralized File I/O
 	virtual DWORD GetCurrentProjectFileFormatVersion() const { return 11; }
@@ -151,8 +150,6 @@ protected:
 	IOStatus ReadFromTextFile( LPCTSTR pszFilePath ); //read a project from a text file
   IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName); //read from text file
   IOStatus ReadFromTextFile9(std::ifstream &sFile, const CString &fileName); //read version 9 text file
-	void SaveSS(CStgFile &FileStg, CDocument *pDoc);
-	void ReadSS(CStgFile &FileStg, CDocument *pDoc);
 
 public:
 	//Attributes
@@ -162,6 +159,10 @@ public:
 	//CList< CDclFormObject* >& GetDclFormList() { return mDclForms; }
 	const CString& GetKeyName() const { return msKeyName; }
 	void SetKeyName( LPCTSTR pszKeyName );
+	const CString& GetBaseFileName() const { return msBaseFileName; }
+	const CString& GetProjectFilePath() const { return msProjectFilePath; }
+	const CString& GetLispFileName() const { return msLispFileName; }
+	const CString& GetDistFileName() const { return msDistFileName; }
 
 	//Services
 	virtual void DeleteForm( CDclFormObject*& pDclForm );
@@ -169,10 +170,17 @@ public:
 	virtual CDclFormObject* AddForm( DclFormType nType, CDclFormObject* pParentForm );
 	virtual void SetGlobalVariableNames( LPCTSTR pszRootName = NULL );
 	virtual void ClearGlobalVariableNames();
+	bool AddActiveXFile( LPCTSTR pszFileName );
+	bool RemoveActiveXFile( LPCTSTR pszFileName );
+	bool HasActiveXFile( LPCTSTR pszFileName ) const;
+	INT_PTR AddPicture(CPictureObject* pPicture);
+	bool LoadPictureFile(LPCTSTR szFile, int nID);
+
+protected:
 
 	//from old CProjectList
+public:
 	void ClearProject();
-	void SetPurchaseMode(int nPurchaseMode);
 	CDclFormObject* GetDclForm(CString DclFormName);
 	void ClearR14Events();
 	CDclFormObject* GetDclTabChildForm(CString sDclParentUniqueName, int nTabIndex);
@@ -199,6 +207,7 @@ protected:
 
 #ifdef _DIAGNOSTIC
 public:
+	virtual LPCTSTR toString() const;
 	virtual void dump( bool bDeep = true ) const;
 #endif
 

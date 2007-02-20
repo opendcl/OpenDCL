@@ -393,6 +393,8 @@
 #define IDR_OBJECTTYPE_LT               1001
 #define IDC_APPVERSION                  1001
 #define IDR_OBJECTTYPE_R14              1002
+#define IDC_RICHEDIT21                  1002
+#define IDC_LICENSETXT                  1002
 #define IDC_PICTURE                     1007
 #define IDC_PICTURELIST                 1008
 #define IDC_CTRL_DESC                   1009
@@ -898,7 +900,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        102
 #define _APS_NEXT_COMMAND_VALUE         40005
-#define _APS_NEXT_CONTROL_VALUE         1002
+#define _APS_NEXT_CONTROL_VALUE         1003
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

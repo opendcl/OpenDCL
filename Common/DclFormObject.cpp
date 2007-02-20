@@ -135,7 +135,7 @@ void CDclFormObject::AddControl( CDclControlObject* pDclControl )
 	pDclControl->SetZOrder( idxNewControl );
 	if( pDclControl->GetID() < 0 )
 		pDclControl->SetID( idxNewControl );
-	pDclControl->m_PurchaseState = mpProject->m_PurchaseState;
+	pDclControl->m_PurchaseState = mpProject->GetPurchaseState();
 }
 
 
@@ -534,6 +534,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 			{
 				// put dcl form into archive
 				pControl->Serialize(ar);
+				TraceFmt( _T("> %s\r\n"), pControl->toString() );
 			}
 		}		
 	}
@@ -588,6 +589,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 
 			// add that ArxControlObject to the list object
 			AddControl( pControl );
+			TraceFmt( _T("< %s\r\n"), pControl->toString() );
 
 			//pControl->ForceUpdateGlobalVariable(GetKeyName());
 			
@@ -1085,13 +1087,20 @@ void CDclFormObject::ZOrderFrontAddTabControls()
 
 
 #ifdef _DIAGNOSTIC
-void CDclFormObject::dump( bool bDeep /*= true*/ ) const
+LPCTSTR CDclFormObject::toString() const
 {
 	CString sInstance;
 	if( mpDlgObject )
 		sInstance.Format( _T(" (DlgObject: %s)"), asString( mpDlgObject ) );
+	static TCHAR buf[1024];
+	_sntprintf( buf, _elements(buf), _T("CDclControlobject [%s: %s%s]"), asString( mType ), GetKeyPath(), (LPCTSTR)sInstance );
+	return buf;
+}
+
+void CDclFormObject::dump( bool bDeep /*= true*/ ) const
+{
 	CString sOut;
-	sOut.Format( _T("CDclFormObject [%s: %s]%s\r\n"), asString( mType ), GetKeyPath(), (LPCTSTR)sInstance );
+	sOut.Format( _T("%s\r\n"), toString() );
 	theWorkspace.DisplayStatus( sOut );
 	if( !bDeep )
 		return;
@@ -1106,10 +1115,7 @@ void CDclFormObject::dump( bool bDeep /*= true*/ ) const
 #ifdef _DEBUG
 void CDclFormObject::dumpDebugger( bool bDeep /*= true*/ ) const
 {
-	CString sInstance;
-	if( mpDlgObject )
-		sInstance.Format( _T(" (DlgObject: %s)"), asString( mpDlgObject ) );
-	TraceFmt( _T("CDclFormObject [%s: %s]%s\r\n"), asString( mType ), GetKeyPath(), (LPCTSTR)sInstance );
+	TraceFmt( _T("%s\r\n"), toString() );
 	if( !bDeep )
 		return;
 	POSITION pos = mDclControls.GetHeadPosition();

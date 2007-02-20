@@ -140,7 +140,6 @@ protected:
 	afx_msg void OnSelchangeDate();
 	afx_msg void OnSelchangeTime();
 	afx_msg void OnChangeFileext();
-	afx_msg void OnChangeIndexEdit();
 	afx_msg void OnSetfocusIndexEdit();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

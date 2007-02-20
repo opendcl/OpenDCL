@@ -290,7 +290,7 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 		return;
 	}
 
-	// get the offset boolean flags
+	// get the offset flags
 	int lLeftFromRight = 0;
 	if (pArxObject->m_pUseLeftOffset->GetType() == PropBool)
 		lLeftFromRight = pArxObject->m_pUseLeftOffset->GetBooleanValue();
@@ -341,7 +341,6 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 
 	// get the current placement of the control
 	CRect rcControl;
-	rcControl = mPaneWindowPos;
 
 	CRect rcThis;
 	mpHostDlg->GetClientRect(&rcThis);

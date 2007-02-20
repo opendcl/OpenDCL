@@ -3708,7 +3708,7 @@ void CSpreadSheet::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 			m_pPickButton->m_sOnClickedEvent = m_ArxControl->GetStrProperty(nEventBtnClicked);
 			m_pPickButton->m_bInvokeWithSendString = m_bInvokeWithSendString;		
 		}
-		m_pFolderButton->m_nDirectory = nAsPick;
+		m_pPickButton->m_nDirectory = nAsPick;
 		m_pPickButton->MoveWindow(rc, TRUE);	
 		m_pPickButton->ShowWindow(TRUE);		
 		
@@ -3727,7 +3727,7 @@ void CSpreadSheet::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 			m_pEllipsesButton->m_sOnClickedEvent = m_ArxControl->GetStrProperty(nEventBtnClicked);
 			m_pEllipsesButton->m_bInvokeWithSendString = m_bInvokeWithSendString;
 		}
-		m_pFolderButton->m_nDirectory = nAsPick;
+		m_pEllipsesButton->m_nDirectory = nAsPick;
 		m_pEllipsesButton->MoveWindow(rc, TRUE);
 		m_pEllipsesButton->ShowWindow(TRUE);
 	}

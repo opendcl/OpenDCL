@@ -502,7 +502,6 @@ CArxProject* CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKey
 		delete pProject;
 		return NULL; 
 	}
-	pProject->m_ShortFileName = sFileName;
 	if( sFileName.Right( GetDistributionFileExtension().GetLength() ).CompareNoCase( GetDistributionFileExtension() ) == 0 )
 		mOdsProjects.AddTail( CString( pProject->GetKeyName() ).MakeLower() );
 

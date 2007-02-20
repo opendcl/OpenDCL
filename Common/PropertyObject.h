@@ -64,8 +64,8 @@ namespace PropVal
 
 		//attributes
 		virtual PropertyType GetType() const = 0;
-		virtual DWORD GetSubtype() const { return 0; }
-		virtual DWORD SetSubtype(DWORD dwSubtype) { return 0; }
+		virtual DWORD GetFlags() const { return 0; }
+		virtual DWORD SetFlags(DWORD dwFlags) { return 0; }
 
 		//simple types
 		virtual bool GetValue( short& v ) const { return false; }
@@ -137,7 +137,7 @@ protected:
 	CPropertyObject();
 	virtual ~CPropertyObject();
 public:
-	CPropertyObject(PropertyType type, DWORD dwSubtype = 0, PropertyId nID = (PropertyId)-1);
+	CPropertyObject(PropertyType type, DWORD dwFlags = 0, PropertyId nID = (PropertyId)-1);
 
 	//2007-01-30 [ORW]: save version set to 5 (no change from ObjectDCL 3)
 	//2007-02-08 [ORW]: save version set to 6 (eliminate MFC serialized classes)
@@ -150,8 +150,8 @@ protected:
 public:
 	PropertyType GetType() const { return mpValue->GetType(); }
 	void SetType( PropertyType type );
-	DWORD GetSubtype() const { return mpValue->GetSubtype(); }
-	void SetSubtype( DWORD flags ) { mpValue->SetSubtype( flags ); }
+	DWORD GetFlags() const { return mpValue->GetFlags(); }
+	void SetFlags( DWORD flags ) { mpValue->SetFlags( flags ); }
 	bool IsHidden() const { return mbHidden; }
 	void SetHidden( bool bHidden = true ) { mbHidden = bHidden; }
 	PropertyId GetID() const { return mnID; }

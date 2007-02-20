@@ -138,6 +138,7 @@ protected:
 
 #ifdef _DIAGNOSTIC
 public:
+	virtual LPCTSTR toString() const;
 	virtual void dump( bool bDeep = true ) const;
 #endif
 

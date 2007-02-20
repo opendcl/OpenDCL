@@ -41,17 +41,17 @@
 LPCTSTR gpszCliboardFormatName = _T("ODCL.Clipboard.Controls");
 
 
+inline static bool IsVersionFree()
+{
+	return false;
+}
+
+
 static CString LTOA(int nVal)
 {
   CString sLong;
 	sLong.Format(_T("%d"), nVal);
   return sLong;
-}
-
-
-static bool IsVersionFree()
-{
-	return activeProject->m_bFreeVersion;
 }
 
 
@@ -173,24 +173,25 @@ static CString FindTabCaption(CDclFormObject *pDclTab)
 }
 
 
-class CClipboardObject : public CObject
-{
-	DECLARE_SERIAL(CClipboardObject);
-public:
-	CClipboardObject() {}
-	virtual ~CClipboardObject()
-	{
-	}
-
-	CTypedPtrList< CObList, CDclControlObject* > mControls;
-
-	virtual void Serialize(CArchive& ar)
-	{
-		CObject::Serialize( ar );
-		mControls.Serialize(ar);
-	}
-};
-IMPLEMENT_SERIAL(CClipboardObject, CObject, 1);
+typedef CTypedPtrList< CObList, CDclControlObject* > CClipboardObject;
+//class CClipboardObject : public CObject
+//{
+//	DECLARE_SERIAL(CClipboardObject);
+//public:
+//	CClipboardObject() {}
+//	virtual ~CClipboardObject()
+//	{
+//	}
+//
+//	CTypedPtrList< CObList, CDclControlObject* > mControls;
+//
+//	virtual void Serialize(CArchive& ar)
+//	{
+//		CObject::Serialize( ar );
+//		mControls.Serialize(ar);
+//	}
+//};
+//IMPLEMENT_SERIAL(CClipboardObject, CObject, 1);
 
 /////////////////////////////////////////////////////////////////////////////
 // CObjectDCLView
@@ -4190,10 +4191,10 @@ void CObjectDCLView::AddProperties( CDclControlObject *pDclControl )
 	if (nType != CtlFileDlgCtrl)
 	{
 		// add the geometry management booleans
-		pDclControl->AddLongProperty( nUseBottomFromBottom, PropBool, 0 );
-		pDclControl->AddLongProperty( nUseLeftFromRight, PropBool, 0 );
-		pDclControl->AddLongProperty( nUseRightFromRight, PropBool, 0 );
-		pDclControl->AddLongProperty( nUseTopFromBottom, PropBool, 0 );
+		pDclControl->AddLongProperty( nUseBottomFromBottom, PropLong, 0 );
+		pDclControl->AddLongProperty( nUseLeftFromRight, PropLong, 0 );
+		pDclControl->AddLongProperty( nUseRightFromRight, PropLong, 0 );
+		pDclControl->AddLongProperty( nUseTopFromBottom, PropLong, 0 );
 	}
 
 	// add the nUseTabStops property
@@ -5883,7 +5884,7 @@ void CObjectDCLView::HideSizingRect()
 
 void CObjectDCLView::CopyControlToClipBoard() 
 {
-	CClipboardObject ClipBoardObject;
+	CClipboardObject ClipBoard;
 
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 		m_SelectedControl.m_pArxObject == NULL)
@@ -5894,9 +5895,7 @@ void CObjectDCLView::CopyControlToClipBoard()
 		return;
 	
 	
-	activeProject->sDclFormCopiedFrom = m_pThisDclForm->GetKeyName();
-
-	ClipBoardObject.mControls.AddTail(m_SelectedControl.m_pArxObject);
+	ClipBoard.AddTail(m_SelectedControl.m_pArxObject);
 
 	POSITION pos = m_SelectedList.GetHeadPosition();
 	while (pos)
@@ -5905,7 +5904,7 @@ void CObjectDCLView::CopyControlToClipBoard()
 		if (pSelControl != NULL)
 		{
 			if (pSelControl->m_nIndex > -1)	
-				ClipBoardObject.mControls.AddTail(pSelControl->m_pArxObject);
+				ClipBoard.AddTail(pSelControl->m_pArxObject);
 		}
 	}
 
@@ -5915,7 +5914,7 @@ void CObjectDCLView::CopyControlToClipBoard()
 	UINT m_nClipboardFormat = RegisterClipboardFormat(gpszCliboardFormatName);
 
 	// serialize data to archive object       
-	ClipBoardObject.Serialize(ar);
+	ClipBoard.Serialize(ar);
 
 	ar.Flush();
 	HGLOBAL hData = memFile.Detach();
@@ -6377,7 +6376,7 @@ void CObjectDCLView::UpdateFontSize(int nSize)
 
 void CObjectDCLView::PasteFromClipBoard()
 {
-	CClipboardObject ClipBoardObject; 
+	CClipboardObject ClipBoard; 
 
 	// CG: This block was added by the Clipboard Assistant component
 	if (OpenClipboard())
@@ -6391,7 +6390,7 @@ void CObjectDCLView::PasteFromClipBoard()
 			CArchive ar(&memFile, CArchive::load);
 			
 			// Serialize data to document
-			ClipBoardObject.Serialize(ar);
+			ClipBoard.Serialize(ar);
 			ar.Close();
 			
 			#if _MFC_VER <= 0x0420
@@ -6407,7 +6406,7 @@ void CObjectDCLView::PasteFromClipBoard()
 		return;
 	
 
-	int nCount = ClipBoardObject.mControls.GetCount();
+	int nCount = ClipBoard.GetCount();
 	int nCopied = 0;
 	
 	// if the dcl form is not valid, exit here
@@ -6415,7 +6414,7 @@ void CObjectDCLView::PasteFromClipBoard()
 		return;
 	
 	
-	if (ClipBoardObject.mControls.GetCount() > 0)
+	if (nCount > 0)
 	{		
 		CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
 		pZOrderList->m_pView = this;
@@ -6432,13 +6431,13 @@ void CObjectDCLView::PasteFromClipBoard()
 		POSITION pos;	
 		
 		// set start position for navigating clipboard controls
-		pos = ClipBoardObject.mControls.GetHeadPosition();
+		pos = ClipBoard.GetHeadPosition();
 
 		// do loop to navigate clip board controls
 		while (pos != NULL)
 		{
 			// get current clipboard control
-			CDclControlObject* pCopyOfArxControlObject = ClipBoardObject.mControls.GetNext(pos);
+			CDclControlObject* pCopyOfArxControlObject = ClipBoard.GetNext(pos);
 			pCopyOfArxControlObject->SetOwnerForm(m_pThisDclForm);
 					
 			ClearEventProperties(pCopyOfArxControlObject);
@@ -6494,13 +6493,13 @@ void CObjectDCLView::PasteFromClipBoard()
 			if (bContinue)
 				continue;
 
-			//if the copy destination is the same as the source
-			if (activeProject->sDclFormCopiedFrom == m_pThisDclForm->GetKeyName())
+			//if the copy will be a duplicate, offset it from the original and rename it
+			if ( m_pThisDclForm->FindControl( pCopyOfArxControlObject->GetKeyName(), pCopyOfArxControlObject->GetType() ) )
 			{
 				// make the control be offset by nControlOffset
 				pCopyOfArxControlObject->SetLongProperty(nLeft, pCopyOfArxControlObject->GetLngProperty(nLeft) + nControlOffset);
 				pCopyOfArxControlObject->SetLongProperty(nTop, pCopyOfArxControlObject->GetLngProperty(nTop) + nControlOffset);
-		
+
 				// get the next available name for the control
 				CString sControlName = FindNextControlName(GetControlName(pCopyOfArxControlObject->GetType()));	
 				pCopyOfArxControlObject->SetStringProperty(nName, sControlName);			

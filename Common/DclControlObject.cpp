@@ -389,6 +389,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 		{
 			RefCountedPtr< CPropertyObject > pProp = mProperties.GetNext(pos);
 			pProp->Serialize(ar);
+			TraceFmt( _T("> %s\r\n"), pProp->toString() );
 		}
 	}
 	else
@@ -415,7 +416,9 @@ void CDclControlObject::Serialize(CArchive& ar)
 			if (bImageList == TRUE)
 			{
 				mpImageList = new CImageListObject();
-				mpImageList->Serialize(ar);				
+				mpImageList->Serialize(ar);		
+				if( mpImageList->m_Delete )
+					mpImageList = NULL;
 			}
 		}
 
@@ -486,21 +489,8 @@ void CDclControlObject::Serialize(CArchive& ar)
 			{
 				RefCountedPtr< CPropertyObject > pProp = new CPropertyObject( PropInvalid );
 				pProp->Serialize(ar);
-				if( pProp->GetName().IsEmpty() )
-				{
-					switch( pProp->GetType() )
-					{
-					case PropActiveXProp:
-					case PropActiveXEnum:
-					case PropActiveXEvent:
-					case PropActiveXRunTime:
-					case PropActiveXMethods:
-						pProp->SetStringValue( pProp->GetAxInterfaceDescriptorPtr()->GetName() );
-					}
-				}
-				//TraceFmt( _T("Read property [%08X, type = %d, id = %d], string value = %s\r\n"),
-				//					(ULONG)&*pProp, (int)pProp->GetType(), (int)pProp->GetID(), (LPCTSTR)pProp->GetStringValue() );
 				mProperties.AddTail(pProp);		
+				TraceFmt( _T("< %s\r\n"), pProp->toString() );
 			}
 
 			// here we are going to add the font of this object to the font collection
@@ -1307,13 +1297,20 @@ CString CDclControlObject::GetKeyPath() const
 
 
 #ifdef _DIAGNOSTIC
-void CDclControlObject::dump( bool bDeep /*= true*/ ) const
+LPCTSTR CDclControlObject::toString() const
 {
 	CString sInstance;
 	if( mpDlgControl )
 		sInstance.Format( _T(" (DlgControl: %s)"), asString( mpDlgControl ) );
+	static TCHAR buf[1024];
+	_sntprintf( buf, _elements(buf), _T("CDclControlobject [%s: %s%s]"), asString( mType ), GetKeyPath(), (LPCTSTR)sInstance );
+	return buf;
+}
+
+void CDclControlObject::dump( bool bDeep /*= true*/ ) const
+{
 	CString sOut;
-	sOut.Format( _T("CDclControlobject [%s: %s%s]\r\n"), asString( mType ), GetKeyPath(), (LPCTSTR)sInstance );
+	sOut.Format( _T("%s\r\n"), toString() );
 	theWorkspace.DisplayStatus( sOut );
 	if( !bDeep )
 		return;
@@ -1330,10 +1327,7 @@ void CDclControlObject::dump( bool bDeep /*= true*/ ) const
 #ifdef _DEBUG
 void CDclControlObject::dumpDebugger( bool bDeep /*= true*/ ) const
 {
-	CString sInstance;
-	if( mpDlgControl )
-		sInstance.Format( _T(" (DlgControl: %s)"), asString( mpDlgControl ) );
-	TraceFmt( _T("CDclControlobject [%s: %s%s]\r\n"), asString( mType ), GetKeyPath(), (LPCTSTR)sInstance );
+	TraceFmt( _T("%s\r\n"), toString() );
 	if( !bDeep )
 		return;
 	for( INT_PTR idx = 0; idx < mProperties.GetCount(); ++idx )

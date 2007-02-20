@@ -11,99 +11,12 @@
 #include "SharedRes.h"
 
 
-static short AddPicture(short nID, LPPICTUREDISP NewPicture) 
-{
-	//create new picture object
-	CPictureObject *pPicture = new CPictureObject;
-	
-	pPicture->SetID(nID);
-	pPicture->GetPicture().SetPictureDispatch(NewPicture);
-	
-	HDC hdc = ::GetDC(GetDesktopWindow());
-	CDC * cdc = CDC::FromHandle(hdc);
-
-	// assign picture object values	
-	CSize sizePic;
-	long lPicWidth;
-	long lPicHeight;
-
-	// get dimensions of bitmap
-	pPicture->GetPicture().m_pPict->get_Width(&lPicWidth);
-	pPicture->GetPicture().m_pPict->get_Height(&lPicHeight);
-
-	sizePic.cx = (int)lPicWidth;
-	sizePic.cy = (int)lPicHeight;
-
-	// convert coordinates from units to logical units
-	cdc->HIMETRICtoLP(&sizePic);
-	cdc->Detach();
-	pPicture->SetWidth(sizePic.cx);
-	pPicture->SetHeight(sizePic.cy);
-
-	// add the new picture object
-	activeProject->GetPictureList().AddTail(pPicture);
-	
-	int nCount = activeProject->GetPictureList().GetCount();
-	// return the index that this new picture object was inserted at
-	return nCount - 1;
-}
-
-
-static void LoadPictureFile(LPCTSTR szFile, int nID)
-{
-	LPPICTURE		lpPicture;
-	lpPicture		= NULL;
-	CPictureHolder	phPicture;
-	
-	// open file
-	HANDLE hFile = CreateFile(szFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
-	_ASSERTE(INVALID_HANDLE_VALUE != hFile);
-
-	// get file size
-	DWORD dwFileSize = GetFileSize(hFile, NULL);
-	_ASSERTE(-1 != dwFileSize);
-
-	LPVOID pvData = NULL;
-	// alloc memory based on file size
-	HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, dwFileSize);
-	_ASSERTE(NULL != hGlobal);
-
-	pvData = GlobalLock(hGlobal);
-	_ASSERTE(NULL != pvData);
-
-	DWORD dwBytesRead = 0;
-	// read file and store in global memory
-	BOOL bRead = ReadFile(hFile, pvData, dwFileSize, &dwBytesRead, NULL);
-	_ASSERTE(FALSE != bRead);
-	GlobalUnlock(hGlobal);
-	CloseHandle(hFile);
-
-	LPSTREAM pstm = NULL;
-	// create IStream* from global memory
-	HRESULT hr = CreateStreamOnHGlobal(hGlobal, TRUE, &pstm);
-	_ASSERTE(SUCCEEDED(hr) && pstm);
-	
-	// Create IPicture from image file
-	if (lpPicture)
-		lpPicture->Release();
-	hr = ::OleLoadPicture(pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID *)&lpPicture);
-	_ASSERTE(SUCCEEDED(hr) && lpPicture);	
-
-	IPicture *ipOld = phPicture.m_pPict;
-	phPicture.m_pPict = lpPicture;
-
-	AddPicture(nID, phPicture.GetPictureDispatch());
-	phPicture.m_pPict = ipOld;
-	pstm->Release();
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CButtonStyles property page
 
-IMPLEMENT_DYNCREATE(CButtonStyles, CPropertyPage)
-
-CButtonStyles::CButtonStyles() : CPropertyPage(CButtonStyles::IDD)
+CButtonStyles::CButtonStyles( CDclControlObject* pControl )
+: CPropertyPage(CButtonStyles::IDD)
+, mpControl( pControl )
 {
 	//{{AFX_DATA_INIT(CButtonStyles)
 		// NOTE: the ClassWizard will add member initialization here
@@ -204,7 +117,7 @@ void CButtonStyles::OnSelchangePiclist()
 		{
 			CString sFile = BrowseWnd.GetPathName();
 			m_nHighestId++;
-			LoadPictureFile(sFile, m_nHighestId);
+			mpControl->GetOwnerProject()->LoadPictureFile(sFile, m_nHighestId);
 			TCHAR Value[80];
 			_ltot(m_nHighestId, Value, 10);
 			int n = m_PicList.AddString(Value);
@@ -346,15 +259,15 @@ BOOL CButtonStyles::OnInitDialog()
 	CString sAdd;
 	sAdd = theWorkspace.LoadResourceString(IDS_ADD);
 	m_PicList.AddString(sAdd);
+	CProject* pProject = mpControl->GetOwnerProject();
 	int nIndex=0;
-	CProject *pProjectList = activeProject;
-	int n = pProjectList->GetPictureList().GetCount();
-	while(nIndex < pProjectList->GetPictureList().GetCount())
+	int n = pProject->GetPictureList().GetCount();
+	while(nIndex < pProject->GetPictureList().GetCount())
 	{
-		POSITION pos = pProjectList->GetPictureList().FindIndex(nIndex);
+		POSITION pos = pProject->GetPictureList().FindIndex(nIndex);
 		if (pos != NULL)
 		{
-			CPictureObject *pPic = pProjectList->GetPictureList().GetAt(pos);
+			CPictureObject *pPic = pProject->GetPictureList().GetAt(pos);
 			TCHAR Value[80];
 			_ltot(pPic->GetID(), Value, 10);
 			int n = m_PicList.AddString(Value);

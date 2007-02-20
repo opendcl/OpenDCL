@@ -53,129 +53,12 @@ static bool FindPictureId(int nId)
 }
 
 
-static short AddPicture(short nID, LPPICTUREDISP NewPicture) 
-{
-	//create new picture object
-	CPictureObject *pPicture = new CPictureObject;
-	
-	pPicture->SetID(nID);
-	pPicture->GetPicture().SetPictureDispatch(NewPicture);
-	
-	HDC hdc = ::GetDC(GetDesktopWindow());
-	CDC * cdc = CDC::FromHandle(hdc);
-
-	// assign picture object values	
-	CSize sizePic;
-	long lPicWidth;
-	long lPicHeight;
-
-	// get dimensions of bitmap
-	pPicture->GetPicture().m_pPict->get_Width(&lPicWidth);
-	pPicture->GetPicture().m_pPict->get_Height(&lPicHeight);
-
-	sizePic.cx = (int)lPicWidth;
-	sizePic.cy = (int)lPicHeight;
-
-	// convert coordinates from units to logical units
-	cdc->HIMETRICtoLP(&sizePic);
-	cdc->Detach();
-	pPicture->SetWidth(sizePic.cx);
-	pPicture->SetHeight(sizePic.cy);
-
-	// add the new picture object
-	activeProject->GetPictureList().AddTail(pPicture);
-	
-	int nCount = activeProject->GetPictureList().GetCount();
-	// return the index that this new picture object was inserted at
-	return nCount - 1;
-}
-
-
-static void UpdatePicture(short nID, LPPICTUREDISP NewPicture, CPictureObject *pPicture) 
-{
-	pPicture->SetID(nID);
-	pPicture->GetPicture().SetPictureDispatch(NewPicture);
-	
-	HDC hdc = ::GetDC(GetDesktopWindow());
-	CDC * cdc = CDC::FromHandle(hdc);
-
-	// assign picture object values	
-	CSize sizePic;
-	long lPicWidth;
-	long lPicHeight;
-
-	// get dimensions of bitmap
-	pPicture->GetPicture().m_pPict->get_Width(&lPicWidth);
-	pPicture->GetPicture().m_pPict->get_Height(&lPicHeight);
-
-	sizePic.cx = (int)lPicWidth;
-	sizePic.cy = (int)lPicHeight;
-
-	// convert coordinates from units to logical units
-	cdc->HIMETRICtoLP(&sizePic);
-	cdc->Detach();
-	pPicture->SetWidth(sizePic.cx);
-	pPicture->SetHeight(sizePic.cy);
-}
-
-
-static void LoadPictureFile(LPCTSTR szFile, int nID, CPictureObject *pPicture = NULL)
-{
-	LPPICTURE		lpPicture;
-	lpPicture		= NULL;
-	CPictureHolder	phPicture;
-	
-	// open file
-	HANDLE hFile = CreateFile(szFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
-	_ASSERTE(INVALID_HANDLE_VALUE != hFile);
-
-	// get file size
-	DWORD dwFileSize = GetFileSize(hFile, NULL);
-	_ASSERTE(-1 != dwFileSize);
-
-	LPVOID pvData = NULL;
-	// alloc memory based on file size
-	HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, dwFileSize);
-	_ASSERTE(NULL != hGlobal);
-
-	pvData = GlobalLock(hGlobal);
-	_ASSERTE(NULL != pvData);
-
-	DWORD dwBytesRead = 0;
-	// read file and store in global memory
-	BOOL bRead = ReadFile(hFile, pvData, dwFileSize, &dwBytesRead, NULL);
-	_ASSERTE(FALSE != bRead);
-	GlobalUnlock(hGlobal);
-	CloseHandle(hFile);
-
-	LPSTREAM pstm = NULL;
-	// create IStream* from global memory
-	HRESULT hr = CreateStreamOnHGlobal(hGlobal, TRUE, &pstm);
-	_ASSERTE(SUCCEEDED(hr) && pstm);
-	
-	// Create IPicture from image file
-	if (lpPicture)
-		lpPicture->Release();
-	hr = ::OleLoadPicture(pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID *)&lpPicture);
-	_ASSERTE(SUCCEEDED(hr) && lpPicture);	
-
-	IPicture *ipOld = phPicture.m_pPict;
-	phPicture.m_pPict = lpPicture;
-
-	if (pPicture == NULL)		
-		AddPicture(nID, phPicture.GetPictureDispatch());
-	else
-		UpdatePicture(nID, phPicture.GetPictureDispatch(), pPicture);
-	phPicture.m_pPict = ipOld;
-	pstm->Release();
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CPictureFolder dialog
 
-CPictureFolder::CPictureFolder(CWnd* pParent /*=NULL*/)
-	: CDialog(CPictureFolder::IDD, pParent)
+CPictureFolder::CPictureFolder(CProject* pProject, CWnd* pParent /*=NULL*/)
+: CDialog(CPictureFolder::IDD, pParent)
+, mpProject( pProject )
 {
 	//{{AFX_DATA_INIT(CPictureFolder)
 	//}}AFX_DATA_INIT
@@ -318,14 +201,12 @@ BOOL CPictureFolder::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	CProject *pProjectList = activeProject;
-	
-	for (int i = 0; i<pProjectList->GetPictureList().GetCount(); i++)
+	for (int i = 0; i<mpProject->GetPictureList().GetCount(); i++)
 	{
-		POSITION pos = pProjectList->GetPictureList().FindIndex(i);
+		POSITION pos = mpProject->GetPictureList().FindIndex(i);
 		if (pos!= NULL)
 		{
-			CPictureObject *pPicture = pProjectList->GetPictureList().GetAt(pos);
+			CPictureObject *pPicture = mpProject->GetPictureList().GetAt(pos);
 			if (pPicture != NULL)
 			{
 				pPicture->SetToBeAdded(false);
@@ -392,7 +273,7 @@ void CPictureFolder::MultiFileDialog()
 			nLargestId = 100;
 		
 		// load the picture into the picture list collection
-		LoadPictureFile(m_FileList.GetAt(i), nLargestId);
+		mpProject->LoadPictureFile(m_FileList.GetAt(i), nLargestId);
 		
 		TCHAR Value[80];
 		_ltot(nLargestId, Value, 10);
@@ -437,8 +318,7 @@ void CPictureFolder::UpdateSingleFileDialog()
 
 			int nId = m_PictureList.GetItemData(nCurSel);
 			// load the picture into the picture list collection
-			LoadPictureFile(szPathName, nId, GetSelectedPictureObject());
-			
+			GetSelectedPictureObject()->LoadFile(szPathName, nId);
 		}
 	}
 
@@ -449,19 +329,17 @@ void CPictureFolder::UpdateSingleFileDialog()
 
 CPictureObject * CPictureFolder::GetSelectedPictureObject() 
 {
-	CProject *pProjectList = activeProject;
-	
 	if (m_PictureList.GetCurSel() == -1)
 		return NULL;
 
 	int nCurSel = m_PictureList.GetItemData(m_PictureList.GetCurSel());
 
-	for (int i = 0; i<pProjectList->GetPictureList().GetCount(); i++)
+	for (int i = 0; i<mpProject->GetPictureList().GetCount(); i++)
 	{
-		POSITION pos = pProjectList->GetPictureList().FindIndex(i);
+		POSITION pos = mpProject->GetPictureList().FindIndex(i);
 		if (pos!= NULL)
 		{
-			CPictureObject *pPicture = pProjectList->GetPictureList().GetAt(pos);
+			CPictureObject *pPicture = mpProject->GetPictureList().GetAt(pos);
 			if (pPicture != NULL)
 			{
 				if (pPicture->GetID() == nCurSel)
@@ -476,19 +354,17 @@ CPictureObject * CPictureFolder::GetSelectedPictureObject()
 
 void CPictureFolder::OnSelchangePicturelist() 
 {
-	CProject *pProjectList = activeProject;
-	
 	if (m_PictureList.GetCurSel() == -1)
 		return;
 
 	int nCurSel = m_PictureList.GetItemData(m_PictureList.GetCurSel());
 
-	for (int i = 0; i<pProjectList->GetPictureList().GetCount(); i++)
+	for (int i = 0; i<mpProject->GetPictureList().GetCount(); i++)
 	{
-		POSITION pos = pProjectList->GetPictureList().FindIndex(i);
+		POSITION pos = mpProject->GetPictureList().FindIndex(i);
 		if (pos!= NULL)
 		{
-			CPictureObject *pPicture = pProjectList->GetPictureList().GetAt(pos);
+			CPictureObject *pPicture = mpProject->GetPictureList().GetAt(pos);
 			if (pPicture != NULL)
 			{
 				if (pPicture->GetID() == nCurSel)
@@ -504,15 +380,13 @@ void CPictureFolder::OnSelchangePicturelist()
 // search every picture id property and ensure it's id is still valid
 void CPictureFolder::CheckPictureRefs() 
 {
-	CProject *pProjectList = activeProject;
-
 	// do loops to search every picture id property and ensure it's id is still valid
-	for (int i=0; i<pProjectList->GetDclFormList().GetCount(); i++)
+	for (int i=0; i<mpProject->GetDclFormList().GetCount(); i++)
 	{
-		POSITION pos = pProjectList->GetDclFormList().FindIndex(i);
+		POSITION pos = mpProject->GetDclFormList().FindIndex(i);
 		if (pos != NULL)
 		{
-			CDclFormObject *pDclObject = pProjectList->GetDclFormList().GetAt(pos);
+			CDclFormObject *pDclObject = mpProject->GetDclFormList().GetAt(pos);
 			if (pDclObject != NULL)
 			{
 				// call method search this dcl form's controls for invalide picture id's

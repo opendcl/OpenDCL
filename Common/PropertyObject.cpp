@@ -16,7 +16,6 @@
 #include "SharedRes.h"
 #include "PropertyIds.h"
 
-static const int nNotSet = -1;
 static const int nDePropDescResStringOffset = 2100;
 
 
@@ -25,17 +24,17 @@ namespace PropVal
 
 class CPropertyValue : public CPropertyValueBase
 {
-	DWORD mdwSubtype;
+	DWORD mdwFlags;
 protected:
 	friend class CPropertyObject;
-	CPropertyValue() : mdwSubtype( 0 ) {}
+	CPropertyValue() : mdwFlags( 0 ) {}
 public:
 	virtual ~CPropertyValue() {}
 
 	//attributes
 	virtual PropertyType GetType() const = 0;
-	virtual DWORD SetSubtype( DWORD dwFlags ) { DWORD dwOld = mdwSubtype; mdwSubtype = dwFlags; return dwOld; }
-	virtual DWORD GetSubtype() const { return mdwSubtype; }
+	virtual DWORD SetFlags( DWORD dwFlags ) { DWORD dwOld = mdwFlags; mdwFlags = dwFlags; return dwOld; }
+	virtual DWORD GetFlags() const { return mdwFlags; }
 
 	//operations
 	virtual void clear() = 0;
@@ -49,7 +48,7 @@ public:
 	virtual LPCTSTR toString() const
 		{
 			static TCHAR buf[1024];
-			_sntprintf( buf, _elements(buf), _T("[%s/%s] %s"), asString( GetType() ), asString( mdwSubtype ), toStringPropVal() );
+			_sntprintf( buf, _elements(buf), _T("[%s/%s] %s"), asString( GetType() ), asString( mdwFlags ), toStringPropVal() );
 			return buf;
 		}
 	virtual LPCTSTR toStringPropVal() const = 0;
@@ -78,7 +77,7 @@ public:
 	virtual LPCTSTR toString() const
 		{
 			static TCHAR buf[1024];
-			_sntprintf( buf, _elements(buf), _T("[%s/%s/\"%s\"] %s"), asString( GetType() ), asString( GetSubtype() ), (LPCTSTR)msDisplayName, toStringPropVal() );
+			_sntprintf( buf, _elements(buf), _T("[%s/%s/\"%s\"] %s"), asString( GetType() ), asString( GetFlags() ), (LPCTSTR)msDisplayName, toStringPropVal() );
 			return buf;
 		}
 	virtual LPCTSTR toStringPropVal() const = 0;
@@ -1248,15 +1247,15 @@ CPropertyObject::CPropertyObject()
 , mnID( nInvalidPropertyId )
 {	
 	SetType( PropInvalid );
-	SetSubtype( 0 );
+	SetFlags( 0 );
 }
 
-CPropertyObject::CPropertyObject(PropertyType type, DWORD dwSubtype /*= 0*/, PropertyId nID /*= -1*/ )
+CPropertyObject::CPropertyObject(PropertyType type, DWORD dwFlags /*= 0*/, PropertyId nID /*= -1*/ )
 : mbHidden( false )
 , mnID( nID )
 {	
 	SetType( type );
-	SetSubtype( dwSubtype );
+	SetFlags( dwFlags );
 }
 
 CPropertyObject::~CPropertyObject()
@@ -1663,7 +1662,7 @@ void CPropertyObject::Serialize(CArchive& ar)
 		else
 			ar << short(mnID);
 		ar << long(GetType());
-		ar << DWORD(GetSubtype()); //added in version 7
+		ar << DWORD(GetFlags()); //added in version 7
 		if (nThisVersion <= 5) //changing from BOOL to bool in version 6 [ORW]
 			ar << BOOL(mbHidden); // store the flag that indicates this property is to be hidden
 		else
@@ -1694,9 +1693,9 @@ void CPropertyObject::Serialize(CArchive& ar)
 
 		if( nThisVersion >= 7 )
 		{
-			DWORD dwSubtype;
-			ar >> dwSubtype;
-			SetSubtype( dwSubtype ); //added in version 7
+			DWORD dwFlags;
+			ar >> dwFlags;
+			SetFlags( dwFlags ); //added in version 7
 		}
 		if (nThisVersion <= 5) //changing from BOOL to bool in version 6 [ORW]
 		{

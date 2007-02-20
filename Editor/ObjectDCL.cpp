@@ -179,12 +179,11 @@ BOOL CObjectDCLApp::InitInstance()
 	// If you are not using these features and wish to reduce the size
 	//  of your final executable, you should remove from the following
 	//  the specific initialization routines you do not need.
-   
-	CString s3rdDay;	
-	s3rdDay = theWorkspace.LoadResourceString(IDS_3RDDAY);
 
+	AfxInitRichEdit();
+   
 	// Change the registry key under which our settings are stored.
-	SetRegistryKey(s3rdDay);
+	SetRegistryKey(theWorkspace.LoadResourceString(IDR_MAINFRAME));
 
 	LoadStdProfileSettings(nNumberOfPrevFiles);  // Load standard INI file options (including MRU)
 
@@ -328,6 +327,34 @@ BOOL CAboutDlg::OnInitDialog()
 	CString sAppVersion;
 	sAppVersion.Format( _T("%d.%d.%d.%d"), dwMajor, dwMinor, dwThird, dwFourth );
 	SetDlgItemText( IDC_APPVERSION, sAppVersion );
+
+	CString sLicenseTxt;
+#ifdef _DEBUG
+	//in the development environment, License.txt is not in the app folder, so search for it
+	sLicenseTxt = theWorkspace.FindFile( _T("License.txt") );
+#else
+	GetModuleFileName( NULL, sLicenseTxt.GetBuffer( MAX_PATH ), MAX_PATH );
+	sLicenseTxt.ReleaseBuffer();
+	sLicenseTxt = sLicenseTxt.Mid( sLicenseTxt.MakeReverse().SpanExcluding( _T("\\/:") ).GetLength() );
+	sLicenseTxt.MakeReverse() += _T("License.txt");
+#endif //_DEBUG
+	try
+	{
+		CStdioFile file( sLicenseTxt, CFile::modeRead | CFile::shareDenyNone );
+		UINT cbText = (UINT)file.GetLength();
+		CStringA sText;
+		cbText = file.Read( sText.GetBuffer( cbText ), cbText );
+		sText.ReleaseBuffer( cbText );
+		CRichEditCtrl* pTextBox = (CRichEditCtrl*)GetDlgItem(IDC_LICENSETXT);
+		pTextBox->SetWindowTextA( sText );
+		pTextBox->SetOptions(ECOOP_OR, ECO_SAVESEL);
+		pTextBox->SetSel(0, 0);
+	}
+	catch( CFileException* e )
+	{
+		e->ReportError();
+		e->Delete();
+	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

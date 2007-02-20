@@ -87,7 +87,6 @@ public:
 	void SetSelectionIndex(short nNewValue);
 	void SetTopIndex(short Index);
 	void CloseListBox(int nInstructions);
-	CString QueryForLispFileName();
 	BOOL SaveDistributionFile(CProjectCollection *pProjectHolder);
 	BOOL OpenProjectFile(LPCTSTR FileName, CProject *pProject);
 	RefCountedPtr< CPropertyObject > GetPropertyObject(short PropertyIndex);
@@ -120,8 +119,6 @@ public:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	afx_msg void ClearProject();
-	afx_msg void ClearPictures();
 	afx_msg short CountPictures();
 	//afx_msg short AddPictureToImageList(short DclFormIndex, short ArxControlIndex, short PropertyIndex, LPPICTUREDISP newPicture);
 	//afx_msg void ClearImageListPropery(short DclFormIndex, short ArxControlIndex, short PropertyIndex);
@@ -140,19 +137,17 @@ public:
 	afx_msg short GetArxControlClientHeight(short DclFormIndex, short ArxControlIndex);
 	afx_msg BOOL IsArxControlDeleted(short DclFormIndex, short ArxControlIndex);
 	afx_msg void DisplayVaries();
-	afx_msg void SetLispFileName(CString sFileName);
 	afx_msg void LoadPicture(LPCTSTR sFileName, short nPictureTag, BOOL bApplyMask);
 	afx_msg LPPICTUREDISP LoadMaskedPicture(LPCTSTR sFileName);
-	//afx_msg short AddPicture(short nID, LPPICTUREDISP NewPicture);
 	afx_msg void CheckPictureRefs();
 	afx_msg void DefaultFontDlg();
 	afx_msg BOOL IsPictureValid(LPPICTUREDISP NewPicture);
-	afx_msg void SetPurchaseMode(short nPurchaseMode);
+	//afx_msg void SetPurchaseMode(short nPurchaseMode);
 	//afx_msg CString ImportOdcl(LPCTSTR sFileName);
 	afx_msg void ShowPropertyDlg(bool bFontActive = false, bool bImageListActive = false);
-	afx_msg void ShowAsFree();
-	afx_msg void SetAutoCADVersion(DWORD nVersion);
-	afx_msg DWORD GetAutoCADVersion();
+	//afx_msg void ShowAsFree();
+	//afx_msg void SetAutoCADVersion(DWORD nVersion);
+	//afx_msg DWORD GetAutoCADVersion();
 	afx_msg void CreateDistributionFile();
 	afx_msg void Refresh();
 	void DoSetupInputType(int nNewSelectedIndex);

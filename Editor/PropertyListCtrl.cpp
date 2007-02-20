@@ -41,124 +41,17 @@
 #define nPromptForNewMasked  2
 
 
+inline static bool IsVersionFree()
+{
+	return false;
+}
+
+
 static CString LTOA(int nVal)
 {
   CString sLong;
 	sLong.Format(_T("%d"), nVal);
   return sLong;
-}
-
-
-short AddPicture(short nID, LPPICTUREDISP NewPicture) 
-{
-	//create new picture object
-	CPictureObject *pPicture = new CPictureObject;
-	
-	pPicture->SetID(nID);
-	pPicture->GetPicture().SetPictureDispatch(NewPicture);
-	
-	HDC hdc = ::GetDC(GetDesktopWindow());
-	CDC * cdc = CDC::FromHandle(hdc);
-
-	// assign picture object values	
-	CSize sizePic;
-	long lPicWidth;
-	long lPicHeight;
-
-	// get dimensions of bitmap
-	pPicture->GetPicture().m_pPict->get_Width(&lPicWidth);
-	pPicture->GetPicture().m_pPict->get_Height(&lPicHeight);
-
-	sizePic.cx = (int)lPicWidth;
-	sizePic.cy = (int)lPicHeight;
-
-	// convert coordinates from units to logical units
-	cdc->HIMETRICtoLP(&sizePic);
-	cdc->Detach();
-	pPicture->SetWidth(sizePic.cx);
-	pPicture->SetHeight(sizePic.cy);
-
-	// add the new picture object
-	activeProject->GetPictureList().AddTail(pPicture);
-	
-	int nCount = activeProject->GetPictureList().GetCount();
-	// return the index that this new picture object was inserted at
-	return nCount - 1;
-}
-
-
-void LoadPictureFile(LPCTSTR szFile, int nID)
-{
-	LPPICTURE		lpPicture;
-	lpPicture		= NULL;
-	CPictureHolder	phPicture;
-	
-	// open file
-	HANDLE hFile = CreateFile(szFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
-	_ASSERTE(INVALID_HANDLE_VALUE != hFile);
-
-	// get file size
-	DWORD dwFileSize = GetFileSize(hFile, NULL);
-	_ASSERTE(-1 != dwFileSize);
-
-	LPVOID pvData = NULL;
-	// alloc memory based on file size
-	HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, dwFileSize);
-	_ASSERTE(NULL != hGlobal);
-
-	pvData = GlobalLock(hGlobal);
-	_ASSERTE(NULL != pvData);
-
-	DWORD dwBytesRead = 0;
-	// read file and store in global memory
-	BOOL bRead = ReadFile(hFile, pvData, dwFileSize, &dwBytesRead, NULL);
-	_ASSERTE(FALSE != bRead);
-	GlobalUnlock(hGlobal);
-	CloseHandle(hFile);
-
-	LPSTREAM pstm = NULL;
-	// create IStream* from global memory
-	HRESULT hr = CreateStreamOnHGlobal(hGlobal, TRUE, &pstm);
-	_ASSERTE(SUCCEEDED(hr) && pstm);
-	
-	// Create IPicture from image file
-	if (lpPicture)
-		lpPicture->Release();
-	hr = ::OleLoadPicture(pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID *)&lpPicture);
-	_ASSERTE(SUCCEEDED(hr) && lpPicture);	
-
-	IPicture *ipOld = phPicture.m_pPict;
-	phPicture.m_pPict = lpPicture;
-
-	AddPicture(nID, phPicture.GetPictureDispatch());
-	phPicture.m_pPict = ipOld;
-	pstm->Release();
-}
-
-
-bool FindPictureId(int nId)
-{
-	// if the count is 0, then return a false to indicate, not found
-	if (activeProject->GetPictureList().GetCount() == 0)
-		return false;
-
-	// do loop to find a matching id
-	for (int i=0; i<activeProject->GetPictureList().GetCount(); i++)
-	{
-		POSITION pos = activeProject->GetPictureList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
-			if (pPic != NULL)
-			{
-				// if this is the same id then return a true to indicate, found	
-				if (pPic->GetID() == nId)
-					return true;
-			}
-		}
-	}
-	// if made it this far then return a false to indicate, not found
-	return false;
 }
 
 
@@ -780,43 +673,10 @@ RefCountedPtr< CPropertyObject > CPropertyListCtrl::GetPropertyObject(short Prop
 //	}
 //}
 
-void CPropertyListCtrl::ClearProject() 
-{
-	CPropertyListCtrl::ClearPictures();
-}
-
-void CPropertyListCtrl::ClearPictures() 
-{
-	// get the count of the list
-	int nPictCount = activeProject->GetPictureList().GetCount();
-	
-	while(nPictCount >= 0)
-	{
-		POSITION pos = activeProject->GetPictureList().FindIndex(nPictCount);
-
-		if (pos != NULL)
-		{
-			// get the object at this position
-			CPictureObject *pPicture = activeProject->GetPictureList().GetAt(pos);
-			if (pPicture != NULL)
-			{
-				// delete the pointer to cleanup the memory
-				delete pPicture;			
-			}
-		}
-		// de-increment the counter
-		nPictCount--;
-	}
-	activeProject->GetPictureList().RemoveAll();
-	
-}
-
-
-
 
 short CPropertyListCtrl::CountPictures() 
 {	
-	return activeProject->GetPictureList().GetCount();
+	return m_pControl->GetOwnerProject()->GetPictureList().GetCount();
 }
 
 
@@ -951,15 +811,15 @@ CDclControlObject* CPropertyListCtrl::GetArxControlObject(short DclFormIndex, sh
 
 	CDclControlObject *pRetObject;
 	bool bRetVal;
- 	if(activeProject->GetDclFormList().GetCount() > DclFormIndex)
+ 	if(m_pControl->GetOwnerProject()->GetDclFormList().GetCount() > DclFormIndex)
 	{
 		// create a position variable to hold the converted DclFormIndex
 		POSITION FormPos;
 			
 		// set the position variable to be equal the index to passing to the GetAt method
-		FormPos = activeProject->GetDclFormList().FindIndex(DclFormIndex);	
+		FormPos = m_pControl->GetOwnerProject()->GetDclFormList().FindIndex(DclFormIndex);	
 		// create a new DclFormObject object and point it at the object in the list
-		CDclFormObject* pNewDclForm = activeProject->GetDclFormList().GetAt(FormPos);	
+		CDclFormObject* pNewDclForm = m_pControl->GetOwnerProject()->GetDclFormList().GetAt(FormPos);	
 		
 
 		if(pNewDclForm->GetControlList().GetCount() >= ArxControlIndex)
@@ -993,15 +853,15 @@ CDclFormObject* CPropertyListCtrl::GetDclFormObject(short DclFormIndex)
 	bool bRetVal;
 
 	
-	if(activeProject->GetDclFormList().GetCount() > DclFormIndex)
+	if(m_pControl->GetOwnerProject()->GetDclFormList().GetCount() > DclFormIndex)
 	{
 		// set the position variable to be equal the index to passing to the GetAt method
-		POSITION pos = activeProject->GetDclFormList().FindIndex(DclFormIndex);	
+		POSITION pos = m_pControl->GetOwnerProject()->GetDclFormList().FindIndex(DclFormIndex);	
 		
 		if (pos == NULL)
 			return NULL;
 		// set the pass pointer to point at the object in the list
-		pRetObject = activeProject->GetDclFormList().GetAt(pos);
+		pRetObject = m_pControl->GetOwnerProject()->GetDclFormList().GetAt(pos);
 		
 		bRetVal = true;
 	}
@@ -1120,7 +980,6 @@ void CPropertyListCtrl::OnDestroy()
 	m_Button.DestroyWindow();
 	m_Edit.DestroyWindow();
 	m_ScrollBar.DestroyWindow();
-	ClearProject();
 	CWnd::OnDestroy();
 }
 
@@ -1128,12 +987,12 @@ void CPropertyListCtrl::OnDestroy()
 LPPICTUREDISP CPropertyListCtrl::GetPicture(short Index) 
 {
 	//CPictureHolder hPicture;
-	if(activeProject->GetPictureList().GetCount() > Index)
+	if(m_pControl->GetOwnerProject()->GetPictureList().GetCount() > Index)
 	{
-		POSITION pos = activeProject->GetPictureList().FindIndex(Index);
+		POSITION pos = m_pControl->GetOwnerProject()->GetPictureList().FindIndex(Index);
 		if (pos != NULL)
 		{
-			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
+			CPictureObject *pPic = m_pControl->GetOwnerProject()->GetPictureList().GetAt(pos);
 			if (pPic != NULL)
 			{
 				return pPic->GetPicture().GetPictureDispatch();
@@ -2324,18 +2183,18 @@ int CPropertyListCtrl::SetListBox()
 				sEnumDesc = theWorkspace.LoadResourceString(IDS_ADD);
 				m_pModeless->AddString(sEnumDesc);
 
-				if (activeProject->GetPictureList().GetCount() > 0)
+				if (m_pControl->GetOwnerProject()->GetPictureList().GetCount() > 0)
 				{
 					// set counter for Pictures
 					int nCount = 0;
 				
 					// do loop to navigate Pictures
-					while (nCount < activeProject->GetPictureList().GetCount())
+					while (nCount < m_pControl->GetOwnerProject()->GetPictureList().GetCount())
 					{
-						POSITION pos = activeProject->GetPictureList().FindIndex(nCount);
+						POSITION pos = m_pControl->GetOwnerProject()->GetPictureList().FindIndex(nCount);
 						if (pos != NULL)
 						{
-							CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
+							CPictureObject *pPic = m_pControl->GetOwnerProject()->GetPictureList().GetAt(pos);
 							if (pPic != NULL)
 							{
 								char Value[80];
@@ -2397,18 +2256,18 @@ int CPropertyListCtrl::SetListBox()
 			sEnumDesc = theWorkspace.LoadResourceString(IDS_ADD);
 			m_pModeless->AddString(sEnumDesc);
 
-			if (activeProject->GetPictureList().GetCount() > 0)
+			if (m_pControl->GetOwnerProject()->GetPictureList().GetCount() > 0)
 			{
 				// set counter for Pictures
 				int nCount = 0;
 			
 				// do loop to navigate Pictures
-				while (nCount < activeProject->GetPictureList().GetCount())
+				while (nCount < m_pControl->GetOwnerProject()->GetPictureList().GetCount())
 				{
-					POSITION pos = activeProject->GetPictureList().FindIndex(nCount);
+					POSITION pos = m_pControl->GetOwnerProject()->GetPictureList().FindIndex(nCount);
 					if (pos != NULL)
 					{
-						CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
+						CPictureObject *pPic = m_pControl->GetOwnerProject()->GetPictureList().GetAt(pos);
 						if (pPic != NULL)
 						{
 							m_pModeless->AddString(LTOA(pPic->GetID()));
@@ -2563,11 +2422,13 @@ int CPropertyListCtrl::SetListBox()
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_FILTERSTYLE_3);
 					m_pModeless->AddString(sEnumDesc);
 					
-					if (activeProject->m_nAutoCADVersion == 2000 && !activeProject->m_bFreeVersion)
+				#if (_ACADTARGET >= 15)
+					if (!IsVersionFree())
 					{											
 						sEnumDesc = theWorkspace.LoadResourceString(IDS_FILTERSTYLE_4);
 						m_pModeless->AddString(sEnumDesc);
 					}
+				#endif
 
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_FILTERSTYLE_5);
 					m_pModeless->AddString(sEnumDesc);
@@ -2927,7 +2788,7 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 			{
 				try
 				{
-					AddPicture(nNewID, pMaskedPic);
+					m_pControl->GetOwnerProject()->AddPicture(CPictureObject::CreatePictureObject(nNewID, pMaskedPic));
 					// get the property
 					RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
 					// set the property
@@ -2966,12 +2827,12 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 			int nLargestPicId = 0;
 
 			// find the largest current picture Id
-			for (int i=0; i<activeProject->GetPictureList().GetCount(); i++)
+			for (int i=0; i<m_pControl->GetOwnerProject()->GetPictureList().GetCount(); i++)
 			{
-				POSITION pos = activeProject->GetPictureList().FindIndex(i);
+				POSITION pos = m_pControl->GetOwnerProject()->GetPictureList().FindIndex(i);
 				if (pos != NULL)
 				{
-					CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
+					CPictureObject *pPic = m_pControl->GetOwnerProject()->GetPictureList().GetAt(pos);
 					if (pPic != NULL)
 					{
 						if (nLargestPicId <= pPic->GetID())
@@ -3080,12 +2941,12 @@ short CPropertyListCtrl::GetPictureID(short Index)
 {
 	short nResult = 0;
 	
-	if(activeProject->GetPictureList().GetCount() > Index)
+	if(m_pControl->GetOwnerProject()->GetPictureList().GetCount() > Index)
 	{		
-		POSITION pos = activeProject->GetPictureList().FindIndex(Index);
+		POSITION pos = m_pControl->GetOwnerProject()->GetPictureList().FindIndex(Index);
 		if (pos != NULL)
 		{
-			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
+			CPictureObject *pPic = m_pControl->GetOwnerProject()->GetPictureList().GetAt(pos);
 			if (pPic != NULL)
 			{
 				// set return value to the name
@@ -3104,12 +2965,12 @@ short CPropertyListCtrl::GetPictureID(short Index)
 
 void CPropertyListCtrl::SetPictureID(short Index, short nID) 
 {
-	if(activeProject->GetPictureList().GetCount() > Index)
+	if(m_pControl->GetOwnerProject()->GetPictureList().GetCount() > Index)
 	{
-		POSITION pos = activeProject->GetPictureList().FindIndex(Index);
+		POSITION pos = m_pControl->GetOwnerProject()->GetPictureList().FindIndex(Index);
 		if (pos != NULL)
 		{
-			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
+			CPictureObject *pPic = m_pControl->GetOwnerProject()->GetPictureList().GetAt(pos);
 			if (pPic != NULL)
 			{
 				// set the picture name
@@ -3268,72 +3129,12 @@ void CPropertyListCtrl::DisplayVaries()
 	{
 		m_ScrollBar.ShowWindow(FALSE);
 	}
-
-
-}
-
-
-
-
-void CPropertyListCtrl::SetLispFileName(CString sFileName) 
-{
-	// conert the LPCTSTR to a CString
-	CString sFile = sFileName;
-	
-	activeProject->m_LispFileName = sFile;
-	if (sFile.GetLength() == 0)
-	{
-		sFile = QueryForLispFileName();
-	}
-	
-	activeProject->m_LispFileName = sFile;
-}
-
-CString CPropertyListCtrl::QueryForLispFileName() 
-{
-	CString strResult;
-	CString sFilter;
-	sFilter = theWorkspace.LoadResourceString(IDS_AUTOLISPFILE);
-
-	// create the open dialog box
-	CFileDialog BrowseWnd(
-		TRUE, 
-		NULL,
-		NULL, 
-		OFN_HIDEREADONLY | OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST,
-		sFilter,
-		CWnd::GetActiveWindow());
-
-	// proceed to setup the file buffer size
-	BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
-	TCHAR* pc = new TCHAR[MAX_PATH];
-	BrowseWnd.m_ofn.lpstrFile = pc;
-	BrowseWnd.m_ofn.lpstrFile[0] = NULL;
-
-	// call method to invoke the file dialog box
-	int iReturn = BrowseWnd.DoModal();
-
-	if(iReturn == IDOK)
-	{
-		strResult = BrowseWnd.GetPathName();
-		delete[] pc;
-	}
-	else
-	{
-		delete[] pc;
-		return strResult;
-	}
-
-	// update the lsp file name
-	activeProject->m_LispFileName = strResult;
-
-	return strResult;	
 }
 
 
 void CPropertyListCtrl::LoadPicture(LPCTSTR sFileName, short nPictureTag, BOOL bApplyMask) 
 {
-	LoadPictureFile(sFileName, nPictureTag);
+	m_pControl->GetOwnerProject()->LoadPictureFile(sFileName, nPictureTag);
 }
 
 LPPICTUREDISP CPropertyListCtrl::LoadMaskedPicture(LPCTSTR sFileName) 
@@ -3403,8 +3204,6 @@ LPPICTUREDISP CPropertyListCtrl::LoadMaskedPicture(LPCTSTR sFileName)
 	hPicture.CreateFromIcon(TempImage.ExtractIcon(0), TRUE);
 	//short nType = hPicture.GetType();
 	return hPicture.GetPictureDispatch();
-
-	
 }
 
 
@@ -3419,19 +3218,19 @@ void CPropertyListCtrl::SearchPictureRefs(CDclFormObject *pDclObject)
 			int nPictureId = pControl->GetLngProperty(nPicture);
 			if (nPictureId > nNotSet)
 			{
-				if (!FindPictureId(nPictureId))
+				if (!pDclObject->GetProject()->FindPicture(nPictureId))
 					pControl->SetLongProperty(nPicture, 0);
 			}
 			int nPressedPictureId = pControl->GetLngProperty(nPressedPicture);
 			if (nPressedPictureId > nNotSet)
 			{
-				if (!FindPictureId(nPressedPictureId))
+				if (!pDclObject->GetProject()->FindPicture(nPressedPictureId))
 					pControl->SetLongProperty(nPressedPicture, 0);
 			}
 			int nIconId = pControl->GetLngProperty(nIcon);
 			if (nIconId > nNotSet)
 			{
-				if (!FindPictureId(nIconId))
+				if (!pDclObject->GetProject()->FindPicture(nIconId))
 					pControl->SetLongProperty(nIcon, 0);
 			}
 		}
@@ -3443,12 +3242,12 @@ void CPropertyListCtrl::SearchPictureRefs(CDclFormObject *pDclObject)
 void CPropertyListCtrl::CheckPictureRefs() 
 {
 	// do loops to search every picture id property and ensure it's id is still valid
-	for (int i=0; i<activeProject->GetDclFormList().GetCount(); i++)
+	for (int i=0; i<m_pControl->GetOwnerProject()->GetDclFormList().GetCount(); i++)
 	{
-		POSITION pos = activeProject->GetDclFormList().FindIndex(i);
+		POSITION pos = m_pControl->GetOwnerProject()->GetDclFormList().FindIndex(i);
 		if (pos != NULL)
 		{
-			CDclFormObject *pDclObject = activeProject->GetDclFormList().GetAt(pos);
+			CDclFormObject *pDclObject = m_pControl->GetOwnerProject()->GetDclFormList().GetAt(pos);
 			if (pDclObject != NULL)
 			{
 				// call method search this dcl form's controls for invalide picture id's
@@ -3507,11 +3306,11 @@ BOOL CPropertyListCtrl::IsPictureValid(LPPICTUREDISP NewPicture)
 	return TRUE;
 }
 
-void CPropertyListCtrl::SetPurchaseMode(short nPurchaseMode) 
-{
-	activeProject->SetPurchaseMode(nPurchaseMode);
-
-}
+//void CPropertyListCtrl::SetPurchaseMode(short nPurchaseMode) 
+//{
+//	m_pControl->GetOwnerProject()->SetPurchaseMode(nPurchaseMode);
+//
+//}
 
 
 //CString CPropertyListCtrl::ImportOdcl(LPCTSTR sFileName) 
@@ -3554,12 +3353,12 @@ void CPropertyListCtrl::SetPurchaseMode(short nPurchaseMode)
 //
 //	// find the largest current picture Id
 //	int i;
-//  for (i=0; i<activeProject->GetPictureList().GetCount(); i++)
+//  for (i=0; i<m_pControl->GetOwnerProject()->GetPictureList().GetCount(); i++)
 //	{
-//		POSITION pos = activeProject->GetPictureList().FindIndex(i);
+//		POSITION pos = m_pControl->GetOwnerProject()->GetPictureList().FindIndex(i);
 //		if (pos != NULL)
 //		{
-//			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
+//			CPictureObject *pPic = m_pControl->GetOwnerProject()->GetPictureList().GetAt(pos);
 //			if (pPic != NULL)
 //			{
 //				if (nLargestPicId <= pPic->GetID())
@@ -3571,10 +3370,10 @@ void CPropertyListCtrl::SetPurchaseMode(short nPurchaseMode)
 //	// find the smallest new picture Id
 //	for (i=0; i<tmpProject.GetPictureList().GetCount(); i++)
 //	{
-//		POSITION pos = activeProject->GetPictureList().FindIndex(i);
+//		POSITION pos = m_pControl->GetOwnerProject()->GetPictureList().FindIndex(i);
 //		if (pos != NULL)
 //		{
-//			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
+//			CPictureObject *pPic = m_pControl->GetOwnerProject()->GetPictureList().GetAt(pos);
 //			if (pPic != NULL)
 //			{
 //				if (nSmallestNewPicId >= pPic->GetID() || nSmallestNewPicId <= 0)
@@ -3597,7 +3396,7 @@ void CPropertyListCtrl::SetPurchaseMode(short nPurchaseMode)
 //				pPic->SetID( pPic->GetID() + nLargestPicId );
 //				
 //				// move this picture over to the existing picture list
-//				activeProject->GetPictureList().AddTail(pPic);
+//				m_pControl->GetOwnerProject()->GetPictureList().AddTail(pPic);
 //			}
 //		}
 //	}
@@ -3612,7 +3411,7 @@ void CPropertyListCtrl::SetPurchaseMode(short nPurchaseMode)
 //			pForm->IncrementPictureId(nLargestPicId);
 //			
 //			// move this picture over to the existing picture list
-//			activeProject->GetDclFormList().AddTail(pForm);
+//			m_pControl->GetOwnerProject()->GetDclFormList().AddTail(pForm);
 //
 //		}
 //	}
@@ -3762,7 +3561,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	pProp = pArxCtrl->GetPropertyObject(nButtonStyle);
 	if (pProp != NULL)
 	{
-		pButtonPage = new CButtonStyles;
+		pButtonPage = new CButtonStyles( pArxCtrl );
 
 		pButtonPage->m_pStyle = pProp;
 		pButtonPage->m_pPicture = pArxCtrl->GetPropertyObject(nPicture);
@@ -3914,26 +3713,27 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	}
 	// update the control no matter what, just incase the user pressed the apply button then cancel
 	UpdateControls(nInvalidPropertyId);
+	Invalidate();
 }
 
-void CPropertyListCtrl::ShowAsFree() 
-{	
-	activeProject->m_bFreeVersion = true;
-}
+//void CPropertyListCtrl::ShowAsFree() 
+//{	
+//	m_pControl->GetOwnerProject()->m_bFreeVersion = true;
+//}
 
-void CPropertyListCtrl::SetAutoCADVersion(DWORD nVersion) 
-{
-	activeProject->m_nAutoCADVersion = nVersion;
+//void CPropertyListCtrl::SetAutoCADVersion(DWORD nVersion) 
+//{
+//	m_pControl->GetOwnerProject()->m_nAutoCADVersion = nVersion;
+//
+//	if (nCurrentPurchaseMode != nPurchasedR14Pro)
+//		m_pControl->GetOwnerProject()->ClearR14Events();
+//
+//}
 
-	if (nCurrentPurchaseMode != nPurchasedR14Pro)
-		activeProject->ClearR14Events();
-
-}
-
-DWORD CPropertyListCtrl::GetAutoCADVersion() 
-{
-	return activeProject->m_nAutoCADVersion;
-}
+//DWORD CPropertyListCtrl::GetAutoCADVersion() 
+//{
+//	return m_pControl->GetOwnerProject()->m_nAutoCADVersion;
+//}
 
 void CPropertyListCtrl::CreateDistributionFile() 
 {

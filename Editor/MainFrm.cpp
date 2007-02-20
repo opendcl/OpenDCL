@@ -446,7 +446,7 @@ void CMainFrame::OnPicturefolder()
 {
 	//if (GetActiveDocument() != NULL)
 	//{
-		CPictureFolder Dlg(this);
+		CPictureFolder Dlg(m_ProjectTree.GetProject(), this);
 		Dlg.DoModal();
 	//}
 }
@@ -642,9 +642,7 @@ void CMainFrame::OnSetautolispfilename()
 	ASSERT(pProject != NULL);
 	if (!pProject)
 		return;
-	CString sLispFile = pProject->QueryForLispFileName();
-	pProject->m_LispFileName = sLispFile;
-		pProjTree->SetItemText(pProjTree->GetAutoLispFileTreeItem(), sLispFile);// update the project tree's autolisp file name
+	pProjTree->SetAutoLispFilename( pProject->QueryForLispFileName() );
 	CDocument* pDoc = pProjTree->GetDocument();
 	if( pDoc )
 		pDoc->SetModifiedFlag();
@@ -660,9 +658,7 @@ void CMainFrame::OnSetdistfilename()
 	ASSERT(pProject != NULL);
 	if (!pProject)
 		return;
-	CString sOdsFile = pProject->QueryForOdsFileName();
-	activeProject->m_DistFileName = sOdsFile;
-	pProjTree->SetItemText(pProjTree->GetOdsFileTreeItem(), sOdsFile);// update the project tree's autolisp file name
+	pProjTree->SetOdsFilename( pProject->QueryForOdsFileName() );
 	pProject->SaveDistFile();
 	CDocument* pDoc = pProjTree->GetDocument();
 	if( pDoc )

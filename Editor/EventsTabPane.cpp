@@ -247,12 +247,12 @@ void CEventsTabPane::AddAnyActiveXEvents()
 		RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetNext( pos );
 		if( pProp && pProp->GetType() == PropActiveXEvent )
 		{ //the event exists, so add it to the list
-			CString sName = pProp->GetName();
+			CString sName = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetName();
 			if( !sName.IsEmpty() )
 			{
 				int idxEvent = m_EventsTree.AddString( sName );
 				m_EventsTree.SetItemData( idxEvent, idxProp );
-				if( pProp->GetSubtype() & 1 ) // if the event has been set...
+				if( !pProp->GetName().IsEmpty() ) // if the event has been set...
 					m_EventsTree.SetCheck( idxEvent, BST_CHECKED ); // set the event tree item as checked.
 			}
 		}
@@ -504,27 +504,20 @@ void CEventsTabPane::CopyToClipboard()
 
 void CEventsTabPane::OnAddtolisp() 
 {
-	CWinApp* pApp = AfxGetApp();
-	CString sProfileName;
-	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
-	BOOL bUsesOn = pApp->GetProfileInt(sProfileName, _T("EventsCopyToClipboard"), TRUE);
-	
-	
+	CString sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
 	CString sDefunPreview;
 	CString sDefunEditText;
-	CDclControlObject *pControl = m_pControl;
 
 	if (m_pDclForm == NULL || m_pControl == NULL)
-	{		
 		return;
-	}
 
 	// get the current event selection
 	PropertyId hItem = (PropertyId)m_EventsTree.GetCurSel();
 	
 	if (hItem != -1)
 	{
+		m_EventsTree.SetCheck(hItem, TRUE); // set the event tree item as checked.
+
 		// get the event id from the curent selection
 		PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(hItem);
 
@@ -534,44 +527,28 @@ void CEventsTabPane::OnAddtolisp()
 		// lets get the defun it self
 		m_DefunEdit.GetWindowText(sDefunEditText);
 
-		if (bUsesOn)
+		if (AfxGetApp()->GetProfileInt(sProfileName, _T("EventsCopyToClipboard"), TRUE))
 		{
 			CopyToClipboard();
-
-			// set the event tree item as checked.
-			m_EventsTree.SetCheck(hItem, TRUE);
-
-			if (pControl != NULL)
-				// set the property to the new defun name
-				SetEvent(nEventId, sDefunEditText);
-
+			if (m_pControl != NULL)
+				SetEvent(nEventId, sDefunEditText); // set the property to the new defun name
 			return;
 		}
 
-		// if the file name has not been set.
-		if (activeProject->m_LispFileName.GetLength() == 0)
+		// if the file name has not been set, prompt for it
+		if (m_pControl->GetOwnerProject()->GetLispFileName().IsEmpty())
 		{
-			activeProject->m_LispFileName =
-				theEditorWorkspace.GetMainFrame()->m_PropertyTabPane.m_PropertiesTabPane.GetPropertiesCtrl().QueryForLispFileName();
-			// set the lisp file name
-			if (activeProject->m_LispFileName.GetLength() == 0)
-				// if the user canceled. Exit here
-				return;
-
+			m_pControl->GetOwnerProject()->QueryForLispFileName();
+			if (m_pControl->GetOwnerProject()->GetLispFileName().IsEmpty())
+				return; //user cancelled
 		}
-		
-		
-		
-		// set the event tree item as checked.
-		m_EventsTree.SetCheck(hItem, TRUE);
 
-		if (pControl != NULL)
-			// set the property to the new defun name
-			SetEvent(nEventId, sDefunEditText);
+		// set the property to the new defun name
+		SetEvent(nEventId, sDefunEditText);
 
 		// here we are going to write out to the lisp file.
-		CStdioFile fout(activeProject->m_LispFileName,
-			CFile::modeCreate|CFile::modeNoTruncate|CFile::modeWrite);
+		CStdioFile fout(m_pControl->GetOwnerProject()->GetLispFileName(),
+										CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite);
 		
 		fout.SeekToEnd();
 		fout.WriteString(_T("\r\n"));
@@ -581,13 +558,9 @@ void CEventsTabPane::OnAddtolisp()
 		fout.Close();
 
 		// update the project tree's autolisp file name
-		theEditorWorkspace.GetProjectTreeCtrl()->SetAutoLispFilename(activeProject->m_LispFileName);
+		theEditorWorkspace.GetProjectTreeCtrl()->SetAutoLispFilename(m_pControl->GetOwnerProject()->GetLispFileName());
 
-		CString sText;
-		CString sTitle;
-		sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-		sText = theWorkspace.LoadResourceString(IDS_FUNCADDED);		
-		MessageBox(sText, sTitle, MB_OK);
+		MessageBox(theWorkspace.LoadResourceString(IDS_FUNCADDED), theWorkspace.LoadResourceString(IDR_MAINFRAME), MB_OK);
 	}
 }
 
@@ -628,11 +601,7 @@ void CEventsTabPane::SetEvent( PropertyId nEventId, CString sEventDefun )
 		if (pos != NULL)
 		{
 			RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetAt( pos );
-			//use subtype flags bit 0 to indicate whether the event is checked
-			if( sEventDefun.IsEmpty() )
-				pProp->SetSubtype( pProp->GetSubtype() & ~DWORD(1) );
-			else
-				pProp->SetSubtype( pProp->GetSubtype() | 1 );
+			pProp->SetStringValue( sEventDefun );
 		}
 	}
 	else

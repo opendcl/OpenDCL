@@ -40,21 +40,21 @@ int AnimateCtrl_Load()
 		if (pProject)
 		{
 			CString sAvi = sFileName;
-			int n = pProject->m_ShortFileName.Find(s1);
+			int n = pProject->GetBaseFileName().Find(s1);
 			if (n == -1)
-				n = pProject->m_ShortFileName.Find(s2);
+				n = pProject->GetBaseFileName().Find(s2);
 
 			int nNext = n;
 			while (nNext > -1)
 			{
-				nNext = pProject->m_ShortFileName.Find(s1, n+1);
+				nNext = pProject->GetBaseFileName().Find(s1, n+1);
 				if (nNext == -1)
-					nNext = pProject->m_ShortFileName.Find(s2, n+1);
+					nNext = pProject->GetBaseFileName().Find(s2, n+1);
 				if (nNext > -1)
 					n = nNext;	
 			}
 
-			sAvi = pProject->m_ShortFileName.Right(n+1) + sAvi;
+			sAvi = pProject->GetBaseFileName().Right(n+1) + sAvi;
 			if (_tcsicmp(sAvi.Left(4), s3) != 0)
 				sAvi += s3;
 

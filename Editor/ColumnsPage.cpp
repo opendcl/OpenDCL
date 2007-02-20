@@ -110,7 +110,6 @@ BEGIN_MESSAGE_MAP(CColumnsPage, CPropertyPage)
 	ON_CBN_SELCHANGE(IDC_DATE, OnSelchangeDate)
 	ON_CBN_SELCHANGE(IDC_TIME, OnSelchangeTime)
 	ON_EN_CHANGE(IDC_FILEEXT, OnChangeFileext)
-	ON_EN_CHANGE(IDC_INDEX_EDIT, OnChangeIndexEdit)
 	ON_EN_SETFOCUS(IDC_INDEX_EDIT, OnSetfocusIndexEdit)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -199,7 +198,7 @@ BOOL CColumnsPage::OnInitDialog()
 	}
 
 	m_nIndex = (m_ColData.GetCount() > 0? 0 : -1);
-	OnSetActive();
+	m_Spin.SetBuddy(&m_IndexEdit);
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
@@ -361,6 +360,8 @@ void CColumnsPage::OnInsert()
 	data.m_Default = 0;	
 	data.m_Alternate = 0;
 	SetControls(nIndex);
+	SetColumn(m_nIndex);
+	m_Spin.SetPos( m_nIndex );
 	m_Text.SetFocus();
 	SetModified();
 }
@@ -384,10 +385,9 @@ void CColumnsPage::SetControls(int nIndex)
 	if (nIndex < 0)
 	{
 		m_Spin.EnableWindow(FALSE);
-		m_Alignment.EnableWindow(FALSE);
-		m_Spin.SetBuddy(NULL);
-		m_Disabled.EnableWindow(FALSE);
 		m_IndexEdit.ShowWindow(FALSE);
+		m_Alignment.EnableWindow(FALSE);
+		m_Disabled.EnableWindow(FALSE);
 		m_Image.EnableWindow(FALSE);
 		m_WidthTextBox.EnableWindow(FALSE);
 		m_Text.EnableWindow(FALSE);
@@ -398,10 +398,9 @@ void CColumnsPage::SetControls(int nIndex)
 
 	if( nIndex >= m_ColData.GetCount() )
 		nIndex = m_ColData.GetCount();
-	GetDlgItem(IDC_DELETE)->EnableWindow(m_ColData.GetCount() > 0);
+	GetDlgItem(IDC_DELETE)->EnableWindow(nColCount > 0);
 	m_IndexEdit.ShowWindow(TRUE);
-	m_Spin.EnableWindow(m_ColData.GetCount() > 1);
-	m_Spin.SetBuddy(&m_IndexEdit);
+	m_Spin.EnableWindow(nColCount > 1);
 	m_Image.EnableWindow(TRUE);
 	m_Alignment.EnableWindow(TRUE);		
 
@@ -411,7 +410,6 @@ void CColumnsPage::SetControls(int nIndex)
 	if (m_ColData[nIndex].m_Image >= m_Image.GetCount())
 		m_ColData[nIndex].m_Image = -1;
 
-	m_Spin.SetPos(nIndex);
 	if (IsImageListValid())
 	{
 		m_Disabled.ShowWindow(FALSE);
@@ -432,12 +430,9 @@ void CColumnsPage::SetControls(int nIndex)
 
 	m_Text.SetLimitText(256);
 
-	TCHAR value[80];
-	_ltot(nIndex, value, 10);
-	m_IndexEdit.SetWindowText(value);
-
-	_ltot(m_ColData[nIndex].m_Width, value, 10);	
-	m_WidthTextBox.SetWindowText(value);
+	CString sVal;
+	sVal.Format( _T("%d"), m_ColData[nIndex].m_Width );
+	m_WidthTextBox.SetWindowText(sVal);
 
 	m_Text.SetWindowText(m_ColData[nIndex].m_Caption);
 	m_Style.SetCurSel(m_ColData[nIndex].m_Style);
@@ -585,18 +580,13 @@ void CColumnsPage::OnChangeWidth()
 
 void CColumnsPage::OnColumnHeaderClicked(int nIndex) 
 {
-	m_nIndex = nIndex;
-	//SetControls(m_nIndex);
+	m_Spin.SetPos(nIndex);
+	SetControls(nIndex);
 	//SetColumn(m_nIndex);
 }
 
 void CColumnsPage::ResetWidths() 
 {
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-
 	CHeaderCtrl *pHeader = m_List.GetHeaderCtrl();
 	if (pHeader == NULL)
 		return;
@@ -610,17 +600,11 @@ void CColumnsPage::ResetWidths()
 		m_ColData[i].m_Width = rc.Width();
 
 	}
-	SetControls(m_nIndex);
 	SetModified();
 }
 
 void CColumnsPage::OnSelchangeAlignment() 
 {
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-
 	int nSel = m_Alignment.GetCurSel();
 	int nAlign;
 	m_ColData[m_nIndex].m_Alignment = nSel;
@@ -642,10 +626,6 @@ void CColumnsPage::OnSelchangeAlignment()
 
 void CColumnsPage::OnSelchangeStyle() 
 {
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
 	if (m_Style.GetCurSel() == 3 || m_Style.GetCurSel() == 29)
 	{
 		if (m_pImageListPage == NULL)
@@ -847,82 +827,47 @@ void CColumnsPage::OnSelchangeImage()
 
 void CColumnsPage::OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-
 	NM_UPDOWN* pNMUpDown = (NM_UPDOWN*)pNMHDR;
-	
-	*pResult = 0;
+	int nIndex = pNMUpDown->iPos + pNMUpDown->iDelta;
+	if( (nIndex < 0 && m_ColData.GetCount() > 0) || (nIndex >= m_ColData.GetCount()) )
+	{
+		*pResult = 1;
+		return;
+	}
+	SetControls( nIndex );
 }
 
 void CColumnsPage::OnDelete() 
 {
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-
 	CHeaderCtrl *pHeader = m_List.GetHeaderCtrl();
 
 	m_List.DeleteColumn(m_nIndex);
 
-	
 	// add the data to the list arrays
 	m_ColData.RemoveAt(m_nIndex);
 
-	
-	if (m_nIndex == 0 && pHeader->GetItemCount() == 0)
-	{
-		m_Spin.EnableWindow(FALSE);
-		m_Alignment.EnableWindow(FALSE);
-	}
-	else
-	{
-		m_Spin.EnableWindow(TRUE);
-		m_Spin.SetBuddy(&m_IndexEdit);
-		m_Alignment.EnableWindow(TRUE);		
-	}
+	m_Spin.EnableWindow(m_ColData.GetCount() > 1);
+	m_Alignment.EnableWindow(m_ColData.GetCount() > 0);
 
-	if (m_nIndex >= m_ColData.GetSize()) 
-		m_nIndex = m_ColData.GetSize() - 1;
-
-	SetControls(m_nIndex);
+	SetControls(m_nIndex >= m_ColData.GetSize()? m_ColData.GetSize() - 1 : m_nIndex);
+	m_Spin.SetPos( m_nIndex );
 	SetModified();
 }
 
 void CColumnsPage::OnSelchangeDefault() 
 {
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-	
 	m_ColData[m_nIndex].m_Default = m_Default.GetCurSel();
 	SetModified();
 }
 
 void CColumnsPage::OnSelchangeAlternate() 
 {
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-	
 	m_ColData[m_nIndex].m_Alternate = m_Alternate.GetCurSel();
 	SetModified();
-	
 }
 
 void CColumnsPage::OnDroplistbtn() 
 {
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-	
-
 	if (m_ColData[m_nIndex].m_Style == 29)
 	{
 		CImageListContents Dlg;
@@ -992,45 +937,23 @@ void CColumnsPage::OnDroplistbtn()
 void CColumnsPage::OnDestroy() 
 {
 	CPropertyPage::OnDestroy();
-	
 	m_ColData.RemoveAll();
-	
 }
 
 void CColumnsPage::OnSelchangeDate() 
 {	
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-
 	m_ColData[m_nIndex].m_Image = m_Dates.GetCurSel();	
 	SetModified();
 }
 
 void CColumnsPage::OnSelchangeTime() 
 {
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-
 	m_ColData[m_nIndex].m_Image = m_Times.GetCurSel();	
 	SetModified();
 }
 
 void CColumnsPage::OnChangeFileext() 
 {
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-
 	CString sText;
 	m_FileExt.GetWindowText(sText);
 	
@@ -1038,15 +961,9 @@ void CColumnsPage::OnChangeFileext()
 	m_ColData[m_nIndex].m_ListItems.Add(sText);
 
 	SetModified();
-	
-}
-
-void CColumnsPage::OnChangeIndexEdit() 
-{
 }
 
 void CColumnsPage::OnSetfocusIndexEdit() 
 {
 	m_Text.SetFocus();
-	
 }
