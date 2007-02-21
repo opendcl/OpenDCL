@@ -951,6 +951,7 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
     }
   }
 #endif
+	m_bDeleted = false;
   return statOK;
 }
 
