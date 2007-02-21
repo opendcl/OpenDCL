@@ -62,7 +62,10 @@ AxPropertyDescriptor::AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTyp
 	VARTYPE vtVar = pFuncDesc->elemdescFunc.tdesc.vt;
 	VARTYPE vtProp = ((vtVar == VT_PTR)? pFuncDesc->elemdescFunc.tdesc.lptdesc->vt : vtVar);
 	SHORT ctParams = pFuncDesc->cParams;
-	assert( (pFuncDesc->invkind == DISPATCH_PROPERTYGET && pFuncDesc->cParams == 0) || pFuncDesc->cParams == 1 );
+	//[DPR] Removing check on number of parameters for property puts, because they can
+	//have more than one (at least, the ComponentOne FlexGrid has puts with more than one value)
+	//Also removing the check for gets, because they can have parameters
+	//assert( (pFuncDesc->invkind == DISPATCH_PROPERTYGET && pFuncDesc->cParams == 0) || pFuncDesc->cParams == 1 );
 	MEMBERID memid = pFuncDesc->memid;
 
 	CComBSTR bstrName;
@@ -365,7 +368,7 @@ void AxPropertyDescriptor::Serialize( CArchive& ar, int nPropertyVersion )
 
 IOStatus AxPropertyDescriptor::ReadFromTextFile( std::ifstream &sFile, ULONG nPropertyVersion )
 {
-  if (!readDISPID(sFile, mDispId)) return statInvalidFormat;
+  if (!readDISPIDAsLong(sFile, mDispId)) return statInvalidFormat;
   if (!readString(sFile, msName)) return statInvalidFormat;
   if (!readString(sFile, msDesc)) return statInvalidFormat;
 
