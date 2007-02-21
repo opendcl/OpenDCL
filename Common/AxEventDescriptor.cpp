@@ -112,11 +112,23 @@ IOStatus AxEventDescriptor::ReadFromTextFile( std::ifstream &sFile, ULONG nPrope
 	int ctParams;
   if (!readInt(sFile, ctParams)) return statInvalidFormat;
 	mrArgs.resize( ctParams );
-  for (int i = 0; i < ctParams; ++i)
+	//16 arguments were written out, even if none were used.
+	//Read them all in, putting the ones that exist in the argument array,
+	//and ignore the others
+  for (int i = 0; i < 16; ++i)
   {
-    if (!readVARTYPE(sFile, mrArgs[i].vt)) return statInvalidFormat;
-    if (!readString(sFile, mrArgs[i].name)) return statInvalidFormat;
-		if (!readCLSID(sFile, mrArgs[i].clsid)) return statInvalidFormat;
+		if (i < ctParams) {
+			//Argument should be read into array
+			if (!readVARTYPE(sFile, mrArgs[i].vt)) return statInvalidFormat;
+			if (!readString(sFile, mrArgs[i].name)) return statInvalidFormat;
+			if (!readCLSID(sFile, mrArgs[i].clsid)) return statInvalidFormat;
+		} else {
+			//Argument should be ignored
+			AxEventArg tempArg;
+			if (!readVARTYPE(sFile, tempArg.vt)) return statInvalidFormat;
+			if (!readString(sFile, tempArg.name)) return statInvalidFormat;
+			if (!readCLSID(sFile, tempArg.clsid)) return statInvalidFormat;
+		}
   }
   if (!readString(sFile, msParams)) return statInvalidFormat;
 
