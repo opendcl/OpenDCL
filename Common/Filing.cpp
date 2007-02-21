@@ -409,9 +409,24 @@ bool readLong(std::ifstream &sFile, long& i)
   return readGenericInt(sFile, labelDebugLong, labelReleaseLong, i);
 }
 
+bool readDISPIDAsLong(std::ifstream &sFile, DISPID& i)
+{
+	LONG l;
+	if (readLong(sFile, l)) {
+		i = l;
+		return true;
+	} else {
+		return false;
+	}
+}
+
 bool readDISPID(std::ifstream &sFile, DISPID& i)
 {
-  return readGenericInt(sFile, labelDebugDISPID, labelReleaseDISPID, (long&)i);
+	bool rVal = readGenericInt(sFile, labelDebugDISPID, labelReleaseDISPID, (long&)i);
+	if (!rVal) {
+		int p = 0;
+	}
+  return rVal;
 }
 
 bool readULONG(std::ifstream &sFile, ULONG& i)

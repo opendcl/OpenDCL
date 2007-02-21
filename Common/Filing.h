@@ -30,6 +30,7 @@ CString readLine(std::ifstream &sFile);
 bool readLine(std::ifstream &sFile, CString checkType1, CString checkType2);
 bool readInt(std::ifstream &sFile, int& i);
 bool readLong(std::ifstream &sFile, long& i);
+bool readDISPIDAsLong(std::ifstream &sFile, DISPID& i);
 bool readDISPID(std::ifstream &sFile, DISPID& i);
 bool readULONG(std::ifstream &sFile, ULONG& i);
 bool readShort(std::ifstream &sFile, short& i);
