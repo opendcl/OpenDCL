@@ -1481,13 +1481,13 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			break;
 		}
 		
-		case nMinTabWidth:
-		{
-			int n = pControl->GetLngProperty(nMinTabWidth);
-			((VdclTab*)pControlWnd)->GetTabCtrl().SetMinTabWidth(pControl->GetLngProperty(nMinTabWidth));
-			((VdclTab*)pControlWnd)->GetTabCtrl().RedrawWindow(NULL, NULL, RDW_UPDATENOW);
-			break;
-		}
+		//case nMinTabWidth:
+		//{
+		//	int n = pControl->GetLngProperty(nMinTabWidth);
+		//	((VdclTab*)pControlWnd)->GetTabCtrl().SetMinTabWidth(pControl->GetLngProperty(nMinTabWidth));
+		//	((VdclTab*)pControlWnd)->GetTabCtrl().RedrawWindow(NULL, NULL, RDW_UPDATENOW);
+		//	break;
+		//}
 		case nMultiSelection:
 		{
 			((OdclMonth*)pControlWnd)->SetMaxSelCount(
@@ -1609,44 +1609,44 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			break;
 			
 		}
-		case nTabSelected:
-		{
-			((CListBox*)pControlWnd)->SetCurSel(pControl->GetLngProperty(nTabSelected));
-			break;
-		}
-		case nTabStyle:
-		{
-			if (pControl->GetLngProperty(nTabStyle) == 0)
-				((CListBox*)pControlWnd)->ModifyStyle(TCS_BUTTONS, TCS_TABS, SWP_FRAMECHANGED);
-			else
-				((CListBox*)pControlWnd)->ModifyStyle(TCS_TABS, TCS_BUTTONS, SWP_FRAMECHANGED);
-			break;
-		}
-		
-		case nTabLabelAlign:
-		{
-			if (pControl->GetLngProperty(nTabLabelAlign) == 0)
-				((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(0, TCS_FORCELABELLEFT, SWP_FRAMECHANGED);
-			else
-				((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(TCS_FORCELABELLEFT, 0, SWP_FRAMECHANGED);
-			break;
-		}
-		case nTabFixedWidth:
-		{
-			if (pControl->GetBoolProperty(nTabFixedWidth) == TRUE)
-			{
-				((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(0, TCS_FIXEDWIDTH, SWP_FRAMECHANGED);
-				CRect rc;
-				((VdclTab*)pControlWnd)->GetTabCtrl().GetItemRect(0, &rc);
-				CSize szTabs;
-				szTabs.cx = pControl->GetLngProperty(nMinTabWidth);
-				szTabs.cy = rc.Height();
-				((VdclTab*)pControlWnd)->GetTabCtrl().SetItemSize(szTabs);
-			}
-			else
-				((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(TCS_FIXEDWIDTH, 0, SWP_FRAMECHANGED);
-			break;
-		}
+		//case nTabSelected:
+		//{
+		//	((CListBox*)pControlWnd)->SetCurSel(pControl->GetLngProperty(nTabSelected));
+		//	break;
+		//}
+		//case nTabStyle:
+		//{
+		//	if (pControl->GetLngProperty(nTabStyle) == 0)
+		//		((CListBox*)pControlWnd)->ModifyStyle(TCS_BUTTONS, TCS_TABS, SWP_FRAMECHANGED);
+		//	else
+		//		((CListBox*)pControlWnd)->ModifyStyle(TCS_TABS, TCS_BUTTONS, SWP_FRAMECHANGED);
+		//	break;
+		//}
+		//
+		//case nTabLabelAlign:
+		//{
+		//	if (pControl->GetLngProperty(nTabLabelAlign) == 0)
+		//		((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(0, TCS_FORCELABELLEFT, SWP_FRAMECHANGED);
+		//	else
+		//		((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(TCS_FORCELABELLEFT, 0, SWP_FRAMECHANGED);
+		//	break;
+		//}
+		//case nTabFixedWidth:
+		//{
+		//	if (pControl->GetBoolProperty(nTabFixedWidth) == TRUE)
+		//	{
+		//		((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(0, TCS_FIXEDWIDTH, SWP_FRAMECHANGED);
+		//		CRect rc;
+		//		((VdclTab*)pControlWnd)->GetTabCtrl().GetItemRect(0, &rc);
+		//		CSize szTabs;
+		//		szTabs.cx = pControl->GetLngProperty(nMinTabWidth);
+		//		szTabs.cy = rc.Height();
+		//		((VdclTab*)pControlWnd)->GetTabCtrl().SetItemSize(szTabs);
+		//	}
+		//	else
+		//		((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(TCS_FIXEDWIDTH, 0, SWP_FRAMECHANGED);
+		//	break;
+		//}
 		case nText:
 		{
 			if (!IsSelfPopulatedList(pControl))

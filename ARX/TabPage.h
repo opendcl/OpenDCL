@@ -24,7 +24,7 @@ protected:
 
 // Construction
 public:
-	CTabPage( CDclFormObject* pSourceForm, CWnd* pHostDlg );
+	CTabPage( CDclFormObject* pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId );
 	~CTabPage();
 
 	//Attributes
@@ -41,11 +41,10 @@ protected:
 
 // Implementation
 protected:
-	virtual void OnOK();
-	virtual void OnCancel();	
-
-	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnPaint();
 };

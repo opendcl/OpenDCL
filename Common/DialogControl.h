@@ -151,6 +151,7 @@ public:
 	// handlers for specific properties
 	virtual bool OnApplyBorderStyle( RefCountedPtr< CPropertyObject > pProp ); //nBorder
 	virtual bool OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp ); //nEnabled
-	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ); //nCaption
+	virtual bool OnApplyVisible( RefCountedPtr< CPropertyObject > pProp ); //nVisible
+	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ); //nCaption, nTitleBarText
 	virtual bool OnApplyCaptionFont( RefCountedPtr< CPropertyObject > pProp ); //nLabelName
 };

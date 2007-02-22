@@ -184,7 +184,7 @@ IOStatus AxMethodDescriptor::ReadFromTextFile(std::ifstream &sFile)
 IOStatus AxMethodDescriptor::ReadFromTextFile2(std::ifstream &sFile)
 {
   if (!readDISPIDAsLong(sFile, mDispId)) return statInvalidFormat;
-  if (!readString(sFile, msName)) return statInvalidFormat;
+	if (!readString(sFile, msName)) return statInvalidFormat;
   if (!readString(sFile, msParams)) return statInvalidFormat;
   if (!readString(sFile, msDesc)) return statInvalidFormat;
   if (!readVARTYPE(sFile, mReturnType)) return statInvalidFormat;

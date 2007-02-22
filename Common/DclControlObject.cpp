@@ -38,7 +38,7 @@ IMPLEMENT_SERIAL(CDclControlObject, CObject, 1)
 
 CDclControlObject::CDclControlObject()
 : mpOwner( NULL )
-, mType( CtlFormPropHolder )
+, mType( CtlForm )
 , mpDlgControl( NULL )
 , mnID( -1 )
 , midxZOrder( -1 )
@@ -76,7 +76,7 @@ CDclControlObject::CDclControlObject()
 
 CDclControlObject::CDclControlObject(CDclFormObject* pOwner)
 : mpOwner( pOwner )
-, mType( CtlFormPropHolder )
+, mType( CtlForm )
 , mpDlgControl( NULL )
 , mnID( -1 )
 , midxZOrder( -1 )
@@ -1289,9 +1289,15 @@ CString CDclControlObject::GetKeyName() const
 
 CString CDclControlObject::GetKeyPath() const
 {
-	CString sPath = GetKeyName();
+	CString sPath;
 	if( mpOwner )
-		sPath = mpOwner->GetKeyPath() + _T('_') + sPath;
+	{
+		sPath = mpOwner->GetKeyPath();
+		if( mType != CtlForm )
+			sPath += _T('_') + GetKeyName();
+	}
+	else
+		sPath = GetKeyName();
 	return sPath;
 }
 

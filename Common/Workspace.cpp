@@ -89,5 +89,17 @@ CString CWorkspace::FindFile( LPCTSTR pszFilePath ) const
 	CString sPath;
 	DWORD ctPath = SearchPath( NULL, pszFilePath, NULL, MAX_PATH, sPath.GetBuffer( MAX_PATH ), NULL );
 	sPath.ReleaseBuffer();
+	if( ctPath == 0 )
+	{ //check the app folder yet
+		CString sAppFolder;
+		if( 0 < GetModuleFileName( NULL, sAppFolder.GetBuffer( MAX_PATH ), MAX_PATH ) )
+		{
+			sAppFolder.ReleaseBuffer();
+			sAppFolder = sAppFolder.Mid( sAppFolder.MakeReverse().SpanExcluding( _T("\\/:") ).GetLength() );
+			sAppFolder.MakeReverse();
+			DWORD ctPath = SearchPath( sAppFolder, pszFilePath, NULL, MAX_PATH, sPath.GetBuffer( MAX_PATH ), NULL );
+			sPath.ReleaseBuffer();
+		}
+	}
 	return sPath;
 }

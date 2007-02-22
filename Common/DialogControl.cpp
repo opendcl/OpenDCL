@@ -84,7 +84,9 @@ bool CDialogControl::ApplyPropertiesEnum()
 		{
 		case nBorderStyle: if( !OnApplyBorderStyle( pProp ) ) bSuccess = false; break;
 		case nEnabled: if( !OnApplyEnabled( pProp ) ) bSuccess = false; break;
-		case nCaption: if( !OnApplyBorderStyle( pProp ) ) bSuccess = false; break;
+		case nVisible: if( !OnApplyVisible( pProp ) ) bSuccess = false; break;
+		case nCaption: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
+		case nTitleBarText: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
 		case nLabelName: if( !OnApplyCaptionFont( pProp ) ) bSuccess = false; break;
 		case nLabelSize: break; //font properties are applied en masse in OnApplyCaptionFont()
 		case nLabelBold: break;
@@ -125,6 +127,12 @@ bool CDialogControl::OnApplyBorderStyle( RefCountedPtr< CPropertyObject > pProp 
 bool CDialogControl::OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp )
 {
 	mpControl->EnableWindow( pProp->GetBooleanValue() );
+	return true;
+}
+
+bool CDialogControl::OnApplyVisible( RefCountedPtr< CPropertyObject > pProp )
+{
+	mpControl->ShowWindow( pProp->GetBooleanValue()? SW_SHOW : SW_HIDE );
 	return true;
 }
 

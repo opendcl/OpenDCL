@@ -96,56 +96,31 @@ BOOL CfgTabPane::OnInitDialog()
 {
 	CAcUiTabExtension::OnInitDialog();
 	
-	//  setup for assigning the form it's properties
-	CPoint pt;
-	CRect rectThis;
+	CRect rectWindow;
+	GetWindowRect( &rectWindow );
 	
-	// get the form's properties
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	
-	GetWindowRect(&rectThis);
-	// setup the rect default rect 
-	rectThis.top = 0;
-	rectThis.left = 0;
-	
-	// get the width
-	//int nCtlWidth = pControlObject->GetLngProperty(nWidth);
-	int nCtlWidth = rectThis.Width();
-	rectThis.right = nCtlWidth;
-
-	// get the height
-	//int nCtlHeight = pControlObject->GetLngProperty(nHeight);
-	int nCtlHeight = rectThis.Height();
-	rectThis.bottom = nCtlHeight;
-
-    // get the left and top values to center the form on the screen	
-	pt.y =  (::GetSystemMetrics(SM_CYSCREEN) - rectThis.Height()) / 2;
-	pt.x =  (::GetSystemMetrics(SM_CXSCREEN) - rectThis.Width()) / 2;
-	
-	// call method to set the start width and position of the form
-	SetWindowPos(NULL, pt.x, pt.y, nCtlWidth, nCtlHeight, SWP_NOACTIVATE);
-	
-	// set the rect for the control pane to be created
-	CRect rcThis(0,0, nCtlWidth, nCtlHeight);
-	
-	// create the control pane that will display the controls
-	mDialogX.GetControlPane().GetPaneWindowRect() = rcThis;
+	// set the control pane position and size
+	mDialogX.GetControlPane().SetPanePos( rectWindow );
 
 	// call method to create the controls
 	UINT nID = 1000;
 	mDialogX.GetControlPane().CreateControls(mDialogX.GetSourceForm(), nID);
+	
+	//  setup for assigning the form it's properties
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 
-	CRect rcClient;
-	GetClientRect(&rcClient);
-	// resize the control pane so all offsets are set correctly
-	mDialogX.GetControlPane().SizeChanged(rcClient.Width(),rcClient.Height());	
+	// get the left and top values to center the form on the screen	
+	CPoint pt( (::GetSystemMetrics(SM_CYSCREEN) - rectWindow.Width()) / 2,
+						 (::GetSystemMetrics(SM_CXSCREEN) - rectWindow.Height()) / 2 );
+	
+	// call method to set the start width and position of the form
+	SetWindowPos(NULL, pt.x, pt.y, rectWindow.Width(), rectWindow.Height(), SWP_NOACTIVATE);
 	
 	// call methods to invoke the event
 	InvokeMethod(pProps->GetStrProperty(nFormEventInitialize), false);	
 
-	GetWindowRect(&rcThis);
 	// call methods to invoke the event
-	InvokeMethodIntInt(pProps->GetStrProperty(nFormEventSize), rcThis.Width(), rcThis.Height(), false);	
+	InvokeMethodIntInt(pProps->GetStrProperty(nFormEventSize), rectWindow.Width(), rectWindow.Height(), false);	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
@@ -203,11 +178,7 @@ void CfgTabPane::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	CAcUiTabExtension::OnShowWindow(bShow, nStatus);
 
-	CRect rectThis;
-	
-	GetWindowRect(&rectThis);
-
-	mDialogX.GetControlPane().SizeChanged(rectThis.Width(),rectThis.Height());	
+	mDialogX.GetControlPane().RecalcLayout();	
 	// call methods to invoke the event
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod( pProps->GetStrProperty(nFormEventShow), false);	

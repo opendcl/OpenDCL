@@ -1,0 +1,25 @@
+[Method]
+Clear
+[Prefix]
+Odcl_Hatch_
+[Desc]
+This method clears the hatch control of its contents.
+[Arguments]
+ProjectFileName
+
+
+
+[Method]
+SetPattern
+[Prefix]
+Odcl_Hatch_
+[Desc]
+This method will display the specified hatch pattern.
+[Arguments]
+ProjectFileName
+Pattern 
+[as String]
+
+
+
+[End of File]

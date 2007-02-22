@@ -4188,7 +4188,15 @@ void CObjectDCLView::AddProperties( CDclControlObject *pDclControl )
 	if (nType == CtlStaticURL)
 		pDclControl->AddStringProperty( nURLAddress, PropString );
 	
-	if (nType != CtlFileDlgCtrl)
+	if (nType == CtlTabStrip)
+	{
+		// add the geometry management booleans
+		pDclControl->AddLongProperty( nUseBottomFromBottom, PropLong, 1 );
+		pDclControl->AddLongProperty( nUseLeftFromRight, PropLong, 0 );
+		pDclControl->AddLongProperty( nUseRightFromRight, PropLong, 0 );
+		pDclControl->AddLongProperty( nUseTopFromBottom, PropLong, 1 );
+	}
+	else if (nType != CtlFileDlgCtrl)
 	{
 		// add the geometry management booleans
 		pDclControl->AddLongProperty( nUseBottomFromBottom, PropLong, 0 );
@@ -5650,22 +5658,22 @@ void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObjec
 			{
 				bool bHasImageList = (pArxObject->GetImageList() != NULL);
 
-				TC_ITEM TabCtrlItem;
-				CString sTTT;
-				TabCtrlItem.mask = TCIF_TEXT;
 				
 				// delete all previos tabs
 				((CTabCtrl*)pControl)->DeleteAllItems();
 				
-				int nCount = pArxObject->CountPropertyListItems(nTabsCaption) - 1;
+				int nCount = pArxObject->CountPropertyListItems(nTabsCaption);
 				int nBottom = 0;
-				while (nCount >= 0)
+				while (nCount-- > 0)
 				{
+					TC_ITEM TabCtrlItem;
+					CString sTTT;
+					TabCtrlItem.mask = TCIF_TEXT;
 					CString Tab = pArxObject->GetPropertyListItem(nTabsCaption, nCount);
-					// get the tag caption
+					// get the tab caption
 					TabCtrlItem.pszText = Tab.GetBuffer(nDeTextLimitCB);		
 					
-					// set the image list item number is required
+					// set the image list item number if required
 					if (bHasImageList)
 					{
 						TabCtrlItem.mask |= TCIF_IMAGE;
@@ -5674,27 +5682,8 @@ void CObjectDCLView::UpdateProperty(PropertyId nID, CDclControlObject *pArxObjec
 					
 					// add the new tab
 					((CTabCtrl*)pControl)->InsertItem( 0, &TabCtrlItem );
-					
-					// get the new items' rectangle
-					CRect rcTab;
-					((CTabCtrl*)pControl)->GetItemRect( 
-						((CTabCtrl*)pControl)->GetItemCount() - 1,
-						&rcTab);
-
-					// if the bottom of this tab is greater than the last setting
-					// update the bottom value
-					if (rcTab.bottom > nBottom)
-						nBottom = rcTab.bottom;
-				
-					nCount--;
 				}
-				
-				// get the height of the tab control
-				CRect rcTabCtrl;
-				((CTabCtrl*)pControl)->GetWindowRect(&rcTabCtrl);
-				((CTabCtrl*)pControl)->SetCurSel(0);
-				// subtract the lowest tab bottom to get the control area height
-				pArxObject->m_ClientHeight = rcTabCtrl.Height() - nBottom;
+				UpdateClientHeight( pArxObject, pControl );
 			}
 			catch(...)
 			{
@@ -6930,41 +6919,36 @@ void CObjectDCLView::CompletedDragResize(int nQuadrant, CPoint point)
 
 void CObjectDCLView::UpdateClientHeight(CDclControlObject* pArxObject, CWnd *pControl) 
 {
-	size_t nCount = 0;
-	int nBottom = 0;
-
 	if (m_SelectedControl.m_pArxObject == NULL)
 		return;
 
 	if (m_SelectedControl.m_pArxObject->GetType() != CtlTabStrip)
 		return;
+	if (!IsWindow(pControl->m_hWnd))
+		return;
 
-	while (nCount < pArxObject->CountPropertyListItems(nTabsCaption))
+	size_t nCount = ((CTabCtrl*)pControl)->GetItemCount();
+	int nTabHeight = 0;
+	while (nCount-- > 0)
 	{
 		// get the new items' rectangle
 		CRect rcTab;
-		((CTabCtrl*)pControl)->GetItemRect( 
-			nCount - 1,
-			&rcTab);
+		((CTabCtrl*)pControl)->GetItemRect( nCount, &rcTab);
 
-		// if the bottom of this tab is greater than the last setting
-		// update the bottom value
-		if (rcTab.bottom > nBottom)
-			nBottom = rcTab.bottom;
-	
-		nCount++;
+		// if the height of this tab is greater than the previous max height, make it the new max
+		if (rcTab.bottom > nTabHeight)
+			nTabHeight = rcTab.bottom;
 	}
 	
 	// get the height of the tab control
 	CRect rcTabCtrl;
-	if (IsWindow(pControl->m_hWnd))
-		((CTabCtrl*)pControl)->GetWindowRect(&rcTabCtrl);
+	((CTabCtrl*)pControl)->GetClientRect(&rcTabCtrl);
 	
 	// subtract the lowest tab bottom to get the control area height
-	pArxObject->m_ClientHeight = rcTabCtrl.Height() - nBottom;
+	pArxObject->m_ClientHeight = rcTabCtrl.Height() - nTabHeight;
 	
 	// inform the parent a tab control has been resized
-    FireTabResized(pArxObject->m_ClientHeight);
+	FireTabResized(pArxObject->m_ClientHeight);
 }
 
 void CObjectDCLView::OnSize(UINT nType, int cx, int cy) 
@@ -7155,56 +7139,19 @@ short CObjectDCLView::GetSelectedTabClientWidth()
 short CObjectDCLView::GetSelectedTabClientHeight() 
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
-		m_SelectedControl.m_pArxObject == NULL ||
-		m_SelectedControl.m_pControl == NULL)
+			m_SelectedControl.m_pArxObject == NULL ||
+			m_SelectedControl.m_pControl == NULL)
 	{
 		HideGrips();
 		return nNotSet;
 	}
 
-	int nCount = 0;
-	int nBottom = 0;
-
 	CTabCtrl *pControl = (CTabCtrl*)((CControlHolder*)m_SelectedControl.m_pControl)->GetChildControl();
-	
-	
 	if (pControl == NULL)
 		return nNotSet;
 
-	int nTotal = m_SelectedControl.m_pArxObject->CountPropertyListItems(nTabsCaption);
-	while (nCount < nTotal)
-	{
-		// get the new items' rectangle
-		CRect rcTab;
-		pControl->GetItemRect( 
-			nCount - 1,
-			&rcTab);
-
-		// if the bottom of this tab is greater than the last setting
-		// update the bottom value
-		if (rcTab.bottom > nBottom)
-			nBottom = rcTab.bottom;
-	
-		nCount++;
-	}
-	
-	// get the height of the tab control
-	CRect rcTabCtrl;
-	if (IsWindow(pControl->m_hWnd))
-		pControl->GetWindowRect(&rcTabCtrl);
-	
-	// subtract the lowest tab bottom to get the control area height
-	m_SelectedControl.m_pArxObject->m_ClientHeight = rcTabCtrl.Height() - nBottom;
-    int nClientHeight = m_SelectedControl.m_pArxObject->m_ClientHeight;
-
-	CRect rcWin;
-	CRect rcClient;
-	
-	GetParentFrame()->GetWindowRect(&rcWin);
-	GetClientRect(&rcClient);
-
-	return rcWin.Height() - rcClient.Height();
-	return nClientHeight + rcWin.Height() - rcClient.Height();
+	UpdateClientHeight( m_SelectedControl.m_pArxObject, pControl );
+	return m_SelectedControl.m_pArxObject->m_ClientHeight;
 }
 
 
@@ -8053,13 +8000,15 @@ CDclFormObject * CObjectDCLView::AddSingleTabPane(int nIndex)
 
 		pNewDclForm = pProject->AddForm( VdclTabForm, m_pThisDclForm );
 		pNewDclForm->SetTabIndex( nIndex );
-		
+
 		CDclControlObject *pDclProperties = pNewDclForm->GetControlProperties();
 		assert( pDclProperties != NULL );
 		if (pDclProperties != NULL)
 		{
-			pDclProperties->SetLongProperty(nHeight, GetSelectedTabClientHeight());
-			pDclProperties->SetLongProperty(nWidth, GetSelectedTabClientWidth());
+			pDclProperties->AddLongProperty(nHeight, PropLong, GetSelectedTabClientHeight(), true);
+			pDclProperties->AddLongProperty(nWidth, PropLong, GetSelectedTabClientWidth(), true);
+			pDclProperties->AddLongProperty(nUseBottomFromBottom, PropLong, 1, true);
+			pDclProperties->AddLongProperty(nUseTopFromBottom, PropLong, 1, true);
 		}
 
 		// add the new dcl form to the project tree so it's shown there

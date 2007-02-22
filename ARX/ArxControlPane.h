@@ -32,7 +32,7 @@ public:
 
 
 protected:
-	CDclFormObject *FindDclObject(CString sControlName) const;
+	CDclFormObject* FindDclObject(CString sControlName) const;
 
 // Implementation
 public:

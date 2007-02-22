@@ -40,7 +40,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // VdclTab window
 
-class VdclTab : public CStatic
+class VdclTab : public CTabCtrl
 {
 public:
 	typedef std::vector< TTabPagePtr > TTabPages;
@@ -50,14 +50,14 @@ private:
 	CTabControlX mControlX;
 	CDclControlObject* mpSourceControl;	
 	CControlPane* mpControlPane;
-	CTabCtrl mTabCtrl;
+	//CTabCtrl mTabCtrl;
 	TTabPages mTabPages;
+	//CRect mrectTabCtrl;
 
 public:
 	CToolTipCtrl m_ToolTip;
 	bool m_bInvokeWithSendString;
 	int m_nCurrentSelectedTab;
-	CRect m_rcPos;
 	bool m_ToolTipsUpdated;
 
 // Construction
@@ -69,8 +69,9 @@ public:
 public:
 	CArxDialogControl& GetDialogControl() { return mControlX; }
 	const CArxDialogControl& GetDialogControl() const { return mControlX; }
-	CTabCtrl& GetTabCtrl() { return mTabCtrl; }
-	const CTabCtrl& GetTabCtrl() const { return mTabCtrl; }
+	CTabCtrl& GetTabCtrl() { return *this; }
+	const CTabCtrl& GetTabCtrl() const { return *this; }
+	CRect GetUsedArea() const;
 	TDialogControlPtr FindControl( HWND hwndControl ) const;
 	TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const;
 
@@ -79,7 +80,7 @@ public:
 	virtual void ShowTab(int nIndex);
 	virtual void HideTab(int nIndex);
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool CreateTabPages( UINT& nId, CRect rcTab );
+	virtual bool CreateTabPages( UINT& nId );
 	TTabPagePtr GetTabPageAt( size_t nIndex ) const;
 	const CDclFormObject* GetTabSourceFormAt( size_t nIndex ) const;
 	const CControlPane* GetTabControlPaneAt( size_t nIndex ) const;
@@ -110,6 +111,7 @@ protected:
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void PostNcDestroy();
+	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 
 protected:
 	DECLARE_MESSAGE_MAP()

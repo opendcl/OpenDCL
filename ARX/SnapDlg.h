@@ -40,7 +40,6 @@ public:
 // Implementation
 protected:
 	BOOL m_sizing;
-	virtual void SizeDialog() = 0;
 
 public:
 	void SetDialogMinExtents(int nWidth, int nHeight);

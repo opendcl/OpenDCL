@@ -394,45 +394,6 @@ long CDclFormObject::GetDclFormTitleBarIcon()
 	return pControl->GetLngProperty(nIcon);
 }
 
-
-/*
-void CDclFormObject::SaveSS(int n, int nType, CStgFile &FileStg, CDocument *pDoc)
-{
-	CString sKey;
-	sKey.Format(_T("%d.dialog%d"), n, nType);
-	FileStg.Open( sKey, CFile::modeCreate | CFile::modeWrite); 
-
-	CArchiveEx arDcl(&FileStg, CArchive::store | CArchive::bNoFlushOnDelete, NULL, mpProject->GetPassword(), TRUE);
-	arDcl.m_pDocument = pDoc;
-	arDcl.m_bForceFlat = FALSE;
-
-	// put dcl form into archive
-	Serialize(arDcl);
-
-	arDcl.Close();			
-
-	FileStg.Close();	// close the stream
-}
-
-bool CDclFormObject::ReadSS(CDclFormObject* pTargetForm, int n, int nType, CStgFile &FileStg, CDocument *pDoc)
-{
-	CString sKey;
-	sKey.Format(_T("%d.dialog%d"), n, nType);
-	FileStg.Open( sKey, CFile::modeRead | CFile::shareDenyWrite); 
-
-	CArchiveEx arDcl(&FileStg, CArchive::load | CArchive::bNoFlushOnDelete, NULL, mpProject ->GetPassword(), TRUE);
-		
-	// get dcl form into archive
-	pTargetForm->Serialize(arDcl);
-		
-	arDcl.Close();			
-
-	FileStg.Close();	// close the stream
-
-	return true;
-}
-*/
-
 IOStatus CDclFormObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
 {
   POSITION pos;	
@@ -559,18 +520,14 @@ void CDclFormObject::Serialize(CArchive& ar)
 		ar >> mnTabIndex;
 
 		if (nThisVersion >= 2)
-		{
 			ar >> msUUID;
-		}
+		else
+			msUUID.Empty();
 
 		if (nThisVersion >= 4)
-		{
 			ar >> m_bUsesClientRect;
-		}
 		else
-		{
 			m_bUsesClientRect = FALSE;
-		}
 
 		
 		// get counter for arx controls
@@ -647,7 +604,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 		
 		if (mDclControls.GetCount() > 0)
 		{
-			CDclControlObject* pControl = GetControlProperties();		
+			CDclControlObject* pControl = GetControlProperties();
 
 			switch (mType)
 			{
@@ -952,7 +909,7 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
   }
 #endif
 	m_bDeleted = false;
-  return statOK;
+	return statOK;
 }
 
 UUID CDclFormObject::GetUUID() const
@@ -1014,6 +971,11 @@ CDclControlObject* CDclFormObject::GetControlProperties()
 	if( mDclControls.IsEmpty() )
 		return CreateControlProperties();
 	return mDclControls.GetHead();
+}
+
+CSize CDclFormObject::GetFormSize() const
+{
+	return CSize( GetControlProperties()->GetLngProperty(nWidth), GetControlProperties()->GetLngProperty(nHeight) );
 }
 
 CDclControlObject* CDclFormObject::FindControl( LPCTSTR pszControlName ) const

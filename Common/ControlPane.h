@@ -60,13 +60,17 @@ protected:
 	CDclFormObject *mpSourceForm;
 	TDialogControls mControls;
 	CWnd* mpHostDlg;
-	CRect mPaneWindowPos;
+	long mlLeftOffset;
+	long mlRightOffset;
+	long mlTopOffset;
+	long mlBottomOffset;
+	//CRect mPaneWindowPos;
 
 // Construction
 protected:
 	CControlPane();
 public:
-	CControlPane(CDclFormObject* pSourceForm, CWnd* pHostDlg);
+	CControlPane(CDclFormObject* pSourceForm, CWnd* pHostDlg );
 	virtual ~CControlPane();
 
 // Properties
@@ -74,31 +78,28 @@ public:
 	CProject* GetProject() const { return mpProject; }
 	CDclFormObject* GetSourceForm() const { return mpSourceForm; }
 	CWnd* GetHostDialog() const { return mpHostDlg; }
-	const CRect& GetPaneWindowRect() const { return mPaneWindowPos; }
-	CRect& GetPaneWindowRect() { return mPaneWindowPos; }
+	//const CRect& GetPanePos() const { return mrectCurrent; }
+	void SetPanePos( CRect rectNew, bool bRecalc = true ); //set current control area and recalculate layout
+	//void SetPaneWindowRect( const CRect& rectNew ) { mPaneWindowPos = rectNew; }
 	const TDialogControls& GetControlsList() const { return mControls; }
 	//TDialogControls& GetControlsList() { return mControls; }
 
 // Operations
 public:
 	void SetFirstControlFocus() const;
-	void Refresh() { SizeChanged( mPaneWindowPos.Width(), mPaneWindowPos.Height() ); }
 	bool CreateControls( CDclFormObject* pDclForm, UINT& nId );
 	void AddControl( TDialogControlPtr pControl );
+	void RecalcLayout();
+	void ResetControlsPos(CDclControlObject *pControl);
 
-	void SizeChanged(int cx, int cy, bool bRefreshOthers = false);
 	void ShowWindow(BOOL bShow);
 	void ShowPictureBoxes(BOOL bShow);
 	void SetGrphcBtnsParents(bool bForceRefresh);
-	void ResetControlsPos2( CDclControlObject *pControl);
 
 protected:
 	void SetGrphcBtnsParents(CDclControlObject *pGrphcBtn, CDclControlObject *pOtherBtn, bool bForceRefresh);
 	CRect GetSplitterRect(int nId);
 	void InvalidateControls();
-	void ResetControlsPos(CDclControlObject *pControl, int cx, int cy, bool bRefreshOthers = false);
-	void ResetControlsPos(CDclControlObject *pControl, bool bRefreshOthers = false);
-	void ResetControlsPos2(CDclControlObject *pControl, int cx, int cy);
 	void ZOrderFront(CWnd *pControl);
 	void ZOrderBack(CWnd *pControl);
 

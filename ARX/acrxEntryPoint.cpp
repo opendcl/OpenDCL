@@ -2914,22 +2914,47 @@ public:
 
 		//optional arguments
 		LPCTSTR pszInitialFolder = NULL;
+		LPCTSTR pszRootFolder = NULL;
+		DWORD dwFlags = BIF_RETURNONLYFSDIRS;
 		pArgs = pArgs->rbnext;
 		if (pArgs)
 		{
-			if (pArgs->restype != RTSTR)
+			if (pArgs->restype == RTSTR)
+				pszInitialFolder = pArgs->resval.rstring;
+			else if (pArgs->restype == RTNIL)
+				pszInitialFolder = NULL;
+			else
 				return RSERR; //wrong argument type
-			pszInitialFolder = pArgs->resval.rstring;
 
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
+			pArgs = pArgs->rbnext;
+			if (pArgs)
+			{
+				if (pArgs->restype == RTSTR)
+					pszRootFolder = pArgs->resval.rstring;
+				else if (pArgs->restype == RTNIL)
+					pszRootFolder = NULL;
+				else
+					return RSERR; //wrong argument type
+
+				pArgs = pArgs->rbnext;
+				if (pArgs)
+				{
+					if (pArgs->restype == RTSHORT)
+						dwFlags = (DWORD)pArgs->resval.rint;
+					else if (pArgs->restype == RTREAL)
+						dwFlags = (DWORD)pArgs->resval.rreal;
+					else
+						return RSERR; //wrong argument type
+
+					if (pArgs->rbnext)
+						return RSERR; //too many arguments
+				}
+			}
 		}
 
-		CDirDialog dlg;
-		dlg.m_strTitle = pszCaption;
-		dlg.m_strInitDir = pszInitialFolder;
+		CDirDialog dlg( pszCaption, pszInitialFolder, pszRootFolder, dwFlags );
 		if (dlg.DoBrowse(CWnd::FromHandle(theArxWorkspace.GetTopmostModalForm())))
-			acedRetStr(dlg.m_strPath);
+			acedRetStr(dlg.GetSelectedFolder());
 
 		return (RSRSLT) ;
 	}
@@ -3547,7 +3572,7 @@ public:
 			return RSRSLT; //dialog not found
 
 		// call the size changed method to force the graphic buttons to refresh
-		pDialog->GetControlPane().Refresh();
+		pDialog->GetControlPane().RecalcLayout();
 
 		return (RSRSLT) ;
 	}

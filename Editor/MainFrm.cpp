@@ -65,20 +65,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	if (CMDIFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
-	
-
-	AfxInitRichEdit();
 
 	CRect rcRet;
 	CWinApp* pApp = AfxGetApp();
 	CString sProfileName;
 	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-    
-	
-    rcRet.left = pApp->GetProfileInt(sProfileName, _T("nTopLeftX"), -1);
-    rcRet.top = pApp->GetProfileInt(sProfileName, _T("nTopLeftY"), -1);
-	
-	
+
+	rcRet.left = pApp->GetProfileInt(sProfileName, _T("nTopLeftX"), -1);
+  rcRet.top = pApp->GetProfileInt(sProfileName, _T("nTopLeftY"), -1);
 	rcRet.right = rcRet.left + pApp->GetProfileInt(sProfileName, _T("sizeWidth"), -1);
 	rcRet.bottom = rcRet.top + pApp->GetProfileInt(sProfileName, _T("sizeHeight"), -1);
 
@@ -99,8 +93,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		TRACE0("Failed to create dialogbar\n");
 		return -1;		// fail to create
 	}
-
-	
 
 	// setup the tool bar for drop down buttons
 	m_wndToolBar.GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
@@ -132,12 +124,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CreateToolBoxBar();
 	// call method to create the ZOrder bar
 	CreateZOrderDockingBar();
-	
-	
+
 	m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
-		
 	EnableDocking(CBRS_ALIGN_ANY);
-	
+
 #ifdef _SCB_REPLACE_MINIFRAME
     m_pFloatingFrameClass = RUNTIME_CLASS(CSCBMiniDockFrameWnd);
 #endif //_SCB_REPLACE_MINIFRAME
@@ -146,7 +136,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	DockControlBar(&m_wndProjectTreeBar, AFX_IDW_DOCKBAR_RIGHT);
 	DockControlBar(&m_wndToolBoxBar, AFX_IDW_DOCKBAR_LEFT);
-	
+
 	CRect rBar;
 	m_wndToolBoxBar.GetWindowRect(rBar);
 	rBar.OffsetRect(0, 1);
@@ -163,13 +153,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		LoadBarState(sProfile);
 	}
 
-	
 	return 0;
  }
 
 void CMainFrame::CreateToolBoxBar()
 {
-	
 	// --- project bar ---
 	if (!m_wndToolBoxBar.Create(_T("Instant Bar"), this, 127))
 	{
@@ -179,10 +167,7 @@ void CMainFrame::CreateToolBoxBar()
 	CString sText;
 	sText = theWorkspace.LoadResourceString(IDS_TOOLBOX);
 	m_wndToolBoxBar.SetWindowText(sText);
-	m_wndToolBoxBar.SetSCBStyle(m_wndToolBoxBar.GetSCBStyle() |
-		SCBS_SIZECHILD);
-
-	
+	m_wndToolBoxBar.SetSCBStyle(m_wndToolBoxBar.GetSCBStyle() | SCBS_SIZECHILD);
 
 	m_ToolBox.Create(IDD_OBJECTDCL_FORM, &m_wndToolBoxBar);
 	m_ToolBox.ShowWindow(TRUE);
@@ -194,9 +179,8 @@ void CMainFrame::CreateToolBoxBar()
 	m_wndToolBar.SetBarStyle(m_wndToolBar.GetBarStyle() |
 		CBRS_TOOLTIPS | CBRS_FLYBY);
 	
-	// enable docking only on the left of right sides (or floating)
+	// enable docking only on the left or right sides (or floating)
 	m_wndToolBoxBar.EnableDocking(CBRS_ALIGN_LEFT|CBRS_ALIGN_RIGHT);
-
 }
 
 void CMainFrame::CreateProjectDockingBar(CProject* pProject /*= NULL*/)
@@ -324,13 +308,9 @@ void CMainFrame::CreatePropertyDockingBar()
 		TRACE0("Failed to create instant bar\n");
 		return;		// fail to create
 	}
-	CString sText;
-	sText = theWorkspace.LoadResourceString(IDS_PROPERTIES);
-	m_wndPropertyBar.SetWindowText(sText);
-	m_wndPropertyBar.SetSCBStyle(m_wndPropertyBar.GetSCBStyle() 
-		| SCBS_SIZECHILD);
+	m_wndPropertyBar.SetWindowText(theWorkspace.LoadResourceString(IDS_PROPERTIES));
+	m_wndPropertyBar.SetSCBStyle(m_wndPropertyBar.GetSCBStyle() | SCBS_SIZECHILD);
 
-	
 	m_PropertyTabPane.Create(IDD_OBJECTDCL_FORM, &m_wndPropertyBar);
 	m_PropertyTabPane.ShowWindow(TRUE);
 	
@@ -341,9 +321,8 @@ void CMainFrame::CreatePropertyDockingBar()
 
 	// enable docking only on the left of right sides (or floating)
 	m_wndPropertyBar.EnableDocking(CBRS_ALIGN_LEFT|CBRS_ALIGN_RIGHT);
-	
-
 }
+
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
 	if( !CMDIFrameWnd::PreCreateWindow(cs) )
@@ -439,8 +418,6 @@ BOOL CMainFrame::DestroyWindow()
 	
 	return CMDIFrameWnd::DestroyWindow();
 }
-
-
 
 void CMainFrame::OnPicturefolder() 
 {
@@ -540,12 +517,9 @@ BOOL CMainFrame::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 		
 		pPopup->TrackPopupMenu(TPM_LEFTALIGN |	TPM_LEFTBUTTON, x, y, this);
 
-
-        return FALSE; //indicates the TBN_DROPDOWN
-                       //notification was handled.
+		return FALSE; //indicates the TBN_DROPDOWN
+                   //notification was handled.
 	}
-
-	
 	return CMDIFrameWnd::OnNotify(wParam, lParam, pResult);
 }
 
@@ -678,7 +652,6 @@ void CMainFrame::OnProjectsAddfiledialogbox()
 		pDoc->SetModifiedFlag();
 }
 
-
 void CMainFrame::OnDockProject() 
 {
 	ShowControlBar(&m_wndProjectTreeBar, !m_wndProjectTreeBar.IsVisible(), FALSE);		
@@ -698,7 +671,6 @@ void CMainFrame::OnUpdateDockProperties(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetCheck(m_wndPropertyBar.IsWindowVisible());	
 }
-
 
 void CMainFrame::OnDockToolbox() 
 {

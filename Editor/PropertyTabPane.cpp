@@ -160,21 +160,25 @@ void CPropertyTabPane::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CPropertyTabPane::DisplaySelectedControlProperties(CDclControlObject *pControl, CObjectDCLView *pView) 
 {
-	CString sCtrlDesc = GetControlName(pControl->GetType());
+	CString sControlType;
 
 	if (pControl->GetType() == CtlActiveX)
-		sCtrlDesc = pControl->GetActiveXTypeName();
+		sControlType = pControl->GetActiveXTypeName();
+	else
+		sControlType = GetControlName(pControl->GetType());
 		
-	CString sName = pControl->GetStrProperty(nName);
-	if (!sCtrlDesc.IsEmpty())
-		sName = sName + _T(" - ") + sCtrlDesc;
+	CString sControlName;
+	if (!sControlType.IsEmpty())
+		sControlName.Format( _T("%s [%s]"), (LPCTSTR)pControl->GetKeyPath(), (LPCTSTR)sControlType );
+	else
+		sControlName = pControl->GetKeyPath();
 	
 	// get the old name
 	CString sOldName;
 	m_PropertiesTabPane.m_ControlDesc.GetWindowText(sOldName);
 
 	// check if we are displaying the properties for the same control
-	if (sOldName == sName) 
+	if (sOldName == sControlName) 
 	{
 		CRect rc;
 		if (pControl->m_pCtrlHolder != NULL)
@@ -188,7 +192,7 @@ void CPropertyTabPane::DisplaySelectedControlProperties(CDclControlObject *pCont
 	}
 
 	// set the control description text
-	m_PropertiesTabPane.m_ControlDesc.SetWindowText(sName);
+	m_PropertiesTabPane.m_ControlDesc.SetWindowText(sControlName);
 	// set the CView pointer for updating controls
 	m_PropertiesTabPane.GetPropertiesCtrl().m_pView = pView;	
 	// set the dcl form pointer for the property pages if they are to be called.

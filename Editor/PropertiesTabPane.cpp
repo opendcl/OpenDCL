@@ -77,12 +77,10 @@ BOOL CPropertiesTabPane::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	m_bInitialized = true;
-	
 	CRect rc(0,0,2,2);	
-	
+
 	mPropListCtrl.Create(rc, this, nPropertyListID);
-	
+
 	m_ControlDesc.SetWindowText(CString());
 	m_PropertyTitle.SetWindowText(CString());
 
@@ -91,32 +89,18 @@ BOOL CPropertiesTabPane::OnInitDialog()
 
 	m_PropertyDesc.SetFont(m_ControlDesc.GetFont());
 
-
 	// set the font	
 	LOGFONT	lf;
 	memset(&lf, 0, sizeof(LOGFONT));
-	CString sFont;
-	sFont = theWorkspace.LoadResourceString(IDS_DEFAULTFONT);
-	lstrcpyn(lf.lfFaceName, sFont, _elements(lf.lfFaceName));
+	lstrcpyn(lf.lfFaceName, theWorkspace.LoadResourceString(IDS_DEFAULTFONT), _elements(lf.lfFaceName));
 	CDC *pDC = mPropListCtrl.GetDC();
-
-	// create font size as scaled
-	lf.lfHeight = -::MulDiv(nDeFontSize, pDC->GetDeviceCaps(LOGPIXELSY), nDePixels);
-
+	lf.lfHeight = -::MulDiv(nDeFontSize, pDC->GetDeviceCaps(LOGPIXELSY), nDePixels); // create font size as scaled
 	lf.lfQuality = PROOF_QUALITY;
-
 	lf.lfWeight = FW_BOLD;
+	m_font.CreateFontIndirect(&lf);
 
-	HFONT hNewFont = ::CreateFontIndirect(&lf);
-	if (hNewFont != NULL)
-	{
-		m_font.Attach(hNewFont);
-		m_PropertyTitle.SetFont(&m_font);	
-	}
-	
-	//m_font.CreateFontIndirect(&lf);
-		
-	
+	m_bInitialized = true;
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }

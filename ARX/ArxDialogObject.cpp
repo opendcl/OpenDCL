@@ -44,7 +44,8 @@ CDialogObject* CArxDialogObject::Create( CDclFormObject* pDclForm, CWnd* pParent
 	case VdclConfigTab: return &(new CfgTabPane( pDclForm, pParent, pParams ))->GetDialogObject();
 	case VdclDockable:
 		{
-			if( pParams && !pParams->bResizes ) //fixed size?
+			RefCountedPtr< CPropertyObject > pPropResizable = pDclForm->GetControlProperties()->GetPropertyObject( nResizable );
+			if( pPropResizable && !pPropResizable->GetBooleanValue() ) //fixed size?
 				return &(new CDockingDialog( pDclForm, pParent, pParams ))->GetDialogObject();
 			return &(new CResizableDockingDialog( pDclForm, pParent, pParams ))->GetDialogObject();
 		}

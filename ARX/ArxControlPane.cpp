@@ -68,7 +68,7 @@ CArxControlPane::CArxControlPane()
 	TraceFmt( _T("> CArxControlPane::CArxControlPane() [this = %08X]\r\n"), (long)this );
 }
 
-CArxControlPane::CArxControlPane(CDclFormObject* pSourceForm, CWnd* pHostDlg)
+CArxControlPane::CArxControlPane( CDclFormObject* pSourceForm, CWnd* pHostDlg )
 : CControlPane( pSourceForm, pHostDlg )
 {
 	TraceFmt( _T("> CArxControlPane::CArxControlPane(%s [%08X], %s [HWND: %08X]) [this: %08X]\r\n"),

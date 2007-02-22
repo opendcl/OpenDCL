@@ -49,7 +49,6 @@ public:
 public:
 	CDialogObject& GetDialogObject() { return mDialogX; }
 	const CDialogObject& GetDialogObject() const { return mDialogX; }
-	void SizeDialog();
 	void CloseDialog();
 	void SetTitleBarIcon(int nPictureID);
 	void SetDclForm(CDclFormObject *pDclFormObject);

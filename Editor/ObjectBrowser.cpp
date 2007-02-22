@@ -543,7 +543,7 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 							sDesc += sLine;			
 					}
 					// clear the clipboard string holder
-					m_sClipBoardDefun2;					
+					m_sClipBoardDefun2.Empty();					
 
 					sDefun1 = theWorkspace.LoadResourceString(IDS_PAR1);
 					bool bHasReturn = false;
@@ -588,8 +588,8 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 						}
 						if (sLine == theWorkspace.LoadResourceString(IDS_ProjectFileName))
 						{
-							sDefun1 += theWorkspace.LoadResourceString(IDS_CF3) + m_pControl->GetStrProperty(nGlobalVarName) + theWorkspace.LoadResourceString(IDS_CF0);
-							m_sClipBoardDefun2 += m_pControl->GetStrProperty(nGlobalVarName);
+							sDefun1 += theWorkspace.LoadResourceString(IDS_CF3) + m_pControl->GetKeyPath() + theWorkspace.LoadResourceString(IDS_CF0);
+							m_sClipBoardDefun2 += m_pControl->GetKeyPath();
 						}						
 						else if (sLine == theWorkspace.LoadResourceString(IDS_ProjectName))
 						{
@@ -707,7 +707,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 	if (pControl == NULL)
 		return;
 
-	sGlobalVarName = pControl->GetStrProperty(nGlobalVarName);
+	sGlobalVarName = pControl->GetKeyPath();
 	
 	if (pControl != m_pControl)
 	{
@@ -970,8 +970,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 							
 					
 					// set the second copy button
-					CString sCopy2Text;
-					sCopy2Text = theWorkspace.LoadResourceString(IDS_COPYTOCLIP);			
+					CString sCopy2Text = theWorkspace.LoadResourceString(IDS_COPYTOCLIP);			
 					m_Copy2.SetWindowText(sCopy2Text);
 					m_Copy2.ShowWindow(TRUE);
 				}
@@ -1010,11 +1009,12 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				}
 				else
 				{
-					sDefun1 += theWorkspace.LoadResourceString(IDS_C2);
+					sDefun1 += theWorkspace.LoadResourceString(IDS_C);
+					sDefun1 += pControl->GetKeyPath() + _T("_On") + sEventName;
 					if (!sEventArgs.IsEmpty())
-						sDefun1 += sEventName + theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sEventArgs + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET3);
+						sDefun1 += theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sEventArgs + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET3);
 					else
-						sDefun1 += sEventName + theWorkspace.LoadResourceString(IDS_DOUBLEBRACKET);
+						sDefun1 += theWorkspace.LoadResourceString(IDS_DOUBLEBRACKET);
 					sDefun1 += theWorkspace.LoadResourceString(IDS_PAR);
 				}
 				
@@ -1469,18 +1469,21 @@ void CObjectBrowser::OnSelchangedListbox(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CObjectBrowser::OnCopy2() 
 {
-	CString sUnitled;
-	sUnitled = theWorkspace.LoadResourceString(IDS_UNTITILED);
-	if (theEditorWorkspace.GetActiveProjectName().Right(sUnitled.GetLength()) == sUnitled)
+	//CString sUnsavedProject = theWorkspace.LoadResourceString(IDS_PROJECT);
+	//if (m_pControl->GetKeyPath().Left(sUnsavedProject.GetLength()) == sUnsavedProject)
+	if( theWorkspace.GetActiveDocument()->GetPathName().IsEmpty() )
 	{
-		CString sRename;
-		CString sTitle;
-		sRename = theWorkspace.LoadResourceString(IDS_RENAMEPROJECT);
-		sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-		MessageBox(sRename, sTitle, MB_OK|MB_ICONEXCLAMATION);
-		return;
+		int nWhatNext = MessageBox( theWorkspace.LoadResourceString(IDS_RENAMEPROJECT),
+																theWorkspace.LoadResourceString(IDR_MAINFRAME),
+																MB_YESNOCANCEL | MB_ICONEXCLAMATION | MB_DEFBUTTON1 );
+		if( nWhatNext == IDYES )
+		{
+			if( !theWorkspace.GetActiveDocument()->DoFileSave() )
+				return;
+		}
+		else if( nWhatNext != IDNO )
+			return;
 	}
-	
 
 	CString source = m_sClipBoardDefun2; 
 	//put your text in source
@@ -1501,16 +1504,20 @@ void CObjectBrowser::OnCopy2()
 
 void CObjectBrowser::OnCopy1() 
 {
-	CString sUnitled;
-	sUnitled = theWorkspace.LoadResourceString(IDS_UNTITILED);
-	if (theEditorWorkspace.GetActiveProjectName().Right(sUnitled.GetLength()) == sUnitled)
+	//CString sUnsavedProject = theWorkspace.LoadResourceString(IDS_PROJECT);
+	//if (m_pControl->GetKeyPath().Left(sUnsavedProject.GetLength()) == sUnsavedProject)
+	if( theWorkspace.GetActiveDocument()->GetPathName().IsEmpty() )
 	{
-		CString sRename;
-		CString sTitle;
-		sRename = theWorkspace.LoadResourceString(IDS_RENAMEPROJECT);
-		sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-		MessageBox(sRename, sTitle, MB_OK|MB_ICONEXCLAMATION);
-		return;
+		int nWhatNext = MessageBox( theWorkspace.LoadResourceString(IDS_RENAMEPROJECT),
+																theWorkspace.LoadResourceString(IDR_MAINFRAME),
+																MB_YESNOCANCEL | MB_ICONEXCLAMATION | MB_DEFBUTTON1 );
+		if( nWhatNext == IDYES )
+		{
+			if( !theWorkspace.GetActiveDocument()->DoFileSave() )
+				return;
+		}
+		else if( nWhatNext != IDNO )
+			return;
 	}
 
 	CString source = m_sClipBoardDefun1; 
@@ -1620,16 +1627,20 @@ void CObjectBrowser::ResizeControls(int cx, int cy)
 
 void CObjectBrowser::OnCopy3() 
 {
-	CString sUnitled;
-	sUnitled = theWorkspace.LoadResourceString(IDS_UNTITILED);
-	if (theEditorWorkspace.GetActiveProjectName().Right(sUnitled.GetLength()) == sUnitled)
+	//CString sUnsavedProject = theWorkspace.LoadResourceString(IDS_PROJECT);
+	//if (m_pControl->GetKeyPath().Left(sUnsavedProject.GetLength()) == sUnsavedProject)
+	if( theWorkspace.GetActiveDocument()->GetPathName().IsEmpty() )
 	{
-		CString sRename;
-		CString sTitle;
-		sRename = theWorkspace.LoadResourceString(IDS_RENAMEPROJECT);
-		sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-		MessageBox(sRename, sTitle, MB_OK|MB_ICONEXCLAMATION);
-		return;
+		int nWhatNext = MessageBox( theWorkspace.LoadResourceString(IDS_RENAMEPROJECT),
+																theWorkspace.LoadResourceString(IDR_MAINFRAME),
+																MB_YESNOCANCEL | MB_ICONEXCLAMATION | MB_DEFBUTTON1 );
+		if( nWhatNext == IDYES )
+		{
+			if( !theWorkspace.GetActiveDocument()->DoFileSave() )
+				return;
+		}
+		else if( nWhatNext != IDNO )
+			return;
 	}
 
 	CString source = m_sClipBoardDefun3; 

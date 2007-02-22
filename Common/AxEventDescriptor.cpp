@@ -129,7 +129,7 @@ IOStatus AxEventDescriptor::ReadFromTextFile( std::ifstream &sFile, ULONG nPrope
 			if (!readString(sFile, tempArg.name)) return statInvalidFormat;
 			if (!readCLSID(sFile, tempArg.clsid)) return statInvalidFormat;
 		}
-  }
+	}
   if (!readString(sFile, msParams)) return statInvalidFormat;
 
 	return statOK;

@@ -648,15 +648,8 @@ CObjectDCLView* CObjectDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 	// add additional properties that may not be there
 	if (pDclForm->GetType() != VdclTabForm)
 	{	
-		CString sUnderscore;
-		sUnderscore = theWorkspace.LoadResourceString(IDS_UNDERSCORE);
-
 		// add the nObjectBrowser property
 		AddControlStdProperty(pDclForm->GetControlProperties(), nObjectBrowser, CString(), PropActiveXMethods);
-
-		// add the GlobalVarName property
-		CString sVarName = theEditorWorkspace.GetActiveProjectName() + sUnderscore + pDclForm->GetKeyName();
-		AddControlStdProperty(pDclForm->GetControlProperties(), nGlobalVarName, sVarName, PropString);
 	}
 
 	// add additional properties that may not be there

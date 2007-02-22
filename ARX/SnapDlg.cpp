@@ -226,7 +226,6 @@ CSize CSnapDlg::ReadSize()
 
 void CSnapDlg::OnSize(UINT nType, int cx, int cy) 
 {
-	
 	CDialog::OnSize(nType, cx, cy);	
 	UpdateGripPos();
 }

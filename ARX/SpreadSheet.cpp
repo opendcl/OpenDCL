@@ -2888,15 +2888,10 @@ void CSpreadSheet::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 		}
 	case Grid_DirectoryCell:
 		{			
-			CString sTitle;
-			sTitle = theWorkspace.LoadResourceString(IDS_SELFOLDER);
-			
-			CDirDialog dlg;
-			//dlg.m_strTitle = sTitle;
-			dlg.m_strSelDir = GetItemText(m_nRowSelected, m_nColSelected);
+			CDirDialog dlg( theWorkspace.LoadResourceString(IDS_SELFOLDER), GetItemText(m_nRowSelected, m_nColSelected) );
 			if (dlg.DoBrowse(this) == TRUE)
 			{
-				SetItemText(m_nRowSelected, m_nColSelected, dlg.m_strPath);
+				SetItemText(m_nRowSelected, m_nColSelected, dlg.GetSelectedFolder());
 				SetItemImage(m_nRowSelected, m_nColSelected, -1);
 			}
 			// fire the on Grid edit cell event.
@@ -2939,27 +2934,10 @@ void CSpreadSheet::DoFileDlg(int nStyle)
 	{
 		case 2:
 		{			
-			/*
-			CString sTitle;
-			sTitle = theWorkspace.LoadResourceString(IDS_SELFOLDER);
-			
-			CDirDialog dlg;
-			dlg.m_strSelDir = GetItemText(m_nRowSelected, m_nColSelected);
+			CDirDialog dlg( theWorkspace.LoadResourceString(IDS_SELFOLDER), GetItemText(m_nRowSelected, m_nColSelected) );
 			if (dlg.DoBrowse(this) == TRUE)
 			{
-				SetItemText(m_nRowSelected, m_nColSelected, dlg.m_strPath);
-				SetItemImage(m_nRowSelected, m_nColSelected, -1);
-			}
-			*/
-			CString sTitle;
-			sTitle = theWorkspace.LoadResourceString(IDS_SELFOLDER);
-			
-			CDirDialog dlg;
-			//dlg.m_strTitle = sTitle;
-			dlg.m_strSelDir = GetItemText(m_nRowSelected, m_nColSelected);
-			if (dlg.DoBrowse(this) == TRUE)
-			{
-				SetItemText(m_nRowSelected, m_nColSelected, dlg.m_strPath);
+				SetItemText(m_nRowSelected, m_nColSelected, dlg.GetSelectedFolder());
 				SetItemImage(m_nRowSelected, m_nColSelected, -1);
 			}
 

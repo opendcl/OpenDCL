@@ -368,7 +368,7 @@ void AxPropertyDescriptor::Serialize( CArchive& ar, int nPropertyVersion )
 
 IOStatus AxPropertyDescriptor::ReadFromTextFile( std::ifstream &sFile, ULONG nPropertyVersion )
 {
-  if (!readDISPIDAsLong(sFile, mDispId)) return statInvalidFormat;
+  if (!readDISPID(sFile, mDispId)) return statInvalidFormat;
   if (!readString(sFile, msName)) return statInvalidFormat;
   if (!readString(sFile, msDesc)) return statInvalidFormat;
 

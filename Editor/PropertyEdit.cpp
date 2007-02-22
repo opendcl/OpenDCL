@@ -148,7 +148,7 @@ void CPropertyEdit::CommitValue()
 		m_pAxContainer->GetActiveXCtrl()->SetProperty(
 			m_pProp->GetAxInterfaceDescriptorPtr()->GetPutDescriptor(),
 			(LPCTSTR)sText );
-	else if (m_pControl->GetType() != CtlFormPropHolder)
+	else if (m_pControl->GetType() != CtlForm)
 	{
 		// if this property is the nName property
 		if (m_pProp->GetID() == nName)
@@ -245,7 +245,7 @@ void CPropertyEdit::UpdateSizes()
 	CString sText;
 	GetWindowText(sText);
 	
-	if (m_pControl->GetType() == CtlFormPropHolder)
+	if (m_pControl->GetType() == CtlForm)
 	{	
 		if (m_pProp->GetID() == nWidth)
 		{			
@@ -379,7 +379,7 @@ void CPropertyEdit::SetNameProp()
 	CString sTitle;
 	GetWindowText(sText);
 
-	if (m_pControl->GetType() != CtlFormPropHolder)
+	if (m_pControl->GetType() != CtlForm)
 	{
 		CDclControlObject *pFormPropHolder = FindArxControlObject(m_pView->m_pThisDclForm, sText, m_pControl);
 		

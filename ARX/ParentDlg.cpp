@@ -111,12 +111,11 @@ void CParentDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CCommonDialog::OnSize(nType, cx, cy);
 	
-	CRect rcThis;
-	CWnd::GetClientRect(&rcThis);
-
-	
 	if (CWnd::IsWindowVisible())	
 	{
+		CRect rcThis;
+		CWnd::GetClientRect(&rcThis);
+
 		// call methods to invoke the event
 		InvokeMethodIntInt(
 			mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 
@@ -127,10 +126,7 @@ void CParentDlg::OnSize(UINT nType, int cx, int cy)
 
 	UpdateGripPos();
 
-	mDialogX.GetControlPane().SizeChanged(rcThis.Width(), rcThis.Height(), false);
-	
-	
-	
+	mDialogX.GetControlPane().RecalcLayout();
 }
 
 void CParentDlg::OnPaint() 

@@ -372,9 +372,7 @@ void CSplitter::OnLButtonUp(UINT nFlags, CPoint point)
 		}
 		Invalidate();
 		
-		CRect rcParent;
-		GetParent()->GetClientRect(&rcParent);
-		m_pControlPane->SizeChanged(rcParent.Width(), rcParent.Height(), TRUE);
+		m_pControlPane->RecalcLayout();
 
 		SavePlacement();
 	}

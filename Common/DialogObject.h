@@ -10,11 +10,10 @@ enum DclFormType;
 //This struct is used to pass standard and custom initialization data to the dialog creation function
 struct DialogParams
 {
-	DialogParams( const CPoint& p, const CRect& s, bool r = true, LPARAM d = NULL )
-		: position( p ), size( s ), bResizes( r ), lpData( d ) {}
+	DialogParams( const CPoint& p, const CRect& s, LPARAM d = NULL )
+		: position( p ), size( s ), lpData( d ) {}
 	CPoint position; //desired initial position
 	CRect size; //desired initial size
-	bool bResizes;  //true if requesting the dialog to support resizing
 	LPARAM lpData; //dialog-specific initialization data
 };
 

@@ -1483,7 +1483,11 @@ int SetAxProperty()
 	//[DPR] GetWindow returns a CWnd. For this instance, we know the it will be a CAxContainer, 
 	//so force the cast.
 	CAxContainer *axContainer = (CAxContainer*)pControl->GetWindow();
-	axContainer->SetProperty(pAxProp, argList, nArgCount);
+	HRESULT hr = axContainer->SetProperty(pAxProp, argList, nArgCount);
+	if( FAILED(hr) )
+		return RSRSLT;
+
+	acedRetT();
 
 	return 0;
 }
@@ -1881,8 +1885,10 @@ int DoAxMethod()
 	
 	COleVariant varGet;
 	// call the set property method to set the property
-	axContainer->Invoke(pMethod, argList, nArgCount, varGet);
-	
+	HRESULT hr = axContainer->Invoke(pMethod, argList, nArgCount, varGet);
+	if( FAILED(hr) )
+		return RSRSLT;
+
 	acedRetOleVar(varGet, NULL, pMethod, axContainer);
 	return 0;
 }

@@ -3051,22 +3051,12 @@ short CPropertyListCtrl::GetDclParentsTabIndex(short Index)
 
 short CPropertyListCtrl::GetArxControlClientHeight(short DclFormIndex, short ArxControlIndex) 
 {
-	USES_CONVERSION;
-	CString strResult;
-
 	CDclControlObject* pControlObject = GetArxControlObject(DclFormIndex, ArxControlIndex);
 
 	if (pControlObject != NULL)
-	{
-
-		// return the value to equal the control type
-		return pControlObject->m_ClientHeight;
-	}
+		return pControlObject->m_ClientHeight; // return the value to equal the control type
 	else
-	{
-		// return -1 to indicate error
-		return nNotSet;
-	}
+		return nNotSet; // return -1 to indicate error
 }
 
 BOOL CPropertyListCtrl::IsArxControlDeleted(short DclFormIndex, short ArxControlIndex) 

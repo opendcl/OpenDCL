@@ -129,6 +129,15 @@ BOOL CModelessDlg::OnInitDialog()
 	// call the method to set the title bar icon
 	SetTitleBarIcon(pControlObject->GetLngProperty(nIcon));
 
+	// set the rect for the control pane to be created
+	CRect rcClient;
+	GetClientRect(&rcClient);
+	mDialogX.GetControlPane().SetPanePos( rcClient, false );
+
+	// call method to create the controls
+	UINT nID = 1000;
+	mDialogX.GetControlPane().CreateControls(mDialogX.GetSourceForm(), nID);
+
 	// setup the rect default rect 
 	rectThis.top = 0;
 	rectThis.left = 0;
@@ -229,19 +238,6 @@ BOOL CModelessDlg::OnInitDialog()
 			nMinHeight);
 	}
     
-
-	// set the rect for the control pane to be created
-	rcThis.SetRect(0,0, nCtlWidth, nCtlHeight);
-	mDialogX.GetControlPane().GetPaneWindowRect() = rcThis;
-	// call method to create the controls
-	UINT nID = 1000;
-	mDialogX.GetControlPane().CreateControls(mDialogX.GetSourceForm(), nID);
-
-	CRect rcClient;
-	GetClientRect(&rcClient);
-	// resize the control pane so all offsets are set correctly
-	mDialogX.GetControlPane().SizeChanged(rcClient.Width(),rcClient.Height());	
-
 	// add the doc reactor if required for an event
 	CString sEventDefun = mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nDocEventActivated);
 	if (sEventDefun.GetLength() > 0)
@@ -251,7 +247,6 @@ BOOL CModelessDlg::OnInitDialog()
 		// activate the reactor
 		acDocManager->addReactor(m_pDocToModReactor);
 	}	
-
 
 	// call methods to invoke the OnInitDialog event
 	InvokeMethod(pControlObject->GetStrProperty(nFormEventInitialize), false);
@@ -301,24 +296,17 @@ void CModelessDlg::OnSize(UINT nType, int cx, int cy)
 	CSnapDlg::OnSize(nType, cx, cy);
 	if (CWnd::IsWindowVisible() && m_bClosing == false  && m_bAboutToClose == false)
 	{
+		mDialogX.GetControlPane().RecalcLayout();
+		SaveSize();
+
 		CRect rcThis;
-		CWnd::GetClientRect(&rcThis);
-		
-		mDialogX.GetControlPane().SizeChanged(rcThis.Width(), rcThis.Height());
 		CWnd::GetWindowRect(&rcThis);
-		
-		if (!m_bAboutToClose)
-		{
-			SaveSize();
-			//m_nX = rcThis.left; //Removed 10-19-06
-			//m_nY = rcThis.top;
-			// call methods to invoke the event
-			InvokeMethodIntInt(
-				mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 
-				rcThis.Width(),
-				rcThis.Height(),
-				false);	
-		}
+		// call methods to invoke the event
+		InvokeMethodIntInt(
+			mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 
+			rcThis.Width(),
+			rcThis.Height(),
+			false);	
 	}
 }
 
@@ -469,17 +457,12 @@ void CModelessDlg::SizeDialog ()
 {
 	if (CWnd::IsWindowVisible() && m_bClosing == false)
 	{
-		CRect rcThis;
-		CWnd::GetClientRect(&rcThis);
-		
-		mDialogX.GetControlPane().SizeChanged(rcThis.Width(), rcThis.Height());
-		CWnd::GetWindowRect(&rcThis);
+		mDialogX.GetControlPane().RecalcLayout();
 		
 		if (!m_bAboutToClose)
 		{
-      //Removed 10-19-06
-			//m_nX = rcThis.left;
-			//m_nY = rcThis.top;
+			CRect rcThis;
+			CWnd::GetWindowRect(&rcThis);
 			// call methods to invoke the event
 			InvokeMethodIntInt(
 				mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 

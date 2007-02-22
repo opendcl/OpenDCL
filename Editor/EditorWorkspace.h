@@ -33,10 +33,10 @@ public:
 	~CEditorWorkspace();
 
 public:
+	virtual void SetModified( bool bModified );
 	virtual CProject* GetActiveProject() const;
 	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxPropertyDescriptor* pProperty ) const;
 	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxMethodDescriptor* pMethod ) const;
-	virtual void SetModified( bool bModified );
 
 	//Attributes
 	CMainFrame* GetMainFrame() const;

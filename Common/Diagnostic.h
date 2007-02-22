@@ -295,10 +295,10 @@ const TCHAR* asString( ControlType type )
 {
 	switch( type )
 	{
-	case CtlFormPropHolder:
-		return _T("CtlFormPropHolder");
 	case CtlInvalid:
 		return _T("CtlInvalid");
+	case CtlForm:
+		return _T("CtlForm");
 	case CtlLabel:
 		return _T("CtlLabel");
 	case CtlStdButton:

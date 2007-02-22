@@ -49,15 +49,47 @@ DWORD CTabControlX::GetWndStyle() const
 
 bool CTabControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 {
-	//switch( pProp->GetType() )
-	//{
-	//}
+	switch( pProp->GetType() )
+	{
+	case nMinTabWidth:
+		GetControl()->GetTabCtrl().SetMinTabWidth(pProp->GetLongValue());
+		break;
+	case nTabSelected:
+		GetControl()->GetTabCtrl().SetCurSel(pProp->GetLongValue());
+		break;
+	case nTabStyle:
+		if( pProp->GetLongValue() == 0 )
+			GetControl()->GetTabCtrl().ModifyStyle( TCS_BUTTONS, TCS_TABS, SWP_FRAMECHANGED );
+		else
+			GetControl()->GetTabCtrl().ModifyStyle( TCS_TABS, TCS_BUTTONS, SWP_FRAMECHANGED );
+		break;
+	case nTabLabelAlign:
+		if( pProp->GetLongValue() == 0 )
+			GetControl()->GetTabCtrl().ModifyStyle( 0, TCS_FORCELABELLEFT, SWP_FRAMECHANGED );
+		else
+			GetControl()->GetTabCtrl().ModifyStyle( TCS_FORCELABELLEFT, 0, SWP_FRAMECHANGED );
+		break;
+	case nTabFixedWidth:
+		if( pProp->GetBooleanValue() )
+		{
+			GetControl()->GetTabCtrl().ModifyStyle( 0, TCS_FIXEDWIDTH, SWP_FRAMECHANGED );
+			CRect rectTab;
+			GetControl()->GetTabCtrl().GetItemRect( 0, &rectTab );
+			CSize sizeTabs;
+			sizeTabs.cx = mpTemplate->GetLngProperty( nMinTabWidth );
+			sizeTabs.cy = rectTab.Height();
+			GetControl()->GetTabCtrl().SetItemSize( sizeTabs );
+		}
+		else
+			GetControl()->GetTabCtrl().ModifyStyle( TCS_FIXEDWIDTH, 0, SWP_FRAMECHANGED );
+		break;
+	}
 	return true;
 }
 
 bool CTabControlX::OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp )
 {
-	mpControl->EnableWindow( pProp->GetBooleanValue() );
+	GetControl()->GetTabCtrl().EnableWindow( pProp->GetBooleanValue() );
 	return true;
 }
 
@@ -75,13 +107,9 @@ VdclTab::VdclTab( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID )
 : mControlX( pTemplate, &Pane, this )
 , mpSourceControl( pTemplate )
 , mpControlPane( &Pane )
-, mTabCtrl()
+//, mrectTabCtrl( Pane.GetPaneWindowRect() )
 {
 	m_nCurrentSelectedTab = -1;
-	m_rcPos.left = 0;
-	m_rcPos.top = 0;
-	m_rcPos.right = 200;
-	m_rcPos.bottom = 200;
 	// No tooltip created
 	m_ToolTip.m_hWnd = NULL;
 	m_ToolTipsUpdated = false;
@@ -97,21 +125,15 @@ bool VdclTab::Create( CWnd* pParentWnd, UINT nID )
 	CRect rectPane = mControlX.GetWndRect();
 
 	bool bSuccess =
-		CStatic::Create( NULL,
-										 (WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN),
-										 rectPane,
-										 pParentWnd,
-										 nID );
+		CTabCtrl::Create( (WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN),
+											rectPane,
+											pParentWnd,
+											nID );
 	VERIFY(CWnd::SubclassDlgItem(nID, pParentWnd));
-
-	CRect rectTabCtrl( 0, 0, rectPane.Width(), rectPane.Height() );
-	if( !mTabCtrl.Create( mControlX.GetWndStyle(), rectTabCtrl, this, IDC_TAB ) )
-		bSuccess = false;
-	VERIFY(mTabCtrl.SubclassDlgItem(IDC_TAB, this));
 
 	RefCountedPtr< CImageListObject > pImageList = mpSourceControl->GetImageList();
 	if( pImageList )
-		mTabCtrl.SetImageList( &pImageList->m_ImageList );
+		SetImageList( &pImageList->m_ImageList );
 
 	if( bSuccess && !mControlX.ApplyPropertiesEnum() )
 		bSuccess = false;
@@ -120,13 +142,28 @@ bool VdclTab::Create( CWnd* pParentWnd, UINT nID )
 		m_bInvokeWithSendString = true;
 	else
 		m_bInvokeWithSendString = false;
-
-	CreateTabPages( nID, rectPane );
-	mTabCtrl.SetCurSel( 0 );// set the first tab as the selected tab
-	ActivateTabPage( 0, TRUE );
 	SetupTabs();
+	SetCurSel(0);
+	CreateTabPages( nID );
+	ActivateTabPage( 0, TRUE );
 
 	return bSuccess;
+}
+
+CRect VdclTab::GetUsedArea() const
+{
+	CRect rectTab;
+	GetClientRect( &rectTab );
+	int nMaxTabHeight = 0;
+	for( int idx = GetItemCount() - 1; idx >= 0; --idx )
+	{
+		CRect rectItem;
+		GetItemRect( idx, &rectItem );
+		if( rectItem.bottom > nMaxTabHeight )
+			nMaxTabHeight = rectItem.bottom;
+	}
+	rectTab.top = nMaxTabHeight;
+	return rectTab;
 }
 
 void VdclTab::SetFirstControlFocus(CTabPage *pActualTabPage)
@@ -157,11 +194,10 @@ const CControlPane* VdclTab::GetTabControlPaneAt( size_t nIndex ) const
 
 void VdclTab::SetupTabs()
 {
-	CString sText;
-	CString sTTT;
+	InitToolTip();
 	
-	// delete all previos tabs
-	mTabCtrl.DeleteAllItems();
+	// delete all previous tabs
+	DeleteAllItems();
 
 	// get the tab's lists
 	RefCountedPtr< CPropertyObject > pTabsCaptionProperty = mpSourceControl->GetPropertyObject(nTabsCaption);
@@ -175,30 +211,24 @@ void VdclTab::SetupTabs()
 		TabCtrlItem.lParam = (LPARAM)i;
 
 		// get the tag caption
-		CString Tab = mpSourceControl->GetPropertyListItem(nTabsCaption, i);
-		TabCtrlItem.pszText = Tab.LockBuffer();
+		CString sTabCaption = mpSourceControl->GetPropertyListItem(nTabsCaption, i);
+		TabCtrlItem.pszText = sTabCaption.LockBuffer();
 
 		// set the image list item number is required
-		RefCountedPtr< CImageListObject > pImageList = mpSourceControl->GetImageList();
-		if (pImageList)
+		RefCountedPtr< CPropertyObject > pImageListProp = mpSourceControl->GetPropertyObject(nTabsImageList);
+		if (pImageListProp && i < pImageListProp->GetIntArrayPtr()->size())
 		{
-			TabCtrlItem.iImage = _ttol(mpSourceControl->GetPropertyListItem(nTabsImageList, i));
+			TabCtrlItem.iImage = pImageListProp->GetIntArrayPtr()->at(i);
 			TabCtrlItem.mask |= TCIF_IMAGE;
 		}
 					
 		// add the new tab
-		mTabCtrl.InsertItem(i, &TabCtrlItem );
-	}
-	
-	InitToolTip();
-	mTabCtrl.SetToolTips(&m_ToolTip);
-	
-	for (size_t i = 0; i < nTabQty; i++)
-	{
-		CRect r;
-		sText = mpSourceControl->GetPropertyListItem(nTabsTTT, i);
-		mTabCtrl.GetItemRect(i, &r);
-		m_ToolTip.AddTool(&mTabCtrl, sText, &r, i);
+		InsertItem(i, &TabCtrlItem );
+
+		CString sToolTipText = mpSourceControl->GetPropertyListItem(nTabsTTT, i);
+		CRect rectTab;
+		GetItemRect(i, &rectTab);
+		m_ToolTip.AddTool(this, sToolTipText, &rectTab, i);
 	}
 
 	// Activate the tooltip control.
@@ -209,16 +239,16 @@ void VdclTab::SetupTabs()
 void VdclTab::HideTab(int nIndex)
 {
 	// ensure the tab is not already removed..
-	for (int i=0; i<mTabCtrl.GetItemCount(); i++)
+	for (int i = 0; i < GetItemCount(); i++)
 	{
 		//  Get the current tab item text.
 		TC_ITEM tcItem;
 		tcItem.mask = TCIF_PARAM;
-		mTabCtrl.GetItem(i, &tcItem);
+		GetItem(i, &tcItem);
 		
 		if (nIndex == tcItem.lParam)
 		{
-			mTabCtrl.DeleteItem(nIndex);
+			DeleteItem(nIndex);
 			return;
 		}
 	}	
@@ -227,143 +257,48 @@ void VdclTab::HideTab(int nIndex)
 void VdclTab::ShowTab(int nIndex)
 {
 	// ensure the tab is not already showing.
-	for (int i=0; i<mTabCtrl.GetItemCount(); i++)
+	for (int i = 0; i < GetItemCount(); i++)
 	{
 		//  Get the current tab item text.
 		TC_ITEM tcItem;
 		tcItem.mask = TCIF_PARAM;
-		mTabCtrl.GetItem(i, &tcItem);
+		GetItem(i, &tcItem);
 		
 		if (nIndex == tcItem.lParam)
 			return;
 	}
 
-	CString sTab = mpSourceControl->GetPropertyListItem(nTabsCaption, nIndex);
+	CString sTabCaption = mpSourceControl->GetPropertyListItem(nTabsCaption, nIndex);
 				
 	// set the image list item number is required
-	int nImage = _ttol(mpSourceControl->GetPropertyListItem(nTabsImageList, nIndex));
+	int nImage = -1;
+	RefCountedPtr< CPropertyObject > pImageListProp = mpSourceControl->GetPropertyObject(nTabsImageList);
+	if (pImageListProp && nIndex < pImageListProp->GetIntArrayPtr()->size())
+		nImage = pImageListProp->GetIntArrayPtr()->at(nIndex);
 				
 	// add the new tab
-	mTabCtrl.InsertItem(nIndex, sTab, nImage);
+	InsertItem(nIndex, sTabCaption, nImage);
 
 	//  Set the item in the tab control.
 	TC_ITEM tcItem;
 	tcItem.mask = TCIF_PARAM;
 	tcItem.lParam = (LPARAM)nIndex;
-	mTabCtrl.SetItem(nIndex, &tcItem);
+	SetItem(nIndex, &tcItem);
 
 }
 
-//bool VdclTab::AddTab( const CDclFormObject* pDclTab, int nTabIndex /*= -1*/ )
-//{
-//	// set counter for ArxControls
-//	int nCount = pDclTab->GetControlList().GetCount();
-//	
-//	
-//	CString sText;
-//	TC_ITEM TabCtrlItem;
-//	CString sTTT;
-//	TabCtrlItem.mask = TCIF_TEXT;
-//	
-//	// delete all previos tabs
-//	//pControl->mTabCtrl.DeleteAllItems();
-//
-//	// get the tab's lists
-//	RefCountedPtr< CPropertyObject > pTabsCaptionProperty = mpSourceControl->GetPropertyObject(nTabsCaption);
-//	RefCountedPtr< CPropertyObject > pTabsTTTProperty = mpSourceControl->GetPropertyObject(nTabsTTT);
-//	RefCountedPtr< CPropertyObject > pTabsImageProperty = mpSourceControl->GetPropertyObject(nTabsImageList);
-//
-//	size_t nTabQty = pTabsCaptionProperty->size();
-//	//for (int i = 0; i < nTabQty; i++)
-//	//{
-//	//	// get the tag caption
-//	//	TabCtrlItem.pszText = pTabsCaptionProperty->GetStringItem(i).GetBuffer(256);
-//	//	// add the new tab
-//	//	//pControl->mTabCtrl.InsertItem( i, &TabCtrlItem );
-//	//}
-//	
-//	
-//	InitToolTip();
-//
-//	// set start position for navigating ArxControls
-//	POSITION pos = pDclTab->GetControlList().GetHeadPosition();
-//	
-//	// do loop to navigate Arx Controls
-//	while (pos != NULL)
-//	{
-//		// get current ArxControlObject
-//		CDclControlObject* pTemplate = pDclTab->GetControlList().GetNext(pos);
-//
-//		if (pTemplate->GetType() == CtlTabStrip)
-//		{
-//			// get the tag caption
-//			TabCtrlItem.pszText = pTabsCaptionProperty->GetStringItem(nTabIndex).GetBuffer(256);
-//			
-//			//int i = pControl->mTabCtrl.GetItemCount();
-//			//// set the image list item number is required
-//			//if (pTabsImageProperty)
-//			//	TabCtrlItem.iImage = (int)atof(pTabsImageProperty->GetStringItem(nTabIndex));
-//
-//			//// add the new tab
-//			//i = pControl->mTabCtrl.InsertItem(i, &TabCtrlItem );
-//			//
-//			//CRect r;
-//			//POSITION pos = pTabsTTTProperty->m_stringList.FindIndex(nTabIndex);		
-//			//
-//			//if (pos != NULL)
-//			//{
-//			//	sText = pTabsTTTProperty->m_stringList.GetAt(pos);
-//			//	pControl->mTabCtrl.GetItemRect(i, &r);
-//			//	pControl->m_ToolTip.AddTool(&pControl->mTabCtrl, sText, &r, i);
-//			//}
-//		}
-//
-//		// increment counter
-//		nCount--;
-//	}
-//	SetupTabs();
-//	//for (i = 0; i < nTabQty; i++)
-//	//{
-//	//	CRect r;
-//	//	POSITION pos = pTabsTTTProperty->m_stringList.FindIndex(i);		
-//	//	if (pos != NULL)
-//	//		sText = pTabsTTTProperty->m_stringList.GetAt(pos);
-//
-//	//	mTabCtrl.GetItemRect(i, &r);
-//	//	VERIFY(m_ToolTip.AddTool(&mTabCtrl, sText, &r, i));
-//	//}
-//
-//	// Activate the tooltip control.
-//	m_ToolTip.Activate(TRUE);
-//	
-//}
-
-bool VdclTab::CreateTabPages( UINT& nId, CRect rcTab )
+bool VdclTab::CreateTabPages( UINT& nId )
 {
 	bool bFailed = false;
-	
+
+	CRect rectPage = GetUsedArea();
 	POSITION pos = mpSourceControl->GetOwnerProject()->GetDclFormList().GetHeadPosition();
 	while (pos)
 	{
 		CDclFormObject* pDclForm = mpSourceControl->GetOwnerProject()->GetDclFormList().GetNext(pos);
 		pDclForm->EnsureIsLoaded();
 		if( pDclForm->GetParentForm() == mpSourceControl->GetOwnerForm() )
-		{
-			// Create the tab pane itself that the controls actually sit on.
-			TTabPagePtr pNewTabPage = new CTabPage( pDclForm, &mTabCtrl );
-			mTabPages.push_back( pNewTabPage );
-			pNewTabPage->Create( IDD_TABPAGE2, &mTabCtrl);
-			pNewTabPage->MoveWindow(rcTab, TRUE);
-
-			pNewTabPage->GetControlPane().GetPaneWindowRect().right = rcTab.right;
-			pNewTabPage->GetControlPane().GetPaneWindowRect().bottom = rcTab.bottom;
-			
-			// call method to create the controls
-			if (!pNewTabPage->GetControlPane().CreateControls( pDclForm, ++nId ) )
-				bFailed = true;
-			
-			pNewTabPage->ShowWindow( FALSE );
-		}
+			mTabPages.push_back( new CTabPage( pDclForm, this, rectPage, nId ) );
 	}
 	return !bFailed;
 }
@@ -393,15 +328,16 @@ TDialogControlPtr VdclTab::FindControl( LPCTSTR pszControlName, ControlType type
 }
 
 
-BEGIN_MESSAGE_MAP(VdclTab, CStatic)
+BEGIN_MESSAGE_MAP(VdclTab, CTabCtrl)
 	//{{AFX_MSG_MAP(VdclTab)
-	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB, OnSelchange)
-	ON_NOTIFY(TCN_SELCHANGING, IDC_TAB, OnSelchanging)	
+	ON_NOTIFY_REFLECT(TCN_SELCHANGE, OnSelchange)
+	ON_NOTIFY_REFLECT(TCN_SELCHANGING, OnSelchanging)	
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
 	ON_WM_KILLFOCUS()
 	ON_WM_SETFOCUS()
 	//}}AFX_MSG_MAP
+	ON_WM_WINDOWPOSCHANGED()
 END_MESSAGE_MAP()
 
 
@@ -412,19 +348,19 @@ void VdclTab::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	CString sTTT;
 	
-	int nCurrentSelectedTab = mTabCtrl.GetCurSel();
+	int nCurrentSelectedTab = GetCurSel();
 	
 	//  Get the current tab item text.
 	TC_ITEM tcItem;
 	tcItem.mask = TCIF_PARAM;
-	mTabCtrl.GetItem(nCurrentSelectedTab, &tcItem);
+	GetItem(nCurrentSelectedTab, &tcItem);
 	
 	nCurrentSelectedTab = tcItem.lParam;	
 
 	// get the tool tip text property
 	RefCountedPtr< CPropertyObject > pTabsTTTProperty = mpSourceControl->GetPropertyObject(nTabsTTT);
 	// get the tool tip object
-	CToolTipCtrl* ThisToolTip = mTabCtrl.GetToolTips();
+	CToolTipCtrl* ThisToolTip = GetToolTips();
 
 	
 	// call method to display the appropriate tab pane
@@ -445,8 +381,6 @@ void VdclTab::ActivateTabPage( int nTabPageToActivate, bool bShow, bool bFireEve
 	if (nTabPageToActivate == -1)
 		return;
 
-	// set the focus to the new tab to be selected
-	mTabCtrl.SetCurSel( nTabPageToActivate );
 	TTabPagePtr pActualTabPage = GetTabPageAt( nTabPageToActivate );
 	if( !pActualTabPage )
 		return;
@@ -459,71 +393,37 @@ void VdclTab::ActivateTabPage( int nTabPageToActivate, bool bShow, bool bFireEve
 	{
 		// setup to get the pane size
 		CDclControlObject *pFormPropertiesArx = pSourceForm->GetControlProperties();
-		
-		// get the tab control position
-		CRect rcItem;
-		
-		int nTTop = 0;
-		int nTBottom = 0;
-		
-		for (int i=0; i < mTabCtrl.GetItemCount(); i++)
-		{
-			// get the tab's position
-			mTabCtrl.GetItemRect(i, &rcItem);
-			
-			if (rcItem.bottom > nTBottom)
-				nTBottom = rcItem.bottom;
-			if (rcItem.top > nTTop)
-				nTTop = rcItem.top;
-		}
-		
-		// set the pane's position
-		CRect rcNewRect(
-			3,
-			nTBottom + 3,
-			m_rcPos.Width() - 6,
-			m_rcPos.Height() - 3);
 
-		// move the tab pane
-		CRect& PanePos = pActualTabPage->GetControlPane().GetPaneWindowRect();
-		PanePos.left = 0;
-		PanePos.top = 0;
-		PanePos.right = rcNewRect.Width();
-		PanePos.bottom = rcNewRect.Height();
-
-		// set the position member for use by other methods
-		// like the SetProperty for sizes.
-		pActualTabPage->GetControlPane().GetSourceForm()->m_rcPos = PanePos;
-		
-		// call the sizechanged method of the tab pane so that it's controls may move as well
-		pActualTabPage->GetControlPane().SizeChanged(rcNewRect.Width(), rcNewRect.Height());
+		CRect rectTab = GetUsedArea();
 		
 		// set the tab page's position
 		pActualTabPage->SetWindowPos(
 			&CWnd::wndTop, 
-			rcNewRect.left,
-			rcNewRect.top,
-			rcNewRect.Width(),
-			rcNewRect.Height(),
+			rectTab.left,
+			rectTab.top,
+			rectTab.Width(),
+			rectTab.Height(),
 			SWP_FRAMECHANGED);
+		
+		// call the sizechanged method of the tab pane so that it's controls may move as well
+		pActualTabPage->GetControlPane().SetPanePos(CRect(0, 0, rectTab.Width(), rectTab.Height()));
 
 		if (bShow)
 			pActualTabPage->GetControlPane().ShowPictureBoxes(FALSE);
 
 		// show the pane
 		pActualTabPage->ShowWindow(bShow);
-		//pActualTabPage->GetControlPane().InvalidateControls();
 
 		// set the selection index if this tab is to be shown
 		if (bShow)
+		{
 			m_nCurrentSelectedTab = nTabPageToActivate;
 
-		if (bShow)
-		{
 			pActualTabPage->GetControlPane().ShowPictureBoxes(bShow);
 			
 			// force the tab pane to get focus
 			SetFirstControlFocus(pActualTabPage);
+			RedrawWindow();
 		}
 	}
 
@@ -540,15 +440,15 @@ void VdclTab::ZOrderFrontAllTabs()
 
 void VdclTab::OnDestroy() 
 {	
-	mTabCtrl.SetImageList(NULL);
+	SetImageList(NULL);
 	if (m_ToolTip.GetToolCount() > 0)
 	{
 		for (int i=m_ToolTip.GetToolCount()-1; i>= 0; i--)
 		{
-			m_ToolTip.DelTool(&mTabCtrl, i);
+			m_ToolTip.DelTool(this, i);
 		}
 	}
-	CStatic::OnDestroy();
+	CTabCtrl::OnDestroy();
 	
 	
 }
@@ -566,21 +466,18 @@ void VdclTab::DestroyTabPages()
 
 void VdclTab::OnSize(UINT nType, int cx, int cy) 
 {
-	m_rcPos.right = m_rcPos.left + cx;
-	m_rcPos.bottom = m_rcPos.top + cy;
-	CRect rcChild(0,0,cx, cy);
-	mTabCtrl.MoveWindow(rcChild, TRUE);
+	//mrectTabCtrl.right = mrectTabCtrl.left + cx;
+	//mrectTabCtrl.bottom = mrectTabCtrl.top + cy;
+	//CRect rcChild(0,0,cx, cy);
+	//MoveWindow(rcChild, TRUE);
+	CTabCtrl::OnSize(nType, cx, cy);
 	ActivateTabPage(m_nCurrentSelectedTab, TRUE, TRUE);
-	CStatic::OnSize(nType, cx, cy);
-	
-	
 }
 
 void VdclTab::OnSelchanging(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	// set the selection index
-	int nCurrentSelectedTab = mTabCtrl.GetCurSel();
-
+	int nCurrentSelectedTab = GetCurSel();
 
 	// call method to invoke autolisp function
 	InvokeMethodInt(mpSourceControl->GetStrProperty(nEventSelChanging), nCurrentSelectedTab, m_bInvokeWithSendString);
@@ -597,7 +494,7 @@ void VdclTab::InitToolTip()
 		// Create inactive
 		m_ToolTip.Activate(FALSE);
 	}
-	mTabCtrl.SetToolTips(&m_ToolTip);
+	SetToolTips(&m_ToolTip);
 } // End of InitToolTip
 
 
@@ -613,7 +510,7 @@ BOOL VdclTab::PreTranslateMessage(MSG* pMsg)
 			for (size_t i = 0; i < nTabQty; i++)
 			{
 				CString sText = pTabsTTTProperty->GetStringArrayPtr()->at(i);		
-				m_ToolTip.UpdateTipText((LPCTSTR)sText, &mTabCtrl, i);
+				m_ToolTip.UpdateTipText((LPCTSTR)sText, this, i);
 			}
 			m_ToolTipsUpdated = true;
 		}
@@ -621,7 +518,7 @@ BOOL VdclTab::PreTranslateMessage(MSG* pMsg)
 
 	m_ToolTip.RelayEvent(pMsg);	
 
-	return CStatic::PreTranslateMessage(pMsg);
+	return CTabCtrl::PreTranslateMessage(pMsg);
 }
 
 
@@ -645,27 +542,33 @@ void VdclTab::SetTooltipText(CString* spText, BOOL bActivate)
 	m_ToolTip.UpdateTipText((LPCTSTR)*spText, this, 1);
 	m_ToolTip.Activate(bActivate);
 } // End of SetTooltipText
+
 void VdclTab::OnKillFocus(CWnd* pNewWnd) 
 {
-	CStatic::OnKillFocus(pNewWnd);
+	CTabCtrl::OnKillFocus(pNewWnd);
 	
 	// call methods to invoke the event
 	InvokeMethod(mpSourceControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
-
 	
 }
 
 void VdclTab::OnSetFocus(CWnd* pOldWnd) 
 {
-	CStatic::OnSetFocus(pOldWnd);
+	CTabCtrl::OnSetFocus(pOldWnd);
 	
 	// call methods to invoke the event
 	InvokeMethod(mpSourceControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
-	
 }
 
 void VdclTab::PostNcDestroy() 
 {
-	CStatic::PostNcDestroy();
+	CTabCtrl::PostNcDestroy();
 	delete this;
+}
+
+void VdclTab::OnWindowPosChanged(WINDOWPOS* lpwndpos)
+{
+	CTabCtrl::OnWindowPosChanged(lpwndpos);
+
+	// TODO: Add your message handler code here
 }

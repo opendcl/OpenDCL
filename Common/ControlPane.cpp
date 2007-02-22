@@ -18,6 +18,10 @@ CControlPane::CControlPane()
 : mpSourceForm( NULL )
 , mpProject( NULL )
 , mpHostDlg( NULL )
+, mlLeftOffset( 0 )
+, mlRightOffset( 0 )
+, mlTopOffset( 0 )
+, mlBottomOffset( 0 )
 {
 }
 
@@ -25,11 +29,28 @@ CControlPane::CControlPane(CDclFormObject* pSourceForm, CWnd* pHostDlg)
 : mpSourceForm( pSourceForm )
 , mpProject( pSourceForm? pSourceForm->GetProject() : NULL )
 , mpHostDlg( pHostDlg )
+, mlLeftOffset( 0 )
+, mlRightOffset( 0 )
+, mlTopOffset( 0 )
+, mlBottomOffset( 0 )
 {
 }
 
 CControlPane::~CControlPane()
 {
+}
+
+void CControlPane::SetPanePos( CRect rectNew, bool bRecalc /*= true*/ )
+{
+	assert( mpHostDlg->m_hWnd != NULL );
+	CRect rectHostClient;
+	mpHostDlg->GetClientRect( &rectHostClient );
+	mlLeftOffset = rectNew.left - rectHostClient.left;
+	mlTopOffset = rectNew.top - rectHostClient.top;
+	mlRightOffset = rectNew.right - rectHostClient.right;
+	mlBottomOffset = rectNew.bottom - rectHostClient.bottom;
+	if( bRecalc )
+		RecalcLayout();
 }
 
 void CControlPane::ZOrderFront(CWnd *pControl)
@@ -51,13 +72,13 @@ void CControlPane::AddControl( TDialogControlPtr pControl )
 bool CControlPane::CreateControls(CDclFormObject *pDclForm, UINT& nId)
 {
 	bool bFailed = false;
-	CRect rcParent;
-	mpHostDlg->GetWindowRect(&rcParent);
-	mpHostDlg->ScreenToClient(&rcParent);
-	mpSourceForm->m_rcPos.left = 0;
-	mpSourceForm->m_rcPos.top = 0;
-	mpSourceForm->m_rcPos.right = rcParent.Width();
-	mpSourceForm->m_rcPos.bottom = rcParent.Height();
+	//CRect rcParent;
+	//mpHostDlg->GetWindowRect(&rcParent);
+	//mpHostDlg->ScreenToClient(&rcParent);
+	//mpSourceForm->m_rcPos.left = 0;
+	//mpSourceForm->m_rcPos.top = 0;
+	//mpSourceForm->m_rcPos.right = rcParent.Width();
+	//mpSourceForm->m_rcPos.bottom = rcParent.Height();
 	
 	POSITION pos = pDclForm->mDclControls.GetTailPosition();
 	while (pos != NULL)
@@ -182,16 +203,13 @@ void CControlPane::SetGrphcBtnsParents(CDclControlObject *pGrphcBtn, CDclControl
 		pGrphcBtn->GetWindow()->ShowWindow(pGrphcBtn->m_pVisible->GetBooleanValue());
 }
 
-void CControlPane::SizeChanged(int cx, int cy, bool bRefreshOthers)
+void CControlPane::RecalcLayout()
 {
 	if (mpSourceForm == NULL)
 		return;
 
 	if (mpSourceForm->mDclControls.GetCount() == 0)
 		return;
-
-	mPaneWindowPos.right = mPaneWindowPos.left + cx;
-	mPaneWindowPos.bottom = mPaneWindowPos.top + cy;
 
 	// first lets calc all the control positions for any splitter controls.
 	POSITION pos = mpSourceForm->mDclControls.GetHeadPosition();
@@ -201,7 +219,7 @@ void CControlPane::SizeChanged(int cx, int cy, bool bRefreshOthers)
 		CDclControlObject *pArxObject = mpSourceForm->mDclControls.GetNext(pos);
 
 		if (pArxObject != NULL && pArxObject->GetType() == CtlSplitter)
-			ResetControlsPos(pArxObject, bRefreshOthers);
+			ResetControlsPos(pArxObject);
 	}
 
 	//next lets calc all the control positions for all NON-splitter controls.
@@ -212,12 +230,14 @@ void CControlPane::SizeChanged(int cx, int cy, bool bRefreshOthers)
 		CDclControlObject *pObject = mpSourceForm->mDclControls.GetNext(pos);
 
 		if (pObject != NULL && pObject->GetType() != CtlSplitter)
-			ResetControlsPos(pObject, bRefreshOthers);
+			ResetControlsPos(pObject);
 	}
 
 	// call method to ensure all graphic buttons and picture boxes and slide holders are setup 
 	// correctly to enure the graphic buttons are transparent.	
 	SetGrphcBtnsParents(true);
+
+	mpHostDlg->Invalidate();
 }
 
 void CControlPane::InvalidateControls()
@@ -243,20 +263,6 @@ void CControlPane::InvalidateControls()
 	}
 }
 
-void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, bool bRefreshOthers)
-{
-	int cx = mPaneWindowPos.Width();
-	int cy = mPaneWindowPos.Height();
-	ResetControlsPos(pArxObject, cx, cy, bRefreshOthers);
-}
-
-void CControlPane::ResetControlsPos2(CDclControlObject *pArxObject)
-{
-	int cx = mPaneWindowPos.Width();
-	int cy = mPaneWindowPos.Height();
-	ResetControlsPos2(pArxObject, cx, cy);
-}
-
 CRect CControlPane::GetSplitterRect(int nId) 
 {
 	CRect rc(0,0,0,0);
@@ -279,16 +285,12 @@ CRect CControlPane::GetSplitterRect(int nId)
 	return rc;	
 }
 
-void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int cy, bool bRefreshOthers)
+void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 {
 	if (pArxObject == NULL)
 		return;
 	if (pArxObject->m_pUseLeftOffset == NULL)
-	{
-		if (bRefreshOthers)
-			pArxObject->GetWindow()->RedrawWindow();		
 		return;
-	}
 
 	// get the offset flags
 	int lLeftFromRight = 0;
@@ -316,12 +318,12 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 		lBottomFromBottom = pArxObject->m_pUseBottomOffset->GetLongValue();
 
 	if (mpSourceForm->GetType() == VdclModal ||
-		mpSourceForm->GetType() == VdclModeless)
+			mpSourceForm->GetType() == VdclModeless)
 	{
 		if (lLeftFromRight  == 0 &&
-			lRightFromRight == 0 &&
-			lTopFromBottom  == 0 &&
-			lBottomFromBottom == 0)
+				lRightFromRight == 0 &&
+				lTopFromBottom  == 0 &&
+				lBottomFromBottom == 0)
 			return;
 	}
 
@@ -339,34 +341,39 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 	if (pControl == NULL)
 		return;
 
-	// get the current placement of the control
 	CRect rcControl;
+	pControl->GetWindowRect( &rcControl );
+	mpHostDlg->ScreenToClient( &rcControl );
 
 	CRect rcThis;
 	mpHostDlg->GetClientRect(&rcThis);
+	rcThis.top += mlTopOffset;
+	rcThis.bottom += mlBottomOffset;
+	rcThis.left += mlLeftOffset;
+	rcThis.right += mlRightOffset;
 
 	// if mpHostDlg control is to be moved according to the right or bottom side of the form
 	if (lLeftFromRight  > 0 ||
-		lRightFromRight > 0 ||
-		lTopFromBottom  > 0 ||
-		lBottomFromBottom > 0)
+			lRightFromRight > 0 ||
+			lTopFromBottom  > 0 ||
+			lBottomFromBottom > 0)
 	{	
-		if (mpSourceForm->GetType() != VdclFileDialog)
-		{	
-			// get the left value
-			rcControl.left = mPaneWindowPos.left + pArxObject->m_pLeft->GetLongValue();	
-			// get the top value
-			rcControl.top = mPaneWindowPos.top + pArxObject->m_pTop->GetLongValue();	
-			// get the width value
-			rcControl.right = rcControl.left + pArxObject->m_pWidth->GetLongValue();	
-			// get the height value
-			rcControl.bottom = rcControl.top + pArxObject->m_pHeight->GetLongValue();	
-		}
-		else
-		{
-			pArxObject->GetWindow()->GetWindowRect(&rcControl);
-			mpHostDlg->ScreenToClient(rcControl);
-		}
+		//if (mpSourceForm->GetType() != VdclFileDialog)
+		//{	
+		//	// get the left value
+		//	rcControl.left = pArxObject->m_pLeft->GetLongValue();	
+		//	// get the top value
+		//	rcControl.top = pArxObject->m_pTop->GetLongValue();	
+		//	// get the width value
+		//	rcControl.right = rcControl.left + pArxObject->m_pWidth->GetLongValue();	
+		//	// get the height value
+		//	rcControl.bottom = rcControl.top + pArxObject->m_pHeight->GetLongValue();	
+		//}
+		//else
+		//{
+		//	pArxObject->GetWindow()->GetWindowRect(&rcControl);
+		//	mpHostDlg->ScreenToClient(rcControl);
+		//}
 		
 		// set the left position if required
 		if (lLeftFromRight == 1)
@@ -374,7 +381,7 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetLeft->GetLongValue();
 			// set the new offset position
-			rcControl.left = cx - nOffsetValue + mPaneWindowPos.left;
+			rcControl.left = rcThis.right - nOffsetValue;
 		}
 		// set the left position if required
 		else if (lLeftFromRight == 2)
@@ -382,7 +389,7 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetLeft->GetLongValue();
 			// set the new offset position
-			rcControl.left = (cx / 2) + nOffsetValue + mPaneWindowPos.left;
+			rcControl.left = ((rcThis.right + rcThis.left) / 2) + nOffsetValue;
 		}
 		// set the left position if required
 		else if (lLeftFromRight > 2)
@@ -396,22 +403,16 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 			// set the new offset position
 			rcControl.left = rc.left + nOffsetValue;
 		}		
-		else if (lLeftFromRight == 0)
-		{
-			// get the offset value
-			int nOffsetValue = pArxObject->m_pOffsetLeft->GetLongValue();
-			// set the new offset position
-			rcControl.left = mPaneWindowPos.left + pArxObject->GetLngProperty(nLeft);
-		}
-		
-		
+		else
+			rcControl.left = rcThis.left + pArxObject->m_pLeft->GetLongValue();
+
 		// set the right position if required
 		if (lRightFromRight == 1 && pArxObject->GetType() != CtlCheckBox)
 		{			
 			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetRight->GetLongValue();
 			// set the new offset position
-			rcControl.right = cx - nOffsetValue + mPaneWindowPos.left;				
+			rcControl.right = rcThis.right - nOffsetValue;
 		}
 		// set the right position if required
 		else if (lRightFromRight > 1)
@@ -423,7 +424,7 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 			CRect rc = GetSplitterRect(lRightFromRight);
 
 			// set the new offset position
-			rcControl.right = rc.left + nOffsetValue;
+			rcControl.right = rc.left - nOffsetValue;
 		}		
 		// if right offset not requested
 		else
@@ -440,7 +441,7 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetTop->GetLongValue();				
 			// set the new offset position
-			rcControl.top = cy - nOffsetValue + mPaneWindowPos.top;
+			rcControl.top = rcThis.bottom - nOffsetValue;
 		}
 		// set the top position if required
 		else if (lTopFromBottom > 1)
@@ -454,6 +455,9 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 			// set the new offset position
 			rcControl.top = rc.top + nOffsetValue;
 		}
+		// if bottom offset not requested
+		else
+			rcControl.top = rcThis.top + pArxObject->m_pTop->GetLongValue();
 
 		// set the top position if required
 		if (lBottomFromBottom  == 1 && pArxObject->GetType() != CtlCheckBox)
@@ -461,7 +465,7 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetBottom->GetLongValue();				
 			// set the new offset position
-			rcControl.bottom = cy - nOffsetValue + mPaneWindowPos.top;
+			rcControl.bottom = rcThis.bottom - nOffsetValue;
 		}
 		// set the bottom position if required
 		else if (lBottomFromBottom > 1)
@@ -473,7 +477,7 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 			CRect rc = GetSplitterRect(lBottomFromBottom);
 
 			// set the new offset position
-			rcControl.bottom = rc.top + nOffsetValue;
+			rcControl.bottom = rc.top - nOffsetValue;
 		}
 		// if bottom offset not requested
 		else
@@ -511,44 +515,31 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 		
 		// redraw graphic buttons
 		if (pArxObject->GetType() == CtlGraphicButton)
-		{
 			pControl->ShowWindow(FALSE);
-		}
-		
-		
+
 		// redraw comboboxes
 		if (pArxObject->GetType() == CtlComboBox)
 		{
 			if (pArxObject->GetLngProperty(nComboBoxStyle) == CmboStyle_Simple)
-			{
 				pControl->ShowWindow(FALSE);
-			}
 		}
 		
-		pControl->MoveWindow(
-			rcControl,
-			TRUE);
+		pControl->MoveWindow( rcControl, TRUE);
 		
 		// mpHostDlg control is a month control
 		if (pArxObject->GetType() == CtlMonth)
-		{
 			((CMonthCalCtrl*)pControl)->SizeMinReq(TRUE);
-		}
 
 		
 		// mpHostDlg control is a month control
 		if (pArxObject->GetType() == CtlGraphicButton)
-		{
 			pControl->ShowWindow(pArxObject->m_pVisible->GetBooleanValue());
-		}
 
 		// redraw comboboxes
 		if (pArxObject->GetType() == CtlComboBox)
 		{
 			if (pArxObject->GetLngProperty(nComboBoxStyle) == CmboStyle_Simple)
-			{				
 				pControl->ShowWindow(pArxObject->m_pVisible->GetBooleanValue());
-			}
 		}
 		
 		// again mpHostDlg control is a tab control
@@ -560,29 +551,28 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 	}
 	else // if not to be offset at all
 	{
-		CRect rcControl;
 		if (mpSourceForm->GetType() != VdclFileDialog)
 		{	
 			// get the left value
-			int nLeftValue = mPaneWindowPos.left + pArxObject->m_pLeft->GetLongValue();	
+			int nLeftValue = pArxObject->m_pLeft->GetLongValue();	
 			// get the top value
-			int nTopValue = mPaneWindowPos.top + pArxObject->m_pTop->GetLongValue();	
+			int nTopValue = pArxObject->m_pTop->GetLongValue();	
 			// get the width value
 			int nWidthValue = pArxObject->m_pWidth->GetLongValue();	
 			// get the height value
 			int nHeightValue = pArxObject->m_pHeight->GetLongValue();	
 			
 			rcControl.SetRect(
-				nLeftValue,
-				nTopValue,
-				nLeftValue + nWidthValue,
-				nTopValue + nHeightValue);	
+				rcThis.left + nLeftValue,
+				rcThis.top + nTopValue,
+				rcThis.left + nLeftValue + nWidthValue,
+				rcThis.top + nTopValue + nHeightValue);	
 		}
-		else
-		{
-			pArxObject->GetWindow()->GetWindowRect(&rcControl);
-			mpHostDlg->ScreenToClient(rcControl);
-		}
+		//else
+		//{
+		//	pArxObject->GetWindow()->GetWindowRect(&rcControl);
+		//	mpHostDlg->ScreenToClient(rcControl);
+		//}
 
 		// mpHostDlg control is a tab control
 		//TODO: move this to ArxControlPane.cpp
@@ -602,324 +592,6 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject, int cx, int c
 		}
 	
 		pControl->MoveWindow(rcControl, TRUE);
-		
-		
-		// mpHostDlg control is a month control
-		if (pArxObject->GetType() == CtlMonth)
-		{
-			((CMonthCalCtrl*)pControl)->SizeMinReq(TRUE);
-		}
-
-		// again mpHostDlg control is a tab control
-		//TODO: move this to ArxControlPane.cpp
-		//if (pArxObject->GetType() == CtlTabStrip)
-		//{
-		//	((VdclTab*)pControl)->SetPaneVisibility(((VdclTab*)pControl)->m_nCurrentSelectedTab, TRUE);
-		//}
-
-		// redraw comboboxes
-		if (pArxObject->GetType() == CtlComboBox)
-		{
-			if (pArxObject->GetLngProperty(nComboBoxStyle) == CmboStyle_Simple)
-			{				
-				pControl->ShowWindow(pArxObject->m_pVisible->GetBooleanValue());
-			}
-		}
-	}
-}
-
-void CControlPane::ResetControlsPos2(CDclControlObject *pArxObject, int cx, int cy)
-{
-	if (pArxObject == NULL)
-		return;
-	if (pArxObject->m_pUseLeftOffset == NULL)
-		return;
-
-	// get the offset boolean flags
-	int nLeftFromRight = pArxObject->m_pUseLeftOffset->GetLongValue();
-	int nRightFromRight = pArxObject->m_pUseRightOffset->GetLongValue();
-	int nTopFromBottom = pArxObject->m_pUseTopOffset->GetLongValue();
-	int nBottomFromBottom = pArxObject->m_pUseBottomOffset->GetLongValue();
-	
-	// get the control being moved			
-	CWnd *pControl = pArxObject->GetWindow();
-
-	//TODO: move this to ArxControlPane.cpp
-	//if (pArxObject->GetType() == CtlGraphicButton)
-	//{
-	//	((CButtonST*)pControl)->m_bDrawTransparent = FALSE;
-	//}
-
-	
-	if (pControl == NULL)
-		return;
-
-	// get the current placement of the control
-	CRect rcControl;
-	rcControl = mPaneWindowPos;
-
-	CRect rcThis;
-	mpHostDlg->GetClientRect(&rcThis);
-
-	// if mpHostDlg control is to be moved according to the right or bottom side of the form
-	if (nLeftFromRight  > 0 ||
-		nRightFromRight > 0 ||
-		nTopFromBottom  > 0 ||
-		nBottomFromBottom > 0)
-	{	
-		if (mpSourceForm->GetType() != VdclFileDialog)
-		{	
-			// get the left value
-			rcControl.left = mPaneWindowPos.left + pArxObject->m_pLeft->GetLongValue();	
-			// get the top value
-			rcControl.top = mPaneWindowPos.top + pArxObject->m_pTop->GetLongValue();	
-			// get the width value
-			rcControl.right = rcControl.left + pArxObject->m_pWidth->GetLongValue();	
-			// get the height value
-			rcControl.bottom = rcControl.top + pArxObject->m_pHeight->GetLongValue();	
-		}
-		else
-		{
-			pArxObject->GetWindow()->GetWindowRect(&rcControl);
-			mpHostDlg->ScreenToClient(rcControl);
-		}
-		
-		// set the left position if required
-		if (nLeftFromRight == 1)
-		{
-			// get the offset value
-			int nOffsetValue = pArxObject->m_pOffsetLeft->GetLongValue();
-			// set the new offset position
-			rcControl.left = cx - nOffsetValue + mPaneWindowPos.left;
-		}
-		// set the left position if required
-		else if (nLeftFromRight == 2)
-		{
-			// get the offset value
-			int nOffsetValue = pArxObject->m_pOffsetLeft->GetLongValue();
-			// set the new offset position
-			rcControl.left = (cx / 2) + nOffsetValue + mPaneWindowPos.left;
-		}
-		// set the left position if required
-		else if (nLeftFromRight > 2)
-		{
-			// get the offset value
-			int nOffsetValue = pArxObject->m_pOffsetLeft->GetLongValue();
-
-			// get the splitter's rect.
-			CRect rc = GetSplitterRect(nLeftFromRight);
-
-			// set the new offset position
-			rcControl.left = rc.left + nOffsetValue;
-		}		
-		else if (nLeftFromRight == 0)
-		{
-			// get the offset value
-			int nOffsetValue = pArxObject->m_pOffsetLeft->GetLongValue();
-			// set the new offset position
-			rcControl.left = mPaneWindowPos.left + pArxObject->GetLngProperty(nLeft);
-		}
-		
-		
-		// set the right position if required
-		if (nRightFromRight == 1 && pArxObject->GetType() != CtlCheckBox)
-		{			
-			// get the offset value
-			int nOffsetValue = pArxObject->m_pOffsetRight->GetLongValue();
-			// set the new offset position
-			rcControl.right = cx - nOffsetValue + mPaneWindowPos.left;				
-		}
-		// set the right position if required
-		else if (nRightFromRight > 1)
-		{
-			// get the offset value
-			int nOffsetValue = pArxObject->m_pOffsetRight->GetLongValue();
-
-			// get the splitter's rect.
-			CRect rc = GetSplitterRect(nRightFromRight);
-
-			// set the new offset position
-			rcControl.right = rc.left + nOffsetValue;
-		}		
-		// if right offset not requested
-		else
-		{
-			// get the offset value
-			int nWidthValue = pArxObject->m_pWidth->GetLongValue();				
-			// set the new offset position
-			rcControl.right = rcControl.left + nWidthValue;
-		}
-
-		// set the top position if required
-		if (nTopFromBottom == 1)
-		{
-			// get the offset value
-			int nOffsetValue = pArxObject->m_pOffsetTop->GetLongValue();				
-			// set the new offset position
-			rcControl.top = cy - nOffsetValue + mPaneWindowPos.top;
-		}
-		// set the top position if required
-		else if (nTopFromBottom > 1)
-		{
-			// get the offset value
-			int nOffsetValue = pArxObject->m_pOffsetTop->GetLongValue();
-
-			// get the splitter's rect.
-			CRect rc = GetSplitterRect(nTopFromBottom);
-
-			// set the new offset position
-			rcControl.top = rc.top + nOffsetValue;
-		}
-
-		// set the top position if required
-		if (nBottomFromBottom  == 1 && pArxObject->GetType() != CtlCheckBox)
-		{
-			// get the offset value
-			int nOffsetValue = pArxObject->m_pOffsetBottom->GetLongValue();				
-			// set the new offset position
-			rcControl.bottom = cy - nOffsetValue + mPaneWindowPos.top;
-		}
-		// set the bottom position if required
-		else if (nBottomFromBottom > 1)
-		{
-			// get the offset value
-			int nOffsetValue = pArxObject->m_pOffsetBottom->GetLongValue();
-
-			// get the splitter's rect.
-			CRect rc = GetSplitterRect(nBottomFromBottom);
-
-			// set the new offset position
-			rcControl.bottom = rc.top + nOffsetValue;
-		}
-		// if bottom offset not requested
-		else
-		{
-			// get the offset value
-			int nHeightValue = pArxObject->m_pHeight->GetLongValue();				
-			// set the new offset position
-			rcControl.bottom = rcControl.top + nHeightValue;
-		}
-
-		// check the width to ensure that it is at least 2 is width
-		if (rcControl.right - rcControl.left < 2)
-			rcControl.right = rcControl.left + 2;
-
-		// check the height to ensure that it is at least 2 is width
-		if (rcControl.bottom - rcControl.top < 2)
-			rcControl.bottom = rcControl.top + 2;
-
-		// check the top is less then 1 then keep it at 0
-		if (rcControl.top < 1)
-			rcControl.top = 1;
-		
-		// check the left is less then 1 then keep it at 0
-		if (rcControl.left < 1)
-			rcControl.left = 1;
-		
-		
-		// mpHostDlg control is a tab control
-		//TODO: move this to ArxControlPane.cpp
-		//if (pArxObject->GetType() == CtlTabStrip)
-		//{
-		//	// directly set it's internal size/position CRect
-		//	((VdclTab*)pControl)->m_rcPos = rcControl;
-		//}
-		
-		// redraw graphic buttons
-		if (pArxObject->GetType() == CtlGraphicButton)
-		{
-			pControl->ShowWindow(FALSE);
-		}
-		
-		
-		// redraw comboboxes
-		if (pArxObject->GetType() == CtlComboBox)
-		{
-			if (pArxObject->GetLngProperty(nComboBoxStyle) == CmboStyle_Simple)
-			{
-				pControl->ShowWindow(FALSE);
-			}
-		}
-		
-		pControl->MoveWindow(
-			rcControl,
-			TRUE);
-		
-		// mpHostDlg control is a month control
-		if (pArxObject->GetType() == CtlMonth)
-		{
-			((CMonthCalCtrl*)pControl)->SizeMinReq(TRUE);
-		}
-
-		
-		// mpHostDlg control is a month control
-		if (pArxObject->GetType() == CtlGraphicButton)
-		{
-			pControl->ShowWindow(pArxObject->m_pVisible->GetBooleanValue());
-		}
-
-		// redraw comboboxes
-		if (pArxObject->GetType() == CtlComboBox)
-		{
-			if (pArxObject->GetLngProperty(nComboBoxStyle) == CmboStyle_Simple)
-			{				
-				pControl->ShowWindow(pArxObject->m_pVisible->GetBooleanValue());
-			}
-		}
-		
-		// again mpHostDlg control is a tab control
-		//TODO: move this to ArxControlPane.cpp
-		//if (pArxObject->GetType() == CtlTabStrip)
-		//{
-		//	((VdclTab*)pControl)->SetPaneVisibility(((VdclTab*)pControl)->m_nCurrentSelectedTab, TRUE);
-		//}
-	}
-	else // if not to be offset at all
-	{
-		CRect rcControl;
-		if (mpSourceForm->GetType() != VdclFileDialog)
-		{	
-			// get the left value
-			int nLeftValue = mPaneWindowPos.left + pArxObject->m_pLeft->GetLongValue();	
-			// get the top value
-			int nTopValue = mPaneWindowPos.top + pArxObject->m_pTop->GetLongValue();	
-			// get the width value
-			int nWidthValue = pArxObject->m_pWidth->GetLongValue();	
-			// get the height value
-			int nHeightValue = pArxObject->m_pHeight->GetLongValue();	
-			
-			rcControl.SetRect(
-				nLeftValue,
-				nTopValue,
-				nLeftValue + nWidthValue,
-				nTopValue + nHeightValue);	
-		}
-		else
-		{
-			pArxObject->GetWindow()->GetWindowRect(&rcControl);
-			mpHostDlg->ScreenToClient(rcControl);
-		}
-
-		// mpHostDlg control is a tab control
-		//TODO: move this to ArxControlPane.cpp
-		//if (pArxObject->GetType() == CtlTabStrip)
-		//{
-		//	// directly set it's internal size/position CRect
-		//	((VdclTab*)pControl)->m_rcPos = rcControl;
-		//}
-		
-		// redraw comboboxes
-		if (pArxObject->GetType() == CtlComboBox)
-		{
-			if (pArxObject->GetLngProperty(nComboBoxStyle) == CmboStyle_Simple)
-			{
-				pControl->ShowWindow(FALSE);
-			}
-		}
-	
-		pControl->MoveWindow(
-			rcControl,
-			TRUE);
 		
 		
 		// mpHostDlg control is a month control

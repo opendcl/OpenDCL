@@ -7,21 +7,21 @@
 
 class CDirDialog
 {
+	CString msCaption;
+	CString msInitialFolder;
+	DWORD mdwFlags;
+	CString msRootFolder;
+	CString msSelectedFolder;
+
 public:
-	CDirDialog();
+	CDirDialog( LPCTSTR pszCaption, LPCTSTR pszInitialFolder = NULL, LPCTSTR pszRootFolder = NULL,
+							DWORD dwFlags = BIF_RETURNONLYFSDIRS );
 	virtual ~CDirDialog();
 
 	BOOL DoBrowse(CWnd *pwndParent = NULL);
-
-	CString m_strWindowTitle;
-	CString m_strPath;
-	CString m_strInitDir;
-	CString m_strSelDir;
-	CString m_strTitle;
-	int m_iImageIndex;
-	BOOL m_bStatus;
+	const CString& GetSelectedFolder() const { return msSelectedFolder; }
 
 private:
-	virtual BOOL SelChanged(LPCSTR lpcsSelection, CString& csStatusText) { return TRUE; };
+	virtual BOOL SelChanged(LPCTSTR pszSelection, CString& csStatusText) { return TRUE; };
 	static int __stdcall CDirDialog::BrowseCtrlCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
 };

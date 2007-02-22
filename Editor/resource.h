@@ -132,11 +132,10 @@
 #define IDS_ANIMATION                   130
 #define IDD_FORMVARNAMEUPDATE_DIALOG    131
 #define IDS_IMAGECOMBOBOX               131
-#define IDS_EDITABLEGRID                132
+#define IDS_GRID                        132
 #define IDS_SPLITTER                    133
-#define IDS_GRID                        134
-#define IDS_HATCH                       135
-#define IDS_FILEDLG                     136
+#define IDS_HATCH                       134
+#define IDS_FILEDLG                     135
 #define IDS_COPYTOCLIPBOARD             137
 #define IDS_STRINGBOLD                  138
 #define IDS_STRINGITALIC                139
@@ -393,7 +392,6 @@
 #define IDR_OBJECTTYPE_LT               1001
 #define IDC_APPVERSION                  1001
 #define IDR_OBJECTTYPE_R14              1002
-#define IDC_RICHEDIT21                  1002
 #define IDC_LICENSETXT                  1002
 #define IDC_PICTURE                     1007
 #define IDC_PICTURELIST                 1008

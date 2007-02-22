@@ -64,7 +64,7 @@ bool CDialogObject::ResizeDialog( long nNewWidth, long nNewHeight )
 	mpSourceForm->GetControlProperties()->SetLongProperty(nHeight, nNewHeight);
 	BOOL bSuccess = ::SetWindowPos(GetHWnd(), NULL, 0, 0, nNewWidth, nNewHeight,
 																 SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER );
-	GetControlPane().SizeChanged(nNewWidth, nNewHeight);
+	GetControlPane().RecalcLayout();
 	return (bSuccess != FALSE);
 }
 
@@ -79,7 +79,7 @@ bool CDialogObject::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 	pt.y =  (::GetSystemMetrics(SM_CYSCREEN) - nNewHeight) / 2;
 	pt.x =  (::GetSystemMetrics(SM_CXSCREEN) - nNewWidth) / 2;
 	BOOL bSuccess = ::SetWindowPos(GetHWnd(), NULL, pt.x, pt.y, nNewWidth, nNewHeight, SWP_NOACTIVATE | SWP_NOZORDER);
-	GetControlPane().SizeChanged(nNewWidth, nNewHeight);
+	GetControlPane().RecalcLayout();
 	return (bSuccess != FALSE);
 }
 

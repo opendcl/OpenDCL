@@ -41,7 +41,7 @@ public:
 	CString m_sSubFileName;
 	CString m_sFileName;
 	CString m_sVarName;
-	CRect m_rcPos;
+	//CRect m_rcPos;
 
 	//Used in editor only
 	HTREEITEM m_htiTreeItem;
@@ -109,6 +109,7 @@ public:
 	//CList< CDclControlObject* >& GetControlList() { return mDclControls; }
 	const CDclControlObject* GetControlProperties() const;
 	CDclControlObject* GetControlProperties();
+	CSize GetFormSize() const;
 	UUID GetUUID() const;
 	const CString& GetUUIDAsString() const { return msUUID; }
 	const CString& GetUniqueName() const { return msUniqueName; }

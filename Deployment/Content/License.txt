@@ -42,8 +42,7 @@ davidrobison (David Robison)
 BETA TESTING
 bazzacad (Barry Ralphs)
 davic_jg_white (David White)
-domenicomaria
-funkitect
+domenicomaria (Domenico Maria Pisano)
 jmaeding (James Maeding)
 kerrybrown (Kerry Brown)
 seros (Mateusz Jacak)

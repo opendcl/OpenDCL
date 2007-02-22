@@ -110,13 +110,9 @@ CZOrderListCtrl* CEditorWorkspace::GetZOrderListCtrl() const
 
 CString CEditorWorkspace::GetActiveProjectName() const
 {
-	CString sShortFileName = StripPathFromFileName(GetActiveProject()->GetKeyName());
-	if (sShortFileName.GetLength() > 4)
-	{
-		if (sShortFileName[sShortFileName.GetLength()-4] == _T('.'))
-			sShortFileName = sShortFileName.Left(sShortFileName.GetLength()-4);
-	}
-	return sShortFileName;
+	if( !mpActiveProject )
+		return CString();
+	return mpActiveProject->GetKeyName();
 }
 
 RefCountedPtr< COleControlObject > CEditorWorkspace::GetOleControlFor( const AxPropertyDescriptor* pProperty ) const

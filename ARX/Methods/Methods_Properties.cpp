@@ -607,6 +607,7 @@ bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, RefCountedPtr
 	return true;
 
 }
+
 void UpdateControl(CWnd *pControl,RefCountedPtr< CPropertyObject > pProperty, CDclControlObject *pTemplate, PropertyId nPropertyId)
 {
 	CRect rcThisControl;
@@ -624,7 +625,7 @@ void UpdateControl(CWnd *pControl,RefCountedPtr< CPropertyObject > pProperty, CD
 	case nHeight:
 		{
 		// call the method to update the control
-			pTemplate->GetControlInstance()->GetControlPane()->ResetControlsPos2(pTemplate);
+			pTemplate->GetControlInstance()->GetControlPane()->ResetControlsPos(pTemplate);
 		break;
 		}
 	// if the font size property has been found pass it the font name only

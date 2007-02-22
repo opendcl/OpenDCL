@@ -13,7 +13,8 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "SharedRes.h"
-#include "afxres.h"
+#include "afxres.h"
+
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -1642,8 +1643,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,0,14
- PRODUCTVERSION 4,0,0,14
+ FILEVERSION 4,0,0,16
+ PRODUCTVERSION 4,0,0,16
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1659,12 +1660,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "OpenDCL Dialog Editor"
-            VALUE "FileVersion", "4, 0, 0, 14"
+            VALUE "FileVersion", "4, 0, 0, 16"
             VALUE "InternalName", "OpenDCL"
             VALUE "LegalCopyright", "Copyright © 2007"
             VALUE "OriginalFilename", "OpenDCL.exe"
             VALUE "ProductName", "OpenDCL"
-            VALUE "ProductVersion", "4, 0, 0, 14"
+            VALUE "ProductVersion", "4, 0, 0, 16"
         END
     END
     BLOCK "VarFileInfo"
@@ -2432,9 +2433,8 @@ BEGIN
     IDS_DWGLIST             "DwgList"
     IDS_ANIMATION           "Animation"
     IDS_IMAGECOMBOBOX       "ImageCombo"
-    IDS_EDITABLEGRID        "Fully Editable Grid"
-    IDS_SPLITTER            "Splitter"
     IDS_GRID                "Grid"
+    IDS_SPLITTER            "Splitter"
     IDS_HATCH               "Hatch"
     IDS_FILEDLG             "Custom File Dialog Box"
     IDS_COPYTOCLIPBOARD     "Copy To Clipboard"
@@ -2512,7 +2512,7 @@ BEGIN
     IDS_DISTFILE            "Distribution File Name"
     IDS_COPYTOCLIP          "Copy To Clipboard"
     IDS_COPYGETTOCLIP       "Copy Get To Clipboard"
-    IDS_RENAMEPROJECT       "The Project is currently named Untitled... Please resave the project as something different. \nIt is not recomended that the AutoLisp code uses an AutoLisp variable starting with the name ""Untitled...""."
+    IDS_RENAMEPROJECT       "The current project has not yet been saved, and the project is still using a default name.\r\n\r\nAutoLISP uses the project name to address this control. Using the default name may not be correct, so it is recommended that you save your project and give it a name before creating AutoLISP code.\r\n\r\nWould you like to save the project before continuing?"
     IDS_UPDATEVARNAMEQ      "If you change the symbol name, you must update any existing AutoLISP code to use the new name.  Are you sure you want to change the AutoLISP symbol name for this control?"
 END
 
@@ -3371,7 +3371,8 @@ END
 // Generated from the TEXTINCLUDE 3 resource.
 //
 #include "SharedRes.rc"
-#include "AfxRes.rc"
+#include "AfxRes.rc"
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

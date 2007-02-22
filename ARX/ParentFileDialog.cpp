@@ -178,7 +178,16 @@ BOOL CParentFileDialog::OnInitDialog()
 
 	mParentDlg.m_pMainChild = this;
 	CFileDialog::OnInitDialog();
-	
+
+	CRect rcThis;
+	mParentDlg.GetClientRect(&rcThis);
+
+	CControlPane& CtrlPane = mParentDlg.GetDialogObject().GetControlPane();
+	CtrlPane.SetPanePos( rcThis );	
+
+	// call method to create the controls
+	UINT nID = 1000;
+	CtrlPane.CreateControls(mParentDlg.GetDialogObject().GetSourceForm(), nID);
 	
 	// Here's one of the big differences from pre MFC 4.0
 	// customizations. All of the controls on the Explorer
@@ -196,7 +205,6 @@ BOOL CParentFileDialog::OnInitDialog()
 	int nHeightOffset = 0;
 	if (pProps->GetBoolProperty(nResizable) == FALSE)
 		nHeightOffset = 10;
-	
 
 	CRect rcCtrls;
 	pWnd->GetWindowRect(&rcCtrls);
@@ -239,8 +247,6 @@ BOOL CParentFileDialog::OnInitDialog()
 		GetParent()->SetWindowPos(NULL, rcRet.left, rcRet.top, rcRet.Width(), rcRet.Height(), 
 			SWP_NOZORDER | SWP_NOACTIVATE);
 	}
-	
-	
 
 	pWnd = GetParent()->GetDlgItem(edt1);
 	pWnd->GetWindowRect(&rcWndEdit);
@@ -249,7 +255,6 @@ BOOL CParentFileDialog::OnInitDialog()
 	pWnd->GetWindowRect(&rcWndStatic);
 	GetParent()->ScreenToClient(&rcWndStatic);
 
-	
 	// here we need to hide specified controls
 	if (pProps->GetBoolProperty(nShowOK) == FALSE)
 		HideControl(IDOK);
@@ -264,7 +269,6 @@ BOOL CParentFileDialog::OnInitDialog()
 			::ShowWindow(hwndSB, SW_HIDE);
 	}
 
-	
 	if (pProps->GetBoolProperty(nShowTypeComboBox) == FALSE)
 		HideControl(cmb1);
 	if (pProps->GetBoolProperty(nShowNameTextBox) == FALSE)
@@ -282,19 +286,6 @@ BOOL CParentFileDialog::OnInitDialog()
 	CtrlModifyStyle(stc3);
 	CtrlModifyStyle(IDOK);
 	CtrlModifyStyle(IDCANCEL);
-
-	CRect rcThis;
-	mParentDlg.GetClientRect(&rcThis);
-
-	CControlPane& CtrlPane = mParentDlg.GetDialogObject().GetControlPane();
-	CtrlPane.GetPaneWindowRect() = rcThis;	
-
-	// call method to create the controls
-	UINT nID = 1000;
-	CtrlPane.CreateControls(mParentDlg.GetDialogObject().GetSourceForm(), nID);
-
-	// resize the control pane so all offsets are set correctly
-	CtrlPane.SizeChanged(rcThis.Width(),rcThis.Height());	
 	
 	CArxDialogControl *pCtrlObj = new CArxDialogControl(pProps, &CtrlPane, this);
 	CtrlPane.AddControl(pCtrlObj);

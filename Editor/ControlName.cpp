@@ -13,6 +13,9 @@ CString GetControlName(int nControl)
 	CString sCtrlDesc;
 	switch (nControl)
 	{
+	case CtlForm:
+		sCtrlDesc = theWorkspace.LoadResourceString(IDS_DCLFORM);
+		break;
 	case CtlLabel:
 		sCtrlDesc = theWorkspace.LoadResourceString(IDS_LABEL);
 		break;

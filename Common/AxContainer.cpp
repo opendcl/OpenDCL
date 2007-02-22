@@ -629,6 +629,7 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, int nID,
 	ArxRect.left = pControl->m_pLeft->GetLongValue();
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
+	MoveWindow( &ArxRect, FALSE );
 	
 	pControl->m_clsid = Clsid;
 	DWORD dwStyle = WS_CHILD|WS_VISIBLE;//|WS_CLIPSIBLINGS|WS_CLIPCHILDREN;
@@ -698,7 +699,6 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, int nID,
 			{
 				m_bActiveXCtrl = CreateControl(Clsid, NULL, dwStyle, ArxRect, pParent, nID);
 			}
-			ShowWindow(TRUE);
 		}		
 	}
 	

@@ -195,52 +195,37 @@ int CResizableDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	
 	//  setup for assigning the form it's properties
-	CRect rectThis;
-	
-	// get the form's properties
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+
 	// set the window text
 	SetWindowText(pProps->GetStrProperty(nTitleBarText));
 	
-	// setup the rect default rect 
-	rectThis.top = 0;
-	rectThis.left = 0;
-	
-
-	// set the rect for the control pane to be created
-	CRect rcThis;
-	GetClientRect(&rcThis);
-	CRect rcWnd;
-	GetWindowRect(&rcWnd);
-	
-	int nCtlWidth = pProps->GetLngProperty(nWidth);
-	int nCtlHeight = pProps->GetLngProperty(nHeight);
-	
+	CRect rectPane;
 	if (mDialogX.GetSourceForm()->m_bUsesClientRect == TRUE && IsFloating())
+		GetClientArea( rectPane );
+	else
 	{
-		nCtlHeight += rcWnd.Height() - rcThis.Height();
-		nCtlWidth += rcWnd.Width() - rcThis.Width();
+		GetWindowRect( &rectPane );
+		ScreenToClient( &rectPane );
 	}
 
-	// get the width
-	rectThis.right = nCtlWidth;
+	rectPane.top += (nDeflateRect + 20);
+	rectPane.left += nDeflateRect;
+	rectPane.bottom += (nBottomAdjustment - nHeightOffset);
 
-	// get the height
-	rectThis.bottom = nCtlHeight;
-	
-	// create the control pane that will display the controls
-	mDialogX.GetControlPane().GetPaneWindowRect() = rcThis;
+	mDialogX.GetControlPane().SetPanePos( rectPane );
+
 	// call method to create the controls
 	UINT nID = 1000;
 	mDialogX.GetControlPane().CreateControls(mDialogX.GetSourceForm(), nID);
-	
-	if (pProps->GetLngProperty(nMaxDialogWidth) > -1)
-	{
-		long lMinHeight;
-		long lMinWidth;
-		GetFloatingMinSize(&lMinHeight, &lMinWidth);
-		lMinWidth = pProps->GetLngProperty(nMinDialogWidth);
-	}
+
+	//if (pProps->GetLngProperty(nMaxDialogWidth) > -1)
+	//{
+	//	long lMinHeight;
+	//	long lMinWidth;
+	//	GetFloatingMinSize(&lMinHeight, &lMinWidth);
+	//	lMinWidth = pProps->GetLngProperty(nMinDialogWidth);
+	//}
 	
 	// add the doc reactor if required for an event
 	CString sEventDefun = pProps->GetStrProperty(nDocEventActivated);
@@ -255,12 +240,13 @@ int CResizableDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// call methods to invoke the event
 	InvokeMethod(pProps->GetStrProperty(nFormEventInitialize), true);	
 	
-	GetWindowRect(&rcThis);
+	CRect rectWindow;
+	GetWindowRect( &rectWindow );
 	// call methods to invoke the event
 	InvokeMethodIntInt(
 		pProps->GetStrProperty(nFormEventSize), 
-		rcThis.Width(),
-		rcThis.Height(),
+		rectWindow.Width(),
+		rectWindow.Height(),
 		false);	
 
 	return 1;
@@ -276,21 +262,19 @@ void CResizableDockingDialog::SizeChanged (CRect *lpRect, BOOL bFloating, int fl
 {
 	if (!m_bClosing)
 	{
-		lpRect->top += nDeflateRect + 2;
+		lpRect->top += (nDeflateRect + 2);
 		lpRect->left += nDeflateRect;
-		lpRect->bottom += nBottomAdjustment;
+		lpRect->bottom += (nBottomAdjustment - nHeightOffset);
 
 		// resize the control pane so all offsets are set correctly
-		mDialogX.GetControlPane().GetPaneWindowRect().left = lpRect->left;
-		mDialogX.GetControlPane().GetPaneWindowRect().top = lpRect->top;
-		mDialogX.GetControlPane().SizeChanged(lpRect->Width(), lpRect->Height() - nHeightOffset);
+		mDialogX.GetControlPane().SetPanePos( *lpRect );
 		
 		// call methods to invoke the event
 		CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 		InvokeMethodIntInt(
 			pProps->GetStrProperty(nFormEventSize), 
 			lpRect->Width(), 
-			lpRect->Height() - nHeightOffset,
+			lpRect->Height(),
 			true);	
 	}
 }
@@ -318,12 +302,13 @@ void CResizableDockingDialog::PostNcDestroy()
 
 bool CResizableDockingDialog::OnClosing()
 {
-	m_bClosing = true;
 	CAdUiDockControlBar::OnClosing();
 	// call methods to invoke the event
+	m_bClosing = true;
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStrProperty(nFormEventClose), true);
-	PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
+	if( !IsFloating() ) //to make sure the window gets destroyed no matter how we got here
+		PostMessage(WM_CLOSE);
 	return true;
 }
 

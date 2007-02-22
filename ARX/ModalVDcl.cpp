@@ -127,6 +127,15 @@ BOOL CModalVDcl::OnInitDialog()
 	// call the method to set the title bar icon
 	SetTitleBarIcon(pFormProps->GetLngProperty(nIcon));
 
+	// create the control pane that will display the controls
+	CRect rcClient;
+	GetClientRect(&rcClient);
+	mDialogX.GetControlPane().SetPanePos( rcClient, false );	
+	
+	// call method to create the controls
+	UINT nID = 1000;
+	mDialogX.GetControlPane().CreateControls(mDialogX.GetSourceForm(), nID);
+
 	// setup the rect default rect 
 	rectThis.top = 0;
 	rectThis.left = 0;
@@ -234,16 +243,6 @@ BOOL CModalVDcl::OnInitDialog()
 			nMinWidth,
 			nMinHeight);
 	}
-
-	// create the control pane that will display the controls
-	mDialogX.GetControlPane().GetPaneWindowRect() = rcThis;	
-	
-	// call method to create the controls
-	UINT nID = 1000;
-	mDialogX.GetControlPane().CreateControls(mDialogX.GetSourceForm(), nID);
-	
-	GetClientRect(&rcThis);
-	mDialogX.GetControlPane().SizeChanged(rcThis.Width(), rcThis.Height());
 	
 	// call methods to invoke the OnInitDialog event
 	InvokeMethod(pFormProps->GetStrProperty(nFormEventInitialize), false);
@@ -337,13 +336,11 @@ void CModalVDcl::OnSize(UINT nType, int cx, int cy)
 {
 	CSnapDlg::OnSize(nType, cx, cy);
 	
-	CRect rcThis;
-	CWnd::GetClientRect(&rcThis);
-	
-	mDialogX.GetControlPane().SizeChanged(rcThis.Width(), rcThis.Height());
+	mDialogX.GetControlPane().RecalcLayout();
 
 	if (CWnd::IsWindowVisible())
 	{	
+		CRect rcThis;
 		CWnd::GetWindowRect(&rcThis);
 		SaveSize();
 		// call methods to invoke the event
@@ -426,32 +423,13 @@ void CModalVDcl::OnOK()
 		//CDialog::EndDialog(MB_OK);
 	}
 }
+
 void CModalVDcl::OnCancel()
 {
 	if (!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), true))	
 	{
 		CSnapDlg::OnCancel();
 		//CDialog::EndDialog(2);
-	}
-}
-
-void CModalVDcl::SizeDialog ()
-{
-	CRect rcThis;
-	GetClientRect(&rcThis);
-
-	mDialogX.GetControlPane().SizeChanged(rcThis.Width(), rcThis.Height());
-	
-	GetWindowRect(&rcThis);
-
-	if (IsWindowVisible())
-	{		
-		// call methods to invoke the event
-		InvokeMethodIntInt(
-			mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 
-			rcThis.Width(),
-			rcThis.Height(),
-			false);	
 	}
 }
 

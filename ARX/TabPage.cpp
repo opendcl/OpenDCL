@@ -8,15 +8,15 @@
 /////////////////////////////////////////////////////////////////////////////
 // CTabPage property page
 
-CTabPage::CTabPage( CDclFormObject* pSourceForm, CWnd* pHostDlg )
+CTabPage::CTabPage( CDclFormObject* pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId )
 : CDialog(CTabPage::IDD)
 , mpSourceForm( pSourceForm )
 , mControlPane( pSourceForm, this )
 {
-	//{{AFX_DATA_INIT(CTabPage)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
-
+	Create(CTabPage::IDD, pTabCtrl);
+	MoveWindow(rectPane);
+	mControlPane.SetPanePos( CRect( 0, 0, rectPane.Width(), rectPane.Height() ), false );
+	mControlPane.CreateControls( pSourceForm, nId );
 }
 
 CTabPage::~CTabPage()
@@ -27,32 +27,16 @@ CTabPage::~CTabPage()
 void CTabPage::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CTabPage)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CTabPage, CDialog)
-	//{{AFX_MSG_MAP(CTabPage)
-	ON_WM_SHOWWINDOW()
-	//}}AFX_MSG_MAP
+	ON_WM_ERASEBKGND()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CTabPage message handlers
-
-void CTabPage::OnShowWindow(BOOL bShow, UINT nStatus) 
-{
-	CDialog::OnShowWindow(bShow, nStatus);	
-}
-
-void CTabPage::OnOK()
-{
-}
-void CTabPage::OnCancel()
-{
-}
 
 BOOL CTabPage::PreTranslateMessage(MSG* pMsg) 
 {
@@ -66,4 +50,17 @@ BOOL CTabPage::PreTranslateMessage(MSG* pMsg)
 	}
 
 	return CWnd::PreTranslateMessage(pMsg);
+}
+
+BOOL CTabPage::OnEraseBkgnd(CDC* pDC)
+{
+	return TRUE;
+	//return CDialog::OnEraseBkgnd(pDC);
+}
+
+void CTabPage::OnPaint()
+{
+	CPaintDC dc(this); // device context for painting
+	// TODO: Add your message handler code here
+	// Do not call CDialog::OnPaint() for painting messages
 }
