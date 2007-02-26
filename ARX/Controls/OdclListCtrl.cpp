@@ -156,8 +156,89 @@ static HANDLE readDibFromMemory(LPVOID pDibSrc)
 }
 
 
-bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
+/////////////////////////////////////////////////////////////////////////////
+// OdclListCtrl
+
+OdclListCtrl::OdclListCtrl( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID )
+: CArxDialogControl( pTemplate, &Pane, this )
+, mbBlockList( false )
 {
+	m_pDocToModReactor = NULL;
+	m_pBlockReactor = NULL;
+	
+	// No tooltip created
+	mToolTip.m_hWnd = NULL;
+
+	m_pLoadedDwg = NULL;
+	m_FileName = CString();
+
+	Create( Pane.GetHostDialog(), nID );
+}
+
+OdclListCtrl::~OdclListCtrl()
+{
+	if (m_pDocToModReactor != NULL)
+		delete m_pDocToModReactor;
+	if (m_pBlockReactor != NULL)
+		delete m_pBlockReactor;
+}
+
+bool OdclListCtrl::Create( CWnd* pParentWnd, UINT nID )
+{
+	bool bSuccess = (CListCtrl::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
+
+	RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
+	if( pImageList )
+	{
+		pImageList->m_ImageList.SetBkColor( GetBkColor() );
+		SetImageList( &pImageList->m_ImageList, TVSIL_NORMAL );
+		SetImageList( &pImageList->m_ImageList, LVSIL_SMALL );
+	}
+	else
+	{ //create a default image list
+		if( !mDefaultImageList.m_hImageList )
+			mDefaultImageList.Create( 1, mpTemplate->GetLngProperty( nRowHeight ), ILC_COLOR, 1, 1 );
+		mDefaultImageList.SetBkColor( GetBkColor() );
+		SetImageList( &mDefaultImageList, TVSIL_NORMAL );
+		SetImageList( &mDefaultImageList, LVSIL_SMALL );
+	}
+
+	if( bSuccess && !ApplyPropertiesEnum() )
+		bSuccess = false;
+
+	if( IsBlockList() )
+	{
+		// create the new reactors
+		m_pDocToModReactor = new CAcadDocReactor( this );
+		m_pBlockReactor = new CAcadBlockReactor( this );
+
+		// activate the reactors
+		acDocManager->addReactor( m_pDocToModReactor );
+		acedEditor->addReactor( m_pBlockReactor );
+
+		// call the method to populate the block list control
+		RefreshBlockList();
+	}
+	else
+		SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
+
+	SetAcadColor( mpTemplate->GetLngProperty( nAcadColor ) );
+
+	InitToolTip();
+	SetToolTipEx(this, mToolTip, mpTemplate);
+
+	if( mpTemplate->GetLngProperty(nEventInvoke) == 1 )
+		m_bInvokeWithSendString = true;
+	else
+		m_bInvokeWithSendString = false;
+
+	return bSuccess;
+}
+
+bool OdclListCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
+{
+	if( !__super::OnApplyProperty( pProp ) )
+		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )
 	{
@@ -167,13 +248,13 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 
 			//create a default icon for blocks without a preview image
 			mBlockViewImageList.Create( 32, 32, ILC_COLOR4, 1, 1 );
-			mBlockViewImageList.SetBkColor( GetControl()->GetBkColor() );
+			mBlockViewImageList.SetBkColor( GetBkColor() );
 
 			HICON hIcon = (HICON)::LoadImage( _hdllInstance, MAKEINTRESOURCE(IDI_LARGEBLOCK), IMAGE_ICON, 0, 0, 0 );
 			mBlockViewImageList.Add( hIcon );
 			DestroyIcon( hIcon );
-			GetControl()->SetImageList( &mBlockViewImageList, LVSIL_NORMAL );
-			GetControl()->SetImageList( &mBlockViewImageList, LVSIL_SMALL );
+			SetImageList( &mBlockViewImageList, LVSIL_NORMAL );
+			SetImageList( &mBlockViewImageList, LVSIL_SMALL );
 			break;
 		}
 	case nListViewStyle:
@@ -193,7 +274,7 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 			}
 			CSize sizeIconSpacing( mpControl->SendMessage( LVM_GETITEMSPACING ) );
 			sizeIconSpacing.cx = pProp->GetLongValue() + nImageListIconSizeX;
-			GetControl()->SetIconSpacing( sizeIconSpacing );
+			SetIconSpacing( sizeIconSpacing );
 			break;
 		}
 	case nIconYSpacing:
@@ -209,28 +290,28 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 			}
 			CSize sizeIconSpacing( mpControl->SendMessage( LVM_GETITEMSPACING ) );
 			sizeIconSpacing.cy = pProp->GetLongValue() + nImageListIconSizeY;
-			GetControl()->SetIconSpacing( sizeIconSpacing );
+			SetIconSpacing( sizeIconSpacing );
 			break;
 		}
 	case nGridLines:
 		{
 			if( pProp->GetBooleanValue() )
-				GetControl()->SetExtendedStyle( GetControl()->GetExtendedStyle() | LVS_EX_GRIDLINES );
+				SetExtendedStyle( GetExtendedStyle() | LVS_EX_GRIDLINES );
 			else
-				GetControl()->SetExtendedStyle( GetControl()->GetExtendedStyle() & ~LVS_EX_GRIDLINES );
+				SetExtendedStyle( GetExtendedStyle() & ~LVS_EX_GRIDLINES );
 			break;
 		}
 	case nFullRowSelect:
 		{
 			if( pProp->GetBooleanValue() )
-				GetControl()->SetExtendedStyle( GetControl()->GetExtendedStyle() | LVS_EX_FULLROWSELECT );
+				SetExtendedStyle( GetExtendedStyle() | LVS_EX_FULLROWSELECT );
 			else
-				GetControl()->SetExtendedStyle( GetControl()->GetExtendedStyle() & ~LVS_EX_FULLROWSELECT );
+				SetExtendedStyle( GetExtendedStyle() & ~LVS_EX_FULLROWSELECT );
 			break;
 		}
 	case nColumnCaptions:
 		{
-			CHeaderCtrl* pHdrCtrl = GetControl()->GetHeaderCtrl();
+			CHeaderCtrl* pHdrCtrl = GetHeaderCtrl();
 			PropVal::TCStringArray* prsCaption = pProp->GetStringArrayPtr();
 			size_t idx = prsCaption->size();
 			while( idx > 0 )
@@ -246,7 +327,7 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 		}
 	case nColumnWidths:
 		{
-			CHeaderCtrl* pHdrCtrl = GetControl()->GetHeaderCtrl();
+			CHeaderCtrl* pHdrCtrl = GetHeaderCtrl();
 			PropVal::TIntArray* prInt = pProp->GetIntArrayPtr();
 			size_t idx = prInt->size();
 			while( idx > 0 )
@@ -261,7 +342,7 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 		}
 	case nColumnAlignments:
 		{
-			CHeaderCtrl* pHdrCtrl = GetControl()->GetHeaderCtrl();
+			CHeaderCtrl* pHdrCtrl = GetHeaderCtrl();
 			PropVal::TIntArray* prInt = pProp->GetIntArrayPtr();
 			size_t idx = prInt->size();
 			while( idx > 0 )
@@ -276,7 +357,7 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 		}
 	case nColumnImages:
 		{
-			CHeaderCtrl* pHdrCtrl = GetControl()->GetHeaderCtrl();
+			CHeaderCtrl* pHdrCtrl = GetHeaderCtrl();
 			PropVal::TIntArray* prInt = pProp->GetIntArrayPtr();
 			size_t idx = prInt->size();
 			while( idx > 0 )
@@ -293,7 +374,7 @@ bool CListViewControlX::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp 
 	return !bFailed;
 }
 
-DWORD CListViewControlX::GetWndStyle() const
+DWORD OdclListCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CArxDialogControl::GetWndStyle();
 
@@ -369,92 +450,6 @@ DWORD CListViewControlX::GetWndStyle() const
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
-// OdclListCtrl
-
-OdclListCtrl::OdclListCtrl( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID )
-: mControlX( pTemplate, &Pane, this )
-, mpSourceControl( pTemplate )
-, mpControlPane( &Pane )
-{
-	m_pDocToModReactor = NULL;
-	m_pBlockReactor = NULL;
-	
-	// No tooltip created
-	m_ToolTip.m_hWnd = NULL;
-
-	m_pLoadedDwg = NULL;
-	m_FileName = CString();
-
-	Create( Pane.GetHostDialog(), nID );
-}
-
-OdclListCtrl::~OdclListCtrl()
-{
-	if (m_pDocToModReactor != NULL)
-		delete m_pDocToModReactor;
-	if (m_pBlockReactor != NULL)
-		delete m_pBlockReactor;
-}
-
-bool OdclListCtrl::Create( CWnd* pParentWnd, UINT nID )
-{
-	bool bSuccess =
-		CListCtrl::Create( mControlX.GetWndStyle(),
-											 mControlX.GetWndRect(),
-											 pParentWnd,
-											 nID );
-	VERIFY(CWnd::SubclassDlgItem(nID, pParentWnd));
-
-	RefCountedPtr< CImageListObject > pImageList = mpSourceControl->GetImageList();
-	if( pImageList )
-	{
-		pImageList->m_ImageList.SetBkColor( GetBkColor() );
-		SetImageList( &pImageList->m_ImageList, TVSIL_NORMAL );
-		SetImageList( &pImageList->m_ImageList, LVSIL_SMALL );
-	}
-	else
-	{ //create a default image list
-		if( !mDefaultImageList.m_hImageList )
-			mDefaultImageList.Create( 1, mpSourceControl->GetLngProperty( nRowHeight ), ILC_COLOR, 1, 1 );
-		mDefaultImageList.SetBkColor( GetBkColor() );
-		SetImageList( &mDefaultImageList, TVSIL_NORMAL );
-		SetImageList( &mDefaultImageList, LVSIL_SMALL );
-	}
-
-	if( bSuccess && !mControlX.ApplyPropertiesEnum() )
-		bSuccess = false;
-
-	if( mControlX.IsBlockList() )
-	{
-		// create the new reactors
-		m_pDocToModReactor = new CAcadDocReactor( this );
-		m_pBlockReactor = new CAcadBlockReactor( this );
-
-		// activate the reactors
-		acDocManager->addReactor( m_pDocToModReactor );
-		acedEditor->addReactor( m_pBlockReactor );
-
-		// call the method to populate the block list control
-		RefreshBlockList();
-	}
-	else
-		SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
-
-	SetAcadColor( mpSourceControl->GetLngProperty( nAcadColor ) );
-
-	InitToolTip();
-	SetToolTipEx(this, m_ToolTip, mpSourceControl);
-
-	if( mpSourceControl->GetLngProperty(nEventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
-
-	return bSuccess;
-}
-
-
 BEGIN_MESSAGE_MAP(OdclListCtrl, CListCtrl)
 	//{{AFX_MSG_MAP(OdclListCtrl)
 	ON_WM_DESTROY()
@@ -507,7 +502,7 @@ void OdclListCtrl::SetAcadColor(long nColor)
 void OdclListCtrl::OnDestroy() 
 {
 	// delete the tool tip text control object
-	m_ToolTip.DelTool(this, 1);
+	mToolTip.DelTool(this, 1);
 	
 	// delete all the items
 	DeleteAllItems();
@@ -643,8 +638,8 @@ void OdclListCtrl::OnSize(UINT nType, int cx, int cy)
 	CListCtrl::OnSize(nType, cx, cy);
 	//Arrange(LVA_DEFAULT);
 	//return;
-	int nPropIconStyle = mpSourceControl->GetLngProperty(nListViewStyle);
-	if (nPropIconStyle == 0 || nPropIconStyle == 1 || mpSourceControl->GetLngProperty(nBlockListStyle) > -1)
+	int nPropIconStyle = mpTemplate->GetLngProperty(nListViewStyle);
+	if (nPropIconStyle == 0 || nPropIconStyle == 1 || mpTemplate->GetLngProperty(nBlockListStyle) > -1)
 	{	
 		GetWorkAreas(0, NULL);
 		CRect rcThis;
@@ -659,14 +654,14 @@ void OdclListCtrl::OnSize(UINT nType, int cx, int cy)
 void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 		/*
-	BOOL bDrag = mpSourceControl->GetBoolProperty(nDragnDropAllowBegin);
+	BOOL bDrag = mpTemplate->GetBoolProperty(nDragnDropAllowBegin);
 
 	if (bDrag == FALSE)
 		CListCtrl::OnLButtonDown(nFlags, point);
 
 	if (bDrag == TRUE && nFlags == 1)
 	*/
-	int nStyle = mpSourceControl->GetLngProperty(nListViewStyle);
+	int nStyle = mpTemplate->GetLngProperty(nListViewStyle);
 	LVHITTESTINFO lvhti;
 	lvhti.pt = point;
 	SubItemHitTest(&lvhti);
@@ -680,7 +675,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 			// call methods to invoke the event
 			InvokeMethodIntInt(
-				mpSourceControl->GetStrProperty(nEventClicked),  
+				mpTemplate->GetStrProperty(nEventClicked),  
 				lvhti.iItem,
 				lvhti.iSubItem,
 				m_bInvokeWithSendString);
@@ -691,7 +686,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 			// call methods to invoke the event
 			InvokeMethodInt(
-				mpSourceControl->GetStrProperty(nEventClicked),  
+				mpTemplate->GetStrProperty(nEventClicked),  
 				lvhti.iItem,
 				m_bInvokeWithSendString);
 		}
@@ -708,14 +703,14 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		{
 		// call methods to invoke the event
 		InvokeMethodIntInt(		
-			mpSourceControl->GetStrProperty(nEventBeginLabelEdit),
+			mpTemplate->GetStrProperty(nEventBeginLabelEdit),
 			lvhti.iItem,
 			lvhti.iSubItem,
 			m_bInvokeWithSendString);
 		}
 	}
 	*/
-	if (mpSourceControl->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
+	if (mpTemplate->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
 	{
 		// Select the item the user clicked on.
 		UINT uFlags;
@@ -738,25 +733,25 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		SubItemHitTest(&lvhti);
 
 		// a -1 will be returned if not found
-		if (mpSourceControl->GetLngProperty(nListViewStyle) > -1)
+		if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
 		{			
 			if (lvhti.iItem > -1)
 			{		
-				if (mpSourceControl->GetLngProperty(nListViewStyle) > -1)
+				if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
 					// call methods to invoke the event
 					InvokeMethodIntInt(
-						mpSourceControl->GetStrProperty(nEventClicked),  
+						mpTemplate->GetStrProperty(nEventClicked),  
 						lvhti.iItem, 
 						lvhti.iSubItem, 
 						m_bInvokeWithSendString);
 				else				
 					// call methods to invoke the event
 					InvokeMethodInt(
-						mpSourceControl->GetStrProperty(nEventClicked),  
+						mpTemplate->GetStrProperty(nEventClicked),  
 						lvhti.iItem, 
 						m_bInvokeWithSendString);
 			}
-			BeginDragnDrop(mpSourceControl, point, m_bInvokeWithSendString);
+			BeginDragnDrop(mpTemplate, point, m_bInvokeWithSendString);
 		}
 		else
 		{
@@ -782,12 +777,12 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			//!CHANGED! 10-5-04 SRM
 			//didnt allow user to drag and drop blocks from external dwgs
 			//if (m_pLoadedDwg == NULL)
-				BeginDragnDropToInsertBlocks(mpSourceControl, point, m_bInvokeWithSendString, saBlockNames);
+				BeginDragnDropToInsertBlocks(mpTemplate, point, m_bInvokeWithSendString, saBlockNames);
 		}
 	}
 
 	InvokeMethodIntIntIntInt(
-		mpSourceControl->GetStrProperty(nEventMouseDown),
+		mpTemplate->GetStrProperty(nEventMouseDown),
 		1,
 		nFlags,
 		point.x,
@@ -802,7 +797,7 @@ void OdclListCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntIntInt(
-		mpSourceControl->GetStrProperty(nEventMouseUp),
+		mpTemplate->GetStrProperty(nEventMouseUp),
 		1,
 		nFlags,
 		point.x,
@@ -820,7 +815,7 @@ void OdclListCtrl::SetDragnDrop(BOOL bRegister)
 	if (bRegister == TRUE)
 	{
 		BOOL success = m_DropTarget.Register(this);
-		m_DropTarget.m_pThisArxControl = mpSourceControl;
+		m_DropTarget.m_pThisArxControl = mpTemplate;
 		m_DropTarget.m_pParent = this;
     }
 	else
@@ -832,14 +827,14 @@ void OdclListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* plvdi = (LV_DISPINFO*)pNMHDR;
 	
-	int nStyle = mpSourceControl->GetLngProperty(nListViewStyle);
+	int nStyle = mpTemplate->GetLngProperty(nListViewStyle);
 
 	if (plvdi->item.mask < GetItemCount() && 
 		plvdi->item.mask >= 0)
 	{
 		// call methods to invoke the event
 		InvokeMethodIntInt(		
-			mpSourceControl->GetStrProperty(nEventBeginLabelEdit),
+			mpTemplate->GetStrProperty(nEventBeginLabelEdit),
 			plvdi->item.mask, plvdi->item.iItem,
 			m_bInvokeWithSendString);
 
@@ -848,7 +843,7 @@ void OdclListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 		{
 			// call methods to invoke the event
 			InvokeMethodIntInt(
-				mpSourceControl->GetStrProperty(nEventClicked),  
+				mpTemplate->GetStrProperty(nEventClicked),  
 				plvdi->item.mask, 
 				plvdi->item.iItem, 
 				m_bInvokeWithSendString);			
@@ -857,7 +852,7 @@ void OdclListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 		{
 			// call methods to invoke the event
 			InvokeMethodInt(
-				mpSourceControl->GetStrProperty(nEventClicked),  
+				mpTemplate->GetStrProperty(nEventClicked),  
 				plvdi->item.iItem, 
 				m_bInvokeWithSendString);
 		}
@@ -874,7 +869,7 @@ void OdclListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 void OdclListCtrl::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpSourceControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
 	
 	*pResult = 0;
 }
@@ -887,17 +882,17 @@ void OdclListCtrl::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 	if (plvdi->item.mask < GetItemCount() && 
 		plvdi->item.mask >= 0)
 	{
-		if (mpSourceControl->GetLngProperty(nListViewStyle) > -1)
+		if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
 			// call methods to invoke the event
 			InvokeMethodIntInt(
-				mpSourceControl->GetStrProperty(nEventDblClicked),  
+				mpTemplate->GetStrProperty(nEventDblClicked),  
 				plvdi->item.mask, 
 				plvdi->item.iItem, 
 				m_bInvokeWithSendString);
 		else				
 			// call methods to invoke the event
 			InvokeMethodInt(
-				mpSourceControl->GetStrProperty(nEventDblClicked),  
+				mpTemplate->GetStrProperty(nEventDblClicked),  
 				plvdi->item.mask, 
 				m_bInvokeWithSendString);
 	}
@@ -912,17 +907,17 @@ void OdclListCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 	if (plvdi->item.mask < GetItemCount() && 
 		plvdi->item.mask >= 0)
 	{
-		if (mpSourceControl->GetLngProperty(nListViewStyle) > -1)
+		if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
 			// call methods to invoke the event
 			InvokeMethodIntInt(
-				mpSourceControl->GetStrProperty(nEventDblClicked),  
+				mpTemplate->GetStrProperty(nEventDblClicked),  
 				plvdi->item.mask, 
 				plvdi->item.iItem, 
 				m_bInvokeWithSendString);
 		else				
 			// call methods to invoke the event
 			InvokeMethodInt(
-				mpSourceControl->GetStrProperty(nEventDblClicked),  
+				mpTemplate->GetStrProperty(nEventDblClicked),  
 				plvdi->item.mask, 
 				m_bInvokeWithSendString);
 	}
@@ -932,7 +927,7 @@ void OdclListCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 
 void OdclListCtrl::OnReturn(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(mpSourceControl->GetStrProperty(nEventReturnPressed), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStrProperty(nEventReturnPressed), m_bInvokeWithSendString);
 	
 	*pResult = 0;
 }
@@ -940,7 +935,7 @@ void OdclListCtrl::OnReturn(NMHDR* pNMHDR, LRESULT* pResult)
 void OdclListCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpSourceControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
 	
 	
 	*pResult = 0;
@@ -954,7 +949,7 @@ void OdclListCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 	if (pDispInfo->item.mask > 0)
 	{
 		InvokeMethodStringIntInt(
-			mpSourceControl->GetStrProperty(nEventEndLabelEdit),
+			mpTemplate->GetStrProperty(nEventEndLabelEdit),
 			plvItem->pszText,
 			plvItem->iItem,
 			plvItem->iSubItem,
@@ -995,7 +990,7 @@ void OdclListCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 
 	// call methods to invoke the event
 	InvokeMethodIntInt(		
-		mpSourceControl->GetStrProperty(nEventBeginLabelEdit),
+		mpTemplate->GetStrProperty(nEventBeginLabelEdit),
 		nItem,
 		m_nEditSubItem,
 		m_bInvokeWithSendString);
@@ -1009,7 +1004,7 @@ void OdclListCtrl::OnKeydown(NMHDR* pNMHDR, LRESULT* pResult)
 	LV_KEYDOWN* pLVKeyDow = (LV_KEYDOWN*)pNMHDR;
 	
 //	CString sChar = pLVKeyDow->wVKey;
-//	InvokeMethodString(mpSourceControl->GetStrProperty(nEventKeyDown), sChar, m_bInvokeWithSendString);
+//	InvokeMethodString(mpTemplate->GetStrProperty(nEventKeyDown), sChar, m_bInvokeWithSendString);
 	
 	
 	*pResult = 0;
@@ -1019,7 +1014,7 @@ void OdclListCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
 	
-	InvokeMethodInt(mpSourceControl->GetStrProperty(nEventColumnClick), pNMListView->iSubItem, m_bInvokeWithSendString);
+	InvokeMethodInt(mpTemplate->GetStrProperty(nEventColumnClick), pNMListView->iSubItem, m_bInvokeWithSendString);
 	
 	*pResult = 0;
 }
@@ -1032,7 +1027,7 @@ void OdclListCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 	POSITION pos = GetFirstSelectedItemPosition();
 	if (pos == NULL)
 	{
-		if (mpSourceControl->GetLngProperty(nListViewStyle) > -1)
+		if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
 		{
 			LVHITTESTINFO lvhti;
 
@@ -1063,17 +1058,17 @@ void OdclListCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 		nCol = 0;
 	}
 	
-	if (mpSourceControl->GetLngProperty(nListViewStyle) > -1)
+	if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
 		// call methods to invoke the event
 		InvokeMethodIntInt(
-			mpSourceControl->GetStrProperty(nEventDblClicked),  
+			mpTemplate->GetStrProperty(nEventDblClicked),  
 			nRow, 
 			nCol, 
 			m_bInvokeWithSendString);
 	else				
 		// call methods to invoke the event
 		InvokeMethodInt(
-			mpSourceControl->GetStrProperty(nEventDblClicked),  
+			mpTemplate->GetStrProperty(nEventDblClicked),  
 			nRow, 
 			m_bInvokeWithSendString);
 	
@@ -1380,12 +1375,12 @@ void OdclListCtrl::SetTooltipText(CString* spText, BOOL bActivate)
 
 void OdclListCtrl::InitToolTip()
 {
-	if (m_ToolTip.m_hWnd == NULL)
+	if (mToolTip.m_hWnd == NULL)
 	{
 		// Create ToolTip control
-		m_ToolTip.Create(this);
+		mToolTip.Create(this);
 		// Create inactive
-		m_ToolTip.Activate(FALSE);
+		mToolTip.Activate(FALSE);
 	}
 } // End of InitToolTip
 
@@ -1393,7 +1388,7 @@ void OdclListCtrl::InitToolTip()
 BOOL OdclListCtrl::PreTranslateMessage(MSG* pMsg) 
 {
 	InitToolTip();
-	m_ToolTip.RelayEvent(pMsg);
+	mToolTip.RelayEvent(pMsg);
 		
 	return CListCtrl::PreTranslateMessage(pMsg);
 }
@@ -1476,7 +1471,7 @@ void OdclListCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 	//HideEditControls();
 
 	InvokeMethodIntIntIntInt(
-		mpSourceControl->GetStrProperty(nEventMouseDown),
+		mpTemplate->GetStrProperty(nEventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -1492,7 +1487,7 @@ void OdclListCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 	//HideEditControls();
 
 	InvokeMethodIntIntIntInt(
-		mpSourceControl->GetStrProperty(nEventMouseUp),
+		mpTemplate->GetStrProperty(nEventMouseUp),
 		4,
 		nFlags,
 		point.x,
@@ -1508,7 +1503,7 @@ void OdclListCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 	//HideEditControls();
 
 	InvokeMethodIntIntIntInt(
-		mpSourceControl->GetStrProperty(nEventMouseDown),
+		mpTemplate->GetStrProperty(nEventMouseDown),
 		2,
 		nFlags,
 		point.x,
@@ -1524,7 +1519,7 @@ void OdclListCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 	//HideEditControls();
 
 	InvokeMethodIntIntIntInt(
-		mpSourceControl->GetStrProperty(nEventMouseUp),
+		mpTemplate->GetStrProperty(nEventMouseUp),
 		2,
 		nFlags,
 		point.x,
@@ -1538,7 +1533,7 @@ void OdclListCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 void OdclListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(mpSourceControl->GetStrProperty(nEventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(mpTemplate->GetStrProperty(nEventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 		
 	CListCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -1546,7 +1541,7 @@ void OdclListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 void OdclListCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(mpSourceControl->GetStrProperty(nEventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(mpTemplate->GetStrProperty(nEventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 		
 	CListCtrl::OnKeyUp(nChar, nRepCnt, nFlags);
 }
@@ -1554,7 +1549,7 @@ void OdclListCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 void OdclListCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntInt(
-		mpSourceControl->GetStrProperty(nEventMouseMove),
+		mpTemplate->GetStrProperty(nEventMouseMove),
 		nFlags,
 		point.x,
 		point.y,

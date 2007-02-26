@@ -187,7 +187,7 @@ BOOL CParentFileDialog::OnInitDialog()
 
 	// call method to create the controls
 	UINT nID = 1000;
-	CtrlPane.CreateControls(mParentDlg.GetDialogObject().GetSourceForm(), nID);
+	CtrlPane.CreateControls(nID);
 	
 	// Here's one of the big differences from pre MFC 4.0
 	// customizations. All of the controls on the Explorer
@@ -287,7 +287,7 @@ BOOL CParentFileDialog::OnInitDialog()
 	CtrlModifyStyle(IDOK);
 	CtrlModifyStyle(IDCANCEL);
 	
-	CArxDialogControl *pCtrlObj = new CArxDialogControl(pProps, &CtrlPane, this);
+	CArxDialogControl *pCtrlObj = new CArxAutoDialogControl(pProps, &CtrlPane, this);
 	CtrlPane.AddControl(pCtrlObj);
 	
 	switch (pProps->GetLngProperty(nEventInvoke))

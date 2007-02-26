@@ -3602,19 +3602,10 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	pProp = pArxCtrl->GetPropertyObject(nTabsCaption);	
 	if (pProp != NULL && m_pDclForm != NULL)
 	{
-		pTabs = new CTabsPane;
-		
-		pTabs->m_pDclForm = m_pDclForm;
-		pTabs->m_pControl = pArxCtrl;
-		pTabs->m_pView = m_pView;
+		pTabs = new CTabsPane( m_pView, pArxCtrl );
 		Dlg.AddPage(pTabs);
 
-		pSortTabs = new CSortTabs;
-
-		pSortTabs->m_pTabPane = pTabs;
-		pSortTabs->m_pDclForm = m_pDclForm;
-		pSortTabs->m_pControl = pArxCtrl;
-		pSortTabs->m_pView = m_pView;
+		pSortTabs = new CSortTabs( m_pView, pArxCtrl, pTabs );
 		Dlg.AddPage(pSortTabs);
 	}
 	
@@ -3702,7 +3693,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	{
 	}
 	// update the control no matter what, just incase the user pressed the apply button then cancel
-	UpdateControls(nInvalidPropertyId);
+	UpdateControls((PropertyId)-2);
 	Invalidate();
 }
 

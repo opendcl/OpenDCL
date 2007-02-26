@@ -21,37 +21,14 @@
 #define dwFlags PRINTER_ENUM_CONNECTIONS | PRINTER_ENUM_LOCAL
 
 
-CRect CPrinterComboControlX::GetWndRect() const
-{
-	CRect rectCombo = CArxDialogControl::GetWndRect();
-	long nListHeight = mpTemplate->GetLngProperty(nDropDownHeight);
-	if( nListHeight < 40 )
-		nListHeight = 40;
-	rectCombo.bottom += nHeight;
-	return rectCombo;
-}
-
-DWORD CPrinterComboControlX::GetWndStyle() const
-{
-	DWORD dwStyle = CArxDialogControl::GetWndStyle();
-	dwStyle |= WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE | CBS_HASSTRINGS |
-						ES_AUTOHSCROLL | WS_CLIPCHILDREN | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED;
-	if (mpTemplate->GetBoolProperty(nSorted) == TRUE)
-		dwStyle |= CBS_SORT;		
-	return dwStyle;
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CPrinterComboBox
 
 CPrinterComboBox::CPrinterComboBox( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID )
-: mControlX( pTemplate, &Pane, this )
-, mpSourceControl( pTemplate )
-, mpControlPane( &Pane )
+: CArxDialogControl( pTemplate, &Pane, this )
 {
 	// No tooltip created
-	m_ToolTip.m_hWnd = NULL;
+	mToolTip.m_hWnd = NULL;
 
 	m_img.Create(16,14,ILC_COLOR4 | ILC_MASK, 3, 1);
 
@@ -69,12 +46,10 @@ CPrinterComboBox::CPrinterComboBox( CControlPane& Pane, CDclControlObject* pTemp
 }
 
 CPrinterComboBox::CPrinterComboBox( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID, CRect rc )
-: mControlX( pTemplate, &Pane, this )
-, mpSourceControl( pTemplate )
-, mpControlPane( &Pane )
+: CArxDialogControl( pTemplate, &Pane, this )
 {
 	// No tooltip created
-	m_ToolTip.m_hWnd = NULL;
+	mToolTip.m_hWnd = NULL;
 
 	m_img.Create(16,14,ILC_COLOR4 | ILC_MASK, 3, 1);
 
@@ -93,6 +68,49 @@ CPrinterComboBox::CPrinterComboBox( CControlPane& Pane, CDclControlObject* pTemp
 
 CPrinterComboBox::~CPrinterComboBox()
 {
+}
+
+CRect CPrinterComboBox::GetWndRect() const
+{
+	CRect rectCombo = CArxDialogControl::GetWndRect();
+	long nListHeight = mpTemplate->GetLngProperty(nDropDownHeight);
+	if( nListHeight < 40 )
+		nListHeight = 40;
+	rectCombo.bottom += nHeight;
+	return rectCombo;
+}
+
+DWORD CPrinterComboBox::GetWndStyle() const
+{
+	DWORD dwStyle = CArxDialogControl::GetWndStyle();
+	dwStyle |= WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE | CBS_HASSTRINGS |
+						ES_AUTOHSCROLL | WS_CLIPCHILDREN | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED;
+	if (mpTemplate->GetBoolProperty(nSorted) == TRUE)
+		dwStyle |= CBS_SORT;		
+	return dwStyle;
+}
+
+bool CPrinterComboBox::Create( CWnd* pParentWnd, UINT nID )
+{
+	return Create( pParentWnd, nID, GetWndRect() );
+}
+
+bool CPrinterComboBox::Create( CWnd* pParentWnd, UINT nID, CRect rc )
+{
+	bool bSuccess = (CComboBox::Create( GetWndStyle(), rc, pParentWnd, nID ) != FALSE);
+
+	if( bSuccess && !ApplyPropertiesEnum() )
+		bSuccess = false;
+
+	InitToolTip();
+	SetToolTipEx(this, mToolTip, mpTemplate);
+
+	if( mpTemplate->GetLngProperty(nEventInvoke) == 1 )
+		m_bInvokeWithSendString = true;
+	else
+		m_bInvokeWithSendString = false;
+
+	return bSuccess;
 }
 
 CComboBox* CPrinterComboBox::FindPaperSizesCombo() const
@@ -125,34 +143,6 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CPrinterComboBox message handlers
-
-bool CPrinterComboBox::Create( CWnd* pParentWnd, UINT nID )
-{
-	return Create( pParentWnd, nID, mControlX.GetWndRect() );
-}
-
-bool CPrinterComboBox::Create( CWnd* pParentWnd, UINT nID, CRect rc )
-{
-	bool bSuccess =
-		CComboBox::Create( mControlX.GetWndStyle(),
-											 rc,
-											 pParentWnd,
-											 nID );
-	VERIFY(CWnd::SubclassDlgItem(nID, pParentWnd));
-
-	if( bSuccess && !mControlX.ApplyPropertiesEnum() )
-		bSuccess = false;
-
-	InitToolTip();
-	SetToolTipEx(this, m_ToolTip, mpSourceControl);
-
-	if( mpSourceControl->GetLngProperty(nEventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
-
-	return bSuccess;
-}
 
 int CPrinterComboBox::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
@@ -242,23 +232,23 @@ void CPrinterComboBox::SetTooltipText(CString* spText, BOOL bActivate)
 
 void CPrinterComboBox::InitToolTip()
 {
-	if (m_ToolTip.m_hWnd == NULL)
+	if (mToolTip.m_hWnd == NULL)
 	{
 		// Create ToolTip control
-		m_ToolTip.Create(this);
+		mToolTip.Create(this);
 		// Create inactive
-		m_ToolTip.Activate(FALSE);
+		mToolTip.Activate(FALSE);
 	}
 } // End of InitToolTip
 
 BOOL CPrinterComboBox::PreTranslateMessage(MSG* pMsg) 
 {
 	InitToolTip();
-	m_ToolTip.RelayEvent(pMsg);	
+	mToolTip.RelayEvent(pMsg);	
 	
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
 	{
-		if (mpSourceControl->GetBoolProperty(nReturnAsTab) == TRUE)
+		if (mpTemplate->GetBoolProperty(nReturnAsTab) == TRUE)
 			pMsg->wParam = VK_TAB;
 		
 	}
@@ -270,9 +260,9 @@ BOOL CPrinterComboBox::PreTranslateMessage(MSG* pMsg)
 void CPrinterComboBox::OnMouseMove(UINT nFlags, CPoint point) 
 {
 
-	if (mpSourceControl)
+	if (mpTemplate)
 		InvokeMethodIntIntInt(
-			mpSourceControl->GetStrProperty(nEventMouseMove),
+			mpTemplate->GetStrProperty(nEventMouseMove),
 			nFlags,
 			point.x,
 			point.y,
@@ -284,9 +274,9 @@ void CPrinterComboBox::OnMouseMove(UINT nFlags, CPoint point)
 
 void CPrinterComboBox::OnSetFocus(CWnd* pOldWnd) 
 {
-	if (mpSourceControl)
+	if (mpTemplate)
 		// call methods to invoke the event
-		InvokeMethod(mpSourceControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+		InvokeMethod(mpTemplate->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
 
 	CComboBox::OnSetFocus(pOldWnd);	
 	
@@ -294,9 +284,9 @@ void CPrinterComboBox::OnSetFocus(CWnd* pOldWnd)
 
 void CPrinterComboBox::OnKillFocus(CWnd* pNewWnd) 
 {
-	if (mpSourceControl)
+	if (mpTemplate)
 		// call methods to invoke the event
-		InvokeMethod(mpSourceControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+		InvokeMethod(mpTemplate->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
 
 
 
@@ -314,13 +304,13 @@ void CPrinterComboBox::OnSelchange()
 	GetLBText(nSel, sString.GetBuffer(nTextLength));
 	sString.ReleaseBuffer();
 
-	if( mpSourceControl )
+	if( mpTemplate )
 	{
 		CComboBox* pPaperSizesCombo = FindPaperSizesCombo();
 		if( !pPaperSizesCombo )
 		{
-			InvokeMethodIntString(mpSourceControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-			mpSourceControl->SetStringProperty(nText, sString);
+			InvokeMethodIntString(mpTemplate->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
+			mpTemplate->SetStringProperty(nText, sString);
 			return;
 		}
 
@@ -357,10 +347,10 @@ void CPrinterComboBox::OnSelchange()
 			pLayout->close();
 			es = acDocManager->unlockDocument(pDoc);
 			EndWaitCursor();
-			if (mpSourceControl)
+			if (mpTemplate)
 			{
-				InvokeMethodIntString(mpSourceControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-				mpSourceControl->SetStringProperty(nText, sString);
+				InvokeMethodIntString(mpTemplate->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
+				mpTemplate->SetStringProperty(nText, sString);
 			}
 			return;
 		}
@@ -390,8 +380,8 @@ void CPrinterComboBox::OnSelchange()
 
 		EndWaitCursor();
 
-		InvokeMethodIntString(mpSourceControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-		mpSourceControl->SetStringProperty(nText, sString);
+		InvokeMethodIntString(mpTemplate->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
+		mpTemplate->SetStringProperty(nText, sString);
 	}
 	else
 	{		
@@ -409,7 +399,7 @@ void CPrinterComboBox::OnDestroy()
 	CComboBox::OnDestroy();
 	
 	// delete the tool tip text control object
-	m_ToolTip.DelTool(this, 1);
+	mToolTip.DelTool(this, 1);
 	
 }
 

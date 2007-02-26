@@ -33,6 +33,7 @@
 #include "OdclLayerCombo.h"
 #include "LineWeightDlg.h"
 #include "LinetypeDlg.h"
+#include "ArxGraphicButtonCtrl.h"
 
 extern void SetPlotterPaperSizesCB(CComboBox *pComboBox);
 
@@ -3657,14 +3658,13 @@ void CSpreadSheet::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 	
 		if (m_pFolderButton == NULL)
 		{
-			m_pFolderButton = new CXPStyleButtonST;
-			m_pFolderButton->Create(this, rc, 192);
+			m_pFolderButton = new CArxGraphicButtonCtrl( m_ArxControl, m_pParentCtrlPane, 192 );
 			
 			m_pFolderButton->SetIcon(IDI_FOLDER2);
 			m_pFolderButton->SetThemeHelper(&m_ThemeHelper);
 			m_pFolderButton->SetFlat(FALSE);
 
-			m_pFolderButton->m_sOnClickedEvent = m_ArxControl->GetStrProperty(nEventBtnClicked);
+			m_pFolderButton->SetOnClickedEvent( m_ArxControl->GetStrProperty(nEventBtnClicked) );
 			m_pFolderButton->m_bInvokeWithSendString = m_bInvokeWithSendString;					
 		}
 		m_pFolderButton->m_nDirectory = nAsPick;
@@ -3676,14 +3676,13 @@ void CSpreadSheet::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 	{			
 		if (m_pPickButton == NULL)
 		{
-			m_pPickButton = new CXPStyleButtonST;
-			m_pPickButton->Create(this, rc, 192);
+			m_pPickButton = new CArxGraphicButtonCtrl( m_ArxControl, m_pParentCtrlPane, 192 );
 			
 			m_pPickButton->SetIcon(IDI_PICSM);
 			m_pPickButton->SetThemeHelper(&m_ThemeHelper);
 			m_pPickButton->SetFlat(FALSE);
 
-			m_pPickButton->m_sOnClickedEvent = m_ArxControl->GetStrProperty(nEventBtnClicked);
+			m_pPickButton->SetOnClickedEvent( m_ArxControl->GetStrProperty(nEventBtnClicked) );
 			m_pPickButton->m_bInvokeWithSendString = m_bInvokeWithSendString;		
 		}
 		m_pPickButton->m_nDirectory = nAsPick;
@@ -3695,14 +3694,13 @@ void CSpreadSheet::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 	{
 		if (m_pEllipsesButton == NULL)
 		{
-			m_pEllipsesButton = new CXPStyleButtonST;
-			m_pEllipsesButton->Create(this, rc, 193);
+			m_pEllipsesButton = new CArxGraphicButtonCtrl( m_ArxControl, m_pParentCtrlPane, 192 );
 
 			m_pEllipsesButton->SetWindowText(sDotDotDot);
 			m_pEllipsesButton->SetThemeHelper(&m_ThemeHelper);
 			m_pEllipsesButton->SetFlat(FALSE);
 
-			m_pEllipsesButton->m_sOnClickedEvent = m_ArxControl->GetStrProperty(nEventBtnClicked);
+			m_pEllipsesButton->SetOnClickedEvent( m_ArxControl->GetStrProperty(nEventBtnClicked) );
 			m_pEllipsesButton->m_bInvokeWithSendString = m_bInvokeWithSendString;
 		}
 		m_pEllipsesButton->m_nDirectory = nAsPick;

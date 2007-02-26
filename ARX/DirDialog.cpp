@@ -14,6 +14,7 @@ int __stdcall CDirDialog::BrowseCtrlCallback(HWND hwnd, UINT uMsg, LPARAM lParam
   CDirDialog* pDirDialogObj = (CDirDialog*)lpData;
   if (uMsg == BFFM_INITIALIZED )
   {
+		::SetForegroundWindow(hwnd);
     if( ! pDirDialogObj->msInitialFolder.IsEmpty() )
       ::SendMessage(hwnd, BFFM_SETSELECTION, TRUE, (LPARAM)(LPCTSTR)(pDirDialogObj->msInitialFolder));
   }

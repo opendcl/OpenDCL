@@ -153,7 +153,6 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories=".;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;EDITOR"
@@ -360,6 +359,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Common\Res\Filter.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\RES\Frame.ico"
 				>
 			</File>
@@ -404,11 +407,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\idr_main.ico"
+				RelativePath=".\RES\IDR_MAIN.ICO"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\IDR_MAIN.ICO"
+				RelativePath="..\Common\Res\idr_main.ico"
 				>
 			</File>
 			<File
@@ -424,11 +427,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Label.ico"
+				RelativePath="..\Common\Res\Label.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\Label.ico"
+				RelativePath=".\RES\Label.ico"
 				>
 			</File>
 			<File
@@ -508,6 +511,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Common\Res\pick.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\RES\PICK.ICO"
 				>
 			</File>
@@ -536,7 +543,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Select.ico"
+				RelativePath=".\Res\Select.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\Res\Select.ico"
 				>
 			</File>
 			<File
@@ -1391,6 +1402,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Common\ButtonCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\ButtonCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Common\ButtonST.cpp"
 				>
 			</File>
@@ -1488,6 +1507,14 @@
 			</File>
 			<File
 				RelativePath="..\Common\FontCollection.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\GraphicButtonCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\GraphicButtonCtrl.h"
 				>
 			</File>
 			<File
@@ -1647,6 +1674,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Common\ThemeHelperST.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\ThemeHelperST.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Common\TipWnd.cpp"
 				>
 			</File>
@@ -1680,6 +1715,14 @@
 			</File>
 			<File
 				RelativePath="..\Common\Workspace.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\XPStyleButtonST.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\XPStyleButtonST.h"
 				>
 			</File>
 		</Filter>

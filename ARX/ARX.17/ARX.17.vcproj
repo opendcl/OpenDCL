@@ -71,7 +71,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="rpcrt4.lib VFW32.LIB"
-				OutputFile="$(OutDir)/ObjectDCL2007.arx"
+				OutputFile="$(OutDir)/OpenDCL.17.arx"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
 				GenerateManifest="false"
@@ -160,7 +160,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="rpcrt4.lib VFW32.LIB"
-				OutputFile="$(OutDir)/ObjectDCL2007.arx"
+				OutputFile="$(OutDir)/OpenDCL.17.arx"
 				AdditionalLibraryDirectories=""
 				GenerateManifest="false"
 				SubSystem="2"
@@ -232,6 +232,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\ArxGraphicButtonCtrl.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\ArxProject.cpp"
 				>
 			</File>
@@ -241,10 +245,6 @@
 			</File>
 			<File
 				RelativePath="..\ArxWorkspace.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\ButtonST.cpp"
 				>
 			</File>
 			<File
@@ -321,10 +321,6 @@
 			</File>
 			<File
 				RelativePath="..\HtmlCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\LayeredWindowHelperST.cpp"
 				>
 			</File>
 			<File
@@ -440,19 +436,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ThemeHelperST.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\TreeCtrlEx.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\TreeCtrlFolder.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XPStyleButtonST.cpp"
 				>
 			</File>
 		</Filter>
@@ -481,6 +469,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\ArxGraphicButtonCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\ArxProject.h"
 				>
 			</File>
@@ -490,10 +482,6 @@
 			</File>
 			<File
 				RelativePath="..\ArxWorkspace.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ButtonST.h"
 				>
 			</File>
 			<File
@@ -570,10 +558,6 @@
 			</File>
 			<File
 				RelativePath="..\HtmlCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\LayeredWindowHelperST.h"
 				>
 			</File>
 			<File
@@ -681,19 +665,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ThemeHelperST.h"
-				>
-			</File>
-			<File
 				RelativePath="..\TreeCtrlEx.h"
 				>
 			</File>
 			<File
 				RelativePath="..\TreeCtrlFolder.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XPStyleButtonST.h"
 				>
 			</File>
 		</Filter>
@@ -710,7 +686,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Res\Filter.ico"
+				RelativePath="..\..\Common\Res\Filter.ico"
 				>
 			</File>
 			<File
@@ -742,7 +718,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\Res\idr_main.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\Res\Info.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\Res\Label.ico"
 				>
 			</File>
 			<File
@@ -782,7 +766,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Res\PICK.ICO"
+				RelativePath="..\..\Common\Res\pick.ico"
 				>
 			</File>
 			<File
@@ -814,7 +798,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Res\Select.ico"
+				RelativePath="..\..\Common\Res\Select.ico"
 				>
 			</File>
 			<File
@@ -1378,31 +1362,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\ButtonCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\ButtonCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\ButtonST.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Common\ButtonST.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1410,7 +1385,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1510,11 +1484,45 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\GraphicButtonCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\GraphicButtonCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\ImageListObject.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Common\ImageListObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\LayeredWindowHelperST.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\Common\LayeredWindowHelperST.h"
 				>
 			</File>
 			<File
@@ -1730,6 +1738,32 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\ThemeHelperST.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\Common\ThemeHelperST.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\TipWnd.cpp"
 				>
 			</File>
@@ -1763,6 +1797,32 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\Workspace.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\XPStyleButtonST.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\Common\XPStyleButtonST.h"
 				>
 			</File>
 		</Filter>

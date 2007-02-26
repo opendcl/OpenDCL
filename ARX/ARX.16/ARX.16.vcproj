@@ -71,7 +71,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="rpcrt4.lib VFW32.LIB"
-				OutputFile="$(OutDir)/ObjectDCL2004.arx"
+				OutputFile="$(OutDir)/OpenDCL.16.arx"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
 				GenerateManifest="false"
@@ -162,7 +162,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="rpcrt4.lib VFW32.LIB"
-				OutputFile="$(OutDir)/ObjectDCL2004.arx"
+				OutputFile="$(OutDir)/OpenDCL.16.arx"
 				AdditionalLibraryDirectories=""
 				GenerateManifest="false"
 				GenerateDebugInformation="false"
@@ -235,6 +235,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\ArxGraphicButtonCtrl.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\ArxProject.cpp"
 				>
 			</File>
@@ -244,10 +248,6 @@
 			</File>
 			<File
 				RelativePath="..\ArxWorkspace.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\ButtonST.cpp"
 				>
 			</File>
 			<File
@@ -324,10 +324,6 @@
 			</File>
 			<File
 				RelativePath="..\HtmlCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\LayeredWindowHelperST.cpp"
 				>
 			</File>
 			<File
@@ -427,19 +423,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ThemeHelperST.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\TreeCtrlEx.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\TreeCtrlFolder.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XPStyleButtonST.cpp"
 				>
 			</File>
 		</Filter>
@@ -468,6 +456,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\ArxGraphicButtonCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\ArxProject.h"
 				>
 			</File>
@@ -477,10 +469,6 @@
 			</File>
 			<File
 				RelativePath="..\ArxWorkspace.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ButtonST.h"
 				>
 			</File>
 			<File
@@ -557,10 +545,6 @@
 			</File>
 			<File
 				RelativePath="..\HtmlCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\LayeredWindowHelperST.h"
 				>
 			</File>
 			<File
@@ -668,19 +652,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ThemeHelperST.h"
-				>
-			</File>
-			<File
 				RelativePath="..\TreeCtrlEx.h"
 				>
 			</File>
 			<File
 				RelativePath="..\TreeCtrlFolder.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XPStyleButtonST.h"
 				>
 			</File>
 		</Filter>
@@ -697,7 +673,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Res\Filter.ico"
+				RelativePath="..\..\Common\Res\Filter.ico"
 				>
 			</File>
 			<File
@@ -777,7 +753,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Res\PICK.ICO"
+				RelativePath="..\..\Common\Res\pick.ico"
 				>
 			</File>
 			<File
@@ -809,7 +785,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Res\Select.ico"
+				RelativePath="..\..\Common\Res\Select.ico"
 				>
 			</File>
 			<File
@@ -1373,6 +1349,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\ButtonCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\ButtonCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\ButtonST.cpp"
 				>
 			</File>
@@ -1491,11 +1475,27 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\GraphicButtonCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\GraphicButtonCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\ImageListObject.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Common\ImageListObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\LayeredWindowHelperST.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\LayeredWindowHelperST.h"
 				>
 			</File>
 			<File
@@ -1711,6 +1711,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\ThemeHelperST.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\ThemeHelperST.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\TipWnd.cpp"
 				>
 			</File>
@@ -1744,6 +1752,14 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\Workspace.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\XPStyleButtonST.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\XPStyleButtonST.h"
 				>
 			</File>
 		</Filter>

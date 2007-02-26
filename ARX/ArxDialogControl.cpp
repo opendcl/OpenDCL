@@ -53,16 +53,7 @@
 #include "VdclTree.h"
 #include "VdclTextButton.h"
 #include "TabPage.h"
-
-
-//special version that deletes the control object in its destructor; used for old style controls
-class CArxOldStyleDialogControl : public CArxDialogControl
-{
-public:
-	CArxOldStyleDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pControl )
-		: CArxDialogControl( pTemplate, pPane, pControl ) {}
-	virtual ~CArxOldStyleDialogControl() { delete mpControl; }
-};
+#include "ArxGraphicButtonCtrl.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -118,7 +109,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 				ACS_CENTER |ACS_AUTOPLAY|ACS_TRANSPARENT, 
 				rc, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlImageComboBox:
 		{			
@@ -131,35 +122,35 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->m_pControlPane = pPane;
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);			
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlDwgList:
 		{
 			CDwgDirList *pControl = new CDwgDirList;
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);			
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlOptionList:
 		{
 			COptionListBox *pControl = new COptionListBox;
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);			
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlActiveX:
 		{
 			CAxContainer *pControl = new CAxContainer( pPane->GetSourceForm() );
 			pControl->CreateCtrl(pTemplate->m_clsid, pTemplate, nID, pPane->GetHostDialog());		
 			//ZOrderFront(pControl);	
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case Ctl3DRect:
 		{
 			VdclStatic *pControl = new VdclStatic;
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);			
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 
 	case CtlHatch:
@@ -167,7 +158,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			CGsPreviewCtrl *pControl = new CGsPreviewCtrl;
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}	
 	
 	case CtlBlockView:	
@@ -175,7 +166,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			CGsPreviewCtrl *pControl = new CGsPreviewCtrl;
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}	
 	
 	case CtlGrid:
@@ -184,10 +175,10 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			pControl->SetThemeHelper(pPane->GetThemeHelper());
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}	
-	case CtlListView: return TDialogControlLockedPtr((new OdclListCtrl( *pPane, pTemplate, nID ))->GetDialogControl());
-	case CtlBlockList: return TDialogControlLockedPtr((new OdclListCtrl( *pPane, pTemplate, nID ))->GetDialogControl());
+	case CtlListView: return *new OdclListCtrl( *pPane, pTemplate, nID );
+	case CtlBlockList: return *new OdclListCtrl( *pPane, pTemplate, nID );
 	
 	case CtlCheckBox:
 		{
@@ -195,7 +186,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}	
 	case CtlComboBox:
 		{			
@@ -207,7 +198,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}	
 	
 	case CtlFrame:
@@ -215,7 +206,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			VdclGroupBox *pControl = new VdclGroupBox;
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}	
 	case CtlGraphicButton:	
 		{			
@@ -228,7 +219,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}	
 	case CtlLabel:
 		{
@@ -236,7 +227,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);			
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// // ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}			
 	case CtlListBox:
 		{
@@ -244,7 +235,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// // ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}		
 	case CtlOptionButton:
 		{
@@ -252,7 +243,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlPictureBox:
 		{
@@ -262,7 +253,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetProject(), pPane->GetHostDialog(), nID);	
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlProgress:
 		{
@@ -270,7 +261,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}			
 		
 	case CtlRoundSlider:
@@ -279,7 +270,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}			
 	case CtlScrollBar:
 		{
@@ -287,7 +278,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}				
 
 	case CtlSlider:
@@ -296,10 +287,10 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 
-	case CtlSlideView: return TDialogControlLockedPtr((new CSlideHolder( *pPane, pTemplate, nID ))->GetDialogControl());
+	case CtlSlideView: return *new CSlideHolder( *pPane, pTemplate, nID );
 		
 	case CtlSpinButton:		
 		{
@@ -307,7 +298,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlStaticURL:		
 		{
@@ -315,7 +306,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlHtmlCtrl:
 		{
@@ -323,7 +314,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlStdButton:
 		{
@@ -332,14 +323,14 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			// set the properties of the control
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlTextBox:
 		{			
 			return CreateEditControl(pTemplate, pPane, nID);
 		}			
 	
-	case CtlTabStrip: return TDialogControlLockedPtr((new VdclTab( *pPane, pTemplate, nID ))->GetDialogControl());
+	case CtlTabStrip: return *new VdclTab( *pPane, pTemplate, nID );
 
 	case CtlTree:	
 		{
@@ -347,7 +338,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}			
 	}
 	return NULL;
@@ -356,82 +347,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 //static
 TDialogControlPtr CArxDialogControl::CreateGraphicButton(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID)
 {
-	CWnd* pParentWnd = pPane->GetHostDialog();
-	// check the control type to determine which control to create
-	switch(pTemplate->GetLngProperty(nButtonStyle))
-	{
-	case ButtonStyle_Filter:
-		{
-			CXPStyleButtonST *pControl = new CXPStyleButtonST;
-			pControl->Create(pTemplate, pPane->GetProject(), pParentWnd, nID);
-			//pControl->SetDefaultActiveFgColor(FALSE);
-			pControl->SetThemeHelper(pPane->GetThemeHelper());
-			pControl->SetFlat(FALSE);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			pControl->SetIcon(IDI_FILTER);
-			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
-		}
-	case ButtonStyle_Flat:
-		{
-			CXPStyleButtonST *pControl = new CXPStyleButtonST;
-			pControl->Create(pTemplate, pPane->GetProject(), pParentWnd, nID);
-			pControl->SetThemeHelper(pPane->GetThemeHelper());
-			pControl->SetFlat(TRUE);
-			pControl->DrawAsToolbar(TRUE);
-			//pControl->SetButtonStyle(
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
-		}
-	case ButtonStyle_Pick:
-		{
-			CXPStyleButtonST *pControl = new CXPStyleButtonST;
-			pControl->Create(pTemplate, pPane->GetProject(), pParentWnd, nID);
-			pControl->SetFlat(FALSE);
-			pControl->SetThemeHelper(pPane->GetThemeHelper());
-			pControl->SetIcon(IDI_PICK);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
-		}
-	case ButtonStyle_Raised:
-		{
-			CXPStyleButtonST *pControl = new CXPStyleButtonST;
-			pControl->Create(pTemplate, pPane->GetProject(), pParentWnd, nID);
-			pControl->SetFlat(FALSE);
-			pControl->SetThemeHelper(pPane->GetThemeHelper());
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
-		}
-	case ButtonStyle_NoBorder:
-		{
-			CXPStyleButtonST *pControl = new CXPStyleButtonST;
-			pControl->Create(pTemplate, pPane->GetProject(), pParentWnd, nID);
-			pControl->SetFlat(TRUE);
-			pControl->SetThemeHelper(pPane->GetThemeHelper());
-			pControl->DrawBorder(FALSE);
-			pControl->m_bHasBorder = FALSE;
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
-		}
-	
-	case ButtonStyle_Select:
-		{
-			CXPStyleButtonST *pControl = new CXPStyleButtonST;
-			pControl->Create(pTemplate, pPane->GetProject(), pParentWnd, nID);
-			pControl->SetFlat(FALSE);
-			pControl->SetThemeHelper(pPane->GetThemeHelper());
-			 
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			pControl->SetIcon(IDI_SELECT);
-			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
-		}
-	}
-	return NULL;
+	return *new CArxGraphicButtonCtrl( pTemplate, pPane, nID );
 }
 
 //static
@@ -448,7 +364,7 @@ TDialogControlPtr CArxDialogControl::CreateEditControl(CDclControlObject* pTempl
 			pControl->Create(pTemplate, pParentWnd, nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case EditFilter_Integer:
 		{
@@ -456,7 +372,7 @@ TDialogControlPtr CArxDialogControl::CreateEditControl(CDclControlObject* pTempl
 			pControl->Create(pTemplate, pParentWnd, nID);		
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case EditFilter_Numeric:
 		{
@@ -464,7 +380,7 @@ TDialogControlPtr CArxDialogControl::CreateEditControl(CDclControlObject* pTempl
 			pControl->Create(pTemplate, pParentWnd, nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case EditFilter_Symbol:
 		{
@@ -472,7 +388,7 @@ TDialogControlPtr CArxDialogControl::CreateEditControl(CDclControlObject* pTempl
 			pControl->Create(pTemplate, pParentWnd, nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	default:
 		{
@@ -480,7 +396,7 @@ TDialogControlPtr CArxDialogControl::CreateEditControl(CDclControlObject* pTempl
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);	
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	}
 	return NULL;
@@ -496,7 +412,7 @@ TDialogControlPtr CArxDialogControl::CreateComboExControl(CDclControlObject* pTe
 	UpdateChildControl(pControl, pTemplate, pPane, nID);
 	// can't do ZOrderFront, it fucks up the display of the CComboBoxEx for some unknown reason.
 	// // ZOrderFront(pControl);
-	return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+	return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 }
 
 //static
@@ -513,7 +429,7 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 			pControl->Create(pTemplate, pParentWnd, nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CmboStyle_Simple:
 		{			
@@ -521,7 +437,7 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 			pControl->Create(pTemplate, pParentWnd, nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CmboStyle_DropDown:
 		{			
@@ -529,7 +445,7 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 			pControl->Create(pTemplate, pParentWnd, nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CmboStyle_ArrowHead:
 		{	
@@ -537,7 +453,7 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 			pControl->Create(pTemplate, pParentWnd, nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CmboStyle_Color:
 		{
@@ -545,7 +461,7 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 			pControl->Create(pTemplate, pParentWnd, nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}			
 	case CmboStyle_LineWeight:
 		{			
@@ -553,7 +469,7 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 			pControl->Create(pTemplate, pParentWnd, nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CmboStyle_PlotNames:
 		{			
@@ -561,7 +477,7 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 			pControl->Create(pTemplate, pParentWnd, nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CmboStyle_PlotTables:
 		{			
@@ -569,7 +485,7 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 			pControl->Create(pTemplate, pParentWnd, nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	
 	case CmboStyle_FontDropList:
@@ -578,7 +494,7 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 			pControl->Create(pTemplate, pParentWnd, nID);
 			// ZOrderFront(pControl);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	
 	case CmboStyle_FontSimpleList:
@@ -587,16 +503,16 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 			pControl->Create(pTemplate, pParentWnd, nID);
 			// ZOrderFront(pControl);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
-	case CmboStyle_Plotters: return TDialogControlLockedPtr((new CPrinterComboBox( *pPane, pTemplate, nID ))->GetDialogControl());
+	case CmboStyle_Plotters: return *new CPrinterComboBox( *pPane, pTemplate, nID );
 	case CmboStyle_PlotterPaperSizes:
 		{
 			VdclComboBox *pControl = new VdclComboBox;
 			pControl->Create(pTemplate, pParentWnd, nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	case CmboStyle_DirPicker:
 		{
@@ -609,7 +525,7 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
 			SetDwgListComboFolderLink(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	
 	case CmboStyle_Layers:
@@ -618,7 +534,7 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 			pControl->Create(pTemplate, pParentWnd, nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
-			return new CArxOldStyleDialogControl( pTemplate, pPane, pControl );
+			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
 	}
 	return NULL;
@@ -809,11 +725,11 @@ void CArxDialogControl::UpdateFont(CDclControlObject *pArxObject, CWnd *pControl
 		((VdclComboBoxEx*)pControl)->SetFont(pFont);	
 		break;
 		}	
-	case CtlGraphicButton:
-		{
-		((CXPStyleButtonST*)pControl)->SetFont(pFont);
-		break;
-		}
+	//case CtlGraphicButton:
+	//	{
+	//	((CArxGraphicButtonCtrl*)pControl)->SetFont(pFont);
+	//	break;
+	//	}
 	case CtlFrame:		
 		{		
 		((VdclGroupBox*)pControl)->m_Frame.SetFont(NULL);	
@@ -1034,9 +950,9 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 				((CStaticLink*)pControlWnd)->SetAcadColor(pControl->GetLngProperty(nAcadColor));
 				break;		
 
-			case CtlGraphicButton:
-				((CXPStyleButtonST*)pControlWnd)->SetAcadColor(pControl->GetLngProperty(nAcadColor));
-				break;
+			//case CtlGraphicButton:
+			//	((CArxGraphicButtonCtrl*)pControlWnd)->SetAcadColor(pControl->GetLngProperty(nAcadColor));
+			//	break;
 			
 			}
 		if (pControl->GetType() != CtlPictureBox && 
@@ -1057,9 +973,9 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			case CtlCheckBox:
 				((CClrButton*)pControlWnd)->SetForeColor(pControl->GetLngProperty(nForeColor));
 				break;
-			case CtlGraphicButton:
-				((CXPStyleButtonST*)pControlWnd)->SetForeColor(pControl->GetLngProperty(nForeColor));
-				break;
+			//case CtlGraphicButton:
+			//	((CArxGraphicButtonCtrl*)pControlWnd)->SetForeColor(pControl->GetLngProperty(nForeColor));
+			//	break;
 			case CtlTextBox:
 				switch (pControl->GetLngProperty(nFilterStyle))
 				{
@@ -1108,10 +1024,9 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			case CtlPictureBox:
 				((CPictureBox*)pControlWnd)->m_AutoSize = pControl->GetBoolProperty(nAutoSize);
 				break;
-			case CtlGraphicButton:		
-				//((CBtnST*)pControlWnd)->SetAcadColor(pControl->GetLngProperty(nAutoSize));
-				//to be done
-				break;
+			//case CtlGraphicButton:		
+			//	((CBtnST*)pControlWnd)->SetAcadColor(pControl->GetLngProperty(nAutoSize));
+			//	break;
 			}
 			break;
 		}
@@ -1221,9 +1136,9 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			case CtlStdButton:
 				((VdclTextButton*)pControlWnd)->SetDragnDrop(pControl->GetBoolProperty(nDragnDropAllowDrop));
 				break;
-			case CtlGraphicButton:
-				((CXPStyleButtonST*)pControlWnd)->SetDragnDrop(pControl->GetBoolProperty(nDragnDropAllowDrop));
-				break;			
+			//case CtlGraphicButton:
+			//	((CArxGraphicButtonCtrl*)pControlWnd)->SetDragnDrop(pControl->GetBoolProperty(nDragnDropAllowDrop));
+			//	break;			
 			case CtlDwgList:
 				((CDwgDirList*)pControlWnd)->SetDragnDrop(pControl->GetBoolProperty(nDragnDropAllowDrop));
 				break;			
@@ -1552,11 +1467,11 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 		{
 			switch (pControl->GetType())
 			{
-			case CtlGraphicButton:		
-				((CXPStyleButtonST *)pControlWnd)->SetPictureID(pControl->GetLngProperty(nPicture));
-				((CXPStyleButtonST *)pControlWnd)->SetPressedPictureID(pControl->GetLngProperty(nPressedPicture));
-				pControlWnd->Invalidate();
-				break;
+			//case CtlGraphicButton:		
+			//	((CArxGraphicButtonCtrl *)pControlWnd)->SetPictureID(pControl->GetLngProperty(nPicture));
+			//	((CArxGraphicButtonCtrl *)pControlWnd)->SetPressedPictureID(pControl->GetLngProperty(nPressedPicture));
+			//	pControlWnd->Invalidate();
+			//	break;
 			case CtlPictureBox:		
 				((CPictureBox *)pControlWnd)->SetPictureID(pControl->GetLngProperty(nPicture));
 				break;
@@ -1797,17 +1712,17 @@ void CArxDialogControl::UpdateText(CDclControlObject *pTemplate, CWnd *pControl,
 			((VdclComboBoxEx*)pControl)->SetWindowText(sText);	
 			break;
 			}
-		case CtlGraphicButton:
-			{
-			CString sOldText;
-			((CXPStyleButtonST*)pControl)->GetWindowText(sOldText);
-			if (sOldText != sText)
-			{
-				((CXPStyleButtonST*)pControl)->SetWindowText(sText);
-				((CXPStyleButtonST*)pControl)->Invalidate();
-			}
-			break;
-			}
+		//case CtlGraphicButton:
+		//	{
+		//	CString sOldText;
+		//	((CArxGraphicButtonCtrl*)pControl)->GetWindowText(sOldText);
+		//	if (sOldText != sText)
+		//	{
+		//		((CArxGraphicButtonCtrl*)pControl)->SetWindowText(sText);
+		//		((CArxGraphicButtonCtrl*)pControl)->Invalidate();
+		//	}
+		//	break;
+		//	}
 		case CtlFrame:		
 			{		
 			((VdclGroupBox*)pControl)->m_Frame.SetWindowText(sText);	
@@ -1951,7 +1866,7 @@ void CArxDialogControl::ChangeToolTipText(CDclControlObject *pArxObject, CWnd *p
 		}
 	case CtlSlideView:
 		{
-		SetToolTipEx(pControl, ((CSlideHolder*)pControl)->m_ToolTip, pArxObject);
+		SetToolTipEx(pControl, ((CSlideHolder*)pControl)->mToolTip, pArxObject);
 		//((CSlideHolder*)pControl)->SetTooltipText(&sToolTipText, TRUE);
 		break;
 		}
@@ -2053,8 +1968,8 @@ void CArxDialogControl::ChangeToolTipText(CDclControlObject *pArxObject, CWnd *p
 
 	case CtlGraphicButton:
 		{
-		SetToolTipEx(pControl, ((CXPStyleButtonST*)pControl)->m_ToolTip, pArxObject);
-		//((CXPStyleButtonST*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		SetToolTipEx(pControl, ((CArxGraphicButtonCtrl*)pControl)->GetToolTipCtrl(), pArxObject);
+		//((CArxGraphicButtonCtrl*)pControl)->SetTooltipText(&sToolTipText, TRUE);
 		break;
 		}
 	case CtlActiveX:

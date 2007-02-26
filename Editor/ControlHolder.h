@@ -4,6 +4,7 @@
 #pragma once
 
 
+#include "ControlPane.h"
 #include "GripRect.h"
 
 #define nGripSizeConst  7
@@ -18,25 +19,23 @@ class AxPropertyDescriptor;
 /////////////////////////////////////////////////////////////////////////////
 // CControlHolder window
 
-class CControlHolder : public CStatic
+class CControlHolder : public CStatic, public CControlPane
 {
+	CDclControlObject* mpTemplate;
+	TDialogControlPtr mpDlgControl;
+
 // Construction
-public:
-	CControlHolder();
 protected:
-	DECLARE_DYNCREATE(CControlHolder)
-// ActiveX attributes
+	CControlHolder();
+public:
+	CControlHolder( CDclControlObject* pTemplate );
+	virtual ~CControlHolder();
+
 public:	
-	class CDclControlObject *m_pArxObject;
 	bool m_bActiveXCtrl;
-// ActiveX  opertations
+
+	// Attributes
 public:
-	HRESULT SaveToStream( IStream* pStream );
-	
-	
-// Attributes
-public:
-	
 	CString m_ClassName;
 	CFont m_Font;
 	int m_ControlId;
@@ -56,6 +55,35 @@ public:
 	RefCountedPtr< CPropertyObject > m_pTopProp;
 	RefCountedPtr< CPropertyObject > m_pWidthProp;
 	RefCountedPtr< CPropertyObject > m_pHeightProp;
+
+public:
+	const CDclControlObject* GetTemplate() const { return mpTemplate; }
+	CDclControlObject* GetTemplate() { return mpTemplate; }
+	TDialogControlPtr GetControl() const { return mpDlgControl; }
+	void SetControl( TDialogControlPtr pControl ) { mpDlgControl = pControl; }
+
+	void UpdateClientHeight();
+	void CheckAutoSizeProp();
+	void UpdateProperty(PropertyId nID);
+	void ResetImageList(CWnd *pControl, int nID);
+	CSize GetControlSize(CWnd *pControl, int nControlType);
+	void UpdateChildControl();
+	void SetupTreeControl(CTreeCtrl *pControl);
+	CWnd* CreateComboBox(CDclControlObject *pArxObject);
+	CWnd* CreateTextBox(CDclControlObject *pArxObject);
+	bool CreateNewDialogControl();
+
+
+// CControlPane
+public:
+	virtual bool FindControl(HWND hwndControl, /*out*/ CString& sControlName) const { return false; }
+	virtual TDialogControlPtr FindControl(HWND hwndControl) const { return NULL; }
+	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const { return NULL; }
+protected:
+	virtual TDialogControlPtr CreateNewDialogControl( CDclControlObject* pTemplate, UINT nID ) { return NULL; }
+
+public:
+	HRESULT SaveToStream( IStream* pStream );
 
 // Operations
 public:
@@ -91,10 +119,6 @@ public:
 	virtual BOOL OnAmbientProperty(COleControlSite* pSite, DISPID dispid, VARIANT* pvar);
 	//}}AFX_VIRTUAL
 
-// Implementation
-public:
-	virtual ~CControlHolder();
-
 	// Generated message map functions
 protected:
 	//{{AFX_MSG(CControlHolder)
@@ -110,4 +134,6 @@ protected:
 	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void ParentNotify(UINT /*message*/, LPARAM /*lParam*/);
 };

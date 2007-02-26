@@ -519,82 +519,80 @@ RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxMethodDescript
   return NULL;
 }
 
-CDclFormObject* CProject::GetDclForm(CString DclFormName)
-{
-  POSITION pos;
-  int nCount = 0;
-
-  while (nCount < mDclForms.GetCount())
-  {
-    // always get the first index when clearing a list
-    pos = mDclForms.FindIndex(nCount);
-
-    // get the object
-    CDclFormObject *pDclForm = mDclForms.GetAt(pos);
-
-    // if this dcl form's name matches the one queried for
-    if (pDclForm->GetKeyName() == DclFormName)
-      // return the dcl form pointer
-      return pDclForm;
-
-    // increment the counter to include the next object
-    nCount++;
-  }
-  return NULL;
-}
-
-
-CDclFormObject* CProject::GetParentDclForm(CString sParentName)
+CDclFormObject* CProject::FindDclForm( LPCTSTR pszDclFormName ) const
 {
 	POSITION pos = mDclForms.GetHeadPosition();
-	while (pos)
+	while( pos )
 	{
-		CDclFormObject* pDclForm = mDclForms.GetNext(pos);
-    if (pDclForm->GetUniqueName() == sParentName)
+    CDclFormObject* pDclForm = mDclForms.GetNext( pos );
+    if( pDclForm->GetKeyName().CompareNoCase( pszDclFormName ) == 0 )
       return pDclForm;
 	}
   return NULL;
 }
 
+CDclFormObject* CProject::FindDclFormWithVarName( LPCTSTR pszVarName ) const
+{
+	POSITION pos = mDclForms.GetHeadPosition();
+	while( pos )
+	{
+    CDclFormObject* pDclForm = mDclForms.GetNext( pos );
+    if( pDclForm->GetControlProperties()->GetStrProperty( nGlobalVarName ).CompareNoCase( pszVarName ) == 0 )
+      return pDclForm;
+	}
+  return NULL;
+}
 
-CDclFormObject* CProject::GetDclTabChildForm(CString sDclParentUniqueName, int nTabIndex)
+CDclControlObject* CProject::FindControlWithVarName( LPCTSTR pszVarName ) const
+{
+	POSITION pos = mDclForms.GetHeadPosition();
+	while( pos )
+	{
+    CDclFormObject* pDclForm = mDclForms.GetNext( pos );
+		CDclControlObject* pControl = pDclForm->FindControlWithVarName( pszVarName );
+    if( pControl )
+      return pControl;
+	}
+  return NULL;
+}
+
+CDclFormObject* CProject::FindParentDclForm( LPCTSTR pszParentFormName ) const
+{
+	POSITION pos = mDclForms.GetHeadPosition();
+	while( pos )
+	{
+		CDclFormObject* pDclForm = mDclForms.GetNext( pos );
+    if( pDclForm->GetUniqueName() == pszParentFormName )
+      return pDclForm;
+	}
+  return NULL;
+}
+
+CDclFormObject* CProject::FindDclTabChildForm( LPCTSTR pszParentFormName, int nTabIndex ) const
 {
 	POSITION pos = mDclForms.GetHeadPosition();
 	while (pos)
 	{
 		CDclFormObject* pDclForm = mDclForms.GetNext(pos);
-    if (pDclForm->GetParentName() == sDclParentUniqueName && pDclForm->GetTabIndex() == nTabIndex)
+    if (pDclForm->GetParentName() == pszParentFormName && pDclForm->GetTabIndex() == nTabIndex)
       return pDclForm;
 	}
   return NULL;
   return NULL;
 }
 
-int CProject::CountDeletedForms()
+size_t CProject::CountDeletedForms() const
 {
-  // set counter for mDclForms
-  int nCount = mDclForms.GetCount();
-  int nDeleted = 0;
-
-  // set start position for navigating mDclForms
+  size_t ctDeleted = 0;
   POSITION pos = mDclForms.GetHeadPosition();
-
-  // do loop to navigate mDclForms
-  while (pos != NULL)
+  while( pos )
   {
-    // get current mDclForms
-    CDclFormObject *pDclForm = mDclForms.GetNext(pos);
-
-    if (pDclForm->m_bDeleted)
-      nDeleted++;
-
-    // increment counter
-    nCount--;
+    CDclFormObject* pDclForm = mDclForms.GetNext( pos );
+    if( pDclForm->m_bDeleted )
+      ++ctDeleted;
   }
-
-  return nDeleted;
+  return ctDeleted;
 }
-
 
 HBITMAP CProject::GetBitmap(UINT nID, CSize &sz) const
 {
@@ -623,7 +621,6 @@ HBITMAP CProject::GetBitmap(UINT nID, CSize &sz) const
 	return hBmp;
 }
 
-
 HICON CProject::GetIcon(UINT nID) const
 {
 	HICON hIcon = NULL;
@@ -649,7 +646,6 @@ HICON CProject::GetIcon(UINT nID) const
 	}
 	return hIcon;
 }
-
 
 CPictureObject* CProject::FindPicture( UINT nID ) const
 {
@@ -722,6 +718,8 @@ IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 		{ //this file is in plain text format
 			SrcFile.Close();
 			IOStatus stat = ReadFromTextFile( pszFilePath );
+			if( msKeyName.IsEmpty() )
+				SetKeyName( msBaseFileName.SpanExcluding( _T(".") ) );
 			return stat;
 		}
 
@@ -733,6 +731,8 @@ IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 			archSource.m_bForceFlat = FALSE;
 			if( SrcFile.GetLength() != 0 )
 				Serialize(archSource);     // load me
+			if( msKeyName.IsEmpty() )
+				SetKeyName( msBaseFileName.SpanExcluding( _T(".") ) );
 		}
 		catch(...)
 		{

@@ -6,12 +6,12 @@
 #include "OdclListCtrl.h"
 #include "SpreadSheetHdr.h"
 #include "ThemeHelperST.h"
-#include "XPStyleButtonST.h"
 #include "PPToolTip.h"
 
 class CThemeHelperST;
 class CPropertyObject;
 class CDclControlObject;
+class CArxGraphicButtonCtrl;
 
 const int Grid_CheckBoxes		= 1;
 const int Grid_OptionButtons	= 2;
@@ -162,9 +162,9 @@ public:
 	
 	CThemeHelperST		m_ThemeHelper;
 	
-	CXPStyleButtonST *m_pEllipsesButton;
-	CXPStyleButtonST *m_pPickButton;
-	CXPStyleButtonST *m_pFolderButton;
+	CArxGraphicButtonCtrl *m_pEllipsesButton;
+	CArxGraphicButtonCtrl *m_pPickButton;
+	CArxGraphicButtonCtrl *m_pFolderButton;
 
 	COLORREF alertnateColor;
 	bool	 m_bOrientationVer;

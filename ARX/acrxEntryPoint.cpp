@@ -559,7 +559,7 @@ bool RetrieveFormFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDclFormObject*& p
 
 			if (pArgs->restype != RTSTR)
 				return false; //wrong argument type
-			pForm = theArxWorkspace.GetForm(pszProjectName, pArgs->resval.rstring);
+			pForm = theArxWorkspace.FindForm(pszProjectName, pArgs->resval.rstring);
 			break;
 		}
 	default:
@@ -977,7 +977,7 @@ public:
 		//}
 		
 		// get the dcl form object that will be displayed
-		mpDclToBeShown = mpProjectToBeShown->GetDclForm(msDialogToBeShown);
+		mpDclToBeShown = mpProjectToBeShown->FindDclForm(msDialogToBeShown);
 		mpDclToBeShown->EnsureIsLoaded();
 
 		CDclControlObject *pProps = mpDclToBeShown->GetControlProperties();

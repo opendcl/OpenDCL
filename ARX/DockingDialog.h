@@ -41,19 +41,18 @@ protected:
 class CDockingDialog : public CAdUiDockControlBar
 {
 	CDockingDialogX mDialogX;
+	bool mbClosing;
+	bool mbHiding;
 
 public:
 	CAcadDocReactor		*m_pDocToModReactor;
 
-	bool				m_bClosing;
 	int					m_FloatingHeight;		
 	int					m_FloatingWidth;
 	int					m_DockedWidth;
 	int					m_DockedHeight;	
 	bool				m_bDockingSizeAdjusted;
 	bool				m_bFloatingSizeAdjusted;
-
-	enum { IDD = 13100 };
 
 // Construction
 public:

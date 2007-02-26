@@ -12,34 +12,14 @@ class CControlPane;
 class CDclControlObject;
 
 
-class CAcadSlideControlX : public CArxDialogControl
-{
-public:
-	CAcadSlideControlX( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pWnd )
-		: CArxDialogControl( pTemplate, pPane, pWnd ) {}
-	virtual ~CAcadSlideControlX() {}
-
-	// attributes
-	virtual DWORD GetWndStyle() const; //get window style from properties
-
-	// operations
-	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
-};
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CSlideHolder window
 
-class CSlideHolder : public CButton
+class CSlideHolder : public CButton, public CArxDialogControl
 {
-protected:
-	CAcadSlideControlX mControlX;
-	CDclControlObject* mpSourceControl;	
-	CControlPane* mpControlPane;
 	CxAcadSlide mSlideCtrl;
 
 public:
-	CPPToolTip  		m_ToolTip;	
 	bool				m_bInvokeWithSendString;	
 	CRect				m_rcFocus;
 	bool				m_bSelectedRect;
@@ -55,14 +35,12 @@ public:
 	CSlideHolder( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID );
 	virtual ~CSlideHolder();
 
-// Interface
+// DialogControl Interface
 public:
-	CArxDialogControl& GetDialogControl() { return mControlX; }
-	const CArxDialogControl& GetDialogControl() const { return mControlX; }
-
-// Operations
-public:
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual DWORD GetWndStyle() const;
+	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
 
 // Implementation
 public:

@@ -85,7 +85,7 @@ bool CDialogObject::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 
 bool CDialogObject::SetFocus()
 {
-	::SetFocus( GetHWnd() );
+	::SetFocus( ::GetWindow( GetHWnd(), GW_CHILD ) );
 	return true;
 }
 

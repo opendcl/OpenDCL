@@ -1,13 +1,17 @@
 #include "stdafx.h"
 #include "ThemeHelperST.h"
 
+#ifdef _DEBUG
+#undef THIS_FILE
+static char THIS_FILE[]=__FILE__;
+#define new DEBUG_NEW
+#endif
 
-const TCHAR sDll[] = _T("UxTheme.dll");
 CThemeHelperST::CThemeHelperST()
 {
 	// Load DLL. This call will fails (and return NULL) if
 	// we are not running under Windows XP (or greater)
-	m_hDll = ::LoadLibrary(sDll);
+	m_hDll = ::LoadLibrary(_T("UxTheme.dll"));
 }
 
 CThemeHelperST::~CThemeHelperST()
@@ -27,21 +31,18 @@ LPVOID CThemeHelperST::GetProc(LPCSTR szProc, LPVOID pfnFail)
 	return lpRet;
 } // End of GetProc
 
-const char sOpen[] = "OpenThemeData";
 HTHEME CThemeHelperST::OpenThemeData(HWND hwnd, LPCWSTR pszClassList)
 {
-	PFNOPENTHEMEDATA pfnOpenThemeData = (PFNOPENTHEMEDATA)GetProc(sOpen, (LPVOID)OpenThemeDataFail);
+	PFNOPENTHEMEDATA pfnOpenThemeData = (PFNOPENTHEMEDATA)GetProc("OpenThemeData", (LPVOID)OpenThemeDataFail);
 	return (*pfnOpenThemeData)(hwnd, pszClassList);
 } // End of OpenThemeData
 
-const char sClose[] = "CloseThemeData";
 HRESULT CThemeHelperST::CloseThemeData(HTHEME hTheme)
 {
-	PFNCLOSETHEMEDATA pfnCloseThemeData = (PFNCLOSETHEMEDATA)GetProc(sClose, (LPVOID)CloseThemeDataFail);
+	PFNCLOSETHEMEDATA pfnCloseThemeData = (PFNCLOSETHEMEDATA)GetProc("CloseThemeData", (LPVOID)CloseThemeDataFail);
 	return (*pfnCloseThemeData)(hTheme);
 } // End of CloseThemeData
 
-const char sDrawBack[] = "DrawThemeBackground";
 HRESULT CThemeHelperST::DrawThemeBackground(HTHEME hTheme, HWND hWnd, HDC hdc, int iPartId, int iStateId, const RECT* pRect, const RECT* pClipRect)
 {
   PFNDRAWTHEMEPARENTBACKGROUND pfnDrawThemeParentBackground = (PFNDRAWTHEMEPARENTBACKGROUND)GetProc("DrawThemeParentBackground", NULL);
@@ -50,7 +51,7 @@ HRESULT CThemeHelperST::DrawThemeBackground(HTHEME hTheme, HWND hWnd, HDC hdc, i
 	  (*pfnDrawThemeParentBackground)(hWnd, hdc, (PRECT)pRect);  
   } // if
   
-  PFNDRAWTHEMEBACKGROUND pfnDrawThemeBackground = (PFNDRAWTHEMEBACKGROUND)GetProc(sDrawBack, (LPVOID)DrawThemeBackgroundFail);
+  PFNDRAWTHEMEBACKGROUND pfnDrawThemeBackground = (PFNDRAWTHEMEBACKGROUND)GetProc("DrawThemeBackground", (LPVOID)DrawThemeBackgroundFail);
 	return (*pfnDrawThemeBackground)(hTheme, hdc, iPartId, iStateId, pRect, pClipRect);
 } // End of DrawThemeBackground
 
@@ -60,16 +61,14 @@ HRESULT CThemeHelperST::DrawThemeText(HTHEME hTheme, HDC hdc, int iPartId, int i
 	return (*pfn)(hTheme, hdc, iPartId, iStateId, pszText, iCharCount, dwTextFlags, dwTextFlags2, pRect);
 } // End of DrawThemeText
 
-const char sIsApp[] = "IsAppThemed";
 BOOL CThemeHelperST::IsAppThemed()
 {
-	PFNISAPPTHEMED pfnIsAppThemed = (PFNISAPPTHEMED)GetProc(sIsApp, (LPVOID)IsAppThemedFail);
+	PFNISAPPTHEMED pfnIsAppThemed = (PFNISAPPTHEMED)GetProc("IsAppThemed", (LPVOID)IsAppThemedFail);
 	return (*pfnIsAppThemed)();
 } // End of IsAppThemed
 
-const char sIsThemeActive[] = "IsThemeActive";
 BOOL CThemeHelperST::IsThemeActive()
 {
-	PFNISTHEMEACTIVE pfn = (PFNISTHEMEACTIVE)GetProc(sIsThemeActive, (LPVOID)IsThemeActiveFail);
+	PFNISTHEMEACTIVE pfn = (PFNISTHEMEACTIVE)GetProc("IsThemeActive", (LPVOID)IsThemeActiveFail);
 	return (*pfn)();
 } // End of IsThemeActive

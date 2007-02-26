@@ -121,7 +121,9 @@ bool CDockingDialogX::CreateModeless() const
 void CDockingDialogX::CloseDialog(int nStatus) const
 {
 	mpOwner->EndModalLoop(nStatus); //set the status
-	mpOwner->SendMessage(WM_CLOSE);
+	CWnd* pTopLevel = IsFloating()? mpOwner->GetParent()->GetParent() : mpOwner;
+	if( pTopLevel && ::IsWindow(pTopLevel->m_hWnd) )
+		pTopLevel->SendMessage(WM_CLOSE);
 	if( ::IsWindow(mpOwner->m_hWnd) )
 		mpOwner->DestroyWindow();
 }
@@ -146,12 +148,13 @@ bool CDockingDialogX::GetClientRect( CRect& rcDlg ) const
 // CDockingDialog dialog
 
 CDockingDialog::CDockingDialog( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
-: CAdUiDockControlBar()
+: CAdUiDockControlBar( ADUI_DOCK_CS_STDMOUSECLICKS | ADUI_DOCK_CS_DESTROY_ON_CLOSE )
 , mDialogX( *this, pSourceForm )
+, mbClosing( false )
+, mbHiding( false )
 {
 	m_bDockingSizeAdjusted = false;
 	m_bFloatingSizeAdjusted = false;
-	m_bClosing = false;
 	m_pDocToModReactor = NULL;
 }
 
@@ -162,11 +165,9 @@ CDockingDialog::~CDockingDialog()
 
 
 BEGIN_MESSAGE_MAP(CDockingDialog, CAdUiDockControlBar)
-	//{{AFX_MSG_MAP(CDockingDialog)
 	ON_WM_CREATE()
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -219,7 +220,7 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// call method to create the controls
 	UINT nID = 1000;
-	mDialogX.GetControlPane().CreateControls(mDialogX.GetSourceForm(), nID);
+	mDialogX.GetControlPane().CreateControls(nID);
 
 	//if (pProps->GetLngProperty(nMaxDialogWidth) > -1)
 	//{
@@ -262,7 +263,8 @@ void CDockingDialog::GetClientArea(CRect &rect)
 
 void CDockingDialog::SizeChanged (CRect *lpRect, BOOL bFloating, int flags) 
 {
-	if (!m_bClosing)
+	CAdUiDockControlBar::SizeChanged(lpRect, bFloating, flags);
+	if (!mbClosing)
 	{
 		lpRect->top += (nDeflateRect + 2);
 		lpRect->left += nDeflateRect;
@@ -283,11 +285,12 @@ void CDockingDialog::SizeChanged (CRect *lpRect, BOOL bFloating, int flags)
 
 void CDockingDialog::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
-	CAdUiDockControlBar::OnShowWindow(bShow, nStatus);
-	
 	// call methods to invoke the event
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStrProperty(nFormEventShow), true);	
+
+	mbHiding = !bShow;
+	CAdUiDockControlBar::OnShowWindow(bShow, nStatus);
 }
 
 bool CDockingDialog::CanFrameworkTakeFocus ()
@@ -299,18 +302,21 @@ bool CDockingDialog::CanFrameworkTakeFocus ()
 void CDockingDialog::PostNcDestroy() 
 {
 	CAdUiDockControlBar::PostNcDestroy();
-	delete this;
+	//the floating docbar container will 'delete this' when floating because 
+	//the ADUI_DOCK_CS_DESTROY_ON_CLOSE style is set in the constructor
+	if( !IsFloating() )
+		delete this;
 }
 
 bool CDockingDialog::OnClosing()
 {
-	m_bClosing = true;
+	mbClosing = true;
 	CAdUiDockControlBar::OnClosing();
 	// call methods to invoke the event
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStrProperty(nFormEventClose), true);
-	if( !IsFloating() ) //to make sure the window gets destroyed no matter how we got here
-		PostMessage(WM_CLOSE);
+	if( !mbHiding && !IsFloating() )
+		PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
 	return true;
 }
 
@@ -549,7 +555,7 @@ BOOL CDockingDialog::PreTranslateMessage(MSG* pMsg)
 			}
 		}
 		TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
-		if( pControl && pControl->GetControlType() )
+		if( pControl && pControl->GetControlType() == CtlActiveX )
 			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
   }	
 	return CAdUiDockControlBar::PreTranslateMessage(pMsg);
@@ -563,6 +569,8 @@ void CDockingDialog::OnDestroy()
 		delete m_pDocToModReactor;
 		m_pDocToModReactor = NULL;
 	}
+	if( !mbClosing )
+		OnClosing();
 	mDialogX.GetControlPane().CleanUpControls();
 	CAdUiDockControlBar::OnDestroy();
 }

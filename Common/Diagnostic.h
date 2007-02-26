@@ -433,8 +433,8 @@ const TCHAR* asString( PropertyId prop )
 {
 	switch( prop )
 	{
-	case nInvalidPropertyId:
-		return _T("nInvalidPropertyId");
+	case nPrivateProperty:
+		return _T("Null/Private");
 	};
 	LPCTSTR pszName = GetPropertyName( prop );
 	if( pszName && *pszName )

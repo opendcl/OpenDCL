@@ -104,7 +104,7 @@ BOOL CfgTabPane::OnInitDialog()
 
 	// call method to create the controls
 	UINT nID = 1000;
-	mDialogX.GetControlPane().CreateControls(mDialogX.GetSourceForm(), nID);
+	mDialogX.GetControlPane().CreateControls(nID);
 	
 	//  setup for assigning the form it's properties
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();

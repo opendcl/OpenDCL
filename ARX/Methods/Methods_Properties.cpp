@@ -9,7 +9,7 @@
 #include "MethodLexicon.h"
 #include "VdclRadioButton.h"
 #include "OdclEdit.h"
-#include "XPStyleButtonST.h"
+#include "ArxGraphicButtonCtrl.h"
 #include "DwgDirList.h"
 #include "OdclEdit.h"
 #include "OdclListCtrl.h"
@@ -1562,12 +1562,12 @@ int ShowToolTip()
 	case CtlSlideView:
 		{
 		CSlideHolder *pCtrl = (CSlideHolder*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
+		if ( pCtrl->GetToolTipCtrl().m_arrTools.GetCount() > 0)
+			pTT = &pCtrl->GetToolTipCtrl().m_arrTools[0];				
 		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
+			pTT = &pCtrl->GetToolTipCtrl().m_pToolInfo;
 		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
+		pCtrl->GetToolTipCtrl().ShowHelpTooltip(pt, *pTT);				
 		break;
 		}
 	case CtlRoundSlider:
@@ -1765,13 +1765,13 @@ int ShowToolTip()
 
 	case CtlGraphicButton:
 		{
-		CXPStyleButtonST *pCtrl = (CXPStyleButtonST*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
+		CArxGraphicButtonCtrl *pCtrl = (CArxGraphicButtonCtrl*)pControl;
+		if ( pCtrl->GetToolTipCtrl().m_arrTools.GetCount() > 0)
+			pTT = &pCtrl->GetToolTipCtrl().m_arrTools[0];				
 		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
+			pTT = &pCtrl->GetToolTipCtrl().m_pToolInfo;
 		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
+		pCtrl->GetToolTipCtrl().ShowHelpTooltip(pt, *pTT);				
 		break;
 		}
 	case CtlActiveX:

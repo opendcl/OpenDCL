@@ -185,7 +185,7 @@ void CPropertyEdit::CommitValue()
 	{
 		if (m_pProp->GetID() == nName)
 		{			
-			CDclFormObject *pDclForm = activeProject->GetDclForm(sText);
+			CDclFormObject *pDclForm = activeProject->FindDclForm(sText);
 			if (pDclForm != NULL)
 			{
 				return;
@@ -405,7 +405,7 @@ void CPropertyEdit::SetNameProp()
 	}
 	else
 	{	
-		CDclFormObject *pDclForm = activeProject->GetDclForm(sText);
+		CDclFormObject *pDclForm = activeProject->FindDclForm(sText);
 		
 		// if an identical form has been found and it's not this one
 		if (pDclForm != NULL && pDclForm != theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pDclForm)

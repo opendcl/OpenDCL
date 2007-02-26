@@ -20,7 +20,7 @@ protected:
 	CDclFormObject* mpSourceForm;
 	CArxControlPane mControlPane;
 
-	enum { IDD = IDD_TABPAGE2 };
+	enum { IDD = IDD_TABPAGE };
 
 // Construction
 public:
@@ -33,18 +33,10 @@ public:
 	const CControlPane& GetControlPane() const { return mControlPane; }
 	CControlPane& GetControlPane() { return mControlPane; }
 
-public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-
-protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
 // Implementation
 protected:
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 
 protected:
 	DECLARE_MESSAGE_MAP()
-public:
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	afx_msg void OnPaint();
 };

@@ -105,6 +105,7 @@ HWND CArxWorkspace::GetTopmostModalForm() const
 	while (pos != NULL)
 	{
 		CDialogObject *pDialog = mDialogs.GetPrev(pos);
+		assert(pDialog != NULL);
 		if (pDialog != NULL)
 		{
 			if (!pDialog->IsModeless())
@@ -283,8 +284,6 @@ bool CArxWorkspace::AddExtensionTab( CDclFormObject* pDclForm, CAdUiTabExtension
 	assert( pDialog != NULL );
 	if( !pDialog )
 		return false;
-	//if( !pDialog->CreateModeless() ) //when this call returns, pDialog is no longer safe! [ORW]
-	//	return false;
 	CString sTabCaption = pDclForm->GetControlProperties()->GetStrProperty(nCfgTabCaption);
 	if (!pTabXM->AddTab(_hdllInstance,
 											IDD_CFGTAB,
@@ -301,32 +300,6 @@ bool CArxWorkspace::UnloadProject( LPCTSTR pszKeyName, bool bForce )
 		return true; //project is not loaded
 	return UnloadProject( pProject, bForce );
 }
-
-//CDclFormObject* CArxWorkspace::FindDialog( LPCTSTR pszFormName ) const
-//{
-//	POSITION pos = mDialogs.GetHeadPosition();
-//	while (pos != NULL)
-//	{
-//		CDialogObject *pDialog = mDialogs.GetNext(pos);
-//		if (pDialog != NULL && pDialog->GetSourceForm()->GetKeyName().CompareNoCase(pszFormName) == 0)
-//			return pDialog->GetSourceForm();
-//	}
-//	return NULL;
-//}
-//
-//CDclFormObject* CArxWorkspace::FindDclForm( LPCTSTR pszProjectName, LPCTSTR pszFormName ) const
-//{
-//	POSITION pos = mDialogs.GetHeadPosition();
-//	while (pos != NULL)
-//	{
-//		CDialogObject *pDialog = mDialogs.GetNext(pos);
-//		if (pDialog != NULL &&
-//				pDialog->GetSourceForm()->GetKeyName().CompareNoCase(pszFormName) == 0 &&
-//				pDialog->GetSourceForm()->mpOwner->GetKeyName().CompareNoCase(pszProjectName) == 0)
-//			return pDialog->GetSourceForm();
-//	}
-//	return NULL;
-//}
 
 CDclFormObject* CArxWorkspace::FindDclFormControl( HWND hwndControl, /*out*/ CString& sControlName ) const
 {
@@ -347,18 +320,6 @@ CDclFormObject* CArxWorkspace::FindDclFormControl( HWND hwndControl, /*out*/ CSt
 	return NULL;
 }
 
-//CDialogObject* CArxWorkspace::FindDialog( LPCTSTR pszFormName ) const
-//{
-//	POSITION pos = mDialogs.GetHeadPosition();
-//	while (pos != NULL)
-//	{
-//		CDialogObject *pDialog = mDialogs.GetNext(pos);
-//		if (pDialog != NULL && pDialog->GetSourceForm()->GetKeyName().CompareNoCase(pszFormName) == 0)
-//			return pDialog;
-//	}
-//	return NULL;
-//}
-
 CDialogObject* CArxWorkspace::FindDialog( LPCTSTR pszProjectName, LPCTSTR pszFormName ) const
 {
 	POSITION pos = mDialogs.GetHeadPosition();
@@ -373,53 +334,30 @@ CDialogObject* CArxWorkspace::FindDialog( LPCTSTR pszProjectName, LPCTSTR pszFor
 	return NULL;
 }
 
-//CDialogObject* CArxWorkspace::FindDialog( const CDclFormObject* pDclForm ) const
-//{
-//	if (!pDclForm)
-//		return NULL;
-//	POSITION pos = mDialogs.GetHeadPosition();
-//	while (pos != NULL)
-//	{
-//		CDialogObject *pDialog = mDialogs.GetNext(pos);
-//		if (pDialog != NULL && pDialog->GetSourceForm() == pDclForm)
-//			return pDialog;
-//	}
-//	return NULL;
-//}
-
-CDclControlObject* CArxWorkspace::FindControl( LPCTSTR pszProject, LPCTSTR pszDialog, LPCTSTR pszControl ) const
+CDclControlObject* CArxWorkspace::FindControl( LPCTSTR pszProject, LPCTSTR pszFormName, LPCTSTR pszControl ) const
 {
 	CArxProject* pProject = FindProject( pszProject );
 	if( !pProject )
 		return NULL;
-	CDclFormObject* pDclForm = pProject->GetDclForm( pszDialog );
-	if( !pDclForm )
-		return NULL;
-	return pDclForm->FindControl( pszControl );
+	CDclFormObject* pDclForm = pProject->FindDclForm( pszFormName );
+	if( pDclForm )
+	{
+		CDclControlObject* pControl = pDclForm->FindControl( pszControl );
+		if( pControl )
+			return pControl;
+	}
+	return pProject->FindControlWithVarName( CString( pszProject ) + _T('_') + pszFormName + _T('_') + pszControl );
 }
 
-//const CArxProject* CArxWorkspace::GetDclFormProject( LPCTSTR pszFormName ) const
-//{
-//	const CDclFormObject* pForm = FindDclForm( pszFormName );
-//	if( !pForm )
-//		return NULL;
-//	return reinterpret_cast<const CArxProject*>(pForm->mpOwner);
-//}
-
-//const CArxProject* CArxWorkspace::GetDialogProject( LPCTSTR pszDialogName ) const
-//{
-//	const CDialogObject* pDialog = FindDialog( pszDialogName );
-//	if( !pDialog )
-//		return NULL;
-//	return reinterpret_cast<const CArxProject*>(pDialog->m_pProject);
-//}
-
-CDclFormObject* CArxWorkspace::GetForm( LPCTSTR pszProjectName, LPCTSTR pszFormName ) const
+CDclFormObject* CArxWorkspace::FindForm( LPCTSTR pszProjectName, LPCTSTR pszFormName ) const
 {
 	CArxProject* pProject = FindProject( pszProjectName );
 	if( !pProject )
 		return NULL;
-	return pProject->GetDclForm( pszFormName );
+	CDclFormObject* pDclForm = pProject->FindDclForm( pszFormName );
+	if( pDclForm )
+		return pDclForm;
+	return pProject->FindDclFormWithVarName( CString( pszProjectName ) + _T('_') + pszFormName );
 }
 
 CArxProject* CArxWorkspace::GetProjectFor( const CDclFormObject *pDclObject ) const
@@ -543,7 +481,8 @@ int CArxWorkspace::ActivateDclForm( CDclFormObject* pDclForm, DialogParams* pPar
 	if( pDlgObject ) //form already created?
 	{ //I think this should result in failure, but for now it just shows the current dialog [ORW]
 		pDlgObject->Show();
-		pDlgObject->SetFocus();
+		if( !pDlgObject->IsModeless() )
+			pDlgObject->SetFocus();
 		return pDlgObject->GetID();
 	}
 	if( pDclForm->GetParentForm() )
@@ -584,427 +523,4 @@ int CArxWorkspace::ActivateDclForm( CDclFormObject* pDclForm, DialogParams* pPar
 		return nID;
 	}
 	return pDialog->DoModal();
-
-
-	//CDialogObject* pDialog = NULL;
-	//// determine what type of dlg to show and show it.
-	//switch (pDclForm->GetType())
-	//{
-	//case VdclDockable:
-	//	{
-	//		pDialog = FindDialog( pDclForm );
-	//		if (pDialog)
-	//		{
-	//			bool bCancel = true;
-	//			if (pDialog->m_pResizableDockingDialog != NULL)
-	//			{
-	//				if (pDialog->m_pResizableDockingDialog->m_bClosing == true)
-	//				{
-	//					pDialog->m_pResizableDockingDialog->CloseWindow();
-	//					delete pDialog->m_pResizableDockingDialog;		
-	//					pDialog->m_pResizableDockingDialog = NULL;		
-	//					RemoveDialog(pDialog); //added 2007-01-28 [ORW]
-	//					bCancel = false;
-	//				}
-	//			}
-	//			if (pDialog->m_pDockingDialog != NULL)
-	//			{
-	//				if (pDialog->m_pDockingDialog->m_bClosing == true)
-	//				{
-	//					pDialog->m_pDockingDialog->CloseWindow();
-	//					delete pDialog->m_pDockingDialog;		
-	//					pDialog->m_pDockingDialog = NULL;		
-	//					RemoveDialog(pDialog); //added 2007-01-28 [ORW]
-	//					bCancel = false;
-	//				}
-	//			}
-	//			if (bCancel)
-	//			{					
-	//				AcApDocument* pDoc = acDocManager->curDocument();
-	//				if (pDoc)
-	//				{
-	//					// give the command line focus {I'm not sure why this is necessary or desirable [ORW]}
-	//					CWnd* wndCommandLine = acedGetAcadDockCmdLine();
-	//					if (wndCommandLine)
-	//						wndCommandLine->SetFocus();		
-
-	//					// send the string to the current document
-	//					acDocManager->sendStringToExecute(pDoc, _T("\x1B\x1B"), false, true, false); //send double cancel
-	//				}
-	//				return 0;	
-	//			}
-	//		}
-
-	//		// create and add a new dialog object to the form holder
-	//		// the mDialogs keeps track of the open dialogs for future
-	//		// reference and modification
-	//		pDialog = new CDialogObject( pDclForm, GetNextDialogId() );			
-	//		mDialogs.AddTail(pDialog);
-	//	
-	//		// get the AutoCAD Frame to be passed in the create method
-	//		CMDIFrameWnd* pAcadFrame = acedGetAcadFrame();
-	//		
-	//		// set the new dialog box	
-	//		CDclControlObject* pProperties = pDclForm->GetControlProperties();
-	//		if (!pProperties)
-	//			return -1;
-
-	//		BOOL bResizable = pProperties->GetBoolProperty(nResizable);
-	//		int nDocHeight = pProperties->GetLngProperty(nHeight);
-	//	
-	//		DWORD dwDockableSides = 0;
-	//		DWORD dwDefaultDockableSide = 0;
-
-	//		switch (pProperties->GetLngProperty(nDockableSides))
-	//		{
-	//		case 1:
-	//			// set the form to only dock on the top side
-	//			dwDockableSides = CBRS_ALIGN_TOP;
-	//			dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
-	//			nDocHeight += 8;
-	//			break;
-	//		case 2:
-	//			// set the form to only dock on the bottom side
-	//			dwDockableSides = CBRS_ALIGN_BOTTOM;
-	//			dwDefaultDockableSide = AFX_IDW_DOCKBAR_BOTTOM;
-	//			nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
-	//			break;
-	//		case 3:
-	//			// set the form to only dock on the top or bottom sides
-	//			dwDockableSides = CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;				
-	//			dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
-	//			nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
-	//			break;
-	//		case 4:
-	//			// set the form to only dock on the any side
-	//			dwDockableSides = AFX_IDW_DOCKBAR_TOP | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP;				
-	//			dwDefaultDockableSide = CBRS_ALIGN_LEFT;
-	//			nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
-	//			break;
-	//		case 5:
-	//			// set the form to only dock on the any side
-	//			dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;
-	//			dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
-	//			nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
-	//			break;
-	//		default:
-	//			// set the form to only dock on the left or right sides
-	//			dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT;
-	//			dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
-	//			break;
-	//		}
-	//		
-	//		if (bResizable)
-	//		{
-	//			pDialog->m_pResizableDockingDialog = new CResizableDockingDialog(pDclForm);
-	//			pDialog->m_pResizableDockingDialog->m_pFontCollection = &theWorkspace.GetFontCollection();
-
-	//			// call the form's method to set the pointer to the loaded dcl form
-	//			pDialog->m_pResizableDockingDialog->SetDclForm(pDclForm);
-	//			
-	//			// set the names for the dlg
-	//			pDialog->m_pResizableDockingDialog->m_sProjectName = pProject->GetKeyName();
-	//			pDialog->m_pResizableDockingDialog->m_sDialogName = pDclForm->GetKeyName();
-	//			
-	//			CRect rect = CFrameWnd::rectDefault;
-	//			if (rect.left < 0)
-	//				rect.left = 0;
-	//			if (rect.top < 0)
-	//				rect.top = 0;				
-	//			rect.bottom = rect.top + nDocHeight;
-	//			rect.right = rect.left + pProperties->GetLngProperty(nWidth);
-	//			
-	//			// create the docking dialog
-	//			CAcModuleResourceOverride resOverride;
-	//			pDialog->m_pResizableDockingDialog->Create(pAcadFrame, _T("ObjectDCLDock"), rect);		
-	//			if (pDclForm->m_UUID.GetLength() == 0)
-	//			{
-	//				UUID uuid;
-	//				UuidCreate(&uuid);
-	//				pDialog->m_pResizableDockingDialog->SetToolID(&uuid);
-	//			}
-	//			else
-	//			{
-	//				UUID uuid = pDclForm->getUUID();
-	//				pDialog->m_pResizableDockingDialog->SetToolID (&uuid);
-	//			}
-	//			// set the form to only dock on the set side(s)
-	//			pDialog->m_pResizableDockingDialog->EnableDocking(dwDockableSides);
-	//			pDialog->m_pResizableDockingDialog->m_bClosing = false;
-	//			// loads the dockable form but does not display it
-	//			pDialog->m_pResizableDockingDialog->RestoreControlBar(dwDefaultDockableSide);				
-	//		}
-	//		else /* non resizable dialog */
-	//		{
-	//			pDialog->m_pDockingDialog = new CDockingDialog(pDclForm);
-	//			pDialog->m_pDockingDialog->m_pFontCollection = &theWorkspace.GetFontCollection();
-
-	//			pDialog->m_pDockingDialog->SetDclForm(pDclForm);
-	//			
-	//			// set the names for the dlg
-	//			pDialog->m_pDockingDialog->m_sProjectName = pProject->GetKeyName();
-	//			pDialog->m_pDockingDialog->m_sDialogName = pDclForm->GetKeyName();
-	//			
-	//			CRect rect = CFrameWnd::rectDefault;
-	//			if (rect.left < 0)
-	//				rect.left = 0;
-	//			if (rect.top < 0)
-	//				rect.top = 0;				
-	//			rect.bottom = rect.top + nDocHeight;
-	//			rect.right = rect.left + pProperties->GetLngProperty(nWidth);
-
-	//			// create the docking dialog
-	//			CAcModuleResourceOverride resOverride;
-	//			pDialog->m_pDockingDialog->Create( pAcadFrame, _T("ObjectDCLDock"), rect);		
-	//			if (pDclForm->m_UUID.GetLength() == 0)
-	//			{
-	//				UUID uuid;
-	//				UuidCreate(&uuid);
-	//				pDialog->m_pDockingDialog->SetToolID (&uuid);
-	//			}
-	//			else
-	//			{
- //         UUID uuid = pDclForm->getUUID();
-	//				pDialog->m_pDockingDialog->SetToolID (&uuid);
-	//			}			
-	//			// set the form to only dock on the set side(s)
-	//			pDialog->m_pDockingDialog->EnableDocking(dwDockableSides);
-	//			pDialog->m_pDockingDialog->m_bClosing = false;
-	//			// loads the dockable form but does not display it
-	//			pDialog->m_pDockingDialog->RestoreControlBar(dwDefaultDockableSide);
-	//		}
-	//		break;
-	//	}
-	//case VdclModeless:
-	//	{
-	//		// create and add a new dialog object to the form holder
-	//		// mDialogs keeps track of the open dialogs for future
-	//		// reference and modification
-	//		pDialog = new CDialogObject( pDclForm, GetNextDialogId() );			
-	//		mDialogs.AddTail(pDialog);
-
-	//		// set the new dialog box	
-	//		pDialog->m_pModelessDialog = new CModelessDlg(pDclForm, CWnd::FromHandle(adsw_acadMainWnd()), nX, nY);
-	//		
-	//		pDialog->m_pModelessDialog->m_pFontCollection = &theWorkspace.GetFontCollection();
-	//		
-	//		// set the names for the dlg
-	//		pDialog->m_pModelessDialog->m_sProjectName = pProject->GetKeyName();
-	//		pDialog->m_pModelessDialog->m_sDialogName = pDclForm->GetKeyName();
-	//		
-	//		// call the form's method to set the pointer to the loaded dcl form
-	//		pDialog->m_pModelessDialog->SetDclForm(pDclForm);
-	//		
-	//		// get the arx object that stores the dcl form's properties
-	//		CDclControlObject *pDclProperties = pDclForm->GetControlProperties();
-
-	//		// invoke as modeless with the right dialog resource
-	//		CAcModuleResourceOverride resOverride;		
-	//		if (pDclProperties->GetBoolProperty(nResizable))
-	//		{
-	//			BOOL bReturnValue = pDialog->m_pModelessDialog->Create(IDD_RESIZEABLE);
-	//			pDialog->m_pModelessDialog->m_bShowGrip = true;
-	//		}
-	//		else
-	//		{
-	//			BOOL bReturnValue = pDialog->m_pModelessDialog->Create(IDD_MODALDIALOG);
-	//			pDialog->m_pModelessDialog->m_bShowGrip = false;
-	//		}
-
-	//		pDialog->m_pModelessDialog->ShowWindow(TRUE);
-	//		break;
-	//	}
-	//case VdclFileDialog:
-	//	{
-	//		// create and add a new dialog object to the form holder
-	//		// mDialogs keeps track of the open dialogs for future
-	//		// reference and modification
-	//		pDialog = new CDialogObject( pDclForm, GetNextDialogId() );			
-	//		mDialogs.AddTail(pDialog);
-	//		
-	//		// get the arx object that stores the dcl form's properties
-	//		CDclControlObject* pDclProperties = pDclForm->GetControlProperties();
-	//		if (!pDclProperties)
-	//			return -1;
-
-	//		CDclControlObject* pFileDlgProperties = pDclForm->FindFirstControlOfType(CtlFileDlgCtrl);
-	//		if (!pFileDlgProperties)
-	//			return -1;
-
-	//		// set the new dialog box	
-	//		CWnd *pParent = NULL;
-	//		if (CountOpenModalForms() > 1)
-	//		{
-	//			POSITION posDialog = mDialogs.GetTailPosition();
-	//			while (posDialog)
-	//			{
-	//				CDialogObject* pDlg = mDialogs.GetPrev(posDialog);
-	//				assert (pDlg != NULL);
-	//				if (!pDlg)
-	//					continue;
-	//				if (pDlg && pDlg->m_pModalDialog != NULL)
-	//				{
-	//					pParent = CWnd::FromHandle(pDlg->m_pModalDialog->m_hWnd);
-	//					break;
-	//				}
-	//			}
-	//		}
-	//		if( !pParent)
-	//			pParent = CWnd::FromHandle(adsw_acadMainWnd());
-	//		
-	//		// get the flags for the CFileDialog
-	//		DWORD dwStyle = GetFileDlgFlags(pDclProperties, pFileDlgProperties);
-	//
-	//		BOOL bOpen = pFileDlgProperties->GetLngProperty(nFileDlgStyle); 
-
-	//		// create the open dialog box
-	//		CAcModuleResourceOverride resOverride;		
-	//		pDialog->m_pFileDialog = new CParentFileDialog(
-	//			pDclForm,
-	//			bOpen, 
-	//			NULL,
-	//			pszDefaultFileName, 
-	//			dwStyle,
-	//			pFileDlgProperties->GetStrProperty(nFilter),
-	//			pParent);
-
-	//		pDialog->m_pFileDialog->m_pFontCollection = &theWorkspace.GetFontCollection();
-	//		pDialog->m_pFileDialog->m_pFileDlgProps = pFileDlgProperties;
-	//		
-	//		// set the names for the dlg
-	//		pDialog->m_pFileDialog->m_sProjectName = pProject->GetKeyName();
-	//		pDialog->m_pFileDialog->m_sDialogName = pDclForm->GetKeyName();
-	//		
-	//		// call the form's method to set the pointer to the loaded dcl form
-	//		pDialog->m_pFileDialog->SetDclForm(pDclForm);
-	//		
-	//		if (pszDefaultDirectory)
-	//			pDialog->m_pFileDialog->m_ofn.lpstrInitialDir = pszDefaultDirectory;
-
-	//		CString sTitle = pDclProperties->GetStrProperty(nTitleBarText);
-	//		if (sTitle.GetLength() > 0)
-	//			pDialog->m_pFileDialog->m_ofn.lpstrTitle = sTitle;
-
-	//		// proceed to setup the file buffer size
-	//		pDialog->m_pFileDialog->m_ofn.nMaxFile = MAX_PATH;
-	//		TCHAR* pc = new TCHAR[MAX_PATH];
-	//		pDialog->m_pFileDialog->m_ofn.lpstrFile = pc;
-	//		pDialog->m_pFileDialog->m_ofn.lpstrFile[0] = NULL;
-	//		
-	//		CStringArray sListFileName;
-	//		sListFileName.SetSize(0,1);
-	//		// set the pointer to the string array object
-	//		pDialog->m_pFileDialog->m_pStrList = &sListFileName;
-	//		
-	//		int nReturnValue = pDialog->m_pFileDialog->DoModal();
-	//		
-	//		if (nReturnValue != IDOK)
-	//			return 0;
-
-	//		if (pFileDlgProperties->GetLngProperty(nFileDlgStyle) == 1) // as open
-	//		{
-	//			if (pFileDlgProperties->GetBoolProperty(nMultiSelect) == TRUE)
-	//			{
-	//				// Convert the array to a list that can be returned
-	//				struct resbuf* prbRetList = acutNewRb(RTSTR);
-	//				struct resbuf* prbTail = prbRetList;
- //
-	//				int nCount = sListFileName.GetSize();
-	//				for (int i=0; i<nCount; i++)
-	//				{
-	//					// get the text name of the selected line number
-	//					CString sFileName = sListFileName.GetAt(i);
-	//					prbTail->rbnext = acutNewRb(RTSTR);
-	//					prbTail = prbTail->rbnext;
-	//					acutNewString(sFileName, prbTail->resval.rstring);
-	//				}
-
-	//				acedRetList(prbRetList);
-	//				acutRelRb(prbRetList);
-
-	//				// cleanup
-	//				delete pDialog->m_pFileDialog;
-	//				delete pDialog->m_pModalDialog;
-	//				RemoveDialog(pDialog);
-	//				return 0;
-	//			}
-	//		}
-	//		
-	//		acedRetStr(pDialog->m_pFileDialog->m_sFileName);
-
-	//		// cleanup
-	//		delete pDialog->m_pFileDialog;
-	//		delete pDialog->m_pModalDialog;
-	//		RemoveDialog(pDialog);
-	//		break;
-	//	}
-	//
-	//case VdclModal:
-	//	{			
-	//		// create and add a new dialog object to the form holder
-	//		// the theArxWorkspace.GetDialogList() keeps track of the open dialogs for future
-	//		// reference and modification
-	//		pDialog = new CDialogObject( pDclForm, GetNextDialogId() );			
-	//		mDialogs.AddTail(pDialog);
-	//		
-	//		// get the arx object that stores the dcl form's properties
-	//		CDclControlObject *pDclProperties = pDclForm->GetControlProperties();
-	//		// set the form's resizing using the dialog resource
-	//		if (pDclProperties->GetBoolProperty(nResizable))
-	//			mnSnapDlgId = IDD_RESIZEABLE;
-	//		else
-	//			mnSnapDlgId = IDD_MODALDIALOG;
-
-	//		// set the new dialog box	
-	//		CWnd *pParent = NULL;
-	//		if (CountOpenModalForms() > 1)
-	//		{
-	//			POSITION posDialog = mDialogs.GetTailPosition();
-	//			while (posDialog)
-	//			{
-	//				CDialogObject* pDlg = mDialogs.GetPrev(posDialog);
-	//				assert (pDlg != NULL);
-	//				if (!pDlg)
-	//					continue;
-	//				if (pDlg && pDlg->m_pModalDialog != NULL)
-	//				{
-	//					pParent = CWnd::FromHandle(pDlg->m_pModalDialog->m_hWnd);
-	//					break;
-	//				}
-	//			}
-	//		}
-	//		if( !pParent)
-	//			pParent = CWnd::FromHandle(adsw_acadMainWnd());
-
-	//		pDialog->m_pModalDialog = new CModalVDcl(pDclForm, pParent, nX, nY);
-	//		
-	//		// set the form's resizing
-	//		if (pDclProperties->GetBoolProperty(nResizable))
-	//			pDialog->m_pModalDialog->m_bShowGrip = true;
-	//		else
-	//			pDialog->m_pModalDialog->m_bShowGrip = false;			
-
-	//		pDialog->m_pModalDialog->m_pFontCollection = &theWorkspace.GetFontCollection();
-	//		
-	//		// set the names for the dlg
-	//		pDialog->m_pModalDialog->m_sProjectName = pProject->GetKeyName();
-	//		pDialog->m_pModalDialog->m_sDialogName = pDclForm->GetKeyName();
-	//		
-	//		// call the form's method to set the pointer to the loaded dcl form
-	//		pDialog->m_pModalDialog->SetDclForm(pDclForm);			
-	//		
-	//		// invoke as modal
-	//		CAcModuleResourceOverride resOverride;		
-	//		int nReturnValue = pDialog->m_pModalDialog->DoModal();
-
-	//		// cleanup
-	//		delete pDialog->m_pFileDialog;
-	//		delete pDialog->m_pModalDialog;
-	//		RemoveDialog(pDialog);
-	//		break;
-	//	}
-	//}
-	//if (pDialog != NULL)
-	//	return pDialog->GetID();
-	//return -1;
 }

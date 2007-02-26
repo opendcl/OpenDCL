@@ -1424,6 +1424,9 @@ int SetAxProperty()
 
 
 	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	if( !pProp )
+		return RSERR; //no property with this name!
+
 	int nParams;
 	AxPropertyDescriptor *pAxProp = NULL;
 	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL &&
@@ -1629,6 +1632,9 @@ int GetAxProperty()
 	}
 
 	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	if( !pProp )
+		return RSERR; //no property with this name!
+
 	int nParams;
 	AxPropertyDescriptor *pAxProp = NULL;
 	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet() != NULL)

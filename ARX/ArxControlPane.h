@@ -4,7 +4,6 @@
 #pragma once
 
 #include "ControlPane.h"
-#include "ThemeHelperST.h"
 
 class CDwgDirList;
 class CComboBoxFolder;
@@ -16,8 +15,6 @@ class CComboBoxFolder;
 class CArxControlPane : public CControlPane
 {
 // Attributes
-protected:
-	CThemeHelperST mThemeHelper;
 
 // Construction
 protected:
@@ -40,9 +37,8 @@ public:
 	virtual bool FindControl(HWND hwndControl, /*out*/ CString& sControlName) const; //if found, returns true & sets sControlName
 	virtual TDialogControlPtr FindControl(HWND hwndControl) const;
 	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const;
-	virtual class CThemeHelperST* GetThemeHelper() { return &mThemeHelper; }
 	virtual void SetGlobalLispSymbols( bool bResetToNil = false );
 
 protected:
-	virtual TDialogControlPtr CreateNewDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID );
+	virtual TDialogControlPtr CreateNewDialogControl( CDclControlObject* pTemplate, UINT nID );
 };

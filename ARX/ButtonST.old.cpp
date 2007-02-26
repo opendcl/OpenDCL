@@ -772,12 +772,12 @@ void CButtonST::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 			backRect.DeflateRect(4, 5);			
 		pDC->FillRect(&backRect, &br);
 	}
-	CRect rcImage = lpDIS->rcItem;
-	if (sTitle.GetLength() > 0)
-	{
-		rcImage.left += 5;
-		rcImage.right += 5;
-	}
+	//CRect rcImage = lpDIS->rcItem;
+	//if (!sTitle.IsEmpty())
+	//{
+	//	rcImage.left += 5;
+	//	rcImage.right += 5;
+	//}
 
 	if (m_pPicture)
 	{
@@ -789,8 +789,8 @@ void CButtonST::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 		
 		GetClientRect(&rcCell);
 
-		// Center the icon horizontally
-		int nPicLeft = ((rcCell.Width() - nPicWidth)/2);
+		// Center the icon horizontally if there is no caption, otherwise left align
+		int nPicLeft = sTitle.IsEmpty()? ((rcCell.Width() - nPicWidth)/2) : rcCell.left;
 		
 		// Center the icon vertically
 		int nPicTop = ((rcCell.Height() - nPicHeight)/2);           

@@ -49,18 +49,12 @@ enum PropertyId;
 #define nDeGridIDCounter 80
 #define nDeMoveBy50		 50
 #define nDeStartupSize	300
-#define nDeRoundRangeMin  -179
-#define nDeRoundRangeMax   180
-#define nDeZeroAngle   90
 
 #define nSizingRectThickness  1
 #define nMinGridSpacing  4
 #define nInitialGridSpacing  8
 #define nControlStartId  100
 #define nControlOffset  8
-
-#define nComboStyle12 12
-#define nComboDropHeight 300
 
 #define nm100 -100
 #define nm99 -99
@@ -136,7 +130,6 @@ public:
 	void OnLostFocus();
 	BOOL CanUndo();
 	void UndoAction();
-	void UpdateControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID);
 	short ResetDclFormIndex();
 	void CheckPictureRefs();
 	void SelectControl(short nArxControlIndex);
@@ -213,55 +206,15 @@ public:
 // control creation operations
 public:
 	void InsertControl		(CRect rcPos);
-	bool CreateChildControl	(CControlHolder *pParent, CDclControlObject *pDclControl, bool bForceUpdate = false);
-	void CreateHatch		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateLabel		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateImageComboBox(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateAnimate		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateButton		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateGraphicButton(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateFrame		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateTextBox		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateCheckBox		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateOptionButton	(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateComboBox		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateMonthCal		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateListBox		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateDwgDirList	(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateScrollBar	(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateSlider		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreatePictureBox	(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateTabStrip		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateTree			(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void Create3DRect		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateProgress		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateSpinButton	(CControlHolder *pParent, CDclControlObject *pArxObject);	
-	void CreateStaticURL	(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateRoundSlider	(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateGrid			(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateBlockView	(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateSlideView	(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateDwgThumbNail	(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateDwgPreview	(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateHtmlCtrl		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateListView		(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateBlockList	(CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateOptionList	(CControlHolder *pParent, CDclControlObject *pArxObject);
-	bool CreateActiveX		(CControlHolder *pParent, CDclControlObject *pArxObject, bool bForceUpdate);
-	void CreateFileDlgCtrls (CControlHolder *pParent, CDclControlObject *pArxObject);
-	void CreateSplitter		(CControlHolder *pParent, CDclControlObject *pArxObject);
-
-	void SetupTreeControl	(CTreeCtrl *pControl);
 	void AddHiddenProperties(CDclControlObject *pArxObject, short nType, CString Name);
 	void AddProperties(CDclControlObject *pDclControl);
 
 public:
-	void UpdateProperty(PropertyId nID, CDclControlObject *pArxObject, CControlHolder *pParent);
+	//void UpdateProperty(PropertyId nID, CDclControlObject *pArxObject, CControlHolder *pParent);
 	void RefreshChildControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID);
 	void ResizeChildControl(CDclControlObject *pArxObject);
-	void CheckAutoSizeProp(CDclControlObject *pArxObject, CControlHolder *pParent);
-	void ResetImageList(CWnd *pControl, int nID, CDclControlObject *pArxObject);
-	void UpdateChildControl(CDclControlObject *pArxObject, CControlHolder *pParent);
+	//void UpdateChildControl(CDclControlObject *pArxObject, CControlHolder *pParent);
+	void UpdateControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID);
 
 	void FireControlSelected(CDclControlObject *pControl);
 	void FireShowFormGrips(BOOL bVisible);

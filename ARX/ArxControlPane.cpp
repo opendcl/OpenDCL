@@ -95,12 +95,10 @@ void CArxControlPane::SetGlobalLispSymbols( bool bResetToNil /*= false*/ )
 }
 
 TDialogControlPtr CArxControlPane::CreateNewDialogControl( CDclControlObject* pTemplate,
-																													 CControlPane* pPane,
 																													 UINT nID )
 {
-	return CArxDialogControl::Create( pTemplate, pPane, nID );
+	return CArxDialogControl::Create( pTemplate, this, nID );
 }
-
 
 void CArxControlPane::CleanUpControls() 
 {	
@@ -136,7 +134,6 @@ bool CArxControlPane::FindControl( HWND hwndControl, /*out*/ CString& sControlNa
 	}
 	return false;
 }
-
 
 TDialogControlPtr CArxControlPane::FindControl( HWND hwndControl ) const
 {

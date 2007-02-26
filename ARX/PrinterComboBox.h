@@ -10,29 +10,11 @@ class CDclControlObject;
 class CControlPane;
 
 
-class CPrinterComboControlX : public CArxDialogControl
-{
-public:
-	CPrinterComboControlX( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pWnd )
-		: CArxDialogControl( pTemplate, pPane, pWnd ) {}
-	virtual ~CPrinterComboControlX() {}
-
-	// attributes
-	virtual CRect GetWndRect() const; //get window position from properties
-	virtual DWORD GetWndStyle() const; //get window style from properties
-};
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CPrinterComboBox window
 
-class CPrinterComboBox : public CComboBox
+class CPrinterComboBox : public CComboBox, public CArxDialogControl
 {
-protected:
-	CPrinterComboControlX mControlX;
-	CDclControlObject* mpSourceControl;	
-	CControlPane* mpControlPane;
-
 public:
 	bool		m_bInvokeWithSendString;
 	CImageList	m_img;
@@ -46,21 +28,21 @@ public:
 	CPrinterComboBox( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID, CRect rc );
 	virtual ~CPrinterComboBox();
 
-// Interface
+// DialogControl Interface
 public:
-	CArxDialogControl& GetDialogControl() { return mControlX; }
-	const CArxDialogControl& GetDialogControl() const { return mControlX; }
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual bool Create( CWnd* pParentWnd, UINT nID, CRect rc );
+	virtual CRect GetWndRect() const;
+	virtual DWORD GetWndStyle() const;
 
 // Operations
 public:
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool Create( CWnd* pParentWnd, UINT nID, CRect rc );
 
 // Implementation
 public:
 	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
 	void InitToolTip();
-	CPPToolTip m_ToolTip;
 	int CreatePrinterList();
 	CString GetPlottersPath();
 protected:

@@ -95,7 +95,7 @@ PropertyId PropNameMap::GetId( LPCTSTR pszName )
 	T_MapNameToId::const_iterator iter = mmapNameToId.find( toLString( tstring( pszName ) ) );
 	if( iter != mmapNameToId.end() )
 		return iter->second;
-	return nInvalidPropertyId;
+	return nPrivateProperty;
 }
 
 void PropNameMap::GetSet( T_PropertyIdSet& IdSet )

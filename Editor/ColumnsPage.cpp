@@ -14,14 +14,12 @@
 
 CColumnData::CColumnData()
 {
-	
 	m_Width = 0;	
 	m_Image = 0;	
 	m_Style = 0;	
 	m_Alignment = 0;	
 	m_Default = 0;	
 	m_Alternate = 0;
-	
 }
 
 CColumnData::~CColumnData()
@@ -49,10 +47,9 @@ CColumnData::CColumnData(const CColumnData &Other)
 	m_Alternate = Other.m_Alternate;
 }
 
+
 /////////////////////////////////////////////////////////////////////////////
 // CColumnsPage property page
-
-IMPLEMENT_DYNCREATE(CColumnsPage, CPropertyPage)
 
 CColumnsPage::CColumnsPage() : CPropertyPage(CColumnsPage::IDD)
 {
@@ -94,7 +91,6 @@ void CColumnsPage::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CColumnsPage, CPropertyPage)
-	//{{AFX_MSG_MAP(CColumnsPage)
 	ON_BN_CLICKED(IDC_INSERT, OnInsert)
 	ON_EN_CHANGE(IDC_TEXT, OnChangeText)
 	ON_EN_CHANGE(1211, OnChangeWidth)
@@ -111,7 +107,6 @@ BEGIN_MESSAGE_MAP(CColumnsPage, CPropertyPage)
 	ON_CBN_SELCHANGE(IDC_TIME, OnSelchangeTime)
 	ON_EN_CHANGE(IDC_FILEEXT, OnChangeFileext)
 	ON_EN_SETFOCUS(IDC_INDEX_EDIT, OnSetfocusIndexEdit)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -198,6 +193,8 @@ BOOL CColumnsPage::OnInitDialog()
 	}
 
 	m_nIndex = (m_ColData.GetCount() > 0? 0 : -1);
+	if (m_nIndex != -1 )
+		m_IndexEdit.SetWindowText( _T("0") );
 	m_Spin.SetBuddy(&m_IndexEdit);
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -531,30 +528,16 @@ void CColumnsPage::SetControls(int nIndex)
 
 void CColumnsPage::OnChangeText() 
 {
-	// if the spin button has been clicked.
-	if (m_bChangingIndex)
-		// exit here now.
-		return;
-
-	CString sText;
-	CHeaderCtrl *pHeader = m_List.GetHeaderCtrl();
-	m_Text.GetWindowText(sText);
-
+	CString sCaption;
+	m_Text.GetWindowText(sCaption);
 	HDITEM hdi;
-	TCHAR  lpBuffer[256];
-	
 	hdi.mask = HDI_TEXT;
-	hdi.pszText = lpBuffer;
-	hdi.cchTextMax = 256;
+	hdi.pszText = sCaption.LockBuffer();
+	m_List.GetHeaderCtrl()->SetItem(m_nIndex, &hdi);
+	sCaption.UnlockBuffer();
+	m_ColData[m_nIndex].m_Caption = sCaption;
 
-	pHeader->GetItem(m_nIndex, &hdi);
-   
-	lstrcpyn(hdi.pszText, sText, _elements(lpBuffer));
-	pHeader->SetItem(m_nIndex, &hdi);
-	
-	m_ColData[m_nIndex].m_Caption = sText;
 	SetModified();
-	
 }
 
 void CColumnsPage::OnChangeWidth() 
@@ -773,9 +756,11 @@ void CColumnsPage::SetColumn(int nIndex)
 		curItem.iImage= m_ColData[m_nIndex].m_Image;
 	}
 
-
-	curItem.pszText = m_ColData[m_nIndex].m_Caption.LockBuffer();
-
+	//force a CString copy here, because calling LockBuffer() on a CArray resident CString corrupts the 
+	//CString reference count mechanism and leads to an eventual crash next time a CString member function 
+	//tries to do anything with the embedded string manager  2007-02-23 [ORW]
+	CString sCaption = (LPCTSTR)m_ColData[m_nIndex].m_Caption;
+	curItem.pszText = sCaption.LockBuffer();
 
 	switch(m_ColData[m_nIndex].m_Alignment)
 	{					
@@ -790,17 +775,11 @@ void CColumnsPage::SetColumn(int nIndex)
 		break;
 	}
 	
-	if (m_ColData[m_nIndex].m_Image == -1 || m_ColData[m_nIndex].m_Image >= m_Image.GetCount())
-	{
-		// do nothing
-	}
-	else
-	{
+	if (m_ColData[m_nIndex].m_Image >= 0 && m_ColData[m_nIndex].m_Image < m_Image.GetCount())
 		curItem.fmt = curItem.fmt | HDF_IMAGE;
-	}
 
 	pHdrCtrl->SetItem(nIndex, &curItem);
-	m_ColData[m_nIndex].m_Caption.UnlockBuffer();
+	sCaption.UnlockBuffer();
 
 }
 

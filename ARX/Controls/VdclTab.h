@@ -12,50 +12,19 @@ class CDclFormObject;
 class VdclTab;
 
 
-class CTabControlX : public CArxDialogControl
-{
-public:
-	CTabControlX( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pWnd )
-		: CArxDialogControl( pTemplate, pPane, pWnd ) {}
-	virtual ~CTabControlX() {}
-
-	const VdclTab* GetControl() const { return (VdclTab*)mpControl; }
-	VdclTab* GetControl() { return (VdclTab*)mpControl; }
-
-	// services
-	virtual TDialogControlPtr FindControl( HWND hwndControl ) const; //find nested control
-	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const; //find nested control
-
-	// attributes
-	virtual DWORD GetWndStyle() const; //get window style from properties
-
-	// operations
-	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
-	virtual bool OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp );
-	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
-	virtual bool OnApplyCaptionFont( RefCountedPtr< CPropertyObject > pProp );
-};
-
-
 /////////////////////////////////////////////////////////////////////////////
 // VdclTab window
 
-class VdclTab : public CTabCtrl
+class VdclTab : public CTabCtrl, public CArxDialogControl
 {
 public:
 	typedef std::vector< TTabPagePtr > TTabPages;
 
 // Attributes
 private:
-	CTabControlX mControlX;
-	CDclControlObject* mpSourceControl;	
-	CControlPane* mpControlPane;
-	//CTabCtrl mTabCtrl;
 	TTabPages mTabPages;
-	//CRect mrectTabCtrl;
 
 public:
-	CToolTipCtrl m_ToolTip;
 	bool m_bInvokeWithSendString;
 	int m_nCurrentSelectedTab;
 	bool m_ToolTipsUpdated;
@@ -65,10 +34,18 @@ public:
 	VdclTab( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID );
 	virtual ~VdclTab();
 
+// DialogControl Interface
+public:
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual DWORD GetWndStyle() const;
+	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
+	virtual bool OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp );
+	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
+	virtual bool OnApplyFont( RefCountedPtr< CPropertyObject > pProp );
+
 // Interface
 public:
-	CArxDialogControl& GetDialogControl() { return mControlX; }
-	const CArxDialogControl& GetDialogControl() const { return mControlX; }
 	CTabCtrl& GetTabCtrl() { return *this; }
 	const CTabCtrl& GetTabCtrl() const { return *this; }
 	CRect GetUsedArea() const;
@@ -79,7 +56,6 @@ public:
 public:
 	virtual void ShowTab(int nIndex);
 	virtual void HideTab(int nIndex);
-	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual bool CreateTabPages( UINT& nId );
 	TTabPagePtr GetTabPageAt( size_t nIndex ) const;
 	const CDclFormObject* GetTabSourceFormAt( size_t nIndex ) const;
@@ -115,4 +91,6 @@ protected:
 
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg UINT OnGetDlgCode();
 };

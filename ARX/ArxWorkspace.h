@@ -44,16 +44,10 @@ public:
 
 	//Searching
 	CArxProject* FindProject( LPCTSTR pszKeyName ) const;
-	//CDclFormObject* FindDialog( LPCTSTR pszFormName ) const;
-	//CDclFormObject* FindDclForm( LPCTSTR pszProjectName, LPCTSTR pszFormName ) const;
 	CDclFormObject* FindDclFormControl( HWND hwndControl, /*out*/ CString& sControlName ) const;
-	//CDialogObject* FindDialog( LPCTSTR pszFormName ) const;
 	CDialogObject* FindDialog( LPCTSTR pszProjectName, LPCTSTR pszDialogName ) const;
-	//CDialogObject* FindDialog( const CDclFormObject* pDclForm ) const;
-	CDclControlObject* FindControl( LPCTSTR pszProject, LPCTSTR pszDialog, LPCTSTR pszControl ) const;
-	//const CArxProject* GetDclFormProject( LPCTSTR pszFormName ) const;
-	//const CArxProject* GetDialogProject( LPCTSTR pszDialogName ) const;
-	CDclFormObject* GetForm( LPCTSTR pszProjectName, LPCTSTR pszFormName ) const;
+	CDclControlObject* FindControl( LPCTSTR pszProject, LPCTSTR pszFormName, LPCTSTR pszControl ) const;
+	CDclFormObject* FindForm( LPCTSTR pszProjectName, LPCTSTR pszFormName ) const;
 	CArxProject* GetProjectFor( const CDclFormObject* pDclForm ) const;
 
 	//Project management

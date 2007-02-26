@@ -213,7 +213,6 @@
 #define IDS_BOOLEAN                     205
 #define IDR_TOOLBOX                     206
 #define IDS_BACKGROUND                  206
-#define IDI_SELECT                      207
 #define IDS_FOREGROUND                  207
 #define IDB_FILTER                      208
 #define IDS_FILEDLG2                    208
@@ -322,7 +321,6 @@
 #define IDC_ADDIMAGE                    260
 #define IDI_OPENFOLDER                  260
 #define IDC_REMOVEIMAGE                 261
-#define IDI_PICK                        261
 #define IDC_EDITWIDTH                   262
 #define IDI_TABFOLDER                   262
 #define IDC_EDITHEIGHT                  263

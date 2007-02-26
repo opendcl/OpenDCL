@@ -42,16 +42,6 @@ public:
 
 class CColumnsPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CColumnsPage)
-
-// Construction
-public:
-	CColumnsPage();
-	~CColumnsPage();
-
-// Dialog Data
-	//{{AFX_DATA(CColumnsPage)
-	enum { IDD = IDD_COLUMNS };
 	CStatic	m_StyleTitle;
 	CEdit	m_IndexEdit;
 	CEdit	m_FileExt;
@@ -72,18 +62,17 @@ public:
 	CListCtrl	m_List;
 	CStatic	m_Index;
 	CComboBox	m_Alignment;
-	//}}AFX_DATA
+
+// Dialog Data
+	enum { IDD = IDD_COLUMNS };
 
 // members
+public:
 	bool m_bShowStyles;
 	int  m_nIndex;
 	CListHeader    m_HeaderCtrl;
 	bool m_bChangingIndex;
 	CImageListPage *m_pImageListPage;
-
-	CDclFormObject *m_pDclForm;
-	CDclControlObject *m_pControl;
-	
 	bool bUsesRowHeader;
 	
 	RefCountedPtr< CPropertyObject > m_pColCaptions;	
@@ -97,8 +86,14 @@ public:
 	RefCountedPtr< CPropertyObject > m_pColImageItems;	
 
 	CArray<CColumnData, CColumnData> m_ColData;										 
-	
 	CObjectDCLView *m_pView;
+	CDclFormObject *m_pDclForm;
+	CDclControlObject *m_pControl;
+
+// Construction
+public:
+	CColumnsPage();
+	~CColumnsPage();
 
 // Operators
 	bool IsImageListValid();
@@ -108,22 +103,16 @@ public:
 	void ResetWidths();
 	void OnColumnHeaderClicked(int nIndex);
 
-
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CColumnsPage)
+	// Overrides
 	public:
 	virtual BOOL OnApply();
 	virtual void OnOK();
 	virtual BOOL OnSetActive();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CColumnsPage)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnInsert();
 	afx_msg void OnChangeText();
@@ -141,7 +130,7 @@ protected:
 	afx_msg void OnSelchangeTime();
 	afx_msg void OnChangeFileext();
 	afx_msg void OnSetfocusIndexEdit();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
 
+protected:
+	DECLARE_MESSAGE_MAP()
 };

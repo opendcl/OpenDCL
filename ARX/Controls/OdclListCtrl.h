@@ -56,52 +56,22 @@ protected:
 };
 
 
-class CListViewControlX : public CArxDialogControl
+/////////////////////////////////////////////////////////////////////////////
+// OdclListCtrl window
+
+class OdclListCtrl : public CListCtrl, public CArxDialogControl
 {
+protected:
+	CImageList mDefaultImageList;
 	bool mbBlockList;
 	CImageList mBlockViewImageList;
 
 public:
-	CListViewControlX( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pWnd )
-		: CArxDialogControl( pTemplate, pPane, pWnd ), mbBlockList( false ) {}
-	virtual ~CListViewControlX() {}
-
-	const OdclListCtrl* GetControl() const { return (OdclListCtrl*)mpControl; }
-	OdclListCtrl* GetControl() { return (OdclListCtrl*)mpControl; }
-
-	virtual bool IsBlockList() const { return mbBlockList; }
-
-	// attributes
-	virtual DWORD GetWndStyle() const; //get window style from properties
-
-	// operations
-	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
-	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
-};
-
-
-/////////////////////////////////////////////////////////////////////////////
-// OdclListCtrl window
-
-class OdclListCtrl : public CListCtrl
-{
-protected:
-	CListViewControlX mControlX;
-	CDclControlObject* mpSourceControl;	
-	CControlPane* mpControlPane;
-	CImageList mDefaultImageList;
-
-public:
-	CPPToolTip m_ToolTip;
   COleDataSource m_COleDataSource; // Needed to make this control an OLE data SOURCE (see OnLButtonDown)
   COleOdcDropTarget m_DropTarget;
 	bool m_bInvokeWithSendString;
 	CAcadDocReactor		*m_pDocToModReactor;
 	CAcadBlockReactor	*m_pBlockReactor;	
-	//CImageList			*m_pBlockImageList;
-	CControlPane		*m_pParentCtrlPane;
-	CString				m_sProjectName;
-	CString				m_sDialogName;
 	int					m_nEditSubItem;
 	CLVEdit				m_LVEdit;
 	//bool				m_bEditCells;
@@ -115,14 +85,16 @@ public:
 	OdclListCtrl( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID );
 	virtual ~OdclListCtrl();
 
-// Interface
+// DialogControl Interface
 public:
-	CArxDialogControl& GetDialogControl() { return mControlX; }
-	const CArxDialogControl& GetDialogControl() const { return mControlX; }
-
-// Operations
-public:
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual DWORD GetWndStyle() const;
+	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
+	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
+
+// Control
+	bool IsBlockList() const { return mbBlockList; }
 
 // Implementation
 public:

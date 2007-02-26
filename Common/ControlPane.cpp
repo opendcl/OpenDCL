@@ -69,29 +69,21 @@ void CControlPane::AddControl( TDialogControlPtr pControl )
 	mControls.push_back( pControl );
 }
 
-bool CControlPane::CreateControls(CDclFormObject *pDclForm, UINT& nId)
+bool CControlPane::CreateControls(UINT& nId)
 {
 	bool bFailed = false;
-	//CRect rcParent;
-	//mpHostDlg->GetWindowRect(&rcParent);
-	//mpHostDlg->ScreenToClient(&rcParent);
-	//mpSourceForm->m_rcPos.left = 0;
-	//mpSourceForm->m_rcPos.top = 0;
-	//mpSourceForm->m_rcPos.right = rcParent.Width();
-	//mpSourceForm->m_rcPos.bottom = rcParent.Height();
-	
-	POSITION pos = pDclForm->mDclControls.GetTailPosition();
+	POSITION pos = mpSourceForm->mDclControls.GetTailPosition();
 	while (pos != NULL)
 	{
-		CDclControlObject* pTemplate = pDclForm->mDclControls.GetPrev(pos);
+		CDclControlObject* pTemplate = mpSourceForm->mDclControls.GetPrev(pos);
 		if( !pos)
 			break; //we've reached the properties control at the head of the list, just skip it
 		if (pTemplate->GetType() < 0)
 			continue;
 		UINT idDlg = pTemplate->GetID();
-		if( idDlg <= 0 || pDclForm->GetType() != CtlSplitter )
+		if( idDlg <= 0 || mpSourceForm->GetType() != CtlSplitter )
 				idDlg = nId++;
-		TDialogControlPtr pControl = CreateNewDialogControl( pTemplate, this, idDlg );
+		TDialogControlPtr pControl = CreateNewDialogControl( pTemplate, idDlg );
 		assert( pControl != NULL );
 		if( pControl )
 			mControls.push_back( pControl );
@@ -387,7 +379,8 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 		else if (lLeftFromRight == 2)
 		{
 			// get the offset value
-			int nOffsetValue = pArxObject->m_pOffsetLeft->GetLongValue();
+			int nFormWidth = mpSourceForm->GetControlProperties()->GetLngProperty(nWidth);
+			int nOffsetValue = nFormWidth / 2 - pArxObject->m_pOffsetLeft->GetLongValue();
 			// set the new offset position
 			rcControl.left = ((rcThis.right + rcThis.left) / 2) + nOffsetValue;
 		}
@@ -513,9 +506,9 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 		//	((VdclTab*)pControl)->m_rcPos = rcControl;
 		//}
 		
-		// redraw graphic buttons
-		if (pArxObject->GetType() == CtlGraphicButton)
-			pControl->ShowWindow(FALSE);
+		//// redraw graphic buttons
+		//if (pArxObject->GetType() == CtlGraphicButton)
+		//	pControl->ShowWindow(FALSE);
 
 		// redraw comboboxes
 		if (pArxObject->GetType() == CtlComboBox)
@@ -530,10 +523,8 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 		if (pArxObject->GetType() == CtlMonth)
 			((CMonthCalCtrl*)pControl)->SizeMinReq(TRUE);
 
-		
-		// mpHostDlg control is a month control
-		if (pArxObject->GetType() == CtlGraphicButton)
-			pControl->ShowWindow(pArxObject->m_pVisible->GetBooleanValue());
+		//if (pArxObject->GetType() == CtlGraphicButton)
+		//	pControl->ShowWindow(pArxObject->m_pVisible->GetBooleanValue()? SSHOW : SW_HIDE);
 
 		// redraw comboboxes
 		if (pArxObject->GetType() == CtlComboBox)
@@ -625,7 +616,7 @@ void CControlPane::CleanUpControls()
 	mControls.clear();
 }
 
-void CControlPane::ShowWindow(BOOL bShow)
+void CControlPane::ShowControls(BOOL bShow)
 {
 	// create a position variable to hold the counter increment
 	POSITION pos;	
@@ -736,7 +727,6 @@ void CControlPane::ShowPictureBoxes(BOOL bShow)
 		// increment counter
 		nCount++;
 	}
-
 }
 
 
@@ -744,7 +734,18 @@ void CControlPane::SetFirstControlFocus() const
 {
 	if(!mpSourceForm)
 		return;
-	CDclControlObject *pCtrl = mpSourceForm->mDclControls.GetTail();
-	if (pCtrl != NULL && pCtrl->GetWindow() != NULL)
-		pCtrl->GetWindow()->SetFocus();
+	POSITION pos = mpSourceForm->mDclControls.GetTailPosition();
+	while( pos )
+	{
+		CDclControlObject* pControl = mpSourceForm->mDclControls.GetPrev( pos );
+		if (pControl == NULL )
+			continue;
+		CWnd* pWnd = pControl->GetWindow();
+		if( pWnd == NULL)
+			continue;
+		if( (pWnd->GetStyle() & (WS_VISIBLE | WS_TABSTOP | WS_DISABLED)) != (WS_VISIBLE | WS_TABSTOP) )
+			continue;
+		pWnd->SetFocus();
+		return;
+	}
 }

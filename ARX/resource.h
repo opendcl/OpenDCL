@@ -41,9 +41,6 @@
 #define IDD_TABPANE                     236
 #define IDC_HAND                        239
 #define IDI_ZOOM                        240
-#define IDI_FILTER                      242
-#define IDI_PICK                        243
-#define IDI_SELECT                      244
 #define IDI_LARGEBLOCK                  246
 #define IDI_ACADFONT                    247
 #define IDI_TRUEFONT                    249
@@ -63,24 +60,10 @@
 #define IDS_EVENT_FolderChange          429
 #define IDS_EVENT_HELP                  430
 #define IDS_EVENT_TypeChange            431
-#define IDS_STRING432                   432
-#define IDS_PROP_ROWHEADER              433
-#define IDS_PROP_INSERTTYPE10           443
-#define IDS_PROP_INSERTTYPE11           444
-#define IDS_PROP_INSERTTYPE12           445
-#define IDS_PROP_INSERTTYPE13           446
-#define IDS_PROP_INSERTTYPE14           447
-#define IDS_PROP_INSERTTYPE15           448
-#define IDS_PROP_INSERTTYPE16           449
-#define IDS_PROP_SPLITTERSTYLE          450
-#define IDS_PROP_INSERTTYPE18           451
-#define IDS_PROP_INSERTTYPE19           452
-#define IDS_PROP_INSERTTYPE20           453
 #define IDD_MODALDIALOG                 12001
 #define IDD_DIALOGBAR_UI                12332
 #define IDD_RESIZEABLE                  12342
-#define IDD_TABPAGE                     12343
-#define IDD_TABPAGE2                    12344
+#define IDD_TABPAGE                     12344
 #define IDD_CUSTOM_FILE_DIALOG          13099
 #define IDI_X                           32515
 

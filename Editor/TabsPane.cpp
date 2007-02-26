@@ -16,17 +16,12 @@
 /////////////////////////////////////////////////////////////////////////////
 // CTabsPane dialog
 
-IMPLEMENT_DYNCREATE(CTabsPane, CPropertyPage)
-
-
-CTabsPane::CTabsPane() : CPropertyPage(CTabsPane::IDD)
+CTabsPane::CTabsPane( CObjectDCLView* pView, CDclControlObject* pControl )
+: CPropertyPage(CTabsPane::IDD)
+, mpView( pView )
+, mpDclControl( pControl )
+, mnTabIndex( -1 )
 {
-	//{{AFX_DATA_INIT(CTabsPane)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
-	m_pDclForm = NULL;
-	m_pControl = NULL;
-	m_nTabIndex = -1;
 }
 
 
@@ -109,35 +104,35 @@ BOOL CTabsPane::OnInitDialog()
 
 void CTabsPane::Setup() 
 {
-	if (m_nTabIndex != -1)
+	if (mnTabIndex != -1)
 		return;
 
 	POSITION pos = NULL;
-	m_pTabCaptions = m_pControl->GetPropertyObject(nTabsCaption);	
-	m_pTabTTT = m_pControl->GetPropertyObject(nTabsTTT);	
-	m_pTabImages = m_pControl->GetPropertyObject(nTabsImageList);	
+	m_pTabCaptions = mpDclControl->GetPropertyObject(nTabsCaption);	
+	m_pTabTTT = mpDclControl->GetPropertyObject(nTabsTTT);	
+	m_pTabImages = mpDclControl->GetPropertyObject(nTabsImageList);	
 
 	// create a pointer to pass to the list to insert
 	CProject *pProject = activeProject;
 	
-	for (size_t i=0; i<m_pTabCaptions->GetStringArrayPtr()->size(); i++)
+	for (size_t i = 0; i < m_pTabCaptions->GetStringArrayPtr()->size(); i++ )
 	{
 		CTabInfo *pTab = new CTabInfo(i);
 		
 		// get a pointer to the child dcl form pane for later use
-		pTab->m_pChildForm = pProject->GetDclTabChildForm(m_pView->m_pThisDclForm->GetUniqueName(), i);
+		pTab->mpChildForm = pProject->FindDclTabChildForm(mpView->m_pThisDclForm->GetUniqueName(), i);
 
 		// add the caption
-		pTab->m_sCaption = m_pTabCaptions->GetStringArrayPtr()->at(i);
+		pTab->msCaption = m_pTabCaptions->GetStringArrayPtr()->at(i);
 
 		// add the tool tip text
 		if (i < m_pTabTTT->GetStringArrayPtr()->size())
-			pTab->m_sToolTipText = m_pTabTTT->GetStringArrayPtr()->at(i);
+			pTab->msToolTipText = m_pTabTTT->GetStringArrayPtr()->at(i);
 
 		m_TabList.AddTail(pTab);
 	}
 
-	m_nTabIndex = 0;
+	mnTabIndex = 0;
 }
 
 void CTabsPane::OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -146,23 +141,23 @@ void CTabsPane::OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult)
 
 	int nIndex = pNMUpDown->iPos;
 	
-	m_nTabIndex += pNMUpDown->iDelta;
+	mnTabIndex += pNMUpDown->iDelta;
 
 	// if this index has been deleted, skip it.
 	POSITION pos = NULL;
 
 	// lets check our wrapping
 	// if to big
-	if (m_nTabIndex == m_TabList.GetCount())
+	if (mnTabIndex == m_TabList.GetCount())
 	{
-		m_nTabIndex = 0;
-		m_SpinBtn.SetPos(m_nTabIndex);
+		mnTabIndex = 0;
+		m_SpinBtn.SetPos(mnTabIndex);
 	}
 	// if to0 small
-	if (m_nTabIndex == -1)
+	if (mnTabIndex == -1)
 	{
-		m_nTabIndex = m_TabList.GetCount()-1;
-		m_SpinBtn.SetPos(m_nTabIndex);
+		mnTabIndex = m_TabList.GetCount()-1;
+		m_SpinBtn.SetPos(mnTabIndex);
 	}
 
 	UpdateFrame();
@@ -177,7 +172,7 @@ void CTabsPane::UpdateFrame()
 	if( m_TabList.GetCount() > 0 )
 	{
 		CString sText;
-		sText.Format( _T("%s%d"), theWorkspace.LoadResourceString(IDS_TABNO), m_nTabIndex + 1 );
+		sText.Format( _T("%s%d"), theWorkspace.LoadResourceString(IDS_TABNO), mnTabIndex + 1 );
 		m_Frame.SetWindowText( sText );
 	}
 	else
@@ -187,16 +182,16 @@ void CTabsPane::UpdateFrame()
 void CTabsPane::UpdateTabInfo() 
 {
 	// here we are going to update the edit boxes
-	POSITION pos = m_TabList.FindIndex(m_nTabIndex);
+	POSITION pos = m_TabList.FindIndex(mnTabIndex);
 	if (pos != NULL)
 	{
 		CTabInfo* pTabInfo = m_TabList.GetAt(pos);
-		m_Caption.SetWindowText(pTabInfo->m_sCaption);	
-		m_ToolTipText.SetWindowText(pTabInfo->m_sToolTipText);
+		m_Caption.SetWindowText(pTabInfo->msCaption);	
+		m_ToolTipText.SetWindowText(pTabInfo->msToolTipText);
 	}
 	else
 	{
-		m_nTabIndex = 0;
+		mnTabIndex = 0;
 		m_Caption.SetWindowText( _T("") );	
 		m_ToolTipText.SetWindowText( _T("") );
 	}
@@ -207,17 +202,17 @@ void CTabsPane::OnAdd()
 	CTabInfo *pTab = new CTabInfo;
 
 	if( m_TabList.GetCount() > 0 )
-		++m_nTabIndex; // increment the index to the new tab (except when adding the first tab)
+		++mnTabIndex; // increment the index to the new tab (except when adding the first tab)
 
 	// check to see where we are going to insert the tab
-	POSITION pos = m_TabList.FindIndex(m_nTabIndex); 		
+	POSITION pos = m_TabList.FindIndex(mnTabIndex); 		
 	if (pos != NULL)
 		m_TabList.InsertBefore(pos, pTab);
 	else
 		m_TabList.AddTail(pTab);
 
 	CString sCaption;
-	sCaption.Format( _T("%s%d"), theWorkspace.LoadResourceString(IDS_TAB), m_nTabIndex + 1 );
+	sCaption.Format( _T("%s%d"), theWorkspace.LoadResourceString(IDS_TAB), mnTabIndex + 1 );
 	m_Caption.SetWindowText( sCaption );
 	m_ToolTipText.SetWindowText( _T("") );
 
@@ -233,12 +228,12 @@ void CTabsPane::OnAdd()
 void CTabsPane::OnChangeCaption() 
 {
 	// here we are going to update the edit boxes
-	POSITION pos = m_TabList.FindIndex(m_nTabIndex);
+	POSITION pos = m_TabList.FindIndex(mnTabIndex);
 	if (pos != NULL)
 	{
 		CString sText;
 		m_Caption.GetWindowText(sText);
-		m_TabList.GetAt(pos)->m_sCaption = sText;
+		m_TabList.GetAt(pos)->msCaption = sText;
 	}
 	SetModified();
 }
@@ -246,12 +241,12 @@ void CTabsPane::OnChangeCaption()
 void CTabsPane::OnChangeTtt() 
 {
 	// here we are going to update the edit boxes
-	POSITION pos = m_TabList.FindIndex(m_nTabIndex);
+	POSITION pos = m_TabList.FindIndex(mnTabIndex);
 	if (pos != NULL)
 	{
 		CString sText;
 		m_ToolTipText.GetWindowText(sText);
-		m_TabList.GetAt(pos)->m_sToolTipText = sText;
+		m_TabList.GetAt(pos)->msToolTipText = sText;
 	}
 	SetModified();
 }
@@ -270,10 +265,10 @@ BOOL CTabsPane::OnApply()
 			
 			// if the tab to be delete has a CDclFormObject associated with it, 
 			// we must delete it to.
-			if (pTabInfo->m_pChildForm)
+			if (pTabInfo->mpChildForm)
 			{
 				// make the call to the view to delete the existing tab's CDclFormObject
-				m_pView->RemoveChildTabPane(pTabInfo->m_pChildForm);
+				mpView->RemoveChildTabPane(pTabInfo->mpChildForm);
 			}
 
 			// remove it from the list
@@ -290,7 +285,7 @@ BOOL CTabsPane::OnApply()
 		m_pTabCaptions->clear();
 		m_pTabTTT->clear();
 		//m_pTabImages->clear();
-		theEditorWorkspace.GetProjectTreeCtrl()->RemoveChildren( m_pDclForm->m_htiTreeItem );
+		theEditorWorkspace.GetProjectTreeCtrl()->RemoveChildren( mpDclControl->GetOwnerForm()->m_htiTreeItem );
 
 
 		// repopulate the tab info lists
@@ -300,24 +295,24 @@ BOOL CTabsPane::OnApply()
 		{
 			++idxPane;
 			CTabInfo* pTab = m_TabList.GetNext( posTab );
-			m_pTabCaptions->GetStringArrayPtr()->push_back( pTab->m_sCaption );
-			m_pTabTTT->GetStringArrayPtr()->push_back( pTab->m_sToolTipText );
+			m_pTabCaptions->GetStringArrayPtr()->push_back( pTab->msCaption );
+			m_pTabTTT->GetStringArrayPtr()->push_back( pTab->msToolTipText );
 
 			// if this is a new tab, add it to the dcl forms
-			if( !pTab->m_pChildForm )
+			if( !pTab->mpChildForm )
 			{
-				assert( pTab->m_OriginalIndex == -1 || pTab->m_OriginalIndex == idxPane );
-				pTab->m_pChildForm = m_pView->AddSingleTabPane( idxPane );
-				pTab->m_OriginalIndex = idxPane;
+				assert( pTab->mnOriginalIndex == -1 || pTab->mnOriginalIndex == idxPane );
+				pTab->mpChildForm = mpView->AddSingleTabPane( idxPane );
+				pTab->mnOriginalIndex = idxPane;
 			}
 			else
-				theEditorWorkspace.GetProjectTreeCtrl()->AddFormToTree( pTab->m_pChildForm, false );
-			pTab->m_pChildForm->SetTabIndex( idxPane );
+				theEditorWorkspace.GetProjectTreeCtrl()->AddFormToTree( pTab->mpChildForm, false );
+			pTab->mpChildForm->SetTabIndex( idxPane );
 		}	
 		
 		// call the method to update the control itself
-		m_pView->RefreshChildControl(m_pControl, (PropertyId)-2);
-		m_pView->ResizeChildTabPanes();
+		mpView->RefreshChildControl(mpDclControl, (PropertyId)-2);
+		mpView->ResizeChildTabPanes();
 		theEditorWorkspace.GetProjectTreeCtrl()->CleanupParents();
 	}
 	catch(...)
@@ -329,13 +324,13 @@ BOOL CTabsPane::OnApply()
 
 void CTabsPane::OnDelete() 
 {
-	POSITION pos = m_TabList.FindIndex(m_nTabIndex);
+	POSITION pos = m_TabList.FindIndex(mnTabIndex);
 	if (pos != NULL)
 	{
 		CTabInfo *pTab = m_TabList.GetAt(pos);
 		
 		// check to see if the user wishes to delete this tab if it has controls on it.
-		if (!m_pView->CanRemoveChildTabPane(pTab->m_OriginalIndex))
+		if (!mpView->CanRemoveChildTabPane(pTab->mnOriginalIndex))
 			return;
 
 		m_TabList.RemoveAt(pos);
@@ -343,14 +338,14 @@ void CTabsPane::OnDelete()
 		if (pTab != NULL)
 		{
 			m_DeletedTabList.AddTail(pTab);
-			if( pTab->m_pChildForm )
-				pTab->m_pChildForm->m_bDeleted = true;
+			if( pTab->mpChildForm )
+				pTab->mpChildForm->m_bDeleted = true;
 		}
 	}
 
 	// increment the index to the new tab
-	if( m_nTabIndex > 0 )
-		--m_nTabIndex;
+	if( mnTabIndex > 0 )
+		--mnTabIndex;
 	m_SpinBtn.SetRange(0, m_TabList.GetCount());
 	m_SpinBtn.EnableWindow(m_TabList.GetCount() > 1);
 	m_Caption.EnableWindow(m_TabList.GetCount() > 0);

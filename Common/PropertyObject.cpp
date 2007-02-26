@@ -713,6 +713,8 @@ public:
 			if( !mpValue )
 				mpValue = new AxInterfaceDescriptor;
 			mpValue->Serialize( ar, nVersion );
+			if( msDisplayName.IsEmpty() ) //older ODC files may not have the property name set, so set it if it's empty
+				msDisplayName = mpValue->GetName();
 			return statOK;
 		}
 	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
@@ -735,6 +737,8 @@ public:
 			{
 				case 5: return mpValue->ReadFromTextFile5( sFile );
 			};
+			if( msDisplayName.IsEmpty() ) //older ODC files may not have the property name set, so set it if it's empty
+				msDisplayName = mpValue->GetName();
 			return statInvalidFormat;
 		}
 
@@ -898,6 +902,7 @@ public:
 			if( !mpValue )
 				mpValue = new AxInterfaceDescriptor;
 			mpValue->Serialize( ar, nVersion );
+			msDisplayName = mpValue->GetName();
 			return statOK;
 		}
 	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
@@ -917,6 +922,7 @@ public:
 			{
 				case 5: return mpValue->ReadFromTextFile5( sFile );
 			};
+			msDisplayName = mpValue->GetName();
 			return statInvalidFormat;
 		}
 
@@ -958,6 +964,7 @@ public:
 			if( !mpValue )
 				mpValue = new AxInterfaceDescriptor;
 			mpValue->Serialize( ar, nVersion );
+			msDisplayName = mpValue->GetName();
 			return statOK;
 		}
 	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
@@ -977,6 +984,7 @@ public:
 			{
 				case 5: return mpValue->ReadFromTextFile5( sFile );
 			};
+			msDisplayName = mpValue->GetName();
 			return statInvalidFormat;
 		}
 
@@ -1244,7 +1252,7 @@ IMPLEMENT_SERIAL(CPropertyObject, CObject, 1)
 
 CPropertyObject::CPropertyObject()
 : mbHidden( false )
-, mnID( nInvalidPropertyId )
+, mnID( nPrivateProperty )
 {	
 	SetType( PropInvalid );
 	SetFlags( 0 );

@@ -578,7 +578,7 @@ void CMainFrame::OnRemove()
 	CString sName = pProjTree->GetItemText(hDclForm);
 
 	// here we need to get a pointer to the dcl form object.
-	CDclFormObject *pDclForm = pProject->GetDclForm(sName);
+	CDclFormObject *pDclForm = pProject->FindDclForm(sName);
 
 	// if the selected tree item was not a dcl form.
 	if (pDclForm == NULL)

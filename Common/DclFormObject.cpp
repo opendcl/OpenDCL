@@ -114,7 +114,7 @@ void CDclFormObject::SetParentForm( LPCTSTR pszParentUniqueName )
 	CString sNewParentName = pszParentUniqueName;
 	if( sNewParentName.IsEmpty() )
 		return; //calling with an empty name is an error; use the other SetParentForm() to clear the parent
-	CDclFormObject* pParentForm = mpProject->GetParentDclForm( sNewParentName );
+	CDclFormObject* pParentForm = mpProject->FindParentDclForm( sNewParentName );
 	if( pParentForm )
 		SetParentForm( pParentForm );
 }
@@ -981,10 +981,10 @@ CSize CDclFormObject::GetFormSize() const
 CDclControlObject* CDclFormObject::FindControl( LPCTSTR pszControlName ) const
 {
 	POSITION pos = mDclControls.GetHeadPosition();
-	while (pos != NULL)
+	while( pos )
 	{
-		CDclControlObject* pControl = mDclControls.GetNext(pos);
-		if (pControl->GetStrProperty(nName) == pszControlName)
+		CDclControlObject* pControl = mDclControls.GetNext( pos );
+		if( pControl->GetKeyName().CompareNoCase( pszControlName ) == 0 )
 			return pControl;
 	}
 	return NULL;
@@ -1015,22 +1015,33 @@ bool CDclFormObject::FindControls( ControlType eType, CList< CDclControlObject* 
 	POSITION pos = mDclControls.GetHeadPosition();
 	while (pos != NULL)
 	{
-		CDclControlObject* pControl = mDclControls.GetNext(pos);
-		if (pControl->GetType() == eType)
+		CDclControlObject* pControl = mDclControls.GetNext( pos );
+		if( pControl->GetType() == eType )
 			Results.AddTail(pControl);
 	}
 	return true;
 }
 
+CDclControlObject* CDclFormObject::FindControlWithVarName( LPCTSTR pszVarName ) const
+{
+	POSITION pos = mDclControls.GetHeadPosition();
+	while( pos )
+	{
+		CDclControlObject* pControl = mDclControls.GetNext( pos );
+		if( pControl->GetStrProperty( nGlobalVarName ).CompareNoCase( pszVarName ) == 0 )
+			return pControl;
+	}
+	return NULL;
+}
+
 bool CDclFormObject::GetControlFonts( CFontCollection& Fonts ) const
 {
-	POSITION posControl = mDclControls.GetHeadPosition();
-	while (posControl != NULL)
+	POSITION pos = mDclControls.GetHeadPosition();
+	while( pos )
 	{
-		CDclControlObject *pCtrl = mDclControls.GetNext(posControl);
-		assert(pCtrl != NULL);
-		if(pCtrl)
-			Fonts.GetFont(pCtrl, NULL);
+		CDclControlObject *pCtrl = mDclControls.GetNext( pos );
+		assert( pCtrl != NULL );
+		Fonts.GetFont( pCtrl, NULL );
 	}
 	return true;
 }
@@ -1038,13 +1049,13 @@ bool CDclFormObject::GetControlFonts( CFontCollection& Fonts ) const
 void CDclFormObject::ZOrderFrontAddTabControls()
 {
 	POSITION pos = mDclControls.GetHeadPosition();
-	mDclControls.GetNext(pos); //skip the properties control
-	while (pos)
+	mDclControls.GetNext( pos ); //skip the properties control
+	while( pos )
 	{
-		CDclControlObject *pControl = mDclControls.GetNext(pos);
+		CDclControlObject *pControl = mDclControls.GetNext( pos );
 		CWnd* pWnd = pControl->GetWindow();
 		if (pWnd != NULL)
-			pWnd->SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
+			pWnd->SetWindowPos( &CWnd::wndTop, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
 	}
 }
 

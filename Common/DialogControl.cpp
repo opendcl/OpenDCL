@@ -16,6 +16,7 @@ CDialogControl::CDialogControl( CDclControlObject* pTemplate, CControlPane* pPan
 : mpTemplate( pTemplate )
 , mpControl( pControl )
 , mpControlPane( pPane )
+, mbEnumProps( false )
 {
 	pTemplate->SetControlInstance( this );
 }
@@ -48,11 +49,15 @@ CString CDialogControl::GetKeyPath() const
 
 CRect CDialogControl::GetWndRect() const
 {
-	CPoint pntUpperLeft( mpTemplate->m_pLeft->GetLongValue(), mpTemplate->m_pTop->GetLongValue() );
+#ifdef EDITOR
+	CPoint pntUpperLeft( 0, 0 );
+#else
+	CPoint pntUpperLeft( mpTemplate->GetLngProperty(nLeft), mpTemplate->GetLngProperty(nTop) );
+#endif
 	return CRect( pntUpperLeft.x,
 								pntUpperLeft.y,
-								pntUpperLeft.x + mpTemplate->m_pWidth->GetLongValue(),
-								pntUpperLeft.y + mpTemplate->m_pHeight->GetLongValue() );
+								pntUpperLeft.x + mpTemplate->GetLngProperty(nWidth),
+								pntUpperLeft.y + mpTemplate->GetLngProperty(nHeight) );
 }
 
 DWORD CDialogControl::GetWndStyle() const
@@ -75,34 +80,44 @@ CString CDialogControl::GetWndCaption() const
 bool CDialogControl::ApplyPropertiesEnum()
 {
 	bool bSuccess = true;
+	mbEnumProps = true;
+	RefCountedPtr< CPropertyObject > pAutoSizeProp = mpTemplate->GetPropertyObject( nAutoSize );
 	POSITION pos = mpTemplate->GetPropertyList().GetHeadPosition();
 	while( pos )
 	{
 		RefCountedPtr< CPropertyObject > pProp = mpTemplate->GetPropertyList().GetNext( pos );
 		assert( pProp != NULL );
-		switch( pProp->GetID() )
-		{
-		case nBorderStyle: if( !OnApplyBorderStyle( pProp ) ) bSuccess = false; break;
-		case nEnabled: if( !OnApplyEnabled( pProp ) ) bSuccess = false; break;
-		case nVisible: if( !OnApplyVisible( pProp ) ) bSuccess = false; break;
-		case nCaption: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
-		case nTitleBarText: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
-		case nLabelName: if( !OnApplyCaptionFont( pProp ) ) bSuccess = false; break;
-		case nLabelSize: break; //font properties are applied en masse in OnApplyCaptionFont()
-		case nLabelBold: break;
-		case nLabelItalic: break;
-		case nLabelUnderline: break;
-		case nLabelStrikeOut: break;
-		case nFontSizeStyle: break;
-		default: if( !OnApplyProperty( pProp ) ) bSuccess = false; break;
-		}
+		if( pProp != pAutoSizeProp ) //save autosize for last
+			OnApplyProperty( pProp );
 	}
+	if( pAutoSizeProp )
+		OnApplyProperty( pAutoSizeProp );
+	mbEnumProps = false;
+	mpControl->Invalidate();
 	return bSuccess;
 }
 
 bool CDialogControl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 {
-	return true;
+	if( !pProp )
+		return false;
+	bool bSuccess = true;
+	switch( pProp->GetID() )
+	{
+	case nBorderStyle: if( !OnApplyBorderStyle( pProp ) ) bSuccess = false; break;
+	case nEnabled: if( !OnApplyEnabled( pProp ) ) bSuccess = false; break;
+	case nVisible: if( !OnApplyVisible( pProp ) ) bSuccess = false; break;
+	case nCaption: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
+	case nTitleBarText: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
+	case nLabelName: if( !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case nLabelSize: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case nLabelBold: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case nLabelItalic: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case nLabelUnderline: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case nLabelStrikeOut: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case nFontSizeStyle: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	}
+	return bSuccess;
 }
 
 bool CDialogControl::OnApplyBorderStyle( RefCountedPtr< CPropertyObject > pProp )
@@ -142,9 +157,8 @@ bool CDialogControl::OnApplyCaption( RefCountedPtr< CPropertyObject > pProp )
 	return true;
 }
 
-bool CDialogControl::OnApplyCaptionFont( RefCountedPtr< CPropertyObject > pProp )
+bool CDialogControl::OnApplyFont( RefCountedPtr< CPropertyObject > pProp )
 {
-	CFont *pFont = theWorkspace.GetFontCollection().GetFont( mpTemplate, mpControl );
 	mpControl->SetFont( theWorkspace.GetFontCollection().GetFont( mpTemplate, mpControl ) );
 	return true;
 }

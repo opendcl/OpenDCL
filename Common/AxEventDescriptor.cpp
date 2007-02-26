@@ -92,12 +92,24 @@ void AxEventDescriptor::Serialize( CArchive& ar, int nPropertyVersion )
 		size_t ctParams;
 		ar >> ctParams;
 		mrArgs.resize( ctParams );
-		for (size_t i = 0; i < ctParams; ++i)
+		for( size_t i = 0; i < ctParams; ++i )
 		{
 			ar >> mrArgs[i].vt;
 			ar >> mrArgs[i].name;
 			if (nPropertyVersion >= 4)
 				SerializeCLSID(ar, mrArgs[i].clsid);
+		}
+		if( nPropertyVersion <= 5 && ctParams < 16 )
+		{ //original code was hardcoded to always write 16! [ORW]
+			size_t ctDiscard = 16 - ctParams;
+			for( size_t i = 0; i < ctDiscard; ++i )
+			{
+				AxEventArg discard;
+				ar >> discard.vt;
+				ar >> discard.name;
+				if (nPropertyVersion >= 4)
+					SerializeCLSID(ar, discard.clsid);
+			}
 		}
 		ar >> msParams;
 	}

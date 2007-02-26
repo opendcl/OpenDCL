@@ -41,14 +41,11 @@ protected:
 class CResizableDockingDialog : public CAdUiDockControlBar
 {
 	CResizableDockingDialogX mDialogX;
-
-	//DECLARE_DYNAMIC(CResizableDockingDialog);
+	bool mbClosing;
+	bool mbHiding;
 
 public:
 	CAcadDocReactor		*m_pDocToModReactor;
-	bool				m_bClosing;
-
-	enum { IDD = 13101 };
 
 // Construction
 public:

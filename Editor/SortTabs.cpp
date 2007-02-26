@@ -8,13 +8,12 @@
 /////////////////////////////////////////////////////////////////////////////
 // CSortTabs property page
 
-IMPLEMENT_DYNCREATE(CSortTabs, CPropertyPage)
-
-CSortTabs::CSortTabs() : CPropertyPage(CSortTabs::IDD)
+CSortTabs::CSortTabs( CObjectDCLView* pView, CDclControlObject* pControl, CTabsPane* pTabsPane )
+: CPropertyPage(CSortTabs::IDD)
+, mpView( pView )
+, mpDclControl( pControl )
+, mpTabsPane( pTabsPane )
 {
-	//{{AFX_DATA_INIT(CSortTabs)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
 }
 
 CSortTabs::~CSortTabs()
@@ -43,15 +42,16 @@ BOOL CSortTabs::OnSetActive()
 {
 	m_List.ResetContent();
 
-	for (int i=0; i<m_pTabPane->m_TabList.GetCount(); i++)
+	for (int i=0; i<mpTabsPane->GetTabList().GetCount(); i++)
 	{
-		POSITION pos = m_pTabPane->m_TabList.FindIndex(i);
+		POSITION pos = mpTabsPane->GetTabList().FindIndex(i);
 		if (pos != NULL)
 		{		
-			CTabInfo *pTab = m_pTabPane->m_TabList.GetAt(pos);
-			m_List.AddString(pTab->m_sCaption);
+			CTabInfo *pTab = mpTabsPane->GetTabList().GetAt(pos);
+			m_List.AddString(pTab->msCaption);
 		}
 	}
+	m_List.SetCurSel( (mpTabsPane->GetTabList().GetCount() > 0)? 0 : -1 );
 	
 	return CPropertyPage::OnSetActive();
 }
@@ -60,7 +60,7 @@ BOOL CSortTabs::OnInitDialog()
 {
 	CPropertyPage::OnInitDialog();
 	
-	m_pTabPane->Setup();
+	mpTabsPane->Setup();
 	OnSetActive();
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -83,21 +83,18 @@ void CSortTabs::OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult)
 	CTabInfo *pTab1;
 	CTabInfo *pTab2;
 
-	POSITION pos1 = m_pTabPane->m_TabList.FindIndex(ni1);
+	POSITION pos1 = mpTabsPane->GetTabList().FindIndex(ni1);
 	if (pos1 != NULL)
-	{		
-		pTab1 = m_pTabPane->m_TabList.GetAt(pos1);
-	}
+		pTab1 = mpTabsPane->GetTabList().GetAt(pos1);
 
-	POSITION pos2 = m_pTabPane->m_TabList.FindIndex(ni2);
+	POSITION pos2 = mpTabsPane->GetTabList().FindIndex(ni2);
 	if (pos2 != NULL)
-	{		
-		pTab2 = m_pTabPane->m_TabList.GetAt(pos2);
-	}
+		pTab2 = mpTabsPane->GetTabList().GetAt(pos2);
 
-	m_pTabPane->m_TabList.SetAt(pos1, pTab2);
-	m_pTabPane->m_TabList.SetAt(pos2, pTab1);
+	mpTabsPane->GetTabList().SetAt(pos1, pTab2);
+	mpTabsPane->GetTabList().SetAt(pos2, pTab1);
 
+	SetModified();
 	OnSetActive();
 
 	m_List.SetCurSel(ni2);
@@ -106,7 +103,7 @@ void CSortTabs::OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult)
 
 BOOL CSortTabs::OnApply() 
 {
-	m_pTabPane->OnApply();
+	mpTabsPane->OnApply();
 
 	return CPropertyPage::OnApply();
 }

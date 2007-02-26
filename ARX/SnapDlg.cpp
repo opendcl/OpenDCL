@@ -200,7 +200,7 @@ CSize CSnapDlg::ReadSize()
 	CWinApp* pApp = AfxGetApp();
 	CString sProfileName = mpSourceForm->GetKeyPath(); 
     
-    szRet.cx = pApp->GetProfileInt(sProfileName, sSizeWidth, nDefaultSize);
+	szRet.cx = pApp->GetProfileInt(sProfileName, sSizeWidth, nDefaultSize);
 	szRet.cy = pApp->GetProfileInt(sProfileName, sSizeHeight, nDefaultSize);
 
 	// ensure the dialog box is at least as big as the min size

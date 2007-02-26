@@ -53,6 +53,9 @@ END
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\idr_main.ico"
 IDI_LABEL               ICON                    "res\\Label.ico"
+IDI_FILTER              ICON                    "Res\\Filter.ico"
+IDI_PICK                ICON                    "Res\\pick.ico"
+IDI_SELECT              ICON                    "Res\\Select.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

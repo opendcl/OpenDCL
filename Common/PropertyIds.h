@@ -3,7 +3,7 @@
 
 enum PropertyId
 {
-	nInvalidPropertyId = -1,
+	nPrivateProperty = -1,
 	nMinPropertyId = 1,
 	nName = 1,
 	nCustom = 2,

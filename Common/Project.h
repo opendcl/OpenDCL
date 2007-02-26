@@ -175,22 +175,20 @@ public:
 	bool HasActiveXFile( LPCTSTR pszFileName ) const;
 	INT_PTR AddPicture(CPictureObject* pPicture);
 	bool LoadPictureFile(LPCTSTR szFile, int nID);
-
-protected:
-
-	//from old CProjectList
-public:
+	CDclFormObject* FindDclForm( LPCTSTR pszDclFormName ) const;
+	CDclFormObject* FindDclFormWithVarName( LPCTSTR pszVarName ) const;
+	CDclControlObject* FindControlWithVarName( LPCTSTR pszVarName ) const;
+	CDclFormObject* FindDclTabChildForm( LPCTSTR pszParentFormName, int nTabIndex ) const;
+	CDclFormObject* FindParentDclForm( LPCTSTR pszParentFormName ) const;
+	size_t CountDeletedForms() const;
 	void ClearProject();
-	CDclFormObject* GetDclForm(CString DclFormName);
 	void ClearR14Events();
-	CDclFormObject* GetDclTabChildForm(CString sDclParentUniqueName, int nTabIndex);
-	CDclFormObject* GetParentDclForm(CString ParentName);
 	CString QueryForLispFileName();
 	CString QueryForOdsFileName();
 	void SaveDistFile();
-	int CountDeletedForms();
 
 	// OLE object management
+public:
 	void AddOleObject(const CLSID& clsid, CAxContainer *pAxCont);
 	bool HasOleObject(const CLSID& clsid);
 	CString GetOleObjectName(const AxPropertyDescriptor *pProperty);

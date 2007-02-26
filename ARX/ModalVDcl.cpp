@@ -134,7 +134,7 @@ BOOL CModalVDcl::OnInitDialog()
 	
 	// call method to create the controls
 	UINT nID = 1000;
-	mDialogX.GetControlPane().CreateControls(mDialogX.GetSourceForm(), nID);
+	mDialogX.GetControlPane().CreateControls(nID);
 
 	// setup the rect default rect 
 	rectThis.top = 0;
@@ -255,7 +255,7 @@ BOOL CModalVDcl::OnInitDialog()
 		rcThis.Height(),
 		false);	
 
-	SetFocus();
+	//SetFocus();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE

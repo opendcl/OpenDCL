@@ -91,6 +91,7 @@ public:
 	CDclControlObject* FindControl( LPCTSTR pszControlName, ControlType eType ) const;
 	CDclControlObject* FindFirstControlOfType( ControlType eType ) const;
 	bool FindControls( ControlType eType, CList< CDclControlObject* >& Results ) const;
+	CDclControlObject* FindControlWithVarName( LPCTSTR pszVarName ) const;
 	bool GetControlFonts( CFontCollection& Fonts ) const;
 	void ZOrderFrontAddTabControls();
 	void SetGlobalVariableName( LPCTSTR pszRootName = NULL, bool bUpdateChildren = true );

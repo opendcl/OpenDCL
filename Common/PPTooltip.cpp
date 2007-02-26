@@ -204,13 +204,13 @@ LRESULT CPPToolTip::SendNotify(CPoint * pt, PPTOOLTIP_INFO & ti)
 
 void CPPToolTip::OnPaint() 
 {
+	CPaintDC dc(this); // device context for painting
+
 	if (!IsEnabledIndexTool(m_nIndexCurrentWnd))
 		return;
 
 	m_nIndexDisplayWnd = m_nIndexCurrentWnd;
 	m_nIndexCurrentWnd = PPTOOLTIP_TOOL_NOEXIST;
-
-	CPaintDC dc(this); // device context for painting
 
 	CRect rect;
 	GetClientRect(&rect);
@@ -218,7 +218,7 @@ void CPPToolTip::OnPaint()
 
 	// Create a memory device-context. This is done to help reduce
 	// screen flicker, since we will paint the entire control to the
-	// off screen device context first.CDC memDC;
+	// off screen device context first.
 	CDC memDC;
 	CBitmap bitmap;
 	memDC.CreateCompatibleDC(&dc);

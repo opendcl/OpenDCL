@@ -136,7 +136,7 @@ BOOL CModelessDlg::OnInitDialog()
 
 	// call method to create the controls
 	UINT nID = 1000;
-	mDialogX.GetControlPane().CreateControls(mDialogX.GetSourceForm(), nID);
+	mDialogX.GetControlPane().CreateControls(nID);
 
 	// setup the rect default rect 
 	rectThis.top = 0;

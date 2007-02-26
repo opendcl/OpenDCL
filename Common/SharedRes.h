@@ -53,8 +53,11 @@
 #define IDS_PROP_TABSCAPTION            240
 #define IDS_PROP_TABSIMAGELIST          241
 #define IDS_PROP_TABSTTTLIST            242
+#define IDI_FILTER                      10007
 #define IDS_PROP_TEXT                   243
+#define IDI_PICK                        10008
 #define IDS_PROP_TICKFRQCY              244
+#define IDI_SELECT                      10009
 #define IDS_PROP_TITLEBARTEXT           245
 #define IDS_PROP_TTT                    246
 #define IDS_PROP_TOP                    247
@@ -260,7 +263,6 @@
 #define IDS_PROP_CLOSESTINSIDE          451
 #define IDS_PROP_CLOSESTOUTSIDE         452
 #define IDS_PROP_HATCHSCALE             453
-#define IDS_EVENT_SPLITTER_MOVED        454
 #define IDS_EVENT_SPLITTERMOVED         454
 #define IDS_PROP_CAPTION_SECOND         455
 #define IDS_PROP_CAPTION_SECONDS        456

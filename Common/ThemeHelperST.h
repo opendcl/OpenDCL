@@ -33,9 +33,12 @@
 //		21019 Somma Lombardo (VA)
 //		Italy
 //
+#ifndef _THEMEHELPERST_H_
+#define _THEMEHELPERST_H_
 
+#if _MSC_VER > 1000
 #pragma once
-
+#endif // _MSC_VER > 1000
 
 #ifndef	HTHEME
 #define	HTHEME	HANDLE
@@ -82,3 +85,5 @@ private:
 
 	HMODULE		m_hDll;
 };
+
+#endif 

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "DialogControl.h"
+#include "ThemeHelperST.h"
 #include <vector>
 
 class CProject;
@@ -22,13 +23,6 @@ const int EditFilter_UpperCase	= 5;
 const int EditFilter_LowerCase	= 6;
 const int EditFilter_Password	= 7;
 const int EditFilter_Multiline	= 8;
-
-const int ButtonStyle_Raised	= 0;
-const int ButtonStyle_Flat		= 1;
-const int ButtonStyle_Pick		= 2;
-const int ButtonStyle_Select	= 3;
-const int ButtonStyle_Filter	= 4;
-const int ButtonStyle_NoBorder	= 5;
 
 const int CmboStyle_Combo		= 0;
 const int CmboStyle_Simple		= 1;
@@ -49,7 +43,7 @@ const int CmboStyle_Layers = 13;
 /////////////////////////////////////////////////////////////////////////////
 // CControlPane window
 
-class CControlPane  : public CObject
+class CControlPane
 {
 public:
 	typedef std::vector< TDialogControlPtr > TDialogControls;
@@ -57,14 +51,14 @@ public:
 // Attributes
 protected:
 	CProject* mpProject;
-	CDclFormObject *mpSourceForm;
+	CDclFormObject* mpSourceForm;
 	TDialogControls mControls;
 	CWnd* mpHostDlg;
 	long mlLeftOffset;
 	long mlRightOffset;
 	long mlTopOffset;
 	long mlBottomOffset;
-	//CRect mPaneWindowPos;
+	CThemeHelperST mThemeHelper;
 
 // Construction
 protected:
@@ -78,21 +72,19 @@ public:
 	CProject* GetProject() const { return mpProject; }
 	CDclFormObject* GetSourceForm() const { return mpSourceForm; }
 	CWnd* GetHostDialog() const { return mpHostDlg; }
-	//const CRect& GetPanePos() const { return mrectCurrent; }
 	void SetPanePos( CRect rectNew, bool bRecalc = true ); //set current control area and recalculate layout
-	//void SetPaneWindowRect( const CRect& rectNew ) { mPaneWindowPos = rectNew; }
 	const TDialogControls& GetControlsList() const { return mControls; }
 	//TDialogControls& GetControlsList() { return mControls; }
 
 // Operations
 public:
 	void SetFirstControlFocus() const;
-	bool CreateControls( CDclFormObject* pDclForm, UINT& nId );
+	bool CreateControls( UINT& nId );
 	void AddControl( TDialogControlPtr pControl );
 	void RecalcLayout();
 	void ResetControlsPos(CDclControlObject *pControl);
 
-	void ShowWindow(BOOL bShow);
+	void ShowControls(BOOL bShow);
 	void ShowPictureBoxes(BOOL bShow);
 	void SetGrphcBtnsParents(bool bForceRefresh);
 
@@ -106,12 +98,12 @@ protected:
 // Implementation
 public:
 	virtual void CleanUpControls();
+	virtual CThemeHelperST* GetThemeHelper() { return &mThemeHelper; }
 	virtual bool FindControl(HWND hwndControl, /*out*/ CString& sControlName) const = 0; //if found, returns true & sets sControlName
 	virtual TDialogControlPtr FindControl(HWND hwndControl) const = 0;
 	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const = 0;
-	virtual class CThemeHelperST* GetThemeHelper() = 0;
 	virtual void SetGlobalLispSymbols( bool bResetToNil = false ) {}
 
 protected:
-	virtual TDialogControlPtr CreateNewDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID ) = 0;
+	virtual TDialogControlPtr CreateNewDialogControl( CDclControlObject* pTemplate, UINT nID ) = 0;
 };

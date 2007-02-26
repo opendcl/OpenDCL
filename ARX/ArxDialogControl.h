@@ -46,3 +46,15 @@ public:
 protected:
 	virtual void SetLispSymbol( bool bResetToNil = false ) const;
 };
+
+
+//This class deletes the control object in its destructor (used for old style and other dynamically 
+//created controls)
+class CArxAutoDialogControl : public CArxDialogControl
+{
+public:
+	CArxAutoDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pControl )
+		: CArxDialogControl( pTemplate, pPane, pControl ) {}
+	virtual ~CArxAutoDialogControl() { delete mpControl; }
+	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
+};

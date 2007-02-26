@@ -32,7 +32,7 @@ following individuals who contributed in various ways to the
 OpenDCL open source project on SourceForge at:
 http://www.sourceforge.net/projects/opendcl
 
-Credits include SOurceForge handles with real names in 
+Credits include SourceForge handles with real names in 
 parentheses when available.
 
 PROGRAMMING
@@ -50,9 +50,10 @@ svelasquez (Sebastião Velasquez)
 zeeboy (Doug Barense)
 
 
-Some OpenDCL components are based on copyrighted source code 
-licensed from third parties. Thanks to the following for their 
-valuable contributions to OpenDCL:
+Some OpenDCL components are based on or derived from public 
+domain and copyrighted source code licensed from third 
+parties. Thanks to the following for their valuable 
+contributions to OpenDCL:
 
 Davide Calabro' (davide_calabro@yahoo.com)
 CCeXDIb device independent bitmap class
