@@ -14,6 +14,9 @@ class CDclControlObject;
 
 class VdclSliderCtrl : public CSliderCtrl
 {
+private:
+	CDclControlObject *m_ArxControl;
+	
 // Construction
 public:
 	VdclSliderCtrl();
@@ -56,7 +59,4 @@ protected:
 	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()
-private:
-	CDclControlObject *m_ArxControl;
-	
 };

@@ -42,6 +42,13 @@ CArxWorkspace::~CArxWorkspace()
 	acDocManager->removeReactor(&mDocReactor);
 }
 
+CString CArxWorkspace::GetUserProfilePrefix() const
+{
+	resbuf rbProfile = { NULL };
+	acedGetVar( _T("CPROFILE"), &rbProfile );
+	return CString( _T("Profiles\\") ) +  rbProfile.resval.rstring + _T("\\OpenDCL\\");
+}
+
 CString CArxWorkspace::LoadResourceString(int nResId, HMODULE hmodRes /*= NULL*/) const
 {
 	//get it from this ARX module if hmodRes is NULL

@@ -1033,20 +1033,20 @@ void CObjectDCLView::CalcControlOffsetDistances(CDclControlObject *pArxObject, C
 	
 
 	if (lRightFromRight == 0 || lRightFromRight == 1)
-		pArxObject->SetLongProperty(nTopFromBottom, rcThis.Height() - nTheTop);
+		pArxObject->SetLongProperty(nRightFromRight, rcThis.Width() - nTheLeft - nTheWidth);
 	else
 	{
 		CRect rc = GetSplitterRect(lRightFromRight);
-		pArxObject->SetLongProperty(nTopFromBottom, nTheTop - rc.top);
+		pArxObject->SetLongProperty(nRightFromRight, nTheLeft + nTheWidth - rc.left);	
 	}
 
 
 	if (lTopFromBottom == 0 || lTopFromBottom == 1)
-		pArxObject->SetLongProperty(nRightFromRight, rcThis.Width() - nTheLeft - nTheWidth);
+		pArxObject->SetLongProperty(nTopFromBottom, rcThis.Width() - nTheLeft - nTheWidth);
 	else
 	{
 		CRect rc = GetSplitterRect(lTopFromBottom);
-		pArxObject->SetLongProperty(nRightFromRight, nTheLeft + nTheWidth - rc.left);	
+		pArxObject->SetLongProperty(nTopFromBottom, nTheTop - rc.top);
 	}
 	
 

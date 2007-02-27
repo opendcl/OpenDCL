@@ -425,14 +425,7 @@ void CPropertyListCtrl::RePaint()
 		m_ScrollBar.ShowScrollBar(FALSE);
 		m_ScrollBar.ShowWindow(FALSE);
 	}
-
-	
 }
-
-
-
-
-
 
 BOOL CPropertyListCtrl::ImageListAddPicture(CPictureHolder *NewPicture, CImageListObject *pImageListObj, CImageList *pImageList, CSize *pImageSize, BOOL ApplyMask)
 {
@@ -1921,13 +1914,6 @@ void CPropertyListCtrl::OnButtonPressed()
 		case PropActiveXMethods:
 			{
 				EditObjectbrowser();
-				/*
-				CObjectBrowser Dlg(this);
-				Dlg.m_pControl = m_pControl;
-				Dlg.m_pDclForm = m_pDclForm;
-				Dlg.m_sDclFormName = m_pDclForm->GetKeyName();
-				Dlg.DoModal();
-				*/
 				break;
 			}
 		case PropActiveXPropPages:

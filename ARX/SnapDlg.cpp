@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "SnapDlg.h"
+#include "Project.h"
 #include "PropertyIds.h"
 #include "DclControlObject.h"
 
@@ -131,7 +132,7 @@ void CSnapDlg::SaveSize()
 	CWinApp* pApp = AfxGetApp();
 	CRect rcThis;
 	GetWindowRect(&rcThis);
-	CString sProfileName = mpSourceForm->GetKeyPath(); 
+	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath(); 
 
 	if (IsWindow(m_hWnd))
 	{
@@ -149,10 +150,10 @@ CRect CSnapDlg::ReadRect()
 	
 	CRect rcRet;
 	CWinApp* pApp = AfxGetApp();
-	CString sProfileName = mpSourceForm->GetKeyPath();
+	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath();
     
-    rcRet.left = pApp->GetProfileInt(sProfileName, sTopLeftX, nDefaultSize);
-    rcRet.top = pApp->GetProfileInt(sProfileName, sTopLeftY, nDefaultSize);
+	rcRet.left = pApp->GetProfileInt(sProfileName, sTopLeftX, nDefaultSize);
+	rcRet.top = pApp->GetProfileInt(sProfileName, sTopLeftY, nDefaultSize);
 	
 	int nScreenWidth = ::GetSystemMetrics(SM_CXSCREEN);
 	int nScreenHeight = ::GetSystemMetrics(SM_CYSCREEN);

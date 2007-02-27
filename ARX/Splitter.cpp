@@ -332,21 +332,23 @@ void CSplitter::OnLButtonUp(UINT nFlags, CPoint point)
 		CWnd *pOwner = GetOwner();
 		if (pOwner && IsWindow(pOwner->m_hWnd))
 		{
-			CRect rc;
-			int delta;
-			pOwner->GetClientRect(rc);
 			pOwner->ScreenToClient(&pt);
 			MoveWindowTo(pt);
 				
+			int delta;
 			if (m_nType == SPS_VERTICAL)
 			{
 				delta = m_nX - m_nSavePos;
-				m_pLeft->SetLongValue(pt.x);							
+				m_ArxControl->m_pLeft->SetLongValue(m_ArxControl->m_pLeft->GetLongValue() + delta );
+				m_ArxControl->m_pOffsetLeft->SetLongValue(m_ArxControl->m_pOffsetLeft->GetLongValue() + delta );
+				m_ArxControl->m_pOffsetRight->SetLongValue(m_ArxControl->m_pOffsetRight->GetLongValue() - delta );
 			}
 			else
 			{
 				delta = m_nY - m_nSavePos;
-				m_pTop->SetLongValue(pt.y);
+				m_ArxControl->m_pTop->SetLongValue(m_ArxControl->m_pTop->GetLongValue() + delta );
+				m_ArxControl->m_pOffsetTop->SetLongValue(m_ArxControl->m_pOffsetTop->GetLongValue() + delta );
+				m_ArxControl->m_pOffsetBottom->SetLongValue(m_ArxControl->m_pOffsetBottom->GetLongValue() - delta );
 			}
 			
 			SPC_NMHDR nmsp;
@@ -360,7 +362,7 @@ void CSplitter::OnLButtonUp(UINT nFlags, CPoint point)
 
 			CRect rcThis;
 			GetWindowRect(&rcThis);
-			GetParent()->GetClientRect(rcThis);
+			GetParent()->ScreenToClient(&rcThis);
 			InvokeMethodIntIntIntInt(
 				m_ArxControl->GetStrProperty(nEventSplitterMoved),
 				rcThis.left,
@@ -372,7 +374,7 @@ void CSplitter::OnLButtonUp(UINT nFlags, CPoint point)
 		}
 		Invalidate();
 		
-		m_pControlPane->RecalcLayout();
+		m_pControlPane->RecalcLayout( true );
 
 		SavePlacement();
 	}
@@ -479,12 +481,15 @@ void CSplitter::SavePlacement()
 {
 	CWinApp* pApp = AfxGetApp();
 
-	CString sProfileName = m_ArxControl->GetKeyPath(); 
+	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + m_ArxControl->GetKeyPath(); 
 
 	if (IsWindow(m_hWnd) && m_pLeft != NULL)
 	{
-		pApp->WriteProfileInt(sProfileName, sTopLeftX, m_pLeft->GetLongValue());
-		pApp->WriteProfileInt(sProfileName, sTopLeftY, m_pTop->GetLongValue());
+		CRect rectCurrent;
+		GetWindowRect( &rectCurrent );
+		GetParent()->ScreenToClient( &rectCurrent );
+		pApp->WriteProfileInt(sProfileName, sTopLeftX, rectCurrent.left);
+		pApp->WriteProfileInt(sProfileName, sTopLeftY, rectCurrent.top);
 	}
     
 }
@@ -495,7 +500,7 @@ CPoint CSplitter::ReadPlacement()
 	CPoint szRet;
 	CWinApp* pApp = AfxGetApp();
 	
-	CString sProfileName = m_ArxControl->GetKeyPath(); 
+	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + m_ArxControl->GetKeyPath(); 
     
 	szRet.x = pApp->GetProfileInt(sProfileName, sTopLeftX, -1);
 	szRet.y = pApp->GetProfileInt(sProfileName, sTopLeftY, -1);

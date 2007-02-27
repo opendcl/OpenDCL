@@ -58,6 +58,7 @@ void CControlPane::ZOrderFront(CWnd *pControl)
 	if (pControl != NULL)
 		pControl->SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
 }
+
 void CControlPane::ZOrderBack(CWnd *pControl)
 {
 	if (pControl != NULL)
@@ -195,86 +196,74 @@ void CControlPane::SetGrphcBtnsParents(CDclControlObject *pGrphcBtn, CDclControl
 		pGrphcBtn->GetWindow()->ShowWindow(pGrphcBtn->m_pVisible->GetBooleanValue());
 }
 
-void CControlPane::RecalcLayout()
+void CControlPane::RecalcLayout( bool bIgnoreSplitters /*= false*/ )
 {
-	if (mpSourceForm == NULL)
+	if( !mpSourceForm )
 		return;
 
-	if (mpSourceForm->mDclControls.GetCount() == 0)
+	if( mpSourceForm->mDclControls.GetCount() == 0 )
 		return;
 
-	// first lets calc all the control positions for any splitter controls.
-	POSITION pos = mpSourceForm->mDclControls.GetHeadPosition();
-	mpSourceForm->mDclControls.GetNext(pos);
-	while (pos != NULL)
+	if( !bIgnoreSplitters )
 	{
-		CDclControlObject *pArxObject = mpSourceForm->mDclControls.GetNext(pos);
-
-		if (pArxObject != NULL && pArxObject->GetType() == CtlSplitter)
-			ResetControlsPos(pArxObject);
+		// first lets calc all the control positions for any splitter controls.
+		POSITION pos = mpSourceForm->mDclControls.GetHeadPosition();
+		mpSourceForm->mDclControls.GetNext( pos );
+		while( pos )
+		{
+			CDclControlObject* pControl = mpSourceForm->mDclControls.GetNext( pos );
+			if( pControl != NULL && pControl->GetType() == CtlSplitter )
+				ResetControlsPos( pControl );
+		}
 	}
 
 	//next lets calc all the control positions for all NON-splitter controls.
-	pos = mpSourceForm->mDclControls.GetHeadPosition();
-	mpSourceForm->mDclControls.GetNext(pos);
-	while (pos != NULL)
+	POSITION pos = mpSourceForm->mDclControls.GetHeadPosition();
+	mpSourceForm->mDclControls.GetNext( pos );
+	while( pos )
 	{
-		CDclControlObject *pObject = mpSourceForm->mDclControls.GetNext(pos);
-
-		if (pObject != NULL && pObject->GetType() != CtlSplitter)
-			ResetControlsPos(pObject);
+		CDclControlObject* pControl = mpSourceForm->mDclControls.GetNext( pos );
+		if( pControl->GetType() != CtlSplitter )
+			ResetControlsPos( pControl );
 	}
 
 	// call method to ensure all graphic buttons and picture boxes and slide holders are setup 
 	// correctly to enure the graphic buttons are transparent.	
-	SetGrphcBtnsParents(true);
+	//SetGrphcBtnsParents(true);
 
 	mpHostDlg->Invalidate();
 }
 
 void CControlPane::InvalidateControls()
 {
-	if (mpSourceForm == NULL)
+	if( !mpSourceForm )
 		return;
 
-	if (mpSourceForm->mDclControls.GetCount() == 0)
-		return;
-
-	for (int i=1; i<mpSourceForm->mDclControls.GetCount(); i++)
+	POSITION pos = mpSourceForm->mDclControls.GetHeadPosition();
+	while( pos )
 	{
-		// get the arx object
-		POSITION pos = mpSourceForm->mDclControls.FindIndex(i);
-		if (pos != NULL)
-		{
-			CDclControlObject *pArxObject = mpSourceForm->mDclControls.GetAt(pos);
-
-			if (pArxObject != NULL)
-				if (pArxObject->GetType() != CtlBlockView && pArxObject->GetType() != CtlHatch)
-					pArxObject->GetWindow()->Invalidate();
-		}
+		CDclControlObject *pControl = mpSourceForm->mDclControls.GetNext( pos );
+		if( pControl->GetType() != CtlBlockView && pControl->GetType() != CtlHatch )
+			pControl->GetWindow()->Invalidate();
 	}
 }
 
-CRect CControlPane::GetSplitterRect(int nId) 
+CRect CControlPane::GetSplitterRect( int nId, CRect& rectCurrent ) 
 {
-	CRect rc(0,0,0,0);
-
 	POSITION pos = mpSourceForm->mDclControls.GetHeadPosition();
-	while (pos != NULL)
+	while( pos )
 	{
-		CDclControlObject *pCtrl = mpSourceForm->mDclControls.GetNext(pos);
-
-		if (pCtrl->GetType() == CtlSplitter && pCtrl->GetControlInstance()->GetControlId() == nId)
+		CDclControlObject *pCtrl = mpSourceForm->mDclControls.GetNext( pos );
+		if( pCtrl->GetType() == CtlSplitter && pCtrl->GetID() == nId )
 		{
-			rc.left = pCtrl->GetLngProperty(nLeft);
-			rc.top = pCtrl->GetLngProperty(nTop);
-			rc.right = rc.left + pCtrl->GetLngProperty(nWidth);
-			rc.bottom = rc.top + pCtrl->GetLngProperty(nHeight);
-			return rc;	
+			pCtrl->GetWindow()->GetWindowRect( &rectCurrent );
+			mpHostDlg->ScreenToClient( &rectCurrent );
+			CPoint pt( pCtrl->GetLngProperty( nLeft ), pCtrl->GetLngProperty( nTop ) );
+			return CRect( pt.x, pt.y, pt.x + pCtrl->GetLngProperty( nWidth ), pt.y + pCtrl->GetLngProperty( nHeight ) );
 		}
 	}
-
-	return rc;	
+	rectCurrent.SetRect(0,0,0,0);
+	return CRect(0,0,0,0);	
 }
 
 void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
@@ -382,19 +371,20 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 			int nFormWidth = mpSourceForm->GetControlProperties()->GetLngProperty(nWidth);
 			int nOffsetValue = nFormWidth / 2 - pArxObject->m_pOffsetLeft->GetLongValue();
 			// set the new offset position
-			rcControl.left = ((rcThis.right + rcThis.left) / 2) + nOffsetValue;
+			rcControl.left = ((rcThis.right + rcThis.left) / 2) - nOffsetValue;
 		}
 		// set the left position if required
 		else if (lLeftFromRight > 2)
 		{
+			// get the splitter's rect.
+			CRect rectCurrent;
+			CRect rc = GetSplitterRect(lLeftFromRight, rectCurrent);
+
 			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetLeft->GetLongValue();
 
-			// get the splitter's rect.
-			CRect rc = GetSplitterRect(lLeftFromRight);
-
 			// set the new offset position
-			rcControl.left = rc.left + nOffsetValue;
+			rcControl.left = rectCurrent.left + nOffsetValue;
 		}		
 		else
 			rcControl.left = rcThis.left + pArxObject->m_pLeft->GetLongValue();
@@ -410,14 +400,15 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 		// set the right position if required
 		else if (lRightFromRight > 1)
 		{
+			// get the splitter's rect.
+			CRect rectCurrent;
+			CRect rc = GetSplitterRect(lRightFromRight, rectCurrent);
+
 			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetRight->GetLongValue();
 
-			// get the splitter's rect.
-			CRect rc = GetSplitterRect(lRightFromRight);
-
 			// set the new offset position
-			rcControl.right = rc.left - nOffsetValue;
+			rcControl.right = rectCurrent.left + nOffsetValue;
 		}		
 		// if right offset not requested
 		else
@@ -434,19 +425,20 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetTop->GetLongValue();				
 			// set the new offset position
-			rcControl.top = rcThis.bottom - nOffsetValue;
+			rcControl.top = rcThis.bottom + nOffsetValue;
 		}
 		// set the top position if required
 		else if (lTopFromBottom > 1)
 		{
+			// get the splitter's rect.
+			CRect rectCurrent;
+			CRect rc = GetSplitterRect(lTopFromBottom, rectCurrent);
+
 			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetTop->GetLongValue();
 
-			// get the splitter's rect.
-			CRect rc = GetSplitterRect(lTopFromBottom);
-
 			// set the new offset position
-			rcControl.top = rc.top + nOffsetValue;
+			rcControl.top = rectCurrent.top + nOffsetValue;
 		}
 		// if bottom offset not requested
 		else
@@ -463,14 +455,15 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 		// set the bottom position if required
 		else if (lBottomFromBottom > 1)
 		{
+			// get the splitter's rect.
+			CRect rectCurrent;
+			CRect rc = GetSplitterRect(lBottomFromBottom, rectCurrent);
+
 			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetBottom->GetLongValue();
 
-			// get the splitter's rect.
-			CRect rc = GetSplitterRect(lBottomFromBottom);
-
 			// set the new offset position
-			rcControl.bottom = rc.top - nOffsetValue;
+			rcControl.bottom = rectCurrent.top + nOffsetValue;
 		}
 		// if bottom offset not requested
 		else
@@ -612,7 +605,11 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 void CControlPane::CleanUpControls() 
 {	
 	for (int idx = mControls.size() - 1; idx >= 0; --idx)
-		mControls[idx]->GetControl()->DestroyWindow();
+	{
+		CWnd* pControl = mControls[idx]->GetControl();
+		if( pControl )
+			pControl->DestroyWindow();
+	}
 	mControls.clear();
 }
 

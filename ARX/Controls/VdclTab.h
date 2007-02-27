@@ -40,9 +40,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
-	virtual bool OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp );
 	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
-	virtual bool OnApplyFont( RefCountedPtr< CPropertyObject > pProp );
 
 // Interface
 public:
@@ -73,9 +71,11 @@ protected:
 	void DestroyTabPages();
 	void SetupTabs();
 
+protected:
+	DECLARE_MESSAGE_MAP()
+
 // Overrides
 public:
-	//virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 	// Generated message map functions
@@ -87,10 +87,5 @@ protected:
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void PostNcDestroy();
-	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
-
-protected:
-	DECLARE_MESSAGE_MAP()
-public:
-	afx_msg UINT OnGetDlgCode();
+	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
 };

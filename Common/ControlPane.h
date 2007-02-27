@@ -81,7 +81,7 @@ public:
 	void SetFirstControlFocus() const;
 	bool CreateControls( UINT& nId );
 	void AddControl( TDialogControlPtr pControl );
-	void RecalcLayout();
+	void RecalcLayout( bool bIgnoreSplitters = false );
 	void ResetControlsPos(CDclControlObject *pControl);
 
 	void ShowControls(BOOL bShow);
@@ -90,7 +90,7 @@ public:
 
 protected:
 	void SetGrphcBtnsParents(CDclControlObject *pGrphcBtn, CDclControlObject *pOtherBtn, bool bForceRefresh);
-	CRect GetSplitterRect(int nId);
+	CRect GetSplitterRect(int nId, CRect& rectCurrent);
 	void InvalidateControls();
 	void ZOrderFront(CWnd *pControl);
 	void ZOrderBack(CWnd *pControl);

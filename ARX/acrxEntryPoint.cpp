@@ -1052,7 +1052,7 @@ public:
 		acutRelRb(prbResult);
 
 		// call method to display the requested form
-		DialogParams params( mptToBeShown, CRect() );
+		DialogParams params( mptToBeShown, CRect(0,0,0,0) );
 		int nDialogId = theArxWorkspace.ActivateDclForm(mpDclToBeShown, &params);
 	
 		acedRetInt(mnDoneDialogValue);
@@ -2008,7 +2008,7 @@ public:
 				sFilename += _T('\\');
 			sFilename += pszDefaultFileName;
 		}
-		DialogParams params( CPoint( nX, nY ), CRect(), bHasFileParams? (LPARAM)&fdp : NULL );
+		DialogParams params( CPoint( nX, nY ), CRect(0,0,0,0), bHasFileParams? (LPARAM)&fdp : NULL );
 		int nResult = theArxWorkspace.ActivateDclForm(pDclObject, &params);
 
 		if (nResult >= 0)

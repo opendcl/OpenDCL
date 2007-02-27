@@ -267,6 +267,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Res\blockvie.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\RES\BlockView.ico"
 				>
 			</File>
@@ -407,11 +411,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RES\IDR_MAIN.ICO"
+				RelativePath="..\Common\Res\idr_main.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\idr_main.ico"
+				RelativePath=".\RES\IDR_MAIN.ICO"
 				>
 			</File>
 			<File
@@ -511,11 +515,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\pick.ico"
+				RelativePath=".\RES\PICK.ICO"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\PICK.ICO"
+				RelativePath="..\Common\Res\pick.ico"
 				>
 			</File>
 			<File

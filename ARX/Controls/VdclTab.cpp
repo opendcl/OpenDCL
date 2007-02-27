@@ -41,14 +41,15 @@ bool VdclTab::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
+	ModifyStyleEx( 0, WS_EX_CONTROLPARENT ); //this prevents the TAB key from locking up the dialog!
+
 	if( mpTemplate->GetLngProperty(nEventInvoke) == 1 )
 		m_bInvokeWithSendString = true;
 	else
 		m_bInvokeWithSendString = false;
 	SetupTabs();
-	SetCurSel(0);
 	CreateTabPages( nID );
-	ActivateTabPage( 0, TRUE );
+	ActivateTabPage( GetCurSel(), TRUE );
 
 	return bSuccess;
 }
@@ -56,7 +57,7 @@ bool VdclTab::Create( CWnd* pParentWnd, UINT nID )
 DWORD VdclTab::GetWndStyle() const
 {
 	DWORD dwStyle = CArxDialogControl::GetWndStyle();
-	dwStyle |= (WS_CLIPCHILDREN /*| TCS_FOCUSNEVER*/ | TCS_TOOLTIPS);
+	dwStyle |= (/*WS_CLIPCHILDREN | */TCS_FOCUSNEVER | TCS_TOOLTIPS);
 
 	if( mpTemplate->GetLngProperty( nTabStyle ) == 0 )
 		dwStyle |= TCS_TABS;
@@ -113,18 +114,6 @@ bool VdclTab::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 			ModifyStyle( TCS_FIXEDWIDTH, 0, SWP_FRAMECHANGED );
 		break;
 	}
-	return true;
-}
-
-bool VdclTab::OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp )
-{
-	EnableWindow( pProp->GetBooleanValue() );
-	return true;
-}
-
-bool VdclTab::OnApplyFont( RefCountedPtr< CPropertyObject > pProp )
-{
-	SetFont( theWorkspace.GetFontCollection().GetFont( mpTemplate, mpControl ) );
 	return true;
 }
 
@@ -313,8 +302,7 @@ BEGIN_MESSAGE_MAP(VdclTab, CTabCtrl)
 	ON_WM_SIZE()
 	ON_WM_KILLFOCUS()
 	ON_WM_SETFOCUS()
-	ON_WM_WINDOWPOSCHANGED()
-	ON_WM_GETDLGCODE()
+	ON_WM_CTLCOLOR_REFLECT()
 END_MESSAGE_MAP()
 
 
@@ -442,12 +430,7 @@ void VdclTab::DestroyTabPages()
 void VdclTab::OnSize(UINT nType, int cx, int cy) 
 {
 	CTabCtrl::OnSize(nType, cx, cy);
-	//ActivateTabPage(m_nCurrentSelectedTab, true, false);
-	TTabPagePtr pTabPage = GetTabPageAt( m_nCurrentSelectedTab );
-	if( !pTabPage )
-		return;
-	CRect rectTab = GetUsedArea();
-	pTabPage->GetControlPane().SetPanePos(CRect(0, 0, rectTab.Width(), rectTab.Height()));
+	ActivateTabPage(m_nCurrentSelectedTab, true, false);
 }
 
 void VdclTab::OnSelchanging(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -542,17 +525,8 @@ void VdclTab::PostNcDestroy()
 	delete this;
 }
 
-void VdclTab::OnWindowPosChanged(WINDOWPOS* lpwndpos)
+HBRUSH VdclTab::CtlColor(CDC* pDC, UINT /*nCtlColor*/)
 {
-	CTabCtrl::OnWindowPosChanged(lpwndpos);
-
-	// TODO: Add your message handler code here
-}
-
-UINT VdclTab::OnGetDlgCode()
-{
-	// TODO: Add your message handler code here and/or call default
-	CWnd* pWnd = GetFocus();
-	::SetFocus( NULL );
-	return __super::OnGetDlgCode();
+	pDC->SelectObject(CBrush(COLORREF(0)));
+	return NULL;
 }

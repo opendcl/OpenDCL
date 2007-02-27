@@ -100,11 +100,7 @@ void VdclTextButton::OnDestroy()
 	// delete the tool tip text control object
 	m_ToolTip.DelTool(this, 1);
 	CButton::OnDestroy();
-	
-	
 }
-
-
 
 void VdclTextButton::OnClicked() 
 {
@@ -139,17 +135,15 @@ void VdclTextButton::OnClicked()
 
 void VdclTextButton::OnMouseMove(UINT nFlags, CPoint point) 
 {
-
 	InvokeMethodIntIntInt(
 		m_ArxControl->GetStrProperty(nEventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
-	
-	
 	CButton::OnMouseMove(nFlags, point);
 }
+
 void VdclTextButton::OnDoubleclicked() 
 {
 	// call methods to invoke the event
@@ -167,7 +161,6 @@ void VdclTextButton::OnKillFocus(CWnd* pNewWnd)
 
 void VdclTextButton::OnCaptureChanged(CWnd *pWnd) 
 {
-	
 	CButton::OnCaptureChanged(pWnd);
 }
 
@@ -214,6 +207,7 @@ void VdclTextButton::SetTooltipText(CString* spText, BOOL bActivate)
 	m_ToolTip.Activate(bActivate);
 	*/
 } // End of SetTooltipText
+
 void VdclTextButton::InitToolTip()
 {
 	
@@ -231,8 +225,6 @@ BOOL VdclTextButton::PreTranslateMessage(MSG* pMsg)
 {
 	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
-		
 	return CButton::PreTranslateMessage(pMsg);
 }
 
