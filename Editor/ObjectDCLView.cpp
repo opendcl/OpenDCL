@@ -1806,10 +1806,9 @@ CWnd* CObjectDCLView::AddCWndControl( CDclControlObject* pDclControl, CRect rcPo
 		// disable the control so the control won't react to mouse events.
 		pControl->EnableWindow(FALSE);	
 	}
-	
-	
+
 	// call method to add the control
-	if (!pControl->CreateNewDialogControl())
+	if (!pControl->CreateNewDialogControl(m_clsid, m_sLicenseKey))
 	{
 		delete pControl;
 		return NULL;
@@ -3576,9 +3575,8 @@ void CObjectDCLView::RefreshChildControl(CDclControlObject *pArxObject, Property
 	case nTabLabelAlign:
 	case nMinTabWidth:
 		{
-
 			if (pArxObject->GetType() != CtlActiveX)
-				pParent->CreateNewDialogControl();
+				pParent->CreateNewDialogControl(m_clsid, m_sLicenseKey);
 			else // if an ActiveX control
 				ResizeChildControl(pArxObject);				
 			break;

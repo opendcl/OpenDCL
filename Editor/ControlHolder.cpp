@@ -754,7 +754,7 @@ CWnd* CControlHolder::CreateTextBox(CDclControlObject *mpTemplate)
 }
 
 
-bool CControlHolder::CreateNewDialogControl()
+bool CControlHolder::CreateNewDialogControl(CLSID idControl, CString sLicenseKey)
 {
 	mpDlgControl = NULL; //this should decrement the previous control's ref count to zero and destroy it
 	// create the appropriate control to display
@@ -1102,14 +1102,14 @@ bool CControlHolder::CreateNewDialogControl()
 			// if the activeX control is being inserted by the user
 			if (mpTemplate->m_clsid.Data1 == 0 && mpTemplate->m_clsid.Data2 == 0 && mpTemplate->m_clsid.Data3 == 0)		
 			{	
-				//if (m_clsid.Data1 == 0 && m_clsid.Data2 == 0 && m_clsid.Data3 == 0)	
-				//{
-				//	mpTemplate->m_Delete = true;
-				//	return NULL;
-				//}
-				//mpTemplate->m_sLicenseKey = m_sLicenseKey;
+				if (idControl.Data1 == 0 && idControl.Data2 == 0 && idControl.Data3 == 0)	
+				{
+					mpTemplate->m_Delete = true;
+					return NULL;
+				}
+				mpTemplate->m_sLicenseKey = sLicenseKey;
 				// create this way if new
-				if (!pControl->CreateCtrl(mpTemplate->m_clsid, mpTemplate, rc, GetId(), this, true))
+				if (!pControl->CreateCtrl(idControl, mpTemplate, rc, GetId(), this, true))
 				{
 					CString sMsg = theWorkspace.LoadResourceString(IDS_BADACTIVEX);
 					CString sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);

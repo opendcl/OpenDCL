@@ -71,7 +71,7 @@ public:
 	void SetupTreeControl(CTreeCtrl *pControl);
 	CWnd* CreateComboBox(CDclControlObject *pArxObject);
 	CWnd* CreateTextBox(CDclControlObject *pArxObject);
-	bool CreateNewDialogControl();
+	bool CreateNewDialogControl(CLSID idControl, CString sLicenseKey);
 
 
 // CControlPane
