@@ -280,23 +280,26 @@ void CControlHolder::OnSize(UINT nType, int cx, int cy)
 
 	if (mpTemplate->GetType() == CtlActiveX)
 	{
-		GetActiveXCtrl()->MoveWindow(
-				0,
-				0,
-				cx,
-				cy,
-				TRUE);
+		CAxContainer *pContainer = GetActiveXCtrl();
+		if (pContainer != NULL) {
+			GetActiveXCtrl()->MoveWindow(
+					0,
+					0,
+					cx,
+					cy,
+					TRUE);
 
-		CRect rc;
-		GetActiveXCtrl()->GetWindowRect(rc);
-		if (rc.Width() != cx || rc.Height() != cy)
-		{
-			CRect rcThis;
-			GetWindowRect(&rcThis);
-			GetParent()->ScreenToClient(rcThis);
-			rcThis.right = rcThis.left + rc.Width();
-			rcThis.bottom = rcThis.top + rc.Height();
-			MoveWindow(rcThis, TRUE);
+			CRect rc;
+			GetActiveXCtrl()->GetWindowRect(rc);
+			if (rc.Width() != cx || rc.Height() != cy)
+			{
+				CRect rcThis;
+				GetWindowRect(&rcThis);
+				GetParent()->ScreenToClient(rcThis);
+				rcThis.right = rcThis.left + rc.Width();
+				rcThis.bottom = rcThis.top + rc.Height();
+				MoveWindow(rcThis, TRUE);
+			}
 		}
 	}
 	else
