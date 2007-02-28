@@ -985,7 +985,7 @@ RefCountedPtr< CPropertyObject > GetPropertyArgument(int nIndex, CString sMethod
 	return pProperty; 
 }
 
-bool GetAxPropertyArgument(struct resbuf *ListData, CString sMethod, COleVariant *oleVar, VARTYPE varType)
+bool GetAxPropertyArgument(struct resbuf *ListData, COleVariant *oleVar, VARTYPE varType)
 {	
 	oleVar->Clear();
 	switch (ListData->restype)
@@ -1533,7 +1533,7 @@ bool GetAxPropertyArgument(struct resbuf *ListData, CString sMethod, COleVariant
 	}
 
 	if (!bReturn)
-		theWorkspace.DisplayAlert(CString(ErrorInappropriateFound) + sMethod); 					 
+		theWorkspace.DisplayAlert(CString(ErrorInappropriateFound));
 
 	return bReturn; 
 }

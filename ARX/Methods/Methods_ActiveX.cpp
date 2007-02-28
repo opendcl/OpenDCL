@@ -17,7 +17,13 @@
 #include "AcadColorTable.h"
 
 void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp = NULL, AxMethodDescriptor *pMethod = NULL, CAxContainer *pAxContainer = NULL, AxPropertyDescriptor *pAxProp = NULL);
-
+bool getActiveXArguments(
+	COleVariant argList[]
+	, int &nArgCount
+	, int nParams
+	, struct resbuf* ListData
+	, AxPropertyDescriptor* pAxProp
+	, AxMethodDescriptor* pAxMethod);
 
 //*****************************************************************************
 // 
@@ -678,31 +684,12 @@ int GetAxObjectProperty()
 	}
 	
 	nParams = pAxProp->GetArgs().size();
-	if( nParams > 16 )
-		return 0; //the following code has a hardcoded limit of 16 params!
-	
+	//Creating this dynamically based upon nParams would be better than fixing it at 16
 	COleVariant argList[16];
-	int nArgCount=0;
-	while (ListData != NULL)
-	{
-		COleVariant Var;
-		if (GetAxPropertyArgument(ListData, sSetProperty, &Var, pAxProp->GetArgs()[nArgCount].vt))
-		{
-			argList[nArgCount] = Var;
-			nArgCount++;			
-		}
-		else
-		{
-			acedRetNil();
-			return 0;
-		}
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-		if (ListData != NULL)
-		{
-			if (nArgCount < nParams)
-				break;
-		}
+	int nArgCount = 0;
+	if (!getActiveXArguments(argList, nArgCount, nParams, ListData, pAxProp, NULL)) {
+		acedRetNil();
+		return 0;
 	}
 
 	// get the AcxtiveX control
@@ -880,32 +867,12 @@ int SetAxObjectProperty()
 	// Since we are Putting it must have at least one parameter.
 	if (nParams == 0)
 		return 0;
-	if (nParams > 16)
-		return 0; //the following code has a hardcoded limit of 16 parameters!
-	
+	//Creating this dynamically based upon nParams would be better than fixing it at 16
 	COleVariant argList[16];
-	int nArgCount = 0;	
-	while (ListData != NULL)
-	{
-		COleVariant Var;
-		if (GetAxPropertyArgument(ListData, sSetProperty, &Var, pAxProp->GetArgs()[nArgCount].vt))
-		{
-			argList[nArgCount] = Var;
-			nArgCount++;			
-		}
-		else
-		{
-			acedRetNil();
-			return 0;
-		}
-		
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-		if (ListData != NULL)
-		{
-			if (nArgCount == nParams)
-				break;
-		}
+	int nArgCount = 0;
+	if (!getActiveXArguments(argList, nArgCount, nParams, ListData, pAxProp, NULL)) {
+		acedRetNil();
+		return 0;
 	}
 
 /* broken, needs to be fixed [ORW]
@@ -1078,7 +1045,7 @@ int DoAxObjectMethod()
 	while (ListData != NULL)
 	{
 		COleVariant Var;
-		if (GetAxPropertyArgument(ListData, sDoAxMethod, &Var, pMethod->CallingArgs[nArgCount]))
+		if (GetAxPropertyArgument(ListData, &Var, pMethod->CallingArgs[nArgCount]))
 		{
 			argList.m_Variant[nArgCount] = Var;
 			nArgCount++;			
@@ -1455,31 +1422,11 @@ int SetAxProperty()
 	if (nParams == 0)
 		return 0;
 
+	//Creating this dynamically based upon nParams would be better than fixing it at 16
 	COleVariant argList[16];
-	
-	nArg++;
-	while (ListData != NULL)
-	{
-		COleVariant Var;
-		if (GetAxPropertyArgument(ListData, sSetProperty, &argList[nArgCount], pAxProp->GetArgs()[nArgCount].vt))
-		{
-			argList[nArgCount] = Var;
-			nArgCount++;			
-		}
-		else
-		{
-			acedRetNil();
-			return 0;
-		}
-		
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-		if (ListData != NULL)
-		{
-			nArg++;				
-			if (nArgCount == nParams)
-				break;
-		}
+	if (!getActiveXArguments(argList, nArgCount, nParams, ListData, pAxProp, NULL)) {
+		acedRetNil();
+		return 0;
 	}
 
 	//get the AcxtiveX control
@@ -1494,6 +1441,7 @@ int SetAxProperty()
 
 	return 0;
 }
+
 //*****************************************************************************
 // 
 // Method: SetFlexGridColorProperty()
@@ -1652,32 +1600,12 @@ int GetAxProperty()
 	
 	nParams = pAxProp->GetArgs().size();
 	
+	//Creating this dynamically based upon nParams would be better than fixing it at 16
 	COleVariant argList[16];
-	
-	nArg++;
-	while (ListData != NULL)
-	{
-		COleVariant Var;
-		if (GetAxPropertyArgument(ListData, sSetProperty, &Var, pAxProp->GetArgs()[nArgCount].vt))
-		{
-			argList[nArgCount] = Var;
-			nArgCount++;			
-		}
-		else
-		{
-			acedRetNil();
-			return 0;
-		}
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-		if (ListData != NULL)
-		{
-			nArg++;				
-			if (nArgCount >= nParams)
-				break;
-		}
+	if (!getActiveXArguments(argList, nArgCount, nParams, ListData, pAxProp, NULL)) {
+		acedRetNil();
+		return 0;
 	}
-
 
 	// get the AcxtiveX control
 	CAxContainer *axContainer = (CAxContainer*)pControl->GetWindow();
@@ -1757,7 +1685,7 @@ int GetFlexGridColorProperty()
   while (ListData != NULL)
   {
     COleVariant Var;
-    if (GetAxPropertyArgument(ListData, sSetProperty, &Var, pAxProp->CallingArgs[nArgCount]))
+    if (GetAxPropertyArgument(ListData, &Var, pAxProp->CallingArgs[nArgCount]))
     {
       argList.m_Variant[nArgCount] = Var;
       nArgCount++;			
@@ -1859,32 +1787,12 @@ int DoAxMethod()
 
 	nParams = pMethod->GetArgs().size();
 	
+	//Creating this dynamically based upon nParams would be better than fixing it at 16
 	COleVariant argList[16];
-	
-	nArg++;
-	while (ListData != NULL)
-	{
-		COleVariant Var;
-		if (GetAxPropertyArgument(ListData, sDoAxMethod, &Var, pMethod->GetArgs().at(nArgCount).vt))
-		{
-			argList[nArgCount] = Var;
-			nArgCount++;			
-		}
-		else
-		{
-			acedRetNil();
-			return 0;
-		}
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-		if (ListData != NULL)
-		{
-			nArg++;				
-			if (nArgCount == nParams)
-				break;
-		}
+	if (!getActiveXArguments(argList, nArgCount, nParams, ListData, NULL, pMethod)) {
+		acedRetNil();
+		return 0;
 	}
-
 
 	// get the AcxtiveX control
 	CAxContainer *axContainer = (CAxContainer*)pControl->GetWindow();
@@ -2152,4 +2060,45 @@ void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp, 
 			acedRetNil();
 			break;
 	}	
+}
+
+bool getActiveXArguments(COleVariant argList[]
+												 , int &nArgCount
+												 , int nParams
+												 , struct resbuf* ListData
+												 , AxPropertyDescriptor* pAxProp
+												 , AxMethodDescriptor* pAxMethod) {
+	//[DPR] argList must be built backward for SetProperty to work properly.
+	//I tried reversing the list in SetProperty, but couldn't get variants to copy.
+	//Decided to move out the reversing out here instead.
+
+	//We have a fixed upper limit of 16 variables
+	if (nParams > 16) {
+		return false;
+	}
+	if (pAxMethod == NULL && pAxProp == NULL) {
+		return false;
+	}
+
+	for (nArgCount = 0; nArgCount < nParams; nArgCount++) {
+		VARTYPE vt;
+		if (pAxProp != NULL) {
+			vt = pAxProp->GetArgs()[nArgCount].vt;
+		} else if (pAxMethod != NULL) {
+			vt = pAxMethod->GetArgs()[nArgCount].vt;
+		}
+		if (!GetAxPropertyArgument(
+			ListData
+			, &argList[nParams - nArgCount - 1]
+			, vt) )
+		{
+			return false;
+		}
+		ListData = ListData->rbnext;
+		if (ListData == NULL) {
+			nArgCount++;
+			break;
+		}
+	}
+	return true;
 }

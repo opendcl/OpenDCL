@@ -58,7 +58,7 @@ bool IsArgumentInt(short restype, int index, CString sMethod);
 bool IsArgumentDouble(short restype, int index, CString sMethod);
 
 // activeX argument retreival method
-bool GetAxPropertyArgument(struct resbuf *ListData, CString sMethod, COleVariant *oleVar, VARTYPE varType);
+bool GetAxPropertyArgument(struct resbuf *ListData, COleVariant *oleVar, VARTYPE varType);
 	
 bool GetStringOrLongArgument(int nIndex, CString *pArg, ULONG *uLong, CString sMethod);
 

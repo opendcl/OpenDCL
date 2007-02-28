@@ -166,13 +166,14 @@ HRESULT AxPropertyDescriptor::Set( IDispatch* pObjectDisp, VARIANTARG* rvarArgs,
 	{
 		for( size_t idxArg = 0; idxArg < ctArgs && idxArg < ctArgTypes; ++idxArg )
 		{
-			if( mrArgs[idxArg].vt == VT_BOOL && rvarArgs[idxArg].vt == VT_BSTR )
+			size_t idxRvar = ctArgs - idxArg - 1;
+			if( mrArgs[idxArg].vt == VT_BOOL && rvarArgs[idxRvar].vt == VT_BSTR )
 			{
-				rvarArgs[idxArg].vt = VT_BOOL;
-				rvarArgs[idxArg].boolVal = (lstrcmpi( bstr_t( rvarArgs[idxArg].bstrVal ), _T("True") ) == 0)? VARIANT_TRUE : VARIANT_FALSE;
+				rvarArgs[idxRvar].vt = VT_BOOL;
+				rvarArgs[idxRvar].boolVal = (lstrcmpi( bstr_t( rvarArgs[idxRvar].bstrVal ), _T("True") ) == 0)? VARIANT_TRUE : VARIANT_FALSE;
 			}
 			else
-				VariantChangeType( &rvarArgs[idxArg], &rvarArgs[idxArg], 0, mrArgs[idxArg].vt );
+				VariantChangeType( &rvarArgs[idxRvar], &rvarArgs[idxRvar], 0, mrArgs[idxArg].vt );
 		}
 	}
 
