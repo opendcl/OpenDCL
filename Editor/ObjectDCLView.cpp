@@ -1042,7 +1042,7 @@ void CObjectDCLView::CalcControlOffsetDistances(CDclControlObject *pArxObject, C
 
 
 	if (lTopFromBottom == 0 || lTopFromBottom == 1)
-		pArxObject->SetLongProperty(nTopFromBottom, rcThis.Width() - nTheLeft - nTheWidth);
+		pArxObject->SetLongProperty(nTopFromBottom, rcThis.Height() - nTheTop);
 	else
 	{
 		CRect rc = GetSplitterRect(lTopFromBottom);
@@ -1692,6 +1692,12 @@ void CObjectDCLView::InsertControl(CRect rcPos, ControlType nCtrlToInsert)
 	CDclControlObject *pDclControl = m_pThisDclForm->AddControl( nCtrlToInsert, sControlName );
 	assert( pDclControl != NULL );
 
+	if( nCtrlToInsert == CtlActiveX )
+	{
+		pDclControl->m_clsid = m_clsid;
+		pDclControl->m_sLicenseKey = m_sLicenseKey;
+	}
+
 	// call the method to add the new control
 	CWnd *pControl = AddCWndControl( pDclControl, rcPos, true );
 	if (pControl == NULL)
@@ -1806,9 +1812,10 @@ CWnd* CObjectDCLView::AddCWndControl( CDclControlObject* pDclControl, CRect rcPo
 		// disable the control so the control won't react to mouse events.
 		pControl->EnableWindow(FALSE);	
 	}
-
+	
+	
 	// call method to add the control
-	if (!pControl->CreateNewDialogControl(m_clsid, m_sLicenseKey))
+	if (!pControl->CreateNewDialogControl())
 	{
 		delete pControl;
 		return NULL;
@@ -1820,7 +1827,7 @@ CWnd* CObjectDCLView::AddCWndControl( CDclControlObject* pDclControl, CRect rcPo
 		CString sName = pDclControl->GetStrProperty(nName);
 		if (sName.IsEmpty())
 			// lets get the correct name set here.
-			pDclControl->SetStringProperty(nName,  FindNextControlName(pDclControl->GetActiveXTypeName()));		
+			pDclControl->SetStringProperty(nName, FindNextControlName(pDclControl->GetActiveXTypeName()));		
 	}
 	
 	if (IsWindow(pControl->m_hWnd))
@@ -2482,8 +2489,8 @@ void CObjectDCLView::AddProperties( CDclControlObject *pDclControl )
 	// add the nImageList property
 	switch (nType)
 	{
-	case CtlGraphicButton:
-	case CtlPictureBox:
+	//case CtlGraphicButton:
+	//case CtlPictureBox:
 	case CtlTree:
 	case CtlListView:
 	case CtlGrid:
@@ -3575,8 +3582,9 @@ void CObjectDCLView::RefreshChildControl(CDclControlObject *pArxObject, Property
 	case nTabLabelAlign:
 	case nMinTabWidth:
 		{
+
 			if (pArxObject->GetType() != CtlActiveX)
-				pParent->CreateNewDialogControl(m_clsid, m_sLicenseKey);
+				pParent->CreateNewDialogControl();
 			else // if an ActiveX control
 				ResizeChildControl(pArxObject);				
 			break;
@@ -4950,7 +4958,7 @@ void CObjectDCLView::DisplayControls(CDclFormObject *pDclForm)
 	
 	CRect rcThis;
 	GetClientRect(&rcThis);
-    ScreenToClient(rcThis);
+	ScreenToClient(rcThis);
 
 	// clear the zorder list box
 	pZOrderList->ClearList(this);
@@ -4993,15 +5001,8 @@ void CObjectDCLView::DisplayControls(CDclFormObject *pDclForm)
 					pArxObject->SetLongProperty(nHeight, rcPos.Height());
 					// set the offset position properties
 					CalcControlOffsetDistances(pArxObject, rcPos);
-					/*
-					pArxObject->SetLongProperty(nLeftFromRight, rcThis.Width() - rcPos.left);
-					pArxObject->SetLongProperty(nTopFromBottom, rcThis.Height() - rcPos.top);
-					pArxObject->SetLongProperty(nRightFromRight, rcThis.Width() - rcPos.right);
-					pArxObject->SetLongProperty(nBottomFromBottom, rcThis.Height() - rcPos.bottom);
-					*/
 				}
-				
-				
+
 				// call the method to add the new control
 				CWnd *pControl = AddCWndControl( pArxObject, rcPos, false);
 				if (pControl == NULL)

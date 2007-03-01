@@ -67,10 +67,6 @@ public:
   IOStatus ReadFromTextFile3(std::ifstream& sFile, const CString &fileName);
 	void Render(CDC *pdc, int nPicLeft, int nPicTop, CRect &rcThis, bool bAutoSize = false);
 	void EnsurePictureIsLoaded();
-	//void SaveSS(CStgFile &FileStg) const;
-	//void SaveSS(CStgFile &FileStg, CDocument *pDoc) const;
-	//static CPictureObject* ReadSS(int nID, CStgFile &FileStg);
-	//static CPictureObject* ReadSS(int nID, CStgFile &FileStg, CDocument *pDoc);
 	
 protected:
 	BOOL PX_IUnknown(CArchive& ar, LPUNKNOWN& pUnk, REFIID iid, LPUNKNOWN pUnkDefault = NULL);

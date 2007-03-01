@@ -141,7 +141,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 	case CtlActiveX:
 		{
 			CAxContainer *pControl = new CAxContainer( pPane->GetSourceForm() );
-			pControl->CreateCtrl(pTemplate->m_clsid, pTemplate, nID, pPane->GetHostDialog());		
+			pControl->CreateCtrl(pTemplate, nID, pPane->GetHostDialog());		
 			//ZOrderFront(pControl);	
 			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}

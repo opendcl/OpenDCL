@@ -618,7 +618,7 @@ END_MESSAGE_MAP()
 // CAxContainer message handlers
 	
 
-BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, int nID, CWnd *pParent)
+BOOL CAxContainer::CreateCtrl(CDclControlObject *pControl, int nID, CWnd *pParent)
 {
 	mpOleControl = pControl;
 	USES_CONVERSION;
@@ -631,7 +631,6 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, int nID,
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
 	MoveWindow( &ArxRect, FALSE );
 	
-	pControl->m_clsid = Clsid;
 	DWORD dwStyle = WS_CHILD|WS_VISIBLE;//|WS_CLIPSIBLINGS|WS_CLIPCHILDREN;
 
 	/*if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
@@ -658,19 +657,19 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, int nID,
 	{		
 		if (!pControl->m_sLicenseKey.IsEmpty())
 		{
-			m_bActiveXCtrl = CreateControl(Clsid, NULL, dwStyle,
+			m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle,
 								ArxRect, pParent, nID,
 								pOleStreamFile, FALSE, bstrLicenseKey);
 			if (m_bActiveXCtrl == FALSE)			
 			{
-				m_bActiveXCtrl = CreateControl(Clsid, NULL, dwStyle,
+				m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle,
 									ArxRect, pParent, nID,
 									NULL, FALSE, bstrLicenseKey);
 				if (m_bActiveXCtrl == TRUE)
 					pControl->ClearStream();
 			}
 			if (m_bActiveXCtrl == FALSE)
-				m_bActiveXCtrl = CreateControl(Clsid, NULL, dwStyle,
+				m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle,
 									ArxRect, pParent, nID,
 									pOleStreamFile, FALSE, NULL);
 			if (m_bActiveXCtrl == FALSE)
@@ -684,7 +683,7 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, int nID,
 
 			if (pOleStreamFile != NULL)
 			{
-				if (CreateControl(Clsid, NULL, dwStyle,
+				if (CreateControl(pControl->m_clsid, NULL, dwStyle,
 						ArxRect, pParent, nID,
 						pOleStreamFile, FALSE, NULL) == TRUE)
 				{
@@ -692,12 +691,12 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, int nID,
 				}
 				else
 				{
-					m_bActiveXCtrl = CreateControl(Clsid, NULL, dwStyle, ArxRect, pParent, nID);
+					m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle, ArxRect, pParent, nID);
 				}
 			}
 			else
 			{
-				m_bActiveXCtrl = CreateControl(Clsid, NULL, dwStyle, ArxRect, pParent, nID);
+				m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle, ArxRect, pParent, nID);
 			}
 		}		
 	}
@@ -740,7 +739,7 @@ void CAxContainer::InitToolTip()
 } // End of InitToolTip
 
 
-BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RECT& rect, int nID, CWnd *pParent, bool bAddPropInfo)
+BOOL CAxContainer::CreateCtrl(CDclControlObject *pControl, const RECT& rect, int nID, CWnd *pParent, bool bAddPropInfo)
 {
 	mpOleControl = pControl;
 	USES_CONVERSION;
@@ -750,11 +749,11 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RE
 	rc = rect;
 	DWORD dwStyle = WS_CHILD|WS_VISIBLE;
 	
-	BSTR bstrLicenseKey = NULL;
+	CComBSTR bstrLicenseKey;
 
 	if (pControl->m_bLicenseChecked == FALSE)
 	{
-		if (RequestLicenseKey(pControl->m_sLicenseKey, Clsid) == FALSE)
+		if (RequestLicenseKey(pControl->m_sLicenseKey, pControl->m_clsid) == FALSE)
 			pControl->m_sLicenseKey = CString();
 		else
 			// the m_bLicenseChecked is used to specify if the license string has been attempted to be extracted
@@ -779,12 +778,12 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RE
 	{
 		if (!pControl->m_sLicenseKey.IsEmpty())
 		{
-			m_bActiveXCtrl = CreateControl(Clsid, NULL, dwStyle,
+			m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle,
 								rc, pParent, nID,
 								pOleStreamFile, FALSE, bstrLicenseKey);
 			if (m_bActiveXCtrl == FALSE)			
 			{
-				m_bActiveXCtrl = CreateControl(Clsid, NULL, dwStyle,
+				m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle,
 									rc, pParent, nID,
 									NULL, FALSE, bstrLicenseKey);
 				if (m_bActiveXCtrl == TRUE)
@@ -799,7 +798,7 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RE
 				}
 			}
 			if (m_bActiveXCtrl == FALSE)
-				m_bActiveXCtrl = CreateControl(Clsid, NULL, dwStyle,
+				m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle,
 									rc, pParent, nID,
 									pOleStreamFile, FALSE, NULL);
 			if (m_bActiveXCtrl == FALSE)
@@ -815,7 +814,7 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RE
 			if (pOleStreamFile != NULL)
 			{
 				m_bActiveXCtrl =
-					CreateControl(Clsid, NULL, dwStyle,
+					CreateControl(pControl->m_clsid, NULL, dwStyle,
 						rc, pParent, nID,
 						pOleStreamFile, FALSE, NULL);
 				if (!m_bActiveXCtrl)
@@ -828,12 +827,12 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RE
 					sMsg += pControl->GetStrProperty(nName) + sMsg2;
 					MessageBox(sMsg, NULL, MB_ICONEXCLAMATION);
 					
-					m_bActiveXCtrl = CreateControl(Clsid, NULL, dwStyle, rc, pParent, nID);
+					m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle, rc, pParent, nID);
 				}				
 			}			
 			else			
 			{
-				m_bActiveXCtrl = CreateControl(Clsid, NULL, dwStyle, rc, pParent, nID);
+				m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle, rc, pParent, nID);
 			}
 		}
 		
@@ -843,9 +842,6 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RE
 		m_bActiveXCtrl = FALSE;
 	}
 	END_CATCH_ALL;
-
-	//if (bstrLicenseKey)
-	//	::SysFreeString(bstrLicenseKey);
 	if (!bAddPropInfo || !m_bActiveXCtrl)
 	{
 		if (pOleStreamFile != NULL)
@@ -859,7 +855,6 @@ BOOL CAxContainer::CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RE
 		// call the method to load and get all the properties
 		Initialize(); 
 	}
-	pControl->m_clsid = Clsid;
 	return m_bActiveXCtrl;
 
 }

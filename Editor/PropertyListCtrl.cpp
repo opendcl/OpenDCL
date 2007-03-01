@@ -1868,7 +1868,7 @@ CRect CPropertyListCtrl::ChangeSelectedItem(int nNewSelectionIndex)
 
 	CString CellText;
 	// get the property selected
-    RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
+	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
 	// fire the cell changed event to notify parent of the new cell selected,
 	// pass it the property ID and the caption text
 	UpdatePropHelpCtrls(pProp);
@@ -2314,23 +2314,13 @@ int CPropertyListCtrl::SetListBox()
 			case nButtonStyle:
 				{
 					// add it's items
-					sEnumDesc = theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_0);				
-					m_pModeless->AddString(sEnumDesc);
-				
-					sEnumDesc = theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_1);
-					m_pModeless->AddString(sEnumDesc);
-					
-					sEnumDesc = theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_2);
-					m_pModeless->AddString(sEnumDesc);
-					
-					sEnumDesc = theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_3);
-					m_pModeless->AddString(sEnumDesc);
-					
-					sEnumDesc = theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_4);
-					m_pModeless->AddString(sEnumDesc);
-					
-					sEnumDesc = theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_5);
-					m_pModeless->AddString(sEnumDesc);
+					m_pModeless->AddString(theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_0));
+					m_pModeless->AddString(theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_1));
+					m_pModeless->AddString(theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_2));
+					m_pModeless->AddString(theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_3));
+					m_pModeless->AddString(theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_4));
+					m_pModeless->AddString(theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_5));
+					m_pModeless->AddString(theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_6));
 					break;
 				}
 			case nComboBoxStyle:

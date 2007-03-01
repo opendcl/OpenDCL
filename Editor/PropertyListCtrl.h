@@ -44,7 +44,7 @@ class CColourPopup;
 #define nMAXFILE  3562
 #define nGreyColor 192
 #define nArchiveExtSize 4096
-#define nDeTotalHeight 75
+#define nDeTotalHeight 100
 #define nDeValueSize 80
 #define nDeLargestPicId 99
 

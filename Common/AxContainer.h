@@ -67,8 +67,8 @@ public:
 	IDispatch *GetChildIDispatch(DISPID dispid);
 
 	void Initialize();
-	virtual BOOL CreateCtrl(CLSID Clsid, CDclControlObject *pControl, int nID, CWnd *pParent);
-	virtual BOOL CreateCtrl(CLSID Clsid, CDclControlObject *pControl, const RECT& rect, int nID, CWnd *pParent, bool bAddPropInfo);
+	virtual BOOL CreateCtrl(CDclControlObject *pControl, int nID, CWnd *pParent);
+	virtual BOOL CreateCtrl(CDclControlObject *pControl, const RECT& rect, int nID, CWnd *pParent, bool bAddPropInfo);
 	COleFont GetFont(DISPID dispid);
 	void SetFont(DISPID dispid, LPDISPATCH newValue);
 	unsigned long GetColor(DISPID dispid);

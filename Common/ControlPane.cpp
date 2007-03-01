@@ -339,51 +339,23 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 			lTopFromBottom  > 0 ||
 			lBottomFromBottom > 0)
 	{	
-		//if (mpSourceForm->GetType() != VdclFileDialog)
-		//{	
-		//	// get the left value
-		//	rcControl.left = pArxObject->m_pLeft->GetLongValue();	
-		//	// get the top value
-		//	rcControl.top = pArxObject->m_pTop->GetLongValue();	
-		//	// get the width value
-		//	rcControl.right = rcControl.left + pArxObject->m_pWidth->GetLongValue();	
-		//	// get the height value
-		//	rcControl.bottom = rcControl.top + pArxObject->m_pHeight->GetLongValue();	
-		//}
-		//else
-		//{
-		//	pArxObject->GetWindow()->GetWindowRect(&rcControl);
-		//	mpHostDlg->ScreenToClient(rcControl);
-		//}
-		
 		// set the left position if required
 		if (lLeftFromRight == 1)
 		{
-			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetLeft->GetLongValue();
-			// set the new offset position
 			rcControl.left = rcThis.right - nOffsetValue;
 		}
-		// set the left position if required
 		else if (lLeftFromRight == 2)
 		{
-			// get the offset value
 			int nFormWidth = mpSourceForm->GetControlProperties()->GetLngProperty(nWidth);
 			int nOffsetValue = nFormWidth / 2 - pArxObject->m_pOffsetLeft->GetLongValue();
-			// set the new offset position
 			rcControl.left = ((rcThis.right + rcThis.left) / 2) - nOffsetValue;
 		}
-		// set the left position if required
 		else if (lLeftFromRight > 2)
 		{
-			// get the splitter's rect.
 			CRect rectCurrent;
 			CRect rc = GetSplitterRect(lLeftFromRight, rectCurrent);
-
-			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetLeft->GetLongValue();
-
-			// set the new offset position
 			rcControl.left = rectCurrent.left + nOffsetValue;
 		}		
 		else
@@ -392,93 +364,62 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 		// set the right position if required
 		if (lRightFromRight == 1 && pArxObject->GetType() != CtlCheckBox)
 		{			
-			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetRight->GetLongValue();
-			// set the new offset position
 			rcControl.right = rcThis.right - nOffsetValue;
 		}
-		// set the right position if required
 		else if (lRightFromRight > 1)
 		{
-			// get the splitter's rect.
 			CRect rectCurrent;
 			CRect rc = GetSplitterRect(lRightFromRight, rectCurrent);
-
-			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetRight->GetLongValue();
-
-			// set the new offset position
 			rcControl.right = rectCurrent.left + nOffsetValue;
 		}		
-		// if right offset not requested
 		else
 		{
-			// get the offset value
 			int nWidthValue = pArxObject->m_pWidth->GetLongValue();				
-			// set the new offset position
 			rcControl.right = rcControl.left + nWidthValue;
 		}
 
 		// set the top position if required
 		if (lTopFromBottom == 1)
 		{
-			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetTop->GetLongValue();				
-			// set the new offset position
-			rcControl.top = rcThis.bottom + nOffsetValue;
+			rcControl.top = rcThis.bottom - nOffsetValue;
 		}
-		// set the top position if required
 		else if (lTopFromBottom > 1)
 		{
-			// get the splitter's rect.
 			CRect rectCurrent;
 			CRect rc = GetSplitterRect(lTopFromBottom, rectCurrent);
-
-			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetTop->GetLongValue();
-
-			// set the new offset position
 			rcControl.top = rectCurrent.top + nOffsetValue;
 		}
-		// if bottom offset not requested
 		else
 			rcControl.top = rcThis.top + pArxObject->m_pTop->GetLongValue();
 
 		// set the top position if required
 		if (lBottomFromBottom  == 1 && pArxObject->GetType() != CtlCheckBox)
 		{
-			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetBottom->GetLongValue();				
-			// set the new offset position
 			rcControl.bottom = rcThis.bottom - nOffsetValue;
 		}
-		// set the bottom position if required
 		else if (lBottomFromBottom > 1)
 		{
-			// get the splitter's rect.
 			CRect rectCurrent;
 			CRect rc = GetSplitterRect(lBottomFromBottom, rectCurrent);
-
-			// get the offset value
 			int nOffsetValue = pArxObject->m_pOffsetBottom->GetLongValue();
-
-			// set the new offset position
 			rcControl.bottom = rectCurrent.top + nOffsetValue;
 		}
-		// if bottom offset not requested
 		else
 		{
-			// get the offset value
 			int nHeightValue = pArxObject->m_pHeight->GetLongValue();				
-			// set the new offset position
 			rcControl.bottom = rcControl.top + nHeightValue;
 		}
 
-		// check the width to ensure that it is at least 2 is width
+		// check the width to ensure that it is at least 2
 		if (rcControl.right - rcControl.left < 2)
 			rcControl.right = rcControl.left + 2;
 
-		// check the height to ensure that it is at least 2 is width
+		// check the height to ensure that it is at least 2
 		if (rcControl.bottom - rcControl.top < 2)
 			rcControl.bottom = rcControl.top + 2;
 
@@ -517,7 +458,7 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 			((CMonthCalCtrl*)pControl)->SizeMinReq(TRUE);
 
 		//if (pArxObject->GetType() == CtlGraphicButton)
-		//	pControl->ShowWindow(pArxObject->m_pVisible->GetBooleanValue()? SSHOW : SW_HIDE);
+		//	pControl->ShowWindow(pArxObject->m_pVisible->GetBooleanValue()? SW_SHOW : SW_HIDE);
 
 		// redraw comboboxes
 		if (pArxObject->GetType() == CtlComboBox)
@@ -537,20 +478,12 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 	{
 		if (mpSourceForm->GetType() != VdclFileDialog)
 		{	
-			// get the left value
 			int nLeftValue = pArxObject->m_pLeft->GetLongValue();	
-			// get the top value
 			int nTopValue = pArxObject->m_pTop->GetLongValue();	
-			// get the width value
 			int nWidthValue = pArxObject->m_pWidth->GetLongValue();	
-			// get the height value
 			int nHeightValue = pArxObject->m_pHeight->GetLongValue();	
-			
-			rcControl.SetRect(
-				rcThis.left + nLeftValue,
-				rcThis.top + nTopValue,
-				rcThis.left + nLeftValue + nWidthValue,
-				rcThis.top + nTopValue + nHeightValue);	
+			rcControl.SetRect( rcThis.left + nLeftValue, rcThis.top + nTopValue,
+												 rcThis.left + nLeftValue + nWidthValue, rcThis.top + nTopValue + nHeightValue);	
 		}
 		//else
 		//{

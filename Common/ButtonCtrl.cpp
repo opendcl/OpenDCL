@@ -15,7 +15,7 @@ CButtonCtrl::CButtonCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UIN
 {
 	m_pStaticBrush = new CBrush();
 	m_nDirectory		= 0;
-	m_bHasBorder		= TRUE;
+	m_bDrawBorder		= TRUE;
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
 }
@@ -29,7 +29,6 @@ CButtonCtrl::~CButtonCtrl()
 bool CButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess = (CXPStyleButtonST::Create( NULL, GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
-	SetThemeHelper( mpControlPane->GetThemeHelper() );
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
@@ -74,28 +73,50 @@ bool CButtonCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 		{
 			switch( pProp->GetLongValue() )
 			{
-			case ButtonStyle_Filter:
+			case ButtonStyle_Raised:
 				SetFlat( FALSE );
-				SetIcon( IDI_FILTER );
+				m_bDrawBorder = TRUE;
+				DrawAsToolbar( FALSE, FALSE );
+				SetThemeHelper( NULL );
 				break;
 			case ButtonStyle_Flat:
 				SetFlat( TRUE );
-				DrawAsToolbar( TRUE );
+				m_bDrawBorder = TRUE;
+				DrawAsToolbar( TRUE, FALSE );
+				SetThemeHelper( NULL );
 				break;
 			case ButtonStyle_Pick:
 				SetFlat( FALSE );
+				m_bDrawBorder = TRUE;
+				DrawAsToolbar( FALSE, FALSE );
 				SetIcon( IDI_PICK );
+				SetThemeHelper( NULL );
 				break;
 			case ButtonStyle_Select:
 				SetFlat( FALSE );
+				m_bDrawBorder = TRUE;
+				DrawAsToolbar( FALSE, FALSE );
 				SetIcon( IDI_SELECT );
+				SetThemeHelper( NULL );
 				break;
-			case ButtonStyle_Raised:
+			case ButtonStyle_Filter:
+				SetFlat( FALSE );
+				m_bDrawBorder = TRUE;
+				DrawAsToolbar( FALSE, FALSE );
+				SetIcon( IDI_FILTER );
+				SetThemeHelper( NULL );
 				break;
 			case ButtonStyle_NoBorder:
 				SetFlat( TRUE );
-				DrawBorder( FALSE );
-				m_bHasBorder = FALSE;
+				m_bDrawBorder = FALSE;
+				DrawAsToolbar( FALSE, FALSE );
+				SetThemeHelper( NULL );
+				break;
+			case ButtonStyle_XPTheme:
+				SetFlat( FALSE );
+				m_bDrawBorder = TRUE;
+				DrawAsToolbar( FALSE, FALSE );
+				SetThemeHelper( mpControlPane->GetThemeHelper() );
 				break;
 			default:
 				bFailed = true;

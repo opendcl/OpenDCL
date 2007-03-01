@@ -18,6 +18,7 @@ enum ButtonStyle
 	ButtonStyle_Select	  = 3,
 	ButtonStyle_Filter	  = 4,
 	ButtonStyle_NoBorder	= 5,
+	ButtonStyle_XPTheme		= 6,
 };
 
 
@@ -43,9 +44,6 @@ public:
 	int		m_nDirectory;
 	
 	CBrush			*m_pStaticBrush;	
-
-	//These may have been part of an older CButtonST class
-	BOOL		m_bHasBorder;		// Is has a border?
 
 public:
 	void SetAcadColor(long nColor);

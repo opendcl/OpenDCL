@@ -49,14 +49,15 @@ protected:
 protected:
 	// Generated message map functions
 	//{{AFX_MSG(CButtonStyles)
+	virtual BOOL OnInitDialog();
 	afx_msg void OnStyle0();
 	afx_msg void OnStyle1();
 	afx_msg void OnStyle2();
 	afx_msg void OnStyle3();
 	afx_msg void OnStyle4();
-	afx_msg void OnSelchangePiclist();
 	afx_msg void OnStyle5();
-	virtual BOOL OnInitDialog();
+	afx_msg void OnStyle6();
+	afx_msg void OnSelchangePiclist();
 
 protected:
 	DECLARE_MESSAGE_MAP()

@@ -46,8 +46,9 @@ BEGIN_MESSAGE_MAP(CButtonStyles, CPropertyPage)
 	ON_BN_CLICKED(IDC_STYLE2, OnStyle2)
 	ON_BN_CLICKED(IDC_STYLE3, OnStyle3)
 	ON_BN_CLICKED(IDC_STYLE4, OnStyle4)
-	ON_LBN_SELCHANGE(IDC_PICLIST, OnSelchangePiclist)
 	ON_BN_CLICKED(IDC_STYLE5, OnStyle5)
+	ON_BN_CLICKED(IDC_STYLE6, OnStyle6)
+	ON_LBN_SELCHANGE(IDC_PICLIST, OnSelchangePiclist)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -86,6 +87,18 @@ void CButtonStyles::OnStyle4()
 	DisplayDesc(4);
 	SetModified();
 	
+}
+
+void CButtonStyles::OnStyle5() 
+{
+	DisplayDesc(5);	
+	SetModified();
+}
+
+void CButtonStyles::OnStyle6() 
+{
+	DisplayDesc(6);	
+	SetModified();
 }
 
 void CButtonStyles::OnSelchangePiclist() 
@@ -207,17 +220,20 @@ void CButtonStyles::DisplayDesc(int nSetting)
 		GetDlgItem(IDC_PICK)->ShowWindow(FALSE);
 		GetDlgItem(IDC_SELECT)->ShowWindow(FALSE);
 		GetDlgItem(IDC_FILTER)->ShowWindow(FALSE);
+		break;
+	case 6:
+		sDesc = theWorkspace.LoadResourceString(IDS_BUTTONSTYLE6);
+		m_PicList.ShowWindow(TRUE);
+		m_Picture.ShowWindow(TRUE);
+		GetDlgItem(IDC_PICK)->ShowWindow(FALSE);
+		GetDlgItem(IDC_SELECT)->ShowWindow(FALSE);
+		GetDlgItem(IDC_FILTER)->ShowWindow(FALSE);
+		break;
 	}
 
 	m_SelectedStyle = nSetting;
 	m_Desc.SetWindowText(sDesc);
 	SetModified(TRUE);
-}
-
-void CButtonStyles::OnStyle5() 
-{
-	DisplayDesc(5);	
-	SetModified();
 }
 
 
@@ -247,6 +263,9 @@ BOOL CButtonStyles::OnInitDialog()
 		break;
 	case 5:
 		pButton = (CButton*)GetDlgItem(IDC_STYLE5);
+		break;
+	case 6:
+		pButton = (CButton*)GetDlgItem(IDC_STYLE6);
 		break;
 	}
 	pButton->SetCheck(TRUE);

@@ -13,7 +13,8 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "SharedRes.h"
-#include "afxres.h"
+#include "afxres.h"
+
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -558,14 +559,15 @@ BEGIN
     CONTROL         "Pick Button",IDC_STYLE2,"Button",BS_AUTORADIOBUTTON,5,44,54,10
     CONTROL         "Raised Border",IDC_STYLE0,"Button",BS_AUTORADIOBUTTON,5,14,70,10
     CONTROL         "Flat Button",IDC_STYLE1,"Button",BS_AUTORADIOBUTTON,5,29,54,10
+    CONTROL         "No Border",IDC_STYLE5,"Button",BS_AUTORADIOBUTTON,5,89,54,10
+    CONTROL         "XP Themed",IDC_STYLE6,"Button",BS_AUTORADIOBUTTON,5,104,54,10
     GROUPBOX        "Button Style Description:",IDC_STATIC,85,0,155,130
     LISTBOX         IDC_PICLIST,195,10,40,115,LBS_NOINTEGRALHEIGHT | NOT WS_VISIBLE | NOT WS_BORDER | WS_VSCROLL,WS_EX_CLIENTEDGE
-    CONTROL         209,IDC_PICK,"Static",SS_BITMAP | NOT WS_VISIBLE,210,10,15,14,WS_EX_DLGMODALFRAME
-    CONTROL         210,IDC_SELECT,"Static",SS_BITMAP | NOT WS_VISIBLE,210,10,15,14,WS_EX_DLGMODALFRAME
-    CONTROL         208,IDC_FILTER,"Static",SS_BITMAP | NOT WS_VISIBLE,210,10,15,14,WS_EX_DLGMODALFRAME
+    CONTROL         IDB_PICK,IDC_PICK,"Static",SS_BITMAP | NOT WS_VISIBLE,210,10,15,14,WS_EX_DLGMODALFRAME
+    CONTROL         IDB_SELECT,IDC_SELECT,"Static",SS_BITMAP | NOT WS_VISIBLE,210,10,15,14,WS_EX_DLGMODALFRAME
+    CONTROL         IDB_FILTER,IDC_FILTER,"Static",SS_BITMAP | NOT WS_VISIBLE,210,10,15,14,WS_EX_DLGMODALFRAME
     LTEXT           "Static",IDC_PICTURE,95,55,90,70,0,WS_EX_STATICEDGE
     LTEXT           "Desc",IDC_DESC,95,10,95,40
-    CONTROL         "No Border",IDC_STYLE5,"Button",BS_AUTORADIOBUTTON,5,89,54,10
 END
 
 IDD_BACKCOLORS DIALOGEX 3, 1, 244, 134
@@ -1888,11 +1890,6 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_BUTTONSTYLE1        "This setting indicates that the button will act as a 'Cool' button. This means the button will behave just as the buttons in Internet Explorer do."
-    IDS_BUTTONSTYLE2        "This setting indicates that the button will have the AutoCAD pick picture displayed."
-    IDS_BUTTONSTYLE3        "This setting indicates that the button will have the AutoCAD select picture displayed."
-    IDS_BUTTONSTYLE4        "This setting indicates that the button will have the AutoCAD filter picture displayed."
-    IDS_BUTTONSTYLE5        "This setting indicates that the button will not display any border of any kind."
     IDS_PROJECT             "Project"
     IDS_MODALFORM           "Modal Forms"
     IDS_MODELESSFORM        "Modeless Forms"
@@ -2068,28 +2065,6 @@ BEGIN
     IDS_FILEDLGFILTERDEF    "AutoCAD Files|*.dwg;*.dxf|AutoLisp Files (*.lsp,*.fas;*.vlx)|*.lsp,*.fas;*.vlx|"
     IDS_MASKED              "<Masked>"
     IDS_PROPERTYWIZARD      "PropertyObject Wizard - "
-    IDS_COMBODESC0          "This setting indicates that the combo box will be displayed as a drop down box that is editable by the user."
-    IDS_COMBODESC1          "This setting indicates that the combo box will be displayed as two seperate controls, a Text Box that is editable by the user and a List Box."
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_COMBODESC2          "This setting indicates that the combo box will be displayed as a drop down box that is read only and not editable by the user."
-    IDS_COMBODESC3          "This setting indicates that the combo box will be displayed as a drop down box that displays all the standard AutoCAD arrow heads available."
-    IDS_COMBODESC4          "This setting indicates that the combo box will be displayed as a drop down box that displays all the standard AutoCAD colors available."
-    IDS_COMBODESC5          "This setting indicates that the combo box will be displayed as a drop down box that displays all the standard AutoCAD line weights available."
-    IDS_COMBODESC6          "This setting indicates that the combo box will be displayed as a drop down box that displays all the available AutoCAD plot style names."
-    IDS_COMBODESC7          "This setting indicates that the combo box will be displayed as a drop down box that displays all the available AutoCAD plot style tables."
-    IDS_TEXTBOXFILTER0      "This setting indicates that any key the user presses will be entered into the text box without scrutiny."
-    IDS_TEXTBOXFILTER1      "This setting indicates that characters corresponding with the current AutoCAD Angle unit settings will be allowed into the text box."
-    IDS_TEXTBOXFILTER2      "This setting indicates that only integers (1 through 9 and 0) will be allowed into the text box."
-    IDS_TEXTBOXFILTER3      "This setting indicates that characters corresponding with the current AutoCAD coordinate unit settings will be allowed into the text box."
-    IDS_TEXTBOXFILTER4      "This setting indicates that the text entered into the text box will be filtered to determine if it complies with the AutoCAD symbol text definition."
-    IDS_TEXTBOXFILTER5      "This setting indicates that the text entered will be automatically converted to upper case only."
-    IDS_TEXTBOXFILTER6      "This setting indicates that the text entered will be automatically converted to lower case only."
-    IDS_TEXTBOXFILTER7      "This setting indicates that the text entered will be displayed with a password character for security reasons."
-    IDS_TEXTBOXFILTER8      "This setting indicates that any key the user presses will be entered into the text box without scrutiny. The text box will also allow the user to enter more than one line of text."
-    IDS_BUTTONSTYLE0        "This setting indicates that the button will have a standard raised border, just the same as the text button. Select from the list box to the right to select the button's picture."
 END
 
 STRINGTABLE 
@@ -2126,6 +2101,7 @@ BEGIN
     IDS_BUTTONSTYLE_3       "3 - SelectButton"
     IDS_BUTTONSTYLE_4       "4 - FilterButton"
     IDS_BUTTONSTYLE_5       "5 - No Border"
+    IDS_BUTTONSTYLE_6       "6 - XP Themed"
 END
 
 STRINGTABLE 
@@ -2189,6 +2165,12 @@ BEGIN
     IDS_RECTSTYLE_2         "2 - Etched"
     IDS_RECTSTYLE_3         "3 - EdgeSunken"
     IDS_RECTSTYLE_4         "4 - EdgeRaised"
+    IDS_COMBODESC0          "This setting indicates that the combo box will be displayed as a drop down box that is editable by the user."
+    IDS_COMBODESC1          "This setting indicates that the combo box will be displayed as two seperate controls, a Text Box that is editable by the user and a List Box."
+    IDS_COMBODESC2          "This setting indicates that the combo box will be displayed as a drop down box that is read only and not editable by the user."
+    IDS_COMBODESC3          "This setting indicates that the combo box will be displayed as a drop down box that displays all the standard AutoCAD arrow heads available."
+    IDS_COMBODESC4          "This setting indicates that the combo box will be displayed as a drop down box that displays all the standard AutoCAD colors available."
+    IDS_COMBODESC5          "This setting indicates that the combo box will be displayed as a drop down box that displays all the standard AutoCAD line weights available."
 END
 
 STRINGTABLE 
@@ -3357,6 +3339,32 @@ BEGIN
     1223                    "sNewDir"
 END
 
+STRINGTABLE 
+BEGIN
+    IDS_COMBODESC6          "This setting indicates that the combo box will be displayed as a drop down box that displays all the available AutoCAD plot style names."
+    IDS_COMBODESC7          "This setting indicates that the combo box will be displayed as a drop down box that displays all the available AutoCAD plot style tables."
+    IDS_TEXTBOXFILTER0      "This setting indicates that any key the user presses will be entered into the text box without scrutiny."
+    IDS_TEXTBOXFILTER1      "This setting indicates that characters corresponding with the current AutoCAD Angle unit settings will be allowed into the text box."
+    IDS_TEXTBOXFILTER2      "This setting indicates that only integers (1 through 9 and 0) will be allowed into the text box."
+    IDS_TEXTBOXFILTER3      "This setting indicates that characters corresponding with the current AutoCAD coordinate unit settings will be allowed into the text box."
+    IDS_TEXTBOXFILTER4      "This setting indicates that the text entered into the text box will be filtered to determine if it complies with the AutoCAD symbol text definition."
+    IDS_TEXTBOXFILTER5      "This setting indicates that the text entered will be automatically converted to upper case only."
+    IDS_TEXTBOXFILTER6      "This setting indicates that the text entered will be automatically converted to lower case only."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_TEXTBOXFILTER7      "This setting indicates that the text entered will be displayed with a password character for security reasons."
+    IDS_TEXTBOXFILTER8      "This setting indicates that any key the user presses will be entered into the text box without scrutiny. The text box will also allow the user to enter more than one line of text."
+    IDS_BUTTONSTYLE0        "The button will be a standard button with an icon and the same border style as a text button."
+    IDS_BUTTONSTYLE1        "The button will be a flat button that uses hot tracking to change appearance when the pointer is over it."
+    IDS_BUTTONSTYLE2        "The button will use the AutoCAD 'pick points' icon."
+    IDS_BUTTONSTYLE3        "The button will use the AutoCAD 'select objects' icon."
+    IDS_BUTTONSTYLE4        "The button will use the AutoCAD 'filter' icon."
+    IDS_BUTTONSTYLE5        "The button will not display any border of any kind."
+    IDS_BUTTONSTYLE6        "The button will use the current XP visual style for buttons"
+END
+
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -3368,7 +3376,8 @@ END
 // Generated from the TEXTINCLUDE 3 resource.
 //
 #include "SharedRes.rc"
-#include "AfxRes.rc"
+#include "AfxRes.rc"
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

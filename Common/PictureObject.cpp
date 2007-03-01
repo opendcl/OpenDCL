@@ -265,7 +265,7 @@ HICON CPictureObject::GetIcon() const
 			{
 				// add the bitmap to a image list for extraction
 				CImageList ImageList;
-				ImageList.Create(m_Width, m_Height, ILC_COLOR4 | ILC_MASK, 1, 1);
+				ImageList.Create(m_Width, m_Height, ILC_COLOR | ILC_MASK, 1, 1);
 				ImageList.Add(CBitmap::FromHandle(hBmpPic), rgbLightGrey);
 				HICON hIcon = ImageList.ExtractIcon(0);
 				ImageList.DeleteImageList();
@@ -404,47 +404,6 @@ CPictureObject* CPictureObject::CreatePictureObject(short nID, LPPICTUREDISP New
 	return pPicture;
 }
 
-/*
-void CPictureObject::SaveSS(CStgFile &FileStg, CDocument *pDoc) const
-{
-	CString sValue;
-	sValue.Format(_T("%d"), m_nID);
-	FileStg.Open(sValue + gszPicture, CFile::modeCreate | CFile::modeWrite); 
-
-	CArchiveEx ar(&FileStg, CArchive::store | CArchive::bNoFlushOnDelete, NULL, gszPassword, TRUE);
-	ar.m_pDocument = pDoc;
-	ar.m_bForceFlat = FALSE;
-
-	// put dcl form into archive
-	const_cast<CPictureObject*>(this)->Serialize(ar);
-
-	ar.Close();			
-
-	FileStg.Close();	// close the stream
-}
-
-CPictureObject* CPictureObject::ReadSS(int nID, CStgFile &FileStg, CDocument *pDoc)
-{
-	CString sValue;
-	sValue.Format(_T("%d"), nID);
-	FileStg.Open(sValue + gszPicture, CFile::modeRead | CFile::shareDenyWrite); 
-
-	CArchiveEx ar(&FileStg, CArchive::load | CArchive::bNoFlushOnDelete, NULL, gszPassword, TRUE);
-	
-	// get current Dcl form
-	CPictureObject* pPicture = new CPictureObject;
-		
-	// get dcl form into archive
-	pPicture->Serialize(ar);
-		
-	ar.Close();			
-
-	FileStg.Close();	// close the stream
-
-	return pPicture;
-}
-*/
-
 IOStatus CPictureObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
 {
   //savebug
@@ -509,16 +468,8 @@ void CPictureObject::Serialize(CArchive& ar)
 		case PICTYPE_METAFILE:
 		case PICTYPE_ENHMETAFILE:
 			{
-				VARIANT var;
-				var.vt = VT_DISPATCH;
-				IPictureDisp *pPicDisp = m_hPicture.GetPictureDispatch();
-				var.pdispVal = pPicDisp;
-				COleVariant OleVar;
-				OleVar.Attach(var);
-				ar << OleVar;
-				var.pdispVal = NULL;
-				OleVar.Clear();
-				HRESULT hr = VariantClear(&var);			
+				_variant_t var( m_hPicture.GetPictureDispatch() );
+				ar << COleVariant( var );
 				break;
 			}
 		case PICTYPE_ICON:
@@ -592,24 +543,15 @@ void CPictureObject::Serialize(CArchive& ar)
 			case PICTYPE_METAFILE:
 			case PICTYPE_ENHMETAFILE:
 				{
-					VARIANT var;
-					COleVariant OleVar;
-					OleVar.Attach(var);
 					try
 					{		
-						LoadPicture(ar, OleVar);
-						var = OleVar.Detach();	
-						m_hPicture.SetPictureDispatch((IPictureDisp*)var.pdispVal);
-						OleVar.Clear();
-						HRESULT hr = VariantClear(&var);
+						COleVariant var;
+						LoadPicture(ar, var);
+						CComQIPtr< IPictureDisp > pPicDisp( (var.vt == VT_DISPATCH)? var.pdispVal : NULL );	
+						m_hPicture.SetPictureDispatch(pPicDisp);
 						m_bLoaded = true;
 					}
-					catch(...)
-					{
-						var = OleVar.Detach();	
-						OleVar.Clear();
-						VariantClear(&var);
-					}
+					catch(...) {}
 					break;
 				}
 			case PICTYPE_ICON:

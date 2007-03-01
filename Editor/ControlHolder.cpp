@@ -280,25 +280,20 @@ void CControlHolder::OnSize(UINT nType, int cx, int cy)
 
 	if (mpTemplate->GetType() == CtlActiveX)
 	{
-		CAxContainer *pContainer = GetActiveXCtrl();
-		if (pContainer != NULL) {
-			GetActiveXCtrl()->MoveWindow(
-					0,
-					0,
-					cx,
-					cy,
-					TRUE);
-
+		CAxContainer* pContainer = GetActiveXCtrl();
+		if (pContainer != NULL)
+		{
+			pContainer->MoveWindow( 0, 0, cx, cy, TRUE );
 			CRect rc;
-			GetActiveXCtrl()->GetWindowRect(rc);
-			if (rc.Width() != cx || rc.Height() != cy)
+			pContainer->GetWindowRect( &rc );
+			if( rc.Width() != cx || rc.Height() != cy )
 			{
 				CRect rcThis;
-				GetWindowRect(&rcThis);
-				GetParent()->ScreenToClient(rcThis);
+				GetWindowRect( &rcThis );
+				GetParent()->ScreenToClient( &rcThis );
 				rcThis.right = rcThis.left + rc.Width();
 				rcThis.bottom = rcThis.top + rc.Height();
-				MoveWindow(rcThis, TRUE);
+				MoveWindow( rcThis, TRUE );
 			}
 		}
 	}
@@ -754,7 +749,7 @@ CWnd* CControlHolder::CreateTextBox(CDclControlObject *mpTemplate)
 }
 
 
-bool CControlHolder::CreateNewDialogControl(CLSID idControl, CString sLicenseKey)
+bool CControlHolder::CreateNewDialogControl()
 {
 	mpDlgControl = NULL; //this should decrement the previous control's ref count to zero and destroy it
 	// create the appropriate control to display
@@ -1102,14 +1097,8 @@ bool CControlHolder::CreateNewDialogControl(CLSID idControl, CString sLicenseKey
 			// if the activeX control is being inserted by the user
 			if (mpTemplate->m_clsid.Data1 == 0 && mpTemplate->m_clsid.Data2 == 0 && mpTemplate->m_clsid.Data3 == 0)		
 			{	
-				if (idControl.Data1 == 0 && idControl.Data2 == 0 && idControl.Data3 == 0)	
-				{
-					mpTemplate->m_Delete = true;
-					return NULL;
-				}
-				mpTemplate->m_sLicenseKey = sLicenseKey;
 				// create this way if new
-				if (!pControl->CreateCtrl(idControl, mpTemplate, rc, GetId(), this, true))
+				if (!pControl->CreateCtrl(mpTemplate, rc, GetId(), this, true))
 				{
 					CString sMsg = theWorkspace.LoadResourceString(IDS_BADACTIVEX);
 					CString sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
@@ -1129,7 +1118,7 @@ bool CControlHolder::CreateNewDialogControl(CLSID idControl, CString sLicenseKey
 			else // if the activeX control is being inserted from memory
 			{
 				// create this way if not new
-				if (!pControl->CreateCtrl(mpTemplate->m_clsid, mpTemplate, rc, GetId(), this, false))
+				if (!pControl->CreateCtrl(mpTemplate, rc, GetId(), this, false))
 				{
 					CString sMsg = theWorkspace.LoadResourceString(IDS_BADACTIVEX);
 					CString sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
@@ -1380,7 +1369,7 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 	{
 	case CtlGraphicButton:
 		mpDlgControl->OnApplyProperty( pProp );
-		mpDlgControl->GetControl()->ShowWindow( SW_SHOW ); //make it visible if the 'nVisible' property is false
+		mpDlgControl->GetControl()->ShowWindow( SW_SHOW ); //make it visible even if the 'nVisible' property is false
 		return;
 	}
 
@@ -1446,9 +1435,9 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 				((CStaticLink*)pControl)->SetAcadColor(mpTemplate->GetLngProperty(nAcadColor));
 				break;		
 
-			case CtlGraphicButton:
-				((CGraphicButtonCtrl*)pControl)->SetAcadColor(mpTemplate->GetLngProperty(nAcadColor));
-				break;
+			//case CtlGraphicButton:
+			//	((CGraphicButtonCtrl*)pControl)->SetAcadColor(mpTemplate->GetLngProperty(nAcadColor));
+			//	break;
 			}
 			pControl->Invalidate();
 			break;
@@ -1466,9 +1455,9 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 			case CtlCheckBox:
 				((CColorButton*)pControl)->SetForeColor(mpTemplate->GetLngProperty(nForeColor));
 				break;
-			case CtlGraphicButton:
-				((CGraphicButtonCtrl*)pControl)->SetForeColor(mpTemplate->GetLngProperty(nForeColor));
-				break;
+			//case CtlGraphicButton:
+			//	((CGraphicButtonCtrl*)pControl)->SetForeColor(mpTemplate->GetLngProperty(nForeColor));
+			//	break;
 			case CtlTextBox:
 				//((CColorEdit*)pControl)->SetForeColor(mpTemplate->GetLngProperty(nForeColor));
 				switch (mpTemplate->GetLngProperty(nFilterStyle))
@@ -1541,12 +1530,12 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 			case CtlStaticURL:
 				((CStaticLink*)pControl)->SetLinkText(mpTemplate->GetStrProperty(nCaption));
 				break;
-			case CtlGraphicButton:
-				{
-				((CGraphicButtonCtrl*)pControl)->SetWindowText(mpTemplate->GetStrProperty(nCaption));
-				((CGraphicButtonCtrl*)pControl)->Invalidate();
-				break;
-				}			
+			//case CtlGraphicButton:
+			//	{
+			//	((CGraphicButtonCtrl*)pControl)->SetWindowText(mpTemplate->GetStrProperty(nCaption));
+			//	((CGraphicButtonCtrl*)pControl)->Invalidate();
+			//	break;
+			//	}			
 			default:
 				{
 				CString sCaptionText = mpTemplate->GetStrProperty(nCaption);
@@ -1744,11 +1733,11 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 				((VdclGroupBox*)pControl)->m_Frame.SetFont(pFont);
 				((VdclGroupBox*)pControl)->m_Frame.Invalidate();
 			}
-			else if (mpTemplate->GetType() == CtlGraphicButton)
-			{
-				((CGraphicButtonCtrl*)pControl)->SetFont(pFont);	
-				pControl->Invalidate();				
-			}
+			//else if (mpTemplate->GetType() == CtlGraphicButton)
+			//{
+			//	((CGraphicButtonCtrl*)pControl)->SetFont(pFont);	
+			//	pControl->Invalidate();				
+			//}
 			else if (mpTemplate->GetType() == CtlOptionList)
 			{
 				((COptionListBox*)pControl)->SetFont(pFont);	
