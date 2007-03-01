@@ -1230,3 +1230,15 @@ void InvokeMethodPoint3D(
 		}
 	}
 }
+CString RtoS(double dValue)
+{
+	CString sReturn;
+	ads_real adsValue = dValue;
+	TCHAR fmtval[26]; 
+	int stat = acdbRToS(adsValue, 2,8, fmtval); 
+	sReturn = fmtval;
+	if (stat == RTNORM)
+		return sReturn;
+	else
+		return _T("0.0");
+}

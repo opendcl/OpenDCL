@@ -24,32 +24,6 @@ BOOL acedRemoveDropTarget(COleDropTarget* pTarget);
 
 const TCHAR *formatname = _T("CDclControlObject");
 
-
-CString LongToA(long lValue)
-{
-	TCHAR fmtval[26]; 
-	ads_real adsValue = lValue;
-	int stat = acdbRToS(adsValue, 2,0, fmtval); 
-	CString sReturn = fmtval;
-	if (stat == RTNORM)
-		return sReturn;	
-
-	return _T("");
-}
-
-CString RtoS(double dValue)
-{
-	CString sReturn;
-	ads_real adsValue = dValue;
-	TCHAR fmtval[26]; 
-	int stat = acdbRToS(adsValue, 2,8, fmtval); 
-	sReturn = fmtval;
-	if (stat == RTNORM)
-		return sReturn;
-	else
-		return _T("0.0");
-}
-
 void ReadExternalDWGfile(CString sPath, CString sFile, acedDwgPoint ptPoint, bool bXref)
 {
 	CString sFileName;

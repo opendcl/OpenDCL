@@ -610,6 +610,7 @@ HRESULT CAxContainer::GetOleObject( IOleObject** ppOleObject )
 
 BEGIN_MESSAGE_MAP(CAxContainer, CWnd)
 	//{{AFX_MSG_MAP(CAxContainer)
+	ON_WM_PAINT()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -923,16 +924,24 @@ IDispatch * CAxContainer::GetChildIDispatch(DISPID dispid)
 	InvokeHelper(dispid, DISPATCH_PROPERTYGET, VT_DISPATCH, (void*)&pDispatch, NULL);
 	return pDispatch;
 }
-
-
+unsigned long CAxContainer::GetFlexGridColorProperty(AxPropertyDescriptor *axProp)
+{
+	unsigned long result;
+	InvokeHelper(axProp->GetDispId(), DISPATCH_PROPERTYGET, VT_I4, (void*)&result, NULL);
+	return result;
+}
+void CAxContainer::SetFlexGridColorProperty(AxPropertyDescriptor *axProp
+																						, unsigned long newValue)
+{
+	static BYTE parms[] = VTS_I4;
+	InvokeHelper(axProp->GetDispId(), DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms, newValue);
+}
 COleFont CAxContainer::GetFont(DISPID dispid)
 {
 	LPDISPATCH pDispatch;
 	InvokeHelper(dispid, DISPATCH_PROPERTYGET, VT_DISPATCH, (void*)&pDispatch, NULL);
 	return COleFont(pDispatch);
 }
-
-
 void CAxContainer::SetFont(DISPID dispid, LPDISPATCH newValue)
 {
 	static BYTE parms[] =
@@ -942,7 +951,6 @@ void CAxContainer::SetFont(DISPID dispid, LPDISPATCH newValue)
 	
 	mpOleControl->SaveToStream(this);
 }
-
 void CAxContainer::SetPicture(DISPID dispid, LPDISPATCH newValue, WORD flag)
 {
 	static BYTE parms[] =
@@ -952,16 +960,12 @@ void CAxContainer::SetPicture(DISPID dispid, LPDISPATCH newValue, WORD flag)
 
 	mpOleControl->SaveToStream(this);
 }
-
 unsigned long CAxContainer::GetColor(DISPID dispid)
 {
 	unsigned long result;
 	InvokeHelper(dispid, DISPATCH_PROPERTYGET, VT_I4, (void*)&result, NULL);
 	return result;
 }
-
-
-
 void CAxContainer::SetColor(DISPID dispid, unsigned long propVal)
 {
 	static BYTE parms[] =
@@ -971,7 +975,6 @@ void CAxContainer::SetColor(DISPID dispid, unsigned long propVal)
 
 	mpOleControl->SaveToStream(this);	
 }
-
 void CAxContainer::LoadPictureFile(DISPID dispid, CString sFile, WORD flag)
 {
 	LPPICTURE		lpPicture;
@@ -1219,4 +1222,19 @@ HRESULT CAxContainer::Invoke( AxMethodDescriptor* axMethod, VARIANTARG* rvarArgs
 	if( FAILED(hr) )
 		return hr;
 	return axMethod->Invoke( pDispatch, rvarArgs, ctArgs, varResult );
+}
+BOOL CAxContainer::PreTranslateMessage(MSG* pMsg) 
+{
+	InitToolTip();
+	mToolTip.RelayEvent(pMsg);
+
+	return CWnd::PreTranslateMessage(pMsg);
+}
+void CAxContainer::OnPaint() 
+{
+	//CPaintDC dc(this); // device context for painting
+
+	CWnd::OnPaint();
+	RedrawWindow(NULL, NULL);
+	// Do not call CWnd::OnPaint() for painting messages
 }

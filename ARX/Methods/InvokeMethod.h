@@ -44,3 +44,5 @@ void InvokeMethodPoint3D(
 					CString sLispFunction, 
 					acedDwgPoint ptPoint,
 					bool UseSendString);
+
+CString RtoS(double dValue);

@@ -21,7 +21,7 @@ class CAxContainer : public CWnd
 protected:
 	CDclFormObject* mpParent;
 	CDclControlObject* mpOleControl;
-	CPPToolTip mToolTip;
+	CPPToolTip mToolTip; //->Move
 	CComPtr< ITypeLib > mpTypeLib;
 	UINT mnTypeLibCount;
 	CComPtr< IDispatch > mpDispatch; //cache the IDispatch and keep it alive for the lifetime of the container
@@ -39,11 +39,8 @@ public:
 	CDclFormObject* GetParent() const { return mpParent; }
 	CDclControlObject* GetOleControl() const { return mpOleControl; }
 
-	void SetTooltipText( LPCTSTR pszText );
-	CPPToolTip& GetToolTip() { return mToolTip; }
-
-	void TryToFireAxEvent(UINT idCtrl, AFX_EVENT* pEvent);
-	void FireAxEvent(UINT idCtrl, RefCountedPtr< CPropertyObject > pProp, AFX_EVENT* pEvent);
+	void SetTooltipText( LPCTSTR pszText ); //->Move
+	CPPToolTip& GetToolTip() { return mToolTip; } //->Move
 
 	BOOL Create(CLSID clsid, LPCTSTR lpszWindowName, DWORD dwStyle,
 		const RECT& rect, CWnd* pParentWnd, UINT nID,
@@ -69,6 +66,8 @@ public:
 	void Initialize();
 	virtual BOOL CreateCtrl(CDclControlObject *pControl, int nID, CWnd *pParent);
 	virtual BOOL CreateCtrl(CDclControlObject *pControl, const RECT& rect, int nID, CWnd *pParent, bool bAddPropInfo);
+	unsigned long GetFlexGridColorProperty(AxPropertyDescriptor *axProp);//
+	void SetFlexGridColorProperty(AxPropertyDescriptor *axProp, unsigned long newValue);//
 	COleFont GetFont(DISPID dispid);
 	void SetFont(DISPID dispid, LPDISPATCH newValue);
 	unsigned long GetColor(DISPID dispid);
@@ -81,6 +80,10 @@ public:
 
 	void SetRefImageList(DISPID dispid, LPDISPATCH newValue);
 	void SetImageList(DISPID dispid, LPDISPATCH newValue);
+
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	//OnChildNotify has not been recreated yet.
+	afx_msg void OnPaint();//
 
 	//ActiveX Helpers
 public:

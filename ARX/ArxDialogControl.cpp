@@ -10,7 +10,7 @@
 #include "ArxWorkspace.h"
 
 #include "ControlTypes.h"
-#include "AxContainer.h"
+#include "OdclActiveX.h"
 #include "VdclAngleEdit.h"
 #include "OdclEdit.h"
 #include "VdclNumericEdit.h"
@@ -140,7 +140,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 		}
 	case CtlActiveX:
 		{
-			CAxContainer *pControl = new CAxContainer( pPane->GetSourceForm() );
+			OdclActiveX *pControl = new OdclActiveX( pPane->GetSourceForm() );
 			pControl->CreateCtrl(pTemplate, nID, pPane->GetHostDialog());		
 			//ZOrderFront(pControl);	
 			return new CArxAutoDialogControl( pTemplate, pPane, pControl );

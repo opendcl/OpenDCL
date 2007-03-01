@@ -834,6 +834,10 @@
 				Filter="h;hh;hxx"
 				>
 				<File
+					RelativePath="..\Controls\OdclActiveX.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Controls\OdclDateTime.h"
 					>
 				</File>
@@ -954,6 +958,10 @@
 				Name="Source Files"
 				Filter="cpp;c;cc;cxx;def;idl;odl"
 				>
+				<File
+					RelativePath="..\Controls\OdclActiveX.cpp"
+					>
+				</File>
 				<File
 					RelativePath="..\Controls\OdclDateTime.cpp"
 					>
@@ -1826,7 +1834,7 @@
 				>
 			</File>
 		</Filter>
-		<File
+				<File
 			RelativePath="..\resource"
 			>
 		</File>
