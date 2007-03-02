@@ -5,7 +5,7 @@
 #include "AxMethodDescriptor.h"
 #include <vector>
 
-class CAxContainer;
+class CAxContainerCtrl;
 enum IOStatus;
 
 
@@ -75,7 +75,7 @@ public:
 	AxPropertyDescriptor* GetArgDescriptor() const;
 	CString GetEnumDesc(CString sValue) const;
 	CString GetEnumValue(int nEnumIndex) const;
-	void DoActiveXFontPropDlg(CAxContainer *axContainer);
+	void DoActiveXFontPropDlg(CAxContainerCtrl *axContainer);
 	CString GetAxMethodDesc(size_t nIndex);
 	size_t CountAxMethodParams(size_t nIndex);
 	GUID GetAxMethodParamGUID(size_t nIndex, int nParam);

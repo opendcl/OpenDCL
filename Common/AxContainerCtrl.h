@@ -1,53 +1,37 @@
-// AxContainer.h : header file
+// AxContainerCtrl.h : header file
 //
 
 #pragma once
 
-#include "PPTooltip.h"
+#include "DialogControl.h"
 
-class COleFont;
+class AxPropertyDescriptor;
+class CControlPane;
 class CDclControlObject;
 class CDclFormObject;
-class CControlPane;
-class AxPropertyDescriptor;
+class COleFont;
+class CProject;
 class CPropertyObject;
 
-
 /////////////////////////////////////////////////////////////////////////////
-// CAxContainer window
+// CAxContainerCtrl window
 
-class CAxContainer : public CWnd
+class CAxContainerCtrl : public CWnd, public CDialogControl
 {
 protected:
-	CDclFormObject* mpParent;
-	CDclControlObject* mpOleControl;
-	CPPToolTip mToolTip; //->Move
 	CComPtr< ITypeLib > mpTypeLib;
 	UINT mnTypeLibCount;
 	CComPtr< IDispatch > mpDispatch; //cache the IDispatch and keep it alive for the lifetime of the container
 
-// Attributes
-	BOOL m_bInvokeWithSendString;
-
 // Construction
 public:
-	CAxContainer(CDclFormObject* pParent);
-	virtual ~CAxContainer();
+	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true);
+	virtual ~CAxContainerCtrl();
 
 // Operations
 public:
-	CDclFormObject* GetParent() const { return mpParent; }
-	CDclControlObject* GetOleControl() const { return mpOleControl; }
+	CDclControlObject* GetOleControl() const { return mpTemplate; }
 
-	void SetTooltipText( LPCTSTR pszText ); //->Move
-	CPPToolTip& GetToolTip() { return mToolTip; } //->Move
-
-	BOOL Create(CLSID clsid, LPCTSTR lpszWindowName, DWORD dwStyle,
-		const RECT& rect, CWnd* pParentWnd, UINT nID,
-		CFile* pPersist = NULL, BOOL bStorage = FALSE,
-		BSTR bstrLicKey = NULL)
-	{ return CreateControl(clsid, lpszWindowName, dwStyle, rect, pParentWnd, nID,
-		pPersist, bStorage, bstrLicKey); }
 	void InitToolTip();
 
 	HRESULT SaveToStream( IStream* pStream );
@@ -63,8 +47,11 @@ public:
 
 	IDispatch *GetChildIDispatch(DISPID dispid);
 
+	void SetTooltipText( LPCTSTR pszText );
+	CPPToolTip& GetToolTip() { return mToolTip; }
+
 	void Initialize();
-	virtual BOOL CreateCtrl(CDclControlObject *pControl, int nID, CWnd *pParent);
+	virtual bool Create(CWnd* pParentWnd, UINT nID);
 	virtual BOOL CreateCtrl(CDclControlObject *pControl, const RECT& rect, int nID, CWnd *pParent, bool bAddPropInfo);
 	unsigned long GetFlexGridColorProperty(AxPropertyDescriptor *axProp);//
 	void SetFlexGridColorProperty(AxPropertyDescriptor *axProp, unsigned long newValue);//
@@ -97,4 +84,5 @@ public:
 	// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
+
 };

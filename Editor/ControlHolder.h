@@ -12,7 +12,7 @@
 #define nDeGridIDCounter 80
 
 class CPropertyObject;
-class CAxContainer;
+class CAxContainerCtrl;
 class AxPropertyDescriptor;
 
 
@@ -96,7 +96,7 @@ public:
 	void CreateGrips();
 	
 	// ActiveX helping methods
-	CAxContainer* GetActiveXCtrl();
+	CAxContainerCtrl* GetActiveXCtrl();
 
 	void SetColor(DISPID dispid, unsigned long ulColor);
 	unsigned long GetColor(DISPID dispid);

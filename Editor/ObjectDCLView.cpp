@@ -15,7 +15,7 @@
 #include "ControlName.h"
 #include "DclControlObject.h"
 #include "FileDlgCtrls.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "OptionListBox.h"
 #include "StaticLink.h"
 #include "3DRect.h"
@@ -3935,7 +3935,7 @@ void CObjectDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool b
 		if (pFontProp == NULL) 
 			return;
 		
-		CAxContainer *axContainer = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
+		CAxContainerCtrl *axContainer = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
 		COleFont font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetGetDispId());
 		CString	sFontName = font.GetName();
 		CY cyFontSize = font.GetSize();

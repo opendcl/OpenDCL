@@ -5,7 +5,7 @@
 #include "ControlHolder.h"
 #include "DclControlObject.h"
 #include "ControlTypes.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "Resource.h"
 #include "Workspace.h"
 #include "OptionListBox.h"
@@ -280,7 +280,7 @@ void CControlHolder::OnSize(UINT nType, int cx, int cy)
 
 	if (mpTemplate->GetType() == CtlActiveX)
 	{
-		CAxContainer* pContainer = GetActiveXCtrl();
+		CAxContainerCtrl* pContainer = GetActiveXCtrl();
 		if (pContainer != NULL)
 		{
 			pContainer->MoveWindow( 0, 0, cx, cy, TRUE );
@@ -341,7 +341,7 @@ void CControlHolder::OnPaint()
 		return;
 	
 	CRect rcControl;
-	CAxContainer *pCtrl = GetActiveXCtrl();
+	CAxContainerCtrl *pCtrl = GetActiveXCtrl();
 
 	CRect rcClient;
 	GetClientRect(&rcClient);
@@ -441,9 +441,9 @@ BOOL CControlHolder::PreTranslateMessage(MSG* pMsg)
 }
 
 
-CAxContainer* CControlHolder::GetActiveXCtrl()
+CAxContainerCtrl* CControlHolder::GetActiveXCtrl()
 {
-	return (CAxContainer*)GetDlgItem(m_ControlId);
+	return (CAxContainerCtrl*)GetDlgItem(m_ControlId);
 }
 
 void CControlHolder::SetColor(DISPID dispid, unsigned long ulColor)
@@ -777,7 +777,7 @@ bool CControlHolder::CreateNewDialogControl()
 			pNewControl = pControl;
 			break;
 		}
-	case CtlGraphicButton: return ((mpDlgControl = new CGraphicButtonCtrl( mpTemplate, this, GetId() )) != NULL);
+	case CtlGraphicButton : return ((mpDlgControl = new CGraphicButtonCtrl( mpTemplate, this, GetId() )) != NULL);
 	case CtlFrame:
 		{
 			VdclGroupBox *pControl = new VdclGroupBox;
@@ -1090,10 +1090,12 @@ bool CControlHolder::CreateNewDialogControl()
 			pNewControl = pControl;
 			break;
 		}
-	case CtlActiveX:
+	case CtlActiveX : return ((mpDlgControl = new CAxContainerCtrl( mpTemplate, this, GetId() )) != NULL);
+	/*case CtlActiveX:
 		{
 			DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-			CAxContainer *pControl = new CAxContainer(mpTemplate->GetOwnerForm());
+			CAxContainerCtrl *pControl = new CAxContainerCtrl()
+				(mpTemplate->GetOwnerForm());
 			// if the activeX control is being inserted by the user
 			if (mpTemplate->m_clsid.Data1 == 0 && mpTemplate->m_clsid.Data2 == 0 && mpTemplate->m_clsid.Data3 == 0)		
 			{	
@@ -1152,7 +1154,7 @@ bool CControlHolder::CreateNewDialogControl()
 			//	mpTemplate->SetStringProperty(nName, FindNextControlName(mpTemplate->GetActiveXTypeName()));		
 			pNewControl = pControl;
 			break;
-		}
+		}*/
 	case CtlDwgList:
 		{	
 			DWORD dwStyle = WS_CHILD | WS_VISIBLE

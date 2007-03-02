@@ -49,7 +49,7 @@
 #include "VdclTextButton.h"
 #include "HtmlCtrl.h"
 #include "PrinterComboBox.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "ComboBoxFolder.h"
 #include "SpreadSheet.h"
 #include "ToolTips.h"
@@ -1776,7 +1776,7 @@ int ShowToolTip()
 		}
 	case CtlActiveX:
 		{
-		CAxContainer *pCtrl = (CAxContainer*)pControl;
+		CAxContainerCtrl *pCtrl = (CAxContainerCtrl*)pControl;
 		if ( pCtrl->GetToolTip().m_arrTools.GetCount() > 0)
 			pTT = &pCtrl->GetToolTip().m_arrTools[0];				
 		else

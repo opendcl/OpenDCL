@@ -11,7 +11,7 @@
 #include "ListBoxDlg.h"
 #include "PropertyIds.h"
 #include "ControlHolder.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "AxInterfaceDescriptor.h"
 #include "ColourPopup.h"
 #include "VarUtils.h"
@@ -1707,7 +1707,7 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 				}
 			case PropActiveXProp:
 				{
-					CAxContainer *pCtrl = ((CControlHolder*)m_pControl->m_pCtrlHolder)->GetActiveXCtrl();
+					CAxContainerCtrl *pCtrl = ((CControlHolder*)m_pControl->m_pCtrlHolder)->GetActiveXCtrl();
 					
 					// only properties with one or none parameters may be edited during design time
 					if (pProperty->GetAxInterfaceDescriptorPtr()->GetParamQty() > 1)

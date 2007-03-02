@@ -10,7 +10,7 @@
 #include "ArxWorkspace.h"
 
 #include "ControlTypes.h"
-#include "OdclActiveX.h"
+#include "ArxAxContainerCtrl.h"
 #include "VdclAngleEdit.h"
 #include "OdclEdit.h"
 #include "VdclNumericEdit.h"
@@ -140,10 +140,13 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 		}
 	case CtlActiveX:
 		{
-			OdclActiveX *pControl = new OdclActiveX( pPane->GetSourceForm() );
-			pControl->CreateCtrl(pTemplate, nID, pPane->GetHostDialog());		
+			//CArxAxContainerCtrl *pControl = new CArxAxContainerCtrl( pPane->GetSourceForm() );
+			//pControl->CreateCtrl(pTemplate, nID, pPane->GetHostDialog());		
 			//ZOrderFront(pControl);	
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
+			CArxAxContainerCtrl *pControl = new CArxAxContainerCtrl(pTemplate, pPane, nID);
+			return pControl;
+			//return new CArxAxContainerCtrl();
+			//return *new CArxGraphicButtonCtrl( pTemplate, pPane, nID );
 		}
 	case Ctl3DRect:
 		{
@@ -1989,7 +1992,7 @@ void CArxDialogControl::ChangeToolTipText(CDclControlObject *pArxObject, CWnd *p
 		}
 	case CtlActiveX:
 		{
-		((CAxContainer*)pControl)->SetTooltipText(sToolTipText);
+		((CAxContainerCtrl*)pControl)->SetTooltipText(sToolTipText);
 		break;
 		}
 	case CtlDwgList:

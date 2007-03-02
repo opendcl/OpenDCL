@@ -9,7 +9,7 @@
 #include "UserMessageId.h"
 #include "VdclTree.h"
 #include "DwgDirList.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "DclControlObject.h"
 #include "PropertyIds.h"
 #include "DropSource.h"

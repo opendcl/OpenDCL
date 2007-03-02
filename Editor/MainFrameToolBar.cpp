@@ -10,7 +10,7 @@
 #include "ControlTypes.h"
 #include "ControlHolder.h"
 #include "OleFont.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "AxPropertyDescriptor.h"
 #include "AxInterfaceDescriptor.h"
 #include "ToolBox.h"
@@ -229,7 +229,7 @@ void CMainFrameToolBar::SetFontToolBar(CDclControlObject *pCtrl)
 			if (pFontProp == NULL) 
 				return;
 
-			CAxContainer *axContainer = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
+			CAxContainerCtrl *axContainer = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
 			COleFont font = axContainer->GetFont( pFontProp->GetAxInterfaceDescriptorPtr()->GetGetDispId());
 			sFontName = font.GetName();
 			cyFontSize = font.GetSize();
@@ -371,7 +371,7 @@ void CMainFrameToolBar::AddFontToToolBar(CDclControlObject *pCtrl)
 			if (pFontProp == NULL) 
 				return;
 
-			CAxContainer *axContainer = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
+			CAxContainerCtrl *axContainer = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
 			COleFont font = axContainer->GetFont(pFontProp->GetAxInterfaceDescriptorPtr()->GetGetDispId());
 			sFontName = font.GetName();
 			cyFontSize = font.GetSize();

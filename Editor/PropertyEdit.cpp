@@ -20,7 +20,7 @@
 #include "ProjectTreeCtrl.h"
 #include "PropertyTabPane.h"
 #include "MainFrm.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "AxInterfaceDescriptor.h"
 
 

@@ -1358,11 +1358,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\Common\AxContainer.cpp"
+				RelativePath="..\Common\AxContainerCtrl.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\AxContainer.h"
+				RelativePath="..\Common\AxContainerCtrl.h"
 				>
 			</File>
 			<File
@@ -1730,7 +1730,7 @@
 				>
 			</File>
 		</Filter>
-		<File
+				<File
 			RelativePath="ObjectDCL.reg"
 			>
 		</File>

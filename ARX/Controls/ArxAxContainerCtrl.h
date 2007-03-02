@@ -2,20 +2,24 @@
 
 //#include "PPToolTip.h"
 
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "DclControlObject.h"
 #include "DialogControl.h"
 
 /////////////////////////////////////////////////////////////////////////////
-// OdclActiveX window
+// CArxAxContainerCtrl window
 
-class OdclActiveX : public CAxContainer
+class CArxAxContainerCtrl : public CAxContainerCtrl
 {
 public:
-	OdclActiveX(CDclFormObject* pParent);
+	bool m_bInvokeWithSendString;
+
+	CArxAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true);
+
+	virtual bool Create( CWnd* pParentWnd, UINT nID );
 
 	void TryToFireAxEvent(UINT idCtrl, AFX_EVENT* pEvent);
-	void FireAxEvent(UINT idCtrl, AxEventDescriptor* pED, AFX_EVENT* pEvent);
+	void FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_EVENT* pEvent);
 
 	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
 protected:

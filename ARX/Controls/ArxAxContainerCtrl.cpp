@@ -1,10 +1,11 @@
 #include "StdAfx.h"
 
 #include "acutmem.h"
+#include "ArxAxContainerCtrl.h"
 #include "AxEventDescriptor.h"
 #include "AxInterfaceDescriptor.h"
+#include "ControlPane.h"
 #include "InvokeMethod.h"
-#include "OdclActiveX.h"
 #include "Project.h"
 #include "VarUtils.h"
 #include "Workspace.h"
@@ -15,33 +16,54 @@ int acedGetRtType(VARIANT *pVarGet);
 double acedVarToDouble(VARIANT *pVarGet);
 CString LongToA(long lValue);
 
-OdclActiveX::OdclActiveX(CDclFormObject* pParent) 
-: CAxContainer(pParent)
-{
-
-}
-
-BEGIN_MESSAGE_MAP(OdclActiveX, CAxContainer)
+BEGIN_MESSAGE_MAP(CArxAxContainerCtrl, CAxContainerCtrl)
 END_MESSAGE_MAP()
 
-BOOL OdclActiveX::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) 
+CArxAxContainerCtrl::CArxAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate) 
+: CAxContainerCtrl(pTemplate, pPane, nID, false)
 {
-	if (nID == mpOleControl->GetControlInstance()->GetControlId())
+	if( bCreate ) 
+	{
+		Create( pPane->GetHostDialog(), nID );
+	} 
+	else 
+	{
+		m_bInvokeWithSendString = false;
+	}
+}
+bool CArxAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID ) {
+	bool bSuccess = CAxContainerCtrl::Create( pParentWnd, nID );
+
+	if( GetTemplate()->GetLngProperty(nEventInvoke) == 1 )
+	{
+		m_bInvokeWithSendString = true;
+	} 
+	else
+	{
+		m_bInvokeWithSendString = false;
+	}
+
+	return bSuccess;
+
+}
+BOOL CArxAxContainerCtrl::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) 
+{
+	if (nID == GetTemplate()->GetControlInstance()->GetControlId())
 		TryToFireAxEvent(nID, (AFX_EVENT*) pExtra);
 
 	return CWnd::OnCmdMsg(nID, nCode, pExtra, pHandlerInfo);
 }
-void OdclActiveX::TryToFireAxEvent(UINT idCtrl, AFX_EVENT* pEvent)
+void CArxAxContainerCtrl::TryToFireAxEvent(UINT idCtrl, AFX_EVENT* pEvent)
 {
 	const AFX_EVENTSINKMAP* pSinkMap = GetEventSinkMap();
 	//const AFX_EVENTSINKMAP_ENTRY* pEntry;
 	size_t flag = (pEvent->m_eventKind != AFX_EVENT::event);
 
-	POSITION pos = mpOleControl->GetPropertyList().GetHeadPosition();
+	POSITION pos = GetTemplate()->GetPropertyList().GetHeadPosition();
 	while (pos != NULL)
 	{
 		// get a pointer to the property
-		CPropertyObject *pProp = mpOleControl->GetPropertyList().GetNext(pos);
+		CPropertyObject *pProp = GetTemplate()->GetPropertyList().GetNext(pos);
 		if (pProp == NULL) {
 			continue;
 		}
@@ -55,18 +77,15 @@ void OdclActiveX::TryToFireAxEvent(UINT idCtrl, AFX_EVENT* pEvent)
 		}
 
 		// is this is the event that we are looking for?
-		if (pED->GetDispId() == pEvent->m_dispid)
+		// if the event defun has been set
+		if (pED->GetDispId() == pEvent->m_dispid && !pProp->GetStringValue().IsEmpty())
 		{
-			// if the event defun has been set
-			if (!pED->GetName().IsEmpty())
-			{
-				FireAxEvent(idCtrl, pED, pEvent);
-			}
+  		FireAxEvent(idCtrl, pProp, pEvent);
 		}
 	}
 }
 
-void OdclActiveX::FireAxEvent(UINT idCtrl, AxEventDescriptor* pED, AFX_EVENT* pEvent)
+void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_EVENT* pEvent)
 {
 	try
 	{
@@ -92,21 +111,21 @@ void OdclActiveX::FireAxEvent(UINT idCtrl, AxEventDescriptor* pED, AFX_EVENT* pE
 			{				
 				// just call InvokeMethod
 				delete [] dispparams.rgvarg;
-				InvokeMethod(pED->GetName(), m_bInvokeWithSendString);
+				InvokeMethod(pProp->GetStringValue(), m_bInvokeWithSendString);
 				return;
 			}
 			// this code is used if the programmer want to call the defun using the default option
 			struct resbuf *pRBList = NULL, *pRB = NULL, *pRBFinal = NULL;
 			// this code is used if the programmer want to call a (Command ...) from the defun
 			bool bShowCommand = false;
-			CString sCommand = CString("(") + FireCancel(pED->GetName()) + " ";
+			CString sCommand = CString("(") + FireCancel(pProp->GetStringValue()) + " ";
 
 			// again this code is for allow (Command ...)
 			if (m_bInvokeWithSendString)
 			{
-				if (pED->GetName().Left(1) == "'")
+				if (pProp->GetStringValue().Left(1) == "'")
 				{
-					sCommand = pED->GetName() + " ";
+					sCommand = pProp->GetStringValue() + " ";
 					bShowCommand = true;
 				}
 			}
@@ -115,7 +134,7 @@ void OdclActiveX::FireAxEvent(UINT idCtrl, AxEventDescriptor* pED, AFX_EVENT* pE
 			if (!m_bInvokeWithSendString)
 			{
 				pRBFinal = acutNewRb(RTSTR);	//	create new resbuf
-				acutNewString(pED->GetName(), pRBFinal->resval.rstring);
+				acutNewString(pProp->GetStringValue(), pRBFinal->resval.rstring);
 
 				//	If this is first resbuf in list,
 				//	we need to store its location in pRBList

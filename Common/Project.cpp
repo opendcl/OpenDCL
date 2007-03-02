@@ -10,7 +10,7 @@
 #include "PropertyObject.h"
 #include "VarUtils.h"
 #include "ArchiveEx.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "StgFile.h"
 #include "Filing.h"
 #include "DclFormObject.h"
@@ -394,7 +394,7 @@ bool CProject::LoadPictureFile(LPCTSTR szFile, int nID)
 	return (AddPicture( pNewPic ) >= 0);
 }
 
-void CProject::AddOleObject(const CLSID& clsid, CAxContainer *pAxCont)
+void CProject::AddOleObject(const CLSID& clsid, CAxContainerCtrl *pAxCont)
 {
 	if (HasOleObject (clsid))
 		return;

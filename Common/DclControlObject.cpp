@@ -5,7 +5,7 @@
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "ImageListObject.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "AxInterfaceDescriptor.h"
 #include "Filing.h"
 #include "PurchaseMode.h"
@@ -174,7 +174,7 @@ void CDclControlObject::SetControlInstance( CDialogControl* pDlgControl )
 }
 
 
-void CDclControlObject::SaveToStream(CAxContainer *pCtrl)
+void CDclControlObject::SaveToStream(CAxContainerCtrl *pCtrl)
 {
 	CComPtr<IStream> pStream;
 	HRESULT hr = CreateStreamOnHGlobal( NULL, TRUE, &pStream );

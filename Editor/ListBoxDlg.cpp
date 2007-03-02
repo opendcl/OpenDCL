@@ -10,7 +10,7 @@
 #include "PropertyIds.h"
 #include "AxPropertyDescriptor.h"
 #include "AxInterfaceDescriptor.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "ControlHolder.h"
 #include "ChildFrm.h"
 #include "PropertyListCtrl.h"
@@ -107,7 +107,7 @@ void CListBoxDlg::OnSelchangeListbox()
 				else if (m_pPropObject->GetAxInterfaceDescriptorPtr()->GetPropPut())
 					dispid = m_pPropObject->GetAxInterfaceDescriptorPtr()->GetPropPut()->GetDispId();
 				
-				CAxContainer *pAxCont = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
+				CAxContainerCtrl *pAxCont = ((CControlHolder*)pCtrl->m_pCtrlHolder)->GetActiveXCtrl();
 				CComPtr< IDispatch > pDisp;
 				pAxCont->GetOleDispatch( &pDisp );
 				// set the image list now.

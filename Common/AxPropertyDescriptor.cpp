@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "AxPropertyDescriptor.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "VarUtils.h"
 #include "Filing.h"
 #include "Project.h"
@@ -54,7 +54,7 @@ AxPropertyDescriptor::AxPropertyDescriptor( VARDESC* pVarDesc, ITypeInfo* pTypeI
 }
 
 AxPropertyDescriptor::AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo,
-																						CAxContainer* pContainer /*= NULL*/,
+																						CAxContainerCtrl* pContainer /*= NULL*/,
 																						LPOLEOBJECT pIObject /*= NULL*/ )
 : mDispId( 0 ), mType( 0 ), mbArray( false ), mbReadOnly( true ), mInvKind( (INVOKEKIND)0 )
 {
@@ -242,7 +242,7 @@ Cleanup:
 }
 
 
-HRESULT AxPropertyDescriptor::GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype, CAxContainer* pContainer /*= NULL*/ )
+HRESULT AxPropertyDescriptor::GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype, CAxContainerCtrl* pContainer /*= NULL*/ )
 {
 	ITypeInfo *TheRefType = NULL;
 	if ((hreftype != -1) &&
@@ -268,7 +268,8 @@ HRESULT AxPropertyDescriptor::GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype,
 				mType = VT_DISPATCH;
 				mGuid = pTA->guid;
 				if( pContainer )
-					pContainer->GetParent()->GetProject()->AddOleObject(pTA->guid, pContainer); // add this OLE object
+					//pContainer->GetParent()->GetProject()->AddOleObject(pTA->guid, pContainer); // add this OLE object
+				  theWorkspace.GetActiveProject()->AddOleObject(pTA->guid, pContainer);
 				break;
 			case TKIND_ENUM:
 				{

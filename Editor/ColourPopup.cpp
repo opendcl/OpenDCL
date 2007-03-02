@@ -35,7 +35,7 @@
 #include <math.h>
 #include "ColourPopup.h"
 #include "WinColorDlg.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "AxInterfaceDescriptor.h"
 #include "ControlHolder.h"
 #include "PropertyObject.h"

@@ -5,7 +5,7 @@
 #include "DclFormObject.h"
 
 class CImageListObject;
-class CAxContainer;
+class CAxContainerCtrl;
 class CDialogControl;
 enum IOStatus;
 enum PropertyId;
@@ -37,7 +37,7 @@ public:
 	int m_PurchaseState;
 	CWnd *m_pCtrlHolder;
 	CRect m_rcOldPosition;
-	CAxContainer* m_pAxWnd;
+	CAxContainerCtrl* m_pAxWnd;
 
 	//ARX only
 	bool m_bEventsAsAction;
@@ -51,7 +51,7 @@ public:
 
 	//storage stream
 	CComPtr<IStream> m_pStream;
-	void SaveToStream(CAxContainer *pCtrl);
+	void SaveToStream(CAxContainerCtrl *pCtrl);
 	IStream *GetLoadStream();
 	void ClearStream();
 

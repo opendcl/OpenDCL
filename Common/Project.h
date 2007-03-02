@@ -67,7 +67,7 @@ class CPictureObject;
 class AxPropertyDescriptor;
 class AxMethodDescriptor;
 class AxEventDescriptor;
-class CAxContainer;
+class CAxContainerCtrl;
 
 #define activeProject (theWorkspacePtr()->GetActiveProject()) //shortcut to the active project*
 //* The concept of an active project is only useful in the editor, and even there, it is used only 
@@ -189,7 +189,7 @@ public:
 
 	// OLE object management
 public:
-	void AddOleObject(const CLSID& clsid, CAxContainer *pAxCont);
+	void AddOleObject(const CLSID& clsid, CAxContainerCtrl *pAxCont);
 	bool HasOleObject(const CLSID& clsid);
 	CString GetOleObjectName(const AxPropertyDescriptor *pProperty);
 	RefCountedPtr< COleControlObject > GetOleObject(const CLSID& clsid);

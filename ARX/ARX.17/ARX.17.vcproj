@@ -842,7 +842,7 @@
 				Filter="h;hh;hxx"
 				>
 				<File
-					RelativePath="..\Controls\OdclActiveX.h"
+					RelativePath="..\Controls\ArxAxContainerCtrl.h"
 					>
 				</File>
 				<File
@@ -967,7 +967,7 @@
 				Filter="cpp;c;cc;cxx;def;idl;odl"
 				>
 				<File
-					RelativePath="..\Controls\OdclActiveX.cpp"
+					RelativePath="..\Controls\ArxAxContainerCtrl.cpp"
 					>
 				</File>
 				<File
@@ -1330,11 +1330,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\AxContainer.cpp"
+				RelativePath="..\..\Common\AxContainerCtrl.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\AxContainer.h"
+				RelativePath="..\..\Common\AxContainerCtrl.h"
 				>
 			</File>
 			<File

@@ -9,7 +9,7 @@
 #include "AxEventDescriptor.h"
 #include "AxMethodDescriptor.h"
 #include "VarUtils.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "OleFont.h"
 
 
@@ -303,7 +303,7 @@ size_t AxInterfaceDescriptor::GetParamQty() const
 	return pPropDesc->GetArgs().size();
 }
 
-void AxInterfaceDescriptor::DoActiveXFontPropDlg(CAxContainer *axContainer)
+void AxInterfaceDescriptor::DoActiveXFontPropDlg(CAxContainerCtrl *axContainer)
 {	
 	try
 	{

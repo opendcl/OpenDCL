@@ -5,7 +5,7 @@
 #include "ArxControlPane.h"
 #include "ArxDialogControl.h"
 #include "DclControlObject.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "ArxProject.h"
 
 
@@ -56,7 +56,7 @@ void CArxControlPane::CleanUpControls()
 	{
 		TDialogControlPtr pControl = mControls[idx];
 		if( pControl->GetControlType() == CtlActiveX )
-			((CAxContainer*)&*(pControl->GetControl()))->CloseWindow();
+			((CAxContainerCtrl*)&*(pControl->GetControl()))->CloseWindow();
 	}
 	CControlPane::CleanUpControls();
 }

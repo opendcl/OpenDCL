@@ -19,7 +19,7 @@
 #include "AxPropertyDescriptor.h"
 #include "AxEventDescriptor.h"
 #include "AxInterfaceDescriptor.h"
-#include "AxContainer.h"
+#include "AxContainerCtrl.h"
 #include "ControlHolder.h"
 #include "LoadArgs.h"
 #include "SharedRes.h"

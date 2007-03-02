@@ -1,6 +1,6 @@
 #pragma once
 
-class CAxContainer;
+class CAxContainerCtrl;
 enum IOStatus;
 
 struct AxPropertyEnum
@@ -40,7 +40,7 @@ protected:
 public:
 	AxPropertyDescriptor( DISPID dispid, LPCTSTR pszName, LPCTSTR pszDesc, VARTYPE type, INVOKEKIND kind );
 	AxPropertyDescriptor( VARDESC* pVarDesc, ITypeInfo* pTypeInfo );
-	AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo, CAxContainer* pContainer = NULL, LPOLEOBJECT pIObject = NULL );
+	AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo, CAxContainerCtrl* pContainer = NULL, LPOLEOBJECT pIObject = NULL );
 	AxPropertyDescriptor( const AxPropertyDescriptor& Src );
 	virtual ~AxPropertyDescriptor(void);
 
@@ -62,7 +62,7 @@ public:
 
 protected:
 	HRESULT PerPropertyBrowsing( LPOLEOBJECT pIObject );
-	HRESULT GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype, CAxContainer* pContainer = NULL );
+	HRESULT GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype, CAxContainerCtrl* pContainer = NULL );
 
 	// File I/O
 public:
