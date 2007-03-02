@@ -2,6 +2,7 @@
 
 #include "acutmem.h"
 #include "ArxAxContainerCtrl.h"
+#include "ArxWorkspace.h"
 #include "AxEventDescriptor.h"
 #include "AxInterfaceDescriptor.h"
 #include "ControlPane.h"
@@ -22,6 +23,14 @@ END_MESSAGE_MAP()
 CArxAxContainerCtrl::CArxAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate) 
 : CAxContainerCtrl(pTemplate, pPane, nID, false)
 {
+	msLispSymbolName = pTemplate->GetStrProperty( nGlobalVarName );
+	if( msLispSymbolName.IsEmpty() )
+		msLispSymbolName = pTemplate->GetKeyPath();
+	SetLispSymbol();
+	TraceFmt( _T("> CArxAxContainerCtrl::CArxAxContainerCtrl(%s [%08X], [%08X], %s [HWND: %08X]) [this: %08X]\r\n"),
+		pTemplate->GetKeyPath(), pTemplate, pPane, CString(mpTemplate->GetRuntimeClass()->m_lpszClassName),
+		mpTemplate->GetWindow(), (long)this );
+
 	if( bCreate ) 
 	{
 		Create( pPane->GetHostDialog(), nID );
@@ -31,6 +40,22 @@ CArxAxContainerCtrl::CArxAxContainerCtrl(CDclControlObject* pTemplate, CControlP
 		m_bInvokeWithSendString = false;
 	}
 }
+CArxAxContainerCtrl::~CArxAxContainerCtrl()
+{
+	SetLispSymbol( true );
+	TraceFmt( _T("< CArxDialogControl::~CArxDialogControl() [this: %08X]\r\n"), (long)this );
+}
+
+void CArxAxContainerCtrl::SetLispSymbol( bool bResetToNil /*= false*/ ) const
+{
+	if( msLispSymbolName.IsEmpty() )
+		return;
+	if( !bResetToNil )
+		theArxWorkspace.SetLispSymbol( msLispSymbolName, (long)mpTemplate );
+	else
+		theArxWorkspace.ResetLispSymbol( msLispSymbolName );
+}
+
 bool CArxAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID ) {
 	bool bSuccess = CAxContainerCtrl::Create( pParentWnd, nID );
 
