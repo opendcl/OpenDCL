@@ -289,7 +289,7 @@ void CDockingDialog::OnShowWindow(BOOL bShow, UINT nStatus)
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStrProperty(nFormEventShow), true);	
 
-	mbHiding = !bShow;
+	mbHiding = !mbClosing && !bShow;
 	CAdUiDockControlBar::OnShowWindow(bShow, nStatus);
 }
 

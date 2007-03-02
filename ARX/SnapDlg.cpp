@@ -116,14 +116,14 @@ void CSnapDlg::OnCaptureChanged(CWnd *pWnd)
 //but at least it is closer to correct.
 void CSnapDlg::SetDialogMinExtents(int nWidth, int nHeight)
 {
-	m_nMinWidth = nWidth + iWidthAdjustment;
-	m_nMinHeight = nHeight + iHeightAdjustment;
+	m_nMinWidth = nWidth/* + iWidthAdjustment*/;
+	m_nMinHeight = nHeight/* + iHeightAdjustment*/;
 }
 	
 void CSnapDlg::SetDialogMaxExtents(int nWidth, int nHeight)
 {
-	m_nMaxWidth = nWidth + iWidthAdjustment;
-	m_nMaxHeight = nHeight + iHeightAdjustment;
+	m_nMaxWidth = nWidth/* + iWidthAdjustment*/;
+	m_nMaxHeight = nHeight/* + iHeightAdjustment*/;
 }
 
 
@@ -199,7 +199,7 @@ CSize CSnapDlg::ReadSize()
 {	
 	CSize szRet;
 	CWinApp* pApp = AfxGetApp();
-	CString sProfileName = mpSourceForm->GetKeyPath(); 
+	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath();
     
 	szRet.cx = pApp->GetProfileInt(sProfileName, sSizeWidth, nDefaultSize);
 	szRet.cy = pApp->GetProfileInt(sProfileName, sSizeHeight, nDefaultSize);

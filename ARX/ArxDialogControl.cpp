@@ -583,8 +583,23 @@ void CArxDialogControl::UpdateChildControl(CDclControlObject *pControl, CControl
 //static
 void CArxDialogControl::UpdateProperty(CDclControlObject *pControl, CControlPane* pPane, UINT nControlId, PropertyId nID)
 {
-	CWnd *pControlWnd = pControl->GetWindow();
+	switch( pControl->GetType() )
+	{ //these controls implement the new CDialogControl interface, so use that
+	case CtlGraphicButton:
+	case CtlTabStrip:
+	case CtlSlideView:
+	case CtlListView:
+	case CtlBlockView:
+		CDialogControl* pDlgControl = pControl->GetControlInstance();
+		if( !pDlgControl )
+			return;
+		pDlgControl->OnApplyProperty( pControl->GetPropertyObject( nID ) );
+		pDlgControl->GetControl()->Invalidate();
+		return;
+	};
+	CWnd* pControlWnd = pControl->GetWindow();
 	UpdatePropertyInt(pControlWnd, pControl, pPane, nID);
+	pControlWnd->Invalidate();
 }
 
 // This function is being phased out as control classes are changed to implement their own CDialogControl interface
@@ -1609,8 +1624,8 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 		}
 		case nVisible:
 		{
-			if (IsWindow(pControlWnd->m_hWnd))		
-				pControlWnd->ShowWindow(pControl->m_pVisible->GetBooleanValue());
+			if (IsWindow(pControlWnd->m_hWnd))
+				pControlWnd->ShowWindow(pControl->m_pVisible->GetBooleanValue()? SW_SHOW : SW_HIDE);
 			else
 				theWorkspace.DisplayAlert(_T("The ActiveX Control is hidden and no longer valid.\nPlease contact the control developer for support."));
 			break;

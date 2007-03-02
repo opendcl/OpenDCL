@@ -33,7 +33,7 @@
 #include "OdclLayerCombo.h"
 #include "LineWeightDlg.h"
 #include "LinetypeDlg.h"
-#include "ArxGraphicButtonCtrl.h"
+#include "DynamicButtonCtrl.h"
 
 extern void SetPlotterPaperSizesCB(CComboBox *pComboBox);
 
@@ -57,6 +57,10 @@ extern void SetPlotterPaperSizesCB(CComboBox *pComboBox);
 #define RBS_CHECKEDHOT			0x00000006
 #define RBS_CHECKEDPRESSED		0x00000007
 #define RBS_CHECKEDDISABLED		0x00000008
+
+#define ID_CELLBUTTON 191
+#define ID_CELLBUTTON_DIR2 192
+#define ID_CELLBUTTON_DIR3 193
 
 
 //extern CAcExtensionModule InterfaceArxDLL;
@@ -179,6 +183,9 @@ BEGIN_MESSAGE_MAP(CSpreadSheet, CListCtrl)
 	ON_NOTIFY_REFLECT(LVN_COLUMNCLICK, OnColumnclick)		
 	ON_WM_MOUSEMOVE()
 	ON_WM_KEYUP()
+	ON_COMMAND(ID_CELLBUTTON, OnCellButtonClicked)
+	ON_COMMAND(ID_CELLBUTTON_DIR2, OnDir2CellButtonClicked)
+	ON_COMMAND(ID_CELLBUTTON_DIR3, OnDir3CellButtonClicked)
 	//}}AFX_MSG_MAP	
 END_MESSAGE_MAP()
 
@@ -190,6 +197,20 @@ void CSpreadSheet::SetThemeHelper(CThemeHelperST* pTheme)
 	m_pTheme = pTheme;
 }
 
+void CSpreadSheet::OnCellButtonClicked(void)
+{
+	InvokeMethodIntInt(m_ArxControl->GetStrProperty(nEventBtnClicked), m_nRowSelected, m_nColSelected, m_bInvokeWithSendString);
+}
+
+void CSpreadSheet::OnDir2CellButtonClicked(void)
+{
+	DoFileDlg(2);
+}
+
+void CSpreadSheet::OnDir3CellButtonClicked(void)
+{
+	DoFileDlg(3);
+}
 
 void CSpreadSheet::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp) 
 {
@@ -3658,17 +3679,16 @@ void CSpreadSheet::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 	
 		if (m_pFolderButton == NULL)
 		{
-			m_pFolderButton = new CArxGraphicButtonCtrl( m_ArxControl, m_pParentCtrlPane, 192 );
-			
+			UINT idCmd = ID_CELLBUTTON;
+			if( nAsPick == 2 )
+				idCmd = ID_CELLBUTTON_DIR2;
+			else if( nAsPick == 3 )
+				idCmd = ID_CELLBUTTON_DIR3;
+			m_pFolderButton = new CDynamicButtonCtrl( this, rc, idCmd );
 			m_pFolderButton->SetIcon(IDI_FOLDER2);
 			m_pFolderButton->SetThemeHelper(&m_ThemeHelper);
 			m_pFolderButton->SetFlat(FALSE);
-
-			m_pFolderButton->SetOnClickedEvent( m_ArxControl->GetStrProperty(nEventBtnClicked) );
-			m_pFolderButton->m_bInvokeWithSendString = m_bInvokeWithSendString;					
 		}
-		m_pFolderButton->m_nDirectory = nAsPick;
-		m_pFolderButton->MoveWindow(rc, TRUE);	
 		m_pFolderButton->ShowWindow(TRUE);		
 		
 	}
@@ -3676,17 +3696,11 @@ void CSpreadSheet::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 	{			
 		if (m_pPickButton == NULL)
 		{
-			m_pPickButton = new CArxGraphicButtonCtrl( m_ArxControl, m_pParentCtrlPane, 192 );
-			
+			m_pPickButton = new CDynamicButtonCtrl( this, rc, ID_CELLBUTTON );
 			m_pPickButton->SetIcon(IDI_PICSM);
 			m_pPickButton->SetThemeHelper(&m_ThemeHelper);
 			m_pPickButton->SetFlat(FALSE);
-
-			m_pPickButton->SetOnClickedEvent( m_ArxControl->GetStrProperty(nEventBtnClicked) );
-			m_pPickButton->m_bInvokeWithSendString = m_bInvokeWithSendString;		
 		}
-		m_pPickButton->m_nDirectory = nAsPick;
-		m_pPickButton->MoveWindow(rc, TRUE);	
 		m_pPickButton->ShowWindow(TRUE);		
 		
 	}
@@ -3694,17 +3708,11 @@ void CSpreadSheet::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 	{
 		if (m_pEllipsesButton == NULL)
 		{
-			m_pEllipsesButton = new CArxGraphicButtonCtrl( m_ArxControl, m_pParentCtrlPane, 192 );
-
+			m_pEllipsesButton = new CDynamicButtonCtrl( this, rc, ID_CELLBUTTON );
 			m_pEllipsesButton->SetWindowText(sDotDotDot);
 			m_pEllipsesButton->SetThemeHelper(&m_ThemeHelper);
 			m_pEllipsesButton->SetFlat(FALSE);
-
-			m_pEllipsesButton->SetOnClickedEvent( m_ArxControl->GetStrProperty(nEventBtnClicked) );
-			m_pEllipsesButton->m_bInvokeWithSendString = m_bInvokeWithSendString;
 		}
-		m_pEllipsesButton->m_nDirectory = nAsPick;
-		m_pEllipsesButton->MoveWindow(rc, TRUE);
 		m_pEllipsesButton->ShowWindow(TRUE);
 	}
 }

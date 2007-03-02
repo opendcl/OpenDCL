@@ -258,135 +258,72 @@ void CPictureBox::SetPictureID(int nPictureID)
 		m_pPicture = NULL;
 		delete m_pPicture;
 	}
-
 	if (m_pPictureHolder)
 	{
 		m_pPictureHolder->Release();
 		m_pPictureHolder = NULL;
-		//delete m_pPictureHolder;
 	}
 	if (m_hbmMem != NULL)
 	{
 		DeleteObject(m_hbmMem);
 		m_hbmMem = NULL;
-		
 	}
-	
-	
-	if (nPictureID == 0)
+
+	m_pPicture = m_pProject->FindPicture( nPictureID );
+	if( m_pPicture )
 	{
-		CPictureBox::SetPictureBlank();
-
-		//RedrawWindow();
-		
-		CDC *pdc = CWnd::GetDC();
-
-		CPictureBox::Refresh(pdc);
-
-		pdc->Detach();
-		
-		return;
+		m_cxIcon = m_pPicture->GetWidth();
+		m_cyIcon = m_pPicture->GetHeight();
+		AutoSize();
 	}
-	
-	// set counter for Pictures
-	int nCount = 0;
+	else
+		SetPictureBlank();
 
-	// set start position for navigating Pictures
-	POSITION pos = m_pProject->GetPictureList().GetHeadPosition();
-
-	// do loop to navigate Pictures
-	while (nCount < m_pProject->GetPictureList().GetCount())
-	{
-		// get position
-		pos = m_pProject->GetPictureList().FindIndex(nCount);
-		// get current Picture in list
-		CPictureObject *pPicture = m_pProject->GetPictureList().GetNext(pos);
-		
-		if (pPicture->GetID() == nPictureID)
-		{
-			if (CString(pPicture->GetFileName()).GetLength() > 0)
-			{
-				m_bLoadPicture = true;
-
-				if (m_pPicture != NULL)
-					delete m_pPicture;
-
-				m_pPicture = new CPictureObject;
-				m_pPicture->SetID(pPicture->GetID());
-				m_pPicture->SetFileName(pPicture->GetFileName());
-				m_pPicture->EnsurePictureIsLoaded();
-			}
-			else
-			{
-				m_pPicture = pPicture;
-			}
-
-			m_cxIcon = m_pPicture->GetWidth();
-			m_cyIcon = m_pPicture->GetHeight();
-		}
-		// increment counter
-		nCount++;
-	}
-	nCount = 0;
-
-	AutoSize();
-	
 	CDC *pdc = CWnd::GetDC();
-
-	CPictureBox::Refresh(pdc);
-
+	Refresh(pdc);
 	pdc->Detach();
-	
 }
 
 void CPictureBox::AutoSize()
 {
 	BOOL bAutoSize = m_ArxControl->GetBoolProperty(nAutoSize);
-	if (bAutoSize && 
-		m_pPictureHolder == NULL &&
-		m_PictureID == 0
-		)
-	{
+	if (!bAutoSize)
 		return;
-	}
+	
+	if (m_pPictureHolder == NULL && m_PictureID == 0)
+		return;
 
-	if (bAutoSize)
-	{
-		CRect rcThis;
-		rcThis.left = m_ArxControl->m_pLeft->GetLongValue();
-		rcThis.top = m_ArxControl->m_pTop->GetLongValue();
-		
-		switch (m_ArxControl->GetLngProperty(nBorderStyle))
-		{		
-		case 0:
-			{
-			rcThis.right = rcThis.left + m_cxIcon;
-			rcThis.bottom = rcThis.top + m_cyIcon;
-			break;
-			}
-		case 1:
-			{
-			rcThis.right = rcThis.left + m_cxIcon + nClientBorderSize;
-			rcThis.bottom = rcThis.top + m_cyIcon + nClientBorderSize;
-			break;
-			}
-		case 2:
-			{
-			rcThis.right = rcThis.left + m_cxIcon + nStaticBorderSize;
-			rcThis.bottom = rcThis.top + m_cyIcon + nStaticBorderSize;
-			break;
-			}		
+	CRect rcThis;
+	rcThis.left = m_ArxControl->m_pLeft->GetLongValue();
+	rcThis.top = m_ArxControl->m_pTop->GetLongValue();
+	
+	switch (m_ArxControl->GetLngProperty(nBorderStyle))
+	{		
+	case 0:
+		{
+		rcThis.right = rcThis.left + m_cxIcon;
+		rcThis.bottom = rcThis.top + m_cyIcon;
+		break;
 		}
-		
-		CRect rcControl;
-		GetWindowRect(&rcControl);
-		// if the control's size is not the same, resize it.
-		if (rcControl.Width() != rcThis.Width() &&
-			rcControl.Height() != rcThis.Height())
-			MoveWindow(rcThis, TRUE);
+	case 1:
+		{
+		rcThis.right = rcThis.left + m_cxIcon + nClientBorderSize;
+		rcThis.bottom = rcThis.top + m_cyIcon + nClientBorderSize;
+		break;
+		}
+	case 2:
+		{
+		rcThis.right = rcThis.left + m_cxIcon + nStaticBorderSize;
+		rcThis.bottom = rcThis.top + m_cyIcon + nStaticBorderSize;
+		break;
+		}		
 	}
 	
-
+	CRect rcControl;
+	GetWindowRect(&rcControl);
+	// if the control's size is not the same, resize it.
+	if (rcControl.Width() != rcThis.Width() && rcControl.Height() != rcThis.Height())
+		MoveWindow(rcThis, TRUE);
 }
 
 void CPictureBox::Clear()
@@ -518,7 +455,7 @@ void CPictureBox::Refresh(CDC *pdc)
 				// and finish!
 				pdc->DrawState(	rcPic.TopLeft(),
 								IconSize, 
-								m_pPicture->GetIcon(), 
+								m_pPicture->CloneIcon(), 
 								DSS_NORMAL, 
 								(CBrush*)NULL);
 			}
@@ -527,7 +464,7 @@ void CPictureBox::Refresh(CDC *pdc)
 				// and finish!
 				pdc->DrawState(	rcPic.TopLeft(),
 								IconSize, 
-								m_pPicture->GetIcon(), 
+								m_pPicture->CloneIcon(), 
 								DSS_DISABLED, 
 								(CBrush*)NULL);
 			}
@@ -535,23 +472,17 @@ void CPictureBox::Refresh(CDC *pdc)
 		else
 		{
 			// get width and height of picture
-			long hmWidth;
-			long hmHeight;
-			m_pPicture->GetPicture().m_pPict->get_Width(&hmWidth);
-			m_pPicture->GetPicture().m_pPict->get_Height(&hmHeight);
+			long lWidth = m_pPicture->GetWidth();
+			long lHeight = m_pPicture->GetHeight();
 			
-			// convert himetric to pixels
-			int nPicWidth	= MulDiv(hmWidth, pdc->GetDeviceCaps(LOGPIXELSX), HIMETRIC_INCH);
-			int nPicHeight	= MulDiv(hmHeight, pdc->GetDeviceCaps(LOGPIXELSY), HIMETRIC_INCH);		
-			
-			m_cxIcon = nPicWidth;
-			m_cyIcon = nPicHeight;
+			m_cxIcon = lWidth;
+			m_cyIcon = lHeight;
 
 			// Center the picture horizontally
-			int nPicLeft = ((rcCell.Width() - nPicWidth)/2);
+			int nPicLeft = ((rcCell.Width() - lWidth)/2);
 			
 			// Center the picture vertically
-			int nPicTop = ((rcCell.Height() - nPicHeight)/2);           
+			int nPicTop = ((rcCell.Height() - lHeight)/2);           
 			if (m_AutoSize == TRUE)
 			{
 				nPicTop = 0;
@@ -561,20 +492,20 @@ void CPictureBox::Refresh(CDC *pdc)
 			if (m_pPicture->GetPicType() == PICTYPE_METAFILE ||
 				m_pPicture->GetPicType() == PICTYPE_ENHMETAFILE)
 			{
-				rcCell = CalcFitRect(nPicWidth, nPicHeight,rcCell.Width(), rcCell.Height());
+				rcCell = CalcFitRect(lWidth, lHeight,rcCell.Width(), rcCell.Height());
 
 				// display picture using IPicture::Render
-				m_pPicture->GetPicture().m_pPict->Render(pdc->m_hDC, rcCell.left, rcCell.top, rcCell.Width(), rcCell.Height(), 0, hmHeight, hmWidth, -hmHeight, &rcCell);				
+				m_pPicture->Render(pdc, rcCell.left, rcCell.top, rcCell);				
 			}
-			else if (nPicWidth > rcCell.Width() || nPicHeight > rcCell.Height() || m_bStretchLoadedPicture)
+			else if (lWidth > rcCell.Width() || lHeight > rcCell.Height() || m_bStretchLoadedPicture)
 			{
 				// display picture using IPicture::Render
-				m_pPicture->GetPicture().m_pPict->Render(pdc->m_hDC, 0, 0, rcCell.Width(), rcCell.Height(), 0, hmHeight, hmWidth, -hmHeight, &rcCell);
+				m_pPicture->Render(pdc, 0, 0, rcCell);
 			}		
 			else
 			{
 				// display picture using IPicture::Render
-				m_pPicture->GetPicture().m_pPict->Render(pdc->m_hDC, nPicLeft, nPicTop, nPicWidth, nPicHeight, 0, hmHeight, hmWidth, -hmHeight, &rcCell);
+				m_pPicture->Render(pdc, nPicLeft, nPicTop, rcCell);
 			}
 		}
 	}
@@ -1155,140 +1086,102 @@ void CPictureBox::DrawHatchRect(int sX, int sY, int eX, int eY, COLORREF rgb, in
 
 void CPictureBox::PaintPicture(int sX, int sY, int nPictureID, int nEnabled, int nUseMask)
 {
-	HDC hdc = ::GetDC(m_hWnd);
 
 	CRect iconRect;
-	CSize IconSize;
-	CPictureObject* pPicture;
 
-	// set counter for Pictures
-	int nCount = 0;
-	bool bFoundPicture = false;
+	CPictureObject* pPicture = m_pProject->FindPicture( nPictureID );
+	if( !pPicture )
+		return;
 
-	// set start position for navigating Pictures
-	POSITION pos = m_pProject->GetPictureList().GetHeadPosition();
+	CSize IconSize( pPicture->GetWidth(), pPicture->GetHeight() );
+	HDC hdc = ::GetDC(m_hWnd);
 
-	// do loop to navigate Pictures
-	while (nCount < m_pProject->GetPictureList().GetCount())
+	iconRect.left = sX; // Center the icon horizontally
+	iconRect.top = sY; // Center the icon vertically
+
+	if (PICTYPE_BITMAP == pPicture->GetPicType())
 	{
-		// get position
-		pos = m_pProject->GetPictureList().FindIndex(nCount);
-		// get current Picture in list
-		pPicture = m_pProject->GetPictureList().GetNext(pos);
-		
-		if (pPicture->GetID() == nPictureID && !bFoundPicture)
+		if (nUseMask)
 		{
-			pPicture->EnsurePictureIsLoaded();
-			// get the icon
-			IconSize.cx = pPicture->GetWidth();
-			IconSize.cy = pPicture->GetHeight();
-			bFoundPicture = true;
-			nCount = m_pProject->GetPictureList().GetCount();
-		}
-		// increment counter
-		nCount++;
-	}
-	nCount = 0;
+			HICON hIcon = pPicture->CloneIcon();
 
-	if (bFoundPicture)
-	{
-		// Center the icon horizontally
-		iconRect.left = sX;
-		
-		// Center the icon vertically
-		iconRect.top = sY;
-			
-		
-		if (PICTYPE_BITMAP == pPicture->GetPicType())
-		{
-			if (nUseMask)
-			{
-				HICON hIcon = pPicture->GetIcon();
-
-				if (nEnabled)
-				{
-					DrawState(hdc, NULL, NULL,
-						(LPARAM)hIcon, 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_NORMAL|DST_ICON);
-				}
-				else
-				{					
-					DrawState(hdc, NULL, NULL,
-						(LPARAM)hIcon, 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_DISABLED|DST_ICON);
-				}				
-			}
-			else
-			{
-				if (nEnabled)
-				{
-					::DrawState(hdc, NULL,
-						NULL, (LPARAM)pPicture->GetBitmap(), 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_NORMAL|DST_BITMAP);
-				}
-				else
-				{
-					
-					::DrawState(hdc, NULL,
-						NULL, (LPARAM)pPicture->GetBitmap(), 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_DISABLED|DST_BITMAP);
-				}
-			}
-		}
-
-		// else if picture is an icon
-		else if (PICTYPE_ICON == pPicture->GetPicType())
-		{
-			HICON hIconOut = pPicture->GetIcon();
-			
 			if (nEnabled)
 			{
 				DrawState(hdc, NULL, NULL,
-						(LPARAM)hIconOut, 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_NORMAL|DST_ICON);
+					(LPARAM)hIcon, 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_NORMAL|DST_ICON);
 			}
 			else
-			{				
+			{					
 				DrawState(hdc, NULL, NULL,
-						(LPARAM)hIconOut, 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_DISABLED|DST_ICON);
-			}
-		
+					(LPARAM)hIcon, 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_DISABLED|DST_ICON);
+			}				
 		}
-
 		else
 		{
-			// get width and height of picture
-			long hmWidth;
-			long hmHeight;
-			pPicture->GetPicture().m_pPict->get_Width(&hmWidth);
-			pPicture->GetPicture().m_pPict->get_Height(&hmHeight);
-			
-			// convert himetric to pixels
-			int nPicWidth	= MulDiv(hmWidth, GetDeviceCaps(hdc, LOGPIXELSX), HIMETRIC_INCH);
-			int nPicHeight	= MulDiv(hmHeight, GetDeviceCaps(hdc, LOGPIXELSY), HIMETRIC_INCH);		
-			
-			iconRect.right = iconRect.left + nPicWidth;
-			iconRect.bottom = iconRect.top + nPicHeight;
-
-			CRect rcThis;
-			GetClientRect(&rcThis);
-				
-			if (pPicture->GetPicType() == PICTYPE_METAFILE ||
-				pPicture->GetPicType() == PICTYPE_ENHMETAFILE)
+			if (nEnabled)
 			{
-				
-				CRect rcCell = CalcFitRect(nPicWidth, nPicHeight,rcThis.Width(), rcThis.Height());
-
-				// display picture using IPicture::Render
-				pPicture->GetPicture().m_pPict->Render(hdc, rcCell.left, rcCell.top, rcCell.Width(), rcCell.Height(), 0, hmHeight, hmWidth, -hmHeight, &rcThis);				
+				::DrawState(hdc, NULL,
+					NULL, (LPARAM)pPicture->CloneBitmap(), 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_NORMAL|DST_BITMAP);
 			}
-			else if (nPicWidth > rcThis.Width() || nPicHeight > rcThis.Height())
-			{
-				// display picture using IPicture::Render
-				pPicture->GetPicture().m_pPict->Render(hdc, 0, 0, rcThis.Width(), rcThis.Height(), 0, hmHeight, hmWidth, -hmHeight, &rcThis);
-			}
-		
 			else
 			{
-				// display picture using IPicture::Render
-				pPicture->GetPicture().m_pPict->Render(hdc, sX, sY, nPicWidth, nPicHeight, 0, hmHeight, hmWidth, -hmHeight, &iconRect);
-			}		
+				
+				::DrawState(hdc, NULL,
+					NULL, (LPARAM)pPicture->CloneBitmap(), 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_DISABLED|DST_BITMAP);
+			}
 		}
+	}
+
+	// else if picture is an icon
+	else if (PICTYPE_ICON == pPicture->GetPicType())
+	{
+		HICON hIconOut = pPicture->CloneIcon();
+		
+		if (nEnabled)
+		{
+			DrawState(hdc, NULL, NULL,
+					(LPARAM)hIconOut, 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_NORMAL|DST_ICON);
+		}
+		else
+		{				
+			DrawState(hdc, NULL, NULL,
+					(LPARAM)hIconOut, 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_DISABLED|DST_ICON);
+		}
+	
+	}
+
+	else
+	{
+		// get width and height of picture
+		long lWidth = pPicture->GetWidth();
+		long lHeight = pPicture->GetHeight();
+		
+		iconRect.right = iconRect.left + lWidth;
+		iconRect.bottom = iconRect.top + lHeight;
+
+		CRect rcThis;
+		GetClientRect(&rcThis);
+			
+		if (pPicture->GetPicType() == PICTYPE_METAFILE ||
+			pPicture->GetPicType() == PICTYPE_ENHMETAFILE)
+		{
+			
+			CRect rcCell = CalcFitRect(lWidth, lHeight,rcThis.Width(), rcThis.Height());
+
+			// display picture using IPicture::Render
+			pPicture->Render(CDC::FromHandle(hdc), rcCell.left, rcCell.top, rcThis);				
+		}
+		else if (lWidth > rcThis.Width() || lHeight > rcThis.Height())
+		{
+			// display picture using IPicture::Render
+			pPicture->Render(CDC::FromHandle(hdc), 0, 0, rcThis);
+		}
+	
+		else
+		{
+			// display picture using IPicture::Render
+			pPicture->Render(CDC::FromHandle(hdc), sX, sY, iconRect);
+		}		
 	}
 
 	// then releasing the DC itself

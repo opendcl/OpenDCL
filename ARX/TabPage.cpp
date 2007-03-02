@@ -34,5 +34,6 @@ END_MESSAGE_MAP()
 
 BOOL CTabPage::OnEraseBkgnd(CDC* pDC)
 {
+	return CDialog::OnEraseBkgnd(pDC);
 	return TRUE;
 }

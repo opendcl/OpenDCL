@@ -14,7 +14,6 @@
 class CArxGraphicButtonCtrl : public CGraphicButtonCtrl
 {
 	COleOdcDropTarget mDropTarget;	
-	CString msOnClickedEvent;
 
 public:
 	bool			m_bInvokeWithSendString;
@@ -30,7 +29,6 @@ public:
 
 public:
 	void SetDragnDrop(BOOL bRegister);
-	void SetOnClickedEvent( LPCTSTR pszLispFunctionName ) { msOnClickedEvent = pszLispFunctionName; }
 
 protected:
 	afx_msg void OnClicked();	

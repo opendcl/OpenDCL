@@ -367,34 +367,14 @@ void CModalVDcl::SetTitleBarIcon(int nPictureID)
 	if (m_hIconAcad != NULL)
 		DestroyIcon(m_hIconAcad);
 	
-	// do loop to navigate Pictures
-	while (nCount < mDialogX.GetSourceForm()->GetProject()->GetPictureList().GetCount())
+	CPictureObject* pPicture = mDialogX.GetSourceForm()->GetProject()->FindPicture( nPictureID );
+	if( pPicture )
 	{
-		// get position
-		pos = mDialogX.GetSourceForm()->GetProject()->GetPictureList().FindIndex(nCount);
-		// get current Picture in list
-		CPictureObject* pPicture = mDialogX.GetSourceForm()->GetProject()->GetPictureList().GetNext(pos);
-		
-		if (pPicture->GetID() == nPictureID)
-		{
-			if (pPicture->GetPicType() == PICTYPE_BITMAP)
-			{
-				// if the icon is already extracted, return that Icon
-				if (pPicture->GetIcon() != NULL)
-				{					
-					// get the icon
-					SetIcon(pPicture->GetIcon(), FALSE);
-					return;
-				}
-			}
-			// get the icon
-			m_hIconAcad = pPicture->GetIcon();
-			// set the icon
-			CDialog::SetIcon(m_hIconAcad, FALSE);
-			return;
-		}
-		// increment counter
-		nCount++;
+		// get the icon
+		m_hIconAcad = pPicture->CloneIcon();
+		// set the icon
+		SetIcon(m_hIconAcad, FALSE);
+		return;
 	}
 
 	// if no icon was found to be specified, display nothing.

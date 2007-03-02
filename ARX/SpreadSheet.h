@@ -11,7 +11,7 @@
 class CThemeHelperST;
 class CPropertyObject;
 class CDclControlObject;
-class CArxGraphicButtonCtrl;
+class CDynamicButtonCtrl;
 
 const int Grid_CheckBoxes		= 1;
 const int Grid_OptionButtons	= 2;
@@ -162,9 +162,9 @@ public:
 	
 	CThemeHelperST		m_ThemeHelper;
 	
-	CArxGraphicButtonCtrl *m_pEllipsesButton;
-	CArxGraphicButtonCtrl *m_pPickButton;
-	CArxGraphicButtonCtrl *m_pFolderButton;
+	CDynamicButtonCtrl *m_pEllipsesButton;
+	CDynamicButtonCtrl *m_pPickButton;
+	CDynamicButtonCtrl *m_pFolderButton;
 
 	COLORREF alertnateColor;
 	bool	 m_bOrientationVer;
@@ -252,6 +252,9 @@ protected:
 	afx_msg void OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnCellButtonClicked(void);
+	afx_msg void OnDir2CellButtonClicked(void);
+	afx_msg void OnDir3CellButtonClicked(void);
 	//}}AFX_MSG	
 	DECLARE_MESSAGE_MAP()
 };

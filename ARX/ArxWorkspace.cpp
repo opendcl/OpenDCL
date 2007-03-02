@@ -49,10 +49,14 @@ CString CArxWorkspace::GetUserProfilePrefix() const
 	return CString( _T("Profiles\\") ) +  rbProfile.resval.rstring + _T("\\OpenDCL\\");
 }
 
-CString CArxWorkspace::LoadResourceString(int nResId, HMODULE hmodRes /*= NULL*/) const
+HMODULE CArxWorkspace::GetResourceModule() const
 {
-	//get it from this ARX module if hmodRes is NULL
-	return CWorkspace::LoadResourceString( nResId, (hmodRes? hmodRes : _hdllInstance) );
+	return _hdllInstance;
+}
+
+HMODULE CArxWorkspace::GetLocalResourceModule() const
+{
+	return _hdllInstance;
 }
 
 CProject* CArxWorkspace::GetActiveProject() const
@@ -213,6 +217,9 @@ void CArxWorkspace::ResetLispSymbol( LPCTSTR pszLispSymbol ) const
 {
 	if( !pszLispSymbol )
 		return; //no-op
+
+	if( !acdbCurDwg() )
+		return; //zero-doc state, or shutting down
 
 	static struct resbuf rbNIL = { NULL, RTNIL };;
 	acedPutSym( pszLispSymbol, &rbNIL );

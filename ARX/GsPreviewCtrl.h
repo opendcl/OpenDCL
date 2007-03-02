@@ -238,6 +238,7 @@ public:
 		if (mhArrowCursor != NULL)
 			DeleteObject(mhArrowCursor);		
 	}
+
     void init(HMODULE hRes, bool bCreateModel = true);
     void erasePreview();
     void clearAll();

@@ -130,6 +130,7 @@ CRect VdclTab::GetUsedArea() const
 			nMaxTabHeight = rectItem.bottom;
 	}
 	rectTab.top = nMaxTabHeight;
+	rectTab.DeflateRect( 1, 1, 3, 3 ); //kludge to leave room for the tab control border
 	return rectTab;
 }
 

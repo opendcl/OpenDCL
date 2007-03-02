@@ -38,7 +38,8 @@ public:
 	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxPropertyDescriptor* pProperty ) const;
 	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxMethodDescriptor* pMethod ) const;
 	virtual CString GetUserProfilePrefix() const;
-	virtual CString LoadResourceString(int nResId, HMODULE hmodRes = NULL) const;
+	virtual HMODULE GetResourceModule() const;
+	virtual HMODULE GetLocalResourceModule() const;
 	virtual bool DisplayAlert( LPCTSTR pszMessage ) const; //display alert dialog; returns true if displayed, false if suppressed
 	virtual bool DisplayStatus( LPCTSTR pszMessage ) const; //display modeless status message; returns true if displayed, false if suppressed
 	virtual CString FindFile( LPCTSTR pszFilePath ) const;

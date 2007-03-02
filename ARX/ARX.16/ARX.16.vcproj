@@ -307,6 +307,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\DynamicButtonCtrl.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\ErrorLexicon.cpp"
 				>
 			</File>
@@ -525,6 +529,10 @@
 			</File>
 			<File
 				RelativePath="..\DwgPreviewCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\DynamicButtonCtrl.h"
 				>
 			</File>
 			<File
@@ -1771,6 +1779,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\resource"
+			>
+		</File>
 	</Files>
 	<Globals>
 		<Global
