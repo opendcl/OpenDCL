@@ -409,31 +409,31 @@ IOStatus AxPropertyDescriptor::ReadFromTextFile( std::ifstream &sFile, ULONG nPr
   return statOK;
 }
 
-IOStatus AxPropertyDescriptor::WriteToTextFile( FILE* pFile ) const
-{
-  writeDISPID(pFile, mDispId);
-  writeString(pFile, msName);
-  writeString(pFile, msDesc);
-  writeVARTYPE(pFile, mType);
-  writeBOOL(pFile, BOOL(mbArray));
-  writeBOOL(pFile, BOOL(!mbReadOnly));
-  writeCLSID(pFile, mGuid);
-  writeInt(pFile, mrEnum.size());
-  writeInt(pFile, mrArgs.size());
-  writeInt(pFile, int(mInvKind));
-  for (size_t i = 0; i < mrEnum.size(); ++i)
-  {
-    writeString(pFile, mrEnum[i].Name);
-    writeOleVariant(pFile, COleVariant(mrEnum[i].Var));
-  }
-  for (size_t i = 0; i < mrArgs.size(); ++i)
-  {
-    writeVARTYPE(pFile, mrArgs[i].vt);
-		writeString(pFile, mrArgs[i].name);
-		writeCLSID(pFile, mrArgs[i].clsid);
-  }
-	return statOK;
-}
+//IOStatus AxPropertyDescriptor::WriteToTextFile( FILE* pFile ) const
+//{
+//  writeDISPID(pFile, mDispId);
+//  writeString(pFile, msName);
+//  writeString(pFile, msDesc);
+//  writeVARTYPE(pFile, mType);
+//  writeBOOL(pFile, BOOL(mbArray));
+//  writeBOOL(pFile, BOOL(!mbReadOnly));
+//  writeCLSID(pFile, mGuid);
+//  writeInt(pFile, mrEnum.size());
+//  writeInt(pFile, mrArgs.size());
+//  writeInt(pFile, int(mInvKind));
+//  for (size_t i = 0; i < mrEnum.size(); ++i)
+//  {
+//    writeString(pFile, mrEnum[i].Name);
+//    writeOleVariant(pFile, COleVariant(mrEnum[i].Var));
+//  }
+//  for (size_t i = 0; i < mrArgs.size(); ++i)
+//  {
+//    writeVARTYPE(pFile, mrArgs[i].vt);
+//		writeString(pFile, mrArgs[i].name);
+//		writeCLSID(pFile, mrArgs[i].clsid);
+//  }
+//	return statOK;
+//}
 
 
 #ifdef _DIAGNOSTIC

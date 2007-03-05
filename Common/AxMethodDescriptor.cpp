@@ -146,27 +146,27 @@ void AxMethodDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 	}
 }
 
-IOStatus AxMethodDescriptor::WriteToTextFile(FILE* pFile) const
-{
-  int nThisVersion = 2;
-
-  writeInt(pFile, nThisVersion);
-  writeDISPID(pFile, mDispId);		
-  writeString(pFile, msName);
-  writeString(pFile, msParams);
-  writeString(pFile, msDesc);
-  writeVARTYPE(pFile, mReturnType);
-	int ctArgs = (int)mrArgs.size();
-  writeInt(pFile, ctArgs);		
-  writeCLSID(pFile, mReturnGuid);
-  for (int i = 0; i < ctArgs; i++)
-  {
-		writeVARTYPE(pFile, mrArgs[i].vt);
-		writeString(pFile, mrArgs[i].name);
-    writeCLSID(pFile, mrArgs[i].clsid);
-  }
-	return statOK;
-}
+//IOStatus AxMethodDescriptor::WriteToTextFile(FILE* pFile) const
+//{
+//  int nThisVersion = 2;
+//
+//  writeInt(pFile, nThisVersion);
+//  writeDISPID(pFile, mDispId);		
+//  writeString(pFile, msName);
+//  writeString(pFile, msParams);
+//  writeString(pFile, msDesc);
+//  writeVARTYPE(pFile, mReturnType);
+//	int ctArgs = (int)mrArgs.size();
+//  writeInt(pFile, ctArgs);		
+//  writeCLSID(pFile, mReturnGuid);
+//  for (int i = 0; i < ctArgs; i++)
+//  {
+//		writeVARTYPE(pFile, mrArgs[i].vt);
+//		writeString(pFile, mrArgs[i].name);
+//    writeCLSID(pFile, mrArgs[i].clsid);
+//  }
+//	return statOK;
+//}
 
 IOStatus AxMethodDescriptor::ReadFromTextFile(std::ifstream &sFile)
 {

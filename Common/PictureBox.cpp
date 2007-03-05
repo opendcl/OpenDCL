@@ -55,8 +55,8 @@ BOOL CPictureBox::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT
 {
 	dwStyle = dwStyle | SS_ICON | SS_CENTERIMAGE;
 	
-	m_cxIcon = 16;
-	m_cyIcon = 16;
+	m_cxIcon = 0;
+	m_cyIcon = 0;
 	
 	// TODO: Add your specialized code here and/or call the base class
 	BOOL bReturn = CWnd::Create(
@@ -102,22 +102,15 @@ void CPictureBox::OnPaint()
 		CRect rcCell;	
 		GetClientRect(&rcCell);
 
-		CSize szIcon(19,16);
 		CPoint pt;
 
 		// Center the icon horizontally
-		pt.x = rcCell.right - 19;
-		pt.x = pt.x / 2;
+		pt.x = (rcCell.right - m_cxIcon) / 2;
 		
 		// Center the icon vertically
-		pt.y = rcCell.bottom - 16; 
-		pt.y = pt.y / 2;
+		pt.y = (rcCell.bottom - m_cyIcon) / 2; 
 
-		CRect rcIconBack(
-			pt.x,
-			pt.y-2,
-			pt.x+19,
-			pt.y-2+19);
+		CRect rcIconBack( pt.x, pt.y - 2, pt.x + m_cxIcon, pt.y - 2 + m_cyIcon );
 
 		::SetBkColor(pdc->m_hDC, RGB(255,255,255));
 		::ExtTextOut(pdc->m_hDC, 0, 0, ETO_OPAQUE, &rcIconBack, NULL, 0, NULL);
@@ -131,56 +124,28 @@ void CPictureBox::OnPaint()
 
 }
 
-void CPictureBox::SetPictureID(long sPictureID)
+void CPictureBox::SetPicture(const CPictureObject* pPict)
 {
-	m_PictureID = sPictureID;
-	
-	if (sPictureID == 0)
+	if( !pPict || !pPict->IsValid() )
 	{
 		SetPictureBlank();
-		Invalidate();		
+		Invalidate();
 		return;
 	}
-	
-	if (m_PictureID == 0)
-		return;
-
-	// set counter for Pictures
-	int nCount = 0;
-
-	// set start position for navigating Pictures
-	POSITION pos = activeProject->GetPictureList().GetHeadPosition();
-
-	int n = activeProject->GetPictureList().GetCount();
-	// do loop to navigate Pictures
-	while (nCount < activeProject->GetPictureList().GetCount())
-	{
-		// get position
-		pos = activeProject->GetPictureList().FindIndex(nCount);
-		// get current Picture in list
-		CPictureObject* pPicture = activeProject->GetPictureList().GetAt(pos);
-		
-		if (pPicture == NULL)
-		{
-			activeProject->GetPictureList().RemoveAt(pos);
-		}
-		activeProject->GetPictureList().GetNext(pos);
-		if (pPicture != NULL && pPicture->GetID() == sPictureID)
-		{
-			if (pPicture->GetPicture().m_pPict != NULL)
-			{
-				// get the icon
-				m_pPictureHolder = pPicture->GetPicture().m_pPict;
-				m_cxIcon = pPicture->GetWidth();
-				m_cyIcon = pPicture->GetHeight();
-			}
-		}
-		// increment counter
-		nCount++;
-	}
-	
+	// get the icon
+	m_hIcon = pPict->CloneIcon();
+	m_cxIcon = pPict->GetWidth();
+	m_cyIcon = pPict->GetHeight();
+	m_ImageList.DeleteImageList();
+	m_ImageList.Create(m_cxIcon, m_cyIcon, ILC_COLOR8 | ILC_MASK, 0, 1);
+	m_ImageList.Add(m_hIcon);
 	Invalidate(TRUE);
 }
+//
+//void CPictureBox::SetPictureID(long sPictureID)
+//{
+//	SetPicture (activeProject(sPictureID));
+//}
 
 void CPictureBox::SetIcon(UINT nId)
 {
@@ -190,9 +155,13 @@ void CPictureBox::SetIcon(UINT nId)
 	HINSTANCE hInstResource = AfxFindResourceHandle(MAKEINTRESOURCE(IDI_LABEL), RT_GROUP_ICON);
 
 	m_hIcon = LoadIcon(hInstResource, MAKEINTRESOURCE(nId));
+	ICONINFO ii;
+	GetIconInfo( m_hIcon, &ii );
   	
-	m_ImageList.Create(19,16, ILC_COLOR8 | ILC_MASK, 0,1);
+	m_ImageList.Create( ii.xHotspot * 2, ii.yHotspot * 2, ILC_COLOR8 | ILC_MASK, 0, 1 );
 	m_ImageList.Add(m_hIcon);
+	::DeleteObject(ii.hbmMask);
+	::DeleteObject(ii.hbmColor);
 	Invalidate(TRUE);
 }
 

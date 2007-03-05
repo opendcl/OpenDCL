@@ -5,7 +5,7 @@
 
 #pragma once
 
-#pragma warning(disable: 4995)
+#pragma warning(disable: 4995 4355)
 
 #define STRICT
 
@@ -55,7 +55,6 @@
 #include <shlwapi.h>
 #include <atlbase.h>
 #include <atlconv.h>
-#include <atlimage.h>
 #include <comutil.h>
 
 

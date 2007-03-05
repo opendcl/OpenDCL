@@ -49,7 +49,7 @@ END_MESSAGE_MAP()
 // VdclComboBoxEx message handlers
 
 
-BOOL VdclComboBoxEx::Create2(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
+BOOL VdclComboBoxEx::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
 {
 	BOOL RetVal;
 	DWORD dwStyle;
@@ -110,7 +110,7 @@ BOOL VdclComboBoxEx::Create2(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 	RetVal = CComboBoxEx::Create( dwStyle, ArxRect, pParentWnd, nID );
 
 
-	VERIFY(CComboBoxEx::SubclassDlgItem(nID, pParentWnd));
+	//VERIFY(CComboBoxEx::SubclassDlgItem(nID, pParentWnd));
 	LimitText(pControl->GetLngProperty(nLimitText));
 	InitToolTip();
 	SetToolTipEx(this, m_ToolTip, pControl);
@@ -126,6 +126,13 @@ BOOL VdclComboBoxEx::Create2(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 		break;
 	}
 	return RetVal;
+}
+
+
+BOOL VdclComboBoxEx::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID )
+{
+	m_ArxControl = NULL;
+	return CComboBoxEx::Create( dwStyle, rect, pParentWnd, nID );
 }
 
 
@@ -303,12 +310,7 @@ void VdclComboBoxEx::SetTooltipText(CString* spText, BOOL bActivate)
 void VdclComboBoxEx::InitToolTip()
 {
 	if (m_ToolTip.m_hWnd == NULL)
-	{
-		// Create ToolTip control
 		m_ToolTip.Create(this);
-		// Create inactive
-		m_ToolTip.Activate(FALSE);
-	}
 } // End of InitToolTip
 
 BOOL VdclComboBoxEx::PreTranslateMessage(MSG* pMsg) 

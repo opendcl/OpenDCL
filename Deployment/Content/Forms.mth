@@ -156,13 +156,13 @@ Odcl_Form_
 This method sets the minimum and maximum extents allowed for a specified dialog box.
 [Arguments]
 ProjectFileName
-MinWidth
+\par\tab MinWidth
 [as Integer]
-MinHeight
+\par\tab MinHeight
 [as Integer]
-MaxWidth
+\par\tab MaxWidth
 [as Integer]
-MaxHeight
+\par\tab MaxHeight
 [as Integer]
 
 

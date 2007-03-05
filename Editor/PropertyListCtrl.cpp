@@ -427,122 +427,6 @@ void CPropertyListCtrl::RePaint()
 	}
 }
 
-BOOL CPropertyListCtrl::ImageListAddPicture(CPictureHolder *NewPicture, CImageListObject *pImageListObj, CImageList *pImageList, CSize *pImageSize, BOOL ApplyMask)
-{
-	BOOL bRetVal = TRUE;
-
-	long lPicHeight = 0;
-	long lPicWidth = 0;
-	CDC * cdc = GetDC();
-	CSize sizePic;
-	int nRetVal;
-
-	if (NULL == NewPicture->m_pPict)
-	{
-		return FALSE;
-	}
-
-	// if picture is a bitmap
-	if (PICTYPE_BITMAP == NewPicture->GetType())
-	{
-		HBITMAP hBitmap = NULL;
-
-		// get handle of the bitmap
-		NewPicture->m_pPict->get_Handle((OLE_HANDLE FAR *) &hBitmap);
-
-		// get dimensions of bitmap
-		NewPicture->m_pPict->get_Width(&lPicWidth);
-		NewPicture->m_pPict->get_Height(&lPicHeight);
-
-		sizePic.cx = (int)lPicWidth;
-		sizePic.cy = (int)lPicHeight;
-
-		// convert coordinates from units to logical units
-		cdc->HIMETRICtoLP(&sizePic);
-
-		// if image list has not been created
-		if (NULL == pImageList->m_hImageList)
-		{			
-			if (pImageSize->cx == 0)
-			{
-				pImageSize->cx = sizePic.cx;
-				pImageSize->cy = sizePic.cy;
-			}
-
-			// create the image list
-			bRetVal = pImageList->Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | ILC_MASK, 0, 1);
-
-			// set the background color of the image list
-			//pImageList->SetBkColor(RGB(nWhite,nWhite,nWhite));		
-			
-		}
-
-		// create a temp bitmap
-		//CBitmap * TempBmp = CBitmap::FromHandle(hBitmap);
-
-		if (bRetVal)
-		{
-			// add bitmap to imagelist; mask is ignored in this sample
-			nRetVal = pImageList->Add(
-				CBitmap::FromHandle(hBitmap),
-				RGB(nGreyColor, nGreyColor, nGreyColor) ) ;
-			bRetVal = (nRetVal != nNotSet);
-		}
-		DeleteObject(hBitmap);
-	}
-	// else if picture is an icon
-	else if (PICTYPE_ICON == NewPicture->GetType())
-	{
-		HICON hIcon;
-
-		// get handle of the icon
-		NewPicture->m_pPict->get_Handle((OLE_HANDLE FAR *) &hIcon);
-
-		// get dimensions of icon
-		NewPicture->m_pPict->get_Width(&lPicWidth);
-		NewPicture->m_pPict->get_Height(&lPicHeight);
-
-		CDC * cdc = GetDC();
-
-		sizePic.cx = (int)lPicWidth;
-		sizePic.cy = (int)lPicHeight;
-
-		// convert coordinates from units to logical units
-		cdc->HIMETRICtoLP(&sizePic);
-
-		// if image list has not been created
-		if (NULL == pImageList->m_hImageList)
-		{
-			if (pImageSize->cx == 0)
-			{
-				pImageSize->cx = sizePic.cx;
-				pImageSize->cy = sizePic.cy;
-			}
-			
-			// create the image list
-			bRetVal = pImageList->Create(sizePic.cx, sizePic.cy, ILC_COLOR8| ILC_MASK, 1, 1);
-			
-			// set the background color of the image list
-			pImageList->SetBkColor(RGB(nWhite,nWhite,nWhite));		
-			
-		}
-		
-		if (bRetVal)
-		{
-			// add icon to image list
-			nRetVal = pImageList->Add(hIcon);
-			bRetVal = (nRetVal != nNotSet);
-		}
-
-	}
-	else
-	{
-		bRetVal = FALSE;
-	}
-	
-	return (bRetVal);
-}
-
 
 RefCountedPtr< CPropertyObject > CPropertyListCtrl::GetPropertyObject(short PropertyIndex) 
 {
@@ -974,25 +858,6 @@ void CPropertyListCtrl::OnDestroy()
 	m_Edit.DestroyWindow();
 	m_ScrollBar.DestroyWindow();
 	CWnd::OnDestroy();
-}
-
-
-LPPICTUREDISP CPropertyListCtrl::GetPicture(short Index) 
-{
-	//CPictureHolder hPicture;
-	if(m_pControl->GetOwnerProject()->GetPictureList().GetCount() > Index)
-	{
-		POSITION pos = m_pControl->GetOwnerProject()->GetPictureList().FindIndex(Index);
-		if (pos != NULL)
-		{
-			CPictureObject *pPic = m_pControl->GetOwnerProject()->GetPictureList().GetAt(pos);
-			if (pPic != NULL)
-			{
-				return pPic->GetPicture().GetPictureDispatch();
-			}
-		}
-	}	
-	return NULL;
 }
 
 void CPropertyListCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
@@ -2757,34 +2622,23 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 			if (sFileName.GetLength() == 0)
 				return;
 
-			CPictureHolder newPic;
 			// load and add the masked picture
-			LPPICTUREDISP pMaskedPic = LoadMaskedPicture(sFileName);
-			if (IsPictureValid(pMaskedPic))
+			CPictureObject* pPict = new CPictureObject( nNewID, sFileName, true );
+			if (pPict->IsValid())
 			{
-				try
-				{
-					m_pControl->GetOwnerProject()->AddPicture(CPictureObject::CreatePictureObject(nNewID, pMaskedPic));
-					// get the property
-					RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
-					// set the property
-					pProp->SetLongValue(nNewID);			
+				m_pControl->GetOwnerProject()->AddPicture(pPict);
+				RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
+				// set the property
+				pProp->SetLongValue(nNewID);			
 
-					if (m_pControl->GetID() == -1)
-					{
-						CChildFrame *pChildFrame = NULL;
-						try{
-							pChildFrame = (CChildFrame*) m_pView->GetParentFrame();
-						}catch(...){}
-						if (pChildFrame)
-							pChildFrame->SetTitleBarIcon(nNewID);
-					}
-			
-				}
-				catch (...)
+				if (m_pControl->GetID() == -1)
 				{
-					MessageBox (theWorkspace.LoadResourceString(IDS_PICNOTVALID), sTitle, MB_ICONEXCLAMATION);
-					return;
+					CChildFrame *pChildFrame = NULL;
+					try{
+						pChildFrame = (CChildFrame*) m_pView->GetParentFrame();
+					}catch(...){}
+					if (pChildFrame)
+						pChildFrame->SetTitleBarIcon(nNewID);
 				}
 			}
 			else
@@ -2792,7 +2646,6 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 				MessageBox (theWorkspace.LoadResourceString(IDS_PICNOTVALID), sTitle, MB_ICONEXCLAMATION);
 				return;
 			}
-
 		}
 		if (nInstructions == nPromptForNewPicture)
 		{
@@ -2939,24 +2792,6 @@ short CPropertyListCtrl::GetPictureID(short Index)
 	return nResult;
 }
 
-void CPropertyListCtrl::SetPictureID(short Index, short nID) 
-{
-	if(m_pControl->GetOwnerProject()->GetPictureList().GetCount() > Index)
-	{
-		POSITION pos = m_pControl->GetOwnerProject()->GetPictureList().FindIndex(Index);
-		if (pos != NULL)
-		{
-			CPictureObject *pPic = m_pControl->GetOwnerProject()->GetPictureList().GetAt(pos);
-			if (pPic != NULL)
-			{
-				// set the picture name
-				pPic->SetID(nID);
-			}
-		}
-	}
-
-}
-
 CString CPropertyListCtrl::GetOnePictureFile() 
 {
 	CString strResult;
@@ -2966,7 +2801,6 @@ CString CPropertyListCtrl::GetOnePictureFile()
 	// create the open dialog box
 	
 	CPreviewFileDlg BrowseWnd(
-	//CFileDialog BrowseWnd(
 		TRUE, 
 		NULL,
 		NULL, 
@@ -2975,18 +2809,14 @@ CString CPropertyListCtrl::GetOnePictureFile()
 		CWnd::GetActiveWindow());
 
 	// proceed to setup the file buffer size
+	TCHAR szPath[MAX_PATH];
 	BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
-	TCHAR* pc = new TCHAR[MAX_PATH];
-	BrowseWnd.m_ofn.lpstrFile = pc;
+	BrowseWnd.m_ofn.lpstrFile = szPath;
 	BrowseWnd.m_ofn.lpstrFile[0] = NULL;
-
-	// call method to invoke the file dialog box
-	int iReturn = BrowseWnd.DoModal();
 	
-	if(iReturn == IDOK)
+	if(BrowseWnd.DoModal() == IDOK)
 		strResult = BrowseWnd.GetPathName();
 
-	delete[] pc; 
 	return strResult;
 
 }
@@ -3098,78 +2928,9 @@ void CPropertyListCtrl::DisplayVaries()
 }
 
 
-void CPropertyListCtrl::LoadPicture(LPCTSTR sFileName, short nPictureTag, BOOL bApplyMask) 
+void CPropertyListCtrl::LoadPicture(LPCTSTR sFileName, short nPictureTag, bool bApplyMask) 
 {
-	m_pControl->GetOwnerProject()->LoadPictureFile(sFileName, nPictureTag);
-}
-
-LPPICTUREDISP CPropertyListCtrl::LoadMaskedPicture(LPCTSTR sFileName) 
-{
-	LPPICTURE		lpPicture;
-	lpPicture		= NULL;
-	CPictureHolder	phPicture;
-	
-	// open file
-	HANDLE hFile = CreateFile(sFileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
-	_ASSERTE(INVALID_HANDLE_VALUE != hFile);
-
-	// get file size
-	DWORD dwFileSize = GetFileSize(hFile, NULL);
-	_ASSERTE(nNotSet != dwFileSize);
-
-	LPVOID pvData = NULL;
-	// alloc memory based on file size
-	HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, dwFileSize);
-	_ASSERTE(NULL != hGlobal);
-
-	pvData = GlobalLock(hGlobal);
-	_ASSERTE(NULL != pvData);
-
-	DWORD dwBytesRead = 0;
-	// read file and store in global memory
-	BOOL bRead = ReadFile(hFile, pvData, dwFileSize, &dwBytesRead, NULL);
-	_ASSERTE(FALSE != bRead);
-	GlobalUnlock(hGlobal);
-	CloseHandle(hFile);
-
-	LPSTREAM pstm = NULL;
-	// create IStream* from global memory
-	HRESULT hr = CreateStreamOnHGlobal(hGlobal, TRUE, &pstm);
-	_ASSERTE(SUCCEEDED(hr) && pstm);
-	
-	// Create IPicture from image file
-	if (lpPicture)
-		lpPicture->Release();
-	hr = ::OleLoadPicture(pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID *)&lpPicture);
-	_ASSERTE(SUCCEEDED(hr) && lpPicture);	
-
-	IPicture *ipOld = phPicture.m_pPict;
-	phPicture.m_pPict = lpPicture;
-	
-	//create new picture object
-	CImageList TempImage;
-	// assign picture object values	
-	CSize ImageSize;
-	ImageSize.cx = 0;
-	ImageSize.cy = 0;
-	if (ImageListAddPicture(&phPicture, NULL, &TempImage, &ImageSize, TRUE) == FALSE)
-	{
-		phPicture.m_pPict = ipOld;
-		pstm->Release();
-		return NULL;
-	}
-	
-	phPicture.m_pPict = ipOld;
-	
-	pstm->Release();
-
-
-	CPictureHolder hPicture;
-	
-	// set return value to the picture		
-	hPicture.CreateFromIcon(TempImage.ExtractIcon(0), TRUE);
-	//short nType = hPicture.GetType();
-	return hPicture.GetPictureDispatch();
+	m_pControl->GetOwnerProject()->LoadPictureFile(sFileName, nPictureTag, bApplyMask);
 }
 
 
@@ -3242,34 +3003,6 @@ void CPropertyListCtrl::DefaultFontDlg()
 		delete pFontPage;
 	
 	Invalidate();
-}
-
-BOOL CPropertyListCtrl::IsPictureValid(LPPICTUREDISP NewPicture) 
-{
-	//create new picture object
-	CPictureObject TestPicture;
-	
-	TestPicture.GetPicture().SetPictureDispatch(NewPicture);
-	
-	// assign picture object values	
-	long lPicWidth;
-	long lPicHeight;
-
-	if (TestPicture.GetPicType() == nNotSet)
-		return FALSE;
-
-	try
-	{
-		// get dimensions of bitmap
-		TestPicture.GetPicture().m_pPict->get_Width(&lPicWidth);
-		TestPicture.GetPicture().m_pPict->get_Height(&lPicHeight);
-	}
-	catch(...)
-	{
-		return FALSE;
-	}
-
-	return TRUE;
 }
 
 //void CPropertyListCtrl::SetPurchaseMode(short nPurchaseMode) 

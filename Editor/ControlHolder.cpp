@@ -24,8 +24,8 @@
 #include "FileDlgCtrls.h"
 #include "PictureObject.h"
 #include "ObjectDCLView.h"
+#include "Project.h"
 
-//#define nChildCtrlIdStart  1100
 
 #define nComboStyle12 12
 #define nComboDropHeight 300
@@ -1293,7 +1293,9 @@ void CControlHolder::CheckAutoSizeProp()
 				GetParent()->ScreenToClient( &rectThis );
 				rectThis.right = rectThis.left + nOldWidth + nWidthDelta;
 				rectThis.bottom = rectThis.top + nOldHeight + nHeightDelta;
-				MoveWindow( &rectThis, FALSE );
+				CRect rectControl(0, 0, rectThis.Width(), rectThis.Height());
+				pControl->MoveWindow( &rectThis, TRUE );
+				MoveWindow( &rectThis, TRUE );
 			}
 		}
 		break;
@@ -1910,8 +1912,9 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 			//case CtlGraphicButton:		
 			//	((CGraphicButtonCtrl *)pControl)->SetPictureID(mpTemplate->GetLngProperty(nPicture));
 			//	break;
-			case CtlPictureBox:		
-				((CPictureBox *)pControl)->SetPictureID(mpTemplate->GetLngProperty(nPicture));
+			case CtlPictureBox:
+				int nID = mpTemplate->GetLngProperty(nPicture);
+				((CPictureBox*)pControl)->SetPicture(mpTemplate->GetOwnerProject()->FindPicture(nID));
 				break;
 			}
 			break;

@@ -394,54 +394,54 @@ long CDclFormObject::GetDclFormTitleBarIcon()
 	return pControl->GetLngProperty(nIcon);
 }
 
-IOStatus CDclFormObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
-{
-  POSITION pos;	
-  int nCount;
-
-  fprintf(pFile, "\nCDclFormObject");
-  writeInt(pFile, 4);
-
-  // put this dcl form's name and type into archive
-  writeString(pFile, msName);
-  writeLong(pFile, mType);
-
-  writeString(pFile, msUniqueName);
-  writeString(pFile, GetParentName());
-  writeShort(pFile, mnTabIndex);
-
-  if (msUUID.GetLength() == 0)
-  {
-    UUID uuid;
-    unsigned char *pUUID;
-    UuidCreate(&uuid);
-    UuidToStringA(&uuid, &pUUID);
-    const_cast<CDclFormObject*>(this)->msUUID = CString(pUUID);
-  }
-  writeString(pFile, msUUID);
-  writeBOOL(pFile, m_bUsesClientRect);
-
-  // set counter for ArxControls
-  nCount = (int)mDclControls.GetCount() - CountDeletedControls();
-
-  writeInt(pFile, nCount);
-
-  // set start position for navigating ArxControls
-  pos = mDclControls.GetHeadPosition();
-  // do loop to navigate Arx Controls
-  while (pos != NULL)
-  {
-    // get current ArxControlObject
-    CDclControlObject* pControl = mDclControls.GetNext(pos);
-
-    if (pControl->m_Delete == FALSE)
-    {
-      // put dcl form into archive
-      pControl->WriteToTextFile(pFile, fileName);
-    }
-  }		
-	return statOK;
-}
+//IOStatus CDclFormObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
+//{
+//  POSITION pos;	
+//  int nCount;
+//
+//  fprintf(pFile, "\nCDclFormObject");
+//  writeInt(pFile, 4);
+//
+//  // put this dcl form's name and type into archive
+//  writeString(pFile, msName);
+//  writeLong(pFile, mType);
+//
+//  writeString(pFile, msUniqueName);
+//  writeString(pFile, GetParentName());
+//  writeShort(pFile, mnTabIndex);
+//
+//  if (msUUID.GetLength() == 0)
+//  {
+//    UUID uuid;
+//    unsigned char *pUUID;
+//    UuidCreate(&uuid);
+//    UuidToStringA(&uuid, &pUUID);
+//    const_cast<CDclFormObject*>(this)->msUUID = CString(pUUID);
+//  }
+//  writeString(pFile, msUUID);
+//  writeBOOL(pFile, m_bUsesClientRect);
+//
+//  // set counter for ArxControls
+//  nCount = (int)mDclControls.GetCount() - CountDeletedControls();
+//
+//  writeInt(pFile, nCount);
+//
+//  // set start position for navigating ArxControls
+//  pos = mDclControls.GetHeadPosition();
+//  // do loop to navigate Arx Controls
+//  while (pos != NULL)
+//  {
+//    // get current ArxControlObject
+//    CDclControlObject* pControl = mDclControls.GetNext(pos);
+//
+//    if (pControl->m_Delete == FALSE)
+//    {
+//      // put dcl form into archive
+//      pControl->WriteToTextFile(pFile, fileName);
+//    }
+//  }		
+//	return statOK;
+//}
 
 void CDclFormObject::Serialize(CArchive& ar)
 {
@@ -529,33 +529,21 @@ void CDclFormObject::Serialize(CArchive& ar)
 		else
 			m_bUsesClientRect = FALSE;
 
-		
-		// get counter for arx controls
+		// get counter for dcl controls
 		ar >> nCount;	
-
 		mDclControls.RemoveAll();
-
-		// do loop to add controls
 		while (nCount-- > 0)
 		{
-			// get current ArxControlObject
 			CDclControlObject* pControl = new CDclControlObject( this );
-			
-			// get dcl form into archive
 			pControl->Serialize(ar);
-
-			// add that ArxControlObject to the list object
 			AddControl( pControl );
 			TraceFmt( _T("< %s\r\n"), pControl->toString() );
-
-			//pControl->ForceUpdateGlobalVariable(GetKeyName());
-			
 			if (mType == VdclModal)
 			{				
 				RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nEventInvoke);
 				if (pProp != NULL)
 				{
-					POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
+					POSITION pos = pControl->GetPropertyList().Find(pProp);
 					pControl->GetPropertyList().RemoveAt(pos);
 				}
 			}

@@ -5,6 +5,8 @@
 #include "Filing.h"
 #include "Project.h"
 
+//#include <AtlImage.h> //for CImage
+
 
 static const CLSID _afx_CLSID_StdPicture2_V1 =
 	{ 0xfb8f0824,0x0164,0x101b, { 0x84,0xed,0x08,0x00,0x2b,0x2e,0xc7,0x13 } };
@@ -180,6 +182,96 @@ static CRect CalcFitRect(int nPicWidth, int nPicHeight, int nCtrlWidth, int nCtr
 }
 
 
+static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList, CSize& ImageSize, bool bApplyMask)
+{
+
+	if (NULL == pPicture->m_pPict)
+		return false;
+
+	// if picture is a bitmap
+	if (PICTYPE_BITMAP == pPicture->GetType())
+	{
+		// get handle of the bitmap
+		HBITMAP hBitmap = NULL;
+		pPicture->m_pPict->get_Handle((OLE_HANDLE FAR *) &hBitmap);
+		CBitmap bmpPic;
+		bmpPic.Attach( hBitmap );
+
+		// get dimensions of bitmap
+		long lPicWidth = 0;
+		pPicture->m_pPict->get_Width(&lPicWidth);
+		long lPicHeight = 0;
+		pPicture->m_pPict->get_Height(&lPicHeight);
+
+		// convert coordinates from units to logical units
+		CSize sizePic( lPicWidth, lPicHeight );
+		CDC().HIMETRICtoLP(&sizePic);
+
+		// if image list has not been created
+		if (!ImageList.m_hImageList)
+		{			
+			if (ImageSize.cx == 0)
+			{
+				ImageSize.cx = sizePic.cx;
+				ImageSize.cy = sizePic.cy;
+			}
+
+			// create the image list
+			if( !ImageList.Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | (bApplyMask? ILC_MASK : 0), 0, 1) )
+				return false;
+
+			// set the background color of the image list
+			//ImageList.SetBkColor(RGB(nWhite,nWhite,nWhite));		
+		}
+		// add bitmap to imagelist; mask is ignored in this sample
+		if( ImageList.Add( CBitmap::FromHandle(hBitmap), RGB(192, 192, 192) ) == -1 )
+			return false;
+	}
+	// else if picture is an icon
+	else if (PICTYPE_ICON == pPicture->GetType())
+	{
+		HICON hIcon;
+
+		// get handle of the icon
+		pPicture->m_pPict->get_Handle((OLE_HANDLE FAR *) &hIcon);
+
+		// get dimensions of icon
+		long lPicWidth = 0;
+		pPicture->m_pPict->get_Width(&lPicWidth);
+		long lPicHeight = 0;
+		pPicture->m_pPict->get_Height(&lPicHeight);
+
+		// convert coordinates from units to logical units
+		CSize sizePic( lPicWidth, lPicHeight );
+		CDC().HIMETRICtoLP(&sizePic);
+
+		// if image list has not been created
+		if (!ImageList.m_hImageList)
+		{			
+			if (ImageSize.cx == 0)
+			{
+				ImageSize.cx = sizePic.cx;
+				ImageSize.cy = sizePic.cy;
+			}
+
+			// create the image list
+			if( !ImageList.Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | (bApplyMask? ILC_MASK : 0), 1, 1) )
+				return false;
+
+			// set the background color of the image list
+			ImageList.SetBkColor(RGB(255,255,255));		
+		}
+		// add icon to image list
+		if( ImageList.Add(hIcon) == -1 )
+			return false;
+	}
+	else
+		return false;
+	
+	return true;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CArchivePropExchange - for persistence in an archive.
 
@@ -209,66 +301,95 @@ protected:
 IMPLEMENT_SERIAL(CPictureObject, CObject, 1)
 
 CPictureObject::CPictureObject()
+: mnID( -1 )
 {
 	m_hPicture.CreateEmpty();
-	m_hIcon = NULL;
-	m_ToBeAdded = false;
-	m_ToBeDeleted = false;
+	CalcLogicalSize();
+}
 
-	m_hBitmap = NULL;
-	m_hLoadedIcon = NULL;
-	m_bLoaded = false;
+CPictureObject::CPictureObject( int nID )
+: mnID( nID )
+{
+	m_hPicture.CreateEmpty();
+	CalcLogicalSize();
+}
+
+CPictureObject::CPictureObject( int nID, LPCTSTR szFile, bool bApplyMask /*= false*/ )
+: mnID( nID )
+{
+	LoadFile( szFile, bApplyMask );
 }
 
 CPictureObject::~CPictureObject()
 {
-	if (m_hBitmap)
-		DeleteObject(m_hBitmap);
-	if (m_hLoadedIcon)
-		DestroyIcon(m_hLoadedIcon);
-	if (m_hIcon)
-		DestroyIcon(m_hIcon);
+}
+
+//static
+CPictureObject* CPictureObject::CreatePictureObject(short nID, LPPICTUREDISP NewPicture)
+{
+	//create new picture object
+	CPictureObject *pPicture = new CPictureObject;
+	
+	pPicture->mnID = nID;
+	pPicture->m_hPicture.SetPictureDispatch(NewPicture);
+	pPicture->CalcLogicalSize();
+	return pPicture;
 }
 
 void CPictureObject::Clear()
 {
-	try
-	{
+	if( m_hPicture.m_pPict )
 		m_hPicture.m_pPict->Release();
-	}
-	catch(...)
-	{
-	}
-	if (m_hIcon != NULL)
-	{
-		DestroyIcon(m_hIcon);
-		m_hIcon = NULL;
-	}
-
 }
 
-HICON CPictureObject::GetIcon() const
+LPDISPATCH CPictureObject::GetPictureDisp() const
+{
+	if( !m_hPicture.m_pPict )
+		return NULL;
+	return const_cast< CPictureObject* >(this)->m_hPicture.GetPictureDispatch();
+}
+
+const HBITMAP CPictureObject::GetBitmap() const
+{
+	if( GetPicType() != PICTYPE_BITMAP )
+		return NULL;
+	HBITMAP hbmpPic = NULL;
+	m_hPicture.m_pPict->get_Handle( (OLE_HANDLE*)&hbmpPic );
+	return hbmpPic;
+}
+
+const HICON CPictureObject::GetIcon() const
+{
+	if( GetPicType() != PICTYPE_ICON )
+		return NULL;
+	HICON hIcon;
+	m_hPicture.m_pPict->get_Handle( (OLE_HANDLE*)&hIcon );
+	return hIcon;			
+}
+
+HICON CPictureObject::CloneIcon() const
 {
 	switch (GetPicType() )
 	{
 	case PICTYPE_ICON:
 		{
 			HICON hIcon;
-			m_hPicture.m_pPict->get_Handle((OLE_HANDLE*)&hIcon);
-			return hIcon;			
+			m_hPicture.m_pPict->get_Handle( (OLE_HANDLE*)&hIcon );
+			return CopyIcon( hIcon );
+			//return (HICON)CopyImage( hIcon, PICTYPE_ICON, 0, 0, 0 );
 		}
 	case PICTYPE_BITMAP:
 		{
-			HBITMAP hBmpPic = NULL;
-			m_hPicture.m_pPict->get_Handle((OLE_HANDLE*)&hBmpPic);
-			if (hBmpPic != NULL)
+			HBITMAP hbmpClone = CloneBitmap();
+			if (hbmpClone != NULL)
 			{
 				// add the bitmap to a image list for extraction
 				CImageList ImageList;
-				ImageList.Create(m_Width, m_Height, ILC_COLOR | ILC_MASK, 1, 1);
-				ImageList.Add(CBitmap::FromHandle(hBmpPic), rgbLightGrey);
+				ImageList.Create(msizePic.cx, msizePic.cy, ILC_COLOR | ILC_MASK, 1, 1);
+				ImageList.Add(CBitmap::FromHandle(hbmpClone), rgbLightGrey);
 				HICON hIcon = ImageList.ExtractIcon(0);
 				ImageList.DeleteImageList();
+				DeleteObject(hbmpClone);
 				return hIcon;
 			}
 		}
@@ -276,15 +397,15 @@ HICON CPictureObject::GetIcon() const
 	return NULL;
 }
 
-HBITMAP CPictureObject::GetBitmap() const
+HBITMAP CPictureObject::CloneBitmap() const
 {
 	switch (GetPicType() )
 	{
 	case PICTYPE_BITMAP:
 		{
-			HBITMAP m_hBitmap = NULL;
-			m_hPicture.m_pPict->get_Handle((OLE_HANDLE*)&m_hBitmap);
-			return m_hBitmap;
+			HBITMAP hbmpPic = NULL;
+			m_hPicture.m_pPict->get_Handle((OLE_HANDLE*)&hbmpPic);
+			return (HBITMAP)CopyImage( hbmpPic, IMAGE_BITMAP, 0, 0, 0 );
 		}
 	}
 	return NULL;
@@ -292,39 +413,16 @@ HBITMAP CPictureObject::GetBitmap() const
 
 short CPictureObject::GetPicType() const
 {
-	if (m_hIcon != NULL)
-		return PICTYPE_ICON;
 	return const_cast<CPictureObject*>(this)->m_hPicture.GetType();
 }
 
-void CPictureObject::Update(short nID, LPPICTUREDISP NewPicture) 
+void CPictureObject::Update(LPPICTUREDISP NewPicture) 
 {
-	m_nID = nID;
 	m_hPicture.SetPictureDispatch(NewPicture);
-	
-	HDC hdc = ::GetDC(GetDesktopWindow());
-	CDC * cdc = CDC::FromHandle(hdc);
-
-	// assign picture object values	
-	CSize sizePic;
-	long lPicWidth;
-	long lPicHeight;
-
-	// get dimensions of bitmap
-	m_hPicture.m_pPict->get_Width(&lPicWidth);
-	m_hPicture.m_pPict->get_Height(&lPicHeight);
-
-	sizePic.cx = (int)lPicWidth;
-	sizePic.cy = (int)lPicHeight;
-
-	// convert coordinates from units to logical units
-	cdc->HIMETRICtoLP(&sizePic);
-	cdc->Detach();
-	m_Width = sizePic.cx;
-	m_Height = sizePic.cy;
+	CalcLogicalSize();
 }
 
-void CPictureObject::LoadFile(LPCTSTR szFile, int nID)
+void CPictureObject::LoadFile( LPCTSTR szFile, bool bApplyMask /*= false*/ )
 {
 	LPPICTURE		lpPicture;
 	lpPicture		= NULL;
@@ -367,85 +465,60 @@ void CPictureObject::LoadFile(LPCTSTR szFile, int nID)
 	IPicture *ipOld = phPicture.m_pPict;
 	phPicture.m_pPict = lpPicture;
 
-	Update(nID, phPicture.GetPictureDispatch());
+	if( bApplyMask )
+	{
+		CImageList imglTemp;
+		CSize sizeImage( 0, 0 );
+		if( ImageListAddPicture( &phPicture, imglTemp, sizeImage, true ) )
+			phPicture.CreateFromIcon( imglTemp.ExtractIcon(0), TRUE );
+	}
+
+	Update(phPicture.GetPictureDispatch());
 	phPicture.m_pPict = ipOld;
 	pstm->Release();
+	CalcLogicalSize();
 }
 
-//static
-CPictureObject* CPictureObject::CreatePictureObject(short nID, LPPICTUREDISP NewPicture)
-{
-	//create new picture object
-	CPictureObject *pPicture = new CPictureObject;
-	
-	pPicture->m_nID = nID;
-	pPicture->m_hPicture.SetPictureDispatch(NewPicture);
-	
-	HDC hdc = ::GetDC(GetDesktopWindow());
-	CDC * cdc = CDC::FromHandle(hdc);
-
-	// assign picture object values	
-	CSize sizePic;
-	long lPicWidth;
-	long lPicHeight;
-
-	// get dimensions of bitmap
-	pPicture->m_hPicture.m_pPict->get_Width(&lPicWidth);
-	pPicture->m_hPicture.m_pPict->get_Height(&lPicHeight);
-
-	sizePic.cx = (int)lPicWidth;
-	sizePic.cy = (int)lPicHeight;
-
-	// convert coordinates from units to logical units
-	cdc->HIMETRICtoLP(&sizePic);
-	cdc->Detach();
-	pPicture->m_Width = sizePic.cx;
-	pPicture->m_Height = sizePic.cy;
-	return pPicture;
-}
-
-IOStatus CPictureObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
-{
-  //savebug
-  fprintf(pFile, "\nCPictureObject");
-	writeInt(pFile, int(GetCurrentSaveVersion()));
-	
-	writeInt(pFile, m_nID);
-	writeInt(pFile, m_Height);
-	writeInt(pFile, m_Width);
-
-	int nPictureType = const_cast<CPictureObject*>(this)->m_hPicture.GetType();
-	writeInt(pFile, nPictureType);
-
-	if (nPictureType == PICTYPE_BITMAP) {
-    HBITMAP hBitmap = NULL;
-    m_hPicture.m_pPict->get_Handle((OLE_HANDLE*)&hBitmap);
-
-    CImage img;
-    img.Attach(hBitmap);
-    writeImage(pFile, fileName, img);
-
-    hBitmap = img.Detach();
-    const_cast<CPictureObject*>(this)->m_hPicture.CreateFromBitmap(hBitmap, NULL, TRUE);
-	} else if (nPictureType == PICTYPE_METAFILE ||
-             nPictureType == PICTYPE_ENHMETAFILE) {
-    //Currently not quite sure how to handle these
-  } else if (PICTYPE_ICON == nPictureType) {
-    // else if picture is an icon
-		HICON hIconPic = NULL;
-		// get handle of the icon
-		m_hPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hIconPic);
-		const_cast<CPictureObject*>(this)->m_hIcon = hIconPic;
-		//m_bImageCreated = true;
-
-		CImageList il;
-		il.Create(m_Width, m_Height, ILC_COLOR8 | ILC_MASK, 1, 1);
-		il.Add(hIconPic);
-    writeImageList(pFile, fileName, il);
-		il.DeleteImageList();
-	}
-	return statOK;
-}
+//IOStatus CPictureObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
+//{
+//  //savebug
+//  fprintf(pFile, "\nCPictureObject");
+//	writeInt(pFile, int(GetCurrentSaveVersion()));
+//	
+//	writeInt(pFile, mnID);
+//	writeInt(pFile, msizePic.cx);
+//	writeInt(pFile, msizePic.cy);
+//
+//	int nPictureType = const_cast<CPictureObject*>(this)->m_hPicture.GetType();
+//	writeInt(pFile, nPictureType);
+//
+//	if (nPictureType == PICTYPE_BITMAP) {
+//    HBITMAP hBitmap = NULL;
+//    m_hPicture.m_pPict->get_Handle((OLE_HANDLE*)&hBitmap);
+//
+//    CImage img;
+//    img.Attach(hBitmap);
+//    writeImage(pFile, fileName, img);
+//
+//    hBitmap = img.Detach();
+//    const_cast<CPictureObject*>(this)->m_hPicture.CreateFromBitmap(hBitmap, NULL, TRUE);
+//	} else if (nPictureType == PICTYPE_METAFILE ||
+//             nPictureType == PICTYPE_ENHMETAFILE) {
+//    //Currently not quite sure how to handle these
+//  } else if (PICTYPE_ICON == nPictureType) {
+//    // else if picture is an icon
+//		HICON hIconPic = NULL;
+//		// get handle of the icon
+//		m_hPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hIconPic);
+//
+//		CImageList il;
+//		il.Create(msizePic.cx, msizePic.cy, ILC_COLOR8 | ILC_MASK, 1, 1);
+//		il.Add(hIconPic);
+//    writeImageList(pFile, fileName, il);
+//		il.DeleteImageList();
+//	}
+//	return statOK;
+//}
 
 void CPictureObject::Serialize(CArchive& ar)
 {
@@ -455,14 +528,12 @@ void CPictureObject::Serialize(CArchive& ar)
   {
     ar << GetCurrentSaveVersion();
 
-    ar << m_nID;
-    ar << m_Height;
-    ar << m_Width;
+    ar << mnID;
 
     short nPictureType = m_hPicture.GetType();
     ar << nPictureType;
 
-		switch( m_hPicture.GetType() )
+		switch( nPictureType )
 		{
 		case PICTYPE_BITMAP:
 		case PICTYPE_METAFILE:
@@ -475,16 +546,9 @@ void CPictureObject::Serialize(CArchive& ar)
 		case PICTYPE_ICON:
 			{
 				HICON hIconPic = NULL;
-				// get handle of the icon
-				m_hPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hIconPic);
-				m_hIcon = hIconPic;
-				//m_bImageCreated = true;
-
+				m_hPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hIconPic); // get handle of the icon
 				CImageList ImageList;
-				ImageList.Create(
-					m_Width,
-					m_Height,
-					ILC_COLOR8 | ILC_MASK, 1, 1);
+				ImageList.Create(msizePic.cx, msizePic.cy, ILC_COLOR8 | ILC_MASK, 1, 1);
 				ImageList.Add(hIconPic);
 				ImageList.Write(&ar);
 				ImageList.DeleteImageList();
@@ -500,20 +564,25 @@ void CPictureObject::Serialize(CArchive& ar)
 		if( nThisVersion > GetCurrentSaveVersion() )
 			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
 
-    ar >> m_nID;
+    ar >> mnID;
     if (nThisVersion == 1)
     {
       CImageList tempImage;
       tempImage.Read(&ar);
       if (tempImage.m_hImageList != NULL)
       {				
-        m_hIcon = tempImage.ExtractIcon(0);
-        m_hPicture.CreateFromIcon(m_hIcon, TRUE);			
+        HICON hIcon = tempImage.ExtractIcon(0);
+        m_hPicture.CreateFromIcon(hIcon, TRUE);			
         tempImage.DeleteImageList();
       }
     }
-    ar >> m_Height;
-    ar >> m_Width;
+		if( nThisVersion < 8 )
+		{ //discarding saved width and height, and recalculating with current device metrics
+			int iHeight;
+			ar >> iHeight;
+			int iWidth;
+			ar >> iWidth;
+		}
 		if( nThisVersion == 1 )
 			return;
 
@@ -531,7 +600,7 @@ void CPictureObject::Serialize(CArchive& ar)
 
 		if( nPictureType < 0 )
 		{
-      m_nID = -1;
+      mnID = -1;
 			return;
 		}
 		
@@ -549,7 +618,6 @@ void CPictureObject::Serialize(CArchive& ar)
 						LoadPicture(ar, var);
 						CComQIPtr< IPictureDisp > pPicDisp( (var.vt == VT_DISPATCH)? var.pdispVal : NULL );	
 						m_hPicture.SetPictureDispatch(pPicDisp);
-						m_bLoaded = true;
 					}
 					catch(...) {}
 					break;
@@ -563,7 +631,6 @@ void CPictureObject::Serialize(CArchive& ar)
 						HICON hIcon = tempImage.ExtractIcon(0);
 						m_hPicture.CreateFromIcon(hIcon, TRUE);			
 						tempImage.DeleteImageList();
-						m_bLoaded = true;
 					}
 					break;
 				}
@@ -579,9 +646,8 @@ void CPictureObject::Serialize(CArchive& ar)
 				{
 					CArchivePropExchange px(ar);
 					CString sPropName;
-					sPropName.Format(_T("%d"), m_nID);
+					sPropName.Format(_T("%d"), mnID);
 					PX_Picture(&px, sPropName, m_hPicture);
-					m_bLoaded = true;
 					break;
 				}
 			case PICTYPE_ICON:
@@ -593,13 +659,13 @@ void CPictureObject::Serialize(CArchive& ar)
 						HICON hIcon = tempImage.ExtractIcon(0);
 						m_hPicture.CreateFromIcon(hIcon, TRUE);			
 						tempImage.DeleteImageList();
-						m_bLoaded = true;
 					}
 					break;
 				}
 			}
 		}
-  }
+		CalcLogicalSize();
+	}
 }
 
 IOStatus CPictureObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
@@ -614,6 +680,7 @@ IOStatus CPictureObject::ReadFromTextFile(std::ifstream &sFile, const CString &f
       return ReadFromTextFile3(sFile, fileName);
       break;
   }
+	CalcLogicalSize();
   return statInvalidFormat;
 }
 
@@ -621,34 +688,33 @@ IOStatus CPictureObject::ReadFromTextFile3(std::ifstream &sFile, const CString &
 {
   try
   {
-    if (!readInt(sFile, m_nID)) return statInvalidFormat;
-    if (!readInt(sFile, m_Height)) return statInvalidFormat;
-    if (!readInt(sFile, m_Width)) return statInvalidFormat;
+    if (!readInt(sFile, mnID)) return statInvalidFormat;
+		int iHeight;
+    if (!readInt(sFile, iHeight)) return statInvalidFormat;
+		int iWidth;
+    if (!readInt(sFile, iWidth)) return statInvalidFormat;
 
     int iPicType;
     if (!readInt(sFile, iPicType)) return statInvalidFormat;
-#ifndef EDITOR
-    m_PicType = iPicType;
-#endif
 
-    if (iPicType == PICTYPE_BITMAP) {
-      CImage img;
-      if (!readImage(sFile, fileName, img)) return statInvalidFormat;
-      HBITMAP hBitmap = img.Detach();
-      m_hPicture.CreateFromBitmap(hBitmap);
-    } else if (iPicType == PICTYPE_METAFILE 
-               || iPicType == PICTYPE_ENHMETAFILE) {
-      //Currently not handled
-    } else if (iPicType == PICTYPE_ICON) {
-      CImageList il;
-      if (!readImageList(sFile, fileName, il)) return statInvalidFormat;
-      if (il.m_hImageList != NULL)
-      {
-        HICON hIcon = il.ExtractIcon(0);
-        m_hPicture.CreateFromIcon(hIcon, TRUE);			
-        il.DeleteImageList();
-      }
-    }
+    //if (iPicType == PICTYPE_BITMAP) {
+    //  CImage img;
+    //  if (!readImage(sFile, fileName, img)) return statInvalidFormat;
+    //  HBITMAP hBitmap = img.Detach();
+    //  m_hPicture.CreateFromBitmap(hBitmap);
+    //} else if (iPicType == PICTYPE_METAFILE 
+    //           || iPicType == PICTYPE_ENHMETAFILE) {
+    //  //Currently not handled
+    //} else if (iPicType == PICTYPE_ICON) {
+    //  CImageList il;
+    //  if (!readImageList(sFile, fileName, il)) return statInvalidFormat;
+    //  if (il.m_hImageList != NULL)
+    //  {
+    //    HICON hIcon = il.ExtractIcon(0);
+    //    m_hPicture.CreateFromIcon(hIcon, TRUE);			
+    //    il.DeleteImageList();
+    //  }
+    //}
   }
   catch(...)
   {
@@ -872,80 +938,24 @@ void CPictureObject::Render(CDC *pdc, int nPicLeft, int nPicTop, CRect &rcThis, 
 	}
 }
 
-void CPictureObject::EnsurePictureIsLoaded()
+void CPictureObject::CalcLogicalSize()
 {
-	if (m_bLoaded)
+	if( !m_hPicture.m_pPict )
+	{
+		msizePic.SetSize( -1, -1 );
 		return;
-
-	CStgFile FileStg;
-	try
-	{
-		FileStg.OpenStg(m_sFileName);
-
-		CString sID;
-		sID.Format(_T("%d"), m_nID);
-		FileStg.Open(sID + gszPicture, CFile::modeRead | CFile::shareDenyWrite); 
-
-		try
-		{
-			CArchiveEx ar(&FileStg, CArchive::load | CArchive::bNoFlushOnDelete, NULL, gszPassword, TRUE);
-		
-			// get dcl form into archive
-			Serialize(ar);
-			
-			ar.Close();
-		}
-		catch( ... )
-		{
-		}
-	}
-	catch( ... )
-	{
 	}
 
-	FileStg.Close();	// close the stream
-	FileStg.CloseStg(); // close the storage file
+	HDC hdc = ::GetDC(GetDesktopWindow());
+	CDC * cdc = CDC::FromHandle(hdc);
 
-	m_bLoaded = true;
+	OLE_XSIZE_HIMETRIC lPicWidth;
+	OLE_YSIZE_HIMETRIC lPicHeight;
+	m_hPicture.m_pPict->get_Width( &lPicWidth );
+	m_hPicture.m_pPict->get_Height( &lPicHeight );
+	msizePic.SetSize( lPicWidth, lPicHeight );
+
+	// convert coordinates from units to logical units
+	cdc->HIMETRICtoLP( &msizePic );
+	cdc->Detach();
 }
-
-/*
-CPictureObject* CPictureObject::ReadSS(int nID, CStgFile &FileStg)
-{
-	CString sID;
-	sID.Format(_T("%d"), nID);
-	FileStg.Open(sID + gszPicture, CFile::modeRead | CFile::shareDenyWrite); 
-
-	CArchiveEx ar(&FileStg, CArchive::load | CArchive::bNoFlushOnDelete, NULL, gszPassword, TRUE);
-	
-	// get current Dcl form
-	CPictureObject* pPicture = new CPictureObject;
-		
-	// get dcl form into archive
-	pPicture->Serialize(ar);
-		
-	ar.Close();			
-
-	FileStg.Close();	// close the stream
-
-	return pPicture;
-}
-
-void CPictureObject::SaveSS(CStgFile &FileStg) const
-{
-	CString sID;
-	sID.Format(_T("%d"), m_nID);
-	FileStg.Open(sID + gszPicture, CFile::modeCreate | CFile::modeWrite); 
-
-	CArchiveEx ar(&FileStg, CArchive::store | CArchive::bNoFlushOnDelete, NULL, gszPassword, TRUE);
-	ar.m_pDocument = NULL;
-	ar.m_bForceFlat = FALSE;
-
-	// put dcl form into archive
-	const_cast<CPictureObject*>(this)->Serialize(ar);
-
-	ar.Close();			
-
-	FileStg.Close();	// close the stream
-}
-*/

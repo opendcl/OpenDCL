@@ -78,9 +78,9 @@ const TCHAR s61[] = _T("\\par  ");
 
 
 void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip, CDclControlObject *pControl)
-{		
-	//const CArxProject *pProjectList = theArxWorkspace.GetDialogProject(pControl->m_sDialogName);
-		
+{
+	m_tooltip.SetBehaviour( PPTOOLTIP_MULTIPLE_SHOW | PPTOOLTIP_NOCLOSE_OVER );
+
 	RefCountedPtr< CPropertyObject > pToolTipText = pControl->GetPropertyObject(nToolTipText);	
 	RefCountedPtr< CPropertyObject > pToolTipLine = pControl->GetPropertyObject(nToolTipLine);	
 	RefCountedPtr< CPropertyObject > pToolTipBody = pControl->GetPropertyObject(nToolTipBody);	
@@ -88,102 +88,97 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip, CDclControlObject *pControl
 	RefCountedPtr< CPropertyObject > pToolTipAvi = pControl->GetPropertyObject(nToolTipAviFileName);
 	RefCountedPtr< CPropertyObject > pToolTipTitleColor = pControl->GetPropertyObject(nToolTipTitleColor);
 
-	if (pToolTipTitleColor == NULL || pToolTipText == NULL)
-		return;
-
-	if (pToolTipTitleColor == NULL || pToolTipText == NULL)
-	{
-		m_tooltip.AddTool(pWnd, pToolTipText->GetStringValue());
-		return;
-	}
-	
-	COLORREF clr = (COLORREF)pToolTipTitleColor->GetLongValue();
-	char value[80];
-	_ltoa(clr, value, 16);
-
-	CString sBody = CString(s6) + value + s4;
+	CString sBody;
 	CString sTitle;
 	CString sMain;
-	
-	sTitle = pToolTipText->GetStringValue();
-
-	sBody += sTitle + s5;
-	
-	if (pToolTipLine->GetBooleanValue() == TRUE)
+	if( pToolTipTitleColor )
 	{
-		sBody += s8;
+		COLORREF clr = pToolTipTitleColor->GetOLEColorValue();
+		sBody.Format( _T("<b><font color=#%02X%02X%02X>"), GetRValue(clr), GetGValue(clr), GetBValue(clr) );
 	}
-	sMain = GetHtmlText(pToolTipBody->GetStringValue());
-
-	if (sTitle.GetLength() == 0 && sMain.GetLength() == 0)
+	if( pToolTipText )
 	{
-		sBody = CString();
-		m_tooltip.AddTool(pWnd, sBody);
-		return;
-	}
+		sTitle = pToolTipText->GetStringValue();
 
+		sBody += sTitle + s5;
+		
+		if (pToolTipLine && pToolTipLine->GetBooleanValue() == TRUE)
+			sBody += s8;
+
+		if( pToolTipBody )
+			sMain = GetHtmlText(pToolTipBody->GetStringValue());
+
+		if (sTitle.GetLength() == 0 && sMain.GetLength() == 0)
+		{
+			sBody = CString();
+			m_tooltip.AddTool(pWnd, sBody);
+			return;
+		}
+
+		sBody += _T("</font></b><br>") + sMain;
+	}
 	CProject* pProject = pControl->GetOwnerProject();
 
-	sBody += s7 + sMain;
+	//if( pToolTipAvi )
+	//{
+	//	CString sAvi = pToolTipAvi->GetStringValue();
+
+	//	m_tooltip.m_AviFileName.Empty();
+	//	if (sAvi.GetLength() > 0)
+	//	{
+	//		if (pProject)
+	//		{
+	//			int n = pProject->GetBaseFileName().Find(s1);
+	//			if (n == -1)
+	//				n = pProject->GetBaseFileName().Find(s2);
+
+	//			int nNext = n;
+	//			while (nNext > -1)
+	//			{
+	//				nNext = pProject->GetBaseFileName().Find(s1, n+1);
+	//				if (nNext == -1)
+	//					nNext = pProject->GetBaseFileName().Find(s2, n+1);
+	//				if (nNext > -1)
+	//					n = nNext;	
+	//			}
+
+	//			sAvi = pProject->GetBaseFileName().Left(n+1) + sAvi;
+	//			if (_tcsicmp(sAvi.Right(4), s3) != 0)
+	//				sAvi += s3;
+	//		}
+	//		
+	//		m_tooltip.m_AviFileName = sAvi;
+	//	}
+	//}
+
 	
-	int nPic = pToolTipPicture->GetLongValue();
-	
-	CString sAvi = pToolTipAvi->GetStringValue();
-
-	m_tooltip.m_AviFileName.Empty();
-	if (sAvi.GetLength() > 0)
+	if( pToolTipPicture )
 	{
-		if (pProject)
+		int nPic = pToolTipPicture->GetLongValue();
+
+		if (nPic == -1)
+			m_tooltip.AddTool(pWnd, sBody, IDI_HELP);
+		else if (nPic == -2)
+			m_tooltip.AddTool(pWnd, sBody, IDI_INFO);
+		else if (nPic == -3)
+			m_tooltip.AddTool(pWnd, sBody, IDI_EXCLEMATION);
+		else if (nPic == -4)
+			m_tooltip.AddTool(pWnd, sBody, IDI_X);
+		else if (nPic == 0)	
+			m_tooltip.AddTool(pWnd, sBody);
+		else if (nPic > 0 && pProject)
 		{
-			int n = pProject->GetBaseFileName().Find(s1);
-			if (n == -1)
-				n = pProject->GetBaseFileName().Find(s2);
-
-			int nNext = n;
-			while (nNext > -1)
-			{
-				nNext = pProject->GetBaseFileName().Find(s1, n+1);
-				if (nNext == -1)
-					nNext = pProject->GetBaseFileName().Find(s2, n+1);
-				if (nNext > -1)
-					n = nNext;	
-			}
-
-			sAvi = pProject->GetBaseFileName().Left(n+1) + sAvi;
-			if (_tcsicmp(sAvi.Right(4), s3) != 0)
-				sAvi += s3;
-		}
-		
-		m_tooltip.m_AviFileName = sAvi;
-	}
-
-
-	if (nPic == -1)
-		m_tooltip.AddTool(pWnd, sBody, IDI_HELP);
-	else if (nPic == -2)
-		m_tooltip.AddTool(pWnd, sBody, IDI_INFO);
-	else if (nPic == -3)
-		m_tooltip.AddTool(pWnd, sBody, IDI_EXCLEMATION);
-	else if (nPic == -4)
-		m_tooltip.AddTool(pWnd, sBody, IDI_X);
-	else if (nPic == 0)	
-		m_tooltip.AddTool(pWnd, sBody);
-	else if (nPic > 0 && pProject)
-	{
-		HBITMAP hBmp = pProject->GetBitmap(nPic, m_tooltip.m_szToolIcon);
-		if (hBmp != NULL)
-			m_tooltip.AddTool(pWnd, sBody, hBmp);
-		else
-		{
-			HICON hIcon = pProject->GetIcon(nPic);
+			HICON hIcon = pProject->CloneIcon(nPic);
 			if (hIcon != NULL)
 				m_tooltip.AddTool(pWnd, sBody, hIcon);
+			else				
+				m_tooltip.AddTool(pWnd, sBody);
 		}
+		else
+			m_tooltip.AddTool(pWnd, sBody);
 	}
 	else
-	{
 		m_tooltip.AddTool(pWnd, sBody);
-	}
 }
 
 void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip, 
@@ -195,6 +190,8 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip,
 				  CString sAvi,
 				  CDclControlObject *pControl = NULL)
 {	
+	m_tooltip.SetBehaviour( PPTOOLTIP_MULTIPLE_SHOW | PPTOOLTIP_NOCLOSE_OVER );
+
 	const CProject* pProject = pControl? pControl->GetOwnerProject() : NULL;
 			
 	if (sTitleIn.GetLength() > 0 && sMainIn.GetLength() == 0)
@@ -208,22 +205,19 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip,
 		return;
 	}
 	
-	COLORREF clr = GetRGBColor(nColor);
-	char value[80];
-	_ltoa(clr, value, 16);
-
-	CString sBody = CString(s6) + value + s4;
+	CString sBody;
 	CString sTitle;
 	CString sMain;
+
+	COLORREF clr = GetRGBColor(nColor);
+	sBody.Format( _T("<b><font color=#%02X%02X%02X>"), GetRValue(clr), GetGValue(clr), GetBValue(clr) );
 	
 	sTitle = sTitleIn;
 
 	sBody += sTitle + s5;
 	
 	if (nLine == TRUE)
-	{
 		sBody += s8;
-	}
 	sMain = GetHtmlText(sMainIn);
 
 	if (sTitle.GetLength() == 0 && sMain.GetLength() == 0)
@@ -231,34 +225,33 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip,
 
 	sBody += s7 + sMain;
 	
+	//m_tooltip.m_AviFileName.Empty();
+	//if (sAvi.GetLength() > 0)
+	//{
+	//	if (pProject != NULL)
+	//	{
+	//		int n = pProject->GetBaseFileName().Find(s1);
+	//		if (n == -1)
+	//			n = pProject->GetBaseFileName().Find(s2);
+
+	//		int nNext = n;
+	//		while (nNext > -1)
+	//		{
+	//			nNext = pProject->GetBaseFileName().Find(s1, n+1);
+	//			if (nNext == -1)
+	//				nNext = pProject->GetBaseFileName().Find(s2, n+1);
+	//			if (nNext > -1)
+	//				n = nNext;	
+	//		}
+
+	//		sAvi = pProject->GetBaseFileName().Left(n+1) + sAvi;
+	//		if (_tcsicmp(sAvi.Right(4), s3) != 0)
+	//			sAvi += s3;
+	//	}
+	//	m_tooltip.m_AviFileName = sAvi;
+	//}
+
 	int nPic = nPicture;
-	
-	m_tooltip.m_AviFileName.Empty();
-	if (sAvi.GetLength() > 0)
-	{
-		if (pProject != NULL)
-		{
-			int n = pProject->GetBaseFileName().Find(s1);
-			if (n == -1)
-				n = pProject->GetBaseFileName().Find(s2);
-
-			int nNext = n;
-			while (nNext > -1)
-			{
-				nNext = pProject->GetBaseFileName().Find(s1, n+1);
-				if (nNext == -1)
-					nNext = pProject->GetBaseFileName().Find(s2, n+1);
-				if (nNext > -1)
-					n = nNext;	
-			}
-
-			sAvi = pProject->GetBaseFileName().Left(n+1) + sAvi;
-			if (_tcsicmp(sAvi.Right(4), s3) != 0)
-				sAvi += s3;
-		}
-		m_tooltip.m_AviFileName = sAvi;
-	}
-
 
 	if (nPic == -1)
 		m_tooltip.AddTool(pWnd,  sBody, IDI_HELP);
@@ -272,22 +265,14 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip,
 		m_tooltip.AddTool(pWnd, sBody);
 	else if (nPic > 0 && pProject)
 	{
-		HBITMAP hBmp = pProject->GetBitmap(nPic, m_tooltip.m_szToolIcon);
-		if (hBmp != NULL)
-			m_tooltip.AddTool(pWnd, sBody, hBmp);
-		else
-		{
-			HICON hIcon = pProject->GetIcon(nPic);
-			if (hIcon != NULL)
-				m_tooltip.AddTool(pWnd, sBody, hIcon);
-			else				
-				m_tooltip.AddTool(pWnd, sBody);
-		}
+		HICON hIcon = pProject->CloneIcon(nPic);
+		if (hIcon != NULL)
+			m_tooltip.AddTool(pWnd, sBody, hIcon);
+		else				
+			m_tooltip.AddTool(pWnd, sBody);
 	}
 	else
-	{
 		m_tooltip.AddTool(pWnd, sBody);
-	}
 }
 
 CString GetHtmlText(CString sMain)

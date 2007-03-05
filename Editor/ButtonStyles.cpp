@@ -150,10 +150,7 @@ void CButtonStyles::OnSelchangePiclist()
 	}
 	
 	if (m_SelectedPic > 0)
-	{
-		m_Picture.SetPictureID(m_SelectedPic);
-		m_Picture.Invalidate();
-	}
+		m_Picture.SetPicture(mpControl->GetOwnerProject()->FindPicture(m_SelectedPic));
 	SetModified(TRUE);
 }
 

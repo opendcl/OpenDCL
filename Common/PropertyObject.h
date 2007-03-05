@@ -105,7 +105,7 @@ namespace PropVal
 		//filing
 		virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const = 0;
 		virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) = 0;
-		virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const = 0;
+		//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const = 0;
 		virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) = 0;
 
 	#ifdef _DIAGNOSTIC
@@ -203,9 +203,9 @@ public:
 	//File I/O
 public:
 	virtual void Serialize(CArchive& ar);
-  IOStatus WriteToTextFile(FILE* pFile) const;
   IOStatus ReadFromTextFile(std::ifstream &sFile);
   IOStatus ReadFromTextFile5(std::ifstream &sFile);
+  //IOStatus WriteToTextFile(FILE* pFile) const;
 
 protected:
 	DECLARE_SERIAL(CPropertyObject)

@@ -14,6 +14,7 @@
 #include "StgFile.h"
 #include "Filing.h"
 #include "DclFormObject.h"
+#include "DialogControl.h"
 #include "PictureObject.h"
 #include "ControlTypes.h"
 #include "AxPropertyDescriptor.h"
@@ -357,41 +358,103 @@ void CProject::ClearR14Events()
 	}
 }
 
-INT_PTR CProject::AddPicture(CPictureObject* pPicture) 
+bool CProject::AddPicture( CPictureObject* pPicture ) 
 {
-	HDC hdc = ::GetDC(GetDesktopWindow());
-	CDC * cdc = CDC::FromHandle(hdc);
-
-	// assign picture object values	
-	long lPicWidth;
-	long lPicHeight;
-
-	// get dimensions of bitmap
-	pPicture->GetPicture().m_pPict->get_Width(&lPicWidth);
-	pPicture->GetPicture().m_pPict->get_Height(&lPicHeight);
-
-	CSize sizePic;
-	sizePic.cx = (int)lPicWidth;
-	sizePic.cy = (int)lPicHeight;
-
-	// convert coordinates from units to logical units
-	cdc->HIMETRICtoLP(&sizePic);
-	cdc->Detach();
-	pPicture->SetWidth(sizePic.cx);
-	pPicture->SetHeight(sizePic.cy);
-
-	// add the new picture object
+	assert( pPicture != NULL );
+	if( !pPicture )
+		return false;
+	int nID = pPicture->GetID();
+	POSITION posPic = mPictures.GetHeadPosition();
+	while( posPic )
+	{
+		POSITION posAt = posPic;
+		CPictureObject* pPictureAt = mPictures.GetNext( posPic );
+		assert( pPictureAt != NULL );
+		if( pPictureAt->GetID() == nID )
+		{
+			delete pPictureAt;
+			mPictures.SetAt( posAt, pPicture );
+			//update any instances of controls or forms referencing the updated picture
+			POSITION posForm = mDclForms.GetHeadPosition();
+			while( posForm )
+			{
+				CDclFormObject* pDclForm = mDclForms.GetNext( posForm );
+				POSITION posControl = pDclForm->GetControlList().GetHeadPosition();
+				while( posControl )
+				{
+					CDclControlObject* pDclControl = pDclForm->GetControlList().GetNext( posControl );
+					if( !pDclControl->GetControlInstance() )
+						continue; //no instance of this control, so skip it
+					POSITION posProp = pDclControl->GetPropertyList().GetHeadPosition();
+					while( posProp )
+					{
+						RefCountedPtr< CPropertyObject > pProp = pDclControl->GetPropertyList().GetNext( posProp );
+						if( pProp->GetType() == PropPicture && pProp->GetLongValue() == nID )
+							pDclControl->GetControlInstance()->OnApplyProperty( pProp ); //apply the updated picture
+					}
+				}
+			}
+			return true;
+		}
+	}
 	mPictures.AddTail(pPicture);
-	
-	// return the index that this new picture object was inserted at
-	return mPictures.GetCount() - 1;
+	return true;
 }
 
-bool CProject::LoadPictureFile(LPCTSTR szFile, int nID)
+void CProject::DeletePicture( int nID )
 {
-	CPictureObject* pNewPic = new CPictureObject;
-	pNewPic->LoadFile( szFile, nID );
-	return (AddPicture( pNewPic ) >= 0);
+	POSITION posPicToDelete = NULL;
+	POSITION posPic = mPictures.GetHeadPosition();
+	while( posPic )
+	{
+		POSITION posAt = posPic;
+		CPictureObject* pPicture = mPictures.GetNext( posPic );
+		assert( pPicture != NULL );
+		if( pPicture->GetID() == nID )
+		{
+			posPicToDelete = posAt;
+			break;
+		}
+	}
+	if( !posPicToDelete )
+		return;
+
+	//remove all references to this picture before deleting it
+	POSITION posForm = mDclForms.GetHeadPosition();
+	while( posForm )
+	{
+		CDclFormObject* pDclForm = mDclForms.GetNext( posForm );
+		POSITION posControl = pDclForm->GetControlList().GetHeadPosition();
+		while( posControl )
+		{
+			CDclControlObject* pDclControl = pDclForm->GetControlList().GetNext( posControl );
+			POSITION posProp = pDclControl->GetPropertyList().GetHeadPosition();
+			while( posProp )
+			{
+				RefCountedPtr< CPropertyObject > pProp = pDclControl->GetPropertyList().GetNext( posProp );
+				if( pProp->GetType() == PropPicture && pProp->GetLongValue() == nID )
+				{
+					pProp->SetShortValue( -1 ); //reset the picture ID
+					if( pDclControl->GetControlInstance() )
+						pDclControl->GetControlInstance()->OnApplyProperty( pProp ); //apply the deleted picture
+				}
+			}
+		}
+	}
+	delete mPictures.GetAt( posPicToDelete );
+	mPictures.RemoveAt( posPicToDelete );
+}
+
+bool CProject::LoadPictureFile( LPCTSTR szFile, int nID, bool bApplyMask /*= false*/ )
+{
+	CPictureObject* pPic = FindPicture( nID );
+	if( !pPic )
+	{
+		pPic = new CPictureObject( nID );
+		AddPicture( pPic );
+	}
+	pPic->LoadFile( szFile, bApplyMask );
+	return true;
 }
 
 void CProject::AddOleObject(const CLSID& clsid, CAxContainerCtrl *pAxCont)
@@ -594,57 +657,21 @@ size_t CProject::CountDeletedForms() const
   return ctDeleted;
 }
 
-HBITMAP CProject::GetBitmap(UINT nID, CSize &sz) const
+HBITMAP CProject::CloneBitmap(UINT nID, CSize &sz) const
 {
-	HBITMAP hBmp = NULL;
-	POSITION pos = mPictures.GetHeadPosition();
-	while (pos != NULL)
-	{
-		// get current Picture in list
-		CPictureObject* pPicture = mPictures.GetNext(pos);
-		if (pPicture != NULL && pPicture->GetID() == nID)
-		{
-			if (pPicture->GetPicture().m_pPict != NULL)
-			{
-				// get the bitmap
-				if (pPicture->GetPicType() == PICTYPE_BITMAP)
-				{
-					pPicture->GetPicture().m_pPict->get_Handle((OLE_HANDLE FAR *) &hBmp);										
-					sz.cx = pPicture->GetWidth();
-					sz.cy = pPicture->GetHeight();
-				}
-				if (pPicture->GetBitmap())
-					return pPicture->GetBitmap();
-			}
-		}
-	}
-	return hBmp;
+	CPictureObject* pPicture = FindPicture( nID );
+	if( !pPicture )
+		return NULL;
+	sz.SetSize( pPicture->GetWidth(), pPicture->GetHeight() );
+	return pPicture->CloneBitmap();
 }
 
-HICON CProject::GetIcon(UINT nID) const
+HICON CProject::CloneIcon(UINT nID) const
 {
-	HICON hIcon = NULL;
-	POSITION pos = mPictures.GetHeadPosition();
-	while (pos != NULL)
-	{
-		// get current Picture in list
-		CPictureObject* pPicture = mPictures.GetNext(pos);
-		if (pPicture != NULL && pPicture->GetID() == nID)
-		{
-			if (pPicture->GetPicture().m_pPict != NULL)
-			{
-				// get the bitmap
-				if (pPicture->GetPicType() == PICTYPE_ICON)
-					pPicture->GetPicture().m_pPict->get_Handle((OLE_HANDLE FAR *) &hIcon);		
-			}
-			if (pPicture->GetIcon() != NULL)
-				return pPicture->GetIcon();					
-			if (pPicture->m_hLoadedIcon != NULL)
-				return pPicture->m_hLoadedIcon;					
-			return hIcon;
-		}
-	}
-	return hIcon;
+	CPictureObject* pPicture = FindPicture( nID );
+	if( !pPicture )
+		return NULL;
+	return pPicture->CloneIcon();
 }
 
 CPictureObject* CProject::FindPicture( UINT nID ) const
@@ -663,20 +690,14 @@ CPictureObject* CProject::FindPicture( UINT nID ) const
 
 bool CProject::GetPictureSize( UINT nID, CSize& size ) const
 {
-	POSITION pos = mPictures.GetHeadPosition();
-	while (pos)
-	{
-		CPictureObject* pPicture = mPictures.GetNext(pos);
-		assert (pPicture != NULL);
-		if (!pPicture || pPicture->GetID() != nID)
-			continue;
-		if (!pPicture->GetPicture().m_pPict)
-			return false;
-		size.cx = pPicture->GetWidth();
-		size.cy = pPicture->GetHeight();
-		return true;
-	}
-	return false;
+	CPictureObject* pPicture = FindPicture( nID );
+	if( !pPicture )
+		return false;
+	if (!pPicture->IsValid())
+		return false;
+	size.cx = pPicture->GetWidth();
+	size.cy = pPicture->GetHeight();
+	return true;
 }
 
 
@@ -752,15 +773,6 @@ IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 
 IOStatus CProject::WriteToFile( LPCTSTR pszFilePath )
 {
-#ifdef SAVE_IN_TEXT_FORMAT
-  FILE* pTextFile = fopen(pszPathName, "w");
-  if (errno != 0)
-    return FALSE;
-	CString sFilename = pszFilePath;
-  WriteToTextFile(pTextFile, sFileName);
-  fclose(pTextFile);
-#else //SAVE_IN_TEXT_FORMAT
-
 	TRY
 	{
 		CFile DestFile( pszFilePath, CFile::modeWrite | CFile::shareExclusive | CFile::modeCreate );
@@ -780,7 +792,6 @@ IOStatus CProject::WriteToFile( LPCTSTR pszFilePath )
 		return statFail;
 	}
 	END_CATCH_ALL;
-#endif //SAVE_IN_TEXT_FORMAT
 	return statOK;
 }
 
@@ -798,9 +809,6 @@ void CProject::Serialize(CArchive& ar)
   ULONG nThisVersion = GetCurrentSaveVersion();
 
   CObject::Serialize(ar);
-  // create a position variable to hold the counter increment
-  POSITION pos;	
-  short nCount;
 
   if (ar.IsStoring())
   {
@@ -815,7 +823,7 @@ void CProject::Serialize(CArchive& ar)
     ar << mnPurchaseState;
     ar << mnAutoCADVersion;
 
-    pos = mDclForms.GetHeadPosition();
+    POSITION pos = mDclForms.GetHeadPosition();
     while (pos != NULL)
     {
       CDclFormObject* pDclForm = mDclForms.GetNext(pos);
@@ -963,7 +971,7 @@ void CProject::Serialize(CArchive& ar)
 			{
 				CTypedPtrList< CObList, CArxControlObject* > listControls;
 				listControls.Serialize(ar);
-				pos = listControls.GetHeadPosition();
+				POSITION pos = listControls.GetHeadPosition();
 				while (pos)
 					mOleControls.push_back(listControls.GetNext(pos));
 			}
@@ -980,12 +988,31 @@ void CProject::Serialize(CArchive& ar)
 			}
 		}
 
+		POSITION posPic = mPictures.GetHeadPosition();
+		while( posPic )
+			delete mPictures.GetNext( posPic );
+    mPictures.RemoveAll();
 
     if (nThisVersion < 9)
 		{
 			try
 			{
 				mPictures.Serialize(ar);
+
+			// this has been added to cleanup picture objects with a blank picture.
+			POSITION pos = mPictures.GetHeadPosition();
+			while( pos )
+			{
+				POSITION posAt = pos;
+				CPictureObject* pPict = mPictures.GetNext(pos);
+				if (pPict == NULL)
+					mPictures.RemoveAt( posAt );
+				else if( pPict->GetID() <= -1 || pPict->GetID() >= 3000 )
+				{
+					delete pPict;
+					mPictures.RemoveAt( posAt );
+				}
+			}
 			}
 			catch(...) {}
 		}
@@ -1001,38 +1028,14 @@ void CProject::Serialize(CArchive& ar)
 			else
 				ar >> nCount;
 
-      mPictures.RemoveAll();
       while (nCount-- > 0)
       {
-        CPictureObject* pPictureObj = new CPictureObject;
+        CPictureObject* pPictureObj = new CPictureObject( -1 );
         pPictureObj->Serialize(ar);
         mPictures.AddTail(pPictureObj);							
       }
     }
-
-		// this has been added to cleanup picture objects with a blank picture.
-		nCount = mPictures.GetCount() - 1;
-		for (int i=nCount; i>= 0; i--)
-		{
-			pos = mPictures.FindIndex(i);
-			if (pos != NULL)
-			{
-				CPictureObject *pPict = mPictures.GetAt(pos);
-
-				if (pPict == NULL)
-					mPictures.RemoveAt(pos);
-				if (pPict != NULL)
-				{
-					if (pPict->GetID() <= -1 || pPict->GetID() >= 3000) //was nPicIdToHight, moved to common
-					{
-						delete pPict;
-						mPictures.RemoveAt(pos);
-					}
-				}
-			}
-		}
   }
-
 }
 
 void CProject::SaveDistFile()
@@ -1194,13 +1197,15 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
   // set counter
   if (!readInt(sFile, nCount)) return statInvalidFormat;
 
+	POSITION posPic = mPictures.GetHeadPosition();
+	while( posPic )
+		delete mPictures.GetNext( posPic );
   mPictures.RemoveAll();
   // do loop to navigate images
   while (nCount-- > 0)
   {
     // get current images
-    CPictureObject* pPictureObj = new CPictureObject;
-
+    CPictureObject* pPictureObj = new CPictureObject( -1 );
     try
     {	
       // get image into archive

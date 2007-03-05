@@ -11,66 +11,48 @@
 #include "VarUtils.h"
 #include "Workspace.h"
 
-CString acedVarToString(VARIANT *pVarGet);
-long acedVarToLong(VARIANT *pVarGet);
-int acedGetRtType(VARIANT *pVarGet);
-double acedVarToDouble(VARIANT *pVarGet);
-CString LongToA(long lValue);
+static CString acedVarToString(VARIANT *pVarGet);
+static long acedVarToLong(VARIANT *pVarGet);
+static int acedGetRtType(VARIANT *pVarGet);
+static double acedVarToDouble(VARIANT *pVarGet);
+static CString LongToA(long lValue);
 
-BEGIN_MESSAGE_MAP(CArxAxContainerCtrl, CAxContainerCtrl)
-END_MESSAGE_MAP()
 
 CArxAxContainerCtrl::CArxAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate) 
 : CAxContainerCtrl(pTemplate, pPane, nID, false)
+, mArxServices( pTemplate )
 {
-	msLispSymbolName = pTemplate->GetStrProperty( nGlobalVarName );
-	if( msLispSymbolName.IsEmpty() )
-		msLispSymbolName = pTemplate->GetKeyPath();
-	SetLispSymbol();
 	TraceFmt( _T("> CArxAxContainerCtrl::CArxAxContainerCtrl(%s [%08X], [%08X], %s [HWND: %08X]) [this: %08X]\r\n"),
 		pTemplate->GetKeyPath(), pTemplate, pPane, CString(mpTemplate->GetRuntimeClass()->m_lpszClassName),
 		mpTemplate->GetWindow(), (long)this );
 
 	if( bCreate ) 
-	{
 		Create( pPane->GetHostDialog(), nID );
-	} 
-	else 
-	{
-		m_bInvokeWithSendString = false;
-	}
 }
+
 CArxAxContainerCtrl::~CArxAxContainerCtrl()
 {
-	SetLispSymbol( true );
 	TraceFmt( _T("< CArxDialogControl::~CArxDialogControl() [this: %08X]\r\n"), (long)this );
 }
 
-void CArxAxContainerCtrl::SetLispSymbol( bool bResetToNil /*= false*/ ) const
-{
-	if( msLispSymbolName.IsEmpty() )
-		return;
-	if( !bResetToNil )
-		theArxWorkspace.SetLispSymbol( msLispSymbolName, (long)mpTemplate );
-	else
-		theArxWorkspace.ResetLispSymbol( msLispSymbolName );
-}
 
-bool CArxAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID ) {
+bool CArxAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID )
+{
 	bool bSuccess = CAxContainerCtrl::Create( pParentWnd, nID );
 
 	if( GetTemplate()->GetLngProperty(nEventInvoke) == 1 )
-	{
 		m_bInvokeWithSendString = true;
-	} 
 	else
-	{
 		m_bInvokeWithSendString = false;
-	}
 
 	return bSuccess;
-
 }
+
+
+BEGIN_MESSAGE_MAP(CArxAxContainerCtrl, CAxContainerCtrl)
+END_MESSAGE_MAP()
+
+
 BOOL CArxAxContainerCtrl::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) 
 {
 	if (nID == GetTemplate()->GetControlInstance()->GetControlId())
@@ -78,6 +60,7 @@ BOOL CArxAxContainerCtrl::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHAN
 
 	return CWnd::OnCmdMsg(nID, nCode, pExtra, pHandlerInfo);
 }
+
 void CArxAxContainerCtrl::TryToFireAxEvent(UINT idCtrl, AFX_EVENT* pEvent)
 {
 	const AFX_EVENTSINKMAP* pSinkMap = GetEventSinkMap();
@@ -350,8 +333,8 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_E
 				AcApDocument* pDoc = acDocManager->curDocument();
 
 				// give the command bar focus
-				CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-				CmdBarWnd->SetFocus();		
+				//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
+				//CmdBarWnd->SetFocus();		
 
 				// send cancel string to current document
 				es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, bShowCommand);
@@ -368,7 +351,6 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_E
 	catch(...)
 	{
 	}
-
 }
 
 //*****************************************************************************

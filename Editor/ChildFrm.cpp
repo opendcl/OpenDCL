@@ -126,29 +126,11 @@ void CChildFrame::SetTitleBarIcon(int nPictureID)
 	}
 	
 	// do loop to navigate Pictures
-	while (nCount < activeProject->GetPictureList().GetCount())
-	{
-		// get position
-		pos = activeProject->GetPictureList().FindIndex(nCount);
-		// get current Picture in list
-		CPictureObject* pPicture = activeProject->GetPictureList().GetNext(pos);
-		
-		if (pPicture->GetID() == nPictureID)
-		{
-			// get the icon
-			m_hIcon = pPicture->GetIcon();
-			// set the icon
-			SetIcon(m_hIcon, FALSE);
-			// set the found flag to true
-			bFoundIcon = true;
-		}
-		// increment counter
-		nCount++;
-	}
-	nCount = 0;
-
+	CPictureObject* pPicture = activeProject->FindPicture(nPictureID);
 	// if not icon was found to be specified	
-	if (!bFoundIcon)
+	if (pPicture)
+		SetIcon( pPicture->CloneIcon(), FALSE );
+	else
 	{
 		HINSTANCE hInstResource = AfxFindResourceHandle(MAKEINTRESOURCE(IDI_ACAD2002), RT_GROUP_ICON);
 		m_hIcon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_ACAD2002));

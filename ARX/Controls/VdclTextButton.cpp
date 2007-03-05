@@ -210,15 +210,8 @@ void VdclTextButton::SetTooltipText(CString* spText, BOOL bActivate)
 
 void VdclTextButton::InitToolTip()
 {
-	
 	if (m_ToolTip.m_hWnd == NULL)
-	{
-		// Create ToolTip control
 		m_ToolTip.Create(this);
-		// Create inactive
-		m_ToolTip.Activate(FALSE);
-	}
-	
 } // End of InitToolTip
 
 BOOL VdclTextButton::PreTranslateMessage(MSG* pMsg) 
@@ -253,7 +246,7 @@ void VdclTextButton::SetDragnDrop(BOOL bRegister)
 
 void VdclTextButton::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	SetFocus();
+	//SetFocus();
 	if (m_ArxControl->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
 	{
 		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);

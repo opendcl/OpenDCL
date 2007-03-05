@@ -1376,12 +1376,7 @@ void OdclListCtrl::SetTooltipText(CString* spText, BOOL bActivate)
 void OdclListCtrl::InitToolTip()
 {
 	if (mToolTip.m_hWnd == NULL)
-	{
-		// Create ToolTip control
 		mToolTip.Create(this);
-		// Create inactive
-		mToolTip.Activate(FALSE);
-	}
 } // End of InitToolTip
 
 

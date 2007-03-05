@@ -231,7 +231,7 @@ void CControlPane::RecalcLayout( bool bIgnoreSplitters /*= false*/ )
 	// correctly to enure the graphic buttons are transparent.	
 	//SetGrphcBtnsParents(true);
 
-	mpHostDlg->Invalidate();
+	//mpHostDlg->Invalidate(); //can't do this: it paints over the controls in Windows XP with Window Classic theme
 }
 
 void CControlPane::InvalidateControls()
@@ -298,15 +298,15 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 	else
 		lBottomFromBottom = pArxObject->m_pUseBottomOffset->GetLongValue();
 
-	if (mpSourceForm->GetType() == VdclModal ||
-			mpSourceForm->GetType() == VdclModeless)
-	{
-		if (lLeftFromRight  == 0 &&
-				lRightFromRight == 0 &&
-				lTopFromBottom  == 0 &&
-				lBottomFromBottom == 0)
-			return;
-	}
+	//if (mpSourceForm->GetType() == VdclModal ||
+	//		mpSourceForm->GetType() == VdclModeless)
+	//{
+	//	if (lLeftFromRight  == 0 &&
+	//			lRightFromRight == 0 &&
+	//			lTopFromBottom  == 0 &&
+	//			lBottomFromBottom == 0)
+	//		return;
+	//}
 
 	
 	// get the control being moved			
@@ -407,7 +407,7 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 			CRect rectCurrent;
 			CRect rc = GetSplitterRect(lBottomFromBottom, rectCurrent);
 			int nOffsetValue = pArxObject->m_pOffsetBottom->GetLongValue();
-			rcControl.bottom = rectCurrent.top + nOffsetValue;
+			rcControl.bottom = rectCurrent.top - nOffsetValue;
 		}
 		else
 		{

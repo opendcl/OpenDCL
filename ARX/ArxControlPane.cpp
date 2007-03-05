@@ -36,11 +36,9 @@ void CArxControlPane::SetGlobalLispSymbols( bool bResetToNil /*= false*/ )
 {
 	for( TDialogControls::iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
 	{
-		CString sLispSymbolName = ((CArxDialogControl*)&*(*iter))->GetLispSymbolName();
-		if( bResetToNil )
-			theArxWorkspace.ResetLispSymbol( sLispSymbolName );
-		else	
-			theArxWorkspace.SetLispSymbol( sLispSymbolName, (long)&**iter );
+		CArxControlServices* pArxServices = (*iter)->GetArxServices();
+		assert( pArxServices != NULL );
+		pArxServices->SetLispSymbol( bResetToNil );
 	}
 }
 

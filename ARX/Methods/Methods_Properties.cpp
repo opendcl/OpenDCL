@@ -1525,167 +1525,104 @@ int ShowToolTip()
 
 	CWnd *pControl  = pArxObject->GetWindow();
 
+	CRect rc;
+	pControl->GetWindowRect(rc);
 	if (pt.x == -1 && pt.y == -1)
-	{
-		CRect rc;
-		pControl->GetClientRect(rc);
 		pt = rc.CenterPoint();
-	}
 
-	PPTOOLTIP_INFO *pTT;
-			
+	PPTOOLTIP_INFO TI;
 	switch (pArxObject->GetType())
 	{
 	case CtlDwgPreview:
 		{
-			CDwgPreviewCtrl* pCtrl = (CDwgPreviewCtrl*)pControl;
-			if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-				pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-			else
-				pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-			
-			pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
+		CDwgPreviewCtrl* pCtrl = (CDwgPreviewCtrl*)pControl;
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlBlockView:
 	case CtlHatch:
 		{
 		CGsPreviewCtrl *pCtrl = (CGsPreviewCtrl*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-				pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-			else
-				pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-			
-			pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlSlideView:
 		{
 		CSlideHolder *pCtrl = (CSlideHolder*)pControl;
-		if ( pCtrl->GetToolTipCtrl().m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->GetToolTipCtrl().m_arrTools[0];				
-		else
-			pTT = &pCtrl->GetToolTipCtrl().m_pToolInfo;
-		
-		pCtrl->GetToolTipCtrl().ShowHelpTooltip(pt, *pTT);				
+		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlRoundSlider:
 		{
 		CRoundSliderCtrl *pCtrl = (CRoundSliderCtrl*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlStaticURL:
 		{
 		CStaticLink *pCtrl = (CStaticLink*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlProgress:
 		{
 		VdclProgressCtrl *pCtrl = (VdclProgressCtrl*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
-		
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlMonth:
 		{
 		OdclMonth *pCtrl = (OdclMonth*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
-		
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlSlider:
 		{
 		VdclSliderCtrl *pCtrl = (VdclSliderCtrl*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
-		
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlPictureBox:
 		{
 		CPictureBox *pCtrl = (CPictureBox*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
-		
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlListBox:
 		{
 		VdclListBox *pCtrl = (VdclListBox*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
-		
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlOptionButton:
 		{
 		VdclRadioButton *pCtrl = (VdclRadioButton*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
-		
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlOptionList:
 		{
 		COptionListBox *pCtrl = (COptionListBox*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
-		
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlCheckBox:
 		{
 		VdclCheckBox *pCtrl = (VdclCheckBox*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
-		
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlTextBox:
@@ -1695,46 +1632,29 @@ int ShowToolTip()
 				case EditFilter_Symbol:
 				{
 					VdclSymbolEdit *pCtrl = (VdclSymbolEdit*)pControl;
-					if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-						pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-					else
-						pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-					
-					pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
-					
+					if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+						pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 					break;
 				}
 				case EditFilter_Angle:
 				{
 					VdclAngleEdit *pCtrl = (VdclAngleEdit*)pControl;
-					if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-						pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-					else
-						pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-					
-					pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
+					if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+						pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 					break;
 				}
 				case EditFilter_Numeric:
 				{
 					VdclNumericEdit *pCtrl = (VdclNumericEdit*)pControl;
-					if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-						pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-					else
-						pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-					
-					pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
+					if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+						pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 					break;
 				}
 				default:
 				{
 					OdclEdit *pCtrl = (OdclEdit*)pControl;
-					if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-						pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-					else
-						pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-					
-					pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
+					if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+						pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 					break;
 				}
 			}
@@ -1743,57 +1663,37 @@ int ShowToolTip()
 	case CtlStdButton:
 		{
 		VdclTextButton *pCtrl = (VdclTextButton*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlTree:
 		{
 		VdclTree *pCtrl = (VdclTree*)pControl;
-		if ( pCtrl->m_ChildTree.m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ChildTree.m_ToolTip.m_arrTools[0];				
-		else
-			pTT = &pCtrl->m_ChildTree.m_ToolTip.m_pToolInfo;
-		
-		pCtrl->m_ChildTree.m_ToolTip.ShowHelpTooltip(pt, *pTT);				
+		if( pCtrl->m_ChildTree.m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ChildTree.m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 
 	case CtlGraphicButton:
 		{
 		CArxGraphicButtonCtrl *pCtrl = (CArxGraphicButtonCtrl*)pControl;
-		if ( pCtrl->GetToolTipCtrl().m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->GetToolTipCtrl().m_arrTools[0];				
-		else
-			pTT = &pCtrl->GetToolTipCtrl().m_pToolInfo;
-		
-		pCtrl->GetToolTipCtrl().ShowHelpTooltip(pt, *pTT);				
+		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlActiveX:
 		{
 		CAxContainerCtrl *pCtrl = (CAxContainerCtrl*)pControl;
-		if ( pCtrl->GetToolTip().m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->GetToolTip().m_arrTools[0];				
-		else
-			pTT = &pCtrl->GetToolTip().m_pToolInfo;
-		
-		pCtrl->GetToolTip().ShowHelpTooltip(pt, *pTT);				
+		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlDwgList:
 		{
 		CDwgDirList *pCtrl = (CDwgDirList*)pControl;
-		if ( pCtrl->m_ToolTip.m_arrTools.GetCount() > 0)
-			pTT = &pCtrl->m_ToolTip.m_arrTools[0];				
-		else
-			pTT = &pCtrl->m_ToolTip.m_pToolInfo;
-		
-		pCtrl->m_ToolTip.ShowHelpTooltip(pt, *pTT);				
+		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	}

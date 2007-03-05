@@ -4,6 +4,7 @@
 #pragma once
 
 #include "DialogControl.h"
+#include "ArxControlServices.h"
 
 class CComboBoxFolder;
 class CDwgDirList;
@@ -13,11 +14,13 @@ class CArxDialogControl : public CDialogControl
 {
 	// Attributes
 protected:
-	CString	msLispSymbolName; //the lisp symbol name used for this control
+	CArxControlServices	mArxServices;
 	
 public:
 	CArxDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pControl );
 	virtual ~CArxDialogControl();
+
+	virtual CArxControlServices* GetArxServices() { return &mArxServices; }
 
 	static TDialogControlPtr Create( CDclControlObject* pTemplate, CControlPane* pPane,
 																	 UINT nID, ControlParams* pParams = NULL );
@@ -37,14 +40,6 @@ public:
 	static void SetDwgListComboFolderLink(CComboBoxFolder *pComboFolder);
 	static void SetDwgListComboFolderLink(CDwgDirList *pDwgList);
 	static void ResetImageList(CDclControlObject *pControl, CWnd *pWnd, int nID);
-
-	// Properties
-public:
-	const CString& GetLispSymbolName() const { return msLispSymbolName; }
-
-	// Implementation
-protected:
-	virtual void SetLispSymbol( bool bResetToNil = false ) const;
 };
 
 

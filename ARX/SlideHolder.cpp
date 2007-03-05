@@ -545,12 +545,7 @@ void CSlideHolder::SetTooltipText(CString* spText, BOOL bActivate)
 void CSlideHolder::InitToolTip()
 {
 	if (mToolTip.m_hWnd == NULL)
-	{
-		// Create ToolTip control
 		mToolTip.Create(this);
-		// Create inactive
-		mToolTip.Activate(FALSE);
-	}
 } // End of InitToolTip
 
 BOOL CSlideHolder::PreTranslateMessage(MSG* pMsg) 

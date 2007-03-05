@@ -502,12 +502,7 @@ void OdclEdit::SetTooltipText(CString* spText, BOOL bActivate)
 void OdclEdit::InitToolTip()
 {
 	if (m_ToolTip.m_hWnd == NULL)
-	{
-		// Create ToolTip control
 		m_ToolTip.Create(this);
-		// Create inactive
-		m_ToolTip.Activate(FALSE);
-	}
 } // End of InitToolTip
 
 BOOL OdclEdit::PreTranslateMessage(MSG* pMsg) 

@@ -49,7 +49,7 @@ bool VdclTab::Create( CWnd* pParentWnd, UINT nID )
 		m_bInvokeWithSendString = false;
 	SetupTabs();
 	CreateTabPages( nID );
-	ActivateTabPage( GetCurSel(), TRUE );
+	ActivateTabPage( GetCurSel(), true, true );
 
 	return bSuccess;
 }
@@ -198,9 +198,6 @@ void VdclTab::SetupTabs()
 		GetItemRect(i, &rectTab);
 		mToolTip.AddTool(this, sToolTipText, (HICON)NULL, &rectTab, i);
 	}
-
-	// Activate the tooltip control.
-   mToolTip.Activate(TRUE);
 }
 
 
@@ -405,17 +402,10 @@ void VdclTab::ZOrderFrontAllTabs()
 void VdclTab::OnDestroy() 
 {	
 	SetImageList(NULL);
-	if (mToolTip.GetToolCount() > 0)
-	{
-		for (int i=mToolTip.GetToolCount()-1; i>= 0; i--)
-		{
-			mToolTip.DelTool(this, i);
-		}
-	}
+	mToolTip.RemoveAllTools();
 	CTabCtrl::OnDestroy();
-	
-	
 }
+
 void VdclTab::DestroyTabPages()
 {
 	size_t idx = mTabPages.size();
@@ -448,13 +438,7 @@ void VdclTab::OnSelchanging(NMHDR* pNMHDR, LRESULT* pResult)
 void VdclTab::InitToolTip()
 {
 	if (mToolTip.m_hWnd == NULL)
-	{
-		// Create ToolTip control
 		mToolTip.Create(this);
-		// Create inactive
-		mToolTip.Activate(FALSE);
-	}
-	//SetToolTips(&mToolTip);
 } // End of InitToolTip
 
 
@@ -491,16 +475,15 @@ void VdclTab::SetTooltipText(CString* spText, BOOL bActivate)
 	InitToolTip();
 
 	// If there is no tooltip defined then add it
-	if (mToolTip.GetToolCount() == 0)
-	{
-		CRect rectBtn; 
-		GetClientRect(rectBtn);
-		mToolTip.AddTool(this, *spText, (HICON)NULL, rectBtn, 1);
-	}
+	//if (mToolTip.GetToolCount() == 0)
+	//{
+	//	CRect rectBtn; 
+	//	GetClientRect(rectBtn);
+	//	mToolTip.AddTool(this, *spText, (HICON)NULL, rectBtn, 1);
+	//}
 
 	// Set text for tooltip
 	mToolTip.UpdateTipText(*spText, this, 1);
-	mToolTip.Activate(bActivate);
 } // End of SetTooltipText
 
 void VdclTab::OnKillFocus(CWnd* pNewWnd) 

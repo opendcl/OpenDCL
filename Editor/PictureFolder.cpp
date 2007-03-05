@@ -27,32 +27,6 @@ static void HIMETRICtoDP(HDC hdc, LPSIZE lpSize)
 }
 
 
-static bool FindPictureId(int nId)
-{
-	// if the count is 0, then return a false to indicate, not found
-	if (activeProject->GetPictureList().GetCount() == 0)
-		return false;
-
-	// do loop to find a matching id
-	for (int i=0; i<activeProject->GetPictureList().GetCount(); i++)
-	{
-		POSITION pos = activeProject->GetPictureList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CPictureObject *pPic = activeProject->GetPictureList().GetAt(pos);
-			if (pPic != NULL)
-			{
-				// if this is the same id then return a true to indicate, found	
-				if (pPic->GetID() == nId)
-					return true;
-			}
-		}
-	}
-	// if made it this far then return a false to indicate, not found
-	return false;
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CPictureFolder dialog
 
@@ -60,28 +34,30 @@ CPictureFolder::CPictureFolder(CProject* pProject, CWnd* pParent /*=NULL*/)
 : CDialog(CPictureFolder::IDD, pParent)
 , mpProject( pProject )
 {
-	//{{AFX_DATA_INIT(CPictureFolder)
-	//}}AFX_DATA_INIT
 }
 
+CPictureFolder::~CPictureFolder()
+{
+	while( !mlistPicsToAdd.empty() )
+	{
+		delete mlistPicsToAdd.back();
+		mlistPicsToAdd.pop_back();
+	}
+}
 
 void CPictureFolder::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CPictureFolder)
 	DDX_Control(pDX, IDC_PICTURELIST, m_PictureList);
 	DDX_Control(pDX, IDC_PICTURE, m_PictureBox);
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CPictureFolder, CDialog)
-	//{{AFX_MSG_MAP(CPictureFolder)
 	ON_BN_CLICKED(IDADD, OnAdd)
 	ON_BN_CLICKED(IDDELETE, OnDelete)
 	ON_LBN_SELCHANGE(IDC_PICTURELIST, OnSelchangePicturelist)
 	ON_BN_CLICKED(IDUPDATE, OnUpdate)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -90,7 +66,6 @@ END_MESSAGE_MAP()
 void CPictureFolder::OnAdd() 
 {
 	MultiFileDialog();
-	
 }
 
 void CPictureFolder::OnDelete() 
@@ -101,71 +76,41 @@ void CPictureFolder::OnDelete()
 	if (nCurSel == -1)
 		return;
 
-	// set the picture box blank
-	m_PictureBox.SetPictureBlank();
-
-	CProject *pProjectList = activeProject;
-	
 	int nCurSelId = m_PictureList.GetItemData(nCurSel);
-
-	for (int i = 0; i<pProjectList->GetPictureList().GetCount(); i++)
+	m_PictureList.DeleteString( nCurSel );
+	if( m_PictureList.GetCount() > nCurSel )
+		m_PictureList.SetCurSel( nCurSel );
+	else if (m_PictureList.GetCount() > 0)
+		m_PictureList.SetCurSel( nCurSel - 1 );
+	else
+		m_PictureList.SetCurSel( -1 );
+	m_PictureBox.SetPicture( GetSelectedPictureObject() );
+	for( std::list< CPictureObject* >::const_iterator iterPict = mlistPicsToAdd.begin();
+			 iterPict != mlistPicsToAdd.end();
+			 ++iterPict )
 	{
-		POSITION pos = pProjectList->GetPictureList().FindIndex(i);
-		if (pos!= NULL)
+		if( (*iterPict)->GetID() == nCurSelId )
 		{
-			CPictureObject *pPicture = pProjectList->GetPictureList().GetAt(pos);
-			if (pPicture != NULL)
-			{
-				if (pPicture->GetID() == nCurSelId)
-				{
-					// set the delete flag on so it will be deleted when the dialog box is closed
-					pPicture->SetToBeDeleted();
-					m_PictureList.DeleteString(nCurSel);
-					if (m_PictureList.GetCount() > nCurSel)
-					{
-						m_PictureList.SetCurSel(nCurSel);
-						m_PictureBox.SetPictureID(m_PictureList.GetItemData(nCurSel));
-					}
-					else if (m_PictureList.GetCount() > 0)
-					{
-						m_PictureList.SetCurSel(nCurSel-1);
-						m_PictureBox.SetPictureID(m_PictureList.GetItemData(nCurSel-1));
-					}
-					else
-					{
-						m_PictureList.SetCurSel(-1);
-						m_PictureBox.SetPictureBlank();
-					}
-				}
-			}
+			mlistPicsToAdd.remove( *iterPict );
+			return;
 		}
 	}
-	
+	msetIdsToDelete.insert( nCurSelId );
 }
 
 void CPictureFolder::OnOK() 
 {
 	m_PictureBox.SetPictureBlank();
-	
-	CProject *pProjectList = activeProject;
-	
-	for (int i = pProjectList->GetPictureList().GetCount()-1; i>=0; i--)
+
+	for( std::set< int >::const_iterator iterToDelete = msetIdsToDelete.begin();
+			 iterToDelete != msetIdsToDelete.end();
+			 ++iterToDelete )
+		mpProject->DeletePicture( *iterToDelete );
+	while( !mlistPicsToAdd.empty() )
 	{
-		POSITION pos = pProjectList->GetPictureList().FindIndex(i);
-		if (pos!= NULL)
-		{
-			CPictureObject *pPicture = pProjectList->GetPictureList().GetAt(pos);
-			if (pPicture != NULL)
-			{
-				if (pPicture->GetToBeDeleted() == true)
-				{
-					delete pPicture;
-					pProjectList->GetPictureList().RemoveAt(pos);
-				}
-			}
-		}
+		mpProject->AddPicture( mlistPicsToAdd.back() );
+		mlistPicsToAdd.pop_back();
 	}
-	CheckPictureRefs();
 
 	CDialog::OnOK();
 }
@@ -173,59 +118,28 @@ void CPictureFolder::OnOK()
 void CPictureFolder::OnCancel() 
 {
 	m_PictureBox.SetPictureBlank();
-	
-	CProject *pProjectList = activeProject;
-	
-	for (int i = pProjectList->GetPictureList().GetCount()-1; i>=0; i--)
-	{
-		POSITION pos = pProjectList->GetPictureList().FindIndex(i);
-		if (pos!= NULL)
-		{
-			CPictureObject *pPicture = pProjectList->GetPictureList().GetAt(pos);
-			if (pPicture != NULL)
-			{
-				if (pPicture->GetToBeAdded())
-				{
-					delete pPicture;
-					pProjectList->GetPictureList().RemoveAt(pos);
-				}
-			}
-		}
-	}
-
-
 	CDialog::OnCancel();
 }
 
 BOOL CPictureFolder::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
-	
-	for (int i = 0; i<mpProject->GetPictureList().GetCount(); i++)
+
+	POSITION pos = mpProject->GetPictureList().GetHeadPosition();
+	while( pos )
 	{
-		POSITION pos = mpProject->GetPictureList().FindIndex(i);
-		if (pos!= NULL)
-		{
-			CPictureObject *pPicture = mpProject->GetPictureList().GetAt(pos);
-			if (pPicture != NULL)
-			{
-				pPicture->SetToBeAdded(false);
-				pPicture->SetToBeDeleted(false);
-				TCHAR Value[80];
-				_ltot(pPicture->GetID(), Value, 10);
-				m_PictureList.SetItemData(m_PictureList.AddString(Value), pPicture->GetID());
-			}
-		}
+		int nID = mpProject->GetPictureList().GetNext( pos )->GetID();
+		CString sVal;
+		sVal.Format( _T("%d"), nID );
+		m_PictureList.SetItemData( m_PictureList.AddString( sVal ), nID );
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
+
 void CPictureFolder::MultiFileDialog() 
 {
-	CStringArray m_FileList;
-	m_FileList.RemoveAll();
-
 	// create the open dialog box
 	CPreviewFileDlg BrowseWnd(
 		TRUE, 
@@ -236,56 +150,51 @@ void CPictureFolder::MultiFileDialog()
 		CWnd::GetActiveWindow());
 
 	// proceed to setup the file buffer size
-	BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
-	TCHAR* pc = new TCHAR[MAX_PATH];
-	BrowseWnd.m_ofn.lpstrFile = pc;
-    BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
+	TCHAR szFileBuf[8192];
+	BrowseWnd.m_ofn.nMaxFile = _elements(szFileBuf);
+	BrowseWnd.m_ofn.lpstrFile = szFileBuf;
+	BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
 
-	// call method to invoke the file dialog box
-	int iReturn = BrowseWnd.DoModal();
-		
-	
-	if(iReturn == IDOK)   
-	{
-		CString szPathName;
-		POSITION pos;
-
-		// do loop to get all selected files
-		for (pos = BrowseWnd.GetStartPosition(); pos != NULL; )
-		{
-			// get the file name 
-			szPathName = BrowseWnd.GetNextPathName(pos);
-	
-			// add the file name to the file list
-			m_FileList.Add(szPathName);				
-		}
-	}
-
-	delete [] pc; 
-	
-	for (int i=0; i<m_FileList.GetSize(); i++)
+	if( BrowseWnd.DoModal() == IDOK )   
 	{
 		int nLargestId;
 		// change this line later for smallest available id
 		if (m_PictureList.GetCount() > 0)
-			nLargestId = m_PictureList.GetItemData(m_PictureList.GetCount()-1) + 1;
+			nLargestId = m_PictureList.GetItemData( m_PictureList.GetCount() - 1 ) + 1;
 		else
 			nLargestId = 100;
-		
-		// load the picture into the picture list collection
-		mpProject->LoadPictureFile(m_FileList.GetAt(i), nLargestId);
-		
-		TCHAR Value[80];
-		_ltot(nLargestId, Value, 10);
-		m_PictureList.SetItemData(m_PictureList.AddString(Value), nLargestId);	
+
+		for( POSITION pos = BrowseWnd.GetStartPosition(); pos; )
+		{
+			// load the picture into the picture list collection
+			int nID = nLargestId++;
+			CPictureObject* pPict = new CPictureObject( nID, BrowseWnd.GetNextPathName( pos ) );
+			if( !pPict->IsValid() )
+			{
+				delete pPict;
+				continue;
+			}
+			for( std::list< CPictureObject* >::const_iterator iterPict = mlistPicsToAdd.begin();
+					 iterPict != mlistPicsToAdd.end();
+					 ++iterPict )
+			{
+				if( (*iterPict)->GetID() == nID )
+				{
+					mlistPicsToAdd.remove( *iterPict );
+					break;
+				}
+			}
+			mlistPicsToAdd.push_back( pPict );
+			CString sVal;
+			sVal.Format( _T("%d"), nID );
+			m_PictureList.SetItemData( m_PictureList.AddString( sVal ), nID );
+		}
 	}
-	
-	m_FileList.RemoveAll();
 }
 
 void CPictureFolder::UpdateSingleFileDialog() 
 {
-	int nCurSel = m_PictureList.GetCurSel();
+	int nCurSelId = m_PictureList.GetItemData( m_PictureList.GetCurSel() );
 
 	// create the open dialog box
 	CPreviewFileDlg BrowseWnd(
@@ -297,141 +206,53 @@ void CPictureFolder::UpdateSingleFileDialog()
 		CWnd::GetActiveWindow());
 
 	// proceed to setup the file buffer size
+	TCHAR szFileBuf[MAX_PATH];
 	BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
-	TCHAR* pc = new TCHAR[MAX_PATH];
-	BrowseWnd.m_ofn.lpstrFile = pc;
-    BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
+	BrowseWnd.m_ofn.lpstrFile = szFileBuf;
+	BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
 
-	// call method to invoke the file dialog box
-	int iReturn = BrowseWnd.DoModal();
-		
-	CString szPathName;
-	if(iReturn == IDOK)   
-	{		
-		POSITION pos;
-
-		// do loop to get all selected files
-		for (pos = BrowseWnd.GetStartPosition(); pos != NULL; )
+	if( BrowseWnd.DoModal() == IDOK )
+	{
+		CPictureObject* pPict = new CPictureObject( nCurSelId, BrowseWnd.GetPathName() );
+		if( !pPict->IsValid() )
 		{
-			// get the file name 
-			szPathName = BrowseWnd.GetNextPathName(pos);
-
-			int nId = m_PictureList.GetItemData(nCurSel);
-			// load the picture into the picture list collection
-			GetSelectedPictureObject()->LoadFile(szPathName, nId);
+			delete pPict;
+			return;
 		}
+		for( std::list< CPictureObject* >::const_iterator iterPict = mlistPicsToAdd.begin();
+				 iterPict != mlistPicsToAdd.end();
+				 ++iterPict )
+		{
+			if( (*iterPict)->GetID() == nCurSelId )
+			{
+				mlistPicsToAdd.remove( *iterPict );
+				break;
+			}
+		}
+		mlistPicsToAdd.push_back( pPict );
 	}
-
-	delete [] pc; 
-	
 }
 
-
-CPictureObject * CPictureFolder::GetSelectedPictureObject() 
+CPictureObject * CPictureFolder::GetSelectedPictureObject()
 {
 	if (m_PictureList.GetCurSel() == -1)
 		return NULL;
-
-	int nCurSel = m_PictureList.GetItemData(m_PictureList.GetCurSel());
-
-	for (int i = 0; i<mpProject->GetPictureList().GetCount(); i++)
+	int nID = m_PictureList.GetItemData( m_PictureList.GetCurSel() );
+	for( std::list< CPictureObject* >::const_iterator iterPict = mlistPicsToAdd.begin();
+			 iterPict != mlistPicsToAdd.end();
+			 ++iterPict )
 	{
-		POSITION pos = mpProject->GetPictureList().FindIndex(i);
-		if (pos!= NULL)
-		{
-			CPictureObject *pPicture = mpProject->GetPictureList().GetAt(pos);
-			if (pPicture != NULL)
-			{
-				if (pPicture->GetID() == nCurSel)
-				{
-					return pPicture;
-				}
-			}
-		}
+		if( (*iterPict)->GetID() == nID )
+			return (*iterPict);
 	}
-	return NULL;	
+	return mpProject->FindPicture( nID );
 }
 
 void CPictureFolder::OnSelchangePicturelist() 
 {
 	if (m_PictureList.GetCurSel() == -1)
 		return;
-
-	int nCurSel = m_PictureList.GetItemData(m_PictureList.GetCurSel());
-
-	for (int i = 0; i<mpProject->GetPictureList().GetCount(); i++)
-	{
-		POSITION pos = mpProject->GetPictureList().FindIndex(i);
-		if (pos!= NULL)
-		{
-			CPictureObject *pPicture = mpProject->GetPictureList().GetAt(pos);
-			if (pPicture != NULL)
-			{
-				if (pPicture->GetID() == nCurSel)
-				{
-					m_PictureBox.SetPictureID(nCurSel);
-				}
-			}
-		}
-	}
-	
-}
-
-// search every picture id property and ensure it's id is still valid
-void CPictureFolder::CheckPictureRefs() 
-{
-	// do loops to search every picture id property and ensure it's id is still valid
-	for (int i=0; i<mpProject->GetDclFormList().GetCount(); i++)
-	{
-		POSITION pos = mpProject->GetDclFormList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CDclFormObject *pDclObject = mpProject->GetDclFormList().GetAt(pos);
-			if (pDclObject != NULL)
-			{
-				// call method search this dcl form's controls for invalide picture id's
-				SearchPictureRefs(pDclObject);
-			}
-		}	
-	}
-	
-}
-
-void CPictureFolder::SearchPictureRefs(CDclFormObject *pDclObject) 
-{
-	for (int i=0; i<pDclObject->GetControlList().GetCount(); i++)
-	{
-		POSITION pos = pDclObject->GetControlList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CDclControlObject *pControl = pDclObject->GetControlList().GetAt(pos);
-			int nPictureId = pControl->GetLngProperty(nPicture);
-			if (nPictureId > -1)
-			{
-				if (!FindPictureId(nPictureId))
-				{
-					pControl->SetLongProperty(nPicture, 0);
-				}
-			}
-			int nPressedPictureId = pControl->GetLngProperty(nPressedPicture);
-			if (nPressedPictureId > -1)
-			{
-				if (!FindPictureId(nPressedPictureId))
-				{
-					pControl->SetLongProperty(nPressedPicture, 0);
-				}
-			}
-			int nIconId = pControl->GetLngProperty(nIcon);
-			if (nIconId > -1)
-			{
-				if (!FindPictureId(nIconId))
-				{
-					pControl->SetLongProperty(nIcon, 0);
-				}
-			}
-		}
-	}
-	
+	m_PictureBox.SetPicture( GetSelectedPictureObject() );
 }
 
 void CPictureFolder::OnUpdate() 

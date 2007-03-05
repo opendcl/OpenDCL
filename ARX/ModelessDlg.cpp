@@ -41,9 +41,9 @@ HWND CModelessDialogX::GetHWnd() const
 	return mpOwner->m_hWnd;
 }
 
-bool CModelessDialogX::CreateModeless() const
+bool CModelessDialogX::CreateModeless( UINT nID ) const
 {
-	return (mpOwner->Create( IsResizable()? IDD_RESIZEABLE : IDD_MODALDIALOG ) != FALSE);
+	return mpOwner->Create( IsResizable()? IDD_RESIZEABLE : IDD_MODALDIALOG );
 }
 
 void CModelessDialogX::CloseDialog(int nStatus) const
@@ -66,6 +66,7 @@ bool CModelessDialogX::SetMinMaxSize( const CSize& min, const CSize& max )
 
 CModelessDlg::CModelessDlg(CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/)
 : CSnapDlg(pSourceForm, CModelessDlg::IDD, pParent)
+, mpParent( pParent )
 , mDialogX( *this, pSourceForm )
 , mnX( (pParams && pParams->lpData)? ((LPPOINT)pParams->lpData)->x : -1 )
 , mnY( (pParams && pParams->lpData)? ((LPPOINT)pParams->lpData)->y : -1 )
@@ -80,6 +81,11 @@ CModelessDlg::CModelessDlg(CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/,
 
 CModelessDlg::~CModelessDlg()
 {
+}
+
+bool CModelessDlg::Create( UINT nTemplateID )
+{
+	return (__super::Create( nTemplateID, mpParent ) != FALSE);
 }
 
 BEGIN_MESSAGE_MAP(CModelessDlg, CSnapDlg)
@@ -259,7 +265,7 @@ BOOL CModelessDlg::OnInitDialog()
 		rcThis.Height(),
 		false);	
 
-	SetFocus();
+	//SetFocus();
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
@@ -312,30 +318,17 @@ void CModelessDlg::OnSize(UINT nType, int cx, int cy)
 
 void CModelessDlg::SetTitleBarIcon(int nPictureID)
 {
-	// set start position for navigating Pictures
-	POSITION pos = mDialogX.GetSourceForm()->GetProject()->GetPictureList().GetHeadPosition();
-
-	int nCount = 0;
-
-	SetIcon(NULL, FALSE);
+	SetIcon( NULL, FALSE );
 	
-	if (m_hIconAcad != NULL)
-		DestroyIcon(m_hIconAcad);
+	if( m_hIconAcad )
+		DestroyIcon( m_hIconAcad );
 	
 	CPictureObject* pPicture = mDialogX.GetSourceForm()->GetProject()->FindPicture( nPictureID );
 	if( pPicture )
-	{
-		// get the icon
 		m_hIconAcad = pPicture->CloneIcon();
-		// set the icon
-		SetIcon(m_hIconAcad, FALSE);
-		return;
-	}
-	
-	// load and display the Acad Small icon
-	HMODULE hRes = _hdllInstance;		
-	m_hIconAcad = LoadIcon(hRes, MAKEINTRESOURCE(IDI_DMICON));
-	SetIcon(m_hIconAcad, FALSE);
+	else
+		m_hIconAcad = CopyIcon( AfxGetApp()->GetMainWnd()->GetIcon( FALSE ) );
+	SetIcon( m_hIconAcad, FALSE );
 }
 
 
@@ -471,7 +464,7 @@ BOOL CModelessDlg::PreTranslateMessage(MSG* pMsg)
 			}
 		}
 		TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
-		if( pControl && pControl->GetControlType() )
+		if( pControl && pControl->GetControlType() == CtlActiveX )
 			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
 	}
 

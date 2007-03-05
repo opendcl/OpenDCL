@@ -217,100 +217,100 @@ void CDclControlObject::ClearStream()
 	m_pStream = NULL;
 }
 
-IOStatus CDclControlObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
-{
-  fprintf(pFile, "\nCArxControlObject");
-
-  int nCount;
-  BOOL bImageList;
-  POSITION pos;
-
-  int nThisVersion = 6;
-  writeInt(pFile, nThisVersion);
-  writeString(pFile, msAxTypeName);
-  writeLong(pFile, mType);
-  writeShort(pFile, m_ClientHeight);
-  //m_PurchaseState = nCurrentPurchaseMode;
-  writeInt(pFile, m_PurchaseState);
-  writeInt(pFile, mnID);
-
-  // serialize the image if it exists
-  if (mpImageList != NULL)
-  {
-    bImageList = TRUE;
-    writeBOOL(pFile, bImageList);	
-    mpImageList->WriteToTextFile(pFile, fileName);
-  }
-  else
-  {
-    bImageList = FALSE;			
-    writeBOOL(pFile, bImageList);
-  }
-
-  if (mType == CtlActiveX)
-  {
-    // save the activeX info.
-    writeString(pFile, m_sLicenseKey);
-    writeString(pFile, m_sBaseCode);
-    writeBOOL(pFile, m_bLicenseChecked);
-    writeCLSID(pFile, m_clsid);
-    try
-    {		
-      LARGE_INTEGER nDisplacement;
-      ULONG nBytesRead;
-      ULONG nBytesLeft;
-      ULARGE_INTEGER iSeekPtr;
-      HRESULT hr;
-
-      nDisplacement.QuadPart = 0;
-
-      if (m_pStream) {
-        hr = m_pStream->Seek( nDisplacement, STREAM_SEEK_CUR, &iSeekPtr );
-        nBytesLeft = ULONG( iSeekPtr.QuadPart );
-
-        if (nBytesLeft == 0 && m_nTotalBytes > 0)
-          nBytesLeft = m_nTotalBytes;
-
-        hr = m_pStream->Seek( nDisplacement, STREAM_SEEK_SET, NULL );
-
-        BYTE* abData = new BYTE[nBytesLeft];
-        hr = m_pStream->Read( abData, nBytesLeft, &nBytesRead );
-        if ( nBytesRead > 0 ) {
-          writeBool(pFile, true);
-          writeBits(pFile, abData, nBytesRead);
-        } else {
-          writeBool(pFile, false);
-        }
-      } else {
-        writeBool(pFile, false);
-      }
-    }
-    catch( CFileException* pException )
-    {
-      pException->Delete();
-    }
-  }
-  // set counter for ArxControls
-  nCount = (int)mProperties.GetCount();
-
-  writeInt(pFile, nCount);
-
-  // set start position for navigating objects
-  pos = mProperties.GetHeadPosition();
-  // do loop to navigate objects
-  while (pos != NULL)
-  {
-    // get current object
-    RefCountedPtr< CPropertyObject > pProp = mProperties.GetNext(pos);
-
-    // put object into archive
-    pProp->WriteToTextFile(pFile);
-
-    // increment counter
-    nCount--;
-  }
-	return statOK;
-}
+//IOStatus CDclControlObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
+//{
+//  fprintf(pFile, "\nCArxControlObject");
+//
+//  int nCount;
+//  BOOL bImageList;
+//  POSITION pos;
+//
+//  int nThisVersion = 6;
+//  writeInt(pFile, nThisVersion);
+//  writeString(pFile, msAxTypeName);
+//  writeLong(pFile, mType);
+//  writeShort(pFile, m_ClientHeight);
+//  //m_PurchaseState = nCurrentPurchaseMode;
+//  writeInt(pFile, m_PurchaseState);
+//  writeInt(pFile, mnID);
+//
+//  // serialize the image if it exists
+//  if (mpImageList != NULL)
+//  {
+//    bImageList = TRUE;
+//    writeBOOL(pFile, bImageList);	
+//    mpImageList->WriteToTextFile(pFile, fileName);
+//  }
+//  else
+//  {
+//    bImageList = FALSE;			
+//    writeBOOL(pFile, bImageList);
+//  }
+//
+//  if (mType == CtlActiveX)
+//  {
+//    // save the activeX info.
+//    writeString(pFile, m_sLicenseKey);
+//    writeString(pFile, m_sBaseCode);
+//    writeBOOL(pFile, m_bLicenseChecked);
+//    writeCLSID(pFile, m_clsid);
+//    try
+//    {		
+//      LARGE_INTEGER nDisplacement;
+//      ULONG nBytesRead;
+//      ULONG nBytesLeft;
+//      ULARGE_INTEGER iSeekPtr;
+//      HRESULT hr;
+//
+//      nDisplacement.QuadPart = 0;
+//
+//      if (m_pStream) {
+//        hr = m_pStream->Seek( nDisplacement, STREAM_SEEK_CUR, &iSeekPtr );
+//        nBytesLeft = ULONG( iSeekPtr.QuadPart );
+//
+//        if (nBytesLeft == 0 && m_nTotalBytes > 0)
+//          nBytesLeft = m_nTotalBytes;
+//
+//        hr = m_pStream->Seek( nDisplacement, STREAM_SEEK_SET, NULL );
+//
+//        BYTE* abData = new BYTE[nBytesLeft];
+//        hr = m_pStream->Read( abData, nBytesLeft, &nBytesRead );
+//        if ( nBytesRead > 0 ) {
+//          writeBool(pFile, true);
+//          writeBits(pFile, abData, nBytesRead);
+//        } else {
+//          writeBool(pFile, false);
+//        }
+//      } else {
+//        writeBool(pFile, false);
+//      }
+//    }
+//    catch( CFileException* pException )
+//    {
+//      pException->Delete();
+//    }
+//  }
+//  // set counter for ArxControls
+//  nCount = (int)mProperties.GetCount();
+//
+//  writeInt(pFile, nCount);
+//
+//  // set start position for navigating objects
+//  pos = mProperties.GetHeadPosition();
+//  // do loop to navigate objects
+//  while (pos != NULL)
+//  {
+//    // get current object
+//    RefCountedPtr< CPropertyObject > pProp = mProperties.GetNext(pos);
+//
+//    // put object into archive
+//    pProp->WriteToTextFile(pFile);
+//
+//    // increment counter
+//    nCount--;
+//  }
+//	return statOK;
+//}
 
 void CDclControlObject::Serialize(CArchive& ar)
 {
@@ -368,7 +368,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 					hr = m_pStream->Seek( nDisplacement, STREAM_SEEK_SET, NULL );
 					while( nBytesLeft > 0 )
 					{
-						hr = m_pStream->Read( abData, min( nBytesLeft, sizeof( abData ) ), &nBytesRead );
+						hr = m_pStream->Read( abData, std::min<ULONG>( nBytesLeft, sizeof( abData ) ), &nBytesRead );
 						if ( nBytesRead > 0 )
 						{
 							ar.Write( abData, nBytesRead );
@@ -404,6 +404,8 @@ void CDclControlObject::Serialize(CArchive& ar)
 		long lType;
 		ar >> lType;
 		mType = (ControlType)lType;
+		if( mType == -1 )
+			mType = CtlForm; //correct control type for controls from older ODC files
 		ar >> m_ClientHeight;
 		ar >> m_PurchaseState;
 
@@ -460,7 +462,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 					
 						while( nBytesLeft > 0 )
 						{
-							nBytesToRead = min( nBytesLeft, sizeof( abData ) );
+							nBytesToRead = std::min<ULONG>( nBytesLeft, sizeof( abData ) );
 							ar.Read( abData, nBytesToRead );
 							m_pStream->Write( abData, nBytesToRead, NULL );
 							nBytesLeft -= nBytesToRead;
@@ -514,80 +516,77 @@ void CDclControlObject::Serialize(CArchive& ar)
 			m_pUseRightOffset = GetPropertyObject(nUseRightFromRight);
 			m_pUseBottomOffset = GetPropertyObject(nUseBottomFromBottom);
 		}
+		else
+		{
+			mProperties.Serialize(ar);
+			// here were are going to add the font of this object to the font collection
+			// before any pictures are loaded or any dialogs are displayed.
+			theWorkspace.GetFontCollection().GetFont(this, NULL);
+		}
 	}
 
-	if (nThisVersion == 1)
-	{
-		mProperties.Serialize(ar);
-		// here were are going to add the font of this object to the font collection
-		// before any pictures are loaded or any dialogs are displayed.
-		theWorkspace.GetFontCollection().GetFont(this, NULL);
-	}
 
 	if (m_PurchaseState < 0)
 		m_PurchaseState = 0;
 
-	// this is done to remove any tool tip text properties 	
+	// remove any properties that shouldn't have been persisted or that were added erroneously in the past
 	if (!ar.IsStoring())
 	{
-		POSITION pos;
-		INT_PTR nCount = mProperties.GetCount() - 1;
-		while (nCount > 0)
-		{		
-			pos = mProperties.FindIndex(nCount);
-			RefCountedPtr< CPropertyObject > pSourceProp = mProperties.GetAt(pos);
-			
-			
+		POSITION pos = mProperties.GetHeadPosition();
+		while (pos)
+		{
+			POSITION posAt = pos;
+			RefCountedPtr< CPropertyObject > pSourceProp = mProperties.GetNext(pos);
 			if (mType == CtlGrid)
 			{
 				if (pSourceProp->GetID() == nDragnDropToAutoCAD)
-					mProperties.RemoveAt(pos);
+					mProperties.RemoveAt(posAt);
 				if (pSourceProp->GetID() == nDragnDropFromControl)
-					mProperties.RemoveAt(pos);
+					mProperties.RemoveAt(posAt);
 				if (pSourceProp->GetID() == nDragnDropFromAutoCAD)
-					mProperties.RemoveAt(pos);
+					mProperties.RemoveAt(posAt);
 				if (pSourceProp->GetID() == nDragnDropBegin)
-					mProperties.RemoveAt(pos);
+					mProperties.RemoveAt(posAt);
 				if (pSourceProp->GetID() == nDragnDropAllowBegin)
-					mProperties.RemoveAt(pos);
+					mProperties.RemoveAt(posAt);
 				if (pSourceProp->GetID() == nDragnDropAllowDrop)
-					mProperties.RemoveAt(pos);
+					mProperties.RemoveAt(posAt);
 				if (pSourceProp->GetID() == nEventReturnPressed)
-					mProperties.RemoveAt(pos);
+					mProperties.RemoveAt(posAt);
 			}
 			
 			if (pSourceProp->GetID() == nAcadColor && mType == CtlFrame)
-				mProperties.RemoveAt(pos);
+				mProperties.RemoveAt(posAt);
 			if (pSourceProp->GetID() == nForeColor && mType == CtlFrame)
-				mProperties.RemoveAt(pos);
+				mProperties.RemoveAt(posAt);
 			if (pSourceProp->GetID() == nTabOrder)
-				mProperties.RemoveAt(pos);
+				mProperties.RemoveAt(posAt);
 			if (pSourceProp->GetID() == nLabelColor)
-				mProperties.RemoveAt(pos);
+				mProperties.RemoveAt(posAt);
 			if (pSourceProp->GetID() == nEventDblClicked && mType == CtlStdButton)
-				mProperties.RemoveAt(pos);
+				mProperties.RemoveAt(posAt);
 			if (pSourceProp->GetID() == nEventDblClicked && mType == CtlGraphicButton)
-				mProperties.RemoveAt(pos);
+				mProperties.RemoveAt(posAt);
 			
 			/*if (pSourceProp->GetID() == nComboBoxStyle && mType == CtlComboBox)
 					pSourceProp->GetLongValue() = 2;*/
 			if (pSourceProp->GetID() == nHScrollBar && mType == CtlListBox)
-				mProperties.RemoveAt(pos);
+				mProperties.RemoveAt(posAt);
 			if (pSourceProp->GetID() == nAllowOrbiting && pSourceProp->GetType() == PropBool)
-				mProperties.RemoveAt(pos);
+				mProperties.RemoveAt(posAt);
 			
 			if (pSourceProp->GetID() == nToolTipText && mType == CtlLabel)
-				mProperties.RemoveAt(pos);
+				mProperties.RemoveAt(posAt);
 			
 			if (pSourceProp->GetID() == nTabLabelAlign)
-				mProperties.RemoveAt(pos);
+				mProperties.RemoveAt(posAt);
 			if (pSourceProp->GetID() == nTabSelected)
-				mProperties.RemoveAt(pos);
+				mProperties.RemoveAt(posAt);
 			
-			nCount--;
+			if (pSourceProp->GetID() == nImageList && (mType == CtlGraphicButton || mType == CtlPictureBox))
+				mProperties.RemoveAt(posAt);
 		}
 	}
-	
 }
 
 size_t CDclControlObject::CountPropertyListItems(PropertyId nID)
@@ -920,53 +919,6 @@ bool CDclControlObject::GetBoolProperty(PropertyId nID) const
 	return false;
 }
 
-short CDclControlObject::FindPropertyIndex(PropertyId nID) const
-{
-	// create a position variable to hold the counter increment
-	POSITION pos;	
-	int nCount;
-	
-	// set counter for Properties
-	nCount = 0;
-
-	// do loop to navigate Arx Controls	
-	while (nCount < mProperties.GetCount())
-	{
-		// get position
-		pos = mProperties.FindIndex(nCount);
-		// get current PropertyObject
-		RefCountedPtr< CPropertyObject > pProperty = mProperties.GetAt(pos);
-		// if the name of property matches
-		if (pProperty->GetID() == nID)
-		{
-			if (nID == nObjectBrowser && nCount > 4)
-			{
-				const_cast<CDclControlObject*>(this)->mProperties.RemoveAt(pos);
-				pos = mProperties.GetHeadPosition();
-				const_cast<CDclControlObject*>(this)->mProperties.InsertAfter(pos, pProperty);
-				return 1;
-			}
-			if (nID == nGlobalVarName && nCount > 5)
-			{
-				const_cast<CDclControlObject*>(this)->mProperties.RemoveAt(pos);
-				pos = mProperties.GetHeadPosition();
-				mProperties.GetNext(pos);
-				const_cast<CDclControlObject*>(this)->mProperties.InsertAfter(pos, pProperty);
-				return 2;
-			}
-
-			// return the value
-			return nCount;
-		}
-		// increment counter
-		nCount++;
-	}
-	nCount = 0;
-	//ASSERT(nCount == 0);
-	
-	return nNotSet;
-}
-
 RefCountedPtr< CPropertyObject > CDclControlObject::GetMethods() const
 { 
 	POSITION posProp = mProperties.GetHeadPosition();
@@ -1027,9 +979,9 @@ void CDclControlObject::ClearProperties()
 	POSITION posProp = mProperties.GetHeadPosition();
 	while (posProp)
 	{
-		RefCountedPtr< CPropertyObject > pProperty = mProperties.GetNext(posProp);
-		assert(pProperty != NULL);
-		assert(!IsBadWritePtr(pProperty, sizeof(CPropertyObject)));
+		RefCountedPtr< CPropertyObject > pProp = mProperties.GetNext(posProp);
+		assert( pProp != NULL );
+		assert(!IsBadWritePtr(pProp, sizeof(CPropertyObject)));
 	}
 #endif
 	mProperties.RemoveAll();
@@ -1037,52 +989,32 @@ void CDclControlObject::ClearProperties()
 
 void CDclControlObject::ResetProperty(PropertyId nId)
 {
-	// create a position variable to hold the counter increment
-	POSITION pos;	
-		
-	// set counter for CPropertyObject
-	int nCount = mProperties.GetCount()-1;
-
-	while(nCount >= 0)
+	POSITION posProp = mProperties.GetHeadPosition();
+	while (posProp)
 	{
-		// get position
-		pos = mProperties.FindIndex(nCount);
-		
-		// get current property
-		RefCountedPtr< CPropertyObject > pPropObject = mProperties.GetAt(pos);
-		if (pPropObject->GetID() == nId)
+		RefCountedPtr< CPropertyObject > pProp = mProperties.GetNext(posProp);
+		assert( pProp != NULL );
+		if( pProp->GetID() == nId )
 		{
-			// clear any lists in this control
-			pPropObject->SetStringValue(NULL);
+			pProp->clear();
 			return;
 		}
-		// increment counter
-		nCount--;
 	}
 }
 
 void CDclControlObject::RemoveProperty(PropertyId nId)
 {
-	// create a position variable to hold the counter increment
-	POSITION pos;	
-		
-	// set counter for CPropertyObject
-	int nCount = mProperties.GetCount()-1;
-
-	while(nCount >= 0)
+	POSITION posProp = mProperties.GetHeadPosition();
+	while (posProp)
 	{
-		// get position
-		pos = mProperties.FindIndex(nCount);
-		
-		// get current property
-		RefCountedPtr< CPropertyObject > pPropObject = mProperties.GetAt(pos);
-		if (pPropObject->GetID() == nId)
+		POSITION posAt = posProp;
+		RefCountedPtr< CPropertyObject > pProp = mProperties.GetNext(posProp);
+		assert( pProp != NULL );
+		if( pProp->GetID() == nId )
 		{
-			mProperties.RemoveAt(pos);
+			mProperties.RemoveAt( posAt );
 			return;
 		}
-		// increment counter
-		nCount--;
 	}
 }
 
@@ -1162,6 +1094,8 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
 	long lType;
   if (!readLong(sFile, lType)) return statInvalidFormat;
 	mType = (ControlType)lType;
+	if( mType == -1 )
+		mType = CtlForm; //correct control type for controls from older ODC files
   if (!readShort(sFile, m_ClientHeight)) return statInvalidFormat;
   if (!readInt(sFile, m_PurchaseState)) return statInvalidFormat;
   if (!readInt(sFile, mnID)) return statInvalidFormat;

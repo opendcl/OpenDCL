@@ -120,28 +120,18 @@ public:
 
 public:
 	afx_msg short CountPictures();
-	//afx_msg short AddPictureToImageList(short DclFormIndex, short ArxControlIndex, short PropertyIndex, LPPICTUREDISP newPicture);
-	//afx_msg void ClearImageListPropery(short DclFormIndex, short ArxControlIndex, short PropertyIndex);
-	//afx_msg void InitImageList(short DclFormIndex, short ArxControlIndex, short PropertyIndex, short ImageWidth, short ImageHeight);	
-	//afx_msg LPPICTUREDISP GetImageListPicture(short DclFormIndex, short ArxControlIndex, short PropertyIndex, short ImageIndex);
-	//afx_msg long GetImageListPictureWidth(short DclFormIndex, short ArxControlIndex, short PropertyIndex);
-	//afx_msg long GetImageListPictureHeight(short DclFormIndex, short ArxControlIndex, short PropertyIndex);
 	afx_msg void ClearGrid();
 	afx_msg void DisplayProperties(CDclControlObject *pControl);
-	afx_msg LPPICTUREDISP GetPicture(short Index);
 	afx_msg void DeleteFlaggedControls(short DclFormIndex);
 	afx_msg short GetPictureID(short Index);
-	afx_msg void SetPictureID(short Index, short nID);
 	afx_msg BOOL SetDclParent(short Index, LPCTSTR ParentName, short TabIndex);
 	afx_msg short GetDclParentsTabIndex(short Index);
 	afx_msg short GetArxControlClientHeight(short DclFormIndex, short ArxControlIndex);
 	afx_msg BOOL IsArxControlDeleted(short DclFormIndex, short ArxControlIndex);
 	afx_msg void DisplayVaries();
-	afx_msg void LoadPicture(LPCTSTR sFileName, short nPictureTag, BOOL bApplyMask);
-	afx_msg LPPICTUREDISP LoadMaskedPicture(LPCTSTR sFileName);
+	afx_msg void LoadPicture(LPCTSTR sFileName, short nPictureTag, bool bApplyMask);
 	afx_msg void CheckPictureRefs();
 	afx_msg void DefaultFontDlg();
-	afx_msg BOOL IsPictureValid(LPPICTUREDISP NewPicture);
 	//afx_msg void SetPurchaseMode(short nPurchaseMode);
 	//afx_msg CString ImportOdcl(LPCTSTR sFileName);
 	afx_msg void ShowPropertyDlg(bool bFontActive = false, bool bImageListActive = false);

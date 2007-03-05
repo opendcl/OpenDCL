@@ -59,6 +59,7 @@ public:
 	HDIB Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount);
 	void Clone(CCeXDib* src);
 	void Draw(HDC hDC, DWORD dwX, DWORD dwY);
+	void Copy(HDC hDC, DWORD dwX, DWORD dwY);
 	LPBYTE GetBits();
 	void Clear(BYTE byVal = 0);
 

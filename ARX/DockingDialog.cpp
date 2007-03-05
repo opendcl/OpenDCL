@@ -44,9 +44,8 @@ bool CDockingDialogX::IsFloating() const
 	return (mpOwner->IsFloating() != FALSE);
 }
 
-bool CDockingDialogX::CreateModeless() const
+bool CDockingDialogX::CreateModeless( UINT nID ) const
 {
-	CMDIFrameWnd* pAcadFrame = acedGetAcadFrame();
 	CDclControlObject* pProps = mpSourceForm->GetControlProperties();
 	int nDocHeight = pProps->GetLngProperty(nHeight);
 	DWORD dwDockableSides = 0;
@@ -99,7 +98,8 @@ bool CDockingDialogX::CreateModeless() const
 	rect.bottom = rect.top + nDocHeight;
 	rect.right = rect.left + pProps->GetLngProperty(nWidth);
 
-	mpOwner->Create( pAcadFrame, _T("ObjectDCLDock"), rect);		
+	if( !mpOwner->Create( mpSourceForm->GetKeyPath(), rect, nID ) )
+		return false;
 	if (mpSourceForm->GetUUIDAsString().IsEmpty())
 	{
 		UUID uuid;
@@ -149,6 +149,7 @@ bool CDockingDialogX::GetClientRect( CRect& rcDlg ) const
 
 CDockingDialog::CDockingDialog( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CAdUiDockControlBar( ADUI_DOCK_CS_STDMOUSECLICKS | ADUI_DOCK_CS_DESTROY_ON_CLOSE )
+, mpParent( pParent )
 , mDialogX( *this, pSourceForm )
 , mbClosing( false )
 , mbHiding( false )
@@ -174,22 +175,20 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CDockingDialog message handlers
 
-BOOL CDockingDialog::Create(CWnd* pParent, LPCTSTR lpszTitle, CRect rect) 
+bool CDockingDialog::Create( LPCTSTR lpszTitle, CRect rect, UINT nID ) 
 {
-  CString title = lpszTitle;
-	CString strWndClass;
-	strWndClass = AfxRegisterWndClass (CS_DBLCLKS, LoadCursor (NULL, IDC_ARROW));	
+	CString strWndClass = AfxRegisterWndClass (CS_DBLCLKS, LoadCursor (NULL, IDC_ARROW));	
 	if (!CAdUiDockControlBar::Create (strWndClass,
-									 title,
-									 WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN,
+									 lpszTitle,
+									 WS_VISIBLE | WS_CHILD /*| WS_CLIPCHILDREN*/,
 									 rect,
-									 pParent, 
-									 IDD_DIALOGBAR_UI))
+									 mpParent, 
+									 nID))
 	{
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
 int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) 

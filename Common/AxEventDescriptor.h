@@ -38,7 +38,7 @@ public:
 public:
 	void Serialize( CArchive& ar, int nPropertyVersion );
 	IOStatus ReadFromTextFile( std::ifstream &sFile, ULONG nPropertyVersion );
-	IOStatus WriteToTextFile( FILE* pFile ) const;
+	//IOStatus WriteToTextFile( FILE* pFile ) const;
 
 #ifdef _DIAGNOSTIC
 	virtual LPCTSTR toString() const;

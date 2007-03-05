@@ -126,7 +126,7 @@ public:
 	//File I/O
 public:
 	virtual void Serialize(CArchive& ar);
-  IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
+  //IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
   IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName);
   IOStatus ReadFromTextFile4(std::ifstream &sFile, const CString &fileName);
 	

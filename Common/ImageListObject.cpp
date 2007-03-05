@@ -116,21 +116,21 @@ IOStatus CImageListObject::ReadFromTextFile1(std::ifstream &sFile, const CString
   return statOK;
 }
 
-IOStatus CImageListObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
-{
-  fprintf(pFile, "\nCImageListObject");
-  writeInt(pFile, CURRENTVERSION);
-  writeLong(pFile, m_ImageSize.cx);
-  writeLong(pFile, m_ImageSize.cy);
-
-  // if the image list is null then save a flag that indicates image list is null
-  if (m_ImageList.m_hImageList == NULL)
-    writeBOOL(pFile, true);
-  else
-  {
-    // this indicates the imagelist in not null and we are to write the image list
-    writeBOOL(pFile, false);
-    writeImageList(pFile, fileName, m_ImageList);
-  }
-	return statOK;
-}
+//IOStatus CImageListObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
+//{
+//  fprintf(pFile, "\nCImageListObject");
+//  writeInt(pFile, CURRENTVERSION);
+//  writeLong(pFile, m_ImageSize.cx);
+//  writeLong(pFile, m_ImageSize.cy);
+//
+//  // if the image list is null then save a flag that indicates image list is null
+//  if (m_ImageList.m_hImageList == NULL)
+//    writeBOOL(pFile, true);
+//  else
+//  {
+//    // this indicates the imagelist in not null and we are to write the image list
+//    writeBOOL(pFile, false);
+//    writeImageList(pFile, fileName, m_ImageList);
+//  }
+//	return statOK;
+//}

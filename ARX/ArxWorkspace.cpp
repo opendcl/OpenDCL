@@ -524,15 +524,15 @@ int CArxWorkspace::ActivateDclForm( CDclFormObject* pDclForm, DialogParams* pPar
 	if( !pParent)
 		pParent = CWnd::FromHandle(adsw_acadMainWnd());
 
+	CAcModuleResourceOverride resOverride;
 	CDialogObject* pDialog = CArxDialogObject::Create( pDclForm, pParent, pParams );
 	assert( pDialog != NULL );
 	if( !pDialog )
 		return -1;
 	UINT nID = pDialog->GetID();
-	CAcModuleResourceOverride resOverride;
 	if( pDialog->IsModeless() )
 	{
-		if( !pDialog->CreateModeless() ) //when this call returns, pDialog is no longer safe! [ORW]
+		if( !pDialog->CreateModeless( nID ) ) //when this call returns, pDialog is no longer safe! [ORW]
 			return -1;
 		return nID;
 	}

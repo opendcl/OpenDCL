@@ -355,34 +355,17 @@ void CModalVDcl::OnSize(UINT nType, int cx, int cy)
 
 void CModalVDcl::SetTitleBarIcon(int nPictureID)
 {
-	//
-	// set start position for navigating Pictures
-	POSITION pos = mDialogX.GetSourceForm()->GetProject()->GetPictureList().GetHeadPosition();
-
-	int nCount = 0;
-	bool bFoundIcon = false;
+	SetIcon( NULL, FALSE );
 	
-	CDialog::SetIcon(NULL, FALSE);
-	
-	if (m_hIconAcad != NULL)
-		DestroyIcon(m_hIconAcad);
+	if( m_hIconAcad )
+		DestroyIcon( m_hIconAcad );
 	
 	CPictureObject* pPicture = mDialogX.GetSourceForm()->GetProject()->FindPicture( nPictureID );
 	if( pPicture )
-	{
-		// get the icon
 		m_hIconAcad = pPicture->CloneIcon();
-		// set the icon
-		SetIcon(m_hIconAcad, FALSE);
-		return;
-	}
-
-	// if no icon was found to be specified, display nothing.
-  // Used to display acad icon, but no more
-	// load and display the Acad Small icon
-	HMODULE hRes = _hdllInstance;		
-	m_hIconAcad = LoadIcon(hRes, MAKEINTRESOURCE(IDI_DMICON));
-	CDialog::SetIcon(m_hIconAcad, FALSE);	
+	else
+		m_hIconAcad = CopyIcon( AfxGetApp()->GetMainWnd()->GetIcon( FALSE ) );
+	SetIcon( m_hIconAcad, FALSE );
 }
 
 void CModalVDcl::OnShowWindow(BOOL bShow, UINT nStatus) 
@@ -428,7 +411,7 @@ BOOL CModalVDcl::PreTranslateMessage(MSG* pMsg)
 			}
 		}
 		TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
-		if( pControl && pControl->GetControlType() )
+		if( pControl && pControl->GetControlType() == CtlActiveX )
 			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
 
     //This currently does not work terribly well. But I would like it to, so I am leaving

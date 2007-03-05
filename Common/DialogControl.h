@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "PropertyObject.h"
 #include "PPToolTip.h"
 
 class CDclControlObject;
 class CControlPane;
+class CArxControlServices;
 enum PropertyId;
 enum ControlType;
 
@@ -42,23 +42,23 @@ pure virtual functions of the base class and overrides any virtual functions tha
 implementation for the particular control. Typically this means adding an override of OnApplyProperty 
 and handling any properties that are specific to the control. Be sure to supermessage the base class' 
 OnApplyProperty so that common properties are correctly handled.
-3) Implement a Create() function that creates the control's window and performs any necessary 
+2) Implement a Create() function that creates the control's window and performs any necessary 
 initialization  of the control. If Create() is implemented in a base class, add an override of 
 Create() that simply supermessages the base class. This is important because the Create() function 
-should be implemented by the lowest class int he inheritance chain in order to assure that all base 
-class initialization has been completed by the time Create() executes. Insure that no bases classes 
+should be implemented by the lowest class in the inheritance chain in order to be sure that all base 
+class initialization has been completed by the time Create() executes. Ensure that no base classes 
 call Create() before initialization is complete by passing 'false' for the bCreate argument to the 
 class constructor. In the control class constructor, call Create() if and only if bCreate is true.
-4) Add an override of the virtual CWnd::PostNcDestroy() function that first calls the base class,  
+3) Add an override of the virtual CWnd::PostNcDestroy() function that first calls the base class,  
 then immediately before returning calls 'delete this' to delete 'this' instance of the control class. 
 This step is necessary because the new design gives the window control of the class' lifetime, rather 
 than the other way around as under the old scheme. Omitting this step will result in memory leaks, but 
 may not otherwise be noticeable.
-5) Combine the editor and ARX module's control handling code into a single common class with derived 
+4) Combine the editor and ARX module's control handling code into a single common class with derived 
 classes for any editor or ARX specific functionality. Some common ARX specific or editor specific 
 functionality may be added by simply including an implementation object as a member of the control 
-class
-6) Change the code for creating a new control to eliminate the extra calls and replace these with a 
+class.
+5) Change the code for creating a new control to eliminate the extra calls and replace these with a 
 single call to 'new CMyControlClass', then return the new CDialogControl by dereferencing the pointer 
 to the control and allowing the control's TDialogObjectPtr cast operator to provide a RefCountedPtr 
 that is locked to prevent automatic destruction.
@@ -74,7 +74,7 @@ control's PostNcDestroy() function.
 //destroy a CDialogControl instance at runtime (see above). Once all controls are ported to the new 
 //style, TDialogControlPtr can be changed back to a plain pointer as shown below and the current 
 //typedef for TDialogControlPtr can be removed along with the TDialogControlLockedPtr class.
-//typedef TDialogControlPtr TDialogControlPtr;
+//typedef class CDialogControl* TDialogControlPtr;
 typedef RefCountedPtr< class CDialogControl > TDialogControlPtr;
 
 
@@ -132,6 +132,9 @@ public:
 	virtual CWnd* GetControl() { return mpControl; }
 	virtual ControlType GetControlType() const;
 	virtual UINT GetControlId() const { return (mpControl? mpControl->GetDlgCtrlID() : (UINT)-1); }
+
+	// ARX specific services
+	virtual CArxControlServices* GetArxServices() { return NULL; }
 
 	// Name rendition
 public:

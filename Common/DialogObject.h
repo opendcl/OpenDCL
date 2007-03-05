@@ -59,7 +59,7 @@ public:
 	virtual bool SetDirty( bool bDirty = true ) { return false; }
 
 	// Dialog
-	virtual bool CreateModeless() const { return false; }
+	virtual bool CreateModeless( UINT nID ) const { return false; }
 	virtual void CloseDialog(int nStatus = -1) const = 0;
 	virtual INT_PTR DoModal() { return -1; }
 	virtual bool Show(bool bShow = true);

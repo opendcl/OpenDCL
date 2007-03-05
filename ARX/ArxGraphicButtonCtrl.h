@@ -5,6 +5,7 @@
 #pragma once
 
 #include "GraphicButtonCtrl.h"
+#include "ArxControlServices.h"
 #include "OleOdcDropTarget.h"
 
 
@@ -13,6 +14,7 @@
 
 class CArxGraphicButtonCtrl : public CGraphicButtonCtrl
 {
+	CArxControlServices	mArxServices;
 	COleOdcDropTarget mDropTarget;	
 
 public:
@@ -24,6 +26,7 @@ public:
 
 // DialogControl Interface
 public:
+	virtual CArxControlServices* GetArxServices() { return &mArxServices; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
 

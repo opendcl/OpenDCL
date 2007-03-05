@@ -96,51 +96,51 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
 }
 
 
-IOStatus AxInterfaceDescriptor::WriteToTextFile(FILE* pFile) const
-{
-  BOOL bProp;
-  BOOL bPropGet;
-  BOOL bPropPut;
-  BOOL bPropPutRef;
-  BOOL bPropEvent;
-  BOOL bPropMethod;
-
-  bProp = (mpProp != NULL);
-  writeBOOL(pFile, bProp);
-  if (bProp)
-    mpProp->WriteToTextFile(pFile);
-
-  bPropGet = (mpPropGet != NULL);
-  writeBOOL(pFile, bPropGet);
-  if (bPropGet)
-    mpPropGet->WriteToTextFile(pFile);
-
-  bPropPut = (mpPropPut != NULL);
-  writeBOOL(pFile, bPropPut);
-  if (bPropPut)
-    mpPropPut->WriteToTextFile(pFile);
-
-  bPropPutRef = (mpPropPutRef != NULL);
-  writeBOOL(pFile, bPropPutRef);
-  if (bPropPutRef)
-    mpPropPutRef->WriteToTextFile(pFile);
-
-  bPropEvent = (mpEvent != NULL);
-  writeBOOL(pFile, bPropEvent);
-  if (bPropEvent)
-    mpEvent->WriteToTextFile(pFile);
-
-	bPropMethod = (mpMethods != NULL);
-  writeBOOL(pFile, bPropMethod);
-  if (mpMethods)
-  {
-    int nCount = (int)mpMethods->size(); 
-    writeInt(pFile, nCount);
-		for(size_t idx = 0; idx < (size_t)nCount; ++idx)
-      mpMethods->at(idx)->WriteToTextFile(pFile);
-  }
-	return statOK;
-}
+//IOStatus AxInterfaceDescriptor::WriteToTextFile(FILE* pFile) const
+//{
+//  BOOL bProp;
+//  BOOL bPropGet;
+//  BOOL bPropPut;
+//  BOOL bPropPutRef;
+//  BOOL bPropEvent;
+//  BOOL bPropMethod;
+//
+//  bProp = (mpProp != NULL);
+//  writeBOOL(pFile, bProp);
+//  if (bProp)
+//    mpProp->WriteToTextFile(pFile);
+//
+//  bPropGet = (mpPropGet != NULL);
+//  writeBOOL(pFile, bPropGet);
+//  if (bPropGet)
+//    mpPropGet->WriteToTextFile(pFile);
+//
+//  bPropPut = (mpPropPut != NULL);
+//  writeBOOL(pFile, bPropPut);
+//  if (bPropPut)
+//    mpPropPut->WriteToTextFile(pFile);
+//
+//  bPropPutRef = (mpPropPutRef != NULL);
+//  writeBOOL(pFile, bPropPutRef);
+//  if (bPropPutRef)
+//    mpPropPutRef->WriteToTextFile(pFile);
+//
+//  bPropEvent = (mpEvent != NULL);
+//  writeBOOL(pFile, bPropEvent);
+//  if (bPropEvent)
+//    mpEvent->WriteToTextFile(pFile);
+//
+//	bPropMethod = (mpMethods != NULL);
+//  writeBOOL(pFile, bPropMethod);
+//  if (mpMethods)
+//  {
+//    int nCount = (int)mpMethods->size(); 
+//    writeInt(pFile, nCount);
+//		for(size_t idx = 0; idx < (size_t)nCount; ++idx)
+//      mpMethods->at(idx)->WriteToTextFile(pFile);
+//  }
+//	return statOK;
+//}
 
 
 void AxInterfaceDescriptor::Serialize(CArchive& ar, int nPropertyVersion)

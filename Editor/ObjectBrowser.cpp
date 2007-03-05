@@ -380,7 +380,7 @@ void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, H
 		case CtlListView:
 			LoadMethods(theWorkspace.LoadResourceString(IDS_LISTCTRLMTH), hParentItem);
 			break;
-		case -1: // a form
+		case CtlForm: // a form
 			LoadMethods("forms.mth", hParentItem);
 			break;
 			
@@ -662,6 +662,8 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 		e->ReportError();
 		e->Delete();
 	}
+	m_sClipBoardDefun2.Replace( _T("\\par"), _T("\r\n") ); //change RTF paragraph breaks to ASCII linefeeds
+	m_sClipBoardDefun2.Replace( _T("\\tab"), _T("\t") ); //change RTF tabs to ASCII tabs
 
 	return true;
 }
@@ -798,7 +800,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 							LoadFullMethod(_T("Grid.mth"), sItemText, sTitle, sDesc, sDefun1);
 							break;
 	
-						case -1: // a form
+						case CtlForm: // a form
 							if (m_pDclForm->GetType() == VdclFileDialog && pControl->GetType() != CtlFileDlgCtrl)
 								LoadFullMethod(_T("FileDlg.mth"), sItemText, sTitle, sDesc, sDefun1);
 							else

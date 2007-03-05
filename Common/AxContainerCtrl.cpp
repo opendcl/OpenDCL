@@ -766,12 +766,7 @@ bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID)
 void CAxContainerCtrl::InitToolTip()
 {
 	if (mToolTip.m_hWnd == NULL)
-	{
-		// Create ToolTip control
 		mToolTip.Create(this);
-		// Create inactive
-		mToolTip.Activate(FALSE);
-	}
 } // End of InitToolTip
 
 
@@ -1077,26 +1072,17 @@ void CAxContainerCtrl::LoadPicture(DISPID dispid, int nId)
 		Invalidate();
 		return;
 	}
-	
-	// set start position for navigating Pictures
-	POSITION pos = theWorkspace.GetActiveProject()->GetPictureList().GetHeadPosition();
 
-	// do loop to navigate Pictures
-	while (pos != NULL)
+	const CPictureObject* pPicture = mpTemplate->GetOwnerProject()->FindPicture(nId);
+	if (pPicture)
 	{
-		// get current Picture in list
-		const CPictureObject* pPicture = theWorkspace.GetActiveProject()->GetPictureList().GetNext(pos);
-		
-		if (pPicture->GetID() == nId)
+		IDispatch *pPicDisp = pPicture->GetPictureDisp();
+		if (pPicDisp != NULL)
 		{
-			IDispatch *pPicDisp = const_cast<CPictureHolder*>(&pPicture->GetPicture())->GetPictureDispatch();
-			if (pPicDisp != NULL)
-			{
-				SetPicture(dispid, pPicDisp, DISPATCH_PROPERTYPUT);
-				Invalidate();
-			}
+			SetPicture(dispid, pPicDisp, DISPATCH_PROPERTYPUT);
+			Invalidate();
 		}
-	}	
+	}
 }
 
 

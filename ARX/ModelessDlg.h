@@ -32,7 +32,7 @@ protected:
 	virtual bool IsDockable() const { return false; }
 	virtual bool IsResizable() const;
 	virtual HWND GetHWnd() const;
-	virtual bool CreateModeless() const;
+	virtual bool CreateModeless( UINT nID ) const;
 	virtual void CloseDialog(int nStatus) const;
 	virtual bool SetMinMaxSize( const CSize& min, const CSize& max );
 };
@@ -43,6 +43,7 @@ protected:
 
 class CModelessDlg : public CSnapDlg
 {
+	CWnd* mpParent;
 	CModelessDialogX mDialogX;
 	int mnX;
 	int mnY;
@@ -63,6 +64,8 @@ public:
 public:
 	CDialogObject& GetDialogObject() { return mDialogX; }
 	const CDialogObject& GetDialogObject() const { return mDialogX; }
+
+	bool Create( UINT nTemplateID );
 
 public:
 	bool IsResizable() const { return mbResizable; }

@@ -44,9 +44,8 @@ bool CResizableDockingDialogX::IsFloating() const
 	return (mpOwner->IsFloating() != FALSE);
 }
 
-bool CResizableDockingDialogX::CreateModeless() const
+bool CResizableDockingDialogX::CreateModeless( UINT nID ) const
 {
-	CMDIFrameWnd* pAcadFrame = acedGetAcadFrame();
 	CDclControlObject* pProps = mpSourceForm->GetControlProperties();
 	int nDocHeight = pProps->GetLngProperty(nHeight);
 	DWORD dwDockableSides = 0;
@@ -99,7 +98,8 @@ bool CResizableDockingDialogX::CreateModeless() const
 	rect.bottom = rect.top + nDocHeight;
 	rect.right = rect.left + pProps->GetLngProperty(nWidth);
 
-	mpOwner->Create( pAcadFrame, _T("ObjectDCLDock"), rect);		
+	if( !mpOwner->Create( mpSourceForm->GetKeyPath(), rect, nID ) )
+		return false;
 	if (mpSourceForm->GetUUIDAsString().IsEmpty())
 	{
 		UUID uuid;
@@ -149,6 +149,7 @@ bool CResizableDockingDialogX::GetClientRect( CRect& rcDlg ) const
 
 CResizableDockingDialog::CResizableDockingDialog( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CAdUiDockControlBar( ADUI_DOCK_CS_STDMOUSECLICKS | ADUI_DOCK_CS_DESTROY_ON_CLOSE )
+, mpParent( pParent )
 , mDialogX( *this, pSourceForm )
 , mbClosing( false )
 , mbHiding( false )
@@ -170,22 +171,19 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizableDockingDialog message handlers
 
-BOOL CResizableDockingDialog::Create(CWnd* pParent, LPCTSTR lpszTitle, CRect rect) 
+#include "VdclStatic.h"
+bool CResizableDockingDialog::Create( LPCTSTR lpszTitle, CRect rect, UINT nID ) 
 {
-  CString title = lpszTitle;
-	CString strWndClass;
-	strWndClass = AfxRegisterWndClass (CS_DBLCLKS, LoadCursor (NULL, IDC_ARROW));	
-  if (!CAdUiDockControlBar::Create (strWndClass,
-								   title,
-								   WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN,
-								   rect,
-                   pParent, 
-								   IDD_DIALOGBAR_UI))
+	CString strWndClass = AfxRegisterWndClass (CS_DBLCLKS, LoadCursor (NULL, IDC_ARROW));	
+  if (!CAdUiDockControlBar::Create( strWndClass, lpszTitle,
+																		WS_VISIBLE | WS_CHILD /*| WS_CLIPCHILDREN*/,
+																		rect, mpParent, nID))
 	{
-		return FALSE;
+		return false;
 	}
+	ModifyStyleEx( 0, WS_EX_CONTROLPARENT );
 
-	return TRUE;
+	return true;
 }
 
 int CResizableDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) 
@@ -399,22 +397,22 @@ void CResizableDockingDialog::GetFloatingMinSize(long* pnMinWidth, long* pnMinHe
 
 BOOL CResizableDockingDialog::PreTranslateMessage(MSG* pMsg) 
 {
-	if (pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
-    {
-		if	(pMsg->message == WM_KEYDOWN &&
-			(pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_CANCEL))
-		{
-			HWND hItem = ::GetDlgItem(m_hWnd, IDCANCEL);
-			if (hItem == NULL || ::IsWindowEnabled(hItem))
-			{
-				SendMessage(WM_COMMAND, IDCANCEL, 0);
-				return TRUE;
-			}
-		}
-		TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
-		if( pControl && pControl->GetControlType() == CtlActiveX )
-			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
-	}	
+	//if (pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
+ //   {
+	//	if	(pMsg->message == WM_KEYDOWN &&
+	//		(pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_CANCEL))
+	//	{
+	//		HWND hItem = ::GetDlgItem(m_hWnd, IDCANCEL);
+	//		if (hItem == NULL || ::IsWindowEnabled(hItem))
+	//		{
+	//			SendMessage(WM_COMMAND, IDCANCEL, 0);
+	//			return TRUE;
+	//		}
+	//	}
+	//	TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
+	//	if( pControl && pControl->GetControlType() == CtlActiveX )
+	//		return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
+	//}	
 		
 	return CAdUiDockControlBar::PreTranslateMessage(pMsg);
 }

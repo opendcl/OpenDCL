@@ -36,8 +36,7 @@
 #endif
 
 #pragma pack (push, 8)
-#pragma warning(disable: 4786 4996)
-#pragma warning(disable: 4995)
+#pragma warning(disable: 4786 4996 4355 4995)
 //#pragma warning(disable: 4098)
 
 //-----------------------------------------------------------------------------
@@ -99,7 +98,8 @@
 #include <fstream>
 
 //-----------------------------------------------------------------------------
-#include <atlimage.h>
+#include <shlwapi.h>
+#include <atlbase.h>
 #include <comutil.h>
 
 //-----------------------------------------------------------------------------

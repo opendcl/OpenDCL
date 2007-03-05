@@ -41,13 +41,12 @@ public:
 public:
 	COLORREF		m_ForeColor;
 	COLORREF		m_BackColor;
-	int		m_nDirectory;
-	
 	CBrush			*m_pStaticBrush;	
 
 public:
 	void SetAcadColor(long nColor);
 	void SetForeColor(long nColor);
+	void SetResourceIcon(UINT idIcon);
 
 protected:
 	virtual void PreSubclassWindow();

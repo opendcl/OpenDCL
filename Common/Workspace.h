@@ -34,6 +34,8 @@ public:
 
 	//Services
 	virtual CString GetUserProfilePrefix() const { return CString(); }
+	virtual HMODULE GetResourceModule() const { return GetModuleHandle( NULL ); }
+	virtual HMODULE GetLocalResourceModule() const { return GetModuleHandle( NULL ); }
 	virtual CString LoadResourceString( int nResId, HMODULE hmodRes = NULL ) const;
 	virtual bool DisplayAlert( LPCTSTR pszMessage ) const; //display alert dialog; returns true if displayed, false if suppressed
 	virtual bool DisplayStatus( LPCTSTR pszMessage ) const; //display modeless status message; returns true if displayed, false if suppressed

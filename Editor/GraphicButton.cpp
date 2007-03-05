@@ -298,25 +298,14 @@ void CGraphicButton::DrawTheIcon(CDC* pdc, RECT* rcItem, CRect *captionRect)
 
 
 	// ensure the picture holder is valid
-	try
-	{
-		short nPicType = m_pPicture->GetPicType();
-		if (nPicType == -1)	
-			return;
-
-		if (m_pPicture->GetPicture().GetPictureDispatch() == NULL)
-			return;
-	}
-	catch(...)
-	{
+	if( m_pPicture->GetWidth() <= 0 || m_pPicture->GetHeight() <= 0 )
 		return;
-	}
 	
 	if (PICTYPE_BITMAP == m_pPicture->GetPicType())
 	{
 		if (m_hBmpPic == NULL)
 			// get the bitmap
-			m_pPicture->GetPicture().m_pPict->get_Handle((OLE_HANDLE FAR *) &m_hBmpPic);
+			m_hBmpPic = m_pPicture->CloneBitmap();
 		
 		// and finish!
 		pdc->DrawState(	pt,
@@ -331,7 +320,7 @@ void CGraphicButton::DrawTheIcon(CDC* pdc, RECT* rcItem, CRect *captionRect)
 	{
 		if (m_hIconPic == NULL)
 			// get handle of the icon
-			m_pPicture->GetPicture().m_pPict->get_Handle((OLE_HANDLE FAR *) &m_hIconPic);
+			m_hIconPic = m_pPicture->CloneIcon();
 	
 		// and finish!
 		pdc->DrawState(	pt,

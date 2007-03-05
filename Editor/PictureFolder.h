@@ -5,6 +5,8 @@
 
 #include "Resource.h"
 #include "PictureBox.h"
+#include <set>
+#include <list>
 
 class CDclFormObject;
 class CPictureObject;
@@ -17,11 +19,13 @@ class CProject;
 class CPictureFolder : public CDialog
 {
 	CProject* mpProject;
+	std::set< int > msetIdsToDelete;
+	std::list< CPictureObject* > mlistPicsToAdd;
 
 // Construction
 public:
 	CPictureFolder(CProject* pProject, CWnd* pParent = NULL);   // standard constructor
-	
+	virtual ~CPictureFolder();
 
 // Dialog Data
 	//{{AFX_DATA(CPictureFolder)

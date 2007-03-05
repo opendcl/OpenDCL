@@ -28,7 +28,7 @@ protected:
 	virtual bool IsResizable() const { return false; }
 	virtual HWND GetHWnd() const;
 	virtual bool IsFloating() const;
-	virtual bool CreateModeless() const;
+	virtual bool CreateModeless( UINT nID ) const;
 	virtual void CloseDialog(int nStatus) const;
 	virtual bool GetWindowRect( CRect& rcDlg ) const;
 	virtual bool GetClientRect( CRect& rcDlg ) const;
@@ -40,6 +40,7 @@ protected:
 
 class CDockingDialog : public CAdUiDockControlBar
 {
+	CWnd* mpParent;
 	CDockingDialogX mDialogX;
 	bool mbClosing;
 	bool mbHiding;
@@ -64,11 +65,11 @@ public:
 	const CDialogObject& GetDialogObject() const { return mDialogX; }
 
 public:
-	void GetClientArea(CRect &rect);
+	virtual bool Create( LPCTSTR lpszTitle, CRect rect, UINT nID );
+	virtual void GetClientArea(CRect &rect);
 
 // Overrides
 public:
-	virtual BOOL Create(CWnd*pParent, LPCTSTR lpszTitle, CRect rect);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 private:

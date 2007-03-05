@@ -100,99 +100,100 @@ LPCTSTR labelDISPID = labelReleaseDISPID;
 LPCTSTR labelBYTE = labelReleaseBYTE;
 //#endif
 
-void writeInt(FILE* pFile, int i)
-{
-  _ftprintf(pFile, _T("\n%s%d"), labelInt, i);
-}
+//void writeInt(FILE* pFile, int i)
+//{
+//  _ftprintf(pFile, _T("\n%s%d"), labelInt, i);
+//}
+//
+//void writeLong(FILE* pFile, long i)
+//{
+//  _ftprintf(pFile, _T("\n%s%d"), labelLong, i);
+//}
+//
+//void writeDISPID(FILE* pFile, DISPID i)
+//{
+//  _ftprintf(pFile, _T("\n%s%d"), labelDISPID, i);
+//}
+//
+//void writeULONG(FILE* pFile, ULONG i)
+//{
+//  _ftprintf(pFile, _T("\n%s%d"), labelULONG, i);
+//}
+//
+//void writeShort(FILE* pFile, short i)
+//{
+//  _ftprintf(pFile, _T("\n%s%d"), labelShort, i);
+//}
+//
+//void writeVARTYPE(FILE* pFile, VARTYPE i)
+//{
+//  _ftprintf(pFile, _T("\n%s%d"), labelVARTYPE, i);
+//}
+//
+//void writeWORD(FILE* pFile, WORD i)
+//{
+//  _ftprintf(pFile, _T("\n%s%d"), labelWORD, i);
+//}
+//
+//void writeDWORD(FILE* pFile, DWORD i)
+//{
+//  _ftprintf(pFile, _T("\n%s%d"), labelDWORD, i);
+//}
+//
+//void writeBYTE(FILE* pFile, BYTE i)
+//{
+//  _ftprintf(pFile, _T("\n%s%d"), labelBYTE, i);
+//}
+//
+//void writeDouble(FILE* pFile, double d) {
+//  _ftprintf(pFile, _T("\n%s%f"), labelDouble, d);
+//}
+//
+//void writeBool(FILE* pFile, bool b)
+//{
+//	_ftprintf(pFile, _T("\n%s%s"), labelBool, (b? _T("T") : _T("F")));
+//}
+//
+//void writeBOOL(FILE* pFile, BOOL b)
+//{
+//  _ftprintf(pFile, _T("\n%s%s"), labelBool, (b? _T("T") : _T("F")));
+//}
+//
+//void writeString(FILE* pFile, CString s)
+//{
+//  s.Replace(_T("\n"), _T("\\n"));
+//  _ftprintf(pFile, _T("\n%s%s"), labelString, (LPCTSTR)s);
+//}
+//
+//void writeBits(FILE* pFile, const BYTE* pBytes, DWORD byteCount)
+//{
+//  _ftprintf(pFile, _T("\n%s%s"), labelBits, base64_encode(pBytes, byteCount, -1).c_str());
+//}
+//
+//void writeCLSID(FILE* pFile, const CLSID &clsid)
+//{
+//  writeDWORD(pFile, clsid.Data1);
+//  writeWORD(pFile, clsid.Data2);
+//  writeWORD(pFile, clsid.Data3);
+//  writeBits(pFile, clsid.Data4, 8);
+//}
+//
+//void writeOleVariant(FILE* pFile, COleVariant var)
+//{
+//  _ftprintf(pFile, _T("\n%s%d"), labelOleVariant, var.vt);
+//  switch(var.vt) {
+//    case VT_EMPTY : 
+//      break;
+//    case VT_I1 : writeInt(pFile, var.intVal); break;
+//    case VT_I2 : writeInt(pFile, var.intVal); break;
+//    case VT_I4 : writeInt(pFile, var.intVal); break;
+//    default :
+//      MessageBox(NULL, _T("Error: Writing OLE Variant!"), _T("ObjectDCL Error"), MB_OK);
+//      _ftprintf(pFile, _T("")); break;
+//  }
+//}
 
-void writeLong(FILE* pFile, long i)
-{
-  _ftprintf(pFile, _T("\n%s%d"), labelLong, i);
-}
-
-void writeDISPID(FILE* pFile, DISPID i)
-{
-  _ftprintf(pFile, _T("\n%s%d"), labelDISPID, i);
-}
-
-void writeULONG(FILE* pFile, ULONG i)
-{
-  _ftprintf(pFile, _T("\n%s%d"), labelULONG, i);
-}
-
-void writeShort(FILE* pFile, short i)
-{
-  _ftprintf(pFile, _T("\n%s%d"), labelShort, i);
-}
-
-void writeVARTYPE(FILE* pFile, VARTYPE i)
-{
-  _ftprintf(pFile, _T("\n%s%d"), labelVARTYPE, i);
-}
-
-void writeWORD(FILE* pFile, WORD i)
-{
-  _ftprintf(pFile, _T("\n%s%d"), labelWORD, i);
-}
-
-void writeDWORD(FILE* pFile, DWORD i)
-{
-  _ftprintf(pFile, _T("\n%s%d"), labelDWORD, i);
-}
-
-void writeBYTE(FILE* pFile, BYTE i)
-{
-  _ftprintf(pFile, _T("\n%s%d"), labelBYTE, i);
-}
-
-void writeDouble(FILE* pFile, double d) {
-  _ftprintf(pFile, _T("\n%s%f"), labelDouble, d);
-}
-
-void writeBool(FILE* pFile, bool b)
-{
-	_ftprintf(pFile, _T("\n%s%s"), labelBool, (b? _T("T") : _T("F")));
-}
-
-void writeBOOL(FILE* pFile, BOOL b)
-{
-  _ftprintf(pFile, _T("\n%s%s"), labelBool, (b? _T("T") : _T("F")));
-}
-
-void writeString(FILE* pFile, CString s)
-{
-  s.Replace(_T("\n"), _T("\\n"));
-  _ftprintf(pFile, _T("\n%s%s"), labelString, (LPCTSTR)s);
-}
-
-void writeBits(FILE* pFile, const BYTE* pBytes, DWORD byteCount)
-{
-  _ftprintf(pFile, _T("\n%s%s"), labelBits, base64_encode(pBytes, byteCount, -1).c_str());
-}
-
-void writeCLSID(FILE* pFile, const CLSID &clsid)
-{
-  writeDWORD(pFile, clsid.Data1);
-  writeWORD(pFile, clsid.Data2);
-  writeWORD(pFile, clsid.Data3);
-  writeBits(pFile, clsid.Data4, 8);
-}
-
-void writeOleVariant(FILE* pFile, COleVariant var)
-{
-  _ftprintf(pFile, _T("\n%s%d"), labelOleVariant, var.vt);
-  switch(var.vt) {
-    case VT_EMPTY : 
-      break;
-    case VT_I1 : writeInt(pFile, var.intVal); break;
-    case VT_I2 : writeInt(pFile, var.intVal); break;
-    case VT_I4 : writeInt(pFile, var.intVal); break;
-    default :
-      MessageBox(NULL, _T("Error: Writing OLE Variant!"), _T("ObjectDCL Error"), MB_OK);
-      _ftprintf(pFile, _T("")); break;
-  }
-}
-
+/*
 void GetImageFromList(const CImageList *lstImages, int nImage, CBitmap* destBitmap) {    
   //From http://www.codeproject.com/bitmap/getimagefromlist.asp
 
@@ -233,46 +234,47 @@ void GetImageFromList(const CImageList *lstImages, int nImage, CBitmap* destBitm
   //cleanup by reselecting the old bitmap object into the DC
   dcMem.SelectObject (pBmpOld);
 }
+*/
 
-int iCurrentImage = 1; //yikes! [ORW]
+//int iCurrentImage = 1; //yikes! [ORW]
 
-void writeImage(FILE* pFile, const CString &fileName, const CImage &img)
-{
-  //Get the file name without the extension or dot
-  CString imageNameBase = fileName.Left(fileName.GetLength() - 4);
-
-  /*See if that file plus "-1.png" exists. If it does not, we are saving the first
-  image to go with the file. If it does, we have already saved images and the
-  iCurrentImage value is correct.*/
-  WIN32_FIND_DATA findData;
-  HANDLE h = FindFirstFile(imageNameBase + _T("-1.png"), &findData);
-  if (h == INVALID_HANDLE_VALUE) {
-    iCurrentImage = 1;    
-  }
-  FindClose(h);
-
-  /*Remember the number of this image so that the file can be easily found
-  when reading the image.*/
-  writeInt(pFile, iCurrentImage);
-
-  //Save the image to disk and increment for the next file we save
-	CString imageName;
-	imageName.Format(_T("%s-%d.png"), imageNameBase, iCurrentImage);
-  img.Save(imageName);
-  iCurrentImage++;
-}
-
-void writeImageList(FILE* pFile, const CString &fileName, const CImageList &l)
-{
-  writeInt(pFile, l.GetImageCount());
-  for (int i = 0; i < l.GetImageCount(); i++) {
-    CBitmap bmp;
-    GetImageFromList(&l, i, &bmp);
-    CImage img;
-    img.Attach(bmp);
-    writeImage(pFile, fileName, img);
-  }
-}
+//void writeImage(FILE* pFile, const CString &fileName, const CImage &img)
+//{
+//  //Get the file name without the extension or dot
+//  CString imageNameBase = fileName.Left(fileName.GetLength() - 4);
+//
+//  /*See if that file plus "-1.png" exists. If it does not, we are saving the first
+//  image to go with the file. If it does, we have already saved images and the
+//  iCurrentImage value is correct.*/
+//  WIN32_FIND_DATA findData;
+//  HANDLE h = FindFirstFile(imageNameBase + _T("-1.png"), &findData);
+//  if (h == INVALID_HANDLE_VALUE) {
+//    iCurrentImage = 1;    
+//  }
+//  FindClose(h);
+//
+//  /*Remember the number of this image so that the file can be easily found
+//  when reading the image.*/
+//  writeInt(pFile, iCurrentImage);
+//
+//  //Save the image to disk and increment for the next file we save
+//	CString imageName;
+//	imageName.Format(_T("%s-%d.png"), imageNameBase, iCurrentImage);
+//  img.Save(imageName);
+//  iCurrentImage++;
+//}
+//
+//void writeImageList(FILE* pFile, const CString &fileName, const CImageList &l)
+//{
+//  writeInt(pFile, l.GetImageCount());
+//  for (int i = 0; i < l.GetImageCount(); i++) {
+//    CBitmap bmp;
+//    GetImageFromList(&l, i, &bmp);
+//    CImage img;
+//    img.Attach(bmp);
+//    writeImage(pFile, fileName, img);
+//  }
+//}
 
 /////////////////////////////////////////////////////////////////////////////
 //Functions to write data to our file.
@@ -561,37 +563,37 @@ bool readOleVariant(std::ifstream &sFile, COleVariant& var)
 }
 
 //Saving these using CArchives, not my text stream.
-bool readImage(std::ifstream &sFile, const CString &fileName, CImage& img)
-{
-  int iImageNumber;
-  if (!readInt(sFile, iImageNumber)) return false;
-
-  //Get the file name without the extension or dot
-	CString imageName;
-	imageName.Format(_T("%s-%d.png"), fileName.Left(fileName.GetLength() - 4), iImageNumber);
-  img.Load(imageName);
-  return true;
-}
+//bool readImage(std::ifstream &sFile, const CString &fileName, CImage& img)
+//{
+//  int iImageNumber;
+//  if (!readInt(sFile, iImageNumber)) return false;
+//
+//  //Get the file name without the extension or dot
+//	CString imageName;
+//	imageName.Format(_T("%s-%d.png"), fileName.Left(fileName.GetLength() - 4), iImageNumber);
+//  img.Load(imageName);
+//  return true;
+//}
 
 bool readImageList(std::ifstream &sFile, const CString &fileName, CImageList &l)
 {
   int iCount;
   if (!readInt(sFile, iCount)) return false;
 
-  bool bFirst = true;
-  for (int i = 0; i < iCount; i++) {
-    CImage img;
-    if (readImage(sFile, fileName, img)) {
-      if (bFirst) {
-        l.Create(img.GetWidth(), img.GetHeight(), ILC_COLOR4 | ILC_MASK, 1, 1);
-        bFirst = false;
-      }
-      HBITMAP hBitmap = img.Detach();
-      l.Add(CBitmap::FromHandle(hBitmap), RGB(0,0,0));
-    } else {
-      return false;
-    }
-  }
+  //bool bFirst = true;
+  //for (int i = 0; i < iCount; i++) {
+  //  CImage img;
+  //  if (readImage(sFile, fileName, img)) {
+  //    if (bFirst) {
+  //      l.Create(img.GetWidth(), img.GetHeight(), ILC_COLOR4 | ILC_MASK, 1, 1);
+  //      bFirst = false;
+  //    }
+  //    HBITMAP hBitmap = img.Detach();
+  //    l.Add(CBitmap::FromHandle(hBitmap), RGB(0,0,0));
+  //  } else {
+  //    return false;
+  //  }
+  //}
 
   return true;
 }

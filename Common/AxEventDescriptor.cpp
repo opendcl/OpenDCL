@@ -147,20 +147,20 @@ IOStatus AxEventDescriptor::ReadFromTextFile( std::ifstream &sFile, ULONG nPrope
 	return statOK;
 }
 
-IOStatus AxEventDescriptor::WriteToTextFile( FILE* pFile ) const
-{
-	writeDISPID(pFile, mDispId);
-  writeString(pFile, msName);
-  writeInt(pFile, mrArgs.size());
-  for (size_t i = 0; i < mrArgs.size(); ++i)
-  {
-    writeVARTYPE(pFile, mrArgs[i].vt);
-		writeString(pFile, mrArgs[i].name);
-		writeCLSID(pFile, mrArgs[i].clsid);
-  }
-  writeString(pFile, msParams);
-	return statOK;
-}
+//IOStatus AxEventDescriptor::WriteToTextFile( FILE* pFile ) const
+//{
+//	writeDISPID(pFile, mDispId);
+//  writeString(pFile, msName);
+//  writeInt(pFile, mrArgs.size());
+//  for (size_t i = 0; i < mrArgs.size(); ++i)
+//  {
+//    writeVARTYPE(pFile, mrArgs[i].vt);
+//		writeString(pFile, mrArgs[i].name);
+//		writeCLSID(pFile, mrArgs[i].clsid);
+//  }
+//  writeString(pFile, msParams);
+//	return statOK;
+//}
 
 
 #ifdef _DIAGNOSTIC

@@ -1,6 +1,19 @@
 #include "stdafx.h"
 #include "CeXDib.h"
 
+#ifndef _MFC_VER
+#include <windows.h>
+#include <tchar.h>
+#pragma message("    compiling for Win32")
+#endif
+
+/*
+#ifdef _DEBUG
+#undef THIS_FILE
+static char THIS_FILE[]=__FILE__;
+#define new DEBUG_NEW
+#endif
+*/
 
 CCeXDib::CCeXDib()
 {
@@ -22,9 +35,12 @@ CCeXDib::~CCeXDib()
 
 void CCeXDib::FreeResources()
 {
-	if (m_hMemDC)	::DeleteDC(m_hMemDC);
-	if (m_hBitmap)	::DeleteObject(m_hBitmap);
-	if (m_hDib)		delete m_hDib;
+	if (m_hMemDC)	
+		::DeleteDC(m_hMemDC);
+	if (m_hBitmap)	
+		::DeleteObject(m_hBitmap);
+	if (m_hDib)		
+		delete m_hDib;
 
 	m_hDib = NULL;
 	m_hMemDC = NULL;
@@ -123,7 +139,8 @@ DWORD CCeXDib::GetPaletteSize()
 
 LPBYTE CCeXDib::GetBits()
 {
-	if (m_hDib)	return ((LPBYTE)m_hDib + *(LPDWORD)m_hDib + GetPaletteSize()); 
+	if (m_hDib)	
+		return ((LPBYTE)m_hDib + *(LPDWORD)m_hDib + GetPaletteSize()); 
 
 	return NULL;
 } // End of GetBits
@@ -145,7 +162,8 @@ DWORD CCeXDib::GetLineWidth()
 
 void CCeXDib::BlendPalette(COLORREF crColor, DWORD dwPerc)
 {
-	if (m_hDib == NULL || m_wColors == 0) return;
+	if (m_hDib == NULL || m_wColors == 0) 
+		return;
 
 	LPBYTE iDst = (LPBYTE)(m_hDib) + sizeof(BITMAPINFOHEADER);
 
@@ -157,7 +175,8 @@ void CCeXDib::BlendPalette(COLORREF crColor, DWORD dwPerc)
 	g = GetGValue(crColor);
 	b = GetBValue(crColor);
 
-	if (dwPerc > 100) dwPerc = 100;
+	if (dwPerc > 100) 
+		dwPerc = 100;
 
 	for (i = 0; i < m_wColors; i++)
 	{
@@ -169,7 +188,8 @@ void CCeXDib::BlendPalette(COLORREF crColor, DWORD dwPerc)
 
 void CCeXDib::Clear(BYTE byVal)
 {
-	if (m_hDib) memset(GetBits(), byVal, m_bi.biSizeImage);
+	if (m_hDib) 
+		memset(GetBits(), byVal, m_bi.biSizeImage);
 } // End of Clear
 
 void CCeXDib::SetPixelIndex(DWORD dwX, DWORD dwY, BYTE byI)
@@ -184,7 +204,8 @@ void CCeXDib::SetPixelIndex(DWORD dwX, DWORD dwY, BYTE byI)
 void CCeXDib::Clone(CCeXDib* src)
 {
 	Create(src->GetWidth(), src->GetHeight(), src->GetBitCount());
-	if (m_hDib) memcpy(m_hDib, src->m_hDib, GetSize());
+	if (m_hDib) 
+		memcpy(m_hDib, src->m_hDib, GetSize());
 } // End of Clone
 
 WORD CCeXDib::GetBitCount()
@@ -240,6 +261,27 @@ void CCeXDib::Draw(HDC hDC, DWORD dwX, DWORD dwY)
 
 	SelectObject(m_hMemDC, hOldBitmap);
 } // End of Draw
+
+void CCeXDib::Copy(HDC hDC, DWORD dwX, DWORD dwY)
+{
+	if (m_hBitmap == NULL)
+	{
+		m_hBitmap = CreateDIBSection(hDC, (BITMAPINFO*)m_hDib, DIB_RGB_COLORS, &m_lpBits, NULL, 0);
+		if (m_hBitmap == NULL)
+			return;
+		if (m_lpBits == NULL)
+		{
+			::DeleteObject(m_hBitmap);
+			m_hBitmap = NULL;
+			return;
+		} // if
+	} // if
+	
+	HDC hMemDC = ::CreateCompatibleDC(hDC);
+	HBITMAP hOldBitmap = (HBITMAP)::SelectObject(hMemDC, m_hBitmap);
+	::BitBlt(hMemDC, 0, 0, m_bi.biWidth, m_bi.biHeight, hDC, dwX, dwY, SRCCOPY);
+	::SelectObject(hMemDC, hOldBitmap);
+} // End of Copy
 
 void CCeXDib::SetGrayPalette()
 {

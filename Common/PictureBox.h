@@ -3,6 +3,8 @@
 
 #pragma once
 
+class CPictureObject;
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CPictureBox window
@@ -14,7 +16,8 @@ public:
 	CPictureBox();
 	void Refresh(HDC hdc);
 	void SetAcadColor(long nColorArg);
-	void SetPictureID(long sPictureID);
+	void SetPicture(const CPictureObject* pPict);
+	//void SetPictureID(long sPictureID);
 	void SetPictureBlank();
 	void AutoSize();
 	void SetIcon(UINT nId);

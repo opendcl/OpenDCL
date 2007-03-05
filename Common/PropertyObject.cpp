@@ -41,7 +41,7 @@ public:
 
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const = 0;
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) = 0;
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const = 0;
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const = 0;
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) = 0;
 
 #ifdef _DIAGNOSTIC
@@ -98,7 +98,7 @@ public:
 	virtual void clear() {}
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { return statOK; }
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { return statOK; }
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const { fprintf(pFile, "PropInvalid"); return statOK; }
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const { fprintf(pFile, "PropInvalid"); return statOK; }
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) { return statOK; }
 
 #ifdef _DIAGNOSTIC
@@ -118,12 +118,12 @@ public:
 
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropLong");
-			writeLong( pFile, mValue );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropLong");
+	//		writeLong( pFile, mValue );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			return readLong( sFile, mValue )? statOK : statInvalidFormat;
@@ -153,12 +153,12 @@ public:
 	virtual void clear() { mValue.Empty(); }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropString");
-			writeString( pFile, mValue );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropString");
+	//		writeString( pFile, mValue );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			return readString( sFile, mValue )? statOK : statInvalidFormat;
@@ -191,12 +191,12 @@ public:
 	virtual void clear() { mValue = 0; }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropDouble");
-			writeDouble( pFile, mValue );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropDouble");
+	//		writeDouble( pFile, mValue );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			return readDouble( sFile, mValue )? statOK : statInvalidFormat;
@@ -235,12 +235,12 @@ public:
 		mValue = (bVal != FALSE);
 		return statOK;
 	}
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropBool");
-			writeBool( pFile, mValue );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropBool");
+	//		writeBool( pFile, mValue );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			return readBool( sFile, mValue )? statOK : statInvalidFormat;
@@ -269,12 +269,12 @@ public:
 	virtual void clear() { mValue = -1; }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropEnum");
-			writeLong( pFile, mValue );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropEnum");
+	//		writeLong( pFile, mValue );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			return readLong( sFile, mValue )? statOK : statInvalidFormat;
@@ -302,12 +302,12 @@ public:
 	virtual void clear() { mValue.Empty(); }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropEvent");
-			writeString( pFile, mValue );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropEvent");
+	//		writeString( pFile, mValue );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			return readString( sFile, mValue )? statOK : statInvalidFormat;
@@ -333,12 +333,12 @@ public:
 	virtual void clear() { mValue = -1; }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropPicture");
-			writeLong( pFile, mValue );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropPicture");
+	//		writeLong( pFile, mValue );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			return readLong( sFile, mValue )? statOK : statInvalidFormat;
@@ -346,6 +346,7 @@ public:
 
 	virtual bool GetValue( long& v ) const { v = mValue; return true; }
 	virtual bool SetValue( const long& v ) { mValue = v; return true; }
+	virtual bool SetValue( const short& v ) { mValue = v; return true; }
 	virtual bool GetValue( CString& v ) const { v.Format(_T("%d"), mValue); return true; }
 	virtual bool SetValue( const CString& v ) { mValue = _tstol(v); return true; }
 	virtual bool SetValue( const LPCTSTR v ) { mValue = _tstol(v); return true; }
@@ -365,7 +366,7 @@ public:
 	virtual void clear() {}
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { return statOK; }
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { return statOK; }
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const { fprintf(pFile, "PropCustom"); return statOK; }
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const { fprintf(pFile, "PropCustom"); return statOK; }
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) { return statOK; }
 
 #ifdef _DIAGNOSTIC
@@ -384,12 +385,12 @@ public:
 	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue = -1; }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropImageList");
-			writeShort( pFile, mValue );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropImageList");
+	//		writeShort( pFile, mValue );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			return readShort( sFile, mValue )? statOK : statInvalidFormat;
@@ -416,12 +417,12 @@ public:
 	virtual void clear() { mValue = -1; }
 	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
 	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropOLEColor");
-			writeDWORD( pFile, mValue );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropOLEColor");
+	//		writeDWORD( pFile, mValue );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			return readDWORD( sFile, mValue )? statOK : statInvalidFormat;
@@ -493,15 +494,15 @@ public:
 			}
 			return statOK;
 		}
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropStringArray");
-			int nSize = (int)(mpValue? mpValue->size() : 0);
-			writeInt(pFile, nSize);
-			for (int idx = 0; idx < nSize; idx++)
-				writeString(pFile, mpValue->at(idx));
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropStringArray");
+	//		int nSize = (int)(mpValue? mpValue->size() : 0);
+	//		writeInt(pFile, nSize);
+	//		for (int idx = 0; idx < nSize; idx++)
+	//			writeString(pFile, mpValue->at(idx));
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			clear();
@@ -594,15 +595,15 @@ public:
 			}
 			return statOK;
 		}
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropIntArray");
-			int nSize = (int)(mpValue? mpValue->size() : 0);
-			writeInt(pFile, nSize);
-      for (int i = 0; i < nSize; i++)
-        writeInt(pFile, mpValue->at(i));
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropIntArray");
+	//		int nSize = (int)(mpValue? mpValue->size() : 0);
+	//		writeInt(pFile, nSize);
+ //     for (int i = 0; i < nSize; i++)
+ //       writeInt(pFile, mpValue->at(i));
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			clear();
@@ -653,15 +654,15 @@ public:
 			mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropActiveXPropPages");
-			if( !mpValue )
-				AxInterfaceDescriptor().WriteToTextFile( pFile );
-			else
-				mpValue->WriteToTextFile( pFile );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropActiveXPropPages");
+	//		if( !mpValue )
+	//			AxInterfaceDescriptor().WriteToTextFile( pFile );
+	//		else
+	//			mpValue->WriteToTextFile( pFile );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			clear();
@@ -717,15 +718,15 @@ public:
 				msDisplayName = mpValue->GetName();
 			return statOK;
 		}
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropActiveXProp");
-			writeString(pFile, msDisplayName);
-			if( !mpValue )
-				return AxInterfaceDescriptor().WriteToTextFile( pFile );
-			mpValue->WriteToTextFile( pFile );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropActiveXProp");
+	//		writeString(pFile, msDisplayName);
+	//		if( !mpValue )
+	//			return AxInterfaceDescriptor().WriteToTextFile( pFile );
+	//		mpValue->WriteToTextFile( pFile );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			clear();
@@ -781,14 +782,14 @@ public:
 			mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropActiveXEnum");
-			if( !mpValue )
-				return AxInterfaceDescriptor().WriteToTextFile( pFile );
-			mpValue->WriteToTextFile( pFile );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropActiveXEnum");
+	//		if( !mpValue )
+	//			return AxInterfaceDescriptor().WriteToTextFile( pFile );
+	//		mpValue->WriteToTextFile( pFile );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			clear();
@@ -842,15 +843,15 @@ public:
 			mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropActiveXEvent");
-			writeString(pFile, msDisplayName);
-			if( !mpValue )
-				return AxInterfaceDescriptor().WriteToTextFile( pFile );
-			mpValue->WriteToTextFile( pFile );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropActiveXEvent");
+	//		writeString(pFile, msDisplayName);
+	//		if( !mpValue )
+	//			return AxInterfaceDescriptor().WriteToTextFile( pFile );
+	//		mpValue->WriteToTextFile( pFile );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			clear();
@@ -905,14 +906,14 @@ public:
 			msDisplayName = mpValue->GetName();
 			return statOK;
 		}
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropActiveXRunTime");
-			if( !mpValue )
-				return AxInterfaceDescriptor().WriteToTextFile( pFile );
-			mpValue->WriteToTextFile( pFile );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropActiveXRunTime");
+	//		if( !mpValue )
+	//			return AxInterfaceDescriptor().WriteToTextFile( pFile );
+	//		mpValue->WriteToTextFile( pFile );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			clear();
@@ -967,14 +968,14 @@ public:
 			msDisplayName = mpValue->GetName();
 			return statOK;
 		}
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropActiveXMethods");
-			if( !mpValue )
-				return AxInterfaceDescriptor().WriteToTextFile( pFile );
-			mpValue->WriteToTextFile( pFile );
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropActiveXMethods");
+	//		if( !mpValue )
+	//			return AxInterfaceDescriptor().WriteToTextFile( pFile );
+	//		mpValue->WriteToTextFile( pFile );
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			clear();
@@ -1098,23 +1099,23 @@ public:
 			}
 			return statOK;
 		}
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropStringArrayList");
-			writeInt(pFile, (int)(mpValue? mpValue->size() : 0));
-			if( mpValue )
-			{
-				PropVal::TCStringArrayList::const_iterator pos = mpValue->begin();
-				while (pos != mpValue->end())
-				{
-					const PropVal::TCStringArray& rStr = *pos++;
-					writeInt(pFile, (int)rStr.size());
-					for (size_t i = 0; i < rStr.size(); ++i)
-						writeString(pFile, rStr[i]);
-				}
-			}
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropStringArrayList");
+	//		writeInt(pFile, (int)(mpValue? mpValue->size() : 0));
+	//		if( mpValue )
+	//		{
+	//			PropVal::TCStringArrayList::const_iterator pos = mpValue->begin();
+	//			while (pos != mpValue->end())
+	//			{
+	//				const PropVal::TCStringArray& rStr = *pos++;
+	//				writeInt(pFile, (int)rStr.size());
+	//				for (size_t i = 0; i < rStr.size(); ++i)
+	//					writeString(pFile, rStr[i]);
+	//			}
+	//		}
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			clear();
@@ -1196,23 +1197,23 @@ public:
 			}
 			return statOK;
 		}
-	virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
-		{
-			fprintf(pFile, "PropIntArrayList");
-			writeInt(pFile, (int)(mpValue? mpValue->size() : 0));
-			if( mpValue )
-			{
-				PropVal::TIntArrayList::const_iterator pos = mpValue->begin();
-				while (pos != mpValue->end())
-				{
-					const PropVal::TIntArray& rInt = *pos++;
-					writeInt(pFile, (int)rInt.size());
-					for (size_t i = 0; i < rInt.size(); ++i)
-						writeInt(pFile, rInt[i]);
-				}
-			}
-			return statOK;
-		}
+	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//	{
+	//		fprintf(pFile, "PropIntArrayList");
+	//		writeInt(pFile, (int)(mpValue? mpValue->size() : 0));
+	//		if( mpValue )
+	//		{
+	//			PropVal::TIntArrayList::const_iterator pos = mpValue->begin();
+	//			while (pos != mpValue->end())
+	//			{
+	//				const PropVal::TIntArray& rInt = *pos++;
+	//				writeInt(pFile, (int)rInt.size());
+	//				for (size_t i = 0; i < rInt.size(); ++i)
+	//					writeInt(pFile, rInt[i]);
+	//			}
+	//		}
+	//		return statOK;
+	//	}
 	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
 		{
 			clear();
@@ -1645,17 +1646,17 @@ CString CPropertyObject::GetStdProperty()
 }
 
 
-IOStatus CPropertyObject::WriteToTextFile(FILE* pFile) const
-{
-  fprintf(pFile, "\nCPropertyObject");
-  int nThisVersion = 5;
-  writeInt(pFile, nThisVersion);
-  writeInt(pFile, mnID);
-  writeInt(pFile, GetType());
-  // store the flag that indicates this property is to be hidden
-  writeBOOL(pFile, mbHidden);
-	return mpValue->FileOut(pFile, nThisVersion);
-}
+//IOStatus CPropertyObject::WriteToTextFile(FILE* pFile) const
+//{
+//  fprintf(pFile, "\nCPropertyObject");
+//  int nThisVersion = 5;
+//  writeInt(pFile, nThisVersion);
+//  writeInt(pFile, mnID);
+//  writeInt(pFile, GetType());
+//  // store the flag that indicates this property is to be hidden
+//  writeBOOL(pFile, mbHidden);
+//	return mpValue->FileOut(pFile, nThisVersion);
+//}
 
 
 void CPropertyObject::Serialize(CArchive& ar)

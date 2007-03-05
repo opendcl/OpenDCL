@@ -40,6 +40,7 @@ To prevent name collisions, ObjectDCL uses a case-insensitive three-tier naming 
 control instance:
 <project-name>_<form-name>_<control-name>
 
+** Strike this paragraph for now. This caused legacy lisp code to fail with controls on tab panes. [ORW] **
 Note that, since forms can be controls, <control-name> for a nested control will itself be constructed by 
 concatenating the name of its parent form, so that the resulting name could look like this, for example:
 MyProject_MyMainForm_MySubForm_MyDeeplyNestedForm_MyButton
@@ -137,8 +138,8 @@ public:
 	virtual bool IsInUse() const;
 	virtual DWORD GetPurchaseState() const { return mnPurchaseState; }
 
-	HBITMAP GetBitmap( UINT nID, CSize& sz ) const;
-	HICON GetIcon( UINT nID ) const;
+	HBITMAP CloneBitmap( UINT nID, CSize& sz ) const;
+	HICON CloneIcon( UINT nID ) const;
 	bool GetPictureSize( UINT nID, CSize& size ) const; //return true if found
 	CPictureObject* FindPicture( UINT nID ) const;
 
@@ -173,8 +174,9 @@ public:
 	bool AddActiveXFile( LPCTSTR pszFileName );
 	bool RemoveActiveXFile( LPCTSTR pszFileName );
 	bool HasActiveXFile( LPCTSTR pszFileName ) const;
-	INT_PTR AddPicture(CPictureObject* pPicture);
-	bool LoadPictureFile(LPCTSTR szFile, int nID);
+	bool AddPicture( CPictureObject* pPicture );
+	void DeletePicture( int nID );
+	bool LoadPictureFile( LPCTSTR szFile, int nID, bool bApplyMask = false );
 	CDclFormObject* FindDclForm( LPCTSTR pszDclFormName ) const;
 	CDclFormObject* FindDclFormWithVarName( LPCTSTR pszVarName ) const;
 	CDclControlObject* FindControlWithVarName( LPCTSTR pszVarName ) const;

@@ -69,16 +69,26 @@ DWORD CGraphicButtonCtrl::GetWndStyle() const
 void CGraphicButtonCtrl::SetPicture( CPictureObject* pPict )
 {
 	mpPicture = pPict;
-	SetIcon( pPict? CopyIcon( pPict->GetIcon() ) : NULL,
-					 mpPressedPicture? CopyIcon( mpPressedPicture->GetIcon() ) : NULL );
+	UpdateButtonGraphic();
 }
 
 void CGraphicButtonCtrl::SetPressedPicture( CPictureObject* pPict )
 {
 	mpPressedPicture = pPict;
-	SetIcon( mpPicture? CopyIcon( mpPicture->GetIcon() ) : NULL,
-					 pPict? CopyIcon( pPict->GetIcon() ) : NULL );
+	UpdateButtonGraphic();
 }
+
+void CGraphicButtonCtrl::UpdateButtonGraphic()
+{
+	if( (!mpPicture || mpPicture->GetPicType() == PICTYPE_BITMAP) &&
+			(!mpPressedPicture || mpPressedPicture->GetPicType() == PICTYPE_BITMAP) )
+		SetBitmaps( mpPicture? mpPicture->CloneBitmap() : NULL, RGB(192,192,192),
+								mpPressedPicture? mpPressedPicture->CloneBitmap() : NULL, RGB(192,192,192) );
+	else
+		SetIcon( mpPicture? mpPicture->CloneIcon() : NULL,
+						 mpPressedPicture? mpPressedPicture->CloneIcon() : NULL );
+}
+
 
 BEGIN_MESSAGE_MAP(CGraphicButtonCtrl, CButtonCtrl)
 END_MESSAGE_MAP()

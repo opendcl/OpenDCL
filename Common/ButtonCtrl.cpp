@@ -3,6 +3,7 @@
 #include "AcadColorTable.h"
 #include "DclControlObject.h"
 #include "ControlPane.h"
+#include "Workspace.h"
 #include "ToolTips.h"
 #include "SharedRes.h"
 
@@ -14,7 +15,6 @@ CButtonCtrl::CButtonCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UIN
 : CDialogControl( pTemplate, pPane, this )
 {
 	m_pStaticBrush = new CBrush();
-	m_nDirectory		= 0;
 	m_bDrawBorder		= TRUE;
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -36,11 +36,7 @@ bool CButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 	//if( mpTemplate->GetLngProperty( nAutoSize ) > 0 )
 	//	SizeToContent();
 
-	if (mToolTip.m_hWnd == NULL)
-	{
-		mToolTip.Create(this);
-		mToolTip.Activate(FALSE);
-	}
+	mToolTip.Create(this);
 	SetToolTipEx(this, mToolTip, GetTemplate());
 
 	return bSuccess;
@@ -89,21 +85,21 @@ bool CButtonCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 				SetFlat( FALSE );
 				m_bDrawBorder = TRUE;
 				DrawAsToolbar( FALSE, FALSE );
-				SetIcon( IDI_PICK );
+				SetResourceIcon( IDI_PICK );
 				SetThemeHelper( NULL );
 				break;
 			case ButtonStyle_Select:
 				SetFlat( FALSE );
 				m_bDrawBorder = TRUE;
 				DrawAsToolbar( FALSE, FALSE );
-				SetIcon( IDI_SELECT );
+				SetResourceIcon( IDI_SELECT );
 				SetThemeHelper( NULL );
 				break;
 			case ButtonStyle_Filter:
 				SetFlat( FALSE );
 				m_bDrawBorder = TRUE;
 				DrawAsToolbar( FALSE, FALSE );
-				SetIcon( IDI_FILTER );
+				SetResourceIcon( IDI_FILTER );
 				SetThemeHelper( NULL );
 				break;
 			case ButtonStyle_NoBorder:
@@ -145,6 +141,23 @@ void CButtonCtrl::SetAcadColor(long nColor)
 void CButtonCtrl::SetForeColor(long nColor)
 {
 	m_ForeColor = GetRGBColor(nColor);
+}
+
+void CButtonCtrl::SetResourceIcon(UINT idIcon)
+{
+	HICON hIcon = LoadIcon( theWorkspace.GetResourceModule(), MAKEINTRESOURCE(idIcon) );
+	ICONINFO ii;
+	GetIconInfo( hIcon, &ii );
+	::DeleteObject(ii.hbmMask);
+	::DeleteObject(ii.hbmColor);
+	//the icon has to be added to, then extracted from, an image list in order to center the cursor hotspot
+	//dimensions (the default cursor hotspot for resource loaded icons is the lower right corner, which 
+	//causes CButtonST::SetIcon() to calculate incorrect icon dimensions)  2007-03-01 [ORW]
+	CImageList imglistIcon;
+	imglistIcon.Create( ii.xHotspot, ii.yHotspot, ILC_COLOR | ILC_MASK, 0, 1 );
+	imglistIcon.Add(hIcon);
+	SetIcon( imglistIcon.ExtractIcon( 0 ) );
+	imglistIcon.DeleteImageList();
 }
 
 void CButtonCtrl::PreSubclassWindow() 

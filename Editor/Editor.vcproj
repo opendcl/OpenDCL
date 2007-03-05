@@ -188,6 +188,7 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
+				DelayLoadDLLs=""
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -411,11 +412,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\idr_main.ico"
+				RelativePath=".\RES\IDR_MAIN.ICO"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\IDR_MAIN.ICO"
+				RelativePath="..\Common\Res\idr_main.ico"
 				>
 			</File>
 			<File
@@ -547,11 +548,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Res\Select.ico"
+				RelativePath="..\Common\Res\Select.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\Select.ico"
+				RelativePath=".\Res\Select.ico"
 				>
 			</File>
 			<File
@@ -1574,6 +1575,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Common\PPDrawManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\PPDrawManager.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\PPHtmlDrawer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\PPHtmlDrawer.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Common\PPTooltip.cpp"
 				>
 			</File>
@@ -1730,7 +1747,7 @@
 				>
 			</File>
 		</Filter>
-				<File
+		<File
 			RelativePath="ObjectDCL.reg"
 			>
 		</File>

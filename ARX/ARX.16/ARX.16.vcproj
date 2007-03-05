@@ -76,6 +76,7 @@
 				AdditionalLibraryDirectories=""
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames=""
+				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -165,6 +166,7 @@
 				OutputFile="$(OutDir)/OpenDCL.16.arx"
 				AdditionalLibraryDirectories=""
 				GenerateManifest="false"
+				DelayLoadDLLs=""
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				TargetMachine="1"
@@ -224,6 +226,10 @@
 			</File>
 			<File
 				RelativePath="..\ArxControlPane.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\ArxControlServices.cpp"
 				>
 			</File>
 			<File
@@ -449,6 +455,10 @@
 			</File>
 			<File
 				RelativePath="..\ArxControlPane.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ArxControlServices.h"
 				>
 			</File>
 			<File
@@ -1591,6 +1601,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\PPDrawManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\PPDrawManager.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\PPHtmlDrawer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\PPHtmlDrawer.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\PPTooltip.cpp"
 				>
 			</File>
@@ -1779,10 +1805,6 @@
 				>
 			</File>
 		</Filter>
-				<File
-			RelativePath="..\resource"
-					>
-				</File>
 	</Files>
 	<Globals>
 		<Global

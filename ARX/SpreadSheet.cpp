@@ -2115,91 +2115,102 @@ void CSpreadSheet::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 		// test to see how to edit the cell each different kind of edit style
 		// according to the column specification.
-		if (GetCellStyle(nRow, nCol) == Grid_CheckBoxes ||
-			GetCellStyle(nRow, nCol) == Grid_OptionButtons)
+		switch( GetCellStyle(nRow, nCol) )
 		{
-			int nImage = GetItemImage(nRow, nCol);
-			
-			// if this column is an option button
-			if (GetCellStyle(nRow, nCol) == Grid_OptionButtons)
+		case Grid_CheckBoxes:
+		case Grid_OptionButtons:
 			{
-				if (nImage <= 0)
+				int nImage = GetItemImage(nRow, nCol);
+				
+				// if this column is an option button
+				if (GetCellStyle(nRow, nCol) == Grid_OptionButtons)
 				{
-					// reset all the other option buttons to unchecked.
-					for (int i=0; i<GetItemCount(); i++)
+					if (nImage <= 0)
 					{
-						if (GetCellStyle(i, nCol) == Grid_OptionButtons)
-							SetItemImage(i, nCol, 0);
+						// reset all the other option buttons to unchecked.
+						for (int i=0; i<GetItemCount(); i++)
+						{
+							if (GetCellStyle(i, nCol) == Grid_OptionButtons)
+								SetItemImage(i, nCol, 0);
+						}
+						if (nImage != 1)
+							SetItemImage(nRow, nCol, 1);
+						else
+							SetItemImage(nRow, nCol, 0);
 					}
+					else
+						SetItemImage(nRow, nCol, 1);
+				}
+				else
+				{			
 					if (nImage != 1)
 						SetItemImage(nRow, nCol, 1);
 					else
 						SetItemImage(nRow, nCol, 0);
 				}
+				
+				// fire the on Grid edit cell event.
+				EndEditControls(this);
+				break;
+			}
+		case Grid_SwitchableIcons:
+			{
+				int nImage = GetItemImage(nRow, nCol);
+				int nDefImage;
+				int nAltImage;
+				
+				if (GetCellData(nRow, nCol) == NULL)
+				{
+					nDefImage = m_pColDefault->GetIntArrayPtr()->at(nCol);	
+					nAltImage = m_pColAlternate->GetIntArrayPtr()->at(nCol);	
+				}
 				else
-					SetItemImage(nRow, nCol, 1);
-			}
-			else
-			{			
-				if (nImage != 1)
-					SetItemImage(nRow, nCol, 1);
+				{
+					nDefImage = GetCellData(nRow, nCol)->nData1;
+					nAltImage = GetCellData(nRow, nCol)->nData2;
+				}
+
+				if (nImage == nDefImage || nImage == -1)
+				{
+					SetItemImage(nRow, nCol, nAltImage);
+				}
 				else
-					SetItemImage(nRow, nCol, 0);
+				{
+					SetItemImage(nRow, nCol, nDefImage);
+				}
+				// fire the on Grid edit cell event.
+				EndEditControls(this);
+				break;
 			}
-			
-			// fire the on Grid edit cell event.
-			EndEditControls(this);
-		}
-		
-
-		// test to see how to edit the cell each different kind of edit style
-		// according to the column specification.
-		if (GetCellStyle(nRow, nCol) == Grid_SwitchableIcons)
-		{
-			int nImage = GetItemImage(nRow, nCol);
-			int nDefImage;
-			int nAltImage;
-			
-			if (GetCellData(nRow, nCol) == NULL)
+		case Grid_EllipsesButtons:
+		case Grid_PickButtons:
 			{
-				nDefImage = m_pColDefault->GetIntArrayPtr()->at(nCol);	
-				nAltImage = m_pColAlternate->GetIntArrayPtr()->at(nCol);	
-			}
-			else
-			{
-				nDefImage = GetCellData(nRow, nCol)->nData1;
-				nAltImage = GetCellData(nRow, nCol)->nData2;
-			}
+				int nOldRow = m_nRowSelected;
+				int nOldCol = m_nColSelected;
 
-			if (nImage == nDefImage || nImage == -1)
-			{
-				SetItemImage(nRow, nCol, nAltImage);
+				m_nColSelected = nCol;
+				m_nRowSelected = nRow;
+				
+				RefreshCell(nOldRow, nOldCol);
+				EditCellNow();
+				return;
 			}
-			else
+		default:
 			{
-				SetItemImage(nRow, nCol, nDefImage);
+				//if (m_nRowSelected == nRow && m_nColSelected == nCol)
+				//	EditCellNow();
+				//else
+				//	break;
+				int nOldRow = m_nRowSelected;
+				int nOldCol = m_nColSelected;
+
+				m_nColSelected = nCol;
+				m_nRowSelected = nRow;
+				
+				RefreshCell(nOldRow, nOldCol);
+				EditCellNow();
+				return;
 			}
-			// fire the on Grid edit cell event.
-			EndEditControls(this);
-		}
-
-		if (GetCellStyle(nRow, nCol) == Grid_EllipsesButtons ||
-			GetCellStyle(nRow, nCol) == Grid_PickButtons)
-		{
-			int nOldRow = m_nRowSelected;
-			int nOldCol = m_nColSelected;
-
-			m_nColSelected = nCol;
-			m_nRowSelected = nRow;
-			
-			RefreshCell(nOldRow, nOldCol);
-			EditCellNow();
-			return;
-		}
-		if (m_nRowSelected == nRow && m_nColSelected == nCol)
-		{
-			EditCellNow();
-			return;
 		}
 	}
 
@@ -3805,7 +3816,7 @@ void CSpreadSheet::ShowImageComboBox(int nRow, int nCol, CStringArray &sStrings,
 		nItemHeight = nItemHeight * 12;
 		nItemHeight = nItemHeight + 10;
 		DWORD dwStyle = WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST;
-    
+
 		BOOL b = pComboBox->Create(dwStyle, CRect(15-nColWidth,-2, rc.Width()+2, nItemHeight), pHolder, IDC_CB_CHILD);
 		pComboBox->SetFont(GetFont());		
 		pComboBox->SetDroppedWidth(nColWidth);
@@ -4573,12 +4584,7 @@ void CSpreadSheet::SetTooltipText(CString* spText, BOOL bActivate)
 void CSpreadSheet::InitToolTip()
 {
 	if (m_ToolTip.m_hWnd == NULL)
-	{
-		// Create ToolTip control
 		m_ToolTip.Create(this);
-		// Create inactive
-		m_ToolTip.Activate(FALSE);
-	}
 } // End of InitToolTip
 
 // SortTextItems - Sort the list based on column text

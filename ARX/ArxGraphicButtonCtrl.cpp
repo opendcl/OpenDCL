@@ -18,6 +18,7 @@ CArxGraphicButtonCtrl::CArxGraphicButtonCtrl( CDclControlObject* pTemplate,
 																							UINT nID,
 																							bool bCreate /*= true*/ )
 : CGraphicButtonCtrl( pTemplate, pPane, nID, false )
+, mArxServices( pTemplate )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );

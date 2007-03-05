@@ -41,7 +41,8 @@ public:
 public:
 	virtual ~VdclComboBoxEx();
 
-	BOOL Create2(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	BOOL Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID );
 
 	// Generated message map functions
 protected:

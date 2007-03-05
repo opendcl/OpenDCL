@@ -233,12 +233,7 @@ void CPrinterComboBox::SetTooltipText(CString* spText, BOOL bActivate)
 void CPrinterComboBox::InitToolTip()
 {
 	if (mToolTip.m_hWnd == NULL)
-	{
-		// Create ToolTip control
 		mToolTip.Create(this);
-		// Create inactive
-		mToolTip.Activate(FALSE);
-	}
 } // End of InitToolTip
 
 BOOL CPrinterComboBox::PreTranslateMessage(MSG* pMsg) 

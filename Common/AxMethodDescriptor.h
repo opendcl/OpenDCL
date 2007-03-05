@@ -43,7 +43,7 @@ public:
 
 	//File I/O
 	virtual void Serialize(CArchive& ar, int nPropertyVersion);
-  IOStatus WriteToTextFile(FILE* pFile) const;
+  //IOStatus WriteToTextFile(FILE* pFile) const;
   IOStatus ReadFromTextFile(std::ifstream &sFile);
   IOStatus ReadFromTextFile2(std::ifstream &sFile);
 

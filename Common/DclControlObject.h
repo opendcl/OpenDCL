@@ -122,7 +122,6 @@ public:
 	CString GetPropertyListItem(PropertyId nID, size_t nIndex);
 	RefCountedPtr< CImageListObject > GetImageList() const { return mpImageList; }
 	void SetImageList( RefCountedPtr< CImageListObject > pImageList ) { mpImageList = pImageList; }
-	short FindPropertyIndex(PropertyId nID) const;
 	POSITION FindPropertyInsertPos( LPCTSTR pszName, bool bHidden ) const;
 	POSITION FindPropertyInsertPos( PropertyId nID, bool bHidden ) const;
 	bool InsertNamedProperty( RefCountedPtr< CPropertyObject > pProp );
@@ -157,9 +156,9 @@ public:
 
 	//File I/O
 	virtual void Serialize(CArchive& ar);	
-  IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
   IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName);
   IOStatus ReadFromTextFile6(std::ifstream &sFile, const CString &fileName);
+  //IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
 	
 	//Name rendition
 public:

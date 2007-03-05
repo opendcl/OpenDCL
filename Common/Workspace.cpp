@@ -19,10 +19,7 @@ CWorkspace::~CWorkspace()
 CString CWorkspace::LoadResourceString(int nResId, HMODULE hmodRes /*= NULL*/) const
 {
 	CString sRes;
-	if( hmodRes )
-		sRes.LoadString( hmodRes, nResId );
-	else
-		sRes.LoadString( nResId );
+	sRes.LoadString( hmodRes? hmodRes : GetLocalResourceModule(), nResId );
 	return sRes;
 }
 

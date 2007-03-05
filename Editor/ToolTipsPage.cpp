@@ -232,76 +232,12 @@ BOOL CToolTipsPage::PreTranslateMessage(MSG* pMsg)
 
 HBITMAP	GetBitmapFromProject(UINT nID, CSize &sz)
 {
-	CProject* pProject = activeProject;
-
-	HBITMAP hBmp = NULL;
-
-	// set start position for navigating Pictures
-	POSITION pos = pProject->GetPictureList().GetHeadPosition();
-
-	// do loop to navigate Pictures
-	while (pos != NULL)
-	{
-		// get current Picture in list
-		CPictureObject* pPicture = pProject->GetPictureList().GetNext(pos);
-		
-		if (pPicture == NULL)
-		{
-			pProject->GetPictureList().RemoveAt(pos);
-		}
-		
-		if (pPicture != NULL && pPicture->GetID() == nID)
-		{
-			if (pPicture->GetPicture().m_pPict != NULL)
-			{
-				// get the bitmap
-				if (pPicture->GetPicType() == PICTYPE_BITMAP)
-				{
-					pPicture->GetPicture().m_pPict->get_Handle((OLE_HANDLE FAR *) &hBmp);										
-					sz.cx = pPicture->GetWidth();
-					sz.cy = pPicture->GetHeight();
-				}
-			}
-		}
-	}
-
-	return hBmp;
+	return activeProject->CloneBitmap( nID, sz );
 }
 
 HICON GetIconFromProject(UINT nID)
 {
-	CProject* pProject = activeProject;
-
-	HICON hIcon = NULL;
-
-	// set start position for navigating Pictures
-	POSITION pos = pProject->GetPictureList().GetHeadPosition();
-
-	// do loop to navigate Pictures
-	while (pos != NULL)
-	{
-		// get current Picture in list
-		CPictureObject* pPicture = pProject->GetPictureList().GetNext(pos);
-		
-		if (pPicture == NULL)
-		{
-			pProject->GetPictureList().RemoveAt(pos);
-		}
-		
-		if (pPicture != NULL && pPicture->GetID() == nID)
-		{
-			if (pPicture->GetPicture().m_pPict != NULL)
-			{
-				// get the bitmap
-				if (pPicture->GetPicType() == PICTYPE_ICON)
-				{
-					pPicture->GetPicture().m_pPict->get_Handle((OLE_HANDLE FAR *) &hIcon);		
-				}
-			}
-		}
-	}
-
-	return hIcon;
+	return activeProject->CloneIcon( nID );
 }
 
 void CToolTipsPage::OnPreview() 
@@ -351,62 +287,53 @@ void CToolTipsPage::OnPreview()
 	CString sAvi;
 	m_Avi.GetWindowText(sAvi);
 
-	m_tooltip.m_AviFileName.Empty();
-	if (sAvi.GetLength() > 0)
-	{
-		CProject *pProjectList = activeProject;
-		
-		int n = pProjectList->GetKeyName().Find(_T("\\"));
-		if (n == -1)
-			n = pProjectList->GetKeyName().Find(_T("/"));
+	//m_tooltip.m_AviFileName.Empty();
+	//if (sAvi.GetLength() > 0)
+	//{
+	//	CProject *pProjectList = activeProject;
+	//	
+	//	int n = pProjectList->GetKeyName().Find(_T("\\"));
+	//	if (n == -1)
+	//		n = pProjectList->GetKeyName().Find(_T("/"));
 
-		int nNext = n;
-		while (nNext > -1)
-		{
-			nNext = pProjectList->GetKeyName().Find(_T("\\"), n+1);
-			if (nNext == -1)
-				nNext = pProjectList->GetKeyName().Find(_T("/"), n+1);
-			if (nNext > -1)
-				n = nNext;	
-		}
+	//	int nNext = n;
+	//	while (nNext > -1)
+	//	{
+	//		nNext = pProjectList->GetKeyName().Find(_T("\\"), n+1);
+	//		if (nNext == -1)
+	//			nNext = pProjectList->GetKeyName().Find(_T("/"), n+1);
+	//		if (nNext > -1)
+	//			n = nNext;	
+	//	}
 
-		sAvi = pProjectList->GetKeyName().Left(n+1) + sAvi;
-		if (lstrcmpi(sAvi.Right(4), _T(".avi")) != 0)
-			sAvi += _T(".avi");
-		
-		m_tooltip.m_AviFileName = sAvi;
-	}
+	//	sAvi = pProjectList->GetKeyName().Left(n+1) + sAvi;
+	//	if (lstrcmpi(sAvi.Right(4), _T(".avi")) != 0)
+	//		sAvi += _T(".avi");
+	//	
+	//	m_tooltip.m_AviFileName = sAvi;
+	//}
 
 	if (sPic == _T("< ? >"))
-		m_tooltip.ShowHelpTooltip(pt, sBody, IDI_HELP);
+		m_tooltip.ShowHelpTooltip(&pt, sBody, IDI_HELP);
 	else if (sPic == _T("<  i  >"))
-		m_tooltip.ShowHelpTooltip(pt, sBody, IDI_INFO);
+		m_tooltip.ShowHelpTooltip(&pt, sBody, IDI_INFO);
 	else if (sPic == _T("<  !  >"))
-		m_tooltip.ShowHelpTooltip(pt, sBody, IDI_EXCLEMATION);
+		m_tooltip.ShowHelpTooltip(&pt, sBody, IDI_EXCLEMATION);
 	else if (sPic == _T("< X >"))
-		m_tooltip.ShowHelpTooltip(pt, sBody, IDI_X);
+		m_tooltip.ShowHelpTooltip(&pt, sBody, IDI_X);
 	else if (sPic.Left(1) == _T("<"))	
-		m_tooltip.ShowHelpTooltip(pt, sBody);
+		m_tooltip.ShowHelpTooltip(&pt, sBody);
 	else if (sPic.GetLength() > 0)
 	{
 		int nId = _tstol(sPic);
-		HBITMAP hBmp = GetBitmapFromProject(nId, m_tooltip.m_szToolIcon);
-		if (hBmp != NULL)
-		{
-			
-			m_tooltip.ShowHelpTooltip(pt, sBody, hBmp);
-		}
+		HICON hIcon = GetIconFromProject(nId);
+		if (hIcon != NULL)
+			m_tooltip.ShowHelpTooltip(&pt, sBody, hIcon);
 		else
-		{
-			HICON hIcon = GetIconFromProject(nId);
-			if (hIcon != NULL)
-				m_tooltip.ShowHelpTooltip(pt, sBody, hIcon);
-		}
+			m_tooltip.ShowHelpTooltip(&pt, sBody);
 	}
 	else
-	{
-		m_tooltip.ShowHelpTooltip(pt, sBody);
-	}
+		m_tooltip.ShowHelpTooltip(&pt, sBody);
 }
 
 void CToolTipsPage::OnBold() 

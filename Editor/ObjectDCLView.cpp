@@ -1055,7 +1055,7 @@ void CObjectDCLView::CalcControlOffsetDistances(CDclControlObject *pArxObject, C
 	else
 	{
 		CRect rc = GetSplitterRect(lBottomFromBottom);
-		pArxObject->SetLongProperty(nBottomFromBottom, (nTheTop + nTheHeight)-rc.top);
+		pArxObject->SetLongProperty(nBottomFromBottom, rc.top - (nTheTop + nTheHeight));
 	}
 }
 

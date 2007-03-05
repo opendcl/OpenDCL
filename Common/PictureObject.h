@@ -7,68 +7,55 @@ enum IOStatus;
 class CPictureObject : public CObject
 {
 protected:
-	int m_nID;
-	int m_Height;
-	int m_Width;
-	
+	int mnID;
+	CSize msizePic;
 	CPictureHolder m_hPicture;
-	HICON m_hIcon;
-	bool m_ToBeAdded;
-	bool m_ToBeDeleted;
-	short m_PicType; //ARX only
-	bool m_bLoaded; //ARX only
-	HBITMAP m_hBitmap; //ARX only
-	CString m_sFileName; //ARX only
 
-public:
-	HICON m_hLoadedIcon; //ARX only
-
-public:
+private:
+	CPictureObject(const CPictureObject&);
+	CPictureObject& operator= (const CPictureObject&);
+protected:
 	CPictureObject(void);
+public:
+	CPictureObject( int nID );
+	CPictureObject( int nID, LPCTSTR szFile, bool bApplyMask = false );
 	virtual ~CPictureObject(void);
 
 protected:
 	//2007-02-12 [ORW]: save version set to 6 (was originally set to 3, but some code in Serialize() expects 4 or 5)
 	//2007-02-15 [ORW]: save version set to 7 (removed duplicated pic type)
-	ULONG GetCurrentSaveVersion() const { return 7; }
+	//2007-02-28 [ORW]: save version set to 8 (removed cached width and height from archive)
+	ULONG GetCurrentSaveVersion() const { return 8; }
 
 public:
-	int GetID() const { return m_nID; }
-	void SetID(int nID) { m_nID = nID; }
-	int GetWidth() const { return m_Width; }
-	void SetWidth( int nWidth ) { m_Width = nWidth; }
-	int GetHeight() const { return m_Height; }
-	void SetHeight( int nHeight ) { m_Height = nHeight; }
-	bool GetToBeAdded() const { return m_ToBeAdded; }
-	void SetToBeAdded(bool bNew = true) { m_ToBeAdded = bNew; }
-	bool GetToBeDeleted() const { return m_ToBeDeleted; }
-	void SetToBeDeleted(bool bNew = true) { m_ToBeDeleted = bNew; }
-	HICON GetIcon() const;
-	const CPictureHolder& GetPicture() const { return m_hPicture; }
-	CPictureHolder& GetPicture() { return m_hPicture; } //need to refactor so this function can be removed [ORW]
-	HBITMAP GetBitmap() const;
-	void SetBitmap(HBITMAP hBitmap) { m_hBitmap = hBitmap; }
-	LPCTSTR GetFileName() const { return m_sFileName; }
-	void SetFileName(LPCTSTR pszFileName) { m_sFileName = pszFileName; }
+	int GetID() const { return mnID; }
+	int GetWidth() const { return msizePic.cx; }
+	int GetHeight() const { return msizePic.cy; }
+	short GetPicType() const;	
+	bool IsValid() const { return (msizePic.cx > 0 && msizePic.cy > 0); }
+	//const CPictureHolder& GetPicture() const { return m_hPicture; }
+	LPDISPATCH GetPictureDisp() const;
+	const HBITMAP GetBitmap() const;
+	const HICON GetIcon() const;
+	HBITMAP CloneBitmap() const;
+	HICON CloneIcon() const;
 
 	//Copied from non-member utility function in Editor
-	void Update(short nID, LPPICTUREDISP NewPicture);
-	void LoadFile(LPCTSTR szFile, int nID);
-	static CPictureObject* CreatePictureObject(short nID, LPPICTUREDISP NewPicture);
+	void Update( LPPICTUREDISP NewPicture );
+	void LoadFile( LPCTSTR szFile, bool bApplyMask = false );
+	static CPictureObject* CreatePictureObject( short nID, LPPICTUREDISP NewPicture );
 
-	//Editor Only
-	short GetPicType() const;	
 	void Clear();
-	virtual void Serialize(CArchive& ar);
-  IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
+	void Render(CDC *pdc, int nPicLeft, int nPicTop, CRect &rcThis, bool bAutoSize = false);
 
-	//ARX Only
+	// File I/O
+	virtual void Serialize(CArchive& ar);
   IOStatus ReadFromTextFile(std::ifstream& sFile, const CString &fileName);
   IOStatus ReadFromTextFile3(std::ifstream& sFile, const CString &fileName);
-	void Render(CDC *pdc, int nPicLeft, int nPicTop, CRect &rcThis, bool bAutoSize = false);
-	void EnsurePictureIsLoaded();
+  //IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
 	
 protected:
+	void CalcLogicalSize();
 	BOOL PX_IUnknown(CArchive& ar, LPUNKNOWN& pUnk, REFIID iid, LPUNKNOWN pUnkDefault = NULL);
 	BOOL PX_Picture(CArchive& ar, CPictureHolder& pict);
 	BOOL ExchangePersistentProp(CArchive& ar, LPUNKNOWN* ppUnk, REFIID iid, LPUNKNOWN pUnkDefault);

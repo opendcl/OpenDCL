@@ -62,11 +62,8 @@
 CArxDialogControl::CArxDialogControl( CDclControlObject* pTemplate, CControlPane* pPane,
 																			CWnd* pControl )
 : CDialogControl( pTemplate, pPane, pControl )
+, mArxServices( pTemplate )
 {
-	msLispSymbolName = pTemplate->GetStrProperty( nGlobalVarName );
-	if( msLispSymbolName.IsEmpty() )
-		msLispSymbolName = pTemplate->GetKeyPath();
-	SetLispSymbol();
 	TraceFmt( _T("> CArxDialogControl::CArxDialogControl(%s [%08X], [%08X], %s [HWND: %08X]) [this: %08X]\r\n"),
 						pTemplate->GetKeyPath(), pTemplate, pPane, CString(pControl->GetRuntimeClass()->m_lpszClassName),
 						pControl->m_hWnd, (long)this );
@@ -74,18 +71,7 @@ CArxDialogControl::CArxDialogControl( CDclControlObject* pTemplate, CControlPane
 
 CArxDialogControl::~CArxDialogControl()
 {
-	SetLispSymbol( true );
 	TraceFmt( _T("< CArxDialogControl::~CArxDialogControl() [this: %08X]\r\n"), (long)this );
-}
-
-void CArxDialogControl::SetLispSymbol( bool bResetToNil /*= false*/ ) const
-{
-	if( msLispSymbolName.IsEmpty() )
-		return;
-	if( !bResetToNil )
-		theArxWorkspace.SetLispSymbol( msLispSymbolName, (long)mpTemplate );
-	else
-		theArxWorkspace.ResetLispSymbol( msLispSymbolName );
 }
 
 //static
@@ -411,7 +397,7 @@ TDialogControlPtr CArxDialogControl::CreateComboExControl(CDclControlObject* pTe
 	CWnd* pParentWnd = pPane->GetHostDialog();
 
 	VdclComboBoxEx *pControl = new VdclComboBoxEx;
-	pControl->Create2(pTemplate, pParentWnd, nID);
+	pControl->Create(pTemplate, pParentWnd, nID);
 	UpdateChildControl(pControl, pTemplate, pPane, nID);
 	// can't do ZOrderFront, it fucks up the display of the CComboBoxEx for some unknown reason.
 	// // ZOrderFront(pControl);
@@ -592,7 +578,7 @@ void CArxDialogControl::UpdateProperty(CDclControlObject *pControl, CControlPane
 	case CtlTabStrip:
 	case CtlSlideView:
 	case CtlListView:
-	case CtlBlockView:
+	case CtlBlockList:
 		CDialogControl* pDlgControl = pControl->GetControlInstance();
 		if( !pDlgControl )
 			return;

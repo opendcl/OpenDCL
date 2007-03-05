@@ -87,8 +87,8 @@ public:
 
 	// FIle I/O
 	virtual void Serialize(CArchive& ar, int nPropertyVersion);
-  IOStatus WriteToTextFile(FILE* pFile) const;
   IOStatus ReadFromTextFile5(std::ifstream &sFile);
+  //IOStatus WriteToTextFile(FILE* pFile) const;
 
 #ifdef _DIAGNOSTIC
 public:
