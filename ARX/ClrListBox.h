@@ -14,6 +14,7 @@ class CClrListBox : public CAcUiListBox
 // Construction
 public:
 	CClrListBox();
+	virtual ~CClrListBox();
 
 // Attributes
 public:
@@ -27,21 +28,10 @@ public:
 	void SetAcadColor(long nColor);
 	void SetForeColor(long nColor);
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CClrListBox)
-	//}}AFX_VIRTUAL
-
-// Implementation
-public:
-	virtual ~CClrListBox();
+protected:
+	DECLARE_MESSAGE_MAP()
 
 	// Generated message map functions
 protected:
-	//{{AFX_MSG(CClrListBox)
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
-	afx_msg void OnDestroy();
-	//}}AFX_MSG
-
-	DECLARE_MESSAGE_MAP()
 };

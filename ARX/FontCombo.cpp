@@ -37,13 +37,12 @@ const int SHX_FONTTYPE = 6;
 //
 ////////////////////////////////////////////////////////////////////////////////
 CFontCombo::CFontCombo()
+: m_ArxControl( NULL )
 {
 	// Load up glyphs
 	m_img.Create(15,13,ILC_COLOR4 | ILC_MASK, 3, 1);
 
-    HMODULE hRes = _hdllInstance;
-	
-	
+	HMODULE hRes = _hdllInstance;
 	HICON hIcon = (HICON)::LoadImage(hRes, MAKEINTRESOURCE(IDI_TRUEFONT), IMAGE_ICON, 0, 0, 0);	
 	m_img.Add(hIcon);
 	DestroyIcon(hIcon);
@@ -51,8 +50,6 @@ CFontCombo::CFontCombo()
 	hIcon = (HICON)::LoadImage(hRes, MAKEINTRESOURCE(IDI_ACADFONT), IMAGE_ICON, 0, 0, 0);
 	m_img.Add(hIcon);
 	DestroyIcon(hIcon);
-
-	
 }
 		 
 BOOL CFontCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
@@ -62,7 +59,7 @@ BOOL CFontCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID 
 	CRect ArxRect;
 
 	// set the arx control pointer
-    m_ArxControl = pControl;
+  m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
 	ArxRect.top = pControl->m_pTop->GetLongValue();
@@ -109,8 +106,6 @@ BOOL CFontCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID 
 		break;
 	}
 
-	VERIFY(CComboBox::SubclassDlgItem(nID, pParentWnd));
-
 	return RetVal;
 }
 
@@ -142,8 +137,6 @@ BOOL CFontCombo::Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT nID)
 	dwStyle = dwStyle | CBS_DROPDOWNLIST;
 	
 	RetVal = CComboBox::Create( dwStyle, rc, pParentWnd, nID );
-
-	VERIFY(CComboBox::SubclassDlgItem(nID, pParentWnd));
 	
 	return RetVal;
 }
@@ -303,45 +296,17 @@ void CFontCombo::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 
 			pDC->MoveTo(nX,rc.top+tm.tmHeight+2);
 			pDC->LineTo(rc.right,rc.top+tm.tmHeight+2);
-	
 		}
-		
 	}
-
 	// Restore State of context
 	pDC->RestoreDC(nIndexDC);
 }
 
 DWORD CFontCombo::GetFontTypeId(CString sName)
 {
-	CString sFontName;
-	CString sThisFontName = sName;
-	sThisFontName.MakeLower();
-	// lets check to set if it's an autocad font first
-	for (int i = 0; i< m_AcadFontFileList.GetSize(); i++)
-	{
-		sFontName = m_AcadFontFileList.GetAt(i);
-		sFontName.MakeLower();
-		if (sThisFontName == sFontName)
-		{
-			return 6;
-		}
-	}
-
-	CString strKey;
-	CFontObj* pFontObj = NULL;
-	int nCount = m_mapFonts.GetCount();
-	POSITION pos = m_mapFonts.GetStartPosition();
-	while (pos != NULL)
-	{
-		pFontObj = NULL;
-		m_mapFonts.GetNextAssoc(pos,strKey,pFontObj);		
-		if (strKey == sName)
-			return pFontObj->GetFlags();
-
-	}
-
-	
+	CFontObj* pFontObj;
+	if( m_mapFonts.Lookup( sName, pFontObj ) )
+		return pFontObj->GetFlags();
 	return 0;
 }
 
@@ -393,8 +358,6 @@ BOOL CFontCombo::EnumerateFonts()
 void CFontCombo::OnDestroy() 
 {
 	POSITION pos = m_mapFonts.GetStartPosition();
-	
-	
 	while (pos)
 	{
 		CString strKey;
@@ -402,7 +365,6 @@ void CFontCombo::OnDestroy()
 		m_mapFonts.GetNextAssoc(pos,strKey,pFontObj);
 		delete pFontObj;
 	}
-
 	CComboBox::OnDestroy();
 }
 
@@ -415,8 +377,6 @@ void CFontCombo::OnMouseMove(UINT nFlags, CPoint point)
 			point.x,
 			point.y,
 			m_bInvokeWithSendString);
-	
-	
 	CComboBox::OnMouseMove(nFlags, point);
 }
 
@@ -514,7 +474,6 @@ void CFontCombo::OnKillfocus()
 	if (m_ArxControl)
 		// call methods to invoke the event
 		InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -543,7 +502,6 @@ void CFontCombo::OnSetfocus()
 	if (m_ArxControl)
 		// call methods to invoke the event
 		InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -578,9 +536,7 @@ void CFontCombo::SetCurrentFont()
 		nSel = FindStringExact(-1,strSelFont);
 		
 		if (nSel == CB_ERR)
-		{
 			SetWindowText(m_strFontSave);
-		}
 	}
 }
 
@@ -637,33 +593,23 @@ void CFontCombo::OnCloseUp()
 ////////////////////////////////////////////////////////////////////////////////
 void CFontCombo::Initialize()
 {
-	CFontObj* pFontObj;
-	CString strKey,strComp;
-	
-	EnumerateFonts();
-	
-	CString sFontName;
-	CString sFontPath = GetFontPath();	
-
 	// get the list of existing AutoCAD shx fonts
+	CString sFontPath = GetFontPath();	
 	CFileFind finder;
 	BOOL bResult = finder.FindFile(sFontPath + "\\*.shx");
-
 	while (bResult)
 	{
 		bResult = finder.FindNextFile();
-
-		// skip . and .. files; otherwise, we'd
-	    // recur infinitely!
-		if (finder.IsDots())
+		if (finder.IsDots()) // skip . and .. files
 			continue;
-		
-		sFontName = finder.GetFileName();
-		m_AcadFontFileList.Add(sFontName.Left(sFontName.GetLength()-4));
+		m_AcadFontFileList.Add(finder.GetFileName().MakeLower());
 	}
 	finder.Close();
 
-
+	CFontObj* pFontObj;
+	CString strKey,strComp;
+	EnumerateFonts();
+	
 	POSITION pos = m_mapFonts.GetStartPosition();
 	
 	// add the sysytem fonts manually because they are not added otherwise
@@ -678,9 +624,7 @@ void CFontCombo::Initialize()
 	while (pos)
 	{
 		m_mapFonts.GetNextAssoc(pos,strKey,pFontObj);
-
 		AddString(strKey);
-		
 	}
 	
 	// We set the timer because its the only way we know when a selection
@@ -691,15 +635,14 @@ void CFontCombo::Initialize()
 	m_wndTip.Create(this);
 
 	// Set default font name
-	CString strDefault = "";
-	
+	CString strDefault;
 }
 
 CString CFontCombo::GetFontPath()
 {
 	CString sChar;
-	CString sAcadPrefix = "";
-	CString sCompile = "";
+	CString sAcadPrefix;
+	CString sCompile;
 	struct resbuf rb; 
 
 	acedGetVar(_T("ACADPREFIX"), &rb); 
@@ -709,17 +652,16 @@ CString CFontCombo::GetFontPath()
 	for (int i=0; i<sAcadPrefix.GetLength(); i++)
 	{
 		sChar = sAcadPrefix.Mid(i,1);
-		if (sChar != ";")
+		if (sChar != _T(";"))
 			sCompile = sCompile + sChar;
 		else
 		{
-			if (sCompile.Right(5) == "fonts")
+			if (sCompile.Right(5) == _T("fonts"))
 				return sCompile;
-			sCompile = "";
+			sCompile = _T("");
 		}
-
 	}
-	return "";
+	return CString();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -742,9 +684,8 @@ CString CFontCombo::GetFontPath()
 ////////////////////////////////////////////////////////////////////////////////
 void CFontCombo::AddFont(CString strName, DWORD dwFlags)
 {
-	CFontObj* pFontObj;	
-
 	// Check fonts not aleady in the array
+	CFontObj* pFontObj;	
 	if (!m_mapFonts.Lookup(strName,pFontObj))
 		m_mapFonts.SetAt(strName,new CFontObj(dwFlags));
 }
@@ -804,7 +745,6 @@ void CFontCombo::OnTimer(UINT nIDEvent)
 		}
 	}
 	CComboBox::OnTimer(nIDEvent);
-
 }
 
 BOOL CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(ENUMLOGFONTEX* pelf, 
@@ -819,16 +759,24 @@ BOOL CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(ENUMLOGFONTEX* pelf
 	
 	if (FontType & TRUETYPE_FONTTYPE)
 	{
+		CString sFontName = pelf->elfLogFont.lfFaceName;
 		dwData = TRUETYPE_FONTTYPE;			
-		((CFontCombo*)pThis)->AddFont(pelf->elfLogFont.lfFaceName, dwData);
+		//check whether it's an SHX font
+		CString sShxName = sFontName;
+		sShxName.MakeLower() += _T(".shx");
+		for (int i = 0; i< ((CFontCombo*)pThis)->m_AcadFontFileList.GetSize(); i++)
+		{
+			if (sShxName == ((CFontCombo*)pThis)->m_AcadFontFileList.GetAt(i))
+			{
+				sFontName += _T(".shx");
+				dwData = 6;
+				break;
+			}
+		}
+		((CFontCombo*)pThis)->AddFont(sFontName, dwData);
 	}
-	
 	return 1; // Call me back
 }
-
-
-
-
 
 void CFontCombo::OnSelchange() 
 {
@@ -872,7 +820,6 @@ BOOL CFontCombo::PreTranslateMessage(MSG* pMsg)
 				pMsg->wParam = VK_TAB;
 		}
 	}
-	
 	return CComboBox::PreTranslateMessage(pMsg);
 }
 
@@ -886,11 +833,11 @@ void CFontCombo::OnDropdown()
 
 void CFontCombo::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
-    lpMeasureItemStruct->itemHeight = 16;
+	lpMeasureItemStruct->itemHeight = 16;
 }
+
 void CFontCombo::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct) 
 {
 	lpMeasureItemStruct->itemHeight = 16;
-		
 	CComboBox::OnMeasureItem(nIDCtl, lpMeasureItemStruct);
 }

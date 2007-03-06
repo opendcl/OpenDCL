@@ -6,7 +6,7 @@ Odcl_DwgList_
 This method list all Dwg files in the specified directory.
 [Arguments]
 ProjectFileName
-sDirectory
+\par\tab sDirectory
 [as String]
 
 
@@ -39,7 +39,7 @@ Odcl_DwgList_
 This method will change the height of each Dwg file item so the thumbnail preview image height will be updated.
 [Arguments]
 ProjectFileName
-nRowHeight
+\par\tab nRowHeight
 [asInteger]
 
 
@@ -51,7 +51,7 @@ Odcl_DwgList_
 This method list all Dwg files in the specified directory.
 [Arguments]
 ProjectFileName
-sDirectory
+\par\tab sDirectory
 [as String]
 
 
@@ -63,7 +63,7 @@ Odcl_ListBox_
 This method will retrieve the type of file indicated. If a 0 is returned, the file is a directory, 1 will indicate a Dwg file.
 [Arguments Return] as Integer
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -107,7 +107,7 @@ Odcl_ListBox_
 This method will set the currently selected list item in a single selection ListBox. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -138,7 +138,7 @@ Odcl_ListBox_
 This method ensures that the indicated ListBox item is visible. If it's not the ListBox is scrolled to ensure the item is visible.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -152,9 +152,9 @@ Odcl_ListBox_
 This method will set the indicated list item in a multiple selection ListBox as selected or unselected. 
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
-nIsSelected
+\par\tab nIsSelected
 [as Integer: 0 = Not Selected, 1 = Selected]
 
 
@@ -166,7 +166,7 @@ Odcl_ListBox_
 This method is used to determine if an item in the list box is currently selected.  This method is useful in a multiple selection ListBox. 
 [Arguments Return] as Integer
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -178,7 +178,7 @@ Odcl_ListBox_
 This method sets the focus rectangle of the ListBox to show around item at the specified index in a multiple selection ListBox.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -210,11 +210,11 @@ Odcl_ListBox_
 This method selects or deselects a range of list items in a multiple selection ListBox.
 [Arguments]
 ProjectFileName
-nStartIndex 
+\par\tab nStartIndex 
 [as Integer]
-nEndIndex 
+\par\tab nEndIndex 
 [as Integer]
-nIsSelected
+\par\tab nIsSelected
 [as Integer: 0 = Not Selected, 1 = Selected]
 
 
@@ -227,7 +227,7 @@ Odcl_ListBox_
 This method sets the anchor list item in a multiple selection ListBox to begin an extended selection.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 

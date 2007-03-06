@@ -6,7 +6,7 @@ Odcl_DwgPreview_
 This method will load a drawing file’s thumbnail bitmap preview into the DwgPreview control for display.
 [Arguments]
 ProjectFileName
-sFileName
+\par\tab sFileName
 [as String]
 
 [Method]
@@ -37,7 +37,7 @@ Odcl_DwgPreview_
 This method draws a rectangle around the inside of the border as indication that the control has been selected or indicated for some purpose.	
 [Arguments]
 ProjectFileName
-ColorIndex
+\par\tab ColorIndex
 [as Integer]
 
 

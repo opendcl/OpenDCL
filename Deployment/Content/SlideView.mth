@@ -6,9 +6,9 @@ Odcl_SlideView_
 This method loads a slide image or slide library and then displays the slide in the control.
 [Arguments]
 ProjectFileName
-FileName
+\par\tab FileName
 [as String]
-\i[Optional] \i0 SlideLibraryImageName
+\par\tab \i[Optional] \i0 SlideLibraryImageName
 [as String]
 
 
@@ -34,22 +34,23 @@ This method will load a slide image from a slide file or slide library file and 
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-UpperLeftX
+\par\tab UpperLeftX
 [as Integer]
-UpperLeftY
+\par\tab UpperLeftY
 [as Integer]
-Width
+\par\tab Width
 [as Integer]
-Height
+\par\tab Height
 [as Integer]
-FileName
+\par\tab FileName
 [as String]
-\i[Optional] \i0 SlideLibraryImageName
+\par\tab \i[Optional] \i0 SlideLibraryImageName
 [as String]
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -67,20 +68,21 @@ This method draws a list of lines in the control.
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-StartX
+\par\tab StartX
 [as Integer]
-StartY
+\par\tab StartY
 [as Integer]
-EndX
+\par\tab EndX
 [as Integer]
-EndY
+\par\tab EndY
 [as Integer]
-LineColor
+\par\tab LineColor
 [as Integer]
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -97,20 +99,21 @@ This method draws a solid rectangle on the control.
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-UpperLeftX
+\par\tab UpperLeftX
 [as Integer]
-UpperLeftY
+\par\tab UpperLeftY
 [as Integer]
-Width
+\par\tab Width
 [as Integer]
-Height
+\par\tab Height
 [as Integer]
-Color
+\par\tab Color
 [as Integer]
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -133,7 +136,7 @@ Odcl_SlideView_
 This method draws a rectangle around the inside of the border as indication that the control has been selected or highlighted for some purpose. 
 [Arguments]
 ProjectFileName
-ColorIndex
+\par\tab ColorIndex
 [as Integer]
 
 

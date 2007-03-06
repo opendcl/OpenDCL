@@ -6,7 +6,7 @@ Odcl_Tab_
 This method will set the current tab selection.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 [Method]
@@ -17,7 +17,7 @@ Odcl_Tab_
 This method will hide a specified tab of a tab control.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -29,7 +29,7 @@ Odcl_Tab_
 This method will reshow an already hidden tab of a tab control.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -41,9 +41,9 @@ Odcl_Tab_
 This method change the text displayed of a specified tab of the tab control.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
-text
+\par\tab text
 [as string]
 
 

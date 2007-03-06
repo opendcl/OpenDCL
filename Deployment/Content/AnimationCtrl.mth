@@ -6,7 +6,7 @@ Odcl_Animate_
 This method will load an animated file and activate it.
 [Arguments]
 ProjectFileName
-sFileName
+\par\tab sFileName
 [as String]
 
 [Method]
@@ -37,7 +37,7 @@ Odcl_Animate_
 This method will display a specific frame of the animation file.
 [Arguments]
 ProjectFileName
-FrameIndex
+\par\tab FrameIndex
 [as Integer]
 
 

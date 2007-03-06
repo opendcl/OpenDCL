@@ -314,6 +314,9 @@ void CModelessDlg::OnSize(UINT nType, int cx, int cy)
 			rcThis.Height(),
 			false);	
 	}
+	
+	mDialogX.GetControlPane().RecalcLayout();
+	RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 }
 
 void CModelessDlg::SetTitleBarIcon(int nPictureID)

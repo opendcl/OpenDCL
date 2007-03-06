@@ -5,7 +5,7 @@ Odcl_AxObject_
 [Desc]
 Some ActiveX control's methods or properties requied the OleObject to be passed in as an argument (for example to set the ImageList property of a Microsoft ImageComboBox you need to pass in the OleObject). Calling this method on an ActiveX control will pass back the numberic value indicated by the OleObject. When finished using the OleObject, call \cf2Odcl_AxObject_Close \cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application. \par \par \b1Note: \b0 Closing OleObjects passed in by an event is not required. The ActiveX control will close the OleObject for you.
 [Arguments]
-OleObject
+\par\tab OleObject
 [as List]
 
 

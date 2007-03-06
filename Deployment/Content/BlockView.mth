@@ -25,11 +25,11 @@ Odcl_BlockView_
 This method loads a block from the current drawing or pre-loaded dwg file into the control for display. This method will allow the camera viewing angle to be set by a standard preset (SW, NW, Top, Front, etc.) When this method is called the block will always be zoomed to its extents unless the \cf1 ZoomFactor \cf0 argument has been submitted. \par \par If the \cf1 ZoomFactor \cf0 has been included then the block is scaled according to the zoom extents. For example: 1.0 = zoomed to extents, 0.5 = 1/2 the zoom extents making the block half the size and 2.0 = doubles the extents making the block zoomed in. \par \par \trowd\trgaph108\trleft750\trbrdrt\brdrs\brdrw10 \trbrdrl\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx1665\clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx7920\pard\intbl\nowidctlpar\b Flag\cell Preset View\cell\row\intbl 0\cell\b0 Top\cell\b\row\intbl 1\cell\b0 Bottom\cell\b\row\intbl 2\cell\b0 Right\cell\b\row\intbl 3\cell\b0 Left\cell\b\row\intbl 4\cell\b0 Front\cell\b\row\intbl 5\cell\b0 Back\cell\b\row\intbl 6\cell\b0 SW - isometric\cell\b\row\intbl 7\cell\b0 SE - isometric\cell\b\row\intbl 8\cell\b0 NW - isometric\cell\b\row\intbl 9\cell\b0 NE - isometric\cell\b\row\pard\lang4105\b0\f1\fs20
 [Arguments]
 ProjectFileName
-BlockName 
+\par\tab BlockName 
 [as String]
-\i [optional]\i0 PresetView 
+\par\tab \i [optional]\i0 PresetView 
 [as Integer]
-\i [optional]\i0 ZoomFactor
+\par\tab \i [optional]\i0 ZoomFactor
 [as Real]
 
 [Method]
@@ -50,15 +50,15 @@ Odcl_BlockView_
 This method loads a block from the current drawing or pre-loaded dwg file into the control for display. This method will allow the camera viewing angle to be set manually by submitting the offset vector camera placement in relation from the center of the block.  When this method is called the block will always be zoomed to its extents unless the \cf1 ZoomFactor \cf0 argument has been submitted. \par \par If the \cf1 ZoomFactor \cf0 has been included then the block is scaled according to the zoom extents. For example: 1.0 = zoomed to extents, 0.5 = 1/2 the zoom extents making the block half the size and 2.0 = doubles the extents making the block zoomed in.
 [Arguments]
 ProjectFileName
-BlockName 
+\par\tab BlockName 
 [as String]
-CameraXOffset 
+\par\tab CameraXOffset 
 [as Real]
-CameraYOffset 
+\par\tab CameraYOffset 
 [as Real]
-\i [optional]\i0 CameraZOffset 
+\par\tab \i [optional]\i0 CameraZOffset 
 [as Real]
-\i [optional]\i0 ZoomFactor
+\par\tab \i [optional]\i0 ZoomFactor
 [as Real]
 
 
@@ -79,7 +79,7 @@ Odcl_BlockView_
 This method will return a list indicating the size of a block. If an external Dwg file was previously loaded using \cf2 Odcl_BlockView_PreLoadDwg \cf0 this method will look for the block in the loaded Dwg file instead of the current drawing being edited.
 [Arguments Return] as List
 ProjectFileName
-DwgFileName
+\par\tab DwgFileName
 [as String]
 
 
@@ -91,11 +91,11 @@ Odcl_BlockView_
 This method loads a block from the current drawing or pre-loaded dwg file into the control for display at an exact scale. This method will allow the camera viewing angle to be set by a standard preset (SW, NW, Top, Front, etc.) \par \par To set the exact scale the \cf1 ZoomFactor \cf0 argument can be calculated as Units per Pixel. So for example a 10 inch by 10 inch block displayed with a value of 0.5 will display about 20 pixels by 20 pixels (+ or - one pixel) in size in the control. \par        \cf1 ZoomFactor \cf0 = Actual Units / ScreenUnits. \par \par \trowd\trgaph108\trleft750\trbrdrt\brdrs\brdrw10 \trbrdrl\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx1665\clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx7920\pard\intbl\nowidctlpar\b Flag\cell Preset View\cell\row\intbl 0\cell\b0 Top\cell\b\row\intbl 1\cell\b0 Bottom\cell\b\row\intbl 2\cell\b0 Right\cell\b\row\intbl 3\cell\b0 Left\cell\b\row\intbl 4\cell\b0 Front\cell\b\row\intbl 5\cell\b0 Back\cell\b\row\intbl 6\cell\b0 SW - isometric\cell\b\row\intbl 7\cell\b0 SE - isometric\cell\b\row\intbl 8\cell\b0 NW - isometric\cell\b\row\intbl 9\cell\b0 NE - isometric\cell\b\row\pard\lang4105\b0\f1\fs20
 [Arguments]
 ProjectFileName
-BlockName 
+\par\tab BlockName 
 [as String]
-\i [optional]\i0 PresetView 
+\par\tab \i [optional]\i0 PresetView 
 [as Integer]
-\i [optional]\i0 ZoomFactor
+\par\tab \i [optional]\i0 ZoomFactor
 [as Real]
 
 
@@ -107,15 +107,15 @@ Odcl_BlockView_
 This method loads a block from the current drawing or pre-loaded dwg file into the control for display at an exact scale.  This method will allow the camera viewing angle to be set manually by submitting the offset vector camera placement in relation from the center of the block.  \par \par To set the exact scale the \cf1 ZoomFactor \cf0 argument can be calculated as Units per Pixel. So for example a 10 inch by 10 inch block displayed with a value of 0.5 will display about 20 pixels by 20 pixels (+ or - one pixel) in size in the control. \par        \cf1 ZoomFactor \cf0 = Actual Units / ScreenUnits
 [Arguments]
 ProjectFileName
-BlockName 
+\par\tab BlockName 
 [as String]
-CameraXOffset 
+\par\tab CameraXOffset 
 [as Real]
-CameraYOffset 
+\par\tab CameraYOffset 
 [as Real]
-\i [optional]\i0 CameraZOffset 
+\par\tab \i [optional]\i0 CameraZOffset 
 [as Real]
-\i [optional]\i0 ZoomFactor
+\par\tab \i [optional]\i0 ZoomFactor
 [as Real]
 
 
@@ -137,7 +137,7 @@ Odcl_BlockView_
 This method preload a drawing into the BlockView control for displaying it's internal blocks. Use the \cf2 Odcl_BlockView_DisplayBlock \cf0 method to display any blocks that reside in the Dwg file that this method will have just loaded.
 [Arguments]
 ProjectFileName
-DwgFileName
+\par\tab DwgFileName
 [as String]
 
 
@@ -150,7 +150,7 @@ Odcl_BlockView_
 This method will recalculate the zoom scale by the \cf1 ZoomFactor \cf0 provided.  For example a \cf1 ZoomFactor \cf0 setting of 1.1 will zoom in on the block object, and a \cf1 ZoomFactor \cf0 setting of 0.9 will recalculate the zoom scale based on the current zoom setting.
 [Arguments]
 ProjectFileName
-ZoomFactor
+\par\tab ZoomFactor
 [as Real]
 
 
@@ -163,11 +163,11 @@ Odcl_BlockView_
 This method loads an external drawing file into the control for display just as the BlockView control displays other blocks. This method will allow the camera viewing angle to be set by a standard preset (SW, NW, Top, Front, etc.) When this method is called the block will always be zoomed to its extents unless the \cf1 ZoomFactor \cf0 argument has been submitted. \par \par If the \cf1 ZoomFactor \cf0 has been included then the block is scaled according to the zoom extents. For example: 1.0 = zoomed to extents, 0.5 = 1/2 the zoom extents making the block half the size and 2.0 = doubles the extents making the block zoomed in. \par \par \trowd\trgaph108\trleft750\trbrdrt\brdrs\brdrw10 \trbrdrl\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx1665\clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx7920\pard\intbl\nowidctlpar\b Flag\cell Preset View\cell\row\intbl 0\cell\b0 Top\cell\b\row\intbl 1\cell\b0 Bottom\cell\b\row\intbl 2\cell\b0 Right\cell\b\row\intbl 3\cell\b0 Left\cell\b\row\intbl 4\cell\b0 Front\cell\b\row\intbl 5\cell\b0 Back\cell\b\row\intbl 6\cell\b0 SW - isometric\cell\b\row\intbl 7\cell\b0 SE - isometric\cell\b\row\intbl 8\cell\b0 NW - isometric\cell\b\row\intbl 9\cell\b0 NE - isometric\cell\b\row\pard\lang4105\b0\f1\fs20
 [Arguments]
 ProjectFileName
-DwgFileName
+\par\tab DwgFileName
 [as String]
-\i [optional]\i0 PresetView 
+\par\tab \i [optional]\i0 PresetView 
 [as Integer]
-\i [optional]\i0 ZoomFactor
+\par\tab \i [optional]\i0 ZoomFactor
 [as Real]
 
 
@@ -179,15 +179,15 @@ Odcl_BlockView_
 This method loads an external drawing file into the control for display just as the BlockView control displays other blocks. This method will allow the camera viewing angle to be set manually by submitting the offset vector camera placement in relation from the center of the block.  When this method is called the block will always be zoomed to its extents unless the \cf1 ZoomFactor \cf0 argument has been submitted. \par \par If the \cf1 ZoomFactor \cf0 has been included then the block is scaled according to the zoom extents. For example: 1.0 = zoomed to extents, 0.5 = 1/2 the zoom extents making the block half the size and 2.0 = doubles the extents making the block zoomed in.
 [Arguments]
 ProjectFileName
-DwgFileName
+\par\tab DwgFileName
 [as String]
-CameraXOffset 
+\par\tab CameraXOffset 
 [as Real]
-CameraYOffset 
+\par\tab CameraYOffset 
 [as Real]
-\i [optional]\i0 CameraZOffset 
+\par\tab \i [optional]\i0 CameraZOffset 
 [as Real]
-\i [optional]\i0 ZoomFactor
+\par\tab \i [optional]\i0 ZoomFactor
 [as Real]
 
 
@@ -200,11 +200,11 @@ Odcl_BlockView_
 This method loads an external drawing file into the control at an exact scale for display just as the BlockView control displays other blocks. This method will allow the camera viewing angle to be set by a standard preset (SW, NW, Top, Front, etc.) \par \par To set the exact scale the \cf1 ZoomFactor \cf0 argument can be calculated as Units per Pixel. So for example a 10 inch by 10 inch block displayed with a value of 0.5 will display about 20 pixels by 20 pixels (+ or - one pixel) in size in the control. \par        \cf1 ZoomFactor \cf0 = Actual Units / ScreenUnits. \par \par \trowd\trgaph108\trleft750\trbrdrt\brdrs\brdrw10 \trbrdrl\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx1665\clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx7920\pard\intbl\nowidctlpar\b Flag\cell Preset View\cell\row\intbl 0\cell\b0 Top\cell\b\row\intbl 1\cell\b0 Bottom\cell\b\row\intbl 2\cell\b0 Right\cell\b\row\intbl 3\cell\b0 Left\cell\b\row\intbl 4\cell\b0 Front\cell\b\row\intbl 5\cell\b0 Back\cell\b\row\intbl 6\cell\b0 SW - isometric\cell\b\row\intbl 7\cell\b0 SE - isometric\cell\b\row\intbl 8\cell\b0 NW - isometric\cell\b\row\intbl 9\cell\b0 NE - isometric\cell\b\row\pard\lang4105\b0\f1\fs20
 [Arguments]
 ProjectFileName
-DwgFileName
+\par\tab DwgFileName
 [as String]
-\i [optional]\i0 PresetView 
+\par\tab \i [optional]\i0 PresetView 
 [as Integer]
-\i [optional]\i0 ZoomFactor
+\par\tab \i [optional]\i0 ZoomFactor
 [as Real]
 
 
@@ -216,15 +216,15 @@ Odcl_BlockView_
 This method loads an external drawing file into the control at an exact scale for display just as the BlockView control displays other blocks.  This method will allow the camera viewing angle to be set manually by submitting the offset vector camera placement in relation from the center of the block.  \par \par To set the exact scale the \cf1 ZoomFactor \cf0 argument can be calculated as Units per Pixel. So for example a 10 inch by 10 inch block displayed with a value of 0.5 will display about 20 pixels by 20 pixels (+ or - one pixel) in size in the control. \par        \cf1 ZoomFactor \cf0 = Actual Units / ScreenUnits
 [Arguments]
 ProjectFileName
-DwgFileName
+\par\tab DwgFileName
 [as String]
-CameraXOffset 
+\par\tab CameraXOffset 
 [as Real]
-CameraYOffset 
+\par\tab CameraYOffset 
 [as Real]
-\i [optional]\i0 CameraZOffset 
+\par\tab \i [optional]\i0 CameraZOffset 
 [as Real]
-\i [optional]\i0 ZoomFactor
+\par\tab \i [optional]\i0 ZoomFactor
 [as Real]
 
 

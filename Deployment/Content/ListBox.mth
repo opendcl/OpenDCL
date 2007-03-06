@@ -19,7 +19,7 @@ Odcl_ListBox_
 This method will add a list of strings to the specified ListBox.
 [Arguments]
 ProjectFileName
-StringList
+\par\tab StringList
 [as List of Strings]
 
 
@@ -32,9 +32,9 @@ Odcl_ListBox_
 This method will fill the ListBox with a list of files found in the directory search that matches the \cf1 sExtension \cf0 argument.  If the \cf1 sExtension \cf0 is not specified *.* is assumed.
 [Arguments]
 ProjectFileName
-sDirectory
+\par\tab sDirectory
 [as String]
-\i[Optional] \i0 sExtension
+\par\tab \i[Optional] \i0 sExtension
 [as String]
 
 
@@ -55,7 +55,7 @@ Odcl_ListBox_
 This method will retrieve a requested list item.
 [Arguments Return] as String
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -97,7 +97,7 @@ Odcl_ListBox_
 This method will set the currently selected list item in a single selection ListBox. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -128,7 +128,7 @@ Odcl_ListBox_
 This method ensures that the indicated ListBox item is visible. If it's not the ListBox is scrolled to ensure the item is visible.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -140,9 +140,9 @@ Odcl_ListBox_
 This method will set the associated item data for the indicated list item. The item data will only accept integer values.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
-IntegerData
+\par\tab IntegerData
 [as Integer]
 
 
@@ -154,7 +154,7 @@ Odcl_ListBox_
 This method will retrieve the associated item data for the indicated list item.
 [Arguments Return] as Integer
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -166,7 +166,7 @@ Odcl_ListBox_
 This method will delete a list item from the ListBox.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -178,9 +178,9 @@ Odcl_ListBox_
 This method will insert a list item in the ListBox.
 [Arguments Return] as Integer
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
-NewString
+\par\tab NewString
 [as String]
 
 
@@ -192,7 +192,7 @@ Odcl_ListBox_
 This method finds the first string in a ListBox that contains a list item with the exact string match without changing the ListBox selection. A search for "Example Text" will find "Example Text". Use the Odcl_ListBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
 ProjectFileName
-SearchString
+\par\tab SearchString
 [as String]
 
 
@@ -204,7 +204,7 @@ Odcl_ListBox_
 This method finds the first string in a ListBox that contains a list item with the specified prefix or partial match without changing the ListBox selection. A search for "Text" will find "Example Text". Use the Odcl_ListBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
 ProjectFileName
-SearchString
+\par\tab SearchString
 [as String]
 
 
@@ -216,7 +216,7 @@ Odcl_ListBox_
 This method finds the first string in a ListBox that contains the specified prefix and selects this list item in the ListBox.
 [Arguments Return] as Integer
 ProjectFileName
-SearchString
+\par\tab SearchString
 [as String]
 
 
@@ -228,9 +228,9 @@ Odcl_ListBox_
 This method will set the indicated list item in a multiple selection ListBox as selected or unselected. 
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
-nIsSelected
+\par\tab nIsSelected
 [as Integer: 0 = Not Selected, 1 = Selected]
 
 
@@ -242,7 +242,7 @@ Odcl_ListBox_
 This method is used to determine if an item in the list box is currently selected.  This method is useful in a multiple selection ListBox. 
 [Arguments Return] as Integer
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -254,7 +254,7 @@ Odcl_ListBox_
 This method sets the focus rectangle of the ListBox to show around item at the specified index in a multiple selection ListBox.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -286,11 +286,11 @@ Odcl_ListBox_
 This method selects or deselects a range of list items in a multiple selection ListBox.
 [Arguments]
 ProjectFileName
-nStartIndex 
+\par\tab nStartIndex 
 [as Integer]
-nEndIndex 
+\par\tab nEndIndex 
 [as Integer]
-nIsSelected
+\par\tab nIsSelected
 [as Integer: 0 = Not Selected, 1 = Selected]
 
 
@@ -303,7 +303,7 @@ Odcl_ListBox_
 This method sets the anchor list item in a multiple selection ListBox to begin an extended selection.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 

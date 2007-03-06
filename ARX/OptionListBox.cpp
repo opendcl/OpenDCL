@@ -19,10 +19,7 @@
 
 COptionListBox::COptionListBox()
 {
-	m_bMouseTracking = FALSE;
-	m_bGetFocusYet = false;	
 	m_RowHeight = 20;	
-	m_nLastHighlighted = -1;
 	m_NextHeight = m_RowHeight;
 }
 
@@ -51,6 +48,7 @@ void COptionListBox::SetRowHeight(int nNewHeight)
 	m_RowHeight = nNewHeight;
 	m_NextHeight = m_RowHeight;
 }
+
 /////////////////////////////////////////////////////////////////////////////
 // COptionListBox message handlers
 
@@ -58,10 +56,8 @@ BOOL COptionListBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 {
 	CRect ArxRect;
 
-	m_bMouseTracking = FALSE;        
-
 	// set the arx control pointer
-    m_ArxControl = pControl;
+	m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
 	ArxRect.top = pControl->m_pTop->GetLongValue();
@@ -89,7 +85,6 @@ BOOL COptionListBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 		dwStyle = dwStyle | WS_GROUP;
 
 	BOOL RetVal = CClrListBox::Create(dwStyle,ArxRect, pParentWnd, nID);
-	VERIFY(CClrListBox::SubclassDlgItem(nID, pParentWnd));
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
 	{
@@ -101,7 +96,6 @@ BOOL COptionListBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 		break;
 	}
 
-	
 	m_ImageList.Create(13, 13, ILC_COLOR8|ILC_MASK, 0, 1);
 	
 	CBitmap bitmap1;
@@ -185,22 +179,19 @@ void COptionListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct, int nHighlight)
 			rcText.Width(), rcText.Height(),
 			DSS_DISABLED|(TRUE ? DST_PREFIXTEXT : DST_TEXT)); 
 	}
-	if (GetFocus() == this &&
-		(lpDrawItemStruct->itemState & ODS_SELECTED ||
-		lpDrawItemStruct->itemState == ODS_SELECTED)
-		)
-	{	
-		// setup the CRect for Focus Rectangle
-		CRect rcCell;
-		rcCell.left = rc.left - 2;
-		rcCell.top = rc.top;
-		rcCell.right = rc.right;
-		rcCell.bottom = rcCell.top + m_NextHeight + 3;
+	//if (GetFocus() == this && (lpDrawItemStruct->itemState & ODS_FOCUS) == ODS_FOCUS )
+	//{	
+	//	// setup the CRect for Focus Rectangle
+	//	CRect rcCell;
+	//	rcCell.left = rc.left - 2;
+	//	rcCell.top = rc.top;
+	//	rcCell.right = rc.right;
+	//	rcCell.bottom = rcCell.top + m_NextHeight + 3;
 
-		if (lpDrawItemStruct->itemData < 2)	
-			// draw the solid rectangle
-			::DrawFocusRect(pDC->m_hDC, &rcCell);
-	}
+	//	if (lpDrawItemStruct->itemData < 2)	
+	//		// draw the solid rectangle
+	//		::DrawFocusRect(pDC->m_hDC, &rcCell);
+	//}
 	pDC->SelectObject(pOldHeadingFont);
 
 	// lets draw the left side dark gray lines
@@ -210,12 +201,10 @@ void COptionListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct, int nHighlight)
 	CPoint point;
 
 	int nImageIndex = 0;
-	if (lpDrawItemStruct->itemState & ODS_SELECTED || lpDrawItemStruct->itemID == m_CurSel)
-	{
+	if (lpDrawItemStruct->itemState & ODS_SELECTED)
 		nImageIndex = 2;
-	}	
-	if (m_nLastHighlighted == lpDrawItemStruct->itemID)
-		nImageIndex++;
+	//if (m_nLastHighlighted == lpDrawItemStruct->itemID)
+	//	nImageIndex++;
 
 	m_ImageList.Draw(pDC, nImageIndex, CPoint(2, rc.top+2), ILD_NORMAL);//ILD_TRANSPARENT);
 	
@@ -228,7 +217,6 @@ void COptionListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct, int nHighlight)
 void COptionListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct) 
 {
 	lpMeasureItemStruct->itemHeight = m_RowHeight;
-	
 }
 
 
@@ -244,13 +232,59 @@ BOOL COptionListBox::PreTranslateMessage(MSG* pMsg)
 	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 	
-  //On a return, do a double-click if on is defined. Otherwise, do a tab.
-  if (pMsg->message == WM_KEYDOWN && pMsg->wParam==VK_RETURN)
-  {
-    if (m_ArxControl->GetStrProperty(nEventDblClicked) == "") {
-      pMsg->wParam = VK_TAB;		
-    }
-  }
+  //On a return, do a double-click if one is defined. Otherwise, do a tab.
+  if (pMsg->message == WM_KEYDOWN)
+	{
+		if (pMsg->wParam == VK_RETURN)
+		{
+			if (m_ArxControl->GetBoolProperty(nReturnAsTab))
+				pMsg->wParam = VK_TAB;
+			else
+			{
+				SetCurSel(GetCaretIndex());
+				return TRUE;
+			}
+		}
+		else if (pMsg->wParam == VK_SPACE)
+		{
+			SetCurSel(GetCaretIndex());
+			return TRUE;
+		}
+		else if (pMsg->wParam == VK_LEFT || pMsg->wParam == VK_UP)
+		{
+			//int nCaret = GetCaretIndex();
+			//if( nCaret > 0 )
+			//	--nCaret;
+			//else
+			//	nCaret = GetCount() - 1;
+			//SetCaretIndex(nCaret);
+			//Invalidate();
+			int nCurSel = GetCurSel();
+			if( nCurSel > 0 )
+				--nCurSel;
+			else
+				nCurSel = GetCount() - 1;
+			SetCurSel(nCurSel);
+			return TRUE;
+		}
+		else if (pMsg->wParam == VK_RIGHT || pMsg->wParam == VK_DOWN)
+		{
+			//int nCaret = GetCaretIndex();
+			//if( nCaret < GetCount() )
+			//	++nCaret;
+			//else
+			//	nCaret = 0;
+			//SetCaretIndex(nCaret);
+			//Invalidate();
+			int nCurSel = GetCurSel();
+			if( nCurSel < GetCount() - 1 )
+				++nCurSel;
+			else
+				nCurSel = 0;
+			SetCurSel(nCurSel);
+			return TRUE;
+		}
+	}
 	
 	return CClrListBox::PreTranslateMessage(pMsg);
 }
@@ -261,23 +295,20 @@ void COptionListBox::OnSelchange()
 {
 	int nCurSel = GetCurSel();
 	
-	if (GetItemData(nCurSel) == 2)
-	{
-		SetCurSel(m_CurSel);
-		return;
-	}
-	// if the control has not yet recieved user input 
-	//if (!m_bGetFocusYet)
-	if (m_CurSel != nCurSel)
-	{
-		// we must redraw the default selected item because it will not redraw itself.
-		CRect rc;
-		//m_bGetFocusYet = true;		
-		GetItemRect(m_CurSel, rc);
-		InvalidateRect(rc);		
-	}
-	
-	m_CurSel = nCurSel;
+	//if (GetItemData(nCurSel) == 2)
+	//{
+	//	SetCurSel(m_CurSel);
+	//	return;
+	//}
+	//if (m_CurSel != nCurSel)
+	//{
+	//	// we must redraw the default selected item because it will not redraw itself.
+	//	CRect rc;
+	//	GetItemRect(m_CurSel, rc);
+	//	InvalidateRect(rc);		
+	//}
+	//
+	//m_CurSel = nCurSel;
 
 	if (nCurSel > -1)
 	{
@@ -296,23 +327,19 @@ void COptionListBox::OnDblclk()
 {
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventDblClicked), m_bInvokeWithSendString);
-
 }
 
 void COptionListBox::OnKillfocus() 
 {
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
-
 }
 
 
 void COptionListBox::OnSetfocus() 
 {
-	
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
-	
 }
 
 int COptionListBox::OnCreate(LPCREATESTRUCT lpCreateStruct) 
@@ -322,7 +349,7 @@ int COptionListBox::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	RefCountedPtr< CPropertyObject > pListProperty = m_ArxControl->GetPropertyObject(nBtnCaption);
 	m_RowHeight = (short)m_ArxControl->GetLngProperty(nRowHeight);
-	m_CurSel = (short)m_ArxControl->GetLngProperty(nDefSelIndex);
+	int nCurSel = (short)m_ArxControl->GetLngProperty(nDefSelIndex);
 	CRect rc;
 	GetClientRect(&rc);
 	size_t nCount = pListProperty->size();
@@ -337,17 +364,13 @@ int COptionListBox::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		else
 			SetItemHeight(nIndex, m_RowHeight);
 	}
-	SetCurSel(m_CurSel);
-	SetCaretIndex(m_CurSel);
-	
-	
+	SetCurSel(nCurSel);
+	SetCaretIndex(nCurSel);
 	return 0;
 }
 
 LRESULT COptionListBox::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
-	m_bMouseTracking = FALSE;    
-	m_nLastHighlighted = -1;
 	RedrawWindow();
 	return FALSE;
 }
@@ -424,36 +447,6 @@ void COptionListBox::OnMouseMove(UINT nFlags, CPoint point)
 		}
 	}
 	pDC->Detach();
-		
-	
-
-	bool bRedraw = false;
-	int nAverageHeight = 0;
-	int nBottomOption = 0;
-
-	// here we need to find the item the mouse is over
-	for (i=0; i<GetCount(); i++)
-	{		
-		GetItemRect(i, rc);
-		rc.bottom = rc.top + m_RowHeight;
-		nBottomOption = rc.bottom;
-	}
-	// setup the mouse tracking event reactor
-	if (!m_bMouseTracking)       
-	{
-		TRACKMOUSEEVENT tme;        
-		tme.cbSize = sizeof(TRACKMOUSEEVENT);
-		tme.dwFlags = TME_LEAVE;
-		tme.hwndTrack = m_hWnd;
-		if (::_TrackMouseEvent(&tme))                
-			m_bMouseTracking = TRUE;
-	}
-	
-}
-
-void COptionListBox::OnCaptureChanged(CWnd *pWnd) 
-{
-	CClrListBox::OnCaptureChanged(pWnd);
 }
 
 void COptionListBox::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {

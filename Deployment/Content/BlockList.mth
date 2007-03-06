@@ -16,7 +16,7 @@ Odcl_ListView_
 This method will force an item to be selected and will also scroll the ListView to ensure the item is displayed. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -33,7 +33,7 @@ This method will format the layout of all the items in the ListView control. \pa
 \par \pard\fi-0\li0
 [Arguments]
 ProjectFileName
-nStyle
+\par\tab nStyle
 [as Integer]
 
 
@@ -56,7 +56,7 @@ Odcl_ListView_
 This method will return the text of an item in a ListView control. 
 [Arguments Return] as String
 ProjectFileName
-nRowIndex
+\par\tab nRowIndex
 [as Integer]
 
 
@@ -87,7 +87,7 @@ Odcl_ListView_
 This method will sort the columns in ascending or descending order, based on the column index provided.  
 [Arguments]
 ProjectFileName
-bAscending
+\par\tab bAscending
 [as Integer, T or Nil] (1 or T = Ascending, 0 or Nil = Descending) 
 
 
@@ -100,7 +100,7 @@ Odcl_BlockList_
 This method will load an external Dwg file and list the blocks available in it. 
 [Arguments]
 ProjectFileName
-sFileName
+\par\tab sFileName
 [as String]
 
 

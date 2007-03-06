@@ -16,7 +16,7 @@ Odcl_
 This method will return the size of a picture, indicated by its Id.
 [Arguments Return] as List
 ProjectName
-PictureID
+\par\tab PictureID
 [as Integer]
 
 
@@ -51,20 +51,21 @@ This method draws a list of lines in the control.
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-StartX
+\par\tab StartX
 [as Integer]
-StartY
+\par\tab StartY
 [as Integer]
-EndX
+\par\tab EndX
 [as Integer]
-EndY
+\par\tab EndY
 [as Integer]
-LineColor
+\par\tab LineColor
 [as Integer]
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -81,28 +82,29 @@ This method draws an arc on the control. This method requires center coordinates
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab
 [Begin List]
 [Begin List]
-UpperLeftX
+\par\tab UpperLeftX
 [as Integer]
-UpperLeftY
+\par\tab UpperLeftY
 [as Integer]
-Width
+\par\tab Width
 [as Integer]
-Height
+\par\tab Height
 [as Integer]
-StartAngleX
+\par\tab StartAngleX
 [as Integer]
-StartAngleY
+\par\tab StartAngleY
 [as Integer]
-EndAngleX
+\par\tab EndAngleX
 [as Integer]
-EndAngleY
+\par\tab EndAngleY
 [as Integer]
-Color
+\par\tab Color
 [as Integer]
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -119,20 +121,21 @@ This method draws a circle on the control. A rectangle is used because it allows
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-UpperLeftX
+\par\tab UpperLeftX
 [as Integer]
-UpperLeftY
+\par\tab UpperLeftY
 [as Integer]
-Width
+\par\tab Width
 [as Integer]
-Height
+\par\tab Height
 [as Integer]
-Color
+\par\tab Color
 [as Integer]
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -150,20 +153,21 @@ This method draws a solid rectangle on the control.
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-UpperLeftX
+\par\tab UpperLeftX
 [as Integer]
-UpperLeftY
+\par\tab UpperLeftY
 [as Integer]
-Width
+\par\tab Width
 [as Integer]
-Height
+\par\tab Height
 [as Integer]
-Color
+\par\tab Color
 [as Integer]
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -188,22 +192,23 @@ This method draws a hatched rectangle on the control. There are five styles of w
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-UpperLeftX
+\par\tab UpperLeftX
 [as Integer]
-UpperLeftY
+\par\tab UpperLeftY
 [as Integer]
-Width
+\par\tab Width
 [as Integer]
-Height
+\par\tab Height
 [as Integer]
-LineColor
+\par\tab LineColor
 [as Integer]
-HatchPattern
+\par\tab HatchPattern
 [as Integer]
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -229,20 +234,21 @@ This method draws various standard windows control borders. Color control is aut
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-UpperLeftX
+\par\tab UpperLeftX
 [as Integer]
-UpperLeftY
+\par\tab UpperLeftY
 [as Integer]
-Width
+\par\tab Width
 [as Integer]
-Height
+\par\tab Height
 [as Integer]
-BorderFlag
+\par\tab BorderFlag
 [as Integer]
-[End List]
-...
+\par\tab [End List]
+\par\tab ...
 [End List]
 
 
@@ -260,18 +266,19 @@ This method draws a focus rectangle used to indicate the control has focus. This
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-UpperLeftX
+\par\tab UpperLeftX
 [as Integer]
-UpperLeftY
+\par\tab UpperLeftY
 [as Integer]
-Width
+\par\tab Width
 [as Integer]
-Height
+\par\tab Height
 [as Integer]
-[End List]
-...
+\par\tab [End List]
+\par\tab ...
 [End List]
 
 
@@ -288,20 +295,21 @@ This method draws a standard rectangle.
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-UpperLeftX
+\par\tab UpperLeftX
 [as Integer]
-UpperLeftY
+\par\tab UpperLeftY
 [as Integer]
-Width
+\par\tab Width
 [as Integer]
-Height
+\par\tab Height
 [as Integer]
-Color
+\par\tab Color
 [as Integer]
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -322,24 +330,25 @@ This method draws text on the control. If the text is going to be drawn outside 
 \par \pard\fi-0\li0  
 [Arguments Return] as Integer
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-UpperLeftX
+\par\tab UpperLeftX
 [as Integer]
-UpperLeftY
+\par\tab UpperLeftY
 [as Integer]
-Width
+\par\tab Width
 [as Integer]
-ForeColor
+\par\tab ForeColor
 [as Integer]
-\i[Optional] \i0 BackColor 
+\par\tab \i[Optional] \i0 BackColor 
 [as Integer]
-Text
+\par\tab Text
 [as String]
-Justification
+\par\tab Justification
 [as String: L = Left, C = Center, R = Right]
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -364,26 +373,27 @@ This method draws text on the control. If the BackColor argument is not passed t
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-UpperLeftX
+\par\tab UpperLeftX
 [as Integer]
-UpperLeftY
+\par\tab UpperLeftY
 [as Integer]
-Width
+\par\tab Width
 [as Integer]
-ForeColor
+\par\tab ForeColor
 [as Integer]
-\i[Optional] \i0 BackColor 
+\par\tab \i[Optional] \i0 BackColor 
 [as Integer]
-Text
+\par\tab Text
 [as String]
-Justification
+\par\tab Justification
 [as String]
-\i[Optional] \i0 Disabled
+\par\tab \i[Optional] \i0 Disabled
 [as Integer: 1, or T = Disabled, 0 or Nil = Enabled]
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -396,7 +406,7 @@ Odcl_PictureBox_
 This method will return the height and width of the text passed in for calculation.
 [Arguments Return] as List (Width Height)
 ProjectFileName
-Text
+\par\tab Text
 [as String]
 
 
@@ -412,20 +422,21 @@ This method will paint a picture anywhere on the control. The dialog box must be
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-UpperLeftX
+\par\tab UpperLeftX
 [as Integer]
-UpperLeftY
+\par\tab UpperLeftY
 [as Integer]
-PictureID
+\par\tab PictureID
 [as Integer]
-\i[Optional] \i0 Enabled
+\par\tab \i[Optional] \i0 Enabled
 [as Integer: 1, or T = Disabled, 0 or Nil = Enabled]
-\i[Optional] \i0 UseMask
+\par\tab \i[Optional] \i0 UseMask
 [as Integer: 1, or T = Use, 0 or Nil = Don't Use]
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -437,7 +448,7 @@ Odcl_PictureBox_
 This method will load a picture file of type .bmp, .ico, .jpg, and .wmf, into the PictureBox control.
 [Arguments]
 ProjectFileName
-FileName
+\par\tab FileName
 [as String]
 
 
@@ -450,11 +461,11 @@ Odcl_PictureBox_
 This method will paint a single point on the control any specified color. Note: this method does not accept lists passed in to specify a group of points to be drawn.  Due to ObjectARX limitations in lists, at this time, small lists cannot be supported.
 [Arguments]
 ProjectFileName
-X
+\par\tab nX
 [as Integer]
-Y
+\par\tab nY
 [as Integer]
-Color
+\par\tab Color
 [as Integer]
 
 

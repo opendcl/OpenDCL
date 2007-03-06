@@ -16,7 +16,7 @@ Odcl_TextBox_
 This method sets the tab stop positions in a multiple-line TextBox.
 [Arguments]
 ProjectFileName
-Units
+\par\tab Units
 [as Integer]
 
 
@@ -29,7 +29,7 @@ Odcl_TextBox_
 This method replaces the currently selected text in a TextBox with the specified text.
 [Arguments]
 ProjectFileName
-NewText
+\par\tab NewText
 [as String]
 
 
@@ -42,7 +42,7 @@ Odcl_TextBox_
 This method returns a T if the contents of an edit control have been modified, or a NIL if the TextBox has not been modified.
 [Arguments Return] as T or Nil
 ProjectFileName
-LineNumber
+\par\tab LineNumber
 [as Interger]
 
 
@@ -64,9 +64,9 @@ Odcl_TextBox_
 This method highlights a selection of text in a TextBox by the indicated start and end positions.
 [Arguments]
 ProjectFileName
-FirstChar
+\par\tab FirstChar
 [as Integer]
-LastChar
+\par\tab LastChar
 [as Integer]
 
 
@@ -78,7 +78,7 @@ Odcl_TextBox_
 This method scrolls to the indicated line in a multiple line TextBox.
 [Arguments]
 ProjectFileName
-LineNumber
+\par\tab LineNumber
 [as Interger]
 
 
@@ -90,7 +90,7 @@ Odcl_TextBox_
 This method gets a line of text from a TextBox.
 [Arguments Return] as String
 ProjectFileName
-LineNumber
+\par\tab LineNumber
 [as Interger]
 
 
@@ -103,7 +103,7 @@ Odcl_TextBox_
 This method returns the length of a line in a TextBox.
 [Arguments Return] as Integer
 ProjectFileName
-LineNumber
+\par\tab LineNumber
 [as Interger]
 
 
@@ -136,7 +136,7 @@ Odcl_TextBox_
 This method retrieves the filter string used by a TextBox control to filter the text entered by the user. \par \par For example a setting of "0123456789" for the \cf1 FilterStringCollection \cf0 argument will tell the TextBox to only accept keyboard keys of that are in the string.
 [Arguments]
 ProjectFileName
-FilterStringCollection
+\par\tab FilterStringCollection
 [as String]
 
 

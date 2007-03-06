@@ -77,6 +77,7 @@ CModalVDcl::CModalVDcl(CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, Dia
 , mnX( (pParams && pParams->lpData)? ((LPPOINT)pParams->lpData)->x : -1 )
 , mnY( (pParams && pParams->lpData)? ((LPPOINT)pParams->lpData)->y : -1 )
 {
+	m_bShowGrip = pSourceForm->GetControlProperties()->GetBoolProperty(nResizable);
 }
 
 
@@ -335,8 +336,6 @@ void CModalVDcl::OnClose()
 void CModalVDcl::OnSize(UINT nType, int cx, int cy) 
 {
 	CSnapDlg::OnSize(nType, cx, cy);
-	
-	mDialogX.GetControlPane().RecalcLayout();
 
 	if (CWnd::IsWindowVisible())
 	{	
@@ -351,6 +350,8 @@ void CModalVDcl::OnSize(UINT nType, int cx, int cy)
 			false);	
 	}	
 	
+	mDialogX.GetControlPane().RecalcLayout();
+	RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 }
 
 void CModalVDcl::SetTitleBarIcon(int nPictureID)

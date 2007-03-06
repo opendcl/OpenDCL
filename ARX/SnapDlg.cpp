@@ -29,6 +29,7 @@ CSnapDlg::CSnapDlg(CDclFormObject* pSourceForm, UINT idd, CWnd* pParent /*=NULL*
 	//{{AFX_DATA_INIT(CSnapDlg)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
+	m_bShowGrip = false;
 	m_sizing = FALSE;
 	m_hIconAcad = NULL;
 }

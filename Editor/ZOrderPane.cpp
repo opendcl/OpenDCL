@@ -473,7 +473,10 @@ BOOL CZOrderPane::PreTranslateMessage(MSG* pMsg)
 			pMsg->message = NULL;
 		}
 		if (m_ZOrderList.m_pView != NULL)
-			m_ZOrderList.m_pView->PreTranslateMessage(pMsg);
+		{
+			if( m_ZOrderList.m_pView->PreTranslateMessage(pMsg) )
+				return TRUE;
+		}
 	}		
 	
 	return CDialog::PreTranslateMessage(pMsg);

@@ -6,15 +6,15 @@ Odcl_ImageComboBox_
 This method will add a new item to the specified ComboBox. This method will return the index of the new inserted item.  
 [Arguments as Integer]
 ProjectFileName
-NewString
+\par\tab NewString
 [as String]
-Image
+\par\tab Image
 [as Integer]
-SelectedImage
+\par\tab SelectedImage
 [as Integer]
-\i [optional]\i0 Indent
+\par\tab \i [optional]\i0 Indent
 [as Integer]
-\i [optional]\i0 Index
+\par\tab \i [optional]\i0 Index
 [as Integer]
 
 
@@ -36,7 +36,7 @@ Odcl_ImageComboBox_
 This method gets the text, image, selected image and indent of the indicated item. A list is returned indicating (String, Image, Selected Image and Indent).
 [Arguments as List]
 ProjectFileName
-Index 
+\par\tab Index 
 [as Integer]
 
 
@@ -48,15 +48,15 @@ Odcl_ImageComboBox_
 This method sets the text, image, selected image and indent of the indicated item.
 [Arguments Return] as String
 ProjectFileName
-Index 
+\par\tab Index 
 [as Integer]
-wString
+\par\tab wString
 [as String]
-Image
+\par\tab Image
 [as Integer]
-SelectedImage
+\par\tab SelectedImage
 [as Integer]
-\i [optional]\i0 Indent
+\par\tab \i [optional]\i0 Indent
 [as Integer]
 
 
@@ -79,7 +79,7 @@ Odcl_ImageComboBox_
 This method sets the minimum allowable width for the control's drop-down ListBox.
 [Arguments]
 ProjectFileName
-Width
+\par\tab Width
 [as Integer]
 
 [Method]
@@ -100,9 +100,9 @@ Odcl_ImageComboBox_
 This method highlights characters in the edit control of a ComboBox using a start and end position.
 [Arguments]
 ProjectFileName
-StartIndex 
+\par\tab StartIndex 
 [as Interger]
-EndIndex
+\par\tab EndIndex
 [as Interger]
 
 
@@ -145,7 +145,7 @@ Odcl_ImageComboBox_
 This method will set the currently selected list item in a single selection ComboBox. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -176,7 +176,7 @@ Odcl_ImageComboBox_
 This method ensures that the indicated ComboBox item is visible. If it's not the ComboBox is scrolled to ensure the item is visible.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -188,9 +188,9 @@ Odcl_ImageComboBox_
 This method will set the associated item data for the indicated list item. The item data will only accept integer values.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
-IntegerData
+\par\tab IntegerData
 [as Integer]
 
 
@@ -202,7 +202,7 @@ Odcl_ImageComboBox_
 This method will retrieve the associated item data for the indicated list item.
 [Arguments Return] as Integer
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -214,7 +214,7 @@ Odcl_ImageComboBox_
 This method will delete an item from the ComboBox.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -226,7 +226,7 @@ Odcl_ImageComboBox_
 This method finds the first string in a ComboBox that contains a list item with the exact string match without changing the ComboBox selection. A search for "Example Text" will find "Example Text". Use the Odcl_ImageComboBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
 ProjectFileName
-SearchString
+\par\tab SearchString
 [as String]
 
 
@@ -238,7 +238,7 @@ Odcl_ImageComboBox_
 This method finds the first string in a ComboBox that contains a list item with the specified prefix or partial match without changing the ComboBox selection. A search for "Text" will find "Example Text". Use the Odcl_ImageComboBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
 ProjectFileName
-SearchString
+\par\tab SearchString
 [as String]
 
 
@@ -250,7 +250,7 @@ Odcl_ImageComboBox_
 This method finds the first string in a ComboBox that contains the specified prefix and selects this list item in the ComboBox.
 [Arguments Return] as Integer
 ProjectFileName
-SearchString
+\par\tab SearchString
 [as String]
 
 

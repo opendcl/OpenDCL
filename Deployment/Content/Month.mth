@@ -89,12 +89,13 @@ Odcl_Month_
 This method sets the currently selected date for a MonthCalender.
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
-Year
+\par\tab Year
 [as Integer]
-Month
+\par\tab Month
 [as Integer]
-Day
+\par\tab Day
 [as Integer]
 [End List]
 
@@ -107,20 +108,23 @@ Odcl_Month_
 This method sets the lowest and highest allowable dates for the MonthCalender.
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
-LowerYear
+\par\tab LowerYear
 [as Integer]
-Month
+\par\tab Month
 [as Integer]
-Day
+\par\tab Day
 [as Integer]
+
 [End List]
+\par\tab 
 [Begin List]
-HigherYear
+\par\tab HigherYear
 [as Integer]
-Month
+\par\tab Month
 [as Integer]
-Day
+\par\tab Day
 [as Integer]
 [End List]
 
@@ -134,20 +138,22 @@ Odcl_Month_
 This method sets the selection for the MonthCalender to the indicated date range.
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
-LowerYear
+\par\tab LowerYear
 [as Integer]
-Month
+\par\tab Month
 [as Integer]
-Day
+\par\tab Day
 [as Integer]
 [End List]
+\par\tab 
 [Begin List]
-HigherYear
+\par\tab HigherYear
 [as Integer]
-Month
+\par\tab Month
 [as Integer]
-Day
+\par\tab Day
 [as Integer]
 [End List]
 

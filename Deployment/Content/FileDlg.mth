@@ -15,7 +15,7 @@ Odcl_Form_
 [Desc]
 This method will close all dialogs requested.  Warning this method will close all dialogs, even those created by another third party. Please use with caution. \par   0 	Closes all dialog boxes. \par   1 	Closes all Modal dialog boxes. \par   2 	Closes all Modeless dialog boxes. \par   4 	Closes all Dockable dialog boxes. \par   8 	Closes all File dialog boxes.
 [Arguments]
-DialogBitStyle
+\par\tab DialogBitStyle
 [as Integer]
 
 
@@ -28,7 +28,7 @@ This method loads the requested project into memory for later use. If you specif
 [Arguments]
 FileName
 [as Integer]
-\i [Optional] \i0 Reload
+\par\tab \i [Optional] \i0 Reload
 [as T]
 
 
@@ -81,7 +81,7 @@ Odcl_Form_
 This method will change the title bar text of any modal or modeless dockable dialog box indicated.
 [Arguments]
 ProjectFileName
-NewText
+\par\tab NewText
 [as String]
 
 

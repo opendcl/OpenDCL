@@ -5,7 +5,7 @@ Odcl_
 [Desc]
 This method will display the AutoCAD Line Weight dialog box.
 [Arguments Return] as Integer
-DefaultSelection
+\par\tab DefaultSelection
 [as Integer]
 
 [Method]
@@ -25,7 +25,7 @@ Odcl_
 [Desc]
 This method will launch a new email message from the user’s default email program and address it to the supplied email address.
 [Arguments]
-EmailAddress
+\par\tab EmailAddress
 [as String]
 
 
@@ -36,9 +36,9 @@ Odcl_
 [Desc]
 This method will prompt the user with a dialog box that allows the selection of directory folders only.
 [Arguments Return] as String
-Description
+\par\tab Description
 [as String]
-\i[Optional] \i0 DefaultDirectory
+\par\tab \i[Optional] \i0 DefaultDirectory
 [as String]
 
 
@@ -50,11 +50,11 @@ Odcl_
 This method will return the color value specified from the arguments. The RedOrColorIndex can be set as 1 to 255 for an AutoCAD color or -1 to -23 for a system color. If you need to create a different color, set the red, green and blue values from 0 to 256. The value from this method is only useful for setting colors of ActiveX controls.
 \par \par The first argument is an integer that indicates the AutoCAD color index, system color or red value. If red is supplied then the green and blue arguments must be supplied.
 [Arguments Return] as Long Integer
-ColorValueOrRed
+\par\tab ColorValueOrRed
 [as Integer]
-\i[Optional] \i0 Green
+\par\tab \i[Optional] \i0 Green
 [as Integer]
-\i[Optional] \i0 Blue
+\par\tab \i[Optional] \i0 Blue
 [as Integer]
 
 
@@ -78,7 +78,7 @@ This method will return the size of a picture, indicated by its Id.
 [Arguments Return] as List of Integers
 ProjectName
 [as String]
-PictureNumberId
+\par\tab PictureNumberId
 [as Integer]
 
 
@@ -120,11 +120,11 @@ This method will prompt the user to select one or more files and will return a l
 \par 	“c:\\pictures”
 \par )
 [Arguments Return] as List of Strings
-ExtensionFilter
+\par\tab ExtensionFilter
 [as String or List of Strings]
-\i[Optional] \i0 Title
+\par\tab \i[Optional] \i0 Title
 [as String]
-\i[Optional] \i0 DefaultDirectory
+\par\tab \i[Optional] \i0 DefaultDirectory
 [as String]
 
 
@@ -210,15 +210,15 @@ This method displays a standard windows message box. The message box contains a 
 \par 	4	A stop sign icon is displayed in the message box.
 \par
 [Arguments Return] as Integers
-Message
+\par\tab Message
 [as String]
-Title
+\par\tab Title
 [as String]
-\i[Optional] \i0 ButtonsStyle
+\par\tab \i[Optional] \i0 ButtonsStyle
 [as Integer]
-\i[Optional] \i0 ImageStyle
+\par\tab \i[Optional] \i0 ImageStyle
 [as Integer]
-\i[Optional] \i0 ShowHelpButton
+\par\tab \i[Optional] \i0 ShowHelpButton
 [as Integer]
 
 

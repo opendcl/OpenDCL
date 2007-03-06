@@ -15,20 +15,21 @@ This method adds columns to a ListView control with the Report style set. Comple
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-nColIndex
+\par\tab nColIndex
 [as Integer]
-sColText
+\par\tab sColText
 [as String]
-nJustification
+\par\tab nJustification
 [as Integer]
-nColWidth
+\par\tab nColWidth
 [as Integer]
-\i[Optional] \i0 nImageListIndex
+\par\tab \i[Optional] \i0 nImageListIndex
 [as Integer]
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -44,12 +45,13 @@ This method adds a new item to the end of a ListView control and will also fill 
 \par          '(x y ...) (x y ...) ... 
 [Arguments Return] as Integer
 ProjectFileName
+\par\tab 
 [Begin List]
-\i[Optional] nImageIndex ...\i0
+\par\tab \i[Optional] nImageIndex ...\i0
 [as Integer]
-sText
+\par\tab sText
 [as String]
-\i[Optional] sColText1 sColText2 sColText3 ...\i0
+\par\tab \i[Optional] sColText1 sColText2 sColText3 ...\i0
 [as String]
 [End List]
 
@@ -62,9 +64,9 @@ Odcl_ListView_
 This method adds a new item to the end of a ListView control. 
 [Arguments Return] as Integer
 ProjectFileName
-\i[Optional] nImageIndex ...\i0
+\par\tab \i[Optional] nImageIndex ...\i0
 [as Integer]
-sText
+\par\tab sText
 [as String]
 
 
@@ -76,9 +78,9 @@ Odcl_ListView_
 This method returns the image of a column header in a ListView control. 
 [Arguments Return] as Integer
 ProjectFileName
-nColumn
+\par\tab nColumn
 [as Integer]
-nImageIndex
+\par\tab nImageIndex
 [as Integer]
 
 
@@ -90,9 +92,9 @@ Odcl_ListView_
 This method sets the image of a column header in a ListView control. Set to -1 to show now images.
 [Arguments]
 ProjectFileName
-nColumn
+\par\tab nColumn
 [as Integer]
-nImageIndex
+\par\tab nImageIndex
 [as Integer]
 
 
@@ -126,14 +128,15 @@ This method inserts a new item anywhere in a ListView control and will also fill
 \par          '(x y ...) (x y ...) ... 
 [Arguments Return] as Integer
 ProjectFileName
-nInsertRowIndex
+\par\tab nInsertRowIndex
 [as Integer]
+\par\tab 
 [Begin List]
-nImageIndex
+\par\tab nImageIndex
 [as Integer]
-sText
+\par\tab sText
 [as String]
-\i[Optional] sColText1 sColText2 sColText3 ...\i0
+\par\tab \i[Optional] sColText1 sColText2 sColText3 ...\i0
 [as String]
 [End List]
 
@@ -146,11 +149,11 @@ Odcl_ListView_
 This method inserts a new item anywhere in a ListView control.
 [Arguments Return] as Integer
 ProjectFileName
-nInsertRowIndex
+\par\tab nInsertRowIndex
 [as Integer]
-\i[Optional] nImageIndex \i0
+\par\tab \i[Optional] nImageIndex \i0
 [as Integer]
-sText
+\par\tab sText
 [as String]
 
 
@@ -166,23 +169,24 @@ This method will clear and fill a ListView control with multiple rows and will f
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
 [Begin List]
-sItemText1
+\par\tab sItemText1
 [as String]
-\i[Optional] \i0 nImageListIndex1 
+\par\tab \i[Optional] \i0 nImageListIndex1 
 [as Integer]
-sCol2Text
+\par\tab sCol2Text
 [as String]
-\i[Optional] \i0 nImageListIndex2
+\par\tab \i[Optional] \i0 nImageListIndex2
 [as Integer]
-sCol3Text
+\par\tab sCol3Text
 [as String]
-\i[Optional] \i0 nImageListIndex3
+\par\tab \i[Optional] \i0 nImageListIndex3
 [as Integer]
-...
+\par\tab ...
 [End List]
-...
+\par\tab ...
 [End List]
 
 
@@ -198,12 +202,13 @@ This method will clear and fill a ListView control with multiple items.
 \par          '(x y ...) (x y ...) ... 
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
-sItemText1
+\par\tab sItemText1
 [as String]
-\i[Optional] \i0 nImageListIndex1 
+\par\tab \i[Optional] \i0 nImageListIndex1 
 [as Integer]
-...
+\par\tab ...
 [End List]
 
 
@@ -225,7 +230,7 @@ Odcl_ListView_
 This method will force an item to be selected and will also scroll the ListView to ensure the item is displayed. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -248,14 +253,15 @@ Odcl_ListView_
 This method will delete the items specified in a list in the ListView control.
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
-nIndex1
+\par\tab nIndex1
 [as Integer]
-nIndex2
+\par\tab nIndex2
 [as Integer]
-nIndex3
+\par\tab nIndex3
 [as Integer]
-...
+\par\tab ...
 [End List]
 
 
@@ -267,7 +273,7 @@ Odcl_ListView_
 This method will delete the specified item from the ListView control.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -281,14 +287,15 @@ Odcl_ListView_
 This method will delete the columns specified in a list in the ListView control.
 [Arguments]
 ProjectFileName
+\par\tab 
 [Begin List]
-nIndex1
+\par\tab nIndex1
 [as Integer]
-nIndex2
+\par\tab nIndex2
 [as Integer]
-nIndex3
+\par\tab nIndex3
 [as Integer]
-...
+\par\tab ...
 [End List]
 
 
@@ -301,7 +308,7 @@ Odcl_ListView_
 This method will delete the specified column from the ListView control.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -320,7 +327,7 @@ This method will format the layout of all the items in the ListView control. \pa
 \par \pard\fi-0\li0
 [Arguments]
 ProjectFileName
-nStyle
+\par\tab nStyle
 [as Integer]
 
 
@@ -343,9 +350,9 @@ Odcl_ListView_
 This method will set the associated item data for the indicated list item. The item data will only accept integer values.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
-IntegerData
+\par\tab IntegerData
 [as Integer]
 
 
@@ -357,7 +364,7 @@ Odcl_ListView_
 This method will retrieve the associated item data for the indicated list item.
 [Arguments Return] as Integer
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -369,9 +376,9 @@ Odcl_ListView_
 This method will return the text of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex \cf0 may need to be used, otherwise it's not required for any other style of ListView.
 [Arguments Return] as String
 ProjectFileName
-nRowIndex
+\par\tab nRowIndex
 [as Integer]
-\i[Optional] \i0 nColIndex 
+\par\tab \i[Optional] \i0 nColIndex 
 [as Integer]
 
 
@@ -383,7 +390,7 @@ Odcl_ListView_
 This method will return a list containing the text of a specified row in a ListView control. This method is useful for ListView controls with the Report style set.
 [Arguments Return] as List of Strings
 ProjectFileName
-nRowIndex
+\par\tab nRowIndex
 [as Integer]
 
 
@@ -395,7 +402,7 @@ Odcl_ListView_
 This method will return a list containing the strings of a specified column in a ListView control. This method is useful for ListView controls with the Report style set.
 [Arguments Return] as List of Strings
 ProjectFileName
-nColIndex
+\par\tab nColIndex
 [as Integer]
 
 
@@ -408,11 +415,11 @@ Odcl_ListView_
 This method will set the text of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex \cf0 may need to be used, otherwise it's not required for any other style of ListView.
 [Arguments]
 ProjectFileName
-NewText
+\par\tab NewText
 [as String]
-nRowIndex
+\par\tab nRowIndex
 [as Integer]
-\i[Optional] \i0 nColIndex 
+\par\tab \i[Optional] \i0 nColIndex 
 [as Integer]
 
 
@@ -425,7 +432,7 @@ Odcl_ListView_
 This method will return the width of a column.
 [Arguments Return] as Integer
 ProjectFileName
-nColIndex
+\par\tab nColIndex
 [as Integer]
 
 
@@ -437,9 +444,9 @@ Odcl_ListView_
 This method will set the width of a column.
 [Arguments]
 ProjectFileName
-nColIndex
+\par\tab nColIndex
 [as Integer]
-nColWidth
+\par\tab nColWidth
 [as Integer]
 
 
@@ -451,7 +458,7 @@ Odcl_ListView_
 This method will calculate the minimum required width of a column to ensure the entire text will appear.
 [Arguments Return] as Integer
 ProjectFileName
-sColText
+\par\tab sColText
 [as String]
 
 
@@ -483,9 +490,9 @@ Odcl_ListView_
 This method will retrieve the image of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex \cf0 may need to be used, otherwise it's not required for any other style of ListView. This method is not available for the BlockList control.
 [Arguments Return] as Integer
 ProjectFileName
-nRowIndex 
+\par\tab nRowIndex 
 [as Integer]
-\i[Optional] \i0 nColIndex
+\par\tab \i[Optional] \i0 nColIndex
 [as Integer]
 
 
@@ -497,9 +504,9 @@ Odcl_ListView_
 This method will test to see which row and column (if columns exit) a point belongs to. 
 [Arguments Return] as List
 ProjectFileName
-nX
+\par\tab nX
 [as Integer]
-nY
+\par\tab nY
 [as Integer]
 
 
@@ -512,11 +519,11 @@ This method will set the image of an item in a ListView control. If a ListView w
 \cf0 may need to be used, otherwise it's not required for any other style of ListView. This method is not available for the BlockList control.
 [Arguments]
 ProjectFileName
-nRowIndex
+\par\tab nRowIndex
 [as Integer]
-\i[Optional] \i0 nColIndex
+\par\tab \i[Optional] \i0 nColIndex
 [as Integer]
-nNewImage
+\par\tab nNewImage
 [as Integer]
 
 
@@ -528,9 +535,9 @@ Odcl_ListView_
 This method will sort the columns in ascending or descending order, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
 [Arguments]
 ProjectFileName
-nColIndex
+\par\tab nColIndex
 [as Integer]
-bAscending
+\par\tab bAscending
 [as Integer, T or Nil] (1 or T = Ascending, 0 or Nil = Descending) 
 
 
@@ -542,9 +549,9 @@ Odcl_ListView_
 This method will sort the columns in ascending or descending order using a numeric comparison, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
 [Arguments]
 ProjectFileName
-nColIndex
+\par\tab nColIndex
 [as Integer]
-bAscending
+\par\tab bAscending
 [as Integer, T or Nil] (1 or T = Ascending, 0 or Nil = Descending) 
 
 
@@ -557,7 +564,7 @@ Odcl_ListView_
 This method will force the label of an item to show the edit box, so the user may rename the text content of that item.  When using this method on a ListView control with the Report style setting only the item in the first column may be edited.  This method will not start the editing process if the EditLabel property of the control is set to False. This method is not available for BlockList controls.
 [Arguments]
 ProjectFileName
-nItemIndex
+\par\tab nItemIndex
 [as Integer]
 
 
@@ -570,4 +577,6 @@ Odcl_ListView_
 This method will cancel the label editing of an item, so the user may not rename the text content of that item. This is useful when you wish to ensure that some items may be edited while others may not.  This method is not available for BlockList controls.
 [Arguments]
 ProjectFileName
+
+
 [End of File]

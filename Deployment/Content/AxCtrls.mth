@@ -15,7 +15,7 @@ Odcl_
 [Desc]
 The method Odcl_RegisterActiveXCtrl is used to register an ActiveX control. When installing your software to another machine each ActiveX control that is used in your program must be registered to the users machine. There are two ways to do this. The most common is to use a proper installation package that will register the ActiveX controls for you. The other is to use this method to register the controls. It is your responsibility to ensure that you do not call this method on any ActiveX control more than once. No damage will be done, but registering ActiveX controls consumes a noticeable amount of time.
 [Arguments]
-ActiveXFileName
+\par\tab ActiveXFileName
 [as String]
 
 
@@ -27,7 +27,7 @@ Odcl_AxObject_
 [Desc]
 When a property or method passes back an OleObject handle consisting of a list with to long integers in it is passing an address to a OleObject device. The device must be cleared from memory eventually. ObjectDCL will clear all the OleObject devices for you once the dialog boxes are closed. If you wish to keep the memory clean use this method to clean the OleObject device from memory once you are finished with it. This method will not delete the item it handles, just the internal device used to modify the control or object belonging to the control.
 [Arguments]
-OleObject
+\par\tab OleObject
 [as List]
 
 [Method]
@@ -37,7 +37,7 @@ Odcl_
 [Desc]
 Some ActiveX controls calculate their distances not in Pixels but in a unit called Twips. Twips are used to calculate the screen in actual inches. There are 1440 Twips per inch. If you require the units in Pixels, use this method to convert the X coordinate Twips to Pixels.
 [Arguments Return] as Integer
-Twips
+\par\tab Twips
 [as Long]
 
 
@@ -49,7 +49,7 @@ Odcl_
 [Desc]
 Some ActiveX controls calculate their distances not in Pixels but in a unit called Twips. Twips are used to calculate the screen in actual inches. There are 1440 Twips per inch. If you require the units in Pixels, use this method to convert the Y coordinate Twips to Pixels.
 [Arguments Return] as Integer
-Twips
+\par\tab Twips
 [as Long]
 
 
@@ -60,7 +60,7 @@ Odcl_
 [Desc]
 Some ActiveX controls calculate their distances not in Pixels but in a unit called Twips. Twips are used to calculate the screen in actual inches. There are 1440 Twips per inch. Use this method to convert the X coordinate Pixels to Twips.
 [Arguments Return] as Long
-Pixels
+\par\tab Pixels
 [as Integer]
 
 
@@ -72,7 +72,7 @@ Odcl_
 [Desc]
 Some ActiveX controls calculate their distances not in Pixels but in a unit called Twips. Twips are used to calculate the screen in actual inches. There are 1440 Twips per inch. Use this method to convert the X coordinate Pixels to Twips.
 [Arguments Return] as Long
-Pixels
+\par\tab Pixels
 [as Integer]
 
 

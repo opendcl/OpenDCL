@@ -28,12 +28,8 @@ public:
 	CArray<long, long> m_TttTitleColorList;
 	CStringArray m_TttAviList;
 	
-	short m_CurSel;
 	bool m_bInvokeWithSendString;
-	bool m_bGetFocusYet;
 	CImageList m_ImageList;
-	BOOL m_bMouseTracking;
-	int m_nLastHighlighted;
 
 	CPPToolTip m_ToolTip;
 // Operations
@@ -65,7 +61,6 @@ protected:
 	afx_msg void OnKillfocus();
 	afx_msg void OnSetfocus();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);	
   afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);	
 	//}}AFX_MSG

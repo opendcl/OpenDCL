@@ -4782,7 +4782,6 @@ void CObjectDCLView::OnSize(UINT nType, int cx, int cy)
 		 
 		pDclProps->SetLongProperty(nWidth, rc.Width());
 		pDclProps->SetLongProperty(nHeight, rc.Height());
-		m_pThisDclForm->m_bUsesClientRect = TRUE;
 
 		GetParentFrame()->GetWindowRect(&rc);
 
@@ -5041,7 +5040,6 @@ void CObjectDCLView::DisplayControls(CDclFormObject *pDclForm)
 	CDclControlObject *pDclProps = m_pThisDclForm->GetControlProperties();
 	pDclProps->SetLongProperty(nWidth, rc.Width());
 	pDclProps->SetLongProperty(nHeight, rc.Height());
-	m_pThisDclForm->m_bUsesClientRect = TRUE;
 
 //	MoveThisInPosition();
 	
@@ -5760,45 +5758,17 @@ CDclFormObject * CObjectDCLView::AddSingleTabPane(int nIndex)
 	// create a pointer to pass to the list to insert
 	CProject *pProject = activeProject;
 	
-	try
+	pNewDclForm = pProject->AddForm( VdclTabForm, m_pThisDclForm );
+	pNewDclForm->SetTabIndex( nIndex );
+
+	CDclControlObject *pDclProperties = pNewDclForm->GetControlProperties();
+	assert( pDclProperties != NULL );
+	if (pDclProperties != NULL)
 	{
-		//pNewDclForm = new CDclFormObject( pProject, VdclTabForm );
-		//// assign the unique name and dcl form type to the dcl form object
-		//pNewDclForm->SetUniqueName(pApp->CreateUniqueName());
-		//pNewDclForm->SetParentForm(m_pThisDclForm);
-		//pNewDclForm->SetTabIndex(nIndex);
-		//
-		//POSITION pos = pProject->GetDclFormList().GetHeadPosition();
-		//while (pos)
-		//{
-		//	CDclFormObject* pForm = pProject->GetDclFormList().GetNext(pos);
-		//	if (pForm->GetParentName() == m_pThisDclForm->GetUniqueName() && pForm->GetTabIndex() == nIndex)
-		//		break;
-		//}
-		//if (pos)
-		//	pProject->GetDclFormList().InsertBefore(pos, pNewDclForm);
-		//else
-		//	pProject->GetDclFormList().AddTail(pNewDclForm);
-
-		pNewDclForm = pProject->AddForm( VdclTabForm, m_pThisDclForm );
-		pNewDclForm->SetTabIndex( nIndex );
-
-		CDclControlObject *pDclProperties = pNewDclForm->GetControlProperties();
-		assert( pDclProperties != NULL );
-		if (pDclProperties != NULL)
-		{
-			pDclProperties->AddLongProperty(nHeight, PropLong, GetSelectedTabClientHeight(), true);
-			pDclProperties->AddLongProperty(nWidth, PropLong, GetSelectedTabClientWidth(), true);
-			pDclProperties->AddLongProperty(nUseBottomFromBottom, PropLong, 1, true);
-			pDclProperties->AddLongProperty(nUseTopFromBottom, PropLong, 1, true);
-		}
-
-		// add the new dcl form to the project tree so it's shown there
-		CProjectTreeCtrl *pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
-		pProjTree->AddFormToTree(pNewDclForm, true);
-	}
-	catch(...)
-	{
+		pDclProperties->AddLongProperty(nHeight, PropLong, GetSelectedTabClientHeight(), true);
+		pDclProperties->AddLongProperty(nWidth, PropLong, GetSelectedTabClientWidth(), true);
+		pDclProperties->AddLongProperty(nUseBottomFromBottom, PropLong, 1, true);
+		pDclProperties->AddLongProperty(nUseTopFromBottom, PropLong, 1, true);
 	}
 	return pNewDclForm;
 }
@@ -5864,6 +5834,7 @@ void CObjectDCLView::ResizeChildTabPanes()
 		int nNewWidth = GetSelectedTabClientWidth();
 		pDclProperties->SetLongProperty(nHeight, nNewHeight);
 		pDclProperties->SetLongProperty(nWidth, nNewWidth);
+		pTabForm->m_bUsesClientRect = FALSE;
 		if (pTabForm->m_pMdiChildWnd != NULL)
 			pTabForm->m_pMdiChildWnd->SetWindowPos(NULL, nNotSet, nNotSet, nNewWidth, nNewHeight, SWP_NOMOVE);
 	}	

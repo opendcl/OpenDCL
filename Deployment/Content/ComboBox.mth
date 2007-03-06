@@ -6,7 +6,7 @@ Odcl_ComboBox_
 This method will add a string to the specified ComboBox. This method will return the index of the new inserted item.
 [Arguments as Integer]
 ProjectFileName
-NewString
+\par\tab NewString
 [as String]
 
 [Method]
@@ -17,7 +17,7 @@ Odcl_ComboBox_
 This method will add a path to a directory selection ComboBox.
 [Arguments]
 ProjectFileName
-NewPath
+\par\tab NewPath
 [as String]
 
 
@@ -40,9 +40,9 @@ Odcl_ComboBox_
 This method will fill the ComboBox with a list of files found in the directory search that matches the \cf1 sExtension \cf0 argument.  If the \cf1 sExtension \cf0 is not specified *.* is assumed.
 [Arguments]
 ProjectFileName
-sDirectory
+\par\tab sDirectory
 [as String]
-\i[Optional] \i0 sExtension
+\par\tab \i[Optional] \i0 sExtension
 [as String]
 
 
@@ -65,7 +65,7 @@ Odcl_ComboBox_
 This method gets the text of a list item from the control's internal ListBox.
 [Arguments Return] as String
 ProjectFileName
-Index 
+\par\tab Index 
 [as Integer]
 
 
@@ -88,7 +88,7 @@ Odcl_ComboBox_
 This method sets the minimum allowable width for the control's drop-down ListBox.
 [Arguments]
 ProjectFileName
-Width
+\par\tab Width
 [as Integer]
 
 [Method]
@@ -109,9 +109,9 @@ Odcl_ComboBox_
 This method highlights characters in the edit control of a ComboBox using a start and end position.
 [Arguments]
 ProjectFileName
-StartIndex 
+\par\tab StartIndex 
 [as Interger]
-EndIndex
+\par\tab EndIndex
 [as Interger]
 
 
@@ -133,7 +133,7 @@ Odcl_ComboBox_
 This method will return the index of a specified line weight in a ComboBox that has the Style property set to 5 - LineWeight.
 [Arguments Return] as Integer
 ProjectFileName
-LineWeight
+\par\tab LineWeight
 [as Interger]
 
 
@@ -146,7 +146,7 @@ Odcl_ComboBox_
 This method will return the index of a specified color in a ComboBox that has the Style property set to 4 - Color.
 [Arguments Return] as Integer
 ProjectFileName
-Color
+\par\tab Color
 [as Interger (0-255)]
 
 
@@ -160,7 +160,7 @@ Odcl_ComboBox_
 This method will add a color to the specified ComboBox that has the Style property set to 4 - Color.
 [Arguments]
 ProjectFileName
-NewColor
+\par\tab NewColor
 [as Interger (0-255)]
 
 
@@ -172,7 +172,7 @@ Odcl_ComboBox_
 This method will add a list of strings to the specified ComboBox.
 [Arguments]
 ProjectFileName
-StringList
+\par\tab StringList
 [as List of Strings]
 
 
@@ -206,7 +206,7 @@ Odcl_ComboBox_
 This method will set the currently selected list item in a single selection ComboBox. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -237,7 +237,7 @@ Odcl_ComboBox_
 This method ensures that the indicated ComboBox item is visible. If it's not the ComboBox is scrolled to ensure the item is visible.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -249,9 +249,9 @@ Odcl_ComboBox_
 This method will set the associated item data for the indicated list item. The item data will only accept integer values.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
-IntegerData
+\par\tab IntegerData
 [as Integer]
 
 
@@ -263,7 +263,7 @@ Odcl_ComboBox_
 This method will retrieve the associated item data for the indicated list item.
 [Arguments Return] as Integer
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -275,7 +275,7 @@ Odcl_ComboBox_
 This method will delete a list item from the ComboBox.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -287,9 +287,9 @@ Odcl_ComboBox_
 This method will insert a list item in the ComboBox.
 [Arguments Return] as Integer
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
-NewString
+\par\tab NewString
 [as String]
 
 
@@ -301,7 +301,7 @@ Odcl_ComboBox_
 This method finds the first string in a ComboBox that contains a list item with the exact string match without changing the ComboBox selection. A search for "Example Text" will find "Example Text". Use the Odcl_ComboBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
 ProjectFileName
-SearchString
+\par\tab SearchString
 [as String]
 
 
@@ -313,7 +313,7 @@ Odcl_ComboBox_
 This method finds the first string in a ComboBox that contains a list item with the specified prefix or partial match without changing the ComboBox selection. A search for "Text" will find "Example Text". Use the Odcl_ComboBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
 ProjectFileName
-SearchString
+\par\tab SearchString
 [as String]
 
 
@@ -325,7 +325,7 @@ Odcl_ComboBox_
 This method finds the first string in a ComboBox that contains the specified prefix and selects this list item in the ComboBox.
 [Arguments Return] as Integer
 ProjectFileName
-SearchString
+\par\tab SearchString
 [as String]
 
 

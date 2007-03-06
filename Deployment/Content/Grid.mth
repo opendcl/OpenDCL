@@ -72,9 +72,9 @@ If the sSeperator argument of this function is not specified, "\t" will be assum
 \par \par \b For example \b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 Odcl_Grid_AddString \cf0 or \cf2 Odcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
 [Arguments Return] as Integer
 ProjectFileName
-sString
+\par\tab sString
 [as String]
-\i[Optional]  sSeperator\i0
+\par\tab \i[Optional]  sSeperator\i0
 [as String]
 
 [Method]
@@ -92,11 +92,11 @@ If the sSeperator argument of this function is not specified, "\t" will be assum
 \par \par \b For example \b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 Odcl_Grid_AddString \cf0 or \cf2 Odcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
 [Arguments Return] as Integer
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
-sString
+\par\tab sString
 [as String]
-\i[Optional]  sSeperator\i0
+\par\tab \i[Optional] \i0 sSeperator
 [as String]
 
 
@@ -108,7 +108,7 @@ Odcl_Grid_
 This method returns the image of a column header in a Grid control. 
 [Arguments Return] as Integer
 ProjectFileName
-nColumn
+\par\tab nColumn
 [as Integer]
 
 
@@ -120,9 +120,9 @@ Odcl_Grid_
 This method sets the image of a column header in a Grid control. Set to -1 to show now images.
 [Arguments]
 ProjectFileName
-nColumn
+\par\tab nColumn
 [as Integer]
-nImageIndex
+\par\tab nImageIndex
 [as Integer]
 
 
@@ -159,14 +159,14 @@ This method inserts a new item anywhere in a Grid control and will also fill in 
 \par \par \b For example \b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 Odcl_Grid_AddString \cf0 or \cf2 Odcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
 [Arguments Return] as Integer
 ProjectFileName
-nInsertRowIndex
+\par\tab nInsertRowIndex
 [as Integer]
 [Begin List]
-nImageIndex
+\par\tab nImageIndex
 [as Integer]
-sText
+\par\tab sText
 [as String]
-\i[Optional] sColText1 sColText2 sColText3 ...\i0
+\par\tab \i[Optional] sColText1 sColText2 sColText3 ...\i0
 [as String]
 [End List]
 
@@ -211,9 +211,9 @@ Odcl_Grid_
 This method will force a cell to be selected and will also scroll the Grid to ensure the item is displayed. Pass in a -2 if you wish to deselect the current selection.
 [Arguments]
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
-nColumn
+\par\tab nColumn
 [as Integer]
 
 
@@ -225,7 +225,7 @@ Odcl_Grid_
 This method will force an entire row to be selected and will also scroll the Grid to ensure the row is visible. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
 
 
@@ -238,7 +238,7 @@ Odcl_Grid_
 This method will return the current row and column indexes of the currently selected cell. If the column index is -1 and the row index is 0 or above, this indicates the entire row is selected.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -260,7 +260,7 @@ Odcl_Grid_
 This method will delete the specified row from the Grid control.
 [Arguments]
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
 
 
@@ -273,7 +273,7 @@ This method will delete the specified column from the Grid control.
 \b Note:\b0 A column can only be deleted if that column was not added using the properties wizard. A value of (-1 -1) means now cell has been selected.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -286,9 +286,9 @@ This method will set the associated item data for the row. The item data will on
 \par \b Note:\b0 The item data can only be set per individual row and not per cell.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
-IntegerData
+\par\tab IntegerData
 [as Integer]
 
 
@@ -300,7 +300,7 @@ Odcl_Grid_
 This method will retrieve the associated item data for the indicated list item.
 [Arguments Return] as Integer
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -312,9 +312,9 @@ Odcl_Grid_
 This method will return the text of an item in a Grid control. 
 [Arguments Return] as String
 ProjectFileName
-nRowIndex
+\par\tab nRowIndex
 [as Integer]
-\i[Optional] \i0 nColIndex 
+\par\tab \i[Optional] \i0 nColIndex 
 [as Integer]
 
 
@@ -326,7 +326,7 @@ Odcl_Grid_
 This method will return a list containing the text of a specified row in a Grid control. 
 [Arguments Return] as List of Strings
 ProjectFileName
-nRowIndex
+\par\tab nRowIndex
 [as Integer]
 
 
@@ -338,7 +338,7 @@ Odcl_Grid_
 This method will return a list containing the strings of a specified column in a Grid control.
 [Arguments Return] as List of Strings
 ProjectFileName
-nColIndex
+\par\tab nColIndex
 [as Integer]
 
 
@@ -351,11 +351,11 @@ Odcl_Grid_
 This method will set the text of an item in a Grid control. 
 [Arguments]
 ProjectFileName
-NewText
+\par\tab NewText
 [as String]
-nRowIndex
+\par\tab nRowIndex
 [as Integer]
-\i[Optional] \i0 nColIndex 
+\par\tab \i[Optional] \i0 nColIndex 
 [as Integer]
 
 
@@ -368,7 +368,7 @@ Odcl_Grid_
 This method will return the width of a column.
 [Arguments Return] as Integer
 ProjectFileName
-nColIndex
+\par\tab nColIndex
 [as Integer]
 
 
@@ -380,9 +380,9 @@ Odcl_Grid_
 This method will set the width of a column.
 [Arguments]
 ProjectFileName
-nColIndex
+\par\tab nColIndex
 [as Integer]
-nColWidth
+\par\tab nColWidth
 [as Integer]
 
 
@@ -394,7 +394,7 @@ Odcl_Grid_
 This method will calculate the minimum required width of a column to ensure the entire text will appear.
 [Arguments Return] as Integer
 ProjectFileName
-sColText
+\par\tab sColText
 [as String]
 
 
@@ -408,9 +408,9 @@ Odcl_Grid_
 This method will retrieve the image of an item in a Grid control. 
 [Arguments Return] as Integer
 ProjectFileName
-nRowIndex 
+\par\tab nRowIndex 
 [as Integer]
-\i[Optional] \i0 nColIndex
+\par\tab \i[Optional] \i0 nColIndex
 [as Integer]
 
 
@@ -423,11 +423,11 @@ This method will set the image of an item in a Grid control.
 \cf0 may need to be used, otherwise it's not required for any other style of Grid. This method is not available for the BlockList control.
 [Arguments]
 ProjectFileName
-nRowIndex
+\par\tab nRowIndex
 [as Integer]
-\i[Optional] \i0 nColIndex
+\par\tab \i[Optional] \i0 nColIndex
 [as Integer]
-nNewImage
+\par\tab nNewImage
 [as Integer]
 
 
@@ -439,9 +439,9 @@ Odcl_Grid_
 This method will sort the columns in ascending or descending order, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
 [Arguments]
 ProjectFileName
-nColIndex
+\par\tab nColIndex
 [as Integer]
-bAscending
+\par\tab bAscending
 [as Integer, T or Nil] (1 or T = Ascending, 0 or Nil = Descending) 
 
 
@@ -453,9 +453,9 @@ Odcl_Grid_
 This method will sort the columns in ascending or descending order using a numeric comparison, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
 [Arguments]
 ProjectFileName
-nColIndex
+\par\tab nColIndex
 [as Integer]
-bAscending
+\par\tab bAscending
 [as Integer, T or Nil] (1 or T = Ascending, 0 or Nil = Descending) 
 
 
@@ -485,11 +485,11 @@ The style argument accepts a numeric value that indicated the style of the text 
 \par \b Note:\b0 If the style does not match the pre-assigned value for the cell or column, then the pre-assigned value will be used.
 [Arguments]
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
-nCol
+\par\tab nCol
 [as Integer]
-nStyle
+\par\tab nStyle
 [as Integer]
 
 
@@ -522,13 +522,13 @@ The style argument accepts a numeric value that indicated the style of the drop 
 \par \b Note:\b0 If the style does not match the pre-assigned value for the cell or column, then the pre-assigned value will be used.
 [Arguments]
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
-nCol
+\par\tab nCol
 [as Integer]
-nStyle
+\par\tab nStyle
 [as Integer]
-[Begin List]
+\par\tab [Begin List]
 DropDownItem
 [as String]
 [End List]
@@ -543,14 +543,14 @@ Odcl_Grid_
 This method will activate an image combo box to edit a cell. 
 [Arguments]
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
-nCol
+\par\tab nCol
 [as Integer]
-[Begin List]
+\par\tab [Begin List]
 nImageIndex
 [as Integer]
-DropDownItem
+\par\tab DropDownItem
 [as String]
 [End List]
 
@@ -564,9 +564,9 @@ Odcl_Grid_
 This method will display an ellipses button on the right side of a cell. An ellipses button is a button with 3 dots (...) on it.
 [Arguments]
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
-nCol
+\par\tab nCol
 [as Integer]
 
 
@@ -578,9 +578,9 @@ Odcl_Grid_
 This method will display an pick button on the right side of a cell. 
 [Arguments]
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
-nCol
+\par\tab nCol
 [as Integer]
 
 
@@ -652,17 +652,17 @@ This method will set the editing style of a single cell. The styles that are ava
 \par \par \b For example \b0if you set the style 38 - Integers Combo, all the items to be added to the drop list must be as strings. You are responcible to ensure the correct text is added.
 [Arguments]
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
-nCol
+\par\tab nCol
 [as Integer]
-nStyle
+\par\tab nStyle
 [as Integer]
-\i[Optional] nData1 \i0
+\par\tab \i[Optional] \i0 nData1 
 [as Integer]
-\i[Optional] nData2 \i0
+\par\tab \i[Optional] \i0 nData2
 [as Integer]
-\i[Optional] sString \i0
+\par\tab \i[Optional] \i0 sString
 [as Integer]
 
 
@@ -684,11 +684,11 @@ The style argument accepts a numeric value that indicated the style of the dialo
 \par \b Note:\b0 If the style does not match the pre-assigned value for the cell or column, then the pre-assigned value will be used.
 [Arguments]
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
-nCol
+\par\tab nCol
 [as Integer]
-nStyle
+\par\tab nStyle
 [as Integer]
 
 
@@ -701,9 +701,9 @@ Odcl_Grid_
 This method will toggle the image displayed in a cell if that cell's style or columns style is set to 3 - Switchable Icons.
 [Arguments]
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
-nCol
+\par\tab nCol
 [as Integer]
 
 
@@ -715,9 +715,9 @@ Odcl_Grid_
 This method will indicate if a cell of style 1 - Check Boxes or 2 - Option Buttons has been checked off.
 [Arguments Return] as Integer
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
-nCol
+\par\tab nCol
 [as Integer]
 
 
@@ -730,11 +730,11 @@ Odcl_Grid_
 This method will set a cell of style 1 - Check Boxes or 2 - Option Buttons as checked or unchecked. A value of 1 = checked and 0 = unchecked.
 [Arguments]
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
-nCol
+\par\tab nCol
 [as Integer]
-nChecked
+\par\tab nChecked
 [as Integer]
 
 
@@ -751,13 +751,13 @@ This method will set the drop down lists for cells with the styles. If the colum
 \par \b For example \b0if you set the style 38 - Integers Combo, all the items to be added to the drop list must be as strings. You are responcible to ensure the correct text is added.
 [Arguments]
 ProjectFileName
-nRow
+\par\tab nRow
 [as Integer]
-nCol
+\par\tab nCol
 [as Integer]
-Strings
+\par\tab Strings
 [as List of Strings]
-\i[Optional] nImageIndexes \i0
+\par\tab \i [Optional] \i0 nImageIndexes
 [as List of Integers]
 
 

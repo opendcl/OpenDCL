@@ -6,7 +6,7 @@ Odcl_OptionList_
 This method will add a string to the specified ListBox.
 [Arguments]
 ProjectFileName
-NewString
+\par\tab NewString
 [as String]
 
 
@@ -18,9 +18,9 @@ Odcl_OptionList_
 This method will force an option list item as enabled (T or 1) or disabled (Nil or 0).
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
-nEnabled
+\par\tab nEnabled
 [as Integer]
 
 
@@ -32,7 +32,7 @@ Odcl_OptionList_
 This method will add a list of strings to the specified ListBox.
 [Arguments]
 ProjectFileName
-StringList
+\par\tab StringList
 [as List of Strings]
 
 
@@ -56,7 +56,7 @@ Odcl_OptionList_
 This method will retrieve a requested list item.
 [Arguments Return] as String
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -79,7 +79,7 @@ Odcl_OptionList_
 This method will set the currently selected list item in a single selection ListBox. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -111,7 +111,7 @@ Odcl_OptionList_
 This method ensures that the indicated ListBox item is visible. If it’s not the ListBox is scrolled to ensure the item is visible.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -123,7 +123,7 @@ Odcl_OptionList_
 This method will delete a list item from the ListBox.
 [Arguments]
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
 
 
@@ -135,9 +135,9 @@ Odcl_OptionList_
 This method will insert a list item in the ListBox.
 [Arguments Return] as Integer
 ProjectFileName
-nIndex
+\par\tab nIndex
 [as Integer]
-NewString
+\par\tab NewString
 [as String]
 
 
@@ -149,9 +149,9 @@ Odcl_OptionList_
 This method sets the title text of the tool tip text for an option button in the list.
 [Arguments]
 ProjectFileName
-nItem
+\par\tab nItem
 [as Integer]
-sTitleText
+\par\tab sTitleText
 [as String]
 
 [Method]
@@ -162,9 +162,9 @@ Odcl_OptionList_
 This method turns off or on the line between the tool tip title and the main text of the tool tip text for an option button in the list.
 [Arguments]
 ProjectFileName
-nItem
+\par\tab nItem
 [as Integer]
-Line
+\par\tab Line
 [as T or Nil]
 
 [Method]
@@ -175,9 +175,9 @@ Odcl_OptionList_
 This method sets the tool tip text title color for an option button in the list.
 [Arguments]
 ProjectFileName
-nItem
+\par\tab nItem
 [as Integer]
-Color
+\par\tab Color
 [as Integer]
 
 [Method]
@@ -188,9 +188,9 @@ Odcl_OptionList_
 This method sets the avi file name of the tool tip window for an option button in the list.
 [Arguments]
 ProjectFileName
-nItem
+\par\tab nItem
 [as Integer]
-sAviFileName
+\par\tab sAviFileName
 [as String]
 
 
@@ -202,9 +202,9 @@ Odcl_OptionList_
 This method sets the picture Id for the tool tip window for an option button in the list.
 [Arguments]
 ProjectFileName
-nItem
+\par\tab nItem
 [as Integer]
-nPicture
+\par\tab nPicture
 [as Integer]
 
 [Method]
@@ -215,9 +215,9 @@ Odcl_OptionList_
 This method sets the main body of text for the tool tip window for an option button in the list.
 [Arguments]
 ProjectFileName
-nItem
+\par\tab nItem
 [as Integer]
-sMainText
+\par\tab sMainText
 [as String]
 
 

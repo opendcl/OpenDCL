@@ -244,7 +244,11 @@ void CControlPane::InvalidateControls()
 	{
 		CDclControlObject *pControl = mpSourceForm->mDclControls.GetNext( pos );
 		if( pControl->GetType() != CtlBlockView && pControl->GetType() != CtlHatch )
-			pControl->GetWindow()->Invalidate();
+		{
+			CWnd* pWnd = pControl->GetWindow();
+			if( pWnd )
+				pWnd->Invalidate();
+		}
 	}
 }
 

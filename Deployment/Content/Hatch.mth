@@ -17,7 +17,7 @@ Odcl_Hatch_
 This method will display the specified hatch pattern.
 [Arguments]
 ProjectFileName
-Pattern 
+\par\tab Pattern 
 [as String]
 
 

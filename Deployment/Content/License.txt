@@ -48,7 +48,10 @@ kerrybrown (Kerry Brown)
 seros (Mateusz Jacak)
 svelasquez (Sebastião Velasquez)
 zeeboy (Doug Barense)
-
+dkh007 (Daniel Hargreaves)
+davidbarker (David Barker)
+stephan_35 (Stéphan Buchholz)
+funkitect (James LeVieux)
 
 Some OpenDCL components are based on or derived from public 
 domain and copyrighted source code licensed from third 

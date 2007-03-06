@@ -6,7 +6,7 @@ Odcl_Html_
 This method will force the HtmlControl to navigate to a URL or directory.  For example “www.objectdcl.com” or “c:\\temp”
 [Arguments]
 ProjectFileName
-Destination
+\par\tab Destination
 [as String]
 
 [Method]
@@ -97,7 +97,7 @@ Odcl_Html_
 This method will force the web browsing system to go online if a value of 1 is passed through the flag, or will for the web browsing system to go off-line if a value of 0 was passed.
 [Arguments]
 ProjectFileName
-GoOnline
+\par\tab GoOnline
 [as Integer]
 
 
@@ -131,7 +131,7 @@ Odcl_Html_
 This method will update the entire Html document currently loaded. Please note that an Html document must have already been loaded to use this method successfully.
 [Arguments]
 ProjectFileName
-NewHtmlCode
+\par\tab NewHtmlCode
 [as String]
 
 
@@ -143,9 +143,9 @@ Odcl_Html_
 This method will update a portion of the Html document currently loaded, by replacing specified text with new text. This method is useful for retrieving input values of form controls in the Html document.
 [Arguments]
 ProjectFileName
-OldHtmlCode
+\par\tab OldHtmlCode
 [as String]
-NewHtmlCode
+\par\tab NewHtmlCode
 [as String]
 
 [Method]

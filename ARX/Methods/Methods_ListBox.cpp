@@ -368,10 +368,6 @@ int ListBox_SetCurSel()
 		acedRetInt(-1);
 		return 0;
 	}
-	// if this list box is an option list box then we need to set it's cur sel member.
-	if (((CClrListBox*)pControl)->m_ArxControl->GetType() == CtlOptionList)	
-		((COptionListBox*) pControl)->m_CurSel = nIndex;
-	
 	((CListBox*) pControl)->SetCurSel(nIndex);	
 	
 	acedRetVoid();

@@ -80,8 +80,8 @@ void CSortTabs::OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult)
 	if (ni2 < 0)
 		ni2 = m_List.GetCount()-1;
 
-	CTabInfo *pTab1;
-	CTabInfo *pTab2;
+	CTabInfo *pTab1 = NULL;
+	CTabInfo *pTab2 = NULL;
 
 	POSITION pos1 = mpTabsPane->GetTabList().FindIndex(ni1);
 	if (pos1 != NULL)
@@ -91,8 +91,11 @@ void CSortTabs::OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult)
 	if (pos2 != NULL)
 		pTab2 = mpTabsPane->GetTabList().GetAt(pos2);
 
-	mpTabsPane->GetTabList().SetAt(pos1, pTab2);
-	mpTabsPane->GetTabList().SetAt(pos2, pTab1);
+	if( pTab1 && pTab2 )
+	{
+		mpTabsPane->GetTabList().SetAt(pos1, pTab2);
+		mpTabsPane->GetTabList().SetAt(pos2, pTab1);
+	}
 
 	SetModified();
 	OnSetActive();

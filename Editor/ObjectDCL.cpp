@@ -599,7 +599,6 @@ CObjectDCLView* CObjectDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 		StartupSize.cx += rcNewDialog.Width() - rcClient.Width();
 		StartupSize.cy += rcNewDialog.Height() - rcClient.Height();
 	}
-	pDclForm->m_bUsesClientRect = TRUE;
 	
 	pNewFrame->GetParent()->ScreenToClient(rcNewDialog);
 

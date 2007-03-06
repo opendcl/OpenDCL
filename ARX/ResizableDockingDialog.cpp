@@ -265,7 +265,7 @@ void CResizableDockingDialog::SizeChanged (CRect *lpRect, BOOL bFloating, int fl
 		lpRect->bottom += (nBottomAdjustment - nHeightOffset);
 
 		// resize the control pane so all offsets are set correctly
-		mDialogX.GetControlPane().SetPanePos( *lpRect );
+		mDialogX.GetControlPane().SetPanePos( *lpRect, true );
 		
 		// call methods to invoke the event
 		CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
@@ -391,28 +391,27 @@ void CResizableDockingDialog::GetFloatingMinSize(long* pnMinWidth, long* pnMinHe
 {
 	// by not adjusting the pnMinWidth or pnMinHeight, the min pnMinWidth will become small enough
 	// that the OnResizeEvent will take care of the width size itself.
-		
 }
 
 
 BOOL CResizableDockingDialog::PreTranslateMessage(MSG* pMsg) 
 {
-	//if (pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
- //   {
-	//	if	(pMsg->message == WM_KEYDOWN &&
-	//		(pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_CANCEL))
-	//	{
-	//		HWND hItem = ::GetDlgItem(m_hWnd, IDCANCEL);
-	//		if (hItem == NULL || ::IsWindowEnabled(hItem))
-	//		{
-	//			SendMessage(WM_COMMAND, IDCANCEL, 0);
-	//			return TRUE;
-	//		}
-	//	}
-	//	TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
-	//	if( pControl && pControl->GetControlType() == CtlActiveX )
-	//		return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
-	//}	
+	if (pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
+	{
+		if	(pMsg->message == WM_KEYDOWN &&
+			(pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_CANCEL))
+		{
+			HWND hItem = ::GetDlgItem(m_hWnd, IDCANCEL);
+			if (hItem == NULL || ::IsWindowEnabled(hItem))
+			{
+				SendMessage(WM_COMMAND, IDCANCEL, 0);
+				return TRUE;
+			}
+		}
+		TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
+		if( pControl && pControl->GetControlType() == CtlActiveX )
+			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
+	}	
 		
 	return CAdUiDockControlBar::PreTranslateMessage(pMsg);
 }

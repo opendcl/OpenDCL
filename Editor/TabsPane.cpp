@@ -257,28 +257,15 @@ BOOL CTabsPane::OnApply()
 	try
 	{
 		// clean up the deleted items first
-		POSITION pos = m_DeletedTabList.GetHeadPosition();
-		while (pos != NULL)
+		POSITION pos;
+		while ((pos = m_DeletedTabList.GetHeadPosition()) != NULL)
 		{
-			// get the tab info
 			CTabInfo *pTabInfo = m_DeletedTabList.GetHead();
-			
-			// if the tab to be delete has a CDclFormObject associated with it, 
-			// we must delete it to.
 			if (pTabInfo->mpChildForm)
-			{
-				// make the call to the view to delete the existing tab's CDclFormObject
 				mpView->RemoveChildTabPane(pTabInfo->mpChildForm);
-			}
-
-			// remove it from the list
 			m_DeletedTabList.RemoveAt(pos);
-			
-			// get next head position
-			pos = m_DeletedTabList.GetHeadPosition();
-			
-			// delete the item.
 			delete pTabInfo;
+			pos = m_DeletedTabList.GetHeadPosition();
 		}
 
 		// reset the tab info lists
@@ -286,7 +273,6 @@ BOOL CTabsPane::OnApply()
 		m_pTabTTT->clear();
 		//m_pTabImages->clear();
 		theEditorWorkspace.GetProjectTreeCtrl()->RemoveChildren( mpDclControl->GetOwnerForm()->m_htiTreeItem );
-
 
 		// repopulate the tab info lists
 		int idxPane = -1;
@@ -298,16 +284,11 @@ BOOL CTabsPane::OnApply()
 			m_pTabCaptions->GetStringArrayPtr()->push_back( pTab->msCaption );
 			m_pTabTTT->GetStringArrayPtr()->push_back( pTab->msToolTipText );
 
-			// if this is a new tab, add it to the dcl forms
+			pTab->mnOriginalIndex = idxPane;
 			if( !pTab->mpChildForm )
-			{
-				assert( pTab->mnOriginalIndex == -1 || pTab->mnOriginalIndex == idxPane );
 				pTab->mpChildForm = mpView->AddSingleTabPane( idxPane );
-				pTab->mnOriginalIndex = idxPane;
-			}
-			else
-				theEditorWorkspace.GetProjectTreeCtrl()->AddFormToTree( pTab->mpChildForm, false );
 			pTab->mpChildForm->SetTabIndex( idxPane );
+			theEditorWorkspace.GetProjectTreeCtrl()->AddFormToTree( pTab->mpChildForm, true );
 		}	
 		
 		// call the method to update the control itself

@@ -43,13 +43,13 @@ Odcl_Control_
 This method will move a control to the new position specified.  When repositioning the control, optional width and height parameters can be specified.
 [Arguments]
 ProjectFileName
-Left
+\par\tab Left
 [as Integer]
-Top
+\par\tab Top
 [as Integer]
-\i[Optional] \i0 Width
+\par\tab \i[Optional] \i0 Width
 [as Integer]
-\i[Optional] \i0 Height
+\par\tab \i[Optional] \i0 Height
 [as Integer]
 
 
@@ -61,7 +61,7 @@ Odcl_Control_
 This method will move the control to the front of all controls or behind all controls. \par      \cf1 Direction \cf0 = \b1 0 \b0 (Move to the \b1 Bottom \b0 of the Tab/ZOrder list) \par      \cf1 Direction \cf0 = \b1 1 \b0 (Move to the \b1 Top \b0 of the Tab/ZOrder list)
 [Arguments]
 ProjectFileName
-Direction
+\par\tab Direction
 [as Integer]
 
 

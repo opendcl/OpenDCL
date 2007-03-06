@@ -73,6 +73,7 @@ CDclFormObject::CDclFormObject()
 , mpParentForm( NULL )
 , mpDlgObject( NULL )
 {
+	m_bUsesClientRect = TRUE;
 	m_pChildWnd = NULL;
 	m_pMdiChildWnd = NULL;
 	m_htiTreeItem = NULL;
@@ -87,6 +88,7 @@ CDclFormObject::CDclFormObject( CProject* Project, DclFormType type /*= VdclInva
 , mpParentForm( NULL )
 , mpDlgObject( NULL )
 {
+	m_bUsesClientRect = TRUE;
 	m_pChildWnd = NULL;
 	m_pMdiChildWnd = NULL;
 	m_htiTreeItem = NULL;

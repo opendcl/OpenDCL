@@ -194,9 +194,12 @@ void VdclTab::SetupTabs()
 		InsertItem(i, &TabCtrlItem );
 
 		CString sToolTipText = mpTemplate->GetPropertyListItem(nTabsTTT, i);
-		CRect rectTab;
-		GetItemRect(i, &rectTab);
-		mToolTip.AddTool(this, sToolTipText, (HICON)NULL, &rectTab, i);
+		if( !sToolTipText.IsEmpty() )
+		{
+			CRect rectTab;
+			GetItemRect(i, &rectTab);
+			mToolTip.AddTool(this, sToolTipText, (HICON)NULL, &rectTab, i);
+		}
 	}
 }
 

@@ -616,16 +616,8 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 							sDefun1 += theWorkspace.LoadResourceString(IDS_CF1) + sLine ;
 							// if the last char was not a ( add a space before we add the argument
 							if (m_sClipBoardDefun2.Right(1) != theWorkspace.LoadResourceString(IDS_OPENBRACKET))
-								m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_SPACE);
-							
-							// here we need to remove the rtf italic symbols from the "\\i[Optional] \\i0"
-							// to "[Optional] "
-							if (sLine.Find(theWorkspace.LoadResourceString(IDS_OPTIONAL)) != nNotSet ||
-								sLine.Find(_T("[optional]")) != nNotSet)
-								m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_OPTIONAL) + theWorkspace.LoadResourceString(IDS_SPACE) + sLine.Mid(17) + theWorkspace.LoadResourceString(IDS_SPACE);
-							else
-								m_sClipBoardDefun2 += sLine + theWorkspace.LoadResourceString(IDS_SPACE);
-							
+								m_sClipBoardDefun2 += _T(' ');
+							m_sClipBoardDefun2 += sLine + _T(' ');
 						}
 						fout.ReadString(sLine);	// now we can get past the [Arguments] 				
 					}
@@ -662,6 +654,8 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 		e->ReportError();
 		e->Delete();
 	}
+	m_sClipBoardDefun2.Replace( _T("\\i0"), _T("") );
+	m_sClipBoardDefun2.Replace( _T("\\i"), _T("") );
 	m_sClipBoardDefun2.Replace( _T("\\par"), _T("\r\n") ); //change RTF paragraph breaks to ASCII linefeeds
 	m_sClipBoardDefun2.Replace( _T("\\tab"), _T("\t") ); //change RTF tabs to ASCII tabs
 

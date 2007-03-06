@@ -14,6 +14,7 @@
 #include "Workspace.h"
 #include "ControlPane.h"
 #include "ControlTypes.h"
+#include "axlock.h"
 
 // Constant and should not be changed unless 
 // image IDB_GLYPH is changed
@@ -123,7 +124,7 @@ CComboBox* CPrinterComboBox::FindPaperSizesCombo() const
 		if (pControl->GetControlType() == CtlComboBox)
 		{
 			if( pControl->GetTemplate()->GetLngProperty(nComboBoxStyle) == CmboStyle_PlotterPaperSizes )
-				return (CComboBox*)&*pControl;
+				return (CComboBox*)pControl->GetControl();
 		}
 	}
 	return NULL;
@@ -272,9 +273,7 @@ void CPrinterComboBox::OnSetFocus(CWnd* pOldWnd)
 	if (mpTemplate)
 		// call methods to invoke the event
 		InvokeMethod(mpTemplate->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
-
 	CComboBox::OnSetFocus(pOldWnd);	
-	
 }
 
 void CPrinterComboBox::OnKillFocus(CWnd* pNewWnd) 
@@ -282,13 +281,7 @@ void CPrinterComboBox::OnKillFocus(CWnd* pNewWnd)
 	if (mpTemplate)
 		// call methods to invoke the event
 		InvokeMethod(mpTemplate->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
-
-
-
 	CComboBox::OnKillFocus(pNewWnd);
-	
-
-	
 }
 
 void CPrinterComboBox::OnSelchange() 
@@ -311,67 +304,55 @@ void CPrinterComboBox::OnSelchange()
 
 		BeginWaitCursor();
 		// get current document
-		AcApDocument* pDoc = acDocManager->curDocument();
-		Acad::ErrorStatus es = acDocManager->lockDocument( pDoc, AcAp::kWrite, NULL, NULL, false);
+		AcAxDocLock CurDocWriteContext( acdbCurDwg() );
 
 		// Get layout manager pointer
 		AcApLayoutManager *pLayoutManager = (AcApLayoutManager*)acdbHostApplicationServices()->layoutManager();
 		assert(pLayoutManager != NULL);
 
-		CString sLayout = pLayoutManager->findActiveLayout(true);
+		CString sLayout = pLayoutManager->findActiveTab();
 		   
 		// Get the specific layout
-		AcDbLayout *pLayout = pLayoutManager->findLayoutNamed(sLayout,true);
-		if (pLayout == NULL) 
+		AcDbLayout* pLayoutObj = pLayoutManager->findLayoutNamed(sLayout,true);
+		if (!pLayoutObj) 
 			return;
-		   
-		es = pLayout->setPlotSettingsName(sString);
-		if (es != Acad::eOk)
-			return;
+		AcDbObjectPointer< AcDbLayout > pLayout;
+		pLayout.acquire( pLayoutObj );
 
 		// Get the plot settings validator
 		AcDbPlotSettingsValidator *pPlotSettingsValidator = acdbHostApplicationServices()->plotSettingsValidator();
 		assert( pPlotSettingsValidator != NULL );
+		if (pPlotSettingsValidator == NULL) 
+			return;
 
-		
 		if (nSel == 0)
 		{
-			pPlotSettingsValidator->setPlotCfgName(pLayout,_T("None"),_T("none_user_media"));
+			pPlotSettingsValidator->setPlotCfgName(pLayout.object(),_T("None"),_T("none_user_media"));
 			if (pPaperSizesCombo)
 				pPaperSizesCombo->ResetContent();
-			pLayout->close();
-			es = acDocManager->unlockDocument(pDoc);
-			EndWaitCursor();
-			if (mpTemplate)
-			{
-				InvokeMethodIntString(mpTemplate->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-				mpTemplate->SetStringProperty(nText, sString);
-			}
+
+			InvokeMethodIntString(mpTemplate->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
+			mpTemplate->SetStringProperty(nText, sString);
 			return;
 		}
 		else
-		{
-			pPlotSettingsValidator->setPlotCfgName(pLayout,sString);
-		}
+			pPlotSettingsValidator->setPlotCfgName(pLayout.object(),sString);
 
 		// Refresh the layout lists in order to use it.
-		pPlotSettingsValidator->refreshLists(pLayout);
+		pPlotSettingsValidator->refreshLists(pLayout.object());
 	    
 		AcArray<const TCHAR*> mediaList;
-		pPlotSettingsValidator->canonicalMediaNameList(pLayout, mediaList);
+		Acad::ErrorStatus es = pPlotSettingsValidator->canonicalMediaNameList(pLayout.object(), mediaList);
+		if (es != Acad::eOk)
+			return;
 
 		pPaperSizesCombo->ResetContent();
 		for (int i=0; i<mediaList.length(); i++)
 		{
-			CString value = mediaList[i];
-			const TCHAR * Value;
-			pPlotSettingsValidator->getLocaleMediaName(pLayout, i,Value);
-			pPaperSizesCombo->AddString(Value);
+			const ACHAR * pszPaperSize;
+			pPlotSettingsValidator->getLocaleMediaName(pLayout.object(), i,pszPaperSize);
+			pPaperSizesCombo->AddString(pszPaperSize);
 		}
-
-		pLayout->close();
-
-		es = acDocManager->unlockDocument(pDoc);
 
 		EndWaitCursor();
 
@@ -433,6 +414,8 @@ CString CPrinterComboBox::GetPlottersPath()
 void CPrinterComboBox::DrawItem(LPDRAWITEMSTRUCT lpDIS) 
 {
 	ASSERT(lpDIS->CtlType == ODT_COMBOBOX); // We've gotta be a combo
+	if( lpDIS->itemID == UINT(-1) )
+		return;
 
 	// Lets make a CDC for ease of use
 	CDC *pDC = CDC::FromHandle(lpDIS->hDC);
