@@ -26,6 +26,7 @@ protected:
 // Construction
 public:
 	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true);
+	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CRect ArxRect, bool bCreate = true);
 	virtual ~CAxContainerCtrl();
 
 // Operations
@@ -52,7 +53,7 @@ public:
 
 	void Initialize();
 	virtual bool Create(CWnd* pParentWnd, UINT nID);
-	virtual BOOL CreateCtrl(CDclControlObject *pControl, const RECT& rect, int nID, CWnd *pParent, bool bAddPropInfo);
+	bool Create(CWnd* pParentWnd, UINT nID, CRect ArxRect);
 	unsigned long GetFlexGridColorProperty(AxPropertyDescriptor *axProp);//
 	void SetFlexGridColorProperty(AxPropertyDescriptor *axProp, unsigned long newValue);//
 	COleFont GetFont(DISPID dispid);

@@ -1090,71 +1090,8 @@ bool CControlHolder::CreateNewDialogControl()
 			pNewControl = pControl;
 			break;
 		}
-	case CtlActiveX : return ((mpDlgControl = new CAxContainerCtrl( mpTemplate, this, GetId() )) != NULL);
-	/*case CtlActiveX:
-		{
-			DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-			CAxContainerCtrl *pControl = new CAxContainerCtrl()
-				(mpTemplate->GetOwnerForm());
-			// if the activeX control is being inserted by the user
-			if (mpTemplate->m_clsid.Data1 == 0 && mpTemplate->m_clsid.Data2 == 0 && mpTemplate->m_clsid.Data3 == 0)		
-			{	
-				// create this way if new
-				if (!pControl->CreateCtrl(mpTemplate, rc, GetId(), this, true))
-				{
-					CString sMsg = theWorkspace.LoadResourceString(IDS_BADACTIVEX);
-					CString sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-					delete pControl;
-					MessageBox(sMsg, sTitle, MB_ICONEXCLAMATION);
-					return NULL;		
-				}
-				if (!IsWindow(pControl->m_hWnd) && mpTemplate->m_sLicenseKey.IsEmpty())
-				{
-					CString sMsg = theWorkspace.LoadResourceString(IDS_BADACTIVEX);
-					CString sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-					delete pControl;
-					MessageBox(sMsg, sTitle, MB_ICONEXCLAMATION);
-					return NULL;		
-				}
-			}
-			else // if the activeX control is being inserted from memory
-			{
-				// create this way if not new
-				if (!pControl->CreateCtrl(mpTemplate, rc, GetId(), this, false))
-				{
-					CString sMsg = theWorkspace.LoadResourceString(IDS_BADACTIVEX);
-					CString sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-					delete pControl;
-					MessageBox(sMsg, sTitle, MB_ICONEXCLAMATION);
-					return NULL;		
-				}
-				if (!IsWindow(pControl->m_hWnd))
-				{
-					CString sMsg = theWorkspace.LoadResourceString(IDS_BADACTIVEX);
-					CString sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-					delete pControl;
-					MessageBox(sMsg, sTitle, MB_ICONEXCLAMATION);
-					return NULL;		
-				}
-			}
-			// lets check to see if the control is the right size
-			CRect rcAx;
-			pControl->GetWindowRect(&rcAx);
-			ScreenToClient(rcAx);
-			if (rc.Width() != rcAx.Width() && rc.Height() != rcAx.Height())
-			{
-				GetWindowRect(&rc);
-				ScreenToClient(rc);
-				rc.right = rc.left + rcAx.Width();
-				rc.bottom = rc.top + rcAx.Height();
-				MoveWindow(rc);
-			}
-			//// lets get the correct name set here.
-			//if (bForceUpdate)
-			//	mpTemplate->SetStringProperty(nName, FindNextControlName(mpTemplate->GetActiveXTypeName()));		
-			pNewControl = pControl;
-			break;
-		}*/
+	case CtlActiveX : 
+		return ((mpDlgControl = new CAxContainerCtrl( mpTemplate, this, GetId(), rc )) != NULL);
 	case CtlDwgList:
 		{	
 			DWORD dwStyle = WS_CHILD | WS_VISIBLE

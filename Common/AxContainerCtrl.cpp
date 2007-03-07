@@ -574,7 +574,19 @@ CAxContainerCtrl::CAxContainerCtrl(CDclControlObject* pTemplate,
 		Create(pPane->GetHostDialog(), nID);
 	}
 }
-
+CAxContainerCtrl::CAxContainerCtrl(CDclControlObject* pTemplate
+																	 , CControlPane* pPane
+																	 , UINT nID
+																	 , CRect ArxRect
+																	 , bool bCreate /*= true*/)
+: CDialogControl( pTemplate, pPane, this)
+, mpTypeLib( NULL )
+, mnTypeLibCount( 0 )
+{
+	if (bCreate) {
+		Create(pPane->GetHostDialog(), nID, ArxRect);
+	}
+}
 CAxContainerCtrl::~CAxContainerCtrl()
 {
 }
@@ -626,22 +638,24 @@ END_MESSAGE_MAP()
 
 bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID)
 {
-	USES_CONVERSION;
-	
-	// get the rectangle of the new control
 	CRect ArxRect;
 	ArxRect.top = GetTemplate()->m_pTop->GetLongValue();
 	ArxRect.left = GetTemplate()->m_pLeft->GetLongValue();
 	ArxRect.bottom = GetTemplate()->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = GetTemplate()->m_pWidth->GetLongValue() + ArxRect.left;
-	MoveWindow( &ArxRect, FALSE );
-	
+
+	return Create(pParentWnd, nID, ArxRect);
+}
+bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect ArxRect)
+{
+	USES_CONVERSION;
+
 	DWORD dwStyle = WS_CHILD|WS_VISIBLE;//|WS_CLIPSIBLINGS|WS_CLIPCHILDREN;
 
 	/*if (GetTemplate()->GetBoolProperty(nIsTabStop) != FALSE)
-		dwStyle = dwStyle | WS_TABSTOP;
+	dwStyle = dwStyle | WS_TABSTOP;
 	else
-		dwStyle = dwStyle | WS_GROUP;*/
+	dwStyle = dwStyle | WS_GROUP;*/
 
 	// 3. setup license key (if used)
 	BSTR bstrLicenseKey = NULL;
@@ -649,9 +663,9 @@ bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID)
 	{
 		bstrLicenseKey = GetTemplate()->m_sLicenseKey.AllocSysString();
 	}
-	
+
 	COleStreamFile *pOleStreamFile = NULL;
-	
+
 	if (GetTemplate()->m_pStream != NULL)
 	{	
 		pOleStreamFile = new COleStreamFile(GetTemplate()->GetLoadStream());
@@ -746,11 +760,15 @@ bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID)
 			}
 		}		
 	}
-	
+
 	catch(...)
 	{
 		bSuccess = false;
 	}
+
+	// get the rectangle of the new control
+	MoveWindow( &ArxRect, FALSE );
+
 	if (bstrLicenseKey)
 		::SysFreeString(bstrLicenseKey);
 	if (pOleStreamFile != NULL)
@@ -762,133 +780,12 @@ bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID)
 	return true;
 }
 
-
 void CAxContainerCtrl::InitToolTip()
 {
 	if (mToolTip.m_hWnd == NULL)
 		mToolTip.Create(this);
 } // End of InitToolTip
 
-
-BOOL CAxContainerCtrl::CreateCtrl(CDclControlObject *pControl, const RECT& rect, int nID, CWnd *pParent, bool bAddPropInfo)
-{
-	mpTemplate = pControl;
-	USES_CONVERSION;
-	BOOL m_bActiveXCtrl;	
-	pControl = pControl;
-	CRect rc(0,0,1,1);
-	rc = rect;
-	DWORD dwStyle = WS_CHILD|WS_VISIBLE;
-	
-	CComBSTR bstrLicenseKey;
-
-	if (pControl->m_bLicenseChecked == FALSE)
-	{
-		if (RequestLicenseKey(pControl->m_sLicenseKey, pControl->m_clsid) == FALSE)
-			pControl->m_sLicenseKey = CString();
-		else
-			// the m_bLicenseChecked is used to specify if the license string has been attempted to be extracted
-			// doesn't mean it has a license, the length of m_sLicenseKey means it has a license.
-			pControl->m_bLicenseChecked = TRUE;
-	}
-
-
-	if (!pControl->m_sLicenseKey.IsEmpty())
-	{
-		pControl->m_bLicenseChecked = TRUE;
-		bstrLicenseKey = pControl->m_sLicenseKey.AllocSysString();
-	}
-	
-	COleStreamFile *pOleStreamFile = NULL;
-	
-	// if properties have been set already.
-	if (!bAddPropInfo && pControl->m_pStream)
-		pOleStreamFile = new COleStreamFile(pControl->GetLoadStream());
-
-	TRY
-	{
-		if (!pControl->m_sLicenseKey.IsEmpty())
-		{
-			m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle,
-								rc, pParent, nID,
-								pOleStreamFile, FALSE, bstrLicenseKey);
-			if (m_bActiveXCtrl == FALSE)			
-			{
-				m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle,
-									rc, pParent, nID,
-									NULL, FALSE, bstrLicenseKey);
-				if (m_bActiveXCtrl == TRUE)
-				{
-					pControl->ClearStream();
-					CString sMsg;
-					CString sMsg2;
-					sMsg = theWorkspace.LoadResourceString(IDS_THE);
-					sMsg2 = theWorkspace.LoadResourceString(IDS_RESETPROP);
-					sMsg += pControl->GetStrProperty(nName) + sMsg2;
-					MessageBox(sMsg, NULL, MB_ICONEXCLAMATION);					
-				}
-			}
-			if (m_bActiveXCtrl == FALSE)
-				m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle,
-									rc, pParent, nID,
-									pOleStreamFile, FALSE, NULL);
-			if (m_bActiveXCtrl == FALSE)
-			{
-				pControl->ClearStream();
-				CString sMsg;
-				sMsg = theWorkspace.LoadResourceString(IDS_NOTLICENCEDAX);
-				MessageBox(sMsg, NULL, MB_ICONEXCLAMATION);
-			}
-		}
-		else
-		{			
-			if (pOleStreamFile != NULL)
-			{
-				m_bActiveXCtrl =
-					CreateControl(pControl->m_clsid, NULL, dwStyle,
-						rc, pParent, nID,
-						pOleStreamFile, FALSE, NULL);
-				if (!m_bActiveXCtrl)
-				{
-					
-					CString sMsg;
-					CString sMsg2;
-					sMsg = theWorkspace.LoadResourceString(IDS_THE);
-					sMsg2 = theWorkspace.LoadResourceString(IDS_RESETPROP);
-					sMsg += pControl->GetStrProperty(nName) + sMsg2;
-					MessageBox(sMsg, NULL, MB_ICONEXCLAMATION);
-					
-					m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle, rc, pParent, nID);
-				}				
-			}			
-			else			
-			{
-				m_bActiveXCtrl = CreateControl(pControl->m_clsid, NULL, dwStyle, rc, pParent, nID);
-			}
-		}
-		
-	}
-	CATCH_ALL(e)
-	{
-		m_bActiveXCtrl = FALSE;
-	}
-	END_CATCH_ALL;
-	if (!bAddPropInfo || !m_bActiveXCtrl)
-	{
-		if (pOleStreamFile != NULL)
-			delete pOleStreamFile;
-	}
-
-	
-	// if properties have not bee set yet.
-	if (bAddPropInfo && m_bActiveXCtrl)
-	{
-		// call the method to load and get all the properties
-		Initialize(); 
-	}
-	return m_bActiveXCtrl;
-
-}
 
 //[DPR] Recreated for methods_activex.cpp
 HRESULT CAxContainerCtrl::GetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult )

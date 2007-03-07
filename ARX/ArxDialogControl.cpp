@@ -126,13 +126,8 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 		}
 	case CtlActiveX:
 		{
-			//CArxAxContainerCtrl *pControl = new CArxAxContainerCtrl( pPane->GetSourceForm() );
-			//pControl->CreateCtrl(pTemplate, nID, pPane->GetHostDialog());		
-			//ZOrderFront(pControl);	
 			CArxAxContainerCtrl *pControl = new CArxAxContainerCtrl(pTemplate, pPane, nID);
 			return pControl;
-			//return new CArxAxContainerCtrl();
-			//return *new CArxGraphicButtonCtrl( pTemplate, pPane, nID );
 		}
 	case Ctl3DRect:
 		{
