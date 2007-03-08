@@ -20,6 +20,7 @@ This method retrieve the current directory.
 ProjectFileName
 [as String]
 
+
 [Method]
 GetFileName
 [Prefix]
@@ -40,7 +41,7 @@ This method will change the height of each Dwg file item so the thumbnail previe
 [Arguments]
 ProjectFileName
 \par\tab nRowHeight
-[asInteger]
+[as Integer]
 
 
 [Method]

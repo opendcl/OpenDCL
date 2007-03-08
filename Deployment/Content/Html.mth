@@ -3,20 +3,13 @@ Navigate
 [Prefix]
 Odcl_Html_
 [Desc]
-This method will force the HtmlControl to navigate to a URL or directory.  For example “www.objectdcl.com” or “c:\\temp”
+This method will force the HtmlControl to navigate to a URL or directory.  For example “https://sourceforge.net/projects/opendcl/” or “c:\\temp”
 [Arguments]
 ProjectFileName
 \par\tab Destination
 [as String]
 
-[Method]
-Stop
-[Prefix]
-Odcl_Html_
-[Desc]
-This method forces the HtmlControl to stop its current activity.
-[Arguments]
-ProjectFileName
+
 
 [Method]
 Refresh
@@ -85,7 +78,7 @@ GetOffline
 [Prefix]
 Odcl_Html_
 [Desc]
-This method will return a 0 or 1 indicating if the web browsing system is currenly online (1) or off-line (0).
+This method will return a 0 or 1 indicating if the web browsing system is currently online (1) or off-line (0).
 [Arguments Return] as Integer
 ProjectFileName
 
@@ -158,7 +151,14 @@ This method will retrieve the main portion of the Html document currently loaded
 ProjectFileName
 
 
-
+[Method]
+Stop
+[Prefix]
+Odcl_Html_
+[Desc]
+This method forces the HtmlControl to stop its current activity.
+[Arguments]
+ProjectFileName
 
 
 [End of File]

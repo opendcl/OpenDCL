@@ -1,15 +1,4 @@
 [Method]
-Clear
-[Prefix]
-Odcl_Hatch_
-[Desc]
-This method clears the hatch control of its contents.
-[Arguments]
-ProjectFileName
-
-
-
-[Method]
 SetPattern
 [Prefix]
 Odcl_Hatch_
@@ -20,6 +9,15 @@ ProjectFileName
 \par\tab Pattern 
 [as String]
 
+
+[Method]
+Clear
+[Prefix]
+Odcl_Hatch_
+[Desc]
+This method clears the hatch control of its contents.
+[Arguments]
+ProjectFileName
 
 
 [End of File]

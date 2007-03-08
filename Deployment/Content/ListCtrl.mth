@@ -8,7 +8,7 @@ This method adds columns to a ListView control with the Report style set. Comple
 \par 0	Left
 \par 1	Center
 \par 2	Right
-\par \par \b Please Note:\b0 \par Because the ListView control was design exclusively for Internet Explorer, the justification for the first column will only display left justification.  We wish this design intent of Microsoft's was not so, but unfortunately this is how Mircosoft provides the control.
+\par \par \b Please Note:\b0 \par Because the ListView control was design exclusively for Internet Explorer, the justification for the first column will only display left justification.  We wish this design intent of Microsoft's was not so, but unfortunately this is how Microsoft provides the control.
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
           (List (List x y ...) (List x y ...) ...)
 \par We have found ObjectARX does not always like lists created as follows:
@@ -26,7 +26,7 @@ ProjectFileName
 [as Integer]
 \par\tab nColWidth
 [as Integer]
-\par\tab \i[Optional] \i0 nImageListIndex
+\par\tab\i{Optional}\i0 nImageListIndex
 [as Integer]
 [End List]
 \par\tab ...
@@ -47,11 +47,11 @@ This method adds a new item to the end of a ListView control and will also fill 
 ProjectFileName
 \par\tab 
 [Begin List]
-\par\tab \i[Optional] nImageIndex ...\i0
+\par\tab\i{Optional}\i0 nImageIndex ...
 [as Integer]
 \par\tab sText
 [as String]
-\par\tab \i[Optional] sColText1 sColText2 sColText3 ...\i0
+\par\tab\i{Optional}\i0 sColText1 sColText2 sColText3 ...
 [as String]
 [End List]
 
@@ -64,7 +64,7 @@ Odcl_ListView_
 This method adds a new item to the end of a ListView control. 
 [Arguments Return] as Integer
 ProjectFileName
-\par\tab \i[Optional] nImageIndex ...\i0
+\par\tab\i{Optional}\i0 nImageIndex ...
 [as Integer]
 \par\tab sText
 [as String]
@@ -136,7 +136,7 @@ ProjectFileName
 [as Integer]
 \par\tab sText
 [as String]
-\par\tab \i[Optional] sColText1 sColText2 sColText3 ...\i0
+\par\tab\i{Optional}\i0 sColText1 sColText2 sColText3 ...
 [as String]
 [End List]
 
@@ -151,7 +151,7 @@ This method inserts a new item anywhere in a ListView control.
 ProjectFileName
 \par\tab nInsertRowIndex
 [as Integer]
-\par\tab \i[Optional] nImageIndex \i0
+\par\tab\i{Optional}\i0 nImageIndex
 [as Integer]
 \par\tab sText
 [as String]
@@ -174,15 +174,15 @@ ProjectFileName
 [Begin List]
 \par\tab sItemText1
 [as String]
-\par\tab \i[Optional] \i0 nImageListIndex1 
+\par\tab\i{Optional}\i0 nImageListIndex1 
 [as Integer]
 \par\tab sCol2Text
 [as String]
-\par\tab \i[Optional] \i0 nImageListIndex2
+\par\tab\i{Optional}\i0 nImageListIndex2
 [as Integer]
 \par\tab sCol3Text
 [as String]
-\par\tab \i[Optional] \i0 nImageListIndex3
+\par\tab\i{Optional}\i0 nImageListIndex3
 [as Integer]
 \par\tab ...
 [End List]
@@ -206,7 +206,7 @@ ProjectFileName
 [Begin List]
 \par\tab sItemText1
 [as String]
-\par\tab \i[Optional] \i0 nImageListIndex1 
+\par\tab\i{Optional}\i0 nImageListIndex1 
 [as Integer]
 \par\tab ...
 [End List]
@@ -378,7 +378,7 @@ This method will return the text of an item in a ListView control. If a ListView
 ProjectFileName
 \par\tab nRowIndex
 [as Integer]
-\par\tab \i[Optional] \i0 nColIndex 
+\par\tab\i{Optional}\i0 nColIndex 
 [as Integer]
 
 
@@ -419,7 +419,7 @@ ProjectFileName
 [as String]
 \par\tab nRowIndex
 [as Integer]
-\par\tab \i[Optional] \i0 nColIndex 
+\par\tab\i{Optional}\i0 nColIndex 
 [as Integer]
 
 
@@ -492,7 +492,7 @@ This method will retrieve the image of an item in a ListView control. If a ListV
 ProjectFileName
 \par\tab nRowIndex 
 [as Integer]
-\par\tab \i[Optional] \i0 nColIndex
+\par\tab\i{Optional}\i0 nColIndex
 [as Integer]
 
 
@@ -521,7 +521,7 @@ This method will set the image of an item in a ListView control. If a ListView w
 ProjectFileName
 \par\tab nRowIndex
 [as Integer]
-\par\tab \i[Optional] \i0 nColIndex
+\par\tab\i{Optional}\i0 nColIndex
 [as Integer]
 \par\tab nNewImage
 [as Integer]
@@ -553,7 +553,6 @@ ProjectFileName
 [as Integer]
 \par\tab bAscending
 [as Integer, T or Nil] (1 or T = Ascending, 0 or Nil = Descending) 
-
 
 
 [Method]

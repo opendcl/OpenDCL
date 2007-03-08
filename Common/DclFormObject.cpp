@@ -307,29 +307,17 @@ bool CDclFormObject::CanWeDeleteForm() const
 
 	return true;
 }
+
 int CDclFormObject::CountDeletedControls() const
 {
-	// set counter for ArxControls
-	INT_PTR nCount = mDclControls.GetCount();
-	int nDeleted = 0;
-
-	// set start position for navigating ArxControls
+	INT_PTR ctDeleted = 0;
 	POSITION pos = mDclControls.GetHeadPosition();
-	
-	// do loop to navigate Arx Controls
-	while (pos != NULL)
+	while (pos)
 	{
-		// get current ArxControlObject
-		CDclControlObject* pControl = mDclControls.GetNext(pos);
-
-		if (pControl->m_Delete)
-			nDeleted++;
-
-		// increment counter
-		nCount--;
+		if (mDclControls.GetNext(pos)->m_Delete)
+			ctDeleted++;
 	}
-
-	return nDeleted;
+	return ctDeleted;
 }
 
 void CDclFormObject::SetGlobalVariableName( LPCTSTR pszRootName /*= NULL*/, bool bUpdateChildren /*= true*/ )	
@@ -374,6 +362,10 @@ size_t CDclFormObject::CountDeletedImageLists() const
 	return ctDeleted;
 }
 
+CDclFormObject* CDclFormObject::AddChildForm( DclFormType type )
+{
+	return mpProject->AddForm( type, this );
+}
 
 CString CDclFormObject::GetDclFormTitle() const
 {

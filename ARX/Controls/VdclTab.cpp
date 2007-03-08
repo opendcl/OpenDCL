@@ -266,7 +266,14 @@ bool VdclTab::CreateTabPages( UINT& nId )
 		CDclFormObject* pDclForm = mpTemplate->GetOwnerProject()->GetDclFormList().GetNext(pos);
 		pDclForm->EnsureIsLoaded();
 		if( pDclForm->GetParentForm() == mpTemplate->GetOwnerForm() )
-			mTabPages.push_back( new CTabPage( pDclForm, this, rectPage, nId ) );
+		{
+			CTabPage* pNewPage = new CTabPage( pDclForm, this, rectPage, nId );
+			short nTabIndex = pDclForm->GetTabIndex();
+			if( nTabIndex >= mTabPages.size() )
+				mTabPages.push_back( pNewPage );
+			else
+				mTabPages.insert( mTabPages.begin() + nTabIndex, pNewPage );
+		}
 	}
 	return !bFailed;
 }

@@ -12,8 +12,8 @@ ProjectFileName
 
 [Method]
 SetEnabled
-[Prefix]
 Odcl_OptionList_
+[Prefix]
 [Desc]
 This method will force an option list item as enabled (T or 1) or disabled (Nil or 0).
 [Arguments]
@@ -34,18 +34,6 @@ This method will add a list of strings to the specified ListBox.
 ProjectFileName
 \par\tab StringList
 [as List of Strings]
-
-
-
-
-[Method]
-Clear
-[Prefix]
-Odcl_OptionList_
-[Desc]
-This method will clear the ListBox of all its items.
-[Arguments]
-ProjectFileName
 
 
 [Method]
@@ -207,6 +195,7 @@ ProjectFileName
 \par\tab nPicture
 [as Integer]
 
+
 [Method]
 SetTttMain
 [Prefix]
@@ -221,5 +210,15 @@ ProjectFileName
 [as String]
 
 
+
+
+[Method]
+Clear
+[Prefix]
+Odcl_OptionList_
+[Desc]
+This method will clear the ListBox of all its items.
+[Arguments]
+ProjectFileName
 
 [End of File]

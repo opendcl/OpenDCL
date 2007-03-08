@@ -96,6 +96,7 @@ public:
 	void ZOrderFrontAddTabControls();
 	void SetGlobalVariableName( LPCTSTR pszRootName = NULL, bool bUpdateChildren = true );
 	void ClearGlobalVariableName( bool bUpdateChildren = true );
+	CDclFormObject* AddChildForm( DclFormType type );
 
 	//Attributes
 public:

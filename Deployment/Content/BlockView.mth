@@ -1,13 +1,4 @@
 [Method]
-Clear
-[Prefix]
-Odcl_BlockView_
-[Desc]
-This method clears the block view control of its contents.
-[Arguments]
-ProjectFileName
-
-[Method]
 RefreshBlock
 [Prefix]
 Odcl_BlockView_
@@ -27,9 +18,9 @@ This method loads a block from the current drawing or pre-loaded dwg file into t
 ProjectFileName
 \par\tab BlockName 
 [as String]
-\par\tab \i [optional]\i0 PresetView 
+\par\tab\i{Optional}\i0 PresetView 
 [as Integer]
-\par\tab \i [optional]\i0 ZoomFactor
+\par\tab\i{Optional}\i0 ZoomFactor
 [as Real]
 
 [Method]
@@ -56,9 +47,9 @@ ProjectFileName
 [as Real]
 \par\tab CameraYOffset 
 [as Real]
-\par\tab \i [optional]\i0 CameraZOffset 
+\par\tab\i{Optional}\i0 CameraZOffset 
 [as Real]
-\par\tab \i [optional]\i0 ZoomFactor
+\par\tab\i{Optional}\i0 ZoomFactor
 [as Real]
 
 
@@ -93,9 +84,9 @@ This method loads a block from the current drawing or pre-loaded dwg file into t
 ProjectFileName
 \par\tab BlockName 
 [as String]
-\par\tab \i [optional]\i0 PresetView 
+\par\tab\i{Optional}\i0 PresetView 
 [as Integer]
-\par\tab \i [optional]\i0 ZoomFactor
+\par\tab\i{Optional}\i0 ZoomFactor
 [as Real]
 
 
@@ -113,9 +104,9 @@ ProjectFileName
 [as Real]
 \par\tab CameraYOffset 
 [as Real]
-\par\tab \i [optional]\i0 CameraZOffset 
+\par\tab\i{Optional}\i0 CameraZOffset 
 [as Real]
-\par\tab \i [optional]\i0 ZoomFactor
+\par\tab\i{Optional}\i0 ZoomFactor
 [as Real]
 
 
@@ -165,9 +156,9 @@ This method loads an external drawing file into the control for display just as 
 ProjectFileName
 \par\tab DwgFileName
 [as String]
-\par\tab \i [optional]\i0 PresetView 
+\par\tab\i{Optional}\i0 PresetView 
 [as Integer]
-\par\tab \i [optional]\i0 ZoomFactor
+\par\tab\i{Optional}\i0 ZoomFactor
 [as Real]
 
 
@@ -185,9 +176,9 @@ ProjectFileName
 [as Real]
 \par\tab CameraYOffset 
 [as Real]
-\par\tab \i [optional]\i0 CameraZOffset 
+\par\tab\i{Optional}\i0 CameraZOffset 
 [as Real]
-\par\tab \i [optional]\i0 ZoomFactor
+\par\tab\i{Optional}\i0 ZoomFactor
 [as Real]
 
 
@@ -202,9 +193,9 @@ This method loads an external drawing file into the control at an exact scale fo
 ProjectFileName
 \par\tab DwgFileName
 [as String]
-\par\tab \i [optional]\i0 PresetView 
+\par\tab\i{Optional}\i0 PresetView 
 [as Integer]
-\par\tab \i [optional]\i0 ZoomFactor
+\par\tab\i{Optional}\i0 ZoomFactor
 [as Real]
 
 
@@ -222,11 +213,19 @@ ProjectFileName
 [as Real]
 \par\tab CameraYOffset 
 [as Real]
-\par\tab \i [optional]\i0 CameraZOffset 
+\par\tab\i{Optional}\i0 CameraZOffset 
 [as Real]
-\par\tab \i [optional]\i0 ZoomFactor
+\par\tab\i{Optional}\i0 ZoomFactor
 [as Real]
 
 
+[Method]
+Clear
+[Prefix]
+Odcl_BlockView_
+[Desc]
+This method clears the block view control of its contents.
+[Arguments]
+ProjectFileName
 
 [End of File]

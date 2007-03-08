@@ -26,7 +26,6 @@ public:
 																	 UINT nID, ControlParams* pParams = NULL );
 
 	static TDialogControlPtr CreateComboExControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nId);	
-	static TDialogControlPtr CreateGraphicButton(CDclControlObject* pTemplate, CControlPane* pPane, UINT nId);
 	static TDialogControlPtr CreateEditControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nId);
 	static TDialogControlPtr CreateComboControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nId);
 	static void UpdateChildControl(CDclControlObject *pControl, CControlPane* pPane, UINT nControlId);

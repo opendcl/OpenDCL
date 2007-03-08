@@ -1686,6 +1686,8 @@ void CObjectDCLView::InsertControl(CRect rcPos, ControlType nCtrlToInsert)
 	CString sControlName;
 	if (nCtrlToInsert == CtlFileDlgCtrl)
 		sControlName = GetControlName(nCtrlToInsert);
+	else if (nCtrlToInsert == CtlActiveX)
+		sControlName = FindNextControlName(GetControlName(m_clsid));
 	else
 		sControlName = FindNextControlName(GetControlName(nCtrlToInsert));
 	
@@ -4306,7 +4308,7 @@ void CObjectDCLView::PasteFromClipBoard()
 				pCopyOfArxControlObject->SetLongProperty(nTop, pCopyOfArxControlObject->GetLngProperty(nTop) + nControlOffset);
 
 				// get the next available name for the control
-				CString sControlName = FindNextControlName(GetControlName(pCopyOfArxControlObject->GetType()));	
+				CString sControlName = FindNextControlName(GetControlName(pCopyOfArxControlObject));	
 				pCopyOfArxControlObject->SetStringProperty(nName, sControlName);			
 			}
 			
@@ -5758,7 +5760,7 @@ CDclFormObject * CObjectDCLView::AddSingleTabPane(int nIndex)
 	// create a pointer to pass to the list to insert
 	CProject *pProject = activeProject;
 	
-	pNewDclForm = pProject->AddForm( VdclTabForm, m_pThisDclForm );
+	pNewDclForm = m_pThisDclForm->AddChildForm( VdclTabForm );
 	pNewDclForm->SetTabIndex( nIndex );
 
 	CDclControlObject *pDclProperties = pNewDclForm->GetControlProperties();

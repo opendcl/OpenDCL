@@ -12,9 +12,9 @@ ProjectFileName
 [as Integer]
 \par\tab SelectedImage
 [as Integer]
-\par\tab \i [optional]\i0 Indent
+\par\tab\i{Optional}\i0 Indent
 [as Integer]
-\par\tab \i [optional]\i0 Index
+\par\tab\i{Optional}\i0 Index
 [as Integer]
 
 
@@ -56,19 +56,9 @@ ProjectFileName
 [as Integer]
 \par\tab SelectedImage
 [as Integer]
-\par\tab \i [optional]\i0 Indent
+\par\tab\i{Optional}\i0 Indent
 [as Integer]
 
-
-
-[Method]
-ClearEdit
-[Prefix]
-Odcl_ImageComboBox_
-[Desc]
-This method clears the control's internal TextBox selection (if any)
-[Arguments]
-ProjectFileName
 
 
 [Method]
@@ -101,9 +91,9 @@ This method highlights characters in the edit control of a ComboBox using a star
 [Arguments]
 ProjectFileName
 \par\tab StartIndex 
-[as Interger]
+[as Integer]
 \par\tab EndIndex
-[as Interger]
+[as Integer]
 
 
 [Method]
@@ -254,6 +244,15 @@ ProjectFileName
 [as String]
 
 
+
+[Method]
+ClearEdit
+[Prefix]
+Odcl_ImageComboBox_
+[Desc]
+This method clears the control's internal TextBox selection (if any)
+[Arguments]
+ProjectFileName
 
 
 [End of File]

@@ -7,12 +7,13 @@ This method is used to force a control to update itself instead of waiting for a
 [Arguments]
 ProjectFileName
 
+
 [Method]
 GetCurPos
 [Prefix]
 Odcl_Control_
 [Desc]
-This method will return a list indicating the current left, top, width and height of the control querried.
+This method will return a list indicating the current left, top, width and height of the control queried.
 [Arguments Return] as List
 ProjectFileName
 
@@ -21,7 +22,7 @@ SetFocus
 [Prefix]
 Odcl_Control_
 [Desc]
-This method will force the indicated control to take focus. \par \par \b1 Note: \b0 But do not use it from the OnInitial event, rather use the Odcl_Control_ZOrder to force the control to the top of the Tab/ZOrder list. This will allow the control to recieve focus first when the dialog box is displayed.
+This method will force the indicated control to take focus. \par \par \b1 Note: \b0 But do not use it from the OnInitial event, rather use the Odcl_Control_ZOrder to force the control to the top of the Tab/ZOrder list. This will allow the control to receive focus first when the dialog box is displayed.
 [Arguments]
 ProjectFileName
 
@@ -47,9 +48,9 @@ ProjectFileName
 [as Integer]
 \par\tab Top
 [as Integer]
-\par\tab \i[Optional] \i0 Width
+\par\tab\i{Optional}\i0 Width
 [as Integer]
-\par\tab \i[Optional] \i0 Height
+\par\tab\i{Optional}\i0 Height
 [as Integer]
 
 

@@ -160,12 +160,7 @@ void CPropertyTabPane::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CPropertyTabPane::DisplaySelectedControlProperties(CDclControlObject *pControl, CObjectDCLView *pView) 
 {
-	CString sControlType;
-
-	if (pControl->GetType() == CtlActiveX)
-		sControlType = pControl->GetActiveXTypeName();
-	else
-		sControlType = GetControlName(pControl->GetType());
+	CString sControlType = GetControlName(pControl);
 		
 	CString sControlName;
 	if (!sControlType.IsEmpty())

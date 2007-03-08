@@ -124,11 +124,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
-	case CtlActiveX:
-		{
-			CArxAxContainerCtrl *pControl = new CArxAxContainerCtrl(pTemplate, pPane, nID);
-			return pControl;
-		}
+	case CtlActiveX: return *new CArxAxContainerCtrl(pTemplate, pPane, nID);
 	case Ctl3DRect:
 		{
 			VdclStatic *pControl = new VdclStatic;
@@ -191,11 +187,9 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}	
-	case CtlGraphicButton:	
-		{			
-			return CreateGraphicButton(pTemplate, pPane, nID);
-		}			
+		}
+
+	case CtlGraphicButton: return *new CArxGraphicButtonCtrl( pTemplate, pPane, nID );
 			
 	case CtlMonth:
 		{
@@ -326,12 +320,6 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 		}			
 	}
 	return NULL;
-}
-
-//static
-TDialogControlPtr CArxDialogControl::CreateGraphicButton(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID)
-{
-	return *new CArxGraphicButtonCtrl( pTemplate, pPane, nID );
 }
 
 //static
@@ -569,6 +557,7 @@ void CArxDialogControl::UpdateProperty(CDclControlObject *pControl, CControlPane
 {
 	switch( pControl->GetType() )
 	{ //these controls implement the new CDialogControl interface, so use that
+	case CtlActiveX:
 	case CtlGraphicButton:
 	case CtlTabStrip:
 	case CtlSlideView:
@@ -909,13 +898,13 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			case CtlPictureBox:
 				((CPictureBox*)pControlWnd)->SetAcadColor(pControl->GetLngProperty(nAcadColor));
 				break;
-			case CtlSlideView:		
-				//((CSlideHolder*)pControlWnd)->SetAcadColor(pControl->GetLngProperty(nAcadColor));
-				break;
-			case CtlListView:		
-			case CtlBlockList:				
-				//((OdclListCtrl*)pControlWnd)->SetAcadColor(pControl->GetLngProperty(nAcadColor));
-				break;
+			//case CtlSlideView:		
+			//	((CSlideHolder*)pControlWnd)->SetAcadColor(pControl->GetLngProperty(nAcadColor));
+			//	break;
+			//case CtlListView:		
+			//case CtlBlockList:				
+			//	((OdclListCtrl*)pControlWnd)->SetAcadColor(pControl->GetLngProperty(nAcadColor));
+			//	break;
 				
 			case CtlLabel:
 				((VdclStatic*)pControlWnd)->SetAcadColor(pControl->GetLngProperty(nAcadColor));
@@ -1171,19 +1160,19 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			case CtlPictureBox:
 				((CPictureBox*)pControlWnd)->SetDragnDrop(pControl->GetBoolProperty(nDragnDropAllowDrop));
 				break;
-			case CtlSlideView:
-				((CSlideHolder*)pControlWnd)->SetDragnDrop(pControl->GetBoolProperty(nDragnDropAllowDrop));
-				break;
+			//case CtlSlideView:
+			//	((CSlideHolder*)pControlWnd)->SetDragnDrop(pControl->GetBoolProperty(nDragnDropAllowDrop));
+			//	break;
 			case CtlTree:
 				((VdclTree*)pControlWnd)->SetDragnDrop(pControl->GetBoolProperty(nDragnDropAllowDrop));
 				break;
 			case CtlDwgPreview:
 				((CDwgPreviewCtrl*)pControlWnd)->SetDragnDrop(pControl->GetBoolProperty(nDragnDropAllowDrop));
 				break;
-			case CtlListView:
-			case CtlBlockList:
-				((OdclListCtrl*)pControlWnd)->SetDragnDrop(pControl->GetBoolProperty(nDragnDropAllowDrop));
-				break;
+			//case CtlListView:
+			//case CtlBlockList:
+			//	((OdclListCtrl*)pControlWnd)->SetDragnDrop(pControl->GetBoolProperty(nDragnDropAllowDrop));
+			//	break;
 			}
 			break;
 		} 
@@ -1973,7 +1962,8 @@ void CArxDialogControl::ChangeToolTipText(CDclControlObject *pArxObject, CWnd *p
 		}
 	case CtlActiveX:
 		{
-		((CAxContainerCtrl*)pControl)->SetTooltipText(sToolTipText);
+		SetToolTipEx(pControl, ((CAxContainerCtrl*)pControl)->GetToolTipCtrl(), pArxObject);
+		//((CAxContainerCtrl*)pControl)->SetTooltipText(sToolTipText);
 		break;
 		}
 	case CtlDwgList:

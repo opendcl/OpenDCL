@@ -26,8 +26,14 @@ protected:
 // Construction
 public:
 	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true);
-	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CRect ArxRect, bool bCreate = true);
+	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CRect rcWnd, bool bCreate = true);
 	virtual ~CAxContainerCtrl();
+
+// DialogControl Interface
+public:
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	virtual DWORD GetWndStyle() const;
+	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
 
 // Operations
 public:
@@ -48,7 +54,6 @@ public:
 
 	IDispatch *GetChildIDispatch(DISPID dispid);
 
-	void SetTooltipText( LPCTSTR pszText );
 	CPPToolTip& GetToolTip() { return mToolTip; }
 
 	void Initialize();
@@ -69,10 +74,6 @@ public:
 	void SetRefImageList(DISPID dispid, LPDISPATCH newValue);
 	void SetImageList(DISPID dispid, LPDISPATCH newValue);
 
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//OnChildNotify has not been recreated yet.
-	afx_msg void OnPaint();//
-
 	//ActiveX Helpers
 public:
 	HRESULT GetProperty(AxPropertyDescriptor* axProp, CString &strReturnValue);
@@ -82,8 +83,12 @@ public:
 	HRESULT Invoke( AxMethodDescriptor* axMethod, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
 	BOOL ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID clsid);
 
-	// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 
+	// Generated message map functions
+protected:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	//OnChildNotify has not been recreated yet.
+	afx_msg void OnPaint();//
 };

@@ -9,6 +9,8 @@ ProjectFileName
 \par\tab nIndex
 [as Integer]
 
+
+
 [Method]
 HideTab 
 [Prefix]
@@ -19,6 +21,7 @@ This method will hide a specified tab of a tab control.
 ProjectFileName
 \par\tab nIndex
 [as Integer]
+
 
 
 [Method]

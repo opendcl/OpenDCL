@@ -34,7 +34,7 @@ This method will fill the ListBox with a list of files found in the directory se
 ProjectFileName
 \par\tab sDirectory
 [as String]
-\par\tab \i[Optional] \i0 sExtension
+\par\tab\i{Optional}\i0 sExtension
 [as String]
 
 

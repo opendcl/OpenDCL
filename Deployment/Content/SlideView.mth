@@ -8,8 +8,9 @@ This method loads a slide image or slide library and then displays the slide in 
 ProjectFileName
 \par\tab FileName
 [as String]
-\par\tab \i[Optional] \i0 SlideLibraryImageName
+\par\tab\i{Optional}\i0 SlideLibraryImageName
 [as String]
+
 
 
 [Method]
@@ -20,6 +21,7 @@ Odcl_SlideView_
 This method clears the control.
 [Arguments]
 ProjectFileName
+
 
 
 [Method]
@@ -47,7 +49,7 @@ ProjectFileName
 [as Integer]
 \par\tab FileName
 [as String]
-\par\tab \i[Optional] \i0 SlideLibraryImageName
+\par\tab\i{Optional}\i0 SlideLibraryImageName
 [as String]
 [End List]
 \par\tab ...
@@ -122,7 +124,7 @@ EndImage
 [Prefix]
 Odcl_SlideView_
 [Desc]
-This method is used to store what has been drawn or painted to the SlideView’s paintable area to memory.  What this does is make all lines, arcs, text, etc. become part of the stored picture that the SlideView uses to paint from.  This method must be called after all objects have been drawn to the SlideView, or possible visual errors could occur, especially if another dialog box is moved over the SlideView and what has been drawn will be erased.
+This method is used to store what has been drawn or painted to the SlideView’s paint able area to memory.  What this does is make all lines, arcs, text, etc. become part of the stored picture that the SlideView uses to paint from.  This method must be called after all objects have been drawn to the SlideView, or possible visual errors could occur, especially if another dialog box is moved over the SlideView and what has been drawn will be erased.
 [Arguments]
 ProjectFileName
 

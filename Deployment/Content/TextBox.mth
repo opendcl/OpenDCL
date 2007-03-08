@@ -43,7 +43,7 @@ This method returns a T if the contents of an edit control have been modified, o
 [Arguments Return] as T or Nil
 ProjectFileName
 \par\tab LineNumber
-[as Interger]
+[as Integer]
 
 
 
@@ -79,7 +79,7 @@ This method scrolls to the indicated line in a multiple line TextBox.
 [Arguments]
 ProjectFileName
 \par\tab LineNumber
-[as Interger]
+[as Integer]
 
 
 [Method]
@@ -91,7 +91,7 @@ This method gets a line of text from a TextBox.
 [Arguments Return] as String
 ProjectFileName
 \par\tab LineNumber
-[as Interger]
+[as Integer]
 
 
 
@@ -104,7 +104,7 @@ This method returns the length of a line in a TextBox.
 [Arguments Return] as Integer
 ProjectFileName
 \par\tab LineNumber
-[as Interger]
+[as Integer]
 
 
 [Method]
@@ -115,6 +115,7 @@ Odcl_TextBox_
 This method counts the number of lines in a multiple-line TextBox.
 [Arguments Return] as Integer
 ProjectFileName
+
 
 
 [Method]

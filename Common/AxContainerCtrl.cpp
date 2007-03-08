@@ -215,6 +215,358 @@ static bool ObjectTypeInfoProperties( LPUNKNOWN pObj, LPTYPEINFO* ppAxTypeInfo )
 	return false;
 }
 
+
+static void AddAxProp(CDclControlObject *pControl, long lId, CString sName, CString sDesc, VARTYPE vt, bool bGet=true, bool bSet=true)
+{
+	RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropActiveXProp);
+	AxPropertyDescriptor* axPropPut =
+		new AxPropertyDescriptor( lId, sName, sDesc, vt, bSet? INVOKE_PROPERTYPUT : INVOKE_PROPERTYGET );
+	pControl->InsertNamedProperty( pProp );
+}
+
+static void SetupFont(CDclControlObject *pControl)
+{
+	AddAxProp(pControl, 0, _T("Name"), _T("Indicates the name of the font to be used."), VT_BSTR);
+	AddAxProp(pControl, 2, _T("Size"), _T("Indicates the size of the font to be used. \\par \\par \\b1Note: \\b0 To properly calculate the font size, multiply your new font size by 10000."), VT_CY);
+	AddAxProp(pControl, 3, _T("Bold"), _T("Indicates if the font is to be Bold."), VT_BOOL);
+	AddAxProp(pControl, 4, _T("Italic"), _T("Indicates if the font is to be Italic."), VT_BOOL);
+	AddAxProp(pControl, 5, _T("Underline"), _T("Indicates if the font is to be Underline."), VT_BOOL);
+	AddAxProp(pControl, 6, _T("Strikethrough"), _T("Indicates if the font is to be Strikethrough."), VT_BOOL);
+	AddAxProp(pControl, 7, _T("Weight"), _T("Indicates the weight of the font to be used."), VT_I2);
+	AddAxProp(pControl, 8, _T("Charset"), _T("Indicates the charset of the font to be used."), VT_I2);	
+}
+
+static void SetupPicture(CDclControlObject *pControl)
+{
+	AddAxProp(pControl, 0, _T("Handle"), _T("Retrieve the picture Handle."), VT_I4, true, false);
+	AddAxProp(pControl, 2, _T("HPal"), _T("Retrieve or set the Handle to the Palette."), VT_I4);
+	AddAxProp(pControl, 3, _T("Type"), _T("Retrieve the picture type."), VT_I2, true, false);
+	AddAxProp(pControl, 4, _T("Width"), _T("Retrieve the picture Width."), VT_I4, true, false);
+	AddAxProp(pControl, 5, _T("Height"), _T("Retrieve the picture Height."), VT_I4, true, false);	
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CAxContainerCtrl
+
+CAxContainerCtrl::CAxContainerCtrl(CDclControlObject* pTemplate,
+																	 CControlPane* pPane,
+																	 UINT nID,
+																	 bool bCreate /*= true*/)
+: CDialogControl( pTemplate, pPane, this)
+, mpTypeLib( NULL )
+, mnTypeLibCount( 0 )
+{
+	if (bCreate) {
+		Create(pPane->GetHostDialog(), nID);
+	}
+}
+CAxContainerCtrl::CAxContainerCtrl(CDclControlObject* pTemplate
+																	 , CControlPane* pPane
+																	 , UINT nID
+																	 , CRect ArxRect
+																	 , bool bCreate /*= true*/)
+: CDialogControl( pTemplate, pPane, this)
+, mpTypeLib( NULL )
+, mnTypeLibCount( 0 )
+{
+	if (bCreate) {
+		Create(pPane->GetHostDialog(), nID, ArxRect);
+	}
+}
+CAxContainerCtrl::~CAxContainerCtrl()
+{
+}
+
+void CAxContainerCtrl::Initialize()
+{
+	CComPtr< IOleObject > pOleObject;
+	if( SUCCEEDED(GetOleObject( &pOleObject )) )
+	{
+		ExtractPropertyInfo(GetTemplate(), pOleObject, TRUE);
+		ExtractMethodInfo(GetTemplate(), pOleObject);
+		ExtractEventInfo(GetTemplate(), pOleObject, FALSE);
+	}
+}
+
+HRESULT CAxContainerCtrl::GetOleDispatch( IDispatch** ppDispatch )
+{
+	if( !mpDispatch )
+	{
+		IUnknown* pUnknown = GetControlUnknown();
+		if( !pUnknown )
+			return E_NOINTERFACE;
+		HRESULT hr = pUnknown->QueryInterface( IID_IDispatch, (void**)&mpDispatch );
+	}
+	*ppDispatch = mpDispatch;
+	(*ppDispatch)->AddRef();
+	return S_OK;
+}
+
+HRESULT CAxContainerCtrl::GetOleObject( IOleObject** ppOleObject )
+{	
+	IUnknown* pUnknown = GetControlUnknown();
+	if( !pUnknown )
+		return E_NOINTERFACE;
+	return pUnknown->QueryInterface( IID_IOleObject, (void**)ppOleObject );
+}
+
+BEGIN_MESSAGE_MAP(CAxContainerCtrl, CWnd)
+	ON_WM_PAINT()
+END_MESSAGE_MAP()
+	
+
+bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID)
+{
+	return Create(pParentWnd, nID, GetWndRect());
+}
+
+bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect rcWnd)
+{
+	DWORD dwStyle = GetWndStyle();
+
+	//setup license key (if used)
+	CComBSTR bstrLicenseKey;
+	if( !GetTemplate()->m_sLicenseKey.IsEmpty() )
+		bstrLicenseKey = GetTemplate()->m_sLicenseKey;
+
+	COleStreamFile *pOleStreamFile = NULL;
+	if (GetTemplate()->m_pStream != NULL)
+		pOleStreamFile = new COleStreamFile(GetTemplate()->GetLoadStream());
+
+	BOOL m_bActiveXCtrl = FALSE;
+	bool bSuccess = true;
+	try
+	{		
+		m_bActiveXCtrl = CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
+																		pOleStreamFile, FALSE, bstrLicenseKey );
+		if (!m_bActiveXCtrl && pOleStreamFile)			
+			m_bActiveXCtrl = CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
+																			NULL, FALSE, bstrLicenseKey );
+		if (!m_bActiveXCtrl && (BSTR)bstrLicenseKey)			
+			m_bActiveXCtrl = CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
+																			NULL, FALSE, NULL );
+		GetTemplate()->ClearStream();
+	}
+	catch(...)
+	{
+		bSuccess = false;
+	}
+
+	if (pOleStreamFile != NULL)
+		delete pOleStreamFile;
+
+	InitToolTip();
+	SetToolTipEx(this, mToolTip, GetTemplate());
+
+	return bSuccess;
+}
+
+bool CAxContainerCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
+{
+	if( !__super::OnApplyProperty( pProp ) )
+		return false;
+	bool bFailed = false;
+	//switch( pProp->GetID() )
+	//{
+	//case <property-id>:
+	//	{
+	//		break;
+	//	}
+	//}
+	return !bFailed;
+}
+
+DWORD CAxContainerCtrl::GetWndStyle() const
+{
+	//ignoring the nIsTabStop property? [ORW]
+	return (WS_CHILD | WS_VISIBLE);
+}
+
+void CAxContainerCtrl::InitToolTip()
+{
+	if (mToolTip.m_hWnd == NULL)
+		mToolTip.Create(this);
+} // End of InitToolTip
+
+
+//[DPR] Recreated for methods_activex.cpp
+HRESULT CAxContainerCtrl::GetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult )
+{
+	if( !axProp )
+		return E_POINTER;
+	CComPtr< IDispatch > pDispatch;
+	HRESULT hr = GetOleDispatch( &pDispatch );
+  if( FAILED(hr) )
+		return hr;
+	return axProp->Get( pDispatch, rvarArgs, ctArgs, varResult );
+}
+
+HRESULT CAxContainerCtrl::GetProperty(AxPropertyDescriptor* axProp, CString &strReturnValue)
+{
+	if( !axProp )
+		return E_POINTER;
+	CComPtr< IDispatch > pDispatch;
+	HRESULT hr = GetOleDispatch( &pDispatch );
+  if( FAILED(hr) )
+		return hr;
+	VARIANT varResult;
+	VariantClear( &varResult );
+	hr = axProp->Get( pDispatch, NULL, 0, varResult );
+  if( FAILED(hr) )
+		return hr;
+	if( varResult.vt == VT_BOOL )
+		strReturnValue = (varResult.boolVal != VARIANT_FALSE? _T("True") : _T("False"));
+	else
+	{
+		if( SUCCEEDED(VariantChangeType( &varResult, &varResult, 0, VT_BSTR )) )
+			strReturnValue = CString( varResult.bstrVal );
+		else
+			strReturnValue.Empty();
+	}
+	return S_OK;
+}
+
+HRESULT CAxContainerCtrl::SetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs )
+{
+	if( !axProp )
+		return E_POINTER;
+	CComPtr< IDispatch > pDispatch;
+	HRESULT hr = GetOleDispatch( &pDispatch );
+  if( FAILED(hr) )
+		return hr;
+	hr = axProp->Set( pDispatch, rvarArgs, ctArgs );
+  if( FAILED(hr) )
+		return hr;
+
+	GetTemplate()->SaveToStream(this);
+	return S_OK;
+}
+
+HRESULT CAxContainerCtrl::SetProperty( AxPropertyDescriptor* axProp, COleVariant varArg )
+{
+	return SetProperty( axProp, &varArg, 1 );
+}
+
+IDispatch * CAxContainerCtrl::GetChildIDispatch(DISPID dispid)
+{
+	LPDISPATCH pDispatch;
+	InvokeHelper(dispid, DISPATCH_PROPERTYGET, VT_DISPATCH, (void*)&pDispatch, NULL);
+	return pDispatch;
+}
+
+unsigned long CAxContainerCtrl::GetFlexGridColorProperty(AxPropertyDescriptor *axProp)
+{
+	unsigned long result;
+	InvokeHelper(axProp->GetDispId(), DISPATCH_PROPERTYGET, VT_I4, (void*)&result, NULL);
+	return result;
+}
+
+void CAxContainerCtrl::SetFlexGridColorProperty(AxPropertyDescriptor *axProp
+																						, unsigned long newValue)
+{
+	static BYTE parms[] = VTS_I4;
+	InvokeHelper(axProp->GetDispId(), DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms, newValue);
+}
+
+COleFont CAxContainerCtrl::GetFont(DISPID dispid)
+{
+	LPDISPATCH pDispatch;
+	InvokeHelper(dispid, DISPATCH_PROPERTYGET, VT_DISPATCH, (void*)&pDispatch, NULL);
+	return COleFont(pDispatch);
+}
+
+void CAxContainerCtrl::SetFont(DISPID dispid, LPDISPATCH newValue)
+{
+	static BYTE parms[] =
+		VTS_DISPATCH;
+	InvokeHelper(dispid, DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms,
+		 newValue);
+	
+	GetTemplate()->SaveToStream(this);
+}
+
+void CAxContainerCtrl::SetPicture(DISPID dispid, LPDISPATCH newValue, WORD flag)
+{
+	static BYTE parms[] =
+		VTS_DISPATCH;
+	InvokeHelper(dispid, flag, VT_EMPTY, NULL, parms,
+		 newValue);
+
+	GetTemplate()->SaveToStream(this);
+}
+
+unsigned long CAxContainerCtrl::GetColor(DISPID dispid)
+{
+	unsigned long result;
+	InvokeHelper(dispid, DISPATCH_PROPERTYGET, VT_I4, (void*)&result, NULL);
+	return result;
+}
+
+void CAxContainerCtrl::SetColor(DISPID dispid, unsigned long propVal)
+{
+	static BYTE parms[] =
+		VTS_I4;
+	InvokeHelper(dispid, DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms,
+		 propVal);
+
+	GetTemplate()->SaveToStream(this);	
+}
+
+void CAxContainerCtrl::LoadPictureFile(DISPID dispid, CString sFile, WORD flag)
+{
+	LPPICTURE		lpPicture;
+	lpPicture		= NULL;
+	
+	if (sFile.IsEmpty())
+		return;
+
+	// open file
+	HANDLE hFile = CreateFile(sFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
+	_ASSERTE(INVALID_HANDLE_VALUE != hFile);
+
+	// get file size
+	DWORD dwFileSize = GetFileSize(hFile, NULL);
+	_ASSERTE(-1 != dwFileSize);
+
+	LPVOID pvData = NULL;
+	// alloc memory based on file size
+	HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, dwFileSize);
+	_ASSERTE(NULL != hGlobal);
+
+	pvData = GlobalLock(hGlobal);
+	_ASSERTE(NULL != pvData);
+
+	DWORD dwBytesRead = 0;
+	// read file and store in global memory
+	BOOL bRead = ReadFile(hFile, pvData, dwFileSize, &dwBytesRead, NULL);
+	_ASSERTE(FALSE != bRead);
+	GlobalUnlock(hGlobal);
+	CloseHandle(hFile);
+
+	LPSTREAM pstm = NULL;
+	// create IStream* from global memory
+	HRESULT hr = CreateStreamOnHGlobal(hGlobal, TRUE, &pstm);
+	_ASSERTE(SUCCEEDED(hr) && pstm);
+	
+	// Create IPicture from image file
+	if (lpPicture)
+		lpPicture->Release();
+	hr = ::OleLoadPicture(pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID *)&lpPicture);
+	_ASSERTE(SUCCEEDED(hr) && lpPicture);	
+
+	CPictureHolder phPicture;
+	IPicture *ipOld = phPicture.m_pPict;
+	phPicture.m_pPict = lpPicture;
+
+	SetPicture(dispid, phPicture.GetPictureDispatch(), flag);
+	
+	phPicture.m_pPict = ipOld;
+	
+	pstm->Release();
+	Invalidate();
+}
+
 UINT CAxContainerCtrl::ExtractEventInfo(CDclControlObject *pControl, LPOLEOBJECT pIObject, bool bUseAsType)
 {
 	ITypeInfo *TheInfo = NULL;
@@ -262,7 +614,6 @@ UINT CAxContainerCtrl::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo* 
 	}
 	return ctEvents;
 }
-
 
 UINT CAxContainerCtrl::ExtractMethodInfo(CDclControlObject *pControl, LPOLEOBJECT pIObject)
 {
@@ -319,39 +670,8 @@ UINT CAxContainerCtrl::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo*
 	return ctMethods;
 }
 
-
-static void AddAxProp(CDclControlObject *pControl, long lId, CString sName, CString sDesc, VARTYPE vt, bool bGet=true, bool bSet=true)
-{
-	RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropActiveXProp);
-	AxPropertyDescriptor* axPropPut =
-		new AxPropertyDescriptor( lId, sName, sDesc, vt, bSet? INVOKE_PROPERTYPUT : INVOKE_PROPERTYGET );
-	pControl->InsertNamedProperty( pProp );
-}
-
-static void SetupFont(CDclControlObject *pControl)
-{
-	AddAxProp(pControl, 0, _T("Name"), _T("Indicates the name of the font to be used."), VT_BSTR);
-	AddAxProp(pControl, 2, _T("Size"), _T("Indicates the size of the font to be used. \\par \\par \\b1Note: \\b0 To properly calculate the font size, multiply your new font size by 10000."), VT_CY);
-	AddAxProp(pControl, 3, _T("Bold"), _T("Indicates if the font is to be Bold."), VT_BOOL);
-	AddAxProp(pControl, 4, _T("Italic"), _T("Indicates if the font is to be Italic."), VT_BOOL);
-	AddAxProp(pControl, 5, _T("Underline"), _T("Indicates if the font is to be Underline."), VT_BOOL);
-	AddAxProp(pControl, 6, _T("Strikethrough"), _T("Indicates if the font is to be Strikethrough."), VT_BOOL);
-	AddAxProp(pControl, 7, _T("Weight"), _T("Indicates the weight of the font to be used."), VT_I2);
-	AddAxProp(pControl, 8, _T("Charset"), _T("Indicates the charset of the font to be used."), VT_I2);	
-}
-
-static void SetupPicture(CDclControlObject *pControl)
-{
-	AddAxProp(pControl, 0, _T("Handle"), _T("Retrieve the picture Handle."), VT_I4, true, false);
-	AddAxProp(pControl, 2, _T("HPal"), _T("Retrieve or set the Handle to the Palette."), VT_I4);
-	AddAxProp(pControl, 3, _T("Type"), _T("Retrieve the picture type."), VT_I2, true, false);
-	AddAxProp(pControl, 4, _T("Width"), _T("Retrieve the picture Width."), VT_I4, true, false);
-	AddAxProp(pControl, 5, _T("Height"), _T("Retrieve the picture Height."), VT_I4, true, false);	
-}
-
 BOOL CAxContainerCtrl::ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID clsid)
 {
-	
 	long lTypeInfoCount = 0;
 	CComBSTR bstrName;
 	BOOL bSuccess = TRUE;
@@ -416,9 +736,7 @@ BOOL CAxContainerCtrl::ExtractComponentsFromTLB(CDclControlObject *pControl, CLS
 			}			
 		}               
 	}
-
 	return TRUE;
-	
 }
 
 UINT CAxContainerCtrl::ExtractPropertyInfo( CDclControlObject* pControl, LPOLEOBJECT pIObject, bool bEnumList /*=false*/ )
@@ -431,7 +749,6 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( CDclControlObject* pControl, LPOLEOB
 		return 0;
 	return ExtractPropertyInfo( pControl, pTypeInfo, pIObject, bEnumList );
 }
-
 
 UINT CAxContainerCtrl::ExtractPropertyInfo( CDclControlObject* pControl, ITypeInfo* pTypeInfo, LPOLEOBJECT pIObject, bool bEnumList /*=false*/ )
 {
@@ -558,405 +875,6 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( CDclControlObject* pControl, ITypeIn
 	return ctProperties;
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// CAxContainerCtrl
-
-
-CAxContainerCtrl::CAxContainerCtrl(CDclControlObject* pTemplate,
-																	 CControlPane* pPane,
-																	 UINT nID,
-																	 bool bCreate /*= true*/)
-: CDialogControl( pTemplate, pPane, this)
-, mpTypeLib( NULL )
-, mnTypeLibCount( 0 )
-{
-	if (bCreate) {
-		Create(pPane->GetHostDialog(), nID);
-	}
-}
-CAxContainerCtrl::CAxContainerCtrl(CDclControlObject* pTemplate
-																	 , CControlPane* pPane
-																	 , UINT nID
-																	 , CRect ArxRect
-																	 , bool bCreate /*= true*/)
-: CDialogControl( pTemplate, pPane, this)
-, mpTypeLib( NULL )
-, mnTypeLibCount( 0 )
-{
-	if (bCreate) {
-		Create(pPane->GetHostDialog(), nID, ArxRect);
-	}
-}
-CAxContainerCtrl::~CAxContainerCtrl()
-{
-}
-
-void CAxContainerCtrl::Initialize()
-{
-	CComPtr< IOleObject > pOleObject;
-	if( SUCCEEDED(GetOleObject( &pOleObject )) )
-	{
-		ExtractPropertyInfo(GetTemplate(), pOleObject, TRUE);
-		ExtractMethodInfo(GetTemplate(), pOleObject);
-		ExtractEventInfo(GetTemplate(), pOleObject, FALSE);
-	}
-}
-
-HRESULT CAxContainerCtrl::GetOleDispatch( IDispatch** ppDispatch )
-{
-	if( !mpDispatch )
-	{
-		IUnknown* pUnknown = GetControlUnknown();
-		if( !pUnknown )
-			return E_NOINTERFACE;
-		HRESULT hr = pUnknown->QueryInterface( IID_IDispatch, (void**)&mpDispatch );
-	}
-	*ppDispatch = mpDispatch;
-	(*ppDispatch)->AddRef();
-	return S_OK;
-}
-
-HRESULT CAxContainerCtrl::GetOleObject( IOleObject** ppOleObject )
-{	
-	IUnknown* pUnknown = GetControlUnknown();
-	if( !pUnknown )
-		return E_NOINTERFACE;
-	return pUnknown->QueryInterface( IID_IOleObject, (void**)ppOleObject );
-}
-
-
-BEGIN_MESSAGE_MAP(CAxContainerCtrl, CWnd)
-	//{{AFX_MSG_MAP(CAxContainerCtrl)
-	ON_WM_PAINT()
-	//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
-
-/////////////////////////////////////////////////////////////////////////////
-// CAxContainerCtrl message handlers
-	
-
-bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID)
-{
-	CRect ArxRect;
-	ArxRect.top = GetTemplate()->m_pTop->GetLongValue();
-	ArxRect.left = GetTemplate()->m_pLeft->GetLongValue();
-	ArxRect.bottom = GetTemplate()->m_pHeight->GetLongValue() + ArxRect.top;
-	ArxRect.right = GetTemplate()->m_pWidth->GetLongValue() + ArxRect.left;
-
-	return Create(pParentWnd, nID, ArxRect);
-}
-bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect ArxRect)
-{
-	USES_CONVERSION;
-
-	DWORD dwStyle = WS_CHILD|WS_VISIBLE;//|WS_CLIPSIBLINGS|WS_CLIPCHILDREN;
-
-	/*if (GetTemplate()->GetBoolProperty(nIsTabStop) != FALSE)
-	dwStyle = dwStyle | WS_TABSTOP;
-	else
-	dwStyle = dwStyle | WS_GROUP;*/
-
-	// 3. setup license key (if used)
-	BSTR bstrLicenseKey = NULL;
-	if (!GetTemplate()->m_sLicenseKey.IsEmpty())
-	{
-		bstrLicenseKey = GetTemplate()->m_sLicenseKey.AllocSysString();
-	}
-
-	COleStreamFile *pOleStreamFile = NULL;
-
-	if (GetTemplate()->m_pStream != NULL)
-	{	
-		pOleStreamFile = new COleStreamFile(GetTemplate()->GetLoadStream());
-	}
-	BOOL m_bActiveXCtrl = FALSE;
-	BOOL bSuccess;
-	try
-	{		
-		if (!GetTemplate()->m_sLicenseKey.IsEmpty())
-		{
-			m_bActiveXCtrl = CreateControl(
-				GetTemplate()->m_clsid
-				, NULL
-				, dwStyle
-				, ArxRect
-				, pParentWnd
-				, nID
-				, pOleStreamFile
-				, FALSE
-				, bstrLicenseKey);
-			if (m_bActiveXCtrl == FALSE)			
-			{
-				m_bActiveXCtrl = CreateControl(
-					GetTemplate()->m_clsid
-					, NULL
-					, dwStyle
-					, ArxRect
-					, pParentWnd
-					, nID
-					, NULL
-					, FALSE
-					, bstrLicenseKey);
-				if (m_bActiveXCtrl == TRUE) 
-				{
-					GetTemplate()->ClearStream();
-				}
-			}
-			if (m_bActiveXCtrl == FALSE) 
-			{
-				m_bActiveXCtrl = CreateControl(
-					GetTemplate()->m_clsid
-					, NULL
-					, dwStyle
-					, ArxRect
-					, pParentWnd
-					, nID
-					, pOleStreamFile
-					, FALSE
-					, NULL);
-			}
-			if (m_bActiveXCtrl == FALSE)
-			{
-				GetTemplate()->ClearStream();
-			}
-		}
-		else
-		{			
-			m_bActiveXCtrl = FALSE;
-
-			if (pOleStreamFile != NULL)
-			{
-				m_bActiveXCtrl = CreateControl(
-					GetTemplate()->m_clsid
-					, NULL
-					, dwStyle
-					, ArxRect
-					, pParentWnd
-					, nID
-					, pOleStreamFile
-					, FALSE
-					, NULL);
-				if (m_bActiveXCtrl == FALSE)
-				{
-					m_bActiveXCtrl = CreateControl(
-						GetTemplate()->m_clsid
-						, NULL
-						, dwStyle
-						, ArxRect
-						, pParentWnd
-						, nID);
-				}
-			}
-			else
-			{
-				m_bActiveXCtrl = CreateControl(
-					GetTemplate()->m_clsid
-					, NULL
-					, dwStyle
-					, ArxRect
-					, pParentWnd
-					, nID);
-			}
-		}		
-	}
-
-	catch(...)
-	{
-		bSuccess = false;
-	}
-
-	// get the rectangle of the new control
-	MoveWindow( &ArxRect, FALSE );
-
-	if (bstrLicenseKey)
-		::SysFreeString(bstrLicenseKey);
-	if (pOleStreamFile != NULL)
-		delete pOleStreamFile;
-
-	InitToolTip();
-	SetToolTipEx(this, mToolTip, GetTemplate());
-
-	return true;
-}
-
-void CAxContainerCtrl::InitToolTip()
-{
-	if (mToolTip.m_hWnd == NULL)
-		mToolTip.Create(this);
-} // End of InitToolTip
-
-
-//[DPR] Recreated for methods_activex.cpp
-HRESULT CAxContainerCtrl::GetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult )
-{
-	if( !axProp )
-		return E_POINTER;
-	CComPtr< IDispatch > pDispatch;
-	HRESULT hr = GetOleDispatch( &pDispatch );
-  if( FAILED(hr) )
-		return hr;
-	return axProp->Get( pDispatch, rvarArgs, ctArgs, varResult );
-}
-
-HRESULT CAxContainerCtrl::GetProperty(AxPropertyDescriptor* axProp, CString &strReturnValue)
-{
-	if( !axProp )
-		return E_POINTER;
-	CComPtr< IDispatch > pDispatch;
-	HRESULT hr = GetOleDispatch( &pDispatch );
-  if( FAILED(hr) )
-		return hr;
-	VARIANT varResult;
-	VariantClear( &varResult );
-	hr = axProp->Get( pDispatch, NULL, 0, varResult );
-  if( FAILED(hr) )
-		return hr;
-	if( varResult.vt == VT_BOOL )
-		strReturnValue = (varResult.boolVal != VARIANT_FALSE? _T("True") : _T("False"));
-	else
-	{
-		if( SUCCEEDED(VariantChangeType( &varResult, &varResult, 0, VT_BSTR )) )
-			strReturnValue = CString( varResult.bstrVal );
-		else
-			strReturnValue.Empty();
-	}
-	return S_OK;
-}
-
-HRESULT CAxContainerCtrl::SetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs )
-{
-	if( !axProp )
-		return E_POINTER;
-	CComPtr< IDispatch > pDispatch;
-	HRESULT hr = GetOleDispatch( &pDispatch );
-  if( FAILED(hr) )
-		return hr;
-	hr = axProp->Set( pDispatch, rvarArgs, ctArgs );
-  if( FAILED(hr) )
-		return hr;
-
-	GetTemplate()->SaveToStream(this);
-	return S_OK;
-}
-
-HRESULT CAxContainerCtrl::SetProperty( AxPropertyDescriptor* axProp, COleVariant varArg )
-{
-	return SetProperty( axProp, &varArg, 1 );
-}
-
-IDispatch * CAxContainerCtrl::GetChildIDispatch(DISPID dispid)
-{
-	LPDISPATCH pDispatch;
-	InvokeHelper(dispid, DISPATCH_PROPERTYGET, VT_DISPATCH, (void*)&pDispatch, NULL);
-	return pDispatch;
-}
-unsigned long CAxContainerCtrl::GetFlexGridColorProperty(AxPropertyDescriptor *axProp)
-{
-	unsigned long result;
-	InvokeHelper(axProp->GetDispId(), DISPATCH_PROPERTYGET, VT_I4, (void*)&result, NULL);
-	return result;
-}
-void CAxContainerCtrl::SetFlexGridColorProperty(AxPropertyDescriptor *axProp
-																						, unsigned long newValue)
-{
-	static BYTE parms[] = VTS_I4;
-	InvokeHelper(axProp->GetDispId(), DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms, newValue);
-}
-COleFont CAxContainerCtrl::GetFont(DISPID dispid)
-{
-	LPDISPATCH pDispatch;
-	InvokeHelper(dispid, DISPATCH_PROPERTYGET, VT_DISPATCH, (void*)&pDispatch, NULL);
-	return COleFont(pDispatch);
-}
-void CAxContainerCtrl::SetFont(DISPID dispid, LPDISPATCH newValue)
-{
-	static BYTE parms[] =
-		VTS_DISPATCH;
-	InvokeHelper(dispid, DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms,
-		 newValue);
-	
-	GetTemplate()->SaveToStream(this);
-}
-void CAxContainerCtrl::SetPicture(DISPID dispid, LPDISPATCH newValue, WORD flag)
-{
-	static BYTE parms[] =
-		VTS_DISPATCH;
-	InvokeHelper(dispid, flag, VT_EMPTY, NULL, parms,
-		 newValue);
-
-	GetTemplate()->SaveToStream(this);
-}
-unsigned long CAxContainerCtrl::GetColor(DISPID dispid)
-{
-	unsigned long result;
-	InvokeHelper(dispid, DISPATCH_PROPERTYGET, VT_I4, (void*)&result, NULL);
-	return result;
-}
-void CAxContainerCtrl::SetColor(DISPID dispid, unsigned long propVal)
-{
-	static BYTE parms[] =
-		VTS_I4;
-	InvokeHelper(dispid, DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms,
-		 propVal);
-
-	GetTemplate()->SaveToStream(this);	
-}
-void CAxContainerCtrl::LoadPictureFile(DISPID dispid, CString sFile, WORD flag)
-{
-	LPPICTURE		lpPicture;
-	lpPicture		= NULL;
-	
-	if (sFile.IsEmpty())
-		return;
-
-	// open file
-	HANDLE hFile = CreateFile(sFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
-	_ASSERTE(INVALID_HANDLE_VALUE != hFile);
-
-	// get file size
-	DWORD dwFileSize = GetFileSize(hFile, NULL);
-	_ASSERTE(-1 != dwFileSize);
-
-	LPVOID pvData = NULL;
-	// alloc memory based on file size
-	HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, dwFileSize);
-	_ASSERTE(NULL != hGlobal);
-
-	pvData = GlobalLock(hGlobal);
-	_ASSERTE(NULL != pvData);
-
-	DWORD dwBytesRead = 0;
-	// read file and store in global memory
-	BOOL bRead = ReadFile(hFile, pvData, dwFileSize, &dwBytesRead, NULL);
-	_ASSERTE(FALSE != bRead);
-	GlobalUnlock(hGlobal);
-	CloseHandle(hFile);
-
-	LPSTREAM pstm = NULL;
-	// create IStream* from global memory
-	HRESULT hr = CreateStreamOnHGlobal(hGlobal, TRUE, &pstm);
-	_ASSERTE(SUCCEEDED(hr) && pstm);
-	
-	// Create IPicture from image file
-	if (lpPicture)
-		lpPicture->Release();
-	hr = ::OleLoadPicture(pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID *)&lpPicture);
-	_ASSERTE(SUCCEEDED(hr) && lpPicture);	
-
-	CPictureHolder phPicture;
-	IPicture *ipOld = phPicture.m_pPict;
-	phPicture.m_pPict = lpPicture;
-
-	SetPicture(dispid, phPicture.GetPictureDispatch(), flag);
-	
-	phPicture.m_pPict = ipOld;
-	
-	pstm->Release();
-	Invalidate();
-}
-
-
 void CAxContainerCtrl::LoadPicture(DISPID dispid, int nId)
 {
 	//[DPR] To convert to Ctrl format, I removed mpParent from this class.
@@ -981,7 +899,6 @@ void CAxContainerCtrl::LoadPicture(DISPID dispid, int nId)
 		}
 	}
 }
-
 
 BOOL CAxContainerCtrl::GetPropertyPageCLSIDs( CArray< CLSID,
    CLSID& >& aclsidPages )
@@ -1012,28 +929,24 @@ BOOL CAxContainerCtrl::GetPropertyPageCLSIDs( CArray< CLSID,
 	return( TRUE );
 }
 
-
 void CAxContainerCtrl::ShowPropertyPages()
 {
-   CArray< CLSID, CLSID& > aclsidCommonPages;
-   CArray< CLSID, CLSID& > aclsidPages;
-   BOOL tSuccess;
-   int iPage;
-   INT_PTR iCommonPage;
-   BOOL tFound;
-   CLSID clsidPage;
+	CArray< CLSID, CLSID& > aclsidCommonPages;
+	CArray< CLSID, CLSID& > aclsidPages;
+	BOOL tSuccess;
+	int iPage;
+	INT_PTR iCommonPage;
+	BOOL tFound;
+	CLSID clsidPage;
 
-   tSuccess = GetPropertyPageCLSIDs( aclsidCommonPages );
-   if( !tSuccess )
-   {
-	  return;
-   }
+	tSuccess = GetPropertyPageCLSIDs( aclsidCommonPages );
+	if( !tSuccess )
+		return;
+
 	aclsidPages.RemoveAll();
 	tSuccess = GetPropertyPageCLSIDs( aclsidPages );
 	if( !tSuccess )
-	{
 		return;
-	}
 
 	for( iCommonPage = aclsidCommonPages.GetSize()-1; iCommonPage >= 0;	iCommonPage-- )
 	{
@@ -1140,23 +1053,22 @@ HRESULT CAxContainerCtrl::Invoke( AxMethodDescriptor* axMethod, VARIANTARG* rvar
 		return hr;
 	return axMethod->Invoke( pDispatch, rvarArgs, ctArgs, varResult );
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CAxContainerCtrl message handlers
+
 BOOL CAxContainerCtrl::PreTranslateMessage(MSG* pMsg) 
 {
 	InitToolTip();
 	mToolTip.RelayEvent(pMsg);
-
 	return CWnd::PreTranslateMessage(pMsg);
 }
+
 void CAxContainerCtrl::OnPaint() 
 {
 	//CPaintDC dc(this); // device context for painting
-
 	CWnd::OnPaint();
 	RedrawWindow(NULL, NULL);
 	// Do not call CWnd::OnPaint() for painting messages
-}
-
-void CAxContainerCtrl::SetTooltipText( LPCTSTR pszText )
-{
-	SetToolTipEx( this, mToolTip, GetTemplate() );
 }

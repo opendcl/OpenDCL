@@ -37,15 +37,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
 
-// These were added to the modified CButtonST class in the original ODCL code
 public:
-	COLORREF		m_ForeColor;
-	COLORREF		m_BackColor;
-	CBrush			*m_pStaticBrush;	
-
-public:
-	void SetAcadColor(long nColor);
-	void SetForeColor(long nColor);
 	void SetResourceIcon(UINT idIcon);
 
 protected:
@@ -53,7 +45,6 @@ protected:
 	afx_msg void PostNcDestroy();
 
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 
 protected:
 	DECLARE_MESSAGE_MAP();

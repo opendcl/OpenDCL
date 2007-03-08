@@ -1,14 +1,4 @@
 [Method]
-GetOleObject
-[Prefix]
-Odcl_AxControl_
-[Desc]
-Some ActiveX control's methods or properties requied the OleObject to be passed in as an argument (for example to set the ImageList property of a Microsoft ImageComboBox you need to pass in the OleObject). Calling this method on an ActiveX control will pass back the numberic value indicated by the OleObject. When finished using the OleObject, call \cf2Odcl_AxObject_Close \cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application.
-[Arguments Return] as List
-ProjectFileName
-
-
-[Method]
 RegisterActiveXCtrl
 [Prefix]
 Odcl_
@@ -25,7 +15,7 @@ Release
 [Prefix]
 Odcl_AxObject_
 [Desc]
-When a property or method passes back an OleObject handle consisting of a list with to long integers in it is passing an address to a OleObject device. The device must be cleared from memory eventually. ObjectDCL will clear all the OleObject devices for you once the dialog boxes are closed. If you wish to keep the memory clean use this method to clean the OleObject device from memory once you are finished with it. This method will not delete the item it handles, just the internal device used to modify the control or object belonging to the control.
+When a property or method passes back an OleObject handle consisting of a list with to long integers in it is passing an address to a OleObject device. The device must be cleared from memory eventually. OpenDCL will clear all the OleObject devices for you once the dialog boxes are closed. If you wish to keep the memory clean use this method to clean the OleObject device from memory once you are finished with it. This method will not delete the item it handles, just the internal device used to modify the control or object belonging to the control.
 [Arguments]
 \par\tab OleObject
 [as List]
@@ -74,6 +64,16 @@ Some ActiveX controls calculate their distances not in Pixels but in a unit call
 [Arguments Return] as Long
 \par\tab Pixels
 [as Integer]
+
+
+[Method]
+GetOleObject
+[Prefix]
+Odcl_AxControl_
+[Desc]
+Some ActiveX control's methods or properties required the OleObject to be passed in as an argument (for example to set the ImageList property of a Microsoft ImageComboBox you need to pass in the OleObject). Calling this method on an ActiveX control will pass back the numeric value indicated by the OleObject. When finished using the OleObject, call \cf2Odcl_AxObject_Close \cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application.
+[Arguments Return] as List
+ProjectFileName
 
 
 

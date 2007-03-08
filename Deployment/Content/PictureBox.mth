@@ -3,7 +3,7 @@ StoreImage
 [Prefix]
 Odcl_PictureBox_
 [Desc]
-This method is used to store what has been drawn or printed to the PictureBox’s paintable area to memory.  What this does is makes all lines, arcs, text, etc. become part of the stored picture that the PictureBox uses to paint from.  This method must be called after all objects have been drawn to the PictureBox, or possible errors could occur, especially if another dialog box is moved of the PictureBox and what has been drawn will be erased.
+This method is used to store what has been drawn or printed to the PictureBox’s paint-able area to memory.  What this does is makes all lines, arcs, text, etc. become part of the stored picture that the PictureBox uses to paint from.  This method must be called after all objects have been drawn to the PictureBox, or possible errors could occur, especially if another dialog box is moved of the PictureBox and what has been drawn will be erased.
 [Arguments]
 ProjectFileName
 
@@ -20,15 +20,6 @@ ProjectName
 [as Integer]
 
 
-
-[Method]
-Clear
-[Prefix]
-Odcl_PictureBox_
-[Desc]
-This method clears the control, including any pictures set using the Picture property.
-[Arguments]
-ProjectFileName
 
 [Method]
 Refresh
@@ -341,7 +332,7 @@ ProjectFileName
 [as Integer]
 \par\tab ForeColor
 [as Integer]
-\par\tab \i[Optional] \i0 BackColor 
+\par\tab\i{Optional}\i0 BackColor 
 [as Integer]
 \par\tab Text
 [as String]
@@ -384,13 +375,13 @@ ProjectFileName
 [as Integer]
 \par\tab ForeColor
 [as Integer]
-\par\tab \i[Optional] \i0 BackColor 
+\par\tab\i{Optional}\i0 BackColor 
 [as Integer]
 \par\tab Text
 [as String]
 \par\tab Justification
 [as String]
-\par\tab \i[Optional] \i0 Disabled
+\par\tab\i{Optional}\i0 Disabled
 [as Integer: 1, or T = Disabled, 0 or Nil = Enabled]
 [End List]
 \par\tab ...
@@ -431,9 +422,9 @@ ProjectFileName
 [as Integer]
 \par\tab PictureID
 [as Integer]
-\par\tab \i[Optional] \i0 Enabled
+\par\tab\i{Optional}\i0 Enabled
 [as Integer: 1, or T = Disabled, 0 or Nil = Enabled]
-\par\tab \i[Optional] \i0 UseMask
+\par\tab\i{Optional}\i0 UseMask
 [as Integer: 1, or T = Use, 0 or Nil = Don't Use]
 [End List]
 \par\tab ...
@@ -468,5 +459,13 @@ ProjectFileName
 \par\tab Color
 [as Integer]
 
+[Method]
+Clear
+[Prefix]
+Odcl_PictureBox_
+[Desc]
+This method clears the control, including any pictures set using the Picture property.
+[Arguments]
+ProjectFileName
 
 [End of File]

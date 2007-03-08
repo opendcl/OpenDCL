@@ -881,12 +881,10 @@ public:
 		AcApDocument* pDoc = acDocManager->curDocument();
 		if (pDoc)
 		{
-			// give the command line focus {I'm not sure why this is necessary or desirable [ORW]}
-			//CWnd* wndCommandLine = acedGetAcadDockCmdLine();
-			//if( wndCommandLine )
-			//	wndCommandLine->SetFocus();		
-
-			// send the string to the current document
+			// give the command line focus (otherwise the command doesn't get processed immediately)
+			CWnd* wndCommandLine = acedGetAcadDockCmdLine();
+			if( wndCommandLine )
+				wndCommandLine->SetFocus();		
 			acDocManager->sendStringToExecute(pDoc, pszStringToSend, false, true, false);
 		}
 

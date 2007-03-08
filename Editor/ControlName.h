@@ -1,4 +1,7 @@
 #pragma once
 
+class CDclControlObject;
 
-CString GetControlName(int nControl);
+CString GetControlName( ControlType type );
+CString GetControlName( CDclControlObject* pTemplate );
+CString GetControlName( CLSID clsid );

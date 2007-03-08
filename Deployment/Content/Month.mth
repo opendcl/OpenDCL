@@ -70,16 +70,6 @@ This method gets the highest selected date of the MonthCalender.
 ProjectFileName
 
 
-[Method]
-GetToday
-[Prefix]
-Odcl_Month_
-[Desc]
-This method returns today’s date.
-[Arguments Return] as List
-ProjectFileName
-
-
 
 [Method]
 SetCurSel
@@ -156,6 +146,17 @@ ProjectFileName
 \par\tab Day
 [as Integer]
 [End List]
+
+
+
+[Method]
+GetToday
+[Prefix]
+Odcl_Month_
+[Desc]
+This method returns today’s date.
+[Arguments Return] as List
+ProjectFileName
 
 
 [End of File]

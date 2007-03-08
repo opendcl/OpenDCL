@@ -336,6 +336,8 @@ void CModalVDcl::OnClose()
 void CModalVDcl::OnSize(UINT nType, int cx, int cy) 
 {
 	CSnapDlg::OnSize(nType, cx, cy);
+	
+	mDialogX.GetControlPane().RecalcLayout();
 
 	if (CWnd::IsWindowVisible())
 	{	
@@ -349,8 +351,6 @@ void CModalVDcl::OnSize(UINT nType, int cx, int cy)
 			rcThis.Height(),
 			false);	
 	}	
-	
-	mDialogX.GetControlPane().RecalcLayout();
 	RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 }
 

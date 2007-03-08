@@ -14,7 +14,6 @@
 CButtonCtrl::CButtonCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 {
-	m_pStaticBrush = new CBrush();
 	m_bDrawBorder		= TRUE;
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -22,8 +21,6 @@ CButtonCtrl::CButtonCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UIN
 
 CButtonCtrl::~CButtonCtrl()
 {
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
 }
 
 bool CButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
@@ -51,12 +48,18 @@ bool CButtonCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 	{
 	case nAcadColor:
 		{
-			SetAcadColor( pProp->GetLongValue() );
+			COLORREF crBkgnd = GetRGBColor( pProp->GetLongValue() );
+			SetColor( BTNST_COLOR_BK_IN, crBkgnd, FALSE );
+			SetColor( BTNST_COLOR_BK_OUT, crBkgnd, FALSE );
+			//SetAcadColor( pProp->GetLongValue() );
 			break;
 		}
 	case nForeColor:
 		{
-			SetForeColor( pProp->GetLongValue() );
+			COLORREF crFgnd = GetRGBColor( pProp->GetLongValue() );
+			SetColor( BTNST_COLOR_FG_IN, crFgnd, FALSE );
+			SetColor( BTNST_COLOR_FG_OUT, crFgnd, FALSE );
+			//SetForeColor( pProp->GetLongValue() );
 			break;
 		}
 	case nAutoSize:
@@ -126,22 +129,7 @@ bool CButtonCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 
 BEGIN_MESSAGE_MAP(CButtonCtrl, CXPStyleButtonST)
 	ON_WM_KILLFOCUS()
-	ON_WM_CTLCOLOR_REFLECT()
 END_MESSAGE_MAP()
-
-void CButtonCtrl::SetAcadColor(long nColor)
-{
-	m_BackColor = GetRGBColor(nColor);
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
-	m_pStaticBrush = new CBrush();
-	m_pStaticBrush->CreateSolidBrush(m_BackColor);
-}
-
-void CButtonCtrl::SetForeColor(long nColor)
-{
-	m_ForeColor = GetRGBColor(nColor);
-}
 
 void CButtonCtrl::SetResourceIcon(UINT idIcon)
 {
@@ -164,18 +152,6 @@ void CButtonCtrl::PreSubclassWindow()
 {
 	__super::PreSubclassWindow();
 	SetButtonStyle( GetButtonStyle() & SS_TYPEMASK );
-}
-
-HBRUSH CButtonCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
-{
-	if (!IsWindowEnabled())
-		return __super::CtlColor(pDC, nCtlColor);
-	
-	pDC->SetBkMode(TRANSPARENT);	
-	pDC->SetBkColor(m_BackColor);	
-	pDC->SetTextColor(m_ForeColor);
-	pDC->SelectObject(m_pStaticBrush);
-	return (HBRUSH)(m_pStaticBrush->GetSafeHandle());
 }
 
 void CButtonCtrl::OnKillFocus(CWnd * pNewWnd)

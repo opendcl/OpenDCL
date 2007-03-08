@@ -8,6 +8,7 @@ This method will display the AutoCAD Line Weight dialog box.
 \par\tab DefaultSelection
 [as Integer]
 
+
 [Method]
 GetLinetype
 [Prefix]
@@ -38,7 +39,7 @@ This method will prompt the user with a dialog box that allows the selection of 
 [Arguments Return] as String
 \par\tab Description
 [as String]
-\par\tab \i[Optional] \i0 DefaultDirectory
+\par\tab\i{Optional}\i0 DefaultDirectory
 [as String]
 
 
@@ -52,20 +53,10 @@ This method will return the color value specified from the arguments. The RedOrC
 [Arguments Return] as Long Integer
 \par\tab ColorValueOrRed
 [as Integer]
-\par\tab \i[Optional] \i0 Green
+\par\tab\i{Optional}\i0 Green
 [as Integer]
-\par\tab \i[Optional] \i0 Blue
+\par\tab\i{Optional}\i0 Blue
 [as Integer]
-
-
-
-[Method]
-GetScreenSize
-[Prefix]
-Odcl_
-[Desc]
-This method returns a list indicating the screen size in pixels.
-[Arguments Return] as List of Integers
 
 
 [Method]
@@ -97,7 +88,7 @@ GetVersion
 [Prefix]
 Odcl_
 [Desc]
-This method returns the version of the currently loaded ObjectDCL2.arx file. Please note that this is not available to ObjectDCL.arx file for version 3.0 through 3.08.[Arguments Return] as Real
+This method returns the version of the currently loaded OpenDCL.arx file. Please note that this is not available to OpenDCL.arx file for version 3.0 through 3.08.[Arguments Return] as Real
 [Arguments]
 
 
@@ -122,9 +113,9 @@ This method will prompt the user to select one or more files and will return a l
 [Arguments Return] as List of Strings
 \par\tab ExtensionFilter
 [as String or List of Strings]
-\par\tab \i[Optional] \i0 Title
+\par\tab\i{Optional}\i0 Title
 [as String]
-\par\tab \i[Optional] \i0 DefaultDirectory
+\par\tab\i{Optional}\i0 DefaultDirectory
 [as String]
 
 
@@ -133,7 +124,7 @@ HideErrorMsgBox
 [Prefix]
 Odcl_
 [Desc]
-This will turn off all error message boxes ObjectDCL generates to inform the AutoLisp programmer of programming mistakes.  This method is intended to be called by an AutoLisp program once it's released to market.
+This will turn off all error message boxes OpenDCL generates to inform the AutoLisp programmer of programming mistakes.  This method is intended to be called by an AutoLisp program once it's released to market.
 [Arguments]
 
 
@@ -214,14 +205,20 @@ This method displays a standard windows message box. The message box contains a 
 [as String]
 \par\tab Title
 [as String]
-\par\tab \i[Optional] \i0 ButtonsStyle
+\par\tab\i{Optional}\i0 ButtonsStyle
 [as Integer]
-\par\tab \i[Optional] \i0 ImageStyle
+\par\tab\i{Optional}\i0 ImageStyle
 [as Integer]
-\par\tab \i[Optional] \i0 ShowHelpButton
+\par\tab\i{Optional}\i0 ShowHelpButton
 [as Integer]
 
 
-
+[Method]
+GetScreenSize
+[Prefix]
+Odcl_
+[Desc]
+This method returns a list indicating the screen size in pixels.
+[Arguments Return] as List of Integers
 
 [End of File]

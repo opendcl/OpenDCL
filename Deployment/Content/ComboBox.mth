@@ -9,6 +9,7 @@ ProjectFileName
 \par\tab NewString
 [as String]
 
+
 [Method]
 AddPath
 [Prefix]
@@ -42,7 +43,7 @@ This method will fill the ComboBox with a list of files found in the directory s
 ProjectFileName
 \par\tab sDirectory
 [as String]
-\par\tab \i[Optional] \i0 sExtension
+\par\tab\i{Optional}\i0 sExtension
 [as String]
 
 
@@ -67,17 +68,6 @@ This method gets the text of a list item from the control's internal ListBox.
 ProjectFileName
 \par\tab Index 
 [as Integer]
-
-
-
-[Method]
-ClearEdit
-[Prefix]
-Odcl_ComboBox_
-[Desc]
-This method clears the control's internal TextBox selection (if any)
-[Arguments]
-ProjectFileName
 
 
 [Method]
@@ -110,9 +100,9 @@ This method highlights characters in the edit control of a ComboBox using a star
 [Arguments]
 ProjectFileName
 \par\tab StartIndex 
-[as Interger]
+[as Integer]
 \par\tab EndIndex
-[as Interger]
+[as Integer]
 
 
 [Method]
@@ -134,7 +124,7 @@ This method will return the index of a specified line weight in a ComboBox that 
 [Arguments Return] as Integer
 ProjectFileName
 \par\tab LineWeight
-[as Interger]
+[as Integer]
 
 
 
@@ -147,7 +137,7 @@ This method will return the index of a specified color in a ComboBox that has th
 [Arguments Return] as Integer
 ProjectFileName
 \par\tab Color
-[as Interger (0-255)]
+[as Integer (0-255)]
 
 
 
@@ -161,7 +151,7 @@ This method will add a color to the specified ComboBox that has the Style proper
 [Arguments]
 ProjectFileName
 \par\tab NewColor
-[as Interger (0-255)]
+[as Integer (0-255)]
 
 
 [Method]
@@ -329,6 +319,15 @@ ProjectFileName
 [as String]
 
 
+
+[Method]
+ClearEdit
+[Prefix]
+Odcl_ComboBox_
+[Desc]
+This method clears the control's internal TextBox selection (if any)
+[Arguments]
+ProjectFileName
 
 
 [End of File]

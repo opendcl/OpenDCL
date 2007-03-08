@@ -192,7 +192,7 @@ HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(RefCountedPtr< COleControlObject
 			}
 		}
 		else
-			hItem = m_ListBox.InsertItem(GetControlName(pControl->GetType()), TVI_ROOT, TVI_SORT);
+			hItem = m_ListBox.InsertItem(GetControlName(pControl), TVI_ROOT, TVI_SORT);
 	}
 		
 	size_t nCount = m_OleObjectList.size();
@@ -460,25 +460,25 @@ void CObjectBrowser::LoadMethods(CString sFileName, HTREEITEM hParentItem)
 
 	try
 	{
-		CStdioFile fout(sMethodFile, CFile::shareDenyWrite|CFile::modeRead);
+		CStdioFile fMthFile(sMethodFile, CFile::shareDenyWrite|CFile::modeRead);
 		
 		CString sLine;
-		fout.ReadString(sLine);
+		fMthFile.ReadString(sLine);
 		CString sMethod2 = theWorkspace.LoadResourceString(IDS_METHOD2);
 		CString sEOF = theWorkspace.LoadResourceString(IDS_EOF);
 		
 		// do loop until the end is found.
-		while (sLine != sEOF)
+		while (sLine != sEOF && fMthFile.GetPosition() < fMthFile.GetLength())
 		{
 			if (sLine == sMethod2)
 			{		
-				fout.ReadString(sLine);	
+				fMthFile.ReadString(sLine);	
 				HTREEITEM hItem = m_ListBox.InsertItem(sLine, hParentItem, TVI_SORT);
 				// set item data to -1 to indicate the info must be loaded from file.
 				m_ListBox.SetItemData(hItem, nNotSet); 
 				m_ListBox.SetItemImage(hItem, 3, 3);							
 			}
-			fout.ReadString(sLine);
+			fMthFile.ReadString(sLine);
 		}
 	}
 	catch( CFileException* e )
@@ -513,10 +513,10 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 
 	try
 	{
-		CStdioFile fout(sMethodFile, CFile::shareDenyWrite|CFile::modeRead);
+		CStdioFile fMthFile(sMethodFile, CFile::shareDenyWrite|CFile::modeRead);
 		
 		CString sLine;
-		fout.ReadString(sLine);
+		fMthFile.ReadString(sLine);
 
 		CString sMethod2 = theWorkspace.LoadResourceString(IDS_METHOD2);
 		CString sEOF = theWorkspace.LoadResourceString(IDS_EOF);
@@ -526,18 +526,19 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 		{
 			if (sLine == sMethod2)
 			{		
-				fout.ReadString(sLine);	
+				fMthFile.ReadString(sLine);	
 				// if this is the method we are looking for.
 				if (sMethodName == sLine)
 				{
-					fout.ReadString(sLine);	// get past the [Prefix]
-					fout.ReadString(sLine);	
+					fMthFile.ReadString(sLine);	// get past the [Prefix]
+					fMthFile.ReadString(sLine);	
 					sFuncName = sLine + StripMethodNameOfBrackets(sMethodName);
-					fout.ReadString(sLine);	// get past the [Desc]
+					fMthFile.ReadString(sLine);	// get past the [Desc]
 					while (sLine.Left(nDeOffset) != theWorkspace.LoadResourceString(IDS_ARGS) && 
-								lstrcmpi(sLine, _T("[Argument]")) != 0)
+								lstrcmpi(sLine, _T("[Argument]")) != 0 &&
+								fMthFile.GetPosition() < fMthFile.GetLength())
 					{
-						fout.ReadString(sLine);	
+						fMthFile.ReadString(sLine);	
 						if (sLine.Left(nDeOffset) != theWorkspace.LoadResourceString(IDS_ARGS) && 
 								lstrcmpi(sLine, _T("[Argument]")) != 0)
 							sDesc += sLine;			
@@ -565,27 +566,10 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 					}
 					
 
-					fout.ReadString(sLine);	// now we can get past the [Arguments] 
+					fMthFile.ReadString(sLine);	// now we can get past the [Arguments] 
 					// here we loop through all the remaining arguments and add to them to the tail of the autolisp syntax structure
-					while (sLine != sMethod2)
+					while (sLine != sMethod2 && !sLine.IsEmpty() && sLine != sEOF)
 					{
-						if (sLine == sEOF)
-						{				
-							if (bHasReturn)
-							{
-								sDefun1 += theWorkspace.LoadResourceString(IDS_CF03);
-								m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_DOUBLECLOSEBRACKET);
-							}
-							else
-							{
-								sDefun1 += theWorkspace.LoadResourceString(IDS_CF04);
-								m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_CLOSEBRACKET);
-							}
-
-							sDefun1 += theWorkspace.LoadResourceString(IDS_PAR1);
-							sDefun1 += theWorkspace.LoadResourceString(IDS_PAR1);
-							return true;
-						}
 						if (sLine == theWorkspace.LoadResourceString(IDS_ProjectFileName))
 						{
 							sDefun1 += theWorkspace.LoadResourceString(IDS_CF3) + m_pControl->GetKeyPath() + theWorkspace.LoadResourceString(IDS_CF0);
@@ -619,7 +603,9 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 								m_sClipBoardDefun2 += _T(' ');
 							m_sClipBoardDefun2 += sLine + _T(' ');
 						}
-						fout.ReadString(sLine);	// now we can get past the [Arguments] 				
+						if( fMthFile.GetPosition() >= fMthFile.GetLength() )
+							break;
+						fMthFile.ReadString(sLine);	// now we can get past the [Arguments] 				
 					}
 
 					if (bHasReturn)
@@ -635,6 +621,7 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 
 					sDefun1 += theWorkspace.LoadResourceString(IDS_PAR1);
 					sDefun1 += theWorkspace.LoadResourceString(IDS_PAR1);
+					break;
 				}
 
 				// hide the first copy button
@@ -646,7 +633,9 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 				m_Copy2.SetWindowText(sCopy2Text);
 				m_Copy2.ShowWindow(TRUE);
 			}
-			fout.ReadString(sLine);
+			if( fMthFile.GetPosition() >= fMthFile.GetLength() )
+				break;
+			fMthFile.ReadString(sLine);
 		}
 	}
 	catch( CFileException* e )
@@ -661,9 +650,6 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 
 	return true;
 }
-
-
-
 
 void CObjectBrowser::SelectionChanged(HTREEITEM hItem) 
 {

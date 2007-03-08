@@ -6,118 +6,74 @@
 #include "Resource.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
+#include "DclControlObject.h"
 
 
-CString GetControlName(int nControl)
+CString GetControlName( ControlType type )
 {
-	CString sCtrlDesc;
-	switch (nControl)
+	switch (type)
 	{
-	case CtlForm:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_DCLFORM);
-		break;
-	case CtlLabel:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_LABEL);
-		break;
-	case CtlStdButton:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_TEXTBUTTON);
-		break;
-	case CtlGraphicButton:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_GRAPHICBUTTON);
-		break;
-	case CtlFrame:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_FRAME);
-		break;
-	case CtlTextBox:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_TEXTBOX);
-		break;
-	case CtlCheckBox:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_CHECKBOX);
-		break;		
-	case CtlOptionButton:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_OPTION);
-		break;
-	case CtlComboBox:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_COMBOBOX);
-		break;
-	case CtlListBox:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_LISTBOX);
-		break;
-	case CtlScrollBar:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_SCROLLBAR);
-		break;
-	case CtlSlider:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_SLIDERBAR);
-		break;
-	case CtlPictureBox:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_PICTUREBOX);
-		break;
-	case CtlTabStrip:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_TABS);
-		break;
-	case CtlMonth:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_MONTHCAL);
-		break;
-	case CtlTree:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_TREE);
-		break;
-	case Ctl3DRect:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_RECT);
-		break;
-	case CtlProgress:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_PROGRESSBAR);
-		break;		
-	case CtlSpinButton:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_SPINBUTTON);
-		break;
-	case CtlStaticURL:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_URL);
-		break;
-	case CtlRoundSlider:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_ROUNDSLIDER);
-		break;
-	case CtlBlockView:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_BLOCKVIEW);
-		break;
-	case CtlSlideView:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_SLIDEVIEW);
-		break;
-	case CtlHtmlCtrl:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_HTML);
-		break;
-	case CtlDwgPreview:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_DWGPREVIEW);
-		break;
-	case CtlListView:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_LISTVIEW);
-		break;
-	case CtlBlockList:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_BLOCKLIST);
-		break;
-	case CtlOptionList:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_OPTIONLIST);
-		break;
-	case CtlDwgList:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_DWGLIST);
-	    break;
-	case CtlAnimate:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_ANIMATION);
-	    break;
-	case CtlImageComboBox:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_IMAGECOMBOBOX);
-	    break;
-	case CtlGrid:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_GRID);
-	    break;
-	case CtlSplitter:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_SPLITTER);
-	    break;
-	case CtlHatch:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_HATCH);
-	    break;
-	case CtlFileDlgCtrl:
-		sCtrlDesc = theWorkspace.LoadResourceString(IDS_FILEDLG2);
-	    break;
+	case CtlForm: return theWorkspace.LoadResourceString(IDS_DCLFORM);
+	case CtlLabel: return theWorkspace.LoadResourceString(IDS_LABEL);
+	case CtlStdButton: return theWorkspace.LoadResourceString(IDS_TEXTBUTTON);
+	case CtlGraphicButton: return theWorkspace.LoadResourceString(IDS_GRAPHICBUTTON);
+	case CtlFrame: return theWorkspace.LoadResourceString(IDS_FRAME);
+	case CtlTextBox: return theWorkspace.LoadResourceString(IDS_TEXTBOX);
+	case CtlCheckBox: return theWorkspace.LoadResourceString(IDS_CHECKBOX);
+	case CtlOptionButton: return theWorkspace.LoadResourceString(IDS_OPTION);
+	case CtlComboBox: return theWorkspace.LoadResourceString(IDS_COMBOBOX);
+	case CtlListBox: return theWorkspace.LoadResourceString(IDS_LISTBOX);
+	case CtlScrollBar: return theWorkspace.LoadResourceString(IDS_SCROLLBAR);
+	case CtlSlider: return theWorkspace.LoadResourceString(IDS_SLIDERBAR);
+	case CtlPictureBox: return theWorkspace.LoadResourceString(IDS_PICTUREBOX);
+	case CtlTabStrip: return theWorkspace.LoadResourceString(IDS_TABS);
+	case CtlMonth: return theWorkspace.LoadResourceString(IDS_MONTHCAL);
+	case CtlTree: return theWorkspace.LoadResourceString(IDS_TREE);
+	case Ctl3DRect: return theWorkspace.LoadResourceString(IDS_RECT);
+	case CtlProgress: return theWorkspace.LoadResourceString(IDS_PROGRESSBAR);
+	case CtlSpinButton: return theWorkspace.LoadResourceString(IDS_SPINBUTTON);
+	case CtlStaticURL: return theWorkspace.LoadResourceString(IDS_URL);
+	case CtlRoundSlider: return theWorkspace.LoadResourceString(IDS_ROUNDSLIDER);
+	case CtlBlockView: return theWorkspace.LoadResourceString(IDS_BLOCKVIEW);
+	case CtlSlideView: return theWorkspace.LoadResourceString(IDS_SLIDEVIEW);
+	case CtlHtmlCtrl: return theWorkspace.LoadResourceString(IDS_HTML);
+	case CtlDwgPreview: return theWorkspace.LoadResourceString(IDS_DWGPREVIEW);
+	case CtlListView: return theWorkspace.LoadResourceString(IDS_LISTVIEW);
+	case CtlBlockList: return theWorkspace.LoadResourceString(IDS_BLOCKLIST);
+	case CtlOptionList: return theWorkspace.LoadResourceString(IDS_OPTIONLIST);
+	case CtlDwgList: return theWorkspace.LoadResourceString(IDS_DWGLIST);
+	case CtlAnimate: return theWorkspace.LoadResourceString(IDS_ANIMATION);
+	case CtlImageComboBox: return theWorkspace.LoadResourceString(IDS_IMAGECOMBOBOX);
+	case CtlGrid: return theWorkspace.LoadResourceString(IDS_GRID);
+	case CtlSplitter: return theWorkspace.LoadResourceString(IDS_SPLITTER);
+	case CtlHatch: return theWorkspace.LoadResourceString(IDS_HATCH);
+	case CtlFileDlgCtrl: return theWorkspace.LoadResourceString(IDS_FILEDLG2);
 	}
-	return sCtrlDesc;
+	return _T("Custom");
+}
+
+
+CString GetControlName( CDclControlObject* pTemplate )
+{
+	switch (pTemplate->GetType())
+	{
+	case CtlActiveX: return pTemplate->GetActiveXTypeName();
+	}
+	return GetControlName( pTemplate->GetType() );
+}
+
+
+CString GetControlName( CLSID clsid )
+{
+	// get the ProgId
+	WCHAR* pwszProgID = NULL;        
+	HRESULT hResult = ProgIDFromCLSID(clsid, &pwszProgID);
+	if (FAILED(hResult))
+		return _T("OLEControl");
+	CString sName( pwszProgID );
+	CoTaskMemFree(pwszProgID);
+	sName.MakeReverse();
+	sName = sName.Right(sName.GetLength() - sName.SpanIncluding(_T("0123456789.")).GetLength()).SpanExcluding(_T("."));
+	sName.MakeReverse();
+	return sName;
 }

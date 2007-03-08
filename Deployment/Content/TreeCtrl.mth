@@ -98,7 +98,7 @@ GetExpanedImage
 [Prefix]
 Odcl_Tree_
 [Desc]
-This method retrieves the index of an assigned image in the tree control’s image list that is to be the image to be displayed once the tree item has been expanded. If a node item does not have a \cf1 String Key \cf0 assigned to it, it will not have an expaned image.
+This method retrieves the index of an assigned image in the tree control’s image list that is to be the image to be displayed once the tree item has been expanded. If a node item does not have a \cf1 String Key \cf0 assigned to it, it will not have an expanded image.
 [Arguments Return] as Integer
 ProjectFileName
 \par\tab Key
@@ -222,7 +222,7 @@ ProjectFileName
 [as String or Long]
 \par\tab ImageIndex 
 [as Integer]
-\par\tab \i [optional]\i0 SelectedImageIndex
+\par\tab\i{Optional}\i0 SelectedImageIndex
 [as Integer]
 
 
@@ -350,16 +350,6 @@ ProjectFileName
 
 
 [Method]
-Clear
-[Prefix]
-Odcl_Tree_
-[Desc]
-This method clears the TreeControl of all node items.
-[Arguments]
-ProjectFileName
-
-
-[Method]
 GetParent
 [Prefix]
 Odcl_Tree_
@@ -390,13 +380,13 @@ ProjectFileName
 [as String or Long]
 \par\tab Text 
 [as String]
-\par\tab \i [optional]\i0 Key 
+\par\tab\i{Optional}\i0 Key 
 [as String]
-\par\tab \i [optional]\i0 ImageIndex
+\par\tab\i{Optional}\i0 ImageIndex
 [as Integer]
-\par\tab \i [optional]\i0 SelectedImageIndex 
+\par\tab\i{Optional}\i0 SelectedImageIndex 
 [as Integer]
-\par\tab \i [optional]\i0 ExpandedImageIndex
+\par\tab\i{Optional}\i0 ExpandedImageIndex
 [as Integer]
 [End List]
 \par\tab ...
@@ -416,13 +406,13 @@ ProjectFileName
 [as String or Long]
 \par\tab Text 
 [as String]
-\par\tab \i [optional]\i0 Key 
+\par\tab\i{Optional}\i0 Key 
 [as String]
-\par\tab \i [optional]\i0 ImageIndex
+\par\tab\i{Optional}\i0 ImageIndex
 [as Integer]
-\par\tab \i [optional]\i0 SelectedImageIndex 
+\par\tab\i{Optional}\i0 SelectedImageIndex 
 [as Integer]
-\par\tab \i [optional]\i0 ExpandedImageIndex
+\par\tab\i{Optional}\i0 ExpandedImageIndex
 [as Integer]
 
 
@@ -440,13 +430,13 @@ ProjectFileName
 [as String or Long]
 \par\tab Text 
 [as String]
-\par\tab \i [optional]\i0 Key 
+\par\tab\i{Optional}\i0 Key 
 [as String]
-\par\tab \i [optional]\i0 ImageIndex
+\par\tab\i{Optional}\i0 ImageIndex
 [as Integer]
-\par\tab \i [optional]\i0 SelectedImageIndex 
+\par\tab\i{Optional}\i0 SelectedImageIndex 
 [as Integer]
-\par\tab \i [optional]\i0 ExpandedImageIndex
+\par\tab\i{Optional}\i0 ExpandedImageIndex
 [as Integer]
 
 
@@ -469,13 +459,13 @@ ProjectFileName
 [Begin List]
 \par\tab Text 
 [as String]
-\par\tab \i [optional]\i0 Key 
+\par\tab\i{Optional}\i0 Key 
 [as String]
-\par\tab \i [optional]\i0 ImageIndex
+\par\tab\i{Optional}\i0 ImageIndex
 [as Integer]
-\par\tab \i [optional]\i0 SelectedImageIndex 
+\par\tab\i{Optional}\i0 SelectedImageIndex 
 [as Integer]
-\par\tab \i [optional]\i0 ExpandedImageIndex
+\par\tab\i{Optional}\i0 ExpandedImageIndex
 [as Integer]
 [End List]
 \par\tab ...
@@ -493,14 +483,22 @@ This method adds a top level tree item. This is a tree item that is not connecte
 ProjectFileName
 \par\tab Text 
 [as String]
-\par\tab \i [optional]\i0 Key 
+\par\tab\i{Optional}\i0 Key 
 [as String]
-\par\tab \i [optional]\i0 ImageIndex
+\par\tab\i{Optional}\i0 ImageIndex
 [as Integer]
-\par\tab \i [optional]\i0 SelectedImageIndex 
+\par\tab\i{Optional}\i0 SelectedImageIndex 
 [as Integer]
-\par\tab \i [optional]\i0 ExpandedImageIndex
+\par\tab\i{Optional}\i0 ExpandedImageIndex
 [as Integer]
 
+[Method]
+Clear
+[Prefix]
+Odcl_Tree_
+[Desc]
+This method clears the TreeControl of all node items.
+[Arguments]
+ProjectFileName
 
 [End of File]

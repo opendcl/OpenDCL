@@ -36,21 +36,14 @@ static CString FindTabCaption2(CDclFormObject *pDclTab, int nTabIndex)
 }
 
 
-static CString FindTabCaption(CDclFormObject *pDclTab)
+static CString FindTabCaption(CDclFormObject *pDclTabPage)
 {
-	// do loop to add all the tree items
-	for (int i=0; i<pDclTab->GetProject()->GetDclFormList().GetCount(); i++)
+	POSITION pos = pDclTabPage->GetProject()->GetDclFormList().GetHeadPosition();
+	while( pos )
 	{
-		POSITION pos = pDclTab->GetProject()->GetDclFormList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CDclFormObject *pDcl = pDclTab->GetProject()->GetDclFormList().GetAt(pos);
-			if (pDcl != NULL)
-			{
-				if (pDclTab->GetParentName() == pDcl->GetUniqueName())
-					return FindTabCaption2(pDcl, pDclTab->GetTabIndex());
-			}			
-		}
+		CDclFormObject *pDclParent = pDclTabPage->GetProject()->GetDclFormList().GetNext( pos );
+		if( pDclTabPage->GetParentName() == pDclParent->GetUniqueName() )
+			return FindTabCaption2( pDclParent, pDclTabPage->GetTabIndex() );
 	}
 	return CString();
 }
@@ -322,11 +315,25 @@ void CProjectTreeCtrl::AddFormToTree(CDclFormObject *pDcl, bool bForceShow)
 			SetItemImage(pDcl->m_htiTreeItem, 5,5);
 			break;
 		case VdclTabForm:
-			HTREEITEM hItem = FindTabParent(pDcl);
+			HTREEITEM hItem = FindTabParent( pDcl );
 			if (hItem != NULL && hItem != TVI_ROOT)
 			{
-				pDcl->m_htiTreeItem = InsertItem(FindTabCaption(pDcl), hItem);
-				SetItemImage(pDcl->m_htiTreeItem, 5,5);
+				HTREEITEM hInsertAfter = GetChildItem( hItem );
+				if( hInsertAfter )
+				{
+					short idxTab = pDcl->GetTabIndex();
+					while( --idxTab > 0 )
+					{
+						HTREEITEM hNext = GetNextSiblingItem( hInsertAfter );
+						if( !hNext )
+							break;
+						hInsertAfter = hNext;
+					}
+				}
+				if( !hInsertAfter )
+					hInsertAfter = TVI_LAST;
+				pDcl->m_htiTreeItem = InsertItem( FindTabCaption( pDcl ), hItem, hInsertAfter );
+				SetItemImage( pDcl->m_htiTreeItem, 5, 5 );
 			}
 			break;
 		}

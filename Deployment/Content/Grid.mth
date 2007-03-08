@@ -8,28 +8,29 @@ This method adds columns to a Grid control. Complete control of each column has 
 \par 0	Left
 \par 1	Center
 \par 2	Right
-\par \par \b Please Note:\b0 \par Because the Grid control was design exclusively for Internet Explorer, the justification for the first column will only display left justification.  We wish this design intent of Microsoft's was not so, but unfortunately this is how Mircosoft provides the control.
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
+\par \par \b Please Note:\b0 \par Because the Grid control was design exclusively for Internet Explorer, the justification for the first column will only display left justification.  We wish this design intent of Microsoft's was not so, but unfortunately this is how Microsoft provides the control.
+\par \par \b Note:\b0 \par Create list as follows: \par 
           (List (List x y ...) (List x y ...) ...)
 \par We have found ObjectARX does not always like lists created as follows:
 \par          '(x y ...) (x y ...) ... 
-\par \par \b Note:\b0 If the grid has columns added using the properties wizzard, this function will not add any new colums.
+\par \par \b Note:\b0 If the grid has columns added using the properties wizard, this function will not add any new columns.
 [Arguments]
 ProjectFileName
+par\tab 
 [Begin List]
 [Begin List]
-nColIndex
+par\tab nColIndex
 [as Integer]
-sColText
+par\tab sColText
 [as String]
-nJustification
+par\tab nJustification
 [as Integer]
-nColWidth
+par\tab nColWidth
 [as Integer]
-\i[Optional] nImageListIndex \i0
+par\tab\i{Optional}\i0 nImageListIndex
 [as Integer]
 [End List]
-...
+par\tab ...
 [End List]
 
 
@@ -39,7 +40,7 @@ AddRow
 Odcl_Grid_
 [Desc]
 This method adds a new item to the end of a Grid control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list. Use \cf1 Odcl_Grid_SetItemImage \cf0 to set the icons of any column cell.
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
+\par \par \b Note:\b0 \par Create list as follows: \par 
           (List x y ...)
 \par We have found ObjectARX does not always like lists created as follows:
 \par          '(x y ...)
@@ -48,12 +49,13 @@ This method adds a new item to the end of a Grid control and will also fill in t
 \par \par \b \b For example \b0\b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 Odcl_Grid_AddString \cf0 or \cf2 Odcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
 [Arguments Return] as Integer
 ProjectFileName
+par\tab 
 [Begin List]
-\i[Optional] nImageIndex ...\i0
+par\tab\i{Optional}\i0 nImageIndex ...
 [as Integer]
-sText
+par\tab sText
 [as String]
-\i[Optional] sColText1 sColText2 sColText3 ...\i0
+par\tab\i{Optional}\i0 sColText1 sColText2 sColText3 ...
 [as String]
 [End List]
 
@@ -63,10 +65,10 @@ AddString
 Odcl_Grid_
 [Desc]
 This method adds a new row to the end of a Grid control and fills in each of the cells using a single string. 
-The string is to have a seperator that identifies what parts of the strings belong in which cell. 
-If the sSeperator argument of this function is not specified, "\t" will be assumed.
+The string is to have a separator that identifies what parts of the strings belong in which cell. 
+If the sSeparator argument of this function is not specified, "\t" will be assumed.
 
-\par \par \b1 Please note: \b0 This functions does not give you the ability to specify image icons to be display in any cell, the function \cf2 Odcl_Grid_SetItemImage \cf0 should be used after this funtion is called to assign image icons in the cells.
+\par \par \b1 Please note: \b0 This functions does not give you the ability to specify image icons to be display in any cell, the function \cf2 Odcl_Grid_SetItemImage \cf0 should be used after this function is called to assign image icons in the cells.
 \par 
 \par \b Also Note:\b0 The style of the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
 \par \par \b For example \b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 Odcl_Grid_AddString \cf0 or \cf2 Odcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
@@ -74,7 +76,7 @@ If the sSeperator argument of this function is not specified, "\t" will be assum
 ProjectFileName
 \par\tab sString
 [as String]
-\par\tab \i[Optional]  sSeperator\i0
+\par\tab\i{Optional}\i0  sSeparator
 [as String]
 
 [Method]
@@ -83,10 +85,10 @@ InsertString
 Odcl_Grid_
 [Desc]
 This method inserts a new row in the specified position of a Grid control and fills in each of the cells using a single string. 
-The string is to have a seperator that identifies what parts of the strings belong in which cell. 
-If the sSeperator argument of this function is not specified, "\t" will be assumed.
+The string is to have a separator that identifies what parts of the strings belong in which cell. 
+If the sSeparator argument of this function is not specified, "\t" will be assumed.
 
-\par \par \b1 Please note: \b0 This functions does not give you the ability to specify image icons to be display in any cell, the function \cf2 Odcl_Grid_SetItemImage \cf0 should be used after this funtion is called to assign image icons in the cells.
+\par \par \b1 Please note: \b0 This functions does not give you the ability to specify image icons to be display in any cell, the function \cf2 Odcl_Grid_SetItemImage \cf0 should be used after this function is called to assign image icons in the cells.
 \par 
 \par \b Also Note:\b0 The style of the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
 \par \par \b For example \b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 Odcl_Grid_AddString \cf0 or \cf2 Odcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
@@ -96,7 +98,7 @@ ProjectFileName
 [as Integer]
 \par\tab sString
 [as String]
-\par\tab \i[Optional] \i0 sSeperator
+\par\tab\i{Optional}\i0 sSeparator
 [as String]
 
 
@@ -150,7 +152,7 @@ InsertRow
 Odcl_Grid_
 [Desc]
 This method inserts a new item anywhere in a Grid control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list.  Use \cf2 Odcl_Grid_SetItemImage \cf0 to set the icons of any column cell.
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
+\par \par \b Note:\b0 \par Create list as follows: \par 
           (List (List x y ...) (List x y ...) ...)
 \par We have found ObjectARX does not always like lists created as follows:
 \par          '(x y ...) (x y ...) ... 
@@ -166,7 +168,7 @@ ProjectFileName
 [as Integer]
 \par\tab sText
 [as String]
-\par\tab \i[Optional] sColText1 sColText2 sColText3 ...\i0
+\par\tab\i{Optional}\i0 sColText1 sColText2 sColText3 ...
 [as String]
 [End List]
 
@@ -177,7 +179,7 @@ FillList
 Odcl_Grid_
 [Desc]
 This method will clear and fill a Grid control with multiple rows and will fill in the cells in each row according to how many columns have been previously setup. 
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
+\par \par \b Note:\b0 \par Create list as follows: \par 
           (List (List x y ...) (List x y ...) ...)
 \par We have found ObjectARX does not always like lists created as follows:
 \par          '(x y ...) (x y ...) ... 
@@ -187,15 +189,15 @@ ProjectFileName
 [Begin List]
 sItemText1
 [as String]
-\i[Optional] \i0 nImageListIndex1 
+\i{Optional}\i0 nImageListIndex1 
 [as Integer]
 sCol2Text
 [as String]
-\i[Optional] \i0 nImageListIndex2
+\i{Optional}\i0 nImageListIndex2
 [as Integer]
 sCol3Text
 [as String]
-\i[Optional] \i0 nImageListIndex3
+\i{Optional}\i0 nImageListIndex3
 [as Integer]
 ...
 [End List]
@@ -314,7 +316,7 @@ This method will return the text of an item in a Grid control.
 ProjectFileName
 \par\tab nRowIndex
 [as Integer]
-\par\tab \i[Optional] \i0 nColIndex 
+\par\tab\i{Optional}\i0 nColIndex 
 [as Integer]
 
 
@@ -355,7 +357,7 @@ ProjectFileName
 [as String]
 \par\tab nRowIndex
 [as Integer]
-\par\tab \i[Optional] \i0 nColIndex 
+\par\tab\i{Optional}\i0 nColIndex 
 [as Integer]
 
 
@@ -410,7 +412,7 @@ This method will retrieve the image of an item in a Grid control.
 ProjectFileName
 \par\tab nRowIndex 
 [as Integer]
-\par\tab \i[Optional] \i0 nColIndex
+\par\tab\i{Optional}\i0 nColIndex
 [as Integer]
 
 
@@ -425,7 +427,7 @@ This method will set the image of an item in a Grid control.
 ProjectFileName
 \par\tab nRowIndex
 [as Integer]
-\par\tab \i[Optional] \i0 nColIndex
+\par\tab\i{Optional}\i0 nColIndex
 [as Integer]
 \par\tab nNewImage
 [as Integer]
@@ -658,11 +660,11 @@ ProjectFileName
 [as Integer]
 \par\tab nStyle
 [as Integer]
-\par\tab \i[Optional] \i0 nData1 
+\par\tab\i{Optional}\i0 nData1 
 [as Integer]
-\par\tab \i[Optional] \i0 nData2
+\par\tab\i{Optional}\i0 nData2
 [as Integer]
-\par\tab \i[Optional] \i0 sString
+\par\tab\i{Optional}\i0 sString
 [as Integer]
 
 
@@ -757,7 +759,7 @@ ProjectFileName
 [as Integer]
 \par\tab Strings
 [as List of Strings]
-\par\tab \i [Optional] \i0 nImageIndexes
+\par\tab\i{Optional}\i0 nImageIndexes
 [as List of Integers]
 
 

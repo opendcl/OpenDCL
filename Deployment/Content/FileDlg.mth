@@ -8,6 +8,7 @@ This method will close the indicated dialog. This method returns a list indicati
 ProjectFileName
 
 
+
 [Method]
 CloseAll
 [Prefix]
@@ -24,11 +25,11 @@ LoadProject
 [Prefix]
 Odcl_
 [Desc]
-This method loads the requested project into memory for later use. If you specify a T after the file name the odc file will be reloaded. If you are loading the ods distribution file, the file will not be reloaded.
+This method loads the requested project into memory for later use. If you specify a T after the file name the .ODC file will be reloaded. If you are loading the ods distribution file, the file will not be reloaded.
 [Arguments]
 FileName
 [as Integer]
-\par\tab \i [Optional] \i0 Reload
+\par\tab\i{Optional}\i0 Reload
 [as T]
 
 

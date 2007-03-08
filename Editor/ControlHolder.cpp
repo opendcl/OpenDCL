@@ -1090,8 +1090,7 @@ bool CControlHolder::CreateNewDialogControl()
 			pNewControl = pControl;
 			break;
 		}
-	case CtlActiveX : 
-		return ((mpDlgControl = new CAxContainerCtrl( mpTemplate, this, GetId(), rc )) != NULL);
+	case CtlActiveX : return ((mpDlgControl = new CAxContainerCtrl( mpTemplate, this, GetId(), rc )) != NULL);
 	case CtlDwgList:
 		{	
 			DWORD dwStyle = WS_CHILD | WS_VISIBLE
@@ -1308,6 +1307,7 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 	//if the control has been redesigned to implement the CDialogControl interface, use that
 	switch( mpTemplate->GetType() )
 	{
+	case CtlActiveX:
 	case CtlGraphicButton:
 		mpDlgControl->OnApplyProperty( pProp );
 		mpDlgControl->GetControl()->ShowWindow( SW_SHOW ); //make it visible even if the 'nVisible' property is false

@@ -10,16 +10,6 @@ ProjectFileName
 [as String]
 
 [Method]
-Close
-[Prefix]
-Odcl_Animate_
-[Desc]
-This method closes the animate file previously opened.
-[Arguments]
-ProjectFileName
-
-
-[Method]
 Stop
 [Prefix]
 Odcl_Animate_
@@ -40,6 +30,15 @@ ProjectFileName
 \par\tab FrameIndex
 [as Integer]
 
+
+[Method]
+Close
+[Prefix]
+Odcl_Animate_
+[Desc]
+This method closes the animate file previously opened.
+[Arguments]
+ProjectFileName
 
 
 [End of File]
