@@ -265,13 +265,14 @@ CAxContainerCtrl::CAxContainerCtrl(CDclControlObject* pTemplate
 																	 , CControlPane* pPane
 																	 , UINT nID
 																	 , CRect ArxRect
+																	 , bool bAddPropInfo
 																	 , bool bCreate /*= true*/)
 : CDialogControl( pTemplate, pPane, this)
 , mpTypeLib( NULL )
 , mnTypeLibCount( 0 )
 {
 	if (bCreate) {
-		Create(pPane->GetHostDialog(), nID, ArxRect);
+		Create(pPane->GetHostDialog(), nID, ArxRect, bAddPropInfo);
 	}
 }
 CAxContainerCtrl::~CAxContainerCtrl()
@@ -604,11 +605,32 @@ UINT CAxContainerCtrl::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo* 
 
 		if( !pAxEventDesc->GetName().IsEmpty() )
 		{
-			RefCountedPtr< CPropertyObject > pProp = new CPropertyObject( PropActiveXEvent );
-			pProp->SetHidden();
-			pControl->GetPropertyList().AddTail( pProp );
-			++ctEvents;
-			pProp->GetAxInterfaceDescriptorPtr()->SetEvent( pAxEventDesc.release() );
+			//Before adding event to this list, see if it already exists.
+			//If it does, don't add it.
+			bool bExists = false;
+			for (POSITION pos = pControl->GetPropertyList().GetHeadPosition();
+				pos != NULL; 
+				pControl->GetPropertyList().GetNext(pos))
+			{
+				CPropertyObject* pProp = pControl->GetPropertyList().GetAt(pos);
+				if (pProp->GetType() == PropActiveXEvent) {
+					AxEventDescriptor* pAxEvent = pProp->GetAxInterfaceDescriptorPtr()->GetEvent();
+					if (pAxEvent->GetName() == pAxEventDesc->GetName()) {
+						//Event exists, set flag to not add it
+						bExists = true;
+						break;
+					}
+				}
+			}
+			if (!bExists) 
+			{
+				//Event did not exist, add it to the list
+				RefCountedPtr< CPropertyObject > pProp = new CPropertyObject( PropActiveXEvent );
+				pProp->SetHidden();
+				pControl->GetPropertyList().AddTail( pProp );
+				++ctEvents;
+				pProp->GetAxInterfaceDescriptorPtr()->SetEvent( pAxEventDesc.release() );
+			}
 		}
 		pTypeInfo->ReleaseFuncDesc( pFuncDesc );
 	}
@@ -640,11 +662,34 @@ UINT CAxContainerCtrl::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo*
 	pTypeInfo->ReleaseTypeAttr( pTypeAttr );
 	
 	// create the new property and insert at the second position after the (ActiveX PropertyObject) property item
+	// If there are already properties there, then replace the old properties
+	// with these new ones.
 	RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropActiveXMethods);
 	pProp->GetAxInterfaceDescriptorPtr()->SetMethods( new std::vector< RefCountedPtr< AxMethodDescriptor > > );
+	pProp->SetID( nObjectBrowser ); // set the id of the new property
 	POSITION pos = pControl->GetPropertyList().GetHeadPosition();
 	pControl->GetPropertyList().InsertAfter( pos, pProp );
-	pProp->SetID( nObjectBrowser ); // set the id of the new property
+	
+	//Remove any old methods that exist
+	pControl->GetPropertyList().GetNext(pos); //Step to new methods
+	pControl->GetPropertyList().GetNext(pos); //Step to past new methods
+	while (pos != NULL) {
+		CPropertyObject* pPropCurrent = pControl->GetPropertyList().GetAt(pos);
+		if (pPropCurrent != NULL && pPropCurrent->GetType() == PropActiveXMethods) {
+			//Question for Owen--what do I need to do for cleanup purposes here?
+			pControl->GetPropertyList().RemoveAt(pos);
+			//Position is now invalid. Reset to the start of the list, then
+			//step over the methods at the start and run through the whole thing again.
+			//Not super efficient, but if the methods are all at the start, it won't be
+			//too bad.
+			pos = pControl->GetPropertyList().GetHeadPosition();
+			pControl->GetPropertyList().GetNext(pos); //Step to new methods
+			pControl->GetPropertyList().GetNext(pos); //Step to past new methods
+		} else {
+			//Not a method, step to the next property
+			pControl->GetPropertyList().GetNext(pos);
+		}
+	}
 
 	//Add a new property for each Get/Put function
 	for( UINT idxFunc = 0; idxFunc < ctFuncs; ++idxFunc )

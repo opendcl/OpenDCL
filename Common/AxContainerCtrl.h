@@ -26,7 +26,7 @@ protected:
 // Construction
 public:
 	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true);
-	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CRect rcWnd, bool bCreate = true);
+	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CRect ArxRect, bool bAddPropInfo, bool bCreate = true);
 	virtual ~CAxContainerCtrl();
 
 // DialogControl Interface
@@ -58,7 +58,7 @@ public:
 
 	void Initialize();
 	virtual bool Create(CWnd* pParentWnd, UINT nID);
-	bool Create(CWnd* pParentWnd, UINT nID, CRect ArxRect);
+	bool Create(CWnd* pParentWnd, UINT nID, CRect ArxRect, bool bAddPropInfo);
 	unsigned long GetFlexGridColorProperty(AxPropertyDescriptor *axProp);//
 	void SetFlexGridColorProperty(AxPropertyDescriptor *axProp, unsigned long newValue);//
 	COleFont GetFont(DISPID dispid);

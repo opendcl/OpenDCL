@@ -1090,7 +1090,8 @@ bool CControlHolder::CreateNewDialogControl()
 			pNewControl = pControl;
 			break;
 		}
-	case CtlActiveX : return ((mpDlgControl = new CAxContainerCtrl( mpTemplate, this, GetId(), rc )) != NULL);
+	case CtlActiveX : 
+		return ((mpDlgControl = new CAxContainerCtrl( mpTemplate, this, GetId(), rc, true )) != NULL);
 	case CtlDwgList:
 		{	
 			DWORD dwStyle = WS_CHILD | WS_VISIBLE
