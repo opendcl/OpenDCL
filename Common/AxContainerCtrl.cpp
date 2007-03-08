@@ -586,7 +586,7 @@ UINT CAxContainerCtrl::ExtractEventInfo(CDclControlObject *pControl, LPOLEOBJECT
 {
 	ITypeInfo *TheInfo = NULL;
 	ObjectTypeInfoEvents(pIObject,&TheInfo);
-	return ExtractEventInfo(pControl, TheInfo, bUseAsType);	
+	return ExtractEventInfo(pControl, TheInfo, bUseAsType);
 }
 
 UINT CAxContainerCtrl::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo* pTypeInfo, bool bUseAsType)
@@ -626,7 +626,7 @@ UINT CAxContainerCtrl::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo* 
 				pos != NULL; 
 				pControl->GetPropertyList().GetNext(pos))
 			{
-				CPropertyObject* pProp = pControl->GetPropertyList().GetAt(pos);
+				RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetAt(pos);
 				if (pProp->GetType() == PropActiveXEvent) {
 					AxEventDescriptor* pAxEvent = pProp->GetAxInterfaceDescriptorPtr()->GetEvent();
 					if (pAxEvent->GetName() == pAxEventDesc->GetName()) {
@@ -688,7 +688,7 @@ UINT CAxContainerCtrl::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo*
 	pControl->GetPropertyList().GetNext(pos); //Step to new methods
 	pControl->GetPropertyList().GetNext(pos); //Step to past new methods
 	while (pos != NULL) {
-		CPropertyObject* pPropCurrent = pControl->GetPropertyList().GetAt(pos);
+		RefCountedPtr< CPropertyObject > pPropCurrent = pControl->GetPropertyList().GetAt(pos);
 		if (pPropCurrent != NULL && pPropCurrent->GetType() == PropActiveXMethods) {
 			//Question for Owen--what do I need to do for cleanup purposes here?
 			pControl->GetPropertyList().RemoveAt(pos);
