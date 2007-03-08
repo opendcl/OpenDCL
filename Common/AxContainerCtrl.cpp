@@ -319,10 +319,10 @@ END_MESSAGE_MAP()
 
 bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID)
 {
-	return Create(pParentWnd, nID, GetWndRect());
+	return Create(pParentWnd, nID, GetWndRect(), false);
 }
 
-bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect rcWnd)
+bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect rcWnd, bool bAddPropInfo)
 {
 	DWORD dwStyle = GetWndStyle();
 
@@ -339,14 +339,23 @@ bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect rcWnd)
 	bool bSuccess = true;
 	try
 	{		
+		//Create the control, passing the OleStream and license key.
 		m_bActiveXCtrl = CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
 																		pOleStreamFile, FALSE, bstrLicenseKey );
-		if (!m_bActiveXCtrl && pOleStreamFile)			
+		if (!m_bActiveXCtrl && pOleStreamFile)
+		{
+			//Creation failed.
+			//Try again, this time without the OleStream.
 			m_bActiveXCtrl = CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
 																			NULL, FALSE, bstrLicenseKey );
-		if (!m_bActiveXCtrl && (BSTR)bstrLicenseKey)			
+		}
+		if (!m_bActiveXCtrl && (BSTR)bstrLicenseKey)
+		{
+			//Creation failed.
+			//Try again, this time without the OleStream and without the license key.
 			m_bActiveXCtrl = CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
 																			NULL, FALSE, NULL );
+		}
 		GetTemplate()->ClearStream();
 	}
 	catch(...)
@@ -356,6 +365,11 @@ bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect rcWnd)
 
 	if (pOleStreamFile != NULL)
 		delete pOleStreamFile;
+
+	if (m_bActiveXCtrl && bAddPropInfo) 
+	{
+		Initialize();
+	}
 
 	InitToolTip();
 	SetToolTipEx(this, mToolTip, GetTemplate());
@@ -1099,7 +1113,10 @@ HRESULT CAxContainerCtrl::Invoke( AxMethodDescriptor* axMethod, VARIANTARG* rvar
 	return axMethod->Invoke( pDispatch, rvarArgs, ctArgs, varResult );
 }
 
-
+void CAxContainerCtrl::PostNcDestroy() {
+	CWnd::PostNcDestroy();
+	delete this;
+}
 /////////////////////////////////////////////////////////////////////////////
 // CAxContainerCtrl message handlers
 

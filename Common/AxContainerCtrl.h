@@ -28,6 +28,7 @@ public:
 	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true);
 	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CRect ArxRect, bool bAddPropInfo, bool bCreate = true);
 	virtual ~CAxContainerCtrl();
+	virtual void PostNcDestroy();
 
 // DialogControl Interface
 public:
