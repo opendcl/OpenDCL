@@ -124,7 +124,17 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
-	case CtlActiveX: return *new CArxAxContainerCtrl(pTemplate, pPane, nID);
+	case CtlActiveX: 
+		{
+			//return *new CArxAxContainerCtrl(pTemplate, pPane, nID); //Do not use this code!
+			//[DPR] 3-8-07: The above line of code is buggy. In the ARX, the references
+			//pointer it returns to CArxControlPane::CreateNewDialogControl which is then 
+			//returned to CControlPane::CreateControls ends up with a reference count that
+			//is not = 1. I'm not sure how or why it gets set that way, but it does.
+			//Breaking it into two steps prevents that from happening.
+			CArxAxContainerCtrl *pControl = new CArxAxContainerCtrl(pTemplate, pPane, nID);
+			return pControl;
+		}
 	case Ctl3DRect:
 		{
 			VdclStatic *pControl = new VdclStatic;
