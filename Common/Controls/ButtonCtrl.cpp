@@ -51,7 +51,7 @@ bool CButtonCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 			COLORREF crBkgnd = GetRGBColor( pProp->GetLongValue() );
 			SetColor( BTNST_COLOR_BK_IN, crBkgnd, FALSE );
 			SetColor( BTNST_COLOR_BK_OUT, crBkgnd, FALSE );
-			//SetAcadColor( pProp->GetLongValue() );
+			SetColor( BTNST_COLOR_BK_FOCUS, crBkgnd, FALSE );
 			break;
 		}
 	case nForeColor:
@@ -59,7 +59,7 @@ bool CButtonCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 			COLORREF crFgnd = GetRGBColor( pProp->GetLongValue() );
 			SetColor( BTNST_COLOR_FG_IN, crFgnd, FALSE );
 			SetColor( BTNST_COLOR_FG_OUT, crFgnd, FALSE );
-			//SetForeColor( pProp->GetLongValue() );
+			SetColor( BTNST_COLOR_FG_FOCUS, crFgnd, FALSE );
 			break;
 		}
 	case nAutoSize:

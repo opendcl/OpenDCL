@@ -28,6 +28,4 @@ protected:
 
 protected:
 	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
-protected:
-	DECLARE_MESSAGE_MAP()
 };

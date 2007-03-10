@@ -18,8 +18,6 @@
 #define IDS_NOLIST2                     113
 #define IDS_NOPICTURE                   114
 #define IDS_NOTDROPDOWN                 115
-#define IDS_TRUE                        117
-#define IDS_FALSE                       118
 #define IDS_DESIGNTIMEONLY              119
 #define IDS_VARNAMEINCORRECT            120
 #define IDS_VARNAMEINCORRECT2           121

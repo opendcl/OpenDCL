@@ -2,6 +2,8 @@
 //
 #pragma once
 
+#include "Resource.h"
+
 class CDclControlObject;
 class CDclFormObject;
 class CObjectDCLView;
@@ -20,8 +22,7 @@ public:
 	CObjectDCLView		*m_pView;
 // Dialog Data
 	//{{AFX_DATA(CEventsTabPane)
-	//enum { IDD = IDD_EVENTS };
-	enum { IDD = 227 };
+	enum { IDD = IDD_EVENTS };
 	CStatic				m_Label;
 	CEdit				m_EventDesc;
 	CEdit				m_DefunPreview;

@@ -312,11 +312,6 @@ HRESULT CAxContainerCtrl::GetOleObject( IOleObject** ppOleObject )
 	return pUnknown->QueryInterface( IID_IOleObject, (void**)ppOleObject );
 }
 
-BEGIN_MESSAGE_MAP(CAxContainerCtrl, CWnd)
-	ON_WM_PAINT()
-END_MESSAGE_MAP()
-	
-
 bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID)
 {
 	return Create(pParentWnd, nID, GetWndRect(), false);
@@ -367,9 +362,7 @@ bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect rcWnd, bool bAdd
 		delete pOleStreamFile;
 
 	if (m_bActiveXCtrl && bAddPropInfo) 
-	{
 		Initialize();
-	}
 
 	InitToolTip();
 	SetToolTipEx(this, mToolTip, GetTemplate());
@@ -1113,10 +1106,7 @@ HRESULT CAxContainerCtrl::Invoke( AxMethodDescriptor* axMethod, VARIANTARG* rvar
 	return axMethod->Invoke( pDispatch, rvarArgs, ctArgs, varResult );
 }
 
-void CAxContainerCtrl::PostNcDestroy() {
-	CWnd::PostNcDestroy();
-	delete this;
-}
+
 /////////////////////////////////////////////////////////////////////////////
 // CAxContainerCtrl message handlers
 
@@ -1124,13 +1114,5 @@ BOOL CAxContainerCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	InitToolTip();
 	mToolTip.RelayEvent(pMsg);
-	return CWnd::PreTranslateMessage(pMsg);
-}
-
-void CAxContainerCtrl::OnPaint() 
-{
-	//CPaintDC dc(this); // device context for painting
-	CWnd::OnPaint();
-	RedrawWindow(NULL, NULL);
-	// Do not call CWnd::OnPaint() for painting messages
+	return __super::PreTranslateMessage(pMsg);
 }

@@ -50,7 +50,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;"
+				AdditionalIncludeDirectories=".;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;EDITOR"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -86,7 +86,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames=""
-				DelayLoadDLLs="urlmon.dll"
+				DelayLoadDLLs="urlmon.dll;avifil32.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/ObjectDCL.pdb"
 				SubSystem="2"
@@ -154,7 +154,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories=".;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;"
+				AdditionalIncludeDirectories=".;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;EDITOR"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -1359,14 +1359,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\Common\AxContainerCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\AxContainerCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Common\AxEventDescriptor.cpp"
 				>
 			</File>
@@ -1407,22 +1399,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\ButtonCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\ButtonCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\ButtonST.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\ButtonST.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Common\CeXDib.cpp"
 				>
 			</File>
@@ -1448,6 +1424,14 @@
 			</File>
 			<File
 				RelativePath="..\Common\DclControlObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\DclControlProp.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\DclControlProp.h"
 				>
 			</File>
 			<File
@@ -1512,14 +1496,6 @@
 			</File>
 			<File
 				RelativePath="..\Common\FontCollection.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\GraphicButtonCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\GraphicButtonCtrl.h"
 				>
 			</File>
 			<File
@@ -1738,14 +1714,50 @@
 				RelativePath="..\Common\Workspace.h"
 				>
 			</File>
-			<File
-				RelativePath="..\Common\XPStyleButtonST.cpp"
+			<Filter
+				Name="Controls"
 				>
-			</File>
-			<File
-				RelativePath="..\Common\XPStyleButtonST.h"
-				>
-			</File>
+				<File
+					RelativePath="..\Common\Controls\AxContainerCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\AxContainerCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ButtonCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ButtonCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ButtonST.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ButtonST.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\GraphicButtonCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\GraphicButtonCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\XPStyleButtonST.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\XPStyleButtonST.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath="ObjectDCL.reg"

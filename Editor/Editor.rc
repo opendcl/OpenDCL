@@ -444,9 +444,9 @@ BEGIN
     LTEXT           "",1119,0,0,8,132
 END
 
-IDD_EVENTS DIALOG  0, 10, 173, 330
+IDD_EVENTS DIALOGEX 0, 10, 173, 330
 STYLE DS_SETFONT | WS_CHILD
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     PUSHBUTTON      "Add Cancel",IDC_ADDCANCEL,0,315,53,14,NOT WS_TABSTOP
     EDITTEXT        IDC_DEFUNEDIT,0,209,171,12,ES_AUTOHSCROLL | NOT WS_TABSTOP
@@ -2043,25 +2043,19 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_TRUE                "True"
-    IDS_FALSE               "False"
     IDS_LSPFILENAME         "Visual/AutoLisp File Name"
     IDS_NAME                "(Name)"
     IDS_EVENT               "(Event)"
-    IDS_LIST                "(List)"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_IMAGELIST           "(ImageList)"
     IDS_TAB1                "Tab 1"
     IDS_TAB2                "Tab 2"
     IDS_TAB3                "Tab 3"
-    IDS_CUSTOM              "(Wizard)"
     IDS_ADD                 "<Add>"
     IDS_FILTER              "Picture Files|*.bmp;*.wmf;*.jpg;*.ico;*.dib|Bitmaps (*.bmp,*.dib)|*.bmp;*.dib|JPEG Files (*.jpg)|*.jpg|Icon Files (*.ico)|*.ico|Wmf Files (*.wmf)|*.wmf|"
     IDS_SAMPLENODE          "Sample Node"
-    IDS_FILEDLGFILTERDEF    "AutoCAD Files|*.dwg;*.dxf|AutoLisp Files (*.lsp,*.fas;*.vlx)|*.lsp,*.fas;*.vlx|"
     IDS_MASKED              "<Masked>"
     IDS_PROPERTYWIZARD      "PropertyObject Wizard - "
 END
@@ -2492,13 +2486,6 @@ BEGIN
     IDS_COPYGETTOCLIP       "Copy Get To Clipboard"
     IDS_RENAMEPROJECT       "The current project has not yet been saved, and the project is still using a default name.\r\n\r\nAutoLISP uses the project name to address this control. Using the default name may not be correct, so it is recommended that you save your project and give it a name before creating AutoLISP code.\r\n\r\nWould you like to save the project before continuing?"
     IDS_UPDATEVARNAMEQ      "If you change the symbol name, you must update any existing AutoLISP code to use the new name.  Are you sure you want to change the AutoLISP symbol name for this control?"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_OPTION1             "Option Item 1"
-    IDS_OPTION2             "Option Item 2"
-    IDS_OPTION3             "Option Item 3"
 END
 
 STRINGTABLE 

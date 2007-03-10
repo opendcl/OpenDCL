@@ -28,7 +28,6 @@ public:
 	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true);
 	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CRect ArxRect, bool bAddPropInfo, bool bCreate = true);
 	virtual ~CAxContainerCtrl();
-	virtual void PostNcDestroy();
 
 // DialogControl Interface
 public:
@@ -84,12 +83,8 @@ public:
 	HRESULT Invoke( AxMethodDescriptor* axMethod, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
 	BOOL ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID clsid);
 
-protected:
-	DECLARE_MESSAGE_MAP()
-
 	// Generated message map functions
 protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	//OnChildNotify has not been recreated yet.
-	afx_msg void OnPaint();//
 };

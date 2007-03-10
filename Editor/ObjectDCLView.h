@@ -206,8 +206,6 @@ public:
 // control creation operations
 public:
 	void InsertControl		(CRect rcPos);
-	void AddHiddenProperties(CDclControlObject *pArxObject, short nType, CString Name);
-	void AddProperties(CDclControlObject *pDclControl);
 
 public:
 	//void UpdateProperty(PropertyId nID, CDclControlObject *pArxObject, CControlHolder *pParent);

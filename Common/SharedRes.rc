@@ -70,6 +70,12 @@ BEGIN
     IDS_BORDERSTYLE_0       "0 - None"
     IDS_BORDERSTYLE_1       "1 - ClientEdge"
     IDS_BORDERSTYLE_2       "2 - StaticEdge"
+    IDS_TRUE                "True"
+    IDS_FALSE               "False"
+    IDS_LIST                "(List)"
+    IDS_CUSTOM              "(Wizard)"
+    IDS_IMAGELIST           "(ImageList)"
+    IDS_OPTION1             "Option Item 1"
 END
 
 STRINGTABLE 
@@ -419,6 +425,13 @@ BEGIN
     IDS_PROP_DISPLAYSECONDS "DisplaySeconds"
     IDS_PROP_DISPLAY_PERCENTAGE "DisplayPercentage"
     IDS_EVENT_FORM_ONOK     "OK"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_OPTION2             "Option Item 2"
+    IDS_OPTION3             "Option Item 3"
+    IDS_FILEDLGFILTERDEF    "AutoCAD Drawing|*.dwg;*.dxf|AutoLISP File(*.lsp,*.fas;*.vlx)|*.lsp,*.fas;*.vlx|"
 END
 
 #endif    // English (U.S.) resources

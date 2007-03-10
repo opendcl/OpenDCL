@@ -16,9 +16,7 @@
 #include "DialogControl.h"
 #include "PropertyNames.h"
 #include "AcadColorTable.h"
-
-
-static const int nNotSet = -1;
+#include "DclControlProp.h"
 
 
 static void AddControlProperty(CDclControlObject *pControl, PropertyId nID, LPCTSTR strValue, PropertyType ValueType)
@@ -491,7 +489,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 			{
 				RefCountedPtr< CPropertyObject > pProp = new CPropertyObject( PropInvalid );
 				pProp->Serialize(ar);
-				mProperties.AddTail(pProp);		
+				InsertNamedProperty( pProp );		
 				TraceFmt( _T("< %s\r\n"), pProp->toString() );
 			}
 
@@ -529,9 +527,9 @@ void CDclControlObject::Serialize(CArchive& ar)
 	if (m_PurchaseState < 0)
 		m_PurchaseState = 0;
 
-	// remove any properties that shouldn't have been persisted or that were added erroneously in the past
 	if (!ar.IsStoring())
 	{
+		// remove any properties that shouldn't have been persisted or that were added erroneously in the past
 		POSITION pos = mProperties.GetHeadPosition();
 		while (pos)
 		{
@@ -657,51 +655,6 @@ void CDclControlObject::ClearGlobalVariableName()
 {	
 	SetStringProperty( nGlobalVarName, NULL );
 }
-//
-//bool CDclControlObject::UpdateGlobalVariable(CString sDclFormName, LPCTSTR pszProjectName /*= NULL*/)	
-//{
-//	RefCountedPtr< CPropertyObject > pPropVar = GetPropertyObject(nGlobalVarName);
-//	RefCountedPtr< CPropertyObject > pPropName = GetPropertyObject(nName);
-//	
-//	// if no nGlobalVarName exists, we must exit here.
-//	if (pPropVar == NULL)
-//		return false;
-//
-//	CString sUnitled = _T("Untitled"); //should use empty string to represent untitled [ORW]
-//	CString sVarName = pPropVar->GetStringValue();
-//	if (sVarName.Left(1) == _T("_") || sVarName.Left(sUnitled.GetLength()) == sUnitled)
-//	{
-//		CString sProjectName( pszProjectName );
-//		if (sProjectName.IsEmpty())
-//			sProjectName = mpOwner->GetProject()->GetKeyName();
-//
-//		if (mType <= 0 || mType > CtlFileDlgCtrl) 
-//			// create the name for a dialog box
-//			pPropVar->SetStringValue(sProjectName + _T('_') + pPropName->GetStringValue());
-//		else
-//			// create the name for a control
-//			pPropVar->SetStringValue(sProjectName + _T('_') + sDclFormName + _T('_') + pPropName->GetStringValue());
-//		return true;
-//	}
-//	return false;
-//}
-//
-//void CDclControlObject::ForceUpdateGlobalVariable(CString sDclFormName)	
-//{
-//	RefCountedPtr< CPropertyObject > pPropVar = GetPropertyObject(nGlobalVarName);
-//	RefCountedPtr< CPropertyObject > pPropName = GetPropertyObject(nName);
-//	
-//	// if no nGlobalVarName exists, we must exit here.
-//	if (pPropVar == NULL)
-//		return;
-//
-//	if (mType <= 0 || mType > CtlFileDlgCtrl) 
-//		// create the name for a dialog box
-//		pPropVar->SetStringValue(mpOwner->GetProject()->GetKeyName() + _T('_') + pPropName->GetStringValue());
-//	else	
-//		// create the name for a control
-//		pPropVar->SetStringValue(mpOwner->GetProject()->GetKeyName() + _T('_') + sDclFormName + _T('_') + pPropName->GetStringValue());	
-//}
 
 bool CDclControlObject::SetStringProperty( PropertyId nID, LPCTSTR pszValue )	
 {
@@ -720,7 +673,7 @@ RefCountedPtr< CPropertyObject > CDclControlObject::AddStringProperty( PropertyI
 	if( !pProp )
 	{
 		pProp = new CPropertyObject( type, 0, nID );
-		mProperties.AddTail( pProp );
+		InsertNamedProperty( pProp );
 		pProp->SetStringValue( pszValue );
 	}
 	else if( bResetExisting )
@@ -748,7 +701,7 @@ RefCountedPtr< CPropertyObject > CDclControlObject::AddBooleanProperty( Property
 	if( !pProp )
 	{
 		pProp = new CPropertyObject( type, 0, nID );
-		mProperties.AddTail( pProp );
+		InsertNamedProperty( pProp );
 		pProp->SetBooleanValue( bValue );
 	}
 	else if( bResetExisting )
@@ -776,7 +729,7 @@ RefCountedPtr< CPropertyObject > CDclControlObject::AddLongProperty( PropertyId 
 	if( !pProp )
 	{
 		pProp = new CPropertyObject( type, 0, nID );
-		mProperties.AddTail( pProp );
+		InsertNamedProperty( pProp );
 		pProp->SetLongValue( lValue );
 	}
 	else if( bResetExisting )
@@ -866,7 +819,7 @@ long CDclControlObject::GetLngProperty(PropertyId nID) const
 			return pProperty->GetLongValue();
 		}
 	}
-	return nNotSet;
+	return -1;
 }
 
 void CDclControlObject::SetColorProperty(PropertyId nID, COLORREF color)
@@ -941,7 +894,6 @@ POSITION CDclControlObject::FindPropertyInsertPos( PropertyId nID, bool bHidden 
 
 POSITION CDclControlObject::FindPropertyInsertPos( LPCTSTR pszName, bool bHidden ) const
 {
-	assert( pszName && *pszName );
 	if( !pszName || !*pszName )
 		return NULL;
 

@@ -261,8 +261,6 @@ BEGIN
     IDS_NOLIST2             " method but nothing was in the list."
     IDS_NOPICTURE           "The picture was not found in the method "
     IDS_NOTDROPDOWN         "The ComboBox is not set to DropDown style."
-    IDS_TRUE                "True"
-    IDS_FALSE               "False"
     IDS_DESIGNTIMEONLY      "Sorry, this property can only be set at design time only."
     IDS_VARNAMEINCORRECT    "The first argument was NIL. Please ensure that the variable being used to specify the form matches the value placed in the (VarName) property of the form."
     IDS_VARNAMEINCORRECT2   "The first argument int method "

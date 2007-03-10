@@ -66,7 +66,7 @@ DWORD CDialogControl::GetWndStyle() const
 
 	if( mpTemplate->GetBoolProperty(nIsTabStop) )
 		dwStyle |= WS_TABSTOP;
-	else
+	if( mpTemplate->GetBoolProperty(nBeginGroup) )
 		dwStyle |= WS_GROUP;
 
 	return dwStyle;

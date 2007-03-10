@@ -280,10 +280,7 @@ void CEventsTabPane::OnChangeDefunedit()
 	CString sDefunEditText;
 	
 	if (m_pDclForm == NULL)
-	{		
 		return;
-	}
-	
 
 	// get the current event selection
 	int hItem = m_EventsTree.GetCurSel();
@@ -297,14 +294,11 @@ void CEventsTabPane::OnChangeDefunedit()
 		PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(hItem);
 
 		// we need to know if the event has been checked
-		BOOL bChecked = m_EventsTree.GetCheck(hItem);
+		bool bChecked = (m_EventsTree.GetCheck(hItem) == BST_CHECKED);
 
 		// if the event is checked, we can update the property object
-		if (bChecked == TRUE)
-			// set the property to the new defun name
-			SetEvent(nEventId, sDefunEditText);
-
-
+		if (bChecked)
+			SetEvent(nEventId, sDefunEditText); // set the property to the new defun name
 		SetDefunPreview();
 	}
 }
@@ -402,44 +396,44 @@ void CEventsTabPane::ClearEvents()
 
 BOOL CEventsTabPane::PreTranslateMessage(MSG* pMsg) 
 {
-	if( pMsg->message == WM_KEYDOWN ||  pMsg->message == WM_CHAR )
-	{
-		// lets make sure the user can't press the [Esc] key and close the tab pane
-		switch (pMsg->wParam)
-		{			
-			case VK_ESCAPE:
-				{
-					return 1;
-				break;
-				}
-			case VK_DELETE:
-				{
-					m_pView->DeleteSelectedControls();
-				break;
-				}
-			case 3:
-				if (m_pView != NULL)
- 					m_pView->OnEditCopy();
-				break;
-			case 22:
-				if (m_pView != NULL)
- 					m_pView->OnEditPaste();
-				break;
-			case 24:
-				if (m_pView != NULL)
- 					m_pView->OnEditCut();
-				break;
-			case 26:
-				if (m_pView != NULL)
- 					m_pView->OnEditUndo();
-				break;
-			default:
-				if (m_pView != NULL)
- 					m_pView->PreTranslateMessage(pMsg);
-				break;
-		}
-		
-	}	
+	//if( pMsg->message == WM_KEYDOWN ||  pMsg->message == WM_CHAR )
+	//{
+	//	// lets make sure the user can't press the [Esc] key and close the tab pane
+	//	switch (pMsg->wParam)
+	//	{			
+	//		case VK_ESCAPE:
+	//			{
+	//				return 1;
+	//			break;
+	//			}
+	//		case VK_DELETE:
+	//			{
+	//				m_pView->DeleteSelectedControls();
+	//			break;
+	//			}
+	//		case 3:
+	//			if (m_pView != NULL)
+ //					m_pView->OnEditCopy();
+	//			break;
+	//		case 22:
+	//			if (m_pView != NULL)
+ //					m_pView->OnEditPaste();
+	//			break;
+	//		case 24:
+	//			if (m_pView != NULL)
+ //					m_pView->OnEditCut();
+	//			break;
+	//		case 26:
+	//			if (m_pView != NULL)
+ //					m_pView->OnEditUndo();
+	//			break;
+	//		default:
+	//			if (m_pView != NULL)
+ //					m_pView->PreTranslateMessage(pMsg);
+	//			break;
+	//	}
+	//	
+	//}	
 	
 	return CDialog::PreTranslateMessage(pMsg);
 }

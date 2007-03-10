@@ -43,7 +43,6 @@ public:
 protected:
 	virtual void PreSubclassWindow();
 	afx_msg void PostNcDestroy();
-
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 
 protected:

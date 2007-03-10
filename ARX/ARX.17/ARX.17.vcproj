@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\;..\Controls;..\Methods;.\VI;&quot;$(SolutionDir)\ZLib&quot;;&quot;$(SolutionDir)\Common&quot;"
+				AdditionalIncludeDirectories="..\;..\Controls;..\Methods;.\VI;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
 				AdditionalUsingDirectories="C:\Program Files\AutoCAD 2007"
 				PreprocessorDefinitions="WIN32;_WINDOWS;ARX_MODULE;_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="false"
@@ -75,7 +75,8 @@
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
 				GenerateManifest="false"
-				DelayLoadDLLs=""
+				IgnoreDefaultLibraryNames=""
+				DelayLoadDLLs="avifil32.dll"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -132,7 +133,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\;..\Controls;..\Methods;.\VI;&quot;$(SolutionDir)\ZLib&quot;;&quot;$(SolutionDir)\Common&quot;"
+				AdditionalIncludeDirectories="..\;..\Controls;..\Methods;.\VI;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
 				AdditionalUsingDirectories="C:\Program Files\AutoCAD 2007"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;ARX_MODULE;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
@@ -238,10 +239,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ArxGraphicButtonCtrl.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\ArxProject.cpp"
 				>
 			</File>
@@ -258,38 +255,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ClrListBox.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\ColorButton.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\ColorEdit.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\ComboBoxFolder.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\ComboBoxHolder.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\CurrencyEdit.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\CxAcadSlide.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\DateTimeHolder.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\DirDialog.cpp"
 				>
 			</File>
@@ -302,35 +267,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\DwgDirList.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\DwgPreviewCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\DynamicButtonCtrl.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\ErrorLexicon.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\Folder.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\FontCombo.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\GsPreviewCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\HtmlCtrl.cpp"
 				>
 			</File>
 			<File
@@ -350,15 +291,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\NumEdit.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\OleOdcDropTarget.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\OptionListBox.cpp"
 				>
 			</File>
 			<File
@@ -370,27 +303,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\PercentageEdit.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\PictureBox.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\PrinterComboBox.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\ProgressTimeToComplete.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\ResizableDockingDialog.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\RoundSliderCtrl.cpp"
 				>
 			</File>
 			<File
@@ -398,27 +311,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\SlideHolder.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\SnapDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Splitter.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\SpreadSheet.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\SpreadSheetHdr.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\StaticLink.cpp"
 				>
 			</File>
 			<File
@@ -443,14 +336,6 @@
 			</File>
 			<File
 				RelativePath="..\TabPage.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\TreeCtrlEx.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\TreeCtrlFolder.cpp"
 				>
 			</File>
 		</Filter>
@@ -483,10 +368,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ArxGraphicButtonCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath="..\ArxProject.h"
 				>
 			</File>
@@ -503,38 +384,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ClrListBox.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ColorButton.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ColorEdit.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ComboBoxFolder.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ComboBoxHolder.h"
-				>
-			</File>
-			<File
-				RelativePath="..\CurrencyEdit.h"
-				>
-			</File>
-			<File
-				RelativePath="..\CxAcadSlide.h"
-				>
-			</File>
-			<File
-				RelativePath="..\DateTimeHolder.h"
-				>
-			</File>
-			<File
 				RelativePath="..\DirDialog.h"
 				>
 			</File>
@@ -547,35 +396,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\DwgDirList.h"
-				>
-			</File>
-			<File
-				RelativePath="..\DwgPreviewCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\DynamicButtonCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath="..\ErrorLexicon.h"
 				>
 			</File>
 			<File
 				RelativePath="..\Folder.h"
-				>
-			</File>
-			<File
-				RelativePath="..\FontCombo.h"
-				>
-			</File>
-			<File
-				RelativePath="..\GsPreviewCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\HtmlCtrl.h"
 				>
 			</File>
 			<File
@@ -595,15 +420,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\NumEdit.h"
-				>
-			</File>
-			<File
 				RelativePath="..\OleOdcDropTarget.h"
-				>
-			</File>
-			<File
-				RelativePath="..\OptionListBox.h"
 				>
 			</File>
 			<File
@@ -615,22 +432,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\PercentageEdit.h"
-				>
-			</File>
-			<File
-				RelativePath="..\PictureBox.h"
-				>
-			</File>
-			<File
-				RelativePath="..\PrinterComboBox.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ProgressTimeToComplete.h"
-				>
-			</File>
-			<File
 				RelativePath="..\ResizableDockingDialog.h"
 				>
 			</File>
@@ -639,35 +440,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\RoundSliderCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath="..\SADirRead.h"
 				>
 			</File>
 			<File
-				RelativePath="..\SlideHolder.h"
-				>
-			</File>
-			<File
 				RelativePath="..\SnapDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Splitter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\SpreadSheet.h"
-				>
-			</File>
-			<File
-				RelativePath="..\SpreadSheetHdr.h"
-				>
-			</File>
-			<File
-				RelativePath="..\StaticLink.h"
 				>
 			</File>
 			<File
@@ -680,14 +457,6 @@
 			</File>
 			<File
 				RelativePath="..\TabPage.h"
-				>
-			</File>
-			<File
-				RelativePath="..\TreeCtrlEx.h"
-				>
-			</File>
-			<File
-				RelativePath="..\TreeCtrlFolder.h"
 				>
 			</File>
 		</Filter>
@@ -847,256 +616,514 @@
 		<Filter
 			Name="Controls"
 			>
-			<Filter
-				Name="Include Files"
-				Filter="h;hh;hxx"
+			<File
+				RelativePath="..\Controls\ArxAxContainerCtrl.cpp"
 				>
-				<File
-					RelativePath="..\Controls\ArxAxContainerCtrl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\OdclDateTime.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\OdclDirStylesCombo.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\OdclEdit.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\OdclLayerCombo.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\OdclListCtrl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\OdclMonth.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\Vdcl3DRect.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclAngleEdit.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclArrowHeadComboBox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclCheckBox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclColorComboBox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclComboBox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclComboBoxEx.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclGroupBox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclLineWeightComboBox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclListBox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclNumericEdit.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclPlotStyleNamesComboBox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclPlotStyleTablesComboBox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclProgressCtrl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclRadioButton.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclScrollBar.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclSliderCtrl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclSpinButton.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclStatic.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclSymbolEdit.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclTab.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclTextButton.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclTree.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Source Files"
-				Filter="cpp;c;cc;cxx;def;idl;odl"
+			</File>
+			<File
+				RelativePath="..\Controls\ArxAxContainerCtrl.h"
 				>
-				<File
-					RelativePath="..\Controls\ArxAxContainerCtrl.cpp"
+			</File>
+			<File
+				RelativePath="..\Controls\ArxGraphicButtonCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxGraphicButtonCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ClrListBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ClrListBox.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ColorButton.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ColorButton.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ColorEdit.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ColorEdit.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ComboBoxFolder.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ComboBoxFolder.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ComboBoxHolder.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ComboBoxHolder.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\CurrencyEdit.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\CurrencyEdit.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\CxAcadSlide.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\CxAcadSlide.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\DateTimeHolder.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\DateTimeHolder.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\DwgDirList.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\DwgDirList.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\DwgPreviewCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\DwgPreviewCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\DynamicButtonCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\DynamicButtonCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\FontCombo.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\FontCombo.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\GsPreviewCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\GsPreviewCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\HtmlCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\HtmlCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\NumEdit.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\NumEdit.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OdclDateTime.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OdclDateTime.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OdclDirStylesCombo.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OdclDirStylesCombo.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OdclEdit.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OdclEdit.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OdclLayerCombo.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OdclLayerCombo.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OdclListCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OdclListCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OdclMonth.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OdclMonth.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OptionListBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\OptionListBox.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\PercentageEdit.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\PercentageEdit.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\PictureBox.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
 					>
-				</File>
-				<File
-					RelativePath="..\Controls\OdclDateTime.cpp"
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					>
-				</File>
-				<File
-					RelativePath="..\Controls\OdclDirStylesCombo.cpp"
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\Controls\PictureBox.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\PrinterComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\PrinterComboBox.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ProgressTimeToComplete.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ProgressTimeToComplete.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\RoundSliderCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\RoundSliderCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\SlideHolder.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\SlideHolder.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\Splitter.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
 					>
-				</File>
-				<File
-					RelativePath="..\Controls\OdclEdit.cpp"
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					>
-				</File>
-				<File
-					RelativePath="..\Controls\OdclLayerCombo.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\OdclListCtrl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\OdclMonth.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\Vdcl3DRect.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclAngleEdit.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclArrowHeadComboBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclCheckBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclColorComboBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclComboBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclComboBoxEx.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclGroupBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclLineWeightComboBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclListBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclNumericEdit.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclPlotStyleNamesComboBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclPlotStyleTablesComboBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclProgressCtrl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclRadioButton.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclScrollBar.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclSliderCtrl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclSpinButton.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclStatic.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclSymbolEdit.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclTab.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclTextButton.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Controls\VdclTree.cpp"
-					>
-				</File>
-			</Filter>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\Controls\Splitter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\SpreadSheet.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\SpreadSheet.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\SpreadSheetHdr.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\SpreadSheetHdr.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\StaticLink.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\StaticLink.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\TreeCtrlEx.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\TreeCtrlEx.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\TreeCtrlFolder.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\TreeCtrlFolder.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\Vdcl3DRect.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\Vdcl3DRect.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclAngleEdit.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclAngleEdit.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclArrowHeadComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclArrowHeadComboBox.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclCheckBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclCheckBox.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclColorComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclColorComboBox.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclComboBox.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclComboBoxEx.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclComboBoxEx.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclGroupBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclGroupBox.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclLineWeightComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclLineWeightComboBox.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclListBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclListBox.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclNumericEdit.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclNumericEdit.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclPlotStyleNamesComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclPlotStyleNamesComboBox.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclPlotStyleTablesComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclPlotStyleTablesComboBox.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclProgressCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclProgressCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclRadioButton.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclRadioButton.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclScrollBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclScrollBar.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclSliderCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclSliderCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclSpinButton.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclSpinButton.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclStatic.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclStatic.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclSymbolEdit.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclSymbolEdit.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclTab.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclTab.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclTextButton.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclTextButton.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclTree.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\VdclTree.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Methods"
@@ -1340,14 +1367,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\AxContainerCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\AxContainerCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Common\AxEventDescriptor.cpp"
 				>
 			</File>
@@ -1388,36 +1407,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\ButtonCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\ButtonCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\ButtonST.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\ButtonST.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\Common\CeXDib.cpp"
 				>
 			</File>
@@ -1443,6 +1432,14 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\DclControlObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\DclControlProp.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\DclControlProp.h"
 				>
 			</File>
 			<File
@@ -1507,14 +1504,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\FontCollection.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\GraphicButtonCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\GraphicButtonCtrl.h"
 				>
 			</File>
 			<File
@@ -1841,32 +1830,50 @@
 				RelativePath="..\..\Common\Workspace.h"
 				>
 			</File>
-			<File
-				RelativePath="..\..\Common\XPStyleButtonST.cpp"
+			<Filter
+				Name="Controls"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
+				<File
+					RelativePath="..\..\Common\Controls\AxContainerCtrl.cpp"
 					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\AxContainerCtrl.h"
 					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\Common\XPStyleButtonST.h"
-				>
-			</File>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ButtonCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ButtonCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ButtonST.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ButtonST.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\GraphicButtonCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\GraphicButtonCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\XPStyleButtonST.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\XPStyleButtonST.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

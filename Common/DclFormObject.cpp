@@ -12,26 +12,7 @@
 #include "Filing.h"
 #include "ControlTypes.h"
 #include "Project.h"
-
-static const int nNotSet = -1;
-
-
-static void AddControlProperty(CDclControlObject *pControl, PropertyId nID, LPCTSTR strValue, PropertyType ValueType)
-{
-	// find the insert position for this new property
-	POSITION InsertPos = pControl->FindPropertyInsertPos(nID, false);
-
-	// create new property object pointer to pass to AddTail method
-	RefCountedPtr< CPropertyObject > pPropertyObect = new CPropertyObject( ValueType, 0, nID );
-	pPropertyObect->SetStringValue(strValue);
-	pPropertyObect->SetHidden(false);
-
-	// reset the name to the new value
-	if (InsertPos == NULL)
-		pControl->GetPropertyList().AddTail(pPropertyObect);
-	else
-		pControl->GetPropertyList().InsertAfter(InsertPos, pPropertyObect);
-}
+#include "DclControlProp.h"
 
 
 //moving all image lists from the form to individual controls while reading older ODC files
@@ -262,7 +243,7 @@ bool CDclFormObject::CanWeDeleteForm() const
 
 	// set counter for ArxControls
 	INT_PTR nCount = mDclControls.GetCount();
-	int nTotal = nNotSet; // please note it must be set to nNotSet to remove the arx control object that holds the properties of the dcl form
+	int nTotal = -1; // please note it must be set to -1 to remove the arx control object that holds the properties of the dcl form
 
 	// set start position for navigating ArxControls
 	POSITION pos = mDclControls.GetHeadPosition();
@@ -471,23 +452,14 @@ void CDclFormObject::Serialize(CArchive& ar)
 		}
 		ar << msUUID;
 		ar << m_bUsesClientRect;
-
-		// set counter for ArxControls
 		nCount = (WORD)mDclControls.GetCount() - CountDeletedControls();
-
 		ar << nCount;
-
-		// set start position for navigating ArxControls
 		pos = mDclControls.GetHeadPosition();
-		// do loop to navigate Arx Controls
 		while (pos != NULL)
 		{
-			// get current ArxControlObject
 			CDclControlObject* pControl = mDclControls.GetNext(pos);
-
 			if (pControl->m_Delete == FALSE)
 			{
-				// put dcl form into archive
 				pControl->Serialize(ar);
 				TraceFmt( _T("> %s\r\n"), pControl->toString() );
 			}
@@ -498,12 +470,10 @@ void CDclFormObject::Serialize(CArchive& ar)
 		ar >> nThisVersion;
 		if (nThisVersion > GetCurrentSaveVersion())
 			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
-		
-		// Get this dcl form's name and type from archive
 		ar >> msName;
 		long lType;
 		ar >> lType;
-		if (lType < nNotSet)
+		if (lType < -1)
 			mType = VdclInvalid;
 		else
 			mType = (DclFormType)lType;
@@ -523,7 +493,6 @@ void CDclFormObject::Serialize(CArchive& ar)
 		else
 			m_bUsesClientRect = FALSE;
 
-		// get counter for dcl controls
 		ar >> nCount;	
 		mDclControls.RemoveAll();
 		while (nCount-- > 0)
@@ -541,6 +510,8 @@ void CDclFormObject::Serialize(CArchive& ar)
 					pControl->GetPropertyList().RemoveAt(pos);
 				}
 			}
+			// Add new properties that have been added since this file was created
+			AddDefaultProperties( pControl );
 		}
 
 		//ensure that we have a form properties control at the head of the list
@@ -591,54 +562,21 @@ void CDclFormObject::Serialize(CArchive& ar)
 			switch (mType)
 			{
 			case VdclModal:
-				{				
-				RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nEventInvoke);
-				if (pProp != NULL)
-				{
-					POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
-					pControl->GetPropertyList().RemoveAt(pos);
-				}
+				pControl->RemoveProperty( nEventInvoke );
 				//break;  This break was missing -- maybe intentional, I can't tell for sure [ORW]
-				}
 			case VdclModeless:
-				{
-				if (!pControl->GetPropertyObject(nMinDialogWidth))
-					AddControlProperty(pControl, nMinDialogWidth, _T("50"), PropLong);
-				if (!pControl->GetPropertyObject(nMinDialogHeight))
-					AddControlProperty(pControl, nMinDialogHeight, _T("50"), PropLong);
-				
-				if (!pControl->GetPropertyObject(nMaxDialogWidth))
-					AddControlProperty(pControl, nMaxDialogWidth, _T("1000"), PropLong);
-				if (!pControl->GetPropertyObject(nMaxDialogHeight))
-					AddControlProperty(pControl, nMaxDialogHeight, _T("1000"), PropLong);
+				pControl->AddLongProperty( nMinDialogWidth, PropLong, 50 );
+				pControl->AddLongProperty( nMinDialogHeight, PropLong, 50 );
+				pControl->AddLongProperty( nMaxDialogWidth, PropLong, 1000 );
+				pControl->AddLongProperty( nMaxDialogHeight, PropLong, 1000 );
 				break;
-				}
 			case VdclDockable:
-				{
-				if (pControl->GetPropertyObject(nResizable) == NULL )
-					AddControlProperty(pControl, nResizable, _T("True"), PropBool);
-
-				RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nMinDialogWidth);
-				if (pProp != NULL)
-				{
-					POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
-					pControl->GetPropertyList().RemoveAt(pos);
-				}
-				pProp = pControl->GetPropertyObject(nMinDialogHeight);
-				if (pProp != NULL)
-				{
-					POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
-					pControl->GetPropertyList().RemoveAt(pos);
-				}
-				pProp = pControl->GetPropertyObject(nMaxDialogWidth);
-				if (pProp != NULL)
-				{
-					POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
-					pControl->GetPropertyList().RemoveAt(pos);
-				}
-				
+				pControl->AddBooleanProperty( nResizable, PropBool, true );
+				pControl->RemoveProperty( nMinDialogWidth );
+				pControl->RemoveProperty( nMinDialogHeight );
+				pControl->RemoveProperty( nMaxDialogWidth );
+				pControl->RemoveProperty( nMaxDialogHeight );
 				break;		
-				}
 			}
 		}
 	}
@@ -761,7 +699,7 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
   if (!readString(sFile, msName)) return statInvalidFormat;
 	long lType;
   if (!readLong(sFile, lType)) return statInvalidFormat;
-  if (lType < nNotSet)
+  if (lType < -1)
 		mType = VdclInvalid;
 	else
 		mType = (DclFormType)lType;
@@ -780,19 +718,15 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 
   mDclControls.RemoveAll();
 
-  // set start position for navigating arx controls
-  POSITION pos = mDclControls.GetHeadPosition();
-  // do loop to navigate ArxControls
   while (nCount-- > 0)
   {
-    // get current ArxControlObject
     CDclControlObject* pControl = new CDclControlObject( this );
 
 		IOStatus stat = pControl->ReadFromTextFile(sFile, fileName);
     if (stat != statOK) return stat;
 
-    // add that ArxControlObject to the list object
-    AddControl(pControl);	
+		AddDefaultProperties( pControl );
+    AddControl(pControl);
 
     if (mType == VdclModal)
     {				
@@ -829,67 +763,30 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 	if( !rImageLists.empty() )
 		MoveImageListsToControls( rImageLists, this ); //moving all control image lists to the individual controls
 
-#ifdef EDITOR
   if (mDclControls.GetCount() > 0)
   {
     CDclControlObject* pControl = GetControlProperties();		
 
-    switch (mType)
-    {
-    case VdclModal:
-      {				
-        RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nEventInvoke);
-        if (pProp != NULL)
-        {
-          POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
-          pControl->GetPropertyList().RemoveAt(pos);
-        }
-      }
-    case VdclModeless:
-      {
-        CString sText = _T("50");
-        if (!pControl->GetPropertyObject(nMinDialogWidth))
-          AddControlProperty(pControl, nMinDialogWidth, sText, PropLong);
-        if (!pControl->GetPropertyObject(nMinDialogHeight))
-          AddControlProperty(pControl, nMinDialogHeight, sText, PropLong);
-
-        sText=_T("1000");
-        if (!pControl->GetPropertyObject(nMaxDialogWidth))
-          AddControlProperty(pControl, nMaxDialogWidth, sText, PropLong);
-        if (!pControl->GetPropertyObject(nMaxDialogHeight))
-          AddControlProperty(pControl, nMaxDialogHeight, sText, PropLong);
-        break;
-      }
-    case VdclDockable:
-      {
-        CString sTrue = _T("True");
-        if (pControl->GetPropertyObject(nResizable) == NULL)
-          AddControlProperty(pControl, nResizable, sTrue, PropBool);
-
-        RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nMinDialogWidth);
-        if (pProp != NULL)
-        {
-          POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
-          pControl->GetPropertyList().RemoveAt(pos);
-        }
-        pProp = pControl->GetPropertyObject(nMinDialogHeight);
-        if (pProp != NULL)
-        {
-          POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
-          pControl->GetPropertyList().RemoveAt(pos);
-        }
-        pProp = pControl->GetPropertyObject(nMaxDialogWidth);
-        if (pProp != NULL)
-        {
-          POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
-          pControl->GetPropertyList().RemoveAt(pos);
-        }
-
-        break;		
-      }
-    }
+		switch (mType)
+		{
+		case VdclModal:
+			pControl->RemoveProperty( nEventInvoke );
+			//break;  This break was missing -- maybe intentional, I can't tell for sure [ORW]
+		case VdclModeless:
+			pControl->AddLongProperty( nMinDialogWidth, PropLong, 50 );
+			pControl->AddLongProperty( nMinDialogHeight, PropLong, 50 );
+			pControl->AddLongProperty( nMaxDialogWidth, PropLong, 1000 );
+			pControl->AddLongProperty( nMaxDialogHeight, PropLong, 1000 );
+			break;
+		case VdclDockable:
+			pControl->AddBooleanProperty( nResizable, PropBool, true );
+			pControl->RemoveProperty( nMinDialogWidth );
+			pControl->RemoveProperty( nMinDialogHeight );
+			pControl->RemoveProperty( nMaxDialogWidth );
+			pControl->RemoveProperty( nMaxDialogHeight );
+			break;		
+		}
   }
-#endif
 	m_bDeleted = false;
 	return statOK;
 }

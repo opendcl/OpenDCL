@@ -49,10 +49,6 @@ bool CArxAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID )
 }
 
 
-BEGIN_MESSAGE_MAP(CArxAxContainerCtrl, CAxContainerCtrl)
-END_MESSAGE_MAP()
-
-
 BOOL CArxAxContainerCtrl::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) 
 {
 	if (nID == GetTemplate()->GetControlInstance()->GetControlId())

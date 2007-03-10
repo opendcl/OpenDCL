@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "ListBoxDlg.h"
+#include "SharedRes.h"
 #include "PropertyObject.h"
 #include "ObjectDCLView.h"
 #include "DclFormObject.h"

@@ -53,11 +53,8 @@
 #define IDS_PROP_TABSCAPTION            240
 #define IDS_PROP_TABSIMAGELIST          241
 #define IDS_PROP_TABSTTTLIST            242
-#define IDI_FILTER                      10007
 #define IDS_PROP_TEXT                   243
-#define IDI_PICK                        10008
 #define IDS_PROP_TICKFRQCY              244
-#define IDI_SELECT                      10009
 #define IDS_PROP_TITLEBARTEXT           245
 #define IDS_PROP_TTT                    246
 #define IDS_PROP_TOP                    247
@@ -278,6 +275,18 @@
 #define IDS_BORDERSTYLE_0               10004
 #define IDS_BORDERSTYLE_1               10005
 #define IDS_BORDERSTYLE_2               10006
+#define IDI_FILTER                      10007
+#define IDS_TRUE                        10007
+#define IDI_PICK                        10008
+#define IDS_FALSE                       10008
+#define IDI_SELECT                      10009
+#define IDS_LIST                        10009
+#define IDS_CUSTOM                      10010
+#define IDS_IMAGELIST                   10011
+#define IDS_OPTION1                     10015
+#define IDS_OPTION2                     10016
+#define IDS_OPTION3                     10017
+#define IDS_FILEDLGFILTERDEF            10021
 
 // Next default values for new objects
 // 
