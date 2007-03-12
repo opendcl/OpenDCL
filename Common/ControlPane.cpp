@@ -351,9 +351,9 @@ void CControlPane::ResetControlsPos(CDclControlObject *pArxObject)
 		}
 		else if (lLeftFromRight == 2)
 		{
-			int nFormWidth = mpSourceForm->GetControlProperties()->GetLngProperty(nWidth);
-			int nOffsetValue = nFormWidth / 2 - pArxObject->m_pOffsetLeft->GetLongValue();
-			rcControl.left = ((rcThis.right + rcThis.left) / 2) - nOffsetValue;
+			int nFormCenter = ((rcThis.right + rcThis.left) / 2);
+			int nControlOffsetFromCenter = pArxObject->m_pOffsetLeft->GetLongValue();
+			rcControl.left = nFormCenter + nControlOffsetFromCenter;
 		}
 		else if (lLeftFromRight > 2)
 		{
