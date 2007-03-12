@@ -676,25 +676,27 @@ UINT CAxContainerCtrl::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo*
 	pProp->SetID( nObjectBrowser ); // set the id of the new property
 	POSITION pos = pControl->GetPropertyList().GetHeadPosition();
 	pControl->GetPropertyList().InsertAfter( pos, pProp );
-	
-	//Remove any old methods that exist
-	pControl->GetPropertyList().GetNext(pos); //Step to new methods
-	pControl->GetPropertyList().GetNext(pos); //Step to past new methods
-	while (pos != NULL) {
-		RefCountedPtr< CPropertyObject > pPropCurrent = pControl->GetPropertyList().GetAt(pos);
-		if (pPropCurrent != NULL && pPropCurrent->GetType() == PropActiveXMethods) {
-			//Question for Owen--what do I need to do for cleanup purposes here?
-			pControl->GetPropertyList().RemoveAt(pos);
-			//Position is now invalid. Reset to the start of the list, then
-			//step over the methods at the start and run through the whole thing again.
-			//Not super efficient, but if the methods are all at the start, it won't be
-			//too bad.
-			pos = pControl->GetPropertyList().GetHeadPosition();
-			pControl->GetPropertyList().GetNext(pos); //Step to new methods
-			pControl->GetPropertyList().GetNext(pos); //Step to past new methods
-		} else {
-			//Not a method, step to the next property
-			pControl->GetPropertyList().GetNext(pos);
+
+	if (pos != NULL) {	
+		//Remove any old methods that exist
+		pControl->GetPropertyList().GetNext(pos); //Step to new methods
+		pControl->GetPropertyList().GetNext(pos); //Step to past new methods
+		while (pos != NULL) {
+			RefCountedPtr< CPropertyObject > pPropCurrent = pControl->GetPropertyList().GetAt(pos);
+			if (pPropCurrent != NULL && pPropCurrent->GetType() == PropActiveXMethods) {
+				//Question for Owen--what do I need to do for cleanup purposes here?
+				pControl->GetPropertyList().RemoveAt(pos);
+				//Position is now invalid. Reset to the start of the list, then
+				//step over the methods at the start and run through the whole thing again.
+				//Not super efficient, but if the methods are all at the start, it won't be
+				//too bad.
+				pos = pControl->GetPropertyList().GetHeadPosition();
+				pControl->GetPropertyList().GetNext(pos); //Step to new methods
+				pControl->GetPropertyList().GetNext(pos); //Step to past new methods
+			} else {
+				//Not a method, step to the next property
+				pControl->GetPropertyList().GetNext(pos);
+			}
 		}
 	}
 
