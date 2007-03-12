@@ -150,6 +150,10 @@ int SetAxObjColorProperty()
 
 	// get the AcxtiveX control
 	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
+	if (axContainer == NULL) {
+		acedRetNil();
+		return 0;
+	}
 	//COleDispatchDriver Disp((LPDISPATCH)lDispatch);// axContainer->GetOleIDispatch();
 	
 	long lRed = 0;
@@ -694,6 +698,10 @@ int GetAxObjectProperty()
 
 	// get the AcxtiveX control
 	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
+	if (axContainer == NULL) {
+		acedRetNil();
+		return 0;
+	}
 	
 	COleVariant varGet;
 	axContainer->GetProperty(pAxProp, argList, nArgCount, varGet);
@@ -1169,6 +1177,10 @@ int SetAxColorProperty()
 	
 	// get the AcxtiveX control
 	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
+	if (axContainer == NULL) {
+	acedRetNil();
+	return 0;
+	}
 	IDispatch *pDisp = axContainer->GetOleIDispatch();
 	
 	long lRed = 0;
@@ -1314,6 +1326,10 @@ int SetAxPictureProperty()
 
 	// get the AcxtiveX control
 	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
+	if (axContainer == NULL) {
+	acedRetNil();
+	return 0;
+	}
 	IDispatch *pDisp = axContainer->GetOleIDispatch();
 		
 	if (ListData->restype == RTSTR)
@@ -1433,6 +1449,10 @@ int SetAxProperty()
 	//[DPR] GetWindow returns a CWnd. For this instance, we know the it will be a CAxContainerCtrl, 
 	//so force the cast.
 	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
+	if (axContainer == NULL) {
+		acedRetNil();
+		return 0;
+	}
 	HRESULT hr = axContainer->SetProperty(pAxProp, argList, nArgCount);
 	if( FAILED(hr) )
 		return RSRSLT;
@@ -1528,7 +1548,11 @@ int SetFlexGridColorProperty()
   unsigned int iColor = (unsigned int)dColor;
 
   // get the AcxtiveX control
-  CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
+	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
+	if (axContainer == NULL) {
+	acedRetNil();
+	return 0;
+	}
 
   axContainer->SetFlexGridColorProperty(pAxProp, iColor);
   acedRetVoid();
@@ -1609,6 +1633,10 @@ int GetAxProperty()
 
 	// get the AcxtiveX control
 	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
+	if (axContainer == NULL) {
+		acedRetNil();
+		return 0;
+	}
 	
 	COleVariant varGet;
 	axContainer->GetProperty(pAxProp, argList, nArgCount, varGet);
@@ -1706,7 +1734,11 @@ int GetFlexGridColorProperty()
   }
 
   // get the AcxtiveX control
-  CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
+	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
+	if (axContainer == NULL) {
+	acedRetNil();
+	return 0;
+	}
 
   //Return the color
   unsigned int iColor = axContainer->GetFlexGridColorProperty(pAxProp);
@@ -1796,6 +1828,10 @@ int DoAxMethod()
 
 	// get the AcxtiveX control
 	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
+	if (axContainer == NULL) {
+		acedRetNil();
+		return 0;
+	}
 	
 	COleVariant varGet;
 	// call the set property method to set the property
