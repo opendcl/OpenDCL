@@ -98,7 +98,7 @@ HRESULT AxMethodDescriptor::Invoke( IDispatch* pObjectDisp, VARIANTARG* rvarArgs
 
 	EXCEPINFO excepInfo = {0};
 	UINT iArgErr = 0;
-  return pObjectDisp->Invoke( mDispId, IID_NULL, GetUserDefaultLCID(), WORD( INVOKE_PROPERTYGET ),
+  return pObjectDisp->Invoke( mDispId, IID_NULL, GetUserDefaultLCID(), WORD( DISPATCH_METHOD ),
 															&dpParams, &varResult, &excepInfo, &iArgErr );
 }
 
