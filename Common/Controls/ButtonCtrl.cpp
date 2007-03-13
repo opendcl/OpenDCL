@@ -25,7 +25,7 @@ CButtonCtrl::~CButtonCtrl()
 
 bool CButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
-	bool bSuccess = (CXPStyleButtonST::Create( NULL, GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
+	bool bSuccess = (__super::Create( NULL, GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;

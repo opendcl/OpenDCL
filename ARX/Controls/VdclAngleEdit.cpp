@@ -7,7 +7,7 @@
 #include "PropertyObject.h"
 #include "ToolTips.h"
 #include "InvokeMethod.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 #include "PropertyIds.h"
 
 const TCHAR sAngleFilter[] = _T("DdGgRrNnSsEeWw 0123456789.'\"-");
@@ -184,7 +184,7 @@ void VdclAngleEdit::OnChange()
 		try
 		{
 		// Send Notification to parent of ListView ctrl
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 
 		//pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, GetCurrentItemColorIndex());
 		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sText);
@@ -306,7 +306,7 @@ void VdclAngleEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		
 	if (m_ArxControl == NULL)
 	{
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 			
 		if (nChar == VK_UP || nChar == VK_DOWN)
 		{
@@ -456,7 +456,7 @@ BOOL VdclAngleEdit::PreTranslateMessage(MSG* pMsg)
 			::TranslateMessage(pMsg);
 			::DispatchMessage(pMsg);
 			
-			CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();		
+			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();		
 			pListCtrl->MoveDown();		
 			return TRUE;				// DO NOT process further
 		}
@@ -468,7 +468,7 @@ BOOL VdclAngleEdit::PreTranslateMessage(MSG* pMsg)
 			SetWindowText(m_strOldValue);
 			
 			// Send Notification to parent of ListView ctrl
-			CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 
 			pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, m_strOldValue);			
 			pListCtrl->HideEditControls();

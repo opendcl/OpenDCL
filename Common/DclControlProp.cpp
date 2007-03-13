@@ -55,14 +55,137 @@ static RefCountedPtr< CPropertyObject > AddControlEvent( CDclControlObject* pDcl
 	return pProp;
 }
 
+static bool AddDefaultFormName( CDclControlObject* pDclControl )
+{
+	if( !pDclControl->GetPropertyObject( nName ) )
+	{
+		CString sFormName;
+		sFormName.Format( _T("%s%d"),
+											theWorkspace.LoadResourceString( IDS_DCLFORM ),
+											pDclControl->GetOwnerProject()->GetDclFormList().GetCount() );
+		pDclControl->AddStringProperty( nName, PropString, sFormName );
+	}
+	return true;
+}
 
-bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= 32*/, long lHeight /*= 32*/ )
+static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidth /*= 32*/, long lHeight /*= 32*/ )
+{
+	assert( pDclControl->GetType() == CtlForm );
+	CDclFormObject* pOwnerForm = pDclControl->GetOwnerForm();
+	assert( pOwnerForm != NULL );
+	if( !pOwnerForm )
+		return false;
+	switch( pOwnerForm->GetType() )
+	{
+	case VdclModal:
+		AddDefaultFormName( pDclControl );
+		pDclControl->AddStringProperty( nObjectBrowser, PropActiveXMethods );
+		pDclControl->AddStringProperty( nGlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		pDclControl->AddBooleanProperty( nResizable, PropBool, false );
+		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 350 );
+		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 250 );
+		pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 100 );
+		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 80 );
+		pDclControl->AddLongProperty( nMaxDialogWidth, PropLong, 1000 );
+		pDclControl->AddLongProperty( nMaxDialogHeight, PropLong, 800 );
+		pDclControl->AddLongProperty( nIcon, PropPicture, -1 );
+		pDclControl->AddBooleanProperty( nTitleBar, PropBool, true );
+		pDclControl->AddStringProperty( nTitleBarText, PropString, pOwnerForm->GetKeyName() );
+		AddControlEvent( pDclControl, nFormEventInitialize );
+		AddControlEvent( pDclControl, nFormEventClose );
+		AddControlEvent( pDclControl, nFormEventSize );
+		AddControlEvent( pDclControl, nFormEventOnOk );
+		AddControlEvent( pDclControl, nFormEventCancelClose );
+		break;
+	case VdclModeless:
+		AddDefaultFormName( pDclControl );
+		pDclControl->AddStringProperty( nObjectBrowser, PropActiveXMethods );
+		pDclControl->AddStringProperty( nGlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		pDclControl->AddBooleanProperty( nResizable, PropBool, true );
+		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 250 );
+		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 150 );
+		pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 100 );
+		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 80 );
+		pDclControl->AddLongProperty( nMaxDialogWidth, PropLong, 1000 );
+		pDclControl->AddLongProperty( nMaxDialogHeight, PropLong, 800 );
+		pDclControl->AddLongProperty( nIcon, PropPicture, -1 );
+		pDclControl->AddBooleanProperty( nTitleBar, PropBool, true );
+		pDclControl->AddStringProperty( nTitleBarText, PropString, pOwnerForm->GetKeyName() );
+		AddControlEvent( pDclControl, nFormEventInitialize );
+		AddControlEvent( pDclControl, nFormEventClose );
+		AddControlEvent( pDclControl, nFormEventSize );
+		AddControlEvent( pDclControl, nFormEventOnOk );
+		AddControlEvent( pDclControl, nFormEventCancelClose );
+		AddControlEvent( pDclControl, nDocEventActivated );
+		break;
+	case VdclDockable:
+		AddDefaultFormName( pDclControl );
+		pDclControl->AddStringProperty( nObjectBrowser, PropActiveXMethods );
+		pDclControl->AddStringProperty( nGlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		pDclControl->AddBooleanProperty( nResizable, PropBool, true );
+		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 250 );
+		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 450 );
+		pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 25 );
+		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 50 );
+		pDclControl->AddStringProperty( nTitleBarText, PropString, pOwnerForm->GetKeyName() );
+		pDclControl->AddLongProperty( nDockableSides, PropEnum, 0 );
+		AddControlEvent( pDclControl, nFormEventInitialize );
+		AddControlEvent( pDclControl, nFormEventClose );
+		AddControlEvent( pDclControl, nFormEventSize );
+		AddControlEvent( pDclControl, nDocEventActivated );
+		break;
+	case VdclConfigTab:
+		AddDefaultFormName( pDclControl );
+		pDclControl->AddStringProperty( nObjectBrowser, PropActiveXMethods );
+		pDclControl->AddStringProperty( nGlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		pDclControl->AddBooleanProperty( nResizable, PropBool, true );
+		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 600 );
+		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 380 );
+		pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 25 );
+		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 50 );
+		pDclControl->AddStringProperty( nCfgTabCaption, PropString, pOwnerForm->GetKeyName() );
+		pDclControl->AddLongProperty( nDockableSides, PropEnum, 0 );
+		AddControlEvent( pDclControl, nFormEventInitialize );
+		AddControlEvent( pDclControl, nFormEventShow );
+		AddControlEvent( pDclControl, nCfgEventCancel );
+		AddControlEvent( pDclControl, nCfgEventHelp );
+		AddControlEvent( pDclControl, nCfgEventOK );
+		break;
+	case VdclFileDialog:
+		AddDefaultFormName( pDclControl );
+		pDclControl->AddStringProperty( nObjectBrowser, PropActiveXMethods );
+		pDclControl->AddStringProperty( nGlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		pDclControl->AddBooleanProperty( nResizable, PropBool, true );
+		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 427 );
+		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 296 );
+		pDclControl->AddStringProperty( nTitleBarText, PropString, theWorkspace.LoadResourceString( IDS_OPEN ) );
+		AddControlEvent( pDclControl, nFormEventInitialize );
+		AddControlEvent( pDclControl, nFormEventClose );
+		AddControlEvent( pDclControl, nFormEventSize );
+		break;
+	case VdclTabForm:
+		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 600 );
+		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 380 );
+		break;
+	default:
+		TraceFmt( _T("* AddDefaultFormProperties() called with unknown form type (%d)\r\n"), pOwnerForm->GetType() );
+		assert( false );
+		return false;
+		break;
+	}
+	return true;
+}
+
+
+bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/, long lHeight /*= -1*/ )
 {
 	assert( pDclControl != NULL );
 	ControlType type = pDclControl->GetType();
 	assert( type != CtlInvalid );
 	if( type == CtlInvalid )
 		return false;
+	if( type == CtlForm )
+		return AddDefaultFormProperties( pDclControl, lWidth, lHeight );
 	CDclFormObject* pOwnerForm = pDclControl->GetOwnerForm();
 	assert( pOwnerForm != NULL );
 	if( !pOwnerForm )
@@ -77,7 +200,11 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= 32*/,
 	pDclControl->AddStringProperty( nGlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
 	pDclControl->AddLongProperty( nLeft, PropLong, 0 );
 	pDclControl->AddLongProperty( nTop, PropLong, 0 );
+	if( lWidth <= 0 )
+		lWidth = 32;
 	pDclControl->AddLongProperty( nWidth, PropLong, lWidth );
+	if( lHeight <= 0 )
+		lHeight = 32;
 	pDclControl->AddLongProperty( nHeight, PropLong, lHeight );
 
 	if( type != CtlFileDlgCtrl )
@@ -332,9 +459,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= 32*/,
 		AddControlEvent( pDclControl, nEventSelChanged );
 		break;
 
-	case CtlForm:
-		break;
-
 	case CtlFrame:
 		pDclControl->AddStringProperty( nCaption, PropString, pDclControl->GetKeyName() );
 		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
@@ -386,6 +510,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= 32*/,
 		pDclControl->AddLongProperty( nBorderStyle, PropEnum, 1 );
 		pDclControl->AddBooleanProperty( nColHeader, PropBool, true );
 		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		//pDclControl->AddBooleanProperty( nFullRowSelect, PropBool, false );
 		pDclControl->AddBooleanProperty( nGridLines, PropBool, true );
 		pDclControl->AddBooleanProperty( nLabelWrap, PropBool, true );
 		pDclControl->AddStringProperty( nImageList, PropImageList, theWorkspace.LoadResourceString( IDS_IMAGELIST ) );
@@ -1022,6 +1147,12 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= 32*/,
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
 		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
+		break;
+
+	default:
+		TraceFmt( _T("* AddDefaultProperties() called with unknown control type (%d)\r\n"), type );
+		assert( false );
+		return false;
 		break;
 	}
 	return true;

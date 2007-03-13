@@ -2263,13 +2263,8 @@ int CPropertyListCtrl::SetListBox()
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_FILTERSTYLE_3);
 					m_pModeless->AddString(sEnumDesc);
 					
-				#if (_ACADTARGET >= 15)
-					if (!IsVersionFree())
-					{											
-						sEnumDesc = theWorkspace.LoadResourceString(IDS_FILTERSTYLE_4);
-						m_pModeless->AddString(sEnumDesc);
-					}
-				#endif
+					sEnumDesc = theWorkspace.LoadResourceString(IDS_FILTERSTYLE_4);
+					m_pModeless->AddString(sEnumDesc);
 
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_FILTERSTYLE_5);
 					m_pModeless->AddString(sEnumDesc);

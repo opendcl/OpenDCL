@@ -25,6 +25,7 @@ const TCHAR sTopLeftY[] = _T("nTopLeftY");
 CSnapDlg::CSnapDlg(CDclFormObject* pSourceForm, UINT idd, CWnd* pParent /*=NULL*/)
 : CDialog(idd, pParent)
 , mpSourceForm( pSourceForm )
+, mbHasTitleBar( pSourceForm->GetControlProperties()->GetBoolProperty( nTitleBar ) )
 {
 	//{{AFX_DATA_INIT(CSnapDlg)
 		// NOTE: the ClassWizard will add member initialization here
@@ -60,6 +61,10 @@ END_MESSAGE_MAP()
 
 BOOL CSnapDlg::OnInitDialog()
 {
+	if( mbHasTitleBar )
+		ModifyStyle( 0, WS_CAPTION, 0 );
+	else
+		ModifyStyle( WS_CAPTION, 0, 0 );
 	CDialog::OnInitDialog();
 	m_sizing = FALSE;
 	m_rcGripRect.left = 0;
@@ -283,11 +288,15 @@ LRESULT CSnapDlg::OnNcHitTest(CPoint point)
 {
 	CPoint pt = point;
 	ScreenToClient(&pt);
-
-	// if in size grip and in client area
-	if (m_bShowGrip && m_rcGripRect.PtInRect(pt) &&
-		pt.x >= 0 && pt.y >= 0)
+	if (m_bShowGrip && m_rcGripRect.PtInRect(pt) && pt.x >= 0 && pt.y >= 0) // if in size grip and in client area
 		return HTBOTTOMRIGHT;
+
+	if( !mbHasTitleBar ) //if no title bar, return HTCAPTION for any uninhabited area of the dialog
+	{
+		CWnd* pWnd = WindowFromPoint( point );
+		if( pWnd == this )
+			return HTCAPTION;
+	}
 	
 	return CDialog::OnNcHitTest(point);
 }

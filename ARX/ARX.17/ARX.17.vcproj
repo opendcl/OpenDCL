@@ -465,6 +465,10 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
+				RelativePath="..\..\Common\Res\arrowheads.bmp"
+				>
+			</File>
+			<File
 				RelativePath="..\Res\dm_dm.ico"
 				>
 			</File>
@@ -477,15 +481,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\Res\Folder.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\Res\Folder.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\Res\FOLDER0.BMP"
-				>
-			</File>
-			<File
-				RelativePath="..\Res\Folder2.ico"
 				>
 			</File>
 			<File
@@ -541,11 +545,27 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\Res\OpButton1.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\Res\OpButton2.bmp"
+				>
+			</File>
+			<File
 				RelativePath="..\Res\OpButton2.bmp"
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\Res\OpButton3.bmp"
+				>
+			</File>
+			<File
 				RelativePath="..\Res\OpButton3.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\Res\OpButton4.bmp"
 				>
 			</File>
 			<File
@@ -561,7 +581,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Res\PickSmall.ico"
+				RelativePath="..\..\Common\Res\PickSmall.ico"
 				>
 			</File>
 			<File
@@ -589,6 +609,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\Res\SHXFont.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\Res\SHXFont.ico"
 				>
 			</File>
@@ -597,11 +621,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Res\toolbar1.bmp"
+				RelativePath="..\Res\TRUEFONT.ICO"
 				>
 			</File>
 			<File
-				RelativePath="..\Res\TRUEFONT.ICO"
+				RelativePath="..\..\Common\Res\truefont.ico"
 				>
 			</File>
 			<File
@@ -630,6 +654,14 @@
 			</File>
 			<File
 				RelativePath="..\Controls\ArxGraphicButtonCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxGridCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxGridCtrl.h"
 				>
 			</File>
 			<File
@@ -898,22 +930,6 @@
 			</File>
 			<File
 				RelativePath="..\Controls\Splitter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\SpreadSheet.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\SpreadSheet.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\SpreadSheetHdr.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\SpreadSheetHdr.h"
 				>
 			</File>
 			<File
@@ -1415,6 +1431,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\ControlName.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\ControlName.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\ControlPane.cpp"
 				>
 			</File>
@@ -1866,6 +1890,22 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\GridCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\GridCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\GridCtrlHdr.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\GridCtrlHdr.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\XPStyleButtonST.cpp"
 					>
 				</File>
@@ -1879,7 +1919,7 @@
 	<Globals>
 		<Global
 			Name="RESOURCE_FILE"
-			Value="\ObjectDCL\Build\ARX\ARX.rc"
+			Value="\OpenDCL\Build\ARX\ARX.rc"
 		/>
 	</Globals>
 </VisualStudioProject>

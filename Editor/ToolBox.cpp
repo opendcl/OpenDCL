@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ToolBox.h"
-#include "Resource.h"
+#include "SharedRes.h"
 #include "PurchaseMode.h"
 #include "ControlTypes.h"
 #include "ObjectDCLView.h"

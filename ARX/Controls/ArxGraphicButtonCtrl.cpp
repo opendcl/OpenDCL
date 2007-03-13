@@ -6,8 +6,6 @@
 #include "DclControlObject.h"
 #include "InvokeMethod.h"
 #include "ControlPane.h"
-#include "SpreadSheet.h"
-#include "ToolTips.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -31,7 +29,7 @@ CArxGraphicButtonCtrl::~CArxGraphicButtonCtrl()
 bool CArxGraphicButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess =
-		CGraphicButtonCtrl::Create( pParentWnd, nID );
+		__super::Create( pParentWnd, nID );
 
 	if( GetTemplate()->GetLngProperty(nEventInvoke) == 1 )
 		m_bInvokeWithSendString = true;

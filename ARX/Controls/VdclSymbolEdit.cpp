@@ -7,7 +7,7 @@
 #include "PropertyObject.h"
 #include "ToolTips.h"
 #include "InvokeMethod.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 #include "PropertyIds.h"
 
 
@@ -195,7 +195,7 @@ void VdclSymbolEdit::OnChange()
 		dispinfo.hdr.idFrom = GetDlgCtrlID();
 		dispinfo.hdr.code = LVN_ENDLABELEDIT;
 
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 
 		dispinfo.item.mask = LVIF_TEXT;
 		dispinfo.item.iItem = pListCtrl->m_nRowSelected;
@@ -301,7 +301,7 @@ void VdclSymbolEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		
 	if (m_ArxControl == NULL)
 	{
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 			
 		if (nChar == VK_UP || nChar == VK_DOWN)
 		{
@@ -443,7 +443,7 @@ BOOL VdclSymbolEdit::PreTranslateMessage(MSG* pMsg)
 			::TranslateMessage(pMsg);
 			::DispatchMessage(pMsg);
 			
-			CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();		
+			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();		
 			pListCtrl->MoveDown();		
 			return TRUE;				// DO NOT process further
 		}
@@ -455,7 +455,7 @@ BOOL VdclSymbolEdit::PreTranslateMessage(MSG* pMsg)
 			SetWindowText(m_strOldValue);
 			
 			// Send Notification to parent of ListView ctrl
-			CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 			pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, m_strOldValue);			
 			pListCtrl->HideEditControls();
 			return TRUE;				// DO NOT process further

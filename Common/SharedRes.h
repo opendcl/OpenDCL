@@ -21,6 +21,8 @@
 #define IDS_THEFILE                     165
 #define IDS_COULDNOTOPEN                166
 #define IDS_ODCFILTER                   179
+#define IDB_ARROWHEADS                  202
+#define IDI_FOLDER                      208
 #define IDS_PROP_NAME                   211
 #define IDS_PROP_CUSTOM                 212
 #define IDS_PROP_AUTOSIZE               213
@@ -67,9 +69,13 @@
 #define IDS_PROP_MARGINLEFT             254
 #define IDS_PROP_MARGINRIGHT            255
 #define IDS_PROP_LIMITTEXT              256
+#define IDB_OPBTNSELH                   256
 #define IDS_PROP_AUTOHSCROLL            257
+#define IDB_OPBTNNON                    257
 #define IDS_PROP_AUTOVSCROLL            258
+#define IDB_OPBTNSEL                    258
 #define IDS_PROP_DROPDOWNHEIGHT         259
+#define IDB_OPBTNNONH                   259
 #define IDS_PROP_MULTICOL               260
 #define IDS_PROP_SELECTSTYLE            261
 #define IDS_PROP_NOINTEGRALHEIGHT       262
@@ -157,7 +163,9 @@
 #define IDS_PROP_HASCHECKBOXES          344
 #define IDS_PROP_TITLEBARICON           345
 #define IDS_PROP_EVENTKEYUP             346
+#define IDI_ACADFONT                    347
 #define IDS_PROP_EVENTMOUSEDOWN         347
+#define IDI_TRUEFONT                    348
 #define IDS_PROP_EVENTMOUSEUP           348
 #define IDS_PROP_EVENTMOUSEMOVE         349
 #define IDS_PROP_EVENTMOUSEMOVEDOFF     350
@@ -166,6 +174,7 @@
 #define IDS_PROP_EVENTPAINT             353
 #define IDS_PROP_USEMASK                354
 #define IDS_PROP_SHOWEDITBOX            355
+#define IDI_PICSM                       356
 #define IDS_PROP_EVENTNAVCOMPLETE       356
 #define IDS_PROP_INPUTFILTER            357
 #define IDS_PROP_TABORDER               358
@@ -268,6 +277,7 @@
 #define IDS_PROP_DISPLAYSECONDS         459
 #define IDS_PROP_DISPLAY_PERCENTAGE     460
 #define IDS_EVENT_FORM_ONOK             461
+#define IDS_PROP_TITLEBAR               462
 #define IDI_LABEL                       10000
 #define IDS_THE                         10001
 #define IDS_RESETPROP                   10002
@@ -287,6 +297,45 @@
 #define IDS_OPTION2                     10016
 #define IDS_OPTION3                     10017
 #define IDS_FILEDLGFILTERDEF            10021
+#define IDS_SELFOLDER                   10022
+#define IDS_OPEN                        10023
+#define IDS_DCLFORM                     10099
+#define IDS_POINTER                     10100
+#define IDS_LABEL                       10101
+#define IDS_TEXTBUTTON                  10102
+#define IDS_GRAPHICBUTTON               10103
+#define IDS_FRAME                       10104
+#define IDS_TEXTBOX                     10105
+#define IDS_CHECKBOX                    10106
+#define IDS_OPTION                      10107
+#define IDS_COMBOBOX                    10108
+#define IDS_LISTBOX                     10109
+#define IDS_SCROLLBAR                   10110
+#define IDS_SLIDERBAR                   10111
+#define IDS_PICTUREBOX                  10112
+#define IDS_TABS                        10113
+#define IDS_MONTHCAL                    10114
+#define IDS_TREE                        10115
+#define IDS_RECT                        10116
+#define IDS_PROGRESSBAR                 10117
+#define IDS_SPINBUTTON                  10118
+#define IDS_URL                         10119
+#define IDS_ROUNDSLIDER                 10120
+#define IDS_BLOCKVIEW                   10121
+#define IDS_SLIDEVIEW                   10122
+#define IDS_HTML                        10123
+#define IDS_DWGPREVIEW                  10124
+#define IDS_LISTVIEW                    10125
+#define IDS_BLOCKLIST                   10126
+#define IDS_OPTIONLIST                  10127
+#define IDS_ACTIVEX                     10128
+#define IDS_DWGLIST                     10129
+#define IDS_ANIMATION                   10130
+#define IDS_IMAGECOMBOBOX               10131
+#define IDS_GRID                        10132
+#define IDS_SPLITTER                    10133
+#define IDS_HATCH                       10134
+#define IDS_FILEDLGCTRL                 10135
 
 // Next default values for new objects
 // 

@@ -74,8 +74,8 @@ static UINT GetDialogTemplateIdFromForm( CDclFormObject* pSourceForm )
 CModalVDcl::CModalVDcl(CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/)
 : CSnapDlg(pSourceForm, GetDialogTemplateIdFromForm( pSourceForm ), pParent)
 , mDialogX( *this, pSourceForm )
-, mnX( (pParams && pParams->lpData)? ((LPPOINT)pParams->lpData)->x : -1 )
-, mnY( (pParams && pParams->lpData)? ((LPPOINT)pParams->lpData)->y : -1 )
+, mnX( pParams? pParams->position.x : -1 )
+, mnY( pParams? pParams->position.y : -1 )
 {
 	m_bShowGrip = pSourceForm->GetControlProperties()->GetBoolProperty(nResizable);
 }

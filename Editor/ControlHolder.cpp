@@ -1311,6 +1311,7 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 	case CtlGraphicButton:
 		mpDlgControl->OnApplyProperty( pProp );
 		mpDlgControl->GetControl()->ShowWindow( SW_SHOW ); //make it visible even if the 'nVisible' property is false
+		mpDlgControl->GetControl()->Invalidate();
 		return;
 	}
 

@@ -196,7 +196,7 @@ void CControlPane::SetGrphcBtnsParents(CDclControlObject *pGrphcBtn, CDclControl
 		pGrphcBtn->GetWindow()->ShowWindow(pGrphcBtn->m_pVisible->GetBooleanValue());
 }
 
-void CControlPane::RecalcLayout( bool bIgnoreSplitters /*= false*/ )
+void CControlPane::RecalcLayout()
 {
 	if( !mpSourceForm )
 		return;
@@ -204,21 +204,18 @@ void CControlPane::RecalcLayout( bool bIgnoreSplitters /*= false*/ )
 	if( mpSourceForm->mDclControls.GetCount() == 0 )
 		return;
 
-	if( !bIgnoreSplitters )
+	// first lets calc all the control positions for any splitter controls.
+	POSITION pos = mpSourceForm->mDclControls.GetHeadPosition();
+	mpSourceForm->mDclControls.GetNext( pos );
+	while( pos )
 	{
-		// first lets calc all the control positions for any splitter controls.
-		POSITION pos = mpSourceForm->mDclControls.GetHeadPosition();
-		mpSourceForm->mDclControls.GetNext( pos );
-		while( pos )
-		{
-			CDclControlObject* pControl = mpSourceForm->mDclControls.GetNext( pos );
-			if( pControl != NULL && pControl->GetType() == CtlSplitter )
-				ResetControlsPos( pControl );
-		}
+		CDclControlObject* pControl = mpSourceForm->mDclControls.GetNext( pos );
+		if( pControl != NULL && pControl->GetType() == CtlSplitter )
+			ResetControlsPos( pControl );
 	}
 
 	//next lets calc all the control positions for all NON-splitter controls.
-	POSITION pos = mpSourceForm->mDclControls.GetHeadPosition();
+	pos = mpSourceForm->mDclControls.GetHeadPosition();
 	mpSourceForm->mDclControls.GetNext( pos );
 	while( pos )
 	{

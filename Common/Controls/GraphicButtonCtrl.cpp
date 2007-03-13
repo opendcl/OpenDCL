@@ -37,6 +37,12 @@ CGraphicButtonCtrl::~CGraphicButtonCtrl()
 {
 }
 
+DWORD CGraphicButtonCtrl::GetWndStyle() const
+{
+	DWORD dwStyle = CDialogControl::GetWndStyle();
+	return dwStyle;
+}
+
 bool CGraphicButtonCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
@@ -58,12 +64,6 @@ bool CGraphicButtonCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp
 		}
 	}
 	return !bFailed;
-}
-
-DWORD CGraphicButtonCtrl::GetWndStyle() const
-{
-	DWORD dwStyle = CDialogControl::GetWndStyle();
-	return dwStyle;
 }
 
 void CGraphicButtonCtrl::SetPicture( CPictureObject* pPict )

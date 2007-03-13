@@ -38,7 +38,7 @@ CArxAxContainerCtrl::~CArxAxContainerCtrl()
 
 bool CArxAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
-	bool bSuccess = CAxContainerCtrl::Create( pParentWnd, nID );
+	bool bSuccess = __super::Create( pParentWnd, nID );
 
 	if( GetTemplate()->GetLngProperty(nEventInvoke) == 1 )
 		m_bInvokeWithSendString = true;

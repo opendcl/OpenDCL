@@ -19,6 +19,7 @@
 #include "GridSpacingDlg.h"
 #include "ObjectBrowser.h"
 #include "EditorWorkspace.h"
+#include "DclControlprop.h"
 #include "SharedRes.h"
 
 
@@ -932,177 +933,12 @@ CDclFormObject* CObjectDCLApp::AddNewDclForm(DclFormType nType)
 	CDclFormObject* pNewDclForm = activeProject->AddForm( nType );
 	if( pNewDclForm )
 	{	
-		AddDclFormProperties(pNewDclForm, nType); //add properties to the new dcl form object
+		AddDefaultProperties(pNewDclForm->GetControlProperties(), -1, -1); //add properties to the new dcl form object
 		CProjectTreeCtrl *pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
 		if( pProjTree )
 			pProjTree->AddFormToTree(pNewDclForm, true); //add the new dcl form to the project tree
 	}
 	return pNewDclForm;
-}
-
-
-void CObjectDCLApp::AddDclFormProperties(CDclFormObject *pNewDclForm, DclFormType nType) 
-{
-	CString sText;
-	CString sTrue;
-	CString sFalse;
-	sTrue = theWorkspace.LoadResourceString(IDS_TRUE);
-	sFalse = theWorkspace.LoadResourceString(IDS_FALSE);
-	CProject *pProject = activeProject;
-
-	// create a new arx object to hold the new dcl form's properties
-	CDclControlObject* pArxPropertyObject = pNewDclForm->GetControlProperties();
-
-	// add standard properties
-
-	// lets create a name for the new dcl form
-	CString sFormName;
-	sFormName.Format( _T("%s%d"), theWorkspace.LoadResourceString(IDS_DCLFORM), pProject->GetDclFormList().GetCount() );
-	AddControlStdProperty(pArxPropertyObject, nName, sFormName, PropString); // add the name property
-
-	//original ODCL 3 code created a default global lisp symbol name; this has been removed (commented below) 
-	//in favor of an empty value in order to use the default name calculated at runtime   2007-02-15 [ORW]
-	CString sGlobalVarName/* = CString( pProject->GetKeyName() ) + _T('_') + sFormName*/;
-	AddControlStdProperty(pArxPropertyObject, nGlobalVarName, sGlobalVarName, PropString);
-
-	// add the nObjectBrowser property
-	AddControlStdProperty(pArxPropertyObject, nObjectBrowser, CString(), PropActiveXMethods);
-	
-	// add properties per their dcl form type
-	switch (nType)
-	{
-	case VdclFileDialog:
-		// add the allow user to resize property
-		AddControlStdProperty(pArxPropertyObject, nResizable, sTrue, PropBool);
-		// add the height property with a default width
-		AddControlStdProperty(pArxPropertyObject, nWidth, LTOA(nDeCtlFileWidth), PropLong);
-		// add the height property with a default height
-		AddControlStdProperty(pArxPropertyObject, nHeight, LTOA(nDeCtlFileHeight+6), PropLong);
-		    
-		sText = theWorkspace.LoadResourceString(IDS_OPEN);
-		// add TitleBarText property
-		AddControlStdProperty(pArxPropertyObject, nTitleBarText, sText /*"Open"*/, PropString);
-                 
-		// add the events to the property list
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventInitialize, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventClose, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventSize, CString(), PropEvent);
-		break;
-	case VdclModal:
-		// add the allow user to resize property
-		AddControlStdProperty(pArxPropertyObject, nResizable, sFalse, PropBool);
-		// add the height property with a default width of 350
-		AddControlStdProperty(pArxPropertyObject, nWidth, LTOA(nDeModalWidth), PropLong);
-		// add the height property with a default height of 250
-		AddControlStdProperty(pArxPropertyObject, nHeight, LTOA(nDeModalHeight), PropLong);
-		
-		// add the min and max properties
-		AddControlStdProperty(pArxPropertyObject, nMinDialogWidth, LTOA(nDeMinSize), PropLong);
-		AddControlStdProperty(pArxPropertyObject, nMinDialogHeight, LTOA(nDeMinSize), PropLong);
-		AddControlStdProperty(pArxPropertyObject, nMaxDialogWidth, LTOA(nDeMaxSize), PropLong);
-		AddControlStdProperty(pArxPropertyObject, nMaxDialogHeight, LTOA(nDeMaxSize), PropLong);
-            
-		sText = theWorkspace.LoadResourceString(IDS_NONE2);
-		// add Icon property
-		AddControlStdProperty(pArxPropertyObject, nImageList, theWorkspace.LoadResourceString(IDS_IMAGELIST), PropImageList);
-		AddControlStdProperty(pArxPropertyObject, nIcon, sText /*"None" */, PropPicture);
-            
-		// add TitleBarText property
-		AddControlStdProperty(pArxPropertyObject, nTitleBarText, sFormName, PropString);
-                 
-		// add the events to the property list
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventInitialize, CString(), PropEvent);
-    AddControlHiddenProperty(pArxPropertyObject, nFormEventOnOk, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventClose, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventSize, CString(), PropEvent);
-		if (nCurrentPurchaseMode != nPurchasedR14Pro)
-			AddControlHiddenProperty(pArxPropertyObject, nFormEventCancelClose, CString(), PropEvent);
-		break;
-	case VdclModeless:
-		// add the allow user to resize property
-		AddControlStdProperty(pArxPropertyObject, nResizable, sTrue, PropBool);
-		// add the height property with a default width of 250
-		AddControlStdProperty(pArxPropertyObject, nWidth, LTOA(nDeModelessWidth), PropLong);
-		// add the height property with a default height of 150
-		AddControlStdProperty(pArxPropertyObject, nHeight, LTOA(nDeModelessHeight), PropLong);
-
-		// add the min and max properties
-		AddControlStdProperty(pArxPropertyObject, nMinDialogWidth, LTOA(nDeMinSize), PropLong);
-		AddControlStdProperty(pArxPropertyObject, nMinDialogHeight, LTOA(nDeMinSize), PropLong);
-		AddControlStdProperty(pArxPropertyObject, nMaxDialogWidth, LTOA(nDeMaxSize), PropLong);
-		AddControlStdProperty(pArxPropertyObject, nMaxDialogHeight, LTOA(nDeMaxSize), PropLong);
-            
-		sText = theWorkspace.LoadResourceString(IDS_NONE2);
-		// add Icon property
-		AddControlStdProperty(pArxPropertyObject, nImageList, theWorkspace.LoadResourceString(IDS_IMAGELIST), PropImageList);
-		AddControlStdProperty(pArxPropertyObject, nIcon, sText /*"None" */, PropPicture);
-            
-		// add TitleBarText property
-		AddControlStdProperty(pArxPropertyObject, nTitleBarText, sFormName, PropString);
-        
-		// add the events to the property list
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventClose, CString(), PropEvent);
-    AddControlHiddenProperty(pArxPropertyObject, nFormEventOnOk, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventInitialize, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventSize, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nDocEventActivated, CString(), PropEvent);
-		if (nCurrentPurchaseMode != nPurchasedR14Pro)
-			AddControlHiddenProperty(pArxPropertyObject, nFormEventCancelClose, CString(), PropEvent);		
-            
-		break;
-	case VdclDockable:
-		if (nCurrentPurchaseMode != nPurchasedR14Pro)
-		{
-			// add the allow user to resize property
-			AddControlStdProperty(pArxPropertyObject, nResizable, sTrue, PropBool);
-		}
-		else
-		{
-			// add the allow user to min dialog width and height properties
-			AddControlStdProperty(pArxPropertyObject, nMinDialogWidth, LTOA(nDeMinDialogWidth), PropLong);
-			AddControlStdProperty(pArxPropertyObject, nMinDialogHeight, LTOA(nDeMinDialogHeight), PropLong);
-		}
-		
-		// add TitleBarText property
-		AddControlStdProperty(pArxPropertyObject, nTitleBarText, sFormName, PropString);
-        
-		// add the dockable sides property
-		AddControlStdProperty(pArxPropertyObject, nDockableSides, LTOA(0), PropEnum);
-		// add the height property with a default height of 150
-		AddControlStdProperty(pArxPropertyObject, nHeight, LTOA(nDeDockableHeight), PropLong);
-		// add the height property with a default width of 250
-		AddControlStdProperty(pArxPropertyObject, nWidth, LTOA(nDeDockableWidth), PropLong);
-		
-		// add the events to the property list
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventClose, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventInitialize, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventSize, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nDocEventActivated, CString(), PropEvent);
-		                
-		break;
-	case VdclConfigTab:
-		// add the caption properties
-		AddControlStdProperty(pArxPropertyObject, nCfgTabCaption, sFormName, PropString);
-		// add the height property with a default height of 380
-		AddControlStdProperty(pArxPropertyObject, nHeight, LTOA(nDeConfigTabHeight), PropLong);
-		// add the height property with a default width of 600
-		AddControlStdProperty(pArxPropertyObject, nWidth, LTOA(nDeConfigTabWidth), PropLong);
-		
-		// add the events to the property list
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventInitialize, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nFormEventShow, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nCfgEventCancel, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nCfgEventHelp, CString(), PropEvent);
-		AddControlHiddenProperty(pArxPropertyObject, nCfgEventOK, CString(), PropEvent);
-		
-		break;
-	case VdclTabForm:
-		// add the height property with a default height of 150
-		AddControlStdProperty(pArxPropertyObject, nHeight, LTOA(nDeModelessHeight), PropLong);
-		// add the height property with a default width of 250
-		AddControlStdProperty(pArxPropertyObject, nWidth, LTOA(nDeModelessWidth), PropLong);
-		break;
-	}	 
 }
 
 void CObjectDCLApp::OnToolsDefaultfont() 

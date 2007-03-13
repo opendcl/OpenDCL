@@ -7,7 +7,7 @@
 #include "PropertyObject.h"
 #include "ToolTips.h"
 #include "InvokeMethod.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 #include "PropertyIds.h"
 
 const TCHAR sNumericFilter[] = _T("Ee +0123456789./'\"-");
@@ -189,7 +189,7 @@ void VdclNumericEdit::OnChange()
 	if (m_ArxControl == NULL)
 	{
 		// Send Notification to parent of ListView ctrl
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 
 		//pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, GetCurrentItemColorIndex());
 		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sText);
@@ -308,7 +308,7 @@ void VdclNumericEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	
 	if (m_ArxControl == NULL)
 	{
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 			
 		if (nChar == VK_UP || nChar == VK_DOWN)
 		{
@@ -471,7 +471,7 @@ BOOL VdclNumericEdit::PreTranslateMessage(MSG* pMsg)
 			::TranslateMessage(pMsg);
 			::DispatchMessage(pMsg);
 			
-			CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();		
+			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();		
 			pListCtrl->MoveDown();		
 			return TRUE;				// DO NOT process further
 		}
@@ -483,7 +483,7 @@ BOOL VdclNumericEdit::PreTranslateMessage(MSG* pMsg)
 			::TranslateMessage(pMsg);
 			::DispatchMessage(pMsg);
 			
-			CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();		
+			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();		
 			pListCtrl->MoveDown();		
 			return TRUE;				// DO NOT process further
 		}
@@ -495,7 +495,7 @@ BOOL VdclNumericEdit::PreTranslateMessage(MSG* pMsg)
 			SetWindowText(m_strOldValue);
 			
 			// Send Notification to parent of ListView ctrl
-			CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 			pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, m_strOldValue);			
 			pListCtrl->HideEditControls();
 			return TRUE;				// DO NOT process further

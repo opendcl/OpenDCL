@@ -32,7 +32,7 @@
 #include "OptionListBox.h"
 #include "VdclStatic.h"
 #include "GsPreviewCtrl.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 #include "OdclListCtrl.h"
 #include "VdclCheckBox.h"
 #include "VdclGroupBox.h"
@@ -149,14 +149,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}	
 	
-	case CtlGrid:
-		{
-			CSpreadSheet *pControl = new CSpreadSheet;
-			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
-			pControl->SetThemeHelper(pPane->GetThemeHelper());
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}	
+	case CtlGrid: return *new CArxGridCtrl( pTemplate, pPane, nID );
 	case CtlListView: return *new OdclListCtrl( *pPane, pTemplate, nID );
 	case CtlBlockList: return *new OdclListCtrl( *pPane, pTemplate, nID );
 	
@@ -558,11 +551,12 @@ void CArxDialogControl::UpdateProperty(CDclControlObject *pControl, CControlPane
 	switch( pControl->GetType() )
 	{ //these controls implement the new CDialogControl interface, so use that
 	case CtlActiveX:
-	case CtlGraphicButton:
-	case CtlTabStrip:
-	case CtlSlideView:
-	case CtlListView:
 	case CtlBlockList:
+	case CtlGraphicButton:
+	case CtlGrid:
+	case CtlListView:
+	case CtlSlideView:
+	case CtlTabStrip:
 		CDialogControl* pDlgControl = pControl->GetControlInstance();
 		if( !pDlgControl )
 			return;
@@ -670,7 +664,7 @@ void CArxDialogControl::ResetImageList(CDclControlObject *pArxObject, CWnd *pCon
 		}
 		case CtlGrid:
 		{
-			CSpreadSheet* pListCtrl = (CSpreadSheet*)pControl;
+			CArxGridCtrl* pListCtrl = (CArxGridCtrl*)pControl;
 			RefCountedPtr< CImageListObject > pImageList = pArxObject->GetImageList();
 			if (pImageList)
 			{
@@ -860,11 +854,11 @@ void CArxDialogControl::UpdateFont(CDclControlObject *pArxObject, CWnd *pControl
 	//	((OdclListCtrl*)pControl)->SetFont(pFont);		
 	//	break;
 	//	}	
-	case CtlGrid:	
-		{		
-		((CSpreadSheet*)pControl)->SetFont(pFont);		
-		break;
-		}	
+	//case CtlGrid:	
+	//	{		
+	//	((CArxGridCtrl*)pControl)->SetFont(pFont);		
+	//	break;
+	//	}	
 	}
 	pControl->Invalidate();
 }
@@ -993,7 +987,7 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 
 		case nRowHeader:
 		{
-			((CSpreadSheet*)pControlWnd)->m_bHasRowHeader = pControl->GetBoolProperty(nRowHeader) == TRUE;
+			((CArxGridCtrl*)pControlWnd)->m_bHasRowHeader = pControl->GetBoolProperty(nRowHeader) == TRUE;
 			break;
 		}
 

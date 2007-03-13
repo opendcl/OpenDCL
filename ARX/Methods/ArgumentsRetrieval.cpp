@@ -442,38 +442,14 @@ bool GetIntArgument(int nIndex, int *pArg, CString sMethod)
 	}
 
 	if (ListData == NULL)
-	{
 		return false;
-	}
 
-	if (ListData->restype == RTT)
-	{
-		// get the first argument required
-		*pArg = 1;	
-		return true; 
-	}
-	else if (ListData->restype == RTNIL)
-	{
-		// get the first argument required
-		*pArg = 0;	
-		return true; 
-	}
-	else
-	{
-		if (IsArgumentInt(ListData->restype, nIndex, sMethod)) 
-		{		
-			// get the first argument required
-			*pArg = ListData->resval.rint;		
-			return true; 
-		}
-		else
-		{	
-			// inform the programmer that he did not make the correct call
-		   return false; 
-		}
-	}
+	if (!IsArgumentInt(ListData->restype, nIndex, sMethod))
+		return false;
+	*pArg = ListData->resval.rint;		
 	return true; 
 }
+
 //*****************************************************************************
 // 
 // Method: FindOptionalIntArgument()

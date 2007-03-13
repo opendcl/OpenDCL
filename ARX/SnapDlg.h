@@ -19,6 +19,7 @@ class CDialogControl;
 class CSnapDlg : public CDialog
 {
 	CDclFormObject* mpSourceForm;
+	bool mbHasTitleBar;
 
 public:
 	HICON				m_hIconAcad;

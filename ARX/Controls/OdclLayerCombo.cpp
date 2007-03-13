@@ -9,7 +9,7 @@
 #include "PropertyIds.h"
 #include "AcadColorTable.h"
 #include "InvokeMethod.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 #include "ToolTips.h"
 
 
@@ -260,7 +260,7 @@ void OdclLayerCombo::OnSelchange()
 	if (m_ArxControl == NULL)
 	{			
 		// Send Notification to parent of ListView ctrl
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent()->GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
 		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);		
 		pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, GetItemData(nSel));
 		// fire the on Grid edit cell event.

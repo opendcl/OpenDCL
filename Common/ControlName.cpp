@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ControlName.h"
-#include "Resource.h"
+#include "SharedRes.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
 #include "DclControlObject.h"
@@ -47,7 +47,7 @@ CString GetControlName( ControlType type )
 	case CtlGrid: return theWorkspace.LoadResourceString(IDS_GRID);
 	case CtlSplitter: return theWorkspace.LoadResourceString(IDS_SPLITTER);
 	case CtlHatch: return theWorkspace.LoadResourceString(IDS_HATCH);
-	case CtlFileDlgCtrl: return theWorkspace.LoadResourceString(IDS_FILEDLG2);
+	case CtlFileDlgCtrl: return theWorkspace.LoadResourceString(IDS_FILEDLGCTRL);
 	}
 	return _T("Custom");
 }

@@ -157,7 +157,9 @@ void CPictureBox::SetIcon(UINT nId)
 	m_hIcon = LoadIcon(hInstResource, MAKEINTRESOURCE(nId));
 	ICONINFO ii;
 	GetIconInfo( m_hIcon, &ii );
-  	
+ 	m_cxIcon = ii.xHotspot * 2;
+	m_cyIcon = ii.yHotspot * 2;
+ 	
 	m_ImageList.Create( ii.xHotspot * 2, ii.yHotspot * 2, ILC_COLOR8 | ILC_MASK, 0, 1 );
 	m_ImageList.Add(m_hIcon);
 	::DeleteObject(ii.hbmMask);

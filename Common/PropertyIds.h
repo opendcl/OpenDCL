@@ -253,5 +253,6 @@ enum PropertyId
 	nDisplaySeconds			= 249,
 	nDisplayPercentage		= 250,
 	nFormEventOnOk = 251,
-	nMaxPropertyId	= 251,
+	nTitleBar = 252,
+	nMaxPropertyId	= 252,
 };

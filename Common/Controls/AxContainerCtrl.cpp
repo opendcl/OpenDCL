@@ -667,38 +667,28 @@ UINT CAxContainerCtrl::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo*
 	UINT ctVars = pTypeAttr->cVars;
 	UINT ctFuncs = pTypeAttr->cFuncs;
 	pTypeInfo->ReleaseTypeAttr( pTypeAttr );
-	
+
+	//Remove any existing ActiveX methods properties before inserting the new ones
+	POSITION pos = pControl->GetPropertyList().GetHeadPosition();
+	while( pos )
+	{
+		POSITION posAt = pos;
+		RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetNext( pos );
+		assert( pProp != NULL );
+		if( pProp->GetType() == PropActiveXMethods )
+		{
+			//Question for Owen--what do I need to do for cleanup purposes here?
+			//Answer: nothing, the ref counted pointers will clean up after themselves [ORW]
+			pControl->GetPropertyList().RemoveAt( posAt );
+		}
+	}
+
 	// create the new property and insert at the second position after the (ActiveX PropertyObject) property item
-	// If there are already properties there, then replace the old properties
-	// with these new ones.
 	RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropActiveXMethods);
 	pProp->GetAxInterfaceDescriptorPtr()->SetMethods( new std::vector< RefCountedPtr< AxMethodDescriptor > > );
 	pProp->SetID( nObjectBrowser ); // set the id of the new property
-	POSITION pos = pControl->GetPropertyList().GetHeadPosition();
-	pControl->GetPropertyList().InsertAfter( pos, pProp );
-
-	if (pos != NULL) {	
-		//Remove any old methods that exist
-		pControl->GetPropertyList().GetNext(pos); //Step to new methods
-		pControl->GetPropertyList().GetNext(pos); //Step to past new methods
-		while (pos != NULL) {
-			RefCountedPtr< CPropertyObject > pPropCurrent = pControl->GetPropertyList().GetAt(pos);
-			if (pPropCurrent != NULL && pPropCurrent->GetType() == PropActiveXMethods) {
-				//Question for Owen--what do I need to do for cleanup purposes here?
-				pControl->GetPropertyList().RemoveAt(pos);
-				//Position is now invalid. Reset to the start of the list, then
-				//step over the methods at the start and run through the whole thing again.
-				//Not super efficient, but if the methods are all at the start, it won't be
-				//too bad.
-				pos = pControl->GetPropertyList().GetHeadPosition();
-				pControl->GetPropertyList().GetNext(pos); //Step to new methods
-				pControl->GetPropertyList().GetNext(pos); //Step to past new methods
-			} else {
-				//Not a method, step to the next property
-				pControl->GetPropertyList().GetNext(pos);
-			}
-		}
-	}
+	POSITION posFirstProp = pControl->GetPropertyList().GetHeadPosition();
+	pControl->GetPropertyList().InsertAfter( posFirstProp, pProp );
 
 	//Add a new property for each Get/Put function
 	for( UINT idxFunc = 0; idxFunc < ctFuncs; ++idxFunc )

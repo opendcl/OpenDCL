@@ -68,8 +68,8 @@ CModelessDlg::CModelessDlg(CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/,
 : CSnapDlg(pSourceForm, CModelessDlg::IDD, pParent)
 , mpParent( pParent )
 , mDialogX( *this, pSourceForm )
-, mnX( (pParams && pParams->lpData)? ((LPPOINT)pParams->lpData)->x : -1 )
-, mnY( (pParams && pParams->lpData)? ((LPPOINT)pParams->lpData)->y : -1 )
+, mnX( pParams? pParams->position.x : -1 )
+, mnY( pParams? pParams->position.y : -1 )
 , mbResizable( pSourceForm->GetControlProperties()->GetBoolProperty(nResizable) )
 {
 	m_bAsModal = false;

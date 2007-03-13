@@ -51,7 +51,7 @@
 #include "PrinterComboBox.h"
 #include "AxContainerCtrl.h"
 #include "ComboBoxFolder.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 #include "ToolTips.h"
 #include "PropertyNames.h"
 #include "DclControlObject.h"

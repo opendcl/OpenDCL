@@ -7,7 +7,7 @@
 #include "PropertyObject.h"
 #include "ToolTips.h"
 #include "InvokeMethod.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 #include "PropertyIds.h"
 
 const int CmboStyle_Simple		= 1;
@@ -207,7 +207,7 @@ void VdclComboBox::OnEditchange()
 	else
 	{
 		// Send Notification to parent of ListView ctrl
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent()->GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
 		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sText);	
 		
 		// fire the on Grid edit cell event.
@@ -281,7 +281,7 @@ void VdclComboBox::OnSelchange()
 	if (m_ArxControl == NULL)
 	{		
 		// Send Notification to parent of ListView ctrl
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent()->GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
 		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);	
 		
 		if (m_pGridEdit != NULL)

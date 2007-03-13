@@ -12,7 +12,7 @@
 
 #include "stdafx.h"
 #include "PercentageEdit.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 
 
 //C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C_C/
@@ -41,7 +41,7 @@ END_MESSAGE_MAP()
 
 void CPercentageEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 		
 	if (nChar == VK_UP)
 		pListCtrl->MoveUp();		
@@ -149,7 +149,7 @@ void CPercentageEdit::OnChange()
 
 
 	// Send Notification to parent of ListView ctrl
-	CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 	//pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, GetCurrentItemColorIndex());
 	pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sText);
 
@@ -180,7 +180,7 @@ BOOL CPercentageEdit::PreTranslateMessage(MSG* pMsg)
 			::TranslateMessage(pMsg);
 			::DispatchMessage(pMsg);
 			
-			CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();		
+			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();		
 			pListCtrl->MoveDown();		
 			return TRUE;				// DO NOT process further
 		}
@@ -192,7 +192,7 @@ BOOL CPercentageEdit::PreTranslateMessage(MSG* pMsg)
 			SetWindowText(m_strOldValue);
 			
 			// Send Notification to parent of ListView ctrl
-			CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 
 			pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, m_strOldValue);
 			

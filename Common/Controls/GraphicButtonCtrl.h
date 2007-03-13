@@ -33,8 +33,8 @@ public:
 	CPictureObject* GetPressedPicture() const { return mpPressedPicture; }
 
 protected:
-	void UpdateButtonGraphic();
+	DECLARE_MESSAGE_MAP();
 
 protected:
-	DECLARE_MESSAGE_MAP();
+	void UpdateButtonGraphic();
 };

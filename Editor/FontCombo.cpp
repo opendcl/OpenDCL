@@ -2,7 +2,7 @@
 //
 
 #include "Stdafx.h"
-#include "resource.h"
+#include "SharedRes.h"
 #include "FontCombo.h"
 #include "ToolBox.h"
 #include "ObjectDCLView.h"

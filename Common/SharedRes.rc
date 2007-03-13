@@ -56,6 +56,21 @@ IDI_LABEL               ICON                    "res\\Label.ico"
 IDI_FILTER              ICON                    "Res\\Filter.ico"
 IDI_PICK                ICON                    "Res\\pick.ico"
 IDI_SELECT              ICON                    "Res\\Select.ico"
+IDI_FOLDER              ICON                    "Res\\Folder.ico"
+IDI_PICSM               ICON                    "Res\\PickSmall.ico"
+IDI_ACADFONT            ICON                    "Res\\SHXFont.ico"
+IDI_TRUEFONT            ICON                    "Res\\truefont.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_ARROWHEADS          BITMAP                  "Res\\arrowheads.bmp"
+IDB_OPBTNSELH           BITMAP                  "Res\\OpButton4.bmp"
+IDB_OPBTNSEL            BITMAP                  "Res\\OpButton2.bmp"
+IDB_OPBTNNONH           BITMAP                  "Res\\OpButton3.bmp"
+IDB_OPBTNNON            BITMAP                  "Res\\OpButton1.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -425,6 +440,7 @@ BEGIN
     IDS_PROP_DISPLAYSECONDS "DisplaySeconds"
     IDS_PROP_DISPLAY_PERCENTAGE "DisplayPercentage"
     IDS_EVENT_FORM_ONOK     "OK"
+    IDS_PROP_TITLEBAR       "TitleBar"
 END
 
 STRINGTABLE 
@@ -432,6 +448,57 @@ BEGIN
     IDS_OPTION2             "Option Item 2"
     IDS_OPTION3             "Option Item 3"
     IDS_FILEDLGFILTERDEF    "AutoCAD Drawing|*.dwg;*.dxf|AutoLISP File(*.lsp,*.fas;*.vlx)|*.lsp,*.fas;*.vlx|"
+    IDS_SELFOLDER           "Select a Folder"
+    IDS_OPEN                "Open"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_DCLFORM             "Form"
+    IDS_POINTER             "Pointer"
+    IDS_LABEL               "Label"
+    IDS_TEXTBUTTON          "TextButton"
+    IDS_GRAPHICBUTTON       "GraphicButton"
+    IDS_FRAME               "Frame"
+    IDS_TEXTBOX             "TextBox"
+    IDS_CHECKBOX            "CheckBox"
+    IDS_OPTION              "Option"
+    IDS_COMBOBOX            "ComboBox"
+    IDS_LISTBOX             "ListBox"
+    IDS_SCROLLBAR           "ScrollBar"
+    IDS_SLIDERBAR           "SliderBar"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PICTUREBOX          "PictureBox"
+    IDS_TABS                "TabControl"
+    IDS_MONTHCAL            "MonthPicker"
+    IDS_TREE                "TreeControl"
+    IDS_RECT                "Rectangle"
+    IDS_PROGRESSBAR         "ProgressBar"
+    IDS_SPINBUTTON          "SpinButton"
+    IDS_URL                 "UrlLink"
+    IDS_ROUNDSLIDER         "AngleSlider"
+    IDS_BLOCKVIEW           "BlockView"
+    IDS_SLIDEVIEW           "SlideView"
+    IDS_HTML                "HtmlControl"
+    IDS_DWGPREVIEW          "DwgPreview"
+    IDS_LISTVIEW            "ListView"
+    IDS_BLOCKLIST           "BlockList"
+    IDS_OPTIONLIST          "OptionList"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ACTIVEX             "Insert ActiveX Control"
+    IDS_DWGLIST             "DwgList"
+    IDS_ANIMATION           "Animation"
+    IDS_IMAGECOMBOBOX       "ImageCombo"
+    IDS_GRID                "Grid"
+    IDS_SPLITTER            "Splitter"
+    IDS_HATCH               "Hatch"
+    IDS_FILEDLGCTRL         "CustFileDlg"
 END
 
 #endif    // English (U.S.) resources

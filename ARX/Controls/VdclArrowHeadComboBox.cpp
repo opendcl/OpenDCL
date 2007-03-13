@@ -7,7 +7,7 @@
 #include "PropertyObject.h"
 #include "ToolTips.h"
 #include "InvokeMethod.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 #include "PropertyIds.h"
 
 
@@ -184,7 +184,7 @@ void VdclArrowHeadComboBox::OnSelchange()
 	if (m_ArxControl == NULL)
 	{		
 		// Send Notification to parent of ListView ctrl
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent()->GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
 		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);		
 		pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, nSel);
 		// fire the on Grid edit cell event.

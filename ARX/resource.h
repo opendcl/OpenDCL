@@ -12,7 +12,6 @@
 #define IDS_OLDERSLD                    107
 #define IDS_DWGNOTLOADING               108
 #define IDS_BLANKHTML                   109
-#define IDS_SELFOLDER                   110
 #define IDS_SELFILES                    111
 #define IDS_NOLIST1                     112
 #define IDS_NOLIST2                     113
@@ -24,12 +23,10 @@
 #define IDS_VARNAMEINCORRECT3           122
 #define IDS_AXFILENOTLOADING2           123
 #define IDB_FOLDER                      129
-#define IDB_ARROWHEADS                  202
 #define IDI_LAYERTHAW                   203
 #define IDI_LAWERFROZEN                 204
 #define IDI_LAYEROFF                    205
 #define IDI_LAYERON                     206
-#define IDI_FOLDER2                     208
 #define IDI_DMICON                      212
 #define IDI_HELP                        216
 #define IDI_PAN                         225
@@ -40,16 +37,9 @@
 #define IDC_HAND                        239
 #define IDI_ZOOM                        240
 #define IDI_LARGEBLOCK                  246
-#define IDI_ACADFONT                    247
-#define IDI_TRUEFONT                    249
 #define IDI_PRINTER                     250
 #define IDI_PLOTTER                     251
 #define IDI_ACADICON                    253
-#define IDB_OPBTNSELH                   256
-#define IDI_PICSM                       256
-#define IDB_OPBTNNON                    257
-#define IDB_OPBTNSEL                    258
-#define IDB_OPBTNNONH                   259
 #define IDI_PICKBTN                     260
 #define IDB_R14LARGE                    300
 #define IDB_R14SMALL                    301

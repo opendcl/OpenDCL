@@ -412,11 +412,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RES\IDR_MAIN.ICO"
+				RelativePath="..\Common\Res\idr_main.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\idr_main.ico"
+				RelativePath=".\RES\IDR_MAIN.ICO"
 				>
 			</File>
 			<File
@@ -432,11 +432,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\Label.ico"
+				RelativePath=".\RES\Label.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Label.ico"
+				RelativePath="..\Common\Res\Label.ico"
 				>
 			</File>
 			<File
@@ -516,11 +516,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RES\PICK.ICO"
+				RelativePath="..\Common\Res\pick.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\pick.ico"
+				RelativePath=".\RES\PICK.ICO"
 				>
 			</File>
 			<File
@@ -548,19 +548,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\Select.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Res\Select.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\SendToBack.ico"
+				RelativePath="..\Common\Res\Select.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\SHXFont.ico"
+				RelativePath=".\RES\SendToBack.ico"
 				>
 			</File>
 			<File
@@ -617,10 +613,6 @@
 			</File>
 			<File
 				RelativePath=".\RES\Tree.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\RES\TRUEFONT.ICO"
 				>
 			</File>
 			<File
@@ -702,10 +694,6 @@
 			</File>
 			<File
 				RelativePath=".\ControlHolder.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ControlName.h"
 				>
 			</File>
 			<File
@@ -1027,10 +1015,6 @@
 			</File>
 			<File
 				RelativePath=".\ControlHolder.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ControlName.cpp"
 				>
 			</File>
 			<File
@@ -1407,6 +1391,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Common\ControlName.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\ControlName.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Common\ControlPane.cpp"
 				>
 			</File>
@@ -1747,6 +1739,22 @@
 				</File>
 				<File
 					RelativePath="..\Common\Controls\GraphicButtonCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\GridCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\GridCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\GridCtrlHdr.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\GridCtrlHdr.h"
 					>
 				</File>
 				<File

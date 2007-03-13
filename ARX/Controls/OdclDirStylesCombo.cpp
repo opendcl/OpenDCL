@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "OdclDirStylesCombo.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 #include "CxAcadSlide.h"
 
 #ifdef _DEBUG
@@ -61,7 +61,7 @@ void OdclDirStylesCombo::OnSelchange()
 	sString.ReleaseBuffer();
 
 	// Send Notification to parent of ListView ctrl
-	CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent()->GetParent();
+	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
 	pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);		
 	
 	// fire the on Grid edit cell event.

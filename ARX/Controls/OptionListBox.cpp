@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "OptionListBox.h"
 #include "InvokeMethod.h"
-#include "Resource.h"
+#include "SharedRes.h"
 #include "AcadColorTable.h"
 #include "PropertyIds.h"
 #include "DclControlObject.h"

@@ -94,7 +94,6 @@ public:
 	CDclFormObject* AddNewDclForm(DclFormType nType);
 	CObjectDCLView* AddDclFormAndView(DclFormType nType);
 	CString CreateUniqueName();
-	void AddDclFormProperties(CDclFormObject *pNewDclForm, DclFormType nType);
 	
 	CMainFrame* GetMainFrame() { return (CMainFrame*)m_pMainWnd; }
 

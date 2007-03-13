@@ -3,12 +3,12 @@
 
 #include "Stdafx.h"
 #include "FontCombo.h"
-#include "Resource.h"
+#include "SharedRes.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "PropertyIds.h"
 #include "InvokeMethod.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 
 
 // Constant and should not be changed unless 
@@ -792,7 +792,7 @@ void CFontCombo::OnSelchange()
 	if (m_ArxControl == NULL)
 	{		
 		// Send Notification to parent of ListView ctrl
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent()->GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
 		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);
 		DWORD nData = GetFontTypeId(sString);
 

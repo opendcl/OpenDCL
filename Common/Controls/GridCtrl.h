@@ -1,10 +1,10 @@
-// SpreadSheet.h : header file
+// GridCtrl.h : header file
 //
 
 #pragma once
 
-#include "OdclListCtrl.h"
-#include "SpreadSheetHdr.h"
+#include "DialogControl.h"
+#include "GridCtrlHdr.h"
 #include "ThemeHelperST.h"
 #include "PPToolTip.h"
 
@@ -94,37 +94,23 @@ struct _RowData
 	}
 };
 
+
 /////////////////////////////////////////////////////////////////////////////
-// CSpreadSheet window
+// CGridCtrl window
 
-class CSpreadSheet : public CListCtrl
+class CGridCtrl : public CListCtrl, public CDialogControl
 {
-// Construction
-public:
-	CSpreadSheet();
 
-	enum EHighlight {
-        HIGHLIGHT_NORMAL, 
-        HIGHLIGHT_ALLCOLUMNS, 
-        HIGHLIGHT_ROW
-    };
-    
-
-// Attributes
 public:
 	int HighlightType; // One of EHighligh enums
 	COLORREF ForegroundColor;
-	CSpreadSheetHdr m_HeaderCtrl;
-	bool			m_bHeaderIsSubclassed;
-	void SetThemeHelper(CThemeHelperST* pTheme);
+	CGridCtrlHdr m_HeaderCtrl;
 	CThemeHelperST*		m_pTheme;
 	HTHEME m_hTheme;
 	
 	int m_nRowHeight;
 	bool m_bHasRowHeader;
-	bool m_bShowHighlight;
-	
-	
+
 	RefCountedPtr< CPropertyObject > m_pColCaptions;	
 	RefCountedPtr< CPropertyObject > m_pColWidths;	
 	RefCountedPtr< CPropertyObject > m_pColImages;	
@@ -137,124 +123,71 @@ public:
 	CImageList		*m_pFontImages;
 	CImageList		*m_pImageList;
 
-	CDclControlObject	*m_ArxControl;
-	CControlPane		*m_pParentCtrlPane;
 	bool				m_bHasGridLines;
 
-	// Cell Editing.
+	enum EHighlight { HIGHLIGHT_NORMAL, HIGHLIGHT_ALLCOLUMNS, HIGHLIGHT_ROW };
+
+	CImageList			m_DefaultImageList;
+	CPPToolTip m_ToolTip;
+
+	COLORREF alertnateColor;
+	bool	 m_bOrientationVer;
+
+	int m_nRowSelected;
+	int m_nColSelected;
+
+// Construction
+public:
+	CGridCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	virtual ~CGridCtrl();
+
+// DialogControl Interface
+public:
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual DWORD GetWndStyle() const;
+	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
+
 public:
 	CRect GetCurSelRect();
-	void DoFileDlg(int nStyle);
-	void EndEditControls(CWnd *pWnd);
 	int GetCurCellStyle();
 	void GetImageDropListItems(int nRow, int nCol, int &nImage, CString &sText);
 	_RowData * GetRowData(int nRow);
 	_Style * GetCellData(int nRow, int nCol);
 	void SetCellStyle(int nRow, int nCol, int nStyle);
 	int GetCellStyle(int nRow, int nCol);
-	void HideEditControls();
-	void CallBeginLabelEdit(CPoint point);
-	void OnEndlabeledit(CString sText);
 	void UpdateCell(CString sText);
-	bool m_bEditCells;
-	bool m_bInvokeWithSendString;
-	CImageList			m_DefaultImageList;
-	
-	CThemeHelperST		m_ThemeHelper;
-	
-	CDynamicButtonCtrl *m_pEllipsesButton;
-	CDynamicButtonCtrl *m_pPickButton;
-	CDynamicButtonCtrl *m_pFolderButton;
-
-	COLORREF alertnateColor;
-	bool	 m_bOrientationVer;
-	
-	CWnd *m_pTextBox[nNumOfTextBoxes];
-	CWnd *m_pComboBox[nNumOfComboBoxes];
-		
-	int	m_nEditSubItem;
-	int m_nRowSelected;
-	int m_nColSelected;
 
 	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
 	void InitToolTip();
-	CPPToolTip m_ToolTip;
 	
 // Operations
 public:
+	virtual void HideEditControls() { return; }
 	BOOL SortTextItems( int nCol, BOOL bAscending, int low = 0, int high = -1);
 	bool SortNumericItems( int nCol, BOOL bAscending, int low = 0, int high = -1);
 	void SetItemTextImage( int nRow,int nCol, CString sText, int nImage);
-	bool acad_truecolordlg(COLORREF color, int curColor, int nIndex, CString sPantone);
 	void SetupColumns();
 	void SetItemImage( int nRow, int nCol, int nImage);
 	int GetItemImage(int nRow, int nCol);
 	void SetColumn(int nIndex);
+	void SetThemeHelper(CThemeHelperST* pTheme);
 	void CellHitTest(CPoint point, int &nRow, int &nCol);
-	void DrawColor(CDC* pDC, CRect rc, int &nColor, CString &sText);
 	void DrawTrueColor(CDC* pDC, CRect rc, int &nColor, CString &sText);
-	void DrawFontIcons(CDC* pDC, CRect rc, int &nImage, CString &sText);
-	void DrawArrowHeads(CDC* pDC, CRect rc, int &nImage, CString &sText);
-	void DrawLineWeights(CDC* pDC, CRect rc, AcDb::LineWeight LW);
 	void DrawLineWeights(CDC* pDC, CRect rc, int nImage);
 	void DrawCheckBox(CDC* pDC, CRect rc, bool bPressed, bool bSelected);
 	void DrawOptionButton(CDC* pDC, CRect rc, bool bPressed, COLORREF backColor, BOOL bSelected);
-	void SetCurSel(int nRow, int nCol);
 	void ShowCurSel();
 	void RefreshCell(int nRow, int nCol);
-	void CheckLayer(CString &sLayer, int &nImage);
 
-	void MoveUp();
-	void MoveDown();
-	
-// celling editing operations
-	void EditCellNow(UINT nChar = 0);
-	void DoEditCellNow(int nStyle, UINT nChar = 0);
-	void ShowTextBox(int nRow, int nCol, int nStyle, UINT nChar = 0);
-	void ShowImageComboBox(int nRow, int nCol, CStringArray &sStrings, CArray<int, int> &nItems);
-	void ShowComboBox(int nRow, int nCol, int nStyle, CStringArray &sStrings);
-	void ShowEllipsesButton(int nRow, int nCol, int nAsPick);
-	
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CSpreadSheet)
-	//}}AFX_VIRTUAL
-
-// Implementation
-public:
-	virtual ~CSpreadSheet();
-
-	BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID);
-
-	// Generated message map functions
 protected:
-	void SubclassHeaderControl();
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	virtual void PreSubclassWindow();
+	DECLARE_MESSAGE_MAP()
+
+// Generated message map functions
+protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	
-	//{{AFX_MSG(CSpreadSheet)	
-	afx_msg void OnDestroy();
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);	
-	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);	
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	afx_msg void OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnCellButtonClicked(void);
-	afx_msg void OnDir2CellButtonClicked(void);
-	afx_msg void OnDir3CellButtonClicked(void);
-	//}}AFX_MSG	
-	DECLARE_MESSAGE_MAP()
+	afx_msg void PostNcDestroy();
 };

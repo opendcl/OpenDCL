@@ -7,7 +7,7 @@
 #include "PropertyObject.h"
 #include "ToolTips.h"
 #include "InvokeMethod.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 #include "PropertyIds.h"
 
 
@@ -189,7 +189,7 @@ void VdclPlotStyleTablesComboBox::OnSelchange()
 		dispinfo.hdr.idFrom = GetDlgCtrlID();
 		dispinfo.hdr.code = LVN_ENDLABELEDIT;
 
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent()->GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
 		dispinfo.item.mask = LVIF_TEXT;
 		dispinfo.item.iItem = pListCtrl->m_nRowSelected;
 		dispinfo.item.iSubItem = pListCtrl->m_nColSelected;

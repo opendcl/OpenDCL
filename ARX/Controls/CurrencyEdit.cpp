@@ -12,7 +12,7 @@
 
 #include "stdafx.h"
 #include "CurrencyEdit.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -63,7 +63,7 @@ void CCurrencyEdit::Init(double	fNumber,
 
 void CCurrencyEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 		
 	if (nChar == VK_UP)
 		pListCtrl->MoveUp();		
@@ -209,7 +209,7 @@ BOOL CCurrencyEdit::PreTranslateMessage(MSG* pMsg)
 			::TranslateMessage(pMsg);
 			::DispatchMessage(pMsg);
 			
-			CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();		
+			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();		
 			pListCtrl->MoveDown();		
 			return TRUE;				// DO NOT process further
 		}
@@ -221,7 +221,7 @@ BOOL CCurrencyEdit::PreTranslateMessage(MSG* pMsg)
 			SetWindowText(m_strOldValue);
 			
 			// Send Notification to parent of ListView ctrl
-			CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 
 			pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, m_strOldValue);
 			
@@ -242,7 +242,7 @@ void CCurrencyEdit::OnChange()
 
 
 	// Send Notification to parent of ListView ctrl
-	CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent();
+	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 
 	//pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, GetCurrentItemColorIndex());
 	pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sText);

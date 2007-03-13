@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "OdclDateTime.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -90,7 +90,7 @@ BOOL OdclDateTime::PreTranslateMessage(MSG* pMsg)
 			::TranslateMessage(pMsg);
 			::DispatchMessage(pMsg);
 			
-			CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent()->GetParent();		
+			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();		
 			pListCtrl->MoveDown();		
 			return TRUE;				// DO NOT process further
 		}
@@ -107,7 +107,7 @@ BOOL OdclDateTime::PreTranslateMessage(MSG* pMsg)
 			dispinfo.hdr.idFrom = GetParent()->GetDlgCtrlID();
 			dispinfo.hdr.code = LVN_ENDLABELEDIT;
 
-			CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent()->GetParent();
+			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
 
 			dispinfo.item.mask = LVIF_TEXT;
 			dispinfo.item.iItem = pListCtrl->m_nRowSelected;
@@ -130,7 +130,7 @@ void OdclDateTime::OnDatetimechange(NMHDR* pNMHDR, LRESULT* pResult)
 	GetWindowText(sText);
 	
 	// Send Notification to parent of ListView ctrl
-	CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent()->GetParent();
+	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
 
 	//pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, GetCurrentItemColorIndex());
 	pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sText);

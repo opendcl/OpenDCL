@@ -6,7 +6,7 @@
 #include "DclControlObject.h"
 #include "InvokeMethod.h"
 #include "DwgDirList.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 #include "PropertyIds.h"
 #include "PropertyObject.h"
 #include "ToolTips.h"
@@ -361,7 +361,7 @@ long CComboBoxFolder::OnSelectItemChange(WPARAM w, LPARAM l)
 		dispinfo.hdr.idFrom = GetDlgCtrlID();
 		dispinfo.hdr.code = LVN_ENDLABELEDIT;
 
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent()->GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
 		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, path);
 		pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, -1);
 		// fire the on Grid edit cell event.

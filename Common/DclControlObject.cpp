@@ -581,7 +581,8 @@ void CDclControlObject::Serialize(CArchive& ar)
 			if (pSourceProp->GetID() == nTabSelected)
 				mProperties.RemoveAt(posAt);
 			
-			if (pSourceProp->GetID() == nImageList && (mType == CtlGraphicButton || mType == CtlPictureBox))
+			if (pSourceProp->GetID() == nImageList &&
+				 (mType == CtlGraphicButton || mType == CtlPictureBox || mType == CtlForm))
 				mProperties.RemoveAt(posAt);
 		}
 	}

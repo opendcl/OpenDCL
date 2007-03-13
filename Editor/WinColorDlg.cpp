@@ -61,7 +61,7 @@ BOOL CWinColorDlg::OnInitDialog()
 	
 	SetFocus();	
 
-	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_SCROLLBAR), GetSysColor(0));
+	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_SCROLLBARCOLOR), GetSysColor(0));
 	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_BACKGROUND), GetSysColor(1));
 	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_ACTCAPTION), GetSysColor(2));
 	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_INACTCAPT), GetSysColor(3));

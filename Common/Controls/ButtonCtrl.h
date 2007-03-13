@@ -41,10 +41,10 @@ public:
 	void SetResourceIcon(UINT idIcon);
 
 protected:
-	virtual void PreSubclassWindow();
-	afx_msg void PostNcDestroy();
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
+	DECLARE_MESSAGE_MAP();
 
 protected:
-	DECLARE_MESSAGE_MAP();
+	virtual void PreSubclassWindow();
+	afx_msg void OnKillFocus(CWnd* pNewWnd);
+	afx_msg void PostNcDestroy();
 };

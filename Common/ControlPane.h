@@ -81,7 +81,7 @@ public:
 	void SetFirstControlFocus() const;
 	bool CreateControls( UINT& nId );
 	void AddControl( TDialogControlPtr pControl );
-	void RecalcLayout( bool bIgnoreSplitters = false );
+	void RecalcLayout();
 	void ResetControlsPos(CDclControlObject *pControl);
 
 	void ShowControls(BOOL bShow);

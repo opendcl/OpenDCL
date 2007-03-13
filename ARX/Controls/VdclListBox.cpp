@@ -58,7 +58,7 @@ BOOL VdclListBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID
 	
 	
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS
-		| LBS_HASSTRINGS | LBS_NOTIFY | LBS_DISABLENOSCROLL  ;
+		| LBS_HASSTRINGS | LBS_NOTIFY | LBS_DISABLENOSCROLL | LBS_USETABSTOPS;
 	
 	if (pControl->GetBoolProperty(nNoIntegralHeight) == TRUE)
 		dwStyle = dwStyle | LBS_NOINTEGRALHEIGHT;

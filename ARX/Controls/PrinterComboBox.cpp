@@ -10,7 +10,7 @@
 #include "PropertyIds.h"
 #include "ToolTips.h"
 #include "InvokeMethod.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
 #include "Workspace.h"
 #include "ControlPane.h"
 #include "ControlTypes.h"
@@ -362,7 +362,7 @@ void CPrinterComboBox::OnSelchange()
 	else
 	{		
 		// Send Notification to parent of ListView ctrl
-		CSpreadSheet *pListCtrl = (CSpreadSheet*)GetParent()->GetParent();
+		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
 		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);
 		pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, -1);
 		// fire the on Grid edit cell event.

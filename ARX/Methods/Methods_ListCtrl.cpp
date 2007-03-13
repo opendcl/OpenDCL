@@ -7,7 +7,8 @@
 #include "ErrorLexicon.h"
 #include "MethodLexicon.h"
 #include "ArgumentsRetrieval.h"
-#include "SpreadSheet.h"
+#include "ArxGridCtrl.h"
+#include "OdclListCtrl.h"
 #include "ControlTypes.h"
 
 

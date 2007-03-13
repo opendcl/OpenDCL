@@ -374,7 +374,7 @@ void CSplitter::OnLButtonUp(UINT nFlags, CPoint point)
 		}
 		Invalidate();
 		
-		m_pControlPane->RecalcLayout( true );
+		m_pControlPane->RecalcLayout();
 
 		SavePlacement();
 	}
