@@ -147,13 +147,16 @@ BOOL CModelessDlg::OnInitDialog()
 	// setup the rect default rect 
 	rectThis.top = 0;
 	rectThis.left = 0;
-	
-	CRect rcProfile(-1,-1,-1,-1);
-	if (mDialogX.GetSourceForm()->GetControlProperties()->GetBoolProperty(nResizable) == TRUE)
-		rcProfile = ReadRect();
 
-	if (rcProfile.Width() > 0)
+	//Read form size from registry	
+	CRect rcProfile(-1,-1,-1,-1);
+	rcProfile = ReadRect();
+
+	if (mDialogX.GetSourceForm()->GetControlProperties()->GetBoolProperty(nResizable) == TRUE 
+		&& rcProfile.Width() > 0)
 	{
+		//Form is resizable and the size has been previously saved in the registry.
+		//Use the registry to set the size of the form.
 		// get the width
 		nCtlWidth = rcProfile.Width();
 
@@ -162,6 +165,7 @@ BOOL CModelessDlg::OnInitDialog()
 	}
 	else
 	{
+		//It is not resizable, or the size is not saved in the registry
 		// get the width
 		nCtlWidth = pControlObject->GetLngProperty(nWidth);
 
