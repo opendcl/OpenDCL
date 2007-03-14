@@ -2116,6 +2116,12 @@ bool getActiveXArguments(COleVariant argList[]
 		return false;
 	}
 
+	//I go through the list twice so I can get the number of arguments, then
+	//properly read it back into the list backwards.
+
+	//Determine number of arguments, because it might be less than number
+	//of parameters
+	struct resbuf* ListDataHead = ListData;
 	for (nArgCount = 0; nArgCount < nParams; nArgCount++) {
 		VARTYPE vt;
 		if (pAxProp != NULL) {
@@ -2123,10 +2129,11 @@ bool getActiveXArguments(COleVariant argList[]
 		} else if (pAxMethod != NULL) {
 			vt = pAxMethod->GetArgs()[nArgCount].vt;
 		}
+		COleVariant temp;
 		if (!GetAxPropertyArgument(
 			ListData
-			, &argList[nParams - nArgCount - 1]
-			, vt) )
+			, &temp
+		  , vt) )
 		{
 			return false;
 		}
@@ -2135,6 +2142,25 @@ bool getActiveXArguments(COleVariant argList[]
 			nArgCount++;
 			break;
 		}
+	}
+
+	//Actually pull out the arguments
+	ListData = ListDataHead;
+	for (int iCurrentArg = 0; iCurrentArg < nArgCount; iCurrentArg++) {
+		VARTYPE vt;
+		if (pAxProp != NULL) {
+			vt = pAxProp->GetArgs()[iCurrentArg].vt;
+		} else if (pAxMethod != NULL) {
+			vt = pAxMethod->GetArgs()[iCurrentArg].vt;
+		}
+		if (!GetAxPropertyArgument(
+			ListData
+			, &argList[nArgCount - iCurrentArg - 1]
+			, vt) )
+		{
+			return false;
+		}
+		ListData = ListData->rbnext;
 	}
 	return true;
 }
