@@ -58,8 +58,10 @@ bool CDialogObject::CenterDialog()
 
 bool CDialogObject::ResizeDialog( long nNewWidth, long nNewHeight )
 {
-	if( !IsResizable() )
-		return false;
+	//DPR--Removing this check. IsResizable controls whether the user can change the
+	//size. I want to be able to change the size even if the user can't.
+	//if( !IsResizable() )
+		//return false;
 	mpSourceForm->GetControlProperties()->SetLongProperty(nWidth, nNewWidth);
 	mpSourceForm->GetControlProperties()->SetLongProperty(nHeight, nNewHeight);
 	BOOL bSuccess = ::SetWindowPos(GetHWnd(), NULL, 0, 0, nNewWidth, nNewHeight,
