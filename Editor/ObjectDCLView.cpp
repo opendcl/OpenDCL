@@ -3003,6 +3003,7 @@ void CObjectDCLView::ClearEventProperties(CDclControlObject *pCtrl)
 	pCtrl->ResetProperty(nEventReturnPressed);
 	pCtrl->ResetProperty(nFormEventCancelClose);
   pCtrl->ResetProperty(nFormEventOnOk);
+	pCtrl->ResetProperty(nFormEventOnCancel);
 	pCtrl->ResetProperty(nOnLMouseEvent);
 	pCtrl->ResetProperty(nOnMMouseEvent);
 	pCtrl->ResetProperty(nOnRMouseEvent);

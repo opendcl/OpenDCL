@@ -278,6 +278,7 @@
 #define IDS_PROP_DISPLAY_PERCENTAGE     460
 #define IDS_EVENT_FORM_ONOK             461
 #define IDS_PROP_TITLEBAR               462
+#define IDS_EVENT_FORM_ONCANCEL         463
 #define IDI_LABEL                       10000
 #define IDS_THE                         10001
 #define IDS_RESETPROP                   10002

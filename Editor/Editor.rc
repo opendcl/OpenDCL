@@ -2398,6 +2398,8 @@ BEGIN
     IDS_HATCHMTH            "Hatch.mth"
     IDS_APROPNAME_DISPLAYNAME "DisplayName"
     IDS_PROPERTYVALUE       "Open OpenDCL Project"
+    14686                   "Indicates that OnOk is being called."
+    14687                   "Indicates that OnCancel is being called. This event happens after CancelClose."
 END
 
 STRINGTABLE 

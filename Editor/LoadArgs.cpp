@@ -405,8 +405,12 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		break;
   case nFormEventOnOk:
     sArgs = CString();
-    sDesc = _T("Called when OnOk is called.");
+		sDesc = theWorkspace.LoadResourceString(14686);
     break;
+	case nFormEventOnCancel:
+		sArgs = CString();
+		sDesc = theWorkspace.LoadResourceString(14687);
+		break;
 	case nOnLMouseEvent:
           sArgs = theWorkspace.LoadResourceString(1212);
           sDesc = theWorkspace.LoadResourceString(5045);

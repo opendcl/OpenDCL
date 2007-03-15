@@ -95,6 +95,7 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		AddControlEvent( pDclControl, nFormEventClose );
 		AddControlEvent( pDclControl, nFormEventSize );
 		AddControlEvent( pDclControl, nFormEventOnOk );
+		AddControlEvent( pDclControl, nFormEventOnCancel );
 		AddControlEvent( pDclControl, nFormEventCancelClose );
 		break;
 	case VdclModeless:
@@ -115,6 +116,7 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		AddControlEvent( pDclControl, nFormEventClose );
 		AddControlEvent( pDclControl, nFormEventSize );
 		AddControlEvent( pDclControl, nFormEventOnOk );
+		AddControlEvent( pDclControl, nFormEventOnCancel );
 		AddControlEvent( pDclControl, nFormEventCancelClose );
 		AddControlEvent( pDclControl, nDocEventActivated );
 		break;

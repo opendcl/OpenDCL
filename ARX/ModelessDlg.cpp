@@ -398,7 +398,7 @@ void CModelessDlg::OnOK()
 {
 	if (!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false))	
 	{
-    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnOk), false);
+    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnOk), true);
 		CSnapDlg::OnOK();
 		EndDialog(IDOK);
 	}
@@ -410,6 +410,7 @@ void CModelessDlg::OnCancel()
 	{
 		if (IsWindowEnabled())
 		{
+			InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnCancel), true);
 			CSnapDlg::OnCancel();
 			EndDialog(IDCANCEL);
 		}

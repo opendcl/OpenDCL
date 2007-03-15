@@ -213,6 +213,7 @@ void CEventsTabPane::UpdateEvents(CDclFormObject *pDclForm, CDclControlObject *p
 	TryToAddEvent(nFormEventCancelClose);
 	TryToAddEvent(nFormEventClose);
   TryToAddEvent(nFormEventOnOk);
+	TryToAddEvent(nFormEventOnCancel);
 	TryToAddEvent(nFormEventInitialize);
 	TryToAddEvent(nFormEventSize);
 	TryToAddEvent(nFormEventShow);

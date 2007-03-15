@@ -392,6 +392,7 @@ void CModalVDcl::OnCancel()
 {
 	if (!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), true))	
 	{
+		InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnCancel), false);
 		CSnapDlg::OnCancel();
 		//CDialog::EndDialog(2);
 	}
