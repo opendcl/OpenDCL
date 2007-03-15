@@ -57,7 +57,7 @@ bool IsArgumentString(short restype, int index, CString sMethod);
 bool IsArgumentInt(short restype, int index, CString sMethod);
 bool IsArgumentDouble(short restype, int index, CString sMethod);
 
-// activeX argument retreival method
+// activeX argument retrieval method
 bool GetAxPropertyArgument(struct resbuf *ListData, COleVariant *oleVar, VARTYPE varType);
 	
 bool GetStringOrLongArgument(int nIndex, CString *pArg, ULONG *uLong, CString sMethod);
@@ -69,3 +69,26 @@ CWnd * GetArgsControlIntString(int nControlType, CString sMethod, int &nInt, CSt
 CWnd * GetArgsControlStringString(int nControlType, CString sMethod, CString &sString, CString &sString2);
 CWnd * GetArgsControlIntInt(int nControlType, CString sMethod, int &nInt, int &nInt2);
 CWnd * GetArgsControlIntIntInt(int nControlType, CString sMethod, int &nInt, int &nInt2, int &nInt3);
+
+//Functions to pull out arguments passed in from LISP.
+//If returns false, the argument passed is not of that type.
+//If returns true, argument is returned in parameter and args is advanced to
+//the next resbuf in the list.
+//This allows you to easily chain these together. If the return is false you fail,
+//otherwise you keep calling it and the functions keep advancing the resbuf chain for you.
+bool isPairArgument(struct resbuf* args);
+void skipArgument(struct resbuf* &args);
+bool getListBeginArgument(struct resbuf* &args);
+bool getListEndArgument(struct resbuf* &args);
+bool getDoubleArgument(struct resbuf* &args, double &d);
+bool getIntArgument(struct resbuf* &args, int &i);
+bool getEnameArgument(struct resbuf* &args, ads_name &en);
+bool getSSArgument(struct resbuf* &args, ads_name &ss);
+bool getObjectIdArgument(struct resbuf* &args, AcDbObjectId &id);
+bool getStringArgument(struct resbuf* &args, CString &str);
+bool getCharStrArgument(struct resbuf* &args, char* str);
+bool getStringIntPairArgument(struct resbuf* &args, CString &str, int &i);
+bool getBoolArgument(struct resbuf* &args, bool& b);
+bool getPointArgument(struct resbuf* &args, AcGePoint3d &p);
+bool get2DPointArgument(struct resbuf* &args, AcGePoint2d &p);
+bool getOLEArgument(struct resbuf* &args, COleVariant &ole);

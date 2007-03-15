@@ -865,26 +865,26 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				if (nThisItemData > nNotSet)
 				{
 					sTitle = theWorkspace.LoadResourceString(IDS_METHOD);
-					sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodDesc(nThisItemData);
-					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData),
-																 pProp->GetAxInterfaceDescriptorPtr()->GetAxMethod(nThisItemData));
-					
-					// here we need to put in OleObject closing instructions if required.
-					if (pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_DISPATCH ||
-						pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_UNKNOWN)
-					{
-						if (!sDesc.IsEmpty())
-							sDesc += theWorkspace.LoadResourceString(IDS_PARPAR);						
-						if (sVarType == theWorkspace.LoadResourceString(IDS_OleObject) || sVarType == CString())
-							sDesc += theWorkspace.LoadResourceString(IDS_OLENOTE1);
-						else					
+					if (pProp->GetAxInterfaceDescriptorPtr() != NULL) {
+						sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodDesc(nThisItemData);
+						sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData),
+																	 pProp->GetAxInterfaceDescriptorPtr()->GetAxMethod(nThisItemData));
+						
+						// here we need to put in OleObject closing instructions if required.
+						if (pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_DISPATCH ||
+							pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_UNKNOWN)
 						{
-							sDesc += theWorkspace.LoadResourceString(IDS_OLENOTE2) + sVarType + theWorkspace.LoadResourceString(IDS_OLENOTE3);
+							if (!sDesc.IsEmpty())
+								sDesc += theWorkspace.LoadResourceString(IDS_PARPAR);						
+							if (sVarType == theWorkspace.LoadResourceString(IDS_OleObject) || sVarType == CString())
+								sDesc += theWorkspace.LoadResourceString(IDS_OLENOTE1);
+							else					
+							{
+								sDesc += theWorkspace.LoadResourceString(IDS_OLENOTE2) + sVarType + theWorkspace.LoadResourceString(IDS_OLENOTE3);
 
+							}
 						}
 					}
-				
-					
 					sDefun1 = theWorkspace.LoadResourceString(IDS_PAR1);
 					
 					// clear the clipboard string holder
@@ -902,33 +902,35 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					sDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_CF0B0);
 					m_sClipBoardDefun2 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE);
 					
-					size_t nCount = pProp->GetAxInterfaceDescriptorPtr()->CountAxMethodParams(nThisItemData);
-					for (size_t i = 0; i < nCount; ++i)
-					{
-						// add the argument name
-						sDefun1 += theWorkspace.LoadResourceString(IDS_CF12) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i);
-						m_sClipBoardDefun2 += CString(theWorkspace.LoadResourceString(IDS_SPACE)) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i); 
-						// add the [as ...]
-						sArgType = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamVarType(nThisItemData, i);
-				
-						if (sArgType == CString())
+					if (pProp->GetAxInterfaceDescriptorPtr() != NULL) {
+						size_t nCount = pProp->GetAxInterfaceDescriptorPtr()->CountAxMethodParams(nThisItemData);
+						for (size_t i = 0; i < nCount; ++i)
 						{
-							sArgType = theWorkspace.LoadResourceString(IDS_OPTIONALNIL);
-							sDefun1 += theWorkspace.LoadResourceString(IDS_CF5I2) + sArgType + theWorkspace.LoadResourceString(IDS_I);
-							m_sClipBoardDefun2 += sArgType;
-						}
-						else if (!sArgType.IsEmpty())
-						{
-							sDefun1 += theWorkspace.LoadResourceString(IDS_CF5IAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2) + theWorkspace.LoadResourceString(IDS_I);
-							m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_OPENAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
-						}
-						else
-							sDefun1 += theWorkspace.LoadResourceString(IDS_CF5);
-						// if it is the second to last argument add close the color.
-						if (i < nCount - 1)
-						{
-							sDefun1 += theWorkspace.LoadResourceString(IDS_CF0) + theWorkspace.LoadResourceString(IDS_SPACE);
-							m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_SPACE);
+							// add the argument name
+							sDefun1 += theWorkspace.LoadResourceString(IDS_CF12) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i);
+							m_sClipBoardDefun2 += CString(theWorkspace.LoadResourceString(IDS_SPACE)) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i); 
+							// add the [as ...]
+							sArgType = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamVarType(nThisItemData, i);
+					
+							if (sArgType == CString())
+							{
+								sArgType = theWorkspace.LoadResourceString(IDS_OPTIONALNIL);
+								sDefun1 += theWorkspace.LoadResourceString(IDS_CF5I2) + sArgType + theWorkspace.LoadResourceString(IDS_I);
+								m_sClipBoardDefun2 += sArgType;
+							}
+							else if (!sArgType.IsEmpty())
+							{
+								sDefun1 += theWorkspace.LoadResourceString(IDS_CF5IAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2) + theWorkspace.LoadResourceString(IDS_I);
+								m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_OPENAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
+							}
+							else
+								sDefun1 += theWorkspace.LoadResourceString(IDS_CF5);
+							// if it is the second to last argument add close the color.
+							if (i < nCount - 1)
+							{
+								sDefun1 += theWorkspace.LoadResourceString(IDS_CF0) + theWorkspace.LoadResourceString(IDS_SPACE);
+								m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_SPACE);
+							}
 						}
 					}
 

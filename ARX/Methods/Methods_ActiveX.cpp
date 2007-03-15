@@ -1475,89 +1475,95 @@ int SetAxProperty()
 //*****************************************************************************
 int SetFlexGridColorProperty()
 {
-/*
-  CString sPropNameArg;
-  int nArg = 0;
-  int nArgCount=0;
+	CString sPropNameArg;
+	int nArg = 0;
+	int nArgCount=0;
 
-  // call the method to get the property object
-  CDclControlObject *pControl = GetControlArxObject(sAxSetProperty, &nArg);
+	// call the method to get the property object
+	CDclControlObject *pControl = GetControlArxObject(sAxSetProperty, &nArg);
 
-  if (pControl == NULL || !GetStringArgument(nArg, &sPropNameArg, sAxSetProperty))
-  {
-    acedRetVoid();
-    return 0;
-  }
-  nArg++;
+	if (pControl == NULL || !GetStringArgument(nArg, &sPropNameArg, sAxSetProperty))
+	{
+		acedRetVoid();
+		return 0;
+	}
+	nArg++;
 
-  struct resbuf *ListData;
+	struct resbuf *ListData;
 
-  //ensure AutoLisp has passed Arguments	
-  if ((ListData = acedGetArgs()) == NULL) 
-  {
-    // inform the programmer that he did not make the correct call
-    theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sAxSetProperty); 			
-    return false; 
-  }
-
-  for (int i = 0; i < nArg; i++)
-  {
-    // first iterate forward to the next required argument
-    ListData = ListData->rbnext;
-  }
-
-  if (ListData == NULL)
-  {
-    acedRetVoid();
-    return 0; 
-  }
-
-
-  RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
-  int nParams;
-  AxPropertyDescriptor *pAxProp = NULL;
-  if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL &&
-    (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_DISPATCH || 
-    pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_UNKNOWN ||
-    pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_VOID))
-  {
-    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
-  }
-  else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut() != NULL)
-  {
-    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
-  }
-  else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL)
-  {
-    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
-  }
-  else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp() != NULL)
-  {
-    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
-  }
-
-  nParams = pAxProp->NumParams;
-
-  //Only one parameter is passed -- the color as a real, which will be converted to
-  //an unsigned int.
-  double dColor;
-  if (!getDoubleArgument(ListData, dColor)) {
-    acedRetVoid();
-    return 0; 
-  }
-  unsigned int iColor = (unsigned int)dColor;
-
-  // get the AcxtiveX control
-	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
-	if (axContainer == NULL) {
-	acedRetNil();
-	return 0;
+	//ensure AutoLisp has passed Arguments	
+	if ((ListData = acedGetArgs()) == NULL) 
+	{
+		// inform the programmer that he did not make the correct call
+		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sAxSetProperty); 			
+		return false; 
 	}
 
-  axContainer->SetFlexGridColorProperty(pAxProp, iColor);
-  acedRetVoid();
-*/
-  return 0;
+	for (int i = 0; i < nArg; i++)
+	{
+		// first iterate forward to the next required argument
+		ListData = ListData->rbnext;
+	}
+
+	if (ListData == NULL)
+	{
+		acedRetVoid();
+		return 0; 
+	}
+
+
+	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	if( !pProp )
+		return RSERR; //no property with this name!
+
+	int nParams;
+	AxPropertyDescriptor *pAxProp = NULL;
+	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL &&
+		(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_DISPATCH || 
+		pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_UNKNOWN ||
+		pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_VOID))
+	{
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
+	}
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPut() != NULL)
+	{
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPut();
+	}
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL)
+	{
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
+	}
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp() != NULL)
+	{
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
+	}
+
+	nParams = pAxProp->GetArgs().size();
+	// here we are ensuring that there is at least one parameters to be passed in. 
+	// Since we are Putting it must have at least one parameter.
+	if (nParams == 0)
+		return 0;
+
+	//Only one parameter is passed -- the color as a real, which will be converted to
+	//an unsigned int.
+	double dColor;
+	if (!getDoubleArgument(ListData, dColor)) {
+		acedRetVoid();
+		return 0; 
+	}
+	unsigned int iColor = (unsigned int)dColor;
+
+	// get the AcxtiveX control
+	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
+	if (axContainer == NULL) {
+		acedRetNil();
+		return 0;
+	}
+
+	axContainer->SetFlexGridColorProperty(pAxProp, iColor);
+	acedRetT();
+
+	return 0;
 }
 
 //*****************************************************************************
@@ -1658,92 +1664,74 @@ int GetAxProperty()
 //*****************************************************************************
 int GetFlexGridColorProperty()
 {
-/*
-  CString sPropNameArg;
-  int nArg = 0;
-  int nArgCount=0;
+	CString sPropNameArg;
+	int nArg = 0;
+	int nArgCount=0;
 
-  // call the method to get the property object
-  CDclControlObject *pControl = GetControlArxObject(sAxGetProperty, &nArg);
+	// call the method to get the property object
+	CDclControlObject *pControl = GetControlArxObject(sAxGetProperty, &nArg);
 
-  if (pControl == NULL || !GetStringArgument(nArg, &sPropNameArg, sAxGetProperty))
-  {
-    acedRetVoid();
-    return 0;
-  }
-  nArg++;
+	if (pControl == NULL || !GetStringArgument(nArg, &sPropNameArg, sAxGetProperty))
+	{
+		acedRetVoid();
+		return 0;
+	}
+	nArg++;
 
-  struct resbuf *ListData;
+	struct resbuf *ListData;
 
-  //ensure AutoLisp has passed Arguments	
-  if ((ListData = acedGetArgs()) == NULL) 
-  {
-    // inform the programmer that he did not make the correct call
-    theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sAxGetProperty); 			
-    return false; 
-  }
-
-  for (int i = 0; i < nArg; i++)
-  {
-    // first iterate forward to the next required argument
-    ListData = ListData->rbnext;
-  }
-
-  RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
-  int nParams;
-  AxPropertyDescriptor *pAxProp = NULL;
-  if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet() != NULL)
-  {
-    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropGet();
-  }
-  else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL)
-  {
-    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
-  }
-  else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp() != NULL)
-  {
-    pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
-  }
-
-  nParams = pAxProp->NumParams;
-
-  VariantList argList;
-
-  nArg++;
-  while (ListData != NULL)
-  {
-    COleVariant Var;
-    if (GetAxPropertyArgument(ListData, &Var, pAxProp->CallingArgs[nArgCount]))
-    {
-      argList.m_Variant[nArgCount] = Var;
-      nArgCount++;			
-    }
-    else
-    {
-      acedRetNil();
-      return 0;
-    }
-    // first iterate forward to the next required argument
-    ListData = ListData->rbnext;
-    if (ListData != NULL)
-    {
-      nArg++;				
-      if (nArgCount >= nParams)
-        break;
-    }
-  }
-
-  // get the AcxtiveX control
-	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
-	if (axContainer == NULL) {
-	acedRetNil();
-	return 0;
+	//ensure AutoLisp has passed Arguments	
+	if ((ListData = acedGetArgs()) == NULL) 
+	{
+		// inform the programmer that he did not make the correct call
+		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sAxGetProperty); 			
+		return false; 
 	}
 
-  //Return the color
-  unsigned int iColor = axContainer->GetFlexGridColorProperty(pAxProp);
-  acedRetReal(iColor);
-*/
+	for (int i = 0; i < nArg; i++)
+	{
+		// first iterate forward to the next required argument
+		ListData = ListData->rbnext;
+	}
+
+	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	if( !pProp )
+		return RSERR; //no property with this name!
+
+	int nParams;
+	AxPropertyDescriptor *pAxProp = NULL;
+	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropGet() != NULL)
+	{
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropGet();
+	}
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL)
+	{
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef();
+	}
+	else if (pProp->GetAxInterfaceDescriptorPtr()->GetProp() != NULL)
+	{
+		pAxProp = pProp->GetAxInterfaceDescriptorPtr()->GetProp();
+	}
+
+	nParams = pAxProp->GetArgs().size();
+
+	//Creating this dynamically based upon nParams would be better than fixing it at 16
+	COleVariant argList[16];
+	if (!getActiveXArguments(argList, nArgCount, nParams, ListData, pAxProp, NULL)) {
+		acedRetNil();
+		return 0;
+	}
+
+	// get the AcxtiveX control
+	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
+	if (axContainer == NULL) {
+		acedRetNil();
+		return 0;
+	}
+
+	unsigned int iColor = axContainer->GetFlexGridColorProperty(pAxProp);
+	acedRetReal(iColor);
+
   return 0;
 }
 //*****************************************************************************

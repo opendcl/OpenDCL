@@ -2826,3 +2826,183 @@ CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, CArray
 	return pArxObject;
 }
 
+
+bool isPairArgument(struct resbuf* args) {
+	return (args->rbnext != NULL 
+		&& args->rbnext->rbnext != NULL 
+		&& args->rbnext->rbnext->rbnext != NULL 
+		&& args->restype == RTLB 
+		&& args->rbnext->rbnext->rbnext->restype == RTDOTE);
+}
+bool getStringArgument(struct resbuf* &args, CString &str) {
+	if (args == NULL || args->restype != RTSTR) return false;
+	str = args->resval.rstring;
+	args = args->rbnext;
+	return true;
+};
+bool getCharStrArgument(struct resbuf* &args, char* str) {
+	if (args == NULL || args->restype != RTSTR) return false;
+	int len = _tcslen(args->resval.rstring);
+	str = new char[len + 1];
+	int i;
+	for (i = 0; i < len; i++) {
+		str[i] = (char)(args->resval.rstring[i]);
+	}
+	str[i] = '\0';
+	args = args->rbnext;
+	return true;
+};
+bool getDoubleArgument(struct resbuf* &args, double &d) {
+	if (args == NULL || args->restype != RTREAL) {
+		//If it is not a double, try it as an int. 
+		int temp;
+		if (!getIntArgument(args, temp)) return false;
+		d = (double)temp;
+		return true;
+	}
+	d = args->resval.rreal;
+	args = args->rbnext;
+	return true;
+}
+bool getIntArgument(struct resbuf* &args, int &i) {
+	if (args == NULL) return false;
+	if (args->restype == RTSHORT) {
+		i = args->resval.rint;
+		args = args->rbnext;
+		return true;
+	} else if (args->restype == RTLONG) {
+		i = args->resval.rlong;
+		args = args->rbnext;
+		return true;
+	} else if (args->restype == RTREAL) {
+		i = (int)args->resval.rreal;
+		args = args->rbnext;
+		return true;
+	} else if (args->restype < 1000) {
+		//Don't advance in this case
+		i = args->restype;
+		return true;
+	}
+	return false;
+}
+bool getPointArgument(struct resbuf* &args, AcGePoint3d &p) {
+	if (args == NULL) return false;
+	if (args->restype == RTPOINT 
+		|| args->restype == RT3DPOINT
+		|| (10 <= args->restype && args->restype <= 17)) {
+			p[X] = args->resval.rpoint[X];
+			p[Y] = args->resval.rpoint[Y];
+			if (args->restype == RTPOINT) {
+				p[Z] = 0;
+			} else {
+				p[Z] = args->resval.rpoint[Z];
+			}
+			args = args->rbnext;
+			return true;
+	} 
+	if ((args->restype == RTREAL || args->restype == RTLONG || args->restype == RTSHORT)
+		&& args->rbnext != NULL 
+		&& (args->rbnext->restype == RTREAL || args->rbnext->restype == RTLONG || args->restype == RTSHORT))
+	{
+		if (args->restype == RTREAL)
+			p[X] = args->resval.rreal;
+		else
+			p[X] = args->resval.rlong;
+
+		if (args->rbnext->restype == RTREAL)
+			p[Y] = args->rbnext->resval.rreal;
+		else
+			p[Y] = args->rbnext->resval.rlong;
+
+		args = args->rbnext->rbnext;
+		if (args != NULL && (args->restype == RTREAL || args->restype == RTLONG || args->restype == RTSHORT)) {
+			if (args->restype == RTREAL)
+				p[Z] = args->resval.rreal;
+			else
+				p[Z] = args->resval.rlong;
+			args = args->rbnext;
+		} else {
+			p[Z] = 0;
+		}
+		return true;
+	}
+	return false;
+}
+bool get2DPointArgument(struct resbuf* &args, AcGePoint2d &p) {
+	if (args == NULL) return false;
+	if (args->restype == RTPOINT 
+		|| args->restype == RT3DPOINT
+		|| (10 <= args->restype && args->restype <= 17)) {
+			p[X] = args->resval.rpoint[X];
+			p[Y] = args->resval.rpoint[Y];
+			args = args->rbnext;
+			return true;
+	} 
+	if (args->restype == RTREAL
+		&& args->rbnext != NULL && args->rbnext->restype == RTREAL)
+	{
+		p[X] = args->resval.rreal;
+		p[Y] = args->rbnext->resval.rreal;
+		args = args->rbnext->rbnext;
+		return true;
+	}
+	return false;
+}
+bool getBoolArgument(struct resbuf* &args, bool& b) {
+	if (args == NULL) return false;
+	if (args->restype == RTNIL) {
+		args = args->rbnext;
+		b = false;
+		return true;
+	} else if (args->restype == RTLE) {
+		//The end of a list will be considered nil, but we won't move to the next argument.
+		//This handles dotted pairs where the second half is nil.
+		b = false;
+		return true;
+	} else {
+		//Anything that is not NIL is true.
+		//Don't check for RTT because people keep using T as a variable. Sigh.
+		//Since it could be anything, it might be a list. If that happens, then we will
+		//need to consume the list here. For the moment, I will simply crash on that, because I
+		//don't think it will happen.
+		if (args->restype != RTLB) {
+			args = args->rbnext;
+			b = true;
+			return true;
+		}
+	}
+	return false;
+};
+bool getOLEArgument(struct resbuf* &args, COleVariant &ole) {
+	switch (args->restype) {
+		case RTREAL:
+			ole.vt = VT_R8;  
+			ole.dblVal = args->resval.rreal;
+			return true;
+		case RTSHORT:
+			ole.vt = VT_I4;  
+			ole.lVal = args->resval.rlong;
+			return true;
+		case RTLONG:
+			ole.vt = VT_I4;  
+			ole.lVal = args->resval.rlong;
+			return true;
+		case RTSTR:
+			{
+				ole.vt = VT_BSTR;  
+				CString str(args->resval.rstring);
+				ole.bstrVal = str.AllocSysString();
+				return true;
+			}
+		case RTT:
+			ole.vt = VT_BOOL;  
+			ole.boolVal = true;
+			return true;
+		case RTNIL:
+			ole.vt = VT_BOOL;  
+			ole.boolVal = false;
+			return true;
+		default:
+			return false;
+	}
+}
