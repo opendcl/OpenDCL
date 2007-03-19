@@ -340,30 +340,23 @@ void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, H
 
 	if (nIndex == 0)
 	{
-		if (m_pDclForm->GetType() == VdclFileDialog && pControl->GetType() == CtlFileDlgCtrl)
+		if( m_pDclForm->GetType() == VdclFileDialog )
 		{
-			// call the method to load info from the appropriate method info files.
-			LoadMethods(theWorkspace.LoadResourceString(IDS_FILEDLGMTH2), hParentItem);
-		}
-		
-		if (pControl->GetID() != -1 &&
-				pControl->GetType() != CtlInvalid &&
-				pControl->GetType() != CtlFileDlgCtrl)
-		{
-			// call the method to load info from the appropriate method info files.
-			LoadMethods(theWorkspace.LoadResourceString(IDS_ALLCTRLMTH), hParentItem);
-		}
-
-		if (pControl->GetID() == -1)
-		{
-			if (m_pDclForm->GetType() == VdclFileDialog)
-				LoadMethods(theWorkspace.LoadResourceString(IDS_FILEDLGMTH), hParentItem);
-			else if (m_pDclForm->GetType() == -2)
-				LoadMethods("BonusFunctions.mth", hParentItem);
-			else
-				LoadMethods(theWorkspace.LoadResourceString(IDS_FORMSMTH), hParentItem);
+			LoadMethods( theWorkspace.LoadResourceString( IDS_FILEDLGMTH ), hParentItem );
+			if( pControl->GetType() == CtlFileDlgCtrl )
+				LoadMethods(theWorkspace.LoadResourceString(IDS_FILEDLGMTH2), hParentItem);
 			return;
 		}
+		else if (m_pDclForm->GetType() == -2)
+		{
+			LoadMethods(_T("BonusFunctions.mth"), hParentItem);
+			return;
+		}
+		
+		if (pControl->GetType() != CtlForm &&
+				pControl->GetType() != CtlInvalid &&
+				pControl->GetType() != CtlFileDlgCtrl)
+			LoadMethods(theWorkspace.LoadResourceString(IDS_ALLCTRLMTH), hParentItem);
 		
 		// here we need to see which control it being displayed to load the correct method info
 		switch (pControl->GetType())
@@ -381,20 +374,20 @@ void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, H
 			LoadMethods(theWorkspace.LoadResourceString(IDS_LISTCTRLMTH), hParentItem);
 			break;
 		case CtlForm: // a form
-			LoadMethods("forms.mth", hParentItem);
+			LoadMethods(theWorkspace.LoadResourceString(IDS_FORMSMTH), hParentItem);
 			break;
 			
 		case -2:
 			
 			break;
 		case CtlGrid:
-			LoadMethods("Grid.mth", hParentItem);
+			LoadMethods(_T("Grid.mth"), hParentItem);
 			break;
 		case CtlImageComboBox:
-			LoadMethods("ImageComboBox.mth", hParentItem);
+			LoadMethods(_T("ImageComboBox.mth"), hParentItem);
 			break;
 		case CtlAnimate:
-			LoadMethods("AnimationCtrl.mth", hParentItem);
+			LoadMethods(_T("AnimationCtrl.mth"), hParentItem);
 			break;	
 		case CtlDwgList:
 			LoadMethods(theWorkspace.LoadResourceString(IDS_DWGLISTMTH), hParentItem);
@@ -448,7 +441,6 @@ void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, H
 		LoadMethods(theWorkspace.LoadResourceString(IDS_AXOBJMTH), hParentItem);
 		return;
 	}
-		
 }
 
 void CObjectBrowser::LoadMethods(CString sFileName, HTREEITEM hParentItem)

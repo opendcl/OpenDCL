@@ -22,7 +22,6 @@ IMPLEMENT_DYNCREATE(CObjectDCLDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CObjectDCLDoc, CDocument)
 	//{{AFX_MSG_MAP(CObjectDCLDoc)
-	ON_COMMAND(ID_FILE_CLOSE, OnFileClose)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -177,47 +176,17 @@ void CObjectDCLDoc::SetGlobalVariableNames( LPCTSTR pszRootName )
 	theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
 }
 
-void CObjectDCLDoc::OnFileClose() 
-{
-	CDocument::OnFileClose();
-
-  CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
-	pApp->CloseAllDocuments(FALSE);
-	
-	theEditorWorkspace.GetProjectTreeCtrl()->ClearTree();		
-	theEditorWorkspace.GetMainFrame()->m_wndToolBar.GetToolBarCtrl().EnableButton(ID_ADDMODAL, FALSE);
-	
-	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_FontNames.EnableWindow(FALSE);
-	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_FontSizes.EnableWindow(FALSE);
-	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_Buttons.EnableWindow(FALSE);
-	theEditorWorkspace.GetMainFrame()->m_wndToolBar.EnableWindow(FALSE);
-
-	CToolBarCtrl *pCtrl = &theEditorWorkspace.GetMainFrame()->m_wndToolBar.GetToolBarCtrl();
-	pCtrl->EnableButton(0, FALSE);
-	pCtrl->EnableButton(ID_ADDMODAL, FALSE);
-	pCtrl->EnableButton(ID_PICTUREFOLDER, FALSE);
-}
-
 void CObjectDCLDoc::OnCloseDocument() 
 {
-	//if( this == ((CObjectDCLApp*)AfxGetApp())->m_pDoc )
-	//{
-	//	((CObjectDCLApp*)AfxGetApp())->m_pDoc = NULL;
-	//	theEditorWorkspace.GetMainFrame()->SetActiveView(NULL);
-	//}
-
-	theEditorWorkspace.GetMainFrame()->m_wndToolBar.GetToolBarCtrl().EnableButton(ID_ADDMODAL, FALSE);	
-	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_FontNames.EnableWindow(FALSE);
-	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_FontSizes.EnableWindow(FALSE);
-	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_Buttons.EnableWindow(FALSE);
-	theEditorWorkspace.GetMainFrame()->m_wndToolBar.EnableWindow(FALSE);
-
+	theEditorWorkspace.GetProjectTreeCtrl()->ClearTree();		
+	theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
 	CToolBarCtrl *pCtrl = &theEditorWorkspace.GetMainFrame()->m_wndToolBar.GetToolBarCtrl();
-	pCtrl->EnableButton(0, FALSE);
+	pCtrl->EnableButton(ID_FILE_SAVE, FALSE);
 	pCtrl->EnableButton(ID_ADDMODAL, FALSE);
 	pCtrl->EnableButton(ID_PICTUREFOLDER, FALSE);
 	CDocument::OnCloseDocument();
 	theEditorWorkspace.SetActiveDocument(NULL);
-
-	//AfxGetApp()->m_pMainWnd->SetWindowText(_T(""));
+	CProject *pProject = activeProject;
+	if (pProject)
+		pProject->ClearProject();	
 }

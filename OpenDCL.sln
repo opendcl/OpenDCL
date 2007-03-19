@@ -46,7 +46,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", 
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ObjectDCL.ENU", "Deployment\ObjectDCL.ENU.vdproj", "{9F181F39-9847-4027-BA6A-BB35E5AF412F}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "OpenDCL.ENU", "Deployment\OpenDCL.ENU.vdproj", "{9F181F39-9847-4027-BA6A-BB35E5AF412F}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"

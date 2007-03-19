@@ -8,6 +8,7 @@
 #pragma once
 
 #include "PPToolTip.h"
+#include <list>
 
 class CDclControlObject;
 class CControlPane;
@@ -132,9 +133,10 @@ public:
 	virtual CWnd* GetControl() { return mpControl; }
 	virtual ControlType GetControlType() const;
 	virtual UINT GetControlId() const { return (mpControl? mpControl->GetDlgCtrlID() : (UINT)-1); }
+	virtual bool GetChildPanes( std::list< const CControlPane* >& listChildren ) const { return false; }
 
 	// ARX specific services
-	virtual CArxControlServices* GetArxServices() { return NULL; }
+	virtual const CArxControlServices* GetArxServices() const { return NULL; }
 
 	// Name rendition
 public:
@@ -146,8 +148,6 @@ public:
 
 	// Services
 public:
-	virtual TDialogControlPtr FindControl( HWND hwndControl ) const { return NULL; } //find nested control
-	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const { return NULL; } //find nested control
 
 	// Control
 public:

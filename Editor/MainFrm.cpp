@@ -690,5 +690,4 @@ void CMainFrame::OnDockZorder()
 void CMainFrame::OnUpdateDockZorder(CCmdUI* pCmdUI) 
 {
 	pCmdUI->SetCheck(m_wndZOderBar.IsWindowVisible());
-	
 }

@@ -1531,12 +1531,12 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 					UINT enumId;
 					if (pProperty->GetID() == nAlternateOrient)
 						enumId = nOrientation * 100;
+					else if (pProperty->GetID() == nSplitterStyle)
+						enumId = IDS_SPLITTERStyle_0 - 1;
+					else if (pProperty->GetID() == nBorderStyle)
+						enumId = IDS_BORDERSTYLE_0 - 1;
 					else
 						enumId = pProperty->GetID() * 100;
-
-					if (pProperty->GetID() == nSplitterStyle)
-						enumId = IDS_SPLITTERStyle_0 - 1;
-					
 					enumId += pProperty->GetLongValue() + 1;
 					CellText = theWorkspace.LoadResourceString(enumId);
 					break;
@@ -1659,7 +1659,7 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 		LPCTSTR lpszText;
 		lpszText = CellText;
 		
-		::DrawText(hdc, lpszText, CellText.GetLength(), rcText, DT_SINGLELINE|DT_VCENTER); 
+		::DrawText(hdc, lpszText, CellText.GetLength(), rcText, DT_SINGLELINE|DT_VCENTER|DT_NOPREFIX); 
 
 		if (pOldFont != NULL)
 			// restore the old font ** a must

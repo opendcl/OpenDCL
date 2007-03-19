@@ -19,7 +19,7 @@ public:
 
 // DialogControl Interface
 public:
-	virtual CArxControlServices* GetArxServices() { return &mArxServices; }
+	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 
 protected:

@@ -690,6 +690,7 @@ BOOL CMainFrameToolBar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 void CMainFrameToolBar::SetActiveView(CView *pView) 
 {
 	m_pActiveView = pView;
+	EnableWindow( (pView != NULL) );
 }
 
 void CMainFrameToolBar::OnFontBold()

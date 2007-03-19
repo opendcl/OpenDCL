@@ -64,19 +64,16 @@ bool CModelessDialogX::SetMinMaxSize( const CSize& min, const CSize& max )
 /////////////////////////////////////////////////////////////////////////////
 // CModelessDlg dialog
 
-CModelessDlg::CModelessDlg(CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/)
-: CSnapDlg(pSourceForm, CModelessDlg::IDD, pParent)
+CModelessDlg::CModelessDlg( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+: CBaseDlg( pSourceForm, CModelessDlg::IDD, pParent, pParams )
 , mpParent( pParent )
 , mDialogX( *this, pSourceForm )
-, mnX( pParams? pParams->position.x : -1 )
-, mnY( pParams? pParams->position.y : -1 )
-, mbResizable( pSourceForm->GetControlProperties()->GetBoolProperty(nResizable) )
+, mbResizable( pSourceForm->GetControlProperties()->GetBoolProperty( nResizable ) )
 {
 	m_bAsModal = false;
 	m_bClosing = false;
 	m_bAboutToClose = false;
 	m_pDocToModReactor = NULL;
-	m_bShowGrip = mbResizable;
 }
 
 CModelessDlg::~CModelessDlg()
@@ -88,7 +85,7 @@ bool CModelessDlg::Create( UINT nTemplateID )
 	return (__super::Create( nTemplateID, mpParent ) != FALSE);
 }
 
-BEGIN_MESSAGE_MAP(CModelessDlg, CSnapDlg)
+BEGIN_MESSAGE_MAP(CModelessDlg, CBaseDlg)
 	//{{AFX_MSG_MAP(CModelessDlg)
 	ON_WM_CLOSE()
 	ON_MESSAGE(WM_ACAD_KEEPFOCUS, onAcadKeepFocus)	
@@ -96,10 +93,6 @@ BEGIN_MESSAGE_MAP(CModelessDlg, CSnapDlg)
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
 	ON_WM_MOVE()
-	ON_WM_KILLFOCUS()
-	ON_WM_CAPTURECHANGED()
-	ON_WM_SETCURSOR()
-	ON_WM_SETFOCUS()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -108,168 +101,20 @@ END_MESSAGE_MAP()
 
 BOOL CModelessDlg::OnInitDialog() 
 {
-	CSnapDlg::OnInitDialog();
+	CBaseDlg::OnInitDialog();
 
-	if (m_bAsModal)
+	if( m_bAsModal )
 	{
-		GetParent()->EnableWindow(FALSE);
-		EnableWindow(TRUE);
+		GetParent()->EnableWindow( FALSE );
+		EnableWindow( TRUE );
 	}
+
 	// Modify the style
 	//GetLayeredDialog()->AddLayeredStyle(m_hWnd);
 
 	// Set the trasparency effect to 70%
 	//GetLayeredDialog()->SetTransparentPercentage(m_hWnd, 80);
 
-	//  setup for assigning the form it's properties
-	CPoint pt;
-	CRect rectThis;
-	int nCtlWidth;
-	int nCtlHeight;
-	
-	// get the form's properties
-	CDclControlObject* pControlObject = mDialogX.GetSourceForm()->GetControlProperties();
-	// set the window text
-	SetWindowText(pControlObject->GetStrProperty(nTitleBarText));
-		
-	// call the method to set the title bar icon
-	SetTitleBarIcon(pControlObject->GetLngProperty(nIcon));
-
-	// set the rect for the control pane to be created
-	CRect rcClient;
-	GetClientRect(&rcClient);
-	mDialogX.GetControlPane().SetPanePos( rcClient, false );
-
-	// call method to create the controls
-	UINT nID = 1000;
-	mDialogX.GetControlPane().CreateControls(nID);
-
-	// setup the rect default rect 
-	rectThis.top = 0;
-	rectThis.left = 0;
-
-	//Read form size from registry	
-	CRect rcProfile(-1,-1,-1,-1);
-	rcProfile = ReadRect();
-
-	if (mDialogX.GetSourceForm()->GetControlProperties()->GetBoolProperty(nResizable) == TRUE 
-		&& rcProfile.Width() > 0)
-	{
-		//Form is resizable and the size has been previously saved in the registry.
-		//Use the registry to set the size of the form.
-		// get the width
-		nCtlWidth = rcProfile.Width();
-
-		// get the height
-		nCtlHeight = rcProfile.Height();
-	}
-	else
-	{
-		//It is not resizable, or the size is not saved in the registry
-		// get the width
-		nCtlWidth = pControlObject->GetLngProperty(nWidth);
-
-		// get the height
-		nCtlHeight = pControlObject->GetLngProperty(nHeight);
-	}
-	
-	CRect rcThis;
-	CRect rcWnd;
-		
-	if (rcProfile.top == -1 && rcProfile.left == -1)
-	{
-		GetClientRect(&rcThis);
-		GetWindowRect(&rcWnd);
-
-		if (mDialogX.GetSourceForm()->m_bUsesClientRect == TRUE)
-		{
-			nCtlHeight += rcWnd.Height() - rcThis.Height();
-			nCtlWidth += rcWnd.Width() - rcThis.Width();
-		}
-	}
-
-	int nScreenWidth = ::GetSystemMetrics(SM_CXSCREEN);
-	int nScreenHeight = ::GetSystemMetrics(SM_CYSCREEN);
-
-	if (nCtlWidth > nScreenWidth)
-		nCtlWidth = nScreenWidth;
-
-	if (nCtlHeight > nScreenHeight)
-		nCtlHeight = nScreenHeight;
-
-	rectThis.right = nCtlWidth;
-	rectThis.bottom = nCtlHeight;
-
-	if (mnY > -1)
-	{
-		// call method to set the start width and position of the form
-		SetWindowPos(NULL, mnX, mnY, nCtlWidth, nCtlHeight, SWP_NOACTIVATE);
-	}
-	else if (rcProfile.left > -1)
-	{
-		// call method to set the start width and position of the form
-		SetWindowPos(NULL, rcProfile.left, rcProfile.top, nCtlWidth, nCtlHeight, SWP_NOACTIVATE);
-	}	
-	else if (mnY == -1)
-	{
-		// get the left and top values to center the form on the screen	
-		pt.y =  (nScreenHeight - rectThis.Height()) / 2;
-		pt.x =  (nScreenWidth - rectThis.Width()) / 2;
-
-		// call method to set the start width and position of the form
-		SetWindowPos(NULL, pt.x, pt.y, nCtlWidth, nCtlHeight, SWP_NOACTIVATE);
-	}
-	
-	if (pControlObject->GetLngProperty(nMaxDialogWidth) > -1)
-	{
-		int nMaxWidth = pControlObject->GetLngProperty(nMaxDialogWidth);
-		int nMaxHeight = pControlObject->GetLngProperty(nMaxDialogHeight);
-		int nMinWidth = pControlObject->GetLngProperty(nMinDialogWidth);
-		int nMinHeight = pControlObject->GetLngProperty(nMinDialogHeight);
-
-		// ensure the max extents is not larger than the screen.
-		if (nMaxWidth > nScreenWidth)
-			nMaxWidth = nScreenWidth;
-		if (nMaxHeight > nScreenHeight)
-			nMaxHeight = nScreenHeight;
-
-		// ensure the min extents is not larger than the screen.
-		if (nMinWidth > nScreenWidth)
-			nMinWidth = nScreenWidth;
-		if (nMinHeight > nScreenHeight)
-			nMinHeight = nScreenHeight;
-
-		// set the min and max allowable settings
-		SetDialogMaxExtents (
-			nMaxWidth,
-			nMaxHeight);		
-		SetDialogMinExtents (
-			nMinWidth,
-			nMinHeight);
-	}
-    
-	// add the doc reactor if required for an event
-	CString sEventDefun = mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nDocEventActivated);
-	if (sEventDefun.GetLength() > 0)
-	{
-		m_pDocToModReactor = new CAcadDocReactor();
-		m_pDocToModReactor->m_EventDefun = sEventDefun;
-		// activate the reactor
-		acDocManager->addReactor(m_pDocToModReactor);
-	}	
-
-	// call methods to invoke the OnInitDialog event
-	InvokeMethod(pControlObject->GetStrProperty(nFormEventInitialize), false);
-
-	GetWindowRect(&rcThis);
-	// call methods to invoke the event
-	InvokeMethodIntInt(
-		mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 
-		rcThis.Width(),
-		rcThis.Height(),
-		false);	
-
-	//SetFocus();
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
@@ -289,26 +134,21 @@ bool CModelessDlg::QueryForClose()
 void CModelessDlg::OnClose() 
 {
 	AboutToClose();
-	SaveSize();
-	CSnapDlg::OnClose();
+	__super::OnClose();
 	DestroyWindow();
 }
 
 LONG CModelessDlg::onAcadKeepFocus(UINT, LONG)
 {
-	// Set the trasparency effect to 70%
-	//GetLayeredDialog()->SetTransparentPercentage(m_hWnd, 100);
 	return TRUE;
 }
 
 void CModelessDlg::OnSize(UINT nType, int cx, int cy) 
 {
-	CSnapDlg::OnSize(nType, cx, cy);
-	if (CWnd::IsWindowVisible() && m_bClosing == false  && m_bAboutToClose == false)
+	CBaseDlg::OnSize(nType, cx, cy);
+	mDialogX.GetControlPane().RecalcLayout();
+	if (IsWindowVisible() && m_bClosing == false  && m_bAboutToClose == false)
 	{
-		mDialogX.GetControlPane().RecalcLayout();
-		SaveSize();
-
 		CRect rcThis;
 		CWnd::GetWindowRect(&rcThis);
 		// call methods to invoke the event
@@ -318,30 +158,12 @@ void CModelessDlg::OnSize(UINT nType, int cx, int cy)
 			rcThis.Height(),
 			false);	
 	}
-	
-	mDialogX.GetControlPane().RecalcLayout();
 	RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 }
 
-void CModelessDlg::SetTitleBarIcon(int nPictureID)
-{
-	SetIcon( NULL, FALSE );
-	
-	if( m_hIconAcad )
-		DestroyIcon( m_hIconAcad );
-	
-	CPictureObject* pPicture = mDialogX.GetSourceForm()->GetProject()->FindPicture( nPictureID );
-	if( pPicture )
-		m_hIconAcad = pPicture->CloneIcon();
-	else
-		m_hIconAcad = CopyIcon( AfxGetApp()->GetMainWnd()->GetIcon( FALSE ) );
-	SetIcon( m_hIconAcad, FALSE );
-}
-
-
 void CModelessDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
-	CSnapDlg::OnShowWindow(bShow, nStatus);
+	CBaseDlg::OnShowWindow(bShow, nStatus);
 	
 	// call methods to invoke the event
 	InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventShow), false);	
@@ -355,13 +177,7 @@ void CModelessDlg::OnDestroy()
 		delete m_pDocToModReactor;
 		m_pDocToModReactor = NULL;
 	}
-
-	//HICON hIcon = CDialog::GetIcon(FALSE);
-	SetIcon(NULL, FALSE);
-	if (m_hIconAcad != NULL)
-		DestroyIcon(m_hIconAcad);
-	mDialogX.GetControlPane().CleanUpControls();
-	CSnapDlg::OnDestroy();
+	__super::OnDestroy();
 }
 
 void CModelessDlg::FireCloseEvent()
@@ -399,8 +215,8 @@ void CModelessDlg::OnOK()
 	if (!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false))	
 	{
     InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnOk), true);
-		CSnapDlg::OnOK();
-		EndDialog(IDOK);
+		__super::OnOK();
+		mDialogX.CloseDialog(IDOK);
 	}
 }
 
@@ -408,18 +224,15 @@ void CModelessDlg::OnCancel()
 {
 	if (!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), true))	
 	{
-		if (IsWindowEnabled())
-		{
-			InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnCancel), true);
-			CSnapDlg::OnCancel();
-			EndDialog(IDCANCEL);
-		}
+    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnCancel), true);
+		__super::OnCancel();
+		mDialogX.CloseDialog(IDCANCEL);
 	}
 }
 
 void CModelessDlg::OnMove(int x, int y) 
 {
-	CSnapDlg::OnMove(x, y);
+	CBaseDlg::OnMove(x, y);
 
   //Removed 10-19-06	
   /*BOOL bVisible = CDialog::IsWindowVisible();
@@ -454,9 +267,6 @@ void CModelessDlg::SizeDialog ()
 	}
 }
 
-
-	
-
 BOOL CModelessDlg::PreTranslateMessage(MSG* pMsg) 
 {
 	if (pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
@@ -476,37 +286,5 @@ BOOL CModelessDlg::PreTranslateMessage(MSG* pMsg)
 			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
 	}
 
-	return CSnapDlg::PreTranslateMessage(pMsg);
-}
-
-void CModelessDlg::OnKillFocus(CWnd* pNewWnd) 
-{
-	CSnapDlg::OnKillFocus(pNewWnd);
-	
-	// TODO: Add your message handler code here
-	
-}
-
-void CModelessDlg::OnSetFocus(CWnd* pNewWnd) 
-{
-	CSnapDlg::OnSetFocus(pNewWnd);
-	
-	// TODO: Add your message handler code here
-	
-}
-
-void CModelessDlg::OnCaptureChanged(CWnd *pWnd) 
-{
-	// TODO: Add your message handler code here
-	
-	CSnapDlg::OnCaptureChanged(pWnd);
-}
-
-
-
-BOOL CModelessDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message) 
-{
-	// TODO: Add your message handler code here and/or call default
-	
-	return CSnapDlg::OnSetCursor(pWnd, nHitTest, message);
+	return CBaseDlg::PreTranslateMessage(pMsg);
 }

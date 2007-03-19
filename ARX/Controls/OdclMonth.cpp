@@ -56,11 +56,9 @@ BOOL OdclMonth::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
 
-	if (pControl->GetBoolProperty(nMultiColumn) == TRUE)
-		dwStyle = dwStyle | LBS_MULTICOLUMN;
-	
-	if (pControl->GetBoolProperty(nSorted) == TRUE)
-		dwStyle = dwStyle | LBS_SORT;		
+	long lMaxSel = pControl->GetLngProperty(nMultiSelection);
+	if ( lMaxSel > 1 )
+		dwStyle = dwStyle | MCS_MULTISELECT;
 
 	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
@@ -68,8 +66,9 @@ BOOL OdclMonth::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 		dwStyle = dwStyle | WS_GROUP;
 
 	RetVal = CMonthCalCtrl::Create(dwStyle, ArxRect, pParentWnd, nID );
+	if( lMaxSel > 1 )
+		SetMaxSelCount( lMaxSel );
 	
-	VERIFY(CMonthCalCtrl::SubclassDlgItem(nID, pParentWnd));
 	InitToolTip();
 	SetToolTipEx(this, m_ToolTip, pControl);
 

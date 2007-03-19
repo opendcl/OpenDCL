@@ -346,6 +346,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 
 	case CtlComboBox:
 		pDclControl->AddLongProperty( nDropDownHeight, PropLong, 100 );
+		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
 		pDclControl->AddStringProperty( nItemData, PropIntArray, sList );
 		pDclControl->AddLongProperty( nLimitText, PropLong, 256 );
@@ -382,7 +383,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nDisableNoScroll, PropBool, false );
 		pDclControl->AddBooleanProperty( nDragnDropAllowBegin, PropBool, true );
 		pDclControl->AddLongProperty( nInsertOrXref, PropEnum, 0 );
-		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
 		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( nSelectStyle, PropEnum, 0 );

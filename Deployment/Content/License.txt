@@ -52,6 +52,7 @@ dkh007 (Daniel Hargreaves)
 davidbarker (David Barker)
 stephan_35 (Stéphan Buchholz)
 funkitect (James LeVieux)
+aymen_ellouze (Aymen Ellouze)
 
 Some OpenDCL components are based on or derived from public 
 domain and copyrighted source code licensed from third 

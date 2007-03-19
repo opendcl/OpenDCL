@@ -117,6 +117,14 @@ bool VdclTab::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 	return true;
 }
 
+bool VdclTab::GetChildPanes( std::list< const CControlPane* >& listChildren ) const
+{
+	size_t idx = mTabPages.size();
+	while( idx-- > 0 )
+		listChildren.push_back( &mTabPages.at( idx )->GetControlPane() );
+	return true;
+}
+
 CRect VdclTab::GetUsedArea() const
 {
 	CRect rectTab;
@@ -276,30 +284,6 @@ bool VdclTab::CreateTabPages( UINT& nId )
 		}
 	}
 	return !bFailed;
-}
-
-TDialogControlPtr VdclTab::FindControl( HWND hwndControl ) const
-{
-	size_t idx = mTabPages.size();
-	while( idx-- > 0 )
-	{
-		TDialogControlPtr pControl = mTabPages.at( idx )->GetControlPane().FindControl( hwndControl );
-		if( pControl )
-			return pControl;
-	}
-	return NULL;
-}
-
-TDialogControlPtr VdclTab::FindControl( LPCTSTR pszControlName, ControlType type /*= CtlInvalid*/ ) const
-{
-	size_t idx = mTabPages.size();
-	while( idx-- > 0 )
-	{
-		TDialogControlPtr pControl = mTabPages.at( idx )->GetControlPane().FindControl( pszControlName, type );
-		if( pControl )
-			return pControl;
-	}
-	return NULL;
 }
 
 

@@ -446,37 +446,25 @@ BOOL VdclNumericEdit::PreTranslateMessage(MSG* pMsg)
 	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 	
-	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
+	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN && m_ArxControl)
 	{
-		if (m_ArxControl)
-		{
-			CString sEvent = m_ArxControl->GetStrProperty(nEventReturnPressed);
-			InvokeMethod(sEvent, m_bInvokeWithSendString);	
+		CString sEvent = m_ArxControl->GetStrProperty(nEventReturnPressed);
+		InvokeMethod(sEvent, m_bInvokeWithSendString);	
 
-			if (m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
-			{
-				pMsg->wParam = VK_TAB;
-			}
-			else
-			{
-				if (sEvent.GetLength() > 0)
-				{
-					pMsg->wParam = NULL;
-					pMsg->message = NULL;
-				}
-			}
+		if (m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
+		{
+			pMsg->wParam = VK_TAB;
 		}
-		if (pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE)
-	    {
-			::TranslateMessage(pMsg);
-			::DispatchMessage(pMsg);
-			
-			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();		
-			pListCtrl->MoveDown();		
-			return TRUE;				// DO NOT process further
+		else
+		{
+			if (sEvent.GetLength() > 0)
+			{
+				pMsg->wParam = NULL;
+				pMsg->message = NULL;
+			}
 		}
 	}
-	if (pMsg->message== WM_KEYDOWN && m_ArxControl == NULL)
+	else if (pMsg->message== WM_KEYDOWN && !m_ArxControl)
 	{
 		if (pMsg->wParam == VK_RETURN)
 	    {

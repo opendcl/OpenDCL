@@ -10,7 +10,6 @@
 #include "DclControlObject.h"
 #include "DclFormObject.h"
 #include "Project.h"
-#include "PictureObject.h"
 #include "ControlTypes.h"
 #include "ArxWorkspace.h"
 
@@ -71,13 +70,10 @@ static UINT GetDialogTemplateIdFromForm( CDclFormObject* pSourceForm )
 // CModalVDcl dialog
 
 
-CModalVDcl::CModalVDcl(CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/)
-: CSnapDlg(pSourceForm, GetDialogTemplateIdFromForm( pSourceForm ), pParent)
+CModalVDcl::CModalVDcl( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+: CBaseDlg( pSourceForm, GetDialogTemplateIdFromForm( pSourceForm ), pParent, pParams )
 , mDialogX( *this, pSourceForm )
-, mnX( pParams? pParams->position.x : -1 )
-, mnY( pParams? pParams->position.y : -1 )
 {
-	m_bShowGrip = pSourceForm->GetControlProperties()->GetBoolProperty(nResizable);
 }
 
 
@@ -88,20 +84,18 @@ CModalVDcl::~CModalVDcl()
 
 void CModalVDcl::DoDataExchange(CDataExchange* pDX)
 {
-	CSnapDlg::DoDataExchange(pDX);
+	CBaseDlg::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CModalVDcl)
 	//}}AFX_DATA_MAP
 }
 
 
-BEGIN_MESSAGE_MAP(CModalVDcl, CSnapDlg)
+BEGIN_MESSAGE_MAP(CModalVDcl, CBaseDlg)
 	//{{AFX_MSG_MAP(CModalVDcl)
 	ON_WM_CREATE()
-	ON_WM_DESTROY()
 	ON_WM_CLOSE()
 	ON_WM_SIZE()
 	ON_WM_SHOWWINDOW()
-	ON_WM_MOUSEMOVE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -112,151 +106,7 @@ END_MESSAGE_MAP()
 
 BOOL CModalVDcl::OnInitDialog() 
 {
-	CSnapDlg::OnInitDialog();
-//GetParent()->EnableWindow(TRUE);
-	//  setup for assigning the form it's properties
-	CPoint pt;
-	CRect rectThis;
-	int nCtlWidth;
-	int nCtlHeight;
-
-	// get the form's properties
-	CDclControlObject* pFormProps = mDialogX.GetSourceForm()->GetControlProperties();
-	// set the window text
-	SetWindowText(pFormProps->GetStrProperty(nTitleBarText));
-	
-	// call the method to set the title bar icon
-	SetTitleBarIcon(pFormProps->GetLngProperty(nIcon));
-
-	// create the control pane that will display the controls
-	CRect rcClient;
-	GetClientRect(&rcClient);
-	mDialogX.GetControlPane().SetPanePos( rcClient, false );	
-	
-	// call method to create the controls
-	UINT nID = 1000;
-	mDialogX.GetControlPane().CreateControls(nID);
-
-	// setup the rect default rect 
-	rectThis.top = 0;
-	rectThis.left = 0;
-	
-	CSize szProfile(-1,-1);
-	if (mDialogX.GetSourceForm()->GetControlProperties()->GetBoolProperty(nResizable) == TRUE)
-		szProfile = ReadSize();
-
-	CRect rcLastRect(-1,-1,-1,-1);
-	rcLastRect = ReadRect();
-
-	CRect rcThis;
-	GetClientRect(&rcThis);
-		
-	int nScreenWidth = ::GetSystemMetrics(SM_CXSCREEN);
-	int nScreenHeight = ::GetSystemMetrics(SM_CYSCREEN);
-
-	if (szProfile.cx > 0)
-	{
-		// get the width
-		nCtlWidth = szProfile.cx;
-
-		// get the height
-		nCtlHeight = szProfile.cy;
-
-		rectThis.right = nCtlWidth;
-		rectThis.bottom = nCtlHeight;
-
-	}
-	else
-	{
-		// get the width
-		nCtlWidth = pFormProps->GetLngProperty(nWidth);
-
-		// get the height
-		nCtlHeight = pFormProps->GetLngProperty(nHeight);
-	
-		// set the rect for the control pane to be created
-		CRect rcWnd;
-		GetWindowRect(&rcWnd);
-
-		if (mDialogX.GetSourceForm()->m_bUsesClientRect == TRUE)
-		{
-			nCtlHeight += rcWnd.Height() - rcThis.Height();
-			nCtlWidth += rcWnd.Width() - rcThis.Width();
-		}
-		
-		if (nCtlWidth > nScreenWidth)
-			nCtlWidth = nScreenWidth;
-
-		if (nCtlHeight > nScreenHeight)
-			nCtlHeight = nScreenHeight;
-
-		rectThis.right = nCtlWidth;
-		rectThis.bottom = nCtlHeight;
-
-		
-	}
-	if (mnX > -1)
-	{
-		// call method to set the start width and position of the form
-		SetWindowPos(NULL, mnX, mnY, nCtlWidth, nCtlHeight, SWP_NOACTIVATE);
-
-	}	
-	else if (rcLastRect.left < 0)
-	{
-		// get the left and top values to center the form on the screen	
-		pt.y =  (nScreenHeight - rectThis.Height()) / 2;
-		pt.x =  (nScreenWidth - rectThis.Width()) / 2;
-
-		// call method to set the start width and position of the form
-		SetWindowPos(NULL, pt.x, pt.y, nCtlWidth, nCtlHeight, SWP_NOACTIVATE);
-
-	}
-	else 
-	{
-		// call method to set the start width and position of the form
-		SetWindowPos(NULL, rcLastRect.left, rcLastRect.top, nCtlWidth, nCtlHeight, SWP_NOACTIVATE);
-	}
-
-	if (pFormProps->GetLngProperty(nMaxDialogWidth) > -1)
-	{
-		int nMaxWidth = pFormProps->GetLngProperty(nMaxDialogWidth);
-		int nMaxHeight = pFormProps->GetLngProperty(nMaxDialogHeight);
-		int nMinWidth = pFormProps->GetLngProperty(nMinDialogWidth);
-		int nMinHeight = pFormProps->GetLngProperty(nMinDialogHeight);
-
-		// ensure the max extents is not larger than the screen.
-		if (nMaxWidth > nScreenWidth)
-			nMaxWidth = nScreenWidth;
-		if (nMaxHeight > nScreenHeight)
-			nMaxHeight = nScreenHeight;
-
-		// ensure the min extents is not larger than the screen.
-		if (nMinWidth > nScreenWidth)
-			nMinWidth = nScreenWidth;
-		if (nMinHeight > nScreenHeight)
-			nMinHeight = nScreenHeight;
-
-		// set the min and max allowable settings
-		SetDialogMaxExtents (
-			nMaxWidth,
-			nMaxHeight);		
-		SetDialogMinExtents (
-			nMinWidth,
-			nMinHeight);
-	}
-	
-	// call methods to invoke the OnInitDialog event
-	InvokeMethod(pFormProps->GetStrProperty(nFormEventInitialize), false);
-
-	GetWindowRect(&rcThis);
-	// call methods to invoke the event
-	InvokeMethodIntInt(
-		mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 
-		rcThis.Width(),
-		rcThis.Height(),
-		false);	
-
-	//SetFocus();
+	__super::OnInitDialog();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
@@ -264,45 +114,12 @@ BOOL CModalVDcl::OnInitDialog()
 
 int CModalVDcl::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	if (CSnapDlg::OnCreate(lpCreateStruct) == -1)
+	if (__super::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
 	EnableToolTips (TRUE);
-	
-	
 	return 0;
 }
-
-void CModalVDcl::OnDestroy() 
-{
-	SaveSize();
-
-	CRect rcThis;
-	GetWindowRect(&rcThis);
-	CPoint pt;
-
-	CDialog::SetIcon(NULL, FALSE);
-
-	if (m_hIconAcad != NULL)
-		DestroyIcon(m_hIconAcad);
-	
-	// get the left and top values to center the form on the screen	
-	pt.y =  (::GetSystemMetrics(SM_CYSCREEN) - rcThis.Height()) / 2;
-	pt.x =  (::GetSystemMetrics(SM_CXSCREEN) - rcThis.Width()) / 2;
-	
-	if (pt.y == rcThis.top &&
-		pt.x == rcThis.left)
-		// call methods to invoke the event
-		InvokeMethodIntInt(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventClose), -1, -1, false);	
-	else
-		// call methods to invoke the event
-		InvokeMethodIntInt(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventClose), rcThis.left, rcThis.top, false);	
-	
-	mDialogX.GetControlPane().CleanUpControls();	
-	
-	CSnapDlg::OnDestroy();
-}
-
 
 BOOL CModalVDcl::OnNotify_ToolTipText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 {
@@ -311,39 +128,31 @@ BOOL CModalVDcl::OnNotify_ToolTipText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 
 void CModalVDcl::CloseDialog()
 {
-	if (!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false))	
-	{
-		CSnapDlg::OnOK();
-	}
+	if (QueryForClose())	
+		__super::OnOK();
 }
-bool CModalVDcl::QueryForClose() 
+
+bool CModalVDcl::QueryForClose()
 {
 	if (mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose) == CString())
 		return true;
-
 	return !(InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false));	
 }
 
 void CModalVDcl::OnClose() 
 {
-	SaveSize();
-	if (!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false))	
-	{
-		CSnapDlg::OnClose();				
-	}
+	if (QueryForClose())	
+		__super::OnClose();				
 }
 
 void CModalVDcl::OnSize(UINT nType, int cx, int cy) 
 {
-	CSnapDlg::OnSize(nType, cx, cy);
-	
+	__super::OnSize(nType, cx, cy);
 	mDialogX.GetControlPane().RecalcLayout();
-
-	if (CWnd::IsWindowVisible())
+	if (IsWindowVisible())
 	{	
 		CRect rcThis;
 		CWnd::GetWindowRect(&rcThis);
-		SaveSize();
 		// call methods to invoke the event
 		InvokeMethodIntInt(
 			mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 
@@ -354,28 +163,11 @@ void CModalVDcl::OnSize(UINT nType, int cx, int cy)
 	RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 }
 
-void CModalVDcl::SetTitleBarIcon(int nPictureID)
-{
-	SetIcon( NULL, FALSE );
-	
-	if( m_hIconAcad )
-		DestroyIcon( m_hIconAcad );
-	
-	CPictureObject* pPicture = mDialogX.GetSourceForm()->GetProject()->FindPicture( nPictureID );
-	if( pPicture )
-		m_hIconAcad = pPicture->CloneIcon();
-	else
-		m_hIconAcad = CopyIcon( AfxGetApp()->GetMainWnd()->GetIcon( FALSE ) );
-	SetIcon( m_hIconAcad, FALSE );
-}
-
 void CModalVDcl::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
-	CSnapDlg::OnShowWindow(bShow, nStatus);
-	
+	__super::OnShowWindow(bShow, nStatus);
 	// call methods to invoke the event
 	InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventShow), false);	
-		
 }
 
 void CModalVDcl::OnOK()
@@ -383,8 +175,7 @@ void CModalVDcl::OnOK()
 	if (!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false))	
 	{
     InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnOk), false);
-		CSnapDlg::OnOK();
-		//CDialog::EndDialog(MB_OK);
+		__super::OnOK();
 	}
 }
 
@@ -392,9 +183,8 @@ void CModalVDcl::OnCancel()
 {
 	if (!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), true))	
 	{
-		InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnCancel), false);
-		CSnapDlg::OnCancel();
-		//CDialog::EndDialog(2);
+    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnCancel), false);
+		__super::OnCancel();
 	}
 }
 
@@ -493,5 +283,5 @@ BOOL CModalVDcl::PreTranslateMessage(MSG* pMsg)
     }*/
   }	
 	
-	return CSnapDlg::PreTranslateMessage(pMsg);
+	return __super::PreTranslateMessage(pMsg);
 }

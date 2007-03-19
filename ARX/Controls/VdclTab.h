@@ -41,14 +41,13 @@ public:
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
 	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
+	virtual bool GetChildPanes( std::list< const CControlPane* >& listChildren ) const;
 
 // Interface
 public:
 	CTabCtrl& GetTabCtrl() { return *this; }
 	const CTabCtrl& GetTabCtrl() const { return *this; }
 	CRect GetUsedArea() const;
-	TDialogControlPtr FindControl( HWND hwndControl ) const;
-	TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const;
 
 // Operations
 public:

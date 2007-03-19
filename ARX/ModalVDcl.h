@@ -3,9 +3,8 @@
 
 #pragma once
 
-#include "SnapDlg.h"
+#include "BaseDlg.h"
 #include "Resource.h"
-#include "ArxDialogObject.h"
 
 class CDclFormObject;
 
@@ -33,11 +32,9 @@ protected:
 /////////////////////////////////////////////////////////////////////////////
 // CModalVDcl dialog
 
-class CModalVDcl : public CSnapDlg
+class CModalVDcl : public CBaseDlg
 {
 	CModalDialogX mDialogX;
-	int mnX;
-	int mnY;
 
 	enum { IDD = IDD_MODALDIALOG };
 
@@ -47,17 +44,16 @@ public:
 	~CModalVDcl();
 
 public:
+	virtual CControlPane& GetControlPane() { return mDialogX.GetControlPane(); }
 	CDialogObject& GetDialogObject() { return mDialogX; }
 	const CDialogObject& GetDialogObject() const { return mDialogX; }
 	void CloseDialog();
-	void SetTitleBarIcon(int nPictureID);
 	void SetDclForm(CDclFormObject *pDclFormObject);
 	bool QueryForClose();
 
 // Overrides
-public:
+protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
 	virtual void OnOK();
 	virtual void OnCancel();
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

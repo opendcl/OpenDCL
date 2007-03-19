@@ -127,7 +127,7 @@ CString CPercentageEdit::Number_To_Percentage(double fNumber)
 // 1 - Temporary string to manipulate into the Percentage string,
 
 
-	CString     strPercentage = "";
+	CString     strPercentage;
 
 	strPercentage = CNumEdit::Number_To_Text(fNumber);
 

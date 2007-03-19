@@ -27,7 +27,6 @@
 #include "Project.h"
 
 
-#define nComboStyle12 12
 #define nComboDropHeight 300
 #define nDeRoundRangeMin  -179
 #define nDeRoundRangeMax   180
@@ -41,8 +40,8 @@ CControlHolder::CControlHolder()
 : CControlPane()
 , mpTemplate( NULL )
 , mpDlgControl( NULL )
+, mnControlId( -1 )
 {
-	m_ControlId = -1;	
 	m_bSelected = false;
 	m_bActiveXCtrl = false;
 	m_ClassName = AfxRegisterWndClass(CS_VREDRAW | CS_HREDRAW,
@@ -56,8 +55,8 @@ CControlHolder::CControlHolder( CDclControlObject* mpTemplate )
 : CControlPane( mpTemplate->GetOwnerForm(), this )
 , mpTemplate( mpTemplate )
 , mpDlgControl( NULL )
+, mnControlId( -1 )
 {
-	m_ControlId = -1;	
 	m_bSelected = false;
 	m_bActiveXCtrl = false;
 	m_ClassName = AfxRegisterWndClass(CS_VREDRAW | CS_HREDRAW,
@@ -73,7 +72,7 @@ CControlHolder::~CControlHolder()
 
 int CControlHolder::GetId()
 {
-	return ++m_ControlId;
+	return mnControlId;
 }
 
 
@@ -96,7 +95,7 @@ BOOL CControlHolder::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, U
 {
 	BOOL bSuccess = CStatic::Create(CString(), dwStyle, rect, pParentWnd, nID);
 	if( bSuccess )
-		m_ControlId = nID;
+		mnControlId = nID + 1;
 	return bSuccess;
 }
 
@@ -297,19 +296,12 @@ void CControlHolder::OnSize(UINT nType, int cx, int cy)
 			}
 		}
 	}
-	else
+	else if( mpDlgControl )
 	{
-		CWnd *pControl = GetDlgItem(m_ControlId);
-	
+		CWnd *pControl = mpDlgControl->GetControl();
 		if (pControl != NULL)
 		{
-			pControl->MoveWindow(
-				0,
-				0,
-				cx,
-				cy,
-				TRUE);
-
+			pControl->MoveWindow( 0, 0, cx, cy, TRUE);
 			CRect rc;
 			pControl->GetWindowRect(rc);
 			if (rc.Width() != cx || rc.Height() != cy)
@@ -443,7 +435,9 @@ BOOL CControlHolder::PreTranslateMessage(MSG* pMsg)
 
 CAxContainerCtrl* CControlHolder::GetActiveXCtrl()
 {
-	return (CAxContainerCtrl*)GetDlgItem(m_ControlId);
+	if( !mpDlgControl )
+		return NULL;
+	return (CAxContainerCtrl*)mpDlgControl->GetControl();
 }
 
 void CControlHolder::SetColor(DISPID dispid, unsigned long ulColor)
@@ -609,7 +603,7 @@ CWnd* CControlHolder::CreateComboBox(CDclControlObject *mpTemplate)
 	if (mpTemplate->GetBoolProperty(nSorted) == TRUE)
 		dwStyle = dwStyle | CBS_SORT;
 
-	if (mpTemplate->GetLngProperty(nComboBoxStyle) == nComboStyle12)
+	if (mpTemplate->GetLngProperty(nComboBoxStyle) == 12)
 		mpTemplate->SetLongProperty(nDropDownHeight, nComboDropHeight);
 		
 	switch (mpTemplate->GetLngProperty(nComboBoxStyle))
@@ -1140,6 +1134,10 @@ bool CControlHolder::CreateNewDialogControl()
 	if( !mpDlgControl )
 		return false;
  	UpdateChildControl();
+	CRect rectControl;
+	pNewControl->GetWindowRect( &rectControl );
+	GetParent()->ScreenToClient( &rectControl );
+	MoveWindow( &rectControl );
 	return true;
 }
 

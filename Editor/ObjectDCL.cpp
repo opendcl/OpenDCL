@@ -53,15 +53,6 @@ static CString LTOA(int nVal)
 //}
 
 
-static CString FindTabCaption2(CDclFormObject *pDclTab, int nTabIndex)
-{
-	CDclControlObject* pControl = pDclTab->FindFirstControlOfType(CtlTabStrip);
-	if (!pControl)
-		return CString();
-	return pControl->GetPropertyListItem(nTabsCaption, nTabIndex);
-}
-
-
 static CString FindTabCaption(CDclFormObject *pDclTab)
 {
 	// do loop to add all the tree items
@@ -74,28 +65,16 @@ static CString FindTabCaption(CDclFormObject *pDclTab)
 			if (pDcl != NULL)
 			{
 				if (pDclTab->GetParentName() == pDcl->GetUniqueName())
-				{					
-					return FindTabCaption2(pDcl, pDclTab->GetTabIndex());
+				{
+					CDclControlObject* pControl = pDcl->FindFirstControlOfType(CtlTabStrip);
+					if (!pControl)
+						return CString();
+					return pControl->GetPropertyListItem(nTabsCaption, pDclTab->GetTabIndex());
 				}
 			}			
 		}
 	}
 	return CString();
-}
-
-
-static RefCountedPtr< CPropertyObject > AddControlStdProperty(CDclControlObject *pDclControl, PropertyId nID, LPCTSTR pszValue, PropertyType type, bool bHidden = false) 
-{
-	RefCountedPtr< CPropertyObject > pProp = pDclControl->AddStringProperty( nID, type, pszValue );
-	if( bHidden )
-		pProp->SetHidden();
-	return pProp;
-}
-
-
-static RefCountedPtr< CPropertyObject > AddControlHiddenProperty(CDclControlObject *pDclControl, PropertyId nID, LPCTSTR pszValue, PropertyType type) 
-{
-	return AddControlStdProperty(pDclControl, nID, pszValue, type, true);
 }
 
 
@@ -404,13 +383,14 @@ CDocument* CObjectDCLApp::OpenDocumentFile(LPCTSTR pszPathName)
 
 void CObjectDCLApp::OnFileNew() 
 {
+	CloseAllDocuments(FALSE);
 	CWinApp::OnFileNew();
-	m_pMainFrame->m_wndToolBar.GetToolBarCtrl().EnableButton(0, TRUE);
+	m_pMainFrame->m_wndToolBar.GetToolBarCtrl().EnableButton(ID_FILE_SAVE, TRUE);
 }
 
 void CObjectDCLApp::OnFileOpen() 
 {
-	CloseDocument();
+	CloseAllDocuments(FALSE);
 	CWinApp::OnFileOpen();
 /*
 	//CString newName;
@@ -442,15 +422,16 @@ void CObjectDCLApp::OnFileOpen()
 	//	theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
 	//	pProject->ClearProject();	
 	//}
-	GetMainFrame()->m_wndToolBar.GetToolBarCtrl().EnableButton(0, TRUE);
+	GetMainFrame()->m_wndToolBar.GetToolBarCtrl().EnableButton(ID_FILE_SAVE, TRUE);
 }
 
 
 BOOL CObjectDCLApp::OnOpenRecentFile(UINT nID)
 {
+	CloseAllDocuments(FALSE);
 	BOOL bSuccess = CWinApp::OnOpenRecentFile(nID);
 	if( bSuccess )
-	  m_pMainFrame->m_wndToolBar.GetToolBarCtrl().EnableButton(0, TRUE);
+	  m_pMainFrame->m_wndToolBar.GetToolBarCtrl().EnableButton(ID_FILE_SAVE, TRUE);
 	return bSuccess;
 
 /*
@@ -499,36 +480,36 @@ BOOL CObjectDCLApp::OnOpenRecentFile(UINT nID)
 */
 }
 
-BOOL CObjectDCLApp::CloseDocument()
-{
-	// Find first doc template
-    POSITION pos = GetFirstDocTemplatePosition();
-    ASSERT(pos != NULL);
-    CDocTemplate* pTemplate = GetNextDocTemplate(pos);
-
-    // get the document
-    pos = pTemplate->GetFirstDocPosition();
-    if (pos != NULL)
-    {
-			//m_pMainFrame->SetActiveView(NULL, FALSE);
-      CDocument* pDoc = pTemplate->GetNextDoc(pos);
-      // remove Document (only 1 possible)
-      if (pDoc != NULL) pDoc->OnCloseDocument();
-    }
-   
-	if (m_pMainFrame != NULL)
-	{
-		theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
-		CProject *pProjectList = activeProject;
-		if (pProjectList != NULL)
-		{
-			theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
-			pProjectList->ClearProject();	
-		}
-		m_pMainFrame->m_wndToolBar.GetToolBarCtrl().EnableButton(0, FALSE);
-	}
-    return TRUE;
-}
+//BOOL CObjectDCLApp::CloseDocument()
+//{
+//	// Find first doc template
+//    POSITION pos = GetFirstDocTemplatePosition();
+//    ASSERT(pos != NULL);
+//    CDocTemplate* pTemplate = GetNextDocTemplate(pos);
+//
+//    // get the document
+//    pos = pTemplate->GetFirstDocPosition();
+//    if (pos != NULL)
+//    {
+//			//m_pMainFrame->SetActiveView(NULL, FALSE);
+//      CDocument* pDoc = pTemplate->GetNextDoc(pos);
+//      // remove Document (only 1 possible)
+//      if (pDoc != NULL) pDoc->OnCloseDocument();
+//    }
+//   
+//	if (m_pMainFrame != NULL)
+//	{
+//		theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
+//		CProject *pProjectList = activeProject;
+//		if (pProjectList != NULL)
+//		{
+//			theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
+//			pProjectList->ClearProject();	
+//		}
+//		m_pMainFrame->m_wndToolBar.GetToolBarCtrl().EnableButton(ID_FILE_SAVE, FALSE);
+//	}
+//    return TRUE;
+//}
 
 CMDIChildWnd* CObjectDCLApp::CreateOrActivateFrame(CDocument* pDoc, CSize ViewSize, bool bResizable)
 {
@@ -642,30 +623,6 @@ CObjectDCLView* CObjectDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 			// set the title bar text
 			((CChildFrame*)pNewFrame)->m_Title = FindTabCaption(pDclForm);
 			pNewFrame->SetWindowText(((CChildFrame*)pNewFrame)->m_Title);
-		}		
-	}
-
-	// add additional properties that may not be there
-	if (pDclForm->GetType() != VdclTabForm)
-	{	
-		// add the nObjectBrowser property
-		AddControlStdProperty(pDclForm->GetControlProperties(), nObjectBrowser, CString(), PropActiveXMethods);
-	}
-
-	// add additional properties that may not be there
-	if (pDclForm->GetType() == VdclDockable)
-	{		
-		// add TitleBarText property
-		AddControlStdProperty(pDclForm->GetControlProperties(), nTitleBarText, pDclForm->GetKeyName(), PropString);
-		
-		if (nCurrentPurchaseMode != nPurchasedR14Pro && 
-			pDclForm->GetControlProperties()->GetPropertyObject(nResizable) == NULL)
-		{
-			CString sTrue;		
-			sTrue = theWorkspace.LoadResourceString(IDS_TRUE);
-	
-			// add the allow user to resize property
-			AddControlStdProperty(pDclForm->GetControlProperties(), nResizable, sTrue, PropBool);
 		}		
 	}
     

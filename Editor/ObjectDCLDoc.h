@@ -25,7 +25,6 @@ public:
 
 // Generated message map functions
 protected:
-	afx_msg void OnFileClose();
 	afx_msg BOOL OnNewDocument();
 	afx_msg BOOL OnOpenDocument(LPCTSTR lpszPathName);
 	afx_msg BOOL OnSaveDocument(LPCTSTR lpszPathName);

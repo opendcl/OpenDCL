@@ -303,7 +303,7 @@ void CCurrencyEdit::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 	else
 	{
-		if(m_bEdit_Has_Focus!=true)
+		if(GetFocus() != this)
 			CEdit::SetSel(0,0);
 
 		m_bEdit_Has_Focus=true;

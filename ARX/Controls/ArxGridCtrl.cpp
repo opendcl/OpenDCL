@@ -1643,7 +1643,7 @@ void CArxGridCtrl::ShowTextBox(int nRow, int nCol, int nStyle, UINT nChar/* = 0 
 			if (pImage2 != NULL)
 				pImage2->GetImageInfo(0, &Info);
 
-			rc.left += Info.rcImage.right - Info.rcImage.left + 4;
+			rc.left += Info.rcImage.right - Info.rcImage.left + 2;
 		}
 	}
 
@@ -1792,7 +1792,7 @@ void CArxGridCtrl::ShowTextBox(int nRow, int nCol, int nStyle, UINT nChar/* = 0 
 			{
 				pTextBox = new CCurrencyEdit;
 
-				UINT nCreateStyle = WS_CHILD | WS_VISIBLE | ES_WANTRETURN | WS_CLIPSIBLINGS | WS_HSCROLL | ES_AUTOHSCROLL | ES_LEFT;
+				UINT nCreateStyle = WS_CHILD | WS_VISIBLE | ES_WANTRETURN | WS_CLIPSIBLINGS | ES_AUTOHSCROLL | ES_LEFT;
 				pTextBox->Create(nCreateStyle, rc, this, 110+nStyle);
 			}
 			else
@@ -1817,11 +1817,8 @@ void CArxGridCtrl::ShowTextBox(int nRow, int nCol, int nStyle, UINT nChar/* = 0 
 			pTextBox->ShowWindow(TRUE);
 
 			pTextBox->SetFocus();			
-			
-			if (nChar == 0)
-				pTextBox->SetSel(sCellText.GetLength(),0, TRUE);
-			else
-				pTextBox->SetSel(1, 1, TRUE);
+
+			pTextBox->SetSel(0, -1, TRUE);
 						
 			// set the control array.
 			m_pTextBox[nStyle] = pTextBox;
@@ -1903,7 +1900,7 @@ void CArxGridCtrl::ShowTextBox(int nRow, int nCol, int nStyle, UINT nChar/* = 0 
 			{
 				pTextBox = new CPercentageEdit;
 
-				UINT nCreateStyle = WS_CHILD | WS_VISIBLE | ES_WANTRETURN | WS_CLIPSIBLINGS | WS_HSCROLL | ES_AUTOHSCROLL | ES_LEFT;
+				UINT nCreateStyle = WS_CHILD | WS_VISIBLE | ES_WANTRETURN | WS_CLIPSIBLINGS | ES_AUTOHSCROLL | ES_LEFT;
 				pTextBox->Create(nCreateStyle, rc, this, 110+nStyle);
 			}
 			else
@@ -1929,10 +1926,7 @@ void CArxGridCtrl::ShowTextBox(int nRow, int nCol, int nStyle, UINT nChar/* = 0 
 
 			pTextBox->SetFocus();			
 			
-			if (nChar == 0)
-				pTextBox->SetSel(sCellText.GetLength(),0, TRUE);
-			else
-				pTextBox->SetSel(1, 1, TRUE);
+			pTextBox->SetSel(0, -1, TRUE);
 						
 			// set the control array.
 			m_pTextBox[nStyle] = pTextBox;

@@ -102,7 +102,7 @@ public:
 	virtual bool FindControl(HWND hwndControl, /*out*/ CString& sControlName) const = 0; //if found, returns true & sets sControlName
 	virtual TDialogControlPtr FindControl(HWND hwndControl) const = 0;
 	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const = 0;
-	virtual void SetGlobalLispSymbols( bool bResetToNil = false ) {}
+	virtual void SetGlobalLispSymbols( bool bResetToNil = false ) const {}
 
 protected:
 	virtual TDialogControlPtr CreateNewDialogControl( CDclControlObject* pTemplate, UINT nID ) = 0;

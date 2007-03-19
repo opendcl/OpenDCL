@@ -14,8 +14,6 @@ class CComboBoxFolder;
 
 class CArxControlPane : public CControlPane
 {
-// Attributes
-
 // Construction
 protected:
 	CArxControlPane();
@@ -27,7 +25,6 @@ public:
 public:
 	BOOL PreTranslateOLEMessage(MSG* pMsg) const;
 
-
 protected:
 	CDclFormObject* FindDclObject(CString sControlName) const;
 
@@ -37,7 +34,7 @@ public:
 	virtual bool FindControl(HWND hwndControl, /*out*/ CString& sControlName) const; //if found, returns true & sets sControlName
 	virtual TDialogControlPtr FindControl(HWND hwndControl) const;
 	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const;
-	virtual void SetGlobalLispSymbols( bool bResetToNil = false );
+	virtual void SetGlobalLispSymbols( bool bResetToNil = false ) const;
 
 protected:
 	virtual TDialogControlPtr CreateNewDialogControl( CDclControlObject* pTemplate, UINT nID );

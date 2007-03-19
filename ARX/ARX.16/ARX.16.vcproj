@@ -253,6 +253,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\BaseDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\CfgTabPane.cpp"
 				>
 			</File>
@@ -313,10 +317,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\SnapDlg.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\StdAfx.cpp"
 				>
 			</File>
@@ -363,6 +363,10 @@
 			</File>
 			<File
 				RelativePath="..\ArxWorkspace.h"
+				>
+			</File>
+			<File
+				RelativePath="..\BaseDlg.h"
 				>
 			</File>
 			<File
@@ -427,10 +431,6 @@
 			</File>
 			<File
 				RelativePath="..\SADirRead.h"
-				>
-			</File>
-			<File
-				RelativePath="..\SnapDlg.h"
 				>
 			</File>
 			<File

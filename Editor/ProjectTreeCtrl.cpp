@@ -318,22 +318,23 @@ void CProjectTreeCtrl::AddFormToTree(CDclFormObject *pDcl, bool bForceShow)
 			HTREEITEM hItem = FindTabParent( pDcl );
 			if (hItem != NULL && hItem != TVI_ROOT)
 			{
-				HTREEITEM hInsertAfter = GetChildItem( hItem );
-				if( hInsertAfter )
+				HTREEITEM hInsertAfter = TVI_FIRST;
+				short idxTab = pDcl->GetTabIndex();
+				for( short idx = idxTab; idx > 0; --idx )
 				{
-					short idxTab = pDcl->GetTabIndex();
-					while( --idxTab > 0 )
-					{
-						HTREEITEM hNext = GetNextSiblingItem( hInsertAfter );
-						if( !hNext )
-							break;
-						hInsertAfter = hNext;
-					}
+					HTREEITEM hNext =
+						(hInsertAfter == TVI_FIRST)? GetChildItem( hItem ) : GetNextSiblingItem( hInsertAfter );
+					if( !hNext )
+						break;
+					if( GetItemData( hNext ) > (DWORD_PTR)idxTab )
+						break;
+					hInsertAfter = hNext;
 				}
 				if( !hInsertAfter )
 					hInsertAfter = TVI_LAST;
 				pDcl->m_htiTreeItem = InsertItem( FindTabCaption( pDcl ), hItem, hInsertAfter );
 				SetItemImage( pDcl->m_htiTreeItem, 5, 5 );
+				SetItemData( pDcl->m_htiTreeItem, pDcl->GetTabIndex() );
 			}
 			break;
 		}

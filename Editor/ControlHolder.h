@@ -23,6 +23,7 @@ class CControlHolder : public CStatic, public CControlPane
 {
 	CDclControlObject* mpTemplate;
 	TDialogControlPtr mpDlgControl;
+	int mnControlId;
 
 // Construction
 protected:
@@ -38,7 +39,6 @@ public:
 public:
 	CString m_ClassName;
 	CFont m_Font;
-	int m_ControlId;
 	bool m_bSelected;
 	int m_ControlType;
 	BOOL m_bGripsCreate;

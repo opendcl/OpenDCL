@@ -40,7 +40,7 @@ The file passed will be searched for if no path is included in the file name.  I
 [Arguments Return] as String "Qualified Path"
 \par\tab FileName
 [as Integer]
-\par\tab\i{Optional}\i0 Reload
+\par\tab \i [Optional] \i0 Reload
 [as T]
 
 
@@ -58,23 +58,9 @@ Similar to LoadProject. The ProjectAlias names an alias to use in place of the a
 [Arguments Return] as String "Qualified Path"
 \par\tab FileName
 [as String]
-\par\tab\i{Optional}\i0 Reload
+\par\tab \i [Optional] \i0 Reload
 [as T]
-\par\tab\i{Optional}\i0 AliasProjectName
-[as String]
-
-
-[Method]
-Project_UnLoad
-[Prefix]
-Odcl_
-[Desc]
-This method loads the requested project into memory
-
-\par\par DEFINITION ARGUMENTS AND RETURN to be CONFIRMED
-
-[Arguments Return] as T or Nil
-\par\tab FileName
+\par\tab \i [Optional] \i0 AliasProjectName
 [as String]
 
 
@@ -96,7 +82,7 @@ Enable
 [Prefix]
 Odcl_Form_
 [Desc]
-This method will disable or enable a dialog box, or config tab (but not the dockable form) to be enabled or disabled. 0 = Disabled, 1 or T = Enabled. When using this call with a Modal dialog box ensure you have the means re-enable the dialog box otherwise AutoCAD will be permanently locked.
+This method will disable or enable a dialog box, or config tab (but not the dockable form) to be enabled or disabled. 0 = Disabled, 1 or T = Enabled. When using this call with a Modal dialog box ensure you have the means re-enable the dialog box otherwise AutoCAD will be permantly locked.
 [Arguments]
 ProjectFileName
 \par\tab Enabled
@@ -163,8 +149,24 @@ This method returns a list indicating the width and height of the dialog box's c
 ProjectFileName
 
 
+[Method]
+IsActive
+[Prefix]
+Odcl_Form_
+[Desc]
+All dialog boxes that are displayed are referenced in an active dialog list.  To find out if a dialog box is active, (as in the case where a secondary Modeless dialog box has been closed by the user and you need to know if you should call the Odcl_Form_Close method) use this method to query the active dialog list for the dialog box you need to ensure is present.
+[Arguments Return] as T or Nil
+ProjectFileName
 
 
+[Method]
+IsFloating
+[Prefix]
+Odcl_Form_
+[Desc]
+This method is for dockable forms only. It will indicate if the dockable form is (T) floating or (Nil) docked to the AutoCAD frame.
+[Arguments Return] as T or Nil
+ProjectFileName
 
 
 [Method]
@@ -218,29 +220,11 @@ Odcl_Form_
 This method displays a dialog box that has already been loaded, to the screen. This method auto detects the style of the dialog box and displays it in the correct mode. \par \par \b *Important  Notes: \b0 \par \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-720\li720 The optional upper left coordinates only affect Modal and Modeless dialog boxes only. \par {\pntext\f1\'B7\tab} If the dialog box being shown is a modal dialog box, this method will wait until the user has exited the dialog box before AutoLisp will be allowed to continue on (for AutoCAD 2000 and 2002). \par{\pntext\f1\'B7\tab}Do not call this method from within a MouseDown event of any control.  Microsoft's underlying technology requires the MouseUp event and this will not happen if this method is called from a MouseDown event. What goes down must come up, and calling this method will fire the MouseUp event to the new dialog box causing an error. \par \pard
 [Arguments]
 ProjectFileName
-\par\tab\i{Optional}\i0 UpperLeftXCoordinate 
+\par\tab \i [Optional] \i0 UpperLeftXCoordinate
 [as Integer]
-\par\tab\i{Optional}\i0 UpperLeftYCoordinate 
+\par\tab \i [Optional] \i0 UpperLeftYCoordinate
 [as Integer]
 
-
-[Method]
-IsFloating
-[Prefix]
-Odcl_Form_
-[Desc]
-This method is for dockable forms only. It will indicate if the dockable form is (T) floating or (Nil) docked to the AutoCAD frame.
-[Arguments Return] as T or Nil
-ProjectFileName
-
-[Method]
-IsActive
-[Prefix]
-Odcl_Form_
-[Desc]
-All dialog boxes that are displayed are referenced in an active dialog list.  To find out if a dialog box is active, (as in the case where a secondary Modeless dialog box has been closed by the user and you need to know if you should call the Odcl_Form_Close method) use this method to query the active dialog list for the dialog box you need to ensure is present.
-[Arguments Return] as T or Nil
-ProjectFileName
 
 
 [End of File]

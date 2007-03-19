@@ -32,13 +32,20 @@ CArxControlPane::~CArxControlPane()
 }
 
 
-void CArxControlPane::SetGlobalLispSymbols( bool bResetToNil /*= false*/ )
+void CArxControlPane::SetGlobalLispSymbols( bool bResetToNil /*= false*/ ) const
 {
-	for( TDialogControls::iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
+	for( TDialogControls::const_iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
 	{
-		CArxControlServices* pArxServices = (*iter)->GetArxServices();
+		const CArxControlServices* pArxServices = (*iter)->GetArxServices();
 		assert( pArxServices != NULL );
 		pArxServices->SetLispSymbol( bResetToNil );
+		std::list< const CControlPane* > listChildren;
+		if( (*iter)->GetChildPanes( listChildren ) )
+		{
+			std::list< const CControlPane* >::const_iterator iterChild = listChildren.begin();
+			for( ; iterChild != listChildren.end(); ++iterChild )
+				(*iterChild)->SetGlobalLispSymbols( bResetToNil );
+		}
 	}
 }
 
@@ -63,21 +70,22 @@ bool CArxControlPane::FindControl( HWND hwndControl, /*out*/ CString& sControlNa
 {
 	if (!hwndControl)
 		return false;
-	size_t ctMax = mControls.size();
-	for( size_t idx = 0; idx < ctMax; ++idx )
+	for( TDialogControls::const_iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
 	{
-		TDialogControlPtr pControl = mControls.at( idx );
-		assert( pControl != NULL );
-		if( pControl->GetControl()->m_hWnd == hwndControl )
+		if( (*iter)->GetControl()->m_hWnd == hwndControl )
 		{
-			sControlName = pControl->GetKeyName();
+			sControlName = (*iter)->GetKeyName();
 			return true;
 		}
-		TDialogControlPtr pNestedControl = pControl->FindControl( hwndControl );
-		if( pNestedControl )
+		std::list< const CControlPane* > listChildren;
+		if( (*iter)->GetChildPanes( listChildren ) )
 		{
-			sControlName = pNestedControl->GetKeyName();
-			return true;
+			std::list< const CControlPane* >::const_iterator iterChild = listChildren.begin();
+			for( ; iterChild != listChildren.end(); ++iterChild )
+			{
+				if( (*iterChild)->FindControl( hwndControl, sControlName ) )
+					return true;
+			}
 		}
 	}
 	return false;
@@ -87,31 +95,42 @@ TDialogControlPtr CArxControlPane::FindControl( HWND hwndControl ) const
 {
 	if (!hwndControl)
 		return false;
-	size_t ctMax = mControls.size();
-	for( size_t idx = 0; idx < ctMax; ++idx )
+	for( TDialogControls::const_iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
 	{
-		TDialogControlPtr pControl = mControls.at( idx );
-		assert( pControl != NULL );
-		if( pControl->GetControl()->m_hWnd == hwndControl )
-			return pControl;
-		TDialogControlPtr pNestedControl = pControl->FindControl( hwndControl );
-		if( pNestedControl )
-			return pNestedControl;
+		if( (*iter)->GetControl()->m_hWnd == hwndControl )
+			return (*iter);
+		std::list< const CControlPane* > listChildren;
+		if( (*iter)->GetChildPanes( listChildren ) )
+		{
+			std::list< const CControlPane* >::const_iterator iterChild = listChildren.begin();
+			for( ; iterChild != listChildren.end(); ++iterChild )
+			{
+				TDialogControlPtr pControl = (*iterChild)->FindControl( hwndControl );
+				if( pControl )
+					return pControl;
+			}
+		}
 	}
 	return NULL;
 }
 
 TDialogControlPtr CArxControlPane::FindControl( LPCTSTR pszControlName, ControlType type /*= CtlInvalid*/ ) const
 {
-	for( size_t idx = 0; idx < mControls.size(); ++idx )
+	for( TDialogControls::const_iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
 	{
-		TDialogControlPtr pControl = mControls.at( idx );
-		assert( pControl != NULL );
-		if( (type == CtlInvalid || pControl->GetControlType() == type) && pControl->GetKeyName() == pszControlName )
-			return pControl;
-		TDialogControlPtr pNestedControl = pControl->FindControl( pszControlName, type );
-		if( pNestedControl )
-			return pNestedControl;
+		if( (type == CtlInvalid || (*iter)->GetControlType() == type) && (*iter)->GetKeyName() == pszControlName )
+			return (*iter);
+		std::list< const CControlPane* > listChildren;
+		if( (*iter)->GetChildPanes( listChildren ) )
+		{
+			std::list< const CControlPane* >::const_iterator iterChild = listChildren.begin();
+			for( ; iterChild != listChildren.end(); ++iterChild )
+			{
+				TDialogControlPtr pControl = (*iterChild)->FindControl( pszControlName, type );
+				if( pControl )
+					return pControl;
+			}
+		}
 	}
 	return NULL;
 }

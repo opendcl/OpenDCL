@@ -1064,28 +1064,24 @@ CRect CObjectDCLView::GetSplitterRect(int nId)
 {
 	CRect rc;
 	// just in case get the client rect
-	GetClientRect(&rc);
+	GetClientRect( &rc );
 
 	// now find and retrieve the rectangle for the splitter.
 	POSITION pos = m_pThisDclForm->GetControlList().GetHeadPosition();
-	while (pos != NULL)
+	while( pos != NULL )
 	{
-		CDclControlObject *pCtrl = m_pThisDclForm->GetControlList().GetNext(pos);
-
-		if (pCtrl->GetType() == CtlSplitter &&
-			pCtrl->GetID() == nId)
+		CDclControlObject* pCtrl = m_pThisDclForm->GetControlList().GetNext( pos );
+		if( pCtrl->GetType() == CtlSplitter && pCtrl->GetID() == nId )
 		{
-			rc.SetRect(
-				pCtrl->GetLngProperty(nLeft),
-				pCtrl->GetLngProperty(nTop),
-				pCtrl->GetLngProperty(nWidth),
-				pCtrl->GetLngProperty(nHeight));
+			rc.SetRect( pCtrl->GetLngProperty( nLeft ), pCtrl->GetLngProperty( nTop ),
+									pCtrl->GetLngProperty( nWidth ), pCtrl->GetLngProperty( nHeight ) );
 
-			return rc;
+			break;
 		}
 	}
 	return rc;
 }
+
 int CObjectDCLView::CheckGripsMouseMoveOver(CPoint point) 
 {
 	CRect rc1;
@@ -2066,7 +2062,6 @@ void CObjectDCLView::ClearChildControls(CControlHolder *pParentControl)
 	//	pChild->DestroyWindow();
 	//	delete pChild;
 	//}
-	pParentControl->m_ControlId = -1;
 }
 
 void CObjectDCLView::RefreshChildControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID)
@@ -3002,7 +2997,7 @@ void CObjectDCLView::ClearEventProperties(CDclControlObject *pCtrl)
 	pCtrl->ResetProperty(nCfgEventApply);
 	pCtrl->ResetProperty(nEventReturnPressed);
 	pCtrl->ResetProperty(nFormEventCancelClose);
-  pCtrl->ResetProperty(nFormEventOnOk);
+	pCtrl->ResetProperty(nFormEventOnOk);
 	pCtrl->ResetProperty(nFormEventOnCancel);
 	pCtrl->ResetProperty(nOnLMouseEvent);
 	pCtrl->ResetProperty(nOnMMouseEvent);
@@ -3948,7 +3943,9 @@ bool CObjectDCLView::IsTabsEnabled()
 
 void CObjectDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView) 
 {
+	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetActiveView(pActivateView);
 	CToolBox *pToolBox = theEditorWorkspace.GetToolBox();
+	pToolBox->SetActiveView(pActivateView);
 
 	if (pDeactiveView == pActivateView)
 	{
@@ -3960,40 +3957,6 @@ void CObjectDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView*
 	}
 	else
 		((CObjectDCLView*)pDeactiveView)->m_pThisDclForm = NULL;
-
-	if (pActivateView != NULL)
-	{
-		pToolBox->SetActiveView(pActivateView);
-		theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetActiveView(pActivateView);
-
-		//if (((CObjectDCLView*)pActivateView)->m_pThisDclForm != NULL)
-		//{
-		//	try
-		//	{
-		//		pDeactiveView->GetParentFrame()->SetWindowText(((CObjectDCLView*)pActivateView)->m_pThisDclForm->GetDclFormTitle());			
-		//		if (m_pThisDclForm->GetType() != VdclTabForm)
-		//			pDeactiveView->GetParentFrame()->SetWindowText(m_pThisDclForm->GetDclFormTitle());// set the title bar text
-		//		else
-		//			pDeactiveView->GetParentFrame()->SetWindowText(FindTabCaption(m_pThisDclForm));// set the title bar text
-		//	}
-		//	catch(...)
-		//	{
-		//	}
-		//}		
-	}
-	else
-	{
-		if (pDeactiveView == pActivateView)
-		{
-			pToolBox->SetActiveView(NULL);
-			theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetActiveView(NULL);
-		}
-		else
-		{
-			pToolBox->SetActiveView(pDeactiveView);
-			theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetActiveView(pDeactiveView);
-		}
-	}
 
 	if(pDeactiveView)
 		((CObjectDCLView*)pDeactiveView)->m_StandardCursorID = false;
@@ -4011,7 +3974,7 @@ void CObjectDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView*
 	//			pDeactiveView->GetParentFrame()->SetWindowText(FindTabCaption(m_pThisDclForm));// set the title bar text
 	//	}		
 	//}
-	if (pActivateView == this)
+	if (bActivate && pActivateView == this)
 		UpdateZOrderList();
 }
 

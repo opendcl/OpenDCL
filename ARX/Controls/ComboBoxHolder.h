@@ -11,32 +11,13 @@
 
 class CComboBoxHolder : public CStatic
 {
-// Construction
-public:
-	CComboBoxHolder();
-
 // Attributes
 public:
 	CWnd *pComboBox;
 	int m_nStyle;
-// Operations
-public:
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CComboBoxHolder)
-	//}}AFX_VIRTUAL
-
-// Implementation
+// Construction
 public:
+	CComboBoxHolder();
 	virtual ~CComboBoxHolder();
-
-	// Generated message map functions
-protected:
-	//{{AFX_MSG(CComboBoxHolder)
-	afx_msg void OnKillfocusCombo();
-	afx_msg void OnSelchangeCombo();	
-	//}}AFX_MSG
-
-	DECLARE_MESSAGE_MAP()
 };

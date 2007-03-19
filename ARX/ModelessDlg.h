@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Resource.h"
-#include "SnapDlg.h"
+#include "BaseDlg.h"
 #include "ArxDialogObject.h"
 
 class CAcadDocReactor;
@@ -41,12 +41,10 @@ protected:
 /////////////////////////////////////////////////////////////////////////////
 // CModelessDlg dialog
 
-class CModelessDlg : public CSnapDlg
+class CModelessDlg : public CBaseDlg
 {
 	CWnd* mpParent;
 	CModelessDialogX mDialogX;
-	int mnX;
-	int mnY;
 	bool mbResizable;
 
 	bool				m_bClosing;
@@ -62,6 +60,7 @@ public:
 	~CModelessDlg();
 
 public:
+	virtual CControlPane& GetControlPane() { return mDialogX.GetControlPane(); }
 	CDialogObject& GetDialogObject() { return mDialogX; }
 	const CDialogObject& GetDialogObject() const { return mDialogX; }
 
@@ -92,10 +91,6 @@ protected:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
 	afx_msg void OnMove(int x, int y);
-	afx_msg void OnSetFocus(CWnd* pNewWnd);
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	afx_msg void OnCaptureChanged(CWnd *pWnd);
-	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 
 protected:
 	DECLARE_MESSAGE_MAP()
