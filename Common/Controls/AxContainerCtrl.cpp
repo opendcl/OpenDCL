@@ -471,7 +471,7 @@ unsigned long CAxContainerCtrl::GetFlexGridColorProperty(AxPropertyDescriptor *a
 }
 
 void CAxContainerCtrl::SetFlexGridColorProperty(AxPropertyDescriptor *axProp
-																						, unsigned long newValue)
+																						    , unsigned long newValue)
 {
 	static BYTE parms[] = VTS_I4;
 	InvokeHelper(axProp->GetDispId(), DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms, newValue);
@@ -677,8 +677,6 @@ UINT CAxContainerCtrl::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo*
 		assert( pProp != NULL );
 		if( pProp->GetType() == PropActiveXMethods )
 		{
-			//Question for Owen--what do I need to do for cleanup purposes here?
-			//Answer: nothing, the ref counted pointers will clean up after themselves [ORW]
 			pControl->GetPropertyList().RemoveAt( posAt );
 		}
 	}
