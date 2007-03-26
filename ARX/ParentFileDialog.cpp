@@ -319,7 +319,10 @@ BOOL CParentFileDialog::OnInitDialog()
 	// call methods to invoke the OnInitDialog event
 	InvokeMethod(pProps->GetStrProperty(nFormEventInitialize), m_bInvokeWithSendString);
 
-	GetWindowRect(&rcThis);
+	if( mParentDlg.GetDialogObject().GetSourceForm()->UsesClientRect() )
+		GetClientRect( &rcThis );
+	else
+		GetWindowRect( &rcThis );
 	// call methods to invoke the event
 	InvokeMethodIntInt(
 		pProps->GetStrProperty(nFormEventSize), 

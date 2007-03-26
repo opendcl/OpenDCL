@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 #include "ToolTipsPage.h"
+#include "ToolTips.h"
+#include "AcadColorTable.h"
 #include "Project.h"
 #include "PictureObject.h"
 #include "PropertyObject.h"
@@ -85,8 +87,6 @@ IMPLEMENT_DYNCREATE(CToolTipsPage, CPropertyPage)
 
 CToolTipsPage::CToolTipsPage() : CPropertyPage(CToolTipsPage::IDD)
 {
-	//{{AFX_DATA_INIT(CToolTipsPage)
-	//}}AFX_DATA_INIT
 }
 
 CToolTipsPage::~CToolTipsPage()
@@ -134,7 +134,7 @@ BOOL CToolTipsPage::OnInitDialog()
 	CPropertyPage::OnInitDialog();
 	
 	// Create the CPPToolTip object
-    m_tooltip.Create(this);
+	m_tooltip.Create(this);
 	
 	m_tooltip.AddTool(GetDlgItem(IDC_AVILABEL), _T("<b><ct=0x0000FF><al_c>AVI File Name</b><br><ct=0x00AA00><hr=100%></ct><br>The AVI file must be located in the same directory as the .odc or .ods file."));
 	
@@ -147,15 +147,15 @@ BOOL CToolTipsPage::OnInitDialog()
 	m_Bold.SetIcon(IDI_BOLD);
 	m_Italic.SetIcon(IDI_ITALIC);
 	m_Color2.SetIcon(IDI_TEXTCOLOR);
-	
-	m_MainText.SetBackgroundColor(FALSE, ::GetSysColor(COLOR_INFOBK));
+
+	//m_MainText.SetBackgroundColor(FALSE, ::GetSysColor(COLOR_INFOBK));
 
 	CString sNone;
 	sNone = theWorkspace.LoadResourceString(IDS_NONE);
 	m_Pictures.AddString(sNone);
-	CString sAdd;
-	sAdd = theWorkspace.LoadResourceString(IDS_ADD);
-	m_Pictures.AddString(sAdd);
+	//CString sAdd;
+	//sAdd = theWorkspace.LoadResourceString(IDS_ADD);
+	//m_Pictures.AddString(sAdd);
 	m_Pictures.AddString(_T("< ? >"));
 	m_Pictures.AddString(_T("<  i  >"));
 	m_Pictures.AddString(_T("<  !  >"));
@@ -185,30 +185,29 @@ BOOL CToolTipsPage::OnInitDialog()
 	switch (m_pToolTipPicture->GetLongValue())
 	{
 	case -1:
-		m_Pictures.SetCurSel(2);
+		m_Pictures.SetCurSel(1);
 		break;
 	case -2:
-		m_Pictures.SetCurSel(3);
+		m_Pictures.SetCurSel(2);
 		break;
 	case -3:
-		m_Pictures.SetCurSel(4);
+		m_Pictures.SetCurSel(3);
 		break;
 	case -4:
-		m_Pictures.SetCurSel(5);
+		m_Pictures.SetCurSel(4);
 		break;
 	default:
 		{
-		n = m_Pictures.FindStringExact(0, LTOA(m_pToolTipText->GetLongValue()));
+		n = m_Pictures.FindStringExact(0, LTOA(m_pToolTipTitle->GetLongValue()));
 		if (n != -1)
 			m_Pictures.SetCurSel(n);
 		else		
 			m_Pictures.SetCurSel(0);
 		}
 	}
-	m_Title.SetWindowText(m_pToolTipText->GetStringValue());	
+	m_Title.SetWindowText(m_pToolTipTitle->GetStringValue());	
 	m_Line.SetCheck(m_pToolTipLine->GetBooleanValue());	
-	//m_MainText.SetWindowText(m_pToolTipBody->GetStringValue());	
-	m_MainText.SetRTF(m_pToolTipBody->GetStringValue());
+	m_MainText.SetWindowText(m_pToolTipBody->GetStringValue());	
 
 	m_Color.SetColour((COLORREF)m_pToolTipTitleColor->GetLongValue());
 
@@ -225,7 +224,6 @@ BOOL CToolTipsPage::OnInitDialog()
 BOOL CToolTipsPage::PreTranslateMessage(MSG* pMsg) 
 {
 	m_tooltip.RelayEvent(pMsg); 
-	
 	return CPropertyPage::PreTranslateMessage(pMsg);
 }
 
@@ -242,154 +240,124 @@ HICON GetIconFromProject(UINT nID)
 
 void CToolTipsPage::OnPreview() 
 {
+	CString sTitle;
+	m_Title.GetWindowText(sTitle);
+	int nLine = m_Line.GetCheck();
+	CString sBody;
+	m_MainText.GetWindowText(sBody);
+	CString sAviFile;
+	m_Avi.GetWindowText(sAviFile);
+	int nColor = m_Color.GetColour();
+	CString sTooltipText = ConstructTooltipHtml( sTitle, GetRGBColor( nColor ), (nLine != 0), sBody );
+
 	CRect rect;
 	GetDlgItem(IDC_PREVIEW)->GetWindowRect(&rect);
 	CPoint pt = rect.CenterPoint();
-	ScreenToClient(&pt);
 
-	/*	
-	DDX_Control(pDX, IDC_COLOR2, m_Color2);
-	DDX_Control(pDX, IDC_UNDERLINE, m_UnderLine);
-	DDX_Control(pDX, IDC_BOLD, m_Bold);
-	DDX_Control(pDX, IDC_MAINTEXT, m_MainText);
-	DDX_Control(pDX, IDC_ITALIC, m_Italic);
-	DDX_Control(pDX, IDC_PICLIST, m_Pictures);
-	DDX_Control(pDX, IDC_AVI, m_Avi);
-	DDX_Control(pDX, IDC_TITLE, m_Title);
-	DDX_Control(pDX, IDC_LINE, m_Line);
-	DDX_Control(pDX, IDC_COLOR, m_Color);
-	*/
-
-	COLORREF clr = m_Color.GetColour();
-	char value[80];
-	_ltoa(clr, value, 16);
-
-	CString sBody = CString("<b><ct=0x") + value + "><al_l>";
-	CString sTitle;
-	CString sMain;
-	
-	m_Title.GetWindowText(sTitle);
-
-	sBody += sTitle + "</b><br>";
-	
-	if (m_Line.GetCheck() == TRUE)
-	{
-		sBody += "<ct=0x000000><hr=100%>";
-	}
-
-	sMain = GetHtmlText();
-	sBody += "</ct><br>" + sMain;
-	
 	CString sPic;
 	if (m_Pictures.GetCurSel() != -1)
 		m_Pictures.GetText(m_Pictures.GetCurSel(), sPic);
-
-	CString sAvi;
-	m_Avi.GetWindowText(sAvi);
-
-	//m_tooltip.m_AviFileName.Empty();
-	//if (sAvi.GetLength() > 0)
-	//{
-	//	CProject *pProjectList = activeProject;
-	//	
-	//	int n = pProjectList->GetKeyName().Find(_T("\\"));
-	//	if (n == -1)
-	//		n = pProjectList->GetKeyName().Find(_T("/"));
-
-	//	int nNext = n;
-	//	while (nNext > -1)
-	//	{
-	//		nNext = pProjectList->GetKeyName().Find(_T("\\"), n+1);
-	//		if (nNext == -1)
-	//			nNext = pProjectList->GetKeyName().Find(_T("/"), n+1);
-	//		if (nNext > -1)
-	//			n = nNext;	
-	//	}
-
-	//	sAvi = pProjectList->GetKeyName().Left(n+1) + sAvi;
-	//	if (lstrcmpi(sAvi.Right(4), _T(".avi")) != 0)
-	//		sAvi += _T(".avi");
-	//	
-	//	m_tooltip.m_AviFileName = sAvi;
-	//}
-
 	if (sPic == _T("< ? >"))
-		m_tooltip.ShowHelpTooltip(&pt, sBody, IDI_HELP);
+		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_HELP);
 	else if (sPic == _T("<  i  >"))
-		m_tooltip.ShowHelpTooltip(&pt, sBody, IDI_INFO);
+		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_INFO);
 	else if (sPic == _T("<  !  >"))
-		m_tooltip.ShowHelpTooltip(&pt, sBody, IDI_EXCLEMATION);
+		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_EXCLEMATION);
 	else if (sPic == _T("< X >"))
-		m_tooltip.ShowHelpTooltip(&pt, sBody, IDI_X);
+		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_X);
 	else if (sPic.Left(1) == _T("<"))	
-		m_tooltip.ShowHelpTooltip(&pt, sBody);
+		m_tooltip.ShowHelpTooltip(&pt, sTooltipText);
 	else if (sPic.GetLength() > 0)
 	{
 		int nId = _tstol(sPic);
 		HICON hIcon = GetIconFromProject(nId);
 		if (hIcon != NULL)
-			m_tooltip.ShowHelpTooltip(&pt, sBody, hIcon);
+			m_tooltip.ShowHelpTooltip(&pt, sTooltipText, hIcon);
 		else
-			m_tooltip.ShowHelpTooltip(&pt, sBody);
+			m_tooltip.ShowHelpTooltip(&pt, sTooltipText);
 	}
 	else
-		m_tooltip.ShowHelpTooltip(&pt, sBody);
+		m_tooltip.ShowHelpTooltip(&pt, sTooltipText);
 }
 
 void CToolTipsPage::OnBold() 
 {
-	m_MainText.SetSelectionBold();
+	ModifySelection( _T("<b>"), _T("</b>") );
 	SetModified();
 }
 
 void CToolTipsPage::OnItalic() 
 {
-	m_MainText.SetSelectionItalic();	
+	ModifySelection( _T("<i>"), _T("</i>") );
 	SetModified();
 }
 
 void CToolTipsPage::OnUnderline() 
 {
-	m_MainText.SetSelectionUnderlined();
+	ModifySelection( _T("<u>"), _T("</u>") );
 	SetModified();
 }
 
 void CToolTipsPage::OnColor2() 
 {
-	m_MainText.SelectColor();
+	CColorDialog dlg;
+	// Get a color from the common color dialog.
+	if( dlg.DoModal() != IDOK )
+		return;
+	COLORREF cr = dlg.GetColor();
+	CString sColor;
+	sColor.Format( _T("<font color=#%02X%02X%02X>"), GetRValue(cr), GetGValue(cr), GetBValue(cr) );
+	ModifySelection( sColor, _T("</font>") );
 	SetModified();
+}
+
+void CToolTipsPage::ModifySelection( LPCTSTR pszPrefix, LPCTSTR pszSuffix )
+{
+	CString sBody;
+	m_MainText.GetWindowText(sBody);
+	int nStart;
+	int nEnd;
+	m_MainText.GetSel( nStart, nEnd );
+	CString sSelText = sBody.Mid( nStart, nEnd - nStart );
+	m_MainText.ReplaceSel( CString( pszPrefix ) + sSelText + pszSuffix, TRUE );
+	int nNewStart = nStart + lstrlen( pszPrefix );
+	m_MainText.SetSel( nNewStart, nNewStart + nEnd - nStart );
+	m_MainText.SetFocus();
 }
 
 void CToolTipsPage::Commit()
 {
 	CString sTitle;
 	m_Title.GetWindowText(sTitle);
-	m_pToolTipText->SetStringValue(sTitle);
+	m_pToolTipTitle->SetStringValue(sTitle);
 	m_pToolTipLine->SetBooleanValue(m_Line.GetCheck() != 0);
-	m_pToolTipBody->SetStringValue(m_MainText.GetRTF());
+	CString sBody;
+	m_MainText.GetWindowText(sBody);
+	m_pToolTipBody->SetStringValue(sBody);
 
-	CString sId;
 	int n = m_Pictures.GetCurSel();
 	if (n != -1)
 	{
+		CString sId;
 		m_Pictures.GetText(n, sId);
 
-		if (n < 2)
+		if (n < 1)
 			m_pToolTipPicture->SetLongValue(0);
-		else if (n == 2)
+		else if (n == 1)
 			m_pToolTipPicture->SetLongValue(-1);
-		else if (n == 3)
+		else if (n == 2)
 			m_pToolTipPicture->SetLongValue(-2);
-		else if (n == 4)
+		else if (n == 3)
 			m_pToolTipPicture->SetLongValue(-3);
-		else if (n == 5)
+		else if (n == 4)
 			m_pToolTipPicture->SetLongValue(-4);
 		else
 			m_pToolTipPicture->SetLongValue(_tstol(sId));
 	}
-	
-	m_Avi.GetWindowText(sTitle);
-	m_pToolTipAvi->SetStringValue(sTitle);
+
+	CString sAviFile;
+	m_Avi.GetWindowText(sAviFile);
+	m_pToolTipAvi->SetStringValue(sAviFile);
 
 	m_pToolTipTitleColor->SetLongValue(m_Color.GetColour());
 }
@@ -397,146 +365,13 @@ void CToolTipsPage::Commit()
 BOOL CToolTipsPage::OnApply() 
 {
 	Commit();
-	
 	return CPropertyPage::OnApply();
 }
 
 void CToolTipsPage::OnOK() 
 {
 	Commit();
-	
 	CPropertyPage::OnOK();
-}
-
-CString CToolTipsPage::GetHtmlText()
-{
-	CString sMain;
-	sMain = m_MainText.GetRTF();
-
-	CArray<COLORREF, COLORREF> colors;
-
-	if (sMain.GetLength() == 0)
-		return sMain; 
-
-	bool bFoundEnd = false;
-	int n = sMain.Find(s9);
-	while (n > -1)
-	{
-		CString sRed, sBlue, sGreen;
-		
-		int nRed = sMain.Find(s10, n);
-		int nGreen = sMain.Find(s11, nRed);
-		int nBlue = sMain.Find(s12, nGreen);
-		int nColorEnd = sMain.Find(s13, nBlue);
-
-		sRed = sMain.Mid(nRed + 4, nGreen - nRed - 4);
-		sGreen = sMain.Mid(nGreen + 6, nBlue - nGreen - 6);
-		sBlue = sMain.Mid(nBlue + 5, nColorEnd - nBlue - 5);
-
-
-		colors.Add(RGB(_tstol(sRed), _tstol(sGreen), _tstol(sBlue)));
-		if (sMain.Find(s10, nColorEnd) == -1)
-			n = -1;
-		else
-			n = nColorEnd;
-	
-	}
-	
-	n = sMain.Find(s14);
-	if (n > -1)
-		sMain = sMain.Mid(n+9);
-	
-	n = sMain.Find(s15);	
-	if (n > -1)
-	{
-		sMain = sMain.Mid(n+5);
-		n = sMain.Find(s1);	
-		if (n > -1)
-		{
-			sMain = sMain.Mid(n);
-		}
-	}
-	
-	n = sMain.Find(s54);
-	if (n > -1)
-		sMain = sMain.Mid(n+5);
-
-	
-	sMain.Replace(s16, CString());
-	
-	for (int j=30; j>=0; j--)
-	{
-		TCHAR value[80];
-		_ltot(j, value, 10);
-		sMain.Replace(CString(s17) + value + s18, CString());
-	}
-	
-	sMain.Replace(s20, s21);
-	sMain.Replace(s22, s23);
-
-	sMain.Replace(s24, s25);
-	sMain.Replace(s26, s27);
-
-	sMain.Replace(s55, s29);
-	sMain.Replace(s56, s29);
-	sMain.Replace(s57, s33);
-	
-	sMain.Replace(s28, s29);
-	sMain.Replace(s30, s29);
-	//sMain.Replace(s31, s33);
-
-	sMain.Replace(s34, s35);
-
-	sMain.Replace(s36, s21);
-	sMain.Replace(s38, s23);
-
-	sMain.Replace(s40, s25);
-	sMain.Replace(s42, s27);
-
-	sMain.Replace(s44, s29);
-	sMain.Replace(s46, s29);
-	sMain.Replace(s48, s33);
-
-	sMain.Replace(s50, s35);
-
-	sMain.Replace(s58, s53);
-	sMain.Replace(s52, s53);
-
-	sMain.Replace(s59, CString());
-	sMain.Replace(s60, CString());
-	sMain.Replace(s61, CString());
-	sMain.Replace(s43, CString());
-
-	for (int i=0; i<colors.GetSize(); i++)
-	{
-		char sIndex[80];
-		char sColor[80];
-
-		_ltoa(i+1, sIndex, 10);
-		_ltoa(colors[i], sColor, 16);
-		
-		sMain.Replace(
-			CString(s31) + sIndex, 
-			CString(s37) + sColor + s19);
-		sMain.Replace(
-			CString(s39) + sIndex + s18, 
-			CString(s37) + sColor + s19);
-		sMain.Replace(
-			CString(s39) + sIndex, 
-			CString(s37) + sColor + s19);
-	}
-
-	n = sMain.Find(s45);
-	if (n > -1)
-		sMain = sMain.Left(n-2);
-	
-	n = sMain.Find(s41);
-	if (n > -1)
-		sMain = sMain.Left(n-2);
-	sMain.Replace(s43, CString());
-
-	return sMain;
-	
 }
 
 void CToolTipsPage::OnChangeAvi() 

@@ -1751,35 +1751,10 @@ int CObjectDCLView::GetNextControlId()
 
 CWnd* CObjectDCLView::AddCWndControl( CDclControlObject* pDclControl, CRect rcPos, bool bForceUpdate )
 {
-	// add the properties to the project list class for the requested control
 	if (pDclControl->GetID() < 0)
 		return NULL;
 
 	AddDefaultProperties( pDclControl, rcPos.Width(), rcPos.Height() );
-
-	if (rcPos.Width() >= 0 &&
-		rcPos.Height() > 0)
-	{
-		// set the position properties
-		pDclControl->SetLongProperty(nLeft, rcPos.left);
-		pDclControl->SetLongProperty(nTop, rcPos.top);
-		pDclControl->SetLongProperty(nWidth, rcPos.Width());
-		pDclControl->SetLongProperty(nHeight, rcPos.Height());
-	}
-	else
-	{
-		// set the position properties
-		rcPos.left = pDclControl->GetLngProperty(nLeft);
-		rcPos.top = pDclControl->GetLngProperty(nTop);
-		rcPos.right = rcPos.left + pDclControl->GetLngProperty(nWidth);
-		rcPos.bottom = rcPos.top + pDclControl->GetLngProperty(nHeight);
-	}
-
-	CRect rcThis;
-	GetClientRect(&rcThis);
-	
-	// set the offset position properties
-	CalcControlOffsetDistances(pDclControl, rcPos);
 	
 	// create a new control holder
 	CControlHolder *pControl = new CControlHolder(pDclControl);
@@ -1820,6 +1795,15 @@ CWnd* CObjectDCLView::AddCWndControl( CDclControlObject* pDclControl, CRect rcPo
 		return NULL;
 	}
 
+	// set the position properties
+	pControl->GetWindowRect( &rcPos );
+	ScreenToClient( &rcPos );
+	pControl->m_pLeftProp->SetLongValue( rcPos.left );
+	pControl->m_pTopProp->SetLongValue( rcPos.top );
+	pControl->m_pWidthProp->SetLongValue( rcPos.Width() );
+	pControl->m_pHeightProp->SetLongValue( rcPos.Height() );
+	CalcControlOffsetDistances( pDclControl, rcPos );
+
 	// if the activeX control's name has not been set yet, we must do it here
 	if (pDclControl->GetType() == CtlActiveX)
 	{
@@ -1849,10 +1833,7 @@ CWnd* CObjectDCLView::AddCWndControl( CDclControlObject* pDclControl, CRect rcPo
 			pControl->ShowWindow(FALSE);
 	}
 	else
-	{
-		//if (nControlToInsert != CtlActiveX)
-			pControl->ShowWindow(TRUE);
-	}	
+		pControl->ShowWindow(TRUE);
 
 	return pControl;
 }
@@ -1956,33 +1937,14 @@ void CObjectDCLView::OnDclFormNameChange()
 
 CString CObjectDCLView::FindNextControlName(CString sControlName) 
 {
-	
-	int nNameCounter = 1;
-	
-	// we are going to do a loop to find the next available control number 'TextBox#'
-	for (int i=1; i<m_pThisDclForm->GetControlList().GetCount(); i++)
-	{
-		POSITION pos = m_pThisDclForm->GetControlList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CDclControlObject *pArxObject = m_pThisDclForm->GetControlList().GetAt(pos);
-			CString sName = pArxObject->GetStrProperty(nName);
-			
-			// if this name is already take, reset loop search for next available control name
-			if (sName == (sControlName + LTOA(nNameCounter)))
-			{
-				// reset the counter to the begining
-				i = 1;
-				// increment the control number counter
-				nNameCounter++;
-			}
-		}
-	}
-	// set the return name to the free one found
-	sControlName = sControlName + LTOA(nNameCounter);
-	
-	// to do later.
-	return sControlName;
+	if( !m_pThisDclForm )
+		return CString();
+	CDclFormObject* pRoot = m_pThisDclForm;
+	while( pRoot->GetParentForm() )
+		pRoot = pRoot->GetParentForm();
+	CString sId;
+	sId.Format( _T("%d"), pRoot->GetNextId() );
+	return sControlName + sId;
 }
 
 
@@ -2780,17 +2742,17 @@ void CObjectDCLView::PasteFromClipBoard()
 		while (pos != NULL)
 		{
 			// get current clipboard control
-			CDclControlObject* pCopyOfArxControlObject = ClipBoard.GetNext(pos);
-			pCopyOfArxControlObject->SetOwnerForm(m_pThisDclForm);
+			CDclControlObject* pCopy = ClipBoard.GetNext(pos);
+			pCopy->SetOwnerForm(m_pThisDclForm);
 					
-			ClearEventProperties(pCopyOfArxControlObject);
-			if (pCopyOfArxControlObject->GetType() == CtlFileDlgCtrl)
+			ClearEventProperties(pCopy);
+			if (pCopy->GetType() == CtlFileDlgCtrl)
 				continue;
 
 			bool bContinue = false;
 			if (nCurrentPurchaseMode != nPurchasedEnt)
 			{
-				switch(pCopyOfArxControlObject->GetType())
+				switch(pCopy->GetType())
 				{
 				case CtlGrid:
 					bContinue = true;
@@ -2800,7 +2762,7 @@ void CObjectDCLView::PasteFromClipBoard()
 			if (nCurrentPurchaseMode != nPurchasedPro &&
 				nCurrentPurchaseMode != nPurchasedEnt)
 			{
-				switch(pCopyOfArxControlObject->GetType())
+				switch(pCopy->GetType())
 				{
 				case CtlDwgList:
 				case CtlBlockView:
@@ -2811,7 +2773,7 @@ void CObjectDCLView::PasteFromClipBoard()
 			}
 			if (nCurrentPurchaseMode == nPurchasedLT)
 			{
-				switch(pCopyOfArxControlObject->GetType())
+				switch(pCopy->GetType())
 				{
 				case CtlPictureBox:
 				case CtlTabStrip:
@@ -2836,69 +2798,70 @@ void CObjectDCLView::PasteFromClipBoard()
 			if (bContinue)
 				continue;
 
+			CString sNameOfCopy = FindNextControlName( GetControlName( pCopy ) );
+			RefCountedPtr< CPropertyObject > pCaptionProp = pCopy->GetPropertyObject( nCaption );
+			if( pCaptionProp && pCaptionProp->GetStringValue() == pCopy->GetKeyName() )
+				pCaptionProp->SetStringValue( sNameOfCopy );
+			pCopy->SetStringProperty( nName, sNameOfCopy );
 			//if the copy will be a duplicate, offset it from the original and rename it
-			if ( m_pThisDclForm->FindControl( pCopyOfArxControlObject->GetKeyName(), pCopyOfArxControlObject->GetType() ) )
+			if( m_pThisDclForm->FindControl( sNameOfCopy, pCopy->GetType() ) )
 			{
 				// make the control be offset by nControlOffset
-				pCopyOfArxControlObject->SetLongProperty(nLeft, pCopyOfArxControlObject->GetLngProperty(nLeft) + nControlOffset);
-				pCopyOfArxControlObject->SetLongProperty(nTop, pCopyOfArxControlObject->GetLngProperty(nTop) + nControlOffset);
-
-				// get the next available name for the control
-				CString sControlName = FindNextControlName(GetControlName(pCopyOfArxControlObject));	
-				pCopyOfArxControlObject->SetStringProperty(nName, sControlName);			
+				pCopy->SetLongProperty( nLeft, pCopy->GetLngProperty(nLeft) + nControlOffset );
+				pCopy->SetLongProperty( nTop, pCopy->GetLngProperty(nTop) + nControlOffset );
 			}
 			
 			CRect rcThis;
 			GetClientRect(&rcThis);
 			
 			// check to make sure the control in inside the form
-			int nCtrlLeft = pCopyOfArxControlObject->GetLngProperty(nLeft);
+			int nCtrlLeft = pCopy->GetLngProperty(nLeft);
+			int nCtrlWidth = pCopy->GetLngProperty(nWidth);
 			if (nCtrlLeft > rcThis.Width())
 			{
-				int nCtrlWidth = pCopyOfArxControlObject->GetLngProperty(nWidth);
 				nCtrlLeft = rcThis.Width() - nCtrlWidth;
-				pCopyOfArxControlObject->SetLongProperty(nLeft, nCtrlLeft);
+				pCopy->SetLongProperty(nLeft, nCtrlLeft);
 			}
 			
 			// check to make sure the control in inside the form
-			int nCtrlTop = pCopyOfArxControlObject->GetLngProperty(nTop);
+			int nCtrlTop = pCopy->GetLngProperty(nTop);
+			int nCtrlHeight = pCopy->GetLngProperty(nHeight);
 			if (nCtrlTop > rcThis.Height())
 			{
-				int nCtrlWidth = pCopyOfArxControlObject->GetLngProperty(nHeight);
-				nCtrlTop = rcThis.Height() - nCtrlWidth;
-				pCopyOfArxControlObject->SetLongProperty(nTop, nCtrlTop);
+				nCtrlTop = rcThis.Height() - nCtrlHeight;
+				pCopy->SetLongProperty(nTop, nCtrlTop);
 			}
 
 			// add current clipboard control to DclFormObject
-			m_pThisDclForm->AddControl(pCopyOfArxControlObject);
+			m_pThisDclForm->AddControl( pCopy );
 			
-			CRect rcPos(0,0,0,0);
+			CRect rcPos( nCtrlLeft, nCtrlTop, nCtrlLeft + nCtrlWidth, nCtrlTop + nCtrlHeight );
 			// call the method to add the CWnd control 
-			CWnd *pControl = AddCWndControl(pCopyOfArxControlObject, rcPos, true);
+			CWnd *pControl = AddCWndControl(pCopy, rcPos, true);
 			if (pControl == NULL)
 				return;
 			
 			// add the new control to the Zorder list
-			pZOrderList->AddControlToList(pCopyOfArxControlObject->GetStrProperty(nName), pCopyOfArxControlObject->GetType());
-			pZOrderList->SelectItem(pCopyOfArxControlObject->GetStrProperty(nName), false);			
+			pZOrderList->AddControlToList(sNameOfCopy, pCopy->GetType());
+			pZOrderList->SelectItem(sNameOfCopy, false);			
 			// call the method to setup the fonts in the font tool bar.
-			theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar(pCopyOfArxControlObject);
+			theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar(pCopy);
 	
 			// increment counter
 			nCount--;
 			nCopied++;
 			if (nCopied == 1)
 			{
-				m_SelectedControl.m_pArxObject = pCopyOfArxControlObject;
+				m_SelectedControl.m_pArxObject = pCopy;
 				m_SelectedControl.m_pControl = pControl;
-				m_SelectedControl.m_nIndex = pCopyOfArxControlObject->GetZOrder();				
+				m_SelectedControl.m_nIndex = pCopy->GetZOrder();				
 			}
 			else
 			{
 				CSelectedControl *pSelCtrl = new CSelectedControl;
-				pSelCtrl->m_pArxObject = pCopyOfArxControlObject;
+				pSelCtrl->m_pArxObject = pCopy;
 				pSelCtrl->m_pControl = pControl;				
-				pSelCtrl->m_nIndex = pCopyOfArxControlObject->GetZOrder();
+				pSelCtrl->m_nIndex = pCopy->GetZOrder();
 				((CControlHolder*)pControl)->SetSelected(TRUE);
 				m_SelectedList.AddTail(pSelCtrl);
 			}			
@@ -2915,6 +2878,7 @@ void CObjectDCLView::PasteFromClipBoard()
 		ShowGripRects(TRUE, rcCtrl);
 		MoveGripRectsForward();
 		ShowSelection();		
+		FireControlSelected(m_SelectedControl.m_pArxObject);
 	}	
 		
 	CalcAllOffsets();
@@ -3315,9 +3279,10 @@ void CObjectDCLView::OnSize(UINT nType, int cx, int cy)
 		CDclControlObject *pDclProps = m_pThisDclForm->GetControlProperties();
 	
 		CRect rc;
-		GetParentFrame()->GetWindowRect(&rc);
-
-		GetClientRect(&rc);
+		if( m_pThisDclForm->UsesClientRect() )
+			GetClientRect(&rc);
+		else
+			GetParent()->GetWindowRect(&rc);
 		 
 		pDclProps->SetLongProperty(nWidth, rc.Width());
 		pDclProps->SetLongProperty(nHeight, rc.Height());
@@ -3342,6 +3307,7 @@ void CObjectDCLView::UpdateGripPos()
 	m_rcGripRect.left = m_rcGripRect.right - m_szGripSize.cx;
 	m_rcGripRect.top = m_rcGripRect.bottom - m_szGripSize.cy;
 }
+
 void CObjectDCLView::AdjustOffsets(int cx, int cy) 
 {
 	
@@ -3574,7 +3540,10 @@ void CObjectDCLView::DisplayControls(CDclFormObject *pDclForm)
 	CalcAllOffsets();
 
 	CRect rc;
-	GetClientRect(&rc);
+	if( m_pThisDclForm->UsesClientRect() )
+		GetClientRect(&rc);
+	else
+		GetParent()->GetWindowRect(&rc);
 		 
 	CDclControlObject *pDclProps = m_pThisDclForm->GetControlProperties();
 	pDclProps->SetLongProperty(nWidth, rc.Width());
@@ -4341,7 +4310,6 @@ void CObjectDCLView::ResizeChildTabPanes()
 		int nNewWidth = GetSelectedTabClientWidth();
 		pDclProperties->SetLongProperty(nHeight, nNewHeight);
 		pDclProperties->SetLongProperty(nWidth, nNewWidth);
-		pTabForm->m_bUsesClientRect = FALSE;
 		if (pTabForm->m_pMdiChildWnd != NULL)
 			pTabForm->m_pMdiChildWnd->SetWindowPos(NULL, nNotSet, nNotSet, nNewWidth, nNewHeight, SWP_NOMOVE);
 	}	
@@ -4353,20 +4321,14 @@ void CObjectDCLView::FireShowPropertyWizard(CDclControlObject *pArxControl)
 		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().ShowPropertyDlg();
 }
 
-	
-
-
 void CObjectDCLView::OnProperties() 
 {
 	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pControl != NULL)
 		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().ShowPropertyDlg();
 }
 
-
 BOOL CObjectDCLView::OnAmbientProperty(COleControlSite* pSite, DISPID dispid, VARIANT* pvar) 
 {
-	
-	
 	if (dispid == DISPID_AMBIENT_USERMODE)
 	{		
 		V_VT(pvar) = VT_BOOL;

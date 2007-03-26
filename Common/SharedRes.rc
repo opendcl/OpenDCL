@@ -7,7 +7,8 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
+#include "afxres.h"
+
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -171,7 +172,7 @@ BEGIN
     IDS_PROP_TEXT           "Text"
     IDS_PROP_TICKFRQCY      "TickFrequency"
     IDS_PROP_TITLEBARTEXT   "TitleBarText"
-    IDS_PROP_TTT            "ToolTipText"
+    IDS_PROP_TTT            "ToolTipTitle"
     IDS_PROP_TOP            "Top"
     IDS_PROP_VALUE          "Value"
     IDS_PROP_VISIBLE        "Visible"
@@ -215,7 +216,7 @@ BEGIN
     IDS_PROP_ITEMDATA       "ItemData"
     IDS_PROP_TOOLBARBTN_CAPTIONS "ButtonList"
     IDS_PROP_TOOLBARBTN_IMAGES "Buttons' ImageList"
-    IDS_PROP_TOOLBARBTN_TTTEXT "ButtonToolTipTextList"
+    IDS_PROP_TOOLBARBTN_TTTEXT "ButtonToolTipTitleList"
     IDS_PROP_TOOLBARBTN_STYLES "Buttons' StyleList"
     IDS_PROP_USETOPFROMBOTTOM "UseTopFromBottom"
     IDS_PROP_USEBOTTOMFROMBOTTOM "UseBottomFromBottom"
@@ -512,7 +513,8 @@ END
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-
+
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

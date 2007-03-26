@@ -573,7 +573,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 			if (pSourceProp->GetID() == nAllowOrbiting && pSourceProp->GetType() == PropBool)
 				mProperties.RemoveAt(posAt);
 			
-			if (pSourceProp->GetID() == nToolTipText && mType == CtlLabel)
+			if (pSourceProp->GetID() == nToolTipTitle && mType == CtlLabel)
 				mProperties.RemoveAt(posAt);
 			
 			if (pSourceProp->GetID() == nTabLabelAlign)
@@ -584,6 +584,17 @@ void CDclControlObject::Serialize(CArchive& ar)
 			if (pSourceProp->GetID() == nImageList &&
 				 (mType == CtlGraphicButton || mType == CtlPictureBox || mType == CtlForm))
 				mProperties.RemoveAt(posAt);
+
+			if( mType == CtlForm && mpOwner->GetParentForm() )
+			{ //tab pages should not have these properties
+				switch(pSourceProp->GetID())
+				{
+				case nName:
+				case nObjectBrowser:
+				case nGlobalVarName:
+					mProperties.RemoveAt(posAt);
+				}
+			}
 		}
 	}
 }
@@ -922,7 +933,7 @@ bool CDclControlObject::InsertNamedProperty( RefCountedPtr< CPropertyObject > pP
 	if( pos )
 		mProperties.InsertAfter( pos, pProp );
 	else
-		mProperties.AddTail( pProp );
+		mProperties.AddHead( pProp );
 	return true;
 }
 

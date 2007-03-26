@@ -3751,8 +3751,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_registeractivexcontrol symbol (do not rename)
-	static int ads_odcl_registeractivexcontrol(void)
+	// ----- ads_odcl_registeractivexctrl symbol (do not rename)
+	static int ads_odcl_registeractivexctrl(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (!pArgs)
@@ -4124,7 +4124,7 @@ ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_ytwipstopixels, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_xpixelstotwips, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_ypixelstotwips, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getcolorvalue, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_registeractivexcontrol, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_registeractivexctrl, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_load, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_unload, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_saveas, true)

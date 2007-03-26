@@ -58,12 +58,17 @@ bool CDialogObject::CenterDialog()
 
 bool CDialogObject::ResizeDialog( long nNewWidth, long nNewHeight )
 {
-	//DPR--Removing this check. IsResizable controls whether the user can change the
-	//size. I want to be able to change the size even if the user can't.
-	//if( !IsResizable() )
-		//return false;
-	mpSourceForm->GetControlProperties()->SetLongProperty(nWidth, nNewWidth);
-	mpSourceForm->GetControlProperties()->SetLongProperty(nHeight, nNewHeight);
+	if( mpSourceForm->UsesClientRect() )
+	{
+		CRect rectWindow;
+		GetWindowRect( rectWindow );
+		CRect rectClient;
+		GetClientRect( rectClient );
+		nNewWidth += (rectWindow.Width() - rectClient.Width());
+		nNewHeight += (rectWindow.Height() - rectClient.Height());
+	}
+	mpSourceForm->GetControlProperties()->SetLongProperty( nWidth, nNewWidth );
+	mpSourceForm->GetControlProperties()->SetLongProperty( nHeight, nNewHeight );
 	BOOL bSuccess = ::SetWindowPos(GetHWnd(), NULL, 0, 0, nNewWidth, nNewHeight,
 																 SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER );
 	GetControlPane().RecalcLayout();
@@ -72,14 +77,21 @@ bool CDialogObject::ResizeDialog( long nNewWidth, long nNewHeight )
 
 bool CDialogObject::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 {
-	if( !IsResizable() )
-		return false;
-	mpSourceForm->GetControlProperties()->SetLongProperty(nWidth, nNewWidth);
-	mpSourceForm->GetControlProperties()->SetLongProperty(nHeight, nNewHeight);
-	CPoint pt;
-	// get the left and top values to center the form on the screen	
-	pt.y =  (::GetSystemMetrics(SM_CYSCREEN) - nNewHeight) / 2;
-	pt.x =  (::GetSystemMetrics(SM_CXSCREEN) - nNewWidth) / 2;
+	if( mpSourceForm->UsesClientRect() )
+	{
+		CRect rectWindow;
+		GetWindowRect( rectWindow );
+		CRect rectClient;
+		GetClientRect( rectClient );
+		nNewWidth += (rectWindow.Width() - rectClient.Width());
+		nNewHeight += (rectWindow.Height() - rectClient.Height());
+	}
+	CPoint pt( (::GetSystemMetrics(SM_CYSCREEN) - nNewHeight) / 2,
+						 (::GetSystemMetrics(SM_CXSCREEN) - nNewWidth) / 2 );
+	mpSourceForm->GetControlProperties()->SetLongProperty( nWidth, nNewWidth );
+	mpSourceForm->GetControlProperties()->SetLongProperty( nHeight, nNewHeight );
+	mpSourceForm->GetControlProperties()->SetLongProperty( nLeft, pt.x );
+	mpSourceForm->GetControlProperties()->SetLongProperty( nTop, pt.y );
 	BOOL bSuccess = ::SetWindowPos(GetHWnd(), NULL, pt.x, pt.y, nNewWidth, nNewHeight, SWP_NOACTIVATE | SWP_NOZORDER);
 	GetControlPane().RecalcLayout();
 	return (bSuccess != FALSE);

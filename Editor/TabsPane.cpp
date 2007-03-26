@@ -65,7 +65,7 @@ void CTabsPane::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CAPTION, m_Caption);
 	DDX_Control(pDX, IDC_IMAGE, m_Image);
 	DDX_Control(pDX, IDC_SPIN, m_SpinBtn);
-	DDX_Control(pDX, IDC_TTT, m_ToolTipText);
+	DDX_Control(pDX, IDC_TTT, m_ToolTipTitle);
 	//}}AFX_DATA_MAP
 }
 
@@ -92,7 +92,7 @@ BOOL CTabsPane::OnInitDialog()
 	m_SpinBtn.SetRange(0, m_TabList.GetCount());
 	m_SpinBtn.EnableWindow(m_TabList.GetCount() > 1);
 	m_Caption.EnableWindow(m_TabList.GetCount() > 0);
-	m_ToolTipText.EnableWindow(m_TabList.GetCount() > 0);
+	m_ToolTipTitle.EnableWindow(m_TabList.GetCount() > 0);
 	GetDlgItem(IDC_DELETE)->EnableWindow(m_TabList.GetCount() > 0);
 
 	UpdateFrame();
@@ -127,7 +127,7 @@ void CTabsPane::Setup()
 
 		// add the tool tip text
 		if (i < m_pTabTTT->GetStringArrayPtr()->size())
-			pTab->msToolTipText = m_pTabTTT->GetStringArrayPtr()->at(i);
+			pTab->msToolTipTitle = m_pTabTTT->GetStringArrayPtr()->at(i);
 
 		m_TabList.AddTail(pTab);
 	}
@@ -187,13 +187,13 @@ void CTabsPane::UpdateTabInfo()
 	{
 		CTabInfo* pTabInfo = m_TabList.GetAt(pos);
 		m_Caption.SetWindowText(pTabInfo->msCaption);	
-		m_ToolTipText.SetWindowText(pTabInfo->msToolTipText);
+		m_ToolTipTitle.SetWindowText(pTabInfo->msToolTipTitle);
 	}
 	else
 	{
 		mnTabIndex = 0;
 		m_Caption.SetWindowText( _T("") );	
-		m_ToolTipText.SetWindowText( _T("") );
+		m_ToolTipTitle.SetWindowText( _T("") );
 	}
 }
 
@@ -214,12 +214,12 @@ void CTabsPane::OnAdd()
 	CString sCaption;
 	sCaption.Format( _T("%s%d"), theWorkspace.LoadResourceString(IDS_TAB), mnTabIndex + 1 );
 	m_Caption.SetWindowText( sCaption );
-	m_ToolTipText.SetWindowText( _T("") );
+	m_ToolTipTitle.SetWindowText( _T("") );
 
 	m_SpinBtn.SetRange(0, m_TabList.GetCount());
 	m_SpinBtn.EnableWindow(m_TabList.GetCount() > 1);
 	m_Caption.EnableWindow(TRUE);
-	m_ToolTipText.EnableWindow(TRUE);
+	m_ToolTipTitle.EnableWindow(TRUE);
 	GetDlgItem(IDC_DELETE)->EnableWindow(TRUE);
 
 	UpdateFrame();
@@ -245,8 +245,8 @@ void CTabsPane::OnChangeTtt()
 	if (pos != NULL)
 	{
 		CString sText;
-		m_ToolTipText.GetWindowText(sText);
-		m_TabList.GetAt(pos)->msToolTipText = sText;
+		m_ToolTipTitle.GetWindowText(sText);
+		m_TabList.GetAt(pos)->msToolTipTitle = sText;
 	}
 	SetModified();
 }
@@ -282,7 +282,7 @@ BOOL CTabsPane::OnApply()
 			++idxPane;
 			CTabInfo* pTab = m_TabList.GetNext( posTab );
 			m_pTabCaptions->GetStringArrayPtr()->push_back( pTab->msCaption );
-			m_pTabTTT->GetStringArrayPtr()->push_back( pTab->msToolTipText );
+			m_pTabTTT->GetStringArrayPtr()->push_back( pTab->msToolTipTitle );
 
 			pTab->mnOriginalIndex = idxPane;
 			if( !pTab->mpChildForm )
@@ -330,7 +330,7 @@ void CTabsPane::OnDelete()
 	m_SpinBtn.SetRange(0, m_TabList.GetCount());
 	m_SpinBtn.EnableWindow(m_TabList.GetCount() > 1);
 	m_Caption.EnableWindow(m_TabList.GetCount() > 0);
-	m_ToolTipText.EnableWindow(m_TabList.GetCount() > 0);
+	m_ToolTipTitle.EnableWindow(m_TabList.GetCount() > 0);
 	GetDlgItem(IDC_DELETE)->EnableWindow(m_TabList.GetCount() > 0);
 	UpdateFrame();
 	UpdateTabInfo();

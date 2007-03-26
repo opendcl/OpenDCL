@@ -40,7 +40,7 @@ enum PropertyId
 	nText					= 33,
 	nTickFrequency		= 34,
 	nTitleBarText			= 35,
-	nToolTipText			= 36,
+	nToolTipTitle			= 36,
 	nTop					= 37,
 	nValue				= 38,
 	nVisible				= 39,

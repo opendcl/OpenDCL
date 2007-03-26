@@ -179,19 +179,19 @@ void COptionListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct, int nHighlight)
 			rcText.Width(), rcText.Height(),
 			DSS_DISABLED|(TRUE ? DST_PREFIXTEXT : DST_TEXT)); 
 	}
-	//if (GetFocus() == this && (lpDrawItemStruct->itemState & ODS_FOCUS) == ODS_FOCUS )
-	//{	
-	//	// setup the CRect for Focus Rectangle
-	//	CRect rcCell;
-	//	rcCell.left = rc.left - 2;
-	//	rcCell.top = rc.top;
-	//	rcCell.right = rc.right;
-	//	rcCell.bottom = rcCell.top + m_NextHeight + 3;
+	if (GetFocus() == this && (lpDrawItemStruct->itemState & ODS_FOCUS) == ODS_FOCUS )
+	{	
+		// setup the CRect for Focus Rectangle
+		CRect rcCell;
+		rcCell.left = rc.left - 2;
+		rcCell.top = rc.top;
+		rcCell.right = rc.right;
+		rcCell.bottom = rcCell.top + m_NextHeight + 3;
 
-	//	if (lpDrawItemStruct->itemData < 2)	
-	//		// draw the solid rectangle
-	//		::DrawFocusRect(pDC->m_hDC, &rcCell);
-	//}
+		if (lpDrawItemStruct->itemData < 2)	
+			// draw the solid rectangle
+			::DrawFocusRect(pDC->m_hDC, &rcCell);
+	}
 	pDC->SelectObject(pOldHeadingFont);
 
 	// lets draw the left side dark gray lines

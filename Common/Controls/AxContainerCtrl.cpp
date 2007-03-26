@@ -471,7 +471,7 @@ unsigned long CAxContainerCtrl::GetFlexGridColorProperty(AxPropertyDescriptor *a
 }
 
 void CAxContainerCtrl::SetFlexGridColorProperty(AxPropertyDescriptor *axProp
-																						    , unsigned long newValue)
+																						, unsigned long newValue)
 {
 	static BYTE parms[] = VTS_I4;
 	InvokeHelper(axProp->GetDispId(), DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms, newValue);
@@ -676,17 +676,14 @@ UINT CAxContainerCtrl::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo*
 		RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetNext( pos );
 		assert( pProp != NULL );
 		if( pProp->GetType() == PropActiveXMethods )
-		{
 			pControl->GetPropertyList().RemoveAt( posAt );
-		}
 	}
 
 	// create the new property and insert at the second position after the (ActiveX PropertyObject) property item
 	RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropActiveXMethods);
 	pProp->GetAxInterfaceDescriptorPtr()->SetMethods( new std::vector< RefCountedPtr< AxMethodDescriptor > > );
 	pProp->SetID( nObjectBrowser ); // set the id of the new property
-	POSITION posFirstProp = pControl->GetPropertyList().GetHeadPosition();
-	pControl->GetPropertyList().InsertAfter( posFirstProp, pProp );
+	pControl->InsertNamedProperty( pProp );
 
 	//Add a new property for each Get/Put function
 	for( UINT idxFunc = 0; idxFunc < ctFuncs; ++idxFunc )
@@ -861,7 +858,6 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( CDclControlObject* pControl, ITypeIn
 		{
 			std::auto_ptr< AxPropertyDescriptor > pAxPropDesc( new AxPropertyDescriptor( pFuncDesc, pTypeInfo, this, pIObject ) );
 			bool bBrowsable = !(pFuncDesc->wFuncFlags & FUNCFLAG_FNONBROWSABLE);
-			pTypeInfo->ReleaseFuncDesc( pFuncDesc );
 
 			if( !pAxPropDesc->GetName().IsEmpty() )
 			{

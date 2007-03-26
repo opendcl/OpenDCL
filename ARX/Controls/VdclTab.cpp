@@ -201,12 +201,12 @@ void VdclTab::SetupTabs()
 		// add the new tab
 		InsertItem(i, &TabCtrlItem );
 
-		CString sToolTipText = mpTemplate->GetPropertyListItem(nTabsTTT, i);
-		if( !sToolTipText.IsEmpty() )
+		CString sToolTipTitle = mpTemplate->GetPropertyListItem(nTabsTTT, i);
+		if( !sToolTipTitle.IsEmpty() )
 		{
 			CRect rectTab;
 			GetItemRect(i, &rectTab);
-			mToolTip.AddTool(this, sToolTipText, (HICON)NULL, &rectTab, i);
+			mToolTip.AddTool(this, sToolTipTitle, (HICON)NULL, &rectTab, i);
 		}
 	}
 }

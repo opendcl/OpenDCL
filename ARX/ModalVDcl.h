@@ -66,7 +66,7 @@ protected:
 	afx_msg void OnClose();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-	afx_msg BOOL OnNotify_ToolTipText(UINT  id, NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg BOOL OnNotify_ToolTipTitle(UINT  id, NMHDR *pNMHDR, LRESULT *pResult);
 
 protected:
 	DECLARE_MESSAGE_MAP()

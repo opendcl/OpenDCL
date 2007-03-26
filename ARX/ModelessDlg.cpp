@@ -150,7 +150,10 @@ void CModelessDlg::OnSize(UINT nType, int cx, int cy)
 	if (IsWindowVisible() && m_bClosing == false  && m_bAboutToClose == false)
 	{
 		CRect rcThis;
-		CWnd::GetWindowRect(&rcThis);
+		if( mDialogX.GetSourceForm()->UsesClientRect() )
+			GetClientRect( &rcThis );
+		else
+			GetWindowRect( &rcThis );
 		// call methods to invoke the event
 		InvokeMethodIntInt(
 			mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 
@@ -255,7 +258,10 @@ void CModelessDlg::SizeDialog ()
 		if (!m_bAboutToClose)
 		{
 			CRect rcThis;
-			CWnd::GetWindowRect(&rcThis);
+			if( mDialogX.GetSourceForm()->UsesClientRect() )
+				GetClientRect( &rcThis );
+			else
+				GetWindowRect( &rcThis );
 			// call methods to invoke the event
 			InvokeMethodIntInt(
 				mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 

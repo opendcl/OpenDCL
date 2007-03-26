@@ -3313,12 +3313,12 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 		Dlg.AddPage(pSortTabs);
 	}
 	
-	pProp = pArxCtrl->GetPropertyObject(nToolTipText);		
+	pProp = pArxCtrl->GetPropertyObject(nToolTipTitle);		
 	if (pProp != NULL)
 	{
 		pToolTipsPage = new CToolTipsPage;
 		
-		pToolTipsPage->m_pToolTipText = pProp;	
+		pToolTipsPage->m_pToolTipTitle = pProp;	
 		pToolTipsPage->m_pToolTipLine = pArxCtrl->GetPropertyObject(nToolTipLine);	
 		pToolTipsPage->m_pToolTipBody = pArxCtrl->GetPropertyObject(nToolTipBody);	
 		pToolTipsPage->m_pToolTipPicture = pArxCtrl->GetPropertyObject(nToolTipPicture);	

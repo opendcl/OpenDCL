@@ -404,7 +404,9 @@ void CColumnsPage::SetControls(int nIndex)
 	// now setup the controls correctly.	
 	m_bChangingIndex = true;
 
-	if (m_ColData[nIndex].m_Image >= m_Image.GetCount())
+	if (m_ColData[nIndex].m_Style != 15 && //date style
+			m_ColData[nIndex].m_Style != 16 && //time style
+			m_ColData[nIndex].m_Image >= m_Image.GetCount())
 		m_ColData[nIndex].m_Image = -1;
 
 	if (IsImageListValid())
@@ -471,6 +473,7 @@ void CColumnsPage::SetControls(int nIndex)
 		case 41:
 		{
 			m_DropListBtn.ShowWindow(TRUE);
+			m_Image.SetCurSel(m_ColData[nIndex].m_Image);
 			break;
 		}
 
@@ -487,6 +490,7 @@ void CColumnsPage::SetControls(int nIndex)
 				CString sLoad;
 				sLoad = theWorkspace.LoadResourceString(IDS_DEFICON);
 				m_DefLabel.SetWindowText(sLoad);
+				m_Image.SetCurSel(m_ColData[nIndex].m_Image);
 			}
 			break;
 		}
@@ -504,6 +508,7 @@ void CColumnsPage::SetControls(int nIndex)
 			m_DefLabel.SetWindowText(sLoad);
 			m_FileExt.ShowWindow(TRUE);			
 			m_DefLabel.ShowWindow(TRUE);
+			m_Image.SetCurSel(m_ColData[nIndex].m_Image);
 
 			if (m_ColData[nIndex].m_ListItems.GetSize() > 0)
 				m_FileExt.SetWindowText(m_ColData[nIndex].m_ListItems.GetAt(0));
@@ -517,6 +522,7 @@ void CColumnsPage::SetControls(int nIndex)
 			m_Alternate.ShowWindow(FALSE);
 			m_DefLabel.ShowWindow(FALSE);
 			m_AltLabel.ShowWindow(FALSE);
+			m_Image.SetCurSel(m_ColData[nIndex].m_Image);
 			break;			
 		}
 	}

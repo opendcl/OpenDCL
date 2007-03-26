@@ -121,7 +121,7 @@ int CModalVDcl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
-BOOL CModalVDcl::OnNotify_ToolTipText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
+BOOL CModalVDcl::OnNotify_ToolTipTitle(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 {
 	return FALSE;
 }
@@ -152,7 +152,10 @@ void CModalVDcl::OnSize(UINT nType, int cx, int cy)
 	if (IsWindowVisible())
 	{	
 		CRect rcThis;
-		CWnd::GetWindowRect(&rcThis);
+		if( mDialogX.GetSourceForm()->UsesClientRect() )
+			GetClientRect( &rcThis );
+		else
+			GetWindowRect( &rcThis );
 		// call methods to invoke the event
 		InvokeMethodIntInt(
 			mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 

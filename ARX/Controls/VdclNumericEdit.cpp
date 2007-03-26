@@ -105,7 +105,7 @@ BOOL VdclNumericEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 	m_pTextProp = pControl->GetPropertyObject(nText);
 	CColorEdit::SetLimitText(pControl->GetLngProperty(nLimitText));
 	//SetTooltipText(
-	//	&pControl->GetStrProperty(nToolTipText), 
+	//	&pControl->GetStrProperty(nToolTipTitle), 
 	//	TRUE);
 	InitToolTip();
 	SetToolTipEx(this, m_ToolTip, pControl);

@@ -16,7 +16,7 @@ class CTabInfo
 public:
 
 	CString msCaption;
-	CString msToolTipText;
+	CString msToolTipTitle;
 	int mnOriginalIndex;
 	CDclFormObject* mpChildForm;
 	CTabInfo(int nIndex = -1) : mnOriginalIndex( nIndex ), mpChildForm( NULL ) {}
@@ -38,7 +38,7 @@ class CTabsPane : public CPropertyPage
 	CEdit	m_Caption;
 	CPictureBox	m_Image;
 	CSpinButtonCtrl	m_SpinBtn;
-	CEdit	m_ToolTipText;
+	CEdit	m_ToolTipTitle;
 	RefCountedPtr< CPropertyObject > m_pTabCaptions;	
 	RefCountedPtr< CPropertyObject > m_pTabTTT;	
 	RefCountedPtr< CPropertyObject > m_pTabImages;	

@@ -248,6 +248,12 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 	case CtlActiveX:
 		pDclControl->AddStringProperty( nActiveXPropPages, PropActiveXPropPages );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
+		pDclControl->AddStringProperty( nToolTipBody, PropString );
+		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
+		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
+		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
 		break;
 
 	case CtlAnimate:
@@ -269,7 +275,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nMultiSelect, PropBool, false );
 		pDclControl->AddLongProperty( nListViewSort, PropEnum, 2 );
 		pDclControl->AddLongProperty( nBlockListStyle, PropEnum, 0 );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -297,7 +303,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( nRenderMode, PropEnum, 5 );
 		pDclControl->AddBooleanProperty( nShowOrbitCirlces, PropBool, false );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -326,7 +332,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nCaption, PropString, pDclControl->GetKeyName() );
 		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -355,7 +361,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nSorted, PropBool, false );
 		pDclControl->AddLongProperty( nComboBoxStyle, PropEnum, 0 );
 		pDclControl->AddStringProperty( nText, PropString, pDclControl->GetKeyName() );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -387,7 +393,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( nSelectStyle, PropEnum, 0 );
 		pDclControl->AddLongProperty( nRowHeight, PropLong, 120 );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -419,7 +425,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nDragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( nDragnDropAllowDrop, PropBool, true );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -483,7 +489,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nPressedPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddLongProperty( nButtonStyle, PropEnum, 0 );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -528,7 +534,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nColumnAlternateImages, sList, PropIntArray );
 		AddControlHiddenProperty( pDclControl, nColumnListItems, sList, PropStringArrayList );
 		AddControlHiddenProperty( pDclControl, nColumnListImages, sList, PropIntArrayList );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -560,7 +566,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nDragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( nDragnDropAllowDrop, PropBool, true );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -600,7 +606,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nSorted, PropBool, false );
 		pDclControl->AddLongProperty( nComboBoxStyle, PropEnum, 0 );
 		pDclControl->AddStringProperty( nText, PropString, pDclControl->GetKeyName() );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -660,7 +666,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nNoIntegralHeight, PropBool, true );
 		pDclControl->AddLongProperty( nSelectStyle, PropEnum, 0 );
 		pDclControl->AddBooleanProperty( nSorted, PropBool, false );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -708,7 +714,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nShowSelectAlways, PropBool, false );
 		pDclControl->AddLongProperty( nListViewSort, PropEnum, 0 );
 		pDclControl->AddLongProperty( nListViewStyle, PropEnum, 3 );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -745,7 +751,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( nMultiSelection, PropLong, 1 );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -769,7 +775,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nCaption, PropString, pDclControl->GetKeyName() );
 		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -829,7 +835,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
 		pDclControl->AddStringProperty( nPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -876,7 +882,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddLongProperty( nMinValue, PropLong, 1 );
 		pDclControl->AddLongProperty( nOrientation, PropEnum, (lWidth >= lHeight)? 0 : 1 );
 		pDclControl->AddBooleanProperty( nSmoothProgress, PropBool, false );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -888,7 +894,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 	case CtlRoundSlider:
 		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -926,7 +932,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nShowTicks, PropBool, true );
 		pDclControl->AddLongProperty( nSmallChange, PropLong, 1 );
 		pDclControl->AddLongProperty( nTickFrequency, PropLong, 10 );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -943,7 +949,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nDragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( nDragnDropAllowDrop, PropBool, true );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -996,7 +1002,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( nURLLinkType, PropEnum, 0 );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -1017,7 +1023,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nDragnDropAllowDrop, PropBool, true );
 		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -1079,7 +1085,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nReadOnly, PropBool, false );
 		pDclControl->AddBooleanProperty( nReturnAsTab, PropBool, false );
 		pDclControl->AddStringProperty( nText, PropString, pDclControl->GetKeyName() );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
@@ -1119,7 +1125,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nLinesAtRoot, PropBool, true );
 		pDclControl->AddBooleanProperty( nShowSelectAlways, PropBool, false );
 		pDclControl->AddBooleanProperty( nSingleExpanded, PropBool, false );
-		pDclControl->AddStringProperty( nToolTipText, PropString );
+		pDclControl->AddStringProperty( nToolTipTitle, PropString );
 		pDclControl->AddStringProperty( nToolTipBody, PropString );
 		pDclControl->AddStringProperty( nToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );

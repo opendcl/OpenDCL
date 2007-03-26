@@ -31,7 +31,7 @@ public:
 	CButtonST	m_Color2;
 	CButtonST	m_UnderLine;
 	CButtonST	m_Bold;
-	CAutoRichEditCtrl	m_MainText;
+	CEdit	m_MainText;
 	CButtonST	m_Italic;
 	CListBox	m_Pictures;
 	CEdit	m_Avi;
@@ -44,7 +44,7 @@ public:
 	int m_SelectedPic;
 	int m_nHighestId;
 	
-	RefCountedPtr< CPropertyObject > m_pToolTipText;	
+	RefCountedPtr< CPropertyObject > m_pToolTipTitle;	
 	RefCountedPtr< CPropertyObject > m_pToolTipLine;	
 	RefCountedPtr< CPropertyObject > m_pToolTipBody;	
 	RefCountedPtr< CPropertyObject > m_pToolTipPicture;	
@@ -52,23 +52,20 @@ public:
 	RefCountedPtr< CPropertyObject > m_pToolTipTitleColor;
 
 	void Commit();
-	CString GetHtmlText();
+	void ModifySelection( LPCTSTR pszPrefix, LPCTSTR pszSuffix );
+
+protected:
+	DECLARE_MESSAGE_MAP()
 
 // Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CToolTipsPage)
-	public:
+protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual BOOL OnApply();
 	virtual void OnOK();
-	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CToolTipsPage)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPreview();
 	afx_msg void OnBold();
@@ -80,7 +77,4 @@ protected:
 	afx_msg void OnLine();
 	afx_msg void OnChangeMaintext();
 	afx_msg void OnSelchangePiclist();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-
 };

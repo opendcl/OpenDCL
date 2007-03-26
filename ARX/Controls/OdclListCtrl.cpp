@@ -296,17 +296,25 @@ bool OdclListCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 	case nGridLines:
 		{
 			if( pProp->GetBooleanValue() )
-				SetExtendedStyle( GetExtendedStyle() | LVS_EX_GRIDLINES );
+				ModifyStyleEx( 0, LVS_EX_GRIDLINES );
 			else
-				SetExtendedStyle( GetExtendedStyle() & ~LVS_EX_GRIDLINES );
+				ModifyStyleEx( LVS_EX_GRIDLINES, 0 );
 			break;
 		}
 	case nFullRowSelect:
 		{
 			if( pProp->GetBooleanValue() )
-				SetExtendedStyle( GetExtendedStyle() | LVS_EX_FULLROWSELECT );
+				ModifyStyleEx( 0, LVS_EX_FULLROWSELECT );
 			else
-				SetExtendedStyle( GetExtendedStyle() & ~LVS_EX_FULLROWSELECT );
+				ModifyStyleEx( LVS_EX_FULLROWSELECT, 0 );
+			break;
+		}
+	case nMultiSelect:
+		{
+			if( pProp->GetBooleanValue() )
+				ModifyStyle( LVS_SINGLESEL, 0 );
+			else
+				ModifyStyle( 0, LVS_SINGLESEL );
 			break;
 		}
 	case nColumnCaptions:

@@ -203,7 +203,7 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	SetWindowText(pProps->GetStrProperty(nTitleBarText));
 	
 	CRect rectPane;
-	if (mDialogX.GetSourceForm()->m_bUsesClientRect == TRUE && IsFloating())
+	if (mDialogX.GetSourceForm()->UsesClientRect() && IsFloating())
 		GetClientArea( rectPane );
 	else
 	{
@@ -242,13 +242,16 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// call methods to invoke the event
 	InvokeMethod(pProps->GetStrProperty(nFormEventInitialize), true);	
 
-	CRect rectWindow;
-	GetWindowRect( &rectWindow );
+	CRect rcThis;
+	if( mDialogX.GetSourceForm()->UsesClientRect() )
+		GetClientRect( &rcThis );
+	else
+		GetWindowRect( &rcThis );
 	// call methods to invoke the event
 	InvokeMethodIntInt(
 		pProps->GetStrProperty(nFormEventSize), 
-		rectWindow.Width(),
-		rectWindow.Height(),
+		rcThis.Width(),
+		rcThis.Height(),
 		false);	
 
 	return 1;
@@ -271,13 +274,19 @@ void CDockingDialog::SizeChanged (CRect *lpRect, BOOL bFloating, int flags)
 
 		// resize the control pane so all offsets are set correctly
 		mDialogX.GetControlPane().SetPanePos( *lpRect );
+
+		CRect rcThis;
+		if( mDialogX.GetSourceForm()->UsesClientRect() )
+			GetClientRect( &rcThis );
+		else
+			GetWindowRect( &rcThis );
 		
 		// call methods to invoke the event
 		CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 		InvokeMethodIntInt(
 			pProps->GetStrProperty(nFormEventSize), 
-			lpRect->Width(), 
-			lpRect->Height(),
+			rcThis.Width(), 
+			rcThis.Height(),
 			true);	
 	}
 }

@@ -516,14 +516,12 @@ void CSlideHolder::OnKillFocus(CWnd* pNewWnd)
 	CButton::OnKillFocus(pNewWnd);
 	
 	CDC *pdc = GetDC();
-	mpControlPane->SetGrphcBtnsParents(true);
 	// draw the solid rectangle
 	pdc->DrawFocusRect(m_rcFocus);
 	pdc->Detach();	
 	m_bHasFocus = false;
 	// call methods to invoke the event
 	InvokeMethod(mpTemplate->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
-	
 }
 
 void CSlideHolder::SetHighLight(int nColorIndex)

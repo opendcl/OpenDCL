@@ -86,10 +86,8 @@ public:
 
 	void ShowControls(BOOL bShow);
 	void ShowPictureBoxes(BOOL bShow);
-	void SetGrphcBtnsParents(bool bForceRefresh);
 
 protected:
-	void SetGrphcBtnsParents(CDclControlObject *pGrphcBtn, CDclControlObject *pOtherBtn, bool bForceRefresh);
 	CRect GetSplitterRect(int nId, CRect& rectCurrent);
 	void InvalidateControls();
 	void ZOrderFront(CWnd *pControl);

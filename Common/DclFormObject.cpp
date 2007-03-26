@@ -53,8 +53,9 @@ CDclFormObject::CDclFormObject()
 , mnTabIndex( -1 )
 , mpParentForm( NULL )
 , mpDlgObject( NULL )
+, mnNextId( 1 )
+, mbUsesClientRect( true )
 {
-	m_bUsesClientRect = TRUE;
 	m_pChildWnd = NULL;
 	m_pMdiChildWnd = NULL;
 	m_htiTreeItem = NULL;
@@ -68,8 +69,9 @@ CDclFormObject::CDclFormObject( CProject* Project, DclFormType type /*= VdclInva
 , mnTabIndex( -1 )
 , mpParentForm( NULL )
 , mpDlgObject( NULL )
+, mnNextId( 1 )
+, mbUsesClientRect( true )
 {
-	m_bUsesClientRect = TRUE;
 	m_pChildWnd = NULL;
 	m_pMdiChildWnd = NULL;
 	m_htiTreeItem = NULL;
@@ -345,7 +347,10 @@ size_t CDclFormObject::CountDeletedImageLists() const
 
 CDclFormObject* CDclFormObject::AddChildForm( DclFormType type )
 {
-	return mpProject->AddForm( type, this );
+	CDclFormObject* pDclForm = mpProject->AddForm( type, this );
+	if( pDclForm )
+		pDclForm->SetUsesClientRect( true );
+	return pDclForm;
 }
 
 CString CDclFormObject::GetDclFormTitle() const
@@ -394,7 +399,7 @@ long CDclFormObject::GetDclFormTitleBarIcon()
 //    const_cast<CDclFormObject*>(this)->msUUID = CString(pUUID);
 //  }
 //  writeString(pFile, msUUID);
-//  writeBOOL(pFile, m_bUsesClientRect);
+//  writeBOOL(pFile, mbUsesClientRect);
 //
 //  // set counter for ArxControls
 //  nCount = (int)mDclControls.GetCount() - CountDeletedControls();
@@ -451,7 +456,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 			msUUID = (LPCTSTR)pUUID;
 		}
 		ar << msUUID;
-		ar << m_bUsesClientRect;
+		ar << BOOL(mbUsesClientRect);
 		nCount = (WORD)mDclControls.GetCount() - CountDeletedControls();
 		ar << nCount;
 		pos = mDclControls.GetHeadPosition();
@@ -489,9 +494,13 @@ void CDclFormObject::Serialize(CArchive& ar)
 			msUUID.Empty();
 
 		if (nThisVersion >= 4)
-			ar >> m_bUsesClientRect;
+		{
+			BOOL bUsesClientRect;
+			ar >> bUsesClientRect;
+			mbUsesClientRect = (bUsesClientRect != FALSE);
+		}
 		else
-			m_bUsesClientRect = FALSE;
+			mbUsesClientRect = FALSE;
 
 		ar >> nCount;	
 		mDclControls.RemoveAll();
@@ -558,15 +567,14 @@ void CDclFormObject::Serialize(CArchive& ar)
 		if (mDclControls.GetCount() > 0)
 		{
 			CDclControlObject* pControl = GetControlProperties();
-
 			switch (mType)
 			{
 			case VdclModal:
 				pControl->RemoveProperty( nEventInvoke );
 				//break;  This break was missing -- maybe intentional, I can't tell for sure [ORW]
 			case VdclModeless:
-				pControl->AddLongProperty( nMinDialogWidth, PropLong, 50 );
-				pControl->AddLongProperty( nMinDialogHeight, PropLong, 50 );
+				pControl->AddLongProperty( nMinDialogWidth, PropLong, pControl->GetLngProperty(nWidth) );
+				pControl->AddLongProperty( nMinDialogHeight, PropLong, pControl->GetLngProperty(nHeight) );
 				pControl->AddLongProperty( nMaxDialogWidth, PropLong, 1000 );
 				pControl->AddLongProperty( nMaxDialogHeight, PropLong, 1000 );
 				break;
@@ -710,7 +718,9 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
   if (!readShort(sFile, mnTabIndex)) return statInvalidFormat;
 
   if (!readString(sFile, msUUID)) return statInvalidFormat;
-  if (!readBOOL(sFile, m_bUsesClientRect)) return statInvalidFormat;
+	BOOL bUsesClientRect;
+  if (!readBOOL(sFile, bUsesClientRect)) return statInvalidFormat;
+	mbUsesClientRect = (bUsesClientRect != FALSE);
 
   // get counter for arx controls
   int nCount;

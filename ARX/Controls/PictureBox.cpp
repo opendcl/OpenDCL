@@ -201,7 +201,7 @@ BOOL CPictureBox::Create(CDclControlObject* pControl, CProject *pProject, CWnd* 
 
 	SetAllProperties();
 	SetTooltipText(
-		&pControl->GetStrProperty(nToolTipText), 
+		&pControl->GetStrProperty(nToolTipTitle), 
 		TRUE);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -1193,7 +1193,6 @@ void CPictureBox::PaintPicture(int sX, int sY, int nPictureID, int nEnabled, int
 void CPictureBox::OnKillFocus(CWnd* pNewWnd) 
 {
 	CWnd::OnKillFocus(pNewWnd);
-	m_pParentPane->SetGrphcBtnsParents(true);
 	m_bHasFocus = false;
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
@@ -1519,10 +1518,6 @@ void CPictureBox::LoadPictureFile(LPCTSTR szFile, bool bStretch)
 	}
 	
 	Refresh();
-
-	m_pParentPane->SetGrphcBtnsParents(true);
-	
-	
 }
 
 
@@ -1612,9 +1607,6 @@ void CPictureBox::CopyDC()
 		DeleteObject(m_hbmMem);
 	
 	m_hbmMem = hbmMem;
-	
-	m_pParentPane->SetGrphcBtnsParents(true);
-		
 }
 
 void CPictureBox::OnSize(UINT nType, int cx, int cy) 
@@ -1625,19 +1617,13 @@ void CPictureBox::OnSize(UINT nType, int cx, int cy)
 		m_hbmMem = NULL;
 		
 	}
-	//m_pParentPane->SetGrphcBtnsParents(true);
-	
-		
 	CWnd::OnSize(nType, cx, cy);
-	
 }
 
 void CPictureBox::OnClicked() 
 {
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);
-
-	
 }
 
 void CPictureBox::OnPaint() 
@@ -1723,7 +1709,6 @@ void CPictureBox::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 		// call methods to invoke the event
 		InvokeMethod(m_ArxControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);
 	}
-	
 }
 
 void CPictureBox::SetTooltipText(CString* spText, BOOL bActivate)

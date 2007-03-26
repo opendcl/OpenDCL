@@ -361,8 +361,8 @@ CString CZOrderPane::NeedText( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResul
 	int nLength;
 
 	// szText length is 80
-	if (toolTipText.GetLength() > nDeToolTipTextLen)
-		nLength = nDeToolTipTextLen;
+	if (toolTipText.GetLength() > nDeToolTipTitleLen)
+		nLength = nDeToolTipTitleLen;
 	else
 		nLength = toolTipText.GetLength();
 	

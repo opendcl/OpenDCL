@@ -77,7 +77,7 @@ BOOL VdclTextButton::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	InitToolTip();
 	SetToolTipEx(this, m_ToolTip, pControl);
 	//SetTooltipText(
-//		&pControl->GetStrProperty(nToolTipText), 
+//		&pControl->GetStrProperty(nToolTipTitle), 
 //		TRUE);
 
 	int n = m_ArxControl->GetLngProperty(nEventInvoke);

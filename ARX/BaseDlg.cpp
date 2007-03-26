@@ -136,7 +136,7 @@ BOOL CBaseDlg::OnInitDialog()
 	mnNCHeight = rectWindow.Height() - rectClient.Height();
 	rectWindow.right = rectWindow.left + pFormProps->GetLngProperty( nWidth );
 	rectWindow.bottom = rectWindow.top + pFormProps->GetLngProperty( nHeight );
-	if( mpSourceForm->m_bUsesClientRect )
+	if( mpSourceForm->UsesClientRect() )
 	{
 		rectWindow.right += mnNCWidth;
 		rectWindow.bottom += mnNCHeight;
@@ -180,16 +180,18 @@ BOOL CBaseDlg::OnInitDialog()
 
 	UpdateGripPos();
 
-	if( pFormProps->GetLngProperty( nMaxDialogWidth ) > -1 )
+	if( mnMinWidth > 0 && mpSourceForm->UsesClientRect() )
 	{
-		bool bAddNCSize = mpSourceForm->m_bUsesClientRect;
-		SetDialogMaxExtents( pFormProps->GetLngProperty( nMaxDialogWidth ) + (bAddNCSize? mnNCWidth : 0),
-												 pFormProps->GetLngProperty( nMaxDialogHeight ) + (bAddNCSize? mnNCHeight : 0) );
-		SetDialogMinExtents( pFormProps->GetLngProperty( nMinDialogWidth ) + (bAddNCSize? mnNCWidth : 0),
-												 pFormProps->GetLngProperty( nMinDialogHeight ) + (bAddNCSize? mnNCHeight : 0) );
+		mnMinWidth += mnNCWidth;
+		mnMaxWidth += mnNCWidth;
+		mnMinHeight += mnNCHeight;
+		mnMaxHeight += mnNCHeight;
 	}
 	
 	InvokeMethod( pFormProps->GetStrProperty( nFormEventInitialize ), false );
+	bool bClientRect = mpSourceForm->UsesClientRect();
+	if( mpSourceForm->UsesClientRect() )
+		GetClientRect( &rectClient );
 	InvokeMethodIntInt( pFormProps->GetStrProperty( nFormEventSize ), rectWindow.Width(), rectWindow.Height(), false );	
 
 	return TRUE;  // return TRUE  unless you set the focus to a control

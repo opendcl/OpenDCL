@@ -152,7 +152,10 @@ BOOL CObjectDCLApp::InitInstance()
 	}
 
 	AfxEnableControlContainer();//&theManager);
-
+	EnableHtmlHelp();
+	delete [] m_pszHelpFilePath;
+	m_pszHelpFilePath = new TCHAR[MAX_PATH];
+	lstrcpyn( (LPTSTR)m_pszHelpFilePath, theWorkspace.FindFile( _T("OpenDCL.chm") ), MAX_PATH );
 	m_pCtrlHelp = NULL;
 
 	// Standard initialization
@@ -571,59 +574,30 @@ CObjectDCLView* CObjectDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 	ASSERT(pNewView != NULL);
 	ASSERT(pNewView->IsKindOf(RUNTIME_CLASS(CObjectDCLView)));
 
-	CRect rcClient;
 	// get the position of the new dialog box
 	pNewFrame->GetWindowRect(rcNewDialog);
-	pNewFrame->GetClientRect(&rcClient);
 
-	if (pDclForm->m_bUsesClientRect == TRUE)
+	if (pDclForm->UsesClientRect())
 	{
-		StartupSize.cx += rcNewDialog.Width() - rcClient.Width();
-		StartupSize.cy += rcNewDialog.Height() - rcClient.Height();
+		CRect rcView;
+		pNewView->GetClientRect(&rcView);
+		rcNewDialog.right += rcNewDialog.Width() - rcView.Width();
+		rcNewDialog.bottom += rcNewDialog.Height() - rcView.Height();
+		pNewFrame->GetParent()->ScreenToClient(&rcNewDialog);
+		pNewFrame->MoveWindow( &rcNewDialog, TRUE );
 	}
-	
-	pNewFrame->GetParent()->ScreenToClient(rcNewDialog);
 
 	if (pDclForm != NULL)
 	{
 		if (pDclForm->GetType() == VdclFileDialog)
-			// set the title bar icon.
 			((CChildFrame*)pNewFrame)->SetTitleBarIcon(-1);
 		else
-			// set the title bar icon.
 			((CChildFrame*)pNewFrame)->SetTitleBarIcon(pDclForm->GetDclFormTitleBarIcon());
-	}
-	
-	if (pDclForm->GetType() == VdclTabForm)
-	{	
-		// reset the size of the new dialog box
-		rcNewDialog.right = rcNewDialog.left + StartupSize.cx + 1;
-		rcNewDialog.bottom = rcNewDialog.top + StartupSize.cy + 1;		
-	}
-	else
-	{
-		// reset the size of the new dialog box
-		rcNewDialog.right = rcNewDialog.left + StartupSize.cx;
-		rcNewDialog.bottom = rcNewDialog.top + StartupSize.cy;
-	}
-
-	// update the new dialog box's size
-	pNewFrame->MoveWindow(rcNewDialog, TRUE);
-
-	if (pDclForm != NULL)
-	{
 		if (pDclForm->GetType() != VdclTabForm)
-		{
-			// set the title bar text
 			((CChildFrame*)pNewFrame)->m_Title = pDclForm->GetDclFormTitle();
-			pNewFrame->SetWindowText(((CChildFrame*)pNewFrame)->m_Title);
-		}
 		else
-		{
-			// set the title bar text
 			((CChildFrame*)pNewFrame)->m_Title = FindTabCaption(pDclForm);
-			pNewFrame->SetWindowText(((CChildFrame*)pNewFrame)->m_Title);
-		}		
+		pNewFrame->SetWindowText(((CChildFrame*)pNewFrame)->m_Title);
 	}
     
 	// set the dcl pointer in the view
@@ -1003,94 +977,93 @@ void CObjectDCLApp::OnToolsEventswritetolispfile()
 
 void CObjectDCLApp::OnToolsExportlanguageexcelspreadsheet() 
 {
-	
-	
 }
 
 void CObjectDCLApp::OnHelp() 
 {
+	HtmlHelp(0, HH_DISPLAY_TOPIC);
 }
 
 void CObjectDCLApp::OnHelpFinder() 
 {
-	CHelp1 Dlg;
-	Dlg.DoModal();
+	//CHelp1 Dlg;
+	//Dlg.DoModal();
 
-	if (Dlg.m_nType == 1)
-	{
-		if (m_pCtrlHelp == NULL)
-		{
-			m_pCtrlHelp = new CHelp2();
-			m_pCtrlHelp->Create(MAKEINTRESOURCE(IDD_HELPCTRLS), m_pMainWnd);
-		}
-		m_pCtrlHelp->ShowWindow(TRUE);
-	}
-	if (Dlg.m_nType == 2)
-	{
+	//if (Dlg.m_nType == 1)
+	//{
+	//	if (m_pCtrlHelp == NULL)
+	//	{
+	//		m_pCtrlHelp = new CHelp2();
+	//		m_pCtrlHelp->Create(MAKEINTRESOURCE(IDD_HELPCTRLS), m_pMainWnd);
+	//	}
+	//	m_pCtrlHelp->ShowWindow(TRUE);
+	//}
+	//if (Dlg.m_nType == 2)
+	//{
 
-		// look in the application directory for the method file
-		TCHAR drive[_MAX_DRIVE];
-		TCHAR dir[_MAX_DIR];
-		TCHAR fname[_MAX_FNAME];
-		TCHAR ext[_MAX_EXT];
-		LPCTSTR path =
-	#ifdef _UNICODE
-			_wpgmptr ;
-	#else
-			_pgmptr ;
-	#endif
-		_tsplitpath(path, drive, dir, fname, ext );
+	//	// look in the application directory for the method file
+	//	TCHAR drive[_MAX_DRIVE];
+	//	TCHAR dir[_MAX_DIR];
+	//	TCHAR fname[_MAX_FNAME];
+	//	TCHAR ext[_MAX_EXT];
+	//	LPCTSTR path =
+	//#ifdef _UNICODE
+	//		_wpgmptr ;
+	//#else
+	//		_pgmptr ;
+	//#endif
+	//	_tsplitpath(path, drive, dir, fname, ext );
 
-		::ShellExecute(
-			NULL, 
-			_T("open"), 
-			CString(drive) + dir + _T("ObjectDcl.hlp"),
-			NULL, 
-			NULL,
-			SW_SHOWNORMAL);
-	}
-	if (Dlg.m_nType == 3)
-	{
+	//	::ShellExecute(
+	//		NULL, 
+	//		_T("open"), 
+	//		CString(drive) + dir + _T("ObjectDcl.hlp"),
+	//		NULL, 
+	//		NULL,
+	//		SW_SHOWNORMAL);
+	//}
+	//if (Dlg.m_nType == 3)
+	//{
 
-		// look in the application directory for the method file
-		TCHAR drive[_MAX_DRIVE];
-		TCHAR dir[_MAX_DIR];
-		TCHAR fname[_MAX_FNAME];
-		TCHAR ext[_MAX_EXT];
-		LPCTSTR path =
-	#ifdef _UNICODE
-			_wpgmptr ;
-	#else
-			_pgmptr ;
-	#endif
-		_tsplitpath(path, drive, dir, fname, ext );
+	//	// look in the application directory for the method file
+	//	TCHAR drive[_MAX_DRIVE];
+	//	TCHAR dir[_MAX_DIR];
+	//	TCHAR fname[_MAX_FNAME];
+	//	TCHAR ext[_MAX_EXT];
+	//	LPCTSTR path =
+	//#ifdef _UNICODE
+	//		_wpgmptr ;
+	//#else
+	//		_pgmptr ;
+	//#endif
+	//	_tsplitpath(path, drive, dir, fname, ext );
 
-		MessageBox(m_pMainWnd->m_hWnd, _T("This may take a minute to open."), _T("Help"), NULL);
+	//	MessageBox(m_pMainWnd->m_hWnd, _T("This may take a minute to open."), _T("Help"), NULL);
 
-		::ShellExecute(
-			NULL, 
-			_T("open"), 
-			CString(drive) + dir + _T("AU.doc"),
-			NULL, 
-			NULL,
-			SW_SHOWNORMAL);
+	//	::ShellExecute(
+	//		NULL, 
+	//		_T("open"), 
+	//		CString(drive) + dir + _T("AU.doc"),
+	//		NULL, 
+	//		NULL,
+	//		SW_SHOWNORMAL);
 
-		
-	}
+	//	
+	//}
 
-	if (Dlg.m_nType == 4)
-	{
-		CDclFormObject DclForm(NULL, (DclFormType)-2); // -2 to indicate bonus functions
-		RefCountedPtr< COleControlObject > pOleControl = new COleControlObject( (ControlType)-2 ); // -2 to indicate bonus functions
-		RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropInvalid, 0, nName);
-		pOleControl->GetPropertyList().AddTail(pProp);
-		
-		CObjectBrowser Dlg(m_pMainFrame);
+	//if (Dlg.m_nType == 4)
+	//{
+	//	CDclFormObject DclForm(NULL, (DclFormType)-2); // -2 to indicate bonus functions
+	//	RefCountedPtr< COleControlObject > pOleControl = new COleControlObject( (ControlType)-2 ); // -2 to indicate bonus functions
+	//	RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropInvalid, 0, nName);
+	//	pOleControl->GetPropertyList().AddTail(pProp);
+	//	
+	//	CObjectBrowser Dlg(m_pMainFrame);
 
-		Dlg.m_pControl = pOleControl;
-		Dlg.m_pDclForm = &DclForm;
-		Dlg.m_sDclFormName.Empty();
+	//	Dlg.m_pControl = pOleControl;
+	//	Dlg.m_pDclForm = &DclForm;
+	//	Dlg.m_sDclFormName.Empty();
 
-		Dlg.DoModal();
-	}
+	//	Dlg.DoModal();
+	//}
 }

@@ -158,11 +158,17 @@ void CButtonCtrl::OnKillFocus(CWnd * pNewWnd)
 {
 	m_bIsDefault = FALSE;
 	Invalidate();
-	__super::OnKillFocus(pNewWnd);
+	__super::OnKillFocus( pNewWnd );
 }
 
 void CButtonCtrl::PostNcDestroy() 
 {
 	__super::PostNcDestroy();
 	delete this;
+}
+
+BOOL CButtonCtrl::PreTranslateMessage(MSG* pMsg)
+{
+	mToolTip.RelayEvent( pMsg );
+	return __super::PreTranslateMessage( pMsg );
 }

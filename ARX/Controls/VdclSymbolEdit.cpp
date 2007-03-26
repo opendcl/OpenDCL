@@ -102,7 +102,7 @@ BOOL VdclSymbolEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	//SetTooltipText(
-//		&pControl->GetStrProperty(nToolTipText), 
+//		&pControl->GetStrProperty(nToolTipTitle), 
 //		TRUE);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))

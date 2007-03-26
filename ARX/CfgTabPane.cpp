@@ -120,6 +120,8 @@ BOOL CfgTabPane::OnInitDialog()
 	InvokeMethod(pProps->GetStrProperty(nFormEventInitialize), false);	
 
 	// call methods to invoke the event
+	if( mDialogX.GetSourceForm()->UsesClientRect() )
+		GetClientRect( &rectWindow );
 	InvokeMethodIntInt(pProps->GetStrProperty(nFormEventSize), rectWindow.Width(), rectWindow.Height(), false);	
 
 	return TRUE;  // return TRUE unless you set the focus to a control

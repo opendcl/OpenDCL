@@ -26,6 +26,8 @@ protected:
 	CString msName;
 	CDialogObject* mpDlgObject; //informational pointer to the one and only instance of this form (or NULL)
 	std::vector< CImageListObject > mImageLists;
+	UINT mnNextId;
+	bool mbUsesClientRect;
 
 	//for managing tab hierarchy and order
 	CDclFormObject* mpParentForm;
@@ -36,7 +38,6 @@ protected:
 // Attributes
 public:
 	bool m_bDeleted;
-	BOOL m_bUsesClientRect;
 	bool m_bLoaded;
 	CString m_sSubFileName;
 	CString m_sFileName;
@@ -68,6 +69,7 @@ public:
 	bool ReorderControl( CDclControlObject* pDclControl, bool bToFront, bool bDeferReindexing = false );
 	bool ReorderControl( CDclControlObject* pDclControl, size_t idxNew, bool bDeferReindexing = false );
 	void ReindexControls();
+	UINT GetNextId() { if( (INT_PTR)mnNextId < mDclControls.GetCount() ) mnNextId = mDclControls.GetCount(); return mnNextId++; }
 
 	void ClearR14Events();
 	void IncrementPictureId(int nIdIncrement);
@@ -123,6 +125,8 @@ public:
 	void SetParentForm( LPCTSTR pszParentUniqueName );
 	short GetTabIndex() const { return mnTabIndex; }
 	void SetTabIndex( short nIndex ) { mnTabIndex = nIndex; }
+	bool UsesClientRect() const { return mbUsesClientRect; }
+	void SetUsesClientRect( bool bUsesClientRect = true ) { mbUsesClientRect = bUsesClientRect; }
 
 	//File I/O
 public:

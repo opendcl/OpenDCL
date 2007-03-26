@@ -11,16 +11,12 @@
 #include "PropertyObject.h"
 #include "Resource.h"
 
-CString GetHtmlText(CString sMain);
-
 const TCHAR s1[] = _T("\\");
 const TCHAR s2[] = _T("/");
 const TCHAR s3[] = _T(".avi");
 const TCHAR s4[] = _T("><al_l>");
-const TCHAR s5[] = _T("</b><br>");
 const TCHAR s6[] = _T("<b><ct=0x");
 const TCHAR s7[] = _T("</ct><br>");
-const TCHAR s8[] = _T("<ct=0x000000><hr=100%>");
 const TCHAR s9[] = _T("\\colortbl");
 const TCHAR s10[] = _T("\\red");
 const TCHAR s11[] = _T("\\green");
@@ -77,85 +73,68 @@ const TCHAR s60[] = _T("\\par }");
 const TCHAR s61[] = _T("\\par  ");
 
 
+CString ConstructTooltipHtml( LPCTSTR pszTitle, COLORREF crTitleColor /*= RGB(0,0,0)*/,
+															bool bSeparator /*= false*/, LPCTSTR pszMainText /*= NULL*/ )
+{
+	CString sBody;
+	if( pszTitle && *pszTitle )
+	{
+		if( crTitleColor != RGB(0,0,0) )
+		{
+			sBody.Format( _T("<b><font color=#%02X%02X%02X>%s</font></b>"),
+										GetRValue(crTitleColor), GetGValue(crTitleColor), GetBValue(crTitleColor),
+										pszTitle );
+		}
+		else
+			sBody.Format( _T("<b>%s</b>"), (LPCTSTR)pszTitle );
+	}
+	if( bSeparator )
+		sBody += _T("<br><hr=100%>");
+	if( pszMainText && *pszMainText )
+	{
+		if( !sBody.IsEmpty() )
+			sBody += _T("<br>");
+		sBody += pszMainText;
+	}
+	return sBody;
+}
+
+
 void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip, CDclControlObject *pControl)
 {
 	m_tooltip.SetBehaviour( PPTOOLTIP_MULTIPLE_SHOW | PPTOOLTIP_NOCLOSE_OVER );
 
-	RefCountedPtr< CPropertyObject > pToolTipText = pControl->GetPropertyObject(nToolTipText);	
+	RefCountedPtr< CPropertyObject > pToolTipTitle = pControl->GetPropertyObject(nToolTipTitle);	
 	RefCountedPtr< CPropertyObject > pToolTipLine = pControl->GetPropertyObject(nToolTipLine);	
 	RefCountedPtr< CPropertyObject > pToolTipBody = pControl->GetPropertyObject(nToolTipBody);	
 	RefCountedPtr< CPropertyObject > pToolTipPicture = pControl->GetPropertyObject(nToolTipPicture);	
 	RefCountedPtr< CPropertyObject > pToolTipAvi = pControl->GetPropertyObject(nToolTipAviFileName);
 	RefCountedPtr< CPropertyObject > pToolTipTitleColor = pControl->GetPropertyObject(nToolTipTitleColor);
 
-	CString sBody;
 	CString sTitle;
 	CString sMain;
-	if( pToolTipTitleColor )
-	{
-		COLORREF clr = pToolTipTitleColor->GetOLEColorValue();
-		sBody.Format( _T("<b><font color=#%02X%02X%02X>"), GetRValue(clr), GetGValue(clr), GetBValue(clr) );
-	}
-	if( pToolTipText )
-	{
-		sTitle = pToolTipText->GetStringValue();
+	int nPic = 0;
+	CString sAvi;
+	if( pToolTipTitle )
+		sTitle = pToolTipTitle->GetStringValue();
+	if( pToolTipBody )
+		sMain = pToolTipBody->GetStringValue();
+	if( pToolTipPicture )
+		nPic = pToolTipPicture->GetLongValue();
+	if( pToolTipAvi )
+		sAvi = pToolTipAvi->GetStringValue();
+	if( sTitle.IsEmpty() && sMain.IsEmpty() && nPic == 0 && sAvi.IsEmpty() )
+		return;
+	CString sBody =
+		ConstructTooltipHtml( sTitle,
+													(pToolTipTitleColor? pToolTipTitleColor->GetOLEColorValue() : RGB(0,0,0)),
+													(pToolTipLine && pToolTipLine->GetBooleanValue()),
+													sMain );
 
-		sBody += sTitle + s5;
-		
-		if (pToolTipLine && pToolTipLine->GetBooleanValue() == TRUE)
-			sBody += s8;
-
-		if( pToolTipBody )
-			sMain = GetHtmlText(pToolTipBody->GetStringValue());
-
-		if (sTitle.GetLength() == 0 && sMain.GetLength() == 0)
-		{
-			sBody = CString();
-			m_tooltip.AddTool(pWnd, sBody);
-			return;
-		}
-
-		sBody += _T("</font></b><br>") + sMain;
-	}
 	CProject* pProject = pControl->GetOwnerProject();
 
-	//if( pToolTipAvi )
-	//{
-	//	CString sAvi = pToolTipAvi->GetStringValue();
-
-	//	m_tooltip.m_AviFileName.Empty();
-	//	if (sAvi.GetLength() > 0)
-	//	{
-	//		if (pProject)
-	//		{
-	//			int n = pProject->GetBaseFileName().Find(s1);
-	//			if (n == -1)
-	//				n = pProject->GetBaseFileName().Find(s2);
-
-	//			int nNext = n;
-	//			while (nNext > -1)
-	//			{
-	//				nNext = pProject->GetBaseFileName().Find(s1, n+1);
-	//				if (nNext == -1)
-	//					nNext = pProject->GetBaseFileName().Find(s2, n+1);
-	//				if (nNext > -1)
-	//					n = nNext;	
-	//			}
-
-	//			sAvi = pProject->GetBaseFileName().Left(n+1) + sAvi;
-	//			if (_tcsicmp(sAvi.Right(4), s3) != 0)
-	//				sAvi += s3;
-	//		}
-	//		
-	//		m_tooltip.m_AviFileName = sAvi;
-	//	}
-	//}
-
-	
 	if( pToolTipPicture )
 	{
-		int nPic = pToolTipPicture->GetLongValue();
-
 		if (nPic == -1)
 			m_tooltip.AddTool(pWnd, sBody, IDI_HELP);
 		else if (nPic == -2)
@@ -190,66 +169,14 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip,
 				  CString sAvi,
 				  CDclControlObject *pControl = NULL)
 {	
+	if (sTitleIn.IsEmpty() && sMainIn.IsEmpty() && nPicture == 0 && sAvi.IsEmpty())
+		return;
+
 	m_tooltip.SetBehaviour( PPTOOLTIP_MULTIPLE_SHOW | PPTOOLTIP_NOCLOSE_OVER );
+			
+	CString sBody = ConstructTooltipHtml( sTitleIn, GetRGBColor( nColor ), (nLine != 0), sMainIn );
 
 	const CProject* pProject = pControl? pControl->GetOwnerProject() : NULL;
-			
-	if (sTitleIn.GetLength() > 0 && sMainIn.GetLength() == 0)
-	{
-		m_tooltip.AddTool(pWnd, sTitleIn);
-		return;
-	}
-	if (sTitleIn.GetLength() == 0 && sMainIn.GetLength() > 0)
-	{
-		m_tooltip.AddTool(pWnd, sMainIn);
-		return;
-	}
-	
-	CString sBody;
-	CString sTitle;
-	CString sMain;
-
-	COLORREF clr = GetRGBColor(nColor);
-	sBody.Format( _T("<b><font color=#%02X%02X%02X>"), GetRValue(clr), GetGValue(clr), GetBValue(clr) );
-	
-	sTitle = sTitleIn;
-
-	sBody += sTitle + s5;
-	
-	if (nLine == TRUE)
-		sBody += s8;
-	sMain = GetHtmlText(sMainIn);
-
-	if (sTitle.GetLength() == 0 && sMain.GetLength() == 0)
-		return;
-
-	sBody += s7 + sMain;
-	
-	//m_tooltip.m_AviFileName.Empty();
-	//if (sAvi.GetLength() > 0)
-	//{
-	//	if (pProject != NULL)
-	//	{
-	//		int n = pProject->GetBaseFileName().Find(s1);
-	//		if (n == -1)
-	//			n = pProject->GetBaseFileName().Find(s2);
-
-	//		int nNext = n;
-	//		while (nNext > -1)
-	//		{
-	//			nNext = pProject->GetBaseFileName().Find(s1, n+1);
-	//			if (nNext == -1)
-	//				nNext = pProject->GetBaseFileName().Find(s2, n+1);
-	//			if (nNext > -1)
-	//				n = nNext;	
-	//		}
-
-	//		sAvi = pProject->GetBaseFileName().Left(n+1) + sAvi;
-	//		if (_tcsicmp(sAvi.Right(4), s3) != 0)
-	//			sAvi += s3;
-	//	}
-	//	m_tooltip.m_AviFileName = sAvi;
-	//}
 
 	int nPic = nPicture;
 
@@ -273,133 +200,4 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip,
 	}
 	else
 		m_tooltip.AddTool(pWnd, sBody);
-}
-
-CString GetHtmlText(CString sMain)
-{
-	CArray<COLORREF, COLORREF> colors;
-
-	if (sMain.GetLength() == 0)
-		return sMain; 
-
-	bool bFoundEnd = false;
-	int n = sMain.Find(s9);
-	while (n > -1)
-	{
-		CString sRed, sBlue, sGreen;
-		
-		int nRed = sMain.Find(s10, n);
-		int nGreen = sMain.Find(s11, nRed);
-		int nBlue = sMain.Find(s12, nGreen);
-		int nColorEnd = sMain.Find(s13, nBlue);
-
-		sRed = sMain.Mid(nRed + 4, nGreen - nRed - 4);
-		sGreen = sMain.Mid(nGreen + 6, nBlue - nGreen - 6);
-		sBlue = sMain.Mid(nBlue + 5, nColorEnd - nBlue - 5);
-
-
-		colors.Add(RGB(_ttoi(sRed), _ttoi(sGreen), _ttoi(sBlue)));
-		if (sMain.Find(s10, nColorEnd) == -1)
-			n = -1;
-		else
-			n = nColorEnd;
-	
-	}
-	
-	n = sMain.Find(s14);
-	if (n > -1)
-		sMain = sMain.Mid(n+9);
-	
-	n = sMain.Find(s15);	
-	if (n > -1)
-	{
-		sMain = sMain.Mid(n+5);
-		n = sMain.Find(s1);	
-		if (n > -1)
-		{
-			sMain = sMain.Mid(n);
-		}
-	}
-	
-	n = sMain.Find(s54);
-	if (n > -1)
-		sMain = sMain.Mid(n+5);
-
-	
-	sMain.Replace(s16, CString());
-	
-	for (int j=30; j>=0; j--)
-	{
-		char value[80];
-		_ltoa(j, value, 10);
-		sMain.Replace(CString(s17) + value + s18, CString());
-	}
-	
-	sMain.Replace(s20, s21);
-	sMain.Replace(s22, s23);
-
-	sMain.Replace(s24, s25);
-	sMain.Replace(s26, s27);
-
-	sMain.Replace(s55, s29);
-	sMain.Replace(s56, s29);
-	sMain.Replace(s57, s33);
-	
-	sMain.Replace(s28, s29);
-	sMain.Replace(s30, s29);
-	//sMain.Replace(s31, s33);
-
-	sMain.Replace(s34, s35);
-
-	sMain.Replace(s36, s21);
-	sMain.Replace(s38, s23);
-
-	sMain.Replace(s40, s25);
-	sMain.Replace(s42, s27);
-
-	sMain.Replace(s44, s29);
-	sMain.Replace(s46, s29);
-	sMain.Replace(s48, s33);
-
-	sMain.Replace(s50, s35);
-
-	sMain.Replace(s58, s53);
-	sMain.Replace(s52, s53);
-
-	sMain.Replace(s59, CString());
-	sMain.Replace(s60, CString());
-	sMain.Replace(s61, CString());
-	sMain.Replace(s43, CString());
-
-
-	for (int i=0; i<colors.GetSize(); i++)
-	{
-		char sIndex[80];
-		char sColor[80];
-
-		_ltoa(i+1, sIndex, 10);
-		_ltoa(colors[i], sColor, 16);
-		
-		sMain.Replace(
-			CString(s31) + sIndex, 
-			CString(s37) + sColor + s19);
-		sMain.Replace(
-			CString(s39) + sIndex + s18, 
-			CString(s37) + sColor + s19);
-		sMain.Replace(
-			CString(s39) + sIndex, 
-			CString(s37) + sColor + s19);
-	}
-
-	n = sMain.Find(s45);
-	if (n > -1)
-		sMain = sMain.Left(n-2);
-	
-	n = sMain.Find(s41);
-	if (n > -1)
-		sMain = sMain.Left(n-2);
-	sMain.Replace(s43, CString());
-
-	return sMain;
-	
 }

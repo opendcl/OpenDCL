@@ -11,7 +11,7 @@ extern LPCTSTR ErrorProjectNotLoaded;
 extern LPCTSTR ErrorDemoCreation;
 extern LPCTSTR ErrorObjectDCL;
 extern LPCTSTR ErrorFormNotFound;
-extern LPCTSTR ErrorTabsToolTipText;
+extern LPCTSTR ErrorTabsToolTipTitle;
 extern LPCTSTR ErrorDialogNotFound;
 extern LPCTSTR ErrorReturnChar;
 extern LPCTSTR ErrorFile;

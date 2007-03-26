@@ -12,7 +12,7 @@
 #define ZDownArrowId  111
 #define ID_TOOLBAR  14
 #define nDeButtonCountZO  4
-#define nDeToolTipTextLen  79
+#define nDeToolTipTitleLen  79
 
 #define nDeFontPtSize 80
 #define nDeColWidth200 200

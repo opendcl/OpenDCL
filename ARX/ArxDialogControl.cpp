@@ -1570,9 +1570,9 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			pControlWnd->SetWindowText(pControl->GetStrProperty(nTitleBarText));
 			break;
 		}
-		case nToolTipText:
+		case nToolTipTitle:
 		{
-			ChangeToolTipText(pControl, pControlWnd);
+			ChangeToolTipTitle(pControl, pControlWnd);
 			break;
 		}
 		case nUseTabStops:
@@ -1821,9 +1821,9 @@ void CArxDialogControl::UpdateText(CDclControlObject *pTemplate, CWnd *pControl,
 
 // This function is being phased out as control classes are changed to implement their own CDialogControl interface
 //static
-void CArxDialogControl::ChangeToolTipText(CDclControlObject *pArxObject, CWnd *pControl)
+void CArxDialogControl::ChangeToolTipTitle(CDclControlObject *pArxObject, CWnd *pControl)
 {
-	CString sToolTipText = pArxObject->GetStrProperty(nToolTipText);
+	CString sToolTipTitle = pArxObject->GetStrProperty(nToolTipTitle);
 	
 	#define nToolTipBody			235
 	#define nToolTipPicture			236
@@ -1836,80 +1836,80 @@ void CArxDialogControl::ChangeToolTipText(CDclControlObject *pArxObject, CWnd *p
 	case CtlDwgPreview:
 		{
 		SetToolTipEx(pControl, ((CDwgPreviewCtrl*)pControl)->m_ToolTip, pArxObject);
-		//((CDwgPreviewCtrl*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((CDwgPreviewCtrl*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlBlockView:
 	case CtlHatch:
 		{
 		SetToolTipEx(pControl, ((CGsPreviewCtrl*)pControl)->m_ToolTip, pArxObject);
-		//((CGsPreviewCtrl*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((CGsPreviewCtrl*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlSlideView:
 		{
 		SetToolTipEx(pControl, ((CSlideHolder*)pControl)->mToolTip, pArxObject);
-		//((CSlideHolder*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((CSlideHolder*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlRoundSlider:
 		{
 		SetToolTipEx(pControl, ((CRoundSliderCtrl*)pControl)->m_ToolTip, pArxObject);
-		//((CRoundSliderCtrl*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((CRoundSliderCtrl*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlStaticURL:
 		{
 		SetToolTipEx(pControl, ((CStaticLink*)pControl)->m_ToolTip, pArxObject);
-		//((CStaticLink*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((CStaticLink*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlProgress:
 		{
 		//SetToolTipEx(pControl, ((TProgressTimeToComplete*)pControl)->m_ToolTip, pArxObject);
-		//((VdclProgressCtrl*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((VdclProgressCtrl*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlMonth:
 		{
 		SetToolTipEx(pControl, ((OdclMonth*)pControl)->m_ToolTip, pArxObject);
-		//((OdclMonth*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((OdclMonth*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlSlider:
 		{
 		SetToolTipEx(pControl, ((VdclSliderCtrl*)pControl)->m_ToolTip, pArxObject);
-		//((VdclSliderCtrl*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((VdclSliderCtrl*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlPictureBox:
 		{
 		SetToolTipEx(pControl, ((CPictureBox*)pControl)->m_ToolTip, pArxObject);
-		//((CPictureBox*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((CPictureBox*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlListBox:
 		{
 		SetToolTipEx(pControl, ((VdclListBox*)pControl)->m_ToolTip, pArxObject);
-		//((VdclListBox*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((VdclListBox*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlOptionButton:
 		{
 		SetToolTipEx(pControl, ((VdclRadioButton*)pControl)->m_ToolTip, pArxObject);
-		//((VdclRadioButton*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((VdclRadioButton*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlOptionList:
 		{
 		//SetToolTipEx(pControl, ((COptionListBox*)pControl)->m_ToolTip, pArxObject);
-		//((COptionListBox*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((COptionListBox*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlCheckBox:
 		{
 		SetToolTipEx(pControl, ((VdclCheckBox*)pControl)->m_ToolTip, pArxObject);
-		//((VdclCheckBox*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((VdclCheckBox*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlTextBox:
@@ -1918,19 +1918,19 @@ void CArxDialogControl::ChangeToolTipText(CDclControlObject *pArxObject, CWnd *p
 			{
 				case EditFilter_Symbol:
 					SetToolTipEx(pControl, ((VdclSymbolEdit*)pControl)->m_ToolTip, pArxObject);
-					//((VdclSymbolEdit*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+					//((VdclSymbolEdit*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 					break;
 				case EditFilter_Angle:
 					SetToolTipEx(pControl, ((VdclAngleEdit*)pControl)->m_ToolTip, pArxObject);
-					//((VdclAngleEdit*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+					//((VdclAngleEdit*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 					break;
 				case EditFilter_Numeric:
 					SetToolTipEx(pControl, ((VdclNumericEdit*)pControl)->m_ToolTip, pArxObject);
-					//((VdclNumericEdit*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+					//((VdclNumericEdit*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 					break;
 				default:
 					SetToolTipEx(pControl, ((OdclEdit*)pControl)->m_ToolTip, pArxObject);
-					//((OdclEdit*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+					//((OdclEdit*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 					break;
 			}
 		break;
@@ -1938,32 +1938,32 @@ void CArxDialogControl::ChangeToolTipText(CDclControlObject *pArxObject, CWnd *p
 	case CtlStdButton:
 		{
 		SetToolTipEx(pControl, ((VdclTextButton*)pControl)->m_ToolTip, pArxObject);
-		//((VdclTextButton*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((VdclTextButton*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlTree:
 		{
 		SetToolTipEx(((VdclTree*)pControl), ((VdclTree*)pControl)->m_ChildTree.m_ToolTip, pArxObject);
-		//((VdclTree*)pControl)->m_ChildTree.SetTooltipText(&sToolTipText, TRUE);
+		//((VdclTree*)pControl)->m_ChildTree.SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 
 	case CtlGraphicButton:
 		{
 		SetToolTipEx(pControl, ((CArxGraphicButtonCtrl*)pControl)->GetToolTipCtrl(), pArxObject);
-		//((CArxGraphicButtonCtrl*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((CArxGraphicButtonCtrl*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlActiveX:
 		{
 		SetToolTipEx(pControl, ((CAxContainerCtrl*)pControl)->GetToolTipCtrl(), pArxObject);
-		//((CAxContainerCtrl*)pControl)->SetTooltipText(sToolTipText);
+		//((CAxContainerCtrl*)pControl)->SetTooltipText(sToolTipTitle);
 		break;
 		}
 	case CtlDwgList:
 		{
 		SetToolTipEx(pControl, ((CDwgDirList*)pControl)->m_ToolTip, pArxObject);
-		//((CDwgDirList*)pControl)->SetTooltipText(&sToolTipText, TRUE);
+		//((CDwgDirList*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	}
