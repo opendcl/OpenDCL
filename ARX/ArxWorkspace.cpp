@@ -491,6 +491,10 @@ bool CArxWorkspace::DisplayStatus( LPCTSTR pszMessage ) const
 int CArxWorkspace::ActivateDclForm( CDclFormObject* pDclForm, DialogParams* pParams /*= NULL*/ )
 {
 	assert (pDclForm != NULL);
+	if( pDclForm->GetParentForm() )
+		return -1; //can only activate top level forms from here!
+	if( pDclForm->GetType() == VdclConfigTab )
+		return -1; //can directly activate config tabs
 	CDialogObject* pDlgObject = pDclForm->GetFormInstance();
 	if( pDlgObject ) //form already created?
 	{ //I think this should result in failure, but for now it just shows the current dialog [ORW]
@@ -499,8 +503,6 @@ int CArxWorkspace::ActivateDclForm( CDclFormObject* pDclForm, DialogParams* pPar
 			pDlgObject->SetFocus();
 		return pDlgObject->GetID();
 	}
-	if( pDclForm->GetParentForm() )
-		return -1; //can only activate top level forms from here!
 	const CProject* pProject = pDclForm->GetProject();
 	assert (pProject != NULL);
 	if (!pProject)

@@ -110,6 +110,7 @@ bool InvokeCancelMethod(CString sLispFunction, bool bUserPressedEsc)
 // InvokeMethod
 void InvokeMethodStringInt(CString sLispFunction, CString sString, int nInt, bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -156,6 +157,7 @@ void InvokeMethodStringInt(CString sLispFunction, CString sString, int nInt, boo
 
 void InvokeMethodStringLong(CString sLispFunction, CString sString, long lLong, bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -203,6 +205,7 @@ void InvokeMethodStringLong(CString sLispFunction, CString sString, long lLong, 
 
 void InvokeMethodLong(CString sLispFunction, long lLong, bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -245,6 +248,7 @@ void InvokeMethodLong(CString sLispFunction, long lLong, bool UseSendString)
 
 void InvokeMethodStringIntInt(CString sLispFunction, CString sString, int nInt1, int nInt2, bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -296,6 +300,7 @@ void InvokeMethodStringIntInt(CString sLispFunction, CString sString, int nInt1,
 
 void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString || (sLispFunction.Left(1) == sSingleQuote))
@@ -340,6 +345,7 @@ void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc)
 
 void InvokeMethodIntString(CString sLispFunction, int nInt, CString sString, bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -381,6 +387,7 @@ void InvokeMethodIntString(CString sLispFunction, int nInt, CString sString, boo
 
 void InvokeMethodIntList(CString sLispFunction, int nInt, CStringList *pList, bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -451,6 +458,7 @@ void InvokeMethodIntList(CString sLispFunction, int nInt, CStringList *pList, bo
 
 void InvokeMethodString(CString sLispFunction, CString sString, bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		//AfxMessageBox(sLispFunction);
@@ -489,12 +497,9 @@ void InvokeMethodString(CString sLispFunction, CString sString, bool UseSendStri
 
 void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString)
 {
-	//acedAlert("InvokeMethodInt 1");
-
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
-	//	acedAlert("InvokeMethodInt 2");
-	//	acedAlert(sLispFunction);
 		if (UseSendString)
 		{
 			// this code if for the dockable dialog only
@@ -530,13 +535,9 @@ void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString)
 }
 void InvokeMethodIntInt(CString sLispFunction, int nInt1, int nInt2, bool UseSendString)
 {
-	//acedAlert("InvokeMethodInt 1");
-
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
-	//	acedAlert("InvokeMethodInt 2");
-	//	acedAlert(sLispFunction);
-
 		if (UseSendString)
 		{
 			char sInt1[80];
@@ -583,6 +584,7 @@ void InvokeMethodIntInt(CString sLispFunction, int nInt1, int nInt2, bool UseSen
 
 void InvokeMethodIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt3, bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -627,6 +629,7 @@ void InvokeMethodIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt
 
 void InvokeMethodIntIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt3, int nInt4, bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -675,6 +678,7 @@ void InvokeMethodIntIntIntInt(CString sLispFunction, int nInt1, int nInt2, int n
 
 void InvokeMethodStringString(CString sLispFunction, CString sString1, CString sString2, bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -713,6 +717,7 @@ void InvokeMethodStringString(CString sLispFunction, CString sString1, CString s
 
 void InvokeMethod3Strings(CString sLispFunction, CString sString1, CString sString2, CString sString3, bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -753,6 +758,7 @@ void InvokeMethod3Strings(CString sLispFunction, CString sString1, CString sStri
 
 void InvokeMethod4Strings(CString sLispFunction, CString sString1, CString sString2, CString sString3, CString sString4, bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -802,6 +808,7 @@ void InvokeMethod3StringsPoint(
 					CPoint	ptPoint,
 					bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		
@@ -866,6 +873,7 @@ void InvokeMethod3StringsLong(
 					long	lValue,
 					bool	UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		
@@ -921,6 +929,7 @@ void InvokeMethodPoint(
 					CPoint	ptPoint,
 					bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -974,6 +983,7 @@ void InvokeMethodPoint3D(
 					acedDwgPoint ptPoint,
 					bool UseSendString)
 {
+	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -1037,6 +1047,7 @@ void InvokeMethodPoint3D(
 		}
 	}
 }
+
 CString RtoS(double dValue)
 {
 	CString sReturn;

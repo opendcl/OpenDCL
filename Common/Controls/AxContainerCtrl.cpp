@@ -351,7 +351,6 @@ bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect rcWnd, bool bAdd
 			m_bActiveXCtrl = CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
 																			NULL, FALSE, NULL );
 		}
-		GetTemplate()->ClearStream();
 	}
 	catch(...)
 	{

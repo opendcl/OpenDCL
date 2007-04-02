@@ -74,10 +74,8 @@ END_MESSAGE_MAP()
 int CMainFrameToolBar::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
 	if (CDialogBar::OnCreate(lpCreateStruct) == nNotSet)
-		return nNotSet;
-	
+		return -1;
 	Setup();
-
 	return 0;
 }
 
@@ -94,17 +92,7 @@ void CMainFrameToolBar::Setup()
 		| CCS_ADJUSTABLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT | TBSTYLE_WRAPABLE;
 
 	if (!m_Buttons.Create( dwStyle, CRect (0,2,317,26), this, ID_TOOLBARBTNS) )
-	{
 		return;
-	}
-
-	// enable the toolbox
-	m_Buttons.EnableWindow(TRUE);
-	m_Buttons.ShowWindow(TRUE);
-	m_Buttons.AutoSize();
-	
-	// call the method to add the buttons to the toolbar
-	AddTheButtons();
 
 	if(m_FontNames.Create(WS_VISIBLE|WS_CHILD|CBS_DROPDOWNLIST | CBS_AUTOHSCROLL |
                     CBS_OWNERDRAWFIXED | CBS_SORT | CBS_HASSTRINGS | 
@@ -128,6 +116,14 @@ void CMainFrameToolBar::Setup()
 			m_FontSizes.AddString(Defaults[i]);
 
 	}
+
+	// enable the toolbox
+	m_Buttons.EnableWindow(TRUE);
+	m_Buttons.ShowWindow(TRUE);
+	
+	// call the method to add the buttons to the toolbar
+	AddTheButtons();
+	m_Buttons.AutoSize();
 
 	return;
 }
@@ -184,11 +180,7 @@ void CMainFrameToolBar::AddTheButtons()
 	m_pTBButtons[13].idCommand = ID_FONTSCALED;
 	m_pTBButtons[13].iString = ID_FONTSCALED;		
 	VERIFY(m_Buttons.AddButtons(1,&m_pTBButtons[13]));
-
-	
 }
-
-
 
 void CMainFrameToolBar::SetFontToolBar(CDclControlObject *pCtrl)
 {
@@ -548,31 +540,23 @@ void CMainFrameToolBar::AddFontToToolBar(CDclControlObject *pCtrl)
 void CMainFrameToolBar::OnDestroy() 
 {
 	CDialogBar::OnDestroy();
-	
 	// delete the button info holders
 	m_font.DeleteObject();			
 	if (m_pTBButtons)
 		delete []m_pTBButtons;
 }
 
-
-
 void CMainFrameToolBar::OnSize(UINT nType, int cx, int cy) 
 {
 	CDialogBar::OnSize(nType, cx, cy);
-	
 	m_Buttons.MoveWindow(0,2,cx,cy,TRUE);
-	
 }
-
 
 CString CMainFrameToolBar::NeedText( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
 	LPTOOLTIPTEXT lpTTT = (LPTOOLTIPTEXT)pNotifyStruct ;
 	ASSERT(nID == lpTTT->hdr.idFrom);
-
 	CString toolTipText;
-
 	switch (nID)
 	{
 	case ID_FONTBOLDBTN:
@@ -588,24 +572,19 @@ CString CMainFrameToolBar::NeedText( UINT nID, NMHDR * pNotifyStruct, LRESULT * 
 		toolTipText = theWorkspace.LoadResourceString(IDS_STRINGSCALED);
 		break;		
 	}
-
 	int nLength = (toolTipText.GetLength() > nDeTTTLen) ? nDeTTTLen : toolTipText.GetLength();
-
 	toolTipText = toolTipText.Left(nLength);
-
 	return toolTipText;
 }
 
 
-
 /////////////////////////////////////////////////////////////////////////////
 // CToolBar message handlers
+
 void CMainFrameToolBar::OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
 	CString toolTipText = NeedText(nID, pNotifyStruct, lResult);
-
 	LPTOOLTIPTEXTW lpTTT = (LPTOOLTIPTEXTW)pNotifyStruct;
-
 #ifdef _UNICODE
 	_tcsncpy(lpTTT->szText,(LPCTSTR)toolTipText, toolTipText.GetLength() + 1);
 #else
@@ -616,29 +595,25 @@ void CMainFrameToolBar::OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * 
 BOOL CMainFrameToolBar::OnNeedText( UINT id, NMHDR * pTTTStruct, LRESULT * pResult )
 {
 	TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pTTTStruct;
-    UINT nID =pTTTStruct->idFrom;
-    if (pTTT->uFlags & TTF_IDISHWND)
-    {
-        // idFrom is actually the HWND of the tool
-        nID = ::GetDlgCtrlID((HWND)nID);
-        if(nID)
-        {
-            pTTT->lpszText = MAKEINTRESOURCE(nID);
-            pTTT->hinst = AfxGetResourceHandle();
-            return(TRUE);
-        }
-    }
-    return(FALSE);
-
+	UINT nID =pTTTStruct->idFrom;
+	if (pTTT->uFlags & TTF_IDISHWND)
+	{
+		// idFrom is actually the HWND of the tool
+		nID = ::GetDlgCtrlID((HWND)nID);
+		if(nID)
+		{
+			pTTT->lpszText = MAKEINTRESOURCE(nID);
+			pTTT->hinst = AfxGetResourceHandle();
+			return(TRUE);
+		}
+	}
+	return(FALSE);
 }
-
 
 void CMainFrameToolBar::OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
 	CString toolTipText = NeedText(nID, pNotifyStruct, lResult);
-
 	LPTOOLTIPTEXT lpTTT = (LPTOOLTIPTEXT)pNotifyStruct;
-
 	lstrcpyn(lpTTT->szText,toolTipText, _elements(lpTTT->szText));
 }
 
@@ -699,35 +674,30 @@ void CMainFrameToolBar::OnFontBold()
 		return;
 	if (((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
 		return;
-	
 	BOOL bChecked = m_Buttons.IsButtonChecked(ID_FONTBOLDBTN);
 	((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontBool((bChecked == TRUE), nLabelBold);
-	
 }
+
 void CMainFrameToolBar::OnFontItalic()
 {
 	if (theEditorWorkspace.GetToolBox()->m_pActiveView == NULL)
 		return;
 	if (((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
 		return;
-	
 	BOOL bChecked = m_Buttons.IsButtonChecked(ID_FONTITALICBTN);
 	((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontBool((bChecked == TRUE), nLabelItalic);
 	
 }
+
 void CMainFrameToolBar::OnFontUnderline()
 {
 	if (theEditorWorkspace.GetToolBox()->m_pActiveView == NULL)
 		return;
 	if (((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
 		return;
-	
-	
 	BOOL bChecked = m_Buttons.IsButtonChecked(ID_FONTUNDERLINEBTN);
 	((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontBool((bChecked == TRUE), nLabelUnderline);
-	
 }
-
 
 void CMainFrameToolBar::OnFontScaled()
 {
@@ -735,9 +705,6 @@ void CMainFrameToolBar::OnFontScaled()
 		return;
 	if (((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
 		return;
-	
-	
 	BOOL bChecked = m_Buttons.IsButtonChecked(ID_FONTSCALED);
 	((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontBool((bChecked == TRUE), nFontSizeStyle);
-	
 }

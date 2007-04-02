@@ -496,7 +496,7 @@ void CZOrderListCtrl::DoZOrderUpdate()
 	{
 		CDclControlObject* pDclControl = ControlList.GetNext( pos );
 		m_pView->m_pThisDclForm->ReorderControl( pDclControl, false, true );
-		CControlHolder* pControlWnd = (CControlHolder*)m_pView->GetDlgItem(pDclControl->GetID() + nControlStartId);
+		CWnd* pControlWnd = pDclControl->GetControlInstance()->GetControl();
 		assert( pControlWnd != NULL );
 		if( pControlWnd )
 			// move this control to the front of the Zorder. This is ok because we do it to every control to get the correct zorder position set.

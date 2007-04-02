@@ -813,7 +813,7 @@ void CPropertyListCtrl::DisplayProperties(CDclControlObject *pControl)
 		m_ScrollBar.SetScrollPos(m_TopIndex, FALSE);			
 	}	
 	
-	if (pControl == NULL)
+	if (pControl == NULL || (pControl->GetType() == CtlForm && pControl->GetOwnerForm()->GetParentForm()) )
 	{
 		ClearGrid();
 		m_Edit.ShowWindow( SW_HIDE );

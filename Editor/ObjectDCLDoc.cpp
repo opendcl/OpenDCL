@@ -78,10 +78,10 @@ BOOL CObjectDCLDoc::OnNewDocument()
 	if (!CDocument::OnNewDocument())
 		return FALSE;
 	
-	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_FontNames.EnableWindow(TRUE);
-	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_FontSizes.EnableWindow(TRUE);
-	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_Buttons.EnableWindow(TRUE);
-	theEditorWorkspace.GetMainFrame()->m_wndToolBar.EnableWindow(TRUE);
+	//theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_FontNames.EnableWindow(TRUE);
+	//theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_FontSizes.EnableWindow(TRUE);
+	//theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_Buttons.EnableWindow(TRUE);
+	//theEditorWorkspace.GetMainFrame()->m_wndToolBar.EnableWindow(TRUE);
 	CEditorProject* pProject = new CEditorProject( m_strTitle );
 	theEditorWorkspace.SetActiveProject( pProject );
 	theEditorWorkspace.SetActiveDocument(this); //kludge [ORW]
@@ -89,10 +89,6 @@ BOOL CObjectDCLDoc::OnNewDocument()
 	ASSERT(pProjTree != NULL);
 	pProjTree->SetupProjectTree( pProject );
 	pProjTree->SetDocument(this);
-
-	CToolBarCtrl *pCtrl = &theEditorWorkspace.GetMainFrame()->m_wndToolBar.GetToolBarCtrl();
-	pCtrl->EnableButton(ID_ADDMODAL, TRUE);
-	pCtrl->EnableButton(ID_PICTUREFOLDER, TRUE);
 	return TRUE;
 }
 
@@ -118,19 +114,10 @@ BOOL CObjectDCLDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	}
 
 	SetModifiedFlag(FALSE);     // start off with unmodified
-  theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_FontNames.EnableWindow(TRUE);
-  theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_FontSizes.EnableWindow(TRUE);
-  theEditorWorkspace.GetMainFrame()->m_wndDlgBar.m_Buttons.EnableWindow(TRUE);
-  theEditorWorkspace.GetMainFrame()->m_wndToolBar.EnableWindow(TRUE);
 	CProjectTreeCtrl* pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
 	ASSERT(pProjTree != NULL);
 	pProjTree->SetupProjectTree(pProject);
 	pProjTree->SetDocument(this);
-
-  CToolBarCtrl *pCtrl = &theEditorWorkspace.GetMainFrame()->m_wndToolBar.GetToolBarCtrl();
-  pCtrl->EnableButton(ID_ADDMODAL, TRUE);
-  pCtrl->EnableButton(ID_PICTUREFOLDER, TRUE);
-
   return TRUE;
 }
 
@@ -155,11 +142,9 @@ BOOL CObjectDCLDoc::OnSaveDocument(LPCTSTR lpszPathName)
 		return FALSE;
 	}
 
+	theEditorWorkspace.GetProjectTreeCtrl()->SetWindowText( lpszPathName );
 	SetModifiedFlag(FALSE);     // back to unmodified
-	SetTitle(lpszPathName);
-	CFrameWnd* pActiveFrame = ((CMainFrame*)AfxGetApp()->GetMainWnd())->GetActiveFrame();
-	if (pActiveFrame)
-		pActiveFrame->SetTitle(lpszPathName);
+	((CMainFrame*)AfxGetApp()->GetMainWnd())->DelayUpdateFrameTitle();
 	//activeProject->SaveDistFile();
 
 	return TRUE;
@@ -178,15 +163,13 @@ void CObjectDCLDoc::SetGlobalVariableNames( LPCTSTR pszRootName )
 
 void CObjectDCLDoc::OnCloseDocument() 
 {
+	CDocument::OnCloseDocument();
 	theEditorWorkspace.GetProjectTreeCtrl()->ClearTree();		
 	theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
 	CToolBarCtrl *pCtrl = &theEditorWorkspace.GetMainFrame()->m_wndToolBar.GetToolBarCtrl();
-	pCtrl->EnableButton(ID_FILE_SAVE, FALSE);
-	pCtrl->EnableButton(ID_ADDMODAL, FALSE);
-	pCtrl->EnableButton(ID_PICTUREFOLDER, FALSE);
-	CDocument::OnCloseDocument();
 	theEditorWorkspace.SetActiveDocument(NULL);
 	CProject *pProject = activeProject;
 	if (pProject)
-		pProject->ClearProject();	
+		pProject->ClearProject();
+	theEditorWorkspace.SetActiveProject( NULL );
 }

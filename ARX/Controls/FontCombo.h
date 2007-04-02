@@ -37,6 +37,10 @@ public:
 // CFontCombo window
 class CFontCombo : public CComboBox
 {
+protected:
+	HWND mhwndList;
+	bool m_bInvokeWithSendString;
+	CStringArray m_AcadFontFileList;
 
 // Construction
 public:
@@ -44,8 +48,6 @@ public:
 	void Initialize();
 	DWORD GetFontTypeId(CString sName);
 	CString GetFontPath();
-	bool m_bInvokeWithSendString;
-	CStringArray m_AcadFontFileList;
 protected:	
 	BOOL EnumerateFonts();
 	void AddFont(CString strName, DWORD dwFlags);
@@ -104,4 +106,5 @@ protected:
 	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

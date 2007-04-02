@@ -3548,10 +3548,8 @@ void CObjectDCLView::DisplayControls(CDclFormObject *pDclForm)
 	CDclControlObject *pDclProps = m_pThisDclForm->GetControlProperties();
 	pDclProps->SetLongProperty(nWidth, rc.Width());
 	pDclProps->SetLongProperty(nHeight, rc.Height());
-
-//	MoveThisInPosition();
-	
 }
+
 void CObjectDCLView::MoveThisInPosition() 
 {
 	CRect rcStartup = ((CChildFrame*)GetParentFrame())->m_rcStartup;
@@ -3931,20 +3929,11 @@ void CObjectDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView*
 		((CObjectDCLView*)pDeactiveView)->m_StandardCursorID = false;
 	
 	CView::OnActivateView(bActivate, pActivateView, pDeactiveView);
-
-	//if (pActivateView != NULL)
-	//{
-	//	if (((CObjectDCLView*)pDeactiveView)->m_pThisDclForm != NULL)
-	//	{
-	//		pDeactiveView->GetParentFrame()->SetWindowText(((CObjectDCLView*)pDeactiveView)->m_pThisDclForm->GetDclFormTitle());			
-	//		if (m_pThisDclForm->GetType() != VdclTabForm)
-	//			pDeactiveView->GetParentFrame()->SetWindowText(m_pThisDclForm->GetDclFormTitle()); // set the title bar text
-	//		else
-	//			pDeactiveView->GetParentFrame()->SetWindowText(FindTabCaption(m_pThisDclForm));// set the title bar text
-	//	}		
-	//}
 	if (bActivate && pActivateView == this)
+	{
 		UpdateZOrderList();
+		theEditorWorkspace.GetPropertyTabs()->DisplaySelectedControlProperties( m_SelectedControl.m_pArxObject, this );
+	}
 }
 
 void CObjectDCLView::UpdateZOrderList() 
@@ -4243,8 +4232,6 @@ CDclFormObject * CObjectDCLView::AddSingleTabPane(int nIndex)
 	{
 		pDclProperties->AddLongProperty(nHeight, PropLong, GetSelectedTabClientHeight(), true);
 		pDclProperties->AddLongProperty(nWidth, PropLong, GetSelectedTabClientWidth(), true);
-		pDclProperties->AddLongProperty(nUseBottomFromBottom, PropLong, 1, true);
-		pDclProperties->AddLongProperty(nUseTopFromBottom, PropLong, 1, true);
 	}
 	return pNewDclForm;
 }

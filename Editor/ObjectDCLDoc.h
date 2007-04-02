@@ -25,11 +25,12 @@ public:
 
 // Generated message map functions
 protected:
+	DECLARE_MESSAGE_MAP()
+protected:
 	afx_msg BOOL OnNewDocument();
 	afx_msg BOOL OnOpenDocument(LPCTSTR lpszPathName);
 	afx_msg BOOL OnSaveDocument(LPCTSTR lpszPathName);
 	afx_msg void OnCloseDocument();
-	DECLARE_MESSAGE_MAP()
 
 // Implementation
 public:

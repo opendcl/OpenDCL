@@ -61,19 +61,8 @@ BOOL VdclComboBoxEx::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	// get the rectangle of the new control
 	ArxRect.top = pControl->m_pTop->GetLongValue();
 	ArxRect.left = pControl->m_pLeft->GetLongValue();
-
-	/*if (pControl->GetLngProperty(nComboBoxStyle) != 1)
-	{
-		pControl->SetLngProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
-	}*/
-
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
-	
-	if (ArxRect.Height() < 40)
-	{
-		ArxRect.bottom = ArxRect.top + 60;
-	}
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_CLIPSIBLINGS
 			  | ES_AUTOHSCROLL | WS_CLIPCHILDREN;

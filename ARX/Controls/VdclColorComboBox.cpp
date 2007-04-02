@@ -58,15 +58,12 @@ BOOL VdclColorComboBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UI
 	// get the rectangle of the new control
 	ArxRect.top = pControl->m_pTop->GetLongValue();
 	ArxRect.left = pControl->m_pLeft->GetLongValue();
-	pControl->SetLongProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
-	
 
+	ArxRect.bottom = ArxRect.bottom  + pControl->GetLngProperty(nDropDownHeight);
 	if (ArxRect.Height() < 40)
-	{
 		ArxRect.bottom = ArxRect.top + 60;
-	}
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_CLIPSIBLINGS
 			  | CBS_HASSTRINGS | WS_TABSTOP | ES_AUTOHSCROLL

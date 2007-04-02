@@ -160,30 +160,33 @@ void CPropertyTabPane::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CPropertyTabPane::DisplaySelectedControlProperties(CDclControlObject *pControl, CObjectDCLView *pView) 
 {
-	CString sControlType = GetControlName(pControl);
-		
 	CString sControlName;
-	if (!sControlType.IsEmpty())
-		sControlName.Format( _T("%s [%s]"), (LPCTSTR)pControl->GetKeyPath(), (LPCTSTR)sControlType );
-	else
-		sControlName = pControl->GetKeyPath();
-	
-	// get the old name
-	CString sOldName;
-	m_PropertiesTabPane.m_ControlDesc.GetWindowText(sOldName);
 
-	// check if we are displaying the properties for the same control
-	if (sOldName == sControlName) 
+	if( pControl )
 	{
-		CRect rc;
-		if (pControl->m_pCtrlHolder != NULL)
+		CString sControlType = GetControlName(pControl);
+		if (!sControlType.IsEmpty())
+			sControlName.Format( _T("%s [%s]"), (LPCTSTR)pControl->GetKeyPath(), (LPCTSTR)sControlType );
+		else
+			sControlName = pControl->GetKeyPath();
+
+		// get the old name
+		CString sOldName;
+		m_PropertiesTabPane.m_ControlDesc.GetWindowText(sOldName);
+
+		// check if we are displaying the properties for the same control
+		if (sOldName == sControlName) 
 		{
-			pControl->m_pCtrlHolder->GetWindowRect(&rc);
-			pControl->m_pCtrlHolder->GetParent()->ScreenToClient(rc);
-			if (pControl->m_rcOldPosition == rc)
-				return;
+			CRect rc;
+			if (pControl->m_pCtrlHolder != NULL)
+			{
+				pControl->m_pCtrlHolder->GetWindowRect(&rc);
+				pControl->m_pCtrlHolder->GetParent()->ScreenToClient(rc);
+				if (pControl->m_rcOldPosition == rc)
+					return;
+			}
+			pControl->m_rcOldPosition = rc;
 		}
-		pControl->m_rcOldPosition = rc;
 	}
 
 	// set the control description text

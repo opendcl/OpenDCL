@@ -43,6 +43,7 @@ public:
 
 public:
 	virtual CControlPane& GetControlPane() = 0;
+	virtual const CDialogObject& GetDialogObject() const = 0;
 	int GetNCWidth() const { return mnNCWidth; }
 	int GetNCHeight() const { return mnNCHeight; }
 	void SetDialogMinExtents( int nWidth, int nHeight );

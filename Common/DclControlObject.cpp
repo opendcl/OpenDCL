@@ -585,6 +585,16 @@ void CDclControlObject::Serialize(CArchive& ar)
 				 (mType == CtlGraphicButton || mType == CtlPictureBox || mType == CtlForm))
 				mProperties.RemoveAt(posAt);
 
+			if( mType == CtlForm && mpOwner->GetType() == VdclConfigTab )
+			{ //config tab pages should not have these properties
+				switch(pSourceProp->GetID())
+				{
+				case nCustom:
+				case nDockableSides:
+					mProperties.RemoveAt(posAt);
+				}
+			}
+
 			if( mType == CtlForm && mpOwner->GetParentForm() )
 			{ //tab pages should not have these properties
 				switch(pSourceProp->GetID())
@@ -592,6 +602,8 @@ void CDclControlObject::Serialize(CArchive& ar)
 				case nName:
 				case nObjectBrowser:
 				case nGlobalVarName:
+				case nUseBottomFromBottom:
+				case nUseTopFromBottom:
 					mProperties.RemoveAt(posAt);
 				}
 			}

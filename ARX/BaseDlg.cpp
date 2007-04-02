@@ -164,7 +164,7 @@ BOOL CBaseDlg::OnInitDialog()
 	UINT nID = 1000;
 	GetControlPane().CreateControls( nID );
 
-	if( rectSaved.right > rectSaved.left && rectSaved.bottom > rectSaved.top )
+	if( GetDialogObject().IsResizable() && rectSaved.right > rectSaved.left && rectSaved.bottom > rectSaved.top )
 	{
 		// ensure the dialog box is on screen
 		if( rectSaved.left < (::GetSystemMetrics( SM_CXSCREEN ) - 10) &&

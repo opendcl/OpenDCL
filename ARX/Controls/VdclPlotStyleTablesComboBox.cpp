@@ -53,15 +53,12 @@ BOOL VdclPlotStyleTablesComboBox::Create(CDclControlObject* pControl, CWnd* pPar
 	// get the rectangle of the new control
 	ArxRect.top = pControl->m_pTop->GetLongValue();
 	ArxRect.left = pControl->m_pLeft->GetLongValue();
-	pControl->SetLongProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
-	
-	if (ArxRect.Height() < 40)
-	{
-		ArxRect.bottom = ArxRect.top + 60;
-	}
 
+	ArxRect.bottom += pControl->GetLngProperty(nDropDownHeight);
+	if (ArxRect.Height() < 40)
+		ArxRect.bottom = ArxRect.top + 60;
 
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE  | WS_CLIPSIBLINGS
 			  | CBS_SORT | CBS_HASSTRINGS | ES_AUTOHSCROLL | WS_CLIPCHILDREN

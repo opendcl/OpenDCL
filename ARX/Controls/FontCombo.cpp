@@ -37,7 +37,8 @@ const int SHX_FONTTYPE = 6;
 //
 ////////////////////////////////////////////////////////////////////////////////
 CFontCombo::CFontCombo()
-: m_ArxControl( NULL )
+: mhwndList( NULL )
+, m_ArxControl( NULL )
 {
 	// Load up glyphs
 	m_img.Create(15,13,ILC_COLOR4 | ILC_MASK, 3, 1);
@@ -64,7 +65,6 @@ BOOL CFontCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID 
 	// get the rectangle of the new control
 	ArxRect.top = pControl->m_pTop->GetLongValue();
 	ArxRect.left = pControl->m_pLeft->GetLongValue();
-	pControl->SetLongProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
 
@@ -80,7 +80,6 @@ BOOL CFontCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID 
 	{
 	case 8:
 		{
-			pControl->SetLongProperty(nHeight, (pControl->GetLngProperty(nHeight) + pControl->GetLngProperty(nDropDownHeight)));
 			ArxRect.bottom = ArxRect.bottom  + pControl->GetLngProperty(nDropDownHeight);
 			dwStyle = dwStyle | CBS_DROPDOWNLIST;
 			break;
@@ -718,9 +717,10 @@ void CFontCombo::OnTimer(UINT nIDEvent)
 		if (nSel != -1 && FirstVis <= nSel)
 		{
 			CRect rc;
-			GetDroppedControlRect(rc);
+			::GetWindowRect( mhwndList, &rc );
+			//GetDroppedControlRect(rc);
 			int itemHeight = GetItemHeight(0);
-			int lastVis = FirstVis + ((rc.Height()-itemHeight)/itemHeight);
+			int lastVis = FirstVis + (rc.Height() + 2) / itemHeight - 1;
 			if (nSel <= lastVis)
 			{
 				int nHeight = itemHeight * ((nSel - FirstVis) + 1);
@@ -838,4 +838,11 @@ void CFontCombo::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStru
 {
 	lpMeasureItemStruct->itemHeight = 16;
 	CComboBox::OnMeasureItem(nIDCtl, lpMeasureItemStruct);
+}
+
+LRESULT CFontCombo::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if( message == WM_CTLCOLORLISTBOX )
+		mhwndList = (HWND)lParam;
+	return __super::WindowProc(message, wParam, lParam);
 }

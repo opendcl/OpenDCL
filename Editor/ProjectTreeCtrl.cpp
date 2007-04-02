@@ -109,6 +109,7 @@ void CProjectTreeCtrl::OnDblclk(NMHDR* pNMHDR, LRESULT* pResult)
 		return;
 	}
 
+	assert( mpProject != NULL );
 	for (int i=0; i<mpProject->GetDclFormList().GetCount(); i++)
 	{
 		POSITION pos = mpProject->GetDclFormList().FindIndex(i);

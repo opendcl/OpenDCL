@@ -23,36 +23,6 @@
 #include "SharedRes.h"
 
 
-static CString LTOA(int nVal)
-{
-  CString sLong;
-	sLong.Format(_T("%d"), nVal);
-  return sLong;
-}
-
-
-//static CDclControlObject* GetArxTabControlObject(CDclFormObject *pDclForm)
-//{
-//	CDclControlObject *pRetObject;
-//
-//	// create a position variable to hold the converted ArxControlIndex
-//	POSITION ControlPos;
-//	
-//	// set the position variable to be equal the index to passing to the GetAt method
-//	ControlPos = pDclForm->m_ArxControlList.GetHeadPosition();	
-//	while (ControlPos != NULL)
-//	{
-//		// set the pass pointer to point at the object in the list
-//		pRetObject = pDclForm->m_ArxControlList.GetNext(ControlPos);
-//		if (pRetObject != NULL && pRetObject->GetType() == CtlTabStrip)
-//			return pRetObject;
-//	}
-//
-//	return NULL;
-//		
-//}
-
-
 static CString FindTabCaption(CDclFormObject *pDclTab)
 {
 	// do loop to add all the tree items
@@ -101,7 +71,6 @@ BEGIN_MESSAGE_MAP(CObjectDCLApp, CWinApp)
 	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
 	ON_COMMAND(ID_FILE_CREATEDISTFILE, OnFileCreatedistfile)
 	ON_COMMAND(ID_TOOLS_DEFAULTFONT, OnToolsDefaultfont)
-	//ON_COMMAND(ID_FILE_CLOSE, OnFileClose)
 	ON_COMMAND(ID_TOOLS_GRIDSPACING, OnToolsGridspacing)
 	ON_UPDATE_COMMAND_UI(ID_TOOLS_EVENTSCOPYTOCLIPBOARD, OnUpdateToolsEventscopytoclipboard)
 	ON_UPDATE_COMMAND_UI(ID_TOOLS_EVENTSWRITETOLISPFILE, OnUpdateToolsEventswritetolispfile)
@@ -168,7 +137,7 @@ BOOL CObjectDCLApp::InitInstance()
 	// Change the registry key under which our settings are stored.
 	SetRegistryKey(theWorkspace.LoadResourceString(IDR_MAINFRAME));
 
-	LoadStdProfileSettings(nNumberOfPrevFiles);  // Load standard INI file options (including MRU)
+	LoadStdProfileSettings(8);  // Load standard INI file options (including MRU)
 
 	// Register the application's document templates.  Document templates
 	//  serve as the connection between documents, frame windows and views.
@@ -346,173 +315,23 @@ BOOL CAboutDlg::OnInitDialog()
 /////////////////////////////////////////////////////////////////////////////
 // CObjectDCLApp message handlers
 
-/*
-CDocument* CObjectDCLApp::OpenDocumentFile(LPCTSTR pszPathName)
-{
-  CDocument* pDoc = NULL;
-  POSITION pos = GetFirstDocTemplatePosition();
-  ASSERT(pos != NULL);
-  // the first doctemplate is the main view of the document
-  CDocTemplate* pTemplate = GetNextDocTemplate(pos);
-  if (CloseDocument())
-  {
-    pDoc = pTemplate->OpenDocumentFile(pszPathName);
-		if (pDoc != NULL)
-		{
-			if( pszPathName )
-				pDoc->SetTitle(pszPathName);
-			else
-			{
-				CString sTitle;
-				sTitle = theWorkspace.LoadResourceString(IDS_UNTITILED);
-				pDoc->SetTitle(sTitle);
-			}
-			CProject *pProject = activeProject;
-			if (pProject != NULL)
-			{
-				pProject->GetKeyName() = pszPathName;
-				pProject->ClearProject();	
-				theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
-			}
-			POSITION pos = pDoc->GetFirstViewPosition();
-			if( pos )
-				m_pMainFrame->SetActiveView(pDoc->GetNextView(pos), FALSE);
-		}
-  }
-
-	return pDoc;
-}
-*/
-
 void CObjectDCLApp::OnFileNew() 
 {
 	CloseAllDocuments(FALSE);
 	CWinApp::OnFileNew();
-	m_pMainFrame->m_wndToolBar.GetToolBarCtrl().EnableButton(ID_FILE_SAVE, TRUE);
 }
 
 void CObjectDCLApp::OnFileOpen() 
 {
 	CloseAllDocuments(FALSE);
 	CWinApp::OnFileOpen();
-/*
-	//CString newName;
-	//if (!DoPromptFileName(newName, IDS_OPENPROJECTFILE,
-	//	OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_ENABLESIZING, TRUE, NULL)) return;
-	//
-	//if (m_pDoc != NULL)
-	//{
-	//	if (!m_pDoc->CheckForSaveModified())
-	//		return;
-	//}
-
-	//CloseDocument();
-	//
-	//	
-	//CDocument *pDoc = CObjectDCLApp::OpenDocumentFile(newName);
-	//m_pMainFrame->GetActiveFrame()->ShowWindow(FALSE);		
-	//
-	//if (m_pMainFrame != NULL)
-	//	m_pMainFrame->m_ProjectTree.SetupProjectTree(pProject);
-	//
-	//CString sBakFileName = newName;
-	//sBakFileName.Replace(_T(".odc"), _T("._od"));
-	//::CopyFile(newName, sBakFileName, FALSE);
-*/
-	//CProject *pProject = activeProject;
-	//if (pProject != NULL)
-	//{
-	//	theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
-	//	pProject->ClearProject();	
-	//}
-	GetMainFrame()->m_wndToolBar.GetToolBarCtrl().EnableButton(ID_FILE_SAVE, TRUE);
 }
-
 
 BOOL CObjectDCLApp::OnOpenRecentFile(UINT nID)
 {
 	CloseAllDocuments(FALSE);
-	BOOL bSuccess = CWinApp::OnOpenRecentFile(nID);
-	if( bSuccess )
-	  m_pMainFrame->m_wndToolBar.GetToolBarCtrl().EnableButton(ID_FILE_SAVE, TRUE);
-	return bSuccess;
-
-/*
-	// lets ensure the file is actually on the disk
-	int nIndex = nID - ID_FILE_MRU_FILE1;	
-	CFileFind find;
-	if (!find.FindFile((*m_pRecentFileList)[nIndex]))
-		return FALSE;
-
-	// lets prompt the user is he wants to save
-	if (m_pDoc != NULL)
-	{
-		if (!m_pDoc->CheckForSaveModified())
-			return FALSE;
-	}
-
-	// start opening the file
-  if (CloseDocument())
-  {
-	CProject *pProjectList = activeProject;
-	if (pProjectList != NULL)
-	{
-		theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
-		pProjectList->ClearProject();	
-	}
-		
-    ASSERT_VALID(this);
-	ASSERT(m_pRecentFileList != NULL);
-
-	ASSERT(nID >= ID_FILE_MRU_FILE1);
-	ASSERT(nID < ID_FILE_MRU_FILE1 + (UINT)m_pRecentFileList->GetSize());
-	nIndex = nID - ID_FILE_MRU_FILE1;
-	ASSERT((*m_pRecentFileList)[nIndex].GetLength() != 0);
-
-	CFileFind find;
-	if (!find.FindFile((*m_pRecentFileList)[nIndex]))
-		return FALSE;
-
-	CDocument *pDoc = OpenDocumentFile((*m_pRecentFileList)[nIndex]);
-	if (pDoc == NULL)
-		m_pRecentFileList->Remove(nIndex);
-
-  }
-  m_pMainFrame->m_wndToolBar.GetToolBarCtrl().EnableButton(0, TRUE);
-  return TRUE;
-*/
+	return CWinApp::OnOpenRecentFile(nID);
 }
-
-//BOOL CObjectDCLApp::CloseDocument()
-//{
-//	// Find first doc template
-//    POSITION pos = GetFirstDocTemplatePosition();
-//    ASSERT(pos != NULL);
-//    CDocTemplate* pTemplate = GetNextDocTemplate(pos);
-//
-//    // get the document
-//    pos = pTemplate->GetFirstDocPosition();
-//    if (pos != NULL)
-//    {
-//			//m_pMainFrame->SetActiveView(NULL, FALSE);
-//      CDocument* pDoc = pTemplate->GetNextDoc(pos);
-//      // remove Document (only 1 possible)
-//      if (pDoc != NULL) pDoc->OnCloseDocument();
-//    }
-//   
-//	if (m_pMainFrame != NULL)
-//	{
-//		theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
-//		CProject *pProjectList = activeProject;
-//		if (pProjectList != NULL)
-//		{
-//			theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
-//			pProjectList->ClearProject();	
-//		}
-//		m_pMainFrame->m_wndToolBar.GetToolBarCtrl().EnableButton(ID_FILE_SAVE, FALSE);
-//	}
-//    return TRUE;
-//}
 
 CMDIChildWnd* CObjectDCLApp::CreateOrActivateFrame(CDocument* pDoc, CSize ViewSize, bool bResizable)
 {
@@ -526,7 +345,7 @@ CMDIChildWnd* CObjectDCLApp::CreateOrActivateFrame(CDocument* pDoc, CSize ViewSi
 	((CChildFrame*)pNewFrame)->m_StartupSize.cx = ViewSize.cx;
 	((CChildFrame*)pNewFrame)->m_StartupSize.cy = ViewSize.cy;
 	if (!bResizable)
-		pNewFrame->ModifyStyle(WS_THICKFRAME, DS_MODALFRAME, NULL);
+		pNewFrame->ModifyStyle(WS_THICKFRAME, DS_MODALFRAME, 0);
 	pNewFrame->ModifyStyleEx(WS_EX_CLIENTEDGE, NULL, 0);// remove the client edge style
 	pDocTemplate->InitialUpdateFrame(pNewFrame, pDoc);
   return (CMDIChildWnd*)pNewFrame;
@@ -600,11 +419,11 @@ CObjectDCLView* CObjectDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 		pNewFrame->SetWindowText(((CChildFrame*)pNewFrame)->m_Title);
 	}
     
-	// set the dcl pointer in the view
-	pNewView->m_pThisDclForm = pDclForm;
 	// call the method to display the controls to the user
 	pNewView->DisplayControls(pDclForm);
-	
+	if( !pNewView->m_SelectedControl.m_pArxObject )
+		pNewView->m_SelectedControl.m_pArxObject = pDclProperties;
+	theEditorWorkspace.GetPropertyTabs()->DisplaySelectedControlProperties( pDclProperties, pNewView );
 	return pNewView;
 }
 
@@ -716,66 +535,11 @@ BOOL CObjectDCLApp::SaveDistributionFile(CProjectCollection *pProjectHolder)
 		// Serialize the control
 		pProjectHolder->Serialize(arExt);
 		arExt.Close();
-		
-		
 		ThisFile.Close();
 	}
-
 	delete [] pc; 
 	return TRUE;
-
 }
-
-
-/*
-BOOL CObjectDCLApp::OpenProject(LPCTSTR FileName, CProject *pProject) 
-{
-	// declare file variables
-	CFileException Exception;
-	CFile ThisFile;
-	
-	
-	// open then file
-	if (!ThisFile.Open(FileName, CFile::modeRead | CFile::shareDenyWrite, &Exception))
-	{
-		return FALSE;
-	}
-	
-	CString sTitle;
-	sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
-		
-
-	CArchiveEx ar(&ThisFile, CArchive::load | CArchive::bNoFlushOnDelete, NULL, sTitle, TRUE);
-		
-	try
-	{
-		// Serialize the control
-		pProject->Serialize(ar);
-		ar.Close();
-	}
-	catch(...)
-	{
-		ar.Close();
-		return FALSE;
-	}
-
-	ThisFile.Close();
-
-	CString sShortName = FileName;
-	sShortName.MakeReverse;
-	sShortName = sShortName.SpanExcluding(_T("\\/:"));
-	sShortName.MakeReverse();
-	sShortName = sShortName.SpanExcluding(_T("."));
-	pProject->GetKeyName() = sShortName;
-	
-	if (nCurrentPurchaseMode != nPurchasedR14Pro)
-		pProject->ClearR14Events();
-	
-	return TRUE;
-}
-*/
-
 
 CObjectDCLView* CObjectDCLApp::AddDclFormAndView(DclFormType nType) 
 {
@@ -795,7 +559,7 @@ CObjectDCLView* CObjectDCLApp::AddDclFormAndView(DclFormType nType)
 		return NULL;
 
 	bool bResizable = true;
-	if (nType == VdclConfigTab || nType == VdclTabForm)
+	if (nType == VdclTabForm)
 		bResizable = false;
 	pNewFrame = CreateOrActivateFrame(pDoc, StartupSize, bResizable);
 	
@@ -827,9 +591,6 @@ CObjectDCLView* CObjectDCLApp::AddDclFormAndView(DclFormType nType)
 
 	CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
 	pZOrderList->ClearSelection();
-		
-	// update the new dialog box's size
-//	pNewFrame->MoveWindow(rcNewDialog, TRUE);
 
 	if (pNewDcl != NULL)
 		// set the title bar text
@@ -838,17 +599,18 @@ CObjectDCLView* CObjectDCLApp::AddDclFormAndView(DclFormType nType)
 	pNewView->m_pThisDclForm = pNewDcl;
 	if (pNewDcl->GetType() == VdclFileDialog && pNewDcl->GetControlCount() == 1)
 	{
-		CRect rc(0,0,nCtlFileWidth,nCtlFileHeight);
+		CRect rc(0,0,416,258);
 		pNewView->InsertControl(rc, CtlFileDlgCtrl);
-		;
-		//pNewView->MoveThisInPosition();		
 	}
 	else
 	{
 		// call the method to display the controls to the user
 		pNewView->DisplayControls(pNewDcl);
 	}
-	
+	if( !pNewView->m_SelectedControl.m_pArxObject )
+		pNewView->m_SelectedControl.m_pArxObject = pDclProperties;
+	theEditorWorkspace.GetPropertyTabs()->DisplaySelectedControlProperties( pDclProperties, pNewView );
+
 	if (pNewDcl->m_htiTreeItem != NULL)
 	{
 		CProjectTreeCtrl *pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
@@ -856,7 +618,6 @@ CObjectDCLView* CObjectDCLApp::AddDclFormAndView(DclFormType nType)
 	}
 	return pNewView;
 }
-
 
 CDclFormObject* CObjectDCLApp::AddNewDclForm(DclFormType nType) 
 {
@@ -894,29 +655,6 @@ int CObjectDCLApp::ExitInstance()
 		delete m_pCtrlHelp;
 	return CWinApp::ExitInstance();
 }
-
-/*
-void CObjectDCLApp::OnFileClose() 
-{
-	CloseDocument();	
-
-	m_pMainFrame->m_wndDlgBar.m_FontNames.EnableWindow(FALSE);
-	m_pMainFrame->m_wndDlgBar.m_FontSizes.EnableWindow(FALSE);
-	m_pMainFrame->m_wndToolBar.EnableWindow(FALSE);
-		
-}
-
-BOOL CObjectDCLApp::SaveAllModified() 
-{
-	// lets prompt the user is he wants to save
-	if (m_pDoc != NULL)
-	{
-		if (!m_pDoc->CheckForSaveModified())
-			return FALSE;
-	}
-	return TRUE;
-}
-*/
 
 void CObjectDCLApp::OnToolsGridspacing() 
 {

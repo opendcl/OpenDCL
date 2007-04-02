@@ -1868,7 +1868,7 @@ public:
 		//----- Remove the following line if you do not expect any argument for this ADS function
 		struct resbuf *pArgs =acedGetArgs () ;
 
-		if (pArgs->rbnext)
+		if (pArgs)
 			return RSERR; //too many arguments
 
 		AcDbObjectId id;

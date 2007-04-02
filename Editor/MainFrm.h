@@ -69,8 +69,9 @@ public:  // control bar embedded members
 
 // Generated message map functions
 protected:
+	DECLARE_MESSAGE_MAP()
+protected:
 	BOOL VerifyBarState(LPCTSTR lpszProfileName);
-	//{{AFX_MSG(CMainFrame)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
 	afx_msg void OnPicturefolder();
@@ -90,6 +91,9 @@ protected:
 	afx_msg void OnUpdateDockZorder(CCmdUI* pCmdUI);
 	afx_msg void OnSetdistfilename();
 	afx_msg void OnProjectsAddfiledialogbox();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+	afx_msg void OnUpdateAddmodal(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateAddmodeless(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateAdddockable(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateAddconfig(CCmdUI *pCmdUI);
+	afx_msg void OnUpdatePicturefolder(CCmdUI *pCmdUI);
 };

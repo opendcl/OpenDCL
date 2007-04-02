@@ -75,37 +75,37 @@ void CEditorWorkspace::SetModified( bool bModified )
 CDocument* CEditorWorkspace::GetActiveDocument() const
 {
 	return mpActiveDoc; //kludge! [ORW]
-	//if( !mpMainFrame )
+	//if( !GetMainFrame() )
 	//	return NULL;
-	//return mpMainFrame->GetActiveDocument();
+	//return GetMainFrame()->GetActiveDocument();
 }
 
 CProjectTreeCtrl* CEditorWorkspace::GetProjectTreeCtrl() const
 {
-	if( !mpMainFrame )
+	if( !GetMainFrame() )
 		return NULL;
-	return &mpMainFrame->m_ProjectTree;
+	return &GetMainFrame()->m_ProjectTree;
 }
 
 CPropertyTabPane* CEditorWorkspace::GetPropertyTabs() const
 {
-	if( !mpMainFrame )
+	if( !GetMainFrame() )
 		return NULL;
-	return &mpMainFrame->m_PropertyTabPane;
+	return &GetMainFrame()->m_PropertyTabPane;
 }
 
 CToolBox* CEditorWorkspace::GetToolBox() const
 {
-	if( !mpMainFrame )
+	if( !GetMainFrame() )
 		return NULL;
-	return &mpMainFrame->m_ToolBox;
+	return &GetMainFrame()->m_ToolBox;
 }
 
 CZOrderListCtrl* CEditorWorkspace::GetZOrderListCtrl() const
 {
-	if( !mpMainFrame )
+	if( !GetMainFrame() )
 		return NULL;
-	return &mpMainFrame->m_ZOrderPane.m_ZOrderList;
+	return &GetMainFrame()->m_ZOrderPane.m_ZOrderList;
 }
 
 CString CEditorWorkspace::GetActiveProjectName() const

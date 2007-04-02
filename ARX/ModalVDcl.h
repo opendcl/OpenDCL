@@ -45,8 +45,8 @@ public:
 
 public:
 	virtual CControlPane& GetControlPane() { return mDialogX.GetControlPane(); }
+	virtual const CDialogObject& GetDialogObject() const { return mDialogX; }
 	CDialogObject& GetDialogObject() { return mDialogX; }
-	const CDialogObject& GetDialogObject() const { return mDialogX; }
 	void CloseDialog();
 	void SetDclForm(CDclFormObject *pDclFormObject);
 	bool QueryForClose();

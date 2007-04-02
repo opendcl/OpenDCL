@@ -17,7 +17,6 @@
 IMPLEMENT_DYNAMIC(CMainFrame, CMDIFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
-	//{{AFX_MSG_MAP(CMainFrame)
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
 	ON_COMMAND(ID_PICTUREFOLDER, OnPicturefolder)
@@ -25,6 +24,11 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 	ON_COMMAND(ID_ADDMODELESS, OnAddmodeless)
 	ON_COMMAND(ID_ADDCONFIG, OnAddconfig)
 	ON_COMMAND(ID_ADDDOCKABLE, OnAdddockable)
+	ON_UPDATE_COMMAND_UI(ID_ADDMODAL, &CMainFrame::OnUpdateAddmodal)
+	ON_UPDATE_COMMAND_UI(ID_ADDMODELESS, &CMainFrame::OnUpdateAddmodeless)
+	ON_UPDATE_COMMAND_UI(ID_ADDDOCKABLE, &CMainFrame::OnUpdateAdddockable)
+	ON_UPDATE_COMMAND_UI(ID_ADDCONFIG, &CMainFrame::OnUpdateAddconfig)
+	ON_UPDATE_COMMAND_UI(ID_PICTUREFOLDER, &CMainFrame::OnUpdatePicturefolder)
 	ON_COMMAND(ID_SETAUTOLISPFILENAME, OnSetautolispfilename)
 	ON_COMMAND(ID_REMOVE, OnRemove)
 	ON_COMMAND(ID_DOCK_PROJECT, OnDockProject)
@@ -38,7 +42,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 	ON_COMMAND(ID_SETDISTFILENAME, OnSetdistfilename)
 	ON_COMMAND(ID_PROJECTS_ADDFILEDIALOGBOX, OnProjectsAddfiledialogbox)
 	ON_WM_SHOWWINDOW()
-	//}}AFX_MSG_MAP
 	// Global help commands
 	ON_COMMAND(ID_HELP_FINDER, CMDIFrameWnd::OnHelpFinder)
 	ON_COMMAND(ID_HELP, CMDIFrameWnd::OnHelp)
@@ -87,8 +90,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 
 	
-	if (!m_wndDlgBar.Create(this, IDR_MAINFRAME, 
-		CBRS_ALIGN_TOP, AFX_IDW_DIALOGBAR))
+	if (!m_wndDlgBar.Create(this, IDR_FONTBTNS, CBRS_ALIGN_TOP, 2))
 	{
 		TRACE0("Failed to create dialogbar\n");
 		return -1;		// fail to create
@@ -97,13 +99,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// setup the tool bar for drop down buttons
 	m_wndToolBar.GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 	TBBUTTONINFO tbi;
-
 	tbi.dwMask= TBIF_STYLE;
 	tbi.cbSize= sizeof(TBBUTTONINFO);
 	m_wndToolBar.GetToolBarCtrl().GetButtonInfo(ID_ADDMODAL, &tbi);
 	tbi.fsStyle |= TBSTYLE_DROPDOWN;
 	m_wndToolBar.GetToolBarCtrl().SetButtonInfo(ID_ADDMODAL, &tbi);
-
+	m_wndToolBar.SetBarStyle(m_wndToolBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
 	
 	if (!m_wndReBar.Create(this) ||
 		!m_wndReBar.AddBar(&m_wndToolBar) ||
@@ -112,10 +113,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		TRACE0("Failed to create rebar\n");
 		return -1;      // fail to create
 	}
+	EnableDocking(CBRS_ALIGN_ANY);
 
-	m_wndToolBar.SetBarStyle(m_wndToolBar.GetBarStyle() |
-		CBRS_TOOLTIPS | CBRS_FLYBY);
-	
 	// call method to create the properties bar
 	CreatePropertyDockingBar();
 	// call method to create the project bar
@@ -125,8 +124,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// call method to create the ZOrder bar
 	CreateZOrderDockingBar();
 
-	m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
-	EnableDocking(CBRS_ALIGN_ANY);
 
 #ifdef _SCB_REPLACE_MINIFRAME
     m_pFloatingFrameClass = RUNTIME_CLASS(CSCBMiniDockFrameWnd);
@@ -313,8 +310,7 @@ void CMainFrame::CreatePropertyDockingBar()
 
 	m_PropertyTabPane.Create(IDD_OBJECTDCL_FORM, &m_wndPropertyBar);
 	m_PropertyTabPane.ShowWindow(TRUE);
-	
-	//theWorkspace.GetProjectList().AddHead(m_PropertyTabPane.m_PropertiesTabPane.GetPropertyList().m_ProjectList);
+
 	// --- end instant bar creation and child setup ---
 	m_wndPropertyBar.SetBarStyle(m_wndProjectTreeBar.GetBarStyle() |
 		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
@@ -358,34 +354,30 @@ void CMainFrame::Dump(CDumpContext& dc) const
 // See www.datamekanix.com for more control bars tips&tricks.
 BOOL CMainFrame::VerifyBarState(LPCTSTR lpszProfileName)
 {
-    CDockState state;
-    state.LoadState(lpszProfileName);
+	CDockState state;
+	state.LoadState(lpszProfileName);
 
-    for (int i = 0; i < state.m_arrBarInfo.GetSize(); i++)
-    {
-        CControlBarInfo* pInfo = (CControlBarInfo*)state.m_arrBarInfo[i];
-        ASSERT(pInfo != NULL);
-        int nDockedCount = pInfo->m_arrBarID.GetSize();
-        if (nDockedCount > 0)
-        {
-            // dockbar
-            for (int j = 0; j < nDockedCount; j++)
-            {
-                UINT nID = (UINT) pInfo->m_arrBarID[j];
-                if (nID == 0) continue; // row separator
-                if (nID > 0xFFFF)
-                    nID &= 0xFFFF; // placeholder - get the ID
-                if (GetControlBar(nID) == NULL)
-                    return FALSE;
-            }
-        }
-        
-        if (!pInfo->m_bFloating) // floating dockbars can be created later
-            if (GetControlBar(pInfo->m_nBarID) == NULL)
-                return FALSE; // invalid bar ID
-    }
+	for (int i = 0; i < state.m_arrBarInfo.GetSize(); i++)
+	{
+		CControlBarInfo* pInfo = (CControlBarInfo*)state.m_arrBarInfo[i];
+		ASSERT(pInfo != NULL);
+		int nDockedCount = pInfo->m_arrBarID.GetSize();
+		// dockbar
+		for (int j = 0; j < nDockedCount; j++)
+		{
+			UINT nID = (UINT) pInfo->m_arrBarID[j];
+			if (nID == 0) continue; // row separator
+			if (nID > 0xFFFF)
+					nID &= 0xFFFF; // placeholder - get the ID
+			if (GetControlBar(nID) == NULL)
+				return FALSE;
+		}
+		if (!pInfo->m_bFloating) // floating dockbars can be created later
+			if (GetControlBar(pInfo->m_nBarID) == NULL)
+				return FALSE; // invalid bar ID
+	}
 
-    return TRUE;
+	return TRUE;
 }
 
 void CMainFrame::OnDestroy() 
@@ -393,21 +385,20 @@ void CMainFrame::OnDestroy()
 	CWinApp* pApp = AfxGetApp();
 	CRect rcThis;
 	GetWindowRect(&rcThis);
-    CString sProfileName;
+	CString sProfileName;
 	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
 
-    pApp->WriteProfileInt(sProfileName, _T("sizeWidth"), rcThis.Width());
-    pApp->WriteProfileInt(sProfileName, _T("sizeHeight"), rcThis.Height());
-	
-    pApp->WriteProfileInt(sProfileName, _T("nTopLeftX"), rcThis.left);
-    pApp->WriteProfileInt(sProfileName, _T("nTopLeftY"), rcThis.top);
+	pApp->WriteProfileInt(sProfileName, _T("sizeWidth"), rcThis.Width());
+	pApp->WriteProfileInt(sProfileName, _T("sizeHeight"), rcThis.Height());
+
+	pApp->WriteProfileInt(sProfileName, _T("nTopLeftX"), rcThis.left);
+	pApp->WriteProfileInt(sProfileName, _T("nTopLeftY"), rcThis.top);
 
 
 	CMDIFrameWnd::OnDestroy();
 	
 	m_TreeImageList.DeleteImageList();
 	theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
-	activeProject->ClearProject();
 }
 
 BOOL CMainFrame::DestroyWindow() 
@@ -415,17 +406,13 @@ BOOL CMainFrame::DestroyWindow()
 	CString sProfile = _T("BarState");
 	CSizingControlBar::GlobalSaveState(this, sProfile);
 	SaveBarState(sProfile);
-	
 	return CMDIFrameWnd::DestroyWindow();
 }
 
 void CMainFrame::OnPicturefolder() 
 {
-	//if (GetActiveDocument() != NULL)
-	//{
-		CPictureFolder Dlg(m_ProjectTree.GetProject(), this);
-		Dlg.DoModal();
-	//}
+	CPictureFolder Dlg(m_ProjectTree.GetProject(), this);
+	Dlg.DoModal();
 }
 
 void CMainFrame::OnAddmodal() 
@@ -690,4 +677,29 @@ void CMainFrame::OnDockZorder()
 void CMainFrame::OnUpdateDockZorder(CCmdUI* pCmdUI) 
 {
 	pCmdUI->SetCheck(m_wndZOderBar.IsWindowVisible());
+}
+
+void CMainFrame::OnUpdateAddmodal(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable( (activeProject != NULL) );
+}
+
+void CMainFrame::OnUpdateAddmodeless(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable( (activeProject != NULL) );
+}
+
+void CMainFrame::OnUpdateAdddockable(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable( (activeProject != NULL) );
+}
+
+void CMainFrame::OnUpdateAddconfig(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable( (activeProject != NULL) );
+}
+
+void CMainFrame::OnUpdatePicturefolder(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable( (activeProject != NULL) );
 }

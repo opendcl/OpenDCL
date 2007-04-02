@@ -146,7 +146,6 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 25 );
 		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 50 );
 		pDclControl->AddStringProperty( nCfgTabCaption, PropString, pOwnerForm->GetKeyName() );
-		pDclControl->AddLongProperty( nDockableSides, PropEnum, 0 );
 		AddControlEvent( pDclControl, nFormEventInitialize );
 		AddControlEvent( pDclControl, nFormEventShow );
 		AddControlEvent( pDclControl, nCfgEventCancel );
@@ -166,8 +165,8 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		AddControlEvent( pDclControl, nFormEventSize );
 		break;
 	case VdclTabForm:
-		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 600 );
-		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 380 );
+		AddControlHiddenProperty( pDclControl, nWidth, lWidth > 0? lWidth : 600, PropLong );
+		AddControlHiddenProperty( pDclControl, nHeight, lHeight > 0? lHeight : 380, PropLong );
 		break;
 	default:
 		TraceFmt( _T("* AddDefaultFormProperties() called with unknown form type (%d)\r\n"), pOwnerForm->GetType() );
