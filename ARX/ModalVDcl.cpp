@@ -20,6 +20,7 @@ static int ChildFrameID = 10101;
 CModalDialogX::CModalDialogX( CModalVDcl& Owner, CDclFormObject* pDclForm )
 : CArxDialogObject( pDclForm, &Owner )
 , mpOwner( &Owner )
+, mbIsClosing( false )
 {
 }
 
@@ -39,7 +40,11 @@ HWND CModalDialogX::GetHWnd() const
 
 void CModalDialogX::CloseDialog(int nStatus) const
 {
+	if( mbIsClosing )
+		return; //already in the process of closing
+	const_cast< CModalDialogX* >(this)->mbIsClosing = true;
 	mpOwner->EndDialog( nStatus );
+	//mpOwner->DestroyWindow();
 	mpOwner->SendMessage(WM_CLOSE, 0, 0); //just to make sure
 }
 

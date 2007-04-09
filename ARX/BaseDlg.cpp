@@ -78,10 +78,10 @@ CRect CBaseDlg::ReadPosition() const
 	CRect rcRet;
 	CWinApp* pApp = AfxGetApp();
 	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath();
-	rcRet.left = pApp->GetProfileInt( sProfileName, sTopLeftX, 0 );
-	rcRet.top = pApp->GetProfileInt( sProfileName, sTopLeftY, 0 );
-	rcRet.right = rcRet.left + pApp->GetProfileInt( sProfileName, sSizeWidth, -1 );
-	rcRet.bottom = rcRet.top + pApp->GetProfileInt( sProfileName, sSizeHeight, -1 );
+	rcRet.left = pApp->GetProfileInt( sProfileName, sTopLeftX, -100 );
+	rcRet.top = pApp->GetProfileInt( sProfileName, sTopLeftY, -100 );
+	rcRet.right = rcRet.left + pApp->GetProfileInt( sProfileName, sSizeWidth, -100 );
+	rcRet.bottom = rcRet.top + pApp->GetProfileInt( sProfileName, sSizeHeight, -100 );
 	return rcRet;
 }
 
@@ -107,6 +107,7 @@ void CBaseDlg::SetTitleBarIcon(int nPictureID)
 BEGIN_MESSAGE_MAP(CBaseDlg, CDialog)
 	ON_WM_HELPINFO()
 	ON_WM_CLOSE()
+	ON_WM_DESTROY()
 	ON_WM_SIZING()
 	ON_WM_CAPTURECHANGED()
 	ON_WM_SIZE()
@@ -146,7 +147,7 @@ BOOL CBaseDlg::OnInitDialog()
 		rectWindow.MoveToX( mnInitialX );
 	else
 		rectWindow.MoveToX( (::GetSystemMetrics( SM_CXSCREEN ) - rectWindow.Width()) / 2 );
-	if( mnInitialY > 0 )
+	if( mnInitialY >= 0 )
 		rectWindow.MoveToY( mnInitialY );
 	else
 		rectWindow.MoveToY( (::GetSystemMetrics( SM_CYSCREEN ) - rectWindow.Height()) / 2 );
@@ -166,13 +167,13 @@ BOOL CBaseDlg::OnInitDialog()
 	GetControlPane().CreateControls( nID );
 
 	if( mnInitialX >= 0 )
-		rectSaved.MoveToX( mnInitialX );
+		rectWindow.MoveToX( mnInitialX );
+	else if( rectSaved.left >= -10 && rectSaved.left < (::GetSystemMetrics( SM_CXSCREEN ) - 10) )
+		rectWindow.MoveToX( rectSaved.left );
 	if( mnInitialY >= 0 )
 		rectSaved.MoveToY( mnInitialY );
-	// ensure the dialog box is on screen
-	if( rectSaved.left < (::GetSystemMetrics( SM_CXSCREEN ) - 10) &&
-			rectSaved.top < (::GetSystemMetrics( SM_CYSCREEN ) - 10) )
-		rectWindow.MoveToXY( rectSaved.left, rectSaved.top );
+	else if( rectSaved.top >= -10 && rectSaved.top < (::GetSystemMetrics( SM_CYSCREEN ) - 10) )
+		rectWindow.MoveToY( rectSaved.top );
 	if( GetDialogObject().IsResizable() && rectSaved.right > rectSaved.left && rectSaved.bottom > rectSaved.top )
 	{
 		rectWindow.right = rectWindow.left + rectSaved.Width();

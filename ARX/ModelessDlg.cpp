@@ -48,6 +48,8 @@ bool CModelessDialogX::CreateModeless( UINT nID ) const
 
 void CModelessDialogX::CloseDialog(int nStatus) const
 {
+	if( mpOwner->IsClosing() )
+		return; //already in the process of closing
 	mpOwner->EndDialog(nStatus);
 	mpOwner->DestroyWindow();
 }
@@ -176,6 +178,7 @@ void CModelessDlg::OnDestroy()
 		delete m_pDocToModReactor;
 		m_pDocToModReactor = NULL;
 	}
+	m_bClosing = true;
 	__super::OnDestroy();
 }
 
@@ -293,7 +296,7 @@ LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 			if( pCmdLine && pCmdLine->IsWindowEnabled() && pCmdLine->IsWindowVisible() )
 				pCmdLine->SetFocus();
 		}
-		else
+		else if( pFocusWnd && IsChild( pFocusWnd ) )
 			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
 	}
 	return 0;

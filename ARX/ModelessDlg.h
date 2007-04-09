@@ -70,6 +70,7 @@ public:
 
 public:
 	bool IsResizable() const { return mbResizable; }
+	bool IsClosing() const { return m_bClosing; }
 
 	void SizeDialog ();
 	void SetTitleBarIcon(int nPictureID);

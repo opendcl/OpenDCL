@@ -13,6 +13,7 @@ class CModalDialogX : public CArxDialogObject
 {
 	friend class CModalVDcl;
 	CModalVDcl* mpOwner;
+	bool mbIsClosing;
 protected:
 	CModalDialogX( CModalVDcl& Owner, CDclFormObject* pDclForm );
 	~CModalDialogX();

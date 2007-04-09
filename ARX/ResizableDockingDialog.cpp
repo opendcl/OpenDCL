@@ -492,7 +492,7 @@ LRESULT CResizableDockingDialog::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 			if( pCmdLine && pCmdLine->IsWindowEnabled() && pCmdLine->IsWindowVisible() )
 				pCmdLine->SetFocus();
 		}
-		else
+		else if( pFocusWnd && IsChild( pFocusWnd ) )
 			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
 	}
 	return 0;

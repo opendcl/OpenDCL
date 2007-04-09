@@ -117,11 +117,8 @@ HWND CArxWorkspace::GetTopmostModalForm() const
 	{
 		CDialogObject *pDialog = mDialogs.GetPrev(pos);
 		assert(pDialog != NULL);
-		if (pDialog != NULL)
-		{
-			if (!pDialog->IsModeless())
-				return pDialog->GetHWnd();
-		}
+		if (pDialog && !pDialog->IsModeless() && pDialog->GetWindow()->IsWindowVisible())
+			return pDialog->GetHWnd();
 	}
 	return adsw_acadMainWnd();
 }
