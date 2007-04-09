@@ -39,10 +39,7 @@ public:
 public:
 	CDclControlObject* GetOleControl() const { return mpTemplate; }
 
-	void InitToolTip();
-
 	HRESULT SaveToStream( IStream* pStream );
-	
 	HRESULT GetOleDispatch( IDispatch** ppDispatch );
 	HRESULT GetOleObject( IOleObject** ppOleObject );
 	UINT ExtractPropertyInfo( CDclControlObject *pControl, LPOLEOBJECT pIObject, bool bEnumList = false );
@@ -53,8 +50,6 @@ public:
 	UINT ExtractMethodInfo( CDclControlObject *pControl, ITypeInfo* pTypeInfo );
 
 	IDispatch *GetChildIDispatch(DISPID dispid);
-
-	CPPToolTip& GetToolTip() { return mToolTip; }
 
 	void Initialize();
 	virtual bool Create(CWnd* pParentWnd, UINT nID);

@@ -47,9 +47,7 @@ public:
 	virtual CControlPane& GetControlPane() { return mDialogX.GetControlPane(); }
 	virtual const CDialogObject& GetDialogObject() const { return mDialogX; }
 	CDialogObject& GetDialogObject() { return mDialogX; }
-	void CloseDialog();
 	void SetDclForm(CDclFormObject *pDclFormObject);
-	bool QueryForClose();
 
 // Overrides
 protected:
@@ -63,7 +61,6 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
-	afx_msg void OnClose();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg BOOL OnNotify_ToolTipTitle(UINT  id, NMHDR *pNMHDR, LRESULT *pResult);

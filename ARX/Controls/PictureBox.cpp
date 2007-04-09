@@ -196,8 +196,6 @@ BOOL CPictureBox::Create(CDclControlObject* pControl, CProject *pProject, CWnd* 
 		ArxRect,
 		pParentWnd, 
 		nID);
-	
-	VERIFY(CButton::SubclassDlgItem(nID, pParentWnd));
 
 	SetAllProperties();
 	SetTooltipText(
@@ -421,18 +419,14 @@ void CPictureBox::Refresh(CDC *pdc)
 			nPicLeft + nPicWidth,
 			nPicTop + nPicHeight
 			);
-/*
-		if (PICTYPE_BITMAP == m_pPicture->m_hPicture.GetType())
+		if (PICTYPE_BITMAP == m_pPicture->GetPicType())
 		{			
-			if (m_pPicture->m_hBitmap == NULL)
-				m_pPicture->m_hPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &m_pPicture->m_hBitmap);
-
 			if (nEnabled)
 			{
 				// and finish!
 				pdc->DrawState(	rcPic.TopLeft(),
 								IconSize, 
-								m_pPicture->m_hBitmap, 
+								m_pPicture->GetBitmap(), 
 								DSS_NORMAL, 
 								NULL);				
 			}
@@ -441,14 +435,13 @@ void CPictureBox::Refresh(CDC *pdc)
 				// and finish!
 				pdc->DrawState(	rcPic.TopLeft(),
 								IconSize, 
-								m_pPicture->m_hBitmap, 
+								m_pPicture->GetBitmap(), 
 								DSS_DISABLED, 
 								NULL);				
 			}
 		}
-*/
 		// else if picture is an icon
-		if (PICTYPE_ICON == m_pPicture->GetPicType())
+		else if (PICTYPE_ICON == m_pPicture->GetPicType())
 		{
 			if (nEnabled)
 			{

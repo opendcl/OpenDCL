@@ -28,18 +28,11 @@
 CPrinterComboBox::CPrinterComboBox( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID )
 : CArxDialogControl( pTemplate, &Pane, this )
 {
-	// No tooltip created
-	mToolTip.m_hWnd = NULL;
-
 	m_img.Create(16,14,ILC_COLOR4 | ILC_MASK, 3, 1);
-
-    HMODULE hRes = _hdllInstance;
-	
-	
+	HMODULE hRes = _hdllInstance;
 	HICON hIcon = (HICON)::LoadImage(hRes, MAKEINTRESOURCE(IDI_PRINTER), IMAGE_ICON, 0, 0, 0);	
 	m_img.Add(hIcon);
 	DestroyIcon(hIcon);
-
 	hIcon = (HICON)::LoadImage(hRes, MAKEINTRESOURCE(IDI_PLOTTER), IMAGE_ICON, 0, 0, 0);
 	m_img.Add(hIcon);
 	DestroyIcon(hIcon);
@@ -49,18 +42,11 @@ CPrinterComboBox::CPrinterComboBox( CControlPane& Pane, CDclControlObject* pTemp
 CPrinterComboBox::CPrinterComboBox( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID, CRect rc )
 : CArxDialogControl( pTemplate, &Pane, this )
 {
-	// No tooltip created
-	mToolTip.m_hWnd = NULL;
-
 	m_img.Create(16,14,ILC_COLOR4 | ILC_MASK, 3, 1);
-
-    HMODULE hRes = _hdllInstance;
-	
-	
+	HMODULE hRes = _hdllInstance;
 	HICON hIcon = (HICON)::LoadImage(hRes, MAKEINTRESOURCE(IDI_PRINTER), IMAGE_ICON, 0, 0, 0);	
 	m_img.Add(hIcon);
 	DestroyIcon(hIcon);
-
 	hIcon = (HICON)::LoadImage(hRes, MAKEINTRESOURCE(IDI_PLOTTER), IMAGE_ICON, 0, 0, 0);
 	m_img.Add(hIcon);
 	DestroyIcon(hIcon);
@@ -102,9 +88,6 @@ bool CPrinterComboBox::Create( CWnd* pParentWnd, UINT nID, CRect rc )
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
-
-	InitToolTip();
-	SetToolTipEx(this, mToolTip, mpTemplate);
 
 	if( mpTemplate->GetLngProperty(nEventInvoke) == 1 )
 		m_bInvokeWithSendString = true;
@@ -226,29 +209,14 @@ int CPrinterComboBox::CreatePrinterList()
 	return 0;
 }
 
-
-void CPrinterComboBox::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-
-void CPrinterComboBox::InitToolTip()
-{
-	if (mToolTip.m_hWnd == NULL)
-		mToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL CPrinterComboBox::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
-	mToolTip.RelayEvent(pMsg);	
-	
+	GetToolTipCtrl().RelayEvent(pMsg);	
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
 	{
 		if (mpTemplate->GetBoolProperty(nReturnAsTab) == TRUE)
 			pMsg->wParam = VK_TAB;
-		
 	}
-
 	return CComboBox::PreTranslateMessage(pMsg);
 }
 
@@ -373,10 +341,6 @@ void CPrinterComboBox::OnSelchange()
 void CPrinterComboBox::OnDestroy() 
 {
 	CComboBox::OnDestroy();
-	
-	// delete the tool tip text control object
-	mToolTip.DelTool(this, 1);
-	
 }
 
 

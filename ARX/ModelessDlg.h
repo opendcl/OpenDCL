@@ -46,6 +46,8 @@ class CModelessDlg : public CBaseDlg
 	CWnd* mpParent;
 	CModelessDialogX mDialogX;
 	bool mbResizable;
+	bool mbTrackingMouse;
+	bool mbInMenuLoop;
 
 	bool				m_bClosing;
 	bool				m_bAboutToClose;
@@ -71,9 +73,6 @@ public:
 
 	void SizeDialog ();
 	void SetTitleBarIcon(int nPictureID);
-	void AboutToClose();
-	bool QueryForClose();
-	void FireCloseEvent();
 
 // Overrides
 public:
@@ -84,6 +83,9 @@ protected:
 
 	// Implementation
 protected:
+	DECLARE_MESSAGE_MAP()
+
+protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnClose();
 	afx_msg LONG onAcadKeepFocus(UINT, LONG);
@@ -91,7 +93,10 @@ protected:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
 	afx_msg void OnMove(int x, int y);
-
-protected:
-	DECLARE_MESSAGE_MAP()
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
+	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnEnterMenuLoop(BOOL bPopupMenu);
+	afx_msg void OnExitMenuLoop(BOOL bPopupMenu);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

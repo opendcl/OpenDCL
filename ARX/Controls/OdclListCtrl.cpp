@@ -11,7 +11,6 @@
 #include "AcadBlockReactor.h"
 #include "AcadColorTable.h"
 #include "InvokeMethod.h"
-#include "ToolTips.h"
 #include "Workspace.h"
 #include "ControlPane.h"
 
@@ -165,13 +164,7 @@ OdclListCtrl::OdclListCtrl( CControlPane& Pane, CDclControlObject* pTemplate, UI
 {
 	m_pDocToModReactor = NULL;
 	m_pBlockReactor = NULL;
-	
-	// No tooltip created
-	mToolTip.m_hWnd = NULL;
-
 	m_pLoadedDwg = NULL;
-	m_FileName = CString();
-
 	Create( Pane.GetHostDialog(), nID );
 }
 
@@ -223,9 +216,6 @@ bool OdclListCtrl::Create( CWnd* pParentWnd, UINT nID )
 		SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
 
 	SetAcadColor( mpTemplate->GetLngProperty( nAcadColor ) );
-
-	InitToolTip();
-	SetToolTipEx(this, mToolTip, mpTemplate);
 
 	if( mpTemplate->GetLngProperty(nEventInvoke) == 1 )
 		m_bInvokeWithSendString = true;
@@ -509,9 +499,6 @@ void OdclListCtrl::SetAcadColor(long nColor)
 
 void OdclListCtrl::OnDestroy() 
 {
-	// delete the tool tip text control object
-	mToolTip.DelTool(this, 1);
-	
 	// delete all the items
 	DeleteAllItems();
 	
@@ -661,14 +648,13 @@ void OdclListCtrl::OnSize(UINT nType, int cx, int cy)
 
 void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-		/*
-	BOOL bDrag = mpTemplate->GetBoolProperty(nDragnDropAllowBegin);
+	CListCtrl::OnLButtonDown(nFlags, point);
+	bool bDrag = mpTemplate->GetBoolProperty(nDragnDropAllowBegin);
 
-	if (bDrag == FALSE)
+	if (!bDrag) //dragging not allowed
 		CListCtrl::OnLButtonDown(nFlags, point);
 
-	if (bDrag == TRUE && nFlags == 1)
-	*/
+/*
 	int nStyle = mpTemplate->GetLngProperty(nListViewStyle);
 	LVHITTESTINFO lvhti;
 	lvhti.pt = point;
@@ -699,94 +685,66 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 				m_bInvokeWithSendString);
 		}
 	}
-	
-	//HideEditControls();
-	/*
-	if (nStyle >= 3)
+*/
+
+/*
+	// Select the item the user clicked on.
+	UINT uFlags;
+	int nItem = HitTest(point, &uFlags);
+	if (nItem > -1)
 	{
-		if (
-			(lvhti.iSubItem == 0 && nStyle == 3) ||
-			nStyle == 4
-		   )
-		{
-		// call methods to invoke the event
-		InvokeMethodIntInt(		
-			mpTemplate->GetStrProperty(nEventBeginLabelEdit),
-			lvhti.iItem,
-			lvhti.iSubItem,
-			m_bInvokeWithSendString);
-		}
+		// force the selected item to show focus
+		SetFocus();
+		UINT nState = LVIS_SELECTED | LVIS_FOCUSED;
+		if( (nFlags & MK_CONTROL) && (GetItemState(nItem,LVIS_SELECTED) & LVIS_SELECTED) )
+			nState = LVIS_FOCUSED; //unselect a selected item if <Ctrl> pressed
+		SetItemState(nItem, nState, LVIS_SELECTED | LVIS_FOCUSED);
 	}
-	*/
-	if (mpTemplate->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
+*/
+
+	// Clear the subitem text the user clicked on.
+	LVHITTESTINFO lvhti;
+	lvhti.pt = point;
+	SubItemHitTest(&lvhti);
+
+	// a -1 will be returned if not found
+	if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
+	{			
+		if (lvhti.iItem > -1)
+		{		
+			if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
+				// call methods to invoke the event
+				InvokeMethodIntInt(
+					mpTemplate->GetStrProperty(nEventClicked),  
+					lvhti.iItem, 
+					lvhti.iSubItem, 
+					m_bInvokeWithSendString);
+			else				
+				// call methods to invoke the event
+				InvokeMethodInt(
+					mpTemplate->GetStrProperty(nEventClicked),  
+					lvhti.iItem, 
+					m_bInvokeWithSendString);
+		}
+		BeginDragnDrop(mpTemplate, point, m_bInvokeWithSendString);
+	}
+	else
 	{
-		// Select the item the user clicked on.
-		UINT uFlags;
-		int nItem = HitTest(point, &uFlags);
-
-		if (nItem > -1)
-		{
-			// force the selected item to show focus
-			SetFocus();
-			UINT flag = LVIS_SELECTED | LVIS_FOCUSED;
-			SetItemState(nItem, flag, flag);
-           
-		}
-
-
-		LVHITTESTINFO lvhti;
-
-		// Clear the subitem text the user clicked on.
-		lvhti.pt = point;
-		SubItemHitTest(&lvhti);
-
-		// a -1 will be returned if not found
-		if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
-		{			
-			if (lvhti.iItem > -1)
-			{		
-				if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
-					// call methods to invoke the event
-					InvokeMethodIntInt(
-						mpTemplate->GetStrProperty(nEventClicked),  
-						lvhti.iItem, 
-						lvhti.iSubItem, 
-						m_bInvokeWithSendString);
-				else				
-					// call methods to invoke the event
-					InvokeMethodInt(
-						mpTemplate->GetStrProperty(nEventClicked),  
-						lvhti.iItem, 
-						m_bInvokeWithSendString);
-			}
-			BeginDragnDrop(mpTemplate, point, m_bInvokeWithSendString);
-		}
+		CStringArray saBlockNames;
+		saBlockNames.SetSize(1,1);
+		POSITION pos = GetFirstSelectedItemPosition();
+		if (pos == NULL)
+			return;
 		else
 		{
-			CStringArray saBlockNames;
-			saBlockNames.SetSize(1,1);
-			POSITION pos = GetFirstSelectedItemPosition();
-			if (pos == NULL)
-			{
-				CListCtrl::OnLButtonDown(nFlags, point);
-				return;
-			}
-			else
-			{
-			   while (pos)
-			   {
-					int nItem = GetNextSelectedItem(pos);
-					CString sItemText = GetItemText(nItem, 0);
-					
-					saBlockNames.Add(sItemText);
-			   }
-			}
-
-			//!CHANGED! 10-5-04 SRM
-			//didnt allow user to drag and drop blocks from external dwgs
-			//if (m_pLoadedDwg == NULL)
-				BeginDragnDropToInsertBlocks(mpTemplate, point, m_bInvokeWithSendString, saBlockNames);
+			while (pos)
+				saBlockNames.Add(GetItemText(GetNextSelectedItem(pos), 0));
 		}
+
+		//!CHANGED! 10-5-04 SRM
+		//didnt allow user to drag and drop blocks from external dwgs
+		//if (m_pLoadedDwg == NULL)
+		BeginDragnDropToInsertBlocks(mpTemplate, point, m_bInvokeWithSendString, saBlockNames);
 	}
 
 	InvokeMethodIntIntIntInt(
@@ -796,9 +754,6 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
-
-	//if (bDrag == TRUE)
-	CListCtrl::OnLButtonDown(nFlags, point);
 }
 
 void OdclListCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
@@ -1377,22 +1332,9 @@ bool OdclListCtrl::SortNumericItems( int nCol, BOOL bAscending,int low, int high
 	return TRUE;
 }
 
-void OdclListCtrl::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-
-void OdclListCtrl::InitToolTip()
-{
-	if (mToolTip.m_hWnd == NULL)
-		mToolTip.Create(this);
-} // End of InitToolTip
-
-
 BOOL OdclListCtrl::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
-	mToolTip.RelayEvent(pMsg);
-		
+	GetToolTipCtrl().RelayEvent(pMsg);
 	return CListCtrl::PreTranslateMessage(pMsg);
 }
 

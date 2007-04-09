@@ -536,6 +536,7 @@ int CArxWorkspace::ActivateDclForm( CDclFormObject* pDclForm, DialogParams* pPar
 	{
 		if( !pDialog->CreateModeless( nID ) ) //when this call returns, pDialog is no longer safe! [ORW]
 			return -1;
+		SetCursor( LoadCursor( NULL, IDC_ARROW ) );
 		return nID;
 	}
 	return pDialog->DoModal();

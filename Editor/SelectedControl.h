@@ -3,6 +3,8 @@
 
 #pragma once
 
+class CDclControlObject;
+
 
 /////////////////////////////////////////////////////////////////////////////
 // SelectedControl window
@@ -10,22 +12,22 @@
 class CSelectedControl : public CObject
 {
 public:
-	CSelectedControl()
-	{
-		Clear();
-		Reset();
-	};
-	class CDclControlObject *m_pArxObject;
-	CWnd *m_pControl;
+	CDclControlObject* m_pArxObject;
+	CWnd* m_pControl;
 	int m_nIndex;
 	CRect m_rcLastDrawn;
-	void Reset(){
-		m_rcLastDrawn.left = 0;
-		m_rcLastDrawn.top = 0;
-		m_rcLastDrawn.bottom = 0;
-		m_rcLastDrawn.right = 0;
-	};
-	void Clear(){	
+
+public:
+	CSelectedControl( CDclControlObject* pDclControl = NULL, CWnd* pControlWnd = NULL, int idxControl = -1 )
+	: m_pArxObject( pDclControl )
+	, m_pControl( pControlWnd )
+	, m_nIndex( idxControl )
+	, m_rcLastDrawn( 0, 0, 0, 0 )
+	{
+	}
+	void Reset() { m_rcLastDrawn.SetRect( 0, 0, 0, 0 ); }
+	void Clear()
+	{	
 		m_pArxObject = NULL;
 		m_pControl = NULL;
 		m_nIndex = -1;

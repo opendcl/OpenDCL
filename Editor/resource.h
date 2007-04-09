@@ -190,7 +190,6 @@
 #define IDC_ITALIC                      225
 #define IDC_TTT                         225
 #define IDC_EDIT5                       225
-#define IDC_BONUS                       225
 #define IDC_FILEEXT                     225
 #define IDC_AVI                         226
 #define IDC_EDIT6                       226

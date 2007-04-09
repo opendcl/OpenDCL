@@ -205,7 +205,6 @@ void CControlHolder::SetSelected(BOOL bSelected)
 	CRect rcThis;
 	GetWindowRect(&rcThis);
 
-
 	// set the predetermined pos's
 	int MidX = (rcThis.Width() - nGripSizeConst) / 2;
 	int MidY = (rcThis.Height() - nGripSizeConst) / 2;
@@ -266,8 +265,6 @@ void CControlHolder::SetSelected(BOOL bSelected)
 	m_GripRect6.Invalidate();
 	m_GripRect7.Invalidate();
 	m_GripRect8.Invalidate();
-	
-
 }
 
 void CControlHolder::OnSize(UINT nType, int cx, int cy) 

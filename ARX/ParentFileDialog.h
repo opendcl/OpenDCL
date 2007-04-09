@@ -70,6 +70,9 @@ public:
 	void CtrlModifyStyle(int nCtrl);
 
 protected:	
+	DECLARE_MESSAGE_MAP()
+
+protected:	
 	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
 	void OnSelectionChanged();
 
@@ -90,7 +93,4 @@ protected:
 	afx_msg LRESULT OnGetFolderName( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnGetSelectedFileCount( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnGetSelectedFiles( WPARAM wParam, LPARAM lParam );
-
-protected:	
-	DECLARE_MESSAGE_MAP()
 };

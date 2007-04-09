@@ -44,8 +44,6 @@ public:
 
 // Implementation
 public:
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	void DrawLine(int sX, int sY, int eX, int eY, int nLineColor);
 	void DrawFillRect(int sX, int sY, int eX, int eY, int nLineColor);
 	void SetHighLight(int nColorIndex);

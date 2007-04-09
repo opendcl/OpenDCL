@@ -69,6 +69,8 @@ CModelessDlg::CModelessDlg( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/
 , mpParent( pParent )
 , mDialogX( *this, pSourceForm )
 , mbResizable( pSourceForm->GetControlProperties()->GetBoolProperty( nResizable ) )
+, mbTrackingMouse( false )
+, mbInMenuLoop( false )
 {
 	m_bAsModal = false;
 	m_bClosing = false;
@@ -78,6 +80,8 @@ CModelessDlg::CModelessDlg( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/
 
 CModelessDlg::~CModelessDlg()
 {
+	if( mbTrackingMouse )
+		KillTimer( WM_MOUSELEAVE );
 }
 
 bool CModelessDlg::Create( UINT nTemplateID )
@@ -86,14 +90,18 @@ bool CModelessDlg::Create( UINT nTemplateID )
 }
 
 BEGIN_MESSAGE_MAP(CModelessDlg, CBaseDlg)
-	//{{AFX_MSG_MAP(CModelessDlg)
 	ON_WM_CLOSE()
 	ON_MESSAGE(WM_ACAD_KEEPFOCUS, onAcadKeepFocus)	
 	ON_WM_SIZE()
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
 	ON_WM_MOVE()
-	//}}AFX_MSG_MAP
+	ON_WM_MOUSEMOVE()
+	ON_WM_NCMOUSEMOVE()
+	ON_MESSAGE(WM_MOUSELEAVE,OnMouseLeave)
+	ON_WM_ENTERMENULOOP()
+	ON_WM_EXITMENULOOP()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -108,6 +116,7 @@ BOOL CModelessDlg::OnInitDialog()
 		GetParent()->EnableWindow( FALSE );
 		EnableWindow( TRUE );
 	}
+	ModifyStyleEx( 0, WS_EX_TOOLWINDOW );
 
 	// Modify the style
 	//GetLayeredDialog()->AddLayeredStyle(m_hWnd);
@@ -119,21 +128,8 @@ BOOL CModelessDlg::OnInitDialog()
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
 
-void CModelessDlg::AboutToClose() 
-{
-	FireCloseEvent();
-}
-
-bool CModelessDlg::QueryForClose() 
-{
-	if (mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose).IsEmpty())
-		return true;
-	return !(InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false));	
-}
-
 void CModelessDlg::OnClose() 
 {
-	AboutToClose();
 	__super::OnClose();
 	DestroyWindow();
 }
@@ -182,36 +178,6 @@ void CModelessDlg::OnDestroy()
 	}
 	__super::OnDestroy();
 }
-
-void CModelessDlg::FireCloseEvent()
-{
-	if (m_bClosing)
-		return;
-
-	CPoint pt;
-	CRect rcThis;
-	GetWindowRect(&rcThis);
-
-	// get the left and top values to center the form on the screen	
-	pt.y =  (::GetSystemMetrics(SM_CYSCREEN) - rcThis.Height()) / 2;
-	pt.x =  (::GetSystemMetrics(SM_CXSCREEN) - rcThis.Width()) / 2;
-
-  //Get actual location of the dialog
-  CRect rc;
-  CWnd::GetWindowRect(&rc);
-
-  if (pt.y == rc.left &&
-		  pt.x == rc.top)
-	  // call methods to invoke the event
-	  InvokeMethodIntInt(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventClose), -1, -1, false);	
-	else
-		// call methods to invoke the event
-		InvokeMethodIntInt(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventClose), rc.left, rc.top, false);	
-
-	mDialogX.GetControlPane().CleanUpControls();
-	m_bClosing = true;
-}
-
 
 void CModelessDlg::OnOK()
 {
@@ -293,4 +259,72 @@ BOOL CModelessDlg::PreTranslateMessage(MSG* pMsg)
 	}
 
 	return CBaseDlg::PreTranslateMessage(pMsg);
+}
+
+void CModelessDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	if( !mbTrackingMouse )
+	{
+		SetTimer( WM_MOUSELEAVE, 200, NULL );
+		mbTrackingMouse = true;
+	}
+	__super::OnMouseMove(nFlags, point);
+}
+
+void CModelessDlg::OnNcMouseMove(UINT nHitTest, CPoint point)
+{
+	if( !mbTrackingMouse )
+	{
+		SetTimer( WM_MOUSELEAVE, 200, NULL );
+		mbTrackingMouse = true;
+	}
+	__super::OnNcMouseMove(nHitTest, point);
+}
+
+LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
+{
+	mbTrackingMouse = false;
+	if( !mbInMenuLoop && !::GetCapture() )
+	{
+		CWnd* pFocusWnd = GetFocus();
+		if( !pFocusWnd || ((pFocusWnd->SendMessage( WM_GETDLGCODE, 0, 0 ) & (DLGC_WANTCHARS | DLGC_WANTARROWS)) == 0) )
+		{
+			CWnd* pCmdLine = acedGetAcadDockCmdLine();
+			if( pCmdLine && pCmdLine->IsWindowEnabled() && pCmdLine->IsWindowVisible() )
+				pCmdLine->SetFocus();
+		}
+		else
+			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
+	}
+	return 0;
+}
+
+void CModelessDlg::OnEnterMenuLoop(BOOL bPopupMenu)
+{
+	mbInMenuLoop = true;
+	__super::OnEnterMenuLoop(bPopupMenu);
+}
+
+void CModelessDlg::OnExitMenuLoop(BOOL bPopupMenu)
+{
+	mbInMenuLoop = false;
+	__super::OnExitMenuLoop(bPopupMenu);
+}
+
+void CModelessDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if( nIDEvent == WM_MOUSELEAVE )
+	{
+		CPoint ptCursor;
+		if( GetCursorPos( &ptCursor ) )
+		{
+			CWnd* pTarget = WindowFromPoint( ptCursor );
+			if( pTarget != this && !IsChild( pTarget ) )
+			{
+				PostMessage( WM_MOUSELEAVE, 0, 0 );
+				KillTimer( WM_MOUSELEAVE );
+			}
+		}
+	}
+	__super::OnTimer(nIDEvent);
 }

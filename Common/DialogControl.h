@@ -111,8 +111,9 @@ protected:
 	CDclControlObject* mpTemplate;
 	CControlPane* mpControlPane;
 	CWnd* mpControl;
-	CPPToolTip mToolTip;
+private:		
 	bool mbEnumProps;
+	CPPToolTip mToolTip;
 
 public:
 	CDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pControl );
@@ -127,8 +128,8 @@ public:
 	CDclControlObject* GetTemplate() { return mpTemplate; }
 	const CControlPane* GetControlPane() const { return mpControlPane; }
 	CControlPane* GetControlPane() { return mpControlPane; }
-	const CPPToolTip& GetToolTipCtrl() const { return mToolTip; }
-	CPPToolTip& GetToolTipCtrl() { return mToolTip; }
+	const CPPToolTip& GetToolTipCtrl() const { const_cast< CDialogControl* >(this)->CreateTooltip(); return mToolTip; }
+	CPPToolTip& GetToolTipCtrl() { CreateTooltip(); return mToolTip; }
 	virtual const CWnd* GetControl() const { return mpControl; }
 	virtual CWnd* GetControl() { return mpControl; }
 	virtual ControlType GetControlType() const;
@@ -148,6 +149,8 @@ public:
 
 	// Services
 public:
+private:
+	void CreateTooltip() { if( !mToolTip.m_hWnd ) mToolTip.Create( mpControl ); }
 
 	// Control
 public:
@@ -168,6 +171,7 @@ public:
 	virtual bool OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp ); //nEnabled
 	virtual bool OnApplyVisible( RefCountedPtr< CPropertyObject > pProp ); //nVisible
 	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ); //nCaption, nTitleBarText
+	virtual bool OnApplyToolTip( RefCountedPtr< CPropertyObject > pProp ); //nToolTipTitle
 	virtual bool OnApplyFont( RefCountedPtr< CPropertyObject > pProp ); //nLabelName
 };
 

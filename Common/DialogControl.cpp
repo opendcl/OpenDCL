@@ -7,6 +7,7 @@
 #include "PropertyIds.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
+#include "ToolTips.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -109,6 +110,12 @@ bool CDialogControl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 	case nVisible: if( !OnApplyVisible( pProp ) ) bSuccess = false; break;
 	case nCaption: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
 	case nTitleBarText: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
+	case nToolTipTitle: if( !OnApplyToolTip( pProp ) ) bSuccess = false; break;
+	case nToolTipLine: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
+	case nToolTipBody: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
+	case nToolTipPicture: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
+	case nToolTipAviFileName: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
+	case nToolTipTitleColor: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
 	case nLabelName: if( !OnApplyFont( pProp ) ) bSuccess = false; break;
 	case nLabelSize: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
 	case nLabelBold: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
@@ -154,6 +161,13 @@ bool CDialogControl::OnApplyVisible( RefCountedPtr< CPropertyObject > pProp )
 bool CDialogControl::OnApplyCaption( RefCountedPtr< CPropertyObject > pProp )
 {
 	mpControl->SetWindowText( pProp->GetStringValue() );
+	return true;
+}
+
+bool CDialogControl::OnApplyToolTip( RefCountedPtr< CPropertyObject > pProp )
+{
+	GetToolTipCtrl().RemoveAllTools();
+	SetToolTipEx( mpControl, GetToolTipCtrl(), mpTemplate );
 	return true;
 }
 

@@ -68,7 +68,7 @@ BOOL CFontCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID 
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
 
-	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE | WS_CLIPSIBLINGS
+	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE | WS_CLIPSIBLINGS | LBS_NOINTEGRALHEIGHT
 			  | CBS_HASSTRINGS | ES_AUTOHSCROLL | WS_CLIPCHILDREN | CBS_SORT | CBS_OWNERDRAWFIXED;
 	
 	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
@@ -80,7 +80,11 @@ BOOL CFontCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID 
 	{
 	case 8:
 		{
-			ArxRect.bottom = ArxRect.bottom  + pControl->GetLngProperty(nDropDownHeight);
+			long lListHeight = pControl->GetLngProperty(nDropDownHeight);
+			long lNewHeight = 16 * (lListHeight / 16) + 16 + 2; //make it an integral height, + 2 pixels for the border
+			if( lListHeight != lNewHeight )
+				pControl->SetLongProperty( nDropDownHeight, lNewHeight );
+			ArxRect.bottom += lNewHeight;
 			dwStyle = dwStyle | CBS_DROPDOWNLIST;
 			break;
 		}
@@ -626,7 +630,7 @@ void CFontCombo::Initialize()
 	
 	// We set the timer because its the only way we know when a selection
 	// has changed - use for tip window
-	SetTimer(1, 500, NULL);
+	SetTimer(1, 200, NULL);
 
 	// Yep tip window is created here
 	m_wndTip.Create(this);

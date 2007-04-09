@@ -27,7 +27,6 @@ private:
 public:
 	bool m_bInvokeWithSendString;
 	int m_nCurrentSelectedTab;
-	bool m_ToolTipsUpdated;
 
 // Construction
 public:
@@ -60,14 +59,13 @@ public:
 
 public:
 	void ActivateTabPage( int nTabPageToActivate, bool bShow, bool bFireEvent = false );
-	void SetTooltipText(CString* spText, BOOL bActivate);
 	void SetFirstControlFocus(CTabPage  *pActualTabPage);
-	void InitToolTip();
 
 // Implementation
 protected:
 	void ZOrderFrontAllTabs();
 	void DestroyTabPages();
+	void ResetTooltips();
 	void SetupTabs();
 
 protected:
@@ -87,4 +85,5 @@ protected:
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void PostNcDestroy();
 	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };

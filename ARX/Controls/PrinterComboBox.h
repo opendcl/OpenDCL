@@ -41,8 +41,6 @@ public:
 
 // Implementation
 public:
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	int CreatePrinterList();
 	CString GetPlottersPath();
 protected:

@@ -1824,13 +1824,6 @@ void CArxDialogControl::UpdateText(CDclControlObject *pTemplate, CWnd *pControl,
 void CArxDialogControl::ChangeToolTipTitle(CDclControlObject *pArxObject, CWnd *pControl)
 {
 	CString sToolTipTitle = pArxObject->GetStrProperty(nToolTipTitle);
-	
-	#define nToolTipBody			235
-	#define nToolTipPicture			236
-	#define nToolTipAviFileName		237
-	#define nToolTipLine			238
-	#define nToolTipTitleColor		239
-		
 	switch (pArxObject->GetType())
 	{
 	case CtlDwgPreview:
@@ -1839,17 +1832,10 @@ void CArxDialogControl::ChangeToolTipTitle(CDclControlObject *pArxObject, CWnd *
 		//((CDwgPreviewCtrl*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
-	case CtlBlockView:
 	case CtlHatch:
 		{
 		SetToolTipEx(pControl, ((CGsPreviewCtrl*)pControl)->m_ToolTip, pArxObject);
 		//((CGsPreviewCtrl*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
-		break;
-		}
-	case CtlSlideView:
-		{
-		SetToolTipEx(pControl, ((CSlideHolder*)pControl)->mToolTip, pArxObject);
-		//((CSlideHolder*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlRoundSlider:
@@ -1945,19 +1931,6 @@ void CArxDialogControl::ChangeToolTipTitle(CDclControlObject *pArxObject, CWnd *
 		{
 		SetToolTipEx(((VdclTree*)pControl), ((VdclTree*)pControl)->m_ChildTree.m_ToolTip, pArxObject);
 		//((VdclTree*)pControl)->m_ChildTree.SetTooltipText(&sToolTipTitle, TRUE);
-		break;
-		}
-
-	case CtlGraphicButton:
-		{
-		SetToolTipEx(pControl, ((CArxGraphicButtonCtrl*)pControl)->GetToolTipCtrl(), pArxObject);
-		//((CArxGraphicButtonCtrl*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
-		break;
-		}
-	case CtlActiveX:
-		{
-		SetToolTipEx(pControl, ((CAxContainerCtrl*)pControl)->GetToolTipCtrl(), pArxObject);
-		//((CAxContainerCtrl*)pControl)->SetTooltipText(sToolTipTitle);
 		break;
 		}
 	case CtlDwgList:

@@ -2519,6 +2519,9 @@ int CPropertyListCtrl::SetListBox()
 
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_DOC_SIDES_4);
 					m_pModeless->AddString(sEnumDesc);
+
+					sEnumDesc = theWorkspace.LoadResourceString(IDS_DOC_SIDES_5);
+					m_pModeless->AddString(sEnumDesc);
 					break;
 				}
 			case nDefaultDockedSide:

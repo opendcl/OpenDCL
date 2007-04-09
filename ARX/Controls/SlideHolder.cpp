@@ -6,7 +6,6 @@
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "AcadColorTable.h"
-#include "ToolTips.h"
 #include "InvokeMethod.h"
 #include "ControlPane.h"
 #include "PropertyIds.h"
@@ -42,9 +41,6 @@ bool CSlideHolder::Create( CWnd* pParentWnd, UINT nID )
 	int nColor = mpTemplate->GetLngProperty(nAcadColor);
 	mSlideCtrl.SetBackColor( GetRGBColor(nColor) );
 	SetAcadColor( nColor );
-
-	InitToolTip();
-	SetToolTipEx(this, mToolTip, mpTemplate);
 
 	if( mpTemplate->GetLngProperty(nEventInvoke) == 1 )
 		m_bInvokeWithSendString = true;
@@ -469,24 +465,16 @@ void CSlideHolder::OnDoubleclicked()
 
 void CSlideHolder::OnDestroy() 
 {
-	// delete the tool tip text control object
-	mToolTip.DelTool(this, 1);
-	
 	// delete the bitmap is valid
 	if (m_hbmMem != NULL)
 	{
 		DeleteObject(m_hbmMem);
 		m_hbmMem = NULL;
 	}
-	
 	m_bSelectedRect = false;
 	mSlideCtrl.FreeData();
 	mSlideCtrl.m_FileName = CString();
-
-
 	CButton::OnDestroy();
-	
-		
 }
 
 void CSlideHolder::OnSetFocus(CWnd* pOldWnd) 
@@ -537,21 +525,10 @@ void CSlideHolder::RemoveHighLight()
 	Invalidate();
 }
 
-void CSlideHolder::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void CSlideHolder::InitToolTip()
-{
-	if (mToolTip.m_hWnd == NULL)
-		mToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL CSlideHolder::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
-	mToolTip.RelayEvent(pMsg);
-	
-	return CButton::PreTranslateMessage(pMsg);
+	GetToolTipCtrl().RelayEvent(pMsg);
+	return __super::PreTranslateMessage(pMsg);
 }
 
 void CSlideHolder::DrawLine(int sX, int sY, int eX, int eY, int nLineColor)

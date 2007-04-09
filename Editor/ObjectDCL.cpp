@@ -14,8 +14,6 @@
 #include "ProjectCollection.h"
 #include "ArchiveEx.h"
 #include "FontPropPage.h"
-#include "Help1.h"
-#include "Help2.h"
 #include "GridSpacingDlg.h"
 #include "ObjectBrowser.h"
 #include "EditorWorkspace.h"
@@ -724,84 +722,4 @@ void CObjectDCLApp::OnHelp()
 
 void CObjectDCLApp::OnHelpFinder() 
 {
-	//CHelp1 Dlg;
-	//Dlg.DoModal();
-
-	//if (Dlg.m_nType == 1)
-	//{
-	//	if (m_pCtrlHelp == NULL)
-	//	{
-	//		m_pCtrlHelp = new CHelp2();
-	//		m_pCtrlHelp->Create(MAKEINTRESOURCE(IDD_HELPCTRLS), m_pMainWnd);
-	//	}
-	//	m_pCtrlHelp->ShowWindow(TRUE);
-	//}
-	//if (Dlg.m_nType == 2)
-	//{
-
-	//	// look in the application directory for the method file
-	//	TCHAR drive[_MAX_DRIVE];
-	//	TCHAR dir[_MAX_DIR];
-	//	TCHAR fname[_MAX_FNAME];
-	//	TCHAR ext[_MAX_EXT];
-	//	LPCTSTR path =
-	//#ifdef _UNICODE
-	//		_wpgmptr ;
-	//#else
-	//		_pgmptr ;
-	//#endif
-	//	_tsplitpath(path, drive, dir, fname, ext );
-
-	//	::ShellExecute(
-	//		NULL, 
-	//		_T("open"), 
-	//		CString(drive) + dir + _T("ObjectDcl.hlp"),
-	//		NULL, 
-	//		NULL,
-	//		SW_SHOWNORMAL);
-	//}
-	//if (Dlg.m_nType == 3)
-	//{
-
-	//	// look in the application directory for the method file
-	//	TCHAR drive[_MAX_DRIVE];
-	//	TCHAR dir[_MAX_DIR];
-	//	TCHAR fname[_MAX_FNAME];
-	//	TCHAR ext[_MAX_EXT];
-	//	LPCTSTR path =
-	//#ifdef _UNICODE
-	//		_wpgmptr ;
-	//#else
-	//		_pgmptr ;
-	//#endif
-	//	_tsplitpath(path, drive, dir, fname, ext );
-
-	//	MessageBox(m_pMainWnd->m_hWnd, _T("This may take a minute to open."), _T("Help"), NULL);
-
-	//	::ShellExecute(
-	//		NULL, 
-	//		_T("open"), 
-	//		CString(drive) + dir + _T("AU.doc"),
-	//		NULL, 
-	//		NULL,
-	//		SW_SHOWNORMAL);
-
-	//	
-	//}
-
-	//if (Dlg.m_nType == 4)
-	//{
-	//	CDclFormObject DclForm(NULL, (DclFormType)-2); // -2 to indicate bonus functions
-	//	RefCountedPtr< COleControlObject > pOleControl = new COleControlObject( (ControlType)-2 ); // -2 to indicate bonus functions
-	//	RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropInvalid, 0, nName);
-	//	pOleControl->GetPropertyList().AddTail(pProp);
-	//	
-	//	CObjectBrowser Dlg(m_pMainFrame);
-
-	//	Dlg.m_pControl = pOleControl;
-	//	Dlg.m_pDclForm = &DclForm;
-	//	Dlg.m_sDclFormName.Empty();
-
-	//	Dlg.DoModal();
-	//}
 }

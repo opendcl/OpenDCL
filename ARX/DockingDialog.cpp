@@ -56,37 +56,37 @@ bool CDockingDialogX::CreateModeless( UINT nID ) const
 	case 1:
 		// set the form to only dock on the top side
 		dwDockableSides = CBRS_ALIGN_TOP;
-		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
+		dwDefaultDockableSide = CBRS_ALIGN_TOP;
 		nDocHeight += 8;
 		break;
 	case 2:
 		// set the form to only dock on the bottom side
 		dwDockableSides = CBRS_ALIGN_BOTTOM;
-		dwDefaultDockableSide = AFX_IDW_DOCKBAR_BOTTOM;
+		dwDefaultDockableSide = CBRS_ALIGN_BOTTOM;
 		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	case 3:
 		// set the form to only dock on the top or bottom sides
 		dwDockableSides = CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;				
-		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
+		dwDefaultDockableSide = CBRS_ALIGN_TOP;
 		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	case 4:
 		// set the form to only dock on the any side
-		dwDockableSides = AFX_IDW_DOCKBAR_TOP | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP;				
+		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP;				
 		dwDefaultDockableSide = CBRS_ALIGN_LEFT;
 		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	case 5:
 		// set the form to only dock on the any side
 		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;
-		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
+		dwDefaultDockableSide = CBRS_ALIGN_LEFT;
 		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	default:
 		// set the form to only dock on the left or right sides
 		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT;
-		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
+		dwDefaultDockableSide = CBRS_ALIGN_LEFT;
 		break;
 	}
 
@@ -153,6 +153,8 @@ CDockingDialog::CDockingDialog( CDclFormObject* pSourceForm, CWnd* pParent /*=NU
 , mDialogX( *this, pSourceForm )
 , mbClosing( false )
 , mbHiding( false )
+, mbTrackingMouse( false )
+, mbInMenuLoop( false )
 {
 	m_bDockingSizeAdjusted = false;
 	m_bFloatingSizeAdjusted = false;
@@ -162,13 +164,25 @@ CDockingDialog::CDockingDialog( CDclFormObject* pSourceForm, CWnd* pParent /*=NU
 
 CDockingDialog::~CDockingDialog()
 {
+	if( mbTrackingMouse )
+	{
+		TRACKMOUSEEVENT tm = { sizeof(TRACKMOUSEEVENT), TME_CANCEL | TME_LEAVE, NULL, 0 };
+		_TrackMouseEvent( &tm );
+	}
 }
 
 
 BEGIN_MESSAGE_MAP(CDockingDialog, CAdUiDockControlBar)
+	ON_WM_HELPINFO()
 	ON_WM_CREATE()
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
+	ON_WM_MOUSEMOVE()
+	ON_WM_NCMOUSEMOVE()
+	ON_MESSAGE(WM_MOUSELEAVE,OnMouseLeave)
+	ON_WM_ENTERMENULOOP()
+	ON_WM_EXITMENULOOP()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -178,16 +192,17 @@ END_MESSAGE_MAP()
 bool CDockingDialog::Create( LPCTSTR lpszTitle, CRect rect, UINT nID ) 
 {
 	CString strWndClass = AfxRegisterWndClass (CS_DBLCLKS, LoadCursor (NULL, IDC_ARROW));	
-	if (!CAdUiDockControlBar::Create (strWndClass,
-									 lpszTitle,
-									 WS_VISIBLE | WS_CHILD /*| WS_CLIPCHILDREN*/,
-									 rect,
-									 mpParent, 
-									 nID))
-	{
+  if (!CAdUiDockControlBar::Create( strWndClass, lpszTitle,
+																		WS_VISIBLE | WS_CHILD /*| WS_CLIPCHILDREN*/,
+																		rect, mpParent, nID))
 		return false;
+	ModifyStyleEx( 0, WS_EX_CONTROLPARENT );
+	__if_exists(idPinBtn)
+	{
+	CWnd* pPinBtn = GetDlgItem( idPinBtn );
+	if( pPinBtn )
+		pPinBtn->DestroyWindow();
 	}
-
 	return true;
 }
 
@@ -289,6 +304,12 @@ void CDockingDialog::SizeChanged (CRect *lpRect, BOOL bFloating, int flags)
 			rcThis.Height(),
 			true);	
 	}
+}
+
+BOOL CDockingDialog::OnHelpInfo(HELPINFO* pHelpInfo)
+{
+	InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nEventOnHelp), true);
+	return TRUE;
 }
 
 void CDockingDialog::OnShowWindow(BOOL bShow, UINT nStatus) 
@@ -581,4 +602,72 @@ void CDockingDialog::OnDestroy()
 		OnClosing();
 	mDialogX.GetControlPane().CleanUpControls();
 	CAdUiDockControlBar::OnDestroy();
+}
+
+void CDockingDialog::OnMouseMove(UINT nFlags, CPoint point)
+{
+	if( !mbTrackingMouse )
+	{
+		SetTimer( WM_MOUSELEAVE, 200, NULL );
+		mbTrackingMouse = true;
+	}
+	__super::OnMouseMove(nFlags, point);
+}
+
+void CDockingDialog::OnNcMouseMove(UINT nHitTest, CPoint point)
+{
+	if( !mbTrackingMouse )
+	{
+		SetTimer( WM_MOUSELEAVE, 200, NULL );
+		mbTrackingMouse = true;
+	}
+	__super::OnNcMouseMove(nHitTest, point);
+}
+
+LRESULT CDockingDialog::OnMouseLeave(WPARAM wParam, LPARAM lParam)
+{
+	mbTrackingMouse = false;
+	if( !mbInMenuLoop && !::GetCapture() )
+	{
+		CWnd* pFocusWnd = GetFocus();
+		if( !pFocusWnd || ((pFocusWnd->SendMessage( WM_GETDLGCODE, 0, 0 ) & (DLGC_WANTCHARS | DLGC_WANTARROWS)) == 0) )
+		{
+			CWnd* pCmdLine = acedGetAcadDockCmdLine();
+			if( pCmdLine && pCmdLine->IsWindowEnabled() && pCmdLine->IsWindowVisible() )
+				pCmdLine->SetFocus();
+		}
+		else
+			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
+	}
+	return 0;
+}
+
+void CDockingDialog::OnEnterMenuLoop(BOOL bPopupMenu)
+{
+	mbInMenuLoop = true;
+	__super::OnEnterMenuLoop(bPopupMenu);
+}
+
+void CDockingDialog::OnExitMenuLoop(BOOL bPopupMenu)
+{
+	mbInMenuLoop = false;
+	__super::OnExitMenuLoop(bPopupMenu);
+}
+
+void CDockingDialog::OnTimer(UINT_PTR nIDEvent)
+{
+	if( nIDEvent == WM_MOUSELEAVE )
+	{
+		CPoint ptCursor;
+		if( GetCursorPos( &ptCursor ) )
+		{
+			CWnd* pTarget = WindowFromPoint( ptCursor );
+			if( pTarget != this && !IsChild( pTarget ) )
+			{
+				PostMessage( WM_MOUSELEAVE, 0, 0 );
+				KillTimer( WM_MOUSELEAVE );
+			}
+		}
+	}
+	__super::OnTimer(nIDEvent);
 }

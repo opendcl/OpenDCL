@@ -38,12 +38,21 @@ const TCHAR sList[] = _T(" (list ");
 Acad::ErrorStatus ExecuteCommandInCurrentDoc( LPCTSTR pszCommand, bool bShowCommand = false )
 {
 	AcApDocument* pDoc = acDocManager->curDocument();
-	assert( pDoc != NULL );
+	//assert( pDoc != NULL );
 	if( !pDoc )
 		return Acad::eNoDocument;
 	//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
 	//CmdBarWnd->SetFocus();		
 	return acDocManager->sendStringToExecute(pDoc, pszCommand, false, true, bShowCommand);
+}
+
+int acedInvokeNoDocStateSafe(const struct resbuf *args, struct resbuf **result)
+{
+	AcApDocument* pDoc = acDocManager->curDocument();
+	//assert( pDoc != NULL );
+	if( !pDoc )
+		return RSERR;
+	return acedInvoke( args, result );
 }
 
 
@@ -82,7 +91,7 @@ bool InvokeCancelMethod(CString sLispFunction, bool bUserPressedEsc)
 		RTNONE);
 
 	if (list != NULL) { 
-		stat = acedInvoke(list, &result); 
+		stat = acedInvokeNoDocStateSafe(list, &result); 
 		acutRelRb(list); 
 		if(result != NULL)
 		{
@@ -110,7 +119,7 @@ bool InvokeCancelMethod(CString sLispFunction, bool bUserPressedEsc)
 // InvokeMethod
 void InvokeMethodStringInt(CString sLispFunction, CString sString, int nInt, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -147,7 +156,7 @@ void InvokeMethodStringInt(CString sLispFunction, CString sString, int nInt, boo
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 			    
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -157,7 +166,7 @@ void InvokeMethodStringInt(CString sLispFunction, CString sString, int nInt, boo
 
 void InvokeMethodStringLong(CString sLispFunction, CString sString, long lLong, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -195,7 +204,7 @@ void InvokeMethodStringLong(CString sLispFunction, CString sString, long lLong, 
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 			    
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -205,7 +214,7 @@ void InvokeMethodStringLong(CString sLispFunction, CString sString, long lLong, 
 
 void InvokeMethodLong(CString sLispFunction, long lLong, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -238,7 +247,7 @@ void InvokeMethodLong(CString sLispFunction, long lLong, bool UseSendString)
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 			    
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -248,7 +257,7 @@ void InvokeMethodLong(CString sLispFunction, long lLong, bool UseSendString)
 
 void InvokeMethodStringIntInt(CString sLispFunction, CString sString, int nInt1, int nInt2, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -290,7 +299,7 @@ void InvokeMethodStringIntInt(CString sLispFunction, CString sString, int nInt1,
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 			    
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -300,7 +309,7 @@ void InvokeMethodStringIntInt(CString sLispFunction, CString sString, int nInt1,
 
 void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString || (sLispFunction.Left(1) == sSingleQuote))
@@ -331,7 +340,7 @@ void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc)
 			list = acutBuildList(RTSTR, FireCancel(sLispFunction), 0);
 			if (list != NULL) 
 			{ 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 
 			    if(result != NULL) 
 				{
@@ -345,7 +354,7 @@ void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc)
 
 void InvokeMethodIntString(CString sLispFunction, int nInt, CString sString, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -377,7 +386,7 @@ void InvokeMethodIntString(CString sLispFunction, int nInt, CString sString, boo
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -387,7 +396,7 @@ void InvokeMethodIntString(CString sLispFunction, int nInt, CString sString, boo
 
 void InvokeMethodIntList(CString sLispFunction, int nInt, CStringList *pList, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -448,7 +457,7 @@ void InvokeMethodIntList(CString sLispFunction, int nInt, CStringList *pList, bo
 			
 			struct resbuf *result = NULL;
 			if (rbpTail != NULL) { 
-		        stat = acedInvoke(rbpTail, &result); 
+		        stat = acedInvokeNoDocStateSafe(rbpTail, &result); 
 			    acutRelRb(rbpTail); 
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -458,7 +467,7 @@ void InvokeMethodIntList(CString sLispFunction, int nInt, CStringList *pList, bo
 
 void InvokeMethodString(CString sLispFunction, CString sString, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		//AfxMessageBox(sLispFunction);
@@ -485,7 +494,7 @@ void InvokeMethodString(CString sLispFunction, CString sString, bool UseSendStri
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -497,7 +506,7 @@ void InvokeMethodString(CString sLispFunction, CString sString, bool UseSendStri
 
 void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -526,7 +535,7 @@ void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString)
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -535,7 +544,7 @@ void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString)
 }
 void InvokeMethodIntInt(CString sLispFunction, int nInt1, int nInt2, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -570,7 +579,7 @@ void InvokeMethodIntInt(CString sLispFunction, int nInt1, int nInt2, bool UseSen
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 
 
 				
@@ -584,7 +593,7 @@ void InvokeMethodIntInt(CString sLispFunction, int nInt1, int nInt2, bool UseSen
 
 void InvokeMethodIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt3, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -619,7 +628,7 @@ void InvokeMethodIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list);
 				if(result != NULL) acutRelRb(result); 
 			} 
@@ -629,7 +638,7 @@ void InvokeMethodIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt
 
 void InvokeMethodIntIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt3, int nInt4, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -667,7 +676,7 @@ void InvokeMethodIntIntIntInt(CString sLispFunction, int nInt1, int nInt2, int n
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -678,7 +687,7 @@ void InvokeMethodIntIntIntInt(CString sLispFunction, int nInt1, int nInt2, int n
 
 void InvokeMethodStringString(CString sLispFunction, CString sString1, CString sString2, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -707,7 +716,7 @@ void InvokeMethodStringString(CString sLispFunction, CString sString1, CString s
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -717,7 +726,7 @@ void InvokeMethodStringString(CString sLispFunction, CString sString1, CString s
 
 void InvokeMethod3Strings(CString sLispFunction, CString sString1, CString sString2, CString sString3, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -748,7 +757,7 @@ void InvokeMethod3Strings(CString sLispFunction, CString sString1, CString sStri
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -758,7 +767,7 @@ void InvokeMethod3Strings(CString sLispFunction, CString sString1, CString sStri
 
 void InvokeMethod4Strings(CString sLispFunction, CString sString1, CString sString2, CString sString3, CString sString4, bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -791,7 +800,7 @@ void InvokeMethod4Strings(CString sLispFunction, CString sString1, CString sStri
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -808,7 +817,7 @@ void InvokeMethod3StringsPoint(
 					CPoint	ptPoint,
 					bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		
@@ -857,7 +866,7 @@ void InvokeMethod3StringsPoint(
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -873,7 +882,7 @@ void InvokeMethod3StringsLong(
 					long	lValue,
 					bool	UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		
@@ -916,7 +925,7 @@ void InvokeMethod3StringsLong(
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -929,7 +938,7 @@ void InvokeMethodPoint(
 					CPoint	ptPoint,
 					bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -969,7 +978,7 @@ void InvokeMethodPoint(
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 
 			    if(result != NULL) acutRelRb(result); 
 			} 
@@ -983,7 +992,7 @@ void InvokeMethodPoint3D(
 					acedDwgPoint ptPoint,
 					bool UseSendString)
 {
-	CAcModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
+	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
 		if (UseSendString)
@@ -1040,7 +1049,7 @@ void InvokeMethodPoint3D(
 				RTNONE);
 
 			if (list != NULL) { 
-		        stat = acedInvoke(list, &result); 
+		        stat = acedInvokeNoDocStateSafe(list, &result); 
 			    acutRelRb(list); 
 			    if(result != NULL) acutRelRb(result); 
 			} 

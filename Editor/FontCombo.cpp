@@ -608,13 +608,10 @@ void CFontCombo::Initialize()
 	
 	// We set the timer because its the only way we know when a selection
 	// has changed - use for tip window
-	SetTimer(1, 500, NULL);
+	SetTimer(1, 200, NULL);
 
 	// Yep tip window is created here
 	m_wndTip.Create(this);
-
-	// Set default font name
-	CString strDefault = "";
 	
 }
 

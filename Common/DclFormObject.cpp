@@ -573,10 +573,10 @@ void CDclFormObject::Serialize(CArchive& ar)
 				pControl->RemoveProperty( nEventInvoke );
 				//break;  This break was missing -- maybe intentional, I can't tell for sure [ORW]
 			case VdclModeless:
-				pControl->AddLongProperty( nMinDialogWidth, PropLong, pControl->GetLngProperty(nWidth) );
-				pControl->AddLongProperty( nMinDialogHeight, PropLong, pControl->GetLngProperty(nHeight) );
-				pControl->AddLongProperty( nMaxDialogWidth, PropLong, 1000 );
-				pControl->AddLongProperty( nMaxDialogHeight, PropLong, 1000 );
+				pControl->AddLongProperty( nMinDialogWidth, PropLong, 0 );
+				pControl->AddLongProperty( nMinDialogHeight, PropLong, 0 );
+				pControl->AddLongProperty( nMaxDialogWidth, PropLong, 0 );
+				pControl->AddLongProperty( nMaxDialogHeight, PropLong, 0 );
 				break;
 			case VdclDockable:
 				pControl->AddBooleanProperty( nResizable, PropBool, true );
@@ -783,10 +783,10 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 			pControl->RemoveProperty( nEventInvoke );
 			//break;  This break was missing -- maybe intentional, I can't tell for sure [ORW]
 		case VdclModeless:
-			pControl->AddLongProperty( nMinDialogWidth, PropLong, 50 );
-			pControl->AddLongProperty( nMinDialogHeight, PropLong, 50 );
-			pControl->AddLongProperty( nMaxDialogWidth, PropLong, 1000 );
-			pControl->AddLongProperty( nMaxDialogHeight, PropLong, 1000 );
+			pControl->AddLongProperty( nMinDialogWidth, PropLong, 0 );
+			pControl->AddLongProperty( nMinDialogHeight, PropLong, 0 );
+			pControl->AddLongProperty( nMaxDialogWidth, PropLong, 0 );
+			pControl->AddLongProperty( nMaxDialogHeight, PropLong, 0 );
 			break;
 		case VdclDockable:
 			pControl->AddBooleanProperty( nResizable, PropBool, true );

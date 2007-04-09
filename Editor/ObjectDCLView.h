@@ -256,11 +256,18 @@ public:
 #endif
 
 protected:
+	DECLARE_MESSAGE_MAP()
 
 // Generated message map functions
 public:
-	//{{AFX_MSG(CObjectDCLView)
+	afx_msg void OnEditCut();
+	afx_msg void OnEditDelete();
+	afx_msg void OnEditPaste();
+	afx_msg void OnEditUndo();
+	afx_msg void OnEditCopy();
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+
+protected:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
@@ -271,17 +278,9 @@ public:
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnBringtofront();
 	afx_msg void OnSendtoback();
-	afx_msg void OnEditCut();
-	afx_msg void OnEditDelete();
-	afx_msg void OnEditPaste();
-	afx_msg void OnEditUndo();
-	afx_msg void OnEditCopy();
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	afx_msg void OnProperties();
 	afx_msg void OnEditObjectbrowser();
-	//}}AFX_MSG
-	
-	DECLARE_MESSAGE_MAP()
 	afx_msg void OnToolsSetlispsymbolnames();
 	afx_msg void OnToolsClearlispsymbolnames();
 	afx_msg void OnUpdateToolsSetlispsymbolnames(CCmdUI *pCmdUI);

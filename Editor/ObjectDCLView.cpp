@@ -608,7 +608,7 @@ void CObjectDCLView::ShowGripRects(BOOL bShow, CRect rcCtrl)
 			nGripSize, nGripSize,
 			TRUE);
 
-		if (m_GripRect1.IsWindowVisible() == FALSE)
+		if (m_GripRect1.IsWindowVisible() != bShow)
 		{
 			// now show all the grip rect's
 			m_GripRect1.ShowWindow(bShow);
@@ -631,16 +631,17 @@ void CObjectDCLView::SelectControl(CString sName)
 	CDclControlObject* pArxObject = FindArxControlObject(m_pThisDclForm, sName);
 	if (pArxObject == NULL)
 		return;
+	if (IsInSelection(pArxObject))
+		return;
 
 	CControlHolder *pControl = (CControlHolder*)pArxObject->m_pCtrlHolder;
 
-	if (m_SelectedControl.m_pArxObject == NULL &&
-		!IsInSelection(pArxObject))
+	if (m_SelectedControl.m_pArxObject == NULL)
 	{
 		m_SelectedControl.m_pArxObject = pArxObject;	
 		m_SelectedControl.m_pControl = pControl;
 		m_SelectedControl.m_nIndex = pArxObject->GetZOrder();
-		ClearSelection();
+		ClearSelection(false);
 		CRect rcCtrl;
 		pControl->GetWindowRect(&rcCtrl);
 		ScreenToClient(rcCtrl);
@@ -649,121 +650,69 @@ void CObjectDCLView::SelectControl(CString sName)
 	}
 	else // add the selected control to the multi selection
 	{
-		if (!IsInSelection(pArxObject) && pArxObject != m_SelectedControl.m_pArxObject)
-		{
-			CSelectedControl *pSelection = new CSelectedControl;
-			pSelection->m_pArxObject = pArxObject;
-			pSelection->m_pControl = pControl;
-			pSelection->m_nIndex = pArxObject->GetZOrder();
-			m_SelectedList.AddTail(pSelection);
-			pControl->SetSelected(TRUE);			
-			FireControlSelected(NULL);
-		}
+		CSelectedControl *pSelection = new CSelectedControl;
+		pSelection->m_pArxObject = pArxObject;
+		pSelection->m_pControl = pControl;
+		pSelection->m_nIndex = pArxObject->GetZOrder();
+		m_SelectedList.AddTail(pSelection);
+		pControl->SetSelected(TRUE);			
+		FireControlSelected(NULL);
 	}
-
 }
-bool CObjectDCLView::CheckControlsForSelection(CRect rcSelArea, bool bLookForOne) 
+
+bool CObjectDCLView::CheckControlsForSelection( CRect rcSelArea, bool bLookForOne ) 
 {
 	CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
-
-	bool bReturn = false;
-	// we are going to do a loop to querry each control if it's to be selected
-	for (int i=m_pThisDclForm->GetControlList().GetCount()- 1; i> 0; i--)
+	if( !m_SelectedControl.m_pArxObject )
 	{
-		POSITION pos = m_pThisDclForm->GetControlList().FindIndex(i);
-		if (pos != NULL)
-		{
-			// get the control
-			CDclControlObject *pArxObject = m_pThisDclForm->GetControlList().GetAt(pos);
-			if (pArxObject != NULL && pArxObject->m_Delete == FALSE)
-			{
-				CControlHolder *pControl = (CControlHolder*)pArxObject->m_pCtrlHolder;
-				assert( pControl != NULL );
-				if( !pControl )
-					continue;
-				// get the control's position
-				CRect rcCtrl;
-				pControl->GetWindowRect(&rcCtrl);
-				ScreenToClient(rcCtrl);
-
-				bool bCrosses = false;
-				// check if the left selection rect crosses this control
-				if (rcSelArea.left > rcCtrl.left &&
-						rcSelArea.left < rcCtrl.right &&
-						rcSelArea.top < rcCtrl.bottom &&
-						rcSelArea.bottom > rcCtrl.top)
-					bCrosses = true;
-				
-				// check if the right selection rect crosses this control
-				if (rcSelArea.right < rcCtrl.right &&
-						rcSelArea.right > rcCtrl.left &&
-						rcSelArea.top < rcCtrl.bottom &&
-						rcSelArea.bottom > rcCtrl.top)
-					bCrosses = true;
-				
-				// check if the top selection rect crosses this control
-				if (rcSelArea.right > rcCtrl.right &&
-						rcSelArea.left < rcCtrl.right &&
-						rcSelArea.top < rcCtrl.bottom &&
-						rcSelArea.top > rcCtrl.top)
-					bCrosses = true;
-
-				// check if the bottom selection rect crosses this control
-				if (rcSelArea.right > rcCtrl.right &&
-						rcSelArea.left < rcCtrl.right &&
-						rcSelArea.bottom < rcCtrl.bottom &&
-						rcSelArea.bottom > rcCtrl.top)
-					bCrosses = true;
-
-				// check if this control is inside the selection rect
-				if (rcSelArea.right > rcCtrl.right &&
-						rcSelArea.left < rcCtrl.left &&
-						rcSelArea.bottom > rcCtrl.bottom &&
-						rcSelArea.top < rcCtrl.top)
-					bCrosses = true;
-
-				// is the point inside the control
-				if (bCrosses)
-				{
-					if (m_SelectedControl.m_pArxObject == NULL &&
-						!IsInSelection(pArxObject))
-					{
-						pZOrderList->ClearSelection();
-						pZOrderList->SelectItem(pArxObject->GetStrProperty(nName), true);
-						// call the method to setup the fonts in the font tool bar.
-						theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar(pArxObject);
-	
-						m_SelectedControl.m_pArxObject = pArxObject;
-						m_SelectedControl.m_pControl = pControl;
-						m_SelectedControl.m_nIndex = i;
-						ClearSelection();
-						ShowGripRects(TRUE, rcCtrl);
-						if(bLookForOne)
-							return true;
-					}
-					else // add the selected control to the multi selection
-					{
-						if (!IsInSelection(pArxObject) && pArxObject != m_SelectedControl.m_pArxObject)
-						{
-							CSelectedControl *pSelection = new CSelectedControl;
-							pZOrderList->SelectItem(pArxObject->GetStrProperty(nName), false);
-							// call the method to setup the fonts in the font tool bar.
-	 						theEditorWorkspace.GetMainFrame()->m_wndDlgBar.AddFontToToolBar(pArxObject);
-	
-							pSelection->m_pArxObject = pArxObject;
-							pSelection->m_pControl = pControl;
-							pSelection->m_nIndex = i;
-							m_SelectedList.AddTail(pSelection);
-							pControl->SetSelected(TRUE);
-							
-						}
-					}
-					bReturn = true;
-				}			
-			}
-		} 
+		pZOrderList->ClearSelection();
+		ClearSelection();
 	}
-	
+	bool bReturn = false;
+	//check each control to see whether it intersects the selection rectangle
+	const CList< CDclControlObject* >& ControlList = m_pThisDclForm->GetControlList();
+	int idx = ControlList.GetCount();
+	POSITION pos = ControlList.GetTailPosition();
+	while( pos )
+	{
+		--idx;
+		CDclControlObject* pDclObject = ControlList.GetPrev( pos );
+		assert( pDclObject != NULL );
+		if( pDclObject->m_Delete )
+			continue;
+		CControlHolder* pControl = (CControlHolder*)pDclObject->m_pCtrlHolder;
+		assert( pControl != NULL );
+		if( !pControl )
+			continue;
+		// get the control's position
+		CRect rcCtrl;
+		pControl->GetWindowRect( &rcCtrl );
+		ScreenToClient( rcCtrl );
+		if( !CRect().IntersectRect( rcSelArea, rcCtrl ) )
+			continue; //no intersection, so skip this control
+		if( IsInSelection( pDclObject ) ||  pDclObject == m_SelectedControl.m_pArxObject )
+			continue; //it's already selected
+		bReturn = true;
+		theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar( pDclObject );
+		bool bFirstSelectedControl = (m_SelectedControl.m_pArxObject == NULL);
+		m_SelectedControl.m_pArxObject = pDclObject;
+		m_SelectedControl.m_pControl = pControl;
+		m_SelectedControl.m_nIndex = idx;
+		pZOrderList->SelectItem( pDclObject->GetStrProperty( nName ), true );
+
+		if( bFirstSelectedControl )
+		{
+			ShowGripRects( TRUE, rcCtrl );
+			if( bLookForOne )
+				return true;
+		}
+		else
+		{
+			CSelectedControl* pSelection = new CSelectedControl( pDclObject, pControl, idx );
+			m_SelectedList.AddTail( pSelection );
+			pControl->SetSelected( TRUE );
+		}
+	}
 	return bReturn;
 }
 
@@ -1254,9 +1203,9 @@ void CObjectDCLView::OnMouseMove(UINT nFlags, CPoint point)
 		::ReleaseDC(NULL, hdc);
 		
 	}
-			
 	CView::OnMouseMove(nFlags, point);
 }
+
 void CObjectDCLView::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	CView::OnLButtonUp(nFlags, point);
@@ -1458,6 +1407,8 @@ void CObjectDCLView::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CObjectDCLView::ClearSelection(bool bResetZOrder)
 {
+	AllRemoveDragRects();
+	HideSizingRect();
 	if (m_SelectedList.GetCount() == 0)
 		return;
 
@@ -1488,39 +1439,26 @@ void CObjectDCLView::ClearSelection(bool bResetZOrder)
 
 void CObjectDCLView::ShowSelection()
 {
-	if (m_SelectedList.GetCount() == 0)
-		return;
-
-	for (int i=0; i<m_SelectedList.GetCount(); i++)
+	POSITION pos = m_SelectedList.GetHeadPosition();
+	while( pos )
 	{
-		POSITION pos = m_SelectedList.FindIndex(i);
-		if (pos != NULL)
-		{
-			CSelectedControl *pSelControl = m_SelectedList.GetAt(pos);
-			((CControlHolder*)pSelControl->m_pControl)->SetSelected(TRUE);
-		}
+		CSelectedControl* pSelControl = m_SelectedList.GetNext( pos );
+		((CControlHolder*)pSelControl->m_pControl)->SetSelected( TRUE );
 	}
 }
+
 bool CObjectDCLView::IsInSelection(CDclControlObject *pArxObject)
 {
-	if (m_SelectedList.GetCount() == 0)
-		return false;
-
-	for (int i=0; i<m_SelectedList.GetCount(); i++)
+	POSITION pos = m_SelectedList.GetHeadPosition();
+	while( pos )
 	{
-		POSITION pos = m_SelectedList.FindIndex(i);
-		if (pos != NULL)
-		{
-			CSelectedControl *pSelControl = m_SelectedList.GetAt(pos);			
-			if (pSelControl->m_pArxObject->GetID() == pArxObject->GetID())
-			{
-				return true;
-			}
-		}
+		CSelectedControl* pSelControl = m_SelectedList.GetNext( pos );
+		if( pSelControl->m_pArxObject == pArxObject )
+			return true;
 	}
-	
 	return false;
 }
+
 void CObjectDCLView::OnLButtonDown(UINT nFlags, CPoint point) 
 {	
 	if (m_pThisDclForm == NULL)
@@ -2182,10 +2120,7 @@ void CObjectDCLView::HideSizingRect()
 	::ReleaseDC(NULL, hdc);
 	
 	m_rcDrawLast.SetRect(0,0,0,0);
-	
 }	
-
-
 
 void CObjectDCLView::CopyControlToClipBoard() 
 {

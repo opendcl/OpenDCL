@@ -126,25 +126,6 @@ BOOL CModalVDcl::OnNotify_ToolTipTitle(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 	return FALSE;
 }
 
-void CModalVDcl::CloseDialog()
-{
-	if (QueryForClose())	
-		__super::OnOK();
-}
-
-bool CModalVDcl::QueryForClose()
-{
-	if (mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose) == CString())
-		return true;
-	return !(InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false));	
-}
-
-void CModalVDcl::OnClose() 
-{
-	if (QueryForClose())	
-		__super::OnClose();				
-}
-
 void CModalVDcl::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize(nType, cx, cy);
@@ -179,6 +160,7 @@ void CModalVDcl::OnOK()
 	{
     InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnOk), false);
 		__super::OnOK();
+		mDialogX.CloseDialog(IDOK);
 	}
 }
 
@@ -188,6 +170,7 @@ void CModalVDcl::OnCancel()
 	{
     InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnCancel), false);
 		__super::OnCancel();
+		mDialogX.CloseDialog(IDCANCEL);
 	}
 }
 

@@ -439,8 +439,10 @@ void CParentFileDialog::OnTypeChange()
 	InvokeMethodString(pProps->GetStrProperty(nEventOnTypeChange), sText, m_bInvokeWithSendString);
 }
 
-BOOL CParentFileDialog::OnHelpInfo(HELPINFO* pHelpInfo) 
+BOOL CParentFileDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
+	CDclControlObject* pProps = mParentDlg.GetDialogObject().GetSourceForm()->GetControlProperties();
+	InvokeMethod(pProps->GetStrProperty(nEventOnHelp), m_bInvokeWithSendString);
 	return TRUE; 
 }
 

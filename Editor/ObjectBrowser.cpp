@@ -347,11 +347,6 @@ void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, H
 				LoadMethods(theWorkspace.LoadResourceString(IDS_FILEDLGMTH2), hParentItem);
 			return;
 		}
-		else if (m_pDclForm->GetType() == -2)
-		{
-			LoadMethods(_T("BonusFunctions.mth"), hParentItem);
-			return;
-		}
 		
 		if (pControl->GetType() != CtlForm &&
 				pControl->GetType() != CtlInvalid &&
@@ -733,8 +728,6 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					{
 						if (m_pDclForm->GetType() == VdclFileDialog)
 							LoadFullMethod(theWorkspace.LoadResourceString(IDS_FILEDLGMTH), sItemText, sTitle, sDesc, sDefun1);	
-						else if (pControl->GetType() == -2)
-							LoadFullMethod(_T("BonusFunctions.mth"), sItemText, sTitle, sDesc, sDefun1);	
 						else
 							LoadFullMethod(theWorkspace.LoadResourceString(IDS_FORMSMTH), sItemText, sTitle, sDesc, sDefun1);	
 					}
@@ -777,10 +770,6 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 								LoadFullMethod(_T("FileDlg.mth"), sItemText, sTitle, sDesc, sDefun1);
 							else
 								LoadFullMethod(_T("Forms.mth"), sItemText, sTitle, sDesc, sDefun1);
-							break;
-
-						case -2: // bonus functions
-							LoadFullMethod(_T("BonusFunctions.mth"), sItemText, sTitle, sDesc, sDefun1);
 							break;
 
 						case CtlImageComboBox:

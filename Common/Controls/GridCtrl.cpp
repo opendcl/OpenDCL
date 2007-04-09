@@ -96,9 +96,6 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 	
 	SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
 
-	InitToolTip();
-	SetToolTipEx(this, m_ToolTip, mpTemplate);
-
 	SetupColumns();
 	if( mpTemplate->GetBoolProperty( nColHeader ) )
 	{
@@ -113,7 +110,7 @@ DWORD CGridCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 	dwStyle |= WS_CLIPCHILDREN | LVS_REPORT | LVS_OWNERDRAWFIXED | LVS_SINGLESEL | LVS_SHAREIMAGELISTS;
-	if( mpTemplate->GetBoolProperty( nColHeader ) )
+	if( !mpTemplate->GetBoolProperty( nColHeader ) )
 		dwStyle |= LVS_NOCOLUMNHEADER;
 	switch( mpTemplate->GetLngProperty( nListViewSort ) )
 	{

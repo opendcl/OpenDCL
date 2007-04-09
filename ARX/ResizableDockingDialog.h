@@ -44,6 +44,8 @@ class CResizableDockingDialog : public CAdUiDockControlBar
 	CResizableDockingDialogX mDialogX;
 	bool mbClosing;
 	bool mbHiding;
+	bool mbTrackingMouse;
+	bool mbInMenuLoop;
 
 public:
 	CAcadDocReactor		*m_pDocToModReactor;
@@ -81,11 +83,18 @@ private:
 	
 // Implementation
 protected:
+	DECLARE_MESSAGE_MAP()
+
+protected:
+	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
 	afx_msg void PostNcDestroy();
-
-protected:
-	DECLARE_MESSAGE_MAP()
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
+	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnEnterMenuLoop(BOOL bPopupMenu);
+	afx_msg void OnExitMenuLoop(BOOL bPopupMenu);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

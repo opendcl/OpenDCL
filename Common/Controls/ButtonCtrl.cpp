@@ -4,7 +4,6 @@
 #include "DclControlObject.h"
 #include "ControlPane.h"
 #include "Workspace.h"
-#include "ToolTips.h"
 #include "SharedRes.h"
 
 
@@ -32,9 +31,6 @@ bool CButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	//if( mpTemplate->GetLngProperty( nAutoSize ) > 0 )
 	//	SizeToContent();
-
-	mToolTip.Create(this);
-	SetToolTipEx(this, mToolTip, GetTemplate());
 
 	return bSuccess;
 }
@@ -169,6 +165,6 @@ void CButtonCtrl::PostNcDestroy()
 
 BOOL CButtonCtrl::PreTranslateMessage(MSG* pMsg)
 {
-	mToolTip.RelayEvent( pMsg );
+	GetToolTipCtrl().RelayEvent( pMsg );
 	return __super::PreTranslateMessage( pMsg );
 }

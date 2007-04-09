@@ -18,7 +18,6 @@
 #include "VarUtils.h"
 #include "PropertyIds.h"
 #include "SharedRes.h"
-#include "ToolTips.h"
 
 
 // function type to return script language dependent strings
@@ -330,26 +329,25 @@ bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect rcWnd, bool bAdd
 	if (GetTemplate()->m_pStream != NULL)
 		pOleStreamFile = new COleStreamFile(GetTemplate()->GetLoadStream());
 
-	BOOL m_bActiveXCtrl = FALSE;
-	bool bSuccess = true;
+	bool bSuccess = false;
 	try
 	{		
 		//Create the control, passing the OleStream and license key.
-		m_bActiveXCtrl = CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
-																		pOleStreamFile, FALSE, bstrLicenseKey );
-		if (!m_bActiveXCtrl && pOleStreamFile)
+		bSuccess = (FALSE != CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
+																				pOleStreamFile, FALSE, bstrLicenseKey ));
+		if (!bSuccess && pOleStreamFile)
 		{
 			//Creation failed.
 			//Try again, this time without the OleStream.
-			m_bActiveXCtrl = CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
-																			NULL, FALSE, bstrLicenseKey );
+			bSuccess = (FALSE != CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
+																					NULL, FALSE, bstrLicenseKey ));
 		}
-		if (!m_bActiveXCtrl && (BSTR)bstrLicenseKey)
+		if (!bSuccess && (BSTR)bstrLicenseKey)
 		{
 			//Creation failed.
 			//Try again, this time without the OleStream and without the license key.
-			m_bActiveXCtrl = CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
-																			NULL, FALSE, NULL );
+			bSuccess = (FALSE != CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
+																					NULL, FALSE, NULL ));
 		}
 	}
 	catch(...)
@@ -360,11 +358,11 @@ bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect rcWnd, bool bAdd
 	if (pOleStreamFile != NULL)
 		delete pOleStreamFile;
 
-	if (m_bActiveXCtrl && bAddPropInfo) 
+	if (bSuccess && bAddPropInfo) 
 		Initialize();
 
-	InitToolTip();
-	SetToolTipEx(this, mToolTip, GetTemplate());
+	if( bSuccess && !ApplyPropertiesEnum() )
+		bSuccess = false;
 
 	return bSuccess;
 }
@@ -389,12 +387,6 @@ DWORD CAxContainerCtrl::GetWndStyle() const
 	//ignoring the nIsTabStop property? [ORW]
 	return (WS_CHILD | WS_VISIBLE);
 }
-
-void CAxContainerCtrl::InitToolTip()
-{
-	if (mToolTip.m_hWnd == NULL)
-		mToolTip.Create(this);
-} // End of InitToolTip
 
 
 //[DPR] Recreated for methods_activex.cpp
@@ -1097,7 +1089,6 @@ HRESULT CAxContainerCtrl::Invoke( AxMethodDescriptor* axMethod, VARIANTARG* rvar
 
 BOOL CAxContainerCtrl::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
-	mToolTip.RelayEvent(pMsg);
+	GetToolTipCtrl().RelayEvent(pMsg);
 	return __super::PreTranslateMessage(pMsg);
 }

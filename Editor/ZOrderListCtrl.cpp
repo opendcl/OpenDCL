@@ -64,11 +64,9 @@ void CZOrderListCtrl::ClearList(CObjectDCLView *pView)
 	if (m_hWnd)
 		DeleteAllItems();
 }
+
 void CZOrderListCtrl::AddControlToList(CString sName, int nType)
 {
-	
-	//int nIndex = InsertItem(GetItemCount(), sName, nType-2);
-
 	LV_ITEM lvItem;
 	lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;
 	lvItem.iItem = GetItemCount();
@@ -98,6 +96,7 @@ void CZOrderListCtrl::RemoveControlFromList(CString sName)
 		}
 	}
 }
+
 void CZOrderListCtrl::RenameControlInList(CString sOldName, CString sNewName)
 {
 	for (int i=0; i<GetItemCount(); i++)
@@ -126,9 +125,7 @@ void CZOrderListCtrl::SelectItem(CString sName, bool bEnsureVisible)
 void CZOrderListCtrl::ClearSelection()
 {
 	for (int i=0; i<GetItemCount(); i++)
-	{
 		SetItemState(i, NULL, LVIS_SELECTED);
-	}
 }
 
 int CZOrderListCtrl::GetSelectedCount() 
@@ -412,39 +409,19 @@ void CZOrderListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 		plvdi->item.mask >= 0)
 	{
 		// get the item'sname
-		CString sName = GetItemText(plvdi->item.mask, 0);
-		// get the numver of selected items
-		int nSelCount=GetSelectedCount();
 		if (m_pView != NULL)
 		{
-			// if only one is selected
-			if (nSelCount == 1)
+			m_pView->SelectControl(GetItemText(plvdi->item.mask, 0));
+			m_pView->ClearSelection(false);
+			// loop to select all the controls
+			for (int i=0;i<GetItemCount(); i++)
 			{
-				// make the calls to the CView to select the control
-				m_pView->m_SelectedControl.m_pControl = NULL;
-				m_pView->m_SelectedControl.m_pControl = NULL;
-				m_pView->ClearSelection();
-				m_pView->SelectControl(sName);
-			}
-			else
-			{
-				// make the calls to the CView to select all the controls
-				m_pView->m_SelectedControl.m_pControl = NULL;
-				m_pView->m_SelectedControl.m_pControl = NULL;
-				m_pView->ClearSelection(false);
-
-				// loop to select all the controls
-				for (int i=0;i<GetItemCount(); i++)
-				{
-					// here we are adding the controls to the selection list.
-					UINT nState = GetItemState(i, LVIS_SELECTED);
-					if (nState == LVIS_SELECTED)
-						m_pView->SelectControl(GetItemText(i, 0));
-				}				
-			}
+				if (GetItemState(i, LVIS_SELECTED) == LVIS_SELECTED)
+					m_pView->SelectControl(GetItemText(i, 0));
+			}				
 		}
 	}
-	*pResult = 0;
+	*pResult = 1;
 }
 
 

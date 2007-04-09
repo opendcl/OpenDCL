@@ -105,6 +105,7 @@ void CBaseDlg::SetTitleBarIcon(int nPictureID)
 }
 
 BEGIN_MESSAGE_MAP(CBaseDlg, CDialog)
+	ON_WM_HELPINFO()
 	ON_WM_CLOSE()
 	ON_WM_SIZING()
 	ON_WM_CAPTURECHANGED()
@@ -164,53 +165,80 @@ BOOL CBaseDlg::OnInitDialog()
 	UINT nID = 1000;
 	GetControlPane().CreateControls( nID );
 
+	if( mnInitialX >= 0 )
+		rectSaved.MoveToX( mnInitialX );
+	if( mnInitialY >= 0 )
+		rectSaved.MoveToY( mnInitialY );
+	// ensure the dialog box is on screen
+	if( rectSaved.left < (::GetSystemMetrics( SM_CXSCREEN ) - 10) &&
+			rectSaved.top < (::GetSystemMetrics( SM_CYSCREEN ) - 10) )
+		rectWindow.MoveToXY( rectSaved.left, rectSaved.top );
 	if( GetDialogObject().IsResizable() && rectSaved.right > rectSaved.left && rectSaved.bottom > rectSaved.top )
 	{
-		// ensure the dialog box is on screen
-		if( rectSaved.left < (::GetSystemMetrics( SM_CXSCREEN ) - 10) &&
-				rectSaved.top < (::GetSystemMetrics( SM_CYSCREEN ) - 10) )
-			rectWindow.MoveToXY( rectSaved.left, rectSaved.top );
-		if( pFormProps->GetBoolProperty( nResizable ) )
-		{
-			rectWindow.right = rectWindow.left + rectSaved.Width();
-			rectWindow.bottom = rectWindow.top + rectSaved.Height();
-		}
-		MoveWindow( &rectWindow, FALSE );
+		rectWindow.right = rectWindow.left + rectSaved.Width();
+		rectWindow.bottom = rectWindow.top + rectSaved.Height();
 	}
 
-	UpdateGripPos();
-
-	if( mnMinWidth > 0 && mpSourceForm->UsesClientRect() )
+	bool bUsesClientRect = mpSourceForm->UsesClientRect();
+	if( mnMinWidth > 0 )
 	{
-		mnMinWidth += mnNCWidth;
-		mnMaxWidth += mnNCWidth;
-		mnMinHeight += mnNCHeight;
-		mnMaxHeight += mnNCHeight;
+		if( bUsesClientRect )
+			mnMinWidth += mnNCWidth;
+		if( rectWindow.Width() < mnNCWidth )
+			rectWindow.right = rectWindow.left + mnMinWidth;
 	}
+	if( mnMaxWidth > 0 )
+	{
+		if( mnMaxWidth > 0 )
+			mnMaxWidth += mnNCWidth;
+		if( rectWindow.Width() > mnMaxWidth )
+			rectWindow.right = rectWindow.left + mnMaxWidth;
+	}
+	if( mnMinHeight > 0 )
+	{
+		if( bUsesClientRect )
+			mnMinHeight += mnNCHeight;
+		if( rectWindow.Height() < mnNCHeight )
+			rectWindow.bottom = rectWindow.top + mnMinHeight;
+	}
+	if( mnMaxHeight > 0 )
+	{
+		if( mnMaxHeight > 0 )
+			mnMaxHeight += mnNCHeight;
+		if( rectWindow.Height() > mnMaxHeight )
+			rectWindow.bottom = rectWindow.top + mnMaxHeight;
+	}
+	MoveWindow( &rectWindow, FALSE );
+	UpdateGripPos();
 	
 	InvokeMethod( pFormProps->GetStrProperty( nFormEventInitialize ), false );
-	bool bClientRect = mpSourceForm->UsesClientRect();
-	if( mpSourceForm->UsesClientRect() )
-		GetClientRect( &rectClient );
+	if( bUsesClientRect )
+		GetClientRect( &rectWindow );
 	InvokeMethodIntInt( pFormProps->GetStrProperty( nFormEventSize ), rectWindow.Width(), rectWindow.Height(), false );	
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
+BOOL CBaseDlg::OnHelpInfo(HELPINFO* pHelpInfo)
+{
+	InvokeMethod(mpSourceForm->GetControlProperties()->GetStrProperty(nEventOnHelp), false);
+	return TRUE;
+}
+
 void CBaseDlg::OnClose() 
 {
-	SavePosition();
-	__super::OnClose();				
+	CString sEvent = mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventCancelClose);
+	if (sEvent.IsEmpty() || !(InvokeCancelMethod(sEvent, false)))
+		__super::OnClose();				
 }
 
 void CBaseDlg::OnDestroy() 
 {
-	DestroyIcon( SetIcon(NULL, FALSE) );
 	SavePosition();
-	CRect rectWindow;
-	GetWindowRect( &rectWindow );
-	InvokeMethodIntInt( mpSourceForm->GetControlProperties()->GetStrProperty( nFormEventClose ),
-											rectWindow.left, rectWindow.top, false );
+	CRect rcThis;
+	GetWindowRect( &rcThis );
+	InvokeMethodIntInt(mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventClose), rcThis.left, rcThis.top, false);	
+	DestroyIcon( SetIcon(NULL, FALSE) );
 	GetControlPane().CleanUpControls();	
 	__super::OnDestroy();
 }
@@ -275,7 +303,6 @@ LRESULT CBaseDlg::OnNcHitTest(CPoint point)
 		if( pWnd == this )
 			return HTCAPTION;
 	}
-	
 	return __super::OnNcHitTest(point);
 }
 

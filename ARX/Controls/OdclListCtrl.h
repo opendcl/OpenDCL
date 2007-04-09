@@ -98,8 +98,6 @@ public:
 
 // Implementation
 public:
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	bool LoadDwg(CString sFileName);
 	void SetAcadColor(long nColor);
 	void RefreshBlockList();
@@ -116,6 +114,9 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 	// Generated message map functions
+protected:
+	DECLARE_MESSAGE_MAP()
+
 protected:
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
@@ -143,7 +144,4 @@ protected:
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void PostNcDestroy();
-
-protected:
-	DECLARE_MESSAGE_MAP()
 };

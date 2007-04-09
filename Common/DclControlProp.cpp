@@ -84,10 +84,10 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		pDclControl->AddBooleanProperty( nResizable, PropBool, false );
 		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 350 );
 		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 250 );
-		pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 100 );
-		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 80 );
-		pDclControl->AddLongProperty( nMaxDialogWidth, PropLong, 1000 );
-		pDclControl->AddLongProperty( nMaxDialogHeight, PropLong, 800 );
+		pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 0 );
+		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 0 );
+		pDclControl->AddLongProperty( nMaxDialogWidth, PropLong, 0 );
+		pDclControl->AddLongProperty( nMaxDialogHeight, PropLong, 0 );
 		pDclControl->AddLongProperty( nIcon, PropPicture, -1 );
 		pDclControl->AddBooleanProperty( nTitleBar, PropBool, true );
 		pDclControl->AddStringProperty( nTitleBarText, PropString, pOwnerForm->GetKeyName() );
@@ -97,6 +97,7 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		AddControlEvent( pDclControl, nFormEventOnOk );
 		AddControlEvent( pDclControl, nFormEventOnCancel );
 		AddControlEvent( pDclControl, nFormEventCancelClose );
+		AddControlEvent( pDclControl, nEventOnHelp );
 		break;
 	case VdclModeless:
 		AddDefaultFormName( pDclControl );
@@ -105,10 +106,10 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		pDclControl->AddBooleanProperty( nResizable, PropBool, true );
 		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 250 );
 		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 150 );
-		pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 100 );
-		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 80 );
-		pDclControl->AddLongProperty( nMaxDialogWidth, PropLong, 1000 );
-		pDclControl->AddLongProperty( nMaxDialogHeight, PropLong, 800 );
+		pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 0 );
+		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 0 );
+		pDclControl->AddLongProperty( nMaxDialogWidth, PropLong, 0 );
+		pDclControl->AddLongProperty( nMaxDialogHeight, PropLong, 0 );
 		pDclControl->AddLongProperty( nIcon, PropPicture, -1 );
 		pDclControl->AddBooleanProperty( nTitleBar, PropBool, true );
 		pDclControl->AddStringProperty( nTitleBarText, PropString, pOwnerForm->GetKeyName() );
@@ -119,6 +120,7 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		AddControlEvent( pDclControl, nFormEventOnCancel );
 		AddControlEvent( pDclControl, nFormEventCancelClose );
 		AddControlEvent( pDclControl, nDocEventActivated );
+		AddControlEvent( pDclControl, nEventOnHelp );
 		break;
 	case VdclDockable:
 		AddDefaultFormName( pDclControl );
@@ -127,14 +129,15 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		pDclControl->AddBooleanProperty( nResizable, PropBool, true );
 		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 250 );
 		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 450 );
-		pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 25 );
-		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 50 );
+		//pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 0 );
+		//pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 0 );
 		pDclControl->AddStringProperty( nTitleBarText, PropString, pOwnerForm->GetKeyName() );
 		pDclControl->AddLongProperty( nDockableSides, PropEnum, 0 );
 		AddControlEvent( pDclControl, nFormEventInitialize );
 		AddControlEvent( pDclControl, nFormEventClose );
 		AddControlEvent( pDclControl, nFormEventSize );
 		AddControlEvent( pDclControl, nDocEventActivated );
+		AddControlEvent( pDclControl, nEventOnHelp );
 		break;
 	case VdclConfigTab:
 		AddDefaultFormName( pDclControl );
@@ -143,14 +146,15 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		pDclControl->AddBooleanProperty( nResizable, PropBool, true );
 		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 600 );
 		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 380 );
-		pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 25 );
-		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 50 );
+		pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 0 );
+		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 0 );
 		pDclControl->AddStringProperty( nCfgTabCaption, PropString, pOwnerForm->GetKeyName() );
 		AddControlEvent( pDclControl, nFormEventInitialize );
 		AddControlEvent( pDclControl, nFormEventShow );
 		AddControlEvent( pDclControl, nCfgEventCancel );
 		AddControlEvent( pDclControl, nCfgEventHelp );
 		AddControlEvent( pDclControl, nCfgEventOK );
+		AddControlEvent( pDclControl, nEventOnHelp );
 		break;
 	case VdclFileDialog:
 		AddDefaultFormName( pDclControl );
@@ -163,6 +167,7 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		AddControlEvent( pDclControl, nFormEventInitialize );
 		AddControlEvent( pDclControl, nFormEventClose );
 		AddControlEvent( pDclControl, nFormEventSize );
+		AddControlEvent( pDclControl, nEventOnHelp );
 		break;
 	case VdclTabForm:
 		AddControlHiddenProperty( pDclControl, nWidth, lWidth > 0? lWidth : 600, PropLong );

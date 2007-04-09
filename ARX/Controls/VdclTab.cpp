@@ -170,8 +170,6 @@ const CControlPane* VdclTab::GetTabControlPaneAt( size_t nIndex ) const
 
 void VdclTab::SetupTabs()
 {
-	InitToolTip();
-	
 	// delete all previous tabs
 	DeleteAllItems();
 
@@ -206,7 +204,24 @@ void VdclTab::SetupTabs()
 		{
 			CRect rectTab;
 			GetItemRect(i, &rectTab);
-			mToolTip.AddTool(this, sToolTipTitle, (HICON)NULL, &rectTab, i);
+			GetToolTipCtrl().AddTool(this, sToolTipTitle, (HICON)NULL, &rectTab, i);
+		}
+	}
+}
+
+void VdclTab::ResetTooltips()
+{
+	RefCountedPtr< CPropertyObject > pTabsTTTProperty = mpTemplate->GetPropertyObject(nTabsTTT);
+	GetToolTipCtrl().RemoveAllTools();
+	size_t nTabQty = pTabsTTTProperty->size();
+	for (size_t i = 0; i < nTabQty; i++)
+	{
+		CString sToolTipTitle = mpTemplate->GetPropertyListItem(nTabsTTT, i);
+		if( !sToolTipTitle.IsEmpty() )
+		{
+			CRect rectTab;
+			GetItemRect(i, &rectTab);
+			GetToolTipCtrl().AddTool(this, sToolTipTitle, (HICON)NULL, &rectTab, i);
 		}
 	}
 }
@@ -228,6 +243,7 @@ void VdclTab::HideTab(int nIndex)
 			return;
 		}
 	}	
+	ResetTooltips();
 }
 
 void VdclTab::ShowTab(int nIndex)
@@ -260,7 +276,7 @@ void VdclTab::ShowTab(int nIndex)
 	tcItem.mask = TCIF_PARAM;
 	tcItem.lParam = (LPARAM)nIndex;
 	SetItem(nIndex, &tcItem);
-
+	ResetTooltips();
 }
 
 bool VdclTab::CreateTabPages( UINT& nId )
@@ -295,6 +311,7 @@ BEGIN_MESSAGE_MAP(VdclTab, CTabCtrl)
 	ON_WM_KILLFOCUS()
 	ON_WM_SETFOCUS()
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_HSCROLL()
 END_MESSAGE_MAP()
 
 
@@ -396,7 +413,7 @@ void VdclTab::ZOrderFrontAllTabs()
 void VdclTab::OnDestroy() 
 {	
 	SetImageList(NULL);
-	mToolTip.RemoveAllTools();
+	GetToolTipCtrl().RemoveAllTools();
 	CTabCtrl::OnDestroy();
 }
 
@@ -429,56 +446,11 @@ void VdclTab::OnSelchanging(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void VdclTab::InitToolTip()
-{
-	if (mToolTip.m_hWnd == NULL)
-		mToolTip.Create(this);
-} // End of InitToolTip
-
-
-
 BOOL VdclTab::PreTranslateMessage(MSG* pMsg) 
 {
-	if (pMsg->message == 512)
-	{
-		if (!m_ToolTipsUpdated)
-		{
-			RefCountedPtr< CPropertyObject > pTabsTTTProperty = mpTemplate->GetPropertyObject(nTabsTTT);
-			size_t nTabQty = pTabsTTTProperty->size();
-			for (size_t i = 0; i < nTabQty; i++)
-			{
-				CString sText = pTabsTTTProperty->GetStringArrayPtr()->at(i);		
-				mToolTip.UpdateTipText(sText, this, i);
-			}
-			m_ToolTipsUpdated = true;
-		}
-	}
-
-	mToolTip.RelayEvent(pMsg);	
-
+	GetToolTipCtrl().RelayEvent(pMsg);	
 	return CTabCtrl::PreTranslateMessage(pMsg);
 }
-
-
-void VdclTab::SetTooltipText(CString* spText, BOOL bActivate)
-{
-	// We cannot accept NULL pointer
-	if (spText == NULL) return;
-
-	// Initialize ToolTip
-	InitToolTip();
-
-	// If there is no tooltip defined then add it
-	//if (mToolTip.GetToolCount() == 0)
-	//{
-	//	CRect rectBtn; 
-	//	GetClientRect(rectBtn);
-	//	mToolTip.AddTool(this, *spText, (HICON)NULL, rectBtn, 1);
-	//}
-
-	// Set text for tooltip
-	mToolTip.UpdateTipText(*spText, this, 1);
-} // End of SetTooltipText
 
 void VdclTab::OnKillFocus(CWnd* pNewWnd) 
 {
@@ -486,7 +458,6 @@ void VdclTab::OnKillFocus(CWnd* pNewWnd)
 	
 	// call methods to invoke the event
 	InvokeMethod(mpTemplate->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
-	
 }
 
 void VdclTab::OnSetFocus(CWnd* pOldWnd) 
@@ -507,4 +478,10 @@ HBRUSH VdclTab::CtlColor(CDC* pDC, UINT /*nCtlColor*/)
 {
 	pDC->SelectObject(CBrush(COLORREF(0)));
 	return NULL;
+}
+
+void VdclTab::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	__super::OnHScroll(nSBCode, nPos, pScrollBar);
+	ResetTooltips();
 }
