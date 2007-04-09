@@ -111,10 +111,7 @@ END_MESSAGE_MAP()
 
 BOOL CModelessDlg::OnInitDialog() 
 {
-	//Modify style needs to be called before base initdialog
-	//Otherwise, resize commands called during OnInit in LISP don't work correctly
 	ModifyStyleEx( 0, WS_EX_TOOLWINDOW );
-
 	CBaseDlg::OnInitDialog();
 
 	if( m_bAsModal )

@@ -673,13 +673,14 @@ bool CObjectDCLView::CheckControlsForSelection( CRect rcSelArea, bool bLookForOn
 	const CList< CDclControlObject* >& ControlList = m_pThisDclForm->GetControlList();
 	int idx = ControlList.GetCount();
 	POSITION pos = ControlList.GetTailPosition();
-	//First control is the form, which is not to be checked for selection.
-	while( idx > 1 && pos )
+	while( pos )
 	{
 		--idx;
 		CDclControlObject* pDclObject = ControlList.GetPrev( pos );
 		assert( pDclObject != NULL );
 		if( pDclObject->m_Delete )
+			continue;
+		if( pDclObject->GetType() <= CtlForm )
 			continue;
 		CControlHolder* pControl = (CControlHolder*)pDclObject->m_pCtrlHolder;
 		assert( pControl != NULL );

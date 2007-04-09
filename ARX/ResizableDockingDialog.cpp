@@ -56,37 +56,38 @@ bool CResizableDockingDialogX::CreateModeless( UINT nID ) const
 	case 1:
 		// set the form to only dock on the top side
 		dwDockableSides = CBRS_ALIGN_TOP;
-		dwDefaultDockableSide = CBRS_ALIGN_TOP;
+		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
 		nDocHeight += 8;
 		break;
 	case 2:
 		// set the form to only dock on the bottom side
 		dwDockableSides = CBRS_ALIGN_BOTTOM;
-		dwDefaultDockableSide = CBRS_ALIGN_BOTTOM;
+		dwDefaultDockableSide = AFX_IDW_DOCKBAR_BOTTOM;
 		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	case 3:
 		// set the form to only dock on the top or bottom sides
 		dwDockableSides = CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;				
-		dwDefaultDockableSide = CBRS_ALIGN_TOP;
+		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
 		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	case 4:
 		// set the form to only dock on the any side
 		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP;				
-		dwDefaultDockableSide = CBRS_ALIGN_LEFT;
+		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
 		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	case 5:
 		// set the form to only dock on the any side
 		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;
-		dwDefaultDockableSide = CBRS_ALIGN_LEFT;
+		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
 		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	default:
 		// set the form to only dock on the left or right sides
 		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT;
-		dwDefaultDockableSide = CBRS_ALIGN_LEFT;
+		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
+		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	}
 
