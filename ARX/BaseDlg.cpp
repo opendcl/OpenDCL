@@ -171,7 +171,7 @@ BOOL CBaseDlg::OnInitDialog()
 	else if( rectSaved.left >= -10 && rectSaved.left < (::GetSystemMetrics( SM_CXSCREEN ) - 10) )
 		rectWindow.MoveToX( rectSaved.left );
 	if( mnInitialY >= 0 )
-		rectSaved.MoveToY( mnInitialY );
+		rectWindow.MoveToY( mnInitialY );
 	else if( rectSaved.top >= -10 && rectSaved.top < (::GetSystemMetrics( SM_CYSCREEN ) - 10) )
 		rectWindow.MoveToY( rectSaved.top );
 	if( GetDialogObject().IsResizable() && rectSaved.right > rectSaved.left && rectSaved.bottom > rectSaved.top )
