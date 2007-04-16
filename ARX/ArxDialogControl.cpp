@@ -1502,6 +1502,9 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			case CtlScrollBar:				
 				((VdclScrollBar*)pControlWnd)->m_nSmallChange = pControl->GetLngProperty(nSmallChange);
 				break;
+			case CtlSlider:				
+				((VdclSliderCtrl*)pControlWnd)->SetLineSize(pControl->GetLngProperty(nSmallChange));
+				break;
 			}
 			break;
 			

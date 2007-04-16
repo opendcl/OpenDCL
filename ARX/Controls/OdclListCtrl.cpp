@@ -709,25 +709,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 	// a -1 will be returned if not found
 	if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
-	{			
-		if (lvhti.iItem > -1)
-		{		
-			if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
-				// call methods to invoke the event
-				InvokeMethodIntInt(
-					mpTemplate->GetStrProperty(nEventClicked),  
-					lvhti.iItem, 
-					lvhti.iSubItem, 
-					m_bInvokeWithSendString);
-			else				
-				// call methods to invoke the event
-				InvokeMethodInt(
-					mpTemplate->GetStrProperty(nEventClicked),  
-					lvhti.iItem, 
-					m_bInvokeWithSendString);
-		}
 		BeginDragnDrop(mpTemplate, point, m_bInvokeWithSendString);
-	}
 	else
 	{
 		CStringArray saBlockNames;
@@ -796,30 +778,11 @@ void OdclListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 		plvdi->item.mask >= 0)
 	{
 		// call methods to invoke the event
-		InvokeMethodIntInt(		
-			mpTemplate->GetStrProperty(nEventBeginLabelEdit),
-			plvdi->item.mask, plvdi->item.iItem,
-			m_bInvokeWithSendString);
-
-		
-		if (nStyle == 4)
-		{
-			// call methods to invoke the event
-			InvokeMethodIntInt(
-				mpTemplate->GetStrProperty(nEventClicked),  
-				plvdi->item.mask, 
-				plvdi->item.iItem, 
-				m_bInvokeWithSendString);			
-		}
-		/*else				
-		{
-			// call methods to invoke the event
-			InvokeMethodInt(
-				mpTemplate->GetStrProperty(nEventClicked),  
-				plvdi->item.iItem, 
-				m_bInvokeWithSendString);
-		}
-		*/
+		InvokeMethodIntInt(
+			mpTemplate->GetStrProperty(nEventClicked),  
+			plvdi->item.mask, 
+			plvdi->item.iItem, 
+			m_bInvokeWithSendString);			
 	}
 /*	else
 	{
@@ -848,14 +811,14 @@ void OdclListCtrl::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 		if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
 			// call methods to invoke the event
 			InvokeMethodIntInt(
-				mpTemplate->GetStrProperty(nEventDblClicked),  
+				mpTemplate->GetStrProperty(nEventRClick),  
 				plvdi->item.mask, 
 				plvdi->item.iItem, 
 				m_bInvokeWithSendString);
 		else				
 			// call methods to invoke the event
 			InvokeMethodInt(
-				mpTemplate->GetStrProperty(nEventDblClicked),  
+				mpTemplate->GetStrProperty(nEventRClick),  
 				plvdi->item.mask, 
 				m_bInvokeWithSendString);
 	}
@@ -873,14 +836,14 @@ void OdclListCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 		if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
 			// call methods to invoke the event
 			InvokeMethodIntInt(
-				mpTemplate->GetStrProperty(nEventDblClicked),  
+				mpTemplate->GetStrProperty(nEventRDblClick),  
 				plvdi->item.mask, 
 				plvdi->item.iItem, 
 				m_bInvokeWithSendString);
 		else				
 			// call methods to invoke the event
 			InvokeMethodInt(
-				mpTemplate->GetStrProperty(nEventDblClicked),  
+				mpTemplate->GetStrProperty(nEventRDblClick),  
 				plvdi->item.mask, 
 				m_bInvokeWithSendString);
 	}
@@ -1340,11 +1303,10 @@ BOOL OdclListCtrl::PreTranslateMessage(MSG* pMsg)
 
 bool OdclListCtrl::LoadDwg(CString sFileName)
 {
-	TCHAR fullpath[511]; 
-
 	try
 	{
-		if (acedFindFile(sFileName, fullpath) != RTNORM) 			
+		CString sPath = theWorkspace.FindFile( sFileName ); 
+		if( sPath.IsEmpty() )
 		{				
 			CString sLoadString;
 			sLoadString = theWorkspace.LoadResourceString(IDS_DWGNOTLOADING);
@@ -1383,7 +1345,7 @@ bool OdclListCtrl::LoadDwg(CString sFileName)
 		m_pLoadedDwg = new AcDbDatabase(false, true);
 		
 		// Try to open the user specified file
-		if (Acad::eOk != (es = m_pLoadedDwg->readDwgFile(fullpath,_SH_DENYNO,false)))
+		if (Acad::eOk != (es = m_pLoadedDwg->readDwgFile(sPath,_SH_DENYNO,false)))
 		{
 			CString sLoadString;
 			sLoadString = theWorkspace.LoadResourceString(IDS_DWGNOTLOADING);
@@ -1393,12 +1355,10 @@ bool OdclListCtrl::LoadDwg(CString sFileName)
 			return false;
 		}
 		// set the file name for future use
-		m_FileName = fullpath;
+		m_FileName = sPath;
 		
 		if (m_pLoadedDwg==NULL)
-		{
 			return false;			
-		}
 	}
 	catch(...)
 	{
@@ -1407,7 +1367,6 @@ bool OdclListCtrl::LoadDwg(CString sFileName)
 	// now call the method to display the blocks in this loaded dwg
 	RefreshBlockList();
 	return true;			
-		
 }
 
 

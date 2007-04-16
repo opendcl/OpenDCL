@@ -33,8 +33,8 @@ int AnimateCtrl_Load()
 	if (_tcsicmp(sFileName.Right(4), s3) != 0)
 		sFileName += s3;
 
-	TCHAR fullpathNew[256]; 
-	if (acedFindFile(sFileName, fullpathNew) != RTNORM)
+	CString sPath = theWorkspace.FindFile( sFileName ); 
+	if( sPath.IsEmpty() )
 	{
 		const CProject *pProject = pArx->GetOwnerProject();
 		if (pProject)
@@ -61,10 +61,10 @@ int AnimateCtrl_Load()
 			sFileName = sAvi;
 		}
 		else
-			sFileName = fullpathNew;
+			sFileName = sPath;
 	}	
 	else
-		sFileName = fullpathNew;
+		sFileName = sPath;
 
 	
 	

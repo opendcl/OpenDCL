@@ -38,6 +38,7 @@ bool VdclTab::Create( CWnd* pParentWnd, UINT nID )
 	if( pImageList )
 		SetImageList( &pImageList->m_ImageList );
 
+	SetupTabs();
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
@@ -47,7 +48,7 @@ bool VdclTab::Create( CWnd* pParentWnd, UINT nID )
 		m_bInvokeWithSendString = true;
 	else
 		m_bInvokeWithSendString = false;
-	SetupTabs();
+
 	CreateTabPages( nID );
 	ActivateTabPage( GetCurSel(), true, true );
 
@@ -85,7 +86,7 @@ bool VdclTab::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 		SetMinTabWidth(pProp->GetLongValue());
 		break;
 	case nTabSelected:
-		SetCurSel(pProp->GetLongValue());
+		ActivateTabPage(pProp->GetLongValue(), true, true);
 		break;
 	case nTabStyle:
 		if( pProp->GetLongValue() == 0 )

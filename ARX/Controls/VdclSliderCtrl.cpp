@@ -68,16 +68,12 @@ BOOL VdclSliderCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 
 	RetVal = CSliderCtrl::Create(dwStyle, ArxRect, pParentWnd, nID);
 	
-	int hPos = pControl->GetLngProperty(nValue);
-	
-	VERIFY(CSliderCtrl::SubclassDlgItem(nID, pParentWnd));
-	CSliderCtrl::SetRange(
-		pControl->GetLngProperty(nMinValue),
-		pControl->GetLngProperty(nMaxValue),
-		TRUE);
-	CSliderCtrl::SetPos(hPos);
+	SetRange( pControl->GetLngProperty(nMinValue), pControl->GetLngProperty(nMaxValue), TRUE );
+	SetLineSize( pControl->GetLngProperty(nSmallChange) );
+	SetPageSize( pControl->GetLngProperty(nLargeChange) );
 		
 	m_pValueProp = pControl->GetPropertyObject(nValue);
+	SetPos(m_pValueProp->GetLongValue());
 
 	InitToolTip();
 	SetToolTipEx(this, m_ToolTip, pControl);
@@ -99,8 +95,6 @@ void VdclSliderCtrl::OnOutofmemory(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventOutOfMemory), m_bInvokeWithSendString);
-
-	
 	*pResult = 0;
 }
 
@@ -111,12 +105,8 @@ void VdclSliderCtrl::OnReleasedcapture(NMHDR* pNMHDR, LRESULT* pResult)
 	InvokeMethodInt(m_ArxControl->GetStrProperty(nEventReleasedCapture), 
 		CSliderCtrl::GetPos(),
 		m_bInvokeWithSendString);
-	
-	
 	*pResult = 0;
 }
-
-
 
 void VdclSliderCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
@@ -135,12 +125,10 @@ void VdclSliderCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		InvokeMethodInt(m_ArxControl->GetStrProperty(nEventScroll), 
 			CSliderCtrl::GetPos(),
 			m_bInvokeWithSendString);
-
 	}
-		
-
 	CSliderCtrl::OnMouseMove(nFlags, point);
 }
+
 void VdclSliderCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
 	m_pValueProp->SetLongValue(CSliderCtrl::GetPos());
@@ -148,8 +136,6 @@ void VdclSliderCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 	InvokeMethodInt(m_ArxControl->GetStrProperty(nEventScroll), 
 		CSliderCtrl::GetPos(),
 		m_bInvokeWithSendString);
-
-	
 	CSliderCtrl::OnLButtonDblClk(nFlags, point);
 }
 
@@ -160,8 +146,6 @@ void VdclSliderCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	InvokeMethodInt(m_ArxControl->GetStrProperty(nEventScroll), 
 		CSliderCtrl::GetPos(),
 		m_bInvokeWithSendString);
-
-	
 	CSliderCtrl::OnLButtonDown(nFlags, point);
 }
 
@@ -172,8 +156,6 @@ void VdclSliderCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 	InvokeMethodInt(m_ArxControl->GetStrProperty(nEventScroll), 
 		CSliderCtrl::GetPos(),
 		m_bInvokeWithSendString);
-
-	
 	CSliderCtrl::OnLButtonUp(nFlags, point);
 }
 
@@ -184,8 +166,6 @@ void VdclSliderCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	InvokeMethodInt(m_ArxControl->GetStrProperty(nEventScroll), 
 		CSliderCtrl::GetPos(),
 		m_bInvokeWithSendString);
-
-	
 	CSliderCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
@@ -196,15 +176,9 @@ void VdclSliderCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	InvokeMethodInt(m_ArxControl->GetStrProperty(nEventScroll), 
 		CSliderCtrl::GetPos(),
 		m_bInvokeWithSendString);
-
-	
 	CSliderCtrl::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
-
-void VdclSliderCtrl::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
 void VdclSliderCtrl::InitToolTip()
 {
 	if (m_ToolTip.m_hWnd == NULL)
@@ -216,8 +190,6 @@ BOOL VdclSliderCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-
-	
 	return CSliderCtrl::PreTranslateMessage(pMsg);
 }
 
@@ -225,8 +197,5 @@ void VdclSliderCtrl::OnDestroy()
 {
 	// delete the tool tip text control object
 	m_ToolTip.DelTool(this, 1);
-	
 	CSliderCtrl::OnDestroy();
-	
-	
 }

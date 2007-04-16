@@ -15,8 +15,6 @@
 const int nReturnChar = 13;
 const int nHardReturnChar = 10;
 
-const int nFileButSize = 256;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CDwgPreviewCtrl
@@ -96,7 +94,6 @@ BOOL CDwgPreviewCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 	InitToolTip();
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
 	{
 	case 1:
@@ -106,23 +103,21 @@ BOOL CDwgPreviewCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 		m_bInvokeWithSendString = false;
 		break;
 	}
-
-
 	return RetVal;
 }
 
 void CDwgPreviewCtrl::LoadDwg(CString sFileName)
 {
-	TCHAR fullpathNew[nFileButSize]; 
-	if (acedFindFile(sFileName, fullpathNew) != RTNORM)
+	CString sPath = theWorkspace.FindFile( sFileName ); 
+	if( sPath.IsEmpty() )
 	{
 		theWorkspace.DisplayAlert(ErrorFileNotFound);
 		return;
 	}	
-	
-	m_filename = fullpathNew;
+	m_filename = sPath;
 	RedrawWindow();
 }
+
 void CDwgPreviewCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) 
 {
 	CDC* pDC = CDC::FromHandle(lpDrawItemStruct->hDC);
@@ -132,6 +127,7 @@ void CDwgPreviewCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	PaintCtrl(pDC);
 	
 }
+
 /*
 void CDwgPreviewCtrl::OnPaint() 
 {

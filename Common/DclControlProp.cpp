@@ -725,12 +725,13 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
 		AddControlEvent( pDclControl, nEventClicked );
-		AddControlEvent( pDclControl, nEventClicked );
+		AddControlEvent( pDclControl, nEventRClick );
 		AddControlEvent( pDclControl, nDragnDropToAutoCAD );
 		AddControlEvent( pDclControl, nDragnDropFromControl );
 		AddControlEvent( pDclControl, nDragnDropFromAutoCAD );
 		AddControlEvent( pDclControl, nDragnDropBegin );
 		AddControlEvent( pDclControl, nEventDblClicked );
+		AddControlEvent( pDclControl, nEventRDblClick );
 		AddControlEvent( pDclControl, nEventKillFocus );
 		AddControlEvent( pDclControl, nEventSetFocus );
 		AddControlEvent( pDclControl, nEventReturnPressed );
@@ -943,6 +944,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
 		pDclControl->AddLongProperty( nValue, PropLong, 1 );
+		AddControlEvent( pDclControl, nEventScroll );
 		AddControlEvent( pDclControl, nEventReleasedCapture );
 		AddControlEvent( pDclControl, nEventMouseMove );
 		break;

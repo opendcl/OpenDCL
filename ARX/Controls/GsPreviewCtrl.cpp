@@ -16,7 +16,6 @@
 
 const int nOrbitOffset = 20;
 const int nOrbitQuadCircleDia = 19;
-const int nFileButSize = 256;
 const TCHAR sModelSpace[] = _T("*Model_Space");
 	
 
@@ -1223,11 +1222,10 @@ int CGsPreviewCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 }
 bool CGsPreviewCtrl::PreLoadDwg(CString sFileName)
 {
-	TCHAR fullpath[511]; 
-
 	try
 	{
-		if (acedFindFile(sFileName, fullpath) != RTNORM) 			
+		CString sPath = theWorkspace.FindFile( sFileName ); 
+		if( sPath.IsEmpty() )
 		{				
 			CString sLoadString;
 			sLoadString = theWorkspace.LoadResourceString(IDS_DWGNOTLOADING);
@@ -1263,7 +1261,7 @@ bool CGsPreviewCtrl::PreLoadDwg(CString sFileName)
 		m_pLoadedDwg = new AcDbDatabase(false, true);
 		
 		// Try to open the user specified file
-		if (Acad::eOk != (es = m_pLoadedDwg->readDwgFile(fullpath,_SH_DENYNO,false)))
+		if (Acad::eOk != (es = m_pLoadedDwg->readDwgFile(sPath,_SH_DENYNO,false)))
 		{
 			CString sLoadString;
 			sLoadString = theWorkspace.LoadResourceString(IDS_DWGNOTLOADING);
@@ -1279,7 +1277,7 @@ bool CGsPreviewCtrl::PreLoadDwg(CString sFileName)
 			return false;
 		}
 		// set the file name for future use
-		m_FileName = fullpath;
+		m_FileName = sPath;
 		
 		if (m_pLoadedDwg==NULL)
 		{
@@ -1375,7 +1373,6 @@ bool CGsPreviewCtrl::LoadPreviewDwg(
 		double dCameraY, 
 		double dCameraZ)
 {
-	TCHAR fullpath[511]; 
 	AcDbExtents extents;
 
 	try
@@ -1383,7 +1380,8 @@ bool CGsPreviewCtrl::LoadPreviewDwg(
 		sFileName.Replace(_T("\\"), _T("/"));
 		sFileName.Replace(_T("//"), _T("/"));
 		
-		if (acedFindFile(sFileName, fullpath) != RTNORM) 			
+		CString sPath = theWorkspace.FindFile( sFileName ); 
+		if( sPath.IsEmpty() )
 		{				
 			CString sLoadString;
 			sLoadString = theWorkspace.LoadResourceString(IDS_DWGNOTLOADING);
@@ -1449,7 +1447,7 @@ bool CGsPreviewCtrl::LoadPreviewDwg(
 			// This database is used to open the user specified file into if it exists
 			m_pLoadedDwg = new AcDbDatabase(false, true);
 			// m_pLog->WriteString("\r\nLoadDwg 8");
-			es = m_pLoadedDwg->readDwgFile(sFileName);
+			es = m_pLoadedDwg->readDwgFile(sPath);
 // m_pLog->WriteString("\r\nLoadDwg 9");
 			// Try to open the user specified file
 			if (es != Acad::eOk)

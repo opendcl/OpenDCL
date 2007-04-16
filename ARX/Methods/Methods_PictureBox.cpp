@@ -2911,14 +2911,14 @@ int PictureBox_LoadPictureFile()
 		//nAscending = nCol;
 	}
 
-	TCHAR fullpath[250]; 
-	if (acedFindFile(sFileName, fullpath) != RTNORM)
+	CString sPath = theWorkspace.FindFile( sFileName ); 
+	if( sPath.IsEmpty() )
 	{
 		theWorkspace.DisplayAlert(ErrorFileNotFound);
 		return 0;
 	}
 
-	((CPictureBox*)pControl)->LoadPictureFile(fullpath, nStretch == 1);
+	((CPictureBox*)pControl)->LoadPictureFile(sPath, nStretch == 1);
 	
 	
 	acedRetVoid();

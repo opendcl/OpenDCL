@@ -165,6 +165,7 @@ BOOL CBaseDlg::OnInitDialog()
 	GetControlPane().SetPanePos( rectClient, false );
 	UINT nID = 1000;
 	GetControlPane().CreateControls( nID );
+	GetControlPane().RecalcLayout();
 
 	if( mnInitialX >= 0 )
 		rectWindow.MoveToX( mnInitialX );

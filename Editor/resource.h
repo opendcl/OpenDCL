@@ -27,6 +27,7 @@
 #define IDS_CONFIGTAB                   57
 #define IDS_TOOLBOX                     58
 #define IDR_MAINFRAME                   59
+#define IDI_OPENDCL                     30
 #define IDR_OBJECTTYPE                  60
 #define IDR_ZTABORDER                   60
 #define IDS_ZTABORDER                   61
@@ -852,7 +853,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        109
 #define _APS_NEXT_COMMAND_VALUE         40007
-#define _APS_NEXT_CONTROL_VALUE         1003
+#define _APS_NEXT_CONTROL_VALUE         1005
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

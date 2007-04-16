@@ -74,26 +74,20 @@ BOOL CPictureBox::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT
 void CPictureBox::OnSysColorChange() 
 {
 	CWnd::OnSysColorChange();
-	
-	
 	Invalidate();
-	
-	
 }
 
 void CPictureBox::OnEnable(BOOL bEnable) 
 {
 	CWnd::OnEnable(bEnable);
-	
 	Invalidate();
-
-	
 }
 
 void CPictureBox::OnPaint() 
 {
+	LONG lClassStyle = GetClassLong( m_hWnd, GCL_STYLE );
+	SetClassLong( m_hWnd, GCL_STYLE, (lClassStyle & ~(LONG)CS_PARENTDC) );
 	PAINTSTRUCT ps; 
-	
 	CDC* pdc = BeginPaint(&ps);
 	Refresh(pdc->m_hDC);
 
@@ -114,13 +108,13 @@ void CPictureBox::OnPaint()
 
 		::SetBkColor(pdc->m_hDC, RGB(255,255,255));
 		::ExtTextOut(pdc->m_hDC, 0, 0, ETO_OPAQUE, &rcIconBack, NULL, 0, NULL);
+		//pdc->DrawIcon( pt.x, pt.y, m_hIcon );
 
-		m_ImageList.SetBkColor(RGB(255,255,255));
+		//m_ImageList.SetBkColor(RGB(255,255,255));
 		m_ImageList.Draw(pdc, 0, pt, ILD_NORMAL);
 	}
-	
-
 	EndPaint(&ps);
+	SetClassLong( m_hWnd, GCL_STYLE, lClassStyle );
 
 }
 
@@ -169,8 +163,6 @@ void CPictureBox::SetIcon(UINT nId)
 
 void CPictureBox::Refresh(HDC hdc)
 {
-	CWindowDC dc(GetDesktopWindow() );
-
 	CRect rcCell;	
 	GetClientRect(&rcCell);
 
@@ -189,8 +181,8 @@ void CPictureBox::Refresh(HDC hdc)
 			m_pPictureHolder->get_Height(&hmHeight);
 			
 			// convert himetric to pixels
-			int nPicWidth	= MulDiv(hmWidth, dc.GetDeviceCaps(LOGPIXELSX), HIMETRIC_INCH);
-			int nPicHeight	= MulDiv(hmHeight, dc.GetDeviceCaps(LOGPIXELSY), HIMETRIC_INCH);		
+			int nPicWidth	= MulDiv(hmWidth, ::GetDeviceCaps(hdc, LOGPIXELSX), HIMETRIC_INCH);
+			int nPicHeight	= MulDiv(hmHeight, ::GetDeviceCaps(hdc, LOGPIXELSY), HIMETRIC_INCH);		
 			
 			m_cxIcon = nPicWidth;
 			m_cyIcon = nPicHeight;

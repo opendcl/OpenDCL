@@ -27,7 +27,6 @@ public:
 	RefCountedPtr< CPropertyObject > m_pValueProp;
 // Operations
 public:
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
 	void InitToolTip();
 	CPPToolTip m_ToolTip;
 	

@@ -8,6 +8,7 @@
 #include "DwgPreviewCtrl.h"
 #include "ErrorLexicon.h"
 #include "ControlTypes.h"
+#include "Workspace.h"
 
 
 int DwgPreview_LoadDwg()
@@ -27,11 +28,9 @@ int DwgPreview_LoadDwg()
 		return 0;
 	}
 
-	TCHAR fullpath[250]; 
-	if (acedFindFile(sFileName, fullpath) != RTNORM)
-	{
+	CString sPath = theWorkspace.FindFile( sFileName ); 
+	if( sPath.IsEmpty() )
 		return 0;
-	}
 
 	((CDwgPreviewCtrl*)pControl)->LoadDwg(sFileName);
 	// return nil

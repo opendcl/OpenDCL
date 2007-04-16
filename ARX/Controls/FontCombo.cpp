@@ -68,7 +68,7 @@ BOOL CFontCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID 
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
 
-	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE | WS_CLIPSIBLINGS | LBS_NOINTEGRALHEIGHT
+	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE | WS_CLIPSIBLINGS
 			  | CBS_HASSTRINGS | ES_AUTOHSCROLL | WS_CLIPCHILDREN | CBS_SORT | CBS_OWNERDRAWFIXED;
 	
 	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
@@ -81,9 +81,7 @@ BOOL CFontCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID 
 	case 8:
 		{
 			long lListHeight = pControl->GetLngProperty(nDropDownHeight);
-			long lNewHeight = 16 * (lListHeight / 16) + 16 + 2; //make it an integral height, + 2 pixels for the border
-			if( lListHeight != lNewHeight )
-				pControl->SetLongProperty( nDropDownHeight, lNewHeight );
+			long lNewHeight = 16 * ((lListHeight + 13) / 16) + 2; //make it an integral height, + 2 pixels for the border
 			ArxRect.bottom += lNewHeight;
 			dwStyle = dwStyle | CBS_DROPDOWNLIST;
 			break;
@@ -128,7 +126,6 @@ BOOL CFontCombo::Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT nID)
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE | WS_CLIPSIBLINGS
 			  | CBS_HASSTRINGS | ES_AUTOHSCROLL | WS_CLIPCHILDREN | CBS_SORT | CBS_OWNERDRAWFIXED;
-	dwStyle = dwStyle | CBS_NOINTEGRALHEIGHT;
 	
 
 	dwStyle = dwStyle | CBS_SORT;		
@@ -827,7 +824,15 @@ BOOL CFontCombo::PreTranslateMessage(MSG* pMsg)
 
 void CFontCombo::OnDropdown() 
 {
-
+	if( mhwndList && m_ArxControl->GetLngProperty(nComboBoxStyle) == 8 )
+	{
+		CRect rcDropdown;
+		::GetWindowRect( mhwndList, &rcDropdown );
+		long lListHeight = m_ArxControl->GetLngProperty(nDropDownHeight);
+		long lNewHeight = 16 * ((lListHeight + 13) / 16) + 2; //make it an integral height, + 2 pixels for the border
+		rcDropdown.bottom = rcDropdown.top + lNewHeight;
+		::MoveWindow( mhwndList, rcDropdown.left, rcDropdown.top, rcDropdown.Width(), rcDropdown.Height(), TRUE );
+	}
 	if (m_ArxControl)
 		// call methods to invoke the event
 		InvokeMethod(m_ArxControl->GetStrProperty(nEventDropDown), m_bInvokeWithSendString);	

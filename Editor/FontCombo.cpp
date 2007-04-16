@@ -712,10 +712,6 @@ BOOL CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(ENUMLOGFONTEX* pelf
 	return 1; // Call me back
 }
 
-
-
-
-
 void CFontCombo::OnSelchange() 
 {
 	

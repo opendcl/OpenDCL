@@ -236,6 +236,7 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// call method to create the controls
 	UINT nID = 1000;
 	mDialogX.GetControlPane().CreateControls(nID);
+	mDialogX.GetControlPane().RecalcLayout();
 
 	//if (pProps->GetLngProperty(nMaxDialogWidth) > -1)
 	//{

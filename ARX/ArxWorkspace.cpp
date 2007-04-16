@@ -67,7 +67,7 @@ CProject* CArxWorkspace::GetActiveProject() const
 CString CArxWorkspace::FindFile( LPCTSTR pszFilePath ) const
 {
 	CString sPath;
-	if( acedFindFile( pszFilePath, sPath.GetBuffer( MAX_PATH ) ) == RTNORM )
+	if( acedFindFile( pszFilePath, sPath.GetBuffer( MAX_PATH ) ) != RTNORM )
 		return CWorkspace::FindFile( pszFilePath );
 	sPath.ReleaseBuffer();
 	return sPath;

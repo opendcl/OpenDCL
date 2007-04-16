@@ -104,8 +104,8 @@ int TabControl_SetCurSel()
 		acedRetInt(-1);
 		return 0;
 	}
-	
-	
+
+	((VdclTab*)pControl)->SetCurSel(nNewSelIndex);
 	((VdclTab*)pControl)->ActivateTabPage(nNewSelIndex, TRUE, TRUE);
 	
 	acedRetVoid();

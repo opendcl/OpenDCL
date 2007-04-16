@@ -42,35 +42,26 @@ int SlideView_SetFileName()
 	}
 	if (sFileName.Find(sIsPathed) == -1)
 	{
-		TCHAR fullpath[100]; 
-		if (acedFindFile(sFileName, fullpath) != RTNORM)
+		CString sPath = theWorkspace.FindFile( sFileName );
+		if( sPath.IsEmpty() )
 		{
 			theWorkspace.DisplayAlert(CString(ErrorFileNotFound) + sNextLine + sFileName);
-			
 			acedRetNil();
 			return 0;
 		}
 		nArg++;
 		if (!FindOptionalStringArgument(nArg, &sSlideName, sSlideView_SetFileName) || pControl == NULL)
-		{
-			bFoundFile = ((CSlideHolder*)pControl)->SetFileName(fullpath, false, CString());
-		}
+			bFoundFile = ((CSlideHolder*)pControl)->SetFileName(sPath, false, CString());
 		else
-		{
-			bFoundFile = ((CSlideHolder*)pControl)->SetFileName(fullpath, true, sSlideName);
-		}
+			bFoundFile = ((CSlideHolder*)pControl)->SetFileName(sPath, true, sSlideName);
 	}
 	else
 	{
 		nArg++;
 		if (!FindOptionalStringArgument(nArg, &sSlideName, sSlideView_SetFileName) || pControl == NULL)
-		{
 			bFoundFile = ((CSlideHolder*)pControl)->SetFileName(sFileName, false, CString());
-		}
 		else
-		{
 			bFoundFile = ((CSlideHolder*)pControl)->SetFileName(sFileName, true, sSlideName);
-		}
 	}
 	
 	if (bFoundFile)
@@ -702,17 +693,13 @@ int SlideView_SlideImage()
 					acedRetInt(-1);  return 0; 
 				}
 				// get the fourth argument required
-				CString sFileName = ListData->resval.rstring;
-
-				TCHAR fullpath[100]; 
-				if (acedFindFile(sFileName, fullpath) != RTNORM)
+				CString sFileName = theWorkspace.FindFile( ListData->resval.rstring );
+				if( sFileName.IsEmpty() )
 				{
-					theWorkspace.DisplayAlert(CString(ErrorFileNotFound) + sNextLine + sFileName);
-					
+					theWorkspace.DisplayAlert(CString(ErrorFileNotFound) + sNextLine + ListData->resval.rstring);
 					acedRetInt(-1);
 					return 0;
 				}
-				sFileName = fullpath;
 
 				// advance to the next list item
 				ListData = ListData->rbnext;
