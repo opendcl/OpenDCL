@@ -33,6 +33,10 @@ DclFormType CModalDialogX::GetType() const
 	return VdclModal;
 }
 
+bool CModalDialogX::IsResizable() const {
+	return mpOwner->IsResizable();
+}
+
 HWND CModalDialogX::GetHWnd() const
 {
 	return mpOwner->m_hWnd;
@@ -70,7 +74,6 @@ static UINT GetDialogTemplateIdFromForm( CDclFormObject* pSourceForm )
 	return IDD_MODALDIALOG;
 }
 
-
 /////////////////////////////////////////////////////////////////////////////
 // CModalVDcl dialog
 
@@ -78,6 +81,7 @@ static UINT GetDialogTemplateIdFromForm( CDclFormObject* pSourceForm )
 CModalVDcl::CModalVDcl( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CBaseDlg( pSourceForm, GetDialogTemplateIdFromForm( pSourceForm ), pParent, pParams )
 , mDialogX( *this, pSourceForm )
+, mbResizable( pSourceForm->GetControlProperties()->GetBoolProperty( nResizable ) )
 {
 }
 

@@ -21,7 +21,7 @@ protected:
 	virtual DclFormType GetType() const;
 	virtual bool IsModeless() const { return false; }
 	virtual bool IsDockable() const { return false; }
-	virtual bool IsResizable() const { return true; }
+	virtual bool IsResizable() const;
 	virtual HWND GetHWnd() const;
 	virtual void CloseDialog(int nStatus) const;
 	virtual INT_PTR DoModal();
@@ -36,6 +36,7 @@ protected:
 class CModalVDcl : public CBaseDlg
 {
 	CModalDialogX mDialogX;
+	bool mbResizable;
 
 	enum { IDD = IDD_MODALDIALOG };
 
@@ -49,6 +50,7 @@ public:
 	virtual const CDialogObject& GetDialogObject() const { return mDialogX; }
 	CDialogObject& GetDialogObject() { return mDialogX; }
 	void SetDclForm(CDclFormObject *pDclFormObject);
+	bool IsResizable() const { return mbResizable; }
 
 // Overrides
 protected:
