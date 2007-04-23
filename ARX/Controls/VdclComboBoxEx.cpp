@@ -65,7 +65,7 @@ BOOL VdclComboBoxEx::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_CLIPSIBLINGS
-			  | ES_AUTOHSCROLL | WS_CLIPCHILDREN;
+			  | CBS_AUTOHSCROLL | WS_CLIPCHILDREN;
 	
 	if (pControl->GetBoolProperty(nSorted) == TRUE)
 		dwStyle = dwStyle | CBS_SORT;		

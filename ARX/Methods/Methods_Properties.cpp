@@ -272,6 +272,18 @@ bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, struct resbuf
 			pProperty->SetBooleanValue(ListData->resval.rreal > 0.0);
 		return true;
 	}
+	else if (pProperty->GetType() == PropDouble)
+	{
+		if (ListData->restype == RTSHORT)
+			pProperty->SetDoubleValue(ListData->resval.rint);
+		else if (ListData->restype == RTLONG)
+			pProperty->SetDoubleValue(ListData->resval.rlong);
+		else if (ListData->restype == RTREAL ||
+				 ListData->restype == RTORINT ||
+				 ListData->restype == RTANG)
+			pProperty->SetDoubleValue(ListData->resval.rreal);
+		return true;
+	}
 	else
 	{
 		return false;		

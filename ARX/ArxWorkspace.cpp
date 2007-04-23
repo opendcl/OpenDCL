@@ -33,7 +33,6 @@ static CString StripPathFromFileName( LPCTSTR pszFilePath )
 
 CArxWorkspace::CArxWorkspace()
 {
-	mDocReactor.m_bRefreshGlobalVariables = true;
 	acDocManager->addReactor(&mDocReactor);
 }
 

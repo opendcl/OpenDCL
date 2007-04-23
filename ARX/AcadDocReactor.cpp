@@ -8,7 +8,6 @@
 #include "GsPreviewCtrl.h"
 #include "ArxWorkspace.h"
 
-
 const TCHAR sSDI[] = _T("SDI");
 
 
@@ -20,7 +19,6 @@ CAcadDocReactor::CAcadDocReactor(CWnd *pBlockList, CWnd *pBlockView)
 	m_pParentBlockList = pBlockList;
 	m_pParentBlockView = pBlockView;
 	m_EventDefun = CString();
-	m_bRefreshGlobalVariables = false;
 }
 
 CAcadDocReactor::~CAcadDocReactor()
@@ -31,34 +29,14 @@ void CAcadDocReactor::documentCreated(AcApDocument* pDocCreating)
 {
 	if(!pDocCreating)
 		return;
-	
-	struct resbuf rb; 
-
-	acedGetVar(sSDI, &rb); 
-
-	if (rb.resval.rint == 0)
-	{
-		if (m_bRefreshGlobalVariables)
-			theArxWorkspace.UpdateGlobalLispSymbols();
-	}
-		
 }
+
 void CAcadDocReactor::documentActivated(AcApDocument* pActivatedDoc)
 {
 	try
 	{
 	if(!pActivatedDoc)
 		return;
-
-	struct resbuf rb; 
-
-	acedGetVar(sSDI, &rb); 
-
-	if (rb.resval.rint == 0)
-	{
-		if (m_bRefreshGlobalVariables)
-			theArxWorkspace.UpdateGlobalLispSymbols();
-	}
 	if (m_EventDefun.GetLength() > 0)
 		// call methods to invoke the event
 		InvokeMethod(m_EventDefun, true, pActivatedDoc);	
@@ -76,17 +54,6 @@ void CAcadDocReactor::documentActivated(AcApDocument* pActivatedDoc)
 
 void CAcadDocReactor::documentBecameCurrent(AcApDocument* pDoc)
 {
-	try
-	{
-		if(!pDoc)
-			return;
-
-		if (m_bRefreshGlobalVariables)
-			theArxWorkspace.UpdateGlobalLispSymbols();
-	}
-	catch(...)
-	{
-	}
 }
 
 void CAcadDocReactor::documentDestroyed(const char* filename)

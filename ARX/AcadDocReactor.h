@@ -18,7 +18,6 @@ public:
 	virtual void documentCreated(AcApDocument* pDocCreating);
 	virtual void documentActivated(AcApDocument* pActivatedDoc);
 	CString m_EventDefun;
-	bool m_bRefreshGlobalVariables;
 	CWnd *m_pParentBlockList;
 	CWnd *m_pParentBlockView;
 };

@@ -56,22 +56,19 @@ BOOL VdclLineWeightComboBox::Create(CDclControlObject* pControl, CWnd* pParentWn
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
 
-	ArxRect.bottom = ArxRect.bottom  + pControl->GetLngProperty(nDropDownHeight);
+	ArxRect.bottom += pControl->GetLngProperty(nDropDownHeight);
 	if (ArxRect.Height() < 40)
-		ArxRect.bottom = ArxRect.top + 60;
+		ArxRect.bottom = ArxRect.top + 40;
 	
-	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE | WS_CLIPSIBLINGS
-			  | CBS_SORT | CBS_HASSTRINGS | ES_AUTOHSCROLL | WS_CLIPCHILDREN
-			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED  |WS_TABSTOP;
+	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
+			  | CBS_SORT | CBS_HASSTRINGS | CBS_AUTOHSCROLL
+			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT;
 	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
 
 	RetVal = CAcUiLineWeightComboBox::Create( dwStyle, ArxRect, pParentWnd, nID );
-	
-
-	VERIFY(CAcUiLineWeightComboBox::SubclassDlgItem(nID, pParentWnd));
 
 	CAcUiLineWeightComboBox::SetUseDefault(FALSE);
 	
@@ -102,8 +99,9 @@ BOOL VdclLineWeightComboBox::Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT
     m_ArxControl = NULL;
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_CLIPSIBLINGS
-			  | CBS_HASSTRINGS| ES_AUTOHSCROLL 
-			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED |WS_GROUP |WS_TABSTOP;
+			  | CBS_HASSTRINGS| CBS_AUTOHSCROLL 
+			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT
+				| WS_GROUP | WS_TABSTOP;
 	
 	RetVal = CAcUiLineWeightComboBox::Create( dwStyle, rc, pParentWnd, nID );
 

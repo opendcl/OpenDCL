@@ -59,11 +59,12 @@ BOOL VdclArrowHeadComboBox::Create(CDclControlObject* pControl, CWnd* pParentWnd
 
 	ArxRect.bottom = ArxRect.bottom  + pControl->GetLngProperty(nDropDownHeight);
 	if (ArxRect.Height() < 40)
-		ArxRect.bottom = ArxRect.top + 60;
+		ArxRect.bottom = ArxRect.top + 40;
 
-	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL|WS_CLIPSIBLINGS
-			  | CBS_SORT | CBS_HASSTRINGS| ES_AUTOHSCROLL
-			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED |WS_GROUP |WS_TABSTOP;
+	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL| WS_CLIPSIBLINGS
+			  | CBS_SORT | CBS_HASSTRINGS | CBS_AUTOHSCROLL
+			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT
+				| WS_GROUP | WS_TABSTOP;
 	
 	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
@@ -102,12 +103,11 @@ BOOL VdclArrowHeadComboBox::Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT 
     m_ArxControl = NULL;
 		
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_CLIPSIBLINGS
-			  | CBS_HASSTRINGS| ES_AUTOHSCROLL // | CBS_SORT 
-			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED |WS_GROUP |WS_TABSTOP;
+			  | CBS_HASSTRINGS | CBS_AUTOHSCROLL // | CBS_SORT 
+			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT
+				| WS_GROUP | WS_TABSTOP;
 	
 	RetVal = CAcUiArrowHeadComboBox::Create( dwStyle, rc, pParentWnd, nID );
-
-	VERIFY(CAcUiArrowHeadComboBox::SubclassDlgItem(nID, pParentWnd));
 	
 	return RetVal;
 }

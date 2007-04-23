@@ -133,7 +133,7 @@ BOOL CComboBoxFolder::Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT nID)
     m_ArxControl = NULL;
 		
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_CLIPSIBLINGS
-			  | CBS_HASSTRINGS | ES_AUTOHSCROLL | WS_CLIPCHILDREN;
+			  | CBS_HASSTRINGS | CBS_AUTOHSCROLL | WS_CLIPCHILDREN;
 	
 	dwStyle = dwStyle | CBS_SORT;		
 
@@ -245,21 +245,18 @@ void CComboBoxFolder::OnMouseMove(UINT nFlags, CPoint point)
 			point.x,
 			point.y,
 			m_bInvokeWithSendString);
-	
-	
 	CComboBox::OnMouseMove(nFlags, point);
 }
+
 void CComboBoxFolder::SetTooltipText(CString* spText, BOOL bActivate)
 {
 } // End of SetTooltipText
+
 void CComboBoxFolder::InitToolTip()
 {
 	if (m_ToolTip.m_hWnd == NULL)
 		m_ToolTip.Create(this);
 } // End of InitToolTip
-
-
-
 
 BOOL CComboBoxFolder::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
 {
@@ -276,11 +273,12 @@ BOOL CComboBoxFolder::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
 
-	ArxRect.bottom = ArxRect.bottom  + pControl->GetLngProperty(nDropDownHeight);
+	ArxRect.bottom += pControl->GetLngProperty(nDropDownHeight);
 	if (ArxRect.Height() < 40)
-		ArxRect.bottom = ArxRect.top + 60;
+		ArxRect.bottom = ArxRect.top + 40;
 
-	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBS_OWNERDRAWVARIABLE | CBS_DROPDOWNLIST;	
+	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
+		| CBS_OWNERDRAWVARIABLE | CBS_DROPDOWNLIST | CBS_NOINTEGRALHEIGHT;
 	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
@@ -288,8 +286,6 @@ BOOL CComboBoxFolder::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 	
 	RetVal = CComboBox::Create( dwStyle, ArxRect, pParentWnd, nID );
 
-
-	VERIFY(CComboBox::SubclassDlgItem(nID, pParentWnd));
 	InitToolTip();
 	SetToolTipEx(this, m_ToolTip, pControl);
 
@@ -332,13 +328,10 @@ long CComboBoxFolder::OnSelectItemChange(WPARAM w, LPARAM l)
 	}
 
 	if (m_pDwgList != NULL)
-	{
 		m_pDwgList->Dir(path);
-	}
 	if (m_ArxControl)
 	{
 		InvokeMethodString(m_ArxControl->GetStrProperty(nEventSelChanged), sLispSafePath, m_bInvokeWithSendString);
-
 		m_ArxControl->SetStringProperty(nText, path);
 	}
 

@@ -63,20 +63,17 @@ BOOL VdclColorComboBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UI
 
 	ArxRect.bottom = ArxRect.bottom  + pControl->GetLngProperty(nDropDownHeight);
 	if (ArxRect.Height() < 40)
-		ArxRect.bottom = ArxRect.top + 60;
+		ArxRect.bottom = ArxRect.top + 40;
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_CLIPSIBLINGS
-			  | CBS_HASSTRINGS | WS_TABSTOP | ES_AUTOHSCROLL
-			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED;
+			  | CBS_HASSTRINGS | WS_TABSTOP | CBS_AUTOHSCROLL
+			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT;
 	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
 
 	RetVal = CAcUiColorComboBox::Create( dwStyle, ArxRect, pParentWnd, nID );
-	
-
-	//VERIFY(CAcUiColorComboBox::SubclassDlgItem(nID, pParentWnd));
 	
 	InitToolTip();
 	SetToolTipEx(this, m_ToolTip, pControl);
@@ -107,7 +104,8 @@ BOOL VdclColorComboBox::Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT nID)
     m_ArxControl = NULL;
 		
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_CLIPSIBLINGS
-			  | CBS_HASSTRINGS | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | WS_GROUP |WS_TABSTOP;
+			  | CBS_HASSTRINGS | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT
+				| WS_GROUP | WS_TABSTOP;
 	
 	RetVal = CAcUiColorComboBox::Create( dwStyle, rc, pParentWnd, nID );
 

@@ -56,13 +56,13 @@ BOOL VdclPlotStyleNamesComboBox::Create(CDclControlObject* pControl, CWnd* pPare
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
 
-	ArxRect.bottom = ArxRect.bottom  + pControl->GetLngProperty(nDropDownHeight);
+	ArxRect.bottom += pControl->GetLngProperty(nDropDownHeight);
 	if (ArxRect.Height() < 40)
-		ArxRect.bottom = ArxRect.top + 60;
+		ArxRect.bottom = ArxRect.top + 40;
 
-	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE  | WS_CLIPSIBLINGS
-			  | CBS_HASSTRINGS | ES_AUTOHSCROLL
-			  | CBS_DROPDOWNLIST;// | CBS_OWNERDRAWFIXED | CBS_SORT;
+	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_CLIPSIBLINGS
+			  | CBS_HASSTRINGS | CBS_AUTOHSCROLL
+			  | CBS_DROPDOWNLIST | CBS_NOINTEGRALHEIGHT;// | CBS_OWNERDRAWFIXED | CBS_SORT;
 	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
@@ -100,7 +100,7 @@ BOOL VdclPlotStyleNamesComboBox::Create(int nStyle, CRect rc, CWnd* pParentWnd, 
     m_ArxControl = NULL;
 		
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_CLIPSIBLINGS
-			  | CBS_HASSTRINGS | ES_AUTOHSCROLL | WS_CLIPCHILDREN;
+			  | CBS_HASSTRINGS | CBS_AUTOHSCROLL | WS_CLIPCHILDREN | CBS_NOINTEGRALHEIGHT;
 	
 	dwStyle = dwStyle | CBS_SORT;		
 

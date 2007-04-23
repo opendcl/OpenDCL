@@ -72,8 +72,9 @@ BOOL OdclLayerCombo::Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT nID)
 
 	// set the arx control pointer
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_CLIPSIBLINGS
-			  | CBS_HASSTRINGS | CBS_SORT | ES_AUTOHSCROLL
-			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED |WS_GROUP |WS_TABSTOP;
+			  | CBS_HASSTRINGS | CBS_SORT | CBS_AUTOHSCROLL
+			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT
+				| WS_GROUP | WS_TABSTOP;
 	
 	RetVal = CComboBox::Create( dwStyle, rc, pParentWnd, nID );
 
@@ -96,13 +97,15 @@ BOOL OdclLayerCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
 
 	if (pControl->GetLngProperty(nComboBoxStyle) != 1)
+	{
 		ArxRect.bottom = ArxRect.bottom  + pControl->GetLngProperty(nDropDownHeight);
-	if (ArxRect.Height() < 40)
-		ArxRect.bottom = ArxRect.top + 60;
+		if (ArxRect.Height() < 40)
+			ArxRect.bottom = ArxRect.top + 40;
+	}
 	
-	dwStyle = WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL
-			  | CBS_HASSTRINGS | CBS_SORT | WS_VSCROLL | WS_CLIPSIBLINGS
-			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED |WS_GROUP |WS_TABSTOP;
+	dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_CLIPSIBLINGS
+			  | CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_SORT
+			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT;
 	
 	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
@@ -110,8 +113,6 @@ BOOL OdclLayerCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 		dwStyle = dwStyle | WS_GROUP;
 
 	RetVal = CComboBox::Create( dwStyle, ArxRect, pParentWnd, nID );
-
-	VERIFY(CComboBox::SubclassDlgItem(nID, pParentWnd));
 
 	InitToolTip();
 	SetToolTipEx(this, m_ToolTip, pControl);

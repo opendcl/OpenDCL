@@ -70,8 +70,8 @@ CRect CPrinterComboBox::GetWndRect() const
 DWORD CPrinterComboBox::GetWndStyle() const
 {
 	DWORD dwStyle = CArxDialogControl::GetWndStyle();
-	dwStyle |= WS_BORDER | WS_VSCROLL | WS_EX_CLIENTEDGE | CBS_HASSTRINGS |
-						ES_AUTOHSCROLL | WS_CLIPCHILDREN | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED;
+	dwStyle |= WS_BORDER | WS_VSCROLL | CBS_HASSTRINGS |
+						CBS_AUTOHSCROLL | WS_CLIPCHILDREN | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED;
 	if (mpTemplate->GetBoolProperty(nSorted) == TRUE)
 		dwStyle |= CBS_SORT;		
 	return dwStyle;

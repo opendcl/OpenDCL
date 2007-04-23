@@ -65,13 +65,8 @@ BOOL VdclComboBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
 	
-	if (ArxRect.Height() < 40)
-	{
-		ArxRect.bottom = ArxRect.top + 60;
-	}
-	
-	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_CLIPSIBLINGS
-			  | CBS_HASSTRINGS | ES_AUTOHSCROLL | WS_CLIPCHILDREN;
+	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
+			  | CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_NOINTEGRALHEIGHT;
 	
 	if (pControl->GetBoolProperty(nSorted) == TRUE)
 		dwStyle = dwStyle | CBS_SORT;		
@@ -85,7 +80,9 @@ BOOL VdclComboBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 	{
 	case 0:
 		{
-			ArxRect.bottom = ArxRect.bottom  + pControl->GetLngProperty(nDropDownHeight);
+			ArxRect.bottom += pControl->GetLngProperty(nDropDownHeight);
+			if (ArxRect.Height() < 40)
+				ArxRect.bottom = ArxRect.top + 40;
 			dwStyle = dwStyle | CBS_DROPDOWN;
 			break;
 		}
@@ -96,7 +93,9 @@ BOOL VdclComboBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 		}
 	default:
 		{
-			ArxRect.bottom = ArxRect.bottom  + pControl->GetLngProperty(nDropDownHeight);
+			ArxRect.bottom += pControl->GetLngProperty(nDropDownHeight);
+			//if (ArxRect.Height() < 40)
+			//	ArxRect.bottom = ArxRect.top + 40;
 			dwStyle = dwStyle | CBS_DROPDOWNLIST;
 			break;
 		}
@@ -133,7 +132,7 @@ BOOL VdclComboBox::Create(CRect rc, CWnd* pParentWnd, UINT nID)
 
 	// set the arx control pointer
     m_ArxControl = NULL;
-	dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | CBS_HASSTRINGS | ES_AUTOHSCROLL;
+	dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_NOINTEGRALHEIGHT;
 
 	dwStyle = dwStyle | WS_GROUP;
 

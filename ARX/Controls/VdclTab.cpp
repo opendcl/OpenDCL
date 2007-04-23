@@ -93,6 +93,7 @@ bool VdclTab::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 			ModifyStyle( TCS_BUTTONS, TCS_TABS, SWP_FRAMECHANGED );
 		else
 			ModifyStyle( TCS_TABS, TCS_BUTTONS, SWP_FRAMECHANGED );
+		ResetTooltips();
 		break;
 	case nTabLabelAlign:
 		if( pProp->GetLongValue() == 0 )
@@ -113,6 +114,7 @@ bool VdclTab::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 		}
 		else
 			ModifyStyle( TCS_FIXEDWIDTH, 0, SWP_FRAMECHANGED );
+		ResetTooltips();
 		break;
 	}
 	return true;
@@ -215,9 +217,16 @@ void VdclTab::ResetTooltips()
 	RefCountedPtr< CPropertyObject > pTabsTTTProperty = mpTemplate->GetPropertyObject(nTabsTTT);
 	GetToolTipCtrl().RemoveAllTools();
 	size_t nTabQty = pTabsTTTProperty->size();
-	for (size_t i = 0; i < nTabQty; i++)
+	for (size_t i = 0; i < GetItemCount(); i++)
 	{
-		CString sToolTipTitle = mpTemplate->GetPropertyListItem(nTabsTTT, i);
+		TC_ITEM tcItem;
+		tcItem.mask = TCIF_PARAM;
+		GetItem( i, &tcItem );
+		size_t idx = tcItem.lParam;
+		assert( idx < nTabQty );
+		if( idx >= nTabQty )
+			continue;
+		CString sToolTipTitle = mpTemplate->GetPropertyListItem( nTabsTTT, idx );
 		if( !sToolTipTitle.IsEmpty() )
 		{
 			CRect rectTab;
@@ -241,10 +250,10 @@ void VdclTab::HideTab(int nIndex)
 		if (nIndex == tcItem.lParam)
 		{
 			DeleteItem(nIndex);
+			ResetTooltips();
 			return;
 		}
 	}	
-	ResetTooltips();
 }
 
 void VdclTab::ShowTab(int nIndex)

@@ -55,17 +55,19 @@ void CGsPreviewCtrl::OnPaint()
     CPaintDC dc(this); 
 
 	if (m_BlockName.GetLength() > 0 || m_pLoadedDwg != NULL)
-	{		
-		try 
+	{
+		if( mpView )
 		{
-			//update the gs view
-			mpView->invalidate(); 
-			mpView->update();
-		}
-		catch(...)
-		{
-			
-			clearAll();
+			try 
+			{
+				//update the gs view
+				mpView->invalidate(); 
+				mpView->update();
+			}
+			catch(...)
+			{		
+				clearAll();
+			}
 		}
 		try
 		{
@@ -274,19 +276,14 @@ void CGsPreviewCtrl::Refresh(CDC *pdc)
 // Erase view and delete model
 void CGsPreviewCtrl::erasePreview()
 {
-	// m_pLog->WriteString("\r\nerasePreview 1");
 	try 
 	{
 		if (mpView)
 			mpView->eraseAll();
-		// m_pLog->WriteString("\r\nerasePreview 2");
 		if (mpManager && mpModel)
 		{  
-			// m_pLog->WriteString("\r\nerasePreview 3");
 			mpManager->destroyAutoCADModel (mpModel);
-			// m_pLog->WriteString("\r\nerasePreview 4");
 			mpModel = NULL;
-			// m_pLog->WriteString("\r\nerasePreview 5");
 		}
 	}
 	catch(...)
@@ -303,179 +300,120 @@ void CGsPreviewCtrl::setModel(AcGsModel* pModel)
 
 void CGsPreviewCtrl::clearAll()
 {	
-	// m_pLog->WriteString("\r\nclearAll 1");
 	m_BlockName = CString();
-    try
+	try
 	{
-		// m_pLog->WriteString("\r\nclearAll 2");
-	
-		if (mpView)  
+		if (mpView)
 		{
 			mpView->eraseAll();
+			if (mpDevice)
+				mpDevice->erase(mpView);
 		}
-		// m_pLog->WriteString("\r\nclearAll 3");
-	
-		if (mpDevice)    {
-			bool b = mpDevice->erase(mpView);
-		}
-// m_pLog->WriteString("\r\nclearAll 4");
-	
 		if (mpFactory)    
 		{
-			// m_pLog->WriteString("\r\nclearAll 5");
-	
 			if (mpView)  
 			{
-				// m_pLog->WriteString("\r\nclearAll 6");
-	
 				mpFactory->deleteView(mpView);
 				mpView = NULL;
 			}
-			// m_pLog->WriteString("\r\nclearAll 7");
-	
 			if (mpGhostModel) 
 			{
-				// m_pLog->WriteString("\r\nclearAll 8");
-	
 				mpFactory->deleteModel(mpGhostModel);
 				mpGhostModel = NULL;
 			}
 			mpFactory = NULL;
-			// m_pLog->WriteString("\r\nclearAll 9");
-	
 		}
     
 		if (mpManager)    
 		{
-			// m_pLog->WriteString("\r\nclearAll 10");
-	
 			if (mpModel) 
 			{
-				// m_pLog->WriteString("\r\nclearAll 11");
-	
 				if (mbModelCreated)
 					mpManager->destroyAutoCADModel(mpModel);
 				mpModel = NULL;
-				// m_pLog->WriteString("\r\nclearAll 12");
-	
 			}
     
 			if (mpDevice)    
 			{
-				// m_pLog->WriteString("\r\nclearAll 13");	
 				mpManager->destroyAutoCADDevice(mpDevice);
 				mpDevice = NULL;
 			}
 			mpManager = NULL;
-			// m_pLog->WriteString("\r\nclearAll 14");
-	
 		}    
-		}
+	}
 	catch(...)
 	{
 	}
-    
 }
 
 
 void CGsPreviewCtrl::init(HMODULE hRes, bool bCreateModel)
 {
-	 // m_pLog->WriteString("\r\ninit 1");
-	// m_pLog->WriteString("\r\ninit 2");
-	//::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
-    //Instantiate view, a device and a model object
-    CRect rect;
-	// m_pLog->WriteString("\r\ninit 3");
-    if (!mpManager) 
+  //Instantiate view, a device and a model object
+  CRect rect;
+  if (!mpManager) 
 	{
-		// m_pLog->WriteString("\r\ninit 4");
-        mpManager = acgsGetGsManager();
-		// m_pLog->WriteString("\r\ninit 5");
-        mpFactory = mpManager->getGSClassFactory();
-        // m_pLog->WriteString("\r\ninit 6");
-        //a device with standard autocad color palette
-        mpDevice = mpManager->createAutoCADDevice(m_hWnd);
-// m_pLog->WriteString("\r\ninit 7");
+    mpManager = acgsGetGsManager();
+    mpFactory = mpManager->getGSClassFactory();
+    //a device with standard autocad color palette
+    mpDevice = mpManager->createAutoCADDevice(m_hWnd);
 		RefCountedPtr< CPropertyObject > pAcadColor = m_ArxControl->GetPropertyObject(nAcadColor);
-		// m_pLog->WriteString("\r\ninit 8");
 		if (pAcadColor)
 		{
-			// m_pLog->WriteString("\r\ninit 9");
-			
 			AcGsColor color = mpDevice->getBackgroundColor();
-// m_pLog->WriteString("\r\ninit 10");
 			COLORREF aColor = GetRGBColor(pAcadColor->GetLongValue());
-// m_pLog->WriteString("\r\ninit 11");
 			//AcGsColor color;
 			color.m_red = GetRValue(aColor);
 			color.m_green = GetGValue(aColor);
 			color.m_blue = GetBValue(aColor);
-// m_pLog->WriteString("\r\ninit 12");			
 			mpDevice->setBackgroundColor(color);
-// m_pLog->WriteString("\r\ninit 13");
 		}	
         
-// m_pLog->WriteString("\r\ninit 14");
-        GetClientRect( &rect);
-		// m_pLog->WriteString("\r\ninit 15");
-        mpDevice->onSize(rect.Width(), rect.Height());   
-		// m_pLog->WriteString("\r\ninit 16");
-        //a simple view
-        mpView = mpFactory->createView();
-        // m_pLog->WriteString("\r\ninit 17");
-        if (bCreateModel)
-        {
-			// m_pLog->WriteString("\r\ninit 18");
-            //a model with open/close protocol
-            mpModel = mpManager->createAutoCADModel();
-			// m_pLog->WriteString("\r\ninit 19");
+    GetClientRect( &rect);
+    mpDevice->onSize(rect.Width(), rect.Height());   
+    //a simple view
+    mpView = mpFactory->createView();
+    // m_pLog->WriteString("\r\ninit 17");
+    if (bCreateModel)
+    {
+      //a model with open/close protocol
+      mpModel = mpManager->createAutoCADModel();
 			mbModelCreated = true;
-        }
-		// m_pLog->WriteString("\r\ninit 20");
-        //another model without open/close for the orbit gadget
-        mpGhostModel = mpFactory->createModel(AcGsModel::kDirect, 0, 0,	0);
-		// m_pLog->WriteString("\r\ninit 21");
-        mpView->add(&mOrbitGadget,mpGhostModel);
-		// m_pLog->WriteString("\r\ninit 22");
-        mOrbitGadget.setGsView(mpView);
-		// m_pLog->WriteString("\r\ninit 23");
-        mpDevice->add(mpView);
-		 // m_pLog->WriteString("\r\ninit 24");
+    }
+    //another model without open/close for the orbit gadget
+    mpGhostModel = mpFactory->createModel(AcGsModel::kDirect, 0, 0,	0);
+    mpView->add(&mOrbitGadget,mpGhostModel);
+    mOrbitGadget.setGsView(mpView);
+    mpDevice->add(mpView);
 
 		// get the view port information - see parameter list
 		ads_real height = 0.0, width = 0.0, viewTwist = 0.0;
 		AcGePoint3d targetView;
 		AcGeVector3d viewDir;
-		 // m_pLog->WriteString("\r\ninit 25");
-	 try
-	 {
-		GetActiveViewPortInfo (height, width, targetView, viewDir, viewTwist, true);
-	 }
-	 catch(...)
-	 {
-		 // m_pLog->WriteString("\r\nError Occured in fuction GetActiveViewPortInfo");
-	 }
-	try
-	 {
-		 // m_pLog->WriteString("\r\ninit 26");
-		//pDb->ucsxdir().crossProduct(pDb->ucsydir())
-		  //pView->setView(position, target,
-		mpView->setView(targetView + viewDir, targetView,
-			AcGeVector3d(0.0, 1.0, 0.0),  // upvector
-			1.0, 1.0);
-	 }
-	 catch(...)
-	 {
-		 // m_pLog->WriteString("\r\nError Occured in fuction setView");
-	 }
-		 // m_pLog->WriteString("\r\ninit 27");
+		// m_pLog->WriteString("\r\ninit 25");
+		try
+		{
+			GetActiveViewPortInfo (height, width, targetView, viewDir, viewTwist, true);
+		}
+		catch(...)
+		{
+		}
+		try
+		{
+			mpView->setView(targetView + viewDir, targetView,
+				AcGeVector3d(0.0, 1.0, 0.0),  // upvector
+				1.0, 1.0);
+		}
+		catch(...)
+		{
+		}
 		/*
         mpView->setView(AcGePoint3d(0.0, 0.0, 1.0),
                        AcGePoint3d(0.0, 0.0,  0.0),
                        AcGeVector3d(0.0, 1.0,  0.0),
                        1.0, 1.0); 
 					   */
-    }
+	}
 }
 
 void CGsPreviewCtrl::SetAcadColor(long nColor) 
@@ -509,8 +447,6 @@ void CGsPreviewCtrl::SetAcadColor(long nColor)
 	color.m_blue = GetBValue(aColor);
 	
 	mpDevice->setBackgroundColor(color);		
-
-
 }
 
 void CGsPreviewCtrl::ResizeHatch() 
@@ -698,7 +634,7 @@ void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		return;
 	}
 
-    SetFocus();
+	SetFocus();
 	if (m_BlockName.GetLength() > 0)
 	{
 		if (m_pInterfaceMode == NULL)
@@ -764,8 +700,6 @@ void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
 		::SetCursor(mhArrowCursor);	
 	}
-
-	
 }
 
 void CGsPreviewCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
@@ -1873,9 +1807,9 @@ BOOL CGsPreviewCtrl::DisplayHatchPattern(CString sPattern)
 		
 	}
   int i;
-    for (i = 0; i < 4; i++) 
+  for (i = 0; i < 4; i++) 
 	{
-        line = new AcDbLine();
+    line = new AcDbLine();
 
 		line->setStartPoint(vertexPts[i]) ;
         line->setEndPoint(vertexPts[(i == 3) ? 0 : i+1]) ;
@@ -1896,17 +1830,21 @@ BOOL CGsPreviewCtrl::DisplayHatchPattern(CString sPattern)
 		m_Line[i] = lineId;
 		line->close();
 
-        dbObjIds.append(lineId);
-    }
-	
+    dbObjIds.append(lineId);
+	}
+
+	double dblPatternScaleFactor = 1.0;
+	AcDbDatabase* pCurDwg = acdbCurDwg();
+	if( pCurDwg && pCurDwg->measurement() == AcDb::kEnglish )
+		dblPatternScaleFactor = 25.4;
 
 	AcDbHatch *pHatch = new AcDbHatch;
 	AcGeVector3d normal(0.0, 0.0, 1.0);
 	pHatch->setNormal(normal);
 	pHatch->setElevation(0.0);
-	pHatch->setPatternScale(m_ArxControl->GetPropertyObject(nHatchScale)->GetDoubleValue());
+	pHatch->setPatternScale(dblPatternScaleFactor * m_ArxControl->GetPropertyObject(nHatchScale)->GetDoubleValue());
 	pHatch->setPatternAngle(0.0);
-	pHatch->setAssociative(Adesk::kTrue);
+	//pHatch->setAssociative(Adesk::kTrue);
 	//pHatch->setHatchStyle(AcDbHatch::kNormal);
 	pHatch->appendLoop(AcDbHatch::kExternal, dbObjIds);
 	pHatch->setPattern(AcDbHatch::kPreDefined, sPattern);
@@ -1921,17 +1859,16 @@ BOOL CGsPreviewCtrl::DisplayHatchPattern(CString sPattern)
 	m_HatchId = hatchId;
 	// Attach hatchId to all source boundary objects for notification.
     //
-    AcDbEntity *pEnt;
-    int numObjs = dbObjIds.length();
-   
-	for (i = 0; i < numObjs; i++) {
-        es = acdbOpenAcDbEntity(pEnt, dbObjIds[i], AcDb::kForWrite);
-        if (es == Acad::eOk) {
-            pEnt->addPersistentReactor(hatchId);
-            pEnt->close();
-        }
-    }
-
+ //   AcDbEntity *pEnt;
+ //   int numObjs = dbObjIds.length();
+ //  
+	//for (i = 0; i < numObjs; i++) {
+ //       es = acdbOpenAcDbEntity(pEnt, dbObjIds[i], AcDb::kForWrite);
+ //       if (es == Acad::eOk) {
+ //           pEnt->addPersistentReactor(hatchId);
+ //           pEnt->close();
+ //       }
+ //   }
 
 	AcGePoint3d extMax = m_pLoadedDwg->extmax();
 		
@@ -2043,18 +1980,14 @@ void CGsPreviewCtrl::DisplayTheBlock(
 		double dCameraY, 
 		double dCameraZ)
 {
-	// m_pLog->WriteString("\r\nDisplayTheBlock 1");
-				
 	//initialize the preview control
     init(_hdllInstance,true);
-// m_pLog->WriteString("\r\nDisplayTheBlock 2");
 	AcDbExtents extents;
 	AcGePoint3d extMax;
 	AcGePoint3d extMin;
 	AcDbDatabase* pDb;
 
 	/*
-    // m_pLog->WriteString("\r\nDisplayTheBlock 3");
 	if (sModelSpace == m_BlockName && m_pLoadedDwg != NULL)
 	{
 		//get the extension values for the model space block
@@ -2074,7 +2007,6 @@ void CGsPreviewCtrl::DisplayTheBlock(
 	}
 	else
 	{	*/
-		// m_pLog->WriteString("\r\nDisplayTheBlock 4");
 		// now create a way of looping through the entities in the block using iterators
 		AcDbBlockTableRecordIterator *pBlockIterator;
 
@@ -2109,14 +2041,12 @@ void CGsPreviewCtrl::DisplayTheBlock(
 			// of course we must close it
 			pEntity->close();
 		}
-		// m_pLog->WriteString("\r\nDisplayTheBlock 5");
 	//}
 
 	// Calculate the extents in WCS
 	extMax = extents.maxPoint ();  
 	extMin = extents.minPoint ();   
 
-	// m_pLog->WriteString("\r\nDisplayTheBlock 6");
 	// get the view port information - see parameter list
 	ads_real height = 0.0, width = 0.0, viewTwist = 0.0;
 	AcGePoint3d targetView(0,0,0);
@@ -2124,7 +2054,6 @@ void CGsPreviewCtrl::DisplayTheBlock(
 	
 	// we are only interested in the directions of the view, not the sizes, so we normalise. 
 	vCameraViewDir = vCameraViewDir.normal();
-// m_pLog->WriteString("\r\nDisplayTheBlock 7");
 	//**********************************************
 	// Our view coordinate space consists of z direction 
 	// get a perp vector off the z direction
@@ -2140,7 +2069,6 @@ void CGsPreviewCtrl::DisplayTheBlock(
 	AcGeVector3d viewYDir = vCameraViewDir.crossProduct (viewXDir);
 
 	AcGeLineSeg3d calcLine(extMax, extMin);
-// m_pLog->WriteString("\r\nDisplayTheBlock 8");
 	AcGePoint3d boxCenter = calcLine.midPoint();
 	//**********************************************
 	// create a transform from WCS to View space
@@ -2155,7 +2083,6 @@ void CGsPreviewCtrl::DisplayTheBlock(
 	AcDbExtents viewExtents = extents;
 	// transforms the extents in WCS->view space
 	viewExtents.transformBy (viewMat);
-// m_pLog->WriteString("\r\nDisplayTheBlock 9");
 	//**********************************************
 	// get the extents of the AutoCAD view
 	double xMax = fabs(viewExtents.maxPoint ().x - viewExtents.minPoint ().x);
@@ -2171,7 +2098,6 @@ void CGsPreviewCtrl::DisplayTheBlock(
 	
 	if (xMax == 0.0)
 		xMax = 0.00000000002;
-// m_pLog->WriteString("\r\nDisplayTheBlock 10");
 
 	if (m_ArxControl->GetType() == CtlHatch)
 	{
@@ -2225,11 +2151,9 @@ void CGsPreviewCtrl::DisplayTheBlock(
 		}
 	}
 
-	// m_pLog->WriteString("\r\nDisplayTheBlock 11");
 	// set the zoom to units per pixel as program requests
 	if (!bZoomExtents)
 	{
-		// m_pLog->WriteString("\r\nDisplayTheBlock 12");
 		if (nScaleType == 1)
 		{
 			CRect rect;
@@ -2242,36 +2166,29 @@ void CGsPreviewCtrl::DisplayTheBlock(
 			
 			// calc the scale factor to display the units per pixel as the program requests
 			double x=dScale/dZoomFactor;		
-			// m_pLog->WriteString("\r\nDisplayTheBlock 13");
 			pView->zoom(x);	
 		}
 		else
 		{
-			// m_pLog->WriteString("\r\nDisplayTheBlock 14");
 			pView->zoom(dZoomFactor);	
 		}
 	}
-	// m_pLog->WriteString("\r\nDisplayTheBlock 15");
 	SetRenderMode();
-	// m_pLog->WriteString("\r\nDisplayTheBlock 16");
 	if (m_pLoadedDwg == NULL)
 	{
 		// remove all objects previously viewed
 		pView->eraseAll();
 	}
-	// m_pLog->WriteString("\r\nDisplayTheBlock 17");
 
 	// add the new object to the viewer
 	m_pRec = pRec;
     pView->add(pRec,model()); 
     pRec->close();
-	// m_pLog->WriteString("\r\nDisplayTheBlock 18");
 	Invalidate();
-// m_pLog->WriteString("\r\nDisplayTheBlock 19");
 	if (m_pAllowCircles && m_pAllowCircles->GetBooleanValue() == TRUE)
 		DrawOrbitCircles();
-// m_pLog->WriteString("\r\nDisplayTheBlock 20");
 }
+
 void CGsPreviewCtrl::UpdateBlock()
 {
 	if (mpView == NULL)
@@ -2342,11 +2259,11 @@ void CGsPreviewCtrl::UpdateBlock()
 	{
 	}
 }
+
 //***************************************************************************************
 // get the view port information - see parameter list
 bool CGsPreviewCtrl::GetActiveViewPortInfo (ads_real &height, ads_real &width, AcGePoint3d &target, AcGeVector3d &vCameraViewDir, ads_real &viewTwist, bool getViewCenter)
 {
-	// m_pLog->WriteString("\r\nGetActiveViewPortInfo 1");
 	// make sure the active view port is uptodate
 	/*
 	try
@@ -2358,69 +2275,50 @@ bool CGsPreviewCtrl::GetActiveViewPortInfo (ads_real &height, ads_real &width, A
 	}
 	*/
 	//acedVportTableRecords2Vports();
-	// m_pLog->WriteString("\r\nGetActiveViewPortInfo 2");
 	// get the working db
   AcDbDatabase *pDb = acdbHostApplicationServices()->workingDatabase(); 
-  // m_pLog->WriteString("\r\nGetActiveViewPortInfo 3");
 	// if not ok
   if (pDb == NULL)
     return false;
-	// m_pLog->WriteString("\r\nGetActiveViewPortInfo 4");
 	// open the view port records
 	AcDbViewportTable *pVTable = NULL;
 	Acad::ErrorStatus es = pDb->getViewportTable (pVTable, AcDb::kForRead);
-	// m_pLog->WriteString("\r\nGetActiveViewPortInfo 5");
 	// if we opened them ok
 	if (es == Acad::eOk)
 	{
-		// m_pLog->WriteString("\r\nGetActiveViewPortInfo 6");
 		AcDbViewportTableRecord *pViewPortRec = NULL;
 		es = pVTable->getAt (_T("*Active"), pViewPortRec, AcDb::kForRead);
-		// m_pLog->WriteString("\r\nGetActiveViewPortInfo 7");
 		if (es == Acad::eOk)
 		{
-			// m_pLog->WriteString("\r\nGetActiveViewPortInfo 8");
 			// get the height of the view
 			height = pViewPortRec->height ();
-			// m_pLog->WriteString("\r\nGetActiveViewPortInfo 9");
 			// get the width
 			width = pViewPortRec->width ();
-			// m_pLog->WriteString("\r\nGetActiveViewPortInfo 10");
 			// if the user wants the center of the viewport used
 			if (getViewCenter == true)
 			{
-				// m_pLog->WriteString("\r\nGetActiveViewPortInfo 11");
 				struct resbuf rb;
 				memset (&rb, 0, sizeof (struct resbuf));
-				// m_pLog->WriteString("\r\nGetActiveViewPortInfo 12");
 				// get the system var VIEWCTR
 				acedGetVar (_T("VIEWCTR"), &rb);
-				// m_pLog->WriteString("\r\nGetActiveViewPortInfo 13");
 				// set that as the target
 				target = AcGePoint3d (rb.resval.rpoint[X], rb.resval.rpoint[Y], rb.resval.rpoint[Z]);
-				// m_pLog->WriteString("\r\nGetActiveViewPortInfo 14");
 			}
 			// we want the viewports camera target setting
 			else
 			{
-				// m_pLog->WriteString("\r\nGetActiveViewPortInfo 15");
 				// get the target of the view
 				target = pViewPortRec->target ();
 			}		
 
-			// m_pLog->WriteString("\r\nGetActiveViewPortInfo 16");
 			// get the view direction
 			vCameraViewDir = pViewPortRec->viewDirection ();
-			// m_pLog->WriteString("\r\nGetActiveViewPortInfo 17");
 			// get the view twist of the viewport
 			viewTwist = pViewPortRec->viewTwist ();
 		}
-		// m_pLog->WriteString("\r\nGetActiveViewPortInfo 18");
 		// close after use
 		pVTable->close ();
-// m_pLog->WriteString("\r\nGetActiveViewPortInfo 19");
 		pViewPortRec->close();	
-		// m_pLog->WriteString("\r\nGetActiveViewPortInfo 20");
 	}	
 	
 	return (true);
@@ -2546,19 +2444,11 @@ void CGsPreviewCtrl::SetRenderMode()
 }
 void CGsPreviewCtrl::OnDestroy() 
 {
-	/*if (m_pLog != NULL)
-	{
-		m_pLog->Close();
-		delete m_pLog;
-	}*/
-	// m_pLog->WriteString("\r\nOnDestroy 1");
 	try
 	{
 		if (m_pLoadedDwg != NULL)
 		{
-			// m_pLog->WriteString("\r\nOnDestroy 2");
 			clearAll();
-			// m_pLog->WriteString("\r\nOnDestroy 3");
 			m_BlockName = CString();
 			try
 			{
@@ -2567,39 +2457,26 @@ void CGsPreviewCtrl::OnDestroy()
 			catch(...)
 			{
 			}
-			// m_pLog->WriteString("\r\nOnDestroy 4");
 			m_pLoadedDwg = NULL;
 		}
-
-		// m_pLog->WriteString("\r\nOnDestroy 5");
 		if (m_pDocToModReactor != NULL)
 		{
-			// m_pLog->WriteString("\r\nOnDestroy 6");
 			acDocManager->removeReactor(m_pDocToModReactor);
-			// m_pLog->WriteString("\r\nOnDestroy 7");
 			delete m_pDocToModReactor;
-			// m_pLog->WriteString("\r\nOnDestroy 8");
 			m_pDocToModReactor = NULL;
 		}	
-		// m_pLog->WriteString("\r\nOnDestroy 9");
 
 		if (m_pBlockReactor != NULL)
 		{
-			// m_pLog->WriteString("\r\nOnDestroy 10");
 			acedEditor->removeReactor(m_pBlockReactor);		
-			// m_pLog->WriteString("\r\nOnDestroy 11");
 			delete m_pBlockReactor;
-			// m_pLog->WriteString("\r\nOnDestroy 12");
 			m_pBlockReactor = NULL;
 		}
-		
 	}
 	catch(...)
 	{
 	}
 	CStatic::OnDestroy();
-	
-	
 }
 
 void CGsPreviewCtrl::OnKillFocus(CWnd* pNewWnd) 

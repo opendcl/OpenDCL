@@ -792,6 +792,9 @@ public:
 					acedRegFunc( ads_odcl_SetCtrlProperty, ADSPROPFUNCBASE + id + nMaxPropertyId );
 				}
 			}
+
+			//set global lisp symbols
+			theArxWorkspace.UpdateGlobalLispSymbols();
 		}
 		return (retCode) ;
 	}
