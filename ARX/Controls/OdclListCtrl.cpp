@@ -469,6 +469,7 @@ BEGIN_MESSAGE_MAP(OdclListCtrl, CListCtrl)
 	ON_WM_MBUTTONUP()
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
+	ON_WM_CONTEXTMENU()
 	ON_WM_KEYDOWN()
 	ON_WM_KEYUP()
 	ON_WM_MOUSEMOVE()
@@ -648,11 +649,18 @@ void OdclListCtrl::OnSize(UINT nType, int cx, int cy)
 
 void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	CListCtrl::OnLButtonDown(nFlags, point);
-	bool bDrag = mpTemplate->GetBoolProperty(nDragnDropAllowBegin);
+	__super::OnLButtonDown(nFlags, point);
+	InvokeMethodIntIntIntInt(
+		mpTemplate->GetStrProperty(nEventMouseDown),
+		1,
+		nFlags,
+		point.x,
+		point.y,
+		m_bInvokeWithSendString);
 
+	bool bDrag = mpTemplate->GetBoolProperty(nDragnDropAllowBegin);
 	if (!bDrag) //dragging not allowed
-		CListCtrl::OnLButtonDown(nFlags, point);
+		return;
 
 /*
 	int nStyle = mpTemplate->GetLngProperty(nListViewStyle);
@@ -728,14 +736,6 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		//if (m_pLoadedDwg == NULL)
 		BeginDragnDropToInsertBlocks(mpTemplate, point, m_bInvokeWithSendString, saBlockNames);
 	}
-
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseDown),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		m_bInvokeWithSendString);
 }
 
 void OdclListCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
@@ -748,12 +748,8 @@ void OdclListCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
-
-	
-	CListCtrl::OnLButtonUp(nFlags, point);
+	__super::OnLButtonUp(nFlags, point);
 }
-
-
 
 void OdclListCtrl::SetDragnDrop(BOOL bRegister)
 {
@@ -766,6 +762,7 @@ void OdclListCtrl::SetDragnDrop(BOOL bRegister)
 	else
 		m_DropTarget.Revoke();
 }
+
 /////////////////////////////////////////////////////////////////////////////
 
 void OdclListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -805,22 +802,12 @@ void OdclListCtrl::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* plvdi = (LV_DISPINFO*)pNMHDR;
 
-	if (plvdi->item.mask < GetItemCount() && 
-		plvdi->item.mask >= 0)
+	if (plvdi->item.mask < GetItemCount() && plvdi->item.mask >= 0)
 	{
-		if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
-			// call methods to invoke the event
-			InvokeMethodIntInt(
-				mpTemplate->GetStrProperty(nEventRClick),  
-				plvdi->item.mask, 
-				plvdi->item.iItem, 
-				m_bInvokeWithSendString);
-		else				
-			// call methods to invoke the event
-			InvokeMethodInt(
-				mpTemplate->GetStrProperty(nEventRClick),  
-				plvdi->item.mask, 
-				m_bInvokeWithSendString);
+		InvokeMethodInt(
+			mpTemplate->GetStrProperty(nEventRClick),  
+			plvdi->item.mask, 
+			m_bInvokeWithSendString);
 	}
 	
 	*pResult = 0;
@@ -830,31 +817,19 @@ void OdclListCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* plvdi = (LV_DISPINFO*)pNMHDR;
 
-	if (plvdi->item.mask < GetItemCount() && 
-		plvdi->item.mask >= 0)
+	if (plvdi->item.mask < GetItemCount() && plvdi->item.mask >= 0)
 	{
-		if (mpTemplate->GetLngProperty(nListViewStyle) > -1)
-			// call methods to invoke the event
-			InvokeMethodIntInt(
-				mpTemplate->GetStrProperty(nEventRDblClick),  
-				plvdi->item.mask, 
-				plvdi->item.iItem, 
-				m_bInvokeWithSendString);
-		else				
-			// call methods to invoke the event
-			InvokeMethodInt(
-				mpTemplate->GetStrProperty(nEventRDblClick),  
-				plvdi->item.mask, 
-				m_bInvokeWithSendString);
+		InvokeMethodInt(
+			mpTemplate->GetStrProperty(nEventRDblClick),  
+			plvdi->item.mask, 
+			m_bInvokeWithSendString);
 	}
-	
 	*pResult = 0;
 }
 
 void OdclListCtrl::OnReturn(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	InvokeMethod(mpTemplate->GetStrProperty(nEventReturnPressed), m_bInvokeWithSendString);
-	
 	*pResult = 0;
 }
 
@@ -1369,7 +1344,6 @@ bool OdclListCtrl::LoadDwg(CString sFileName)
 	return true;			
 }
 
-
 void OdclListCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
 {
 	//HideEditControls();
@@ -1381,9 +1355,7 @@ void OdclListCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
-	
-	
-	CListCtrl::OnMButtonDown(nFlags, point);
+	__super::OnMButtonDown(nFlags, point);
 }
 
 void OdclListCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
@@ -1397,9 +1369,7 @@ void OdclListCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
-	
-	
-	CListCtrl::OnMButtonUp(nFlags, point);
+	__super::OnMButtonUp(nFlags, point);
 }
 
 void OdclListCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
@@ -1413,9 +1383,7 @@ void OdclListCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
-	
-	
-	CListCtrl::OnRButtonDown(nFlags, point);
+	__super::OnRButtonDown(nFlags, point);
 }
 
 void OdclListCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
@@ -1429,17 +1397,26 @@ void OdclListCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
+	__super::OnRButtonUp(nFlags, point);
+}
 
-	
-	CListCtrl::OnRButtonUp(nFlags, point);
+void OdclListCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
+{
+	InvokeMethodIntIntIntInt(
+		mpTemplate->GetStrProperty(nEventMouseDown),
+		2,
+		MK_RBUTTON,
+		point.x,
+		point.y,
+		m_bInvokeWithSendString);
+	__super::OnContextMenu(pTarget, point);
 }
 
 void OdclListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
 	InvokeMethodStringIntInt(mpTemplate->GetStrProperty(nEventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
-		
-	CListCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
+	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void OdclListCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 

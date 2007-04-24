@@ -2208,17 +2208,12 @@ int Grid_Cell_ToggleImages()
 // 
 //*****************************************************************************
 
-const TCHAR sSeperator[] = _T("\t");
-const TCHAR sSpace[] = _T(" ");
-
 int Grid_AddString()
 {
-	CString sStringArg;
-	CString sDivider = sSeperator;
 	int nInsertIndex = -1;
-
+	CString sStringArg;
+	CString sDivider = _T("\t");
 	CDclControlObject *pArx = GetLispInput(sGrid_AddString, sStringArg, sDivider);
-	
 	if (pArx == NULL)
 	{
 		acedRetInt(-1);
@@ -2227,64 +2222,44 @@ int Grid_AddString()
 	
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();	
 
-	int nStart = 0;
-	int nNext = sStringArg.Find(sDivider, nStart);
-	int nCol = 0;
+	int nStart = -1;
 
+	int nNext = sStringArg.Find(sDivider, 0);
 	if (nNext == -1)
 		nNext = sStringArg.GetLength();
+	int nCol = 0;
 	while (nNext > -1)
 	{
-		CString sCell;
+		CString sCell = sStringArg.Mid(nStart + 1, nNext);
+		sCell.Trim(_T(" "));
 
-		if (nStart > 0)
-			sCell = sStringArg.Mid(nStart+1, nNext);
-		else
-			sCell = sStringArg.Mid(nStart, nNext);
-
-		sCell.TrimLeft(sSpace);
-		sCell.TrimRight(sSpace);
-
-		if (sCell.GetLength() > 0 && nCol == 0)
+		if( nCol == 0 )
 		{
 			LV_ITEM lvItem;
-			lvItem.mask = LVIF_TEXT|LVIF_INDENT|LVIF_IMAGE;
-			lvItem.iItem = pGridCtrl->GetItemCount()+1;
+			lvItem.mask = LVIF_TEXT | LVIF_INDENT | LVIF_IMAGE;
+			lvItem.iItem = pGridCtrl->GetItemCount() + 1;
 			lvItem.iSubItem = 0;
-			TCHAR sValue [256];
-			_tcscpy(sValue, sCell);
-			lvItem.pszText = sValue;			
+			lvItem.pszText = sCell.LockBuffer();			
 			lvItem.iImage = -1;
 			lvItem.iIndent = 0;			
-			
-			// insert the row item
 			nInsertIndex = pGridCtrl->InsertItem(&lvItem);
-			
-			nCol++;
 		}
 		else
 		{
-			if (!pGridCtrl->SetItemText(nInsertIndex, nCol, sCell))
-			{
-				acedRetVoid();
-				return 0;
-			}
-			nCol++;
+			pGridCtrl->SetItemText(nInsertIndex, nCol, sCell);
 		}
+		++nCol;
 
-		sStringArg = sStringArg.Mid(nNext+1);
-		//nStart = nNext;
-		nNext = sStringArg.Find(sDivider, nStart+1);
-
+		sStringArg = sStringArg.Mid(nNext + 1);
+		nNext = sStringArg.Find(sDivider, 0);
 		if (nNext == -1 && sStringArg.GetLength() > 0)
 			nNext = sStringArg.GetLength();
 	}
 
-	
-
 	acedRetInt(nInsertIndex);
 	return 0;
 }
+
 //*****************************************************************************
 // 
 // Method: Grid_InsertString()
@@ -2297,12 +2272,10 @@ int Grid_AddString()
 
 int Grid_InsertString()
 {
-	CString sStringArg;
-	CString sDivider = sSeperator;
 	int nInsertIndex = -1;
-
+	CString sStringArg;
+	CString sDivider = _T("\t");
 	CDclControlObject *pArx = GetLispInput(sGrid_InsertString, nInsertIndex, sStringArg, sDivider);
-	
 	if (pArx == NULL)
 	{
 		acedRetInt(-1);
@@ -2311,60 +2284,39 @@ int Grid_InsertString()
 	
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();	
 
-	int nStart = 0;
-	int nNext = sStringArg.Find(sDivider, nStart);
-	int nCol = 0;
+	int nStart = -1;
 
+	int nNext = sStringArg.Find(sDivider, 0);
 	if (nNext == -1)
 		nNext = sStringArg.GetLength();
+	int nCol = 0;
 	while (nNext > -1)
 	{
-		CString sCell;
+		CString sCell = sStringArg.Mid(nStart + 1, nNext);
+		sCell.Trim(_T(" "));
 
-		if (nStart > 0)
-			sCell = sStringArg.Mid(nStart+1, nNext);
-		else
-			sCell = sStringArg.Mid(nStart, nNext);
-
-		sCell.TrimLeft(sSpace);
-		sCell.TrimRight(sSpace);
-
-		if (sCell.GetLength() > 0 && nCol == 0)
+		if( nCol == 0 )
 		{
 			LV_ITEM lvItem;
-			lvItem.mask = LVIF_TEXT|LVIF_INDENT|LVIF_IMAGE;
-			lvItem.iItem = nInsertIndex;
+			lvItem.mask = LVIF_TEXT | LVIF_INDENT | LVIF_IMAGE;
+			lvItem.iItem = pGridCtrl->GetItemCount() + 1;
 			lvItem.iSubItem = 0;
-			TCHAR sValue [256];
-			_tcscpy(sValue, sCell);
-			lvItem.pszText = sValue;			
+			lvItem.pszText = sCell.LockBuffer();			
 			lvItem.iImage = -1;
 			lvItem.iIndent = 0;			
-			
-			// insert the row item
 			nInsertIndex = pGridCtrl->InsertItem(&lvItem);
-			
-			nCol++;
 		}
 		else
 		{
-			if (!pGridCtrl->SetItemText(nInsertIndex, nCol, sCell))
-			{
-				acedRetVoid();
-				return 0;
-			}
-			nCol++;
+			pGridCtrl->SetItemText(nInsertIndex, nCol, sCell);
 		}
+		++nCol;
 
-		sStringArg = sStringArg.Mid(nNext+1);
-		//nStart = nNext;
-		nNext = sStringArg.Find(sDivider, nStart+1);
-
+		sStringArg = sStringArg.Mid(nNext + 1);
+		nNext = sStringArg.Find(sDivider, 0);
 		if (nNext == -1 && sStringArg.GetLength() > 0)
 			nNext = sStringArg.GetLength();
 	}
-
-	
 
 	acedRetInt(nInsertIndex);
 	return 0;

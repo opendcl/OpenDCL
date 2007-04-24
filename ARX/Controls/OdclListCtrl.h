@@ -143,5 +143,6 @@ protected:
 	afx_msg void OnOdstatechanged(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnContextMenu( CWnd* pTarget, CPoint point );
 	afx_msg void PostNcDestroy();
 };

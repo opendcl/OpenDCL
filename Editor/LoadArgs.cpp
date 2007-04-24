@@ -17,17 +17,16 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 	switch (nEventId)
 	{
 	case nEventSplitterMoved:
-		sDesc = theWorkspace.LoadResourceString(5224);
-		
+		sDesc = theWorkspace.LoadResourceString(IDS_EVENTDESC_SPLITTERMOVED);
 		if (pControl->GetType() == CtlSplitter)
-			sArgs = theWorkspace.LoadResourceString(1331);			
+			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_RECT);			
 		break;
 
 	case nEventBtnClicked:
-		sDesc = theWorkspace.LoadResourceString(5000);
+		sDesc = theWorkspace.LoadResourceString(IDS_EVENTDESC_BTNCLICKED);
 		
 		if (pControl->GetType() == CtlGrid)
-			sArgs = theWorkspace.LoadResourceString(1187);			
+			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ROWCOL);			
 		break;
     
 	case nEventClicked:
@@ -39,7 +38,7 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 			break;
 		case CtlListView:
 		case CtlGrid:
-			sArgs = theWorkspace.LoadResourceString(1187);
+			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ROWCOL);
 			break;
 		case CtlBlockList:
 			sArgs = theWorkspace.LoadResourceString(1189);
@@ -66,7 +65,7 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 	
 	case nEventEditChanged:
 		sArgs = theWorkspace.LoadResourceString(1208);
-        sDesc = theWorkspace.LoadResourceString(5002);
+		sDesc = theWorkspace.LoadResourceString(5002);
 		break;
 
 	case nEventDblClicked:
@@ -74,7 +73,7 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		{
 		case CtlListView:
 		case CtlGrid:
-			sArgs = theWorkspace.LoadResourceString(1187);
+			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ROWCOL);
 			break;
 		case CtlBlockList:
 			sArgs = theWorkspace.LoadResourceString(1189);
@@ -92,7 +91,7 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		{
 		case CtlGrid:
 			{
-				sArgs = theWorkspace.LoadResourceString(1187);
+				sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ROWCOL);
 				sDesc = theWorkspace.LoadResourceString(5004);			
 				break;
 		
@@ -152,13 +151,35 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		break;
 
 	case nEventRClick:
-		sArgs = CString();
-		sDesc = theWorkspace.LoadResourceString(5009);
+		switch( pControl->GetType())
+		{
+		case CtlGrid:
+			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ROWCOL);			
+			break;
+		case CtlListView:
+			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ITEM);
+			break;
+		default:
+			sArgs.Empty();
+			break;
+		}
+		sDesc = theWorkspace.LoadResourceString(IDS_EVENTDESC_RCLICK);
 		break;
 
 	case nEventRDblClick:
-		sArgs = CString();
-		sDesc = theWorkspace.LoadResourceString(5010);
+		switch( pControl->GetType())
+		{
+		case CtlGrid:
+			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ROWCOL);			
+			break;
+		case CtlListView:
+			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ITEM);
+			break;
+		default:
+			sArgs.Empty();
+			break;
+		}
+		sDesc = theWorkspace.LoadResourceString(IDS_EVENTDESC_RDBLCLICK);
 		break;
 
 	case nEventReturn:
@@ -175,16 +196,16 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		switch( pControl->GetType())
 		{
 		case CtlGrid:
-			sArgs = theWorkspace.LoadResourceString(1187);			
+			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ROWCOL);			
 			break;
 		case CtlListView:
-			sArgs = theWorkspace.LoadResourceString(1193);
+			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ITEM);
 			break;
 		case CtlTree:
-            sArgs = theWorkspace.LoadResourceString(1194);
+            sArgs = theWorkspace.LoadResourceString(IDS_ARGS_KEY);
 			break;
 		}
-        sDesc = theWorkspace.LoadResourceString(5013);
+		sDesc = theWorkspace.LoadResourceString(5013);
 		break;
     
 	case nEventDeleteItem:
@@ -196,7 +217,7 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
        switch( pControl->GetType())
 	   {		   
 	   case CtlGrid:
-			sArgs = theWorkspace.LoadResourceString(1187);			
+			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ROWCOL);			
 			sDesc = theWorkspace.LoadResourceString(5225);
 			break;
 	   case CtlListView:
@@ -289,7 +310,7 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
           sDesc = theWorkspace.LoadResourceString(5041);
 		   break;
       
-    case nEventSelChanging:
+	case nEventSelChanging:
 		switch( pControl->GetType())
 		{
 		case CtlTabStrip:
@@ -360,7 +381,7 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
               sArgs = CString();
 			  break;
 		}
-        sDesc = theWorkspace.LoadResourceString(5026);
+		sDesc = theWorkspace.LoadResourceString(5026);
 		break;
     
 	case nFormEventInitialize:

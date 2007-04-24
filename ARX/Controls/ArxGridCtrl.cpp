@@ -235,10 +235,8 @@ void CArxGridCtrl::CheckLayer(CString &sLayer, int &nImage)
 
 	// of course we must close it
 	pLayerTableRecord->close();
-	
 	delete pIterator;
-
-    pLayerTable->close();
+	pLayerTable->close();
 }
 
 void CArxGridCtrl::EditCellNow(UINT nChar/* = 0 */) 
@@ -249,9 +247,6 @@ void CArxGridCtrl::EditCellNow(UINT nChar/* = 0 */)
 		mpTemplate->GetStrProperty(nEventBeginLabelEdit),
 		m_nRowSelected, m_nColSelected,
 		m_bInvokeWithSendString);
-
-	if (m_nColSelected >= m_pColStyles->GetIntArrayPtr()->size())
-		return;
 
 	switch (GetCurCellStyle())
 	{
@@ -380,6 +375,7 @@ void CArxGridCtrl::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 		}
 		m_pEllipsesButton->ShowWindow(TRUE);
 	}
+	m_pEllipsesButton->MoveWindow( &rc, TRUE );
 }
 
 void CArxGridCtrl::DrawFontIcons(CDC* pDC, CRect rc, int &nImage, CString &sText)
@@ -653,6 +649,10 @@ BEGIN_MESSAGE_MAP(CArxGridCtrl, CGridCtrl)
 	ON_WM_DRAWITEM_REFLECT()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()	
+	ON_WM_RBUTTONDOWN()
+	ON_WM_RBUTTONUP()	
+	ON_WM_MBUTTONDOWN()
+	ON_WM_MBUTTONUP()	
 	ON_WM_CHAR()
 	ON_WM_KEYDOWN()
 	ON_WM_LBUTTONDBLCLK()	
@@ -662,6 +662,7 @@ BEGIN_MESSAGE_MAP(CArxGridCtrl, CGridCtrl)
 	ON_NOTIFY_REFLECT(LVN_COLUMNCLICK, OnColumnclick)		
 	ON_WM_MOUSEMOVE()
 	ON_WM_KEYUP()
+	ON_WM_CONTEXTMENU()
 	ON_COMMAND(ID_CELLBUTTON, OnCellButtonClicked)
 	ON_COMMAND(ID_CELLBUTTON_DIR2, OnDir2CellButtonClicked)
 	ON_COMMAND(ID_CELLBUTTON_DIR3, OnDir3CellButtonClicked)
@@ -696,9 +697,10 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		point.y,
 		m_bInvokeWithSendString);
 
+	__super::OnLButtonDown(nFlags, point);
+
 	int nRow, nCol;
 	CellHitTest(point, nRow, nCol);
-
 	if (m_nRowSelected != nRow || m_nColSelected != nCol)
 		HideEditControls();
 
@@ -859,6 +861,30 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	// exit here.
 	//if (m_pColStyles->m_intList.GetSize() < nCol)
 	//	return;
+}
+
+void CArxGridCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
+{
+	InvokeMethodIntIntIntInt(
+		mpTemplate->GetStrProperty(nEventMouseDown),
+		2,
+		nFlags,
+		point.x,
+		point.y,
+		m_bInvokeWithSendString);
+	__super::OnRButtonDown(nFlags, point);
+}
+
+void CArxGridCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
+{
+	InvokeMethodIntIntIntInt(
+		mpTemplate->GetStrProperty(nEventMouseDown),
+		4,
+		nFlags,
+		point.x,
+		point.y,
+		m_bInvokeWithSendString);
+	__super::OnMButtonDown(nFlags, point);
 }
 
 void CArxGridCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
@@ -1078,6 +1104,43 @@ void CArxGridCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
+	__super::OnLButtonUp(nFlags, point);
+}
+
+void CArxGridCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
+{
+	InvokeMethodIntIntIntInt(
+		mpTemplate->GetStrProperty(nEventMouseUp),
+		2,
+		nFlags,
+		point.x,
+		point.y,
+		m_bInvokeWithSendString);
+	__super::OnRButtonUp(nFlags, point);
+}
+
+void CArxGridCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
+{
+	InvokeMethodIntIntIntInt(
+		mpTemplate->GetStrProperty(nEventMouseUp),
+		4,
+		nFlags,
+		point.x,
+		point.y,
+		m_bInvokeWithSendString);
+	__super::OnMButtonUp(nFlags, point);
+}
+
+void CArxGridCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
+{
+	InvokeMethodIntIntIntInt(
+		mpTemplate->GetStrProperty(nEventMouseDown),
+		2,
+		MK_RBUTTON,
+		point.x,
+		point.y,
+		m_bInvokeWithSendString);
+	__super::OnContextMenu(pTarget, point);
 }
 
 void CArxGridCtrl::OnMouseMove(UINT nFlags, CPoint point) 

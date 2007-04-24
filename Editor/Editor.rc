@@ -2937,7 +2937,8 @@ END
 
 STRINGTABLE 
 BEGIN
-    5000                    "Indicates that the user has clicked the left mouse button on the Button. If the control is a grid control, the user has clicked on the ellipses or pick button."
+    IDS_EVENTDESC_BTNCLICKED 
+                            "Indicates that the user has clicked the left mouse button on the Button. If the control is a grid control, the user has clicked on the ellipses or pick button."
     5001                    "Indicates that the user has clicked the left mouse button on the control."
     5002                    "Indicates that the user has edited the Text Box control."
     5003                    "Indicates that the user has double clicked the left mouse button on the control."
@@ -2950,8 +2951,8 @@ END
 STRINGTABLE 
 BEGIN
     5008                    "Indicates the control could not complete an action, because it ran out of memory."
-    5009                    "Indicates that the user has clicked the right mouse button on the control."
-    5010                    "Indicates that the user has double clicked the right mouse button on the control."
+    IDS_EVENTDESC_RCLICK    "Indicates that the user has clicked the right mouse button on the control."
+    IDS_EVENTDESC_RDBLCLICK "Indicates that the user has double clicked the right mouse button on the control."
     5011                    "Indicates that the control has the user input focus and has press the [Return] key."
     5012                    "Indicates that the control has just gained the user input focus"
     5013                    "Indicates that the user has started to edit the item label."
@@ -3197,7 +3198,8 @@ BEGIN
     5221                    "Called when the user changes the file type filter ComobBox."
     5222                    "Indicates the user has just dragged and dropped a selection from the File List Box in a File Dialog Box to this control."
     5223                    "Indicates that the user has selected a new directory."
-    5224                    "Fired when the user moves a splitter control."
+    IDS_EVENTDESC_SPLITTERMOVED 
+                            "Fired when the user moves a splitter control."
     5225                    "Indicates that the user has finished editing the grid cell."
     5226                    "GridCellEdit"
 END
@@ -3212,19 +3214,19 @@ BEGIN
     1328                    "nValue"
     1329                    "nIndex"
     1330                    "nSelection sSelText"
-    1331                    "nLeft nTop nWidth nHeight"
+    IDS_ARGS_RECT           "nLeft nTop nWidth nHeight"
 END
 
 STRINGTABLE 
 BEGIN
-    1187                    "nRow nCol"
+    IDS_ARGS_ROWCOL         "nRow nCol"
     1188                    "nValue"
     1189                    "nIndex"
     1190                    "nSelection sSelText"
     1191                    "nSelection sSelText"
     1192                    "sSelText SelKey"
-    1193                    "nRow nCol"
-    1194                    "Key"
+    IDS_ARGS_ITEM           "nItem"
+    IDS_ARGS_KEY            "Key"
     1195                    "sItemText nRow nCol"
     1196                    "sItemText Key"
     1197                    "sChar"

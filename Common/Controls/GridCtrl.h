@@ -128,7 +128,6 @@ public:
 	enum EHighlight { HIGHLIGHT_NORMAL, HIGHLIGHT_ALLCOLUMNS, HIGHLIGHT_ROW };
 
 	CImageList			m_DefaultImageList;
-	CPPToolTip m_ToolTip;
 
 	COLORREF alertnateColor;
 	bool	 m_bOrientationVer;
@@ -157,8 +156,6 @@ public:
 	void SetCellStyle(int nRow, int nCol, int nStyle);
 	int GetCellStyle(int nRow, int nCol);
 	void UpdateCell(CString sText);
-
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
 	void InitToolTip();
 	
 // Operations

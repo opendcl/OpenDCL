@@ -20,6 +20,7 @@
 #define IDS_SAMPLENODE                  24
 #define IDS_MASKED                      28
 #define IDS_PROPERTYWIZARD              29
+#define IDI_OPENDCL                     30
 #define IDS_PROJECT                     53
 #define IDS_MODALFORM                   54
 #define IDS_MODELESSFORM                55
@@ -27,7 +28,6 @@
 #define IDS_CONFIGTAB                   57
 #define IDS_TOOLBOX                     58
 #define IDR_MAINFRAME                   59
-#define IDI_OPENDCL                     30
 #define IDR_OBJECTTYPE                  60
 #define IDR_ZTABORDER                   60
 #define IDS_ZTABORDER                   61
@@ -397,6 +397,10 @@
 #define IDC_STYLE                       0x0471
 #define IDC_FONTSIZE                    0x0472
 #define IDC_DISABLED                    1138
+#define IDS_ARGS_ROWCOL                 1187
+#define IDS_ARGS_ITEM                   1193
+#define IDS_ARGS_KEY                    1194
+#define IDS_ARGS_RECT                   1331
 #define IDS_FILTERSTYLE_0               1701
 #define IDS_FILTERSTYLE_1               1702
 #define IDS_FILTERSTYLE_2               1703
@@ -461,9 +465,13 @@
 #define IDS_JUSTIFICATION_0             4301
 #define IDS_JUSTIFICATION_1             4302
 #define IDS_JUSTIFICATION_2             4303
+#define IDS_EVENTDESC_BTNCLICKED        5000
+#define IDS_EVENTDESC_RCLICK            5009
+#define IDS_EVENTDESC_RDBLCLICK         5010
 #define IDS_SELECTSTYLE_0               5101
 #define IDS_SELECTSTYLE_1               5102
 #define IDS_SELECTSTYLE_2               5103
+#define IDS_EVENTDESC_SPLITTERMOVED     5224
 #define IDS_TAB_JUSTIFY_0               6201
 #define IDS_TAB_JUSTIFY_1               6202
 #define IDS_TABSTYLE_0                  6301

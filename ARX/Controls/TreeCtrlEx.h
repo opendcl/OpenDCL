@@ -26,7 +26,6 @@ public:
 
 // Operations
 public:
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
 	void InitToolTip();
 	void SetDragnDrop(BOOL bRegister);
 	

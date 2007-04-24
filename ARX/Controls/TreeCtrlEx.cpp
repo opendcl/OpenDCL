@@ -14,9 +14,7 @@
 
 CTreeCtrlEx::CTreeCtrlEx()
 {
-	// No tooltip created
 	m_ToolTip.m_hWnd = NULL;
-
 }
 
 CTreeCtrlEx::~CTreeCtrlEx()
@@ -42,8 +40,6 @@ BOOL CTreeCtrlEx::PreTranslateMessage(MSG* pMsg)
 {
 	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
-	
 	return CTreeCtrl::PreTranslateMessage(pMsg);
 }
 
@@ -51,11 +47,8 @@ void CTreeCtrlEx::OnDestroy()
 {
 	// delete the tool tip text control object
 	m_ToolTip.DelTool(this, 1);
-	
 	CTreeCtrl::OnDestroy();
-	
 }
-
 
 void CTreeCtrlEx::OnMouseMove(UINT nFlags, CPoint point) 
 {
@@ -66,13 +59,8 @@ void CTreeCtrlEx::OnMouseMove(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
-	
-	
 	CTreeCtrl::OnMouseMove(nFlags, point);
 }
-void CTreeCtrlEx::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
 
 void CTreeCtrlEx::InitToolTip()
 {
@@ -91,8 +79,6 @@ void CTreeCtrlEx::SetDragnDrop(BOOL bRegister)
 	else
 		m_DropTarget.Revoke();
 }
-
-
 
 void CTreeCtrlEx::OnLButtonDown(UINT nFlags, CPoint point) 
 {
@@ -115,10 +101,7 @@ void CTreeCtrlEx::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 		SetFocus();
 		if ((hItem != NULL))// && (TVHT_ONITEM & uFlags))
-		{
 		   Select(hItem, TVGN_CARET);
-		}
-
 		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
 	}
 	
@@ -144,6 +127,7 @@ void CTreeCtrlEx::OnLButtonUp(UINT nFlags, CPoint point)
 	
 	CTreeCtrl::OnLButtonUp(nFlags, point);
 }
+
 void CTreeCtrlEx::OnRButtonUp(UINT nFlags, CPoint point) 
 {
 
@@ -164,8 +148,6 @@ void CTreeCtrlEx::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult)
 	if (pParent->m_bDeleting)
 		return;
 
-
-	
 	// get the selected item
 	TV_ITEM SelectedItem = pNMTreeView->itemNew;
 	pParent->m_hOldItem = SelectedItem.hItem;
@@ -185,13 +167,11 @@ void CTreeCtrlEx::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult)
 			m_bInvokeWithSendString);
 	}
 	SelectDropTarget(SelectedItem.hItem);
-
 }
 
 void CTreeCtrlEx::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	HTREEITEM hItem = HitTest(point, &nFlags);
 	SelectItem(hItem);
-
 	CTreeCtrl::OnRButtonDown(nFlags, point);
 }

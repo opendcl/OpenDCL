@@ -2200,6 +2200,11 @@ public:
 		if (pArgs)
 			return RSERR; //too many arguments
 
+		CRect rcDlg;
+		pDialog->GetWindowRect( rcDlg );
+		ads_point ptUL = { rcDlg.left, rcDlg.top, 0 };
+		acedRetPoint( ptUL ); //return the upper left corner as a 2D point
+
 		pDialog->CloseDialog();
 
 		return (RSRSLT) ;
