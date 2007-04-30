@@ -86,6 +86,9 @@ BOOL COptionListBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 
 	BOOL RetVal = CClrListBox::Create(dwStyle,ArxRect, pParentWnd, nID);
 
+	m_ToolTip.Create(this);
+	SetToolTipEx(this, m_ToolTip, pControl);
+
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
 	{
 	case 1:
@@ -219,17 +222,8 @@ void COptionListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	lpMeasureItemStruct->itemHeight = m_RowHeight;
 }
 
-
-void COptionListBox::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
-
 BOOL COptionListBox::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 	
   //On a return, do a double-click if one is defined. Otherwise, do a tab.

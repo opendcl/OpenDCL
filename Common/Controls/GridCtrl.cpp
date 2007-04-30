@@ -275,7 +275,6 @@ void CGridCtrl::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp
 
 BOOL CGridCtrl::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	GetToolTipCtrl().RelayEvent(pMsg);
 	return __super::PreTranslateMessage(pMsg);
 }
@@ -754,12 +753,6 @@ void CGridCtrl::UpdateCell(CString sText)
 	if (m_nRowSelected > -1)
 		SetItemText(m_nRowSelected, m_nColSelected, sText);
 }
-
-void CGridCtrl::InitToolTip()
-{
-	if (GetToolTipCtrl().m_hWnd == NULL)
-		GetToolTipCtrl().Create(this);
-} // End of InitToolTip
 
 // SortTextItems - Sort the list based on column text
 // Returns		 - Returns true for success

@@ -1113,14 +1113,12 @@ BOOL CGsPreviewCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 		dwStyle = dwStyle | WS_GROUP;
 
 	BOOL RetVal = CStatic::Create(_T(""), dwStyle, ArxRect, pParentWnd, nID);
-	VERIFY(CStatic::SubclassDlgItem(nID, pParentWnd));
-	
 	
 	m_pInterfaceMode = m_ArxControl->GetPropertyObject(nAllowOrbiting);
 	m_pAllowCircles = m_ArxControl->GetPropertyObject(nShowOrbitCirlces);
 	m_pRenderMode = m_ArxControl->GetPropertyObject(nRenderMode);
 
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 
@@ -2507,19 +2505,8 @@ void CGsPreviewCtrl::RemoveHighLight()
 	Invalidate();
 }
 
-void CGsPreviewCtrl::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-
-void CGsPreviewCtrl::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL CGsPreviewCtrl::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 	
 	return CStatic::PreTranslateMessage(pMsg);

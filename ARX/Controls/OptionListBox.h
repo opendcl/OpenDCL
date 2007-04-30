@@ -35,7 +35,6 @@ public:
 // Operations
 public:
 	void SetRowHeight(int nNewHeight);
-	void InitToolTip();
 	void SetDragnDrop(BOOL bRegister);
 	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct, int nHighlight);
 // Overrides

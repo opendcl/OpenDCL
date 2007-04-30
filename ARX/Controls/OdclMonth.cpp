@@ -69,7 +69,7 @@ BOOL OdclMonth::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	if( lMaxSel > 1 )
 		SetMaxSelCount( lMaxSel );
 	
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	CMonthCalCtrl::SizeMinReq(TRUE);
@@ -94,11 +94,7 @@ void OdclMonth::OnDestroy()
 {
 	// delete the tool tip text control object
 	m_ToolTip.DelTool(this, 1);
-	
-
 	CMonthCalCtrl::OnDestroy();
-	
-	
 }
 
 void OdclMonth::OnMouseMove(UINT nFlags, CPoint point) 
@@ -110,8 +106,6 @@ void OdclMonth::OnMouseMove(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
-	
-	
 	CMonthCalCtrl::OnMouseMove(nFlags, point);
 }
 
@@ -119,40 +113,23 @@ void OdclMonth::OnMouseMove(UINT nFlags, CPoint point)
 void OdclMonth::OnGetdaystate(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventGetDayState), m_bInvokeWithSendString);
-	
-	
 	*pResult = 0;
 }
 
 void OdclMonth::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventSelChanged), m_bInvokeWithSendString);
-	
-	
 	*pResult = 0;
 }
 
 void OdclMonth::OnSelect(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventSelect), m_bInvokeWithSendString);
-	
-	
 	*pResult = 0;
 }
 
-void OdclMonth::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void OdclMonth::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL OdclMonth::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	return CMonthCalCtrl::PreTranslateMessage(pMsg);
 }

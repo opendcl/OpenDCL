@@ -103,10 +103,8 @@ BOOL VdclComboBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 
 	RetVal = CComboBox::Create( dwStyle, ArxRect, pParentWnd, nID );
 
-
-	VERIFY(CComboBox::SubclassDlgItem(nID, pParentWnd));
 	LimitText(pControl->GetLngProperty(nLimitText));
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	SetExtendedUI(TRUE);
@@ -359,20 +357,8 @@ void VdclComboBox::OnShowWindow(BOOL bShow, UINT nStatus)
 	CComboBox::OnShowWindow(bShow, nStatus);	
 }
 
-void VdclComboBox::SetTooltipText(CString* spText, BOOL bActivate)
-{
-	
-} // End of SetTooltipText
-
-void VdclComboBox::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL VdclComboBox::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 	
 	if (pMsg->message == WM_KEYDOWN)

@@ -156,7 +156,6 @@ public:
 	void SetCellStyle(int nRow, int nCol, int nStyle);
 	int GetCellStyle(int nRow, int nCol);
 	void UpdateCell(CString sText);
-	void InitToolTip();
 	
 // Operations
 public:

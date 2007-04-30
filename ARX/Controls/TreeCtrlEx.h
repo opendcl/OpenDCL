@@ -26,7 +26,6 @@ public:
 
 // Operations
 public:
-	void InitToolTip();
 	void SetDragnDrop(BOOL bRegister);
 	
 // Implementation

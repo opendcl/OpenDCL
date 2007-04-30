@@ -1574,8 +1574,14 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			break;
 		}
 		case nToolTipTitle:
+		case nToolTipBalloon:
+		case nToolTipLine:
+		case nToolTipBody:
+		case nToolTipPicture:
+		case nToolTipAviFileName:
+		case nToolTipTitleColor:
 		{
-			ChangeToolTipTitle(pControl, pControlWnd);
+			UpdateToolTip(pControl, pControlWnd);
 			break;
 		}
 		case nUseTabStops:
@@ -1824,7 +1830,7 @@ void CArxDialogControl::UpdateText(CDclControlObject *pTemplate, CWnd *pControl,
 
 // This function is being phased out as control classes are changed to implement their own CDialogControl interface
 //static
-void CArxDialogControl::ChangeToolTipTitle(CDclControlObject *pArxObject, CWnd *pControl)
+void CArxDialogControl::UpdateToolTip(CDclControlObject *pArxObject, CWnd *pControl)
 {
 	CString sToolTipTitle = pArxObject->GetStrProperty(nToolTipTitle);
 	switch (pArxObject->GetType())

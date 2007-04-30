@@ -29,8 +29,6 @@ public:
 
 // Operations
 public:
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	CPPToolTip m_ToolTip;
 	void SetDragnDrop(BOOL bRegister);
 	void SetAcadColor(long nColor);

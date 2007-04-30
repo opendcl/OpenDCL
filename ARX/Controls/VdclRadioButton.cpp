@@ -69,7 +69,7 @@ BOOL VdclRadioButton::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 	
 	VERIFY(CClrButton::SubclassDlgItem(nID, pParentWnd));
 
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -186,26 +186,11 @@ void VdclRadioButton::OnKillFocus(CWnd* pNewWnd)
 	
 }
 
-void VdclRadioButton::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void VdclRadioButton::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
-
 BOOL VdclRadioButton::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
-	{
 		pMsg->wParam = VK_TAB;		
-	}
-	
 	return CClrButton::PreTranslateMessage(pMsg);
 }
 

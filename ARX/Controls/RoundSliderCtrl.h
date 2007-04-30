@@ -28,8 +28,6 @@ protected:
 	bool	m_bDragChanged;
 // attributes
 public:
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	CPPToolTip m_ToolTip;
 	
 	void SetPos(int nPos);

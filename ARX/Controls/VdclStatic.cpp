@@ -105,7 +105,7 @@ BOOL VdclStatic::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID 
 	RetVal = CStatic::Create(Caption, dwStyle, ArxRect, pParentWnd, nID);
 	VERIFY(CStatic::SubclassDlgItem(nID, pParentWnd));
 
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	return RetVal;
@@ -122,19 +122,6 @@ void VdclStatic::OnDestroy()
 		delete m_pStaticBrush;
 }
 
-void VdclStatic::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void VdclStatic::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-	{
-		// Create ToolTip control
-		m_ToolTip.Create(this);
-	}
-} // End of InitToolTip
-
-
 void VdclStatic::OnMouseMove(UINT nFlags, CPoint point) 
 {
 
@@ -144,16 +131,12 @@ void VdclStatic::OnMouseMove(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
-	
-	
 	CStatic::OnMouseMove(nFlags, point);
 }
 
 BOOL VdclStatic::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	return CStatic::PreTranslateMessage(pMsg);
 }
 
@@ -167,13 +150,10 @@ void VdclStatic::SetDragnDrop(BOOL bRegister)
     }
 	else
 		m_DropTarget.Revoke();
-
 }
-
 
 void VdclStatic::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	
 	if (m_ArxControl->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
 	{
 		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);

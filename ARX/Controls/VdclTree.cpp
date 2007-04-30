@@ -126,7 +126,7 @@ BOOL VdclTree::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	
 	m_ChildTree.m_ArxControl = m_ArxControl;
 	//m_ChildTree.ModifyStyle(TVS_TRACKSELECT, 0, SWP_NOSIZE | SWP_NOMOVE);
-	m_ChildTree.InitToolTip();
+	m_ChildTree.m_ToolTip.Create(this);
 	SetToolTipEx(&m_ChildTree, m_ChildTree.m_ToolTip, pControl);
 
 	

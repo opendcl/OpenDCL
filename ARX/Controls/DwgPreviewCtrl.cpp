@@ -85,13 +85,11 @@ BOOL CDwgPreviewCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 		pParentWnd,
 		nID);
 	
-	VERIFY(CButton::SubclassDlgItem(nID, pParentWnd));
-	
 	int nColor = m_ArxControl->GetLngProperty(nAcadColor);
 	COLORREF rgb = GetRGBColor(nColor);
 	
 	m_BkColor = rgb;
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -331,21 +329,9 @@ void CDwgPreviewCtrl::OnKillFocus(CWnd* pNewWnd)
 	
 }
 
-void CDwgPreviewCtrl::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-
-void CDwgPreviewCtrl::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL CDwgPreviewCtrl::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	return CButton::PreTranslateMessage(pMsg);
 }
 

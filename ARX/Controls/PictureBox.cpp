@@ -11,6 +11,7 @@
 #include "PropertyIds.h"
 #include "Project.h"
 #include "PictureObject.h"
+#include "ToolTips.h"
 
 #define HIMETRIC_INCH	2540
 
@@ -198,9 +199,8 @@ BOOL CPictureBox::Create(CDclControlObject* pControl, CProject *pProject, CWnd* 
 		nID);
 
 	SetAllProperties();
-	SetTooltipText(
-		&pControl->GetStrProperty(nToolTipTitle), 
-		TRUE);
+	m_ToolTip.Create(this);
+	SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
 	{
@@ -1704,20 +1704,9 @@ void CPictureBox::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 }
 
-void CPictureBox::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void CPictureBox::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL CPictureBox::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	return CButton::PreTranslateMessage(pMsg);
 }
 
@@ -1729,12 +1718,9 @@ void CPictureBox::OnDestroy()
 		delete m_pPicture;
 	}
 
-	
 	// delete the tool tip text control object
 	m_ToolTip.DelTool(this, 1);
-	
 	CButton::OnDestroy();
-		
 }
 
 void CPictureBox::SetDragnDrop(BOOL bRegister)

@@ -27,9 +27,7 @@ public:
 	RefCountedPtr< CPropertyObject > m_pValueProp;
 // Operations
 public:
-	void InitToolTip();
 	CPPToolTip m_ToolTip;
-	
 
 // Overrides
 	// ClassWizard generated virtual function overrides

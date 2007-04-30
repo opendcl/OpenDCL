@@ -70,9 +70,7 @@ BOOL VdclPlotStyleNamesComboBox::Create(CDclControlObject* pControl, CWnd* pPare
 
 	RetVal = CAcUiPlotStyleNamesComboBox::Create( dwStyle, ArxRect, pParentWnd, nID );
 	
-	VERIFY(CAcUiPlotStyleNamesComboBox::SubclassDlgItem(nID, pParentWnd));
-
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -216,29 +214,17 @@ void VdclPlotStyleNamesComboBox::OnMouseMove(UINT nFlags, CPoint point)
 	CAcUiPlotStyleNamesComboBox::OnMouseMove(nFlags, point);
 }
 
-void VdclPlotStyleNamesComboBox::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void VdclPlotStyleNamesComboBox::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL VdclPlotStyleNamesComboBox::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
 	{
 		if (m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
 			pMsg->wParam = VK_TAB;
-		
 	}
-
 	return CAcUiPlotStyleNamesComboBox::PreTranslateMessage(pMsg);
 }
+
 void VdclPlotStyleNamesComboBox::OnDropdown() 
 {
 	if (m_ArxControl)

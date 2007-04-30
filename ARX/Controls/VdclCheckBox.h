@@ -25,10 +25,7 @@ public:
 
 // Operations
 public:
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	CPPToolTip m_ToolTip;
-	
 
 // Overrides
 	// ClassWizard generated virtual function overrides

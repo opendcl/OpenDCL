@@ -46,8 +46,6 @@ public:
 	void PaintPicture(int sX, int sY, int nPictureID, int nEnabled, int nUseMask);
 	void LoadPictureFile(LPCTSTR szFile, bool bStretch = false);
 	void CopyDC();
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	CPPToolTip m_ToolTip;
 	void SetDragnDrop(BOOL bRegister);
 

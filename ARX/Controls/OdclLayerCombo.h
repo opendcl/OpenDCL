@@ -26,9 +26,6 @@ public:
 	
 // Operations
 public:
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
-	
 	void GetVisibility(int nItem, bool &bFrozen, bool &bOn);
 	void DrawColor(CDC* pDC, CRect rc, int nColor);
 

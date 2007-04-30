@@ -92,7 +92,6 @@ BOOL VdclAngleEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT n
 
 	RetVal=  CColorEdit::Create( dwStyle, ArxRect, pParentWnd, nID );
 	
-	VERIFY(CColorEdit::SubclassDlgItem(nID, pParentWnd));
 	// fix up 3D styles
 	ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
 	CColorEdit::ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
@@ -101,7 +100,7 @@ BOOL VdclAngleEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT n
 	
 	CColorEdit::SetLimitText(pControl->GetLngProperty(nLimitText));
 
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -411,19 +410,8 @@ void VdclAngleEdit::OnBadInput()
 	MessageBeep((UINT)-1);
 }
 
-void VdclAngleEdit::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-
-void VdclAngleEdit::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL VdclAngleEdit::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 	
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN && m_ArxControl)

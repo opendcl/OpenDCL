@@ -24,8 +24,6 @@ public:
 public:
 	bool			m_bFocusClick;
 	CString m_sFilter;
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	CPPToolTip m_ToolTip;
 	
 	bool m_bInvokeWithSendString;

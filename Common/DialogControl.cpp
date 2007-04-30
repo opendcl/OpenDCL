@@ -113,6 +113,7 @@ bool CDialogControl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 	case nCaption: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
 	case nTitleBarText: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
 	case nToolTipTitle: if( !OnApplyToolTip( pProp ) ) bSuccess = false; break;
+	case nToolTipBalloon: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
 	case nToolTipLine: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
 	case nToolTipBody: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
 	case nToolTipPicture: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;

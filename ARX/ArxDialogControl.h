@@ -35,7 +35,7 @@ public:
 	static void UpdateProperty(CDclControlObject *pControl, CControlPane* pPane, UINT nControlId, PropertyId nID);
 	static void UpdateText(CDclControlObject *pControl, CWnd *pWnd, CString sText);
 	static void UpdateFont(CDclControlObject *pControl, CWnd *pWnd, CFont *pFont);
-	static void ChangeToolTipTitle(CDclControlObject *pControl, CWnd *pWnd);
+	static void UpdateToolTip(CDclControlObject *pControl, CWnd *pWnd);
 	static void SetDwgListComboFolderLink(CComboBoxFolder *pComboFolder);
 	static void SetDwgListComboFolderLink(CDwgDirList *pDwgList);
 	static void ResetImageList(CDclControlObject *pControl, CWnd *pWnd, int nID);

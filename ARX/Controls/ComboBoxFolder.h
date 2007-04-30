@@ -58,8 +58,6 @@ public:
 	void AddPath(CString path);
 	void Init(int w=0, int h=0);
 	virtual ~CComboBoxFolder();
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	
 	// Generated message map functions
 protected:

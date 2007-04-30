@@ -27,8 +27,6 @@ public:
 // Operations
 public:
 	void DrawComboItemImage(CDC& dc, CRect& r, int cargo);
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	CPPToolTip m_ToolTip;
 	
 	COLORREF GetColorFromIndex(int nColorIndex);

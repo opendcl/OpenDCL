@@ -214,7 +214,6 @@ void CComboBoxFolder::SetDroppedWidth(int width)
 
 BOOL CComboBoxFolder::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 
 	if (pMsg->message==WM_KEYDOWN && (pMsg->wParam==VK_DOWN || pMsg->wParam==VK_RIGHT))
@@ -248,16 +247,6 @@ void CComboBoxFolder::OnMouseMove(UINT nFlags, CPoint point)
 	CComboBox::OnMouseMove(nFlags, point);
 }
 
-void CComboBoxFolder::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-
-void CComboBoxFolder::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL CComboBoxFolder::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
 {
 	BOOL RetVal;
@@ -286,9 +275,8 @@ BOOL CComboBoxFolder::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 	
 	RetVal = CComboBox::Create( dwStyle, ArxRect, pParentWnd, nID );
 
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
-
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
 	{

@@ -30,8 +30,6 @@ public:
 	CComboBox *m_pGridDropList;
 // Operations
 public:
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	CPPToolTip m_ToolTip;
 	void SetDragnDrop(BOOL bRegister);
 	void SetAcadColor(long nColor);

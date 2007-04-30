@@ -659,8 +659,6 @@ BOOL CRoundSliderCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UIN
 
 	BOOL RetVal = CSliderCtrl::Create(dwStyle, ArxRect, pParentWnd, nID);
 	
-
-	VERIFY(CRoundSliderCtrl::SubclassDlgItem(nID, pParentWnd));
 	CRoundSliderCtrl::SetRange(-179, 180, FALSE);
 	CRoundSliderCtrl::SetZero(90);
 	CRoundSliderCtrl::SetInverted();
@@ -668,9 +666,8 @@ BOOL CRoundSliderCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UIN
 	m_pValueProp = pControl->GetPropertyObject(nValue);
 
 	CRoundSliderCtrl::SetPos(m_pValueProp->GetLongValue());
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
-
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
 	{
@@ -690,27 +687,11 @@ void CRoundSliderCtrl::OnDestroy()
 {
 	// delete the tool tip text control object
 	m_ToolTip.DelTool(this, 1);
-	
-	
 	CSliderCtrl::OnDestroy();
-	
-
 }
-
-void CRoundSliderCtrl::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void CRoundSliderCtrl::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 
 BOOL CRoundSliderCtrl::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	return CSliderCtrl::PreTranslateMessage(pMsg);
 }

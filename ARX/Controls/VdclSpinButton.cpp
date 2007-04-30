@@ -71,7 +71,7 @@ BOOL VdclSpinButton::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 
 	SetPos(m_Pos);
 
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 	
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -130,19 +130,9 @@ void VdclSpinButton::OnMouseMove(UINT nFlags, CPoint point)
 	
 	CSpinButtonCtrl::OnMouseMove(nFlags, point);
 }
-void VdclSpinButton::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void VdclSpinButton::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 
 BOOL VdclSpinButton::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);	
 
 	return CSpinButtonCtrl::PreTranslateMessage(pMsg);

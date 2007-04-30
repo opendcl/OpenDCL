@@ -121,14 +121,10 @@ BOOL OdclEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 
 	RetVal=  CColorEdit::Create( dwStyle, ArxRect, pParentWnd, nID );
 	
-
-	
-	VERIFY(CColorEdit::SubclassDlgItem(nID, pParentWnd));
-	
 	m_pTextProp = pControl->GetPropertyObject(nText);
 	
 	CColorEdit::SetLimitText(pControl->GetLngProperty(nLimitText));
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -496,18 +492,8 @@ void OdclEdit::OnBadInput()
 	MessageBeep((UINT)-1);
 }
 
-void OdclEdit::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void OdclEdit::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL OdclEdit::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 	
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN && m_ArxControl && !m_bAllowReturn)

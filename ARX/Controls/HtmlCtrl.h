@@ -24,8 +24,6 @@ public:
 public:
 	
 	void ReplaceText(CString sOldText, CString sNewText);
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	CPPToolTip m_ToolTip;
 	
 	CString GetFullName() const;

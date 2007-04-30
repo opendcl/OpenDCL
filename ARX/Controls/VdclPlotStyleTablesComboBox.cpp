@@ -70,10 +70,7 @@ BOOL VdclPlotStyleTablesComboBox::Create(CDclControlObject* pControl, CWnd* pPar
 
 	RetVal = CAcUiPlotStyleTablesComboBox::Create( dwStyle, ArxRect, pParentWnd, nID );
 	
-	VERIFY(CAcUiPlotStyleTablesComboBox::SubclassDlgItem(nID, pParentWnd));
-
-
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -213,27 +210,14 @@ void VdclPlotStyleTablesComboBox::OnKillFocus(CWnd* pNewWnd)
 		
 }
 
-void VdclPlotStyleTablesComboBox::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void VdclPlotStyleTablesComboBox::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL VdclPlotStyleTablesComboBox::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
 	{
 		if (m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
 			pMsg->wParam = VK_TAB;
-		
 	}
-
 	return CAcUiPlotStyleTablesComboBox::PreTranslateMessage(pMsg);
 }
 

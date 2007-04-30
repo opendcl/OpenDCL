@@ -10,6 +10,7 @@
 #include "PropertyIds.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
+#include "ToolTips.h"
 
 const TCHAR *sBackSlash2 = _T("\\");
 const TCHAR sDwg[] = _T("*.dwg");
@@ -509,7 +510,9 @@ BOOL CDwgDirList::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID
 	}
 
 	BOOL RetVal = CClrListBox::Create(dwStyle,ArxRect, pParentWnd, nID);
-	VERIFY(CClrListBox::SubclassDlgItem(nID, pParentWnd));
+
+	m_ToolTip.Create(this);
+	SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
 	{
@@ -896,25 +899,9 @@ void CDwgDirList::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	
 }
 
-
-void CDwgDirList::SetTooltipText(CString* spText, BOOL bActivate)
-{
-
-} // End of SetTooltipText
-
-void CDwgDirList::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
-
 BOOL CDwgDirList::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-
-	
 	return CListBox::PreTranslateMessage(pMsg);
 }
 
@@ -941,7 +928,6 @@ void CDwgDirList::OnDblclk()
 		InvokeMethodString(m_ArxControl->GetStrProperty(nEventFolderChanged), m_sPath, false);		
 	}
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventDblClicked), m_bInvokeWithSendString);
-	
 }
 
 

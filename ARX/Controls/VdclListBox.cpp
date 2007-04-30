@@ -89,8 +89,6 @@ BOOL VdclListBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID
 		dwStyle = dwStyle | WS_GROUP;
 
 	BOOL RetVal = CClrListBox::Create(dwStyle,ArxRect, pParentWnd, nID);
-	VERIFY(CClrListBox::SubclassDlgItem(nID, pParentWnd));
-
 
 	// fix up 3D styles
 	ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
@@ -99,7 +97,7 @@ BOOL VdclListBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID
 	ModifyStyleEx(0, WS_VSCROLL);
 	CClrListBox::ModifyStyleEx(0, WS_VSCROLL);
 	
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -255,40 +253,31 @@ void VdclListBox::OnSelchange()
 		}
 	}	   
 }
+
 void VdclListBox::OnDblclk() 
 {
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventDblClicked), m_bInvokeWithSendString);
 }
+
 void VdclListBox::OnKillfocus() 
 {
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
 }
+
 void VdclListBox::OnSetfocus() 
 {
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);	
 }
-void VdclListBox::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void VdclListBox::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
+
 BOOL VdclListBox::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-
-  if (pMsg->wParam == WM_KEYDOWN && pMsg->lParam == VK_RETURN) {
-    int i = 0;
-  }
-	
 	return CClrListBox::PreTranslateMessage(pMsg);
 }
+
 void VdclListBox::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
     if (nChar == VK_RETURN) {
@@ -298,6 +287,7 @@ void VdclListBox::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
     CClrListBox::OnKeyDown(nChar, nRepCnt, nFlags);
   }
 }
+
 void VdclListBox::SetDragnDrop(BOOL bRegister)
 {
 	if (bRegister == TRUE)

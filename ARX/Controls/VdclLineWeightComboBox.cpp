@@ -72,7 +72,7 @@ BOOL VdclLineWeightComboBox::Create(CDclControlObject* pControl, CWnd* pParentWn
 
 	CAcUiLineWeightComboBox::SetUseDefault(FALSE);
 	
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -194,34 +194,19 @@ void VdclLineWeightComboBox::OnKillFocus(CWnd* pNewWnd)
 	if (m_ArxControl)
 		// call methods to invoke the event
 		InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
-	
-	
 }
-
-void VdclLineWeightComboBox::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void VdclLineWeightComboBox::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 
 BOOL VdclLineWeightComboBox::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
 	{
 		if (m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
 			pMsg->wParam = VK_TAB;
-		
 	}
-
 	return CAcUiLineWeightComboBox::PreTranslateMessage(pMsg);
 }
+
 void VdclLineWeightComboBox::OnDropdown() 
 {
 	if (m_ArxControl)

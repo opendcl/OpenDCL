@@ -62,32 +62,16 @@ BOOL VdclProgressCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UIN
 		dwStyle = dwStyle | PBS_VERTICAL ;
 
 	RetVal = CProgressCtrl::Create(dwStyle, ArxRect, pParentWnd, nID);
-
-	// Set the range to be 0 to 100.
-	//CProgressCtrl::SetRange( 0, 100 );
-
-	//CProgressCtrl::SetPos (50);
 	
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	return RetVal;
 }
-void VdclProgressCtrl::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void VdclProgressCtrl::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 
 BOOL VdclProgressCtrl::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	return CProgressCtrl::PreTranslateMessage(pMsg);
 }
 

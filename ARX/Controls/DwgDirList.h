@@ -97,8 +97,6 @@ public:
 	void SetDragnDrop(BOOL bRegister);
 	void CreateImageList();
 	void Dir(CString sDir);
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	void ClearThumbnailList();
 	
 // Overrides

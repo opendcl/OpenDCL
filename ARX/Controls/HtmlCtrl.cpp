@@ -51,7 +51,7 @@
 	
 	CHtmlView::SetSilent(FALSE);
 
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 
@@ -232,7 +232,6 @@ void CHtmlCtrl::OnNavigateComplete2(LPCTSTR strURL)
 {
 	// call methods to invoke the event
 	InvokeMethodString(m_ArxControl->GetStrProperty(nEventNavigateComplete), strURL, m_bInvokeWithSendString);
-		
 	CHtmlView::OnNavigateComplete2(strURL);
 }
 
@@ -245,27 +244,12 @@ void CHtmlCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
-	
-	
 	CHtmlView::OnMouseMove(nFlags, point);
 }
 
-void CHtmlCtrl::SetTooltipText(CString* spText, BOOL bActivate)
-{
-
-} // End of SetTooltipText
-void CHtmlCtrl::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
-
 BOOL CHtmlCtrl::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	return CHtmlView::PreTranslateMessage(pMsg);
 } // End of PreTranslateMessage
 

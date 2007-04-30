@@ -65,12 +65,10 @@ BOOL VdclCheckBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 
 	RetVal =  CClrButton::Create(Caption, dwStyle, ArxRect, pParentWnd, nID );
 	
-	VERIFY(CClrButton::SubclassDlgItem(nID, pParentWnd));
-	
 	ModifyStyleEx(0, BS_AUTOCHECKBOX);
 	CClrButton::ModifyStyleEx(0, BS_AUTOCHECKBOX);
 
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -156,28 +154,12 @@ void VdclCheckBox::OnDoubleclicked()
 {
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventDblClicked), m_bInvokeWithSendString);
-	
 }
-
-void VdclCheckBox::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void VdclCheckBox::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
 
 BOOL VdclCheckBox::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
-	{
 		pMsg->wParam = VK_TAB;		
-	}
-	
-
 	return CClrButton::PreTranslateMessage(pMsg);
 }

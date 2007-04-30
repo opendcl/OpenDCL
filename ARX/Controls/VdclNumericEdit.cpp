@@ -96,18 +96,13 @@ BOOL VdclNumericEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 
 	RetVal=  CColorEdit::Create( dwStyle, ArxRect, pParentWnd, nID );
 	
-	VERIFY(CColorEdit::SubclassDlgItem(nID, pParentWnd));
 	// fix up 3D styles
 	ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
 	CColorEdit::ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
-
-	
 	m_pTextProp = pControl->GetPropertyObject(nText);
 	CColorEdit::SetLimitText(pControl->GetLngProperty(nLimitText));
-	//SetTooltipText(
-	//	&pControl->GetStrProperty(nToolTipTitle), 
-	//	TRUE);
-	InitToolTip();
+
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -414,36 +409,8 @@ void VdclNumericEdit::OnBadInput()
 	MessageBeep((UINT)-1);
 }
 
-void VdclNumericEdit::SetTooltipText(CString* spText, BOOL bActivate)
-{
-/*	// We cannot accept NULL pointer
-	if (spText == NULL) return;
-
-	// Initialize ToolTip
-	InitToolTip();
-
-	// If there is no tooltip defined then add it
-	if (m_ToolTip.GetToolCount() == 0)
-	{
-		CRect rectBtn; 
-		GetClientRect(rectBtn);
-		m_ToolTip.AddTool(this, (LPCTSTR)*spText, rectBtn, 1);
-	}
-
-	// Set text for tooltip
-	m_ToolTip.UpdateTipText((LPCTSTR)*spText, this, 1);
-	m_ToolTip.Activate(bActivate);
-	*/
-} // End of SetTooltipText
-void VdclNumericEdit::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL VdclNumericEdit::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 	
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN && m_ArxControl)

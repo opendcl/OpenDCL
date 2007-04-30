@@ -30,8 +30,6 @@ public:
 // Operations
 public:
 	void OnBadInput();
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	CPPToolTip m_ToolTip;
 	void SetDragnDrop(BOOL bRegister);
 	CComboBox		*m_pGridDropList;

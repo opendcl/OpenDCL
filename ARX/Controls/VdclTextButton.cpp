@@ -20,7 +20,6 @@ VdclTextButton::VdclTextButton()
 {
 	// No tooltip created
 	m_ToolTip.m_hWnd = NULL;
-
 }
 
 VdclTextButton::~VdclTextButton()
@@ -74,11 +73,8 @@ BOOL VdclTextButton::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 
 	VERIFY(CButton::SubclassDlgItem(nID, pParentWnd));
 	
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
-	//SetTooltipText(
-//		&pControl->GetStrProperty(nToolTipTitle), 
-//		TRUE);
 
 	int n = m_ArxControl->GetLngProperty(nEventInvoke);
 	switch (n)
@@ -183,40 +179,8 @@ void VdclTextButton::OnNcPaint()
 	// Do not call CButton::OnNcPaint() for painting messages
 }
 
-void VdclTextButton::SetTooltipText(CString* spText, BOOL bActivate)
-{
-	/*
-	// We cannot accept NULL pointer
-	if (spText == NULL) return;
-
-	// Initialize ToolTip
-	InitToolTip();
-
-	// If there is no tooltip defined then add it
-	if (m_ToolTip.GetToolCount() == 0)
-	{
-		CRect rectBtn; 
-		GetClientRect(rectBtn);
-		//m_ToolTip.AddTool(this, (LPCTSTR)*spText, rectBtn, 1);
-		m_ToolTip.AddTool(this, spText));
-
-	}
-
-	// Set text for tooltip
-	m_ToolTip.UpdateTipText((LPCTSTR)*spText, this, 1);
-	m_ToolTip.Activate(bActivate);
-	*/
-} // End of SetTooltipText
-
-void VdclTextButton::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL VdclTextButton::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 	return CButton::PreTranslateMessage(pMsg);
 }

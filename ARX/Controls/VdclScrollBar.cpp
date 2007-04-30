@@ -76,7 +76,7 @@ BOOL VdclScrollBar::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT n
 	
 	m_pValueProp = pControl->GetPropertyObject(nValue);
 
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -199,18 +199,8 @@ void VdclScrollBar::OnDestroy()
 	
 }
 
-void VdclScrollBar::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void VdclScrollBar::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL VdclScrollBar::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 	
 	return CScrollBar::PreTranslateMessage(pMsg);

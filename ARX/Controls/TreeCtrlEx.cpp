@@ -38,7 +38,8 @@ END_MESSAGE_MAP()
 
 BOOL CTreeCtrlEx::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
+	if( !m_ToolTip.m_hWnd )
+		m_ToolTip.Create(this);
 	m_ToolTip.RelayEvent(pMsg);
 	return CTreeCtrl::PreTranslateMessage(pMsg);
 }
@@ -61,12 +62,6 @@ void CTreeCtrlEx::OnMouseMove(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	CTreeCtrl::OnMouseMove(nFlags, point);
 }
-
-void CTreeCtrlEx::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
 
 void CTreeCtrlEx::SetDragnDrop(BOOL bRegister)
 {

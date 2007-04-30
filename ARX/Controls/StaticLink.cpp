@@ -93,11 +93,8 @@ BOOL CStaticLink::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID
 		pParentWnd,
 		nID);
 
-	VERIFY(CStatic::SubclassDlgItem(nID, pParentWnd));
-
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
-
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
 	{
@@ -270,25 +267,12 @@ void CStaticLink::OnMouseMove(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
-	
-	
 	CStatic::OnMouseMove(nFlags, point);
 }
-void CStaticLink::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void CStaticLink::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 
 BOOL CStaticLink::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	return CStatic::PreTranslateMessage(pMsg);
 }
 

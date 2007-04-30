@@ -19,8 +19,6 @@ class OdclEdit : public CColorEdit
 // Construction
 public:
 	OdclEdit();
-	void SetTooltipText(CString* spText, BOOL bActivate = TRUE);
-	void InitToolTip();
 	CPPToolTip m_ToolTip;
 	
 // Attributes

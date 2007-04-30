@@ -73,11 +73,8 @@ BOOL VdclArrowHeadComboBox::Create(CDclControlObject* pControl, CWnd* pParentWnd
 
 	RetVal = CAcUiArrowHeadComboBox::Create( dwStyle, ArxRect, pParentWnd, nID );
 	
-	VERIFY(CAcUiArrowHeadComboBox::SubclassDlgItem(nID, pParentWnd));
-
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
-
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
 	{
@@ -203,25 +200,14 @@ void VdclArrowHeadComboBox::OnKillFocus(CWnd* pNewWnd)
 	if (m_ArxControl)
 		// call methods to invoke the event
 		InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
-
 }
-
-void VdclArrowHeadComboBox::SetTooltipText(CString* spText, BOOL bActivate)
-{
-} // End of SetTooltipText
-void VdclArrowHeadComboBox::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
 
 BOOL VdclArrowHeadComboBox::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	return CAcUiArrowHeadComboBox::PreTranslateMessage(pMsg);
 }
+
 void VdclArrowHeadComboBox::OnDropdown() 
 {
 	if (m_ArxControl)

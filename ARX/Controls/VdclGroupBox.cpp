@@ -4,8 +4,7 @@
 #include "stdafx.h"
 #include "VdclGroupBox.h"
 #include "DclControlObject.h"
-//#include "PropertyObject.h"
-//#include "ToolTips.h"
+#include "ToolTips.h"
 #include "PropertyObject.h"
 #include "PropertyIds.h"
 
@@ -19,7 +18,6 @@ VdclGroupBox::VdclGroupBox()
 {
 	// No tooltip created
 	m_ToolTip.m_hWnd = NULL;
-
 }
 
 VdclGroupBox::~VdclGroupBox()
@@ -58,8 +56,6 @@ BOOL VdclGroupBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;	
 	RetVal =  CStatic::Create(CString(), dwStyle, ArxRect, pParentWnd, nID );
-	
-	VERIFY(CStatic::SubclassDlgItem(nID, pParentWnd));
 
 	CRect rcFrame(0,0, ArxRect.Width(), ArxRect.Height());
 	dwStyle = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_GROUPBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;	
@@ -68,7 +64,8 @@ BOOL VdclGroupBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 	m_Frame.SetFont(GetFont());
 	m_Frame.MoveWindow(rcFrame, TRUE);
 
-	
+	m_ToolTip.Create(this);
+	SetToolTipEx(this, m_ToolTip, pControl);
 	return RetVal;
 }
 
@@ -91,21 +88,8 @@ void VdclGroupBox::OnSize(UINT nType, int cx, int cy)
 	m_Frame.MoveWindow(rcFrame, TRUE);
 }
 
-
-void VdclGroupBox::SetTooltipText(CString* spText, BOOL bActivate)
-{
-	
-} // End of SetTooltipText
-void VdclGroupBox::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
 BOOL VdclGroupBox::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
-	
 	return CStatic::PreTranslateMessage(pMsg);
 }

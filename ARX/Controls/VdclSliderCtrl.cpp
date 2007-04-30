@@ -75,7 +75,7 @@ BOOL VdclSliderCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	m_pValueProp = pControl->GetPropertyObject(nValue);
 	SetPos(m_pValueProp->GetLongValue());
 
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 	
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
@@ -179,16 +179,8 @@ void VdclSliderCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	CSliderCtrl::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
-void VdclSliderCtrl::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
-
-
 BOOL VdclSliderCtrl::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 	return CSliderCtrl::PreTranslateMessage(pMsg);
 }

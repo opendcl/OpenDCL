@@ -75,7 +75,7 @@ BOOL VdclColorComboBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UI
 
 	RetVal = CAcUiColorComboBox::Create( dwStyle, ArxRect, pParentWnd, nID );
 	
-	InitToolTip();
+	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	SetUseOther1(TRUE);
@@ -199,37 +199,25 @@ void VdclColorComboBox::OnKillFocus(CWnd* pNewWnd)
 	if (m_ArxControl)
 		// call methods to invoke the event
 		InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
-	
 }
 
 COLORREF VdclColorComboBox::GetColorFromIndex(int nColorIndex)
 {
 	return CAcUiColorComboBox::GetColorFromIndex(nColorIndex);
 }
-void VdclColorComboBox::SetTooltipText(CString* spText, BOOL bActivate)
-{
-	
-} // End of SetTooltipText
-void VdclColorComboBox::InitToolTip()
-{
-	if (m_ToolTip.m_hWnd == NULL)
-		m_ToolTip.Create(this);
-} // End of InitToolTip
 
 BOOL VdclColorComboBox::PreTranslateMessage(MSG* pMsg) 
 {
-	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);	
 
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
 	{
 		if (m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
 			pMsg->wParam = VK_TAB;
-		
 	}
-
 	return CAcUiColorComboBox::PreTranslateMessage(pMsg);
 }
+
 void VdclColorComboBox::OnDropdown() 
 {
 	if (m_ArxControl)
