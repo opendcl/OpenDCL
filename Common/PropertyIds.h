@@ -255,5 +255,6 @@ enum PropertyId
 	nFormEventOnOk = 251,
 	nTitleBar = 252,
 	nFormEventOnCancel = 253,
-	nMaxPropertyId	= 253
+	nToolTipBalloon		= 254,
+	nMaxPropertyId	= 254
 };

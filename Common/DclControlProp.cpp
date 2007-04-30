@@ -258,6 +258,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		break;
 
 	case CtlAnimate:
@@ -285,6 +286,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nDragnDropToAutoCAD );
 		AddControlEvent( pDclControl, nDragnDropFromControl );
@@ -313,6 +315,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nDragnDropToAutoCAD );
@@ -342,6 +345,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		pDclControl->AddBooleanProperty( nValue, PropBool, false );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nEventDblClicked );
@@ -371,6 +375,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventEditChanged );
 		AddControlEvent( pDclControl, nEventKillFocus );
 		AddControlEvent( pDclControl, nEventSetFocus );
@@ -403,6 +408,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		pDclControl->AddBooleanProperty( nVScrollBar, PropBool, true );
 		AddControlEvent( pDclControl, nEventFolderChanged );
 		AddControlEvent( pDclControl, nEventClicked );
@@ -435,6 +441,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nDragnDropToAutoCAD );
@@ -499,6 +506,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nDragnDropToAutoCAD );
@@ -544,6 +552,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventBtnClicked );
 		AddControlEvent( pDclControl, nEventKillFocus );
 		AddControlEvent( pDclControl, nEventSetFocus );
@@ -576,6 +585,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nDragnDropToAutoCAD );
@@ -616,6 +626,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventEditChanged );
 		AddControlEvent( pDclControl, nEventKillFocus );
 		AddControlEvent( pDclControl, nEventSetFocus );
@@ -676,6 +687,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		pDclControl->AddBooleanProperty( nUseTabStops, PropBool, false );
 		pDclControl->AddBooleanProperty( nVScrollBar, PropBool, false );
 		AddControlEvent( pDclControl, nEventClicked );
@@ -724,6 +736,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nEventRClick );
 		AddControlEvent( pDclControl, nDragnDropToAutoCAD );
@@ -762,6 +775,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventSelChanged );
 		AddControlEvent( pDclControl, nEventGetDayState );
 		AddControlEvent( pDclControl, nEventSelect );
@@ -786,6 +800,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		pDclControl->AddBooleanProperty( nValue, PropBool, false );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nEventDblClicked );
@@ -810,8 +825,9 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 				pProp->GetStringArrayPtr()->push_back( theWorkspace.LoadResourceString( IDS_OPTION2 ) );
 				pProp->GetStringArrayPtr()->push_back( theWorkspace.LoadResourceString( IDS_OPTION3 ) );
 			}
-			pDclControl->AddStringProperty( nBtnTTText, PropStringArray, sList );
 		}
+		pDclControl->AddStringProperty( nBtnTTText, PropStringArray, sList );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		pDclControl->AddLongProperty( nDefSelIndex, PropLong, 0 );
 		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
 		pDclControl->AddBooleanProperty( nIsTabStop, PropBool, true );
@@ -846,6 +862,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nDragnDropToAutoCAD );
@@ -893,6 +910,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		pDclControl->AddLongProperty( nValue, PropLong, 0 );
 		break;
 
@@ -905,6 +923,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		pDclControl->AddLongProperty( nValue, PropLong, 0 );
 		AddControlEvent( pDclControl, nEventMouseMove );
 		AddControlEvent( pDclControl, nEventScroll );
@@ -943,6 +962,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		pDclControl->AddLongProperty( nValue, PropLong, 1 );
 		AddControlEvent( pDclControl, nEventScroll );
 		AddControlEvent( pDclControl, nEventReleasedCapture );
@@ -961,6 +981,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nDragnDropToAutoCAD );
@@ -1014,6 +1035,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		pDclControl->AddStringProperty( nURLAddress, PropString );
 		AddControlHiddenProperty( pDclControl, nLabelBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
@@ -1035,6 +1057,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nDragnDropToAutoCAD );
@@ -1062,6 +1085,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		//AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_TAB3));
 		AddControlHiddenProperty( pDclControl, nTabsImageList, sList, PropIntArray );
 		AddControlHiddenProperty( pDclControl, nTabsTTT, sList, PropStringArray );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlHiddenProperty( pDclControl, nImageList, theWorkspace.LoadResourceString( IDS_IMAGELIST ), PropImageList );
 		AddControlEvent( pDclControl, nEventChanged );
 		AddControlEvent( pDclControl, nEventSelChanging );
@@ -1097,6 +1121,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		pDclControl->AddBooleanProperty( nVScrollBar, PropBool, false );
 		AddControlEvent( pDclControl, nDragnDropFromControl );
 		AddControlEvent( pDclControl, nDragnDropFromAutoCAD );
@@ -1137,6 +1162,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddStringProperty( nToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( nToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( nToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nDragnDropToAutoCAD );

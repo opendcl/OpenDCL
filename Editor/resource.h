@@ -275,7 +275,6 @@
 #define IDI_OLEOBJECT                   279
 #define IDI_FILEDLG                     280
 #define IDB_FDTOP                       281
-#define IDD_GETTINGSTARTED              283
 #define IDR_FONTBTNS                    285
 #define IDD_SORTTABS                    300
 #define IDD_COLUMNS                     301
@@ -349,7 +348,6 @@
 #define IDC_METHDEF                     1036
 #define IDC_CTRLCHECK                   1036
 #define IDC_PROPDESCEDIT                1037
-#define IDC_DONTSHOWAGAIN               1039
 #define IDC_STRIKEOUT                   0x0410
 #define IDC_UNDERLINE                   0x0411
 #define IDC_COLOR2                      1043
@@ -376,6 +374,8 @@
 #define IDC_SERVERPATH                  1083
 #define IDC_AVILABEL                    1084
 #define IDC_MAINTEXT                    1085
+#define IDC_LINE2                       1086
+#define IDC_BALLOON                     1086
 #define IDC_LEFT                        1087
 #define IDC_TOP                         1088
 #define stc1                            0x0440

@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "LoadArgs.h"
+#include "Resource.h"
 #include "ControlTypes.h"
 #include "DclControlObject.h"
 #include "PropertyIds.h"

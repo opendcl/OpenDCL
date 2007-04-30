@@ -451,6 +451,10 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
+				RelativePath="..\..\Common\Res\arrowheads.bmp"
+				>
+			</File>
+			<File
 				RelativePath="..\Res\dm_dm.ico"
 				>
 			</File>
@@ -464,6 +468,10 @@
 			</File>
 			<File
 				RelativePath="..\Res\Folder.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\Res\Folder.ico"
 				>
 			</File>
 			<File
@@ -523,11 +531,27 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\Res\OpButton1.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\Res\OpButton2.bmp"
+				>
+			</File>
+			<File
 				RelativePath="..\Res\OpButton2.bmp"
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\Res\OpButton3.bmp"
+				>
+			</File>
+			<File
 				RelativePath="..\Res\OpButton3.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\Res\OpButton4.bmp"
 				>
 			</File>
 			<File
@@ -540,6 +564,10 @@
 			</File>
 			<File
 				RelativePath="..\Res\PickBtn.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\Res\PickSmall.ico"
 				>
 			</File>
 			<File
@@ -571,11 +599,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\Res\SHXFont.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\Res\sm Acad.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\Res\TRUEFONT.ICO"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\Res\truefont.ico"
 				>
 			</File>
 			<File

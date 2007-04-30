@@ -338,7 +338,8 @@ void CControlPane::ResetControlsPos(CDclControlObject *pDclControl)
 	if (rcControl.left < 1)
 		rcControl.left = 1;
 	
-	if( pDclControl->GetType() == CtlComboBox || pDclControl->GetType() == CtlImageComboBox )
+	if( (pDclControl->GetType() == CtlComboBox || pDclControl->GetType() == CtlImageComboBox) &&
+			((pControl->GetStyle() & CBS_DROPDOWN) != 0) )
 		rcControl.bottom += pDclControl->GetLngProperty( nDropDownHeight );
 	
 	pControl->MoveWindow( rcControl, TRUE);

@@ -3321,6 +3321,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	{
 		pToolTipsPage = new CToolTipsPage;
 		
+		pToolTipsPage->m_pToolTipBalloon = pArxCtrl->GetPropertyObject(nToolTipBalloon);	
 		pToolTipsPage->m_pToolTipTitle = pProp;	
 		pToolTipsPage->m_pToolTipLine = pArxCtrl->GetPropertyObject(nToolTipLine);	
 		pToolTipsPage->m_pToolTipBody = pArxCtrl->GetPropertyObject(nToolTipBody);	

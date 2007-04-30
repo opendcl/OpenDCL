@@ -3039,7 +3039,7 @@ public:
 		//----- Read the external DWG file
 		AcDbObjectId blockId;
 		AcDbDatabase *pDwg = new AcDbDatabase(Adesk::kFalse);
-		Acad::ErrorStatus es = pDwg->readDwgFile (sPath);
+		Acad::ErrorStatus es = pDwg->readDwgFile (sPath, _SH_DENYNO);
 		if (es == Acad::eOk)
 		{
 			//----- Put it into a block table record of the current database

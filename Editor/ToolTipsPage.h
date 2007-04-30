@@ -38,12 +38,14 @@ public:
 	CEdit	m_Title;
 	CButton	m_Line;
 	CColourPicker	m_Color;
+	CButton m_Balloon;
 	//}}AFX_DATA
 
 	CPPToolTip m_tooltip;
 	int m_SelectedPic;
 	int m_nHighestId;
 	
+	RefCountedPtr< CPropertyObject > m_pToolTipBalloon;	
 	RefCountedPtr< CPropertyObject > m_pToolTipTitle;	
 	RefCountedPtr< CPropertyObject > m_pToolTipLine;	
 	RefCountedPtr< CPropertyObject > m_pToolTipBody;	
@@ -77,4 +79,5 @@ protected:
 	afx_msg void OnLine();
 	afx_msg void OnChangeMaintext();
 	afx_msg void OnSelchangePiclist();
+	afx_msg void OnBalloon();
 };

@@ -1381,7 +1381,7 @@ bool CGsPreviewCtrl::LoadPreviewDwg(
 			// This database is used to open the user specified file into if it exists
 			m_pLoadedDwg = new AcDbDatabase(false, true);
 			// m_pLog->WriteString("\r\nLoadDwg 8");
-			es = m_pLoadedDwg->readDwgFile(sPath);
+			es = m_pLoadedDwg->readDwgFile(sPath, _SH_DENYNO);
 // m_pLog->WriteString("\r\nLoadDwg 9");
 			// Try to open the user specified file
 			if (es != Acad::eOk)

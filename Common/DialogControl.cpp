@@ -20,6 +20,8 @@ CDialogControl::CDialogControl( CDclControlObject* pTemplate, CControlPane* pPan
 , mbEnumProps( false )
 {
 	pTemplate->SetControlInstance( this );
+	RefCountedPtr< CPropertyObject > pToolTipBalloon = pTemplate->GetPropertyObject(nToolTipBalloon);
+	mToolTip.SetDefaultSizes( !pToolTipBalloon || pToolTipBalloon->GetBooleanValue() );
 }
 
 CDialogControl::~CDialogControl()

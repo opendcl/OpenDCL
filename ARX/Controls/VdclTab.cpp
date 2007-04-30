@@ -249,7 +249,7 @@ void VdclTab::HideTab(int nIndex)
 		
 		if (nIndex == tcItem.lParam)
 		{
-			DeleteItem(nIndex);
+			DeleteItem(i);
 			ResetTooltips();
 			return;
 		}
@@ -258,8 +258,9 @@ void VdclTab::HideTab(int nIndex)
 
 void VdclTab::ShowTab(int nIndex)
 {
+	int idxToInsertAt = 0;
 	// ensure the tab is not already showing.
-	for (int i = 0; i < GetItemCount(); i++)
+	for (int i = GetItemCount() - 1; i >= 0 ; i--)
 	{
 		//  Get the current tab item text.
 		TC_ITEM tcItem;
@@ -268,6 +269,11 @@ void VdclTab::ShowTab(int nIndex)
 		
 		if (nIndex == tcItem.lParam)
 			return;
+		if (nIndex > tcItem.lParam)
+		{
+			idxToInsertAt = i + 1;
+			break;
+		}
 	}
 
 	CString sTabCaption = mpTemplate->GetPropertyListItem(nTabsCaption, nIndex);
@@ -279,13 +285,13 @@ void VdclTab::ShowTab(int nIndex)
 		nImage = pImageListProp->GetIntArrayPtr()->at(nIndex);
 				
 	// add the new tab
-	InsertItem(nIndex, sTabCaption, nImage);
+	InsertItem(idxToInsertAt, sTabCaption, nImage);
 
 	//  Set the item in the tab control.
 	TC_ITEM tcItem;
 	tcItem.mask = TCIF_PARAM;
 	tcItem.lParam = (LPARAM)nIndex;
-	SetItem(nIndex, &tcItem);
+	SetItem(idxToInsertAt, &tcItem);
 	ResetTooltips();
 }
 

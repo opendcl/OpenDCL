@@ -19,68 +19,7 @@ static CString LTOA(int nVal)
 }
 
 
-const TCHAR s1[] = _T("\\");
-const TCHAR s2[] = _T("/");
-const TCHAR s3[] = _T(".avi");
-const TCHAR s4[] = _T("><al_l>");
-const TCHAR s5[] = _T("</b><br>");
-const TCHAR s6[] = _T("<b><ct=0x");
-const TCHAR s7[] = _T("</ct><br>");
-const TCHAR s8[] = _T("<ct=0x000000><hr=100%>");
-const TCHAR s9[] = _T("\\colortbl");
-const TCHAR s10[] = _T("\\red");
-const TCHAR s11[] = _T("\\green");
-const TCHAR s12[] = _T("\\blue");
-const TCHAR s13[] = _T(";");
-const TCHAR s14[] = _T("\\viewkind");
-const TCHAR s15[] = _T("\\lang");
-const TCHAR s16[] = _T("\\f0");
-const TCHAR s17[] = _T("\\fs");
-const TCHAR s18[] = _T(" ");
-const TCHAR s19[] = _T(">");
-const TCHAR s20[] = _T(" \\b0");
-const TCHAR s21[] = _T("</b>");
-const TCHAR s22[] = _T(" \\b");
-const TCHAR s23[] = _T("<b>");
-const TCHAR s24[] = _T(" \\i0");
-const TCHAR s25[] = _T("</i>");
-const TCHAR s26[] = _T(" \\i");
-const TCHAR s27[] = _T("<i>");
-const TCHAR s28[] = _T(" \\ulnone");
-const TCHAR s29[] = _T("</u>");
-const TCHAR s30[] = _T(" \\ul0");
-const TCHAR s31[] = _T(" \\cf");
-const TCHAR s32[] = _T(" \\ul");
-const TCHAR s33[] = _T("<u>");
-const TCHAR s34[] = _T(" \\tab"); 
-const TCHAR s35[] = _T("<t=2>");
-const TCHAR s36[] = _T("\\b0");
-const TCHAR s37[] = _T("<ct=0x");
-const TCHAR s38[] = _T("\\b");
-const TCHAR s39[] = _T("\\cf");
-const TCHAR s40[] = _T("\\i0");
-const TCHAR s41[] = _T("\\par }");
-const TCHAR s42[] = _T("\\i");
-const TCHAR s43[] = _T("\\par ");
-const TCHAR s44[] = _T("\\ulnone");
-const TCHAR s45[] = _T("\\par \\pard");
-const TCHAR s46[] = _T("\\ul0");
-
-const TCHAR s48[] = _T("\\ul");
-
-const TCHAR s50[] = _T("\\tab"); 
-
-const TCHAR s52[] = _T("\\cf0"); 
-const TCHAR s53[] = _T("<ct=0x000000>");
-const TCHAR s54[] = _T("\\pard");
-const TCHAR s55[] = _T("\\ulnone ");
-const TCHAR s56[] = _T("\\ul0 ");
-const TCHAR s57[] = _T("\\ul ");
-const TCHAR s58[] = _T("\\cf0 ");
-const TCHAR s59[] = _T("\\par }\r\n");
-const TCHAR s60[] = _T("\\par }");
-const TCHAR s61[] = _T("\\par  ");
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // CToolTipsPage property page
 
 IMPLEMENT_DYNCREATE(CToolTipsPage, CPropertyPage)
@@ -107,6 +46,7 @@ void CToolTipsPage::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_TITLE, m_Title);
 	DDX_Control(pDX, IDC_LINE, m_Line);
 	DDX_Control(pDX, IDC_COLOR, m_Color);
+	DDX_Control(pDX, IDC_BALLOON, m_Balloon);
 	//}}AFX_DATA_MAP
 }
 
@@ -123,6 +63,7 @@ BEGIN_MESSAGE_MAP(CToolTipsPage, CPropertyPage)
 	ON_BN_CLICKED(IDC_LINE, OnLine)
 	ON_EN_CHANGE(IDC_MAINTEXT, OnChangeMaintext)
 	ON_LBN_SELCHANGE(IDC_PICLIST, OnSelchangePiclist)
+	ON_BN_CLICKED(IDC_BALLOON, OnBalloon)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -136,7 +77,7 @@ BOOL CToolTipsPage::OnInitDialog()
 	// Create the CPPToolTip object
 	m_tooltip.Create(this);
 	
-	m_tooltip.AddTool(GetDlgItem(IDC_AVILABEL), _T("<b><ct=0x0000FF><al_c>AVI File Name</b><br><ct=0x00AA00><hr=100%></ct><br>The AVI file must be located in the same directory as the .odc or .ods file."));
+	//m_tooltip.AddTool(GetDlgItem(IDC_AVILABEL), _T("<b><ct=0x0000FF><al_c>AVI File Name</b><br><ct=0x00AA00><hr=100%></ct><br>The AVI file must be located in the same directory as the .odc or .ods file."));
 	
 	m_UnderLine.SetFlat();
 	m_Bold.SetFlat();
@@ -205,6 +146,7 @@ BOOL CToolTipsPage::OnInitDialog()
 			m_Pictures.SetCurSel(0);
 		}
 	}
+	m_Balloon.SetCheck(m_pToolTipBalloon->GetBooleanValue());	
 	m_Title.SetWindowText(m_pToolTipTitle->GetStringValue());	
 	m_Line.SetCheck(m_pToolTipLine->GetBooleanValue());	
 	m_MainText.SetWindowText(m_pToolTipBody->GetStringValue());	
@@ -254,6 +196,7 @@ void CToolTipsPage::OnPreview()
 	GetDlgItem(IDC_PREVIEW)->GetWindowRect(&rect);
 	CPoint pt = rect.CenterPoint();
 
+	m_tooltip.SetDefaultSizes( (m_Balloon.GetCheck() != 0) );
 	CString sPic;
 	if (m_Pictures.GetCurSel() != -1)
 		m_Pictures.GetText(m_Pictures.GetCurSel(), sPic);
@@ -327,6 +270,7 @@ void CToolTipsPage::ModifySelection( LPCTSTR pszPrefix, LPCTSTR pszSuffix )
 
 void CToolTipsPage::Commit()
 {
+	m_pToolTipBalloon->SetBooleanValue(m_Balloon.GetCheck() != 0);
 	CString sTitle;
 	m_Title.GetWindowText(sTitle);
 	m_pToolTipTitle->SetStringValue(sTitle);
@@ -395,6 +339,11 @@ void CToolTipsPage::OnChangeMaintext()
 }
 
 void CToolTipsPage::OnSelchangePiclist() 
+{
+	SetModified();
+}
+
+void CToolTipsPage::OnBalloon() 
 {
 	SetModified();
 }

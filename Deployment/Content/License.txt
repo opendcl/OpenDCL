@@ -39,6 +39,14 @@ PROGRAMMING
 owenwengerd (Owen Wengerd)
 davidrobison (David Robison)
 
+DOCUMENTATION/EXAMPLES
+davic_jg_white (David White)
+bazzacad (Barry Ralphs)
+kerrybrown (Kerry Brown)
+
+LOGO/GRAPHICS
+dkh007 (Daniel Hargreaves)
+
 BETA TESTING
 bazzacad (Barry Ralphs)
 davic_jg_white (David White)

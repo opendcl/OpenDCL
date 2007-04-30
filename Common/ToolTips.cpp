@@ -39,9 +39,9 @@ CString ConstructTooltipHtml( LPCTSTR pszTitle, COLORREF crTitleColor /*= RGB(0,
 }
 
 
-void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip, CDclControlObject *pControl)
+void SetToolTipEx(CWnd *pWnd, CPPToolTip& tooltip, CDclControlObject *pControl)
 {
-	m_tooltip.SetBehaviour( PPTOOLTIP_MULTIPLE_SHOW | PPTOOLTIP_NOCLOSE_OVER );
+	tooltip.SetBehaviour( PPTOOLTIP_MULTIPLE_SHOW );
 
 	RefCountedPtr< CPropertyObject > pToolTipTitle = pControl->GetPropertyObject(nToolTipTitle);	
 	RefCountedPtr< CPropertyObject > pToolTipLine = pControl->GetPropertyObject(nToolTipLine);	
@@ -49,6 +49,10 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip, CDclControlObject *pControl
 	RefCountedPtr< CPropertyObject > pToolTipPicture = pControl->GetPropertyObject(nToolTipPicture);	
 	RefCountedPtr< CPropertyObject > pToolTipAvi = pControl->GetPropertyObject(nToolTipAviFileName);
 	RefCountedPtr< CPropertyObject > pToolTipTitleColor = pControl->GetPropertyObject(nToolTipTitleColor);
+	RefCountedPtr< CPropertyObject > pToolTipBalloon = pControl->GetPropertyObject(nToolTipBalloon);
+
+	if( pToolTipBalloon && !pToolTipBalloon->GetBooleanValue() )
+		tooltip.SetDefaultSizes( FALSE );
 
 	CString sTitle;
 	CString sMain;
@@ -75,31 +79,31 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip, CDclControlObject *pControl
 	if( pToolTipPicture )
 	{
 		if (nPic == -1)
-			m_tooltip.AddTool(pWnd, sBody, IDI_HELP);
+			tooltip.AddTool(pWnd, sBody, IDI_HELP);
 		else if (nPic == -2)
-			m_tooltip.AddTool(pWnd, sBody, IDI_INFO);
+			tooltip.AddTool(pWnd, sBody, IDI_INFO);
 		else if (nPic == -3)
-			m_tooltip.AddTool(pWnd, sBody, IDI_EXCLEMATION);
+			tooltip.AddTool(pWnd, sBody, IDI_EXCLEMATION);
 		else if (nPic == -4)
-			m_tooltip.AddTool(pWnd, sBody, IDI_X);
+			tooltip.AddTool(pWnd, sBody, IDI_X);
 		else if (nPic == 0)	
-			m_tooltip.AddTool(pWnd, sBody);
+			tooltip.AddTool(pWnd, sBody);
 		else if (nPic > 0 && pProject)
 		{
 			HICON hIcon = pProject->CloneIcon(nPic);
 			if (hIcon != NULL)
-				m_tooltip.AddTool(pWnd, sBody, hIcon);
+				tooltip.AddTool(pWnd, sBody, hIcon);
 			else				
-				m_tooltip.AddTool(pWnd, sBody);
+				tooltip.AddTool(pWnd, sBody);
 		}
 		else
-			m_tooltip.AddTool(pWnd, sBody);
+			tooltip.AddTool(pWnd, sBody);
 	}
 	else
-		m_tooltip.AddTool(pWnd, sBody);
+		tooltip.AddTool(pWnd, sBody);
 }
 
-void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip, 
+void SetToolTipEx(CWnd *pWnd, CPPToolTip &tooltip, 
 				  CString sTitleIn, 
 				  CString sMainIn, 
 				  int nLine,
@@ -111,8 +115,15 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip,
 	if (sTitleIn.IsEmpty() && sMainIn.IsEmpty() && nPicture == 0 && sAvi.IsEmpty())
 		return;
 
-	m_tooltip.SetBehaviour( PPTOOLTIP_MULTIPLE_SHOW | PPTOOLTIP_NOCLOSE_OVER );
-			
+	tooltip.SetBehaviour( PPTOOLTIP_MULTIPLE_SHOW );
+
+	if( pControl )
+	{
+		RefCountedPtr< CPropertyObject > pToolTipBalloon = pControl->GetPropertyObject(nToolTipBalloon);
+		if( pToolTipBalloon && !pToolTipBalloon->GetBooleanValue() )
+			tooltip.SetDefaultSizes( FALSE );
+	}
+
 	CString sBody = ConstructTooltipHtml( sTitleIn, GetRGBColor( nColor ), (nLine != 0), sMainIn );
 
 	const CProject* pProject = pControl? pControl->GetOwnerProject() : NULL;
@@ -120,23 +131,23 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &m_tooltip,
 	int nPic = nPicture;
 
 	if (nPic == -1)
-		m_tooltip.AddTool(pWnd,  sBody, IDI_HELP);
+		tooltip.AddTool(pWnd,  sBody, IDI_HELP);
 	else if (nPic == -2)
-		m_tooltip.AddTool(pWnd,  sBody, IDI_INFO);
+		tooltip.AddTool(pWnd,  sBody, IDI_INFO);
 	else if (nPic == -3)
-		m_tooltip.AddTool(pWnd, sBody, IDI_EXCLEMATION);
+		tooltip.AddTool(pWnd, sBody, IDI_EXCLEMATION);
 	else if (nPic == -4)
-		m_tooltip.AddTool(pWnd, sBody, IDI_X);
+		tooltip.AddTool(pWnd, sBody, IDI_X);
 	else if (nPic == 0)	
-		m_tooltip.AddTool(pWnd, sBody);
+		tooltip.AddTool(pWnd, sBody);
 	else if (nPic > 0 && pProject)
 	{
 		HICON hIcon = pProject->CloneIcon(nPic);
 		if (hIcon != NULL)
-			m_tooltip.AddTool(pWnd, sBody, hIcon);
+			tooltip.AddTool(pWnd, sBody, hIcon);
 		else				
-			m_tooltip.AddTool(pWnd, sBody);
+			tooltip.AddTool(pWnd, sBody);
 	}
 	else
-		m_tooltip.AddTool(pWnd, sBody);
+		tooltip.AddTool(pWnd, sBody);
 }
