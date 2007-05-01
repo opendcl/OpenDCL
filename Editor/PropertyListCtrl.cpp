@@ -3328,7 +3328,6 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 		pToolTipsPage->m_pToolTipPicture = pArxCtrl->GetPropertyObject(nToolTipPicture);	
 		pToolTipsPage->m_pToolTipAvi = pArxCtrl->GetPropertyObject(nToolTipAviFileName);
 		pToolTipsPage->m_pToolTipTitleColor = pArxCtrl->GetPropertyObject(nToolTipTitleColor);
-		
 		Dlg.AddPage(pToolTipsPage);
 	}
 	
@@ -3346,60 +3345,27 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	else if (bImageListActive)
 		Dlg.SetActivePage(pImageListPage);
 
-	try
+	if (Dlg.DoModal() == IDOK)
 	{
-		// call the dialog box
-		if (Dlg.DoModal() == IDOK)
-		{
-			if (theEditorWorkspace.GetActiveDocument() != NULL)
-				theEditorWorkspace.GetActiveDocument()->SetModifiedFlag(TRUE);
-		}
-		Invalidate();
+		if (theEditorWorkspace.GetActiveDocument() != NULL)
+			theEditorWorkspace.GetActiveDocument()->SetModifiedFlag(TRUE);
 	}
-	catch(...)
-	{
-	}
+	Invalidate();
 	
-	try
-	{
-		// delete the tabs now
-		if (pTabs)
-		{
-			((CObjectDCLView*)m_pView)->ResizeChildTabPanes();
-			delete pTabs;
-		}
-
-		if (pToolTipsPage)
-			delete pToolTipsPage;
-		if (pColumnsPage)
-			delete pColumnsPage;
-		if (pGeometryPage)
-			delete pGeometryPage;
-		if (pBackColorsPage)
-			delete pBackColorsPage;
-		if (pAltColorsPage)
-			delete pAltColorsPage;
-		if (pForeColorsPage)
-			delete pForeColorsPage;
-		if (pComboBoxPage)
-			delete pComboBoxPage;
-		if (pTextBoxPage)
-			delete pTextBoxPage;
-		if (pFontPage)
-			delete pFontPage;
-		if (pButtonPage)
-			delete pButtonPage;
-		if (pImageListPage)
-			delete pImageListPage;
-		if (pSortTabs)
-			delete pSortTabs;	
-		if (pProgressPage)
-			delete pProgressPage;
-
-	}
-	catch(...)
-	{
-	}
+	delete pTabs;
+	delete pToolTipsPage;
+	delete pColumnsPage;
+	delete pGeometryPage;
+	delete pBackColorsPage;
+	delete pAltColorsPage;
+	delete pForeColorsPage;
+	delete pComboBoxPage;
+	delete pTextBoxPage;
+	delete pFontPage;
+	delete pButtonPage;
+	delete pImageListPage;
+	delete pSortTabs;	
+	delete pProgressPage;
 	// update the control no matter what, just incase the user pressed the apply button then cancel
 	UpdateControls((PropertyId)-2);
 	Invalidate();

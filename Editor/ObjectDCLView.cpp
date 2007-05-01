@@ -3703,15 +3703,10 @@ void CObjectDCLView::CheckPictureRefs()
 
 void CObjectDCLView::SelectControl(short nArxControlIndex) 
 {
-	
 	CDclControlObject* pArxObject = GetArxControlObject(m_pThisDclForm, nArxControlIndex);
-
 	if (pArxObject == NULL)
 		return;
-
-
 	CWnd *pControl = pArxObject->m_pCtrlHolder;
-	
 	m_SelectedControl.m_pArxObject = pArxObject;
 	m_SelectedControl.m_pControl = pControl;
 	m_SelectedControl.m_nIndex = pArxObject->GetZOrder();
@@ -3724,13 +3719,11 @@ void CObjectDCLView::SelectControl(short nArxControlIndex)
 		ScreenToClient(rcCtrl);
 		ShowGripRects(TRUE, rcCtrl);
 	}
-
 }
-
-
 
 void CObjectDCLView::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
+	CView::OnLButtonDblClk(nFlags, point);
 	if (m_pThisDclForm == NULL)
 		return;
 
@@ -3744,8 +3737,6 @@ void CObjectDCLView::OnLButtonDblClk(UINT nFlags, CPoint point)
 		FireShowPropertyWizard(m_pThisDclForm->GetControlProperties());
 	else
 		FireShowPropertyWizard(m_SelectedControl.m_pArxObject);
-
-	CView::OnLButtonDblClk(nFlags, point);
 }
 
 void CObjectDCLView::CalcAllOffsets() 
@@ -4218,20 +4209,18 @@ void CObjectDCLView::RemoveChildTabPane(CDclFormObject *pDclForm)
 
 void CObjectDCLView::ResizeChildTabPanes()
 {
-	CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
-	// create a pointer to pass to the list to insert
-	CProject *pProject = activeProject;
-	
-	RefCountedPtr< CPropertyObject > pProp = m_SelectedControl.m_pArxObject->GetPropertyObject(nTabsCaption);
-
+	CDclControlObject* pDclControl = m_SelectedControl.m_pArxObject;
+	RefCountedPtr< CPropertyObject > pProp = pDclControl->GetPropertyObject(nTabsCaption);
+	if( !pProp )
+		return;
+	int nNewHeight = GetSelectedTabClientHeight();
+	int nNewWidth = GetSelectedTabClientWidth();
 	for (size_t i=0; i<pProp->GetStringArrayPtr()->size(); i++)
 	{
-		CDclFormObject *pTabForm = pProject->FindDclTabChildForm(m_pThisDclForm->GetUniqueName(), i);
+		CDclFormObject *pTabForm = pDclControl->GetOwnerProject()->FindDclTabChildForm(m_pThisDclForm->GetUniqueName(), i);
 		if (!pTabForm)
 			continue;
 		CDclControlObject *pDclProperties = pTabForm->GetControlProperties();
-		int nNewHeight = GetSelectedTabClientHeight();
-		int nNewWidth = GetSelectedTabClientWidth();
 		pDclProperties->SetLongProperty(nHeight, nNewHeight);
 		pDclProperties->SetLongProperty(nWidth, nNewWidth);
 		if (pTabForm->m_pMdiChildWnd != NULL)

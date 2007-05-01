@@ -3958,7 +3958,7 @@ int CARXApp::ads_odcl_GetCtrlProperty(void)
 {
 	acedRetNil();
 	int nFunctionCode = acedGetFunCode();
-	if( nFunctionCode < ADSPROPFUNCBASE || nFunctionCode >= ADSPROPFUNCBASE + nMaxPropertyId )
+	if( nFunctionCode < ADSPROPFUNCBASE || nFunctionCode > ADSPROPFUNCBASE + nMaxPropertyId )
 		return RSERR;
 	GetCtrlProperty( static_cast<PropertyId>(nFunctionCode - ADSPROPFUNCBASE) );
 	return RSRSLT;
@@ -3970,7 +3970,7 @@ int CARXApp::ads_odcl_SetCtrlProperty(void)
 	acedRetNil();
 	int nFunctionCode = acedGetFunCode();
 	int nSetPropertyBase = ADSPROPFUNCBASE + nMaxPropertyId;
-	if( nFunctionCode < nSetPropertyBase || nFunctionCode >= nSetPropertyBase + nMaxPropertyId )
+	if( nFunctionCode < nSetPropertyBase || nFunctionCode > nSetPropertyBase + nMaxPropertyId )
 		return RSERR;
 	SetCtrlProperty( static_cast<PropertyId>(nFunctionCode - nSetPropertyBase) );
 	return RSRSLT;
