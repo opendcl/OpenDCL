@@ -53,6 +53,8 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip& tooltip, CDclControlObject *pControl)
 
 	if( pToolTipBalloon && !pToolTipBalloon->GetBooleanValue() )
 		tooltip.SetDefaultSizes( FALSE );
+	else
+		tooltip.SetDefaultSizes( TRUE );
 
 	CString sTitle;
 	CString sMain;

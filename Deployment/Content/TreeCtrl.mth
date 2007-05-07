@@ -80,7 +80,7 @@ ProjectFileName
 
 
 [Method]
-SetExpanedImage
+SetExpandedImage
 [Prefix]
 Odcl_Tree_
 [Desc]
@@ -94,7 +94,7 @@ ProjectFileName
 
 
 [Method]
-GetExpanedImage
+GetExpandedImage
 [Prefix]
 Odcl_Tree_
 [Desc]

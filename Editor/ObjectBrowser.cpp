@@ -542,14 +542,14 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 						sTitle = theWorkspace.LoadResourceString(IDS_BOLDMETHOD) + sMethodName + theWorkspace.LoadResourceString(IDS_B0CF1)
 							+ sLine.Mid(19) + theWorkspace.LoadResourceString(IDS_CF0);
 						sDefun1 += theWorkspace.LoadResourceString(IDS_SETQVALUE) + sFuncName + theWorkspace.LoadResourceString(IDS_CF02);
-						m_sClipBoardDefun2 = theWorkspace.LoadResourceString(IDS_SETQVALUE2) + sFuncName + theWorkspace.LoadResourceString(IDS_SPACE);
+						m_sClipBoardDefun2 = theWorkspace.LoadResourceString(IDS_SETQVALUE2) + sFuncName + _T(" ");
 						bHasReturn = true;
 					}
 					else
 					{
 						sTitle = theWorkspace.LoadResourceString(IDS_METHOD);
 						sDefun1 += theWorkspace.LoadResourceString(IDS_CF2) + sFuncName + theWorkspace.LoadResourceString(IDS_CF02);
-						m_sClipBoardDefun2 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sFuncName + theWorkspace.LoadResourceString(IDS_SPACE);
+						m_sClipBoardDefun2 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sFuncName + _T(" ");
 					}
 					
 
@@ -582,7 +582,7 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 							sDefun1 += theWorkspace.LoadResourceString(IDS_CF04);
 							m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_CLOSEBRACKET);
 						}
-						else if (!sLine.IsEmpty() && sLine != theWorkspace.LoadResourceString(IDS_SPACE) && sLine != theWorkspace.LoadResourceString(IDS_DOUBLESPACE) && sLine != theWorkspace.LoadResourceString(IDS_TRIPLESPACE)) 
+						else if (!sLine.IsEmpty() && sLine != _T(" ") && sLine != theWorkspace.LoadResourceString(IDS_DOUBLESPACE) && sLine != theWorkspace.LoadResourceString(IDS_TRIPLESPACE)) 
 						{
 							sDefun1 += theWorkspace.LoadResourceString(IDS_CF1) + sLine ;
 							// if the last char was not a ( add a space before we add the argument
@@ -874,11 +874,11 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					if (!sVarType.IsEmpty())
 					{
 						sDefun1 += theWorkspace.LoadResourceString(IDS_SETQVALUE3);
-						m_sClipBoardDefun2 = theWorkspace.LoadResourceString(IDS_SETQVALUE2) + theWorkspace.LoadResourceString(IDS_SPACE);						
+						m_sClipBoardDefun2 = theWorkspace.LoadResourceString(IDS_SETQVALUE2) + _T(" ");						
 					}
 					// add the DoMethod
 					sDefun1 += theWorkspace.LoadResourceString(IDS_CF22) + sOleObject + theWorkspace.LoadResourceString(IDS_DOMETHOD) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3B);
-					m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_DOMETHOD2) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_QUOTE);
+					m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_DOMETHOD2) + sGlobalVarName + _T(" ") + theWorkspace.LoadResourceString(IDS_QUOTE);
 					// add the method name
 					sDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_CF0B0);
 					m_sClipBoardDefun2 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE);
@@ -889,7 +889,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 						{
 							// add the argument name
 							sDefun1 += theWorkspace.LoadResourceString(IDS_CF12) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i);
-							m_sClipBoardDefun2 += CString(theWorkspace.LoadResourceString(IDS_SPACE)) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i); 
+							m_sClipBoardDefun2 += CString(_T(" ")) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i); 
 							// add the [as ...]
 							sArgType = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamVarType(nThisItemData, i);
 					
@@ -909,8 +909,8 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 							// if it is the second to last argument add close the color.
 							if (i < nCount - 1)
 							{
-								sDefun1 += theWorkspace.LoadResourceString(IDS_CF0) + theWorkspace.LoadResourceString(IDS_SPACE);
-								m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_SPACE);
+								sDefun1 += theWorkspace.LoadResourceString(IDS_CF0) + _T(" ");
+								m_sClipBoardDefun2 += _T(" ");
 							}
 						}
 					}
@@ -966,7 +966,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				if (!pProp->GetStringValue().IsEmpty())
 				{
 					if (!sEventArgs.IsEmpty())
-						sDefun1 += pProp->GetStringValue() + theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_BRACKETOPEN) + sEventArgs + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET3);						
+						sDefun1 += pProp->GetStringValue() + _T(" ") + theWorkspace.LoadResourceString(IDS_BRACKETOPEN) + sEventArgs + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET3);						
 					else
 						sDefun1 += pProp->GetStringValue() + theWorkspace.LoadResourceString(IDS_DOUBLEBRACKET);						
 
@@ -977,7 +977,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					sDefun1 += theWorkspace.LoadResourceString(IDS_C);
 					sDefun1 += pControl->GetKeyPath() + _T("_On") + sEventName;
 					if (!sEventArgs.IsEmpty())
-						sDefun1 += theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sEventArgs + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET3);
+						sDefun1 += _T(" ") + theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sEventArgs + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET3);
 					else
 						sDefun1 += theWorkspace.LoadResourceString(IDS_DOUBLEBRACKET);
 					sDefun1 += theWorkspace.LoadResourceString(IDS_PAR);
@@ -999,7 +999,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				if (pAxPropPut && pAxPropPut->GetGuid() == GUID_COLOR)
 				{
 					sDefun1 = theWorkspace.LoadResourceString(IDS_PARCF2) + sOleObject + theWorkspace.LoadResourceString(IDS_SETCOLOR) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3B1) + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTEB0);
-					m_sClipBoardDefun1 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_SETCOLOR2) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_QUOTE) + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE) + theWorkspace.LoadResourceString(IDS_SPACE);
+					m_sClipBoardDefun1 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_SETCOLOR2) + sGlobalVarName + _T(" ") + theWorkspace.LoadResourceString(IDS_QUOTE) + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE) + _T(" ");
 		
 					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropPut);
 		
@@ -1022,7 +1022,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				{
 					// lets set the put property
 					sDefun1 = theWorkspace.LoadResourceString(IDS_PARCF2) + sOleObject + theWorkspace.LoadResourceString(IDS_SETPROP3) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3BQ);
-					m_sClipBoardDefun1 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_SETPROP4) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_QUOTE);
+					m_sClipBoardDefun1 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_SETPROP4) + sGlobalVarName + _T(" ") + theWorkspace.LoadResourceString(IDS_QUOTE);
 
 					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropPut);
 		
@@ -1072,25 +1072,25 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 							if (sArg.IsEmpty())
 								sArg = theWorkspace.LoadResourceString(IDS_NEWVAL3);
 							sDefun1 += theWorkspace.LoadResourceString(IDS_CF12) + sArg;
-							m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_SPACE) + sArg;
+							m_sClipBoardDefun1 += _T(" ") + sArg;
 							sArgType = GetTypeName(pAxPropPut->GetArgs()[i].vt, NULL, pAxPropPut);
 							if (sArgType == CString())
 							{
 								sArgType = theWorkspace.LoadResourceString(IDS_OPTIONALNILASB);
 								sDefun1 += theWorkspace.LoadResourceString(IDS_CF5IB) + sArgType + theWorkspace.LoadResourceString(IDS_CBI0);
-								m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_OPENBRACKET2) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
+								m_sClipBoardDefun1 += _T(" ") + theWorkspace.LoadResourceString(IDS_OPENBRACKET2) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
 							}
 							else if (!sArgType.IsEmpty())
 							{						
 								sDefun1 += theWorkspace.LoadResourceString(IDS_CF5IAS2) + sArgType + theWorkspace.LoadResourceString(IDS_CBI0);
-								m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_OPENAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
+								m_sClipBoardDefun1 += _T(" ") + theWorkspace.LoadResourceString(IDS_OPENAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
 							}
 							else
 								sDefun1 += theWorkspace.LoadResourceString(IDS_CF5);
 							if (i < nCount-1)
 							{
 								sDefun1 += theWorkspace.LoadResourceString(IDS_CF02);
-								m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_SPACE);
+								m_sClipBoardDefun1 += _T(" ");
 							}
 						}							
 					}
@@ -1112,7 +1112,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 
 					// lets set the get property
 					sDefun2 = theWorkspace.LoadResourceString(IDS_PARSETVALUE) + sOleObject + theWorkspace.LoadResourceString(IDS_GETPROPCF0CF3) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3B2);
-					m_sClipBoardDefun2 = theWorkspace.LoadResourceString(IDS_SETQVAL) + sOleObject + theWorkspace.LoadResourceString(IDS_GETPROP) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_QUOTE);
+					m_sClipBoardDefun2 = theWorkspace.LoadResourceString(IDS_SETQVAL) + sOleObject + theWorkspace.LoadResourceString(IDS_GETPROP) + sGlobalVarName + _T(" ") + theWorkspace.LoadResourceString(IDS_QUOTE);
 					sDefun2 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_CF0B0);
 					m_sClipBoardDefun2 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE);
 
@@ -1126,23 +1126,23 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 							if (sArg.IsEmpty())
 								sArg = theWorkspace.LoadResourceString(IDS_NEWVAL3);
 							sDefun2 += theWorkspace.LoadResourceString(IDS_CF12) + sArg;
-							m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_SPACE) + sArg;
+							m_sClipBoardDefun2 += _T(" ") + sArg;
 							sArgType = GetTypeName(pAxPropGet->GetArgs()[i].vt, NULL, pAxPropGet);
 							if (sArgType == CString())
 							{
 								sArgType = theWorkspace.LoadResourceString(IDS_OPTIONALNILASB);
 								sDefun2 += theWorkspace.LoadResourceString(IDS_CF5IB) + sArgType + theWorkspace.LoadResourceString(IDS_CBI0);
-								m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_OPENBRACKET2) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
+								m_sClipBoardDefun2 += _T(" ") + theWorkspace.LoadResourceString(IDS_OPENBRACKET2) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
 							}
 							else if (!sArgType.IsEmpty())
 							{														
 								sDefun2 += theWorkspace.LoadResourceString(IDS_CF5IAS2) + sArgType + theWorkspace.LoadResourceString(IDS_CBI0);
-								m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_OPENAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
+								m_sClipBoardDefun2 += _T(" ") + theWorkspace.LoadResourceString(IDS_OPENAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
 							}
 							if (i < nCount - 1)
 							{
 								sDefun2 += theWorkspace.LoadResourceString(IDS_CF02);
-								m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_SPACE);
+								m_sClipBoardDefun2 += _T(" ");
 							}
 						}
 					}
@@ -1281,15 +1281,15 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 								// lets set the Put property
 								//sDefun1 = theWorkspace.LoadResourceString(IDS_SETPROP) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3B2);
 								sDefun1 = CString("\\par (\\cf2 Odcl_Control_Set") + m_ListBox.GetItemText(hItem) + " \\cf0 \\cf3" + sGlobalVarName + " ";
-								m_sClipBoardDefun1 = CString("(Odcl_Control_Set") + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_SPACE);
-								sDefun1 += "\\cf1 newValue [as " + sVarType + "]\\cf0 ) " + theWorkspace.LoadResourceString(IDS_PAR);
-								m_sClipBoardDefun1 += sGlobalVarName + " newValue [as " + sVarType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKETS);
+								m_sClipBoardDefun1 = CString("(Odcl_Control_Set") + m_ListBox.GetItemText(hItem) + _T(" ");
+								sDefun1 += "\\par \\cf1 newValue [as " + sVarType + "]\\cf0 ) " + theWorkspace.LoadResourceString(IDS_PAR);
+								m_sClipBoardDefun1 += sGlobalVarName + "\r\n\t newValue [as " + sVarType + _T("])");
 								
 								// lets set the get property
 								sDefun2 = CString("\\par (\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 Odcl_Control_Get") + m_ListBox.GetItemText(hItem) + " \\cf0 \\cf3";
-								m_sClipBoardDefun2 = "(Setq Value (Odcl_Control_Get" + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_SPACE);
+								m_sClipBoardDefun2 = "(Setq Value (Odcl_Control_Get" + m_ListBox.GetItemText(hItem) + _T(" ");
 								sDefun2 += sGlobalVarName + "\\cf0))";
-								m_sClipBoardDefun2 += sGlobalVarName + theWorkspace.LoadResourceString(IDS_DOUBLECLOSEBRACKET);
+								m_sClipBoardDefun2 += sGlobalVarName + _T("])");
 			
 								// set the title.
 								sTitle = theWorkspace.LoadResourceString(IDS_THEPROPERTY);
@@ -1327,7 +1327,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 			sRtfHeader = theWorkspace.LoadResourceString(IDS_RTFHEADER2);
 			sRtf += sRtfHeader + theWorkspace.LoadResourceString(IDS_RN);
 			sRtfHeader = theWorkspace.LoadResourceString(IDS_RTFHEADER3);
-			sRtf += sRtfHeader + theWorkspace.LoadResourceString(IDS_SPACE);
+			sRtf += sRtfHeader + _T(" ");
 			// set the title then start the bold statment
 			sRtf += sTitle;
 			
@@ -1344,7 +1344,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 			sRtf += theWorkspace.LoadResourceString(IDS_PAR);
 			sRtf += theWorkspace.LoadResourceString(IDS_PAR);
 			// add the description
-			sRtf += sDesc + theWorkspace.LoadResourceString(IDS_SPACE) + theWorkspace.LoadResourceString(IDS_PAR);		
+			sRtf += sDesc + _T(" ") + theWorkspace.LoadResourceString(IDS_PAR);		
 			
 			// close the RTF statement
 			if (!sDefun1.IsEmpty() && sDefun2.IsEmpty())

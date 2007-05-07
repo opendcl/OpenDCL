@@ -12,11 +12,6 @@ int DwgList_GetType();
 
 int OptionList_SetEnabled();
 int OptionList_SetTttTitle();
-int OptionList_SetTttTitleLine();
-int OptionList_SetTttTitleColor();
-int OptionList_SetTttAvi();
-int OptionList_SetTttPicture();
-int OptionList_SetTttMain();
 
 int ListBox_Dir();
 int ListBox_AddString();

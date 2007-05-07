@@ -13,8 +13,6 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 extern bool IsOnlyModalForm();
-const TCHAR sQuote[] = _T("\"");
-const TCHAR sProperQuote[] = _T("\\\"");
 
 const int nCancelCheckLength = 6;
 const int nCancelRemoveLength = 4;
@@ -34,6 +32,13 @@ const TCHAR sCancelStr[] = _T("\x1B\x1B");
 const TCHAR sNewLine[] = _T("\n");
 const TCHAR sList[] = _T(" (list ");
 
+CString EscapeLispStringArgument( LPCTSTR pszString )
+{
+	CString sResult = pszString;
+	sResult.Replace( _T("\\"), _T("\\\\") );
+	sResult.Replace( _T("\""), _T("\\\"") );
+	return sResult;
+}
 
 Acad::ErrorStatus ExecuteCommandInCurrentDoc( LPCTSTR pszCommand, bool bShowCommand = false )
 {
@@ -124,9 +129,9 @@ void InvokeMethodStringInt(CString sLispFunction, CString sString, int nInt, boo
 	{
 		if (UseSendString)
 		{
-			sString.Replace(sQuote, sProperQuote);
-			char sInt[80];
-			_ltoa(nInt, sInt, 10);
+			sString = EscapeLispStringArgument( sString );
+			CString sInt;
+			sInt.Format( _T("%d"), nInt );
 			
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
@@ -171,7 +176,7 @@ void InvokeMethodStringLong(CString sLispFunction, CString sString, long lLong, 
 	{
 		if (UseSendString)
 		{
-			sString.Replace(sQuote, sProperQuote);
+			sString = EscapeLispStringArgument( sString );
 			ads_real adsValue = lLong;
 			TCHAR fmtval[26]; 
 			int stat = acdbRToS(adsValue, 2,0, fmtval); 
@@ -262,11 +267,11 @@ void InvokeMethodStringIntInt(CString sLispFunction, CString sString, int nInt1,
 	{
 		if (UseSendString)
 		{
-			sString.Replace(sQuote, sProperQuote);
-			char sInt1[80];
-			_ltoa(nInt1, sInt1, 10);
-			char sInt2[80];
-			_ltoa(nInt2, sInt2, 10);
+			sString = EscapeLispStringArgument( sString );
+			CString sInt1;
+			sInt1.Format( _T("%d"), nInt1 );
+			CString sInt2;
+			sInt2.Format( _T("%d"), nInt2 );
 			
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
@@ -359,11 +364,9 @@ void InvokeMethodIntString(CString sLispFunction, int nInt, CString sString, boo
 	{
 		if (UseSendString)
 		{
-			sString.Replace(sQuote, sProperQuote);
-		
-			// this code if for the dockable dialog only
-			char sInt[80];
-			_ltoa(nInt, sInt, 10);
+			sString = EscapeLispStringArgument( sString );
+			CString sInt;
+			sInt.Format( _T("%d"), nInt );
 			
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(sBracket) + sLispFunction + sAddSpace + sInt + sSpaceQuote + sString + sQuoteEndBracket;
@@ -401,9 +404,8 @@ void InvokeMethodIntList(CString sLispFunction, int nInt, CStringList *pList, bo
 	{
 		if (UseSendString)
 		{
-			// this code if for the dockable dialog only
-			char sInt[80];
-			_ltoa(nInt, sInt, 10);
+			CString sInt;
+			sInt.Format( _T("%d"), nInt );
 			
 			CString sCommand = CString(sBracket) + FireCancel(sLispFunction) + sAddSpace + sInt + sSpaceQuote;
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
@@ -412,8 +414,7 @@ void InvokeMethodIntList(CString sLispFunction, int nInt, CStringList *pList, bo
 			for (int i=0; i<pList->GetCount(); i++)
 			{
 				POSITION pos = pList->FindIndex(i);				
-				CString sItem = pList->GetAt(pos);
-				sItem.Replace(sQuote, sProperQuote);
+				CString sItem = EscapeLispStringArgument( pList->GetAt(pos) );
 				sCommand = sCommand + sItem + sAddSpace;
 			}
 			sCommand = sCommand + sQuoteEndBracket;
@@ -473,8 +474,7 @@ void InvokeMethodString(CString sLispFunction, CString sString, bool UseSendStri
 		//AfxMessageBox(sLispFunction);
 		if (UseSendString)
 		{
-			sString.Replace(sQuote, sProperQuote);
-			// this code if for the dockable dialog only
+			sString = EscapeLispStringArgument( sString );
 			CString sCommand = CString(sBracket) + FireCancel(sLispFunction) + sSpaceQuote + sString + sQuoteEndBracket;
 			
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
@@ -511,9 +511,8 @@ void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString)
 	{
 		if (UseSendString)
 		{
-			// this code if for the dockable dialog only
-			char sInt[80];
-			_ltoa(nInt, sInt, 10);
+			CString sInt;
+			sInt.Format( _T("%d"), nInt );
 			
 			sLispFunction = FireCancel(sLispFunction);
 			CString sCommand = CString(sBracket) + sLispFunction + sAddSpace + sInt + sEndBracket;
@@ -549,10 +548,10 @@ void InvokeMethodIntInt(CString sLispFunction, int nInt1, int nInt2, bool UseSen
 	{
 		if (UseSendString)
 		{
-			char sInt1[80];
-			_ltoa(nInt1, sInt1, 10);
-			char sInt2[80];
-			_ltoa(nInt2, sInt2, 10);
+			CString sInt1;
+			sInt1.Format( _T("%d"), nInt1 );
+			CString sInt2;
+			sInt2.Format( _T("%d"), nInt2 );
 			
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
@@ -598,12 +597,12 @@ void InvokeMethodIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt
 	{
 		if (UseSendString)
 		{
-			char sInt1[80];
-			_ltoa(nInt1, sInt1, 10);
-			char sInt2[80];
-			_ltoa(nInt2, sInt2, 10);
-			char sInt3[80];
-			_ltoa(nInt3, sInt3, 10);
+			CString sInt1;
+			sInt1.Format( _T("%d"), nInt1 );
+			CString sInt2;
+			sInt2.Format( _T("%d"), nInt2 );
+			CString sInt3;
+			sInt3.Format( _T("%d"), nInt3 );
 			
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
@@ -643,14 +642,14 @@ void InvokeMethodIntIntIntInt(CString sLispFunction, int nInt1, int nInt2, int n
 	{
 		if (UseSendString)
 		{
-			char sInt1[80];
-			_ltoa(nInt1, sInt1, 10);
-			char sInt2[80];
-			_ltoa(nInt2, sInt2, 10);
-			char sInt3[80];
-			_ltoa(nInt3, sInt3, 10);
-			char sInt4[80];
-			_ltoa(nInt4, sInt4, 10);
+			CString sInt1;
+			sInt1.Format( _T("%d"), nInt1 );
+			CString sInt2;
+			sInt2.Format( _T("%d"), nInt2 );
+			CString sInt3;
+			sInt3.Format( _T("%d"), nInt3 );
+			CString sInt4;
+			sInt4.Format( _T("%d"), nInt4 );
 			
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
@@ -692,9 +691,9 @@ void InvokeMethodStringString(CString sLispFunction, CString sString1, CString s
 	{
 		if (UseSendString)
 		{
-			sString1.Replace(sQuote, sProperQuote);
-			sString2.Replace(sQuote, sProperQuote);
-			// this code if for the dockable dialog only
+			sString1 = EscapeLispStringArgument( sString1 );
+			sString2 = EscapeLispStringArgument( sString2 );
+
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(sBracket) + sLispFunction + sSpaceQuote + sString1 + sQuoteSpaceQuote + sString2 + sQuoteEndBracket;
 			
@@ -731,10 +730,10 @@ void InvokeMethod3Strings(CString sLispFunction, CString sString1, CString sStri
 	{
 		if (UseSendString)
 		{
-			sString1.Replace(sQuote, sProperQuote);
-			sString2.Replace(sQuote, sProperQuote);
-			sString3.Replace(sQuote, sProperQuote);
-			// this code if for the dockable dialog only
+			sString1 = EscapeLispStringArgument( sString1 );
+			sString2 = EscapeLispStringArgument( sString2 );
+			sString3 = EscapeLispStringArgument( sString3 );
+
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(sBracket) + sLispFunction + sSpaceQuote + sString1 + sQuoteSpaceQuote + sString2 + sQuoteSpaceQuote +  sString3 + sQuoteEndBracket;
 			
@@ -772,11 +771,11 @@ void InvokeMethod4Strings(CString sLispFunction, CString sString1, CString sStri
 	{
 		if (UseSendString)
 		{
-			sString1.Replace(sQuote, sProperQuote);
-			sString2.Replace(sQuote, sProperQuote);
-			sString3.Replace(sQuote, sProperQuote);
-			sString4.Replace(sQuote, sProperQuote);
-			// this code if for the dockable dialog only
+			sString1 = EscapeLispStringArgument( sString1 );
+			sString2 = EscapeLispStringArgument( sString2 );
+			sString3 = EscapeLispStringArgument( sString3 );
+			sString4 = EscapeLispStringArgument( sString4 );
+
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(sBracket) + sLispFunction + sSpaceQuote + sString1 + sQuoteSpaceQuote + sString2 + sQuoteSpaceQuote +  sString3 + sQuoteSpaceQuote + sString4 + sQuoteEndBracket;
 			
@@ -823,15 +822,15 @@ void InvokeMethod3StringsPoint(
 		
 		if (UseSendString)
 		{
-			sString1.Replace(sQuote, sProperQuote);
-			sString2.Replace(sQuote, sProperQuote);
-			sString3.Replace(sQuote, sProperQuote);
-			char sInt1[80];
-			_ltoa(ptPoint.x, sInt1, 10);
-			char sInt2[80];
-			_ltoa(ptPoint.y, sInt2, 10);
+			sString1 = EscapeLispStringArgument( sString1 );
+			sString2 = EscapeLispStringArgument( sString2 );
+			sString3 = EscapeLispStringArgument( sString3 );
+
+			CString sInt1;
+			sInt1.Format( _T("%d"), ptPoint.x );
+			CString sInt2;
+			sInt2.Format( _T("%d"), ptPoint.y );
 			
-			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(sBracket) 
 				+ sLispFunction
@@ -888,13 +887,13 @@ void InvokeMethod3StringsLong(
 		
 		if (UseSendString)
 		{
-			sString1.Replace(sQuote, sProperQuote);
-			sString2.Replace(sQuote, sProperQuote);
-			sString3.Replace(sQuote, sProperQuote);
-			char sInt[80];
-			_ltoa(lValue, sInt, 10);
+			sString1 = EscapeLispStringArgument( sString1 );
+			sString2 = EscapeLispStringArgument( sString2 );
+			sString3 = EscapeLispStringArgument( sString3 );
+
+			CString sInt;
+			sInt.Format( _T("%d"), lValue );
 			
-			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(sBracket) 
 				+ sLispFunction 
@@ -943,10 +942,10 @@ void InvokeMethodPoint(
 	{
 		if (UseSendString)
 		{
-			char sInt1[80];
-			_ltoa(ptPoint.x, sInt1, 10);
-			char sInt2[80];
-			_ltoa(ptPoint.y, sInt2, 10);
+			CString sInt1;
+			sInt1.Format( _T("%d"), ptPoint.x );
+			CString sInt2;
+			sInt2.Format( _T("%d"), ptPoint.y );
 			
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			

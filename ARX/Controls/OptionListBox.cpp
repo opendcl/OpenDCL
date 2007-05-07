@@ -87,7 +87,7 @@ BOOL COptionListBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	BOOL RetVal = CClrListBox::Create(dwStyle,ArxRect, pParentWnd, nID);
 
 	m_ToolTip.Create(this);
-	SetToolTipEx(this, m_ToolTip, pControl);
+	//SetToolTipEx(this, m_ToolTip, pControl);
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
 	{
@@ -116,8 +116,33 @@ BOOL COptionListBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	CBitmap bitmap4;
 	bitmap4.LoadBitmap(IDB_OPBTNSELH);
 	m_ImageList.Add(&bitmap4, RGB(255,0,255));
-	
+
+	ResetTooltips();
 	return RetVal;
+}
+
+void COptionListBox::ResetTooltips()
+{
+	m_ToolTip.RemoveAllTools();
+	RefCountedPtr< CPropertyObject > pTTTProperty = m_ArxControl->GetPropertyObject( nBtnTTText );
+	if( !pTTTProperty )
+		return;
+	RefCountedPtr< CPropertyObject > pToolTipBalloon = m_ArxControl->GetPropertyObject( nToolTipBalloon );
+	m_ToolTip.SetDefaultSizes( !pToolTipBalloon || pToolTipBalloon->GetBooleanValue() );
+	size_t nBtnQty = pTTTProperty->size();
+	for (size_t i = 0; i < GetCount(); i++)
+	{
+		assert( i < nBtnQty );
+		if( i >= nBtnQty )
+			break;
+		CString sToolTipTitle = m_ArxControl->GetPropertyListItem( nBtnTTText, i );
+		if( !sToolTipTitle.IsEmpty() )
+		{
+			CRect rectItem;
+			GetItemRect( i, &rectItem );
+			m_ToolTip.AddTool( this, sToolTipTitle, (HICON)NULL, &rectItem, i );
+		}
+	}
 }
 
 
@@ -397,40 +422,6 @@ void COptionListBox::OnMouseMove(UINT nFlags, CPoint point)
 				m_ImageList.Draw(pDC, 3, CPoint(2, rc.top+2), ILD_NORMAL);//ILD_TRANSPARENT);
 			else
 				m_ImageList.Draw(pDC, 1, CPoint(2, rc.top+2), ILD_NORMAL);//ILD_TRANSPARENT);
-			
-			
-			CString sTitle;
-			if (i < m_TttTitleList.GetCount())
-				sTitle = m_TttTitleList[i];
-			
-			CString sMain;
-			if (i < m_TttMainList.GetCount())
-				sMain = m_TttMainList[i];
-			
-			int nLine = 0;
-			if (i < m_TttLineList.GetCount())
-				nLine = m_TttLineList[i];
-			
-			int nColor = 0;
-			if (i < m_TttTitleColorList.GetCount())
-				nColor = m_TttTitleColorList[i];
-			
-			int nPicture = 0;
-			if (i < m_TttPictureList.GetCount())
-				nPicture = m_TttPictureList[i];
-			
-			CString sAvi;
-			if (i < m_TttAviList.GetCount())
-				sAvi = m_TttAviList[i];
-
-			SetToolTipEx(this, m_ToolTip, 
-				sTitle,
-				sMain,
-				nLine,
-				nColor,
-				nPicture,
-				sAvi,
-				m_ArxControl);
 		}
 		else
 		{

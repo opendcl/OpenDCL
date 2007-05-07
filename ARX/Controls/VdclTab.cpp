@@ -179,6 +179,8 @@ void VdclTab::SetupTabs()
 	// get the tab's lists
 	RefCountedPtr< CPropertyObject > pTabsCaptionProperty = mpTemplate->GetPropertyObject(nTabsCaption);
 	RefCountedPtr< CPropertyObject > pTabsTTTProperty = mpTemplate->GetPropertyObject(nTabsTTT);
+	RefCountedPtr< CPropertyObject > pToolTipBalloon = mpTemplate->GetPropertyObject( nToolTipBalloon );
+	GetToolTipCtrl().SetDefaultSizes( !pToolTipBalloon || pToolTipBalloon->GetBooleanValue() );
 
 	size_t nTabQty = pTabsCaptionProperty->size();
 	for (size_t i = 0; i < nTabQty; i++)
@@ -214,8 +216,10 @@ void VdclTab::SetupTabs()
 
 void VdclTab::ResetTooltips()
 {
-	RefCountedPtr< CPropertyObject > pTabsTTTProperty = mpTemplate->GetPropertyObject(nTabsTTT);
+	RefCountedPtr< CPropertyObject > pTabsTTTProperty = mpTemplate->GetPropertyObject( nTabsTTT );
 	GetToolTipCtrl().RemoveAllTools();
+	RefCountedPtr< CPropertyObject > pToolTipBalloon = mpTemplate->GetPropertyObject( nToolTipBalloon );
+	GetToolTipCtrl().SetDefaultSizes( !pToolTipBalloon || pToolTipBalloon->GetBooleanValue() );
 	size_t nTabQty = pTabsTTTProperty->size();
 	for (size_t i = 0; i < GetItemCount(); i++)
 	{

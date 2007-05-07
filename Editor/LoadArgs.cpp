@@ -345,17 +345,17 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		sDesc = theWorkspace.LoadResourceString(5021);
 		break;
   
-    case nEventUpdate:
+	case nEventUpdate:
 		sArgs = theWorkspace.LoadResourceString(1208);
 		sDesc = theWorkspace.LoadResourceString(5022);
 		break;
   
-    case nEventDropDown:
+	case nEventDropDown:
 		sArgs = CString();
 		sDesc = theWorkspace.LoadResourceString(5023);
 		break;
   
-    case nEventScroll:
+	case nEventScroll:
 		sArgs = theWorkspace.LoadResourceString(1188);
 		sDesc = theWorkspace.LoadResourceString(5024);
 		break;

@@ -507,40 +507,24 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 
 // This function is being phased out as control classes are changed to implement their own CDialogControl interface
 //static
-void CArxDialogControl::UpdateChildControl(CWnd *pControlWnd, CDclControlObject *pControl, CControlPane* pPane, UINT nControlId)
+void CArxDialogControl::UpdateChildControl( CWnd* pControlWnd, CDclControlObject* pTemplate, CControlPane* pPane, UINT nControlId )
 {
-	POSITION pos;
-	int nCount = 0; 
-
-	while(nCount < pControl->GetPropertyList().GetCount())
+	POSITION pos = pTemplate->GetPropertyList().GetHeadPosition();
+	while( pos )
 	{
-		pos = pControl->GetPropertyList().FindIndex(nCount);
-	
-		if (pos != NULL)
+		RefCountedPtr< CPropertyObject > pProp = pTemplate->GetPropertyList().GetNext( pos );
+		switch( pProp->GetID() )
 		{
-			RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetAt(pos);
-			if (pProp != NULL && pControl != NULL && pControl != NULL)
-				UpdatePropertyInt(pControlWnd, pControl, pPane, pProp->GetID());
-		}	
-		nCount++;
-	}
-}
-
-// This function is being phased out as control classes are changed to implement their own CDialogControl interface
-//static
-void CArxDialogControl::UpdateChildControl(CDclControlObject *pControl, CControlPane* pPane, UINT nControlId)
-{
-	POSITION pos;
-	int nCount = 0; 
-
-	while(nCount < pControl->GetPropertyList().GetCount())
-	{
-		pos = pControl->GetPropertyList().FindIndex(nCount);
-	
-		RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetAt(pos);
-		UpdateProperty(pControl, pPane, nControlId, pProp->GetID());
-			
-		nCount++;
+		case nToolTipBalloon:
+		case nToolTipLine:
+		case nToolTipBody:
+		case nToolTipPicture:
+		case nToolTipAviFileName:
+		case nToolTipTitleColor:
+			break; //skip related properties that all get set at once with the main property of the group
+		default:
+			UpdatePropertyInt( pControlWnd, pTemplate, pPane, pProp->GetID() );
+		}
 	}
 }
 

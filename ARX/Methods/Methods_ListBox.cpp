@@ -878,235 +878,26 @@ int OptionList_SetTttTitle()
 		return 0;
 	}
 
-	// if this list box is not at option list box
+	// if this list box is not an option list box
 	if (pArx->GetType() != CtlOptionList)	
 		return 0;
 
-	/*CStringArray m_TttMainList;
-	CArray<int, int> m_TttLineList;
-	CStringArray m_TttTitleList;
-	CArray<int, int> m_TttPictureList;
-	CArray<long, long> m_TttTitleColorList;
-	CStringArray m_TttAviList;
-	*/
-	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
-	
-	if (nItem < pOptionLst->m_TttTitleList.GetCount())
-		pOptionLst->m_TttTitleList[nItem] = sText;
-	else
+	RefCountedPtr< CPropertyObject > pTTTProperty = pArx->GetPropertyObject( nBtnTTText );
+	if( !pTTTProperty )
+		return 0;
+	PropVal::TCStringArray* prsTTT = pTTTProperty->GetStringArrayPtr();
+	if( !prsTTT )
 	{
-		while (nItem >= pOptionLst->m_TttTitleList.GetCount())
-		{
-			int n = pOptionLst->m_TttTitleList.Add(CString());
-			if (n == nItem)				
-				pOptionLst->m_TttTitleList[nItem] = sText;
-		}
+		pTTTProperty->AddStringItem( CString() ); //make sure the string array is created
+		prsTTT = pTTTProperty->GetStringArrayPtr();
+		assert( prsTTT != NULL );
 	}
-	
-	acedRetVoid();
-	return 0;
-}
-
-
-int OptionList_SetTttTitleColor()
-{
-	int nItem;
-	int nColor;
-	
-	CDclControlObject *pArx = GetLispInput(sOptionList_SetTttTitleColor, nItem, nColor);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	// if this list box is not at option list box
-	if (pArx->GetType() != CtlOptionList)	
-		return 0;
-
-	/*CStringArray m_TttMainList;
-	CArray<int, int> m_TttLineList;
-	CStringArray m_TttTitleList;
-	CArray<int, int> m_TttPictureList;
-	CArray<long, long> m_TttTitleColorList;
-	CStringArray m_TttAviList;
-	*/
-	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
-	
-	if (nItem < pOptionLst->m_TttTitleColorList.GetCount())
-		pOptionLst->m_TttTitleColorList[nItem] = nColor;
-	else
-	{
-		while (nItem >= pOptionLst->m_TttTitleColorList.GetCount())
-		{
-			int n = pOptionLst->m_TttTitleColorList.Add(1);
-			if (n == nItem)				
-				pOptionLst->m_TttTitleColorList[nItem] = nColor;
-		}
-	}
-	
-	acedRetVoid();
-	return 0;
-}
-
-
-int OptionList_SetTttTitleLine()
-{
-	int nItem;
-	int nLine;
-	
-	CDclControlObject *pArx = GetLispInput(sOptionList_SetTttTitleLine, nItem, nLine);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	// if this list box is not at option list box
-	if (pArx->GetType() != CtlOptionList)	
-		return 0;
-
-	/*CStringArray m_TttMainList;
-	CArray<int, int> m_TttLineList;
-	CStringArray m_TttTitleList;
-	CArray<int, int> m_TttPictureList;
-	CArray<long, long> m_TttTitleColorList;
-	CStringArray m_TttAviList;
-	*/
-	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
-	
-	if (nItem < pOptionLst->m_TttLineList.GetCount())
-		pOptionLst->m_TttLineList[nItem] = nLine;
-	else
-	{
-		while (nItem >= pOptionLst->m_TttLineList.GetCount())
-		{
-			int n = pOptionLst->m_TttLineList.Add(0);
-			if (n == nItem)				
-				pOptionLst->m_TttLineList[nItem] = nLine;
-		}
-	}
-	
-	acedRetVoid();
-	return 0;
-}
-
-
-int OptionList_SetTttMain()
-{
-	int nItem;
-	CString sText;
-	CDclControlObject *pArx = GetLispInput(sOptionList_SetTttMain, nItem, sText);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	// if this list box is not at option list box
-	if (pArx->GetType() != CtlOptionList)	
-		return 0;
-
-	/*CStringArray m_TttMainList;
-	CArray<int, int> m_TttLineList;
-	CStringArray m_TttTitleList;
-	CArray<int, int> m_TttPictureList;
-	CArray<long, long> m_TttTitleColorList;
-	CStringArray m_TttAviList;
-	*/
-	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
-	
-	if (nItem < pOptionLst->m_TttMainList.GetCount())
-		pOptionLst->m_TttMainList[nItem] = sText;
-	else
-	{
-		while (nItem >= pOptionLst->m_TttMainList.GetCount())
-		{
-			int n = pOptionLst->m_TttMainList.Add(CString());
-			if (n == nItem)				
-				pOptionLst->m_TttMainList[nItem] = sText;
-		}
-	}
-	
-	acedRetVoid();
-	return 0;
-}
-
-
-int OptionList_SetTttPicture()
-{
-	int nItem;
-	int nPicture;
-	CDclControlObject *pArx = GetLispInput(sOptionList_SetTttPicture, nItem, nPicture);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	// if this list box is not at option list box
-	if (pArx->GetType() != CtlOptionList)	
-		return 0;
-
-	/*CStringArray m_TttMainList;
-	CArray<int, int> m_TttLineList;
-	CStringArray m_TttTitleList;
-	CArray<int, int> m_TttPictureList;
-	CArray<long, long> m_TttTitleColorList;
-	CStringArray m_TttAviList;
-	*/
-	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
-	
-	if (nItem < pOptionLst->m_TttPictureList.GetCount())
-		pOptionLst->m_TttPictureList[nItem] = nPicture;
-	else
-	{
-		while (nItem >= pOptionLst->m_TttPictureList.GetCount())
-		{
-			int n = pOptionLst->m_TttPictureList.Add(0);
-			if (n == nItem)				
-				pOptionLst->m_TttPictureList[nItem] = nPicture;
-		}
-	}
-	
-	acedRetVoid();
-	return 0;
-}
-
-
-int OptionList_SetTttAvi()
-{
-	int nItem;
-	CString sAvi;
-	CDclControlObject *pArx = GetLispInput(sOptionList_SetTttAvi, nItem, sAvi);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	// if this list box is not at option list box
-	if (pArx->GetType() != CtlOptionList)	
-		return 0;
+	if( nItem >= prsTTT->size() )
+		prsTTT->resize( nItem );
+	prsTTT->at( nItem ) = sText;
 
 	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
-	
-	if (nItem < pOptionLst->m_TttAviList.GetCount())
-		pOptionLst->m_TttAviList[nItem] = sAvi;
-	else
-	{
-		while (nItem >= pOptionLst->m_TttAviList.GetCount())
-		{
-			int n = pOptionLst->m_TttAviList.Add(CString());
-			if (n == nItem)				
-				pOptionLst->m_TttAviList[nItem] = sAvi;
-		}
-	}
+	pOptionLst->ResetTooltips();
 	
 	acedRetVoid();
 	return 0;

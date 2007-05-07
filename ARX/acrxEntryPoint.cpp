@@ -191,11 +191,6 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 
 	{sOptionList_SetEnabled,		OptionList_SetEnabled},
 	{sOptionList_SetTttTitle,		OptionList_SetTttTitle},
-	{sOptionList_SetTttTitleLine,	OptionList_SetTttTitleLine},
-	{sOptionList_SetTttTitleColor,	OptionList_SetTttTitleColor},
-	{sOptionList_SetTttAvi,			OptionList_SetTttAvi},
-	{sOptionList_SetTttPicture,		OptionList_SetTttPicture},
-	{sOptionList_SetTttMain,		OptionList_SetTttMain},
 
 	{sOptionList_AddList,		ListBox_AddList},
 	{sOptionList_AddString,		ListBox_AddString},

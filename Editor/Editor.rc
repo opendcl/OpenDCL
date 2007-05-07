@@ -1612,8 +1612,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,1,11
- PRODUCTVERSION 4,0,1,11
+ FILEVERSION 4,0,1,12
+ PRODUCTVERSION 4,0,1,12
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1629,12 +1629,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "OpenDCL Dialog Editor"
-            VALUE "FileVersion", "4, 0, 1, 11"
+            VALUE "FileVersion", "4, 0, 1, 12"
             VALUE "InternalName", "OpenDCL"
             VALUE "LegalCopyright", "Copyright © 2007"
             VALUE "OriginalFilename", "OpenDCL.exe"
             VALUE "ProductName", "OpenDCL"
-            VALUE "ProductVersion", "4, 0, 1, 11"
+            VALUE "ProductVersion", "4, 0, 1, 12"
         END
     END
     BLOCK "VarFileInfo"
@@ -1642,113 +1642,6 @@ BEGIN
         VALUE "Translation", 0x409, 1200
     END
 END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
-BEGIN
-    IDR_FONTBTNS, DIALOG
-    BEGIN
-    END
-
-    IDD_WINCOLORDIALOG, DIALOG
-    BEGIN
-    END
-
-    IDD_TOOLTIPS, DIALOG
-    BEGIN
-    END
-
-    IDD_TABS, DIALOG
-    BEGIN
-    END
-
-    IDD_TABPAGE_PROPERTIES, DIALOG
-    BEGIN
-    END
-
-    IDD_SORTTABS, DIALOG
-    BEGIN
-    END
-
-    IDD_PROPWIZARD, DIALOG
-    BEGIN
-    END
-
-    IDD_PROGRESSBAR, DIALOG
-    BEGIN
-    END
-
-    IDD_PICTUREFOLDER_DIALOG, DIALOG
-    BEGIN
-    END
-
-    IDD_OBJECTBROWSER, DIALOG
-    BEGIN
-    END
-
-    IDD_LISTCONTENTS, DIALOG
-    BEGIN
-    END
-
-    IDD_INSERTCONTROL, DIALOG
-    BEGIN
-    END
-
-    IDD_IMAGELISTCONTENTS, DIALOG
-    BEGIN
-    END
-
-    IDD_HELPCTRLS, DIALOG
-    BEGIN
-    END
-
-    IDD_GRIDSPACING_DIALOG, DIALOG
-    BEGIN
-    END
-
-    IDD_GEOMETRY, DIALOG
-    BEGIN
-    END
-
-    IDD_FREEDIALOG, DIALOG
-    BEGIN
-    END
-
-    IDD_FORMVARNAMEUPDATE_DIALOG, DIALOG
-    BEGIN
-    END
-
-    IDD_FILEOPENPREVIEW, DIALOG
-    BEGIN
-    END
-
-    IDD_EVENTS, DIALOG
-    BEGIN
-    END
-
-    IDD_EVALDIALOG, DIALOG
-    BEGIN
-    END
-
-    IDD_COMPONENTCATEGORIES, DIALOG
-    BEGIN
-    END
-
-    IDD_COMBOBOX, DIALOG
-    BEGIN
-    END
-
-    IDD_COLUMNS, DIALOG
-    BEGIN
-    END
-END
-#endif    // APSTUDIO_INVOKED
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2428,7 +2321,6 @@ END
 STRINGTABLE 
 BEGIN
     IDS_SETQVALUE2          "(Setq rValue ("
-    IDS_SPACE               " "
     IDS_CF2                 "(\\cf2"
     IDS_CF03                "\\cf0))"
     IDS_DOUBLECLOSEBRACKET  "))"
@@ -2509,7 +2401,6 @@ STRINGTABLE
 BEGIN
     IDS_SETPROP2            "(Odcl_Control_SetProperty "
     IDS_NVISA               """ NewValue [is a "
-    IDS_CLOSEBRACKETS       "])"
     IDS_NVISA2              """\\cf0\\b0  \\cf1 NewValue\\cf0  [is a "
     IDS_CF0CF3B2            " \\cf0 \\cf3\\b """
     IDS_SETQGETPROP         "\\par(\\cf2 Setq \\cf0 \\cf1 Value \\cf0 (\\cf2 Odcl_Control_GetProperty \\cf0 \\cf3 "
@@ -3181,6 +3072,13 @@ BEGIN
     IDS_BUTTONSTYLE4        "The button will use the AutoCAD 'filter' icon."
     IDS_BUTTONSTYLE5        "The button will not display any border of any kind."
     IDS_BUTTONSTYLE6        "The button will use the current XP visual style for buttons"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_TITLEBAR_DESC  "Set to 'False' for a dialog with no title bar"
+    IDS_PROP_TOOLTIPBALLOON_DESC 
+                            "Choose the tooltip style. Set to 'True' for balloon style, or 'False' for plain rectangle style."
 END
 
 #endif    // English (U.S.) resources

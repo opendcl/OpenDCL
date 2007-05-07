@@ -530,8 +530,8 @@ int Tree_AddChild()
 	CString sChildText;
 	CString sKey;
 	int nImage;
-	int nSelectedImage;
-	int nExpandedImage;
+	int nSelectedImage = -1;
+	int nExpandedImage = -1;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_AddChild, &nArg);
 
@@ -555,22 +555,15 @@ int Tree_AddChild()
 	}
 
 	nArg++;	
-	if (!FindOptionalStringArgument(nArg, &sKey, sTree_AddChild))
-	{
-		sKey = "";
-	}
-	else
-	{		
+	if (FindOptionalStringArgument(nArg, &sKey, sTree_AddChild))
 		nArg++;
-	}
 	if (FindOptionalIntArgument(nArg, &nImage, sTree_AddChild))
 	{
 		nArg++;
 		if (FindOptionalIntArgument(nArg, &nSelectedImage, sTree_AddChild))
 		{
 			nArg++;
-			if (!FindOptionalIntArgument(nArg, &nExpandedImage, sTree_AddChild))
-				nExpandedImage = -1;
+			FindOptionalIntArgument(nArg, &nExpandedImage, sTree_AddChild);
 		}
 		else 
 			nSelectedImage = nImage;

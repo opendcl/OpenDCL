@@ -28,7 +28,6 @@ public:
 	static TDialogControlPtr CreateComboExControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nId);	
 	static TDialogControlPtr CreateEditControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nId);
 	static TDialogControlPtr CreateComboControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nId);
-	static void UpdateChildControl(CDclControlObject *pControl, CControlPane* pPane, UINT nControlId);
 	static void UpdateChildControl(CWnd* pControlWnd, CDclControlObject *pControl, CControlPane* pPane, UINT nControlId);
 	static bool IsSelfPopulatedList(CDclControlObject *pControl);
 	static void UpdatePropertyInt(CWnd *pWnd, CDclControlObject *pControl, CControlPane* pPane, PropertyId nID);

@@ -21,22 +21,24 @@ public:
 	short m_RowHeight;
 	short m_NextHeight;
 
-	CStringArray m_TttMainList;
-	CArray<int, int> m_TttLineList;
-	CStringArray m_TttTitleList;
-	CArray<int, int> m_TttPictureList;
-	CArray<long, long> m_TttTitleColorList;
-	CStringArray m_TttAviList;
+	//CStringArray m_TttMainList;
+	//CArray<int, int> m_TttLineList;
+	//CStringArray m_TttTitleList;
+	//CArray<int, int> m_TttPictureList;
+	//CArray<long, long> m_TttTitleColorList;
+	//CStringArray m_TttAviList;
 	
 	bool m_bInvokeWithSendString;
 	CImageList m_ImageList;
-
 	CPPToolTip m_ToolTip;
+
 // Operations
 public:
 	void SetRowHeight(int nNewHeight);
 	void SetDragnDrop(BOOL bRegister);
 	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct, int nHighlight);
+	void ResetTooltips();
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(COptionListBox)

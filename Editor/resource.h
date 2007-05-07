@@ -425,6 +425,8 @@
 #define IDS_ALTROWCOLORDESC9            2341
 #define IDS_ALTROWCOLORDESC10           2342
 #define IDS_ALTROWCOLORDESC11           2343
+#define IDS_PROP_TITLEBAR_DESC          2352
+#define IDS_PROP_TOOLTIPBALLOON_DESC    2354
 #define IDS_ORIENTATION_0               2601
 #define IDS_ORIENTATION_1               2602
 #define IDS_SPLITTERStyle_0             2603
@@ -668,7 +670,6 @@
 #define IDS_SETQVALUE                   14542
 #define IDS_CF02                        14543
 #define IDS_SETQVALUE2                  14544
-#define IDS_SPACE                       14545
 #define IDS_CF2                         14546
 #define IDS_CF03                        14547
 #define IDS_DOUBLECLOSEBRACKET          14548
@@ -733,7 +734,6 @@
 #define IDS_SETPROP                     14607
 #define IDS_SETPROP2                    14608
 #define IDS_NVISA                       14609
-#define IDS_CLOSEBRACKETS               14610
 #define IDS_NVISA2                      14611
 #define IDS_CF0CF3B2                    14612
 #define IDS_SETQGETPROP                 14613
