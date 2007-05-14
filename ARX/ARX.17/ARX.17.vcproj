@@ -541,11 +541,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\Res\OpButton1.bmp"
+				RelativePath="..\Res\OpButton1.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\Res\OpButton1.bmp"
+				RelativePath="..\..\Common\Res\OpButton1.bmp"
 				>
 			</File>
 			<File
@@ -557,19 +557,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Res\OpButton3.bmp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Common\Res\OpButton3.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\Res\OpButton4.bmp"
+				RelativePath="..\Res\OpButton3.bmp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Common\Res\OpButton4.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\Res\OpButton4.bmp"
 				>
 			</File>
 			<File
@@ -609,11 +609,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Res\SHXFont.ico"
+				RelativePath="..\..\Common\Res\SHXFont.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\Res\SHXFont.ico"
+				RelativePath="..\Res\SHXFont.ico"
 				>
 			</File>
 			<File
@@ -621,11 +621,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\Res\truefont.ico"
+				RelativePath="..\Res\TRUEFONT.ICO"
 				>
 			</File>
 			<File
-				RelativePath="..\Res\TRUEFONT.ICO"
+				RelativePath="..\..\Common\Res\truefont.ico"
 				>
 			</File>
 			<File

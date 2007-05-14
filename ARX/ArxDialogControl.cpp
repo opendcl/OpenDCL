@@ -1557,6 +1557,7 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			pControlWnd->SetWindowText(pControl->GetStrProperty(nTitleBarText));
 			break;
 		}
+		case nBtnTTText:
 		case nToolTipTitle:
 		case nToolTipBalloon:
 		case nToolTipLine:
@@ -1882,7 +1883,7 @@ void CArxDialogControl::UpdateToolTip(CDclControlObject *pArxObject, CWnd *pCont
 	case CtlOptionList:
 		{
 		//SetToolTipEx(pControl, ((COptionListBox*)pControl)->m_ToolTip, pArxObject);
-		//((COptionListBox*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
+		((COptionListBox*)pControl)->ResetTooltips();
 		break;
 		}
 	case CtlCheckBox:

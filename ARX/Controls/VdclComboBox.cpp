@@ -40,7 +40,7 @@ BEGIN_MESSAGE_MAP(VdclComboBox, CComboBox)
 	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
 	ON_WM_MOUSEMOVE()
 	ON_CONTROL_REFLECT(CBN_EDITUPDATE, OnEditupdate)
-	ON_WM_SHOWWINDOW()
+	//ON_WM_SHOWWINDOW()
 	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -334,28 +334,28 @@ void VdclComboBox::OnEditupdate()
 
 }
 
-
-
-void VdclComboBox::OnShowWindow(BOOL bShow, UINT nStatus) 
-{
-	if (m_ArxControl)
-	{
-		if (m_ArxControl->GetLngProperty(nComboBoxStyle) == CmboStyle_Simple)
-		{		
- 			CRect rcThis;
-			GetWindowRect(&rcThis);
-			GetParent()->ScreenToClient(rcThis);
-			
-			CRect rcListBox;
-			GetClientRect(rcListBox);
-			rcThis.bottom = rcThis.bottom -1;
-
-			MoveWindow(rcThis, TRUE);
-		}
-	}
-	
-	CComboBox::OnShowWindow(bShow, nStatus);	
-}
+//
+//
+//void VdclComboBox::OnShowWindow(BOOL bShow, UINT nStatus) 
+//{
+//	if (m_ArxControl)
+//	{
+//		if (m_ArxControl->GetLngProperty(nComboBoxStyle) == CmboStyle_Simple)
+//		{		
+// 			CRect rcThis;
+//			GetWindowRect(&rcThis);
+//			GetParent()->ScreenToClient(rcThis);
+//			
+//			CRect rcListBox;
+//			GetClientRect(rcListBox);
+//			rcThis.bottom = rcThis.bottom -1;
+//
+//			MoveWindow(rcThis, TRUE);
+//		}
+//	}
+//	
+//	CComboBox::OnShowWindow(bShow, nStatus);	
+//}
 
 BOOL VdclComboBox::PreTranslateMessage(MSG* pMsg) 
 {

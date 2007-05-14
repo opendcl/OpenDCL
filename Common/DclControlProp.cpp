@@ -110,7 +110,7 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 0 );
 		pDclControl->AddLongProperty( nMaxDialogWidth, PropLong, 0 );
 		pDclControl->AddLongProperty( nMaxDialogHeight, PropLong, 0 );
-		pDclControl->AddLongProperty( nIcon, PropPicture, -1 );
+		//pDclControl->AddLongProperty( nIcon, PropPicture, -1 );
 		pDclControl->AddBooleanProperty( nTitleBar, PropBool, true );
 		pDclControl->AddStringProperty( nTitleBarText, PropString, pOwnerForm->GetKeyName() );
 		AddControlEvent( pDclControl, nFormEventInitialize );

@@ -577,6 +577,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 				pControl->AddLongProperty( nMinDialogHeight, PropLong, 0 );
 				pControl->AddLongProperty( nMaxDialogWidth, PropLong, 0 );
 				pControl->AddLongProperty( nMaxDialogHeight, PropLong, 0 );
+				pControl->RemoveProperty( nIcon );
 				break;
 			case VdclDockable:
 				pControl->AddBooleanProperty( nResizable, PropBool, true );

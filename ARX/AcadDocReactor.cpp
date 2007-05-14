@@ -37,6 +37,7 @@ void CAcadDocReactor::documentActivated(AcApDocument* pActivatedDoc)
 	{
 	if(!pActivatedDoc)
 		return;
+	theArxWorkspace.UpdateGlobalLispSymbols();
 	if (m_EventDefun.GetLength() > 0)
 		// call methods to invoke the event
 		InvokeMethod(m_EventDefun, true, pActivatedDoc);	

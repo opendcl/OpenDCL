@@ -119,6 +119,17 @@ BOOL CModelessDlg::OnInitDialog()
 		GetParent()->EnableWindow( FALSE );
 		EnableWindow( TRUE );
 	}
+	else
+	{
+		// add the doc reactor if required for an event
+		CString sEventDefun = mDialogX.GetControlPane().GetSourceForm()->GetControlProperties()->GetStrProperty(nDocEventActivated);
+		if (!sEventDefun.IsEmpty())
+		{
+			m_pDocToModReactor = new CAcadDocReactor();
+			m_pDocToModReactor->m_EventDefun = sEventDefun;
+			acDocManager->addReactor(m_pDocToModReactor);
+		}	
+	}
 
 	// Modify the style
 	//GetLayeredDialog()->AddLayeredStyle(m_hWnd);

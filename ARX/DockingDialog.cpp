@@ -248,11 +248,10 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	// add the doc reactor if required for an event
 	CString sEventDefun = pProps->GetStrProperty(nDocEventActivated);
-	if (sEventDefun.GetLength() > 0)
+	if (!sEventDefun.IsEmpty())
 	{
 		m_pDocToModReactor = new CAcadDocReactor();
 		m_pDocToModReactor->m_EventDefun = sEventDefun;
-		// activate the reactor
 		acDocManager->addReactor(m_pDocToModReactor);
 	}	
 

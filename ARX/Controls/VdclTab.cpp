@@ -115,8 +115,16 @@ bool VdclTab::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 		else
 			ModifyStyle( TCS_FIXEDWIDTH, 0, SWP_FRAMECHANGED );
 		ResetTooltips();
+	case nTabsTTT:
+		ResetTooltips();
 		break;
 	}
+	return true;
+}
+
+bool VdclTab::OnApplyToolTip( RefCountedPtr< CPropertyObject > pProp )
+{
+	ResetTooltips();
 	return true;
 }
 
@@ -209,7 +217,7 @@ void VdclTab::SetupTabs()
 		{
 			CRect rectTab;
 			GetItemRect(i, &rectTab);
-			GetToolTipCtrl().AddTool(this, sToolTipTitle, (HICON)NULL, &rectTab, i);
+			GetToolTipCtrl().AddTool(this, sToolTipTitle, &rectTab, i);
 		}
 	}
 }
@@ -235,7 +243,7 @@ void VdclTab::ResetTooltips()
 		{
 			CRect rectTab;
 			GetItemRect(i, &rectTab);
-			GetToolTipCtrl().AddTool(this, sToolTipTitle, (HICON)NULL, &rectTab, i);
+			GetToolTipCtrl().AddTool(this, sToolTipTitle, &rectTab, i);
 		}
 	}
 }

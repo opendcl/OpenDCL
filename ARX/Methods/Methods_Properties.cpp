@@ -284,6 +284,22 @@ bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, struct resbuf
 			pProperty->SetDoubleValue(ListData->resval.rreal);
 		return true;
 	}
+	else if (pProperty->GetType() == PropStringArray)
+	{
+		if (ListData->restype != RTLB)
+			return false;
+		ListData = ListData->rbnext;
+		PropVal::TCStringArray rsNewList;
+		while( ListData && ListData->restype == RTSTR )
+		{
+			rsNewList.push_back( ListData->resval.rstring );
+			ListData = ListData->rbnext;
+		}
+		if( !ListData || ListData->restype != RTLE || ListData->rbnext )
+			return false;
+		(*pProperty->GetStringArrayPtr()) = rsNewList;
+		return true;
+	}
 	else
 	{
 		return false;		

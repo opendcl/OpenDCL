@@ -251,17 +251,17 @@ void CBaseDlg::OnSizing(UINT fwSide, LPRECT pRect)
 	int nNewHeight = pRect->bottom - pRect->top;
 	
 	// ensure the user does not size below the min allowable size
-	if (nNewWidth < mnMinWidth)
+	if (mnMinWidth > 0 && nNewWidth < mnMinWidth)
 		pRect->right = pRect->left + mnMinWidth;
 
-	if (nNewHeight < mnMinHeight)
+	if (mnMinHeight > 0 && nNewHeight < mnMinHeight)
 		pRect->bottom = pRect->top + mnMinHeight;
 
 	// ensure the user does not size above the max allowable size
-	if (nNewWidth > mnMaxWidth)
+	if (mnMaxWidth > 0 && nNewWidth > mnMaxWidth)
 		pRect->right = pRect->left + mnMaxWidth;
 
-	if (nNewHeight > mnMaxHeight)
+	if (mnMaxHeight > 0 && nNewHeight > mnMaxHeight)
 		pRect->bottom = pRect->top + mnMaxHeight;
 
 	__super::OnSizing(fwSide, pRect);

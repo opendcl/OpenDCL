@@ -140,7 +140,7 @@ void COptionListBox::ResetTooltips()
 		{
 			CRect rectItem;
 			GetItemRect( i, &rectItem );
-			m_ToolTip.AddTool( this, sToolTipTitle, (HICON)NULL, &rectItem, i );
+			m_ToolTip.AddTool( this, sToolTipTitle, &rectItem, i );
 		}
 	}
 }

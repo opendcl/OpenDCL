@@ -40,6 +40,7 @@ public:
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
 	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
+	virtual bool OnApplyToolTip( RefCountedPtr< CPropertyObject > pProp );
 	virtual bool GetChildPanes( std::list< const CControlPane* >& listChildren ) const;
 
 // Interface
