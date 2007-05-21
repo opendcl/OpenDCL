@@ -140,7 +140,7 @@ void CTreeCtrlFolder::Display(CRect rc)
 	if (nScreenWidth < rc.left + rc.right/* actually height*/)
 		rc.left = nScreenWidth - rc.right -1;
 
-	SetWindowPos(&wndNoTopMost, rc.left, rc.top, rc.right, rc.bottom, SWP_SHOWWINDOW);
+	SetWindowPos(&wndTopMost, rc.left, rc.top, rc.right, rc.bottom, SWP_SHOWWINDOW);
 
 	CWnd* pTopParent = GetParent()->GetParentOwner();
     if (pTopParent != NULL)
@@ -195,7 +195,6 @@ void CTreeCtrlFolder::Inform()
 	if (parent != NULL)
 	{	CFolder* folder = (CFolder*) GetItemData(m_selectedItem);
 		m_comboBoxFolder->SendMessage(WM_SELECTITEM_CHANGE, (WPARAM)folder);
-		m_comboBoxFolder->SetFocus();
 	}
 }
 
@@ -501,9 +500,6 @@ void CTreeCtrlFolder::EnumFolders()
 void CTreeCtrlFolder::Init(CComboBoxFolder* comboBoxFolder)
 {
 	m_comboBoxFolder = comboBoxFolder;
-
-	char szPath[MAX_PATH];
-
 	EnumFolders();
 	return;
 
@@ -571,5 +567,6 @@ void CTreeCtrlFolder::SelectNextItem(BOOL selectNext)
 	if (item != NULL)
 	{	SelectItem(item);
 		Inform();
+		m_comboBoxFolder->SetFocus();
 	}
 }

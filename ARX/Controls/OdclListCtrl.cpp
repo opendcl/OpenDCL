@@ -368,6 +368,11 @@ bool OdclListCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 			}
 			break;
 		}
+	case nDragnDropAllowDrop:
+		{
+			SetDragnDrop( pProp->GetBooleanValue() );
+			break;
+		}
 	}
 	return !bFailed;
 }

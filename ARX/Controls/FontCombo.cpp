@@ -602,14 +602,22 @@ void CFontCombo::Initialize()
 		if (finder.IsDots()) // skip . and .. files
 			continue;
 		m_AcadFontFileList.Add(finder.GetFileName().MakeLower());
+		TRY
+		{
+			CString sFilename = finder.GetFileName().MakeLower();
+			CStdioFile fFont( sFontPath + _T("\\") + sFilename, CFile::modeRead | CFile::typeText );
+			CString sLine1;
+			fFont.ReadString( sLine1 );
+			if( sLine1 == _T("AutoCAD-86 unifont 1.0") /*|| sLine1 == _T("AutoCAD-86 shapes 1.0")*/ )
+				AddFont(sFilename, 6);
+		}
+		CATCH( CFileException, e ) {} END_CATCH
 	}
 	finder.Close();
 
 	CFontObj* pFontObj;
 	CString strKey,strComp;
 	EnumerateFonts();
-	
-	POSITION pos = m_mapFonts.GetStartPosition();
 	
 	// add the sysytem fonts manually because they are not added otherwise
 	AddString( _T("MS Sans Serif"));
@@ -620,6 +628,7 @@ void CFontCombo::Initialize()
 	AddString( _T("Fixedsys"));
 	AddString( _T("Courier"));
 
+	POSITION pos = m_mapFonts.GetStartPosition();
 	while (pos)
 	{
 		m_mapFonts.GetNextAssoc(pos,strKey,pFontObj);
@@ -760,7 +769,8 @@ BOOL CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(ENUMLOGFONTEX* pelf
 	if (FontType & TRUETYPE_FONTTYPE)
 	{
 		CString sFontName = pelf->elfLogFont.lfFaceName;
-		dwData = TRUETYPE_FONTTYPE;			
+		dwData = TRUETYPE_FONTTYPE;
+/*
 		//check whether it's an SHX font
 		CString sShxName = sFontName;
 		sShxName.MakeLower() += _T(".shx");
@@ -773,6 +783,7 @@ BOOL CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(ENUMLOGFONTEX* pelf
 				break;
 			}
 		}
+*/
 		((CFontCombo*)pThis)->AddFont(sFontName, dwData);
 	}
 	return 1; // Call me back

@@ -1289,7 +1289,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 								sDefun2 = CString("\\par (\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 Odcl_Control_Get") + m_ListBox.GetItemText(hItem) + " \\cf0 \\cf3";
 								m_sClipBoardDefun2 = "(Setq Value (Odcl_Control_Get" + m_ListBox.GetItemText(hItem) + _T(" ");
 								sDefun2 += sGlobalVarName + "\\cf0))";
-								m_sClipBoardDefun2 += sGlobalVarName + _T("])");
+								m_sClipBoardDefun2 += sGlobalVarName + _T("))");
 			
 								// set the title.
 								sTitle = theWorkspace.LoadResourceString(IDS_THEPROPERTY);

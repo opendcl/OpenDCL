@@ -28,6 +28,8 @@ public:
 public:
 	void GetVisibility(int nItem, bool &bFrozen, bool &bOn);
 	void DrawColor(CDC* pDC, CRect rc, int nColor);
+protected:
+	void Populate();
 
 // Overrides
 	// ClassWizard generated virtual function overrides

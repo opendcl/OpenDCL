@@ -708,7 +708,7 @@ int ComboBox_GetEBText()
 	}
 
 	
-	CString sString = "";
+	CString sString;
 	
 	((CComboBox*)pControl)->GetWindowText(sString);
 	//sString.ReleaseBuffer();
@@ -762,8 +762,7 @@ int ComboBox_Dir()
 	if (pArxObject->GetLngProperty(nComboBoxStyle) != CmboStyle_DropDown &&
 		pArxObject->GetLngProperty(nComboBoxStyle) != CmboStyle_DirPicker)
 	{
-		CString sLoadString;
-		sLoadString = "The combo box is not a directory combo box.";
+		CString sLoadString = _T("The combo box is not a directory combo box.");
 		theWorkspace.DisplayAlert(sLoadString);
 		// return -1
 		acedRetInt(-1);

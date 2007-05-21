@@ -60,6 +60,45 @@ BEGIN_MESSAGE_MAP(OdclLayerCombo, CComboBox)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
+
+void OdclLayerCombo::Populate() 
+{
+	ResetContent();
+
+	AcDbLayerTable *pLayerTable;
+    acdbHostApplicationServices()->workingDatabase()->getSymbolTable(pLayerTable, AcDb::kForRead);
+
+    AcDbLayerTableIterator* pIterator = NULL;
+    
+	pLayerTable->newIterator(pIterator, true, true);
+
+	// loop thru the layers
+	for (; !pIterator->done(); pIterator->step())
+	{
+		AcDbLayerTableRecord *pLayerTableRecord = NULL;
+
+		// open the entity for read
+		if (pIterator->getRecord(pLayerTableRecord, AcDb::kForRead) != Acad::eOk)
+			continue;
+
+		// get the layer name
+		const TCHAR* pName;
+		pLayerTableRecord->getName(pName);
+		int nItem = AddString(pName);
+
+		// get the layer color
+		AcCmColor clr = pLayerTableRecord->color();
+		SetItemData(nItem, clr.colorIndex());
+
+		// of course we must close it
+	    pLayerTableRecord->close();
+	}
+	
+	delete pIterator;
+
+    pLayerTable->close();
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // OdclLayerCombo message handlers
 BOOL OdclLayerCombo::Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT nID) 
@@ -77,7 +116,7 @@ BOOL OdclLayerCombo::Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT nID)
 				| WS_GROUP | WS_TABSTOP;
 	
 	RetVal = CComboBox::Create( dwStyle, rc, pParentWnd, nID );
-
+	Populate();
 	return RetVal;
 }
 
@@ -113,6 +152,7 @@ BOOL OdclLayerCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 		dwStyle = dwStyle | WS_GROUP;
 
 	RetVal = CComboBox::Create( dwStyle, ArxRect, pParentWnd, nID );
+	Populate();
 
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
@@ -193,15 +233,17 @@ void OdclLayerCombo::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->FillRect(rc, &brushFill);
 
-	CString strCurFont, strNextFont;
+	CString strLayer;
 
 	if (lpDrawItemStruct->itemID >= 0 && lpDrawItemStruct->itemID < GetCount())
-	{
-		GetLBText(lpDrawItemStruct->itemID,strCurFont);
-	}
+		GetLBText(lpDrawItemStruct->itemID,strLayer);
 	else
 	{
-		return;
+		int nCurSel = GetCurSel();
+		if( nCurSel >= 0 )
+			GetLBText(nCurSel,strLayer);
+		else
+			return;
 	}
 
 	CRect rcImage(rc);
@@ -231,7 +273,7 @@ void OdclLayerCombo::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	rc.left += 48; // Text Position
 	rc.top++;
 	
-	pDC->TextOut(rc.left,rc.top,strCurFont);
+	pDC->TextOut(rc.left,rc.top,strLayer);
 	
 	// Restore State of context
 	pDC->RestoreDC(nIndexDC);
@@ -264,42 +306,13 @@ void OdclLayerCombo::OnSelchange()
 }
 void OdclLayerCombo::OnDropdown() 
 {
-	ResetContent();
-
-	AcDbLayerTable *pLayerTable;
-    acdbHostApplicationServices()->workingDatabase()->getSymbolTable(pLayerTable, AcDb::kForRead);
-
-    AcDbLayerTableIterator* pIterator = NULL;
-    
-	pLayerTable->newIterator(pIterator, true, true);
-
-	// loop thru the layers
-	for (; !pIterator->done(); pIterator->step())
-	{
-		AcDbLayerTableRecord *pLayerTableRecord = NULL;
-
-		// open the entity for read
-		if (pIterator->getRecord(pLayerTableRecord, AcDb::kForRead) != Acad::eOk)
-			continue;
-
-		// get the layer name
-		const TCHAR* pName;
-		pLayerTableRecord->getName(pName);
-		int nItem = AddString(pName);
-
-		// get the layer color
-		AcCmColor clr = pLayerTableRecord->color();
-		SetItemData(nItem, clr.colorIndex());
-
-		// of course we must close it
-	    pLayerTableRecord->close();
-	}
-	
-	delete pIterator;
-
-    pLayerTable->close();
-	
-	
+	CString sCurSel;
+	int nCurSel = GetCurSel();
+	if( nCurSel >= 0 )
+		GetLBText(nCurSel, sCurSel);
+	Populate();
+	if(!sCurSel.IsEmpty())
+		SetCurSel(FindStringExact(0, sCurSel));
 }
 
 void OdclLayerCombo::GetVisibility(int nItem, bool &bFrozen, bool &bOn) 
