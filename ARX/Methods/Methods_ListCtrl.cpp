@@ -214,18 +214,10 @@ int ListCtrl_AddColumn()
 			
 			if (nImageIndex > -1)
 			{
-				HD_ITEM curItem;
-				LPTSTR  pStrTemp;
-				CHeaderCtrl* pHdrCtrl= NULL;
-
-				// retrieve embedded header control			
-				pHdrCtrl = pListCtrl->GetHeaderCtrl();
-
 				// add bmaps to each header item
-				pHdrCtrl->GetItem(nRet, &curItem);
+				HD_ITEM curItem;
 				curItem.mask= HDI_TEXT | HDI_IMAGE | HDI_FORMAT;
-				pStrTemp = sColumnHeading.GetBuffer(sColumnHeading.GetLength());
-				curItem.pszText = pStrTemp;
+				curItem.pszText = sColumnHeading.LockBuffer();
 				curItem.iImage= nImageIndex;
 			
 				switch(nFormat)
@@ -242,6 +234,8 @@ int ListCtrl_AddColumn()
 					break;
 				}
 			
+				CHeaderCtrl* pHdrCtrl= NULL;
+				pHdrCtrl = pListCtrl->GetHeaderCtrl();
 				pHdrCtrl->SetItem(nRet, &curItem);
 			}
 			

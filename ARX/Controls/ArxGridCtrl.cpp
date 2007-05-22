@@ -19,7 +19,7 @@
 #include "PrinterComboBox.h"
 #include "VdclPlotStyleNamesComboBox.h"
 #include "VdclPlotStyleTablesComboBox.h"
-#include "OdclDirStylesCombo.h"
+#include "OdclDimStylesCombo.h"
 #include "VdclColorComboBox.h"
 #include "VdclComboBox.h"
 #include "VdclComboBoxEx.h"
@@ -2392,12 +2392,12 @@ void CArxGridCtrl::ShowComboBox(int nRow, int nCol, int nStyle, CStringArray &sS
 		}
 	case 5:
 		{
-			OdclDirStylesCombo *pComboBox = NULL;
+			OdclDimStylesCombo *pComboBox = NULL;
 			//rc.top--;	
 			// get or create the control.
 			if (m_pComboBox[nStyle] == NULL)
 			{
-				pComboBox = new OdclDirStylesCombo;
+				pComboBox = new OdclDimStylesCombo;
 				
 				pComboBox->m_bTextStyle = true;
 				pHolder->Create(sCellText, WS_CHILD, rc, this, 120+nStyle);
@@ -2412,7 +2412,7 @@ void CArxGridCtrl::ShowComboBox(int nRow, int nCol, int nStyle, CStringArray &sS
 			else
 			{
 				pHolder = (CComboBoxHolder*)m_pComboBox[nStyle];
-				pComboBox = (OdclDirStylesCombo*)pHolder->pComboBox;
+				pComboBox = (OdclDimStylesCombo*)pHolder->pComboBox;
 				pComboBox->MoveWindow(CRect(15-nColWidth,-2, rc.Width()+2, 350));
 				pHolder->MoveWindow(rc, TRUE);
 				pComboBox->ResetContent();
@@ -2591,12 +2591,12 @@ void CArxGridCtrl::ShowComboBox(int nRow, int nCol, int nStyle, CStringArray &sS
 		}
 	case 12:
 		{
-			OdclDirStylesCombo *pComboBox = NULL;
+			OdclDimStylesCombo *pComboBox = NULL;
 			//rc.top--;	
 			// get or create the control.
 			if (m_pComboBox[nStyle] == NULL)
 			{
-				pComboBox = new OdclDirStylesCombo;
+				pComboBox = new OdclDimStylesCombo;
 				
 				pHolder->Create(sCellText, WS_CHILD, rc, this, 120+nStyle);
 				
@@ -2610,7 +2610,7 @@ void CArxGridCtrl::ShowComboBox(int nRow, int nCol, int nStyle, CStringArray &sS
 			else
 			{
 				pHolder = (CComboBoxHolder*)m_pComboBox[nStyle];
-				pComboBox = (OdclDirStylesCombo*)pHolder->pComboBox;
+				pComboBox = (OdclDimStylesCombo*)pHolder->pComboBox;
 				pHolder->MoveWindow(rc, TRUE);
 				pComboBox->ResetContent();
 			}

@@ -159,7 +159,6 @@ void CComboBoxFolder::OnLButtonDown(UINT nFlags, CPoint point)
 		m_treeCtrl.ShowWindow(SW_HIDE);
 	else
 		DisplayTree ();
-
 }
 
 void CComboBoxFolder::AddPath(CString path)
@@ -171,7 +170,6 @@ void CComboBoxFolder::AddPath(CString path)
 void CComboBoxFolder::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
 	OnLButtonDown(nFlags, point);
-
 }
 
 CString CComboBoxFolder::GetSelectedPath()

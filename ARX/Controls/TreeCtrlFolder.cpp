@@ -6,6 +6,10 @@
 #include "Resource.h"
 #include "ComboBoxFolder.h"
 
+// multi-monitor stubs to fake support for multiple monitors in Win95 and WinNT
+//#define COMPILE_MULTIMON_STUBS //stubs are already defined by PPToolTip.cpp
+#include "MultiMon.h"
+
 #define FOLDER_ICON			0
 #define FOLDER_EXPAND_ICON	1
 #define NETWORK_ICON		2
@@ -130,16 +134,16 @@ BOOL CTreeCtrlFolder::PreTranslateMessage(MSG* pMsg)
 
 void CTreeCtrlFolder::Display(CRect rc)
 {	
-	int nScreenWidth = ::GetSystemMetrics(SM_CXSCREEN);
-	int nScreenHeight = ::GetSystemMetrics(SM_CYSCREEN);
-
-	// lets make sure that the drop list is not shown partially off screen
-	if (nScreenHeight < rc.top + rc.bottom/* actually height*/)
-		rc.bottom = nScreenHeight - rc.top -1;
-	
-	if (nScreenWidth < rc.left + rc.right/* actually height*/)
-		rc.left = nScreenWidth - rc.right -1;
-
+	HMONITOR hDisplay = ::MonitorFromWindow( m_hWnd, MONITOR_DEFAULTTONEAREST );
+	MONITORINFO DisplayInfo = { sizeof(MONITORINFO) };
+	if( ::GetMonitorInfo( hDisplay, &DisplayInfo ) )
+	{
+		RECT& rectDisplay = DisplayInfo.rcWork;
+		if( rc.right > rectDisplay.right )
+			rc.right = rectDisplay.right;
+		if( rc.bottom > rectDisplay.bottom )
+			rc.bottom = rectDisplay.bottom;
+	}
 	SetWindowPos(&wndTopMost, rc.left, rc.top, rc.right, rc.bottom, SWP_SHOWWINDOW);
 
 	CWnd* pTopParent = GetParent()->GetParentOwner();

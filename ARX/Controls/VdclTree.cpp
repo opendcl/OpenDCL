@@ -112,7 +112,7 @@ BOOL VdclTree::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	
 	RetVal = CStatic::Create(
 		CString(), 
-		WS_VISIBLE|WS_CHILD|WS_TABSTOP|WS_CLIPSIBLINGS|WS_CLIPCHILDREN,
+		WS_VISIBLE|WS_CHILD|WS_TABSTOP|WS_CLIPSIBLINGS/*|WS_CLIPCHILDREN*/,
 		ArxRect,
 		pParentWnd,
 		nID);
@@ -122,7 +122,7 @@ BOOL VdclTree::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	CRect rcChild(0,0,ArxRect.Width(), ArxRect.Height());
 	m_ChildTree.Create(dwStyle, rcChild, this, IDC_TREE);
 	
-	VERIFY(m_ChildTree.SubclassDlgItem(IDC_TREE, this));
+	//VERIFY(m_ChildTree.SubclassDlgItem(IDC_TREE, this));
 	
 	m_ChildTree.m_ArxControl = m_ArxControl;
 	//m_ChildTree.ModifyStyle(TVS_TRACKSELECT, 0, SWP_NOSIZE | SWP_NOMOVE);

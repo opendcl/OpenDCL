@@ -394,8 +394,7 @@ void VdclTab::ActivateTabPage( int nTabPageToActivate, bool bShow, bool bFireEve
 	if (pSourceForm != NULL)
 	{
 		CRect rectTab = GetUsedArea();
-		
-		// set the tab page's position
+		pActualTabPage->GetControlPane().SetPanePos(CRect(0, 0, rectTab.Width(), rectTab.Height()));
 		pActualTabPage->SetWindowPos(
 			&CWnd::wndTop, 
 			rectTab.left,
@@ -403,9 +402,6 @@ void VdclTab::ActivateTabPage( int nTabPageToActivate, bool bShow, bool bFireEve
 			rectTab.Width(),
 			rectTab.Height(),
 			SWP_FRAMECHANGED);
-		
-		// call the sizechanged method of the tab pane so that it's controls may move as well
-		pActualTabPage->GetControlPane().SetPanePos(CRect(0, 0, rectTab.Width(), rectTab.Height()));
 
 		if (bShow)
 			pActualTabPage->GetControlPane().ShowPictureBoxes(FALSE);

@@ -1,8 +1,8 @@
-// OdclDirStylesCombo.cpp : implementation file
+// OdclDimStylesCombo.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "OdclDirStylesCombo.h"
+#include "OdclDimStylesCombo.h"
 #include "ArxGridCtrl.h"
 #include "CxAcadSlide.h"
 
@@ -13,68 +13,23 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// OdclDirStylesCombo
+// OdclDimStylesCombo
 
-OdclDirStylesCombo::OdclDirStylesCombo()
+OdclDimStylesCombo::OdclDimStylesCombo()
 {
 	m_bTextStyle = false;
 }
 
-OdclDirStylesCombo::~OdclDirStylesCombo()
+OdclDimStylesCombo::~OdclDimStylesCombo()
 {
 }
 
 
-BEGIN_MESSAGE_MAP(OdclDirStylesCombo, CComboBox)
-	//{{AFX_MSG_MAP(OdclDirStylesCombo)
-	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
-	//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// OdclDirStylesCombo message handlers
-BOOL OdclDirStylesCombo::Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT nID) 
-{
-	BOOL RetVal;
-	DWORD dwStyle;
-
-	if (rc.Height() < 100)
-		rc.bottom = rc.top + 100;
-
-	// set the arx control pointer
-	dwStyle = WS_CHILD | WS_VISIBLE 
-			  | CBS_SORT 
-			  | CBS_DROPDOWNLIST | WS_GROUP |WS_TABSTOP;
-	
-	RetVal = CComboBox::Create( dwStyle, rc, pParentWnd, nID );
-
-	return RetVal;
-}
-
-void OdclDirStylesCombo::OnSelchange() 
-{
-	CString sString;
-	int nSel = GetCurSel();
-	int nTextLength = GetLBTextLen(nSel);      
-	GetLBText(nSel, sString.GetBuffer(nTextLength));
-	sString.ReleaseBuffer();
-
-	// Send Notification to parent of ListView ctrl
-	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
-	pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);		
-	
-	// fire the on Grid edit cell event.
-	pListCtrl->EndEditControls(pListCtrl);
-			
-	
-}
-
-void OdclDirStylesCombo::OnDropdown() 
+void OdclDimStylesCombo::Populate() 
 {
 	ResetContent();
 
-	if (m_bTextStyle == false)
+	if (!m_bTextStyle)
 	{
 		AcDbDimStyleTable *pDimStyleTable;
 		acdbHostApplicationServices()->workingDatabase()->getSymbolTable(pDimStyleTable, AcDb::kForRead);
@@ -105,8 +60,7 @@ void OdclDirStylesCombo::OnDropdown()
 
 		pDimStyleTable->close();
 	}
-	
-	if (m_bTextStyle == true)
+	else
 	{
 		AcDbTextStyleTable *pTextStyleTable;
 		acdbHostApplicationServices()->workingDatabase()->getSymbolTable(pTextStyleTable, AcDb::kForRead);
@@ -137,5 +91,62 @@ void OdclDirStylesCombo::OnDropdown()
 
 		pTextStyleTable->close();
 	}
+}
+
+
+BEGIN_MESSAGE_MAP(OdclDimStylesCombo, CComboBox)
+	//{{AFX_MSG_MAP(OdclDimStylesCombo)
+	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
+	//}}AFX_MSG_MAP
+END_MESSAGE_MAP()
+
+/////////////////////////////////////////////////////////////////////////////
+// OdclDimStylesCombo message handlers
+BOOL OdclDimStylesCombo::Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT nID) 
+{
+	BOOL RetVal;
+	DWORD dwStyle;
+
+	if (rc.Height() < 100)
+		rc.bottom = rc.top + 100;
+
+	// set the arx control pointer
+	dwStyle = WS_CHILD | WS_VISIBLE 
+			  | CBS_SORT 
+			  | CBS_DROPDOWNLIST | WS_GROUP |WS_TABSTOP;
 	
+	RetVal = CComboBox::Create( dwStyle, rc, pParentWnd, nID );
+	Populate();
+
+	return RetVal;
+}
+
+void OdclDimStylesCombo::OnSelchange() 
+{
+	CString sString;
+	int nSel = GetCurSel();
+	int nTextLength = GetLBTextLen(nSel);      
+	GetLBText(nSel, sString.GetBuffer(nTextLength));
+	sString.ReleaseBuffer();
+
+	// Send Notification to parent of ListView ctrl
+	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
+	pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);		
+	
+	// fire the on Grid edit cell event.
+	pListCtrl->EndEditControls(pListCtrl);
+			
+	
+}
+
+void OdclDimStylesCombo::OnDropdown() 
+{
+	CString sCurSel;
+	int nCurSel = GetCurSel();
+	if( nCurSel >= 0 )
+		GetLBText(nCurSel, sCurSel);
+	Populate();
+	if(!sCurSel.IsEmpty())
+		SetCurSel(FindStringExact(0, sCurSel));
 }

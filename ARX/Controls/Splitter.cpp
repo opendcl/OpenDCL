@@ -340,14 +340,14 @@ void CSplitter::OnLButtonUp(UINT nFlags, CPoint point)
 			{
 				delta = m_nX - m_nSavePos;
 				m_ArxControl->m_pLeft->SetLongValue(m_ArxControl->m_pLeft->GetLongValue() + delta );
-				m_ArxControl->m_pOffsetLeft->SetLongValue(m_ArxControl->m_pOffsetLeft->GetLongValue() + delta );
+				m_ArxControl->m_pOffsetLeft->SetLongValue(m_ArxControl->m_pOffsetLeft->GetLongValue() - delta );
 				m_ArxControl->m_pOffsetRight->SetLongValue(m_ArxControl->m_pOffsetRight->GetLongValue() - delta );
 			}
 			else
 			{
 				delta = m_nY - m_nSavePos;
 				m_ArxControl->m_pTop->SetLongValue(m_ArxControl->m_pTop->GetLongValue() + delta );
-				m_ArxControl->m_pOffsetTop->SetLongValue(m_ArxControl->m_pOffsetTop->GetLongValue() + delta );
+				m_ArxControl->m_pOffsetTop->SetLongValue(m_ArxControl->m_pOffsetTop->GetLongValue() - delta );
 				m_ArxControl->m_pOffsetBottom->SetLongValue(m_ArxControl->m_pOffsetBottom->GetLongValue() - delta );
 			}
 			
