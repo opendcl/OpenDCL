@@ -676,7 +676,9 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 	if (pControl == NULL)
 		return;
 
-	sGlobalVarName = pControl->GetKeyPath();
+	sGlobalVarName = pControl->GetStrProperty( nGlobalVarName );
+	if( sGlobalVarName.IsEmpty() )
+		sGlobalVarName = pControl->GetKeyPath();
 	
 	if (pControl != m_pControl)
 	{

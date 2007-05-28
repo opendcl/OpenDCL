@@ -27,8 +27,6 @@ CAcadDocReactor::~CAcadDocReactor()
 
 void CAcadDocReactor::documentCreated(AcApDocument* pDocCreating)
 {
-	if(!pDocCreating)
-		return;
 }
 
 void CAcadDocReactor::documentActivated(AcApDocument* pActivatedDoc)

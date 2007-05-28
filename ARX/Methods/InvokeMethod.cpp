@@ -40,15 +40,16 @@ CString EscapeLispStringArgument( LPCTSTR pszString )
 	return sResult;
 }
 
-Acad::ErrorStatus ExecuteCommandInCurrentDoc( LPCTSTR pszCommand, bool bShowCommand = false )
+Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand = false, AcApDocument* pDoc = NULL )
 {
-	AcApDocument* pDoc = acDocManager->curDocument();
+	if( !pDoc )
+		pDoc = acDocManager->curDocument();
 	//assert( pDoc != NULL );
 	if( !pDoc )
 		return Acad::eNoDocument;
 	//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
 	//CmdBarWnd->SetFocus();		
-	return acDocManager->sendStringToExecute(pDoc, pszCommand, false, true, bShowCommand);
+	return acDocManager->sendStringToExecute( pDoc, pszCommand, false, true, bShowCommand );
 }
 
 int acedInvokeNoDocStateSafe(const struct resbuf *args, struct resbuf **result)
@@ -77,7 +78,7 @@ CString FireCancel(CString sLispFunction)
 
 	CString CancelStr = (sCancelStr);
 
-	Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(CancelStr);
+	Acad::ErrorStatus es = ExecuteCommand(CancelStr);
 	return sLispFunction.Mid(nCancelRemoveLength);
 }
 
@@ -146,7 +147,7 @@ void InvokeMethodStringInt(CString sLispFunction, CString sString, int nInt, boo
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -194,7 +195,7 @@ void InvokeMethodStringLong(CString sLispFunction, CString sString, long lLong, 
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -238,7 +239,7 @@ void InvokeMethodLong(CString sLispFunction, long lLong, bool UseSendString)
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -288,7 +289,7 @@ void InvokeMethodStringIntInt(CString sLispFunction, CString sString, int nInt1,
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -334,7 +335,7 @@ void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc)
 				bShowCommand = true;
 			}
 			
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand, bShowCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand, bShowCommand, pDoc);
 		}
 		else
 		{
@@ -374,7 +375,7 @@ void InvokeMethodIntString(CString sLispFunction, int nInt, CString sString, boo
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -419,7 +420,7 @@ void InvokeMethodIntList(CString sLispFunction, int nInt, CStringList *pList, bo
 			}
 			sCommand = sCommand + sQuoteEndBracket;
 			
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -480,7 +481,7 @@ void InvokeMethodString(CString sLispFunction, CString sString, bool UseSendStri
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -520,7 +521,7 @@ void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString)
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -560,7 +561,7 @@ void InvokeMethodIntInt(CString sLispFunction, int nInt1, int nInt2, bool UseSen
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 
 			
 
@@ -611,7 +612,7 @@ void InvokeMethodIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -658,7 +659,7 @@ void InvokeMethodIntIntIntInt(CString sLispFunction, int nInt1, int nInt2, int n
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -700,7 +701,7 @@ void InvokeMethodStringString(CString sLispFunction, CString sString1, CString s
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -740,7 +741,7 @@ void InvokeMethod3Strings(CString sLispFunction, CString sString1, CString sStri
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -782,7 +783,7 @@ void InvokeMethod4Strings(CString sLispFunction, CString sString1, CString sStri
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -843,7 +844,7 @@ void InvokeMethod3StringsPoint(
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -906,7 +907,7 @@ void InvokeMethod3StringsLong(
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -958,7 +959,7 @@ void InvokeMethodPoint(
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -1029,7 +1030,7 @@ void InvokeMethodPoint3D(
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;
 
-			Acad::ErrorStatus es = ExecuteCommandInCurrentDoc(sCommand);
+			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
 		else
 		{
