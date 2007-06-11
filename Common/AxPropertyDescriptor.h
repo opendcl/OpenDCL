@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AxArg.h"
+
 class CAxContainerCtrl;
 enum IOStatus;
 
@@ -7,14 +9,6 @@ struct AxPropertyEnum
 {
 	CString Name;
 	VARIANT Var;
-};
-
-struct AxPropertyArg
-{
-	VARTYPE vt;
-	CString name;
-	CLSID clsid;
-	AxPropertyArg() : vt( VT_EMPTY ) {}
 };
 
 
@@ -32,7 +26,7 @@ protected:
 	GUID mGuid;
 	INVOKEKIND mInvKind;
 	std::vector< AxPropertyEnum > mrEnum;
-	std::vector< AxPropertyArg > mrArgs;
+	std::vector< AxArg > mrArgs;
 
 protected:
 	friend class AxInterfaceDescriptor;
@@ -54,7 +48,7 @@ public:
 	GUID GetGuid() const { return mGuid; }
 	INVOKEKIND GetInvKind() const { return mInvKind; }
 	const std::vector< AxPropertyEnum >& GetEnum() const { return mrEnum; }
-	const std::vector< AxPropertyArg >& GetArgs() const { return mrArgs; }
+	const std::vector< AxArg >& GetArgs() const { return mrArgs; }
 
 	// Operations
 	HRESULT Get( IDispatch* pObjectDisp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult ) const;

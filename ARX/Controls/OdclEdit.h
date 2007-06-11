@@ -64,9 +64,9 @@ protected:
 	afx_msg void OnDestroy();	
 	afx_msg void OnChange();
 	afx_msg void OnErrspace();
-	afx_msg void OnKillfocus();
+	afx_msg void OnKillFocus(/* CWnd* pFocus */);
 	afx_msg void OnMaxtext();
-	afx_msg void OnSetfocus();
+	afx_msg void OnSetFocus(/* CWnd* pFocus */);
 	afx_msg void OnUpdate();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);

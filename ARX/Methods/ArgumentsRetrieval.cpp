@@ -961,60 +961,68 @@ RefCountedPtr< CPropertyObject > GetPropertyArgument(int nIndex, CString sMethod
 	return pProperty; 
 }
 
-bool GetAxPropertyArgument(struct resbuf *ListData, COleVariant *oleVar, VARTYPE varType)
+bool GetAxPropertyArgument(struct resbuf*& ListData, COleVariant *oleVar, const AxArg& type)
 {	
 	oleVar->Clear();
 	switch (ListData->restype)
 	{	
 		case RTREAL:
 		case RTANG:
+		case RTORINT:
 			{
 				oleVar->vt = VT_R8;
-				oleVar->dblVal = ListData->resval.rreal;	
+				oleVar->dblVal = ListData->resval.rreal;
+				ListData = ListData->rbnext;
 				break;
 			}
 		case RTSHORT:
 			{
 				oleVar->vt = VT_I2;
 				oleVar->iVal = ListData->resval.rint;
-				if (varType == VT_DISPATCH)
+				if (type.vt == VT_DISPATCH)
 				{
 					oleVar->vt = VT_DISPATCH;
 					COleDispatchDriver *pDisp = (COleDispatchDriver *)ListData->resval.rint;
 					oleVar->pdispVal = pDisp->m_lpDispatch;
 					pDisp->m_lpDispatch = NULL;
 				}
-				
+				ListData = ListData->rbnext;
 				break;
 			}
 		case RTLONG:
 			{
-				oleVar->vt = VT_I4;
-				oleVar->lVal = ListData->resval.rlong;
-				if (varType == VT_DISPATCH)
+				if (type.vt == VT_DISPATCH)
 				{
 					oleVar->vt = VT_DISPATCH;
 					COleDispatchDriver *pDisp = (COleDispatchDriver *)ListData->resval.rlong;
 					oleVar->pdispVal = pDisp->m_lpDispatch;
 					pDisp->m_lpDispatch = NULL;
 				}
+				else
+				{
+					oleVar->vt = VT_I4;
+					oleVar->lVal = ListData->resval.rlong;
+				}
+				ListData = ListData->rbnext;
 				break;
 			}
 		case RTSTR:
 			{
 				//oleVar->vt = VT_LPSTR;
 				*oleVar = ListData->resval.rstring;				
+				ListData = ListData->rbnext;
 				break;
 			}
 		case RTT:
 			{
 				oleVar->vt = VT_BOOL;
-				oleVar->boolVal = TRUE;				
+				oleVar->boolVal = VARIANT_TRUE;				
+				ListData = ListData->rbnext;
 				break;
 			}
 		case RTNIL:
 			{
-				if (varType == VT_VARIANT)
+				if (type.vt == VT_VARIANT)
 				{
 					oleVar->vt = VT_VARIANT|VT_BYREF;
 					oleVar->pvarVal = NULL;
@@ -1022,15 +1030,16 @@ bool GetAxPropertyArgument(struct resbuf *ListData, COleVariant *oleVar, VARTYPE
 				else
 				{
 					oleVar->vt = VT_BOOL;
-					oleVar->boolVal = FALSE;				
-				
+					oleVar->boolVal = VARIANT_FALSE;				
 				}
+				ListData = ListData->rbnext;
 				break;
 			}
 			// must be a list
+		case RT3DPOINT:
 		case RTPOINT:
 			{
-				switch (varType)
+				switch (type.vt)
 				{
 				case VT_DISPATCH:
 				case VT_UNKNOWN:
@@ -1039,6 +1048,7 @@ bool GetAxPropertyArgument(struct resbuf *ListData, COleVariant *oleVar, VARTYPE
 						COleDispatchDriver *pDisp = (COleDispatchDriver *)((ULONG)ListData->resval.rpoint[1]);
 						oleVar->pdispVal = pDisp->m_lpDispatch;
 						pDisp->m_lpDispatch = NULL;
+						ListData = ListData->rbnext;
 						break;
 					}
 				case VT_DISPATCH|VT_BYREF:
@@ -1049,34 +1059,27 @@ bool GetAxPropertyArgument(struct resbuf *ListData, COleVariant *oleVar, VARTYPE
 						pDisp = (COleDispatchDriver *)((ULONG)ListData->resval.rpoint[1]);
 						oleVar->ppdispVal = &pDisp->m_lpDispatch;
 						pDisp->m_lpDispatch = NULL;
-						
+						ListData = ListData->rbnext;
 						break;
 					}
-				}
-				switch (varType)
-				{
 				case VT_DATE:
 					{
-					COleDateTime Date;
-					Date.SetDate(
-						ListData->resval.rpoint[0],
-						ListData->resval.rpoint[1],
-						ListData->resval.rpoint[2]);
-					oleVar->vt = VT_DATE;
-					oleVar->date = Date;
-					break;
+						COleDateTime Date;
+						Date.SetDate(
+							ListData->resval.rpoint[0],
+							ListData->resval.rpoint[1],
+							ListData->resval.rpoint[2]);
+						oleVar->vt = VT_DATE;
+						oleVar->date = Date;
+						ListData = ListData->rbnext;
+						break;
 					}
-				case VT_DATE|VT_BYREF:
+				case VT_UI4:
 					{
-					COleDateTime Date;
-					Date.SetDate(
-						ListData->resval.rpoint[0],
-						ListData->resval.rpoint[1],
-						ListData->resval.rpoint[2]);
-					oleVar->vt = VT_DATE|VT_BYREF;
-					oleVar->date = Date;
-					oleVar->pdate = &oleVar->date ;
-					break;
+						oleVar->vt = VT_UI4;
+						oleVar->ulVal = RGB(ListData->resval.rpoint[0], ListData->resval.rpoint[1], ListData->resval.rpoint[2]);
+						ListData = ListData->rbnext;
+						break;
 					}
 				}
 				break;
@@ -1087,9 +1090,10 @@ bool GetAxPropertyArgument(struct resbuf *ListData, COleVariant *oleVar, VARTYPE
 				break;
 			}		
 	}
+	bool bReturn = (S_OK == VariantChangeType( oleVar, oleVar, 0, type.vt ));
 
+/*
 	// set to converted as false for default
-	bool bReturn = false;
 
 	// here we need to check the COleVariant to ensure that it is set to the correct type and that the 
 	// user did not pass in a value that is not allowed.
@@ -1146,7 +1150,6 @@ bool GetAxPropertyArgument(struct resbuf *ListData, COleVariant *oleVar, VARTYPE
 				oleVar->iVal = oleVar->dblVal;
 				bReturn = true;
 			}
-			
 			break;
 		case VT_I4:
 			if (oleVar->vt == VT_I2)
@@ -1171,8 +1174,30 @@ bool GetAxPropertyArgument(struct resbuf *ListData, COleVariant *oleVar, VARTYPE
 				oleVar->lVal = oleVar->dblVal;
 				bReturn = true;
 			}
-			
-
+			break;
+		case VT_UI4:
+			if (oleVar->vt == VT_I2)
+			{
+				oleVar->vt = VT_I4;
+				oleVar->lVal = oleVar->iVal;
+				bReturn = true;
+			}
+			if (oleVar->vt == VT_I4)
+				bReturn = true;
+			if (oleVar->vt == VT_R8)
+			{
+				// convert to an float
+				oleVar->vt = VT_I4;
+				oleVar->lVal = oleVar->dblVal;
+				bReturn = true;
+			}
+			if (oleVar->vt == VT_R4)
+			{
+				// convert to an float
+				oleVar->vt = VT_I4;
+				oleVar->lVal = oleVar->dblVal;
+				bReturn = true;
+			}
 			break;
 		case VT_R4:
 			if (oleVar->vt == VT_R8)
@@ -1507,6 +1532,7 @@ bool GetAxPropertyArgument(struct resbuf *ListData, COleVariant *oleVar, VARTYPE
 			return false;
 			break;
 	}
+*/
 
 	if (!bReturn)
 		theWorkspace.DisplayAlert(CString(ErrorInappropriateFound));

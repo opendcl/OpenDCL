@@ -4,10 +4,31 @@
 #pragma once
 
 #include "ParentDlg.h"
+#include "ArxDialogObject.h"
 
 class CFontCollection;
 class CDclControlObject;
 class CDclFormObject;
+
+
+class CFileDialogX : public CArxDialogObject
+{
+	friend class CParentFileDialog;
+	CParentFileDialog* mpOwner;
+	CParentDlg* mpParent;
+protected:
+	CFileDialogX( CParentFileDialog& Owner, CDclFormObject* pDclForm, CParentDlg* pParent );
+	~CFileDialogX();
+
+	virtual DclFormType GetType() const;
+	virtual bool IsModeless() const { return false; }
+	virtual bool IsDockable() const { return false; }
+	virtual bool IsResizable() const { return true; }
+	virtual HWND GetHWnd() const;
+	virtual void CloseDialog(int nStatus) const;
+	virtual INT_PTR DoModal();
+	virtual bool Show(bool bShow = true) { return false; }
+};
 
 
 struct FileDialogParams
@@ -33,7 +54,8 @@ struct FileDialogParams
 
 class CParentFileDialog : public CFileDialog
 {
-	CParentDlg mParentDlg;
+	CFileDialogX mDialogX;
+	//CParentDlg mParentDlg;
 	CString msTitle;
 	CString msFilterList;
 	FileDialogParams* mpParams;
@@ -43,8 +65,6 @@ public:
 
 	CRect m_rcThis;
 	CRect m_rcParent;
-
-	enum { IDD = IDD_CUSTOM_FILE_DIALOG };
 
 public:
 	CParentFileDialog( CDclFormObject* pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
@@ -56,15 +76,16 @@ public:
 		DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 		LPCTSTR lpszFilter = NULL,
 		CWnd* pParentWnd = NULL);
+	~CParentFileDialog();
 protected:
 	void InitializeFromParams( CDclFormObject* pSourceForm, DialogParams* pParams = NULL );
 
 	//Attributes
 public:
-	const CParentDlg& GetParentDlg() const { return mParentDlg; }
-	CParentDlg& GetParentDlg() { return mParentDlg; }
-	CDialogObject& GetDialogObject() { return mParentDlg.GetDialogObject(); }
-	const CDialogObject& GetDialogObject() const { return mParentDlg.GetDialogObject(); }
+	//const CParentDlg& GetParentDlg() const { return mParentDlg; }
+	//CParentDlg& GetParentDlg() { return mParentDlg; }
+	CDialogObject& GetDialogObject() { return mDialogX; }
+	const CDialogObject& GetDialogObject() const { return mDialogX; }
 
 	void CloseNow();
 	void CtrlModifyStyle(int nCtrl);

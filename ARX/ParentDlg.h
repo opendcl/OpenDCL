@@ -4,11 +4,12 @@
 #pragma once
 
 #include "Resource.h"
-#include "ArxDialogObject.h"
 
 class CDialogControl;
 class CFontCollection;
+class CDclFormObject;
 class CDclControlObject;
+class CParentFileDialog;
 
 extern const UINT WM_FILEDLG_GETFILENAME;
 extern const UINT WM_FILEDLG_GETFILETITLE;
@@ -20,34 +21,13 @@ extern const UINT WM_FILEDLG_GETSELECTEDFILECOUNT;
 extern const UINT WM_FILEDLG_GETSELECTEDFILES;
 
 
-class CFileDialogX : public CArxDialogObject
-{
-	friend class CParentDlg;
-	CParentDlg* mpOwner;
-protected:
-	CFileDialogX( CParentDlg& Owner, CDclFormObject* pDclForm );
-	~CFileDialogX();
-
-	virtual DclFormType GetType() const;
-	virtual bool IsModeless() const { return false; }
-	virtual bool IsDockable() const { return false; }
-	virtual bool IsResizable() const { return true; }
-	virtual HWND GetHWnd() const;
-	virtual void CloseDialog(int nStatus) const;
-	virtual INT_PTR DoModal();
-	virtual bool Show(bool bShow = true) { return false; }
-};
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CParentDlg dialog
 
 class CParentDlg : public CCommonDialog
 {
-	CFileDialogX mDialogX;
-
 public:
-	CWnd				*m_pMainChild;
+	CParentFileDialog* mpFileDlg;
 
 	BOOL m_bShowGrip;	
 	BOOL m_bInitDone;			// if all internal vars initialized
@@ -59,12 +39,8 @@ public:
 
 // Construction
 public:
-	CParentDlg( CDclFormObject* pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL );
+	CParentDlg( CWnd* pParent, CParentFileDialog* pFileDlg );
 	~CParentDlg();
-
-public:
-	CDialogObject& GetDialogObject() { return mDialogX; }
-	const CDialogObject& GetDialogObject() const { return mDialogX; }
 
 public:
 	void UpdateGripPos();
@@ -79,9 +55,10 @@ protected:
 	UINT OnNcHitTest(CPoint point);
 	afx_msg void OnCancel();
 	afx_msg void OnOK();
+	afx_msg void OnPaint();
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnPaint();
+	afx_msg void PostNcDestroy();
 
 	//custom file dialog messages
 	afx_msg LRESULT OnGetFileName( WPARAM wParam, LPARAM lParam );

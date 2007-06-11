@@ -412,11 +412,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\idr_main.ico"
+				RelativePath=".\RES\IDR_MAIN.ICO"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\IDR_MAIN.ICO"
+				RelativePath="..\Common\Res\idr_main.ico"
 				>
 			</File>
 			<File
@@ -520,11 +520,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\pick.ico"
+				RelativePath=".\RES\PICK.ICO"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\PICK.ICO"
+				RelativePath="..\Common\Res\pick.ico"
 				>
 			</File>
 			<File
@@ -552,11 +552,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Res\Select.ico"
+				RelativePath="..\Common\Res\Select.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\Select.ico"
+				RelativePath=".\Res\Select.ico"
 				>
 			</File>
 			<File
@@ -1329,6 +1329,10 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\Common\AxArg.h"
+				>
 			</File>
 			<File
 				RelativePath="..\Common\AxEventDescriptor.cpp"

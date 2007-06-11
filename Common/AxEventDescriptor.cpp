@@ -104,7 +104,7 @@ void AxEventDescriptor::Serialize( CArchive& ar, int nPropertyVersion )
 			size_t ctDiscard = 16 - ctParams;
 			for( size_t i = 0; i < ctDiscard; ++i )
 			{
-				AxEventArg discard;
+				AxArg discard;
 				ar >> discard.vt;
 				ar >> discard.name;
 				if (nPropertyVersion >= 4)
@@ -136,7 +136,7 @@ IOStatus AxEventDescriptor::ReadFromTextFile( std::ifstream &sFile, ULONG nPrope
 			if (!readCLSID(sFile, mrArgs[i].clsid)) return statInvalidFormat;
 		} else {
 			//Argument should be ignored
-			AxEventArg tempArg;
+			AxArg tempArg;
 			if (!readVARTYPE(sFile, tempArg.vt)) return statInvalidFormat;
 			if (!readString(sFile, tempArg.name)) return statInvalidFormat;
 			if (!readCLSID(sFile, tempArg.clsid)) return statInvalidFormat;

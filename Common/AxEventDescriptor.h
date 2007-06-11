@@ -1,14 +1,8 @@
 #pragma once
 
-enum IOStatus;
+#include "AxArg.h"
 
-struct AxEventArg
-{
-	VARTYPE vt;
-	CString name;
-	CLSID clsid;
-	AxEventArg() : vt( VT_EMPTY ) {}
-};
+enum IOStatus;
 
 
 // Struct for holding information about ActiveX events so we do not
@@ -19,7 +13,7 @@ class AxEventDescriptor
 	CString msName;
 	CString msDesc;
 	CString msParams;
-	std::vector< AxEventArg > mrArgs;
+	std::vector< AxArg > mrArgs;
 
 protected:
 	friend class AxInterfaceDescriptor;
@@ -32,7 +26,7 @@ public:
 	DISPID GetDispId() const { return mDispId; }
 	const CString& GetName() const { return msName; }
 	const CString& GetDesc() const { return msDesc; }
-	const std::vector< AxEventArg >& GetArgs() const { return mrArgs; }
+	const std::vector< AxArg >& GetArgs() const { return mrArgs; }
 
 	// File I/O
 public:

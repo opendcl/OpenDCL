@@ -1,14 +1,8 @@
 #pragma once
 
-enum IOStatus;
+#include "AxArg.h"
 
-struct AxMethodArg
-{
-	VARTYPE vt;
-	CString name;
-	CLSID clsid;
-	AxMethodArg() : vt( VT_EMPTY ) {}
-};
+enum IOStatus;
 
 
 // class for holding information about ActiveX methods so we do not
@@ -21,7 +15,7 @@ class AxMethodDescriptor
 	CString msParams;
 	VARTYPE mReturnType;
 	GUID mReturnGuid;	
-	std::vector< AxMethodArg > mrArgs;
+	std::vector< AxArg > mrArgs;
 
 protected:
 	friend class AxInterfaceDescriptor;
@@ -36,7 +30,7 @@ public:
 	const CString& GetDesc() const { return msDesc; }
 	VARTYPE GetReturnType() const { return mReturnType; }
 	GUID GetReturnGuid() const { return mReturnGuid; }
-	const std::vector< AxMethodArg >& GetArgs() const { return mrArgs; }
+	const std::vector< AxArg >& GetArgs() const { return mrArgs; }
 
 	//Operations
 	HRESULT Invoke( IDispatch* pObjectDisp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult ) const;

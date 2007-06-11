@@ -280,9 +280,11 @@ void CGsPreviewCtrl::erasePreview()
 	{
 		if (mpView)
 			mpView->eraseAll();
-		if (mpManager && mpModel)
+		if (mpModel)
 		{  
-			mpManager->destroyAutoCADModel (mpModel);
+			AcGsManager* pManager = acgsGetGsManager();
+			if( pManager )
+				pManager->destroyAutoCADModel (mpModel);
 			mpModel = NULL;
 		}
 	}
@@ -309,36 +311,35 @@ void CGsPreviewCtrl::clearAll()
 			if (mpDevice)
 				mpDevice->erase(mpView);
 		}
-		if (mpFactory)    
+		AcGsManager* pManager = acgsGetGsManager();
+		if( pManager )
 		{
-			if (mpView)  
+			AcGsClassFactory* pFactory = pManager->getGSClassFactory();
+			if (pFactory)    
 			{
-				mpFactory->deleteView(mpView);
-				mpView = NULL;
+				if (mpView)  
+				{
+					pFactory->deleteView(mpView);
+					mpView = NULL;
+				}
+				if (mpGhostModel) 
+				{
+					pFactory->deleteModel(mpGhostModel);
+					mpGhostModel = NULL;
+				}
 			}
-			if (mpGhostModel) 
-			{
-				mpFactory->deleteModel(mpGhostModel);
-				mpGhostModel = NULL;
-			}
-			mpFactory = NULL;
-		}
-    
-		if (mpManager)    
-		{
 			if (mpModel) 
 			{
 				if (mbModelCreated)
-					mpManager->destroyAutoCADModel(mpModel);
+					pManager->destroyAutoCADModel(mpModel);
 				mpModel = NULL;
 			}
     
 			if (mpDevice)    
 			{
-				mpManager->destroyAutoCADDevice(mpDevice);
+				pManager->destroyAutoCADDevice(mpDevice);
 				mpDevice = NULL;
 			}
-			mpManager = NULL;
 		}    
 	}
 	catch(...)
@@ -350,70 +351,70 @@ void CGsPreviewCtrl::clearAll()
 void CGsPreviewCtrl::init(HMODULE hRes, bool bCreateModel)
 {
   //Instantiate view, a device and a model object
-  CRect rect;
-  if (!mpManager) 
+  AcGsManager* pManager = acgsGetGsManager();
+	assert( pManager != NULL );
+	if( !pManager )
+		return;
+  AcGsClassFactory* pFactory = pManager->getGSClassFactory();
+  //a device with standard autocad color palette
+  mpDevice = pManager->createAutoCADDevice(m_hWnd);
+	RefCountedPtr< CPropertyObject > pAcadColor = m_ArxControl->GetPropertyObject(nAcadColor);
+	if (pAcadColor)
 	{
-    mpManager = acgsGetGsManager();
-    mpFactory = mpManager->getGSClassFactory();
-    //a device with standard autocad color palette
-    mpDevice = mpManager->createAutoCADDevice(m_hWnd);
-		RefCountedPtr< CPropertyObject > pAcadColor = m_ArxControl->GetPropertyObject(nAcadColor);
-		if (pAcadColor)
-		{
-			AcGsColor color = mpDevice->getBackgroundColor();
-			COLORREF aColor = GetRGBColor(pAcadColor->GetLongValue());
-			//AcGsColor color;
-			color.m_red = GetRValue(aColor);
-			color.m_green = GetGValue(aColor);
-			color.m_blue = GetBValue(aColor);
-			mpDevice->setBackgroundColor(color);
-		}	
-        
-    GetClientRect( &rect);
-    mpDevice->onSize(rect.Width(), rect.Height());   
-    //a simple view
-    mpView = mpFactory->createView();
-    // m_pLog->WriteString("\r\ninit 17");
-    if (bCreateModel)
-    {
-      //a model with open/close protocol
-      mpModel = mpManager->createAutoCADModel();
-			mbModelCreated = true;
-    }
-    //another model without open/close for the orbit gadget
-    mpGhostModel = mpFactory->createModel(AcGsModel::kDirect, 0, 0,	0);
-    mpView->add(&mOrbitGadget,mpGhostModel);
-    mOrbitGadget.setGsView(mpView);
-    mpDevice->add(mpView);
+		AcGsColor color = mpDevice->getBackgroundColor();
+		COLORREF aColor = GetRGBColor(pAcadColor->GetLongValue());
+		//AcGsColor color;
+		color.m_red = GetRValue(aColor);
+		color.m_green = GetGValue(aColor);
+		color.m_blue = GetBValue(aColor);
+		mpDevice->setBackgroundColor(color);
+	}	
+      
+  CRect rect;
+  GetClientRect( &rect);
+  mpDevice->onSize(rect.Width(), rect.Height());   
+  //a simple view
+  mpView = pFactory->createView();
+  // m_pLog->WriteString("\r\ninit 17");
+  if (bCreateModel)
+  {
+    //a model with open/close protocol
+    mpModel = pManager->createAutoCADModel();
+		mbModelCreated = true;
+  }
+  //another model without open/close for the orbit gadget
+  mpGhostModel = pFactory->createModel(AcGsModel::kDirect, 0, 0,	0);
+  mpView->add(&mOrbitGadget,mpGhostModel);
+  mOrbitGadget.setGsView(mpView);
+  mpDevice->add(mpView);
 
-		// get the view port information - see parameter list
-		ads_real height = 0.0, width = 0.0, viewTwist = 0.0;
-		AcGePoint3d targetView;
-		AcGeVector3d viewDir;
-		// m_pLog->WriteString("\r\ninit 25");
-		try
-		{
-			GetActiveViewPortInfo (height, width, targetView, viewDir, viewTwist, true);
-		}
-		catch(...)
-		{
-		}
-		try
-		{
-			mpView->setView(targetView + viewDir, targetView,
-				AcGeVector3d(0.0, 1.0, 0.0),  // upvector
-				1.0, 1.0);
-		}
-		catch(...)
-		{
-		}
-		/*
-        mpView->setView(AcGePoint3d(0.0, 0.0, 1.0),
-                       AcGePoint3d(0.0, 0.0,  0.0),
-                       AcGeVector3d(0.0, 1.0,  0.0),
-                       1.0, 1.0); 
-					   */
+	// get the view port information - see parameter list
+	ads_real height = 0.0, width = 0.0, viewTwist = 0.0;
+	AcGePoint3d targetView;
+	AcGeVector3d viewDir;
+	// m_pLog->WriteString("\r\ninit 25");
+	try
+	{
+		GetActiveViewPortInfo (height, width, targetView, viewDir, viewTwist, true);
 	}
+	catch(...)
+	{
+	}
+	try
+	{
+		mpView->setView(targetView + viewDir, targetView,
+			AcGeVector3d(0.0, 1.0, 0.0),  // upvector
+			1.0, 1.0);
+	}
+	catch(...)
+	{
+	}
+	/*
+      mpView->setView(AcGePoint3d(0.0, 0.0, 1.0),
+                     AcGePoint3d(0.0, 0.0,  0.0),
+                     AcGeVector3d(0.0, 1.0,  0.0),
+                     1.0, 1.0); 
+				   */
 }
 
 void CGsPreviewCtrl::SetAcadColor(long nColor) 

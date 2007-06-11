@@ -527,11 +527,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\Res\OpButton1.bmp"
+				RelativePath="..\Res\OpButton1.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\Res\OpButton1.bmp"
+				RelativePath="..\..\Common\Res\OpButton1.bmp"
 				>
 			</File>
 			<File
@@ -543,19 +543,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Res\OpButton3.bmp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Common\Res\OpButton3.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\Res\OpButton4.bmp"
+				RelativePath="..\Res\OpButton3.bmp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Common\Res\OpButton4.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\Res\OpButton4.bmp"
 				>
 			</File>
 			<File
@@ -595,11 +595,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\Res\SHXFont.ico"
+				RelativePath="..\Res\SHXFont.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Res\SHXFont.ico"
+				RelativePath="..\..\Common\Res\SHXFont.ico"
 				>
 			</File>
 			<File
@@ -607,11 +607,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\Res\truefont.ico"
+				RelativePath="..\Res\TRUEFONT.ICO"
 				>
 			</File>
 			<File
-				RelativePath="..\Res\TRUEFONT.ICO"
+				RelativePath="..\..\Common\Res\truefont.ico"
 				>
 			</File>
 			<File
@@ -1128,212 +1128,6 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Methods"
-			>
-			<Filter
-				Name="Include Files"
-				Filter="h;hh;hxx"
-				>
-				<File
-					RelativePath="..\Methods\ArgumentsRetrieval.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\InvokeMethod.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\MethodLexicon.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_ActiveX.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Animate.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_BinFiles.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_BlockView.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_ComboBox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_ComboBoxEx.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_DwgPreview.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Edit.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_FileDlg.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Files.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Grid.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Hatch.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Html.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_ListBox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_ListCtrl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Month.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_PictureBox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Properties.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_SlideView.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Tab.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Tree.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Source Files"
-				Filter="cpp;c;cc;cxx;def;idl;odl"
-				>
-				<File
-					RelativePath="..\Methods\ArgumentsRetrieval.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\InvokeMethod.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\MethodLexicon.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_ActiveX.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Animate.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_BinFiles.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_BlockView.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_ComboBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_ComboBoxEx.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_DwgPreview.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Edit.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_FileDlg.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Files.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Grid.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Hatch.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Html.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_ListBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_ListCtrl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Month.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_PictureBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Properties.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_SlideView.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Tab.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Tree.cpp"
-					>
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
 			Name="Common"
 			>
 			<File
@@ -1366,6 +1160,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\AutoRichEditCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\AxArg.h"
 				>
 			</File>
 			<File
@@ -1879,6 +1677,212 @@
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\XPStyleButtonST.h"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Methods"
+			>
+			<Filter
+				Name="Include Files"
+				Filter="h;hh;hxx"
+				>
+				<File
+					RelativePath="..\Methods\ArgumentsRetrieval.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\InvokeMethod.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\MethodLexicon.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_ActiveX.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Animate.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_BinFiles.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_BlockView.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_ComboBox.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_ComboBoxEx.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_DwgPreview.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Edit.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_FileDlg.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Files.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Grid.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Hatch.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Html.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_ListBox.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_ListCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Month.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_PictureBox.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Properties.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_SlideView.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Tab.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Tree.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
+				Filter="cpp;c;cc;cxx;def;idl;odl"
+				>
+				<File
+					RelativePath="..\Methods\ArgumentsRetrieval.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\InvokeMethod.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\MethodLexicon.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_ActiveX.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Animate.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_BinFiles.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_BlockView.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_ComboBox.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_ComboBoxEx.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_DwgPreview.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Edit.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_FileDlg.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Files.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Grid.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Hatch.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Html.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_ListBox.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_ListCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Month.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_PictureBox.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Properties.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_SlideView.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Tab.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Tree.cpp"
 					>
 				</File>
 			</Filter>

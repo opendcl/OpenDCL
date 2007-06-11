@@ -358,7 +358,7 @@ TDialogControlPtr CArxDialogControl::CreateEditControl(CDclControlObject* pTempl
 	default:
 		{
 			OdclEdit *pControl = new OdclEdit;
-			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);	
+			pControl->Create(pTemplate, pParentWnd, nID);	
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			// ZOrderFront(pControl);
 			return new CArxAutoDialogControl( pTemplate, pPane, pControl );

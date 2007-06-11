@@ -186,6 +186,7 @@ int WriteBinFile()
 			break;
 		default:
 			{
+			pFile->m_bFoundError = true;
 			return 0; 		
 			break;
 			}
@@ -201,8 +202,7 @@ int WriteBinFile()
 	}
 	
 	acedRetT();
-    return 0; 		
-	
+	return 0; 		
 }
 
 
@@ -231,27 +231,32 @@ int ReadBinFile()
 		}
 		else
 		{
-			acedRetVoid();
+			acedRetNil();
 			return 0; 		
 		}
 	}
 	else
 	{
-		acedRetVoid();
+		acedRetNil();
         return 0; 		
 	}
-	CArchive &ar = *pFile->m_pArchive;
+	// if this is the end of the file.
+	if (pFile->m_bFoundEnd == true)
+	{
+		acedRetNil();
+		return 0;
+	}
 
-	
+	CArchive &ar = *pFile->m_pArchive;
 	// get the resbuf variable type
 	ar >> restype;
 
 	// if the restype is -1 this is the end of the file.
-	if (restype == -1 || pFile->m_bFoundEnd == true)
+	if (restype == -1)
 	{
 		pFile->m_bFoundEnd = true;
-		acedRetVoid();
-        return 0; 		
+		acedRetNil();
+		return 0;
 	}
 
 
@@ -393,6 +398,10 @@ int ReadBinFile()
 			ar >> lVal;
 			acedRetLong(lVal);
 			break;
+		default:
+			pFile->m_bFoundEnd = true;
+			acedRetNil();
+			break;
 		}
 		return 0;
 	}
@@ -464,7 +473,6 @@ int ReadBinFile()
 				ar >> nVal;
 				pRB = acutNewRb(restype);	
 				pRB->resval.rint = nVal;
-				
 				break;
 				}
 			case RTDXF0:
@@ -523,9 +531,9 @@ int ReadBinFile()
 		return 0;
 	}
 
+	pFile->m_bFoundEnd = true;
 	acedRetNil();	
-    return -1; 		
-	
+	return -1; 		
 }
 
 int CloseBinFile()
@@ -538,50 +546,86 @@ int CloseBinFile()
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		acedRetNil();
-        return 0; 
+		return 0; 
 	}
 
 	// get the file name
 	if (ListData->restype == RTLONG)
 	{
 		if (ListData->resval.rlong > 0)
-		{
 			pFile = (CLispFileObject*)ListData->resval.rlong;		
-		}
 		else
 		{
-			acedRetVoid();
+			acedRetNil();
 			return 0; 		
 		}
 	}
 	else if (ListData->restype == RTSHORT)
 	{
 		if (ListData->resval.rlong > 0)
-		{
 			pFile = (CLispFileObject*)ListData->resval.rint;
-		}
 		else
 		{
-			acedRetVoid();
+			acedRetNil();
 			return 0; 		
 		}
 	}
 	else
 	{
-		acedRetVoid();
-        return 0; 		
+		acedRetNil();
+		return 0; 		
 	}
 
 	if (pFile->m_Style == "w")
-	{
-		int nEndOfFile = -1;
-		*pFile->m_pArchive << nEndOfFile;
-	}
+		*pFile->m_pArchive << int(-1);
 	pFile->m_pArchive->Close();
 	delete pFile->m_pArchive;
 	pFile->m_File.Close();
 	delete pFile;
 
-	acedRetVoid();
+	acedRetT();
+	return 0;
+}
+
+
+int CheckBinFile()
+{
+	struct resbuf *ListData = NULL;
+	CLispFileObject *pFile = NULL;
+	if ((ListData = acedGetArgs()) == NULL) 
+	{
+		acedRetNil();
+		return 0; 
+	}
+
+	// get the file handle
+	if (ListData->restype == RTLONG)
+	{
+		if (ListData->resval.rlong > 0)
+			pFile = (CLispFileObject*)ListData->resval.rlong;			
+		else
+		{
+			acedRetNil();
+			return 0; 		
+		}
+	}
+	else
+	{
+		acedRetNil();
+		return 0; 		
+	}
+	// if there is an error state
+	if (pFile->m_bFoundError == true)
+	{
+		acedRetInt( -1 );
+		return 0;
+	}
+	// if this is the end of the file.
+	if (pFile->m_bFoundEnd == true)
+	{
+		acedRetInt( 1 );
+		return 0;
+	}
+	acedRetInt( 0 );
 	return 0;
 }

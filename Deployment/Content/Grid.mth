@@ -16,21 +16,21 @@ This method adds columns to a Grid control. Complete control of each column has 
 \par \par \b Note:\b0 If the grid has columns added using the properties wizard, this function will not add any new columns.
 [Arguments]
 ProjectFileName
-par\tab 
+\par\tab 
 [Begin List]
 [Begin List]
-par\tab nColIndex
+\par\tab nColIndex
 [as Integer]
-par\tab sColText
+\par\tab sColText
 [as String]
-par\tab nJustification
+\par\tab nJustification
 [as Integer]
-par\tab nColWidth
+\par\tab nColWidth
 [as Integer]
-par\tab\i{Optional}\i0 nImageListIndex
+\par\tab\i{Optional}\i0 nImageListIndex
 [as Integer]
 [End List]
-par\tab ...
+\par\tab ...
 [End List]
 
 
@@ -49,13 +49,13 @@ This method adds a new item to the end of a Grid control and will also fill in t
 \par \par \b \b For example \b0\b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 Odcl_Grid_AddString \cf0 or \cf2 Odcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
 [Arguments Return] as Integer
 ProjectFileName
-par\tab 
+\par\tab 
 [Begin List]
-par\tab\i{Optional}\i0 nImageIndex ...
+\par\tab\i{Optional}\i0 nImageIndex ...
 [as Integer]
-par\tab sText
+\par\tab sText
 [as String]
-par\tab\i{Optional}\i0 sColText1 sColText2 sColText3 ...
+\par\tab\i{Optional}\i0 sColText1 sColText2 sColText3 ...
 [as String]
 [End List]
 
@@ -163,6 +163,7 @@ This method inserts a new item anywhere in a Grid control and will also fill in 
 ProjectFileName
 \par\tab nInsertRowIndex
 [as Integer]
+\par\tab 
 [Begin List]
 \par\tab nImageIndex
 [as Integer]

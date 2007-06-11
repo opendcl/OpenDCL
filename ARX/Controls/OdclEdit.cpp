@@ -36,10 +36,12 @@ BEGIN_MESSAGE_MAP(OdclEdit, CColorEdit)
 	ON_WM_DESTROY()
 	ON_CONTROL_REFLECT(EN_CHANGE, OnChange)
 	ON_CONTROL_REFLECT(EN_ERRSPACE, OnErrspace)
-	ON_CONTROL_REFLECT(EN_KILLFOCUS, OnKillfocus)
 	ON_CONTROL_REFLECT(EN_MAXTEXT, OnMaxtext)
-	ON_CONTROL_REFLECT(EN_SETFOCUS, OnSetfocus)
 	ON_CONTROL_REFLECT(EN_UPDATE, OnUpdate)
+	ON_CONTROL_REFLECT(EN_KILLFOCUS, OnKillFocus)
+	ON_CONTROL_REFLECT(EN_SETFOCUS, OnSetFocus)
+	//ON_WM_SETFOCUS()
+	//ON_WM_KILLFOCUS()
 	ON_WM_KEYUP()
 	ON_WM_KEYDOWN()
 	ON_WM_CHAR()
@@ -126,6 +128,8 @@ BOOL OdclEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	CColorEdit::SetLimitText(pControl->GetLngProperty(nLimitText));
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
+	SetForeColor( pControl->GetLngProperty(nForeColor) );
+	SetAcadColor( pControl->GetLngProperty(nAcadColor) );
 
 	switch (m_ArxControl->GetLngProperty(nEventInvoke))
 	{
@@ -192,8 +196,6 @@ BOOL OdclEdit::Create(int nStyle, CRect rc, CWnd* pParentWnd, UINT nID)
 
 	RetVal=  CColorEdit::Create( dwStyle, rc, pParentWnd, nID );
 		
-	VERIFY(CColorEdit::SubclassDlgItem(nID, pParentWnd));
-		
 	return RetVal;
 	
 }
@@ -259,7 +261,7 @@ void OdclEdit::OnErrspace()
 	
 }
 
-void OdclEdit::OnKillfocus() 
+void OdclEdit::OnKillFocus(/* CWnd* pFocus */) 
 {
 	m_bFocusClick = false;
 
@@ -293,11 +295,7 @@ void OdclEdit::OnKillfocus()
 			GetParent()->EnableWindow(TRUE);
 		}
 		else
-		{
-			if (GetParent()->IsWindowVisible() && m_ArxControl)
-			// call methods to invoke the event
 			InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
-		}
 	}
 /*
 	if (m_ArxControl == NULL)
@@ -340,7 +338,7 @@ void OdclEdit::OnMaxtext()
 	
 }
 
-void OdclEdit::OnSetfocus() 
+void OdclEdit::OnSetFocus(/* CWnd* pFocus */) 
 {
 	if (m_ArxControl)
 		// call methods to invoke the event

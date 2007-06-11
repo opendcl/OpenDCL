@@ -49,7 +49,7 @@ void CColorEdit::SetAcadColor(long nColor)
 	m_pStaticBrush->CreateSolidBrush(GetRGBColor(nColor));
 	m_BackColor = GetRGBColor(nColor);
 	
-	if (m_DefForeColor == m_DefForeColor && m_DefBackColor == m_BackColor)
+	if (m_DefBackColor == m_BackColor)
 		m_UseBackColor = false;
 	else
 		m_UseBackColor = true;
@@ -63,7 +63,7 @@ void CColorEdit::SetBkColor(COLORREF lColor)
 	m_pStaticBrush->CreateSolidBrush(lColor);
 	m_BackColor = lColor;
 	
-	if (m_DefForeColor == m_DefForeColor && m_DefBackColor == m_BackColor)
+	if (m_DefBackColor == m_BackColor)
 		m_UseBackColor = false;
 	else
 		m_UseBackColor = true;
@@ -72,7 +72,7 @@ void CColorEdit::SetBkColor(COLORREF lColor)
 void CColorEdit::SetForeColor(COLORREF lColor)
 {
 	m_ForeColor = lColor;
-	if (m_DefForeColor == m_DefForeColor && m_DefBackColor == m_BackColor)
+	if (m_DefBackColor == m_BackColor)
 		m_UseBackColor = false;
 	else
 		m_UseBackColor = true;
@@ -81,7 +81,7 @@ void CColorEdit::SetForeColor(COLORREF lColor)
 void CColorEdit::SetForeColor(long nColor)
 {
 	m_ForeColor = GetRGBColor(nColor);
-	if (m_DefForeColor == m_DefForeColor && m_DefBackColor == m_BackColor)
+	if (m_DefBackColor == m_BackColor)
 		m_UseBackColor = false;
 	else
 		m_UseBackColor = true;
@@ -89,11 +89,12 @@ void CColorEdit::SetForeColor(long nColor)
 
 HBRUSH CColorEdit::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if (!IsWindowEnabled() || !m_UseBackColor)
+	if (!IsWindowEnabled() )
 	{		
 		return NULL;
 	}
 	
+	//if (m_UseBackColor)
 	pDC->SetBkColor(m_BackColor);	
 	pDC->SetTextColor(m_ForeColor);
 		

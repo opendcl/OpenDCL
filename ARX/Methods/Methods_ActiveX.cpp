@@ -1857,6 +1857,7 @@ void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp, 
 		case VT_I2:
 			acedRetInt(varGet.iVal);
 			break;
+		case VT_UI4:
 		case VT_I4:
 			{
 				if (pAxProp != NULL)
@@ -1884,7 +1885,7 @@ void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp, 
 					}
 					else
 					{
-						acedRetLong(varGet.lVal);
+						acedRetLong(varGet.vt == VT_UI4? (LONG)varGet.ulVal : varGet.lVal);
 					}				
 				}
 				else if (pMethod != NULL)
@@ -1912,12 +1913,12 @@ void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp, 
 					}
 					else
 					{
-						acedRetLong(varGet.lVal);
+						acedRetLong(varGet.vt == VT_UI4? (LONG)varGet.ulVal : varGet.lVal);
 					}
 				}
 				else
 				{
-					acedRetLong(varGet.lVal);
+					acedRetLong(varGet.vt == VT_UI4? (LONG)varGet.ulVal : varGet.lVal);
 				}				
 			break;
 			}
@@ -2021,6 +2022,11 @@ void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp, 
 				acedRetNil();
 			break;
 			}
+		case VT_UI4|VT_BYREF:
+			{
+			acedRetLong(*varGet.pulVal);
+			break;
+			}
 		case VT_I4|VT_BYREF:
 			{
 			acedRetLong(*varGet.plVal);
@@ -2111,21 +2117,14 @@ bool getActiveXArguments(COleVariant argList[]
 	//of parameters
 	struct resbuf* ListDataHead = ListData;
 	for (nArgCount = 0; nArgCount < nParams; nArgCount++) {
-		VARTYPE vt;
-		if (pAxProp != NULL) {
-			vt = pAxProp->GetArgs()[nArgCount].vt;
-		} else if (pAxMethod != NULL) {
-			vt = pAxMethod->GetArgs()[nArgCount].vt;
-		}
 		COleVariant temp;
 		if (!GetAxPropertyArgument(
 			ListData
 			, &temp
-		  , vt) )
+			, pAxProp? pAxProp->GetArgs()[nArgCount] : pAxMethod->GetArgs()[nArgCount] ))
 		{
 			return false;
 		}
-		ListData = ListData->rbnext;
 		if (ListData == NULL) {
 			nArgCount++;
 			break;
@@ -2135,20 +2134,13 @@ bool getActiveXArguments(COleVariant argList[]
 	//Actually pull out the arguments
 	ListData = ListDataHead;
 	for (int iCurrentArg = 0; iCurrentArg < nArgCount; iCurrentArg++) {
-		VARTYPE vt;
-		if (pAxProp != NULL) {
-			vt = pAxProp->GetArgs()[iCurrentArg].vt;
-		} else if (pAxMethod != NULL) {
-			vt = pAxMethod->GetArgs()[iCurrentArg].vt;
-		}
 		if (!GetAxPropertyArgument(
 			ListData
 			, &argList[nArgCount - iCurrentArg - 1]
-			, vt) )
+			, pAxProp? pAxProp->GetArgs()[iCurrentArg] : pAxMethod->GetArgs()[iCurrentArg] ))
 		{
 			return false;
 		}
-		ListData = ListData->rbnext;
 	}
 	return true;
 }

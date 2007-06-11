@@ -16,18 +16,21 @@ public:
 	{
 		m_pArchive = NULL;
 		m_bFoundEnd = false;
+		m_bFoundError = false;
 	}
 	~CLispFileObject(){}
 	CArchive	*m_pArchive;
 	CFile		m_File;
 	CString		m_Style;
 	bool		m_bFoundEnd;
+	bool		m_bFoundError;
 };
 
 int OpenBinFile();
 int WriteBinFile();
 int ReadBinFile();
 int CloseBinFile();
+int CheckBinFile();
 
 
 

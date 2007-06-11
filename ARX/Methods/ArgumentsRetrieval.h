@@ -4,6 +4,7 @@
 #pragma once
 
 #include "DialogObject.h"
+#include "AxArg.h"
 
 class CDclControlObject;
 class CPropertyObject;
@@ -58,7 +59,7 @@ bool IsArgumentInt(short restype, int index, CString sMethod);
 bool IsArgumentDouble(short restype, int index, CString sMethod);
 
 // activeX argument retrieval method
-bool GetAxPropertyArgument(struct resbuf *ListData, COleVariant *oleVar, VARTYPE varType);
+bool GetAxPropertyArgument(struct resbuf*& ListData, COleVariant *oleVar, const AxArg& type );
 	
 bool GetStringOrLongArgument(int nIndex, CString *pArg, ULONG *uLong, CString sMethod);
 

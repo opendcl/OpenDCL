@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "ParentDlg.h"
+#include "ParentFileDialog.h"
 #include "InvokeMethod.h"
 #include "DclControlObject.h"
 #include "PropertyIds.h"
@@ -18,46 +19,12 @@ const UINT WM_FILEDLG_GETSELECTEDFILECOUNT = RegisterWindowMessage( _T("odcl.Fil
 const UINT WM_FILEDLG_GETSELECTEDFILES = RegisterWindowMessage( _T("odcl.FileDialog.GetSelectedFiles") );
 
 
-// CFileDialogX interface implementation
-CFileDialogX::CFileDialogX( CParentDlg& Owner, CDclFormObject* pDclForm )
-: CArxDialogObject( pDclForm, &Owner )
-, mpOwner( &Owner )
-{
-}
-
-CFileDialogX::~CFileDialogX()
-{
-}
-
-DclFormType CFileDialogX::GetType() const
-{
-	return VdclFileDialog;
-}
-
-HWND CFileDialogX::GetHWnd() const
-{
-	return mpOwner->m_hWnd;
-}
-
-void CFileDialogX::CloseDialog(int nStatus) const
-{
-	mpOwner->EndDialog( nStatus );
-	mpOwner->SendMessage(WM_CLOSE, 0, 0);
-	mpOwner->SendMessage(NM_CLICK, (WPARAM)nStatus, 0);
-}
-
-INT_PTR CFileDialogX::DoModal()
-{
-	return mpOwner->DoModal();
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CParentDlg dialog
 
-CParentDlg::CParentDlg( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+CParentDlg::CParentDlg( CWnd* pParent, CParentFileDialog* pFileDlg )
 : CCommonDialog(pParent)
-, mDialogX( *this, pSourceForm )
+, mpFileDlg( pFileDlg )
 {
 	m_szGripSize.cx = GetSystemMetrics(SM_CXVSCROLL);
 	m_szGripSize.cy = GetSystemMetrics(SM_CYHSCROLL);
@@ -100,10 +67,9 @@ void CParentDlg::OnOK()
 	CCommonDialog::OnOK();	
 }
 
-
 void CParentDlg::OnDestroy() 
 {
-	InvokeMethodIntInt(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventClose), -1, -1, false);	
+	InvokeMethodIntInt(mpFileDlg->GetDialogObject().GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventClose), -1, -1, false);	
 	CCommonDialog::OnDestroy();
 }
 
@@ -114,13 +80,13 @@ void CParentDlg::OnSize(UINT nType, int cx, int cy)
 	if (CWnd::IsWindowVisible())	
 	{
 		CRect rcThis;
-		if( mDialogX.GetSourceForm()->UsesClientRect() )
+		if( mpFileDlg->GetDialogObject().GetSourceForm()->UsesClientRect() )
 			GetClientRect( &rcThis );
 		else
 			GetWindowRect( &rcThis );
 		// call methods to invoke the event
 		InvokeMethodIntInt(
-			mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 
+			mpFileDlg->GetDialogObject().GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventSize), 
 			rcThis.Width(),
 			rcThis.Height(),
 			false);	
@@ -128,7 +94,7 @@ void CParentDlg::OnSize(UINT nType, int cx, int cy)
 
 	UpdateGripPos();
 
-	mDialogX.GetControlPane().RecalcLayout();
+	mpFileDlg->GetDialogObject().GetControlPane().RecalcLayout();
 }
 
 void CParentDlg::OnPaint() 
@@ -186,6 +152,12 @@ void CParentDlg::UpdateGripPos()
 	
 }
 
+void CParentDlg::PostNcDestroy() 
+{
+	__super::PostNcDestroy();
+	delete this;
+}
+
 // protected members
 
 void CParentDlg::ShowSizeGrip(BOOL bShow)
@@ -199,56 +171,56 @@ void CParentDlg::ShowSizeGrip(BOOL bShow)
 
 LRESULT CParentDlg::OnGetFileName( WPARAM wParam, LPARAM lParam )
 {
-	if( !m_pMainChild )
+	if( !mpFileDlg )
 		return 0;
-	return m_pMainChild->SendMessage( WM_FILEDLG_GETFILENAME, wParam, lParam );
+	return mpFileDlg->SendMessage( WM_FILEDLG_GETFILENAME, wParam, lParam );
 }
 
 LRESULT CParentDlg::OnGetFileTitle( WPARAM wParam, LPARAM lParam )
 {
-	if( !m_pMainChild )
+	if( !mpFileDlg )
 		return 0;
-	return m_pMainChild->SendMessage( WM_FILEDLG_GETFILETITLE, wParam, lParam );
+	return mpFileDlg->SendMessage( WM_FILEDLG_GETFILETITLE, wParam, lParam );
 }
 
 LRESULT CParentDlg::OnGetFileExt( WPARAM wParam, LPARAM lParam )
 {
-	if( !m_pMainChild )
+	if( !mpFileDlg )
 		return 0;
-	return m_pMainChild->SendMessage( WM_FILEDLG_GETFILEEXT, wParam, lParam );
+	return mpFileDlg->SendMessage( WM_FILEDLG_GETFILEEXT, wParam, lParam );
 }
 
 LRESULT CParentDlg::OnGetFilePath( WPARAM wParam, LPARAM lParam )
 {
-	if( !m_pMainChild )
+	if( !mpFileDlg )
 		return 0;
-	return m_pMainChild->SendMessage( WM_FILEDLG_GETFILEPATH, wParam, lParam );
+	return mpFileDlg->SendMessage( WM_FILEDLG_GETFILEPATH, wParam, lParam );
 }
 
 LRESULT CParentDlg::OnGetFolderPath( WPARAM wParam, LPARAM lParam )
 {
-	if( !m_pMainChild )
+	if( !mpFileDlg )
 		return 0;
-	return m_pMainChild->SendMessage( WM_FILEDLG_GETFOLDERPATH, wParam, lParam );
+	return mpFileDlg->SendMessage( WM_FILEDLG_GETFOLDERPATH, wParam, lParam );
 }
 
 LRESULT CParentDlg::OnGetFolderName( WPARAM wParam, LPARAM lParam )
 {
-	if( !m_pMainChild )
+	if( !mpFileDlg )
 		return 0;
-	return m_pMainChild->SendMessage( WM_FILEDLG_GETFOLDERNAME, wParam, lParam );
+	return mpFileDlg->SendMessage( WM_FILEDLG_GETFOLDERNAME, wParam, lParam );
 }
 
 LRESULT CParentDlg::OnGetSelectedFileCount( WPARAM wParam, LPARAM lParam )
 {
-	if( !m_pMainChild )
+	if( !mpFileDlg )
 		return 0;
-	return m_pMainChild->SendMessage( WM_FILEDLG_GETSELECTEDFILECOUNT, wParam, lParam );
+	return mpFileDlg->SendMessage( WM_FILEDLG_GETSELECTEDFILECOUNT, wParam, lParam );
 }
 
 LRESULT CParentDlg::OnGetSelectedFiles( WPARAM wParam, LPARAM lParam )
 {
-	if( !m_pMainChild )
+	if( !mpFileDlg )
 		return 0;
-	return m_pMainChild->SendMessage( WM_FILEDLG_GETSELECTEDFILES, wParam, lParam );
+	return mpFileDlg->SendMessage( WM_FILEDLG_GETSELECTEDFILES, wParam, lParam );
 }

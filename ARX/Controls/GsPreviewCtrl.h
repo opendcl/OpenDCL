@@ -165,7 +165,7 @@ public:
 
 public:
     CGsPreviewCtrl() : CStatic(), 					
-                   mpManager(NULL), mpFactory(NULL), mpDevice(NULL), mpView(NULL), 
+                   mpDevice(NULL), mpView(NULL), mpGhostModel( NULL ),
                    mpModel(NULL),mbModelCreated(false),mbZooming(false),mbPanning(false),mbOrbiting(false) 
 		{
 			// No tooltip created
@@ -298,8 +298,6 @@ private:
     HCURSOR				mhCrossCursor;
     HCURSOR				mhOrbitCursor;
 	HCURSOR				mhArrowCursor;
-    AcGsManager         *mpManager;
-    AcGsClassFactory    *mpFactory;
     AcGsDevice          *mpDevice;
     AcGsView            *mpView;
     AcGsModel           *mpModel;

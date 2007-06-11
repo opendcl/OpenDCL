@@ -36,7 +36,7 @@ CArxDialogObject::~CArxDialogObject()
 CDialogObject* CArxDialogObject::Create( CDclFormObject* pDclForm, CWnd* pParent /*= NULL*/,
 																				 DialogParams* pParams /*= NULL*/ )
 {
-	CAcModuleResourceOverride resOverride;
+	CAcAppContextModuleResourceOverride resOverride;
 	switch( pDclForm->GetType() )
 	{
 	case VdclModal: return &(new CModalVDcl( pDclForm, pParent, pParams ))->GetDialogObject();

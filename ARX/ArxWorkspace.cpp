@@ -522,7 +522,7 @@ int CArxWorkspace::ActivateDclForm( CDclFormObject* pDclForm, DialogParams* pPar
 	if( !pParent)
 		pParent = CWnd::FromHandle(adsw_acadMainWnd());
 
-	CAcModuleResourceOverride resOverride;
+	CAcAppContextModuleResourceOverride resOverride;
 	CDialogObject* pDialog = CArxDialogObject::Create( pDclForm, pParent, pParams );
 	assert( pDialog != NULL );
 	if( !pDialog )

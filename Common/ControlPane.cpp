@@ -81,6 +81,8 @@ bool CControlPane::CreateControls(UINT& nId)
 			break; //we've reached the properties control at the head of the list, just skip it
 		if (pTemplate->GetType() < 0)
 			continue;
+		if (pTemplate->GetType() == CtlFileDlgCtrl)
+			continue;
 		UINT idDlg = pTemplate->GetID();
 		if( idDlg <= 0 || mpSourceForm->GetType() != CtlSplitter )
 				idDlg = nId++;

@@ -14,6 +14,41 @@
 #include "ControlTypes.h"
 
 
+// CFileDialogX interface implementation
+CFileDialogX::CFileDialogX( CParentFileDialog& Owner, CDclFormObject* pDclForm, CParentDlg* pParent )
+: CArxDialogObject( pDclForm, &Owner )
+, mpOwner( &Owner )
+, mpParent( pParent )
+{
+}
+
+CFileDialogX::~CFileDialogX()
+{
+}
+
+DclFormType CFileDialogX::GetType() const
+{
+	return VdclFileDialog;
+}
+
+HWND CFileDialogX::GetHWnd() const
+{
+	return mpOwner->m_hWnd;
+}
+
+void CFileDialogX::CloseDialog(int nStatus) const
+{
+	mpOwner->EndDialog( nStatus );
+	mpOwner->SendMessage(WM_CLOSE, 0, 0);
+	mpOwner->SendMessage(NM_CLICK, (WPARAM)nStatus, 0);
+}
+
+INT_PTR CFileDialogX::DoModal()
+{
+	return mpOwner->DoModal();
+}
+
+
 bool IsWindows98orLater()
 {
 	OSVERSIONINFO osvi;
@@ -78,7 +113,8 @@ static DWORD GetFileDlgFlags( CDclControlObject* pDclProperties, CDclControlObje
 
 CParentFileDialog::CParentFileDialog( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent )
-, mParentDlg( pSourceForm, pParent )
+, mDialogX( *this, pSourceForm, NULL )
+//, mParentDlg( pParent, this )
 , mpParams( pParams? (FileDialogParams*)pParams->lpData : NULL )
 //, mprsFilenames( NULL )
 {
@@ -94,13 +130,20 @@ CParentFileDialog::CParentFileDialog(CDclFormObject* pSourceForm,
 																		 LPCTSTR lpszFilter,
 																		 CWnd* pParentWnd)
 :	CFileDialog(bOpenFileDialog, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd)
-, mParentDlg( pSourceForm, pParentWnd )
+, mDialogX( *this, pSourceForm, NULL )
+//, mParentDlg( pParentWnd, this )
 , mpParams( NULL )
 //, mprsFilenames( NULL )
 {
 	SetTemplate(IDD_CUSTOM_FILE_DIALOG, IDD_CUSTOM_FILE_DIALOG);
 	InitializeFromParams( pSourceForm );
 }
+
+
+CParentFileDialog::~CParentFileDialog()
+{
+}
+
 
 void CParentFileDialog::InitializeFromParams( CDclFormObject* pSourceForm, DialogParams* pParams /*= NULL*/ )
 {
@@ -157,32 +200,32 @@ END_MESSAGE_MAP()
 
 void CParentFileDialog::CtrlModifyStyle(int nCtrl) 
 {	
-	CWnd *pCtrl = GetDlgItem(nCtrl);
-	
-	ModifyStyle(NULL, WS_CLIPSIBLINGS, 0);
+	CWnd *pCtrl = /*mParentDlg.*/GetDlgItem(nCtrl);
+	if( pCtrl )
+		pCtrl->ModifyStyle(NULL, WS_CLIPSIBLINGS, 0);
 }
+
 
 BOOL CParentFileDialog::OnInitDialog() 
 {
-	mParentDlg.SubclassWindow(GetParent()->m_hWnd);
+	//mParentDlg.SubclassWindow(GetParent()->m_hWnd);
 
-	CDclControlObject* pProps = mParentDlg.GetDialogObject().GetSourceForm()->GetControlProperties();
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 
 	// here we need to set the style of the dialog box according to it is to be resizable or not
-	if (pProps->GetBoolProperty(nResizable) == FALSE)
-		// set as not resizable
-		mParentDlg.ModifyStyle(WS_THICKFRAME, DS_MODALFRAME, 0);
-	else
-		// set as resizable
-		mParentDlg.ModifyStyle(DS_MODALFRAME, WS_THICKFRAME, 0);
+	//if (pProps->GetBoolProperty(nResizable) == FALSE)
+	//	// set as not resizable
+	//	/*mParentDlg.*/ModifyStyle(WS_THICKFRAME, DS_MODALFRAME, 0);
+	//else
+	//	// set as resizable
+	//	/*mParentDlg.*/ModifyStyle(DS_MODALFRAME, WS_THICKFRAME, 0);
 
-	mParentDlg.m_pMainChild = this;
 	CFileDialog::OnInitDialog();
 
 	CRect rcThis;
-	mParentDlg.GetClientRect(&rcThis);
+	/*mParentDlg.*/GetClientRect(&rcThis);
 
-	CControlPane& CtrlPane = mParentDlg.GetDialogObject().GetControlPane();
+	CControlPane& CtrlPane = mDialogX.GetControlPane();
 	CtrlPane.SetPanePos( rcThis );	
 
 	// call method to create the controls
@@ -217,7 +260,7 @@ BOOL CParentFileDialog::OnInitDialog()
 
 	CRect rcRet;
 	CWinApp* pApp = AfxGetApp();
-	CString sProfileName = mParentDlg.GetDialogObject().GetSourceForm()->GetKeyPath();
+	CString sProfileName = mDialogX.GetSourceForm()->GetKeyPath();
     
     rcRet.left = pApp->GetProfileInt(sProfileName, _T("nTopLeftX"), -1);
     rcRet.top = pApp->GetProfileInt(sProfileName, _T("nTopLeftY"), -1);
@@ -239,21 +282,27 @@ BOOL CParentFileDialog::OnInitDialog()
 		pt.y =  (nScreenHeight - nParentHeight) / 2;
 		pt.x =  (nScreenWidth - nParentWidth) / 2;
 
-		GetParent()->SetWindowPos(NULL, pt.x, pt.y, nParentWidth, nParentHeight, 
-			SWP_NOZORDER | SWP_NOACTIVATE);
+		//GetParent()->SetWindowPos(NULL, pt.x, pt.y, nParentWidth, nParentHeight, 
+		//	SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 	else	
 	{
-		GetParent()->SetWindowPos(NULL, rcRet.left, rcRet.top, rcRet.Width(), rcRet.Height(), 
-			SWP_NOZORDER | SWP_NOACTIVATE);
+		//GetParent()->SetWindowPos(NULL, rcRet.left, rcRet.top, rcRet.Width(), rcRet.Height(), 
+		//	SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 
-	pWnd = GetParent()->GetDlgItem(edt1);
-	pWnd->GetWindowRect(&rcWndEdit);
-	GetParent()->ScreenToClient(&rcWndEdit);
-	pWnd = GetParent()->GetDlgItem(stc3);
-	pWnd->GetWindowRect(&rcWndStatic);
-	GetParent()->ScreenToClient(&rcWndStatic);
+	pWnd = /*mParentDlg.*/GetDlgItem(edt1);
+	if( pWnd )
+	{
+		pWnd->GetWindowRect(&rcWndEdit);
+		/*mParentDlg.*/ScreenToClient(&rcWndEdit);
+	}
+	pWnd = /*mParentDlg.*/GetDlgItem(stc3);
+	if( pWnd )
+	{
+		pWnd->GetWindowRect(&rcWndStatic);
+		/*mParentDlg.*/ScreenToClient(&rcWndStatic);
+	}
 
 	// here we need to hide specified controls
 	if (pProps->GetBoolProperty(nShowOK) == FALSE)
@@ -301,25 +350,25 @@ BOOL CParentFileDialog::OnInitDialog()
 	}
 
 	
-	if (pProps->GetBoolProperty(nResizable) == TRUE)
-		mParentDlg.m_bShowGrip = true;
-	else
-		mParentDlg.m_bShowGrip = false;
+	//if (pProps->GetBoolProperty(nResizable) == TRUE)
+	//	mParentDlg.m_bShowGrip = true;
+	//else
+	//	mParentDlg.m_bShowGrip = false;
 
 	// gets the template size as the min track size
 	CRect rc;
 	GetWindowRect(&rc);
-	mParentDlg.m_ptMinTrackSize.x = rc.Width();
-	mParentDlg.m_ptMinTrackSize.y = rc.Height();
+	//mParentDlg.m_ptMinTrackSize.x = rc.Width();
+	//mParentDlg.m_ptMinTrackSize.y = rc.Height();
 
-	mParentDlg.m_bInitDone = TRUE;
+	//mParentDlg.m_bInitDone = TRUE;
 
 	//mParentDlg.UpdateGripPos();
 
 	// call methods to invoke the OnInitDialog event
 	InvokeMethod(pProps->GetStrProperty(nFormEventInitialize), m_bInvokeWithSendString);
 
-	if( mParentDlg.GetDialogObject().GetSourceForm()->UsesClientRect() )
+	if( mDialogX.GetSourceForm()->UsesClientRect() )
 		GetClientRect( &rcThis );
 	else
 		GetWindowRect( &rcThis );
@@ -388,7 +437,7 @@ void CParentFileDialog::OnSelectionChanged()
 	
 	CListCtrl* wndLst1 = (CListCtrl*)(pWnd->GetDlgItem(1));
 	
-	CDclControlObject* pProps = mParentDlg.GetDialogObject().GetSourceForm()->GetControlProperties();
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	int nSelCount = wndLst1->GetSelectedCount();
 	
 	POSITION pos = wndLst1->GetFirstSelectedItemPosition();
@@ -435,26 +484,26 @@ void CParentFileDialog::OnTypeChange()
 	CWnd *pCmbo = GetParent()->GetDlgItem(cmb1);
 	
 	((CComboBox*)pCmbo)->GetWindowText(sText);
-	CDclControlObject* pProps = mParentDlg.GetDialogObject().GetSourceForm()->GetControlProperties();
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethodString(pProps->GetStrProperty(nEventOnTypeChange), sText, m_bInvokeWithSendString);
 }
 
 BOOL CParentFileDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	CDclControlObject* pProps = mParentDlg.GetDialogObject().GetSourceForm()->GetControlProperties();
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStrProperty(nEventOnHelp), m_bInvokeWithSendString);
 	return TRUE; 
 }
 
 void CParentFileDialog::OnHelp()
 {
-	CDclControlObject* pProps = mParentDlg.GetDialogObject().GetSourceForm()->GetControlProperties();
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStrProperty(nEventOnHelp), m_bInvokeWithSendString);
 }
 
 void CParentFileDialog::OnFolderChange()
 {
-	CDclControlObject* pProps = mParentDlg.GetDialogObject().GetSourceForm()->GetControlProperties();
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethodString(pProps->GetStrProperty(nEventFolderChanged), GetFolderPath(), m_bInvokeWithSendString);
 }
 
@@ -463,18 +512,17 @@ void CParentFileDialog::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 	
-	if (mParentDlg.m_bShowGrip)
-	{
-		// draw size-grip
-		dc.DrawFrameControl(&mParentDlg.m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
-	}
+	//if (mParentDlg.m_bShowGrip)
+	//{
+	//	// draw size-grip
+	//	dc.DrawFrameControl(&mParentDlg.m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
+	//}
 }
 
 
 void CParentFileDialog::CloseNow() 
 {
-	OnOK();
-	//mParentDlg.EndDialog(IDOK);
+	mDialogX.CloseDialog( IDOK );
 }
 
 LRESULT CParentFileDialog::OnGetFileName( WPARAM wParam, LPARAM lParam )

@@ -108,6 +108,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("WriteBin"),			WriteBinFile},
 	{_T("ReadBin"),				ReadBinFile},
 	{_T("CloseBin"),			CloseBinFile},						
+	{_T("CheckBin"),			CheckBinFile},						
 
 	// general control methods
 	{_T("Control_SetProperty"),			SetProperty}, // this method is used to set any property of any control
