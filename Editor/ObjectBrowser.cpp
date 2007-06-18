@@ -29,14 +29,9 @@
 // CObjectBrowser dialog
 
 CObjectBrowser::CObjectBrowser(CWnd* pParent /*=NULL*/)
-	//: CDialog(CObjectBrowser::IDD, pParent)
 	: CResizableDialog(CObjectBrowser::IDD, pParent)
 {
-	
-	//{{AFX_DATA_INIT(CObjectBrowser)
-	//}}AFX_DATA_INIT
 	m_pControl = NULL;
-	nMethodIndex = 0;
 	m_sDclFormName = theWorkspace.LoadResourceString(IDS_DclFormName);
 	m_sClipBoardDefun1;
 	m_sClipBoardDefun2;
@@ -46,7 +41,6 @@ CObjectBrowser::CObjectBrowser(CWnd* pParent /*=NULL*/)
 void CObjectBrowser::DoDataExchange(CDataExchange* pDX)
 {
 	CResizableDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CObjectBrowser)
 	DDX_Control(pDX, IDC_COPY3, m_Copy3);
 	DDX_Control(pDX, IDC_METHDEF, m_MefDef);
 	DDX_Control(pDX, IDOK, m_OK);
@@ -54,22 +48,16 @@ void CObjectBrowser::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COPY1, m_Copy1);
 	DDX_Control(pDX, IDC_RICHEDIT, m_RichBox);
 	DDX_Control(pDX, IDC_LISTBOX, m_ListBox);
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CObjectBrowser, CResizableDialog)
-	//{{AFX_MSG_MAP(CObjectBrowser)
-	ON_NOTIFY(NM_CLICK, IDC_LISTBOX, OnClickListbox)
-	ON_NOTIFY(NM_RETURN, IDC_LISTBOX, OnReturnListbox)
-	ON_NOTIFY(NM_DBLCLK, IDC_LISTBOX, OnDblclkListbox)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_LISTBOX, OnSelchangedListbox)
 	ON_BN_CLICKED(IDC_COPY2, OnCopy2)
 	ON_BN_CLICKED(IDC_COPY1, OnCopy1)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
 	ON_BN_CLICKED(IDC_COPY3, OnCopy3)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -266,88 +254,76 @@ void CObjectBrowser::SearchMethods(RefCountedPtr< CPropertyObject > pProp)
 
 void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, HTREEITEM hParentItem, int nIndex) 
 {
-	int nCount = pControl->GetPropertyList().GetCount();
-	for (int i = 0; i<nCount; i++)
+	POSITION pos = pControl->GetPropertyList().GetHeadPosition();
+	size_t idx = 0;
+	while (pos)
 	{
-		POSITION pos = pControl->GetPropertyList().FindIndex(i);
-		if (pos != NULL)
-		{			
-			RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetAt(pos);
-			if (pProp != NULL)
+		++idx;
+		RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetNext(pos);
+		if (!pProp)
+			continue;
+		switch (pProp->GetType())
+		{
+		case PropCustom:
+		case PropImageList:
+		case PropStringArray:
+		case PropIntArray:
+		case PropActiveXPropPages:
+			break;
+		case PropActiveXMethods:
 			{
-				switch (pProp->GetType())
+				int nCount = pProp->size();
+				for (int j = 0; j < nCount; j++)
 				{
-				case PropCustom:
-				case PropImageList:
-				case PropStringArray:
-				case PropIntArray:
-				case PropActiveXPropPages:
-					break;
-				case PropActiveXMethods:
-					{
-						int nCount = pProp->size();
-						if (nCount > 0)
-						{
-							nMethodIndex = i;
-							for (int j=0; j<nCount; j++)
-							{
-								CString sTitle = pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->at(j)->GetName();								
-								HTREEITEM hItem = m_ListBox.InsertItem(sTitle, hParentItem, TVI_SORT);
-								m_ListBox.SetItemData(hItem, j);
-								m_ListBox.SetItemImage(hItem, 3, 3);
-							}
-						}
-					break;
-					}
-				default:
-					if (pProp->GetID() != nName && pProp->GetID() != nGlobalVarName)
-					{
-						CString sTitle = pProp->GetName();
-						if (sTitle.GetLength() > 0)
-						{
-							HTREEITEM hItem = m_ListBox.InsertItem(sTitle, hParentItem, TVI_SORT);
-							m_ListBox.SetItemData(hItem, i);
-							switch (pProp->GetType())
-							{
-							case PropActiveXEvent:
-								m_ListBox.SetItemImage(hItem, 2, 2);
-								// if this is not the main OleObject, don't both showning events because they
-								// can't see them or access them in the events tab pane
-								//if (nIndex > 0)
-								//	return;
-								break;
-							case PropActiveXProp:
-							case PropActiveXRunTime:
-							case PropActiveXEnum:
-								m_ListBox.SetItemImage(hItem, 4, 4);							
-								break;
-							case PropLong:
-							case PropString:
-							case PropDouble:
-							case PropBool:
-							case PropEnum:
-							case PropPicture:
-								m_ListBox.SetItemImage(hItem, 4, 4);
-								break;
-							}						
-						}
-					}
-					break;
+					CString sTitle = pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->at(j)->GetName();								
+					HTREEITEM hItem = m_ListBox.InsertItem(sTitle, hParentItem, TVI_SORT);
+					m_ListBox.SetItemData(hItem, (DWORD_PTR)(-((long)j + 1)));
+					m_ListBox.SetItemImage(hItem, 3, 3);
 				}
 			}
+			break;
+		default:
+			{
+				if (pProp->GetID() != nName && pProp->GetID() != nGlobalVarName)
+				{
+					CString sTitle;
+					if( pProp->GetType() == PropActiveXEvent )
+						sTitle = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetName();
+					else
+						sTitle = pProp->GetName();
+					if (sTitle.GetLength() > 0)
+					{
+						HTREEITEM hItem = m_ListBox.InsertItem(sTitle, hParentItem, TVI_SORT);
+						m_ListBox.SetItemData(hItem, idx);
+						switch (pProp->GetType())
+						{
+						case PropActiveXEvent:
+						case PropEvent:
+							m_ListBox.SetItemImage(hItem, 2, 2);
+							break;
+						case PropActiveXProp:
+						case PropActiveXRunTime:
+						case PropActiveXEnum:
+							m_ListBox.SetItemImage(hItem, 4, 4);							
+							break;
+						case PropLong:
+						case PropString:
+						case PropDouble:
+						case PropBool:
+						case PropEnum:
+						case PropPicture:
+							m_ListBox.SetItemImage(hItem, 4, 4);
+							break;
+						}						
+					}
+				}
+			}
+			break;
 		}
 	}
 
 	if (nIndex == 0)
 	{
-		if( m_pDclForm->GetType() == VdclFileDialog )
-		{
-			LoadMethods( theWorkspace.LoadResourceString( IDS_FILEDLGMTH ), hParentItem );
-			if( pControl->GetType() == CtlFileDlgCtrl )
-				LoadMethods(theWorkspace.LoadResourceString(IDS_FILEDLGMTH2), hParentItem);
-			return;
-		}
-		
 		if (pControl->GetType() != CtlForm &&
 				pControl->GetType() != CtlInvalid &&
 				pControl->GetType() != CtlFileDlgCtrl)
@@ -356,9 +332,9 @@ void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, H
 		// here we need to see which control it being displayed to load the correct method info
 		switch (pControl->GetType())
 		{
-		//case VdclFileDialog:
-		//	LoadMethods(theWorkspace.LoadResourceString(IDS_FILEDLGMTH2), hParentItem);
-		//	break;
+		case CtlFileDlgCtrl:
+			LoadMethods(theWorkspace.LoadResourceString(IDS_FILEDLGMTH2), hParentItem);
+			break;
 		case CtlTabStrip:
 			LoadMethods(theWorkspace.LoadResourceString(IDS_TABMTH), hParentItem);
 			break;
@@ -461,8 +437,8 @@ void CObjectBrowser::LoadMethods(CString sFileName, HTREEITEM hParentItem)
 			{		
 				fMthFile.ReadString(sLine);	
 				HTREEITEM hItem = m_ListBox.InsertItem(sLine, hParentItem, TVI_SORT);
-				// set item data to -1 to indicate the info must be loaded from file.
-				m_ListBox.SetItemData(hItem, nNotSet); 
+				// set item data to 0 to indicate the info must be loaded from file.
+				m_ListBox.SetItemData(hItem, 0); 
 				m_ListBox.SetItemImage(hItem, 3, 3);							
 			}
 			fMthFile.ReadString(sLine);
@@ -640,39 +616,31 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 
 void CObjectBrowser::SelectionChanged(HTREEITEM hItem) 
 {
-	int nImage;
-	int nSelImage;
-	POSITION pos = NULL;
 	CString sExtraText;
-	CString sOleObject;
-	sOleObject = theWorkspace.LoadResourceString(IDS_Odcl_AxControl_);
+	CString sOleObject = theWorkspace.LoadResourceString(IDS_Odcl_AxControl_);
 	CString sArgType;
 	CString sGlobalVarName;
-	hItem = m_ListBox.GetSelectedItem();
-
-	if (hItem == NULL)
-	{
-		CString sRtf;
-		m_RichBox.SetRTF(sRtf);			
-		return;
-	}
 
 	m_Copy1.ShowWindow(FALSE);
 	m_Copy2.ShowWindow(FALSE);
 	m_Copy3.ShowWindow(FALSE);
+
+	hItem = m_ListBox.GetSelectedItem();
+	if (hItem == NULL)
+	{
+		m_RichBox.SetRTF(CString());			
+		return;
+	}
 		
 	HTREEITEM hParent = m_ListBox.GetParentItem(hItem);
 	if (hParent == NULL)
 	{
-		CString sRtf;
-		m_RichBox.SetRTF(sRtf);					
+		m_RichBox.SetRTF(CString());			
 		ResizeControls();
 		return;
 	}
 
-	int nThisItemData = m_ListBox.GetItemData(hParent);
-
-	RefCountedPtr< COleControlObject > pControl = m_OleObjectList.at(nThisItemData);
+	RefCountedPtr< COleControlObject > pControl = m_OleObjectList.at(m_ListBox.GetItemData(hParent));
 	if (pControl == NULL)
 		return;
 
@@ -686,274 +654,259 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 		sGlobalVarName = theWorkspace.LoadResourceString(IDS_OleObject);
 	}
 	
-	m_ListBox.GetItemImage(hItem, nImage, nSelImage);
-	nThisItemData = m_ListBox.GetItemData(hItem);
+	int nThisItemData = m_ListBox.GetItemData(hItem);
 
-	if (nImage == 3/* a method*/)
-		pos = pControl->GetPropertyList().FindIndex(nMethodIndex);
-	else
-		pos = pControl->GetPropertyList().FindIndex(nThisItemData);
+	RefCountedPtr< CPropertyObject > pProp;
+	if ((long)nThisItemData < 0)
+	{
+		pProp = pControl->GetPropertyObject( nObjectBrowser );
+		nThisItemData = -(long)nThisItemData;
+		nThisItemData--;
+	}
+	else if( nThisItemData > 0 )
+	{
+		POSITION pos = pControl->GetPropertyList().FindIndex( nThisItemData - 1 );
+		if( pos )
+			pProp = pControl->GetPropertyList().GetAt( pos );
+	}
 
-	//if (pos == NULL && pControl->GetType() == -2)
-	//{			
-	//	CString sItemText;
-	//	CString sTitle;
-	//	CString sDesc;
-	//	CString sVarType;
-	//	CString sDefun1;
-	//	CString sDefun2;
-	//}
+	CString sTitle;
+	CString sDesc;
+	CString sVarType;
+	CString sDefun1;
+	CString sDefun2;
 
-	if (pos != NULL)
-	{			
-		RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetAt(pos);
-		if (pProp != NULL)
-		{
-			CString sTitle;
-			CString sDesc;
-			CString sVarType;
-			CString sDefun1;
-			CString sDefun2;
-			if (nImage == 3/* a method*/)
-			{
-				if (nThisItemData == nNotSet)
-				{
-					CString sItemText = m_ListBox.GetItemText(hItem);
-					
-					if (pControl->GetType() == CtlActiveX)
-					{
-						LoadFullMethod(theWorkspace.LoadResourceString(IDS_AXCTRLSMTH), sItemText, sTitle, sDesc, sDefun1);
-						// call the method to load info from the appropriate method info files.
-						LoadFullMethod(theWorkspace.LoadResourceString(IDS_ALLCTRLMTH), sItemText, sTitle, sDesc, sDefun1);					
-					}
-					else if (pControl->GetID() == -1)
-					{
-						if (m_pDclForm->GetType() == VdclFileDialog)
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_FILEDLGMTH), sItemText, sTitle, sDesc, sDefun1);	
-						else
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_FORMSMTH), sItemText, sTitle, sDesc, sDefun1);	
-					}
-					else
-					{
-						if (m_pDclForm->GetType() == VdclFileDialog && pControl->GetType() != CtlFileDlgCtrl)
-							// call the method to load info from the appropriate method info files.
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_FILEDLGMTH), sItemText, sTitle, sDesc, sDefun1);					
-						
-						else if (pControl->GetType() != CtlFileDlgCtrl)
-							// call the method to load info from the appropriate method info files.
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_ALLCTRLMTH), sItemText, sTitle, sDesc, sDefun1);					
-
-						// here we need to see which control it being displayed to load the correct method info
-						switch (pControl->GetType())
-						{
-						
-						case CtlFileDlgCtrl:
-							LoadFullMethod(_T("FileDlgCtrl.mth"), sItemText, sTitle, sDesc, sDefun1);
-							break;
-
-						case CtlTabStrip:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_TABMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
+	if (!pProp)
+	{
+		CString sItemText = m_ListBox.GetItemText(hItem);
 		
-						case CtlListBox:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_LISTBOXMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
+		if (pControl->GetType() == CtlActiveX)
+		{
+			LoadFullMethod(theWorkspace.LoadResourceString(IDS_AXCTRLSMTH), sItemText, sTitle, sDesc, sDefun1);
+			// call the method to load info from the appropriate method info files.
+			LoadFullMethod(theWorkspace.LoadResourceString(IDS_ALLCTRLMTH), sItemText, sTitle, sDesc, sDefun1);					
+		}
+		else if (pControl->GetType() == CtlForm || pControl->GetID() == -1)
+			LoadFullMethod(theWorkspace.LoadResourceString(IDS_FORMSMTH), sItemText, sTitle, sDesc, sDefun1);	
+		else
+		{
+			if (pControl->GetType() != CtlFileDlgCtrl)
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_ALLCTRLMTH), sItemText, sTitle, sDesc, sDefun1);					
 
-						case CtlListView:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_LISTCTRLMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
-	
-						case CtlGrid:
-							LoadFullMethod(_T("Grid.mth"), sItemText, sTitle, sDesc, sDefun1);
-							break;
-	
-						case CtlForm: // a form
-							if (m_pDclForm->GetType() == VdclFileDialog && pControl->GetType() != CtlFileDlgCtrl)
-								LoadFullMethod(_T("FileDlg.mth"), sItemText, sTitle, sDesc, sDefun1);
-							else
-								LoadFullMethod(_T("Forms.mth"), sItemText, sTitle, sDesc, sDefun1);
-							break;
+			// here we need to see which control it being displayed to load the correct method info
+			switch (pControl->GetType())
+			{
+			
+			case CtlFileDlgCtrl:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_FILEDLGMTH2), sItemText, sTitle, sDesc, sDefun1);
+				break;
 
-						case CtlImageComboBox:
-							LoadFullMethod(_T("ImageComboBox.mth"), sItemText, sTitle, sDesc, sDefun1);
-							break;
-	
-						case CtlAnimate:
-							LoadFullMethod(_T("AnimationCtrl.mth"), sItemText, sTitle, sDesc, sDefun1);
-							break;
-	
-						case CtlDwgList:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_DWGLISTMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
-	
-						case CtlBlockList:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_BLOCKLISTMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
-	
-						case CtlPictureBox:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_PICBOXMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
-	
-						case CtlOptionList:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_OPTLISTMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
-	
-						case CtlBlockView:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_BLOCKVIEWMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
-						
-						case CtlHatch:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_HATCHMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
-						
-						case CtlSlideView:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_SLIDEVIEWMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
-						
-						case CtlTree:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_TREEMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
-						
-						case CtlComboBox:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_COMBOMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
+			case CtlTabStrip:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_TABMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
 
-						case CtlTextBox:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_TEXTBOXMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
+			case CtlListBox:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_LISTBOXMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
 
-						case CtlDwgPreview:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_DWGPREVIEWMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
+			case CtlListView:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_LISTCTRLMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
 
-						case CtlActiveX:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_AXCTRLSMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;
-	
-						case CtlMonth:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_MONTHMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;	
+			case CtlGrid:
+				LoadFullMethod(_T("Grid.mth"), sItemText, sTitle, sDesc, sDefun1);
+				break;
 
-						case CtlGraphicButton:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_GRPBTNMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;	
+			case CtlForm: // a form
+				if (m_pDclForm->GetType() == VdclFileDialog && pControl->GetType() != CtlFileDlgCtrl)
+					LoadFullMethod(_T("FileDlg.mth"), sItemText, sTitle, sDesc, sDefun1);
+				else
+					LoadFullMethod(_T("Forms.mth"), sItemText, sTitle, sDesc, sDefun1);
+				break;
 
-						case CtlHtmlCtrl:
-							LoadFullMethod(theWorkspace.LoadResourceString(IDS_HTMLMTH), sItemText, sTitle, sDesc, sDefun1);
-							break;	
-						}
-					}
-					
-				}
-				if (nThisItemData > nNotSet)
-				{
-					sTitle = theWorkspace.LoadResourceString(IDS_METHOD);
-					if (pProp->GetAxInterfaceDescriptorPtr() != NULL) {
-						sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodDesc(nThisItemData);
-						sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData),
-																	 pProp->GetAxInterfaceDescriptorPtr()->GetAxMethod(nThisItemData));
-						
-						// here we need to put in OleObject closing instructions if required.
-						if (pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_DISPATCH ||
-							pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_UNKNOWN)
-						{
-							if (!sDesc.IsEmpty())
-								sDesc += theWorkspace.LoadResourceString(IDS_PARPAR);						
-							if (sVarType == theWorkspace.LoadResourceString(IDS_OleObject) || sVarType == CString())
-								sDesc += theWorkspace.LoadResourceString(IDS_OLENOTE1);
-							else					
-							{
-								sDesc += theWorkspace.LoadResourceString(IDS_OLENOTE2) + sVarType + theWorkspace.LoadResourceString(IDS_OLENOTE3);
+			case CtlImageComboBox:
+				LoadFullMethod(_T("ImageComboBox.mth"), sItemText, sTitle, sDesc, sDefun1);
+				break;
 
-							}
-						}
-					}
-					sDefun1 = theWorkspace.LoadResourceString(IDS_PAR1);
-					
-					// clear the clipboard string holder
-					m_sClipBoardDefun2;
-					// setup the defun is it is to return a value
-					if (!sVarType.IsEmpty())
-					{
-						sDefun1 += theWorkspace.LoadResourceString(IDS_SETQVALUE3);
-						m_sClipBoardDefun2 = theWorkspace.LoadResourceString(IDS_SETQVALUE2) + _T(" ");						
-					}
-					// add the DoMethod
-					sDefun1 += theWorkspace.LoadResourceString(IDS_CF22) + sOleObject + theWorkspace.LoadResourceString(IDS_DOMETHOD) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3B);
-					m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_DOMETHOD2) + sGlobalVarName + _T(" ") + theWorkspace.LoadResourceString(IDS_QUOTE);
-					// add the method name
-					sDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_CF0B0);
-					m_sClipBoardDefun2 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE);
-					
-					if (pProp->GetAxInterfaceDescriptorPtr() != NULL) {
-						size_t nCount = pProp->GetAxInterfaceDescriptorPtr()->CountAxMethodParams(nThisItemData);
-						for (size_t i = 0; i < nCount; ++i)
-						{
-							// add the argument name
-							sDefun1 += theWorkspace.LoadResourceString(IDS_CF12) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i);
-							m_sClipBoardDefun2 += CString(_T(" ")) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i); 
-							// add the [as ...]
-							sArgType = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamVarType(nThisItemData, i);
-					
-							if (sArgType == CString())
-							{
-								sArgType = theWorkspace.LoadResourceString(IDS_OPTIONALNIL);
-								sDefun1 += theWorkspace.LoadResourceString(IDS_CF5I2) + sArgType + theWorkspace.LoadResourceString(IDS_I);
-								m_sClipBoardDefun2 += sArgType;
-							}
-							else if (!sArgType.IsEmpty())
-							{
-								sDefun1 += theWorkspace.LoadResourceString(IDS_CF5IAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2) + theWorkspace.LoadResourceString(IDS_I);
-								m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_OPENAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
-							}
-							else
-								sDefun1 += theWorkspace.LoadResourceString(IDS_CF5);
-							// if it is the second to last argument add close the color.
-							if (i < nCount - 1)
-							{
-								sDefun1 += theWorkspace.LoadResourceString(IDS_CF0) + _T(" ");
-								m_sClipBoardDefun2 += _T(" ");
-							}
-						}
-					}
+			case CtlAnimate:
+				LoadFullMethod(_T("AnimationCtrl.mth"), sItemText, sTitle, sDesc, sDefun1);
+				break;
 
-					// close the brackets
-					if (!sVarType.IsEmpty())
-					{
-						sDefun1 += theWorkspace.LoadResourceString(IDS_CF0PAR);
-						m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_DOUBLECLOSEBRACKET);
-					}
-					else
-					{
-						sDefun1 += theWorkspace.LoadResourceString(IDS_CF0PAR2);
-						m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_CLOSEBRACKET);
-					}
+			case CtlDwgList:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_DWGLISTMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
 
-					// add a more info disclaimer.
-					sDefun1 += theWorkspace.LoadResourceString(IDS_FORMOREINFO);
-					// add a microsoft disclaimer.
-					if (pControl->IsMicrosoftActiveXCtrl() == TRUE)
-						sDefun1 += theWorkspace.LoadResourceString(IDS_TOFINDIT);
-							
-					
-					// set the second copy button
-					CString sCopy2Text = theWorkspace.LoadResourceString(IDS_COPYTOCLIP);			
-					m_Copy2.SetWindowText(sCopy2Text);
-					m_Copy2.ShowWindow(TRUE);
-				}
+			case CtlBlockList:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_BLOCKLISTMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
+
+			case CtlPictureBox:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_PICBOXMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
+
+			case CtlOptionList:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_OPTLISTMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
+
+			case CtlBlockView:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_BLOCKVIEWMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
+			
+			case CtlHatch:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_HATCHMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
+			
+			case CtlSlideView:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_SLIDEVIEWMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
+			
+			case CtlTree:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_TREEMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
+			
+			case CtlComboBox:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_COMBOMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
+
+			case CtlTextBox:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_TEXTBOXMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
+
+			case CtlDwgPreview:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_DWGPREVIEWMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
+
+			case CtlActiveX:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_AXCTRLSMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;
+
+			case CtlMonth:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_MONTHMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;	
+
+			case CtlGraphicButton:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_GRPBTNMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;	
+
+			case CtlHtmlCtrl:
+				LoadFullMethod(theWorkspace.LoadResourceString(IDS_HTMLMTH), sItemText, sTitle, sDesc, sDefun1);
+				break;	
 			}
-			else if (pProp->GetType() == PropActiveXEvent)
+		}
+	}
+	else
+	{
+		switch (pProp->GetType())
+	{
+		case PropActiveXMethods:
+			{
+				sTitle = theWorkspace.LoadResourceString(IDS_METHOD);
+				if (pProp->GetAxInterfaceDescriptorPtr() != NULL)
+				{
+					sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodDesc(nThisItemData);
+					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData),
+																 pProp->GetAxInterfaceDescriptorPtr()->GetAxMethod(nThisItemData));
+					
+					// here we need to put in OleObject closing instructions if required.
+					if (pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_DISPATCH ||
+						pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_UNKNOWN)
+					{
+						if (!sDesc.IsEmpty())
+							sDesc += theWorkspace.LoadResourceString(IDS_PARPAR);						
+						if (sVarType.IsEmpty() || sVarType == theWorkspace.LoadResourceString(IDS_OleObject))
+							sDesc += theWorkspace.LoadResourceString(IDS_OLENOTE1);
+						else					
+							sDesc += theWorkspace.LoadResourceString(IDS_OLENOTE2) + sVarType + theWorkspace.LoadResourceString(IDS_OLENOTE3);
+					}
+				}
+				sDefun1 = theWorkspace.LoadResourceString(IDS_PAR1);
+				
+				// clear the clipboard string holder
+				m_sClipBoardDefun2;
+				// setup the defun is it is to return a value
+				if (!sVarType.IsEmpty())
+				{
+					sDefun1 += theWorkspace.LoadResourceString(IDS_SETQVALUE3);
+					m_sClipBoardDefun2 = theWorkspace.LoadResourceString(IDS_SETQVALUE2) + _T(" ");						
+				}
+				// add the DoMethod
+				sDefun1 += theWorkspace.LoadResourceString(IDS_CF22) + sOleObject + theWorkspace.LoadResourceString(IDS_DOMETHOD) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3B);
+				m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_DOMETHOD2) + sGlobalVarName + _T(" ") + theWorkspace.LoadResourceString(IDS_QUOTE);
+				// add the method name
+				sDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_CF0B0);
+				m_sClipBoardDefun2 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE);
+				
+				if (pProp->GetAxInterfaceDescriptorPtr() != NULL) {
+					size_t nCount = pProp->GetAxInterfaceDescriptorPtr()->CountAxMethodParams(nThisItemData);
+					for (size_t i = 0; i < nCount; ++i)
+					{
+						// add the argument name
+						sDefun1 += theWorkspace.LoadResourceString(IDS_CF12) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i);
+						m_sClipBoardDefun2 += CString(_T(" ")) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i); 
+						// add the [as ...]
+						sArgType = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamVarType(nThisItemData, i);
+				
+						if (sArgType == CString())
+						{
+							sArgType = theWorkspace.LoadResourceString(IDS_OPTIONALNIL);
+							sDefun1 += theWorkspace.LoadResourceString(IDS_CF5I2) + sArgType + theWorkspace.LoadResourceString(IDS_I);
+							m_sClipBoardDefun2 += sArgType;
+						}
+						else if (!sArgType.IsEmpty())
+						{
+							sDefun1 += theWorkspace.LoadResourceString(IDS_CF5IAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2) + theWorkspace.LoadResourceString(IDS_I);
+							m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_OPENAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
+						}
+						else
+							sDefun1 += theWorkspace.LoadResourceString(IDS_CF5);
+						// if it is the second to last argument add close the color.
+						if (i < nCount - 1)
+						{
+							sDefun1 += theWorkspace.LoadResourceString(IDS_CF0) + _T(" ");
+							m_sClipBoardDefun2 += _T(" ");
+						}
+					}
+				}
+
+				// close the brackets
+				if (!sVarType.IsEmpty())
+				{
+					sDefun1 += theWorkspace.LoadResourceString(IDS_CF0PAR);
+					m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_DOUBLECLOSEBRACKET);
+				}
+				else
+				{
+					sDefun1 += theWorkspace.LoadResourceString(IDS_CF0PAR2);
+					m_sClipBoardDefun2 += theWorkspace.LoadResourceString(IDS_CLOSEBRACKET);
+				}
+
+				// add a more info disclaimer.
+				sDefun1 += theWorkspace.LoadResourceString(IDS_FORMOREINFO);
+				// add a microsoft disclaimer.
+				if (pControl->IsMicrosoftActiveXCtrl() == TRUE)
+					sDefun1 += theWorkspace.LoadResourceString(IDS_TOFINDIT);
+						
+				// set the second copy button
+				CString sCopy2Text = theWorkspace.LoadResourceString(IDS_COPYTOCLIP);			
+				m_Copy2.SetWindowText(sCopy2Text);
+				m_Copy2.ShowWindow(TRUE);
+			}
+			break;
+		case PropActiveXEvent:
 			{
 				sTitle = theWorkspace.LoadResourceString(IDS_EVENTTITLE);
 				sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetDesc();
-
-				if (!pProp->GetStringValue().IsEmpty())
+				CString sEventName = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetName();
+				if (!sEventName.IsEmpty())
 				{
-					sDefun1 = pProp->GetStringValue();
-					sDefun1 += theWorkspace.LoadResourceString(IDS_PAR);
-				}				
+					CString sKeyName = pControl->GetStrProperty( nGlobalVarName );
+					if( sKeyName.IsEmpty() )
+						sKeyName = pControl->GetKeyPath();
+					sDefun1.Format( _T(" \\par c:%s_On%s () \\par "), (LPCTSTR)sKeyName, (LPCTSTR)sEventName );
+				}
 			}
-			else if (pProp->GetType() == PropEvent)
+			break;
+		case PropEvent:
 			{
 				sTitle = theWorkspace.LoadResourceString(IDS_EVENTTITLE);
 
@@ -964,7 +917,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				CString sEventArgs;
 				LoadArgsNDesc(pProp->GetID(), pControl, sEventArgs, sDesc);
 				
-				sDefun1 = theWorkspace.LoadResourceString(IDS_PAR);
+				sDefun1 = _T(" \\par ");
 				if (!pProp->GetStringValue().IsEmpty())
 				{
 					if (!sEventArgs.IsEmpty())
@@ -972,143 +925,142 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					else
 						sDefun1 += pProp->GetStringValue() + theWorkspace.LoadResourceString(IDS_DOUBLEBRACKET);						
 
-					sDefun1 += theWorkspace.LoadResourceString(IDS_PAR);
+					sDefun1 += _T(" \\par ");
 				}
 				else
 				{
-					sDefun1 += theWorkspace.LoadResourceString(IDS_C);
-					sDefun1 += pControl->GetKeyPath() + _T("_On") + sEventName;
+					sDefun1 += _T("c:");
+					CString sKeyName = pControl->GetStrProperty( nGlobalVarName );
+					if( sKeyName.IsEmpty() )
+						sKeyName = pControl->GetKeyPath();
+					sDefun1 += sKeyName + _T("_On") + sEventName;
 					if (!sEventArgs.IsEmpty())
 						sDefun1 += _T(" ") + theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sEventArgs + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET3);
 					else
 						sDefun1 += theWorkspace.LoadResourceString(IDS_DOUBLEBRACKET);
-					sDefun1 += theWorkspace.LoadResourceString(IDS_PAR);
+					sDefun1 += _T(" \\par ");
 				}
-				
 			}
-			else if (pProp->GetType() == PropActiveXProp || pProp->GetType() == PropActiveXRunTime)
+			break;
+		case PropActiveXProp:
+		case PropActiveXRunTime:
 			{
-				// clear the clipboard string holder2
-				m_sClipBoardDefun1;
-				m_sClipBoardDefun2;
-				
+				m_sClipBoardDefun1.Empty();
+				m_sClipBoardDefun2.Empty();
 				AxPropertyDescriptor* pAxPropGet = pProp->GetAxInterfaceDescriptorPtr()->GetGetDescriptor();
 				AxPropertyDescriptor* pAxPropPut = pProp->GetAxInterfaceDescriptorPtr()->GetPutDescriptor();
 				sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetDesc();
 				sTitle = theWorkspace.LoadResourceString(IDS_THEPROPERTY);
 				
 				// do a special override for the color set properties
-				if (pAxPropPut && pAxPropPut->GetGuid() == GUID_COLOR)
+				if (pAxPropPut)
 				{
-					sDefun1 = theWorkspace.LoadResourceString(IDS_PARCF2) + sOleObject + theWorkspace.LoadResourceString(IDS_SETCOLOR) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3B1) + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTEB0);
-					m_sClipBoardDefun1 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_SETCOLOR2) + sGlobalVarName + _T(" ") + theWorkspace.LoadResourceString(IDS_QUOTE) + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE) + _T(" ");
-		
-					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropPut);
-		
-					sDefun1 += theWorkspace.LoadResourceString(IDS_REDCOLORDESC2);
-					m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_REDCOLORDESC);
-					sDefun1 += theWorkspace.LoadResourceString(IDS_CLOSEBRACKET) + theWorkspace.LoadResourceString(IDS_PAR);
-					m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_CLOSEBRACKET);
-
-					if (sDesc.IsEmpty())
-						sDesc = theWorkspace.LoadResourceString(IDS_DESCNOTSET);
-
-					sDesc += theWorkspace.LoadResourceString(IDS_SETCOLORDESC);
-						
-					// show the first copy button
-					m_Copy1.ShowWindow(TRUE);
-				}
-					
-				// if a put property
-				if (pAxPropPut && pAxPropPut->GetGuid() != GUID_COLOR)
-				{
-					// lets set the put property
-					sDefun1 = theWorkspace.LoadResourceString(IDS_PARCF2) + sOleObject + theWorkspace.LoadResourceString(IDS_SETPROP3) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3BQ);
-					m_sClipBoardDefun1 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_SETPROP4) + sGlobalVarName + _T(" ") + theWorkspace.LoadResourceString(IDS_QUOTE);
-
-					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropPut);
-		
-					if (sVarType == theWorkspace.LoadResourceString(IDS_PROP_PICTURE))
+					if (pAxPropPut->GetGuid() == GUID_COLOR)
 					{
-						if (pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IPictureDisp)
-						{
-							CString sLoad;
-							sExtraText = theWorkspace.LoadResourceString(IDS_PICTURESHORTCUT);
-							sExtraText += CString() + sOleObject + theWorkspace.LoadResourceString(IDS_LOADPIC) + sGlobalVarName;
-							sLoad = theWorkspace.LoadResourceString(IDS_PICTURESHORTCUT2);
-							m_sClipBoardDefun3 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_LOADPIC2) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_PICDESC);
-							sExtraText += sLoad;
-							m_Copy3.ShowWindow(TRUE);
-		
-						}
+						sDefun1 = theWorkspace.LoadResourceString(IDS_PARCF2) + sOleObject + theWorkspace.LoadResourceString(IDS_SETCOLOR) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3B1) + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTEB0);
+						m_sClipBoardDefun1 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_SETCOLOR2) + sGlobalVarName + _T(" ") + theWorkspace.LoadResourceString(IDS_QUOTE) + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE) + _T(" ");
+			
+						sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropPut);
+			
+						sDefun1 += theWorkspace.LoadResourceString(IDS_REDCOLORDESC2);
+						m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_REDCOLORDESC);
+						sDefun1 += theWorkspace.LoadResourceString(IDS_CLOSEBRACKET) + _T(" \\par ");
+						m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_CLOSEBRACKET);
+
+						if (sDesc.IsEmpty())
+							sDesc = theWorkspace.LoadResourceString(IDS_DESCNOTSET);
+
+						sDesc += theWorkspace.LoadResourceString(IDS_SETCOLORDESC);
+							
+						// show the first copy button
+						m_Copy1.ShowWindow(TRUE);
 					}
-					
-					// here we need to put in OleObject closing instructions if required.
-					if (pProp->GetAxInterfaceDescriptorPtr()->GetType() == VT_DISPATCH ||
-							pProp->GetAxInterfaceDescriptorPtr()->GetType() == VT_UNKNOWN)
-					{
-						if (!sDesc.IsEmpty())
-							sDesc += theWorkspace.LoadResourceString(IDS_PARPAR);
-						if (sVarType == theWorkspace.LoadResourceString(IDS_OleObject) || sVarType == CString())
-							sDesc += theWorkspace.LoadResourceString(IDS_WHENFIN);
-						else						
-							sDesc += theWorkspace.LoadResourceString(IDS_WHENFIN2) + sVarType + theWorkspace.LoadResourceString(IDS_WHENFIN3);
-					}
-					
-					// if the set property does not have arguments
-					if (pAxPropPut == NULL || pAxPropPut->GetArgs().empty())
-					{
-						sDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_NEWVAL2);
-						m_sClipBoardDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_NEWVAL);
-					}
-					// if it does have arguments then we must add them
 					else
 					{
-						sDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_CF0B0);
-						m_sClipBoardDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE);
+						// lets set the put property
+						sDefun1 = theWorkspace.LoadResourceString(IDS_PARCF2) + sOleObject + theWorkspace.LoadResourceString(IDS_SETPROP3) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3BQ);
+						m_sClipBoardDefun1 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_SETPROP4) + sGlobalVarName + _T(" ") + theWorkspace.LoadResourceString(IDS_QUOTE);
 
-						size_t nCount = pAxPropPut->GetArgs().size();
-						for (size_t i=0; i<nCount; i++)
+						sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropPut);
+			
+						if (sVarType == theWorkspace.LoadResourceString(IDS_PROP_PICTURE))
 						{
-							CString sArg = pAxPropPut->GetArgs()[i].name;
-							if (sArg.IsEmpty())
-								sArg = theWorkspace.LoadResourceString(IDS_NEWVAL3);
-							sDefun1 += theWorkspace.LoadResourceString(IDS_CF12) + sArg;
-							m_sClipBoardDefun1 += _T(" ") + sArg;
-							sArgType = GetTypeName(pAxPropPut->GetArgs()[i].vt, NULL, pAxPropPut);
-							if (sArgType == CString())
+							if (pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IPictureDisp)
 							{
-								sArgType = theWorkspace.LoadResourceString(IDS_OPTIONALNILASB);
-								sDefun1 += theWorkspace.LoadResourceString(IDS_CF5IB) + sArgType + theWorkspace.LoadResourceString(IDS_CBI0);
-								m_sClipBoardDefun1 += _T(" ") + theWorkspace.LoadResourceString(IDS_OPENBRACKET2) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
+								CString sLoad;
+								sExtraText = theWorkspace.LoadResourceString(IDS_PICTURESHORTCUT);
+								sExtraText += CString() + sOleObject + theWorkspace.LoadResourceString(IDS_LOADPIC) + sGlobalVarName;
+								sLoad = theWorkspace.LoadResourceString(IDS_PICTURESHORTCUT2);
+								m_sClipBoardDefun3 = theWorkspace.LoadResourceString(IDS_OPENBRACKET) + sOleObject + theWorkspace.LoadResourceString(IDS_LOADPIC2) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_PICDESC);
+								sExtraText += sLoad;
+								m_Copy3.ShowWindow(TRUE);
+			
 							}
-							else if (!sArgType.IsEmpty())
-							{						
-								sDefun1 += theWorkspace.LoadResourceString(IDS_CF5IAS2) + sArgType + theWorkspace.LoadResourceString(IDS_CBI0);
-								m_sClipBoardDefun1 += _T(" ") + theWorkspace.LoadResourceString(IDS_OPENAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
-							}
-							else
-								sDefun1 += theWorkspace.LoadResourceString(IDS_CF5);
-							if (i < nCount-1)
+						}
+						
+						// here we need to put in OleObject closing instructions if required.
+						if (pProp->GetAxInterfaceDescriptorPtr()->GetType() == VT_DISPATCH ||
+								pProp->GetAxInterfaceDescriptorPtr()->GetType() == VT_UNKNOWN)
+						{
+							if (!sDesc.IsEmpty())
+								sDesc += theWorkspace.LoadResourceString(IDS_PARPAR);
+							if (sVarType == theWorkspace.LoadResourceString(IDS_OleObject) || sVarType == CString())
+								sDesc += theWorkspace.LoadResourceString(IDS_WHENFIN);
+							else						
+								sDesc += theWorkspace.LoadResourceString(IDS_WHENFIN2) + sVarType + theWorkspace.LoadResourceString(IDS_WHENFIN3);
+						}
+						
+						// if the set property does not have arguments
+						if (pAxPropPut == NULL || pAxPropPut->GetArgs().empty())
+						{
+							sDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_NEWVAL2);
+							m_sClipBoardDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_NEWVAL);
+						}
+						// if it does have arguments then we must add them
+						else
+						{
+							sDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_CF0B0);
+							m_sClipBoardDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_QUOTE);
+
+							size_t nCount = pAxPropPut->GetArgs().size();
+							for (size_t i=0; i<nCount; i++)
 							{
-								sDefun1 += theWorkspace.LoadResourceString(IDS_CF02);
-								m_sClipBoardDefun1 += _T(" ");
-							}
-						}							
+								CString sArg = pAxPropPut->GetArgs()[i].name;
+								if (sArg.IsEmpty())
+									sArg = theWorkspace.LoadResourceString(IDS_NEWVAL3);
+								sDefun1 += theWorkspace.LoadResourceString(IDS_CF12) + sArg;
+								m_sClipBoardDefun1 += _T(" ") + sArg;
+								sArgType = GetTypeName(pAxPropPut->GetArgs()[i].vt, NULL, pAxPropPut);
+								if (sArgType == CString())
+								{
+									sArgType = theWorkspace.LoadResourceString(IDS_OPTIONALNILASB);
+									sDefun1 += theWorkspace.LoadResourceString(IDS_CF5IB) + sArgType + theWorkspace.LoadResourceString(IDS_CBI0);
+									m_sClipBoardDefun1 += _T(" ") + theWorkspace.LoadResourceString(IDS_OPENBRACKET2) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
+								}
+								else if (!sArgType.IsEmpty())
+								{						
+									sDefun1 += theWorkspace.LoadResourceString(IDS_CF5IAS2) + sArgType + theWorkspace.LoadResourceString(IDS_CBI0);
+									m_sClipBoardDefun1 += _T(" ") + theWorkspace.LoadResourceString(IDS_OPENAS) + sArgType + theWorkspace.LoadResourceString(IDS_CLOSEBRACKET2);
+								}
+								else
+									sDefun1 += theWorkspace.LoadResourceString(IDS_CF5);
+								if (i < nCount-1)
+								{
+									sDefun1 += theWorkspace.LoadResourceString(IDS_CF02);
+									m_sClipBoardDefun1 += _T(" ");
+								}
+							}							
+						}
+						sDefun1 += theWorkspace.LoadResourceString(IDS_CLOSEBRACKET) + _T(" \\par \\cf0");
+						m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_CLOSEBRACKET);
+						// show the first copy button
+						m_Copy1.ShowWindow(TRUE);
 					}
-					sDefun1 += theWorkspace.LoadResourceString(IDS_CLOSEBRACKET) + theWorkspace.LoadResourceString(IDS_PAR);
-					m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_CLOSEBRACKET);
-					// show the first copy button
-					m_Copy1.ShowWindow(TRUE);
 				}
 				else
-				{
-					// hide the first copy button
 					m_Copy1.ShowWindow(TRUE);
-				}
 
-				// if a get property
-				if (pAxPropGet != NULL)
+				if (pAxPropGet)
 				{
 					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropGet);
 
@@ -1158,15 +1110,12 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					m_Copy2.ShowWindow(TRUE);
 				}
 				else
-				{					
 					m_Copy2.ShowWindow(FALSE);
-				}
-
-				
 			}
-			else
+			break;
+		default:
 			{
-				if (m_pControl->GetType() == CtlFileDlgCtrl || m_pControl->GetType() == nNotSet)
+				if (m_pControl->GetType() == CtlFileDlgCtrl || m_pControl->GetType() <= CtlInvalid)
 				{
 
 					sTitle = theWorkspace.LoadResourceString(IDS_THEPROPERTY);
@@ -1174,7 +1123,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					sDesc += theWorkspace.LoadResourceString(IDS_PARPAR) + theWorkspace.LoadResourceString(IDS_DESIGNTIMEONLY);
 
 				}
-				else
+				else 
 				{	
 					sDesc = pProp->GetDocumentationDesc();
 						
@@ -1249,8 +1198,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 						}
 					default:
 						{
-							if ((pProp->GetID() == nWidth || pProp->GetID() == nHeight) &&
-									pControl->GetID() == -1)
+							if (pControl->GetType() == CtlForm)
 							{
 								sTitle = theWorkspace.LoadResourceString(IDS_THEPROPERTY);
 								sDesc = pProp->GetDocumentationDesc();
@@ -1281,10 +1229,9 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 								}		
 
 								// lets set the Put property
-								//sDefun1 = theWorkspace.LoadResourceString(IDS_SETPROP) + sGlobalVarName + theWorkspace.LoadResourceString(IDS_CF0CF3B2);
 								sDefun1 = CString("\\par (\\cf2 Odcl_Control_Set") + m_ListBox.GetItemText(hItem) + " \\cf0 \\cf3" + sGlobalVarName + " ";
 								m_sClipBoardDefun1 = CString("(Odcl_Control_Set") + m_ListBox.GetItemText(hItem) + _T(" ");
-								sDefun1 += "\\par \\cf1 newValue [as " + sVarType + "]\\cf0 ) " + theWorkspace.LoadResourceString(IDS_PAR);
+								sDefun1 += "\\par \\cf1 newValue [as " + sVarType + "]\\cf0 ) " + _T(" \\par ");
 								m_sClipBoardDefun1 += sGlobalVarName + "\r\n\t newValue [as " + sVarType + _T("])");
 								
 								// lets set the get property
@@ -1309,112 +1256,78 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					}
 				}
 			}
-			
-			if (sDesc.IsEmpty())
-				sDesc = theWorkspace.LoadResourceString(IDS_DESCNOTSET);
-
-			CHARFORMAT cf;
-
-			// set the first default char settings
-			cf.dwMask = CFM_STRIKEOUT|CFM_BOLD;
-			cf.dwEffects = NULL;
-			m_RichBox.SetDefaultCharFormat(cf);
-
-			CString sRtf;
-			CString sRtfHeader;
-
-			// add the headers to the RTF string
-			sRtfHeader = theWorkspace.LoadResourceString(IDS_RTFHEADER1);
-			sRtf = sRtfHeader + theWorkspace.LoadResourceString(IDS_RN);
-			sRtfHeader = theWorkspace.LoadResourceString(IDS_RTFHEADER2);
-			sRtf += sRtfHeader + theWorkspace.LoadResourceString(IDS_RN);
-			sRtfHeader = theWorkspace.LoadResourceString(IDS_RTFHEADER3);
-			sRtf += sRtfHeader + _T(" ");
-			// set the title then start the bold statment
-			sRtf += sTitle;
-			
-			if (sTitle.GetLength() < nTitleLength)
-				// add the title name and close the bold
-				sRtf += theWorkspace.LoadResourceString(IDS_B) + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_B0CF0);
-				
-			//if the var type has been set
-			if (!sVarType.IsEmpty())
-			{
-				// add it to the RTF text as the color red.
-				sRtf += theWorkspace.LoadResourceString(IDS_ISA) + sVarType + theWorkspace.LoadResourceString(IDS_CF02);
-			}
-			sRtf += theWorkspace.LoadResourceString(IDS_PAR);
-			sRtf += theWorkspace.LoadResourceString(IDS_PAR);
-			// add the description
-			sRtf += sDesc + _T(" ") + theWorkspace.LoadResourceString(IDS_PAR);		
-			
-			// close the RTF statement
-			if (!sDefun1.IsEmpty() && sDefun2.IsEmpty())
-			{
-				sRtf += theWorkspace.LoadResourceString(IDS_ALISPSYN);
-				// add it to the RTF text as the color red.
-				sRtf += sDefun1;
-			}
-			else if (!sDefun1.IsEmpty() && !sDefun2.IsEmpty())
-			{
-				sRtf += theWorkspace.LoadResourceString(IDS_ALSPS);
-				// add it to the RTF text as the color red.
-				sRtf += sDefun1;
-				sRtf += theWorkspace.LoadResourceString(IDS_ALGPS);
-				// add it to the RTF text as the color red.
-				sRtf += sDefun2;
-			}			
-			else if (!sDefun2.IsEmpty())
-			{
-				m_Copy1.ShowWindow(FALSE);
-				m_Copy2.ShowWindow(TRUE);
-				sRtf += theWorkspace.LoadResourceString(IDS_ALGPS);
-				// add it to the RTF text as the color red.
-				sRtf += sDefun2;
-			}
-			
-			sRtf += sExtraText;
-			sRtf += theWorkspace.LoadResourceString(IDS_PARRN);
-			// add any extra text if any extists.
-			
-			m_RichBox.SetRTF(sRtf);			
+			break;
 		}
 	}
-	ResizeControls();
-}
 
+	if (sDesc.IsEmpty())
+		sDesc = theWorkspace.LoadResourceString(IDS_DESCNOTSET);
 
-void CObjectBrowser::OnClickListbox(NMHDR* pNMHDR, LRESULT* pResult) 
-{
-	// get the selected item
-	NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
+	CHARFORMAT cf;
+
+	// set the first default char settings
+	cf.dwMask = CFM_STRIKEOUT|CFM_BOLD;
+	cf.dwEffects = NULL;
+	m_RichBox.SetDefaultCharFormat(cf);
+
+	CString sRtf;
+	CString sRtfHeader;
+
+	// add the headers to the RTF string
+	sRtfHeader = theWorkspace.LoadResourceString(IDS_RTFHEADER1);
+	sRtf = sRtfHeader + theWorkspace.LoadResourceString(IDS_RN);
+	sRtfHeader = theWorkspace.LoadResourceString(IDS_RTFHEADER2);
+	sRtf += sRtfHeader + theWorkspace.LoadResourceString(IDS_RN);
+	sRtfHeader = theWorkspace.LoadResourceString(IDS_RTFHEADER3);
+	sRtf += sRtfHeader + _T(" ");
+	// set the title then start the bold statment
+	sRtf += sTitle;
+	
+	if (sTitle.GetLength() < nTitleLength)
+		// add the title name and close the bold
+		sRtf += theWorkspace.LoadResourceString(IDS_B) + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_B0CF0);
 		
-	// get the selected item
-	TV_ITEM SelectedItem = pNMTreeView->itemNew;
-
-	if (SelectedItem.hItem !=NULL)
-		SelectionChanged(SelectedItem.hItem);
-	else
+	//if the var type has been set
+	if (!sVarType.IsEmpty())
 	{
-		HTREEITEM hItem = m_ListBox.GetSelectedItem();
-		SelectionChanged(SelectedItem.hItem);
+		// add it to the RTF text as the color red.
+		sRtf += theWorkspace.LoadResourceString(IDS_ISA) + sVarType + theWorkspace.LoadResourceString(IDS_CF02);
+	}
+	sRtf += _T(" \\par \\par ");
+	// add the description
+	sRtf += sDesc + _T(" \\par ");		
+	
+	// close the RTF statement
+	if (!sDefun1.IsEmpty() && sDefun2.IsEmpty())
+	{
+		sRtf += theWorkspace.LoadResourceString(IDS_ALISPSYN);
+		// add it to the RTF text as the color red.
+		sRtf += sDefun1;
+	}
+	else if (!sDefun1.IsEmpty() && !sDefun2.IsEmpty())
+	{
+		sRtf += theWorkspace.LoadResourceString(IDS_ALSPS);
+		// add it to the RTF text as the color red.
+		sRtf += sDefun1;
+		sRtf += theWorkspace.LoadResourceString(IDS_ALGPS);
+		// add it to the RTF text as the color red.
+		sRtf += sDefun2;
+	}			
+	else if (!sDefun2.IsEmpty())
+	{
+		m_Copy1.ShowWindow(FALSE);
+		m_Copy2.ShowWindow(TRUE);
+		sRtf += theWorkspace.LoadResourceString(IDS_ALGPS);
+		// add it to the RTF text as the color red.
+		sRtf += sDefun2;
 	}
 	
-
-	*pResult = 0;
-}
-
-void CObjectBrowser::OnReturnListbox(NMHDR* pNMHDR, LRESULT* pResult) 
-{
+	sRtf += sExtraText;
+	sRtf += theWorkspace.LoadResourceString(IDS_PARRN);
+	// add any extra text if any extists.
 	
-	*pResult = 0;
-}
-
-void CObjectBrowser::OnDblclkListbox(NMHDR* pNMHDR, LRESULT* pResult) 
-{
-	// TODO: Add your control notification handler code here
-	
-	*pResult = 0;
+		m_RichBox.SetRTF(sRtf);			
+	ResizeControls();
 }
 
 void CObjectBrowser::OnSelchangedListbox(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -1436,8 +1349,6 @@ void CObjectBrowser::OnSelchangedListbox(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CObjectBrowser::OnCopy2() 
 {
-	//CString sUnsavedProject = theWorkspace.LoadResourceString(IDS_PROJECT);
-	//if (m_pControl->GetKeyPath().Left(sUnsavedProject.GetLength()) == sUnsavedProject)
 	if( theWorkspace.GetActiveDocument()->GetPathName().IsEmpty() )
 	{
 		int nWhatNext = MessageBox( theWorkspace.LoadResourceString(IDS_RENAMEPROJECT),
@@ -1471,8 +1382,6 @@ void CObjectBrowser::OnCopy2()
 
 void CObjectBrowser::OnCopy1() 
 {
-	//CString sUnsavedProject = theWorkspace.LoadResourceString(IDS_PROJECT);
-	//if (m_pControl->GetKeyPath().Left(sUnsavedProject.GetLength()) == sUnsavedProject)
 	if( theWorkspace.GetActiveDocument()->GetPathName().IsEmpty() )
 	{
 		int nWhatNext = MessageBox( theWorkspace.LoadResourceString(IDS_RENAMEPROJECT),

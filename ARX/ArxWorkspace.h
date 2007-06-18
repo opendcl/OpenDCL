@@ -25,7 +25,6 @@ class CArxWorkspace : public CWorkspace
 {
 	CList<CDialogObject*> mDialogs;
 	CArxProjectCollection mProjects;
-	CStringList	mOdsProjects;
 	CAcadDocReactor mDocReactor;
 
 public:
@@ -58,6 +57,8 @@ public:
 	bool UnloadProject( LPCTSTR pszKeyName, bool bForce = false );
 	bool RegisterDialog( CDialogObject* pDialog );
 	bool UnregisterDialog( CDialogObject* pDialog );
+	CArxProject* ImportProject( CFile& src, LPCTSTR pszKeyName = NULL );
+	bool ExportProject( CProject* pProject, CFile& src );
 	CArxProject* LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKeyName = NULL, bool bReload = false );
 
 	//Services

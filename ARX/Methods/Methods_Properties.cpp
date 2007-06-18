@@ -395,7 +395,7 @@ int SetProperty()
 bool Property_SetByList(CDclControlObject *pArxObject)
 {
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < 3; i++)
@@ -937,7 +937,7 @@ bool DoSetPosByPtrList()
 	int nHeightValue;
 	
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 
 	if (ListData == NULL)
@@ -1297,7 +1297,7 @@ bool DoSetPosByList()
 	CString sFormName;
 	
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 
 	if (ListData == NULL)

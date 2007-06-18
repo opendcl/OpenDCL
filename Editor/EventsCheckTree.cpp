@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "EventsCheckTree.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "UserMessageID.h"
 
 #define nOnEditCopy		3

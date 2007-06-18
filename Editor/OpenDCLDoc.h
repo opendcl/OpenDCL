@@ -1,16 +1,16 @@
-// ObjectDCLDoc.h : interface of the CObjectDCLDoc class
+// OpenDCLDoc.h : interface of the COpenDCLDoc class
 //
 
 #pragma once
 
 
-class CObjectDCLDoc : public COleDocument
+class COpenDCLDoc : public COleDocument
 {
 protected: // create from serialization only
-	CObjectDCLDoc();
-	DECLARE_DYNCREATE(CObjectDCLDoc)
+	COpenDCLDoc();
+	DECLARE_DYNCREATE(COpenDCLDoc)
 public:
-	virtual ~CObjectDCLDoc();
+	virtual ~COpenDCLDoc();
 
 // Attributes
 public:

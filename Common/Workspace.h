@@ -30,7 +30,6 @@ public:
 	//Workspace constants
 	virtual DWORD GetMinSupportedAcadVersion() const { return 2000; }
 	virtual CString GetProjectFileExtension() const { return _T(".odc"); }
-	virtual CString GetDistributionFileExtension() const { return _T(".ods"); }
 
 	//Services
 	virtual CString GetUserProfilePrefix() const { return CString(); }

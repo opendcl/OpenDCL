@@ -5,7 +5,6 @@
 #include "ComboBoxPage.h"
 #include "PropertyObject.h"
 #include "ControlTypes.h"
-#include "PurchaseMode.h"
 #include "Workspace.h"
 
 
@@ -64,26 +63,7 @@ BOOL CComboBoxPage::OnInitDialog()
 	for (int i=0; i<nCount; i++)
 	{
 		sDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_0 + i);
-		switch (nCurrentPurchaseMode)
-		{
-		case nPurchasedLT:
-			if (i < 3)		
-				m_OptionList.AddString(sDesc);
-			break;			
-		case nPurchasedStd:
-			if (i < 12)		
-				m_OptionList.AddString(sDesc);
-			break;
-		case nPurchasedR14Pro:
-			if (i < 3 )
-				m_OptionList.AddString(sDesc);
-			if (i > 7 && i != 10 && i != 11)
-				m_OptionList.AddString(sDesc);
-			break;
-		default:
-			m_OptionList.AddString(sDesc);
-			break;
-		}
+		m_OptionList.AddString(sDesc);
 	}
 
 	m_SelectedStyle = m_pStyle->GetLongValue();

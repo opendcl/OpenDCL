@@ -5,6 +5,7 @@
 #include "ArxWorkspace.h"
 #include "ArxProject.h"
 #include "Resource.h"
+#include "ArchiveEx.h"
 #include "ArxDialogObject.h"
 #include "DclFormObject.h"
 #include "ErrorLexicon.h"
@@ -28,6 +29,22 @@ static CString StripPathFromFileName( LPCTSTR pszFilePath )
 	sShortName = sShortName.SpanExcluding(_T("\\/:"));
 	sShortName.MakeReverse();
 	return sShortName;
+}
+
+
+static CString CreateUniqueName() 
+{
+	CString sUniqueName;
+	UUID uuid;
+#ifdef _UNICODE
+	RPC_WSTR pUUID;
+#else
+	RPC_CSTR pUUID;
+#endif
+	UuidCreate(&uuid);
+	UuidToString(&uuid, &pUUID);
+	sUniqueName = (LPCTSTR)pUUID;
+	return sUniqueName;
 }
 
 
@@ -409,13 +426,61 @@ RefCountedPtr< COleControlObject > CArxWorkspace::GetOleControlFor( const AxMeth
 }
 
 
+CArxProject* CArxWorkspace::ImportProject( CFile& src, LPCTSTR pszKeyName /*= NULL*/ )
+{
+	// create a new project
+	CArxProject* pProject = new CArxProject( pszKeyName );
+	try
+	{
+		CArchiveEx ar( &src, CArchive::load | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
+		pProject->Serialize( ar );
+	}
+	catch( ... )
+	{
+		delete pProject;
+		return NULL; 
+	}
+	if (pProject->GetDclFormList().GetCount() == 0) //file had nothing in it
+	{		
+		delete pProject;
+		return NULL; 
+	}
+
+	if( pProject->GetKeyName().IsEmpty() )
+		pProject->SetKeyName( CreateUniqueName() );
+	UnloadProject( pProject->GetKeyName(), true );
+	if( !AddProject( pProject ) )
+	{ //couldn't add the new project, probably because of a name collision
+		delete pProject;
+		return NULL;
+	}
+
+	return pProject;
+}
+
+
+bool CArxWorkspace::ExportProject( CProject* pProject, CFile& dest )
+{
+	try
+	{
+		CArchiveEx ar( &dest, CArchive::store | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
+		pProject->Serialize( ar );
+	}
+	catch( ... )
+	{
+		return false; 
+	}
+
+	return true;
+}
+
+
 CArxProject* CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKeyName /*= NULL*/, bool bReload /*= false*/ )
 {
 	CString sFilePath( pszFilePath );
 	if( sFilePath.IsEmpty() )
 		return NULL;
 
-	
 	if( !bReload )
 	{
 		CString sKeyName( pszKeyName );
@@ -435,8 +500,6 @@ CArxProject* CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKey
 	if( sFoundFile.IsEmpty() )
 	{
 		sFoundFile = FindFile( sFilePath + GetProjectFileExtension() );
-		if( sFoundFile.IsEmpty() )
-			sFoundFile = FindFile( sFilePath + GetDistributionFileExtension() );
 	}
 
 	if( sFoundFile.IsEmpty() )
@@ -450,8 +513,6 @@ CArxProject* CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKey
 		delete pProject;
 		return NULL; 
 	}
-	if( sFileName.Right( GetDistributionFileExtension().GetLength() ).CompareNoCase( GetDistributionFileExtension() ) == 0 )
-		mOdsProjects.AddTail( CString( pProject->GetKeyName() ).MakeLower() );
 
 	if( bReload )
 		UnloadProject( pProject->GetKeyName(), true );

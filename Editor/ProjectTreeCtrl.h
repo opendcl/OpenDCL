@@ -4,7 +4,7 @@
 #pragma once
 
 class CProject;
-class CObjectDCLDoc;
+class COpenDCLDoc;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -19,7 +19,7 @@ public:
 // Attributes
 protected:
 	CProject* mpProject;
-	CObjectDCLDoc* mpDocument;
+	COpenDCLDoc* mpDocument;
 	HTREEITEM mhtiModalParent;
 	HTREEITEM mhtiModelessParent;
 	HTREEITEM mhtiDockableParent;
@@ -27,8 +27,8 @@ protected:
 	HTREEITEM mhtiFileDialogParent;
 	HTREEITEM mhtiAutoLispFileParent;
 	HTREEITEM mhtiAutoLispFile;
-	HTREEITEM mhtiOdsFileParent;
-	HTREEITEM mhtiOdsFile;
+	HTREEITEM mhtiPasswordParent;
+	HTREEITEM mhtiPassword;
 	HTREEITEM mhtiAxFilesParent;
 
 public:
@@ -39,15 +39,15 @@ public:
 	HTREEITEM GetFileDialogParentTreeItem() const { return mhtiFileDialogParent; }
 	HTREEITEM GetAutoLispFileParentTreeItem() const { return mhtiAutoLispFileParent; }
 	HTREEITEM GetAutoLispFileTreeItem() const { return mhtiAutoLispFile; }
-	HTREEITEM GetOdsFileParentTreeItem() const { return mhtiOdsFileParent; }
-	HTREEITEM GetOdsFileTreeItem() const { return mhtiOdsFile; }
+	HTREEITEM GetPasswordParentTreeItem() const { return mhtiPasswordParent; }
+	HTREEITEM GetPasswordTreeItem() const { return mhtiPassword; }
 	HTREEITEM GetAxFilesParentTreeItem() const { return mhtiAxFilesParent; }
 	void SetAutoLispFilename( LPCTSTR pszLispFilename );
-	void SetOdsFilename( LPCTSTR pszOdsFilename );
+	void SetPassword( LPCTSTR pszPassword );
 	void SetupProjectTree( CProject* pProject = NULL );
 	CProject* GetProject() const { return mpProject; }
-	CObjectDCLDoc* GetDocument() const { return mpDocument; }
-	void SetDocument(CObjectDCLDoc* pDocument) { mpDocument = pDocument; }
+	COpenDCLDoc* GetDocument() const { return mpDocument; }
+	void SetDocument(COpenDCLDoc* pDocument) { mpDocument = pDocument; }
 
 // Operations
 public:

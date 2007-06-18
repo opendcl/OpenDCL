@@ -9,7 +9,7 @@
 #include "DropListContents.h"
 #include "Workspace.h"
 #include "SharedRes.h"
-#include "ObjectDclView.h"
+#include "OpenDCLView.h"
 
 
 CColumnData::CColumnData()

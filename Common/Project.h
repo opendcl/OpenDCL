@@ -3,7 +3,7 @@
 /*
 General Project Structure and Nomenclature Notes -- 2007-01-28 [ORW]
 
-The logical hierarchy of an ObjectDCL project starts with the project itself at the top. The project contains 
+The logical hierarchy of an OpenDCL project starts with the project itself at the top. The project contains 
 one or more forms, and these in turn contain one or more controls. The original code tended to use the words  
 dialog and form interchangeably, but in code that I've rewritten I use "dialog" to refer to an instantiated 
 form (i.e. a dialog window on the screen), and "form" or "template" when referring to the form definition 
@@ -32,11 +32,11 @@ CDialogObject      DialogObject.h/cpp       : instantiated ODCL form interface (
 CControlPane       ControlPane.h/cpp        : manages a collection of control windows (can be nested via tab pages)
 CDialogControl     DialogControl.h/cpp      : instantiated ODCL control interface (analagous to CDclControlObject)
 
-The ObjectDCL editor defines CEditorProject and CEditorWorkspace that customize and extend the common
+The OpenDCL editor defines CEditorProject and CEditorWorkspace that customize and extend the common
 CProject/CWorkspace classes. Likewise, the ARX modules define CArxProject/CArxWorkspace to customize and 
 extend the common classes with ARX-specific data and services.
 
-To prevent name collisions, ObjectDCL uses a case-insensitive three-tier naming system to name a specific 
+To prevent name collisions, OpenDCL uses a case-insensitive three-tier naming system to name a specific 
 control instance:
 <project-name>_<form-name>_<control-name>
 
@@ -105,13 +105,8 @@ protected:
 	CString msBaseFileName; //the project file base name (no path, no extension)
 	CStringArray mrsActiveXFiles;
 	CString msLispFileName;
-	CString msDistFileName;
-
 	CString msPassword;
-	bool mbHasPassword;
 	DWORD mnAutoCADVersion;
-	DWORD mnPurchaseState;
-	bool mbFreeVersion;
 	
 public:		
 	CString m_sDefaultFontName;
@@ -128,15 +123,15 @@ public:
 protected:
 	void Initialize();
 
-	//2007-01-30 [ORW]: save version set to 9 (no change from ObjectDCL 3)
+	//2007-01-30 [ORW]: save version set to 9 (no change from OpenDCL 3)
 	//2007-02-09 [ORW]: save version set to 10
 	//2007-02-14 [ORW]: save version set to 11 (form count changed from short to unsigned long)
-	ULONG GetCurrentSaveVersion() const { return 11; }
+	//2007-06-16 [ORW]: save version set to 12 (removed mbHasPassword and msDistFileName members)
+	ULONG GetCurrentSaveVersion() const { return 12; }
 
 public:
-	virtual LPCTSTR GetPassword() const { return _T("d32afd3aw3aq3fdaw3"); }
+	static LPCTSTR GetOdclPassword() { return _T("d32afd3aw3aq3fdaw3"); }
 	virtual bool IsInUse() const;
-	virtual DWORD GetPurchaseState() const { return mnPurchaseState; }
 
 	HBITMAP CloneBitmap( UINT nID, CSize& sz ) const;
 	HICON CloneIcon( UINT nID ) const;
@@ -144,8 +139,7 @@ public:
 	CPictureObject* FindPicture( UINT nID ) const;
 
 	//Centralized File I/O
-	virtual DWORD GetCurrentProjectFileFormatVersion() const { return 11; }
-	virtual IOStatus ReadFromFile( LPCTSTR pszFilePath ); //read a project from all supported file formats
+	virtual IOStatus ReadFromFile( LPCTSTR pszFilePath ); //read a project from any supported file format
 	virtual IOStatus WriteToFile( LPCTSTR pszFilePath ); //write in the current project file format
 protected:
 	IOStatus ReadFromTextFile( LPCTSTR pszFilePath ); //read a project from a text file
@@ -157,13 +151,14 @@ public:
 	const CList<CPictureObject*>& GetPictureList() const { return mPictures; }
 	CList<CPictureObject*>& GetPictureList() { return mPictures; }
 	const CList< CDclFormObject* >& GetDclFormList() const { return mDclForms; }
-	//CList< CDclFormObject* >& GetDclFormList() { return mDclForms; }
 	const CString& GetKeyName() const { return msKeyName; }
 	void SetKeyName( LPCTSTR pszKeyName );
 	const CString& GetBaseFileName() const { return msBaseFileName; }
 	const CString& GetProjectFilePath() const { return msProjectFilePath; }
 	const CString& GetLispFileName() const { return msLispFileName; }
-	const CString& GetDistFileName() const { return msDistFileName; }
+	void SetLispFileName( LPCTSTR pszLispFileName ) { msLispFileName = pszLispFileName; }
+	const CString& GetPassword() const { return msPassword; }
+	void SetPassword( LPCTSTR pszPassword ) { msPassword = pszPassword; }
 
 	//Services
 	virtual void DeleteForm( CDclFormObject*& pDclForm );
@@ -185,9 +180,6 @@ public:
 	size_t CountDeletedForms() const;
 	void ClearProject();
 	void ClearR14Events();
-	CString QueryForLispFileName();
-	CString QueryForOdsFileName();
-	void SaveDistFile();
 
 	// OLE object management
 public:
@@ -200,7 +192,7 @@ public:
 	RefCountedPtr< COleControlObject > GetOleObject(const AxEventDescriptor *pEvent);
 
 public:
-	virtual void Serialize(CArchive& ar);   // overridden for document i/o
+	virtual void Serialize(CArchive& ar);
 
 protected:
 	DECLARE_SERIAL(CProject)

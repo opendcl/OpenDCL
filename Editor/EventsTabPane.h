@@ -6,7 +6,7 @@
 
 class CDclControlObject;
 class CDclFormObject;
-class CObjectDCLView;
+class COpenDCLView;
 enum PropertyId;
 
 
@@ -19,7 +19,7 @@ class CEventsTabPane : public CDialog
 public:
 	CEventsTabPane(CWnd* pParent = NULL);   // standard constructor
 
-	CObjectDCLView		*m_pView;
+	COpenDCLView		*m_pView;
 // Dialog Data
 	//{{AFX_DATA(CEventsTabPane)
 	enum { IDD = IDD_EVENTS };

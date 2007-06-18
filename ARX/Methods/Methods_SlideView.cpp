@@ -148,7 +148,7 @@ int SlideView_VectorImage()
 	int nLineColor;
 
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -341,7 +341,7 @@ int SlideView_FillImage()
 	int nLineColor;
 
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -557,7 +557,7 @@ int SlideView_SlideImage()
 	
 	struct resbuf *ListData;
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)

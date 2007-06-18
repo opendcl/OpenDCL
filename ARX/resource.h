@@ -12,6 +12,7 @@
 #define IDS_OLDERSLD                    107
 #define IDS_DWGNOTLOADING               108
 #define IDS_BLANKHTML                   109
+#define IDS_ERR_INVALIDARGUMENTTYPE     110
 #define IDS_SELFILES                    111
 #define IDS_NOLIST1                     112
 #define IDS_NOLIST2                     113
@@ -43,7 +44,7 @@
 #define IDI_PICKBTN                     260
 #define IDB_R14LARGE                    300
 #define IDB_R14SMALL                    301
-#define IDI_EXCLEMATION                 309
+#define IDI_WARN                        309
 #define IDI_INFO                        310
 #define IDS_EVENT_FolderChange          429
 #define IDS_EVENT_HELP                  430

@@ -34,7 +34,6 @@ public:
 	//runtime state
 	BOOL m_Delete;
 	short m_ClientHeight;
-	int m_PurchaseState;
 	CWnd *m_pCtrlHolder;
 	CRect m_rcOldPosition;
 	CAxContainerCtrl* m_pAxWnd;
@@ -83,9 +82,10 @@ public:
 	CDclControlObject(ControlType type, CDclFormObject* pOwner, LPCTSTR pszName = NULL);
 	virtual ~CDclControlObject();
 
-	//2007-01-30 [ORW]: save version set to 6 (no change from ObjectDCL 3)
+	//2007-01-30 [ORW]: save version set to 6 (no change from OpenDCL 3)
 	//2007-02-08 [ORW]: save version set to 7 (eliminated serialized MFC classes)
-	ULONG GetCurrentSaveVersion() const { return 7; }
+	//2007-06-16 [ORW]: save version set to 8 (removed purchase state)
+	ULONG GetCurrentSaveVersion() const { return 8; }
 
 	//Attributes
 public:

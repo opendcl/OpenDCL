@@ -1,8 +1,8 @@
-// ObjectDCLView.cpp : implementation of the CObjectDCLView class
+// OpenDCLView.cpp : implementation of the COpenDCLView class
 //
 
 #include "stdafx.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "DclFormObject.h"
 #include "ChildFrm.h"
 #include "PropertyIds.h"
@@ -29,11 +29,10 @@
 #include "GraphicButtonCtrl.h"
 #include "VdclStatic.h"
 #include "ListCtrlEx.h"
-#include "PurchaseMode.h"
 #include "OleFont.h"
 #include "AxPropertyDescriptor.h"
 #include "AxInterfaceDescriptor.h"
-#include "ObjectDCL.h"
+#include "OpenDCL.h"
 #include "EditorWorkspace.h"
 #include "SharedRes.h"
 #include "GraphicButtonCtrl.h"
@@ -197,12 +196,12 @@ typedef CTypedPtrList< CObList, CDclControlObject* > CClipboardObject;
 //IMPLEMENT_SERIAL(CClipboardObject, CObject, 1);
 
 /////////////////////////////////////////////////////////////////////////////
-// CObjectDCLView
+// COpenDCLView
 
-IMPLEMENT_DYNCREATE(CObjectDCLView, CView)
+IMPLEMENT_DYNCREATE(COpenDCLView, CView)
 
-BEGIN_MESSAGE_MAP(CObjectDCLView, CView)
-	//{{AFX_MSG_MAP(CObjectDCLView)
+BEGIN_MESSAGE_MAP(COpenDCLView, CView)
+	//{{AFX_MSG_MAP(COpenDCLView)
 	ON_WM_LBUTTONUP()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_RBUTTONUP()
@@ -223,16 +222,16 @@ BEGIN_MESSAGE_MAP(CObjectDCLView, CView)
 	ON_COMMAND(ID_PROPERTIES, OnProperties)
 	ON_COMMAND(ID_EDIT_OBJECTBROWSER, OnEditObjectbrowser)
 	//}}AFX_MSG_MAP
-	ON_COMMAND(ID_TOOLS_SETLISPSYMBOLNAMES, &CObjectDCLView::OnToolsSetlispsymbolnames)
-	ON_COMMAND(ID_TOOLS_CLEARLISPSYMBOLNAMES, &CObjectDCLView::OnToolsClearlispsymbolnames)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_SETLISPSYMBOLNAMES, &CObjectDCLView::OnUpdateToolsSetlispsymbolnames)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_CLEARLISPSYMBOLNAMES, &CObjectDCLView::OnUpdateToolsClearlispsymbolnames)
+	ON_COMMAND(ID_TOOLS_SETLISPSYMBOLNAMES, &COpenDCLView::OnToolsSetlispsymbolnames)
+	ON_COMMAND(ID_TOOLS_CLEARLISPSYMBOLNAMES, &COpenDCLView::OnToolsClearlispsymbolnames)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_SETLISPSYMBOLNAMES, &COpenDCLView::OnUpdateToolsSetlispsymbolnames)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_CLEARLISPSYMBOLNAMES, &COpenDCLView::OnUpdateToolsClearlispsymbolnames)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CObjectDCLView construction/destruction
+// COpenDCLView construction/destruction
 
-CObjectDCLView::CObjectDCLView():CView()//(CObjectDCLView::IDD)
+COpenDCLView::COpenDCLView():CView()//(COpenDCLView::IDD)
 {
 	CWinApp* pApp = AfxGetApp();
 	CString sProfileName;
@@ -268,7 +267,7 @@ CObjectDCLView::CObjectDCLView():CView()//(CObjectDCLView::IDD)
 	m_clsid.Data3 = 0;
 }
 
-CObjectDCLView::~CObjectDCLView()
+COpenDCLView::~COpenDCLView()
 {
 	if (m_pThisDclForm)
 	{
@@ -282,7 +281,7 @@ CObjectDCLView::~CObjectDCLView()
 	
 }
 
-BOOL CObjectDCLView::PreCreateWindow(CREATESTRUCT& cs)
+BOOL COpenDCLView::PreCreateWindow(CREATESTRUCT& cs)
 {
 	
 	cs.style = WS_CHILD | WS_VISIBLE | WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
@@ -294,7 +293,7 @@ BOOL CObjectDCLView::PreCreateWindow(CREATESTRUCT& cs)
 	return TRUE;
 }
 
-void CObjectDCLView::OnInitialUpdate()
+void COpenDCLView::OnInitialUpdate()
 {
 	CView::OnInitialUpdate();
 	ModifyStyleEx(WS_EX_CLIENTEDGE, NULL, 0);
@@ -305,7 +304,7 @@ void CObjectDCLView::OnInitialUpdate()
 }
 
 
-void CObjectDCLView::ResizeParentToFit(BOOL bShrinkOnly)
+void COpenDCLView::ResizeParentToFit(BOOL bShrinkOnly)
 {
 	// determine current size of the client area as if no scrollbars present
 	CRect rectClient;
@@ -359,30 +358,30 @@ void CObjectDCLView::ResizeParentToFit(BOOL bShrinkOnly)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CObjectDCLView diagnostics
+// COpenDCLView diagnostics
 
 #ifdef _DEBUG
-void CObjectDCLView::AssertValid() const
+void COpenDCLView::AssertValid() const
 {
 	CView::AssertValid();
 }
 
-void CObjectDCLView::Dump(CDumpContext& dc) const
+void COpenDCLView::Dump(CDumpContext& dc) const
 {
 	CView::Dump(dc);
 }
 #endif //_DEBUG
 
-//CObjectDCLDoc* CObjectDCLView::GetDocument() const // non-debug version is inline
+//COpenDCLDoc* COpenDCLView::GetDocument() const // non-debug version is inline
 //{
-//	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CObjectDCLDoc)));
-//	return (CObjectDCLDoc*)m_pDocument;
+//	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(COpenDCLDoc)));
+//	return (COpenDCLDoc*)m_pDocument;
 //}
 
 /////////////////////////////////////////////////////////////////////////////
-// CObjectDCLView message handlers
+// COpenDCLView message handlers
 
-void CObjectDCLView::DrawActiveXCtrl(CDclControlObject *pCtrl, CDC* pDC) 
+void COpenDCLView::DrawActiveXCtrl(CDclControlObject *pCtrl, CDC* pDC) 
 {
 	/*
 	if (pCtrl->m_Delete == TRUE)
@@ -435,8 +434,8 @@ void CObjectDCLView::DrawActiveXCtrl(CDclControlObject *pCtrl, CDC* pDC)
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CObjectDCLView message handlers
-void CObjectDCLView::ClearUndoList()
+// COpenDCLView message handlers
+void COpenDCLView::ClearUndoList()
 {
 	for (int i=m_UndoList.GetCount()-1; i>=0; i--)
 	{
@@ -455,7 +454,7 @@ void CObjectDCLView::ClearUndoList()
 	m_UndoList.RemoveAll();
 }
 
-void CObjectDCLView::NullDrawRect()
+void COpenDCLView::NullDrawRect()
 {
 	m_bDrawing = false;
 	m_rcDraw.top = 0;
@@ -465,7 +464,7 @@ void CObjectDCLView::NullDrawRect()
 }
 	
 
-void CObjectDCLView::PaintBackGround(HDC hdc)
+void COpenDCLView::PaintBackGround(HDC hdc)
 {
 	try
 	{
@@ -501,7 +500,7 @@ void CObjectDCLView::PaintBackGround(HDC hdc)
 	}
 }
 
-void CObjectDCLView::OnGridSpacingChanged() 
+void COpenDCLView::OnGridSpacingChanged() 
 {
 	try
 	{
@@ -513,14 +512,14 @@ void CObjectDCLView::OnGridSpacingChanged()
 	}
 }
 
-void CObjectDCLView::OnControlToInsertChanged() 
+void COpenDCLView::OnControlToInsertChanged() 
 {
 	m_SelectedControl.m_pArxObject = NULL;
 	m_SelectedControl.m_pControl = NULL;
 	m_SelectedControl.m_nIndex = nNotSet;
 	GetDocument()->SetModifiedFlag(TRUE);
 }
-void CObjectDCLView::HideGrips()
+void COpenDCLView::HideGrips()
 {
 	m_GripRect1.ShowWindow(FALSE);
 	m_GripRect2.ShowWindow(FALSE);
@@ -532,7 +531,7 @@ void CObjectDCLView::HideGrips()
 	m_GripRect8.ShowWindow(FALSE);
 
 }
-void CObjectDCLView::MoveGripRectsForward()
+void COpenDCLView::MoveGripRectsForward()
 {
 	m_GripRect1.SetWindowPos(&CWnd::wndTop, 0,0,nNotSet,nNotSet, SWP_NOSIZE|SWP_NOMOVE);
 	m_GripRect2.SetWindowPos(&CWnd::wndTop, 0,0,nNotSet,nNotSet, SWP_NOSIZE|SWP_NOMOVE);
@@ -544,7 +543,7 @@ void CObjectDCLView::MoveGripRectsForward()
 	m_GripRect8.SetWindowPos(&CWnd::wndTop, 0,0,nNotSet,nNotSet, SWP_NOSIZE|SWP_NOMOVE);
 
 }
-void CObjectDCLView::ShowGripRects(BOOL bShow, CRect rcCtrl)
+void COpenDCLView::ShowGripRects(BOOL bShow, CRect rcCtrl)
 {
 	if (m_bGripsCreate == FALSE)
 		return;
@@ -626,7 +625,7 @@ void CObjectDCLView::ShowGripRects(BOOL bShow, CRect rcCtrl)
 	}
 }
 
-void CObjectDCLView::SelectControl(CString sName) 
+void COpenDCLView::SelectControl(CString sName) 
 {
 	CDclControlObject* pArxObject = FindArxControlObject(m_pThisDclForm, sName);
 	if (pArxObject == NULL)
@@ -660,7 +659,7 @@ void CObjectDCLView::SelectControl(CString sName)
 	}
 }
 
-bool CObjectDCLView::CheckControlsForSelection( CRect rcSelArea, bool bLookForOne ) 
+bool COpenDCLView::CheckControlsForSelection( CRect rcSelArea, bool bLookForOne ) 
 {
 	CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
 	if( !m_SelectedControl.m_pArxObject )
@@ -718,7 +717,7 @@ bool CObjectDCLView::CheckControlsForSelection( CRect rcSelArea, bool bLookForOn
 	return bReturn;
 }
 
-bool CObjectDCLView::CheckControlsForSelection(CPoint point, UINT nFlags, bool bMouseDown) 
+bool COpenDCLView::CheckControlsForSelection(CPoint point, UINT nFlags, bool bMouseDown) 
 {
 	CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();	
 	if (m_SelectedList.GetCount() == 0 &&
@@ -792,7 +791,7 @@ bool CObjectDCLView::CheckControlsForSelection(CPoint point, UINT nFlags, bool b
 	return false;
 }
 
-void CObjectDCLView::OnRButtonUp(UINT nFlags, CPoint point) 
+void COpenDCLView::OnRButtonUp(UINT nFlags, CPoint point) 
 {
 	m_MouseDown = false;
 	FirePopUpMenuPlease(point.x, point.y);
@@ -802,7 +801,7 @@ void CObjectDCLView::OnRButtonUp(UINT nFlags, CPoint point)
 }
 
 
-void CObjectDCLView::MoveControl(CSelectedControl *pSelectedControl, CPoint point)
+void COpenDCLView::MoveControl(CSelectedControl *pSelectedControl, CPoint point)
 {
 	CRect rcCtrl;
 	CRect rcNewPos;
@@ -848,7 +847,7 @@ void CObjectDCLView::MoveControl(CSelectedControl *pSelectedControl, CPoint poin
 	m_bMoving = true;
 }
 
-void CObjectDCLView::RemoveDragRect(CSelectedControl *pSelectedControl)
+void COpenDCLView::RemoveDragRect(CSelectedControl *pSelectedControl)
 {
 	//if (pSelectedControl->m_pControl == NULL)
 	//	return;
@@ -872,7 +871,7 @@ void CObjectDCLView::RemoveDragRect(CSelectedControl *pSelectedControl)
 	::ReleaseDC(NULL, hdc);
 }
 
-void CObjectDCLView::AllRemoveDragRects()
+void COpenDCLView::AllRemoveDragRects()
 {
 	RemoveDragRect(&m_SelectedControl);
 	
@@ -890,7 +889,7 @@ void CObjectDCLView::AllRemoveDragRects()
 
 
 
-bool CObjectDCLView::StoreControlsPosition(CSelectedControl *pSelectedControl)
+bool COpenDCLView::StoreControlsPosition(CSelectedControl *pSelectedControl)
 {
 	CRect rcCtrl;
 
@@ -926,7 +925,7 @@ bool CObjectDCLView::StoreControlsPosition(CSelectedControl *pSelectedControl)
 	return true;
 }
 
-void CObjectDCLView::CalcControlOffsetDistances(CDclControlObject *pArxObject, CRect &rcCtrl)
+void COpenDCLView::CalcControlOffsetDistances(CDclControlObject *pArxObject, CRect &rcCtrl)
 {
 	CRect rcThis;
 	GetClientRect(&rcThis);
@@ -1011,7 +1010,7 @@ void CObjectDCLView::CalcControlOffsetDistances(CDclControlObject *pArxObject, C
 	}
 }
 
-CRect CObjectDCLView::GetSplitterRect(int nId)
+CRect COpenDCLView::GetSplitterRect(int nId)
 {
 	CRect rc;
 	// just in case get the client rect
@@ -1033,7 +1032,7 @@ CRect CObjectDCLView::GetSplitterRect(int nId)
 	return rc;
 }
 
-int CObjectDCLView::CheckGripsMouseMoveOver(CPoint point) 
+int COpenDCLView::CheckGripsMouseMoveOver(CPoint point) 
 {
 	CRect rc1;
 	CRect rc2;
@@ -1117,7 +1116,7 @@ int CObjectDCLView::CheckGripsMouseMoveOver(CPoint point)
 	// return a value indicating not over a grip control
 	return nNotSet;
 }
-void CObjectDCLView::OnMouseMove(UINT nFlags, CPoint point) 
+void COpenDCLView::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	
 	CheckGripsMouseMoveOver(point);
@@ -1208,7 +1207,7 @@ void CObjectDCLView::OnMouseMove(UINT nFlags, CPoint point)
 	CView::OnMouseMove(nFlags, point);
 }
 
-void CObjectDCLView::OnLButtonUp(UINT nFlags, CPoint point) 
+void COpenDCLView::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	CView::OnLButtonUp(nFlags, point);
 	
@@ -1407,14 +1406,15 @@ void CObjectDCLView::OnLButtonUp(UINT nFlags, CPoint point)
 	CalcAllOffsets();
 }
 
-void CObjectDCLView::ClearSelection(bool bResetZOrder)
+void COpenDCLView::ClearSelection(bool bResetZOrder)
 {
 	AllRemoveDragRects();
 	HideSizingRect();
+	m_SelectedControl.m_pArxObject = NULL;
 	if (m_SelectedList.GetCount() == 0)
 		return;
-
 	HideGrips();		
+
 	for (int i=m_SelectedList.GetCount()- 1; i>=0; i--)
 	{
 		POSITION pos = m_SelectedList.FindIndex(i);
@@ -1439,7 +1439,7 @@ void CObjectDCLView::ClearSelection(bool bResetZOrder)
 	}
 }
 
-void CObjectDCLView::ShowSelection()
+void COpenDCLView::ShowSelection()
 {
 	POSITION pos = m_SelectedList.GetHeadPosition();
 	while( pos )
@@ -1449,7 +1449,7 @@ void CObjectDCLView::ShowSelection()
 	}
 }
 
-bool CObjectDCLView::IsInSelection(CDclControlObject *pArxObject)
+bool COpenDCLView::IsInSelection(CDclControlObject *pArxObject)
 {
 	POSITION pos = m_SelectedList.GetHeadPosition();
 	while( pos )
@@ -1461,7 +1461,7 @@ bool CObjectDCLView::IsInSelection(CDclControlObject *pArxObject)
 	return false;
 }
 
-void CObjectDCLView::OnLButtonDown(UINT nFlags, CPoint point) 
+void COpenDCLView::OnLButtonDown(UINT nFlags, CPoint point) 
 {	
 	if (m_pThisDclForm == NULL)
 		return;
@@ -1487,7 +1487,7 @@ void CObjectDCLView::OnLButtonDown(UINT nFlags, CPoint point)
 	CView::OnLButtonDown(nFlags, point);
 		
 }
-void CObjectDCLView::OnRButtonDown(UINT nFlags, CPoint point) 
+void COpenDCLView::OnRButtonDown(UINT nFlags, CPoint point) 
 {
 	OnMouseButtonDown(1, point);
 	
@@ -1538,7 +1538,7 @@ void CObjectDCLView::OnRButtonDown(UINT nFlags, CPoint point)
 	CView::OnRButtonDown(nFlags, point);
 }
 
-void CObjectDCLView::OnMouseButtonDown(UINT nFlags, CPoint point) 
+void COpenDCLView::OnMouseButtonDown(UINT nFlags, CPoint point) 
 {
 	FireShowFormGrips(FALSE);
 	m_MouseDown = true;	
@@ -1581,7 +1581,7 @@ void CObjectDCLView::OnMouseButtonDown(UINT nFlags, CPoint point)
 	}
 	
 }
-int CObjectDCLView::RoundToGridPattern(int Value)
+int COpenDCLView::RoundToGridPattern(int Value)
 {
 	// return value if the grid spacing is too small
 	if (m_gridSpacing < nMinGridSpacing)
@@ -1600,7 +1600,7 @@ int CObjectDCLView::RoundToGridPattern(int Value)
 
 }
 
-void CObjectDCLView::InsertControl(CRect rcPos)
+void COpenDCLView::InsertControl(CRect rcPos)
 {
 	// if the control to insert in not a valid control, exit here
 	if (theEditorWorkspace.GetToolBox()->m_nSelectedCtrl < CtlLabel)
@@ -1610,7 +1610,7 @@ void CObjectDCLView::InsertControl(CRect rcPos)
 }
 
 
-void CObjectDCLView::InsertControl(CRect rcPos, ControlType nCtrlToInsert)
+void COpenDCLView::InsertControl(CRect rcPos, ControlType nCtrlToInsert)
 {
 
 	// if the dcl form is not valid, exit here
@@ -1676,7 +1676,7 @@ void CObjectDCLView::InsertControl(CRect rcPos, ControlType nCtrlToInsert)
 	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar(pDclControl);
 }
 
-int CObjectDCLView::GetNextControlId()
+int COpenDCLView::GetNextControlId()
 {
 	int nHighest = -1;
 	POSITION pos = m_pThisDclForm->GetControlList().GetHeadPosition();
@@ -1689,7 +1689,7 @@ int CObjectDCLView::GetNextControlId()
 	return nHighest + nControlStartId + 1;
 }
 
-CWnd* CObjectDCLView::AddCWndControl( CDclControlObject* pDclControl, CRect rcPos, bool bForceUpdate )
+CWnd* COpenDCLView::AddCWndControl( CDclControlObject* pDclControl, CRect rcPos, bool bForceUpdate )
 {
 	if (pDclControl->GetID() < 0)
 		return NULL;
@@ -1778,7 +1778,7 @@ CWnd* CObjectDCLView::AddCWndControl( CDclControlObject* pDclControl, CRect rcPo
 	return pControl;
 }
 
-int CObjectDCLView::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+int COpenDCLView::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
 	if (CView::OnCreate(lpCreateStruct) == nNotSet)
 		return nNotSet;
@@ -1847,7 +1847,7 @@ int CObjectDCLView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
-int CObjectDCLView::GetDclFormIndex() 
+int COpenDCLView::GetDclFormIndex() 
 {
 	POSITION pos;
 	int nCount = 0;
@@ -1868,14 +1868,14 @@ int CObjectDCLView::GetDclFormIndex()
 	return nNotSet;
 }
 
-void CObjectDCLView::OnDclFormNameChange() 
+void COpenDCLView::OnDclFormNameChange() 
 {
 	GetDclFormIndex();
 
 	GetDocument()->SetModifiedFlag(TRUE);
 }
 
-CString CObjectDCLView::FindNextControlName(CString sControlName) 
+CString COpenDCLView::FindNextControlName(CString sControlName) 
 {
 	if( !m_pThisDclForm )
 		return CString();
@@ -1888,7 +1888,7 @@ CString CObjectDCLView::FindNextControlName(CString sControlName)
 }
 
 
-void CObjectDCLView::OnDestroy() 
+void COpenDCLView::OnDestroy() 
 {
 	if (m_pThisDclForm != NULL)
 		m_pThisDclForm->m_pChildWnd = NULL;
@@ -1902,7 +1902,7 @@ void CObjectDCLView::OnDestroy()
 	}
 }
 
-void CObjectDCLView::PreDestroy() 
+void COpenDCLView::PreDestroy() 
 {
 	ClearControls();
 	
@@ -1925,7 +1925,7 @@ void CObjectDCLView::PreDestroy()
 	m_pThisDclForm = NULL;
 }
 
-void CObjectDCLView::ClearControls() 
+void COpenDCLView::ClearControls() 
 {
 	ClearSelection();
 	if (m_pThisDclForm == NULL)
@@ -1954,7 +1954,7 @@ void CObjectDCLView::ClearControls()
 	m_pThisDclForm = NULL;
 }
 
-void CObjectDCLView::ClearChildControls(CControlHolder *pParentControl) 
+void COpenDCLView::ClearChildControls(CControlHolder *pParentControl) 
 {
 	if (pParentControl->m_ControlType == CtlActiveX)
 		pParentControl->GetTemplate()->SaveToStream(pParentControl->GetActiveXCtrl());
@@ -1966,7 +1966,7 @@ void CObjectDCLView::ClearChildControls(CControlHolder *pParentControl)
 	//}
 }
 
-void CObjectDCLView::RefreshChildControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID)
+void COpenDCLView::RefreshChildControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID)
 {
 	if (pArxObject == NULL)
 		return;
@@ -2079,7 +2079,7 @@ void CObjectDCLView::RefreshChildControl(CDclControlObject *pArxObject, Property
 	}
 }
 
-void CObjectDCLView::ResizeChildControl(CDclControlObject *pArxObject)
+void COpenDCLView::ResizeChildControl(CDclControlObject *pArxObject)
 {
 	if (pArxObject == NULL)
 		return;
@@ -2112,7 +2112,7 @@ void CObjectDCLView::ResizeChildControl(CDclControlObject *pArxObject)
 		ShowGripRects(TRUE, rcControl );
 }
 
-void CObjectDCLView::HideSizingRect()
+void COpenDCLView::HideSizingRect()
 {
 	if (m_rcDrawLast.Width() == 0 && m_rcDrawLast.Height() == 0)
 		return;
@@ -2124,7 +2124,7 @@ void CObjectDCLView::HideSizingRect()
 	m_rcDrawLast.SetRect(0,0,0,0);
 }	
 
-void CObjectDCLView::CopyControlToClipBoard() 
+void COpenDCLView::CopyControlToClipBoard() 
 {
 	CClipboardObject ClipBoard;
 
@@ -2174,7 +2174,7 @@ void CObjectDCLView::CopyControlToClipBoard()
 }
 
 
-void CObjectDCLView::DeleteSelectedControls() 
+void COpenDCLView::DeleteSelectedControls() 
 {
 	bool FireTabDeleted = false;
 	if (m_SelectedControl.m_nIndex == nNotSet ||
@@ -2252,7 +2252,7 @@ void CObjectDCLView::DeleteSelectedControls()
 		FireTabControlDeleted();
 }
 
-void CObjectDCLView::UpdateFont(CString sName) 
+void COpenDCLView::UpdateFont(CString sName) 
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 		m_SelectedControl.m_pArxObject == NULL ||
@@ -2346,7 +2346,7 @@ void CObjectDCLView::UpdateFont(CString sName)
 	}	
 }
 
-void CObjectDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool bBool, int nSize, CString sName)
+void COpenDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool bBool, int nSize, CString sName)
 {
 	CString	sFontName;
 	try
@@ -2430,7 +2430,7 @@ void CObjectDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool b
 	}
 
 }
-void CObjectDCLView::UpdateFontBool(bool bBool, PropertyId nId)
+void COpenDCLView::UpdateFontBool(bool bBool, PropertyId nId)
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 		m_SelectedControl.m_pArxObject == NULL ||
@@ -2522,7 +2522,7 @@ void CObjectDCLView::UpdateFontBool(bool bBool, PropertyId nId)
 	}	
 }
 
-void CObjectDCLView::UpdateFontSize(int nSize) 
+void COpenDCLView::UpdateFontSize(int nSize) 
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 		m_SelectedControl.m_pArxObject == NULL ||
@@ -2616,7 +2616,7 @@ void CObjectDCLView::UpdateFontSize(int nSize)
 }
 
 
-void CObjectDCLView::PasteFromClipBoard()
+void COpenDCLView::PasteFromClipBoard()
 {
 	CClipboardObject ClipBoard; 
 
@@ -2684,55 +2684,6 @@ void CObjectDCLView::PasteFromClipBoard()
 					
 			ClearEventProperties(pCopy);
 			if (pCopy->GetType() == CtlFileDlgCtrl)
-				continue;
-
-			bool bContinue = false;
-			if (nCurrentPurchaseMode != nPurchasedEnt)
-			{
-				switch(pCopy->GetType())
-				{
-				case CtlGrid:
-					bContinue = true;
-					break;
-				}
-			}
-			if (nCurrentPurchaseMode != nPurchasedPro &&
-				nCurrentPurchaseMode != nPurchasedEnt)
-			{
-				switch(pCopy->GetType())
-				{
-				case CtlDwgList:
-				case CtlBlockView:
-				case CtlImageComboBox:
-					bContinue = true;
-					break;
-				}
-			}
-			if (nCurrentPurchaseMode == nPurchasedLT)
-			{
-				switch(pCopy->GetType())
-				{
-				case CtlPictureBox:
-				case CtlTabStrip:
-				case CtlMonth:
-				case CtlSpinButton:
-				case CtlStaticURL:
-				case CtlHtmlCtrl:
-				case CtlDwgPreview:
-				case CtlListView:
-				case CtlGrid:
-				case CtlActiveX:
-				case CtlDwgList:
-				case CtlFileDlgCtrl:
-				case CtlBlockView:
-				case CtlHatch:
-				case CtlBlockList:
-					bContinue = true;
-					break;
-				}
-			}
-			
-			if (bContinue)
 				continue;
 
 			CString sNameOfCopy = FindNextControlName( GetControlName( pCopy ) );
@@ -2820,7 +2771,7 @@ void CObjectDCLView::PasteFromClipBoard()
 		
 	CalcAllOffsets();
 }
-void CObjectDCLView::SetupDragResize(int nQuadrant) 
+void COpenDCLView::SetupDragResize(int nQuadrant) 
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 		m_SelectedControl.m_pArxObject == NULL ||
@@ -2844,7 +2795,7 @@ void CObjectDCLView::SetupDragResize(int nQuadrant)
 
 }
 
-void CObjectDCLView::ClearEventProperties(CDclControlObject *pCtrl)
+void COpenDCLView::ClearEventProperties(CDclControlObject *pCtrl)
 {
 	pCtrl->ResetProperty(nEventBtnClicked);
 	pCtrl->ResetProperty(nEventClicked);
@@ -2911,7 +2862,7 @@ void CObjectDCLView::ClearEventProperties(CDclControlObject *pCtrl)
 
 }
 
-void CObjectDCLView::DragResized(int nQuadrant, CPoint point) 
+void COpenDCLView::DragResized(int nQuadrant, CPoint point) 
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 		m_SelectedControl.m_pArxObject == NULL ||
@@ -2932,7 +2883,7 @@ void CObjectDCLView::DragResized(int nQuadrant, CPoint point)
 	
 	m_rcDraw = m_rcDrawLast;
 }
-CRect CObjectDCLView::CalcResizeRect(int nQuadrant, CPoint point)
+CRect COpenDCLView::CalcResizeRect(int nQuadrant, CPoint point)
 {
 	CRect rcForm;
 	GetWindowRect(&rcForm);
@@ -3037,7 +2988,7 @@ CRect CObjectDCLView::CalcResizeRect(int nQuadrant, CPoint point)
 	return rcPos;
 }
 
-void CObjectDCLView::CompletedDragResize(int nQuadrant, CPoint point) 
+void COpenDCLView::CompletedDragResize(int nQuadrant, CPoint point) 
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 		m_SelectedControl.m_pArxObject == NULL ||
@@ -3173,7 +3124,7 @@ void CObjectDCLView::CompletedDragResize(int nQuadrant, CPoint point)
 	FireSetUndo();
 }
 
-void CObjectDCLView::UpdateClientHeight(CDclControlObject* pArxObject, CWnd *pControl) 
+void COpenDCLView::UpdateClientHeight(CDclControlObject* pArxObject, CWnd *pControl) 
 {
 	if (m_SelectedControl.m_pArxObject == NULL)
 		return;
@@ -3207,7 +3158,7 @@ void CObjectDCLView::UpdateClientHeight(CDclControlObject* pArxObject, CWnd *pCo
 	FireTabResized(pArxObject->m_ClientHeight);
 }
 
-void CObjectDCLView::OnSize(UINT nType, int cx, int cy) 
+void COpenDCLView::OnSize(UINT nType, int cx, int cy) 
 {
 	InvalidateRect(&m_rcGripRect);
 	CView::OnSize(nType, cx, cy);
@@ -3235,7 +3186,7 @@ void CObjectDCLView::OnSize(UINT nType, int cx, int cy)
 	InvalidateRect(&m_rcGripRect);
 }	
 
-void CObjectDCLView::UpdateGripPos()
+void COpenDCLView::UpdateGripPos()
 {
 	// size-grip goes bottom right in the client area
 
@@ -3245,7 +3196,7 @@ void CObjectDCLView::UpdateGripPos()
 	m_rcGripRect.top = m_rcGripRect.bottom - m_szGripSize.cy;
 }
 
-void CObjectDCLView::AdjustOffsets(int cx, int cy) 
+void COpenDCLView::AdjustOffsets(int cx, int cy) 
 {
 	
 	if (m_pThisDclForm == NULL)
@@ -3286,7 +3237,7 @@ void CObjectDCLView::AdjustOffsets(int cx, int cy)
 
 
 // refresh the selected control
-void CObjectDCLView::RefreshSelectControl() 
+void COpenDCLView::RefreshSelectControl() 
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 		m_SelectedControl.m_pArxObject == NULL ||
@@ -3314,7 +3265,7 @@ void CObjectDCLView::RefreshSelectControl()
 }
 
 
-void CObjectDCLView::ZOrdedSelectedControls(short direction) 
+void COpenDCLView::ZOrdedSelectedControls(short direction) 
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 		m_SelectedControl.m_pArxObject == NULL ||
@@ -3356,7 +3307,7 @@ void CObjectDCLView::ZOrdedSelectedControls(short direction)
 	UpdateZOrderList();
 }
 
-short CObjectDCLView::GetSelectedTabClientWidth() 
+short COpenDCLView::GetSelectedTabClientWidth() 
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 		m_SelectedControl.m_pArxObject == NULL ||
@@ -3369,7 +3320,7 @@ short CObjectDCLView::GetSelectedTabClientWidth()
 	return (short)m_SelectedControl.m_pArxObject->GetLngProperty(nWidth);
 }
 
-short CObjectDCLView::GetSelectedTabClientHeight() 
+short COpenDCLView::GetSelectedTabClientHeight() 
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 			m_SelectedControl.m_pArxObject == NULL ||
@@ -3388,7 +3339,7 @@ short CObjectDCLView::GetSelectedTabClientHeight()
 }
 
 
-void CObjectDCLView::DisplayControls(CDclFormObject *pDclForm) 
+void COpenDCLView::DisplayControls(CDclFormObject *pDclForm) 
 {
 	CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
 	m_pThisDclForm = pDclForm;
@@ -3487,7 +3438,7 @@ void CObjectDCLView::DisplayControls(CDclFormObject *pDclForm)
 	pDclProps->SetLongProperty(nHeight, rc.Height());
 }
 
-void CObjectDCLView::MoveThisInPosition() 
+void COpenDCLView::MoveThisInPosition() 
 {
 	CRect rcStartup = ((CChildFrame*)GetParentFrame())->m_rcStartup;
 	if (rcStartup.left < 0)
@@ -3499,7 +3450,7 @@ void CObjectDCLView::MoveThisInPosition()
 	GetParentFrame()->MoveWindow(rcStartup,TRUE);
 }
 
-short CObjectDCLView::GetSelectedArxIndex() 
+short COpenDCLView::GetSelectedArxIndex() 
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 		m_SelectedControl.m_pArxObject == NULL ||
@@ -3515,7 +3466,7 @@ short CObjectDCLView::GetSelectedArxIndex()
 		return m_SelectedControl.m_nIndex;
 }
 
-long CObjectDCLView::GetSelectedType() 
+long COpenDCLView::GetSelectedType() 
 {
 	if (m_SelectedControl.m_nIndex == nNotSet ||
 		m_SelectedControl.m_pArxObject == NULL ||
@@ -3530,7 +3481,7 @@ long CObjectDCLView::GetSelectedType()
 }
 
 
-void CObjectDCLView::OnLostFocus() 
+void COpenDCLView::OnLostFocus() 
 {
 	HideGrips();
 	HideSizingRect();
@@ -3539,7 +3490,7 @@ void CObjectDCLView::OnLostFocus()
 
 }
 
-BOOL CObjectDCLView::CanUndo() 
+BOOL COpenDCLView::CanUndo() 
 {
 	if (m_UndoList.GetCount() > 0)
 		return TRUE;
@@ -3547,7 +3498,7 @@ BOOL CObjectDCLView::CanUndo()
 		return FALSE;
 }
 
-void CObjectDCLView::UndoAction() 
+void COpenDCLView::UndoAction() 
 {
 	POSITION pos = m_UndoList.GetTailPosition();
 	
@@ -3648,7 +3599,7 @@ void CObjectDCLView::UndoAction()
 	
 }
 
-void CObjectDCLView::UpdateControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID) 
+void COpenDCLView::UpdateControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID) 
 {
 	
 	if (m_pThisDclForm == NULL)
@@ -3676,12 +3627,12 @@ void CObjectDCLView::UpdateControl(CDclControlObject *pArxObject, PropertyId Cha
 
 }
 
-short CObjectDCLView::ResetDclFormIndex() 
+short COpenDCLView::ResetDclFormIndex() 
 {
 	return GetDclFormIndex();
 }
 
-void CObjectDCLView::CheckPictureRefs() 
+void COpenDCLView::CheckPictureRefs() 
 {
 	
 	for (int i=1; i<m_pThisDclForm->GetControlList().GetCount(); i++)
@@ -3701,7 +3652,7 @@ void CObjectDCLView::CheckPictureRefs()
 
 }
 
-void CObjectDCLView::SelectControl(short nArxControlIndex) 
+void COpenDCLView::SelectControl(short nArxControlIndex) 
 {
 	CDclControlObject* pArxObject = GetArxControlObject(m_pThisDclForm, nArxControlIndex);
 	if (pArxObject == NULL)
@@ -3721,7 +3672,7 @@ void CObjectDCLView::SelectControl(short nArxControlIndex)
 	}
 }
 
-void CObjectDCLView::OnLButtonDblClk(UINT nFlags, CPoint point) 
+void COpenDCLView::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
 	CView::OnLButtonDblClk(nFlags, point);
 	if (m_pThisDclForm == NULL)
@@ -3739,7 +3690,7 @@ void CObjectDCLView::OnLButtonDblClk(UINT nFlags, CPoint point)
 		FireShowPropertyWizard(m_SelectedControl.m_pArxObject);
 }
 
-void CObjectDCLView::CalcAllOffsets() 
+void COpenDCLView::CalcAllOffsets() 
 {
 	
 	CRect rcThis;
@@ -3772,7 +3723,7 @@ void CObjectDCLView::CalcAllOffsets()
 	}
 }
 
-void CObjectDCLView::RefreshControlsWithPictures() 
+void COpenDCLView::RefreshControlsWithPictures() 
 {
 	CRect rcThis;
 	GetClientRect(&rcThis);
@@ -3796,7 +3747,7 @@ void CObjectDCLView::RefreshControlsWithPictures()
 
 }
 
-void CObjectDCLView::ZOrderUpdateOfSelCtrl(short ZIndex) 
+void COpenDCLView::ZOrderUpdateOfSelCtrl(short ZIndex) 
 {
 	
 	if (m_SelectedControl.m_nIndex == nNotSet ||
@@ -3814,7 +3765,7 @@ void CObjectDCLView::ZOrderUpdateOfSelCtrl(short ZIndex)
 	UpdateZOrderList();
 }
 
-bool CObjectDCLView::IsTabsEnabled()
+bool COpenDCLView::IsTabsEnabled()
 {
 	if (m_pThisDclForm == NULL)
 		return true;
@@ -3836,7 +3787,7 @@ bool CObjectDCLView::IsTabsEnabled()
 }
 
 
-void CObjectDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView) 
+void COpenDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView) 
 {
 	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetActiveView(pActivateView);
 	CToolBox *pToolBox = theEditorWorkspace.GetToolBox();
@@ -3851,10 +3802,10 @@ void CObjectDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView*
 		}		
 	}
 	else
-		((CObjectDCLView*)pDeactiveView)->m_pThisDclForm = NULL;
+		((COpenDCLView*)pDeactiveView)->m_pThisDclForm = NULL;
 
 	if(pDeactiveView)
-		((CObjectDCLView*)pDeactiveView)->m_StandardCursorID = false;
+		((COpenDCLView*)pDeactiveView)->m_StandardCursorID = false;
 	
 	CView::OnActivateView(bActivate, pActivateView, pDeactiveView);
 	if (bActivate && pActivateView == this)
@@ -3864,7 +3815,7 @@ void CObjectDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView*
 	}
 }
 
-void CObjectDCLView::UpdateZOrderList() 
+void COpenDCLView::UpdateZOrderList() 
 {
 	
 	if (m_pThisDclForm == NULL)
@@ -3900,48 +3851,48 @@ void CObjectDCLView::UpdateZOrderList()
 		pProjTree->SelectItem(m_pThisDclForm->m_htiTreeItem);
 	}
 }
-void CObjectDCLView::OnBringtofront() 
+void COpenDCLView::OnBringtofront() 
 {
 	ZOrdedSelectedControls(0);
 	
 }
 
-void CObjectDCLView::OnSendtoback() 
+void COpenDCLView::OnSendtoback() 
 {
 	ZOrdedSelectedControls(1);
 	
 }
 
-void CObjectDCLView::OnEditCut() 
+void COpenDCLView::OnEditCut() 
 {
 	CopyControlToClipBoard();
 	DeleteSelectedControls();
 	theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
 }
 
-void CObjectDCLView::OnEditDelete() 
+void COpenDCLView::OnEditDelete() 
 {
 	DeleteSelectedControls();
 	theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
 }
 
-void CObjectDCLView::OnEditPaste() 
+void COpenDCLView::OnEditPaste() 
 {
 	PasteFromClipBoard();
 }
 
-void CObjectDCLView::OnEditUndo() 
+void COpenDCLView::OnEditUndo() 
 {
 	UndoAction();
 }
 
-void CObjectDCLView::OnEditCopy() 
+void COpenDCLView::OnEditCopy() 
 {
 	CopyControlToClipBoard();
 	
 }
 
-void CObjectDCLView::OnContextMenu(CWnd* pWnd, CPoint point) 
+void COpenDCLView::OnContextMenu(CWnd* pWnd, CPoint point) 
 {
 	if (m_pThisDclForm == NULL)
 		return;
@@ -3964,22 +3915,7 @@ void CObjectDCLView::OnContextMenu(CWnd* pWnd, CPoint point)
 		CMenu* pPopup;
 
 		// the font popup is stored in a resource
-		switch (nCurrentPurchaseMode)
-		{
-		case nPurchasedLT:
-			menu.LoadMenu(IDR_POPUPMENUS_LT);
-			break;
-		case nPurchasedR14Pro:
-			menu.LoadMenu(IDR_POPUPMENUS_R14);
-			break;
-		case nPurchasedStd:
-			menu.LoadMenu(IDR_POPUPMENUS_STD);
-			break;
-		default:
-			menu.LoadMenu(IDR_POPUPMENUS);
-			break;
-		}
-		
+		menu.LoadMenu(IDR_POPUPMENUS);
 		pPopup = menu.GetSubMenu(1);
 		ClientToScreen(&point);
 		pPopup->TrackPopupMenu( TPM_LEFTALIGN, point.x, point.y, this );			
@@ -3995,35 +3931,19 @@ void CObjectDCLView::OnContextMenu(CWnd* pWnd, CPoint point)
 	CMenu* pPopup;
 
 	// the font popup is stored in a resource
-	switch (nCurrentPurchaseMode)
-		{
-		case nPurchasedLT:
-			menu.LoadMenu(IDR_POPUPMENUS_LT);
-			break;
-		case nPurchasedR14Pro:
-			menu.LoadMenu(IDR_POPUPMENUS_R14);
-			break;
-		case nPurchasedStd:
-			menu.LoadMenu(IDR_POPUPMENUS_STD);
-			break;
-		default:
-			menu.LoadMenu(IDR_POPUPMENUS);
-			break;
-		}
-		
+	menu.LoadMenu(IDR_POPUPMENUS);
 	pPopup = menu.GetSubMenu(2);
 	ClientToScreen(&point);
-	CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
+	COpenDCLApp* pApp = (COpenDCLApp*)AfxGetApp();
 	pPopup->TrackPopupMenu( TPM_LEFTALIGN, point.x, point.y, pApp->m_pMainWnd );
 }
 
-BOOL CObjectDCLView::PreTranslateMessage(MSG* pMsg) 
+BOOL COpenDCLView::PreTranslateMessage(MSG* pMsg) 
 {
-
 	return CView::PreTranslateMessage(pMsg);
 }
 
-void CObjectDCLView::FireControlSelected(CDclControlObject *pArxControl)
+void COpenDCLView::FireControlSelected(CDclControlObject *pArxControl)
 {
 	if (pArxControl != NULL)
 	{
@@ -4047,7 +3967,7 @@ void CObjectDCLView::FireControlSelected(CDclControlObject *pArxControl)
 	theEditorWorkspace.GetToolBox()->m_nSelectedCtrl = 1;
 
 }
-void CObjectDCLView::FireShowFormGrips(BOOL bVisible)
+void COpenDCLView::FireShowFormGrips(BOOL bVisible)
 {
 	if (m_pThisDclForm != NULL && bVisible)
 	{
@@ -4063,19 +3983,19 @@ void CObjectDCLView::FireShowFormGrips(BOOL bVisible)
 	}
 }
 
-void CObjectDCLView::FirePopUpMenuPlease(long cx, long cy)
+void COpenDCLView::FirePopUpMenuPlease(long cx, long cy)
 {
 }
 
-void CObjectDCLView::FireTabResized(short nClientHeight)
+void COpenDCLView::FireTabResized(short nClientHeight)
 {
 }
 
-void CObjectDCLView::FireMouseDownEvent()
+void COpenDCLView::FireMouseDownEvent()
 {
 }
 
-void CObjectDCLView::FireTabControlDeleted()
+void COpenDCLView::FireTabControlDeleted()
 {
 	theEditorWorkspace.GetProjectTreeCtrl()->RemoveChildren( m_pThisDclForm->m_htiTreeItem );
 	CProject* pProject = m_pThisDclForm->GetProject();
@@ -4089,11 +4009,11 @@ void CObjectDCLView::FireTabControlDeleted()
 	}
 }
 
-void CObjectDCLView::FireSetUndo()
+void COpenDCLView::FireSetUndo()
 {
 }
 
-void CObjectDCLView::FireControlInserted(CDclControlObject *pArxControl, long ControlType)
+void COpenDCLView::FireControlInserted(CDclControlObject *pArxControl, long ControlType)
 {
 	// have the property list show the new control
 	if (pArxControl != NULL)
@@ -4110,9 +4030,9 @@ void CObjectDCLView::FireControlInserted(CDclControlObject *pArxControl, long Co
 	//	AddTabPanes();
 }
 
-//void CObjectDCLView::AddTabPanes()
+//void COpenDCLView::AddTabPanes()
 //{
-//	CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
+//	COpenDCLApp* pApp = (COpenDCLApp*)AfxGetApp();
 //	// create a pointer to pass to the list to insert
 //	CProject *pProject = activeProject;
 //	
@@ -4144,10 +4064,10 @@ void CObjectDCLView::FireControlInserted(CDclControlObject *pArxControl, long Co
 //}
 
 
-CDclFormObject * CObjectDCLView::AddSingleTabPane(int nIndex)
+CDclFormObject * COpenDCLView::AddSingleTabPane(int nIndex)
 {
 	CDclFormObject* pNewDclForm = NULL;
-	CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
+	COpenDCLApp* pApp = (COpenDCLApp*)AfxGetApp();
 	// create a pointer to pass to the list to insert
 	CProject *pProject = activeProject;
 	
@@ -4165,12 +4085,12 @@ CDclFormObject * CObjectDCLView::AddSingleTabPane(int nIndex)
 }
 
 
-bool CObjectDCLView::CanRemoveChildTabPane(int nIndex)
+bool COpenDCLView::CanRemoveChildTabPane(int nIndex)
 {
 	if (nIndex == nNotSet)
 		return true;
 
-	CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
+	COpenDCLApp* pApp = (COpenDCLApp*)AfxGetApp();
 	// create a pointer to pass to the list to insert
 	CProject *pProject = activeProject;
 	
@@ -4198,7 +4118,7 @@ bool CObjectDCLView::CanRemoveChildTabPane(int nIndex)
 	return true;
 }
 
-void CObjectDCLView::RemoveChildTabPane(CDclFormObject *pDclForm)
+void COpenDCLView::RemoveChildTabPane(CDclFormObject *pDclForm)
 {
 	if (pDclForm == NULL)
 		return;
@@ -4207,7 +4127,7 @@ void CObjectDCLView::RemoveChildTabPane(CDclFormObject *pDclForm)
 	pDclForm->GetProject()->DeleteForm( pDclForm );
 }
 
-void CObjectDCLView::ResizeChildTabPanes()
+void COpenDCLView::ResizeChildTabPanes()
 {
 	CDclControlObject* pDclControl = m_SelectedControl.m_pArxObject;
 	RefCountedPtr< CPropertyObject > pProp = pDclControl->GetPropertyObject(nTabsCaption);
@@ -4228,19 +4148,19 @@ void CObjectDCLView::ResizeChildTabPanes()
 	}	
 }
 
-void CObjectDCLView::FireShowPropertyWizard(CDclControlObject *pArxControl)
+void COpenDCLView::FireShowPropertyWizard(CDclControlObject *pArxControl)
 {
 	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pControl != NULL)
 		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().ShowPropertyDlg();
 }
 
-void CObjectDCLView::OnProperties() 
+void COpenDCLView::OnProperties() 
 {
 	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pControl != NULL)
 		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().ShowPropertyDlg();
 }
 
-BOOL CObjectDCLView::OnAmbientProperty(COleControlSite* pSite, DISPID dispid, VARIANT* pvar) 
+BOOL COpenDCLView::OnAmbientProperty(COleControlSite* pSite, DISPID dispid, VARIANT* pvar) 
 {
 	if (dispid == DISPID_AMBIENT_USERMODE)
 	{		
@@ -4266,7 +4186,7 @@ BOOL CObjectDCLView::OnAmbientProperty(COleControlSite* pSite, DISPID dispid, VA
 	return CView::OnAmbientProperty(pSite, dispid, pvar);
 }
 
-void CObjectDCLView::OnDraw(CDC* pDC) 
+void COpenDCLView::OnDraw(CDC* pDC) 
 {
 	HDC hdc = pDC->m_hDC;
 	PaintBackGround(hdc);	
@@ -4309,32 +4229,32 @@ void CObjectDCLView::OnDraw(CDC* pDC)
 	
 }
 
-void CObjectDCLView::OnEditObjectbrowser() 
+void COpenDCLView::OnEditObjectbrowser() 
 {
 	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pControl != NULL)
 		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().EditObjectbrowser();
 }
 
-void CObjectDCLView::OnToolsSetlispsymbolnames()
+void COpenDCLView::OnToolsSetlispsymbolnames()
 {
 	CFormVarNameUpdate Dlg( m_pThisDclForm, m_pThisDclForm->GetKeyName() );
 	Dlg.DoModal();
 	theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
 }
 
-void CObjectDCLView::OnToolsClearlispsymbolnames()
+void COpenDCLView::OnToolsClearlispsymbolnames()
 {
 	CFormVarNameUpdate Dlg( m_pThisDclForm, NULL );
 	Dlg.DoModal();
 	theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
 }
 
-void CObjectDCLView::OnUpdateToolsSetlispsymbolnames(CCmdUI *pCmdUI)
+void COpenDCLView::OnUpdateToolsSetlispsymbolnames(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable( m_pThisDclForm != NULL );
 }
 
-void CObjectDCLView::OnUpdateToolsClearlispsymbolnames(CCmdUI *pCmdUI)
+void COpenDCLView::OnUpdateToolsClearlispsymbolnames(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable( m_pThisDclForm != NULL );
 }

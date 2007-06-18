@@ -55,7 +55,7 @@ public:
 	CDclFormObject( CProject* pProject, DclFormType type = VdclInvalid );
 	virtual ~CDclFormObject();
 
-	//2007-01-30 [ORW]: save version set to 4 (no change from ObjectDCL 3)
+	//2007-01-30 [ORW]: save version set to 4 (no change from OpenDCL 3)
 	//2007-02-19 [ORW]: save version set to 5 (image list collection removed from form object)
 	ULONG GetCurrentSaveVersion() const { return 5; }
 
@@ -78,7 +78,6 @@ public:
 	size_t CountDeletedImageLists() const;
 	CString GetDclFormTitle() const;
 	long GetDclFormTitleBarIcon();
-	void EnsureIsLoaded();
 
 	//void SaveSS(int n, int nType, class CStgFile &FileStg, CDocument *pDoc);
 	//static CDclFormObject* ReadSS(int n, int nType, CStgFile &FileStg, CDocument *pDoc);

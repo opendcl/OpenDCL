@@ -4,12 +4,18 @@
 // to when its reference count reaches zero. Creating a copy of the pointer class increments the reference 
 // count, thus ensuring that the object stays alive as long as there are any outstanding pointers to it.
 //
-// Copyright 2007 Owen Wengerd (http://www.manusoft.com)
-// Licensed to OpenDCL under terms of GNU General Public License
-//
 // Usage:
 // class CMyObject;
 // RefCountedPtr< MyObject > pMyObject = new CMyObject;
+//
+// Copyright 2007 ManuSoft. All Rights Reserved.
+// http://www.manusoft.com
+//
+// A license to use the code in this file for the OpenDCL project has been granted
+// by Owen Wengerd and ManuSoft. This code is provided under the terms of the GPL
+// license governing OpenDCL. This code may not be used for any other purpose
+// without the express written consent of Owen Wengerd or ManuSoft.
+
 
 class RefCounterBase
 {

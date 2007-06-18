@@ -65,8 +65,11 @@ static VARTYPE_ENTRY g_aVarTypes[] =
    { _T( "VT_ERROR" ), VT_ERROR },
    { _T( "VT_COLOR" ), VT_COLOR },
    { _T( "VT_FONT" ), VT_FONT },
-   { _T( "VT_UNKNOWN" ), VT_UNKNOWN }
-   
+   { _T( "VT_UNKNOWN" ), VT_UNKNOWN },
+   { _T( "VT_VARIANT" ), VT_VARIANT },
+   { _T( "VT_SAFEARRAY" ), VT_SAFEARRAY },
+   { _T( "VT_INT" ), VT_INT },
+   { _T( "VT_UINT" ), VT_UINT },
 };
 
 LPCTSTR VTIToString( int iType )

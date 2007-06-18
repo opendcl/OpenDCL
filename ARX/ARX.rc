@@ -132,7 +132,7 @@ IDI_LAYEROFF            ICON                    "Res\\LayerOff.ico"
 IDI_LAYERON             ICON                    "Res\\LayerOn.ico"
 IDI_HELP                ICON                    "Res\\Question.ico"
 IDI_INFO                ICON                    "Res\\Info.ico"
-IDI_EXCLEMATION         ICON                    "Res\\Exclemation.ico"
+IDI_WARN                ICON                    "Res\\Warn.ico"
 IDI_X                   ICON                    "Res\\X.ico"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -141,8 +141,8 @@ IDI_X                   ICON                    "Res\\X.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,1,16
- PRODUCTVERSION 4,0,1,16
+ FILEVERSION 4,0,1,17
+ PRODUCTVERSION 4,0,1,17
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -157,13 +157,15 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
+            VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL ARX Interface"
-            VALUE "FileVersion", "4, 0, 1, 16"
-            VALUE "InternalName", "ARX"
-            VALUE "LegalCopyright", "Copyright © 2007"
+            VALUE "FileVersion", "4, 0, 1, 17"
+            VALUE "InternalName", "OpenDCL.Runtime"
+            VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
+            VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL.arx"
             VALUE "ProductName", "OpenDCL"
-            VALUE "ProductVersion", "4, 0, 1, 16"
+            VALUE "ProductVersion", "4, 0, 1, 17"
         END
     END
     BLOCK "VarFileInfo"
@@ -242,6 +244,8 @@ BEGIN
     IDS_OLDERSLD            "An older format slide file file from an AutoCAD version earlier than V9 cannot be displayed in OpenDCL."
     IDS_DWGNOTLOADING       "Could not load the drawing file: "
     IDS_BLANKHTML           "An Html file must first be loaded before it can be updated."
+    IDS_ERR_INVALIDARGUMENTTYPE 
+                            "Invalid argument type!\r\n  Expected: %s\r\n  Received: %s"
     IDS_SELFILES            "Select the files"
 END
 
@@ -251,7 +255,7 @@ BEGIN
     IDS_NOLIST2             " method but nothing was in the list."
     IDS_NOPICTURE           "The picture was not found in the method "
     IDS_NOTDROPDOWN         "The ComboBox is not set to DropDown style."
-    IDS_DESIGNTIMEONLY      "Sorry, this property can only be set at design time only."
+    IDS_DESIGNTIMEONLY      "Sorry, this property can only be set at design time."
     IDS_VARNAMEINCORRECT    "The first argument was NIL. Please ensure that the variable being used to specify the form matches the value placed in the (VarName) property of the form."
     IDS_VARNAMEINCORRECT2   "The first argument int method "
     IDS_VARNAMEINCORRECT3   " was NIL. Please ensure that the variable being used to specify the control matches the value placed in the (VarName) property of the control."

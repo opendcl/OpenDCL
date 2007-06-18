@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "objectdcl.h"
+#include "OpenDCL.h"
 #include "Colors.h"
 #include "PropertyObject.h"
 #include "AcadColorTable.h"

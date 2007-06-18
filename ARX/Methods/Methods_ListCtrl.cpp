@@ -66,7 +66,7 @@ int ListCtrl_AddColumn()
 		return 0;
 	}
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 
 	for (int i = 0; i < nArg; i++)
@@ -362,7 +362,7 @@ int ListCtrl_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
 		return 0;
 	}
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -409,7 +409,7 @@ int ListCtrl_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
 	// clear the array
 	sTextArray.RemoveAll();
 
-	// do loop to get all the strings passed by AutoLisp
+	// do loop to get all the strings passed by AutoLISP
 	bool bDoLoop = true;
 	while (bDoLoop)
 	{
@@ -1350,7 +1350,7 @@ int ListCtrl_DeleteItems()
 		return 0;
 	}
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -1371,7 +1371,7 @@ int ListCtrl_DeleteItems()
 		ListData = ListData->rbnext;
 	}
 
-	// do loop to get all the strings passed by AutoLisp
+	// do loop to get all the strings passed by AutoLISP
 	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	bool bDoLoop = true;
 	while (bDoLoop)
@@ -1448,7 +1448,7 @@ int ListCtrl_DeleteColumns()
 		return 0;
 	}
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -1469,7 +1469,7 @@ int ListCtrl_DeleteColumns()
 		ListData = ListData->rbnext;
 	}
 
-	// do loop to get all the strings passed by AutoLisp
+	// do loop to get all the strings passed by AutoLISP
 	OdclListCtrl *pListCtrl = (OdclListCtrl*)pArx->GetWindow();
 	bool bDoLoop = true;
 	while (bDoLoop)
@@ -1549,7 +1549,7 @@ int ListCtrl_FillGrid()
 		return 0;
 	}
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)

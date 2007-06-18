@@ -17,6 +17,7 @@ public:
 		m_pArchive = NULL;
 		m_bFoundEnd = false;
 		m_bFoundError = false;
+        m_bIsOpen = false;
 	}
 	~CLispFileObject(){}
 	CArchive	*m_pArchive;
@@ -24,11 +25,13 @@ public:
 	CString		m_Style;
 	bool		m_bFoundEnd;
 	bool		m_bFoundError;
+    bool		m_bIsOpen;
 };
 
 int OpenBinFile();
 int WriteBinFile();
 int ReadBinFile();
+void AppendResBuf( resbuf *, resbuf * );
 int CloseBinFile();
 int CheckBinFile();
 

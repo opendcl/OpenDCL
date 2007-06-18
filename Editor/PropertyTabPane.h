@@ -25,7 +25,7 @@ public:
 // Operations
 public:
 	void SetupTabs();
-	void DisplaySelectedControlProperties(CDclControlObject *pControl,CObjectDCLView *pView);
+	void DisplaySelectedControlProperties(CDclControlObject *pControl,COpenDCLView *pView);
 	void ClearControlProperties();
 // Overrides
 	// ClassWizard generated virtual function overrides

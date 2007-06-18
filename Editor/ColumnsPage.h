@@ -13,7 +13,7 @@ class CImageListPage;
 class CImageListPage;
 class CDclFormObject;
 class CDclControlObject;
-class CObjectDCLView;
+class COpenDCLView;
 
 
 class CColumnData : public CObject
@@ -86,7 +86,7 @@ public:
 	RefCountedPtr< CPropertyObject > m_pColImageItems;	
 
 	CArray<CColumnData, CColumnData> m_ColData;										 
-	CObjectDCLView *m_pView;
+	COpenDCLView *m_pView;
 	CDclFormObject *m_pDclForm;
 	CDclControlObject *m_pControl;
 

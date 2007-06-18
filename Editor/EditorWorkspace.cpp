@@ -4,8 +4,8 @@
 #include "stdafx.h"
 #include "EditorWorkspace.h"
 #include "EditorProject.h"
-#include "ObjectDCL.h"
-#include "ObjectDCLDoc.h"
+#include "OpenDCL.h"
+#include "OpenDCLDoc.h"
 #include "ZOrderPane.h"
 
 
@@ -27,7 +27,7 @@ static CString StripPathFromFileName(CString sFullPath)
 
 
 CEditorWorkspace::CEditorWorkspace()
-: mpMainFrame( ((CObjectDCLApp*)AfxGetApp())->m_pMainFrame )
+: mpMainFrame( ((COpenDCLApp*)AfxGetApp())->m_pMainFrame )
 , mpActiveProject( NULL )
 {
 }
@@ -46,7 +46,7 @@ CMainFrame* CEditorWorkspace::GetMainFrame() const
 {
 	if( mpMainFrame )
 		return mpMainFrame;
-	const_cast<CEditorWorkspace*>(this)->mpMainFrame = ((CObjectDCLApp*)AfxGetApp())->m_pMainFrame;
+	const_cast<CEditorWorkspace*>(this)->mpMainFrame = ((COpenDCLApp*)AfxGetApp())->m_pMainFrame;
 	return mpMainFrame;
 }
 

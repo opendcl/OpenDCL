@@ -780,6 +780,7 @@ public:
 			if( !mpValue )
 				mpValue = new AxInterfaceDescriptor;
 			mpValue->Serialize( ar, nVersion );
+			msDisplayName = mpValue->GetName();
 			return statOK;
 		}
 	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const

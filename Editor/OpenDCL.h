@@ -1,11 +1,11 @@
-// ObjectDCL.h : main header file for the OBJECTDCL application
+// OpenDCL.h : main header file for the OBJECTDCL application
 //
 
 #pragma once
 
 
 #include "MainFrm.h"       // main symbols
-#include "ObjectDCLView.h" 
+#include "OpenDCLView.h" 
 
 class CProject;
 class CEditorWorkspace;
@@ -44,14 +44,14 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CObjectDCLApp:
-// See ObjectDCL.cpp for the implementation of this class
+// COpenDCLApp:
+// See OpenDCL.cpp for the implementation of this class
 //
 
-class CObjectDCLApp : public CWinApp
+class COpenDCLApp : public CWinApp
 {
 public:
-	CObjectDCLApp();
+	COpenDCLApp();
 	CMainFrame*			m_pMainFrame;
 
 	// ActiveX handling options
@@ -60,10 +60,9 @@ public:
 
 // operations
 public:
-	BOOL SaveDistributionFile(CProjectCollection *pProjectHolder);
-	CObjectDCLView* OpenExistingForm(CDclFormObject *pDclForm);
+	COpenDCLView* OpenExistingForm(CDclFormObject *pDclForm);
 	CDclFormObject* AddNewDclForm(DclFormType nType);
-	CObjectDCLView* AddDclFormAndView(DclFormType nType);
+	COpenDCLView* AddDclFormAndView(DclFormType nType);
 	CString CreateUniqueName();
 	
 	CMainFrame* GetMainFrame() { return (CMainFrame*)m_pMainWnd; }
@@ -82,7 +81,6 @@ protected:
 	afx_msg void OnFileNew();
 	afx_msg void OnFileOpen();
 	afx_msg BOOL OnOpenRecentFile(UINT nID);
-	afx_msg void OnFileCreatedistfile();
 	afx_msg void OnToolsDefaultfont();
 	afx_msg void OnFileClose();
 	afx_msg void OnToolsGridspacing();
@@ -90,7 +88,6 @@ protected:
 	afx_msg void OnUpdateToolsEventswritetolispfile(CCmdUI* pCmdUI);
 	afx_msg void OnToolsEventscopytoclipboard();
 	afx_msg void OnToolsEventswritetolispfile();
-	afx_msg void OnToolsExportlanguageexcelspreadsheet();
 	afx_msg void OnHelp();
 	afx_msg void OnHelpFinder();
 };

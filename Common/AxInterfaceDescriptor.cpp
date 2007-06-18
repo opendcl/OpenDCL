@@ -362,7 +362,7 @@ CString AxInterfaceDescriptor::GetDesc() const
 
 CString AxInterfaceDescriptor::GetAxMethodDesc(size_t nIndex)
 {
-	if (nIndex < mpMethods->size())
+	if (mpMethods && nIndex < mpMethods->size())
 		return mpMethods->at(nIndex)->GetDesc();
 	return CString();
 }
@@ -371,21 +371,21 @@ CString AxInterfaceDescriptor::GetAxMethodDesc(size_t nIndex)
 
 size_t AxInterfaceDescriptor::CountAxMethodParams( size_t nIndex )
 {
-	if (nIndex < mpMethods->size())
+	if (mpMethods && nIndex < mpMethods->size())
 		return mpMethods->at(nIndex)->GetArgs().size();
 	return 0;
 }
 
 CString AxInterfaceDescriptor::GetAxMethodParamName(size_t nIndex, int nParam)
 {
-	if (nIndex < mpMethods->size())
+	if (mpMethods && nIndex < mpMethods->size())
 		return mpMethods->at(nIndex)->GetArgs().at(nParam).name;
 	return CString();
 }
 
 VARTYPE AxInterfaceDescriptor::GetAxMethodReturnType(size_t nIndex)
 {
-	if (nIndex < mpMethods->size())
+	if (mpMethods && nIndex < mpMethods->size())
 		return mpMethods->at(nIndex)->GetReturnType();
 	return 0;
 }
@@ -393,21 +393,21 @@ VARTYPE AxInterfaceDescriptor::GetAxMethodReturnType(size_t nIndex)
 
 AxMethodDescriptor * AxInterfaceDescriptor::GetAxMethod(size_t nIndex)
 {
-	if (nIndex < mpMethods->size())
+	if (mpMethods && nIndex < mpMethods->size())
 		return mpMethods->at(nIndex);
 	return NULL;
 }
 
 CString AxInterfaceDescriptor::GetAxMethodParamVarType(size_t nIndex, int nParam)
 {
-	if (nIndex < mpMethods->size())
+	if (mpMethods && nIndex < mpMethods->size())
 		return VARTYPEtoString(mpMethods->at(nIndex)->GetArgs().at(nParam).vt);
 	return CString();
 }
 
 GUID AxInterfaceDescriptor::GetAxMethodParamGUID(size_t nIndex, int nParam)
 {
-	if (nIndex < mpMethods->size())
+	if (mpMethods && nIndex < mpMethods->size())
 		return mpMethods->at(nIndex)->GetArgs().at(nParam).clsid;
 	GUID guid;
 	::memset(&guid, 0, sizeof(GUID));	

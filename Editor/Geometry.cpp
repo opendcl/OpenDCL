@@ -6,7 +6,7 @@
 #include "PropertyObject.h"
 #include "DclFormObject.h"
 #include "DclControlObject.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "ControlTypes.h"
 #include "PropertyIds.h"
 
@@ -71,7 +71,7 @@ BOOL CGeometry::OnApply()
 	m_pUseRightFromRight->SetLongValue(m_Right.GetItemData(m_Right.GetCurSel()));
 
 	
-	CObjectDCLView *pView = (CObjectDCLView *)m_pDclForm->m_pChildWnd;
+	COpenDCLView *pView = (COpenDCLView *)m_pDclForm->m_pChildWnd;
 	
 	pView->CalcAllOffsets();
 	

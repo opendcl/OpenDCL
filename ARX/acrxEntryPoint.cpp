@@ -73,6 +73,7 @@
 #include "LineWeightDlg.h"
 #include "LinetypeDlg.h"
 #include "ParentFileDialog.h"
+#include "Base64.h"
 
 
 //-----------------------------------------------------------------------------
@@ -808,6 +809,11 @@ public:
 	}
 
 
+	// ----- OpenDCL.OpenDCL command
+	static void OpenDCLOpenDCL(void)
+	{  //do nothing, just need it here so that AutoCAD doesn't complain about an unknown command
+	}
+
 	// ----- ads_odcl_getversion symbol (do not rename)
 	static int ads_odcl_getversion(void)
 	{
@@ -975,8 +981,6 @@ public:
 		
 		// get the dcl form object that will be displayed
 		mpDclToBeShown = mpProjectToBeShown->FindDclForm(msDialogToBeShown);
-		mpDclToBeShown->EnsureIsLoaded();
-
 		CDclControlObject *pProps = mpDclToBeShown->GetControlProperties();
 		pProps->SetStringProperty(nFormEventInitialize, msActionToBeShown);
 		
@@ -1961,39 +1965,6 @@ public:
 			if (pArgs->rbnext)
 				return RSERR; //too many arguments
 		}
-		
-		//if (pProject->m_PurchaseState == 96)
-		//{
-		//	MessageBox(
-		//		FindTopModalForm(), 
-		//		_T("This dialog box was created using an evaluation Version of ObjectDCL.\n\nObjectDCL can be purchased on-line at www.CADalog.com"),
-		//		theWorkspace.LoadResourceString(IDS_OBJECTDCL),
-		//		NULL);		
-
-		//}	
-		//else if (pProject->m_PurchaseState != nPurchasedMode &&
-		//	pProject->m_PurchaseState != 400 &&
-		//	pProject->m_PurchaseState != 401 &&
-		//	pProject->m_PurchaseState != 402 &&
-		//	pProject->m_PurchaseState != 403)
-		//{
-		//	MessageBox(FindTopModalForm(), ErrorDemoCreation, theWorkspace.LoadResourceString(IDS_OBJECTDCL), NULL);		
-		//}
-		//else if (FindPurchaseModeId(pDclObject) == nSchoolMode)
-		//{
-		//	CDclControlObject *pCtrl = pDclObject->GetControlProperties();	
-		//	CString sTitle = pCtrl->GetStrProperty(nTitleBarText);
-		//	if (sTitle.Left(7) != sStudent)
-		//		sTitle = CString(_T("Student Version - ")) + sTitle;
-		//	pCtrl->SetStringProperty(nTitleBarText, sTitle);
-
-		//	if (pDclObject->GetType() == VdclDockable)
-		//	{
-		//		MessageBox(FindTopModalForm(), _T("This dockable for was created using the ObjectDCL Student vesrion."), theWorkspace.LoadResourceString(IDS_OBJECTDCL), NULL);
-		//	}
-		//}
-		
-		pDclObject->EnsureIsLoaded();
 
 		// call method to display the requested form
 		FileDialogParams fdp( TRUE, NULL, NULL, 0, NULL );
@@ -2193,15 +2164,23 @@ public:
 		if (!pDialog)
 			return RSRSLT; //dialog not found
 
+		int nStatus = 0;
 		if (pArgs)
-			return RSERR; //too many arguments
+		{
+			if (pArgs->restype != RTSHORT)
+				return RSERR; //wrong argument type
+			nStatus = pArgs->resval.rint;
+
+			if (pArgs->rbnext)
+				return RSERR; //too many arguments
+		}
 
 		CRect rcDlg;
 		pDialog->GetWindowRect( rcDlg );
 		ads_point ptUL = { rcDlg.left, rcDlg.top, 0 };
 		acedRetPoint( ptUL ); //return the upper left corner as a 2D point
 
-		pDialog->CloseDialog();
+		pDialog->CloseDialog( nStatus );
 
 		return (RSRSLT) ;
 	}
@@ -2270,17 +2249,19 @@ public:
 		struct resbuf *pArgs =acedGetArgs () ;
 
 		//optional arguments
-		int fMask = -1;
+		DWORD fMask = -1;
 		if (pArgs)
 		{
-			if (pArgs->restype == RTSHORT)
-				fMask = pArgs->resval.rint;
+			if (pArgs->restype != RTSHORT)
+				return RSERR; //wrong argument type
+
+			fMask = pArgs->resval.rint;
 
 			if (pArgs->rbnext)
 				return RSERR; //too many arguments
 		}
 
-		theArxWorkspace.CloseAllDialogs();
+		theArxWorkspace.CloseAllDialogs( fMask );
 
 		return (RSRSLT) ;
 	}
@@ -3818,36 +3799,6 @@ public:
 			}
 		}
 
-/* These gymnastics look superfluous to me, so I commented them out pending further investigation [ORW]
-		CString sTempFile = sFullFileName;
-		sTempFile.MakeLower();
-
-		if (sTempFile.Left(1) == "c")
-			sTempFile = sFullFileName;
-		else
-		{
-			TCHAR lpPathBuffer[4096];
-
-			::GetTempPath(4096, lpPathBuffer);
-			
-			sTempFile = lpPathBuffer;
-			
-			CString sFileName = sFullFileName;
-			//!CHANGED! 9-24-04 SRM
-			//Wasnt finding paths with '/' in them
-			sFileName.Replace('/', '\\');
-			
-			int n=0;
-			while ((n = sFileName.Find(_T("\\"))) > -1)
-			{
-				sFileName = sFileName.Mid(n+1);
-			}
-			sTempFile += sFileName; 
-
-			::DeleteFile(sTempFile);
-		}
-*/
-
 		CProject *pProject = theArxWorkspace.LoadProjectFile(pszFilename, pszKeyName, bReload);
 		if (pProject == NULL)
 		{
@@ -3858,9 +3809,6 @@ public:
 			return RSRSLT; 
 		}
 		acedRetStr( pProject->GetProjectFilePath() );
-
-		//if (pProject->m_PurchaseState == nSchoolMode)
-		//	acutPrintf(_T("\nObjectDCL Student version."));
 
 		return (RSRSLT) ;
 	}
@@ -3885,7 +3833,6 @@ public:
 
 		//optional arguments
 		bool bForce = false;
-		LPCTSTR pszKeyName = NULL;
 		if (pArgs)
 		{
 			bForce = (pArgs->restype != RTNIL);
@@ -3916,7 +3863,7 @@ public:
 			return RSERR; //wrong argument type
 
 		if( !pProject )
-			return RSERR; //too many arguments
+			return RSERR; //project not found
 
 		pArgs = pArgs->rbnext;
 		if (pArgs == NULL)
@@ -3928,11 +3875,155 @@ public:
 		else
 			return RSERR; //wrong argument type
 
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
+		pArgs = pArgs->rbnext;
+		LPCTSTR pszPassword = NULL;
+		if (pArgs)
+		{
+			switch (pArgs->restype)
+			{
+			case RTSTR:
+				pszPassword = pArgs->resval.rstring;
+				break;
+			case RTNIL:
+				break;
+			default:
+				return RSERR; //wrong argument type
+			}
+
+			if (pArgs->rbnext)
+				return RSERR; //too many arguments
+		}
+
+		if( pProject->GetPassword() != CString( pszPassword ) )
+			return RSERR; //wrong password
 
 		if (pProject->WriteToFile(pszFilename) == statOK)
 			acedRetT();
+
+		return (RSRSLT) ;
+	}
+
+	// ----- ads_odcl_project_import symbol (do not rename)
+	static int ads_odcl_project_import(void)
+	{
+		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
+
+		LPCTSTR pszRawData = NULL;
+		if( pArgs->restype == RTSTR )
+			pszRawData = pArgs->resval.rstring;
+		else
+			return RSERR; //wrong argument type
+
+		pArgs = pArgs->rbnext;
+		LPCTSTR pszPassword = NULL;
+		LPCTSTR pszProjectKey = NULL;
+		if (pArgs)
+		{
+			switch (pArgs->restype)
+			{
+			case RTSTR:
+				pszPassword = pArgs->resval.rstring;
+				break;
+			case RTNIL:
+				break;
+			default:
+				return RSERR; //wrong argument type
+			}
+
+			pArgs = pArgs->rbnext;
+
+			if (pArgs)
+			{
+				if( pArgs->restype == RTSTR )
+					pszProjectKey = pArgs->resval.rstring;
+				else
+					return RSERR; //wrong argument type
+
+				if (pArgs->rbnext)
+					return RSERR; //too many arguments
+			}
+		}
+
+		CArxProject* pProject = NULL;
+		std::string sRawData;
+	#ifdef _UNICODE
+		CStringA sRawDataA( pszRawData );
+		sRawData = (LPCSTR)sRawDataA;
+	#else
+		sRawData = pszRawData;
+	#endif
+		try
+		{
+			std::string sDecodedData = base64_decode( sRawData );
+			CMemFile Data( (BYTE*)sDecodedData.c_str(), sDecodedData.length() );
+			pProject = theArxWorkspace.ImportProject( Data, pszProjectKey );
+			if (pProject)
+			{
+				if( pszPassword )
+					pProject->SetPassword( pszPassword );
+				acedRetStr( pProject->GetKeyName() );
+			}
+		}
+		catch( ... )
+		{
+			delete pProject;
+			return NULL; 
+		}
+
+		return (RSRSLT) ;
+	}
+
+	// ----- ads_odcl_project_export symbol (do not rename)
+	static int ads_odcl_project_export(void)
+	{
+		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
+
+		CProject* pProject = NULL;
+		if (pArgs->restype == RTLONG)
+			pProject = (CProject*)pArgs->resval.rlong;
+		else if( pArgs->restype == RTSTR )
+			pProject = theArxWorkspace.FindProject( pArgs->resval.rstring );
+		else
+			return RSERR; //wrong argument type
+
+		if( !pProject )
+			return RSERR; //project not found
+
+		pArgs = pArgs->rbnext;
+		LPCTSTR pszPassword = NULL;
+		if (pArgs)
+		{
+			switch (pArgs->restype)
+			{
+			case RTSTR:
+				pszPassword = pArgs->resval.rstring;
+				break;
+			case RTNIL:
+				break;
+			default:
+				return RSERR; //wrong argument type
+			}
+
+			if (pArgs->rbnext)
+				return RSERR; //too many arguments
+		}
+
+		if( pProject->GetPassword() != CString( pszPassword ) )
+			return RSERR; //wrong password
+
+		CMemFile bufData( 0x10000 );
+		if (theArxWorkspace.ExportProject(pProject, bufData))
+		{
+			UINT cbData = (UINT)bufData.GetLength();
+			BYTE* pbData = bufData.Detach();
+			CString sRawData = base64_encode( pbData, cbData ).c_str();
+			bufData.Attach( pbData, cbData );
+			acedRetStr(sRawData);
+		}
 
 		return (RSRSLT) ;
 	}
@@ -4055,6 +4146,7 @@ static int DumpControl(void)
 
 #endif //_DIAGNOSTIC
 
+ACED_ARXCOMMAND_ENTRY_AUTO(CARXApp, OpenDCL, OpenDCL, OpenDCL, ACRX_CMD_TRANSPARENT, NULL)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getversion, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getversionex, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_loadproject, true)
@@ -4132,3 +4224,5 @@ ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_registeractivexctrl, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_load, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_unload, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_saveas, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_import, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_export, true)

@@ -139,7 +139,7 @@ protected:
 public:
 	CPropertyObject(PropertyType type, DWORD dwFlags = 0, PropertyId nID = (PropertyId)-1);
 
-	//2007-01-30 [ORW]: save version set to 5 (no change from ObjectDCL 3)
+	//2007-01-30 [ORW]: save version set to 5 (no change from OpenDCL 3)
 	//2007-02-08 [ORW]: save version set to 6 (eliminate MFC serialized classes)
 	//2007-02-08 [ORW]: save version set to 7 (added subtype to filed data)
 	ULONG GetCurrentSaveVersion() const { return 7; }

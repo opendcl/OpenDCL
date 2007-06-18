@@ -1,4 +1,4 @@
-// ObjectDCLView.h : interface of the CObjectDCLView class
+// OpenDCLView.h : interface of the COpenDCLView class
 //
 
 #pragma once
@@ -6,7 +6,7 @@
 #include "GripRect.h"
 #include "UndoActions.h"
 #include "SelectedControl.h"
-#include "ObjectDCLDoc.h"
+#include "OpenDCLDoc.h"
 #include "Resource.h"
 
 
@@ -67,17 +67,11 @@ typedef CList<CSelectedControl*> CSelectedCol;
 typedef CList<CUndoActions*> CUndoCol;
 
 
-class CObjectDCLView : public CView
+class COpenDCLView : public CView
 {
 protected: // create from serialization only
-	CObjectDCLView();
-	DECLARE_DYNCREATE(CObjectDCLView)
-
-public:
-	//{{AFX_DATA(CObjectDCLView)
-	enum{ IDD = IDD_OBJECTDCL_FORM };
-		// NOTE: the ClassWizard will add data members here
-	//}}AFX_DATA
+	COpenDCLView();
+	DECLARE_DYNCREATE(COpenDCLView)
 
 // Attributes
 public:
@@ -99,7 +93,7 @@ public:
 	CString m_sBaseCode;
 	CString m_sLicenseKey;
 	CSize m_StartupSize;
-	//CObjectDCLDoc* GetDocument() const;	
+	//COpenDCLDoc* GetDocument() const;	
 	bool m_StandardCursorID; // true = cross, false = arrow	
 	short m_gridSpacing;
 	CString m_ActiveXFileName;
@@ -234,7 +228,7 @@ public:
 
 // Overrides	
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CObjectDCLView)
+	//{{AFX_VIRTUAL(COpenDCLView)
 	public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
@@ -249,7 +243,7 @@ public:
 	
 // Implementation
 public:
-	virtual ~CObjectDCLView();
+	virtual ~COpenDCLView();
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;

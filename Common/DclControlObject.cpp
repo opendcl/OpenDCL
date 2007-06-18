@@ -8,7 +8,6 @@
 #include "AxContainerCtrl.h"
 #include "AxInterfaceDescriptor.h"
 #include "Filing.h"
-#include "PurchaseMode.h"
 #include "Workspace.h"
 #include "Project.h"
 #include "PropertyIds.h"
@@ -228,8 +227,7 @@ void CDclControlObject::ClearStream()
 //  writeString(pFile, msAxTypeName);
 //  writeLong(pFile, mType);
 //  writeShort(pFile, m_ClientHeight);
-//  //m_PurchaseState = nCurrentPurchaseMode;
-//  writeInt(pFile, m_PurchaseState);
+//  writeInt(pFile, 400);
 //  writeInt(pFile, mnID);
 //
 //  // serialize the image if it exists
@@ -323,8 +321,6 @@ void CDclControlObject::Serialize(CArchive& ar)
 		ar << msAxTypeName;
 		ar << long(mType);
 		ar << m_ClientHeight;
-		m_PurchaseState = nCurrentPurchaseMode;
-		ar << m_PurchaseState;
 		ar << mnID;
 
 		// serialize the image if it exists
@@ -405,7 +401,11 @@ void CDclControlObject::Serialize(CArchive& ar)
 		if( mType == -1 )
 			mType = CtlForm; //correct control type for controls from older ODC files
 		ar >> m_ClientHeight;
-		ar >> m_PurchaseState;
+		if (nThisVersion < 8)
+		{
+			int nPurchaseState;
+			ar >> nPurchaseState; //discard
+		}
 
 		if (nThisVersion >= 6)
 			ar >> mnID;
@@ -523,10 +523,6 @@ void CDclControlObject::Serialize(CArchive& ar)
 		}
 	}
 
-
-	if (m_PurchaseState < 0)
-		m_PurchaseState = 0;
-
 	if (!ar.IsStoring())
 	{
 		// remove any properties that shouldn't have been persisted or that were added erroneously in the past
@@ -569,6 +565,8 @@ void CDclControlObject::Serialize(CArchive& ar)
 			/*if (pSourceProp->GetID() == nComboBoxStyle && mType == CtlComboBox)
 					pSourceProp->GetLongValue() = 2;*/
 			if (pSourceProp->GetID() == nHScrollBar && mType == CtlListBox)
+				mProperties.RemoveAt(posAt);
+			if (pSourceProp->GetID() == nEventClicked && mType == CtlListBox)
 				mProperties.RemoveAt(posAt);
 			if (pSourceProp->GetID() == nAllowOrbiting && pSourceProp->GetType() == PropBool)
 				mProperties.RemoveAt(posAt);
@@ -1073,7 +1071,8 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
 	if( mType == -1 )
 		mType = CtlForm; //correct control type for controls from older ODC files
   if (!readShort(sFile, m_ClientHeight)) return statInvalidFormat;
-  if (!readInt(sFile, m_PurchaseState)) return statInvalidFormat;
+	int nPurchaseState;
+  if (!readInt(sFile, nPurchaseState)) return statInvalidFormat; //discard
   if (!readInt(sFile, mnID)) return statInvalidFormat;
 
 	mpImageList = NULL;

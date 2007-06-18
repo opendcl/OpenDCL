@@ -281,8 +281,8 @@ BOOL VdclListBox::PreTranslateMessage(MSG* pMsg)
 void VdclListBox::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
     if (nChar == VK_RETURN) {
-    //Change return into a double-click
-    InvokeMethod(m_ArxControl->GetStrProperty(nEventDblClicked), m_bInvokeWithSendString);
+			//Change return into a double-click
+			InvokeMethod(m_ArxControl->GetStrProperty(nEventDblClicked), m_bInvokeWithSendString);
   } else {
     CClrListBox::OnKeyDown(nChar, nRepCnt, nFlags);
   }
@@ -325,7 +325,7 @@ void VdclListBox::OnLButtonDown(UINT nFlags, CPoint point)
 		// "Pack" lparam with x and y coordinates where lbuttondown originated
 		lparam=point.y; 
 		lparam=lparam<<16;
-		lparam &= point.x;                         
+		lparam |= point.x;                         
     
 		SendMessage(WM_LBUTTONUP,0,lparam);	
 	}

@@ -12,7 +12,7 @@ class CEditorProject;
 class CToolBox;
 class CPropertyTabPane;
 class CZOrderListCtrl;
-class CObjectDCLDoc;
+class COpenDCLDoc;
 class COleControlObject;
 
 

@@ -85,7 +85,7 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip& tooltip, CDclControlObject *pControl)
 		else if (nPic == -2)
 			tooltip.AddTool(pWnd, sBody, IDI_INFO);
 		else if (nPic == -3)
-			tooltip.AddTool(pWnd, sBody, IDI_EXCLEMATION);
+			tooltip.AddTool(pWnd, sBody, IDI_WARN);
 		else if (nPic == -4)
 			tooltip.AddTool(pWnd, sBody, IDI_X);
 		else if (nPic == 0)	
@@ -137,7 +137,7 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &tooltip,
 	else if (nPic == -2)
 		tooltip.AddTool(pWnd,  sBody, IDI_INFO);
 	else if (nPic == -3)
-		tooltip.AddTool(pWnd, sBody, IDI_EXCLEMATION);
+		tooltip.AddTool(pWnd, sBody, IDI_WARN);
 	else if (nPic == -4)
 		tooltip.AddTool(pWnd, sBody, IDI_X);
 	else if (nPic == 0)	

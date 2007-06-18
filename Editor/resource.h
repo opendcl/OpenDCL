@@ -12,6 +12,7 @@
 #define IDS_LSPFILENAME                 12
 #define IDS_NAME                        13
 #define IDS_EVENT                       14
+#define IDS_SELECTPROJECTLISPFILE       15
 #define IDS_TAB1                        17
 #define IDS_TAB2                        18
 #define IDS_TAB3                        19
@@ -21,6 +22,7 @@
 #define IDS_MASKED                      28
 #define IDS_PROPERTYWIZARD              29
 #define IDI_OPENDCL                     30
+#define IDR_ODCDOCTEMPLATE              40
 #define IDS_PROJECT                     53
 #define IDS_MODALFORM                   54
 #define IDS_MODELESSFORM                55
@@ -28,7 +30,6 @@
 #define IDS_CONFIGTAB                   57
 #define IDS_TOOLBOX                     58
 #define IDR_MAINFRAME                   59
-#define IDR_OBJECTTYPE                  60
 #define IDR_ZTABORDER                   60
 #define IDS_ZTABORDER                   61
 #define IDS_TTTSENDTOBACK               62
@@ -58,7 +59,7 @@
 #define IDS_NOGRID                      88
 #define IDS_AGRID                       89
 #define IDS_WILLBE                      90
-#define IDS_DISTFILE                    91
+#define IDS_PASSWORD                    91
 #define IDS_COPYTOCLIP                  92
 #define IDS_COPYGETTOCLIP               93
 #define IDS_RENAMEPROJECT               94
@@ -73,7 +74,10 @@
 #define IDD_FORMVARNAMEUPDATE_DIALOG    105
 #define IDD_TABPAGE_PROPERTIES          106
 #define IDD_PICTUREFOLDER_DIALOG        107
-#define IDD_OBJECTDCL_FORM              108
+#define IDD_OPENDCL_FORM                108
+#define IDD_PROJECTPASSWORD             109
+#define IDI_ICON1                       110
+#define IDI_PASSWORD                    110
 #define IDS_FILEDLG                     135
 #define IDS_COPYTOCLIPBOARD             137
 #define IDS_STRINGBOLD                  138
@@ -94,6 +98,7 @@
 #define IDD_INSERTCONTROL               152
 #define IDS_1000                        152
 #define IDD_COMPONENTCATEGORIES         156
+#define IDS_AUTOLISPFILE                159
 #define IDI_STDBUTTON                   164
 #define IDI_GRAPHICBUTTON               165
 #define IDI_FRAME                       166
@@ -114,9 +119,7 @@
 #define IDI_HTML                        178
 #define IDS_SELECTTOIMPORT              180
 #define IDI_LISTBOX                     181
-#define IDS_STARODS                     181
 #define IDI_LISTVIEW                    182
-#define IDS_SAVEDISTAS                  182
 #define IDS_ImageListCtrl               183
 #define IDS_BOOL                        184
 #define IDS_INT                         185
@@ -154,19 +157,13 @@
 #define IDB_FILTER                      208
 #define IDR_POPUPMENUS                  209
 #define IDB_PICK                        210
-#define IDR_POPUPMENUS_STD              210
 #define IDS_ALREADYADDED                210
 #define IDB_FDBOTTOM                    211
-#define IDR_POPUPMENUS_LT               211
 #define IDB_SELECT                      213
 #define IDD_FILEOPENPREVIEW             213
 #define IDC_SCALEDSTYLE                 214
-#define IDR_POPUPMENUS_R14              214
 #define IDC_PIXELSTYLE                  215
-#define IDC_LINK                        215
-#define IDC_HOMELINK                    216
 #define IDI_HELP                        216
-#define IDC_LINK3                       217
 #define IDC_HANDICON                    219
 #define IDC_FILTER3                     219
 #define IDC_FILTER2                     220
@@ -176,18 +173,15 @@
 #define IDC_COLOR                       222
 #define IDC_BROWSE                      222
 #define IDC_COPY2                       222
-#define IDC_CTRLS                       222
 #define IDC_DROPLISTBTN                 222
 #define IDC_CAPTION                     223
 #define IDC_EDIT1                       223
 #define IDC_COPY1                       223
-#define IDC_GENERAL                     223
 #define IDC_TEXT                        223
 #define IDC_BOLD                        224
 #define IDC_CLEAR                       224
 #define IDC_EDIT4                       224
 #define IDC_COPY3                       224
-#define IDC_GENERAL2                    224
 #define IDC_ITALIC                      225
 #define IDC_TTT                         225
 #define IDC_EDIT5                       225
@@ -227,9 +221,7 @@
 #define IDI_BLOCKVIEW                   243
 #define IDC_STYLE4                      244
 #define IDI_SLIDEVW                     244
-#define IDD_EVALDIALOG                  245
 #define IDC_STYLE5                      245
-#define IDD_FREEDIALOG                  246
 #define IDC_STYLE6                      246
 #define IDC_COMBO0                      247
 #define IDC_COMBO1                      248
@@ -260,14 +252,12 @@
 #define IDI_TABFOLDER                   262
 #define IDC_EDITHEIGHT                  263
 #define IDI_ENUM                        263
-#define IDC_ORDERLINK                   264
 #define IDI_EVENT                       264
 #define IDI_METHOD                      265
 #define IDI_PROPERTY                    266
 #define IDI_ENUMS                       267
 #define IDI_ACAD2002                    270
 #define IDI_OPTIONLIST                  272
-#define IDI_ODS                         274
 #define IDI_DWGLIST                     275
 #define IDI_ANIMATE                     276
 #define IDI_IMAGECOMBOBOX               277
@@ -287,10 +277,9 @@
 #define IDI_BOLD                        305
 #define IDI_ITALIC                      306
 #define IDI_TEXTCOLOR                   307
-#define IDI_EXCLEMATION                 309
+#define IDI_WARN                        309
 #define IDI_INFO                        310
 #define IDI_SPLITTER                    312
-#define IDD_HELP                        314
 #define IDD_HELPCTRLS                   315
 #define IDI_HATCH                       315
 #define IDD_PROGRESSBAR                 316
@@ -325,6 +314,7 @@
 #define IDC_APPVERSION                  1001
 #define IDR_OBJECTTYPE_R14              1002
 #define IDC_LICENSETXT                  1002
+#define IDC_PASSWORD                    1005
 #define IDC_PICTURE                     1007
 #define IDC_PICTURELIST                 1008
 #define IDC_CTRL_DESC                   1009
@@ -344,7 +334,6 @@
 #define IDC_GRIDSLIDER                  1032
 #define IDC_CURRENTSPACING              1033
 #define IDC_OPTIONLIST                  1034
-#define IDC_FORMSCHECK                  1035
 #define IDC_METHDEF                     1036
 #define IDC_CTRLCHECK                   1036
 #define IDC_PROPDESCEDIT                1037
@@ -374,7 +363,6 @@
 #define IDC_SERVERPATH                  1083
 #define IDC_AVILABEL                    1084
 #define IDC_MAINTEXT                    1085
-#define IDC_LINE2                       1086
 #define IDC_BALLOON                     1086
 #define IDC_LEFT                        1087
 #define IDC_TOP                         1088
@@ -552,8 +540,8 @@
 #define ID_TOOLBOX_OPTIONLIST           12843
 #define ID_TOOLBOX_ACTIVEX              12844
 #define ID_TOOLBOX_DWGLIST              12845
-#define ID_BUTTON12846                  12846
 #define ID_TOOLBOX_ANIMATE              12846
+#define ID_BUTTON12846                  12846
 #define ID_BUTTON12847                  12847
 #define ID_TOOLBOX_IMAGECOMBOBOX        12847
 #define ID_TOOLBOX_GRID                 12848
@@ -591,7 +579,6 @@
 #define ID_WINDOW_CLOSEALL              12896
 #define ID_EDIT_OBJECTBROWSER           12897
 #define ID_PROJECTS_ADDFILEDIALOGBOX    12898
-#define ID_FILE_CREATEDISTFILE          12899
 #define ID_TOOLS_EVENTSCOPYTOCLIPBOARD  12901
 #define ID_TOOLS_EVENTSWRITETOLISPFILE  12902
 #define ID_FONTBOLDBTN                  12903
@@ -609,10 +596,8 @@
 #define ID_FONTS_FONTUNDERLINE          12923
 #define ID_FONT_SCALED                  12925
 #define ID_BUTTON12869                  12927
-#define ID_TOOLS_EXPORTLANGUAGEEXCELSPREADSHEET 12931
 #define ID_BUTTON12932                  12932
 #define ID_TOOLBOX_IMAGELIST            12933
-#define ID_TOOLBOX_ANIATION             12934
 #define ID_BUTTON12937                  12937
 #define ID_BUTTON12939                  12939
 #define IDS_CAPTIONOPTIONS              14191
@@ -636,7 +621,6 @@
 #define IDS_REQUIREDCATEGORIES          14491
 #define IDS_CREATEFAILED                14494
 #define IDS_COPYFAILED                  14510
-#define IDS_FILEDLGMTH                  14511
 #define IDS_FORMSMTH                    14512
 #define IDS_TABMTH                      14513
 #define IDS_SERVERNOTFOUND              14514
@@ -691,7 +675,6 @@
 #define IDS_Odcl_AxControl_             14564
 #define IDS_Odcl_AxObject_              14565
 #define IDS_PARPAR                      14566
-#define IDS_C                           14567
 #define IDS_OLENOTE1                    14568
 #define IDS_OLENOTE2                    14569
 #define IDS_SETQVALUE3                  14570
@@ -712,7 +695,6 @@
 #define IDS_CF0PAR2                     14585
 #define IDS_FORMOREINFO                 14586
 #define IDS_TOFINDIT                    14587
-#define IDS_PAR                         14588
 #define IDS_CLOSEBRACKET3               14589
 #define IDS_DOUBLEBRACKET               14590
 #define IDS_C2                          14591
@@ -854,14 +836,15 @@
 #define ID_TOOLS_SETLISPSYMBOLNAMES     40003
 #define ID_TOOLS_CLEARLISPSYMBOLNAMES   40004
 #define ID_BUTTON40005                  40005
+#define ID_FILE_SETPROJECTPASSWORD      40007
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        109
-#define _APS_NEXT_COMMAND_VALUE         40007
-#define _APS_NEXT_CONTROL_VALUE         1005
+#define _APS_NEXT_RESOURCE_VALUE        111
+#define _APS_NEXT_COMMAND_VALUE         40008
+#define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

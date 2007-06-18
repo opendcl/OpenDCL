@@ -6,7 +6,7 @@
 #include "Resource.h"
 
 class CDclControlObject;
-class CObjectDCLView;
+class COpenDCLView;
 class CPropertyObject;
 class CControlHolder;
 
@@ -57,5 +57,5 @@ public:
 	BOOL m_ListBoxCreated;
 	RefCountedPtr< CPropertyObject > m_pPropObject;
 	CDclControlObject *m_pControl;
-	CObjectDCLView *m_pView;
+	COpenDCLView *m_pView;
 };

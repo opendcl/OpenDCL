@@ -23,7 +23,7 @@
 #include "ListCtrlEx.h"
 #include "FileDlgCtrls.h"
 #include "PictureObject.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "Project.h"
 
 
@@ -277,7 +277,7 @@ void CControlHolder::OnSize(UINT nType, int cx, int cy)
 	if (mpTemplate->GetType() == CtlActiveX)
 	{
 		CAxContainerCtrl* pContainer = GetActiveXCtrl();
-		if (pContainer != NULL)
+		if (pContainer && pContainer->m_hWnd)
 		{
 			pContainer->MoveWindow( 0, 0, cx, cy, TRUE );
 			CRect rc;

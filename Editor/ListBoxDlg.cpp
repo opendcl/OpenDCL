@@ -5,7 +5,7 @@
 #include "ListBoxDlg.h"
 #include "SharedRes.h"
 #include "PropertyObject.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "DclFormObject.h"
 #include "DclControlObject.h"
 #include "PropertyIds.h"

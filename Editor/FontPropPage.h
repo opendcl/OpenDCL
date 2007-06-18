@@ -37,7 +37,7 @@ public:
 	CString	m_sStyle;
 	//}}AFX_DATA
 	
-	CString sObjectDCLProf;
+	CString sOpenDCLProf;
 	RefCountedPtr< CPropertyObject > m_pFontName;
 	RefCountedPtr< CPropertyObject > m_pFontSize;
 	RefCountedPtr< CPropertyObject > m_pFontStrikeOut;

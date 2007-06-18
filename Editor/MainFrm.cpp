@@ -3,12 +3,12 @@
 
 #include "stdafx.h"
 #include "MainFrm.h"
-#include "ObjectDCL.h"
+#include "OpenDCL.h"
 #include "Project.h"
 #include "PictureFolder.h"
 #include "DclFormObject.h"
-#include "PurchaseMode.h"
 #include "EditorWorkspace.h"
+#include "ProjectPasswordDlg.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_DOCK_TOOLBOX, OnUpdateDockToolbox)
 	ON_COMMAND(ID_DOCK_ZORDER, OnDockZorder)
 	ON_UPDATE_COMMAND_UI(ID_DOCK_ZORDER, OnUpdateDockZorder)
-	ON_COMMAND(ID_SETDISTFILENAME, OnSetdistfilename)
+	ON_COMMAND(ID_SETDISTFILENAME, OnSetpassword)
 	ON_COMMAND(ID_PROJECTS_ADDFILEDIALOGBOX, OnProjectsAddfiledialogbox)
 	ON_WM_SHOWWINDOW()
 	// Global help commands
@@ -166,7 +166,7 @@ void CMainFrame::CreateToolBoxBar()
 	m_wndToolBoxBar.SetWindowText(sText);
 	m_wndToolBoxBar.SetSCBStyle(m_wndToolBoxBar.GetSCBStyle() | SCBS_SIZECHILD);
 
-	m_ToolBox.Create(IDD_OBJECTDCL_FORM, &m_wndToolBoxBar);
+	m_ToolBox.Create(IDD_OPENDCL_FORM, &m_wndToolBoxBar);
 	m_ToolBox.ShowWindow(TRUE);
 	
 	// --- end instant bar creation and child setup ---
@@ -236,7 +236,7 @@ void CMainFrame::CreateProjectDockingBar(CProject* pProject /*= NULL*/)
 	m_TreeImageList.Add(hicon);
 	DestroyIcon(hicon);
 
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_ODS));
+	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_PASSWORD));
 	m_TreeImageList.Add(hicon);
 	DestroyIcon(hicon);
 
@@ -285,7 +285,7 @@ void CMainFrame::CreateZOrderDockingBar()
 	m_wndZOderBar.SetSCBStyle(m_wndZOderBar.GetSCBStyle() 
 		| SCBS_SIZECHILD);
 	
-	m_ZOrderPane.Create(IDD_OBJECTDCL_FORM, &m_wndZOderBar);
+	m_ZOrderPane.Create(IDD_OPENDCL_FORM, &m_wndZOderBar);
 	m_ZOrderPane.ShowWindow(TRUE);
 
 	// --- end instant bar creation and child setup ---
@@ -308,7 +308,7 @@ void CMainFrame::CreatePropertyDockingBar()
 	m_wndPropertyBar.SetWindowText(theWorkspace.LoadResourceString(IDS_PROPERTIES));
 	m_wndPropertyBar.SetSCBStyle(m_wndPropertyBar.GetSCBStyle() | SCBS_SIZECHILD);
 
-	m_PropertyTabPane.Create(IDD_OBJECTDCL_FORM, &m_wndPropertyBar);
+	m_PropertyTabPane.Create(IDD_OPENDCL_FORM, &m_wndPropertyBar);
 	m_PropertyTabPane.ShowWindow(TRUE);
 
 	// --- end instant bar creation and child setup ---
@@ -421,8 +421,8 @@ void CMainFrame::OnAddmodal()
 	ASSERT(pProjTree != NULL);
 	if (!pProjTree)
 		return;
-	CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
-	CObjectDCLView *pView = pApp->AddDclFormAndView(VdclModal);
+	COpenDCLApp* pApp = (COpenDCLApp*)AfxGetApp();
+	COpenDCLView *pView = pApp->AddDclFormAndView(VdclModal);
 	CDocument* pDoc = pProjTree->GetDocument();
 	if( pDoc )
 		pDoc->SetModifiedFlag();
@@ -434,8 +434,8 @@ void CMainFrame::OnAddmodeless()
 	ASSERT(pProjTree != NULL);
 	if (!pProjTree)
 		return;
-	CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
-	CObjectDCLView *pView = pApp->AddDclFormAndView(VdclModeless);
+	COpenDCLApp* pApp = (COpenDCLApp*)AfxGetApp();
+	COpenDCLView *pView = pApp->AddDclFormAndView(VdclModeless);
 	CDocument* pDoc = pProjTree->GetDocument();
 	if( pDoc )
 		pDoc->SetModifiedFlag();
@@ -447,8 +447,8 @@ void CMainFrame::OnAddconfig()
 	ASSERT(pProjTree != NULL);
 	if (!pProjTree)
 		return;
-	CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
-	CObjectDCLView *pView = pApp->AddDclFormAndView(VdclConfigTab);
+	COpenDCLApp* pApp = (COpenDCLApp*)AfxGetApp();
+	COpenDCLView *pView = pApp->AddDclFormAndView(VdclConfigTab);
 	CDocument* pDoc = pProjTree->GetDocument();
 	if( pDoc )
 		pDoc->SetModifiedFlag();
@@ -460,8 +460,8 @@ void CMainFrame::OnAdddockable()
 	ASSERT(pProjTree != NULL);
 	if (!pProjTree)
 		return;
-	CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
-	CObjectDCLView *pView = pApp->AddDclFormAndView(VdclDockable);
+	COpenDCLApp* pApp = (COpenDCLApp*)AfxGetApp();
+	COpenDCLView *pView = pApp->AddDclFormAndView(VdclDockable);
 	CDocument* pDoc = pProjTree->GetDocument();
 	if( pDoc )
 		pDoc->SetModifiedFlag();
@@ -474,25 +474,10 @@ BOOL CMainFrame::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 
 	switch(lpnm->code)
 	{
-      case TBN_DROPDOWN:
-        //drop down button was hit
-        CMenu menu;
-		switch (nCurrentPurchaseMode)
-		{
-		case nPurchasedLT:
-			menu.LoadMenu(IDR_POPUPMENUS_LT);
-			break;
-		case nPurchasedR14Pro:
-		case nPurchasedGMP:
-			menu.LoadMenu(IDR_POPUPMENUS_R14);
-			break;
-		case nPurchasedStd:
-			menu.LoadMenu(IDR_POPUPMENUS_STD);
-			break;
-		default:
-			menu.LoadMenu(IDR_POPUPMENUS);
-			break;
-		}
+	case TBN_DROPDOWN:
+		//drop down button was hit
+		CMenu menu;
+		menu.LoadMenu(IDR_POPUPMENUS);
 		CMenu* pPopup = menu.GetSubMenu(3);
 		ASSERT(pPopup != NULL);
 		
@@ -548,8 +533,8 @@ void CMainFrame::OnRemove()
 			pProjTree->GetDockableParentTreeItem() == hDclForm ||
 			pProjTree->GetModalParentTreeItem() == hDclForm ||
 			pProjTree->GetModelessParentTreeItem() == hDclForm ||
-			pProjTree->GetOdsFileTreeItem() == hDclForm ||
-			pProjTree->GetOdsFileParentTreeItem() == hDclForm ||
+			pProjTree->GetPasswordTreeItem() == hDclForm ||
+			pProjTree->GetPasswordParentTreeItem() == hDclForm ||
 			pProjTree->GetAxFilesParentTreeItem() == hDclForm)
 	{
 		// let the user know he has not selected a form item.
@@ -603,13 +588,28 @@ void CMainFrame::OnSetautolispfilename()
 	ASSERT(pProject != NULL);
 	if (!pProject)
 		return;
-	pProjTree->SetAutoLispFilename( pProject->QueryForLispFileName() );
-	CDocument* pDoc = pProjTree->GetDocument();
-	if( pDoc )
-		pDoc->SetModifiedFlag();
+
+	CString sLispFileName = pProject->GetLispFileName();
+	CFileDialog Dlg( FALSE,
+									 _T(".lsp"), 
+									 sLispFileName, 
+									 OFN_HIDEREADONLY | OFN_ENABLESIZING | OFN_EXPLORER,
+									 theWorkspace.LoadResourceString(IDS_AUTOLISPFILE),
+									 CWnd::GetActiveWindow() );
+	CString sTitle = theWorkspace.LoadResourceString(IDS_SELECTPROJECTLISPFILE);
+	Dlg.m_pOFN->lpstrTitle = sTitle;
+	if( Dlg.DoModal() == IDOK )
+	{
+		sLispFileName = Dlg.GetFileName();
+		pProject->SetLispFileName( sLispFileName );
+		pProjTree->SetAutoLispFilename( sLispFileName );
+		CDocument* pDoc = pProjTree->GetDocument();
+		if( pDoc )
+			pDoc->SetModifiedFlag();
+	}
 }
 
-void CMainFrame::OnSetdistfilename() 
+void CMainFrame::OnSetpassword() 
 {
 	CProjectTreeCtrl* pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
 	ASSERT(pProjTree != NULL);
@@ -619,11 +619,16 @@ void CMainFrame::OnSetdistfilename()
 	ASSERT(pProject != NULL);
 	if (!pProject)
 		return;
-	pProjTree->SetOdsFilename( pProject->QueryForOdsFileName() );
-	pProject->SaveDistFile();
-	CDocument* pDoc = pProjTree->GetDocument();
-	if( pDoc )
-		pDoc->SetModifiedFlag();
+	CProjectPasswordDlg Dlg( pProject->GetPassword(), this );
+	if( Dlg.DoModal() == IDOK )
+	{
+		CString sPassword = Dlg.GetPassword();
+		pProject->SetPassword( sPassword );
+  	pProjTree->SetPassword( sPassword );
+		CDocument* pDoc = pProjTree->GetDocument();
+		if( pDoc )
+			pDoc->SetModifiedFlag();
+	}
 }
 
 void CMainFrame::OnProjectsAddfiledialogbox() 
@@ -632,8 +637,8 @@ void CMainFrame::OnProjectsAddfiledialogbox()
 	ASSERT(pProjTree != NULL);
 	if (!pProjTree)
 		return;
-	CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
-	CObjectDCLView *pView = pApp->AddDclFormAndView(VdclFileDialog);
+	COpenDCLApp* pApp = (COpenDCLApp*)AfxGetApp();
+	COpenDCLView *pView = pApp->AddDclFormAndView(VdclFileDialog);
 	CDocument* pDoc = pProjTree->GetDocument();
 	if( pDoc )
 		pDoc->SetModifiedFlag();

@@ -39,7 +39,7 @@ int PictureBox_DrawLine()
 	int nEndY;
 	
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -260,7 +260,7 @@ int PictureBox_DrawPoint()
 	int nStartY;
 	
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -426,7 +426,7 @@ int PictureBox_DrawEdge()
 	int nEdge;
 
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -624,7 +624,7 @@ int PictureBox_DrawFocusRect()
 	int nEndY;
 
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -799,7 +799,7 @@ int PictureBox_DrawRect()
 	int nEndY;
 	
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -1025,7 +1025,7 @@ int PictureBox_DrawFillRect()
 	int nEndY;
 	
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -1336,7 +1336,7 @@ int PictureBox_DrawArc()
 	int nEndAngleY;
 	
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -1631,7 +1631,7 @@ int PictureBox_DrawCircle()
 	int	nLowerRightY;
 	
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -1860,7 +1860,7 @@ int PictureBox_DrawHatchRect()
 	int nHatchPattern;
 
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -2147,7 +2147,7 @@ int PictureBox_DrawWrappedText()
 	int nTextHeight;
 	
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -2428,7 +2428,7 @@ int PictureBox_DrawText()
 	int nDisabled;
 
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -2680,7 +2680,7 @@ int PictureBox_PaintPicture()
 	
 	struct resbuf *ListData;
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)

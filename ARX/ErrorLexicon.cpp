@@ -2,7 +2,6 @@
 #include "ErrorLexicon.h"
 
 LPCTSTR ProjectPrefix				= _T(".odc");
-LPCTSTR DistributionPrefix			= _T(".ods");
 LPCTSTR ErrorProjectFile			= _T("The project file: ");
 LPCTSTR ErrorWasNotFound			= _T("\nWas not found.  Please ensure that this file is placed");
 LPCTSTR ErrorInaDirectory			= _T("\n in a directory where AutoCAD searches automatically.");
@@ -13,9 +12,9 @@ LPCTSTR ErrorSchoolCreation			= _T("This dialog box was created using a student 
 LPCTSTR ErrorObjectDCL				= _T("ObjectDCL");
 LPCTSTR ErrorFormNotFound			= _T("Form not found");
 LPCTSTR ErrorTabsToolTipTitle		= _T("TabsToolTipTitle");
-LPCTSTR ErrorDialogNotFound			= _T("The dialog requested by an AutoLisp call was not found in the list of active dialog boxes.\n");
-LPCTSTR ErrorControlNotFound		= _T("The control requested by an AutoLisp call was not found in the specified dialog boxes.\n");
-LPCTSTR ErrorControlWrongType		= _T("The control requested by an AutoLisp call was found but was not the correct type for call made.\n");
+LPCTSTR ErrorDialogNotFound			= _T("The dialog requested by an AutoLISP call was not found in the list of active dialog boxes.\n");
+LPCTSTR ErrorControlNotFound		= _T("The control requested by an AutoLISP call was not found in the specified dialog boxes.\n");
+LPCTSTR ErrorControlWrongType		= _T("The control requested by an AutoLISP call was found but was not the correct type for call made.\n");
 LPCTSTR ErrorReturnChar				= _T("\n");
 LPCTSTR ErrorFile					= _T("     File: ");
 LPCTSTR ErrorDialog					= _T("     Dialog: ");

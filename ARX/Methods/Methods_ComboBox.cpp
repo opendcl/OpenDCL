@@ -240,7 +240,7 @@ int ComboBox_AddList()
 	struct resbuf *ListData;
 	CString sNewString;
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)

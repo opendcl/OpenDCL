@@ -4,15 +4,15 @@
 #include "stdafx.h"
 #include "ProjectTreeCtrl.h"
 #include "Project.h"
-#include "ObjectDCL.h"
-#include "ObjectDCLView.h"
+#include "OpenDCL.h"
+#include "OpenDCLView.h"
 #include "DclFormObject.h"
 #include "DclControlObject.h"
 #include "ChildFrm.h"
-#include "PurchaseMode.h"
 #include "ControlTypes.h"
 #include "PropertyIds.h"
 #include "SharedRes.h"
+#include "ProjectPasswordDlg.h"
 
 #define nNotSet -1
 
@@ -62,8 +62,8 @@ CProjectTreeCtrl::CProjectTreeCtrl()
 , mhtiFileDialogParent( NULL )
 , mhtiAutoLispFileParent( NULL )
 , mhtiAutoLispFile( NULL )
-, mhtiOdsFileParent( NULL )
-, mhtiOdsFile( NULL )
+, mhtiPasswordParent( NULL )
+, mhtiPassword( NULL )
 , mhtiAxFilesParent( NULL )
 {
 }
@@ -96,16 +96,39 @@ void CProjectTreeCtrl::OnDblclk(NMHDR* pNMHDR, LRESULT* pResult)
 	if (mhtiAutoLispFile == hItem)
 	{
 		// update the project tree's autolisp file name
-		SetItemText(mhtiAutoLispFile, activeProject->QueryForLispFileName());
+		CString sLispFileName = mpProject->GetLispFileName();
+		CFileDialog Dlg( FALSE,
+										 _T(".lsp"), 
+										 sLispFileName, 
+										 OFN_HIDEREADONLY | OFN_ENABLESIZING | OFN_EXPLORER,
+										 theWorkspace.LoadResourceString(IDS_AUTOLISPFILE),
+										 CWnd::GetActiveWindow() );
+		CString sTitle = theWorkspace.LoadResourceString(IDS_SELECTPROJECTLISPFILE);
+		Dlg.m_pOFN->lpstrTitle = sTitle;
+		if( Dlg.DoModal() == IDOK )
+		{
+			sLispFileName = Dlg.GetFileName();
+			mpProject->SetLispFileName( sLispFileName );
+			SetAutoLispFilename( sLispFileName );
+			if( mpDocument )
+				mpDocument->SetModifiedFlag();
+		}
 		return;
 	}
 	
-	if (mhtiOdsFile == hItem)
+	if (mhtiPassword == hItem)
 	{
-		// update the project tree's ODS file name
-		SetItemText(mhtiOdsFile, activeProject->QueryForOdsFileName());
-		// and save the file
-		activeProject->SaveDistFile();
+		// update the project's password
+		CString sPassword = mpProject->GetPassword();
+		CProjectPasswordDlg Dlg( sPassword, this );
+		if( Dlg.DoModal() == IDOK )
+		{
+			sPassword = Dlg.GetPassword();
+			mpProject->SetPassword( sPassword );
+  		SetPassword( sPassword );
+			if( mpDocument )
+				mpDocument->SetModifiedFlag();
+		}
 		return;
 	}
 
@@ -119,7 +142,7 @@ void CProjectTreeCtrl::OnDblclk(NMHDR* pNMHDR, LRESULT* pResult)
 			if (pDcl->m_htiTreeItem == hItem)
 			{
 				if (pDcl->m_pMdiChildWnd == NULL)
-					((CObjectDCLApp*)AfxGetApp())->OpenExistingForm(pDcl);
+					((COpenDCLApp*)AfxGetApp())->OpenExistingForm(pDcl);
 				else
 					pDcl->m_pMdiChildWnd->SetWindowPos(&CWnd::wndTop, 0,0,nNotSet,nNotSet, SWP_NOSIZE|SWP_NOMOVE);
 				return;
@@ -162,12 +185,12 @@ void CProjectTreeCtrl::SetAutoLispFilename( LPCTSTR pszLispFilename )
 	SetItemText(mhtiAutoLispFile, sLispFilename);
 }
 
-void CProjectTreeCtrl::SetOdsFilename( LPCTSTR pszOdsFilename )
+void CProjectTreeCtrl::SetPassword( LPCTSTR pszPassword )
 {
-	CString sOdsFilename = pszOdsFilename;
-	if( sOdsFilename.IsEmpty() )
-		sOdsFilename = theWorkspace.LoadResourceString(IDS_NONE);
-	SetItemText(mhtiOdsFile, sOdsFilename);
+	CString sPassword = pszPassword;
+	if( sPassword.IsEmpty() )
+		sPassword = theWorkspace.LoadResourceString(IDS_NONE);
+	SetItemText(mhtiPassword, sPassword);
 }
 
 void CProjectTreeCtrl::SetupProjectTree(CProject* pProject /*= NULL*/)
@@ -202,17 +225,17 @@ void CProjectTreeCtrl::SetupProjectTree(CProject* pProject /*= NULL*/)
 	SetItemImage(mhtiAutoLispFile, 6,6);	
 
 	// set the distribution file name
-	sText = theWorkspace.LoadResourceString(IDS_DISTFILE);
-	mhtiOdsFileParent = InsertItem(sText);
-	SetItemImage(mhtiOdsFileParent, 1,1);
+	sText = theWorkspace.LoadResourceString(IDS_PASSWORD);
+	mhtiPasswordParent = InsertItem(sText);
+	SetItemImage(mhtiPasswordParent, 1,1);
 
-	if (!mpProject || mpProject->GetDistFileName().IsEmpty())
+	if (!mpProject || mpProject->GetPassword().IsEmpty())
 		sText = theWorkspace.LoadResourceString(IDS_NONE);
 	else
-		sText = mpProject->GetDistFileName();
+		sText = mpProject->GetPassword();
 	// add the distribution file name itself
-	mhtiOdsFile = InsertItem(sText, mhtiOdsFileParent);
-	SetItemImage(mhtiOdsFile, 7,7);
+	mhtiPassword = InsertItem(sText, mhtiPasswordParent);
+	SetItemImage(mhtiPassword, 7,7);
 }
 
 void CProjectTreeCtrl::ClearTree()
@@ -221,13 +244,13 @@ void CProjectTreeCtrl::ClearTree()
 	DeleteAllItems();
 	// set all the htree items to null
 	mhtiAutoLispFileParent = NULL;
-	mhtiOdsFileParent = NULL;
+	mhtiPasswordParent = NULL;
 	mhtiModalParent = NULL;
 	mhtiModelessParent = NULL;
 	mhtiDockableParent = NULL;
 	mhtiConfigParent = NULL;
 	mhtiAutoLispFile = NULL;
-	mhtiOdsFile = NULL;
+	mhtiPassword = NULL;
 	mhtiAxFilesParent = NULL;
 	mhtiFileDialogParent = NULL;
 	mpProject = NULL;
@@ -283,7 +306,7 @@ void CProjectTreeCtrl::AddFormToTree(CDclFormObject *pDcl, bool bForceShow)
 				SetItemImage(mhtiModalParent, 1,1);
 			}				
 			pDcl->m_htiTreeItem = InsertItem(pDcl->GetKeyName(), mhtiModalParent, TVI_SORT);
-			SetItemImage(pDcl->m_htiTreeItem, 2,2);			
+			SetItemImage(pDcl->m_htiTreeItem, 2,2);
 			break;
 		case VdclModeless:
 			if (mhtiModelessParent == NULL)
@@ -412,26 +435,10 @@ void CProjectTreeCtrl::OnContextMenu(CWnd* pWnd, CPoint point)
 	CMenu* pPopup;
 
 	// the font popup is stored in a resource
-	switch (nCurrentPurchaseMode)
-		{
-		case nPurchasedLT:
-			menu.LoadMenu(IDR_POPUPMENUS_LT);
-			break;
-		case nPurchasedGMP:
-		case nPurchasedR14Pro:
-			menu.LoadMenu(IDR_POPUPMENUS_R14);
-			break;
-		case nPurchasedStd:
-			menu.LoadMenu(IDR_POPUPMENUS_STD);
-			break;
-		default:
-			menu.LoadMenu(IDR_POPUPMENUS);
-			break;
-		}
-		
+	menu.LoadMenu(IDR_POPUPMENUS);
 	pPopup = menu.GetSubMenu(0);
 	ClientToScreen(&point);
-	CObjectDCLApp* pApp = (CObjectDCLApp*)AfxGetApp();
+	COpenDCLApp* pApp = (COpenDCLApp*)AfxGetApp();
 	pPopup->TrackPopupMenu( TPM_LEFTALIGN, point.x, point.y, pApp->m_pMainWnd );	
 }
 

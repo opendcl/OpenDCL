@@ -64,7 +64,7 @@ int Grid_AddColumn()
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();	
   RefCountedPtr< CPropertyObject > m_pColCaptions = pArx->GetPropertyObject(nColumnCaptions);	
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 
 	for (int i = 0; i < nArg; i++)
@@ -372,7 +372,7 @@ int Grid_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
 
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();	
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 
   int i;	
@@ -426,7 +426,7 @@ int Grid_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
 	// clear the array
 	sTextArray.RemoveAll();
 
-	// do loop to get all the strings passed by AutoLisp
+	// do loop to get all the strings passed by AutoLISP
 	bool bDoLoop = true;
 	while (bDoLoop)
 	{
@@ -1232,7 +1232,7 @@ int Grid_FillGrid()
 	
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 
   int i;	
@@ -1799,7 +1799,7 @@ int Grid_Cell_ComboBox()
 	struct resbuf *ListData;
 	CString sNewString;
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -1907,7 +1907,7 @@ int Grid_Cell_ImageComboBox()
 	struct resbuf *ListData;
 	CString sNewString;
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)

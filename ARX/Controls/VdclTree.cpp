@@ -489,7 +489,7 @@ void VdclTree::Clear()
 // 
 // Method: VdclTree::GetParentInfo()
 // 
-// Purpose: [Send the parent info back to AutoLisp]
+// Purpose: [Send the parent info back to AutoLISP]
 // 
 // Parameters:  
 //		[sKey]:  [TODO: Write the description of this parameter]

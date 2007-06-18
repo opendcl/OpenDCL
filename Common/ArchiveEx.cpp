@@ -10,7 +10,7 @@ CArchiveEx::CArchiveEx(CFile* pFile, UINT nMode, void* lpBuf, CString sKey, BOOL
 , m_strKey( sKey )
 , mpCompressedDataFile( NULL )
 {
-	if(!m_strKey.IsEmpty())
+	if(bCompress)
 	{
 		mpCompressedDataFile = m_pFile;
 		m_pFile = new CMemFile;
@@ -33,7 +33,8 @@ CArchiveEx::CArchiveEx(CFile* pFile, UINT nMode, void* lpBuf, CString sKey, BOOL
 				if(ahead.uchFlag == 3)
 				{
 					ULONG crc = adler32(0L, Z_NULL, 0);
-					Crypto(pCompBuf, dwFileSize, m_strKey);
+					if( !m_strKey.IsEmpty() )
+						Crypto(pCompBuf, dwFileSize, m_strKey);
 					crc = adler32(crc, pCompBuf, dwFileSize);
 					if(crc != ahead.ulCRC)
 					{

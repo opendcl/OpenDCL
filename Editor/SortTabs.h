@@ -8,7 +8,7 @@
 
 class CDclFormObject;
 class CDclControlObject;
-class CObjectDCLView;
+class COpenDCLView;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -16,7 +16,7 @@ class CObjectDCLView;
 
 class CSortTabs : public CPropertyPage
 {
-	CObjectDCLView* mpView;
+	COpenDCLView* mpView;
 	CDclControlObject* mpDclControl;
 	CTabsPane* mpTabsPane;
 	CListBox	m_List;
@@ -26,7 +26,7 @@ class CSortTabs : public CPropertyPage
 
 // Construction
 public:
-	CSortTabs( CObjectDCLView* pView, CDclControlObject* pControl, CTabsPane* pTabsPane );
+	CSortTabs( COpenDCLView* pView, CDclControlObject* pControl, CTabsPane* pTabsPane );
 	~CSortTabs();
 
 // Overrides

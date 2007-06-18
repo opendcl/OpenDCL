@@ -690,7 +690,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddBooleanProperty( nToolTipBalloon, PropBool, true );
 		pDclControl->AddBooleanProperty( nUseTabStops, PropBool, false );
 		pDclControl->AddBooleanProperty( nVScrollBar, PropBool, false );
-		AddControlEvent( pDclControl, nEventClicked );
 		AddControlEvent( pDclControl, nDragnDropToAutoCAD );
 		AddControlEvent( pDclControl, nDragnDropFromControl );
 		AddControlEvent( pDclControl, nDragnDropFromAutoCAD );

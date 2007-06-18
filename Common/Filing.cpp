@@ -188,7 +188,7 @@ LPCTSTR labelBYTE = labelReleaseBYTE;
 //    case VT_I2 : writeInt(pFile, var.intVal); break;
 //    case VT_I4 : writeInt(pFile, var.intVal); break;
 //    default :
-//      MessageBox(NULL, _T("Error: Writing OLE Variant!"), _T("ObjectDCL Error"), MB_OK);
+//      MessageBox(NULL, _T("Error: Writing OLE Variant!"), _T("OpenDCL Error"), MB_OK);
 //      _ftprintf(pFile, _T("")); break;
 //  }
 //}
@@ -556,7 +556,7 @@ bool readOleVariant(std::ifstream &sFile, COleVariant& var)
     case VT_I4 : 
       return readInt(sFile, var.intVal);
     default :
-      MessageBox(NULL, _T("Error: Reading OLE Variant!"), _T("ObjectDCL Error"), MB_OK);
+      MessageBox(NULL, _T("Error: Reading OLE Variant!"), _T("OpenDCL Error"), MB_OK);
       return false;
   }
   return false;

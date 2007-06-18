@@ -149,7 +149,7 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_E
 
 			// do loop starting from the last argument to the index of 1. Because ActiveX arguments are in reverse order.
 			// don't ask me why!
-			// The Index last index is not an argument to be passed to AutoLisp.
+			// The Index last index is not an argument to be passed to AutoLISP.
 			for (int i=dispparams.cArgs-2; i>=0; i--)
 			{
 				VARIANT* pVarArg = &dispparams.rgvarg[i];

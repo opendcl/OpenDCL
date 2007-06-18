@@ -5,7 +5,7 @@
 #include "SharedRes.h"
 #include "FontCombo.h"
 #include "ToolBox.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "EditorWorkspace.h"
 
 
@@ -723,10 +723,10 @@ void CFontCombo::OnSelchange()
 	
 	if (theEditorWorkspace.GetToolBox()->m_pActiveView == NULL)
 		return;
-	if (((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
 		return;
 	
-	((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFont(sString);
+	((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFont(sString);
 }
 
 BOOL CFontCombo::PreTranslateMessage(MSG* pMsg) 

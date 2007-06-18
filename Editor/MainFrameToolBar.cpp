@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "MainFrameToolBar.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "PropertyIds.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
@@ -672,20 +672,20 @@ void CMainFrameToolBar::OnFontBold()
 {		
 	if (theEditorWorkspace.GetToolBox()->m_pActiveView == NULL)
 		return;
-	if (((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
 		return;
 	BOOL bChecked = m_Buttons.IsButtonChecked(ID_FONTBOLDBTN);
-	((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontBool((bChecked == TRUE), nLabelBold);
+	((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontBool((bChecked == TRUE), nLabelBold);
 }
 
 void CMainFrameToolBar::OnFontItalic()
 {
 	if (theEditorWorkspace.GetToolBox()->m_pActiveView == NULL)
 		return;
-	if (((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
 		return;
 	BOOL bChecked = m_Buttons.IsButtonChecked(ID_FONTITALICBTN);
-	((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontBool((bChecked == TRUE), nLabelItalic);
+	((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontBool((bChecked == TRUE), nLabelItalic);
 	
 }
 
@@ -693,18 +693,18 @@ void CMainFrameToolBar::OnFontUnderline()
 {
 	if (theEditorWorkspace.GetToolBox()->m_pActiveView == NULL)
 		return;
-	if (((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
 		return;
 	BOOL bChecked = m_Buttons.IsButtonChecked(ID_FONTUNDERLINEBTN);
-	((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontBool((bChecked == TRUE), nLabelUnderline);
+	((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontBool((bChecked == TRUE), nLabelUnderline);
 }
 
 void CMainFrameToolBar::OnFontScaled()
 {
 	if (theEditorWorkspace.GetToolBox()->m_pActiveView == NULL)
 		return;
-	if (((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
 		return;
 	BOOL bChecked = m_Buttons.IsButtonChecked(ID_FONTSCALED);
-	((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontBool((bChecked == TRUE), nFontSizeStyle);
+	((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontBool((bChecked == TRUE), nFontSizeStyle);
 }

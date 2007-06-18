@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "FontSizes.h"
 #include "ToolBox.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "EditorWorkspace.h"
 
 
@@ -40,11 +40,11 @@ void CFontSizes::OnSelchange()
 	
 	if (theEditorWorkspace.GetToolBox()->m_pActiveView == NULL)
 		return;
-	if (((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
 		return;
 	
 	if (!sString.IsEmpty())
-		((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontSize(_tstol(sString));
+		((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontSize(_tstol(sString));
 	
 }
 
@@ -55,10 +55,10 @@ void CFontSizes::OnEditchange()
 	
 	if (theEditorWorkspace.GetToolBox()->m_pActiveView == NULL)
 		return;
-	if (((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
 		return;
 	
 	if (!sString.IsEmpty())
-		((CObjectDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontSize(_tstol(sString));
+		((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFontSize(_tstol(sString));
 	
 }

@@ -10,6 +10,7 @@
 #include "ArxProject.h"
 #include "DclFormObject.h"
 #include "ControlPane.h"
+#include "VarUtils.h"
 
 
 
@@ -149,7 +150,7 @@ struct resbuf *GetProjectAndFormName(CString *pArg1, CString *pArg2, CString sMe
 {	
 	struct resbuf *ListData;
 
- 	//ensure AutoLisp has passed Arguments	
+ 	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -199,7 +200,7 @@ struct resbuf *GetProjectAndFormName(CString *pArg1, CString *pArg2, CString sMe
 // 
 // Method: GetStringArgument()
 // 
-// Purpose: [gets the expected string argument from AutoLisp]
+// Purpose: [gets the expected string argument from AutoLISP]
 // 
 // Parameters:  
 //		[nIndex]:  [0 based index]
@@ -212,7 +213,7 @@ bool GetStringArgument(int nIndex, CString *pArg, CString sMethod)
 {
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -250,7 +251,7 @@ bool GetStringArgument(int nIndex, CString *pArg, CString sMethod)
 // 
 // Method: GetStringOrLongArgument()
 // 
-// Purpose: [gets the expected string or long argument from AutoLisp]
+// Purpose: [gets the expected string or long argument from AutoLISP]
 // 
 // Parameters:  
 //		[nIndex]:  [0 based index]
@@ -263,7 +264,7 @@ bool GetStringOrLongArgument(int nIndex, CString *pArg, ULONG *uLong, CString sM
 {
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -312,7 +313,7 @@ bool GetStringOrLongArgument(int nIndex, CString *pArg, ULONG *uLong, CString sM
 // 
 // Method: FindOptionalStringArgument()
 // 
-// Purpose: [looks for optional to get the expected string argument from AutoLisp, but does not
+// Purpose: [looks for optional to get the expected string argument from AutoLISP, but does not
 //			 prompt the user if not found]
 // 
 // Parameters:  
@@ -326,7 +327,7 @@ bool FindOptionalStringArgument(int nIndex, CString *pArg, CString sMethod)
 {
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		return false; 
@@ -359,7 +360,7 @@ bool FindOptionalStringArgument(int nIndex, CString *pArg, CString sMethod)
 // 
 // Method: GetDoubleArgument()
 // 
-// Purpose: [gets the expected int argument from AutoLisp]
+// Purpose: [gets the expected int argument from AutoLISP]
 // 
 // Parameters:  
 //		[nIndex]:  [0 base index]
@@ -372,7 +373,7 @@ bool GetDoubleArgument(int nIndex, double *pArg, CString sMethod)
 {
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -414,7 +415,7 @@ bool GetDoubleArgument(int nIndex, double *pArg, CString sMethod)
 // 
 // Method: GetIntArgument()
 // 
-// Purpose: [gets the expected int argument from AutoLisp]
+// Purpose: [gets the expected int argument from AutoLISP]
 // 
 // Parameters:  
 //		[nIndex]:  [0 base index]
@@ -427,7 +428,7 @@ bool GetIntArgument(int nIndex, int *pArg, CString sMethod)
 {
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -454,7 +455,7 @@ bool GetIntArgument(int nIndex, int *pArg, CString sMethod)
 // 
 // Method: FindOptionalIntArgument()
 // 
-// Purpose: [gets the optional int argument from AutoLisp]
+// Purpose: [gets the optional int argument from AutoLISP]
 // 
 // Parameters:  
 //		[nIndex]:  [0 base index]
@@ -467,7 +468,7 @@ bool FindOptionalIntArgument(int nIndex, int *pArg, CString sMethod)
 {
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		*pArg = -1;
@@ -510,7 +511,7 @@ bool FindOptionalIntArgument(int nIndex, int *pArg, CString sMethod)
 // 
 // Method: FindOptionalDoubleArgument()
 // 
-// Purpose: [gets the optional int argument from AutoLisp]
+// Purpose: [gets the optional int argument from AutoLISP]
 // 
 // Parameters:  
 //		[nIndex]:  [0 base index]
@@ -523,7 +524,7 @@ bool FindOptionalDoubleArgument(int nIndex, double *pArg, CString sMethod)
 {
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -723,7 +724,7 @@ CWnd * GetControlPointer(ControlType nControlType, CString sMethod, CDclFormObje
 	CString sItem;
 	struct resbuf *ListData;
 
-	// call the method to get 2 expected string arguments from AutoLisp
+	// call the method to get 2 expected string arguments from AutoLISP
 	ListData = GetProjectAndFormName(&sProject, &sDialogBox, sMethod);
 	
 	if (ListData == NULL)
@@ -877,7 +878,7 @@ RefCountedPtr< CPropertyObject > GetPropertyArgument(int nIndex, CString sMethod
 {
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -1090,7 +1091,7 @@ bool GetAxPropertyArgument(struct resbuf*& ListData, COleVariant *oleVar, const 
 				break;
 			}		
 	}
-	bool bReturn = (S_OK == VariantChangeType( oleVar, oleVar, 0, type.vt ));
+	bool bReturn = (type.vt == VT_VARIANT || S_OK == VariantChangeType( oleVar, oleVar, 0, type.vt ));
 
 /*
 	// set to converted as false for default
@@ -1535,7 +1536,11 @@ bool GetAxPropertyArgument(struct resbuf*& ListData, COleVariant *oleVar, const 
 */
 
 	if (!bReturn)
-		theWorkspace.DisplayAlert(CString(ErrorInappropriateFound));
+	{
+		CString sArgErr;
+		sArgErr.Format( theWorkspace.LoadResourceString( IDS_ERR_INVALIDARGUMENTTYPE ), VTToString( type.vt ), VTToString( oleVar->vt ) );
+		theWorkspace.DisplayAlert( sArgErr );
+	}
 
 	return bReturn; 
 }
@@ -1547,7 +1552,7 @@ bool GetDateArgument(int nIndex, COleDateTime *pArg, CString sMethod)
 	int nMonth;
 	int nDay;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -1699,7 +1704,7 @@ CWnd * GetArgsControlIntString(int nControlType, CString sMethod, int &nInt, CSt
 	struct resbuf *ListData;
 	CString sNewString;
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -1764,7 +1769,7 @@ CWnd * GetArgsControlStringString(int nControlType, CString sMethod, CString &sS
 	struct resbuf *ListData;
 	CString sNewString;
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -1824,7 +1829,7 @@ CWnd * GetArgsControlIntInt(int nControlType, CString sMethod, int &nInt, int &n
 	struct resbuf *ListData;
 	CString sNewString;
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -1902,7 +1907,7 @@ CWnd * GetArgsControlIntIntInt(int nControlType, CString sMethod, int &nInt, int
 	struct resbuf *ListData;
 	CString sNewString;
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -2007,7 +2012,7 @@ CWnd * GetArgsControlStringIntInt(int nControlType, CString sMethod, CString &sS
 	struct resbuf *ListData;
 	CString sNewString;
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)

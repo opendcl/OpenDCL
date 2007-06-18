@@ -101,8 +101,6 @@ END
 STRINGTABLE 
 BEGIN
     IDS_DOTLSP              ".lsp"
-    IDS_DOTODS              ".ods"
-    IDS_ODSFILTER           "OpenDCL Distribution Files (*.ods)|*.ods||"
     IDS_COLOR               "Color"
     IDS_OleObject           "OleObject"
     IDS_THEFILE             "The file "
@@ -123,7 +121,6 @@ BEGIN
     IDS_DefaultFontUnderLine "DefaultFontUnderLine"
     IDS_DefaultFontBold     "DefaultFontBold"
     IDS_DefaultFontSizeStyle "DefaultFontSizeStyle"
-    IDS_AUTOLISPFILE        "AutoLisp Files (*.lsp)|*.lsp||"
 END
 
 STRINGTABLE 

@@ -4,9 +4,8 @@
 #include "stdafx.h"
 #include "ToolBox.h"
 #include "SharedRes.h"
-#include "PurchaseMode.h"
 #include "ControlTypes.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "DclFormObject.h"
 #include "ZOrderListCtrl.h"
 #include "InsertControlDlg.h"
@@ -233,40 +232,7 @@ void CToolBox::AddTheButtons()
 	m_pTBButtons[nDeButtonCount-1].iString = nDeActiveXButton + ID_TOOLBOX_POINTER;		
 	
 	for (nIndex = 0; nIndex < nDeButtonCount; nIndex++)
-	{
-		if (nCurrentPurchaseMode == nPurchasedLT && nIndex >= 12 && nIndex <= 15)
-			continue;
-		if (nCurrentPurchaseMode == nPurchasedLT && nIndex >= 18 && nIndex <= 21)
-			continue;
-		if (nCurrentPurchaseMode == nPurchasedLT && nIndex >= 23 && nIndex <= 26)
-			continue;
-		if (nCurrentPurchaseMode == nPurchasedLT && nIndex >= 28)
-			continue;
-
-		if (nCurrentPurchaseMode != nPurchasedEnt &&
-			nCurrentPurchaseMode != nDemoPro &&
-			nIndex == CtlGrid -2)
-			continue;
-
-		if (nCurrentPurchaseMode == nPurchasedStd && nIndex == CtlImageComboBox -2)
-			continue;
-		if (nCurrentPurchaseMode == nPurchasedLT && nIndex == CtlImageComboBox -2)
-			continue;
-
-		if (nCurrentPurchaseMode == nPurchasedStd && nIndex == 21)
-			continue;
-		if (nCurrentPurchaseMode == nPurchasedStd && nIndex == 28)
-			continue;
-		if (nCurrentPurchaseMode == nPurchasedStd && nIndex == 29)
-			continue;
-
-		if (nCurrentPurchaseMode == nPurchasedR14Pro && nIndex == CtlBlockView - 1)
-			continue;
-		if (nCurrentPurchaseMode == nPurchasedR14Pro && nIndex == CtlBlockList - 1)
-			continue;
-		
 		VERIFY(m_ToolBoxButtons.AddButtons(1, &m_pTBButtons[nIndex]));		
-	}
 	
 }
 
@@ -383,270 +349,270 @@ void CToolBox::EnableToolboxTabs(bool bEnabled)
 void CToolBox::OnToolboxPointer()
 {
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = false;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = false;
 	m_nSelectedCtrl = 1;
 }
 
 void CToolBox::OnToolboxAngleslider() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlRoundSlider;
 }
 
 void CToolBox::OnToolboxBlocklist() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlBlockList;
 }
 
 void CToolBox::OnToolboxBlockview() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlBlockView;
 	
 }
 
 void CToolBox::OnToolboxCheckbox() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlCheckBox;
 }
 
 void CToolBox::OnToolboxCombobox() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlComboBox;
 	
 }
 
 void CToolBox::OnToolboxDwgpreview() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlDwgPreview;
 	
 }
 
 void CToolBox::OnToolboxFrame() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlFrame;
 	
 }
 
 void CToolBox::OnToolboxGraphicbutton() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlGraphicButton;
 	
 }
 
 void CToolBox::OnToolboxHtml() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlHtmlCtrl;
 	
 }
 
 void CToolBox::OnToolboxLabel() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlLabel;
 	
 }
 
 void CToolBox::OnToolboxListbox() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlListBox;
 	
 }
 
 void CToolBox::OnToolboxListview() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlListView;
 	
 }
 
 void CToolBox::OnToolboxMonthpicker() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlMonth;
 	
 }
 
 void CToolBox::OnToolboxOption() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlOptionButton;
 	
 }
 
 void CToolBox::OnToolboxPicturebox() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlPictureBox;
 }
 
 void CToolBox::OnToolboxProgressbar() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlProgress;
 }
 
 void CToolBox::OnToolboxRectangle() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = Ctl3DRect;	
 }
 
 void CToolBox::OnToolboxScrollbar() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlScrollBar;
 }
 
 void CToolBox::OnToolboxSlider() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlSlider;	
 }
 
 void CToolBox::OnToolboxSlideview() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlSlideView;
 }
 
 void CToolBox::OnToolboxSpinbutton() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlSpinButton;
 }
 
@@ -658,10 +624,10 @@ void CToolBox::OnToolboxTabs()
 	}
 	
 	// check to see if we need to disallow the user from inserting or selecting a control
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm != NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm != NULL)
 	{
 		
-		if (((CObjectDCLView*)m_pActiveView)->IsTabsEnabled() == false)
+		if (((COpenDCLView*)m_pActiveView)->IsTabsEnabled() == false)
 		{
 			CString sMsg;
 			CString sTitle;
@@ -672,7 +638,7 @@ void CToolBox::OnToolboxTabs()
 			MessageBox(sMsg, sTitle, MB_ICONEXCLAMATION);
 			return;
 		}
-		if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm->GetType() == VdclTabForm)
+		if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm->GetType() == VdclTabForm)
 		{
 			CString sMsg;
 			CString sTitle;
@@ -685,55 +651,55 @@ void CToolBox::OnToolboxTabs()
 		}
 	}
 
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlTabStrip;
 }
 
 void CToolBox::OnToolboxTextbox() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlTextBox;
 }
 
 void CToolBox::OnToolboxTextbutton() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlStdButton;
 }
 
 void CToolBox::OnToolboxTree() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlTree;
 }
 
 void CToolBox::OnToolboxUrllink() 
 {
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlStaticURL;
 }
 
@@ -746,19 +712,19 @@ void CToolBox::SetActiveView(CView *pView)
 		CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
 
 		// clear the list
-		pZOrderList->ClearList((CObjectDCLView*)pView);
+		pZOrderList->ClearList((COpenDCLView*)pView);
 
 	}
 }
 
 void CToolBox::OnToolboxOptionList() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlOptionList	;
 	
 }
@@ -780,7 +746,7 @@ BOOL CToolBox::OnInitDialog()
 
 void CToolBox::OnToolboxActivex() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
@@ -795,15 +761,15 @@ void CToolBox::OnToolboxActivex()
 		return;
 	}
 
-	((CObjectDCLView*)m_pActiveView)->m_clsid = dlg.m_clsid;
-	((CObjectDCLView*)m_pActiveView)->m_ActiveXFileName = dlg.m_FileName;
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_clsid = dlg.m_clsid;
+	((COpenDCLView*)m_pActiveView)->m_ActiveXFileName = dlg.m_FileName;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	CString strLicenseKey;
 	CWaitCursor wait;
 	if (RequestLicenseKey(strLicenseKey, dlg.m_clsid) == TRUE)
-		((CObjectDCLView*)m_pActiveView)->m_sLicenseKey = strLicenseKey;
+		((COpenDCLView*)m_pActiveView)->m_sLicenseKey = strLicenseKey;
 	else
-		((CObjectDCLView*)m_pActiveView)->m_sLicenseKey = CString();
+		((COpenDCLView*)m_pActiveView)->m_sLicenseKey = CString();
 	
 	m_nSelectedCtrl = CtlActiveX;	
 	
@@ -811,13 +777,13 @@ void CToolBox::OnToolboxActivex()
 
 void CToolBox::OnToolboxDwglist() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlDwgList;
 	
 }
@@ -825,13 +791,13 @@ void CToolBox::OnToolboxDwglist()
 
 void CToolBox::OnToolboxAnimate() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlAnimate;
 	
 	
@@ -839,48 +805,48 @@ void CToolBox::OnToolboxAnimate()
 
 void CToolBox::OnToolboxImagecombobox() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlImageComboBox;
 }
 
 void CToolBox::OnToolboxGrid() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlGrid;
 }
 
 void CToolBox::OnToolboxSlitter() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlSplitter;
 }
 
 void CToolBox::OnToolboxHatch() 
 {
-	if (((CObjectDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
+	if (((COpenDCLView*)m_pActiveView)->m_pThisDclForm == NULL)
 	{
 		ResetToPointer();
 		return;
 	}
 	
-	((CObjectDCLView*)m_pActiveView)->m_StandardCursorID = true;
+	((COpenDCLView*)m_pActiveView)->m_StandardCursorID = true;
 	m_nSelectedCtrl = CtlHatch;
 }

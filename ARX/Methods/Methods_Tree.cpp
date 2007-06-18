@@ -66,7 +66,7 @@ bool Tree_AddParentList(CWnd *pControl, int nArg)
 	int nExpandedImage;
 
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)
@@ -306,7 +306,7 @@ bool Tree_AddChildList(CWnd *pControl, int nArg)
 	int nExpandedImage;
 	
 	struct resbuf *ListData;
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
 	
 	for (int i = 0; i < nArg; i++)

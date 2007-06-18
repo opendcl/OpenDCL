@@ -228,43 +228,43 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath=".\RES\3DRECT.ICO"
+				RelativePath=".\Res\3drect.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\ACAD2002.ICO"
+				RelativePath=".\Res\acad2002.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Animate.ICO"
+				RelativePath=".\Res\Animate.ICO"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Arrow.ico"
+				RelativePath=".\Res\Arrow.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\ARROW1.ICO"
+				RelativePath=".\Res\arrow1.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Arw06dn.ico"
+				RelativePath=".\Res\Arw06dn.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Arw06up.ico"
+				RelativePath=".\Res\Arw06up.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\AxFile.ico"
+				RelativePath=".\Res\AxFile.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\BITMAP1.BMP"
+				RelativePath=".\Res\bitmap1.bmp"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\BlockList.ico"
+				RelativePath=".\Res\BlockList.ico"
 				>
 			</File>
 			<File
@@ -272,231 +272,187 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RES\BlockView.ico"
+				RelativePath=".\Res\BlockView.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\BMP00001.BMP"
+				RelativePath=".\Res\bmp00001.bmp"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\BMP00002.BMP"
+				RelativePath=".\Res\bmp00002.bmp"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Bold.ico"
+				RelativePath=".\Res\Bold.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Bottom.bmp"
+				RelativePath=".\Res\Bottom.bmp"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\BringToFront.ico"
+				RelativePath=".\Res\BringToFront.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Button.ico"
+				RelativePath=".\Res\Button.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Check.ico"
+				RelativePath=".\Res\Check.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\CLOSEDFO.BMP"
+				RelativePath=".\Res\CLOSEDFO.BMP"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\ClosedFolder.ico"
+				RelativePath=".\Res\ClosedFolder.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\ConfigTab.ico"
+				RelativePath=".\Res\ConfigTab.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\COORDCUR.CUR"
+				RelativePath=".\Res\COORDCUR.CUR"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\CURSOR1.CUR"
+				RelativePath=".\Res\DockableForm.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\DockableForm.ico"
+				RelativePath=".\Res\DropDown.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\DropDown.ico"
+				RelativePath=".\Res\DwgList.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\DwgList.ico"
+				RelativePath=".\Res\dwgpreview.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\dwgpreview.ico"
+				RelativePath=".\Res\EditBox.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\EditBox.ico"
+				RelativePath=".\Res\Enum.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Enum.ico"
+				RelativePath=".\Res\Enums.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Enums.ico"
+				RelativePath=".\Res\Event.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Event.ico"
+				RelativePath=".\Res\FileDlg.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Exclemation.ico"
+				RelativePath=".\Res\Frame.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\FileDlg.ico"
+				RelativePath=".\Res\geometry.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\Filter.ico"
+				RelativePath=".\Res\GraphicButton.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Frame.ico"
+				RelativePath=".\Res\Grid.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\GEOMETRY.BMP"
+				RelativePath=".\Res\Hand.cur"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\GraphicButton.ico"
+				RelativePath=".\Res\Hatch.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Grid.ico"
+				RelativePath=".\Res\Help.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Hand.cur"
+				RelativePath=".\Res\HtmlCtrl.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Hatch.ico"
+				RelativePath=".\Res\ico00002.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Help.ico"
+				RelativePath=".\Res\ico00003.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\HtmlCtrl.ico"
+				RelativePath=".\Res\ICON16.ICO"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\ICO00002.ICO"
+				RelativePath=".\Res\ImageComboBox.ICO"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\ICO00003.ICO"
+				RelativePath=".\Res\Info.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\ICON16.ICO"
+				RelativePath=".\Res\Italic.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\IDR_MAIN.ICO"
+				RelativePath=".\Res\LABEL1.ICO"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\idr_main.ico"
+				RelativePath=".\Res\ListBox.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\ImageComboBox.ICO"
+				RelativePath=".\Res\ListView.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Info.ico"
+				RelativePath=".\Res\lsp.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Italic.ico"
+				RelativePath=".\Res\mainfram.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\Label.ico"
+				RelativePath=".\Res\Method.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Label.ico"
+				RelativePath=".\Res\ModalForm.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\LABEL1.ICO"
+				RelativePath=".\Res\ModelessForm.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\ListBox.ico"
+				RelativePath=".\Res\MonthView.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\ListView.ico"
+				RelativePath=".\Res\MULTIROW.BMP"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\LSP.ICO"
-				>
-			</File>
-			<File
-				RelativePath=".\RES\MAINFRAM.BMP"
-				>
-			</File>
-			<File
-				RelativePath=".\RES\Method.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\RES\ModalForm.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\RES\ModelessForm.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\RES\MonthView.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\RES\MULTIROW.BMP"
-				>
-			</File>
-			<File
-				RelativePath=".\RES\ObjectDCL.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\RES\ObjectDCL.rc2"
-				>
-			</File>
-			<File
-				RelativePath=".\RES\ObjectDCLDoc.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\RES\ODS.ICO"
-				>
-			</File>
-			<File
-				RelativePath=".\RES\OleObject.ico"
+				RelativePath=".\Res\OleObject.ico"
 				>
 			</File>
 			<File
@@ -504,55 +460,59 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RES\OPENFOLD.BMP"
+				RelativePath=".\Res\OpenDCL.rc2"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\OpenFolder.ico"
+				RelativePath=".\Res\OpenDCLDoc.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Option.ico"
+				RelativePath=".\Res\OPENFOLD.BMP"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\OptionList.ico"
+				RelativePath=".\Res\OpenFolder.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\PICK.ICO"
+				RelativePath=".\Res\Option.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\pick.ico"
+				RelativePath=".\Res\OptionList.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Picture.ico"
+				RelativePath=".\Res\Password.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Progress.ico"
+				RelativePath=".\Res\pick.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Property.ico"
+				RelativePath=".\Res\Picture.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Question.ico"
+				RelativePath=".\Res\Progress.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\RoundSlider.ico"
+				RelativePath=".\Res\Property.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Scroll.ico"
+				RelativePath=".\Res\Question.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\Select.ico"
+				RelativePath=".\Res\RoundSlider.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Res\Scroll.ico"
 				>
 			</File>
 			<File
@@ -560,79 +520,83 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RES\SendToBack.ico"
+				RelativePath=".\Res\SendToBack.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\SINGLERO.BMP"
+				RelativePath=".\Res\SINGLERO.BMP"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Slider.ico"
+				RelativePath=".\Res\Slider.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\slideview.ico"
+				RelativePath=".\Res\slideview.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\SpinButton.ico"
+				RelativePath=".\Res\SpinButton.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Splitter.ico"
+				RelativePath=".\Res\Splitter.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Tab.ico"
+				RelativePath=".\Res\Tab.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Text.ico"
+				RelativePath=".\Res\Text.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\TextColor.ico"
+				RelativePath=".\Res\TextColor.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Toolbar.bmp"
+				RelativePath=".\Res\Toolbar.bmp"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\ToolBar.ico"
+				RelativePath=".\Res\ToolBar.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\TOOLBAR1.BMP"
+				RelativePath=".\Res\toolbar1.bmp"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\TOOLBAR1.ICO"
+				RelativePath=".\Res\toolbar1.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Top.bmp"
+				RelativePath=".\Res\Top.bmp"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Tree.ico"
+				RelativePath=".\Res\Tree.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\UnderLine.ico"
+				RelativePath=".\Res\UnderLine.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\Url.ico"
+				RelativePath=".\Res\Url.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\X.ico"
+				RelativePath=".\Res\Warn.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\RES\ztaborde.bmp"
+				RelativePath=".\Res\X.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Res\ztaborde.bmp"
 				>
 			</File>
 		</Filter>
@@ -813,15 +777,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ObjectDCL.h"
+				RelativePath=".\OpenDCL.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ObjectDCLDoc.h"
+				RelativePath=".\OpenDCLDoc.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ObjectDCLView.h"
+				RelativePath=".\OpenDCLView.h"
 				>
 			</File>
 			<File
@@ -846,6 +810,10 @@
 			</File>
 			<File
 				RelativePath=".\ProjectBar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ProjectPasswordDlg.h"
 				>
 			</File>
 			<File
@@ -1130,15 +1098,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ObjectDCL.cpp"
+				RelativePath=".\OpenDCL.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ObjectDCLDoc.cpp"
+				RelativePath=".\OpenDCLDoc.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ObjectDCLView.cpp"
+				RelativePath=".\OpenDCLView.cpp"
 				>
 			</File>
 			<File
@@ -1163,6 +1131,10 @@
 			</File>
 			<File
 				RelativePath=".\ProjectBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ProjectPasswordDlg.cpp"
 				>
 			</File>
 			<File
@@ -1599,10 +1571,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\PurchaseMode.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Common\RefCountedPtr.h"
 				>
 			</File>
@@ -1760,7 +1728,7 @@
 			</Filter>
 		</Filter>
 		<File
-			RelativePath="ObjectDCL.reg"
+			RelativePath=".\OpenDCL.reg"
 			>
 		</File>
 	</Files>

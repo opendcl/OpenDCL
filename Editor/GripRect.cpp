@@ -2,9 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "ObjectDCL.h"
+#include "OpenDCL.h"
 #include "GripRect.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -125,7 +125,7 @@ void CGripRect::OnMouseMove(UINT nFlags, CPoint point)
 
 	if (m_bResizing == true)
 	{
-		CObjectDCLView *pParent = (CObjectDCLView*)GetParent();
+		COpenDCLView *pParent = (COpenDCLView*)GetParent();
 		CRect rcThis;
 		GetWindowRect(&rcThis);
 		pParent->ScreenToClient(rcThis);
@@ -139,7 +139,7 @@ void CGripRect::OnMouseMove(UINT nFlags, CPoint point)
 
 void CGripRect::OnLButtonUp(UINT nFlags, CPoint point) 
 {
-	CObjectDCLView *pParent = (CObjectDCLView*)GetParent();
+	COpenDCLView *pParent = (COpenDCLView*)GetParent();
 	CRect rcThis;
 	GetWindowRect(&rcThis);
 	pParent->ScreenToClient(rcThis);
@@ -153,7 +153,7 @@ void CGripRect::OnLButtonUp(UINT nFlags, CPoint point)
 }
 void CGripRect::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	CObjectDCLView *pParent = (CObjectDCLView*)GetParent();
+	COpenDCLView *pParent = (COpenDCLView*)GetParent();
 	pParent->SetupDragResize(m_nQuadrant);
 	m_bResizing = true;
 }

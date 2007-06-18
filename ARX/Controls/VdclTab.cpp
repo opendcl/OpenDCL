@@ -316,7 +316,6 @@ bool VdclTab::CreateTabPages( UINT& nId )
 	while (pos)
 	{
 		CDclFormObject* pDclForm = mpTemplate->GetOwnerProject()->GetDclFormList().GetNext(pos);
-		pDclForm->EnsureIsLoaded();
 		if( pDclForm->GetParentForm() == mpTemplate->GetOwnerForm() )
 		{
 			CTabPage* pNewPage = new CTabPage( pDclForm, this, rectPage, nId );

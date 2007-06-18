@@ -77,7 +77,7 @@ BOOL CToolTipsPage::OnInitDialog()
 	// Create the CPPToolTip object
 	m_tooltip.Create(this);
 	
-	//m_tooltip.AddTool(GetDlgItem(IDC_AVILABEL), _T("<b><ct=0x0000FF><al_c>AVI File Name</b><br><ct=0x00AA00><hr=100%></ct><br>The AVI file must be located in the same directory as the .odc or .ods file."));
+	//m_tooltip.AddTool(GetDlgItem(IDC_AVILABEL), _T("<b><ct=0x0000FF><al_c>AVI File Name</b><br><ct=0x00AA00><hr=100%></ct><br>The AVI file must be located in the same directory as the .odc file."));
 	
 	m_UnderLine.SetFlat();
 	m_Bold.SetFlat();
@@ -205,7 +205,7 @@ void CToolTipsPage::OnPreview()
 	else if (sPic == _T("<  i  >"))
 		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_INFO);
 	else if (sPic == _T("<  !  >"))
-		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_EXCLEMATION);
+		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_WARN);
 	else if (sPic == _T("< X >"))
 		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_X);
 	else if (sPic.Left(1) == _T("<"))	

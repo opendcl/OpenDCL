@@ -9,7 +9,7 @@
 
 class CDclFormObject;
 class CDclControlObject;
-class CObjectDCLView;
+class COpenDCLView;
 
 class CTabInfo
 {
@@ -30,7 +30,7 @@ typedef CList<CTabInfo*> CTabInfoList;
 
 class CTabsPane : public CPropertyPage
 {
-	CObjectDCLView* mpView;
+	COpenDCLView* mpView;
 	CDclControlObject* mpDclControl;
 	int mnTabIndex;
 
@@ -50,7 +50,7 @@ class CTabsPane : public CPropertyPage
 	
 	// Construction
 public:
-	CTabsPane( CObjectDCLView* pView, CDclControlObject* pControl );   // standard constructor
+	CTabsPane( COpenDCLView* pView, CDclControlObject* pControl );   // standard constructor
 	~CTabsPane();   // standard constructor
 
 public:

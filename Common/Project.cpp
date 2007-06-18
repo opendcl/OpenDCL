@@ -20,7 +20,6 @@
 #include "AxPropertyDescriptor.h"
 #include "AxEventDescriptor.h"
 #include "AxMethodDescriptor.h"
-#include "PurchaseMode.h"
 #include "ProjectCollection.h"
 #include <fstream>
 #include <stdio.h>
@@ -105,12 +104,8 @@ void CProject::Initialize()
   mrsActiveXFiles.RemoveAll();
   mrsActiveXFiles.SetSize(0,1);
   msPassword.Empty();
-  mbHasPassword = false;
   msLispFileName.Empty();	
-  msDistFileName.Empty();
   mnAutoCADVersion = theWorkspace.GetMinSupportedAcadVersion();
-  mbFreeVersion = false;
-	mnPurchaseState = nCurrentPurchaseMode;
 
   CString sSection = theWorkspace.LoadResourceString(IDR_MAINFRAME);
 	CWinApp* pApp = AfxGetApp();
@@ -257,70 +252,12 @@ bool CProject::HasActiveXFile( LPCTSTR pszFileName ) const
 	return false;
 }
 
-CString CProject::QueryForLispFileName() 
-{
-  // create the open dialog box
-  CFileDialog BrowseWnd(
-    FALSE,
-    _T(".lsp"), 
-    msLispFileName, 
-    OFN_HIDEREADONLY | OFN_ENABLESIZING | OFN_EXPLORER,
-    theWorkspace.LoadResourceString(IDS_AUTOLISPFILE),
-    CWnd::GetActiveWindow());
-
-	// setup the file buffer
-  CString sResult;
-  BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
-  BrowseWnd.m_ofn.lpstrFile = sResult.GetBuffer( MAX_PATH );
-
-  // invoke the file dialog box
-  if(BrowseWnd.DoModal() != IDOK)
-		return CString();
-	sResult.ReleaseBuffer();
-
-  // update the lsp file name
-  msLispFileName = sResult;
-
-  return sResult;	
-}
-
-CString CProject::QueryForOdsFileName() 
-{
-  // create the open dialog box
-  CFileDialog BrowseWnd(
-    FALSE,
-    _T(".ods"), 
-    msLispFileName, 
-    OFN_HIDEREADONLY | OFN_ENABLESIZING | OFN_EXPLORER,
-    theWorkspace.LoadResourceString(IDS_ODSFILTER),
-    CWnd::GetActiveWindow());
-
-	// setup the file buffer
-  CString sResult;
-  BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
-  BrowseWnd.m_ofn.lpstrFile = sResult.GetBuffer( MAX_PATH );
-
-  // invoke the file dialog box
-  if(BrowseWnd.DoModal() != IDOK)
-		return CString();
-	sResult.ReleaseBuffer();
-
-  // update the lsp file name
-  msDistFileName = sResult;
-
-  return sResult;	
-}
-
 void CProject::ClearProject()
 {
   //msKeyName.Empty(); //this should remain unchanged for the life of the project unless explicitly changed!
-	msDistFileName.Empty();
 	msLispFileName.Empty();
 	msBaseFileName.Empty();
 	msPassword.Empty();
-	mbHasPassword = false;
-	mbFreeVersion = false;
-	mnAutoCADVersion = theWorkspace.GetMinSupportedAcadVersion();
 
 	// clear dcl forms
   POSITION posDclForm = mDclForms.GetHeadPosition();	
@@ -729,8 +666,8 @@ IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 		msProjectFilePath = SrcFile.GetFilePath();
 		msBaseFileName = StripPathFromFileName( msProjectFilePath );
 
-		//Check the first line -- if it is "ObjectDCL Project", then it is a text file.
-		char szTextFileSignature[] = "ObjectDCL Project";
+		//Check the first line -- if it is "OpenDCL Project", then it is a text file.
+		char szTextFileSignature[] = "OpenDCL Project";
 		char szLine1[sizeof(szTextFileSignature)];
 		UINT_PTR cbRead = SrcFile.Read(szLine1, sizeof(szLine1) - 1);
 		szLine1[cbRead] = '\0';
@@ -813,14 +750,11 @@ void CProject::Serialize(CArchive& ar)
   if (ar.IsStoring())
   {
     ar << GetCurrentSaveVersion();
-    ar << BOOL(mbHasPassword);
     ar << msPassword;
     ar << msLispFileName;
     ar << msKeyName; //project key
-    ar << msDistFileName;
 
     ar << unsigned long(mDclForms.GetCount() - CountDeletedForms());
-    ar << mnPurchaseState;
     ar << mnAutoCADVersion;
 
     POSITION pos = mDclForms.GetHeadPosition();
@@ -857,9 +791,14 @@ void CProject::Serialize(CArchive& ar)
 		if (nThisVersion > GetCurrentSaveVersion())
 			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
 
-		BOOL bHasPassword;
-    ar >> bHasPassword;
-		mbHasPassword = (bHasPassword != FALSE);
+		if( nThisVersion < 12 )
+		{
+			BOOL bHasPassword;
+			ar >> bHasPassword; //discard
+			// this is a fix for an older password protect scheme.
+			if (nThisVersion != 2 && nThisVersion != 3)
+				msPassword.Empty();
+		}
     ar >> msPassword;		
     ar >> msLispFileName;
 
@@ -885,26 +824,11 @@ void CProject::Serialize(CArchive& ar)
 		if( msKeyName.IsEmpty() ) //if it's already set, don't change it
 			SetKeyName( sKeyName );
 
-    if (nThisVersion >= 6)
-    {
-      // this is used for a distribution file with multiple projects in it.
-      ar >> msDistFileName;
-
-      // lets check here if we need to add the ods file extension
-      if (msDistFileName.Right(4).CompareNoCase(_T(".ods")) != 0 /*.ods*/ && msDistFileName != sNone /* "<None>"*/)
-        msDistFileName += _T(".ods");
-			else if (msDistFileName == _T(".ods") || msDistFileName == (sNone + _T(".ods")))
-				msDistFileName = sNone; //drop the extraneous extension
-    }
-    else
-      msDistFileName = sNone;
-
-    // this is a fix for an older password protect scheme.
-    if (nThisVersion != 2 && nThisVersion != 3)
-    {
-      mbHasPassword = false;
-      msPassword.Empty();
-    }
+		if( nThisVersion < 12 && nThisVersion >= 6 )
+		{
+			CString sDistFileName;
+			ar >> sDistFileName; //discard
+		}
 
     // get counter for dcl forms
 		unsigned long ctForms = 0;
@@ -917,7 +841,11 @@ void CProject::Serialize(CArchive& ar)
 		else
 			ar >> ctForms;
 		
-		ar >> mnPurchaseState;
+		if( nThisVersion < 12 )
+		{
+			int nPurchaseState;
+			ar >> nPurchaseState; //discard
+		}
 
     if (nThisVersion >= 4)
       ar >> mnAutoCADVersion;
@@ -1038,52 +966,12 @@ void CProject::Serialize(CArchive& ar)
   }
 }
 
-void CProject::SaveDistFile()
-{
-  CString sNone = theWorkspace.LoadResourceString(IDS_NONE);
-  // now save the distribution file if required
-  if (!msDistFileName.IsEmpty() &&
-			msDistFileName != sNone &&
-			msDistFileName != _T(".ods") &&
-			msDistFileName != sNone + _T(".ods"))
-  {
-    CProjectCollection phProjects;
-
-    phProjects.AddProject(this);
-
-    // declare file variables
-    CFileException Exception;
-    CFile ThisFile;
-
-    // open the file
-    if ( !ThisFile.Open(msDistFileName, CFile::modeCreate | CFile::shareExclusive | CFile::modeWrite, &Exception) )
-    {
-      CString sTheFile;
-      sTheFile = theWorkspace.LoadResourceString(IDS_THEFILE);
-      CString sText;
-      sText = theWorkspace.LoadResourceString(IDS_COULDNOTOPEN);
-
-      MessageBox (::GetActiveWindow(), sTheFile + msDistFileName + sText, theWorkspace.LoadResourceString(IDR_MAINFRAME), NULL);
-      return;
-    }
-
-    CArchiveEx ar(&ThisFile, CArchive::store | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
-
-    // Serialize the control
-    phProjects.Serialize(ar);
-    ar.Close();
-
-    ThisFile.Close();
-  }
-}
-
-
 IOStatus CProject::ReadFromTextFile( LPCTSTR lpszFilePath ) 
 {
 	IOStatus stat = statOK;
 	std::ifstream sFile(lpszFilePath, std::ios::in);
 	InitFilerGlobals(); //Init the globals before reading anything from the file.
-	if (readLine(sFile) != "ObjectDCL Project")
+	if (readLine(sFile) != "OpenDCL Project")
 		stat = statInvalidFormat;
 	else
 	{
@@ -1109,7 +997,7 @@ IOStatus CProject::ReadFromTextFile(std::ifstream &sFile, const CString &fileNam
   //Init the globals before reading anything from the file.
   InitFilerGlobals();
 
-  if (readLine(sFile) != "ObjectDCL Project") return statInvalidFormat;
+  if (readLine(sFile) != "OpenDCL Project") return statInvalidFormat;
 
   int nThisVersion;
   if (!readInt(sFile, nThisVersion)) return statInvalidFormat;
@@ -1126,11 +1014,9 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
   POSITION pos;
 
 	BOOL bHasPassword;
-  if (!readBOOL(sFile, bHasPassword)) return statInvalidFormat;
-	mbHasPassword = (bHasPassword != FALSE);
+  if (!readBOOL(sFile, bHasPassword)) return statInvalidFormat; //discard
   if (!readString(sFile, msPassword)) return statInvalidFormat;
   if (!readString(sFile, msLispFileName)) return statInvalidFormat;
-  // lets check here if we need to add the ods file extension
   CString strResult = msLispFileName;
   strResult.MakeLower();
 
@@ -1149,16 +1035,13 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
 	}
 
   // this is used for a distribution file with multiple projects in it.
-  if (!readString(sFile, msDistFileName)) return statInvalidFormat;
-
-	// lets check here if we need to add the ods file extension
-  if (msDistFileName != sNone &&
-			msDistFileName.Right(4).CompareNoCase(theWorkspace.GetDistributionFileExtension()) != 0)
-    msDistFileName += theWorkspace.GetDistributionFileExtension();
+	CString sDistFileName;
+  if (!readString(sFile, sDistFileName)) return statInvalidFormat; //discard
 
   // get counter for dcl forms
   if (!readInt(sFile, nCount)) return statInvalidFormat;
-  if (!readInt(sFile, (int&)mnPurchaseState)) return statInvalidFormat;
+	int nPurchaseState;
+  if (!readInt(sFile, nPurchaseState)) return statInvalidFormat; //discard
 
   if (!readInt(sFile, (int&)mnAutoCADVersion)) return statInvalidFormat;
 

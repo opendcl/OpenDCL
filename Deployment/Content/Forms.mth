@@ -5,7 +5,8 @@ Odcl_Form_
 [Desc]
 This method will close the indicated dialog. This method returns a list indicating the last upper left coordinates of Modal or Modeless dialog boxes.
 [Arguments]
-ProjectFileName
+\par\tab \i [Optional] \i0 DialogStatus
+[as Integer]
 
 
 [Method]
@@ -13,7 +14,8 @@ UpdateVarNames
 [Prefix]
 Odcl_
 [Desc]
-This method is used to update the VarNames in the current drawing so that they may be used to call a dialog box.
+This method is used to update the lisp symbol names in the current drawing so that they may be used to specify a form or control.
+\par *This function is deprecated. Symbol names should remain up to date automatically.
 [Arguments]
 
 
@@ -22,7 +24,7 @@ CloseAll
 [Prefix]
 Odcl_Form_
 [Desc]
-This method will close all dialogs requested.  Warning this method will close all dialogs, even those created by another third party. Please use with caution. \par   0 	Closes all dialog boxes. \par   1 	Closes all Modal dialog boxes. \par   2 	Closes all Modeless dialog boxes. \par   4 	Closes all Dockable. 
+This method will close all open dialogs of the specified type, even those created by another application. Use with care. \par   0 	Closes all dialog boxes. \par   1 	Closes all Modal dialog boxes. \par   2 	Closes all Modeless dialog boxes. \par   4 	Closes all Dockable. 
 \par   8 	Closes all File Dialog Boxes. 
 [Arguments]
 \par\tab DialogBitStyle
@@ -34,14 +36,16 @@ LoadProject
 [Prefix]
 Odcl_
 [Desc]
-This method loads the requested project into memory for later use. If you specify a T after the file name the odc file will be reloaded, but only if it is an .odc file. If you are loading the ods distribution file, the file will not be reloaded.
+This method loads the requested project into memory for later use. If you specify a T after the file name the odc file will be reloaded, but only if it is an .odc file.
 The file passed will be searched for if no path is included in the file name.  If a path is included in the file name, the entire path is assumed to be correct.
-\par DEFINITION ARGUMENTS AND RETURN to be CONFIRMED
+\par *This function is deprecated. Use (Odcl_Project_Load) instead.
 [Arguments Return] as String "Qualified Path"
 \par\tab FileName
 [as Integer]
 \par\tab \i [Optional] \i0 Reload
 [as T]
+\par\tab \i [Optional] \i0 AliasProjectName
+[as String]
 
 
 [Method]
@@ -49,12 +53,12 @@ Project_Load
 [Prefix]
 Odcl_
 [Desc]
-Similar to LoadProject. The ProjectAlias names an alias to use in place of the actual Project 
-\par For example 
+This method loads the requested project file into memory. If you specify a T after the file name, the file will be reloaded if it is already loaded. The ProjectAlias specifies an alias to use in place of the saved project name 
+\par\par For example:
 \par(Setq rValue (Odcl_Project_Load  "MySuperSpecialProject" nil "Proj01")) 
-\par will load the project if it isn't loaded and allow you to refer to it as Proj01, so a call to show one of its forms might be 
-\par (Odcl_Form_Show Proj01_Form)
-\par\par DEFINITION ARGUMENTS AND RETURN to be CONFIRMED
+\par will load the project if it isn't loaded and allow you to refer to it as Proj01, so a call to show one of its forms might be:
+\par (Odcl_Form_Show Proj01_Form)*
+\par\par * If you specify explicit values for the VarName property of a form or control, then you must use that symbol name regardless of the project name.
 [Arguments Return] as String "Qualified Path"
 \par\tab FileName
 [as String]
@@ -69,12 +73,53 @@ Project_UnLoad
 [Prefix]
 Odcl_
 [Desc]
-This method loads the unloads requested project from memory for later use.
-\par DEFINITION ARGUMENTS AND RETURN to be CONFIRMED 
+This method unloads the requested project from memory, freeing any resources that it used.
 [Arguments Return] as T or Nil 
-\par\tab FileName
+\par\tab ProjectName
 [as String]
 
+
+[Method]
+Project_SaveAs
+[Prefix]
+Odcl_
+[Desc]
+This method writes a project from memory to an ODC file. The password must match the project password, or the call will fail.
+[Arguments Return] as T or Nil
+\par\tab ProjectName
+[as String]
+\par\tab FilePath
+[as String]
+\par\tab \i [Optional] \i0 Password
+[as String]
+
+
+[Method]
+Project_Import
+[Prefix]
+Odcl_
+[Desc]
+This method loads a project from base64 encoded binary data. The encoded data can be any base64 encoded .odc file, but normally it will the contents of an .odce file that is embedded in the lisp code either by compiling the .odce file as a VLX resource or by including the encoded data as a literal string in the lisp code. You can specify a new password for the project, overriding the saved password (the password is verified before exporting the project data). The ProjectAlias specifies an alias to use in place of the saved project name. See Odcl_Project_Load for more information about the AliasProjectName argument.
+[Arguments Return] as String "ProjectName"
+\par\tab Base64EncodedData
+[as String]
+\par\tab \i [Optional] \i0 NewPassword
+[as String]
+\par\tab \i [Optional] \i0 AliasProjectName
+[as String]
+
+
+[Method]
+Project_Export
+[Prefix]
+Odcl_
+[Desc]
+This method exports the specified project to base64 encoded binary data. The password must match the project password, or the export will fail.
+[Arguments Return] as String "Base64EncodedData"
+\par\tab ProjectName
+[as String]
+\par\tab \i [Optional] \i0 Password
+[as String]
 
 
 [Method]
@@ -182,6 +227,7 @@ ProjectFileName
 \par\tab Height
 [as Integer]
 
+
 [Method]
 SetDialogMinMaxSizes
 [Prefix]
@@ -217,14 +263,13 @@ Show
 [Prefix]
 Odcl_Form_
 [Desc]
-This method displays a dialog box that has already been loaded, to the screen. This method auto detects the style of the dialog box and displays it in the correct mode. \par \par \b *Important  Notes: \b0 \par \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-720\li720 The optional upper left coordinates only affect Modal and Modeless dialog boxes only. \par {\pntext\f1\'B7\tab} If the dialog box being shown is a modal dialog box, this method will wait until the user has exited the dialog box before AutoLisp will be allowed to continue on (for AutoCAD 2000 and 2002). \par{\pntext\f1\'B7\tab}Do not call this method from within a MouseDown event of any control.  Microsoft's underlying technology requires the MouseUp event and this will not happen if this method is called from a MouseDown event. What goes down must come up, and calling this method will fire the MouseUp event to the new dialog box causing an error. \par \pard
-[Arguments]
+This method displays a dialog box from a loaded project. \par \par \b *Important  Notes: \b0 \par \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-720\li720 The optional upper left coordinates only affect Modal and Modeless dialog boxes. \par {\pntext\f1\'B7\tab} If the dialog box being shown is a modal dialog box, this method will wait until the user has exited the dialog box before returning to AutoLISP. \par{\pntext\f1\'B7\tab}Do not call this method from within a MouseDown event of any control. \par \pard
+[Arguments Return] as Integer Dialog Status
 ProjectFileName
 \par\tab \i [Optional] \i0 UpperLeftXCoordinate
 [as Integer]
 \par\tab \i [Optional] \i0 UpperLeftYCoordinate
 [as Integer]
-
 
 
 [End of File]

@@ -11,7 +11,7 @@
 #include "PropertyObject.h"
 #include "AxEventDescriptor.h"
 #include "AxInterfaceDescriptor.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "Project.h"
 #include "EditorWorkspace.h"
 #include "MainFrm.h"
@@ -531,11 +531,27 @@ void CEventsTabPane::OnAddtolisp()
 		}
 
 		// if the file name has not been set, prompt for it
-		if (m_pControl->GetOwnerProject()->GetLispFileName().IsEmpty())
+		CProject* pProject = m_pControl->GetOwnerProject();
+		CString sLispFileName = pProject->GetLispFileName();
+		if (sLispFileName.IsEmpty())
 		{
-			m_pControl->GetOwnerProject()->QueryForLispFileName();
-			if (m_pControl->GetOwnerProject()->GetLispFileName().IsEmpty())
+			CFileDialog Dlg( FALSE,
+											 _T(".lsp"), 
+											 sLispFileName, 
+											 OFN_HIDEREADONLY | OFN_ENABLESIZING | OFN_EXPLORER,
+											 theWorkspace.LoadResourceString(IDS_AUTOLISPFILE),
+											 CWnd::GetActiveWindow() );
+			CString sTitle = theWorkspace.LoadResourceString(IDS_SELECTPROJECTLISPFILE);
+			Dlg.m_pOFN->lpstrTitle = sTitle;
+			if( Dlg.DoModal() != IDOK )
 				return; //user cancelled
+			sLispFileName = Dlg.GetFileName();
+			if( sLispFileName.IsEmpty() )
+				return;
+			pProject->SetLispFileName( sLispFileName );
+			CDocument* pDoc = m_pView->GetDocument();
+			if( pDoc )
+				pDoc->SetModifiedFlag();
 		}
 
 		// set the property to the new defun name

@@ -6,7 +6,7 @@
 #include "FormVarNameUpdate.h"
 #include "PropertyObject.h"
 
-class CObjectDCLView;
+class COpenDCLView;
 class CControlHolder;
 class CDclControlObject;
 
@@ -35,7 +35,7 @@ public:
 	RefCountedPtr< CPropertyObject > m_pProp;
 	CControlHolder *m_pAxContainer;
 	CDclControlObject	*m_pControl;
-	CObjectDCLView		*m_pView;
+	COpenDCLView		*m_pView;
 // Operations
 public:
 	

@@ -45,7 +45,7 @@ int SetAxObjColorProperty()
 	ULONG lDispatch;
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -229,7 +229,7 @@ int SetAxObjectPictureProperty()
 	CString sFileName;
 	int nPictureId = 0;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
     {
 		acedRetVoid();
@@ -462,7 +462,7 @@ int CloseAxObject()
 	ULONG lObject = 0;
 	ULONG lDispatch = 0;
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
     {
 		acedRetVoid();
@@ -561,7 +561,7 @@ int GetAxObjectProperty()
 	ULONG lObject = 0;
 	ULONG lDispatch = 0;
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
     {
 		acedRetVoid();
@@ -731,7 +731,7 @@ int SetAxObjectProperty()
 	ULONG lObject = 0;
 	ULONG lDispatch = 0;
 	
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
     {
 		acedRetVoid();
@@ -919,7 +919,7 @@ int DoAxObjectMethod()
 	ULONG lObject = 0;
 	ULONG lDispatch = 0;
 		
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
     {
 		acedRetVoid();
@@ -1116,7 +1116,7 @@ int SetAxColorProperty()
 	
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -1270,7 +1270,7 @@ int SetAxPictureProperty()
 	
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -1385,7 +1385,7 @@ int SetAxProperty()
 	
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -1491,7 +1491,7 @@ int SetFlexGridColorProperty()
 
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -1595,7 +1595,7 @@ int GetAxProperty()
 	
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -1680,7 +1680,7 @@ int GetFlexGridColorProperty()
 
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -1762,7 +1762,7 @@ int DoAxMethod()
 	
 	struct resbuf *ListData;
 
-	//ensure AutoLisp has passed Arguments	
+	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
@@ -1835,7 +1835,7 @@ int DoAxMethod()
 // 
 // Method: acedRetOleVar()
 // 
-// Purpose: [returns an ActiveX variant to AutoLisp]
+// Purpose: [returns an ActiveX variant to AutoLISP]
 // 
 // Parameters: varGet
 // 

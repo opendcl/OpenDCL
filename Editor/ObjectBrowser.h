@@ -6,6 +6,7 @@
 #include "ResizableDialog.h"
 #include "AutoRichEditCtrl.h"
 #include "OleControlObject.h"
+#include "Resource.h"
 #include <vector>
 
 class CDclFormObject;
@@ -38,9 +39,7 @@ public:
 	CObjectBrowser(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CObjectBrowser)
-	//enum { IDD = IDD_OBJECTBROWSER };
-	enum { IDD = 254 };
+	enum { IDD = IDD_OBJECTBROWSER };
 	CButton	m_Copy3;
 	CStatic	m_MefDef;
 	CButton	m_OK;
@@ -48,7 +47,7 @@ public:
 	CButton	m_Copy1;
 	CAutoRichEditCtrl	m_RichBox;
 	CTreeCtrl			m_ListBox;
-	//}}AFX_DATA
+
 	CImageList			m_ImageList;
 	RefCountedPtr< COleControlObject > m_pControl;
 	CDclFormObject		*m_pDclForm;
@@ -56,16 +55,13 @@ public:
 	CString				m_sClipBoardDefun1;
 	CString				m_sClipBoardDefun2;
 	CString				m_sClipBoardDefun3;
-	
-	int					nMethodIndex;
 	std::vector< RefCountedPtr< COleControlObject > > m_OleObjectList;
 	
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CObjectBrowser)
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+
 public:
 	void Setup();
 	void ResizeControls(int cx=-1, int cy=-1);
@@ -85,9 +81,6 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CObjectBrowser)
 	virtual BOOL OnInitDialog();
-	afx_msg void OnClickListbox(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReturnListbox(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnDblclkListbox(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnSelchangedListbox(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnCopy2();
 	afx_msg void OnCopy1();

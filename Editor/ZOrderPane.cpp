@@ -5,7 +5,7 @@
 #include "ZOrderPane.h"
 #include "Resource.h"
 #include "SharedRes.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "Workspace.h"
 
 

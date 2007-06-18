@@ -5,7 +5,7 @@
 #include "GridSpacingDlg.h"
 #include "Project.h"
 #include "DclFormObject.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -120,8 +120,8 @@ void CGridSpacingDlg::OnOK()
 				{
 					try
 					{
-						((CObjectDCLView*)pDclForm->m_pChildWnd)->m_gridSpacing = m_GridSpacing;
-						((CObjectDCLView*)pDclForm->m_pChildWnd)->OnGridSpacingChanged();
+						((COpenDCLView*)pDclForm->m_pChildWnd)->m_gridSpacing = m_GridSpacing;
+						((COpenDCLView*)pDclForm->m_pChildWnd)->OnGridSpacingChanged();
 					}
 					catch(...)
 					{

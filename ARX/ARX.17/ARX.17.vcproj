@@ -621,11 +621,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\Res\truefont.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\Res\TRUEFONT.ICO"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\Res\truefont.ico"
+				RelativePath="..\Res\Warn.ico"
 				>
 			</File>
 			<File
@@ -1706,10 +1710,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\PropertyObject.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\PurchaseMode.h"
 				>
 			</File>
 			<File

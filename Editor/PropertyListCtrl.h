@@ -13,7 +13,7 @@ class CListBoxDlg;
 class CImageListObject;
 class CDclControlObject;
 class CDclFormObject;
-class CObjectDCLView;
+class COpenDCLView;
 class CColourPopup;
 
 
@@ -67,7 +67,7 @@ public:
 	CDclFormObject		*m_pDclForm;
 	CPropertyList		m_PropertyList;
 	CString				m_ClassName;
-	CObjectDCLView		*m_pView;
+	COpenDCLView		*m_pView;
 	CStatic				*m_pPropTitle;
 	CEdit				*m_pPropDesc;
 	CColourPopup		*m_pColorPopup;
@@ -87,8 +87,6 @@ public:
 	void SetSelectionIndex(short nNewValue);
 	void SetTopIndex(short Index);
 	void CloseListBox(int nInstructions);
-	BOOL SaveDistributionFile(CProjectCollection *pProjectHolder);
-	BOOL OpenProjectFile(LPCTSTR FileName, CProject *pProject);
 	RefCountedPtr< CPropertyObject > GetPropertyObject(short PropertyIndex);
 	void EditObjectbrowser();
 	
@@ -132,13 +130,7 @@ public:
 	afx_msg void LoadPicture(LPCTSTR sFileName, short nPictureTag, bool bApplyMask);
 	afx_msg void CheckPictureRefs();
 	afx_msg void DefaultFontDlg();
-	//afx_msg void SetPurchaseMode(short nPurchaseMode);
-	//afx_msg CString ImportOdcl(LPCTSTR sFileName);
 	afx_msg void ShowPropertyDlg(bool bFontActive = false, bool bImageListActive = false);
-	//afx_msg void ShowAsFree();
-	//afx_msg void SetAutoCADVersion(DWORD nVersion);
-	//afx_msg DWORD GetAutoCADVersion();
-	afx_msg void CreateDistributionFile();
 	afx_msg void Refresh();
 	void DoSetupInputType(int nNewSelectedIndex);
 

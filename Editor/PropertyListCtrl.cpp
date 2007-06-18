@@ -4,7 +4,7 @@
 #include "PropertyListCtrl.h"
 #include "ObjectBrowser.h"
 #include "PropertyObject.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "DclFormObject.h"
 #include "DclControlObject.h"
 #include "PictureObject.h"
@@ -16,7 +16,6 @@
 #include "ColourPopup.h"
 #include "VarUtils.h"
 #include "ControlTypes.h"
-#include "PurchaseMode.h"
 #include "ChildFrm.h"
 #include "PreviewFileDlg.h"
 #include "FontPropPage.h"
@@ -33,7 +32,7 @@
 #include "ToolTipsPage.h"
 #include "ProgressBarPage.h"
 #include "ProjectCollection.h"
-#include "ObjectDCL.h"
+#include "OpenDCL.h"
 #include "EditorWorkspace.h"
 #include "SharedRes.h"
 
@@ -2202,49 +2201,38 @@ int CPropertyListCtrl::SetListBox()
 					
 					if (m_pControl->GetType() == CtlComboBox)
 					{
-						if (nCurrentPurchaseMode != nPurchasedLT)
-						{
-							if (nCurrentPurchaseMode != nPurchasedR14Pro)
-							{						
-								sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_3);
-								m_pModeless->AddString(sEnumDesc);
-							
-								sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_4);
-								m_pModeless->AddString(sEnumDesc);
-								
-								sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_5);
-								m_pModeless->AddString(sEnumDesc);
-								
-								sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_6);
-								m_pModeless->AddString(sEnumDesc);
-								
-								sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_7);
-								m_pModeless->AddString(sEnumDesc);
-							}
+						sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_3);
+						m_pModeless->AddString(sEnumDesc);
+					
+						sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_4);
+						m_pModeless->AddString(sEnumDesc);
 						
-							sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_8);
-							m_pModeless->AddString(sEnumDesc);
+						sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_5);
+						m_pModeless->AddString(sEnumDesc);
+						
+						sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_6);
+						m_pModeless->AddString(sEnumDesc);
+						
+						sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_7);
+						m_pModeless->AddString(sEnumDesc);
+						
+						sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_8);
+						m_pModeless->AddString(sEnumDesc);
+						
+						sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_9);
+						m_pModeless->AddString(sEnumDesc);
 							
-							sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_9);
-							m_pModeless->AddString(sEnumDesc);
+						sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_10);
+						m_pModeless->AddString(sEnumDesc);					
+						
+						sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_11);
+						m_pModeless->AddString(sEnumDesc);					
+
+						sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_12);
+						m_pModeless->AddString(sEnumDesc);
 							
-							if (nCurrentPurchaseMode != nPurchasedR14Pro)
-							{												
-								sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_10);
-								m_pModeless->AddString(sEnumDesc);					
-								
-								sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_11);
-								m_pModeless->AddString(sEnumDesc);					
-							}
-							if (nCurrentPurchaseMode != nPurchasedStd)
-							{
-								sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_12);
-								m_pModeless->AddString(sEnumDesc);
-							}
-							
-							sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_13);
-							m_pModeless->AddString(sEnumDesc);
-						}
+						sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_13);
+						m_pModeless->AddString(sEnumDesc);
 					}
 					break;
 				}				
@@ -3003,125 +2991,6 @@ void CPropertyListCtrl::DefaultFontDlg()
 	Invalidate();
 }
 
-//void CPropertyListCtrl::SetPurchaseMode(short nPurchaseMode) 
-//{
-//	m_pControl->GetOwnerProject()->SetPurchaseMode(nPurchaseMode);
-//
-//}
-
-
-//CString CPropertyListCtrl::ImportOdcl(LPCTSTR sFileName) 
-//{
-//	CString strResult;
-//	// declare file variables
-//	CFileException Exception;
-//	CFile ThisFile;
-//
-//	// open then file
-//	if (!ThisFile.Open(sFileName, CFile::modeRead | CFile::shareDenyWrite, &Exception))
-//	{
-//		return strResult.AllocSysString();
-//	}
-//
-//	CProject tmpProject;
-//
-//	CString sTitle;
-//	sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-//	
-//	CArchiveEx ar(&ThisFile, CArchive::load | CArchive::bNoFlushOnDelete, NULL, sTitle, TRUE);
-//	
-//	try
-//	{
-//		// Deserialize the control
-//		tmpProject.Serialize(ar);
-//	}
-//	catch(...)
-//	{
-//		ar.Close();
-//		return CString();
-//	}
-//		
-//	ar.Close();
-//
-//	ThisFile.Close();
-//	POSITION pos;
-//	int nLargestPicId = 0;
-//	int nSmallestNewPicId = 0;
-//
-//	// find the largest current picture Id
-//	int i;
-//  for (i=0; i<m_pControl->GetOwnerProject()->GetPictureList().GetCount(); i++)
-//	{
-//		POSITION pos = m_pControl->GetOwnerProject()->GetPictureList().FindIndex(i);
-//		if (pos != NULL)
-//		{
-//			CPictureObject *pPic = m_pControl->GetOwnerProject()->GetPictureList().GetAt(pos);
-//			if (pPic != NULL)
-//			{
-//				if (nLargestPicId <= pPic->GetID())
-//					nLargestPicId = pPic->GetID();		
-//			}
-//		}
-//	}
-//	
-//	// find the smallest new picture Id
-//	for (i=0; i<tmpProject.GetPictureList().GetCount(); i++)
-//	{
-//		POSITION pos = m_pControl->GetOwnerProject()->GetPictureList().FindIndex(i);
-//		if (pos != NULL)
-//		{
-//			CPictureObject *pPic = m_pControl->GetOwnerProject()->GetPictureList().GetAt(pos);
-//			if (pPic != NULL)
-//			{
-//				if (nSmallestNewPicId >= pPic->GetID() || nSmallestNewPicId <= 0)
-//					nSmallestNewPicId = pPic->GetID();
-//			}
-//		}		
-//	}
-//	// calc the difference
-//  	nLargestPicId = nLargestPicId - nSmallestNewPicId + 1;
-//	
-//	// do loop to copy all picture objects
-//	for (i=0; i<tmpProject.GetPictureList().GetCount(); i++)
-//	{
-//		POSITION pos = tmpProject.GetPictureList().FindIndex(i);
-//		if (pos != NULL)
-//		{
-//			CPictureObject *pPic = tmpProject.GetPictureList().GetAt(pos);
-//			if (pPic != NULL)
-//			{
-//				pPic->SetID( pPic->GetID() + nLargestPicId );
-//				
-//				// move this picture over to the existing picture list
-//				m_pControl->GetOwnerProject()->GetPictureList().AddTail(pPic);
-//			}
-//		}
-//	}
-//	
-//	// do loop to copy all dcl form objects
-//	for (i=0; i<tmpProject.GetDclFormList().GetCount(); i++)
-//	{
-//		pos = tmpProject.GetDclFormList().FindIndex(i);
-//		if (pos != NULL)
-//		{
-//			CDclFormObject *pForm = tmpProject.GetDclFormList().GetAt(pos);
-//			pForm->IncrementPictureId(nLargestPicId);
-//			
-//			// move this picture over to the existing picture list
-//			m_pControl->GetOwnerProject()->GetDclFormList().AddTail(pForm);
-//
-//		}
-//	}
-//
-//	tmpProject.GetDclFormList().RemoveAll();
-//	tmpProject.GetPictureList().RemoveAll();
-//	
-//	strResult = tmpProject.m_sPassword;
-//	
-//	return strResult;
-//}
-
-
 void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive) 
 {
 	CPropertySheet Dlg;
@@ -3371,177 +3240,6 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	Invalidate();
 }
 
-//void CPropertyListCtrl::ShowAsFree() 
-//{	
-//	m_pControl->GetOwnerProject()->m_bFreeVersion = true;
-//}
-
-//void CPropertyListCtrl::SetAutoCADVersion(DWORD nVersion) 
-//{
-//	m_pControl->GetOwnerProject()->m_nAutoCADVersion = nVersion;
-//
-//	if (nCurrentPurchaseMode != nPurchasedR14Pro)
-//		m_pControl->GetOwnerProject()->ClearR14Events();
-//
-//}
-
-//DWORD CPropertyListCtrl::GetAutoCADVersion() 
-//{
-//	return m_pControl->GetOwnerProject()->m_nAutoCADVersion;
-//}
-
-void CPropertyListCtrl::CreateDistributionFile() 
-{
-	CString sFilter;
-	sFilter = theWorkspace.LoadResourceString(IDS_ODCFILTER);
-
-	// create the open dialog box
-	CFileDialog BrowseWnd(
-		TRUE, 
-		NULL,
-		NULL, 
-		OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
-		sFilter,
-		CWnd::GetActiveWindow());
-
-	// proceed to setup the file buffer size
-	BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
-	TCHAR* pc = new TCHAR[MAX_PATH];
-	BrowseWnd.m_ofn.lpstrFile = pc;
-    BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
-
-	BrowseWnd.m_ofn.lpstrTitle = theWorkspace.LoadResourceString(IDS_SELECTTOIMPORT);
-	
-
-	// call method to invoke the file dialog box	
-	int iReturn = BrowseWnd.DoModal();
-		
-	if(iReturn == IDOK)   
-	{
-		CProjectCollection phProjects;
-
-		CString szPathName;
-		POSITION pos;
-
-		// do loop to get all selected files
-		for (pos = BrowseWnd.GetStartPosition(); pos != NULL; )
-		{
-			// get the file name 
-			szPathName = BrowseWnd.GetNextPathName(pos);
-	
-			CProject *pProject = new CProject;
-			if (OpenProjectFile(szPathName, pProject))
-			{				
-				phProjects.AddProject(pProject);
-			}
-			else
-			{
-				delete pProject;
-			}
-		}
-
-		SaveDistributionFile(&phProjects);
-		phProjects.ClearProjects();
-	}
-
-	delete [] pc; 
-
-
-}
-
-BOOL CPropertyListCtrl::SaveDistributionFile(CProjectCollection *pProjectHolder) 
-{
-	CString sFilter;
-	sFilter = theWorkspace.LoadResourceString(IDS_ODSFILTER);
-
-	// create the open dialog box
-	CFileDialog BrowseWnd(
-		FALSE, 
-		theWorkspace.LoadResourceString(IDS_STARODS),
-		NULL, 
-		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING | OFN_EXPLORER | OFN_PATHMUSTEXIST,
-		sFilter,
-		CWnd::GetActiveWindow());
-
-	BrowseWnd.m_ofn.lpstrTitle = theWorkspace.LoadResourceString(IDS_SAVEDISTAS);
-	// proceed to setup the file buffer size
-	BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
-	TCHAR* pc = new TCHAR[MAX_PATH];
-	BrowseWnd.m_ofn.lpstrFile = pc;
-    BrowseWnd.m_ofn.lpstrFile[0] = NULL;
-
-	// call method to invoke the file dialog box
-	int iReturn = BrowseWnd.DoModal();
-
-	CString sFileName = BrowseWnd.m_ofn.lpstrFile;
-	delete[] pc;
-	if(iReturn == IDOK)   
-	{
-		
-		// declare file variables
-		CFileException Exception;
-		CFile ThisFile;
-
-		CString sTitle;
-		sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-	
-		// open then file
-		if ( !ThisFile.Open(sFileName, CFile::modeCreate | CFile::shareExclusive | CFile::modeWrite, &Exception) )
-		{
-			MessageBox (theWorkspace.LoadResourceString(IDS_THEFILE) + sFileName + theWorkspace.LoadResourceString(IDS_COULDNOTOPEN), sTitle, NULL);
-			return FALSE;
-		}
-
-		CArchiveEx ar(&ThisFile, CArchive::store | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
-	
-		// Serialize the control
-		pProjectHolder->Serialize(ar);
-		ar.Close();
-
-		ThisFile.Close();
-	}
-	return TRUE;
-
-}
-
-
-BOOL CPropertyListCtrl::OpenProjectFile(LPCTSTR FileName, CProject *pProject) 
-{
-	// declare file variables
-	CFileException Exception;
-	CFile ThisFile;
-	
-	// open then file
-	if (!ThisFile.Open(FileName, CFile::modeRead | CFile::shareDenyWrite, &Exception))
-	{
-		return FALSE;
-	}
-
-	CString sTitle;
-	sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
-		
-	CArchiveEx ar(&ThisFile, CArchive::load | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
-					
-	try
-	{
-		// Deserialize the control
-		pProject->Serialize(ar);
-	}
-	catch(...)
-	{
-		ar.Close();
-		return FALSE;
-	}	
-
-	ThisFile.Close();
-
-	//if (pProject->m_nAutoCADVersion == 14)
-		//pProject->ClearR14Events();
-	
-	return TRUE;
-}
-
 void CPropertyListCtrl::OnEnterPressed()
 {
 	UpdateControls(m_Edit.m_pProp->GetID());
@@ -3630,7 +3328,7 @@ void CPropertyListCtrl::EditObjectbrowser()
 
 	AfxInitRichEdit();
 
-	CObjectDCLApp *pApp = (CObjectDCLApp*)AfxGetApp();
+	COpenDCLApp *pApp = (COpenDCLApp*)AfxGetApp();
 
 	if (pApp->m_pCtrlHelp == NULL)
 	{

@@ -12,10 +12,7 @@
 #define IDS_DefaultFontUnderLine        156
 #define IDS_DefaultFontBold             157
 #define IDS_DefaultFontSizeStyle        158
-#define IDS_AUTOLISPFILE                159
 #define IDS_DOTLSP                      160
-#define IDS_DOTODS                      161
-#define IDS_ODSFILTER                   162
 #define IDS_COLOR                       163
 #define IDS_OleObject                   164
 #define IDS_THEFILE                     165
@@ -279,7 +276,6 @@
 #define IDS_EVENT_FORM_ONOK             461
 #define IDS_PROP_TITLEBAR               462
 #define IDS_EVENT_FORM_ONCANCEL         463
-#define IDS_PROP_TOOLTIPBALLOON         464
 #define IDS_PROP_TOOLTIP_BALLOON        464
 #define IDI_LABEL                       10000
 #define IDS_THE                         10001

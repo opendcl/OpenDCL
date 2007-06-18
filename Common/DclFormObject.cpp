@@ -120,7 +120,6 @@ void CDclFormObject::AddControl( CDclControlObject* pDclControl )
 	pDclControl->SetZOrder( idxNewControl );
 	if( pDclControl->GetID() < 0 )
 		pDclControl->SetID( idxNewControl );
-	pDclControl->m_PurchaseState = mpProject->GetPurchaseState();
 }
 
 
@@ -267,7 +266,7 @@ bool CDclFormObject::CanWeDeleteForm() const
 		{
 			//sQuestion = theWorkspace.LoadResourceString(IDS_QDELETEFORMWTAB);
 			sQuestion = _T("Are you sure you want to remove this dialog box?\r\nDeleting it will remove the Tab control and all it's Tab pane forms with their controls.");
-			if(MessageBox(::GetActiveWindow(), sQuestion, _T("ObjectDCL"), MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2) == 6)
+			if(MessageBox(::GetActiveWindow(), sQuestion, _T("OpenDCL"), MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2) == 6)
 				return true;
 			else
 				return false;
@@ -282,7 +281,7 @@ bool CDclFormObject::CanWeDeleteForm() const
 	{
 		//sQuestion = theWorkspace.LoadResourceString(IDS_QDELETEFORM);
 		sQuestion = _T("Deleting this tab will permanently delete the controls drawn on it's form.\r\nAre you sure you wish to delete this tab and it's child controls?");
-		if(MessageBox(::GetActiveWindow(), sQuestion, _T("ObjectDCL"), MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2) == 6)
+		if(MessageBox(::GetActiveWindow(), sQuestion, _T("OpenDCL"), MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2) == 6)
 			return true;
 		else
 			return false;
@@ -623,34 +622,6 @@ void CDclFormObject::IncrementPictureId(int nIdIncrement)
 		nCount--;
 	}
 	
-}
-
-
-void CDclFormObject::EnsureIsLoaded()
-{
-	// if already loaded.
-	if (m_bLoaded)
-		return;
-
-	CStgFile FileStg;	// instance the CF wrapper
-
-	if (FileStg.OpenStg( m_sFileName ) == FALSE)	// creates the storage
-		return;	
-	
-	FileStg.Open(m_sSubFileName, CFile::modeRead | CFile::shareDenyWrite); 
-
-	CArchiveEx arDcl(&FileStg, CArchive::load | CArchive::bNoFlushOnDelete, NULL, mpProject->GetPassword(), TRUE);
-	
-	// get dcl form into archive
-	Serialize(arDcl);
-	m_bLoaded = true;
-		
-	arDcl.Close();			
-
-	FileStg.Close();	// close the stream
-
-	FileStg.CloseStg();	// close the storage file
-
 }
 
 

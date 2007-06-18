@@ -7,7 +7,7 @@
 #include "DclControlObject.h"
 #include "ControlName.h"
 #include "ControlTypes.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "PropertyIds.h"
 
 #define IDC_TABCTRL 109
@@ -158,7 +158,7 @@ void CPropertyTabPane::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CPropertyTabPane::DisplaySelectedControlProperties(CDclControlObject *pControl, CObjectDCLView *pView) 
+void CPropertyTabPane::DisplaySelectedControlProperties(CDclControlObject *pControl, COpenDCLView *pView) 
 {
 	CString sControlName;
 

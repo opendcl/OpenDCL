@@ -3,7 +3,7 @@
 
 #pragma once
 
-class CObjectDCLView;
+class COpenDCLView;
 
 #define nValueSize 256
 #define nType100 100
@@ -22,13 +22,13 @@ public:
 
 // Attributes
 public:
-	CObjectDCLView *m_pView;
+	COpenDCLView *m_pView;
 	CImageList		m_ImageList;	
 
 // Operations
 public:
 	void AddControlToList(CString sName, int nType);
-	void ClearList(CObjectDCLView *pView);
+	void ClearList(COpenDCLView *pView);
 	void RemoveControlFromList(CString sName);
 	void RenameControlInList(CString sOldName, CString sNewName);
 	void SelectItem(CString sName, bool bEnsureVisible);

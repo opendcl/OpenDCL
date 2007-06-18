@@ -13,8 +13,7 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "SharedRes.h"
-#include "afxres.h"
-
+#include "afxres.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -231,12 +230,6 @@ BEGIN
     LTEXT           "",IDC_PICTURE,7,7,211,187,SS_SUNKEN
 END
 
-IDD_OBJECTDCL_FORM DIALOG  0, 0, 40, 22
-STYLE DS_SETFONT | WS_CHILD
-FONT 8, "MS Sans Serif"
-BEGIN
-END
-
 IDD_OBJECTBROWSER DIALOGEX 0, 0, 406, 198
 STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "Intelligent Help"
@@ -351,22 +344,6 @@ BEGIN
     CONTROL         222,IDC_EXAMPLEIMAGE,"Static",SS_BITMAP,5,5,134,124,WS_EX_CLIENTEDGE
 END
 
-IDD_FREEDIALOG DIALOG  0, 0, 283, 114
-STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "OpenDCL Free Version"
-FONT 8, "MS Sans Serif"
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,226,7,50,14
-    LTEXT           "the controls, more properties like 'Font' and 'Visible', control more events like 'GetFocus' and 'LostFocus', resizable dialogs, bonus commands and more...",IDC_STATIC,17,31,201,23
-    LTEXT           "To purchase a more versatile version go to",IDC_STATIC,17,64,136,9
-    LTEXT           "OpenDCL's Order Web Page",IDC_ORDERLINK,156,64,106,9
-    LTEXT           "To find out more about OpenDCL and what the Standard and ",IDC_STATIC,17,81,220,8
-    LTEXT           "Pro versions have to offer in controls, dialogs and functionality,",IDC_STATIC,17,89,206,8
-    LTEXT           "www.OpenDCL.com",IDC_HOMELINK,31,97,102,10
-    LTEXT           "visit",IDC_LINK3,17,98,14,9
-    LTEXT           "This software is a free version of OpenDCL that provides similar functionality to that of AutoCAD's DCL language. All versions of OpenDCL incorporate new technologies that let you draw in ",IDC_STATIC,17,7,201,25
-END
-
 IDD_FORMVARNAMEUPDATE_DIALOG DIALOGEX 0, 0, 293, 153
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Modify AutoLISP Symbol Names"
@@ -433,20 +410,8 @@ BEGIN
     PUSHBUTTON      "Add to .Lsp File",IDC_ADDTOLISP,57,315,115,14,NOT WS_TABSTOP
     EDITTEXT        IDC_DEFUNPREVIEW,0,224,171,40,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL | NOT WS_TABSTOP
     EDITTEXT        IDC_EVENTDESC,1,269,171,40,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL | NOT WS_TABSTOP
-    LTEXT           "AutoLisp Function to Active On Event",IDC_LABEL,0,199,172,10
+    LTEXT           "AutoLISP Function to Active On Event",IDC_LABEL,0,199,172,10
     LISTBOX         IDC_EVENTSTREE,1,1,171,195,LBS_SORT | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-END
-
-IDD_EVALDIALOG DIALOG  0, 0, 262, 77
-STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "OpenDCL"
-FONT 8, "MS Sans Serif"
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,205,11,50,14
-    LTEXT           "This software is an evaluation version of OpenDCL.",IDC_STATIC,15,16,176,9
-    LTEXT           "To purchase this software go to",IDC_STATIC,15,25,100,12
-    LTEXT           "CADalog's On Line Store",IDC_LINK,117,25,83,11
-    LTEXT           "All Dialog boxes created using this demo program will display a 'Demo' message in AutoCAD when activated.",IDC_STATIC,15,41,188,16
 END
 
 IDD_EDITFILTERS DIALOG  3, 1, 244, 130
@@ -599,6 +564,24 @@ IDD_BLANKDIALOG DIALOG  0, 0, 5, 5
 STYLE DS_SETFONT | WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
+END
+
+IDD_OPENDCL_FORM DIALOG  0, 0, 40, 22
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+END
+
+IDD_PROJECTPASSWORD DIALOGEX 0, 0, 290, 87
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Project Password"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "The project password must be specified when importing or exporting the project via AutoLISP. The purpose of a password is to limit access to a project definition that is embedded inside a compiled .vlx file or otherwise imported from data at runtime.",IDC_STATIC,7,7,214,46
+    LTEXT           "&Password:",IDC_STATIC,7,58,108,10
+    EDITTEXT        IDC_PASSWORD,7,68,276,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,233,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,233,24,50,14
 END
 
 
@@ -937,7 +920,7 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_OPENDCL             ICON                    "res\\opendcl.ico"
-IDR_OBJECTTYPE          ICON                    "res\\ObjectDCLDoc.ico"
+IDR_ODCDOCTEMPLATE      ICON                    "res\\OpenDCLDoc.ico"
 IDI_X                   ICON                    "RES\\X.ico"
 IDI_URL                 ICON                    "res\\Url.ico"
 IDI_UNDERLINE           ICON                    "RES\\UnderLine.ico"
@@ -959,7 +942,6 @@ IDI_OPTIONLIST          ICON                    "res\\OptionList.ico"
 IDI_OPTION              ICON                    "res\\Option.ico"
 IDI_OPENFOLDER          ICON                    "res\\OpenFolder.ico"
 IDI_OLEOBJECT           ICON                    "res\\OleObject.ico"
-IDI_ODS                 ICON                    "res\\ods.ico"
 IDI_MONTH               ICON                    "res\\MonthView.ico"
 IDI_MODELESS            ICON                    "res\\ModelessForm.ico"
 IDI_MODAL               ICON                    "res\\ModalForm.ico"
@@ -978,7 +960,7 @@ IDI_GRID                ICON                    "RES\\Grid.ico"
 IDI_GRAPHICBUTTON       ICON                    "res\\GraphicButton.ico"
 IDI_FRAME               ICON                    "res\\Frame.ico"
 IDI_FILEDLG             ICON                    "res\\FileDlg.ico"
-IDI_EXCLEMATION         ICON                    "RES\\Exclemation.ico"
+IDI_WARN                ICON                    "RES\\Warn.ico"
 IDI_EVENT               ICON                    "res\\Event.ico"
 IDI_ENUMS               ICON                    "res\\Enums.ico"
 IDI_ENUM                ICON                    "res\\Enum.ico"
@@ -999,6 +981,7 @@ IDI_ANGLESLIDER         ICON                    "res\\RoundSlider.ico"
 IDI_ACTIVEX             ICON                    "res\\toolbar1.ico"
 IDI_ACAD2002            ICON                    "res\\acad2002.ico"
 IDI_3DRECT              ICON                    "res\\3drect.ico"
+IDI_PASSWORD            ICON                    "res\\Password.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1055,131 +1038,6 @@ BEGIN
     END
 END
 
-IDR_POPUPMENUS_STD MENU 
-BEGIN
-    POPUP "&Projects"
-    BEGIN
-        MENUITEM "&Add Modal Form",             ID_ADDMODAL
-        MENUITEM "Add &Modeless Form",          ID_ADDMODELESS
-        MENUITEM SEPARATOR
-        MENUITEM "&Set AutoLISP File Name",     ID_SETAUTOLISPFILENAME
-        MENUITEM SEPARATOR
-        MENUITEM "&Remove Form",                ID_REMOVE
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
-        MENUITEM "&Delete\tDel",                ID_EDIT_DELETE
-        MENUITEM SEPARATOR
-        MENUITEM "&Bring to Front",             ID_BRINGTOFRONT
-        MENUITEM "&Send to Back",               ID_SENDTOBACK
-        MENUITEM SEPARATOR
-        MENUITEM "&Properties",                 ID_PROPERTIES
-        MENUITEM "&Intelligent Help",           ID_EDIT_OBJECTBROWSER
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
-        MENUITEM SEPARATOR
-        MENUITEM "&Intelligent Help",           ID_EDIT_OBJECTBROWSER
-    END
-    POPUP "Projects2"
-    BEGIN
-        MENUITEM "&Add Modal Form",             ID_ADDMODAL
-        MENUITEM "Add &Modeless Form",          ID_ADDMODELESS
-    END
-END
-
-IDR_POPUPMENUS_R14 MENU 
-BEGIN
-    POPUP "&Projects"
-    BEGIN
-        MENUITEM "&Add Modal Form",             ID_ADDMODAL
-        MENUITEM "Add &Modeless Form",          ID_ADDMODELESS
-        MENUITEM "Add &Dockable Form",          ID_ADDDOCKABLE
-        MENUITEM "Add &File Dialog Box",        ID_PROJECTS_ADDFILEDIALOGBOX
-        MENUITEM SEPARATOR
-        MENUITEM "&Set AutoLISP File Name",     ID_SETAUTOLISPFILENAME
-        MENUITEM SEPARATOR
-        MENUITEM "&Remove Form",                ID_REMOVE
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
-        MENUITEM "&Delete\tDel",                ID_EDIT_DELETE
-        MENUITEM SEPARATOR
-        MENUITEM "&Bring to Front",             ID_BRINGTOFRONT
-        MENUITEM "&Send to Back",               ID_SENDTOBACK
-        MENUITEM SEPARATOR
-        MENUITEM "&Properties",                 ID_PROPERTIES
-        MENUITEM "&Intelligent Help",           ID_EDIT_OBJECTBROWSER
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
-        MENUITEM SEPARATOR
-        MENUITEM "&Intelligent Help",           ID_EDIT_OBJECTBROWSER
-    END
-    POPUP "Projects2"
-    BEGIN
-        MENUITEM "&Add Modal Form",             ID_ADDMODAL
-        MENUITEM "Add &Modeless Form",          ID_ADDMODELESS
-        MENUITEM "Add &Dockable Form",          ID_ADDDOCKABLE
-        MENUITEM "Add &File Dialog Box",        ID_PROJECTS_ADDFILEDIALOGBOX
-    END
-END
-
-IDR_POPUPMENUS_LT MENU 
-BEGIN
-    POPUP "&Projects"
-    BEGIN
-        MENUITEM "&Add Modal Form",             ID_ADDMODAL
-        MENUITEM SEPARATOR
-        MENUITEM "&Set AutoLISP File Name",     ID_SETAUTOLISPFILENAME
-        MENUITEM SEPARATOR
-        MENUITEM "&Remove Form",                ID_REMOVE
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
-        MENUITEM "&Delete\tDel",                ID_EDIT_DELETE
-        MENUITEM SEPARATOR
-        MENUITEM "&Bring to Front",             ID_BRINGTOFRONT
-        MENUITEM "&Send to Back",               ID_SENDTOBACK
-        MENUITEM SEPARATOR
-        MENUITEM "&Properties",                 ID_PROPERTIES
-        MENUITEM "&Object Browser",             ID_EDIT_OBJECTBROWSER
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
-        MENUITEM SEPARATOR
-        MENUITEM "&Object Browser",             ID_EDIT_OBJECTBROWSER
-    END
-    POPUP "Projects2"
-    BEGIN
-        MENUITEM "&Add Modal Form",             ID_ADDMODAL
-    END
-END
-
 IDR_POPUPMENUS MENU 
 BEGIN
     POPUP "&Projects"
@@ -1227,7 +1085,7 @@ BEGIN
     END
 END
 
-IDR_OBJECTTYPE_STD MENU 
+IDR_ODCDOCTEMPLATE MENU 
 BEGIN
     POPUP "&File"
     BEGIN
@@ -1236,208 +1094,6 @@ BEGIN
         MENUITEM "&Close",                      ID_FILE_CLOSE
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
         MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
-        MENUITEM SEPARATOR
-        MENUITEM "Create Distribution File",    ID_FILE_CREATEDISTFILE
-        MENUITEM SEPARATOR
-        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
-        MENUITEM "&Delete\tDel",                ID_EDIT_DELETE
-        MENUITEM SEPARATOR
-        MENUITEM "&Bring to Front",             ID_BRINGTOFRONT
-        MENUITEM "&Send to Back",               ID_SENDTOBACK
-        MENUITEM SEPARATOR
-        MENUITEM "&Properties",                 ID_PROPERTIES
-        MENUITEM "&Intelligent Help",           ID_EDIT_OBJECTBROWSER
-    END
-    POPUP "&Projects"
-    BEGIN
-        MENUITEM "&Add Modal Form",             ID_ADDMODAL
-        MENUITEM "Add &Modeless Form",          ID_ADDMODELESS
-        MENUITEM SEPARATOR
-        MENUITEM "&View/Edit Picture Folder",   ID_PICTUREFOLDER
-        MENUITEM "&Set AutoLISP File Name",     ID_SETAUTOLISPFILENAME
-        MENUITEM "Set D&istribution File Name", ID_SETDISTFILENAME
-        MENUITEM SEPARATOR
-        MENUITEM "&Remove Form",                ID_REMOVE
-    END
-    POPUP "&Tools"
-    BEGIN
-        MENUITEM "&Default Font",               ID_TOOLS_DEFAULTFONT
-        MENUITEM "Grid Spacing",                ID_TOOLS_GRIDSPACING
-        MENUITEM SEPARATOR
-        MENUITEM "Set Lisp Symbol Names",       ID_TOOLS_SETLISPSYMBOLNAMES
-        MENUITEM "Clear Lisp Symbol Names",     ID_TOOLS_CLEARLISPSYMBOLNAMES
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "Tool&Box",                    ID_DOCK_TOOLBOX
-        MENUITEM "&Z/Tab Order",                ID_DOCK_ZORDER
-        MENUITEM "Project Tree",                ID_DOCK_PROJECT
-        MENUITEM "Properties",                  ID_DOCK_PROPERTIES
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&Help",                       ID_HELP
-        MENUITEM SEPARATOR
-        MENUITEM "&About OpenDCL...",           ID_APP_ABOUT
-    END
-END
-
-IDR_OBJECTTYPE_R14 MENU 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
-        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
-        MENUITEM "&Close",                      ID_FILE_CLOSE
-        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
-        MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
-        MENUITEM SEPARATOR
-        MENUITEM "Create Distribution File",    ID_FILE_CREATEDISTFILE
-        MENUITEM SEPARATOR
-        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
-        MENUITEM "&Delete\tDel",                ID_EDIT_DELETE
-        MENUITEM SEPARATOR
-        MENUITEM "&Bring to Front",             ID_BRINGTOFRONT
-        MENUITEM "&Send to Back",               ID_SENDTOBACK
-        MENUITEM SEPARATOR
-        MENUITEM "&Properties",                 ID_PROPERTIES
-        MENUITEM "&Intelligent Help",           ID_EDIT_OBJECTBROWSER
-    END
-    POPUP "&Projects"
-    BEGIN
-        MENUITEM "&Add Modal Form",             ID_ADDMODAL
-        MENUITEM "Add &Modeless Form",          ID_ADDMODELESS
-        MENUITEM "Add &Dockable Form",          ID_ADDDOCKABLE
-        MENUITEM "Add &File Dialog Box",        ID_PROJECTS_ADDFILEDIALOGBOX
-        MENUITEM SEPARATOR
-        MENUITEM "&View/Edit Picture Folder",   ID_PICTUREFOLDER
-        MENUITEM "&Set AutoLISP File Name",     ID_SETAUTOLISPFILENAME
-        MENUITEM "Set D&istribution File Name", ID_SETDISTFILENAME
-        MENUITEM SEPARATOR
-        MENUITEM "&Remove Form",                ID_REMOVE
-        MENUITEM "Export Language Excel Spreadsheet", ID_TOOLS_EXPORTLANGUAGEEXCELSPREADSHEET
-    END
-    POPUP "&Tools"
-    BEGIN
-        MENUITEM "&Default Font",               ID_TOOLS_DEFAULTFONT
-        MENUITEM "Grid Spacing",                ID_TOOLS_GRIDSPACING
-        MENUITEM SEPARATOR
-        MENUITEM "Set Lisp Symbol Names",       ID_TOOLS_SETLISPSYMBOLNAMES
-        MENUITEM "Clear Lisp Symbol Names",     ID_TOOLS_CLEARLISPSYMBOLNAMES
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "Tool&Box",                    ID_DOCK_TOOLBOX
-        MENUITEM "&Z/Tab Order",                ID_DOCK_ZORDER
-        MENUITEM "Project Tree",                ID_DOCK_PROJECT
-        MENUITEM "Properties",                  ID_DOCK_PROPERTIES
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&Help",                       ID_HELP
-        MENUITEM SEPARATOR
-        MENUITEM "&About OpenDCL...",           ID_APP_ABOUT
-    END
-END
-
-IDR_OBJECTTYPE_LT MENU 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
-        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
-        MENUITEM "&Close",                      ID_FILE_CLOSE
-        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
-        MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
-        MENUITEM SEPARATOR
-        MENUITEM "Create Distribution File",    ID_FILE_CREATEDISTFILE
-        MENUITEM SEPARATOR
-        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
-        MENUITEM "&Delete\tDel",                ID_EDIT_DELETE
-        MENUITEM SEPARATOR
-        MENUITEM "&Bring to Front",             ID_BRINGTOFRONT
-        MENUITEM "&Send to Back",               ID_SENDTOBACK
-        MENUITEM SEPARATOR
-        MENUITEM "&Properties",                 ID_PROPERTIES
-        MENUITEM "&Object Browser",             ID_EDIT_OBJECTBROWSER
-    END
-    POPUP "&Projects"
-    BEGIN
-        MENUITEM "&Add Modal Form",             ID_ADDMODAL
-        MENUITEM SEPARATOR
-        MENUITEM "&View/Edit Picture Folder",   ID_PICTUREFOLDER
-        MENUITEM "&Set AutoLISP File Name",     ID_SETAUTOLISPFILENAME
-        MENUITEM "Set D&istribution File Name", ID_SETDISTFILENAME
-        MENUITEM SEPARATOR
-        MENUITEM "&Remove Form",                ID_REMOVE
-    END
-    POPUP "&Tools"
-    BEGIN
-        MENUITEM "&Default Font",               ID_TOOLS_DEFAULTFONT
-        MENUITEM "Grid Spacing",                ID_TOOLS_GRIDSPACING
-        MENUITEM SEPARATOR
-        MENUITEM "Set Lisp Symbol Names",       ID_TOOLS_SETLISPSYMBOLNAMES
-        MENUITEM "Clear Lisp Symbol Names",     ID_TOOLS_CLEARLISPSYMBOLNAMES
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "Tool&Box",                    ID_DOCK_TOOLBOX
-        MENUITEM "&Z/Tab Order",                ID_DOCK_ZORDER
-        MENUITEM "Project Tree",                ID_DOCK_PROJECT
-        MENUITEM "Properties",                  ID_DOCK_PROPERTIES
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&Help",                       ID_HELP
-        MENUITEM SEPARATOR
-        MENUITEM "&About OpenDCL...",           ID_APP_ABOUT
-    END
-END
-
-IDR_OBJECTTYPE MENU 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
-        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
-        MENUITEM "&Close",                      ID_FILE_CLOSE
-        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
-        MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
-        MENUITEM SEPARATOR
-        MENUITEM "Create Distribution File",    ID_FILE_CREATEDISTFILE
         MENUITEM SEPARATOR
         MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
         MENUITEM SEPARATOR
@@ -1468,7 +1124,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&View/Edit Picture Folder",   ID_PICTUREFOLDER
         MENUITEM "&Set AutoLISP File Name",     ID_SETAUTOLISPFILENAME
-        MENUITEM "Set D&istribution File Name", ID_SETDISTFILENAME
+        MENUITEM "Set Project &Password",       ID_SETDISTFILENAME
         MENUITEM SEPARATOR
         MENUITEM "&Remove Form",                ID_REMOVE
     END
@@ -1507,7 +1163,6 @@ BEGIN
         MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
         MENUITEM SEPARATOR
-        MENUITEM "Create Distribution File",    ID_FILE_CREATEDISTFILE
         MENUITEM "&Register Controls...",       ID_FILE_REGISTERCONTROLS
         MENUITEM SEPARATOR
         MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
@@ -1613,8 +1268,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,1,16
- PRODUCTVERSION 4,0,1,16
+ FILEVERSION 4,0,1,17
+ PRODUCTVERSION 4,0,1,17
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1629,13 +1284,15 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
+            VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL Dialog Editor"
-            VALUE "FileVersion", "4, 0, 1, 16"
-            VALUE "InternalName", "OpenDCL"
-            VALUE "LegalCopyright", "Copyright © 2007"
+            VALUE "FileVersion", "4, 0, 1, 17"
+            VALUE "InternalName", "OpenDCL.Editor"
+            VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
+            VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL.exe"
             VALUE "ProductName", "OpenDCL"
-            VALUE "ProductVersion", "4, 0, 1, 16"
+            VALUE "ProductVersion", "4, 0, 1, 17"
         END
     END
     BLOCK "VarFileInfo"
@@ -1643,6 +1300,25 @@ BEGIN
         VALUE "Translation", 0x409, 1200
     END
 END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_PROJECTPASSWORD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 283
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 80
+    END
+END
+#endif    // APSTUDIO_INVOKED
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1659,7 +1335,6 @@ BEGIN
     IDS_CONFIGTAB           "Config Tabs"
     IDS_TOOLBOX             "ToolBox"
     IDR_MAINFRAME           "OpenDCL"
-    IDR_OBJECTTYPE          "\nProject\nOpenDCL\nOpenDCL Projects (*.odc)\n.odc\nOpenDCL.Document\nOpenDCL Project"
     IDS_ZTABORDER           "Z / Tab Order"
     IDS_TTTSENDTOBACK       "Send Control To Back of Z/Tab Order"
     IDS_TTTBRINGTOFRONT     "Bring Control To Front of Z/Tab Order"
@@ -1795,9 +1470,10 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_LSPFILENAME         "Visual/AutoLisp File Name"
+    IDS_LSPFILENAME         "AutoLISP File Name"
     IDS_NAME                "(Name)"
     IDS_EVENT               "(Event)"
+    IDS_SELECTPROJECTLISPFILE "Specify Project AutoLISP File"
 END
 
 STRINGTABLE 
@@ -1870,9 +1546,9 @@ END
 STRINGTABLE 
 BEGIN
     IDS_RUNTIMENOTALLOWEDCTRL 
-                            "\\b1 Note: \\b0This property is a design time property and cannot be set using AutoLisp. "
+                            "\\b1 Note: \\b0This property is a design time property and cannot be set using AutoLISP. "
     IDS_RUNTIMENOTALLOWEDDLG 
-                            "\\b1 Note: \\b0This property is a design time property and cannot be set using AutoLisp."
+                            "\\b1 Note: \\b0This property is a design time property and cannot be set using AutoLISP."
     IDS_PICTURESHORTCUT     " \\par \\b1 ShortCut Method: \\b0 OpenDCL has an added method that allows you to directly load a picture from the picture folder or a file. The last argument can be an integer for the picture Id or a string for the file name. \\par \\par (\\cf2 "
     IDS_NEWCOLUMNCAPTION    "Column %d"
 END
@@ -2042,13 +1718,12 @@ END
 STRINGTABLE 
 BEGIN
     ID_WINDOW_CLOSEALL      "Close all the Dialog Boxes"
-    ID_FILE_CREATEDISTFILE  "Create a Distribution File, This option replaces the password protection in the .Odc file."
 END
 
 STRINGTABLE 
 BEGIN
     IDS_TTTUPARROW          "Move the selected control(s) up in the Z / Tab order"
-    IDS_TTTDOWNARROW        "Move the selected control(s) down in the Z / Tab Order"
+    IDS_TTTDOWNARROW        "Move the selected control(s) down in the Z / Tab order"
     IDS_TTTHELP             "Help"
     IDS_PROPERTIES          "Properties"
     IDS_EVENTS              "Events"
@@ -2097,7 +1772,6 @@ END
 STRINGTABLE 
 BEGIN
     IDS_COPYFAILED          "Error copying to clipboard: %1"
-    IDS_FILEDLGMTH          "FileDlg.mth"
 END
 
 STRINGTABLE 
@@ -2207,7 +1881,7 @@ BEGIN
     IDS_NOGRID              "No grid will be displayed."
     IDS_AGRID               "A grid spacing of "
     IDS_WILLBE              " pixels will be displayed."
-    IDS_DISTFILE            "Distribution File Name"
+    IDS_PASSWORD            "Password"
     IDS_COPYTOCLIP          "Copy To Clipboard"
     IDS_COPYGETTOCLIP       "Copy Get To Clipboard"
     IDS_RENAMEPROJECT       "The current project has not yet been saved, and the project is still using a default name.\r\n\r\nAutoLISP uses the project name to address this control. Using the default name may not be correct, so it is recommended that you save your project and give it a name before creating AutoLISP code.\r\n\r\nWould you like to save the project before continuing?"
@@ -2224,7 +1898,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_CTRLHELP            "{\\bnsi\\bnsicpg1252\\deff0\\deflang4105{\\fonttbl{\\f0\\fnil\\fcharset0 MS Sans Serif;}{\\f1\\fswiss\\fcharset0 Arial;}}\n{\\*\\generator Msftedit 5.41.15.1503;}\\viewkind4\\uc1\\pard\\ul\\b\\f0\\fs20 How to lookup Help for Controls and Dialog boxes.\\ulnone\\b0\\par\n\\par\nTo activate the help for control and dialog boxes, right click on the control or dialog box that you wish to look up help information on. Next click on\\b  ""Intelligent Help"" \\b0 at the bottom.\\par\n\\par\nNext the intelligent help dialog box will appear. Select on the left side property or function you wish to lookup. On the right, the help information will be shown to you. All information on the selection will appear there and will even show you the correctly formatted AutoLisp syntax at the bottom for that control or dialog box.\\par\n\\par\nFor ease of use, at the bottom you will notice one or two buttons titled; ""Copy to Clipboard"". Click one of those buttons and you will be able then simply paste the code into your AutoLisp file.\\f1\\par\n}\n "
+    IDS_CTRLHELP            "{\\bnsi\\bnsicpg1252\\deff0\\deflang4105{\\fonttbl{\\f0\\fnil\\fcharset0 MS Sans Serif;}{\\f1\\fswiss\\fcharset0 Arial;}}\n{\\*\\generator Msftedit 5.41.15.1503;}\\viewkind4\\uc1\\pard\\ul\\b\\f0\\fs20 How to lookup Help for Controls and Dialog boxes.\\ulnone\\b0\\par\n\\par\nTo activate the help for control and dialog boxes, right click on the control or dialog box that you wish to look up help information on. Next click on\\b  ""Intelligent Help"" \\b0 at the bottom.\\par\n\\par\nNext the intelligent help dialog box will appear. Select on the left side property or function you wish to lookup. On the right, the help information will be shown to you. All information on the selection will appear there and will even show you the correctly formatted AutoLISP syntax at the bottom for that control or dialog box.\\par\n\\par\nFor ease of use, at the bottom you will notice one or two buttons titled; ""Copy to Clipboard"". Click one of those buttons and you will be able then simply paste the code into your AutoLISP file.\\f1\\par\n}\n "
     ID_FILE_REGISTERCONTROLS "Register/Unregister controls"
 END
 
@@ -2268,6 +1942,7 @@ BEGIN
     IDS_POINT               "."
     IDS_50                  "50"
     IDS_1000                "1000"
+    IDS_AUTOLISPFILE        "AutoLISP Files (*.lsp)|*.lsp||"
 END
 
 STRINGTABLE 
@@ -2286,8 +1961,6 @@ BEGIN
     IDS_EventsWriteToLispFile "EventsWriteToLispFile"
     IDS_3RDDAY              "Third Day Software"
     IDS_SELECTTOIMPORT      "Select the OpenDCL Project Files to Import"
-    IDS_STARODS             "*.ods"
-    IDS_SAVEDISTAS          "Save Distribution File As"
     IDS_ImageListCtrl       "ImageListCtrl"
     IDS_BOOL                "Bool"
     IDS_INT                 "Integer"
@@ -2347,7 +2020,6 @@ BEGIN
     IDS_Odcl_AxControl_     "Odcl_AxControl_"
     IDS_Odcl_AxObject_      "Odcl_AxObject_"
     IDS_PARPAR              " \\par \\par "
-    IDS_C                   "c:"
     IDS_OLENOTE1            "\\b1 Note: \\b0 When finished using the \\cf1 OleObject\\cf0 , you may need to call \\cf2Odcl_AxObject_Close \\cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application. The ActiveX object will probably manage this for you, please check the documentation to ensure this."
     IDS_OLENOTE2            "\\b1 Note: \\b0 When finished using the \\cf1"
     IDS_SETQVALUE3          "(\\cf2 Setq \\cf1 rValue \\cf0 "
@@ -2372,7 +2044,6 @@ BEGIN
     IDS_CF0PAR2             "\\cf0 )\\par "
     IDS_FORMOREINFO         "\\par For more infomation on this method please refer to the ActiveX control's documentation. "
     IDS_TOFINDIT            "To find it online please go to msdn.Microsoft.com "
-    IDS_PAR                 " \\par "
     IDS_CLOSEBRACKET3       " /)"
     IDS_DOUBLEBRACKET       " ()"
     IDS_C2                  "c:..."
@@ -2391,9 +2062,9 @@ BEGIN
     IDS_B0CF0               "\\b0\\cf0 "
     IDS_B                   " \\b "
     IDS_ISA                 " \\cf1 is a "
-    IDS_ALISPSYN            " \\par \\b AutoLisp Syntax:\\b0 "
-    IDS_ALSPS               " \\par \\b AutoLisp Set PropertyObject Syntax:\\b0 "
-    IDS_ALGPS               " \\par \\b AutoLisp Get PropertyObject Syntax:\\b0 "
+    IDS_ALISPSYN            " \\par \\b AutoLISP Syntax:\\b0 "
+    IDS_ALSPS               " \\par \\b AutoLISP Set PropertyObject Syntax:\\b0 "
+    IDS_ALGPS               " \\par \\b AutoLISP Get PropertyObject Syntax:\\b0 "
     IDS_PARRN               " \\par \r\n}"
     IDS_SETPROP             "\\par(\\cf2 Odcl_Control_SetProperty \\cf0 \\cf3 "
 END
@@ -2525,7 +2196,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    2101                    "The Name Property is a tag that is used by AutoLisp to determine which control to access."
+    2101                    "The Name Property is a tag that is used by AutoLISP to determine which control to access."
     2102                    "Activates the properties dialog box for each control."
     2103                    "When set to True, the control is resized to match the picture size."
     2104                    "This setting determines the control's type of border style that will be drawn."
@@ -2714,7 +2385,7 @@ BEGIN
     2298                    "For a ListView control, this sets the row height if no images have been added to the image list. For an OptionList control, sets the height spacing between each Option Button. For a DwgList control, set the height of from the top of dwg file name to the bottom of the preview image."
     2299                    "Sets the default selection in the OptionList control. Use the SetCurSel method at run time to change the selected button."
     2300                    "The ObjectBrowser will display a list of all events, properties and methods available for the selected control or form."
-    2301                    "Each control and form can be activated or accessed  by a global AutoLisp variable. This property defines the name of that  variable for this control or form."
+    2301                    "Each control and form can be activated or accessed  by a global AutoLISP variable. This property defines the name of that  variable for this control or form."
     2302                    "Determines if the File Dialog box is to be a Save or Open dialog box."
     2303                    "Checks off the Read Only CheckBox at startup."
 END
@@ -3081,6 +2752,11 @@ BEGIN
                             "Choose the tooltip style. Set to 'True' for balloon style, or 'False' for plain rectangle style."
 END
 
+STRINGTABLE 
+BEGIN
+    IDR_ODCDOCTEMPLATE      "\nProject\nOpenDCL\nOpenDCL Projects (*.odc,*.odce)\n.odc;.odce\nOpenDCL.Document\nOpenDCL Project"
+END
+
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -3092,8 +2768,7 @@ END
 // Generated from the TEXTINCLUDE 3 resource.
 //
 #include "SharedRes.rc"
-#include "AfxRes.rc"
-
+#include "AfxRes.rc"
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

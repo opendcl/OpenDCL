@@ -3,7 +3,7 @@
 
 #pragma once
 
-class CObjectDCLView;
+class COpenDCLView;
 
 
 class CChildFrame : public CMDIChildWnd
@@ -16,7 +16,7 @@ public:
 public:
 	CRect m_rcStartup;
 	CSize m_StartupSize;
-	CObjectDCLView *m_pChildView;
+	COpenDCLView *m_pChildView;
 	CString m_Title;
 	HICON m_hIcon;
 	bool m_bResizable;

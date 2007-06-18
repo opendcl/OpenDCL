@@ -16,7 +16,7 @@
 #include "DclFormObject.h"
 #include "ControlName.h"
 #include "EditorWorkspace.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "ProjectTreeCtrl.h"
 #include "PropertyTabPane.h"
 #include "MainFrm.h"

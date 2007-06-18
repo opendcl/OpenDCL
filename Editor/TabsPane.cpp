@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "TabsPane.h"
 #include "DclControlObject.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "PropertyIds.h"
 #include "DclFormObject.h"
 #include "PropertyObject.h"
@@ -16,7 +16,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CTabsPane dialog
 
-CTabsPane::CTabsPane( CObjectDCLView* pView, CDclControlObject* pControl )
+CTabsPane::CTabsPane( COpenDCLView* pView, CDclControlObject* pControl )
 : CPropertyPage(CTabsPane::IDD)
 , mpView( pView )
 , mpDclControl( pControl )

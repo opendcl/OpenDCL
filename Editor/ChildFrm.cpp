@@ -7,7 +7,7 @@
 #include "Project.h"
 #include "EditorWorkspace.h"
 #include "PictureObject.h"
-#include "ObjectDCLView.h"
+#include "OpenDCLView.h"
 #include "PropertyTabPane.h"
 
 #define nDlgStartupOffsetX  -165
@@ -181,7 +181,7 @@ void CChildFrame::OnShowWindow(BOOL bShow, UINT nStatus)
 {	
 	if (m_pChildView != NULL)
 	{
-		CObjectDCLView *pChild = (CObjectDCLView*)m_pChildView;
+		COpenDCLView *pChild = (COpenDCLView*)m_pChildView;
 		if (pChild->m_pThisDclForm == NULL)
 		{
 			CMDIChildWnd::OnShowWindow(bShow, nStatus);

@@ -89,7 +89,7 @@ protected:
 	afx_msg void OnUpdateDockToolbox(CCmdUI* pCmdUI);
 	afx_msg void OnDockZorder();
 	afx_msg void OnUpdateDockZorder(CCmdUI* pCmdUI);
-	afx_msg void OnSetdistfilename();
+	afx_msg void OnSetpassword();
 	afx_msg void OnProjectsAddfiledialogbox();
 	afx_msg void OnUpdateAddmodal(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateAddmodeless(CCmdUI *pCmdUI);

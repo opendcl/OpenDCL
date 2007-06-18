@@ -60,7 +60,7 @@ CFontPropertyPage::CFontPropertyPage() : CPropertyPage(CFontPropertyPage::IDD)
 	else if ( plogfont->lfWeight >= nDeBoldWeight )
 		m_sStyle = theWorkspace.LoadResourceString(IDS_BOLD);
 
-	sObjectDCLProf = theWorkspace.LoadResourceString(IDR_MAINFRAME);
+	sOpenDCLProf = theWorkspace.LoadResourceString(IDR_MAINFRAME);
 }
 
 CFontPropertyPage::~CFontPropertyPage()
@@ -141,12 +141,12 @@ BOOL CFontPropertyPage::OnInitDialog()
 	catch(...)
 	{
 		CString sProblems;
-		CString sObjectDCL;
+		CString sOpenDCL;
 
 		sProblems = theWorkspace.LoadResourceString(IDS_PROBLEMS);
-		sObjectDCL = theWorkspace.LoadResourceString(IDS_OBJECTDCL);
+		sOpenDCL = theWorkspace.LoadResourceString(IDS_OBJECTDCL);
 
-		MessageBox (sProblems, sObjectDCL, MB_ICONEXCLAMATION);
+		MessageBox (sProblems, sOpenDCL, MB_ICONEXCLAMATION);
 	}
 
 
@@ -403,7 +403,7 @@ BOOL CFontPropertyPage::OnApply()
 	else // update the default setting
 	{
 		pProjectList->m_sDefaultFontName = strResult;
-		pApp->WriteProfileString(sObjectDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontName), pProjectList->m_sDefaultFontName);		
+		pApp->WriteProfileString(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontName), pProjectList->m_sDefaultFontName);		
 	}
 
 	
@@ -428,7 +428,7 @@ BOOL CFontPropertyPage::OnApply()
 		else // update the default setting
 		{
 			pProjectList->m_nDefaultFontSize = lSize;
-			pApp->WriteProfileInt(sObjectDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontSize), pProjectList->m_nDefaultFontSize);
+			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontSize), pProjectList->m_nDefaultFontSize);
 		}		
 	}
 
@@ -479,29 +479,29 @@ BOOL CFontPropertyPage::OnApply()
 	{
 		if (nStyle == 0)
 		{
-			pApp->WriteProfileInt(sObjectDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontBold), FALSE);
-			pApp->WriteProfileInt(sObjectDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), FALSE);
+			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontBold), FALSE);
+			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), FALSE);
 			pProjectList->m_bDefaultFontBold = FALSE;
 			pProjectList->m_bDefaultFontItalic = FALSE;
 		}
 		else if(nStyle == 3)
 		{
-			pApp->WriteProfileInt(sObjectDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontBold), TRUE);
-			pApp->WriteProfileInt(sObjectDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), TRUE);
+			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontBold), TRUE);
+			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), TRUE);
 			pProjectList->m_bDefaultFontBold = TRUE;
 			pProjectList->m_bDefaultFontItalic = TRUE;
 		}
 		else if(nStyle == 2)
 		{
-			pApp->WriteProfileInt(sObjectDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontBold), FALSE);
-			pApp->WriteProfileInt(sObjectDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), TRUE);
+			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontBold), FALSE);
+			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), TRUE);
 			pProjectList->m_bDefaultFontBold = FALSE;
 			pProjectList->m_bDefaultFontItalic = TRUE;
 		}
 		else if(nStyle == 1)
 		{
-			pApp->WriteProfileInt(sObjectDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontBold), TRUE);
-			pApp->WriteProfileInt(sObjectDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), FALSE);
+			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontBold), TRUE);
+			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), FALSE);
 			pProjectList->m_bDefaultFontBold = TRUE;
 			pProjectList->m_bDefaultFontItalic = FALSE;
 		}
@@ -512,14 +512,14 @@ BOOL CFontPropertyPage::OnApply()
 	{
 		// set the font Underline
 		pProjectList->m_bDefaultFontUnderLine = ((CButton*)GetDlgItem(IDC_UNDERLINE))->GetCheck();
-		pApp->WriteProfileInt(sObjectDCLProf, _T("DefaultFontUnderLine"), pProjectList->m_bDefaultFontUnderLine);	
+		pApp->WriteProfileInt(sOpenDCLProf, _T("DefaultFontUnderLine"), pProjectList->m_bDefaultFontUnderLine);	
 
 		if (m_ScaledOpt.GetCheck())
 			pProjectList->m_bDefaultFontSizeStyle = TRUE;
 		else
 			pProjectList->m_bDefaultFontSizeStyle = FALSE;
 
-		pApp->WriteProfileInt(sObjectDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontSizeStyle), pProjectList->m_bDefaultFontSizeStyle);	
+		pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontSizeStyle), pProjectList->m_bDefaultFontSizeStyle);	
 	}
 	else
 	{

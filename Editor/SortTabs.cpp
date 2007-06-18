@@ -8,7 +8,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CSortTabs property page
 
-CSortTabs::CSortTabs( CObjectDCLView* pView, CDclControlObject* pControl, CTabsPane* pTabsPane )
+CSortTabs::CSortTabs( COpenDCLView* pView, CDclControlObject* pControl, CTabsPane* pTabsPane )
 : CPropertyPage(CSortTabs::IDD)
 , mpView( pView )
 , mpDclControl( pControl )

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "objectdcl.h"
+#include "OpenDCL.h"
 #include "ZOrderListCtrl.h"
 #include "ControlHolder.h"
 #include "DclControlObject.h"
@@ -57,7 +57,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CZOrderListCtrl message handlers
 
-void CZOrderListCtrl::ClearList(CObjectDCLView *pView)
+void CZOrderListCtrl::ClearList(COpenDCLView *pView)
 {
 	m_pView = pView;
 	// delete all the items
@@ -411,7 +411,6 @@ void CZOrderListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 		// get the item'sname
 		if (m_pView != NULL)
 		{
-			m_pView->SelectControl(GetItemText(plvdi->item.mask, 0));
 			m_pView->ClearSelection(false);
 			// loop to select all the controls
 			for (int i=0;i<GetItemCount(); i++)

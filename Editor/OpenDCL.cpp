@@ -1,9 +1,8 @@
-// ObjectDCL.cpp : Defines the class behaviors for the application.
+// OpenDCL.cpp : Defines the class behaviors for the application.
 //
 
 #include "stdafx.h"
-#include "ObjectDCL.h"
-#include "PurchaseMode.h"
+#include "OpenDCL.h"
 #include "ChildFrm.h"
 #include "Project.h"
 #include "DclFormObject.h"
@@ -61,20 +60,18 @@ CTCOptions::CTCOptions() :
 {
 }
 /////////////////////////////////////////////////////////////////////////////
-// CObjectDCLApp
+// COpenDCLApp
 
-BEGIN_MESSAGE_MAP(CObjectDCLApp, CWinApp)
+BEGIN_MESSAGE_MAP(COpenDCLApp, CWinApp)
 	ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
 	ON_COMMAND(ID_FILE_NEW, OnFileNew)
 	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
-	ON_COMMAND(ID_FILE_CREATEDISTFILE, OnFileCreatedistfile)
 	ON_COMMAND(ID_TOOLS_DEFAULTFONT, OnToolsDefaultfont)
 	ON_COMMAND(ID_TOOLS_GRIDSPACING, OnToolsGridspacing)
 	ON_UPDATE_COMMAND_UI(ID_TOOLS_EVENTSCOPYTOCLIPBOARD, OnUpdateToolsEventscopytoclipboard)
 	ON_UPDATE_COMMAND_UI(ID_TOOLS_EVENTSWRITETOLISPFILE, OnUpdateToolsEventswritetolispfile)
 	ON_COMMAND(ID_TOOLS_EVENTSCOPYTOCLIPBOARD, OnToolsEventscopytoclipboard)
 	ON_COMMAND(ID_TOOLS_EVENTSWRITETOLISPFILE, OnToolsEventswritetolispfile)
-	ON_COMMAND(ID_TOOLS_EXPORTLANGUAGEEXCELSPREADSHEET, OnToolsExportlanguageexcelspreadsheet)
 	ON_COMMAND(ID_HELP, OnHelp)
 	ON_COMMAND(ID_HELP_FINDER, OnHelpFinder)
 	// MRU - most recently used file menu
@@ -93,23 +90,23 @@ BEGIN_MESSAGE_MAP(CObjectDCLApp, CWinApp)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CObjectDCLApp construction
+// COpenDCLApp construction
 
-CObjectDCLApp::CObjectDCLApp()
+COpenDCLApp::COpenDCLApp()
 : m_pMainFrame( NULL )
 {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// The one and only CObjectDCLApp object
+// The one and only COpenDCLApp object
 
-CObjectDCLApp theApp;
+COpenDCLApp theApp;
 //CMyOccManager theManager;
 
 /////////////////////////////////////////////////////////////////////////////
-// CObjectDCLApp initialization
+// COpenDCLApp initialization
 
-BOOL CObjectDCLApp::InitInstance()
+BOOL COpenDCLApp::InitInstance()
 {
 	//AfxEnableMemoryTracking(TRUE);
 	// Initialize OLE libraries
@@ -140,40 +137,12 @@ BOOL CObjectDCLApp::InitInstance()
 	// Register the application's document templates.  Document templates
 	//  serve as the connection between documents, frame windows and views.
 
-	CMultiDocTemplate* pDocTemplate = NULL;
-	switch (nCurrentPurchaseMode)
-		{
-		case nPurchasedLT:
-			pDocTemplate = new CMultiDocTemplate(
-				IDR_OBJECTTYPE_LT,
-				RUNTIME_CLASS(CObjectDCLDoc),
-				RUNTIME_CLASS(CChildFrame), // custom MDI child frame
-				RUNTIME_CLASS(CObjectDCLView));
-			break;
-		case nPurchasedR14Pro:
-		case nPurchasedGMP:
-			pDocTemplate = new CMultiDocTemplate(
-				IDR_OBJECTTYPE_R14,
-				RUNTIME_CLASS(CObjectDCLDoc),
-				RUNTIME_CLASS(CChildFrame), // custom MDI child frame
-				RUNTIME_CLASS(CObjectDCLView));
-			break;
-		case nPurchasedStd:			
-			pDocTemplate = new CMultiDocTemplate(
-				IDR_OBJECTTYPE_STD,
-				RUNTIME_CLASS(CObjectDCLDoc),
-				RUNTIME_CLASS(CChildFrame), // custom MDI child frame
-				RUNTIME_CLASS(CObjectDCLView));
-			break;
-		default:			
-			pDocTemplate = new CMultiDocTemplate(
-				IDR_OBJECTTYPE,
-				RUNTIME_CLASS(CObjectDCLDoc),
-				RUNTIME_CLASS(CChildFrame), // custom MDI child frame
-				RUNTIME_CLASS(CObjectDCLView));
-			break;
-		}
-	AddDocTemplate(pDocTemplate);
+	AddDocTemplate(
+		new CMultiDocTemplate(
+			IDR_ODCDOCTEMPLATE,
+			RUNTIME_CLASS(COpenDCLDoc),
+			RUNTIME_CLASS(CChildFrame), // custom MDI child frame
+			RUNTIME_CLASS(COpenDCLView)));
 	
 	// create main MDI Frame window
 	CMainFrame* pMainFrame = new CMainFrame;
@@ -259,7 +228,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 // App command to run the dialog
-void CObjectDCLApp::OnAppAbout()
+void COpenDCLApp::OnAppAbout()
 {
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
@@ -311,27 +280,27 @@ BOOL CAboutDlg::OnInitDialog()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CObjectDCLApp message handlers
+// COpenDCLApp message handlers
 
-void CObjectDCLApp::OnFileNew() 
+void COpenDCLApp::OnFileNew() 
 {
 	CloseAllDocuments(FALSE);
 	CWinApp::OnFileNew();
 }
 
-void CObjectDCLApp::OnFileOpen() 
+void COpenDCLApp::OnFileOpen() 
 {
 	CloseAllDocuments(FALSE);
 	CWinApp::OnFileOpen();
 }
 
-BOOL CObjectDCLApp::OnOpenRecentFile(UINT nID)
+BOOL COpenDCLApp::OnOpenRecentFile(UINT nID)
 {
 	CloseAllDocuments(FALSE);
 	return CWinApp::OnOpenRecentFile(nID);
 }
 
-CMDIChildWnd* CObjectDCLApp::CreateOrActivateFrame(CDocument* pDoc, CSize ViewSize, bool bResizable)
+CMDIChildWnd* COpenDCLApp::CreateOrActivateFrame(CDocument* pDoc, CSize ViewSize, bool bResizable)
 {
 	POSITION pos = m_pDocManager->GetFirstDocTemplatePosition();
 	CDocTemplate* pDocTemplate = m_pDocManager->GetNextDocTemplate(pos);
@@ -349,7 +318,7 @@ CMDIChildWnd* CObjectDCLApp::CreateOrActivateFrame(CDocument* pDoc, CSize ViewSi
   return (CMDIChildWnd*)pNewFrame;
 }
 
-CObjectDCLView* CObjectDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
+COpenDCLView* COpenDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 {
 	CRect rcNewDialog;
 	CMDIChildWnd* pNewFrame;
@@ -381,7 +350,7 @@ CObjectDCLView* CObjectDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 	}
 	
 	pNewFrame = CreateOrActivateFrame(theWorkspace.GetActiveDocument()/*m_pMainFrame->GetActiveDocument()*/, StartupSize, bResizable);
-	CObjectDCLView* pNewView = (CObjectDCLView*)pNewFrame->GetActiveView();
+	COpenDCLView* pNewView = (COpenDCLView*)pNewFrame->GetActiveView();
 
 	// set the dcl pointers
 	pNewView->m_pThisDclForm = pDclForm;
@@ -389,7 +358,7 @@ CObjectDCLView* CObjectDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 	pDclForm->m_pMdiChildWnd = pNewFrame;
 
 	ASSERT(pNewView != NULL);
-	ASSERT(pNewView->IsKindOf(RUNTIME_CLASS(CObjectDCLView)));
+	ASSERT(pNewView->IsKindOf(RUNTIME_CLASS(COpenDCLView)));
 
 	// get the position of the new dialog box
 	pNewFrame->GetWindowRect(rcNewDialog);
@@ -425,121 +394,7 @@ CObjectDCLView* CObjectDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 	return pNewView;
 }
 
-void CObjectDCLApp::OnFileCreatedistfile() 
-{
-	CString sFilter;
-	sFilter = theWorkspace.LoadResourceString(IDS_ODCFILTER);
-
-	// create the open dialog box
-	CFileDialog BrowseWnd(
-		TRUE, 
-		NULL,
-		NULL, 
-		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
-		sFilter,
-		CWnd::GetActiveWindow());
-
-	// proceed to setup the file buffer size
-	BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
-	TCHAR* pc = new TCHAR[MAX_PATH];
-	BrowseWnd.m_ofn.lpstrFile = pc;
-    BrowseWnd.m_ofn.lpstrFile[0] = NULL;
-
-	CString sText;	
-	sText = theWorkspace.LoadResourceString(IDS_SELECTTOIMPORT);
-
-	BrowseWnd.m_ofn.lpstrTitle = sText;
-
-	// call method to invoke the file dialog box	
-	int iReturn = BrowseWnd.DoModal();
-	if(iReturn == IDOK)   
-	{
-		CProjectCollection phProjects;
-
-		CString sPathName;
-		POSITION pos;
-
-		// do loop to get all selected files
-		for (pos = BrowseWnd.GetStartPosition(); pos != NULL; )
-		{
-			// get the file name 
-			sPathName = BrowseWnd.GetNextPathName(pos);
-			CProject *pProject = new CProject;
-			if( pProject->ReadFromFile(sPathName) == statOK )
-				phProjects.AddProject(pProject);
-			else
-				delete pProject;
-		}
-
-		SaveDistributionFile(&phProjects);
-		phProjects.ClearProjects();
-	}
-
-	delete [] pc; 
-}
-
-BOOL CObjectDCLApp::SaveDistributionFile(CProjectCollection *pProjectHolder) 
-{
-	CString sFilter; 
-	sFilter = theWorkspace.LoadResourceString(IDS_ODSFILTER);
-
-	CString sText;	
-	sText = theWorkspace.LoadResourceString(IDS_STARODS);
-
-	// create the open dialog box
-	CFileDialog BrowseWnd(
-		FALSE, 
-		sText,
-		NULL, 
-		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING | OFN_EXPLORER | OFN_PATHMUSTEXIST,
-		sFilter,
-		CWnd::GetActiveWindow());
-
-	sText = theWorkspace.LoadResourceString(IDS_SAVEDISTAS);
-
-	BrowseWnd.m_ofn.lpstrTitle = sText;
-	// proceed to setup the file buffer size
-	BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
-	TCHAR* pc = new TCHAR[MAX_PATH];
-	BrowseWnd.m_ofn.lpstrFile = pc;
-    BrowseWnd.m_ofn.lpstrFile[0] = NULL;
-
-	// call method to invoke the file dialog box
-	int iReturn = BrowseWnd.DoModal();
-
-	if(iReturn == IDOK)   
-	{
-		CString sFileName = BrowseWnd.m_ofn.lpstrFile;
-	
-		// declare file variables
-		CFileException Exception;
-		CFile ThisFile;
-		CString sTitle;
-		sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-		
-		// open then file
-		if ( !ThisFile.Open(sFileName, CFile::modeCreate | CFile::shareExclusive | CFile::modeWrite, &Exception) )
-		{
-			CString sTheFile;	
-			sTheFile = theWorkspace.LoadResourceString(IDS_THEFILE);
-			CString sText;	
-			sText = theWorkspace.LoadResourceString(IDS_COULDNOTOPEN);
-
-			MessageBox (::GetActiveWindow(), sTheFile + sFileName + sText, sTitle, NULL);
-			return FALSE;
-		}
-		
-		CArchiveEx arExt(&ThisFile, CArchive::store | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
-		// Serialize the control
-		pProjectHolder->Serialize(arExt);
-		arExt.Close();
-		ThisFile.Close();
-	}
-	delete [] pc; 
-	return TRUE;
-}
-
-CObjectDCLView* CObjectDCLApp::AddDclFormAndView(DclFormType nType) 
+COpenDCLView* COpenDCLApp::AddDclFormAndView(DclFormType nType) 
 {
 	CRect rcNewDialog;
 	CMDIChildWnd* pNewFrame;
@@ -570,14 +425,14 @@ CObjectDCLView* CObjectDCLApp::AddDclFormAndView(DclFormType nType)
 			((CChildFrame*)pNewFrame)->SetTitleBarIcon(nNotSet); // set the title bar icon.
 	}
 
-	CObjectDCLView* pNewView = (CObjectDCLView*)pNewFrame->GetActiveView();
+	COpenDCLView* pNewView = (COpenDCLView*)pNewFrame->GetActiveView();
 
 	// set the dcl pointers
 	pNewDcl->m_pChildWnd = pNewView;
 	pNewDcl->m_pMdiChildWnd = pNewFrame;
 
 	ASSERT(pNewView != NULL);
-	ASSERT(pNewView->IsKindOf(RUNTIME_CLASS(CObjectDCLView)));
+	ASSERT(pNewView->IsKindOf(RUNTIME_CLASS(COpenDCLView)));
 
 	// get the position of the new dialog box
 	pNewFrame->GetWindowRect(rcNewDialog);
@@ -617,7 +472,7 @@ CObjectDCLView* CObjectDCLApp::AddDclFormAndView(DclFormType nType)
 	return pNewView;
 }
 
-CDclFormObject* CObjectDCLApp::AddNewDclForm(DclFormType nType) 
+CDclFormObject* COpenDCLApp::AddNewDclForm(DclFormType nType) 
 {
 	// create a pointer to pass to the list to insert
 	CDclFormObject* pNewDclForm = activeProject->AddForm( nType );
@@ -631,7 +486,7 @@ CDclFormObject* CObjectDCLApp::AddNewDclForm(DclFormType nType)
 	return pNewDclForm;
 }
 
-void CObjectDCLApp::OnToolsDefaultfont() 
+void COpenDCLApp::OnToolsDefaultfont() 
 {
 	CPropertySheet Dlg;
 	CFontPropertyPage FontPage;
@@ -647,20 +502,20 @@ void CObjectDCLApp::OnToolsDefaultfont()
 	Dlg.DoModal();
 }
 
-int CObjectDCLApp::ExitInstance() 
+int COpenDCLApp::ExitInstance() 
 {
 	if (m_pCtrlHelp != NULL)
 		delete m_pCtrlHelp;
 	return CWinApp::ExitInstance();
 }
 
-void CObjectDCLApp::OnToolsGridspacing() 
+void COpenDCLApp::OnToolsGridspacing() 
 {
 	CGridSpacingDlg Dlg;
 	Dlg.DoModal();
 }
 
-void CObjectDCLApp::OnUpdateToolsEventscopytoclipboard(CCmdUI* pCmdUI) 
+void COpenDCLApp::OnUpdateToolsEventscopytoclipboard(CCmdUI* pCmdUI) 
 {
 	CWinApp* pApp = AfxGetApp();
 	CString sProfileName;
@@ -674,7 +529,7 @@ void CObjectDCLApp::OnUpdateToolsEventscopytoclipboard(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(bUsesOn);	
 }
 
-void CObjectDCLApp::OnUpdateToolsEventswritetolispfile(CCmdUI* pCmdUI) 
+void COpenDCLApp::OnUpdateToolsEventswritetolispfile(CCmdUI* pCmdUI) 
 {
 	CWinApp* pApp = AfxGetApp();
 	CString sProfileName;
@@ -688,7 +543,7 @@ void CObjectDCLApp::OnUpdateToolsEventswritetolispfile(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(bUsesOn);	
 }
 
-void CObjectDCLApp::OnToolsEventscopytoclipboard() 
+void COpenDCLApp::OnToolsEventscopytoclipboard() 
 {
 	CString sSection = theWorkspace.LoadResourceString(IDR_MAINFRAME);
 	CString sName = theWorkspace.LoadResourceString(IDS_EventsCopyToClipboard);
@@ -699,7 +554,7 @@ void CObjectDCLApp::OnToolsEventscopytoclipboard()
 	theEditorWorkspace.GetPropertyTabs()->m_EventsTabPane.m_AddToLisp.SetWindowText(sText);
 }
 
-void CObjectDCLApp::OnToolsEventswritetolispfile() 
+void COpenDCLApp::OnToolsEventswritetolispfile() 
 {
 	CString sSection = theWorkspace.LoadResourceString(IDR_MAINFRAME);
 	CString sName = theWorkspace.LoadResourceString(IDS_EventsWriteToLispFile);
@@ -710,16 +565,11 @@ void CObjectDCLApp::OnToolsEventswritetolispfile()
 	theEditorWorkspace.GetPropertyTabs()->m_EventsTabPane.m_AddToLisp.SetWindowText(sText);	
 }
 
-
-void CObjectDCLApp::OnToolsExportlanguageexcelspreadsheet() 
-{
-}
-
-void CObjectDCLApp::OnHelp() 
+void COpenDCLApp::OnHelp() 
 {
 	HtmlHelp(0, HH_DISPLAY_TOPIC);
 }
 
-void CObjectDCLApp::OnHelpFinder() 
+void COpenDCLApp::OnHelpFinder() 
 {
 }
