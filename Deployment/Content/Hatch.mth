@@ -1,7 +1,7 @@
 [Method]
 SetPattern
 [Prefix]
-Odcl_Hatch_
+dcl_Hatch_
 [Desc]
 This method will display the specified hatch pattern.
 [Arguments]
@@ -13,7 +13,7 @@ ProjectFileName
 [Method]
 Clear
 [Prefix]
-Odcl_Hatch_
+dcl_Hatch_
 [Desc]
 This method clears the hatch control of its contents.
 [Arguments]

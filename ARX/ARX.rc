@@ -141,8 +141,8 @@ IDI_X                   ICON                    "Res\\X.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,1,17
- PRODUCTVERSION 4,0,1,17
+ FILEVERSION 4,0,1,18
+ PRODUCTVERSION 4,0,1,18
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -159,13 +159,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL ARX Interface"
-            VALUE "FileVersion", "4, 0, 1, 17"
+            VALUE "FileVersion", "4, 0, 1, 18"
             VALUE "InternalName", "OpenDCL.Runtime"
             VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL.arx"
             VALUE "ProductName", "OpenDCL"
-            VALUE "ProductVersion", "4, 0, 1, 17"
+            VALUE "ProductVersion", "4, 0, 1, 18"
         END
     END
     BLOCK "VarFileInfo"
@@ -260,6 +260,7 @@ BEGIN
     IDS_VARNAMEINCORRECT2   "The first argument int method "
     IDS_VARNAMEINCORRECT3   " was NIL. Please ensure that the variable being used to specify the control matches the value placed in the (VarName) property of the control."
     IDS_AXFILENOTLOADING2   "Could not load the ActiveX control file for registering: "
+    IDS_BANNER              "\nOpenDCL Runtime [%d.%d.%d.%d] loaded\n"
 END
 
 #endif    // English (U.S.) resources

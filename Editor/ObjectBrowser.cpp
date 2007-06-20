@@ -617,7 +617,7 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 void CObjectBrowser::SelectionChanged(HTREEITEM hItem) 
 {
 	CString sExtraText;
-	CString sOleObject = theWorkspace.LoadResourceString(IDS_Odcl_AxControl_);
+	CString sOleObject = theWorkspace.LoadResourceString(IDS_dcl_AxControl_);
 	CString sArgType;
 	CString sGlobalVarName;
 
@@ -650,7 +650,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 	
 	if (pControl != m_pControl)
 	{
-		sOleObject = theWorkspace.LoadResourceString(IDS_Odcl_AxObject_);
+		sOleObject = theWorkspace.LoadResourceString(IDS_dcl_AxObject_);
 		sGlobalVarName = theWorkspace.LoadResourceString(IDS_OleObject);
 	}
 	
@@ -797,7 +797,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 	else
 	{
 		switch (pProp->GetType())
-	{
+		{
 		case PropActiveXMethods:
 			{
 				sTitle = theWorkspace.LoadResourceString(IDS_METHOD);
@@ -1115,18 +1115,39 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 			break;
 		default:
 			{
-				if (m_pControl->GetType() == CtlFileDlgCtrl || m_pControl->GetType() <= CtlInvalid)
+				switch(pProp->GetType())
 				{
-
-					sTitle = theWorkspace.LoadResourceString(IDS_THEPROPERTY);
-					sDesc = pProp->GetDocumentationDesc();
-					sDesc += theWorkspace.LoadResourceString(IDS_PARPAR) + theWorkspace.LoadResourceString(IDS_DESIGNTIMEONLY);
-
+					case PropLong:
+						sVarType = theWorkspace.LoadResourceString(IDS_LONG);
+						break;
+					case PropEnum:
+					case PropPicture:
+						sVarType = theWorkspace.LoadResourceString(IDS_INT);
+						break;
+					case PropString:
+						sVarType = theWorkspace.LoadResourceString(IDS_STRING);
+						break;
+					case PropDouble:
+						sVarType = theWorkspace.LoadResourceString(IDS_REAL);
+						break;
+					case PropBool:
+						sVarType = theWorkspace.LoadResourceString(IDS_BOOLEAN);
+						break;					
+				}		
+				sTitle = theWorkspace.LoadResourceString(IDS_PROPERTY);
+				sDesc = pProp->GetDocumentationDesc();
+				if (pProp->IsHidden())
+				{
+					sDesc += theWorkspace.LoadResourceString(IDS_PARPAR);
+					sDesc += theWorkspace.LoadResourceString(IDS_HIDDENPROP);
+				}
+				else if(m_pControl->GetType() == CtlFileDlgCtrl || m_pControl->GetType() <= CtlInvalid)
+				{
+					sDesc += theWorkspace.LoadResourceString(IDS_PARPAR);
+					sDesc += theWorkspace.LoadResourceString(IDS_DESIGNTIMEONLY);
 				}
 				else 
 				{	
-					sDesc = pProp->GetDocumentationDesc();
-						
 					switch (pProp->GetID())
 					{
 					case nComboBoxStyle:
@@ -1185,63 +1206,31 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					case nMinDialogHeight:
 					case nMaxDialogHeight:
 						{
-							sTitle = theWorkspace.LoadResourceString(IDS_THEPROPERTY);
-							sDesc = pProp->GetDocumentationDesc();
 							CString sMsg;
 							if (m_pControl->GetType() < CtlLabel || m_pControl->GetType() > CtlFileDlgCtrl)
 								sMsg = theWorkspace.LoadResourceString(IDS_RUNTIMENOTALLOWEDDLG);
 							else
 								sMsg = theWorkspace.LoadResourceString(IDS_RUNTIMENOTALLOWEDCTRL);
-
 							sDesc += theWorkspace.LoadResourceString(IDS_PARPAR) + sMsg;
 							break;
 						}
 					default:
 						{
 							if (pControl->GetType() == CtlForm)
-							{
-								sTitle = theWorkspace.LoadResourceString(IDS_THEPROPERTY);
-								sDesc = pProp->GetDocumentationDesc();
-								CString sMsg;
-								sMsg = theWorkspace.LoadResourceString(IDS_DESIGNTIMEONLY);
-								sDesc += theWorkspace.LoadResourceString(IDS_PARPAR) + sMsg;
-							}
+								sDesc += theWorkspace.LoadResourceString(IDS_PARPAR) + theWorkspace.LoadResourceString(IDS_DESIGNTIMEONLY);
 							else
 							{
-								switch(pProp->GetType())
-								{
-									case PropLong:
-										sVarType = theWorkspace.LoadResourceString(IDS_LONG);
-										break;
-									case PropEnum:
-									case PropPicture:
-										sVarType = theWorkspace.LoadResourceString(IDS_INT);
-										break;
-									case PropString:
-										sVarType = theWorkspace.LoadResourceString(IDS_STRING);
-										break;
-									case PropDouble:
-										sVarType = theWorkspace.LoadResourceString(IDS_REAL);
-										break;
-									case PropBool:
-										sVarType = theWorkspace.LoadResourceString(IDS_BOOLEAN);
-										break;					
-								}		
-
 								// lets set the Put property
-								sDefun1 = CString("\\par (\\cf2 Odcl_Control_Set") + m_ListBox.GetItemText(hItem) + " \\cf0 \\cf3" + sGlobalVarName + " ";
-								m_sClipBoardDefun1 = CString("(Odcl_Control_Set") + m_ListBox.GetItemText(hItem) + _T(" ");
+								sDefun1 = CString("\\par (\\cf2 dcl_Control_Set") + m_ListBox.GetItemText(hItem) + " \\cf0 \\cf3" + sGlobalVarName + " ";
+								m_sClipBoardDefun1 = CString("(dcl_Control_Set") + m_ListBox.GetItemText(hItem) + _T(" ");
 								sDefun1 += "\\par \\cf1 newValue [as " + sVarType + "]\\cf0 ) " + _T(" \\par ");
 								m_sClipBoardDefun1 += sGlobalVarName + "\r\n\t newValue [as " + sVarType + _T("])");
 								
 								// lets set the get property
-								sDefun2 = CString("\\par (\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 Odcl_Control_Get") + m_ListBox.GetItemText(hItem) + " \\cf0 \\cf3";
-								m_sClipBoardDefun2 = "(Setq Value (Odcl_Control_Get" + m_ListBox.GetItemText(hItem) + _T(" ");
+								sDefun2 = CString("\\par (\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_Control_Get") + m_ListBox.GetItemText(hItem) + " \\cf0 \\cf3";
+								m_sClipBoardDefun2 = "(Setq Value (dcl_Control_Get" + m_ListBox.GetItemText(hItem) + _T(" ");
 								sDefun2 += sGlobalVarName + "\\cf0))";
 								m_sClipBoardDefun2 += sGlobalVarName + _T("))");
-			
-								// set the title.
-								sTitle = theWorkspace.LoadResourceString(IDS_THEPROPERTY);
 								
 								// hide the first copy button
 								m_Copy1.ShowWindow(TRUE);
@@ -1280,12 +1269,13 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 	sRtf += sRtfHeader + theWorkspace.LoadResourceString(IDS_RN);
 	sRtfHeader = theWorkspace.LoadResourceString(IDS_RTFHEADER3);
 	sRtf += sRtfHeader + _T(" ");
+	
 	// set the title then start the bold statment
 	sRtf += sTitle;
-	
-	if (sTitle.GetLength() < nTitleLength)
-		// add the title name and close the bold
-		sRtf += theWorkspace.LoadResourceString(IDS_B) + m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_B0CF0);
+	// add the title name and close the bold
+	sRtf += _T(" \\b1");
+	sRtf += m_ListBox.GetItemText(hItem);
+	sRtf += _T("\\b0\\cf0 ");
 		
 	//if the var type has been set
 	if (!sVarType.IsEmpty())

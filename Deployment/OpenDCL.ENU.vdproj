@@ -21,8 +21,20 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_02FD18A3A8C44709A4F5CAD47D036389"
+        "OwnerKey" = "8:_7EE0C18491EB42C0B283787A90478C1D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_058621BF6A1941A08EB4812FDC476EC4"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0BEB11C7F04F46F290FBACC2C4F14E6B"
+        "OwnerKey" = "8:_CA2BB1DA95FD447E80A2ED45325DA0CE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -33,31 +45,25 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_0CB878CBD8054AA9A834200E89AD7AF1"
+        "MsmKey" = "8:_0E2727147EC24DD8B484CD881048C166"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_0E78E107610042CBBBB26BC3A0AF343B"
+        "MsmKey" = "8:_0E36E8ADE53B40BB8F7DCF0AE7FCA58D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_1038BE835FE046A0A4FE918C211BFE6D"
+        "MsmKey" = "8:_0E99ACBBA3B34A999E3639FF04F8692A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_10CF786691334342A82E1843BD3B3E02"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_11AD60686BFD4ECBB4C7120C809AC2FC"
+        "MsmKey" = "8:_134A51FB41C14D428AA893B6E0DE28E9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -69,61 +75,25 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_19E0688FD8224D01A9F06BA4FDA38204"
+        "MsmKey" = "8:_1D2D468A5FF44BDFB866D37B3FC2CB77"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_1B1D3FBA58284CA5B199C18A8BA555AB"
+        "MsmKey" = "8:_1E7DBC6F6B4E40898B80ECC4A574FE1E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_1BBBDCFF2ABC468FB951D00B0BF82274"
+        "MsmKey" = "8:_25FD2871AA8E45608DAF2EB6AF02A13A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_1BD680BA0DD54983B8E7CAEBB2BC6482"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_1BE6B956422B4E05B02A4F4789C59FF8"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_1E221F713B80480F956F685D38193C90"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_223791038E9D458690C62797F0A6DEB8"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_226FF02740794AC4BFFDA8983C5778DC"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_242AB722E18A425FAF07F97D325BC081"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_281C46AEBC0E45D7A7C6B5C442347310"
+        "MsmKey" = "8:_29CD14D0E48E4CD7A2B60023A1FDDD90"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -135,13 +105,25 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_2B118CCF5E904D9DADBED7C595DBE5BC"
+        "MsmKey" = "8:_2C5FCCC7EA214A9DBEB455D1342FA932"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_2C08284BFEFE471A9B6AF15A28003F6D"
+        "MsmKey" = "8:_2CF71824AB6A48DE815C2684C24D6395"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2DC35D96F44043CD807BF844D44978CC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2DE2B573F7084FF78C19390380140E4C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -153,19 +135,25 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_324A4BEDB4D44108A7DCEE7DE9DEEDFA"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_345DDB6FCD2F4CA9B1E9CA5E38D6C007"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
+        "MsmKey" = "8:_361C9607C4F742E28F0C64FC720ABDAE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_366F1B95EC9945CE9B39CDABC9439D1F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3A093B21728B43D6B8A74EAD3ED94475"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -189,19 +177,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_4732B9DC83E640B0AB63FAC5DD603F31"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_48344A7B8E864FC6B655243AA6949A00"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_486904923BBC42DE80DE554E04EF1CB3"
+        "MsmKey" = "8:_41B0ACD32A6445DDACF7FEC39EEBBCC1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -213,7 +189,19 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_5BF9BE0A2FDE4F29A9B7CB4E6377A67F"
+        "MsmKey" = "8:_4DC02821279847908FDFF710927E8414"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_58C3CB39EA5D4B19825E4E0505B45897"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5C8D4301E2174D2FBD065F0503CBA099"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -225,7 +213,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_5E8E7A7ACF624E7E9A341FF443342A91"
+        "MsmKey" = "8:_5CE4882A7F8341EA862C5C1D965F1D20"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5E4A6C7A68AF41E0B5191E40BE105D67"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -237,31 +231,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_607F7AB10AEF41DFA706A0BCAFCFF551"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6119BA8AD0324B8FBE6BEE903AD97565"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_62388D24FF974B639907CBBD6FE2809F"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_6252B991126549448F60D1D6FBC7FEE4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_643E69221A804323902098EC6AD7B01B"
+        "MsmKey" = "8:_6444B3F0652E48719081D10FDE1C22E4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -285,20 +261,50 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_6A8A7F54652A4139AD667356DED28798"
+        "MsmKey" = "8:_67C6F886341044A392A46A0FA2175AB6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_6FCA02E94F2D44F8A61F5E39E1E15E39"
+        "MsmKey" = "8:_696421E396E342F6942AEE41C07E2321"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_74A3EB6226E84594BEF01DDF4CE345F6"
-        "OwnerKey" = "8:_CA2BB1DA95FD447E80A2ED45325DA0CE"
+        "MsmKey" = "8:_6BCE638360E845838768633791C6FABD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6FCE7FB535414525B55C38DB39E38B3E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6FF3A3DEE0F24D97BAAF52ED445DB029"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_70DE209FD23A412C8CCAFC1EF6487643"
+        "OwnerKey" = "8:_A5DC8534255C4A09AB2B24412D8EFD4E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_766B7E49AA764C638A8343FF141C70B9"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_77643A861651464F989C7BAFAA00BAE6"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -309,25 +315,43 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_7BD842E2EBA0453880E46FD22601478E"
+        "MsmKey" = "8:_7D308279611D479E98402C20732149F6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_7BE222E0DCAF467D8A98B480FF187E1A"
+        "MsmKey" = "8:_7D74B132EA714E9E8E4FBC2C384420D8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_7F26C9710A8E4F1E8491B84A67D92FD3"
+        "MsmKey" = "8:_7E37DBB5FF49404AA71C5ECCB60ACF1C"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7E8A63C40CD644BAA2A13C1D41DAD2D1"
+        "OwnerKey" = "8:_70DE209FD23A412C8CCAFC1EF6487643"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7EE0C18491EB42C0B283787A90478C1D"
+        "OwnerKey" = "8:_A5DC8534255C4A09AB2B24412D8EFD4E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_80F0500A6F9D4C65BD94462A9FA71546"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_81C876CCBE084BAFBC47BF6EF6230085"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -339,14 +363,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_8AA788CD82E74C36A504D2E9783C804F"
+        "MsmKey" = "8:_8402C76F9F224D319E924902416E5652"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8B0D6508E7E846DF83E9FD747CE1889D"
-        "OwnerKey" = "8:_A5DC8534255C4A09AB2B24412D8EFD4E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -357,7 +375,49 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_9529CFFA36324637B6658A33C86E8C0E"
+        "MsmKey" = "8:_920628961E5242609A2A9EF1F5A4A95B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_93D5A397DD32439E8D02C30DD772266F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_95ACE30263DE40FABED438EA3AB8FD26"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9618339D8A9A4512B272D6896AEFD671"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_96D874A726394DBF84C32C9336711D32"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_97D9C9B4A6A14B5F8EEA51A9A532E25C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_98424AF3E901418CBFE1345B2C4637FA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_999452B9763342AF9AC9128FD232F8C5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -369,19 +429,31 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_9AF907B7D9794C0288480EA993C26D83"
+        "MsmKey" = "8:_9AFA4741DA954067B7577F6CEA80210B"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9B223277BD3BA9D95529BD04EA1DC542"
+        "OwnerKey" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9B223277BD3BA9D95529BD04EA1DC542"
+        "OwnerKey" = "8:_A5DC8534255C4A09AB2B24412D8EFD4E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9B223277BD3BA9D95529BD04EA1DC542"
+        "OwnerKey" = "8:_CA2BB1DA95FD447E80A2ED45325DA0CE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_9B4D95A76F1048BA8EFC046B167AA01B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9F96FD34756C41FAAD8D47528808C029"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -393,25 +465,43 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A1CBBCB172274A0EA1B5F8218A679479"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A2A745A0EE981F5D640F97E952599E75"
         "OwnerKey" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_A48C1713EBC54890A1271FA6A382F462"
-        "OwnerKey" = "8:_CA2BB1DA95FD447E80A2ED45325DA0CE"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_A499A27F29A4497898678103C2DC03F5"
+        "MsmKey" = "8:_A5DC8534255C4A09AB2B24412D8EFD4E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_A5DC8534255C4A09AB2B24412D8EFD4E"
+        "MsmKey" = "8:_A9B2E5A22FEF5786B8AA09985945A715"
+        "OwnerKey" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A9B2E5A22FEF5786B8AA09985945A715"
+        "OwnerKey" = "8:_A5DC8534255C4A09AB2B24412D8EFD4E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A9B2E5A22FEF5786B8AA09985945A715"
+        "OwnerKey" = "8:_CA2BB1DA95FD447E80A2ED45325DA0CE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_ACE70F902D154084BBA771A1DA15295E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -429,20 +519,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_AFA89DF86A1549909E6C3C450D6093AD"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_B05C513C41881F8938F14DE70F2B308F"
         "OwnerKey" = "8:_CA2BB1DA95FD447E80A2ED45325DA0CE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_B3191D1392DF4E0AAD76C632FDCFA4F0"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_B0C760F465A744DE9F9144D451ECD3EA"
+        "OwnerKey" = "8:_CA2BB1DA95FD447E80A2ED45325DA0CE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -459,31 +543,31 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_B76AFF9D3B004941AF76C79BDC70696A"
+        "MsmKey" = "8:_B6190573F12B4E72A6ADD32F52F52AB6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_BDF14E2654E84FBA82E1C4044AC4767E"
-        "OwnerKey" = "8:_8B0D6508E7E846DF83E9FD747CE1889D"
+        "MsmKey" = "8:_BA2B239BB3854894AABC1791AA17F5C5"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_BFAAACCC673A47A988C56C91518849AE"
+        "MsmKey" = "8:_BEB2FE6973B04F01BA4A45047EF9ECC8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BF1EBAFF64034240A3B3D87A905F3FE5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_C037D44F2E89413C8E9D3192A10E52FD"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C0C990CAA4F243589672E0FC5EE1028F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -501,19 +585,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_C6407E4BBA21496EA5C253C89FB0A6B6"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C9B5452AF0714499A5B2D7664D9FDB11"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -525,13 +597,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_CD5A477D597848D197C6939540A98414"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_CE1A67A98A2D4663A90C4B27370B4E15"
+        "MsmKey" = "8:_CFD92A5CB7E647D29878DCAD390985AA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -539,30 +605,6 @@
         {
         "MsmKey" = "8:_D0CC4AEC8DBD4504AEE34366AAE14B85"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D2794BE8FB5DCA9AB18B6A2725DD48BB"
-        "OwnerKey" = "8:_A5DC8534255C4A09AB2B24412D8EFD4E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D2794BE8FB5DCA9AB18B6A2725DD48BB"
-        "OwnerKey" = "8:_CA2BB1DA95FD447E80A2ED45325DA0CE"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D2794BE8FB5DCA9AB18B6A2725DD48BB"
-        "OwnerKey" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D4BA77D27DA34A2BBE64D27325486033"
-        "OwnerKey" = "8:_F51F183C83B6471895196CD44D7CF540"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -579,37 +621,25 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D614ED4213ED49F29556EFDAE49AB8BD"
+        "MsmKey" = "8:_DF403DB3C7D84C7285F532DE0A7D24F0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_DB18FDDFC64E4B6DA08E18D756E44284"
+        "MsmKey" = "8:_E184E68CB9174E1DA23F3DBEEBCAD885"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_DB3FA3BC31774863A30AA3BF0370F112"
+        "MsmKey" = "8:_E258BE6C55B2406F9D764CC4A7C14452"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_DCD7A613E4AC4A42A18EA61F62F2CFFC"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DEC6C69E154249B6867C839A9CB01189"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E39936A6443447208CB557CFBCFACEDC"
+        "MsmKey" = "8:_E2D923779C7A47C0AB2394B7170CCD10"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -621,44 +651,32 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_E43F88C2C85B4726804E540FF60C2494"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E4F809B23BED4CE6A26820FE08D9317B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_E98386BCFDA742149B91D3C1B2273C9A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_EB634F23D8E84230A7F32AFF7E6439F8"
+        "MsmKey" = "8:_ECF950FA4F19482EBCE7F7027A81DABD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_ED87FC91169F4FE4D86E9CC24F21F63E"
-        "OwnerKey" = "8:_A5DC8534255C4A09AB2B24412D8EFD4E"
+        "MsmKey" = "8:_EE869EC278ED4433A590CDE76099D141"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_ED87FC91169F4FE4D86E9CC24F21F63E"
-        "OwnerKey" = "8:_CA2BB1DA95FD447E80A2ED45325DA0CE"
+        "MsmKey" = "8:_EF0D8AEAB73948C280703766BECA32A0"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_ED87FC91169F4FE4D86E9CC24F21F63E"
-        "OwnerKey" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
+        "MsmKey" = "8:_EF444BC387A34B1B89179EC41F3E929D"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -669,19 +687,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_F51F183C83B6471895196CD44D7CF540"
-        "OwnerKey" = "8:_A5DC8534255C4A09AB2B24412D8EFD4E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F67CA4B610A74C8BB432EC80259B2A72"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FCC6DEA924E54386890BAFCB2AC78525"
+        "MsmKey" = "8:_FD7E8C448B9446E489DEA535BDBA9FEE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -693,7 +699,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug\\OpenDCL.msi"
+        "OutputFilename" = "8:Debug\\OpenDCL.Studio.ENU.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -725,7 +731,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\OpenDCL.msi"
+        "OutputFilename" = "8:Release\\OpenDCL.Studio.ENU.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -888,10 +894,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0CB878CBD8054AA9A834200E89AD7AF1"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0E2727147EC24DD8B484CD881048C166"
             {
-            "SourcePath" = "8:Content\\Examples\\Child1.sld"
-            "TargetName" = "8:Child1.sld"
+            "SourcePath" = "8:Content\\Examples\\DistSample2.lsp"
+            "TargetName" = "8:DistSample2.lsp"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -908,10 +914,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0E78E107610042CBBBB26BC3A0AF343B"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0E36E8ADE53B40BB8F7DCF0AE7FCA58D"
             {
-            "SourcePath" = "8:Content\\Examples\\ListBoxCopyPaste.odc"
-            "TargetName" = "8:ListBoxCopyPaste.odc"
+            "SourcePath" = "8:Content\\Examples\\Modeless.odcl"
+            "TargetName" = "8:Modeless.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -928,10 +934,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1038BE835FE046A0A4FE918C211BFE6D"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0E99ACBBA3B34A999E3639FF04F8692A"
             {
-            "SourcePath" = "8:Content\\Examples\\ListBox.LSP"
-            "TargetName" = "8:ListBox.LSP"
+            "SourcePath" = "8:Content\\Examples\\HTML.odcl"
+            "TargetName" = "8:HTML.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -948,30 +954,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_10CF786691334342A82E1843BD3B3E02"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_134A51FB41C14D428AA893B6E0DE28E9"
             {
-            "SourcePath" = "8:Content\\Examples\\DwgList.lsp"
-            "TargetName" = "8:DwgList.lsp"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_11AD60686BFD4ECBB4C7120C809AC2FC"
-            {
-            "SourcePath" = "8:Content\\Examples\\DistSampleReadMe.txt"
-            "TargetName" = "8:DistSampleReadMe.txt"
+            "SourcePath" = "8:Content\\Examples\\Animation.odcl"
+            "TargetName" = "8:Animation.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1008,7 +994,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_19E0688FD8224D01A9F06BA4FDA38204"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1D2D468A5FF44BDFB866D37B3FC2CB77"
             {
             "SourcePath" = "8:Content\\Examples\\Child2.sld"
             "TargetName" = "8:Child2.sld"
@@ -1028,10 +1014,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1B1D3FBA58284CA5B199C18A8BA555AB"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1E7DBC6F6B4E40898B80ECC4A574FE1E"
             {
-            "SourcePath" = "8:Content\\Examples\\Selections.odc"
-            "TargetName" = "8:Selections.odc"
+            "SourcePath" = "8:Content\\Examples\\MessageBox.lsp"
+            "TargetName" = "8:MessageBox.lsp"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1048,10 +1034,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1BBBDCFF2ABC468FB951D00B0BF82274"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_25FD2871AA8E45608DAF2EB6AF02A13A"
             {
-            "SourcePath" = "8:Content\\Examples\\Misc.lsp"
-            "TargetName" = "8:Misc.lsp"
+            "SourcePath" = "8:Content\\Examples\\MessageBox.odcl"
+            "TargetName" = "8:MessageBox.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1068,130 +1054,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1BD680BA0DD54983B8E7CAEBB2BC6482"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_29CD14D0E48E4CD7A2B60023A1FDDD90"
             {
-            "SourcePath" = "8:Content\\Examples\\ViewDWG.LSP"
-            "TargetName" = "8:ViewDWG.LSP"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1BE6B956422B4E05B02A4F4789C59FF8"
-            {
-            "SourcePath" = "8:Content\\Examples\\_MasterDemo.odc"
-            "TargetName" = "8:_MasterDemo.odc"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1E221F713B80480F956F685D38193C90"
-            {
-            "SourcePath" = "8:Content\\Examples\\Animation.lsp"
-            "TargetName" = "8:Animation.lsp"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_223791038E9D458690C62797F0A6DEB8"
-            {
-            "SourcePath" = "8:Content\\Examples\\Splitters.odc"
-            "TargetName" = "8:Splitters.odc"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_226FF02740794AC4BFFDA8983C5778DC"
-            {
-            "SourcePath" = "8:Content\\Examples\\slide library.slb"
-            "TargetName" = "8:slide library.slb"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_242AB722E18A425FAF07F97D325BC081"
-            {
-            "SourcePath" = "8:Content\\Examples\\Misc.odc"
-            "TargetName" = "8:Misc.odc"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_281C46AEBC0E45D7A7C6B5C442347310"
-            {
-            "SourcePath" = "8:Content\\Examples\\DragNDrop.odc"
-            "TargetName" = "8:DragNDrop.odc"
+            "SourcePath" = "8:Content\\Examples\\Config.odcl"
+            "TargetName" = "8:Config.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1228,10 +1094,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2B118CCF5E904D9DADBED7C595DBE5BC"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2C5FCCC7EA214A9DBEB455D1342FA932"
             {
-            "SourcePath" = "8:Content\\Examples\\TreeView.odc"
-            "TargetName" = "8:TreeView.odc"
+            "SourcePath" = "8:Content\\Examples\\ListBoxCopyPaste.odcl"
+            "TargetName" = "8:ListBoxCopyPaste.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1248,10 +1114,50 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2C08284BFEFE471A9B6AF15A28003F6D"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2CF71824AB6A48DE815C2684C24D6395"
             {
-            "SourcePath" = "8:Content\\Examples\\ListView.lsp"
-            "TargetName" = "8:ListView.lsp"
+            "SourcePath" = "8:Content\\Examples\\TreeView.LSP"
+            "TargetName" = "8:TreeView.LSP"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2DC35D96F44043CD807BF844D44978CC"
+            {
+            "SourcePath" = "8:Content\\Examples\\slide3.sld"
+            "TargetName" = "8:slide3.sld"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2DE2B573F7084FF78C19390380140E4C"
+            {
+            "SourcePath" = "8:Content\\Examples\\ViewDWG.odcl"
+            "TargetName" = "8:ViewDWG.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1288,26 +1194,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_324A4BEDB4D44108A7DCEE7DE9DEEDFA"
-            {
-            "SourcePath" = "8:Content\\Examples\\DistSample.prv"
-            "TargetName" = "8:DistSample.prv"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_345DDB6FCD2F4CA9B1E9CA5E38D6C007"
             {
             "SourcePath" = "8:Content\\AllCtrls.mth"
@@ -1328,12 +1214,52 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_361C9607C4F742E28F0C64FC720ABDAE"
+            {
+            "SourcePath" = "8:Content\\Examples\\Animation.lsp"
+            "TargetName" = "8:Animation.lsp"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_366F1B95EC9945CE9B39CDABC9439D1F"
             {
             "SourcePath" = "8:Content\\AxObjects.mth"
             "TargetName" = "8:AxObjects.mth"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3A093B21728B43D6B8A74EAD3ED94475"
+            {
+            "SourcePath" = "8:Content\\Examples\\Hatches.lsp"
+            "TargetName" = "8:Hatches.lsp"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1408,50 +1334,10 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4732B9DC83E640B0AB63FAC5DD603F31"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_41B0ACD32A6445DDACF7FEC39EEBBCC1"
             {
-            "SourcePath" = "8:Content\\Examples\\TreeView.LSP"
-            "TargetName" = "8:TreeView.LSP"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_48344A7B8E864FC6B655243AA6949A00"
-            {
-            "SourcePath" = "8:Content\\Examples\\Selections.lsp"
-            "TargetName" = "8:Selections.lsp"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_486904923BBC42DE80DE554E04EF1CB3"
-            {
-            "SourcePath" = "8:Content\\Examples\\Modeless.odc"
-            "TargetName" = "8:Modeless.odc"
+            "SourcePath" = "8:Content\\Examples\\DistSample.prv"
+            "TargetName" = "8:DistSample.prv"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1488,10 +1374,50 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5BF9BE0A2FDE4F29A9B7CB4E6377A67F"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4DC02821279847908FDFF710927E8414"
             {
-            "SourcePath" = "8:Content\\Examples\\_MasterDemo.LSP"
-            "TargetName" = "8:_MasterDemo.LSP"
+            "SourcePath" = "8:Content\\Examples\\Modeless.LSP"
+            "TargetName" = "8:Modeless.LSP"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_58C3CB39EA5D4B19825E4E0505B45897"
+            {
+            "SourcePath" = "8:Content\\Examples\\Methods.LSP"
+            "TargetName" = "8:Methods.LSP"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5C8D4301E2174D2FBD065F0503CBA099"
+            {
+            "SourcePath" = "8:Content\\Examples\\Selections.odcl"
+            "TargetName" = "8:Selections.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1528,10 +1454,30 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5E8E7A7ACF624E7E9A341FF443342A91"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5CE4882A7F8341EA862C5C1D965F1D20"
             {
-            "SourcePath" = "8:Content\\Examples\\Animation.odc"
-            "TargetName" = "8:Animation.odc"
+            "SourcePath" = "8:Content\\Examples\\Selections.lsp"
+            "TargetName" = "8:Selections.lsp"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5E4A6C7A68AF41E0B5191E40BE105D67"
+            {
+            "SourcePath" = "8:Content\\Examples\\_MasterDemo.odcl"
+            "TargetName" = "8:_MasterDemo.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1568,66 +1514,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_607F7AB10AEF41DFA706A0BCAFCFF551"
-            {
-            "SourcePath" = "8:Content\\Examples\\FileCopy.avi"
-            "TargetName" = "8:FileCopy.avi"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6119BA8AD0324B8FBE6BEE903AD97565"
-            {
-            "SourcePath" = "8:Content\\Examples\\ToolTip.LSP"
-            "TargetName" = "8:ToolTip.LSP"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_62388D24FF974B639907CBBD6FE2809F"
-            {
-            "SourcePath" = "8:Content\\Examples\\Methods.odc"
-            "TargetName" = "8:Methods.odc"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6252B991126549448F60D1D6FBC7FEE4"
             {
             "SourcePath" = "8:Content\\AxCtrls.mth"
@@ -1648,10 +1534,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_643E69221A804323902098EC6AD7B01B"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6444B3F0652E48719081D10FDE1C22E4"
             {
-            "SourcePath" = "8:Content\\Examples\\DistSample.lsp"
-            "TargetName" = "8:DistSample.lsp"
+            "SourcePath" = "8:Content\\Examples\\HTML.lsp"
+            "TargetName" = "8:HTML.lsp"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1708,10 +1594,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6A8A7F54652A4139AD667356DED28798"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_67C6F886341044A392A46A0FA2175AB6"
             {
-            "SourcePath" = "8:Content\\Examples\\DragNDrop.lsp"
-            "TargetName" = "8:DragNDrop.lsp"
+            "SourcePath" = "8:Content\\Examples\\ToolTip.LSP"
+            "TargetName" = "8:ToolTip.LSP"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1728,10 +1614,110 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6FCA02E94F2D44F8A61F5E39E1E15E39"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_696421E396E342F6942AEE41C07E2321"
             {
-            "SourcePath" = "8:Content\\Examples\\slide1.sld"
-            "TargetName" = "8:slide1.sld"
+            "SourcePath" = "8:Content\\Examples\\ListBoxCopyPaste.lsp"
+            "TargetName" = "8:ListBoxCopyPaste.lsp"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6BCE638360E845838768633791C6FABD"
+            {
+            "SourcePath" = "8:Content\\Examples\\grid.lsp"
+            "TargetName" = "8:grid.lsp"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6FCE7FB535414525B55C38DB39E38B3E"
+            {
+            "SourcePath" = "8:Content\\Examples\\Misc.odcl"
+            "TargetName" = "8:Misc.odcl"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6FF3A3DEE0F24D97BAAF52ED445DB029"
+            {
+            "SourcePath" = "8:Content\\Examples\\ViewDWG.LSP"
+            "TargetName" = "8:ViewDWG.LSP"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_766B7E49AA764C638A8343FF141C70B9"
+            {
+            "SourcePath" = "8:Content\\Examples\\Grid.odcl"
+            "TargetName" = "8:Grid.odcl"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_77643A861651464F989C7BAFAA00BAE6"
+            {
+            "SourcePath" = "8:Content\\Examples\\DragNDrop.lsp"
+            "TargetName" = "8:DragNDrop.lsp"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1768,10 +1754,10 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7BD842E2EBA0453880E46FD22601478E"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7D308279611D479E98402C20732149F6"
             {
-            "SourcePath" = "8:Content\\Examples\\Hatches.odc"
-            "TargetName" = "8:Hatches.odc"
+            "SourcePath" = "8:Content\\Examples\\DistSample1.lsp"
+            "TargetName" = "8:DistSample1.lsp"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1788,10 +1774,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7BE222E0DCAF467D8A98B480FF187E1A"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7D74B132EA714E9E8E4FBC2C384420D8"
             {
-            "SourcePath" = "8:Content\\Examples\\clock.avi"
-            "TargetName" = "8:clock.avi"
+            "SourcePath" = "8:Content\\Examples\\Splitters.lsp"
+            "TargetName" = "8:Splitters.lsp"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1808,10 +1794,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7F26C9710A8E4F1E8491B84A67D92FD3"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7E37DBB5FF49404AA71C5ECCB60ACF1C"
             {
-            "SourcePath" = "8:Content\\Examples\\slide3.sld"
-            "TargetName" = "8:slide3.sld"
+            "SourcePath" = "8:Content\\Examples\\slide1.sld"
+            "TargetName" = "8:slide1.sld"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1848,6 +1834,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_81C876CCBE084BAFBC47BF6EF6230085"
+            {
+            "SourcePath" = "8:Content\\Examples\\Child3.sld"
+            "TargetName" = "8:Child3.sld"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_81EFA593D2AE4C1BB17F026B2065836F"
             {
             "SourcePath" = "8:Content\\GNU-GPL.txt"
@@ -1868,10 +1874,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8AA788CD82E74C36A504D2E9783C804F"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8402C76F9F224D319E924902416E5652"
             {
-            "SourcePath" = "8:Content\\Examples\\ToolTip.odc"
-            "TargetName" = "8:ToolTip.odc"
+            "SourcePath" = "8:Content\\Examples\\slide library.slb"
+            "TargetName" = "8:slide library.slb"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1908,10 +1914,150 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9529CFFA36324637B6658A33C86E8C0E"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_920628961E5242609A2A9EF1F5A4A95B"
             {
-            "SourcePath" = "8:Content\\Examples\\Config.odc"
-            "TargetName" = "8:Config.odc"
+            "SourcePath" = "8:Content\\Examples\\ToolTip.odcl"
+            "TargetName" = "8:ToolTip.odcl"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_93D5A397DD32439E8D02C30DD772266F"
+            {
+            "SourcePath" = "8:Content\\Examples\\Child1.sld"
+            "TargetName" = "8:Child1.sld"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_95ACE30263DE40FABED438EA3AB8FD26"
+            {
+            "SourcePath" = "8:Content\\Examples\\FileCopy.avi"
+            "TargetName" = "8:FileCopy.avi"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9618339D8A9A4512B272D6896AEFD671"
+            {
+            "SourcePath" = "8:Content\\Examples\\DwgList.odcl"
+            "TargetName" = "8:DwgList.odcl"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_96D874A726394DBF84C32C9336711D32"
+            {
+            "SourcePath" = "8:Content\\Examples\\DwgList.lsp"
+            "TargetName" = "8:DwgList.lsp"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_97D9C9B4A6A14B5F8EEA51A9A532E25C"
+            {
+            "SourcePath" = "8:Content\\Examples\\Splitters.odcl"
+            "TargetName" = "8:Splitters.odcl"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_98424AF3E901418CBFE1345B2C4637FA"
+            {
+            "SourcePath" = "8:Content\\Examples\\DistSample.odcl"
+            "TargetName" = "8:DistSample.odcl"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_999452B9763342AF9AC9128FD232F8C5"
+            {
+            "SourcePath" = "8:Content\\Examples\\clock.avi"
+            "TargetName" = "8:clock.avi"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -1948,7 +2094,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9AF907B7D9794C0288480EA993C26D83"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9AFA4741DA954067B7577F6CEA80210B"
             {
             "SourcePath" = "8:Content\\Examples\\Config.LSP"
             "TargetName" = "8:Config.LSP"
@@ -1968,12 +2114,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9B4D95A76F1048BA8EFC046B167AA01B"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9B223277BD3BA9D95529BD04EA1DC542"
             {
-            "SourcePath" = "8:..\\ARX\\Runtime\\ENU\\Content\\GNU-GPL.txt"
-            "TargetName" = "8:GNU-GPL.txt"
+            "SourcePath" = "8:VERSION.dll"
+            "TargetName" = "8:VERSION.dll"
             "Tag" = "8:"
-            "Folder" = "8:_DCE46B70EC97498EA7A2485E6FC33849"
+            "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1984,16 +2130,16 @@
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9F96FD34756C41FAAD8D47528808C029"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9B4D95A76F1048BA8EFC046B167AA01B"
             {
-            "SourcePath" = "8:Content\\Examples\\Modeless.LSP"
-            "TargetName" = "8:Modeless.LSP"
+            "SourcePath" = "8:..\\ARX\\Runtime\\ENU\\Content\\GNU-GPL.txt"
+            "TargetName" = "8:GNU-GPL.txt"
             "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Folder" = "8:_DCE46B70EC97498EA7A2485E6FC33849"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2028,6 +2174,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A1CBBCB172274A0EA1B5F8218A679479"
+            {
+            "SourcePath" = "8:Content\\Examples\\DistSample.vlx"
+            "TargetName" = "8:DistSample.vlx"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A2A745A0EE981F5D640F97E952599E75"
             {
             "SourcePath" = "8:comdlg32.dll"
@@ -2048,10 +2214,30 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A499A27F29A4497898678103C2DC03F5"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A9B2E5A22FEF5786B8AA09985945A715"
             {
-            "SourcePath" = "8:Content\\Examples\\EventHandling.odc"
-            "TargetName" = "8:EventHandling.odc"
+            "SourcePath" = "8:RPCRT4.dll"
+            "TargetName" = "8:RPCRT4.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ACE70F902D154084BBA771A1DA15295E"
+            {
+            "SourcePath" = "8:Content\\Examples\\_MasterDemo.LSP"
+            "TargetName" = "8:_MasterDemo.LSP"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -2108,26 +2294,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AFA89DF86A1549909E6C3C450D6093AD"
-            {
-            "SourcePath" = "8:Content\\Examples\\DistSample.odce"
-            "TargetName" = "8:DistSample.odce"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B05C513C41881F8938F14DE70F2B308F"
             {
             "SourcePath" = "8:AcGe16.dll"
@@ -2146,26 +2312,6 @@
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B3191D1392DF4E0AAD76C632FDCFA4F0"
-            {
-            "SourcePath" = "8:Content\\Examples\\HTML.odc"
-            "TargetName" = "8:HTML.odc"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B32AA6EF35704F71ABFADD707DF48EB9"
@@ -2208,10 +2354,10 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B76AFF9D3B004941AF76C79BDC70696A"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B6190573F12B4E72A6ADD32F52F52AB6"
             {
-            "SourcePath" = "8:Content\\Examples\\DistSample.odc"
-            "TargetName" = "8:DistSample.odc"
+            "SourcePath" = "8:Content\\Examples\\EventHandling.LSP"
+            "TargetName" = "8:EventHandling.LSP"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -2228,10 +2374,50 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BFAAACCC673A47A988C56C91518849AE"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BA2B239BB3854894AABC1791AA17F5C5"
             {
-            "SourcePath" = "8:Content\\Examples\\MessageBox.odc"
-            "TargetName" = "8:MessageBox.odc"
+            "SourcePath" = "8:Content\\Examples\\ListView.lsp"
+            "TargetName" = "8:ListView.lsp"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BEB2FE6973B04F01BA4A45047EF9ECC8"
+            {
+            "SourcePath" = "8:Content\\Examples\\OpenDCL_ARXLoader.LSP"
+            "TargetName" = "8:OpenDCL_ARXLoader.LSP"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BF1EBAFF64034240A3B3D87A905F3FE5"
+            {
+            "SourcePath" = "8:Content\\Examples\\ListView.odcl"
+            "TargetName" = "8:ListView.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -2254,26 +2440,6 @@
             "TargetName" = "8:ListBox.mth"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C0C990CAA4F243589672E0FC5EE1028F"
-            {
-            "SourcePath" = "8:Content\\Examples\\DwgList.odc"
-            "TargetName" = "8:DwgList.odc"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2328,10 +2494,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C6407E4BBA21496EA5C253C89FB0A6B6"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CFD92A5CB7E647D29878DCAD390985AA"
             {
-            "SourcePath" = "8:Content\\Examples\\Child3.sld"
-            "TargetName" = "8:Child3.sld"
+            "SourcePath" = "8:Content\\Examples\\DragNDrop.odcl"
+            "TargetName" = "8:DragNDrop.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -2346,86 +2512,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C9B5452AF0714499A5B2D7664D9FDB11"
-            {
-            "SourcePath" = "8:Content\\Examples\\OpenDCL_ARXLoader.LSP"
-            "TargetName" = "8:OpenDCL_ARXLoader.LSP"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CD5A477D597848D197C6939540A98414"
-            {
-            "SourcePath" = "8:Content\\Examples\\grid.lsp"
-            "TargetName" = "8:grid.lsp"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CE1A67A98A2D4663A90C4B27370B4E15"
-            {
-            "SourcePath" = "8:Content\\Examples\\Splitters.lsp"
-            "TargetName" = "8:Splitters.lsp"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D2794BE8FB5DCA9AB18B6A2725DD48BB"
-            {
-            "SourcePath" = "8:VERSION.dll"
-            "TargetName" = "8:VERSION.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D4BB4986B886FA9E622282D899BCAB5D"
@@ -2468,10 +2554,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D614ED4213ED49F29556EFDAE49AB8BD"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DF403DB3C7D84C7285F532DE0A7D24F0"
             {
-            "SourcePath" = "8:Content\\Examples\\DistSample.vlx"
-            "TargetName" = "8:DistSample.vlx"
+            "SourcePath" = "8:Content\\Examples\\DistSample.odcl.lsp"
+            "TargetName" = "8:DistSample.odcl.lsp"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -2488,10 +2574,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DB18FDDFC64E4B6DA08E18D756E44284"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E184E68CB9174E1DA23F3DBEEBCAD885"
             {
-            "SourcePath" = "8:Content\\Examples\\ViewDWG.odc"
-            "TargetName" = "8:ViewDWG.odc"
+            "SourcePath" = "8:Content\\Examples\\ListBox.LSP"
+            "TargetName" = "8:ListBox.LSP"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -2508,10 +2594,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DB3FA3BC31774863A30AA3BF0370F112"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E258BE6C55B2406F9D764CC4A7C14452"
             {
-            "SourcePath" = "8:Content\\Examples\\ListView.odc"
-            "TargetName" = "8:ListView.odc"
+            "SourcePath" = "8:Content\\Examples\\EventHandling.odcl"
+            "TargetName" = "8:EventHandling.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -2528,50 +2614,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DCD7A613E4AC4A42A18EA61F62F2CFFC"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E2D923779C7A47C0AB2394B7170CCD10"
             {
-            "SourcePath" = "8:Content\\Examples\\HTML.lsp"
-            "TargetName" = "8:HTML.lsp"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DEC6C69E154249B6867C839A9CB01189"
-            {
-            "SourcePath" = "8:Content\\Examples\\MessageBox.lsp"
-            "TargetName" = "8:MessageBox.lsp"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E39936A6443447208CB557CFBCFACEDC"
-            {
-            "SourcePath" = "8:Content\\Examples\\Methods.LSP"
-            "TargetName" = "8:Methods.LSP"
+            "SourcePath" = "8:Content\\Examples\\ListBox.odcl"
+            "TargetName" = "8:ListBox.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -2608,46 +2654,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E43F88C2C85B4726804E540FF60C2494"
-            {
-            "SourcePath" = "8:Content\\Examples\\ListBoxCopyPaste.lsp"
-            "TargetName" = "8:ListBoxCopyPaste.lsp"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E4F809B23BED4CE6A26820FE08D9317B"
-            {
-            "SourcePath" = "8:Content\\Examples\\EventHandling.LSP"
-            "TargetName" = "8:EventHandling.LSP"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E98386BCFDA742149B91D3C1B2273C9A"
             {
             "SourcePath" = "8:Content\\Forms.mth"
@@ -2668,10 +2674,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EB634F23D8E84230A7F32AFF7E6439F8"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ECF950FA4F19482EBCE7F7027A81DABD"
             {
-            "SourcePath" = "8:Content\\Examples\\Hatches.lsp"
-            "TargetName" = "8:Hatches.lsp"
+            "SourcePath" = "8:Content\\Examples\\Misc.lsp"
+            "TargetName" = "8:Misc.lsp"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -2688,12 +2694,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ED87FC91169F4FE4D86E9CC24F21F63E"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EE869EC278ED4433A590CDE76099D141"
             {
-            "SourcePath" = "8:RPCRT4.dll"
-            "TargetName" = "8:RPCRT4.dll"
+            "SourcePath" = "8:Content\\Examples\\TreeView.odcl"
+            "TargetName" = "8:TreeView.odcl"
             "Tag" = "8:"
-            "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2704,8 +2710,48 @@
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EF0D8AEAB73948C280703766BECA32A0"
+            {
+            "SourcePath" = "8:Content\\Examples\\Hatches.odcl"
+            "TargetName" = "8:Hatches.odcl"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EF444BC387A34B1B89179EC41F3E929D"
+            {
+            "SourcePath" = "8:Content\\Examples\\Methods.odcl"
+            "TargetName" = "8:Methods.odcl"
+            "Tag" = "8:"
+            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F449FEF162374EAE81BE6A2521228FDF"
@@ -2728,30 +2774,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F67CA4B610A74C8BB432EC80259B2A72"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FD7E8C448B9446E489DEA535BDBA9FEE"
             {
-            "SourcePath" = "8:Content\\Examples\\ListBox.odc"
-            "TargetName" = "8:ListBox.odc"
-            "Tag" = "8:"
-            "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FCC6DEA924E54386890BAFCB2AC78525"
-            {
-            "SourcePath" = "8:Content\\Examples\\Grid.odc"
-            "TargetName" = "8:Grid.odc"
+            "SourcePath" = "8:Content\\Examples\\DistSampleReadMe.txt"
+            "TargetName" = "8:DistSampleReadMe.txt"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
             "Condition" = "8:"
@@ -2775,10 +2801,10 @@
             {
             "Name" = "8:ObjectDCL.Project"
             "Description" = "8:ObjectDCL Project"
-            "Extensions" = "8:odc;odce"
+            "Extensions" = "8:odcl;odcle"
             "MIME" = "8:"
-            "Icon" = "8:"
-            "IconIndex" = "3:0"
+            "Icon" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
+            "IconIndex" = "3:30"
                 "Command"
                 {
                 "Command" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
@@ -2891,7 +2917,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
         "ProductCode" = "8:{5CDE52C9-41F6-486F-BA3C-D4B8CBE6FA81}"
-        "PackageCode" = "8:{89B6F5D7-0607-4F27-B459-7C15112CA31C}"
+        "PackageCode" = "8:{C6D5CB63-8759-49A2-8461-0F76D3951FCD}"
         "UpgradeCode" = "8:{F8AB94DC-2F57-4C29-8842-E2BB5F898E6C}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
@@ -3476,7 +3502,21 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_74A3EB6226E84594BEF01DDF4CE345F6"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_02FD18A3A8C44709A4F5CAD47D036389"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:policy_8_0_microsoft_vc80_mfc_x86.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_0BEB11C7F04F46F290FBACC2C4F14E6B"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -3501,7 +3541,35 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_8B0D6508E7E846DF83E9FD747CE1889D"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_70DE209FD23A412C8CCAFC1EF6487643"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:Microsoft_VC80_CRT_x86.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_7E8A63C40CD644BAA2A13C1D41DAD2D1"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:policy_8_0_microsoft_vc80_crt_x86.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_7EE0C18491EB42C0B283787A90478C1D"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -3515,7 +3583,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_A48C1713EBC54890A1271FA6A382F462"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_B0C760F465A744DE9F9144D451ECD3EA"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -3540,54 +3608,12 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_BDF14E2654E84FBA82E1C4044AC4767E"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:policy_8_0_microsoft_vc80_mfc_x86.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_D4BA77D27DA34A2BBE64D27325486033"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:policy_8_0_microsoft_vc80_crt_x86.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_F51F183C83B6471895196CD44D7CF540"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:Microsoft_VC80_CRT_x86.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
         }
         "ProjectOutput"
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_66662DC8C2254054AFF22552267B1DDA"
             {
-            "SourcePath" = "8:..\\ARX\\RxInstall\\RxInstall.17\\Debug\\RxInstall.17.dll"
+            "SourcePath" = "8:..\\ARX\\RxInstall\\RxInstall.17\\Release\\RxInstall.17.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_DCE46B70EC97498EA7A2485E6FC33849"
@@ -3615,7 +3641,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A5DC8534255C4A09AB2B24412D8EFD4E"
             {
-            "SourcePath" = "8:..\\ARX\\ARX.17\\Debug\\OpenDCL.17.arx"
+            "SourcePath" = "8:..\\ARX\\ARX.17\\Release\\OpenDCL.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_DCE46B70EC97498EA7A2485E6FC33849"
@@ -3643,7 +3669,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C8B5EB67C59548EF9FA8D898EBD90806"
             {
-            "SourcePath" = "8:..\\Editor\\Debug\\OpenDCL.exe"
+            "SourcePath" = "8:..\\Editor\\Release\\OpenDCL.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
@@ -3671,7 +3697,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CA2BB1DA95FD447E80A2ED45325DA0CE"
             {
-            "SourcePath" = "8:..\\ARX\\ARX.16\\Debug\\OpenDCL.16.arx"
+            "SourcePath" = "8:..\\ARX\\ARX.16\\Release\\OpenDCL.16.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_DCE46B70EC97498EA7A2485E6FC33849"
@@ -3699,7 +3725,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D0CC4AEC8DBD4504AEE34366AAE14B85"
             {
-            "SourcePath" = "8:..\\arx\\rxinstall\\rxinstall.16\\debug\\RxInstall.16.dll"
+            "SourcePath" = "8:..\\ARX\\RxInstall\\RxInstall.16\\Release\\RxInstall.16.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_DCE46B70EC97498EA7A2485E6FC33849"

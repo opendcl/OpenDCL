@@ -714,7 +714,7 @@ public:
 			if( !mpValue )
 				mpValue = new AxInterfaceDescriptor;
 			mpValue->Serialize( ar, nVersion );
-			if( msDisplayName.IsEmpty() ) //older ODC files may not have the property name set, so set it if it's empty
+			if( msDisplayName.IsEmpty() ) //older ODCL files may not have the property name set, so set it if it's empty
 				msDisplayName = mpValue->GetName();
 			return statOK;
 		}
@@ -738,7 +738,7 @@ public:
 			{
 				case 5: return mpValue->ReadFromTextFile5( sFile );
 			};
-			if( msDisplayName.IsEmpty() ) //older ODC files may not have the property name set, so set it if it's empty
+			if( msDisplayName.IsEmpty() ) //older ODCL files may not have the property name set, so set it if it's empty
 				msDisplayName = mpValue->GetName();
 			return statInvalidFormat;
 		}

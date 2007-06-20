@@ -1,9 +1,9 @@
 [Method]
 RegisterActiveXCtrl
 [Prefix]
-Odcl_
+dcl_
 [Desc]
-The method Odcl_RegisterActiveXCtrl is used to register an ActiveX control. When installing your software to another machine each ActiveX control that is used in your program must be registered to the users machine. There are two ways to do this. The most common is to use a proper installation package that will register the ActiveX controls for you. The other is to use this method to register the controls. It is your responsibility to ensure that you do not call this method on any ActiveX control more than once. No damage will be done, but registering ActiveX controls consumes a noticeable amount of time.
+The method dcl_RegisterActiveXCtrl is used to register an ActiveX control. When installing your software to another machine each ActiveX control that is used in your program must be registered to the users machine. There are two ways to do this. The most common is to use a proper installation package that will register the ActiveX controls for you. The other is to use this method to register the controls. It is your responsibility to ensure that you do not call this method on any ActiveX control more than once. No damage will be done, but registering ActiveX controls consumes a noticeable amount of time.
 [Arguments]
 \par\tab ActiveXFileName
 [as String]
@@ -13,7 +13,7 @@ The method Odcl_RegisterActiveXCtrl is used to register an ActiveX control. When
 [Method]
 Release
 [Prefix]
-Odcl_AxObject_
+dcl_AxObject_
 [Desc]
 When a property or method passes back an OleObject handle consisting of a list with to long integers in it is passing an address to a OleObject device. The device must be cleared from memory eventually. OpenDCL will clear all the OleObject devices for you once the dialog boxes are closed. If you wish to keep the memory clean use this method to clean the OleObject device from memory once you are finished with it. This method will not delete the item it handles, just the internal device used to modify the control or object belonging to the control.
 [Arguments]
@@ -23,7 +23,7 @@ When a property or method passes back an OleObject handle consisting of a list w
 [Method]
 XTwipsToPixels
 [Prefix]
-Odcl_
+dcl_
 [Desc]
 Some ActiveX controls calculate their distances not in Pixels but in a unit called Twips. Twips are used to calculate the screen in actual inches. There are 1440 Twips per inch. If you require the units in Pixels, use this method to convert the X coordinate Twips to Pixels.
 [Arguments Return] as Integer
@@ -35,7 +35,7 @@ Some ActiveX controls calculate their distances not in Pixels but in a unit call
 [Method]
 YTwipsToPixels
 [Prefix]
-Odcl_
+dcl_
 [Desc]
 Some ActiveX controls calculate their distances not in Pixels but in a unit called Twips. Twips are used to calculate the screen in actual inches. There are 1440 Twips per inch. If you require the units in Pixels, use this method to convert the Y coordinate Twips to Pixels.
 [Arguments Return] as Integer
@@ -46,7 +46,7 @@ Some ActiveX controls calculate their distances not in Pixels but in a unit call
 [Method]
 XPixelsToTwips
 [Prefix]
-Odcl_
+dcl_
 [Desc]
 Some ActiveX controls calculate their distances not in Pixels but in a unit called Twips. Twips are used to calculate the screen in actual inches. There are 1440 Twips per inch. Use this method to convert the X coordinate Pixels to Twips.
 [Arguments Return] as Long
@@ -58,7 +58,7 @@ Some ActiveX controls calculate their distances not in Pixels but in a unit call
 [Method]
 YPixelsToTwips
 [Prefix]
-Odcl_
+dcl_
 [Desc]
 Some ActiveX controls calculate their distances not in Pixels but in a unit called Twips. Twips are used to calculate the screen in actual inches. There are 1440 Twips per inch. Use this method to convert the X coordinate Pixels to Twips.
 [Arguments Return] as Long
@@ -69,9 +69,9 @@ Some ActiveX controls calculate their distances not in Pixels but in a unit call
 [Method]
 GetOleObject
 [Prefix]
-Odcl_AxControl_
+dcl_AxControl_
 [Desc]
-Some ActiveX control's methods or properties required the OleObject to be passed in as an argument (for example to set the ImageList property of a Microsoft ImageComboBox you need to pass in the OleObject). Calling this method on an ActiveX control will pass back the numeric value indicated by the OleObject. When finished using the OleObject, call \cf2Odcl_AxObject_Close \cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application.
+Some ActiveX control's methods or properties required the OleObject to be passed in as an argument (for example to set the ImageList property of a Microsoft ImageComboBox you need to pass in the OleObject). Calling this method on an ActiveX control will pass back the numeric value indicated by the OleObject. When finished using the OleObject, call \cf2dcl_AxObject_Close \cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application.
 [Arguments Return] as List
 ProjectFileName
 

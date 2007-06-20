@@ -4,8 +4,8 @@ REGEDIT
 ;   registered in your InitInstance automatically with a call to
 ;   CWinApp::RegisterShellFileTypes and COleObjectFactory::UpdateRegistryAll.
 
-HKEY_CLASSES_ROOT\.odc = OpenDCL.Project
-HKEY_CLASSES_ROOT\.odce = OpenDCL.Project
+HKEY_CLASSES_ROOT\.odcl = OpenDCL.Project
+HKEY_CLASSES_ROOT\.lsp = OpenDCL.Project
 HKEY_CLASSES_ROOT\OpenDCL.Project\shell\open\command = OPENDCL.EXE %1
 HKEY_CLASSES_ROOT\OpenDCL.Project\shell\open\ddeexec = [open("%1")]
 HKEY_CLASSES_ROOT\OpenDCL.Project\shell\open\ddeexec\application = OPENDCL

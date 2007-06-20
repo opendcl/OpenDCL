@@ -1,7 +1,7 @@
 [Method]
 Close
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method will close the indicated dialog. This method returns a list indicating the last upper left coordinates of Modal or Modeless dialog boxes.
 [Arguments]
@@ -12,7 +12,7 @@ This method will close the indicated dialog. This method returns a list indicati
 [Method]
 UpdateVarNames 
 [Prefix]
-Odcl_
+dcl_
 [Desc]
 This method is used to update the lisp symbol names in the current drawing so that they may be used to specify a form or control.
 \par *This function is deprecated. Symbol names should remain up to date automatically.
@@ -22,7 +22,7 @@ This method is used to update the lisp symbol names in the current drawing so th
 [Method]
 CloseAll
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method will close all open dialogs of the specified type, even those created by another application. Use with care. \par   0 	Closes all dialog boxes. \par   1 	Closes all Modal dialog boxes. \par   2 	Closes all Modeless dialog boxes. \par   4 	Closes all Dockable. 
 \par   8 	Closes all File Dialog Boxes. 
@@ -34,11 +34,11 @@ This method will close all open dialogs of the specified type, even those create
 [Method]
 LoadProject
 [Prefix]
-Odcl_
+dcl_
 [Desc]
-This method loads the requested project into memory for later use. If you specify a T after the file name the odc file will be reloaded, but only if it is an .odc file.
+This method loads the requested project into memory for later use. If you specify a T after the file name the odc file will be reloaded, but only if it is an .odcl file.
 The file passed will be searched for if no path is included in the file name.  If a path is included in the file name, the entire path is assumed to be correct.
-\par *This function is deprecated. Use (Odcl_Project_Load) instead.
+\par *This function is deprecated. Use (dcl_Project_Load) instead.
 [Arguments Return] as String "Qualified Path"
 \par\tab FileName
 [as Integer]
@@ -51,13 +51,13 @@ The file passed will be searched for if no path is included in the file name.  I
 [Method]
 Project_Load
 [Prefix]
-Odcl_
+dcl_
 [Desc]
 This method loads the requested project file into memory. If you specify a T after the file name, the file will be reloaded if it is already loaded. The ProjectAlias specifies an alias to use in place of the saved project name 
 \par\par For example:
-\par(Setq rValue (Odcl_Project_Load  "MySuperSpecialProject" nil "Proj01")) 
+\par(Setq rValue (dcl_Project_Load  "MySuperSpecialProject" nil "Proj01")) 
 \par will load the project if it isn't loaded and allow you to refer to it as Proj01, so a call to show one of its forms might be:
-\par (Odcl_Form_Show Proj01_Form)*
+\par (dcl_Form_Show Proj01_Form)*
 \par\par * If you specify explicit values for the VarName property of a form or control, then you must use that symbol name regardless of the project name.
 [Arguments Return] as String "Qualified Path"
 \par\tab FileName
@@ -71,7 +71,7 @@ This method loads the requested project file into memory. If you specify a T aft
 [Method]
 Project_UnLoad
 [Prefix]
-Odcl_
+dcl_
 [Desc]
 This method unloads the requested project from memory, freeing any resources that it used.
 [Arguments Return] as T or Nil 
@@ -82,7 +82,7 @@ This method unloads the requested project from memory, freeing any resources tha
 [Method]
 Project_SaveAs
 [Prefix]
-Odcl_
+dcl_
 [Desc]
 This method writes a project from memory to an ODC file. The password must match the project password, or the call will fail.
 [Arguments Return] as T or Nil
@@ -97,9 +97,9 @@ This method writes a project from memory to an ODC file. The password must match
 [Method]
 Project_Import
 [Prefix]
-Odcl_
+dcl_
 [Desc]
-This method loads a project from base64 encoded binary data. The encoded data can be any base64 encoded .odc file, but normally it will the contents of an .odce file that is embedded in the lisp code either by compiling the .odce file as a VLX resource or by including the encoded data as a literal string in the lisp code. You can specify a new password for the project, overriding the saved password (the password is verified before exporting the project data). The ProjectAlias specifies an alias to use in place of the saved project name. See Odcl_Project_Load for more information about the AliasProjectName argument.
+This method loads a project from base64 encoded binary data. The encoded data can be any base64 encoded .odcl file, but normally it will the contents of an .odcle file that is embedded in the lisp code either by compiling the .odcle file as a VLX resource or by including the encoded data as a literal string in the lisp code. You can specify a new password for the project, overriding the saved password (the password is verified before exporting the project data). The ProjectAlias specifies an alias to use in place of the saved project name. See dcl_Project_Load for more information about the AliasProjectName argument.
 [Arguments Return] as String "ProjectName"
 \par\tab Base64EncodedData
 [as String]
@@ -112,7 +112,7 @@ This method loads a project from base64 encoded binary data. The encoded data ca
 [Method]
 Project_Export
 [Prefix]
-Odcl_
+dcl_
 [Desc]
 This method exports the specified project to base64 encoded binary data. The password must match the project password, or the export will fail.
 [Arguments Return] as String "Base64EncodedData"
@@ -125,7 +125,7 @@ This method exports the specified project to base64 encoded binary data. The pas
 [Method]
 Enable
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method will disable or enable a dialog box, or config tab (but not the dockable form) to be enabled or disabled. 0 = Disabled, 1 or T = Enabled. When using this call with a Modal dialog box ensure you have the means re-enable the dialog box otherwise AutoCAD will be permantly locked.
 [Arguments]
@@ -137,7 +137,7 @@ ProjectFileName
 [Method]
 IsEnabled
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method will return T if the form is enabled and Nil if the form is disabled.
 [Arguments]
@@ -147,7 +147,7 @@ ProjectFileName
 [Method]
 Center
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method will center only modal dialogs requested to the center of the screen.
 [Arguments]
@@ -157,7 +157,7 @@ ProjectFileName
 [Method]
 GetHwnd
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method will return the Hwnd value of the dialog box. This may be required by an ActiveX control.
 [Arguments]
@@ -167,7 +167,7 @@ ProjectFileName
 [Method]
 GetTitleBarText
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method will retrieve the title bar text or config tab text of the dialog requested. 
 [Arguments Return] as String
@@ -177,7 +177,7 @@ ProjectFileName
 [Method]
 GetRectangle
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method returns a list indicating the left, top, width and height values of the dialog box.
 [Arguments Return] as List
@@ -187,7 +187,7 @@ ProjectFileName
 [Method]
 GetControlArea
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method returns a list indicating the width and height of the dialog box's client area.  This would be the area of the dialog box excluding the title bar and border of the dialog box.
 [Arguments Return] as List
@@ -197,9 +197,9 @@ ProjectFileName
 [Method]
 IsActive
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
-All dialog boxes that are displayed are referenced in an active dialog list.  To find out if a dialog box is active, (as in the case where a secondary Modeless dialog box has been closed by the user and you need to know if you should call the Odcl_Form_Close method) use this method to query the active dialog list for the dialog box you need to ensure is present.
+All dialog boxes that are displayed are referenced in an active dialog list.  To find out if a dialog box is active, (as in the case where a secondary Modeless dialog box has been closed by the user and you need to know if you should call the dcl_Form_Close method) use this method to query the active dialog list for the dialog box you need to ensure is present.
 [Arguments Return] as T or Nil
 ProjectFileName
 
@@ -207,7 +207,7 @@ ProjectFileName
 [Method]
 IsFloating
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method is for dockable forms only. It will indicate if the dockable form is (T) floating or (Nil) docked to the AutoCAD frame.
 [Arguments Return] as T or Nil
@@ -217,7 +217,7 @@ ProjectFileName
 [Method]
 Resize
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method will resize a dialog box.
 [Arguments]
@@ -231,7 +231,7 @@ ProjectFileName
 [Method]
 SetDialogMinMaxSizes
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method sets the minimum and maximum extents allowed for a specified dialog box.
 [Arguments]
@@ -249,7 +249,7 @@ ProjectFileName
 [Method]
 SetTitleBarText
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method will change the title bar text of any modal or modeless dockable dialog box indicated.
 [Arguments]
@@ -261,7 +261,7 @@ ProjectFileName
 [Method]
 Show
 [Prefix]
-Odcl_Form_
+dcl_Form_
 [Desc]
 This method displays a dialog box from a loaded project. \par \par \b *Important  Notes: \b0 \par \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-720\li720 The optional upper left coordinates only affect Modal and Modeless dialog boxes. \par {\pntext\f1\'B7\tab} If the dialog box being shown is a modal dialog box, this method will wait until the user has exited the dialog box before returning to AutoLISP. \par{\pntext\f1\'B7\tab}Do not call this method from within a MouseDown event of any control. \par \pard
 [Arguments Return] as Integer Dialog Status

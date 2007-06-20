@@ -1,7 +1,7 @@
 [Method]
 AddColumns
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method adds columns to a ListView control with the Report style set. Complete control of each column has been provided with this method, the width, justification, and optional image from the image list can or must be specified for each control. Because this method asks you to specify the insertion index, columns don't have to be added at the end, but if necessary can be added in the beginning or the middle of the existing columns. 
 \par \par The column justification is to be set using:
@@ -36,9 +36,9 @@ ProjectFileName
 [Method]
 AddItem (For Report Style)
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
-This method adds a new item to the end of a ListView control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list. Use \cf1 Odcl_ListView_SetItemImage \cf0 to set the icons of any column cell.
+This method adds a new item to the end of a ListView control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list. Use \cf1 dcl_ListView_SetItemImage \cf0 to set the icons of any column cell.
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
           (List (List x y ...) (List x y ...) ...)
 \par We have found ObjectARX does not always like lists created as follows:
@@ -59,7 +59,7 @@ ProjectFileName
 [Method]
 AddItem
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method adds a new item to the end of a ListView control. 
 [Arguments Return] as Integer
@@ -73,7 +73,7 @@ ProjectFileName
 [Method]
 GetColumnImage
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method returns the image of a column header in a ListView control. 
 [Arguments Return] as Integer
@@ -87,7 +87,7 @@ ProjectFileName
 [Method]
 SetColumnImage
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method sets the image of a column header in a ListView control. Set to -1 to show now images.
 [Arguments]
@@ -101,7 +101,7 @@ ProjectFileName
 [Method]
 GetColumnCount
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method returns number of a columns in a ListView control. 
 [Arguments Return] as Integer
@@ -110,7 +110,7 @@ ProjectFileName
 [Method]
 GetCount
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method returns number of items or rows in a ListView control. 
 [Arguments Return] as Integer
@@ -119,9 +119,9 @@ ProjectFileName
 [Method]
 InsertItem (For Report Style)
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
-This method inserts a new item anywhere in a ListView control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list.  Use \cf2 Odcl_ListView_SetItemImage \cf0 to set the icons of any column cell.
+This method inserts a new item anywhere in a ListView control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list.  Use \cf2 dcl_ListView_SetItemImage \cf0 to set the icons of any column cell.
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
           (List (List x y ...) (List x y ...) ...)
 \par We have found ObjectARX does not always like lists created as follows:
@@ -144,7 +144,7 @@ ProjectFileName
 [Method]
 InsertItem
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method inserts a new item anywhere in a ListView control.
 [Arguments Return] as Integer
@@ -160,7 +160,7 @@ ProjectFileName
 [Method]
 FillList (For Report Style)
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will clear and fill a ListView control with multiple rows and will fill in the cells in each row according to how many columns have been previously setup. 
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -193,7 +193,7 @@ ProjectFileName
 [Method]
 FillList 
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will clear and fill a ListView control with multiple items. 
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -215,7 +215,7 @@ ProjectFileName
 [Method]
 CountItems
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will return total number of items in the ListView control.
 [Arguments Return] as Integer
@@ -225,7 +225,7 @@ ProjectFileName
 [Method]
 SetCurSel
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will force an item to be selected and will also scroll the ListView to ensure the item is displayed. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
@@ -237,7 +237,7 @@ ProjectFileName
 [Method]
 Clear
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will clear the ListView of all its items.
 [Arguments]
@@ -248,7 +248,7 @@ ProjectFileName
 [Method]
 DeleteItems
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will delete the items specified in a list in the ListView control.
 [Arguments]
@@ -268,7 +268,7 @@ ProjectFileName
 [Method]
 DeleteItem
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will delete the specified item from the ListView control.
 [Arguments]
@@ -282,7 +282,7 @@ ProjectFileName
 [Method]
 DeleteColumns
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will delete the columns specified in a list in the ListView control.
 [Arguments]
@@ -303,7 +303,7 @@ ProjectFileName
 [Method]
 DeleteColumn
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will delete the specified column from the ListView control.
 [Arguments]
@@ -317,7 +317,7 @@ ProjectFileName
 [Method]
 Arrange
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will format the layout of all the items in the ListView control. \par
 \par \pard\fi-1100\li1100 0   \b Left\b0 \tab Aligns items along the left edge of the ListView
@@ -335,7 +335,7 @@ ProjectFileName
 [Method]
 GetSelCount
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will return the selected item count.
 [Arguments Return] as Integer
@@ -345,7 +345,7 @@ ProjectFileName
 [Method]
 SetItemData
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will set the associated item data for the indicated list item. The item data will only accept integer values.
 [Arguments]
@@ -359,7 +359,7 @@ ProjectFileName
 [Method]
 GetItemData
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will retrieve the associated item data for the indicated list item.
 [Arguments Return] as Integer
@@ -371,7 +371,7 @@ ProjectFileName
 [Method]
 GetItemText
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will return the text of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex \cf0 may need to be used, otherwise it's not required for any other style of ListView.
 [Arguments Return] as String
@@ -385,7 +385,7 @@ ProjectFileName
 [Method]
 GetRowItems
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will return a list containing the text of a specified row in a ListView control. This method is useful for ListView controls with the Report style set.
 [Arguments Return] as List of Strings
@@ -397,7 +397,7 @@ ProjectFileName
 [Method]
 GetColumnItems
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will return a list containing the strings of a specified column in a ListView control. This method is useful for ListView controls with the Report style set.
 [Arguments Return] as List of Strings
@@ -410,7 +410,7 @@ ProjectFileName
 [Method]
 SetItemText
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will set the text of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex \cf0 may need to be used, otherwise it's not required for any other style of ListView.
 [Arguments]
@@ -427,7 +427,7 @@ ProjectFileName
 [Method]
 GetColWidth
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will return the width of a column.
 [Arguments Return] as Integer
@@ -439,7 +439,7 @@ ProjectFileName
 [Method]
 SetColWidth
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will set the width of a column.
 [Arguments]
@@ -453,7 +453,7 @@ ProjectFileName
 [Method]
 CalcColWidth
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will calculate the minimum required width of a column to ensure the entire text will appear.
 [Arguments Return] as Integer
@@ -466,7 +466,7 @@ ProjectFileName
 [Method]
 GetSelectedItems
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will return a list of all selected items in the ListView control. 
 [Arguments Return] as List as Strings
@@ -475,7 +475,7 @@ ProjectFileName
 [Method]
 GetSelectedNths
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will return a list of all indexes of the selected items in the ListView control. 
 [Arguments Return] as List of Integers
@@ -485,7 +485,7 @@ ProjectFileName
 [Method]
 GetItemImage
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will retrieve the image of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex \cf0 may need to be used, otherwise it's not required for any other style of ListView. This method is not available for the BlockList control.
 [Arguments Return] as Integer
@@ -499,7 +499,7 @@ ProjectFileName
 [Method]
 HitPointTest
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will test to see which row and column (if columns exit) a point belongs to. 
 [Arguments Return] as List
@@ -513,7 +513,7 @@ ProjectFileName
 [Method]
 SetItemImage
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will set the image of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex 
 \cf0 may need to be used, otherwise it's not required for any other style of ListView. This method is not available for the BlockList control.
@@ -530,7 +530,7 @@ ProjectFileName
 [Method]
 SortTextItems
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will sort the columns in ascending or descending order, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
 [Arguments]
@@ -544,7 +544,7 @@ ProjectFileName
 [Method]
 SortNumericItems
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will sort the columns in ascending or descending order using a numeric comparison, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
 [Arguments]
@@ -558,7 +558,7 @@ ProjectFileName
 [Method]
 StartLabelEdit
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will force the label of an item to show the edit box, so the user may rename the text content of that item.  When using this method on a ListView control with the Report style setting only the item in the first column may be edited.  This method will not start the editing process if the EditLabel property of the control is set to False. This method is not available for BlockList controls.
 [Arguments]
@@ -571,7 +571,7 @@ ProjectFileName
 [Method]
 CancelLabelEdit
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will cancel the label editing of an item, so the user may not rename the text content of that item. This is useful when you wish to ensure that some items may be edited while others may not.  This method is not available for BlockList controls.
 [Arguments]

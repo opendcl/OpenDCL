@@ -26,7 +26,6 @@ class AxPropertyDescriptor;
 
 #define nDeIconSize 16
 #define nNotSet -1
-#define nTitleLength 14
 
 
 /////////////////////////////////////////////////////////////////////////////

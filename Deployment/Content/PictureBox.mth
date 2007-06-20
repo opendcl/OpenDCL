@@ -1,7 +1,7 @@
 [Method]
 StoreImage
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method is used to store what has been drawn or printed to the PictureBox’s paint-able area to memory.  What this does is makes all lines, arcs, text, etc. become part of the stored picture that the PictureBox uses to paint from.  This method must be called after all objects have been drawn to the PictureBox, or possible errors could occur, especially if another dialog box is moved of the PictureBox and what has been drawn will be erased.
 [Arguments]
@@ -11,7 +11,7 @@ ProjectFileName
 [Method]
 GetPictureSize
 [Prefix]
-Odcl_
+dcl_
 [Desc]
 This method will return the size of a picture, indicated by its Id.
 [Arguments Return] as List
@@ -24,16 +24,16 @@ ProjectName
 [Method]
 Refresh
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
-This method repaints the PictureBox using the image last stored by Odcl_PictureBox_StoreImage.  Any pictures set using the Picture property or Odcl_PictureBox_LoadPicture  will not be removed. 
+This method repaints the PictureBox using the image last stored by dcl_PictureBox_StoreImage.  Any pictures set using the Picture property or dcl_PictureBox_LoadPicture  will not be removed. 
 [Arguments]
 ProjectFileName
 
 [Method]
 DrawLine
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method draws a list of lines in the control.
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -64,7 +64,7 @@ ProjectFileName
 [Method]
 DrawArc
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method draws an arc on the control. This method requires center coordinates, a radius, and start and end points to calculate the start and end angles of the arc. These points don’t need to fall directly on the arc, they are used to calculate the start and end angles.
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -103,7 +103,7 @@ ProjectFileName
 [Method]
 DrawCircle
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method draws a circle on the control. A rectangle is used because it allows both circles and ellipses to be drawn using the same method.
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -135,7 +135,7 @@ ProjectFileName
 [Method]
 DrawFillRect
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method draws a solid rectangle on the control.
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -166,7 +166,7 @@ ProjectFileName
 [Method]
 DrawHatchRect
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method draws a hatched rectangle on the control. There are five styles of windows hatches available, an integer of 1 - 5 will indicate which one is to be drawn. \par
 \par \b Hatch Pattern Flags:
@@ -207,7 +207,7 @@ ProjectFileName
 [Method]
 DrawEdge
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method draws various standard windows control borders. Color control is automatically handled by this method.\par
 \par \b Border Flags:
@@ -248,7 +248,7 @@ ProjectFileName
 [Method]
 DrawFocusRect
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method draws a focus rectangle used to indicate the control has focus. This method is a Boolean XOR function, calling this function a second time with the same rectangle removes the rectangle from the display. 
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -277,7 +277,7 @@ ProjectFileName
 [Method]
 DrawRect
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method draws a standard rectangle.
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -308,7 +308,7 @@ ProjectFileName
 [Method]
 DrawWrappedText
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method draws text on the control. If the text is going to be drawn outside the allowable width area the text is automatically wrapped around to the next line or lines. A bounding rectangle is used to define where the text is to be drawn.
 \par If a 0 or -27 is passed into BackColor, then the text is draw transparently.
@@ -347,7 +347,7 @@ ProjectFileName
 [Method]
 DrawText
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method draws text on the control. If the BackColor argument is not passed the PictureBox’s BackColor property is used. 
 \par If a 0 or -27 is passed into BackColor, then the text is draw transparently.
@@ -392,7 +392,7 @@ ProjectFileName
 [Method]
 GetTextExtent
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method will return the height and width of the text passed in for calculation.
 [Arguments Return] as List (Width Height)
@@ -404,7 +404,7 @@ ProjectFileName
 [Method]
 PaintPicture
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method will paint a picture anywhere on the control. The dialog box must be visible. If you intend to use this method to show a picture of pictures on the the PictureBox, make this call from the OnPaint event of the PictureBox so that the image is shown at the correct time.
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -434,7 +434,7 @@ ProjectFileName
 [Method]
 LoadPictureFile
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method will load a picture file of type .bmp, .ico, .jpg, and .wmf, into the PictureBox control.
 [Arguments]
@@ -447,7 +447,7 @@ ProjectFileName
 [Method]
 DrawPoint
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method will paint a single point on the control any specified color. Note: this method does not accept lists passed in to specify a group of points to be drawn.  Due to ObjectARX limitations in lists, at this time, small lists cannot be supported.
 [Arguments]
@@ -462,7 +462,7 @@ ProjectFileName
 [Method]
 Clear
 [Prefix]
-Odcl_PictureBox_
+dcl_PictureBox_
 [Desc]
 This method clears the control, including any pictures set using the Picture property.
 [Arguments]

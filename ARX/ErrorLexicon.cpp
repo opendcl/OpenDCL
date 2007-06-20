@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "ErrorLexicon.h"
 
-LPCTSTR ProjectPrefix				= _T(".odc");
 LPCTSTR ErrorProjectFile			= _T("The project file: ");
 LPCTSTR ErrorWasNotFound			= _T("\nWas not found.  Please ensure that this file is placed");
 LPCTSTR ErrorInaDirectory			= _T("\n in a directory where AutoCAD searches automatically.");
@@ -9,7 +8,7 @@ LPCTSTR Error2ndArgMissing			= _T("The second argument is missing.");
 LPCTSTR ErrorProjectNotLoaded		= _T("The Project File name passed in was not previously loaded,\nor was spelled incorrectly from the project name passed in previously");
 LPCTSTR ErrorDemoCreation			= _T("This dialog box was created using an evaluation Version of ObjectDCL.");
 LPCTSTR ErrorSchoolCreation			= _T("This dialog box was created using a student Version of ObjectDCL.");
-LPCTSTR ErrorObjectDCL				= _T("ObjectDCL");
+LPCTSTR ErrorOpenDCL				= _T("OpenDCL");
 LPCTSTR ErrorFormNotFound			= _T("Form not found");
 LPCTSTR ErrorTabsToolTipTitle		= _T("TabsToolTipTitle");
 LPCTSTR ErrorDialogNotFound			= _T("The dialog requested by an AutoLISP call was not found in the list of active dialog boxes.\n");

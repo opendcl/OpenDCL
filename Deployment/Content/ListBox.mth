@@ -1,7 +1,7 @@
 [Method]
 AddString
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will add a string to the specified ListBox. This method will return the index of the new inserted item.
 [Arguments as Integer]
@@ -14,7 +14,7 @@ NewString
 [Method]
 AddList
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will add a list of strings to the specified ListBox.
 [Arguments]
@@ -27,7 +27,7 @@ ProjectFileName
 [Method]
 Dir
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will fill the ListBox with a list of files found in the directory search that matches the \cf1 sExtension \cf0 argument.  If the \cf1 sExtension \cf0 is not specified *.* is assumed.
 [Arguments]
@@ -41,7 +41,7 @@ ProjectFileName
 [Method]
 Clear
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will clear the ListBox of all its items.
 [Arguments]
@@ -50,7 +50,7 @@ ProjectFileName
 [Method]
 GetText
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will retrieve a requested list item.
 [Arguments Return] as String
@@ -63,7 +63,7 @@ ProjectFileName
 [Method]
 GetSelectedItems
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will return a list of all selected items in the ListBox. This method is useful only for ListBoxes with multiple selection.
 [Arguments Return] as List of Strings
@@ -73,7 +73,7 @@ ProjectFileName
 [Method]
 GetSelectedNths
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will return a list of all indexes of the selected items in the ListBox. This method is useful only for ListBoxes with multiple selection.
 [Arguments Return] as List of Integers
@@ -82,7 +82,7 @@ ProjectFileName
 [Method]
 GetCount
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will return the total number of list items.
 [Arguments Return] as Integer
@@ -92,7 +92,7 @@ ProjectFileName
 [Method]
 SetCurSel
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will set the currently selected list item in a single selection ListBox. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
@@ -104,7 +104,7 @@ ProjectFileName
 [Method]
 GetCurSel
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will return the index of the currently selected list item in a single selection ListBox. -1 will be returned if nothing is selected.
 [Arguments Return] as Integer
@@ -114,7 +114,7 @@ ProjectFileName
 [Method]
 GetTopIndex
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method retrieves the index of the first visible item in a ListBox.
 [Arguments Return] as Integer
@@ -123,7 +123,7 @@ ProjectFileName
 [Method]
 SetTopIndex
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method ensures that the indicated ListBox item is visible. If it's not the ListBox is scrolled to ensure the item is visible.
 [Arguments]
@@ -135,7 +135,7 @@ ProjectFileName
 [Method]
 SetItemData
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will set the associated item data for the indicated list item. The item data will only accept integer values.
 [Arguments]
@@ -149,7 +149,7 @@ ProjectFileName
 [Method]
 GetItemData
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will retrieve the associated item data for the indicated list item.
 [Arguments Return] as Integer
@@ -161,7 +161,7 @@ ProjectFileName
 [Method]
 DeleteString
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will delete a list item from the ListBox.
 [Arguments]
@@ -173,7 +173,7 @@ ProjectFileName
 [Method]
 InsertString
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will insert a list item in the ListBox.
 [Arguments Return] as Integer
@@ -187,9 +187,9 @@ ProjectFileName
 [Method]
 FindStringExact
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
-This method finds the first string in a ListBox that contains a list item with the exact string match without changing the ListBox selection. A search for "Example Text" will find "Example Text". Use the Odcl_ListBox_SelectString function instead to both find and select a string.
+This method finds the first string in a ListBox that contains a list item with the exact string match without changing the ListBox selection. A search for "Example Text" will find "Example Text". Use the dcl_ListBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
 ProjectFileName
 \par\tab SearchString
@@ -199,9 +199,9 @@ ProjectFileName
 [Method]
 FindString
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
-This method finds the first string in a ListBox that contains a list item with the specified prefix or partial match without changing the ListBox selection. A search for "Text" will find "Example Text". Use the Odcl_ListBox_SelectString function instead to both find and select a string.
+This method finds the first string in a ListBox that contains a list item with the specified prefix or partial match without changing the ListBox selection. A search for "Text" will find "Example Text". Use the dcl_ListBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
 ProjectFileName
 \par\tab SearchString
@@ -211,7 +211,7 @@ ProjectFileName
 [Method]
 SelectString
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method finds the first string in a ListBox that contains the specified prefix and selects this list item in the ListBox.
 [Arguments Return] as Integer
@@ -223,7 +223,7 @@ ProjectFileName
 [Method]
 SetSel
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method will set the indicated list item in a multiple selection ListBox as selected or unselected. 
 [Arguments]
@@ -237,7 +237,7 @@ ProjectFileName
 [Method]
 GetSel
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method is used to determine if an item in the list box is currently selected.  This method is useful in a multiple selection ListBox. 
 [Arguments Return] as Integer
@@ -249,7 +249,7 @@ ProjectFileName
 [Method]
 SetFocusIndex
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method sets the focus rectangle of the ListBox to show around item at the specified index in a multiple selection ListBox.
 [Arguments]
@@ -261,7 +261,7 @@ ProjectFileName
 [Method]
 GetFocusIndex
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method returns the index of the list item that has the focus rectangle in a multiple selection ListBox around it.
 [Arguments Return] as Integer
@@ -271,7 +271,7 @@ ProjectFileName
 [Method]
 GetSelCount
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method returns the number of list items currently selected in a multiple selection ListBox.
 [Arguments Return] as Integer
@@ -281,7 +281,7 @@ ProjectFileName
 [Method]
 SelItemRange
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method selects or deselects a range of list items in a multiple selection ListBox.
 [Arguments]
@@ -298,7 +298,7 @@ ProjectFileName
 [Method]
 SetAnchorIndex
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method sets the anchor list item in a multiple selection ListBox to begin an extended selection.
 [Arguments]
@@ -310,7 +310,7 @@ ProjectFileName
 [Method]
 GetAnchorIndex
 [Prefix]
-Odcl_ListBox_
+dcl_ListBox_
 [Desc]
 This method retrieves the index of the current anchor list item in a ListBox.
 [Arguments Return] as Integer

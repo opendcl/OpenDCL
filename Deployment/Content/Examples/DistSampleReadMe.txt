@@ -1,30 +1,38 @@
-Contents of DistSample.zip
+Contents of DistSamples.zip
 
-    ReadMe.txt      - This file.
+    DistSampleReadMe.txt - This file.
     
-    DistSample.odc  - OpenDCL project.
-    DistSample.odce - Same as DistSample.odc but encoded.
-    DistSample.lsp  - LISP Source.
-    DistSample.prv  - Visual LISP project (make) file.
-    DistSample.vlx  - Compiled version of DistSample.lsp complete with
-                      DistSample.odce embedded as a text file resource. 
-                      Ready to run as is.
+    DistSample.odcl      - OpenDCL project.
+    DistSample.odcl.lsp  - Same as DistSample.odcl but encoded.
+    DistSample1.lsp      - LISP Source.
+    DistSample.prv       - Visual LISP project (make) file.
+    DistSample.vlx       - Compiled version of DistSample1.lsp complete with
+                           DistSample.odce embedded as a text file resource. 
+                           Ready to run as is.
                       
+    DistSample2.lsp      - LISP Source. Same as DistSample1.lsp but uses
+                           an inline odcl project rather than a text
+                           resource in a vlx file.
+
 Overview
 
-    This zip file contains the lisp source code and OpenDCL files to 
+    This sample contains the lisp source code and OpenDCL files to 
     demonstrate how to embed an OpenDCL project into a vlx file, and 
     then how to use said resource as one might normally use a regular 
-    OpenDCL project file.
+    OpenDCL project file. 
+    
+    A new sample (DistSample2.lsp) demonstrates how the same dialog 
+    data can be embedded directly into the lisp source code as an
+    inline text stream.
     
     Why would you want to do this? The primary reason is one of 
     simplified distribution, though some developers might want to use 
-    it as a mild form of security to protect their dialog designs or to 
-    ensure non modified dialog versions are always utilized. Note the 
-    use of the word 'mild'. If you are very concerned about security 
-    there are additional things that can be done to increase the security 
-    of vlx file content including resources but that is outside the 
-    scope and intent of this tutorial.
+    it as a mild form of security to protect their dialog designs or 
+    to ensure non modified dialog versions are always utilized. Note 
+    the use of the word 'mild'. If you are very concerned about 
+    security there are additional things that can be done to increase 
+    the security of vlx file content including resources but that is 
+    outside the scope and intent of this tutorial.
     
 Requirements    
 
@@ -32,10 +40,10 @@ Requirements
     
     OpenDCL 4.0, beta 17 or newer.
     
-DistSample.odc
+DistSample.odcl
 
-    Contains one form with a simple label (the label is of no consequence 
-    but mentioned for completeness) and one button.
+    Contains one form with a simple label (the label is of no 
+    consequence but mentioned for completeness) and one button.
     
     Varnames:
     
@@ -51,19 +59,24 @@ DistSample.odc
         
     Project is not pass worded.        
     
-DistSample.odce        
+DistSample.odcl.lsp        
 
-    Exactly the same as DistSample.odc but saved to .odce format via 
-    the OpenDCL dialog editor (File > Saveas > DistSample.odce).
+    Exactly the same as DistSample.odcl but saved to .lsp format via 
+    the OpenDCL dialog editor (File > Saveas > DistSample.odcl.lsp).
     
-DistSample.lsp
+DistSample1.lsp
 
-    LISP Source that demonstrates how to use both the DistSample.odc 
-    project (when called as DistSample.lsp, for example during 
+    LISP Source that demonstrates how to use both the DistSample.odcl 
+    project (when called as DistSample1.lsp, for example during 
     development) as well as the DistSample.odce (when called from 
-    DistSample.vlx, which attempts to use DistSample.odce as an 
+    DistSample.vlx, which attempts to use DistSample.odcl.lsp as an 
     embedded text resource).
     
+DistSample2.lsp
+        
+    LISP Source that demonstrates how to use the DistSample.odcl.lsp 
+    project data as an (inline) embedded text stream.
+
 DistSample.vlx
 
     Compiled version of DistSample.lsp. Compiled by using the Visual 
@@ -77,13 +90,13 @@ DistSample.prv
         	 (:active-x . T)
         	 (:separate-namespace)
         	 (:protected . T)
-        	 (:load-file-list (:lsp "DistSample.lsp"))
-        	 (:require-file-list (:txt "DistSample.odce"))
+        	 (:load-file-list (:lsp "DistSample1.lsp"))
+        	 (:require-file-list (:txt "DistSample.odcl"))
         	 (:ob-directory)
         	 (:tmp-directory)
         	 (:optimization . st)
         )    
-
+        
 Credits
 
     Owen Wengerd, for his passionate and spirited commitment to the 
@@ -91,8 +104,7 @@ Credits
     coding up the logic that made ODCL project embedding possible 
     and easy to use. Kudos Owen.
     
-    Michael Puckett, author of all code and text in this little 
-    tutorial.
+    Michael Puckett, author of all code and text in this tutorial.
 
 Questions?
 

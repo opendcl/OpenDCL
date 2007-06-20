@@ -1,7 +1,7 @@
 [Method]
 Load
 [Prefix]
-Odcl_SlideView_
+dcl_SlideView_
 [Desc]
 This method loads a slide image or slide library and then displays the slide in the control.
 [Arguments]
@@ -16,7 +16,7 @@ ProjectFileName
 [Method]
 Clear
 [Prefix]
-Odcl_SlideView_
+dcl_SlideView_
 [Desc]
 This method clears the control.
 [Arguments]
@@ -27,7 +27,7 @@ ProjectFileName
 [Method]
 SlideImage
 [Prefix]
-Odcl_SlideView_
+dcl_SlideView_
 [Desc]
 This method will load a slide image from a slide file or slide library file and paint it anywhere on the control.
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -61,7 +61,7 @@ ProjectFileName
 [Method]
 VectorImage
 [Prefix]
-Odcl_SlideView_
+dcl_SlideView_
 [Desc]
 This method draws a list of lines in the control.
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -92,7 +92,7 @@ ProjectFileName
 [Method]
 FillImage
 [Prefix]
-Odcl_SlideView_
+dcl_SlideView_
 [Desc]
 This method draws a solid rectangle on the control.
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -122,7 +122,7 @@ ProjectFileName
 [Method]
 EndImage
 [Prefix]
-Odcl_SlideView_
+dcl_SlideView_
 [Desc]
 This method is used to store what has been drawn or painted to the SlideView’s paint able area to memory.  What this does is make all lines, arcs, text, etc. become part of the stored picture that the SlideView uses to paint from.  This method must be called after all objects have been drawn to the SlideView, or possible visual errors could occur, especially if another dialog box is moved over the SlideView and what has been drawn will be erased.
 [Arguments]
@@ -133,7 +133,7 @@ ProjectFileName
 [Method]
 SetHighLight
 [Prefix]
-Odcl_SlideView_
+dcl_SlideView_
 [Desc]
 This method draws a rectangle around the inside of the border as indication that the control has been selected or highlighted for some purpose. 
 [Arguments]
@@ -145,7 +145,7 @@ ProjectFileName
 [Method]
 RemoveHighLight
 [Prefix]
-Odcl_SlideView_
+dcl_SlideView_
 [Desc]
 This method removes the drawn rectangle around the inside of the border that indicates the control has been selected or highlighted for some purpose.
 [Arguments]

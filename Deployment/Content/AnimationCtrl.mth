@@ -1,7 +1,7 @@
 [Method]
 Load
 [Prefix]
-Odcl_Animate_
+dcl_Animate_
 [Desc]
 This method will load an animated file and activate it.
 [Arguments]
@@ -12,7 +12,7 @@ ProjectFileName
 [Method]
 Stop
 [Prefix]
-Odcl_Animate_
+dcl_Animate_
 [Desc]
 This stops the animation from playing.
 [Arguments Return] as String
@@ -22,7 +22,7 @@ ProjectFileName
 [Method]
 Seek
 [Prefix]
-Odcl_Animate_
+dcl_Animate_
 [Desc]
 This method will display a specific frame of the animation file.
 [Arguments]
@@ -34,7 +34,7 @@ ProjectFileName
 [Method]
 Close
 [Prefix]
-Odcl_Animate_
+dcl_Animate_
 [Desc]
 This method closes the animate file previously opened.
 [Arguments]

@@ -23,6 +23,7 @@
 #define IDS_VARNAMEINCORRECT2           121
 #define IDS_VARNAMEINCORRECT3           122
 #define IDS_AXFILENOTLOADING2           123
+#define IDS_BANNER                      124
 #define IDB_FOLDER                      129
 #define IDI_LAYERTHAW                   203
 #define IDI_LAWERFROZEN                 204
@@ -60,7 +61,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        454
+#define _APS_NEXT_RESOURCE_VALUE        455
 #define _APS_NEXT_COMMAND_VALUE         32769
 #define _APS_NEXT_CONTROL_VALUE         12345
 #define _APS_NEXT_SYMED_VALUE           454

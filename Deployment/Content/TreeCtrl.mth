@@ -1,7 +1,7 @@
 [Method]
 GetFirstChildItem
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method gets the key of the first child tree item. Nil is return if not children are found.
 [Arguments Return] as Integer or Nil
@@ -13,7 +13,7 @@ ProjectFileName
 [Method]
 EnsureVisible
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method ensures that the indicated tree item is visible.
 [Arguments]
@@ -24,7 +24,7 @@ ProjectFileName
 [Method]
 IsItemExpanded
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method will return a T if the item is expanded and Nil if not expanded.
 [Arguments]
@@ -36,7 +36,7 @@ ProjectFileName
 [Method]
 SortChildren
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method sorts the children of an indicated parent or child tree item.
 [Arguments]
@@ -48,7 +48,7 @@ ProjectFileName
 [Method]
 EditLabel
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method starts the edit process of a tree item by displaying a TextBox on top of the tree item. This method will not start the editing process if the EditLabel property of the control is set to False.
 [Arguments]
@@ -60,7 +60,7 @@ ProjectFileName
 [Method]
 CancelEditLabel
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method cancels the edit process of a tree item.
 [Arguments]
@@ -70,7 +70,7 @@ ProjectFileName
 [Method]
 SelectSetFirstVisible
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method selects the indicated tree item tries to make it the first visible item in the control.
 [Arguments]
@@ -82,7 +82,7 @@ ProjectFileName
 [Method]
 SetExpandedImage
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method assigns an image from the image list as the image to be displayed once tree item has been expanded. \par \par \b1 Please note! \b0 Items with \cf1 String Keys \cf0 attached to them \b1 can \b0 have expanded images. Also note that this call must be made before the tree item is expanded. The best coding practice would be to call this method just after the required tree item has been added to the tree control.
 [Arguments]
@@ -96,7 +96,7 @@ ProjectFileName
 [Method]
 GetExpandedImage
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method retrieves the index of an assigned image in the tree control’s image list that is to be the image to be displayed once the tree item has been expanded. If a node item does not have a \cf1 String Key \cf0 assigned to it, it will not have an expanded image.
 [Arguments Return] as Integer
@@ -108,7 +108,7 @@ ProjectFileName
 [Method]
 ExpandItem
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method expands any visible node item to display its children. \par
 \par \b ExpandStyle Flags:
@@ -128,7 +128,7 @@ ProjectFileName
 [Method]
 DeleteItem
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method deletes any tree item and its children. \par \par \b1 Please note! \b0 If the tree control was populated using \cf1 String Keys \cf0, this method may incorrectly re-order the internal Key list so that \cf1 String Keys \cf0 will not match the correct node items. This is a design flaw of the Microsoft Tree control and a work around has not be found.
 
@@ -141,7 +141,7 @@ ProjectFileName
 [Method]
 GetVisibleCount
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method gets the total number of visible tree items. 
 [Arguments Return] as Integer
@@ -150,7 +150,7 @@ ProjectFileName
 [Method]
 GetItemData
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method gets integer item data of any tree item.
 [Arguments Return] as Integer
@@ -162,7 +162,7 @@ ProjectFileName
 [Method]
 SetItemData
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method sets integer item data of any tree item.
 [Arguments]
@@ -175,7 +175,7 @@ ProjectFileName
 [Method]
 GetItemText
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method gets the text of any tree item.
 [Arguments Return] as String
@@ -187,7 +187,7 @@ ProjectFileName
 [Method]
 SetItemText
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method sets the text of any tree item.
 [Arguments]
@@ -201,7 +201,7 @@ ProjectFileName
 [Method]
 GetItemImages
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method returns a list indicating the unselected and selected images of the requested tree item.
 [Arguments Return] as List
@@ -213,7 +213,7 @@ Key
 [Method]
 SetItemImages
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method sets the unselected and selected images of any tree item.
 [Arguments]
@@ -229,7 +229,7 @@ ProjectFileName
 [Method]
 GetItem
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method retrieves the information of any tree item. Nil will be returned if the Key argument is invalid.
 [Arguments Return] as List or Nil
@@ -241,7 +241,7 @@ ProjectFileName
 [Method]
 GetRootItem
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method retrieves the key of the first parent tree item.
 [Arguments Return] as String or Long
@@ -251,7 +251,7 @@ ProjectFileName
 [Method]
 GetSelectedItem
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method retrieves the key of the selected tree item.
 [Arguments Return] as String or Long
@@ -261,7 +261,7 @@ ProjectFileName
 [Method]
 GetFirstVisibleItem
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method retrieves the unique key of the first visible tree item.
 [Arguments Return] as String or Long
@@ -270,7 +270,7 @@ ProjectFileName
 [Method]
 GetNextVisibleItem
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method retrieves the unique key of the next visible tree item.
 [Arguments Return] as String or Long
@@ -282,7 +282,7 @@ ProjectFileName
 [Method]
 GetPrevVisibleItem
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method retrieves the unique key of the previous visible tree item.
 [Arguments Return] as String or Long
@@ -294,7 +294,7 @@ ProjectFileName
 [Method]
 GetNextSiblingItem
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method retrieves the unique key of the next sibling tree item.
 [Arguments Return] as String or Long
@@ -306,7 +306,7 @@ ProjectFileName
 [Method]
 GetPrevSiblingItem
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method retrieves the unique key of the previous sibling tree item.
 [Arguments Return] as String or Long
@@ -317,7 +317,7 @@ ProjectFileName
 [Method]
 ItemHasChildren
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method indicates if a tree item has any children.
 [Arguments Return] as T or Nil
@@ -329,7 +329,7 @@ ProjectFileName
 [Method]
 SelectItem
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method selects the indicated tree item.
 [Arguments]
@@ -342,7 +342,7 @@ ProjectFileName
 [Method]
 CountItems
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method counts the number of tree items in the TreeControl.
 [Arguments Return] as Integer
@@ -352,7 +352,7 @@ ProjectFileName
 [Method]
 GetParent
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method gets the unique Key of any parent tree item in the TreeControl or returns Nil if none is found.  \par \par \b1 Please note! \b0 Adding node items with \cf1 String Keys \cf0 attached to them \b1 can \b0 have expanded images. 
 [Arguments Return] as String or Long
@@ -364,7 +364,7 @@ ProjectFileName
 [Method]
 AddChild (Using Lists)
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method adds a child tree item to a top level tree item or other child tree item. 
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -397,7 +397,7 @@ ProjectFileName
 [Method]
 AddChild (Without Lists)
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method adds a child tree item to a top level tree item or other child tree item. A child is a tree item that is connected to a parent or owner tree item. This method returns the long integer value of the new node item key. \par \par \b1 Please note! \b0 Adding node items with \cf1 String Keys \cf0 attached to them \b1 can \b0 have expanded images. 
 [Arguments Return] as Long
@@ -420,7 +420,7 @@ ProjectFileName
 [Method]
 InsertAfter
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method adds a child tree item or top level tree item after an indicated tree a child tree item or top level. This method returns the long integer value of the new node item key. \par \par \b1 Please note! \b0 If the tree control was populated using \cf1 String Keys \cf0, this method may incorrectly re-order the internal Key list so that \cf1 String Keys \cf0 will not match the correct node items. This is a design flaw of the Microsoft Tree control and a work around has not be found.
  \par \par \b1 Please note! \b0 Adding node items with \cf1 String Keys \cf0 attached to them \b1 can \b0 have expanded images. 
@@ -445,7 +445,7 @@ ProjectFileName
 [Method]
 AddParent (Using Lists)
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method adds a multiple top level tree items.
 \par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
@@ -476,7 +476,7 @@ ProjectFileName
 [Method]
 AddParent (Without Lists)
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method adds a top level tree item. This is a tree item that is not connected to a parent or owner tree item. This method returns the long integer value of the new node item key. \par \par \b1 Please note! \b0 Adding node items with \cf1 String Keys \cf0 attached to them \b1 can \b0 have expanded images. 
 [Arguments Return] or Long
@@ -495,7 +495,7 @@ ProjectFileName
 [Method]
 Clear
 [Prefix]
-Odcl_Tree_
+dcl_Tree_
 [Desc]
 This method clears the TreeControl of all node items.
 [Arguments]

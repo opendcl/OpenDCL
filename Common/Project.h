@@ -92,7 +92,7 @@ enum IOStatus
 
 
 
-//CProject represents the contents of a single .odc file
+//CProject represents the contents of a single .odcl file
 class CProject : public CObject
 {
 protected:		

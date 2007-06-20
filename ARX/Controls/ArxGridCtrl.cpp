@@ -349,8 +349,8 @@ void CArxGridCtrl::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 			m_pFolderButton->SetThemeHelper(mpControlPane->GetThemeHelper());
 			m_pFolderButton->SetFlat(FALSE);
 		}
+		m_pFolderButton->MoveWindow( &rc, TRUE );
 		m_pFolderButton->ShowWindow(TRUE);		
-		
 	}
 	else if (nAsPick == 1)
 	{			
@@ -361,8 +361,8 @@ void CArxGridCtrl::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 			m_pPickButton->SetThemeHelper(mpControlPane->GetThemeHelper());
 			m_pPickButton->SetFlat(FALSE);
 		}
+		m_pPickButton->MoveWindow( &rc, TRUE );
 		m_pPickButton->ShowWindow(TRUE);		
-		
 	}
 	else if (nAsPick == 0)
 	{
@@ -373,9 +373,9 @@ void CArxGridCtrl::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 			m_pEllipsesButton->SetThemeHelper(mpControlPane->GetThemeHelper());
 			m_pEllipsesButton->SetFlat(FALSE);
 		}
+		m_pEllipsesButton->MoveWindow( &rc, TRUE );
 		m_pEllipsesButton->ShowWindow(TRUE);
 	}
-	m_pEllipsesButton->MoveWindow( &rc, TRUE );
 }
 
 void CArxGridCtrl::DrawFontIcons(CDC* pDC, CRect rc, int &nImage, CString &sText)

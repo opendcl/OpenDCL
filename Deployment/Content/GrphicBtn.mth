@@ -1,13 +1,13 @@
 [Method]
 FlushGraphicButtons
 [Prefix]
-Odcl_
+dcl_
 [Desc]
 This method is intended to force all GraphicButtons to repaint themselves.  This method is usefull when controling transparency of GraphicButtons.  This method is intended to be called after the GraphicButton(s) has first been hidden, then reshown.
 \par For Example
-    (Odcl_Control_SetProperty Test_DclForm2_GraphicButton1 "Visible" 0)
-    (Odcl_Control_SetProperty Test_DclForm2_GraphicButton1 "Visible" 1)
-    (Odcl_FlushGraphicButtons Test_DclForm2)
+    (dcl_Control_SetProperty Test_DclForm2_GraphicButton1 "Visible" 0)
+    (dcl_Control_SetProperty Test_DclForm2_GraphicButton1 "Visible" 1)
+    (dcl_FlushGraphicButtons Test_DclForm2)
 [Arguments]
 ProjectFileName
 

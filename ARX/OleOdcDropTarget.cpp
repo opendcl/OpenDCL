@@ -48,7 +48,7 @@ void ReadExternalDWGfile(CString sPath, CString sFile, acedDwgPoint ptPoint, boo
 
 	if (bXref)
 	{
-		sCommand = _T("(Odcl_LoadXref \"");
+		sCommand = _T("(dcl_LoadXref \"");
 		sCommand +=	sLispSafePath +	_T("\" \"") + sFile + _T("\" (list ");
 		sCommand +=	RtoS(ptPoint[0]) + _T(" ");
 		sCommand +=	RtoS(ptPoint[1]) + _T(" "); 
@@ -56,7 +56,7 @@ void ReadExternalDWGfile(CString sPath, CString sFile, acedDwgPoint ptPoint, boo
 	}
 	else
 	{
-		sCommand = _T("(Odcl_Insert \"");
+		sCommand = _T("(dcl_Insert \"");
 		sCommand +=	sLispSafePath + sFile +	_T("\" (list ");
 		sCommand +=	RtoS(ptPoint[0]) + _T(" ");
 		sCommand +=	RtoS(ptPoint[1]) + _T(" "); 

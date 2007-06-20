@@ -1,15 +1,13 @@
 #pragma once
 
 
-extern LPCTSTR ProjectPrefix;
-extern LPCTSTR DistributionPrefix;
 extern LPCTSTR ErrorProjectFile;
 extern LPCTSTR ErrorWasNotFound;
 extern LPCTSTR ErrorInaDirectory;
 extern LPCTSTR Error2ndArgMissing;
 extern LPCTSTR ErrorProjectNotLoaded;
 extern LPCTSTR ErrorDemoCreation;
-extern LPCTSTR ErrorObjectDCL;
+extern LPCTSTR ErrorOpenDCL;
 extern LPCTSTR ErrorFormNotFound;
 extern LPCTSTR ErrorTabsToolTipTitle;
 extern LPCTSTR ErrorDialogNotFound;

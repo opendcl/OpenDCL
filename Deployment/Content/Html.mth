@@ -1,7 +1,7 @@
 [Method]
 Navigate
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method will force the HtmlControl to navigate to a URL or directory.  For example “https://sourceforge.net/projects/opendcl/” or “c:\\temp”
 [Arguments]
@@ -14,7 +14,7 @@ ProjectFileName
 [Method]
 Refresh
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method forces the HtmlControl to reload the current file.
 [Arguments]
@@ -24,7 +24,7 @@ ProjectFileName
 [Method]
 GoBack
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method forces the HtmlControl to go back to its previously selected file.
 [Arguments]
@@ -34,7 +34,7 @@ ProjectFileName
 [Method]
 GoHome
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method forces the HtmlControl to go to the system’s selected home URL page.
 [Arguments]
@@ -45,7 +45,7 @@ ProjectFileName
 [Method]
 GoSearch
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method forces the HtmlControl to go to the system’s selected search page.
 [Arguments]
@@ -56,7 +56,7 @@ ProjectFileName
 [Method]
 GetLocationName
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method retrieves the name of the HtmlControl’s currently selected location.
 [Arguments Return] as String
@@ -66,7 +66,7 @@ ProjectFileName
 [Method]
 GetLocationURL
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method retrieves the URL of the HtmlControl’s currently selected location.
 [Arguments Return] as String
@@ -76,7 +76,7 @@ ProjectFileName
 [Method]
 GetOffline
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method will return a 0 or 1 indicating if the web browsing system is currently online (1) or off-line (0).
 [Arguments Return] as Integer
@@ -85,7 +85,7 @@ ProjectFileName
 [Method]
 SetOffline
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method will force the web browsing system to go online if a value of 1 is passed through the flag, or will for the web browsing system to go off-line if a value of 0 was passed.
 [Arguments]
@@ -99,7 +99,7 @@ ProjectFileName
 [Method]
 GetGetBusy
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method returns a 1 if the HtmlControl is busy loading a page or 0 if it’s not.
 [Arguments Return] as Integer
@@ -109,7 +109,7 @@ ProjectFileName
 [Method]
 GetFullName
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method returns the full name of the HtmlControl’s currently select page, including its path.
 [Arguments]
@@ -119,7 +119,7 @@ ProjectFileName
 [Method]
 UpdateHtmlCode
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method will update the entire Html document currently loaded. Please note that an Html document must have already been loaded to use this method successfully.
 [Arguments]
@@ -131,7 +131,7 @@ ProjectFileName
 [Method]
 ReplaceText
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method will update a portion of the Html document currently loaded, by replacing specified text with new text. This method is useful for retrieving input values of form controls in the Html document.
 [Arguments]
@@ -144,7 +144,7 @@ ProjectFileName
 [Method]
 GetHtmlDocument
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method will retrieve the main portion of the Html document currently loaded. It will not retrieve Java code, header or footer portions of the Html document.
 [Arguments Return] as String
@@ -154,7 +154,7 @@ ProjectFileName
 [Method]
 Stop
 [Prefix]
-Odcl_Html_
+dcl_Html_
 [Desc]
 This method forces the HtmlControl to stop its current activity.
 [Arguments]

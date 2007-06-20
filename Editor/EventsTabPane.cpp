@@ -337,7 +337,7 @@ void CEventsTabPane::SetDefunPreview()
 		else
 		{
 			// add the default message box to show the programmer the event has not been updated
-			sDefunBody.Format( _T("     (Odcl_MessageBox \"To Do: code must be added to event handler\\r\\n%s\" \"To do\")"),
+			sDefunBody.Format( _T("     (dcl_MessageBox \"To Do: code must be added to event handler\\r\\n%s\" \"To do\")"),
 												 sEventDefun );
 		}
 

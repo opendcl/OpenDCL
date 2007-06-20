@@ -1,7 +1,7 @@
 [Method]
 AddString
 [Prefix]
-Odcl_OptionList_
+dcl_OptionList_
 [Desc]
 This method will add a string to the specified ListBox.
 [Arguments]
@@ -12,7 +12,7 @@ ProjectFileName
 
 [Method]
 SetEnabled
-Odcl_OptionList_
+dcl_OptionList_
 [Prefix]
 [Desc]
 This method will force an option list item as enabled (T or 1) or disabled (Nil or 0).
@@ -27,7 +27,7 @@ ProjectFileName
 [Method]
 AddList
 [Prefix]
-Odcl_OptionList_
+dcl_OptionList_
 [Desc]
 This method will add a list of strings to the specified ListBox.
 [Arguments]
@@ -39,7 +39,7 @@ ProjectFileName
 [Method]
 GetText
 [Prefix]
-Odcl_OptionList_
+dcl_OptionList_
 [Desc]
 This method will retrieve a requested list item.
 [Arguments Return] as String
@@ -51,7 +51,7 @@ ProjectFileName
 [Method]
 GetCount
 [Prefix]
-Odcl_OptionList_
+dcl_OptionList_
 [Desc]
 This method will return the total number of list items.
 [Arguments Return] as Integer
@@ -62,7 +62,7 @@ ProjectFileName
 [Method]
 SetCurSel
 [Prefix]
-Odcl_OptionList_
+dcl_OptionList_
 [Desc]
 This method will set the currently selected list item in a single selection ListBox. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
@@ -74,7 +74,7 @@ ProjectFileName
 [Method]
 GetCurSel
 [Prefix]
-Odcl_OptionList_
+dcl_OptionList_
 [Desc]
 This method will return the index of the currently selected list item in a single selection ListBox. -1 will be returned if nothing is selected.
 [Arguments Return] as Integer
@@ -84,7 +84,7 @@ ProjectFileName
 [Method]
 GetTopIndex
 [Prefix]
-Odcl_OptionList_
+dcl_OptionList_
 [Desc]
 This method retrieves the index of the first visible item in a ListBox.
 [Arguments Return] as Integer
@@ -94,7 +94,7 @@ ProjectFileName
 [Method]
 SetTopIndex
 [Prefix]
-Odcl_OptionList_
+dcl_OptionList_
 [Desc]
 This method ensures that the indicated ListBox item is visible. If it’s not the ListBox is scrolled to ensure the item is visible.
 [Arguments]
@@ -106,7 +106,7 @@ ProjectFileName
 [Method]
 DeleteString
 [Prefix]
-Odcl_OptionList_
+dcl_OptionList_
 [Desc]
 This method will delete a list item from the ListBox.
 [Arguments]
@@ -118,7 +118,7 @@ ProjectFileName
 [Method]
 InsertString
 [Prefix]
-Odcl_OptionList_
+dcl_OptionList_
 [Desc]
 This method will insert a list item in the ListBox.
 [Arguments Return] as Integer
@@ -132,7 +132,7 @@ ProjectFileName
 [Method]
 SetTttTitle
 [Prefix]
-Odcl_OptionList_
+dcl_OptionList_
 [Desc]
 This method sets the title text of the tool tip text for an option button in the list.
 [Arguments]
@@ -146,7 +146,7 @@ ProjectFileName
 [Method]
 Clear
 [Prefix]
-Odcl_OptionList_
+dcl_OptionList_
 [Desc]
 This method will clear the ListBox of all its items.
 [Arguments]

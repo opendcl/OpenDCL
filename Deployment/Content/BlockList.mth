@@ -1,7 +1,7 @@
 [Method]
 CountItems
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will return total number of items in the ListView control.
 [Arguments Return] as Integer
@@ -11,7 +11,7 @@ ProjectFileName
 [Method]
 SetCurSel
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will force an item to be selected and will also scroll the ListView to ensure the item is displayed. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
@@ -24,7 +24,7 @@ ProjectFileName
 [Method]
 Arrange
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will format the layout of all the items in the ListView control. \par
 \par \pard\fi-1100\li1100 0   \b Left\b0 \tab Aligns items along the left edge of the ListView
@@ -42,7 +42,7 @@ ProjectFileName
 [Method]
 GetSelCount
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will return the selected item count.
 [Arguments Return] as Integer
@@ -52,7 +52,7 @@ ProjectFileName
 [Method]
 GetItemText
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will return the text of an item in a ListView control. 
 [Arguments Return] as String
@@ -64,7 +64,7 @@ ProjectFileName
 [Method]
 GetSelectedItems
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will return a list of all selected items in the ListView control. 
 [Arguments Return] as List as Strings
@@ -73,7 +73,7 @@ ProjectFileName
 [Method]
 GetSelectedNths
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will return a list of all indexes of the selected items in the ListView control. 
 [Arguments Return] as List of Integers
@@ -83,7 +83,7 @@ ProjectFileName
 [Method]
 SortTextItems
 [Prefix]
-Odcl_ListView_
+dcl_ListView_
 [Desc]
 This method will sort the columns in ascending or descending order, based on the column index provided.  
 [Arguments]
@@ -96,7 +96,7 @@ ProjectFileName
 [Method]
 LoadDwg
 [Prefix]
-Odcl_BlockList_
+dcl_BlockList_
 [Desc]
 This method will load an external Dwg file and list the blocks available in it. 
 [Arguments]
@@ -109,7 +109,7 @@ ProjectFileName
 [Method]
 Reset
 [Prefix]
-Odcl_BlockList_
+dcl_BlockList_
 [Desc]
 This method will reset the BlockList to display the blocks of the current Dwg file.
 [Arguments]
@@ -120,7 +120,7 @@ ProjectFileName
 [Method]
 GetFileName
 [Prefix]
-Odcl_BlockList_
+dcl_BlockList_
 [Desc]
 This method will return the file name of the external loaded Dwg file. If Nil is returned no external Dwg file was loaded.
 [Arguments Return] as String or Nil

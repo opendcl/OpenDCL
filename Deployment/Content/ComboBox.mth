@@ -1,7 +1,7 @@
 [Method]
 AddString
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will add a string to the specified ComboBox. This method will return the index of the new inserted item.
 [Arguments as Integer]
@@ -13,7 +13,7 @@ ProjectFileName
 [Method]
 AddPath
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will add a path to a directory selection ComboBox.
 [Arguments]
@@ -26,7 +26,7 @@ ProjectFileName
 [Method]
 GetTBText
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method gets the text in the control's internal TextBox.
 [Arguments Return] as String
@@ -36,7 +36,7 @@ ProjectFileName
 [Method]
 Dir
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will fill the ComboBox with a list of files found in the directory search that matches the \cf1 sExtension \cf0 argument.  If the \cf1 sExtension \cf0 is not specified *.* is assumed.
 [Arguments]
@@ -50,7 +50,7 @@ ProjectFileName
 [Method]
 GetDir
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will retrieve the currently selected directory of the directory combo box.
 [Arguments]
@@ -61,7 +61,7 @@ ProjectFileName
 [Method]
 GetLBText
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method gets the text of a list item from the control's internal ListBox.
 [Arguments Return] as String
@@ -73,7 +73,7 @@ ProjectFileName
 [Method]
 SetDroppedWidth
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method sets the minimum allowable width for the control's drop-down ListBox.
 [Arguments]
@@ -84,7 +84,7 @@ ProjectFileName
 [Method]
 GetDroppedWidth
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method retrieves the minimum allowable width for the control's drop-down ListBox.
 [Arguments Return] as Integer
@@ -94,7 +94,7 @@ ProjectFileName
 [Method]
 SetEditSel
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method highlights characters in the edit control of a ComboBox using a start and end position.
 [Arguments]
@@ -108,7 +108,7 @@ ProjectFileName
 [Method]
 GetEditSel
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will return a list indicating the start and end position of the selected characters in the edit control of a ComboBox.
 [Arguments Return] as List of Integers
@@ -118,7 +118,7 @@ ProjectFileName
 [Method]
 FindLineWeight
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will return the index of a specified line weight in a ComboBox that has the Style property set to 5 - LineWeight.
 [Arguments Return] as Integer
@@ -131,7 +131,7 @@ ProjectFileName
 [Method]
 FindColor
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will return the index of a specified color in a ComboBox that has the Style property set to 4 - Color.
 [Arguments Return] as Integer
@@ -145,7 +145,7 @@ ProjectFileName
 [Method]
 AddColor
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will add a color to the specified ComboBox that has the Style property set to 4 - Color.
 [Arguments]
@@ -157,7 +157,7 @@ ProjectFileName
 [Method]
 AddList
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will add a list of strings to the specified ComboBox.
 [Arguments]
@@ -170,7 +170,7 @@ ProjectFileName
 [Method]
 Clear
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will clear the ComboBox of all its items.
 [Arguments]
@@ -181,7 +181,7 @@ ProjectFileName
 [Method]
 GetCount
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will return the total number of list items.
 [Arguments Return] as Integer
@@ -191,7 +191,7 @@ ProjectFileName
 [Method]
 SetCurSel
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will set the currently selected list item in a single selection ComboBox. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
@@ -203,7 +203,7 @@ ProjectFileName
 [Method]
 GetCurSel
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will return the index of the currently selected list item in a single selection ComboBox. -1 will be returned if nothing is selected.
 [Arguments Return] as Integer
@@ -213,7 +213,7 @@ ProjectFileName
 [Method]
 GetTopIndex
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method retrieves the index of the first visible item in a ComboBox.
 [Arguments Return] as Integer
@@ -222,7 +222,7 @@ ProjectFileName
 [Method]
 SetTopIndex
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method ensures that the indicated ComboBox item is visible. If it's not the ComboBox is scrolled to ensure the item is visible.
 [Arguments]
@@ -234,7 +234,7 @@ ProjectFileName
 [Method]
 SetItemData
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will set the associated item data for the indicated list item. The item data will only accept integer values.
 [Arguments]
@@ -248,7 +248,7 @@ ProjectFileName
 [Method]
 GetItemData
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will retrieve the associated item data for the indicated list item.
 [Arguments Return] as Integer
@@ -260,7 +260,7 @@ ProjectFileName
 [Method]
 DeleteString
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will delete a list item from the ComboBox.
 [Arguments]
@@ -272,7 +272,7 @@ ProjectFileName
 [Method]
 InsertString
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method will insert a list item in the ComboBox.
 [Arguments Return] as Integer
@@ -286,9 +286,9 @@ ProjectFileName
 [Method]
 FindStringExact
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
-This method finds the first string in a ComboBox that contains a list item with the exact string match without changing the ComboBox selection. A search for "Example Text" will find "Example Text". Use the Odcl_ComboBox_SelectString function instead to both find and select a string.
+This method finds the first string in a ComboBox that contains a list item with the exact string match without changing the ComboBox selection. A search for "Example Text" will find "Example Text". Use the dcl_ComboBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
 ProjectFileName
 \par\tab SearchString
@@ -298,9 +298,9 @@ ProjectFileName
 [Method]
 FindString
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
-This method finds the first string in a ComboBox that contains a list item with the specified prefix or partial match without changing the ComboBox selection. A search for "Text" will find "Example Text". Use the Odcl_ComboBox_SelectString function instead to both find and select a string.
+This method finds the first string in a ComboBox that contains a list item with the specified prefix or partial match without changing the ComboBox selection. A search for "Text" will find "Example Text". Use the dcl_ComboBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
 ProjectFileName
 \par\tab SearchString
@@ -310,7 +310,7 @@ ProjectFileName
 [Method]
 SelectString
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method finds the first string in a ComboBox that contains the specified prefix and selects this list item in the ComboBox.
 [Arguments Return] as Integer
@@ -323,7 +323,7 @@ ProjectFileName
 [Method]
 ClearEdit
 [Prefix]
-Odcl_ComboBox_
+dcl_ComboBox_
 [Desc]
 This method clears the control's internal TextBox selection (if any)
 [Arguments]

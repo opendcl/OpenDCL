@@ -56,6 +56,8 @@
 #define IDS_UNTITILED                   84
 #define IDS_DESIGNTIMEONLY              85
 #define IDS_BADACTIVEX                  86
+#define IDS_DESIGNTIMEONLY2             87
+#define IDS_HIDDENPROP                  87
 #define IDS_NOGRID                      88
 #define IDS_AGRID                       89
 #define IDS_WILLBE                      90
@@ -672,8 +674,8 @@
 #define IDS_TRIPLESPACE                 14561
 #define IDS_CF1                         14562
 #define IDS_OPTIONAL                    14563
-#define IDS_Odcl_AxControl_             14564
-#define IDS_Odcl_AxObject_              14565
+#define IDS_dcl_AxControl_              14564
+#define IDS_dcl_AxObject_               14565
 #define IDS_PARPAR                      14566
 #define IDS_OLENOTE1                    14568
 #define IDS_OLENOTE2                    14569

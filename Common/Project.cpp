@@ -21,6 +21,7 @@
 #include "AxEventDescriptor.h"
 #include "AxMethodDescriptor.h"
 #include "ProjectCollection.h"
+#include "Base64.h"
 #include <fstream>
 #include <stdio.h>
 
@@ -656,12 +657,49 @@ bool CProject::IsInUse() const
 
 IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 {
+	CString sExt = CString( pszFilePath ).Right( 4 );
+	if( sExt.CompareNoCase( _T(".lsp") ) == 0 )
+	{
+		try
+		{
+			CStdioFile SourceFile( pszFilePath, CFile::modeRead );
+			if (!SourceFile)
+				return statFileNotFound;
+			CStringA sRawData;
+			UINT cchData = SourceFile.Read( sRawData.GetBuffer( (int)SourceFile.GetLength() ), (UINT)SourceFile.GetLength() );
+			sRawData.ReleaseBufferSetLength( cchData );
+			if( cchData == 0 )
+				return statReadFailed;
+			std::string sData = base64_decode( (LPCSTR)sRawData );
+			if( sData.length() == 0 )
+				return statReadFailed;
+			CMemFile Data( sData.length() );
+			Data.Write( sData.c_str(), sData.length() );
+			Data.SeekToBegin();
+			try
+			{
+				CArchiveEx ar( &Data, CArchive::load, NULL, _T("ObjectDCL"), TRUE);
+				Serialize( ar );
+				ar.Close();
+			}
+			catch(...)
+			{
+				return statInvalidFormat;
+			}
+		}
+		catch(...)
+		{
+			return statFileNotFound;
+		}
+		return statOK;
+	}
+
 	CFile SrcFile;
 	try
 	{
 		SrcFile.Open( pszFilePath, CFile::modeRead | CFile::shareDenyWrite | CFile::osSequentialScan );
 		if (!SrcFile)
-			return statFail;
+			return statFileNotFound;
 
 		msProjectFilePath = SrcFile.GetFilePath();
 		msBaseFileName = StripPathFromFileName( msProjectFilePath );
@@ -710,25 +748,49 @@ IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 
 IOStatus CProject::WriteToFile( LPCTSTR pszFilePath )
 {
-	TRY
+	try
 	{
-		CFile DestFile( pszFilePath, CFile::modeWrite | CFile::shareExclusive | CFile::modeCreate );
-		if (!DestFile)
-			return statFileNotFound;
+		CString sExt = CString( pszFilePath ).Right( 4 );
+		if( sExt.CompareNoCase( _T(".lsp") ) == 0 )
 		{
-			CArchiveEx archSave(&DestFile, CArchive::store, NULL, _T("ObjectDCL"), TRUE);
-			Serialize(archSave);
-			archSave.Close();
-			msProjectFilePath = DestFile.GetFilePath();
+			CStdioFile DestFile( pszFilePath, CFile::modeWrite | CFile::shareExclusive | CFile::modeCreate );
+			if (!DestFile)
+				return statFileNotFound;
+			CMemFile Data( 0x10000 );
+			CArchiveEx ar( &Data, CArchive::store | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
+			Serialize( ar );
+			ar.Close();
+			UINT cbData = (UINT)Data.GetLength();
+			if( cbData == 0 )
+				return statWriteFailed;
+			BYTE* pbData = Data.Detach();
+			CString sRawData = base64_encode( pbData, cbData ).c_str();
+			Data.Attach( pbData, cbData );
+			Data.Close();
+			sRawData.Replace( _T("\r\n"), _T("\"\n\"") );
+			CString sFormattedData;
+			sFormattedData.Format( _T("'(\"%s\")"), (LPCTSTR)sRawData );
+			DestFile.Write( sFormattedData, sFormattedData.GetLength() );
+			DestFile.Flush();
 		}
-		DestFile.Flush();
+		else
+		{
+			CFile DestFile( pszFilePath, CFile::modeWrite | CFile::shareExclusive | CFile::modeCreate );
+			if (!DestFile)
+				return statFileNotFound;
+			{
+				CArchiveEx archSave(&DestFile, CArchive::store, NULL, _T("ObjectDCL"), TRUE);
+				Serialize(archSave);
+				archSave.Close();
+				msProjectFilePath = DestFile.GetFilePath();
+			}
+			DestFile.Flush();
+		}
 	}
-	CATCH_ALL(e)
+	catch(...)
 	{
-		DELETE_EXCEPTION(e);
 		return statFail;
 	}
-	END_CATCH_ALL;
 	return statOK;
 }
 

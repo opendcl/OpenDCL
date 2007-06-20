@@ -11,7 +11,6 @@
 #include "StgFile.h"
 #include "DclFormObject.h"
 #include "EditorWorkspace.h"
-#include "Base64.h"
 
 
 #define DELETE_EXCEPTION(e) do { e->Delete(); } while (0)
@@ -104,46 +103,11 @@ BOOL COpenDCLDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	theEditorWorkspace.SetActiveProject( pProject );
 	theEditorWorkspace.SetActiveDocument(this); //kludge [ORW]
 
-	CString sExt( lpszPathName );
-	sExt = sExt.MakeReverse().Left( 5 ).MakeReverse();
-	if( sExt.CompareNoCase( _T(".odce") ) == 0 )
+	IOStatus stat = pProject->ReadFromFile( lpszPathName );
+	if( stat != statOK )
 	{
-		TRY
-		{
-			CStdioFile SourceFile( lpszPathName, CFile::modeRead );
-			if (!SourceFile)
-				return FALSE;
-			CStringA sRawData;
-			UINT cchData = SourceFile.Read( sRawData.GetBuffer( (int)SourceFile.GetLength() ), (UINT)SourceFile.GetLength() );
-			sRawData.ReleaseBufferSetLength( cchData );
-			if( cchData == 0 )
-				return FALSE;
-			std::string sData = base64_decode( (LPCTSTR)sRawData );
-			if( sData.length() == 0 )
-				return FALSE;
-			CMemFile Data( sData.length() );
-			Data.Write( sData.c_str(), sData.length() );
-			Data.SeekToBegin();
-			CArchiveEx ar( &Data, CArchive::load, NULL, _T("ObjectDCL"), TRUE);
-			activeProject->Serialize( ar );
-			ar.Close();
-		}
-		CATCH_ALL(e)
-		{
-			ReportSaveLoadException(lpszPathName, e, FALSE, AFX_IDP_FAILED_TO_OPEN_DOC);
-			DELETE_EXCEPTION(e);
-			return FALSE;
-		}
-		END_CATCH_ALL;
-	}
-	else 
-	{
-		IOStatus stat = pProject->ReadFromFile( lpszPathName );
-		if( stat != statOK )
-		{
-			ReportSaveLoadException(lpszPathName, NULL, FALSE, AFX_IDP_FAILED_TO_OPEN_DOC);
-			return FALSE;
-		}
+		ReportSaveLoadException(lpszPathName, NULL, FALSE, AFX_IDP_FAILED_TO_OPEN_DOC);
+		return FALSE;
 	}
 
 	SetModifiedFlag(FALSE);     // start off with unmodified
@@ -169,38 +133,7 @@ BOOL COpenDCLDoc::OnSaveDocument(LPCTSTR lpszPathName)
 	CWaitCursor wait;
 
 	activeProject->SetKeyName( lpszPathName ); //updating the key name *before* saving
-	CString sExt( lpszPathName );
-	sExt = sExt.MakeReverse().Left( 5 ).MakeReverse();
-	if( sExt.CompareNoCase( _T(".odce") ) == 0 )
-	{
-		TRY
-		{
-			CStdioFile DestFile( lpszPathName, CFile::modeWrite | CFile::shareExclusive | CFile::modeCreate );
-			if (!DestFile)
-				return FALSE;
-			CMemFile Data( 0x10000 );
-			CArchiveEx ar( &Data, CArchive::store | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
-			activeProject->Serialize( ar );
-			ar.Close();
-			UINT cbData = (UINT)Data.GetLength();
-			if( cbData == 0 )
-				return FALSE;
-			BYTE* pbData = Data.Detach();
-			std::string sRawData = base64_encode( pbData, cbData );
-			Data.Attach( pbData, cbData );
-			Data.Abort();
-			DestFile.Write( sRawData.c_str(), sRawData.length() );
-			DestFile.Flush();
-		}
-		CATCH_ALL(e)
-		{
-			ReportSaveLoadException(sFileName, e, TRUE, AFX_IDP_FAILED_TO_SAVE_DOC);
-			DELETE_EXCEPTION(e);
-			return FALSE;
-		}
-		END_CATCH_ALL;
-	}
-	else if (activeProject->WriteToFile(sFileName) != statOK)
+	if (activeProject->WriteToFile(sFileName) != statOK)
 	{
 		ReportSaveLoadException(sFileName, NULL, TRUE, AFX_IDP_FAILED_TO_SAVE_DOC);
 		return FALSE;

@@ -690,8 +690,8 @@ public:
 	size_t GetPropertyIdCount() const { return mPropIds.size(); }
 
 protected:
-	static int ads_odcl_GetCtrlProperty(void);
-	static int ads_odcl_SetCtrlProperty(void);
+	static int ads_dcl_GetCtrlProperty(void);
+	static int ads_dcl_SetCtrlProperty(void);
 
 public:
 	CARXApp () : AcRxArxApp () {}
@@ -708,6 +708,13 @@ public:
 		BOOL ret=acedRegisterExtendedTab( sModulePath, _T("OptionsDialog") );
 
 		GetPropertyIdSet( mPropIds );
+
+		DWORD dwMajor;
+		DWORD dwMinor;
+		DWORD dwThird;
+		DWORD dwFourth;
+		if( theWorkspace.GetModuleVersionInfo( dwMajor, dwMinor, dwThird, dwFourth, _hdllInstance ) )
+			acutPrintf( theWorkspace.LoadResourceString( IDS_BANNER ), dwMajor, dwMinor, dwThird, dwFourth );
 
 		return (retCode) ;
 	}
@@ -766,7 +773,7 @@ public:
 		if( retCode == AcRx::kRetOK )
 		{
 			//register control specific ADS functions
-			static const CString sPrefix = _T("odcl_");
+			static const CString sPrefix = _T("dcl_");
 			for( int idxFunction = 0; idxFunction < _elements(grAdsFunctionTable); ++idxFunction )
 			{
 				const AdsFunctionTableEntry& Entry = grAdsFunctionTable[idxFunction];
@@ -785,8 +792,8 @@ public:
 				{
 					acedDefun( sGetPrefix + pszPropName, ADSPROPFUNCBASE + id );
 					acedDefun( sSetPrefix + pszPropName, ADSPROPFUNCBASE + id + nMaxPropertyId );
-					acedRegFunc( ads_odcl_GetCtrlProperty, ADSPROPFUNCBASE + id );
-					acedRegFunc( ads_odcl_SetCtrlProperty, ADSPROPFUNCBASE + id + nMaxPropertyId );
+					acedRegFunc( ads_dcl_GetCtrlProperty, ADSPROPFUNCBASE + id );
+					acedRegFunc( ads_dcl_SetCtrlProperty, ADSPROPFUNCBASE + id + nMaxPropertyId );
 				}
 			}
 
@@ -814,8 +821,8 @@ public:
 	{  //do nothing, just need it here so that AutoCAD doesn't complain about an unknown command
 	}
 
-	// ----- ads_odcl_getversion symbol (do not rename)
-	static int ads_odcl_getversion(void)
+	// ----- ads_dcl_getversion symbol (do not rename)
+	static int ads_dcl_getversion(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -836,8 +843,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_getversion symbol (do not rename)
-	static int ads_odcl_getversionex(void)
+	// ----- ads_dcl_getversion symbol (do not rename)
+	static int ads_dcl_getversionex(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -858,19 +865,19 @@ public:
 	}
 
 	// ----- ads_loadproject symbol (do not rename)
-	static int ads_odcl_loadproject(void)
+	static int ads_dcl_loadproject(void)
 	{
-		return ads_odcl_project_load();
+		return ads_dcl_project_load();
 	}
 
-	// ----- ads_odcl_load_dialog symbol (do not rename)
-	static int ads_odcl_load_dialog(void)
+	// ----- ads_dcl_load_dialog symbol (do not rename)
+	static int ads_dcl_load_dialog(void)
 	{
-		return ads_odcl_project_load () ;
+		return ads_dcl_project_load () ;
 	}
 
-	// ----- ads_odcl_sendstring symbol (do not rename)
-	static int ads_odcl_sendstring(void)
+	// ----- ads_dcl_sendstring symbol (do not rename)
+	static int ads_dcl_sendstring(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -896,8 +903,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_invokefunc symbol (do not rename)
-	static int ads_odcl_invokefunc(void)
+	// ----- ads_dcl_invokefunc symbol (do not rename)
+	static int ads_dcl_invokefunc(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -920,8 +927,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_new_dialog symbol (do not rename)
-	static int ads_odcl_new_dialog(void)
+	// ----- ads_dcl_new_dialog symbol (do not rename)
+	static int ads_dcl_new_dialog(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1001,14 +1008,14 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_unload_dialog symbol (do not rename)
-	static int ads_odcl_unload_dialog(void)
+	// ----- ads_dcl_unload_dialog symbol (do not rename)
+	static int ads_dcl_unload_dialog(void)
 	{
-		return ads_odcl_project_unload();
+		return ads_dcl_project_unload();
 	}
 
-	// ----- ads_odcl_done_dialog symbol (do not rename)
-	static int ads_odcl_done_dialog(void)
+	// ----- ads_dcl_done_dialog symbol (do not rename)
+	static int ads_dcl_done_dialog(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -1032,8 +1039,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_start_dialog symbol (do not rename)
-	static int ads_odcl_start_dialog(void)
+	// ----- ads_dcl_start_dialog symbol (do not rename)
+	static int ads_dcl_start_dialog(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs)
@@ -1061,8 +1068,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_start_list symbol (do not rename)
-	static int ads_odcl_start_list(void)
+	// ----- ads_dcl_start_list symbol (do not rename)
+	static int ads_dcl_start_list(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1136,8 +1143,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_add_list symbol (do not rename)
-	static int ads_odcl_add_list(void)
+	// ----- ads_dcl_add_list symbol (do not rename)
+	static int ads_dcl_add_list(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1244,8 +1251,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_end_list symbol (do not rename)
-	static int ads_odcl_end_list(void)
+	// ----- ads_dcl_end_list symbol (do not rename)
+	static int ads_dcl_end_list(void)
 	{
 		//----- Remove the following line if you do not expect any argument for this ADS function
 		struct resbuf *pArgs =acedGetArgs () ;
@@ -1256,8 +1263,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_action_tile symbol (do not rename)
-	static int ads_odcl_action_tile(void)
+	// ----- ads_dcl_action_tile symbol (do not rename)
+	static int ads_dcl_action_tile(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1340,8 +1347,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_set_tile symbol (do not rename)
-	static int ads_odcl_set_tile(void)
+	// ----- ads_dcl_set_tile symbol (do not rename)
+	static int ads_dcl_set_tile(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1376,8 +1383,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_mode_tile symbol (do not rename)
-	static int ads_odcl_mode_tile(void)
+	// ----- ads_dcl_mode_tile symbol (do not rename)
+	static int ads_dcl_mode_tile(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1465,8 +1472,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_get_tile symbol (do not rename)
-	static int ads_odcl_get_tile(void)
+	// ----- ads_dcl_get_tile symbol (do not rename)
+	static int ads_dcl_get_tile(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1498,18 +1505,18 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_get_attr symbol (do not rename)
-	static int ads_odcl_get_attr(void)
+	// ----- ads_dcl_get_attr symbol (do not rename)
+	static int ads_dcl_get_attr(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
-		acedAlert(_T("(odcl_Get_Attr) is not implemented yet!"));
+		acedAlert(_T("(dcl_Get_Attr) is not implemented yet!"));
 
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_start_image symbol (do not rename)
-	static int ads_odcl_start_image(void)
+	// ----- ads_dcl_start_image symbol (do not rename)
+	static int ads_dcl_start_image(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1532,8 +1539,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_vector_image symbol (do not rename)
-	static int ads_odcl_vector_image(void)
+	// ----- ads_dcl_vector_image symbol (do not rename)
+	static int ads_dcl_vector_image(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1613,8 +1620,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_fill_image symbol (do not rename)
-	static int ads_odcl_fill_image(void)
+	// ----- ads_dcl_fill_image symbol (do not rename)
+	static int ads_dcl_fill_image(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1694,8 +1701,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_dimx_tile symbol (do not rename)
-	static int ads_odcl_dimx_tile(void)
+	// ----- ads_dcl_dimx_tile symbol (do not rename)
+	static int ads_dcl_dimx_tile(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1720,8 +1727,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_dimy_tile symbol (do not rename)
-	static int ads_odcl_dimy_tile(void)
+	// ----- ads_dcl_dimy_tile symbol (do not rename)
+	static int ads_dcl_dimy_tile(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1746,8 +1753,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_end_image symbol (do not rename)
-	static int ads_odcl_end_image(void)
+	// ----- ads_dcl_end_image symbol (do not rename)
+	static int ads_dcl_end_image(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1770,8 +1777,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_slide_image symbol (do not rename)
-	static int ads_odcl_slide_image(void)
+	// ----- ads_dcl_slide_image symbol (do not rename)
+	static int ads_dcl_slide_image(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -1865,8 +1872,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_getlinetype symbol (do not rename)
-	static int ads_odcl_getlinetype(void)
+	// ----- ads_dcl_getlinetype symbol (do not rename)
+	static int ads_dcl_getlinetype(void)
 	{
 		//----- Remove the following line if you do not expect any argument for this ADS function
 		struct resbuf *pArgs =acedGetArgs () ;
@@ -1882,8 +1889,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_getlineweight symbol (do not rename)
-	static int ads_odcl_getlineweight(void)
+	// ----- ads_dcl_getlineweight symbol (do not rename)
+	static int ads_dcl_getlineweight(void)
 	{
 		//----- Remove the following line if you do not expect any argument for this ADS function
 		struct resbuf *pArgs =acedGetArgs () ;
@@ -1916,8 +1923,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_show symbol (do not rename)
-	static int ads_odcl_form_show(void)
+	// ----- ads_dcl_form_show symbol (do not rename)
+	static int ads_dcl_form_show(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2012,8 +2019,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_center symbol (do not rename)
-	static int ads_odcl_form_center(void)
+	// ----- ads_dcl_form_center symbol (do not rename)
+	static int ads_dcl_form_center(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2061,8 +2068,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_resize symbol (do not rename)
-	static int ads_odcl_form_resize(void)
+	// ----- ads_dcl_form_resize symbol (do not rename)
+	static int ads_dcl_form_resize(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2104,8 +2111,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_setfocus symbol (do not rename)
-	static int ads_odcl_form_setfocus(void)
+	// ----- ads_dcl_form_setfocus symbol (do not rename)
+	static int ads_dcl_form_setfocus(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2124,8 +2131,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_hide symbol (do not rename)
-	static int ads_odcl_form_hide(void)
+	// ----- ads_dcl_form_hide symbol (do not rename)
+	static int ads_dcl_form_hide(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2153,8 +2160,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_close symbol (do not rename)
-	static int ads_odcl_form_close(void)
+	// ----- ads_dcl_form_close symbol (do not rename)
+	static int ads_dcl_form_close(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2185,8 +2192,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_getrectangle symbol (do not rename)
-	static int ads_odcl_form_getrectangle(void)
+	// ----- ads_dcl_form_getrectangle symbol (do not rename)
+	static int ads_dcl_form_getrectangle(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2216,8 +2223,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_getcontrolarea symbol (do not rename)
-	static int ads_odcl_form_getcontrolarea(void)
+	// ----- ads_dcl_form_getcontrolarea symbol (do not rename)
+	static int ads_dcl_form_getcontrolarea(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2243,8 +2250,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_closeall symbol (do not rename)
-	static int ads_odcl_form_closeall(void)
+	// ----- ads_dcl_form_closeall symbol (do not rename)
+	static int ads_dcl_form_closeall(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2266,8 +2273,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_isfloating symbol (do not rename)
-	static int ads_odcl_form_isfloating(void)
+	// ----- ads_dcl_form_isfloating symbol (do not rename)
+	static int ads_dcl_form_isfloating(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2288,8 +2295,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_isactive symbol (do not rename)
-	static int ads_odcl_form_isactive(void)
+	// ----- ads_dcl_form_isactive symbol (do not rename)
+	static int ads_dcl_form_isactive(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2308,8 +2315,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_configtab_isapplyenabled symbol (do not rename)
-	static int ads_odcl_configtab_isapplyenabled(void)
+	// ----- ads_dcl_configtab_isapplyenabled symbol (do not rename)
+	static int ads_dcl_configtab_isapplyenabled(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2328,8 +2335,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_configtab_setapplyenabled symbol (do not rename)
-	static int ads_odcl_configtab_setapplyenabled(void)
+	// ----- ads_dcl_configtab_setapplyenabled symbol (do not rename)
+	static int ads_dcl_configtab_setapplyenabled(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2348,8 +2355,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_getscreensize symbol (do not rename)
-	static int ads_odcl_getscreensize(void)
+	// ----- ads_dcl_getscreensize symbol (do not rename)
+	static int ads_dcl_getscreensize(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs)
@@ -2364,8 +2371,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_gettitlebartext symbol (do not rename)
-	static int ads_odcl_form_gettitlebartext(void)
+	// ----- ads_dcl_form_gettitlebartext symbol (do not rename)
+	static int ads_dcl_form_gettitlebartext(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2386,8 +2393,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_settitlebartext symbol (do not rename)
-	static int ads_odcl_form_settitlebartext(void)
+	// ----- ads_dcl_form_settitlebartext symbol (do not rename)
+	static int ads_dcl_form_settitlebartext(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2416,8 +2423,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_messagebox symbol (do not rename)
-	static int ads_odcl_messagebox(void)
+	// ----- ads_dcl_messagebox symbol (do not rename)
+	static int ads_dcl_messagebox(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -2507,8 +2514,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_setdialogminmaxsizes symbol (do not rename)
-	static int ads_odcl_form_setdialogminmaxsizes(void)
+	// ----- ads_dcl_form_setdialogminmaxsizes symbol (do not rename)
+	static int ads_dcl_form_setdialogminmaxsizes(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2558,8 +2565,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_gethwnd symbol (do not rename)
-	static int ads_odcl_form_gethwnd(void)
+	// ----- ads_dcl_form_gethwnd symbol (do not rename)
+	static int ads_dcl_form_gethwnd(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2577,8 +2584,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_isenabled symbol (do not rename)
-	static int ads_odcl_form_isenabled(void)
+	// ----- ads_dcl_form_isenabled symbol (do not rename)
+	static int ads_dcl_form_isenabled(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2597,8 +2604,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_isvisible symbol (do not rename)
-	static int ads_odcl_form_isvisible(void)
+	// ----- ads_dcl_form_isvisible symbol (do not rename)
+	static int ads_dcl_form_isvisible(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2617,8 +2624,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_form_enable symbol (do not rename)
-	static int ads_odcl_form_enable(void)
+	// ----- ads_dcl_form_enable symbol (do not rename)
+	static int ads_dcl_form_enable(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -2646,8 +2653,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_getharddrivesize symbol (do not rename)
-	static int ads_odcl_getharddrivesize(void)
+	// ----- ads_dcl_getharddrivesize symbol (do not rename)
+	static int ads_dcl_getharddrivesize(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -2670,8 +2677,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_getfocus symbol (do not rename)
-	static int ads_odcl_getfocus(void)
+	// ----- ads_dcl_getfocus symbol (do not rename)
+	static int ads_dcl_getfocus(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs)
@@ -2697,8 +2704,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_hideerrormsgbox symbol (do not rename)
-	static int ads_odcl_hideerrormsgbox(void)
+	// ----- ads_dcl_hideerrormsgbox symbol (do not rename)
+	static int ads_dcl_hideerrormsgbox(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs)
@@ -2709,8 +2716,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_showerrormsgbox symbol (do not rename)
-	static int ads_odcl_showerrormsgbox(void)
+	// ----- ads_dcl_showerrormsgbox symbol (do not rename)
+	static int ads_dcl_showerrormsgbox(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs)
@@ -2721,8 +2728,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_getblocksize symbol (do not rename)
-	static int ads_odcl_getblocksize(void)
+	// ----- ads_dcl_getblocksize symbol (do not rename)
+	static int ads_dcl_getblocksize(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -2767,8 +2774,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_control_gethwnd symbol (do not rename)
-	static int ads_odcl_control_gethwnd(void)
+	// ----- ads_dcl_control_gethwnd symbol (do not rename)
+	static int ads_dcl_control_gethwnd(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (!pArgs)
@@ -2821,8 +2828,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_navigatetourl symbol (do not rename)
-	static int ads_odcl_navigatetourl(void)
+	// ----- ads_dcl_navigatetourl symbol (do not rename)
+	static int ads_dcl_navigatetourl(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -2843,8 +2850,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_activateemail symbol (do not rename)
-	static int ads_odcl_activateemail(void)
+	// ----- ads_dcl_activateemail symbol (do not rename)
+	static int ads_dcl_activateemail(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -2881,8 +2888,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_browsefolder symbol (do not rename)
-	static int ads_odcl_browsefolder(void)
+	// ----- ads_dcl_browsefolder symbol (do not rename)
+	static int ads_dcl_browsefolder(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -2942,8 +2949,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_insert symbol (do not rename)
-	static int ads_odcl_insert(void)
+	// ----- ads_dcl_insert symbol (do not rename)
+	static int ads_dcl_insert(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -3177,8 +3184,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_loadxref symbol (do not rename)
-	static int ads_odcl_loadxref(void)
+	// ----- ads_dcl_loadxref symbol (do not rename)
+	static int ads_dcl_loadxref(void)
 	{
 		/* Revision 2007-01-28 [ORW]  **This change breaks existing code.**
 				The original implementation of this function expected a path without filename as the first argument and 
@@ -3261,8 +3268,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_updatevarnames symbol (do not rename)
-	static int ads_odcl_updatevarnames(void)
+	// ----- ads_dcl_updatevarnames symbol (do not rename)
+	static int ads_dcl_updatevarnames(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs)
@@ -3274,8 +3281,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_forcedwgredraw symbol (do not rename)
-	static int ads_odcl_forcedwgredraw(void)
+	// ----- ads_dcl_forcedwgredraw symbol (do not rename)
+	static int ads_dcl_forcedwgredraw(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs)
@@ -3288,8 +3295,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_getmousecoords symbol (do not rename)
-	static int ads_odcl_getmousecoords(void)
+	// ----- ads_dcl_getmousecoords symbol (do not rename)
+	static int ads_dcl_getmousecoords(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs)
@@ -3305,8 +3312,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_getdwgmousecoords symbol (do not rename)
-	static int ads_odcl_getdwgmousecoords(void)
+	// ----- ads_dcl_getdwgmousecoords symbol (do not rename)
+	static int ads_dcl_getdwgmousecoords(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs)
@@ -3368,8 +3375,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_multifiledialog symbol (do not rename)
-	static int ads_odcl_multifiledialog(void)
+	// ----- ads_dcl_multifiledialog symbol (do not rename)
+	static int ads_dcl_multifiledialog(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -3468,8 +3475,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_getpicturesize symbol (do not rename)
-	static int ads_odcl_getpicturesize(void)
+	// ----- ads_dcl_getpicturesize symbol (do not rename)
+	static int ads_dcl_getpicturesize(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -3510,8 +3517,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_setcmdbarfocus symbol (do not rename)
-	static int ads_odcl_setcmdbarfocus(void)
+	// ----- ads_dcl_setcmdbarfocus symbol (do not rename)
+	static int ads_dcl_setcmdbarfocus(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs)
@@ -3527,8 +3534,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_flushgraphicbuttons symbol (do not rename)
-	static int ads_odcl_flushgraphicbuttons(void)
+	// ----- ads_dcl_flushgraphicbuttons symbol (do not rename)
+	static int ads_dcl_flushgraphicbuttons(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -3562,8 +3569,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_xtwipstopixels symbol (do not rename)
-	static int ads_odcl_xtwipstopixels(void)
+	// ----- ads_dcl_xtwipstopixels symbol (do not rename)
+	static int ads_dcl_xtwipstopixels(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (!pArgs)
@@ -3591,8 +3598,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_ytwipstopixels symbol (do not rename)
-	static int ads_odcl_ytwipstopixels(void)
+	// ----- ads_dcl_ytwipstopixels symbol (do not rename)
+	static int ads_dcl_ytwipstopixels(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (!pArgs)
@@ -3620,8 +3627,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_xpixelstotwips symbol (do not rename)
-	static int ads_odcl_xpixelstotwips(void)
+	// ----- ads_dcl_xpixelstotwips symbol (do not rename)
+	static int ads_dcl_xpixelstotwips(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (!pArgs)
@@ -3649,8 +3656,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_ypixelstotwips symbol (do not rename)
-	static int ads_odcl_ypixelstotwips(void)
+	// ----- ads_dcl_ypixelstotwips symbol (do not rename)
+	static int ads_dcl_ypixelstotwips(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (!pArgs)
@@ -3678,8 +3685,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_getcolorvalue symbol (do not rename)
-	static int ads_odcl_getcolorvalue(void)
+	// ----- ads_dcl_getcolorvalue symbol (do not rename)
+	static int ads_dcl_getcolorvalue(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (!pArgs)
@@ -3736,8 +3743,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_registeractivexctrl symbol (do not rename)
-	static int ads_odcl_registeractivexctrl(void)
+	// ----- ads_dcl_registeractivexctrl symbol (do not rename)
+	static int ads_dcl_registeractivexctrl(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (!pArgs)
@@ -3767,8 +3774,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_project_load symbol (do not rename)
-	static int ads_odcl_project_load(void)
+	// ----- ads_dcl_project_load symbol (do not rename)
+	static int ads_dcl_project_load(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -3813,8 +3820,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_project_unload symbol (do not rename)
-	static int ads_odcl_project_unload(void)
+	// ----- ads_dcl_project_unload symbol (do not rename)
+	static int ads_dcl_project_unload(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -3847,8 +3854,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_project_saveas symbol (do not rename)
-	static int ads_odcl_project_saveas(void)
+	// ----- ads_dcl_project_saveas symbol (do not rename)
+	static int ads_dcl_project_saveas(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -3903,18 +3910,45 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_project_import symbol (do not rename)
-	static int ads_odcl_project_import(void)
+	// ----- ads_dcl_project_import symbol (do not rename)
+	static int ads_dcl_project_import(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
 			return RSERR; //argument expected
 
 		LPCTSTR pszRawData = NULL;
-		if( pArgs->restype == RTSTR )
+		CString sRawDataIn;
+		switch( pArgs->restype )
+		{
+		case RTSTR:
 			pszRawData = pArgs->resval.rstring;
-		else
+			break;
+		case RTLB:
+			{
+				while( (pArgs = pArgs->rbnext) && pArgs->restype != RTLE )
+				{
+					switch (pArgs->restype)
+					{
+					case RTSTR:
+						sRawDataIn += pArgs->resval.rstring;
+						break;
+					case RTNIL:
+						break;
+					default:
+						return RSERR; //wrong argument type
+					}
+				}
+				if( pArgs )
+					pArgs = pArgs->rbnext;
+				else
+					return RSERR; //no matching RTLE found
+				pszRawData = sRawDataIn;
+			}
+			break;
+		default:
 			return RSERR; //wrong argument type
+		}
 
 		pArgs = pArgs->rbnext;
 		LPCTSTR pszPassword = NULL;
@@ -3936,10 +3970,16 @@ public:
 
 			if (pArgs)
 			{
-				if( pArgs->restype == RTSTR )
+				switch (pArgs->restype)
+				{
+				case RTSTR:
 					pszProjectKey = pArgs->resval.rstring;
-				else
+					break;
+				case RTNIL:
+					break;
+				default:
 					return RSERR; //wrong argument type
+				}
 
 				if (pArgs->rbnext)
 					return RSERR; //too many arguments
@@ -3975,8 +4015,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_odcl_project_export symbol (do not rename)
-	static int ads_odcl_project_export(void)
+	// ----- ads_dcl_project_export symbol (do not rename)
+	static int ads_dcl_project_export(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 		if (pArgs == NULL)
@@ -4041,7 +4081,7 @@ int CARXApp::mnListOperation = 3; //1 = change selection, 2 = append item, 3 = r
 IMPLEMENT_ARX_ENTRYPOINT(CARXApp)
 
 //static
-int CARXApp::ads_odcl_GetCtrlProperty(void)
+int CARXApp::ads_dcl_GetCtrlProperty(void)
 {
 	acedRetNil();
 	int nFunctionCode = acedGetFunCode();
@@ -4052,7 +4092,7 @@ int CARXApp::ads_odcl_GetCtrlProperty(void)
 }
 
 //static
-int CARXApp::ads_odcl_SetCtrlProperty(void)
+int CARXApp::ads_dcl_SetCtrlProperty(void)
 {
 	acedRetNil();
 	int nFunctionCode = acedGetFunCode();
@@ -4147,82 +4187,82 @@ static int DumpControl(void)
 #endif //_DIAGNOSTIC
 
 ACED_ARXCOMMAND_ENTRY_AUTO(CARXApp, OpenDCL, OpenDCL, OpenDCL, ACRX_CMD_TRANSPARENT, NULL)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getversion, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getversionex, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_loadproject, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_load_dialog, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_sendstring, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_invokefunc, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_new_dialog, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_unload_dialog, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_done_dialog, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_start_dialog, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_start_list, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_add_list, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_end_list, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_action_tile, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_set_tile, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_mode_tile, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_get_tile, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_get_attr, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_start_image, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_vector_image, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_fill_image, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_dimx_tile, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_dimy_tile, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_end_image, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_slide_image, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getlinetype, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getlineweight, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_show, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_center, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_resize, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_setfocus, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_hide, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_close, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_getrectangle, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_getcontrolarea, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_closeall, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_isfloating, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_isactive, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_configtab_isapplyenabled, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_configtab_setapplyenabled, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getscreensize, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_gettitlebartext, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_settitlebartext, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_messagebox, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_setdialogminmaxsizes, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_gethwnd, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_isenabled, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_isvisible, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_form_enable, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getharddrivesize, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getfocus, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_hideerrormsgbox, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_showerrormsgbox, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getblocksize, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_control_gethwnd, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_navigatetourl, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_activateemail, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_browsefolder, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_insert, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_loadxref, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_updatevarnames, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_forcedwgredraw, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getmousecoords, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getdwgmousecoords, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_multifiledialog, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getpicturesize, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_setcmdbarfocus, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_flushgraphicbuttons, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_xtwipstopixels, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_ytwipstopixels, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_xpixelstotwips, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_ypixelstotwips, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_getcolorvalue, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_registeractivexctrl, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_load, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_unload, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_saveas, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_import, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, odcl_project_export, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getversion, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getversionex, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_loadproject, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_load_dialog, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_sendstring, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_invokefunc, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_new_dialog, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_unload_dialog, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_done_dialog, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_start_dialog, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_start_list, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_add_list, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_end_list, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_action_tile, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_set_tile, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_mode_tile, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_get_tile, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_get_attr, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_start_image, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_vector_image, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_fill_image, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_dimx_tile, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_dimy_tile, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_end_image, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_slide_image, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getlinetype, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getlineweight, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_show, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_center, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_resize, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_setfocus, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_hide, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_close, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_getrectangle, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_getcontrolarea, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_closeall, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_isfloating, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_isactive, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_configtab_isapplyenabled, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_configtab_setapplyenabled, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getscreensize, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_gettitlebartext, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_settitlebartext, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_messagebox, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_setdialogminmaxsizes, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_gethwnd, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_isenabled, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_isvisible, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_enable, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getharddrivesize, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getfocus, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_hideerrormsgbox, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_showerrormsgbox, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getblocksize, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_control_gethwnd, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_navigatetourl, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_activateemail, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_browsefolder, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_insert, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_loadxref, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_updatevarnames, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_forcedwgredraw, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getmousecoords, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getdwgmousecoords, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_multifiledialog, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getpicturesize, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_setcmdbarfocus, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_flushgraphicbuttons, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_xtwipstopixels, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_ytwipstopixels, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_xpixelstotwips, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_ypixelstotwips, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getcolorvalue, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_registeractivexctrl, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_load, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_unload, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_saveas, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_import, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_export, true)

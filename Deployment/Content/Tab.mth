@@ -1,7 +1,7 @@
 [Method]
 SetCurSel 
 [Prefix]
-Odcl_Tab_
+dcl_Tab_
 [Desc]
 This method will set the current tab selection.
 [Arguments]
@@ -14,7 +14,7 @@ ProjectFileName
 [Method]
 HideTab 
 [Prefix]
-Odcl_Tab_
+dcl_Tab_
 [Desc]
 This method will hide a specified tab of a tab control.
 [Arguments]
@@ -27,7 +27,7 @@ ProjectFileName
 [Method]
 ShowTab 
 [Prefix]
-Odcl_Tab_
+dcl_Tab_
 [Desc]
 This method will reshow an already hidden tab of a tab control.
 [Arguments]
@@ -39,7 +39,7 @@ ProjectFileName
 [Method]
 SetTabText 
 [Prefix]
-Odcl_Tab_
+dcl_Tab_
 [Desc]
 This method change the text displayed of a specified tab of the tab control.
 [Arguments]
@@ -53,7 +53,7 @@ ProjectFileName
 [Method]
 GetCurSel 
 [Prefix]
-Odcl_Tab_
+dcl_Tab_
 [Desc]
 This method will get the current tab selection.
 [Arguments Return] as Integer
@@ -64,7 +64,7 @@ ProjectFileName
 [Method]
 GetRowCount
 [Prefix]
-Odcl_Tab_
+dcl_Tab_
 [Desc]
 This method will return the number of tab rows in the tab control.
 [Arguments Return] as Integer

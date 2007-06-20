@@ -77,7 +77,7 @@ BOOL CToolTipsPage::OnInitDialog()
 	// Create the CPPToolTip object
 	m_tooltip.Create(this);
 	
-	//m_tooltip.AddTool(GetDlgItem(IDC_AVILABEL), _T("<b><ct=0x0000FF><al_c>AVI File Name</b><br><ct=0x00AA00><hr=100%></ct><br>The AVI file must be located in the same directory as the .odc file."));
+	//m_tooltip.AddTool(GetDlgItem(IDC_AVILABEL), _T("<b><ct=0x0000FF><al_c>AVI File Name</b><br><ct=0x00AA00><hr=100%></ct><br>The AVI file must be located in the same directory as the .odcl file."));
 	
 	m_UnderLine.SetFlat();
 	m_Bold.SetFlat();

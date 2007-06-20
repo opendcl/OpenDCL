@@ -1268,8 +1268,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,1,17
- PRODUCTVERSION 4,0,1,17
+ FILEVERSION 4,0,1,18
+ PRODUCTVERSION 4,0,1,18
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1286,13 +1286,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL Dialog Editor"
-            VALUE "FileVersion", "4, 0, 1, 17"
+            VALUE "FileVersion", "4, 0, 1, 18"
             VALUE "InternalName", "OpenDCL.Editor"
             VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL.exe"
             VALUE "ProductName", "OpenDCL"
-            VALUE "ProductVersion", "4, 0, 1, 17"
+            VALUE "ProductVersion", "4, 0, 1, 18"
         END
     END
     BLOCK "VarFileInfo"
@@ -1733,7 +1733,7 @@ BEGIN
     IDS_PICTUREDESC         "(Picture)"
     IDS_RUNTIME             "(Run Time Only)"
     IDS_METHOD              "Method"
-    IDS_PROPERTY            "PropertyObject"
+    IDS_PROPERTY            "Property"
     IDS_DESCNOTSET          "The description for this Method, PropertyObject or Event has not been set in the ActiveX control."
     IDS_EVENTTITLE          "Event"
     IDS_RTFHEADER1          "{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang4105{\\fonttbl{\\f0\\fnil\\fcharset0 Times New Roman;}}"
@@ -1876,8 +1876,9 @@ BEGIN
     IDS_FUNCADDED           "The function has been added."
     IDS_TAB                 "Tab "
     IDS_UNTITILED           "Untitled"
-    IDS_DESIGNTIMEONLY      "This property can only be set at design time only."
+    IDS_DESIGNTIMEONLY      "This property can only be set at design time."
     IDS_BADACTIVEX          "Sorry, this ActiveX control could not be inserted. Some ActiveX controls are proprietary and cannot be inserted into any program other than the one they are intended for."
+    IDS_HIDDENPROP          "This is a hidden property that can not be set directly."
     IDS_NOGRID              "No grid will be displayed."
     IDS_AGRID               "A grid spacing of "
     IDS_WILLBE              " pixels will be displayed."
@@ -1933,7 +1934,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_THEPROPERTY         "The PropertyObject:"
+    IDS_THEPROPERTY         "Property"
     IDS_STRINGSCALED        "Font Scaling, by pixels or by monitor settings."
     IDS_ERRORONRET          "Error - on retrieval"
     IDS_8F                  "%.8f"
@@ -2017,10 +2018,10 @@ BEGIN
     IDS_TRIPLESPACE         "   "
     IDS_CF1                 "\\cf1  "
     IDS_OPTIONAL            "[Optional]"
-    IDS_Odcl_AxControl_     "Odcl_AxControl_"
-    IDS_Odcl_AxObject_      "Odcl_AxObject_"
+    IDS_dcl_AxControl_      "dcl_AxControl_"
+    IDS_dcl_AxObject_       "dcl_AxObject_"
     IDS_PARPAR              " \\par \\par "
-    IDS_OLENOTE1            "\\b1 Note: \\b0 When finished using the \\cf1 OleObject\\cf0 , you may need to call \\cf2Odcl_AxObject_Close \\cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application. The ActiveX object will probably manage this for you, please check the documentation to ensure this."
+    IDS_OLENOTE1            "\\b1 Note: \\b0 When finished using the \\cf1 OleObject\\cf0 , you may need to call \\cf2dcl_AxObject_Close \\cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application. The ActiveX object will probably manage this for you, please check the documentation to ensure this."
     IDS_OLENOTE2            "\\b1 Note: \\b0 When finished using the \\cf1"
     IDS_SETQVALUE3          "(\\cf2 Setq \\cf1 rValue \\cf0 "
     IDS_CF22                "(\\cf2 "
@@ -2066,19 +2067,19 @@ BEGIN
     IDS_ALSPS               " \\par \\b AutoLISP Set PropertyObject Syntax:\\b0 "
     IDS_ALGPS               " \\par \\b AutoLISP Get PropertyObject Syntax:\\b0 "
     IDS_PARRN               " \\par \r\n}"
-    IDS_SETPROP             "\\par(\\cf2 Odcl_Control_SetProperty \\cf0 \\cf3 "
+    IDS_SETPROP             "\\par(\\cf2 dcl_Control_SetProperty \\cf0 \\cf3 "
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_SETPROP2            "(Odcl_Control_SetProperty "
+    IDS_SETPROP2            "(dcl_Control_SetProperty "
     IDS_NVISA               """ NewValue [is a "
     IDS_NVISA2              """\\cf0\\b0  \\cf1 NewValue\\cf0  [is a "
     IDS_CF0CF3B2            " \\cf0 \\cf3\\b """
-    IDS_SETQGETPROP         "\\par(\\cf2 Setq \\cf0 \\cf1 Value \\cf0 (\\cf2 Odcl_Control_GetProperty \\cf0 \\cf3 "
+    IDS_SETQGETPROP         "\\par(\\cf2 Setq \\cf0 \\cf1 Value \\cf0 (\\cf2 dcl_Control_GetProperty \\cf0 \\cf3 "
     IDS_CF0CF3BQ            " \\cf0 \\cf3\\b """
     IDS_CF0B0PAR            """\\cf0\\b0 ))\\par"
-    IDS_SETQGETPROP2        "(Setq Value (Odcl_Control_GetProperty "
+    IDS_SETQGETPROP2        "(Setq Value (dcl_Control_GetProperty "
     IDS_DQPAR               "))\\par"
     IDS_CBI0                "]\\i0 "
     IDS_CF5IB               " \\cf5\\i ["
@@ -2095,8 +2096,8 @@ BEGIN
     IDS_NEWVAL              """ NewValue"
     IDS_NEWVAL2             """\\cf0\\b0  \\cf1 NewValue\\cf0 "
     IDS_WHENFIN2            "When finished using the OleObject called \\cf1"
-    IDS_WHENFIN             "When finished using the \\cf1 OleObject\\cf0 , call \\cf2Odcl_AxObject_Close \\cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application."
-    IDS_WHENFIN3            "\\cf0, call \\cf2Odcl_AxObject_Close \\cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application."
+    IDS_WHENFIN             "When finished using the \\cf1 OleObject\\cf0 , call \\cf2dcl_AxObject_Close \\cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application."
+    IDS_WHENFIN3            "\\cf0, call \\cf2dcl_AxObject_Close \\cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application."
     IDS_LOADPIC             "LoadPicture \\cf0 \\cf3"
     IDS_LOADPIC2            "LoadPicture "
     IDS_PICDESC             " Picture [as Intager for PictureID or as String for File Name])"
@@ -2145,14 +2146,7 @@ BEGIN
     IDS_REGULAR             "Regular"
     IDS_BOLDITAL            "Bold Italic"
     IDS_ITALIC              "Italic"
-    IDS_OLENOTE3            "\\cf0  OleObject, you may need to call \\cf2Odcl_AxObject_Close \\cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application. The ActiveX object will probably manage this for you, please check the documentation to ensure this."
-END
-
-STRINGTABLE 
-BEGIN
-    IDR_OBJECTTYPE_STD      "\nProject\nOpenDCL\nOpenDCL Projects (*.odc)\n.odc\nOpenDCL.Document\nOpenDCL Project"
-    IDR_OBJECTTYPE_LT       "\nProject\nOpenDCL\nOpenDCL Projects (*.odc)\n.odc\nOpenDCL.Document\nOpenDCL Project"
-    IDR_OBJECTTYPE_R14      "\nProject\nOpenDCL\nOpenDCL Projects (*.odc)\n.odc\nOpenDCL.Document\nOpenDCL Project"
+    IDS_OLENOTE3            "\\cf0  OleObject, you may need to call \\cf2dcl_AxObject_Close \\cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application. The ActiveX object will probably manage this for you, please check the documentation to ensure this."
 END
 
 STRINGTABLE 
@@ -2754,7 +2748,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDR_ODCDOCTEMPLATE      "\nProject\nOpenDCL\nOpenDCL Projects (*.odc,*.odce)\n.odc;.odce\nOpenDCL.Document\nOpenDCL Project"
+    IDR_ODCDOCTEMPLATE      "\nProject\nOpenDCL\nOpenDCL Projects (*.odcl,*.lsp)\n.odcl;.lsp\nOpenDCL.Document\nOpenDCL Project"
 END
 
 #endif    // English (U.S.) resources

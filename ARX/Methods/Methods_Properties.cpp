@@ -65,8 +65,8 @@
 const int nBufSize = 100;
 const int nFalse = 0;
 const TCHAR sT[] = _T("T");
-const TCHAR sGetPropertry [] = _T("Odcl_Control_Get");
-const TCHAR sSetPropertry [] = _T("Odcl_Control_Set");
+const TCHAR sGetPropertry [] = _T("dcl_Control_Get");
+const TCHAR sSetPropertry [] = _T("dcl_Control_Set");
 
 bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, struct resbuf *ListData, CDclControlObject *pArxObject);
 
