@@ -26,7 +26,7 @@ protected:
 	CString msName;
 	CDialogObject* mpDlgObject; //informational pointer to the one and only instance of this form (or NULL)
 	std::vector< CImageListObject > mImageLists;
-	UINT mnNextId;
+	UINT_PTR mnNextId;
 	bool mbUsesClientRect;
 
 	//for managing tab hierarchy and order
@@ -69,7 +69,7 @@ public:
 	bool ReorderControl( CDclControlObject* pDclControl, bool bToFront, bool bDeferReindexing = false );
 	bool ReorderControl( CDclControlObject* pDclControl, size_t idxNew, bool bDeferReindexing = false );
 	void ReindexControls();
-	UINT GetNextId() { if( (INT_PTR)mnNextId < mDclControls.GetCount() ) mnNextId = mDclControls.GetCount(); return mnNextId++; }
+	UINT_PTR GetNextId() { if( (INT_PTR)mnNextId < mDclControls.GetCount() ) mnNextId = mDclControls.GetCount(); return mnNextId++; }
 
 	void ClearR14Events();
 	void IncrementPictureId(int nIdIncrement);

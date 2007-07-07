@@ -133,10 +133,10 @@ public:
 	static LPCTSTR GetOdclPassword() { return _T("d32afd3aw3aq3fdaw3"); }
 	virtual bool IsInUse() const;
 
-	HBITMAP CloneBitmap( UINT nID, CSize& sz ) const;
-	HICON CloneIcon( UINT nID ) const;
-	bool GetPictureSize( UINT nID, CSize& size ) const; //return true if found
-	CPictureObject* FindPicture( UINT nID ) const;
+	HBITMAP CloneBitmap( UINT_PTR nID, CSize& sz ) const;
+	HICON CloneIcon( UINT_PTR nID ) const;
+	bool GetPictureSize( UINT_PTR nID, CSize& size ) const; //return true if found
+	CPictureObject* FindPicture( UINT_PTR nID ) const;
 
 	//Centralized File I/O
 	virtual IOStatus ReadFromFile( LPCTSTR pszFilePath ); //read a project from any supported file format
@@ -171,7 +171,7 @@ public:
 	bool HasActiveXFile( LPCTSTR pszFileName ) const;
 	bool AddPicture( CPictureObject* pPicture );
 	void DeletePicture( int nID );
-	bool LoadPictureFile( LPCTSTR szFile, int nID, bool bApplyMask = false );
+	bool LoadPictureFile( LPCTSTR szFile, UINT_PTR nID, bool bApplyMask = false );
 	CDclFormObject* FindDclForm( LPCTSTR pszDclFormName ) const;
 	CDclFormObject* FindDclFormWithVarName( LPCTSTR pszVarName ) const;
 	CDclControlObject* FindControlWithVarName( LPCTSTR pszVarName ) const;

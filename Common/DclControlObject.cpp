@@ -593,6 +593,15 @@ void CDclControlObject::Serialize(CArchive& ar)
 				}
 			}
 
+			if( mType == CtlForm && mpOwner->GetType() == VdclModeless )
+			{ //config tab pages should not have these properties
+				switch(pSourceProp->GetID())
+				{
+				case nIcon:
+					mProperties.RemoveAt(posAt);
+				}
+			}
+
 			if( mType == CtlForm && mpOwner->GetParentForm() )
 			{ //tab pages should not have these properties
 				switch(pSourceProp->GetID())
@@ -822,7 +831,7 @@ CString CDclControlObject::GetStrProperty(PropertyId nID) const
 	return CString();
 }
 
-long CDclControlObject::GetLngProperty(PropertyId nID) const
+long CDclControlObject::GetLongProperty(PropertyId nID) const
 {
 	POSITION posProp = mProperties.GetHeadPosition();
 	while (posProp)

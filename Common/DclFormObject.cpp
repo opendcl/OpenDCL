@@ -370,7 +370,7 @@ CString CDclFormObject::GetDclFormTitle() const
 long CDclFormObject::GetDclFormTitleBarIcon()
 {
 	CDclControlObject* pControl = GetControlProperties();
-	return pControl->GetLngProperty(nIcon);
+	return pControl->GetLongProperty(nIcon);
 }
 
 //IOStatus CDclFormObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
@@ -606,17 +606,17 @@ void CDclFormObject::IncrementPictureId(int nIdIncrement)
 		// get current property
 		CDclControlObject* pControlForm = mDclControls.GetAt(pos);
 		
-		int nPictureId = pControlForm->GetLngProperty(nPicture);
+		int nPictureId = pControlForm->GetLongProperty(nPicture);
 		if (nPictureId > 0)
-			pControlForm->SetLongProperty(nPicture, pControlForm->GetLngProperty(nPicture) + nIdIncrement);
+			pControlForm->SetLongProperty(nPicture, pControlForm->GetLongProperty(nPicture) + nIdIncrement);
 
-		int nPressedPictureId = pControlForm->GetLngProperty(nPressedPicture);
+		int nPressedPictureId = pControlForm->GetLongProperty(nPressedPicture);
 		if (nPressedPictureId > 0)
-			pControlForm->SetLongProperty(nPressedPicture, pControlForm->GetLngProperty(nPressedPicture) + nIdIncrement);
+			pControlForm->SetLongProperty(nPressedPicture, pControlForm->GetLongProperty(nPressedPicture) + nIdIncrement);
 
-		int nIconId = pControlForm->GetLngProperty(nIcon);
+		int nIconId = pControlForm->GetLongProperty(nIcon);
 		if (nIconId > 0)
-			pControlForm->SetLongProperty(nIcon, pControlForm->GetLngProperty(nIcon) + nIdIncrement);
+			pControlForm->SetLongProperty(nIcon, pControlForm->GetLongProperty(nIcon) + nIdIncrement);
 
 		// increment counter
 		nCount--;
@@ -836,7 +836,7 @@ CDclControlObject* CDclFormObject::GetControlProperties()
 
 CSize CDclFormObject::GetFormSize() const
 {
-	return CSize( GetControlProperties()->GetLngProperty(nWidth), GetControlProperties()->GetLngProperty(nHeight) );
+	return CSize( GetControlProperties()->GetLongProperty(nWidth), GetControlProperties()->GetLongProperty(nHeight) );
 }
 
 CDclControlObject* CDclFormObject::FindControl( LPCTSTR pszControlName ) const

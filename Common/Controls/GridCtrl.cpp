@@ -49,7 +49,7 @@ CGridCtrl::CGridCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nI
 	m_pFontImages = NULL;
 	m_pImageList = NULL;
 	m_bHasRowHeader = pTemplate->GetBoolProperty( nRowHeader );
-	m_nRowHeight = pTemplate->GetLngProperty( nRowHeight );
+	m_nRowHeight = pTemplate->GetLongProperty( nRowHeight );
 	m_bOrientationVer = pTemplate->GetBoolProperty( nAlternateOrient );
 	alertnateColor = pTemplate->GetColorProperty( nAlternateColor );
 	m_bHasGridLines = pTemplate->GetBoolProperty( nGridLines );
@@ -112,7 +112,7 @@ DWORD CGridCtrl::GetWndStyle() const
 	dwStyle |= WS_CLIPCHILDREN | LVS_REPORT | LVS_OWNERDRAWFIXED | LVS_SINGLESEL | LVS_SHAREIMAGELISTS;
 	if( !mpTemplate->GetBoolProperty( nColHeader ) )
 		dwStyle |= LVS_NOCOLUMNHEADER;
-	switch( mpTemplate->GetLngProperty( nListViewSort ) )
+	switch( mpTemplate->GetLongProperty( nListViewSort ) )
 	{
 	case 1:
 		dwStyle |= LVS_SORTDESCENDING;
@@ -149,7 +149,7 @@ bool CGridCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 			else
 			{
 				if( !m_DefaultImageList.m_hImageList )
-					m_DefaultImageList.Create( 1, mpTemplate->GetLngProperty( nRowHeight ), ILC_COLOR, 1, 1 );
+					m_DefaultImageList.Create( 1, mpTemplate->GetLongProperty( nRowHeight ), ILC_COLOR, 1, 1 );
 				m_DefaultImageList.SetBkColor( ::GetSysColor(COLOR_WINDOW ) );
 				SetImageList( &m_DefaultImageList, TVSIL_NORMAL );
 				SetImageList( &m_DefaultImageList, LVSIL_SMALL );
@@ -702,22 +702,16 @@ void CGridCtrl::SetCellStyle(int nRow, int nCol, int nStyle)
 	{
 		// set the row now
 		pCells = new _RowData;
-		SetItemData(nRow, (long)pCells);
+		SetItemData(nRow, (DWORD_PTR)pCells);
 	}
 
-	int nCount = pCells->m_Cells.GetCount();
+	if (nCol >= static_cast< int >(pCells->m_Cells.GetCount()))
+		pCells->m_Cells.SetSize( nCol + 1 );
 
-	if (nCol >= nCount)
-	{	
-		//int n = pCells->Add(newCellData);
-		pCells->m_Cells.SetSize(nCol+1);
-	}
-
-	if (nCol < pCells->m_Cells.GetCount())
+	if (nCol < static_cast< int >(pCells->m_Cells.GetCount()))
 	{
 		if (pCells->m_Cells[nCol] == NULL)
 			pCells->m_Cells[nCol] = new _Style;
-
 		pCells->m_Cells.GetAt(nCol)->nStyle = nStyle;			
 	}
 }

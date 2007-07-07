@@ -301,7 +301,7 @@ bool CProject::AddPicture( CPictureObject* pPicture )
 	assert( pPicture != NULL );
 	if( !pPicture )
 		return false;
-	int nID = pPicture->GetID();
+	UINT_PTR nID = pPicture->GetID();
 	POSITION posPic = mPictures.GetHeadPosition();
 	while( posPic )
 	{
@@ -383,7 +383,7 @@ void CProject::DeletePicture( int nID )
 	mPictures.RemoveAt( posPicToDelete );
 }
 
-bool CProject::LoadPictureFile( LPCTSTR szFile, int nID, bool bApplyMask /*= false*/ )
+bool CProject::LoadPictureFile( LPCTSTR szFile, UINT_PTR nID, bool bApplyMask /*= false*/ )
 {
 	CPictureObject* pPic = FindPicture( nID );
 	if( !pPic )
@@ -442,7 +442,7 @@ CString CProject::GetOleObjectName(const AxPropertyDescriptor *pProperty)
 	RefCountedPtr< COleControlObject > pOleControl = GetOleObject( pProperty );
 	if( pOleControl )
 		pOleControl->GetAxTypeName();
-  return theWorkspace.LoadResourceString(IDS_OleObject);
+  return theWorkspace.LoadResourceString(IDS_OLEOBJECT);
 }
 
 
@@ -595,7 +595,7 @@ size_t CProject::CountDeletedForms() const
   return ctDeleted;
 }
 
-HBITMAP CProject::CloneBitmap(UINT nID, CSize &sz) const
+HBITMAP CProject::CloneBitmap(UINT_PTR nID, CSize &sz) const
 {
 	CPictureObject* pPicture = FindPicture( nID );
 	if( !pPicture )
@@ -604,7 +604,7 @@ HBITMAP CProject::CloneBitmap(UINT nID, CSize &sz) const
 	return pPicture->CloneBitmap();
 }
 
-HICON CProject::CloneIcon(UINT nID) const
+HICON CProject::CloneIcon(UINT_PTR nID) const
 {
 	CPictureObject* pPicture = FindPicture( nID );
 	if( !pPicture )
@@ -612,7 +612,7 @@ HICON CProject::CloneIcon(UINT nID) const
 	return pPicture->CloneIcon();
 }
 
-CPictureObject* CProject::FindPicture( UINT nID ) const
+CPictureObject* CProject::FindPicture( UINT_PTR nID ) const
 {
 	POSITION pos = mPictures.GetHeadPosition();
 	while (pos)
@@ -626,7 +626,7 @@ CPictureObject* CProject::FindPicture( UINT nID ) const
 }
 
 
-bool CProject::GetPictureSize( UINT nID, CSize& size ) const
+bool CProject::GetPictureSize( UINT_PTR nID, CSize& size ) const
 {
 	CPictureObject* pPicture = FindPicture( nID );
 	if( !pPicture )

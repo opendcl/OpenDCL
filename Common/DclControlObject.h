@@ -143,7 +143,7 @@ public:
 																										bool bResetExisting = false );
 
 	CString GetStrProperty(PropertyId nID) const;
-	long GetLngProperty(PropertyId nID) const;
+	long GetLongProperty(PropertyId nID) const;
 	bool GetBoolProperty(PropertyId nID) const;
 	void SetColorProperty(PropertyId nID, COLORREF color);
 	COLORREF GetColorProperty(PropertyId nID) const;

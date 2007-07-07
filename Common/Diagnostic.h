@@ -68,6 +68,13 @@ const TCHAR* asString( const unsigned long n )
 }
 
 inline
+const TCHAR* asString( const unsigned int n )
+{
+	static TCHAR buf[64];
+	return _ultot( n, buf, 10 );
+}
+
+inline
 const TCHAR* asString( const int n )
 {
 	static TCHAR buf[64];
@@ -75,10 +82,17 @@ const TCHAR* asString( const int n )
 }
 
 inline
-const TCHAR* asString( const size_t n )
+const TCHAR* asString( const __int64 n )
 {
 	static TCHAR buf[64];
-	return _ultot( n, buf, 10 );
+	return _i64tot( n, buf, 10 );
+}
+
+inline
+const TCHAR* asString( const unsigned __int64 n )
+{
+	static TCHAR buf[64];
+	return _ui64tot( n, buf, 10 );
 }
 
 inline
@@ -99,7 +113,7 @@ const TCHAR* asString( const TCHAR* psz )
 {
 	if( !psz )
 		return _T("<null>");
-	size_t cchStr = lstrlen( psz );
+	int cchStr = lstrlen( psz );
 	const TCHAR* pszUnits = (cchStr == 1? _T("character") : _T("characters"));
 	static TCHAR buf[1024];
 	if( cchStr < 255 )
@@ -116,7 +130,7 @@ inline
 const TCHAR* asString( const void* pv )
 {
 	static TCHAR buf[1024];
-	_sntprintf( buf, _elements(buf), _T("[%X]"), INT_PTR(pv) );
+	_sntprintf( buf, _elements(buf), _T("[%p]"), pv );
 	return buf;
 }
 
@@ -249,7 +263,7 @@ template<>
 inline
 const TCHAR* asString( const std::vector< CString >& rStr )
 {
-	size_t ctElem = rStr.size();
+	unsigned int ctElem = rStr.size();
 	if( ctElem == 0 )
 		return _T("<empty>");
 	static TCHAR buf[1024];

@@ -39,6 +39,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="0"
 				AdditionalIncludeDirectories="$(MSVC7)\Include"
 				PreprocessorDefinitions="WIN32;STDC;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS"
@@ -53,6 +54,7 @@
 				DisableSpecificWarnings="4267"
 				UndefinePreprocessorDefinitions="_DLL"
 				OmitDefaultLibName="true"
+				ErrorReporting="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -65,6 +67,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				UseUnicodeResponseFiles="false"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -107,6 +110,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				AdditionalIncludeDirectories="$(MSVC7)\Include"
 				PreprocessorDefinitions="WIN32;STDC;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
@@ -118,6 +122,7 @@
 				DisableSpecificWarnings="4267"
 				UndefinePreprocessorDefinitions="_DLL"
 				OmitDefaultLibName="true"
+				ErrorReporting="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -130,6 +135,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				UseUnicodeResponseFiles="false"
 			/>
 			<Tool
 				Name="VCALinkTool"

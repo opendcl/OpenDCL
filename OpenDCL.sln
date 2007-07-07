@@ -1,22 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ARX", "ARX", "{C8C0FDA1-0A13-41F8-826B-C69F16C4660C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Runtime", "Runtime", "{C8C0FDA1-0A13-41F8-826B-C69F16C4660C}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ARX.17", "ARX\ARX.17\ARX.17.vcproj", "{4CD64E85-C523-4BDB-AB33-6FE973C8B8ED}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{A459EF20-FC54-44D3-B922-9D872E52A1FD} = {A459EF20-FC54-44D3-B922-9D872E52A1FD}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor", "Editor\Editor.vcproj", "{5AF84D9B-53AA-4ACB-A44A-B0159A12992E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ARX.17", "Runtime\ARX.17\ARX.17.vcproj", "{4CD64E85-C523-4BDB-AB33-6FE973C8B8ED}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -25,7 +16,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor", "Editor\Editor.vcp
 		{A459EF20-FC54-44D3-B922-9D872E52A1FD} = {A459EF20-FC54-44D3-B922-9D872E52A1FD}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ARX.16", "ARX\ARX.16\ARX.16.vcproj", "{4CD64E85-C522-4BDB-AB33-6FE973C8B8ED}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor", "Studio\Editor.vcproj", "{5AF84D9B-53AA-4ACB-A44A-B0159A12992E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{A459EF20-FC54-44D3-B922-9D872E52A1FD} = {A459EF20-FC54-44D3-B922-9D872E52A1FD}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ARX.16", "Runtime\ARX.16\ARX.16.vcproj", "{4CD64E85-C522-4BDB-AB33-6FE973C8B8ED}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -40,25 +40,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZLib", "ZLib\ZLib.vcproj", 
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{D5660736-E995-40CB-901A-414197F5A94E}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "OpenDCL.ENU", "Deployment\OpenDCL.ENU.vdproj", "{9F181F39-9847-4027-BA6A-BB35E5AF412F}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Runtime", "Runtime", "{AA631F39-FFE3-4B7E-8805-7FE1AE60BA09}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RxInstall", "RxInstall", "{35B038AE-19E6-46F3-8794-080CB2C6AE60}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Studio.ENU", "Studio\ENU\Studio.ENU.vdproj", "{9F181F39-9847-4027-BA6A-BB35E5AF412F}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -70,19 +52,31 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ENU", "ENU", "{F97F1A1F-A92
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RxInstall.17", "ARX\RxInstall\RxInstall.17\RxInstall.17.vcproj", "{C721C46D-7378-43B2-86ED-19538DF46D05}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RxInstall", "Runtime\RxInstall\RxInstall.vcproj", "{C721C46D-7378-43B2-86ED-19538DF46D05}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RxInstall.16", "ARX\RxInstall\RxInstall.16\RxInstall.16.vcproj", "{C721C46D-7377-43B2-86ED-19538DF46D05}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Runtime.ENU", "Runtime\ENU\Runtime.ENU.vdproj", "{74BD5705-1A9E-40BC-9F46-D41EEBC4F265}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Runtime.ENU", "ARX\Runtime\ENU\Runtime.ENU.vdproj", "{74BD5705-1A9E-40BC-9F46-D41EEBC4F265}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Runtime.ENU.MSM", "Runtime\ENU\MSM\Runtime.ENU.MSM.vdproj", "{EED1D996-438A-4A89-86CF-75C3C5188254}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Studio", "Studio", "{CFCBE5A7-5E6D-4386-84EA-0050A0870151}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ENU", "ENU", "{5D5E3904-B40B-42C0-A7C5-D492A90017E8}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -118,14 +112,14 @@ Global
 		{C721C46D-7378-43B2-86ED-19538DF46D05}.Debug|Win32.Build.0 = Debug|Win32
 		{C721C46D-7378-43B2-86ED-19538DF46D05}.Release|Win32.ActiveCfg = Release|Win32
 		{C721C46D-7378-43B2-86ED-19538DF46D05}.Release|Win32.Build.0 = Release|Win32
-		{C721C46D-7377-43B2-86ED-19538DF46D05}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C721C46D-7377-43B2-86ED-19538DF46D05}.Debug|Win32.Build.0 = Debug|Win32
-		{C721C46D-7377-43B2-86ED-19538DF46D05}.Release|Win32.ActiveCfg = Release|Win32
-		{C721C46D-7377-43B2-86ED-19538DF46D05}.Release|Win32.Build.0 = Release|Win32
 		{74BD5705-1A9E-40BC-9F46-D41EEBC4F265}.Debug|Win32.ActiveCfg = Debug
 		{74BD5705-1A9E-40BC-9F46-D41EEBC4F265}.Debug|Win32.Build.0 = Debug
 		{74BD5705-1A9E-40BC-9F46-D41EEBC4F265}.Release|Win32.ActiveCfg = Release
 		{74BD5705-1A9E-40BC-9F46-D41EEBC4F265}.Release|Win32.Build.0 = Release
+		{EED1D996-438A-4A89-86CF-75C3C5188254}.Debug|Win32.ActiveCfg = Debug
+		{EED1D996-438A-4A89-86CF-75C3C5188254}.Debug|Win32.Build.0 = Debug
+		{EED1D996-438A-4A89-86CF-75C3C5188254}.Release|Win32.ActiveCfg = Release
+		{EED1D996-438A-4A89-86CF-75C3C5188254}.Release|Win32.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -133,12 +127,12 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4CD64E85-C523-4BDB-AB33-6FE973C8B8ED} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{4CD64E85-C522-4BDB-AB33-6FE973C8B8ED} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
-		{AA631F39-FFE3-4B7E-8805-7FE1AE60BA09} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
-		{35B038AE-19E6-46F3-8794-080CB2C6AE60} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
-		{9F181F39-9847-4027-BA6A-BB35E5AF412F} = {D5660736-E995-40CB-901A-414197F5A94E}
-		{F97F1A1F-A92A-4B86-9A5F-FE215C9644DC} = {AA631F39-FFE3-4B7E-8805-7FE1AE60BA09}
-		{C721C46D-7378-43B2-86ED-19538DF46D05} = {35B038AE-19E6-46F3-8794-080CB2C6AE60}
-		{C721C46D-7377-43B2-86ED-19538DF46D05} = {35B038AE-19E6-46F3-8794-080CB2C6AE60}
+		{F97F1A1F-A92A-4B86-9A5F-FE215C9644DC} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
+		{C721C46D-7378-43B2-86ED-19538DF46D05} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{74BD5705-1A9E-40BC-9F46-D41EEBC4F265} = {F97F1A1F-A92A-4B86-9A5F-FE215C9644DC}
+		{EED1D996-438A-4A89-86CF-75C3C5188254} = {F97F1A1F-A92A-4B86-9A5F-FE215C9644DC}
+		{5AF84D9B-53AA-4ACB-A44A-B0159A12992E} = {CFCBE5A7-5E6D-4386-84EA-0050A0870151}
+		{5D5E3904-B40B-42C0-A7C5-D492A90017E8} = {CFCBE5A7-5E6D-4386-84EA-0050A0870151}
+		{9F181F39-9847-4027-BA6A-BB35E5AF412F} = {5D5E3904-B40B-42C0-A7C5-D492A90017E8}
 	EndGlobalSection
 EndGlobal

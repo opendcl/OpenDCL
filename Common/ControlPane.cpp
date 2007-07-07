@@ -154,8 +154,8 @@ CRect CControlPane::GetSplitterRect( int nId, CRect& rectCurrent )
 		{
 			pCtrl->GetWindow()->GetWindowRect( &rectCurrent );
 			mpHostDlg->ScreenToClient( &rectCurrent );
-			CPoint pt( pCtrl->GetLngProperty( nLeft ), pCtrl->GetLngProperty( nTop ) );
-			return CRect( pt.x, pt.y, pt.x + pCtrl->GetLngProperty( nWidth ), pt.y + pCtrl->GetLngProperty( nHeight ) );
+			CPoint pt( pCtrl->GetLongProperty( nLeft ), pCtrl->GetLongProperty( nTop ) );
+			return CRect( pt.x, pt.y, pt.x + pCtrl->GetLongProperty( nWidth ), pt.y + pCtrl->GetLongProperty( nHeight ) );
 		}
 	}
 	rectCurrent.SetRect(0,0,0,0);
@@ -342,7 +342,7 @@ void CControlPane::ResetControlsPos(CDclControlObject *pDclControl)
 	
 	if( (pDclControl->GetType() == CtlComboBox || pDclControl->GetType() == CtlImageComboBox) &&
 			((pControl->GetStyle() & CBS_DROPDOWN) != 0) )
-		rcControl.bottom += pDclControl->GetLngProperty( nDropDownHeight );
+		rcControl.bottom += pDclControl->GetLongProperty( nDropDownHeight );
 	
 	pControl->MoveWindow( rcControl, TRUE);
 	

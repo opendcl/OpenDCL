@@ -307,14 +307,14 @@ CPictureObject::CPictureObject()
 	CalcLogicalSize();
 }
 
-CPictureObject::CPictureObject( int nID )
+CPictureObject::CPictureObject( UINT nID )
 : mnID( nID )
 {
 	m_hPicture.CreateEmpty();
 	CalcLogicalSize();
 }
 
-CPictureObject::CPictureObject( int nID, LPCTSTR szFile, bool bApplyMask /*= false*/ )
+CPictureObject::CPictureObject( UINT nID, LPCTSTR szFile, bool bApplyMask /*= false*/ )
 : mnID( nID )
 {
 	LoadFile( szFile, bApplyMask );
@@ -528,7 +528,7 @@ void CPictureObject::Serialize(CArchive& ar)
   {
     ar << GetCurrentSaveVersion();
 
-    ar << mnID;
+    ar << unsigned long(mnID);
 
     short nPictureType = m_hPicture.GetType();
     ar << nPictureType;
@@ -564,7 +564,9 @@ void CPictureObject::Serialize(CArchive& ar)
 		if( nThisVersion > GetCurrentSaveVersion() )
 			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
 
-    ar >> mnID;
+		unsigned long ulID;
+    ar >> ulID;
+		mnID = ulID;
     if (nThisVersion == 1)
     {
       CImageList tempImage;
@@ -688,7 +690,9 @@ IOStatus CPictureObject::ReadFromTextFile3(std::ifstream &sFile, const CString &
 {
   try
   {
-    if (!readInt(sFile, mnID)) return statInvalidFormat;
+		int nID;
+    if (!readInt(sFile, nID)) return statInvalidFormat;
+		mnID = nID;
 		int iHeight;
     if (!readInt(sFile, iHeight)) return statInvalidFormat;
 		int iWidth;

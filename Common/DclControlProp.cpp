@@ -165,6 +165,7 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 296 );
 		pDclControl->AddStringProperty( nTitleBarText, PropString, theWorkspace.LoadResourceString( IDS_OPEN ) );
 		AddControlEvent( pDclControl, nFormEventInitialize );
+		AddControlEvent( pDclControl, nFormEventCancelClose );
 		AddControlEvent( pDclControl, nFormEventClose );
 		AddControlEvent( pDclControl, nFormEventSize );
 		AddControlEvent( pDclControl, nEventOnHelp );

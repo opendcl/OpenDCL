@@ -14,7 +14,7 @@
 #define IDS_DefaultFontSizeStyle        158
 #define IDS_DOTLSP                      160
 #define IDS_COLOR                       163
-#define IDS_OleObject                   164
+#define IDS_OLEOBJECT                   164
 #define IDS_THEFILE                     165
 #define IDS_COULDNOTOPEN                166
 #define IDS_ODCFILTER                   179
@@ -282,6 +282,8 @@
 #define IDS_RESETPROP                   10002
 #define IDS_NOTLICENCEDAX               10003
 #define IDS_BORDERSTYLE_0               10004
+#define IDC_CURSOR1                     10004
+#define IDC_HAND                        10004
 #define IDS_BORDERSTYLE_1               10005
 #define IDS_BORDERSTYLE_2               10006
 #define IDI_FILTER                      10007
@@ -340,7 +342,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        10004
+#define _APS_NEXT_RESOURCE_VALUE        10005
 #define _APS_NEXT_COMMAND_VALUE         10501
 #define _APS_NEXT_CONTROL_VALUE         10004
 #define _APS_NEXT_SYMED_VALUE           10004

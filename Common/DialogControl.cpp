@@ -55,12 +55,12 @@ CRect CDialogControl::GetWndRect() const
 #ifdef EDITOR
 	CPoint pntUpperLeft( 0, 0 );
 #else
-	CPoint pntUpperLeft( mpTemplate->GetLngProperty(nLeft), mpTemplate->GetLngProperty(nTop) );
+	CPoint pntUpperLeft( mpTemplate->GetLongProperty(nLeft), mpTemplate->GetLongProperty(nTop) );
 #endif
 	return CRect( pntUpperLeft.x,
 								pntUpperLeft.y,
-								pntUpperLeft.x + mpTemplate->GetLngProperty(nWidth),
-								pntUpperLeft.y + mpTemplate->GetLngProperty(nHeight) );
+								pntUpperLeft.x + mpTemplate->GetLongProperty(nWidth),
+								pntUpperLeft.y + mpTemplate->GetLongProperty(nHeight) );
 }
 
 DWORD CDialogControl::GetWndStyle() const

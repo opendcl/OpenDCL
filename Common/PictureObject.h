@@ -7,7 +7,7 @@ enum IOStatus;
 class CPictureObject : public CObject
 {
 protected:
-	int mnID;
+	UINT mnID;
 	CSize msizePic;
 	CPictureHolder m_hPicture;
 
@@ -17,8 +17,8 @@ private:
 protected:
 	CPictureObject(void);
 public:
-	CPictureObject( int nID );
-	CPictureObject( int nID, LPCTSTR szFile, bool bApplyMask = false );
+	CPictureObject( UINT nID );
+	CPictureObject( UINT nID, LPCTSTR szFile, bool bApplyMask = false );
 	virtual ~CPictureObject(void);
 
 protected:
@@ -28,7 +28,7 @@ protected:
 	ULONG GetCurrentSaveVersion() const { return 8; }
 
 public:
-	int GetID() const { return mnID; }
+	UINT GetID() const { return mnID; }
 	int GetWidth() const { return msizePic.cx; }
 	int GetHeight() const { return msizePic.cy; }
 	short GetPicType() const;	

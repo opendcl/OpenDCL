@@ -29,7 +29,7 @@ bool CButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
-	//if( mpTemplate->GetLngProperty( nAutoSize ) > 0 )
+	//if( mpTemplate->GetLongProperty( nAutoSize ) > 0 )
 	//	SizeToContent();
 
 	return bSuccess;

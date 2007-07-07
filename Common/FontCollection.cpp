@@ -28,7 +28,7 @@ CFont* CFontCollection::GetFont(CDclControlObject *pControl, CWnd *pWnd)
 
 	LOGFONT stTargetFont = {0};
 	lstrcpyn( stTargetFont.lfFaceName, pControl->GetStrProperty(nLabelName), LF_FACESIZE );
-	int nFontSize = pControl->GetLngProperty(nLabelSize);
+	int nFontSize = pControl->GetLongProperty(nLabelSize);
 	stTargetFont.lfWeight = (pControl->GetBoolProperty(nLabelBold)? FW_BOLD : FW_NORMAL);
 	stTargetFont.lfItalic = pControl->GetBoolProperty(nLabelItalic);
 	stTargetFont.lfUnderline = pControl->GetBoolProperty(nLabelUnderline);
