@@ -17,7 +17,6 @@ VdclCheckBox::VdclCheckBox()
 {
 	// No tooltip created
 	m_ToolTip.m_hWnd = NULL;
-
 }
 
 VdclCheckBox::~VdclCheckBox()
@@ -26,13 +25,12 @@ VdclCheckBox::~VdclCheckBox()
 
 
 BEGIN_MESSAGE_MAP(VdclCheckBox, CClrButton)
-	//{{AFX_MSG_MAP(VdclCheckBox)
 	ON_WM_DESTROY()
 	ON_WM_MOUSEMOVE()
 	ON_CONTROL_REFLECT(BN_CLICKED, OnClicked)
 	ON_CONTROL_REFLECT(BN_DOUBLECLICKED, OnDoubleclicked)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
+
 
 /////////////////////////////////////////////////////////////////////////////
 // VdclCheckBox message handlers
@@ -44,7 +42,7 @@ BOOL VdclCheckBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 	CRect ArxRect;
 
 	// set the arx control pointer
-    m_ArxControl = pControl;
+	m_ArxControl = pControl;
 	m_pValue = m_ArxControl->GetPropertyObject(nValue);
 	
 	// get the rectangle of the new control
@@ -57,16 +55,13 @@ BOOL VdclCheckBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 	CString Caption = pControl->GetStrProperty(nCaption);
 	
 		
-	dwStyle = WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX |WS_CLIPSIBLINGS;	
+	dwStyle = WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | WS_CLIPSIBLINGS;	
 	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
 
 	RetVal =  CClrButton::Create(Caption, dwStyle, ArxRect, pParentWnd, nID );
-	
-	ModifyStyleEx(0, BS_AUTOCHECKBOX);
-	CClrButton::ModifyStyleEx(0, BS_AUTOCHECKBOX);
 
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
@@ -83,18 +78,13 @@ BOOL VdclCheckBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 	return RetVal;
 }
 
-
-
 void VdclCheckBox::OnDestroy() 
 {
 	// delete the tool tip text control object
 	m_ToolTip.DelTool(this, 1);
-	
-
 	CClrButton::OnDestroy();
-	
-	
 }
+
 void VdclCheckBox::OnMouseMove(UINT nFlags, CPoint point) 
 {
 
@@ -104,8 +94,6 @@ void VdclCheckBox::OnMouseMove(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
-	
-	
 	CClrButton::OnMouseMove(nFlags, point);
 }
 

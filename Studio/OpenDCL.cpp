@@ -532,44 +532,31 @@ void COpenDCLApp::OnToolsGridspacing()
 
 void COpenDCLApp::OnUpdateToolsEventscopytoclipboard(CCmdUI* pCmdUI) 
 {
-	CWinApp* pApp = AfxGetApp();
-	CString sProfileName;
-	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
-  BOOL bUsesOn = pApp->GetProfileInt(sProfileName, _T("EventsCopyToClipboard"), TRUE);
-    
-	pCmdUI->SetCheck(bUsesOn);	
+	BOOL bChecked =
+		AfxGetApp()->GetProfileInt(theWorkspace.LoadResourceString(IDR_MAINFRAME), _T("EventsCopyToClipboard"), TRUE);
+	pCmdUI->SetCheck(bChecked);	
 }
 
 void COpenDCLApp::OnUpdateToolsEventswritetolispfile(CCmdUI* pCmdUI) 
 {
-	CWinApp* pApp = AfxGetApp();
-	CString sProfileName;
-	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
-	BOOL bUsesOn = pApp->GetProfileInt(sProfileName, _T("EventsWriteToLispFile"), FALSE);
-    
-	pCmdUI->SetCheck(bUsesOn);	
+	BOOL bChecked =
+		AfxGetApp()->GetProfileInt(theWorkspace.LoadResourceString(IDR_MAINFRAME), _T("EventsWriteToLispFile"), FALSE);
+	pCmdUI->SetCheck(bChecked);	
 }
 
 void COpenDCLApp::OnToolsEventscopytoclipboard() 
 {
 	CString sSection = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-	BOOL bCurrentVal = AfxGetApp()->GetProfileInt(sSection, _T("EventsCopyToClipboard"), TRUE);
-	AfxGetApp()->WriteProfileInt(sSection, _T("EventsCopyToClipboard"), !bCurrentVal);
-
-	CString sText = theWorkspace.LoadResourceString(IDS_COPYTOCLIPBOARD);
-	theEditorWorkspace.GetPropertyTabs()->m_EventsTabPane.m_AddToLisp.SetWindowText(sText);
+	BOOL bNewVal = !AfxGetApp()->GetProfileInt(sSection, _T("EventsCopyToClipboard"), TRUE);
+	AfxGetApp()->WriteProfileInt(sSection, _T("EventsCopyToClipboard"), bNewVal);
 }
 
 void COpenDCLApp::OnToolsEventswritetolispfile() 
 {
 	CString sSection = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-	BOOL bCurrentVal = AfxGetApp()->GetProfileInt(sSection, _T("EventsWriteToLispFile"), TRUE);
-	AfxGetApp()->WriteProfileInt(sSection, _T("EventsWriteToLispFile"), !bCurrentVal);
-    
-	CString sText = theWorkspace.LoadResourceString(IDS_ADDTOSTRING);
-	theEditorWorkspace.GetPropertyTabs()->m_EventsTabPane.m_AddToLisp.SetWindowText(sText);	
+	BOOL bNewVal = !AfxGetApp()->GetProfileInt(sSection, _T("EventsWriteToLispFile"), FALSE);
+	AfxGetApp()->WriteProfileInt(sSection, _T("EventsWriteToLispFile"), bNewVal);
+	theEditorWorkspace.GetPropertyTabs()->m_EventsTabPane.m_AddToLisp.ShowWindow(bNewVal? SW_SHOW : SW_HIDE);	
 }
 
 void COpenDCLApp::OnHelp() 

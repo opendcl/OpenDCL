@@ -107,14 +107,14 @@ IDC_HANDICON            CURSOR                  "res\\Hand.cur"
 
 IDR_FONTBTNS DIALOGEX 0, 0, 215, 16
 STYLE DS_SETFONT | WS_CHILD
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
 END
 
 IDD_WINCOLORDIALOG DIALOG  0, 0, 233, 186
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
 CAPTION "Select Window System Color"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,176,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,176,24,50,14
@@ -124,7 +124,7 @@ END
 IDD_TOOLTIPS DIALOGEX 3, 1, 244, 134
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION
 CAPTION "ToolTips"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     CONTROL         "&Balloon style tooltip",IDC_BALLOON,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,5,236,10
     LTEXT           "Title:",IDC_STATIC,5,20,19,11
@@ -148,7 +148,7 @@ END
 IDD_TABS DIALOGEX 3, 1, 244, 134
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION
 CAPTION "Tab/Pages"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     PUSHBUTTON      "Browse",IDC_BROWSE,198,19,38,12,NOT WS_VISIBLE | NOT WS_TABSTOP
     PUSHBUTTON      "Clear",IDC_CLEAR,198,34,38,12,NOT WS_VISIBLE | NOT WS_TABSTOP
@@ -167,7 +167,7 @@ END
 
 IDD_TABPAGE_PROPERTIES DIALOGEX 0, 0, 210, 226
 STYLE DS_SETFONT | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     LTEXT           "Control Desc",IDC_CTRL_DESC,0,0,205,8
     EDITTEXT        IDC_PROPDESCEDIT,32,160,171,40,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
@@ -177,7 +177,7 @@ END
 IDD_SORTTABS DIALOG  3, 1, 244, 134
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION
 CAPTION "Sort Tab Pages"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg"
 BEGIN
     GROUPBOX        "Tabs",-1,0,4,243,129
     CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,182,16,14,24
@@ -187,7 +187,7 @@ END
 IDD_PROPWIZARD DIALOG  0, 0, 266, 189
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "PropertyObject Wizard"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,54,172,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,109,172,50,14
@@ -198,7 +198,7 @@ END
 IDD_PROGRESSBAR DIALOG  3, 1, 248, 140
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION
 CAPTION "Text"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg"
 BEGIN
     CONTROL         "Show Percentage",IDC_PERCENTAGE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,7,74,11
     CONTROL         "Show Time Remaining",IDC_TIME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,26,74,11
@@ -218,7 +218,7 @@ END
 IDD_PICTUREFOLDER_DIALOG DIALOGEX 0, 0, 320, 201
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Picture Folder"
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     PUSHBUTTON      "OK",IDOK,276,55,37,14
     PUSHBUTTON      "Cancel",IDCANCEL,276,71,37,14
@@ -232,7 +232,7 @@ END
 IDD_OBJECTBROWSER DIALOGEX 0, 0, 406, 198
 STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "Intelligent Help"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,366,17,33,13
     LTEXT           "Methods",IDC_STATIC,7,7,130,10,0,WS_EX_STATICEDGE
@@ -246,7 +246,7 @@ END
 
 IDD_LISTDIALOG DIALOGEX 0, 0, 96, 114
 STYLE DS_SETFONT | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     LISTBOX         IDC_LISTBOX,0,0,96,102,LBS_WANTKEYBOARDINPUT | NOT WS_BORDER | WS_VSCROLL | WS_TABSTOP,WS_EX_CLIENTEDGE
 END
@@ -254,7 +254,7 @@ END
 IDD_LISTCONTENTS DIALOG  0, 0, 166, 167
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Drop List Contents"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,109,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,109,24,50,14
@@ -266,7 +266,7 @@ IDD_INSERTCONTROL DIALOGEX 0, 0, 260, 217
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_CONTEXTHELP
 CAPTION "Insert ActiveX Control"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,203,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,203,25,50,14
@@ -278,7 +278,7 @@ END
 IDD_IMAGELISTCONTENTS DIALOGEX 0, 0, 186, 222
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Image Drop List Contents"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
@@ -293,7 +293,7 @@ END
 IDD_IMAGELIST DIALOGEX 3, 1, 244, 134
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION
 CAPTION "Image List"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     GROUPBOX        "Images",IDC_STATIC,0,40,241,88
     PUSHBUTTON      "Remove",IDC_REMOVEIMAGE,75,108,59,15,NOT WS_TABSTOP
@@ -309,7 +309,7 @@ END
 IDD_HELPCTRLS DIALOG  0, 0, 274, 188
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Help"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg"
 BEGIN
     DEFPUSHBUTTON   "Close",IDOK,112,169,50,14
     CONTROL         "",IDC_RICHEDIT1,"RICHEDIT",TCS_RAGGEDRIGHT | TCS_MULTISELECT | WS_BORDER | WS_TABSTOP,7,7,260,157
@@ -318,7 +318,7 @@ END
 IDD_GRIDSPACING_DIALOG DIALOG  0, 0, 250, 79
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Grid Spacing"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,193,24,50,14
@@ -330,7 +330,7 @@ END
 IDD_GEOMETRY DIALOGEX 3, 1, 252, 135
 STYLE DS_SETFONT | WS_POPUP | WS_CAPTION
 CAPTION "Geometry"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     LTEXT           "Left Side Alignment:",IDC_STATIC,146,5,96,9
     LTEXT           "Top Side Alignment:",IDC_STATIC,145,36,96,9
@@ -346,7 +346,7 @@ END
 IDD_FORMVARNAMEUPDATE_DIALOG DIALOGEX 0, 0, 293, 153
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Modify AutoLISP Symbol Names"
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "Yes",IDOK,94,132,50,14
     PUSHBUTTON      "No",IDCANCEL,149,132,50,14
@@ -358,7 +358,7 @@ END
 IDD_FORECOLORS DIALOGEX 3, 1, 244, 134
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION
 CAPTION "ForeColor"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     GROUPBOX        "Other Colors",IDC_STATIC,128,0,113,129
     GROUPBOX        "Standard Colors",IDC_STATIC,133,10,102,30
@@ -374,7 +374,7 @@ END
 IDD_FONTPAGE DIALOG  0, 0, 242, 130
 STYLE DS_SETFONT | WS_POPUP | WS_DISABLED | WS_CAPTION
 CAPTION "Font"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg"
 BEGIN
     LTEXT           "&Font:",stc1,2,2,44,9
     COMBOBOX        IDC_FONT,2,11,121,75,CBS_SIMPLE | CBS_AUTOHSCROLL | CBS_SORT | CBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
@@ -393,7 +393,7 @@ END
 
 IDD_FILEOPENPREVIEW DIALOGEX 0, 0, 83, 132
 STYLE DS_SETFONT | DS_3DLOOK | DS_NOFAILCREATE | DS_CONTROL | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     CONTROL         "",IDC_IMAGE,"Static",SS_BITMAP | SS_CENTERIMAGE | SS_SUNKEN,8,20,72,85,WS_EX_CLIENTEDGE
     CONTROL         "&Preview",IDC_PREVIEW,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,113,40,8
@@ -401,12 +401,12 @@ BEGIN
 END
 
 IDD_EVENTS DIALOGEX 0, 10, 173, 330
-STYLE DS_SETFONT | WS_CHILD
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     PUSHBUTTON      "Add Cancel",IDC_ADDCANCEL,0,315,53,14,NOT WS_TABSTOP
     EDITTEXT        IDC_DEFUNEDIT,0,209,171,12,ES_AUTOHSCROLL | NOT WS_TABSTOP
-    PUSHBUTTON      "Add to .Lsp File",IDC_ADDTOLISP,57,315,115,14,NOT WS_TABSTOP
+    PUSHBUTTON      "Add to AutoLISP File",IDC_ADDTOLISP,57,315,115,14,WS_DISABLED | NOT WS_TABSTOP
     EDITTEXT        IDC_DEFUNPREVIEW,0,224,171,40,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL | NOT WS_TABSTOP
     EDITTEXT        IDC_EVENTDESC,1,269,171,40,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL | NOT WS_TABSTOP
     LTEXT           "AutoLISP Function to Active On Event",IDC_LABEL,0,199,172,10
@@ -416,7 +416,7 @@ END
 IDD_EDITFILTERS DIALOG  3, 1, 244, 130
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION
 CAPTION "Text Box Filter Styles"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg"
 BEGIN
     CONTROL         "Symbols",IDC_FILTER4,"Button",BS_AUTORADIOBUTTON,5,62,54,10
     CONTROL         "Multi Line String",IDC_FILTER8,"Button",BS_AUTORADIOBUTTON,5,114,73,10
@@ -436,7 +436,7 @@ IDD_COMPONENTCATEGORIES DIALOGEX 0, 0, 204, 95
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_CONTEXTHELP
 CAPTION "Component Categories"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,147,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,147,24,50,14
@@ -447,7 +447,7 @@ END
 IDD_COMBOBOX DIALOGEX 3, 1, 248, 140
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION
 CAPTION "ComboBox Styles"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     GROUPBOX        "Combo Box Styles:",IDC_STATIC,3,3,116,129
     GROUPBOX        "Combo Box Description:",IDC_STATIC,123,3,121,129
@@ -461,7 +461,7 @@ END
 IDD_COLUMNS DIALOGEX 3, 1, 244, 134
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION
 CAPTION "Columns"
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     GROUPBOX        "Column Designing",IDC_FRAME,0,3,241,96
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SHAREIMAGELISTS | WS_BORDER | WS_TABSTOP,0,102,241,30
@@ -494,7 +494,7 @@ END
 IDD_BUTTONSTYLES DIALOGEX 3, 1, 244, 134
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION
 CAPTION "Button Styles"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     GROUPBOX        "Button Styles:",IDC_STATIC,0,0,81,129
     CONTROL         "Filter Button",IDC_STYLE4,"Button",BS_AUTORADIOBUTTON,5,74,54,10
@@ -516,7 +516,7 @@ END
 IDD_BACKCOLORS DIALOGEX 3, 1, 244, 134
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION
 CAPTION "BackGround"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     GROUPBOX        "Other Colors",IDC_STATIC,128,0,113,129
     EDITTEXT        IDC_EDIT,182,57,49,12,ES_AUTOHSCROLL | NOT WS_TABSTOP
@@ -532,7 +532,7 @@ END
 IDD_ALTCOLORS DIALOGEX 3, 1, 244, 134
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION
 CAPTION "Alternate Color"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     GROUPBOX        "Other Colors",IDC_STATIC,128,0,113,129
     GROUPBOX        "Standard Colors",IDC_STATIC,133,10,102,30
@@ -548,7 +548,7 @@ END
 IDD_ABOUTBOX DIALOGEX 0, 0, 399, 319
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About OpenDCL"
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     ICON            IDI_OPENDCL,IDC_STATIC,7,7,20,20
     CTEXT           "OpenDCL 4.0 [BETA]",IDC_STATIC,96,7,93,8,SS_NOPREFIX
@@ -561,13 +561,13 @@ END
 
 IDD_BLANKDIALOG DIALOG  0, 0, 5, 5
 STYLE DS_SETFONT | WS_CHILD
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg"
 BEGIN
 END
 
 IDD_OPENDCL_FORM DIALOG  0, 0, 40, 22
 STYLE DS_SETFONT | WS_CHILD
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg"
 BEGIN
 END
 
@@ -1266,8 +1266,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,2,0
- PRODUCTVERSION 4,0,2,0
+ FILEVERSION 4,0,2,1
+ PRODUCTVERSION 4,0,2,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1284,13 +1284,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL Dialog Editor"
-            VALUE "FileVersion", "4, 0, 2, 0"
+            VALUE "FileVersion", "4, 0, 2, 1"
             VALUE "InternalName", "OpenDCL.Editor"
             VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL.exe"
             VALUE "ProductName", "OpenDCL"
-            VALUE "ProductVersion", "4, 0, 2, 0"
+            VALUE "ProductVersion", "4, 0, 2, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -1793,11 +1793,6 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_ADDTOSTRING         "Add to .Lsp File"
-END
-
-STRINGTABLE 
-BEGIN
     IDS_BOLD                "Bold"
     IDS_MSSERIF             "MS Serif"
     IDS_SYSTEM              "System"
@@ -1870,7 +1865,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_CTRLHELP            "{\\bnsi\\bnsicpg1252\\deff0\\deflang4105{\\fonttbl{\\f0\\fnil\\fcharset0 MS Sans Serif;}{\\f1\\fswiss\\fcharset0 Arial;}}\n{\\*\\generator Msftedit 5.41.15.1503;}\\viewkind4\\uc1\\pard\\ul\\b\\f0\\fs20 How to lookup Help for Controls and Dialog boxes.\\ulnone\\b0\\par\n\\par\nTo activate the help for control and dialog boxes, right click on the control or dialog box that you wish to look up help information on. Next click on\\b  ""Intelligent Help"" \\b0 at the bottom.\\par\n\\par\nNext the intelligent help dialog box will appear. Select on the left side property or function you wish to lookup. On the right, the help information will be shown to you. All information on the selection will appear there and will even show you the correctly formatted AutoLISP syntax at the bottom for that control or dialog box.\\par\n\\par\nFor ease of use, at the bottom you will notice one or two buttons titled; ""Copy to Clipboard"". Click one of those buttons and you will be able then simply paste the code into your AutoLISP file.\\f1\\par\n}\n "
+    IDS_CTRLHELP            "{\\bnsi\\bnsicpg1252\\deff0\\deflang4105{\\fonttbl{\\f0\\fnil\\fcharset0 MS Shell Dlg;}{\\f1\\fswiss\\fcharset0 Arial;}}\n{\\*\\generator Msftedit 5.41.15.1503;}\\viewkind4\\uc1\\pard\\ul\\b\\f0\\fs20 How to lookup Help for Controls and Dialog boxes.\\ulnone\\b0\\par\n\\par\nTo activate the help for control and dialog boxes, right click on the control or dialog box that you wish to look up help information on. Next click on\\b  ""Intelligent Help"" \\b0 at the bottom.\\par\n\\par\nNext the intelligent help dialog box will appear. Select on the left side property or function you wish to lookup. On the right, the help information will be shown to you. All information on the selection will appear there and will even show you the correctly formatted AutoLISP syntax at the bottom for that control or dialog box.\\par\n\\par\nFor ease of use, at the bottom you will notice one or two buttons titled; ""Copy to Clipboard"". Click one of those buttons and you will be able then simply paste the code into your AutoLISP file.\\f1\\par\n}\n "
     ID_FILE_REGISTERCONTROLS "Register/Unregister controls"
 END
 

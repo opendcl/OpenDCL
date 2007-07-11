@@ -68,29 +68,20 @@ int CPropertyTabPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CDialog::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
-	DWORD dwStyle = WS_CHILD	| WS_VISIBLE		| TCS_FOCUSNEVER 
-		| TCS_TOOLTIPS	| TCS_TABS 		 
-		| WS_GROUP		| WS_CLIPSIBLINGS	| WS_CLIPCHILDREN | TCS_MULTILINE;
+	DWORD dwStyle = WS_CHILD | WS_VISIBLE | TCS_FOCUSNEVER | TCS_TOOLTIPS	| TCS_TABS | WS_GROUP |
+									WS_CLIPSIBLINGS	| WS_CLIPCHILDREN | TCS_MULTILINE;
 
 	if (m_TabCtrl.Create(dwStyle, CRect(0,0,10,10), this, IDC_TABCTRL))
-	{
 		SetupTabs();
-	}
 
-	if (!m_font.CreateStockObject(DEFAULT_GUI_FONT))
-		if (!m_font.CreatePointFont(80, _T("MS Sans Serif")))
-			return -1;
-
+	if (!m_font.CreateStockObject(DEFAULT_GUI_FONT) && !m_font.CreatePointFont(80, _T("MS Sans Serif")))
+		return -1;
 
 	// Create the properties tab 
-	m_PropertiesTabPane.Create(
-		IDD_TABPAGE_PROPERTIES,
-		&m_TabCtrl);
+	m_PropertiesTabPane.Create(IDD_TABPAGE_PROPERTIES, &m_TabCtrl);
 
 	// create the events tab
-	m_EventsTabPane.Create(
-		IDD_EVENTS,
-		&m_TabCtrl);
+	m_EventsTabPane.Create(IDD_EVENTS, &m_TabCtrl);
 
 	m_TabCtrl.SetFont(&m_font);
 	m_EventsTabPane.SetFont(&m_font);
@@ -160,8 +151,10 @@ void CPropertyTabPane::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CPropertyTabPane::DisplaySelectedControlProperties(CDclControlObject *pControl, COpenDCLView *pView) 
 {
-	CString sControlName;
+	if (m_PropertiesTabPane.GetPropertiesCtrl().m_pControl == pControl)
+		return;
 
+	CString sControlName;
 	if( pControl )
 	{
 		CString sControlType = GetControlName(pControl);
@@ -196,15 +189,13 @@ void CPropertyTabPane::DisplaySelectedControlProperties(CDclControlObject *pCont
 	m_PropertiesTabPane.m_ControlDesc.SetWindowText(sControlName);
 	// set the CView pointer for updating controls
 	m_PropertiesTabPane.GetPropertiesCtrl().m_pView = pView;	
-	// set the dcl form pointer for the property pages if they are to be called.
-	m_PropertiesTabPane.GetPropertiesCtrl().m_pDclForm = pView->m_pThisDclForm;
 	// display the properties of the control
 	m_PropertiesTabPane.GetPropertiesCtrl().DisplayProperties(pControl);
 
 	// set the CView pointer for updating controls
 	m_EventsTabPane.ClearEvents();
 	// update the events tab pane
-	m_EventsTabPane.UpdateEvents(pView->m_pThisDclForm, pControl);
+	m_EventsTabPane.UpdateEvents(pControl);
 	m_EventsTabPane.m_pView = pView;
 		
 }

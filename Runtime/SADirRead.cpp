@@ -104,7 +104,7 @@ const TCHAR *sBackSlash = _T("\\");
 const TCHAR sForwardSlash = _T('/');
 const TCHAR sDot[] = _T(".");
 const TCHAR sDotDot[] = _T("..");
-const TCHAR sFileFilter[] = _T("\\*.");
+const TCHAR sFileFilter[] = _T("\\*");
 
 
 //////////////////////////////////////////////////////////////////////

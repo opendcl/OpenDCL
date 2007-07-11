@@ -408,7 +408,8 @@ void CPropertyEdit::SetNameProp()
 		CDclFormObject *pDclForm = activeProject->FindDclForm(sText);
 		
 		// if an identical form has been found and it's not this one
-		if (pDclForm != NULL && pDclForm != theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pDclForm)
+		if (pDclForm != NULL &&
+				pDclForm != theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pControl->GetOwnerForm())
 		{
 			SetWindowText(m_pProp->GetStringValue());
 			sMsg = theWorkspace.LoadResourceString(IDS_FORMBADNAME);

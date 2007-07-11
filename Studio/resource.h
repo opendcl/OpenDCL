@@ -453,7 +453,6 @@
 #define IDS_BV_UM_1                     11702
 #define IDS_BV_UM_2                     11703
 #define IDS_BV_UM_3                     11704
-#define IDS_ADDTOSTRING                 12514
 #define IDI_X                           12515
 #define ID_EDIT_DELETE                  12771
 #define ID_BRINGTOFRONT                 12772

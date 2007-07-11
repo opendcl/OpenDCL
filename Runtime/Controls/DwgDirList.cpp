@@ -606,8 +606,6 @@ void CDwgDirList::Dir(CString sDir)
 	bool bInserted;
 	int nCount;
 
-	
-
 	// empty the list box
 	ResetContent();
 	
@@ -616,15 +614,10 @@ void CDwgDirList::Dir(CString sDir)
 	saFolderNames.RemoveAll();
 	saFolderNames.SetSize(0,1);
 
-	//dr.Recurse() = false;    // scan subdirs ?
-
 	m_sPath = sDir;
-
 	dr.ClearDirs();         // start clean
 	if (!dr.GetDirs(sDir, true)) // get all folders 
 		return; // exit if nothing found
-
-	// dump the directory list to the debug trace window:
 
 	// get the dir array
 	CSADirRead::SADirVector &dirs = dr.Dirs();

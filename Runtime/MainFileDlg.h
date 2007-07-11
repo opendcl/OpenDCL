@@ -47,6 +47,7 @@ protected:
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg void OnClose();
 	afx_msg void OnOK();
+	afx_msg void OnCancel();
 	afx_msg void OnDestroy();
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);

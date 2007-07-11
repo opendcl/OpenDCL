@@ -50,21 +50,18 @@ int CZOrderPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect rc(0,0,2,2);
 
 	// create the ZOrder List
-	if (!m_ZOrderList.Create(
-		WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER | LVS_REPORT | LVS_SHOWSELALWAYS ,
-		rc,
-		this,
-		ZOrderListID))
-	{
+	if (!m_ZOrderList.Create( WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_SHOWSELALWAYS |
+															LVS_NOCOLUMNHEADER | LVS_REPORT | LVS_SHOWSELALWAYS,
+														rc,
+														this,
+														ZOrderListID))
 		return -1;
-	}
 
 	m_ZOrderList.InsertColumn(0, _T("Controls"), LVCFMT_LEFT, nDeColWidth200);
 	m_ZOrderList.ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
 
-	if (!m_font.CreateStockObject(DEFAULT_GUI_FONT))
-		if (!m_font.CreatePointFont(nDeFontPtSize, _T("MS Sans Serif")))
-			return -1;
+	if (!m_font.CreateStockObject(DEFAULT_GUI_FONT) && !m_font.CreatePointFont(nDeFontPtSize, _T("MS Sans Serif")))
+		return -1;
 	
 	m_ZOrderList.SetFont(&m_font);
 
@@ -196,12 +193,10 @@ int CZOrderPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_ZOrderList.m_ImageList.Add(hicon);
 	DestroyIcon(hicon);
 
-
 	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_GRID));
 	m_ZOrderList.m_ImageList.Add(hicon);
 	DestroyIcon(hicon);
 
-	
 	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_SPLITTER));
 	m_ZOrderList.m_ImageList.Add(hicon);
 	DestroyIcon(hicon);
@@ -213,7 +208,6 @@ int CZOrderPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_OPENFOLDER));
 	m_ZOrderList.m_ImageList.Add(hicon);
 	DestroyIcon(hicon);
-
 
 	int cx, cy;
 	::ImageList_GetIconSize(m_ZOrderList.m_ImageList.m_hImageList, &cx, &cy);

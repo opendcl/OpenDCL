@@ -183,8 +183,19 @@ BOOL CMainFileDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 
 void CMainFileDlg::OnOK() 
 {
-	mpSourceForm->GetFormInstance()->GetWindow()->SendMessage( WM_COMMAND, IDOK, NULL );
-	__super::OnOK();	
+	CString sEvent = mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventCancelClose);
+	if (sEvent.IsEmpty() || !(InvokeCancelMethod(sEvent, false)))
+	{
+		mpSourceForm->GetFormInstance()->GetWindow()->SendMessage( WM_COMMAND, IDOK, NULL );
+		__super::OnOK();
+	}
+}
+
+void CMainFileDlg::OnCancel() 
+{
+	CString sEvent = mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventCancelClose);
+	if (sEvent.IsEmpty() || !(InvokeCancelMethod(sEvent, false)))
+		__super::OnCancel();
 }
 
 void CMainFileDlg::OnClose() 

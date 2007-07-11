@@ -33,12 +33,11 @@ public:
 	//}}AFX_DATA
 	bool m_bInitialized;
 	CDclControlObject	*m_pControl;
-	CDclFormObject		*m_pDclForm;
 	
 // operations
 public:
 	void CopyToClipboard();
-	void UpdateEvents(CDclFormObject *pDclForm, CDclControlObject *pControl);
+	void UpdateEvents(CDclControlObject *pControl);
 	void AddAnyActiveXEvents();
 	void TryToAddEvent(PropertyId nEvent);
 	void ClearEvents();

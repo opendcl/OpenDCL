@@ -20,15 +20,12 @@ CClrButton::~CClrButton()
 {
 	if (m_pStaticBrush)
 		delete m_pStaticBrush;
-	
 }
 
 
 BEGIN_MESSAGE_MAP(CClrButton, CButton)
-	//{{AFX_MSG_MAP(CClrButton)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_DESTROY()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -42,7 +39,6 @@ void CClrButton::SetAcadColor(long nColor)
 	m_pStaticBrush = new CBrush();
 	m_BackColor = GetRGBColor(nColor);
 	m_pStaticBrush->CreateSolidBrush(m_BackColor);
-	
 }
 
 
@@ -55,21 +51,11 @@ void CClrButton::SetForeColor(long nColor)
 HBRUSH CClrButton::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
 	if (!IsWindowEnabled())
-	{		
 		return NULL;
-	}
 	
 	pDC->SetBkMode(TRANSPARENT);	
 	pDC->SetBkColor(m_BackColor);	
 	pDC->SetTextColor(m_ForeColor);
 	pDC->SelectObject(m_pStaticBrush);
 	return (HBRUSH)(m_pStaticBrush->GetSafeHandle());
-	
-}
-
-void CClrButton::OnDestroy() 
-{
-	CButton::OnDestroy();
-	
-	
 }

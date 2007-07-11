@@ -234,8 +234,7 @@ END_MESSAGE_MAP()
 COpenDCLView::COpenDCLView():CView()//(COpenDCLView::IDD)
 {
 	CWinApp* pApp = AfxGetApp();
-	CString sProfileName;
-	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
+	CString sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
 	
 	// get the grid spacing
 	m_gridSpacing = pApp->GetProfileInt(sProfileName, _T("nGridSpacing"), 8);
@@ -246,7 +245,7 @@ COpenDCLView::COpenDCLView():CView()//(COpenDCLView::IDD)
 	m_bGripsCreate = false;
 	m_MouseDown = false;
 	m_bMoving = false;
-	m_SelectedControl.m_nIndex = -1;
+	m_SelectedControl.Clear();
 	m_SelectedList.RemoveAll();
 	m_UndoList.RemoveAll();
 	m_MouseDown = false;
@@ -499,23 +498,18 @@ void COpenDCLView::PaintBackGround(HDC hdc)
 
 void COpenDCLView::OnGridSpacingChanged() 
 {
-	try
-	{
-	GetDocument()->SetModifiedFlag(TRUE);
+	CDocument* pDoc = GetDocument();
+	if( pDoc )
+		pDoc->SetModifiedFlag(TRUE);
 	Invalidate();
-	}
-	catch(...)
-	{
-	}
 }
 
 void COpenDCLView::OnControlToInsertChanged() 
 {
-	m_SelectedControl.m_pArxObject = NULL;
-	m_SelectedControl.m_pControl = NULL;
-	m_SelectedControl.m_nIndex = -1;
+	m_SelectedControl.Clear();
 	GetDocument()->SetModifiedFlag(TRUE);
 }
+
 void COpenDCLView::HideGrips()
 {
 	m_GripRect1.ShowWindow(FALSE);
@@ -526,8 +520,8 @@ void COpenDCLView::HideGrips()
 	m_GripRect6.ShowWindow(FALSE);
 	m_GripRect7.ShowWindow(FALSE);
 	m_GripRect8.ShowWindow(FALSE);
-
 }
+
 void COpenDCLView::MoveGripRectsForward()
 {
 	m_GripRect1.SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
@@ -538,13 +532,12 @@ void COpenDCLView::MoveGripRectsForward()
 	m_GripRect6.SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
 	m_GripRect7.SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
 	m_GripRect8.SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
-
 }
+
 void COpenDCLView::ShowGripRects(BOOL bShow, CRect rcCtrl)
 {
 	if (m_bGripsCreate == FALSE)
 		return;
-	
 
 	// set the predetermined pos's
 	int LeftX = rcCtrl.left - (nGripSize / 2);
@@ -565,13 +558,11 @@ void COpenDCLView::ShowGripRects(BOOL bShow, CRect rcCtrl)
 		m_GripRect2.MoveWindow( 
 			MidX, TopY, nGripSize, nGripSize,
 			TRUE);
-			
 
 		m_GripRect3.MoveWindow( 
 			RightX,
 			TopY, nGripSize, nGripSize,
 			TRUE);
-			
 
 		m_GripRect4.MoveWindow( 
 			LeftX,
@@ -754,10 +745,10 @@ bool COpenDCLView::CheckControlsForSelection(CPoint point, UINT nFlags, bool bMo
 						// call the method to setup the fonts in the font tool bar.
 						theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar(pArxObject);
 	
+						ClearSelection();
 						m_SelectedControl.m_pArxObject = pArxObject;
 						m_SelectedControl.m_pControl = pControl;
 						m_SelectedControl.m_nIndex = i;
-						ClearSelection();
 						ShowGripRects(TRUE, rcCtrl);
 						FireControlSelected(pArxObject);
 					}
@@ -1500,9 +1491,7 @@ void COpenDCLView::OnRButtonDown(UINT nFlags, CPoint point)
 	}
 	else
 	{
-		m_SelectedControl.m_pArxObject = NULL;
-		m_SelectedControl.m_pControl = NULL;
-		m_SelectedControl.m_nIndex = -1;
+		m_SelectedControl.Clear();
 		HideGrips();
 		ClearSelection();
 		FireShowFormGrips(TRUE);
@@ -1560,9 +1549,7 @@ void COpenDCLView::OnMouseButtonDown(UINT nFlags, CPoint point)
 		}
 		else
 		{
-			m_SelectedControl.m_pArxObject = NULL;
-			m_SelectedControl.m_pControl = NULL;
-			m_SelectedControl.m_nIndex = -1;
+			m_SelectedControl.Clear();
 			HideGrips();
 			ClearSelection();
 			m_bDrawing = true;
@@ -1647,13 +1634,13 @@ CDclControlObject* COpenDCLView::InsertControl(CRect rcPos, ControlType nCtrlToI
 	CUndoActions *pUndo = new CUndoActions( uaInsert, pDclControl, pControl );
 	m_UndoList.AddTail(pUndo);
 
+	ClearSelection();
 	m_SelectedControl.m_pArxObject = pDclControl;
 	m_SelectedControl.m_pControl = pControl;
 	m_SelectedControl.m_nIndex = pDclControl->GetZOrder();
 	pControl->GetWindowRect(&rcPos);
 	ScreenToClient(rcPos);
 	ShowGripRects(TRUE, rcPos);
-	ClearSelection();
 
 	// Fire the control was inserted event to let the parent know
 	FireControlInserted(pDclControl, nCtrlToInsert);
@@ -2656,9 +2643,7 @@ void COpenDCLView::PasteFromClipBoard()
 	
 		HideGrips();
 		// clear the previous selection
-		m_SelectedControl.m_nIndex = -1;
-		m_SelectedControl.m_pArxObject = NULL;
-		m_SelectedControl.m_pControl = NULL;
+		m_SelectedControl.Clear();
 		ClearSelection();
 		
 		// create a position variable to hold the counter increment
@@ -3479,7 +3464,6 @@ void COpenDCLView::OnLostFocus()
 	HideSizingRect();
 	ClearSelection();
 	m_StandardCursorID = false;
-
 }
 
 BOOL COpenDCLView::CanUndo() 

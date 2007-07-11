@@ -40,12 +40,6 @@
 #define nPromptForNewMasked  2
 
 
-inline static bool IsVersionFree()
-{
-	return false;
-}
-
-
 static CString LTOA(int nVal)
 {
   CString sLong;
@@ -93,7 +87,6 @@ CPropertyListCtrl::CPropertyListCtrl()
 	m_pView = NULL;	
 	m_pPropTitle = NULL;
 	m_pPropDesc = NULL;
-	m_pDclForm = NULL;
 	m_pColorPopup = NULL;
 	m_pModeless = NULL;
 	m_pParent = NULL;
@@ -767,14 +760,10 @@ void CPropertyListCtrl::ClearGrid()
 	::ReleaseDC(m_hWnd, hdc);
 
 	m_pControl = NULL;
-	m_pDclForm = NULL;
 
 	// make any child controls not visible
 	if (m_Button.IsWindowVisible())
-	{
-		m_Button.ShowWindow(FALSE);
-		
-	}
+		m_Button.ShowWindow(SW_HIDE);
 
 	if (m_Edit.IsWindowVisible())
 	{
@@ -783,9 +772,9 @@ void CPropertyListCtrl::ClearGrid()
 	}
 
 	if (m_ScrollBarCreated && m_ScrollBar.IsWindowVisible())
-		m_ScrollBar.ShowWindow(FALSE);
-
+		m_ScrollBar.ShowWindow(SW_HIDE);
 }
+
 void CPropertyListCtrl::ClearArea(HDC hdc)
 {;
 			
@@ -804,6 +793,8 @@ void CPropertyListCtrl::ClearArea(HDC hdc)
 
 void CPropertyListCtrl::DisplayProperties(CDclControlObject *pControl) 
 {
+	if( pControl == m_pControl )
+		return;
 	
 	if (pControl != NULL)
 	{
@@ -829,13 +820,12 @@ void CPropertyListCtrl::DisplayProperties(CDclControlObject *pControl)
 			m_PropertyList.AddTail(pProp);
 	}
 
-	// if the selected index is greater than the available properties for this control	
+	// if the selected index is greater than the available properties for this control, set it to zero
 	if (m_SelectedIndex > m_PropertyList.GetCount() - 1)
-		// set the selected index to 0
 		m_SelectedIndex = 0;
 
 	// get the property selected
-    RefCountedPtr< CPropertyObject > pPropSelected = GetPropertyObject(m_SelectedIndex);
+	RefCountedPtr< CPropertyObject > pPropSelected = GetPropertyObject(m_SelectedIndex);
 					
 	if (pPropSelected == NULL)
 	{
@@ -3031,7 +3021,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 		pGeometryPage->m_pUseRightFromRight = pArxCtrl->GetPropertyObject(nUseRightFromRight);
 		
 		pGeometryPage->m_pControl = pArxCtrl;
-		pGeometryPage->m_pDclForm = m_pDclForm;
+		pGeometryPage->m_pDclForm = m_pControl->GetOwnerForm();
 		
 		Dlg.AddPage(pGeometryPage);
 	}
@@ -3169,14 +3159,14 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 		
 		pColumnsPage->bUsesRowHeader = pArxCtrl->GetBoolProperty(nRowHeader) == TRUE;	
 
-		pColumnsPage->m_pDclForm = m_pDclForm;
+		pColumnsPage->m_pDclForm = m_pControl->GetOwnerForm();
 		pColumnsPage->m_pControl = pArxCtrl;
 		pColumnsPage->m_pView = m_pView;
 		Dlg.AddPage(pColumnsPage);
 	}
 
 	pProp = pArxCtrl->GetPropertyObject(nTabsCaption);	
-	if (pProp != NULL && m_pDclForm != NULL)
+	if (pProp != NULL && m_pControl->GetOwnerForm() != NULL)
 	{
 		pTabs = new CTabsPane( m_pView, pArxCtrl );
 		Dlg.AddPage(pTabs);
@@ -3323,7 +3313,7 @@ BOOL CPropertyListCtrl::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 
 void CPropertyListCtrl::EditObjectbrowser() 
 {
-	if (m_pControl == NULL && m_pDclForm == NULL)
+	if (m_pControl == NULL)
 		return;
 
 	AfxInitRichEdit();
@@ -3335,8 +3325,8 @@ void CPropertyListCtrl::EditObjectbrowser()
 		CObjectBrowser Dlg;
 		Dlg.m_pControl = (COleControlObject*)m_pControl;
 		Dlg.m_pControl.Lock();
-		Dlg.m_pDclForm = m_pDclForm;
-		Dlg.m_sDclFormName = m_pDclForm->GetKeyName();
+		Dlg.m_pDclForm = m_pControl->GetOwnerForm();
+		Dlg.m_sDclFormName = m_pControl->GetOwnerForm()->GetKeyName();
 		Dlg.DoModal();
 		return;
 	}
@@ -3346,16 +3336,16 @@ void CPropertyListCtrl::EditObjectbrowser()
 		m_pIntelHelp = new CObjectBrowser();
 		m_pIntelHelp->m_pControl = (COleControlObject*)m_pControl;
 		m_pIntelHelp->m_pControl.Lock();
-		m_pIntelHelp->m_pDclForm = m_pDclForm;
-		m_pIntelHelp->m_sDclFormName = m_pDclForm->GetKeyName();
+		m_pIntelHelp->m_pDclForm = m_pControl->GetOwnerForm();
+		m_pIntelHelp->m_sDclFormName = m_pControl->GetOwnerForm()->GetKeyName();
 		m_pIntelHelp->Create(MAKEINTRESOURCE(IDD_OBJECTBROWSER), AfxGetApp()->m_pMainWnd);
 	}
 	else
 	{
 		m_pIntelHelp->m_pControl = (COleControlObject*)m_pControl;
 		m_pIntelHelp->m_pControl.Lock();
-		m_pIntelHelp->m_pDclForm = m_pDclForm;
-		m_pIntelHelp->m_sDclFormName = m_pDclForm->GetKeyName();
+		m_pIntelHelp->m_pDclForm = m_pControl->GetOwnerForm();
+		m_pIntelHelp->m_sDclFormName = m_pControl->GetOwnerForm()->GetKeyName();
 		m_pIntelHelp->Setup();
 	}
 	m_pIntelHelp->ShowWindow(TRUE);

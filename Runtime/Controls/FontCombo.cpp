@@ -620,6 +620,7 @@ void CFontCombo::Initialize()
 	EnumerateFonts();
 	
 	// add the sysytem fonts manually because they are not added otherwise
+	AddString( _T("MS Shell Dlg"));
 	AddString( _T("MS Sans Serif"));
 	AddString( _T("MS Serif"));
 	AddString( _T("System"));

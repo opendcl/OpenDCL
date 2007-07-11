@@ -1920,6 +1920,7 @@ public:
 		int nY = -1;
 		LPCTSTR pszDefaultDirectory = NULL;
 		LPCTSTR pszDefaultFileName = NULL;
+		LPCTSTR pszDefaultExtension = NULL;
 		if (pArgs)
 		{
 			if (pArgs->restype == RTSTR)
@@ -1933,6 +1934,15 @@ public:
 				if (pArgs->restype != RTSTR)
 					return RSERR; //wrong argument type
 				pszDefaultFileName = pArgs->resval.rstring;
+
+				if (pArgs->rbnext)
+				{
+					pArgs = pArgs->rbnext;
+
+					if (pArgs->restype != RTSTR)
+						return RSERR; //wrong argument type
+					pszDefaultExtension = pArgs->resval.rstring;
+				}
 			}
 			else if (pArgs->restype == RTSHORT)
 			{
@@ -1962,6 +1972,8 @@ public:
 			if( !sFilename.IsEmpty() && !sFilename.Right(1).SpanExcluding( _T("\\/") ).IsEmpty() )
 				sFilename += _T('\\');
 			sFilename += pszDefaultFileName;
+			fdp.sFilename = sFilename;
+			fdp.sDefaultExtension = pszDefaultExtension;
 		}
 		DialogParams params( CPoint( nX, nY ), CRect(0,0,0,0), bHasFileParams? (LPARAM)&fdp : NULL );
 		int nResult = theArxWorkspace.ActivateDclForm(pDclObject, &params);

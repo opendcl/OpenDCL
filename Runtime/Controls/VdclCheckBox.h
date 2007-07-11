@@ -15,41 +15,30 @@ class CPropertyObject;
 
 class VdclCheckBox : public CClrButton
 {
-// Construction
-public:
-	VdclCheckBox();
-
-// Attributes
-public:
+	CDclControlObject *m_ArxControl;
+	RefCountedPtr< CPropertyObject > m_pValue;
 	bool m_bInvokeWithSendString;
-
-// Operations
 public:
 	CPPToolTip m_ToolTip;
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(VdclCheckBox)
-	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
-
-// Implementation
+// Construction
 public:
+	VdclCheckBox();
 	virtual ~VdclCheckBox();
+
+// Overrides
+public:
+	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+protected:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 	// Generated message map functions
 protected:
-	//{{AFX_MSG(VdclCheckBox)
+	DECLARE_MESSAGE_MAP()
+
+protected:
 	afx_msg void OnDestroy();
 	afx_msg void OnClicked();
 	afx_msg void OnDoubleclicked();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	//}}AFX_MSG
-
-	DECLARE_MESSAGE_MAP()
-private:
-	CDclControlObject *m_ArxControl;
-	RefCountedPtr< CPropertyObject > m_pValue;
 };

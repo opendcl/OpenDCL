@@ -180,7 +180,7 @@ Questions?
     Please visit the following sites for more information:
 
         http://sourceforge.net/projects/opendcl
-        http://www.opendcl.com/forum/
+        http://www.opendcl.com
 
 --------------------------------------------------------------------------------
 

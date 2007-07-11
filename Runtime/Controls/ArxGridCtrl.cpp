@@ -67,16 +67,16 @@ static LPTSTR s_TimeFormats[] =
 };
 
 
-bool getvar(CString varname)
+bool getvar(LPCTSTR pszVarName)
 {	
 	struct resbuf rsVarVal;
-	if (acedGetVar(varname, &rsVarVal) != RTNORM)
+	if (acedGetVar(pszVarName, &rsVarVal) != RTNORM)
 		return false;
 	if (rsVarVal.restype == RTT)
 		return true;
 	if (rsVarVal.restype == RTNIL)
 		return false;
-	return (rsVarVal.resval.rint == 1);	
+	return (rsVarVal.restype == RTSHORT && rsVarVal.resval.rint == 1);	
 }
 
 
@@ -88,16 +88,11 @@ int GetCurrentLayerColor()
 	AcDbObjectId objId = acdbHostApplicationServices()->workingDatabase()->clayer();
 
 	if (Acad::eOk != (es = acdbOpenAcDbEntity(pEnt, objId, AcDb::kForRead)))
-	{
 		return 0;
-	}
 	
 	AcDbLayerTableRecord *pLayerTableRecord = (AcDbLayerTableRecord*)pEnt;
-
 	if (pLayerTableRecord == NULL)
-	{
 		return 0;
-	}
 	
 	AcCmColor clr = pLayerTableRecord->color();
 	
@@ -183,8 +178,7 @@ void CArxGridCtrl::SetCurSel(int nRow, int nCol)
 	bool bRefreshOldRect = false;
 	CRect rcOld;
 			
-	if (m_nRowSelected != nRow ||
-		m_nColSelected != nCol)
+	if (m_nRowSelected != nRow || m_nColSelected != nCol)
 	{
 		if (m_nRowSelected != -1)
 		{
@@ -202,6 +196,7 @@ void CArxGridCtrl::SetCurSel(int nRow, int nCol)
 	InvalidateRect(rc, TRUE);
 	
 	ShowCurSel();
+	Invalidate(TRUE);
 }
 
 void CArxGridCtrl::CheckLayer(CString &sLayer, int &nImage)
@@ -699,6 +694,8 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 	__super::OnLButtonDown(nFlags, point);
 
+	CRect rcOld = GetCurSelRect();
+	InvalidateRect( &rcOld, TRUE );
 	int nRow, nCol;
 	CellHitTest(point, nRow, nCol);
 	if (m_nRowSelected != nRow || m_nColSelected != nCol)
@@ -721,7 +718,7 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		nCol,
 		m_bInvokeWithSendString);
 
-	m_bShowHighlight = true;
+	//m_bShowHighlight = true;
 
 	if (nCol >= 0)
 	{
@@ -783,13 +780,9 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 				}
 
 				if (nImage == nDefImage || nImage == -1)
-				{
 					SetItemImage(nRow, nCol, nAltImage);
-				}
 				else
-				{
 					SetItemImage(nRow, nCol, nDefImage);
-				}
 				// fire the on Grid edit cell event.
 				EndEditControls(this);
 				break;
@@ -797,13 +790,6 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		case Grid_EllipsesButtons:
 		case Grid_PickButtons:
 			{
-				int nOldRow = m_nRowSelected;
-				int nOldCol = m_nColSelected;
-
-				m_nColSelected = nCol;
-				m_nRowSelected = nRow;
-				
-				RefreshCell(nOldRow, nOldCol);
 				EditCellNow();
 				return;
 			}
@@ -819,29 +805,15 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 				m_nColSelected = nCol;
 				m_nRowSelected = nRow;
 				
-				RefreshCell(nOldRow, nOldCol);
 				EditCellNow();
 				return;
 			}
 		}
 	}
-
-	
-	CRect rcOld;
-	bool bRefreshOldRect = false;
-	if (m_nRowSelected >= 0)
-	{
-		rcOld = GetCurSelRect();
-		bRefreshOldRect = true;
-	}
 	
 	m_nRowSelected = nRow;
 	m_nColSelected = nCol;
-
 	ShowCurSel();
-
-	if (bRefreshOldRect)
-		InvalidateRect(rcOld, TRUE);
 	
 	if (nCol > 0)
 	{
@@ -3586,7 +3558,7 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 							{
 								sLabel = theWorkspace.LoadResourceString(4223);
 							}
-							else if (getvar("LWUNITS"))
+							else if (getvar(_T("LWUNITS")))
 							{
 								double dValue = ((double) newLW) / 100;
 								sLabel.Format( _T("%.2f mm"), dValue);								

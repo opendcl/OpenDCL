@@ -110,7 +110,6 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 0 );
 		pDclControl->AddLongProperty( nMaxDialogWidth, PropLong, 0 );
 		pDclControl->AddLongProperty( nMaxDialogHeight, PropLong, 0 );
-		//pDclControl->AddLongProperty( nIcon, PropPicture, -1 );
 		pDclControl->AddBooleanProperty( nTitleBar, PropBool, true );
 		pDclControl->AddStringProperty( nTitleBarText, PropString, pOwnerForm->GetKeyName() );
 		AddControlEvent( pDclControl, nFormEventInitialize );
@@ -129,8 +128,6 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		pDclControl->AddBooleanProperty( nResizable, PropBool, true );
 		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 250 );
 		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 450 );
-		//pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 0 );
-		//pDclControl->AddLongProperty( nMinDialogHeight, PropLong, 0 );
 		pDclControl->AddStringProperty( nTitleBarText, PropString, pOwnerForm->GetKeyName() );
 		pDclControl->AddLongProperty( nDockableSides, PropEnum, 0 );
 		AddControlEvent( pDclControl, nFormEventInitialize );

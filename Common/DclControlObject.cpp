@@ -583,35 +583,57 @@ void CDclControlObject::Serialize(CArchive& ar)
 				 (mType == CtlGraphicButton || mType == CtlPictureBox || mType == CtlForm))
 				mProperties.RemoveAt(posAt);
 
-			if( mType == CtlForm && mpOwner->GetType() == VdclConfigTab )
-			{ //config tab pages should not have these properties
-				switch(pSourceProp->GetID())
+			if( mType == CtlForm )
+			{
+				DclFormType eFormType = mpOwner->GetType();
+				if( eFormType == VdclConfigTab )
 				{
-				case nCustom:
-				case nDockableSides:
-					mProperties.RemoveAt(posAt);
+					switch(pSourceProp->GetID())
+					{
+					case nCustom:
+					case nDockableSides:
+						mProperties.RemoveAt(posAt);
+					}
 				}
-			}
-
-			if( mType == CtlForm && mpOwner->GetType() == VdclModeless )
-			{ //config tab pages should not have these properties
-				switch(pSourceProp->GetID())
+				else if( eFormType == VdclModal )
 				{
-				case nIcon:
-					mProperties.RemoveAt(posAt);
+					switch(pSourceProp->GetID())
+					{
+					case nEventInvoke:
+						mProperties.RemoveAt(posAt);
+					}
 				}
-			}
-
-			if( mType == CtlForm && mpOwner->GetParentForm() )
-			{ //tab pages should not have these properties
-				switch(pSourceProp->GetID())
+				else if( eFormType == VdclModeless )
 				{
-				case nName:
-				case nObjectBrowser:
-				case nGlobalVarName:
-				case nUseBottomFromBottom:
-				case nUseTopFromBottom:
-					mProperties.RemoveAt(posAt);
+					switch(pSourceProp->GetID())
+					{
+					case nIcon:
+						mProperties.RemoveAt(posAt);
+					}
+				}
+				else if( eFormType == VdclDockable )
+				{
+					switch(pSourceProp->GetID())
+					{
+					case nMinDialogWidth:
+					case nMinDialogHeight:
+					case nMaxDialogWidth:
+					case nMaxDialogHeight:
+						mProperties.RemoveAt(posAt);
+					}
+				}
+
+				if( mpOwner->GetParentForm() )
+				{ //tab pages should not have these properties
+					switch(pSourceProp->GetID())
+					{
+					case nName:
+					case nObjectBrowser:
+					case nGlobalVarName:
+					case nUseBottomFromBottom:
+					case nUseTopFromBottom:
+						mProperties.RemoveAt(posAt);
+					}
 				}
 			}
 		}

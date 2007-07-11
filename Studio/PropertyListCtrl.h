@@ -63,7 +63,6 @@ public:
 public:
 	HCURSOR				m_Cursor;
 	CDclControlObject	*m_pControl;
-	CDclFormObject		*m_pDclForm;
 	CPropertyList		m_PropertyList;
 	CString				m_ClassName;
 	COpenDCLView		*m_pView;

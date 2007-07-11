@@ -102,10 +102,10 @@ void CProjectTreeCtrl::OnDblclk(NMHDR* pNMHDR, LRESULT* pResult)
 										 theWorkspace.LoadResourceString(IDS_AUTOLISPFILE),
 										 CWnd::GetActiveWindow() );
 		CString sTitle = theWorkspace.LoadResourceString(IDS_SELECTPROJECTLISPFILE);
-		Dlg.m_pOFN->lpstrTitle = sTitle;
+		Dlg.m_pOFN->lpstrTitle = sTitle.LockBuffer();
 		if( Dlg.DoModal() == IDOK )
 		{
-			sLispFileName = Dlg.GetFileName();
+			sLispFileName = Dlg.GetPathName();
 			mpProject->SetLispFileName( sLispFileName );
 			SetAutoLispFilename( sLispFileName );
 			if( mpDocument )

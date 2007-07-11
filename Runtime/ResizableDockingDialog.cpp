@@ -46,7 +46,7 @@ bool CResizableDockingDialogX::IsFloating() const
 bool CResizableDockingDialogX::CreateModeless( UINT nID ) const
 {
 	CDclControlObject* pProps = mpSourceForm->GetControlProperties();
-	int nDocHeight = pProps->GetLongProperty(nHeight);
+	int nWindowHeight = pProps->GetLongProperty(nHeight);
 	DWORD dwDockableSides = 0;
 	DWORD dwDefaultDockableSide = 0;
 
@@ -56,37 +56,43 @@ bool CResizableDockingDialogX::CreateModeless( UINT nID ) const
 		// set the form to only dock on the top side
 		dwDockableSides = CBRS_ALIGN_TOP;
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
-		nDocHeight += 8;
+		if( !mpSourceForm->UsesClientRect() )
+			nWindowHeight += 8;
 		break;
 	case 2:
 		// set the form to only dock on the bottom side
 		dwDockableSides = CBRS_ALIGN_BOTTOM;
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_BOTTOM;
-		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
+		if( !mpSourceForm->UsesClientRect() )
+			nWindowHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	case 3:
 		// set the form to only dock on the top or bottom sides
 		dwDockableSides = CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;				
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
-		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
+		if( !mpSourceForm->UsesClientRect() )
+			nWindowHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	case 4:
 		// set the form to only dock on the any side
 		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP;				
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
-		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
+		if( !mpSourceForm->UsesClientRect() )
+			nWindowHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	case 5:
 		// set the form to only dock on the any side
 		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
-		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
+		if( !mpSourceForm->UsesClientRect() )
+			nWindowHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	default:
 		// set the form to only dock on the left or right sides
 		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT;
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
-		nDocHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
+		if( !mpSourceForm->UsesClientRect() )
+			nWindowHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	}
 
@@ -95,7 +101,7 @@ bool CResizableDockingDialogX::CreateModeless( UINT nID ) const
 		rect.left = 0;
 	if (rect.top < 0)
 		rect.top = 0;				
-	rect.bottom = rect.top + nDocHeight;
+	rect.bottom = rect.top + nWindowHeight;
 	rect.right = rect.left + pProps->GetLongProperty(nWidth);
 
 	if( !mpOwner->Create( mpSourceForm->GetKeyPath(), rect, nID ) )
@@ -111,21 +117,21 @@ bool CResizableDockingDialogX::CreateModeless( UINT nID ) const
     UUID uuid = mpSourceForm->GetUUID();
 		mpOwner->SetToolID (&uuid);
 	}			
-	// set the form to only dock on the set side(s)
 	mpOwner->EnableDocking(dwDockableSides);
-	// loads the dockable form but does not display it
-	mpOwner->RestoreControlBar(dwDefaultDockableSide);
+	mpOwner->RestoreControlBar(dwDefaultDockableSide); // loads the dockable form but does not display it
 	return true;
 }
 
 void CResizableDockingDialogX::CloseDialog(int nStatus) const
 {
+	CWnd* pTopLevel = IsFloating()? (mpOwner->m_hWnd? mpOwner->GetParent()->GetParent() : NULL) : mpOwner;
+	HWND hwndTopLevel = pTopLevel? pTopLevel->m_hWnd : NULL;
+	HWND hwndOwner = mpOwner->m_hWnd;
 	mpOwner->EndModalLoop(nStatus); //set the status
-	CWnd* pTopLevel = IsFloating()? mpOwner->GetParent()->GetParent() : mpOwner;
-	if( pTopLevel && ::IsWindow(pTopLevel->m_hWnd) )
-		pTopLevel->SendMessage(WM_CLOSE);
-	if( ::IsWindow(mpOwner->m_hWnd) )
-		mpOwner->DestroyWindow();
+	if( hwndTopLevel && ::IsWindow(hwndTopLevel) )
+		::SendMessage(hwndTopLevel, WM_CLOSE, 0, 0);
+	if( hwndOwner && ::IsWindow(hwndOwner) )
+		::DestroyWindow(hwndOwner);
 }
 
 bool CResizableDockingDialogX::GetWindowRect( CRect& rcDlg ) const

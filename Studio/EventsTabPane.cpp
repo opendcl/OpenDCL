@@ -31,21 +31,15 @@ const int nDescBottom = 26;
 CEventsTabPane::CEventsTabPane(CWnd* pParent /*=NULL*/)
 	: CDialog(CEventsTabPane::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CEventsTabPane)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
 	m_bInitialized = false;
 	m_pControl = NULL;
-	m_pDclForm = NULL;
 	m_pView = NULL;
-	
 }
 
 
 void CEventsTabPane::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CEventsTabPane)
 	DDX_Control(pDX, IDC_LABEL, m_Label);
 	DDX_Control(pDX, IDC_EVENTDESC, m_EventDesc);
 	DDX_Control(pDX, IDC_DEFUNPREVIEW, m_DefunPreview);
@@ -53,12 +47,10 @@ void CEventsTabPane::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EVENTSTREE, m_EventsTree);
 	DDX_Control(pDX, IDC_ADDTOLISP, m_AddToLisp);
 	DDX_Control(pDX, IDC_ADDCANCEL, m_AddCancel);
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CEventsTabPane, CDialog)
-	//{{AFX_MSG_MAP(CEventsTabPane)
 	ON_WM_SIZE()
 	ON_WM_SHOWWINDOW()
 	ON_EN_CHANGE(IDC_DEFUNEDIT, OnChangeDefunedit)
@@ -66,7 +58,6 @@ BEGIN_MESSAGE_MAP(CEventsTabPane, CDialog)
 	ON_BN_CLICKED(IDC_ADDTOLISP, OnAddtolisp)
 	ON_LBN_SELCHANGE(IDC_EVENTSTREE, OnSelchangeEventstree)
 	ON_CLBN_CHKCHANGE(IDC_EVENTSTREE, OnCheckChanged)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -77,29 +68,12 @@ BOOL CEventsTabPane::OnInitDialog()
 	CDialog::OnInitDialog();
 	m_bInitialized = true;
 
-	CString sText;
-	CWinApp* pApp = AfxGetApp();
-	CString sProfileName;
-	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-
-	BOOL bUsesOn = pApp->GetProfileInt(sProfileName, _T("EventsCopyToClipboard"), TRUE);
-			
-	if (bUsesOn)
-	{
-		sText = theWorkspace.LoadResourceString(IDS_COPYTOCLIPBOARD);
-		m_AddToLisp.SetWindowText(sText);
-	}
-	else
-	{
-		sText = theWorkspace.LoadResourceString(IDS_ADDTOSTRING);
-		m_AddToLisp.SetWindowText(sText);	
-	}
+	if (!AfxGetApp()->GetProfileInt(theWorkspace.LoadResourceString(IDR_MAINFRAME), _T("EventsWriteToLispFile"), FALSE))
+		m_AddToLisp.ShowWindow(SW_HIDE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
-
-
 
 void CEventsTabPane::OnSize(UINT nType, int cx, int cy) 
 {
@@ -108,7 +82,6 @@ void CEventsTabPane::OnSize(UINT nType, int cx, int cy)
 	if (!m_bInitialized) 
 		return;
 
-	
 	CRect rcEventTree (0,1,cx,cy-nTreeBottom);
 	m_EventsTree.MoveWindow(rcEventTree, TRUE);
 		
@@ -129,7 +102,6 @@ void CEventsTabPane::OnSize(UINT nType, int cx, int cy)
 	
 	CRect rcAddToLisp (75,cy-nDescBottom+3,cx+1,cy-1);
 	m_AddToLisp.MoveWindow(rcAddToLisp, TRUE);
-
 }
 
 
@@ -137,27 +109,21 @@ void CEventsTabPane::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	CDialog::OnShowWindow(bShow, nStatus);
 
-	if (bShow == TRUE && m_pDclForm != NULL)
-		UpdateEvents(m_pDclForm, m_pControl);
+	//if (bShow == TRUE && m_pDclForm != NULL)
+	//	UpdateEvents(m_pControl);
 }
 
-void CEventsTabPane::UpdateEvents(CDclFormObject *pDclForm, CDclControlObject *pControl)
+void CEventsTabPane::UpdateEvents(CDclControlObject *pControl)
 {
 	m_pControl = pControl;
-	m_pDclForm = pDclForm;
-
-	if (m_pDclForm == NULL)
-		return;
 	
-	if (m_pDclForm->GetType() == VdclDockable)
-		m_AddCancel.ShowWindow(TRUE);
+	if (pControl && pControl->GetOwnerForm()->GetType() == VdclDockable)
+		m_AddCancel.ShowWindow(SW_SHOW);
 	else
-		m_AddCancel.ShowWindow(FALSE);
-
-	CString sEventDeclaration;
+		m_AddCancel.ShowWindow(SW_HIDE);
 	m_EventsTree.ResetContent();
 	
-	if (m_pDclForm == NULL || m_pControl == NULL)
+	if (m_pControl == NULL)
 		return;
 	
 	TryToAddEvent(nEventFolderChanged);
@@ -235,7 +201,7 @@ void CEventsTabPane::UpdateEvents(CDclFormObject *pDclForm, CDclControlObject *p
 
 void CEventsTabPane::AddAnyActiveXEvents() 
 {
-	if( m_pDclForm == NULL )
+	if( m_pControl == NULL )
 		return;
 
 	//The ActiveX event item data is the property item index because a control can have multiple 
@@ -263,7 +229,7 @@ void CEventsTabPane::AddAnyActiveXEvents()
 
 void CEventsTabPane::TryToAddEvent( PropertyId nEventId ) 
 {
-	if( m_pDclForm == NULL )
+	if( m_pControl == NULL )
 		return;
 
 	RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyObject( nEventId );
@@ -280,7 +246,7 @@ void CEventsTabPane::OnChangeDefunedit()
 {
 	CString sDefunEditText;
 	
-	if (m_pDclForm == NULL)
+	if (m_pControl == NULL)
 		return;
 
 	// get the current event selection
@@ -306,7 +272,7 @@ void CEventsTabPane::OnChangeDefunedit()
 
 void CEventsTabPane::SetDefunPreview()
 {
-	if( !m_pDclForm )
+	if( !m_pControl )
 		return;
 
 	CString sPreview;
@@ -332,7 +298,7 @@ void CEventsTabPane::SetDefunPreview()
 		sArgs += _T(" /");
 
 		CString sDefunBody;
-		if (nEventId == nDragnDropFromAutoCAD && m_pDclForm->GetType() != VdclFileDialog)
+		if (nEventId == nDragnDropFromAutoCAD && m_pControl->GetOwnerForm()->GetType() != VdclFileDialog)
 			sDefunBody = _T("     (setq ssDragnDropSelectionSet (ssget \"P\"))"); //get the 'Previous' selection set
 		else
 		{
@@ -382,7 +348,8 @@ CString CEventsTabPane::GetDefunArguments()
 
 void CEventsTabPane::ClearEvents()
 {
-	if (m_pDclForm == NULL)
+	m_AddToLisp.EnableWindow(FALSE);
+	if (m_pControl == NULL)
 		return;
 
 	m_Label.SetWindowText(CString());
@@ -391,8 +358,6 @@ void CEventsTabPane::ClearEvents()
 	m_DefunEdit.SetWindowText(CString());
 	m_DefunPreview.SetWindowText(CString());
 	m_pControl = NULL;
-	m_pDclForm = NULL;
-	
 }
 
 BOOL CEventsTabPane::PreTranslateMessage(MSG* pMsg) 
@@ -441,12 +406,10 @@ BOOL CEventsTabPane::PreTranslateMessage(MSG* pMsg)
 
 void CEventsTabPane::OnAddcancel() 
 {
-	CString sDefunEditText;
-	
-	if (m_pDclForm == NULL)
-	{		
+	if (m_pControl == NULL)
 		return;
-	}
+	
+	CString sDefunEditText;
 	
 	// get the current event selection
 	int hItem = m_EventsTree.GetCurSel();
@@ -470,7 +433,6 @@ void CEventsTabPane::OnAddcancel()
 			// set the property to the new defun name
 			SetEvent(nEventId, sDefunEditText);
 	}
-	
 }
 
 void CEventsTabPane::CopyToClipboard() 
@@ -483,27 +445,22 @@ void CEventsTabPane::CopyToClipboard()
 	//put your text in source
 	if(OpenClipboard())
 	{
-		HGLOBAL clipbuffer;
-		TCHAR * buffer;
 		EmptyClipboard();
-		clipbuffer = GlobalAlloc(GMEM_DDESHARE, (source.GetLength()+1) * sizeof(TCHAR));
-		buffer = (TCHAR*)GlobalLock(clipbuffer);
+		HGLOBAL clipbuffer = GlobalAlloc(GMEM_DDESHARE, (source.GetLength() + 1) * sizeof(TCHAR));
+		TCHAR* buffer = (TCHAR*)GlobalLock(clipbuffer);
 		lstrcpyn(buffer, source, source.GetLength() + 1);
 		GlobalUnlock(clipbuffer);
 		SetClipboardData(CF_TEXT,clipbuffer);
 		CloseClipboard();
-
-
 	}
 }
 
 void CEventsTabPane::OnAddtolisp() 
 {
-	CString sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
 	CString sDefunPreview;
 	CString sDefunEditText;
 
-	if (m_pDclForm == NULL || m_pControl == NULL)
+	if (m_pControl == NULL)
 		return;
 
 	// get the current event selection
@@ -522,14 +479,6 @@ void CEventsTabPane::OnAddtolisp()
 		// lets get the defun it self
 		m_DefunEdit.GetWindowText(sDefunEditText);
 
-		if (AfxGetApp()->GetProfileInt(sProfileName, _T("EventsCopyToClipboard"), TRUE))
-		{
-			CopyToClipboard();
-			if (m_pControl != NULL)
-				SetEvent(nEventId, sDefunEditText); // set the property to the new defun name
-			return;
-		}
-
 		// if the file name has not been set, prompt for it
 		CProject* pProject = m_pControl->GetOwnerProject();
 		CString sLispFileName = pProject->GetLispFileName();
@@ -542,13 +491,14 @@ void CEventsTabPane::OnAddtolisp()
 											 theWorkspace.LoadResourceString(IDS_AUTOLISPFILE),
 											 CWnd::GetActiveWindow() );
 			CString sTitle = theWorkspace.LoadResourceString(IDS_SELECTPROJECTLISPFILE);
-			Dlg.m_pOFN->lpstrTitle = sTitle;
+			Dlg.m_pOFN->lpstrTitle = sTitle.LockBuffer();
 			if( Dlg.DoModal() != IDOK )
 				return; //user cancelled
-			sLispFileName = Dlg.GetFileName();
+			sLispFileName = Dlg.GetPathName();
 			if( sLispFileName.IsEmpty() )
 				return;
 			pProject->SetLispFileName( sLispFileName );
+			theEditorWorkspace.GetProjectTreeCtrl()->SetAutoLispFilename(sLispFileName);
 			CDocument* pDoc = m_pView->GetDocument();
 			if( pDoc )
 				pDoc->SetModifiedFlag();
@@ -568,16 +518,14 @@ void CEventsTabPane::OnAddtolisp()
 		
 		fout.Close();
 
-		// update the project tree's autolisp file name
-		theEditorWorkspace.GetProjectTreeCtrl()->SetAutoLispFilename(m_pControl->GetOwnerProject()->GetLispFileName());
-
 		MessageBox(theWorkspace.LoadResourceString(IDS_FUNCADDED), theWorkspace.LoadResourceString(IDR_MAINFRAME), MB_OK);
 	}
 }
 
 void CEventsTabPane::OnSelchangeEventstree() 
 {
-	if (m_pDclForm == NULL)
+	m_AddToLisp.EnableWindow(FALSE);
+	if (m_pControl == NULL)
 		return;
 	
 	int hItem = m_EventsTree.GetCurSel();
@@ -592,8 +540,9 @@ void CEventsTabPane::OnSelchangeEventstree()
 	
 	// update the defun edit box.
 	m_DefunEdit.SetWindowText(GetEvent((PropertyId)m_EventsTree.GetItemData(m_EventsTree.GetCurSel())));
-	
+	m_AddToLisp.EnableWindow();
 }
+
 void CEventsTabPane::OnCheckChanged()
 {
 	PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(m_EventsTree.GetCurSel());
@@ -617,6 +566,9 @@ void CEventsTabPane::SetEvent( PropertyId nEventId, CString sEventDefun )
 	}
 	else
 		m_pControl->SetStringProperty( nEventId, sEventDefun ); 
+	CString sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
+	if (AfxGetApp()->GetProfileInt(sProfileName, _T("EventsCopyToClipboard"), TRUE))
+		CopyToClipboard();
 }
 
 CString CEventsTabPane::GetEvent( PropertyId nEventId )
@@ -627,7 +579,7 @@ CString CEventsTabPane::GetEvent( PropertyId nEventId )
 	if( sEventSymbol.IsEmpty() )
 	{
 		CString sEventName;
-		if (m_pDclForm->GetControlProperties() != m_pControl)
+		if (m_pControl->GetType() != CtlForm)
 		{
 			sEventName = m_pControl->GetStrProperty( nGlobalVarName );
 			if( sEventName.IsEmpty() )
@@ -635,9 +587,9 @@ CString CEventsTabPane::GetEvent( PropertyId nEventId )
 		}
 		else
 		{
-			sEventName = m_pDclForm->GetControlProperties()->GetStrProperty( nGlobalVarName );
+			sEventName = m_pControl->GetStrProperty( nGlobalVarName );
 			if( sEventName.IsEmpty() )
-				sEventName = m_pDclForm->GetKeyPath();
+				sEventName = m_pControl->GetOwnerForm()->GetKeyPath();
 		}
 		CString sItemText;
 		m_EventsTree.GetText(m_EventsTree.GetCurSel(), sItemText);

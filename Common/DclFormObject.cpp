@@ -499,7 +499,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 			mbUsesClientRect = (bUsesClientRect != FALSE);
 		}
 		else
-			mbUsesClientRect = FALSE;
+			mbUsesClientRect = false;
 
 		ar >> nCount;	
 		mDclControls.RemoveAll();
@@ -509,15 +509,6 @@ void CDclFormObject::Serialize(CArchive& ar)
 			pControl->Serialize(ar);
 			AddControl( pControl );
 			TraceFmt( _T("< %s\r\n"), pControl->toString() );
-			if (mType == VdclModal)
-			{				
-				RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nEventInvoke);
-				if (pProp != NULL)
-				{
-					POSITION pos = pControl->GetPropertyList().Find(pProp);
-					pControl->GetPropertyList().RemoveAt(pos);
-				}
-			}
 			// Add new properties that have been added since this file was created
 			AddDefaultProperties( pControl );
 		}
@@ -561,31 +552,6 @@ void CDclFormObject::Serialize(CArchive& ar)
 			}
 			if( !rImageLists.empty() )
 				MoveImageListsToControls( rImageLists, this ); //moving all control image lists to the individual controls
-		}
-		
-		if (mDclControls.GetCount() > 0)
-		{
-			CDclControlObject* pControl = GetControlProperties();
-			switch (mType)
-			{
-			case VdclModal:
-				pControl->RemoveProperty( nEventInvoke );
-				//break;  This break was missing -- maybe intentional, I can't tell for sure [ORW]
-			case VdclModeless:
-				pControl->AddLongProperty( nMinDialogWidth, PropLong, 0 );
-				pControl->AddLongProperty( nMinDialogHeight, PropLong, 0 );
-				pControl->AddLongProperty( nMaxDialogWidth, PropLong, 0 );
-				pControl->AddLongProperty( nMaxDialogHeight, PropLong, 0 );
-				pControl->RemoveProperty( nIcon );
-				break;
-			case VdclDockable:
-				pControl->AddBooleanProperty( nResizable, PropBool, true );
-				pControl->RemoveProperty( nMinDialogWidth );
-				pControl->RemoveProperty( nMinDialogHeight );
-				pControl->RemoveProperty( nMaxDialogWidth );
-				pControl->RemoveProperty( nMaxDialogHeight );
-				break;		
-			}
 		}
 	}
 }

@@ -7,7 +7,8 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
+#include "afxres.h"
+
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -117,7 +118,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_NONE                "<None>"
-    IDS_DEFAULTFONT         "MS Sans Serif"
+    IDS_DEFAULTFONT         "MS Shell Dlg"
 END
 
 STRINGTABLE 
@@ -521,7 +522,8 @@ END
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-
+
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

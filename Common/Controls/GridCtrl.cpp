@@ -185,75 +185,55 @@ void CGridCtrl::SetThemeHelper(CThemeHelperST* pTheme)
 	m_pTheme = pTheme;
 }
 
-int CGridCtrl::GetItemImage( int nRow, int nCol)  
+int CGridCtrl::GetItemImage(int nRow, int nCol)  
 {
 	LV_ITEM lvitem;
-				
 	lvitem.mask = LVIF_IMAGE | LVIF_PARAM | LVIF_STATE;
 	lvitem.iItem = nRow;
 	lvitem.iSubItem = nCol;				
 	lvitem.stateMask = LVIS_CUT | LVIS_DROPHILITED | 
 			LVIS_FOCUSED |  LVIS_SELECTED | 
 			LVIS_OVERLAYMASK | LVIS_STATEIMAGEMASK;
-
 	GetItem( &lvitem );
-
 	return lvitem.iImage;
-
 }
 
-void CGridCtrl::SetColumn(int nIndex)
+void CGridCtrl::SetColumn(UINT nIndex)
 {	
-	HD_ITEM curItem;
-	LPTSTR  pStrTemp;
-	CHeaderCtrl* pHdrCtrl = NULL;
-
-	// retrieve embedded header control			
-	pHdrCtrl = GetHeaderCtrl();
-
-	// add bmaps to each header item
-	pHdrCtrl->GetItem(nIndex, &curItem);
-	
-	if (m_pColImages->GetIntArrayPtr()->at(nIndex) == -1)
-	{
-		curItem.mask= HDI_TEXT | HDI_FORMAT;
-		curItem.iImage = -1;
-	}
-	else
-	{
-		curItem.mask= HDI_TEXT | HDI_IMAGE | HDI_FORMAT;
-		curItem.iImage= m_pColImages->GetIntArrayPtr()->at(nIndex);
-	}
-	
 	CString sCaption = m_pColCaptions->GetStringArrayPtr()->at(nIndex);
-	pStrTemp = sCaption.GetBuffer(sCaption.GetLength());
-	curItem.pszText = pStrTemp;
+	HD_ITEM curItem =
+		{ HDI_TEXT | HDI_FORMAT, 0, sCaption.LockBuffer(), NULL, sCaption.GetLength() + 1, HDF_STRING, 0, -1, -1 };
+	if (m_pColImages->GetIntArrayPtr()->at(nIndex) >= 0)
+	{
+		curItem.mask |= HDI_IMAGE;
+		curItem.iImage = m_pColImages->GetIntArrayPtr()->at(nIndex);
+		curItem.fmt |= HDF_IMAGE;
+	}
 	
 	switch(m_pColAlignment->GetIntArrayPtr()->at(nIndex))
 	{					
 	case 1:
-		curItem.fmt= HDF_CENTER | HDF_STRING;
+		curItem.fmt |= HDF_CENTER;
 		break;
 	case 2:
-		curItem.fmt= HDF_RIGHT | HDF_STRING;
+		curItem.fmt |= HDF_RIGHT;
 		break;				
 	default:
-		curItem.fmt= HDF_LEFT | HDF_STRING;
+		curItem.fmt |= HDF_LEFT;
 		break;
 	}
-
-	if (m_pColImages->GetIntArrayPtr()->at(nIndex) != -1)
-		curItem.fmt = curItem.fmt | HDF_IMAGE;
-
-	pHdrCtrl->SetItem(nIndex, &curItem);
+	GetHeaderCtrl()->SetItem(nIndex, &curItem);
 }
 
 void CGridCtrl::SetupColumns()
-{		
-	for (size_t i=0; i<m_pColWidths->GetIntArrayPtr()->size(); i++)
+{
+	for (size_t idxColumn = 0; idxColumn < m_pColWidths->GetIntArrayPtr()->size(); ++idxColumn)
 	{
-		InsertColumn(i, m_pColCaptions->GetStringItem(i), LVCFMT_LEFT, m_pColWidths->GetIntArrayPtr()->at(i));
-		SetColumn(i);
+		InsertColumn(idxColumn,
+								 m_pColCaptions->GetStringItem(idxColumn),
+								 LVCFMT_LEFT,
+								 m_pColWidths->GetIntArrayPtr()->at(idxColumn));
+		SetColumn(idxColumn);
 	}
 }
 
@@ -718,14 +698,15 @@ void CGridCtrl::SetCellStyle(int nRow, int nCol, int nStyle)
 
 void CGridCtrl::RefreshCell(int nRow, int nCol) 
 {
-	CRect rc = GetCurSelRect();
-	InvalidateRect(rc, TRUE);
+	CRect rc;
+	GetSubItemRect(nRow, nCol, LVIR_BOUNDS, rc);
+	InvalidateRect(&rc, TRUE);
 }
 
 void CGridCtrl::ShowCurSel() 
 {
 	CRect rc = GetCurSelRect();
-	InvalidateRect(rc, TRUE);
+	InvalidateRect(&rc, TRUE);
 }
 
 void CGridCtrl::SetItemImage( int nRow, int nCol, int nImage)  

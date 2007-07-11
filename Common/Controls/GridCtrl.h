@@ -166,7 +166,7 @@ public:
 	void SetupColumns();
 	void SetItemImage( int nRow, int nCol, int nImage);
 	int GetItemImage(int nRow, int nCol);
-	void SetColumn(int nIndex);
+	void SetColumn(UINT nIndex);
 	void SetThemeHelper(CThemeHelperST* pTheme);
 	void CellHitTest(CPoint point, int &nRow, int &nCol);
 	void DrawTrueColor(CDC* pDC, CRect rc, int &nColor, CString &sText);
