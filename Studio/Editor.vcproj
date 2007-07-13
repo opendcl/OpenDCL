@@ -248,10 +248,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\arrowheads.bmp"
-				>
-			</File>
-			<File
 				RelativePath=".\Res\ArrowR.ico"
 				>
 			</File>
@@ -269,10 +265,6 @@
 			</File>
 			<File
 				RelativePath=".\Res\BlockList.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\Res\blockvie.ico"
 				>
 			</File>
 			<File
@@ -356,14 +348,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\Filter.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\Res\Folder.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Res\Font.bmp"
 				>
 			</File>
@@ -381,10 +365,6 @@
 			</File>
 			<File
 				RelativePath=".\Res\Grid.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\Res\Hand.cur"
 				>
 			</File>
 			<File
@@ -408,10 +388,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\idr_main.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Res\ImageComboBox.ICO"
 				>
 			</File>
@@ -421,10 +397,6 @@
 			</File>
 			<File
 				RelativePath=".\Res\Italic.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\Res\Label.ico"
 				>
 			</File>
 			<File
@@ -476,31 +448,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\OpButton1.bmp"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\Res\OpButton2.bmp"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\Res\OpButton3.bmp"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\Res\OpButton4.bmp"
-				>
-			</File>
-			<File
-				RelativePath=".\Res\opendcl.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Res\OpenDCL.rc2"
-				>
-			</File>
-			<File
-				RelativePath=".\Res\OpenDCLDoc.ico"
 				>
 			</File>
 			<File
@@ -529,14 +477,6 @@
 			</File>
 			<File
 				RelativePath=".\Res\pick.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\Res\pick.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\Res\PickSmall.ico"
 				>
 			</File>
 			<File
@@ -572,15 +512,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Res\Select.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Res\SendToBack.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\Res\SHXFont.ico"
 				>
 			</File>
 			<File
@@ -625,10 +557,6 @@
 			</File>
 			<File
 				RelativePath=".\Res\Tree.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\Res\truefont.ico"
 				>
 			</File>
 			<File
@@ -1775,6 +1703,71 @@
 				</File>
 				<File
 					RelativePath="..\Common\Controls\XPStyleButtonST.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Resource Files"
+				Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+				>
+				<File
+					RelativePath="..\Common\Res\arrowheads.bmp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\Filter.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\Folder.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\Hand.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\idr_main.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\Label.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\OpButton1.bmp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\OpButton2.bmp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\OpButton3.bmp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\OpButton4.bmp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\pick.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\PickSmall.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\Select.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\SHXFont.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Res\truefont.ico"
 					>
 				</File>
 			</Filter>

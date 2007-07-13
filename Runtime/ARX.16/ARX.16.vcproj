@@ -1538,6 +1538,71 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Resource Files"
+				Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+				>
+				<File
+					RelativePath="..\..\Common\Res\arrowheads.bmp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\Filter.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\Folder.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\Hand.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\idr_main.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\Label.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\OpButton1.bmp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\OpButton2.bmp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\OpButton3.bmp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\OpButton4.bmp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\pick.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\PickSmall.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\Select.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\SHXFont.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Res\truefont.ico"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Methods"

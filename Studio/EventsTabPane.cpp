@@ -30,6 +30,7 @@ const int nDescBottom = 26;
 
 CEventsTabPane::CEventsTabPane(CWnd* pParent /*=NULL*/)
 	: CDialog(CEventsTabPane::IDD, pParent)
+	, mszDlg( 0, 0 )
 {
 	m_bInitialized = false;
 	m_pControl = NULL;
@@ -40,24 +41,21 @@ CEventsTabPane::CEventsTabPane(CWnd* pParent /*=NULL*/)
 void CEventsTabPane::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_LABEL, m_Label);
 	DDX_Control(pDX, IDC_EVENTDESC, m_EventDesc);
 	DDX_Control(pDX, IDC_DEFUNPREVIEW, m_DefunPreview);
 	DDX_Control(pDX, IDC_DEFUNEDIT, m_DefunEdit);
 	DDX_Control(pDX, IDC_EVENTSTREE, m_EventsTree);
-	DDX_Control(pDX, IDC_ADDTOLISP, m_AddToLisp);
-	DDX_Control(pDX, IDC_ADDCANCEL, m_AddCancel);
 }
 
 
 BEGIN_MESSAGE_MAP(CEventsTabPane, CDialog)
 	ON_WM_SIZE()
-	ON_WM_SHOWWINDOW()
-	ON_EN_CHANGE(IDC_DEFUNEDIT, OnChangeDefunedit)
-	ON_BN_CLICKED(IDC_ADDCANCEL, OnAddcancel)
-	ON_BN_CLICKED(IDC_ADDTOLISP, OnAddtolisp)
 	ON_LBN_SELCHANGE(IDC_EVENTSTREE, OnSelchangeEventstree)
 	ON_CLBN_CHKCHANGE(IDC_EVENTSTREE, OnCheckChanged)
+	ON_EN_CHANGE(IDC_DEFUNEDIT, OnChangeDefunedit)
+	ON_BN_CLICKED(IDC_ADDCANCEL, OnAddcancel)
+	ON_BN_CLICKED(IDC_COPYTOCLIPBOARD, OnCopytoclipboard)
+	ON_BN_CLICKED(IDC_ADDTOLISP, OnAddtolisp)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -68,8 +66,14 @@ BOOL CEventsTabPane::OnInitDialog()
 	CDialog::OnInitDialog();
 	m_bInitialized = true;
 
+	if (!AfxGetApp()->GetProfileInt(theWorkspace.LoadResourceString(IDR_MAINFRAME), _T("EventsCopyToClipboard"), TRUE))
+		GetDlgItem(IDC_COPYTOCLIPBOARD)->ShowWindow(SW_HIDE);
 	if (!AfxGetApp()->GetProfileInt(theWorkspace.LoadResourceString(IDR_MAINFRAME), _T("EventsWriteToLispFile"), FALSE))
-		m_AddToLisp.ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_ADDTOLISP)->ShowWindow(SW_HIDE);
+
+	CRect rectDlg;
+	GetWindowRect( &rectDlg );
+	mszDlg.SetSize( rectDlg.Width(), rectDlg.Height() );
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
@@ -78,39 +82,77 @@ BOOL CEventsTabPane::OnInitDialog()
 void CEventsTabPane::OnSize(UINT nType, int cx, int cy) 
 {
 	CDialog::OnSize(nType, cx, cy);
-	
-	if (!m_bInitialized) 
-		return;
 
-	CRect rcEventTree (0,1,cx,cy-nTreeBottom);
-	m_EventsTree.MoveWindow(rcEventTree, TRUE);
-		
-	CRect rcLabel (2,cy-nTreeBottom+1,cx,cy-nLabelBottom);
-	m_Label.MoveWindow(rcLabel, TRUE);
+	if( mszDlg.cx == 0 && mszDlg.cy == 0 )
+		return; //no-op
 
-	CRect rcDefunEdit (0,cy-nLabelBottom+1,cx,cy-nEditBottom);
-	m_DefunEdit.MoveWindow(rcDefunEdit, TRUE);
+	CSize vecOffset( cx - mszDlg.cx, cy - mszDlg.cy );
+	mszDlg.SetSize( cx, cy );
+	if( vecOffset.cx == 0 && vecOffset.cy == 0 )
+		return; //no-op
 
-	CRect rcDefunPreview (0,cy-nEditBottom+1,cx,cy-nPreviewBottom);
-	m_DefunPreview.MoveWindow(rcDefunPreview, TRUE);	
+	CRect rcLabel;
+	GetDlgItem(IDC_LABEL)->GetWindowRect( &rcLabel );
 
-	CRect rcEventDesc (0,cy-nPreviewBottom+1,cx,cy-nDescBottom);
-	m_EventDesc.MoveWindow(rcEventDesc, TRUE);
+	CRect rcEventsTree;
+	GetDlgItem(IDC_EVENTSTREE)->GetWindowRect( &rcEventsTree );
+	static int nBottomOffset = rcLabel.top - rcEventsTree.bottom;
+	rcEventsTree.bottom = rcLabel.top + vecOffset.cy - nBottomOffset;
+	rcEventsTree.right += vecOffset.cx;
+	ScreenToClient( &rcEventsTree );
+	rcEventsTree.top = 1;
+	GetDlgItem(IDC_EVENTSTREE)->MoveWindow(rcEventsTree, TRUE);
+
+	rcLabel.top += vecOffset.cy;
+	rcLabel.bottom += vecOffset.cy;
+	rcLabel.right += vecOffset.cx;
+	ScreenToClient( &rcLabel );
+	GetDlgItem(IDC_LABEL)->MoveWindow(rcLabel, TRUE);
+
+	CRect rcDefunEdit;
+	GetDlgItem(IDC_DEFUNEDIT)->GetWindowRect( &rcDefunEdit );
+	rcDefunEdit.top += vecOffset.cy;
+	rcDefunEdit.bottom += vecOffset.cy;
+	rcDefunEdit.right += vecOffset.cx;
+	ScreenToClient( &rcDefunEdit );
+	GetDlgItem(IDC_DEFUNEDIT)->MoveWindow(rcDefunEdit, TRUE);
+
+	CRect rcDefunPreview;
+	GetDlgItem(IDC_DEFUNPREVIEW)->GetWindowRect( &rcDefunPreview );
+	rcDefunPreview.top += vecOffset.cy;
+	rcDefunPreview.bottom += vecOffset.cy;
+	rcDefunPreview.right += vecOffset.cx;
+	ScreenToClient( &rcDefunPreview );
+	GetDlgItem(IDC_DEFUNPREVIEW)->MoveWindow(rcDefunPreview, TRUE);	
+
+	CRect rcEventDesc;
+	GetDlgItem(IDC_EVENTDESC)->GetWindowRect( &rcEventDesc );
+	rcEventDesc.top += vecOffset.cy;
+	rcEventDesc.bottom += vecOffset.cy;
+	rcEventDesc.right += vecOffset.cx;
+	ScreenToClient( &rcEventDesc );
+	GetDlgItem(IDC_EVENTDESC)->MoveWindow(rcEventDesc, TRUE);
 
 	CRect rcAddCancel (0,cy-nDescBottom+3,70,cy-1);		
-	m_AddCancel.MoveWindow(rcAddCancel, TRUE);
+	GetDlgItem(IDC_ADDCANCEL)->GetWindowRect( &rcAddCancel );
+	rcAddCancel.top += vecOffset.cy;
+	rcAddCancel.bottom += vecOffset.cy;
+	ScreenToClient( &rcAddCancel );
+	GetDlgItem(IDC_ADDCANCEL)->MoveWindow(rcAddCancel, TRUE);
 	
-	CRect rcAddToLisp (75,cy-nDescBottom+3,cx+1,cy-1);
-	m_AddToLisp.MoveWindow(rcAddToLisp, TRUE);
-}
-
-
-void CEventsTabPane::OnShowWindow(BOOL bShow, UINT nStatus) 
-{
-	CDialog::OnShowWindow(bShow, nStatus);
-
-	//if (bShow == TRUE && m_pDclForm != NULL)
-	//	UpdateEvents(m_pControl);
+	CRect rcCopyToClipboard;
+	GetDlgItem(IDC_COPYTOCLIPBOARD)->GetWindowRect( &rcCopyToClipboard );
+	rcCopyToClipboard.top += vecOffset.cy;
+	rcCopyToClipboard.bottom += vecOffset.cy;
+	ScreenToClient( &rcCopyToClipboard );
+	GetDlgItem(IDC_COPYTOCLIPBOARD)->MoveWindow(rcCopyToClipboard, TRUE);
+	
+	CRect rcAddToLisp;
+	GetDlgItem(IDC_ADDTOLISP)->GetWindowRect( &rcAddToLisp );
+	rcAddToLisp.top += vecOffset.cy;
+	rcAddToLisp.bottom += vecOffset.cy;
+	ScreenToClient( &rcAddToLisp );
+	GetDlgItem(IDC_ADDTOLISP)->MoveWindow(rcAddToLisp, TRUE);
 }
 
 void CEventsTabPane::UpdateEvents(CDclControlObject *pControl)
@@ -118,9 +160,9 @@ void CEventsTabPane::UpdateEvents(CDclControlObject *pControl)
 	m_pControl = pControl;
 	
 	if (pControl && pControl->GetOwnerForm()->GetType() == VdclDockable)
-		m_AddCancel.ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_ADDCANCEL)->ShowWindow(SW_SHOW);
 	else
-		m_AddCancel.ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_ADDCANCEL)->ShowWindow(SW_HIDE);
 	m_EventsTree.ResetContent();
 	
 	if (m_pControl == NULL)
@@ -244,29 +286,18 @@ void CEventsTabPane::TryToAddEvent( PropertyId nEventId )
 
 void CEventsTabPane::OnChangeDefunedit() 
 {
-	CString sDefunEditText;
-	
 	if (m_pControl == NULL)
 		return;
 
-	// get the current event selection
 	int hItem = m_EventsTree.GetCurSel();
-	
 	if (hItem != -1)
 	{
-		// get the new defun name from the edit box
-		m_DefunEdit.GetWindowText(sDefunEditText);
-
-		// get the event id from the curent selection
-		PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(hItem);
-
-		// we need to know if the event has been checked
-		bool bChecked = (m_EventsTree.GetCheck(hItem) == BST_CHECKED);
-
-		// if the event is checked, we can update the property object
-		if (bChecked)
-			SetEvent(nEventId, sDefunEditText); // set the property to the new defun name
+		CString sDefunEditText;
+		m_DefunEdit.GetWindowText(sDefunEditText); // get the new defun name from the edit box
 		SetDefunPreview();
+		bool bChecked = (m_EventsTree.GetCheck(hItem) == BST_CHECKED);
+		if (bChecked)
+			SetEvent((PropertyId)m_EventsTree.GetItemData(hItem), sDefunEditText); // set the property to the new defun name
 	}
 }
 
@@ -348,11 +379,12 @@ CString CEventsTabPane::GetDefunArguments()
 
 void CEventsTabPane::ClearEvents()
 {
-	m_AddToLisp.EnableWindow(FALSE);
+	GetDlgItem(IDC_ADDCANCEL)->EnableWindow(FALSE);
+	GetDlgItem(IDC_COPYTOCLIPBOARD)->EnableWindow(FALSE);
+	GetDlgItem(IDC_ADDTOLISP)->EnableWindow(FALSE);
 	if (m_pControl == NULL)
 		return;
 
-	m_Label.SetWindowText(CString());
 	m_EventDesc.SetWindowText(CString());
 	m_EventsTree.ResetContent();
 	m_DefunEdit.SetWindowText(CString());
@@ -435,7 +467,7 @@ void CEventsTabPane::OnAddcancel()
 	}
 }
 
-void CEventsTabPane::CopyToClipboard() 
+void CEventsTabPane::OnCopytoclipboard() 
 {
 	CString source;
 
@@ -524,7 +556,7 @@ void CEventsTabPane::OnAddtolisp()
 
 void CEventsTabPane::OnSelchangeEventstree() 
 {
-	m_AddToLisp.EnableWindow(FALSE);
+	GetDlgItem(IDC_ADDCANCEL)->EnableWindow(FALSE);
 	if (m_pControl == NULL)
 		return;
 	
@@ -537,10 +569,14 @@ void CEventsTabPane::OnSelchangeEventstree()
 	m_EventsTree.GetText(hItem, sItemText);   		
 	if (sItemText.IsEmpty())
 		return;
+
+	BOOL bChecked = (m_EventsTree.GetCheck(hItem) == BST_CHECKED);
 	
 	// update the defun edit box.
 	m_DefunEdit.SetWindowText(GetEvent((PropertyId)m_EventsTree.GetItemData(m_EventsTree.GetCurSel())));
-	m_AddToLisp.EnableWindow();
+	GetDlgItem(IDC_ADDCANCEL)->EnableWindow(bChecked);
+	GetDlgItem(IDC_COPYTOCLIPBOARD)->EnableWindow(bChecked);
+	GetDlgItem(IDC_ADDTOLISP)->EnableWindow(bChecked);
 }
 
 void CEventsTabPane::OnCheckChanged()
@@ -566,9 +602,6 @@ void CEventsTabPane::SetEvent( PropertyId nEventId, CString sEventDefun )
 	}
 	else
 		m_pControl->SetStringProperty( nEventId, sEventDefun ); 
-	CString sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-	if (AfxGetApp()->GetProfileInt(sProfileName, _T("EventsCopyToClipboard"), TRUE))
-		CopyToClipboard();
 }
 
 CString CEventsTabPane::GetEvent( PropertyId nEventId )

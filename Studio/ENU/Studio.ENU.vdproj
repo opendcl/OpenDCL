@@ -2618,7 +2618,7 @@
             "Extensions" = "8:.odcl"
             "MIME" = "8:"
             "Icon" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
-            "IconIndex" = "3:30"
+            "IconIndex" = "3:59"
                 "Command"
                 {
                 "Command" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
@@ -2731,7 +2731,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
         "ProductCode" = "8:{E3B30108-F4BE-4DCC-B758-DBF139F2BA8D}"
-        "PackageCode" = "8:{45279389-6281-49F2-9F49-DF942FCF02EA}"
+        "PackageCode" = "8:{E0F3DADE-508B-4EBF-90BF-96C0D8BCA513}"
         "UpgradeCode" = "8:{F8AB94DC-2F57-4C29-8842-E2BB5F898E6C}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
@@ -2964,7 +2964,7 @@
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
-            "IconIndex" = "3:30"
+            "IconIndex" = "3:59"
             "Transitive" = "11:FALSE"
             "Target" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
             "Folder" = "8:_0067D1898414445B83104B9F34CB2E68"
@@ -2978,7 +2978,7 @@
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
-            "IconIndex" = "3:30"
+            "IconIndex" = "3:59"
             "Transitive" = "11:FALSE"
             "Target" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
             "Folder" = "8:_8A49A5CB8AC64E55B760026641E58D97"
@@ -3401,7 +3401,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C8B5EB67C59548EF9FA8D898EBD90806"
             {
-            "SourcePath" = "8:..\\Release\\OpenDCL.exe"
+            "SourcePath" = "8:..\\Debug\\OpenDCL.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
@@ -3429,7 +3429,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E3100086375D4DC3918CE7A8E6CBF6D6"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\ENU\\MSM\\Release\\OpenDCL.Runtime.ENU.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\ENU\\MSM\\Debug\\OpenDCL.Runtime.ENU.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"

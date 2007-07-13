@@ -123,10 +123,11 @@ int FileDlgGetSelectionCount()
 	}	
 
 	CCustomFileDialog *pFileDlg = (CCustomFileDialog*)pControl->GetWindow();
-	UINT cFiles = 0;
-	for( POSITION pos = pFileDlg->GetStartPosition(); pos; pFileDlg->GetNextPathName( pos ) )
-		++cFiles;
-	acedRetInt(cFiles);
+	CWnd* pMainWnd = pFileDlg->GetParent()->GetDlgItem(lst2);
+	if (pMainWnd == NULL)
+		return 0;
+	CListCtrl* pFileListCtrl = (CListCtrl*)(pMainWnd->GetDlgItem(1));
+	acedRetInt(pFileListCtrl->GetSelectedCount());
 	return 0;
 }
 int FileDlgGetFileNameList()
@@ -142,14 +143,19 @@ int FileDlgGetFileNameList()
 	}	
 
 	CCustomFileDialog *pFileDlg = (CCustomFileDialog*)pControl->GetWindow();
+	CWnd* pMainWnd = pFileDlg->GetParent()->GetDlgItem(lst2);
+	if (pMainWnd == NULL)
+		return 0;
+	CListCtrl* pFileListCtrl = (CListCtrl*)(pMainWnd->GetDlgItem(1));
 
 	struct resbuf* prbFileList = NULL;
 	struct resbuf* prbTail = NULL;
-	POSITION pos = pFileDlg->GetStartPosition();
+	POSITION pos = pFileListCtrl->GetFirstSelectedItemPosition();
 	while( pos )
 	{
 		resbuf* prbFile = acutNewRb(RTSTR);
-		acutNewString(pFileDlg->GetNextPathName(pos), prbFile->resval.rstring);
+		int idxSelected = pFileListCtrl->GetNextSelectedItem(pos);
+		acutNewString(pFileListCtrl->GetItemText(idxSelected, 0), prbFile->resval.rstring);
 		if (!prbTail)
 		{
 			prbFileList = prbFile;

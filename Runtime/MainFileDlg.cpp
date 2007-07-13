@@ -19,7 +19,7 @@ const TCHAR sTopLeftY[] = _T("nTopLeftY");
 // CMainFileDlg dialog
 
 CMainFileDlg::CMainFileDlg(CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/)
-: CDialog( -1, pParent )
+: CCommonDialog( pParent )
 , mpSourceForm( pSourceForm )
 , mnInitialX( pParams? pParams->position.x : -1 )
 , mnInitialY( pParams? pParams->position.y : -1 )
@@ -123,14 +123,20 @@ void CMainFileDlg::Initialize()
 	mpDlg->GetControlPane().CreateControls( nID );
 	mpDlg->GetControlPane().RecalcLayout();
 
+	CRect rectParent;
+	::GetWindowRect( ::GetParent(m_hWnd), &rectParent );
 	if( mnInitialX >= 0 )
 		rectWindow.MoveToX( mnInitialX );
 	else if( rectSaved.left >= -10 && rectSaved.left < (::GetSystemMetrics( SM_CXSCREEN ) - 10) )
 		rectWindow.MoveToX( rectSaved.left );
+	else
+		rectWindow.MoveToX( rectParent.left + (rectParent.Width() - rectWindow.Width()) / 2 );
 	if( mnInitialY >= 0 )
 		rectWindow.MoveToY( mnInitialY );
 	else if( rectSaved.top >= -10 && rectSaved.top < (::GetSystemMetrics( SM_CYSCREEN ) - 10) )
 		rectWindow.MoveToY( rectSaved.top );
+	else
+		rectWindow.MoveToY( rectParent.top + (rectParent.Height() - rectWindow.Height()) / 2 );
 	if( mpDlg->IsResizable() && rectSaved.right > rectSaved.left && rectSaved.bottom > rectSaved.top )
 	{
 		rectWindow.right = rectWindow.left + rectSaved.Width();
@@ -185,10 +191,7 @@ void CMainFileDlg::OnOK()
 {
 	CString sEvent = mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventCancelClose);
 	if (sEvent.IsEmpty() || !(InvokeCancelMethod(sEvent, false)))
-	{
-		mpSourceForm->GetFormInstance()->GetWindow()->SendMessage( WM_COMMAND, IDOK, NULL );
 		__super::OnOK();
-	}
 }
 
 void CMainFileDlg::OnCancel() 

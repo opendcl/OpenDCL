@@ -1926,29 +1926,28 @@ public:
 			if (pArgs->restype == RTSTR)
 			{
 				pszDefaultDirectory = pArgs->resval.rstring;
+
 				pArgs = pArgs->rbnext; //move to the next argument
-
-				if (!pArgs)
-					return RSERR; //not enough arguments
-
-				if (pArgs->restype != RTSTR)
-					return RSERR; //wrong argument type
-				pszDefaultFileName = pArgs->resval.rstring;
-
-				if (pArgs->rbnext)
+				if (pArgs)
 				{
-					pArgs = pArgs->rbnext;
-
 					if (pArgs->restype != RTSTR)
 						return RSERR; //wrong argument type
-					pszDefaultExtension = pArgs->resval.rstring;
+					pszDefaultFileName = pArgs->resval.rstring;
+
+					pArgs = pArgs->rbnext;
+					if (pArgs)
+					{
+						if (pArgs->restype != RTSTR)
+							return RSERR; //wrong argument type
+						pszDefaultExtension = pArgs->resval.rstring;
+					}
 				}
 			}
 			else if (pArgs->restype == RTSHORT)
 			{
 				nX = pArgs->resval.rint;
-				pArgs = pArgs->rbnext; //move to the next argument
 
+				pArgs = pArgs->rbnext; //move to the next argument
 				if (!pArgs)
 					return RSERR; //not enough arguments
 
@@ -1985,16 +1984,24 @@ public:
 				if( (fdp.dwFlags & OFN_ALLOWMULTISELECT) )
 				{
 					// Convert the array to a list that can be returned
-					struct resbuf* prbRetList = acutNewRb(RTSTR);
-					struct resbuf* prbTail = prbRetList;
+					struct resbuf* prbRetList = NULL;
+					struct resbuf* prbTail = NULL;
 
-					int nCount = fdp.rsFilenames.GetSize();
-					for (int i=0; i<nCount; i++)
+					INT_PTR nCount = fdp.rsFilenames.GetSize();
+					for (INT_PTR i = 0; i < nCount; i++)
 					{
 						// get the text name of the selected line number
 						CString sFileName = fdp.rsFilenames.GetAt(i);
-						prbTail->rbnext = acutNewRb(RTSTR);
-						prbTail = prbTail->rbnext;
+						if( prbTail )
+						{
+							prbTail->rbnext = acutNewRb(RTSTR);
+							prbTail = prbTail->rbnext;
+						}
+						else
+						{
+							prbRetList = acutNewRb(RTSTR);
+							prbTail = prbRetList;
+						}
 						acutNewString(sFileName, prbTail->resval.rstring);
 					}
 

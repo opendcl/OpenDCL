@@ -21,7 +21,6 @@
 #define IDS_SAMPLENODE                  24
 #define IDS_MASKED                      28
 #define IDS_PROPERTYWIZARD              29
-#define IDI_OPENDCL                     30
 #define IDR_ODCDOCTEMPLATE              40
 #define IDS_PROJECT                     53
 #define IDS_MODALFORM                   54
@@ -302,6 +301,8 @@
 #define IDC_LABEL                       1018
 #define IDC_TAB                         1019
 #define IDC_LIST                        1020
+#define IDC_ADDTOLISP2                  1020
+#define IDC_COPYTOCLIPBOARD             1020
 #define IDC_RICHEDIT                    1024
 #define IDC_SPIN                        1025
 #define IDC_ADD                         1026

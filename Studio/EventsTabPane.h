@@ -19,24 +19,22 @@ class CEventsTabPane : public CDialog
 public:
 	CEventsTabPane(CWnd* pParent = NULL);   // standard constructor
 
-	COpenDCLView		*m_pView;
+private:
 // Dialog Data
-	//{{AFX_DATA(CEventsTabPane)
 	enum { IDD = IDD_EVENTS };
-	CStatic				m_Label;
+
 	CEdit				m_EventDesc;
 	CEdit				m_DefunPreview;
 	CEdit				m_DefunEdit;
 	CCheckListBox		m_EventsTree;
-	CButton				m_AddToLisp;
-	CButton				m_AddCancel;
-	//}}AFX_DATA
 	bool m_bInitialized;
 	CDclControlObject	*m_pControl;
+	CSize mszDlg;
+public:
+	COpenDCLView		*m_pView;
 	
 // operations
 public:
-	void CopyToClipboard();
 	void UpdateEvents(CDclControlObject *pControl);
 	void AddAnyActiveXEvents();
 	void TryToAddEvent(PropertyId nEvent);
@@ -62,10 +60,10 @@ protected:
 	//{{AFX_MSG(CEventsTabPane)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnChangeDefunedit();
 	afx_msg void OnAddcancel();
 	afx_msg void OnAddtolisp();
+	afx_msg void OnCopytoclipboard();
 	afx_msg void OnSelchangeEventstree();
 	//}}AFX_MSG
 	afx_msg void OnCheckChanged();

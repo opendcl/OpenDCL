@@ -35,9 +35,10 @@ public:
 
 
 // CFileDialogX interface implementation
-CFileDialogX::CFileDialogX( CCustomFileDialog& Owner, CDclFormObject* pDclForm )
+CFileDialogX::CFileDialogX( CCustomFileDialog& Owner, CDclFormObject* pDclForm, FileDialogParams* pParams /*= NULL*/ )
 : CArxDialogObject( pDclForm, &Owner )
 , mpOwner( &Owner )
+, mpParams( pParams )
 {
 }
 
@@ -64,6 +65,14 @@ void CFileDialogX::CloseDialog(int nStatus) const
 INT_PTR CFileDialogX::DoModal()
 {
 	INT_PTR nResult = mpOwner->DoModal();
+	if( nResult == IDOK && mpParams )
+	{
+		mpParams->sFilename = mpOwner->GetPathName();
+		mpParams->rsFilenames.RemoveAll();
+		POSITION pos = mpOwner->GetStartPosition();
+		while( pos )
+			mpParams->rsFilenames.Add( mpOwner->GetNextPathName( pos ) );
+	}
 	delete mpOwner;
 	return nResult;
 }
@@ -120,7 +129,7 @@ static DWORD GetFileDlgFlags( CDclControlObject* pFileDlgProperties )
 
 CCustomFileDialog::CCustomFileDialog( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent )
-, mDialogX( *this, pSourceForm )
+, mDialogX( *this, pSourceForm, pParams? (FileDialogParams*)pParams->lpData : NULL )
 , mpParams( pParams? (FileDialogParams*)pParams->lpData : NULL )
 , mMainFileDlg( pSourceForm, pParent, pParams )
 , mpFileDlgCtrl( pSourceForm->FindFirstControlOfType(CtlFileDlgCtrl) )
@@ -153,9 +162,11 @@ CCustomFileDialog::CCustomFileDialog( CDclFormObject* pSourceForm, CWnd* pParent
 			//m_bOpenFileDialog = pFileDlgParams->bOpenFileDialog; //always use design time property
 			mpParams->dwFlags |= ofn.Flags; //keep the flags we have so far, just add the new ones
 			ofn.Flags = mpParams->dwFlags;
-			ofn.lpstrDefExt = mpParams->sDefaultExtension.LockBuffer();
-			DWORD cchBuffer = (ofn.Flags & OFN_ALLOWMULTISELECT)? (0x8000 / sizeof(TCHAR)) : MAX_PATH;
-			ofn.lpstrFile = mpParams->sFilename.GetBuffer( cchBuffer );
+			msDefaultExtension = mpParams->sDefaultExtension;
+			ofn.lpstrDefExt = msDefaultExtension.LockBuffer();
+			DWORD cchBuffer = (ofn.Flags & OFN_ALLOWMULTISELECT)? 0x800 : MAX_PATH;
+			ofn.lpstrFile = sResultBuf.GetBuffer( cchBuffer );
+			lstrcpyn(  ofn.lpstrFile, mpParams->sFilename, cchBuffer );
 			ofn.nMaxFile = cchBuffer;
 		}
 	}
@@ -235,6 +246,7 @@ BOOL CCustomFileDialog::OnInitDialog()
 			mDialogX.GetSourceForm()->GetControlProperties()->GetLongProperty( nWidth ) - pCtrl->GetLongProperty( nWidth );
 		int nBottomBorder =
 			mDialogX.GetSourceForm()->GetControlProperties()->GetLongProperty( nHeight ) - pCtrl->GetLongProperty( nHeight );
+
 		CRect rectWindow;
 		mMainFileDlg.GetWindowRect( &rectWindow );
 		mMainFileDlg.GetParent()->ScreenToClient( &rectWindow );
@@ -251,14 +263,15 @@ BOOL CCustomFileDialog::OnInitDialog()
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
 
-void CCustomFileDialog::OnOK() 
-{	
-	__super::OnOK();
-	OnFileNameOK();
+BOOL CCustomFileDialog::OnFileNameOK()
+{
+	__super::OnFileNameOK();
+	return FALSE;
 }
 
 void CCustomFileDialog::OnFileNameChange()
 {
+	__super::OnFileNameChange();
 	CWnd* pWnd = GetParent()->GetDlgItem(lst2);
 	if (pWnd == NULL)
 		return;
@@ -281,10 +294,8 @@ void CCustomFileDialog::OnFileNameChange()
 	{
 		if (nSelCount == 1)
 		{
-			CString sItemText = GetPathName();
-	
 			// call methods to invoke the event
-			InvokeMethodIntString(mpFileDlgCtrl->GetStrProperty(nEventSelChanged), nSelCount, sItemText, false);			
+			InvokeMethodIntString(mpFileDlgCtrl->GetStrProperty(nEventSelChanged), nSelCount, GetPathName(), false);			
 		}
 		else 
 		{
@@ -294,21 +305,9 @@ void CCustomFileDialog::OnFileNameChange()
 	}
 }
 
-BOOL CCustomFileDialog::OnFileNameOK()
-{	
-	if( mpParams )
-	{
-		mpParams->sFilename = GetPathName();
-		mpParams->rsFilenames.RemoveAll();
-		POSITION pos = GetStartPosition();
-		while( pos )
-			mpParams->rsFilenames.Add( GetNextPathName( pos ) );
-	}
-	return FALSE;
-}
-
 void CCustomFileDialog::OnTypeChange()
 {
+	__super::OnTypeChange();
 	if( !mpFileDlgCtrl )
 		return;
 	CString sText;
@@ -331,6 +330,7 @@ void CCustomFileDialog::OnHelp()
 
 void CCustomFileDialog::OnFolderChange()
 {
+	__super::OnFolderChange();
 	if( !mpFileDlgCtrl )
 		return;
 	InvokeMethodString(mpFileDlgCtrl->GetStrProperty(nEventFolderChanged), GetFolderPath(), false);

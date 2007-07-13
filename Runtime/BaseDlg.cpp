@@ -157,14 +157,20 @@ BOOL CBaseDlg::OnInitDialog()
 	GetControlPane().CreateControls( nID );
 	GetControlPane().RecalcLayout();
 
+	CRect rectParent;
+	::GetWindowRect( ::GetParent(m_hWnd), &rectParent );
 	if( mnInitialX >= 0 )
 		rectWindow.MoveToX( mnInitialX );
 	else if( rectSaved.left >= -10 && rectSaved.left < (::GetSystemMetrics( SM_CXSCREEN ) - 10) )
 		rectWindow.MoveToX( rectSaved.left );
+	else
+		rectWindow.MoveToX( rectParent.left + (rectParent.Width() - rectWindow.Width()) / 2 );
 	if( mnInitialY >= 0 )
 		rectWindow.MoveToY( mnInitialY );
 	else if( rectSaved.top >= -10 && rectSaved.top < (::GetSystemMetrics( SM_CYSCREEN ) - 10) )
 		rectWindow.MoveToY( rectSaved.top );
+	else
+		rectWindow.MoveToY( rectParent.top + (rectParent.Height() - rectWindow.Height()) / 2 );
 	if( GetDialogObject().IsResizable() && rectSaved.right > rectSaved.left && rectSaved.bottom > rectSaved.top )
 	{
 		rectWindow.right = rectWindow.left + rectSaved.Width();

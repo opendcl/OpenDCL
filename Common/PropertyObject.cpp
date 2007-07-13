@@ -1592,22 +1592,14 @@ CString CPropertyObject::GetDocumentationDesc()
 
 CString CPropertyObject::GetStringItem(short ListIndex)
 {
-	// create a position variable to hold the converted ListIndex
-	CString pItem;
-	
-	if(size_t(ListIndex) < GetStringArrayPtr()->size())
-		pItem = GetStringArrayPtr()->at(ListIndex);
-	else if(size_t(ListIndex) < GetIntArrayPtr()->size())
-	{
-		// create a new String list item and point it at the object in the list
-		pItem.Format(_T("%d"), GetIntArrayPtr()->at(ListIndex));
-	}
+	CString sItem;
+	if(GetType() == PropStringArray && size_t(ListIndex) < GetStringArrayPtr()->size())
+		sItem = GetStringArrayPtr()->at(ListIndex);
+	else if(GetType() == PropIntArray && size_t(ListIndex) < GetIntArrayPtr()->size())
+		sItem.Format(_T("%d"), GetIntArrayPtr()->at(ListIndex));
 	else
-	{
-		//pItem = theWorkspace.LoadResourceString(IDS_ERRORONRET);
-		pItem = _T("Error - on retrieval");
-	}
-	return pItem;
+		sItem = _T("#");
+	return sItem;
 }
 
 CString CPropertyObject::GetStdProperty()

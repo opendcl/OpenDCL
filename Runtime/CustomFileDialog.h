@@ -11,25 +11,6 @@ class CDclControlObject;
 class CDclFormObject;
 
 
-class CFileDialogX : public CArxDialogObject
-{
-	friend class CCustomFileDialog;
-	CCustomFileDialog* mpOwner;
-protected:
-	CFileDialogX( CCustomFileDialog& Owner, CDclFormObject* pDclForm );
-	~CFileDialogX();
-
-	virtual DclFormType GetType() const;
-	virtual bool IsModeless() const { return false; }
-	virtual bool IsDockable() const { return false; }
-	virtual bool IsResizable() const { return true; }
-	virtual HWND GetHWnd() const;
-	virtual void CloseDialog(int nStatus) const;
-	virtual INT_PTR DoModal();
-	virtual bool Show(bool bShow = true) { return false; }
-};
-
-
 struct FileDialogParams
 {
 	FileDialogParams( BOOL bOpen, LPCTSTR pszExt, LPCTSTR pszFile, DWORD flags, LPCTSTR pszFilter )
@@ -48,6 +29,26 @@ struct FileDialogParams
 };
 
 
+class CFileDialogX : public CArxDialogObject
+{
+	friend class CCustomFileDialog;
+	CCustomFileDialog* mpOwner;
+	FileDialogParams* mpParams;
+protected:
+	CFileDialogX( CCustomFileDialog& Owner, CDclFormObject* pDclForm, FileDialogParams* pParams = NULL );
+	~CFileDialogX();
+
+	virtual DclFormType GetType() const;
+	virtual bool IsModeless() const { return false; }
+	virtual bool IsDockable() const { return false; }
+	virtual bool IsResizable() const { return true; }
+	virtual HWND GetHWnd() const;
+	virtual void CloseDialog(int nStatus) const;
+	virtual INT_PTR DoModal();
+	virtual bool Show(bool bShow = true) { return false; }
+};
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CCustomFileDialog dialog
 
@@ -56,6 +57,8 @@ class CCustomFileDialog : public CFileDialog
 	CFileDialogX mDialogX;
 	CString msTitle;
 	CString msFilterList;
+	CString msDefaultExtension;
+	CString sResultBuf;
 	FileDialogParams* mpParams;
 	CMainFileDlg mMainFileDlg;
 	CDclControlObject* mpFileDlgCtrl;
@@ -71,6 +74,7 @@ public:
 	const CDialogObject& GetDialogObject() const { return mDialogX; }
 	CMainFileDlg& GetMainDialog() { return mMainFileDlg; }
 
+	void GetResults();	
 	void CloseNow();
 	void CtrlModifyStyle(int nCtrl);
 
@@ -79,13 +83,12 @@ protected:
 
 protected:	
 	afx_msg void OnHelp();
-	virtual BOOL OnFileNameOK();	
+	virtual BOOL OnFileNameOK();
 	virtual void OnFileNameChange();	
 	virtual void OnFolderChange();
 	virtual void OnTypeChange();
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	virtual BOOL OnInitDialog();
-	afx_msg void OnOK();
 
 	//custom file dialog messages
 	afx_msg LRESULT OnGetFileName( WPARAM wParam, LPARAM lParam );

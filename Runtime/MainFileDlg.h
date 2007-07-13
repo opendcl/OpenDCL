@@ -11,7 +11,7 @@ class CDclFormObject;
 /////////////////////////////////////////////////////////////////////////////
 // CMainFileDlg dialog
 
-class CMainFileDlg : public CDialog
+class CMainFileDlg : public CCommonDialog
 {
 	CDclFormObject* mpSourceForm;
 	int mnInitialX;

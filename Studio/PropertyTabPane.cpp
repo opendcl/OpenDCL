@@ -106,7 +106,6 @@ void CPropertyTabPane::OnSize(UINT nType, int cx, int cy)
 	// get the tab control position
 	CRect rcItem;
 	
-	int nTTop = 0;
 	int nTBottom = 0;
 	
 	for (int i=0; i < m_TabCtrl.GetItemCount(); i++)
@@ -116,16 +115,14 @@ void CPropertyTabPane::OnSize(UINT nType, int cx, int cy)
 		
 		if (rcItem.bottom > nTBottom)
 			nTBottom = rcItem.bottom;
-		if (rcItem.top > nTTop)
-			nTTop = rcItem.top;
 	}
 	
 	// set the pane's position
 	CRect rcNewRect(
 		3,
 		nTBottom + 3,
-		rc.Width() - 6,
-		rc.Height() - 3);
+		rcTab.Width() - 6,
+		rcTab.Height() - 3);
 
 	m_PropertiesTabPane.MoveWindow(rcNewRect, TRUE);
 	m_EventsTabPane.MoveWindow(rcNewRect, TRUE);	

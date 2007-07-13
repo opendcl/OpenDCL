@@ -718,7 +718,7 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		nCol,
 		m_bInvokeWithSendString);
 
-	//m_bShowHighlight = true;
+	m_bShowHighlight = true;
 
 	if (nCol >= 0)
 	{

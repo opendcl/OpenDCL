@@ -263,7 +263,7 @@ Show
 [Prefix]
 dcl_Form_
 [Desc]
-This method displays a dialog box from a loaded project. \par \par \b *Important  Notes: \b0 \par \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-720\li720 The optional upper left coordinates only affect Modal and Modeless dialog boxes. \par {\pntext\f1\'B7\tab} If the dialog box being shown is a modal dialog box, this method will wait until the user has exited the dialog box before returning to AutoLISP. \par{\pntext\f1\'B7\tab}Do not call this method from within a MouseDown event of any control. \par \pard
+This method displays a dialog box from a loaded project. \par \par \b *Important  Notes: \b0 \par \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-720\li720 The optional upper left coordinates only affect Modal and Modeless dialog boxes. \par {\pntext\f1\'B7\tab} If the dialog box being shown is a modal dialog box, this method will wait until the user has exited the dialog box before returning to AutoLISP. \par{\pntext\f1\'B7\tab}Do not call this method from within a MouseDown event of any control. \par{\pntext\f1\'B7\tab}File Dialog Box forms use an alternate function signature that expects the form name followed by optional string arguments for the initial folder, the initial filename, and the default file extension. \par \pard
 [Arguments Return] as Integer Dialog Status
 ProjectFileName
 \par\tab \i [Optional] \i0 UpperLeftXCoordinate

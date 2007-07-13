@@ -549,6 +549,7 @@ void COpenDCLApp::OnToolsEventscopytoclipboard()
 	CString sSection = theWorkspace.LoadResourceString(IDR_MAINFRAME);
 	BOOL bNewVal = !AfxGetApp()->GetProfileInt(sSection, _T("EventsCopyToClipboard"), TRUE);
 	AfxGetApp()->WriteProfileInt(sSection, _T("EventsCopyToClipboard"), bNewVal);
+	theEditorWorkspace.GetPropertyTabs()->m_EventsTabPane.GetDlgItem(IDC_COPYTOCLIPBOARD)->ShowWindow(bNewVal? SW_SHOW : SW_HIDE);	
 }
 
 void COpenDCLApp::OnToolsEventswritetolispfile() 
@@ -556,7 +557,7 @@ void COpenDCLApp::OnToolsEventswritetolispfile()
 	CString sSection = theWorkspace.LoadResourceString(IDR_MAINFRAME);
 	BOOL bNewVal = !AfxGetApp()->GetProfileInt(sSection, _T("EventsWriteToLispFile"), FALSE);
 	AfxGetApp()->WriteProfileInt(sSection, _T("EventsWriteToLispFile"), bNewVal);
-	theEditorWorkspace.GetPropertyTabs()->m_EventsTabPane.m_AddToLisp.ShowWindow(bNewVal? SW_SHOW : SW_HIDE);	
+	theEditorWorkspace.GetPropertyTabs()->m_EventsTabPane.GetDlgItem(IDC_ADDTOLISP)->ShowWindow(bNewVal? SW_SHOW : SW_HIDE);	
 }
 
 void COpenDCLApp::OnHelp() 
