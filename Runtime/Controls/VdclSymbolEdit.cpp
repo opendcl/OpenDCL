@@ -61,10 +61,10 @@ BOOL VdclSymbolEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->m_pTop->GetLongValue();
-	ArxRect.left = pControl->m_pLeft->GetLongValue();
-	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
 	
 
 	dwStyle = WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | ES_MULTILINE | ES_AUTOHSCROLL;

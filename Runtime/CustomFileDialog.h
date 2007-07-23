@@ -58,7 +58,8 @@ class CCustomFileDialog : public CFileDialog
 	CString msTitle;
 	CString msFilterList;
 	CString msDefaultExtension;
-	CString sResultBuf;
+	CString msInitialDirectory;
+	CString msResultBuf;
 	FileDialogParams* mpParams;
 	CMainFileDlg mMainFileDlg;
 	CDclControlObject* mpFileDlgCtrl;

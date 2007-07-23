@@ -205,7 +205,9 @@ static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList,
 
 		// convert coordinates from units to logical units
 		CSize sizePic( lPicWidth, lPicHeight );
-		CDC().HIMETRICtoLP(&sizePic);
+		HDC hdc = ::GetDC(GetDesktopWindow());
+		CDC* cdc = CDC::FromHandle(hdc);
+		cdc->HIMETRICtoLP(&sizePic);
 
 		// if image list has not been created
 		if (!ImageList.m_hImageList)
@@ -243,7 +245,9 @@ static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList,
 
 		// convert coordinates from units to logical units
 		CSize sizePic( lPicWidth, lPicHeight );
-		CDC().HIMETRICtoLP(&sizePic);
+		HDC hdc = ::GetDC(GetDesktopWindow());
+		CDC* cdc = CDC::FromHandle(hdc);
+		cdc->HIMETRICtoLP(&sizePic);
 
 		// if image list has not been created
 		if (!ImageList.m_hImageList)

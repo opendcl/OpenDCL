@@ -50,11 +50,6 @@ public:
 	int			m_nType;
 
 	CControlPane		*m_pControlPane;
-	CPropertyObject		*m_pLeft;
-	CPropertyObject		*m_pTop;
-
-	CPropertyObject		*m_pClosestInside;
-	CPropertyObject		*m_pClosestOutside;
 
 // Operations
 public:

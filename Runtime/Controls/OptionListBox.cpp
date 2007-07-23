@@ -60,10 +60,10 @@ BOOL COptionListBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->m_pTop->GetLongValue();
-	ArxRect.left = pControl->m_pLeft->GetLongValue();
-	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
 	
 	
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | LBS_OWNERDRAWVARIABLE
@@ -152,6 +152,9 @@ void COptionListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 void COptionListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct, int nHighlight) 
 {
+	if( lpDrawItemStruct->itemID >= GetCount() )
+		return;
+
 	// Lets make a CDC for ease of use
 	CDC *pDC = CDC::FromHandle(lpDrawItemStruct->hDC);
 	
@@ -173,7 +176,6 @@ void COptionListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct, int nHighlight)
 	pDC->FillRect(rc, m_pStaticBrush);
 
 	CString strCurFont,strNextFont;
-	
 	GetText(lpDrawItemStruct->itemID, strCurFont);
 
 	int nX = rc.left; // Save for lines
@@ -186,21 +188,18 @@ void COptionListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct, int nHighlight)
 	pDC->SetTextColor(m_ForeColor);
 	
 	// draw the text
-	LPCTSTR lpszString;
-	lpszString = strCurFont;
 	CRect rcText = rc;
 	rcText.top = rcText.top + 2;
-	
 	if (lpDrawItemStruct->itemData < 2)
 		// draw the text as normal
-		m_NextHeight = ::DrawText(pDC->m_hDC, lpszString, strCurFont.GetLength(), &rcText, DT_TOP|DT_WORDBREAK|DT_LEFT);	
+		m_NextHeight = ::DrawText(pDC->m_hDC, strCurFont, strCurFont.GetLength(), &rcText, DT_TOP|DT_WORDBREAK|DT_LEFT);	
 	else
 	{
 		// draw the text as disabled.
 		::DrawState(pDC->m_hDC, 
 			(HBRUSH)NULL,
 			NULL,
-			(LPARAM)lpszString, 
+			(LPARAM)(LPCTSTR)strCurFont, 
 			(WPARAM)strCurFont.GetLength(),
 			rcText.left, rcText.top, 
 			rcText.Width(), rcText.Height(),

@@ -929,35 +929,35 @@ void COpenDCLView::CalcControlOffsetDistances(CDclControlObject *pArxObject, CRe
 
 	// get the offset boolean flags
 	int lLeftFromRight = 0;
-	if (pArxObject->m_pUseLeftOffset)
+	if (pArxObject->GetPropertyObject(nUseLeftFromRight))
 	{
-		if (pArxObject->m_pUseLeftOffset->GetType() == PropBool)
-			lLeftFromRight = pArxObject->m_pUseLeftOffset->GetBooleanValue();
+		if (pArxObject->GetPropertyObject(nUseLeftFromRight)->GetType() == PropBool)
+			lLeftFromRight = pArxObject->GetPropertyObject(nUseLeftFromRight)->GetBooleanValue();
 		else
-			lLeftFromRight = pArxObject->m_pUseLeftOffset->GetLongValue();
+			lLeftFromRight = pArxObject->GetPropertyObject(nUseLeftFromRight)->GetLongValue();
 	}
 
 	int lRightFromRight = 0;
-	if (pArxObject->m_pUseLeftOffset)
+	if (pArxObject->GetPropertyObject(nUseLeftFromRight))
 	{
-		if (pArxObject->m_pUseRightOffset->GetType() == PropBool)
-			lRightFromRight = pArxObject->m_pUseRightOffset->GetBooleanValue();
+		if (pArxObject->GetPropertyObject(nUseRightFromRight)->GetType() == PropBool)
+			lRightFromRight = pArxObject->GetPropertyObject(nUseRightFromRight)->GetBooleanValue();
 		else
-			lRightFromRight = pArxObject->m_pUseRightOffset->GetLongValue();
+			lRightFromRight = pArxObject->GetPropertyObject(nUseRightFromRight)->GetLongValue();
 	}
 
 	int lTopFromBottom = 0;
-	if (pArxObject->m_pUseLeftOffset)
+	if (pArxObject->GetPropertyObject(nUseLeftFromRight))
 	{
-		if (pArxObject->m_pUseRightOffset->GetType() == PropBool)
-			lTopFromBottom = pArxObject->m_pUseTopOffset->GetBooleanValue();
+		if (pArxObject->GetPropertyObject(nUseRightFromRight)->GetType() == PropBool)
+			lTopFromBottom = pArxObject->GetPropertyObject(nUseTopFromBottom)->GetBooleanValue();
 		else
-			lTopFromBottom = pArxObject->m_pUseTopOffset->GetLongValue();
+			lTopFromBottom = pArxObject->GetPropertyObject(nUseTopFromBottom)->GetLongValue();
 	}
 
 	int lBottomFromBottom = 0;
-	if (pArxObject->m_pUseLeftOffset)
-		lBottomFromBottom = pArxObject->m_pUseBottomOffset->GetLongValue();
+	if (pArxObject->GetPropertyObject(nUseLeftFromRight))
+		lBottomFromBottom = pArxObject->GetPropertyObject(nUseBottomFromBottom)->GetLongValue();
 
 	// set the offset position properties
 	if (lLeftFromRight == 0 || lLeftFromRight == 1)

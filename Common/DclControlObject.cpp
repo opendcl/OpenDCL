@@ -50,24 +50,6 @@ CDclControlObject::CDclControlObject()
 	::memset(&m_clsid, 0, sizeof(GUID));	
 	m_pStream = NULL;	
 	m_pAxWnd = NULL;
-
-  m_pVisible = NULL;
-
-  m_pLeft = NULL;
-  m_pTop = NULL;
-  m_pWidth = NULL;
-  m_pHeight = NULL;
-
-  m_pOffsetLeft = NULL;
-  m_pOffsetTop = NULL;
-  m_pOffsetRight = NULL;
-  m_pOffsetBottom = NULL;
-
-  m_pUseLeftOffset = NULL;
-  m_pUseTopOffset = NULL;
-  m_pUseRightOffset = NULL;
-  m_pUseBottomOffset = NULL;
-
 	m_bEventsAsAction = false;
 }
 
@@ -88,24 +70,6 @@ CDclControlObject::CDclControlObject(CDclFormObject* pOwner)
 	::memset(&m_clsid, 0, sizeof(GUID));	
 	m_pStream = NULL;	
 	m_pAxWnd = NULL;
-
-  m_pVisible = NULL;
-
-  m_pLeft = NULL;
-  m_pTop = NULL;
-  m_pWidth = NULL;
-  m_pHeight = NULL;
-
-  m_pOffsetLeft = NULL;
-  m_pOffsetTop = NULL;
-  m_pOffsetRight = NULL;
-  m_pOffsetBottom = NULL;
-
-  m_pUseLeftOffset = NULL;
-  m_pUseTopOffset = NULL;
-  m_pUseRightOffset = NULL;
-  m_pUseBottomOffset = NULL;
-
 	m_bEventsAsAction = false;
 }
 
@@ -128,24 +92,6 @@ CDclControlObject::CDclControlObject(ControlType type, CDclFormObject* pOwner, L
 	::memset(&m_clsid, 0, sizeof(GUID));	
 	m_pStream = NULL;	
 	m_pAxWnd = NULL;
-
-  m_pVisible = NULL;
-
-  m_pLeft = NULL;
-  m_pTop = NULL;
-  m_pWidth = NULL;
-  m_pHeight = NULL;
-
-  m_pOffsetLeft = NULL;
-  m_pOffsetTop = NULL;
-  m_pOffsetRight = NULL;
-  m_pOffsetBottom = NULL;
-
-  m_pUseLeftOffset = NULL;
-  m_pUseTopOffset = NULL;
-  m_pUseRightOffset = NULL;
-  m_pUseBottomOffset = NULL;
-
 	m_bEventsAsAction = false;
 }
 
@@ -492,35 +438,14 @@ void CDclControlObject::Serialize(CArchive& ar)
 				InsertNamedProperty( pProp );		
 				TraceFmt( _T("< %s\r\n"), pProp->toString() );
 			}
-
-			// here we are going to add the font of this object to the font collection
-			// before any pictures are loaded or any dialogs are displayed.
-			theWorkspace.GetFontCollection().GetFont(this, NULL);
-
-			m_pVisible = GetPropertyObject(nVisible);
-
-			m_pLeft = GetPropertyObject(nLeft);
-			m_pTop = GetPropertyObject(nTop);
-			m_pWidth = GetPropertyObject(nWidth);
-			m_pHeight = GetPropertyObject(nHeight);
-
-			m_pOffsetLeft = GetPropertyObject(nLeftFromRight);
-			m_pOffsetTop = GetPropertyObject(nTopFromBottom);
-			m_pOffsetRight = GetPropertyObject(nRightFromRight);
-			m_pOffsetBottom = GetPropertyObject(nBottomFromBottom);
-
-			m_pUseLeftOffset = GetPropertyObject(nUseLeftFromRight);
-			m_pUseTopOffset = GetPropertyObject(nUseTopFromBottom);
-			m_pUseRightOffset = GetPropertyObject(nUseRightFromRight);
-			m_pUseBottomOffset = GetPropertyObject(nUseBottomFromBottom);
 		}
 		else
 		{
 			mProperties.Serialize(ar);
-			// here were are going to add the font of this object to the font collection
-			// before any pictures are loaded or any dialogs are displayed.
-			theWorkspace.GetFontCollection().GetFont(this, NULL);
 		}
+		// here were are going to add the font of this object to the font collection
+		// before any pictures are loaded or any dialogs are displayed.
+		theWorkspace.GetFontCollection().GetFont( this, NULL );
 	}
 
 	if (!ar.IsStoring())
@@ -1197,27 +1122,6 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
   // before any pictures are loaded or any dialogs are displayed.
   CFontCollection *pFontCol = &theWorkspace.GetFontCollection();
   pFontCol->GetFont(this, NULL);
-
-//#ifndef EDITOR
-  // set the position property pointers
-  //m_pTabOrder = NULL;
-  m_pVisible = GetPropertyObject(nVisible);
-
-  m_pLeft = GetPropertyObject(nLeft);
-  m_pTop = GetPropertyObject(nTop);
-  m_pWidth = GetPropertyObject(nWidth);
-  m_pHeight = GetPropertyObject(nHeight);
-
-  m_pOffsetLeft = GetPropertyObject(nLeftFromRight);
-  m_pOffsetTop = GetPropertyObject(nTopFromBottom);
-  m_pOffsetRight = GetPropertyObject(nRightFromRight);
-  m_pOffsetBottom = GetPropertyObject(nBottomFromBottom);
-
-  m_pUseLeftOffset = GetPropertyObject(nUseLeftFromRight);
-  m_pUseTopOffset = GetPropertyObject(nUseTopFromBottom);
-  m_pUseRightOffset = GetPropertyObject(nUseRightFromRight);
-  m_pUseBottomOffset = GetPropertyObject(nUseBottomFromBottom);
-//#endif
 
   return statOK;
 }

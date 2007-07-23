@@ -146,8 +146,6 @@ CMyOverrideDropTarget::~CMyOverrideDropTarget()
 DROPEFFECT CMyOverrideDropTarget::OnDragEnter(CWnd* pWnd, COleDataObject* pDataObject,
 		DWORD dwKeyState, CPoint point)
 {
-	if (!m_pThisArxControl->GetBoolProperty(nDragnDropAllowDrop))
-		return DROPEFFECT_NONE; 
   if (! pDataObject->IsDataAvailable(CF_TEXT))
     return DROPEFFECT_NONE;
   return OnDragOver(pWnd, pDataObject, dwKeyState, point); 
@@ -157,20 +155,15 @@ DROPEFFECT CMyOverrideDropTarget::OnDragEnter(CWnd* pWnd, COleDataObject* pDataO
 DROPEFFECT CMyOverrideDropTarget::OnDragOver(CWnd* pWnd, COleDataObject* pDataObject,
 		DWORD dwKeyState, CPoint point)
 {
-	if (!m_pThisArxControl->GetBoolProperty(nDragnDropAllowDrop))
-	{
-		return DROPEFFECT_NONE; 
-	}
+  // find the tracker size
+  CSize trackerSize;
+  
+  if (NULL==pDataObject)
+		return DROPEFFECT_NONE;;
 
-    // find the tracker size
-    CSize trackerSize;
-    
-    if (NULL==pDataObject)
-        return DROPEFFECT_NONE;;
-
-    // check if it's the same point
-    if (point == m_lastDragPt)
-         return DROPEFFECT_COPY;
+  // check if it's the same point
+	if (point == m_lastDragPt)
+		return DROPEFFECT_COPY;
     
 	return DROPEFFECT_COPY;
 }

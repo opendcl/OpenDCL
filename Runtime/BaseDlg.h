@@ -44,10 +44,11 @@ public:
 public:
 	virtual CControlPane& GetControlPane() = 0;
 	virtual const CDialogObject& GetDialogObject() const = 0;
+	virtual void SetMinMaxSize( const CSize& szMin, const CSize& szMax );
+
+protected:
 	int GetNCWidth() const { return mnNCWidth; }
 	int GetNCHeight() const { return mnNCHeight; }
-	void SetDialogMinExtents( int nWidth, int nHeight );
-	void SetDialogMaxExtents( int nWidth, int nHeight );	
 	void SavePosition();
 	CRect ReadPosition() const;
 	void UpdateGripPos();

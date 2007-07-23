@@ -252,7 +252,7 @@
                         {
                             "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_7E69F7B279A74207ADF44D6E9BF8E8BF"
                             {
-                            "Name" = "8:[Manufacturer]"
+                            "Name" = "8:OpenDCL"
                             "Condition" = "8:"
                             "AlwaysCreate" = "11:FALSE"
                             "DeleteAtUninstall" = "11:FALSE"

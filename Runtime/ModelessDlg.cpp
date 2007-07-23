@@ -56,8 +56,7 @@ void CModelessDialogX::CloseDialog(int nStatus) const
 bool CModelessDialogX::SetMinMaxSize( const CSize& min, const CSize& max )
 {
 	CDialogObject::SetMinMaxSize( min, max );
-	mpOwner->SetDialogMaxExtents (min.cx, min.cy);
-	mpOwner->SetDialogMinExtents (max.cx, max.cy);
+	mpOwner->SetMinMaxSize (min, max);
 	return true;
 }
 

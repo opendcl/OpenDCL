@@ -171,6 +171,7 @@ void CTreeCtrlEx::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult)
 			m_bInvokeWithSendString);
 	}
 	SelectDropTarget(SelectedItem.hItem);
+	Invalidate();
 }
 
 void CTreeCtrlEx::OnRButtonDown(UINT nFlags, CPoint point)

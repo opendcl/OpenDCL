@@ -28,30 +28,36 @@ public:
 
 public:
 	//Workspace constants
-	virtual DWORD GetMinSupportedAcadVersion() const { return 2000; }
-	virtual CString GetProjectFileExtension() const { return _T(".odcl"); }
+	virtual DWORD GetMinSupportedAcadVersion(void) const { return 2000; }
+	virtual CString GetProjectFileExtension(void) const { return _T(".odcl"); }
 
 	//Services
-	virtual CString GetUserProfilePrefix() const { return CString(); }
-	virtual HMODULE GetResourceModule() const { return GetModuleHandle( NULL ); }
-	virtual HMODULE GetLocalResourceModule() const { return GetModuleHandle( NULL ); }
+	virtual CString GetSettingsRegPath(void) const { return _T("Software\\OpenDCL"); }
+	virtual CString GetUserProfilePrefix(void) const { return CString(); }
+	virtual HMODULE GetResourceModule(void) const { return GetModuleHandle( NULL ); }
+	virtual HMODULE GetLocalResourceModule(void) const { return GetModuleHandle( NULL ); }
 	virtual CString LoadResourceString( int nResId, HMODULE hmodRes = NULL ) const;
+	virtual CString GetLanguage(void);
 	virtual bool DisplayAlert( LPCTSTR pszMessage ) const; //display alert dialog; returns true if displayed, false if suppressed
 	virtual bool DisplayStatus( LPCTSTR pszMessage ) const; //display modeless status message; returns true if displayed, false if suppressed
 	virtual void SetModified( bool bModified ) {}
-	virtual CProject* GetActiveProject() const = 0; //must be overridden in derived class
-	virtual CDocument* GetActiveDocument() const { return NULL; }
+	virtual CProject* GetActiveProject(void) const = 0; //must be overridden in derived class
+	virtual CDocument* GetActiveDocument(void) const { return NULL; }
 	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxPropertyDescriptor* pProperty ) const = 0;
 	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxMethodDescriptor* pMethod ) const = 0;
 	virtual CString FindFile( LPCTSTR pszFilePath ) const;
 
-	bool GetModuleVersionInfo( DWORD& dwMajor, DWORD&dwMinor, DWORD& dwThird, DWORD& dwFourth, HMODULE hmodTarget = NULL ) const;
-	bool DisplayAlert( UINT nResourceId, HMODULE hmodRes = NULL ) const;
-	bool DisplayStatus( UINT nResourceId, HMODULE hmodRes = NULL ) const;
+	virtual bool GetModuleVersionInfo( DWORD& dwMajor, DWORD&dwMinor, DWORD& dwThird, DWORD& dwFourth, HMODULE hmodTarget = NULL ) const;
+	virtual bool DisplayAlert( UINT nResourceId, HMODULE hmodRes = NULL ) const;
+	virtual bool DisplayStatus( UINT nResourceId, HMODULE hmodRes = NULL ) const;
+	virtual bool GetDwordSetting( DWORD& dwValue, LPCTSTR pszValue );
+	virtual bool SetDwordSetting( DWORD dwValue, LPCTSTR pszValue );
+	virtual bool IsAutoUpdateCheckEnabled(void) const;
+	virtual bool SetAutoUpdateCheckEnabled( bool bEnabled = true );
 
 	//Attributes
-	bool IsMessagesSuppressed() const { return mbMessagesSuppressed; }
+	bool IsMessagesSuppressed(void) const { return mbMessagesSuppressed; }
 	void SetMessagesSuppressed( bool bSuppressed = true ) { mbMessagesSuppressed = bSuppressed; }
-	const CFontCollection& GetFontCollection() const { return mFonts; }
-	CFontCollection& GetFontCollection() { return mFonts; }
+	const CFontCollection& GetFontCollection(void) const { return mFonts; }
+	CFontCollection& GetFontCollection(void) { return mFonts; }
 };

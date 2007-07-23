@@ -42,16 +42,12 @@ void CMainFileDlg::DoDataExchange(CDataExchange* pDX)
 	__super::DoDataExchange(pDX);
 }
 
-void CMainFileDlg::SetDialogMinExtents(int nWidth, int nHeight)
+void CMainFileDlg::SetMinMaxSize( const CSize& szMin, const CSize& szMax )
 {
-	mnMinWidth = nWidth;
-	mnMinHeight = nHeight;
-}
-	
-void CMainFileDlg::SetDialogMaxExtents(int nWidth, int nHeight)
-{
-	mnMaxWidth = nWidth;
-	mnMaxHeight = nHeight;
+	mnMinWidth = szMin.cx;
+	mnMinHeight = szMin.cy;
+	mnMaxWidth = szMax.cx;
+	mnMaxHeight = szMax.cy;
 }
 
 void CMainFileDlg::SavePosition()
@@ -106,14 +102,25 @@ void CMainFileDlg::Initialize()
 	mnNCHeight = rectWindow.Height() - rectClient.Height();
 	rectWindow.right = rectWindow.left + pFormProps->GetLongProperty( nWidth );
 	rectWindow.bottom = rectWindow.top + pFormProps->GetLongProperty( nHeight );
+	CSize szMin( pFormProps->GetLongProperty( nMinDialogWidth ), pFormProps->GetLongProperty( nMinDialogHeight ) );
+	CSize szMax( pFormProps->GetLongProperty( nMaxDialogWidth ), pFormProps->GetLongProperty( nMaxDialogHeight ) );
 	bool bUsesClientRect = mpSourceForm->UsesClientRect();
 	if( bUsesClientRect )
 	{
 		rectWindow.right += mnNCWidth;
 		rectWindow.bottom += mnNCHeight;
+		if( szMin.cx > 0 )
+			szMin.cx += mnNCWidth;
+		if( szMin.cy > 0 )
+			szMin.cy += mnNCHeight;
+		if( szMax.cx > 0 )
+			szMax.cx += mnNCWidth;
+		if( szMax.cy > 0 )
+			szMax.cy += mnNCHeight;
 	}
 
 	SetWindowText( pFormProps->GetStrProperty( nTitleBarText ) );
+	SetMinMaxSize( szMin, szMax );
 
 	//create the control pane and the design time controls
 	GetClientRect( &rectClient );
@@ -223,20 +230,38 @@ void CMainFileDlg::OnSizing(UINT fwSide, LPRECT pRect)
 {
 	int nNewWidth = pRect->right - pRect->left;
 	int nNewHeight = pRect->bottom - pRect->top;
-	
-	// ensure the user does not size below the min allowable size
-	if (mnMinWidth > 0 && nNewWidth < mnMinWidth)
-		pRect->right = pRect->left + mnMinWidth;
 
-	if (mnMinHeight > 0 && nNewHeight < mnMinHeight)
-		pRect->bottom = pRect->top + mnMinHeight;
+	if( fwSide == WMSZ_BOTTOMLEFT || fwSide == WMSZ_LEFT || fwSide == WMSZ_TOPLEFT )
+	{
+		if (mnMinWidth > 0 && nNewWidth < mnMinWidth)
+			pRect->left = pRect->right - mnMinWidth;
+		if (mnMaxWidth > 0 && nNewWidth > mnMaxWidth)
+			pRect->left = pRect->right - mnMaxWidth;
+	}
 
-	// ensure the user does not size above the max allowable size
-	if (mnMaxWidth > 0 && nNewWidth > mnMaxWidth)
-		pRect->right = pRect->left + mnMaxWidth;
+	if( fwSide == WMSZ_BOTTOMRIGHT || fwSide == WMSZ_RIGHT || fwSide == WMSZ_TOPRIGHT )
+	{
+		if (mnMinWidth > 0 && nNewWidth < mnMinWidth)
+			pRect->right = pRect->left + mnMinWidth;
+		if (mnMaxWidth > 0 && nNewWidth > mnMaxWidth)
+			pRect->right = pRect->left + mnMaxWidth;
+	}
 
-	if (mnMaxHeight > 0 && nNewHeight > mnMaxHeight)
-		pRect->bottom = pRect->top + mnMaxHeight;
+	if( fwSide == WMSZ_BOTTOMLEFT || fwSide == WMSZ_BOTTOM || fwSide == WMSZ_BOTTOMRIGHT )
+	{
+		if (mnMinHeight > 0 && nNewHeight < mnMinHeight)
+			pRect->bottom = pRect->top + mnMinHeight;
+		if (mnMaxHeight > 0 && nNewHeight > mnMaxHeight)
+			pRect->bottom = pRect->top + mnMaxHeight;
+	}
+
+	if( fwSide == WMSZ_TOPLEFT || fwSide == WMSZ_TOP || fwSide == WMSZ_TOPRIGHT )
+	{
+		if (mnMinHeight > 0 && nNewHeight < mnMinHeight)
+			pRect->top = pRect->bottom - mnMinHeight;
+		if (mnMaxHeight > 0 && nNewHeight > mnMaxHeight)
+			pRect->top = pRect->bottom - mnMaxHeight;
+	}
 
 	__super::OnSizing(fwSide, pRect);
 }

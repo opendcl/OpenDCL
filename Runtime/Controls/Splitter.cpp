@@ -59,33 +59,25 @@ BOOL CSplitter::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	CRect ArxRect;
 
 	// set the arx control pointer
-    m_ArxControl = pControl;
-	
-	m_pLeft = m_ArxControl->GetPropertyObject(nLeft);
-	m_pTop = m_ArxControl->GetPropertyObject(nTop);
-
+	m_ArxControl = pControl;
 	CPoint pt = ReadPlacement();
 
-	if (pControl->m_pWidth->GetLongValue() > pControl->m_pHeight->GetLongValue())
+	if (pControl->GetPropertyObject(nWidth)->GetLongValue() > pControl->GetPropertyObject(nHeight)->GetLongValue())
 	{
 		// get the rectangle of the new control
 		if (pt.y > -1)
-		{
-			pControl->m_pTop->SetLongValue(pt.y);
-		}			
+			pControl->GetPropertyObject(nTop)->SetLongValue(pt.y);
 	}
 	else
 	{
 		// get the rectangle of the new control
 		if (pt.x > -1)
-		{
-			pControl->m_pLeft->SetLongValue(pt.x);
-		}			
+			pControl->GetPropertyObject(nLeft)->SetLongValue(pt.x);
 	}
-	ArxRect.top = pControl->m_pTop->GetLongValue();
-	ArxRect.left = pControl->m_pLeft->GetLongValue();
-	ArxRect.bottom = ArxRect.top + pControl->m_pHeight->GetLongValue();
-	ArxRect.right = ArxRect.left + pControl->m_pWidth->GetLongValue();
+	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
+	ArxRect.bottom = ArxRect.top + pControl->GetPropertyObject(nHeight)->GetLongValue();
+	ArxRect.right = ArxRect.left + pControl->GetPropertyObject(nWidth)->GetLongValue();
 	
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;	
@@ -122,17 +114,12 @@ BOOL CSplitter::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 		m_nType = SPS_HORIZONTAL;
 	}
 
-	
-	
-	m_pClosestInside = m_ArxControl->GetPropertyObject(nSplitterMin);
-	m_pClosestOutside = m_ArxControl->GetPropertyObject(nSplitterMax);
-
 	if (m_nType == SPS_VERTICAL)
-		SetRange(m_pClosestInside->GetLongValue(),
-				 ArxRect.Height() - m_pClosestOutside->GetLongValue());
+		SetRange(m_ArxControl->GetPropertyObject(nSplitterMin)->GetLongValue(),
+				 ArxRect.Height() - m_ArxControl->GetPropertyObject(nSplitterMax)->GetLongValue());
 	else
-		SetRange(m_pClosestInside->GetLongValue(),
-				 ArxRect.Width() - m_pClosestOutside->GetLongValue());
+		SetRange(m_ArxControl->GetPropertyObject(nSplitterMin)->GetLongValue(),
+				 ArxRect.Width() - m_ArxControl->GetPropertyObject(nSplitterMax)->GetLongValue());
 
 	return RetVal;
 }
@@ -235,8 +222,6 @@ void CSplitter::OnPaint()
 		
 		// draw the solid rectangle
 		::DrawEdge(pdc->m_hDC, &rc1, EDGE_ETCHED, BF_RECT);
-		
-
 		rcCell.top = rc1.bottom+1;
 		
 		// draw the Window background for the cell				
@@ -297,18 +282,20 @@ void CSplitter::OnMouseMove(UINT nFlags, CPoint point)
 		ClientToScreen(&pt);
 		GetParent()->ScreenToClient(&pt);
 
-		if (pt.x < m_pClosestInside->GetLongValue())
-			pt.x = m_pClosestInside->GetLongValue();
-		if (pt.y < m_pClosestInside->GetLongValue())
-			pt.y = m_pClosestInside->GetLongValue();
+		long lSplitterMin = m_ArxControl->GetPropertyObject(nSplitterMin)->GetLongValue();
+		long lSplitterMax = m_ArxControl->GetPropertyObject(nSplitterMax)->GetLongValue();
+		if (pt.x < lSplitterMin)
+			pt.x = lSplitterMin;
+		if (pt.y < lSplitterMin)
+			pt.y = lSplitterMin;
 
 		CRect rc;
 		GetParent()->GetClientRect(&rc);			
 
-		if (pt.x > rc.Width() - m_pClosestOutside->GetLongValue())
-			pt.x = rc.Width() - m_pClosestOutside->GetLongValue();
-		if (pt.y > rc.Height() - m_pClosestOutside->GetLongValue())
-			pt.y = rc.Height() - m_pClosestOutside->GetLongValue();
+		if (pt.x > rc.Width() - lSplitterMax)
+			pt.x = rc.Width() - lSplitterMax;
+		if (pt.y > rc.Height() - lSplitterMax)
+			pt.y = rc.Height() - lSplitterMax;
 
 		GetParent()->ClientToScreen(&pt);
 		m_nX = pt.x;
@@ -339,16 +326,16 @@ void CSplitter::OnLButtonUp(UINT nFlags, CPoint point)
 			if (m_nType == SPS_VERTICAL)
 			{
 				delta = m_nX - m_nSavePos;
-				m_ArxControl->m_pLeft->SetLongValue(m_ArxControl->m_pLeft->GetLongValue() + delta );
-				m_ArxControl->m_pOffsetLeft->SetLongValue(m_ArxControl->m_pOffsetLeft->GetLongValue() - delta );
-				m_ArxControl->m_pOffsetRight->SetLongValue(m_ArxControl->m_pOffsetRight->GetLongValue() - delta );
+				m_ArxControl->GetPropertyObject(nLeft)->SetLongValue(m_ArxControl->GetPropertyObject(nLeft)->GetLongValue() + delta );
+				m_ArxControl->GetPropertyObject(nLeftFromRight)->SetLongValue(m_ArxControl->GetPropertyObject(nLeftFromRight)->GetLongValue() - delta );
+				m_ArxControl->GetPropertyObject(nRightFromRight)->SetLongValue(m_ArxControl->GetPropertyObject(nRightFromRight)->GetLongValue() - delta );
 			}
 			else
 			{
 				delta = m_nY - m_nSavePos;
-				m_ArxControl->m_pTop->SetLongValue(m_ArxControl->m_pTop->GetLongValue() + delta );
-				m_ArxControl->m_pOffsetTop->SetLongValue(m_ArxControl->m_pOffsetTop->GetLongValue() - delta );
-				m_ArxControl->m_pOffsetBottom->SetLongValue(m_ArxControl->m_pOffsetBottom->GetLongValue() - delta );
+				m_ArxControl->GetPropertyObject(nTop)->SetLongValue(m_ArxControl->GetPropertyObject(nTop)->GetLongValue() + delta );
+				m_ArxControl->GetPropertyObject(nTopFromBottom)->SetLongValue(m_ArxControl->GetPropertyObject(nTopFromBottom)->GetLongValue() - delta );
+				m_ArxControl->GetPropertyObject(nBottomFromBottom)->SetLongValue(m_ArxControl->GetPropertyObject(nBottomFromBottom)->GetLongValue() - delta );
 			}
 			
 			SPC_NMHDR nmsp;
@@ -483,7 +470,7 @@ void CSplitter::SavePlacement()
 
 	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + m_ArxControl->GetKeyPath(); 
 
-	if (IsWindow(m_hWnd) && m_pLeft != NULL)
+	if (IsWindow(m_hWnd) && m_ArxControl->GetPropertyObject(nLeft) != NULL)
 	{
 		CRect rectCurrent;
 		GetWindowRect( &rectCurrent );

@@ -30,10 +30,11 @@ public:
 	virtual ~CMainFileDlg();
 
 public:
+	virtual void SetMinMaxSize( const CSize& szMin, const CSize& szMax );
+
+protected:
 	int GetNCWidth() const { return mnNCWidth; }
 	int GetNCHeight() const { return mnNCHeight; }
-	void SetDialogMinExtents( int nWidth, int nHeight );
-	void SetDialogMaxExtents( int nWidth, int nHeight );	
 	void SavePosition();
 	CRect ReadPosition() const;
 	void Initialize();

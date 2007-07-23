@@ -46,10 +46,10 @@ BOOL VdclCheckBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 	m_pValue = m_ArxControl->GetPropertyObject(nValue);
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->m_pTop->GetLongValue();
-	ArxRect.left = pControl->m_pLeft->GetLongValue();
-	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
 	
 	// get the caption
 	CString Caption = pControl->GetStrProperty(nCaption);

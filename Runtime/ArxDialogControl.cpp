@@ -86,10 +86,10 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			CAnimateCtrl *pControl = new CAnimateCtrl;
 			CRect rc;
 			// get the rectangle of the new control
-			rc.top = pTemplate->m_pTop->GetLongValue();
-			rc.left = pTemplate->m_pLeft->GetLongValue();
-			rc.bottom = pTemplate->m_pHeight->GetLongValue() + rc.top;
-			rc.right = pTemplate->m_pWidth->GetLongValue() + rc.left;
+			rc.top = pTemplate->GetPropertyObject(nTop)->GetLongValue();
+			rc.left = pTemplate->GetPropertyObject(nLeft)->GetLongValue();
+			rc.bottom = pTemplate->GetPropertyObject(nHeight)->GetLongValue() + rc.top;
+			rc.right = pTemplate->GetPropertyObject(nWidth)->GetLongValue() + rc.left;
 			pControl->Create(
 				WS_VISIBLE|WS_CHILD|WS_CLIPSIBLINGS |
 				ACS_CENTER |ACS_AUTOPLAY|ACS_TRANSPARENT, 
@@ -1586,7 +1586,7 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 		case nVisible:
 		{
 			if (IsWindow(pControlWnd->m_hWnd))
-				pControlWnd->ShowWindow(pControl->m_pVisible->GetBooleanValue()? SW_SHOW : SW_HIDE);
+				pControlWnd->ShowWindow(pControl->GetPropertyObject(nVisible)->GetBooleanValue()? SW_SHOW : SW_HIDE);
 			else
 				theWorkspace.DisplayAlert(_T("The ActiveX Control is hidden and no longer valid.\nPlease contact the control developer for support."));
 			break;

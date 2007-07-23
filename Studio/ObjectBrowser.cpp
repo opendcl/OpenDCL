@@ -33,8 +33,6 @@ CObjectBrowser::CObjectBrowser(CWnd* pParent /*=NULL*/)
 {
 	m_pControl = NULL;
 	m_sDclFormName = theWorkspace.LoadResourceString(IDS_DclFormName);
-	m_sClipBoardDefun1;
-	m_sClipBoardDefun2;
 }
 
 
@@ -799,7 +797,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				sDefun1 = _T("\\par ");
 				
 				// clear the clipboard string holder
-				m_sClipBoardDefun2;
+				m_sClipBoardDefun2.Empty();
 				// setup the defun is it is to return a value
 				if (!sVarType.IsEmpty())
 				{

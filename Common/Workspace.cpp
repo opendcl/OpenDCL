@@ -6,6 +6,8 @@
 
 #pragma comment(lib, "version.lib") //for file version info functions
 
+static const TCHAR gszRegVal_AUC[] = _T("AutoUpdateCheck");
+
 
 CWorkspace::CWorkspace()
 : mbMessagesSuppressed( false )
@@ -21,6 +23,45 @@ CString CWorkspace::LoadResourceString(int nResId, HMODULE hmodRes /*= NULL*/) c
 	CString sRes;
 	sRes.LoadString( hmodRes? hmodRes : GetLocalResourceModule(), nResId );
 	return sRes;
+}
+
+CString CWorkspace::GetLanguage(void)
+{
+	static const LPCTSTR pszRKLanguage = _T("Language");
+	CString sLanguage;
+	HKEY hkReg = NULL;
+	if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_CURRENT_USER, GetSettingsRegPath(), 0, KEY_QUERY_VALUE, &hkReg ) )
+	{
+		DWORD dwType = 0;
+		DWORD cbValue = 64 - sizeof(TCHAR);
+		if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszRKLanguage, NULL, &dwType, (BYTE*)sLanguage.GetBuffer( 64 ), &cbValue ) &&
+				dwType == REG_SZ )
+			sLanguage.ReleaseBuffer( cbValue / sizeof(TCHAR) );
+		else
+			sLanguage.ReleaseBuffer( 0 );
+		RegCloseKey( hkReg );
+	}
+	if( !sLanguage.IsEmpty() )
+		return sLanguage;
+	if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_LOCAL_MACHINE, GetSettingsRegPath(), 0, KEY_QUERY_VALUE, &hkReg ) )
+	{
+		DWORD dwType = 0;
+		DWORD cbValue = 64 - sizeof(TCHAR);
+		if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszRKLanguage, NULL, &dwType, (BYTE*)sLanguage.GetBuffer( 64 ), &cbValue ) &&
+				dwType == REG_SZ )
+			sLanguage.ReleaseBuffer( cbValue / sizeof(TCHAR) );
+		else
+			sLanguage.ReleaseBuffer( 0 );
+		RegCloseKey( hkReg );
+	}
+	if( !sLanguage.IsEmpty() )
+		return sLanguage;
+	if( 0 != GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_SABBREVLANGNAME, sLanguage.GetBuffer( 64 ), 64 ) )
+	{
+		sLanguage.ReleaseBuffer();
+		return sLanguage;
+	}
+	return _T("ENU");
 }
 
 //display alert dialog; returns true if displayed, false if suppressed
@@ -49,7 +90,48 @@ bool CWorkspace::DisplayStatus( UINT nResourceId, HMODULE hmodRes /*= NULL*/ ) c
 	return DisplayStatus( LoadResourceString( nResourceId, hmodRes ) );
 }
 
-bool CWorkspace::GetModuleVersionInfo( DWORD& dwMajor, DWORD&dwMinor, DWORD& dwThird, DWORD& dwFourth,
+bool CWorkspace::GetDwordSetting( DWORD& dwValue, LPCTSTR pszValue )
+{
+	bool bSuccess = false;
+	DWORD dwValueLocal = 0;
+	HKEY hkReg = NULL;
+	if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_CURRENT_USER, GetSettingsRegPath(), 0, KEY_QUERY_VALUE, &hkReg ) )
+	{
+		DWORD dwType = 0;
+		DWORD cbValue = sizeof(dwValueLocal);
+		if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszValue, NULL, &dwType, (BYTE*)&dwValueLocal, &cbValue ) )
+			bSuccess = true;
+		RegCloseKey( hkReg );
+	}
+	if( !bSuccess &&
+			ERROR_SUCCESS == RegOpenKeyEx( HKEY_LOCAL_MACHINE, GetSettingsRegPath(), 0, KEY_QUERY_VALUE, &hkReg ) )
+	{
+		DWORD dwType = 0;
+		DWORD cbValue = sizeof(dwValueLocal);
+		if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszValue, NULL, &dwType, (BYTE*)&dwValueLocal, &cbValue ) )
+			bSuccess = true;
+		RegCloseKey( hkReg );
+	}
+	if( !bSuccess )
+		return false;
+	dwValue = dwValueLocal;
+	return true;
+}
+
+bool CWorkspace::SetDwordSetting( DWORD dwValue, LPCTSTR pszValue )
+{
+	bool bSuccess = false;
+	HKEY hkReg = NULL;
+	if( ERROR_SUCCESS == RegCreateKeyEx( HKEY_CURRENT_USER, GetSettingsRegPath(), 0, NULL, 0, KEY_SET_VALUE, NULL, &hkReg, NULL ) )
+	{
+		if( ERROR_SUCCESS == RegSetValueEx( hkReg, pszValue, 0, REG_DWORD, (BYTE*)&dwValue, sizeof(dwValue) ) )
+			bSuccess = true;
+		RegCloseKey( hkReg );
+	}
+	return bSuccess;
+}
+
+bool CWorkspace::GetModuleVersionInfo( DWORD& dwMajor, DWORD& dwMinor, DWORD& dwThird, DWORD& dwFourth,
 																			 HMODULE hmodTarget /*= NULL*/ ) const
 {
 	if( !hmodTarget )
@@ -79,6 +161,17 @@ bool CWorkspace::GetModuleVersionInfo( DWORD& dwMajor, DWORD&dwMinor, DWORD& dwT
 	}
 	delete[] pvBuffer;
 	return true;
+}
+
+bool CWorkspace::IsAutoUpdateCheckEnabled(void) const
+{
+	DWORD dwAUC = 0;
+	return (theWorkspace.GetDwordSetting( dwAUC, gszRegVal_AUC ) && dwAUC != 0);
+}
+
+bool CWorkspace::SetAutoUpdateCheckEnabled( bool bEnabled /*= true*/ )
+{
+	return theWorkspace.SetDwordSetting( bEnabled? 1 : 0, gszRegVal_AUC );
 }
 
 CString CWorkspace::FindFile( LPCTSTR pszFilePath ) const

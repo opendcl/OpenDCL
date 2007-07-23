@@ -6,6 +6,8 @@
 #define IDS_DWGNOTLOADING               108
 #define IDS_BLANKHTML                   109
 #define IDS_ERR_INVALIDARGUMENTTYPE     110
+#define IDS_AUTOUPDATECHECK             111
+#define IDS_CLOSEMENU                   112
 #define IDS_METHODVARNAMEINCORRECT      120
 #define IDS_BANNER                      124
 #define IDB_FOLDER                      129
@@ -36,8 +38,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        455
-#define _APS_NEXT_COMMAND_VALUE         32769
+#define _APS_NEXT_RESOURCE_VALUE        456
+#define _APS_NEXT_COMMAND_VALUE         32774
 #define _APS_NEXT_CONTROL_VALUE         12345
 #define _APS_NEXT_SYMED_VALUE           454
 #endif

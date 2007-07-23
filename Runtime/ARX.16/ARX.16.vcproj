@@ -320,6 +320,10 @@
 				RelativePath="..\TabPage.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\UpdateCheck.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Include Files"
@@ -435,6 +439,10 @@
 			</File>
 			<File
 				RelativePath="..\TabPage.h"
+				>
+			</File>
+			<File
+				RelativePath="..\UpdateCheck.h"
 				>
 			</File>
 		</Filter>

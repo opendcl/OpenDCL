@@ -165,8 +165,15 @@ CCustomFileDialog::CCustomFileDialog( CDclFormObject* pSourceForm, CWnd* pParent
 			msDefaultExtension = mpParams->sDefaultExtension;
 			ofn.lpstrDefExt = msDefaultExtension.LockBuffer();
 			DWORD cchBuffer = (ofn.Flags & OFN_ALLOWMULTISELECT)? 0x800 : MAX_PATH;
-			ofn.lpstrFile = sResultBuf.GetBuffer( cchBuffer );
-			lstrcpyn(  ofn.lpstrFile, mpParams->sFilename, cchBuffer );
+			ofn.lpstrFile = msResultBuf.GetBuffer( cchBuffer );
+			memset( ofn.lpstrFile, 0, cchBuffer * sizeof(TCHAR) );
+			if( !mpParams->sFilename.IsEmpty() && mpParams->sFilename.Right(1).SpanExcluding( _T("\\/") ).IsEmpty() )
+			{
+				msInitialDirectory = mpParams->sFilename;
+				ofn.lpstrInitialDir = msInitialDirectory.LockBuffer();
+			}
+			else
+				lstrcpyn( ofn.lpstrFile, mpParams->sFilename, cchBuffer );
 			ofn.nMaxFile = cchBuffer;
 		}
 	}

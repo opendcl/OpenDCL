@@ -74,25 +74,27 @@ class OdclListCtrl : public CListCtrl, public CArxDialogControl
 			{ if( mpListCtrl ) mpListCtrl->RefreshBlockList(); }
 		void documentDestroyed(const char* filename)
 			{ if( mpListCtrl ) mpListCtrl->RefreshBlockList(); }
-	} mDocReactor;
+	};
 
 protected:
 	CImageList mDefaultImageList;
 	bool mbBlockList;
+
+	// only for CtlBlockList
+	CDocReactor* mpDocReactor;
+	CAcadBlockReactor* mpBlockReactor;	
 	CImageList mBlockViewImageList;
+public:
+	AcDbDatabase		*m_pLoadedDwg;
+	CString				m_FileName;
 
 public:
   COleDataSource m_COleDataSource; // Needed to make this control an OLE data SOURCE (see OnLButtonDown)
   COleOdcDropTarget m_DropTarget;
 	bool m_bInvokeWithSendString;
-	CAcadBlockReactor	*m_pBlockReactor;	
 	int					m_nEditSubItem;
 	CLVEdit				m_LVEdit;
 	//bool				m_bEditCells;
-
-	// BlockList Attributes
-	AcDbDatabase		*m_pLoadedDwg;
-	CString				m_FileName;
 
 // Construction
 public:

@@ -131,8 +131,8 @@ IDI_X                   ICON                    "Res\\X.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,2,2
- PRODUCTVERSION 4,0,2,2
+ FILEVERSION 4,0,2,4
+ PRODUCTVERSION 4,0,2,4
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -149,13 +149,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL ARX Interface"
-            VALUE "FileVersion", "4, 0, 2, 2"
+            VALUE "FileVersion", "4, 0, 2, 4"
             VALUE "InternalName", "OpenDCL.Runtime"
             VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL.arx"
             VALUE "ProductName", "OpenDCL"
-            VALUE "ProductVersion", "4, 0, 2, 2"
+            VALUE "ProductVersion", "4, 0, 2, 4"
         END
     END
     BLOCK "VarFileInfo"
@@ -220,13 +220,15 @@ BEGIN
     IDS_BLANKHTML           "An Html file must first be loaded before it can be updated."
     IDS_ERR_INVALIDARGUMENTTYPE 
                             "Invalid argument type!\r\n  Expected: %s\r\n  Received: %s"
+    IDS_AUTOUPDATECHECK     "Automatic &Update Check"
 END
 
 STRINGTABLE 
 BEGIN
+    IDS_CLOSEMENU           "&Close Menu"
     IDS_METHODVARNAMEINCORRECT 
                             "The first argument for method [%s] was NIL. Please ensure that the variable being used to specify the control matches the value placed in the (VarName) property of the control."
-    IDS_BANNER              "\nOpenDCL Runtime [%d.%d.%d.%d] loaded\n"
+    IDS_BANNER              "\nOpenDCL Runtime [%s] loaded\n"
 END
 
 #endif    // English (U.S.) resources

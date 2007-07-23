@@ -54,25 +54,6 @@ public:
 	IStream *GetLoadStream();
 	void ClearStream();
 
-// position pointers
-public:
-	RefCountedPtr< CPropertyObject > m_pVisible;
-
-	RefCountedPtr< CPropertyObject > m_pLeft;
-	RefCountedPtr< CPropertyObject > m_pTop;
-	RefCountedPtr< CPropertyObject > m_pWidth;
-	RefCountedPtr< CPropertyObject > m_pHeight;
-
-	RefCountedPtr< CPropertyObject > m_pOffsetLeft;
-	RefCountedPtr< CPropertyObject > m_pOffsetTop;
-	RefCountedPtr< CPropertyObject > m_pOffsetRight;
-	RefCountedPtr< CPropertyObject > m_pOffsetBottom;
-
-	RefCountedPtr< CPropertyObject > m_pUseLeftOffset;
-	RefCountedPtr< CPropertyObject > m_pUseTopOffset;
-	RefCountedPtr< CPropertyObject > m_pUseRightOffset;
-	RefCountedPtr< CPropertyObject > m_pUseBottomOffset;
-
 protected:
 	CDclControlObject();
 	CDclControlObject(const CDclControlObject&); //declared protected to prevent copy construction

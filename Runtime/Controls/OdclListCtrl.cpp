@@ -159,18 +159,18 @@ static HANDLE readDibFromMemory(LPVOID pDibSrc)
 
 OdclListCtrl::OdclListCtrl( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID )
 : CArxDialogControl( pTemplate, &Pane, this )
-, mDocReactor( this )
-, mbBlockList( false )
+, mpDocReactor( NULL )
+, mpBlockReactor( NULL )
+, mbBlockList( pTemplate->GetType() == CtlBlockList )
 {
-	m_pBlockReactor = NULL;
 	m_pLoadedDwg = NULL;
 	Create( Pane.GetHostDialog(), nID );
 }
 
 OdclListCtrl::~OdclListCtrl()
 {
-	if (m_pBlockReactor != NULL)
-		delete m_pBlockReactor;
+	delete mpBlockReactor;
+	delete mpDocReactor;
 }
 
 bool OdclListCtrl::Create( CWnd* pParentWnd, UINT nID )
@@ -199,8 +199,9 @@ bool OdclListCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( IsBlockList() )
 	{
 		// create and add the new reactor
-		m_pBlockReactor = new CAcadBlockReactor( this );
-		acedEditor->addReactor( m_pBlockReactor );
+		mpBlockReactor = new CAcadBlockReactor( this );
+		acedEditor->addReactor( mpBlockReactor );
+		mpDocReactor = new CDocReactor( this );
 
 		// call the method to populate the block list control
 		RefreshBlockList();
@@ -227,8 +228,7 @@ bool OdclListCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 	{
 	case nBlockListStyle:
 		{
-			mbBlockList = true;
-
+			assert( mbBlockList == true );
 			//create a default icon for blocks without a preview image
 			mBlockViewImageList.Create( 32, 32, ILC_COLOR4, 1, 1 );
 			mBlockViewImageList.SetBkColor( GetBkColor() );
@@ -481,13 +481,6 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // OdclListCtrl message handlers
 
-CString _ltoa(int nVal)
-{
-	char value[80];
-	_ltoa(nVal, value, 10);
-	return value;
-}
-
 void OdclListCtrl::SetAcadColor(long nColor)
 {
 	COLORREF crBkColor = GetRGBColor(nColor);
@@ -516,11 +509,11 @@ void OdclListCtrl::OnDestroy()
 
 	m_DropTarget.Revoke();
 
-	if (m_pBlockReactor != NULL)
+	if (mpBlockReactor != NULL)
 	{
-		acedEditor->removeReactor(m_pBlockReactor);		
-		delete m_pBlockReactor;
-		m_pBlockReactor = NULL;
+		acedEditor->removeReactor(mpBlockReactor);		
+		delete mpBlockReactor;
+		mpBlockReactor = NULL;
 	}
 	CListCtrl::OnDestroy();
 }

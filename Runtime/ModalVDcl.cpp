@@ -60,8 +60,7 @@ INT_PTR CModalDialogX::DoModal()
 bool CModalDialogX::SetMinMaxSize( const CSize& min, const CSize& max )
 {
 	CDialogObject::SetMinMaxSize( min, max );
-	mpOwner->SetDialogMaxExtents (min.cx, max.cy);
-	mpOwner->SetDialogMinExtents (min.cx, max.cy);
+	mpOwner->SetMinMaxSize (min, max);
 	return true;
 }
 

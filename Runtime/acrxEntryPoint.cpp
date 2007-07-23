@@ -74,10 +74,11 @@
 #include "LinetypeDlg.h"
 #include "CustomFileDialog.h"
 #include "Base64.h"
+#include "UpdateCheck.h"
 
 
 //-----------------------------------------------------------------------------
-#define szRDS _RXST("odcl")
+#define szRDS _RXST("dcl")
 #define ADSFUNCBASE 1000 //the externally defined ADS functions will be defined starting at this function index
 #define ADSPROPFUNCBASE 2000 //the property functions will be defined starting at this function index
 
@@ -85,6 +86,12 @@
 
 static LPCTSTR gpszDclEventsLspFileName = _T("DclEvents.lsp");
 static LPCTSTR gpszOnActionEventLispFunction = _T("(defun c:OnActionEvent_%s()%s)(princ)\n");
+
+#ifdef _PRERELEASE
+static LPCTSTR gpszUCProductName = _T("OpenDCL Runtime Dev");
+#else
+static LPCTSTR gpszUCProductName = _T("OpenDCL Runtime");
+#endif
 
 
 #ifdef _DIAGNOSTIC
@@ -712,7 +719,13 @@ public:
 		DWORD dwThird;
 		DWORD dwFourth;
 		if( theWorkspace.GetModuleVersionInfo( dwMajor, dwMinor, dwThird, dwFourth, _hdllInstance ) )
-			acutPrintf( theWorkspace.LoadResourceString( IDS_BANNER ), dwMajor, dwMinor, dwThird, dwFourth );
+		{
+			CString sVersion;
+			sVersion.Format( _T("%d.%d.%d.%d"), dwMajor, dwMinor, dwThird, dwFourth );
+			if( theWorkspace.IsAutoUpdateCheckEnabled() )
+				UpdateCheck( gpszUCProductName, sVersion );
+			acutPrintf( theWorkspace.LoadResourceString( IDS_BANNER ), (LPCTSTR)sVersion );
+		}
 
 		return (retCode) ;
 	}
@@ -1927,16 +1940,16 @@ public:
 			{
 				pszDefaultDirectory = pArgs->resval.rstring;
 
-				pArgs = pArgs->rbnext; //move to the next argument
-				if (pArgs)
+				if (pArgs->rbnext)
 				{
+					pArgs = pArgs->rbnext; //move to the next argument
 					if (pArgs->restype != RTSTR)
 						return RSERR; //wrong argument type
 					pszDefaultFileName = pArgs->resval.rstring;
 
-					pArgs = pArgs->rbnext;
-					if (pArgs)
+					if (pArgs->rbnext)
 					{
+						pArgs = pArgs->rbnext; //move to the next argument
 						if (pArgs->restype != RTSTR)
 							return RSERR; //wrong argument type
 						pszDefaultExtension = pArgs->resval.rstring;
@@ -1979,7 +1992,7 @@ public:
 
 		if (nResult >= 0)
 		{
-			if (pDclObject->GetType() == VdclFileDialog)
+			if (nResult == IDOK && pDclObject->GetType() == VdclFileDialog)
 			{
 				if( (fdp.dwFlags & OFN_ALLOWMULTISELECT) )
 				{
@@ -4072,6 +4085,45 @@ public:
 
 		return (RSRSLT) ;
 	}
+
+	// ----- ads_dcl_updatecheck symbol (do not rename)
+	static int ads_dcl_updatecheck(void)
+	{
+		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs != NULL)
+			return RSERR; //no arguments expected
+
+		DWORD dwMajor;
+		DWORD dwMinor;
+		DWORD dwThird;
+		DWORD dwFourth;
+		if( theWorkspace.GetModuleVersionInfo( dwMajor, dwMinor, dwThird, dwFourth, _hdllInstance ) )
+		{
+			CString sVersion;
+			sVersion.Format( _T("%d.%d.%d.%d"), dwMajor, dwMinor, dwThird, dwFourth );
+			UpdateCheck( gpszUCProductName, sVersion );
+			acedRetT();
+		}
+
+		return (RSRSLT) ;
+	}
+
+	// ----- ads_dcl_setautoupdatecheck symbol (do not rename)
+	static int ads_dcl_setautoupdatecheck(void)
+	{
+		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
+
+		bool bEnable = (pArgs == NULL || pArgs->restype != RTNIL);
+		if (pArgs && pArgs->rbnext)
+			return RSERR; //too many arguments
+
+		if( theWorkspace.SetAutoUpdateCheckEnabled( bEnable ) )
+			acedRetT();
+
+		return (RSRSLT) ;
+	}
 } ;
 
 CString CARXApp::msDialogToBeShown;
@@ -4271,3 +4323,5 @@ ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_unload, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_saveas, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_import, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_export, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_updatecheck, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_setautoupdatecheck, true)

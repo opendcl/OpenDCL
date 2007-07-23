@@ -177,10 +177,10 @@ BOOL CPictureBox::Create(CDclControlObject* pControl, CProject *pProject, CWnd* 
 	m_cyIcon = 16;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->m_pTop->GetLongValue();
-	ArxRect.left = pControl->m_pLeft->GetLongValue();
-	ArxRect.bottom = pControl->m_pHeight->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->m_pWidth->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
 	
 	// set the back color
 	m_BkColor = GetRGBColor(m_ArxControl->GetLongProperty(nAcadColor));
@@ -292,8 +292,8 @@ void CPictureBox::AutoSize()
 		return;
 
 	CRect rcThis;
-	rcThis.left = m_ArxControl->m_pLeft->GetLongValue();
-	rcThis.top = m_ArxControl->m_pTop->GetLongValue();
+	rcThis.left = m_ArxControl->GetPropertyObject(nLeft)->GetLongValue();
+	rcThis.top = m_ArxControl->GetPropertyObject(nTop)->GetLongValue();
 	
 	switch (m_ArxControl->GetLongProperty(nBorderStyle))
 	{		
