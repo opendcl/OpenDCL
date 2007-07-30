@@ -3029,21 +3029,8 @@ void COpenDCLView::CompletedDragResize(int nQuadrant, CPoint point)
 	m_SelectedControl.m_pControl->MoveWindow(rcNewPos, TRUE);
 	
 	if (m_SelectedControl.m_pArxObject->GetType() == CtlTabStrip)
-	{
-		//short nTabHeight = GetSelectedTabClientHeight();
-		//short nTabWidth = GetSelectedTabClientWidth();
 		ResizeChildTabPanes();
-	}
-	CRect rc;
-	m_SelectedControl.m_pControl->GetWindowRect(&rc);
-	ScreenToClient(rc);
-/*	if (rc != rcNewPos)
-	{
-		m_SelectedControl.m_pControl->ShowWindow(TRUE);
-		ShowGripRects(TRUE, rc);
-		return;
-	}
-*/
+
 	// add the event to the undo list
 	CUndoActions *pUndo = new CUndoActions(
 		uaMoved,
@@ -3126,7 +3113,7 @@ void COpenDCLView::UpdateClientHeight(CDclControlObject* pArxObject, CWnd *pCont
 	
 	// get the height of the tab control
 	CRect rcTabCtrl;
-	((CTabCtrl*)pControl)->GetClientRect(&rcTabCtrl);
+	pControl->GetWindowRect(&rcTabCtrl);
 	
 	// subtract the lowest tab bottom to get the control area height
 	pArxObject->m_ClientHeight = rcTabCtrl.Height() - nTabHeight;
@@ -3293,7 +3280,9 @@ short COpenDCLView::GetSelectedTabClientWidth()
 		HideGrips();
 		return -1;
 	}
-	
+	assert( m_SelectedControl.m_pArxObject->GetType() == CtlTabStrip );
+	if( m_SelectedControl.m_pArxObject->GetType() != CtlTabStrip )
+		return -1;
 	return (short)m_SelectedControl.m_pArxObject->GetLongProperty(nWidth);
 }
 
@@ -3306,11 +3295,13 @@ short COpenDCLView::GetSelectedTabClientHeight()
 		HideGrips();
 		return -1;
 	}
+	assert( m_SelectedControl.m_pArxObject->GetType() == CtlTabStrip );
+	if( m_SelectedControl.m_pArxObject->GetType() != CtlTabStrip )
+		return -1;
 
 	CTabCtrl *pControl = (CTabCtrl*)((CControlHolder*)m_SelectedControl.m_pControl)->GetChildControl();
 	if (pControl == NULL)
 		return -1;
-
 	UpdateClientHeight( m_SelectedControl.m_pArxObject, pControl );
 	return m_SelectedControl.m_pArxObject->m_ClientHeight;
 }
@@ -4113,6 +4104,7 @@ void COpenDCLView::RemoveChildTabPane(CDclFormObject *pDclForm)
 void COpenDCLView::ResizeChildTabPanes()
 {
 	CDclControlObject* pDclControl = m_SelectedControl.m_pArxObject;
+	assert( pDclControl->GetType() == CtlTabStrip );
 	RefCountedPtr< CPropertyObject > pProp = pDclControl->GetPropertyObject(nTabsCaption);
 	if( !pProp )
 		return;
@@ -4124,10 +4116,18 @@ void COpenDCLView::ResizeChildTabPanes()
 		if (!pTabForm)
 			continue;
 		CDclControlObject *pDclProperties = pTabForm->GetControlProperties();
-		pDclProperties->SetLongProperty(nHeight, nNewHeight);
 		pDclProperties->SetLongProperty(nWidth, nNewWidth);
+		pDclProperties->SetLongProperty(nHeight, nNewHeight);
 		if (pTabForm->m_pMdiChildWnd != NULL)
-			pTabForm->m_pMdiChildWnd->SetWindowPos(NULL, -1, -1, nNewWidth, nNewHeight, SWP_NOMOVE);
+		{
+			CRect rcClient;
+			pTabForm->m_pMdiChildWnd->GetClientRect(&rcClient);
+			CRect rcWindow;
+			pTabForm->m_pMdiChildWnd->GetWindowRect(&rcWindow);
+			nNewWidth = nNewWidth + rcWindow.Width() - rcClient.Width();
+			nNewHeight = nNewHeight + rcWindow.Height() - rcClient.Height();
+			pTabForm->m_pMdiChildWnd->SetWindowPos(NULL, -1, -1, nNewWidth, nNewHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+		}
 	}	
 }
 

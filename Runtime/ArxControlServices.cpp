@@ -11,10 +11,8 @@
 
 CArxControlServices::CArxControlServices( CDclControlObject* pTemplate )
 : mpTemplate( pTemplate )
-, msLispSymbolName( pTemplate->GetStrProperty( nGlobalVarName ) )
+, msLispSymbolName( pTemplate->GetVarName() )
 {
-	if( msLispSymbolName.IsEmpty() )
-		msLispSymbolName = pTemplate->GetKeyPath();
 	SetLispSymbol();
 }
 

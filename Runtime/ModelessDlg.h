@@ -46,6 +46,7 @@ class CModelessDlg : public CBaseDlg
 	bool mbResizable;
 	bool mbTrackingMouse;
 	bool mbInMenuLoop;
+	HWND mhwndKeyboardFocus;
 
 	bool				m_bClosing;
 	bool				m_bAboutToClose;
@@ -90,6 +91,7 @@ protected:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
 	afx_msg void OnMove(int x, int y);
+	afx_msg void OnCaptureChanged(CWnd* pWnd);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);

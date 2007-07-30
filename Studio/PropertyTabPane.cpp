@@ -155,9 +155,7 @@ void CPropertyTabPane::DisplaySelectedControlProperties(CDclControlObject *pCont
 	if( pControl )
 	{
 		CString sControlType = GetControlName(pControl);
-		CString sName = pControl->GetStrProperty( nGlobalVarName );
-		if( sName.IsEmpty() )
-			sName = pControl->GetKeyPath();
+		CString sName = pControl->GetVarName();
 		if (!sControlType.IsEmpty())
 			sControlName.Format( _T("%s [%s]"), (LPCTSTR)sName, (LPCTSTR)sControlType );
 		else

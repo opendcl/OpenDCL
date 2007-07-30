@@ -451,115 +451,170 @@ void CDclControlObject::Serialize(CArchive& ar)
 	if (!ar.IsStoring())
 	{
 		// remove any properties that shouldn't have been persisted or that were added erroneously in the past
+		CDclFormObject* pOwnerForm = mpOwner;
+		while( pOwnerForm->GetParentForm() )
+			pOwnerForm = pOwnerForm->GetParentForm(); //get top level parent
+		DclFormType eFormType = pOwnerForm->GetType();
 		POSITION pos = mProperties.GetHeadPosition();
 		while (pos)
 		{
 			POSITION posAt = pos;
-			RefCountedPtr< CPropertyObject > pSourceProp = mProperties.GetNext(pos);
-			if (mType == CtlGrid)
+			RefCountedPtr< CPropertyObject > pSourceProp = mProperties.GetNext( pos );
+			PropertyId nID = pSourceProp->GetID();
+			switch( mType )
 			{
-				if (pSourceProp->GetID() == nDragnDropToAutoCAD)
-					mProperties.RemoveAt(posAt);
-				if (pSourceProp->GetID() == nDragnDropFromControl)
-					mProperties.RemoveAt(posAt);
-				if (pSourceProp->GetID() == nDragnDropFromAutoCAD)
-					mProperties.RemoveAt(posAt);
-				if (pSourceProp->GetID() == nDragnDropBegin)
-					mProperties.RemoveAt(posAt);
-				if (pSourceProp->GetID() == nDragnDropAllowBegin)
-					mProperties.RemoveAt(posAt);
-				if (pSourceProp->GetID() == nDragnDropAllowDrop)
-					mProperties.RemoveAt(posAt);
-				if (pSourceProp->GetID() == nEventReturnPressed)
-					mProperties.RemoveAt(posAt);
-			}
-			
-			if (pSourceProp->GetID() == nAcadColor && mType == CtlFrame)
-				mProperties.RemoveAt(posAt);
-			if (pSourceProp->GetID() == nForeColor && mType == CtlFrame)
-				mProperties.RemoveAt(posAt);
-			if (pSourceProp->GetID() == nTabOrder)
-				mProperties.RemoveAt(posAt);
-			if (pSourceProp->GetID() == nLabelColor)
-				mProperties.RemoveAt(posAt);
-			if (pSourceProp->GetID() == nEventDblClicked && mType == CtlStdButton)
-				mProperties.RemoveAt(posAt);
-			if (pSourceProp->GetID() == nEventDblClicked && mType == CtlGraphicButton)
-				mProperties.RemoveAt(posAt);
-			
-			/*if (pSourceProp->GetID() == nComboBoxStyle && mType == CtlComboBox)
-					pSourceProp->GetLongValue() = 2;*/
-			if (pSourceProp->GetID() == nHScrollBar && mType == CtlListBox)
-				mProperties.RemoveAt(posAt);
-			if (pSourceProp->GetID() == nEventClicked && mType == CtlListBox)
-				mProperties.RemoveAt(posAt);
-			if (pSourceProp->GetID() == nAllowOrbiting && pSourceProp->GetType() == PropBool)
-				mProperties.RemoveAt(posAt);
-			
-			if (pSourceProp->GetID() == nToolTipTitle && mType == CtlLabel)
-				mProperties.RemoveAt(posAt);
-			
-			if (pSourceProp->GetID() == nTabLabelAlign)
-				mProperties.RemoveAt(posAt);
-			if (pSourceProp->GetID() == nTabSelected)
-				mProperties.RemoveAt(posAt);
-			
-			if (pSourceProp->GetID() == nImageList &&
-				 (mType == CtlGraphicButton || mType == CtlPictureBox || mType == CtlForm))
-				mProperties.RemoveAt(posAt);
-
-			if( mType == CtlForm )
-			{
-				DclFormType eFormType = mpOwner->GetType();
-				if( eFormType == VdclConfigTab )
+			case CtlGrid:
+				switch( nID )
 				{
-					switch(pSourceProp->GetID())
-					{
-					case nCustom:
-					case nDockableSides:
-						mProperties.RemoveAt(posAt);
-					}
+				case nDragnDropToAutoCAD:
+				case nDragnDropFromControl:
+				case nDragnDropFromAutoCAD:
+				case nDragnDropBegin:
+				case nDragnDropAllowBegin:
+				case nDragnDropAllowDrop:
+				case nEventReturnPressed:
+					mProperties.RemoveAt(posAt);
+					continue;
 				}
-				else if( eFormType == VdclModal )
+				break;
+			case CtlFrame:
+				switch( nID )
 				{
-					switch(pSourceProp->GetID())
-					{
-					case nEventInvoke:
-						mProperties.RemoveAt(posAt);
-					}
+				case nAcadColor:
+				case nForeColor:
+					mProperties.RemoveAt(posAt);
+					continue;
 				}
-				else if( eFormType == VdclModeless )
+				break;
+			case CtlStdButton:
+				switch( nID )
 				{
-					switch(pSourceProp->GetID())
-					{
-					case nIcon:
-						mProperties.RemoveAt(posAt);
-					}
+				case nEventDblClicked:
+					mProperties.RemoveAt(posAt);
+					continue;
 				}
-				else if( eFormType == VdclDockable )
+				break;
+			case CtlGraphicButton:
+				switch( nID )
 				{
-					switch(pSourceProp->GetID())
-					{
-					case nMinDialogWidth:
-					case nMinDialogHeight:
-					case nMaxDialogWidth:
-					case nMaxDialogHeight:
-						mProperties.RemoveAt(posAt);
-					}
+				case nEventDblClicked:
+				case nImageList:
+					mProperties.RemoveAt(posAt);
+					continue;
 				}
-
+				break;
+			case CtlListBox:
+				switch( nID )
+				{
+				case nHScrollBar:
+				case nEventClicked:
+					mProperties.RemoveAt(posAt);
+					continue;
+				}
+				break;
+			case CtlLabel:
+				switch( nID )
+				{
+				case nToolTipTitle:
+					mProperties.RemoveAt(posAt);
+					continue;
+				}
+				break;
+			case CtlPictureBox:
+				switch( nID )
+				{
+				case nImageList:
+					mProperties.RemoveAt(posAt);
+					continue;
+				}
+				break;
+			case CtlForm:
 				if( mpOwner->GetParentForm() )
-				{ //tab pages should not have these properties
-					switch(pSourceProp->GetID())
+				{
+					switch( nID )
 					{
 					case nName:
 					case nObjectBrowser:
 					case nGlobalVarName:
 					case nUseBottomFromBottom:
 					case nUseTopFromBottom:
-						mProperties.RemoveAt(posAt);
+						mProperties.RemoveAt(posAt); //tab pages should not have these properties
+						continue;
 					}
 				}
+				switch( nID )
+				{
+				case nImageList:
+					mProperties.RemoveAt(posAt);
+					continue;
+				}
+				switch( eFormType )
+				{
+				case VdclConfigTab:
+					switch( nID )
+					{
+					case nCustom:
+					case nDockableSides:
+						mProperties.RemoveAt(posAt);
+						continue;
+					}
+					break;
+				case VdclModal:
+					switch( nID )
+					{
+					case nEventInvoke:
+						mProperties.RemoveAt(posAt);
+						continue;
+					}
+					break;
+				case VdclModeless:
+					switch( nID )
+					{
+					case nIcon:
+						mProperties.RemoveAt(posAt);
+						continue;
+					}
+					break;
+				case VdclDockable:
+					switch( nID )
+					{
+					case nMinDialogWidth:
+					case nMinDialogHeight:
+					case nMaxDialogWidth:
+					case nMaxDialogHeight:
+						mProperties.RemoveAt(posAt);
+						continue;
+					}
+					break;
+				}
+				break;
+			}
+			switch( nID )
+			{
+			case nTabOrder:
+			case nLabelColor:
+			case nTabLabelAlign:
+			case nTabSelected:
+				mProperties.RemoveAt(posAt);
+				continue;
+			case nAllowOrbiting:
+				if( pSourceProp->GetType() == PropBool )
+				{
+					mProperties.RemoveAt(posAt);
+					continue;
+				}
+				break;
+			}
+			switch( eFormType )
+			{
+			case VdclModal:
+				switch( nID )
+				{
+				case nEventInvoke:
+					mProperties.RemoveAt(posAt);
+					continue;
+				}
+				break;
 			}
 		}
 	}
@@ -1143,6 +1198,14 @@ CString CDclControlObject::GetKeyPath() const
 	else
 		sPath = GetKeyName();
 	return sPath;
+}
+
+CString CDclControlObject::GetVarName() const
+{
+	CString sName = GetStrProperty( nGlobalVarName );
+	if( sName.IsEmpty() )
+		sName = GetKeyPath();
+	return sName;
 }
 
 

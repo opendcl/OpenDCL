@@ -138,6 +138,7 @@ public:
 public:
 	CString GetKeyName() const;
 	CString GetKeyPath() const;
+	CString GetVarName() const;
 
 protected:
 	DECLARE_SERIAL(CDclFormObject)

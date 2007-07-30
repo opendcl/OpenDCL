@@ -23,14 +23,12 @@ CTreeCtrlEx::~CTreeCtrlEx()
 
 
 BEGIN_MESSAGE_MAP(CTreeCtrlEx, CTreeCtrl)
-	//{{AFX_MSG_MAP(CTreeCtrlEx)
 	ON_WM_DESTROY()
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_RBUTTONUP()
-	ON_NOTIFY_REFLECT(TVN_SELCHANGED, OnSelchanged)
-	//}}AFX_MSG_MAP
 	ON_WM_RBUTTONDOWN()
+	ON_NOTIFY_REFLECT(TVN_SELCHANGED, OnSelchanged)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

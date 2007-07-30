@@ -503,7 +503,7 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 					}
 					else
 					{
-						sTitle = theWorkspace.LoadResourceString(IDS_METHOD);
+						sTitle = _T("\\b0 ") + theWorkspace.LoadResourceString(IDS_METHOD) + _T(" \\b ") + sMethodName + _T(" \\b0 \\cf0");
 						sDefun1 += _T("(\\cf2") + sFuncName + _T("\\cf0  ");
 						m_sClipBoardDefun2 = _T("(") + sFuncName + _T(" ");
 					}
@@ -515,8 +515,9 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 					{
 						if (sLine == theWorkspace.LoadResourceString(IDS_PROJECTFILENAME))
 						{
-							sDefun1 += _T("\\cf3") + m_pControl->GetKeyPath() + _T("\\cf0");
-							m_sClipBoardDefun2 += m_pControl->GetKeyPath();
+							CString sControlName = m_pControl->GetVarName();
+							sDefun1 += _T("\\cf3") + sControlName + _T("\\cf0");
+							m_sClipBoardDefun2 += sControlName;
 						}						
 						else if (sLine == theWorkspace.LoadResourceString(IDS_PROJECTNAME))
 						{
@@ -622,9 +623,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 	if (pControl == NULL)
 		return;
 
-	sGlobalVarName = pControl->GetStrProperty( nGlobalVarName );
-	if( sGlobalVarName.IsEmpty() )
-		sGlobalVarName = pControl->GetKeyPath();
+	sGlobalVarName = pControl->GetVarName();
 	
 	if (pControl != m_pControl)
 		sGlobalVarName = theWorkspace.LoadResourceString(IDS_OLEOBJECT);
@@ -650,10 +649,10 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 	CString sVarType;
 	CString sDefun1;
 	CString sDefun2;
+	CString sItemText = m_ListBox.GetItemText(hItem);
 
 	if (!pProp)
 	{
-		CString sItemText = m_ListBox.GetItemText(hItem);
 		
 		if (pControl->GetType() == CtlActiveX)
 		{
@@ -775,7 +774,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 		{
 		case PropActiveXMethods:
 			{
-				sTitle = theWorkspace.LoadResourceString(IDS_METHOD);
+				sTitle = _T("\\b0 ") + theWorkspace.LoadResourceString(IDS_METHOD) + _T(" \\b ") + sItemText + _T(" \\b0 \\cf0");
 				if (pProp->GetAxInterfaceDescriptorPtr() != NULL)
 				{
 					sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodDesc(nThisItemData);
@@ -870,24 +869,17 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 			break;
 		case PropActiveXEvent:
 			{
-				sTitle = theWorkspace.LoadResourceString(IDS_EVENTTITLE);
-				sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetDesc();
 				CString sEventName = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetName();
 				if (!sEventName.IsEmpty())
-				{
-					CString sKeyName = pControl->GetStrProperty( nGlobalVarName );
-					if( sKeyName.IsEmpty() )
-						sKeyName = pControl->GetKeyPath();
-					sDefun1.Format( _T(" \\par c:%s_On%s () \\par "), (LPCTSTR)sKeyName, (LPCTSTR)sEventName );
-				}
+					sDefun1.Format( _T(" \\par c:%s_On%s () \\par "), (LPCTSTR)sGlobalVarName, (LPCTSTR)sEventName );
+				sTitle = _T("\\b0 ") + theWorkspace.LoadResourceString(IDS_EVENTTITLE) + _T(" \\b ") + (sEventName.IsEmpty()? sItemText : sEventName) + _T(" \\b0 \\cf0");
+				sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetDesc();
 			}
 			break;
 		case PropEvent:
 			{
-				sTitle = theWorkspace.LoadResourceString(IDS_EVENTTITLE);
-
-				// load the event name
 				CString sEventName = GetPropertyName(pProp->GetID());
+				sTitle = _T("\\b0 ") + theWorkspace.LoadResourceString(IDS_EVENTTITLE) + _T(" \\b ") + (sEventName.IsEmpty()? sItemText : sEventName) + _T(" \\b0 \\cf0");
 
 				// get the args and desc
 				CString sEventArgs;
@@ -906,10 +898,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				else
 				{
 					sDefun1 += _T("c:");
-					CString sKeyName = pControl->GetStrProperty( nGlobalVarName );
-					if( sKeyName.IsEmpty() )
-						sKeyName = pControl->GetKeyPath();
-					sDefun1 += sKeyName + _T("_On") + sEventName;
+					sDefun1 += sGlobalVarName + _T("_On") + sEventName;
 					if (!sEventArgs.IsEmpty())
 						sDefun1 += _T(" (") + sEventArgs + _T(" /)");
 					else
@@ -926,7 +915,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				AxPropertyDescriptor* pAxPropGet = pProp->GetAxInterfaceDescriptorPtr()->GetGetDescriptor();
 				AxPropertyDescriptor* pAxPropPut = pProp->GetAxInterfaceDescriptorPtr()->GetPutDescriptor();
 				sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetDesc();
-				sTitle = theWorkspace.LoadResourceString(IDS_PROPERTYTITLE);
+				sTitle = _T("\\b0 ") + theWorkspace.LoadResourceString(IDS_PROPERTYTITLE) + _T(" \\b ") + sItemText + _T(" \\b0 \\cf0");
 				
 				// do a special override for the color set properties
 				if (pAxPropPut)
@@ -1109,7 +1098,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 						sVarType = theWorkspace.LoadResourceString(IDS_BOOLEAN);
 						break;					
 				}		
-				sTitle = theWorkspace.LoadResourceString(IDS_PROPERTY);
+				sTitle = _T("\\b0 ") + theWorkspace.LoadResourceString(IDS_PROPERTY) + _T(" \\b ") + sItemText + _T(" \\b0 \\cf0");
 				sDesc = pProp->GetDocumentationDesc();
 				if (pProp->IsHidden())
 				{
@@ -1242,10 +1231,6 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 	
 	// set the title then start the bold statment
 	sRtf += sTitle;
-	// add the title name and close the bold
-	sRtf += _T(" \\b1");
-	sRtf += m_ListBox.GetItemText(hItem);
-	sRtf += _T("\\b0\\cf0 ");
 		
 	//if the var type has been set
 	if (!sVarType.IsEmpty())
@@ -1318,6 +1303,7 @@ void CObjectBrowser::OnCopy2()
 		{
 			if( !theWorkspace.GetActiveDocument()->DoFileSave() )
 				return;
+			SelectionChanged( m_ListBox.GetSelectedItem() );
 		}
 		else if( nWhatNext != IDNO )
 			return;
@@ -1351,6 +1337,7 @@ void CObjectBrowser::OnCopy1()
 		{
 			if( !theWorkspace.GetActiveDocument()->DoFileSave() )
 				return;
+			SelectionChanged( m_ListBox.GetSelectedItem() );
 		}
 		else if( nWhatNext != IDNO )
 			return;
@@ -1463,8 +1450,6 @@ void CObjectBrowser::ResizeControls(int cx, int cy)
 
 void CObjectBrowser::OnCopy3() 
 {
-	//CString sUnsavedProject = theWorkspace.LoadResourceString(IDS_PROJECT);
-	//if (m_pControl->GetKeyPath().Left(sUnsavedProject.GetLength()) == sUnsavedProject)
 	if( theWorkspace.GetActiveDocument()->GetPathName().IsEmpty() )
 	{
 		int nWhatNext = MessageBox( theWorkspace.LoadResourceString(IDS_RENAMEPROJECT),
@@ -1474,6 +1459,7 @@ void CObjectBrowser::OnCopy3()
 		{
 			if( !theWorkspace.GetActiveDocument()->DoFileSave() )
 				return;
+			SelectionChanged( m_ListBox.GetSelectedItem() );
 		}
 		else if( nWhatNext != IDNO )
 			return;

@@ -227,7 +227,11 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 	if (type != CtlActiveX && type != CtlFileDlgCtrl)
 		pDclControl->AddBooleanProperty( nEnabled, PropBool, true );
 
-	switch( pOwnerForm->GetType() )
+	CDclFormObject* pTopLevelParentForm = pOwnerForm;
+	while( pTopLevelParentForm->GetParentForm() )
+		pTopLevelParentForm = pTopLevelParentForm->GetParentForm();
+	DclFormType eFormType = pTopLevelParentForm->GetType();
+	switch( eFormType )
 	{
 	case VdclModal:
 		break;

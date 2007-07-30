@@ -161,6 +161,7 @@ CResizableDockingDialog::CResizableDockingDialog( CDclFormObject* pSourceForm, C
 , mbHiding( false )
 , mbTrackingMouse( false )
 , mbInMenuLoop( false )
+, mhwndKeyboardFocus( NULL )
 {
 }
 
@@ -179,6 +180,7 @@ BEGIN_MESSAGE_MAP(CResizableDockingDialog, CAdUiDockControlBar)
 	ON_WM_CREATE()
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
+	ON_WM_CAPTURECHANGED()
 	ON_WM_MOUSEMOVE()
 	ON_WM_NCMOUSEMOVE()
 	ON_MESSAGE(WM_MOUSELEAVE,OnMouseLeave)
@@ -424,8 +426,7 @@ BOOL CResizableDockingDialog::PreTranslateMessage(MSG* pMsg)
 {
 	if (pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
 	{
-		if	(pMsg->message == WM_KEYDOWN &&
-			(pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_CANCEL))
+		if (pMsg->message == WM_KEYDOWN && (pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_CANCEL))
 		{
 			HWND hItem = ::GetDlgItem(m_hWnd, IDCANCEL);
 			if (hItem == NULL || ::IsWindowEnabled(hItem))
@@ -434,11 +435,52 @@ BOOL CResizableDockingDialog::PreTranslateMessage(MSG* pMsg)
 				return TRUE;
 			}
 		}
+		if( mhwndKeyboardFocus )
+		{
+			pMsg->hwnd = mhwndKeyboardFocus;
+			if( !IsDialogMessage( pMsg ) && !TranslateMessage( pMsg ) )
+				DispatchMessage( pMsg );
+			return TRUE;
+		}
 		TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
 		if( pControl && pControl->GetControlType() == CtlActiveX )
 			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
-	}	
-		
+	}
+	if( GetCapture() == this )
+	{
+		CWnd* pTarget = WindowFromPoint( pMsg->pt );
+		if( pTarget )
+		{
+			if( pTarget == this || IsChild( pTarget ) )
+			{
+				if( !mbTrackingMouse )
+				{
+					SetTimer( WM_MOUSELEAVE, 200, NULL );
+					mbTrackingMouse = true;
+				}
+				if( mhwndKeyboardFocus )
+				{
+					::SetFocus( mhwndKeyboardFocus );
+					::SetCapture( NULL );
+				}
+			}
+			if( pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MOUSELAST )
+			{
+				CPoint ptMouse( pMsg->pt );
+				pTarget->ScreenToClient( &ptMouse );
+				pMsg->lParam = MAKELPARAM(ptMouse.x, ptMouse.y);
+				if( mhwndKeyboardFocus && pMsg->message != WM_MOUSEMOVE && pMsg->message != WM_NCMOUSEMOVE )
+				{
+					::SetCapture( NULL );
+					pTarget->SetFocus();
+				}
+			}
+			//pTarget->SendMessage( pMsg->message, pMsg->wParam, pMsg->lParam );
+			return TRUE;
+		}
+	}
+
+
 	return CAdUiDockControlBar::PreTranslateMessage(pMsg);
 }
 
@@ -450,22 +492,48 @@ void CResizableDockingDialog::OnDestroy()
 	CAdUiDockControlBar::OnDestroy();
 }
 
+void CResizableDockingDialog::OnCaptureChanged(CWnd* pWnd)
+{
+	mhwndKeyboardFocus = NULL;
+	__super::OnCaptureChanged(pWnd);
+}
+
 void CResizableDockingDialog::OnMouseMove(UINT nFlags, CPoint point)
 {
-	if( !mbTrackingMouse )
+	CPoint ptMsg( point );
+	ClientToScreen( &ptMsg );
+	CWnd* pTarget = WindowFromPoint( ptMsg );
+	if( pTarget && (pTarget == this || IsChild( pTarget )) )
 	{
-		SetTimer( WM_MOUSELEAVE, 200, NULL );
-		mbTrackingMouse = true;
+		if( !mbTrackingMouse )
+		{
+			SetTimer( WM_MOUSELEAVE, 200, NULL );
+			mbTrackingMouse = true;
+		}
+		if( mhwndKeyboardFocus )
+		{
+			::SetFocus( mhwndKeyboardFocus );
+			ReleaseCapture();
+		}
 	}
 	__super::OnMouseMove(nFlags, point);
 }
 
 void CResizableDockingDialog::OnNcMouseMove(UINT nHitTest, CPoint point)
 {
-	if( !mbTrackingMouse )
+	CWnd* pTarget = WindowFromPoint( point );
+	if( pTarget && (pTarget == this || IsChild( pTarget )) )
 	{
-		SetTimer( WM_MOUSELEAVE, 200, NULL );
-		mbTrackingMouse = true;
+		if( !mbTrackingMouse )
+		{
+			SetTimer( WM_MOUSELEAVE, 200, NULL );
+			mbTrackingMouse = true;
+		}
+		if( mhwndKeyboardFocus )
+		{
+			::SetFocus( mhwndKeyboardFocus );
+			ReleaseCapture();
+		}
 	}
 	__super::OnNcMouseMove(nHitTest, point);
 }
@@ -484,7 +552,8 @@ LRESULT CResizableDockingDialog::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 		}
 		else if( pFocusWnd && IsChild( pFocusWnd ) )
 		{
-			pFocusWnd->SetCapture();
+			mhwndKeyboardFocus = pFocusWnd->m_hWnd;
+			SetCapture();
 			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
 		}
 	}
@@ -511,7 +580,7 @@ void CResizableDockingDialog::OnTimer(UINT_PTR nIDEvent)
 		if( GetCursorPos( &ptCursor ) )
 		{
 			CWnd* pTarget = WindowFromPoint( ptCursor );
-			if( pTarget != this && !IsChild( pTarget ) )
+			if( !pTarget || (pTarget != this && !IsChild( pTarget )) )
 			{
 				PostMessage( WM_MOUSELEAVE, 0, 0 );
 				KillTimer( WM_MOUSELEAVE );

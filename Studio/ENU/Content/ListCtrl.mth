@@ -8,8 +8,8 @@ This method adds columns to a ListView control with the Report style set. Comple
 \par 0	Left
 \par 1	Center
 \par 2	Right
-\par \par \b Please Note:\b0 \par Because the ListView control was design exclusively for Internet Explorer, the justification for the first column will only display left justification.  We wish this design intent of Microsoft's was not so, but unfortunately this is how Microsoft provides the control.
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
+\par \par \b Please Note:\b0 \par Due to limitations of the Windows ListView control, the first column will only display left justified.
+\par \par \b Note:\b0 \par Create list in the following manner: \par 
           (List (List x y ...) (List x y ...) ...)
 \par We have found ObjectARX does not always like lists created as follows:
 \par          '(x y ...) (x y ...) ... 
@@ -39,7 +39,7 @@ AddItem (For Report Style)
 dcl_ListView_
 [Desc]
 This method adds a new item to the end of a ListView control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list. Use \cf1 dcl_ListView_SetItemImage \cf0 to set the icons of any column cell.
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
+\par \par \b Note:\b0 \par Create list in the following manner: \par 
           (List (List x y ...) (List x y ...) ...)
 \par We have found ObjectARX does not always like lists created as follows:
 \par          '(x y ...) (x y ...) ... 
@@ -122,7 +122,7 @@ InsertItem (For Report Style)
 dcl_ListView_
 [Desc]
 This method inserts a new item anywhere in a ListView control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list.  Use \cf2 dcl_ListView_SetItemImage \cf0 to set the icons of any column cell.
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
+\par \par \b Note:\b0 \par Create list in the following manner: \par 
           (List (List x y ...) (List x y ...) ...)
 \par We have found ObjectARX does not always like lists created as follows:
 \par          '(x y ...) (x y ...) ... 
@@ -163,7 +163,7 @@ FillList (For Report Style)
 dcl_ListView_
 [Desc]
 This method will clear and fill a ListView control with multiple rows and will fill in the cells in each row according to how many columns have been previously setup. 
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
+\par \par \b Note:\b0 \par Create list in the following manner: \par 
           (List (List x y ...) (List x y ...) ...)
 \par We have found ObjectARX does not always like lists created as follows:
 \par          '(x y ...) (x y ...) ... 
@@ -191,12 +191,12 @@ ProjectFileName
 
 
 [Method]
-FillList 
+FillList
 [Prefix]
 dcl_ListView_
 [Desc]
 This method will clear and fill a ListView control with multiple items. 
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
+\par \par \b Note:\b0 \par Create list in the following manner: \par 
           (List (List x y ...) (List x y ...) ...)
 \par We have found ObjectARX does not always like lists created as follows:
 \par          '(x y ...) (x y ...) ... 

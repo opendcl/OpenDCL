@@ -43,32 +43,13 @@ struct UpdateNotificationParams_t
 
 
 static LPCSTR constructPostData( const UpdateCheckParams_t& Params );
+static bool CheckForUpdates( const UpdateCheckParams_t& Params, UpdateNotificationParams_t* pResponse = NULL );
 static DWORD WINAPI BackgroundCheckForUpdates( LPVOID pvParam );
 static DWORD WINAPI BackgroundUpdateNotification( LPVOID pvParam );
 static LRESULT CALLBACK TrayIconWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 static ATOM trayIconWndClass();
 static CStringA UrlEncode( CStringA sUnsafe );
 static bool isUsingShellV1();
-
-
-class CTrayIconWnd
-{
-	HICON mhIcon;
-	CString msNotification;
-	CString msBubbleAction;
-	HWND mhWnd;
-	NOTIFYICONDATA mstNI;
-	bool mbUsingShellV1;
-	bool mbDeleting;
-public:
-	CTrayIconWnd();
-	virtual ~CTrayIconWnd();
-	HWND window() const { return mhWnd; }
-	LRESULT ProcessMessage( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
-protected:
-	NOTIFYICONDATA& GetNIStruct( bool& bUsingShellV1 );
-	void SetIcon( HICON hIcon );
-};
 
 
 ATOM trayIconWndClass()
@@ -178,10 +159,8 @@ bool isUsingShellV1()
 	return bUsingShellV1;
 }
 
-DWORD WINAPI BackgroundCheckForUpdates( LPVOID pvParam )
+bool CheckForUpdates( const UpdateCheckParams_t& Params, UpdateNotificationParams_t* pResponse /*= NULL*/ )
 {
-	UpdateCheckParams_t Params( *(UpdateCheckParams_t*)pvParam );
-	delete (UpdateCheckParams_t*)pvParam;
 	bool bFailed = true;
 	try
 	{
@@ -227,7 +206,17 @@ DWORD WINAPI BackgroundCheckForUpdates( LPVOID pvParam )
 						if( InternetReadFile( hRequest, sResponse.GetBuffer( 512 ), 511, &cbRead ) )
 						{
 							sResponse.ReleaseBufferSetLength( cbRead );
-							if( !sResponse.IsEmpty() )
+							if( sResponse.IsEmpty() )
+							{ //there is no update available
+								if( pResponse )
+								{
+									pResponse->sTitle.Empty();
+									pResponse->sMessage.Empty();
+									pResponse->sAction.Empty();
+								}
+								bFailed = false;
+							}
+							else
 							{
 								//If the response is not empty, it is assumed to be in a pseudo-XML format
 								static const CHAR szAttrNotification[] = "<Notification>";
@@ -272,15 +261,25 @@ DWORD WINAPI BackgroundCheckForUpdates( LPVOID pvParam )
 										if( idxActionEnd >= 0 )
 											sAction = sAction.Left( idxActionEnd );
 									}
-									UpdateNotificationParams_t* pParams = new UpdateNotificationParams_t( sTitle, sMessage, sAction );
-									DWORD dwThreadId;
-									HANDLE hThread = CreateThread( NULL, 4096, BackgroundUpdateNotification, pParams, 0, &dwThreadId );
-									if( !hThread )
-										delete pParams;
+									if( pResponse )
+									{
+										pResponse->sTitle = sTitle;
+										pResponse->sMessage = sMessage;
+										pResponse->sAction = sAction;
+										bFailed = false;
+									}
 									else
 									{
-										CloseHandle( hThread );
-										bFailed = false;
+										UpdateNotificationParams_t* pParams = new UpdateNotificationParams_t( sTitle, sMessage, sAction );
+										DWORD dwThreadId;
+										HANDLE hThread = CreateThread( NULL, 4096, BackgroundUpdateNotification, pParams, 0, &dwThreadId );
+										if( !hThread )
+											delete pParams;
+										else
+										{
+											CloseHandle( hThread );
+											bFailed = false;
+										}
 									}
 								}
 							}
@@ -295,6 +294,14 @@ DWORD WINAPI BackgroundCheckForUpdates( LPVOID pvParam )
 	}
 	catch( ... )
 	{}
+	return !bFailed;
+}
+
+DWORD WINAPI BackgroundCheckForUpdates( LPVOID pvParam )
+{
+	UpdateCheckParams_t Params( *(UpdateCheckParams_t*)pvParam );
+	delete (UpdateCheckParams_t*)pvParam;
+	CheckForUpdates( Params );
 	return 0;
 }
 
@@ -415,6 +422,15 @@ LRESULT CALLBACK TrayIconWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 		}
 		case WM_DESTROY:
 		{
+			NOTIFYICONDATA NI;
+			ZeroMemory( &NI, sizeof(NI) );
+		#ifdef NOTIFYICONDATA_V1_SIZE
+			NI.cbSize = (isUsingShellV1()? NOTIFYICONDATA_V1_SIZE : sizeof(NOTIFYICONDATA));
+		#else
+			NI.cbSize = sizeof(NOTIFYICONDATA);
+		#endif //NOTIFYICONDATA_V1_SIZE
+			NI.hWnd = hwnd;
+			NI.uID = 1;
 			Shell_NotifyIcon( NIM_DELETE, &NI );
 			delete (UpdateNotificationParams_t*)GetWindowLongPtr( hwnd, GWLP_USERDATA );
 			break;

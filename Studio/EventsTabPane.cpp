@@ -611,19 +611,7 @@ CString CEventsTabPane::GetEvent( PropertyId nEventId )
 		sEventSymbol = m_pControl->GetStrProperty(nEventId); 
 	if( sEventSymbol.IsEmpty() )
 	{
-		CString sEventName;
-		if (m_pControl->GetType() != CtlForm)
-		{
-			sEventName = m_pControl->GetStrProperty( nGlobalVarName );
-			if( sEventName.IsEmpty() )
-				sEventName = m_pControl->GetKeyPath();
-		}
-		else
-		{
-			sEventName = m_pControl->GetStrProperty( nGlobalVarName );
-			if( sEventName.IsEmpty() )
-				sEventName = m_pControl->GetOwnerForm()->GetKeyPath();
-		}
+		CString sEventName = m_pControl->GetVarName();
 		CString sItemText;
 		m_EventsTree.GetText(m_EventsTree.GetCurSel(), sItemText);
 		sEventSymbol.Format( _T("c:%s_On%s"), (LPCTSTR)sEventName, (LPCTSTR)sItemText );

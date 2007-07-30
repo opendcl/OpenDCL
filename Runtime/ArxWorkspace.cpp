@@ -277,7 +277,7 @@ bool CArxWorkspace::UpdateGlobalLispSymbols() const
 		assert( pDialog->GetSourceForm() != NULL);
 		if( !pDialog || !pDialog->GetSourceForm() )
 			continue;
-		CString sVarName = pDialog->GetSourceForm()->GetControlProperties()->GetStrProperty(nGlobalVarName);
+		CString sVarName = pDialog->GetSourceForm()->GetVarName();
 		if (!sVarName.IsEmpty())
 			SetLispSymbol(sVarName, (long)pDialog->GetSourceForm());
 		pDialog->GetControlPane().SetGlobalLispSymbols();

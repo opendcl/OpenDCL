@@ -45,6 +45,7 @@ class CDockingDialog : public CAdUiDockControlBar
 	bool mbHiding;
 	bool mbTrackingMouse;
 	bool mbInMenuLoop;
+	HWND mhwndKeyboardFocus;
 
 public:
 	int					m_FloatingHeight;		
@@ -98,6 +99,7 @@ protected:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
 	afx_msg void PostNcDestroy();
+	afx_msg void OnCaptureChanged(CWnd* pWnd);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);

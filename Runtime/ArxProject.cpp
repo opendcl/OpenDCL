@@ -60,20 +60,13 @@ bool CArxProject::SetProjectLispSymbols( bool bResetToNil /*= false*/ ) const
 			continue;
 		if( pDclForm->GetParentForm() )
 			continue; //ignore child forms, since they will use the same name as their parent
-		CDclControlObject* pPropertiesControl = pDclForm->GetControlProperties();
-		if( pPropertiesControl )
+		CString sVarName = pDclForm->GetVarName();
+		if( !sVarName.IsEmpty() )
 		{
-			// Get the variable name
-			CString sVarName = pDclForm->GetControlProperties()->GetStrProperty( nGlobalVarName );
-			if( sVarName.IsEmpty() )
-				sVarName = pDclForm->GetKeyPath();
-			if( !sVarName.IsEmpty() )
-			{
-				if( bResetToNil )
-					theArxWorkspace.ResetLispSymbol( sVarName );
-				else
-					theArxWorkspace.SetLispSymbol( sVarName, (long)pDclForm );
-			}
+			if( bResetToNil )
+				theArxWorkspace.ResetLispSymbol( sVarName );
+			else
+				theArxWorkspace.SetLispSymbol( sVarName, (long)pDclForm );
 		}
 	}
 	return true;

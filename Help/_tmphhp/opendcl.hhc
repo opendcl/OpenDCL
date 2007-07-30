@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+<param name="ExWindow Styles" value="0x800225">
+<param name="Window Styles" value="0x800225">
+</OBJECT>
+<UL>
+<LI>	<OBJECT type="text/sitemap">	<param name="Name" value="Introduction">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<UL>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Welcome">	<PARAM name="Local" value="welcome.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="What's New">	<PARAM name="Local" value="whatsnew.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Installation">	<PARAM name="Local" value="installation.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Getting Started">	<PARAM name="Local" value="morehelp.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+</UL>
+<LI>	<OBJECT type="text/sitemap">	<param name="Name" value="Getting Oriented">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<UL>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Demonstrating OpenDCL">	<PARAM name="Local" value="demonstratingopendcl.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="The Editor">	<PARAM name="Local" value="editorworkspace.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Dialog Types">	<PARAM name="Local" value="dialogboxstyles.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="The OpenDCL Toolkit">	<PARAM name="Local" value="toolbar.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="The Project Window">	<PARAM name="Local" value="theprojectwindows.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Property Wizards">	<PARAM name="Local" value="propertywizards.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Controlling Properties and Events">	<PARAM name="Local" value="propertywindow.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="The Object Browser">	<PARAM name="Local" value="objectbrowser.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Editor Options">	<PARAM name="Local" value="opendcloptions.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Create a Dialog">	<PARAM name="Local" value="creatingyourfirstdialogbox.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+</UL>
+<LI>	<OBJECT type="text/sitemap">	<param name="Name" value="Using OpenDCL">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<UL>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Form and Control Naming">	<PARAM name="Local" value="varnames.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Loading Projects and Forms">	<PARAM name="Local" value="loadingforms.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Managing Events">	<PARAM name="Local" value="eventhandlingcode.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Picture Folder">	<PARAM name="Local" value="picturefolder.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Using Drag and Drop">	<PARAM name="Local" value="draganddrop.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Error Handling">	<PARAM name="Local" value="errorhandling.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Cancel Close">	<PARAM name="Local" value="aboutcancelclose.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="OpenDCL MessageBox">	<PARAM name="Local" value="alertvsodcl_messagebox.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Tips and Tricks">	<PARAM name="Local" value="tipsandtricks.htm">	<PARAM name="ImageNumber" value="1">	</OBJECT>
+<UL>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Hiding Controls">	<PARAM name="Local" value="abouthidingcontrols.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Disabling Controls">	<PARAM name="Local" value="aboutdisablecontrols.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Set Dialog Property">	<PARAM name="Local" value="aboutsetproperty.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Multiple Dialog Activation">	<PARAM name="Local" value="aboutmultipledialogactivation.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Tree Control">	<PARAM name="Local" value="abouttreecontrol.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="OpenDCL Toolbar">	<PARAM name="Local" value="abouttoolbars.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Create List of Images">	<PARAM name="Local" value="aboutlistofimages.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Option Button Separation">	<PARAM name="Local" value="aboutoptionbuttons.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Using Entmake">	<PARAM name="Local" value="aboutentmake.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Graphic Button">	<PARAM name="Local" value="aboutgraphicbutton.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="DialogClose">	<PARAM name="Local" value="dialogclose.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+</UL>
+</UL>
+<LI>	<OBJECT type="text/sitemap">	<param name="Name" value="Advanced Topics">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<UL>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Picture Box Programming">	<PARAM name="Local" value="pictureboxprogramming.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Using Transparent Controls">	<PARAM name="Local" value="transparentcontrols.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Multiple Document Modes">	<PARAM name="Local" value="sdimode.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Separate Namespaces">	<PARAM name="Local" value="separatenamespace.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="ActiveX Support">	<PARAM name="Local" value="activex.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+</UL>
+<LI>	<OBJECT type="text/sitemap">	<param name="Name" value="Reference">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<UL>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="What's Changed">	<PARAM name="Local" value="whatschanged.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Functions New to Ver. 4.0">	<PARAM name="Local" value="functionsnewtover4.htm">	<PARAM name="ImageNumber" value="1">	</OBJECT>
+<UL>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="CheckBin">	<PARAM name="Local" value="checkbin.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="CloseBin">	<PARAM name="Local" value="closebin.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Control_Dump">	<PARAM name="Local" value="control_dump.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="FlexGrid_GetColor">	<PARAM name="Local" value="flexgrid_getcolor.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Flexgrid_SetColor">	<PARAM name="Local" value="flexgrid_setcolor.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Form_Dump">	<PARAM name="Local" value="form_dump.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="GetVersionEx">	<PARAM name="Local" value="getversionex.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="OpenBin">	<PARAM name="Local" value="openbin.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Project_Dump">	<PARAM name="Local" value="project_dump.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Project_Export">	<PARAM name="Local" value="project_export.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Project_Import">	<PARAM name="Local" value="project_import.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Project_Load">	<PARAM name="Local" value="project_load.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Project_Saveas">	<PARAM name="Local" value="project_saveas.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Project_Unload">	<PARAM name="Local" value="project_unload.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="ReadBin">	<PARAM name="Local" value="readbin.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="SetAutoUpdateCheck">	<PARAM name="Local" value="setautoupdatecheck.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="UpdateCheck">	<PARAM name="Local" value="updatecheck.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="WriteBin">	<PARAM name="Local" value="writebin.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+</UL>
+<LI>	<OBJECT type="text/sitemap">	<param name="Name" value="Additional (Bonus) Functions">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<UL>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="ActivateEmail">	<PARAM name="Local" value="odcl_activateemail.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="BrowseFolder">	<PARAM name="Local" value="odcl_browsefolder.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="GetColorValue">	<PARAM name="Local" value="odcl_getcolorvalue.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="GetLinetype">	<PARAM name="Local" value="odcl_getlinetype.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="GetLineWeight">	<PARAM name="Local" value="getlineweight.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="GetMouseCoords">	<PARAM name="Local" value="getmousecoords.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="GetPictureSize">	<PARAM name="Local" value="odcl_getpicturesize.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="GetScreenSize">	<PARAM name="Local" value="odcl_getscreensize.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="GetVersion">	<PARAM name="Local" value="odcl_getversion.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="HideErrorMsgBox">	<PARAM name="Local" value="odcl_hideerrormsgbox.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="LoadProject">	<PARAM name="Local" value="odcl_loadproject.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="MessageBox">	<PARAM name="Local" value="odcl_messagebox.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="MultiFileDialog">	<PARAM name="Local" value="odcl_multifiledialog.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="RegisterActiveXCtrl">	<PARAM name="Local" value="regactivex.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="SetCmdBarFocus">	<PARAM name="Local" value="odcl_setcmdbarfocus.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="UpdateVarNames">	<PARAM name="Local" value="odcl_updatevarnames.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+</UL>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="OpenDCL Function List">	<PARAM name="Local" value="opendclfunctions.htm">	<PARAM name="ImageNumber" value="1">	</OBJECT>
+<UL>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Undocumented Functions">	<PARAM name="Local" value="undocumentedfunctions.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+</UL>
+<LI>	<OBJECT type="text/sitemap">	<param name="Name" value="Tutorials">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<UL>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="AutoDesk University Tutorial">	<PARAM name="Local" value="audtutorial.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+</UL>
+</UL>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="About">	<PARAM name="Local" value="about.htm">	<PARAM name="ImageNumber" value="1">	</OBJECT>
+<UL>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Acknowledgements">	<PARAM name="Local" value="acknowledgements.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Resources">	<PARAM name="Local" value="resources.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="License">	<PARAM name="Local" value="license.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Glossary">	<PARAM name="Local" value="glossary.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+</UL>
+</UL>
+
+</BODY></HTML>

@@ -3307,16 +3307,16 @@ BOOL CPPHtmlDrawer::IsImageWithShadow(_STRUCT_IMAGE & si)
 ///////////////////////////////////////////////////////////////////////////
 // Map of the styles
 void CPPHtmlDrawer::SetDefaultCssStyles()
-{
+{ //changed "Verdana" font to "MS Shell Dlg" to support international character sets -- 2007-07-23 [ORW]
 	CPPString str = _T("");
-	str += _T("body {font-size: 10pt; color:black; font-family:Verdana}\r\n");
-	str += _T("p {font-size: 10pt; color:black; font-family:Verdana; font-weight:bold}\r\n");
-	str += _T("h1 {font-size: 14pt; color:black; font-family:Verdana; font-weight:bold}\r\n");
-	str += _T("h2 {font-size: 13pt; color:#ff9900; font-family:Verdana; font-weight:bold}\r\n");
-	str += _T("h3 {font-size: 12pt; color:#ff9900; font-family:Arial; font-weight:bold}\r\n");
-	str += _T("h4 {font-size: 10pt; color:black; font-family:Verdana; font-weight:bold}\r\n");
-	str += _T("h5 {font-size: 9pt; color:#ff9900; font-family:Verdana; font-weight:bold}\r\n");
-	str += _T("h6 {font-size: 65%; color:#626262; font-family:Verdana; font-weight:normal}\r\n");
+	str += _T("body {font-size: 10pt; color:black; font-family:\"MS Shell Dlg\"}\r\n");
+	str += _T("p {font-size: 10pt; color:black; font-family:\"MS Shell Dlg\"; font-weight:bold}\r\n");
+	str += _T("h1 {font-size: 14pt; color:black; font-family:\"MS Shell Dlg\"; font-weight:bold}\r\n");
+	str += _T("h2 {font-size: 13pt; color:#ff9900; font-family:\"MS Shell Dlg\"; font-weight:bold}\r\n");
+	str += _T("h3 {font-size: 12pt; color:#ff9900; font-family:\"MS Shell Dlg\"; font-weight:bold}\r\n");
+	str += _T("h4 {font-size: 10pt; color:black; font-family:\"MS Shell Dlg\"; font-weight:bold}\r\n");
+	str += _T("h5 {font-size: 9pt; color:#ff9900; font-family:\"MS Shell Dlg\"; font-weight:bold}\r\n");
+	str += _T("h6 {font-size: 65%; color:#626262; font-family:\"MS Shell Dlg\"; font-weight:normal}\r\n");
 	str += _T("pre {font-size: 9pt; font-family:\"Courier\"; background-color:#fbedbb}\r\n");
 	str += _T("code {color:#990000; font-family:Arial}\r\n");
 	str += _T("a:link {text-decoration:none; color:blue}\r\n");

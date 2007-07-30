@@ -263,6 +263,9 @@ void VdclTab::HideTab(int nIndex)
 		{
 			DeleteItem(i);
 			ResetTooltips();
+			TTabPagePtr pTabPage = GetTabPageAt(GetCurSel());
+			pTabPage->Invalidate();
+			pTabPage->GetControlPane().RecalcLayout();
 			return;
 		}
 	}	

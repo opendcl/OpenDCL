@@ -50,8 +50,8 @@ public:
 	virtual bool GetModuleVersionInfo( DWORD& dwMajor, DWORD&dwMinor, DWORD& dwThird, DWORD& dwFourth, HMODULE hmodTarget = NULL ) const;
 	virtual bool DisplayAlert( UINT nResourceId, HMODULE hmodRes = NULL ) const;
 	virtual bool DisplayStatus( UINT nResourceId, HMODULE hmodRes = NULL ) const;
-	virtual bool GetDwordSetting( DWORD& dwValue, LPCTSTR pszValue );
-	virtual bool SetDwordSetting( DWORD dwValue, LPCTSTR pszValue );
+	virtual bool GetDwordSetting( DWORD& dwValue, LPCTSTR pszValueName );
+	virtual bool SetDwordSetting( DWORD dwValue, LPCTSTR pszValueName );
 	virtual bool IsAutoUpdateCheckEnabled(void) const;
 	virtual bool SetAutoUpdateCheckEnabled( bool bEnabled = true );
 
@@ -60,4 +60,7 @@ public:
 	void SetMessagesSuppressed( bool bSuppressed = true ) { mbMessagesSuppressed = bSuppressed; }
 	const CFontCollection& GetFontCollection(void) const { return mFonts; }
 	CFontCollection& GetFontCollection(void) { return mFonts; }
+
+protected:
+	bool GetDwordSettingImp( DWORD& dwValue, LPCTSTR pszValueName, bool bHKLM = true, bool bX32 = true );
 };

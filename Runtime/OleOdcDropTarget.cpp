@@ -441,7 +441,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 				InvokeMethodLong(
 					m_pThisArxControl->GetStrProperty(nDragnDropFromAutoCAD),
 					(long)hitem,
-					m_pThisArxControl->GetLongProperty(nEventInvoke));
+					(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
 			}
 			else
 			{
@@ -449,7 +449,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 				InvokeMethodString(
 					m_pThisArxControl->GetStrProperty(nDragnDropFromAutoCAD),
 					sTreeItemKey,
-					m_pThisArxControl->GetLongProperty(nEventInvoke));
+					(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
 			}
 		}
 		else
@@ -463,7 +463,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 					pControl->GetOwnerForm()->GetKeyName(),
 					pControl->GetStrProperty(nName),
 					(long)hitem,
-					m_pThisArxControl->GetLongProperty(nEventInvoke));
+					(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
 			}
 			else
 			{
@@ -474,7 +474,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 					pControl->GetOwnerForm()->GetKeyName(),
 					pControl->GetStrProperty(nName),
 					sTreeItemKey,
-					m_pThisArxControl->GetLongProperty(nEventInvoke));
+					(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
 			}
 		}
 	}
@@ -487,7 +487,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 			InvokeMethodPoint(
 				m_pThisArxControl->GetStrProperty(nDragnDropFromAutoCAD),
 				point,
-				m_pThisArxControl->GetLongProperty(nEventInvoke));
+				(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
 		}
 		else
 		{
@@ -498,7 +498,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 				pControl->GetOwnerForm()->GetKeyName(),
 				pControl->GetStrProperty(nName),
 				point,
-				m_pThisArxControl->GetLongProperty(nEventInvoke));
+				(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
 		}
 	}
 	

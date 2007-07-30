@@ -538,7 +538,7 @@ CDclFormObject* CProject::FindDclFormWithVarName( LPCTSTR pszVarName ) const
 	while( pos )
 	{
     CDclFormObject* pDclForm = mDclForms.GetNext( pos );
-    if( pDclForm->GetControlProperties()->GetStrProperty( nGlobalVarName ).CompareNoCase( pszVarName ) == 0 )
+    if( pDclForm->GetVarName().CompareNoCase( pszVarName ) == 0 )
       return pDclForm;
 	}
   return NULL;

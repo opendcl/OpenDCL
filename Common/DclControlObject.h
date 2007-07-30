@@ -146,6 +146,7 @@ public:
 	CString GetKeyName() const;
 	CString GetKeyPath() const;
 	ControlType GetType() const { return mType; }
+	CString GetVarName() const;
 
 protected:
 	DECLARE_SERIAL(CDclControlObject)

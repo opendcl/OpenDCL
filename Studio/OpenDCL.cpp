@@ -321,7 +321,6 @@ CMDIChildWnd* COpenDCLApp::CreateOrActivateFrame(CDocument* pDoc, CSize ViewSize
 
 COpenDCLView* COpenDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 {
-	CRect rcNewDialog;
 	CMDIChildWnd* pNewFrame;
 	
 	// get the arx object that holds the dialog's properties
@@ -332,23 +331,6 @@ COpenDCLView* COpenDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 	bool bResizable = true;
 	if (pDclForm->GetType() == VdclConfigTab || pDclForm->GetType() == VdclTabForm)
 		bResizable = false;
-
-	if (pDclForm->GetType() == VdclTabForm)
-	{
-		CDclFormObject *pParent = pDclForm->GetParentForm();
-		if (pParent != NULL)
-		{
-			CDclControlObject* pTabCtrl = pParent->FindFirstControlOfType(CtlTabStrip);
-			assert( pTabCtrl != NULL );
-			if( pTabCtrl )
-			{
-				StartupSize.cx = pTabCtrl->GetLongProperty(nWidth);			
-				StartupSize.cy = pTabCtrl->m_ClientHeight + GetSystemMetrics(SM_CYCAPTION);
-			}
-		}
-		else 
-			return NULL;
-	}
 	
 	pNewFrame = CreateOrActivateFrame(theWorkspace.GetActiveDocument()/*m_pMainFrame->GetActiveDocument()*/, StartupSize, bResizable);
 	COpenDCLView* pNewView = (COpenDCLView*)pNewFrame->GetActiveView();
@@ -361,17 +343,16 @@ COpenDCLView* COpenDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 	ASSERT(pNewView != NULL);
 	ASSERT(pNewView->IsKindOf(RUNTIME_CLASS(COpenDCLView)));
 
-	// get the position of the new dialog box
-	pNewFrame->GetWindowRect(rcNewDialog);
-
 	if (pDclForm->UsesClientRect())
 	{
+		CRect rcNewDialog;
+		pNewFrame->GetWindowRect(rcNewDialog);
 		CRect rcView;
 		pNewView->GetClientRect(&rcView);
-		rcNewDialog.right += rcNewDialog.Width() - rcView.Width();
-		rcNewDialog.bottom += rcNewDialog.Height() - rcView.Height();
-		pNewFrame->GetParent()->ScreenToClient(&rcNewDialog);
-		pNewFrame->MoveWindow( &rcNewDialog, TRUE );
+		pNewFrame->SetWindowPos(NULL, -1, -1,
+														rcNewDialog.Width() * 2 - rcView.Width(),
+														rcNewDialog.Height() * 2 - rcView.Height(),
+														SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 
 	if (pDclForm != NULL)

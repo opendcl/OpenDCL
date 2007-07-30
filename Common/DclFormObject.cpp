@@ -772,6 +772,15 @@ CString CDclFormObject::GetKeyPath() const
 	return mpProject->GetKeyName() + _T('_') + GetKeyName();
 }
 
+CString CDclFormObject::GetVarName() const
+{
+	const CDclControlObject* pControlProps = GetControlProperties();
+	assert( pControlProps != NULL );
+	if (!pControlProps)
+		return CString(); //properties have not yet been added!
+	return pControlProps->GetVarName();
+}
+
 INT_PTR CDclFormObject::GetControlCount() const
 {
 	return mDclControls.GetCount();

@@ -9,6 +9,27 @@
 static const TCHAR gszRegVal_AUC[] = _T("AutoUpdateCheck");
 
 
+typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+bool IsWow64()
+{
+#ifdef _WIN64
+	return false;
+#else
+  static BOOL bIsWow64 = FALSE;
+	static bool bAlreadyTested = false;
+	if( !bAlreadyTested )
+	{
+		LPFN_ISWOW64PROCESS fnIsWow64Process =
+			(LPFN_ISWOW64PROCESS)GetProcAddress( GetModuleHandle( _T("KERNEL32") ), "IsWow64Process" );
+    if( fnIsWow64Process )
+			fnIsWow64Process( GetCurrentProcess(), &bIsWow64 );
+		bAlreadyTested = true;
+	}
+	return (bIsWow64 != FALSE);
+#endif //_WIN64
+}
+
+
 CWorkspace::CWorkspace()
 : mbMessagesSuppressed( false )
 {
@@ -90,41 +111,29 @@ bool CWorkspace::DisplayStatus( UINT nResourceId, HMODULE hmodRes /*= NULL*/ ) c
 	return DisplayStatus( LoadResourceString( nResourceId, hmodRes ) );
 }
 
-bool CWorkspace::GetDwordSetting( DWORD& dwValue, LPCTSTR pszValue )
+bool CWorkspace::GetDwordSetting( DWORD& dwValue, LPCTSTR pszValueName )
 {
-	bool bSuccess = false;
-	DWORD dwValueLocal = 0;
-	HKEY hkReg = NULL;
-	if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_CURRENT_USER, GetSettingsRegPath(), 0, KEY_QUERY_VALUE, &hkReg ) )
-	{
-		DWORD dwType = 0;
-		DWORD cbValue = sizeof(dwValueLocal);
-		if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszValue, NULL, &dwType, (BYTE*)&dwValueLocal, &cbValue ) )
-			bSuccess = true;
-		RegCloseKey( hkReg );
-	}
-	if( !bSuccess &&
-			ERROR_SUCCESS == RegOpenKeyEx( HKEY_LOCAL_MACHINE, GetSettingsRegPath(), 0, KEY_QUERY_VALUE, &hkReg ) )
-	{
-		DWORD dwType = 0;
-		DWORD cbValue = sizeof(dwValueLocal);
-		if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszValue, NULL, &dwType, (BYTE*)&dwValueLocal, &cbValue ) )
-			bSuccess = true;
-		RegCloseKey( hkReg );
-	}
-	if( !bSuccess )
-		return false;
-	dwValue = dwValueLocal;
-	return true;
+	if( GetDwordSettingImp( dwValue, pszValueName, false ) )
+		return true;
+	if( GetDwordSettingImp( dwValue, pszValueName, true ) )
+		return true;
+#ifdef _WIN64
+	//check the 64 bit registry view in case the setting is stored there
+	if( GetDwordSettingImp( dwValue, pszValueName, false, false ) )
+		return true;
+	if( GetDwordSettingImp( dwValue, pszValueName, true, false ) )
+		return true;
+#endif //_WIN64
+	return false;
 }
 
-bool CWorkspace::SetDwordSetting( DWORD dwValue, LPCTSTR pszValue )
-{
+bool CWorkspace::SetDwordSetting( DWORD dwValue, LPCTSTR pszValueName )
+{ //always writing to 32-bit registry view
 	bool bSuccess = false;
 	HKEY hkReg = NULL;
-	if( ERROR_SUCCESS == RegCreateKeyEx( HKEY_CURRENT_USER, GetSettingsRegPath(), 0, NULL, 0, KEY_SET_VALUE, NULL, &hkReg, NULL ) )
+	if( ERROR_SUCCESS == RegCreateKeyEx( HKEY_CURRENT_USER, GetSettingsRegPath(), 0, NULL, 0, KEY_SET_VALUE | KEY_WOW64_32KEY, NULL, &hkReg, NULL ) )
 	{
-		if( ERROR_SUCCESS == RegSetValueEx( hkReg, pszValue, 0, REG_DWORD, (BYTE*)&dwValue, sizeof(dwValue) ) )
+		if( ERROR_SUCCESS == RegSetValueEx( hkReg, pszValueName, 0, REG_DWORD, (BYTE*)&dwValue, sizeof(dwValue) ) )
 			bSuccess = true;
 		RegCloseKey( hkReg );
 	}
@@ -192,4 +201,27 @@ CString CWorkspace::FindFile( LPCTSTR pszFilePath ) const
 		}
 	}
 	return sPath;
+}
+
+bool CWorkspace::GetDwordSettingImp( DWORD& dwValue, LPCTSTR pszValueName, bool bHKLM /*= true*/, bool bX32 /*= true*/ )
+{
+	bool bSuccess = false;
+	DWORD dwValueLocal = 0;
+	HKEY hkReg = NULL;
+	if( ERROR_SUCCESS == RegOpenKeyEx( bHKLM? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER,
+																		 GetSettingsRegPath(),
+																		 0,
+																		 KEY_QUERY_VALUE | (bX32? KEY_WOW64_32KEY : 0),
+																		 &hkReg ) )
+	{
+		DWORD dwType = 0;
+		DWORD cbValue = sizeof(dwValueLocal);
+		if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszValueName, NULL, &dwType, (BYTE*)&dwValueLocal, &cbValue ) )
+			bSuccess = true;
+		RegCloseKey( hkReg );
+	}
+	if( !bSuccess )
+		return false;
+	dwValue = dwValueLocal;
+	return true;
 }
