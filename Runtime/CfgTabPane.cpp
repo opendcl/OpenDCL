@@ -60,18 +60,13 @@ CfgTabPane::CfgTabPane( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, Di
 
 CfgTabPane::~CfgTabPane()
 {
-	OnDestroy();
 }
 
 
-/*
-BEGIN_MESSAGE_MAP(CfgTabPane, CAcUiTabExtension)
-	//{{AFX_MSG_MAP(CfgTabPane)
+BEGIN_MESSAGE_MAP(CfgTabPane, CAcUiTabChildDialog)
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-*/
 
 /////////////////////////////////////////////////////////////////////////////
 // CfgTabPane message handlers
@@ -87,11 +82,6 @@ BOOL CfgTabPane::OnTabChanging () {
 	return (TRUE) ;
 }
 
-BOOL CfgTabPane::PreTranslateMessage(MSG* pMsg) 
-{
-	return CWnd::PreTranslateMessage(pMsg);
-}
-
 BOOL CfgTabPane::OnInitDialog() 
 {
 	CAcUiTabExtension::OnInitDialog();
@@ -105,16 +95,16 @@ BOOL CfgTabPane::OnInitDialog()
 	// call method to create the controls
 	UINT nID = 1000;
 	mDialogX.GetControlPane().CreateControls(nID);
-	
-	//  setup for assigning the form it's properties
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 
 	// get the left and top values to center the form on the screen	
 	CPoint pt( (::GetSystemMetrics(SM_CYSCREEN) - rectWindow.Width()) / 2,
 						 (::GetSystemMetrics(SM_CXSCREEN) - rectWindow.Height()) / 2 );
 	
 	// call method to set the start width and position of the form
-	SetWindowPos(NULL, pt.x, pt.y, rectWindow.Width(), rectWindow.Height(), SWP_NOACTIVATE);
+	SetWindowPos(NULL, pt.x, pt.y, rectWindow.Width(), rectWindow.Height(), SWP_NOZORDER | SWP_NOACTIVATE);
+	
+	//  setup for assigning the form it's properties
+	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	
 	// call methods to invoke the event
 	InvokeMethod(pProps->GetStrProperty(nFormEventInitialize), false);	
@@ -144,12 +134,6 @@ void CfgTabPane::OnMainDialogAPPLY()
 	InvokeMethod(pProps->GetStrProperty(nCfgEventApply), false);	
 }
 
-/*BOOL PreTranslateMessage(MSG* pMsg)
-{
-	MSG * nMsg = pMsg;
-	return TRUE;
-}
-*/
 void CfgTabPane::OnMainDialogCancel()
 // This function is called when the main dialog CANCEL button is pressed.
 {
@@ -175,15 +159,11 @@ void CfgTabPane::PostNcDestroy()
 	delete this;
 }
 
-
 void CfgTabPane::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	CAcUiTabExtension::OnShowWindow(bShow, nStatus);
-
-	mDialogX.GetControlPane().RecalcLayout();	
-	// call methods to invoke the event
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod( pProps->GetStrProperty(nFormEventShow), false);	
+	InvokeMethod( mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventShow), false);	
 }
 
 void CfgTabPane::OnDestroy() 

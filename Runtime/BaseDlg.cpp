@@ -25,10 +25,10 @@ CBaseDlg::CBaseDlg(CDclFormObject* pSourceForm, UINT idd, CWnd* pParent /*=NULL*
 , mnInitialX( pParams? pParams->position.x : -1 )
 , mnInitialY( pParams? pParams->position.y : -1 )
 , mbHasTitleBar( pSourceForm->GetControlProperties()->GetBoolProperty( nTitleBar ) )
-, mnMinWidth( pSourceForm->GetControlProperties()->GetLongProperty( nMinDialogWidth ) )
-, mnMinHeight( pSourceForm->GetControlProperties()->GetLongProperty( nMinDialogHeight ) )
-, mnMaxWidth( pSourceForm->GetControlProperties()->GetLongProperty( nMaxDialogWidth ) )
-, mnMaxHeight( pSourceForm->GetControlProperties()->GetLongProperty( nMaxDialogHeight ) )
+, mnMinWidth( 0 )
+, mnMinHeight( 0 )
+, mnMaxWidth( 0 )
+, mnMaxHeight( 0 )
 , mnNCWidth( 0 )
 , mnNCHeight( 0 )
 , mbShowGrip( pSourceForm->GetControlProperties()->GetBoolProperty( nResizable ) )
@@ -53,6 +53,17 @@ void CBaseDlg::SetMinMaxSize( const CSize& szMin, const CSize& szMax )
 	mnMinHeight = szMin.cy;
 	mnMaxWidth = szMax.cx;
 	mnMaxHeight = szMax.cy;
+	if( mpSourceForm->UsesClientRect() )
+	{
+		if( mnMinWidth > 0 )
+			mnMinWidth += mnNCWidth;
+		if( mnMinHeight > 0 )
+			mnMinHeight += mnNCHeight;
+		if( mnMaxWidth > 0 )
+			mnMaxWidth += mnNCWidth;
+		if( mnMaxHeight > 0 )
+			mnMaxHeight += mnNCHeight;
+	}
 }
 
 void CBaseDlg::SavePosition()
@@ -134,27 +145,19 @@ BOOL CBaseDlg::OnInitDialog()
 	mnNCHeight = rectWindow.Height() - rectClient.Height();
 	rectWindow.right = rectWindow.left + pFormProps->GetLongProperty( nWidth );
 	rectWindow.bottom = rectWindow.top + pFormProps->GetLongProperty( nHeight );
-	CSize szMin( pFormProps->GetLongProperty( nMinDialogWidth ), pFormProps->GetLongProperty( nMinDialogHeight ) );
-	CSize szMax( pFormProps->GetLongProperty( nMaxDialogWidth ), pFormProps->GetLongProperty( nMaxDialogHeight ) );
 	bool bUsesClientRect = mpSourceForm->UsesClientRect();
 	if( bUsesClientRect )
 	{
 		rectWindow.right += mnNCWidth;
 		rectWindow.bottom += mnNCHeight;
-		if( szMin.cx > 0 )
-			szMin.cx += mnNCWidth;
-		if( szMin.cy > 0 )
-			szMin.cy += mnNCHeight;
-		if( szMax.cx > 0 )
-			szMax.cx += mnNCWidth;
-		if( szMax.cy > 0 )
-			szMax.cy += mnNCHeight;
 	}
 
 	CDialog::OnInitDialog();
 
 	SetWindowText( pFormProps->GetStrProperty( nTitleBarText ) );
 	SetTitleBarIcon( pFormProps->GetLongProperty( nIcon ) );
+	CSize szMin( pFormProps->GetLongProperty( nMinDialogWidth ), pFormProps->GetLongProperty( nMinDialogHeight ) );
+	CSize szMax( pFormProps->GetLongProperty( nMaxDialogWidth ), pFormProps->GetLongProperty( nMaxDialogHeight ) );
 	SetMinMaxSize( szMin, szMax );
 
 	//create the control pane and the design time controls
@@ -182,35 +185,6 @@ BOOL CBaseDlg::OnInitDialog()
 	{
 		rectWindow.right = rectWindow.left + rectSaved.Width();
 		rectWindow.bottom = rectWindow.top + rectSaved.Height();
-	}
-
-	if( mnMinWidth > 0 )
-	{
-		if( bUsesClientRect )
-			mnMinWidth += mnNCWidth;
-		if( rectWindow.Width() < mnNCWidth )
-			rectWindow.right = rectWindow.left + mnMinWidth;
-	}
-	if( mnMaxWidth > 0 )
-	{
-		if( mnMaxWidth > 0 )
-			mnMaxWidth += mnNCWidth;
-		if( rectWindow.Width() > mnMaxWidth )
-			rectWindow.right = rectWindow.left + mnMaxWidth;
-	}
-	if( mnMinHeight > 0 )
-	{
-		if( bUsesClientRect )
-			mnMinHeight += mnNCHeight;
-		if( rectWindow.Height() < mnNCHeight )
-			rectWindow.bottom = rectWindow.top + mnMinHeight;
-	}
-	if( mnMaxHeight > 0 )
-	{
-		if( mnMaxHeight > 0 )
-			mnMaxHeight += mnNCHeight;
-		if( rectWindow.Height() > mnMaxHeight )
-			rectWindow.bottom = rectWindow.top + mnMaxHeight;
 	}
 	MoveWindow( &rectWindow, FALSE );
 	UpdateGripPos();

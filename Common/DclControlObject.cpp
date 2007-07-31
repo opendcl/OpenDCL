@@ -451,10 +451,14 @@ void CDclControlObject::Serialize(CArchive& ar)
 	if (!ar.IsStoring())
 	{
 		// remove any properties that shouldn't have been persisted or that were added erroneously in the past
-		CDclFormObject* pOwnerForm = mpOwner;
-		while( pOwnerForm->GetParentForm() )
-			pOwnerForm = pOwnerForm->GetParentForm(); //get top level parent
-		DclFormType eFormType = pOwnerForm->GetType();
+		DclFormType eFormType = VdclInvalid;
+		if( mpOwner )
+		{
+			CDclFormObject* pOwnerForm = mpOwner;
+			while( pOwnerForm->GetParentForm() )
+				pOwnerForm = pOwnerForm->GetParentForm(); //get top level parent
+			eFormType = pOwnerForm->GetType();
+		}
 		POSITION pos = mProperties.GetHeadPosition();
 		while (pos)
 		{
@@ -529,7 +533,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				}
 				break;
 			case CtlForm:
-				if( mpOwner->GetParentForm() )
+				if( mpOwner && mpOwner->GetParentForm() )
 				{
 					switch( nID )
 					{
@@ -555,6 +559,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 					{
 					case nCustom:
 					case nDockableSides:
+					case nEventOnHelp:
 						mProperties.RemoveAt(posAt);
 						continue;
 					}

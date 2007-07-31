@@ -151,7 +151,6 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		AddControlEvent( pDclControl, nCfgEventCancel );
 		AddControlEvent( pDclControl, nCfgEventHelp );
 		AddControlEvent( pDclControl, nCfgEventOK );
-		AddControlEvent( pDclControl, nEventOnHelp );
 		break;
 	case VdclFileDialog:
 		AddDefaultFormName( pDclControl );

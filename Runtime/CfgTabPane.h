@@ -50,7 +50,6 @@ public:
 	CDialogObject& GetDialogObject() { return mDialogX; }
 	const CDialogObject& GetDialogObject() const { return mDialogX; }
 
-	//virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual void OnMainDialogAPPLY();
   virtual void OnMainDialogCancel();
   virtual void OnMainDialogOK();
@@ -60,10 +59,12 @@ public:
 
 	// Overrides
 protected:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual void PostNcDestroy();
 
 	// Implementation
+protected:
+	DECLARE_MESSAGE_MAP()
+
 protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
