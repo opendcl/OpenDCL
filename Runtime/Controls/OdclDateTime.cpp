@@ -15,22 +15,19 @@ static char THIS_FILE[] = __FILE__;
 // OdclDateTime
 
 OdclDateTime::OdclDateTime()
+: mbrushBackground( ::GetSysColor(COLOR_BTNFACE) )
 {
-	m_pStaticBrush = new CBrush();
 	m_BackColor = ::GetSysColor(COLOR_BTNFACE);
 	m_DefBackColor = m_BackColor;
-	m_pStaticBrush->CreateSolidBrush(m_BackColor);
 	m_ForeColor = ::GetSysColor(COLOR_WINDOWTEXT);
 	m_DefForeColor = m_ForeColor;
 	m_UseBackColor = true;
-
 	m_DefaultBackColor = m_BackColor;
 }
 
 OdclDateTime::~OdclDateTime()
 {
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
+	mbrushBackground.DeleteObject();
 }
 
 
@@ -47,12 +44,9 @@ END_MESSAGE_MAP()
 
 void OdclDateTime::SetBkColor(COLORREF lColor)
 {
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
-	m_pStaticBrush = new CBrush();
-	m_pStaticBrush->CreateSolidBrush(lColor);
 	m_BackColor = lColor;
-	
+	mbrushBackground.DeleteObject();
+	mbrushBackground.CreateSolidBrush(m_BackColor);
 	if (m_DefForeColor == m_DefForeColor && m_DefBackColor == m_BackColor)
 		m_UseBackColor = false;
 	else
@@ -71,14 +65,11 @@ void OdclDateTime::SetForeColor(COLORREF lColor)
 HBRUSH OdclDateTime::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
 	if (!IsWindowEnabled() || !m_UseBackColor)
-	{		
 		return NULL;
-	}
 	
 	pDC->SetBkColor(m_BackColor);	
 	pDC->SetTextColor(m_ForeColor);
-	pDC->SelectObject(m_pStaticBrush);
-	return (HBRUSH)(m_pStaticBrush->GetSafeHandle());
+	return mbrushBackground;
 }
 
 BOOL OdclDateTime::PreTranslateMessage(MSG* pMsg) 

@@ -23,7 +23,6 @@
 
 static CString FindTabCaption(CDclFormObject *pDclTab)
 {
-	// do loop to add all the tree items
 	for (int i=0; i < pDclTab->GetProject()->GetDclFormList().GetCount(); i++)
 	{
 		POSITION pos = pDclTab->GetProject()->GetDclFormList().FindIndex(i);
@@ -321,10 +320,7 @@ CMDIChildWnd* COpenDCLApp::CreateOrActivateFrame(CDocument* pDoc, CSize ViewSize
 
 COpenDCLView* COpenDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 {
-	CMDIChildWnd* pNewFrame;
-	
-	// get the arx object that holds the dialog's properties
-	CDclControlObject *pDclProperties = pDclForm->GetControlProperties();
+	CDclControlObject* pDclProperties = pDclForm->GetControlProperties();
 	CSize StartupSize(pDclProperties->GetLongProperty(nWidth), pDclProperties->GetLongProperty(nHeight));
 	
 	// create the new view
@@ -332,7 +328,7 @@ COpenDCLView* COpenDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
 	if (pDclForm->GetType() == VdclConfigTab || pDclForm->GetType() == VdclTabForm)
 		bResizable = false;
 	
-	pNewFrame = CreateOrActivateFrame(theWorkspace.GetActiveDocument()/*m_pMainFrame->GetActiveDocument()*/, StartupSize, bResizable);
+	CMDIChildWnd* pNewFrame = CreateOrActivateFrame(theWorkspace.GetActiveDocument()/*m_pMainFrame->GetActiveDocument()*/, StartupSize, bResizable);
 	COpenDCLView* pNewView = (COpenDCLView*)pNewFrame->GetActiveView();
 
 	// set the dcl pointers

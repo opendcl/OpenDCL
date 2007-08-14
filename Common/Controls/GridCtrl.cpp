@@ -357,6 +357,7 @@ void CGridCtrl::DrawOptionButton(CDC* pDC, CRect rc, bool bPressed, COLORREF bac
 		if (bSelected)
 			SetPixel(pDC->m_hDC, nX-2, nY-3, backColor);
 		
+		::DeleteObject(SelectObject(pDC->m_hDC, OldPen));
 	}
 	else
 	{
@@ -698,15 +699,14 @@ void CGridCtrl::SetCellStyle(int nRow, int nCol, int nStyle)
 
 void CGridCtrl::RefreshCell(int nRow, int nCol) 
 {
-	CRect rc;
-	GetSubItemRect(nRow, nCol, LVIR_BOUNDS, rc);
-	InvalidateRect(&rc, TRUE);
+	CRect rc = GetCurSelRect();
+	InvalidateRect(rc, TRUE);
 }
 
 void CGridCtrl::ShowCurSel() 
 {
 	CRect rc = GetCurSelRect();
-	InvalidateRect(&rc, TRUE);
+	InvalidateRect(rc, TRUE);
 }
 
 void CGridCtrl::SetItemImage( int nRow, int nCol, int nImage)  

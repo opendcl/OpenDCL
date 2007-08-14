@@ -61,7 +61,7 @@ void CAutoRichEditCtrl::SetRTF(CString sRTF)
 /*
 	Callback function to stream an RTF string into the rich edit control.
 */
-DWORD CALLBACK CAutoRichEditCtrl::CBStreamIn(DWORD dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
+DWORD CALLBACK CAutoRichEditCtrl::CBStreamIn(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
 {
 	// We insert the rich text here.
 
@@ -93,7 +93,7 @@ DWORD CALLBACK CAutoRichEditCtrl::CBStreamIn(DWORD dwCookie, LPBYTE pbBuff, LONG
 /*
 	Callback function to stream the RTF string out of the rich edit control.
 */
-DWORD CALLBACK CAutoRichEditCtrl::CBStreamOut(DWORD dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
+DWORD CALLBACK CAutoRichEditCtrl::CBStreamOut(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
 {
 	// Address of our string var is in psEntry
 	CString *psEntry = reinterpret_cast<CString*>(dwCookie);
@@ -353,7 +353,7 @@ void CAutoRichEditCtrl::GetSystemFonts(CStringArray &saFontList)
 	CDC *pDC = GetDC ();
 
 	EnumFonts (pDC->GetSafeHdc(),NULL,(FONTENUMPROC) CBEnumFonts,(LPARAM)&saFontList);//Enumerate
-
+	ReleaseDC(pDC);
 }
 
 BOOL CALLBACK CAutoRichEditCtrl::CBEnumFonts(LPLOGFONT lplf, LPTEXTMETRIC lptm, DWORD dwType, LPARAM lpData)

@@ -115,7 +115,6 @@ void CArxGraphicButtonCtrl::OnClicked()
 			InvokeMethod(GetTemplate()->GetStrProperty(nEventClicked), m_bInvokeWithSendString);
 		}
 	}
-	__super::OnClicked();
 }
 
 void CArxGraphicButtonCtrl::SetDragnDrop(BOOL bRegister)

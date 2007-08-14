@@ -365,7 +365,7 @@ BOOL VdclComboBox::PreTranslateMessage(MSG* pMsg)
 	{
 		m_bAutoComplete = TRUE;
 
-		int nVirtKey = (int) pMsg->wParam;
+		WPARAM nVirtKey = pMsg->wParam;
 		if (nVirtKey == VK_DELETE || nVirtKey == VK_BACK)
 			m_bAutoComplete = false;
 	}

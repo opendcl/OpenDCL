@@ -15,19 +15,17 @@
 // VdclStatic
 
 VdclStatic::VdclStatic()
+: mbrushBackground( GetRGBColor(-16) )
 {
 	// No tooltip created
 	m_ToolTip.m_hWnd = NULL;
-	m_pStaticBrush = new CBrush();
-	
 	m_BkColor = GetRGBColor(-16);
-	m_pStaticBrush->CreateSolidBrush(m_BkColor);
 	m_ForeColor = GetRGBColor(-19);
-	
 }
 
 VdclStatic::~VdclStatic()
 {
+	mbrushBackground.DeleteObject();
 }
 
 
@@ -57,17 +55,15 @@ BOOL VdclStatic::OnEraseBkgnd(CDC* pDC)
 {
 	CRect cr;
 	GetClientRect(cr); 
-	pDC->FillRect(&cr, m_pStaticBrush);
-
+	pDC->FillRect(&cr, &mbrushBackground);
 	return TRUE; //CStatic::OnEraseBkgnd(pDC);
 }
+
 void VdclStatic::SetAcadColor(long nColor)
 {
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
-	m_pStaticBrush = new CBrush();
 	m_BkColor = GetRGBColor(nColor);
-	m_pStaticBrush->CreateSolidBrush(m_BkColor);
+	mbrushBackground.DeleteObject();
+	mbrushBackground.CreateSolidBrush(m_BkColor);
 }
 
 
@@ -75,7 +71,6 @@ void VdclStatic::SetForeColor(long nColor)
 {
 	m_ForeColor = GetRGBColor(nColor);
 }
-
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -115,11 +110,7 @@ void VdclStatic::OnDestroy()
 {
 	// delete the tool tip text control object
 	m_ToolTip.DelTool(this, 1);
-	
 	CStatic::OnDestroy();
-	
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
 }
 
 void VdclStatic::OnMouseMove(UINT nFlags, CPoint point) 
@@ -165,12 +156,12 @@ void VdclStatic::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 	
-	dc.SaveDC();
+	int nDCState = dc.SaveDC();
 
 	dc.SetTextColor(m_ForeColor);
 	dc.SetBkColor(m_BkColor);
 	dc.SetBkMode(OPAQUE);
-	dc.SelectObject(m_pStaticBrush);
+	CBrush* pOldBrush = dc.SelectObject(&mbrushBackground);
 
 	// setup the font			
 	CFont *pOldFont = dc.SelectObject(GetFont());
@@ -195,8 +186,8 @@ void VdclStatic::OnPaint()
 	GetWindowText(sText);
 	LPCTSTR lpszString;
 	lpszString = sText;
-	
-	dc.FillRect(rcThis, m_pStaticBrush);
+
+	dc.FillRect(rcThis, &mbrushBackground);
 	if (IsWindowEnabled() == FALSE)
     {
       dc.SetTextColor(GetSysColor(COLOR_3DHIGHLIGHT));
@@ -210,7 +201,7 @@ void VdclStatic::OnPaint()
 
 	  dc.DrawText(lpszString, sText.GetLength(), &rect, dwJustification);
 	  dc.SetBkColor(m_BkColor);
-      dc.SetTextColor(GetSysColor(COLOR_3DSHADOW));
+		dc.SetTextColor(GetSysColor(COLOR_3DSHADOW));
 	  dc.DrawText(lpszString, sText.GetLength(), &rcThis, dwJustification);
     }
 	else
@@ -222,32 +213,25 @@ void VdclStatic::OnPaint()
 	
 	// select old font
 	dc.SelectObject(pOldFont);
-
-
-	dc.RestoreDC(-1);
+	dc.SelectObject(pOldBrush);
+	dc.RestoreDC(nDCState);
 }
 
 HBRUSH VdclStatic::CtlColor ( CDC* pDC, UINT nCtlColor )
 {
 	if (!IsWindowEnabled())
-	{		
 		return NULL;
-	}
 	
 	//pDC->SetBkMode(TRANSPARENT);	
 	pDC->SetTextColor(m_ForeColor);
-	pDC->SelectObject(m_pStaticBrush);
 	pDC->SetBkColor(m_BkColor); // Setting the Color of the Text Background to the one passed by the Dialog
-	nCtlColor = m_BkColor;
-	return (HBRUSH)(m_pStaticBrush->GetSafeHandle());
+	return mbrushBackground;
 	// for tranparent call this next line.
 	return (HBRUSH)::GetStockObject(HOLLOW_BRUSH); 
-	
 }
 
 void VdclStatic::OnSize(UINT nType, int cx, int cy) 
 {
-	
 	CStatic::OnSize(nType, cx, cy);
 	RedrawWindow();
 }

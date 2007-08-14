@@ -276,7 +276,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 			_ltot(sizePic.cy, Value, 10);
 			m_DispHeight.SetWindowText(Value);
 			// set the background color of the image list
-			GetImageList().SetBkColor(RGB(255,192,192));		
+			GetImageList().SetBkColor(RGB(255,255,255));		
 			
 		}
 		

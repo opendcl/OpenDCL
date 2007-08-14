@@ -520,6 +520,9 @@ bool RetrieveProjectFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CProject*& pPro
 	case RTLONG:
 		pProject = (CProject*)pArgs->resval.rlong;
 		break;
+	case RTENAME:
+		pProject = (CProject*)pArgs->resval.rlname[0];
+		break;
 	case RTSTR:
 		pProject = theArxWorkspace.FindProject( pArgs->resval.rstring );
 		break;
@@ -548,6 +551,9 @@ bool RetrieveFormFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDclFormObject*& p
 		break;
 	case RTLONG:
 		pForm = (CDclFormObject*)pArgs->resval.rlong;
+		break;
+	case RTENAME:
+		pForm = (CDclFormObject*)pArgs->resval.rlname[0];
 		break;
 	case RTSTR:
 		{
@@ -589,6 +595,9 @@ bool RetrieveControlFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDclControlObje
 		break;
 	case RTLONG:
 		pControl = (CDclControlObject*)pArgs->resval.rlong;
+		break;
+	case RTENAME:
+		pControl = (CDclControlObject*)pArgs->resval.rlname[0];
 		break;
 	case RTSTR:
 		{
@@ -950,9 +959,17 @@ public:
 		msDialogToBeShown = pArgs->resval.rstring;
 		pArgs = pArgs->rbnext; //move to the next argument
 
-		if (pArgs->restype != RTLONG)
+		switch (pArgs->restype)
+		{
+		case RTLONG:
+			mpProjectToBeShown = (CProject*)pArgs->resval.rlong;
+			break;
+		case RTENAME:
+			mpProjectToBeShown = (CProject*)pArgs->resval.rlname[0];
+			break;
+		default:
 			return RSERR; //wrong argument type
-		mpProjectToBeShown = (CProject*)pArgs->resval.rlong;
+		};
 		assert (mpProjectToBeShown != NULL);
 		pArgs = pArgs->rbnext; //move to the next argument
 
@@ -1959,8 +1976,8 @@ public:
 			else if (pArgs->restype == RTSHORT)
 			{
 				nX = pArgs->resval.rint;
-
 				pArgs = pArgs->rbnext; //move to the next argument
+
 				if (!pArgs)
 					return RSERR; //not enough arguments
 
@@ -2801,6 +2818,9 @@ public:
 		case RTLONG:
 			pControl = (CDclControlObject*)pArgs->resval.rlong;
 			break;
+		case RTENAME:
+			pControl = (CDclControlObject*)pArgs->resval.rlname[0];
+			break;
 		case RTSTR:
 			{
 				pszProject = pArgs->resval.rstring;
@@ -3040,7 +3060,7 @@ public:
 
 		//----- Read the external DWG file
 		AcDbObjectId blockId;
-		AcDbDatabase *pDwg = new AcDbDatabase(Adesk::kFalse);
+		AcDbDatabase *pDwg = new AcDbDatabase(false);
 		Acad::ErrorStatus es = pDwg->readDwgFile (sPath, _SH_DENYNO);
 		if (es == Acad::eOk)
 		{
@@ -3598,8 +3618,10 @@ public:
 		switch (pArgs->restype)
 		{
 		case RTSHORT:
-		case RTLONG:
 			twips = pArgs->resval.rint;
+			break;
+		case RTLONG:
+			twips = pArgs->resval.rlong;
 			break;
 		case RTREAL:
 			twips = (long)pArgs->resval.rreal;
@@ -3611,7 +3633,9 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		acedRetLong (MulDiv (GetDeviceCaps (CDC(), LOGPIXELSX), twips, 1440));
+		CDC dc;
+		acedRetLong (MulDiv (GetDeviceCaps (dc, LOGPIXELSX), twips, 1440));
+		dc.DeleteDC();
 
 		return (RSRSLT) ;
 	}
@@ -3627,8 +3651,10 @@ public:
 		switch (pArgs->restype)
 		{
 		case RTSHORT:
-		case RTLONG:
 			pixels = pArgs->resval.rint;
+			break;
+		case RTLONG:
+			pixels = pArgs->resval.rlong;
 			break;
 		case RTREAL:
 			pixels = (long)pArgs->resval.rreal;
@@ -3640,7 +3666,9 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		acedRetLong (MulDiv (pixels, 1440, GetDeviceCaps (CDC(), LOGPIXELSX)));
+		CDC dc;
+		acedRetLong (MulDiv (pixels, 1440, GetDeviceCaps (dc, LOGPIXELSX)));
+		dc.DeleteDC();
 
 		return (RSRSLT) ;
 	}
@@ -3656,8 +3684,10 @@ public:
 		switch (pArgs->restype)
 		{
 		case RTSHORT:
-		case RTLONG:
 			pixels = pArgs->resval.rint;
+			break;
+		case RTLONG:
+			pixels = pArgs->resval.rlong;
 			break;
 		case RTREAL:
 			pixels = (long)pArgs->resval.rreal;
@@ -3669,7 +3699,9 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		acedRetLong (MulDiv (pixels, 1440, GetDeviceCaps (CDC(), LOGPIXELSY)));
+		CDC dc;
+		acedRetLong (MulDiv (pixels, 1440, GetDeviceCaps (dc, LOGPIXELSY)));
+		dc.DeleteDC();
 
 		return (RSRSLT) ;
 	}
@@ -3685,8 +3717,10 @@ public:
 		switch (pArgs->restype)
 		{
 		case RTSHORT:
-		case RTLONG:
 			twips = pArgs->resval.rint;
+			break;
+		case RTLONG:
+			twips = pArgs->resval.rlong;
 			break;
 		case RTREAL:
 			twips = (long)pArgs->resval.rreal;
@@ -3698,7 +3732,9 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		acedRetLong (MulDiv (GetDeviceCaps (CDC(), LOGPIXELSX), twips, 1440));
+		CDC dc;
+		acedRetLong (MulDiv (GetDeviceCaps (dc, LOGPIXELSX), twips, 1440));
+		dc.DeleteDC();
 
 		return (RSRSLT) ;
 	}
@@ -3714,8 +3750,10 @@ public:
 		switch (pArgs->restype)
 		{
 		case RTSHORT:
-		case RTLONG:
 			lRed = pArgs->resval.rint;
+			break;
+		case RTLONG:
+			lRed = pArgs->resval.rlong;
 			break;
 		default:
 			return RSERR; //invalid argument type
@@ -3728,8 +3766,10 @@ public:
 			switch (pArgs->restype)
 			{
 			case RTSHORT:
-			case RTLONG:
 				lGreen = pArgs->resval.rint;
+				break;
+			case RTLONG:
+				lGreen = pArgs->resval.rlong;
 				break;
 			default:
 				return RSERR; //invalid argument type
@@ -3743,8 +3783,10 @@ public:
 			switch (pArgs->restype)
 			{
 			case RTSHORT:
-			case RTLONG:
 				lBlue = pArgs->resval.rint;
+				break;
+			case RTLONG:
+				lBlue = pArgs->resval.rlong;
 				break;
 			default:
 				return RSERR; //invalid argument type
@@ -3846,13 +3888,8 @@ public:
 			return RSERR; //argument expected
 
 		CProject* pProject = NULL;
-		if (pArgs->restype == RTLONG)
-			pProject = (CProject*)pArgs->resval.rlong;
-		else if( pArgs->restype == RTSTR )
-			pProject = theArxWorkspace.FindProject( pArgs->resval.rstring );
-		else
+		if (!RetrieveProjectFromArgs( pArgs, pProject ))
 			return RSERR; //wrong argument type
-
 		if( !pProject )
 			return RSERR; //too many arguments
 
@@ -3880,13 +3917,8 @@ public:
 			return RSERR; //argument expected
 
 		CProject* pProject = NULL;
-		if (pArgs->restype == RTLONG)
-			pProject = (CProject*)pArgs->resval.rlong;
-		else if( pArgs->restype == RTSTR )
-			pProject = theArxWorkspace.FindProject( pArgs->resval.rstring );
-		else
+		if (!RetrieveProjectFromArgs( pArgs, pProject ))
 			return RSERR; //wrong argument type
-
 		if( !pProject )
 			return RSERR; //project not found
 
@@ -4041,13 +4073,8 @@ public:
 			return RSERR; //argument expected
 
 		CProject* pProject = NULL;
-		if (pArgs->restype == RTLONG)
-			pProject = (CProject*)pArgs->resval.rlong;
-		else if( pArgs->restype == RTSTR )
-			pProject = theArxWorkspace.FindProject( pArgs->resval.rstring );
-		else
+		if (!RetrieveProjectFromArgs( pArgs, pProject ))
 			return RSERR; //wrong argument type
-
 		if( !pProject )
 			return RSERR; //project not found
 

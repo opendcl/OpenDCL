@@ -78,7 +78,7 @@ public:
 	int ActivateDclForm( CDclFormObject* pDclObject, DialogParams* pParams );
 	void CloseAllDialogs( DWORD dwMask = (DWORD)-1 );
 	void ResetLispSymbol( LPCTSTR pszLispSymbol ) const;
-	void SetLispSymbol( LPCTSTR pszLispSymbol, long lValue ) const;
+	void SetLispSymbol( LPCTSTR pszLispSymbol, UINT_PTR pValue ) const;
 	bool UpdateGlobalLispSymbols() const;
 	bool OnExtendTabbedDialog( CAdUiTabExtensionManager* pTabXM );
 	bool AddExtensionTab( CDclFormObject* pDclForm, CAdUiTabExtensionManager* pTabXM );

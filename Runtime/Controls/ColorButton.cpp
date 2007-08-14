@@ -10,22 +10,20 @@
 // CClrButton
 
 CClrButton::CClrButton()
+: mbrushBackground( GetRGBColor(-16) )
 {
-	m_pStaticBrush = new CBrush();
-	m_pStaticBrush->CreateSolidBrush(GetRGBColor(-16));
+	m_BackColor = GetRGBColor(-16);
 	m_ForeColor = GetRGBColor(-19);
 }
 
 CClrButton::~CClrButton()
 {
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
+	mbrushBackground.DeleteObject();
 }
 
 
 BEGIN_MESSAGE_MAP(CClrButton, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
-	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -34,11 +32,9 @@ END_MESSAGE_MAP()
 
 void CClrButton::SetAcadColor(long nColor)
 {
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
-	m_pStaticBrush = new CBrush();
 	m_BackColor = GetRGBColor(nColor);
-	m_pStaticBrush->CreateSolidBrush(m_BackColor);
+	mbrushBackground.DeleteObject();
+	mbrushBackground.CreateSolidBrush(m_BackColor);
 }
 
 
@@ -56,6 +52,5 @@ HBRUSH CClrButton::CtlColor(CDC* pDC, UINT nCtlColor)
 	pDC->SetBkMode(TRANSPARENT);	
 	pDC->SetBkColor(m_BackColor);	
 	pDC->SetTextColor(m_ForeColor);
-	pDC->SelectObject(m_pStaticBrush);
-	return (HBRUSH)(m_pStaticBrush->GetSafeHandle());
+	return mbrushBackground;
 }

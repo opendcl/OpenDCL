@@ -66,7 +66,7 @@ bool CArxProject::SetProjectLispSymbols( bool bResetToNil /*= false*/ ) const
 			if( bResetToNil )
 				theArxWorkspace.ResetLispSymbol( sVarName );
 			else
-				theArxWorkspace.SetLispSymbol( sVarName, (long)pDclForm );
+				theArxWorkspace.SetLispSymbol( sVarName, (UINT_PTR)pDclForm );
 		}
 	}
 	return true;

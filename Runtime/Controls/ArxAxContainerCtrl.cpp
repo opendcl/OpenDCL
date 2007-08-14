@@ -22,9 +22,9 @@ CArxAxContainerCtrl::CArxAxContainerCtrl(CDclControlObject* pTemplate, CControlP
 : CAxContainerCtrl(pTemplate, pPane, nID, false)
 , mArxServices( pTemplate )
 {
-	TraceFmt( _T("> CArxAxContainerCtrl::CArxAxContainerCtrl(%s [%08X], [%08X], %s [HWND: %08X]) [this: %08X]\r\n"),
+	TraceFmt( _T("> CArxAxContainerCtrl::CArxAxContainerCtrl(%s [%p], [%p], %s [HWND: %p]) [this: %p]\r\n"),
 		pTemplate->GetKeyPath(), pTemplate, pPane, CString(mpTemplate->GetRuntimeClass()->m_lpszClassName),
-		mpTemplate->GetWindow(), (long)this );
+		mpTemplate->GetWindow(), this );
 
 	if( bCreate ) 
 		Create( pPane->GetHostDialog(), nID );
@@ -32,7 +32,7 @@ CArxAxContainerCtrl::CArxAxContainerCtrl(CDclControlObject* pTemplate, CControlP
 
 CArxAxContainerCtrl::~CArxAxContainerCtrl()
 {
-	TraceFmt( _T("< CArxDialogControl::~CArxDialogControl() [this: %08X]\r\n"), (long)this );
+	TraceFmt( _T("< CArxDialogControl::~CArxDialogControl() [this: %p]\r\n"), this );
 }
 
 
@@ -238,7 +238,7 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_E
 							if (pDisp != NULL)
 							{
 								// create a new long
-								pRB = acutNewRb(RTLONG);	//	create new resbuf
+								pRB = acutNewRb(RTENAME);	//	create new resbuf
 
 								// get the ITypeInfo
 								ITypeInfo *TheInfo = NULL;
@@ -253,7 +253,7 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_E
 
 								// Get the CArxControlObject
 								COleControlObject *pOleObject = pProject->GetOleObject(TheAttr->guid);
-								pRB->resval.rlong = (ULONG)pOleObject;
+								pRB->resval.rlname[0] = (DWORD_PTR)pOleObject;
 
 								// Build up the linked list
 								// Remember that pRBList still points
@@ -261,10 +261,10 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_E
 								pRBList->rbnext = pRB;
 								pRBList = pRB;
 								// create a new long
-								pRB = acutNewRb(RTLONG);	//	create new resbuf
+								pRB = acutNewRb(RTENAME);	//	create new resbuf
 								// set the dispatch as the new long
-								pRB->resval.rlong = (ULONG)pVarArg->pdispVal;
-
+								pRB->resval.rlname[0] = (DWORD_PTR)pVarArg->pdispVal;
+								pRB->resval.rlname[1] = 0;
 							}
 							// Build up the linked list
 							// Remember that pRBList still points

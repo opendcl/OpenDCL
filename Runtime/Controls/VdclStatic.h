@@ -14,9 +14,9 @@ class CDclControlObject;
 
 class VdclStatic : public CStatic
 {
+	CBrush mbrushBackground;
 // Attributes
 public:
-	CBrush *m_pStaticBrush;		
 	COLORREF m_ForeColor;
 	COLORREF m_BkColor;
 	bool m_bTransparent;

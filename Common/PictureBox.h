@@ -20,6 +20,7 @@ public:
 	//void SetPictureID(long sPictureID);
 	void SetPictureBlank();
 	void AutoSize();
+	void SetIcon(HICON hIcon);
 	void SetIcon(UINT nId);
 
 // Attributes

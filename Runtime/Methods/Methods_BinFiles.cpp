@@ -81,7 +81,7 @@ int OpenBinFile()
     //set ISOpen
     pFile->m_bIsOpen = true;
 
-    acedRetLong( (long)pFile );
+    acedRetPointer( pFile );
     return 0;
 }
 
@@ -109,6 +109,16 @@ int WriteBinFile()
         {
             if ( ListData->resval.rlong > 0 )
                 pFile = (CLispFileObject*)ListData->resval.rlong;			
+            else
+            {
+                acedRetNil();
+                return 0; 	
+            }
+        }
+        else if ( ListData->restype == RTENAME )
+        {
+            if ( ListData->resval.rlname[0] > 0 )
+                pFile = (CLispFileObject*)ListData->resval.rlname[0];			
             else
             {
                 acedRetNil();
@@ -364,6 +374,16 @@ int ReadBinFile()
                 return 0; 		
             }
         }
+        else if ( ListData->restype == RTENAME )
+        {
+            if ( ListData->resval.rlname[0] > 0 )
+                pFile = (CLispFileObject*)ListData->resval.rlname[0];			
+            else
+            {
+                acedRetNil();
+                return 0; 	
+            }
+        }
         else
         {
             acedRetVoid();
@@ -563,6 +583,16 @@ int CloseBinFile()
             return 0; 		
         }
     }
+    else if ( ListData->restype == RTENAME )
+    {
+        if ( ListData->resval.rlname[0] > 0 )
+            pFile = (CLispFileObject*)ListData->resval.rlname[0];			
+        else
+        {
+            acedRetNil();
+            return 0; 	
+        }
+    }
     else if (ListData->restype == RTSHORT)
     {
         if (ListData->resval.rlong > 0)
@@ -646,6 +676,16 @@ int CheckBinFile()
         {
             acedRetNil();
             return 0; 		
+        }
+    }
+    else if ( ListData->restype == RTENAME )
+    {
+        if ( ListData->resval.rlname[0] > 0 )
+            pFile = (CLispFileObject*)ListData->resval.rlname[0];			
+        else
+        {
+            acedRetNil();
+            return 0; 	
         }
     }
     else

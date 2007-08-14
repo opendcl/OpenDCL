@@ -244,6 +244,7 @@ void CFontCombo::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->FillRect(rc, &brushFill);
+	brushFill.DeleteObject();
 
 	CString strCurFont,strNextFont;
 	if (lpDIS->itemID >= 0 && lpDIS->itemID < (UINT)GetCount())
@@ -325,9 +326,9 @@ BOOL CFontCombo::EnumerateFonts()
 	if (!EnumFontFamiliesEx(
 			hDC,	// handle to device context
 			&lf,	// pointer to logical font information
-			(FONTENUMPROC)EnumFamScreenCallBackEx,	// pointer to callback function
+			EnumFamScreenCallBackEx,	// pointer to callback function
 			(LPARAM) this,	// application-supplied data
-			(DWORD) 0))
+			0))
 		return FALSE;
 
 	::ReleaseDC(NULL,hDC);	
@@ -717,7 +718,7 @@ void CFontCombo::AddFont(CString strName, DWORD dwFlags)
 // N T ALMOND   25/09/98  1.0		Origin
 //
 ////////////////////////////////////////////////////////////////////////////////
-void CFontCombo::OnTimer(UINT nIDEvent) 
+void CFontCombo::OnTimer(UINT_PTR nIDEvent) 
 {
 	// Is combo open
 	if (GetDroppedState( ))
@@ -757,8 +758,8 @@ void CFontCombo::OnTimer(UINT nIDEvent)
 	CComboBox::OnTimer(nIDEvent);
 }
 
-BOOL CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(ENUMLOGFONTEX* pelf, 
-	NEWTEXTMETRICEX* lpntm, int FontType, LPVOID pThis)
+int CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(CONST LOGFONT* lplf, 
+	CONST TEXTMETRIC* lpntm, DWORD FontType, LPARAM pThis)
 
 {
 	// don't put in non-printer raster fonts
@@ -769,7 +770,7 @@ BOOL CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(ENUMLOGFONTEX* pelf
 	
 	if (FontType & TRUETYPE_FONTTYPE)
 	{
-		CString sFontName = pelf->elfLogFont.lfFaceName;
+		CString sFontName = lplf->lfFaceName;
 		dwData = TRUETYPE_FONTTYPE;
 /*
 		//check whether it's an SHX font

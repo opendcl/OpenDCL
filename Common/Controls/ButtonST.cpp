@@ -112,7 +112,9 @@ CButtonST::~CButtonST()
 	if (m_dcBk.m_hDC && m_pbmpOldBk)
 	{
 		m_dcBk.SelectObject(m_pbmpOldBk);
+		m_pbmpOldBk = NULL;
 	} // if
+	m_bmpBk.DeleteObject();
 
 	FreeResources();
 
@@ -1468,14 +1470,14 @@ DWORD CButtonST::SetBitmaps(HBITMAP hBitmapIn, COLORREF crTransColorIn, HBITMAP 
 		m_csBitmaps[0].dwHeight = (DWORD)csBitmapSize.bmHeight;
 
 		// Create grayscale/darker bitmap BEFORE mask (of hBitmapIn)
-		switch ((int)hBitmapOut)
+		switch ((LONG_PTR)hBitmapOut)
 		{
-			case (int)BTNST_AUTO_GRAY:
+			case (LONG_PTR)BTNST_AUTO_GRAY:
 				hBitmapOut = CreateGrayscaleBitmap(hBitmapIn, m_csBitmaps[0].dwWidth, m_csBitmaps[0].dwHeight, crTransColorIn);
 				m_csBitmaps[1].hBitmap = hBitmapOut;
 				crTransColorOut = crTransColorIn;
 				break;
-			case (int)BTNST_AUTO_DARKER:
+			case (LONG_PTR)BTNST_AUTO_DARKER:
 				hBitmapOut = CreateDarkerBitmap(hBitmapIn, m_csBitmaps[0].dwWidth, m_csBitmaps[0].dwHeight, crTransColorIn);
 				m_csBitmaps[1].hBitmap = hBitmapOut;
 				crTransColorOut = crTransColorIn;
@@ -2416,11 +2418,6 @@ DWORD CButtonST::OnDrawBorder(CDC* pDC, CRect* pRect)
 	}
 	else // ...else draw non pressed button
 	{
-		CPen penBtnHiLight(PS_SOLID, 0, GetSysColor(COLOR_BTNHILIGHT)); // White
-		CPen pen3DLight(PS_SOLID, 0, GetSysColor(COLOR_3DLIGHT));       // Light gray
-		CPen penBtnShadow(PS_SOLID, 0, GetSysColor(COLOR_BTNSHADOW));   // Dark gray
-		CPen pen3DDKShadow(PS_SOLID, 0, GetSysColor(COLOR_3DDKSHADOW)); // Black
-
 		if (m_bIsFlat)
 		{
 			if (m_bMouseOnButton && m_bDrawBorder)
@@ -2428,6 +2425,10 @@ DWORD CButtonST::OnDrawBorder(CDC* pDC, CRect* pRect)
 		}
 		else
 		{
+			CPen penBtnHiLight(PS_SOLID, 0, GetSysColor(COLOR_BTNHILIGHT)); // White
+			CPen pen3DLight(PS_SOLID, 0, GetSysColor(COLOR_3DLIGHT));       // Light gray
+			CPen penBtnShadow(PS_SOLID, 0, GetSysColor(COLOR_BTNSHADOW));   // Dark gray
+			CPen pen3DDKShadow(PS_SOLID, 0, GetSysColor(COLOR_3DDKSHADOW)); // Black
 			// Draw top-left borders
 			// White line
 			CPen* pOldPen = pDC->SelectObject(&penBtnHiLight);

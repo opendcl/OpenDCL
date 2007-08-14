@@ -55,9 +55,9 @@ protected:
 	void SetFontInUse(const CString& strFont);
 	CDclControlObject *m_ArxControl;
 public:
-	static BOOL CALLBACK AFX_EXPORT EnumFamScreenCallBackEx(
-	ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int FontType, 
-	LPVOID pThis);
+	static int CALLBACK AFX_EXPORT EnumFamScreenCallBackEx(
+	CONST LOGFONT* lplf, CONST TEXTMETRIC* lpntm, DWORD FontType, 
+	LPARAM pThis);
 
 	// ListCtrl edit data members
 	bool m_bESC;
@@ -99,7 +99,7 @@ protected:
 	afx_msg void OnKillfocus();
 	afx_msg void OnSetfocus();
 	afx_msg void OnCloseUp();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnSelchange();
 	afx_msg void OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);		

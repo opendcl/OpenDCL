@@ -280,7 +280,6 @@ void CProject::ClearProject()
   // clear OLE controls
 	mOleControls.clear();
 
-	mClipBoard.RemoveAll();
   mrsActiveXFiles.RemoveAll();
 }
 
@@ -579,7 +578,6 @@ CDclFormObject* CProject::FindDclTabChildForm( LPCTSTR pszParentFormName, int nT
       return pDclForm;
 	}
   return NULL;
-  return NULL;
 }
 
 size_t CProject::CountDeletedForms() const
@@ -682,10 +680,20 @@ IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 				Serialize( ar );
 				ar.Close();
 			}
+			catch(CException* e)
+			{
+				e->Delete();
+				return statInvalidFormat;
+			}
 			catch(...)
 			{
 				return statInvalidFormat;
 			}
+		}
+		catch(CException* e)
+		{
+			e->Delete();
+			return statFileNotFound;
 		}
 		catch(...)
 		{
@@ -730,11 +738,21 @@ IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 			if( msKeyName.IsEmpty() )
 				SetKeyName( msBaseFileName.SpanExcluding( _T(".") ) );
 		}
+		catch(CException* e)
+		{
+			e->Delete();
+			return statInvalidFormat;
+		}
 		catch(...)
 		{
 			SrcFile.Close();
 			return statInvalidFormat;
 		}
+	}
+	catch(CException* e)
+	{
+		e->Delete();
+		return statFileNotFound;
 	}
 	catch(...)
 	{
@@ -786,6 +804,11 @@ IOStatus CProject::WriteToFile( LPCTSTR pszFilePath )
 			}
 			DestFile.Flush();
 		}
+	}
+	catch(CException* e)
+	{
+		e->Delete();
+		return statFail;
 	}
 	catch(...)
 	{

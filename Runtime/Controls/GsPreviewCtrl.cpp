@@ -70,17 +70,16 @@ void CGsPreviewCtrl::OnPaint()
 		}
 		try
 		{
-		CDC* pdc = &dc;
 		if (mbOrbiting || 
 			(m_pAllowCircles && m_pAllowCircles->GetBooleanValue() == TRUE)
 			)
-			DrawOrbitCircles(pdc);
+			DrawOrbitCircles(&dc);
 		
-		DoHighLight(pdc);
+		DoHighLight(&dc);
 		if (GetFocus() == this && !mbOrbiting && !mbPanning && !mbZooming)
 		{
 			// draw the solid rectangle
-			pdc->DrawFocusRect(m_rcFocus);	
+			dc.DrawFocusRect(m_rcFocus);	
 		}
 		}
 		catch(...)
@@ -92,14 +91,13 @@ void CGsPreviewCtrl::OnPaint()
 	{
 	if (m_BlockName.GetLength() == 0)
 	{
-		CDC* pdc = &dc;		
-		Refresh(pdc);
+		Refresh(&dc);
 
-		DoHighLight(pdc);
+		DoHighLight(&dc);
 		if (GetFocus() == this && !mbOrbiting && !mbPanning)
 		{
 			// draw the solid rectangle
-			pdc->DrawFocusRect(m_rcFocus);
+			dc.DrawFocusRect(m_rcFocus);
 		}	
 	}
 
@@ -126,8 +124,8 @@ void CGsPreviewCtrl::DoHighLight(CDC *pdc)
 		CSize szValue(1,1);
 		rcCell.DeflateRect(szValue);
 		
-		CPen *pPen = new CPen(PS_SOLID, 1, m_HighlightColor);
-		CPen* pOldPen = pdc->SelectObject(pPen);
+		CPen Pen(PS_SOLID, 1, m_HighlightColor);
+		CPen* pOldPen = pdc->SelectObject(&Pen);
 
 		pdc->MoveTo(1, 1);
 		pdc->LineTo(rcCell.Width(), 1);		
@@ -138,7 +136,7 @@ void CGsPreviewCtrl::DoHighLight(CDC *pdc)
 		//pdc->Rectangle(rcCell);
 
 		pdc->SelectObject(pOldPen);			
-		pPen->DeleteObject();	
+		Pen.DeleteObject();
 	}
 	}
 	catch(...)
@@ -191,8 +189,8 @@ void CGsPreviewCtrl::DrawOrbitCircles(CDC* pDC)
 	int eX = cX + nSmallerSize - nOrbitOffset;
 	int eY = cY + nSmallerSize - nOrbitOffset;
 	
-	CPen *pPen = new CPen(PS_SOLID, 1, RGB(0,255,0));
-	CPen* pOldPen = pdc->SelectObject(pPen);
+	CPen Pen(PS_SOLID, 1, RGB(0,255,0));
+	CPen* pOldPen = pdc->SelectObject(&Pen);
 
 	// draw the main circle
 	pdc->MoveTo(sX, sY);
@@ -206,16 +204,13 @@ void CGsPreviewCtrl::DrawOrbitCircles(CDC* pDC)
 	DrawOrbitQuadCircle(pdc, eX, cY);
 	
 	pdc->SelectObject(pOldPen);			
-	pPen->DeleteObject();
-	delete pPen;
+	Pen.DeleteObject();
 
 	if (pDC == NULL)
-		pdc->Detach();
-	
+		ReleaseDC(pdc);
 	}
 	catch(...)
 	{
-		
 		clearAll();
 	}	
 }
@@ -234,13 +229,8 @@ void CGsPreviewCtrl::DrawOrbitQuadCircle(CDC *pdc, int nX, int nY)
 }
 void CGsPreviewCtrl::ClearScreenArea()
 {
-	PAINTSTRUCT ps; 
-	
-	CDC* pdc = BeginPaint(&ps);
-    
-	Refresh(pdc);
-
-	EndPaint(&ps);
+	CPaintDC dc(this);
+	Refresh(&dc);
 }
 
 void CGsPreviewCtrl::Refresh(CDC *pdc)
@@ -252,19 +242,19 @@ void CGsPreviewCtrl::Refresh(CDC *pdc)
 
 	if (m_pStaticBrush != NULL)
 	{
-		// draw the Window background for the cell				
-		pdc->FillRect(rcThis, m_pStaticBrush);
+		// draw the Window background for the cell			
+		CBrush br(m_BackColor);
+		pdc->FillRect(rcThis, &br);
+		br.DeleteObject();
 	}
 	else	
 	{
-		CBrush *pCellBrush = new CBrush;	
-		pCellBrush->CreateSysColorBrush(COLOR_BTNFACE);
-	
 		// draw the Window background for the cell				
-		pdc->FillRect(rcThis, pCellBrush);
+		CBrush br;
+		br.CreateSysColorBrush(COLOR_BTNFACE);
+		pdc->FillRect(rcThis, &br);
 		// delete the brush
-		pCellBrush->DeleteObject();
-		delete pCellBrush;
+		br.DeleteObject();
 	}
 	}
 	catch(...)
@@ -564,7 +554,7 @@ void CGsPreviewCtrl::OnSize(UINT nType, int cx, int cy)
 	{
 		CDC *pdc = GetDC();
 		Refresh(pdc);
-		pdc->Detach();
+		ReleaseDC(pdc);
 	}
 }
 
@@ -594,7 +584,7 @@ BOOL CGsPreviewCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 			CDC *pdc = GetDC();
 			// draw the solid rectangle
 			pdc->DrawFocusRect(m_rcFocus);	
-			pdc->Detach();
+			ReleaseDC(pdc);
 		}
     }
     return TRUE;
@@ -609,7 +599,7 @@ void CGsPreviewCtrl::Zoom(double dZfactor)
 		CDC *pdc = GetDC();
 		// draw the solid rectangle
 		pdc->DrawFocusRect(m_rcFocus);	
-		pdc->Detach();
+		ReleaseDC(pdc);
 	}
 }
 void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
@@ -643,7 +633,7 @@ void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			mbOrbiting = false;
 			SetCapture();
 			//set up the proper cursor
-			::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+			::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 			//::SetCursor(mhPanCursor);
 			//store the start point
 			mStartPt = point;		
@@ -658,7 +648,7 @@ void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			mbOrbiting = false;
 			SetCapture();
 			//set up the proper cursor
-			::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+			::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 			::SetCursor(mhZoomCursor);
 			//store the start point
 			mStartPt = point;					
@@ -674,7 +664,7 @@ void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			mbOrbiting = false;
 			SetCapture();
 			//set up the proper cursor
-			::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+			::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 			::SetCursor(mhPanCursor);
 			//store the start point
 			mStartPt = point;
@@ -688,7 +678,7 @@ void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			mbOrbiting = true;
 			SetCapture();
 			//set up the proper cursor
-			::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+			::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 			::SetCursor(mhOrbitCursor);
 			//store the start point
 			mStartPt = point;
@@ -697,7 +687,7 @@ void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	else
 	{
-		::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+		::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 		::SetCursor(mhArrowCursor);	
 	}
 }
@@ -719,19 +709,19 @@ void CGsPreviewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		{
 		case 2:
 			{	
-				::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+				::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 				::SetCursor(mhPanCursor);
 				break;
 			}
 		case 3:
 			{	
-				::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+				::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 				::SetCursor(mhZoomCursor);
 				break;
 			}
 		default:
 			{	
-				::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+				::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 				::SetCursor(mhArrowCursor);
 				break;
 			}
@@ -790,7 +780,7 @@ void CGsPreviewCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 		mbPanning = true;
 		SetCapture();
 		//set up the proper cursor
-		::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+		::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 		//::SetCursor(mhPanCursor);
 		//store the start point
 		mStartPt = point;
@@ -803,7 +793,7 @@ void CGsPreviewCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 		mbPanning = true;
 		SetCapture();
 		//set up the proper cursor
-		::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+		::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 		::SetCursor(mhPanCursor);
 		//store the start point
 		mStartPt = point;
@@ -830,8 +820,8 @@ void CGsPreviewCtrl::OnMButtonUp(UINT nFlags, CPoint point)
     //end pan
 	ReleaseCapture();
 	mbPanning = false;
-	//::SetClassLong(m_hWnd,GCL_HCURSOR,(long)mhArrowCursor);
-	::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+	//::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,(LONG_PTR)mhArrowCursor);
+	::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 	::SetCursor(mhArrowCursor);
 		
 	ShowCursor(TRUE);
@@ -839,10 +829,7 @@ void CGsPreviewCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 	CDC *pdc = GetDC();
 	// draw the solid rectangle
 	pdc->DrawFocusRect(m_rcFocus);
-	pdc->Detach();	
-
-	
-	
+	ReleaseDC(pdc);
 }
 
 void CGsPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point) 
@@ -861,8 +848,8 @@ void CGsPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		{
 			mbOrbiting = false;
 			mbPanning = false;
-			//::SetClassLong(m_hWnd,GCL_HCURSOR,(long)mhArrowCursor);
-			::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+			//::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,(LONG_PTR)mhArrowCursor);
+			::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 			//::SetCursor(mhArrowCursor);
 		
 			
@@ -877,8 +864,8 @@ void CGsPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			mbPanning = false;
 			mbZooming = false;
 			
-			//::SetClassLong(m_hWnd,GCL_HCURSOR,(long)mhArrowCursor);
-			::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+			//::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,(LONG_PTR)mhArrowCursor);
+			::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 			::SetCursor(mhArrowCursor);
 		
 			
@@ -891,21 +878,21 @@ void CGsPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		{
 		case 2:
 			{	
-				::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+				::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 				::SetCursor(mhPanCursor);
 				ShowCursor(TRUE);
 				break;
 			}
 		case 3:
 			{	
-				::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+				::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 				::SetCursor(mhZoomCursor);
 				ShowCursor(TRUE);
 				break;
 			}
 		default:
 			{	
-				::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+				::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 				::SetCursor(mhArrowCursor);
 				ShowCursor(TRUE);
 				//ReleaseCapture();		
@@ -915,7 +902,7 @@ void CGsPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		/*
 		if (mbZooming == false && mbPanning == false && mbOrbiting == false)
 		{
-			::SetClassLong(m_hWnd,GCL_HCURSOR,NULL);
+			::SetClassLongPtr(m_hWnd,GCLP_HCURSOR,NULL);
 			CStatic::SetCursor(mhArrowCursor);
 			ShowCursor(TRUE);
 			ReleaseCapture();
@@ -1073,8 +1060,7 @@ void CGsPreviewCtrl::OnSetFocus(CWnd* pOldWnd)
 	CDC *pdc = GetDC();
 	// draw the solid rectangle
 	pdc->DrawFocusRect(m_rcFocus);
-	
-	pdc->Detach();
+	ReleaseDC(pdc);
 
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
@@ -1635,9 +1621,7 @@ BOOL CGsPreviewCtrl::DisplayBlock(
 		double dCameraY, 
 		double dCameraZ)
 {
-// m_pLog->WriteString("\r\nDisplayBlock 1");
 	clearAll();
-// m_pLog->WriteString("\r\nDisplayBlock 2");	
 	// if a drawing has been previously loaded
 	if (m_pLoadedDwg && m_FileName == CString())
 	{
@@ -1651,25 +1635,18 @@ BOOL CGsPreviewCtrl::DisplayBlock(
 		}
 		m_pLoadedDwg = NULL;
 	}
-// m_pLog->WriteString("\r\nDisplayBlock 3");	
 	m_BlockName = sBlockName;
     
 	if (sBlockName.GetLength() == 0)
 		return FALSE;
-// m_pLog->WriteString("\r\nDisplayBlock 4");	
     AcDbBlockTableRecord *pRec;
     AcDbBlockTable *pTab;
     Acad::ErrorStatus es;
     AcDbDatabase* pDb;
-// m_pLog->WriteString("\r\nDisplayBlock 5");	
 	if (m_pLoadedDwg != NULL)
-	{
-		// delete it.
 		pDb = m_pLoadedDwg;
-	}
 	else
 		pDb = acdbHostApplicationServices()->workingDatabase(); 
-// m_pLog->WriteString("\r\nDisplayBlock 6");
 
 	if (pDb==NULL)
 	{
@@ -1677,14 +1654,27 @@ BOOL CGsPreviewCtrl::DisplayBlock(
 		m_BlockName = CString();
         return FALSE;
 	}
-  // m_pLog->WriteString("\r\nDisplayBlock 7");	  
+	class AutoDocLock
+	{
+		AcApDocument* mpDoc;
+	public:
+		AutoDocLock( AcApDocument* pDoc ) : mpDoc( pDoc )
+			{
+				if( Acad::eOk != acDocManager->lockDocument( pDoc, AcAp::kWrite ) )
+					mpDoc = NULL;
+			}
+		~AutoDocLock(void)
+			{
+				if( mpDoc )
+					acDocManager->unlockDocument( mpDoc );
+			}
+	} DocLock( acDocManager->curDocument() );
 	if ((es = pDb->getBlockTable(pTab,AcDb::kForRead)) !=Acad::eOk)    
 	{
 		sBlockName = CString();
 		m_BlockName = CString();
 		return FALSE;
 	}
-	// m_pLog->WriteString("\r\nDisplayBlock 8");	
 	if (!pTab->has(sBlockName))
     {
         pTab->close();
@@ -1692,7 +1682,6 @@ BOOL CGsPreviewCtrl::DisplayBlock(
 		m_BlockName = CString();
         return FALSE;
     }
-// m_pLog->WriteString("\r\nDisplayBlock 9");	
     if ((es = pTab->getAt(sBlockName,pRec,AcDb::kForWrite)) !=Acad::eOk)
     {
 		sBlockName = CString();
@@ -1701,34 +1690,6 @@ BOOL CGsPreviewCtrl::DisplayBlock(
 	    return FALSE;
     }
     pTab->close();	
-// m_pLog->WriteString("\r\nDisplayBlock 10");	
-/*
-	AcGePoint3d vertexPts[4];
-    AcDbObjectId lineId, cirId, hatchId;
-    AcDbObjectIdArray dbObjIds;
-    AcDbLine *line;
-
-    vertexPts[0].set(0.0, 0.0, 0.0);
-    vertexPts[1].set(20.0, 0.0, 0.0);
-    vertexPts[2].set(20.0, 10.0, 0.0);
-    vertexPts[3].set(0.0, 10.0, 0.0);
-
-    for (int i = 0; i < 4; i++) 
-	{
-        line =  new AcDbLine();
-        line->setStartPoint(vertexPts[i]) ;
-        line->setEndPoint(vertexPts[(i == 3) ? 0 : i+1]) ;
-    
-		if (pRec->appendAcDbEntity(line) != Acad::eOk)
-		{
-			pRec->close();
-			return 0;
-		}
-		line->close();
-
-        dbObjIds.append(lineId);
-    }
-*/
 	DisplayTheBlock(
 		pRec,		
 		dZoomFactor, 
@@ -1740,7 +1701,6 @@ BOOL CGsPreviewCtrl::DisplayBlock(
 		dCameraX, 
 		dCameraY, 
 		dCameraZ);
-// m_pLog->WriteString("\r\nDisplayBlock 11");	
 	return TRUE;
 }
 
@@ -1751,16 +1711,26 @@ BOOL CGsPreviewCtrl::DisplayHatchPattern(CString sPattern)
 	AcDbBlockTable *pBlockTable = NULL;
 	AcDbBlockTableRecord *pBlockRecord = NULL;
 	
-	m_pLoadedDwg = new AcDbDatabase();
+	m_pLoadedDwg = new AcDbDatabase(true, true);
 	
 	if (m_pLoadedDwg == NULL)
-		return 0;
+		return FALSE;
 	
-	m_pLoadedDwg->getSymbolTable(pBlockTable,AcDb::kForRead);
-
-	pBlockTable->getAt(ACDB_MODEL_SPACE, pBlockRecord, AcDb::kForWrite);
-
+	Acad::ErrorStatus es = m_pLoadedDwg->getSymbolTable(pBlockTable,AcDb::kForRead);
+	if( es != Acad::eOk )
+	{
+		delete m_pLoadedDwg;
+		m_pLoadedDwg = NULL;
+		return FALSE;
+	}
+	es = pBlockTable->getAt(ACDB_MODEL_SPACE, pBlockRecord, AcDb::kForWrite);
 	pBlockTable->close();
+	if( es != Acad::eOk )
+	{
+		delete m_pLoadedDwg;
+		m_pLoadedDwg = NULL;
+		return FALSE;
+	}
 
 
 	// Construct database AcDbLines
@@ -1846,7 +1816,7 @@ BOOL CGsPreviewCtrl::DisplayHatchPattern(CString sPattern)
 	else
 		pHatch->setColor(clr);
 	
-	Acad::ErrorStatus es = pBlockRecord->appendAcDbEntity(hatchId, pHatch);
+	es = pBlockRecord->appendAcDbEntity(hatchId, pHatch);
 	pHatch->close();
 	m_HatchId = hatchId;
 	// Attach hatchId to all source boundary objects for notification.
@@ -2470,8 +2440,7 @@ void CGsPreviewCtrl::OnKillFocus(CWnd* pNewWnd)
 	CDC *pdc = GetDC();
 	// draw the solid rectangle
 	pdc->DrawFocusRect(m_rcFocus);
-	
-	pdc->Detach();
+	ReleaseDC(pdc);
 	
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
@@ -2514,7 +2483,7 @@ HBRUSH CGsPreviewCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	//pDC->SetBkMode(TRANSPARENT);	
 	pDC->SetBkColor(m_BackColor);		
-	pDC->SelectObject(m_pStaticBrush);
+	delete pDC->SelectObject(m_pStaticBrush);
 	return (HBRUSH)(m_pStaticBrush->GetSafeHandle());	
 }
 

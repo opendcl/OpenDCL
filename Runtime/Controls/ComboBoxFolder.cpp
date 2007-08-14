@@ -293,7 +293,7 @@ const TCHAR sDivider2[] = _T("\\\\");
 const TCHAR sDivider3[] = _T("//");
 const TCHAR sDivider4[] = _T("/");
 
-long CComboBoxFolder::OnSelectItemChange(WPARAM w, LPARAM l)
+LRESULT CComboBoxFolder::OnSelectItemChange(WPARAM w, LPARAM l)
 {
 	CString path;
 	CFolder* folder = (CFolder*) w;

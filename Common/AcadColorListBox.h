@@ -12,13 +12,14 @@
 
 class CAcadColorListBox : public CListBox
 {
+	CBrush mbrushBackground;
+
 // Construction
 public:
 	CAcadColorListBox();
 
 // Attributes
 public:
-	CBrush *m_pStaticBrush;		
 	COLORREF m_ForeColor;
 	COLORREF m_BackColor;
 

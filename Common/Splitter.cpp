@@ -41,20 +41,12 @@ BOOL CSplitter::Create(int nStyle, const RECT& rect, CWnd* pParentWnd, UINT nID)
 
 void CSplitter::OnPaint() 
 {
-	//CPaintDC dc(this); // device context for painting
-	PAINTSTRUCT ps; 
-	
-	
-	CDC* pdc = BeginPaint(&ps);
-    
-	
-	CBrush *pCellBrush = new CBrush;	
-	pCellBrush->CreateSysColorBrush(COLOR_BTNFACE);
-			
-	
+	CPaintDC dc(this); // device context for painting
+	CBrush CellBrush;	
+	CellBrush.CreateSysColorBrush(COLOR_BTNFACE);
+
 	CRect rcThis;
 	GetWindowRect(&rcThis);
-
 	CRect rcCell(0,0,rcThis.Width(), rcThis.Height());
 
 	switch (m_nStyle)
@@ -62,7 +54,7 @@ void CSplitter::OnPaint()
 	case Splitter_DoubleRaised:
 		{
 		// draw the Window background for the cell				
-		pdc->FillRect(rcCell, pCellBrush);
+		dc.FillRect(rcCell, &CellBrush);
 		
 		if (rcCell.Width() >= rcCell.Height())
 		{
@@ -73,9 +65,9 @@ void CSplitter::OnPaint()
 			rc2.bottom = rc2.top + 3;
 
 			// draw the solid rectangle
-			::DrawEdge(pdc->m_hDC, &rc1, BDR_RAISEDINNER, BF_RECT);		
+			::DrawEdge(dc.m_hDC, &rc1, BDR_RAISEDINNER, BF_RECT);		
 			// draw the solid rectangle
-			::DrawEdge(pdc->m_hDC, &rc2, BDR_RAISEDINNER, BF_RECT);		
+			::DrawEdge(dc.m_hDC, &rc2, BDR_RAISEDINNER, BF_RECT);		
 		}
 		else
 		{
@@ -86,9 +78,9 @@ void CSplitter::OnPaint()
 			rc2.right = rc2.left + 3;
 
 			// draw the solid rectangle
-			::DrawEdge(pdc->m_hDC, &rc1, BDR_RAISEDINNER, BF_RECT);		
+			::DrawEdge(dc.m_hDC, &rc1, BDR_RAISEDINNER, BF_RECT);		
 			// draw the solid rectangle
-			::DrawEdge(pdc->m_hDC, &rc2, BDR_RAISEDINNER, BF_RECT);		
+			::DrawEdge(dc.m_hDC, &rc2, BDR_RAISEDINNER, BF_RECT);		
 		}
 		break;
 		
@@ -96,21 +88,20 @@ void CSplitter::OnPaint()
 	case Splitter_Raised:
 		{
 		// draw the solid rectangle
-		::DrawEdge(pdc->m_hDC, &rcCell, BDR_RAISEDINNER, BF_RECT);
+		::DrawEdge(dc.m_hDC, &rcCell, BDR_RAISEDINNER, BF_RECT);
 		
 		rcCell.DeflateRect(1,1);
 		
 		// draw the Window background for the cell				
-		pdc->FillRect(rcCell, pCellBrush);
+		dc.FillRect(rcCell, &CellBrush);
 		break;
 		}
 	case Splitter_Sunken:
 		{
 		// draw the Window background for the cell				
-		pdc->FillRect(rcCell, pCellBrush);
+		dc.FillRect(rcCell, &CellBrush);
 		
 		CRect rc1 = rcCell;
-			
 		if (rcCell.Width() >= rcCell.Height())
 		{
 			rc1.top++; 
@@ -135,27 +126,23 @@ void CSplitter::OnPaint()
 		}
 		
 		// draw the solid rectangle
-		::DrawEdge(pdc->m_hDC, &rc1, EDGE_ETCHED, BF_RECT);
+		::DrawEdge(dc.m_hDC, &rc1, EDGE_ETCHED, BF_RECT);
 		
 
 		rcCell.top = rc1.bottom+1;
 		
 		// draw the Window background for the cell				
-		pdc->FillRect(rcCell, pCellBrush);
+		dc.FillRect(rcCell, &CellBrush);
 		break;
 		}
 	default:
 		// draw the Window background for the cell				
-		pdc->FillRect(rcCell, pCellBrush);
+		dc.FillRect(rcCell, &CellBrush);
 		break;
 	}
 	
-	// delete the brush
-	pCellBrush->DeleteObject();
-	delete pCellBrush;
+	CellBrush.DeleteObject();
 
-	EndPaint(&ps);
-	
 	// Do not call CWnd::OnPaint() for painting messages
 }
 

@@ -64,14 +64,14 @@ CArxDialogControl::CArxDialogControl( CDclControlObject* pTemplate, CControlPane
 : CDialogControl( pTemplate, pPane, pControl )
 , mArxServices( pTemplate )
 {
-	TraceFmt( _T("> CArxDialogControl::CArxDialogControl(%s [%08X], [%08X], %s [HWND: %08X]) [this: %08X]\r\n"),
+	TraceFmt( _T("> CArxDialogControl::CArxDialogControl(%s [%p], [%p], %s [HWND: %p]) [this: %p]\r\n"),
 						pTemplate->GetKeyPath(), pTemplate, pPane, CString(pControl->GetRuntimeClass()->m_lpszClassName),
-						pControl->m_hWnd, (long)this );
+						pControl->m_hWnd, this );
 }
 
 CArxDialogControl::~CArxDialogControl()
 {
-	TraceFmt( _T("< CArxDialogControl::~CArxDialogControl() [this: %08X]\r\n"), (long)this );
+	TraceFmt( _T("< CArxDialogControl::~CArxDialogControl() [this: %p]\r\n"), this );
 }
 
 //static
@@ -948,7 +948,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 				//case EditFilter_Multiline:
 				//	
 				case EditFilter_Symbol:
-					((CColorEdit*)pControlWnd)->m_UseBackColor = false;
 					break;
 				default:
 					((CColorEdit*)pControlWnd)->SetForeColor(pControl->GetLongProperty(nForeColor));
@@ -1172,6 +1171,7 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 				{
 					((COptionListBox*) pControlWnd)->SetItemData(i, nData);
 				}
+				pControlWnd->EnableWindow(pControl->GetBoolProperty(nEnabled));
 				pControlWnd->Invalidate();				
 			}			
 			else

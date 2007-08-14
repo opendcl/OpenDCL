@@ -85,10 +85,10 @@ CRect CBaseDlg::ReadPosition() const
 	CRect rcRet;
 	CWinApp* pApp = AfxGetApp();
 	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath();
-	rcRet.left = pApp->GetProfileInt( sProfileName, sTopLeftX, -100 );
-	rcRet.top = pApp->GetProfileInt( sProfileName, sTopLeftY, -100 );
-	rcRet.right = rcRet.left + pApp->GetProfileInt( sProfileName, sSizeWidth, -100 );
-	rcRet.bottom = rcRet.top + pApp->GetProfileInt( sProfileName, sSizeHeight, -100 );
+	rcRet.left = pApp->GetProfileInt( sProfileName, sTopLeftX, -5000 );
+	rcRet.top = pApp->GetProfileInt( sProfileName, sTopLeftY, -5000 );
+	rcRet.right = rcRet.left + pApp->GetProfileInt( sProfileName, sSizeWidth, -5000 );
+	rcRet.bottom = rcRet.top + pApp->GetProfileInt( sProfileName, sSizeHeight, -5000 );
 	return rcRet;
 }
 
@@ -186,7 +186,10 @@ BOOL CBaseDlg::OnInitDialog()
 		rectWindow.right = rectWindow.left + rectSaved.Width();
 		rectWindow.bottom = rectWindow.top + rectSaved.Height();
 	}
+	if( GetStyle() & WS_CHILD )
+		GetParent()->ScreenToClient( &rectWindow );
 	MoveWindow( &rectWindow, FALSE );
+	SavePosition();
 	UpdateGripPos();
 	
 	InvokeMethod( pFormProps->GetStrProperty( nFormEventInitialize ), false );
@@ -315,5 +318,6 @@ void CBaseDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 void CBaseDlg::PostNcDestroy() 
 {
 	__super::PostNcDestroy();
-	delete this;
+	if( GetDialogObject().IsModeless() )
+		delete this;
 }

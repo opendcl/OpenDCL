@@ -37,8 +37,7 @@ int ComboBoxEx_AddString()
 	
 	if (pArx == NULL)	
 	{
-		// return nil
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 	
@@ -74,19 +73,16 @@ int ComboBoxEx_AddString()
 
 void ReturnItem(COMBOBOXEXITEM &cbi)
 {	
-	// this code is for all other dialogs
-	int stat;
-	struct resbuf *list;    
-
-	list = acutBuildList(
-		RTSTR, CString(cbi.pszText),
+	struct resbuf *list = acutBuildList(
+		RTSTR, cbi.pszText,
 		RTSHORT, cbi.iImage,
 		RTSHORT, cbi.iSelectedImage,
 		RTSHORT, cbi.iIndent,
 		RTNONE);
 
-	if (list != NULL) { 	    
-		stat = acedRetList(list);		
+	if (list != NULL)
+	{ 	    
+		acedRetList(list);		
 		acutRelRb(list); 
 	} 
 
@@ -96,32 +92,20 @@ int ComboBoxEx_GetLBText()
 {
 	int nArg=0;
 	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_GetLBText, &nArg);
-	int nArgument;
-	
-	if (!GetIntArgument(nArg, &nArgument, sComboBoxEx_GetLBText) || pControl == NULL)
-	{
-		// return nil
+	int nIndex;
+
+	if (pControl == NULL ||
+			!GetIntArgument(nArg, &nIndex, sComboBoxEx_GetLBText) ||
+			nIndex < 0 ||
+			nIndex >= ((CComboBoxEx*)pControl)->GetCount())
+	{		
 		acedRetNil();
 		return 0;
-	}
-	
-	COMBOBOXEXITEM cbi;
+	}	
 
-	cbi.iItem = nArgument;
-	
-	((CComboBoxEx*)pControl)->GetItem(&cbi);
-
-	// return the string found
 	CString sString;
-	
-	int n = ((CComboBox*)pControl)->GetLBTextLen(nArgument);      
-	((CComboBox*)pControl)->GetLBText(nArgument, sString.GetBuffer(n));
-	sString.ReleaseBuffer();
-
-	cbi.pszText = (LPTSTR)(LPCTSTR)sString;
-	cbi.cchTextMax = sString.GetLength();
-	
-	ReturnItem(cbi);
+	((CComboBox*)pControl)->GetLBText(nIndex, sString);
+	acedRetStr( sString );
 	return 0;
 }
 
@@ -148,31 +132,33 @@ int ComboBoxEx_SetItem()
 	
 	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_SetItem, &nArg);
 	
-	if (pControl == NULL || !GetIntArgument(nArg, &nIndex, sComboBoxEx_SetItem))
+	if (pControl == NULL ||
+			!GetIntArgument(nArg, &nIndex, sComboBoxEx_SetItem) ||
+			nIndex < 0 ||
+			nIndex >= ((CComboBoxEx*)pControl)->GetCount())
 	{		
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}	
 	nArg++;
 
 	if (!GetStringArgument(nArg, &sStringArg, sComboBoxEx_SetItem))
 	{
-		// return -1
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 	nArg++;
 
 	if (!GetIntArgument(nArg, &nImage, sComboBoxEx_SetItem))
 	{		
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}	
 	nArg++;
 
 	if (!GetIntArgument(nArg, &nSelectedImage, sComboBoxEx_SetItem))
 	{		
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}	
 	nArg++;
@@ -189,8 +175,7 @@ int ComboBoxEx_SetItem()
      CBEIF_SELECTEDIMAGE | CBEIF_TEXT;
 
 	cbi.iItem = nIndex;
-	cbi.pszText = (LPTSTR)(LPCTSTR)sStringArg;
-	cbi.cchTextMax = sStringArg.GetLength();
+	cbi.pszText = sStringArg.LockBuffer();
 	cbi.iImage = nImage;
 	cbi.iSelectedImage = nSelectedImage;
 	cbi.iOverlay = 2;
@@ -203,45 +188,42 @@ int ComboBoxEx_SetItem()
 int ComboBoxEx_Clear()
 {
 	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_Clear);
-
-	int nArg = 0;
-	CDclControlObject *pArxObject = GetControlArxObject(sComboBoxEx_Clear, &nArg);
-	
-	int nCount = ((CComboBoxEx*)pControl)->GetComboBoxCtrl()->GetCount();
-
-	for (int i=0; i<nCount; i++)
-	{
-		((CComboBoxEx*)pControl)->DeleteItem(0);
+	if (!pControl )
+	{		
+		acedRetNil();
+		return 0;
 	}
-	((CComboBoxEx*)pControl)->GetComboBoxCtrl()->ResetContent();
 	
-	// return nil
-	acedRetVoid();
+	((CComboBoxEx*)pControl)->GetComboBoxCtrl()->ResetContent();
+	acedRetT();
 	return 0;
 }
 
 int ComboBoxEx_GetCurSel()
 {
 	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_GetCurSel);
-	
-	int nSel = ((CComboBoxEx*)pControl)->GetComboBoxCtrl()->GetCurSel();
-	
-	// return nil
-	acedRetInt(nSel);
+	if (!pControl )
+	{		
+		acedRetNil();
+		return 0;
+	}
+
+	acedRetInt(((CComboBoxEx*)pControl)->GetComboBoxCtrl()->GetCurSel());
 	return 0;
 }
 
 int ComboBoxEx_GetCount()
 {
 	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_GetCount);
+	if (!pControl )
+	{		
+		acedRetNil();
+		return 0;
+	}
 	
-	int nCount = ((CComboBoxEx*)pControl)->GetComboBoxCtrl()->GetCount();
-	
-	// return nil
-	acedRetInt(nCount);
+	acedRetInt(((CComboBoxEx*)pControl)->GetComboBoxCtrl()->GetCount());
 	return 0;
 }
-
 
 int ComboBoxEx_DeleteString()
 {
@@ -249,34 +231,35 @@ int ComboBoxEx_DeleteString()
 	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_DeleteString, &nArg);
 	int nIndex;
 	
-	if (!GetIntArgument(nArg, &nIndex, sComboBoxEx_DeleteString) || pControl == NULL)
-	{
-		// return -1
-		acedRetInt(-1);
+	if (!pControl ||
+			!GetIntArgument(nArg, &nIndex, sComboBoxEx_DeleteString) ||
+			nIndex < 0 ||
+			nIndex >= ((CComboBoxEx*)pControl)->GetCount())
+	{		
+		acedRetNil();
 		return 0;
 	}
 	((CComboBoxEx*) pControl)->DeleteItem(nIndex);
-	acedRetVoid();
+	acedRetT();
 	return 0;
 
 }
+
 int ComboBoxEx_SelectString()
 {
 	int nArg=0;
 	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_SelectString, &nArg);
 	CString sSearchString;
 
-	if (!GetStringArgument(nArg, &sSearchString, sComboBoxEx_SelectString) || pControl == NULL)
-	{
-		// return -1
-		acedRetInt(-1);
+	if (!pControl || !GetStringArgument(nArg, &sSearchString, sComboBoxEx_SelectString))
+	{		
+		acedRetNil();
 		return 0;
 	}
 	
 	int nIndex = ((CComboBoxEx*) pControl)->GetComboBoxCtrl()->GetCurSel();
 	acedRetInt(((CComboBoxEx*) pControl)->GetComboBoxCtrl()->SelectString(nIndex, sSearchString));
 	return 0;
-
 }
 
 int ComboBoxEx_FindString()
@@ -285,36 +268,34 @@ int ComboBoxEx_FindString()
 	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_FindString, &nArg);
 	CString sSearchString;
 
-	if (!GetStringArgument(nArg, &sSearchString, sComboBoxEx_FindString) || pControl == NULL)
-	{
-		// return -1
-		acedRetInt(-1);
+	if (!pControl || !GetStringArgument(nArg, &sSearchString, sComboBoxEx_FindString))
+	{		
+		acedRetNil();
 		return 0;
 	}
 	
 	int nIndex = ((CComboBoxEx*) pControl)->GetComboBoxCtrl()->GetCurSel();
 	acedRetInt(((CComboBoxEx*) pControl)->GetComboBoxCtrl()->FindString(nIndex, sSearchString));
 	return 0;
-
 }
+
 int ComboBoxEx_FindStringExact()
 {
 	int nArg=0;
 	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_FindStringExact, &nArg);
 	CString sSearchString;
 
-	if (!GetStringArgument(nArg, &sSearchString, sComboBoxEx_FindStringExact) || pControl == NULL)
-	{
-		// return -1
-		acedRetInt(-1);
+	if (!pControl || !GetStringArgument(nArg, &sSearchString, sComboBoxEx_FindStringExact))
+	{		
+		acedRetNil();
 		return 0;
 	}
 	
 	int nIndex = ((CComboBoxEx*) pControl)->GetComboBoxCtrl()->GetCurSel();
 	acedRetInt(((CComboBoxEx*) pControl)->GetComboBoxCtrl()->FindStringExact(nIndex, sSearchString));
 	return 0;
-
 }
+
 int ComboBoxEx_SetCurSel()
 {
 	int nArg=0;
@@ -322,25 +303,27 @@ int ComboBoxEx_SetCurSel()
 	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_SetCurSel, &nArg);
 	int nIndex;
 	
-	if (!GetIntArgument(nArg, &nIndex, sComboBoxEx_SetCurSel) || pControl == NULL)
-	{
-		// return -1
-		acedRetInt(-1);
+	if (!pControl ||
+			!GetIntArgument(nArg, &nIndex, sComboBoxEx_SetCurSel) ||
+			nIndex < 0 ||
+			nIndex >= ((CComboBoxEx*)pControl)->GetCount())
+	{		
+		acedRetNil();
 		return 0;
 	}
 	((CComboBoxEx*) pControl)->GetComboBoxCtrl()->SetCurSel(nIndex);
 
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
+
 int ComboBoxEx_GetEditSel()
 {
 	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_GetEditSel);
 	
-	if (pControl == NULL)
-	{
-		// return -1
-		acedRetInt(-1);
+	if (!pControl)
+	{		
+		acedRetNil();
 		return 0;
 	}
 	DWORD dwSel;
@@ -349,8 +332,7 @@ int ComboBoxEx_GetEditSel()
 	// Set the selection to be all characters after the current selection.
 	if ((dwSel=((CComboBoxEx*) pControl)->GetComboBoxCtrl()->GetEditSel()) == CB_ERR)
 	{
-		// return -1
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 	else
@@ -360,58 +342,54 @@ int ComboBoxEx_GetEditSel()
 	}
 
 	// this code is for all other dialogs
-	int stat;
-	struct resbuf *list;    
-
-	list = acutBuildList(
+	struct resbuf *list = acutBuildList(
 		RTSHORT, nStart,
 		RTSHORT, nEnd,
 		RTNONE);
 
-	if (list != NULL) { 	    
-		stat = acedRetList(list);		
+	if (list != NULL)
+	{ 	    
+		acedRetList(list);		
 		acutRelRb(list); 
 	} 
 
 	return 0;	
 }
+
 int ComboBoxEx_SetEditSel()
 {
-	//int nArg=0;
-	//CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_SetEditSel, &nArg);
 	int nStart;
 	int nEnd;
 	
 	CWnd *pControl = GetArgsControlIntInt(CtlImageComboBox, sComboBoxEx_SetEditSel, nStart, nEnd);
 
-	if (pControl == NULL)
-	{
-		// return -1
-		acedRetInt(-1);
+	if (!pControl)
+	{		
+		acedRetNil();
 		return 0;
 	}
 
 	((CComboBoxEx*) pControl)->GetEditCtrl()->SetSel(nStart, nEnd);
 
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
+
 int ComboBoxEx_SetItemData()
 {
-	int nIndex;
-	int nData;
+	int nIndex = -1;
+	int nData = 0;
 	CWnd *pControl = GetArgsControlIntInt(CtlImageComboBox, sComboBoxEx_SetItemData, nIndex, nData);
 
-	if (pControl == NULL)
-	{
-		// return -1
-		acedRetInt(-1);
+	if (!pControl || nIndex < 0 || nIndex >= ((CComboBoxEx*)pControl)->GetCount())
+	{		
+		acedRetNil();
 		return 0;
 	}
 	
 	((CComboBoxEx*) pControl)->GetComboBoxCtrl()->SetItemData(nIndex, nData);
 
-	acedRetVoid();
+	acedRetT();
 	return 0;
 
 }
@@ -421,10 +399,12 @@ int ComboBoxEx_GetItemData()
 	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_GetItemData, &nArg);
 	int nIndex;
 	
-	if (!GetIntArgument(nArg, &nIndex, sComboBoxEx_GetItemData) || pControl == NULL)
+	if (!pControl ||
+			!GetIntArgument(nArg, &nIndex, sComboBoxEx_GetItemData) ||
+			nIndex < 0 ||
+			nIndex >= ((CComboBoxEx*)pControl)->GetCount())
 	{
-		// return -1
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 	
@@ -438,8 +418,7 @@ int ComboBoxEx_GetTopIndex()
 
 	if (pControl == NULL)		
 	{
-		// return nil
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 	
@@ -455,24 +434,22 @@ int ComboBoxEx_SetTopIndex()
 	
 	if (!GetIntArgument(nArg, &nIndex, sComboBoxEx_SetTopIndex) || pControl == NULL)
 	{
-		// return -1
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 	((CComboBoxEx*) pControl)->GetComboBoxCtrl()->SetTopIndex(nIndex);
 
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
 int ComboBoxEx_GetDroppedWidth()
 {
-	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_SetTopIndex);
+	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_GetDroppedWidth);
 
 	if (pControl == NULL)		
 	{
-		// return nil
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 	
@@ -488,128 +465,68 @@ int ComboBoxEx_SetDroppedWidth()
 	
 	if (!GetIntArgument(nArg, &nDroppedWidth, sComboBoxEx_SetDroppedWidth) || pControl == NULL)
 	{
-		// return -1
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 	((CComboBoxEx*) pControl)->GetComboBoxCtrl()->SetDroppedWidth(nDroppedWidth);
 
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
+
 int ComboBoxEx_ClearEdit()
 {
 	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_ClearEdit);
 
 	if (pControl == NULL)		
 	{
-		// return nil
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 	
 	((CComboBoxEx*)pControl)->GetComboBoxCtrl()->Clear();
-	acedRetVoid();
+	acedRetT();
 	return 0;
-
 }
 
 
 int ComboBoxEx_GetEBText()
 {
-		CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_GetEBText);
-	
+	CWnd *pControl = GetControlPointer(CtlImageComboBox, sComboBoxEx_GetEBText);
 	if (pControl == NULL)
 	{
-		// return nil
-		acedRetStr(CString());
+		acedRetNil();
 		return 0;
 	}
 
-	
 	CString sString;
-	
 	CComboBoxEx *pCtrl = (CComboBoxEx*)pControl;
-	
 	CEdit *pEdit = pCtrl->GetEditCtrl();
-	
 	if (pEdit != NULL)
-	{	
 		pEdit->GetWindowText(sString);
-		// return the string found
-		acedRetStr(sString);
-	}
 	else
-	{
-		int nSel = pCtrl->GetComboBoxCtrl()->GetCurSel();
-	
-		COMBOBOXEXITEM cbi;
-
-		cbi.iItem = nSel;
-		
-		pCtrl->GetItem(&cbi);
-
-		// return the string found
-		CString sString;
-		
-		int n = pCtrl->GetLBTextLen(nSel);      
-		pCtrl->GetLBText(nSel, sString.GetBuffer(n));
-		sString.ReleaseBuffer();
-
-		cbi.pszText = (LPTSTR)(LPCTSTR)sString;
-		cbi.cchTextMax = sString.GetLength();
-
-		// return the string found
-		acedRetStr(sString);
-	}
+		pCtrl->GetLBText(pCtrl->GetComboBoxCtrl()->GetCurSel(), sString);
+	acedRetStr(sString);
 	return 0;
 }
 
 int ComboBoxEx_GetItem()
 {
-	int nIndex=-1;
-
-	CDclControlObject *pArx = GetLispInput(sGrid_SelectCell, nIndex);
-
-	if (pArx == NULL || nIndex == -1)
+	int nIndex = -1;
+	CDclControlObject* pDclObject = GetLispInput(sGrid_SelectCell, nIndex);
+	if (pDclObject == NULL || nIndex < 0 || nIndex >= ((CComboBoxEx*)pDclObject->GetWindow())->GetCount())
 	{		
 		acedRetNil();
 		return 0;
 	}
 
-	CComboBoxEx *pCtrl = (CComboBoxEx*)pArx->GetWindow();
-	
-	
-	COMBOBOXEXITEM cbi;
-
-	cbi.iItem = nIndex;
-	
-	pCtrl->GetItem(&cbi);
-
-	// return the string found
-	CString sString;
-	
-	int n = pCtrl->GetLBTextLen(nIndex);      
-	pCtrl->GetLBText(nIndex, sString.GetBuffer(n));
-	sString.ReleaseBuffer();
-
-	cbi.pszText = (LPTSTR)(LPCTSTR)sString;
-	cbi.cchTextMax = sString.GetLength();
-
-	int stat;
-	struct resbuf *list;    
-
-	list = acutBuildList(
-		RTSTR, sString,
-		RTSHORT, cbi.iImage,
-		RTSHORT, cbi.iSelectedImage,
-		RTSHORT, cbi.iIndent,			
-		RTNONE);
-
-	if (list != NULL) { 	    
-		stat = acedRetList(list);		
-		acutRelRb(list); 
-	} 
+	COMBOBOXEXITEM cbi = { CBEIF_TEXT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE | CBEIF_INDENT, nIndex };
+	CString sText;
+	int cchText = ((CComboBoxEx*)pDclObject->GetWindow())->GetLBTextLen( nIndex ) + 1;
+	cbi.pszText = sText.GetBuffer( cchText );
+	cbi.cchTextMax = cchText;
+	((CComboBoxEx*)pDclObject->GetWindow())->GetItem(&cbi);
+	ReturnItem(cbi);
 
 	return 0;
 }

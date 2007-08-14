@@ -12,13 +12,14 @@
 
 class VdclStatic : public CStatic
 {
+	CBrush mbrushBackground;
+
 // Construction
 public:
 	VdclStatic();
 	
 // Attributes
 public:
-	CBrush *m_pStaticBrush;	
 	COLORREF m_ForeColor;
 // Operations
 public:

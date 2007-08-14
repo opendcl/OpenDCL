@@ -12,13 +12,14 @@
 
 class CDwgPreviewCtrl : public CButton
 {
+	CBrush mbrushBackground;
+
 // Construction
 public:
 	CDwgPreviewCtrl();
 
 // Attributes
 public:
-	CBrush *m_pStaticBrush;		
 	COLORREF m_BackColor;
 	CPPToolTip m_ToolTip;
 	

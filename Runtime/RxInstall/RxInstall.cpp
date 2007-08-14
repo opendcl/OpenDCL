@@ -152,6 +152,18 @@ public:
 			sResult.ReleaseBuffer( cchBuffer );
 			return sResult;
 		}
+	String Right( int cchBuffer ) const
+		{
+			if( !mpszString )
+				return String();
+			int cchThis = lstrlen( mpszString );
+			if( cchBuffer > cchThis )
+				cchBuffer = cchThis;
+			String sResult;
+			lstrcpyn( sResult.GetBuffer( cchBuffer ), mpszString + cchThis - cchBuffer, cchBuffer );
+			sResult.ReleaseBuffer( cchBuffer );
+			return sResult;
+		}
 	int Find( LPCTSTR pszTarget ) const
 		{
 			if( !mpszString || !*mpszString || !pszTarget || !*pszTarget )
@@ -283,19 +295,45 @@ String GetSiblingModulePath( LPCTSTR pszFilename )
 }
 
 
-LPCTSTR GetTargetModulePath( UINT nAcadTarget )
+LPCTSTR GetTargetModulePath( UINT nAcadTarget, LPCTSTR pszModifier = NULL )
 {
 	TCHAR szAcadTarget[32];
 	_ultot_s( nAcadTarget, szAcadTarget, 10 );
 	String sAppFilename = GetAppName();
 	if( sAppFilename.IsEmpty() )
 		sAppFilename = _T("OpenDCL");
+	if( pszModifier )
+	{
+		sAppFilename += _T(".");
+		sAppFilename += pszModifier;
+	}
 	sAppFilename += _T(".");
 	sAppFilename += szAcadTarget;
 	sAppFilename += _T(".arx");
 	static String sPath;
 	sPath = GetSiblingModulePath( sAppFilename );
 	return sPath;
+}
+
+
+typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+bool IsWow64()
+{
+#ifdef _WIN64
+	return false;
+#else
+  static BOOL bIsWow64 = FALSE;
+	static bool bAlreadyTested = false;
+	if( !bAlreadyTested )
+	{
+		LPFN_ISWOW64PROCESS fnIsWow64Process =
+			(LPFN_ISWOW64PROCESS)GetProcAddress( GetModuleHandle( _T("KERNEL32") ), "IsWow64Process" );
+    if( fnIsWow64Process )
+			fnIsWow64Process( GetCurrentProcess(), &bIsWow64 );
+		bAlreadyTested = true;
+	}
+	return (bIsWow64 != FALSE);
+#endif //_WIN64
 }
 
 
@@ -320,18 +358,18 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 }
 
 
-void CreateDemandLoadEntry( UINT nAcadTarget, RegKey& rkDemandLoad )
+void CreateDemandLoadEntry( UINT nAcadTarget, RegKey& rkDemandLoad, LPCTSTR pszModifier = NULL )
 {
 	if( !rkDemandLoad )
 		return;
 	if( nAcadTarget >= 16 )
 	{
-		rkDemandLoad.SetValue( REGKEY_LOADER, GetTargetModulePath( nAcadTarget ) );
+		rkDemandLoad.SetValue( REGKEY_LOADER, GetTargetModulePath( nAcadTarget, pszModifier ) );
 		rkDemandLoad.SetValue( REGKEY_DESCRIPTION, GetAppLongName() );
 		if( !rkDemandLoad.HasValue( REGVAL_LOADCTRLS ) )
 			rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest/* | kOnAutoCADStartup*/ );
 		{
-			RegKey rkCommands( REGKEY_COMMANDS, rkDemandLoad, true );
+			RegKey rkCommands( REGKEY_COMMANDS, rkDemandLoad, true, KEY_WRITE );
 			LPCTSTR* rpszCommands = NULL;
 			for( int idx = GetRxCommandArray( rpszCommands ) - 1; idx >= 0; --idx )
 				rkCommands.SetValue( rpszCommands[idx], rpszCommands[idx] );
@@ -350,15 +388,15 @@ void CreateDemandLoadEntry( UINT nAcadTarget, RegKey& rkDemandLoad )
 		if( !rkDemandLoad.HasValue( REGVAL_LOADCTRLS ) )
 			rkDemandLoad.SetValue( REGVAL_LOADCTRLS, kOnCommandInvocation | kOnLoadRequest/* | kOnAutoCADStartup*/ );
 		{
-			RegKey rkLoader( REGKEY_LOADER, rkDemandLoad, true );
-			rkLoader.SetValue( _MODULE, GetTargetModulePath( nAcadTarget ) );
+			RegKey rkLoader( REGKEY_LOADER, rkDemandLoad, true, KEY_WRITE );
+			rkLoader.SetValue( _MODULE, GetTargetModulePath( nAcadTarget, pszModifier ) );
 		}
 		{
-			RegKey rkName( REGKEY_NAME, rkDemandLoad, true );
+			RegKey rkName( REGKEY_NAME, rkDemandLoad, true, KEY_WRITE );
 			rkName.SetValue( GetAppLongName(), GetAppLongName() );
 		}
 		{
-			RegKey rkCommands( REGKEY_COMMANDS, rkDemandLoad, true );
+			RegKey rkCommands( REGKEY_COMMANDS, rkDemandLoad, true, KEY_WRITE );
 			LPCTSTR* rpszCommands = NULL;
 			for( int idx = GetRxCommandArray( rpszCommands ) - 1; idx >= 0; --idx )
 				rkCommands.SetValue( rpszCommands[idx], rpszCommands[idx] );
@@ -376,47 +414,35 @@ HKEY GetRootRegKey( UINT nAcadTarget, bool bHKLM = true )
 }
 
 
-void RxSelfInstallImp( UINT nAcadTarget, LPCTSTR pszTargetKey, bool bHKLM = true )
+void RxSelfInstallImp( UINT nAcadTarget, LPCTSTR pszTargetKey, bool bHKLM = true, bool bX64 = false )
 {
-	RegKey rkDemandLoad( pszTargetKey, GetRootRegKey( nAcadTarget, bHKLM ), true, true );
+	RegKey rkRoot( pszTargetKey, HKEY_LOCAL_MACHINE, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
+	RegKey rkDemandLoad( String( pszTargetKey ) + _T("\\Applications\\") +  GetAppLongName(),
+											 GetRootRegKey( nAcadTarget, bHKLM ),
+											 true,
+											 KEY_WRITE | (bX64? KEY_WOW64_64KEY : 0) );
 	if( !rkDemandLoad )
 		return;
-	CreateDemandLoadEntry( nAcadTarget, rkDemandLoad );
+	CreateDemandLoadEntry( nAcadTarget, rkDemandLoad, (bX64? _T("x64") : NULL) );
 }
 
 
-bool EnumerateRegTargets( UINT nAcadTarget, LPCTSTR pszRegKey, bool bLT, bool bHKLM = true )
+bool EnumerateRegTargets( UINT nAcadTarget, LPCTSTR pszRegKey, bool bHKLM = true, bool bX64 = false )
 {
-	TCHAR szAcadRoot[] = _T("SOFTWARE\\Autodesk\\AutoCAD");
-	RegKey rkAcad( szAcadRoot, GetRootRegKey( nAcadTarget, bHKLM ), false, false );
-	RegKey rkTarget( pszRegKey, rkAcad, false, false );
+	String sAcadRootKey = _T("SOFTWARE\\Autodesk\\AutoCAD\\");
+	sAcadRootKey += pszRegKey;
+	RegKey rkTarget( sAcadRootKey, GetRootRegKey( nAcadTarget, bHKLM ), false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
 	if( !rkTarget )
 		return false;
 
-	TCHAR _Applications[] = _T("\\Applications\\");
-	LPCTSTR pszAppName = GetAppLongName();
-	size_t cchAppName = lstrlen( pszAppName );
 	DWORD cchMaxSubkey = MAX_PATH;
 	RegQueryInfoKey( rkTarget, NULL, NULL, NULL, NULL, &cchMaxSubkey, NULL, NULL, NULL, NULL, NULL, NULL );
-	size_t cchRegKey = lstrlen( pszRegKey );
-	TCHAR* pszFullPath = new TCHAR[_elements(szAcadRoot) +
-																 cchRegKey +
-																 1 +
-																 cchMaxSubkey +
-																 _elements(_Applications) +
-																 cchAppName +
-																 1 ];
-	lstrcpy( pszFullPath, szAcadRoot );
-	pszFullPath[_elements(szAcadRoot) - 1] = _T('\\');
-	lstrcpy( pszFullPath + _elements(szAcadRoot), pszRegKey );
-	TCHAR* pszSubkey = pszFullPath + _elements(szAcadRoot) + cchRegKey;
-	*pszSubkey++ = _T('\\');
-
-	DWORD idxSubkey = 0;
 	DWORD dwBufSize = cchMaxSubkey + 1;
+	String sSubkey;
+	DWORD idxSubkey = 0;
 	while( RegEnumKeyEx( rkTarget,
 												idxSubkey,
-												pszSubkey,
+												sSubkey.GetBuffer( dwBufSize ),
 												&dwBufSize,
 												NULL,
 												NULL,
@@ -424,12 +450,13 @@ bool EnumerateRegTargets( UINT nAcadTarget, LPCTSTR pszRegKey, bool bLT, bool bH
 												NULL ) == ERROR_SUCCESS )
 	{
 		idxSubkey++;
-		lstrcpy( pszSubkey + dwBufSize, _Applications );
-		lstrcpy( pszSubkey + dwBufSize + _elements(_Applications) - 1, pszAppName );
-		RxSelfInstallImp( nAcadTarget, pszFullPath, bHKLM );
+		sSubkey.ReleaseBuffer();
+		String sAcadTargetKey = sAcadRootKey;
+		sAcadTargetKey += _T('\\');
+		sAcadTargetKey += sSubkey;
+		RxSelfInstallImp( nAcadTarget, sAcadTargetKey, bHKLM, bX64 );
 		dwBufSize = cchMaxSubkey + 1;
 	}
-	delete[] pszFullPath;
 	return true;
 }
 
@@ -452,15 +479,17 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	EnumerateRegTargets( 16, _T("R16.2"), bHKLM );
 	EnumerateRegTargets( 17, _T("R17.0"), bHKLM );
 	EnumerateRegTargets( 17, _T("R17.1"), bHKLM );
+	if( IsWow64() )
+		EnumerateRegTargets( 17, _T("R17.1"), bHKLM, true );
 	return ERROR_SUCCESS;
 }
 
 
-bool RemoveAllRegTargets( LPCTSTR pszRegKey, HKEY hkRoot )
+bool RemoveAllRegTargets( LPCTSTR pszRegKey, HKEY hkRoot, bool bX64 = false )
 {
 	TCHAR szAdeskRoot[] = _T("SOFTWARE\\Autodesk");
-	RegKey rkAdesk( szAdeskRoot, hkRoot, false, false );
-	RegKey rkTarget( pszRegKey, rkAdesk, false, false );
+	RegKey rkAdesk( szAdeskRoot, hkRoot, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
+	RegKey rkTarget( pszRegKey, rkAdesk, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
 	if( !rkTarget )
 		return false;
 
@@ -479,9 +508,9 @@ bool RemoveAllRegTargets( LPCTSTR pszRegKey, HKEY hkRoot )
 												NULL ) == ERROR_SUCCESS )
 	{
 		idxSubkey++;
-		RegKey rkTargetVer( pszSubkey, rkTarget, false, false );
-		RegKey rkApps( _T("Applications"), rkTargetVer, false, false );
-		RegKey rkThisApp( GetAppLongName(), rkApps, false, true );
+		RegKey rkTargetVer( pszSubkey, rkTarget, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
+		RegKey rkApps( _T("Applications"), rkTargetVer, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
+		RegKey rkThisApp( GetAppLongName(), rkApps, false, KEY_ALL_ACCESS | (bX64? KEY_WOW64_64KEY : 0) );
 		if( rkThisApp )
 			RegRemoveKey( rkThisApp );
 		dwBufSize = cchMaxSubkey + 1;
@@ -511,6 +540,13 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 	RemoveAllRegTargets( _T("AutoCAD\\R16.2"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("AutoCAD\\R16.2"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("AutoCAD\\R17.0"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("AutoCAD\\R17.0"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("AutoCAD\\R17.1"), HKEY_CURRENT_USER );
+	if( IsWow64() )
+	{
+		RemoveAllRegTargets( _T("AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE, true );
+		RemoveAllRegTargets( _T("AutoCAD\\R17.1"), HKEY_CURRENT_USER, true );
+	}
 	return ERROR_SUCCESS;
 }

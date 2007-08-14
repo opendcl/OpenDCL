@@ -29,6 +29,8 @@ CSlideHolder::CSlideHolder( CControlPane& Pane, CDclControlObject* pTemplate, UI
 
 CSlideHolder::~CSlideHolder()
 {
+	if(m_hbmMem)
+		::DeleteObject(m_hbmMem);
 }
 
 bool CSlideHolder::Create( CWnd* pParentWnd, UINT nID )
@@ -92,40 +94,27 @@ END_MESSAGE_MAP()
 
 void CSlideHolder::OnPaint() 
 {
+	if (!GetParent()->IsWindowVisible())		
+		return;
+	CPaintDC dc( this ); // Device context for painting
 	if (m_hbmMem != NULL)
 	{
-		CPaintDC dc( this ); // Device context for painting
-		CDC *pdc = &dc;
-        CBitmap *poldbmp; 
 		CDC memdc;
-    
-		if (!GetParent()->IsWindowVisible())		
-			return;
+		// Create a compatible memory DC
+		memdc.CreateCompatibleDC( &dc );
+		// Select the bitmap into the DC
+		CBitmap *poldbmp = memdc.SelectObject( CBitmap::FromHandle(m_hbmMem) );
 
-        // Create a compatible memory DC
-        memdc.CreateCompatibleDC( pdc );
-        // Select the bitmap into the DC
-        poldbmp = memdc.SelectObject( CBitmap::FromHandle(m_hbmMem) );
-
-        // Copy (BitBlt) bitmap from memory DC to screen DC
-        pdc->BitBlt( 0, 0,
-			GetDeviceCaps(pdc->m_hDC, HORZRES), 
-			GetDeviceCaps(pdc->m_hDC, VERTRES),                 
+		// Copy (BitBlt) bitmap from memory DC to screen DC
+		dc.BitBlt( 0, 0,
+			GetDeviceCaps(dc.m_hDC, HORZRES), 
+			GetDeviceCaps(dc.m_hDC, VERTRES),                 
 			&memdc, 0, 0, SRCCOPY );
 
-        memdc.SelectObject( poldbmp );
+    memdc.SelectObject( poldbmp );
 		return;
 	}
-	//CPaintDC dc(this); // device context for painting
-	PAINTSTRUCT ps; 
-	
-	
-	CDC* pdc = BeginPaint(&ps);
-
-	PaintControl(pdc);
-	
-	EndPaint(&ps);
-	
+	PaintControl(&dc);
 	if (m_hbmMem == NULL)
 	{
 		CWnd *pFocusWnd = CWnd::GetFocus();
@@ -133,9 +122,6 @@ void CSlideHolder::OnPaint()
 		// then send a 0 to indicate this control does not 
 		// have focus. Otherwise send a 1 to indicate that
 		// it does have focus.
-		
-		if (!GetParent()->IsWindowVisible())		
-			return;
 
 		if (pFocusWnd != this)
 			// call methods to invoke the event
@@ -144,25 +130,12 @@ void CSlideHolder::OnPaint()
 			// call methods to invoke the event
 			InvokeMethodInt(mpTemplate->GetStrProperty(nEventPaint), 1, m_bInvokeWithSendString);
 	}
-
-	
 }
 
 void CSlideHolder::SetAcadColor(long nColor)
 {	
-	try
-	{
-		m_BkColor = GetRGBColor(nColor);
-			
-		CDC *pdc = CWnd::GetDC();
-
-		PaintControl(pdc);
-
-		pdc->Detach();
-	}
-	catch(...)
-	{
-	}
+	m_BkColor = GetRGBColor(nColor);
+	Invalidate();
 }
 
 bool CSlideHolder::SetFileName(CString sFileName, bool slb, CString slbSldName)
@@ -286,8 +259,8 @@ void CSlideHolder::PaintControl(CDC *pdc)
 		CSize szValue(1,1);
 		rcCell.DeflateRect(szValue);
 		
-		CPen *pPen = new CPen(PS_SOLID, 1, m_HighlightColor);
-		CPen* pOldPen = pdc->SelectObject(pPen);
+		CPen Pen(PS_SOLID, 1, m_HighlightColor);
+		CPen* pOldPen = pdc->SelectObject(&Pen);
 
 		pdc->MoveTo(1, 1);
 		pdc->LineTo(rcCell.Width(), 1);		
@@ -295,9 +268,7 @@ void CSlideHolder::PaintControl(CDC *pdc)
 		pdc->LineTo(1, rcCell.Height());		
 		pdc->LineTo(1, 1);		
 		
-		pdc->SelectObject(pOldPen);			
-		pPen->DeleteObject();
-	
+		pdc->SelectObject(pOldPen);
 	}
 	
 
@@ -492,7 +463,7 @@ void CSlideHolder::OnSetFocus(CWnd* pOldWnd)
 	CDC *pdc = GetDC();
 	// draw the solid rectangle
 	pdc->DrawFocusRect(m_rcFocus);
-	pdc->Detach();
+	ReleaseDC(pdc);
 	
 	// call methods to invoke the event
 	InvokeMethod(mpTemplate->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
@@ -506,7 +477,7 @@ void CSlideHolder::OnKillFocus(CWnd* pNewWnd)
 	CDC *pdc = GetDC();
 	// draw the solid rectangle
 	pdc->DrawFocusRect(m_rcFocus);
-	pdc->Detach();	
+	ReleaseDC(pdc);
 	m_bHasFocus = false;
 	// call methods to invoke the event
 	InvokeMethod(mpTemplate->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
@@ -590,35 +561,14 @@ void CSlideHolder::CopyDC()
 	HDC hDCmem = CreateCompatibleDC (hDC) ; 
 	int nSourceX = GetDeviceCaps(hDC, HORZRES);
 	int nSourceY = GetDeviceCaps(hDC, VERTRES); 
-	
-	if (!GetParent()->IsWindowVisible())		
-	{
-		DeleteDC (hDCmem); 
-		return;
-	}
-	
 
 	// Create a compatible bitmap for hdcSource.  
 	HBITMAP hbmMem = CreateCompatibleBitmap(hDC, 
 				nSourceX, 
 				nSourceY); 
-
-	if (!GetParent()->IsWindowVisible())		
-	{
-		DeleteDC (hDCmem); 		
-		return;
-	}
 	
 	HGDIOBJ hbmOld;
 	hbmOld = SelectObject (hDCmem, hbmMem) ; 
-	
-	if (!GetParent()->IsWindowVisible())		
-	{
-		SelectObject (hDCmem, hbmOld);
-		DeleteDC (hDCmem); 
-		DeleteObject (hbmOld);
-		return;
-	}
 
 	BitBlt(hDCmem, 0,0, 
 			nSourceX,
@@ -626,7 +576,6 @@ void CSlideHolder::CopyDC()
 			hDC,0, 0, SRCCOPY);
 
 	SelectObject (hDCmem, hbmOld);
-	DeleteObject (hbmOld);
 	DeleteDC (hDCmem); 
 	
 	// delete the bitmap if valid

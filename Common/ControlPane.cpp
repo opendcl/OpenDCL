@@ -85,7 +85,7 @@ bool CControlPane::CreateControls(UINT& nId)
 			continue;
 		UINT idDlg = pTemplate->GetID();
 		if( idDlg <= 0 || mpSourceForm->GetType() != CtlSplitter )
-				idDlg = nId++;
+			idDlg = nId++;
 		TDialogControlPtr pControl = CreateNewDialogControl( pTemplate, idDlg );
 		assert( pControl != NULL );
 		if( pControl )
@@ -193,17 +193,6 @@ void CControlPane::ResetControlsPos(CDclControlObject *pDclControl)
 		lBottomFromBottom = pDclControl->GetPropertyObject(nUseBottomFromBottom)->GetBooleanValue();
 	else
 		lBottomFromBottom = pDclControl->GetPropertyObject(nUseBottomFromBottom)->GetLongValue();
-
-	//if (mpSourceForm->GetType() == VdclModal ||
-	//		mpSourceForm->GetType() == VdclModeless)
-	//{
-	//	if (lLeftFromRight  == 0 &&
-	//			lRightFromRight == 0 &&
-	//			lTopFromBottom  == 0 &&
-	//			lBottomFromBottom == 0)
-	//		return;
-	//}
-
 	
 	// get the control being moved			
 	CWnd *pControl = pDclControl->GetWindow();
@@ -214,7 +203,6 @@ void CControlPane::ResetControlsPos(CDclControlObject *pDclControl)
 	//	((CButtonST*)pControl)->m_bDrawTransparent = FALSE;
 	//}
 
-	
 	if (pControl == NULL)
 		return;
 
@@ -230,10 +218,7 @@ void CControlPane::ResetControlsPos(CDclControlObject *pDclControl)
 	rcThis.right += mlRightOffset;
 
 	// if mpHostDlg control is to be moved according to the right or bottom side of the form
-	if (lLeftFromRight  > 0 ||
-			lRightFromRight > 0 ||
-			lTopFromBottom  > 0 ||
-			lBottomFromBottom > 0)
+	if (lLeftFromRight  > 0 || lRightFromRight > 0 || lTopFromBottom  > 0 || lBottomFromBottom > 0)
 	{	
 		// set the left position if required
 		if (lLeftFromRight == 1)

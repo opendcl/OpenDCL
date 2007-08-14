@@ -180,7 +180,6 @@ BEGIN_MESSAGE_MAP(CResizableDockingDialog, CAdUiDockControlBar)
 	ON_WM_CREATE()
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
-	ON_WM_CAPTURECHANGED()
 	ON_WM_MOUSEMOVE()
 	ON_WM_NCMOUSEMOVE()
 	ON_MESSAGE(WM_MOUSELEAVE,OnMouseLeave)
@@ -479,7 +478,6 @@ BOOL CResizableDockingDialog::PreTranslateMessage(MSG* pMsg)
 			return TRUE;
 		}
 	}
-
 
 	return CAdUiDockControlBar::PreTranslateMessage(pMsg);
 }

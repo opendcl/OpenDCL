@@ -790,6 +790,8 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		case Grid_EllipsesButtons:
 		case Grid_PickButtons:
 			{
+				m_nColSelected = nCol;
+				m_nRowSelected = nRow;
 				EditCellNow();
 				return;
 			}
@@ -2925,39 +2927,28 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	CRect rcClipBox;
 	pDC->GetClipBox(rcClipBox);
 
-    //CMemDC pDC(CDC::FromHandle(lpDrawItemStruct->hDC), rcItem);
-    int nItem = lpDrawItemStruct->itemID;
-    CImageList* pImageList; 
-    // Save dc state 
-    //int nSavedDC = pDC->SaveDC();
+  int nItem = lpDrawItemStruct->itemID;
+  CImageList* pImageList; 
     
-	//CDC dcm;    
 	CRect rc;
-    GetClientRect(rc);    
-    //pDC->CreateCompatibleDC(pDC);
-    //CBitmap bmt;
-    //bmt.CreateCompatibleBitmap(pDC,rc.Width(),rc.Height());
-    //CBitmap *pBitmapOld = pDC->SelectObject(&bmt);
-    HGDIOBJ pOldFont = SelectObject(pDC->m_hDC, GetFont()->m_hObject);
+  GetClientRect(rc);    
+  HGDIOBJ pOldFont = SelectObject(pDC->m_hDC, GetFont()->m_hObject);
 
-  //  pDC->Rectangle(rc);// make the work of the OnEraseBkgnd function
+  // Get item image and state info 
+  LV_ITEM lvi;
+  lvi.mask = LVIF_IMAGE | LVIF_STATE; 
+  lvi.iItem = nItem; 
+  lvi.iSubItem = 0;
+  lvi.stateMask = 0xFFFF; 
+  // get all state flags 
+  GetItem(&lvi);
   
-
-    // Get item image and state info 
-    LV_ITEM lvi;
-    lvi.mask = LVIF_IMAGE | LVIF_STATE; 
-    lvi.iItem = nItem; 
-    lvi.iSubItem = 0;
-    lvi.stateMask = 0xFFFF; 
-    // get all state flags 
-    GetItem(&lvi);
-    
-    // Should the item be highlighted
-    BOOL bHighlight =
-        ((lvi.state & LVIS_DROPHILITED) ||
-        ((lvi.state & LVIS_SELECTED)
-        && ((GetFocus()
-        == this) || (GetStyle() & LVS_SHOWSELALWAYS))));
+  // Should the item be highlighted
+  BOOL bHighlight =
+      ((lvi.state & LVIS_DROPHILITED) ||
+      ((lvi.state & LVIS_SELECTED)
+      && ((GetFocus()
+      == this) || (GetStyle() & LVS_SHOWSELALWAYS))));
 
 	int nCellStyle = GetCellStyle(lvi.iItem, 0);
 
@@ -2968,28 +2959,28 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	if (bHighlight && nCellStyle == Grid_SwitchableIcons)
 		bHighlight = false;
 
-    // Get rectangles for drawing 
-    CRect rcBounds, rcLabel, rcIcon;
-    GetItemRect(nItem, rcBounds, LVIR_BOUNDS);
-    GetItemRect(nItem, rcLabel, LVIR_LABEL); 
-    GetItemRect(nItem, rcIcon, LVIR_ICON);
-    CRect rcCol(rcBounds);
-    CString sLabel = GetItemText(nItem, 0);
+  // Get rectangles for drawing 
+  CRect rcBounds, rcLabel, rcIcon;
+  GetItemRect(nItem, rcBounds, LVIR_BOUNDS);
+  GetItemRect(nItem, rcLabel, LVIR_LABEL); 
+  GetItemRect(nItem, rcIcon, LVIR_ICON);
+  CRect rcCol(rcBounds);
+  CString sLabel = GetItemText(nItem, 0);
   
 	// Labels are offset by a certain amount 
-    // This offset is related to the width of a space character
-    int offset = 4;//pDC->GetTextExtent(_T(" "), 1).cx*2;
+  // This offset is related to the width of a space character
+  int offset = 4;//pDC->GetTextExtent(_T(" "), 1).cx*2;
     
 	bool bWordWrap = false;
 	if (rcLabel.Height() >= (pDC->GetTextExtent(_T(" "), 1).cy*2) + 1)
 		bWordWrap = true;
 	
     
-    CRect rcHighlight;
-    CRect rcWnd; 
-    int nExt; 
+  CRect rcHighlight;
+  CRect rcWnd; 
+  int nExt; 
     
-    switch (HighlightType) 
+  switch (HighlightType) 
 	{ 
     case HIGHLIGHT_NORMAL: 
         nExt = pDC->GetOutputTextExtent(sLabel).cx + offset; 
@@ -3010,7 +3001,7 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
         break;
     default: 
         rcHighlight = rcLabel; 
-    } 
+  } 
     
 	CRect rcBtn = rcBounds;
 	//rcBtn.left = 0;
@@ -3038,8 +3029,9 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 			pDC->SetTextColor(::GetSysColor(COLOR_BTNTEXT));
 			pDC->SetBkColor(::GetSysColor(COLOR_BTNFACE));
-			pDC->FillRect(rcBtn,
-				&CBrush(::GetSysColor(COLOR_BTNFACE)));
+			CBrush br(::GetSysColor(COLOR_BTNFACE));
+			pDC->FillRect(rcBtn, &br);
+			br.DeleteObject();
 
 			// draw the solid rectangle
 			::DrawEdge(pDC->m_hDC, &rcBtn, BDR_RAISEDINNER, BF_RECT);
@@ -3096,12 +3088,15 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		{
 			pDC->SetTextColor(::GetSysColor(COLOR_HIGHLIGHTTEXT));
 			pDC->SetBkColor(::GetSysColor(COLOR_HIGHLIGHT));
-			pDC->FillRect(rcHighlight,
-			&CBrush(::GetSysColor(COLOR_HIGHLIGHT))); 
+			CBrush br(::GetSysColor(COLOR_HIGHLIGHT));
+			pDC->FillRect(rcHighlight, &br);
+			br.DeleteObject();
 		}
 		else
 		{
-			pDC->FillRect(rcHighlight, &CBrush(backGround)); 
+			CBrush br(backGround);
+			pDC->FillRect(rcHighlight, &br); 
+			br.DeleteObject();
 			if (ForegroundColor != 0)
 				pDC->SetTextColor(ForegroundColor); 
 		}
@@ -3641,11 +3636,6 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	// restore the old font ** a must
 	SelectObject(pDC->m_hDC, pOldFont);
-	
-//	BitBlt(pDC->m_hDC,rcItem.left,rcItem.top,rcItem.Width()+1,m_nRowHeight+1,pDC->m_hDC,rcItem.left,rcItem.top,SRCCOPY);
-
- //   pDC->SelectObject(pBitmapOld);
-    //pDC->RestoreDC( nSavedDC );
 }
 
 void CArxGridCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 

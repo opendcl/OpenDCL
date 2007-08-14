@@ -20,23 +20,24 @@ class RegKeyA
 {
 	HKEY m_hkRoot;
 	HKEY m_hkThis;
-	bool m_bForWrite;
+	REGSAM m_samAccess;
 	LPSTR m_pszKey;
 public:
-	RegKeyA( LPCSTR pszKey, HKEY hkRoot, bool bCreate = false, bool bForWrite = true );
+	RegKeyA( LPCSTR pszKey, HKEY hkRoot, bool bCreate = false, REGSAM samAccess = KEY_ALL_ACCESS );
 	RegKeyA( RegKeyA& Source );
 	virtual ~RegKeyA();
 	virtual void Close();
-	virtual bool IsWritable() const { return (m_hkRoot && m_bForWrite); }
+	virtual bool IsWritable() const { return (m_hkRoot && (m_samAccess & KEY_WRITE) == KEY_WRITE); }
 	virtual bool HasValue( LPCSTR pszName ) const;
 	virtual bool SetValue( LPCSTR pszName, LPCSTR pszValue );
 	virtual bool SetValue( LPCSTR pszName, DWORD dwValue );
 	virtual bool SetValue( LPCSTR pszName, const BYTE* pbData, DWORD cbData );
+	virtual LPCSTR GetString( LPCSTR pszName ) const;
 	operator HKEY () const { return m_hkThis; }
 	LPCSTR Key() const { return m_pszKey; }
 	HKEY Root() const { return m_hkRoot; }
 protected:
-	virtual HKEY InnerOpen( LPCSTR pszKey, HKEY hkRoot, bool bCreate = false, bool bForWrite = true );
+	virtual HKEY InnerOpen( LPCSTR pszKey, HKEY hkRoot, bool bCreate = false, REGSAM samAccess = KEY_ALL_ACCESS );
 };
 
 typedef RegKeyA RegKey;

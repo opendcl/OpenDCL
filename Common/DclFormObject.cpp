@@ -465,7 +465,10 @@ void CDclFormObject::Serialize(CArchive& ar)
 			if (pControl->m_Delete == FALSE)
 			{
 				pControl->Serialize(ar);
-				TraceFmt( _T("> %s\r\n"), pControl->toString() );
+			#ifdef _DIAGNOSTIC
+				if( (GetAsyncKeyState( VK_CONTROL ) & 0x8000) == 0x8000 )
+					TraceFmt( _T("> %s\r\n"), pControl->toString() );
+			#endif //_DIAGNOSTIC
 			}
 		}		
 	}
@@ -502,13 +505,16 @@ void CDclFormObject::Serialize(CArchive& ar)
 			mbUsesClientRect = false;
 
 		ar >> nCount;	
-		mDclControls.RemoveAll();
+		ClearControls();
 		while (nCount-- > 0)
 		{
 			CDclControlObject* pControl = new CDclControlObject( this );
 			pControl->Serialize(ar);
 			AddControl( pControl );
-			TraceFmt( _T("< %s\r\n"), pControl->toString() );
+			#ifdef _DIAGNOSTIC
+				if( (GetAsyncKeyState( VK_CONTROL ) & 0x8000) == 0x8000 )
+					TraceFmt( _T("< %s\r\n"), pControl->toString() );
+			#endif //_DIAGNOSTIC
 			// Add new properties that have been added since this file was created
 			AddDefaultProperties( pControl );
 		}
@@ -664,7 +670,7 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
   int nCount;
   if (!readInt(sFile, nCount)) return statInvalidFormat;
 
-  mDclControls.RemoveAll();
+  ClearControls();;
 
   while (nCount-- > 0)
   {
@@ -819,18 +825,18 @@ CDclControlObject* CDclFormObject::FindControl( LPCTSTR pszControlName ) const
 	POSITION pos = mDclControls.GetHeadPosition();
 	while( pos )
 	{
-		CDclControlObject* pControl = mDclControls.GetNext( pos );
-		if( pControl->GetKeyName().CompareNoCase( pszControlName ) == 0 )
-			return pControl;
+		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
+		if( pDclControl->GetKeyName().CompareNoCase( pszControlName ) == 0 )
+			return pDclControl;
 	}
 	return NULL;
 }
 
 CDclControlObject* CDclFormObject::FindControl( LPCTSTR pszControlName, ControlType eType ) const
 {
-	CDclControlObject* pControl = FindControl( pszControlName );
-	if( pControl && pControl->GetType() == eType )
-		return pControl;
+	CDclControlObject* pDclControl = FindControl( pszControlName );
+	if( pDclControl && pDclControl->GetType() == eType )
+		return pDclControl;
 	return NULL;
 }
 
@@ -839,9 +845,9 @@ CDclControlObject* CDclFormObject::FindFirstControlOfType( ControlType eType ) c
 	POSITION pos = mDclControls.GetHeadPosition();
 	while (pos != NULL)
 	{
-		CDclControlObject* pControl = mDclControls.GetNext(pos);
-		if (pControl->GetType() == eType)
-			return pControl;
+		CDclControlObject* pDclControl = mDclControls.GetNext(pos);
+		if (pDclControl->GetType() == eType)
+			return pDclControl;
 	}
 	return NULL;
 }
@@ -851,9 +857,9 @@ bool CDclFormObject::FindControls( ControlType eType, CList< CDclControlObject* 
 	POSITION pos = mDclControls.GetHeadPosition();
 	while (pos != NULL)
 	{
-		CDclControlObject* pControl = mDclControls.GetNext( pos );
-		if( pControl->GetType() == eType )
-			Results.AddTail(pControl);
+		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
+		if( pDclControl->GetType() == eType )
+			Results.AddTail(pDclControl);
 	}
 	return true;
 }
@@ -863,9 +869,9 @@ CDclControlObject* CDclFormObject::FindControlWithVarName( LPCTSTR pszVarName ) 
 	POSITION pos = mDclControls.GetHeadPosition();
 	while( pos )
 	{
-		CDclControlObject* pControl = mDclControls.GetNext( pos );
-		if( pControl->GetStrProperty( nGlobalVarName ).CompareNoCase( pszVarName ) == 0 )
-			return pControl;
+		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
+		if( pDclControl->GetStrProperty( nGlobalVarName ).CompareNoCase( pszVarName ) == 0 )
+			return pDclControl;
 	}
 	return NULL;
 }
@@ -875,9 +881,9 @@ bool CDclFormObject::GetControlFonts( CFontCollection& Fonts ) const
 	POSITION pos = mDclControls.GetHeadPosition();
 	while( pos )
 	{
-		CDclControlObject *pCtrl = mDclControls.GetNext( pos );
-		assert( pCtrl != NULL );
-		Fonts.GetFont( pCtrl, NULL );
+		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
+		assert( pDclControl != NULL );
+		Fonts.GetFont( pDclControl, NULL );
 	}
 	return true;
 }
@@ -888,8 +894,8 @@ void CDclFormObject::ZOrderFrontAddTabControls()
 	mDclControls.GetNext( pos ); //skip the properties control
 	while( pos )
 	{
-		CDclControlObject *pControl = mDclControls.GetNext( pos );
-		CWnd* pWnd = pControl->GetWindow();
+		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
+		CWnd* pWnd = pDclControl->GetWindow();
 		if (pWnd != NULL)
 			pWnd->SetWindowPos( &CWnd::wndTop, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
 	}

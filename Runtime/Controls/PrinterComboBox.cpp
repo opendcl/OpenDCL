@@ -408,6 +408,7 @@ void CPrinterComboBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->FillRect(rc, &brushFill);
+	brushFill.DeleteObject();
 
 	CString strCurFont,strNextFont;
 	GetLBText(lpDIS->itemID,strCurFont);

@@ -76,6 +76,7 @@ public:
 			// the CDC that was passed to the constructor.
 			m_hDC = m_hAttribDC = NULL;
 		}
+		m_bitmap.DeleteObject();
 	}
 	
 	// Allow usage as a pointer

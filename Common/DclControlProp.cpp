@@ -104,6 +104,7 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		pDclControl->AddStringProperty( nObjectBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( nGlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
 		pDclControl->AddBooleanProperty( nResizable, PropBool, true );
+		pDclControl->AddLongProperty( nEventInvoke, PropEnum, 0 );
 		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 250 );
 		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 150 );
 		pDclControl->AddLongProperty( nMinDialogWidth, PropLong, 0 );
@@ -126,6 +127,7 @@ static bool AddDefaultFormProperties( CDclControlObject* pDclControl, long lWidt
 		pDclControl->AddStringProperty( nObjectBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( nGlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
 		pDclControl->AddBooleanProperty( nResizable, PropBool, true );
+		pDclControl->AddLongProperty( nEventInvoke, PropEnum, 0 );
 		pDclControl->AddLongProperty( nWidth, PropLong, lWidth > 0? lWidth : 250 );
 		pDclControl->AddLongProperty( nHeight, PropLong, lHeight > 0? lHeight : 450 );
 		pDclControl->AddStringProperty( nTitleBarText, PropString, pOwnerForm->GetKeyName() );
@@ -232,13 +234,8 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 	DclFormType eFormType = pTopLevelParentForm->GetType();
 	switch( eFormType )
 	{
-	case VdclModal:
-		break;
 	case VdclDockable:
 	case VdclModeless:
-		pDclControl->AddLongProperty( nEventInvoke, PropEnum, (type == CtlTextBox)? 0 : 1 );
-		break;
-	default:
 		pDclControl->AddLongProperty( nEventInvoke, PropEnum, 0 );
 		break;
 	}
@@ -1079,6 +1076,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		pDclControl->AddLongProperty( nMinTabWidth, PropLong, 50 );
 		pDclControl->AddBooleanProperty( nTabFixedWidth, PropBool, false );
 		pDclControl->AddLongProperty( nTabStyle, PropEnum, 0 );
+		pDclControl->AddBooleanProperty( nMultiRow, PropBool, false );
 		AddControlHiddenProperty( pDclControl, nTabsCaption, sList, PropStringArray );
 		//AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_TAB1));
 		//AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_TAB2));

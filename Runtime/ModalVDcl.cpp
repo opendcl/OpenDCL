@@ -54,7 +54,9 @@ void CModalDialogX::CloseDialog(int nStatus) const
 
 INT_PTR CModalDialogX::DoModal()
 {
-	return mpOwner->DoModal();
+	INT_PTR nResult = mpOwner->DoModal();
+	delete mpOwner;
+	return nResult;
 }
 
 bool CModalDialogX::SetMinMaxSize( const CSize& min, const CSize& max )

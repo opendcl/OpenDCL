@@ -329,7 +329,10 @@ void CDclControlObject::Serialize(CArchive& ar)
 		{
 			RefCountedPtr< CPropertyObject > pProp = mProperties.GetNext(pos);
 			pProp->Serialize(ar);
-			TraceFmt( _T("> %s\r\n"), pProp->toString() );
+			#ifdef _DIAGNOSTIC
+				if( (GetAsyncKeyState( VK_CONTROL ) & 0x8000) == 0x8000 )
+					TraceFmt( _T("> %s\r\n"), pProp->toString() );
+			#endif //_DIAGNOSTIC
 		}
 	}
 	else
@@ -430,13 +433,16 @@ void CDclControlObject::Serialize(CArchive& ar)
 		{
 			// get counter for objects
 			ar >> nCount;		
-			mProperties.RemoveAll();
+			ClearProperties();
 			while (nCount-- > 0)
 			{
 				RefCountedPtr< CPropertyObject > pProp = new CPropertyObject( PropInvalid );
 				pProp->Serialize(ar);
-				InsertNamedProperty( pProp );		
-				TraceFmt( _T("< %s\r\n"), pProp->toString() );
+				InsertNamedProperty( pProp );
+			#ifdef _DIAGNOSTIC
+				if( (GetAsyncKeyState( VK_CONTROL ) & 0x8000) == 0x8000 )
+					TraceFmt( _T("< %s\r\n"), pProp->toString() );
+			#endif //_DIAGNOSTIC
 			}
 		}
 		else
@@ -560,6 +566,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 					case nCustom:
 					case nDockableSides:
 					case nEventOnHelp:
+					case nEventInvoke:
 						mProperties.RemoveAt(posAt);
 						continue;
 					}
@@ -1149,7 +1156,7 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
   int nCount;
   if (!readInt(sFile, nCount)) return statInvalidFormat;
 
-  mProperties.RemoveAll();
+  ClearProperties();
 
   // do loop to navigate objects
   while (nCount-- > 0)

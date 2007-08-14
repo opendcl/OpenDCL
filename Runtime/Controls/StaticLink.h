@@ -42,7 +42,6 @@ public:
 // Attributes
 public:
 	bool m_bInvokeWithSendString;
-	CBrush *m_pStaticBrush;		
 
 	// Operations
 public:
@@ -63,6 +62,7 @@ public:
 	// Hyperlink contains URL/filename. If NULL, I will use the window text.
 	// (GetWindowText) to get the target.
 	CHyperlink		m_link;
+	COLORREF		m_BkColor;
 	COLORREF		m_color;
 
 	// Default colors you can change
@@ -77,12 +77,6 @@ public:
 // Implementation
 public:
 	virtual ~CStaticLink();
-
-protected:
-	//CFont			m_font;					// underline font for text control
-	BOOL			m_bDeleteOnDestroy;	// delete object when window destroyed?
-
-	virtual void PostNcDestroy();
 
 	// Generated message map functions
 protected:

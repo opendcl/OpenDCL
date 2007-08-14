@@ -184,9 +184,9 @@ static CRect CalcFitRect(int nPicWidth, int nPicHeight, int nCtrlWidth, int nCtr
 
 static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList, CSize& ImageSize, bool bApplyMask)
 {
-
 	if (NULL == pPicture->m_pPict)
 		return false;
+	bool bSuccess = true;
 
 	// if picture is a bitmap
 	if (PICTYPE_BITMAP == pPicture->GetType())
@@ -208,6 +208,7 @@ static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList,
 		HDC hdc = ::GetDC(GetDesktopWindow());
 		CDC* cdc = CDC::FromHandle(hdc);
 		cdc->HIMETRICtoLP(&sizePic);
+		cdc->DeleteDC();
 
 		// if image list has not been created
 		if (!ImageList.m_hImageList)
@@ -220,14 +221,15 @@ static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList,
 
 			// create the image list
 			if( !ImageList.Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | (bApplyMask? ILC_MASK : 0), 0, 1) )
-				return false;
+				bSuccess = false;
 
 			// set the background color of the image list
 			//ImageList.SetBkColor(RGB(nWhite,nWhite,nWhite));		
 		}
 		// add bitmap to imagelist; mask is ignored in this sample
 		if( ImageList.Add( CBitmap::FromHandle(hBitmap), RGB(192, 192, 192) ) == -1 )
-			return false;
+			bSuccess = false;
+		bmpPic.DeleteObject();
 	}
 	// else if picture is an icon
 	else if (PICTYPE_ICON == pPicture->GetType())
@@ -248,6 +250,7 @@ static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList,
 		HDC hdc = ::GetDC(GetDesktopWindow());
 		CDC* cdc = CDC::FromHandle(hdc);
 		cdc->HIMETRICtoLP(&sizePic);
+		cdc->DeleteDC();
 
 		// if image list has not been created
 		if (!ImageList.m_hImageList)
@@ -260,19 +263,19 @@ static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList,
 
 			// create the image list
 			if( !ImageList.Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | (bApplyMask? ILC_MASK : 0), 1, 1) )
-				return false;
+				bSuccess = false;
 
 			// set the background color of the image list
 			ImageList.SetBkColor(RGB(255,255,255));		
 		}
 		// add icon to image list
 		if( ImageList.Add(hIcon) == -1 )
-			return false;
+			bSuccess = false;
 	}
 	else
-		return false;
+		bSuccess = false;
 	
-	return true;
+	return bSuccess;
 }
 
 
@@ -954,9 +957,6 @@ void CPictureObject::CalcLogicalSize()
 		return;
 	}
 
-	HDC hdc = ::GetDC(GetDesktopWindow());
-	CDC * cdc = CDC::FromHandle(hdc);
-
 	OLE_XSIZE_HIMETRIC lPicWidth;
 	OLE_YSIZE_HIMETRIC lPicHeight;
 	m_hPicture.m_pPict->get_Width( &lPicWidth );
@@ -964,6 +964,8 @@ void CPictureObject::CalcLogicalSize()
 	msizePic.SetSize( lPicWidth, lPicHeight );
 
 	// convert coordinates from units to logical units
+	HDC hdc = ::GetDC(GetDesktopWindow());
+	CDC * cdc = CDC::FromHandle(hdc);
 	cdc->HIMETRICtoLP( &msizePic );
-	cdc->Detach();
+	cdc->DeleteDC();
 }

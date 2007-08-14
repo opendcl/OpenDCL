@@ -21,7 +21,6 @@ class CPictureBox : public CButton
 // Construction
 public:
 	CBrush m_brBackground;
-	//CPen StaticPen;
 
 	CPictureBox();
 	void AutoSize();

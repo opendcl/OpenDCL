@@ -59,7 +59,9 @@ void COptionListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	pDC->SetBkMode(TRANSPARENT);
 
-	pDC->FillRect(rc, m_pStaticBrush);
+	CBrush brBack(GetRGBColor(nButtonFace));
+	pDC->FillRect(rc, &brBack);
+	brBack.DeleteObject();
 
 	CString strCurFont,strNextFont;
 	

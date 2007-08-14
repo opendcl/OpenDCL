@@ -447,7 +447,7 @@ HICON CPPDrawManager::StretchIcon(HICON hIcon, DWORD dwWidth, DWORD dwHeight)
 				} //if
 			} //if
 			::SelectObject(hSrcDC, hOldSrcBitmap);
-			::SelectObject(hDestDC, hOldDestBitmap);
+			::DeleteObject(::SelectObject(hDestDC, hOldDestBitmap));
 			csStretched.fIcon = TRUE;
 			hStretchedIcon = ::CreateIconIndirect(&csStretched);
 		} //if

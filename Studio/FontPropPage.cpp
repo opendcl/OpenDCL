@@ -326,13 +326,13 @@ void CFontPropertyPage::OnSelChange()
 	int n = m_comboSize.GetLBTextLen(nSel);      
 	m_comboSize.GetLBText(nSel, m_sSize);
 
-	if (m_ScaledOpt.GetCheck() == TRUE)
+	if (m_ScaledOpt.GetCheck() == BST_CHECKED)
 	{
 		HDC hdc = ::GetDC(NULL);	
 		logfont.lfHeight = -::MulDiv(_tstol(m_sSize),	GetDeviceCaps(hdc, LOGPIXELSY), nDePixelScale);		
 	}
 	else
-		logfont.lfHeight = _tstol(m_sSize) * -1;		
+		logfont.lfHeight = _tstol(m_sSize);		
 	logfont.lfWeight = 400;	
 	logfont.lfItalic = FALSE;
 	if( m_sStyle.Find( theWorkspace.LoadResourceString(IDS_ITALIC) ) != -1 )
@@ -418,7 +418,7 @@ BOOL CFontPropertyPage::OnApply()
 	if (strResult != CString())		
 	{
 		long lSize = _tstol(strResult);
-		if (lSize > 0)
+		if (m_ScaledOpt.GetCheck() == BST_CHECKED)
 			lSize = lSize * -1;
 		// if the project list pointer is NULL then update the property
 		if (m_pFontSize != NULL) 

@@ -14,8 +14,8 @@ class COpenDCLView;
 class CTabInfo
 {
 public:
-
 	CString msCaption;
+	int mnImageIndex;
 	CString msToolTipTitle;
 	int mnOriginalIndex;
 	CDclFormObject* mpChildForm;
@@ -32,11 +32,12 @@ class CTabsPane : public CPropertyPage
 {
 	COpenDCLView* mpView;
 	CDclControlObject* mpDclControl;
+	RefCountedPtr< CImageList >& mpImageList; //address of image list pointer used by image list property page
 	int mnTabIndex;
 
 	CStatic	m_Frame;
 	CEdit	m_Caption;
-	CPictureBox	m_Image;
+	CComboBoxEx	m_Image;
 	CSpinButtonCtrl	m_SpinBtn;
 	CEdit	m_ToolTipTitle;
 	RefCountedPtr< CPropertyObject > m_pTabCaptions;	
@@ -50,13 +51,13 @@ class CTabsPane : public CPropertyPage
 	
 	// Construction
 public:
-	CTabsPane( COpenDCLView* pView, CDclControlObject* pControl );   // standard constructor
+	CTabsPane( COpenDCLView* pView, CDclControlObject* pControl, RefCountedPtr< CImageList >& pImageList );   // standard constructor
 	~CTabsPane();   // standard constructor
 
 public:
 	const CTabInfoList& GetTabList() const { return m_TabList; }
 	CTabInfoList& GetTabList() { return m_TabList; }
-	void Setup() ;
+	void Setup();
 
 protected:
 	void UpdateTabInfo();
@@ -70,13 +71,15 @@ protected:
 
 // Implementation
 protected:
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnAdd();
-	afx_msg void OnChangeCaption();
-	afx_msg void OnChangeTtt();
-	afx_msg void OnDelete();
+	DECLARE_MESSAGE_MAP()
 
 protected:
-	DECLARE_MESSAGE_MAP()
+	virtual BOOL OnInitDialog();
+	virtual BOOL OnSetActive();
+	afx_msg void OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnAdd();
+	afx_msg void OnDelete();
+	afx_msg void OnChangeCaption();
+	afx_msg void OnChangeImage();
+	afx_msg void OnChangeTtt();
 };

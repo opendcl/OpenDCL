@@ -15,20 +15,20 @@
 CArxControlPane::CArxControlPane()
 : CControlPane()
 {
-	TraceFmt( _T("> CArxControlPane::CArxControlPane() [this = %08X]\r\n"), (long)this );
+	TraceFmt( _T("> CArxControlPane::CArxControlPane() [this = %p]\r\n"), this );
 }
 
 CArxControlPane::CArxControlPane( CDclFormObject* pSourceForm, CWnd* pHostDlg )
 : CControlPane( pSourceForm, pHostDlg )
 {
-	TraceFmt( _T("> CArxControlPane::CArxControlPane(%s [%08X], %s [HWND: %08X]) [this: %08X]\r\n"),
+	TraceFmt( _T("> CArxControlPane::CArxControlPane(%s [%p], %s [HWND: %p]) [this: %p]\r\n"),
 						pSourceForm->GetKeyPath(), pSourceForm, CString(pHostDlg->GetRuntimeClass()->m_lpszClassName),
-						pHostDlg->m_hWnd, (long)this );
+						pHostDlg->m_hWnd, this );
 }
 
 CArxControlPane::~CArxControlPane()
 {
-	TraceFmt( _T("< CArxControlPane::~CArxControlPane() [this: %08X]\r\n"), (long)this );
+	TraceFmt( _T("< CArxControlPane::~CArxControlPane() [this: %p]\r\n"), this );
 }
 
 

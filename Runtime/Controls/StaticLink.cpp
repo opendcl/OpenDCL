@@ -25,11 +25,8 @@ CStaticLink::CStaticLink()
 {
 	// No tooltip created
 	m_ToolTip.m_hWnd = NULL;
-
-	m_pStaticBrush = new CBrush();
-	//m_pStaticBrush->CreateStockObject(HOLLOW_BRUSH);	
-	m_pStaticBrush->CreateSolidBrush(GetRGBColor(-16));
-
+	m_BkColor = GetRGBColor(-16);
+	m_color = 0;
 }
 
 CStaticLink::~CStaticLink()
@@ -54,10 +51,7 @@ END_MESSAGE_MAP()
 
 void CStaticLink::SetAcadColor(long nColor)
 {
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
-	m_pStaticBrush = new CBrush();
-	m_pStaticBrush->CreateSolidBrush(GetRGBColor(nColor));
+	m_BkColor = GetRGBColor(nColor);
 }
 
 
@@ -82,7 +76,6 @@ BOOL CStaticLink::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID
 	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
 	
 	m_link = lpszWindowName;	
-	m_bDeleteOnDestroy = TRUE;
 	int nColor = pControl->GetLongProperty(nForeColor);
 	m_color = GetRGBColor(nColor);
 
@@ -124,9 +117,7 @@ HBRUSH CStaticLink::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	pDC->SetTextColor(m_color);
 	pDC->SetBkMode(TRANSPARENT);
-
-	pDC->SelectObject(m_pStaticBrush);
-	return *m_pStaticBrush;		
+	return CreateSolidBrush(m_BkColor);		
 }
 
 
@@ -140,7 +131,7 @@ void CStaticLink::OnLButtonDown(UINT nFlags, CPoint point)
 	else
 		h = m_link.Navigate(CString(_T("mailto:")) + m_ArxControl->GetStrProperty(nURLAddress));
 
-	if ((UINT)h > 32) 
+	if ((UINT_PTR)h > 32) 
 	{						 // success!
 		m_color = g_colorVisited;			 // change color
 		Invalidate();							 // repaint 
@@ -159,12 +150,6 @@ BOOL CStaticLink::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 	return TRUE;
 }
 
-void CStaticLink::PostNcDestroy()
-{
-	//if (m_bDeleteOnDestroy)
-		//delete this;
-}
-
 int CStaticLink::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
 	if (CStatic::OnCreate(lpCreateStruct) == -1)
@@ -175,22 +160,17 @@ int CStaticLink::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CStaticLink::SetLinkText(CString sNewText) 
 {
 	m_link = sNewText;
-	CStatic::SetWindowText(sNewText);
-	
-	CDC *pdc = CStatic::GetDC();
-	if (pdc == NULL)
-		return;
-	CStaticLink::Refresh(pdc);
-	pdc->Detach();
-	
+	SetWindowText(sNewText);
+	Refresh();
 }
+
 void CStaticLink::Refresh()
 {
-	CDC *pdc = CStatic::GetDC();
+	CDC *pdc = GetDC();
 	if (pdc == NULL)
 		return;
-	CStaticLink::Refresh(pdc);
-	pdc->Detach();
+	Refresh(pdc);
+	ReleaseDC(pdc);
 }
 
 void CStaticLink::Refresh(CDC *pdc) 
@@ -202,40 +182,29 @@ void CStaticLink::Refresh(CDC *pdc)
 	CWnd::GetWindowRect(&rcThis);
 	CRect rcCell(0,0,rcThis.Width(), rcThis.Height());
 	
-	CBrush *pCellBrush = new CBrush;	
-	pCellBrush->CreateSysColorBrush(COLOR_BTNFACE);
+	CBrush CellBrush;	
+	CellBrush.CreateSysColorBrush(COLOR_BTNFACE);
 	
 	
 	// draw the Window background for the cell				
-	pdc->FillRect(rcCell, pCellBrush);
+	pdc->FillRect(rcCell, &CellBrush);
 	// delete the brush
-	pCellBrush->DeleteObject();
-	delete pCellBrush;
-	
+	CellBrush.DeleteObject();
 
 	// use underline font and visited/unvisited colors
-	pdc->SelectObject(GetFont());
+	CFont* pOldFont = pdc->SelectObject(GetFont());
 	pdc->SetTextColor(m_color);
 	CString sText;
-	CStatic::GetWindowText(sText);
+	GetWindowText(sText);
 	pdc->SetBkMode(TRANSPARENT);
-	
 	pdc->TextOut(1,1,sText);
-
-	// return hollow brush to preserve parent background color
-	hbr = (HBRUSH)::GetStockObject(HOLLOW_BRUSH);
+	pdc->SelectObject(pOldFont);
 }
 
 void CStaticLink::OnPaint() 
 {
-	//CPaintDC dc(this); // device context for painting
-	
-	PAINTSTRUCT ps; 
-	CDC* pdc = BeginPaint(&ps);
-    
-	CStaticLink::Refresh(pdc);
-
-	EndPaint(&ps);	
+	CPaintDC dc(this); // device context for painting
+	Refresh(&dc);
 }
 
 void CStaticLink::OnDestroy() 
@@ -244,9 +213,6 @@ void CStaticLink::OnDestroy()
 	m_ToolTip.DelTool(this, 1);
 	
 	CStatic::OnDestroy();
-	
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
 }
 
 void CStaticLink::OnMouseMove(UINT nFlags, CPoint point) 
@@ -263,6 +229,6 @@ void CStaticLink::OnMouseMove(UINT nFlags, CPoint point)
 BOOL CStaticLink::PreTranslateMessage(MSG* pMsg) 
 {
 	m_ToolTip.RelayEvent(pMsg);
-	return CStatic::PreTranslateMessage(pMsg);
+	return __super::PreTranslateMessage(pMsg);
 }
 

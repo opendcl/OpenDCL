@@ -165,7 +165,7 @@ void CTreeCtrlEx::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult)
 		InvokeMethodStringLong(
 			m_ArxControl->GetStrProperty(nEventSelChanged),
 			sItemText,
-			(long)SelectedItem.hItem,
+			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
 	}
 	SelectDropTarget(SelectedItem.hItem);

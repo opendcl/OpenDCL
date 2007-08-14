@@ -15,6 +15,12 @@
 
 void AxInterfaceDescriptor::clear()
 {
+	delete mpProp;
+	delete mpPropGet;
+	delete mpPropPut;
+	delete mpPropPutRef;
+	delete mpEvent;
+	delete mpMethods;
 	mpProp = NULL;
 	mpPropGet = NULL;
 	mpPropPut = NULL;

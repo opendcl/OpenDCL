@@ -75,6 +75,8 @@ BOOL COptionListBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	if (pControl->GetBoolProperty(nSorted) == TRUE)
 		dwStyle = dwStyle | LBS_SORT;		
 
+	if (!pControl->GetBoolProperty(nEnabled))
+		dwStyle = dwStyle | WS_DISABLED;		
 
 	if (pControl->GetBoolProperty(nVScrollBar) == TRUE)
 		dwStyle = dwStyle | WS_VSCROLL;	
@@ -173,7 +175,9 @@ void COptionListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct, int nHighlight)
 
 	pDC->SetBkMode(TRANSPARENT);
 
-	pDC->FillRect(rc, m_pStaticBrush);
+	CBrush brBkGnd(m_BackColor);
+	pDC->FillRect(rc, &brBkGnd);
+	brBkGnd.DeleteObject();
 
 	CString strCurFont,strNextFont;
 	GetText(lpDrawItemStruct->itemID, strCurFont);
@@ -234,6 +238,7 @@ void COptionListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct, int nHighlight)
 
 	m_ImageList.Draw(pDC, nImageIndex, CPoint(2, rc.top+2), ILD_NORMAL);//ILD_TRANSPARENT);
 	
+	::DeleteObject(::SelectObject(pDC->m_hDC, OldPen));
 	// Restore State of context
 	pDC->RestoreDC(nIndexDC);
 	
@@ -429,7 +434,7 @@ void COptionListBox::OnMouseMove(UINT nFlags, CPoint point)
 				m_ImageList.Draw(pDC, 0, CPoint(2, rc.top+2), ILD_NORMAL);//ILD_TRANSPARENT);
 		}
 	}
-	pDC->Detach();
+	ReleaseDC(pDC);
 }
 
 void COptionListBox::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {

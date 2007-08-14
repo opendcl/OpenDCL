@@ -279,7 +279,7 @@ void GetImageFromList(const CImageList *lstImages, int nImage, CBitmap* destBitm
 /////////////////////////////////////////////////////////////////////////////
 //Functions to write data to our file.
 #define CHUNKSIZE 1048576
-LPSTR currentChunk = new CHAR[CHUNKSIZE];
+CHAR currentChunk[CHUNKSIZE];
 CString currentString;
 int chunkPosition = CHUNKSIZE;
 CString lastLine;

@@ -11,6 +11,8 @@ class CDclControlObject;
 
 class CClrListBox : public CAcUiListBox
 {
+	CBrush mbrushBackground;
+
 // Construction
 public:
 	CClrListBox();
@@ -18,7 +20,6 @@ public:
 
 // Attributes
 public:
-	CBrush *m_pStaticBrush;		
 	COLORREF m_ForeColor;
 	COLORREF m_BackColor;
 	CDclControlObject *m_ArxControl;

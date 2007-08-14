@@ -224,7 +224,7 @@ HTREEITEM CTreeCtrlFolder::AddFolder(CFolder* folder, HTREEITEM parent, bool bCu
 		imageIndex = 1;
 	HTREEITEM item = InsertItem(folder->m_pathDescription, 
 							imageIndex, imageIndex, parent);
-	SetItemData(item, (DWORD)folder);
+	SetItemData(item, (DWORD_PTR)folder);
 	return item;
 }
 

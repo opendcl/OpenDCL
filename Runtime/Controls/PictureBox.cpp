@@ -111,7 +111,6 @@ CPictureBox::CPictureBox()
 
 CPictureBox::~CPictureBox()
 {
-	
 	if (m_pPictureHolder != NULL)
 	{
 		m_pPictureHolder->Release();
@@ -123,9 +122,7 @@ CPictureBox::~CPictureBox()
 	{
 		DeleteObject(m_hbmMem);
 		m_hbmMem = NULL;
-		
 	}
-	
 }
 
 
@@ -233,18 +230,9 @@ void CPictureBox::OnEnable(BOOL bEnable)
 	{
 		DeleteObject(m_hbmMem);
 		m_hbmMem = NULL;
-		
 	}
 	
 	Invalidate();
-	/*
-	CDC *pdc = CWnd::GetDC();
-
-	CPictureBox::Refresh(pdc);
-
-	pdc->Detach();
-	*/
-	
 }
 
 void CPictureBox::SetPictureID(int nPictureID)
@@ -277,9 +265,9 @@ void CPictureBox::SetPictureID(int nPictureID)
 	else
 		SetPictureBlank();
 
-	CDC *pdc = CWnd::GetDC();
+	CDC *pdc = GetDC();
 	Refresh(pdc);
-	pdc->Detach();
+	ReleaseDC(pdc);
 }
 
 void CPictureBox::AutoSize()
@@ -364,18 +352,13 @@ void CPictureBox::Clear()
 	
 	// then releasing the DC itself
 	::ReleaseDC(m_hWnd, hdc);
-	
-	
 }
 
 void CPictureBox::Refresh()
 {
-	CDC *pdc = CWnd::GetDC();
-
+	CDC *pdc = GetDC();
 	CPictureBox::Refresh(pdc);
-
-	pdc->Detach();
-		
+	ReleaseDC(pdc);
 }
 
 void CPictureBox::Refresh(CDC *pdc)
@@ -386,8 +369,7 @@ void CPictureBox::Refresh(CDC *pdc)
 	GetClientRect(&rcCell);
 	
 	
-	CBrush CellBrush;
-	CellBrush.CreateSolidBrush(m_BkColor);
+	CBrush CellBrush(m_BkColor);
 	
 	
 	// draw the Window background for the cell				
@@ -618,10 +600,7 @@ int CPictureBox::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
-	
-	
 	SetPictureBlank();
-	
 	return 0;
 }
 
@@ -679,12 +658,9 @@ void CPictureBox::SetAcadColor(long nColor)
 	m_BkColor = GetRGBColor(nColor);
 
 	//RedrawWindow();
-	CDC *pdc = CWnd::GetDC();
-
+	CDC *pdc = GetDC();
 	CPictureBox::Refresh(pdc);
-
-	pdc->Detach();
-
+	ReleaseDC(pdc);
 }
 
 void CPictureBox::DrawLine(int sX, int sY, int eX, int eY, COLORREF rgb)
@@ -705,7 +681,6 @@ void CPictureBox::DrawLine(int sX, int sY, int eX, int eY, COLORREF rgb)
 
 	// then releasing the DC itself
 	::ReleaseDC(m_hWnd, hdc);
-
 }
 
 void CPictureBox::DrawPoint(int nX, int nY, COLORREF rgb)
@@ -716,7 +691,6 @@ void CPictureBox::DrawPoint(int nX, int nY, COLORREF rgb)
 
 	// then releasing the DC itself
 	::ReleaseDC(m_hWnd, hdc);
-
 }
 
 void CPictureBox::DrawArc(int sX, int sY, int eX, int eY, int saX, int saY, int eaX, int eaY, COLORREF rgb)
@@ -954,8 +928,6 @@ void CPictureBox::DrawFillRect(int sX, int sY, int eX, int eY, COLORREF rgb)
 
 	// then releasing the DC itself
 	::ReleaseDC(m_hWnd, hdc);
-
-
 }
 
 void CPictureBox::DrawEdge(int sX, int sY, int eX, int eY, int nEdge)
@@ -1002,8 +974,6 @@ void CPictureBox::DrawEdge(int sX, int sY, int eX, int eY, int nEdge)
 	
 	// then releasing the DC itself
 	::ReleaseDC(m_hWnd, hdc);
-
-
 }
 
 void CPictureBox::DrawFocusRect(int sX, int sY, int eX, int eY)
@@ -1022,7 +992,6 @@ void CPictureBox::DrawFocusRect(int sX, int sY, int eX, int eY)
 	
 	// then releasing the DC itself
 	::ReleaseDC(m_hWnd, hdc);
-
 }
 
 void CPictureBox::DrawRect(int sX, int sY, int eX, int eY, COLORREF rgb)
@@ -1048,8 +1017,8 @@ void CPictureBox::DrawRect(int sX, int sY, int eX, int eY, COLORREF rgb)
 
 	// then releasing the DC itself
 	::ReleaseDC(m_hWnd, hdc);
-
 }
+
 void CPictureBox::DrawHatchRect(int sX, int sY, int eX, int eY, COLORREF rgb, int nHatchPattern)
 {
 	HDC hdc = ::GetDC(m_hWnd);
@@ -1071,9 +1040,6 @@ void CPictureBox::DrawHatchRect(int sX, int sY, int eX, int eY, COLORREF rgb, in
 		
 	// then releasing the DC itself
 	::ReleaseDC(m_hWnd, hdc);
-
-
-
 }
 
 
@@ -1551,40 +1517,17 @@ void CPictureBox::CopyDC()
 		DeleteObject(m_hbmMem);
 		m_hbmMem = NULL;
 	}
+	if (!GetParent()->IsWindowVisible())		
+		return;
 	
 	HDC hDC = ::GetDC(m_hWnd);
 	HDC hDCmem = CreateCompatibleDC (hDC) ; 
 	int nSourceX = GetDeviceCaps(hDC, HORZRES);
 	int nSourceY = GetDeviceCaps(hDC, VERTRES); 
-	
-	if (!GetParent()->IsWindowVisible())		
-	{
-		DeleteDC (hDCmem); 
-		return;
-	}
-	
 
 	// Create a compatible bitmap for hdcSource.  
-	HBITMAP hbmMem = CreateCompatibleBitmap(hDC, 
-				nSourceX, 
-				nSourceY); 
-
-	if (!GetParent()->IsWindowVisible())		
-	{
-		DeleteDC (hDCmem); 		
-		return;
-	}
-	
-	HGDIOBJ hbmOld;
-	hbmOld = SelectObject (hDCmem, hbmMem) ; 
-	
-	if (!GetParent()->IsWindowVisible())		
-	{
-		SelectObject (hDCmem, hbmOld);
-		DeleteDC (hDCmem); 
-		DeleteObject (hbmOld);
-		return;
-	}
+	HBITMAP hbmMem = CreateCompatibleBitmap(hDC, nSourceX, nSourceY); 
+	HGDIOBJ hbmOld = SelectObject (hDCmem, hbmMem) ; 
 
 	BitBlt(hDCmem, 0,0, 
 			nSourceX,
@@ -1593,7 +1536,8 @@ void CPictureBox::CopyDC()
 
 	SelectObject (hDCmem, hbmOld);
 	DeleteObject (hbmOld);
-	DeleteDC (hDCmem); 
+	DeleteDC (hDCmem);
+	::ReleaseDC (m_hWnd, hDC);
 	
 	// delete the bitmap if valid
 	if (m_hbmMem != NULL)
@@ -1608,7 +1552,6 @@ void CPictureBox::OnSize(UINT nType, int cx, int cy)
 	{
 		DeleteObject(m_hbmMem);
 		m_hbmMem = NULL;
-		
 	}
 	CWnd::OnSize(nType, cx, cy);
 }
@@ -1636,7 +1579,6 @@ void CPictureBox::OnPaint()
 		if (!GetParent()->IsWindowVisible())		
 			return;
 
-		
 		CPictureBox::Refresh(pdc);
 			
 		CWnd *pFocusWnd = CWnd::GetFocus();
@@ -1644,9 +1586,6 @@ void CPictureBox::OnPaint()
 		// then send a 0 to indicate this control does not 
 		// have focus. Otherwise send a 1 to indicate that
 		// it does have focus.
-		
-		if (!GetParent()->IsWindowVisible())		
-			return;
 
 		if (pFocusWnd != this)
 			// call methods to invoke the event
@@ -1657,35 +1596,24 @@ void CPictureBox::OnPaint()
 		
 	}
 
-	if (!GetParent()->IsWindowVisible())		
-		return;
-
 	if (m_hbmMem != NULL)
 	{
-	    CBitmap *poldbmp; 
+		if (!GetParent()->IsWindowVisible())		
+			return;
+
 		CDC memdc;
-    
-		if (!GetParent()->IsWindowVisible())		
-			return;
+    // Create a compatible memory DC
+    memdc.CreateCompatibleDC( pdc );
+    // Select the bitmap into the DC
+    CBitmap *poldbmp = memdc.SelectObject( CBitmap::FromHandle(m_hbmMem) );
 
-        // Create a compatible memory DC
-        memdc.CreateCompatibleDC( pdc );
-        // Select the bitmap into the DC
-        poldbmp = memdc.SelectObject( CBitmap::FromHandle(m_hbmMem) );
-		
-		if (!GetParent()->IsWindowVisible())		
-		{
-			memdc.SelectObject( poldbmp );
-			return;
-		}
-
-        // Copy (BitBlt) bitmap from memory DC to screen DC
-        pdc->BitBlt( 0, 0,
+    // Copy (BitBlt) bitmap from memory DC to screen DC
+    pdc->BitBlt( 0, 0,
 			GetDeviceCaps(pdc->m_hDC, HORZRES), 
 			GetDeviceCaps(pdc->m_hDC, VERTRES),                 
 			&memdc, 0, 0, SRCCOPY );
 
-        memdc.SelectObject( poldbmp );
+    memdc.SelectObject( poldbmp );
 	}
 }
 

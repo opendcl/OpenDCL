@@ -9,13 +9,14 @@
 
 class CClrButton : public CButton
 {
+	CBrush mbrushBackground;
+
 // Construction
 public:
 	CClrButton();
 
 // Attributes
 public:
-	CBrush *m_pStaticBrush;		
 	COLORREF m_ForeColor;
 	COLORREF m_BackColor;
 

@@ -18,12 +18,13 @@ class CImageListPage : public CPropertyPage
 {
 	//DECLARE_DYNCREATE(CImageListPage)
 
+	friend class CPropertyListCtrl;
+
 	CDclControlObject* mpDclControl;
 	RefCountedPtr< CImageList > mpImageList;
 
 // Construction
 //protected:
-//	CImageListPage();
 public:
 	CImageListPage( CDclControlObject* pDclControl );
 	~CImageListPage();
@@ -38,10 +39,6 @@ public:
 
 	CImageList& GetImageList() { return *mpImageList; }
 
-	//RefCountedPtr< CPropertyObject > m_pImageListIndex;
-	//CDclFormObject *m_pDclForm;
-	//CImageListObject *m_pImageListObj;
-	//bool m_bImageListCreated;
 	void LoadPictureFile(LPCTSTR szFile);
 	BOOL ImageListAddPicture(LPPICTUREDISP iPic);
 	int nCurrentWidth;

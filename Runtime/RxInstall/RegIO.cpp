@@ -12,19 +12,19 @@
 #include "RegIO.h"
 
 
-RegKeyA::RegKeyA( LPCSTR pszKey, HKEY hkRoot, bool bCreate /*= false*/, bool bForWrite /*= true*/ )
+RegKeyA::RegKeyA( LPCSTR pszKey, HKEY hkRoot, bool bCreate /*= false*/, REGSAM samAccess /*= KEY_ALL_ACCESS*/ )
 :	m_hkRoot( hkRoot ),
 	m_hkThis( NULL ),
-	m_bForWrite( bForWrite ),
+	m_samAccess( samAccess ),
 	m_pszKey( NULL )
 {
-	InnerOpen( pszKey, hkRoot, bCreate, bForWrite );
+	InnerOpen( pszKey, hkRoot, bCreate, samAccess );
 }
 
 RegKeyA::RegKeyA( RegKeyA& Source )
 :	m_hkRoot( Source.m_hkRoot ),
 	m_hkThis( Source.m_hkThis ),
-	m_bForWrite( Source.m_bForWrite ),
+	m_samAccess( Source.m_samAccess ),
 	m_pszKey( Source.m_pszKey )
 {
 	Source.m_hkRoot = NULL;
@@ -32,7 +32,7 @@ RegKeyA::RegKeyA( RegKeyA& Source )
 	Source.m_pszKey = NULL;
 }
 
-HKEY RegKeyA::InnerOpen( LPCSTR pszKey, HKEY hkRoot, bool bCreate /*= false*/, bool bForWrite /*= true*/ )
+HKEY RegKeyA::InnerOpen( LPCSTR pszKey, HKEY hkRoot, bool bCreate /*= false*/, REGSAM samAccess /*= KEY_ALL_ACCESS*/ )
 {
 	if( !pszKey )
 	{
@@ -43,20 +43,8 @@ HKEY RegKeyA::InnerOpen( LPCSTR pszKey, HKEY hkRoot, bool bCreate /*= false*/, b
 	lstrcpyA( m_pszKey, pszKey );
 	if( ERROR_SUCCESS !=
 				bCreate?
-					::RegCreateKeyExA( hkRoot,
-														 pszKey,
-														 0,
-														 NULL,
-														 REG_OPTION_NON_VOLATILE,
-														 (m_bForWrite? (KEY_READ | KEY_WRITE) : KEY_READ),
-														 NULL,
-														 &m_hkThis,
-														 NULL ) :
-					::RegOpenKeyExA( hkRoot,
-													 pszKey,
-													 0,
-													 (m_bForWrite? (KEY_READ | KEY_WRITE) : KEY_READ),
-													 &m_hkThis ) )
+					::RegCreateKeyExA( hkRoot, pszKey, 0, NULL, REG_OPTION_NON_VOLATILE, samAccess, NULL, &m_hkThis, NULL ) :
+					::RegOpenKeyExA( hkRoot, pszKey, 0, samAccess, &m_hkThis ) )
 		m_hkThis = NULL;
 	return m_hkThis;
 }
@@ -90,23 +78,42 @@ bool RegKeyA::HasValue( LPCSTR pszName ) const
 
 bool RegKeyA::SetValue( LPCSTR pszName, LPCSTR pszValue )
 {
-	if( !m_bForWrite || !m_hkThis )
+	if( !IsWritable() || !m_hkThis )
 		return false;
 	return (::RegSetValueExA( m_hkThis, pszName, 0, REG_SZ, (BYTE*)pszValue, lstrlenA( pszValue ) + 1 ) == ERROR_SUCCESS);
 }
 
 bool RegKeyA::SetValue( LPCSTR pszName, DWORD dwValue )
 {
-	if( !m_bForWrite || !m_hkThis )
+	if( !IsWritable() || !m_hkThis )
 		return false;
 	return (::RegSetValueExA( m_hkThis, pszName, 0, REG_DWORD, (BYTE*)&dwValue, sizeof(DWORD)) == ERROR_SUCCESS);
 }
 
 bool RegKeyA::SetValue( LPCSTR pszName, const BYTE* pbData, DWORD cbData )
 {
-	if( !m_bForWrite || !m_hkThis )
+	if( !IsWritable() || !m_hkThis )
 		return false;
 	return (::RegSetValueExA( m_hkThis, pszName, 0, REG_BINARY, pbData, cbData) == ERROR_SUCCESS);
+}
+
+LPCSTR RegKeyA::GetString( LPCSTR pszName ) const
+{
+	static CHAR szReturn[MAX_PATH << 2];
+	szReturn[0] = '\0';
+	DWORD dwSize = MAX_PATH << 2;
+	DWORD dwType;
+	LONG lResult = ::RegQueryValueExA( m_hkThis, pszName, 0, &dwType, (BYTE*)szReturn, &dwSize );
+	if( lResult == ERROR_SUCCESS && dwType == REG_EXPAND_SZ )
+	{
+		LPSTR pszSource = new CHAR[dwSize];
+		lstrcpyA( pszSource, szReturn );
+		DWORD cchResult = ::ExpandEnvironmentStringsA( pszSource, szReturn, MAX_PATH << 2);
+		if( cchResult > (MAX_PATH << 2) || cchResult <= 0 )
+			szReturn[0] = '\0';
+		delete [] pszSource;
+	}
+	return szReturn;
 }
 
 

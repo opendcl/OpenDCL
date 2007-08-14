@@ -232,6 +232,7 @@ void OdclLayerCombo::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->FillRect(rc, &brushFill);
+	brushFill.DeleteObject();
 
 	CString strLayer;
 

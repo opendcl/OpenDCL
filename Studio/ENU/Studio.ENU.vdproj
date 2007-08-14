@@ -160,7 +160,7 @@
         "Entry"
         {
         "MsmKey" = "8:_417ECD6D2E123311B77BFF5C8B36F7DE"
-        "OwnerKey" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
+        "OwnerKey" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -328,13 +328,7 @@
         "Entry"
         {
         "MsmKey" = "8:_9B223277BD3BA9D95529BD04EA1DC542"
-        "OwnerKey" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9B4D95A76F1048BA8EFC046B167AA01B"
-        "OwnerKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -358,7 +352,7 @@
         "Entry"
         {
         "MsmKey" = "8:_A2A745A0EE981F5D640F97E952599E75"
-        "OwnerKey" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
+        "OwnerKey" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -388,7 +382,7 @@
         "Entry"
         {
         "MsmKey" = "8:_A9B2E5A22FEF5786B8AA09985945A715"
-        "OwnerKey" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
+        "OwnerKey" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -483,12 +477,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_CAF229602E33463AAF768A03DF8C521C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -513,7 +501,19 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D35C731BE02349A3BEA9D122101B6522"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D396F7DB7EE74A9DA6F6F01F25A86BDE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -550,12 +550,6 @@
         "Entry"
         {
         "MsmKey" = "8:_E3100086375D4DC3918CE7A8E6CBF6D6"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E3DD788CD33E4E2E8B8BF20028C728A6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1748,26 +1742,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9B4D95A76F1048BA8EFC046B167AA01B"
-            {
-            "SourcePath" = "8:Content\\GNU-GPL.txt"
-            "TargetName" = "8:GNU-GPL.txt"
-            "Tag" = "8:"
-            "Folder" = "8:_DCE46B70EC97498EA7A2485E6FC33849"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9BD1010D4D3B43A7BBE4CAF1A339480F"
             {
             "SourcePath" = "8:Content\\Examples\\DistSample.odcl.lsp"
@@ -2348,6 +2322,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D396F7DB7EE74A9DA6F6F01F25A86BDE"
+            {
+            "SourcePath" = "8:..\\OpenDCL.ico"
+            "TargetName" = "8:OpenDCL.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D44BEBA21CD743BFA5F6F51B6CC8C830"
             {
             "SourcePath" = "8:Content\\Examples\\Modeless.LSP"
@@ -2434,26 +2428,6 @@
             "TargetName" = "8:DwgList.odcl"
             "Tag" = "8:"
             "Folder" = "8:_6F00DF77BD9345DE91236AAD7401995F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E3DD788CD33E4E2E8B8BF20028C728A6"
-            {
-            "SourcePath" = "8:Content\\License.txt"
-            "TargetName" = "8:License.txt"
-            "Tag" = "8:"
-            "Folder" = "8:_DCE46B70EC97498EA7A2485E6FC33849"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2617,11 +2591,11 @@
             "Description" = "8:OpenDCL Project"
             "Extensions" = "8:.odcl"
             "MIME" = "8:"
-            "Icon" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
-            "IconIndex" = "3:59"
+            "Icon" = "8:_D396F7DB7EE74A9DA6F6F01F25A86BDE"
+            "IconIndex" = "3:0"
                 "Command"
                 {
-                "Command" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
+                "Command" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
                 }
                 "Verbs"
                 {
@@ -2730,14 +2704,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{D6DE16E2-2690-45D5-8C6B-EB3FAFEC8F0B}"
-        "PackageCode" = "8:{56EF86E0-F89F-46EF-99DF-A0A5D757446A}"
+        "ProductCode" = "8:{95D5F562-88C3-4B9F-8CB0-3BA05BF0C635}"
+        "PackageCode" = "8:{CAE8EAE3-2775-45D1-A76F-20145444112E}"
         "UpgradeCode" = "8:{F8AB94DC-2F57-4C29-8842-E2BB5F898E6C}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:4.0.0301"
+        "ProductVersion" = "8:4.1.0002"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://sourceforge.net/projects/opendcl/"
@@ -2747,8 +2721,8 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:OpenDCL  (US English)"
         "ARPURLINFOABOUT" = "8:http://sourceforge.net/projects/opendcl/"
-        "ARPPRODUCTICON" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
-        "ARPIconIndex" = "3:59"
+        "ARPPRODUCTICON" = "8:_D396F7DB7EE74A9DA6F6F01F25A86BDE"
+        "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:0"
@@ -2783,7 +2757,7 @@
                                 }
                                 "Values"
                                 {
-                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_4E12A58241C84E40B686AAD6ABA40AC1"
+                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_AC24B294AB344D45945D38298CC2C299"
                                     {
                                     "Name" = "8:AutoUpdateCheck"
                                     "Condition" = "8:"
@@ -2972,12 +2946,12 @@
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
-            "IconIndex" = "3:59"
+            "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
+            "Target" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
             "Folder" = "8:_0067D1898414445B83104B9F34CB2E68"
             "WorkingFolder" = "8:_E79FD28A43E246DEBA6AF02218988801"
-            "Icon" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
+            "Icon" = "8:_D396F7DB7EE74A9DA6F6F01F25A86BDE"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_890D7CFBE3AD4A2DAD52C819E906060C"
@@ -2986,12 +2960,12 @@
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
-            "IconIndex" = "3:59"
+            "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
+            "Target" = "8:_D2E30088FE6F44CDA911B5E5558D3661"
             "Folder" = "8:_8A49A5CB8AC64E55B760026641E58D97"
             "WorkingFolder" = "8:_E79FD28A43E246DEBA6AF02218988801"
-            "Icon" = "8:_C8B5EB67C59548EF9FA8D898EBD90806"
+            "Icon" = "8:_D396F7DB7EE74A9DA6F6F01F25A86BDE"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_9EBFD98EC8B94282A663AC14465DA17F"
@@ -3407,9 +3381,9 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C8B5EB67C59548EF9FA8D898EBD90806"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D2E30088FE6F44CDA911B5E5558D3661"
             {
-            "SourcePath" = "8:..\\Release\\OpenDCL.exe"
+            "SourcePath" = "8:..\\Debug\\OpenDCL.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
@@ -3437,7 +3411,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E3100086375D4DC3918CE7A8E6CBF6D6"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\ENU\\MSM\\Release\\OpenDCL.Runtime.ENU.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\ENU\\MSM\\Debug\\OpenDCL.Runtime.ENU.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"

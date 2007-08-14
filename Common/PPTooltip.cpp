@@ -599,7 +599,7 @@ BOOL CPPToolTip::RelayEvent(MSG* pMsg)
 					//RUS: »щем предопределенную гор€чую зону тултипа
 					hWnd = FindTool(&pt, ti);
 				} //if
-				TRACE ("¬ременное окно = 0x%08X\n", hWnd);
+				TRACE ("¬ременное окно = %p\n", hWnd);
 				if (NULL == hWnd)
 				{
 					//ENG: An item with a tooltip wasn't found
@@ -664,7 +664,7 @@ BOOL CPPToolTip::RelayEvent(MSG* pMsg)
 
 void CPPToolTip::SetNewTooltip(HWND hWnd, const PPTOOLTIP_INFO & ti, BOOL bDisplayWithDelay /* = TRUE */, TooltipType type /* = PPTOOLTIP_NORMAL */)
 {
-	TRACE (_T("CPPToolTip::SetNewTooltip(hWnd=0x%08X, CRect(left=%d, top=%d, right=%d, bottom=%d), nID=%d)\n"), 
+	TRACE (_T("CPPToolTip::SetNewTooltip(hWnd=%p, CRect(left=%d, top=%d, right=%d, bottom=%d), nID=%d)\n"), 
 		hWnd, ti.rectBounds.left, ti.rectBounds.top, ti.rectBounds.right, ti.rectBounds.bottom, ti.nIDTool);
 	
 	m_bNextToolExist = FALSE;
@@ -699,7 +699,7 @@ void CPPToolTip::SetNewTooltip(HWND hWnd, const PPTOOLTIP_INFO & ti, BOOL bDispl
 		OnTimer(TIMER_SHOW);
 } //End of SetNewTooltip
 
-void CPPToolTip::OnTimer(UINT nIDEvent) 
+void CPPToolTip::OnTimer(UINT_PTR nIDEvent) 
 {
 	POINT pt;
 	switch (nIDEvent)
@@ -1624,11 +1624,11 @@ CString CPPToolTip::GetDebugInfoTool(LPPOINT lpPoint)
 	strOutput += CreateDebugCell(_T("Title"), ch);
 	
 	//3. Window's handle and Window Owner's handle
-	str.Format(_T("0x%08X"), hWnd);
+	str.Format(_T("%p"), hWnd);
 	strOutput += CreateDebugCell(_T("Handle"), str);
 	
 	//4. Window's ID
-	str.Format(_T("%d"), GetWindowLong(hWnd, GWL_ID));
+	str.Format(_T("%p"), GetWindowLongPtr(hWnd, GWLP_ID));
 	strOutput += CreateDebugCell(_T("Control ID"), str);
 
 	//5. Window's styles
@@ -1679,7 +1679,7 @@ CString CPPToolTip::GetDebugInfoTool(LPPOINT lpPoint)
 	strOutput += CreateDebugCell(_T("Title"), str);
 	
 	//3. Window's handle and Window Owner's handle
-	str.Format(_T("0x%08X"), hParent);
+	str.Format(_T("%p"), hParent);
 	strOutput += CreateDebugCell(_T("Handle"), str);
 
 	strOutput += _T("</table>");
@@ -1871,7 +1871,7 @@ void CPPToolTip::AddTool(CWnd * pWnd, DWORD dwIdString, HICON hIcon, LPCRECT lpR
 void CPPToolTip::AddTool(CWnd * pWnd, LPCTSTR lpszString, HICON hIcon, LPCRECT lpRectBounds /*= NULL*/, DWORD dwIDTool /*= 0*/)
 {
 	CString str;
-	str.Format(_T("<table><tr><td><icon handle=0x%X></td><td>%s</td></tr></table>"), 
+	str.Format(_T("<table><tr><td><icon handle=0x%p></td><td>%s</td></tr></table>"), 
 		hIcon, lpszString);
 	AddTool(pWnd, str, lpRectBounds, dwIDTool);
 }
@@ -1931,7 +1931,7 @@ void CPPToolTip::AddTool(CWnd * pWnd, LPCTSTR lpszString /* = NULL */, LPCRECT l
 
 void CPPToolTip::AddTool(CWnd * pWnd, PPTOOLTIP_INFO & ti)
 {
-	TRACE(_T("CPPToolTip::AddTool(hWnd=0x%08X)\n"), pWnd->GetSafeHwnd());
+	TRACE(_T("CPPToolTip::AddTool(hWnd=%p)\n"), pWnd->GetSafeHwnd());
 	ASSERT (pWnd);
 
 	//ENG: Gets HWND of a window
@@ -1975,6 +1975,37 @@ void CPPToolTip::AddTool(CWnd * pWnd, PPTOOLTIP_INFO & ti)
 	hotarea.push_back(ti);
 } //End of AddTool
 
+// Clean up resources associated with a tool before it is removed
+void CPPToolTip::OnRemoveTool( const PPTOOLTIP_INFO& ti ) const
+{
+	static const CString sIconHandle = _T("<icon handle=");
+	int nStart = 0;
+	do
+	{
+		nStart = ti.sTooltip.Find( sIconHandle, nStart );
+		if( nStart >= 0 )
+		{
+			nStart += sIconHandle.GetLength();
+			CString sHandle = ti.sTooltip.Mid( nStart ).SpanExcluding( _T("> ") );
+		#ifdef _WIN64
+			HICON hIcon = NULL;
+			if( sHandle.GetLength() > 10 ) //won't fit in unsigned long
+			{
+				ULONGLONG ulLowPart = _tcstoul( CString( _T("0x") ) + sHandle.Right( 8 ), NULL, 16 );
+				ULONGLONG ulHighPart = ((ULONGLONG)_tcstoul( sHandle.Left( sHandle.GetLength() - 8 ), NULL, 16 )) << 32;
+				hIcon = (HICON)(ulHighPart | ulLowPart);
+			}
+			else
+				hIcon = (HICON)_tcstoul( sHandle, NULL, 16 );
+		#else
+			HICON hIcon = (HICON)_tcstoul( sHandle, NULL, 16 );
+		#endif
+			if( hIcon )
+				DestroyIcon( hIcon );
+		}
+	} while( nStart >= 0 );
+}
+
 ////////////////////////////////////////////////////////////////////
 // CPPToolTip::RemoveTool()
 //   Removes the tool specified by pWnd and lpRectBounds from the collection of 
@@ -1988,7 +2019,7 @@ void CPPToolTip::AddTool(CWnd * pWnd, PPTOOLTIP_INFO & ti)
 ////////////////////////////////////////////////////////////////////
 void CPPToolTip::RemoveTool(CWnd * pWnd, LPCRECT lpRectBounds /* = NULL */)
 {
-	TRACE (_T("CPPToolTip::RemoveTool(hWnd=0x%08X)\n"), pWnd->GetSafeHwnd());
+	TRACE (_T("CPPToolTip::RemoveTool(hWnd=%p)\n"), pWnd->GetSafeHwnd());
 	ASSERT(pWnd);
 	
 	//ENG: Gets HWND of a window
@@ -2010,6 +2041,10 @@ void CPPToolTip::RemoveTool(CWnd * pWnd, LPCRECT lpRectBounds /* = NULL */)
 	{
 		//ENG: Removes all tools for the specified window
 		//RUS: ”дал€ютс€ все инструменты дл€ указанного окна
+		arHotArea & hotarea = item->second;
+		arHotArea::iterator iter;
+		for (iter = hotarea.begin(); iter != hotarea.end(); ++iter)
+			OnRemoveTool( *iter );
 		m_ToolMap.erase(item);
 	}
 	else
@@ -2022,6 +2057,7 @@ void CPPToolTip::RemoveTool(CWnd * pWnd, LPCRECT lpRectBounds /* = NULL */)
 		{
 			if ((*iter).rectBounds == *lpRectBounds)
 			{
+				OnRemoveTool( *iter );
 				//ENG: The tool was found
 				//RUS: »нструмент найден
 				if (hotarea.size() > 1)
@@ -2052,8 +2088,14 @@ void CPPToolTip::RemoveAllTools()
 
 	//ENG: Removes all tools
 	//RUS: ”дал€ем все инструменты
-	if (m_ToolMap.size())
-		m_ToolMap.clear();
+	for (mapIter item = m_ToolMap.begin(); item != m_ToolMap.end(); ++item)
+	{
+		arHotArea & hotarea = item->second;
+		arHotArea::iterator iter;
+		for (iter = hotarea.begin(); iter != hotarea.end(); ++iter)
+			OnRemoveTool( *iter );
+	}
+	m_ToolMap.clear();
 
 	//ENG: Removes all toolbars
 	//RUS: ”дал€ем все панели инструментов
@@ -2070,7 +2112,7 @@ void CPPToolTip::RemoveAllTools()
 ////////////////////////////////////////////////////////////////////
 void CPPToolTip::AddToolBar(CToolBar * pBar)
 {
-	TRACE (_T("CPPToolTip::AddToolBar(hWnd=0x%08X)\n"), pBar->GetSafeHwnd());
+	TRACE (_T("CPPToolTip::AddToolBar(hWnd=%p)\n"), pBar->GetSafeHwnd());
 	ASSERT(pBar);
 
 	//ENG: Gets HWND toolbar's window

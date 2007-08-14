@@ -241,17 +241,18 @@ void CArxWorkspace::ResetLispSymbol( LPCTSTR pszLispSymbol ) const
 #endif
 }
 
-void CArxWorkspace::SetLispSymbol( LPCTSTR pszLispSymbol, long lValue ) const
+void CArxWorkspace::SetLispSymbol( LPCTSTR pszLispSymbol, UINT_PTR pValue ) const
 {
 	if( !pszLispSymbol )
 		return; //no-op
 
-	struct resbuf rbLong = { NULL, RTLONG };;
-	rbLong.resval.rlong = lValue;
-	acedPutSym( pszLispSymbol, &rbLong );
+	struct resbuf rbPtr = { NULL, RTENAME };;
+	rbPtr.resval.rlname[0] = pValue;
+	rbPtr.resval.rlname[1] = 0;
+	acedPutSym( pszLispSymbol, &rbPtr );
 
 #ifdef _DEBUG
-	TraceFmt( _T("Lisp Symbol %s set to %08x\r\n"), pszLispSymbol, lValue );
+	TraceFmt( _T("Lisp Symbol %s set to %s\r\n"), pszLispSymbol, asString( pValue ) );
 #endif
 }
 
@@ -279,7 +280,7 @@ bool CArxWorkspace::UpdateGlobalLispSymbols() const
 			continue;
 		CString sVarName = pDialog->GetSourceForm()->GetVarName();
 		if (!sVarName.IsEmpty())
-			SetLispSymbol(sVarName, (long)pDialog->GetSourceForm());
+			SetLispSymbol(sVarName, (UINT_PTR)pDialog->GetSourceForm());
 		pDialog->GetControlPane().SetGlobalLispSymbols();
 	}
 

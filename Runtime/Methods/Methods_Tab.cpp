@@ -12,137 +12,116 @@
 
 int TabControl_SetTabText()
 {
-	CString pszString;
-	int nNewSelIndex;
+	CString sString;
+	int nIndex = -1;
 	int nArg;
 
 	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_SetTabText, &nArg);
-
-	if (!GetIntArgument(nArg, &nNewSelIndex, sTabControl_SetTabText) || pControl == NULL)
+	if (!pControl ||
+			!GetIntArgument(nArg, &nIndex, sTabControl_SetTabText) ||
+			(nIndex = ((VdclTab*)pControl)->GetTabItemIndex( nIndex )) < 0)
 	{
-		
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 
 	nArg++;
 	
-	if (!GetStringArgument(nArg, &pszString, sTabControl_SetTabText))
+	if (!GetStringArgument(nArg, &sString, sTabControl_SetTabText))
 	{
-		
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 	
-	TCITEM tcItem;
+	TCITEM tcItem = { TCIF_TEXT };
+	tcItem.pszText = sString.LockBuffer();
+	((VdclTab*)pControl)->GetTabCtrl().SetItem(nIndex, &tcItem);
 
-	//  Get the current tab item text.
-    tcItem.mask = TCIF_TEXT;
-	((VdclTab*)pControl)->GetTabCtrl().GetItem(nNewSelIndex, &tcItem);
-
-	//  Set the new text for the item.
-	tcItem.pszText = pszString.GetBuffer(256);
-
-	//  Set the item in the tab control.
-	((VdclTab*)pControl)->GetTabCtrl().SetItem(nNewSelIndex, &tcItem);
-
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
-
 int TabControl_ShowTab()
 {
-	int nIndex;
+	int nIndex = -1;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_ShowTab, &nArg);
-
-	if (!GetIntArgument(nArg, &nIndex, sTabControl_ShowTab) || pControl == NULL)
+	if (!pControl ||
+			!GetIntArgument(nArg, &nIndex, sTabControl_ShowTab) ||
+			nIndex < 0 ||
+			nIndex >= ((VdclTab*)pControl)->GetTabPageCount())
 	{
-		
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 	
-	
-	
 	((VdclTab*)pControl)->ShowTab(nIndex);
-	
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
 int TabControl_HideTab()
 {
-	int nIndex;
+	int nIndex = -1;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_HideTab, &nArg);
-
-	if (!GetIntArgument(nArg, &nIndex, sTabControl_HideTab) || pControl == NULL)
+	if (!pControl ||
+			!GetIntArgument(nArg, &nIndex, sTabControl_HideTab) ||
+			nIndex < 0 ||
+			nIndex >= ((VdclTab*)pControl)->GetTabPageCount())
 	{
-		
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
-	
-	
-	
+
 	((VdclTab*)pControl)->HideTab(nIndex);
-	
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
+
 int TabControl_SetCurSel()
 {
-	int nNewSelIndex;
+	int nIndex = -1;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_SetCurSel, &nArg);
-
-	if (!GetIntArgument(nArg, &nNewSelIndex, sTabControl_SetCurSel) || pControl == NULL)
+	if (!pControl ||
+			!GetIntArgument(nArg, &nIndex, sTabControl_SetCurSel) ||
+			((VdclTab*)pControl)->GetTabItemIndex( nIndex ) < 0)
 	{
-		
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 
-	((VdclTab*)pControl)->SetCurSel(nNewSelIndex);
-	((VdclTab*)pControl)->ActivateTabPage(nNewSelIndex, TRUE, TRUE);
-	
-	acedRetVoid();
+	((VdclTab*)pControl)->SetCurSel(((VdclTab*)pControl)->GetTabItemIndex( nIndex ));
+	((VdclTab*)pControl)->ActivateTabPage(nIndex, TRUE, TRUE);
+	acedRetT();
 	return 0;
 }
+
 int TabControl_GetCurSel()
 {
-	
 	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_GetCurSel);
-
 	if (pControl == NULL)
 	{
-		
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
-	
-	
-	acedRetInt(((VdclTab*)pControl)->m_nCurrentSelectedTab);
+
+	acedRetInt(((VdclTab*)pControl)->GetCurTabPage());
 	return 0;
 }
+
 int TabControl_GetRowCount()
 {
-		
 	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_GetRowCount);
-
 	if (pControl == NULL)
 	{
-		
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
-	
-	
+
 	acedRetInt(((VdclTab*)pControl)->GetTabCtrl().GetRowCount());
 	return 0;
-
 }
 
 

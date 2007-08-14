@@ -20,20 +20,17 @@ const int nHardReturnChar = 10;
 // CDwgPreviewCtrl
 
 CDwgPreviewCtrl::CDwgPreviewCtrl()
+: mbrushBackground( RGB(0,0,0) )
 {
 	m_bSelectedRect = false;
 	// No tooltip created
 	m_ToolTip.m_hWnd = NULL;
-
-	m_pStaticBrush = new CBrush();
 	m_BackColor = RGB(0,0,0);
-	m_pStaticBrush->CreateSolidBrush(m_BackColor);
-	
-
 }
 
 CDwgPreviewCtrl::~CDwgPreviewCtrl()
 {
+	mbrushBackground.DeleteObject();
 }
 
 
@@ -121,9 +118,7 @@ void CDwgPreviewCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	CDC* pDC = CDC::FromHandle(lpDrawItemStruct->hDC);
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetBkColor(m_BackColor);
-
 	PaintCtrl(pDC);
-	
 }
 
 /*
@@ -183,18 +178,16 @@ void CDwgPreviewCtrl::PaintCtrl(CDC *pdc)
 		CSize szValue(1,1);
 		rcCell.DeflateRect(szValue);
 		
-		CPen *pPen = new CPen(PS_SOLID, 1, m_HighlightColor);
-		CPen* pOldPen = pdc->SelectObject(pPen);
+		CPen Pen(PS_SOLID, 1, m_HighlightColor);
+		CPen* pOldPen = pdc->SelectObject(&Pen);
 
 		pdc->MoveTo(1, 1);
 		pdc->LineTo(rcCell.Width(), 1);		
 		pdc->LineTo(rcCell.Width(), rcCell.Height());		
 		pdc->LineTo(1, rcCell.Height());		
 		pdc->LineTo(1, 1);		
-		
-		pdc->SelectObject(pOldPen);			
-		pPen->DeleteObject();
-	
+		pdc->SelectObject(pOldPen);
+		Pen.DeleteObject();
 	}
 
 	if (GetFocus() == this)
@@ -219,12 +212,9 @@ void CDwgPreviewCtrl::RemoveHighLight()
 
 void CDwgPreviewCtrl::SetAcadColor(long nColor)
 {
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
-	m_pStaticBrush = new CBrush();
 	m_BackColor = GetRGBColor(nColor);
-	m_pStaticBrush->CreateSolidBrush(m_BackColor);
-	
+	mbrushBackground.DeleteObject();
+	mbrushBackground.CreateSolidBrush(m_BackColor);
 }
 
 void CDwgPreviewCtrl::OnSize(UINT nType, int cx, int cy) 
@@ -243,27 +233,20 @@ void CDwgPreviewCtrl::OnSize(UINT nType, int cx, int cy)
 	{
 		CDC *pdc = GetDC();
 		Refresh(pdc);
-		pdc->Detach();
+		pdc->DeleteDC();
 	}	
 }
 
 void CDwgPreviewCtrl::Refresh(CDC *pdc)
 {
-	CBrush *pCellBrush = new CBrush;	
-	pCellBrush->CreateSysColorBrush(COLOR_BTNFACE);
-			
-	
 	CRect rcThis;
 	CWnd::GetClientRect(&rcThis);
-
-	
 	CRect rcCell(0,0,rcThis.Width(), rcThis.Height());
+	CBrush CellBrush(COLOR_BTNFACE);
 	// draw the Window background for the cell				
-	pdc->FillRect(rcCell, pCellBrush);
+	pdc->FillRect(rcCell, &CellBrush);
 	// delete the brush
-	pCellBrush->DeleteObject();
-	delete pCellBrush;
-
+	CellBrush.DeleteObject();
 }
 
 
@@ -308,7 +291,7 @@ void CDwgPreviewCtrl::OnSetFocus(CWnd* pOldWnd)
 	CDC *pdc = GetDC();
 	// draw the solid rectangle
 	pdc->DrawFocusRect(m_rcFocus);
-	pdc->Detach();
+	ReleaseDC(pdc);
 	
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
@@ -322,7 +305,7 @@ void CDwgPreviewCtrl::OnKillFocus(CWnd* pNewWnd)
 	CDC *pdc = GetDC();
 	// draw the solid rectangle
 	pdc->DrawFocusRect(m_rcFocus);
-	pdc->Detach();	
+	ReleaseDC(pdc);
 
 	// call methods to invoke the event
 	InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
@@ -339,14 +322,7 @@ void CDwgPreviewCtrl::OnDestroy()
 {
 	// delete the tool tip text control object
 	m_ToolTip.DelTool(this, 1);
-	
 	CButton::OnDestroy();
-	
-	
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
-	
-		
 }
 
 void CDwgPreviewCtrl::SetDragnDrop(BOOL bRegister)
@@ -365,9 +341,7 @@ void CDwgPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	SetFocus();
 	if (m_ArxControl->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
-	{
 		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
-	}
 		
 	CButton::OnLButtonDown(nFlags, point);
 }
@@ -375,29 +349,13 @@ void CDwgPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 HBRUSH CDwgPreviewCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
 	return (HBRUSH)::GetStockObject(NULL_BRUSH); 
-	/*
-	if (!IsWindowEnabled())
-	{
-		return NULL;
-	}
-
-	pDC->SetBkColor(m_BackColor);	
-	pDC->SelectObject(m_pStaticBrush);
-	return *m_pStaticBrush;	
-	*/
 }
 
 HBRUSH CDwgPreviewCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
 {
-	//HBRUSH hbr = CButton::OnCtlColor(pDC, pWnd, nCtlColor);
-	
 	if (!IsWindowEnabled())
-	{		
 		return NULL;
-	}
-	
 	pDC->SetBkColor(m_BackColor);	
-	pDC->SelectObject(m_pStaticBrush);
-	return (HBRUSH)(m_pStaticBrush->GetSafeHandle());
+	return mbrushBackground;
 }
 

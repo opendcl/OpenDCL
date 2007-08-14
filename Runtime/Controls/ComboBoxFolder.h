@@ -61,7 +61,7 @@ public:
 	
 	// Generated message map functions
 protected:
-	afx_msg long OnSelectItemChange(WPARAM w, LPARAM l);
+	afx_msg LRESULT OnSelectItemChange(WPARAM w, LPARAM l);
 	//{{AFX_MSG(CComboBoxFolder)
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);

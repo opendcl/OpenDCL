@@ -470,11 +470,17 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 						break;
 					}
 				case RTSHORT:
-				case RTLONG:
 					{
 						pNewProperty = new CPropertyObject(PropLong);
 						// get the first argument required
 						pNewProperty->SetLongValue(ListData->resval.rint);
+						break;
+					}
+				case RTLONG:
+					{
+						pNewProperty = new CPropertyObject(PropLong);
+						// get the first argument required
+						pNewProperty->SetLongValue(ListData->resval.rlong);
 						break;
 					}
 				case RTSTR:
@@ -930,7 +936,7 @@ int Control_SetPos()
 
 bool DoSetPosByPtrList()
 {
-	long lPointer = 0;
+	LONG_PTR lPointer = 0;
 	int nLeftValue;
 	int nTopValue;
 	int nWidthValue;
@@ -946,8 +952,10 @@ bool DoSetPosByPtrList()
 	// get the long point argument required
 	if (ListData->restype == RTLONG) 
 		lPointer = ListData->resval.rlong;
+	else if (ListData->restype == RTENAME) 
+		lPointer =(LONG_PTR) ListData->resval.rlname[0];
 	else if (ListData->restype == RTREAL) 
-		lPointer =(long) ListData->resval.rreal;
+		lPointer =(LONG_PTR) ListData->resval.rreal;
 	else if (ListData->restype == RTSHORT) 
 		lPointer = ListData->resval.rint;
 	
@@ -1144,11 +1152,13 @@ bool DoSetPosByPtrList()
 				
 			// get the long point argument required
 			if (ListData->restype == RTREAL) 
-				lPointer = (long)ListData->resval.rreal;
-			if (ListData->restype == RTSHORT) 
-				lPointer = (int)ListData->resval.rint;
-			if (ListData->restype == RTLONG) 
-				lPointer = (long)ListData->resval.rlong;
+				lPointer = (LONG_PTR)ListData->resval.rreal;
+			else if (ListData->restype == RTSHORT) 
+				lPointer = (LONG_PTR)ListData->resval.rint;
+			else if (ListData->restype == RTLONG) 
+				lPointer = (LONG_PTR)ListData->resval.rlong;
+			else if (ListData->restype == RTENAME) 
+				lPointer = (LONG_PTR)ListData->resval.rlname[0];
 			
 			
 			CDclControlObject *pControl = (CDclControlObject*)lPointer;
@@ -1304,7 +1314,11 @@ bool DoSetPosByList()
 		return false;
 	
 	// if a point variable was used (a pointer cast to a long and set using)
-	if (ListData->restype == RTSHORT || ListData->restype == RTLONG || ListData->restype == RTREAL || ListData->restype == RTLB) 
+	if (ListData->restype == RTSHORT ||
+			ListData->restype == RTLONG ||
+			ListData->restype == RTENAME ||
+			ListData->restype == RTREAL ||
+			ListData->restype == RTLB) 
 	{
 		// call DoSetPosByPtrList instead and exit here
 		return DoSetPosByPtrList();

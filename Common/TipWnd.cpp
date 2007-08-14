@@ -98,9 +98,8 @@ BOOL CTipWnd::OnEraseBkgnd(CDC* pDC)
 	pDC->GetClipBox(rc);
 	CBrush* pOldBrush = pDC->SelectObject(&br);
 	pDC->PatBlt(rc.left,rc.top,rc.Width(),rc.Height(),PATCOPY);
-
 	pDC->SelectObject(pOldBrush);
-
+	br.DeleteObject();
 	return TRUE;
 }
 
@@ -124,9 +123,6 @@ BOOL CTipWnd::OnEraseBkgnd(CDC* pDC)
 ////////////////////////////////////////////////////////////////////////////////
 void CTipWnd::ShowTips(CPoint pt,const CString& str)
 {
-	CSize sz;
-	CDC* pDC = GetDC();
-
 	// Create new font if the selection has changed
 	if (m_strFont != str)
 	{
@@ -142,11 +138,11 @@ void CTipWnd::ShowTips(CPoint pt,const CString& str)
 		m_font.DeleteObject();
 		m_font.CreateFontIndirect(&lf);
 		
-
+		CDC* pDC = GetDC();
 		CFont* pFont = pDC->SelectObject(&m_font);
 
 		// String demensions of font on screen 
-		sz = pDC->GetTextExtent(m_strFont);
+		CSize sz = pDC->GetTextExtent(m_strFont);
 
 		// Give some space round the font
 		sz.cx += 8;

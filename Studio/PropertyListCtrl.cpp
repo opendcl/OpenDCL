@@ -3168,7 +3168,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	pProp = pArxCtrl->GetPropertyObject(nTabsCaption);	
 	if (pProp != NULL && m_pControl->GetOwnerForm() != NULL)
 	{
-		pTabs = new CTabsPane( m_pView, pArxCtrl );
+		pTabs = new CTabsPane( m_pView, pArxCtrl, pImageListPage->mpImageList );
 		Dlg.AddPage(pTabs);
 
 		pSortTabs = new CSortTabs( m_pView, pArxCtrl, pTabs );

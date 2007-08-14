@@ -12,13 +12,14 @@
 
 class OdclDateTime : public CDateTimeCtrl
 {
+	CBrush mbrushBackground;
+
 // Construction
 public:
 	OdclDateTime();
 
 // Attributes
 public:
-	CBrush *m_pStaticBrush;		
 	COLORREF m_ForeColor;
 	COLORREF m_BackColor;
 	COLORREF m_DefForeColor;

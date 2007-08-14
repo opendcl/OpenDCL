@@ -10,8 +10,6 @@
 #include "PropertyIds.h"
 #include "ToolTips.h"
 
-extern void CloseModalDlg(CString sFileName, CString sDialogName);
-
 
 /////////////////////////////////////////////////////////////////////////////
 // VdclTextButton

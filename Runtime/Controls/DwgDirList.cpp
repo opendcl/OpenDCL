@@ -78,7 +78,7 @@ BOOL ThumbnailFile::LoadDwgThumbnail()
             if (nType == TITLE_THUMB)
             {
                char szTitle[256];
-               DWORD lOld = (DWORD)f.GetPosition();
+               LONGLONG lOld = (LONGLONG)f.GetPosition();
                f.Seek (lOffset, CFile::begin);
                f.Read(szTitle, lSize);
                szTitle[lSize] = '\0';
@@ -88,7 +88,7 @@ BOOL ThumbnailFile::LoadDwgThumbnail()
    // Bitmap (copied from some DIB examples)
             else if (nType == BMP_THUMB)
             {
-				DWORD lOld = (DWORD)f.GetPosition();
+				LONGLONG lOld = (LONGLONG)f.GetPosition();
 				f.Seek (lOffset, CFile::begin);
 				
 				HGLOBAL hDIB = ::GlobalAlloc(GMEM_FIXED, lSize);
@@ -221,13 +221,10 @@ void ThumbnailFile::DrawBitmap(CDC* pDC, CPoint pt, int nPaintableWidth, int nPa
 		HDC hdc = pDC->m_hDC;
 		CPoint point;
 		
-		CBrush *pStaticBrush = new CBrush;
-		pStaticBrush->CreateSolidBrush(::GetSysColor(COLOR_WINDOW));
+		CBrush StaticBrush(::GetSysColor(COLOR_WINDOW));
 		CRect rc(pt.x, pt.y, pt.x + nPaintableWidth, pt.y + nPaintableHeight);
-
-		pDC->FillRect(rc, pStaticBrush);
-		
-		delete pStaticBrush;
+		pDC->FillRect(rc, &StaticBrush);
+		StaticBrush.DeleteObject();
 
 		COLORREF rgb = RGB(255, 0, 0);
 		HGDIOBJ pen = ::CreatePen(PS_SOLID, 1, rgb);
@@ -285,26 +282,6 @@ void ThumbnailFile::DrawBitmap(CDC* pDC, CPoint pt, int nPaintableWidth, int nPa
 
 		
 		::SelectObject(dcMem.m_hDC, pBmpOld);
-		
-		//pDC->BitBlt(10,pt.y+10, 53, 51, &dcMem, 53, 51, SRCCOPY);
-
-		/*
-		CBitmap *poldbmp; 
-		CDC memdc;
-    
-	    // Create a compatible memory DC
-        memdc.CreateCompatibleDC( pDC );
-        // Select the bitmap into the DC
-        poldbmp = (CBitmap*)memdc.SelectObject( hR14Logo);
-		
-		// Copy (BitBlt) bitmap from memory DC to screen DC
-        pDC->BitBlt( 10, pt.y+10,
-			GetDeviceCaps(pDC->m_hDC, HORZRES), 
-			GetDeviceCaps(pDC->m_hDC, VERTRES),                 
-			&memdc, 0, 0, SRCCOPY );
-
-        memdc.SelectObject( poldbmp );
-		*/
 		return;
 	}
 	
@@ -395,8 +372,6 @@ void ThumbnailFile::DrawBitmap(CDC* pDC, CPoint pt, int nPaintableWidth, int nPa
 
 		::SelectObject(dcMem.m_hDC, pBmpOld);
 
-		CBrush *pStaticBrush = new CBrush;
-		pStaticBrush->CreateSolidBrush(::GetSysColor(COLOR_WINDOW));
 		
 		CRect rcTop;
 			rcTop.left = ptOrignal.x;
@@ -420,17 +395,18 @@ void ThumbnailFile::DrawBitmap(CDC* pDC, CPoint pt, int nPaintableWidth, int nPa
 			rcRight.right = ptOrignal.x + nPaintableWidth;
 			rcRight.bottom = ptOrignal.y + nPaintableHeight;
 			
+		CBrush StaticBrush(::GetSysColor(COLOR_WINDOW));
 		if (rcTop.Height() > 0)
-			pDC->FillRect(rcTop, pStaticBrush);
+			pDC->FillRect(rcTop, &StaticBrush);
 		if (rcBottom.Height() > 0)
-			pDC->FillRect(rcBottom, pStaticBrush);
+			pDC->FillRect(rcBottom, &StaticBrush);
 		if (rcLeft.Width() > 0)
-			pDC->FillRect(rcLeft, pStaticBrush);
+			pDC->FillRect(rcLeft, &StaticBrush);
 		if (rcRight.Width() > 0)
-			pDC->FillRect(rcRight, pStaticBrush);
-		
-		delete pStaticBrush;
+			pDC->FillRect(rcRight, &StaticBrush);
+		StaticBrush.DeleteObject();
 	}
+	dcMem.DeleteDC();
 }
 
 /////////////////////////////////////////////////////////////////////////////

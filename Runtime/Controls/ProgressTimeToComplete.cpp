@@ -220,7 +220,7 @@ CString TProgressTimeToComplete::GetRemainingText(double lfPercent, double lfSec
 		double dPercentage = double(nPos) / double(nUpper);
 		dPercentage *= 100;
 
-		str.Format(_T("%d"),(long)dPercentage);
+		str.Format(_T("%d"),(int)dPercentage);
 
 		str += sPercentage;
 

@@ -85,11 +85,10 @@ void CPictureBox::OnEnable(BOOL bEnable)
 
 void CPictureBox::OnPaint() 
 {
-	LONG lClassStyle = GetClassLong( m_hWnd, GCL_STYLE );
-	SetClassLong( m_hWnd, GCL_STYLE, (lClassStyle & ~(LONG)CS_PARENTDC) );
-	PAINTSTRUCT ps; 
-	CDC* pdc = BeginPaint(&ps);
-	Refresh(pdc->m_hDC);
+	LONG lClassStyle = GetClassLongPtr( m_hWnd, GCL_STYLE );
+	SetClassLongPtr( m_hWnd, GCL_STYLE, (lClassStyle & ~(LONG)CS_PARENTDC) );
+	CPaintDC dc(this);
+	Refresh(dc.m_hDC);
 
 	if (m_hIcon != NULL)
 	{
@@ -106,15 +105,14 @@ void CPictureBox::OnPaint()
 
 		CRect rcIconBack( pt.x, pt.y - 2, pt.x + m_cxIcon, pt.y - 2 + m_cyIcon );
 
-		::SetBkColor(pdc->m_hDC, RGB(255,255,255));
-		::ExtTextOut(pdc->m_hDC, 0, 0, ETO_OPAQUE, &rcIconBack, NULL, 0, NULL);
+		::SetBkColor(dc.m_hDC, RGB(255,255,255));
+		::ExtTextOut(dc.m_hDC, 0, 0, ETO_OPAQUE, &rcIconBack, NULL, 0, NULL);
 		//pdc->DrawIcon( pt.x, pt.y, m_hIcon );
 
 		//m_ImageList.SetBkColor(RGB(255,255,255));
-		m_ImageList.Draw(pdc, 0, pt, ILD_NORMAL);
+		m_ImageList.Draw(&dc, 0, pt, ILD_NORMAL);
 	}
-	EndPaint(&ps);
-	SetClassLong( m_hWnd, GCL_STYLE, lClassStyle );
+	SetClassLongPtr( m_hWnd, GCL_STYLE, lClassStyle );
 
 }
 
@@ -141,24 +139,28 @@ void CPictureBox::SetPicture(const CPictureObject* pPict)
 //	SetPicture (activeProject(sPictureID));
 //}
 
-void CPictureBox::SetIcon(UINT nId)
+void CPictureBox::SetIcon(HICON hIcon)
 {
 	m_PictureID = 0;
 	m_pPictureHolder = NULL;
-	
-	HINSTANCE hInstResource = AfxFindResourceHandle(MAKEINTRESOURCE(IDI_LABEL), RT_GROUP_ICON);
-
-	m_hIcon = LoadIcon(hInstResource, MAKEINTRESOURCE(nId));
+	m_hIcon = hIcon;
+	if(!hIcon)
+		return SetPictureBlank();
 	ICONINFO ii;
 	GetIconInfo( m_hIcon, &ii );
  	m_cxIcon = ii.xHotspot * 2;
 	m_cyIcon = ii.yHotspot * 2;
- 	
 	m_ImageList.Create( ii.xHotspot * 2, ii.yHotspot * 2, ILC_COLOR8 | ILC_MASK, 0, 1 );
 	m_ImageList.Add(m_hIcon);
 	::DeleteObject(ii.hbmMask);
 	::DeleteObject(ii.hbmColor);
 	Invalidate(TRUE);
+}
+
+void CPictureBox::SetIcon(UINT nId)
+{
+	HINSTANCE hInstResource = AfxFindResourceHandle(MAKEINTRESOURCE(IDI_LABEL), RT_GROUP_ICON);
+	SetIcon( LoadIcon(hInstResource, MAKEINTRESOURCE(nId)) );
 }
 
 void CPictureBox::Refresh(HDC hdc)

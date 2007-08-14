@@ -872,19 +872,25 @@ int OptionList_SetTttTitle()
 	CString sText;
 	CDclControlObject *pArx = GetLispInput(sOptionList_SetTttTitle, nItem, sText);
 
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
+	if (pArx == NULL || nItem < 0)
+	{
+		acedRetNil();
 		return 0;
 	}
 
-	// if this list box is not an option list box
-	if (pArx->GetType() != CtlOptionList)	
+	if (pArx->GetType() != CtlOptionList || // if this list box is not an option list box
+			nItem >= pArx->GetPropertyObject(nBtnCaption)->size()) // or the specified item does not exist
+	{
+		acedRetNil();
 		return 0;
+	}
 
 	RefCountedPtr< CPropertyObject > pTTTProperty = pArx->GetPropertyObject( nBtnTTText );
 	if( !pTTTProperty )
+	{
+		acedRetNil();
 		return 0;
+	}
 	PropVal::TCStringArray* prsTTT = pTTTProperty->GetStringArrayPtr();
 	if( !prsTTT )
 	{
@@ -893,12 +899,12 @@ int OptionList_SetTttTitle()
 		assert( prsTTT != NULL );
 	}
 	if( nItem >= prsTTT->size() )
-		prsTTT->resize( nItem );
+		prsTTT->resize( nItem + 1 );
 	prsTTT->at( nItem ) = sText;
 
 	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
 	pOptionLst->ResetTooltips();
 	
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }

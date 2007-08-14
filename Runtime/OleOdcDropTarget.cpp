@@ -177,6 +177,7 @@ void CMyOverrideDropTarget::OnDragLeave(CWnd* pWnd)
 		ASSERT(pDC);
 		// erase previous focus rect
 		pDC->DrawFocusRect(CRect(m_lastDragPt, m_trackerSize)); 
+		pDC->DeleteDC();
 		m_prevDropEffect = DROPEFFECT_NONE;
 	}
 }
@@ -425,7 +426,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 	{
 		HTREEITEM	hitem;
 		UINT		flags = 0;
-		CString		sTreeItemKey = "";
+		CString		sTreeItemKey;
 		VdclTree *pTree = (VdclTree*)m_pThisArxControl->GetWindow();
 
 		if ((hitem = pTree->m_ChildTree.HitTest(point, &flags)) != NULL)
@@ -440,7 +441,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 				// From AcadDwgView
 				InvokeMethodLong(
 					m_pThisArxControl->GetStrProperty(nDragnDropFromAutoCAD),
-					(long)hitem,
+					(DWORD_PTR)hitem,
 					(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
 			}
 			else
@@ -462,7 +463,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 					pControl->GetOwnerProject()->GetKeyName(),
 					pControl->GetOwnerForm()->GetKeyName(),
 					pControl->GetStrProperty(nName),
-					(long)hitem,
+					(DWORD_PTR)hitem,
 					(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
 			}
 			else

@@ -638,7 +638,7 @@ int Grid_SetItemData()
 	if (pData == NULL)
 	{
 		pData = new _RowData; 
-		pGridCtrl->SetItemData(nIndex, (long)pData);
+		pGridCtrl->SetItemData(nIndex, (DWORD_PTR)pData);
 	}
 
 	pData->nItemData = lItemData;

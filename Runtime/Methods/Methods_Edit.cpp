@@ -273,10 +273,10 @@ int TextBox_SetTabStops()
 		return 0;
 	}
 	
+	CDC *pdc = pControl->GetDC();
 	TEXTMETRIC tm;
-	CDC *pdc = ((CEdit*)pControl)->GetDC();
 	pdc->GetTextMetrics(&tm);
-	pdc->Detach();
+	pControl->ReleaseDC(pdc);
 
 	((CEdit*)pControl)->SetTabStops(nUnits * tm.tmAveCharWidth);
 

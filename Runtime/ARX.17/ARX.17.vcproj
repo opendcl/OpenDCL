@@ -43,7 +43,7 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="..\;..\Controls;..\Methods;.\VI;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
 				AdditionalUsingDirectories="C:\Program Files\AutoCAD 2007"
-				PreprocessorDefinitions="WIN32;_WINDOWS;ARX_MODULE;_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="WIN32;_WINDOWS;ARX_MODULE;_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE"
 				StringPooling="false"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -135,7 +135,7 @@
 				Optimization="2"
 				AdditionalIncludeDirectories="..\;..\Controls;..\Methods;.\VI;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
 				AdditionalUsingDirectories="C:\Program Files\AutoCAD 2007"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;ARX_MODULE;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;ARX_MODULE;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE"
 				StringPooling="true"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -1683,6 +1683,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\ToolTips.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\UserMessageID.h"
 				>
 			</File>
@@ -1764,6 +1768,7 @@
 			</Filter>
 			<Filter
 				Name="Resource Files"
+				Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 				>
 				<File
 					RelativePath="..\..\Common\Res\arrowheads.bmp"
@@ -1831,7 +1836,7 @@
 	<Globals>
 		<Global
 			Name="RESOURCE_FILE"
-			Value="\OpenDCL\Build 4.0\Runtime\ARX.rc"
+			Value="\OpenDCL\Build\ARX\ARX.rc"
 		/>
 	</Globals>
 </VisualStudioProject>

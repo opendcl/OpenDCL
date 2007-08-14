@@ -48,6 +48,17 @@ void CMainFileDlg::SetMinMaxSize( const CSize& szMin, const CSize& szMax )
 	mnMinHeight = szMin.cy;
 	mnMaxWidth = szMax.cx;
 	mnMaxHeight = szMax.cy;
+	if( mpSourceForm->UsesClientRect() )
+	{
+		if( mnMinWidth > 0 )
+			mnMinWidth += mnNCWidth;
+		if( mnMinHeight > 0 )
+			mnMinHeight += mnNCHeight;
+		if( mnMaxWidth > 0 )
+			mnMaxWidth += mnNCWidth;
+		if( mnMaxHeight > 0 )
+			mnMaxHeight += mnNCHeight;
+	}
 }
 
 void CMainFileDlg::SavePosition()
@@ -149,36 +160,10 @@ void CMainFileDlg::Initialize()
 		rectWindow.right = rectWindow.left + rectSaved.Width();
 		rectWindow.bottom = rectWindow.top + rectSaved.Height();
 	}
-
-	if( mnMinWidth > 0 )
-	{
-		if( bUsesClientRect )
-			mnMinWidth += mnNCWidth;
-		if( rectWindow.Width() < mnNCWidth )
-			rectWindow.right = rectWindow.left + mnMinWidth;
-	}
-	if( mnMaxWidth > 0 )
-	{
-		if( mnMaxWidth > 0 )
-			mnMaxWidth += mnNCWidth;
-		if( rectWindow.Width() > mnMaxWidth )
-			rectWindow.right = rectWindow.left + mnMaxWidth;
-	}
-	if( mnMinHeight > 0 )
-	{
-		if( bUsesClientRect )
-			mnMinHeight += mnNCHeight;
-		if( rectWindow.Height() < mnNCHeight )
-			rectWindow.bottom = rectWindow.top + mnMinHeight;
-	}
-	if( mnMaxHeight > 0 )
-	{
-		if( mnMaxHeight > 0 )
-			mnMaxHeight += mnNCHeight;
-		if( rectWindow.Height() > mnMaxHeight )
-			rectWindow.bottom = rectWindow.top + mnMaxHeight;
-	}
+	if( GetStyle() & WS_CHILD )
+		GetParent()->ScreenToClient( &rectWindow );
 	MoveWindow( &rectWindow, FALSE );
+	SavePosition();
 	
 	InvokeMethod( pFormProps->GetStrProperty( nFormEventInitialize ), false );
 	if( bUsesClientRect )

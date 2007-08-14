@@ -23,6 +23,7 @@ public:
 // Attributes
 private:
 	TTabPages mTabPages;
+	CBrush mbrushBackground;
 
 public:
 	bool m_bInvokeWithSendString;
@@ -51,12 +52,16 @@ public:
 
 // Operations
 public:
-	virtual void ShowTab(int nIndex);
-	virtual void HideTab(int nIndex);
+	virtual void ShowTab(int nPageIndex);
+	virtual void HideTab(int nPageIndex);
 	virtual bool CreateTabPages( UINT& nId );
-	TTabPagePtr GetTabPageAt( size_t nIndex ) const;
-	const CDclFormObject* GetTabSourceFormAt( size_t nIndex ) const;
-	const CControlPane* GetTabControlPaneAt( size_t nIndex ) const;
+	size_t GetCurTabPage() const { return GetTabPageIndex( GetCurSel() ); }
+	size_t GetTabPageCount() const { return mTabPages.size(); }
+	int GetTabItemIndex( size_t nPageIndex ) const;
+	size_t GetTabPageIndex( int nItemIndex ) const;
+	TTabPagePtr GetTabPageAt( size_t nPageIndex ) const;
+	const CDclFormObject* GetTabSourceFormAt( size_t nPageIndex ) const;
+	const CControlPane* GetTabControlPaneAt( size_t nPageIndex ) const;
 
 public:
 	void ActivateTabPage( int nTabPageToActivate, bool bShow, bool bFireEvent = false );

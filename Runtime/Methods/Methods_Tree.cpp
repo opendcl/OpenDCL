@@ -35,17 +35,20 @@ void ReturnTreeItem(CString sText, int nImage, int nSelectedImage, CString sKey)
 	
 }
 
-void ReturnTreeItem(CString sText, int nImage, int nSelectedImage, ULONG uLong)
+void ReturnTreeItem(CString sText, int nImage, int nSelectedImage, DWORD_PTR uLong)
 {
 	// this code is for all other dialogs
 	int stat;
-	struct resbuf *list;    
+	struct resbuf *list;
+	ads_name ptr;
+	ptr[0] = uLong;
+	ptr[1] = 0;
 
 	list = acutBuildList(
 		RTSTR, sText,
 		RTSHORT, nImage,
 		RTSHORT, nSelectedImage,
-		RTLONG, uLong,
+		RTENAME, ptr,
 		RTNONE);
 
 	if (list != NULL) { 	    
@@ -289,7 +292,7 @@ int Tree_AddParent()
 	((VdclTree*)pControl)->m_bAutoChangeSelection = false; 
 	
 	
-	acedRetLong((ULONG)hItem);
+	acedRetHandle((DWORD_PTR)hItem);
 	return 0;
 
 }
@@ -297,10 +300,10 @@ int Tree_AddParent()
 bool Tree_AddChildList(CWnd *pControl, int nArg)
 {
 	CString sParentKey;
-	ULONG uParentKey = 0;
+	DWORD_PTR uParentKey = 0;
 	CString sChildText;
 	CString sKey;
-	ULONG uKey = 0;
+	DWORD_PTR uKey = 0;
 	int nImage;
 	int nSelectedImage;
 	int nExpandedImage;
@@ -355,6 +358,11 @@ bool Tree_AddChildList(CWnd *pControl, int nArg)
 				{
 					// get the next argument required
 					uParentKey = ListData->resval.rlong;
+				}
+				else if (ListData->restype == RTENAME) 
+				{
+					// get the next argument required
+					uParentKey = ListData->resval.rlname[0];
 				}
 				else if (ListData->restype == RTSHORT) 
 				{
@@ -535,8 +543,8 @@ int Tree_AddChild()
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_AddChild, &nArg);
 
-	ULONG uParentKey;
-	if (!GetStringOrLongArgument(nArg, &sParentKey, &uParentKey, "") || pControl == NULL)
+	DWORD_PTR uParentKey;
+	if (!GetStringOrHandleArgument(nArg, sParentKey, uParentKey, sTree_AddChild) || pControl == NULL)
 	{
 		if (Tree_AddChildList(pControl, nArg))
 			acedRetVoid();
@@ -593,7 +601,7 @@ int Tree_AddChild()
 		acedRetNil();
 		return 0;
 	}
-	acedRetLong((ULONG)hItem);
+	acedRetHandle((DWORD_PTR)hItem);
 	
 	return 0;
 
@@ -610,8 +618,8 @@ int Tree_InsertAfter()
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_InsertAfter, &nArg);
 
-	ULONG uRefKey;
-	if (!GetStringOrLongArgument(nArg, &sRefKey, &uRefKey, sTree_InsertAfter) || pControl == NULL)
+	DWORD_PTR uRefKey;
+	if (!GetStringOrHandleArgument(nArg, sRefKey, uRefKey, sTree_InsertAfter) || pControl == NULL)
 	{
 		
 		acedRetVoid();
@@ -662,7 +670,7 @@ int Tree_InsertAfter()
 		return 0;
 	}
 	
-	acedRetLong((ULONG)hItem);
+	acedRetHandle((DWORD_PTR)hItem);
 	
 	return 0;
 
@@ -733,8 +741,8 @@ int Tree_SelectItem()
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_SelectItem, &nArg);
 	VdclTree* pTree = (VdclTree*)pControl;
 	
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_SelectItem) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SelectItem) || pControl == NULL)
 	{		
 		acedRetVoid();
 		return 0;
@@ -785,8 +793,8 @@ int Tree_GetParent()
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetParent, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sParentKey, &uLong, sTree_GetParent) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sParentKey, uLong, sTree_GetParent) || pControl == NULL)
 	{		
 		acedRetVoid();
 		return 0;
@@ -822,8 +830,8 @@ int Tree_ItemHasChildren()
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_ItemHasChildren, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_ItemHasChildren) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_ItemHasChildren) || pControl == NULL)
 	{
 		
 		acedRetVoid();
@@ -854,8 +862,8 @@ int Tree_GetNextSiblingItem()
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetNextSiblingItem, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_GetNextSiblingItem) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetNextSiblingItem) || pControl == NULL)
 	{		
 		acedRetVoid();
 		return 0;
@@ -877,7 +885,7 @@ int Tree_GetNextSiblingItem()
 		HTREEITEM hItem = (HTREEITEM)uLong;
 		HTREEITEM hNextItem = ((VdclTree*)pControl)->m_ChildTree.GetNextSiblingItem(hItem);
 		
-		acedRetLong((ULONG)hNextItem);
+		acedRetHandle((DWORD_PTR)hNextItem);
 	}
 
 	return 0;
@@ -889,8 +897,8 @@ int Tree_GetPrevSiblingItem()
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetPrevSiblingItem, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_GetPrevSiblingItem) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetPrevSiblingItem) || pControl == NULL)
 	{		
 		acedRetVoid();
 		return 0;
@@ -912,7 +920,7 @@ int Tree_GetPrevSiblingItem()
 		HTREEITEM hItem = (HTREEITEM)uLong;
 		HTREEITEM hPrevItem = ((VdclTree*)pControl)->m_ChildTree.GetPrevSiblingItem(hItem);
 
-		acedRetLong((ULONG)hPrevItem);
+		acedRetHandle((DWORD_PTR)hPrevItem);
 	}
 	return 0;
 }
@@ -931,20 +939,21 @@ int Tree_GetFirstVisibleItem()
 
 	CString sRetVal = ((VdclTree*)pControl)->Get_hItemKey(hItem);
 	if (sRetVal.Left(1) == "?" || sRetVal.IsEmpty())
-		acedRetLong((ULONG)hItem);
+		acedRetHandle((DWORD_PTR)hItem);
 	else	
 		acedRetStr(((VdclTree*)pControl)->Get_hItemKey(hItem));
 
 	return 0;
 }
+
 int Tree_GetNextVisibleItem()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetNextVisibleItem, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_GetNextVisibleItem) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetNextVisibleItem) || pControl == NULL)
 	{
 		
 		acedRetVoid();
@@ -967,18 +976,19 @@ int Tree_GetNextVisibleItem()
 		HTREEITEM hItem = (HTREEITEM)uLong;
 		HTREEITEM hNextItem = ((VdclTree*)pControl)->m_ChildTree.GetNextVisibleItem(hItem);
 
-		acedRetLong((ULONG)hNextItem);
+		acedRetHandle((DWORD_PTR)hNextItem);
 	}
 	return 0;
 }
+
 int Tree_GetPrevVisibleItem()
 {
 	CString sSelectKey = "";
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetPrevVisibleItem, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_GetPrevVisibleItem) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetPrevVisibleItem) || pControl == NULL)
 	{
 		
 		acedRetVoid();
@@ -1001,7 +1011,7 @@ int Tree_GetPrevVisibleItem()
 		HTREEITEM hItem = ((VdclTree*)pControl)->Get_hItem(sSelectKey);
 		HTREEITEM hPrevItem = ((VdclTree*)pControl)->m_ChildTree.GetPrevVisibleItem(hItem);
 			
-		acedRetLong((ULONG)hPrevItem);
+		acedRetHandle((DWORD_PTR)hPrevItem);
 	}
 	return 0;
 }
@@ -1026,7 +1036,7 @@ int Tree_GetSelectedItem()
 	
 	CString sRetVal = ((VdclTree*)pControl)->Get_hItemKey(hItem);
 	if (sRetVal.Left(1) == "?" || sRetVal.IsEmpty())
-		acedRetLong((ULONG)hItem);
+		acedRetHandle((DWORD_PTR)hItem);
 	else	
 		acedRetStr(((VdclTree*)pControl)->Get_hItemKey(hItem));
 
@@ -1047,20 +1057,21 @@ int Tree_GetRootItem()
 
 	CString sRetVal = ((VdclTree*)pControl)->Get_hItemKey(hItem);
 	if (sRetVal.Left(1) == "?" || sRetVal.IsEmpty())		
-		acedRetLong((ULONG)hItem);
+		acedRetHandle((DWORD_PTR)hItem);
 	else	
 		acedRetStr(((VdclTree*)pControl)->Get_hItemKey(hItem));
 
 	return 0;
 }
+
 int Tree_GetItem()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetItem, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_GetItem) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetItem) || pControl == NULL)
 	{
 		
 		acedRetVoid();
@@ -1093,14 +1104,15 @@ int Tree_GetItem()
 	
 	return 0;
 }
+
 int Tree_GetItemImages()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetItemImages, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_GetItemImages) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetItemImages) || pControl == NULL)
 	{		
 		acedRetVoid();
 		return 0;
@@ -1138,18 +1150,18 @@ int Tree_GetItemImages()
 	} 
 
 	return 0;
-
 }
+
 int Tree_SetItemImages()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nImage;
 	int nSelectedImage;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_SetItemImages, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_SetItemImages) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SetItemImages) || pControl == NULL)
 	{		
 		acedRetVoid();
 		return 0;
@@ -1193,22 +1205,20 @@ int Tree_SetItemImages()
 
 int Tree_SetExpanedImage()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nExpandedImage;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_SetExpanedImage, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_SetExpanedImage) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SetExpanedImage) || pControl == NULL)
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
 	nArg++;
 	if (!GetIntArgument(nArg, &nExpandedImage, sTree_SetExpanedImage))
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
@@ -1228,12 +1238,12 @@ int Tree_SetExpanedImage()
 
 int Tree_GetExpanedImage()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_SetExpanedImage, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_GetExpanedImage) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetExpanedImage) || pControl == NULL)
 	{
 		
 		acedRetVoid();
@@ -1257,12 +1267,12 @@ int Tree_GetExpanedImage()
 
 int Tree_GetItemData()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetItemData, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_GetItemData) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetItemData) || pControl == NULL)
 	{
 		
 		acedRetVoid();
@@ -1285,22 +1295,21 @@ int Tree_GetItemData()
 		return 0;
 	}
 	
-	long lDate = ((VdclTree*)pControl)->m_ChildTree.GetItemData(hItem);
-	acedRetLong(lDate);	
+	DWORD_PTR lData = ((VdclTree*)pControl)->m_ChildTree.GetItemData(hItem);
+	acedRetHandle(lData);	
 	return 0;
-
 }
+
 int Tree_SetItemData()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nData;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_SetItemData, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_SetItemData) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SetItemData) || pControl == NULL)
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
@@ -1308,7 +1317,6 @@ int Tree_SetItemData()
 	nArg++;
 	if (!GetIntArgument(nArg, &nData, sTree_SetItemData))
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
@@ -1328,23 +1336,20 @@ int Tree_SetItemData()
 
 int Tree_GetItemText()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetItemText, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_GetItemText) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetItemText) || pControl == NULL)
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
 
 	HTREEITEM hItem = NULL;
 	if (sSelectKey.GetLength() > 0)
-	{
 		hItem = ((VdclTree*)pControl)->Get_hItem(sSelectKey);
-	}
 	if (uLong != NULL)
 		hItem = (HTREEITEM)uLong;
 
@@ -1359,17 +1364,17 @@ int Tree_GetItemText()
 	
 	return 0;
 }
+
 int Tree_SetItemText()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	CString sNewText;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_SetItemText, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_SetItemText) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SetItemText) || pControl == NULL)
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
@@ -1377,7 +1382,6 @@ int Tree_SetItemText()
 	nArg++;
 	if (!GetStringArgument(nArg, &sNewText, sTree_SetItemText) || pControl == NULL)
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
@@ -1405,21 +1409,20 @@ int Tree_GetVisibleCount()
 		return 0;
 	}
 
-	acedRetInt( 
-		((VdclTree*)pControl)->m_ChildTree.GetVisibleCount()
-		);
+	acedRetInt( ((VdclTree*)pControl)->m_ChildTree.GetVisibleCount() );
 	return 0;
-}int Tree_DeleteItem()
+}
+
+int Tree_DeleteItem()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_DeleteItem, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_DeleteItem) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_DeleteItem) || pControl == NULL)
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
@@ -1437,9 +1440,7 @@ int Tree_GetVisibleCount()
 		delete pItem;
 	}
 	else if (uLong != 0)
-	{
 		((VdclTree*)pControl)->m_ChildTree.DeleteItem((HTREEITEM)uLong);
-	}
 	else
 	{
 		theWorkspace.DisplayAlert(ErrorKeyMustBeSet);
@@ -1449,17 +1450,17 @@ int Tree_GetVisibleCount()
 	}
 	acedRetVoid();
 	return 0;
-
 }
+
 int Tree_ExpandItem()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nExpandStyle;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_ExpandItem, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_ExpandItem) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_ExpandItem) || pControl == NULL)
 	{		
 		acedRetVoid();
 		return 0;
@@ -1471,7 +1472,6 @@ int Tree_ExpandItem()
 		return 0;
 	}
 
-	
 	HTREEITEM hItem = NULL;
 	OdclTreeItem *pItem = NULL;
 	if (!sSelectKey.IsEmpty())
@@ -1481,9 +1481,7 @@ int Tree_ExpandItem()
 		hItem = pItem->hItem;
 	}
 	if (uLong !=0)
-	{
 		hItem = (HTREEITEM)uLong;
-	}
 	
 	((VdclTree*)pControl)->m_bAutoChangeSelection = false;
 	switch (nExpandStyle)
@@ -1511,18 +1509,17 @@ int Tree_ExpandItem()
 
 	acedRetVoid();
 	return 0;
-
 }
+
 int Tree_SelectSetFirstVisible()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_SelectSetFirstVisible, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_SelectSetFirstVisible) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SelectSetFirstVisible) || pControl == NULL)
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
@@ -1533,9 +1530,7 @@ int Tree_SelectSetFirstVisible()
 		((VdclTree*)pControl)->m_ChildTree.SelectSetFirstVisible(hItem);
 	}
 	if (uLong != 0)
-	{
 		((VdclTree*)pControl)->m_ChildTree.SelectSetFirstVisible((HTREEITEM)uLong);
-	}
 
 	acedRetVoid();
 	return 0;
@@ -1543,33 +1538,27 @@ int Tree_SelectSetFirstVisible()
 
 int Tree_EditLabel()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_EditLabel, &nArg);
 
 	
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_EditLabel) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_EditLabel) || pControl == NULL)
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
 	HTREEITEM hItem = NULL;
 	if (sSelectKey.GetLength() > 0)
-	{
 		hItem = ((VdclTree*)pControl)->Get_hItem(sSelectKey);
-	}
 	if (uLong != 0)
-	{
 		hItem = (HTREEITEM)uLong;
-	}
 	if (hItem != NULL)
 	{
 		CEdit* pEdit = ((VdclTree*)pControl)->m_ChildTree.EditLabel(hItem);
 		if (pEdit == NULL)
 		{
-			
 			acedRetVoid();
 			return 0;
 		}
@@ -1613,23 +1602,18 @@ int Tree_SortChildren()
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_SortChildren, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_SortChildren) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SortChildren) || pControl == NULL)
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
 	HTREEITEM hItem = NULL;
 	
 	if (sSelectKey.GetLength() > 0)
-	{
 		hItem = ((VdclTree*)pControl)->Get_hItem(sSelectKey);
-	}
 	if (uLong != 0)
-	{
 		hItem = (HTREEITEM)uLong;
-	}
 	if (hItem != NULL)
 	{
 		((VdclTree*)pControl)->m_ChildTree.SortChildren(hItem);
@@ -1638,32 +1622,26 @@ int Tree_SortChildren()
 	acedRetVoid();
 	return 0;
 }
+
 int Tree_EnsureVisible()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_EnsureVisible, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_EnsureVisible) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_EnsureVisible) || pControl == NULL)
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
 	HTREEITEM hItem = NULL;
 	if (sSelectKey.GetLength() > 0)
-	{
 		hItem = ((VdclTree*)pControl)->Get_hItem(sSelectKey);
-	}
 	if (uLong != 0)
-	{
 		hItem = (HTREEITEM)uLong;
-	}
 	if (hItem != NULL)
-	{
 		((VdclTree*)pControl)->m_ChildTree.EnsureVisible(hItem);
-	}
 
 	acedRetVoid();
 	return 0;
@@ -1671,14 +1649,13 @@ int Tree_EnsureVisible()
 
 int Tree_GetFirstChildItem()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetFirstChildItem, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_GetFirstChildItem) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetFirstChildItem) || pControl == NULL)
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
@@ -1698,33 +1675,28 @@ int Tree_GetFirstChildItem()
 	{
 		HTREEITEM hItem = (HTREEITEM)uLong;
 		HTREEITEM hChildItem = ((VdclTree*)pControl)->m_ChildTree.GetChildItem(hItem);
-		
-		acedRetLong((ULONG)hChildItem);
+		acedRetHandle((DWORD_PTR)hChildItem);
 	}
 	return 0;
-
 }
 
 
 int Tree_IsItemExpanded()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_IsItemExpanded, &nArg);
 
-	ULONG uLong;
-	if (!GetStringOrLongArgument(nArg, &sSelectKey, &uLong, sTree_IsItemExpanded) || pControl == NULL)
+	DWORD_PTR uLong;
+	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_IsItemExpanded) || pControl == NULL)
 	{
-		
 		acedRetVoid();
 		return 0;
 	}
 
 	HTREEITEM hItem = NULL;
 	if (sSelectKey.GetLength() > 0)
-	{
 		hItem = ((VdclTree*)pControl)->Get_hItem(sSelectKey);
-	}
 	if (uLong != NULL)
 		hItem = (HTREEITEM)uLong;
 

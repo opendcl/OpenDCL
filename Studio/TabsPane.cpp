@@ -8,6 +8,7 @@
 #include "PropertyIds.h"
 #include "DclFormObject.h"
 #include "PropertyObject.h"
+#include "SharedRes.h"
 #include "Project.h"
 #include "ProjectTreeCtrl.h"
 #include "EditorWorkspace.h"
@@ -16,10 +17,13 @@
 /////////////////////////////////////////////////////////////////////////////
 // CTabsPane dialog
 
-CTabsPane::CTabsPane( COpenDCLView* pView, CDclControlObject* pControl )
+CTabsPane::CTabsPane( COpenDCLView* pView,
+											CDclControlObject* pControl,
+											RefCountedPtr< CImageList >& pImageList )
 : CPropertyPage(CTabsPane::IDD)
 , mpView( pView )
 , mpDclControl( pControl )
+, mpImageList( pImageList )
 , mnTabIndex( -1 )
 {
 }
@@ -60,24 +64,21 @@ CTabsPane::~CTabsPane()
 void CTabsPane::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CTabsPane)
 	DDX_Control(pDX, IDC_FRAME, m_Frame);
 	DDX_Control(pDX, IDC_CAPTION, m_Caption);
 	DDX_Control(pDX, IDC_IMAGE, m_Image);
 	DDX_Control(pDX, IDC_SPIN, m_SpinBtn);
 	DDX_Control(pDX, IDC_TTT, m_ToolTipTitle);
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CTabsPane, CPropertyPage)
-	//{{AFX_MSG_MAP(CTabsPane)
 	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN, OnDeltaposSpin)
 	ON_BN_CLICKED(IDC_ADD, OnAdd)
-	ON_EN_CHANGE(IDC_CAPTION, OnChangeCaption)
-	ON_EN_CHANGE(IDC_TTT, OnChangeTtt)
 	ON_BN_CLICKED(IDC_DELETE, OnDelete)
-	//}}AFX_MSG_MAP
+	ON_EN_CHANGE(IDC_CAPTION, OnChangeCaption)
+	ON_CBN_SELCHANGE(IDC_IMAGE, OnChangeImage)
+	ON_EN_CHANGE(IDC_TTT, OnChangeTtt)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -91,9 +92,12 @@ BOOL CTabsPane::OnInitDialog()
 
 	m_SpinBtn.SetRange(0, m_TabList.GetCount());
 	m_SpinBtn.EnableWindow(m_TabList.GetCount() > 1);
-	m_Caption.EnableWindow(m_TabList.GetCount() > 0);
-	m_ToolTipTitle.EnableWindow(m_TabList.GetCount() > 0);
-	GetDlgItem(IDC_DELETE)->EnableWindow(m_TabList.GetCount() > 0);
+	bool bHasTabs = (m_TabList.GetCount() > 0);
+	GetDlgItem(IDC_DELETE)->EnableWindow(bHasTabs);
+	m_Caption.EnableWindow(bHasTabs);
+	bool bHasImages = (mpImageList->m_hImageList && mpImageList->GetImageCount() > 0);
+	m_Image.EnableWindow(bHasImages && bHasTabs);
+	m_ToolTipTitle.EnableWindow(bHasTabs);
 
 	UpdateFrame();
 	UpdateTabInfo();
@@ -118,17 +122,14 @@ void CTabsPane::Setup()
 	for (size_t i = 0; i < m_pTabCaptions->GetStringArrayPtr()->size(); i++ )
 	{
 		CTabInfo *pTab = new CTabInfo(i);
-		
-		// get a pointer to the child dcl form pane for later use
 		pTab->mpChildForm = pProject->FindDclTabChildForm(mpView->m_pThisDclForm->GetUniqueName(), i);
-
-		// add the caption
 		pTab->msCaption = m_pTabCaptions->GetStringArrayPtr()->at(i);
-
-		// add the tool tip text
+		if (i < m_pTabImages->GetIntArrayPtr()->size())
+			pTab->mnImageIndex = m_pTabImages->GetIntArrayPtr()->at(i);
+		else
+			pTab->mnImageIndex = -1;
 		if (i < m_pTabTTT->GetStringArrayPtr()->size())
 			pTab->msToolTipTitle = m_pTabTTT->GetStringArrayPtr()->at(i);
-
 		m_TabList.AddTail(pTab);
 	}
 
@@ -186,13 +187,28 @@ void CTabsPane::UpdateTabInfo()
 	if (pos != NULL)
 	{
 		CTabInfo* pTabInfo = m_TabList.GetAt(pos);
-		m_Caption.SetWindowText(pTabInfo->msCaption);	
+		m_Caption.SetWindowText(pTabInfo->msCaption);
+		if( mpImageList->m_hImageList && mpImageList->GetImageCount() > 0 )
+		{
+			if( pTabInfo->mnImageIndex >= 0 && pTabInfo->mnImageIndex < mpImageList->GetImageCount() )
+				m_Image.SetCurSel(pTabInfo->mnImageIndex + 1);
+			else 
+				m_Image.SetCurSel(0);
+			m_Image.EnableWindow(TRUE);
+		}
+		else
+		{
+			m_Image.SetCurSel(0);
+			m_Image.EnableWindow(FALSE);
+		}
 		m_ToolTipTitle.SetWindowText(pTabInfo->msToolTipTitle);
 	}
 	else
 	{
 		mnTabIndex = 0;
 		m_Caption.SetWindowText( _T("") );	
+		m_Image.SetCurSel(0);
+		m_Image.EnableWindow(FALSE);
 		m_ToolTipTitle.SetWindowText( _T("") );
 	}
 }
@@ -218,11 +234,50 @@ void CTabsPane::OnAdd()
 
 	m_SpinBtn.SetRange(0, m_TabList.GetCount());
 	m_SpinBtn.EnableWindow(m_TabList.GetCount() > 1);
-	m_Caption.EnableWindow(TRUE);
-	m_ToolTipTitle.EnableWindow(TRUE);
 	GetDlgItem(IDC_DELETE)->EnableWindow(TRUE);
+	m_Caption.EnableWindow(TRUE);
+	bool bHasImages = (mpImageList->m_hImageList && mpImageList->GetImageCount() > 0);
+	m_Image.SetCurSel(0);
+	m_Image.EnableWindow(bHasImages);
+	m_ToolTipTitle.EnableWindow(TRUE);
 
 	UpdateFrame();
+}
+
+void CTabsPane::OnDelete() 
+{
+	POSITION pos = m_TabList.FindIndex(mnTabIndex);
+	if (pos != NULL)
+	{
+		CTabInfo *pTab = m_TabList.GetAt(pos);
+		
+		// check to see if the user wishes to delete this tab if it has controls on it.
+		if (!mpView->CanRemoveChildTabPane(pTab->mnOriginalIndex))
+			return;
+
+		m_TabList.RemoveAt(pos);
+		// move the deleted tab item over to the deleted tab list for later cleanup
+		if (pTab != NULL)
+		{
+			m_DeletedTabList.AddTail(pTab);
+			if( pTab->mpChildForm )
+				pTab->mpChildForm->m_bDeleted = true;
+		}
+	}
+
+	// increment the index to the new tab
+	if( mnTabIndex > 0 )
+		--mnTabIndex;
+	m_SpinBtn.SetRange(0, m_TabList.GetCount());
+	m_SpinBtn.EnableWindow(m_TabList.GetCount() > 1);
+	GetDlgItem(IDC_DELETE)->EnableWindow(m_TabList.GetCount() > 0);
+	m_Caption.EnableWindow(m_TabList.GetCount() > 0);
+	bool bHasImages = (mpImageList->m_hImageList && mpImageList->GetImageCount() > 0);
+	m_Image.EnableWindow(bHasImages);
+	m_ToolTipTitle.EnableWindow(m_TabList.GetCount() > 0);
+	UpdateFrame();
+	UpdateTabInfo();
+	SetModified();
 }
 
 void CTabsPane::OnChangeCaption() 
@@ -235,6 +290,14 @@ void CTabsPane::OnChangeCaption()
 		m_Caption.GetWindowText(sText);
 		m_TabList.GetAt(pos)->msCaption = sText;
 	}
+	SetModified();
+}
+
+void CTabsPane::OnChangeImage() 
+{
+	POSITION pos = m_TabList.FindIndex(mnTabIndex);
+	if (pos != NULL)
+		m_TabList.GetAt(pos)->mnImageIndex = m_Image.GetCurSel() - 1;
 	SetModified();
 }
 
@@ -271,7 +334,7 @@ BOOL CTabsPane::OnApply()
 		// reset the tab info lists
 		m_pTabCaptions->clear();
 		m_pTabTTT->clear();
-		//m_pTabImages->clear();
+		m_pTabImages->clear();
 		theEditorWorkspace.GetProjectTreeCtrl()->RemoveChildren( mpDclControl->GetOwnerForm()->m_htiTreeItem );
 
 		// repopulate the tab info lists
@@ -283,6 +346,7 @@ BOOL CTabsPane::OnApply()
 			CTabInfo* pTab = m_TabList.GetNext( posTab );
 			m_pTabCaptions->GetStringArrayPtr()->push_back( pTab->msCaption );
 			m_pTabTTT->GetStringArrayPtr()->push_back( pTab->msToolTipTitle );
+			m_pTabImages->GetIntArrayPtr()->push_back( pTab->mnImageIndex );
 
 			pTab->mnOriginalIndex = idxPane;
 			if( !pTab->mpChildForm )
@@ -302,37 +366,24 @@ BOOL CTabsPane::OnApply()
 	return CPropertyPage::OnApply();
 }
 
-
-void CTabsPane::OnDelete() 
+BOOL CTabsPane::OnSetActive()
 {
-	POSITION pos = m_TabList.FindIndex(mnTabIndex);
-	if (pos != NULL)
+	if( !__super::OnSetActive() )
+		return FALSE;
+	m_Image.SetImageList(mpImageList);
+	bool bHasImages = (mpImageList->m_hImageList && mpImageList->GetImageCount() > 0);
+	m_Image.ResetContent();
+	CString sNone = theWorkspace.LoadResourceString(IDS_NONE);
+	COMBOBOXEXITEM cbi = { CBEIF_IMAGE | CBEIF_SELECTEDIMAGE | CBEIF_TEXT, 0, sNone.LockBuffer(), 0, -1, -1 };
+	m_Image.InsertItem( &cbi );
+	if(bHasImages)
 	{
-		CTabInfo *pTab = m_TabList.GetAt(pos);
-		
-		// check to see if the user wishes to delete this tab if it has controls on it.
-		if (!mpView->CanRemoveChildTabPane(pTab->mnOriginalIndex))
-			return;
-
-		m_TabList.RemoveAt(pos);
-		// move the deleted tab item over to the deleted tab list for later cleanup
-		if (pTab != NULL)
+		for( int i = 0; i < mpImageList->GetImageCount(); ++i )
 		{
-			m_DeletedTabList.AddTail(pTab);
-			if( pTab->mpChildForm )
-				pTab->mpChildForm->m_bDeleted = true;
+			COMBOBOXEXITEM cbi = { CBEIF_IMAGE | CBEIF_SELECTEDIMAGE, i + 1, NULL, 0, i, i };
+			m_Image.InsertItem( &cbi );
 		}
 	}
-
-	// increment the index to the new tab
-	if( mnTabIndex > 0 )
-		--mnTabIndex;
-	m_SpinBtn.SetRange(0, m_TabList.GetCount());
-	m_SpinBtn.EnableWindow(m_TabList.GetCount() > 1);
-	m_Caption.EnableWindow(m_TabList.GetCount() > 0);
-	m_ToolTipTitle.EnableWindow(m_TabList.GetCount() > 0);
-	GetDlgItem(IDC_DELETE)->EnableWindow(m_TabList.GetCount() > 0);
-	UpdateFrame();
 	UpdateTabInfo();
-	SetModified();
+	return TRUE;
 }

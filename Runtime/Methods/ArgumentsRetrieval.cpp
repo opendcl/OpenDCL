@@ -247,20 +247,8 @@ bool GetStringArgument(int nIndex, CString *pArg, CString sMethod)
 	}
 	return true; 
 }
-//*****************************************************************************
-// 
-// Method: GetStringOrLongArgument()
-// 
-// Purpose: [gets the expected string or long argument from AutoLISP]
-// 
-// Parameters:  
-//		[nIndex]:  [0 based index]
-//		[*pArg]:  [TODO: Write the description of this parameter]
-// 
-// Returns:	bool
-// 
-//*****************************************************************************
-bool GetStringOrLongArgument(int nIndex, CString *pArg, ULONG *uLong, CString sMethod)
+
+bool GetStringOrHandleArgument(int nIndex, CString& sArg, DWORD_PTR& hdl, LPCTSTR pszMethod)
 {
 	struct resbuf *ListData;
 
@@ -268,7 +256,7 @@ bool GetStringOrLongArgument(int nIndex, CString *pArg, ULONG *uLong, CString sM
 	if ((ListData = acedGetArgs()) == NULL) 
 	{
 		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod); 			
+		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + pszMethod); 			
         return false; 
 	}
 
@@ -279,36 +267,29 @@ bool GetStringOrLongArgument(int nIndex, CString *pArg, ULONG *uLong, CString sM
 	}
 
 	if (ListData == NULL)
-	{
 		return false;
-	}
 
 	// if this argument is the begining of a list
 	if (ListData->restype == RTLB)
 		return false; 
 
 	if (ListData->restype == RTLONG)
-	{
-		// get the first argument required
-		*uLong = ListData->resval.rlong;				
-	}
+		hdl = ListData->resval.rlong;				
+	else if (ListData->restype == RTENAME)
+		hdl = ListData->resval.rlname[0];				
 	else if (ListData->restype == RTSHORT)
-	{
-		// get the first argument required
-		*uLong = ListData->resval.rint;				
-	}	
-	else if (IsArgumentString(ListData->restype, nIndex, sMethod)) 
+		hdl = ListData->resval.rint;				
+	else if (IsArgumentString(ListData->restype, nIndex, pszMethod)) 
 	{		
 		// get the first argument required
-		*pArg = ListData->resval.rstring;				
-		*uLong = 0;
+		sArg = ListData->resval.rstring;				
+		hdl = 0;
 	}
 	else
-	{	
 		return false; 
-	}
 	return true; 
 }
+
 //*****************************************************************************
 // 
 // Method: FindOptionalStringArgument()
@@ -642,10 +623,14 @@ CWnd * GetControlPointer(int nControlType, CString sMethod, int *pnArgs)
 	{	
 		pArxObject = (CDclControlObject *)ListData->resval.rlong;
 	}
+	else if (ListData->restype == RTENAME)
+	{	
+		pArxObject = (CDclControlObject *)ListData->resval.rlname[0];
+	}
 	else if (ListData->restype == RTREAL)
 	{	
 		double dValue = ListData->resval.rreal;
-		pArxObject = (CDclControlObject *)((long)dValue);
+		pArxObject = (CDclControlObject *)((LONG_PTR)dValue);
 	}
 	else if (ListData->restype == RTSTR)
 	{		
@@ -782,10 +767,14 @@ CDclControlObject * GetControlArxObject(CString sMethod, int *pnArgs)
 	{	
 		pArxObject = (CDclControlObject *)ListData->resval.rlong;
 	}
+	else if (ListData->restype == RTENAME)
+	{	
+		pArxObject = (CDclControlObject *)ListData->resval.rlname[0];
+	}
 	else if (ListData->restype == RTREAL)
 	{	
 		double dValue = ListData->resval.rreal;
-		pArxObject = (CDclControlObject *)((long)dValue);
+		pArxObject = (CDclControlObject *)((LONG_PTR)dValue);
 	}
 	else if (ListData->restype == RTSTR)
 	{		
@@ -1003,6 +992,20 @@ bool GetAxPropertyArgument(struct resbuf*& ListData, COleVariant *oleVar, const 
 					oleVar->lVal = ListData->resval.rlong;
 				}
 				ListData = ListData->rbnext;
+				break;
+			}
+		case RTENAME:
+			{
+				if (type.vt == VT_DISPATCH)
+				{
+					oleVar->vt = VT_DISPATCH;
+					COleDispatchDriver *pDisp = (COleDispatchDriver *)ListData->resval.rlname[0];
+					oleVar->pdispVal = pDisp->m_lpDispatch;
+					pDisp->m_lpDispatch = NULL;
+					ListData = ListData->rbnext;
+				}
+				else
+					return false;
 				break;
 			}
 		case RTSTR:
@@ -2126,10 +2129,15 @@ struct resbuf *getLispTargetInput(LPCTSTR sMethod, CDclControlObject *&pArg)
 		pArg = (CDclControlObject *)ListData->resval.rlong;
 		return ListData;
 	}
+	else if (ListData->restype == RTENAME)
+	{	
+		pArg = (CDclControlObject *)ListData->resval.rlname[0];
+		return ListData;
+	}
 	else if (ListData->restype == RTREAL)
 	{	
 		double dValue = ListData->resval.rreal;
-		pArg = (CDclControlObject *)((long)dValue);
+		pArg = (CDclControlObject *)((LONG_PTR)dValue);
 		return ListData;
 	}
 	else if (ListData->restype == RTSTR)

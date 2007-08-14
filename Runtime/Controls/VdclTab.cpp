@@ -19,6 +19,7 @@
 
 VdclTab::VdclTab( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID )
 : CArxDialogControl( pTemplate, &Pane, this )
+, mbrushBackground( RGB(0,0,0) )
 {
 	m_nCurrentSelectedTab = -1;
 	Create( Pane.GetHostDialog(), nID );
@@ -26,6 +27,7 @@ VdclTab::VdclTab( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID )
 
 VdclTab::~VdclTab()
 {
+	mbrushBackground.DeleteObject();
 }
 
 bool VdclTab::Create( CWnd* pParentWnd, UINT nID )
@@ -158,25 +160,47 @@ void VdclTab::SetFirstControlFocus(CTabPage *pActualTabPage)
 	pActualTabPage->GetControlPane().SetFirstControlFocus();
 }
 
-TTabPagePtr VdclTab::GetTabPageAt( size_t nIndex ) const
+int VdclTab::GetTabItemIndex( size_t nPageIndex ) const
 {
-	if( nIndex >= mTabPages.size() )
-		return NULL;
-	return mTabPages.at( nIndex );
+	if( nPageIndex >= mTabPages.size() )
+		return -1;
+	for (int i = 0; i < GetItemCount(); i++)
+	{
+		TC_ITEM tcItem = { TCIF_PARAM };
+		GetItem(i, &tcItem);
+		if (nPageIndex == tcItem.lParam)
+			return i;
+	}
+	return -1;
 }
 
-const CDclFormObject* VdclTab::GetTabSourceFormAt( size_t nIndex ) const
+size_t VdclTab::GetTabPageIndex( int nItemIndex ) const
 {
-	if( nIndex >= mTabPages.size() )
-		return NULL;
-	return mTabPages.at( nIndex )->GetSourceForm();
+	TC_ITEM tcItem = { TCIF_PARAM };
+	if( !GetItem(nItemIndex, &tcItem) )
+		return (size_t)-1;
+	return (size_t)tcItem.lParam;
 }
 
-const CControlPane* VdclTab::GetTabControlPaneAt( size_t nIndex ) const
+TTabPagePtr VdclTab::GetTabPageAt( size_t nPageIndex ) const
 {
-	if( nIndex >= mTabPages.size() )
+	if( nPageIndex >= mTabPages.size() )
 		return NULL;
-	return &mTabPages.at( nIndex )->GetControlPane();
+	return mTabPages.at( nPageIndex );
+}
+
+const CDclFormObject* VdclTab::GetTabSourceFormAt( size_t nPageIndex ) const
+{
+	if( nPageIndex >= mTabPages.size() )
+		return NULL;
+	return mTabPages.at( nPageIndex )->GetSourceForm();
+}
+
+const CControlPane* VdclTab::GetTabControlPaneAt( size_t nPageIndex ) const
+{
+	if( nPageIndex >= mTabPages.size() )
+		return NULL;
+	return &mTabPages.at( nPageIndex )->GetControlPane();
 }
 
 void VdclTab::SetupTabs()
@@ -249,29 +273,24 @@ void VdclTab::ResetTooltips()
 }
 
 
-void VdclTab::HideTab(int nIndex)
+void VdclTab::HideTab(int nPageIndex)
 {
-	// ensure the tab is not already removed..
-	for (int i = 0; i < GetItemCount(); i++)
-	{
-		//  Get the current tab item text.
-		TC_ITEM tcItem;
-		tcItem.mask = TCIF_PARAM;
-		GetItem(i, &tcItem);
-		
-		if (nIndex == tcItem.lParam)
-		{
-			DeleteItem(i);
-			ResetTooltips();
-			TTabPagePtr pTabPage = GetTabPageAt(GetCurSel());
-			pTabPage->Invalidate();
-			pTabPage->GetControlPane().RecalcLayout();
-			return;
-		}
-	}	
+	int nItemIndex = GetTabItemIndex( nPageIndex );
+	if( nItemIndex < 0 )
+		return;
+
+	bool bHideCurrent = (nItemIndex == GetCurSel());
+	DeleteItem(nItemIndex);
+	ResetTooltips();
+	RedrawWindow();
+	m_nCurrentSelectedTab = -1;
+	if( nItemIndex >= GetItemCount() )
+		--nItemIndex;
+	SetCurSel(nItemIndex);
+	ActivateTabPage(GetCurTabPage(), true, bHideCurrent);
 }
 
-void VdclTab::ShowTab(int nIndex)
+void VdclTab::ShowTab(int nPageIndex)
 {
 	int idxToInsertAt = 0;
 	// ensure the tab is not already showing.
@@ -282,22 +301,22 @@ void VdclTab::ShowTab(int nIndex)
 		tcItem.mask = TCIF_PARAM;
 		GetItem(i, &tcItem);
 		
-		if (nIndex == tcItem.lParam)
+		if (nPageIndex == tcItem.lParam)
 			return;
-		if (nIndex > tcItem.lParam)
+		if (nPageIndex > tcItem.lParam)
 		{
 			idxToInsertAt = i + 1;
 			break;
 		}
 	}
 
-	CString sTabCaption = mpTemplate->GetPropertyListItem(nTabsCaption, nIndex);
+	CString sTabCaption = mpTemplate->GetPropertyListItem(nTabsCaption, nPageIndex);
 				
 	// set the image list item number is required
 	int nImage = -1;
 	RefCountedPtr< CPropertyObject > pImageListProp = mpTemplate->GetPropertyObject(nTabsImageList);
-	if (pImageListProp && nIndex < pImageListProp->GetIntArrayPtr()->size())
-		nImage = pImageListProp->GetIntArrayPtr()->at(nIndex);
+	if (pImageListProp && nPageIndex < pImageListProp->GetIntArrayPtr()->size())
+		nImage = pImageListProp->GetIntArrayPtr()->at(nPageIndex);
 				
 	// add the new tab
 	InsertItem(idxToInsertAt, sTabCaption, nImage);
@@ -305,9 +324,10 @@ void VdclTab::ShowTab(int nIndex)
 	//  Set the item in the tab control.
 	TC_ITEM tcItem;
 	tcItem.mask = TCIF_PARAM;
-	tcItem.lParam = (LPARAM)nIndex;
+	tcItem.lParam = (LPARAM)nPageIndex;
 	SetItem(idxToInsertAt, &tcItem);
 	ResetTooltips();
+	RedrawWindow();
 }
 
 bool VdclTab::CreateTabPages( UINT& nId )
@@ -396,7 +416,6 @@ void VdclTab::ActivateTabPage( int nTabPageToActivate, bool bShow, bool bFireEve
 	if (pSourceForm != NULL)
 	{
 		CRect rectTab = GetUsedArea();
-		pActualTabPage->GetControlPane().SetPanePos(CRect(0, 0, rectTab.Width(), rectTab.Height()));
 		pActualTabPage->SetWindowPos(
 			&CWnd::wndTop, 
 			rectTab.left,
@@ -409,6 +428,7 @@ void VdclTab::ActivateTabPage( int nTabPageToActivate, bool bShow, bool bFireEve
 			pActualTabPage->GetControlPane().ShowPictureBoxes(FALSE);
 
 		// show the pane
+		pActualTabPage->GetControlPane().RecalcLayout();
 		pActualTabPage->ShowWindow(bShow? SW_SHOW : SW_HIDE);
 		bool bNewPage = (m_nCurrentSelectedTab != nTabPageToActivate);
 		m_nCurrentSelectedTab = nTabPageToActivate;
@@ -502,8 +522,7 @@ void VdclTab::PostNcDestroy()
 
 HBRUSH VdclTab::CtlColor(CDC* pDC, UINT /*nCtlColor*/)
 {
-	pDC->SelectObject(CBrush(COLORREF(0)));
-	return NULL;
+	return mbrushBackground;
 }
 
 void VdclTab::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)

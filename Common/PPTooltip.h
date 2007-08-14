@@ -173,6 +173,9 @@ public:
 	CPPToolTip();
 	virtual ~CPPToolTip();
 
+	//added to destroy icons used by the tooltip -- 2007-08-04 [ORW]
+	void OnRemoveTool( const PPTOOLTIP_INFO& ti ) const;
+
 // Attributes
 public:
 	enum {	PPTTSZ_ROUNDED_CX = 0,
@@ -438,7 +441,7 @@ protected:
 
 	//{{AFX_MSG(CPPToolTip)
 	afx_msg void OnPaint();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	//}}AFX_MSG
 #if _MSC_VER < 1300

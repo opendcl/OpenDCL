@@ -28,7 +28,7 @@ public:
 		, mpEvent( NULL )
 		, mpMethods( NULL )
 		{}
-	virtual ~AxInterfaceDescriptor() {}
+	virtual ~AxInterfaceDescriptor() { clear(); }
 
 	//Attributes
 public:

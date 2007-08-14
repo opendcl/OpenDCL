@@ -224,30 +224,36 @@ int SetAxObjectPictureProperty()
 {
 	CString sPropNameArg;
 	struct resbuf *ListData = NULL;
-	ULONG lObject = 0;
-	ULONG lDispatch = 0;
+	DWORD_PTR lObject = 0;
+	DWORD_PTR lDispatch = 0;
 	CString sFileName;
 	int nPictureId = 0;
 
 	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
-    {
+	{
 		acedRetVoid();
-        return 0; 
+		return 0; 
 	}
 	
 	// must be a list
 	if (ListData->restype == RTPOINT)
 	{
 		// get the argument
-		lObject = ULONG(ListData->resval.rpoint[0]);
-		lDispatch = ULONG(ListData->resval.rpoint[1]);			
+		lObject = DWORD_PTR(ListData->resval.rpoint[0]);
+		lDispatch = DWORD_PTR(ListData->resval.rpoint[1]);			
+	}	
+	else if (ListData->restype == RTENAME)
+	{
+		// get the argument
+		lObject = DWORD_PTR(ListData->resval.rlname[0]);
+		lDispatch = DWORD_PTR(ListData->resval.rlname[1]);			
 	}	
 	// must be a list
 	else if (ListData->restype != RTLB)
 	{
 		acedRetVoid();
-        return 0; 
+		return 0; 
 	}
 	else if (ListData->restype == RTLB)
 	{
@@ -425,21 +431,12 @@ int AxGetObject()
 		
 	if (pAxCont != NULL)
 	{
-		int stat;
-		struct resbuf *list;    
-
 		IDispatch* pDisp;
 		pAxCont->GetOleDispatch( &pDisp );
-		list = acutBuildList(
-			RTLONG, (long)pControl,
-			RTLONG, pDisp,
-			RTNONE);
-
-		if (list != NULL) 
-		{ 	    
-			stat = acedRetList(list);		
-			acutRelRb(list); 
-		} 
+		resbuf rbAxObject = { NULL, RTENAME };
+		rbAxObject.resval.rlname[0] = (LONG_PTR)pControl;
+		rbAxObject.resval.rlname[1] = (LONG_PTR)pDisp;
+		acedRetVal( &rbAxObject );
 	}
 	return 0;
 }
@@ -459,8 +456,8 @@ int CloseAxObject()
 {
 	CString sPropNameArg;
 	struct resbuf *ListData = NULL;
-	ULONG lObject = 0;
-	ULONG lDispatch = 0;
+	DWORD_PTR lObject = 0;
+	DWORD_PTR lDispatch = 0;
 	
 	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
@@ -473,8 +470,14 @@ int CloseAxObject()
 	if (ListData->restype == RTPOINT)
 	{
 		// get the argument
-		lObject = ULONG(ListData->resval.rpoint[0]);
-		lDispatch = ULONG(ListData->resval.rpoint[1]);			
+		lObject = DWORD_PTR(ListData->resval.rpoint[0]);
+		lDispatch = DWORD_PTR(ListData->resval.rpoint[1]);			
+	}	
+	else if (ListData->restype == RTENAME)
+	{
+		// get the argument
+		lObject = DWORD_PTR(ListData->resval.rlname[0]);
+		lDispatch = DWORD_PTR(ListData->resval.rlname[1]);			
 	}	
 	// must be a list
 	else if (ListData->restype != RTLB)
@@ -558,8 +561,8 @@ int GetAxObjectProperty()
 {
 	CString sPropNameArg;
 	struct resbuf *ListData = NULL;
-	ULONG lObject = 0;
-	ULONG lDispatch = 0;
+	DWORD_PTR lObject = 0;
+	DWORD_PTR lDispatch = 0;
 	
 	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
@@ -572,8 +575,14 @@ int GetAxObjectProperty()
 	if (ListData->restype == RTPOINT)
 	{
 		// get the argument
-		lObject = ULONG(ListData->resval.rpoint[0]);
-		lDispatch = ULONG(ListData->resval.rpoint[1]);			
+		lObject = DWORD_PTR(ListData->resval.rpoint[0]);
+		lDispatch = DWORD_PTR(ListData->resval.rpoint[1]);			
+	}	
+	else if (ListData->restype == RTENAME)
+	{
+		// get the argument
+		lObject = DWORD_PTR(ListData->resval.rlname[0]);
+		lDispatch = DWORD_PTR(ListData->resval.rlname[1]);			
 	}	
 	// must be a list
 	else if (ListData->restype != RTLB)
@@ -728,8 +737,8 @@ int SetAxObjectProperty()
 	
 	CString sPropNameArg;
 	struct resbuf *ListData = NULL;
-	ULONG lObject = 0;
-	ULONG lDispatch = 0;
+	DWORD_PTR lObject = 0;
+	DWORD_PTR lDispatch = 0;
 	
 	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
@@ -742,8 +751,14 @@ int SetAxObjectProperty()
 	if (ListData->restype == RTPOINT)
 	{
 		// get the argument
-		lObject = ULONG(ListData->resval.rpoint[0]);
-		lDispatch = ULONG(ListData->resval.rpoint[1]);			
+		lObject = DWORD_PTR(ListData->resval.rpoint[0]);
+		lDispatch = DWORD_PTR(ListData->resval.rpoint[1]);			
+	}	
+	else if (ListData->restype == RTENAME)
+	{
+		// get the argument
+		lObject = DWORD_PTR(ListData->resval.rlname[0]);
+		lDispatch = DWORD_PTR(ListData->resval.rlname[1]);			
 	}	
 	// must be a list
 	else if (ListData->restype != RTLB)
@@ -916,8 +931,8 @@ int DoAxObjectMethod()
 	struct resbuf *ListData = NULL;
 	CString sMethodNameArg;
 	int nArgCount=0;
-	ULONG lObject = 0;
-	ULONG lDispatch = 0;
+	DWORD_PTR lObject = 0;
+	DWORD_PTR lDispatch = 0;
 		
 	//ensure AutoLISP has passed Arguments	
 	if ((ListData = acedGetArgs()) == NULL) 
@@ -930,8 +945,14 @@ int DoAxObjectMethod()
 	if (ListData->restype == RTPOINT)
 	{
 		// get the argument
-		lObject = ULONG(ListData->resval.rpoint[0]);
-		lDispatch = ULONG(ListData->resval.rpoint[1]);			
+		lObject = DWORD_PTR(ListData->resval.rpoint[0]);
+		lDispatch = DWORD_PTR(ListData->resval.rpoint[1]);			
+	}	
+	else if (ListData->restype == RTENAME)
+	{
+		// get the argument
+		lObject = DWORD_PTR(ListData->resval.rlname[0]);
+		lDispatch = DWORD_PTR(ListData->resval.rlname[1]);			
 	}	
 	// must be a list
 	else if (ListData->restype != RTLB)
@@ -1390,7 +1411,7 @@ int SetAxProperty()
 	{
 		// inform the programmer that he did not make the correct call
 		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sAxSetProperty); 			
-        return false; 
+		return false; 
 	}
 
 	for (int i = 0; i < nArg; i++)
@@ -1402,7 +1423,7 @@ int SetAxProperty()
 	if (ListData == NULL)
 	{
 		acedRetVoid();
-        return 0; 
+		return 0; 
 	}
 
 
@@ -1449,7 +1470,8 @@ int SetAxProperty()
 	//[DPR] GetWindow returns a CWnd. For this instance, we know the it will be a CAxContainerCtrl, 
 	//so force the cast.
 	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
-	if (axContainer == NULL) {
+	if (axContainer == NULL)
+	{
 		acedRetNil();
 		return 0;
 	}
@@ -1547,7 +1569,8 @@ int SetFlexGridColorProperty()
 	//Only one parameter is passed -- the color as a real, which will be converted to
 	//an unsigned int.
 	double dColor;
-	if (!getDoubleArgument(ListData, dColor)) {
+	if (!getDoubleArgument(ListData, dColor))
+	{
 		acedRetVoid();
 		return 0; 
 	}
@@ -1555,7 +1578,8 @@ int SetFlexGridColorProperty()
 
 	// get the AcxtiveX control
 	CAxContainerCtrl *axContainer = (CAxContainerCtrl*)pControl->GetWindow();
-	if (axContainer == NULL) {
+	if (axContainer == NULL)
+	{
 		acedRetNil();
 		return 0;
 	}
@@ -1734,6 +1758,7 @@ int GetFlexGridColorProperty()
 
   return 0;
 }
+
 //*****************************************************************************
 // 
 // Method: DoAxMethod()
@@ -1967,22 +1992,10 @@ void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp, 
 						pObject = theArxWorkspace.GetOleControlFor(pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef());					
 				}
 
-				ULONG lDispatch = (ULONG)varGet.pdispVal;
-				ULONG lObject = (ULONG)&*pObject;
-				
-				int stat;
-				struct resbuf *list;    
-
-				list = acutBuildList(
-					RTLONG, lObject,
-					RTLONG, lDispatch,
-					RTNONE);
-
-				if (list != NULL) 
-				{ 	    
-					stat = acedRetList(list);		
-					acutRelRb(list); 
-				} 
+				resbuf rbAxObject = { NULL, RTENAME };
+				rbAxObject.resval.rlname[0] = (DWORD_PTR)&*pObject;
+				rbAxObject.resval.rlname[1] = (DWORD_PTR)varGet.pdispVal;
+				acedRetVal( &rbAxObject );
 			break;
 			}
 		case VT_ERROR:
@@ -2005,10 +2018,9 @@ void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp, 
 			//varGet.pvarVal
 			break;
 		case VT_UNKNOWN:
-			RetVal.restype = RTLONG;
-			RetVal.resval.rlong = (long)varGet.punkVal;
-			
-			//varGet.punkVal = argList->m_Variant[i].punkVal;
+			RetVal.restype = RTENAME;
+			RetVal.resval.rlname[0] = (LONG_PTR)varGet.punkVal;
+			RetVal.resval.rlname[1] = 0;
 			break;
 
 		case VT_I2|VT_BYREF:			

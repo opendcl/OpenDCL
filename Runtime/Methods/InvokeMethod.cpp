@@ -176,7 +176,7 @@ void InvokeMethodStringInt(CString sLispFunction, CString sString, int nInt, boo
 	}
 }
 
-void InvokeMethodStringLong(CString sLispFunction, CString sString, long lLong, bool UseSendString)
+void InvokeMethodStringLong(CString sLispFunction, CString sString, DWORD_PTR lLong, bool UseSendString)
 {
 	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
@@ -208,11 +208,14 @@ void InvokeMethodStringLong(CString sLispFunction, CString sString, long lLong, 
 			// this code is for all other dialogs
 			int stat;
 			struct resbuf *result = NULL, *list;    
+			ads_name lVal;
+			lVal[0] = lLong;
+			lVal[1] = 0;
 
 			list = acutBuildList(
 				RTSTR, FireCancel(sLispFunction), 
 				RTSTR, sString,
-				RTLONG, lLong,
+				RTENAME, lVal,
 				RTNONE);
 
 			if (list != NULL) { 
@@ -224,7 +227,7 @@ void InvokeMethodStringLong(CString sLispFunction, CString sString, long lLong, 
 	}
 }
 
-void InvokeMethodLong(CString sLispFunction, long lLong, bool UseSendString)
+void InvokeMethodLong(CString sLispFunction, DWORD_PTR lLong, bool UseSendString)
 {
 	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
@@ -252,10 +255,13 @@ void InvokeMethodLong(CString sLispFunction, long lLong, bool UseSendString)
 			// this code is for all other dialogs
 			int stat;
 			struct resbuf *result = NULL, *list;    
+			ads_name lVal;
+			lVal[0] = lLong;
+			lVal[1] = 0;
 
 			list = acutBuildList(
 				RTSTR, FireCancel(sLispFunction), 
-				RTLONG, lLong,
+				RTENAME, lVal,
 				RTNONE);
 
 			if (list != NULL) { 
@@ -826,31 +832,24 @@ void InvokeMethod3StringsPoint(
 	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
-		
 		if (UseSendString)
 		{
 			sString1 = EscapeLispStringArgument( sString1 );
 			sString2 = EscapeLispStringArgument( sString2 );
 			sString3 = EscapeLispStringArgument( sString3 );
-
-			CString sInt1;
-			sInt1.Format( _T("%d"), ptPoint.x );
-			CString sInt2;
-			sInt2.Format( _T("%d"), ptPoint.y );
 			
-			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket) 
-				+ sLispFunction
-				+ sSpaceQuote + sString1 
-				+ sQuoteSpaceQuote + sString2 
-				+ sQuoteSpaceQuote + sString3 + sQuoteSpace
-				+ sInt1 + sComma
-				+ sInt2 + sEndBracket;
-			
+			sLispFunction = FireCancel(sLispFunction);
+			CString sCommand;
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
-
-			Acad::ErrorStatus es = ExecuteCommand(sCommand);
+				sCommand = sLispFunction + _T(" ");
+			else
+				sCommand.Format( _T("(%s \"%s\" \"%s\" \"%s\" '(%d %d))"), (LPCTSTR)sLispFunction,
+																																	 (LPCTSTR)sString1,
+																																	 (LPCTSTR)sString2,
+																																	 (LPCTSTR)sString3,
+																																	 ptPoint.x,
+																																	 ptPoint.y );
+			ExecuteCommand(sCommand);
 		}
 		else
 		{
@@ -885,7 +884,7 @@ void InvokeMethod3StringsLong(
 					CString sString1, 
 					CString sString2, 
 					CString sString3, 
-					long	lValue,
+					DWORD_PTR	lValue,
 					bool	UseSendString)
 {
 	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
@@ -920,14 +919,16 @@ void InvokeMethod3StringsLong(
 			// this code is for all other dialogs
 			int stat;
 			struct resbuf *result = NULL, *list;    
-
+			ads_name lVal;
+			lVal[0] = lValue;
+			lVal[1] = 0;
 			
 			list = acutBuildList(
 				RTSTR, FireCancel(sLispFunction), 
 				RTSTR, sString1,
 				RTSTR, sString2,
 				RTSTR, sString3,
-				RTLONG, lValue,
+				RTENAME, lVal,
 				RTNONE);
 
 			if (list != NULL) { 

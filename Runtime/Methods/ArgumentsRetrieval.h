@@ -10,6 +10,24 @@ class CDclControlObject;
 class CPropertyObject;
 
 
+inline void acedRetPointer(void* ptr)
+{
+	struct resbuf RetVal = {NULL,RTENAME};
+	RetVal.resval.rlname[0] = (LONG_PTR)ptr;
+	RetVal.resval.rlname[1] = 0;
+	acedRetVal(&RetVal);
+}
+
+
+inline void acedRetHandle(DWORD_PTR hdl)
+{
+	struct resbuf RetVal = {NULL,RTENAME};
+	RetVal.resval.rlname[0] = (LONG_PTR)hdl;
+	RetVal.resval.rlname[1] = 0;
+	acedRetVal(&RetVal);
+}
+
+
 inline void acedRetLong(LONG lValue)
 {
 	struct resbuf RetVal = {NULL,RTLONG};
@@ -61,7 +79,7 @@ bool IsArgumentDouble(short restype, int index, CString sMethod);
 // activeX argument retrieval method
 bool GetAxPropertyArgument(struct resbuf*& ListData, COleVariant *oleVar, const AxArg& type );
 	
-bool GetStringOrLongArgument(int nIndex, CString *pArg, ULONG *uLong, CString sMethod);
+bool GetStringOrHandleArgument(int nIndex, CString& sArg, DWORD_PTR& hdl, LPCTSTR pszMethod);
 
 CWnd * GetArgsControlInt(int nControlType, CString sMethod, int &nInt);
 CWnd * GetArgsControlDouble(int nControlType, CString sMethod, double &dDouble);

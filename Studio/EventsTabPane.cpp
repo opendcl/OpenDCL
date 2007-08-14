@@ -293,11 +293,10 @@ void CEventsTabPane::OnChangeDefunedit()
 	if (hItem != -1)
 	{
 		CString sDefunEditText;
-		m_DefunEdit.GetWindowText(sDefunEditText); // get the new defun name from the edit box
+		if (m_EventsTree.GetCheck(hItem) == BST_CHECKED)
+			m_DefunEdit.GetWindowText(sDefunEditText); // get the new defun name from the edit box
+		SetEvent((PropertyId)m_EventsTree.GetItemData(hItem), sDefunEditText); // set the property to the new defun name
 		SetDefunPreview();
-		bool bChecked = (m_EventsTree.GetCheck(hItem) == BST_CHECKED);
-		if (bChecked)
-			SetEvent((PropertyId)m_EventsTree.GetItemData(hItem), sDefunEditText); // set the property to the new defun name
 	}
 }
 
@@ -316,9 +315,10 @@ void CEventsTabPane::SetDefunPreview()
 		PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData( hItem );
 
 		// get the defun name
-		CString sEventDefun = GetEvent( nEventId );
+		CString sEventDefun;
+		m_DefunEdit.GetWindowText( sEventDefun );
 		if( sEventDefun.IsEmpty() )
-			m_DefunEdit.GetWindowText( sEventDefun );
+			sEventDefun = GetEvent( nEventId );
 
 		// if the ^C^C has been added, remove it for the defun preview
 		if( sEventDefun.Left(4).CompareNoCase( _T("^c^c") ) == 0 )

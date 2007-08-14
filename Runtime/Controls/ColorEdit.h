@@ -9,19 +9,16 @@
 
 class CColorEdit : public CAcUiEdit
 {
+	CBrush mbrushBackground;
+
 // Construction
 public:
 	CColorEdit();
 
 // Attributes
 public:
-	CBrush *m_pStaticBrush;		
 	COLORREF m_ForeColor;
 	COLORREF m_BackColor;
-	COLORREF m_DefForeColor;
-	COLORREF m_DefBackColor;
-	bool m_UseBackColor;
-	COLORREF m_DefaultBackColor;
 	
 // Operations
 public:
@@ -45,7 +42,6 @@ protected:
 	//{{AFX_MSG(CColorEdit)
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
-	afx_msg void OnDestroy();
 	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()

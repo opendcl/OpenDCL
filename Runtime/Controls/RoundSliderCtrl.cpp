@@ -191,6 +191,7 @@ CRoundSliderCtrl::CRoundSliderCtrl()
 
 CRoundSliderCtrl::~CRoundSliderCtrl()
 {
+	m_rgn.DeleteObject(); 
 }
 
 BEGIN_MESSAGE_MAP(CRoundSliderCtrl, CSliderCtrl)
@@ -229,8 +230,8 @@ void CRoundSliderCtrl::Init()
 
 	// Set the window region so mouse clicks only activate the round section 
 	// of the slider
-	m_rgn.DeleteObject(); 
 	SetWindowRgn(NULL, FALSE);
+	m_rgn.DeleteObject(); 
 	m_rgn.CreateEllipticRgnIndirect(rc);
 	SetWindowRgn(m_rgn, TRUE);
 
@@ -254,11 +255,11 @@ void CRoundSliderCtrl::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	CRect rc;
 	GetClientRect(&rc);
-//#ifdef USE_MEM_DC
+#ifdef USE_MEM_DC
 	CMemDC pDC(&dc, rc);
-//#else
-//	CDC* pDC = &dc;
-//#endif
+#else
+	CDC* pDC = &dc;
+#endif
 
 	int nRadius = m_nRadius;
 
@@ -267,8 +268,8 @@ void CRoundSliderCtrl::OnPaint()
 	pDC->FillSolidRect(rc, ::GetSysColor(COLOR_BTNFACE));
 
 	// Draw the sliders channel
-	DrawCircle(&pDC, m_ptCenter, nRadius--, ::GetSysColor(COLOR_3DDKSHADOW), ::GetSysColor(COLOR_3DHIGHLIGHT));
-	DrawCircle(&pDC, m_ptCenter, nRadius, ::GetSysColor(COLOR_3DSHADOW), ::GetSysColor(COLOR_3DLIGHT));
+	DrawCircle(pDC, m_ptCenter, nRadius--, ::GetSysColor(COLOR_3DDKSHADOW), ::GetSysColor(COLOR_3DHIGHLIGHT));
+	DrawCircle(pDC, m_ptCenter, nRadius, ::GetSysColor(COLOR_3DSHADOW), ::GetSysColor(COLOR_3DLIGHT));
 
 	int nPos = (((m_nPos-nMin)*360/(nMax-nMin)) + m_nZero + 360) % 360;
 	if(m_bInverted) nPos = 360-nPos;
@@ -279,8 +280,8 @@ void CRoundSliderCtrl::OnPaint()
 #pragma warning(default:4244)
 	nRadius-=2;
 
-	DrawCircle(&pDC, m_ptCenter, nRadius--, ::GetSysColor(COLOR_3DHIGHLIGHT), ::GetSysColor(COLOR_3DDKSHADOW));
-	DrawCircle(&pDC, m_ptCenter, nRadius--, ::GetSysColor(COLOR_3DLIGHT), ::GetSysColor(COLOR_3DSHADOW));
+	DrawCircle(pDC, m_ptCenter, nRadius--, ::GetSysColor(COLOR_3DHIGHLIGHT), ::GetSysColor(COLOR_3DDKSHADOW));
+	DrawCircle(pDC, m_ptCenter, nRadius--, ::GetSysColor(COLOR_3DLIGHT), ::GetSysColor(COLOR_3DSHADOW));
 	
 	// Draw the knob
 	int nKnobRadius = m_nKnobRadius;
@@ -291,23 +292,24 @@ void CRoundSliderCtrl::OnPaint()
 	rgnKnob.CreateEllipticRgnIndirect(rcKnob);
 	CBrush brKnob(::GetSysColor(COLOR_BTNFACE));
 	pDC->FillRgn(&rgnKnob, &brKnob);
+	brKnob.DeleteObject();
 	rgnKnob.DeleteObject();
 
 	if(m_bDragging)
 	{
-		DrawCircle(&pDC, ptKnobCenter, --nKnobRadius, ::GetSysColor(COLOR_3DDKSHADOW), ::GetSysColor(COLOR_3DHIGHLIGHT));
-		DrawCircle(&pDC, ptKnobCenter, --nKnobRadius, ::GetSysColor(COLOR_3DSHADOW), ::GetSysColor(COLOR_3DLIGHT));
+		DrawCircle(pDC, ptKnobCenter, --nKnobRadius, ::GetSysColor(COLOR_3DDKSHADOW), ::GetSysColor(COLOR_3DHIGHLIGHT));
+		DrawCircle(pDC, ptKnobCenter, --nKnobRadius, ::GetSysColor(COLOR_3DSHADOW), ::GetSysColor(COLOR_3DLIGHT));
 	}
 	else
 	{
-		DrawCircle(&pDC, ptKnobCenter, --nKnobRadius, ::GetSysColor(COLOR_3DHIGHLIGHT), ::GetSysColor(COLOR_3DDKSHADOW));
-		DrawCircle(&pDC, ptKnobCenter, --nKnobRadius, ::GetSysColor(COLOR_3DLIGHT), ::GetSysColor(COLOR_3DSHADOW));
+		DrawCircle(pDC, ptKnobCenter, --nKnobRadius, ::GetSysColor(COLOR_3DHIGHLIGHT), ::GetSysColor(COLOR_3DDKSHADOW));
+		DrawCircle(pDC, ptKnobCenter, --nKnobRadius, ::GetSysColor(COLOR_3DLIGHT), ::GetSysColor(COLOR_3DSHADOW));
 	}
 
 	// Draw the focus circle on the inside of the knob
 	if(GetFocus() == this)
 	{
-		DrawCircle(&pDC, ptKnobCenter, nKnobRadius-2, RGB(0, 0, 0), TRUE);
+		DrawCircle(pDC, ptKnobCenter, nKnobRadius-2, RGB(0, 0, 0), TRUE);
 	}
 
 	// Draw the text
@@ -315,13 +317,7 @@ void CRoundSliderCtrl::OnPaint()
 
 	if(!strFormattedText.IsEmpty())
 	{
-		//CWnd* pOwner = GetParentOwner();
-		//if(pOwner)
-		//{
-			//CFont* pFont = pOwner->GetFont();
-		CFont* pFont = m_pFont;
-		pDC->SelectObject(pFont);
-		//}
+		CFont* pOldFont = pDC->SelectObject(m_pFont);
 
 		const CSize szExtent = pDC->GetTextExtent(strFormattedText);
 		const CPoint ptText = CPoint(m_ptCenter.x - szExtent.cx/2, m_ptCenter.x - szExtent.cy/2);
@@ -335,8 +331,8 @@ void CRoundSliderCtrl::OnPaint()
 		{
 			pDC->TextOut(ptText.x, ptText.y, strFormattedText);
 		}
+		pDC->SelectObject(pOldFont);
 	}
-
 
 	// Don't call CSliderCtrl::OnPaint()
 }

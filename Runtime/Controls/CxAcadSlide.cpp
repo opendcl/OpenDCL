@@ -194,12 +194,11 @@ void CxAcadSlide::Draw(CDC *pDC, CRect& rect)
 		return;
 	int oldDC = pDC->SaveDC();
 	short lastcolor = -1;
-	CPen pen;
-	CBrush brush;
-	COLORREF rgb;
-	rgb = RGB(0,0,0);
-	pen.CreatePen(PS_SOLID, 0, rgb);
-	brush.CreateSolidBrush(rgb);
+	COLORREF rgb = RGB(0,0,0);
+	CPen pen(PS_SOLID, 0, rgb);
+	CBrush brush(rgb);
+	pDC->SelectObject(&pen);
+	pDC->SelectObject(&brush);
 			
 	CPoint polypoints[10];
 	m_Data->SeekToBegin();
@@ -209,13 +208,8 @@ void CxAcadSlide::Draw(CDC *pDC, CRect& rect)
 	float hscale = (float)rect.Width() / (float)m_Width;
 	BYTE color = 7, type, buf[8];
 	
-	int i = 0;
-
 	try
 	{
-	if(!m_Data)
-		return;
-	
 	while(m_Data->Read(&record, sizeof(record)) == sizeof(record))
 	{
 		if(m_LowFirst)
@@ -226,9 +220,6 @@ void CxAcadSlide::Draw(CDC *pDC, CRect& rect)
 		{
 		// offset vector
 		case 0xFB:
-			if(!m_Data)
-				return;
-	
 			m_Data->Read(buf, 3);
 			if (Level == 2)
 			{
@@ -261,9 +252,6 @@ void CxAcadSlide::Draw(CDC *pDC, CRect& rect)
 			break;
 		// common endpoint vector
 		case 0xFE:
-			if(!m_Data)
-				return;
-	
 			m_Data->Read(buf, 1);
 			if(m_LowFirst)
 				toX = lastX + HIBYTE(record);
@@ -277,12 +265,9 @@ void CxAcadSlide::Draw(CDC *pDC, CRect& rect)
 			break;
 		// solid fill
 		case 0xFD:
-			if(!m_Data)
-				return;
-	
 			m_Data->Read(&polycount, sizeof(polycount));
 			m_Data->Read(buf, 2);
-			for(i = 0; i < polycount; i++)
+			for(int i = 0; i < polycount; i++)
 			{
 				m_Data->Read(buf, 6);
 				polypoints[i].x = X(MAKEWORD(buf[2], buf[3]));
@@ -330,9 +315,6 @@ void CxAcadSlide::Draw(CDC *pDC, CRect& rect)
 				break;
 			// else vector
 			fromX = record;
-			if(!m_Data)
-				return;
-	
 			m_Data->Read(&fromY, sizeof(WORD));
 			m_Data->Read(&toX, sizeof(WORD));
 			m_Data->Read(&toY, sizeof(WORD));
@@ -357,24 +339,20 @@ void CxAcadSlide::Draw(HDC hdc, CRect& rect)
 		return;
 	int oldDC = SaveDC(hdc);
 	short lastcolor = -1;
-	HGDIOBJ pen = NULL;
-	HBRUSH brush = NULL;
-	
+	COLORREF rgb = RGB(0,0,0);
+	CPen pen(PS_SOLID, 0, rgb);
+	CBrush brush(rgb);
+	SelectObject(hdc, &pen);
+	SelectObject(hdc, &brush);
 	CPoint polypoints[10];
-	if(!m_Data)
-		return;
-	
+
 	m_Data->SeekToBegin();
 	WORD record, fromX, fromY, toX, toY, lastX, lastY, polycount;
 	lastX = lastY = 0;
 	float vscale = (float)rect.Height() / (float)m_Height;
 	float hscale = (float)rect.Width() / (float)m_Width;
 	BYTE color = 7, type, buf[8];
-	COLORREF rgb;
-	int i = 0;
-	if(!m_Data)
-		return;
-	
+
 	while(m_Data->Read(&record, sizeof(record)) == sizeof(record))
 	{
 		if(m_LowFirst)
@@ -385,9 +363,6 @@ void CxAcadSlide::Draw(HDC hdc, CRect& rect)
 		{
 		// offset vector
 		case 0xFB:
-			if(!m_Data)
-				return;
-	
 			m_Data->Read(buf, 3);
 			if(m_LowFirst)
 				fromX =	lastX + HIBYTE(record);
@@ -404,9 +379,6 @@ void CxAcadSlide::Draw(HDC hdc, CRect& rect)
 			break;
 		// common endpoint vector
 		case 0xFE:
-			if(!m_Data)
-				return;
-	
 			m_Data->Read(buf, 1);
 			if(m_LowFirst)
 				toX = lastX + HIBYTE(record);
@@ -421,16 +393,10 @@ void CxAcadSlide::Draw(HDC hdc, CRect& rect)
 			break;
 		// solid fill
 		case 0xFD:
-			if(!m_Data)
-				return;
-	
 			m_Data->Read(&polycount, sizeof(polycount));
 			m_Data->Read(buf, 2);
-			for(i = 0; i < polycount; i++)
+			for(int i = 0; i < polycount; i++)
 			{
-				if(!m_Data)
-					return;
-	
 				m_Data->Read(buf, 6);
 				polypoints[i].x = X(MAKEWORD(buf[2], buf[3]));
 				polypoints[i].y = Y(MAKEWORD(buf[4], buf[5]));
@@ -461,14 +427,10 @@ void CxAcadSlide::Draw(HDC hdc, CRect& rect)
 			}
 				//rgb = RGB(acadcol[color][0], acadcol[color][1], acadcol[color][2]);
 			lastcolor = color;
-			if (pen)
-				DeleteObject(pen);
-			pen = ::CreatePen(PS_SOLID, 0, rgb);
-			if (brush)
-				DeleteObject(brush);
-			brush = ::CreateSolidBrush(rgb);
-			SelectObject(hdc, pen);
-			SelectObject(hdc, brush);
+			pen.CreatePen(PS_SOLID, 0, rgb);
+			brush.CreateSolidBrush(rgb);
+			SelectObject(hdc, &pen);
+			SelectObject(hdc, &brush);
 			break;
 		// end of data
 		case 0xFC:
@@ -479,9 +441,6 @@ void CxAcadSlide::Draw(HDC hdc, CRect& rect)
 				break;
 			// else vector
 			fromX = record;
-			if(!m_Data)
-				return;
-	
 			m_Data->Read(&fromY, sizeof(WORD));
 			m_Data->Read(&toX, sizeof(WORD));
 			m_Data->Read(&toY, sizeof(WORD));

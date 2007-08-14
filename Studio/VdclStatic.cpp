@@ -10,15 +10,14 @@
 // VdclStatic
 
 VdclStatic::VdclStatic()
+: mbrushBackground( GetRGBColor(nButtonFace) )
 {
-	m_pStaticBrush = new CBrush();
-	m_pStaticBrush->CreateSolidBrush(GetRGBColor(nButtonFace));
 	m_ForeColor = GetRGBColor(nButtonText);
 }
 
 VdclStatic::~VdclStatic()
 {
-
+	mbrushBackground.DeleteObject();
 }
 
 
@@ -31,10 +30,8 @@ END_MESSAGE_MAP()
 
 void VdclStatic::SetAcadColor(long nColorArg)
 {
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
-	m_pStaticBrush = new CBrush();
-	m_pStaticBrush->CreateSolidBrush(GetRGBColor(nColorArg));
+	mbrushBackground.DeleteObject();
+	mbrushBackground.CreateSolidBrush(GetRGBColor(nColorArg));
 }
 
 
@@ -52,8 +49,7 @@ HBRUSH VdclStatic::CtlColor(CDC* pDC, UINT nCtlColor)
 	{	
 		pDC->SetBkMode(TRANSPARENT);	
 		pDC->SetTextColor(m_ForeColor);
-		pDC->SelectObject(m_pStaticBrush);
-		return *m_pStaticBrush;	
+		return mbrushBackground;	
 	}
 
 	return NULL;
@@ -62,7 +58,4 @@ HBRUSH VdclStatic::CtlColor(CDC* pDC, UINT nCtlColor)
 void VdclStatic::OnDestroy() 
 {
 	CStatic::OnDestroy();
-	
-	if (m_pStaticBrush)
-	delete m_pStaticBrush;	
 }

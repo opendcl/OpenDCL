@@ -485,6 +485,7 @@ void VdclTree::Clear()
 	}
 	m_bDeleting = false;
 }
+
 //*****************************************************************************
 // 
 // Method: VdclTree::GetParentInfo()
@@ -527,6 +528,7 @@ bool VdclTree::GetParentInfo(CString sKey)
 	
 	return true;
 }
+
 bool VdclTree::GetParentInfo(HTREEITEM hItem) 
 {
 	if (hItem == NULL)
@@ -549,7 +551,7 @@ bool VdclTree::GetParentInfo(HTREEITEM hItem)
 		return true;
 	}
 	
-	acedRetLong((long)hParentItem);
+	acedRetHandle((DWORD_PTR)hParentItem);
 	
 	return true;
 }
@@ -646,7 +648,7 @@ void VdclTree::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 		// call methods to invoke the event
 		InvokeMethodLong(		
 			m_ArxControl->GetStrProperty(nEventBeginLabelEdit),
-			(long)SelectedItem.hItem,
+			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
 	}
 	
@@ -679,7 +681,7 @@ void VdclTree::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 		InvokeMethodStringLong(
 			m_ArxControl->GetStrProperty(nEventEndLabelEdit),
 			sNewText,
-			(long)SelectedItem.hItem,
+			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
 	}
 	
@@ -714,7 +716,7 @@ void VdclTree::OnDeleteitem(NMHDR* pNMHDR, LRESULT* pResult)
 		InvokeMethodStringLong(
 			m_ArxControl->GetStrProperty(nEventDeleteItem),
 			sItemText,
-			(long)SelectedItem.hItem,
+			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
 	}
 	
@@ -818,7 +820,7 @@ void VdclTree::OnItemexpanded(NMHDR* pNMHDR, LRESULT* pResult)
 		InvokeMethodStringLong(
 			m_ArxControl->GetStrProperty(nEventItemExpanded),
 			sItemText,
-			(long)SelectedItem.hItem,
+			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
 	}
 }
@@ -908,7 +910,7 @@ void VdclTree::OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult)
 		InvokeMethodStringLong(
 			m_ArxControl->GetStrProperty(nEventItemExpanding),
 			sItemText,
-			(long)SelectedItem.hItem,
+			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
 	}
 

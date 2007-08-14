@@ -10,16 +10,15 @@
 // CClrListBox
 
 CClrListBox::CClrListBox()
+: mbrushBackground( GetRGBColor(-6) )
 {
-	m_pStaticBrush = new CBrush();
-	m_pStaticBrush->CreateSolidBrush(GetRGBColor(-6));
+	m_BackColor = GetRGBColor(-6);
 	m_ForeColor = GetRGBColor(-19);
 }
 
 CClrListBox::~CClrListBox()
 {
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
+	mbrushBackground.DeleteObject();
 }
 
 
@@ -32,11 +31,9 @@ END_MESSAGE_MAP()
 
 void CClrListBox::SetAcadColor(long nColor)
 {
-	if (m_pStaticBrush)
-		delete m_pStaticBrush;
-	m_pStaticBrush = new CBrush();
 	m_BackColor = GetRGBColor(nColor);
-	m_pStaticBrush->CreateSolidBrush(m_BackColor);
+	mbrushBackground.DeleteObject();
+	mbrushBackground.CreateSolidBrush(m_BackColor);
 }
 
 void CClrListBox::SetForeColor(long nColor)
@@ -52,6 +49,5 @@ HBRUSH CClrListBox::CtlColor(CDC* pDC, UINT nCtlColor)
 	pDC->SetBkMode(TRANSPARENT);	
 	pDC->SetBkColor(m_BackColor);	
 	pDC->SetTextColor(m_ForeColor);
-	pDC->SelectObject(m_pStaticBrush);
-	return (HBRUSH)(m_pStaticBrush->GetSafeHandle());
+	return mbrushBackground;
 }

@@ -3027,9 +3027,6 @@ void COpenDCLView::CompletedDragResize(int nQuadrant, CPoint point)
 	
 	// move the control
 	m_SelectedControl.m_pControl->MoveWindow(rcNewPos, TRUE);
-	
-	if (m_SelectedControl.m_pArxObject->GetType() == CtlTabStrip)
-		ResizeChildTabPanes();
 
 	// add the event to the undo list
 	CUndoActions *pUndo = new CUndoActions(
@@ -3044,11 +3041,9 @@ void COpenDCLView::CompletedDragResize(int nQuadrant, CPoint point)
 	CRect rcChild(0,0, rcPos.Width(), rcPos.Height());
 	// resize the child control
 	pControl->MoveWindow(rcChild, TRUE);
+	pControl->GetWindowRect(&rcChild);
 	
 	rcPos = rcNewPos;
-
-	pControl->GetWindowRect(&rcChild);
-
 	rcPos.right = rcPos.left + rcChild.Width();
 	rcPos.bottom = rcPos.top + rcChild.Height();
 
@@ -3057,20 +3052,7 @@ void COpenDCLView::CompletedDragResize(int nQuadrant, CPoint point)
 	m_SelectedControl.m_pArxObject->SetLongProperty(nTop, rcPos.top);
 	m_SelectedControl.m_pArxObject->SetLongProperty(nWidth, rcPos.Width());
 	m_SelectedControl.m_pArxObject->SetLongProperty(nHeight, rcPos.Height());
-		
-	CRect rcThis;
-	GetClientRect(&rcThis);
-	
-
-	// set the offset position properties
 	CalcControlOffsetDistances(m_SelectedControl.m_pArxObject, rcPos);
-	/*
-	m_SelectedControl.m_pArxObject->SetLongProperty(nLeftFromRight, rcThis.Width() - rcPos.left);
-	m_SelectedControl.m_pArxObject->SetLongProperty(nTopFromBottom, rcThis.Height() - rcPos.top);
-	m_SelectedControl.m_pArxObject->SetLongProperty(nRightFromRight, rcThis.Width() - rcPos.right);
-	m_SelectedControl.m_pArxObject->SetLongProperty(nBottomFromBottom, rcThis.Height() - rcPos.bottom);
-	*/
-
 
 	// call method to update the position of the grip rects
 	ShowGripRects(TRUE, rcPos);
@@ -3080,9 +3062,7 @@ void COpenDCLView::CompletedDragResize(int nQuadrant, CPoint point)
 	UpdateClientHeight(m_SelectedControl.m_pArxObject, pControl);
 
 	if (m_SelectedControl.m_pArxObject->GetType() == CtlTabStrip)
-	{
 		ResizeChildTabPanes();
-	}
 
 	FireControlSelected(m_SelectedControl.m_pArxObject);
 	FireSetUndo();
@@ -4124,8 +4104,8 @@ void COpenDCLView::ResizeChildTabPanes()
 			pTabForm->m_pMdiChildWnd->GetClientRect(&rcClient);
 			CRect rcWindow;
 			pTabForm->m_pMdiChildWnd->GetWindowRect(&rcWindow);
-			nNewWidth = nNewWidth + rcWindow.Width() - rcClient.Width();
-			nNewHeight = nNewHeight + rcWindow.Height() - rcClient.Height();
+			nNewWidth += (rcWindow.Width() - rcClient.Width());
+			nNewHeight += (rcWindow.Height() - rcClient.Height());
 			pTabForm->m_pMdiChildWnd->SetWindowPos(NULL, -1, -1, nNewWidth, nNewHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 		}
 	}	
