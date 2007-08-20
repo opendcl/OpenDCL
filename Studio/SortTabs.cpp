@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "SortTabs.h"
+#include "Workspace.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -107,6 +108,6 @@ void CSortTabs::OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult)
 BOOL CSortTabs::OnApply() 
 {
 	mpTabsPane->OnApply();
-
+	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();
 }

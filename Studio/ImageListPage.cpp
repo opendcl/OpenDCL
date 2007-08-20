@@ -381,7 +381,7 @@ BOOL CImageListPage::OnApply()
 	}
 	else
 		mpDclControl->SetImageList( NULL );
-
+	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();
 }
 

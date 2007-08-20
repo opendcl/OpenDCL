@@ -181,23 +181,38 @@ BOOL CMainFileDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 
 void CMainFileDlg::OnOK() 
 {
-	CString sEvent = mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventCancelClose);
-	if (sEvent.IsEmpty() || !(InvokeCancelMethod(sEvent, false)))
+	if (mpSourceForm->GetFormInstance()->IsClosing() ||
+			!(InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false)))
+	{
+		mpSourceForm->GetFormInstance()->SetClosing();
 		__super::OnOK();
+	}
+	else
+		mpSourceForm->GetFormInstance()->SetClosing( false );
 }
 
 void CMainFileDlg::OnCancel() 
 {
-	CString sEvent = mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventCancelClose);
-	if (sEvent.IsEmpty() || !(InvokeCancelMethod(sEvent, false)))
+	if (mpSourceForm->GetFormInstance()->IsClosing() ||
+			!(InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventCancelClose), true)))
+	{
+		mpSourceForm->GetFormInstance()->SetClosing();
 		__super::OnCancel();
+	}
+	else
+		mpSourceForm->GetFormInstance()->SetClosing( false );
 }
 
 void CMainFileDlg::OnClose() 
 {
-	CString sEvent = mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventCancelClose);
-	if (sEvent.IsEmpty() || !(InvokeCancelMethod(sEvent, false)))
-		__super::OnClose();				
+	if (mpSourceForm->GetFormInstance()->IsClosing() ||
+			!(InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventCancelClose), true)))
+	{
+		mpSourceForm->GetFormInstance()->SetClosing();
+		__super::OnClose();
+	}
+	else
+		mpSourceForm->GetFormInstance()->SetClosing( false );
 }
 
 void CMainFileDlg::OnDestroy() 

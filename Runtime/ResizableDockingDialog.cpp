@@ -122,8 +122,10 @@ bool CResizableDockingDialogX::CreateModeless( UINT nID ) const
 	return true;
 }
 
-void CResizableDockingDialogX::CloseDialog(int nStatus) const
+void CResizableDockingDialogX::CloseDialog(int nStatus)
 {
+	if( IsClosing() )
+		return;
 	CWnd* pTopLevel = IsFloating()? (mpOwner->m_hWnd? mpOwner->GetParent()->GetParent() : NULL) : mpOwner;
 	HWND hwndTopLevel = pTopLevel? pTopLevel->m_hWnd : NULL;
 	HWND hwndOwner = mpOwner->m_hWnd;
@@ -157,7 +159,6 @@ CResizableDockingDialog::CResizableDockingDialog( CDclFormObject* pSourceForm, C
 : CAdUiDockControlBar( ADUI_DOCK_CS_STDMOUSECLICKS | ADUI_DOCK_CS_DESTROY_ON_CLOSE )
 , mpParent( pParent )
 , mDialogX( *this, pSourceForm )
-, mbClosing( false )
 , mbHiding( false )
 , mbTrackingMouse( false )
 , mbInMenuLoop( false )
@@ -274,7 +275,7 @@ void CResizableDockingDialog::GetClientArea(CRect &rect)
 void CResizableDockingDialog::SizeChanged (CRect *lpRect, BOOL bFloating, int flags) 
 {
 	CAdUiDockControlBar::SizeChanged(lpRect, bFloating, flags);
-	if (!mbClosing)
+	if (!mDialogX.IsClosing())
 	{
 		lpRect->top += (nDeflateRect + 2);
 		lpRect->left += nDeflateRect;
@@ -310,7 +311,7 @@ void CResizableDockingDialog::OnShowWindow(BOOL bShow, UINT nStatus)
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStrProperty(nFormEventShow), true);	
 
-	mbHiding = !mbClosing && !bShow;
+	mbHiding = !mDialogX.IsClosing() && !bShow;
 	CAdUiDockControlBar::OnShowWindow(bShow, nStatus);
 }
 
@@ -331,7 +332,9 @@ void CResizableDockingDialog::PostNcDestroy()
 
 bool CResizableDockingDialog::OnClosing()
 {
-	mbClosing = true;
+	if( mDialogX.IsClosing() )
+		return true;
+	mDialogX.SetClosing();
 	CAdUiDockControlBar::OnClosing();
 	// call methods to invoke the event
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
@@ -484,8 +487,7 @@ BOOL CResizableDockingDialog::PreTranslateMessage(MSG* pMsg)
 
 void CResizableDockingDialog::OnDestroy() 
 {
-	if( !mbClosing )
-		OnClosing();
+	OnClosing();
 	mDialogX.GetControlPane().CleanUpControls();
 	CAdUiDockControlBar::OnDestroy();
 }

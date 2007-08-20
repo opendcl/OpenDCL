@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "ProgressBarPage.h"
 #include "DclControlObject.h"
+#include "Workspace.h"
 #include "PropertyIds.h"
 
 
@@ -102,7 +103,7 @@ BOOL CProgressBarPage::OnApply()
 	
 	m_pArxCtrl->SetBooleanProperty(nDisplaySeconds, m_Time.GetCheck() != 0);
 
-
+	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();
 }
 

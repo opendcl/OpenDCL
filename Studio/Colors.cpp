@@ -116,9 +116,8 @@ BOOL CColors::OnApply()
 	CString sValue;
 	m_Edit.GetWindowText(sValue);
 	int nThisValue = _tstol(sValue);
-	
 	m_pColor->SetLongValue(nThisValue);
-	
+	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();
 }
 

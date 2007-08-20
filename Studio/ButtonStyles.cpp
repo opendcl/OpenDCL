@@ -154,7 +154,7 @@ BOOL CButtonStyles::OnApply()
 {
 	m_pStyle->SetLongValue(m_SelectedStyle);
 	m_pPicture->SetLongValue(static_cast< long >(m_SelectedPic));
-	
+	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();
 }
 

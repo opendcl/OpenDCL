@@ -25,21 +25,22 @@ public:
 	CMainFrameToolBar();   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CMainFrameToolBar)
 	enum { IDD = IDR_MAINFRAME };
+
 	CFontCombo		m_FontNames;
 	CFontSizes		m_FontSizes;
-	//}}AFX_DATA
+	long      m_lFontSize;
 	short			m_nFontWeight;
 	short			m_nFontCharset;
 	bool			m_bBold;
 	bool			m_bUnderline;
-	bool			m_bScaled;
 	bool			m_bItalic;
+	bool			m_bScaled;
 	CToolBarCtrl	m_Buttons;
 	TBBUTTON		*m_pTBButtons;
 	CFont			m_font;
 	CView			*m_pActiveView;
+
 	void SetFontToolBar(CDclControlObject *pCtrl);
 	void AddFontToToolBar(CDclControlObject *pCtrl);
 	void SetActiveView(CView *pView);
@@ -49,21 +50,16 @@ public:
 	
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CMainFrameToolBar)
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
-	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
-
 	// Generated message map functions
-	//{{AFX_MSG(CMainFrameToolBar)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	//}}AFX_MSG
 	afx_msg void OnFontBold();
 	afx_msg void OnFontItalic();
 	afx_msg void OnFontUnderline();

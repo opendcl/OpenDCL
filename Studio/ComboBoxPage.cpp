@@ -46,7 +46,7 @@ END_MESSAGE_MAP()
 BOOL CComboBoxPage::OnApply() 
 {
 	m_pStyle->SetLongValue(m_SelectedStyle);
-	
+	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();
 }
 

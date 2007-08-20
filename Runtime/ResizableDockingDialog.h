@@ -28,7 +28,7 @@ protected:
 	virtual HWND GetHWnd() const;
 	virtual bool IsFloating() const;
 	virtual bool CreateModeless( UINT nID ) const;
-	virtual void CloseDialog(int nStatus) const;
+	virtual void CloseDialog(int nStatus);
 	virtual bool GetWindowRect( CRect& rcDlg ) const;
 	virtual bool GetClientRect( CRect& rcDlg ) const;
 };
@@ -41,7 +41,6 @@ class CResizableDockingDialog : public CAdUiDockControlBar
 {
 	CWnd* mpParent;
 	CResizableDockingDialogX mDialogX;
-	bool mbClosing;
 	bool mbHiding;
 	bool mbTrackingMouse;
 	bool mbInMenuLoop;

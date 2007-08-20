@@ -353,7 +353,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlComboBox:
@@ -378,7 +377,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlEvent( pDclControl, nEventKillFocus );
 		AddControlEvent( pDclControl, nEventSetFocus );
 		AddControlEvent( pDclControl, nEventSelChanged );
-		AddControlEvent( pDclControl, nEventUpdate );
+		//AddControlEvent( pDclControl, nEventUpdate );
 		AddControlEvent( pDclControl, nEventDropDown );
 		AddControlEvent( pDclControl, nEventMouseMove );
 		AddControlHiddenProperty( pDclControl, nLabelBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
@@ -386,7 +385,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlDwgList:
@@ -424,7 +422,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlDwgPreview:
@@ -484,7 +481,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlGraphicButton:
@@ -517,7 +513,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlGrid:
@@ -566,7 +561,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlHatch:
@@ -629,7 +623,7 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlEvent( pDclControl, nEventKillFocus );
 		AddControlEvent( pDclControl, nEventSetFocus );
 		AddControlEvent( pDclControl, nEventSelChanged );
-		AddControlEvent( pDclControl, nEventUpdate );
+		//AddControlEvent( pDclControl, nEventUpdate );
 		AddControlEvent( pDclControl, nEventDropDown );
 		AddControlEvent( pDclControl, nEventMouseMove );
 		AddControlHiddenProperty( pDclControl, nLabelBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
@@ -637,7 +631,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlLabel:
@@ -660,7 +653,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlListBox:
@@ -703,7 +695,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlListView:
@@ -759,7 +750,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlMonth:
@@ -781,7 +771,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlOptionButton:
@@ -807,7 +796,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlOptionList:
@@ -841,7 +829,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlPictureBox:
@@ -886,7 +873,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlProgress:
@@ -929,7 +915,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlScrollBar:
@@ -1039,7 +1024,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlStdButton:
@@ -1067,16 +1051,16 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlTabStrip:
 		pDclControl->AddStringProperty( nLabelName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
-		//pDclControl->AddLongProperty( nTabLabelAlign, PropEnum, 1 );
-		pDclControl->AddLongProperty( nMinTabWidth, PropLong, 50 );
+		pDclControl->AddLongProperty( nTabLabelAlign, PropEnum, 1 );
+		pDclControl->AddLongProperty( nMinTabWidth, PropLong, -1 );
 		pDclControl->AddBooleanProperty( nTabFixedWidth, PropBool, false );
 		pDclControl->AddLongProperty( nTabStyle, PropEnum, 0 );
 		pDclControl->AddBooleanProperty( nMultiRow, PropBool, false );
+		//pDclControl->AddLongProperty( nTabJustified, PropEnum, 0 );
 		AddControlHiddenProperty( pDclControl, nTabsCaption, sList, PropStringArray );
 		//AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_TAB1));
 		//AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_TAB2));
@@ -1092,7 +1076,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlTextBox:
@@ -1137,7 +1120,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	case CtlTree:
@@ -1184,7 +1166,6 @@ bool AddDefaultProperties( CDclControlObject* pDclControl, long lWidth /*= -1*/,
 		AddControlHiddenProperty( pDclControl, nLabelSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
 		AddControlHiddenProperty( pDclControl, nLabelStrikeOut, false, PropBool );
 		AddControlHiddenProperty( pDclControl, nLabelUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, nFontSizeStyle, true, PropBool );
 		break;
 
 	default:

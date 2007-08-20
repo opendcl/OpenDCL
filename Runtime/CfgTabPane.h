@@ -28,7 +28,7 @@ protected:
 	virtual HWND GetHWnd() const;
 	virtual bool IsDirty() const;
 	virtual bool SetDirty( bool bDirty = true );
-	virtual void CloseDialog(int nStatus) const;
+	virtual void CloseDialog(int nStatus);
 };
 
 

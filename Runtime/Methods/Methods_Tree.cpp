@@ -241,8 +241,8 @@ bool Tree_AddParentList(CWnd *pControl, int nArg)
 
 int Tree_AddParent()
 {
-	CString sParentText = "";
-	CString sKey = "";
+	CString sParentText ;
+	CString sKey ;
 	int nImage = -1;
 	int nSelectedImage = -1;
 	int nExpandedImage = -1;
@@ -252,7 +252,7 @@ int Tree_AddParent()
 	if (!GetStringArgument(nArg, &sParentText, "") || pControl == NULL)
 	{
 		if (Tree_AddParentList(pControl, nArg))
-			acedRetVoid();
+			acedRetNil();
 		else
 		{
 			CString sArg;
@@ -261,14 +261,14 @@ int Tree_AddParent()
 			theWorkspace.DisplayAlert(
 				CString(ErrorTheErrorStart) + sArg + ErrorTheErrorMiddle + sTree_AddParent +
 				ErrorEndErrorNotaString	);	
-			acedRetVoid();
+			acedRetNil();
 		}
 		return 0;
 	}
 	nArg++;
 	if (!FindOptionalStringArgument(nArg, &sKey, sTree_AddParent))
 	{
-		sKey = "";
+		sKey ;
 	}
 	else
 	{		
@@ -547,10 +547,10 @@ int Tree_AddChild()
 	if (!GetStringOrHandleArgument(nArg, sParentKey, uParentKey, sTree_AddChild) || pControl == NULL)
 	{
 		if (Tree_AddChildList(pControl, nArg))
-			acedRetVoid();
+			acedRetNil();
 		else
 		{
-			acedRetVoid();
+			acedRetNil();
 		}
 		return 0;
 	}
@@ -558,7 +558,7 @@ int Tree_AddChild()
 	if (!GetStringArgument(nArg, &sChildText, sTree_AddChild) || pControl == NULL)
 	{
 		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -622,7 +622,7 @@ int Tree_InsertAfter()
 	if (!GetStringOrHandleArgument(nArg, sRefKey, uRefKey, sTree_InsertAfter) || pControl == NULL)
 	{
 		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	nArg++;
@@ -630,14 +630,14 @@ int Tree_InsertAfter()
 	if (!GetStringArgument(nArg, &sChildText, sTree_InsertAfter))
 	{
 		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
 	nArg++;
 	if (!FindOptionalStringArgument(nArg, &sKey, sTree_InsertAfter))
 	{
-		sKey = "";
+		sKey ;
 	}
 	else
 	{		
@@ -683,14 +683,14 @@ int Tree_Clear()
 	if (pControl == NULL)		
 	{
 		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	
 	((VdclTree*)pControl)->Clear();
 	
 	
-	acedRetVoid();
+	acedRetNil();
 	return 0;
 }
 
@@ -712,7 +712,7 @@ int Tree_CountItems()
 	if (pControl == NULL)		
 	{
 		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	
@@ -736,7 +736,7 @@ int Tree_CountItems()
 //*****************************************************************************
 int Tree_SelectItem()
 {
-	CString sSelectKey = "";
+	CString sSelectKey ;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_SelectItem, &nArg);
 	VdclTree* pTree = (VdclTree*)pControl;
@@ -744,7 +744,7 @@ int Tree_SelectItem()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SelectItem) || pControl == NULL)
 	{		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -772,7 +772,7 @@ int Tree_SelectItem()
 	*/
 	pTree->m_ChildTree.SetFocus();
 		
-	acedRetVoid();
+	acedRetNil();
 	return 0;
 }
 
@@ -796,7 +796,7 @@ int Tree_GetParent()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sParentKey, uLong, sTree_GetParent) || pControl == NULL)
 	{		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	
@@ -826,7 +826,7 @@ int Tree_GetParent()
 
 int Tree_ItemHasChildren()
 {
-	CString sSelectKey = "";
+	CString sSelectKey ;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_ItemHasChildren, &nArg);
 
@@ -834,7 +834,7 @@ int Tree_ItemHasChildren()
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_ItemHasChildren) || pControl == NULL)
 	{
 		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -858,14 +858,14 @@ int Tree_ItemHasChildren()
 }
 int Tree_GetNextSiblingItem()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetNextSiblingItem, &nArg);
 
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetNextSiblingItem) || pControl == NULL)
 	{		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -875,7 +875,7 @@ int Tree_GetNextSiblingItem()
 		HTREEITEM hNextItem = ((VdclTree*)pControl)->m_ChildTree.GetNextSiblingItem(hItem);
 		
 		CString sRetVal = ((VdclTree*)pControl)->Get_hItemKey(hNextItem);
-		if (sRetVal.Left(1) == "?" || sRetVal.IsEmpty())			
+		if (sRetVal.Left(1) == _T("?") || sRetVal.IsEmpty())			
 			acedRetStr(_T(""));
 		else
 			acedRetStr(((VdclTree*)pControl)->Get_hItemKey(hNextItem));
@@ -893,14 +893,14 @@ int Tree_GetNextSiblingItem()
 
 int Tree_GetPrevSiblingItem()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetPrevSiblingItem, &nArg);
 
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetPrevSiblingItem) || pControl == NULL)
 	{		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -910,7 +910,7 @@ int Tree_GetPrevSiblingItem()
 		HTREEITEM hPrevItem = ((VdclTree*)pControl)->m_ChildTree.GetPrevSiblingItem(hItem);
 
 		CString sRetVal = ((VdclTree*)pControl)->Get_hItemKey(hPrevItem);
-		if (sRetVal.Left(1) == "?" || sRetVal.IsEmpty())			
+		if (sRetVal.Left(1) == _T("?") || sRetVal.IsEmpty())			
 			acedRetStr(_T(""));
 		else
 			acedRetStr(((VdclTree*)pControl)->Get_hItemKey(hPrevItem));
@@ -930,15 +930,14 @@ int Tree_GetFirstVisibleItem()
 
 	if (pControl == NULL)
 	{
-		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	
 	HTREEITEM hItem = ((VdclTree*)pControl)->m_ChildTree.GetFirstVisibleItem();
 
 	CString sRetVal = ((VdclTree*)pControl)->Get_hItemKey(hItem);
-	if (sRetVal.Left(1) == "?" || sRetVal.IsEmpty())
+	if (sRetVal.Left(1) == _T("?") || sRetVal.IsEmpty())
 		acedRetHandle((DWORD_PTR)hItem);
 	else	
 		acedRetStr(((VdclTree*)pControl)->Get_hItemKey(hItem));
@@ -955,8 +954,7 @@ int Tree_GetNextVisibleItem()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetNextVisibleItem) || pControl == NULL)
 	{
-		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -966,7 +964,7 @@ int Tree_GetNextVisibleItem()
 		HTREEITEM hNextItem = ((VdclTree*)pControl)->m_ChildTree.GetNextVisibleItem(hItem);
 
 		CString sRetVal = ((VdclTree*)pControl)->Get_hItemKey(hNextItem);
-		if (sRetVal.Left(1) == "?" || sRetVal.IsEmpty())			
+		if (sRetVal.Left(1) == _T("?") || sRetVal.IsEmpty())			
 			acedRetStr(_T(""));
 		else	
 			acedRetStr(((VdclTree*)pControl)->Get_hItemKey(hNextItem));
@@ -983,15 +981,14 @@ int Tree_GetNextVisibleItem()
 
 int Tree_GetPrevVisibleItem()
 {
-	CString sSelectKey = "";
+	CString sSelectKey;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetPrevVisibleItem, &nArg);
 
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetPrevVisibleItem) || pControl == NULL)
 	{
-		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -1001,7 +998,7 @@ int Tree_GetPrevVisibleItem()
 		HTREEITEM hPrevItem = ((VdclTree*)pControl)->m_ChildTree.GetPrevVisibleItem(hItem);
 
 		CString sRetVal = ((VdclTree*)pControl)->Get_hItemKey(hPrevItem);
-		if (sRetVal.Left(1) == "?" || sRetVal.IsEmpty())
+		if (sRetVal.Left(1) == _T("?") || sRetVal.IsEmpty())
 			acedRetStr(_T(""));
 		else	
 			acedRetStr(((VdclTree*)pControl)->Get_hItemKey(hPrevItem));
@@ -1021,8 +1018,7 @@ int Tree_GetSelectedItem()
 
 	if (pControl == NULL)
 	{
-		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	
@@ -1035,28 +1031,28 @@ int Tree_GetSelectedItem()
 	}
 	
 	CString sRetVal = ((VdclTree*)pControl)->Get_hItemKey(hItem);
-	if (sRetVal.Left(1) == "?" || sRetVal.IsEmpty())
+	if (sRetVal.Left(1) == _T("?") || sRetVal.IsEmpty())
 		acedRetHandle((DWORD_PTR)hItem);
 	else	
 		acedRetStr(((VdclTree*)pControl)->Get_hItemKey(hItem));
 
 	return 0;
 }
+
 int Tree_GetRootItem()
 {
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_GetRootItem);
 
 	if (pControl == NULL)
 	{
-		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	
 	HTREEITEM hItem = ((VdclTree*)pControl)->m_ChildTree.GetRootItem();
 
 	CString sRetVal = ((VdclTree*)pControl)->Get_hItemKey(hItem);
-	if (sRetVal.Left(1) == "?" || sRetVal.IsEmpty())		
+	if (sRetVal.Left(1) == _T("?") || sRetVal.IsEmpty())		
 		acedRetHandle((DWORD_PTR)hItem);
 	else	
 		acedRetStr(((VdclTree*)pControl)->Get_hItemKey(hItem));
@@ -1073,8 +1069,7 @@ int Tree_GetItem()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetItem) || pControl == NULL)
 	{
-		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -1088,7 +1083,7 @@ int Tree_GetItem()
 
 	if (hItem == NULL)
 	{		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	CString sText = ((VdclTree*)pControl)->m_ChildTree.GetItemText(hItem);
@@ -1098,9 +1093,8 @@ int Tree_GetItem()
 	
 	if (sSelectKey.GetLength() > 0)
 		ReturnTreeItem(sText, nImage, nSelectedImage, sSelectKey);
-	else
-		if (uLong != 0)
-			ReturnTreeItem(sText, nImage, nSelectedImage, uLong);
+	else if (uLong != 0)
+		ReturnTreeItem(sText, nImage, nSelectedImage, uLong);
 	
 	return 0;
 }
@@ -1114,7 +1108,7 @@ int Tree_GetItemImages()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetItemImages) || pControl == NULL)
 	{		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -1163,20 +1157,19 @@ int Tree_SetItemImages()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SetItemImages) || pControl == NULL)
 	{		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	nArg++;
 	if (!GetIntArgument(nArg, &nImage, sTree_SetItemImages))
 	{
-		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	nArg++;
 	if (!FindOptionalIntArgument(nArg, &nSelectedImage, sTree_SetItemImages))
 	{		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -1199,7 +1192,7 @@ int Tree_SetItemImages()
 	}
 	((VdclTree*)pControl)->m_ChildTree.SetItemImage(hItem, nImage, nSelectedImage);
 	((VdclTree*)pControl)->m_ChildTree.Invalidate();
-	acedRetVoid();
+	acedRetNil();
 	return 0;
 }
 
@@ -1213,13 +1206,13 @@ int Tree_SetExpanedImage()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SetExpanedImage) || pControl == NULL)
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	nArg++;
 	if (!GetIntArgument(nArg, &nExpandedImage, sTree_SetExpanedImage))
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	
@@ -1232,7 +1225,7 @@ int Tree_SetExpanedImage()
 		((VdclTree*)pControl)->m_ChildTree.Invalidate();
 	}
 	
-	acedRetVoid();
+	acedRetNil();
 	return 0;
 }
 
@@ -1245,8 +1238,7 @@ int Tree_GetExpanedImage()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetExpanedImage) || pControl == NULL)
 	{
-		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	
@@ -1274,8 +1266,7 @@ int Tree_GetItemData()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetItemData) || pControl == NULL)
 	{
-		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -1310,14 +1301,14 @@ int Tree_SetItemData()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SetItemData) || pControl == NULL)
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
 	nArg++;
 	if (!GetIntArgument(nArg, &nData, sTree_SetItemData))
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -1330,7 +1321,7 @@ int Tree_SetItemData()
 	{
 		((VdclTree*)pControl)->m_ChildTree.SetItemData((HTREEITEM)uLong, nData);
 	}
-	acedRetVoid();
+	acedRetNil();
 	return 0;
 }
 
@@ -1343,7 +1334,7 @@ int Tree_GetItemText()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetItemText) || pControl == NULL)
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -1375,14 +1366,14 @@ int Tree_SetItemText()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SetItemText) || pControl == NULL)
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
 	nArg++;
 	if (!GetStringArgument(nArg, &sNewText, sTree_SetItemText) || pControl == NULL)
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	
@@ -1395,7 +1386,7 @@ int Tree_SetItemText()
 		((VdclTree*)pControl)->m_ChildTree.SetItemText((HTREEITEM)uLong, sNewText);
 
 	((VdclTree*)pControl)->m_ChildTree.Invalidate();
-	acedRetVoid();
+	acedRetNil();
 	return 0;
 }
 int Tree_GetVisibleCount()
@@ -1405,7 +1396,7 @@ int Tree_GetVisibleCount()
 	if (pControl == NULL)
 	{
 		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -1423,7 +1414,7 @@ int Tree_DeleteItem()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_DeleteItem) || pControl == NULL)
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -1445,10 +1436,10 @@ int Tree_DeleteItem()
 	{
 		theWorkspace.DisplayAlert(ErrorKeyMustBeSet);
 		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
-	acedRetVoid();
+	acedRetNil();
 	return 0;
 }
 
@@ -1462,13 +1453,13 @@ int Tree_ExpandItem()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_ExpandItem) || pControl == NULL)
 	{		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	nArg++;
 	if (!GetIntArgument(nArg, &nExpandStyle, sTree_ExpandItem))
 	{		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -1507,7 +1498,7 @@ int Tree_ExpandItem()
 	
 	((VdclTree*)pControl)->m_ChildTree.Invalidate();
 
-	acedRetVoid();
+	acedRetNil();
 	return 0;
 }
 
@@ -1520,7 +1511,7 @@ int Tree_SelectSetFirstVisible()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SelectSetFirstVisible) || pControl == NULL)
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -1532,7 +1523,7 @@ int Tree_SelectSetFirstVisible()
 	if (uLong != 0)
 		((VdclTree*)pControl)->m_ChildTree.SelectSetFirstVisible((HTREEITEM)uLong);
 
-	acedRetVoid();
+	acedRetNil();
 	return 0;
 }
 
@@ -1546,7 +1537,7 @@ int Tree_EditLabel()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_EditLabel) || pControl == NULL)
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	HTREEITEM hItem = NULL;
@@ -1559,25 +1550,25 @@ int Tree_EditLabel()
 		CEdit* pEdit = ((VdclTree*)pControl)->m_ChildTree.EditLabel(hItem);
 		if (pEdit == NULL)
 		{
-			acedRetVoid();
+			acedRetNil();
 			return 0;
 		}
 	}
-	acedRetVoid();
+	acedRetNil();
 	return 0;
 
 }
 
 int Tree_CancelEditLabel()
 {
-	CString sSelectKey = "";
+	CString sSelectKey ;
 	
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_CancelEditLabel);
 
 	if (pControl == NULL)
 	{
 		
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -1586,26 +1577,26 @@ int Tree_CancelEditLabel()
 	
 	if (pEdit == NULL)
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	pEdit->ShowWindow(FALSE);
 
-	acedRetVoid();
+	acedRetNil();
 	return 0;
 
 }
 
 int Tree_SortChildren()
 {
-	CString sSelectKey = "";
+	CString sSelectKey ;
 	int nArg;
 	CWnd *pControl = GetControlPointer(CtlTree, sTree_SortChildren, &nArg);
 
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_SortChildren) || pControl == NULL)
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	HTREEITEM hItem = NULL;
@@ -1619,7 +1610,7 @@ int Tree_SortChildren()
 		((VdclTree*)pControl)->m_ChildTree.SortChildren(hItem);
 		((VdclTree*)pControl)->m_ChildTree.Invalidate();
 	}
-	acedRetVoid();
+	acedRetNil();
 	return 0;
 }
 
@@ -1632,7 +1623,7 @@ int Tree_EnsureVisible()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_EnsureVisible) || pControl == NULL)
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 	HTREEITEM hItem = NULL;
@@ -1643,7 +1634,7 @@ int Tree_EnsureVisible()
 	if (hItem != NULL)
 		((VdclTree*)pControl)->m_ChildTree.EnsureVisible(hItem);
 
-	acedRetVoid();
+	acedRetNil();
 	return 0;
 }
 
@@ -1656,7 +1647,7 @@ int Tree_GetFirstChildItem()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_GetFirstChildItem) || pControl == NULL)
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 
@@ -1666,7 +1657,7 @@ int Tree_GetFirstChildItem()
 		HTREEITEM hChildItem = ((VdclTree*)pControl)->m_ChildTree.GetChildItem(hItem);
 		
 		CString sRetVal = ((VdclTree*)pControl)->Get_hItemKey(hChildItem);
-		if (sRetVal.Left(1) == "?" || sRetVal.IsEmpty())			
+		if (sRetVal.Left(1) == _T("?") || sRetVal.IsEmpty())			
 			acedRetStr(_T(""));
 		else	
 			acedRetStr( ((VdclTree*)pControl)->Get_hItemKey(hChildItem));
@@ -1690,7 +1681,7 @@ int Tree_IsItemExpanded()
 	DWORD_PTR uLong;
 	if (!GetStringOrHandleArgument(nArg, sSelectKey, uLong, sTree_IsItemExpanded) || pControl == NULL)
 	{
-		acedRetVoid();
+		acedRetNil();
 		return 0;
 	}
 

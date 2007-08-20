@@ -1039,7 +1039,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		const CDialogObject *pDialog = mpDclToBeShown->GetFormInstance();
+		CDialogObject *pDialog = mpDclToBeShown->GetFormInstance();
 		if( !pDialog )
 			return RSERR; //called on invalid dialog
 

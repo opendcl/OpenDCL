@@ -56,8 +56,11 @@ HWND CFileDialogX::GetHWnd() const
 	return mpOwner->m_hWnd;
 }
 
-void CFileDialogX::CloseDialog(int nStatus) const
+void CFileDialogX::CloseDialog(int nStatus)
 {
+	if( IsClosing() )
+		return; //already in the process of closing
+	SetClosing();
 	mpOwner->GetMainDialog().EndDialog( nStatus );
 	mpOwner->GetMainDialog().SendMessage( WM_CLOSE, 0, 0 );
 }

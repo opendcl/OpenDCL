@@ -8,6 +8,8 @@
 #include "AxContainerCtrl.h"
 #include "Resource.h"
 #include "Workspace.h"
+#include "GraphicButtonCtrl.h"
+#include "TabStripCtrl.h"
 #include "OptionListBox.h"
 #include "StaticLink.h"
 #include "3DRect.h"
@@ -18,7 +20,6 @@
 #include "ColorButton.h"
 #include "ColorEdit.h"
 #include "VdclGroupBox.h"
-#include "GraphicButtonCtrl.h"
 #include "VdclStatic.h"
 #include "ListCtrlEx.h"
 #include "FileDlgCtrls.h"
@@ -866,18 +867,7 @@ bool CControlHolder::CreateNewDialogControl()
 			pNewControl = pControl;
 			break;
 		}
-	case CtlTabStrip:
-		{
-			DWORD dwStyle = WS_CHILD | WS_VISIBLE | TCS_FOCUSNEVER |WS_GROUP |WS_CLIPSIBLINGS;
-			if (mpTemplate->GetBoolProperty(nMultiRow))
-				dwStyle = dwStyle | TCS_MULTILINE;
-			else
-				dwStyle = dwStyle | TCS_SINGLELINE;
-			CTabCtrl *pControl = new CTabCtrl;
-			pControl->Create( dwStyle, rc, this, GetId());
-			pNewControl = pControl;
-			break;
-		}
+	case CtlTabStrip : return ((mpDlgControl = new CTabStripCtrl( mpTemplate, this, GetId() )) != NULL);
 	case CtlMonth:
 		{
 			CMonthCalCtrl *pControl = new CMonthCalCtrl;
@@ -1268,28 +1258,7 @@ void CControlHolder::UpdateClientHeight()
 	if (!IsWindow(pControl->m_hWnd))
 		return;
 
-	size_t nCount = ((CTabCtrl*)pControl)->GetItemCount();
-	int nTabHeight = 0;
-	while (nCount-- > 0)
-	{
-		// get the new items' rectangle
-		CRect rcTab;
-		((CTabCtrl*)pControl)->GetItemRect( nCount, &rcTab);
-
-		// if the height of this tab is greater than the previous max height, make it the new max
-		if (rcTab.bottom > nTabHeight)
-			nTabHeight = rcTab.bottom;
-	}
-	
-	// get the height of the tab control
-	CRect rcTabCtrl;
-	((CTabCtrl*)pControl)->GetClientRect(&rcTabCtrl);
-	
-	// subtract the lowest tab bottom to get the control area height
-	mpTemplate->m_ClientHeight = rcTabCtrl.Height() - nTabHeight;
-	
-	// inform the parent a tab control has been resized
-	//FireTabResized(mpTemplate->m_ClientHeight); //no-op
+	mpTemplate->m_ClientHeight = ((CTabStripCtrl*)pControl)->GetUsedArea().Height();
 }
 
 
@@ -1304,6 +1273,7 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 	{
 	case CtlActiveX:
 	case CtlGraphicButton:
+	case CtlTabStrip:
 		mpDlgControl->OnApplyProperty( pProp );
 		mpDlgControl->GetControl()->ShowWindow( SW_SHOW ); //make it visible even if the 'nVisible' property is false
 		mpDlgControl->GetControl()->Invalidate();
@@ -1767,18 +1737,18 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 			break;
 		}
 		
-		case nMinTabWidth:
-		{
-			try 
-			{
-				((CTabCtrl*)pControl)->SetMinTabWidth(mpTemplate->GetLongProperty(nMinTabWidth));
-				((CTabCtrl*)pControl)->RedrawWindow(NULL, NULL, RDW_UPDATENOW);
-			}
-			catch(...)
-			{
-			}
-			break;
-		}
+		//case nMinTabWidth:
+		//{
+		//	try 
+		//	{
+		//		((CTabCtrl*)pControl)->SetMinTabWidth(mpTemplate->GetLongProperty(nMinTabWidth));
+		//		((CTabCtrl*)pControl)->RedrawWindow(NULL, NULL, RDW_UPDATENOW);
+		//	}
+		//	catch(...)
+		//	{
+		//	}
+		//	break;
+		//}
 		
 		case nMaxValue:
 		case nMinValue:
@@ -1896,83 +1866,83 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 			break;
 		}
 
-		case nTabsCaption:
-		//case nTabsImageList:
-		{
-			try
-			{
-				bool bHasImageList = (mpTemplate->GetImageList() != NULL);
+		//case nTabsCaption:
+		////case nTabsImageList:
+		//{
+		//	try
+		//	{
+		//		bool bHasImageList = (mpTemplate->GetImageList() != NULL);
 
-				
-				// delete all previos tabs
-				((CTabCtrl*)pControl)->DeleteAllItems();
-				
-				int nCount = mpTemplate->CountPropertyListItems(nTabsCaption);
-				int nBottom = 0;
-				while (nCount-- > 0)
-				{
-					TC_ITEM TabCtrlItem;
-					CString sTTT;
-					TabCtrlItem.mask = TCIF_TEXT;
-					CString Tab = mpTemplate->GetPropertyListItem(nTabsCaption, nCount);
-					// get the tab caption
-					TabCtrlItem.pszText = Tab.GetBuffer(nDeTextLimitCB);		
-					
-					// set the image list item number if required
-					if (bHasImageList)
-					{
-						TabCtrlItem.mask |= TCIF_IMAGE;
-						TabCtrlItem.iImage = _tstol(mpTemplate->GetPropertyListItem(nTabsImageList, nCount));
-					}
-					
-					// add the new tab
-					((CTabCtrl*)pControl)->InsertItem( 0, &TabCtrlItem );
-				}
-				UpdateClientHeight();
-			}
-			catch(...)
-			{
-			}
-			break;
-		}
-		case nTabSelected:
-		{
-			((CAcadColorListBox*)pControl)->SetCurSel(mpTemplate->GetLongProperty(nTabSelected));
-			break;
-		}
-		case nTabStyle:
-		{
-			if (mpTemplate->GetLongProperty(nTabStyle) == 0)
-				((CTabCtrl*)pControl)->ModifyStyle(TCS_BUTTONS, TCS_TABS, SWP_FRAMECHANGED);
-			else
-				((CTabCtrl*)pControl)->ModifyStyle(TCS_TABS, TCS_BUTTONS, SWP_FRAMECHANGED);
-			break;
-		}
-		
-		case nTabFixedWidth:
-		{
-			try
-			{
-				if (mpTemplate->GetBoolProperty(nTabFixedWidth) == TRUE)
-				{
-					((CTabCtrl*)pControl)->ModifyStyle(0, TCS_FIXEDWIDTH, SWP_FRAMECHANGED);
-					CRect rc;
-					((CTabCtrl*)pControl)->GetItemRect(0, &rc);
-					CSize szTabs;
-					szTabs.cx = mpTemplate->GetLongProperty(nMinTabWidth);
-					szTabs.cy = rc.Height();
-					((CTabCtrl*)pControl)->SetItemSize(szTabs);
-				}
-				else
-				{	
-					((CTabCtrl*)pControl)->ModifyStyle(TCS_FIXEDWIDTH, 0, SWP_FRAMECHANGED);
-				}
-			}
-			catch(...)
-			{
-			}
-			break;
-		}
+		//		
+		//		// delete all previos tabs
+		//		((CTabCtrl*)pControl)->DeleteAllItems();
+		//		
+		//		int nCount = mpTemplate->CountPropertyListItems(nTabsCaption);
+		//		int nBottom = 0;
+		//		while (nCount-- > 0)
+		//		{
+		//			TC_ITEM TabCtrlItem;
+		//			CString sTTT;
+		//			TabCtrlItem.mask = TCIF_TEXT;
+		//			CString Tab = mpTemplate->GetPropertyListItem(nTabsCaption, nCount);
+		//			// get the tab caption
+		//			TabCtrlItem.pszText = Tab.GetBuffer(nDeTextLimitCB);		
+		//			
+		//			// set the image list item number if required
+		//			if (bHasImageList)
+		//			{
+		//				TabCtrlItem.mask |= TCIF_IMAGE;
+		//				TabCtrlItem.iImage = _tstol(mpTemplate->GetPropertyListItem(nTabsImageList, nCount));
+		//			}
+		//			
+		//			// add the new tab
+		//			((CTabCtrl*)pControl)->InsertItem( 0, &TabCtrlItem );
+		//		}
+		//		UpdateClientHeight();
+		//	}
+		//	catch(...)
+		//	{
+		//	}
+		//	break;
+		//}
+		//case nTabSelected:
+		//{
+		//	((CAcadColorListBox*)pControl)->SetCurSel(mpTemplate->GetLongProperty(nTabSelected));
+		//	break;
+		//}
+		//case nTabStyle:
+		//{
+		//	if (mpTemplate->GetLongProperty(nTabStyle) == 0)
+		//		((CTabCtrl*)pControl)->ModifyStyle(TCS_BUTTONS, TCS_TABS, SWP_FRAMECHANGED);
+		//	else
+		//		((CTabCtrl*)pControl)->ModifyStyle(TCS_TABS, TCS_BUTTONS, SWP_FRAMECHANGED);
+		//	break;
+		//}
+		//
+		//case nTabFixedWidth:
+		//{
+		//	try
+		//	{
+		//		if (mpTemplate->GetBoolProperty(nTabFixedWidth) == TRUE)
+		//		{
+		//			((CTabCtrl*)pControl)->ModifyStyle(0, TCS_FIXEDWIDTH, SWP_FRAMECHANGED);
+		//			CRect rc;
+		//			((CTabCtrl*)pControl)->GetItemRect(0, &rc);
+		//			CSize szTabs;
+		//			szTabs.cx = mpTemplate->GetLongProperty(nMinTabWidth);
+		//			szTabs.cy = rc.Height();
+		//			((CTabCtrl*)pControl)->SetItemSize(szTabs);
+		//		}
+		//		else
+		//		{	
+		//			((CTabCtrl*)pControl)->ModifyStyle(TCS_FIXEDWIDTH, 0, SWP_FRAMECHANGED);
+		//		}
+		//	}
+		//	catch(...)
+		//	{
+		//	}
+		//	break;
+		//}
 		case nText:
 		{
 			int nTextLimit = mpTemplate->GetLongProperty(nLimitText);
@@ -2056,7 +2026,7 @@ void CControlHolder::ResetImageList(CWnd *pControl, int nID)
 		{
 			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
 			if (pImageList)
-				((CTabCtrl*)pControl)->SetImageList(&pImageList->m_ImageList);
+				((CTabStripCtrl*)pControl)->SetImageList(&pImageList->m_ImageList);
 			break;
 		}
 		case CtlGrid:

@@ -13,7 +13,6 @@ class CModalDialogX : public CArxDialogObject
 {
 	friend class CModalVDcl;
 	CModalVDcl* mpOwner;
-	bool mbIsClosing;
 protected:
 	CModalDialogX( CModalVDcl& Owner, CDclFormObject* pDclForm );
 	~CModalDialogX();
@@ -23,7 +22,7 @@ protected:
 	virtual bool IsDockable() const { return false; }
 	virtual bool IsResizable() const;
 	virtual HWND GetHWnd() const;
-	virtual void CloseDialog(int nStatus) const;
+	virtual void CloseDialog(int nStatus);
 	virtual INT_PTR DoModal();
 	//virtual bool Show(bool bShow = true) { return false; }
 	virtual bool SetMinMaxSize( const CSize& min, const CSize& max );
@@ -48,7 +47,7 @@ public:
 public:
 	virtual CControlPane& GetControlPane() { return mDialogX.GetControlPane(); }
 	virtual const CDialogObject& GetDialogObject() const { return mDialogX; }
-	CDialogObject& GetDialogObject() { return mDialogX; }
+	virtual CDialogObject& GetDialogObject() { return mDialogX; }
 	void SetDclForm(CDclFormObject *pDclFormObject);
 	bool IsResizable() const { return mbResizable; }
 

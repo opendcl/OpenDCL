@@ -33,10 +33,9 @@ CFont* CFontCollection::GetFont(CDclControlObject *pControl, CWnd *pWnd)
 	stTargetFont.lfItalic = pControl->GetBoolProperty(nLabelItalic);
 	stTargetFont.lfUnderline = pControl->GetBoolProperty(nLabelUnderline);
 	stTargetFont.lfStrikeOut = pControl->GetBoolProperty(nLabelStrikeOut);
-	BOOL bFontSizeStyle = pControl->GetBoolProperty(nFontSizeStyle);
-	if( bFontSizeStyle )
-	{
-		HWND hwndControl = (pWnd? pWnd->m_hWnd : NULL);
+	if( nFontSize > 0 )
+	{ //calculate point size
+		HWND hwndControl = (pWnd? pWnd->m_hWnd : ::GetDesktopWindow());
 		HDC hDC = ::GetDC( hwndControl );
 		int nPixelsY = GetDeviceCaps( hDC, LOGPIXELSY );
 		::ReleaseDC( hwndControl, hDC );

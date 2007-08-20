@@ -31,7 +31,7 @@ protected:
 	virtual bool IsResizable() const;
 	virtual HWND GetHWnd() const;
 	virtual bool CreateModeless( UINT nID ) const;
-	virtual void CloseDialog(int nStatus) const;
+	virtual void CloseDialog(int nStatus);
 	virtual bool SetMinMaxSize( const CSize& min, const CSize& max );
 };
 
@@ -48,7 +48,6 @@ class CModelessDlg : public CBaseDlg
 	bool mbInMenuLoop;
 	HWND mhwndKeyboardFocus;
 
-	bool				m_bClosing;
 	bool				m_bAboutToClose;
 	bool m_bAsModal;
 	
@@ -61,14 +60,13 @@ public:
 
 public:
 	virtual CControlPane& GetControlPane() { return mDialogX.GetControlPane(); }
-	CDialogObject& GetDialogObject() { return mDialogX; }
-	const CDialogObject& GetDialogObject() const { return mDialogX; }
+	virtual const CDialogObject& GetDialogObject() const { return mDialogX; }
+	virtual CDialogObject& GetDialogObject() { return mDialogX; }
 
 	bool Create( UINT nTemplateID );
 
 public:
 	bool IsResizable() const { return mbResizable; }
-	bool IsClosing() const { return m_bClosing; }
 
 	void SizeDialog ();
 	void SetTitleBarIcon(int nPictureID);

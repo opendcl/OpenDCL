@@ -91,7 +91,7 @@ void CTextBoxFilters::DisplayDesc(int nSetting)
 BOOL CTextBoxFilters::OnApply() 
 {
 	m_pStyle->SetLongValue(m_SelectedStyle);
-	
+	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();
 }
 

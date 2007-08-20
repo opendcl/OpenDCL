@@ -473,6 +473,32 @@ void CDclControlObject::Serialize(CArchive& ar)
 			PropertyId nID = pSourceProp->GetID();
 			switch( mType )
 			{
+			case CtlComboBox:
+				switch( nID )
+				{
+				case nEventUpdate:
+					mProperties.RemoveAt(posAt);
+					continue;
+				}
+				break;
+			case CtlFrame:
+				switch( nID )
+				{
+				case nAcadColor:
+				case nForeColor:
+					mProperties.RemoveAt(posAt);
+					continue;
+				}
+				break;
+			case CtlGraphicButton:
+				switch( nID )
+				{
+				case nEventDblClicked:
+				case nImageList:
+					mProperties.RemoveAt(posAt);
+					continue;
+				}
+				break;
 			case CtlGrid:
 				switch( nID )
 				{
@@ -487,28 +513,18 @@ void CDclControlObject::Serialize(CArchive& ar)
 					continue;
 				}
 				break;
-			case CtlFrame:
+			case CtlImageComboBox:
 				switch( nID )
 				{
-				case nAcadColor:
-				case nForeColor:
+				case nEventUpdate:
 					mProperties.RemoveAt(posAt);
 					continue;
 				}
 				break;
-			case CtlStdButton:
+			case CtlLabel:
 				switch( nID )
 				{
-				case nEventDblClicked:
-					mProperties.RemoveAt(posAt);
-					continue;
-				}
-				break;
-			case CtlGraphicButton:
-				switch( nID )
-				{
-				case nEventDblClicked:
-				case nImageList:
+				case nToolTipTitle:
 					mProperties.RemoveAt(posAt);
 					continue;
 				}
@@ -522,18 +538,18 @@ void CDclControlObject::Serialize(CArchive& ar)
 					continue;
 				}
 				break;
-			case CtlLabel:
-				switch( nID )
-				{
-				case nToolTipTitle:
-					mProperties.RemoveAt(posAt);
-					continue;
-				}
-				break;
 			case CtlPictureBox:
 				switch( nID )
 				{
 				case nImageList:
+					mProperties.RemoveAt(posAt);
+					continue;
+				}
+				break;
+			case CtlStdButton:
+				switch( nID )
+				{
+				case nEventDblClicked:
 					mProperties.RemoveAt(posAt);
 					continue;
 				}
@@ -612,6 +628,23 @@ void CDclControlObject::Serialize(CArchive& ar)
 			case nAllowOrbiting:
 				if( pSourceProp->GetType() == PropBool )
 				{
+					mProperties.RemoveAt(posAt);
+					continue;
+				}
+				break;
+			case nFontSizeStyle:
+				{
+					long lFontSize = GetLongProperty( nLabelSize );
+					if( pSourceProp->GetBooleanValue() )
+					{
+						if( lFontSize < 0 )
+							SetLongProperty( nLabelSize, -lFontSize );
+					}
+					else
+					{
+						if( lFontSize > 0 )
+							SetLongProperty( nLabelSize, -lFontSize );
+					}
 					mProperties.RemoveAt(posAt);
 					continue;
 				}

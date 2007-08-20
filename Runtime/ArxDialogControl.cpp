@@ -49,7 +49,7 @@
 #include "SlideHolder.h"
 #include "StaticLink.h"
 #include "HtmlCtrl.h"
-#include "VdclTab.h"
+#include "ArxTabStripCtrl.h"
 #include "VdclTree.h"
 #include "VdclTextButton.h"
 #include "TabPage.h"
@@ -301,7 +301,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			return CreateEditControl(pTemplate, pPane, nID);
 		}			
 	
-	case CtlTabStrip: return *new VdclTab( *pPane, pTemplate, nID );
+	case CtlTabStrip: return *new CArxTabStripCtrl( pTemplate, pPane, nID );
 
 	case CtlTree:	
 		{
@@ -807,8 +807,8 @@ void CArxDialogControl::UpdateFont(CDclControlObject *pArxObject, CWnd *pControl
 		}
 	//case CtlTabStrip:		
 	//	{		
-	//	((VdclTab*)pControl)->GetTabCtrl().SetFont(NULL);	
-	//	((VdclTab*)pControl)->GetTabCtrl().SetFont(pFont);		
+	//	((CArxTabStripCtrl*)pControl)->GetTabCtrl().SetFont(NULL);	
+	//	((CArxTabStripCtrl*)pControl)->GetTabCtrl().SetFont(pFont);		
 	//	break;
 	//	}
 	case CtlMonth:
@@ -1161,7 +1161,7 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			else if (pControl->GetType() == CtlTree)
 				((VdclTree *)pControlWnd)->m_ChildTree.EnableWindow(pControl->GetBoolProperty(nEnabled));
 			//else if (pControl->GetType() == CtlTabStrip)
-			//	((VdclTab *)pControlWnd)->GetTabCtrl().EnableWindow(pControl->GetBoolProperty(nEnabled));
+			//	((CArxTabStripCtrl *)pControlWnd)->GetTabCtrl().EnableWindow(pControl->GetBoolProperty(nEnabled));
 			else if (pControl->GetType() == CtlOptionList)
 			{
 				int nData=0;
@@ -1365,8 +1365,8 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 		//case nMinTabWidth:
 		//{
 		//	int n = pControl->GetLongProperty(nMinTabWidth);
-		//	((VdclTab*)pControlWnd)->GetTabCtrl().SetMinTabWidth(pControl->GetLongProperty(nMinTabWidth));
-		//	((VdclTab*)pControlWnd)->GetTabCtrl().RedrawWindow(NULL, NULL, RDW_UPDATENOW);
+		//	((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().SetMinTabWidth(pControl->GetLongProperty(nMinTabWidth));
+		//	((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().RedrawWindow(NULL, NULL, RDW_UPDATENOW);
 		//	break;
 		//}
 		case nMultiSelection:
@@ -1510,25 +1510,25 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 		//case nTabLabelAlign:
 		//{
 		//	if (pControl->GetLongProperty(nTabLabelAlign) == 0)
-		//		((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(0, TCS_FORCELABELLEFT, SWP_FRAMECHANGED);
+		//		((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().ModifyStyle(0, TCS_FORCELABELLEFT, SWP_FRAMECHANGED);
 		//	else
-		//		((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(TCS_FORCELABELLEFT, 0, SWP_FRAMECHANGED);
+		//		((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().ModifyStyle(TCS_FORCELABELLEFT, 0, SWP_FRAMECHANGED);
 		//	break;
 		//}
 		//case nTabFixedWidth:
 		//{
 		//	if (pControl->GetBoolProperty(nTabFixedWidth) == TRUE)
 		//	{
-		//		((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(0, TCS_FIXEDWIDTH, SWP_FRAMECHANGED);
+		//		((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().ModifyStyle(0, TCS_FIXEDWIDTH, SWP_FRAMECHANGED);
 		//		CRect rc;
-		//		((VdclTab*)pControlWnd)->GetTabCtrl().GetItemRect(0, &rc);
+		//		((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().GetItemRect(0, &rc);
 		//		CSize szTabs;
 		//		szTabs.cx = pControl->GetLongProperty(nMinTabWidth);
 		//		szTabs.cy = rc.Height();
-		//		((VdclTab*)pControlWnd)->GetTabCtrl().SetItemSize(szTabs);
+		//		((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().SetItemSize(szTabs);
 		//	}
 		//	else
-		//		((VdclTab*)pControlWnd)->GetTabCtrl().ModifyStyle(TCS_FIXEDWIDTH, 0, SWP_FRAMECHANGED);
+		//		((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().ModifyStyle(TCS_FIXEDWIDTH, 0, SWP_FRAMECHANGED);
 		//	break;
 		//}
 		case nText:

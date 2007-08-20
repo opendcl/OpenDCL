@@ -76,36 +76,22 @@ void ReadExternalDWGfile(CString sPath, CString sFile, acedDwgPoint ptPoint, boo
 
 Adesk::Boolean append(AcDbDatabase*pDb, AcDbEntity* pEntity, int vport)
 {
-	AcDbBlockTable *pBlockTable;
-	Acad::ErrorStatus es = pDb->getSymbolTable(pBlockTable,
-			AcDb::kForRead);
-	if (es != Acad::eOk)
-	{
-		ads_alert(_T("Failed to get block table!"));
-		return Adesk::kFalse;
-	}
-
 	AcDbBlockTableRecord *pBlockRec;
-	es = pBlockTable->getAt(vport == 1 ?  ACDB_PAPER_SPACE : ACDB_MODEL_SPACE ,
-		pBlockRec, AcDb::kForWrite);
+	Acad::ErrorStatus es = acdbOpenObject( pBlockRec, pDb->currentSpaceId(), AcDb::kForWrite );
 	if (es != Acad::eOk)
 	{
-		ads_alert(_T("Failed to get block table record!"));
-		pBlockTable->close();
+		theWorkspace.DisplayAlert(_T("Failed to get block table record!"));
 		return Adesk::kFalse;
 	}
 
 	es = pBlockRec->appendAcDbEntity(pEntity);
+	pBlockRec->close();
 	if (es != Acad::eOk)
 	{
-		ads_alert(_T("Failed to append entity!"));
-		pBlockTable->close();
-		pBlockRec->close();
+		theWorkspace.DisplayAlert(_T("Failed to append entity!"));
 		delete pEntity;
 		return Adesk::kFalse;
 	}
-	pBlockRec->close();
-	pBlockTable->close();
 	return Adesk::kTrue;
 }
 
@@ -621,7 +607,7 @@ void BeginDragnDrop(CDclControlObject *pControl, CPoint point, bool bInvokeWithS
 	InvokeMethod(pControl->GetStrProperty(nDragnDropBegin), bInvokeWithSendString);
 
 	int objType = 0;
-	COleDataSource *pSource = generateDataSource(objType, CRect(CPoint(point.x,point.y), CSize(0,0)));
+	COleDataSource *pSource = generateDataSource(objType, CRect(point, CSize(0,0)));
 	
 	CMyOverrideDropTarget myDT;
 	CDropSource myDS;
@@ -631,7 +617,7 @@ void BeginDragnDrop(CDclControlObject *pControl, CPoint point, bool bInvokeWithS
 	if (!acedStartOverrideDropTarget(&myDT))
 		TRACE("Error in overriding Custom drop target!\n");
 
-	DROPEFFECT dwEffect = pSource->DoDragDrop( DROPEFFECT_NONE |DROPEFFECT_MOVE | DROPEFFECT_COPY, NULL, &myDS);
+	DROPEFFECT dwEffect = pSource->DoDragDrop( DROPEFFECT_MOVE | DROPEFFECT_COPY, &CRect(point, CSize(3,3)), &myDS);
 
 	// End overriding AutoCAD default droptarget
 	if (!acedEndOverrideDropTarget(&myDT))
@@ -650,7 +636,7 @@ void BeginDragnDropToInsertBlocks(CDclControlObject *pControl, CPoint point, boo
 	InvokeMethod(pControl->GetStrProperty(nDragnDropBegin), bInvokeWithSendString);
 
 	int objType = 0;
-	COleDataSource *pSource = generateDataSource(objType, CRect(CPoint(point.x,point.y), CSize(0,0)));
+	COleDataSource *pSource = generateDataSource(objType, CRect(point, CSize(0,0)));
 	
 	CMyOverrideDropTarget myDT;
 	CDropSource myDS;
@@ -662,7 +648,7 @@ void BeginDragnDropToInsertBlocks(CDclControlObject *pControl, CPoint point, boo
 	if (!acedStartOverrideDropTarget(&myDT))
 		TRACE("Error in overriding Custom drop target!\n");
 
-	DROPEFFECT dwEffect = pSource->DoDragDrop( DROPEFFECT_NONE |DROPEFFECT_MOVE | DROPEFFECT_COPY, NULL, &myDS);
+	DROPEFFECT dwEffect = pSource->DoDragDrop( DROPEFFECT_MOVE | DROPEFFECT_COPY, &CRect(point, CSize(3,3)), &myDS);
 
 	// End overriding AutoCAD default droptarget
 	if (!acedEndOverrideDropTarget(&myDT))

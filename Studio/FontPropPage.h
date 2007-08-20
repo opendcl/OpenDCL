@@ -6,6 +6,7 @@
 #include "Resource.h"
 
 class CPropertyObject;
+class CDclControlObject;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -16,9 +17,8 @@ class CFontPropertyPage : public CPropertyPage
 
 // Construction
 public:
-	CFontPropertyPage();
+	CFontPropertyPage(CDclControlObject* pDclControl = NULL);
 	~CFontPropertyPage();
-	void GetCurrentFont(LPLOGFONT lplf);
 
 // Dialog Data
 	//{{AFX_DATA(CFontPropertyPage)
@@ -38,13 +38,13 @@ public:
 	//}}AFX_DATA
 	
 	CString sOpenDCLProf;
+	CDclControlObject* mpDclControl;
 	RefCountedPtr< CPropertyObject > m_pFontName;
 	RefCountedPtr< CPropertyObject > m_pFontSize;
 	RefCountedPtr< CPropertyObject > m_pFontStrikeOut;
 	RefCountedPtr< CPropertyObject > m_pFontUnderline;
 	RefCountedPtr< CPropertyObject > m_pFontBold;
 	RefCountedPtr< CPropertyObject > m_pFontItalic;
-	RefCountedPtr< CPropertyObject > m_pFontSizeStyle;
 
 // Overrides
 	// ClassWizard generate virtual function overrides

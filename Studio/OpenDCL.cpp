@@ -284,18 +284,24 @@ BOOL CAboutDlg::OnInitDialog()
 
 void COpenDCLApp::OnFileNew() 
 {
+	if( !SaveAllModified() )
+		return;
 	CloseAllDocuments(FALSE);
 	CWinApp::OnFileNew();
 }
 
 void COpenDCLApp::OnFileOpen() 
 {
+	if( !SaveAllModified() )
+		return;
 	CloseAllDocuments(FALSE);
 	CWinApp::OnFileOpen();
 }
 
 BOOL COpenDCLApp::OnOpenRecentFile(UINT nID)
 {
+	if( !SaveAllModified() )
+		return FALSE;
 	CloseAllDocuments(FALSE);
 	return CWinApp::OnOpenRecentFile(nID);
 }
@@ -474,6 +480,7 @@ CDclFormObject* COpenDCLApp::AddNewDclForm(DclFormType nType)
 		CProjectTreeCtrl *pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
 		if( pProjTree )
 			pProjTree->AddFormToTree(pNewDclForm, true); //add the new dcl form to the project tree
+		theWorkspace.SetModified(true);
 	}
 	return pNewDclForm;
 }

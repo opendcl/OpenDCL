@@ -45,10 +45,11 @@ bool CModelessDialogX::CreateModeless( UINT nID ) const
 	return mpOwner->Create( IsResizable()? IDD_RESIZEABLE : IDD_MODALDIALOG );
 }
 
-void CModelessDialogX::CloseDialog(int nStatus) const
+void CModelessDialogX::CloseDialog(int nStatus)
 {
-	if( mpOwner->IsClosing() )
+	if( IsClosing() )
 		return; //already in the process of closing
+	SetClosing();
 	mpOwner->EndDialog(nStatus);
 	mpOwner->DestroyWindow();
 }
@@ -74,7 +75,6 @@ CModelessDlg::CModelessDlg( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/
 , mhwndKeyboardFocus( NULL )
 {
 	m_bAsModal = false;
-	m_bClosing = false;
 	m_bAboutToClose = false;
 }
 
@@ -137,7 +137,7 @@ void CModelessDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CBaseDlg::OnSize(nType, cx, cy);
 	mDialogX.GetControlPane().RecalcLayout();
-	if (IsWindowVisible() && m_bClosing == false  && m_bAboutToClose == false)
+	if (IsWindowVisible() && !mDialogX.IsClosing() && m_bAboutToClose == false)
 	{
 		CRect rcThis;
 		if( mDialogX.GetSourceForm()->UsesClientRect() )
@@ -164,13 +164,14 @@ void CModelessDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 void CModelessDlg::OnDestroy() 
 {
-	m_bClosing = true;
+	mDialogX.SetClosing();
 	__super::OnDestroy();
 }
 
 void CModelessDlg::OnOK()
 {
-	if (!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false))	
+	if (mDialogX.IsClosing() ||
+			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false))	
 	{
     InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnOk), true);
 		__super::OnOK();
@@ -180,7 +181,8 @@ void CModelessDlg::OnOK()
 
 void CModelessDlg::OnCancel()
 {
-	if (!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), true))	
+	if (mDialogX.IsClosing() ||
+			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), true))	
 	{
     InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnCancel), true);
 		__super::OnCancel();
@@ -206,7 +208,7 @@ void CModelessDlg::OnMove(int x, int y)
 
 void CModelessDlg::SizeDialog ()
 {
-	if (CWnd::IsWindowVisible() && m_bClosing == false)
+	if (CWnd::IsWindowVisible() && !mDialogX.IsClosing())
 	{
 		mDialogX.GetControlPane().RecalcLayout();
 		

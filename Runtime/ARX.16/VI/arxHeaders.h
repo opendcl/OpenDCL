@@ -163,6 +163,7 @@
 #include "aNavListCtrl.h"
 
 //----- AutoCAD Tool Palette API
+#define dllexport //to override the forced __declspec(dllexport) declarations in the AcTcXXX headers
 #include "AcTc.h"
 #include "AcTcUiManager.h"
 #include "AcTcUI.h"
@@ -173,6 +174,7 @@
 #include "AcTcUiToolPaletteSet.h"
 #include "AcTc_i.h"		// AcTc_i.c
 #include "dcdispid.h"
+#undef dllexport
 #endif // _AFXEXT
 
 //----- ADS

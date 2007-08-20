@@ -1698,6 +1698,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Common\Controls\TabStripCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\TabStripCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Controls\XPStyleButtonST.cpp"
 					>
 				</File>

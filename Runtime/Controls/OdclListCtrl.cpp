@@ -460,7 +460,6 @@ BEGIN_MESSAGE_MAP(OdclListCtrl, CListCtrl)
 	ON_NOTIFY_REFLECT(NM_SETFOCUS, OnSetfocus)
 	ON_NOTIFY_REFLECT(LVN_ENDLABELEDIT, OnEndlabeledit)
 	ON_NOTIFY_REFLECT(LVN_BEGINLABELEDIT, OnBeginlabeledit)
-	ON_NOTIFY_REFLECT(LVN_KEYDOWN, OnKeydown)
 	ON_NOTIFY_REFLECT(LVN_COLUMNCLICK, OnColumnclick)
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_MBUTTONDOWN()
@@ -690,11 +689,6 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 */
 
-	// Clear the subitem text the user clicked on.
-	LVHITTESTINFO lvhti;
-	lvhti.pt = point;
-	SubItemHitTest(&lvhti);
-
 	// a -1 will be returned if not found
 	if (mpTemplate->GetLongProperty(nListViewStyle) > -1)
 		BeginDragnDrop(mpTemplate, point, m_bInvokeWithSendString);
@@ -703,18 +697,15 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		CStringArray saBlockNames;
 		saBlockNames.SetSize(1,1);
 		POSITION pos = GetFirstSelectedItemPosition();
-		if (pos == NULL)
-			return;
-		else
+		if (pos)
 		{
 			while (pos)
 				saBlockNames.Add(GetItemText(GetNextSelectedItem(pos), 0));
+			//!CHANGED! 10-5-04 SRM
+			//didnt allow user to drag and drop blocks from external dwgs
+			//if (m_pLoadedDwg == NULL)
+			BeginDragnDropToInsertBlocks(mpTemplate, point, m_bInvokeWithSendString, saBlockNames);
 		}
-
-		//!CHANGED! 10-5-04 SRM
-		//didnt allow user to drag and drop blocks from external dwgs
-		//if (m_pLoadedDwg == NULL)
-		BeginDragnDropToInsertBlocks(mpTemplate, point, m_bInvokeWithSendString, saBlockNames);
 	}
 }
 
@@ -876,17 +867,6 @@ void OdclListCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 		m_nEditSubItem,
 		m_bInvokeWithSendString);
 
-	
-	*pResult = 0;
-}
-
-void OdclListCtrl::OnKeydown(NMHDR* pNMHDR, LRESULT* pResult) 
-{
-	LV_KEYDOWN* pLVKeyDow = (LV_KEYDOWN*)pNMHDR;
-	
-//	CString sChar = pLVKeyDow->wVKey;
-//	InvokeMethodString(mpTemplate->GetStrProperty(nEventKeyDown), sChar, m_bInvokeWithSendString);
-	
 	
 	*pResult = 0;
 }

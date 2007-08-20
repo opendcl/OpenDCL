@@ -111,15 +111,17 @@ void CProject::Initialize()
   CString sSection = theWorkspace.LoadResourceString(IDR_MAINFRAME);
 	CWinApp* pApp = AfxGetApp();
   m_sDefaultFontName = pApp->GetProfileString( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontName), NULL);
-  m_nDefaultFontSize = pApp->GetProfileInt( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontSize), 0);
+  m_nDefaultFontSize = pApp->GetProfileInt( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontSize), -10);
   m_bDefaultFontItalic = pApp->GetProfileInt( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), 0);
   m_bDefaultFontUnderLine = pApp->GetProfileInt( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontUnderLine), 0);
   m_bDefaultFontBold = pApp->GetProfileInt( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontBold), 0);
-  m_bDefaultFontSizeStyle = pApp->GetProfileInt( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontSizeStyle), 1);
   if (m_sDefaultFontName.IsEmpty())
     m_sDefaultFontName = theWorkspace.LoadResourceString(IDS_DEFAULTFONT);
-  if (m_nDefaultFontSize == 0)
-    m_nDefaultFontSize = 8;	
+	if( pApp->GetProfileInt( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontSizeStyle), 0 ) != 0 )
+	{
+		if( m_nDefaultFontSize < 0 )
+			m_nDefaultFontSize *= -1; //if "size style" is non-zero, make the size positive to indicate "point size"
+	}
 }
 
 
@@ -889,10 +891,15 @@ void CProject::Serialize(CArchive& ar)
 
     // lets check here if we need to add the lisp file extension
     CString sNone = theWorkspace.LoadResourceString(IDS_NONE);
-    if (msLispFileName.Right(4).CompareNoCase(_T(".lsp")) != 0 /*.lsp*/ && msLispFileName != sNone /*"<None>"*/)
-      msLispFileName += _T(".lsp");
-		else if (msLispFileName == _T(".lsp") || msLispFileName == (sNone + _T(".lsp")))
-			msLispFileName = sNone; //drop the extraneous extension
+		if (!msLispFileName.IsEmpty())
+		{
+			if (msLispFileName == sNone ||
+					msLispFileName.CompareNoCase( _T(".lsp") ) == 0 ||
+					msLispFileName.CompareNoCase( sNone + _T(".lsp") ) == 0 )
+				msLispFileName.Empty();
+			else if (msLispFileName.Right(4).CompareNoCase(_T(".lsp")) != 0)
+				msLispFileName += _T(".lsp");
+		}
 
 		CString sKeyName;
     if (nThisVersion >= 10)
@@ -1102,12 +1109,16 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
   if (!readBOOL(sFile, bHasPassword)) return statInvalidFormat; //discard
   if (!readString(sFile, msPassword)) return statInvalidFormat;
   if (!readString(sFile, msLispFileName)) return statInvalidFormat;
-  CString strResult = msLispFileName;
-  strResult.MakeLower();
-
   CString sNone = theWorkspace.LoadResourceString(IDS_NONE);
-  if (strResult != sNone && strResult.Right(4).CompareNoCase(_T(".lsp")) != 0)
-    msLispFileName += _T(".lsp");
+	if (!msLispFileName.IsEmpty())
+	{
+		if (msLispFileName == sNone ||
+				msLispFileName.CompareNoCase( _T(".lsp") ) == 0 ||
+				msLispFileName.CompareNoCase( sNone + _T(".lsp") ) == 0 )
+			msLispFileName.Empty();
+		else if (msLispFileName.Right(4).CompareNoCase(_T(".lsp")) != 0)
+			msLispFileName += _T(".lsp");
+	}
 
   // this is the original project file path; use it to construct the project key
 	CString sKeyName;

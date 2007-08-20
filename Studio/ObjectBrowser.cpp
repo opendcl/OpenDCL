@@ -1157,7 +1157,6 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					case nIconYSpacing:
 					case nGridLines:
 					case nFullRowSelect:
-					case nFontSizeStyle:
 					case nReturnAsTab:
 					case nSingleExpanded:
 					case nRowHeight:

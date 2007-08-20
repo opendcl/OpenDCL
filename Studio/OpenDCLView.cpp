@@ -36,6 +36,7 @@
 #include "EditorWorkspace.h"
 #include "SharedRes.h"
 #include "GraphicButtonCtrl.h"
+#include "TabStripCtrl.h"
 #include "PictureObject.h"
 #include "DclControlProp.h"
 
@@ -498,16 +499,12 @@ void COpenDCLView::PaintBackGround(HDC hdc)
 
 void COpenDCLView::OnGridSpacingChanged() 
 {
-	CDocument* pDoc = GetDocument();
-	if( pDoc )
-		pDoc->SetModifiedFlag(TRUE);
 	Invalidate();
 }
 
 void COpenDCLView::OnControlToInsertChanged() 
 {
 	m_SelectedControl.Clear();
-	GetDocument()->SetModifiedFlag(TRUE);
 }
 
 void COpenDCLView::HideGrips()
@@ -684,13 +681,13 @@ bool COpenDCLView::CheckControlsForSelection( CRect rcSelArea, bool bLookForOne 
 		bReturn = true;
 		theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar( pDclObject );
 		bool bFirstSelectedControl = (m_SelectedControl.m_pArxObject == NULL);
-		m_SelectedControl.m_pArxObject = pDclObject;
-		m_SelectedControl.m_pControl = pControl;
-		m_SelectedControl.m_nIndex = idx;
 		pZOrderList->SelectItem( pDclObject->GetStrProperty( nName ), true );
 
 		if( bFirstSelectedControl )
 		{
+			m_SelectedControl.m_pArxObject = pDclObject;
+			m_SelectedControl.m_pControl = pControl;
+			m_SelectedControl.m_nIndex = idx;
 			ShowGripRects( TRUE, rcCtrl );
 			if( bLookForOne )
 				return true;
@@ -832,6 +829,7 @@ void COpenDCLView::MoveControl(CSelectedControl *pSelectedControl, CPoint point)
 	}
 	
 	theEditorWorkspace.GetToolBox()->ResetToPointer();
+	theWorkspace.SetModified(true);
 	m_bMoving = true;
 }
 
@@ -909,6 +907,7 @@ bool COpenDCLView::StoreControlsPosition(CSelectedControl *pSelectedControl)
 	pSelectedControl->m_pArxObject->SetLongProperty(nHeight, rcCtrl.Height());
 
 	CalcControlOffsetDistances(pSelectedControl->m_pArxObject, rcCtrl);
+	theWorkspace.SetModified(true);
 
 	return true;
 }
@@ -996,6 +995,7 @@ void COpenDCLView::CalcControlOffsetDistances(CDclControlObject *pArxObject, CRe
 		CRect rc = GetSplitterRect(lBottomFromBottom);
 		pArxObject->SetLongProperty(nBottomFromBottom, rc.top - (nTheTop + nTheHeight));
 	}
+	theWorkspace.SetModified(true);
 }
 
 CRect COpenDCLView::GetSplitterRect(int nId)
@@ -1979,12 +1979,10 @@ void COpenDCLView::RefreshChildControl(CDclControlObject *pArxObject, PropertyId
 	switch(ChangedPropertyID)
 	{
 	case -1:
-	case nTabJustified:
 	case nSmoothProgress:
 	case nSorted:
 	case nImageList:
 	case nMultiColumn:
-	case nMultiRow:
 	case nOrientation:
 	case nFilterStyle:
 	case nJustification:
@@ -1998,8 +1996,6 @@ void COpenDCLView::RefreshChildControl(CDclControlObject *pArxObject, PropertyId
 	case nHasButtons:
 	case nCheckBoxes:
 	case nButtonStyle:
-	case nTabLabelAlign:
-	case nMinTabWidth:
 		{
 
 			if (pArxObject->GetType() != CtlActiveX)
@@ -2240,7 +2236,6 @@ void COpenDCLView::UpdateFont(CString sName)
 
 	GetDocument()->SetModifiedFlag(TRUE);
 
-	
 	if (m_SelectedControl.m_pArxObject->GetType() == CtlActiveX)
 	{	
 		UpdateAxFont(&m_SelectedControl, nLabelName, false, -1, sName);		
@@ -2321,8 +2316,8 @@ void COpenDCLView::UpdateFont(CString sName)
 				}
 			}
 		}		
-		
 	}	
+	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar( m_SelectedControl.m_pArxObject );
 }
 
 void COpenDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool bBool, int nSize, CString sName)
@@ -2420,12 +2415,25 @@ void COpenDCLView::UpdateFontBool(bool bBool, PropertyId nId)
 	
 	GetDocument()->SetModifiedFlag(TRUE);
 
+	int nAction = 0;
+	switch( nId )
+	{
+	case nLabelBold:
+		nAction = uaFontBold;
+		break;
+	case nLabelUnderline:
+		nAction = uaFontUnderline;
+		break;
+	case nLabelItalic:
+		nAction = uaFontItalic;
+		break;
+	};
 	if (m_SelectedControl.m_pArxObject->GetType() == CtlActiveX)
 	{	
 		UpdateAxFont(&m_SelectedControl, nId, bBool);		
 		// add the event to the undo list
 		CUndoActions *pUndo = new CUndoActions(
-			uaFontBold,
+			nAction,
 			m_SelectedControl.m_pArxObject,
 			m_SelectedControl.m_pControl);
 	}
@@ -2438,7 +2446,7 @@ void COpenDCLView::UpdateFontBool(bool bBool, PropertyId nId)
 		{
 			// add the event to the undo list
 			CUndoActions *pUndo = new CUndoActions(
-				uaFontBold,
+				nAction,
 				m_SelectedControl.m_pArxObject,
 				m_SelectedControl.m_pControl);
 
@@ -2450,7 +2458,7 @@ void COpenDCLView::UpdateFontBool(bool bBool, PropertyId nId)
 			pProp->SetBooleanValue(bBool);
 
 			// call the method to update the control
-			((CControlHolder*)m_SelectedControl.m_pArxObject->m_pCtrlHolder)->UpdateProperty(nId);
+			((CControlHolder*)m_SelectedControl.m_pArxObject->m_pCtrlHolder)->UpdateProperty(nLabelName);
 		}
 	}
 
@@ -2467,7 +2475,7 @@ void COpenDCLView::UpdateFontBool(bool bBool, PropertyId nId)
 					UpdateAxFont(pSelControl, nId, bBool);
 					// add the event to the undo list
 					CUndoActions *pUndo = new CUndoActions(
-						uaFontBold,
+						nAction,
 						pSelControl->m_pArxObject,
 						pSelControl->m_pControl);
 		
@@ -2481,7 +2489,7 @@ void COpenDCLView::UpdateFontBool(bool bBool, PropertyId nId)
 					{						
 						// add the event to the undo list
 						CUndoActions *pUndo = new CUndoActions(
-							uaFontBold,
+							nAction,
 							pSelControl->m_pArxObject,
 							pSelControl->m_pControl);
 
@@ -2493,12 +2501,13 @@ void COpenDCLView::UpdateFontBool(bool bBool, PropertyId nId)
 						pProp->SetBooleanValue(bBool);
 						
 						// call the method to update the control
-						((CControlHolder*)pSelControl->m_pArxObject->m_pCtrlHolder)->UpdateProperty(nId);
+						((CControlHolder*)pSelControl->m_pArxObject->m_pCtrlHolder)->UpdateProperty(nLabelName);
 					}
 				}
 			}
 		}		
 	}	
+	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar( m_SelectedControl.m_pArxObject );
 }
 
 void COpenDCLView::UpdateFontSize(int nSize) 
@@ -2509,7 +2518,6 @@ void COpenDCLView::UpdateFontSize(int nSize)
 		return;
 
 	GetDocument()->SetModifiedFlag(TRUE);
-
 	
 	if (m_SelectedControl.m_pArxObject->GetType() == CtlActiveX)
 	{	
@@ -2543,7 +2551,7 @@ void COpenDCLView::UpdateFontSize(int nSize)
 			pProp->SetLongValue(nSize);
 
 			// call the method to update the control
-			((CControlHolder*)m_SelectedControl.m_pArxObject->m_pCtrlHolder)->UpdateProperty(nLabelSize);
+			((CControlHolder*)m_SelectedControl.m_pArxObject->m_pCtrlHolder)->UpdateProperty(nLabelName);
 		}
 	}
 
@@ -2592,6 +2600,7 @@ void COpenDCLView::UpdateFontSize(int nSize)
 			}
 		}		
 	}	
+	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar( m_SelectedControl.m_pArxObject );
 }
 
 
@@ -3072,31 +3081,12 @@ void COpenDCLView::UpdateClientHeight(CDclControlObject* pArxObject, CWnd *pCont
 {
 	if (m_SelectedControl.m_pArxObject == NULL)
 		return;
-
 	if (m_SelectedControl.m_pArxObject->GetType() != CtlTabStrip)
 		return;
 	if (!IsWindow(pControl->m_hWnd))
 		return;
 
-	size_t nCount = ((CTabCtrl*)pControl)->GetItemCount();
-	int nTabHeight = 0;
-	while (nCount-- > 0)
-	{
-		// get the new items' rectangle
-		CRect rcTab;
-		((CTabCtrl*)pControl)->GetItemRect( nCount, &rcTab);
-
-		// if the height of this tab is greater than the previous max height, make it the new max
-		if (rcTab.bottom > nTabHeight)
-			nTabHeight = rcTab.bottom;
-	}
-	
-	// get the height of the tab control
-	CRect rcTabCtrl;
-	pControl->GetWindowRect(&rcTabCtrl);
-	
-	// subtract the lowest tab bottom to get the control area height
-	pArxObject->m_ClientHeight = rcTabCtrl.Height() - nTabHeight;
+	pArxObject->m_ClientHeight = ((CTabStripCtrl*)pControl)->GetUsedArea().Height();
 	
 	// inform the parent a tab control has been resized
 	FireTabResized(pArxObject->m_ClientHeight);
@@ -3279,7 +3269,7 @@ short COpenDCLView::GetSelectedTabClientHeight()
 	if( m_SelectedControl.m_pArxObject->GetType() != CtlTabStrip )
 		return -1;
 
-	CTabCtrl *pControl = (CTabCtrl*)((CControlHolder*)m_SelectedControl.m_pControl)->GetChildControl();
+	CTabStripCtrl* pControl = (CTabStripCtrl*)((CControlHolder*)m_SelectedControl.m_pControl)->GetChildControl();
 	if (pControl == NULL)
 		return -1;
 	UpdateClientHeight( m_SelectedControl.m_pArxObject, pControl );
@@ -3639,7 +3629,6 @@ void COpenDCLView::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 void COpenDCLView::CalcAllOffsets() 
 {
-	
 	CRect rcThis;
 	GetClientRect(&rcThis);
 	
@@ -3736,10 +3725,6 @@ bool COpenDCLView::IsTabsEnabled()
 
 void COpenDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView) 
 {
-	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetActiveView(pActivateView);
-	CToolBox *pToolBox = theEditorWorkspace.GetToolBox();
-	pToolBox->SetActiveView(pActivateView);
-
 	if (pDeactiveView == pActivateView)
 	{
 		if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pControl != m_SelectedControl.m_pArxObject)
@@ -3765,6 +3750,9 @@ void COpenDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* p
 			if( pCurrentForm )
 				pCurrentCtrl = pCurrentForm->GetControlProperties();
 		}
+		theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetActiveView(pActivateView);
+		CToolBox *pToolBox = theEditorWorkspace.GetToolBox();
+		pToolBox->SetActiveView(pActivateView);
 		theEditorWorkspace.GetPropertyTabs()->DisplaySelectedControlProperties( pCurrentCtrl, this );
 	}
 }
@@ -3965,6 +3953,7 @@ void COpenDCLView::FireTabControlDeleted()
 
 void COpenDCLView::FireSetUndo()
 {
+	theWorkspace.SetModified(true);
 }
 
 void COpenDCLView::FireControlInserted(CDclControlObject *pArxControl, long ControlType)
@@ -3975,6 +3964,7 @@ void COpenDCLView::FireControlInserted(CDclControlObject *pArxControl, long Cont
 	// reset the toolbar to the pointer
 	m_StandardCursorID = false;
 	theEditorWorkspace.GetToolBox()->m_nSelectedCtrl = 1;
+	theWorkspace.SetModified(true);
 
 	//This adds three unnamed tab panes when a new tab strip is inserted. I commented this because the 
 	//unnamed panes caused problems with the tab strip not recognizing the panes, and I think it is more 
@@ -4035,6 +4025,7 @@ CDclFormObject * COpenDCLView::AddSingleTabPane(int nIndex)
 		pDclProperties->AddLongProperty(nHeight, PropLong, GetSelectedTabClientHeight(), true);
 		pDclProperties->AddLongProperty(nWidth, PropLong, GetSelectedTabClientWidth(), true);
 	}
+	theWorkspace.SetModified(true);
 	return pNewDclForm;
 }
 
@@ -4079,6 +4070,7 @@ void COpenDCLView::RemoveChildTabPane(CDclFormObject *pDclForm)
 	if (pDclForm->m_htiTreeItem != NULL)
 		theEditorWorkspace.GetProjectTreeCtrl()->DeleteItem(pDclForm->m_htiTreeItem);
 	pDclForm->GetProject()->DeleteForm( pDclForm );
+	theWorkspace.SetModified(true);
 }
 
 void COpenDCLView::ResizeChildTabPanes()
@@ -4109,6 +4101,7 @@ void COpenDCLView::ResizeChildTabPanes()
 			pTabForm->m_pMdiChildWnd->SetWindowPos(NULL, -1, -1, nNewWidth, nNewHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 		}
 	}	
+	theWorkspace.SetModified(true);
 }
 
 void COpenDCLView::FireShowPropertyWizard(CDclControlObject *pArxControl)
@@ -4202,6 +4195,7 @@ void COpenDCLView::OnToolsSetlispsymbolnames()
 {
 	CFormVarNameUpdate Dlg( m_pThisDclForm, m_pThisDclForm->GetKeyName() );
 	Dlg.DoModal();
+	theWorkspace.SetModified(true);
 	theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
 }
 
@@ -4209,6 +4203,7 @@ void COpenDCLView::OnToolsClearlispsymbolnames()
 {
 	CFormVarNameUpdate Dlg( m_pThisDclForm, NULL );
 	Dlg.DoModal();
+	theWorkspace.SetModified(true);
 	theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
 }
 

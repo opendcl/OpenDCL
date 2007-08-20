@@ -41,6 +41,7 @@ CString ConstructTooltipHtml( LPCTSTR pszTitle, COLORREF crTitleColor /*= RGB(0,
 
 void SetToolTipEx(CWnd *pWnd, CPPToolTip& tooltip, CDclControlObject *pControl)
 {
+	tooltip.RemoveTool( pWnd );
 	tooltip.SetBehaviour( PPTOOLTIP_MULTIPLE_SHOW );
 
 	RefCountedPtr< CPropertyObject > pToolTipTitle = pControl->GetPropertyObject(nToolTipTitle);	

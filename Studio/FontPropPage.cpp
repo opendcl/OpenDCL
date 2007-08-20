@@ -5,18 +5,10 @@
 #include "FontPropPage.h"
 #include "PropertyObject.h"
 #include "Project.h"
+#include "ControlHolder.h"
 #include "SharedRes.h"
 
-#define nDePixelScale 72
 #define nDeBoldWeight 700
-
-
-static CString LTOA(int nVal)
-{
-  CString sLong;
-	sLong.Format(_T("%d"), nVal);
-  return sLong;
-}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -24,22 +16,32 @@ static CString LTOA(int nVal)
 
 IMPLEMENT_DYNCREATE(CFontPropertyPage, CPropertyPage)
 
-CFontPropertyPage::CFontPropertyPage() : CPropertyPage(CFontPropertyPage::IDD)
+CFontPropertyPage::CFontPropertyPage(CDclControlObject* pDclControl /*= NULL*/)
+: CPropertyPage(CFontPropertyPage::IDD)
+, mpDclControl( pDclControl )
 {
-	m_pFontName = NULL;
-	m_pFontSize = NULL;
-	m_pFontStrikeOut = NULL;
-	m_pFontUnderline = NULL;
-	m_pFontBold = NULL;
-	m_pFontItalic = NULL;
-	m_pFontSizeStyle = NULL;
-
-
-	m_pFontName = NULL;
+	if( mpDclControl )
+	{
+		m_pFontName = mpDclControl->GetPropertyObject(nLabelName);
+		m_pFontSize = mpDclControl->GetPropertyObject(nLabelSize);
+		m_pFontStrikeOut = mpDclControl->GetPropertyObject(nLabelStrikeOut);
+		m_pFontUnderline = mpDclControl->GetPropertyObject(nLabelUnderline);
+		m_pFontBold = mpDclControl->GetPropertyObject(nLabelBold);
+		m_pFontItalic = mpDclControl->GetPropertyObject(nLabelItalic);
+	}
+	else
+	{
+		m_pFontName = NULL;
+		m_pFontSize = NULL;
+		m_pFontStrikeOut = NULL;
+		m_pFontUnderline = NULL;
+		m_pFontBold = NULL;
+		m_pFontItalic = NULL;
+	}
 
 	LOGFONT* plogfont = NULL;
-	LOGFONT logfont;
-	CWindowDC dc(GetDesktopWindow() );
+	static LOGFONT logfont;
+	CWindowDC dc(GetDesktopWindow());
 	m_cyPixelsPerInch = GetDeviceCaps(dc, LOGPIXELSY);
 	if( plogfont == NULL )
 	{
@@ -51,7 +53,10 @@ CFontPropertyPage::CFontPropertyPage() : CPropertyPage(CFontPropertyPage::IDD)
 	m_bStrikeOut = plogfont->lfStrikeOut;
 	m_bUnderline = plogfont->lfUnderline;
 	m_sFont = plogfont->lfFaceName;
-	m_sSize.Format( theWorkspace.LoadResourceString(IDS_PerD), MulDiv(plogfont->lfHeight, nDePixelScale, m_cyPixelsPerInch) );
+	m_sSize.Format( _T("%d"),
+									MulDiv(plogfont->lfHeight < 0? -plogfont->lfHeight : plogfont->lfHeight,
+												 m_cyPixelsPerInch,
+												 72) );
 	m_sStyle = theWorkspace.LoadResourceString(IDS_REGULAR);
 	if( plogfont->lfWeight >= nDeBoldWeight && plogfont->lfItalic)
 		m_sStyle = theWorkspace.LoadResourceString(IDS_BOLDITAL);
@@ -70,7 +75,7 @@ CFontPropertyPage::~CFontPropertyPage()
 void CFontPropertyPage::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CFontPropertyPage)
+
 	DDX_Control(pDX, grp2, m_Frame);
 	DDX_Control(pDX, IDC_SAMPLE, m_staticSample);
 	DDX_Control(pDX, IDC_STYLE, m_comboStyle);
@@ -84,12 +89,10 @@ void CFontPropertyPage::DoDataExchange(CDataExchange* pDX)
 	DDX_CBString(pDX, IDC_FONTSIZE, m_sSize);
 	DDV_MaxChars(pDX, m_sSize, LF_FACESIZE);
 	DDX_CBString(pDX, IDC_STYLE, m_sStyle);
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CFontPropertyPage, CPropertyPage)
-	//{{AFX_MSG_MAP(CFontPropertyPage)
 	ON_CBN_SELCHANGE(IDC_FONT, OnSelChange)
 	ON_CBN_SELENDOK(IDC_STYLE, OnSelendokStyle)
 	ON_CBN_SELCHANGE(IDC_STYLE, OnSelChange)
@@ -102,7 +105,6 @@ BEGIN_MESSAGE_MAP(CFontPropertyPage, CPropertyPage)
 	ON_BN_CLICKED(IDC_SCALEDSTYLE, OnSelChange)
 	ON_CBN_SELCHANGE(IDC_FONTSIZE, OnSelchangeFontsize)
 	ON_WM_DESTROY()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -111,7 +113,7 @@ END_MESSAGE_MAP()
 BOOL CFontPropertyPage::OnInitDialog() 
 {
 	CPropertyPage::OnInitDialog();
-	CProject *pProjectList = activeProject;
+	CProject* pProject = activeProject;
 
 	try
 	{
@@ -159,7 +161,7 @@ BOOL CFontPropertyPage::OnInitDialog()
 	if (m_pFontName != NULL)
 		m_sFont = m_pFontName->GetStringValue();
 	else
-		m_sFont = pProjectList->m_sDefaultFontName;
+		m_sFont = pProject->m_sDefaultFontName;
 
 	int nSel;
 
@@ -169,21 +171,30 @@ BOOL CFontPropertyPage::OnInitDialog()
 
 
 	// set the font size
-	long lSize;
-	
-	if (m_pFontSize != NULL)
-		lSize = m_pFontSize->GetLongValue();
-	else
-		lSize = pProjectList->m_nDefaultFontSize;
+	long lSize = m_pFontSize? m_pFontSize->GetLongValue() : pProject->m_nDefaultFontSize;
 	
 	if (lSize < 0)
-		lSize = lSize * -1;
-	
-	m_sSize = LTOA(lSize);
+	{
+		m_sSize.Format(_T("%d"), -lSize);
+		m_PixelOpt.SetCheck(BST_CHECKED);
+	}
+	else
+	{
+		m_sSize.Format(_T("%d"), lSize);
+		m_ScaledOpt.SetCheck(BST_CHECKED);
+	}
 
-	nSel = m_comboSize.FindStringExact(0, m_sSize);
-	if (nSel != -1)
-		m_comboSize.SetCurSel(nSel);
+	long lAbsSize = (lSize < 0)? -lSize : lSize;
+	for( int i = 1; i < m_comboSize.GetCount(); ++i )
+	{
+		CString sSize;
+		m_comboSize.GetLBText( i, sSize );
+		if( _tstol( sSize ) > lAbsSize )
+		{
+			m_comboSize.SetCurSel( i - 1 );
+			break;
+		}
+	}
 	
 
 	// set the underline style
@@ -192,40 +203,26 @@ BOOL CFontPropertyPage::OnInitDialog()
 	if (m_pFontUnderline != NULL)
 		((CButton*)pControl)->SetCheck(m_pFontUnderline->GetBooleanValue());
 	else
-		((CButton*)pControl)->SetCheck(pProjectList->m_bDefaultFontUnderLine);
-	
-	
-	// set the strikeout style
-	pControl = GetDlgItem(IDC_STRIKEOUT);
-	if (m_pFontStrikeOut != NULL)
-		((CButton*)pControl)->SetCheck(m_pFontStrikeOut->GetBooleanValue());
-	else
-		// this one's always false when setting the default.
-		((CButton*)pControl)->SetCheck(FALSE);
-	
-	
+		((CButton*)pControl)->SetCheck(pProject->m_bDefaultFontUnderLine);
+
 	if (m_pFontBold != NULL)
 	{
-		if (m_pFontBold->GetBooleanValue() == FALSE &&
-			m_pFontItalic->GetBooleanValue() == FALSE)
+		if (m_pFontBold->GetBooleanValue() == FALSE && m_pFontItalic->GetBooleanValue() == FALSE)
 		{
 			m_sStyle = theWorkspace.LoadResourceString(IDS_REGULAR);
 			m_comboStyle.SetCurSel(0);
 		}
-		else if(m_pFontBold->GetBooleanValue() == TRUE &&
-			m_pFontItalic->GetBooleanValue() == TRUE)
+		else if(m_pFontBold->GetBooleanValue() == TRUE && m_pFontItalic->GetBooleanValue() == TRUE)
 		{
 			m_sStyle = theWorkspace.LoadResourceString(IDS_BOLDITAL);
 			m_comboStyle.SetCurSel(3);
 		}
-		else if(m_pFontBold->GetBooleanValue() == FALSE &&
-			m_pFontItalic->GetBooleanValue() == TRUE)
+		else if(m_pFontBold->GetBooleanValue() == FALSE && m_pFontItalic->GetBooleanValue() == TRUE)
 		{
 			m_sStyle = theWorkspace.LoadResourceString(IDS_ITALIC);
 			m_comboStyle.SetCurSel(2);
 		}
-		else if(m_pFontBold->GetBooleanValue() == TRUE && 
-			m_pFontItalic->GetBooleanValue() == FALSE)
+		else if(m_pFontBold->GetBooleanValue() == TRUE && m_pFontItalic->GetBooleanValue() == FALSE)
 		{
 			m_sStyle = theWorkspace.LoadResourceString(IDS_BOLD);
 			m_comboStyle.SetCurSel(1);
@@ -233,46 +230,26 @@ BOOL CFontPropertyPage::OnInitDialog()
 	}
 	else
 	{
-		if (pProjectList->m_bDefaultFontBold == FALSE &&
-			pProjectList->m_bDefaultFontItalic == FALSE)
+		if (pProject->m_bDefaultFontBold == FALSE && pProject->m_bDefaultFontItalic == FALSE)
 		{
 			m_sStyle = theWorkspace.LoadResourceString(IDS_REGULAR);
 			m_comboStyle.SetCurSel(0);
 		}
-		else if(pProjectList->m_bDefaultFontBold == TRUE &&
-			pProjectList->m_bDefaultFontItalic == TRUE)
+		else if(pProject->m_bDefaultFontBold == TRUE && pProject->m_bDefaultFontItalic == TRUE)
 		{
 			m_sStyle = theWorkspace.LoadResourceString(IDS_BOLDITAL);		
 			m_comboStyle.SetCurSel(3);
 		}
-		else if(pProjectList->m_bDefaultFontBold == FALSE &&
-			pProjectList->m_bDefaultFontItalic == TRUE)
+		else if(pProject->m_bDefaultFontBold == FALSE && pProject->m_bDefaultFontItalic == TRUE)
 		{
 			m_sStyle = theWorkspace.LoadResourceString(IDS_ITALIC);		
 			m_comboStyle.SetCurSel(2);
 		}
-		else if(pProjectList->m_bDefaultFontBold == TRUE && 
-			pProjectList->m_bDefaultFontItalic == FALSE)
+		else if(pProject->m_bDefaultFontBold == TRUE && pProject->m_bDefaultFontItalic == FALSE)
 		{
 			m_sStyle = theWorkspace.LoadResourceString(IDS_BOLD);
 			m_comboStyle.SetCurSel(1);
 		}
-	}
-
-	if (m_pFontSizeStyle != NULL)
-	{
-		if (m_pFontSizeStyle->GetBooleanValue() == TRUE)
-			m_ScaledOpt.SetCheck(TRUE);
-		else
-			m_PixelOpt.SetCheck(TRUE);
-		
-	}
-	else
-	{
-		if (pProjectList->m_bDefaultFontSizeStyle == TRUE)
-			m_ScaledOpt.SetCheck(TRUE);
-		else
-			m_PixelOpt.SetCheck(TRUE);
 	}
 	
 	OnSelChange();
@@ -315,8 +292,6 @@ void CFontPropertyPage::OnSelChange()
 
 	UpdateData(TRUE);
 
-	
-
 	LOGFONT logfont;
 	memset(&logfont, 0, sizeof(LOGFONT));
 	logfont.lfStrikeOut = m_bStrikeOut;
@@ -328,11 +303,12 @@ void CFontPropertyPage::OnSelChange()
 
 	if (m_ScaledOpt.GetCheck() == BST_CHECKED)
 	{
-		HDC hdc = ::GetDC(NULL);	
-		logfont.lfHeight = -::MulDiv(_tstol(m_sSize),	GetDeviceCaps(hdc, LOGPIXELSY), nDePixelScale);		
+		CDC* cdc = GetDC();	
+		logfont.lfHeight = -::MulDiv(_tstol(m_sSize),	GetDeviceCaps(cdc->m_hDC, LOGPIXELSY), 72);
+		ReleaseDC(cdc);
 	}
 	else
-		logfont.lfHeight = _tstol(m_sSize);		
+		logfont.lfHeight = -_tstol(m_sSize);		
 	logfont.lfWeight = 400;	
 	logfont.lfItalic = FALSE;
 	if( m_sStyle.Find( theWorkspace.LoadResourceString(IDS_ITALIC) ) != -1 )
@@ -364,89 +340,81 @@ void CFontPropertyPage::OnSelChange()
 	SetModified(TRUE);
 }
 
-void CFontPropertyPage::GetCurrentFont(LPLOGFONT lplf)
-{
-	
-}
-
 void CFontPropertyPage::OnDestroy() 
 {
-	
 	m_fontSample.DeleteObject();
 	m_comboStyle.Clear();
 	m_comboFont.Clear();
 	m_comboSize.Clear();
 
 	CPropertyPage::OnDestroy();
-	
 }
 
 
 BOOL CFontPropertyPage::OnApply() 
 {
 	CWinApp* pApp = AfxGetApp();
-	CProject *pProjectList = activeProject;
+	CProject *pProject = activeProject;
 	
 	// set the font name
-	CString strResult;	
+	CString sFontName;	
 	int nSel = m_comboFont.GetCurSel();
 	if (nSel > -1)		
-		m_comboFont.GetLBText(nSel, strResult);
+		m_comboFont.GetLBText(nSel, sFontName);
 	else
-		m_comboFont.GetWindowText(strResult);
+		m_comboFont.GetWindowText(sFontName);
 
 	// if the project list pointer is NULL then update the property
 	if (m_pFontName != NULL) 
 	{
-		m_pFontName->SetStringValue(strResult);
+		m_pFontName->SetStringValue(sFontName);
+		theWorkspace.SetModified(true);
 	}
 	else // update the default setting
 	{
-		pProjectList->m_sDefaultFontName = strResult;
-		pApp->WriteProfileString(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontName), pProjectList->m_sDefaultFontName);		
+		pProject->m_sDefaultFontName = sFontName;
+		pApp->WriteProfileString(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontName), sFontName);		
 	}
 
 	
 	// get the size
-	strResult = _T("-1");
+	CString sFontSize;	
 	nSel = m_comboSize.GetCurSel();
 	if (nSel > -1)		
-		m_comboSize.GetLBText(nSel, strResult);
+		m_comboSize.GetLBText(nSel, sFontSize);
 	else
-		m_comboSize.GetWindowText(strResult);
+		m_comboSize.GetWindowText(sFontSize);
 
-	if (strResult != CString())		
+	if (!sFontSize.IsEmpty())		
 	{
-		long lSize = _tstol(strResult);
-		if (m_ScaledOpt.GetCheck() == BST_CHECKED)
-			lSize = lSize * -1;
-		// if the project list pointer is NULL then update the property
+		long lSize = _tstol(sFontSize);
+		if (m_PixelOpt.GetCheck() == BST_CHECKED)
+			lSize = -lSize;
 		if (m_pFontSize != NULL) 
-		{
 			m_pFontSize->SetLongValue(lSize);
-		}
 		else // update the default setting
 		{
-			pProjectList->m_nDefaultFontSize = lSize;
-			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontSize), pProjectList->m_nDefaultFontSize);
+			pProject->m_nDefaultFontSize = lSize;
+			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontSize), lSize);
+			if( pApp->GetProfileInt( sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontSizeStyle), 0 ) != 0 )
+				pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontSizeStyle), 0); //no longer used, must be set to zero
 		}		
 	}
 
 
 	// set the underline style
 	CWnd *pControl = GetDlgItem(IDC_UNDERLINE);
-	BOOL bNewValue = (BOOL)((CButton*)pControl)->GetCheck();
+	bool bNewValue = (((CButton*)pControl)->GetCheck() == BST_CHECKED);
 
 	// if the project list pointer is NULL then update the property
 	if (m_pFontUnderline != NULL) 
-		m_pFontUnderline->SetBooleanValue(bNewValue != FALSE);
-
-	// set the strikeout style
-	pControl = GetDlgItem(IDC_STRIKEOUT);
-	bNewValue = ((CButton*)pControl)->GetCheck();
-	// if the project list pointer is NULL then update the property
-	if (m_pFontStrikeOut != NULL)
-		m_pFontStrikeOut->SetBooleanValue(bNewValue != FALSE);
+		m_pFontUnderline->SetBooleanValue(bNewValue);
+	else
+	{
+		// set the font Underline
+		pProject->m_bDefaultFontUnderLine = bNewValue;
+		pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontUnderLine), bNewValue? 1 : 0);	
+	}
 
 	// set the bold and italic styles
 	int nStyle = m_comboStyle.GetCurSel();
@@ -481,55 +449,34 @@ BOOL CFontPropertyPage::OnApply()
 		{
 			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontBold), FALSE);
 			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), FALSE);
-			pProjectList->m_bDefaultFontBold = FALSE;
-			pProjectList->m_bDefaultFontItalic = FALSE;
+			pProject->m_bDefaultFontBold = FALSE;
+			pProject->m_bDefaultFontItalic = FALSE;
 		}
 		else if(nStyle == 3)
 		{
 			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontBold), TRUE);
 			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), TRUE);
-			pProjectList->m_bDefaultFontBold = TRUE;
-			pProjectList->m_bDefaultFontItalic = TRUE;
+			pProject->m_bDefaultFontBold = TRUE;
+			pProject->m_bDefaultFontItalic = TRUE;
 		}
 		else if(nStyle == 2)
 		{
 			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontBold), FALSE);
 			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), TRUE);
-			pProjectList->m_bDefaultFontBold = FALSE;
-			pProjectList->m_bDefaultFontItalic = TRUE;
+			pProject->m_bDefaultFontBold = FALSE;
+			pProject->m_bDefaultFontItalic = TRUE;
 		}
 		else if(nStyle == 1)
 		{
 			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontBold), TRUE);
 			pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), FALSE);
-			pProjectList->m_bDefaultFontBold = TRUE;
-			pProjectList->m_bDefaultFontItalic = FALSE;
+			pProject->m_bDefaultFontBold = TRUE;
+			pProject->m_bDefaultFontItalic = FALSE;
 		}
 	}
+	if( mpDclControl && mpDclControl->m_pCtrlHolder )
+		((CControlHolder*)mpDclControl->m_pCtrlHolder)->UpdateProperty(nLabelName);
 
-	// if the project list pointer is NOT NULL then update the default setting
-	if (m_pFontSizeStyle == NULL) 		
-	{
-		// set the font Underline
-		pProjectList->m_bDefaultFontUnderLine = ((CButton*)GetDlgItem(IDC_UNDERLINE))->GetCheck();
-		pApp->WriteProfileInt(sOpenDCLProf, _T("DefaultFontUnderLine"), pProjectList->m_bDefaultFontUnderLine);	
-
-		if (m_ScaledOpt.GetCheck())
-			pProjectList->m_bDefaultFontSizeStyle = TRUE;
-		else
-			pProjectList->m_bDefaultFontSizeStyle = FALSE;
-
-		pApp->WriteProfileInt(sOpenDCLProf, theWorkspace.LoadResourceString(IDS_DefaultFontSizeStyle), pProjectList->m_bDefaultFontSizeStyle);	
-	}
-	else
-	{
-		if (m_ScaledOpt.GetCheck())
-			m_pFontSizeStyle->SetBooleanValue(true);
-		else
-			m_pFontSizeStyle->SetBooleanValue(false);
-		
-	}
-	
 	return CPropertyPage::OnApply();
 }
 

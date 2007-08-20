@@ -26,6 +26,7 @@ public:
 	CPPToolTip m_ToolTip;
 	
 // ListCtrl edit data members
+	bool m_bAutoComplete;
 	bool m_bESC;
 
 // Overrides
@@ -53,7 +54,6 @@ protected:
 	afx_msg void OnSetfocus();
 	afx_msg void OnSelchange();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnEditupdate();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDropdown();
 	//}}AFX_MSG

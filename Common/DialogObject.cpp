@@ -21,6 +21,7 @@ CDialogObject::CDialogObject( CDclFormObject* pDclForm, CWnd* pHostDlg )
 , mpSourceForm( pDclForm )
 , mpProject( pDclForm->GetProject() )
 , mpHostDlg( pHostDlg )
+, mbClosing( false )
 {
 	if( pDclForm )
 		pDclForm->SetFormInstance( this );

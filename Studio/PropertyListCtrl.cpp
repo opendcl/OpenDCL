@@ -2964,9 +2964,7 @@ void CPropertyListCtrl::CheckPictureRefs()
 void CPropertyListCtrl::DefaultFontDlg() 
 {
 	CPropertySheet Dlg;
-	CFontPropertyPage *pFontPage = NULL;
-	RefCountedPtr< CPropertyObject > pProp = NULL;
-	pFontPage = new CFontPropertyPage;
+	CFontPropertyPage *pFontPage = new CFontPropertyPage;
 	
 	// set the title
 	CString sTitle;
@@ -3101,15 +3099,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	pProp = pArxCtrl->GetPropertyObject(nLabelName);
 	if (pProp != NULL)
 	{
-		pFontPage = new CFontPropertyPage;
-
-		pFontPage->m_pFontName = pProp;
-		pFontPage->m_pFontSize = pArxCtrl->GetPropertyObject(nLabelSize);
-		pFontPage->m_pFontStrikeOut = pArxCtrl->GetPropertyObject(nLabelStrikeOut);
-		pFontPage->m_pFontUnderline = pArxCtrl->GetPropertyObject(nLabelUnderline);
-		pFontPage->m_pFontBold = pArxCtrl->GetPropertyObject(nLabelBold);
-		pFontPage->m_pFontItalic = pArxCtrl->GetPropertyObject(nLabelItalic);
-		pFontPage->m_pFontSizeStyle = pArxCtrl->GetPropertyObject(nFontSizeStyle);
+		pFontPage = new CFontPropertyPage(pArxCtrl);
 		Dlg.AddPage(pFontPage);
 	}
 	
@@ -3205,11 +3195,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 		Dlg.SetActivePage(pImageListPage);
 
 	if (Dlg.DoModal() == IDOK)
-	{
-		if (theEditorWorkspace.GetActiveDocument() != NULL)
-			theEditorWorkspace.GetActiveDocument()->SetModifiedFlag(TRUE);
-	}
-	Invalidate();
+		theWorkspace.SetModified(true);
 	
 	delete pTabs;
 	delete pToolTipsPage;
@@ -3227,6 +3213,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	delete pProgressPage;
 	// update the control no matter what, just incase the user pressed the apply button then cancel
 	UpdateControls((PropertyId)-2);
+	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar( pArxCtrl );
 	Invalidate();
 }
 

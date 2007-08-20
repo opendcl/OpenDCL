@@ -43,7 +43,7 @@ protected:
 	virtual bool IsDockable() const { return false; }
 	virtual bool IsResizable() const { return true; }
 	virtual HWND GetHWnd() const;
-	virtual void CloseDialog(int nStatus) const;
+	virtual void CloseDialog(int nStatus);
 	virtual INT_PTR DoModal();
 	virtual bool Show(bool bShow = true) { return false; }
 };

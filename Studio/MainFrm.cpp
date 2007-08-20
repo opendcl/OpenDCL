@@ -600,7 +600,7 @@ void CMainFrame::OnSetautolispfilename()
 	Dlg.m_pOFN->lpstrTitle = sTitle;
 	if( Dlg.DoModal() == IDOK )
 	{
-		sLispFileName = Dlg.GetFileName();
+		sLispFileName = Dlg.GetPathName();
 		pProject->SetLispFileName( sLispFileName );
 		pProjTree->SetAutoLispFilename( sLispFileName );
 		CDocument* pDoc = pProjTree->GetDocument();

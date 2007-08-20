@@ -146,7 +146,6 @@ protected:
 	afx_msg void OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnKeydown(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnMButtonDown(UINT nFlags, CPoint point);

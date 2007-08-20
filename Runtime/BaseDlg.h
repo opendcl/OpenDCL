@@ -44,6 +44,7 @@ public:
 public:
 	virtual CControlPane& GetControlPane() = 0;
 	virtual const CDialogObject& GetDialogObject() const = 0;
+	virtual CDialogObject& GetDialogObject() = 0;
 	virtual void SetMinMaxSize( const CSize& szMin, const CSize& szMax );
 
 protected:

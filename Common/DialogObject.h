@@ -40,6 +40,7 @@ protected:
 	CDclFormObject* mpSourceForm;
 	CProject* mpProject;
 	CWnd* mpHostDlg;
+	bool mbClosing;
 
 public:
 	CDialogObject( CDclFormObject* pDclForm, CWnd* pHostDlg );
@@ -57,10 +58,12 @@ public:
 	virtual bool IsFloating() const { return true; }
 	virtual bool IsDirty() const { return false; }
 	virtual bool SetDirty( bool bDirty = true ) { return false; }
+	virtual bool IsClosing() const { return mbClosing; }
+	virtual void SetClosing( bool bClosing = true ) { mbClosing = bClosing; }
 
 	// Dialog
 	virtual bool CreateModeless( UINT nID ) const { return false; }
-	virtual void CloseDialog(int nStatus = -1) const = 0;
+	virtual void CloseDialog(int nStatus = -1) = 0;
 	virtual INT_PTR DoModal() { return -1; }
 	virtual bool Show(bool bShow = true);
 	virtual bool CenterDialog();

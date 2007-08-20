@@ -249,7 +249,7 @@ void CColumnsPage::CommitLists()
 BOOL CColumnsPage::OnApply() 
 {
 	CommitLists();
-	
+	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();
 }
 

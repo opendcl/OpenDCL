@@ -44,7 +44,6 @@
 #include "VdclSpinButton.h"
 #include "VdclStatic.h"
 #include "VdclSymbolEdit.h"
-#include "VdclTab.h"
 #include "VdclTree.h"
 #include "VdclTextButton.h"
 #include "HtmlCtrl.h"

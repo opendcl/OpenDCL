@@ -6,7 +6,7 @@
 #include "DclControlObject.h"
 #include "ArgumentsRetrieval.h"
 #include "MethodLexicon.h"
-#include "VdclTab.h"
+#include "ArxTabStripCtrl.h"
 #include "ControlTypes.h"
 
 
@@ -19,7 +19,7 @@ int TabControl_SetTabText()
 	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_SetTabText, &nArg);
 	if (!pControl ||
 			!GetIntArgument(nArg, &nIndex, sTabControl_SetTabText) ||
-			(nIndex = ((VdclTab*)pControl)->GetTabItemIndex( nIndex )) < 0)
+			(nIndex = ((CArxTabStripCtrl*)pControl)->GetTabItemIndex( nIndex )) < 0)
 	{
 		acedRetNil();
 		return 0;
@@ -35,7 +35,7 @@ int TabControl_SetTabText()
 	
 	TCITEM tcItem = { TCIF_TEXT };
 	tcItem.pszText = sString.LockBuffer();
-	((VdclTab*)pControl)->GetTabCtrl().SetItem(nIndex, &tcItem);
+	((CArxTabStripCtrl*)pControl)->GetTabCtrl().SetItem(nIndex, &tcItem);
 
 	acedRetT();
 	return 0;
@@ -49,13 +49,13 @@ int TabControl_ShowTab()
 	if (!pControl ||
 			!GetIntArgument(nArg, &nIndex, sTabControl_ShowTab) ||
 			nIndex < 0 ||
-			nIndex >= ((VdclTab*)pControl)->GetTabPageCount())
+			nIndex >= ((CArxTabStripCtrl*)pControl)->GetTabPageCount())
 	{
 		acedRetNil();
 		return 0;
 	}
 	
-	((VdclTab*)pControl)->ShowTab(nIndex);
+	((CArxTabStripCtrl*)pControl)->ShowTab(nIndex);
 	acedRetT();
 	return 0;
 }
@@ -68,13 +68,13 @@ int TabControl_HideTab()
 	if (!pControl ||
 			!GetIntArgument(nArg, &nIndex, sTabControl_HideTab) ||
 			nIndex < 0 ||
-			nIndex >= ((VdclTab*)pControl)->GetTabPageCount())
+			nIndex >= ((CArxTabStripCtrl*)pControl)->GetTabPageCount())
 	{
 		acedRetNil();
 		return 0;
 	}
 
-	((VdclTab*)pControl)->HideTab(nIndex);
+	((CArxTabStripCtrl*)pControl)->HideTab(nIndex);
 	acedRetT();
 	return 0;
 }
@@ -86,15 +86,16 @@ int TabControl_SetCurSel()
 	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_SetCurSel, &nArg);
 	if (!pControl ||
 			!GetIntArgument(nArg, &nIndex, sTabControl_SetCurSel) ||
-			((VdclTab*)pControl)->GetTabItemIndex( nIndex ) < 0)
+			!((CArxTabStripCtrl*)pControl)->SetCurrentTab(nIndex))
 	{
 		acedRetNil();
 		return 0;
 	}
 
-	((VdclTab*)pControl)->SetCurSel(((VdclTab*)pControl)->GetTabItemIndex( nIndex ));
-	((VdclTab*)pControl)->ActivateTabPage(nIndex, TRUE, TRUE);
-	acedRetT();
+	if( ((CArxTabStripCtrl*)pControl)->SetCurrentTab(nIndex) )
+		acedRetT();
+	else
+		acedRetNil();
 	return 0;
 }
 
@@ -107,7 +108,7 @@ int TabControl_GetCurSel()
 		return 0;
 	}
 
-	acedRetInt(((VdclTab*)pControl)->GetCurTabPage());
+	acedRetInt(((CArxTabStripCtrl*)pControl)->GetCurTabPage());
 	return 0;
 }
 
@@ -120,7 +121,7 @@ int TabControl_GetRowCount()
 		return 0;
 	}
 
-	acedRetInt(((VdclTab*)pControl)->GetTabCtrl().GetRowCount());
+	acedRetInt(((CArxTabStripCtrl*)pControl)->GetTabCtrl().GetRowCount());
 	return 0;
 }
 

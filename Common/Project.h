@@ -110,11 +110,10 @@ protected:
 	
 public:		
 	CString m_sDefaultFontName;
-	long m_nDefaultFontSize;
+	long m_nDefaultFontSize; //positive means point size, negative means normal character size in pixels
 	BOOL m_bDefaultFontItalic;
 	BOOL m_bDefaultFontUnderLine;
 	BOOL m_bDefaultFontBold;
-	BOOL m_bDefaultFontSizeStyle;
 
 public:
 	CProject();

@@ -155,6 +155,7 @@ void COpenDCLDoc::SetGlobalVariableNames( LPCTSTR pszRootName )
 
 	// force the redraw of the property list box so any (VarName) will be updated.
 	theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
+	theWorkspace.SetModified(true);
 }
 
 void COpenDCLDoc::OnCloseDocument() 

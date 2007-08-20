@@ -208,13 +208,17 @@ BOOL CBaseDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 
 void CBaseDlg::OnClose() 
 {
-	CString sEvent = mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventCancelClose);
-	if (sEvent.IsEmpty() || !(InvokeCancelMethod(sEvent, false)))
+	bool bCancelling = (this->m_nModalResult == IDCANCEL || this->m_nModalResult == -1);
+	if (GetDialogObject().IsClosing() ||
+			!InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventCancelClose), bCancelling))
 	{
+		GetDialogObject().SetClosing();
 		__super::OnClose();
 		if( GetDialogObject().IsModeless() && ::IsWindow( m_hWnd ) )
 			DestroyWindow(); //if it's a modeless dialog, we have to destroy it yet
 	}
+	else
+		GetDialogObject().SetClosing( false );
 }
 
 void CBaseDlg::OnDestroy() 

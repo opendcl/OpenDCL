@@ -591,6 +591,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Controls\ArxTabStripCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxTabStripCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ClrListBox.cpp"
 				>
 			</File>
@@ -1004,14 +1012,6 @@
 			</File>
 			<File
 				RelativePath="..\Controls\VdclSymbolEdit.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclTab.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclTab.h"
 				>
 			</File>
 			<File
@@ -1757,6 +1757,14 @@
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\GridCtrlHdr.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\TabStripCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\TabStripCtrl.h"
 					>
 				</File>
 				<File

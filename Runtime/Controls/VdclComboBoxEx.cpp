@@ -19,9 +19,9 @@ const int CmboStyle_Simple		= 1;
 VdclComboBoxEx::VdclComboBoxEx()
 {
 	m_bESC = false;
+	m_bAutoComplete = true;
 	// No tooltip created
 	m_ToolTip.m_hWnd = NULL;
-
 }
 
 VdclComboBoxEx::~VdclComboBoxEx()
@@ -39,7 +39,6 @@ BEGIN_MESSAGE_MAP(VdclComboBoxEx, CComboBoxEx)
 	ON_CONTROL_REFLECT(CBN_SETFOCUS, OnSetfocus)
 	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
 	ON_WM_MOUSEMOVE()
-	ON_CONTROL_REFLECT(CBN_EDITUPDATE, OnEditupdate)
 	ON_WM_SHOWWINDOW()
 	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
 	//}}AFX_MSG_MAP
@@ -183,6 +182,39 @@ void VdclComboBoxEx::OnEditchange()
 			InvokeMethodString(m_ArxControl->GetStrProperty(nEventEditChanged), sText, m_bInvokeWithSendString);
 		}
 	}
+	
+	// if we are not to auto update the text, get outta here
+	if (!m_bAutoComplete) 
+		return;
+
+	// Get the text in the edit box
+	CString str;
+	GetWindowText(str);
+	CString sLBText;
+	if( GetCurSel() >= 0 )
+	{
+		GetLBText( GetCurSel(), sLBText );
+		if( sLBText == str )
+			return; //no-op
+	}
+	int cchText = str.GetLength();
+
+	// Currently selected range
+	DWORD dwCurSel = GetEditSel();
+	WORD dStart = LOWORD(dwCurSel);
+	WORD dEnd   = HIWORD(dwCurSel);
+
+	for( int idx = 0; idx < GetCount(); ++idx )
+	{
+		GetLBText( idx, sLBText );
+		if( sLBText.Left( cchText ).CompareNoCase( str ) == 0 )
+		{
+			m_bAutoComplete = false;
+			SetCurSel( idx );
+			m_bAutoComplete = true;
+			GetEditCtrl()->SetSel(cchText, -1);
+		}
+	}
 }
 
 
@@ -248,25 +280,6 @@ void VdclComboBoxEx::OnSelchange()
 	}
 }
 
-void VdclComboBoxEx::OnEditupdate() 
-{
-	CString sText;
-	
-	GetWindowText(sText);
-	if (m_ArxControl)
-	{
-		CString sTestText = m_ArxControl->GetStrProperty(nText);
-		if (sTestText != sText)
-		{
-			m_ArxControl->SetStringProperty(nText, sText);
-			// call methods to invoke the event
-			InvokeMethodString(m_ArxControl->GetStrProperty(nEventEditChanged), sText, m_bInvokeWithSendString);
-		}
-	}
-	
-}
-
-
 
 void VdclComboBoxEx::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
@@ -293,26 +306,28 @@ BOOL VdclComboBoxEx::PreTranslateMessage(MSG* pMsg)
 {
 	m_ToolTip.RelayEvent(pMsg);
 	
-	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN && m_ArxControl)
+	if (pMsg->message == WM_KEYDOWN)
 	{
+		m_bAutoComplete = true;
+		WPARAM nVirtKey = pMsg->wParam;
+		if (nVirtKey == VK_DELETE || nVirtKey == VK_BACK)
+			m_bAutoComplete = false;
 		if (m_ArxControl)
-			if (m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
-				pMsg->wParam = VK_TAB;
-		
-	}
-	if (pMsg->message== WM_KEYDOWN && m_ArxControl == NULL)
-	{
-		if (pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE)
-	    {
-			::TranslateMessage(pMsg);
-			::DispatchMessage(pMsg);
-			
-			m_bESC = pMsg->wParam == VK_ESCAPE;
-			return TRUE;				// DO NOT process further
+		{
+			if (nVirtKey == VK_RETURN && m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
+				pMsg->wParam = VK_TAB;		
+		}
+		else
+		{
+			if (nVirtKey == VK_RETURN || nVirtKey == VK_ESCAPE)
+			{
+				::TranslateMessage(pMsg);
+				::DispatchMessage(pMsg);
+				m_bESC = pMsg->wParam == VK_ESCAPE;
+				return TRUE;				// DO NOT process further
+			}
 		}
 	}
-
-
 	return CComboBoxEx::PreTranslateMessage(pMsg);
 }
 

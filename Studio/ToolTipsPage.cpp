@@ -138,25 +138,14 @@ BOOL CToolTipsPage::OnInitDialog()
 		m_Pictures.SetCurSel(4);
 		break;
 	default:
-		{
-		n = m_Pictures.FindStringExact(0, LTOA(m_pToolTipTitle->GetLongValue()));
-		if (n != -1)
-			m_Pictures.SetCurSel(n);
-		else		
-			m_Pictures.SetCurSel(0);
-		}
+		m_Pictures.SelectString(0, m_pToolTipPicture->GetStringValue());
+		break;
 	}
 	m_Balloon.SetCheck(m_pToolTipBalloon->GetBooleanValue());	
 	m_Title.SetWindowText(m_pToolTipTitle->GetStringValue());	
 	m_Line.SetCheck(m_pToolTipLine->GetBooleanValue());	
 	m_MainText.SetWindowText(m_pToolTipBody->GetStringValue());	
-
 	m_Color.SetColour((COLORREF)m_pToolTipTitleColor->GetLongValue());
-
-	n = m_Pictures.FindStringExact(0, LTOA(m_pToolTipPicture->GetLongValue()));	
-	if (n > -1)
-		m_Pictures.SetCurSel(n);
-
 	m_Avi.SetWindowText(m_pToolTipAvi->GetStringValue());
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -304,6 +293,7 @@ void CToolTipsPage::Commit()
 	m_pToolTipAvi->SetStringValue(sAviFile);
 
 	m_pToolTipTitleColor->SetLongValue(m_Color.GetColour());
+	theWorkspace.SetModified(true);
 }
 
 BOOL CToolTipsPage::OnApply() 

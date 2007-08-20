@@ -20,7 +20,6 @@ static int ChildFrameID = 10101;
 CModalDialogX::CModalDialogX( CModalVDcl& Owner, CDclFormObject* pDclForm )
 : CArxDialogObject( pDclForm, &Owner )
 , mpOwner( &Owner )
-, mbIsClosing( false )
 {
 }
 
@@ -42,11 +41,11 @@ HWND CModalDialogX::GetHWnd() const
 	return mpOwner->m_hWnd;
 }
 
-void CModalDialogX::CloseDialog(int nStatus) const
+void CModalDialogX::CloseDialog(int nStatus)
 {
-	if( mbIsClosing )
+	if( IsClosing() )
 		return; //already in the process of closing
-	const_cast< CModalDialogX* >(this)->mbIsClosing = true;
+	SetClosing();
 	mpOwner->EndDialog( nStatus );
 	//mpOwner->DestroyWindow();
 	mpOwner->SendMessage(WM_CLOSE, 0, 0); //just to make sure
@@ -165,7 +164,8 @@ void CModalVDcl::OnShowWindow(BOOL bShow, UINT nStatus)
 
 void CModalVDcl::OnOK()
 {
-	if (!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false))	
+	if (mDialogX.IsClosing() ||
+			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), false))	
 	{
     InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnOk), false);
 		__super::OnOK();
@@ -175,7 +175,8 @@ void CModalVDcl::OnOK()
 
 void CModalVDcl::OnCancel()
 {
-	if (!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), true))	
+	if (mDialogX.IsClosing() ||
+			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventCancelClose), true))	
 	{
     InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventOnCancel), false);
 		__super::OnCancel();

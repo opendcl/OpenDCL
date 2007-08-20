@@ -122,8 +122,10 @@ bool CDockingDialogX::CreateModeless( UINT nID ) const
 	return true;
 }
 
-void CDockingDialogX::CloseDialog(int nStatus) const
+void CDockingDialogX::CloseDialog(int nStatus)
 {
+	if( IsClosing() )
+		return;
 	CWnd* pTopLevel = IsFloating()? (mpOwner->m_hWnd? mpOwner->GetParent()->GetParent() : NULL) : mpOwner;
 	HWND hwndTopLevel = pTopLevel? pTopLevel->m_hWnd : NULL;
 	HWND hwndOwner = mpOwner->m_hWnd;
@@ -157,7 +159,6 @@ CDockingDialog::CDockingDialog( CDclFormObject* pSourceForm, CWnd* pParent /*=NU
 : CAdUiDockControlBar( ADUI_DOCK_CS_STDMOUSECLICKS | ADUI_DOCK_CS_DESTROY_ON_CLOSE )
 , mpParent( pParent )
 , mDialogX( *this, pSourceForm )
-, mbClosing( false )
 , mbHiding( false )
 , mbTrackingMouse( false )
 , mbInMenuLoop( false )
@@ -278,7 +279,7 @@ void CDockingDialog::GetClientArea(CRect &rect)
 void CDockingDialog::SizeChanged (CRect *lpRect, BOOL bFloating, int flags) 
 {
 	CAdUiDockControlBar::SizeChanged(lpRect, bFloating, flags);
-	if (!mbClosing)
+	if (!mDialogX.IsClosing())
 	{
 		lpRect->top += (nDeflateRect + 2);
 		lpRect->left += nDeflateRect;
@@ -315,7 +316,7 @@ void CDockingDialog::OnShowWindow(BOOL bShow, UINT nStatus)
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStrProperty(nFormEventShow), true);	
 
-	mbHiding = !mbClosing && !bShow;
+	mbHiding = !mDialogX.IsClosing() && !bShow;
 	CAdUiDockControlBar::OnShowWindow(bShow, nStatus);
 }
 
@@ -336,7 +337,9 @@ void CDockingDialog::PostNcDestroy()
 
 bool CDockingDialog::OnClosing()
 {
-	mbClosing = true;
+	if( mDialogX.IsClosing() )
+		return true;
+	mDialogX.SetClosing();
 	CAdUiDockControlBar::OnClosing();
 	// call methods to invoke the event
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
@@ -629,8 +632,7 @@ BOOL CDockingDialog::PreTranslateMessage(MSG* pMsg)
 
 void CDockingDialog::OnDestroy() 
 {
-	if( !mbClosing )
-		OnClosing();
+	OnClosing();
 	mDialogX.GetControlPane().CleanUpControls();
 	CAdUiDockControlBar::OnDestroy();
 }

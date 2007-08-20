@@ -125,7 +125,6 @@ bool CDialogControl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 	case nLabelItalic: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
 	case nLabelUnderline: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
 	case nLabelStrikeOut: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
-	case nFontSizeStyle: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
 	}
 	return bSuccess;
 }

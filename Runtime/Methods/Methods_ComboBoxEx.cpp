@@ -47,7 +47,7 @@ int ComboBoxEx_AddString()
 		nSelectedImage = nImage;
 
 	if (nIndex == -1)
-		nIndex = pCombo->GetComboBoxCtrl()->GetCount();
+		nIndex = pCombo->GetCount();
 
 	COMBOBOXEXITEM cbi;
 
@@ -59,7 +59,7 @@ int ComboBoxEx_AddString()
 		pCombo->GetImageList()->SetBkColor(RGB(255,255,255));
 
 	cbi.iItem = nIndex;
-	cbi.pszText = (LPTSTR)(LPCTSTR)sStringArg;
+	cbi.pszText = sStringArg.LockBuffer();
 	cbi.cchTextMax = sStringArg.GetLength();
 	cbi.iImage = nImage;
 	cbi.iSelectedImage = nSelectedImage;
@@ -194,7 +194,7 @@ int ComboBoxEx_Clear()
 		return 0;
 	}
 	
-	((CComboBoxEx*)pControl)->GetComboBoxCtrl()->ResetContent();
+	((CComboBoxEx*)pControl)->ResetContent();
 	acedRetT();
 	return 0;
 }
@@ -208,7 +208,7 @@ int ComboBoxEx_GetCurSel()
 		return 0;
 	}
 
-	acedRetInt(((CComboBoxEx*)pControl)->GetComboBoxCtrl()->GetCurSel());
+	acedRetInt(((CComboBoxEx*)pControl)->GetCurSel());
 	return 0;
 }
 
@@ -221,7 +221,7 @@ int ComboBoxEx_GetCount()
 		return 0;
 	}
 	
-	acedRetInt(((CComboBoxEx*)pControl)->GetComboBoxCtrl()->GetCount());
+	acedRetInt(((CComboBoxEx*)pControl)->GetCount());
 	return 0;
 }
 
@@ -257,8 +257,8 @@ int ComboBoxEx_SelectString()
 		return 0;
 	}
 	
-	int nIndex = ((CComboBoxEx*) pControl)->GetComboBoxCtrl()->GetCurSel();
-	acedRetInt(((CComboBoxEx*) pControl)->GetComboBoxCtrl()->SelectString(nIndex, sSearchString));
+	int nIndex = ((CComboBoxEx*) pControl)->GetCurSel();
+	acedRetInt(((CComboBoxEx*) pControl)->SelectString(nIndex, sSearchString));
 	return 0;
 }
 
@@ -274,8 +274,8 @@ int ComboBoxEx_FindString()
 		return 0;
 	}
 	
-	int nIndex = ((CComboBoxEx*) pControl)->GetComboBoxCtrl()->GetCurSel();
-	acedRetInt(((CComboBoxEx*) pControl)->GetComboBoxCtrl()->FindString(nIndex, sSearchString));
+	int nIndex = ((CComboBoxEx*) pControl)->GetCurSel();
+	acedRetInt(((CComboBoxEx*) pControl)->FindString(nIndex, sSearchString));
 	return 0;
 }
 
@@ -291,8 +291,8 @@ int ComboBoxEx_FindStringExact()
 		return 0;
 	}
 	
-	int nIndex = ((CComboBoxEx*) pControl)->GetComboBoxCtrl()->GetCurSel();
-	acedRetInt(((CComboBoxEx*) pControl)->GetComboBoxCtrl()->FindStringExact(nIndex, sSearchString));
+	int nIndex = ((CComboBoxEx*) pControl)->GetCurSel();
+	acedRetInt(((CComboBoxEx*) pControl)->FindStringExact(nIndex, sSearchString));
 	return 0;
 }
 
@@ -311,7 +311,7 @@ int ComboBoxEx_SetCurSel()
 		acedRetNil();
 		return 0;
 	}
-	((CComboBoxEx*) pControl)->GetComboBoxCtrl()->SetCurSel(nIndex);
+	((CComboBoxEx*) pControl)->SetCurSel(nIndex);
 
 	acedRetT();
 	return 0;
@@ -329,8 +329,7 @@ int ComboBoxEx_GetEditSel()
 	DWORD dwSel;
 	int nStart;
 	int nEnd;
-	// Set the selection to be all characters after the current selection.
-	if ((dwSel=((CComboBoxEx*) pControl)->GetComboBoxCtrl()->GetEditSel()) == CB_ERR)
+	if ((dwSel=((CComboBoxEx*) pControl)->GetEditSel()) == CB_ERR)
 	{
 		acedRetNil();
 		return 0;
@@ -387,7 +386,7 @@ int ComboBoxEx_SetItemData()
 		return 0;
 	}
 	
-	((CComboBoxEx*) pControl)->GetComboBoxCtrl()->SetItemData(nIndex, nData);
+	((CComboBoxEx*) pControl)->SetItemData(nIndex, nData);
 
 	acedRetT();
 	return 0;
@@ -408,7 +407,7 @@ int ComboBoxEx_GetItemData()
 		return 0;
 	}
 	
-	acedRetInt(((CComboBoxEx*) pControl)->GetComboBoxCtrl()->GetItemData(nIndex));
+	acedRetInt(((CComboBoxEx*) pControl)->GetItemData(nIndex));
 	return 0;
 
 }
@@ -422,7 +421,7 @@ int ComboBoxEx_GetTopIndex()
 		return 0;
 	}
 	
-	acedRetInt(((CComboBoxEx*)pControl)->GetComboBoxCtrl()->GetTopIndex());	
+	acedRetInt(((CComboBoxEx*)pControl)->GetTopIndex());	
 	return 0;
 
 }
@@ -437,7 +436,7 @@ int ComboBoxEx_SetTopIndex()
 		acedRetNil();
 		return 0;
 	}
-	((CComboBoxEx*) pControl)->GetComboBoxCtrl()->SetTopIndex(nIndex);
+	((CComboBoxEx*) pControl)->SetTopIndex(nIndex);
 
 	acedRetT();
 	return 0;
@@ -453,7 +452,7 @@ int ComboBoxEx_GetDroppedWidth()
 		return 0;
 	}
 	
-	acedRetInt(((CComboBoxEx*)pControl)->GetComboBoxCtrl()->GetDroppedWidth());	
+	acedRetInt(((CComboBoxEx*)pControl)->GetDroppedWidth());	
 	return 0;
 
 }
@@ -468,7 +467,7 @@ int ComboBoxEx_SetDroppedWidth()
 		acedRetNil();
 		return 0;
 	}
-	((CComboBoxEx*) pControl)->GetComboBoxCtrl()->SetDroppedWidth(nDroppedWidth);
+	((CComboBoxEx*) pControl)->SetDroppedWidth(nDroppedWidth);
 
 	acedRetT();
 	return 0;
@@ -484,7 +483,7 @@ int ComboBoxEx_ClearEdit()
 		return 0;
 	}
 	
-	((CComboBoxEx*)pControl)->GetComboBoxCtrl()->Clear();
+	((CComboBoxEx*)pControl)->Clear();
 	acedRetT();
 	return 0;
 }
@@ -505,7 +504,7 @@ int ComboBoxEx_GetEBText()
 	if (pEdit != NULL)
 		pEdit->GetWindowText(sString);
 	else
-		pCtrl->GetLBText(pCtrl->GetComboBoxCtrl()->GetCurSel(), sString);
+		pCtrl->GetLBText(pCtrl->GetCurSel(), sString);
 	acedRetStr(sString);
 	return 0;
 }

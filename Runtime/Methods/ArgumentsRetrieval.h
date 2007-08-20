@@ -21,6 +21,11 @@ inline void acedRetPointer(void* ptr)
 
 inline void acedRetHandle(DWORD_PTR hdl)
 {
+	if( hdl == 0 )
+	{
+		acedRetNil();
+		return;
+	}
 	struct resbuf RetVal = {NULL,RTENAME};
 	RetVal.resval.rlname[0] = (LONG_PTR)hdl;
 	RetVal.resval.rlname[1] = 0;

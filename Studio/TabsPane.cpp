@@ -363,6 +363,7 @@ BOOL CTabsPane::OnApply()
 	catch(...)
 	{
 	}
+	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();
 }
 

@@ -514,6 +514,15 @@ CArxProject* CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKey
 
 	if( bReload )
 		UnloadProject( pProject->GetKeyName(), true );
+	else if( !pszKeyName || *pszKeyName == _T('\0') )
+	{
+		CArxProject* pExistingProject = FindProject( pProject->GetKeyName() );
+		if( pExistingProject )
+		{
+			delete pProject;
+			return pExistingProject; //already loaded, just return it
+		}
+	}
 	if( !AddProject( pProject ) )
 	{ //couldn't add the new project, probably because of a name collision
 		delete pProject;

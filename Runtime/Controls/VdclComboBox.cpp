@@ -39,7 +39,6 @@ BEGIN_MESSAGE_MAP(VdclComboBox, CComboBox)
 	ON_CONTROL_REFLECT(CBN_SETFOCUS, OnSetfocus)
 	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
 	ON_WM_MOUSEMOVE()
-	ON_CONTROL_REFLECT(CBN_EDITUPDATE, OnEditupdate)
 	//ON_WM_SHOWWINDOW()
 	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
 	//}}AFX_MSG_MAP
@@ -205,7 +204,39 @@ void VdclComboBox::OnEditchange()
 		// fire the on Grid edit cell event.
 		pListCtrl->EndEditControls(pListCtrl);
 	}
+	
+	// if we are not to auto update the text, get outta here
+	if (!m_bAutoComplete) 
+		return;
 
+	// Get the text in the edit box
+	CString str;
+	GetWindowText(str);
+	CString sLBText;
+	if( GetCurSel() >= 0 )
+	{
+		GetLBText( GetCurSel(), sLBText );
+		if( sLBText == str )
+			return; //no-op
+	}
+	int cchText = str.GetLength();
+
+	// Currently selected range
+	DWORD dwCurSel = GetEditSel();
+	WORD dStart = LOWORD(dwCurSel);
+	WORD dEnd   = HIWORD(dwCurSel);
+
+	for( int idx = 0; idx < GetCount(); ++idx )
+	{
+		GetLBText( idx, sLBText );
+		if( sLBText.Left( cchText ).CompareNoCase( str ) == 0 )
+		{
+			m_bAutoComplete = false;
+			SetCurSel( idx );
+			m_bAutoComplete = true;
+			SetEditSel(cchText, -1);
+		}
+	}
 }
 
 
@@ -283,55 +314,6 @@ void VdclComboBox::OnSelchange()
 		// fire the on Grid edit cell event.
 		pListCtrl->EndEditControls(pListCtrl);
 	}
-
-	
-}
-
-void VdclComboBox::OnEditupdate() 
-{
-	
-	if (m_ArxControl)
-	{
-		CString sText;
-		
-		GetWindowText(sText);
-		CString sTestText = m_ArxControl->GetStrProperty(nText);
-		if (sTestText != sText)
-		{
-			m_ArxControl->SetStringProperty(nText, sText);
-			// call methods to invoke the event
-			InvokeMethodString(m_ArxControl->GetStrProperty(nEventEditChanged), sText, m_bInvokeWithSendString);
-		}
-	}
-	// if we are not to auto update the text, get outta here
-	if (!m_bAutoComplete) 
-		return;
-
-	// Get the text in the edit box
-	CString str;
-	GetWindowText(str);
-	int nLength = str.GetLength();
-
-	// Currently selected range
-	DWORD dwCurSel = GetEditSel();
-	WORD dStart = LOWORD(dwCurSel);
-	WORD dEnd   = HIWORD(dwCurSel);
-
-	// Search for, and select in, and string in the combo box that is prefixed
-	// by the text in the edit box
-	if (SelectString(-1, str) == CB_ERR)
-	{
-		SetWindowText(str);		// No text selected, so restore what was there before
-		if (dwCurSel != CB_ERR)
-		SetEditSel(dStart, dEnd);	//restore cursor postion
-	}
-
-	// Set the text selection as the additional text that we have added
-	if (dEnd < nLength && dwCurSel != CB_ERR)
-		SetEditSel(dStart, dEnd);
-	else
-		SetEditSel(nLength, -1);
-
 }
 
 //
@@ -363,31 +345,26 @@ BOOL VdclComboBox::PreTranslateMessage(MSG* pMsg)
 	
 	if (pMsg->message == WM_KEYDOWN)
 	{
-		m_bAutoComplete = TRUE;
-
+		m_bAutoComplete = true;
 		WPARAM nVirtKey = pMsg->wParam;
 		if (nVirtKey == VK_DELETE || nVirtKey == VK_BACK)
 			m_bAutoComplete = false;
-	}
-
-	
-	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN && m_ArxControl)
-	{
-		if (m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
-			pMsg->wParam = VK_TAB;		
-	}
-	if (pMsg->message== WM_KEYDOWN && m_ArxControl == NULL)
-	{
-		if (pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE)
-	    {
-			::TranslateMessage(pMsg);
-			::DispatchMessage(pMsg);
-			
-			m_bESC = pMsg->wParam == VK_ESCAPE;
-			return TRUE;				// DO NOT process further
+		if (m_ArxControl)
+		{
+			if (nVirtKey == VK_RETURN && m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
+				pMsg->wParam = VK_TAB;		
+		}
+		else
+		{
+			if (nVirtKey == VK_RETURN || nVirtKey == VK_ESCAPE)
+			{
+				::TranslateMessage(pMsg);
+				::DispatchMessage(pMsg);
+				m_bESC = pMsg->wParam == VK_ESCAPE;
+				return TRUE;				// DO NOT process further
+			}
 		}
 	}
-
 	return CComboBox::PreTranslateMessage(pMsg);
 }
 

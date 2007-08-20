@@ -43,8 +43,11 @@ bool CConfigTabPaneX::SetDirty( bool bDirty )
 	return true;
 }
 
-void CConfigTabPaneX::CloseDialog(int nStatus) const
+void CConfigTabPaneX::CloseDialog(int nStatus)
 {
+	if( IsClosing() )
+		return;
+	SetClosing();
 	mpOwner->GetMainDialog()->EndDialog( nStatus );
 }
 
