@@ -28,7 +28,7 @@ public:
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
 public:
 	void SetDragnDrop(BOOL bRegister);

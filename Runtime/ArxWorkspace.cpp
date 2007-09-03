@@ -311,7 +311,7 @@ bool CArxWorkspace::AddExtensionTab( CDclFormObject* pDclForm, CAdUiTabExtension
 	assert( pDialog != NULL );
 	if( !pDialog )
 		return false;
-	CString sTabCaption = pDclForm->GetControlProperties()->GetStrProperty(nCfgTabCaption);
+	CString sTabCaption = pDclForm->GetControlProperties()->GetStrProperty(Prop::CfgTabCaption);
 	if (!pTabXM->AddTab(_hdllInstance,
 											IDD_CFGTAB,
 											sTabCaption,
@@ -558,7 +558,7 @@ int CArxWorkspace::ActivateDclForm( CDclFormObject* pDclForm, DialogParams* pPar
 	if( pDclForm->GetParentForm() )
 		return -1; //can only activate top level forms from here!
 	if( pDclForm->GetType() == VdclConfigTab )
-		return -1; //can directly activate config tabs
+		return -1; //cannot directly activate config tabs
 	CDialogObject* pDlgObject = pDclForm->GetFormInstance();
 	if( pDlgObject ) //form already created?
 	{ //I think this should result in failure, but for now it just shows the current dialog [ORW]
@@ -569,26 +569,26 @@ int CArxWorkspace::ActivateDclForm( CDclFormObject* pDclForm, DialogParams* pPar
 	}
 	const CProject* pProject = pDclForm->GetProject();
 	assert (pProject != NULL);
-	if (!pProject)
+	if( !pProject )
 		return -1;
 
 	CWnd *pParent = NULL;
-	if (CountOpenModalForms() > 1)
+	if( !pDclForm->IsModeless() )
 	{
 		POSITION posDialog = mDialogs.GetTailPosition();
-		while (posDialog)
+		while( posDialog )
 		{
-			CDialogObject* pDlg = mDialogs.GetPrev(posDialog);
+			CDialogObject* pDlg = mDialogs.GetPrev( posDialog );
 			assert (pDlg != NULL);
-			if (!pDlg->IsModeless())
+			if( !pDlg->IsModeless() )
 			{
-				pParent = CWnd::FromHandle(pDlg->GetHWnd());
+				pParent = pDlg->GetWindow();
 				break;
 			}
 		}
 	}
-	if( !pParent)
-		pParent = CWnd::FromHandle(adsw_acadMainWnd());
+	if( !pParent )
+		pParent = CWnd::FromHandle( adsw_acadMainWnd() );
 
 	CAcAppContextModuleResourceOverride resOverride;
 	CDialogObject* pDialog = CArxDialogObject::Create( pDclForm, pParent, pParams );
@@ -598,9 +598,13 @@ int CArxWorkspace::ActivateDclForm( CDclFormObject* pDclForm, DialogParams* pPar
 	UINT nID = pDialog->GetID();
 	if( pDialog->IsModeless() )
 	{
+		HWND hwndActiveWindow = pParent->IsWindowEnabled()? NULL : GetActiveWindow();
 		if( !pDialog->CreateModeless( nID ) ) //when this call returns, pDialog is no longer safe! [ORW]
 			return -1;
-		SetCursor( LoadCursor( NULL, IDC_ARROW ) );
+		if( hwndActiveWindow )
+			SetActiveWindow( hwndActiveWindow );
+		else
+			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
 		return nID;
 	}
 	return pDialog->DoModal();

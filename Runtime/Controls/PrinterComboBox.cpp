@@ -60,10 +60,10 @@ CPrinterComboBox::~CPrinterComboBox()
 CRect CPrinterComboBox::GetWndRect() const
 {
 	CRect rectCombo = CArxDialogControl::GetWndRect();
-	long nListHeight = mpTemplate->GetLongProperty(nDropDownHeight);
+	long nListHeight = mpTemplate->GetLongProperty(Prop::DropDownHeight);
 	if( nListHeight < 40 )
 		nListHeight = 40;
-	rectCombo.bottom += nHeight;
+	rectCombo.bottom += Prop::Height;
 	return rectCombo;
 }
 
@@ -72,7 +72,7 @@ DWORD CPrinterComboBox::GetWndStyle() const
 	DWORD dwStyle = CArxDialogControl::GetWndStyle();
 	dwStyle |= WS_BORDER | WS_VSCROLL | CBS_HASSTRINGS |
 						CBS_AUTOHSCROLL | WS_CLIPCHILDREN | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED;
-	if (mpTemplate->GetBoolProperty(nSorted) == TRUE)
+	if (mpTemplate->GetBooleanProperty(Prop::Sorted) == TRUE)
 		dwStyle |= CBS_SORT;		
 	return dwStyle;
 }
@@ -89,7 +89,7 @@ bool CPrinterComboBox::Create( CWnd* pParentWnd, UINT nID, CRect rc )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
-	if( mpTemplate->GetLongProperty(nEventInvoke) == 1 )
+	if( mpTemplate->GetLongProperty(Prop::EventInvoke) == 1 )
 		m_bInvokeWithSendString = true;
 	else
 		m_bInvokeWithSendString = false;
@@ -106,7 +106,7 @@ CComboBox* CPrinterComboBox::FindPaperSizesCombo() const
 		TDialogControlPtr pControl = rControls[idx];
 		if (pControl->GetControlType() == CtlComboBox)
 		{
-			if( pControl->GetTemplate()->GetLongProperty(nComboBoxStyle) == CmboStyle_PlotterPaperSizes )
+			if( pControl->GetTemplate()->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_PlotterPaperSizes )
 				return (CComboBox*)pControl->GetControl();
 		}
 	}
@@ -214,7 +214,7 @@ BOOL CPrinterComboBox::PreTranslateMessage(MSG* pMsg)
 	GetToolTipCtrl().RelayEvent(pMsg);	
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
 	{
-		if (mpTemplate->GetBoolProperty(nReturnAsTab) == TRUE)
+		if (mpTemplate->GetBooleanProperty(Prop::ReturnAsTab) == TRUE)
 			pMsg->wParam = VK_TAB;
 	}
 	return CComboBox::PreTranslateMessage(pMsg);
@@ -226,7 +226,7 @@ void CPrinterComboBox::OnMouseMove(UINT nFlags, CPoint point)
 
 	if (mpTemplate)
 		InvokeMethodIntIntInt(
-			mpTemplate->GetStrProperty(nEventMouseMove),
+			mpTemplate->GetStrProperty(Prop::EventMouseMove),
 			nFlags,
 			point.x,
 			point.y,
@@ -240,7 +240,7 @@ void CPrinterComboBox::OnSetFocus(CWnd* pOldWnd)
 {
 	if (mpTemplate)
 		// call methods to invoke the event
-		InvokeMethod(mpTemplate->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+		InvokeMethod(mpTemplate->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 	CComboBox::OnSetFocus(pOldWnd);	
 }
 
@@ -248,7 +248,7 @@ void CPrinterComboBox::OnKillFocus(CWnd* pNewWnd)
 {
 	if (mpTemplate)
 		// call methods to invoke the event
-		InvokeMethod(mpTemplate->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+		InvokeMethod(mpTemplate->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 	CComboBox::OnKillFocus(pNewWnd);
 }
 
@@ -265,8 +265,8 @@ void CPrinterComboBox::OnSelchange()
 		CComboBox* pPaperSizesCombo = FindPaperSizesCombo();
 		if( !pPaperSizesCombo )
 		{
-			InvokeMethodIntString(mpTemplate->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-			mpTemplate->SetStringProperty(nText, sString);
+			InvokeMethodIntString(mpTemplate->GetStrProperty(Prop::EventSelChanged), nSel, sString, m_bInvokeWithSendString);
+			mpTemplate->SetStringProperty(Prop::Text, sString);
 			return;
 		}
 
@@ -299,8 +299,8 @@ void CPrinterComboBox::OnSelchange()
 			if (pPaperSizesCombo)
 				pPaperSizesCombo->ResetContent();
 
-			InvokeMethodIntString(mpTemplate->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-			mpTemplate->SetStringProperty(nText, sString);
+			InvokeMethodIntString(mpTemplate->GetStrProperty(Prop::EventSelChanged), nSel, sString, m_bInvokeWithSendString);
+			mpTemplate->SetStringProperty(Prop::Text, sString);
 			return;
 		}
 		else
@@ -324,18 +324,18 @@ void CPrinterComboBox::OnSelchange()
 
 		EndWaitCursor();
 
-		InvokeMethodIntString(mpTemplate->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-		mpTemplate->SetStringProperty(nText, sString);
+		InvokeMethodIntString(mpTemplate->GetStrProperty(Prop::EventSelChanged), nSel, sString, m_bInvokeWithSendString);
+		mpTemplate->SetStringProperty(Prop::Text, sString);
 	}
-	else
-	{		
-		// Send Notification to parent of ListView ctrl
-		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
-		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);
-		pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, -1);
-		// fire the on Grid edit cell event.
-		pListCtrl->EndEditControls(pListCtrl);
-	}
+	//else
+	//{		
+	//	// Send Notification to parent of ListView ctrl
+	//	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
+	//	pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);
+	//	pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, -1);
+	//	// fire the on Grid edit cell event.
+	//	pListCtrl->EndEditControls(pListCtrl);
+	//}
 }
 
 void CPrinterComboBox::OnDestroy() 

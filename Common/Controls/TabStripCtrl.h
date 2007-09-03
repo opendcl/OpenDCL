@@ -26,9 +26,9 @@ public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
-	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
-	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
-	virtual bool OnApplyToolTip( RefCountedPtr< CPropertyObject > pProp );
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
+	virtual bool OnApplyToolTip( TPropertyPtr pProp );
 
 // Interface
 public:
@@ -49,7 +49,7 @@ public:
 	// Generated message map functions
 protected:
 	afx_msg void OnDestroy();
-	afx_msg void PostNcDestroy();
 	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void PostNcDestroy();
 };

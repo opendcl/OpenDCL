@@ -18,10 +18,10 @@ public:
 	CGridCtrlHdr( CGridCtrl* pParent );
 	virtual ~CGridCtrlHdr();
 
-	// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 
+// Generated message map functions
 protected:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };

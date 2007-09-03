@@ -3,4 +3,4 @@
 
 #include "PropertyObject.h"
 
-typedef CList< RefCountedPtr< CPropertyObject > > CPropertyList;
+typedef CList< TPropertyPtr > CPropertyList;

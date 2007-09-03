@@ -197,7 +197,8 @@ void CTreeCtrlFolder::Inform()
 {
 	CWnd* parent = GetParent();
 	if (parent != NULL)
-	{	CFolder* folder = (CFolder*) GetItemData(m_selectedItem);
+	{
+		CFolder* folder = (CFolder*) GetItemData(m_selectedItem);
 		m_comboBoxFolder->SendMessage(WM_SELECTITEM_CHANGE, (WPARAM)folder);
 	}
 }

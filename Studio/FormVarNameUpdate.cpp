@@ -41,7 +41,7 @@ void CFormVarNameUpdate::OnOK()
 		mpDclForm->ClearGlobalVariableName( mbSetControls );
 	else
 	{
-		mpDclForm->GetControlProperties()->AddStringProperty( nName, PropString, msFormName );
+		mpDclForm->GetControlProperties()->AddStringProperty( Prop::Name, PropString, msFormName );
 		mpDclForm->SetGlobalVariableName( NULL, mbSetControls );
 	}
 	CDialog::OnOK();

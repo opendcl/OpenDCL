@@ -243,7 +243,7 @@ void CColumnsPage::CommitLists()
 			rInt.push_back(m_ColData[i].m_ImageItems[idx]);
 		m_pColImageItems->GetIntArrayListPtr()->push_back(rInt);
 	}
-	m_pView->RefreshChildControl(m_pControl, (PropertyId)-2);
+	m_pView->RefreshChildControl(m_pControl, Prop::_All);
 }
 
 BOOL CColumnsPage::OnApply() 

@@ -48,17 +48,17 @@ BOOL VdclProgressCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UIN
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	DWORD dwStyle = WS_CHILD|WS_VISIBLE | WS_CLIPSIBLINGS;
 
-	if (pControl->GetBoolProperty(nSmoothProgress) == TRUE)
+	if (pControl->GetBooleanProperty(Prop::SmoothProgress) == TRUE)
 		dwStyle = dwStyle | PBS_SMOOTH;
 
-	if (pControl->GetLongProperty(nOrientation) == 1)
+	if (pControl->GetLongProperty(Prop::Orientation) == 1)
 		dwStyle = dwStyle | PBS_VERTICAL ;
 
 	RetVal = CProgressCtrl::Create(dwStyle, ArxRect, pParentWnd, nID);

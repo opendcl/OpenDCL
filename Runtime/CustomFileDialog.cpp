@@ -98,30 +98,30 @@ static DWORD GetFileDlgFlags( CDclControlObject* pFileDlgProperties )
 	assert (pFileDlgProperties != NULL);
 	DWORD dwFlags = OFN_EXPLORER | OFN_ENABLEHOOK | OFN_ENABLETEMPLATE;
 
-	if (pFileDlgProperties->GetLongProperty(nFileDlgStyle) == 1) // as open
+	if (pFileDlgProperties->GetLongProperty(Prop::FileDlgStyle) == 1) // as open
 	{
-		if (!pFileDlgProperties->GetBoolProperty(nShowReadOnlyCheckBox))
+		if (!pFileDlgProperties->GetBooleanProperty(Prop::ShowReadOnlyCheckBox))
 			dwFlags |= OFN_HIDEREADONLY;
-		if (pFileDlgProperties->GetBoolProperty(nAsReadOnly))
+		if (pFileDlgProperties->GetBooleanProperty(Prop::AsReadOnly))
 			dwFlags |= OFN_READONLY;
-		if (pFileDlgProperties->GetBoolProperty(nMultiSelect))
+		if (pFileDlgProperties->GetBooleanProperty(Prop::MultiSelect))
 			dwFlags |= OFN_ALLOWMULTISELECT;
-		if (pFileDlgProperties->GetBoolProperty(nFileMustExist))
+		if (pFileDlgProperties->GetBooleanProperty(Prop::FileMustExist))
 			dwFlags |= OFN_FILEMUSTEXIST;
-		if (pFileDlgProperties->GetBoolProperty(nCreationPrompt))
+		if (pFileDlgProperties->GetBooleanProperty(Prop::CreationPrompt))
 			dwFlags |= OFN_CREATEPROMPT;
 	}
-	else if (pFileDlgProperties->GetLongProperty(nFileDlgStyle) == 0) // as save
+	else if (pFileDlgProperties->GetLongProperty(Prop::FileDlgStyle) == 0) // as save
 	{
 		dwFlags |= OFN_HIDEREADONLY;
-		if (pFileDlgProperties->GetBoolProperty(nOverWritePrompt))
+		if (pFileDlgProperties->GetBooleanProperty(Prop::OverWritePrompt))
 			dwFlags |= OFN_OVERWRITEPROMPT;	
 	}
-	if (pFileDlgProperties->GetBoolProperty(nShowHelp))
+	if (pFileDlgProperties->GetBooleanProperty(Prop::ShowHelp))
 		dwFlags |= OFN_SHOWHELP;
-	if (pFileDlgProperties->GetBoolProperty(nExtCanBeDiff))
+	if (pFileDlgProperties->GetBooleanProperty(Prop::ExtCanBeDiff))
 		dwFlags |= OFN_EXTENSIONDIFFERENT;
-	if (pFileDlgProperties->GetBoolProperty(nPathMustExist))
+	if (pFileDlgProperties->GetBooleanProperty(Prop::PathMustExist))
 		dwFlags |= OFN_PATHMUSTEXIST;	
 	return dwFlags;
 }
@@ -140,19 +140,19 @@ CCustomFileDialog::CCustomFileDialog( CDclFormObject* pSourceForm, CWnd* pParent
 	SetTemplate(IDD_CUSTOM_FILE_DIALOG, IDD_CUSTOM_FILE_DIALOG);
 	OPENFILENAME& ofn = GetOFN();
 	CDclControlObject* pProps = pSourceForm->GetControlProperties();
-	if (pProps->GetBoolProperty(nResizable))
+	if (pProps->GetBooleanProperty(Prop::Resizable))
 		ofn.Flags |= OFN_ENABLESIZING;
 	if( pSourceForm )
 	{
 		if (mpFileDlgCtrl)
 		{
-			m_bOpenFileDialog = (mpFileDlgCtrl->GetLongProperty(nFileDlgStyle) != 0)? TRUE : FALSE;
+			m_bOpenFileDialog = (mpFileDlgCtrl->GetLongProperty(Prop::FileDlgStyle) != 0)? TRUE : FALSE;
 			ofn.Flags |= GetFileDlgFlags(mpFileDlgCtrl);
-			msTitle = pProps->GetStrProperty(nTitleBarText);
+			msTitle = pProps->GetStrProperty(Prop::TitleBarText);
 			if( !msTitle.IsEmpty() )
 				ofn.lpstrTitle = msTitle.LockBuffer();
 		}
-		msFilterList = mpFileDlgCtrl->GetStrProperty(nFilter);
+		msFilterList = mpFileDlgCtrl->GetStrProperty(Prop::Filter);
 		if( mpParams && !mpParams->sFilterList.IsEmpty() )
 			msFilterList = mpParams->sFilterList;
 		if( !msFilterList.IsEmpty() )
@@ -219,9 +219,9 @@ BOOL CCustomFileDialog::OnInitDialog()
 	CDclControlObject* pCtrl = mDialogX.GetSourceForm()->FindFirstControlOfType( CtlFileDlgCtrl );
 	if( pCtrl )
 	{
-		if (!pCtrl->GetBoolProperty(nShowOK))
+		if (!pCtrl->GetBooleanProperty(Prop::ShowOK))
 			HideControl(IDOK);
-		if (!pCtrl->GetBoolProperty(nShowCancel))
+		if (!pCtrl->GetBooleanProperty(Prop::ShowCancel))
 			HideControl(IDCANCEL);
 
 		if(IsWindows98orLater())
@@ -232,14 +232,14 @@ BOOL CCustomFileDialog::OnInitDialog()
 				::ShowWindow(pScrollBar->m_hWnd, SW_HIDE);
 		}
 
-		if (!pCtrl->GetBoolProperty(nShowTypeComboBox))
+		if (!pCtrl->GetBooleanProperty(Prop::ShowTypeComboBox))
 			HideControl(cmb1);
-		if (!pCtrl->GetBoolProperty(nShowNameTextBox))
+		if (!pCtrl->GetBooleanProperty(Prop::ShowNameTextBox))
 			HideControl(edt1);
 
-		if (!pCtrl->GetBoolProperty(nShowTypeLabel))
+		if (!pCtrl->GetBooleanProperty(Prop::ShowTypeLabel))
 			HideControl(stc2);
-		if (!pCtrl->GetBoolProperty(nShowNameLabel))
+		if (!pCtrl->GetBooleanProperty(Prop::ShowNameLabel))
 			HideControl(stc3);
 
 		CtrlModifyStyle(cmb1);
@@ -253,9 +253,9 @@ BOOL CCustomFileDialog::OnInitDialog()
 		//add right and bottom borders for custom controls by calculating what the right and left borders
 		//are on the template, then add the same amount of border to this dialog.
 		int nRightBorder =
-			mDialogX.GetSourceForm()->GetControlProperties()->GetLongProperty( nWidth ) - pCtrl->GetLongProperty( nWidth );
+			mDialogX.GetSourceForm()->GetControlProperties()->GetLongProperty( Prop::Width ) - pCtrl->GetLongProperty( Prop::Width );
 		int nBottomBorder =
-			mDialogX.GetSourceForm()->GetControlProperties()->GetLongProperty( nHeight ) - pCtrl->GetLongProperty( nHeight );
+			mDialogX.GetSourceForm()->GetControlProperties()->GetLongProperty( Prop::Height ) - pCtrl->GetLongProperty( Prop::Height );
 
 		CRect rectWindow;
 		mMainFileDlg.GetWindowRect( &rectWindow );
@@ -297,7 +297,7 @@ void CCustomFileDialog::OnFileNameChange()
 	if (pos == NULL || nSelCount == 0)
 	{
 		// call methods to invoke the event
-		InvokeMethodIntString(mpFileDlgCtrl->GetStrProperty(nEventSelChanged), -1, CString(), false);		
+		InvokeMethodIntString(mpFileDlgCtrl->GetStrProperty(Prop::EventSelChanged), -1, CString(), false);		
 		return;
 	}
 	else
@@ -305,12 +305,12 @@ void CCustomFileDialog::OnFileNameChange()
 		if (nSelCount == 1)
 		{
 			// call methods to invoke the event
-			InvokeMethodIntString(mpFileDlgCtrl->GetStrProperty(nEventSelChanged), nSelCount, GetPathName(), false);			
+			InvokeMethodIntString(mpFileDlgCtrl->GetStrProperty(Prop::EventSelChanged), nSelCount, GetPathName(), false);			
 		}
 		else 
 		{
 			// call methods to invoke the event
-			InvokeMethodIntString(mpFileDlgCtrl->GetStrProperty(nEventSelChanged), nSelCount, CString(), false);			
+			InvokeMethodIntString(mpFileDlgCtrl->GetStrProperty(Prop::EventSelChanged), nSelCount, CString(), false);			
 		}
 	}
 }
@@ -322,20 +322,20 @@ void CCustomFileDialog::OnTypeChange()
 		return;
 	CString sText;
 	GetParent()->GetDlgItem(cmb1)->GetWindowText(sText);
-	InvokeMethodString(mpFileDlgCtrl->GetStrProperty(nEventOnTypeChange), sText, false);
+	InvokeMethodString(mpFileDlgCtrl->GetStrProperty(Prop::EventOnTypeChange), sText, false);
 }
 
 BOOL CCustomFileDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStrProperty(nEventOnHelp), false);
+	InvokeMethod(pProps->GetStrProperty(Prop::EventOnHelp), false);
 	return TRUE; 
 }
 
 void CCustomFileDialog::OnHelp()
 {
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStrProperty(nEventOnHelp), false);
+	InvokeMethod(pProps->GetStrProperty(Prop::EventOnHelp), false);
 }
 
 void CCustomFileDialog::OnFolderChange()
@@ -343,7 +343,7 @@ void CCustomFileDialog::OnFolderChange()
 	__super::OnFolderChange();
 	if( !mpFileDlgCtrl )
 		return;
-	InvokeMethodString(mpFileDlgCtrl->GetStrProperty(nEventFolderChanged), GetFolderPath(), false);
+	InvokeMethodString(mpFileDlgCtrl->GetStrProperty(Prop::EventFolderChanged), GetFolderPath(), false);
 }
 
 void CCustomFileDialog::CloseNow() 

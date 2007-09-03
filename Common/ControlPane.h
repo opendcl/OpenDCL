@@ -11,7 +11,7 @@ class CProject;
 class CDclControlObject;
 class CDclFormObject;
 class CFontCollection;
-enum PropertyId;
+enum Prop::Id;
 
 
 const int EditFilter_String		= 0;

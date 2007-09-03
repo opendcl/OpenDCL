@@ -5,8 +5,8 @@
 #include "OleOdcDropTarget.h"
 #include "InvokeMethod.h"
 #include "UserMessageId.h"
+#include "ArxDwgListCtrl.h"
 #include "VdclTree.h"
-#include "DwgDirList.h"
 #include "AxContainerCtrl.h"
 #include "DclControlObject.h"
 #include "PropertyIds.h"
@@ -186,7 +186,7 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 		// get the path. The first item always holds the path.
 		CString sPath = m_pBlockNames->GetAt(0);
 		// get the event defun name
-		CString sEventDefun = m_pThisArxControl->GetStrProperty(nDragnDropToAutoCAD);
+		CString sEventDefun = m_pThisArxControl->GetStrProperty(Prop::DragnDropToAutoCAD);
 
 		// if the event defun name is valid
 		if (sEventDefun.GetLength() > 0)
@@ -210,7 +210,7 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 		// other wise loop thru all files to insert.
 		for (int i=1; i<m_pBlockNames->GetSize(); i++)
 		{
-			if (m_pThisArxControl->GetLongProperty(nInsertOrXref) == 0)
+			if (m_pThisArxControl->GetLongProperty(Prop::InsertOrXref) == 0)
 				ReadExternalDWGfile(sPath, m_pBlockNames->GetAt(i), dwgPt, false);	
 			else
 				ReadExternalDWGfile(sPath, m_pBlockNames->GetAt(i), dwgPt, true);		
@@ -228,7 +228,7 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 	}
 	else if (m_pBlockNames != NULL)
 	{
-		CString sEventName = m_pThisArxControl->GetStrProperty(nDragnDropToAutoCAD);
+		CString sEventName = m_pThisArxControl->GetStrProperty(Prop::DragnDropToAutoCAD);
 
 		if (sEventName.GetLength() > 0)
 		{
@@ -284,7 +284,7 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 	else
 	{
 		InvokeMethodPoint3D(
-			m_pThisArxControl->GetStrProperty(nDragnDropToAutoCAD),
+			m_pThisArxControl->GetStrProperty(Prop::DragnDropToAutoCAD),
 			dwgPt,
 			bUseSendString);
 	}
@@ -406,7 +406,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 	
 	CDclControlObject *pControl = PasteArxObjectFromClipboard();
 	if (m_pThisArxControl->GetType() == CtlDwgList)
-		CDwgDirList *pDwgList = (CDwgDirList*)pControl->GetWindow();
+		CArxDwgListCtrl *pDwgList = (CArxDwgListCtrl*)pControl->GetWindow();
 	
 	if (m_pThisArxControl->GetType() == CtlTree)
 	{
@@ -426,17 +426,17 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 			{
 				// From AcadDwgView
 				InvokeMethodLong(
-					m_pThisArxControl->GetStrProperty(nDragnDropFromAutoCAD),
+					m_pThisArxControl->GetStrProperty(Prop::DragnDropFromAutoCAD),
 					(DWORD_PTR)hitem,
-					(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
+					(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 			}
 			else
 			{
 				// From AcadDwgView
 				InvokeMethodString(
-					m_pThisArxControl->GetStrProperty(nDragnDropFromAutoCAD),
+					m_pThisArxControl->GetStrProperty(Prop::DragnDropFromAutoCAD),
 					sTreeItemKey,
-					(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
+					(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 			}
 		}
 		else
@@ -445,23 +445,23 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 			{
 				// From Control
 				InvokeMethod3StringsLong(
-					m_pThisArxControl->GetStrProperty(nDragnDropFromControl), 
+					m_pThisArxControl->GetStrProperty(Prop::DragnDropFromControl), 
 					pControl->GetOwnerProject()->GetKeyName(),
 					pControl->GetOwnerForm()->GetKeyName(),
-					pControl->GetStrProperty(nName),
+					pControl->GetStrProperty(Prop::Name),
 					(DWORD_PTR)hitem,
-					(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
+					(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 			}
 			else
 			{
 				// From Control
 				InvokeMethod4Strings(
-					m_pThisArxControl->GetStrProperty(nDragnDropFromControl), 
+					m_pThisArxControl->GetStrProperty(Prop::DragnDropFromControl), 
 					pControl->GetOwnerProject()->GetKeyName(),
 					pControl->GetOwnerForm()->GetKeyName(),
-					pControl->GetStrProperty(nName),
+					pControl->GetStrProperty(Prop::Name),
 					sTreeItemKey,
-					(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
+					(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 			}
 		}
 	}
@@ -472,20 +472,20 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 		{
 			// From AcadDwgView
 			InvokeMethodPoint(
-				m_pThisArxControl->GetStrProperty(nDragnDropFromAutoCAD),
+				m_pThisArxControl->GetStrProperty(Prop::DragnDropFromAutoCAD),
 				point,
-				(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
+				(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 		}
 		else
 		{
 			// From Control
 			InvokeMethod3StringsPoint(
-				m_pThisArxControl->GetStrProperty(nDragnDropFromControl), 
+				m_pThisArxControl->GetStrProperty(Prop::DragnDropFromControl), 
 				pControl->GetOwnerProject()->GetKeyName(),
 				pControl->GetOwnerForm()->GetKeyName(),
-				pControl->GetStrProperty(nName),
+				pControl->GetStrProperty(Prop::Name),
 				point,
-				(m_pThisArxControl->GetLongProperty(nEventInvoke) == 1));
+				(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 		}
 	}
 	
@@ -588,9 +588,8 @@ void CopyArxObjectToClipboard(CDclControlObject *pControl)
 		::GlobalUnlock(hData);
 	#endif
 
-		if (pControl->GetWindow()->OpenClipboard())
+	if (pControl->GetWindow()->OpenClipboard())
 	{
-		
 		::SetClipboardData(m_nClipboardFormat, hData);
 		CloseClipboard();
 	}
@@ -598,13 +597,13 @@ void CopyArxObjectToClipboard(CDclControlObject *pControl)
 		AfxMessageBox(_T("Error, cannot open clipboard."));
 }
 
-void BeginDragnDrop(CDclControlObject *pControl, CPoint point, bool bInvokeWithSendString)
+DROPEFFECT BeginDragnDrop(CDclControlObject *pControl, CPoint point, bool bInvokeWithSendString)
 {
 	// copy this control's Arx control object to the clip board
 	CopyArxObjectToClipboard(pControl);
 
 	// call methods to invoke the event
-	InvokeMethod(pControl->GetStrProperty(nDragnDropBegin), bInvokeWithSendString);
+	InvokeMethod(pControl->GetStrProperty(Prop::DragnDropBegin), bInvokeWithSendString);
 
 	int objType = 0;
 	COleDataSource *pSource = generateDataSource(objType, CRect(point, CSize(0,0)));
@@ -625,15 +624,16 @@ void BeginDragnDrop(CDclControlObject *pControl, CPoint point, bool bInvokeWithS
 	
 	pSource->Empty(); 
 	delete pSource;
+	return dwEffect;
 }
 
-void BeginDragnDropToInsertBlocks(CDclControlObject *pControl, CPoint point, bool bInvokeWithSendString, CStringArray &BlockNames)
+DROPEFFECT BeginDragnDropToInsertBlocks(CDclControlObject *pControl, CPoint point, bool bInvokeWithSendString, CStringArray &BlockNames)
 {
 	// copy this control's Arx control object to the clip board
 	CopyArxObjectToClipboard(pControl);
 
 	// call methods to invoke the event
-	InvokeMethod(pControl->GetStrProperty(nDragnDropBegin), bInvokeWithSendString);
+	InvokeMethod(pControl->GetStrProperty(Prop::DragnDropBegin), bInvokeWithSendString);
 
 	int objType = 0;
 	COleDataSource *pSource = generateDataSource(objType, CRect(point, CSize(0,0)));
@@ -656,6 +656,7 @@ void BeginDragnDropToInsertBlocks(CDclControlObject *pControl, CPoint point, boo
 	
 	pSource->Empty(); 
 	delete pSource;
+	return dwEffect;
 }
 
 COleDataSource* generateDataSource(int objType, const CRect& rect)

@@ -51,26 +51,26 @@ BOOL CProgressBarPage::OnInitDialog()
 	
 	SetWindowText(m_sTitle);
 		
-	m_pArxCtrl->GetPropertyObject(nDisplayPercentage);
+	m_pArxCtrl->GetPropertyObject(Prop::DisplayPercentage);
 
-	if (m_pArxCtrl->GetBoolProperty(nDisplayPercentage) == TRUE)
+	if (m_pArxCtrl->GetBooleanProperty(Prop::DisplayPercentage) == TRUE)
 	{
 		m_Percentage.SetCheck(TRUE);
 		m_Progress.m_bPercentage = true;
 	}
-	else if (m_pArxCtrl->GetBoolProperty(nDisplaySeconds) == TRUE)
+	else if (m_pArxCtrl->GetBooleanProperty(Prop::DisplaySeconds) == TRUE)
 	{
 		m_Progress.m_bTime = true;
 	}
-	m_Time.SetCheck(m_pArxCtrl->GetBoolProperty(nDisplaySeconds));
+	m_Time.SetCheck(m_pArxCtrl->GetBooleanProperty(Prop::DisplaySeconds));
 		
-	m_Minute.SetWindowText(m_pArxCtrl->GetStrProperty(nMinuteText));
-	m_Minutes.SetWindowText(m_pArxCtrl->GetStrProperty(nMinutesText));
+	m_Minute.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::MinuteText));
+	m_Minutes.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::MinutesText));
 
-	m_Second.SetWindowText(m_pArxCtrl->GetStrProperty(nSecondText));
-	m_Seconds.SetWindowText(m_pArxCtrl->GetStrProperty(nSecondsText));
+	m_Second.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::SecondText));
+	m_Seconds.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::SecondsText));
 	
-	m_Progress.m_sText = CString("15 ") + m_pArxCtrl->GetStrProperty(nSecondsText);
+	m_Progress.m_sText = CString("15 ") + m_pArxCtrl->GetStrProperty(Prop::SecondsText);
 
 	// setup display progress bar.
 	m_Progress.SetRange(0,100);
@@ -88,20 +88,20 @@ BOOL CProgressBarPage::OnApply()
 	CString sValue;
 	
 	m_Minute.GetWindowText(sValue);
-	m_pArxCtrl->SetStringProperty(nMinuteText, sValue);
+	m_pArxCtrl->SetStringProperty(Prop::MinuteText, sValue);
 
 	m_Minutes.GetWindowText(sValue);
-	m_pArxCtrl->SetStringProperty(nMinutesText, sValue);
+	m_pArxCtrl->SetStringProperty(Prop::MinutesText, sValue);
 
 	m_Second.GetWindowText(sValue);
-	m_pArxCtrl->SetStringProperty(nSecondText, sValue);
+	m_pArxCtrl->SetStringProperty(Prop::SecondText, sValue);
 	
 	m_Seconds.GetWindowText(sValue);
-	m_pArxCtrl->SetStringProperty(nSecondsText, sValue);
+	m_pArxCtrl->SetStringProperty(Prop::SecondsText, sValue);
 	
-	m_pArxCtrl->SetBooleanProperty(nDisplayPercentage, m_Percentage.GetCheck() != 0);
+	m_pArxCtrl->SetBooleanProperty(Prop::DisplayPercentage, m_Percentage.GetCheck() != 0);
 	
-	m_pArxCtrl->SetBooleanProperty(nDisplaySeconds, m_Time.GetCheck() != 0);
+	m_pArxCtrl->SetBooleanProperty(Prop::DisplaySeconds, m_Time.GetCheck() != 0);
 
 	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();

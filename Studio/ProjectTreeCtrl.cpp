@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "ProjectTreeCtrl.h"
 #include "Project.h"
-#include "OpenDCL.h"
+#include "Editor.h"
 #include "OpenDCLView.h"
 #include "DclFormObject.h"
 #include "DclControlObject.h"
@@ -29,7 +29,7 @@ static CString FindTabCaption2(CDclFormObject *pDclTab, int nTabIndex)
 {
 	CDclControlObject* pControl = pDclTab->FindFirstControlOfType(CtlTabStrip);
 	if (pControl)
-		return pControl->GetPropertyListItem(nTabsCaption, nTabIndex);
+		return pControl->GetPropertyListItem(Prop::TabsCaption, nTabIndex);
 	return CString();
 }
 

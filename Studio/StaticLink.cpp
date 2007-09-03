@@ -62,7 +62,7 @@ BOOL CStaticLink::Create(LPCTSTR lpszWindowName, const RECT& rect, CWnd* pParent
 {
 	m_link = lpszWindowName;	
 	m_bDeleteOnDestroy = TRUE;
-	//SetForeColor(m_pControl->GetColorProperty(nForeColor));
+	//SetForeColor(m_pControl->GetColorProperty(Prop::ForegroundColor));
 	
 	BOOL bCreated = CStatic::Create(
 		lpszWindowName,

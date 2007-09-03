@@ -14,6 +14,12 @@ class CDclControlObject;
 class CFontCollection;
 class CDialogControl;
 
+#if (_MFC_VER < 0x0800)
+#define __LRESULT UINT
+#else
+#define __LRESULT LRESULT
+#endif
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CBaseDlg dialog
@@ -69,11 +75,7 @@ protected:
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnPaint();
-#if (_ACADTARGET == 16)
-  afx_msg UINT OnNcHitTest(CPoint point);
-#else
-  afx_msg LRESULT OnNcHitTest(CPoint point);
-#endif
+  afx_msg __LRESULT OnNcHitTest(CPoint point);
 	afx_msg void PostNcDestroy();
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 };

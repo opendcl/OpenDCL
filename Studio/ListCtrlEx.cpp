@@ -64,10 +64,10 @@ void CListCtrlEx::SetupColumns(CDclControlObject *pControl)
 	while (m_Child.GetItemCount() > 0)
 		m_Child.DeleteItem(0);
 
-	RefCountedPtr< CPropertyObject > pColCaptions = pControl->GetPropertyObject(nColumnCaptions);
-	RefCountedPtr< CPropertyObject > pColWidths = pControl->GetPropertyObject(nColumnWidths);
-	RefCountedPtr< CPropertyObject > pColAlign = pControl->GetPropertyObject(nColumnAlignments);
-	RefCountedPtr< CPropertyObject > pColImage = pControl->GetPropertyObject(nColumnImages);
+	TPropertyPtr pColCaptions = pControl->GetPropertyObject(Prop::ColumnCaptions);
+	TPropertyPtr pColWidths = pControl->GetPropertyObject(Prop::ColumnWidths);
+	TPropertyPtr pColAlign = pControl->GetPropertyObject(Prop::ColumnAlignments);
+	TPropertyPtr pColImage = pControl->GetPropertyObject(Prop::ColumnImages);
 
 	for (size_t i = 0; i < pColCaptions->size(); i++)
 	{				

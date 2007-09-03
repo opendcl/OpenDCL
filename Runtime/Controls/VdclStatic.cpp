@@ -86,13 +86,13 @@ BOOL VdclStatic::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID 
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	// get the caption
-	CString Caption = pControl->GetStrProperty(nCaption);
+	CString Caption = pControl->GetStrProperty(Prop::Caption);
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | SS_LEFT | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 	
@@ -117,7 +117,7 @@ void VdclStatic::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -145,7 +145,7 @@ void VdclStatic::SetDragnDrop(BOOL bRegister)
 
 void VdclStatic::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	if (m_ArxControl->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
+	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
 	{
 		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
 	}
@@ -167,7 +167,7 @@ void VdclStatic::OnPaint()
 	CFont *pOldFont = dc.SelectObject(GetFont());
 
 	DWORD dwJustification;
-	switch (m_ArxControl->GetLongProperty(nJustification))
+	switch (m_ArxControl->GetLongProperty(Prop::Justification))
 	{
 	case 0:
 		dwJustification = DT_TOP|DT_WORDBREAK|DT_LEFT;

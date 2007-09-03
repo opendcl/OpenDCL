@@ -6,7 +6,7 @@
 #include "Resource.h"
 #include "Project.h"
 #include "MainFrm.h"
-#include "OpenDCL.h"
+#include "Editor.h"
 #include "ArchiveEx.h"
 #include "StgFile.h"
 #include "DclFormObject.h"

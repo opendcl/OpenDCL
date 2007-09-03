@@ -30,11 +30,8 @@ bool CTabStripCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	bool bSuccess = (CTabCtrl::Create( GetWndStyle(), rectPane, pParentWnd, nID ) != FALSE);
 
-	RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
-	if( pImageList )
-		SetImageList( &pImageList->m_ImageList );
-
-	SetupTabs();
+	if( bSuccess && !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::ImageList ) ) )
+		bSuccess = false;
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
@@ -46,86 +43,92 @@ DWORD CTabStripCtrl::GetWndStyle() const
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 	dwStyle |= (/*WS_CLIPCHILDREN | */TCS_FOCUSNEVER | TCS_TOOLTIPS);
 
-	if( mpTemplate->GetLongProperty( nTabStyle ) == 0 )
+	if( mpTemplate->GetLongProperty( Prop::TabStyle ) == 0 )
 		dwStyle |= TCS_TABS;
 	else
 		dwStyle |= TCS_BUTTONS;
 
-	if( mpTemplate->GetBoolProperty( nMultiRow ) )
+	if( mpTemplate->GetBooleanProperty( Prop::MultiRow ) )
 		dwStyle |= TCS_MULTILINE;
 	else
 		dwStyle |= TCS_SINGLELINE;
 	
-	if( mpTemplate->GetBoolProperty( nTabFixedWidth ) )
+	if( mpTemplate->GetBooleanProperty( Prop::TabFixedWidth ) )
 		dwStyle |= TCS_FIXEDWIDTH;
 	
-	if( mpTemplate->GetLongProperty( nTabLabelAlign ) == 0 )
+	if( mpTemplate->GetLongProperty( Prop::TabLabelAlign ) == 0 )
 		dwStyle |= (TCS_FORCEICONLEFT | TCS_FORCELABELLEFT);
 
 	return dwStyle;
 }
 
-bool CTabStripCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
+bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
 		return false;
 	switch( pProp->GetID() )
 	{
-	case nTabsCaption:
-	case nTabsImageList:
+	case Prop::TabsCaption:
 		SetupTabs();
 		Invalidate();
 		break;
-	case nImageList:
+	case Prop::TabsImageList:
+		if( !IsEnumeratingProperties() )
+			SetupTabs();
+		Invalidate();
+		break;
+	case Prop::ImageList:
 		{
 			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
 			if (pImageList)
 			{
-				pImageList->m_ImageList.SetBkColor( ::GetSysColor( COLOR_BTNFACE ) );
-				SetImageList( &pImageList->m_ImageList );
+				CImageList& ImageList = pImageList->GetImageList();
+				ImageList.SetBkColor( ::GetSysColor( COLOR_BTNFACE ) );
+				SetImageList( &ImageList );
 			}
 			else
 				SetImageList( NULL );
 		}
 		break;
-	case nMinTabWidth:
+	case Prop::MinTabWidth:
 		SetMinTabWidth(pProp->GetLongValue());
-		SetupTabs();
+		if( !IsEnumeratingProperties() )
+			SetupTabs();
 		Invalidate();
 		break;
-	case nTabSelected:
+	case Prop::TabSelected:
 		SetCurSel( GetTabItemIndex( pProp->GetLongValue() ) );
 		break;
-	case nTabStyle:
+	case Prop::TabStyle:
 		if( pProp->GetLongValue() == 0 )
 			ModifyStyle( TCS_BUTTONS, TCS_TABS, SWP_FRAMECHANGED );
 		else
 			ModifyStyle( TCS_TABS, TCS_BUTTONS, SWP_FRAMECHANGED );
 		ResetTooltips();
 		break;
-	case nTabJustified: //not used
+	case Prop::TabJustified: //not used
 		break;
-	case nMultiRow:
+	case Prop::MultiRow:
 		if( pProp->GetLongValue() == 0 )
 			ModifyStyle( TCS_MULTILINE, TCS_SINGLELINE, SWP_FRAMECHANGED );
 		else
 			ModifyStyle( TCS_SINGLELINE, TCS_MULTILINE, SWP_FRAMECHANGED );
 		ResetTooltips();
 		break;
-	case nTabLabelAlign:
+	case Prop::TabLabelAlign:
 		if( pProp->GetLongValue() == 0 )
 			ModifyStyle( 0, TCS_FORCEICONLEFT | TCS_FORCELABELLEFT, SWP_FRAMECHANGED );
 		else
 			ModifyStyle( TCS_FORCEICONLEFT | TCS_FORCELABELLEFT, 0, SWP_FRAMECHANGED );
 		break;
-	case nTabFixedWidth:
+	case Prop::TabFixedWidth:
 		if( pProp->GetBooleanValue() )
 		{
 			ModifyStyle( TCS_RIGHTJUSTIFY, TCS_FIXEDWIDTH, SWP_FRAMECHANGED );
 			CRect rectTab;
 			GetItemRect( 0, &rectTab );
 			CSize sizeTabs;
-			sizeTabs.cx = mpTemplate->GetLongProperty( nMinTabWidth );
+			sizeTabs.cx = mpTemplate->GetLongProperty( Prop::MinTabWidth );
 			if( sizeTabs.cx < 0 )
 				sizeTabs.cx = rectTab.Width();
 			sizeTabs.cy = rectTab.Height();
@@ -133,19 +136,20 @@ bool CTabStripCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 		}
 		else
 			ModifyStyle( TCS_FIXEDWIDTH, TCS_RIGHTJUSTIFY, SWP_FRAMECHANGED );
-		SetupTabs();
+		if( !IsEnumeratingProperties() )
+			SetupTabs();
 		break;
-	case nToolTipBalloon:
+	case Prop::ToolTipBalloon:
 		GetToolTipCtrl().SetDefaultSizes( pProp->GetBooleanValue() );
 		break;
-	case nTabsTTT:
+	case Prop::TabsTTT:
 		ResetTooltips();
 		break;
 	}
 	return true;
 }
 
-bool CTabStripCtrl::OnApplyToolTip( RefCountedPtr< CPropertyObject > pProp )
+bool CTabStripCtrl::OnApplyToolTip( TPropertyPtr pProp )
 {
 	ResetTooltips();
 	return true;
@@ -174,9 +178,9 @@ void CTabStripCtrl::SetupTabs()
 	DeleteAllItems();
 
 	// get the tab's lists
-	RefCountedPtr< CPropertyObject > pTabsCaptionProperty = mpTemplate->GetPropertyObject(nTabsCaption);
-	RefCountedPtr< CPropertyObject > pTabsTTTProperty = mpTemplate->GetPropertyObject(nTabsTTT);
-	RefCountedPtr< CPropertyObject > pToolTipBalloon = mpTemplate->GetPropertyObject( nToolTipBalloon );
+	TPropertyPtr pTabsCaptionProperty = mpTemplate->GetPropertyObject(Prop::TabsCaption);
+	TPropertyPtr pTabsTTTProperty = mpTemplate->GetPropertyObject(Prop::TabsTTT);
+	TPropertyPtr pToolTipBalloon = mpTemplate->GetPropertyObject( Prop::ToolTipBalloon );
 	GetToolTipCtrl().SetDefaultSizes( !pToolTipBalloon || pToolTipBalloon->GetBooleanValue() );
 
 	size_t nTabQty = pTabsCaptionProperty->size();
@@ -187,11 +191,11 @@ void CTabStripCtrl::SetupTabs()
 		TabCtrlItem.lParam = (LPARAM)i;
 
 		// get the tag caption
-		CString sTabCaption = mpTemplate->GetPropertyListItem(nTabsCaption, i);
+		CString sTabCaption = mpTemplate->GetPropertyListItem(Prop::TabsCaption, i);
 		TabCtrlItem.pszText = sTabCaption.LockBuffer();
 
 		// set the image list item number is required
-		RefCountedPtr< CPropertyObject > pImageListProp = mpTemplate->GetPropertyObject(nTabsImageList);
+		TPropertyPtr pImageListProp = mpTemplate->GetPropertyObject(Prop::TabsImageList);
 		if (pImageListProp && i < pImageListProp->GetIntArrayPtr()->size())
 		{
 			TabCtrlItem.iImage = pImageListProp->GetIntArrayPtr()->at(i);
@@ -201,7 +205,7 @@ void CTabStripCtrl::SetupTabs()
 		// add the new tab
 		InsertItem(i, &TabCtrlItem );
 
-		CString sToolTipTitle = mpTemplate->GetPropertyListItem(nTabsTTT, i);
+		CString sToolTipTitle = mpTemplate->GetPropertyListItem(Prop::TabsTTT, i);
 		if( !sToolTipTitle.IsEmpty() )
 		{
 			CRect rectTab;
@@ -213,9 +217,9 @@ void CTabStripCtrl::SetupTabs()
 
 void CTabStripCtrl::ResetTooltips()
 {
-	RefCountedPtr< CPropertyObject > pTabsTTTProperty = mpTemplate->GetPropertyObject( nTabsTTT );
+	TPropertyPtr pTabsTTTProperty = mpTemplate->GetPropertyObject( Prop::TabsTTT );
 	GetToolTipCtrl().RemoveAllTools();
-	RefCountedPtr< CPropertyObject > pToolTipBalloon = mpTemplate->GetPropertyObject( nToolTipBalloon );
+	TPropertyPtr pToolTipBalloon = mpTemplate->GetPropertyObject( Prop::ToolTipBalloon );
 	GetToolTipCtrl().SetDefaultSizes( !pToolTipBalloon || pToolTipBalloon->GetBooleanValue() );
 	size_t nTabQty = pTabsTTTProperty->size();
 	for (size_t i = 0; i < (size_t)GetItemCount(); i++)
@@ -227,7 +231,7 @@ void CTabStripCtrl::ResetTooltips()
 		assert( idx < nTabQty );
 		if( idx >= nTabQty )
 			continue;
-		CString sToolTipTitle = mpTemplate->GetPropertyListItem( nTabsTTT, idx );
+		CString sToolTipTitle = mpTemplate->GetPropertyListItem( Prop::TabsTTT, idx );
 		if( !sToolTipTitle.IsEmpty() )
 		{
 			CRect rectTab;
@@ -261,12 +265,6 @@ BOOL CTabStripCtrl::PreTranslateMessage(MSG* pMsg)
 	return CTabCtrl::PreTranslateMessage(pMsg);
 }
 
-void CTabStripCtrl::PostNcDestroy() 
-{
-	CTabCtrl::PostNcDestroy();
-	delete this;
-}
-
 HBRUSH CTabStripCtrl::CtlColor(CDC* pDC, UINT /*nCtlColor*/)
 {
 	return mbrushBackground;
@@ -276,4 +274,10 @@ void CTabStripCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	__super::OnHScroll(nSBCode, nPos, pScrollBar);
 	ResetTooltips();
+}
+
+void CTabStripCtrl::PostNcDestroy() 
+{
+	CTabCtrl::PostNcDestroy();
+	delete this;
 }

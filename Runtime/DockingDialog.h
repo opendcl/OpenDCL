@@ -12,6 +12,12 @@ class CDialogControl;
 class CDclFormObject;
 class CDclControlObject;
 
+#if (_MFC_VER < 0x0800)
+#define __LRESULT UINT
+#else
+#define __LRESULT LRESULT
+#endif
+
 
 class CDockingDialogX : public CArxDialogObject
 {
@@ -24,7 +30,7 @@ protected:
 	virtual DclFormType GetType() const;
 	virtual bool IsModeless() const { return true; }
 	virtual bool IsDockable() const { return true; }
-	virtual bool IsResizable() const { return false; }
+	virtual bool IsResizable() const;
 	virtual HWND GetHWnd() const;
 	virtual bool IsFloating() const;
 	virtual bool CreateModeless( UINT nID ) const;
@@ -45,14 +51,7 @@ class CDockingDialog : public CAdUiDockControlBar
 	bool mbTrackingMouse;
 	bool mbInMenuLoop;
 	HWND mhwndKeyboardFocus;
-
-public:
-	int					m_FloatingHeight;		
-	int					m_FloatingWidth;
-	int					m_DockedWidth;
-	int					m_DockedHeight;	
-	bool				m_bDockingSizeAdjusted;
-	bool				m_bFloatingSizeAdjusted;
+	bool mbResizable;
 
 // Construction
 public:
@@ -66,6 +65,7 @@ public:
 public:
 	virtual bool Create( LPCTSTR lpszTitle, CRect rect, UINT nID );
 	virtual void GetClientArea(CRect &rect);
+	bool IsResizable() const { return mbResizable; }
 
 // Overrides
 public:
@@ -79,10 +79,8 @@ private:
 	// is repainted immediately.
 	bool CanFrameworkTakeFocus();
 	virtual void OnUserSizing(UINT nSide, LPRECT pRect);
-	virtual CSize CalcFloatingSize();
 	virtual CSize CalcDynamicLayout( int nLength, DWORD dwMode );
 	virtual CSize CalcFixedLayout( BOOL bStretch, BOOL bHorz );	
-	virtual CSize CalcDockedSize();
 	virtual void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight);	
 	virtual void SizeChanged (CRect *lpRect, BOOL bFloating, int flags);
 	virtual bool OnClosing();
@@ -98,11 +96,11 @@ protected:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
 	afx_msg void PostNcDestroy();
-	afx_msg void OnCaptureChanged(CWnd* pWnd);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
+	afx_msg LRESULT OnMouseEnter(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnEnterMenuLoop(BOOL bPopupMenu);
 	afx_msg void OnExitMenuLoop(BOOL bPopupMenu);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg __LRESULT OnNcHitTest(CPoint point);
+	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 };

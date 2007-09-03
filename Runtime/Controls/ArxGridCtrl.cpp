@@ -6,38 +6,47 @@
 #include "DclControlObject.h"
 #include "InvokeMethod.h"
 #include "ControlPane.h"
-#include "DynamicButtonCtrl.h"
-#include "VdclArrowHeadComboBox.h"
-#include "ComboBoxHolder.h"
-#include "ComboBoxFolder.h"
-#include "CurrencyEdit.h"
-#include "OdclEdit.h"
-#include "PercentageEdit.h"
-#include "VdclAngleEdit.h"
-#include "FontCombo.h"
-#include "OdclLayerCombo.h"
-#include "PrinterComboBox.h"
-#include "VdclPlotStyleNamesComboBox.h"
-#include "VdclPlotStyleTablesComboBox.h"
-#include "OdclDimStylesCombo.h"
-#include "VdclColorComboBox.h"
-#include "VdclComboBox.h"
-#include "VdclComboBoxEx.h"
-#include "VdclNumericEdit.h"
-#include "VdclSymbolEdit.h"
-#include "DateTimeHolder.h"
-#include "LineWeightDlg.h"
-#include "LinetypeDlg.h"
+#include "ButtonEditCtrl.h"
+#include "ComboEditCtrl.h"
+#include "ImageComboEditCtrl.h"
+#include "TextBoxEditCtrl.h"
+#include "ToggleEditCtrl.h"
+#include "RadioEditCtrl.h"
+#include "AngleFilter.h"
+#include "CurrencyFilter.h"
+#include "DateFilter.h"
+#include "IntegerFilter.h"
+#include "LowerCaseFilter.h"
+#include "MultilineFilter.h"
+#include "NumericFilter.h"
+#include "TimeFilter.h"
+#include "UpperCaseFilter.h"
+//#include "VdclArrowHeadComboBox.h"
+//#include "ComboBoxHolder.h"
+//#include "ComboBoxFolder.h"
+//#include "CurrencyEdit.h"
+//#include "OdclEdit.h"
+//#include "PercentageEdit.h"
+//#include "VdclAngleEdit.h"
+//#include "FontCombo.h"
+//#include "OdclLayerCombo.h"
+//#include "PrinterComboBox.h"
+//#include "VdclPlotStyleNamesComboBox.h"
+//#include "VdclPlotStyleTablesComboBox.h"
+//#include "OdclDimStylesCombo.h"
+//#include "VdclColorComboBox.h"
+//#include "VdclComboBox.h"
+//#include "VdclComboBoxEx.h"
+//#include "VdclNumericEdit.h"
+//#include "VdclSymbolEdit.h"
+//#include "DateTimeHolder.h"
+//#include "LineWeightDlg.h"
+//#include "LinetypeDlg.h"
 #include "DirDialog.h"
 #include "Workspace.h"
 #include "AcadColorTable.h"
 #include "SharedRes.h"
 
-#define HP_HEADERITEM			0x00000001
-
-#define ID_CELLBUTTON 191
-#define ID_CELLBUTTON_DIR2 192
-#define ID_CELLBUTTON_DIR3 193
 
 static LPTSTR s_DateFormats[] =
 {
@@ -80,37 +89,80 @@ bool getvar(LPCTSTR pszVarName)
 }
 
 
-int GetCurrentLayerColor() 
+static int GetCurrentLayerColor()
 {
-	CString sLayerName;
-	Acad::ErrorStatus es;
-	AcDbEntity *pEnt;
-	AcDbObjectId objId = acdbHostApplicationServices()->workingDatabase()->clayer();
-
-	if (Acad::eOk != (es = acdbOpenAcDbEntity(pEnt, objId, AcDb::kForRead)))
-		return 0;
-	
-	AcDbLayerTableRecord *pLayerTableRecord = (AcDbLayerTableRecord*)pEnt;
-	if (pLayerTableRecord == NULL)
-		return 0;
-	
-	AcCmColor clr = pLayerTableRecord->color();
-	
-	int nColor = clr.colorIndex();
-
-	// of course we must close it
-	pLayerTableRecord->close();
-
+	AcDbObjectId idLayer = acdbHostApplicationServices()->workingDatabase()->clayer();
+	AcDbLayerTableRecord* pLayer = NULL;
+	if( Acad::eOk != acdbOpenObject( pLayer, idLayer, AcDb::kForRead ) )
+		return 7;
+	int nColor = pLayer->color().colorIndex();
+	pLayer->close();
 	return nColor;
 }
 
-
-CString LTOA(long lValue)
+class CTrueColorEditCtrl : public CGridCellEditCtrl
 {
-	CString sVal;
-	sVal.Format( _T("%d"), lValue );
-	return sVal;
-}	
+public:
+	CTrueColorEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol )
+		: CGridCellEditCtrl( pGridCtrl, nRow, nCol )
+		{
+			int nCellImage = pGridCtrl->GetCellImage( nRow, nCol );
+			resbuf rbCurColor = { NULL, RTSHORT };
+			rbCurColor.resval.rint = GetCurrentLayerColor();
+			resbuf rbT = { &rbCurColor, RTT };
+			resbuf rbColor = { &rbT };
+			resbuf rbFuncName = { &rbColor, RTSTR };
+			rbFuncName.resval.rstring = _T("acad_truecolordlg");
+			CString sText = pGridCtrl->GetCellText( nRow, nCol );
+			if( nCellImage == -1 )
+			{
+				int idxComma = sText.Find( _T(",") );
+				CString sRed = sText.Left( idxComma );
+				CString sGreen = sText.Mid( idxComma + 1 );
+				idxComma = sGreen.Find( _T(",") );
+				CString sBlue = sGreen.Mid( idxComma + 1 );
+				sGreen = sGreen.Left( idxComma );
+				rbColor.restype = 420;
+				rbColor.resval.rlong =
+					(long)RGB(_tstol( sBlue ), _tstol( sGreen ), _tstol( sRed ) ); //note: BGR instead of RGB!
+			}
+			else if( !sText.IsEmpty() )
+			{
+				rbColor.restype = 430;
+				rbColor.resval.rstring = sText.LockBuffer(); //color book color
+			}
+			else
+			{
+				rbColor.restype = RTSHORT;
+				rbColor.resval.rint = (nCellImage > 0 && nCellImage < 256)? nCellImage : 7;
+			}
+			resbuf* prbResult = NULL;
+			if( RTNORM == acedInvoke( &rbFuncName, &prbResult ) && prbResult )
+			{
+				resbuf* prbTrueColor = prbResult->rbnext;
+				resbuf* prbColorBook = (prbTrueColor? prbTrueColor->rbnext : NULL);
+				if( prbColorBook && prbColorBook->restype == 430 )
+					pGridCtrl->SetCellTextImage( nRow, nCol, prbColorBook->resval.rstring, 300 );
+				else if( prbTrueColor && prbTrueColor->restype == 420 )
+				{
+					COLORREF clr = (COLORREF)prbTrueColor->resval.rlong; //note: BGR instead of RGB!
+					CString sColor;
+					sColor.Format( _T("%d,%d,%d"), GetBValue( clr ), GetGValue( clr ), GetRValue( clr ) );
+					pGridCtrl->SetCellTextImage( nRow, nCol, sColor, -1 );
+				}
+				else
+				{
+					CString sColor;
+					sColor.Format( _T("%d"), prbResult->resval.rint );
+					pGridCtrl->SetCellTextImage( nRow, nCol, sColor, prbResult->resval.rint );
+				}
+				acutRelRb( prbResult );
+			}
+		}
+	virtual ~CTrueColorEditCtrl()
+		{
+		}
+};
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -123,18 +175,6 @@ CArxGridCtrl::CArxGridCtrl( CDclControlObject* pTemplate,
 : CGridCtrl( pTemplate, pPane, nID, false )
 , mArxServices( pTemplate )
 {
-	m_bShowHighlight = true;
-	m_bEditCells = true;
-
-	// init all the pointers for cell editing controls.
-	for (int i=0; i<nNumOfTextBoxes; i++)
-		m_pTextBox[i] = NULL;
-	for (int i=0; i<nNumOfComboBoxes; i++)
-		m_pComboBox[i] = NULL;
-	m_pFolderButton = NULL;
-	m_pEllipsesButton = NULL;
-	m_pPickButton = NULL;
-
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
 }
@@ -148,55 +188,28 @@ bool CArxGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
 
-	if( GetTemplate()->GetLongProperty(nEventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
+	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
+		mbInvokeWithSendString = true;
 	else
-		m_bInvokeWithSendString = false;
+		mbInvokeWithSendString = false;
 
 	return bSuccess;
 }
 
-bool CArxGridCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
+bool CArxGridCtrl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	//switch( pProp->GetID() )
 	//{
-	//case nDragnDropAllowDrop:
+	//case Prop::DragnDropAllowDrop:
 	//	{
 	//		SetDragnDrop( pProp->GetBooleanValue() );
 	//		break;
 	//	}
 	//}
 	return !bFailed;
-}
-
-void CArxGridCtrl::SetCurSel(int nRow, int nCol) 
-{
-	m_bShowHighlight = true;
-	bool bRefreshOldRect = false;
-	CRect rcOld;
-			
-	if (m_nRowSelected != nRow || m_nColSelected != nCol)
-	{
-		if (m_nRowSelected != -1)
-		{
-			rcOld = GetCurSelRect();
-			bRefreshOldRect = true;
-		}
-	}
-	m_nRowSelected = nRow;
-	m_nColSelected = nCol;
-
-	if (bRefreshOldRect)
-		InvalidateRect(rcOld, TRUE);
-	
-	CRect rc = GetCurSelRect();
-	InvalidateRect(rc, TRUE);
-	
-	ShowCurSel();
-	Invalidate(TRUE);
 }
 
 void CArxGridCtrl::CheckLayer(CString &sLayer, int &nImage)
@@ -234,54 +247,205 @@ void CArxGridCtrl::CheckLayer(CString &sLayer, int &nImage)
 	pLayerTable->close();
 }
 
-void CArxGridCtrl::EditCellNow(UINT nChar/* = 0 */) 
+void CArxGridCtrl::OnEditCurCell()
 {
-	if( m_nColSelected < 0 )
+	__super::OnEditCurCell();
+	if( !IsEditing() )
 		return;
-	InvokeMethodIntInt(		
-		mpTemplate->GetStrProperty(nEventBeginLabelEdit),
-		m_nRowSelected, m_nColSelected,
-		m_bInvokeWithSendString);
-
-	switch (GetCurCellStyle())
-	{
-		case Grid_CheckBoxes:
-		case Grid_OptionButtons:
-		case Grid_SwitchableIcons:
-			return;
-			break;
-		case Grid_DirectoryCell:
-		{
-			ShowEllipsesButton(m_nRowSelected,	m_nColSelected, 2);
-			return;
-			break;
-		}
-		case Grid_DwgFilesCell:
-		{
-			ShowEllipsesButton(m_nRowSelected,	m_nColSelected, 3);
-			return;
-			break;
-		}
-		case Grid_EllipsesButtons:
-		{
-			ShowEllipsesButton(m_nRowSelected,	m_nColSelected, 0);
-			return;
-			break;
-		}
-		case Grid_PickButtons:
-		{
-			ShowEllipsesButton(m_nRowSelected,	m_nColSelected, 1);
-			return;
-			break;
-		}
-	}
-	RefreshCell(m_nRowSelected, m_nColSelected);
-
-	m_bShowHighlight = false;
-
-	DoEditCellNow(GetCurCellStyle());
+	InvokeMethodIntInt( mpTemplate->GetStrProperty(Prop::EventBeginLabelEdit),
+											mCurrentCell.row(),
+											mCurrentCell.col(),
+											mbInvokeWithSendString);
 }
 
+void CArxGridCtrl::OnEndEditCurCell()
+{
+	InvokeMethodIntInt( mpTemplate->GetStrProperty(Prop::EventEndLabelEdit),
+											mCurrentCell.row(),
+											mCurrentCell.col(),
+											mbInvokeWithSendString);
+	__super::OnEndEditCurCell();
+}
+
+void CArxGridCtrl::DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText )
+{
+	CRect rc = rcIcon;
+	//if (nColor == -1)
+	//{
+	//	VdclColorComboBox *pComboBox = NULL;
+	//	CComboBoxHolder *pHolder;
+	//	
+	//	// get or create the control.
+	//	if (m_pComboBox[4] == NULL)
+	//	{
+	//		pComboBox = new VdclColorComboBox;
+	//		pHolder = new CComboBoxHolder;
+	//		
+	//		pHolder->Create(CString(), WS_CHILD, CRect(1,1,10,10), this, 124);
+	//		
+	//		pHolder->pComboBox = pComboBox;
+	//		pComboBox->Create(4, CRect(1,1,10,10), pHolder, 410);
+	//		pComboBox->SetFont(GetFont());
+
+	//		pHolder->m_nStyle = 4;
+	//		pHolder->SetFont(GetFont());				
+	//		m_pComboBox[4] = pHolder;
+	//		
+	//	}
+	//	else
+	//	{
+	//		pHolder = (CComboBoxHolder*)m_pComboBox[4];
+	//		pComboBox = (VdclColorComboBox*)pHolder->pComboBox;
+	//	}
+
+	//	int n = -1;
+	//	if (sText.GetLength() == 0)
+	//	{
+	//		pComboBox->GetLBText(8, sText);
+	//	}
+
+	//	n = pComboBox->FindStringExact(0, sText);
+	//	if (n == -1)
+	//	{
+	//		n = pComboBox->FindString(0, sText);
+	//		if (n != -1)
+	//		{					
+	//			pComboBox->GetLBText(n, sText);
+	//		}
+	//	}
+	//	if (n == -1)
+	//	{	
+	//		nColor = _ttoi(sText);
+
+	//		n = pComboBox->FindItemByColorIndex(nColor);
+	//		
+	//		if (n == -101)
+	//			sText = LTOA(nColor);
+	//		else
+	//			pComboBox->GetLBText(n, sText);
+	//	}
+	//	else
+	//	{
+	//		nColor = pComboBox->GetItemColorIndex(n);
+	//	}
+	//}
+	
+	// setup the CRect for FillRect	
+	CPoint point;
+	
+	// move the color splotch down by one.
+	rc.top++;
+	rc.bottom++;
+
+	HGDIOBJ pen = ::CreatePen(PS_SOLID, 1, RGB(0,0,0));
+	HGDIOBJ OldPen = SelectObject(cdc.m_hDC, pen);
+		
+	::Rectangle(cdc.m_hDC, rc.left, rc.top, rc.right, rc.bottom);
+
+	SelectObject(cdc.m_hDC, OldPen);			
+	DeleteObject(pen);
+
+	rc.DeflateRect(1,1);
+
+	// draw the solid rectangle
+	COLORREF rgb;
+	
+	if (nColor == 256 || nColor == 0)
+	{
+		rgb = RGB(255,255,255);
+		::SetBkColor(cdc.m_hDC, rgb);
+	}
+	else
+	{
+		rgb = GetRGBColor(nColor);
+		::SetBkColor(cdc.m_hDC, rgb);
+	}
+
+	::ExtTextOut(cdc.m_hDC, 0, 0, ETO_OPAQUE, &rc, NULL, 0, NULL);
+	::SetBkColor(cdc.m_hDC, rgb);
+}
+
+void CArxGridCtrl::DrawFontIcons( CDC& cdc, const CRect& rcIcon, int nImage, const CString& sText )
+{
+	CRect rc = rcIcon;
+/*
+	if (nImage == -1)
+	{
+		BeginWaitCursor();
+
+		CFontCombo *pComboBox = NULL;
+		CComboBoxHolder *pHolder;
+		
+		// get or create the control.
+		if (m_pComboBox[9] == NULL)
+		{
+			pComboBox = new CFontCombo;
+			pHolder = new CComboBoxHolder;
+
+			pHolder->Create(CString(), WS_CHILD, CRect(1,1,10,10), this, 129);
+			
+			pHolder->pComboBox = pComboBox;
+			pComboBox->Create(9, CRect(1,1,10,10), pHolder, 410);
+			pComboBox->SetFont(GetFont());
+			
+			pHolder->m_nStyle = 9;
+			pHolder->SetFont(GetFont());				
+			m_pComboBox[9] = pHolder;			
+		}
+		else
+		{
+			pHolder = (CComboBoxHolder*)m_pComboBox[9];
+			pComboBox = (CFontCombo*)pHolder->pComboBox;
+		}
+
+		int n = pComboBox->FindStringExact(0, sText);
+		if (n == -1)
+		{
+			n = pComboBox->FindString(0, sText);
+			if (n == -1)
+			{	
+				n = _ttoi(sText);
+				pComboBox->GetLBText(n, sText);
+			}
+		}
+		
+		DWORD dwData = pComboBox->GetFontTypeId(sText);
+	
+		if (dwData == 4)
+			nImage = 0;
+		else if (dwData == 6)
+			nImage = 1;
+
+		EndWaitCursor();
+
+		if (nImage == -1)
+			return;
+	}
+*/
+
+	rc.top++;
+
+	//if (m_pFontImages == NULL)
+	//{
+	//	m_pFontImages = new CImageList();
+	//	m_pFontImages->Create(15,13,ILC_COLOR4 | ILC_MASK, 3, 1);
+	//	
+	//	HMODULE hRes = theWorkspace.GetResourceModule();
+
+	//	HICON hIcon = (HICON)::LoadImage(hRes, MAKEINTRESOURCE(IDI_TRUEFONT), IMAGE_ICON, 0, 0, 0);	
+	//	m_pFontImages->Add(hIcon);
+	//	DestroyIcon(hIcon);
+
+	//	hIcon = (HICON)::LoadImage(hRes, MAKEINTRESOURCE(IDI_ACADFONT), IMAGE_ICON, 0, 0, 0);
+	//	m_pFontImages->Add(hIcon);
+	//	DestroyIcon(hIcon);
+	//}
+
+	//if (nImage > -1)
+	//	m_pFontImages->Draw(pDC, nImage, rc.TopLeft(), ILD_TRANSPARENT);
+}
+
+/*
 void CArxGridCtrl::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 {
 	if (!m_bEditCells) 
@@ -304,13 +468,13 @@ void CArxGridCtrl::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 	{
 		//SetItem(nRow, 0, LVIF_STATE, NULL, 0, LVIS_SELECTED, LVIS_SELECTED, 0);				
 		//SetItem(nRow, nCol, LVIF_STATE, NULL, 0, LVIS_SELECTED, LVIS_SELECTED, 0);				
-		m_nRowSelected = nRow;
-		m_nColSelected = nCol;
+		mCurrentCell.row() = nRow;
+		mCurrentCell.col() = nCol;
 	}
 	else
 	{
-		m_nRowSelected = -1;
-		m_nColSelected = -1;
+		mCurrentCell.row() = -1;
+		mCurrentCell.col() = -1;
 	}
 	
 
@@ -372,84 +536,9 @@ void CArxGridCtrl::ShowEllipsesButton(int nRow, int nCol, int nAsPick)
 		m_pEllipsesButton->ShowWindow(TRUE);
 	}
 }
+*/
 
-void CArxGridCtrl::DrawFontIcons(CDC* pDC, CRect rc, int &nImage, CString &sText)
-{
-	if (nImage == -1)
-	{
-		BeginWaitCursor();
-
-		CFontCombo *pComboBox = NULL;
-		CComboBoxHolder *pHolder;
-		
-		// get or create the control.
-		if (m_pComboBox[9] == NULL)
-		{
-			pComboBox = new CFontCombo;
-			pHolder = new CComboBoxHolder;
-
-			pHolder->Create(CString(), WS_CHILD, CRect(1,1,10,10), this, 129);
-			
-			pHolder->pComboBox = pComboBox;
-			pComboBox->Create(9, CRect(1,1,10,10), pHolder, 410);
-			pComboBox->SetFont(GetFont());
-			
-			pHolder->m_nStyle = 9;
-			pHolder->SetFont(GetFont());				
-			m_pComboBox[9] = pHolder;			
-		}
-		else
-		{
-			pHolder = (CComboBoxHolder*)m_pComboBox[9];
-			pComboBox = (CFontCombo*)pHolder->pComboBox;
-		}
-
-		int n = pComboBox->FindStringExact(0, sText);
-		if (n == -1)
-		{
-			n = pComboBox->FindString(0, sText);
-			if (n == -1)
-			{	
-				n = _ttoi(sText);
-				pComboBox->GetLBText(n, sText);
-			}
-		}
-		
-		DWORD dwData = pComboBox->GetFontTypeId(sText);
-	
-		if (dwData == 4)
-			nImage = 0;
-		else if (dwData == 6)
-			nImage = 1;
-
-		EndWaitCursor();
-
-		if (nImage == -1)
-			return;
-	}
-
-	rc.top++;
-
-	if (m_pFontImages == NULL)
-	{
-		m_pFontImages = new CImageList();
-		m_pFontImages->Create(15,13,ILC_COLOR4 | ILC_MASK, 3, 1);
-		
-		HMODULE hRes = _hdllInstance;
-
-		HICON hIcon = (HICON)::LoadImage(hRes, MAKEINTRESOURCE(IDI_TRUEFONT), IMAGE_ICON, 0, 0, 0);	
-		m_pFontImages->Add(hIcon);
-		DestroyIcon(hIcon);
-
-		hIcon = (HICON)::LoadImage(hRes, MAKEINTRESOURCE(IDI_ACADFONT), IMAGE_ICON, 0, 0, 0);
-		m_pFontImages->Add(hIcon);
-		DestroyIcon(hIcon);
-	}
-
-	if (nImage > -1)
-		m_pFontImages->Draw(pDC, nImage, rc.TopLeft(), ILD_TRANSPARENT);
-}
-
+/*
 void CArxGridCtrl::DrawLineWeights(CDC* pDC, CRect rc, AcDb::LineWeight LW)
 {
 	CPoint point;
@@ -546,7 +635,9 @@ void CArxGridCtrl::DrawLineWeights(CDC* pDC, CRect rc, AcDb::LineWeight LW)
 		::SetBkColor(pDC->m_hDC, rgb);
 	}
 }
+*/
 
+/*
 void CArxGridCtrl::DrawArrowHeads(CDC* pDC, CRect rc, int &nImage, CString &sText)
 {
 	if (nImage == -1)
@@ -607,33 +698,93 @@ void CArxGridCtrl::DrawArrowHeads(CDC* pDC, CRect rc, int &nImage, CString &sTex
 
 	m_pArrowImages->Draw(pDC, nImage, rc.TopLeft(), ILD_NORMAL);
 }
+*/
 
-void CArxGridCtrl::MoveUp() 
+void CArxGridCtrl::DoFileDlg(CellStyle nStyle) 
 {
-	HideEditControls();
-	m_bShowHighlight = true;
-	
-	if (m_nRowSelected > 0)
+	switch (nStyle)
 	{
-		int nRow = m_nRowSelected;
-		m_nRowSelected--;
-		RefreshCell(nRow, m_nColSelected);
-		ShowCurSel();
+		case Grid_DirectoryCell:
+		{			
+			CDirDialog dlg( theWorkspace.LoadResourceString(IDS_SELFOLDER), GetItemText(mCurrentCell.row(), mCurrentCell.col()) );
+			if (dlg.DoBrowse(this) == TRUE)
+				SetCellTextImage( mCurrentCell.row(), mCurrentCell.col(), dlg.GetSelectedFolder(), -1 );
+			break;
+		}
+		case Grid_DwgFilesCell:
+		{
+			struct resbuf * result;
+			CString sFileExt = _T("dwg;dxf");
+			CString sFile = GetItemText(mCurrentCell.row(), mCurrentCell.col());
+			result = acutNewRb(RTSTR);
+
+			const _CellData* pCellData = GetCellData( mCurrentCell.row(), mCurrentCell.col() );
+			if( pCellData && !pCellData->mrsComboList.empty() )
+				sFileExt = pCellData->mrsComboList.front().c_str();
+			else
+			{
+				std::vector< tstring > rsList;
+				std::vector< int > ridxImage;
+				if( GetCellComboListItems( mCurrentCell.row(), mCurrentCell.col(), rsList, ridxImage ) && !rsList.empty() )
+					sFileExt = rsList.front().c_str();
+			}
+			if (acedGetFileD(sFile, sFile, sFileExt, 8, result) == RTNORM)
+				SetCellTextImage( mCurrentCell.row(), mCurrentCell.col(), result->resval.rstring, -1 );
+			acutRelRb(result);
+			break;
+		}
 	}
 }
 
-void CArxGridCtrl::MoveDown() 
+CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 {
-	HideEditControls();
-	m_bShowHighlight = true;
-	
-	if (m_nRowSelected < GetItemCount()-1)
+	switch( GetCellStyle( nRow, nCol ) )
 	{
-		int nRow = m_nRowSelected;
-		m_nRowSelected++;
-		RefreshCell(nRow, m_nColSelected);
-		ShowCurSel();
+		case Grid_CheckBoxes: return new CToggleEditCtrl( this, nRow, nCol );
+		case Grid_OptionButtons: return new CRadioEditCtrl( this, nRow, nCol );
+		case Grid_SwitchableIcons: return new CToggleEditCtrl( this, nRow, nCol );
+		case Grid_EllipsesButtons: return new CButtonEditCtrl( this, nRow, nCol, _T("..."), ID_CELLBUTTON );
+		case Grid_PickButtons: return new CButtonEditCtrl( this, nRow, nCol, IDI_PICSM, ID_CELLBUTTON );
+		case Grid_Strings: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid_AngleUnits: return new CTextBoxEditCtrl( this, nRow, nCol, new CAngleFilter );
+		case Grid_Integers: return new CTextBoxEditCtrl( this, nRow, nCol, new CIntegerFilter );
+		case Grid_Units: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid_UpperCase: return new CTextBoxEditCtrl( this, nRow, nCol, new CUpperCaseFilter );
+		case Grid_LowerCase: return new CTextBoxEditCtrl( this, nRow, nCol, new CLowerCaseFilter );
+		case Grid_Password: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid_MultiLine: return new CTextBoxEditCtrl( this, nRow, nCol, new CMultilineFilter );
+		case Grid_Currency: return new CTextBoxEditCtrl( this, nRow, nCol, new CCurrencyFilter );
+		case Grid_Date: return new CTextBoxEditCtrl( this, nRow, nCol, new CDateFilter );
+		case Grid_Time: return new CTextBoxEditCtrl( this, nRow, nCol, new CTimeFilter );
+		case Grid_Percentage: return new CTextBoxEditCtrl( this, nRow, nCol, new CIntegerFilter );
+		case Grid_DropDown:
+		case Grid_ArrowHead:
+		case Grid_AcadColors:
+		case Grid_TextStyleList:
+		case Grid_PlotStyleNames:
+		case Grid_PlotStyleTables:
+		case Grid_PlotterList:
+		case Grid_Fonts:
+		case Grid_DriveList:
+		case Grid_LayerList:
+		case Grid_DimStyleList:
+			return new CComboDropdownListEditCtrl( this, nRow, nCol );
+		case Grid_ImageDropList: return new CImageComboDropdownListEditCtrl( this, nRow, nCol );
+		case Grid_AcadColorCell: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid_TrueColorCell: return new CTrueColorEditCtrl( this, nRow, nCol );
+		case Grid_LineWeightCell: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid_LinetypeCell: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid_DirectoryCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
+		case Grid_DwgFilesCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
+		case Grid_Strings_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol );
+		case Grid_AngleUnits_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CAngleFilter );
+		case Grid_Integers_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CIntegerFilter );
+		case Grid_Units_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol );
+		case Grid_UpperCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CUpperCaseFilter );
+		case Grid_LowerCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CLowerCaseFilter );
+		//default: return new CTextBoxEditCtrl( this, nRow, nCol );
 	}
+	return NULL;
 }
 
 
@@ -659,8 +810,6 @@ BEGIN_MESSAGE_MAP(CArxGridCtrl, CGridCtrl)
 	ON_WM_KEYUP()
 	ON_WM_CONTEXTMENU()
 	ON_COMMAND(ID_CELLBUTTON, OnCellButtonClicked)
-	ON_COMMAND(ID_CELLBUTTON_DIR2, OnDir2CellButtonClicked)
-	ON_COMMAND(ID_CELLBUTTON_DIR3, OnDir3CellButtonClicked)
 END_MESSAGE_MAP()
 
 
@@ -669,287 +818,77 @@ END_MESSAGE_MAP()
 
 void CArxGridCtrl::OnCellButtonClicked(void)
 {
-	InvokeMethodIntInt(mpTemplate->GetStrProperty(nEventBtnClicked), m_nRowSelected, m_nColSelected, m_bInvokeWithSendString);
-}
-
-void CArxGridCtrl::OnDir2CellButtonClicked(void)
-{
-	DoFileDlg(2);
-}
-
-void CArxGridCtrl::OnDir3CellButtonClicked(void)
-{
-	DoFileDlg(3);
+	switch( GetCurCellStyle() )
+	{
+	case Grid_DirectoryCell: return DoFileDlg( Grid_DirectoryCell );
+	case Grid_DwgFilesCell: return DoFileDlg( Grid_DwgFilesCell );
+	}
+	InvokeMethodIntInt( mpTemplate->GetStrProperty(Prop::EventBtnClicked),
+											mCurrentCell.row(),
+											mCurrentCell.col(),
+											mbInvokeWithSendString);
 }
 
 void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseDown),
-		1,
-		nFlags,
-		point.x,
-		point.y,
-		m_bInvokeWithSendString);
+	InvokeMethodIntIntIntInt( mpTemplate->GetStrProperty(Prop::EventMouseDown),
+														1,
+														nFlags,
+														point.x,
+														point.y,
+														mbInvokeWithSendString);
 
 	__super::OnLButtonDown(nFlags, point);
 
-	CRect rcOld = GetCurSelRect();
-	InvalidateRect( &rcOld, TRUE );
-	int nRow, nCol;
-	CellHitTest(point, nRow, nCol);
-	if (m_nRowSelected != nRow || m_nColSelected != nCol)
-		HideEditControls();
 
-	if (nCol == 0 && m_bHasRowHeader)
-		nCol = -1;
-
-	CHeaderCtrl *pHeader = GetHeaderCtrl();
-
-	if (pHeader != NULL && nCol > pHeader->GetItemCount())
+	if( !mCurrentCell )
 		return;
 
-	if (nRow == -1)
-		return;
-
-	InvokeMethodIntInt(
-		mpTemplate->GetStrProperty(nEventClicked),
-		nRow,
-		nCol,
-		m_bInvokeWithSendString);
-
-	m_bShowHighlight = true;
-
-	if (nCol >= 0)
-	{
-		// test to see how to edit the cell each different kind of edit style
-		// according to the column specification.
-		switch( GetCellStyle(nRow, nCol) )
-		{
-		case Grid_CheckBoxes:
-		case Grid_OptionButtons:
-			{
-				int nImage = GetItemImage(nRow, nCol);
-				
-				// if this column is an option button
-				if (GetCellStyle(nRow, nCol) == Grid_OptionButtons)
-				{
-					if (nImage <= 0)
-					{
-						// reset all the other option buttons to unchecked.
-						for (int i=0; i<GetItemCount(); i++)
-						{
-							if (GetCellStyle(i, nCol) == Grid_OptionButtons)
-								SetItemImage(i, nCol, 0);
-						}
-						if (nImage != 1)
-							SetItemImage(nRow, nCol, 1);
-						else
-							SetItemImage(nRow, nCol, 0);
-					}
-					else
-						SetItemImage(nRow, nCol, 1);
-				}
-				else
-				{			
-					if (nImage != 1)
-						SetItemImage(nRow, nCol, 1);
-					else
-						SetItemImage(nRow, nCol, 0);
-				}
-				
-				// fire the on Grid edit cell event.
-				EndEditControls(this);
-				break;
-			}
-		case Grid_SwitchableIcons:
-			{
-				int nImage = GetItemImage(nRow, nCol);
-				int nDefImage;
-				int nAltImage;
-				
-				if (GetCellData(nRow, nCol) == NULL)
-				{
-					nDefImage = m_pColDefault->GetIntArrayPtr()->at(nCol);	
-					nAltImage = m_pColAlternate->GetIntArrayPtr()->at(nCol);	
-				}
-				else
-				{
-					nDefImage = GetCellData(nRow, nCol)->nData1;
-					nAltImage = GetCellData(nRow, nCol)->nData2;
-				}
-
-				if (nImage == nDefImage || nImage == -1)
-					SetItemImage(nRow, nCol, nAltImage);
-				else
-					SetItemImage(nRow, nCol, nDefImage);
-				// fire the on Grid edit cell event.
-				EndEditControls(this);
-				break;
-			}
-		case Grid_EllipsesButtons:
-		case Grid_PickButtons:
-			{
-				m_nColSelected = nCol;
-				m_nRowSelected = nRow;
-				EditCellNow();
-				return;
-			}
-		default:
-			{
-				//if (m_nRowSelected == nRow && m_nColSelected == nCol)
-				//	EditCellNow();
-				//else
-				//	break;
-				int nOldRow = m_nRowSelected;
-				int nOldCol = m_nColSelected;
-
-				m_nColSelected = nCol;
-				m_nRowSelected = nRow;
-				
-				EditCellNow();
-				return;
-			}
-		}
-	}
-	
-	m_nRowSelected = nRow;
-	m_nColSelected = nCol;
-	ShowCurSel();
-	
-	if (nCol > 0)
-	{
-		if (GetCellStyle(nRow, nCol) != Grid_CheckBoxes &&
-			GetCellStyle(nRow, nCol) != Grid_OptionButtons &&
-			GetCellStyle(nRow, nCol) != Grid_SwitchableIcons)
-		{
-			CRect rc = GetCurSelRect();
-			InvalidateRect(rc, TRUE);
-		}
-	}
-	// if not in a cell exit here
-	if (nRow == -1)
-		return;
-
-	// if no style property is set for this column
-	// exit here.
-	//if (m_pColStyles->m_intList.GetSize() < nCol)
-	//	return;
+	InvokeMethodIntInt( mpTemplate->GetStrProperty(Prop::EventClicked),
+											mCurrentCell.row(),
+											mCurrentCell.col(),
+											mbInvokeWithSendString);
 }
 
 void CArxGridCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseDown),
+		mpTemplate->GetStrProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		mbInvokeWithSendString);
 	__super::OnRButtonDown(nFlags, point);
 }
 
 void CArxGridCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseDown),
+		mpTemplate->GetStrProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		mbInvokeWithSendString);
 	__super::OnMButtonDown(nFlags, point);
 }
 
 void CArxGridCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
-//	__super::OnLButtonDblClk(nFlags, point);
-	int nRow, nCol;
-	CellHitTest(point, nRow, nCol);
-	if (nCol < 0)
+	if( !mCurrentCell )
 		return;
 
-	InvokeMethodIntInt(
-		mpTemplate->GetStrProperty(nEventDblClicked),
-		nRow,
-		nCol,
-		m_bInvokeWithSendString);
-
-	// test to see how to edit the cell each different kind of edit style
-	// according to the column specification.
-	if (GetCellStyle(nRow, nCol) == Grid_CheckBoxes ||
-		GetCellStyle(nRow, nCol) == Grid_OptionButtons)
-	{
-		int nImage = GetItemImage(nRow, nCol);
-		
-		// if this column is an option button
-		if (GetCellStyle(nRow, nCol) == Grid_OptionButtons)
-		{
-			if (nImage <= 0)
-			{
-				// reset all the other option buttons to unchecked.
-				for (int i=0; i<GetItemCount(); i++)
-				{
-					SetItemImage(i, nCol, 0);
-				}
-				if (nImage != 1)
-					SetItemImage(nRow, nCol, 1);
-				else
-					SetItemImage(nRow, nCol, 0);
-			}
-			else
-				SetItemImage(nRow, nCol, 1);
-		}
-		else
-		{			
-			if (nImage != 1)
-				SetItemImage(nRow, nCol, 1);
-			else
-				SetItemImage(nRow, nCol, 0);
-		}
-	}
-
-	// test to see how to edit the cell each different kind of edit style
-	// according to the column specification.
-	if (GetCellStyle(nRow, nCol) == Grid_SwitchableIcons)
-	{
-		int nImage = GetItemImage(nRow, nCol);
-		int nDefImage;
-		int nAltImage;
-		
-		if (GetCellData(nRow, nCol) == NULL)
-		{
-			nDefImage = m_pColDefault->GetIntArrayPtr()->at(nCol);	
-			nAltImage = m_pColAlternate->GetIntArrayPtr()->at(nCol);	
-		}
-		else
-		{
-			nDefImage = GetCellData(nRow, nCol)->nData1;
-			nAltImage = GetCellData(nRow, nCol)->nData2;
-		}
-
-		if (nImage == nDefImage || nImage == -1)
-		{
-			SetItemImage(nRow, nCol, nAltImage);
-		}
-		else
-		{
-			SetItemImage(nRow, nCol, nDefImage);
-		}
-	}
-
-	//
-	if (m_bHasRowHeader && nCol == 0)
-		return;
-
-	ShowCurSel();
-	EditCellNow();
+	InvokeMethodIntInt( mpTemplate->GetStrProperty(Prop::EventDblClicked),
+											mCurrentCell.row(),
+											mCurrentCell.col(),
+											mbInvokeWithSendString);
 }
 
 void CArxGridCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	if (mpTemplate)		
-		InvokeMethodStringIntInt(mpTemplate->GetStrProperty(nEventKeyUp), CString() + (char)nChar,  (int)nRepCnt,  (int)nFlags, m_bInvokeWithSendString);
+		InvokeMethodStringIntInt(mpTemplate->GetStrProperty(Prop::EventKeyUp), CString() + (char)nChar,  (int)nRepCnt,  (int)nFlags, mbInvokeWithSendString);
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
@@ -957,284 +896,122 @@ void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (mpTemplate)
 	{
-		char sChar = nChar;
-		InvokeMethodStringIntInt(mpTemplate->GetStrProperty(nEventKeyDown), CString() + sChar,  (int)nRepCnt, (int)nFlags, m_bInvokeWithSendString);
+		TCHAR sChar = nChar;
+		InvokeMethodStringIntInt(mpTemplate->GetStrProperty(Prop::EventKeyDown), CString( (TCHAR)sChar ),  (int)nRepCnt, (int)nFlags, mbInvokeWithSendString);
 	}
-
-	m_bShowHighlight = true;
 
 	switch (nChar) 
 	{
 		case VK_ESCAPE: 
 			break;
 		case VK_RETURN: 
-			EditCellNow();
+			OnEditCurCell();
 			return;
-			break;			
 		case VK_UP: 
 		{
 			MoveUp();
 			return;
-			break;
 		}
 		case VK_DOWN: 
 		{
 			MoveDown();
 			return;
-			break;
 		}
 		case VK_LEFT: 
 		{
-			
-			if (m_nColSelected > (BOOL)m_bHasRowHeader)
-			{
-				int nCol = m_nColSelected;
-				m_nColSelected--;
-				RefreshCell(m_nRowSelected, nCol);
-				ShowCurSel();
-				return;
-			}
-			break;
+			MoveLeft();
+			return;
 		}
 		case VK_RIGHT: 
 		{
-			CHeaderCtrl* pHdrCtrl = GetHeaderCtrl();
-
-			if (m_nColSelected < pHdrCtrl->GetItemCount()-1)
-			{
-				int nCol = m_nColSelected;
-				m_nColSelected++;
-				RefreshCell(m_nRowSelected, nCol);
-				ShowCurSel();
-				return;
-			}
-			break;
+			MoveRight();
+			return;
 		}
 	}
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
-void CArxGridCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
-{
-	m_bShowHighlight = true;
-	switch (nChar) 
-	{
-		case VK_ESCAPE: 
-			break;
-		case VK_RETURN: 
-			EditCellNow();
-			return;
-			break;	
-		case VK_BACK: 
-			EditCellNow();
-			return;
-			break;		
-		default:
-			EditCellNow(nChar);
-			return;
-			break;		
-	}
-	__super::OnChar(nChar, nRepCnt, nFlags);
-}
-
-BOOL CArxGridCtrl::PreTranslateMessage(MSG* pMsg) 
-{
-	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN)
-	{
-		// get the Multiline control.
-		if (m_pTextBox[8] != NULL)
-		{		
-			OdclEdit *pTextBox = (OdclEdit*)m_pTextBox[8];
-			int nS, nE;
-			CString sText;
-
-			pTextBox->GetSel(nS, nE);
-			pTextBox->GetWindowText(sText);
-
-			sText = sText.Mid(nS, nE) + _T("\r\n");
-			
-			pTextBox->ReplaceSel(sText, TRUE);
-			return TRUE;
-		}
-		pMsg->wParam = NULL;
-		pMsg->message = NULL;
-		EditCellNow();
-	}
-	return __super::PreTranslateMessage(pMsg);
-}
-
 void CArxGridCtrl::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(mpTemplate->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventKillFocus), mbInvokeWithSendString);
 	*pResult = 0;
 }
 
 void CArxGridCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseUp),
+		mpTemplate->GetStrProperty(Prop::EventMouseDown),
 		1,
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		mbInvokeWithSendString);
 	__super::OnLButtonUp(nFlags, point);
 }
 
 void CArxGridCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseUp),
+		mpTemplate->GetStrProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		mbInvokeWithSendString);
 	__super::OnRButtonUp(nFlags, point);
 }
 
 void CArxGridCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseUp),
+		mpTemplate->GetStrProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		mbInvokeWithSendString);
 	__super::OnMButtonUp(nFlags, point);
 }
 
 void CArxGridCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseDown),
+		mpTemplate->GetStrProperty(Prop::EventMouseDown),
 		2,
 		MK_RBUTTON,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		mbInvokeWithSendString);
 	__super::OnContextMenu(pTarget, point);
 }
 
 void CArxGridCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseMove),
+		mpTemplate->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		mbInvokeWithSendString);
 	__super::OnMouseMove(nFlags, point);
 }
 
-bool CArxGridCtrl::acad_truecolordlg(COLORREF color, int curColor, int nIndex = -1, CString sPantone = CString())
-{
-	struct resbuf *arglist, *rslt=NULL; 
-	int rc; 
-
-	if (nIndex == -1)
-	{
-		arglist = acutBuildList(
-					RTSTR, _T("acad_truecolordlg"), 
-					420, (long)color, 
-					RTT, 
-					RTSHORT, curColor, 
-					0); 
-	}	
-	else if (sPantone.GetLength() > 0)
-	{
-		arglist = acutBuildList(
-					RTSTR, _T("acad_truecolordlg"), 
-					430, sPantone, 
-					RTT, 
-					RTSHORT, curColor, 
-					0); 
-	}
-	else // uses index value not true value
-	{
-		arglist = acutBuildList(
-					RTSTR, _T("acad_truecolordlg"), 
-					RTSHORT, nIndex, 
-					RTT, 
-					RTSHORT, curColor, 
-					0); 
-	}
-
-	if (arglist == NULL) 
-		return false;
-
-	rc = acedInvoke(arglist, &rslt); 
-
-	acutRelRb(arglist);
-
-	if (rc != RTNORM) 
-	{ 
-		return false;
-	} 
-	else if (rslt == NULL) 
-	{ 
-		return false;
-	} 
-	
-	struct resbuf *index, *trueColor, *colorBook;
-	/* Save the user-selected color */ 
-	index = rslt;
-	
-	trueColor = index->rbnext;
-	if (trueColor != NULL)
-	{
-		colorBook = trueColor->rbnext;
-
-		if (colorBook != NULL)
-		{
-			if (colorBook->restype == 430)
-			{
-				CString sColorBook = colorBook->resval.rstring;
-
-				SetItemImage(m_nRowSelected, m_nColSelected, 300);
-				SetItemText(m_nRowSelected, m_nColSelected, sColorBook);
-				return true;
-			}
-		}
-
-		if (trueColor->restype == 420)
-		{
-			COLORREF clr = trueColor->resval.rlong;
-			CString sColor = LTOA(GetBValue(clr)) + _T(",") +
-							 LTOA(GetGValue(clr)) + _T(",") +
-							 LTOA(GetRValue(clr));
-			
-			SetItemImage(m_nRowSelected, m_nColSelected, -1);
-			SetItemText(m_nRowSelected, m_nColSelected, sColor);
-		}
-	}
-	else
-	{
-		SetItemImage(m_nRowSelected, m_nColSelected, index->resval.rint);
-		SetItemText(m_nRowSelected, m_nColSelected, LTOA(index->resval.rint));
-	}
-
-	acutRelRb(rslt);
-
-	return true;
-}
-
-void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */) 
+/*
+void CArxGridCtrl::DoEditCellNow(int nStyle) 
 {
 	
 	switch (nStyle)
 	{		
 	case Grid_AngleUnits_Combo:
 		{
-			ShowTextBox(m_nRowSelected,	m_nColSelected, nStyle, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), nStyle, nChar);
 			
-			RefCountedPtr< CPropertyObject > pProp = mpTemplate->GetPropertyObject(nColumnListItems);	
+			TPropertyPtr pProp = mpTemplate->GetPropertyObject(Prop::ColumnListItems);	
 			
-			if (GetCellData(m_nRowSelected,	m_nColSelected) != NULL)
-				ShowComboBox(m_nRowSelected, m_nColSelected, 2, GetCellData(m_nRowSelected, m_nColSelected)->sStrings);
-			else if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
-					ShowComboBox(m_nRowSelected, m_nColSelected, 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(m_nColSelected)));
+			if (GetCellData(mCurrentCell.row(),	mCurrentCell.col()) != NULL)
+				ShowComboBox(mCurrentCell.row(), mCurrentCell.col(), 2, GetCellData(mCurrentCell.row(), mCurrentCell.col())->sStrings);
+			else if (mCurrentCell.col() < pProp->GetStringArrayListPtr()->size())
+					ShowComboBox(mCurrentCell.row(), mCurrentCell.col(), 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(mCurrentCell.col())));
 			VdclAngleEdit *pText = (VdclAngleEdit *)m_pTextBox[nStyle-36];
 				
 			CComboBoxHolder *pHolder = (CComboBoxHolder*)m_pComboBox[2];
@@ -1248,14 +1025,14 @@ void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 		}
 	case Grid_Units_Combo:
 		{
-			ShowTextBox(m_nRowSelected,	m_nColSelected, nStyle, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), nStyle, nChar);
 			
-			RefCountedPtr< CPropertyObject > pProp = mpTemplate->GetPropertyObject(nColumnListItems);	
+			TPropertyPtr pProp = mpTemplate->GetPropertyObject(Prop::ColumnListItems);	
 
-			if (GetCellData(m_nRowSelected,	m_nColSelected) != NULL)
-				ShowComboBox(m_nRowSelected, m_nColSelected, 2, GetCellData(m_nRowSelected, m_nColSelected)->sStrings);
-			else if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
-				ShowComboBox(m_nRowSelected, m_nColSelected, 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(m_nColSelected)));
+			if (GetCellData(mCurrentCell.row(),	mCurrentCell.col()) != NULL)
+				ShowComboBox(mCurrentCell.row(), mCurrentCell.col(), 2, GetCellData(mCurrentCell.row(), mCurrentCell.col())->sStrings);
+			else if (mCurrentCell.col() < pProp->GetStringArrayListPtr()->size())
+				ShowComboBox(mCurrentCell.row(), mCurrentCell.col(), 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(mCurrentCell.col())));
 
 			VdclNumericEdit *pText = (VdclNumericEdit *)m_pTextBox[nStyle-36];
 			
@@ -1271,14 +1048,14 @@ void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 	case Grid_Strings_Combo:
 	case Grid_Integers_Combo:
 		{
-			ShowTextBox(m_nRowSelected,	m_nColSelected, nStyle, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), nStyle, nChar);
 			
-			RefCountedPtr< CPropertyObject > pProp = mpTemplate->GetPropertyObject(nColumnListItems);	
+			TPropertyPtr pProp = mpTemplate->GetPropertyObject(Prop::ColumnListItems);	
 
-			if (GetCellData(m_nRowSelected,	m_nColSelected) != NULL)
-				ShowComboBox(m_nRowSelected, m_nColSelected, 2, GetCellData(m_nRowSelected, m_nColSelected)->sStrings);
-			else if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
-				ShowComboBox(m_nRowSelected, m_nColSelected, 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(m_nColSelected)));
+			if (GetCellData(mCurrentCell.row(),	mCurrentCell.col()) != NULL)
+				ShowComboBox(mCurrentCell.row(), mCurrentCell.col(), 2, GetCellData(mCurrentCell.row(), mCurrentCell.col())->sStrings);
+			else if (mCurrentCell.col() < pProp->GetStringArrayListPtr()->size())
+				ShowComboBox(mCurrentCell.row(), mCurrentCell.col(), 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(mCurrentCell.col())));
 			
 			OdclEdit *pText = (OdclEdit *)m_pTextBox[nStyle-36];
 			
@@ -1296,14 +1073,14 @@ void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 	case Grid_UpperCase_Combo:
 	case Grid_LowerCase_Combo:
 		{
-			ShowTextBox(m_nRowSelected,	m_nColSelected, nStyle, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), nStyle, nChar);
 			
-			RefCountedPtr< CPropertyObject > pProp = mpTemplate->GetPropertyObject(nColumnListItems);	
+			TPropertyPtr pProp = mpTemplate->GetPropertyObject(Prop::ColumnListItems);	
 
-			if (GetCellData(m_nRowSelected,	m_nColSelected) != NULL)
-				ShowComboBox(m_nRowSelected, m_nColSelected, 2, GetCellData(m_nRowSelected, m_nColSelected)->sStrings);
-			else if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
-				ShowComboBox(m_nRowSelected, m_nColSelected, 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(m_nColSelected)));
+			if (GetCellData(mCurrentCell.row(),	mCurrentCell.col()) != NULL)
+				ShowComboBox(mCurrentCell.row(), mCurrentCell.col(), 2, GetCellData(mCurrentCell.row(), mCurrentCell.col())->sStrings);
+			else if (mCurrentCell.col() < pProp->GetStringArrayListPtr()->size())
+				ShowComboBox(mCurrentCell.row(), mCurrentCell.col(), 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(mCurrentCell.col())));
 			
 			OdclEdit *pText = NULL;
 			switch(nStyle)
@@ -1326,73 +1103,73 @@ void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 			break;
 		}
 	case Grid_Strings:
-			ShowTextBox(m_nRowSelected,	m_nColSelected, 0, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), 0, nChar);
 			break;
 	case Grid_AngleUnits:
-			ShowTextBox(m_nRowSelected,	m_nColSelected, 1, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), 1, nChar);
 			break;
 	case Grid_Integers:
-			ShowTextBox(m_nRowSelected,	m_nColSelected, 2, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), 2, nChar);
 			break;
 	case Grid_Units:
-			ShowTextBox(m_nRowSelected,	m_nColSelected, 3, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), 3, nChar);
 			break;
 	case Grid_UpperCase:
-			ShowTextBox(m_nRowSelected,	m_nColSelected, 5, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), 5, nChar);
 			break;
 	case Grid_LowerCase:
-			ShowTextBox(m_nRowSelected,	m_nColSelected, 6, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), 6, nChar);
 			break;
 	case Grid_Password:
-			ShowTextBox(m_nRowSelected,	m_nColSelected, 7, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), 7, nChar);
 			break;
 	case Grid_MultiLine:
-			ShowTextBox(m_nRowSelected,	m_nColSelected, 8, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), 8, nChar);
 			break;
 	case Grid_Currency:
-			ShowTextBox(m_nRowSelected,	m_nColSelected, 9, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), 9, nChar);
 			break;
 	case Grid_Date:
-			ShowTextBox(m_nRowSelected,	m_nColSelected, 10, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), 10, nChar);
 			break;
 	case Grid_Time:
-			ShowTextBox(m_nRowSelected,	m_nColSelected, 11, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), 11, nChar);
 			break;
 	case Grid_Percentage:
-			ShowTextBox(m_nRowSelected,	m_nColSelected, 12, nChar);
+			ShowTextBox(mCurrentCell.row(),	mCurrentCell.col(), 12, nChar);
 			break;			
 	case Grid_DropDown:
 		{
-			RefCountedPtr< CPropertyObject > pProp = mpTemplate->GetPropertyObject(nColumnListItems);	
-			if (GetCellData(m_nRowSelected,	m_nColSelected) != NULL)
-				ShowComboBox(m_nRowSelected, m_nColSelected, 2, GetCellData(m_nRowSelected, m_nColSelected)->sStrings);
-			else if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
-				ShowComboBox(m_nRowSelected, m_nColSelected, 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(m_nColSelected)));
+			TPropertyPtr pProp = mpTemplate->GetPropertyObject(Prop::ColumnListItems);	
+			if (GetCellData(mCurrentCell.row(),	mCurrentCell.col()) != NULL)
+				ShowComboBox(mCurrentCell.row(), mCurrentCell.col(), 2, GetCellData(mCurrentCell.row(), mCurrentCell.col())->sStrings);
+			else if (mCurrentCell.col() < pProp->GetStringArrayListPtr()->size())
+				ShowComboBox(mCurrentCell.row(), mCurrentCell.col(), 2, PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(mCurrentCell.col())));
 		break;
 		}
 	case Grid_ImageDropList:
 		{
-			if (GetCellData(m_nRowSelected, m_nColSelected) != NULL &&
-				GetCellData(m_nRowSelected, m_nColSelected)->sStrings.GetSize() > 0)
+			if (GetCellData(mCurrentCell.row(), mCurrentCell.col()) != NULL &&
+				GetCellData(mCurrentCell.row(), mCurrentCell.col())->sStrings.GetSize() > 0)
 			{
-				ShowImageComboBox(m_nRowSelected, 
-						m_nColSelected,
-						GetCellData(m_nRowSelected, m_nColSelected)->sStrings,
-						GetCellData(m_nRowSelected, m_nColSelected)->nInts);
+				ShowImageComboBox(mCurrentCell.row(), 
+						mCurrentCell.col(),
+						GetCellData(mCurrentCell.row(), mCurrentCell.col())->sStrings,
+						GetCellData(mCurrentCell.row(), mCurrentCell.col())->nInts);
 			}
 			else
 			{
-				RefCountedPtr< CPropertyObject > pProp = mpTemplate->GetPropertyObject(nColumnListItems);	
-				RefCountedPtr< CPropertyObject > pPropImages = mpTemplate->GetPropertyObject(nColumnListImages);
-				if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
+				TPropertyPtr pProp = mpTemplate->GetPropertyObject(Prop::ColumnListItems);	
+				TPropertyPtr pPropImages = mpTemplate->GetPropertyObject(Prop::ColumnListImages);
+				if (mCurrentCell.col() < pProp->GetStringArrayListPtr()->size())
 				{
-					PropVal::TIntArray& rInts = pPropImages->GetIntArrayListPtr()->at(m_nColSelected);
+					PropVal::TIntArray& rInts = pPropImages->GetIntArrayListPtr()->at(mCurrentCell.col());
 					CArray< int, int > rInt;
 					for(int idx = 0; idx < rInts.size(); idx++)
 						rInt.Add(rInts[idx]);
-					ShowImageComboBox(m_nRowSelected, 
-							m_nColSelected,
-							PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(m_nColSelected)),
+					ShowImageComboBox(mCurrentCell.row(), 
+							mCurrentCell.col(),
+							PropVal::ConvertedCStringArray(pProp->GetStringArrayListPtr()->at(mCurrentCell.col())),
 							rInt);
 				}
 			}
@@ -1410,13 +1187,13 @@ void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 	case Grid_DimStyleList:
 		{
 			CStringArray sStrings;
-			ShowComboBox(m_nRowSelected, m_nColSelected, nStyle-16, sStrings);
+			ShowComboBox(mCurrentCell.row(), mCurrentCell.col(), nStyle-16, sStrings);
 		break;
 		}	
 		
 	case Grid_AcadColorCell:
 		{
-			int nCurrentColor = GetItemImage(m_nRowSelected, m_nColSelected);
+			int nCurrentColor = GetItemImage(mCurrentCell.row(), mCurrentCell.col());
 			if (acedSetColorDialog(
 					nCurrentColor,
 					TRUE,
@@ -1427,8 +1204,8 @@ void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 
 				retColor.setColorIndex(nCurrentColor);
 				sDesc = retColor.colorNameForDisplay();
-				SetItemText(m_nRowSelected, m_nColSelected, sDesc);
-				SetItemImage(m_nRowSelected, m_nColSelected, nCurrentColor);
+				SetItemText(mCurrentCell.row(), mCurrentCell.col(), sDesc);
+				SetItemImage(mCurrentCell.row(), mCurrentCell.col(), nCurrentColor);
 			}
 			// fire the on Grid edit cell event.
 			EndEditControls(this);
@@ -1437,9 +1214,9 @@ void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 	case Grid_TrueColorCell:
 		{
 				COLORREF clr = 0;
-			int nImage = GetItemImage(m_nRowSelected, m_nColSelected);
+			int nImage = GetItemImage(mCurrentCell.row(), mCurrentCell.col());
 		
-			CString sLabel = GetItemText(m_nRowSelected, m_nColSelected);
+			CString sLabel = GetItemText(mCurrentCell.row(), mCurrentCell.col());
 			int nComma = sLabel.Find(_T(","));
 			int nComma2 = sLabel.Find(_T(","), nComma+1);
 			if (nComma > -1 && nComma2 > -1)
@@ -1467,8 +1244,8 @@ void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 							 LTOA(GetGValue(color)) + _T(",") +
 							 LTOA(GetBValue(color));
 			
-				SetItemImage(m_nRowSelected, m_nColSelected, -1);
-				SetItemText(m_nRowSelected, m_nColSelected, sColor);
+				SetItemImage(mCurrentCell.row(), mCurrentCell.col(), -1);
+				SetItemText(mCurrentCell.row(), mCurrentCell.col(), sColor);
 			}
 			// fire the on Grid edit cell event.
 			EndEditControls(this);
@@ -1477,9 +1254,9 @@ void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 		
 	case Grid_LineWeightCell:
 		{
-			AcDb::LineWeight newLW = (AcDb::LineWeight)GetItemImage(m_nRowSelected, m_nColSelected);
+			AcDb::LineWeight newLW = (AcDb::LineWeight)GetItemImage(mCurrentCell.row(), mCurrentCell.col());
 			SelectLineWeightUI(newLW, true, this);
-			SetItemImage(m_nRowSelected, m_nColSelected, (int)newLW);
+			SetItemImage(mCurrentCell.row(), mCurrentCell.col(), (int)newLW);
 			
 			// fire the on Grid edit cell event.
 			EndEditControls(this);
@@ -1490,7 +1267,7 @@ void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 			CString sLinetype;
 			AcDbObjectId idLinetype;
 			SelectLinetypeUI(idLinetype, sLinetype, true, this);
-			SetItemText(m_nRowSelected, m_nColSelected, sLinetype);
+			SetItemText(mCurrentCell.row(), mCurrentCell.col(), sLinetype);
 
 			// fire the on Grid edit cell event.
 			EndEditControls(this);
@@ -1498,11 +1275,11 @@ void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 		}
 	case Grid_DirectoryCell:
 		{			
-			CDirDialog dlg( theWorkspace.LoadResourceString(IDS_SELFOLDER), GetItemText(m_nRowSelected, m_nColSelected) );
+			CDirDialog dlg( theWorkspace.LoadResourceString(IDS_SELFOLDER), GetItemText(mCurrentCell.row(), mCurrentCell.col()) );
 			if (dlg.DoBrowse(this) == TRUE)
 			{
-				SetItemText(m_nRowSelected, m_nColSelected, dlg.GetSelectedFolder());
-				SetItemImage(m_nRowSelected, m_nColSelected, -1);
+				SetItemText(mCurrentCell.row(), mCurrentCell.col(), dlg.GetSelectedFolder());
+				SetItemImage(mCurrentCell.row(), mCurrentCell.col(), -1);
 			}
 			// fire the on Grid edit cell event.
 			EndEditControls(this);
@@ -1511,13 +1288,13 @@ void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 	case Grid_DwgFilesCell:
 		{
 			struct resbuf * result;
-			CString sFile = GetItemText(m_nRowSelected, m_nColSelected);
+			CString sFile = GetItemText(mCurrentCell.row(), mCurrentCell.col());
 			result = acutNewRb(RTSTR);
 
 			if (acedGetFileD(sFile, sFile, _T("dwg"), 8, result) == RTNORM)
 			{
-				SetItemText(m_nRowSelected, m_nColSelected, result->resval.rstring);
-				SetItemImage(m_nRowSelected, m_nColSelected, -1);
+				SetItemText(mCurrentCell.row(), mCurrentCell.col(), result->resval.rstring);
+				SetItemImage(mCurrentCell.row(), mCurrentCell.col(), -1);
 			}
 			acutRelRb(result);
 			
@@ -1531,88 +1308,38 @@ void CArxGridCtrl::DoEditCellNow(int nStyle, UINT nChar/* = 0 */)
 
 	if (nStyle == 0)
 	{
-		m_bShowHighlight = true;
+		mbShowHighlight = true;
 		ShowCurSel();
 	}
 }
+*/
 
-void CArxGridCtrl::DoFileDlg(int nStyle) 
+void CArxGridCtrl::OnSelectionChanged() 
 {
-	switch (nStyle)
-	{
-		case 2:
-		{			
-			CDirDialog dlg( theWorkspace.LoadResourceString(IDS_SELFOLDER), GetItemText(m_nRowSelected, m_nColSelected) );
-			if (dlg.DoBrowse(this) == TRUE)
-			{
-				SetItemText(m_nRowSelected, m_nColSelected, dlg.GetSelectedFolder());
-				SetItemImage(m_nRowSelected, m_nColSelected, -1);
-			}
-
-			// fire the on Grid edit cell event.
-			EndEditControls(this);
-
-			break;
-		}
-		case 3:
-		{
-			struct resbuf * result;
-			CString sFileExt = _T("dwg;dxf");
-			CString sFile = GetItemText(m_nRowSelected, m_nColSelected);
-			result = acutNewRb(RTSTR);
-		
-			if (GetCellData(m_nRowSelected, m_nColSelected) != NULL &&
-				GetCellData(m_nRowSelected, m_nColSelected)->sStrings.GetSize() > 0)
-			{
-				sFileExt = GetCellData(m_nRowSelected, m_nColSelected)->sStrings[0];
-			}
-			else
-			{			
-				RefCountedPtr< CPropertyObject > pProp = mpTemplate->GetPropertyObject(nColumnListItems);	
-				if (m_nColSelected < pProp->GetStringArrayListPtr()->size())
-					sFileExt = pProp->GetStringArrayListPtr()->at(m_nColSelected)[0];
-			}
-			if (acedGetFileD(sFile, sFile, sFileExt, 8, result) == RTNORM)
-			{
-				SetItemText(m_nRowSelected, m_nColSelected, result->resval.rstring);
-				SetItemImage(m_nRowSelected, m_nColSelected, -1);
-			}
-			acutRelRb(result);
-			
-			// fire the on Grid edit cell event.
-			EndEditControls(this);
-
-			break;
-		}
-	}
+	InvokeMethodIntInt(mpTemplate->GetStrProperty(Prop::EventSelChanged), mCurrentCell.row(), mCurrentCell.col(), mbInvokeWithSendString);
 }
 
-void CArxGridCtrl::ShowCurSel() 
-{
-	InvokeMethodIntInt(mpTemplate->GetStrProperty(nEventSelChanged), m_nRowSelected, m_nColSelected, m_bInvokeWithSendString);
-	__super::ShowCurSel();
-}
-
-void CArxGridCtrl::ShowTextBox(int nRow, int nCol, int nStyle, UINT nChar/* = 0 */)
+/*
+void CArxGridCtrl::ShowTextBox(int nRow, int nCol, int nStyle)
 {
 	int nCount = GetItemCount();
 	
 	if (nRow > -1 && nCol > -1)
 	{
-		m_nRowSelected = nRow;
-		m_nColSelected = nCol;
+		mCurrentCell.row() = nRow;
+		mCurrentCell.col() = nCol;
 	}
 	else
 	{
-		m_nRowSelected = -1;
-		m_nColSelected = -1;
+		mCurrentCell.row() = -1;
+		mCurrentCell.col() = -1;
 	}
 	
 	COLORREF backGround = GetBkColor();
 	
 	if (!m_bOrientationVer)
 	{
-		if ((m_nRowSelected % 2) != 0)
+		if ((mCurrentCell.row() % 2) != 0)
 			backGround = alertnateColor; 
 	}
 	else
@@ -1620,7 +1347,7 @@ void CArxGridCtrl::ShowTextBox(int nRow, int nCol, int nStyle, UINT nChar/* = 0 
 		int n = 0;
 		if (m_bHasRowHeader)
 			n = 1;
-		if (((m_nColSelected+n) % 2) != 0)
+		if (((mCurrentCell.col()+n) % 2) != 0)
 			backGround = alertnateColor;
 	}
 
@@ -1639,7 +1366,7 @@ void CArxGridCtrl::ShowTextBox(int nRow, int nCol, int nStyle, UINT nChar/* = 0 
 		{
 		CRect rcClient;
 		GetClientRect(&rcClient);
-		int nCalc = (m_nRowHeight * 5);
+		int nCalc = (mpTemplate->GetLongProperty( Prop::RowHeight ) * 5);
 		rc.bottom = rc.top + nCalc;
 		if (rc.bottom > rcClient.bottom)
 			rc.bottom = rcClient.bottom-1;
@@ -2035,13 +1762,13 @@ void CArxGridCtrl::ShowImageComboBox(int nRow, int nCol, CStringArray &sStrings,
 	{
 		SetItem(nRow, 0, LVIF_STATE, NULL, 0, LVIS_SELECTED, LVIS_SELECTED, 0);				
 		SetItem(nRow, nCol, LVIF_STATE, NULL, 0, LVIS_SELECTED, LVIS_SELECTED, 0);				
-		m_nRowSelected = nRow;
-		m_nColSelected = nCol;
+		mCurrentCell.row() = nRow;
+		mCurrentCell.col() = nCol;
 	}
 	else
 	{
-		m_nRowSelected = -1;
-		m_nColSelected = -1;
+		mCurrentCell.row() = -1;
+		mCurrentCell.col() = -1;
 	}
 	
 
@@ -2193,13 +1920,13 @@ void CArxGridCtrl::ShowComboBox(int nRow, int nCol, int nStyle, CStringArray &sS
 	int nCount = GetItemCount();
 	if (nRow > -1 && nCol > -1)
 	{
-		m_nRowSelected = nRow;
-		m_nColSelected = nCol;
+		mCurrentCell.row() = nRow;
+		mCurrentCell.col() = nCol;
 	}
 	else
 	{
-		m_nRowSelected = -1;
-		m_nColSelected = -1;
+		mCurrentCell.row() = -1;
+		mCurrentCell.col() = -1;
 	}
 	
 	BeginWaitCursor();
@@ -2299,9 +2026,10 @@ void CArxGridCtrl::ShowComboBox(int nRow, int nCol, int nStyle, CStringArray &sS
 			VdclArrowHeadComboBox *pComboBox = NULL;
 			rc.top--;
 			rc.bottom++;
-			if (m_nRowHeight == 19)
+			int nRowHeight = mpTemplate->GetLongProperty( Prop::RowHeight );
+			if (nRowHeight == 19)
 				rc.bottom++;
-			if (m_nRowHeight >= 20)
+			if (nRowHeight >= 20)
 				rc.bottom += 2;
 
 			// get or create the control.
@@ -2333,9 +2061,10 @@ void CArxGridCtrl::ShowComboBox(int nRow, int nCol, int nStyle, CStringArray &sS
 			VdclColorComboBox *pComboBox = NULL;
 			rc.top--;
 			rc.bottom++;
-			if (m_nRowHeight == 19)
+			int nRowHeight = mpTemplate->GetLongProperty( Prop::RowHeight );
+			if (nRowHeight == 19)
 				rc.bottom++;
-			if (m_nRowHeight >= 20)
+			if (nRowHeight >= 20)
 				rc.bottom += 2;
 
 			// get or create the control.
@@ -2646,154 +2375,12 @@ void CArxGridCtrl::ShowComboBox(int nRow, int nCol, int nStyle, CStringArray &sS
 
 	EndWaitCursor();
 }
+*/
 
 void CArxGridCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	m_bShowHighlight = true;
 	HideEditControls();
 	*pResult = 0;
-}
-
-void CArxGridCtrl::OnEndlabeledit(CString sText) 
-{	
-	if (m_nRowSelected > -1)
-	{
-		InvokeMethodIntInt(
-			mpTemplate->GetStrProperty(nEventEndLabelEdit),
-			m_nRowSelected,
-			m_nColSelected,
-			m_bInvokeWithSendString);
-
-		SetItemText(m_nRowSelected, m_nColSelected, sText);
-
-		int nCount = GetItemCount();
-		for (int i=0; i<nCount; i++)
-		{
-			SetItemState(i, NULL, NULL);
-
-			CHeaderCtrl *pHdr = GetHeaderCtrl();
-			int nCount = pHdr->GetItemCount();
-			for (int j=0; j<nCount; j++)
-				SetItem(i, j, LVIF_STATE, NULL, 0, NULL, NULL, 0);				
-		}	
-		SetItem(m_nRowSelected, 0, LVIF_STATE, NULL, 0, LVIS_SELECTED, LVIS_SELECTED, 0);				
-		SetItem(m_nRowSelected,	m_nColSelected, LVIF_STATE, NULL, 0, NULL, NULL, 0);				
-	}
-}
-
-void CArxGridCtrl::CallBeginLabelEdit(CPoint point) 
-{
-	LVHITTESTINFO lvhti;
-
-	// Clear the subitem text the user clicked on.
-	lvhti.pt = point;
-	SubItemHitTest(&lvhti);
-	
-	if (lvhti.flags & LVHT_ONITEMLABEL)
-	{
-		// call methods to invoke the event
-		InvokeMethodIntInt(		
-			mpTemplate->GetStrProperty(nEventBeginLabelEdit),
-			lvhti.iItem,
-			lvhti.iSubItem,
-			m_bInvokeWithSendString);
-	}
-}
-
-void CArxGridCtrl::EndEditControls(CWnd *pWnd)
-{
-	if (pWnd->IsWindowVisible() == TRUE)
-	{
-		InvokeMethodIntInt(		
-			mpTemplate->GetStrProperty(nEventEndLabelEdit),
-			m_nRowSelected, m_nColSelected,
-			m_bInvokeWithSendString);
-	}
-}
-
-void CArxGridCtrl::HideEditControls()
-{
-	CRect rc;
-  int i;
-	for (i=0; i<nNumOfTextBoxes; i++)
-	{
-		if (m_pTextBox[i] != NULL && m_pTextBox[i]->IsWindowVisible() == TRUE)
-		{
-			EndEditControls(m_pTextBox[i]);
-			m_pTextBox[i]->ShowWindow(FALSE);
-		}
-	}
-
-	for (i=0; i<nNumOfComboBoxes; i++)
-	{
-		if (m_pComboBox[i] != NULL && m_pComboBox[i]->IsWindowVisible() == TRUE)
-		{
-			//EndEditControls(m_pComboBox[i]);
-			m_pComboBox[i]->ShowWindow(SW_HIDE);
-		}
-	}
-	if( m_pPickButton )
-		m_pPickButton->ShowWindow(SW_HIDE);
-	if( m_pEllipsesButton )
-		m_pEllipsesButton->ShowWindow(SW_HIDE);
-	if( m_pFolderButton )
-		m_pFolderButton->ShowWindow(SW_HIDE);
-}
-
-void CArxGridCtrl::OnDestroy() 
-{
-	// init all the pointers for cell editing controls.
-  int i;
-	for (i=0; i<nNumOfTextBoxes; i++)
-	{
-		if (m_pTextBox[i] != NULL)
-		{
-			m_pTextBox[i]->DestroyWindow();
-			delete m_pTextBox[i];
-			m_pTextBox[i] = NULL;
-		}
-	}
-	for (i=0; i<nNumOfComboBoxes; i++)
-	{
-		if (m_pComboBox[i] != NULL)
-		{
-			CComboBoxHolder *pHolder = (CComboBoxHolder*)m_pComboBox[i];
-			
-			pHolder->pComboBox->DestroyWindow();
-			delete pHolder->pComboBox;
-			pHolder->pComboBox = NULL;
-			
-			m_pComboBox[i]->DestroyWindow();
-			delete m_pComboBox[i];
-			m_pComboBox[i] = NULL;
-		}
-	}
-	
-	if (m_pPickButton != NULL)
-	{
-		m_pPickButton->DestroyWindow();
-		delete m_pPickButton;
-		m_pPickButton = NULL;
-	}
-	if (m_pEllipsesButton != NULL)
-	{
-		m_pEllipsesButton->DestroyWindow();
-		delete m_pEllipsesButton;
-		m_pEllipsesButton = NULL;
-	}
-	
-	if (m_pFolderButton != NULL)
-	{
-		m_pFolderButton->DestroyWindow();
-		delete m_pFolderButton;
-		m_pFolderButton = NULL;
-	}
-	for (i=0; i<GetItemCount(); i++)
-	{
-		if (GetItemData(i) > 0)
-			delete (_RowData*)GetItemData(i);	
-	}
-	__super::OnDestroy();
 }
 
 void CArxGridCtrl::OnSize(UINT nType, int cx, int cy) 
@@ -2806,120 +2393,20 @@ void CArxGridCtrl::OnSize(UINT nType, int cx, int cy)
 void CArxGridCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
-	InvokeMethodInt(mpTemplate->GetStrProperty(nEventColumnClick), pNMListView->iSubItem, m_bInvokeWithSendString);
+	InvokeMethodInt(mpTemplate->GetStrProperty(Prop::EventColumnClick), pNMListView->iSubItem, mbInvokeWithSendString);
 	*pResult = 0;
 }
 
-void CArxGridCtrl::DrawColor(CDC* pDC, CRect rc, int &nColor, CString &sText)
+void CArxGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 {
-
-	if (nColor == -1)
-	{
-		VdclColorComboBox *pComboBox = NULL;
-		CComboBoxHolder *pHolder;
-		
-		// get or create the control.
-		if (m_pComboBox[4] == NULL)
-		{
-			pComboBox = new VdclColorComboBox;
-			pHolder = new CComboBoxHolder;
-			
-			pHolder->Create(CString(), WS_CHILD, CRect(1,1,10,10), this, 124);
-			
-			pHolder->pComboBox = pComboBox;
-			pComboBox->Create(4, CRect(1,1,10,10), pHolder, 410);
-			pComboBox->SetFont(GetFont());
-
-			pHolder->m_nStyle = 4;
-			pHolder->SetFont(GetFont());				
-			m_pComboBox[4] = pHolder;
-			
-		}
-		else
-		{
-			pHolder = (CComboBoxHolder*)m_pComboBox[4];
-			pComboBox = (VdclColorComboBox*)pHolder->pComboBox;
-		}
-
-		int n = -1;
-		if (sText.GetLength() == 0)
-		{
-			pComboBox->GetLBText(8, sText);
-		}
-
-		n = pComboBox->FindStringExact(0, sText);
-		if (n == -1)
-		{
-			n = pComboBox->FindString(0, sText);
-			if (n != -1)
-			{					
-				pComboBox->GetLBText(n, sText);
-			}
-		}
-		if (n == -1)
-		{	
-			nColor = _ttoi(sText);
-
-			n = pComboBox->FindItemByColorIndex(nColor);
-			
-			if (n == -101)
-				sText = LTOA(nColor);
-			else
-				pComboBox->GetLBText(n, sText);
-		}
-		else
-		{
-			nColor = pComboBox->GetItemColorIndex(n);
-		}
-	}
-	
-	// setup the CRect for FillRect	
-	CPoint point;
-	
-	// move the color splotch down by one.
-	rc.top++;
-	rc.bottom++;
-
-	HGDIOBJ pen = ::CreatePen(PS_SOLID, 1, RGB(0,0,0));
-	HGDIOBJ OldPen = SelectObject(pDC->m_hDC, pen);
-		
-	::Rectangle(pDC->m_hDC, rc.left, rc.top, rc.right, rc.bottom);
-
-	SelectObject(pDC->m_hDC, OldPen);			
-	DeleteObject(pen);
-
-	rc.DeflateRect(1,1);
-
-	// draw the solid rectangle
-	COLORREF rgb;
-	
-	if (nColor == 256 || nColor == 0)
-	{
-		rgb = RGB(255,255,255);
-		::SetBkColor(pDC->m_hDC, rgb);
-	}
-	else
-	{
-		rgb = GetRGBColor(nColor);
-		::SetBkColor(pDC->m_hDC, rgb);
-	}
-
-	::ExtTextOut(pDC->m_hDC, 0, 0, ETO_OPAQUE, &rc, NULL, 0, NULL);
-	::SetBkColor(pDC->m_hDC, rgb);
-}
-
-void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
-{
-	if (lpDrawItemStruct->CtlType != ODT_LISTVIEW)
+	__super::DrawCell( nRow, nCol, rectCell, cdc );
+/*
+	if( lpDrawItemStruct->CtlType != ODT_LISTVIEW )
         return;
 
-	if(lpDrawItemStruct->itemAction != ODA_DRAWENTIRE)
-		return;
-
-	COLORREF rowColor = alertnateColor;
-	COLORREF backGround = mpTemplate->GetColorProperty(nAcadColor);
+	COLORREF backGround = GetColorService()->GetBackgroundColor();
 	COLORREF back = backGround;
-	COLORREF foreGround = ::GetSysColor(COLOR_WINDOWTEXT);
+	COLORREF foreGround = GetColorService()->GetForegroundColor();
 	
 	CDC* pDC = CDC::FromHandle(lpDrawItemStruct->hDC);
 	CRect rcItem(lpDrawItemStruct->rcItem); 
@@ -3011,13 +2498,12 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	HTHEME	hTheme = NULL;
 
-	if (m_bHasRowHeader == true)
+	if (mbHasRowHeader == true)
 	{
-		if( m_pTheme )
-			hTheme = m_pTheme->OpenThemeData(m_hWnd, L"HEADER");
-		if (hTheme == NULL) // If the handle cannot be retrieved, 
-							// go back to non-visual style drawing
-							// code.
+		CThemeHelperST* pTheme = GetThemeHelper();
+		if( pTheme )
+			hTheme = pTheme->OpenThemeData(GetSafeHwnd(), L"HEADER");
+		if (hTheme == NULL) // If the handle cannot be retrieved, go back to non-visual style drawing code.
 		{			
 			if (nItem == GetTopIndex())
 			{
@@ -3047,9 +2533,9 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 			rcTheme.bottom++;
 			int iStateId = 0;
 
-			m_pTheme->DrawThemeBackground(hTheme, m_hWnd, pDC->GetSafeHdc(), HP_HEADERITEM, iStateId, &rcTheme, NULL);
+			pTheme->DrawThemeBackground(hTheme, m_hWnd, pDC->GetSafeHdc(), HP_HEADERITEM, iStateId, &rcTheme, NULL);
 
-			m_pTheme->CloseThemeData(hTheme);
+			pTheme->CloseThemeData(hTheme);
 
 			hTheme = NULL;
 
@@ -3192,7 +2678,7 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	
 	int nColumn = 1;
-	if (!m_bHasRowHeader)
+	if (!mbHasRowHeader)
 	{
 		nColumn = 0;
 		rcCol.right = rcBtn.left; 
@@ -3207,7 +2693,7 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
         rcCol.right = rcCol.left + lvc.cx;
 
 		
-		if (m_bShowHighlight)
+		if (mbShowHighlight)
 		{
 			switch(nCellStyle)
 			{
@@ -3216,25 +2702,25 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 				case Grid_EllipsesButtons:
 				case Grid_PickButtons:
 				case Grid_SwitchableIcons:
-					m_bShowHighlight = false;
+					mbShowHighlight = false;
 					break;
 			}
 		}
 		// if the entire column is selected.
-		if (m_nColSelected == -1)
-			m_bShowHighlight = true;
+		if (mCurrentCell.col() == -1)
+			mbShowHighlight = true;
 		
-		if (m_nRowSelected == lvi.iItem &&
-			m_nColSelected == nColumn &&
-			m_bShowHighlight)
+		if (mCurrentCell.row() == lvi.iItem &&
+			mCurrentCell.col() == nColumn &&
+			mbShowHighlight)
 		{
 			backGround = ::GetSysColor(COLOR_HIGHLIGHT);
 			foreGround = ::GetSysColor(COLOR_HIGHLIGHTTEXT);
 			bHighlighted = true;
 		}
-		else if (m_nRowSelected == lvi.iItem &&
-			     m_nColSelected == -1 &&
-				 m_bShowHighlight)
+		else if (mCurrentCell.row() == lvi.iItem &&
+			     mCurrentCell.col() == -1 &&
+				 mbShowHighlight)
 		{
 			backGround = ::GetSysColor(COLOR_HIGHLIGHT);
 			foreGround = ::GetSysColor(COLOR_HIGHLIGHTTEXT);
@@ -3291,7 +2777,7 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		sLabel = GetItemText(nItem, nColumn); 
 
 		
-		if (m_bHasGridLines)
+		if (mbHasGridLines)
 		{
 			COLORREF rgb = ::GetSysColor(COLOR_BTNFACE);
 			HGDIOBJ pen = ::CreatePen(PS_SOLID, 1, rgb);
@@ -3435,7 +2921,6 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 						case Grid_TrueColorCell:
 						{
 							DrawTrueColor(pDC, rcBox, nImage, sLabel);
-							/*
 							COLORREF clr;
 							if (nImage >= -1 && nImage <= 256)								
 							{
@@ -3486,7 +2971,6 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 								clr = RGB(clrBook.red(), clrBook.green(), clrBook.blue());	
 								DrawTrueColor(pDC, rcBox, clr);
 							}
-							*/
 
 							break;
 						}
@@ -3636,18 +3120,14 @@ void CArxGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	// restore the old font ** a must
 	SelectObject(pDC->m_hDC, pOldFont);
+*/
 }
 
 void CArxGridCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
-	//its not meself
 	if( GetFocus() != this) 
 		SetFocus();
-	
 	HideEditControls();
-	
-	//Invalidate();
-
 	__super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
@@ -3655,7 +3135,6 @@ void CArxGridCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	if( GetFocus() != this) 
 		SetFocus();
-
 	HideEditControls();
 	__super::OnVScroll(nSBCode, nPos, pScrollBar);
 }

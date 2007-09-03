@@ -45,13 +45,13 @@ BOOL VdclGroupBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	// get the caption
-	CString Caption = pControl->GetStrProperty(nCaption);
+	CString Caption = pControl->GetStrProperty(Prop::Caption);
 	
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;	

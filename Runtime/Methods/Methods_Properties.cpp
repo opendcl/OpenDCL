@@ -7,19 +7,21 @@
 #include "UserMessageId.h"
 #include "ErrorLexicon.h"
 #include "MethodLexicon.h"
-#include "VdclRadioButton.h"
-#include "OdclEdit.h"
 #include "ArxGraphicButtonCtrl.h"
-#include "DwgDirList.h"
+#include "ArxListBoxCtrl.h"
+#include "ArxGridCtrl.h"
+#include "ArxDwgListCtrl.h"
+#include "ArxOptionListCtrl.h"
+#include "ArxRadioButtonCtrl.h"
+#include "ArxCheckBoxCtrl.h"
+#include "OdclEdit.h"
 #include "OdclEdit.h"
 #include "OdclListCtrl.h"
 #include "OdclMonth.h"
-#include "OptionListBox.h"
 #include "OdclLayerCombo.h"
 #include "RoundSliderCtrl.h"
 #include "PictureBox.h"
 #include "DwgPreviewCtrl.h"
-#include "ButtonST.h"
 #include "FontCombo.h"
 #include "Splitter.h"
 #include "StaticLink.h"
@@ -27,18 +29,15 @@
 #include "SlideHolder.h"
 #include "VdclAngleEdit.h"
 #include "VdclArrowHeadComboBox.h"
-#include "VdclCheckBox.h"
 #include "VdclColorComboBox.h"
 #include "VdclComboBox.h"
 #include "VdclComboBoxEx.h"
 #include "VdclGroupBox.h"
 #include "VdclLineWeightComboBox.h"
-#include "VdclListBox.h"
 #include "VdclNumericEdit.h"
 #include "VdclPlotStyleNamesComboBox.h"
 #include "VdclPlotStyleTablesComboBox.h"
 #include "VdclProgressCtrl.h"
-#include "VdclRadioButton.h"
 #include "VdclScrollBar.h"
 #include "VdclSliderCtrl.h"
 #include "VdclSpinButton.h"
@@ -50,7 +49,6 @@
 #include "PrinterComboBox.h"
 #include "AxContainerCtrl.h"
 #include "ComboBoxFolder.h"
-#include "ArxGridCtrl.h"
 #include "ToolTips.h"
 #include "PropertyNames.h"
 #include "DclControlObject.h"
@@ -67,13 +65,13 @@ const TCHAR sT[] = _T("T");
 const TCHAR sGetPropertry [] = _T("dcl_Control_Get");
 const TCHAR sSetPropertry [] = _T("dcl_Control_Set");
 
-bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, struct resbuf *ListData, CDclControlObject *pArxObject);
+bool SetPropertyObject(TPropertyPtr pProperty, struct resbuf *ListData, CDclControlObject *pArxObject);
 
 
 
 //*****************************************************************************
 // 
-// Method: SetCtrlProperty(PropertyId id)
+// Method: SetCtrlProperty(Prop::Id id)
 // 
 // Purpose: [sets the value of a property]
 // 
@@ -82,7 +80,7 @@ bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, struct resbuf
 // Returns:	int
 // 
 //*****************************************************************************
-bool SetCtrlProperty(PropertyId id)
+bool SetCtrlProperty(Prop::Id id)
 {
 	CString sProp = CString(sSetPropertry) + GetPropertyName(id);
 
@@ -91,7 +89,7 @@ bool SetCtrlProperty(PropertyId id)
 	if (pArxObject == NULL)
 		return false;
 
-	RefCountedPtr< CPropertyObject > pProperty = pArxObject->GetPropertyObject(id);
+	TPropertyPtr pProperty = pArxObject->GetPropertyObject(id);
 	if (pProperty == NULL)
 		return false;
 
@@ -108,7 +106,7 @@ bool SetCtrlProperty(PropertyId id)
 
 //*****************************************************************************
 // 
-// Method: GetCtrlProperty(PropertyId id)
+// Method: GetCtrlProperty(Prop::Id id)
 // 
 // Purpose: [gets the value of a property]
 // 
@@ -117,7 +115,7 @@ bool SetCtrlProperty(PropertyId id)
 // Returns:	int
 // 
 //*****************************************************************************
-bool GetCtrlProperty(PropertyId id)
+bool GetCtrlProperty(Prop::Id id)
 {
 	CString sProp = CString(sGetPropertry) + GetPropertyName(id);
 
@@ -126,26 +124,26 @@ bool GetCtrlProperty(PropertyId id)
 	if (pArxObject == NULL)
 		return false;
 
-	RefCountedPtr< CPropertyObject > pProperty = pArxObject->GetPropertyObject(id);
+	TPropertyPtr pProperty = pArxObject->GetPropertyObject(id);
 	if (pProperty == NULL)
 		return false;
 
 	// here we need to do special position lookups for width, height, left and top properties.
-	if (id == nWidth)
+	if (id == Prop::Width)
 	{
 		CRect rc;
 		pArxObject->GetWindow()->GetWindowRect(rc);
 		acedRetInt(rc.Width());
 		return true;
 	}
-	else if (id == nHeight)
+	else if (id == Prop::Height)
 	{
 		CRect rc;
 		pArxObject->GetWindow()->GetWindowRect(rc);
 		acedRetInt(rc.Height());
 		return true;
 	}
-	else if (id == nTop)
+	else if (id == Prop::Top)
 	{
 		CRect rc;
 		pArxObject->GetWindow()->GetWindowRect(rc);
@@ -153,7 +151,7 @@ bool GetCtrlProperty(PropertyId id)
 		acedRetInt(rc.top);
 		return true;
 	}
-	else if (id == nLeft)
+	else if (id == Prop::Left)
 	{
 		CRect rc;
 		pArxObject->GetWindow()->GetWindowRect(rc);
@@ -166,18 +164,18 @@ bool GetCtrlProperty(PropertyId id)
 	// and the request property is the value
 	// we have to query the control and not the stored
 	// property for it's value
-	if (id == nValue && pArxObject->GetType() == CtlOptionButton)
+	if (id == Prop::Value && pArxObject->GetType() == CtlOptionButton)
 	{
-		int nCheckValue = ((VdclRadioButton*)pArxObject->GetWindow())->GetCheck();
-		// this is important, nValue must equal 1 because it may return another value
-		if (nCheckValue == 1)
+		int nCheckValue = ((CButton*)pArxObject->GetWindow())->GetCheck();
+		// this is important, Prop::Value must equal 1 because it may return another value
+		if (nCheckValue != BST_UNCHECKED)
 			pProperty->SetBooleanValue(true);
 		else
 			pProperty->SetBooleanValue(false);
 	}
 	if (pProperty == NULL)
 	{
-		theWorkspace.DisplayAlert(CString (ErrorTheProperty) + GetPropertyName(id) + ErrorPropertyWasNotFound + ErrorForControl + pArxObject->GetStrProperty(nName));
+		theWorkspace.DisplayAlert(CString (ErrorTheProperty) + GetPropertyName(id) + ErrorPropertyWasNotFound + ErrorForControl + pArxObject->GetStrProperty(Prop::Name));
 		// return a negitive value to indicate to the calling autolisp function that the call failed
 		acedRetInt(-1);
 		return false;
@@ -187,11 +185,11 @@ bool GetCtrlProperty(PropertyId id)
 	return true;
 }
 
-bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, struct resbuf *ListData, CDclControlObject *pCtrl)
+bool SetPropertyObject(TPropertyPtr pProperty, struct resbuf *ListData, CDclControlObject *pCtrl)
 {
 	// here we are going to accept any numeric value for a text property and convert it to text.
 	// just to make it easier for the programmers.
-	if (pProperty->GetType() == PropString || pProperty->GetID() == nText)
+	if (pProperty->GetType() == PropString || pProperty->GetID() == Prop::Text)
 	{
 		TCHAR value[80];
 			
@@ -223,7 +221,7 @@ bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, struct resbuf
 			{
 			// if the control is a text box we need to find out if it's an AngleEdit type
 			// so we can convert the double as an angle unit and not a real unit.
-			if (pCtrl->GetType() == CtlTextBox && pCtrl->GetLongProperty(nFilterStyle) == EditFilter_Angle)
+			if (pCtrl->GetType() == CtlTextBox && pCtrl->GetLongProperty(Prop::FilterStyle) == EditFilter_Angle)
 				acdbAngToS(ListData->resval.rreal, -1, -1, value);
 			else
 				acdbRToS(ListData->resval.rreal, -1, -1, value);
@@ -343,9 +341,9 @@ int SetProperty()
 		}
 	}
 	nArgs++;
-	PropertyId nPropertyId = GetPropertyId(sPropNameArg);
+	Prop::Id nPropertyId = GetPropertyId(sPropNameArg);
 	
-	RefCountedPtr< CPropertyObject > pProperty = pArxObject->GetPropertyObject(nPropertyId);
+	TPropertyPtr pProperty = pArxObject->GetPropertyObject(nPropertyId);
 
 	if (pProperty == NULL)
 	{
@@ -355,7 +353,7 @@ int SetProperty()
 	}
 
 	// get the argument sent by AutoLISP and return it as a CPropertyObject pointer
-	RefCountedPtr< CPropertyObject > pPropArg = GetPropertyArgument(nArgs, sSetProperty);
+	TPropertyPtr pPropArg = GetPropertyArgument(nArgs, sSetProperty);
 
 	if (pPropArg == NULL)
 	{
@@ -367,7 +365,7 @@ int SetProperty()
 	if (!SetPropertyObject(pProperty, pPropArg, pArxObject))
 	{
 		// set this up latter to tell the user what was received and what it expected
-		theWorkspace.DisplayAlert(CString(ErrorWrongArgTypeForProp) + ErrorForControl + pArxObject->GetStrProperty(nName));
+		theWorkspace.DisplayAlert(CString(ErrorWrongArgTypeForProp) + ErrorForControl + pArxObject->GetStrProperty(Prop::Name));
 		// return a negitive value to indicate to the calling autolisp function that the call failed
 		acedRetInt(-1);
 		return 0;
@@ -432,7 +430,7 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 			if (ListData == NULL)
 			{
 				// inform the programmer that he did not make the correct call
-				theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSetProperty + ErrorForControl + pArxObject->GetStrProperty(nName));	
+				theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSetProperty + ErrorForControl + pArxObject->GetStrProperty(Prop::Name));	
 				
 				return false;
 			}
@@ -443,20 +441,20 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 			if (ListData->restype != RTSTR) 
 			{
 				// inform the programmer that he did not make the correct call
-				theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sSetProperty + ErrorForControl + pArxObject->GetStrProperty(nName));	
+				theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sSetProperty + ErrorForControl + pArxObject->GetStrProperty(Prop::Name));	
 				return false;
 			}				
 				
 			// get the next argument required
 			CString sPropertyName = ListData->resval.rstring;
 		
-			PropertyId nPropertyId = GetPropertyId(sPropertyName);
+			Prop::Id nPropertyId = GetPropertyId(sPropertyName);
 
-			RefCountedPtr< CPropertyObject > pProperty = pArxObject->GetPropertyObject(nPropertyId);
+			TPropertyPtr pProperty = pArxObject->GetPropertyObject(nPropertyId);
 								
 			ListData = ListData->rbnext;
 
-			RefCountedPtr< CPropertyObject > pNewProperty;
+			TPropertyPtr pNewProperty;
 
 			switch (ListData->restype)
 			{	
@@ -509,7 +507,7 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 						theWorkspace.DisplayAlert(
 							CString(ErrorInappropriateFound)
 							+ sSetProperty
-							+ ErrorForControl + pArxObject->GetStrProperty(nName)); 			
+							+ ErrorForControl + pArxObject->GetStrProperty(Prop::Name)); 			
 						return false; 
 						break;
 					}
@@ -517,7 +515,7 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 			if (!SetPropertyObject(pProperty, pNewProperty))
 			{
 				// set this up latter to tell the user what was received and what it expected
-				theWorkspace.DisplayAlert(CString(ErrorWrongArgTypeForProp) + ErrorForControl + pArxObject->GetStrProperty(nName));
+				theWorkspace.DisplayAlert(CString(ErrorWrongArgTypeForProp) + ErrorForControl + pArxObject->GetStrProperty(Prop::Name));
 				return false;
 			}
 
@@ -532,11 +530,11 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 	return true;
 }
 
-bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, RefCountedPtr< CPropertyObject > pPropArg, CDclControlObject *pCtrl)
+bool SetPropertyObject(TPropertyPtr pProperty, TPropertyPtr pPropArg, CDclControlObject *pCtrl)
 {
 	// here we are going to accept any numeric value for a text property and convert it to text.
 	// just to make it easier for the programmers.
-	if (pProperty->GetID() == nText)
+	if (pProperty->GetID() == Prop::Text)
 	{
 		switch (pPropArg->GetType())
 		{
@@ -554,7 +552,7 @@ bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, RefCountedPtr
 			{
 			// if the control is a text box we need to find out if it's an AngleEdit type
 			// so we can convert the double as an angle unit and not a real unit.
-			if (pCtrl->GetType() == CtlTextBox && pCtrl->GetLongProperty(nFilterStyle) == EditFilter_Angle)
+			if (pCtrl->GetType() == CtlTextBox && pCtrl->GetLongProperty(Prop::FilterStyle) == EditFilter_Angle)
 			{
 				TCHAR value[80];
 				acdbAngToS(pPropArg->GetDoubleValue(), -1, -1, value);
@@ -641,21 +639,21 @@ bool SetPropertyObject(RefCountedPtr< CPropertyObject > pProperty, RefCountedPtr
 
 }
 
-void UpdateControl(CWnd *pControl,RefCountedPtr< CPropertyObject > pProperty, CDclControlObject *pTemplate, PropertyId nPropertyId)
+void UpdateControl(CWnd *pControl,TPropertyPtr pProperty, CDclControlObject *pTemplate, Prop::Id nPropertyId)
 {
 	CRect rcThisControl;
 	pControl->GetWindowRect(&rcThisControl);
 	
 	switch (pProperty->GetID())
 	{
-	case nLeftFromRight:
-	case nRightFromRight:
-	case nTopFromBottom:
-	case nBottomFromBottom:
-	case nLeft:
-	case nTop:
-	case nWidth:
-	case nHeight:
+	case Prop::LeftFromRight:
+	case Prop::RightFromRight:
+	case Prop::TopFromBottom:
+	case Prop::BottomFromBottom:
+	case Prop::Left:
+	case Prop::Top:
+	case Prop::Width:
+	case Prop::Height:
 		{
 		// call the method to update the control
 			pTemplate->GetControlInstance()->GetControlPane()->ResetControlsPos(pTemplate);
@@ -663,26 +661,26 @@ void UpdateControl(CWnd *pControl,RefCountedPtr< CPropertyObject > pProperty, CD
 		}
 	// if the font size property has been found pass it the font name only
 	// and set it's size properly
-	case nLabelSize:
+	case Prop::LabelSize:
 		{
 			CArxDialogControl::UpdateProperty(pTemplate,
 																				pTemplate->GetControlInstance()->GetControlPane(),
 																				pTemplate->GetControlInstance()->GetControlId(),
-																				nLabelName);
+																				Prop::LabelName);
 		break;
 		}
 	// if a font property has been found pass it the font name only
 	// otherwise the font will not be updated.
-	case nLabelUnderline:
-	case nLabelItalic:
-	case nLabelBold:
-	case nLabelStrikeOut:
+	case Prop::LabelUnderline:
+	case Prop::LabelItalic:
+	case Prop::LabelBold:
+	case Prop::LabelStrikeOut:
 		{
 		// call the method to update the control
 		CArxDialogControl::UpdateProperty(pTemplate,
 																			pTemplate->GetControlInstance()->GetControlPane(),
 																			pTemplate->GetControlInstance()->GetControlId(),
-																			nLabelName);
+																			Prop::LabelName);
 		break;
 		}
 	default:
@@ -714,24 +712,24 @@ int GetProperty()
 		return 0;
 	}
 
-	PropertyId nPropertyId = GetPropertyId(sPropNameArg);
+	Prop::Id nPropertyId = GetPropertyId(sPropNameArg);
 
 	// here we need to do special position lookups for width, height, left and top properties.
-	if (nPropertyId == nWidth)
+	if (nPropertyId == Prop::Width)
 	{
 		CRect rc;
 		pArxObject->GetWindow()->GetWindowRect(rc);
 		acedRetInt(rc.Width());
 		return 0;
 	}
-	else if (nPropertyId == nHeight)
+	else if (nPropertyId == Prop::Height)
 	{
 		CRect rc;
 		pArxObject->GetWindow()->GetWindowRect(rc);
 		acedRetInt(rc.Height());
 		return 0;
 	}
-	else if (nPropertyId == nTop)
+	else if (nPropertyId == Prop::Top)
 	{
 		CRect rc;
 		pArxObject->GetWindow()->GetWindowRect(rc);
@@ -739,7 +737,7 @@ int GetProperty()
 		acedRetInt(rc.top);
 		return 0;
 	}
-	else if (nPropertyId == nLeft)
+	else if (nPropertyId == Prop::Left)
 	{
 		CRect rc;
 		pArxObject->GetWindow()->GetWindowRect(rc);
@@ -748,25 +746,25 @@ int GetProperty()
 		return 0;
 	}
 
-	RefCountedPtr< CPropertyObject > pProperty = pArxObject->GetPropertyObject(nPropertyId);
+	TPropertyPtr pProperty = pArxObject->GetPropertyObject(nPropertyId);
 
 	// if this control is a radio or option button
 	// and the request property is the value
 	// we have to query the control and not the stored
 	// property for it's value
-	if (nPropertyId == nValue &&
+	if (nPropertyId == Prop::Value &&
 		pArxObject->GetType() == CtlOptionButton)
 	{
-		int nValue = ((VdclRadioButton*)pArxObject->GetWindow())->GetCheck();
-		// this is important, nValue must equal 1 because it may return another value
-		if (nValue == 1)
+		int nValue = ((CButton*)pArxObject->GetWindow())->GetCheck();
+		// this is important, Prop::Value must equal 1 because it may return another value
+		if (nValue != BST_UNCHECKED)
 			pProperty->SetBooleanValue(true);
 		else
 			pProperty->SetBooleanValue(false);
 	}
 	if (pProperty == NULL)
 	{
-		theWorkspace.DisplayAlert(CString (ErrorTheProperty) + sPropNameArg + ErrorPropertyWasNotFound + ErrorForControl + pArxObject->GetStrProperty(nName));
+		theWorkspace.DisplayAlert(CString (ErrorTheProperty) + sPropNameArg + ErrorPropertyWasNotFound + ErrorForControl + pArxObject->GetStrProperty(Prop::Name));
 		// return a negitive value to indicate to the calling autolisp function that the call failed
 		acedRetInt(-1);
 		return 0;
@@ -777,7 +775,7 @@ int GetProperty()
 
 }
 
-void SetReturnValue(int nType, RefCountedPtr< CPropertyObject > pProperty)
+void SetReturnValue(int nType, TPropertyPtr pProperty)
 {
 	if (nType == PropBool)
 	{
@@ -1591,7 +1589,7 @@ int ShowToolTip()
 		}
 	case CtlSlideView:
 		{
-		CSlideHolder *pCtrl = (CSlideHolder*)pControl;
+		CDialogControl *pCtrl = (CDialogControl*)pControl;
 		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
 			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
@@ -1640,35 +1638,35 @@ int ShowToolTip()
 		}
 	case CtlListBox:
 		{
-		VdclListBox *pCtrl = (VdclListBox*)pControl;
-		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
+		CDialogControl *pCtrl = (CDialogControl*)pControl;
+		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlOptionButton:
 		{
-		VdclRadioButton *pCtrl = (VdclRadioButton*)pControl;
-		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
+		CDialogControl *pCtrl = (CDialogControl*)pControl;
+		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlOptionList:
 		{
-		COptionListBox *pCtrl = (COptionListBox*)pControl;
-		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
+		CDialogControl *pCtrl = (CDialogControl*)pControl;
+		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlCheckBox:
 		{
-		VdclCheckBox *pCtrl = (VdclCheckBox*)pControl;
-		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
+		CDialogControl *pCtrl = (CDialogControl*)pControl;
+		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlTextBox:
 		{
-			switch (pArxObject->GetLongProperty(nFilterStyle))
+			switch (pArxObject->GetLongProperty(Prop::FilterStyle))
 			{
 				case EditFilter_Symbol:
 				{
@@ -1718,23 +1716,23 @@ int ShowToolTip()
 
 	case CtlGraphicButton:
 		{
-		CArxGraphicButtonCtrl *pCtrl = (CArxGraphicButtonCtrl*)pControl;
+		CDialogControl *pCtrl = (CDialogControl*)pControl;
 		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
 			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlActiveX:
 		{
-		CAxContainerCtrl *pCtrl = (CAxContainerCtrl*)pControl;
+		CDialogControl *pCtrl = (CDialogControl*)pControl;
 		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
 			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlDwgList:
 		{
-		CDwgDirList *pCtrl = (CDwgDirList*)pControl;
-		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
+		CDialogControl *pCtrl = (CDialogControl*)pControl;
+		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	}

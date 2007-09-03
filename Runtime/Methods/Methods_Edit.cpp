@@ -26,8 +26,8 @@ int TextBox_SetFilter()
 		return 0;
 	}
 	
-	if (pArxObject->GetLongProperty(nFilterStyle) > 0 &&
-		pArxObject->GetLongProperty(nFilterStyle) < 8)
+	if (pArxObject->GetLongProperty(Prop::FilterStyle) > 0 &&
+		pArxObject->GetLongProperty(Prop::FilterStyle) < 8)
 	{
 		theWorkspace.DisplayAlert(ErrorWrongFilterStyle);
 		// return nil
@@ -55,7 +55,7 @@ int TextBox_SetFilter()
 int TextBox_GetFilter()
 {
 	CDclControlObject *pArxObject = GetControlArxObject(sTextBox_SetFilter);
-	if (pArxObject->GetLongProperty(nFilterStyle) > 0)
+	if (pArxObject->GetLongProperty(Prop::FilterStyle) > 0)
 	{
 		theWorkspace.DisplayAlert(ErrorWrongFilterStyle);
 		// return nil

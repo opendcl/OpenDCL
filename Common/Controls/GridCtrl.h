@@ -5,93 +5,100 @@
 
 #include "DialogControl.h"
 #include "GridCtrlHdr.h"
-#include "ThemeHelperST.h"
-#include "PPToolTip.h"
+#include "AcadColorService.h"
+#include <string>
+#include <locale>
 
-class CThemeHelperST;
-class CPropertyObject;
-class CDclControlObject;
-class CDynamicButtonCtrl;
+class CGridCellEditCtrl;
 
-const int Grid_CheckBoxes		= 1;
-const int Grid_OptionButtons	= 2;
-const int Grid_SwitchableIcons	= 3;
-const int Grid_EllipsesButtons	= 4;
-const int Grid_PickButtons		= 5;
-const int Grid_Strings			= 6;
-const int Grid_AngleUnits		= 7;
-const int Grid_Integers			= 8;
-const int Grid_Units			= 9;
-const int Grid_UpperCase		= 10;
-const int Grid_LowerCase		= 11;
-const int Grid_Password			= 12;
-const int Grid_MultiLine		= 13;
-const int Grid_Currency			= 14;
-const int Grid_Date				= 15;
-const int Grid_Time				= 16;
-const int Grid_Percentage		= 17;
-const int Grid_DropDown			= 18;
-const int Grid_ArrowHead		= 19;
-const int Grid_AcadColors		= 20;
-const int Grid_TextStyleList	= 21;
-const int Grid_PlotStyleNames	= 22;
-const int Grid_PlotStyleTables	= 23;
-const int Grid_PlotterList		= 24;
-const int Grid_Fonts			= 25;
-const int Grid_DriveList		= 26;
-const int Grid_LayerList		= 27;
-const int Grid_DimStyleList		= 28;
-const int Grid_ImageDropList	= 29;
-const int Grid_AcadColorCell	= 30;
-const int Grid_TrueColorCell	= 31;
-const int Grid_LineWeightCell	= 32;
-const int Grid_LinetypeCell		= 33;
-const int Grid_DirectoryCell	= 34;
-const int Grid_DwgFilesCell		= 35;
-const int Grid_Strings_Combo	= 36;
-const int Grid_AngleUnits_Combo	= 37;
-const int Grid_Integers_Combo	= 38;
-const int Grid_Units_Combo		= 39;
-const int Grid_UpperCase_Combo	= 40;
-const int Grid_LowerCase_Combo	= 41;
+#if defined(_UNICODE)
+typedef std::wstring tstring;
+#else
+typedef std::string tstring;
+#endif //_UNICODE
 
-const int nNumOfTextBoxes = 13; 
-const int nNumOfComboBoxes = 14; 
+#define ID_CELLBUTTON 191
 
-struct _Style
+enum CellStyle
 {
-	int nStyle;
-	int nData1; // holds the default image value for style 3 and holds the date and time styles for 15 and 16
-	int nData2; // holds the alternate image value for style 3.
-	CStringArray sStrings; // holds the data that will fill a combo box list drop down.
-	CArray<int, int> nInts; // holds the data that will fill an image combo box list drop down.
-
-	_Style() 
-	{
-		nStyle = 0;
-		nData1 = 0;
-		nData2 = 0;
-	} 
-
+	Grid_Undefined = -1,
+	Grid_Runtime = 0,
+	Grid_CheckBoxes		= 1,
+	Grid_OptionButtons	= 2,
+	Grid_SwitchableIcons	= 3,
+	Grid_EllipsesButtons	= 4,
+	Grid_PickButtons		= 5,
+	Grid_Strings			= 6,
+	Grid_AngleUnits		= 7,
+	Grid_Integers			= 8,
+	Grid_Units			= 9,
+	Grid_UpperCase		= 10,
+	Grid_LowerCase		= 11,
+	Grid_Password			= 12,
+	Grid_MultiLine		= 13,
+	Grid_Currency			= 14,
+	Grid_Date				= 15,
+	Grid_Time				= 16,
+	Grid_Percentage		= 17,
+	Grid_DropDown			= 18,
+	Grid_ArrowHead		= 19,
+	Grid_AcadColors		= 20,
+	Grid_TextStyleList	= 21,
+	Grid_PlotStyleNames	= 22,
+	Grid_PlotStyleTables	= 23,
+	Grid_PlotterList		= 24,
+	Grid_Fonts			= 25,
+	Grid_DriveList		= 26,
+	Grid_LayerList		= 27,
+	Grid_DimStyleList		= 28,
+	Grid_ImageDropList	= 29,
+	Grid_AcadColorCell	= 30,
+	Grid_TrueColorCell	= 31,
+	Grid_LineWeightCell	= 32,
+	Grid_LinetypeCell		= 33,
+	Grid_DirectoryCell	= 34,
+	Grid_DwgFilesCell		= 35,
+	Grid_Strings_Combo	= 36,
+	Grid_AngleUnits_Combo	= 37,
+	Grid_Integers_Combo	= 38,
+	Grid_Units_Combo		= 39,
+	Grid_UpperCase_Combo	= 40,
+	Grid_LowerCase_Combo	= 41,
 };
 
+struct _CellData
+{
+	CellStyle mType;
+	int midxImage;
+	int midxAltImage;
+	int mnDateTimeStyle;
+	std::vector< tstring > mrsComboList;
+	std::vector< int > mrnComboImage;
+	_CellData()
+		: mType( Grid_Undefined )
+		, midxImage( -1 )
+		, midxAltImage( -1 )
+		, mnDateTimeStyle( -1 )
+	{
+	} 
+	_CellData( CellStyle type, int image = -1, int altImage = -1, int dateTimeStyle = -1 )
+		: mType( type )
+		, midxImage( image )
+		, midxAltImage( altImage )
+		, mnDateTimeStyle( dateTimeStyle )
+	{
+	} 
+	virtual ~_CellData() {}
+};
+
+typedef std::vector< _CellData > _ColumnData;
 struct _RowData
 {
-	long nItemData; // holds the item data because the row item data is now used.
-	CArray<_Style*, _Style*> m_Cells;
+	DWORD_PTR mnItemData; // holds the item data
+	_ColumnData mCellData;
 
-	_RowData()
-	{
-		nItemData = 0;
-	}
-	~_RowData()
-	{
-		for (int i=0; i<m_Cells.GetSize(); i++)
-		{
-			if (m_Cells[i] != NULL)
-				delete m_Cells[i];
-		}
-	}
+	_RowData( DWORD_PTR nItemData = 0 ) : mnItemData( nItemData ) {}
+	virtual ~_RowData() {}
 };
 
 
@@ -100,40 +107,33 @@ struct _RowData
 
 class CGridCtrl : public CListCtrl, public CDialogControl
 {
+	CAcadColorService mColorService;
+	CGridCtrlHdr mHeaderCtrl;
+	ULONG mcColumns;
+	bool mbHasRowHeader;
+	bool mbHasGridLines;
+	bool mbAlternateColumnColors;
+	CGridCellEditCtrl* mpCellEditCtrl;
+	CImageList mDefaultImageList;
+	CImageList mOptionButtonImageList;
+	CImageList mArrowImageList;
+	CImageList mFontImageList;
+	COLORREF mclrAlternate;
 
-public:
-	int HighlightType; // One of EHighligh enums
-	COLORREF ForegroundColor;
-	CGridCtrlHdr m_HeaderCtrl;
-	CThemeHelperST*		m_pTheme;
-	HTHEME m_hTheme;
-	
-	int m_nRowHeight;
-	bool m_bHasRowHeader;
-
-	RefCountedPtr< CPropertyObject > m_pColCaptions;	
-	RefCountedPtr< CPropertyObject > m_pColWidths;	
-	RefCountedPtr< CPropertyObject > m_pColImages;	
-	RefCountedPtr< CPropertyObject > m_pColStyles;	
-	RefCountedPtr< CPropertyObject > m_pColAlignment;	
-	RefCountedPtr< CPropertyObject > m_pColDefault;	
-	RefCountedPtr< CPropertyObject > m_pColAlternate;	
-
-	CImageList		*m_pArrowImages;
-	CImageList		*m_pFontImages;
-	CImageList		*m_pImageList;
-
-	bool				m_bHasGridLines;
-
-	enum EHighlight { HIGHLIGHT_NORMAL, HIGHLIGHT_ALLCOLUMNS, HIGHLIGHT_ROW };
-
-	CImageList			m_DefaultImageList;
-
-	COLORREF alertnateColor;
-	bool	 m_bOrientationVer;
-
-	int m_nRowSelected;
-	int m_nColSelected;
+protected:
+	class _Cell
+	{
+		int mRow;
+		int mCol;
+	public:
+		_Cell( int row = -1, int col = -1 ) : mRow( row ), mCol( col ) {}
+		operator bool() const { return (mRow >= 0); }
+		int row() const { return mRow; }
+		int col() const { return mCol; }
+		void set( int row, int col )
+			{ mRow = row; if( row < 0 ) mCol = -1; else mCol = col; }
+	} mCurrentCell;
+	std::vector< _RowData > mRowData;
 
 // Construction
 public:
@@ -144,46 +144,96 @@ public:
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual DWORD GetWndStyle() const;
-	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
 public:
+	void SetCurCell( int nRow, int nCol );
+	int GetCurRow() const { return mCurrentCell.row(); }
+	int GetCurColumn() const { return mCurrentCell.col(); }
+	CellStyle GetCellStyle( int nRow, int nCol );
+	CellStyle GetCurCellStyle();
+	void SetCellStyle( int nRow, int nCol, CellStyle nStyle, int image = -1, int altImage = -1,
+										 int dateTimeStyle = -1, LPCTSTR pszListText = NULL );
+	CString GetCellText( int nRow, int nCol ) const;
+	CString GetCurCellText() const;
+	void SetCurCellText( LPCTSTR pszText );
+	bool SetCellText( int nRow, int nCol, LPCTSTR pszText );
+	CRect GetCellRect( int nRow, int nCol, int area = LVIR_BOUNDS );
+	void SetCellImage( int nRow, int nCol, int nImage );
+	void SetCellTextImage( int nRow, int nCol, LPCTSTR pszText, int nImage );
+	int GetCellImage( int nRow, int nCol );
+	int GetCellUncheckedImage( int nRow, int nCol );
+	int GetCellCheckedImage( int nRow, int nCol );
+	bool IsCellChecked( int nRow, int nCol );
+	bool SetCellListData( int nRow, int nCol, const CArray<int, int>& rnImage, const CStringArray& rsList );
+	bool GetCellComboListItems( int nRow, int nCol, std::vector< tstring >& rsList, std::vector< int >& ridxImage );
+	UINT GetCellState( int nRow, int nCol );
+	bool ToggleCellState( int nRow, int nCol );
+	bool CellHitTest( const CPoint& point, int& nRow, int& nCol );
+	void HideEditControls();
+	bool EditCurCell() { OnEditCurCell(); return true; }
+	bool CancelEditing() { HideEditControls(); return true; }
+
+protected:
+	const _RowData* GetRowData( size_t nRow ) const;
+	const _CellData* GetCellData( size_t nRow, size_t nCol ) const;
+	_RowData& GetRowDataRef( size_t nRow );
+	_CellData& GetCellDataRef( size_t nRow, size_t nCol );
+	int GetCellListImage( int nRow, int nCol, LPCTSTR pszListText );
 	CRect GetCurSelRect();
-	int GetCurCellStyle();
-	void GetImageDropListItems(int nRow, int nCol, int &nImage, CString &sText);
-	_RowData * GetRowData(int nRow);
-	_Style * GetCellData(int nRow, int nCol);
-	void SetCellStyle(int nRow, int nCol, int nStyle);
-	int GetCellStyle(int nRow, int nCol);
-	void UpdateCell(CString sText);
-	
-// Operations
-public:
-	virtual void HideEditControls() { return; }
-	BOOL SortTextItems( int nCol, BOOL bAscending, int low = 0, int high = -1);
-	bool SortNumericItems( int nCol, BOOL bAscending, int low = 0, int high = -1);
-	void SetItemTextImage( int nRow,int nCol, CString sText, int nImage);
+	CRect GetCurCellRect( int area = LVIR_BOUNDS );
+	void InvalidateCell( int nRow, int nCol );
 	void SetupColumns();
-	void SetItemImage( int nRow, int nCol, int nImage);
-	int GetItemImage(int nRow, int nCol);
-	void SetColumn(UINT nIndex);
-	void SetThemeHelper(CThemeHelperST* pTheme);
-	void CellHitTest(CPoint point, int &nRow, int &nCol);
-	void DrawTrueColor(CDC* pDC, CRect rc, int &nColor, CString &sText);
-	void DrawLineWeights(CDC* pDC, CRect rc, int nImage);
-	void DrawCheckBox(CDC* pDC, CRect rc, bool bPressed, bool bSelected);
-	void DrawOptionButton(CDC* pDC, CRect rc, bool bPressed, COLORREF backColor, BOOL bSelected);
-	void ShowCurSel();
-	void RefreshCell(int nRow, int nCol);
+	void MoveUp();
+	void MoveDown();
+	void MoveLeft();
+	void MoveRight();
+	bool IsEditing() const { return (mpCellEditCtrl != NULL); }
+
+	// CListCtrl overrides to ensure that base class functions don't get called directly
+public:
+	BOOL SetItemData( int nRow, DWORD_PTR dwData );
+	DWORD_PTR GetItemData( int nRow ) const;
+	int InsertColumn( int nCol, LPCTSTR lpszColumnHeading, int nFormat = LVCFMT_LEFT, int nWidth = -1,
+										int nImageIndex = -1 );
+	CString GetItemText( int nRow, int nCol ) { return GetCellText( nRow, nCol ); }
+	BOOL SetItemText( int nRow, int nCol, LPCTSTR pszText ) { return SetCellText( nRow, nCol, pszText ); }
+	BOOL DeleteItem( int nRow );
+	BOOL DeleteColumn( int nCol );
+
+
+// Overridables
+protected:
+	virtual void OnSelectionChanged() {}
+	virtual void OnEditCurCell();
+	virtual CGridCellEditCtrl* CreateEditControl( int nRow, int nCol );
+	virtual void OnEndEditCurCell();
+	virtual void DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc );
+
+// Operations
+protected:
+	void DrawOptionButton( CDC& cdc, const CRect& rcIcon, bool bPressed, bool bHighlight );
+	void DrawCheckBox( CDC& cdc, const CRect& rcIcon, bool bPressed, bool bHighlight );
+	void DrawTrueColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText );
+	void DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText );
+	void DrawFontIcons( CDC& cdc, const CRect& rcIcon, int nImage, const CString& sText );
+
+public:
+	BOOL SortTextItems( int nCol, BOOL bAscending, int low = 0, int high = -1 );
+	bool SortNumericItems( int nCol, BOOL bAscending, int low = 0, int high = -1 );
 
 protected:
 	DECLARE_MESSAGE_MAP()
 
 // Generated message map functions
 protected:
+	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp);
 	afx_msg void OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void PostNcDestroy();
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };

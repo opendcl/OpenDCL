@@ -46,15 +46,16 @@ CString CAutoRichEditCtrl::GetRTF()
 
 }
 
-void CAutoRichEditCtrl::SetRTF(CString sRTF)
+void CAutoRichEditCtrl::SetRTF(LPCTSTR pszRTF)
 {
 	// Put the RTF string sRTF into the rich edit control.
+	CStringA sRtfA( pszRTF );
 
 	// Read the text in
 	EDITSTREAM es;
 	es.dwError = 0;
 	es.pfnCallback = CBStreamIn;
-	es.dwCookie = reinterpret_cast<DWORD>(&sRTF);
+	es.dwCookie = reinterpret_cast<DWORD>(&sRtfA);
 	StreamIn(SF_RTF, es);	// Do it.
 }
 
@@ -71,19 +72,19 @@ DWORD CALLBACK CAutoRichEditCtrl::CBStreamIn(DWORD_PTR dwCookie, LPBYTE pbBuff, 
 	Zafir Anjum
 */
 
-	CString *pstr = reinterpret_cast<CString*>(dwCookie);
+	CStringA *pstr = reinterpret_cast<CStringA*>(dwCookie);
 
-	if (pstr->GetLength() * sizeof(TCHAR) < (ULONG)cb)
+	if (pstr->GetLength() < cb)
 	{
-		*pcb = pstr->GetLength() * sizeof(TCHAR);
-		memcpy(pbBuff, (LPCTSTR) *pstr, *pcb);
+		*pcb = pstr->GetLength();
+		memcpy(pbBuff, (LPCSTR) *pstr, *pcb);
 		pstr->Empty();
 	}
 	else
 	{
 		*pcb = cb;
-		memcpy(pbBuff, (LPCTSTR) *pstr, *pcb);
-		*pstr = pstr->Right(pstr->GetLength() - cb / sizeof(TCHAR));
+		memcpy(pbBuff, (LPCSTR) *pstr, *pcb);
+		*pstr = pstr->Right(pstr->GetLength() - cb);
 	}
 	///
 

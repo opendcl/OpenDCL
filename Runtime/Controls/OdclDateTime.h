@@ -46,7 +46,6 @@ public:
 	// Generated message map functions
 protected:
 	//{{AFX_MSG(OdclDateTime)
-	afx_msg void OnDatetimechange(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnWmkeydown(NMHDR* pNMHDR, LRESULT* pResult);	
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	//}}AFX_MSG

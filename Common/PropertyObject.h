@@ -1,13 +1,13 @@
 #pragma once
 
 #include <vector>
+#include "PropertyIds.h"
 
 class AxPropertyDescriptor;
 class AxEventDescriptor;
 class AxMethodDescriptor;
 class AxInterfaceDescriptor;
 enum IOStatus;
-enum PropertyId;
 
 enum PropertyType
 {
@@ -125,7 +125,7 @@ class CPropertyObject : public CObject
 
 protected:
 	bool mbHidden;
-	PropertyId mnID;
+	Prop::Id mnID;
 #ifdef _DEBUG
 private:
 	PropertyType mType; //used for inspecting type at runtime while debugging
@@ -137,7 +137,7 @@ protected:
 	CPropertyObject();
 	virtual ~CPropertyObject();
 public:
-	CPropertyObject(PropertyType type, DWORD dwFlags = 0, PropertyId nID = (PropertyId)-1);
+	CPropertyObject(PropertyType type, DWORD dwFlags = 0, Prop::Id nID = (Prop::Id)-1);
 
 	//2007-01-30 [ORW]: save version set to 5 (no change from OpenDCL 3)
 	//2007-02-08 [ORW]: save version set to 6 (eliminate MFC serialized classes)
@@ -154,8 +154,8 @@ public:
 	void SetFlags( DWORD flags ) { mpValue->SetFlags( flags ); }
 	bool IsHidden() const { return mbHidden; }
 	void SetHidden( bool bHidden = true ) { mbHidden = bHidden; }
-	PropertyId GetID() const { return mnID; }
-	void SetID( PropertyId nID ) { mnID = nID; }
+	Prop::Id GetID() const { return mnID; }
+	void SetID( Prop::Id nID ) { mnID = nID; }
 
 	//simple value access
 	CString GetStringValue() const;
@@ -211,6 +211,9 @@ protected:
 	DECLARE_SERIAL(CPropertyObject)
 
 #ifdef _DIAGNOSTIC
+public:
 	virtual LPCTSTR toString() const;
 #endif
 };
+
+typedef RefCountedPtr< CPropertyObject > TPropertyPtr;

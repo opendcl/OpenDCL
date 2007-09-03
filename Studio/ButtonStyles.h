@@ -8,6 +8,7 @@
 
 class CDclControlObject;
 class CPropertyObject;
+class COpenDCLView;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -16,6 +17,7 @@ class CPropertyObject;
 class CButtonStyles : public CPropertyPage
 {
 	CDclControlObject* mpControl;
+	COpenDCLView* mpView;
 	CPictureBox	m_Picture;
 	CListBox	m_PicList;
 	CStatic	m_Desc;
@@ -25,15 +27,15 @@ class CButtonStyles : public CPropertyPage
 	int m_SelectedStyle;
 
 public:
-	RefCountedPtr< CPropertyObject > m_pStyle;
-	RefCountedPtr< CPropertyObject > m_pPicture;
+	TPropertyPtr m_pStyle;
+	TPropertyPtr m_pPicture;
 
 protected:
 	enum { IDD = IDD_BUTTONSTYLES };
 
 // Construction
 public:
-	CButtonStyles( CDclControlObject* pControl );
+	CButtonStyles( CDclControlObject* pControl, COpenDCLView* pView );
 	~CButtonStyles();
 
 public:

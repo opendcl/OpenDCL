@@ -53,18 +53,13 @@
 #include "Methods_BinFiles.h"
 #include "MethodLexicon.h"
 #include "DialogObject.h"
-#include "ModalVDcl.h"
 #include "CustomFileDialog.h"
 #include "ErrorLexicon.h"
 #include "LayeredWindowHelperST.h"
 #include "ControlTypes.h"
 #include "ArchiveEx.h"
-#include "CfgTabPane.h"
-#include "DockingDialog.h"
-#include "ResizableDockingDialog.h"
 #include "SlideHolder.h"
 #include "InvokeMethod.h"
-#include "ModelessDlg.h"
 #include "DialogControl.h"
 #include "StringCompare.h"
 #include "DirDialog.h"
@@ -72,7 +67,6 @@
 #include "AcadColorTable.h"
 #include "LineWeightDlg.h"
 #include "LinetypeDlg.h"
-#include "CustomFileDialog.h"
 #include "Base64.h"
 #include "UpdateCheck.h"
 
@@ -193,7 +187,6 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{sDwgList_Dir,				DwgList_Dir},
 	{sDwgList_GetDir,			DwgList_GetDir},
 	{sDwgList_GetFileName,		DwgList_GetFileName},
-	{sDwgList_SetRowHeight,		DwgList_SetRowHeight},											
 	{sDwgList_GetType,			DwgList_GetType},
 
 	{sOptionList_SetEnabled,		OptionList_SetEnabled},
@@ -240,19 +233,14 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{sListBox_GetAnchorIndex,	ListBox_GetAnchorIndex},
 
 	// grid control methods 
-	{sGrid_Cell_TextBox,		Grid_Cell_TextBox},
 	{sGrid_AddString,			Grid_AddString},
-	{sGrid_Cell_ComboBox,		Grid_Cell_ComboBox},
-	{sGrid_Cell_ImageComboBox,	Grid_Cell_ImageComboBox},
-	{sGrid_Cell_EllipsesButton,	Grid_Cell_EllipsesButton},
-	{sGrid_Cell_PickButton,		Grid_Cell_PickButton},
+	{_T("Grid_StartItemEdit"),	Grid_Cell_StartItemEdit},
 	{sGrid_Cell_SetStyle,		Grid_Cell_SetStyle},											
 	{sGrid_SelectCell,			Grid_SelCurCell},
 
 	{sGrid_SelCurRow,			Grid_SelCurRow},
 	{sGrid_HitPointTest,		Grid_HitPointTest},
 	{sGrid_Cell_SetDropList,	Grid_Cell_SetDropList},
-	{sGrid_Cell_DoCellDlg,		Grid_Cell_DoCellDlg},
 	{sGrid_AddColumn,			Grid_AddColumn},
 	{sGrid_AddRow,				Grid_AddRow},
 	{sGrid_CalcColumnWidth,		Grid_CalcColumnWidth},
@@ -279,7 +267,6 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{sGrid_SetColumnImage,		Grid_SetColumnImage},
 	{sGrid_GetCount,			Grid_GetCount},
 	{sGrid_GetColumnCount,		Grid_GetColumnCount},
-	{sGrid_Cell_ToggleImages,	Grid_Cell_ToggleImages},
 	{sGrid_GetCheck,			Grid_GetCheck},
 	{sGrid_SetCheck,			Grid_SetCheck},
 	{sGrid_InsertRow,			Grid_InsertRow},
@@ -770,16 +757,16 @@ public:
 				assert( nRet == AcRx::kRetOK );
 				return AcRx::kRetOK;
 			}
-			if( nFunctionCode >= ADSPROPFUNCBASE && nFunctionCode < ADSPROPFUNCBASE + nMaxPropertyId )
+			if( nFunctionCode >= ADSPROPFUNCBASE && nFunctionCode < ADSPROPFUNCBASE + Prop::_MaxId )
 			{
-				bool bSuccess = GetCtrlProperty( static_cast<PropertyId>(nFunctionCode - ADSPROPFUNCBASE) );
+				bool bSuccess = GetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - ADSPROPFUNCBASE) );
 				assert( bSuccess == true );
 				return AcRx::kRetOK;
 			}
-			int nSetPropertyBase = ADSPROPFUNCBASE + nMaxPropertyId;
-			if( nFunctionCode >= nSetPropertyBase && nFunctionCode < nSetPropertyBase + nMaxPropertyId )
+			int nSetPropertyBase = ADSPROPFUNCBASE + Prop::_MaxId;
+			if( nFunctionCode >= nSetPropertyBase && nFunctionCode < nSetPropertyBase + Prop::_MaxId )
 			{
-				bool bSuccess = SetCtrlProperty( static_cast<PropertyId>(nFunctionCode - nSetPropertyBase) );
+				bool bSuccess = SetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - nSetPropertyBase) );
 				assert( bSuccess == true );
 				return AcRx::kRetOK;
 			}
@@ -806,14 +793,14 @@ public:
 			static const CString sSetPrefix = sPrefix + _T("Control_Set");
 			for( T_PropertyIdSet::const_iterator iter = mPropIds.begin(); iter != mPropIds.end(); ++iter )
 			{
-				PropertyId id = *iter;
+				Prop::Id id = *iter;
 				LPCTSTR pszPropName = GetPropertyName( id );
 				if( pszPropName && *pszPropName != _T('(') )
 				{
 					acedDefun( sGetPrefix + pszPropName, ADSPROPFUNCBASE + id );
-					acedDefun( sSetPrefix + pszPropName, ADSPROPFUNCBASE + id + nMaxPropertyId );
+					acedDefun( sSetPrefix + pszPropName, ADSPROPFUNCBASE + id + Prop::_MaxId );
 					acedRegFunc( ads_dcl_GetCtrlProperty, ADSPROPFUNCBASE + id );
-					acedRegFunc( ads_dcl_SetCtrlProperty, ADSPROPFUNCBASE + id + nMaxPropertyId );
+					acedRegFunc( ads_dcl_SetCtrlProperty, ADSPROPFUNCBASE + id + Prop::_MaxId );
 				}
 			}
 
@@ -999,7 +986,7 @@ public:
 		// get the dcl form object that will be displayed
 		mpDclToBeShown = mpProjectToBeShown->FindDclForm(msDialogToBeShown);
 		CDclControlObject *pProps = mpDclToBeShown->GetControlProperties();
-		pProps->SetStringProperty(nFormEventInitialize, msActionToBeShown);
+		pProps->SetStringProperty(Prop::FormEventInitialize, msActionToBeShown);
 		
 		TCHAR lpPathBuffer[MAX_PATH];
 		::GetTempPath(MAX_PATH, lpPathBuffer);
@@ -1119,7 +1106,7 @@ public:
 
 		if (pCtrl->GetWindow() == NULL)
 		{ //the control has not been created yet
-			RefCountedPtr< CPropertyObject > pProp = pCtrl->GetPropertyObject(nList);
+			TPropertyPtr pProp = pCtrl->GetPropertyObject(Prop::List);
 			assert(pProp != NULL);
 			if (!pProp)
 				return RSERR;
@@ -1184,7 +1171,7 @@ public:
 
 		if (pCtrl->GetWindow() == NULL)
 		{ //the control has not been created yet
-			RefCountedPtr< CPropertyObject > pProp = pCtrl->GetPropertyObject(nList);
+			TPropertyPtr pProp = pCtrl->GetPropertyObject(Prop::List);
 			assert(pProp != NULL);
 			if (!pProp)
 				return RSERR;
@@ -1314,29 +1301,29 @@ public:
 		case CtlOptionButton:
 		case CtlSlideView:
 			{
-				pCtrl->SetStringProperty(nEventClicked, sAction);
+				pCtrl->SetStringProperty(Prop::EventClicked, sAction);
 				break;
 			}
 		case CtlTextBox:
 			{
-				pCtrl->SetStringProperty(nEventEditChanged, sAction);
+				pCtrl->SetStringProperty(Prop::EventEditChanged, sAction);
 				break;
 			}		
 		case CtlGrid:
 		case CtlListView:
 			{
-				pCtrl->SetStringProperty(nEventClicked, sAction);
+				pCtrl->SetStringProperty(Prop::EventClicked, sAction);
 				break;
 			}
 		case CtlComboBox:
 		case CtlListBox:
 			{
-				pCtrl->SetStringProperty(nEventSelChanged, sAction);
+				pCtrl->SetStringProperty(Prop::EventSelChanged, sAction);
 				break;
 			}	
 		case CtlScrollBar:
 			{
-				pCtrl->SetStringProperty(nEventScroll, sAction);
+				pCtrl->SetStringProperty(Prop::EventScroll, sAction);
 				break;
 			}
 		}
@@ -1386,7 +1373,7 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
-		pCtrl->SetStringProperty(nText, pszValue);
+		pCtrl->SetStringProperty(Prop::Text, pszValue);
 		if (pCtrl->GetWindow())
 			pCtrl->GetWindow()->SetWindowText(pszValue);
 
@@ -1426,12 +1413,12 @@ public:
 			{
 			case 0:
 				{
-					pCtrl->SetBooleanProperty(nEnabled, true);
+					pCtrl->SetBooleanProperty(Prop::Enabled, true);
 					break;
 				}		
 			case 1:
 				{
-					pCtrl->SetBooleanProperty(nEnabled, false);
+					pCtrl->SetBooleanProperty(Prop::Enabled, false);
 					break;
 				}		
 			}
@@ -1442,13 +1429,13 @@ public:
 			{
 			case 0:
 				{
-					pCtrl->SetBooleanProperty(nEnabled, true);
+					pCtrl->SetBooleanProperty(Prop::Enabled, true);
 					pCtrl->GetWindow()->EnableWindow(TRUE);
 					break;
 				}		
 			case 1:
 				{
-					pCtrl->SetBooleanProperty(nEnabled, false);
+					pCtrl->SetBooleanProperty(Prop::Enabled, false);
 					pCtrl->GetWindow()->EnableWindow(FALSE);
 					break;
 				}
@@ -1503,7 +1490,7 @@ public:
 
 		if (pCtrl->GetWindow() == NULL)
 		{ //the control has not been created yet
-			acedRetStr(pCtrl->GetStrProperty(nText));
+			acedRetStr(pCtrl->GetStrProperty(Prop::Text));
 		}
 		else
 		{ //we are changing an already created control
@@ -2415,7 +2402,7 @@ public:
 		CDclControlObject* pPropObj = pDialog->GetSourceForm()->GetControlProperties();
 		assert(pPropObj != NULL);
 		if(pPropObj)
-			acedRetStr(pPropObj->GetStrProperty(nTitleBarText));
+			acedRetStr(pPropObj->GetStrProperty(Prop::TitleBarText));
 
 		return (RSRSLT) ;
 	}
@@ -2444,7 +2431,7 @@ public:
 		}
 
 		CDclControlObject *pPropObj = pDialog->GetSourceForm()->GetControlProperties();
-		pPropObj->SetStringProperty(nTitleBarText, pszTitle);
+		pPropObj->SetStringProperty(Prop::TitleBarText, pszTitle);
 		::SetWindowText( pDialog->GetHWnd(), pszTitle );
 
 		return (RSRSLT) ;
@@ -3989,9 +3976,7 @@ public:
 						return RSERR; //wrong argument type
 					}
 				}
-				if( pArgs )
-					pArgs = pArgs->rbnext;
-				else
+				if( !pArgs )
 					return RSERR; //no matching RTLE found
 				pszRawData = sRawDataIn;
 			}
@@ -4059,7 +4044,7 @@ public:
 		catch( ... )
 		{
 			delete pProject;
-			return NULL; 
+			return RSERR; 
 		}
 
 		return (RSRSLT) ;
@@ -4169,9 +4154,9 @@ int CARXApp::ads_dcl_GetCtrlProperty(void)
 {
 	acedRetNil();
 	int nFunctionCode = acedGetFunCode();
-	if( nFunctionCode < ADSPROPFUNCBASE || nFunctionCode > ADSPROPFUNCBASE + nMaxPropertyId )
+	if( nFunctionCode < ADSPROPFUNCBASE || nFunctionCode > ADSPROPFUNCBASE + Prop::_MaxId )
 		return RSERR;
-	GetCtrlProperty( static_cast<PropertyId>(nFunctionCode - ADSPROPFUNCBASE) );
+	GetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - ADSPROPFUNCBASE) );
 	return RSRSLT;
 }
 
@@ -4180,10 +4165,10 @@ int CARXApp::ads_dcl_SetCtrlProperty(void)
 {
 	acedRetNil();
 	int nFunctionCode = acedGetFunCode();
-	int nSetPropertyBase = ADSPROPFUNCBASE + nMaxPropertyId;
-	if( nFunctionCode < nSetPropertyBase || nFunctionCode > nSetPropertyBase + nMaxPropertyId )
+	int nSetPropertyBase = ADSPROPFUNCBASE + Prop::_MaxId;
+	if( nFunctionCode < nSetPropertyBase || nFunctionCode > nSetPropertyBase + Prop::_MaxId )
 		return RSERR;
-	SetCtrlProperty( static_cast<PropertyId>(nFunctionCode - nSetPropertyBase) );
+	SetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - nSetPropertyBase) );
 	return RSRSLT;
 }
 

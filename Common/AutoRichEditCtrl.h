@@ -58,7 +58,7 @@ public:
 	void SetSelectionItalic();
 	void SetSelectionUnderlined();
 
-	void SetRTF(CString sRTF);
+	void SetRTF(LPCTSTR pszRTF);
 	CString GetRTF();
 	virtual ~CAutoRichEditCtrl();
 

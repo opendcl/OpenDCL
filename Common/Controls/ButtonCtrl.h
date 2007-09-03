@@ -6,6 +6,7 @@
 
 #include "XPStyleButtonST.h"
 #include "DialogControl.h"
+#include "AcadColorService.h"
 
 class CDclControlObject;
 class CProject;
@@ -21,12 +22,56 @@ enum ButtonStyle
 	ButtonStyle_XPTheme		= 6,
 };
 
+class CButtonAcadColorService : public CAcadColorService
+{
+	CButtonST& mButton;
+
+// Construction
+public:
+	CButtonAcadColorService( CButtonST& Button ) : mButton( Button )
+		{
+			ResetButtonForegroundColor();
+			ResetButtonBackgroundColor();
+		}
+	virtual ~CButtonAcadColorService()
+		{
+		}
+
+protected:
+	void ResetButtonForegroundColor() const;
+	void ResetButtonBackgroundColor() const;
+
+// Operations
+public:
+	virtual void SetBackgroundColor( long nAcadColor )
+	{
+		__super::SetBackgroundColor( nAcadColor );
+		ResetButtonBackgroundColor();
+	}
+	virtual void SetBackgroundColor( COLORREF color )
+	{
+		__super::SetBackgroundColor( color );
+		ResetButtonBackgroundColor();
+	}
+	virtual void SetForegroundColor( long nAcadColor )
+	{
+		__super::SetForegroundColor( nAcadColor );
+		ResetButtonForegroundColor();
+	}
+	virtual void SetForegroundColor( COLORREF color )
+	{
+		__super::SetForegroundColor( color );
+		ResetButtonForegroundColor();
+	}
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // CButtonCtrl window
 
 class CButtonCtrl : public CXPStyleButtonST, public CDialogControl
 {
+	CButtonAcadColorService mAcadColorService;
+
 public:
 	CButtonCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CButtonCtrl();
@@ -35,7 +80,8 @@ public:
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
 
 public:
 	void SetResourceIcon(UINT idIcon);

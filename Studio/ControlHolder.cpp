@@ -5,19 +5,21 @@
 #include "ControlHolder.h"
 #include "DclControlObject.h"
 #include "ControlTypes.h"
-#include "AxContainerCtrl.h"
 #include "Resource.h"
 #include "Workspace.h"
 #include "GraphicButtonCtrl.h"
 #include "TabStripCtrl.h"
-#include "OptionListBox.h"
+#include "AxContainerCtrl.h"
+#include "ListBoxCtrl.h"
+#include "OptionListCtrl.h"
+#include "CheckBoxCtrl.h"
+#include "RadioButtonCtrl.h"
+#include "GridCtrl.h"
 #include "StaticLink.h"
 #include "3DRect.h"
 #include "Splitter.h"
 #include "PictureBox.h"
 #include "RoundSliderCtrl.h"
-#include "AcadColorListBox.h"
-#include "ColorButton.h"
 #include "ColorEdit.h"
 #include "VdclGroupBox.h"
 #include "VdclStatic.h"
@@ -42,14 +44,8 @@ CControlHolder::CControlHolder()
 , mpTemplate( NULL )
 , mpDlgControl( NULL )
 , mnControlId( -1 )
+, mGripper( this, false )
 {
-	m_bSelected = false;
-	m_bActiveXCtrl = false;
-	m_ClassName = AfxRegisterWndClass(CS_VREDRAW | CS_HREDRAW,
-		  NULL,
-		  ::GetSysColorBrush(COLOR_BTNFACE),
-		  NULL);
-	
 }
 
 CControlHolder::CControlHolder( CDclControlObject* mpTemplate )
@@ -57,35 +53,18 @@ CControlHolder::CControlHolder( CDclControlObject* mpTemplate )
 , mpTemplate( mpTemplate )
 , mpDlgControl( NULL )
 , mnControlId( -1 )
+, mGripper( this, false )
 {
-	m_bSelected = false;
-	m_bActiveXCtrl = false;
-	m_ClassName = AfxRegisterWndClass(CS_VREDRAW | CS_HREDRAW,
-		  NULL,
-		  ::GetSysColorBrush(COLOR_BTNFACE),
-		  NULL);
-	
 }
 
 CControlHolder::~CControlHolder()
 {
 }
 
-int CControlHolder::GetId()
-{
-	return mnControlId;
-}
-
 
 BEGIN_MESSAGE_MAP(CControlHolder, CWnd)
-	ON_WM_CREATE()
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
-	ON_WM_MOUSEMOVE()
-	ON_WM_LBUTTONDBLCLK()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_LBUTTONUP()
-	ON_WM_SHOWWINDOW()
 	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
@@ -100,172 +79,12 @@ BOOL CControlHolder::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, U
 	return bSuccess;
 }
 
-int CControlHolder::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+void CControlHolder::SetSelected() 
 {
-	if (CStatic::OnCreate(lpCreateStruct) == -1)
-		return -1;
-	CreateGrips();
-
-	return 0;
-}
-void CControlHolder::CreateGrips()
-{
-	int nGridIDCounter = nDeGridIDCounter;
-	CRect rcGrip(0,0,nGripSizeConst,nGripSizeConst);
-	
-	// create all the grip rect and hide them for later selection use
-	m_bGripsCreate = m_GripRect1.Create(rcGrip, this, nGridIDCounter);
-	m_GripRect1.ShowWindow(FALSE);		
-	m_GripRect1.m_bShowAsSelected = true;
-	nGridIDCounter++;
-	
-	m_GripRect2.Create(rcGrip, this, nGridIDCounter);
-	m_GripRect2.ShowWindow(FALSE);
-	m_GripRect2.m_bShowAsSelected = true;
-	nGridIDCounter++;
-	
-	m_GripRect3.Create(rcGrip, this, nGridIDCounter);
-	m_GripRect3.ShowWindow(FALSE);
-	m_GripRect3.m_bShowAsSelected = true;
-	nGridIDCounter++;
-	
-	m_GripRect4.Create(rcGrip, this, nGridIDCounter);
-	m_GripRect4.ShowWindow(FALSE);
-	m_GripRect4.m_bShowAsSelected = true;
-	nGridIDCounter++;
-	
-	m_GripRect5.Create(rcGrip, this, nGridIDCounter);
-	m_GripRect5.ShowWindow(FALSE);
-	m_GripRect5.m_bShowAsSelected = true;
-	nGridIDCounter++;
-	
-	m_GripRect6.Create(rcGrip, this, nGridIDCounter);
-	m_GripRect6.ShowWindow(FALSE);
-	m_GripRect6.m_bShowAsSelected = true;
-	nGridIDCounter++;
-	
-	m_GripRect7.Create(rcGrip, this, nGridIDCounter);
-	m_GripRect7.ShowWindow(FALSE);
-	m_GripRect7.m_bShowAsSelected = true;
-	nGridIDCounter++;
-	
-	m_GripRect8.Create(rcGrip, this, nGridIDCounter);
-	m_GripRect8.ShowWindow(FALSE);
-	m_GripRect8.m_bShowAsSelected = true;
-	
-
-}
-
-void CControlHolder::ReleaseSelection() 
-{
-	m_bSelected = false;
-	// now hide all the grip rect's
-	m_GripRect1.ShowWindow(FALSE);
-	m_GripRect2.ShowWindow(FALSE);
-	m_GripRect3.ShowWindow(FALSE);
-	m_GripRect4.ShowWindow(FALSE);
-	m_GripRect5.ShowWindow(FALSE);
-	m_GripRect6.ShowWindow(FALSE);
-	m_GripRect7.ShowWindow(FALSE);
-	m_GripRect8.ShowWindow(FALSE);
-
-}
-void CControlHolder::ForceGripsForward() 
-{
-	m_GripRect1.SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
-	m_GripRect2.SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
-	m_GripRect3.SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
-	m_GripRect4.SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
-	m_GripRect5.SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
-	m_GripRect6.SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
-	m_GripRect7.SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
-	m_GripRect8.SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
-	
-}
-
-void CControlHolder::HideGrips() 
-{
-	m_GripRect1.ShowWindow(FALSE);
-	m_GripRect2.ShowWindow(FALSE);
-	m_GripRect3.ShowWindow(FALSE);
-	m_GripRect4.ShowWindow(FALSE);
-	m_GripRect5.ShowWindow(FALSE);
-	m_GripRect6.ShowWindow(FALSE);
-	m_GripRect7.ShowWindow(FALSE);
-	m_GripRect8.ShowWindow(FALSE);
-	
-}
-
-void CControlHolder::SetSelected(BOOL bSelected) 
-{
-	if (bSelected == TRUE)
-		m_bSelected = true;
-	else
-		m_bSelected = false;
-
 	CRect rcThis;
-	GetWindowRect(&rcThis);
-
-	// set the predetermined pos's
-	int MidX = (rcThis.Width() - nGripSizeConst) / 2;
-	int MidY = (rcThis.Height() - nGripSizeConst) / 2;
-	int RightX = rcThis.Width() - nGripSizeConst;
-	int BottomY = rcThis.Height() - nGripSizeConst;
-
-	// set the positions of all the grip rect's
-	m_GripRect1.MoveWindow( 
-		0, 0, nGripSizeConst, nGripSizeConst, 
-		TRUE);
-	
-	m_GripRect2.MoveWindow( 
-		MidX, 0, nGripSizeConst, nGripSizeConst,
-		TRUE);
-
-	m_GripRect3.MoveWindow( 
-		RightX, 0, nGripSizeConst, nGripSizeConst,
-		TRUE);
-
-	m_GripRect4.MoveWindow( 
-		0, MidY, nGripSizeConst, nGripSizeConst, 
-		TRUE);
-		
-	m_GripRect5.MoveWindow( 
-		RightX, MidY, nGripSizeConst, nGripSizeConst,
-		TRUE);
-
-	// set the positions of all the grip rect's
-	m_GripRect6.MoveWindow( 
-		0, BottomY, nGripSizeConst, nGripSizeConst, 
-		TRUE);
-	
-	m_GripRect7.MoveWindow( 
-		MidX, BottomY, nGripSizeConst, nGripSizeConst,
-		TRUE);
-
-	m_GripRect8.MoveWindow( 
-		RightX, BottomY, nGripSizeConst, nGripSizeConst,
-		TRUE);
-	
-	ForceGripsForward();
-
-	// now show all the grip rect's
-	m_GripRect1.ShowWindow(TRUE);
-	m_GripRect2.ShowWindow(TRUE);
-	m_GripRect3.ShowWindow(TRUE);
-	m_GripRect4.ShowWindow(TRUE);
-	m_GripRect5.ShowWindow(TRUE);
-	m_GripRect6.ShowWindow(TRUE);
-	m_GripRect7.ShowWindow(TRUE);
-	m_GripRect8.ShowWindow(TRUE);
-	
-	m_GripRect1.Invalidate();
-	m_GripRect2.Invalidate();
-	m_GripRect3.Invalidate();
-	m_GripRect4.Invalidate();
-	m_GripRect5.Invalidate();
-	m_GripRect6.Invalidate();
-	m_GripRect7.Invalidate();
-	m_GripRect8.Invalidate();
+	GetWindowRect( &rcThis );
+	ScreenToClient( &rcThis );
+	mGripper.MoveTo( rcThis );
 }
 
 void CControlHolder::OnSize(UINT nType, int cx, int cy) 
@@ -360,80 +179,13 @@ void CControlHolder::OnPaint()
 
 void CControlHolder::OnDestroy() 
 {
-	m_GripRect1.DestroyWindow();
-	m_GripRect2.DestroyWindow();
-	m_GripRect3.DestroyWindow();
-	m_GripRect4.DestroyWindow();
-	m_GripRect5.DestroyWindow();
-	m_GripRect6.DestroyWindow();
-	m_GripRect7.DestroyWindow();
-	m_GripRect8.DestroyWindow();
 	mpDlgControl = NULL;
-	CStatic::OnDestroy();
+	__super::OnDestroy();
 }
-
-CWnd *CControlHolder::GetChildControl() 
-{
-	return mpDlgControl? mpDlgControl->GetControl() : NULL;
-}
-
-
-
-void CControlHolder::OnMouseMove(UINT nFlags, CPoint point) 
-{
-	// TODO: Add your message handler code here and/or call default
-	
-//	CStatic::OnMouseMove(nFlags, point);
-}
-
-void CControlHolder::OnLButtonDblClk(UINT nFlags, CPoint point) 
-{
-	// TODO: Add your message handler code here and/or call default
-	
-//	CStatic::OnLButtonDblClk(nFlags, point);
-}
-
-void CControlHolder::OnLButtonDown(UINT nFlags, CPoint point) 
-{
-	// TODO: Add your message handler code here and/or call default
-	
-//	CStatic::OnLButtonDown(nFlags, point);
-}
-
-void CControlHolder::OnLButtonUp(UINT nFlags, CPoint point) 
-{
-	// TODO: Add your message handler code here and/or call default
-	
-//	CStatic::OnLButtonUp(nFlags, point);
-}
-
-BOOL CControlHolder::PreTranslateMessage(MSG* pMsg) 
-{
-	switch (pMsg->message)
-	{
-	case WM_KEYDOWN:
-	case WM_LBUTTONUP:
-	case WM_LBUTTONDBLCLK:
-	case WM_LBUTTONDOWN:
-	case WM_MBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-	case WM_KEYUP:
-	case WM_MOUSEMOVE:
-		{
-			pMsg->wParam = NULL;
-			pMsg->message = NULL;
-			return TRUE;
-			break;
-		}	
-	}
-		
-	return CStatic::PreTranslateMessage(pMsg);
-}
-
 
 CAxContainerCtrl* CControlHolder::GetActiveXCtrl()
 {
-	if( !mpDlgControl )
+	if( !mpDlgControl || mpDlgControl->GetControlType() != CtlActiveX )
 		return NULL;
 	return (CAxContainerCtrl*)mpDlgControl->GetControl();
 }
@@ -442,6 +194,7 @@ void CControlHolder::SetColor(DISPID dispid, unsigned long ulColor)
 {
 	GetActiveXCtrl()->SetColor(dispid, ulColor);
 }
+
 unsigned long CControlHolder::GetColor(DISPID dispid)
 {
 	return GetActiveXCtrl()->GetColor(dispid);
@@ -489,13 +242,6 @@ BOOL CControlHolder::OnAmbientProperty(COleControlSite* pSite, DISPID dispid, VA
 	}	
 	return CStatic::OnAmbientProperty(pSite, dispid, pvar);
 }
-
-void CControlHolder::OnShowWindow(BOOL bShow, UINT nStatus) 
-{
-	CWnd::OnShowWindow(bShow, nStatus);
-	
-}
-
 
 void CControlHolder::SetupTreeControl(CTreeCtrl *pControl)
 {
@@ -559,26 +305,17 @@ void CControlHolder::SetupTreeControl(CTreeCtrl *pControl)
 	pControl->Expand(m_rghItem[0], TVE_EXPAND);
 }
 
-CSize CControlHolder::GetControlSize(CWnd *pControl, int nControlType)
+CSize CControlHolder::GetControlSize( CWnd* pControl, ControlType nControlType )
 {
-	CSize retSize;
-	
-	if (pControl != NULL)
+	CSize retSize( 0, 0 );
+	if( pControl )
 	{
 		CRect rcControl;
-		
 		if (nControlType == CtlMonth)
-		{
-			((CMonthCalCtrl*)pControl)->GetMinReqRect(&rcControl);
-			retSize.cx = rcControl.Width();
-			retSize.cy = rcControl.Height();	
-		}
+			((CMonthCalCtrl*)pControl)->GetMinReqRect( &rcControl );
 		else
-		{
 			pControl->GetWindowRect(&rcControl);
-			retSize.cx = rcControl.Width();
-			retSize.cy = rcControl.Height();		
-		}
+		retSize.SetSize( rcControl.Width(), rcControl.Height() );	
 	}
 	return retSize;
 }
@@ -594,23 +331,23 @@ CWnd* CControlHolder::CreateComboBox(CDclControlObject *mpTemplate)
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL 
 		| CBS_HASSTRINGS | WS_GROUP | ES_AUTOHSCROLL | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 
-	RefCountedPtr< CPropertyObject > pPropNoIntegralHeight = mpTemplate->GetPropertyObject(nNoIntegralHeight);
+	TPropertyPtr pPropNoIntegralHeight = mpTemplate->GetPropertyObject(Prop::NoIntegralHeight);
 	if (!pPropNoIntegralHeight || pPropNoIntegralHeight->GetBooleanValue())
 		dwStyle = dwStyle | CBS_NOINTEGRALHEIGHT;
 
-	if (mpTemplate->GetBoolProperty(nSorted) == TRUE)
+	if (mpTemplate->GetBooleanProperty(Prop::Sorted) == TRUE)
 		dwStyle = dwStyle | CBS_SORT;
 
-	if (mpTemplate->GetLongProperty(nComboBoxStyle) == 12)
-		mpTemplate->SetLongProperty(nDropDownHeight, nComboDropHeight);
+	if (mpTemplate->GetLongProperty(Prop::ComboBoxStyle) == 12)
+		mpTemplate->SetLongProperty(Prop::DropDownHeight, nComboDropHeight);
 		
-	switch (mpTemplate->GetLongProperty(nComboBoxStyle))
+	switch (mpTemplate->GetLongProperty(Prop::ComboBoxStyle))
 	{
 		case 0:
 		{
 			CComboBox *pControl = new CComboBox;
 			pControl->Create( dwStyle | CBS_DROPDOWN, rc, this, GetId());
-			pControl->SetWindowText(mpTemplate->GetStrProperty(nText));
+			pControl->SetWindowText(mpTemplate->GetStrProperty(Prop::Text));
 			pNewControl = pControl;
 			break;
 		}
@@ -618,7 +355,7 @@ CWnd* CControlHolder::CreateComboBox(CDclControlObject *mpTemplate)
 		{
 			CComboBox *pControl = new CComboBox;
 			pControl->Create( dwStyle | CBS_SIMPLE, rc, this, GetId());
-			pControl->SetWindowText(mpTemplate->GetStrProperty(nText));
+			pControl->SetWindowText(mpTemplate->GetStrProperty(Prop::Text));
 			pNewControl = pControl;
 			break;
 		}
@@ -627,12 +364,12 @@ CWnd* CControlHolder::CreateComboBox(CDclControlObject *mpTemplate)
 			CComboBox *pControl = new CComboBox;
 			pControl->Create( dwStyle | CBS_DROPDOWNLIST, rc, this, GetId());
 			
-			CString sText = mpTemplate->GetStrProperty(nText);
-			CString sName = mpTemplate->GetStrProperty(nName);
+			CString sText = mpTemplate->GetStrProperty(Prop::Text);
+			CString sName = mpTemplate->GetStrProperty(Prop::Name);
 			if (sName != sText)
 			{
 				pControl->SetWindowText(sName);
-				mpTemplate->SetStringProperty(nText, sName);
+				mpTemplate->SetStringProperty(Prop::Text, sName);
 			}
 			pNewControl = pControl;
 			break;
@@ -643,7 +380,7 @@ CWnd* CControlHolder::CreateComboBox(CDclControlObject *mpTemplate)
 			pControl->Create( dwStyle | CBS_SIMPLE, rc, this, GetId());
 			
 			CString sDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_0 + 9).Mid(4);
-			mpTemplate->SetStringProperty(nText, sDesc);
+			mpTemplate->SetStringProperty(Prop::Text, sDesc);
 			pControl->SetWindowText(sDesc);			
 			pNewControl = pControl;
 			break;
@@ -653,14 +390,14 @@ CWnd* CControlHolder::CreateComboBox(CDclControlObject *mpTemplate)
 			CComboBoxEx *pControl = new CComboBoxEx;
 			pControl->Create( WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_GROUP | CBS_DROPDOWN, rc, this, GetId());
 			
-			int nThisValue = mpTemplate->GetLongProperty(nComboBoxStyle);
+			int nThisValue = mpTemplate->GetLongProperty(Prop::ComboBoxStyle);
 			CString sDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_0 + nThisValue);
 			if (nThisValue > 9)
 				sDesc = sDesc.Mid(5);
 			else
 				sDesc = sDesc.Mid(4);
 
-			mpTemplate->SetStringProperty(nText, sDesc);
+			mpTemplate->SetStringProperty(Prop::Text, sDesc);
 			pControl->SetWindowText(sDesc);
 			pNewControl = pControl;
 			break;
@@ -669,7 +406,7 @@ CWnd* CControlHolder::CreateComboBox(CDclControlObject *mpTemplate)
 
 	CRect rcAfter;
 	pNewControl->GetWindowRect(&rcAfter);
-	mpTemplate->SetLongProperty(nHeight, rcAfter.Height());
+	mpTemplate->SetLongProperty(Prop::Height, rcAfter.Height());
 	return pNewControl;
 }
 
@@ -681,15 +418,15 @@ CWnd* CControlHolder::CreateTextBox(CDclControlObject *mpTemplate)
 	
 	DWORD dwStyle = WS_CHILD|WS_VISIBLE|ES_WANTRETURN |WS_CLIPSIBLINGS; 
 
-	if (mpTemplate->GetBoolProperty(nHScrollBar) == TRUE)
+	if (mpTemplate->GetBooleanProperty(Prop::HScrollBar) == TRUE)
 		dwStyle = dwStyle | WS_HSCROLL;
-	if (mpTemplate->GetBoolProperty(nVScrollBar) == TRUE)
+	if (mpTemplate->GetBooleanProperty(Prop::VScrollBar) == TRUE)
 		dwStyle = dwStyle | WS_VSCROLL;	
-	if (mpTemplate->GetBoolProperty(nReadOnly) == TRUE)
+	if (mpTemplate->GetBooleanProperty(Prop::ReadOnly) == TRUE)
 		dwStyle = dwStyle | ES_READONLY;
 	
 	// adjust the dwStyle for filter settings
-	switch (mpTemplate->GetLongProperty(nFilterStyle))
+	switch (mpTemplate->GetLongProperty(Prop::FilterStyle))
 	{			
 	case 2: /* Integer */
 		dwStyle = dwStyle | ES_NUMBER|ES_AUTOHSCROLL;
@@ -712,7 +449,7 @@ CWnd* CControlHolder::CreateTextBox(CDclControlObject *mpTemplate)
 	}
 
 	// adjust the justification style				
-	switch (mpTemplate->GetLongProperty(nJustification))
+	switch (mpTemplate->GetLongProperty(Prop::Justification))
 	{
 	case 0:/*Left*/
 		dwStyle = dwStyle | ES_LEFT;
@@ -728,12 +465,12 @@ CWnd* CControlHolder::CreateTextBox(CDclControlObject *mpTemplate)
 	CColorEdit *pNewControl = new CColorEdit;
 	pNewControl->Create( dwStyle, rc, this, GetId());
 
-	if (mpTemplate->GetLongProperty(nFilterStyle) == 7)
+	if (mpTemplate->GetLongProperty(Prop::FilterStyle) == 7)
 		pNewControl->SetPasswordChar(_T('*'));
 	else
 		pNewControl->SetPasswordChar(_T('\0'));
 	
-	pNewControl->SetWindowText(mpTemplate->GetStrProperty(nText));
+	pNewControl->SetWindowText(mpTemplate->GetStrProperty(Prop::Text));
 
 	// fix up 3D styles
 	pNewControl->ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
@@ -754,7 +491,7 @@ bool CControlHolder::CreateNewDialogControl()
 	case CtlLabel:
 		{
 			VdclStatic *pControl = new VdclStatic;
-			pControl->Create( mpTemplate->GetStrProperty(nCaption),
+			pControl->Create( mpTemplate->GetStrProperty(Prop::Caption),
 												WS_CHILD|WS_VISIBLE|WS_CLIPSIBLINGS|WS_CLIPSIBLINGS,
 												rc, this, GetId());
 			pNewControl = pControl;
@@ -763,7 +500,7 @@ bool CControlHolder::CreateNewDialogControl()
 	case CtlStdButton:
 		{
 			CButton *pControl = new CButton;
-			pControl->Create( mpTemplate->GetStrProperty(nCaption),
+			pControl->Create( mpTemplate->GetStrProperty(Prop::Caption),
 												WS_CHILD|WS_VISIBLE|WS_CLIPCHILDREN|WS_CLIPSIBLINGS|BS_MULTILINE,
 												rc, this, GetId());
 			pNewControl = pControl;
@@ -773,62 +510,31 @@ bool CControlHolder::CreateNewDialogControl()
 	case CtlFrame:
 		{
 			VdclGroupBox *pControl = new VdclGroupBox;
-			pControl->Create( mpTemplate->GetStrProperty(nCaption), rc, this, GetId());
+			pControl->Create( mpTemplate->GetStrProperty(Prop::Caption), rc, this, GetId());
 			pNewControl = pControl;
 			break;
 		}
 	case CtlTextBox:
 		pNewControl = CreateTextBox(mpTemplate);
 		break;
-	case CtlCheckBox:
-		{
-			CColorButton *pControl = new CColorButton;
-			pControl->Create( mpTemplate->GetStrProperty(nCaption),
-												WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | WS_CLIPSIBLINGS,
-												rc, this, GetId());
-			pNewControl = pControl;
-			break;
-		}
-	case CtlOptionButton:
-		{
-			CColorButton *pControl = new CColorButton;
-			pControl->Create( mpTemplate->GetStrProperty(nCaption),
-												WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON |WS_CLIPSIBLINGS,
-												rc, this, GetId());
-			pNewControl = pControl;
-			break;
-		}
+	case CtlCheckBox : return ((mpDlgControl = new CCheckBoxCtrl( mpTemplate, this, GetId() )) != NULL);
+	case CtlOptionButton : return ((mpDlgControl = new CCheckBoxCtrl( mpTemplate, this, GetId() )) != NULL);
 	case CtlComboBox:
 		pNewControl = CreateComboBox(mpTemplate);
 		break;
-	case CtlListBox:
-		{
-			DWORD dwStyle = WS_CHILD | WS_VISIBLE | LBS_HASSTRINGS | LBS_NOTIFY |WS_CLIPSIBLINGS;
-			if (mpTemplate->GetBoolProperty(nNoIntegralHeight) == TRUE)
-				dwStyle = dwStyle | LBS_NOINTEGRALHEIGHT;
-			if (mpTemplate->GetBoolProperty(nMultiColumn) == TRUE)
-				dwStyle = dwStyle | LBS_MULTICOLUMN;
-			if (mpTemplate->GetBoolProperty(nSorted) == TRUE)
-				dwStyle = dwStyle | LBS_SORT;		
-			if (mpTemplate->GetBoolProperty(nVScrollBar) == TRUE)
-				dwStyle = dwStyle | WS_VSCROLL;	
-			CAcadColorListBox *pControl = new CAcadColorListBox;
-			pControl->Create( dwStyle, rc, this, GetId());
-			pNewControl = pControl;
-			break;
-		}
+	case CtlListBox : return ((mpDlgControl = new CListBoxCtrl( mpTemplate, this, GetId() )) != NULL);
 	case CtlScrollBar:
 		{
 			DWORD dwStyle = WS_CHILD | WS_VISIBLE |WS_CLIPSIBLINGS;
 			
 			if (rcThis.Width() >= rcThis.Height())
 			{
-				mpTemplate->SetLongProperty(nOrientation, 0);
+				mpTemplate->SetLongProperty(Prop::Orientation, 0);
 				dwStyle = dwStyle | SBS_HORZ;
 			}
 			else
 			{
-				mpTemplate->SetLongProperty(nOrientation, 1);
+				mpTemplate->SetLongProperty(Prop::Orientation, 1);
 				dwStyle = dwStyle | SBS_VERT;
 			}
 			CScrollBar *pControl = new CScrollBar;
@@ -842,15 +548,15 @@ bool CControlHolder::CreateNewDialogControl()
 			DWORD dwStyle = WS_CHILD | WS_VISIBLE | TBS_BOTTOM | WS_CLIPSIBLINGS;
 			if (rcThis.Width() >= rcThis.Height())
 			{
-				mpTemplate->SetLongProperty(nOrientation, 0);
+				mpTemplate->SetLongProperty(Prop::Orientation, 0);
 				dwStyle = dwStyle | TBS_HORZ;
 			}
 			else
 			{
-				mpTemplate->SetLongProperty(nOrientation, 1);
+				mpTemplate->SetLongProperty(Prop::Orientation, 1);
 				dwStyle = dwStyle | TBS_VERT;
 			}
-			if (mpTemplate->GetBoolProperty(nShowTicks) == TRUE)
+			if (mpTemplate->GetBooleanProperty(Prop::ShowTicks) == TRUE)
 				dwStyle = dwStyle | TBS_AUTOTICKS;
 			CSliderCtrl *pControl = new CSliderCtrl;
 			pControl->Create( dwStyle, rc, this, GetId());
@@ -882,29 +588,29 @@ bool CControlHolder::CreateNewDialogControl()
 			
 			DWORD dwStyle = WS_CHILD|WS_VISIBLE;
 
-			switch (mpTemplate->GetLongProperty(nComboBoxStyle))
+			switch (mpTemplate->GetLongProperty(Prop::ComboBoxStyle))
 			{
 				case 0:
 				{
 					pControl->Create( dwStyle | CBS_DROPDOWN, rc, this, GetId());
-					pControl->SetWindowText(mpTemplate->GetStrProperty(nText));
+					pControl->SetWindowText(mpTemplate->GetStrProperty(Prop::Text));
 					break;
 				}
 				case 1:
 				{
 					pControl->Create( dwStyle | CBS_SIMPLE, rc, this, GetId());
-					pControl->SetWindowText(mpTemplate->GetStrProperty(nText));
+					pControl->SetWindowText(mpTemplate->GetStrProperty(Prop::Text));
 					break;
 				}
 				case 2:
 				{
 					pControl->Create( dwStyle | CBS_DROPDOWNLIST, rc, this, GetId());
-					CString sText = mpTemplate->GetStrProperty(nText);
-					CString sName = mpTemplate->GetStrProperty(nText);
+					CString sText = mpTemplate->GetStrProperty(Prop::Text);
+					CString sName = mpTemplate->GetStrProperty(Prop::Text);
 					if (sName != sText)
 					{
 						pControl->SetWindowText(sName);
-						mpTemplate->SetStringProperty(nText, sName);
+						mpTemplate->SetStringProperty(Prop::Text, sName);
 					}
 					break;
 				}	
@@ -931,9 +637,9 @@ bool CControlHolder::CreateNewDialogControl()
 	case CtlProgress:
 		{
 			DWORD dwStyle = WS_CHILD|WS_VISIBLE |WS_CLIPSIBLINGS;
-			if (mpTemplate->GetBoolProperty(nSmoothProgress) == TRUE)
+			if (mpTemplate->GetBooleanProperty(Prop::SmoothProgress) == TRUE)
 				dwStyle = dwStyle | PBS_SMOOTH;
-			if (mpTemplate->GetLongProperty(nOrientation) == 1)
+			if (mpTemplate->GetLongProperty(Prop::Orientation) == 1)
 				dwStyle = dwStyle | PBS_VERTICAL ;
 			CProgressCtrl *pControl = new CProgressCtrl;
 			pControl->Create(dwStyle, rc, this, GetId());		
@@ -945,11 +651,11 @@ bool CControlHolder::CreateNewDialogControl()
 			DWORD dwStyle = WS_CHILD | WS_VISIBLE | UDS_ARROWKEYS |WS_CLIPSIBLINGS ;
 			if (rcThis.Width() >= rcThis.Height())
 			{
-				mpTemplate->SetLongProperty(nOrientation, 0);
+				mpTemplate->SetLongProperty(Prop::Orientation, 0);
 				dwStyle = dwStyle | UDS_HORZ;
 			}
 			else
-				mpTemplate->SetLongProperty(nOrientation, 1);
+				mpTemplate->SetLongProperty(Prop::Orientation, 1);
 			CSpinButtonCtrl *pControl = new CSpinButtonCtrl;
 			pControl->Create( dwStyle, rc, this, GetId() );
 			pControl->MoveWindow(rc, TRUE);
@@ -968,7 +674,7 @@ bool CControlHolder::CreateNewDialogControl()
 	case CtlRoundSlider:
 		{
 			DWORD dwStyle = WS_CHILD | WS_VISIBLE |WS_CLIPSIBLINGS;
-			//if (mpTemplate->GetBoolProperty(nShowTicks) == TRUE)
+			//if (mpTemplate->GetBooleanProperty(Prop::ShowTicks) == TRUE)
 				//dwStyle = dwStyle;
 			CRoundSliderCtrl *pControl = new CRoundSliderCtrl;
 			pControl->Create( dwStyle, rc, this, GetId());
@@ -998,17 +704,17 @@ bool CControlHolder::CreateNewDialogControl()
 		{
 			DWORD dwStyle = WS_CHILD | WS_VISIBLE | 
 				TVS_DISABLEDRAGDROP | TVS_INFOTIP | WS_TABSTOP  |WS_CLIPSIBLINGS;
-			if (mpTemplate->GetBoolProperty(nShowSelectAlways))
+			if (mpTemplate->GetBooleanProperty(Prop::ShowSelectAlways))
 				dwStyle = dwStyle | TVS_SHOWSELALWAYS;
-			if (mpTemplate->GetBoolProperty(nHasLines))
+			if (mpTemplate->GetBooleanProperty(Prop::HasLines))
 				dwStyle = dwStyle | TVS_HASLINES;
-			if (mpTemplate->GetBoolProperty(nLinesAtRoot))
+			if (mpTemplate->GetBooleanProperty(Prop::LinesAtRoot))
 				dwStyle = dwStyle | TVS_LINESATROOT;
-			if (mpTemplate->GetBoolProperty(nHasButtons))
+			if (mpTemplate->GetBooleanProperty(Prop::HasButtons))
 				dwStyle = dwStyle | TVS_HASBUTTONS;
-			if (mpTemplate->GetBoolProperty(nEditLabels))
+			if (mpTemplate->GetBooleanProperty(Prop::EditLabels))
 				dwStyle = dwStyle | TVS_EDITLABELS;
-			if (mpTemplate->GetBoolProperty(nCheckBoxes))
+			if (mpTemplate->GetBooleanProperty(Prop::CheckBoxes))
 				dwStyle = dwStyle | TVS_CHECKBOXES;
 			CTreeCtrl *pControl = new CTreeCtrl;
 			pControl->Create(dwStyle, rc, this, GetId());
@@ -1033,14 +739,7 @@ bool CControlHolder::CreateNewDialogControl()
 			pNewControl = pControl;
 			break;
 		}
-	case CtlGrid:
-		{
-			CListCtrlEx *pControl = new CListCtrlEx;
-			pControl->Create(WS_CHILD|WS_VISIBLE |WS_CLIPSIBLINGS, rc, this, GetId());
-			pControl->SetIcon(IDI_GRID);
-			pNewControl = pControl;
-			break;
-		}
+	case CtlGrid : return ((mpDlgControl = new CGridCtrl( mpTemplate, this, GetId() )) != NULL);
 	case CtlListView:
 		{
 			CPictureBox *pControl = new CPictureBox;
@@ -1057,36 +756,9 @@ bool CControlHolder::CreateNewDialogControl()
 			pNewControl = pControl;
 			break;
 		}
-	case CtlOptionList:
-		{	
-			DWORD dwStyle = WS_CHILD | WS_VISIBLE | LBS_OWNERDRAWVARIABLE
-				| LBS_HASSTRINGS | LBS_NOTIFY |WS_CLIPSIBLINGS;
-			if (mpTemplate->GetBoolProperty(nNoIntegralHeight) == TRUE)
-				dwStyle = dwStyle | LBS_NOINTEGRALHEIGHT;
-			if (mpTemplate->GetBoolProperty(nVScrollBar) == TRUE)
-				dwStyle = dwStyle | WS_VSCROLL;	
-			COptionListBox *pControl = new COptionListBox;
-			pControl->m_RowHeight = (short)mpTemplate->GetLongProperty(nRowHeight);
-			pControl->Create(dwStyle, rc, this, GetId());
-			pNewControl = pControl;
-			break;
-		}
+	case CtlOptionList : return ((mpDlgControl = new COptionListCtrl( mpTemplate, this, GetId() )) != NULL);
 	case CtlActiveX : return ((mpDlgControl = new CAxContainerCtrl( mpTemplate, this, GetId(), rc, true )) != NULL);
-	case CtlDwgList:
-		{	
-			DWORD dwStyle = WS_CHILD | WS_VISIBLE
-				| LBS_HASSTRINGS | LBS_NOTIFY |WS_CLIPSIBLINGS;
-			dwStyle |= LBS_NOINTEGRALHEIGHT;
-			if (mpTemplate->GetBoolProperty(nMultiColumn) == TRUE)
-				dwStyle = dwStyle | LBS_MULTICOLUMN;
-			if (mpTemplate->GetBoolProperty(nSorted) == TRUE)
-				dwStyle = dwStyle | LBS_SORT;		
-			dwStyle = dwStyle | WS_VSCROLL;	
-			CAcadColorListBox *pControl = new CAcadColorListBox;
-			pControl->Create(dwStyle, rc, this, GetId());
-			pNewControl = pControl;
-			break;
-		}
+	case CtlDwgList : return ((mpDlgControl = new CListBoxCtrl( mpTemplate, this, GetId() )) != NULL);
 	case CtlSplitter:
 		{
 			if (rcThis.Width() >= rcThis.Height())
@@ -1128,69 +800,22 @@ bool CControlHolder::CreateNewDialogControl()
 	return true;
 }
 
-void CControlHolder::CheckAutoSizeProp()
+void CControlHolder::AutoSize()
 {
-	CWnd *pControl = GetChildControl();
+	CWnd *pControl = GetControl();
 	if (pControl == NULL)
 		return;
 	
 	switch(mpTemplate->GetType())
 	{
-		/*
-	case CtlComboBox:
-		{
-		if (mpTemplate->GetLongProperty(nComboBoxStyle) == 1)
-		{
-			CRect rcDropDown;
-			CListBox   pListBox;
-			//((CComboBox*)pControl)->GetDroppedControlRect(&rcDropDown);
-		}
-		break;
-		}
-		*/
-	//case CtlGraphicButton:
-	//	{
-	//	if (mpTemplate->GetBoolProperty(nAutoSize) == TRUE)
-	//	{
-	//		int nBorderAddition;
-
-	//		switch(mpTemplate->GetLongProperty(nButtonStyle))
-	//		{
-	//		case 0:
-	//			nBorderAddition = 4;
-	//			break;
-	//		case 1:
-	//			nBorderAddition = 0;
-	//			break;
-	//		default:
-	//			return;
-	//			break;
-	//		}
-	//		CPictureObject* pPict = ((CGraphicButtonCtrl*)pControl)->GetPicture();
-	//		int nIconWidth = (pPict? pPict->GetWidth() : 16) + nBorderAddition;
-	//		int nIconHeight = (pPict? pPict->GetHeight() : 16) + nBorderAddition;
-	//		mpTemplate->SetLongProperty( nWidth, nIconWidth );
-	//		mpTemplate->SetLongProperty( nHeight, nIconHeight );
-	//		CRect rcCtrl;
-	//		GetWindowRect(&rcCtrl);
-	//		ScreenToClient(rcCtrl);
-	//		rcCtrl.right = rcCtrl.left + nIconWidth;
-	//		rcCtrl.bottom = rcCtrl.top + nIconHeight;
-	//		MoveWindow(rcCtrl, TRUE);
-	//		
-	//	}
-	//	break;
-	//	}
 	case CtlPictureBox:
 		{
-		if (mpTemplate->GetBoolProperty(nAutoSize) == TRUE)
+		if( mpTemplate->GetBooleanProperty( Prop::AutoSize ) )
 		{
-			int nBorderAddition;
-
-			switch(mpTemplate->GetLongProperty(nBorderStyle))
+			int nBorderAddition = 0;
+			switch(mpTemplate->GetLongProperty(Prop::BorderStyle))
 			{
 			case 0:
-				nBorderAddition = 0;
 				break;
 			case 1:
 				nBorderAddition = 4;
@@ -1199,14 +824,14 @@ void CControlHolder::CheckAutoSizeProp()
 				nBorderAddition = 2;
 				break;
 			}
-			int nOldWidth = mpTemplate->GetLongProperty(nWidth);
-			int nOldHeight = mpTemplate->GetLongProperty(nHeight);
+			int nOldWidth = mpTemplate->GetLongProperty(Prop::Width);
+			int nOldHeight = mpTemplate->GetLongProperty(Prop::Height);
 			int nWidthDelta = ((CPictureBox*)pControl)->m_cxIcon + nBorderAddition - nOldWidth;
 			int nHeightDelta = ((CPictureBox*)pControl)->m_cyIcon + nBorderAddition - nOldHeight;
 			if( nWidthDelta != 0 )
-				mpTemplate->SetLongProperty(nWidth, nOldWidth + nWidthDelta);
+				mpTemplate->SetLongProperty(Prop::Width, nOldWidth + nWidthDelta);
 			if( nHeightDelta != 0 )
-				mpTemplate->SetLongProperty(nHeight, nOldHeight + nHeightDelta);
+				mpTemplate->SetLongProperty(Prop::Height, nOldHeight + nHeightDelta);
 			if( nWidthDelta != 0 || nHeightDelta != 0 )
 			{
 				CRect rectThis;
@@ -1228,25 +853,29 @@ void CControlHolder::CheckAutoSizeProp()
 		}
 	default:
 		{
-			// get the child control
-			CSize pCtrlSize = GetControlSize(pControl, mpTemplate->GetType());
-	
-			if (pCtrlSize.cx != mpTemplate->GetLongProperty(nWidth) ||
-				pCtrlSize.cy != mpTemplate->GetLongProperty(nHeight))
+			CSize szControl = GetControlSize( pControl, mpTemplate->GetType() );
+			int nOldWidth = mpTemplate->GetLongProperty(Prop::Width);
+			int nOldHeight = mpTemplate->GetLongProperty(Prop::Height);
+			int nWidthDelta = szControl.cx - nOldWidth;
+			int nHeightDelta = szControl.cy - nOldHeight;
+			if( nWidthDelta != 0 )
+				mpTemplate->SetLongProperty( Prop::Width, szControl.cx );
+			if( nHeightDelta != 0 )
+				mpTemplate->SetLongProperty( Prop::Height, szControl.cy );
+			if( nWidthDelta != 0 || nHeightDelta != 0 )
 			{
-				mpTemplate->SetLongProperty(
-					nWidth,
-					pCtrlSize.cx);
-				mpTemplate->SetLongProperty(
-					nHeight,
-					pCtrlSize.cy
-					);
+				CRect rectThis;
+				GetWindowRect( &rectThis );
+				GetParent()->ScreenToClient( &rectThis );
+				rectThis.right = rectThis.left + szControl.cx;
+				rectThis.bottom = rectThis.top + szControl.cy;
+				CRect rectControl(0, 0, rectThis.Width(), rectThis.Height());
+				pControl->MoveWindow( &rectThis, TRUE );
+				MoveWindow( &rectThis, TRUE );
 			}
 			break;
 		}
-
 	}
-
 }
 
 
@@ -1262,20 +891,26 @@ void CControlHolder::UpdateClientHeight()
 }
 
 
-void CControlHolder::UpdateProperty(PropertyId nID)
+void CControlHolder::UpdateProperty(Prop::Id nID)
 {
 	if( !mpDlgControl )
 		return;
-	RefCountedPtr< CPropertyObject > pProp = mpTemplate->GetPropertyObject(nID);
+	TPropertyPtr pProp = mpTemplate->GetPropertyObject(nID);
 
 	//if the control has been redesigned to implement the CDialogControl interface, use that
 	switch( mpTemplate->GetType() )
 	{
 	case CtlActiveX:
+	case CtlCheckBox:
+	case CtlDwgList:
 	case CtlGraphicButton:
+	case CtlGrid:
+	case CtlListBox:
+	case CtlOptionList:
+	case CtlOptionButton:
 	case CtlTabStrip:
 		mpDlgControl->OnApplyProperty( pProp );
-		mpDlgControl->GetControl()->ShowWindow( SW_SHOW ); //make it visible even if the 'nVisible' property is false
+		mpDlgControl->GetControl()->ShowWindow( SW_SHOW ); //make it visible even if the 'Prop::Visible' property is false
 		mpDlgControl->GetControl()->Invalidate();
 		return;
 	}
@@ -1287,32 +922,32 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 	// set the appropriate property
 	switch(nID)
 	{
-		case nAutoSize:
+		case Prop::AutoSize:
 			{
 			switch (mpTemplate->GetType())
 			{
 			case CtlPictureBox:
-				((CPictureBox*)pControl)->m_AutoSize = mpTemplate->GetBoolProperty(nAutoSize);
+				((CPictureBox*)pControl)->m_AutoSize = mpTemplate->GetBooleanProperty(Prop::AutoSize);
 				break;
 			//case CtlGraphicButton:
-			//	((CGraphicButtonCtrl*)pControl)->m_AutoSize = mpTemplate->GetBoolProperty(nAutoSize);
+			//	((CGraphicButtonCtrl*)pControl)->m_AutoSize = mpTemplate->GetBooleanProperty(Prop::AutoSize);
 				break;
 			}			
 			break;
 			}
-		case nAcadColor:
+		case Prop::BackgroundColor:
 		{				
 			switch (mpTemplate->GetType())
 			{
 			case CtlLabel:
-				((VdclStatic*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(nAcadColor));
+				((VdclStatic*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(Prop::BackgroundColor));
 				break;
 			
-			case CtlStdButton:
-			case CtlOptionButton:
-			case CtlCheckBox:
-				((CColorButton*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(nAcadColor));
-				break;
+			//case CtlStdButton:
+			//case CtlOptionButton:
+			//case CtlCheckBox:
+			//	((CColorButton*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(Prop::BackgroundColor));
+			//	break;
 
 			case CtlAnimate:
 			case CtlListView:
@@ -1323,77 +958,75 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 			case CtlDwgPreview:
 			case CtlPictureBox:
 			case CtlSlideView:		
-				((CPictureBox*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(nAcadColor));
+				((CPictureBox*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(Prop::BackgroundColor));
 				break;
 
 			case CtlTextBox:
-				((CColorEdit*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(nAcadColor));
+				((CColorEdit*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(Prop::BackgroundColor));
 				break;
-			
-			case CtlListBox:
-			case CtlDwgList:
-				((CAcadColorListBox*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(nAcadColor));
-				break;
-			case CtlOptionList:
-				((COptionListBox*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(nAcadColor));
-				break;		
+			//
+			//case CtlListBox:
+			//case CtlDwgList:
+			//case CtlOptionList:
+			//	((CListBoxCtrl*)pControl)->GetColorService()->SetBackgroundColor(mpTemplate->GetLongProperty(Prop::BackgroundColor));
+			//	break;		
 				
 			case CtlStaticURL:
-				((CStaticLink*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(nAcadColor));
+				((CStaticLink*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(Prop::BackgroundColor));
 				break;		
 
 			//case CtlGraphicButton:
-			//	((CGraphicButtonCtrl*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(nAcadColor));
+			//	((CGraphicButtonCtrl*)pControl)->SetAcadColor(mpTemplate->GetLongProperty(Prop::BackgroundColor));
 			//	break;
 			}
 			pControl->Invalidate();
 			break;
 		}	
-		case nForeColor:
+		case Prop::ForegroundColor:
 		{				
 			switch (mpTemplate->GetType())
 			{
 			case CtlLabel:
-				((VdclStatic*)pControl)->SetForeColor(mpTemplate->GetLongProperty(nForeColor));
+				((VdclStatic*)pControl)->SetForeColor(mpTemplate->GetLongProperty(Prop::ForegroundColor));
 				break;		
 
-			case CtlStdButton:
-			case CtlOptionButton:
-			case CtlCheckBox:
-				((CColorButton*)pControl)->SetForeColor(mpTemplate->GetLongProperty(nForeColor));
-				break;
+			//case CtlStdButton:
+			//case CtlOptionButton:
+			//case CtlCheckBox:
+			//	((CColorButton*)pControl)->SetForeColor(mpTemplate->GetLongProperty(Prop::ForegroundColor));
+			//	break;
 			//case CtlGraphicButton:
-			//	((CGraphicButtonCtrl*)pControl)->SetForeColor(mpTemplate->GetLongProperty(nForeColor));
+			//	((CGraphicButtonCtrl*)pControl)->SetForeColor(mpTemplate->GetLongProperty(Prop::ForegroundColor));
 			//	break;
 			case CtlTextBox:
-				//((CColorEdit*)pControl)->SetForeColor(mpTemplate->GetLongProperty(nForeColor));
-				switch (mpTemplate->GetLongProperty(nFilterStyle))
+				//((CColorEdit*)pControl)->SetForeColor(mpTemplate->GetLongProperty(Prop::ForegroundColor));
+				switch (mpTemplate->GetLongProperty(Prop::FilterStyle))
 				{
 				case 8: //EditFilter_Multiline
 					((CColorEdit*)pControl)->m_UseBackColor = false;
 				case 4: //EditFilter_Symbol
 					break;
 				default:
-					((CColorEdit*)pControl)->SetForeColor(mpTemplate->GetLongProperty(nForeColor));
+					((CColorEdit*)pControl)->SetForeColor(mpTemplate->GetLongProperty(Prop::ForegroundColor));
 					break;
 				}
 				break;			
 			case CtlStaticURL:
-				((CStaticLink*)pControl)->SetForeColor(mpTemplate->GetLongProperty(nForeColor));
+				((CStaticLink*)pControl)->SetForeColor(mpTemplate->GetLongProperty(Prop::ForegroundColor));
 				break;
-			case CtlListBox:
-			case CtlDwgList:
-			case CtlOptionList:
-				((CAcadColorListBox*)pControl)->SetForeColor(mpTemplate->GetLongProperty(nForeColor));
-				break;
+			//case CtlListBox:
+			//case CtlDwgList:
+			//case CtlOptionList:
+			//	((CAcadColorListBox*)pControl)->SetForeColor(mpTemplate->GetLongProperty(Prop::ForegroundColor));
+			//	break;
 			}			
 			pControl->Invalidate();
 			break;
 		}	
 		
-		case nBorderStyle:
+		case Prop::BorderStyle:
 		{
-			switch(mpTemplate->GetLongProperty(nBorderStyle))
+			switch(mpTemplate->GetLongProperty(Prop::BorderStyle))
 			{
 			case 0:
 				pControl->ModifyStyle(WS_BORDER, 0, SWP_FRAMECHANGED);
@@ -1416,108 +1049,108 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 			switch (mpTemplate->GetType())
 			{
 			case CtlPictureBox:
-				((CPictureBox*)pControl)->m_BorderStyle = mpTemplate->GetLongProperty(nBorderStyle);
+				((CPictureBox*)pControl)->m_BorderStyle = mpTemplate->GetLongProperty(Prop::BorderStyle);
 				break;
 			}
 			break;
 		}	
-		case nButtonStyle:
+		case Prop::ButtonStyle:
 		{				
-			//((CGraphicButton*)pControl)->SetDefaultPicture(mpTemplate->GetLongProperty(nButtonStyle));
+			//((CGraphicButton*)pControl)->SetDefaultPicture(mpTemplate->GetLongProperty(Prop::ButtonStyle));
 			break;
 		}	
-		case nCaption:
+		case Prop::Caption:
 		{				
 			switch (mpTemplate->GetType())
 			{
 				
 			case CtlFrame:
-				((VdclGroupBox*)pControl)->SetCaption(mpTemplate->GetStrProperty(nCaption));
+				((VdclGroupBox*)pControl)->SetCaption(mpTemplate->GetStrProperty(Prop::Caption));
 				break;
 			case CtlStaticURL:
-				((CStaticLink*)pControl)->SetLinkText(mpTemplate->GetStrProperty(nCaption));
+				((CStaticLink*)pControl)->SetLinkText(mpTemplate->GetStrProperty(Prop::Caption));
 				break;
 			//case CtlGraphicButton:
 			//	{
-			//	((CGraphicButtonCtrl*)pControl)->SetWindowText(mpTemplate->GetStrProperty(nCaption));
+			//	((CGraphicButtonCtrl*)pControl)->SetWindowText(mpTemplate->GetStrProperty(Prop::Caption));
 			//	((CGraphicButtonCtrl*)pControl)->Invalidate();
 			//	break;
 			//	}			
 			default:
 				{
-				CString sCaptionText = mpTemplate->GetStrProperty(nCaption);
+				CString sCaptionText = mpTemplate->GetStrProperty(Prop::Caption);
 				pControl->SetWindowText(sCaptionText);
 				break;
 				}
 			}
 			break;
 		}	
-		case nColumnWidth:
+		case Prop::ColumnWidth:
 		{				
-			int nNewColWidth = mpTemplate->GetLongProperty(nColumnWidth);
+			int nNewColWidth = mpTemplate->GetLongProperty(Prop::ColumnWidth);
 			if (nNewColWidth > 0)
-				((CAcadColorListBox*)pControl)->SetColumnWidth(nNewColWidth);
+				((CListBox*)pControl)->SetColumnWidth(nNewColWidth);
 			break;
 		}	
 		
-		case nDefSelIndex:
-		{
-			((COptionListBox*)pControl)->ResetContent();					
-			CString sListItem;
-			RefCountedPtr< CPropertyObject > pPropList = mpTemplate->GetPropertyObject(nBtnCaption);
-			int nDefSelection = mpTemplate->GetLongProperty(nDefSelIndex) ;
-			for (size_t i = 0; i < pPropList->size(); i++)
-			{				
-				sListItem = pPropList->GetStringItem(i);
-				if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
-				{
-					((COptionListBox *)pControl)->AddString(sListItem);
-				}
-				if (nDefSelection == i)
-					((COptionListBox *)pControl)->SetItemData(i, 1);
-				else
-					((COptionListBox *)pControl)->SetItemData(i, 0);
-			}
-			
-			break;
-		}
+		//case Prop::DefSelIndex:
+		//{
+		//	((COptionListBox*)pControl)->ResetContent();					
+		//	CString sListItem;
+		//	TPropertyPtr pPropList = mpTemplate->GetPropertyObject(Prop::BtnCaption);
+		//	int nDefSelection = mpTemplate->GetLongProperty(Prop::DefSelIndex) ;
+		//	for (size_t i = 0; i < pPropList->size(); i++)
+		//	{				
+		//		sListItem = pPropList->GetStringItem(i);
+		//		if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
+		//		{
+		//			((COptionListBox *)pControl)->AddString(sListItem);
+		//		}
+		//		if (nDefSelection == i)
+		//			((COptionListBox *)pControl)->SetItemData(i, 1);
+		//		else
+		//			((COptionListBox *)pControl)->SetItemData(i, 0);
+		//	}
+		//	
+		//	break;
+		//}
 		
-		case nDisableNoScroll:
+		case Prop::DisableNoScroll:
 		{
-			if (mpTemplate->GetBoolProperty(nDisableNoScroll) == FALSE)
-				((CAcadColorListBox*)pControl)->ModifyStyle(LBS_DISABLENOSCROLL, 0, SWP_FRAMECHANGED);
+			if (mpTemplate->GetBooleanProperty(Prop::DisableNoScroll) == FALSE)
+				pControl->ModifyStyle(LBS_DISABLENOSCROLL, 0, SWP_FRAMECHANGED);
 			else
-				((CAcadColorListBox*)pControl)->ModifyStyle(0, LBS_DISABLENOSCROLL, SWP_FRAMECHANGED);
+				pControl->ModifyStyle(0, LBS_DISABLENOSCROLL, SWP_FRAMECHANGED);
 			break;
 		}
 		
-		case nEnabled:
+		case Prop::Enabled:
 		{
 			if (mpTemplate->GetType() == CtlSlider)
 			{
-				((CSliderCtrl *)pControl)->EnableWindow(mpTemplate->GetBoolProperty(nEnabled));
+				((CSliderCtrl *)pControl)->EnableWindow(mpTemplate->GetBooleanProperty(Prop::Enabled));
 			}
-			else if (mpTemplate->GetType() == CtlOptionList)
-			{
-				int nData=0;
-				if (mpTemplate->GetBoolProperty(nEnabled) == FALSE)
-					nData = 2;
-				for (int i=0; i<((COptionListBox*) pControl)->GetCount(); i++)
-				{
-					((COptionListBox*) pControl)->SetItemData(i, nData);
-				}
-				pControl->Invalidate();				
-			}			
+			//else if (mpTemplate->GetType() == CtlOptionList)
+			//{
+			//	int nData=0;
+			//	if (mpTemplate->GetBooleanProperty(Prop::Enabled) == FALSE)
+			//		nData = 2;
+			//	for (int i=0; i<((COptionListBox*) pControl)->GetCount(); i++)
+			//	{
+			//		((COptionListBox*) pControl)->SetItemData(i, nData);
+			//	}
+			//	pControl->Invalidate();				
+			//}			
 			else
 			{
-				pControl->EnableWindow(mpTemplate->GetBoolProperty(nEnabled));
+				pControl->EnableWindow(mpTemplate->GetBooleanProperty(Prop::Enabled));
 				pControl->Invalidate();
 			}
 			break;				
 		}	
-		case nFilterStyle:
+		case Prop::FilterStyle:
 			{
-			switch (mpTemplate->GetLongProperty(nFilterStyle))
+			switch (mpTemplate->GetLongProperty(Prop::FilterStyle))
 			{
 			case 5:/*Upper case*/
 				{
@@ -1555,19 +1188,19 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 			break;
 		}
 
-		case nIndent:
+		case Prop::Indent:
 		{
-			((CTreeCtrl*)pControl)->SetIndent(mpTemplate->GetLongProperty(nIndent));
+			((CTreeCtrl*)pControl)->SetIndent(pProp->GetLongValue());
 			break;
 		}
 
-		case nImageList:
+		case Prop::ImageList:
 		{
 			ResetImageList(pControl, nID);
 			break;
 		}
 
-		case nJustification:
+		case Prop::Justification:
 		{
 			switch (mpTemplate->GetType())
 			{
@@ -1578,7 +1211,7 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 					((CColorEdit*)pControl)->ModifyStyle(ES_CENTER, 0, SWP_FRAMECHANGED);
 					((CColorEdit*)pControl)->ModifyStyle(ES_LEFT, 0, SWP_FRAMECHANGED);
 					
-					switch (mpTemplate->GetLongProperty(nJustification))
+					switch (mpTemplate->GetLongProperty(Prop::Justification))
 					{
 					case 0:// Left
 						((CColorEdit*)pControl)->ModifyStyle(0, ES_LEFT, SWP_FRAMECHANGED);
@@ -1599,7 +1232,7 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 					pControl->ModifyStyle(SS_CENTER, 0, SWP_FRAMECHANGED);
 					pControl->ModifyStyle(SS_LEFT, 0, SWP_FRAMECHANGED);
 			
-					switch (mpTemplate->GetLongProperty(nJustification))
+					switch (mpTemplate->GetLongProperty(Prop::Justification))
 					{
 					case 0:/*Left*/
 						pControl->ModifyStyle(0, SS_LEFT, SWP_FRAMECHANGED);
@@ -1619,7 +1252,7 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 			
 		}
 
-		case nLabelName:
+		case Prop::LabelName:
 		{			
 			CFont *pFont = theWorkspace.GetFontCollection().GetFont(mpTemplate, pControl);
 			
@@ -1645,11 +1278,11 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 			//	((CGraphicButtonCtrl*)pControl)->SetFont(pFont);	
 			//	pControl->Invalidate();				
 			//}
-			else if (mpTemplate->GetType() == CtlOptionList)
-			{
-				((COptionListBox*)pControl)->SetFont(pFont);	
-				pControl->Invalidate();				
-			}
+			//else if (mpTemplate->GetType() == CtlOptionList)
+			//{
+			//	((COptionListBox*)pControl)->SetFont(pFont);	
+			//	pControl->Invalidate();				
+			//}
 			else if (mpTemplate->GetType() == CtlGrid)
 			{
 				((CListCtrlEx*)pControl)->SetFont(pFont);	
@@ -1664,55 +1297,55 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 			break;
 		}
 
-		case nLimitText:
+		case Prop::LimitText:
 		{
-			((CColorEdit*)pControl)->SetLimitText(mpTemplate->GetLongProperty(nLimitText));
+			((CColorEdit*)pControl)->SetLimitText(mpTemplate->GetLongProperty(Prop::LimitText));
 			break;
 		}
 		
-		case nBtnCaption:
-		{
-			CString sListItem;
-			((COptionListBox*)pControl)->ResetContent();					
-			int nDefSelection = mpTemplate->GetLongProperty(nDefSelIndex) ;
-			for (size_t i = 0; i < pProp->size(); i++)
-			{				
-				sListItem = pProp->GetStringItem(i);
-				if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
-				{
-					((COptionListBox *)pControl)->AddString(sListItem);
-					if (nDefSelection == i)
-						((COptionListBox *)pControl)->SetItemData(i, 1);
-					else
-						((COptionListBox *)pControl)->SetItemData(i, 0);
-				}
-			}
-			
-			break;
-		}
+		//case Prop::BtnCaption:
+		//{
+		//	CString sListItem;
+		//	((COptionListBox*)pControl)->ResetContent();					
+		//	int nDefSelection = mpTemplate->GetLongProperty(Prop::DefSelIndex) ;
+		//	for (size_t i = 0; i < pProp->size(); i++)
+		//	{				
+		//		sListItem = pProp->GetStringItem(i);
+		//		if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
+		//		{
+		//			((COptionListBox *)pControl)->AddString(sListItem);
+		//			if (nDefSelection == i)
+		//				((COptionListBox *)pControl)->SetItemData(i, 1);
+		//			else
+		//				((COptionListBox *)pControl)->SetItemData(i, 0);
+		//		}
+		//	}
+		//	
+		//	break;
+		//}
 	
-		case nColumnCaptions:
+		case Prop::ColumnCaptions:
 		{
 			((CListCtrlEx *)pControl)->SetupColumns(mpTemplate);
 
 			break;
 		}
-		case nList:
+		case Prop::List:
 		{
 			switch (mpTemplate->GetType())
 			{
-			case CtlListBox:
-				{
-					CString sListItem;
-					((CAcadColorListBox *)pControl)->ResetContent();					
-					for (size_t i = 0; i < pProp->size(); i++)
-					{				
-						sListItem = pProp->GetStringItem(i);
-						if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
-							((CAcadColorListBox *)pControl)->AddString(sListItem);
-					}
-					break;
-				}
+			//case CtlListBox:
+			//	{
+			//		CString sListItem;
+			//		((CListBox *)pControl)->ResetContent();					
+			//		for (size_t i = 0; i < pProp->size(); i++)
+			//		{				
+			//			sListItem = pProp->GetStringItem(i);
+			//			if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
+			//				((CListBox *)pControl)->AddString(sListItem);
+			//		}
+			//		break;
+			//	}
 			case CtlComboBox:
 				{
 					CString sListItem;
@@ -1723,25 +1356,25 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 						if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
 							((CComboBox *)pControl)->AddString(pProp->GetStringItem(i));
 					}
-					pControl->SetWindowText(mpTemplate->GetStrProperty(nText));
+					pControl->SetWindowText(mpTemplate->GetStrProperty(Prop::Text));
 					break;
 				}
 			}
 			break;				
 		}
-		case nMarginLeft:
+		case Prop::MarginLeft:
 		{
 			((CColorEdit*)pControl)->SetMargins(
-				mpTemplate->GetLongProperty(nMarginLeft),
-				mpTemplate->GetLongProperty(nMarginRight));
+				mpTemplate->GetLongProperty(Prop::MarginLeft),
+				mpTemplate->GetLongProperty(Prop::MarginRight));
 			break;
 		}
 		
-		//case nMinTabWidth:
+		//case Prop::MinTabWidth:
 		//{
 		//	try 
 		//	{
-		//		((CTabCtrl*)pControl)->SetMinTabWidth(mpTemplate->GetLongProperty(nMinTabWidth));
+		//		((CTabCtrl*)pControl)->SetMinTabWidth(mpTemplate->GetLongProperty(Prop::MinTabWidth));
 		//		((CTabCtrl*)pControl)->RedrawWindow(NULL, NULL, RDW_UPDATENOW);
 		//	}
 		//	catch(...)
@@ -1750,51 +1383,51 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 		//	break;
 		//}
 		
-		case nMaxValue:
-		case nMinValue:
+		case Prop::MaxValue:
+		case Prop::MinValue:
 		{
 			switch (mpTemplate->GetType())
 			{
 			case CtlProgress:
 				((CProgressCtrl*)pControl)->SetRange(
-					(short)mpTemplate->GetLongProperty(nMinValue),
-					(short)mpTemplate->GetLongProperty(nMaxValue));
+					(short)mpTemplate->GetLongProperty(Prop::MinValue),
+					(short)mpTemplate->GetLongProperty(Prop::MaxValue));
 				break;				
 			case CtlScrollBar:
 				((CScrollBar*)pControl)->SetScrollRange(
-					mpTemplate->GetLongProperty(nMinValue),
-					mpTemplate->GetLongProperty(nMaxValue),
+					mpTemplate->GetLongProperty(Prop::MinValue),
+					mpTemplate->GetLongProperty(Prop::MaxValue),
 					TRUE);
 				break;				
 			case CtlSlider:
 				((CSliderCtrl*)pControl)->SetRange(
-					mpTemplate->GetLongProperty(nMinValue),
-					mpTemplate->GetLongProperty(nMaxValue));
-				((CSliderCtrl *)pControl)->SetPos(mpTemplate->GetLongProperty(nMinValue));
-				((CSliderCtrl *)pControl)->SetPos(mpTemplate->GetLongProperty(nValue));
+					mpTemplate->GetLongProperty(Prop::MinValue),
+					mpTemplate->GetLongProperty(Prop::MaxValue));
+				((CSliderCtrl *)pControl)->SetPos(mpTemplate->GetLongProperty(Prop::MinValue));
+				((CSliderCtrl *)pControl)->SetPos(mpTemplate->GetLongProperty(Prop::Value));
 				break;				
 			}
 			break;
 		}	
 		
-		case nSplitterStyle:
+		case Prop::SplitterStyle:
 		{
-			((CSplitter *)pControl)->m_nStyle = mpTemplate->GetLongProperty(nSplitterStyle);
+			((CSplitter *)pControl)->m_nStyle = mpTemplate->GetLongProperty(Prop::SplitterStyle);
 			int n = ((CSplitter *)pControl)->m_nStyle;
 			if (((CSplitter *)pControl)->m_nStyle <= 0)
 			{
 				((CSplitter *)pControl)->m_nStyle = 0;
-				mpTemplate->SetLongProperty(nSplitterStyle, 0);
+				mpTemplate->SetLongProperty(Prop::SplitterStyle, 0);
 			}
 			pControl->Invalidate();
 			break;
 		}
 			
-		case nOrientation:
+		case Prop::Orientation:
 		{
 			if (mpTemplate->GetType() == CtlSlider)
 			{			
-				switch(mpTemplate->GetLongProperty(nOrientation))
+				switch(mpTemplate->GetLongProperty(Prop::Orientation))
 				{
 				case 0:				
 					((CSliderCtrl *)pControl)->ModifyStyle(TBS_VERT, 0, SWP_FRAMECHANGED);
@@ -1808,15 +1441,15 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 			}
 			break;
 		}
-		case nPicture:
+		case Prop::Picture:
 		{
 			switch (mpTemplate->GetType())
 			{
 			//case CtlGraphicButton:		
-			//	((CGraphicButtonCtrl *)pControl)->SetPictureID(mpTemplate->GetLongProperty(nPicture));
+			//	((CGraphicButtonCtrl *)pControl)->SetPictureID(mpTemplate->GetLongProperty(Prop::Picture));
 			//	break;
 			case CtlPictureBox:
-				int nID = mpTemplate->GetLongProperty(nPicture);
+				int nID = mpTemplate->GetLongProperty(Prop::Picture);
 				((CPictureBox*)pControl)->SetPicture(mpTemplate->GetOwnerProject()->FindPicture(nID));
 				break;
 			}
@@ -1824,9 +1457,9 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 		}
 
 			
-		case nShowTicks:
+		case Prop::ShowTicks:
 		{
-			if (mpTemplate->GetBoolProperty(nShowTicks) == FALSE)
+			if (mpTemplate->GetBooleanProperty(Prop::ShowTicks) == FALSE)
 				((CSliderCtrl *)pControl)->ModifyStyle(TBS_AUTOTICKS, 0, SWP_FRAMECHANGED);
 			else
 				((CSliderCtrl *)pControl)->ModifyStyle(0, TBS_AUTOTICKS, SWP_FRAMECHANGED);
@@ -1834,40 +1467,40 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 			break;
 		}
 
-		case nReadOnly:
+		case Prop::ReadOnly:
 		{
-			((CColorEdit*)pControl)->SetReadOnly(mpTemplate->GetBoolProperty(nReadOnly));
+			((CColorEdit*)pControl)->SetReadOnly(mpTemplate->GetBooleanProperty(Prop::ReadOnly));
 			break;
 		}
 
-		case nRowHeight:
-		{
-			if (mpTemplate->GetType() == CtlOptionList)
-			{
-				((COptionListBox*)pControl)->m_RowHeight = (short)mpTemplate->GetLongProperty(nRowHeight);
-				((COptionListBox*)pControl)->ResetContent();					
-				CString sListItem;
-				RefCountedPtr< CPropertyObject > pPropList = mpTemplate->GetPropertyObject(nBtnCaption);
-				int nDefSelection = mpTemplate->GetLongProperty(nDefSelIndex) ;
-				for (size_t i = 0; i < pPropList->size(); i++)
-				{				
-					sListItem = pPropList->GetStringItem(i);
-					if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
-					{
-						((COptionListBox *)pControl)->AddString(sListItem);
-						if (nDefSelection == i)
-							((COptionListBox *)pControl)->SetItemData(i, 1);
-						else
-							((COptionListBox *)pControl)->SetItemData(i, 0);
-					}
-				}
-			}
-			
-			break;
-		}
+		//case Prop::RowHeight:
+		//{
+		//	if (mpTemplate->GetType() == CtlOptionList)
+		//	{
+		//		((COptionListBox*)pControl)->m_RowHeight = (short)mpTemplate->GetLongProperty(Prop::RowHeight);
+		//		((COptionListBox*)pControl)->ResetContent();					
+		//		CString sListItem;
+		//		TPropertyPtr pPropList = mpTemplate->GetPropertyObject(Prop::BtnCaption);
+		//		int nDefSelection = mpTemplate->GetLongProperty(Prop::DefSelIndex) ;
+		//		for (size_t i = 0; i < pPropList->size(); i++)
+		//		{				
+		//			sListItem = pPropList->GetStringItem(i);
+		//			if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
+		//			{
+		//				((COptionListBox *)pControl)->AddString(sListItem);
+		//				if (nDefSelection == i)
+		//					((COptionListBox *)pControl)->SetItemData(i, 1);
+		//				else
+		//					((COptionListBox *)pControl)->SetItemData(i, 0);
+		//			}
+		//		}
+		//	}
+		//	
+		//	break;
+		//}
 
-		//case nTabsCaption:
-		////case nTabsImageList:
+		//case Prop::TabsCaption:
+		////case Prop::TabsImageList:
 		//{
 		//	try
 		//	{
@@ -1877,14 +1510,14 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 		//		// delete all previos tabs
 		//		((CTabCtrl*)pControl)->DeleteAllItems();
 		//		
-		//		int nCount = mpTemplate->CountPropertyListItems(nTabsCaption);
+		//		int nCount = mpTemplate->CountPropertyListItems(Prop::TabsCaption);
 		//		int nBottom = 0;
 		//		while (nCount-- > 0)
 		//		{
 		//			TC_ITEM TabCtrlItem;
 		//			CString sTTT;
 		//			TabCtrlItem.mask = TCIF_TEXT;
-		//			CString Tab = mpTemplate->GetPropertyListItem(nTabsCaption, nCount);
+		//			CString Tab = mpTemplate->GetPropertyListItem(Prop::TabsCaption, nCount);
 		//			// get the tab caption
 		//			TabCtrlItem.pszText = Tab.GetBuffer(nDeTextLimitCB);		
 		//			
@@ -1892,7 +1525,7 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 		//			if (bHasImageList)
 		//			{
 		//				TabCtrlItem.mask |= TCIF_IMAGE;
-		//				TabCtrlItem.iImage = _tstol(mpTemplate->GetPropertyListItem(nTabsImageList, nCount));
+		//				TabCtrlItem.iImage = _tstol(mpTemplate->GetPropertyListItem(Prop::TabsImageList, nCount));
 		//			}
 		//			
 		//			// add the new tab
@@ -1905,31 +1538,31 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 		//	}
 		//	break;
 		//}
-		//case nTabSelected:
+		//case Prop::TabSelected:
 		//{
-		//	((CAcadColorListBox*)pControl)->SetCurSel(mpTemplate->GetLongProperty(nTabSelected));
+		//	((CAcadColorListBox*)pControl)->SetCurSel(mpTemplate->GetLongProperty(Prop::TabSelected));
 		//	break;
 		//}
-		//case nTabStyle:
+		//case Prop::TabStyle:
 		//{
-		//	if (mpTemplate->GetLongProperty(nTabStyle) == 0)
+		//	if (mpTemplate->GetLongProperty(Prop::TabStyle) == 0)
 		//		((CTabCtrl*)pControl)->ModifyStyle(TCS_BUTTONS, TCS_TABS, SWP_FRAMECHANGED);
 		//	else
 		//		((CTabCtrl*)pControl)->ModifyStyle(TCS_TABS, TCS_BUTTONS, SWP_FRAMECHANGED);
 		//	break;
 		//}
 		//
-		//case nTabFixedWidth:
+		//case Prop::TabFixedWidth:
 		//{
 		//	try
 		//	{
-		//		if (mpTemplate->GetBoolProperty(nTabFixedWidth) == TRUE)
+		//		if (mpTemplate->GetBooleanProperty(Prop::TabFixedWidth) == TRUE)
 		//		{
 		//			((CTabCtrl*)pControl)->ModifyStyle(0, TCS_FIXEDWIDTH, SWP_FRAMECHANGED);
 		//			CRect rc;
 		//			((CTabCtrl*)pControl)->GetItemRect(0, &rc);
 		//			CSize szTabs;
-		//			szTabs.cx = mpTemplate->GetLongProperty(nMinTabWidth);
+		//			szTabs.cx = mpTemplate->GetLongProperty(Prop::MinTabWidth);
 		//			szTabs.cy = rc.Height();
 		//			((CTabCtrl*)pControl)->SetItemSize(szTabs);
 		//		}
@@ -1943,73 +1576,73 @@ void CControlHolder::UpdateProperty(PropertyId nID)
 		//	}
 		//	break;
 		//}
-		case nText:
+		case Prop::Text:
 		{
-			int nTextLimit = mpTemplate->GetLongProperty(nLimitText);
+			int nTextLimit = mpTemplate->GetLongProperty(Prop::LimitText);
 
-			CString sNewText = mpTemplate->GetStrProperty(nText);
+			CString sNewText = mpTemplate->GetStrProperty(Prop::Text);
 
 			if (nTextLimit > -1) 
 			{
 				sNewText = sNewText.Left(nTextLimit);
-				mpTemplate->SetStringProperty(nText, sNewText);
+				mpTemplate->SetStringProperty(Prop::Text, sNewText);
 			}
 
 			pControl->SetWindowText(sNewText);
 			break;
 		}
-		case nTickFrequency:
+		case Prop::TickFrequency:
 		{
-			((CSliderCtrl *)pControl)->SetTicFreq(mpTemplate->GetLongProperty(nTickFrequency));
+			((CSliderCtrl *)pControl)->SetTicFreq(mpTemplate->GetLongProperty(Prop::TickFrequency));
 			
 			break;
 		}
 		
-		case nUseTabStops:
+		case Prop::UseTabStops:
 		{
-			if (mpTemplate->GetBoolProperty(nUseTabStops) == FALSE)
-				((CAcadColorListBox*)pControl)->ModifyStyle(LBS_USETABSTOPS, 0, SWP_FRAMECHANGED);
+			if (mpTemplate->GetBooleanProperty(Prop::UseTabStops) == FALSE)
+				pControl->ModifyStyle(LBS_USETABSTOPS, 0, SWP_FRAMECHANGED);
 			else
-				((CAcadColorListBox*)pControl)->ModifyStyle(0, LBS_USETABSTOPS, SWP_FRAMECHANGED);
+				pControl->ModifyStyle(0, LBS_USETABSTOPS, SWP_FRAMECHANGED);
 			break;
 		}
 		
-		case nValue:
+		case Prop::Value:
 		{
 			switch (mpTemplate->GetType())
 			{
-			case CtlCheckBox:
-			case CtlOptionButton:
-				((CColorButton *)pControl)->SetCheck(mpTemplate->GetBoolProperty(nValue));
-				break;									
+			//case CtlCheckBox:
+			//case CtlOptionButton:
+			//	((CColorButton *)pControl)->SetCheck(mpTemplate->GetBooleanProperty(Prop::Value));
+			//	break;									
 			case CtlRoundSlider:				
-				//((CRoundSliderCtrl *)pControl)->SetText(mpTemplate->GetLongProperty(nValue));
-				((CRoundSliderCtrl *)pControl)->SetPos(mpTemplate->GetLongProperty(nValue));				
+				//((CRoundSliderCtrl *)pControl)->SetText(mpTemplate->GetLongProperty(Prop::Value));
+				((CRoundSliderCtrl *)pControl)->SetPos(mpTemplate->GetLongProperty(Prop::Value));				
 				((CRoundSliderCtrl *)pControl)->RedrawWindow();
 
 				break;
 			case CtlSlider:
-				((CSliderCtrl *)pControl)->SetPos(mpTemplate->GetLongProperty(nValue));
+				((CSliderCtrl *)pControl)->SetPos(mpTemplate->GetLongProperty(Prop::Value));
 				break;
 			case CtlScrollBar:
-				((CScrollBar *)pControl)->SetScrollPos(mpTemplate->GetLongProperty(nValue), TRUE);
+				((CScrollBar *)pControl)->SetScrollPos(mpTemplate->GetLongProperty(Prop::Value), TRUE);
 				break;
 			case CtlProgress:
-				((CProgressCtrl*)pControl)->SetPos(mpTemplate->GetLongProperty(nValue));
+				((CProgressCtrl*)pControl)->SetPos(mpTemplate->GetLongProperty(Prop::Value));
 				break;
 			
 			}
 			break;
 		}
-		case nVScrollBar:
+		case Prop::VScrollBar:
 		{
 			if (mpTemplate->GetType() != CtlDwgList)
 			{
-				if (mpTemplate->GetBoolProperty(nVScrollBar) == FALSE)
-					((CAcadColorListBox*)pControl)->ModifyStyle(WS_VSCROLL, 0, SWP_FRAMECHANGED);
+				if (mpTemplate->GetBooleanProperty(Prop::VScrollBar) == FALSE)
+					pControl->ModifyStyle(WS_VSCROLL, 0, SWP_FRAMECHANGED);
 				else
 				{
-					((CAcadColorListBox*)pControl)->ModifyStyle(0, WS_VSCROLL, SWP_FRAMECHANGED);
+					pControl->ModifyStyle(0, WS_VSCROLL, SWP_FRAMECHANGED);
 					pControl->Invalidate();
 				}
 			}
@@ -2026,14 +1659,14 @@ void CControlHolder::ResetImageList(CWnd *pControl, int nID)
 		{
 			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
 			if (pImageList)
-				((CTabStripCtrl*)pControl)->SetImageList(&pImageList->m_ImageList);
+				((CTabStripCtrl*)pControl)->SetImageList(&pImageList->GetImageList());
 			break;
 		}
 		case CtlGrid:
 		{
 			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
 			if (pImageList)
-				((CListCtrlEx*)pControl)->m_Child.SetImageList(&pImageList->m_ImageList);
+				((CListCtrlEx*)pControl)->m_Child.SetImageList(&pImageList->GetImageList());
 			break;
 		}
 		case CtlTree:
@@ -2041,8 +1674,8 @@ void CControlHolder::ResetImageList(CWnd *pControl, int nID)
 			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
 			if (pImageList)
 			{
-				((CTreeCtrl*)pControl)->SetImageList(&pImageList->m_ImageList, TVSIL_NORMAL);
-				((CTreeCtrl*)pControl)->SetImageList(&pImageList->m_ImageList, TVSIL_STATE);
+				((CTreeCtrl*)pControl)->SetImageList(&pImageList->GetImageList(), TVSIL_NORMAL);
+				((CTreeCtrl*)pControl)->SetImageList(&pImageList->GetImageList(), TVSIL_STATE);
 			}
 			break;
 		}

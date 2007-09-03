@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "OpenDCL.h"
+#include "Editor.h"
 #include "Colors.h"
 #include "PropertyObject.h"
 #include "AcadColorTable.h"
@@ -15,15 +15,40 @@ static CString LTOA(int nVal)
   return sLong;
 }
 
+static UINT GetDialogResourceId( Prop::Id idProp )
+{
+	switch( idProp )
+	{
+	case Prop::BackgroundColor: return IDD_BACKCOLORS;
+	case Prop::AlternateColor: return IDD_ALTCOLORS;
+	case Prop::ForegroundColor: return IDD_FORECOLORS;
+	}
+	return (UINT)-1;
+}
+
+static UINT GetTitleResource( Prop::Id idProp )
+{
+	switch( idProp )
+	{
+	case Prop::BackgroundColor: return IDS_BACKGROUND;
+	case Prop::AlternateColor: return IDS_ALTCOLORS;
+	case Prop::ForegroundColor: return IDS_FOREGROUND;
+	}
+	return (UINT)-1;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CColors property page
 
 
-CColors::CColors(UINT unID) : CPropertyPage(unID)
+CColors::CColors(Prop::Id idProp, CDclControlObject* pControl, COpenDCLView* pView)
+: CPropertyPage( GetDialogResourceId( idProp ) )
+, midProp( idProp )
+, mpControl( pControl )
+, mpView( pView )
+, msTitle( theWorkspace.LoadResourceString( GetTitleResource( idProp ) ) )
+, mpColor( pControl->GetPropertyObject( idProp ) )
 {
-	//{{AFX_DATA_INIT(CColors)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
 }
 
 CColors::~CColors()
@@ -33,13 +58,10 @@ CColors::~CColors()
 void CColors::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CColors)
 	DDX_Control(pDX, IDC_COLORCOMBO, m_ColorCB);
 	DDX_Control(pDX, IDC_EDIT, m_Edit);
 	DDX_Control(pDX, IDC_SYSTEMCOLORLIST, m_SystemColors);
 	DDX_Control(pDX, IDC_COLORPATCH, m_Color);
-	
-	//}}AFX_DATA_MAP
 }
 
 
@@ -61,7 +83,7 @@ BOOL CColors::OnInitDialog()
 {
 	CPropertyPage::OnInitDialog();
 	
-	SetWindowText(m_sTitle);
+	SetWindowText(msTitle);
 	m_SystemColors.AddColor(_T("Scroll Bar"), GetSysColor(0));
 	m_SystemColors.AddColor(_T("Background"), GetSysColor(1));
 	m_SystemColors.AddColor(_T("Active Caption"), GetSysColor(2));
@@ -100,12 +122,12 @@ BOOL CColors::OnInitDialog()
 
 	m_Edit.SetLimitText(3);
 
-	m_Edit.SetWindowText(LTOA(m_pColor->GetLongValue()));
+	m_Edit.SetWindowText(LTOA(mpColor->GetLongValue()));
 
-	if (m_pColor->GetLongValue() < 0)
-		m_SystemColors.SetCurSel((m_pColor->GetLongValue() * -1)-1);
+	if (mpColor->GetLongValue() < 0)
+		m_SystemColors.SetCurSel((mpColor->GetLongValue() * -1)-1);
 	else
-		m_ColorCB.SetCurSel(m_pColor->GetLongValue()-1);
+		m_ColorCB.SetCurSel(mpColor->GetLongValue()-1);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
@@ -116,8 +138,10 @@ BOOL CColors::OnApply()
 	CString sValue;
 	m_Edit.GetWindowText(sValue);
 	int nThisValue = _tstol(sValue);
-	m_pColor->SetLongValue(nThisValue);
+	mpColor->SetLongValue(nThisValue);
 	theWorkspace.SetModified(true);
+	if( mpView )
+		mpView->RefreshChildControl(mpControl, Prop::_All);
 	return CPropertyPage::OnApply();
 }
 

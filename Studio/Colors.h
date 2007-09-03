@@ -10,16 +10,23 @@
 #include "ColorListBox.h"
 #include "ColorPatch.h"
 
+class CDclControlObject;
+class COpenDCLView;
 
 /////////////////////////////////////////////////////////////////////////////
 // CColors dialog
 
 class CColors : public CPropertyPage
 {
+	Prop::Id midProp;
+	CDclControlObject* mpControl;
+	COpenDCLView* mpView;
+	CString msTitle;
+	TPropertyPtr mpColor;
 	
 // Construction
 public:
-	CColors(UINT unID);
+	CColors(Prop::Id idProp, CDclControlObject* pControl, COpenDCLView* pView);
 	~CColors();
 
 // Dialog Data
@@ -31,8 +38,6 @@ public:
 	CColorPatch		m_Color;
 	//}}AFX_DATA
 
-	RefCountedPtr< CPropertyObject > m_pColor;
-	CString			m_sTitle;
 	void DisplayColor();
 
 // Overrides

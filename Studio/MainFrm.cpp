@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "MainFrm.h"
-#include "OpenDCL.h"
+#include "Editor.h"
 #include "Project.h"
 #include "PictureFolder.h"
 #include "DclFormObject.h"
@@ -512,13 +512,10 @@ void CMainFrame::OnRemove()
 	HTREEITEM hParentItem = pProjTree->GetParentItem(hDclForm);
 
 	if (hParentItem != NULL && pProjTree->GetParentItem(hParentItem) != NULL)
-	{
-		// let the user know he has not selected a form item.
-		CString sTitle;
-		sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-		CString sErrorMsg;
-		sErrorMsg = theWorkspace.LoadResourceString(IDS_CANNOTREMOVETABPANE);
-		MessageBox(sErrorMsg, sTitle, MB_OK|MB_ICONEXCLAMATION);		
+	{ //a child form was selected
+		MessageBox( theWorkspace.LoadResourceString(IDS_CANNOTREMOVETABPANE),
+								theWorkspace.LoadResourceString(IDR_MAINFRAME),
+								(MB_OK | MB_ICONEXCLAMATION) );
 		return;
 	}
 
@@ -526,7 +523,6 @@ void CMainFrame::OnRemove()
 	if (hDclForm == NULL)
 		return;
 
-	// check to see if the user selected a non form item	
 	if (pProjTree->GetAutoLispFileTreeItem() == hDclForm ||
 			pProjTree->GetAutoLispFileParentTreeItem() == hDclForm ||
 			pProjTree->GetConfigParentTreeItem() == hDclForm ||
@@ -536,39 +532,31 @@ void CMainFrame::OnRemove()
 			pProjTree->GetPasswordTreeItem() == hDclForm ||
 			pProjTree->GetPasswordParentTreeItem() == hDclForm ||
 			pProjTree->GetAxFilesParentTreeItem() == hDclForm)
-	{
-		// let the user know he has not selected a form item.
-		CString sTitle;
-		sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-		CString sErrorMsg;
-		sErrorMsg = theWorkspace.LoadResourceString(IDS_DCLTREEITEMNOTSEL);
-		MessageBox(sErrorMsg, sTitle, MB_OK|MB_ICONEXCLAMATION);
+	{ //the selected tree item was not a form
+		MessageBox( theWorkspace.LoadResourceString(IDS_DCLTREEITEMNOTSEL),
+								theWorkspace.LoadResourceString(IDR_MAINFRAME),
+								(MB_OK | MB_ICONEXCLAMATION) );
 		return;
 	}
 	
-	// here we need to get the name of the form to be removed
-	CString sName = pProjTree->GetItemText(hDclForm);
-
-	// here we need to get a pointer to the dcl form object.
-	CDclFormObject *pDclForm = pProject->FindDclForm(sName);
-
-	// if the selected tree item was not a dcl form.
-	if (pDclForm == NULL)
-	{
-		// let the user know he has not selected a form item.
-		CString sTitle;
-		sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-		CString sErrorMsg;
-		sErrorMsg = theWorkspace.LoadResourceString(IDS_DCLTREEITEMNOTSEL);
-		MessageBox(sErrorMsg, sTitle, MB_OK|MB_ICONEXCLAMATION);
+	CDclFormObject* pDclForm = pProject->FindDclForm( pProjTree->GetItemText( hDclForm ) );
+	if( !pDclForm )
+	{ //the form was not found for some reason
+		MessageBox( theWorkspace.LoadResourceString(IDS_DCLTREEITEMNOTSEL),
+								theWorkspace.LoadResourceString(IDR_MAINFRAME),
+								(MB_OK | MB_ICONEXCLAMATION) );
 		return;
 	}
-	// call the method to ensure the user wishes to delete the form.
-	if (!pDclForm->CanWeDeleteForm())
+
+	//prompt the user to make sure they want to delete the form
+	if( MessageBox( theWorkspace.LoadResourceString(IDS_QDELETEFORM),
+									theWorkspace.LoadResourceString(IDR_MAINFRAME),
+									(MB_ICONQUESTION | MB_YESNO | MB_DEFBUTTON2) ) != IDYES )
 		return;
 
-	if (pDclForm->m_htiTreeItem != NULL) // if the tab has a tree item (which it should)
-		pProjTree->DeleteItem(pDclForm->m_htiTreeItem); // delete the item.
+	ASSERT(pDclForm->m_htiTreeItem != NULL);
+	if( pDclForm->m_htiTreeItem ) // if the tab has a tree item (which it should)
+		pProjTree->DeleteItem( pDclForm->m_htiTreeItem ); // delete the item.
 	pDclForm->GetProject()->DeleteForm( pDclForm ); //pDclForm is invalid after this call!
 
 	CDocument* pDoc = pProjTree->GetDocument();

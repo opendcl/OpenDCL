@@ -63,27 +63,27 @@ BOOL OdclEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
     m_ArxControl = pControl;
 
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | ES_WANTRETURN | WS_CLIPSIBLINGS;
 	//	
 	
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
 
-	if (pControl->GetBoolProperty(nHScrollBar) == TRUE)
+	if (pControl->GetBooleanProperty(Prop::HScrollBar) == TRUE)
 		dwStyle = dwStyle | WS_HSCROLL;
-	if (pControl->GetBoolProperty(nVScrollBar) == TRUE)
+	if (pControl->GetBooleanProperty(Prop::VScrollBar) == TRUE)
 		dwStyle = dwStyle | WS_VSCROLL;
-	if (m_ArxControl->GetBoolProperty(nReadOnly) == TRUE)
+	if (m_ArxControl->GetBooleanProperty(Prop::ReadOnly) == TRUE)
 		dwStyle = dwStyle | ES_READONLY;
 		
-	switch (m_ArxControl->GetLongProperty(nFilterStyle))
+	switch (m_ArxControl->GetLongProperty(Prop::FilterStyle))
 	{
 	case 2: /* Integer */
 		dwStyle = dwStyle | ES_NUMBER | ES_AUTOHSCROLL;
@@ -108,7 +108,7 @@ BOOL OdclEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 
 	
 	// adjust the justification style				
-	switch (m_ArxControl->GetLongProperty(nJustification))
+	switch (m_ArxControl->GetLongProperty(Prop::Justification))
 	{
 	case 0:/*Left*/
 		dwStyle = dwStyle | ES_LEFT;
@@ -123,15 +123,15 @@ BOOL OdclEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 
 	RetVal=  CColorEdit::Create( dwStyle, ArxRect, pParentWnd, nID );
 	
-	m_pTextProp = pControl->GetPropertyObject(nText);
+	m_pTextProp = pControl->GetPropertyObject(Prop::Text);
 	
-	CColorEdit::SetLimitText(pControl->GetLongProperty(nLimitText));
+	CColorEdit::SetLimitText(pControl->GetLongProperty(Prop::LimitText));
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
-	SetForeColor( pControl->GetLongProperty(nForeColor) );
-	SetAcadColor( pControl->GetLongProperty(nAcadColor) );
+	SetForeColor( pControl->GetLongProperty(Prop::ForegroundColor) );
+	SetAcadColor( pControl->GetLongProperty(Prop::BackgroundColor) );
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -205,7 +205,7 @@ void OdclEdit::OnMouseMove(UINT nFlags, CPoint point)
 
 	if (m_ArxControl)
 		InvokeMethodIntIntInt(
-			m_ArxControl->GetStrProperty(nEventMouseMove),
+			m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 			nFlags,
 			point.x,
 			point.y,
@@ -232,32 +232,22 @@ void OdclEdit::OnChange()
 	
 	if (m_ArxControl)
 	{		
-		CString sTestText = m_ArxControl->GetStrProperty(nText);
+		CString sTestText = m_ArxControl->GetStrProperty(Prop::Text);
 		if (sTestText != sText)
 		{
-			//AfxMessageBox(m_ArxControl->GetStrProperty(nEventEditChanged));
-			m_ArxControl->SetStringProperty(nText, sText);
+			//AfxMessageBox(m_ArxControl->GetStrProperty(Prop::EventEditChanged));
+			m_ArxControl->SetStringProperty(Prop::Text, sText);
 			// call methods to invoke the event
-			InvokeMethodString(m_ArxControl->GetStrProperty(nEventEditChanged), sText, m_bInvokeWithSendString);
+			InvokeMethodString(m_ArxControl->GetStrProperty(Prop::EventEditChanged), sText, m_bInvokeWithSendString);
 		}
 	}
-
-	if (m_ArxControl == NULL)
-	{
-		// Send Notification to parent of ListView ctrl
-		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
-
-		//pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, GetCurrentItemColorIndex());
-		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sText);
-	}
-
 }
 
 void OdclEdit::OnErrspace() 
 {
 	if (m_ArxControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventOutOfMemory), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventOutOfMemory), m_bInvokeWithSendString);
 	
 }
 
@@ -279,7 +269,7 @@ void OdclEdit::OnKillFocus(/* CWnd* pFocus */)
 			stat = acedPutSym(_T("$value"), VarVal);
       acutRelRb(VarVal);
 
-			CString sText = m_ArxControl->GetStrProperty(nEventEditChanged);
+			CString sText = m_ArxControl->GetStrProperty(Prop::EventEditChanged);
 
 			list = acutBuildList(RTSTR, sText, 0);
 			if (list != NULL) 
@@ -295,7 +285,7 @@ void OdclEdit::OnKillFocus(/* CWnd* pFocus */)
 			GetParent()->EnableWindow(TRUE);
 		}
 		else
-			InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+			InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 	}
 /*
 	if (m_ArxControl == NULL)
@@ -334,7 +324,7 @@ void OdclEdit::OnMaxtext()
 {
 	if (m_ArxControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventMaxText), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventMaxText), m_bInvokeWithSendString);
 	
 }
 
@@ -342,7 +332,7 @@ void OdclEdit::OnSetFocus(/* CWnd* pFocus */)
 {
 	if (m_ArxControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 	m_bFocusClick = false;
 }
 
@@ -356,7 +346,7 @@ void OdclEdit::OnUpdate()
 		GetWindowText(sText);
 		if (IsWindowVisible() == TRUE)
 			// call methods to invoke the event
-			InvokeMethodString(m_ArxControl->GetStrProperty(nEventUpdate), sText, m_bInvokeWithSendString);
+			InvokeMethodString(m_ArxControl->GetStrProperty(Prop::EventUpdate), sText, m_bInvokeWithSendString);
 
 	}
 }
@@ -365,7 +355,7 @@ void OdclEdit::OnUpdate()
 void OdclEdit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	if (m_ArxControl)
-		InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(nEventKeyUp), CString((char)nChar), (int)nRepCnt,  (int)nFlags, m_bInvokeWithSendString);
+		InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(Prop::EventKeyUp), CString((char)nChar), (int)nRepCnt,  (int)nFlags, m_bInvokeWithSendString);
 	CColorEdit::OnKeyUp(nChar, nRepCnt, nFlags);
 
 }
@@ -373,55 +363,55 @@ void OdclEdit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 void OdclEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	if (m_ArxControl)
-		InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(nEventKeyDown), CString((char)nChar),  (int)nRepCnt, (int)nFlags, m_bInvokeWithSendString);
+		InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(Prop::EventKeyDown), CString((char)nChar),  (int)nRepCnt, (int)nFlags, m_bInvokeWithSendString);
 	
-	if (m_ArxControl == NULL && !m_bAllowReturn)
-	{
-		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
+	//if (m_ArxControl == NULL && !m_bAllowReturn)
+	//{
+	//	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 
-		if (nChar == VK_UP || nChar == VK_DOWN)
-		{
-			if (m_pGridDropList == NULL)
-			{
-				if (nChar == VK_UP)
-					pListCtrl->MoveUp();		
-				
-				if (nChar == VK_DOWN)
-					pListCtrl->MoveDown();					
-			}
-			else
-			{
-				CString sText;
-				GetWindowText(sText);
+	//	if (nChar == VK_UP || nChar == VK_DOWN)
+	//	{
+	//		if (m_pGridDropList == NULL)
+	//		{
+	//			if (nChar == VK_UP)
+	//				pListCtrl->MoveUp();		
+	//			
+	//			if (nChar == VK_DOWN)
+	//				pListCtrl->MoveDown();					
+	//		}
+	//		else
+	//		{
+	//			CString sText;
+	//			GetWindowText(sText);
 
-				int n = m_pGridDropList->FindString(0, sText);
-				if (n > -1)
-				{
-					if (nChar == VK_UP)
-						n--;
-					if (nChar == VK_DOWN)
-						n++;
-					
-					if (n < 0)
-						n = m_pGridDropList->GetCount()-1;
+	//			int n = m_pGridDropList->FindString(0, sText);
+	//			if (n > -1)
+	//			{
+	//				if (nChar == VK_UP)
+	//					n--;
+	//				if (nChar == VK_DOWN)
+	//					n++;
+	//				
+	//				if (n < 0)
+	//					n = m_pGridDropList->GetCount()-1;
 
-					if (n > m_pGridDropList->GetCount()-1)
-						n = 0;
-				}
-				else
-				{
-					if (nChar == VK_UP)
-						n = m_pGridDropList->GetCount()-1;			
-					if (nChar == VK_DOWN)
-						n = 0;
-				}
+	//				if (n > m_pGridDropList->GetCount()-1)
+	//					n = 0;
+	//			}
+	//			else
+	//			{
+	//				if (nChar == VK_UP)
+	//					n = m_pGridDropList->GetCount()-1;			
+	//				if (nChar == VK_DOWN)
+	//					n = 0;
+	//			}
 
-				m_pGridDropList->GetLBText(n, sText);
-				SetWindowText(sText);
-				SetSel(0, sText.GetLength(), TRUE);
-			}
-		}
-	}
+	//			m_pGridDropList->GetLBText(n, sText);
+	//			SetWindowText(sText);
+	//			SetSel(0, sText.GetLength(), TRUE);
+	//		}
+	//	}
+	//}
 
 	CColorEdit::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -496,10 +486,10 @@ BOOL OdclEdit::PreTranslateMessage(MSG* pMsg)
 	
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN && m_ArxControl && !m_bAllowReturn)
 	{
-		CString sEvent = m_ArxControl->GetStrProperty(nEventReturnPressed);
+		CString sEvent = m_ArxControl->GetStrProperty(Prop::EventReturnPressed);
 		InvokeMethod(sEvent, m_bInvokeWithSendString);	
 
-		if (m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
+		if (m_ArxControl->GetBooleanProperty(Prop::ReturnAsTab) == TRUE)
 		{
 			pMsg->wParam = VK_TAB;
 		}
@@ -519,8 +509,8 @@ BOOL OdclEdit::PreTranslateMessage(MSG* pMsg)
 			::TranslateMessage(pMsg);
 			::DispatchMessage(pMsg);
 			
-			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();		
-			pListCtrl->MoveDown();		
+			//CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();		
+			//pListCtrl->MoveDown();		
 			return TRUE;				// DO NOT process further
 		}
 		if (pMsg->wParam == VK_ESCAPE)
@@ -533,7 +523,7 @@ BOOL OdclEdit::PreTranslateMessage(MSG* pMsg)
 			// Send Notification to parent of ListView ctrl
 			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 
-			pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, m_strOldValue);
+			//pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, m_strOldValue);
 			pListCtrl->HideEditControls();
 			return TRUE;				// DO NOT process further
 		}
@@ -560,7 +550,7 @@ void OdclEdit::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	if (m_ArxControl)
 	{
-		if (m_ArxControl->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
+		if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
 		{
 			BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
 		}
@@ -576,7 +566,7 @@ void OdclEdit::OnLButtonUp(UINT nFlags, CPoint point)
 	CColorEdit::OnLButtonUp(nFlags, point);
 	if (!m_bFocusClick && m_ArxControl)
 	{
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 		m_bFocusClick = true;
 	}
 }

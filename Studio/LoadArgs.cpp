@@ -12,25 +12,25 @@
 #include "DclFormObject.h"
 
 
-void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CString &sArgs, CString &sDesc)
+void LoadArgsNDesc(Prop::Id nEventId, const CDclControlObject *pControl, CString &sArgs, CString &sDesc)
 {
 	// here we need to test the event defun id type to see what arguments need to be added.
 	switch (nEventId)
 	{
-	case nEventSplitterMoved:
+	case Prop::EventSplitterMoved:
 		sDesc = theWorkspace.LoadResourceString(IDS_EVENTDESC_SPLITTERMOVED);
 		if (pControl->GetType() == CtlSplitter)
 			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_RECT);			
 		break;
 
-	case nEventBtnClicked:
+	case Prop::EventBtnClicked:
 		sDesc = theWorkspace.LoadResourceString(IDS_EVENTDESC_BTNCLICKED);
 		
 		if (pControl->GetType() == CtlGrid)
 			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ROWCOL);			
 		break;
     
-	case nEventClicked:
+	case Prop::EventClicked:
 		switch( pControl->GetType())
 		{
 		case CtlCheckBox:
@@ -51,25 +51,25 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		sDesc = theWorkspace.LoadResourceString(5001);
 		break;      
 		
-	case nEventFolderChanged:
+	case Prop::EventFolderChanged:
 		sArgs = theWorkspace.LoadResourceString(1220);
         sDesc = theWorkspace.LoadResourceString(5219);
 		break;
-	case nEventOnHelp:
+	case Prop::EventOnHelp:
 		sArgs = CString();
         sDesc = theWorkspace.LoadResourceString(5220);
 		break;
-	case nEventOnTypeChange:
+	case Prop::EventOnTypeChange:
 		sArgs = theWorkspace.LoadResourceString(1221);
         sDesc = theWorkspace.LoadResourceString(5221);
 		break;
 	
-	case nEventEditChanged:
+	case Prop::EventEditChanged:
 		sArgs = theWorkspace.LoadResourceString(1208);
 		sDesc = theWorkspace.LoadResourceString(5002);
 		break;
 
-	case nEventDblClicked:
+	case Prop::EventDblClicked:
 		switch( pControl->GetType())
 		{
 		case CtlListView:
@@ -86,7 +86,7 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		sDesc = theWorkspace.LoadResourceString(5003);
 		break;
       
-	case nEventSelChanged:
+	case Prop::EventSelChanged:
     
 		switch( pControl->GetType())
 		{
@@ -98,7 +98,7 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		
 			}
 		case CtlComboBox:
-			if (pControl->GetLongProperty(nComboBoxStyle) == 12)
+			if (pControl->GetLongProperty(Prop::ComboBoxStyle) == 12)
 			{
 				sArgs = theWorkspace.LoadResourceString(1223);
 				sDesc = theWorkspace.LoadResourceString(5223);
@@ -131,27 +131,27 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
       
 		break;
       
-	case nEventGetDayState:
+	case Prop::EventGetDayState:
 		sArgs = CString();
 		sDesc = theWorkspace.LoadResourceString(5005);
 		break;
 
-	case nEventSelect:
+	case Prop::EventSelect:
 		sArgs = CString();
 		sDesc = theWorkspace.LoadResourceString(5006);
 		break;
 
-	case nEventKillFocus:
+	case Prop::EventKillFocus:
 		sArgs = CString();
 		sDesc = theWorkspace.LoadResourceString(5007);
 		break;
 
-	case nEventOutOfMemory:
+	case Prop::EventOutOfMemory:
 		sArgs = CString();
 		sDesc = theWorkspace.LoadResourceString(5008);
 		break;
 
-	case nEventRClick:
+	case Prop::EventRClick:
 		switch( pControl->GetType())
 		{
 		case CtlGrid:
@@ -167,7 +167,7 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		sDesc = theWorkspace.LoadResourceString(IDS_EVENTDESC_RCLICK);
 		break;
 
-	case nEventRDblClick:
+	case Prop::EventRDblClick:
 		switch( pControl->GetType())
 		{
 		case CtlGrid:
@@ -183,17 +183,17 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		sDesc = theWorkspace.LoadResourceString(IDS_EVENTDESC_RDBLCLICK);
 		break;
 
-	case nEventReturn:
+	case Prop::EventReturn:
 		sArgs = CString();
 		sDesc = theWorkspace.LoadResourceString(5011);
 		break;
 
-	case nEventSetFocus:
+	case Prop::EventSetFocus:
 		sArgs = CString();
 		sDesc = theWorkspace.LoadResourceString(5012);
 		break;
     
-	case nEventBeginLabelEdit:
+	case Prop::EventBeginLabelEdit:
 		switch( pControl->GetType())
 		{
 		case CtlGrid:
@@ -209,12 +209,12 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		sDesc = theWorkspace.LoadResourceString(5013);
 		break;
     
-	case nEventDeleteItem:
+	case Prop::EventDeleteItem:
        sArgs = CString();
        sDesc = theWorkspace.LoadResourceString(5014);
 	   break;
     
-	case nEventEndLabelEdit:
+	case Prop::EventEndLabelEdit:
        switch( pControl->GetType())
 	   {		   
 	   case CtlGrid:
@@ -232,17 +232,17 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
        }  
        break;
 
-	case nEventItemExpanded:
+	case Prop::EventItemExpanded:
        sArgs = "ItemText Key";
        sDesc = theWorkspace.LoadResourceString(5016);
 	   break;
     
-	case nEventItemExpanding:
+	case Prop::EventItemExpanding:
 		sArgs = "ItemText Key";
         sDesc = theWorkspace.LoadResourceString(5017);
 		break;
     
-	case nEventKeyDown:
+	case Prop::EventKeyDown:
 		switch( pControl->GetType())
 		{
         case CtlBlockList:
@@ -256,62 +256,62 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 	    sDesc = theWorkspace.LoadResourceString(5018);
 		break;
     
-	case nEventKeyUp:
+	case Prop::EventKeyUp:
            sArgs = theWorkspace.LoadResourceString(1199);
            sDesc = theWorkspace.LoadResourceString(5033);
 		   break;
     
-	case nEventMouseDown:
+	case Prop::EventMouseDown:
            sArgs = theWorkspace.LoadResourceString(1200);
            sDesc = theWorkspace.LoadResourceString(5034);
 		   break;
     
-	case nEventMouseUp:
+	case Prop::EventMouseUp:
            sArgs = theWorkspace.LoadResourceString(1200);
            sDesc = theWorkspace.LoadResourceString(5035);
 		   break;
     
-	case nEventMouseMove:
+	case Prop::EventMouseMove:
            sArgs = theWorkspace.LoadResourceString(1201);
            sDesc = theWorkspace.LoadResourceString(5036);
 		   break;
     
-	case nEventMouseMovedOff:
+	case Prop::EventMouseMovedOff:
           sArgs = CString();
           sDesc = theWorkspace.LoadResourceString(5037);
 		   break;
     
-	case nEventMouseEntered:
+	case Prop::EventMouseEntered:
           sArgs = CString();
           sDesc = theWorkspace.LoadResourceString(5042);
 		   break;
     
-	case nEventColumnClick:
+	case Prop::EventColumnClick:
           sArgs = theWorkspace.LoadResourceString(1202);
           sDesc = theWorkspace.LoadResourceString(5052);
 		   break;
     
-	case nEventMouseDblClick:
+	case Prop::EventMouseDblClick:
           sArgs = theWorkspace.LoadResourceString(1200);
           sDesc = theWorkspace.LoadResourceString(5038);
 		   break;
     
-	case nEventMouseWheel:
+	case Prop::EventMouseWheel:
           sArgs = theWorkspace.LoadResourceString(1203);
           sDesc = theWorkspace.LoadResourceString(5039);
 		   break;
     
-	case nEventPaint:
+	case Prop::EventPaint:
           sArgs = theWorkspace.LoadResourceString(1204);
           sDesc = theWorkspace.LoadResourceString(5040);		  
 		   break;
     
-	case nEventNavigateComplete:
+	case Prop::EventNavigateComplete:
           sArgs = theWorkspace.LoadResourceString(1205);
           sDesc = theWorkspace.LoadResourceString(5041);
 		   break;
       
-	case nEventSelChanging:
+	case Prop::EventSelChanging:
 		switch( pControl->GetType())
 		{
 		case CtlTabStrip:
@@ -324,7 +324,7 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
         sDesc = theWorkspace.LoadResourceString(5019);
 		break;
     
-	case nEventChanged:
+	case Prop::EventChanged:
         switch( pControl->GetType())
 		{
 		case CtlTabStrip:
@@ -340,37 +340,37 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		sDesc = theWorkspace.LoadResourceString(5020);
 		break;
 
-	case nEventMaxText:
+	case Prop::EventMaxText:
 		sArgs = CString();
 		sDesc = theWorkspace.LoadResourceString(5021);
 		break;
   
-	case nEventUpdate:
+	case Prop::EventUpdate:
 		sArgs = theWorkspace.LoadResourceString(1208);
 		sDesc = theWorkspace.LoadResourceString(5022);
 		break;
   
-	case nEventDropDown:
+	case Prop::EventDropDown:
 		sArgs = CString();
 		sDesc = theWorkspace.LoadResourceString(5023);
 		break;
   
-	case nEventScroll:
+	case Prop::EventScroll:
 		sArgs = theWorkspace.LoadResourceString(1188);
 		sDesc = theWorkspace.LoadResourceString(5024);
 		break;
   
-	case nEventScrolled:
+	case Prop::EventScrolled:
         sArgs = theWorkspace.LoadResourceString(1188);
         sDesc = theWorkspace.LoadResourceString(5053);		
 		break;
       
-	case nEventReleasedCapture:
+	case Prop::EventReleasedCapture:
 		sArgs = theWorkspace.LoadResourceString(1188);
 		sDesc = theWorkspace.LoadResourceString(5025);		
 		break;
       
-	case nFormEventClose:
+	case Prop::FormEventClose:
 		switch( pControl->GetOwnerForm()->GetType() )
 		{
 		case VdclFileDialog:
@@ -385,73 +385,73 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		sDesc = theWorkspace.LoadResourceString(5026);
 		break;
     
-	case nFormEventInitialize:
+	case Prop::FormEventInitialize:
           sArgs = CString();
           sDesc = theWorkspace.LoadResourceString(5027);
 		break;
-	case nFormEventSize:
+	case Prop::FormEventSize:
           sArgs = theWorkspace.LoadResourceString(1210);
           sDesc = theWorkspace.LoadResourceString(5028);
 		break;
-	case nFormEventShow:
+	case Prop::FormEventShow:
           sArgs = CString();
           sDesc = theWorkspace.LoadResourceString(5029);
 		break;
-	case nDocEventActivated:
+	case Prop::DocEventActivated:
           sArgs = CString();
           sDesc = theWorkspace.LoadResourceString(5030);
 		break;
-	case nCfgEventCancel:
+	case Prop::CfgEventCancel:
           sArgs = CString();
           sDesc = theWorkspace.LoadResourceString(5031);
 		break;
-	case nCfgEventOK:
+	case Prop::CfgEventOK:
           sArgs = CString();
           sDesc = theWorkspace.LoadResourceString(5032);
 		break;
-	case nCfgEventHelp:
+	case Prop::CfgEventHelp:
           sArgs = CString();
           sDesc = theWorkspace.LoadResourceString(5033);
 		break;
-	case nCfgEventApply:
+	case Prop::CfgEventApply:
           sArgs = CString();
           sDesc = theWorkspace.LoadResourceString(5034);
 		break;
-	case nEventReturnPressed:
+	case Prop::EventReturnPressed:
           sArgs = CString();
           sDesc = theWorkspace.LoadResourceString(5043);
 		break;
-	case nFormEventCancelClose:
+	case Prop::FormEventCancelClose:
           sArgs = theWorkspace.LoadResourceString(1211);
           sDesc = theWorkspace.LoadResourceString(5044);
 		break;
-  case nFormEventOnOk:
+  case Prop::FormEventOnOk:
     sArgs = CString();
 		sDesc = theWorkspace.LoadResourceString(14686);
     break;
-	case nFormEventOnCancel:
+	case Prop::FormEventOnCancel:
 		sArgs = CString();
 		sDesc = theWorkspace.LoadResourceString(14687);
 		break;
-	case nOnLMouseEvent:
+	case Prop::OnLMouseEvent:
           sArgs = theWorkspace.LoadResourceString(1212);
           sDesc = theWorkspace.LoadResourceString(5045);
 		break;
-	case nOnMMouseEvent:
+	case Prop::OnMMouseEvent:
           sArgs = theWorkspace.LoadResourceString(1212);
          sDesc = theWorkspace.LoadResourceString(5046);
 		break;
-	case nOnRMouseEvent:
+	case Prop::OnRMouseEvent:
           sArgs = theWorkspace.LoadResourceString(1212);
           sDesc = theWorkspace.LoadResourceString(5047);
 		break;
       
-	case nDragnDropToAutoCAD:
+	case Prop::DragnDropToAutoCAD:
           sArgs = theWorkspace.LoadResourceString(1213);
           sDesc = theWorkspace.LoadResourceString(5048);
 		break;
       
-	case nDragnDropFromControl:
+	case Prop::DragnDropFromControl:
         switch(pControl->GetType())
 		{
 		case CtlTree:
@@ -463,7 +463,7 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		}
         sDesc = theWorkspace.LoadResourceString(5049);
 		break;
-	case nDragnDropFromAutoCAD:
+	case Prop::DragnDropFromAutoCAD:
 		if (pControl->GetOwnerForm()->GetType() == VdclFileDialog)
 		{
 			switch( pControl->GetType())
@@ -493,7 +493,7 @@ void LoadArgsNDesc(PropertyId nEventId, const CDclControlObject *pControl, CStri
 		}
 		break;
 
-	case nDragnDropBegin:
+	case Prop::DragnDropBegin:
           sArgs = CString();
           sDesc = theWorkspace.LoadResourceString(5051);
 		break;

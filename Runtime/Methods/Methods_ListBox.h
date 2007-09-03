@@ -7,7 +7,6 @@
 int DwgList_Dir();
 int DwgList_GetDir();
 int DwgList_GetFileName();
-int DwgList_SetRowHeight();
 int DwgList_GetType();
 
 int OptionList_SetEnabled();

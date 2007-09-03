@@ -65,13 +65,13 @@ static CString CreateUniqueName()
 	return sUniqueName;
 }
 
-static void AddControlProperty(CDclControlObject *pControl, PropertyId nID, LPCTSTR strValue, PropertyType ValueType)
+static void AddControlProperty(CDclControlObject *pControl, Prop::Id nID, LPCTSTR strValue, PropertyType ValueType)
 {
 	// find the insert position for this new property
 	POSITION InsertPos = pControl->FindPropertyInsertPos(nID, false);
 
 	// create new property object pointer to pass to AddTail method
-	RefCountedPtr< CPropertyObject > pPropertyObect = new CPropertyObject( ValueType, 0, nID );
+	TPropertyPtr pPropertyObect = new CPropertyObject( ValueType, 0, nID );
 
 	// assign values
 	pPropertyObect->SetStringValue(strValue);
@@ -327,7 +327,7 @@ bool CProject::AddPicture( CPictureObject* pPicture )
 					POSITION posProp = pDclControl->GetPropertyList().GetHeadPosition();
 					while( posProp )
 					{
-						RefCountedPtr< CPropertyObject > pProp = pDclControl->GetPropertyList().GetNext( posProp );
+						TPropertyPtr pProp = pDclControl->GetPropertyList().GetNext( posProp );
 						if( pProp->GetType() == PropPicture && pProp->GetLongValue() == nID )
 							pDclControl->GetControlInstance()->OnApplyProperty( pProp ); //apply the updated picture
 					}
@@ -370,7 +370,7 @@ void CProject::DeletePicture( int nID )
 			POSITION posProp = pDclControl->GetPropertyList().GetHeadPosition();
 			while( posProp )
 			{
-				RefCountedPtr< CPropertyObject > pProp = pDclControl->GetPropertyList().GetNext( posProp );
+				TPropertyPtr pProp = pDclControl->GetPropertyList().GetNext( posProp );
 				if( pProp->GetType() == PropPicture && pProp->GetLongValue() == nID )
 				{
 					pProp->SetShortValue( -1 ); //reset the picture ID
@@ -589,7 +589,7 @@ size_t CProject::CountDeletedForms() const
   while( pos )
   {
     CDclFormObject* pDclForm = mDclForms.GetNext( pos );
-    if( pDclForm->m_bDeleted )
+    if( pDclForm->IsDeleted() )
       ++ctDeleted;
   }
   return ctDeleted;
@@ -848,7 +848,7 @@ void CProject::Serialize(CArchive& ar)
     while (pos != NULL)
     {
       CDclFormObject* pDclForm = mDclForms.GetNext(pos);
-      if (!pDclForm->m_bDeleted)
+      if( !pDclForm->IsDeleted() )
 			{
         pDclForm->Serialize(ar);
 			#ifdef _DEBUG

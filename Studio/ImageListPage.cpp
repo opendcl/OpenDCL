@@ -22,17 +22,13 @@ CImageListPage::CImageListPage( CDclControlObject* pDclControl )
 , nCurrentWidth( 0 )
 , nCurrentHeight( 0 )
 {
-	//{{AFX_DATA_INIT(CImageListPage)
-	//}}AFX_DATA_INIT
-	//m_bImageListCreated = false;
-	nCurrentWidth = 0;
-	nCurrentHeight = 0;
 	RefCountedPtr< CImageListObject > pImageList = pDclControl->GetImageList();
 	if( pImageList )
 	{
-		mpImageList->Create( &pImageList->m_ImageList );
-		nCurrentWidth = pImageList->m_ImageSize.cx;
-		nCurrentHeight = pImageList->m_ImageSize.cy;
+		mpImageList->Create( &pImageList->GetImageList() );
+		const CSize& szImage = pImageList->GetSize();
+		nCurrentWidth = szImage.cx;
+		nCurrentHeight = szImage.cy;
 	}
 }
 
@@ -373,12 +369,7 @@ void CImageListPage::OnRemoveimage()
 BOOL CImageListPage::OnApply() 
 {
 	if( mpImageList && mpImageList->m_hImageList && mpImageList->GetImageCount() > 0 )
-	{
-		CImageListObject* pNewImageList = new CImageListObject;
-		pNewImageList->m_ImageSize.SetSize( nCurrentWidth, nCurrentHeight );
-		pNewImageList->m_ImageList.Attach( ImageList_Duplicate( mpImageList->m_hImageList ) );
-		mpDclControl->SetImageList( pNewImageList );
-	}
+		mpDclControl->SetImageList( new CImageListObject( mpImageList ) );
 	else
 		mpDclControl->SetImageList( NULL );
 	theWorkspace.SetModified(true);

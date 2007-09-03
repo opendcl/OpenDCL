@@ -24,7 +24,7 @@ public:
 // DialogControl Interface
 public:
 	virtual DWORD GetWndStyle() const;
-	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
 public:
 	void SetPicture( CPictureObject* pPict );

@@ -62,7 +62,7 @@ int Grid_AddColumn()
 	}
 
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();	
-  RefCountedPtr< CPropertyObject > m_pColCaptions = pArx->GetPropertyObject(nColumnCaptions);	
+  TPropertyPtr m_pColCaptions = pArx->GetPropertyObject(Prop::ColumnCaptions);	
 
 	//ensure AutoLISP has passed Arguments	
 	ListData = acedGetArgs();
@@ -209,53 +209,7 @@ int Grid_AddColumn()
 							nFormat,
 							nWidth,
 							nImageIndex);
-			
-			_RowData *pCells = pGridCtrl->GetRowData(nRet);
-			
-			if (pCells != NULL && pCells->m_Cells.GetCount() < nRet)
-			{
-				for (int i=0; i<pGridCtrl->GetItemCount(); i++)
-				{
-					_RowData *pData = pGridCtrl->GetRowData(i);
 
-					_Style *pStyle = NULL;
-					pData->m_Cells.InsertAt(nRet, pStyle);					
-				}
-			}
-		
-			if (nImageIndex > -1)
-			{
-				HD_ITEM curItem;
-				LPTSTR  pStrTemp;
-				CHeaderCtrl* pHdrCtrl= NULL;
-
-				// retrieve embedded header control			
-				pHdrCtrl = pGridCtrl->GetHeaderCtrl();
-
-				// add bmaps to each header item
-				pHdrCtrl->GetItem(nRet, &curItem);
-				curItem.mask= HDI_TEXT | HDI_IMAGE | HDI_FORMAT;
-				pStrTemp = sColumnHeading.GetBuffer(sColumnHeading.GetLength());
-				curItem.pszText = pStrTemp;
-				curItem.iImage= nImageIndex;
-			
-				switch(nFormat)
-				{					
-				case 1:
-					curItem.fmt= HDF_CENTER | HDF_STRING |HDF_IMAGE;
-					break;
-				case 2:
-					curItem.fmt= HDF_RIGHT | HDF_STRING | HDF_IMAGE;
-					break;				
-				case 0:
-				default:
-					curItem.fmt= HDF_LEFT | HDF_STRING | HDF_IMAGE;
-					break;
-				}
-			
-				pHdrCtrl->SetItem(nRet, &curItem);
-			}
-			
 			if (ListData->restype != RTLE) 
 			{
 				// inform the programmer that he did not make the correct call
@@ -271,7 +225,7 @@ int Grid_AddColumn()
 				if (ListData == NULL)
 				{
 					// return nil
-					acedRetVoid();
+					acedRetT();
 					return 0;
 				}
 				// start of inner list
@@ -283,7 +237,7 @@ int Grid_AddColumn()
 					if (ListData == NULL)
 					{
 						// return nil
-						acedRetVoid();
+						acedRetT();
 						return 0;
 					}
 				}
@@ -292,7 +246,7 @@ int Grid_AddColumn()
 			if (ListData == NULL)
 			{
 				// return nil
-				acedRetVoid();
+				acedRetT();
 				return 0;
 			}
 		}
@@ -305,7 +259,7 @@ int Grid_AddColumn()
 	}
 	
 	// return nil
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
@@ -475,10 +429,8 @@ int Grid_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
 		lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;
 		lvItem.iItem = nIndex;
 		lvItem.iSubItem = 0;		
-		TCHAR sValue [256];
-		_tcscpy(sValue, sTextArray[0]);
-		lvItem.pszText = sValue;
-		
+		lvItem.pszText = sTextArray[0].LockBuffer();
+		lvItem.cchTextMax = -1;
 		lvItem.iImage = nIntArray[0];
 		lvItem.iIndent = 0;
 		
@@ -489,8 +441,10 @@ int Grid_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
 	// now set the rest of the cells.
 	for (i=1; i<sTextArray.GetSize(); i++)
 	{
-		pGridCtrl->SetItemText(nInsertIndex, i, sTextArray[i]);
-		pGridCtrl->SetItemImage(nInsertIndex, i, (i < nIntArray.GetSize())? nIntArray[i] : nIntArray[0]);
+		pGridCtrl->SetCellTextImage(nInsertIndex,
+																i,
+																sTextArray[i],
+																(i < nIntArray.GetSize())? nIntArray[i] : nIntArray[0]);
 	}
 	
 	// clear the text array
@@ -537,7 +491,7 @@ int Grid_Clear()
 	pGridCtrl->DeleteAllItems();
 
 	// return nil
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 //*****************************************************************************
@@ -564,14 +518,7 @@ int Grid_GetItemData()
 	}
 
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	long lData = 0;	
-	_RowData *pData = pGridCtrl->GetRowData(nIndex);
-	if (pData != NULL)
-		lData = pData->nItemData;
-
-	// return the count
-	acedRetInt(lData);
+	acedRetInt(pGridCtrl->GetItemData(nIndex));
 	return 0;
 }
 
@@ -603,7 +550,7 @@ int Grid_GetItemImage()
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
 
 	// return the count
-	acedRetInt(pGridCtrl->GetItemImage(nIndex, nColIndex));
+	acedRetInt(pGridCtrl->GetCellImage(nIndex, nColIndex));
 	return 0;
 }
 
@@ -633,18 +580,8 @@ int Grid_SetItemData()
 	}
 
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-
-	_RowData *pData = pGridCtrl->GetRowData(nIndex);
-	if (pData == NULL)
-	{
-		pData = new _RowData; 
-		pGridCtrl->SetItemData(nIndex, (DWORD_PTR)pData);
-	}
-
-	pData->nItemData = lItemData;
-	
-	// return nil
-	acedRetVoid();
+	pGridCtrl->SetItemData(nIndex, (DWORD_PTR)lItemData);
+	acedRetT();
 	return 0;
 }
 
@@ -838,7 +775,7 @@ int Grid_SetItemText()
 		
 	pGridCtrl->SetItemText(nRowIndex, nColIndex, sNewText);
 	
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
@@ -873,46 +810,9 @@ int Grid_Cell_SetStyle()
 	}
 
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
+	pGridCtrl->SetCellStyle(nRow, nCol, (CellStyle)nStyle, nData1, nData2, nData2, sOptionalText);
 
-	pGridCtrl->SetCellStyle(nRow, nCol, nStyle);
-
-	if (pGridCtrl->GetCellData(nRow, nCol) != NULL)
-	{
-		pGridCtrl->GetCellData(nRow, nCol)->nData1 = nData1;
-		pGridCtrl->GetCellData(nRow, nCol)->nData2 = nData2;
-	}
-
-	switch(nStyle)
-	{
-	case Grid_DwgFilesCell:
-		{
-			if (pGridCtrl->GetCellData(nRow, nCol) != NULL)
-			{
-				pGridCtrl->GetCellData(nRow, nCol)->sStrings.RemoveAll();
-				pGridCtrl->GetCellData(nRow, nCol)->sStrings.Add(sOptionalText);
-			}
-			break;
-		}
-	case Grid_UpperCase:
-	case Grid_UpperCase_Combo:
-		{
-			CString sText;
-			sText = pGridCtrl->GetItemText(nRow, nCol);
-			sText.MakeUpper();
-			pGridCtrl->SetItemText(nRow, nCol, sText);
-			break;
-		}		
-	case Grid_LowerCase:
-	case Grid_LowerCase_Combo:
-		{
-			CString sText;
-			sText = pGridCtrl->GetItemText(nRow, nCol);
-			sText.MakeLower();
-			pGridCtrl->SetItemText(nRow, nCol, sText);
-			break;
-		}
-	}
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }			
 
@@ -961,41 +861,9 @@ int Grid_Cell_SetDropList()
 	}
 
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-
-	if (pGridCtrl->GetCellData(nRow, nCol) != NULL)
-	{
-		pGridCtrl->GetCellData(nRow, nCol)->sStrings.RemoveAll();
-		pGridCtrl->GetCellData(nRow, nCol)->nInts.RemoveAll();
-
-    int i;		
-		for (i=0; i<sStrings.GetSize(); i++)
-		{
-			CString &sText = sStrings[i];
-			int nStyle = 0;
-			if (pGridCtrl->GetCellData(nRow, nCol) != NULL)
-				nStyle = pGridCtrl->GetCellData(nRow, nCol)->nStyle;
-
-			switch(nStyle)
-			{
-			case Grid_UpperCase:
-			case Grid_UpperCase_Combo:
-				sText.MakeUpper();
-				break;
-			case Grid_LowerCase:
-			case Grid_LowerCase_Combo:
-				sText.MakeLower();					
-				break;
-			}
-			
-			pGridCtrl->GetCellData(nRow, nCol)->sStrings.Add(sText);
-		}
-		for (i=0; i<nInts.GetSize(); i++)
-		{
-			pGridCtrl->GetCellData(nRow, nCol)->nInts.Add(nInts[i]);
-		}
-	}
+	pGridCtrl->SetCellListData( nRow, nCol, nInts, sStrings );
 	
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }			
 //*****************************************************************************
@@ -1025,10 +893,10 @@ int Grid_SetItemImage()
 
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
 		
-	pGridCtrl->SetItemImage(nArg1, nArg2, nArg3);
+	pGridCtrl->SetCellImage(nArg1, nArg2, nArg3);
 
 	
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
@@ -1095,7 +963,7 @@ int Grid_SetColWidth()
 
 	pGridCtrl->SetColumnWidth(nColIndex, nNewWidth);
 
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
@@ -1151,22 +1019,15 @@ int Grid_DeleteItems()
 	}
 
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-
-	_RowData *pData = pGridCtrl->GetRowData(nRow);
-
-	if (pData != NULL)
-		delete pData;
-
-	// get the second argument required
 	pGridCtrl->DeleteItem(nRow);
 
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
 //*****************************************************************************
 // 
-// Method: Grid_DeleteItems()
+// Method: Grid_DeleteColumns()
 // 
 // Purpose: [Forces an item to be selected]
 // 
@@ -1188,20 +1049,9 @@ int Grid_DeleteColumns()
 	}
 
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-
-	// get the second argument required
 	pGridCtrl->DeleteColumn(nCol);
-
-	for (int i=0; i<pGridCtrl->GetItemCount(); i++)
-	{
-		_RowData *pCells = pGridCtrl->GetRowData(i);
-
-		if (nCol < pCells->m_Cells.GetSize() && 
-			nCol > pGridCtrl->m_pColCaptions->GetStringArrayPtr()->size()-1)
-			pCells->m_Cells.RemoveAt(nCol);
-	}
 	
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 //*****************************************************************************
@@ -1370,15 +1220,7 @@ int Grid_FillGrid()
 			ListData = ListData->rbnext;	
 
 			if (ListData == NULL || ListData->restype == RTLE) 
-			{
-				pGridCtrl->SetRedraw(TRUE); // turn drawing back on and update the window
-				pGridCtrl->Invalidate();
-				pGridCtrl->UpdateWindow(); 
-			
-				// return nil
-				acedRetVoid();
-				return 0;
-			}	
+				bDoLoop = false;
 		}	
 
 		// increment the index counter
@@ -1386,24 +1228,14 @@ int Grid_FillGrid()
 		
 		// if no more lists are found then exit here
 		if (ListData == NULL)
-		{
-			
-			pGridCtrl->SetRedraw(TRUE); // turn drawing back on and update the window
-			pGridCtrl->Invalidate();
-			pGridCtrl->UpdateWindow(); 
-			
-			// return nil
-			acedRetVoid();
-			return 0;
-		}
+			bDoLoop = false;
 	}
 	
 	pGridCtrl->SetRedraw(TRUE); // turn drawing back on and update the window
 	pGridCtrl->Invalidate();
 	pGridCtrl->UpdateWindow(); 
 		
-	// return nil
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
@@ -1413,14 +1245,12 @@ int Grid_GetSelectedCell()
 	CDclControlObject *pArx = GetControlArxObject(sGrid_GetSelectedCell, &nArg);
 	if (pArx == NULL)
 	{
-		// return nil
 		acedRetNil();
 		return 0;
 	}
 
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	ReturnRowCol(pGridCtrl->m_nRowSelected, pGridCtrl->m_nColSelected);
+	ReturnRowCol( pGridCtrl->GetCurRow(), pGridCtrl->GetCurColumn() );
 	return 0;
 }
 
@@ -1440,7 +1270,7 @@ int Grid_CancelLabelEdit()
 	// Make sure the focus is set to the list view control.
 	pGridCtrl->HideEditControls();
 
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
@@ -1475,7 +1305,7 @@ int Grid_SortColTextItems()
 	{
 	}
 	
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
@@ -1509,7 +1339,7 @@ int Grid_SortColNumericItems()
 	{
 	}
 	
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
@@ -1548,13 +1378,13 @@ int Grid_SetColumnImage()
 
 	if (pHeader == NULL)
 	{
-		acedRetVoid();
+		acedRetT();
 		return 0;
 	}
 	
 	if (pHeader->GetImageList() == NULL)
 	{
-		acedRetVoid();
+		acedRetT();
 		return 0;
 	}
 	
@@ -1569,7 +1399,7 @@ int Grid_SetColumnImage()
 	{
 		if (pHeader->GetItem(nCol, &item) == FALSE)
 		{
-			acedRetVoid();
+			acedRetT();
 			return 0;
 		}
 	}
@@ -1587,7 +1417,7 @@ int Grid_SetColumnImage()
 	{
 	}
 
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
@@ -1691,9 +1521,9 @@ int Grid_SelCurCell()
 
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
 	
-	pGridCtrl->SetCurSel(nRow, nCol);
+	pGridCtrl->SetCurCell(nRow, nCol);
 	pGridCtrl->EnsureVisible(nRow, false);
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
@@ -1714,300 +1544,14 @@ int Grid_SelCurRow()
 
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
 	
-	pGridCtrl->SetCurSel(nRow, -1);
+	pGridCtrl->SetCurCell(nRow, -1);
 	pGridCtrl->EnsureVisible(nRow, false);
-	acedRetVoid();
-	return 0;
-}
-
-int Grid_Cell_TextBox()
-{
-	int nRow;
-	int nCol;
-	int nStyle;
-	
-	CDclControlObject *pArx = GetLispInput(sGrid_SelectCell, nRow, nCol, nStyle);
-
-	if (pArx == NULL)	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-
-	int nChar = 0;
-
-	// ensure the programmer does not try to show a combo box style that
-	// does not match the col pre-assigned setting.
-	if (pGridCtrl->m_pColStyles->GetIntArrayPtr()->size()-1 > nCol)
-	{
-		if (pGridCtrl->m_pColStyles->GetIntArrayPtr()->at(nCol) != nStyle &&
-			pGridCtrl->m_pColStyles->GetIntArrayPtr()->at(nCol) != 0)
-			nStyle = pGridCtrl->m_pColStyles->GetIntArrayPtr()->at(nCol);
-	}
-	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
-
-	if (nCellStyle != nStyle && nCellStyle > 0)
-		nStyle = nCellStyle;
-	
-	pGridCtrl->SetCurSel(nRow, nCol);
-	pGridCtrl->DoEditCellNow(nStyle);
-
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
 
-
-int Grid_Cell_ComboBox()
-{
-	int nRow;
-	int nCol;
-	int nStyle;
-	CStringArray sStrings;
-	int nArg=0;
-
-	CWnd *pControl = GetControlPointer(CtlListView, sGrid_Cell_ComboBox, &nArg);
-	
-	if (pControl == NULL || !GetIntArgument(nArg, &nRow, sGrid_Cell_ComboBox))	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	nArg++;
-	if (!GetIntArgument(nArg, &nCol, sGrid_Cell_ComboBox))	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	nArg++;
-	if (!GetIntArgument(nArg, &nStyle, sGrid_Cell_ComboBox))	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	nArg++;
-	
-	struct resbuf *ListData;
-	CString sNewString;
-	
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			// check to see if we are finished.
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				break;
-			}
-			
-			if (ListData->restype != RTSTR) 
-			{
-				// inform the programmer that he did not make the correct call
-				theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sGrid_Cell_ComboBox);	
-				acedRetInt(-1);  return 0; 
-			}
-
-			// get the first argument required
-			sNewString = ListData->resval.rstring;
-
-			sStrings.Add(sNewString);
-		}
-	}	
-	
-	CArxGridCtrl *pList = (CArxGridCtrl*)pControl;
-	
-	if (sStrings.GetSize() > 1 && nRow > -1 && nCol > -1)
-	{
-		pList->m_nRowSelected = nRow;
-		pList->m_nColSelected = nCol;
-
-		// ensure the programmer does not try to show a combo box style that
-		// does not match the col pre-assigned setting.
-		if (pList->m_pColStyles->GetIntArrayPtr()->size()-1 > nCol)
-		{
-			if (pList->m_pColStyles->GetIntArrayPtr()->at(nCol) != nStyle &&
-				pList->m_pColStyles->GetIntArrayPtr()->at(nCol) != 0)
-				nStyle = pList->m_pColStyles->GetIntArrayPtr()->at(nCol);
-		}
-		
-		
-	}
-	int nCellStyle = pList->GetCellStyle(nRow, nCol);
-
-	if (nCellStyle != nStyle && nCellStyle > 0)
-		nStyle = nCellStyle;
-	
-	pList->SetCurSel(nRow, nCol);
-	//pGridCtrl->DoEditCellNow(nStyle);
-	
-	pList->ShowComboBox(nRow, nCol, nStyle-16, sStrings);
-
-	acedRetVoid();
-	return 0;
-}
-
-
-
-int Grid_Cell_ImageComboBox()
-{
-	int nRow;
-	int nCol;
-	CStringArray sStrings;
-	CArray<int, int> nItems;
-	int nArg = 0;
-
-	CWnd *pControl = GetControlPointer(CtlListView, sGrid_Cell_ImageComboBox, &nArg);
-	
-	if (pControl == NULL || !GetIntArgument(nArg, &nRow, sGrid_Cell_ImageComboBox))	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	nArg++;
-	if (!GetIntArgument(nArg, &nCol, sGrid_Cell_ImageComboBox))	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	nArg++;
-	
-	struct resbuf *ListData;
-	CString sNewString;
-	
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			int nItem = 0;
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			// check to see if we are finished.
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				break;
-			}
-			
-			if (ListData->restype == RTSHORT) 
-			{
-				// get the first argument required
-				nItem = ListData->resval.rint;
-			}
-			else if (ListData->restype == RTLONG) 
-			{
-				// get the first argument required
-				nItem = ListData->resval.rlong;
-			}
-			else
-			{
-				// inform the programmer that he did not make the correct call
-				theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sGrid_Cell_ImageComboBox);	
-				acedRetInt(-1);  return 0; 
-			}
-
-			
-
-			if (ListData->restype != RTSTR) 
-			{
-				// inform the programmer that he did not make the correct call
-				theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sGrid_Cell_ImageComboBox);	
-				acedRetInt(-1);  return 0; 
-			}
-
-			// get the first argument required
-			sNewString = ListData->resval.rstring;
-		
-			nItems.Add(nItem);
-			sStrings.Add(sNewString);
-		}
-	}	
-	
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pControl;
-	
-	// ensure the programmer does not try to show a combo box style that
-	// does not match the col pre-assigned setting.
-	if (pGridCtrl->m_pColStyles->GetIntArrayPtr()->size()-1 > nCol)
-	{
-		if (pGridCtrl->m_pColStyles->GetIntArrayPtr()->at(nCol) != Grid_ImageDropList && 
-			pGridCtrl->m_pColStyles->GetIntArrayPtr()->at(nCol) != 0)
-		{
-			acedRetVoid();
-			return 0;
-		}
-	}
-
-	if (sStrings.GetSize() > 1 && nRow > -1 && nCol > -1)
-	{
-		int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
-
-		if (nCellStyle != Grid_ImageDropList &&
-			nCellStyle != 0)
-		{
-			acedRetVoid();
-			return 0;
-		}
-		
-		pGridCtrl->SetCurSel(nRow, nCol);
-		pGridCtrl->ShowImageComboBox(nRow, nCol, sStrings, nItems);
-	}
-
-	acedRetVoid();
-	return 0;
-}
-
-
-
-int Grid_Cell_EllipsesButton()
+int Grid_Cell_StartItemEdit()
 {
 	int nRow;
 	int nCol;
@@ -2021,80 +1565,11 @@ int Grid_Cell_EllipsesButton()
 	}
 
 	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
+	pGridCtrl->SetCurCell(nRow, nCol);
+	pGridCtrl->EnsureVisible(nRow, false);
+	pGridCtrl->EditCurCell();
 
-	if (nCellStyle != Grid_EllipsesButtons && nCellStyle > 0)
-	{
-		acedRetVoid();
-		return 0;
-	}
-	
-	pGridCtrl->SetCurSel(nRow, nCol);
-	pGridCtrl->DoEditCellNow(Grid_EllipsesButtons);
-	//pGridCtrl->ShowEllipsesButton(nRow, nCol, false);
-
-	acedRetVoid();
-	return 0;
-}
-
-
-int Grid_Cell_PickButton()
-{
-	int nRow;
-	int nCol;
-	
-	CDclControlObject *pArx = GetLispInput(sGrid_SelectCell, nRow, nCol);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
-
-	if (nCellStyle != Grid_PickButtons && nCellStyle > 0)
-	{
-		acedRetVoid();
-		return 0;
-	}
-	
-	pGridCtrl->SetCurSel(nRow, nCol);
-	pGridCtrl->DoEditCellNow(Grid_PickButtons);
-	//pGridCtrl->ShowEllipsesButton(nRow, nCol, true);
-
-	acedRetVoid();
-	return 0;
-}
-
-int Grid_Cell_DoCellDlg()
-{
-	int nRow;
-	int nCol;
-	int nStyle;
-	
-	CDclControlObject *pArx = GetLispInput(sGrid_Cell_DoCellDlg, nRow, nCol, nStyle);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
-
-	if (nCellStyle != nStyle && nCellStyle > 0)
-		nStyle = nCellStyle;
-	
-	pGridCtrl->SetCurSel(nRow, nCol);
-	pGridCtrl->DoEditCellNow(nStyle);
-
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 
@@ -2119,7 +1594,7 @@ int Grid_GetCheck()
 	if (nCellStyle == Grid_CheckBoxes ||
 		nCellStyle == Grid_OptionButtons)
 	{
-		if (pGridCtrl->GetItemImage(nRow, nCol) > 0)
+		if (pGridCtrl->IsCellChecked(nRow, nCol))
 		{
 			acedRetT();
 			return 0;
@@ -2151,50 +1626,10 @@ int Grid_SetCheck()
 	if (nCellStyle == Grid_CheckBoxes ||
 		nCellStyle == Grid_OptionButtons)
 	{
-		pGridCtrl->SetItemImage(nRow, nCol, nChecked);
+		pGridCtrl->SetCellImage(nRow, nCol, nChecked);
 	}
 
-	acedRetVoid();
-	return 0;
-}
-
-int Grid_Cell_ToggleImages()
-{
-	int nRow;
-	int nCol;
-	
-	CDclControlObject *pArx = GetLispInput(sGrid_Cell_ToggleImages, nRow, nCol);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
-
-	// test to see how to edit the cell each different kind of edit style
-	// according to the column specification.
-	if (nCellStyle != Grid_SwitchableIcons && nCellStyle > 0)
-	{
-		acedRetVoid();
-		return 0;
-	}
-	
-	int nImage = pGridCtrl->GetItemImage(nRow, nCol);
-
-	if (nImage == pGridCtrl->m_pColDefault->GetIntArrayPtr()->at(nCol) || nImage == -1)
-	{
-		pGridCtrl->SetItemImage(nRow, nCol, pGridCtrl->m_pColAlternate->GetIntArrayPtr()->at(nCol));
-	}
-	else
-	{
-		pGridCtrl->SetItemImage(nRow, nCol, pGridCtrl->m_pColDefault->GetIntArrayPtr()->at(nCol));
-	}
-
-	acedRetVoid();
+	acedRetT();
 	return 0;
 }
 

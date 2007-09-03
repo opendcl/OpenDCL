@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Resource.h"
-#include "OptionListBox.h"
+#include "ListBoxCtrl.h"
 
 class CPropertyObject;
 
@@ -22,14 +22,14 @@ public:
 	//{{AFX_DATA(CComboBoxPage)
 	enum { IDD = IDD_COMBOBOX };
 	CComboBoxEx	m_ComboBoxEx;
-	COptionListBox	m_OptionList;
+	CListBox	m_OptionList;
 	CStatic	m_Desc;
 	//}}AFX_DATA
 
 	int m_nCtrl;
 	int m_SelectedStyle;
 	CImageList m_ImageList;
-	RefCountedPtr< CPropertyObject > m_pStyle;
+	TPropertyPtr m_pStyle;
 	void DisplayDesc(int nSetting);
 
 // Overrides

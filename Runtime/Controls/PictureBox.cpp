@@ -174,16 +174,16 @@ BOOL CPictureBox::Create(CDclControlObject* pControl, CProject *pProject, CWnd* 
 	m_cyIcon = 16;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	// set the back color
-	m_BkColor = GetRGBColor(m_ArxControl->GetLongProperty(nAcadColor));
+	m_BkColor = GetRGBColor(m_ArxControl->GetLongProperty(Prop::BackgroundColor));
 	m_brBackground.CreateSolidBrush(m_BkColor);
 
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
@@ -199,7 +199,7 @@ BOOL CPictureBox::Create(CDclControlObject* pControl, CProject *pProject, CWnd* 
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -216,7 +216,7 @@ void CPictureBox::OnSysColorChange()
 {
 	CWnd::OnSysColorChange();
 	
-	m_BkColor = GetRGBColor(m_ArxControl->GetLongProperty(nAcadColor));	
+	m_BkColor = GetRGBColor(m_ArxControl->GetLongProperty(Prop::BackgroundColor));	
 	
 	Invalidate();
 	
@@ -272,7 +272,7 @@ void CPictureBox::SetPictureID(int nPictureID)
 
 void CPictureBox::AutoSize()
 {
-	BOOL bAutoSize = m_ArxControl->GetBoolProperty(nAutoSize);
+	BOOL bAutoSize = m_ArxControl->GetBooleanProperty(Prop::AutoSize);
 	if (!bAutoSize)
 		return;
 	
@@ -280,10 +280,10 @@ void CPictureBox::AutoSize()
 		return;
 
 	CRect rcThis;
-	rcThis.left = m_ArxControl->GetPropertyObject(nLeft)->GetLongValue();
-	rcThis.top = m_ArxControl->GetPropertyObject(nTop)->GetLongValue();
+	rcThis.left = m_ArxControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	rcThis.top = m_ArxControl->GetPropertyObject(Prop::Top)->GetLongValue();
 	
-	switch (m_ArxControl->GetLongProperty(nBorderStyle))
+	switch (m_ArxControl->GetLongProperty(Prop::BorderStyle))
 	{		
 	case 0:
 		{
@@ -316,7 +316,7 @@ void CPictureBox::Clear()
 {
 	m_pPicture = NULL;
 	m_PictureID = 0;
-	m_ArxControl->SetLongProperty(nPicture, m_PictureID);
+	m_ArxControl->SetLongProperty(Prop::Picture, m_PictureID);
 	// set the picture ID to a value that indicates it's blank
 	
 	if (m_pPictureHolder)
@@ -403,7 +403,7 @@ void CPictureBox::Refresh(CDC *pdc)
 			);
 		if (PICTYPE_BITMAP == m_pPicture->GetPicType())
 		{			
-			if (nEnabled)
+			if (Prop::Enabled)
 			{
 				// and finish!
 				pdc->DrawState(	rcPic.TopLeft(),
@@ -425,7 +425,7 @@ void CPictureBox::Refresh(CDC *pdc)
 		// else if picture is an icon
 		else if (PICTYPE_ICON == m_pPicture->GetPicType())
 		{
-			if (nEnabled)
+			if (Prop::Enabled)
 			{
 				// and finish!
 				pdc->DrawState(	rcPic.TopLeft(),
@@ -511,7 +511,7 @@ void CPictureBox::Refresh(CDC *pdc)
 		
 		// Center the picture vertically
 		int nPicTop = ((rc.Height() - nPicHeight)/2);           
-		if (m_ArxControl->GetBoolProperty(nAutoSize))
+		if (m_ArxControl->GetBooleanProperty(Prop::AutoSize))
 		{
 			nPicTop = 0;
 			nPicLeft = 0;
@@ -611,16 +611,16 @@ void CPictureBox::SetPictureBlank()
 
 void CPictureBox::SetAllProperties()
 {
-	SetProperty(nPicture);
+	SetProperty(Prop::Picture);
 }
 
 void CPictureBox::SetProperty(int nID)
 {
 	switch(nID)
 	{
-		case nPicture:
+		case Prop::Picture:
 		{
-			SetPictureID(m_ArxControl->GetLongProperty(nPicture));
+			SetPictureID(m_ArxControl->GetLongProperty(Prop::Picture));
 		}
 	}
 }
@@ -628,13 +628,13 @@ void CPictureBox::SetProperty(int nID)
 void CPictureBox::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	SetFocus();
-	if (m_ArxControl->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
+	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
 	{
 		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
 	}
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDown),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
 		1,
 		nFlags,
 		point.x,
@@ -642,7 +642,7 @@ void CPictureBox::OnLButtonDown(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnLMouseEvent),
+		m_ArxControl->GetStrProperty(Prop::OnLMouseEvent),
 		0,
 		nFlags,
 		point.x,
@@ -1154,7 +1154,7 @@ void CPictureBox::OnKillFocus(CWnd* pNewWnd)
 	CWnd::OnKillFocus(pNewWnd);
 	m_bHasFocus = false;
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 }
 
 void CPictureBox::OnSetFocus(CWnd* pOldWnd) 
@@ -1162,14 +1162,14 @@ void CPictureBox::OnSetFocus(CWnd* pOldWnd)
 	CWnd::OnSetFocus(pOldWnd);
 	m_bHasFocus = true;
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 }
 
 void CPictureBox::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseUp),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
 		1,
 		nFlags,
 		point.x,
@@ -1177,7 +1177,7 @@ void CPictureBox::OnLButtonUp(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnLMouseEvent),
+		m_ArxControl->GetStrProperty(Prop::OnLMouseEvent),
 		1,
 		nFlags,
 		point.x,
@@ -1192,7 +1192,7 @@ void CPictureBox::OnLButtonUp(UINT nFlags, CPoint point)
 void CPictureBox::OnMButtonDblClk(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDblClick),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
 		4,
 		nFlags,
 		point.x,
@@ -1200,7 +1200,7 @@ void CPictureBox::OnMButtonDblClk(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnMMouseEvent),
+		m_ArxControl->GetStrProperty(Prop::OnMMouseEvent),
 		2,
 		nFlags,
 		point.x,
@@ -1214,7 +1214,7 @@ void CPictureBox::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDown),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -1222,7 +1222,7 @@ void CPictureBox::OnMButtonDown(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnMMouseEvent),
+		m_ArxControl->GetStrProperty(Prop::OnMMouseEvent),
 		0,
 		nFlags,
 		point.x,
@@ -1235,7 +1235,7 @@ void CPictureBox::OnMButtonDown(UINT nFlags, CPoint point)
 void CPictureBox::OnMButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseUp),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -1243,7 +1243,7 @@ void CPictureBox::OnMButtonUp(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnMMouseEvent),
+		m_ArxControl->GetStrProperty(Prop::OnMMouseEvent),
 		1,
 		nFlags,
 		point.x,
@@ -1266,7 +1266,7 @@ void CPictureBox::OnMouseMove(UINT nFlags, CPoint point)
 		m_bMouseTracking = FALSE;        	
 		m_bHasFocus = false;
 		SetFocus();
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventMouseMovedOff), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventMouseMovedOff), m_bInvokeWithSendString);
 		CWnd::OnMouseMove(nFlags, point);
 		return;
 	}
@@ -1281,12 +1281,12 @@ void CPictureBox::OnMouseMove(UINT nFlags, CPoint point)
 		if (::_TrackMouseEvent(&tme))                
 			m_bMouseTracking = TRUE;
 		InvokeMethod(
-			m_ArxControl->GetStrProperty(nEventMouseEntered),
+			m_ArxControl->GetStrProperty(Prop::EventMouseEntered),
 			m_bInvokeWithSendString);
 	}
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -1302,7 +1302,7 @@ void CPictureBox::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -1316,7 +1316,7 @@ void CPictureBox::OnMouseMove(UINT nFlags, CPoint point)
 BOOL CPictureBox::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDblClick),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
 		nFlags,
 		zDelta,
 		pt.x,
@@ -1330,7 +1330,7 @@ BOOL CPictureBox::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 void CPictureBox::OnRButtonDblClk(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDblClick),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
 		2,
 		nFlags,
 		point.x,
@@ -1338,11 +1338,11 @@ void CPictureBox::OnRButtonDblClk(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(nEventRDblClick),
+		m_ArxControl->GetStrProperty(Prop::EventRDblClick),
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnRMouseEvent),
+		m_ArxControl->GetStrProperty(Prop::OnRMouseEvent),
 		2,
 		nFlags,
 		point.x,
@@ -1356,7 +1356,7 @@ void CPictureBox::OnRButtonDblClk(UINT nFlags, CPoint point)
 void CPictureBox::OnRButtonDown(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDown),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,
@@ -1364,7 +1364,7 @@ void CPictureBox::OnRButtonDown(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnRMouseEvent),
+		m_ArxControl->GetStrProperty(Prop::OnRMouseEvent),
 		0,
 		nFlags,
 		point.x,
@@ -1377,7 +1377,7 @@ void CPictureBox::OnRButtonDown(UINT nFlags, CPoint point)
 void CPictureBox::OnRButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseUp),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,
@@ -1385,12 +1385,12 @@ void CPictureBox::OnRButtonUp(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(nEventRClick),
+		m_ArxControl->GetStrProperty(Prop::EventRClick),
 		m_bInvokeWithSendString);	
 	
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnRMouseEvent),
+		m_ArxControl->GetStrProperty(Prop::OnRMouseEvent),
 		1,
 		nFlags,
 		point.x,
@@ -1403,7 +1403,7 @@ void CPictureBox::OnRButtonUp(UINT nFlags, CPoint point)
 void CPictureBox::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(nEventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 		
 	CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -1411,14 +1411,14 @@ void CPictureBox::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CPictureBox::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(nEventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 		
 	CWnd::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 LRESULT CPictureBox::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventMouseMovedOff), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventMouseMovedOff), m_bInvokeWithSendString);
 	
 	m_bMouseTracking = FALSE;        
 	return FALSE;
@@ -1483,7 +1483,7 @@ void CPictureBox::LoadPictureFile(LPCTSTR szFile, bool bStretch)
 void CPictureBox::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDblClick),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
 		1,
 		nFlags,
 		point.x,
@@ -1493,11 +1493,11 @@ void CPictureBox::OnLButtonDblClk(UINT nFlags, CPoint point)
 	
 	
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(nEventDblClicked),
+		m_ArxControl->GetStrProperty(Prop::EventDblClicked),
 		m_bInvokeWithSendString);
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nOnLMouseEvent),
+		m_ArxControl->GetStrProperty(Prop::OnLMouseEvent),
 		2,
 		nFlags,
 		point.x,
@@ -1559,7 +1559,7 @@ void CPictureBox::OnSize(UINT nType, int cx, int cy)
 void CPictureBox::OnClicked() 
 {
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);
 }
 
 void CPictureBox::OnPaint() 
@@ -1589,10 +1589,10 @@ void CPictureBox::OnPaint()
 
 		if (pFocusWnd != this)
 			// call methods to invoke the event
-			InvokeMethodInt(m_ArxControl->GetStrProperty(nEventPaint), 0, m_bInvokeWithSendString);
+			InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventPaint), 0, m_bInvokeWithSendString);
 		else
 			// call methods to invoke the event
-			InvokeMethodInt(m_ArxControl->GetStrProperty(nEventPaint), 1, m_bInvokeWithSendString);
+			InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventPaint), 1, m_bInvokeWithSendString);
 		
 	}
 
@@ -1628,7 +1628,7 @@ void CPictureBox::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	else
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);
 	}
 }
 
@@ -1672,7 +1672,7 @@ HBRUSH CPictureBox::CtlColor(CDC* pDC, UINT nCtlColor)
 		m_brBackground.CreateSolidBrush(GetRGBColor(-16));
 	}
 
-	m_BkColor = GetRGBColor(m_ArxControl->GetLongProperty(nAcadColor));	
+	m_BkColor = GetRGBColor(m_ArxControl->GetLongProperty(Prop::BackgroundColor));	
 	pDC->SetBkColor(m_BkColor); 
 	pDC->SetBkMode(OPAQUE); 
 	return m_brBackground; 

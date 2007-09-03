@@ -62,22 +62,22 @@ BOOL CSplitter::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	m_ArxControl = pControl;
 	CPoint pt = ReadPlacement();
 
-	if (pControl->GetPropertyObject(nWidth)->GetLongValue() > pControl->GetPropertyObject(nHeight)->GetLongValue())
+	if (pControl->GetPropertyObject(Prop::Width)->GetLongValue() > pControl->GetPropertyObject(Prop::Height)->GetLongValue())
 	{
 		// get the rectangle of the new control
 		if (pt.y > -1)
-			pControl->GetPropertyObject(nTop)->SetLongValue(pt.y);
+			pControl->GetPropertyObject(Prop::Top)->SetLongValue(pt.y);
 	}
 	else
 	{
 		// get the rectangle of the new control
 		if (pt.x > -1)
-			pControl->GetPropertyObject(nLeft)->SetLongValue(pt.x);
+			pControl->GetPropertyObject(Prop::Left)->SetLongValue(pt.x);
 	}
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = ArxRect.top + pControl->GetPropertyObject(nHeight)->GetLongValue();
-	ArxRect.right = ArxRect.left + pControl->GetPropertyObject(nWidth)->GetLongValue();
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = ArxRect.top + pControl->GetPropertyObject(Prop::Height)->GetLongValue();
+	ArxRect.right = ArxRect.left + pControl->GetPropertyObject(Prop::Width)->GetLongValue();
 	
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;	
@@ -91,7 +91,7 @@ BOOL CSplitter::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 		nID+2500,
 		NULL);
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -101,7 +101,7 @@ BOOL CSplitter::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 		break;
 	}
 	
-	m_nStyle = m_ArxControl->GetLongProperty(nSplitterStyle);
+	m_nStyle = m_ArxControl->GetLongProperty(Prop::SplitterStyle);
 
 	if (ArxRect.Width() < ArxRect.Height())
 	{
@@ -115,11 +115,11 @@ BOOL CSplitter::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	}
 
 	if (m_nType == SPS_VERTICAL)
-		SetRange(m_ArxControl->GetPropertyObject(nSplitterMin)->GetLongValue(),
-				 ArxRect.Height() - m_ArxControl->GetPropertyObject(nSplitterMax)->GetLongValue());
+		SetRange(m_ArxControl->GetPropertyObject(Prop::SplitterMin)->GetLongValue(),
+				 ArxRect.Height() - m_ArxControl->GetPropertyObject(Prop::SplitterMax)->GetLongValue());
 	else
-		SetRange(m_ArxControl->GetPropertyObject(nSplitterMin)->GetLongValue(),
-				 ArxRect.Width() - m_ArxControl->GetPropertyObject(nSplitterMax)->GetLongValue());
+		SetRange(m_ArxControl->GetPropertyObject(Prop::SplitterMin)->GetLongValue(),
+				 ArxRect.Width() - m_ArxControl->GetPropertyObject(Prop::SplitterMax)->GetLongValue());
 
 	return RetVal;
 }
@@ -269,8 +269,8 @@ void CSplitter::OnMouseMove(UINT nFlags, CPoint point)
 		ClientToScreen(&pt);
 		GetParent()->ScreenToClient(&pt);
 
-		long lSplitterMin = m_ArxControl->GetPropertyObject(nSplitterMin)->GetLongValue();
-		long lSplitterMax = m_ArxControl->GetPropertyObject(nSplitterMax)->GetLongValue();
+		long lSplitterMin = m_ArxControl->GetPropertyObject(Prop::SplitterMin)->GetLongValue();
+		long lSplitterMax = m_ArxControl->GetPropertyObject(Prop::SplitterMax)->GetLongValue();
 		if (pt.x < lSplitterMin)
 			pt.x = lSplitterMin;
 		if (pt.y < lSplitterMin)
@@ -313,16 +313,16 @@ void CSplitter::OnLButtonUp(UINT nFlags, CPoint point)
 			if (m_nType == SPS_VERTICAL)
 			{
 				delta = m_nX - m_nSavePos;
-				m_ArxControl->GetPropertyObject(nLeft)->SetLongValue(m_ArxControl->GetPropertyObject(nLeft)->GetLongValue() + delta );
-				m_ArxControl->GetPropertyObject(nLeftFromRight)->SetLongValue(m_ArxControl->GetPropertyObject(nLeftFromRight)->GetLongValue() - delta );
-				m_ArxControl->GetPropertyObject(nRightFromRight)->SetLongValue(m_ArxControl->GetPropertyObject(nRightFromRight)->GetLongValue() - delta );
+				m_ArxControl->GetPropertyObject(Prop::Left)->SetLongValue(m_ArxControl->GetPropertyObject(Prop::Left)->GetLongValue() + delta );
+				m_ArxControl->GetPropertyObject(Prop::LeftFromRight)->SetLongValue(m_ArxControl->GetPropertyObject(Prop::LeftFromRight)->GetLongValue() - delta );
+				m_ArxControl->GetPropertyObject(Prop::RightFromRight)->SetLongValue(m_ArxControl->GetPropertyObject(Prop::RightFromRight)->GetLongValue() - delta );
 			}
 			else
 			{
 				delta = m_nY - m_nSavePos;
-				m_ArxControl->GetPropertyObject(nTop)->SetLongValue(m_ArxControl->GetPropertyObject(nTop)->GetLongValue() + delta );
-				m_ArxControl->GetPropertyObject(nTopFromBottom)->SetLongValue(m_ArxControl->GetPropertyObject(nTopFromBottom)->GetLongValue() - delta );
-				m_ArxControl->GetPropertyObject(nBottomFromBottom)->SetLongValue(m_ArxControl->GetPropertyObject(nBottomFromBottom)->GetLongValue() - delta );
+				m_ArxControl->GetPropertyObject(Prop::Top)->SetLongValue(m_ArxControl->GetPropertyObject(Prop::Top)->GetLongValue() + delta );
+				m_ArxControl->GetPropertyObject(Prop::TopFromBottom)->SetLongValue(m_ArxControl->GetPropertyObject(Prop::TopFromBottom)->GetLongValue() - delta );
+				m_ArxControl->GetPropertyObject(Prop::BottomFromBottom)->SetLongValue(m_ArxControl->GetPropertyObject(Prop::BottomFromBottom)->GetLongValue() - delta );
 			}
 			
 			SPC_NMHDR nmsp;
@@ -338,7 +338,7 @@ void CSplitter::OnLButtonUp(UINT nFlags, CPoint point)
 			GetWindowRect(&rcThis);
 			GetParent()->ScreenToClient(&rcThis);
 			InvokeMethodIntIntIntInt(
-				m_ArxControl->GetStrProperty(nEventSplitterMoved),
+				m_ArxControl->GetStrProperty(Prop::EventSplitterMoved),
 				rcThis.left,
 				rcThis.top,
 				rcThis.Width(),
@@ -457,7 +457,7 @@ void CSplitter::SavePlacement()
 
 	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + m_ArxControl->GetKeyPath(); 
 
-	if (IsWindow(m_hWnd) && m_ArxControl->GetPropertyObject(nLeft) != NULL)
+	if (IsWindow(m_hWnd) && m_ArxControl->GetPropertyObject(Prop::Left) != NULL)
 	{
 		CRect rectCurrent;
 		GetWindowRect( &rectCurrent );

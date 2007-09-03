@@ -16,7 +16,7 @@
 #include "MethodLexicon.h"
 #include "AcadColorTable.h"
 
-void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp = NULL, AxMethodDescriptor *pMethod = NULL, CAxContainerCtrl *pAxContainer = NULL, AxPropertyDescriptor *pAxProp = NULL);
+void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp = NULL, AxMethodDescriptor *pMethod = NULL, CAxContainerCtrl *pAxContainer = NULL, AxPropertyDescriptor *pAxProp = NULL);
 bool getActiveXArguments(
 	COleVariant argList[]
 	, int &nArgCount
@@ -127,7 +127,7 @@ int SetAxObjColorProperty()
 
 	CDclControlObject *pControl = (CDclControlObject*) lObject;
 
-	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	TPropertyPtr pProp = pControl->FindPropertyObject(sPropNameArg);
 	int nParams;
 	RefCountedPtr< AxPropertyDescriptor > pAxProp = NULL;
 	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() &&
@@ -355,7 +355,7 @@ int SetAxObjectPictureProperty()
 	}
 		
 	CDclControlObject *pControl = (CDclControlObject*) lObject;
-	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	TPropertyPtr pProp = pControl->FindPropertyObject(sPropNameArg);
 
 	AxPropertyDescriptor *pAxProp = NULL;
 	
@@ -669,7 +669,7 @@ int GetAxObjectProperty()
 	
 
 	CDclControlObject *pControl = (CDclControlObject*) lObject;
-	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	TPropertyPtr pProp = pControl->FindPropertyObject(sPropNameArg);
 	if (pProp == NULL)
 	{
 		theWorkspace.DisplayAlert(CString ("The ActiveX get property \"") + sPropNameArg + "\" is not a member of this ActiveX object.");
@@ -856,7 +856,7 @@ int SetAxObjectProperty()
         return 0; 
 	}
 
-	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	TPropertyPtr pProp = pControl->FindPropertyObject(sPropNameArg);
 	if (pProp == NULL)
 	{
 		acedRetVoid();
@@ -1039,7 +1039,7 @@ int DoAxObjectMethod()
 
 /* broken [ORW]
 	CDclControlObject *pControl = (CDclControlObject*) lObject;
-	RefCountedPtr< CPropertyObject > pProp = pControl->GetMethods();
+	TPropertyPtr pProp = pControl->GetMethods();
 	int nParams;
 	
 	if (pProp->m_Type != PropActiveXMethods)
@@ -1157,7 +1157,7 @@ int SetAxColorProperty()
         return 0; 
 	}
 
-	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	TPropertyPtr pProp = pControl->FindPropertyObject(sPropNameArg);
 	if (pProp == NULL)
 	{
 		acedRetVoid();
@@ -1312,7 +1312,7 @@ int SetAxPictureProperty()
 	}
 
 
-	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	TPropertyPtr pProp = pControl->FindPropertyObject(sPropNameArg);
 	int nParams;
 	AxPropertyDescriptor *pAxProp = NULL;
 	if (pProp->GetAxInterfaceDescriptorPtr()->GetPropPutRef() != NULL &&
@@ -1427,7 +1427,7 @@ int SetAxProperty()
 	}
 
 
-	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	TPropertyPtr pProp = pControl->FindPropertyObject(sPropNameArg);
 	if( !pProp )
 		return RSERR; //no property with this name!
 
@@ -1534,7 +1534,7 @@ int SetFlexGridColorProperty()
 	}
 
 
-	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	TPropertyPtr pProp = pControl->FindPropertyObject(sPropNameArg);
 	if( !pProp )
 		return RSERR; //no property with this name!
 
@@ -1633,7 +1633,7 @@ int GetAxProperty()
 		ListData = ListData->rbnext;
 	}
 
-	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	TPropertyPtr pProp = pControl->FindPropertyObject(sPropNameArg);
 	if( !pProp )
 		return RSERR; //no property with this name!
 
@@ -1718,7 +1718,7 @@ int GetFlexGridColorProperty()
 		ListData = ListData->rbnext;
 	}
 
-	RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject(sPropNameArg);
+	TPropertyPtr pProp = pControl->FindPropertyObject(sPropNameArg);
 	if( !pProp )
 		return RSERR; //no property with this name!
 
@@ -1802,7 +1802,7 @@ int DoAxMethod()
 	}
 
 
-	RefCountedPtr< CPropertyObject > pProp = pControl->GetMethods();
+	TPropertyPtr pProp = pControl->GetMethods();
 	int nParams;
 	
 	if (pProp->GetType() != PropActiveXMethods)
@@ -1867,7 +1867,7 @@ int DoAxMethod()
 // Returns:	int
 // 
 //*****************************************************************************
-void acedRetOleVar(COleVariant &varGet, RefCountedPtr< CPropertyObject > pProp, AxMethodDescriptor *pMethod, CAxContainerCtrl *pAxContainer, AxPropertyDescriptor *pAxProp)
+void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, AxMethodDescriptor *pMethod, CAxContainerCtrl *pAxContainer, AxPropertyDescriptor *pAxProp)
 {
 	struct resbuf RetVal;
 			

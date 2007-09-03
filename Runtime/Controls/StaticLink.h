@@ -7,6 +7,12 @@
 
 class CDclControlObject;
 
+#if (_MFC_VER < 0x0800)
+#define __LRESULT UINT
+#else
+#define __LRESULT LRESULT
+#endif
+
 
 //////////////////
 // Simple text hyperlink derived from CString
@@ -81,11 +87,7 @@ public:
 	// Generated message map functions
 protected:
 	//{{AFX_MSG(CStaticLink)
-#if (_ACADTARGET == 16)
-  afx_msg UINT OnNcHitTest(CPoint point);
-#else
-  afx_msg LRESULT OnNcHitTest(CPoint point);
-#endif
+  afx_msg __LRESULT OnNcHitTest(CPoint point);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);

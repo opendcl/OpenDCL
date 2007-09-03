@@ -106,8 +106,8 @@ public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
-	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
-	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ) { return true; }
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
 
 // Control
 	bool IsBlockList() const { return mbBlockList; }

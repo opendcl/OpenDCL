@@ -180,7 +180,7 @@ void CListBoxDlg::OnSelchangeListbox()
 		else
 		{
 			m_pPropObject->SetStringValue(sValue);
-			if (m_pPropObject->GetID() == nResizable)
+			if (m_pPropObject->GetID() == Prop::Resizable)
 			{
 				if (m_ListBox.GetCurSel() == 0)
 					m_pView->InvalidateRect(m_pView->m_rcGripRect, TRUE);
@@ -239,7 +239,7 @@ void CListBoxDlg::OnKillfocusListbox()
 	}
 }
 
-void CListBoxDlg::SetPropertyPointer(RefCountedPtr< CPropertyObject > pPropObject)
+void CListBoxDlg::SetPropertyPointer(TPropertyPtr pPropObject)
 {
 	m_pPropObject = pPropObject;	
 }

@@ -51,19 +51,19 @@ BOOL VdclLineWeightComboBox::Create(CDclControlObject* pControl, CWnd* pParentWn
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 
-	ArxRect.bottom += pControl->GetLongProperty(nDropDownHeight);
+	ArxRect.bottom += pControl->GetLongProperty(Prop::DropDownHeight);
 	if (ArxRect.Height() < 40)
 		ArxRect.bottom = ArxRect.top + 40;
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
 			  | CBS_SORT | CBS_HASSTRINGS | CBS_AUTOHSCROLL
 			  | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT;
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
@@ -75,7 +75,7 @@ BOOL VdclLineWeightComboBox::Create(CDclControlObject* pControl, CWnd* pParentWn
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -125,7 +125,7 @@ void VdclLineWeightComboBox::OnMouseMove(UINT nFlags, CPoint point)
 {
 	if (m_ArxControl)
 		InvokeMethodIntIntInt(
-			m_ArxControl->GetStrProperty(nEventMouseMove),
+			m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 			nFlags,
 			point.x,
 			point.y,
@@ -142,7 +142,7 @@ void VdclLineWeightComboBox::OnSetFocus(CWnd* pOldWnd)
 
 	if (m_ArxControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 
 }
 
@@ -172,19 +172,19 @@ void VdclLineWeightComboBox::OnSelchange()
 
 	if (m_ArxControl)
 	{
-		InvokeMethodIntString(m_ArxControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-		m_ArxControl->SetStringProperty(nText, sString);
+		InvokeMethodIntString(m_ArxControl->GetStrProperty(Prop::EventSelChanged), nSel, sString, m_bInvokeWithSendString);
+		m_ArxControl->SetStringProperty(Prop::Text, sString);
 	}
 	
-	if (m_ArxControl == NULL)
-	{		
-		// Send Notification to parent of ListView ctrl
-		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
-		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);		
-		pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, nSel);
-		// fire the on Grid edit cell event.
-		pListCtrl->EndEditControls(pListCtrl);
-	}
+	//if (m_ArxControl == NULL)
+	//{		
+	//	// Send Notification to parent of ListView ctrl
+	//	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
+	//	pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);		
+	//	pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, nSel);
+	//	// fire the on Grid edit cell event.
+	//	pListCtrl->EndEditControls(pListCtrl);
+	//}
 }
 
 void VdclLineWeightComboBox::OnKillFocus(CWnd* pNewWnd) 
@@ -193,7 +193,7 @@ void VdclLineWeightComboBox::OnKillFocus(CWnd* pNewWnd)
 	
 	if (m_ArxControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 }
 
 BOOL VdclLineWeightComboBox::PreTranslateMessage(MSG* pMsg) 
@@ -201,7 +201,7 @@ BOOL VdclLineWeightComboBox::PreTranslateMessage(MSG* pMsg)
 	m_ToolTip.RelayEvent(pMsg);
 	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
 	{
-		if (m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
+		if (m_ArxControl->GetBooleanProperty(Prop::ReturnAsTab) == TRUE)
 			pMsg->wParam = VK_TAB;
 	}
 	return CAcUiLineWeightComboBox::PreTranslateMessage(pMsg);
@@ -211,5 +211,5 @@ void VdclLineWeightComboBox::OnDropdown()
 {
 	if (m_ArxControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventDropDown), m_bInvokeWithSendString);	
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventDropDown), m_bInvokeWithSendString);	
 }

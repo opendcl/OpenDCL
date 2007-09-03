@@ -94,14 +94,14 @@ bool CxAcadSlide::Load(CString filename, bool slb, CString slbSldName)
 	{
 		char tmp[32];
 		ZeroMemory(tmp, 32);
-		if((32 != file.Read(tmp, 32)) || (strcmp(tmp, SlbHeader) != 0))
+		if((32 != file.Read(tmp, 32)) || (lstrcmpA(tmp, SlbHeader) != 0))
 			return false;
 		// strip parenthesis
 		CxSlideEntry sldentry;
 		UINT_PTR namelen = 0;
 		do {
 			file.Read(&sldentry, sizeof(CxSlideEntry));
-			namelen = lstrlen(sldentry.Name);
+			namelen = lstrlenA(sldentry.Name);
 		}
 		while((CStringA(slbSldName).CompareNoCase(sldentry.Name) != 0) && (namelen > 0));
 		if(namelen > 0)
@@ -109,7 +109,7 @@ bool CxAcadSlide::Load(CString filename, bool slb, CString slbSldName)
 			CxSlideEntry next;
 			// read next entry for offset info
 			file.Read(&next, sizeof(CxSlideEntry));
-			if(strlen(next.Name) > 0)
+			if(lstrlenA(next.Name) > 0)
 				size = next.Offset - sldentry.Offset;
 			else
 				size = DWORD(file.GetLength()) - sldentry.Offset;

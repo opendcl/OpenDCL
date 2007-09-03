@@ -61,21 +61,21 @@ BOOL VdclSymbolEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 
 	dwStyle = WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | ES_MULTILINE | ES_AUTOHSCROLL;
 	//WS_CLIPCHILDREN | 
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
 
 	// adjust the justification style				
-	switch (m_ArxControl->GetLongProperty(nJustification))
+	switch (m_ArxControl->GetLongProperty(Prop::Justification))
 	{
 	case 0:/*Left*/
 		dwStyle = dwStyle | ES_LEFT | WS_CLIPSIBLINGS;
@@ -94,13 +94,13 @@ BOOL VdclSymbolEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
 	CAcUiSymbolEdit::ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
 
-	m_pTextProp = pControl->GetPropertyObject(nText);
-	CAcUiSymbolEdit::SetLimitText(pControl->GetLongProperty(nLimitText));
+	m_pTextProp = pControl->GetPropertyObject(Prop::Text);
+	CAcUiSymbolEdit::SetLimitText(pControl->GetLongProperty(Prop::LimitText));
 
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -110,7 +110,7 @@ BOOL VdclSymbolEdit::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 		break;
 	}
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -171,33 +171,33 @@ void VdclSymbolEdit::OnChange()
 
 	if (m_ArxControl)
 	{
-		CString sTestText = m_ArxControl->GetStrProperty(nText);
+		CString sTestText = m_ArxControl->GetStrProperty(Prop::Text);
 		if (sTestText != sText)
 		{
-			m_ArxControl->SetStringProperty(nText, sText);
+			m_ArxControl->SetStringProperty(Prop::Text, sText);
 			// call methods to invoke the event
-			InvokeMethodString(m_ArxControl->GetStrProperty(nEventEditChanged), sText, m_bInvokeWithSendString);
+			InvokeMethodString(m_ArxControl->GetStrProperty(Prop::EventEditChanged), sText, m_bInvokeWithSendString);
 		}
 	}
 	
-	if (m_ArxControl == NULL)
-	{
-		// Send Notification to parent of ListView ctrl
-		LV_DISPINFO dispinfo;
-		dispinfo.hdr.hwndFrom = GetParent()->m_hWnd;
-		dispinfo.hdr.idFrom = GetDlgCtrlID();
-		dispinfo.hdr.code = LVN_ENDLABELEDIT;
+	//if (m_ArxControl == NULL)
+	//{
+	//	// Send Notification to parent of ListView ctrl
+	//	LV_DISPINFO dispinfo;
+	//	dispinfo.hdr.hwndFrom = GetParent()->m_hWnd;
+	//	dispinfo.hdr.idFrom = GetDlgCtrlID();
+	//	dispinfo.hdr.code = LVN_ENDLABELEDIT;
 
-		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
+	//	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 
-		dispinfo.item.mask = LVIF_TEXT;
-		dispinfo.item.iItem = pListCtrl->m_nRowSelected;
-		dispinfo.item.iSubItem = pListCtrl->m_nColSelected;
-		dispinfo.item.pszText = m_bESC ? NULL : LPTSTR((LPCTSTR)sText);
-		dispinfo.item.cchTextMax = sText.GetLength();
+	//	dispinfo.item.mask = LVIF_TEXT;
+	//	dispinfo.item.iItem = pListCtrl->m_nRowSelected;
+	//	dispinfo.item.iSubItem = pListCtrl->m_nColSelected;
+	//	dispinfo.item.pszText = m_bESC ? NULL : LPTSTR((LPCTSTR)sText);
+	//	dispinfo.item.cchTextMax = sText.GetLength();
 
-		pListCtrl->SendMessage( WM_NOTIFY, GetDlgCtrlID(), (LPARAM)&dispinfo );
-	}
+	//	pListCtrl->SendMessage( WM_NOTIFY, GetDlgCtrlID(), (LPARAM)&dispinfo );
+	//}
 }
 
 
@@ -206,7 +206,7 @@ void VdclSymbolEdit::OnMouseMove(UINT nFlags, CPoint point)
 
 	if (m_ArxControl)
 		InvokeMethodIntIntInt(
-			m_ArxControl->GetStrProperty(nEventMouseMove),
+			m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 			nFlags,
 			point.x,
 			point.y,
@@ -219,7 +219,7 @@ void VdclSymbolEdit::OnErrspace()
 {
 	// call methods to invoke the event
 	if (m_ArxControl)
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventOutOfMemory), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventOutOfMemory), m_bInvokeWithSendString);
 	
 }
 
@@ -242,7 +242,7 @@ void VdclSymbolEdit::OnKillfocus()
 	
 	if (GetParent()->IsWindowVisible() && m_ArxControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 	
 }
 
@@ -250,7 +250,7 @@ void VdclSymbolEdit::OnMaxtext()
 {
 	// call methods to invoke the event
 	if (m_ArxControl)
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventMaxText), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventMaxText), m_bInvokeWithSendString);
 	
 }
 
@@ -258,7 +258,7 @@ void VdclSymbolEdit::OnSetfocus()
 {
 	// call methods to invoke the event
 	if (m_ArxControl)
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 	
 }
 
@@ -271,7 +271,7 @@ void VdclSymbolEdit::OnUpdate()
 	if (IsWindowVisible() == TRUE)
 		// call methods to invoke the event
 		if (m_ArxControl)
-			InvokeMethodString(m_ArxControl->GetStrProperty(nEventUpdate), sText, m_bInvokeWithSendString);
+			InvokeMethodString(m_ArxControl->GetStrProperty(Prop::EventUpdate), sText, m_bInvokeWithSendString);
 	
 }
 
@@ -280,7 +280,7 @@ void VdclSymbolEdit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	char sChar = nChar;
 	if (m_ArxControl)
-		InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(nEventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+		InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 	
 	
 	CAcUiSymbolEdit::OnKeyUp(nChar, nRepCnt, nFlags);
@@ -290,55 +290,55 @@ void VdclSymbolEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	char sChar = nChar;
 	if (m_ArxControl)
-		InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(nEventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+		InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 		
-	if (m_ArxControl == NULL)
-	{
-		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
-			
-		if (nChar == VK_UP || nChar == VK_DOWN)
-		{
-			if (m_pGridDropList == NULL)
-			{
-				if (nChar == VK_UP)
-					pListCtrl->MoveUp();		
-				
-				if (nChar == VK_DOWN)
-					pListCtrl->MoveDown();					
-			}
-			else
-			{
-				CString sText;
-				GetWindowText(sText);
+	//if (m_ArxControl == NULL)
+	//{
+	//	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
+	//		
+	//	if (nChar == VK_UP || nChar == VK_DOWN)
+	//	{
+	//		if (m_pGridDropList == NULL)
+	//		{
+	//			if (nChar == VK_UP)
+	//				pListCtrl->MoveUp();		
+	//			
+	//			if (nChar == VK_DOWN)
+	//				pListCtrl->MoveDown();					
+	//		}
+	//		else
+	//		{
+	//			CString sText;
+	//			GetWindowText(sText);
 
-				int n = m_pGridDropList->FindString(0, sText);
-				if (n > -1)
-				{
-					if (nChar == VK_UP)
-						n--;
-					if (nChar == VK_DOWN)
-						n++;
-					
-					if (n < 0)
-						n = m_pGridDropList->GetCount()-1;
+	//			int n = m_pGridDropList->FindString(0, sText);
+	//			if (n > -1)
+	//			{
+	//				if (nChar == VK_UP)
+	//					n--;
+	//				if (nChar == VK_DOWN)
+	//					n++;
+	//				
+	//				if (n < 0)
+	//					n = m_pGridDropList->GetCount()-1;
 
-					if (n > m_pGridDropList->GetCount()-1)
-						n = 0;
-				}
-				else
-				{
-					if (nChar == VK_UP)
-						n = m_pGridDropList->GetCount()-1;			
-					if (nChar == VK_DOWN)
-						n = 0;
-				}
+	//				if (n > m_pGridDropList->GetCount()-1)
+	//					n = 0;
+	//			}
+	//			else
+	//			{
+	//				if (nChar == VK_UP)
+	//					n = m_pGridDropList->GetCount()-1;			
+	//				if (nChar == VK_DOWN)
+	//					n = 0;
+	//			}
 
-				m_pGridDropList->GetLBText(n, sText);
-				SetWindowText(sText);
-				SetSel(0, sText.GetLength(), TRUE);
-			}
-		}
-	}
+	//			m_pGridDropList->GetLBText(n, sText);
+	//			SetWindowText(sText);
+	//			SetSel(0, sText.GetLength(), TRUE);
+	//		}
+	//	}
+	//}
 
 	CAcUiSymbolEdit::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -368,7 +368,7 @@ void VdclSymbolEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	if (nChar == 13)
 	{
 		if (m_ArxControl)
-			InvokeMethod(m_ArxControl->GetStrProperty(nEventReturnPressed), m_bInvokeWithSendString);
+			InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventReturnPressed), m_bInvokeWithSendString);
 		return;
 	}
 	
@@ -383,10 +383,10 @@ BOOL VdclSymbolEdit::PreTranslateMessage(MSG* pMsg)
 	{
 		if (m_ArxControl)
 		{
-			CString sEvent = m_ArxControl->GetStrProperty(nEventReturnPressed);
+			CString sEvent = m_ArxControl->GetStrProperty(Prop::EventReturnPressed);
 			InvokeMethod(sEvent, m_bInvokeWithSendString);	
 
-			if (m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
+			if (m_ArxControl->GetBooleanProperty(Prop::ReturnAsTab) == TRUE)
 			{
 				pMsg->wParam = VK_TAB;
 			}
@@ -407,8 +407,8 @@ BOOL VdclSymbolEdit::PreTranslateMessage(MSG* pMsg)
 			::TranslateMessage(pMsg);
 			::DispatchMessage(pMsg);
 			
-			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();		
-			pListCtrl->MoveDown();		
+			//CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();		
+			//pListCtrl->MoveDown();		
 			return TRUE;				// DO NOT process further
 		}
 		if (pMsg->wParam == VK_ESCAPE)
@@ -420,7 +420,7 @@ BOOL VdclSymbolEdit::PreTranslateMessage(MSG* pMsg)
 			
 			// Send Notification to parent of ListView ctrl
 			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
-			pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, m_strOldValue);			
+			//pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, m_strOldValue);			
 			pListCtrl->HideEditControls();
 			return TRUE;				// DO NOT process further
 		}
@@ -455,7 +455,7 @@ void VdclSymbolEdit::OnLButtonUp(UINT nFlags, CPoint point)
 	if (!m_bFocusClick)
 	{
 		if (m_ArxControl)
-			InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+			InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 		m_bFocusClick = true;
 	}
 

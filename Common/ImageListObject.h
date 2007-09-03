@@ -5,19 +5,28 @@ enum IOStatus;
 
 class CImageListObject : public CObject
 {
+	CImageList mImageList;
+	bool mbDeleted;
+	CSize mszImage;
+
 public:
-	CImageListObject( const CImageListObject& Src );
 	CImageListObject();
+	CImageListObject( const CImageListObject& Src );
+	CImageListObject( const CImageList* pSrc );
 	virtual ~CImageListObject();
 
-// Attributes
-public:
-	CImageList m_ImageList;
-	CSize m_ImageSize;
-	BOOL m_Delete;
 // Operations
 public:
 	CImageListObject& operator =( const CImageListObject& Src );
+	operator bool() const { return (!mbDeleted && mImageList.m_hImageList); }
+
+// Attributes
+public:
+	bool IsDeleted() const { return mbDeleted; }
+	void SetDeleted( bool bDelete = true ) { mbDeleted = bDelete; }
+	const CSize& GetSize() const { return mszImage; }
+	const CImageList& GetImageList() const { return mImageList; }
+	CImageList& GetImageList() { return mImageList; }
 
 // Implementation
 

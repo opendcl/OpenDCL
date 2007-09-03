@@ -33,7 +33,6 @@ OdclDateTime::~OdclDateTime()
 
 BEGIN_MESSAGE_MAP(OdclDateTime, CDateTimeCtrl)
 	//{{AFX_MSG_MAP(OdclDateTime)
-	ON_NOTIFY_REFLECT(DTN_DATETIMECHANGE, OnDatetimechange)
 	ON_NOTIFY_REFLECT(DTN_WMKEYDOWN, OnWmkeydown)	
 	ON_WM_CTLCOLOR_REFLECT()
 	//}}AFX_MSG_MAP
@@ -81,8 +80,8 @@ BOOL OdclDateTime::PreTranslateMessage(MSG* pMsg)
 			::TranslateMessage(pMsg);
 			::DispatchMessage(pMsg);
 			
-			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();		
-			pListCtrl->MoveDown();		
+			//CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();		
+			//pListCtrl->MoveDown();		
 			return TRUE;				// DO NOT process further
 		}
 		if (pMsg->wParam == VK_ESCAPE)
@@ -92,21 +91,21 @@ BOOL OdclDateTime::PreTranslateMessage(MSG* pMsg)
 			
 			SetWindowText(m_strOldValue);
 			
-			// Send Notification to parent of ListView ctrl
-			LV_DISPINFO dispinfo;
-			dispinfo.hdr.hwndFrom = GetParent()->GetParent()->m_hWnd;
-			dispinfo.hdr.idFrom = GetParent()->GetDlgCtrlID();
-			dispinfo.hdr.code = LVN_ENDLABELEDIT;
+			//// Send Notification to parent of ListView ctrl
+			//LV_DISPINFO dispinfo;
+			//dispinfo.hdr.hwndFrom = GetParent()->GetParent()->m_hWnd;
+			//dispinfo.hdr.idFrom = GetParent()->GetDlgCtrlID();
+			//dispinfo.hdr.code = LVN_ENDLABELEDIT;
 
 			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
 
-			dispinfo.item.mask = LVIF_TEXT;
-			dispinfo.item.iItem = pListCtrl->m_nRowSelected;
-			dispinfo.item.iSubItem = pListCtrl->m_nColSelected;
-			dispinfo.item.pszText = LPTSTR((LPCTSTR)m_strOldValue);
-			dispinfo.item.cchTextMax = m_strOldValue.GetLength();
+			//dispinfo.item.mask = LVIF_TEXT;
+			//dispinfo.item.iItem = pListCtrl->m_nRowSelected;
+			//dispinfo.item.iSubItem = pListCtrl->m_nColSelected;
+			//dispinfo.item.pszText = LPTSTR((LPCTSTR)m_strOldValue);
+			//dispinfo.item.cchTextMax = m_strOldValue.GetLength();
 
-			pListCtrl->SendMessage( WM_NOTIFY, GetDlgCtrlID(), (LPARAM)&dispinfo );
+			//pListCtrl->SendMessage( WM_NOTIFY, GetDlgCtrlID(), (LPARAM)&dispinfo );
 			pListCtrl->HideEditControls();
 			return TRUE;				// DO NOT process further
 		}
@@ -114,19 +113,6 @@ BOOL OdclDateTime::PreTranslateMessage(MSG* pMsg)
 	}
 	
 	return CDateTimeCtrl::PreTranslateMessage(pMsg);
-}
-void OdclDateTime::OnDatetimechange(NMHDR* pNMHDR, LRESULT* pResult) 
-{
-	CString sText;	
-	GetWindowText(sText);
-	
-	// Send Notification to parent of ListView ctrl
-	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
-
-	//pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, GetCurrentItemColorIndex());
-	pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sText);
-
-	*pResult = 0;
 }
 
 void OdclDateTime::OnWmkeydown(NMHDR* pNMHDR, LRESULT* pResult) 

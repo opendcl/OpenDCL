@@ -11,26 +11,38 @@ static const int CURRENTVERSION = 1;
 IMPLEMENT_SERIAL(CImageListObject, CObject, 1)
 
 CImageListObject::CImageListObject()
+: mbDeleted( false )
 {
-	m_ImageList.m_hImageList = NULL;
-	m_Delete = FALSE;
+	mImageList.m_hImageList = NULL;
 }
 
 CImageListObject::CImageListObject( const CImageListObject& Src )
-: m_Delete( FALSE )
+: mbDeleted( false )
 {
-	m_ImageList.m_hImageList = ImageList_Duplicate( Src.m_ImageList );
+	mImageList.m_hImageList = ImageList_Duplicate( Src.mImageList );
+	mszImage = Src.GetSize();
+}
+
+CImageListObject::CImageListObject( const CImageList* pSrc )
+: mbDeleted( false )
+{
+	mImageList.m_hImageList = ImageList_Duplicate( pSrc->m_hImageList );
+	int cx = -1;
+	int cy = -1;
+	ImageList_GetIconSize( mImageList.m_hImageList, &cx, &cy );
+	mszImage.SetSize( cx, cy );
 }
 
 CImageListObject::~CImageListObject()
 {	
-	m_ImageList.DeleteImageList();
+	mImageList.DeleteImageList();
 }
 
 CImageListObject& CImageListObject::operator =( const CImageListObject& Src )
 {
-	m_ImageSize = Src.m_ImageSize;
-	m_ImageList.m_hImageList = ImageList_Duplicate( Src.m_ImageList );
+	mbDeleted = Src.mbDeleted;
+	mszImage = Src.mszImage;
+	mImageList.m_hImageList = ImageList_Duplicate( Src.mImageList );
 	return *this;
 }
 
@@ -57,10 +69,10 @@ void CImageListObject::Serialize(CArchive& ar)
 	if (ar.IsStoring())
 	{
 		ar << CURRENTVERSION;		
-		ar << m_ImageSize;
+		ar << mszImage;
 
 		// if the image list is null than save a flag that indicates image list is null
-		if (m_ImageList.m_hImageList == NULL)
+		if (mImageList.m_hImageList == NULL)
 		{
 			ar << TRUE;
 		}
@@ -68,7 +80,7 @@ void CImageListObject::Serialize(CArchive& ar)
 		{
 			// this indicates the imagelist in not null and we are to write the image list
 			ar << FALSE;
-			m_ImageList.Write(&ar);
+			mImageList.Write(&ar);
 		}
 		
 	}
@@ -77,42 +89,37 @@ void CImageListObject::Serialize(CArchive& ar)
 		int nThisVersion;
 		BOOL bNull;
 		ar >> nThisVersion;		
-		ar >> m_ImageSize;		
+		ar >> mszImage;		
 		ar >> bNull;
 		
 		// set the delete flag as false
-		m_Delete = FALSE;
+		mbDeleted = false;
 
 		// if the flag indicates that the image list in not null, then read the image list
 		if (bNull == FALSE)
-		{
-			m_ImageList.Read(&ar);
-		}
+			mImageList.Read(&ar);
 		else
-		{
-			m_ImageList.DeleteImageList();
-		}
+			mImageList.DeleteImageList();
 	}
-
 }
 
 IOStatus CImageListObject::ReadFromTextFile1(std::ifstream &sFile, const CString &fileName)
 {
-  if (!readLong(sFile, m_ImageSize.cx)) return statInvalidFormat;		
-  if (!readLong(sFile, m_ImageSize.cy)) return statInvalidFormat;		
+  if (!readLong(sFile, mszImage.cx)) return statInvalidFormat;		
+  if (!readLong(sFile, mszImage.cy)) return statInvalidFormat;		
 
   // set the delete flag as false
-  m_Delete = FALSE;
+  mbDeleted = false;
 
   BOOL bNull;
   if (!readBOOL(sFile, bNull)) return statInvalidFormat;
   // if the flag indicates that the image list in not null, then read the image list
   if (bNull == FALSE)
 	{
-    if (!readImageList(sFile, fileName, m_ImageList)) return statInvalidFormat;
+    if (!readImageList(sFile, fileName, mImageList)) return statInvalidFormat;
 	}
   else
-    m_ImageList.DeleteImageList();
+    mImageList.DeleteImageList();
   return statOK;
 }
 
@@ -124,13 +131,13 @@ IOStatus CImageListObject::ReadFromTextFile1(std::ifstream &sFile, const CString
 //  writeLong(pFile, m_ImageSize.cy);
 //
 //  // if the image list is null then save a flag that indicates image list is null
-//  if (m_ImageList.m_hImageList == NULL)
+//  if (mImageList.m_hImageList == NULL)
 //    writeBOOL(pFile, true);
 //  else
 //  {
 //    // this indicates the imagelist in not null and we are to write the image list
 //    writeBOOL(pFile, false);
-//    writeImageList(pFile, fileName, m_ImageList);
+//    writeImageList(pFile, fileName, mImageList);
 //  }
 //	return statOK;
 //}

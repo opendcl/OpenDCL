@@ -111,7 +111,7 @@ bool CWorkspace::DisplayStatus( UINT nResourceId, HMODULE hmodRes /*= NULL*/ ) c
 	return DisplayStatus( LoadResourceString( nResourceId, hmodRes ) );
 }
 
-bool CWorkspace::GetDwordSetting( DWORD& dwValue, LPCTSTR pszValueName )
+bool CWorkspace::GetDwordSetting( DWORD& dwValue, LPCTSTR pszValueName ) const
 {
 	if( GetDwordSettingImp( dwValue, pszValueName, false ) )
 		return true;
@@ -175,12 +175,12 @@ bool CWorkspace::GetModuleVersionInfo( DWORD& dwMajor, DWORD& dwMinor, DWORD& dw
 bool CWorkspace::IsAutoUpdateCheckEnabled(void) const
 {
 	DWORD dwAUC = 0;
-	return (theWorkspace.GetDwordSetting( dwAUC, gszRegVal_AUC ) && dwAUC != 0);
+	return (GetDwordSetting( dwAUC, gszRegVal_AUC ) && dwAUC != 0);
 }
 
 bool CWorkspace::SetAutoUpdateCheckEnabled( bool bEnabled /*= true*/ )
 {
-	return theWorkspace.SetDwordSetting( bEnabled? 1 : 0, gszRegVal_AUC );
+	return SetDwordSetting( bEnabled? 1 : 0, gszRegVal_AUC );
 }
 
 CString CWorkspace::FindFile( LPCTSTR pszFilePath ) const
@@ -203,7 +203,7 @@ CString CWorkspace::FindFile( LPCTSTR pszFilePath ) const
 	return sPath;
 }
 
-bool CWorkspace::GetDwordSettingImp( DWORD& dwValue, LPCTSTR pszValueName, bool bHKLM /*= true*/, bool bX32 /*= true*/ )
+bool CWorkspace::GetDwordSettingImp( DWORD& dwValue, LPCTSTR pszValueName, bool bHKLM /*= true*/, bool bX32 /*= true*/ ) const
 {
 	bool bSuccess = false;
 	DWORD dwValueLocal = 0;

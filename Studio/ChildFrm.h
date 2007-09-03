@@ -27,7 +27,7 @@ public:
 // Operations
 public:
 	void ResetFrame();
-	void SetTitleBarIcon(int nPictureID);
+	void SetTitleBarIcon(UINT_PTR nPictureID);
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CChildFrame)

@@ -29,13 +29,13 @@
 	CRect ArxRect;   
 
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
@@ -55,7 +55,7 @@
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -231,7 +231,7 @@ BOOL CHtmlCtrl::LoadFromResource(UINT nRes)
 void CHtmlCtrl::OnNavigateComplete2(LPCTSTR strURL) 
 {
 	// call methods to invoke the event
-	InvokeMethodString(m_ArxControl->GetStrProperty(nEventNavigateComplete), strURL, m_bInvokeWithSendString);
+	InvokeMethodString(m_ArxControl->GetStrProperty(Prop::EventNavigateComplete), strURL, m_bInvokeWithSendString);
 	CHtmlView::OnNavigateComplete2(strURL);
 }
 
@@ -239,7 +239,7 @@ void CHtmlCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,

@@ -52,23 +52,23 @@ BOOL TProgressTimeToComplete::Create(CDclControlObject* pControl, CWnd* pParentW
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	DWORD dwStyle = WS_CHILD|WS_VISIBLE | WS_CLIPSIBLINGS;
 
-	if (pControl->GetBoolProperty(nSmoothProgress) == TRUE)
+	if (pControl->GetBooleanProperty(Prop::SmoothProgress) == TRUE)
 		dwStyle = dwStyle | PBS_SMOOTH;
 
-	if (pControl->GetLongProperty(nOrientation) == 1)
+	if (pControl->GetLongProperty(Prop::Orientation) == 1)
 		dwStyle = dwStyle | PBS_VERTICAL ;
 
 	RetVal = CProgressCtrl::Create(dwStyle, ArxRect, pParentWnd, nID);
 
-	m_bPercentage = m_ArxControl->GetBoolProperty(nDisplayPercentage) == TRUE;
-	m_bTime = m_ArxControl->GetBoolProperty(nDisplaySeconds) == TRUE;
+	m_bPercentage = m_ArxControl->GetBooleanProperty(Prop::DisplayPercentage) == TRUE;
+	m_bTime = m_ArxControl->GetBooleanProperty(Prop::DisplaySeconds) == TRUE;
 
 	// Set the range to be 0 to 100.
 	//CProgressCtrl::SetRange( 0, 100 );
@@ -235,13 +235,13 @@ CString TProgressTimeToComplete::GetRemainingText(double lfPercent, double lfSec
 			if (nSeconds < 1)
 			{	
 				str.Format(CString("%d ") + 
-						   m_ArxControl->GetStrProperty(nSecondText), 
+						   m_ArxControl->GetStrProperty(Prop::SecondText), 
 						   nSeconds);
 			}
 			else
 			{
 				str.Format(CString("%d ") + 
-						   m_ArxControl->GetStrProperty(nSecondsText), 
+						   m_ArxControl->GetStrProperty(Prop::SecondsText), 
 						   nSeconds);
 			}
 		}
@@ -253,11 +253,11 @@ CString TProgressTimeToComplete::GetRemainingText(double lfPercent, double lfSec
 		}
 	}
 /*
-	m_Minute.SetWindowText(m_pArxCtrl->GetStrProperty(nMinuteText));
-	m_Minutes.SetWindowText(m_pArxCtrl->GetStrProperty(nMinutesText));
+	m_Minute.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::MinuteText));
+	m_Minutes.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::MinutesText));
 
-	m_Second.SetWindowText(m_pArxCtrl->GetStrProperty(nSecondText));
-	m_Seconds.SetWindowText(m_pArxCtrl->GetStrProperty(nSecondsText));
+	m_Second.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::SecondText));
+	m_Seconds.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::SecondsText));
 */	
 
     return str;

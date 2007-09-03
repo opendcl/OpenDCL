@@ -42,7 +42,7 @@ bool CArxTabStripCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	ModifyStyleEx( 0, WS_EX_CONTROLPARENT ); //this prevents the TAB key from locking up the dialog!
 
-	mbInvokeWithSendString = (GetTemplate()->GetLongProperty(nEventInvoke) == 1);
+	mbInvokeWithSendString = (GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1);
 
 	CreateTabPages( nID );
 	ActivateTabPage( GetTabPageAt( GetCurTabPage() ), true );
@@ -106,7 +106,7 @@ bool CArxTabStripCtrl::SetCurrentTab( size_t nPageIndex )
 	TTabPagePtr pTabPage = GetTabPageAt( nPageIndex );
 	if( !pTabPage )
 		return false;
-	if( !pTabPage->GetSourceForm()->GetControlProperties()->GetBoolProperty( nVisible ) )
+	if( !pTabPage->GetSourceForm()->GetControlProperties()->GetBooleanProperty( Prop::Visible ) )
 		ShowTab( nPageIndex );
 	SetCurSel( GetTabItemIndex( nPageIndex ) );
 	ActivateTabPage( pTabPage, true );
@@ -118,7 +118,7 @@ void CArxTabStripCtrl::HideTab( size_t nPageIndex )
 	TTabPagePtr pTabPage = GetTabPageAt( nPageIndex );
 	if( !pTabPage )
 		return;
-	pTabPage->GetSourceForm()->GetControlProperties()->SetBooleanProperty( nVisible, false );
+	pTabPage->GetSourceForm()->GetControlProperties()->SetBooleanProperty( Prop::Visible, false );
 	int nItemIndex = GetTabItemIndex( nPageIndex );
 	if( nItemIndex < 0 )
 		return;
@@ -141,7 +141,7 @@ void CArxTabStripCtrl::ShowTab( size_t nPageIndex )
 	TTabPagePtr pTabPage = GetTabPageAt( nPageIndex );
 	if( !pTabPage )
 		return;
-	pTabPage->GetSourceForm()->GetControlProperties()->SetBooleanProperty( nVisible, true );
+	pTabPage->GetSourceForm()->GetControlProperties()->SetBooleanProperty( Prop::Visible, true );
 
 	int idxToInsertAt = 0;
 	for( int i = GetItemCount() - 1; i >= 0; --i )
@@ -159,10 +159,10 @@ void CArxTabStripCtrl::ShowTab( size_t nPageIndex )
 		}
 	}
 
-	CString sTabCaption = mpTemplate->GetPropertyListItem( nTabsCaption, nPageIndex );
+	CString sTabCaption = mpTemplate->GetPropertyListItem( Prop::TabsCaption, nPageIndex );
 				
 	int nImage = -1;
-	RefCountedPtr< CPropertyObject > pImageListProp = mpTemplate->GetPropertyObject(nTabsImageList);
+	TPropertyPtr pImageListProp = mpTemplate->GetPropertyObject(Prop::TabsImageList);
 	if (pImageListProp && nPageIndex < pImageListProp->GetIntArrayPtr()->size())
 		nImage = pImageListProp->GetIntArrayPtr()->at( nPageIndex );
 				
@@ -242,7 +242,7 @@ void CArxTabStripCtrl::ActivateTabPage( TTabPagePtr pTabPage, bool bFireEvent /*
 	Invalidate();
 
 	if (bFireEvent)
-		InvokeMethodInt( mpTemplate->GetStrProperty(nEventChanged), GetCurTabPage(), mbInvokeWithSendString );
+		InvokeMethodInt( mpTemplate->GetStrProperty(Prop::EventChanged), GetCurTabPage(), mbInvokeWithSendString );
 }
 
 void CArxTabStripCtrl::SetFirstControlFocus( CTabPage* pTabPage )
@@ -271,7 +271,7 @@ void CArxTabStripCtrl::OnSelchange( NMHDR* pNMHDR, LRESULT* pResult )
 
 void CArxTabStripCtrl::OnSelchanging( NMHDR* pNMHDR, LRESULT* pResult ) 
 {
-	InvokeMethodInt( mpTemplate->GetStrProperty(nEventSelChanging), GetCurTabPage(), mbInvokeWithSendString );
+	InvokeMethodInt( mpTemplate->GetStrProperty(Prop::EventSelChanging), GetCurTabPage(), mbInvokeWithSendString );
 	*pResult = 0;
 }
 
@@ -284,11 +284,11 @@ void CArxTabStripCtrl::OnSize(UINT nType, int cx, int cy)
 void CArxTabStripCtrl::OnKillFocus( CWnd* pNewWnd ) 
 {
 	CTabCtrl::OnKillFocus( pNewWnd );
-	InvokeMethod( mpTemplate->GetStrProperty(nEventKillFocus), mbInvokeWithSendString );
+	InvokeMethod( mpTemplate->GetStrProperty(Prop::EventKillFocus), mbInvokeWithSendString );
 }
 
 void CArxTabStripCtrl::OnSetFocus( CWnd* pOldWnd ) 
 {
 	CTabCtrl::OnSetFocus( pOldWnd );
-	InvokeMethod( mpTemplate->GetStrProperty(nEventSetFocus), mbInvokeWithSendString );
+	InvokeMethod( mpTemplate->GetStrProperty(Prop::EventSetFocus), mbInvokeWithSendString );
 }

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "OpenDCL.h"
+#include "Editor.h"
 #include "ZOrderListCtrl.h"
 #include "ControlHolder.h"
 #include "DclControlObject.h"
@@ -27,7 +27,7 @@ static CDclControlObject* FindArxControlObject(CDclFormObject *pDclForm, CString
 	while (pos)
 	{
 		CDclControlObject *pControl = pDclForm->GetControlList().GetNext(pos);
-		if (pControl->GetStrProperty(nName) == sControlName && pCtrl != pControl)
+		if (pControl->GetStrProperty(Prop::Name) == sControlName && pCtrl != pControl)
 			return pControl;
 	}
 	return NULL;
@@ -429,42 +429,22 @@ void CZOrderListCtrl::DoZOrderUpdate()
 {
 	// this temp list will be used to re-order the controls in the dcl form's control list.
 	CList< CDclControlObject* > ControlList;
-	CDclControlObject *pDclFormPropHolder;
-	CDclControlObject *pCtrlObject;
-	POSITION pos = NULL;
-	
-	// first we need to get the control object that stores the properties for hte dcl form.
-	pDclFormPropHolder = m_pView->m_pThisDclForm->GetControlProperties();
 
-	
-	// here we need to exit if we find more than one selected and they are all at the end
-  int i;
-	for (i=0; i<GetItemCount(); i++)
+	for( int idx = 0; idx < GetItemCount(); ++idx )
 	{
-		// get the item name so we can extract it.
-		CString sName = GetItemText(i, 0);
-
-		// call the method that extracts the control object by it's name from the list
-		pCtrlObject = FindArxControlObject(m_pView->m_pThisDclForm, sName);
-
-		// add it to the list.
-		ControlList.AddTail(pCtrlObject);
+		CDclControlObject* pDclControl = FindArxControlObject( m_pView->m_pThisDclForm, GetItemText( idx, 0 ) );
+		if( pDclControl )
+			ControlList.AddTail( pDclControl );
 	}
 
 	// here we need to loop thru the dcl form control list to extract all the deleted controls so they don't get lost in space
-	for (i=0; i<ControlList.GetCount(); i++)
+	POSITION pos = m_pView->m_pThisDclForm->GetControlList().GetHeadPosition();
+	while( pos )
 	{
-		pos = m_pView->m_pThisDclForm->GetControlList().FindIndex(i);
-		if (pos != NULL)
-		{
-			// get the control
-			pCtrlObject = m_pView->m_pThisDclForm->GetControlList().GetAt(pos);
-			
-			// if the control has been marked as deleted we need to place it in the front of the list
-			if (pCtrlObject->m_Delete == TRUE)
-				// add it to the list.
-				ControlList.AddHead(pCtrlObject);	
-		}
+		// if the control has been marked as deleted we need to place it in the front of the list
+		CDclControlObject* pDclControl = m_pView->m_pThisDclForm->GetControlList().GetNext( pos );
+		if (pDclControl->IsDeleted())
+			ControlList.AddHead(pDclControl);	
 	}
 
 	pos = ControlList.GetHeadPosition();
@@ -479,7 +459,7 @@ void CZOrderListCtrl::DoZOrderUpdate()
 			pControlWnd->SetWindowPos( &CWnd::wndTop, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
 	}
 	m_pView->m_pThisDclForm->ReindexControls();
-	m_pView->MoveGripRectsForward();
+	m_pView->MoveGripsToTop();
 	m_pView->SetFocus();
 }
 
@@ -515,12 +495,7 @@ BOOL CZOrderListCtrl::PreTranslateMessage(MSG* pMsg)
 				if (m_pView != NULL)
  					m_pView->PreTranslateMessage(pMsg);
 				break;
-			
 		}	
-		/*char value[80];
-		_ltoa(pMsg->wParam, value, 10);
-		AfxGetApp()->m_pMainWnd->SetWindowText(value);
-		*/		
 	}	
 	return CListCtrl::PreTranslateMessage(pMsg);
 }
@@ -529,6 +504,4 @@ void CZOrderListCtrl::OnEditPaste()
 {
 	if (m_pView != NULL)
  		m_pView->OnEditPaste();
-	
-	
 }

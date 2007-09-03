@@ -33,7 +33,7 @@ public:
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
 	virtual DWORD GetWndStyle() const;
-	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
 // Operations
 public:

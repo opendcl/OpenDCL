@@ -109,7 +109,7 @@ CColourPopup::CColourPopup()
 CColourPopup::CColourPopup(CPoint p, COLORREF crColour, CWnd* pParentWnd,
                            LPCTSTR szDefaultText /* = NULL */,
                            LPCTSTR szCustomText  /* = NULL */,
-						   RefCountedPtr< CPropertyObject > pProp /*= NULL */,
+						   TPropertyPtr pProp /*= NULL */,
 						   CControlHolder *pAxCtrl /* = NULL */)
 {
     Initialise();

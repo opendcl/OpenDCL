@@ -291,7 +291,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ModalVDcl.cpp"
+				RelativePath="..\ModalDlg.cpp"
 				>
 			</File>
 			<File
@@ -300,10 +300,6 @@
 			</File>
 			<File
 				RelativePath="..\OleOdcDropTarget.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\ResizableDockingDialog.cpp"
 				>
 			</File>
 			<File
@@ -420,7 +416,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ModalVDcl.h"
+				RelativePath="..\ModalDlg.h"
 				>
 			</File>
 			<File
@@ -429,10 +425,6 @@
 			</File>
 			<File
 				RelativePath="..\OleOdcDropTarget.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ResizableDockingDialog.h"
 				>
 			</File>
 			<File
@@ -573,6 +565,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Controls\ArxCheckBoxCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxCheckBoxCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxDwgListCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxDwgListCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxGraphicButtonCtrl.cpp"
 				>
 			</File>
@@ -589,27 +597,35 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Controls\ArxListBoxCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxListBoxCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxOptionListCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxOptionListCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxRadioButtonCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxRadioButtonCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxTabStripCtrl.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\Controls\ArxTabStripCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\ClrListBox.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\ClrListBox.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\ColorButton.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\ColorButton.h"
 				>
 			</File>
 			<File
@@ -661,27 +677,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Controls\DwgDirList.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\DwgDirList.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Controls\DwgPreviewCtrl.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\Controls\DwgPreviewCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\DynamicButtonCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\DynamicButtonCtrl.h"
 				>
 			</File>
 			<File
@@ -762,14 +762,6 @@
 			</File>
 			<File
 				RelativePath="..\Controls\OdclMonth.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\OptionListBox.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\OptionListBox.h"
 				>
 			</File>
 			<File
@@ -877,14 +869,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Controls\VdclCheckBox.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclCheckBox.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Controls\VdclColorComboBox.cpp"
 				>
 			</File>
@@ -925,14 +909,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Controls\VdclListBox.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclListBox.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Controls\VdclNumericEdit.cpp"
 				>
 			</File>
@@ -962,14 +938,6 @@
 			</File>
 			<File
 				RelativePath="..\Controls\VdclProgressCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclRadioButton.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclRadioButton.h"
 				>
 			</File>
 			<File
@@ -1239,11 +1207,7 @@
 			Name="Common"
 			>
 			<File
-				RelativePath="..\..\Common\AcadColorListBox.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\AcadColorListBox.h"
+				RelativePath="..\..\Common\AcadColorService.h"
 				>
 			</File>
 			<File
@@ -1710,6 +1674,10 @@
 				Name="Controls"
 				>
 				<File
+					RelativePath="..\..\Common\Controls\AngleFilter.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\AxContainerCtrl.cpp"
 					>
 				</File>
@@ -1726,6 +1694,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\ButtonEditCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\ButtonST.cpp"
 					>
 				</File>
@@ -1734,11 +1706,55 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\CheckBoxCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\CheckBoxCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ComboEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\CurrencyFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\DateFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\DynamicButtonCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\DynamicButtonCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\EditEx.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\EditEx.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\FilteredEditEx.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\GraphicButtonCtrl.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\GraphicButtonCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\GridCellEditCtrl.h"
 					>
 				</File>
 				<File
@@ -1758,11 +1774,87 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\ImageComboEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\InputFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\IntegerFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ListBoxCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ListBoxCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\LowerCaseFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\MultilineFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\NumericFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\OptionListCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\OptionListCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\RadioButtonCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\RadioButtonCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\RadioEditCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\TabStripCtrl.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\TabStripCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\TextBoxCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\TextBoxCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\TextBoxEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\TimeFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ToggleEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\UpperCaseFilter.h"
 					>
 				</File>
 				<File
@@ -1844,7 +1936,7 @@
 	<Globals>
 		<Global
 			Name="RESOURCE_FILE"
-			Value="\OpenDCL\Build\ARX\ARX.rc"
+			Value="\OpenDCL\Build 4.1\Runtime\ARX.rc"
 		/>
 	</Globals>
 </VisualStudioProject>

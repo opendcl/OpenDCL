@@ -36,7 +36,7 @@ int ComboBox_AddPath()
 		return 0;
 	}
 	
-	if (pArxObject->GetLongProperty(nComboBoxStyle) != CmboStyle_DirPicker)
+	if (pArxObject->GetLongProperty(Prop::ComboBoxStyle) != CmboStyle_DirPicker)
 	{
 		theWorkspace.DisplayAlert(_T("This ComboBox is not a Directory Picker ComboBox."));
 		// return nil
@@ -75,7 +75,7 @@ int ComboBox_AddColor()
 		return 0;
 	}
 	
-	if (pArxObject->GetLongProperty(nComboBoxStyle) != CmboStyle_Color)
+	if (pArxObject->GetLongProperty(Prop::ComboBoxStyle) != CmboStyle_Color)
 	{
 		theWorkspace.DisplayAlert(ErrorWrongColorStyle);
 		// return nil
@@ -114,7 +114,7 @@ int ComboBox_FindLineWeight()
 		return 0;
 	}
 	
-	if (pArxObject->GetLongProperty(nComboBoxStyle) != CmboStyle_LineWeight)
+	if (pArxObject->GetLongProperty(Prop::ComboBoxStyle) != CmboStyle_LineWeight)
 	{
 		theWorkspace.DisplayAlert(ErrorWrongColorStyle);
 		// return nil
@@ -156,7 +156,7 @@ int ComboBox_FindColor()
 		return 0;
 	}
 	
-	if (pArxObject->GetLongProperty(nComboBoxStyle) != CmboStyle_Color)
+	if (pArxObject->GetLongProperty(Prop::ComboBoxStyle) != CmboStyle_Color)
 	{
 		theWorkspace.DisplayAlert(ErrorWrongColorStyle);
 		// return nil
@@ -298,7 +298,7 @@ int ComboBox_Clear()
 	int nArg = 0;
 	CDclControlObject *pArxObject = GetControlArxObject(sComboBox_GetDir, &nArg);
 	
-	switch (pArxObject->GetLongProperty(nComboBoxStyle))
+	switch (pArxObject->GetLongProperty(Prop::ComboBoxStyle))
 	{
 		case CmboStyle_Combo:
 		case CmboStyle_Simple:
@@ -759,8 +759,8 @@ int ComboBox_Dir()
 	CString sExtension;
 
 	// check the control type to determine which control to create
-	if (pArxObject->GetLongProperty(nComboBoxStyle) != CmboStyle_DropDown &&
-		pArxObject->GetLongProperty(nComboBoxStyle) != CmboStyle_DirPicker)
+	if (pArxObject->GetLongProperty(Prop::ComboBoxStyle) != CmboStyle_DropDown &&
+		pArxObject->GetLongProperty(Prop::ComboBoxStyle) != CmboStyle_DirPicker)
 	{
 		CString sLoadString = _T("The combo box is not a directory combo box.");
 		theWorkspace.DisplayAlert(sLoadString);
@@ -781,7 +781,7 @@ int ComboBox_Dir()
 		sExtension = _T("*.*");
 	}
 
-	if (pArxObject->GetLongProperty(nComboBoxStyle) == CmboStyle_DropDown)
+	if (pArxObject->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_DropDown)
 	{
 		// Add all the files and directories in the windows directory.
 		TCHAR lpszOldPath[MAX_PATH];
@@ -798,7 +798,7 @@ int ComboBox_Dir()
 	
 		::SetCurrentDirectory(lpszOldPath);
 	}
-	else if (pArxObject->GetLongProperty(nComboBoxStyle) == CmboStyle_DirPicker)
+	else if (pArxObject->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_DirPicker)
 	{
 		((CComboBoxFolder*)pControl)->AddPath(sDir);
 	}

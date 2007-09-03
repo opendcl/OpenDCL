@@ -110,12 +110,12 @@ BOOL CfgTabPane::OnInitDialog()
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	
 	// call methods to invoke the event
-	InvokeMethod(pProps->GetStrProperty(nFormEventInitialize), false);	
+	InvokeMethod(pProps->GetStrProperty(Prop::FormEventInitialize), false);	
 
 	// call methods to invoke the event
 	if( mDialogX.GetSourceForm()->UsesClientRect() )
 		GetClientRect( &rectWindow );
-	InvokeMethodIntInt(pProps->GetStrProperty(nFormEventSize), rectWindow.Width(), rectWindow.Height(), false);	
+	InvokeMethodIntInt(pProps->GetStrProperty(Prop::FormEventSize), rectWindow.Width(), rectWindow.Height(), false);	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
@@ -126,7 +126,7 @@ void CfgTabPane::OnMainDialogOK()
 {
 	// call methods to invoke the event
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStrProperty(nCfgEventOK), false);	
+	InvokeMethod(pProps->GetStrProperty(Prop::CfgEventOK), false);	
 }
 
 void CfgTabPane::OnMainDialogAPPLY()
@@ -134,7 +134,7 @@ void CfgTabPane::OnMainDialogAPPLY()
 {
 	// call methods to invoke the event
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStrProperty(nCfgEventApply), false);	
+	InvokeMethod(pProps->GetStrProperty(Prop::CfgEventApply), false);	
 }
 
 void CfgTabPane::OnMainDialogCancel()
@@ -142,7 +142,7 @@ void CfgTabPane::OnMainDialogCancel()
 {
     // call methods to invoke the event
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStrProperty(nCfgEventCancel), false);	
+	InvokeMethod(pProps->GetStrProperty(Prop::CfgEventCancel), false);	
 }
 
 BOOL CfgTabPane::OnMainDialogHelp()
@@ -151,7 +151,7 @@ BOOL CfgTabPane::OnMainDialogHelp()
 {
   // call methods to invoke the event
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStrProperty(nCfgEventHelp), false);	
+	InvokeMethod(pProps->GetStrProperty(Prop::CfgEventHelp), false);	
   // Return TRUE if handled.
   return TRUE;
 }
@@ -166,7 +166,7 @@ void CfgTabPane::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	CAcUiTabExtension::OnShowWindow(bShow, nStatus);
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod( mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(nFormEventShow), false);	
+	InvokeMethod( mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventShow), false);	
 }
 
 void CfgTabPane::OnDestroy() 

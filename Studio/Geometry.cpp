@@ -85,21 +85,21 @@ void CGeometry::ShowSplitter(CString sName)
 	CDclControlObject *pCtrl = m_pDclForm->FindControl(sName, CtlSplitter);
 	if (pCtrl)
 	{
-		int nTheWidth = pCtrl->GetLongProperty(nWidth);
-		int nTheHeight = pCtrl->GetLongProperty(nHeight);
-		int nTheLeft = pCtrl->GetLongProperty(nLeft);
-		int nTheTop = pCtrl->GetLongProperty(nTop);
+		int nTheWidth = pCtrl->GetLongProperty(Prop::Width);
+		int nTheHeight = pCtrl->GetLongProperty(Prop::Height);
+		int nTheLeft = pCtrl->GetLongProperty(Prop::Left);
+		int nTheTop = pCtrl->GetLongProperty(Prop::Top);
 		
 		if (nTheWidth > nTheHeight)
 		{
-			if (m_pControl->GetLongProperty(nTop) < nTheTop)
+			if (m_pControl->GetLongProperty(Prop::Top) < nTheTop)
 				m_BottomSplitter.ShowWindow(TRUE);
 			else
 				m_TopSplitter.ShowWindow(TRUE);
 		}
 		else
 		{
-			if (m_pControl->GetLongProperty(nLeft) < nTheLeft)
+			if (m_pControl->GetLongProperty(Prop::Left) < nTheLeft)
 				m_RightSplitter.ShowWindow(TRUE);
 			else
 				m_LeftSplitter.ShowWindow(TRUE);
@@ -140,24 +140,24 @@ BOOL CGeometry::OnInitDialog()
 	while (pos != NULL)
 	{
 		CDclControlObject *pCtrl = Splitters.GetNext(pos);
-		if (!pCtrl->m_Delete)
+		if (!pCtrl->IsDeleted())
 		{
-			int nTheWidth = pCtrl->GetLongProperty(nWidth);
-			int nTheHeight = pCtrl->GetLongProperty(nHeight);
+			int nTheWidth = pCtrl->GetLongProperty(Prop::Width);
+			int nTheHeight = pCtrl->GetLongProperty(Prop::Height);
 			if (nTheWidth > nTheHeight)
 			{
 				int n;
-				n = m_Top.AddString(pCtrl->GetStrProperty(nName));
+				n = m_Top.AddString(pCtrl->GetStrProperty(Prop::Name));
 				m_Top.SetItemData(n, pCtrl->GetID());
-				n = m_Bottom.AddString(pCtrl->GetStrProperty(nName));
+				n = m_Bottom.AddString(pCtrl->GetStrProperty(Prop::Name));
 				m_Bottom.SetItemData(n, pCtrl->GetID());
 			}
 			else
 			{
 				int n;
-				n = m_Left.AddString(pCtrl->GetStrProperty(nName));
+				n = m_Left.AddString(pCtrl->GetStrProperty(Prop::Name));
 				m_Left.SetItemData(n, pCtrl->GetID());
-				n = m_Right.AddString(pCtrl->GetStrProperty(nName));
+				n = m_Right.AddString(pCtrl->GetStrProperty(Prop::Name));
 				m_Right.SetItemData(n, pCtrl->GetID());
 			}
 		}

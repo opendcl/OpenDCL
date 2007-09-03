@@ -67,7 +67,7 @@ bool GetStringArgument(int nIndex, CString *pArg, CString sMethod);
 bool GetIntArgument(int nIndex, int *pArg, CString sMethod);
 bool GetDoubleArgument(int nIndex, double *pArg, CString sMethod);
 bool GetDateArgument(int nIndex, COleDateTime *pArg, CString sMethod);
-RefCountedPtr< CPropertyObject > GetPropertyArgument(int nIndex, CString sMethod);
+TPropertyPtr GetPropertyArgument(int nIndex, CString sMethod);
 CDclFormObject * FindDclObject(CDclControlObject *pControl);
 
 bool FindOptionalStringArgument(int nIndex, CString *pArg, CString sMethod);

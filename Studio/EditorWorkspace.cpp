@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "EditorWorkspace.h"
 #include "EditorProject.h"
-#include "OpenDCL.h"
+#include "Editor.h"
 #include "OpenDCLDoc.h"
 #include "ZOrderPane.h"
 

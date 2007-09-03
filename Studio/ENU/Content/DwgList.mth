@@ -33,18 +33,6 @@ ProjectFileName
 
 
 [Method]
-SetRowHeight 
-[Prefix]
-dcl_DwgList_
-[Desc]
-This method will change the height of each Dwg file item so the thumbnail preview image height will be updated.
-[Arguments]
-ProjectFileName
-\par\tab nRowHeight
-[as Integer]
-
-
-[Method]
 GetType
 [Prefix]
 dcl_DwgList_
@@ -68,7 +56,6 @@ ProjectFileName
 [as Integer]
 
 
-
 [Method]
 GetSelectedItems
 [Prefix]
@@ -77,7 +64,6 @@ dcl_ListBox_
 This method will return a list of all selected items in the ListBox. This method is useful only for ListBoxes with multiple selection.
 [Arguments Return] as List of Strings
 ProjectFileName
-
 
 
 [Method]
@@ -131,6 +117,7 @@ This method retrieves the index of the first visible item in a ListBox.
 [Arguments Return] as Integer
 ProjectFileName
 
+
 [Method]
 SetTopIndex
 [Prefix]
@@ -141,8 +128,6 @@ This method ensures that the indicated ListBox item is visible. If it's not the 
 ProjectFileName
 \par\tab nIndex
 [as Integer]
-
-
 
 
 [Method]
@@ -217,7 +202,6 @@ ProjectFileName
 [as Integer]
 \par\tab nIsSelected
 [as Integer: 0 = Not Selected, 1 = Selected]
-
 
 
 [Method]

@@ -443,11 +443,11 @@ const TCHAR* asString( PropertyType type )
 }
 
 inline
-const TCHAR* asString( PropertyId prop )
+const TCHAR* asString( Prop::Id prop )
 {
 	switch( prop )
 	{
-	case nPrivateProperty:
+	case Prop::_Private:
 		return _T("Null/Private");
 	};
 	LPCTSTR pszName = GetPropertyName( prop );

@@ -7,8 +7,9 @@
 class CImageListObject;
 class CAxContainerCtrl;
 class CDialogControl;
+class CControlHolder;
 enum IOStatus;
-enum PropertyId;
+enum Prop::Id;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -28,14 +29,13 @@ protected:
 	RefCountedPtr< CImageListObject > mpImageList;
 	int mnID;
 	int midxZOrder;
+	bool mbDeleted;
 
 public:
 
 	//runtime state
-	BOOL m_Delete;
 	short m_ClientHeight;
-	CWnd *m_pCtrlHolder;
-	CRect m_rcOldPosition;
+	CControlHolder *m_pCtrlHolder;
 	CAxContainerCtrl* m_pAxWnd;
 
 	//ARX only
@@ -85,6 +85,8 @@ public:
 	void SetAxTypeName( LPCTSTR pszAxTypeName ) { msAxTypeName = pszAxTypeName; }
 	int GetID() const { return mnID; }
 	int GetZOrder() const { return midxZOrder; }
+	bool IsDeleted() const { return mbDeleted; }
+	void SetDeleted( bool bDelete = true ) { mbDeleted = bDelete; }
 
 protected: //for use by parent form only
 	void SetID( int nID ) { mnID = nID; }
@@ -94,40 +96,40 @@ protected: //for use by parent form only
 public:
 	void SetGlobalVariableName( LPCTSTR pszParentName = NULL );
 	void ClearGlobalVariableName();
-	RefCountedPtr< CPropertyObject > GetPropertyObject( PropertyId nID ) const;
-	RefCountedPtr< CPropertyObject > FindPropertyObject( LPCTSTR pszName ) const;
-	RefCountedPtr< CPropertyObject > GetMethods() const;
-	void RemoveProperty(PropertyId nId);
-	void ResetProperty(PropertyId nId);
-	size_t CountPropertyListItems(PropertyId nID);
-	CString GetPropertyListItem(PropertyId nID, size_t nIndex);
+	TPropertyPtr GetPropertyObject( Prop::Id nID ) const;
+	TPropertyPtr FindPropertyObject( LPCTSTR pszName ) const;
+	TPropertyPtr GetMethods() const;
+	void RemoveProperty(Prop::Id nId);
+	void ResetProperty(Prop::Id nId);
+	size_t CountPropertyListItems(Prop::Id nID);
+	CString GetPropertyListItem(Prop::Id nID, size_t nIndex);
 	RefCountedPtr< CImageListObject > GetImageList() const { return mpImageList; }
 	void SetImageList( RefCountedPtr< CImageListObject > pImageList ) { mpImageList = pImageList; }
 	POSITION FindPropertyInsertPos( LPCTSTR pszName, bool bHidden ) const;
-	POSITION FindPropertyInsertPos( PropertyId nID, bool bHidden ) const;
-	bool InsertNamedProperty( RefCountedPtr< CPropertyObject > pProp );
+	POSITION FindPropertyInsertPos( Prop::Id nID, bool bHidden ) const;
+	bool InsertNamedProperty( TPropertyPtr pProp );
 
-	bool SetStringProperty( PropertyId nID, LPCTSTR pszValue );
-	RefCountedPtr< CPropertyObject > AddStringProperty( PropertyId nID,
+	bool SetStringProperty( Prop::Id nID, LPCTSTR pszValue );
+	TPropertyPtr AddStringProperty( Prop::Id nID,
 																											PropertyType type = PropString,
 																											LPCTSTR pszValue = NULL,
 																											bool bResetExisting = false );
-	bool SetBooleanProperty( PropertyId nID, bool bValue = true );
-	RefCountedPtr< CPropertyObject > AddBooleanProperty( PropertyId nID,
+	bool SetBooleanProperty( Prop::Id nID, bool bValue = true );
+	TPropertyPtr AddBooleanProperty( Prop::Id nID,
 																											 PropertyType type = PropBool,
 																											 bool bValue = true,
 																											 bool bResetExisting = false );
-	bool SetLongProperty( PropertyId nID, long lValue = -1 );
-	RefCountedPtr< CPropertyObject > AddLongProperty( PropertyId nID,
+	bool SetLongProperty( Prop::Id nID, long lValue = -1 );
+	TPropertyPtr AddLongProperty( Prop::Id nID,
 																										PropertyType type = PropLong,
 																										long lValue = -1,
 																										bool bResetExisting = false );
 
-	CString GetStrProperty(PropertyId nID) const;
-	long GetLongProperty(PropertyId nID) const;
-	bool GetBoolProperty(PropertyId nID) const;
-	void SetColorProperty(PropertyId nID, COLORREF color);
-	COLORREF GetColorProperty(PropertyId nID) const;
+	CString GetStrProperty(Prop::Id nID) const;
+	long GetLongProperty(Prop::Id nID) const;
+	bool GetBooleanProperty(Prop::Id nID) const;
+	void SetColorProperty(Prop::Id nID, COLORREF color);
+	COLORREF GetColorProperty(Prop::Id nID) const;
 	void ClearProperties();
 	void ClearR14Events();
 

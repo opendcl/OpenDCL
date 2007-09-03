@@ -31,7 +31,7 @@ public:
 	CString m_OriginalValue;
 	CString m_sFilter;
 	bool m_bAllowReturn;
-	RefCountedPtr< CPropertyObject > m_pProp;
+	TPropertyPtr m_pProp;
 	CControlHolder *m_pAxContainer;
 	CDclControlObject	*m_pControl;
 	COpenDCLView		*m_pView;

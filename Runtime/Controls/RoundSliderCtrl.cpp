@@ -353,7 +353,7 @@ void CRoundSliderCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		RedrawWindow();
 		m_pValueProp->SetLongValue(m_nPos);
 		// call methods to invoke the event
-		InvokeMethodInt(m_ArxControl->GetStrProperty(nEventScroll), 
+		InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
 			m_nPos,
 			m_bInvokeWithSendString);
 
@@ -368,7 +368,7 @@ void CRoundSliderCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -385,7 +385,7 @@ void CRoundSliderCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 			m_pValueProp->SetLongValue(m_nPos);
 			// call methods to invoke the event
-			InvokeMethodInt(m_ArxControl->GetStrProperty(nEventScroll), 
+			InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
 				m_nPos,
 				m_bInvokeWithSendString);
 	
@@ -416,7 +416,7 @@ void CRoundSliderCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		RedrawWindow();
 		m_pValueProp->SetLongValue(m_nPos);
 		// call methods to invoke the event
-		InvokeMethodInt(m_ArxControl->GetStrProperty(nEventScroll), 
+		InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
 			m_nPos,
 			m_bInvokeWithSendString);
 
@@ -479,7 +479,7 @@ void CRoundSliderCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			RedrawWindow();
 			m_pValueProp->SetLongValue(m_nPos);
 			// call methods to invoke the event
-			InvokeMethodInt(m_ArxControl->GetStrProperty(nEventScroll), 
+			InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
 				m_nPos,
 				m_bInvokeWithSendString);
 
@@ -640,15 +640,15 @@ BOOL CRoundSliderCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UIN
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE |WS_CLIPSIBLINGS;
 
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
@@ -659,13 +659,13 @@ BOOL CRoundSliderCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UIN
 	CRoundSliderCtrl::SetZero(90);
 	CRoundSliderCtrl::SetInverted();
 
-	m_pValueProp = pControl->GetPropertyObject(nValue);
+	m_pValueProp = pControl->GetPropertyObject(Prop::Value);
 
 	CRoundSliderCtrl::SetPos(m_pValueProp->GetLongValue());
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;

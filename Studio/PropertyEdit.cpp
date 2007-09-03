@@ -45,7 +45,7 @@ static CDclControlObject* FindArxControlObject(CDclFormObject *pDclForm, CString
 		if (ControlPos != NULL)
 		{
 			CDclControlObject *pControl = pDclForm->GetControlList().GetAt(ControlPos);
-			if (pControl->GetStrProperty(nName) == sArxControlName && pCtrl != pControl)
+			if (pControl->GetStrProperty(Prop::Name) == sArxControlName && pCtrl != pControl)
 			{
 				// return the object found
 				return pControl;
@@ -150,8 +150,8 @@ void CPropertyEdit::CommitValue()
 			(LPCTSTR)sText );
 	else if (m_pControl->GetType() != CtlForm)
 	{
-		// if this property is the nName property
-		if (m_pProp->GetID() == nName)
+		// if this property is the Prop::Name property
+		if (m_pProp->GetID() == Prop::Name)
 		{	
 			// don't set the value it is blank
 			if (sText.IsEmpty())
@@ -172,10 +172,10 @@ void CPropertyEdit::CommitValue()
 		m_pProp->SetStringValue(sText);	
 
 		// lets update the control if the property is not a position property
-		if (m_pProp->GetID() != nLeft &&
-			m_pProp->GetID() != nTop &&
-			m_pProp->GetID() != nWidth &&
-			m_pProp->GetID() != nHeight)
+		if (m_pProp->GetID() != Prop::Left &&
+			m_pProp->GetID() != Prop::Top &&
+			m_pProp->GetID() != Prop::Width &&
+			m_pProp->GetID() != Prop::Height)
 		{
 			// and refresh the control
 			m_pView->RefreshChildControl(m_pControl, m_pProp->GetID());
@@ -183,7 +183,7 @@ void CPropertyEdit::CommitValue()
 	}
 	else
 	{
-		if (m_pProp->GetID() == nName)
+		if (m_pProp->GetID() == Prop::Name)
 		{			
 			CDclFormObject *pDclForm = activeProject->FindDclForm(sText);
 			if (pDclForm != NULL)
@@ -198,7 +198,7 @@ void CPropertyEdit::CommitValue()
 				return;
 			}		
 		}
-		if (m_pProp->GetID() == nTitleBarText)
+		if (m_pProp->GetID() == Prop::TitleBarText)
 		{	
 			CChildFrame *pChildFrm = NULL;
 			try
@@ -247,7 +247,7 @@ void CPropertyEdit::UpdateSizes()
 	
 	if (m_pControl->GetType() == CtlForm)
 	{	
-		if (m_pProp->GetID() == nWidth)
+		if (m_pProp->GetID() == Prop::Width)
 		{			
 			int nThisValue = _tstol(sText);
 			// don't set the value it is blank
@@ -274,7 +274,7 @@ void CPropertyEdit::UpdateSizes()
 			
 		}
 		
-		if (m_pProp->GetID() == nHeight)
+		if (m_pProp->GetID() == Prop::Height)
 		{			
 			int nThisValue = _tstol(sText);
 			// don't set the value it is blank
@@ -336,8 +336,8 @@ void CPropertyEdit::OnKillFocus(CWnd* pNewWnd)
 {
 	CommitValue();
 
-	// if this property is the nName property
-	if (m_pProp->GetID() == nName)
+	// if this property is the Prop::Name property
+	if (m_pProp->GetID() == Prop::Name)
 	{	
 		SetNameProp();
 		// call the method to update the VarName
@@ -364,8 +364,8 @@ void CPropertyEdit::OnChange()
 		CommitList();
 	else
 	{
-		// if this property is the nName property
-		if (m_pProp->GetID() == nName)
+		// if this property is the Prop::Name property
+		if (m_pProp->GetID() == Prop::Name)
 			return;	
 		// otherwise call CommitValue to update the text value
 		CommitValue();
@@ -447,8 +447,8 @@ BOOL CPropertyEdit::PreTranslateMessage(MSG* pMsg)
 				//pMsg->message = NULL;
 
 			}
-			// if this property is the nName property
-			if (m_pProp->GetID() == nName)
+			// if this property is the Prop::Name property
+			if (m_pProp->GetID() == Prop::Name)
 			{	
 				SetNameProp();				
 			}

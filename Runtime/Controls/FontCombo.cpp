@@ -63,26 +63,26 @@ BOOL CFontCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID 
   m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
 			  | CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_SORT | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT;
 	
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
 
-	switch (pControl->GetLongProperty(nComboBoxStyle))
+	switch (pControl->GetLongProperty(Prop::ComboBoxStyle))
 	{
 	case 8:
 		{
-			long lListHeight = pControl->GetLongProperty(nDropDownHeight);
+			long lListHeight = pControl->GetLongProperty(Prop::DropDownHeight);
 			long lNewHeight = 16 * ((lListHeight + 13) / 16) + 2; //make it an integral height, + 2 pixels for the border
-			pControl->SetLongProperty(nDropDownHeight, lNewHeight);
+			pControl->SetLongProperty(Prop::DropDownHeight, lNewHeight);
 			ArxRect.bottom += lNewHeight;
 			dwStyle = dwStyle | CBS_DROPDOWNLIST;
 			break;
@@ -96,7 +96,7 @@ BOOL CFontCombo::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID 
 
 	RetVal = CComboBox::Create( dwStyle, ArxRect, pParentWnd, nID );
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -372,7 +372,7 @@ void CFontCombo::OnMouseMove(UINT nFlags, CPoint point)
 {
 	if (m_ArxControl)
 		InvokeMethodIntIntInt(
-			m_ArxControl->GetStrProperty(nEventMouseMove),
+			m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 			nFlags,
 			point.x,
 			point.y,
@@ -473,7 +473,7 @@ void CFontCombo::OnKillfocus()
 
 	if (m_ArxControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -501,7 +501,7 @@ void CFontCombo::OnSetfocus()
 
 	if (m_ArxControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -745,7 +745,7 @@ void CFontCombo::OnTimer(UINT_PTR nIDEvent)
 				GetLBText(nSel,str);
 				if (m_ArxControl)
 				{
-					//if (m_ArxControl->GetLongProperty(nComboBoxStyle) == 8)
+					//if (m_ArxControl->GetLongProperty(Prop::ComboBoxStyle) == 8)
 						m_wndTip.ShowTips(pt,str);
 				}
 				else
@@ -800,26 +800,24 @@ void CFontCombo::OnSelchange()
 	sString.ReleaseBuffer();
 
 	if (m_ArxControl)
-		InvokeMethodIntString(m_ArxControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
+		InvokeMethodIntString(m_ArxControl->GetStrProperty(Prop::EventSelChanged), nSel, sString, m_bInvokeWithSendString);
 	
 	if (m_ArxControl == NULL)
 	{		
 		// Send Notification to parent of ListView ctrl
 		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
-		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);
-		DWORD nData = GetFontTypeId(sString);
+		//pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);
+		//DWORD nData = GetFontTypeId(sString);
 
-		if (nData == 4)
-			nData = 0;
-		else if (nData == 6)
-			nData = 1;
-		else 
-			nData = -1;
-		
-		pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, nData);
-
-		// fire the on Grid edit cell event.
-		pListCtrl->EndEditControls(pListCtrl);
+		//if (nData == 4)
+		//	nData = 0;
+		//else if (nData == 6)
+		//	nData = 1;
+		//else 
+		//	nData = -1;
+		//
+		//pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, nData);
+		pListCtrl->HideEditControls();
 	}
 }
 
@@ -829,7 +827,7 @@ BOOL CFontCombo::PreTranslateMessage(MSG* pMsg)
 	{
 		if (m_ArxControl)
 		{
-			if (m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
+			if (m_ArxControl->GetBooleanProperty(Prop::ReturnAsTab) == TRUE)
 				pMsg->wParam = VK_TAB;
 		}
 	}
@@ -840,7 +838,7 @@ void CFontCombo::OnDropdown()
 {
 	if (m_ArxControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventDropDown), m_bInvokeWithSendString);	
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventDropDown), m_bInvokeWithSendString);	
 }
 
 void CFontCombo::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)

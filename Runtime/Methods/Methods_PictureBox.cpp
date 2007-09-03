@@ -2858,21 +2858,12 @@ int PictureBox_PaintPicture()
 	}
 	else
 	{	
-		
 		// inform the programer that he did not make the correct call
 		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_PaintPicture);			
         acedRetInt(-1);  return 0; 
 	}
-
-	
-	
-	
 	acedRetVoid();
 	return 0;
-		
-
-	
-
 }
 
 

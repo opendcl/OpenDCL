@@ -858,10 +858,10 @@ CDclControlObject * GetControlArxObject(CString sMethod, int *pnArgs)
 // Parameters:  
 //		[nIndex]:  [0 based argument index]
 // 
-// Returns:	RefCountedPtr< CPropertyObject > 
+// Returns:	TPropertyPtr 
 // 
 //*****************************************************************************
-RefCountedPtr< CPropertyObject > GetPropertyArgument(int nIndex, CString sMethod)
+TPropertyPtr GetPropertyArgument(int nIndex, CString sMethod)
 {
 	struct resbuf *ListData;
 
@@ -888,7 +888,7 @@ RefCountedPtr< CPropertyObject > GetPropertyArgument(int nIndex, CString sMethod
 		return NULL;
 	}
 	
-	RefCountedPtr< CPropertyObject > pProperty;
+	TPropertyPtr pProperty;
 
 	switch (ListData->restype)
 	{	

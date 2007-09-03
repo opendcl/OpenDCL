@@ -185,6 +185,8 @@ CPPToolTip::CPPToolTip()
 
 CPPToolTip::~CPPToolTip()
 {
+	if( IsWindow( m_hWnd ) )
+		DestroyWindow();
 	FreeResources();
 	RemoveAllTools();
 	HideBorder();

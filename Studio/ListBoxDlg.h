@@ -21,7 +21,7 @@ public:
 	CListBoxDlg(CWnd* pParent = NULL);   // standard constructor
 	void AddString(CString NewString);
 	void MoveWindow(CRect *pRect);
-	void SetPropertyPointer(RefCountedPtr< CPropertyObject > pPropObject);
+	void SetPropertyPointer(TPropertyPtr pPropObject);
 	CControlHolder *m_pAxContainer;
 // Dialog Data
 	//{{AFX_DATA(CListBoxDlg)
@@ -55,7 +55,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	BOOL m_ListBoxCreated;
-	RefCountedPtr< CPropertyObject > m_pPropObject;
+	TPropertyPtr m_pPropObject;
 	CDclControlObject *m_pControl;
 	COpenDCLView *m_pView;
 };

@@ -43,21 +43,21 @@ DWORD CGraphicButtonCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CGraphicButtonCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
+bool CGraphicButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )
 	{
-	case nPicture:
+	case Prop::Picture:
 		{
 			SetPicture( mpTemplate->GetOwnerProject()->FindPicture( pProp->GetLongValue() ) );
 			if( !IsEnumeratingProperties() )
-				OnApplyProperty( mpTemplate->GetPropertyObject( nAutoSize ) );
+				OnApplyProperty( mpTemplate->GetPropertyObject( Prop::AutoSize ) );
 			break;
 		}
-	case nPressedPicture:
+	case Prop::PressedPicture:
 		{
 			SetPressedPicture( mpTemplate->GetOwnerProject()->FindPicture( pProp->GetLongValue() ) );
 			break;

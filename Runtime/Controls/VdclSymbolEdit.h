@@ -22,7 +22,7 @@ public:
 // Attributes
 public:
 	bool m_bInvokeWithSendString;
-	RefCountedPtr< CPropertyObject > m_pTextProp;
+	TPropertyPtr m_pTextProp;
 	CBrush *m_pStaticBrush;		
 	COLORREF m_ForeColor;
 	void OnBadInput();

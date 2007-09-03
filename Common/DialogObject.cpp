@@ -68,8 +68,8 @@ bool CDialogObject::ResizeDialog( long nNewWidth, long nNewHeight )
 		nNewWidth += (rectWindow.Width() - rectClient.Width());
 		nNewHeight += (rectWindow.Height() - rectClient.Height());
 	}
-	mpSourceForm->GetControlProperties()->SetLongProperty( nWidth, nNewWidth );
-	mpSourceForm->GetControlProperties()->SetLongProperty( nHeight, nNewHeight );
+	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Width, nNewWidth );
+	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Height, nNewHeight );
 	BOOL bSuccess = ::SetWindowPos(GetHWnd(), NULL, 0, 0, nNewWidth, nNewHeight,
 																 SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER );
 	GetControlPane().RecalcLayout();
@@ -89,10 +89,10 @@ bool CDialogObject::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
 	}
 	CPoint pt( (::GetSystemMetrics(SM_CYSCREEN) - nNewHeight) / 2,
 						 (::GetSystemMetrics(SM_CXSCREEN) - nNewWidth) / 2 );
-	mpSourceForm->GetControlProperties()->SetLongProperty( nWidth, nNewWidth );
-	mpSourceForm->GetControlProperties()->SetLongProperty( nHeight, nNewHeight );
-	mpSourceForm->GetControlProperties()->SetLongProperty( nLeft, pt.x );
-	mpSourceForm->GetControlProperties()->SetLongProperty( nTop, pt.y );
+	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Width, nNewWidth );
+	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Height, nNewHeight );
+	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Left, pt.x );
+	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Top, pt.y );
 	BOOL bSuccess = ::SetWindowPos(GetHWnd(), NULL, pt.x, pt.y, nNewWidth, nNewHeight, SWP_NOACTIVATE | SWP_NOZORDER);
 	GetControlPane().RecalcLayout();
 	return (bSuccess != FALSE);
@@ -120,10 +120,10 @@ bool CDialogObject::SetMinMaxSize( const CSize& min, const CSize& max )
 	assert(pPropObj != NULL);
 	if (pPropObj)
 	{
-		pPropObj->SetLongProperty(nMinDialogWidth, min.cx);
-		pPropObj->SetLongProperty(nMinDialogHeight, min.cy);
-		pPropObj->SetLongProperty(nMaxDialogWidth, max.cx);
-		pPropObj->SetLongProperty(nMaxDialogHeight, max.cy);
+		pPropObj->SetLongProperty(Prop::MinDialogWidth, min.cx);
+		pPropObj->SetLongProperty(Prop::MinDialogHeight, min.cy);
+		pPropObj->SetLongProperty(Prop::MaxDialogWidth, max.cx);
+		pPropObj->SetLongProperty(Prop::MaxDialogHeight, max.cy);
 	}
 	return true;
 }

@@ -39,12 +39,12 @@ public:
 	
 	CString sOpenDCLProf;
 	CDclControlObject* mpDclControl;
-	RefCountedPtr< CPropertyObject > m_pFontName;
-	RefCountedPtr< CPropertyObject > m_pFontSize;
-	RefCountedPtr< CPropertyObject > m_pFontStrikeOut;
-	RefCountedPtr< CPropertyObject > m_pFontUnderline;
-	RefCountedPtr< CPropertyObject > m_pFontBold;
-	RefCountedPtr< CPropertyObject > m_pFontItalic;
+	TPropertyPtr m_pFontName;
+	TPropertyPtr m_pFontSize;
+	TPropertyPtr m_pFontStrikeOut;
+	TPropertyPtr m_pFontUnderline;
+	TPropertyPtr m_pFontBold;
+	TPropertyPtr m_pFontItalic;
 
 // Overrides
 	// ClassWizard generate virtual function overrides

@@ -41,13 +41,13 @@ END_MESSAGE_MAP()
 
 void CPercentageEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
-		
-	if (nChar == VK_UP)
-		pListCtrl->MoveUp();		
-	
-	if (nChar == VK_DOWN)
-		pListCtrl->MoveDown();				
+	//CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
+	//	
+	//if (nChar == VK_UP)
+	//	pListCtrl->MoveUp();		
+	//
+	//if (nChar == VK_DOWN)
+	//	pListCtrl->MoveDown();				
 
 	CEdit::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -144,14 +144,14 @@ CString CPercentageEdit::Number_To_Percentage(double fNumber)
 void CPercentageEdit::OnChange() 
 {
 		
-	CString sText;	
-	GetWindowText(sText);
+	//CString sText;	
+	//GetWindowText(sText);
 
 
-	// Send Notification to parent of ListView ctrl
-	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
-	//pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, GetCurrentItemColorIndex());
-	pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sText);
+	//// Send Notification to parent of ListView ctrl
+	//CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
+	////pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, GetCurrentItemColorIndex());
+	//pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sText);
 
 }
 //--------------------------------------------------------------------------------------/
@@ -180,8 +180,8 @@ BOOL CPercentageEdit::PreTranslateMessage(MSG* pMsg)
 			::TranslateMessage(pMsg);
 			::DispatchMessage(pMsg);
 			
-			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();		
-			pListCtrl->MoveDown();		
+			//CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();		
+			//pListCtrl->MoveDown();		
 			return TRUE;				// DO NOT process further
 		}
 		if (pMsg->wParam == VK_ESCAPE)
@@ -194,7 +194,7 @@ BOOL CPercentageEdit::PreTranslateMessage(MSG* pMsg)
 			// Send Notification to parent of ListView ctrl
 			CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent();
 
-			pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, m_strOldValue);
+			//pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, m_strOldValue);
 			
 			pListCtrl->HideEditControls();
 			return TRUE;				// DO NOT process further

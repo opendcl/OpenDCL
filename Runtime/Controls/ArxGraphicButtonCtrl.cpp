@@ -31,7 +31,7 @@ bool CArxGraphicButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
 
-	if( GetTemplate()->GetLongProperty(nEventInvoke) == 1 )
+	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
 		m_bInvokeWithSendString = true;
 	else
 		m_bInvokeWithSendString = false;
@@ -39,14 +39,14 @@ bool CArxGraphicButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-bool CArxGraphicButtonCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
+bool CArxGraphicButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )
 	{
-	case nDragnDropAllowDrop:
+	case Prop::DragnDropAllowDrop:
 		{
 			SetDragnDrop( pProp->GetBooleanValue() );
 			break;
@@ -67,7 +67,7 @@ void CArxGraphicButtonCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	if (GetTemplate())
 	{
 	InvokeMethodIntIntInt(
-		GetTemplate()->GetStrProperty(nEventMouseMove),
+		GetTemplate()->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -81,7 +81,7 @@ void CArxGraphicButtonCtrl::OnDoubleclicked()
 	if (GetTemplate())
 	{
 		// call methods to invoke the event
-		InvokeMethod(GetTemplate()->GetStrProperty(nEventDblClicked), false);
+		InvokeMethod(GetTemplate()->GetStrProperty(Prop::EventDblClicked), false);
 	}
 }
 
@@ -95,7 +95,7 @@ void CArxGraphicButtonCtrl::OnClicked()
 			int stat;
 			struct resbuf *result = NULL, *list;    
 
-			CString sText = GetTemplate()->GetStrProperty(nEventClicked);
+			CString sText = GetTemplate()->GetStrProperty(Prop::EventClicked);
 			list = acutBuildList(RTSTR, sText, 0);
 			if (list != NULL) 
 			{ 
@@ -112,7 +112,7 @@ void CArxGraphicButtonCtrl::OnClicked()
 		else
 		{
 			// call methods to invoke the event
-			InvokeMethod(GetTemplate()->GetStrProperty(nEventClicked), m_bInvokeWithSendString);
+			InvokeMethod(GetTemplate()->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);
 		}
 	}
 }
@@ -134,6 +134,6 @@ void CArxGraphicButtonCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonDown(nFlags, point);
 
-	if (GetTemplate() && GetTemplate()->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
+	if (GetTemplate() && GetTemplate()->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
 		BeginDragnDrop(GetTemplate(), point, m_bInvokeWithSendString);
 }

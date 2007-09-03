@@ -5,7 +5,7 @@
 #include "ComboBoxFolder.h"
 #include "DclControlObject.h"
 #include "InvokeMethod.h"
-#include "DwgDirList.h"
+#include "ArxDwgListCtrl.h"
 #include "ArxGridCtrl.h"
 #include "PropertyIds.h"
 #include "PropertyObject.h"
@@ -30,7 +30,6 @@ CComboBoxFolder::~CComboBoxFolder()
 
 
 BEGIN_MESSAGE_MAP(CComboBoxFolder, CComboBox)
-	//{{AFX_MSG_MAP(CComboBoxFolder)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_MOUSEMOVE()
@@ -38,7 +37,6 @@ BEGIN_MESSAGE_MAP(CComboBoxFolder, CComboBox)
 	ON_WM_SETFOCUS()
 	ON_WM_DESTROY()
 	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
-	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_SELECTITEM_CHANGE, OnSelectItemChange)
 
 END_MESSAGE_MAP()
@@ -237,7 +235,7 @@ void CComboBoxFolder::OnMouseMove(UINT nFlags, CPoint point)
 {
 	if (m_ArxControl)
 		InvokeMethodIntIntInt(
-			m_ArxControl->GetStrProperty(nEventMouseMove),
+			m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 			nFlags,
 			point.x,
 			point.y,
@@ -255,18 +253,18 @@ BOOL CComboBoxFolder::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 
-	ArxRect.bottom += pControl->GetLongProperty(nDropDownHeight);
+	ArxRect.bottom += pControl->GetLongProperty(Prop::DropDownHeight);
 	if (ArxRect.Height() < 40)
 		ArxRect.bottom = ArxRect.top + 40;
 
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
 		| CBS_OWNERDRAWVARIABLE | CBS_DROPDOWNLIST | CBS_NOINTEGRALHEIGHT;
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
@@ -276,7 +274,7 @@ BOOL CComboBoxFolder::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -317,8 +315,8 @@ LRESULT CComboBoxFolder::OnSelectItemChange(WPARAM w, LPARAM l)
 		m_pDwgList->Dir(path);
 	if (m_ArxControl)
 	{
-		InvokeMethodString(m_ArxControl->GetStrProperty(nEventSelChanged), sLispSafePath, m_bInvokeWithSendString);
-		m_ArxControl->SetStringProperty(nText, path);
+		InvokeMethodString(m_ArxControl->GetStrProperty(Prop::EventSelChanged), sLispSafePath, m_bInvokeWithSendString);
+		m_ArxControl->SetStringProperty(Prop::Text, path);
 	}
 
 	// now lets clear the control and repopulate it so the old path is removed correctly
@@ -329,18 +327,10 @@ LRESULT CComboBoxFolder::OnSelectItemChange(WPARAM w, LPARAM l)
 
 	if (m_ArxControl == NULL)
 	{		
-		// Send Notification to parent of ListView ctrl
-		LV_DISPINFO dispinfo;
-		dispinfo.hdr.hwndFrom = GetParent()->GetParent()->m_hWnd;
-		dispinfo.hdr.idFrom = GetDlgCtrlID();
-		dispinfo.hdr.code = LVN_ENDLABELEDIT;
-
 		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
-		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, path);
-		pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, -1);
-		// fire the on Grid edit cell event.
-		pListCtrl->EndEditControls(pListCtrl);
+		pListCtrl->HideEditControls();
 	}
+	Invalidate();
 
 	return 0;
 }
@@ -352,7 +342,7 @@ void CComboBoxFolder::OnKillFocus(CWnd* pNewWnd)
 	
 	if (m_ArxControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 
 }
 
@@ -362,7 +352,7 @@ void CComboBoxFolder::OnSetFocus(CWnd* pOldWnd)
 	
 	if (m_ArxControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 
 	
 }
@@ -381,5 +371,5 @@ void CComboBoxFolder::OnDropdown()
 {
 	if (m_ArxControl)
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventDropDown), m_bInvokeWithSendString);	
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventDropDown), m_bInvokeWithSendString);	
 }

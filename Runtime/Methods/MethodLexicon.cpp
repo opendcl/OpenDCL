@@ -6,14 +6,8 @@ LPCTSTR sFilesDir = _T("Files_Dir");
 LPCTSTR sShowToolTip = _T("Control_ShowToolTip");
 
 
-LPCTSTR sGrid_Cell_TextBox = _T("Grid_ShowTextBox");
-LPCTSTR sGrid_Cell_ComboBox = _T("Grid_ShowComboBox");
-LPCTSTR sGrid_Cell_ImageComboBox = _T("Grid_ShowImageComboBox");
-LPCTSTR sGrid_Cell_EllipsesButton =	_T("Grid_ShowEllipsesButton");
-LPCTSTR sGrid_Cell_PickButton =	_T("Grid_ShowPickButton");
 LPCTSTR sGrid_Cell_SetStyle = _T("Grid_SetItemStyle");
 LPCTSTR sGrid_SelectCell = _T("Grid_SelCurCell");
-LPCTSTR sGrid_Cell_DoCellDlg = _T("Grid_ShowItemDlg");
 LPCTSTR sGrid_Cell_SetDropList = _T("Grid_SetItemDropList");
 LPCTSTR sGrid_HitPointTest = _T("Grid_HitPointTest");
 LPCTSTR sGrid_SelCurRow = _T("Grid_SelCurRow");
@@ -23,10 +17,8 @@ LPCTSTR sGrid_GetColumnImage = _T("Grid_GetColumnImage");
 LPCTSTR sGrid_SetColumnImage = _T("Grid_SetColumnImage");
 LPCTSTR sGrid_GetCount = _T("Grid_GetRowCount");
 LPCTSTR sGrid_GetColumnCount = _T("Grid_GetColumnCount");
-LPCTSTR sGrid_Cell_ToggleImages = _T("Grid_ToggleItemImages");
 LPCTSTR sGrid_GetCheck = _T("Grid_GetItemCheck");
 LPCTSTR sGrid_SetCheck = _T("Grid_SetItemCheck");
-
 LPCTSTR sGrid_AddColumn = _T("Grid_AddColumns");
 LPCTSTR sGrid_AddRow = _T("Grid_AddRow");
 LPCTSTR sGrid_AddString = _T("Grid_AddString");

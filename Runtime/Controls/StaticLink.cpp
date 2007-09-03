@@ -70,13 +70,13 @@ BOOL CStaticLink::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	m_link = lpszWindowName;	
-	int nColor = pControl->GetLongProperty(nForeColor);
+	int nColor = pControl->GetLongProperty(Prop::ForegroundColor);
 	m_color = GetRGBColor(nColor);
 
 	BOOL bCreated = CStatic::Create(
@@ -89,7 +89,7 @@ BOOL CStaticLink::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -101,11 +101,7 @@ BOOL CStaticLink::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID
 	return bCreated;
 }
 
-#if (_ACADTARGET == 16)
-UINT CStaticLink::OnNcHitTest(CPoint point) 
-#else
-LRESULT CStaticLink::OnNcHitTest(CPoint point) 
-#endif
+__LRESULT CStaticLink::OnNcHitTest(CPoint point) 
 {
 	return HTCLIENT;
 }
@@ -126,10 +122,10 @@ void CStaticLink::OnLButtonDown(UINT nFlags, CPoint point)
 	// Call ShellExecute to run the file. For an URL, this will run the browser.
 	//
 	HINSTANCE h;
-	if (m_ArxControl->GetLongProperty(nURLLinkType) == 0)
-		h = m_link.Navigate(m_ArxControl->GetStrProperty(nURLAddress));
+	if (m_ArxControl->GetLongProperty(Prop::URLLinkType) == 0)
+		h = m_link.Navigate(m_ArxControl->GetStrProperty(Prop::URLAddress));
 	else
-		h = m_link.Navigate(CString(_T("mailto:")) + m_ArxControl->GetStrProperty(nURLAddress));
+		h = m_link.Navigate(CString(_T("mailto:")) + m_ArxControl->GetStrProperty(Prop::URLAddress));
 
 	if ((UINT_PTR)h > 32) 
 	{						 // success!
@@ -218,7 +214,7 @@ void CStaticLink::OnDestroy()
 void CStaticLink::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,

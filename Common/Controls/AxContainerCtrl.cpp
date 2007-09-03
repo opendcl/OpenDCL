@@ -217,7 +217,7 @@ static bool ObjectTypeInfoProperties( LPUNKNOWN pObj, LPTYPEINFO* ppAxTypeInfo )
 
 static void AddAxProp(CDclControlObject *pControl, long lId, CString sName, CString sDesc, VARTYPE vt, bool bGet=true, bool bSet=true)
 {
-	RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropActiveXProp);
+	TPropertyPtr pProp = new CPropertyObject(PropActiveXProp);
 	AxPropertyDescriptor* axPropPut =
 		new AxPropertyDescriptor( lId, sName, sDesc, vt, bSet? INVOKE_PROPERTYPUT : INVOKE_PROPERTYGET );
 	pControl->InsertNamedProperty( pProp );
@@ -367,7 +367,7 @@ bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect rcWnd, bool bAdd
 	return bSuccess;
 }
 
-bool CAxContainerCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
+bool CAxContainerCtrl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
 		return false;
@@ -384,7 +384,7 @@ bool CAxContainerCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 
 DWORD CAxContainerCtrl::GetWndStyle() const
 {
-	//ignoring the nIsTabStop property? [ORW]
+	//ignoring the Prop::IsTabStop property? [ORW]
 	return (WS_CHILD | WS_VISIBLE);
 }
 
@@ -610,7 +610,7 @@ UINT CAxContainerCtrl::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo* 
 				pos != NULL; 
 				pControl->GetPropertyList().GetNext(pos))
 			{
-				RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetAt(pos);
+				TPropertyPtr pProp = pControl->GetPropertyList().GetAt(pos);
 				if (pProp->GetType() == PropActiveXEvent) {
 					AxEventDescriptor* pAxEvent = pProp->GetAxInterfaceDescriptorPtr()->GetEvent();
 					if (pAxEvent->GetName() == pAxEventDesc->GetName()) {
@@ -623,7 +623,7 @@ UINT CAxContainerCtrl::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo* 
 			if (!bExists) 
 			{
 				//Event did not exist, add it to the list
-				RefCountedPtr< CPropertyObject > pProp = new CPropertyObject( PropActiveXEvent );
+				TPropertyPtr pProp = new CPropertyObject( PropActiveXEvent );
 				pProp->SetHidden();
 				pControl->GetPropertyList().AddTail( pProp );
 				++ctEvents;
@@ -664,16 +664,16 @@ UINT CAxContainerCtrl::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo*
 	while( pos )
 	{
 		POSITION posAt = pos;
-		RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetNext( pos );
+		TPropertyPtr pProp = pControl->GetPropertyList().GetNext( pos );
 		assert( pProp != NULL );
 		if( pProp->GetType() == PropActiveXMethods )
 			pControl->GetPropertyList().RemoveAt( posAt );
 	}
 
 	// create the new property and insert at the second position after the (ActiveX PropertyObject) property item
-	RefCountedPtr< CPropertyObject > pProp = new CPropertyObject(PropActiveXMethods);
+	TPropertyPtr pProp = new CPropertyObject(PropActiveXMethods);
 	pProp->GetAxInterfaceDescriptorPtr()->SetMethods( new std::vector< RefCountedPtr< AxMethodDescriptor > > );
-	pProp->SetID( nObjectBrowser ); // set the id of the new property
+	pProp->SetID( Prop::ObjectBrowser ); // set the id of the new property
 	pControl->InsertNamedProperty( pProp );
 
 	//Add a new property for each Get/Put function
@@ -815,7 +815,7 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( CDclControlObject* pControl, ITypeIn
 				UINT nDecorator = 2;
 				CString sBaseName = pAxPropDesc->GetName();
 				CString sPropName = sBaseName;
-				RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject( sPropName );
+				TPropertyPtr pProp = pControl->FindPropertyObject( sPropName );
 				while( pProp && !pProp->GetAxInterfaceDescriptorPtr() )
 				{ //found a different type of property with the same name, so decorate the name
 					sPropName.Format( _T("%s%d"), (LPCTSTR)sBaseName, nDecorator++ );
@@ -860,7 +860,7 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( CDclControlObject* pControl, ITypeIn
 				UINT nDecorator = 2;
 				CString sBaseName = pAxPropDesc->GetName();
 				CString sPropName = sBaseName;
-				RefCountedPtr< CPropertyObject > pProp = pControl->FindPropertyObject( sPropName );
+				TPropertyPtr pProp = pControl->FindPropertyObject( sPropName );
 				while( pProp && !pProp->GetAxInterfaceDescriptorPtr() )
 				{ //found a different type of property with the same name, so decorate the name
 					sPropName.Format( _T("%s%d"), (LPCTSTR)sBaseName, nDecorator++ );

@@ -132,10 +132,10 @@ void OdclDimStylesCombo::OnSelchange()
 
 	// Send Notification to parent of ListView ctrl
 	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
-	pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);		
+	//pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);		
 	
 	// fire the on Grid edit cell event.
-	pListCtrl->EndEditControls(pListCtrl);
+	pListCtrl->HideEditControls();
 			
 	
 }

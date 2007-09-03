@@ -32,7 +32,7 @@
 #include "ToolTipsPage.h"
 #include "ProgressBarPage.h"
 #include "ProjectCollection.h"
-#include "OpenDCL.h"
+#include "Editor.h"
 #include "EditorWorkspace.h"
 #include "SharedRes.h"
 
@@ -266,7 +266,7 @@ void CPropertyListCtrl::SetFont(CFont *pFont)
 	m_Edit.SetFont(m_pFont);
 }
 
-void CPropertyListCtrl::UpdateControls(PropertyId nPropId) 
+void CPropertyListCtrl::UpdateControls(Prop::Id nPropId) 
 {
 	m_pView->RefreshChildControl(m_pControl, nPropId);
 }
@@ -348,7 +348,7 @@ void CPropertyListCtrl::RefreshGrid(HDC hdc)
 			if (pos != NULL)
 			{
 				// get the property Name text
-				RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetAt(pos);
+				TPropertyPtr pProperty = m_PropertyList.GetAt(pos);
 
 				int nDrawStyle;
 				
@@ -420,7 +420,7 @@ void CPropertyListCtrl::RePaint()
 }
 
 
-RefCountedPtr< CPropertyObject > CPropertyListCtrl::GetPropertyObject(short PropertyIndex) 
+TPropertyPtr CPropertyListCtrl::GetPropertyObject(short PropertyIndex) 
 {
 	if (m_PropertyList.GetCount() == 0)
 		return NULL;
@@ -429,14 +429,14 @@ RefCountedPtr< CPropertyObject > CPropertyListCtrl::GetPropertyObject(short Prop
 	if (pos == NULL)
 		return NULL;
 
-	RefCountedPtr< CPropertyObject > pPropertyObject = m_PropertyList.GetAt(pos);
+	TPropertyPtr pPropertyObject = m_PropertyList.GetAt(pos);
 
 	return pPropertyObject;
 }
 
 //void CPropertyListCtrl::ClearImageListPropery(short DclFormIndex, short ArxControlIndex, short PropertyIndex) 
 //{
-//	RefCountedPtr< CPropertyObject > pPropertyObject = GetPropertyObject(PropertyIndex);
+//	TPropertyPtr pPropertyObject = GetPropertyObject(PropertyIndex);
 //	
 //	// check if the indexes were correct
 //	if (pPropertyObject != NULL)
@@ -471,7 +471,7 @@ RefCountedPtr< CPropertyObject > CPropertyListCtrl::GetPropertyObject(short Prop
 //short CPropertyListCtrl::AddPictureToImageList(short DclFormIndex, short ArxControlIndex, short PropertyIndex, LPPICTUREDISP newPicture) 
 //{
 //	// create a new property object and point it at the object in the list
-//	RefCountedPtr< CPropertyObject > pPropertyObject = GetPropertyObject(PropertyIndex);
+//	TPropertyPtr pPropertyObject = GetPropertyObject(PropertyIndex);
 //	
 //	// check if the indexes were correct
 //	if (pPropertyObject == NULL)
@@ -513,7 +513,7 @@ RefCountedPtr< CPropertyObject > CPropertyListCtrl::GetPropertyObject(short Prop
 //void CPropertyListCtrl::InitImageList(short DclFormIndex, short ArxControlIndex, short PropertyIndex, short ImageWidth, short ImageHeight) 
 //{
 //	// create a new DclFormObject object and point it at the object in the list
-//	RefCountedPtr< CPropertyObject > pPropertyObject = GetPropertyObject(PropertyIndex);
+//	TPropertyPtr pPropertyObject = GetPropertyObject(PropertyIndex);
 //	
 //	// check if the indexes were correct
 //	if (pPropertyObject != NULL)
@@ -554,7 +554,7 @@ short CPropertyListCtrl::CountPictures()
 //LPPICTUREDISP CPropertyListCtrl::GetImageListPicture(short DclFormIndex, short ArxControlIndex, short PropertyIndex, short ImageIndex) 
 //{
 //	// create a new DclFormObject object and point it at the object in the list
-//	RefCountedPtr< CPropertyObject > pPropertyObject = GetPropertyObject(PropertyIndex);
+//	TPropertyPtr pPropertyObject = GetPropertyObject(PropertyIndex);
 //	
 //	// check if the indexes were correct
 //	if (pPropertyObject == NULL)
@@ -605,7 +605,7 @@ short CPropertyListCtrl::CountPictures()
 //long CPropertyListCtrl::GetImageListPictureWidth(short DclFormIndex, short ArxControlIndex, short PropertyIndex) 
 //{
 //	// create a new DclFormObject object and point it at the object in the list
-//	RefCountedPtr< CPropertyObject > pPropertyObject = GetPropertyObject(PropertyIndex);
+//	TPropertyPtr pPropertyObject = GetPropertyObject(PropertyIndex);
 //	
 //	// check if the indexes were correct
 //	if (pPropertyObject == NULL)
@@ -639,7 +639,7 @@ short CPropertyListCtrl::CountPictures()
 //long CPropertyListCtrl::GetImageListPictureHeight(short DclFormIndex, short ArxControlIndex, short PropertyIndex) 
 //{
 //	// create a new DclFormObject object and point it at the object in the list
-//	RefCountedPtr< CPropertyObject > pPropertyObject = GetPropertyObject(PropertyIndex);
+//	TPropertyPtr pPropertyObject = GetPropertyObject(PropertyIndex);
 //	
 //	// check if the indexes were correct
 //	if (pPropertyObject == NULL)
@@ -815,7 +815,7 @@ void CPropertyListCtrl::DisplayProperties(CDclControlObject *pControl)
 	POSITION posProp = pControl->GetPropertyList().GetHeadPosition();
 	while (posProp != NULL)
 	{
-		RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetNext(posProp);
+		TPropertyPtr pProp = pControl->GetPropertyList().GetNext(posProp);
 		if (!pProp->IsHidden()) // if not a hidden property add it to the property list
 			m_PropertyList.AddTail(pProp);
 	}
@@ -825,7 +825,7 @@ void CPropertyListCtrl::DisplayProperties(CDclControlObject *pControl)
 		m_SelectedIndex = 0;
 
 	// get the property selected
-	RefCountedPtr< CPropertyObject > pPropSelected = GetPropertyObject(m_SelectedIndex);
+	TPropertyPtr pPropSelected = GetPropertyObject(m_SelectedIndex);
 					
 	if (pPropSelected == NULL)
 	{
@@ -941,7 +941,7 @@ void CPropertyListCtrl::DoSetupInputType(int nNewSelectedIndex)
 		if (pos == NULL)
 			return;
 
-		RefCountedPtr< CPropertyObject > pProp = m_PropertyList.GetAt(pos);
+		TPropertyPtr pProp = m_PropertyList.GetAt(pos);
 		
 		// if this is an ActiveX property of type BOOL then
 		if (pProp->GetType() == PropActiveXProp)
@@ -1065,7 +1065,7 @@ void CPropertyListCtrl::DoSetupInputType(int nNewSelectedIndex)
 			case PropString:
 			case PropDouble:
 			{
-				if (pProp->GetID() == nLabelName)
+				if (pProp->GetID() == Prop::LabelName)
 				{
 					if (m_Button.GetButtonStyle() != nDotsImage)
 					{
@@ -1499,7 +1499,7 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 			pos = m_PropertyList.FindIndex(nRow);
 			
 			// get the property Name text
-			RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetAt(pos);
+			TPropertyPtr pProperty = m_PropertyList.GetAt(pos);
 			
 			// get the property desc name.
 			CellText = pProperty->GetName();			
@@ -1511,18 +1511,18 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 			if (pos == NULL)
 				return;
 			// get the property Name text
-			RefCountedPtr< CPropertyObject > pProperty = m_PropertyList.GetAt(pos);
+			TPropertyPtr pProperty = m_PropertyList.GetAt(pos);
 
 			switch (pProperty->GetType())				
 			{
 			case PropEnum:
 				{
 					UINT enumId;
-					if (pProperty->GetID() == nAlternateOrient)
-						enumId = nOrientation * 100;
-					else if (pProperty->GetID() == nSplitterStyle)
+					if (pProperty->GetID() == Prop::AlternateOrient)
+						enumId = Prop::Orientation * 100;
+					else if (pProperty->GetID() == Prop::SplitterStyle)
 						enumId = IDS_SPLITTERStyle_0 - 1;
-					else if (pProperty->GetID() == nBorderStyle)
+					else if (pProperty->GetID() == Prop::BorderStyle)
 						enumId = IDS_BORDERSTYLE_0 - 1;
 					else
 						enumId = pProperty->GetID() * 100;
@@ -1722,7 +1722,7 @@ CRect CPropertyListCtrl::ChangeSelectedItem(int nNewSelectionIndex)
 
 	CString CellText;
 	// get the property selected
-	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
+	TPropertyPtr pProp = GetPropertyObject(m_SelectedIndex);
 	// fire the cell changed event to notify parent of the new cell selected,
 	// pass it the property ID and the caption text
 	UpdatePropHelpCtrls(pProp);
@@ -1755,7 +1755,7 @@ int CPropertyListCtrl::GetSelectedIndex(long y)
 void CPropertyListCtrl::OnButtonPressed()
 {
 	// get the property object
-	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
+	TPropertyPtr pProp = GetPropertyObject(m_SelectedIndex);
 	int nCalcHeight = 100;
 
 	if (m_Button.GetButtonStyle() != nDropDownImage)
@@ -1808,7 +1808,7 @@ void CPropertyListCtrl::OnButtonPressed()
 		case PropString:
 			{
 				// if the property is font name invoke the font dialog
-				if (pProp->GetID() == nLabelName)
+				if (pProp->GetID() == Prop::LabelName)
 				{					
 					FireInvokeFontPane();
 				}
@@ -1982,7 +1982,7 @@ int CPropertyListCtrl::SetListBox()
 {
 	if (m_pModeless == NULL) return 0;
 	// get the property object
-	RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
+	TPropertyPtr pProp = GetPropertyObject(m_SelectedIndex);
 	
 	// set the list box to point to the property object
 	m_pModeless->SetPropertyPointer(pProp);
@@ -2068,7 +2068,7 @@ int CPropertyListCtrl::SetListBox()
 							CString sName = pCtrl->GetActiveXTypeName();
 							if (sName == "ImageListCtrl")
 							{
-								sName = pCtrl->GetStrProperty(nName);
+								sName = pCtrl->GetStrProperty(Prop::Name);
 								m_pModeless->AddString(sName);
 							}
 						}
@@ -2126,7 +2126,7 @@ int CPropertyListCtrl::SetListBox()
 
 			switch(pProp->GetID())
 			{	
-			case nURLLinkType:
+			case Prop::URLLinkType:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_URL_TYPE_0);
@@ -2138,7 +2138,7 @@ int CPropertyListCtrl::SetListBox()
 					break;
 				}
 			
-			case nInsertOrXref:
+			case Prop::InsertOrXref:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_DRAGSTYLE_0);
@@ -2150,7 +2150,7 @@ int CPropertyListCtrl::SetListBox()
 					break;
 				}
 			
-			case nBorderStyle:
+			case Prop::BorderStyle:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_BORDERSTYLE_0);
@@ -2165,7 +2165,7 @@ int CPropertyListCtrl::SetListBox()
 					break;
 				}
 				
-			case nButtonStyle:
+			case Prop::ButtonStyle:
 				{
 					// add it's items
 					m_pModeless->AddString(theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_0));
@@ -2177,7 +2177,7 @@ int CPropertyListCtrl::SetListBox()
 					m_pModeless->AddString(theWorkspace.LoadResourceString(IDS_BUTTONSTYLE_6));
 					break;
 				}
-			case nComboBoxStyle:
+			case Prop::ComboBoxStyle:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_COMBOBOXSTYLE_0);
@@ -2226,7 +2226,7 @@ int CPropertyListCtrl::SetListBox()
 					}
 					break;
 				}				
-			case nFilterStyle:
+			case Prop::FilterStyle:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_FILTERSTYLE_0);				
@@ -2257,7 +2257,7 @@ int CPropertyListCtrl::SetListBox()
 					m_pModeless->AddString(sEnumDesc);
 					break;
 				}
-			case nEventInvoke:
+			case Prop::EventInvoke:
 				{
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_EVENTINVOKE_0);
 					m_pModeless->AddString(sEnumDesc);
@@ -2266,7 +2266,7 @@ int CPropertyListCtrl::SetListBox()
 					m_pModeless->AddString(sEnumDesc);
 					break;
 				}
-			case nFileDlgStyle:
+			case Prop::FileDlgStyle:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_FILEDLGSTYLE_0);				
@@ -2276,7 +2276,7 @@ int CPropertyListCtrl::SetListBox()
 					m_pModeless->AddString(sEnumDesc);									
 					break;
 				}
-			case nListViewStyle:
+			case Prop::ListViewStyle:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_LV_STYLE_0);				
@@ -2293,7 +2293,7 @@ int CPropertyListCtrl::SetListBox()
 					
 					break;
 				}
-			case nListViewSort:
+			case Prop::ListViewSort:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_LV_SORT_0);				
@@ -2306,7 +2306,7 @@ int CPropertyListCtrl::SetListBox()
 					m_pModeless->AddString(sEnumDesc);
 					break;
 				}
-			case nListViewIconAlign:
+			case Prop::ListViewIconAlign:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_LV_IA_0);				
@@ -2318,7 +2318,7 @@ int CPropertyListCtrl::SetListBox()
 					break;
 				}
 				
-			case nBlockListStyle:
+			case Prop::BlockListStyle:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_BL_STYLE_0);				
@@ -2330,7 +2330,7 @@ int CPropertyListCtrl::SetListBox()
 					break;
 				}
 				
-			case nTabLabelAlign:
+			case Prop::TabLabelAlign:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_JUSTIFICATION_0);
@@ -2342,7 +2342,7 @@ int CPropertyListCtrl::SetListBox()
 					break;
 				}
 		
-			case nAllowOrbiting:
+			case Prop::AllowOrbiting:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_BV_UM_0);
@@ -2359,7 +2359,7 @@ int CPropertyListCtrl::SetListBox()
 					break;
 				}
 
-			case nTabJustified:
+			case Prop::TabJustified:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_TAB_JUSTIFY_0);
@@ -2369,7 +2369,7 @@ int CPropertyListCtrl::SetListBox()
 					m_pModeless->AddString(sEnumDesc);
 					break;
 				}
-			case nTabStyle:
+			case Prop::TabStyle:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_TABSTYLE_0);
@@ -2380,7 +2380,7 @@ int CPropertyListCtrl::SetListBox()
 					break;
 				}
 				
-			case nJustification:
+			case Prop::Justification:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_JUSTIFICATION_0);
@@ -2393,7 +2393,7 @@ int CPropertyListCtrl::SetListBox()
 					m_pModeless->AddString(sEnumDesc);
 					break;
 				}
-			case nSplitterStyle:
+			case Prop::SplitterStyle:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_SPLITTERStyle_0);
@@ -2409,8 +2409,8 @@ int CPropertyListCtrl::SetListBox()
 					m_pModeless->AddString(sEnumDesc);
 					break;
 				}
-			case nAlternateOrient:
-			case nOrientation:
+			case Prop::AlternateOrient:
+			case Prop::Orientation:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_ORIENTATION_0);
@@ -2420,7 +2420,7 @@ int CPropertyListCtrl::SetListBox()
 					m_pModeless->AddString(sEnumDesc);
 					break;
 				}
-			case nSelectStyle:
+			case Prop::SelectStyle:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_SELECTSTYLE_0);
@@ -2433,7 +2433,7 @@ int CPropertyListCtrl::SetListBox()
 					m_pModeless->AddString(sEnumDesc);
 					break;
 				}
-			case nRenderMode:
+			case Prop::RenderMode:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_BV_RM_0);
@@ -2461,7 +2461,7 @@ int CPropertyListCtrl::SetListBox()
 					m_pModeless->AddString(sEnumDesc);
 					break;
 				}
-			case nRectStyle:
+			case Prop::RectStyle:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_RECTSTYLE_0);
@@ -2480,7 +2480,7 @@ int CPropertyListCtrl::SetListBox()
 					m_pModeless->AddString(sEnumDesc);
 					break;
 				}
-			case nDockableSides:
+			case Prop::DockableSides:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_DOC_SIDES_0);
@@ -2502,7 +2502,7 @@ int CPropertyListCtrl::SetListBox()
 					m_pModeless->AddString(sEnumDesc);
 					break;
 				}
-			case nDefaultDockedSide:
+			case Prop::DefaultDockedSide:
 				{
 					// add it's items
 					sEnumDesc = theWorkspace.LoadResourceString(IDS_DOC_DEFAULT_0);
@@ -2520,7 +2520,7 @@ int CPropertyListCtrl::SetListBox()
 					break;
 				}
 
-			case nPicture:
+			case Prop::Picture:
 				{
 					// to be done
 					break;
@@ -2603,7 +2603,7 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 			if (pPict->IsValid())
 			{
 				m_pControl->GetOwnerProject()->AddPicture(pPict);
-				RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
+				TPropertyPtr pProp = GetPropertyObject(m_SelectedIndex);
 				// set the property
 				pProp->SetLongValue(nNewID);			
 
@@ -2651,7 +2651,7 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 			// load the picture
 			LoadPicture(sFileName, nNewID, TRUE);
 			// get the property
-			RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
+			TPropertyPtr pProp = GetPropertyObject(m_SelectedIndex);
 			if (pProp != NULL)
 			{
 				// set the property
@@ -2672,7 +2672,7 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 		}
 
 		// get the property
-		RefCountedPtr< CPropertyObject > pProp = GetPropertyObject(m_SelectedIndex);
+		TPropertyPtr pProp = GetPropertyObject(m_SelectedIndex);
 
 		if (pProp != NULL)
 		{
@@ -2696,7 +2696,7 @@ void CPropertyListCtrl::CloseListBox(int nInstructions)
 }
 
 
-void CPropertyListCtrl::PropertyHasChanged(PropertyId nId)
+void CPropertyListCtrl::PropertyHasChanged(Prop::Id nId)
 {
 	// inform the parrent that a property has changed
 	FirePropertyChanged(nId);
@@ -2841,14 +2841,14 @@ short CPropertyListCtrl::GetArxControlClientHeight(short DclFormIndex, short Arx
 		return -1; // return -1 to indicate error
 }
 
-BOOL CPropertyListCtrl::IsArxControlDeleted(short DclFormIndex, short ArxControlIndex) 
+bool CPropertyListCtrl::IsDclControlDeleted(short DclFormIndex, short ArxControlIndex) 
 {
 	CDclControlObject *pControl = GetArxControlObject(DclFormIndex, ArxControlIndex);
 
 	if (pControl == NULL)
-		return FALSE;
+		return false;
 		
-	return pControl->m_Delete;
+	return pControl->IsDeleted();
 }
 
 void CPropertyListCtrl::DisplayVaries() 
@@ -2918,23 +2918,23 @@ void CPropertyListCtrl::SearchPictureRefs(CDclFormObject *pDclObject)
 		if (pos != NULL)
 		{
 			CDclControlObject *pControl = pDclObject->GetControlList().GetAt(pos);
-			int nPictureId = pControl->GetLongProperty(nPicture);
+			int nPictureId = pControl->GetLongProperty(Prop::Picture);
 			if (nPictureId > -1)
 			{
 				if (!pDclObject->GetProject()->FindPicture(nPictureId))
-					pControl->SetLongProperty(nPicture, 0);
+					pControl->SetLongProperty(Prop::Picture, 0);
 			}
-			int nPressedPictureId = pControl->GetLongProperty(nPressedPicture);
+			int nPressedPictureId = pControl->GetLongProperty(Prop::PressedPicture);
 			if (nPressedPictureId > -1)
 			{
 				if (!pDclObject->GetProject()->FindPicture(nPressedPictureId))
-					pControl->SetLongProperty(nPressedPicture, 0);
+					pControl->SetLongProperty(Prop::PressedPicture, 0);
 			}
-			int nIconId = pControl->GetLongProperty(nIcon);
+			int nIconId = pControl->GetLongProperty(Prop::Icon);
 			if (nIconId > -1)
 			{
 				if (!pDclObject->GetProject()->FindPicture(nIconId))
-					pControl->SetLongProperty(nIcon, 0);
+					pControl->SetLongProperty(Prop::Icon, 0);
 			}
 		}
 	}
@@ -2991,7 +2991,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	CFontPropertyPage *pFontPage = NULL;
 	CButtonStyles *pButtonPage = NULL;
 	CImageListPage *pImageListPage = NULL;
-	RefCountedPtr< CPropertyObject > pProp = NULL;
+	TPropertyPtr pProp = NULL;
 	CTabsPane *pTabs = NULL;
 	CSortTabs *pSortTabs = NULL;
 	CColumnsPage *pColumnsPage = NULL;
@@ -3008,15 +3008,15 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	//	return;
 
 	// Show the geometry page if required
-	pProp = pArxCtrl->GetPropertyObject(nUseTopFromBottom);
+	pProp = pArxCtrl->GetPropertyObject(Prop::UseTopFromBottom);
 	if (pProp != NULL)
 	{
 		pGeometryPage = new CGeometry;
 
 		pGeometryPage->m_pUseTopFromBottom = pProp;
-		pGeometryPage->m_pUseBottomFromBottom = pArxCtrl->GetPropertyObject(nUseBottomFromBottom);
-		pGeometryPage->m_pUseLeftFromRight = pArxCtrl->GetPropertyObject(nUseLeftFromRight);
-		pGeometryPage->m_pUseRightFromRight = pArxCtrl->GetPropertyObject(nUseRightFromRight);
+		pGeometryPage->m_pUseBottomFromBottom = pArxCtrl->GetPropertyObject(Prop::UseBottomFromBottom);
+		pGeometryPage->m_pUseLeftFromRight = pArxCtrl->GetPropertyObject(Prop::UseLeftFromRight);
+		pGeometryPage->m_pUseRightFromRight = pArxCtrl->GetPropertyObject(Prop::UseRightFromRight);
 		
 		pGeometryPage->m_pControl = pArxCtrl;
 		pGeometryPage->m_pDclForm = m_pControl->GetOwnerForm();
@@ -3026,54 +3026,44 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 
 	
 	// Show the color selection page if required
-	pProp = pArxCtrl->GetPropertyObject(nDisplayPercentage);
+	pProp = pArxCtrl->GetPropertyObject(Prop::DisplayPercentage);
 	if (pProp != NULL)
 	{
 		pProgressPage = new CProgressBarPage(IDD_PROGRESSBAR);
 		pProgressPage->m_sTitle = theWorkspace.LoadResourceString(IDS_CAPTIONOPTIONS);
 
 		pProgressPage->m_pArxCtrl = pArxCtrl;
-		//pProgressPage->m_pTime = pArxCtrl->GetPropertyObject(nDisplaySeconds);
+		//pProgressPage->m_pTime = pArxCtrl->GetPropertyObject(Prop::DisplaySeconds);
 		
 		Dlg.AddPage(pProgressPage);
 	}
-	
 
 	// Show the color selection page if required
-	pProp = pArxCtrl->GetPropertyObject(nAcadColor);
+	pProp = pArxCtrl->GetPropertyObject(Prop::BackgroundColor);
 	if (pProp != NULL)
 	{
-		pBackColorsPage = new CColors(IDD_BACKCOLORS);
-		pBackColorsPage->m_sTitle = theWorkspace.LoadResourceString(IDS_BACKGROUND);
-		pBackColorsPage->m_pColor = pProp;
-		
+		pBackColorsPage = new CColors(Prop::BackgroundColor, pArxCtrl, m_pView);
 		Dlg.AddPage(pBackColorsPage);
 	}
-	// Show the color selection page if required
-	pProp = pArxCtrl->GetPropertyObject(nAlternateColor);
-	if (pProp != NULL)
-	{
-		pAltColorsPage = new CColors(IDD_ALTCOLORS);
-		pAltColorsPage->m_sTitle = theWorkspace.LoadResourceString(IDS_ALTCOLORS);
-		pAltColorsPage->m_pColor = pProp;
-		
-		Dlg.AddPage(pAltColorsPage);
-	}
-	
 
 	// Show the color selection page if required
-	pProp = pArxCtrl->GetPropertyObject(nForeColor);
+	pProp = pArxCtrl->GetPropertyObject(Prop::AlternateColor);
 	if (pProp != NULL)
 	{
-		pForeColorsPage = new CColors(IDD_FORECOLORS);
-		pForeColorsPage->m_sTitle = theWorkspace.LoadResourceString(IDS_FOREGROUND);
-		pForeColorsPage->m_pColor = pProp;
-		
+		pAltColorsPage = new CColors(Prop::AlternateColor, pArxCtrl, m_pView);
+		Dlg.AddPage(pAltColorsPage);
+	}
+
+	// Show the color selection page if required
+	pProp = pArxCtrl->GetPropertyObject(Prop::ForegroundColor);
+	if (pProp != NULL)
+	{
+		pForeColorsPage = new CColors(Prop::ForegroundColor, pArxCtrl, m_pView);
 		Dlg.AddPage(pForeColorsPage);
 	}
 	
 	// Show the combo box style selection page if required
-	pProp = pArxCtrl->GetPropertyObject(nComboBoxStyle);
+	pProp = pArxCtrl->GetPropertyObject(Prop::ComboBoxStyle);
 	if (pProp != NULL)
 	{
 		pComboBoxPage = new CComboBoxPage;
@@ -3085,7 +3075,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	}
 
 	// Show the text box filter style selection page if required
-	pProp = pArxCtrl->GetPropertyObject(nFilterStyle);
+	pProp = pArxCtrl->GetPropertyObject(Prop::FilterStyle);
 	if (pProp != NULL)
 	{
 		pTextBoxPage = new CTextBoxFilters;
@@ -3096,7 +3086,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	}
 
 	// Show the font page if required
-	pProp = pArxCtrl->GetPropertyObject(nLabelName);
+	pProp = pArxCtrl->GetPropertyObject(Prop::LabelName);
 	if (pProp != NULL)
 	{
 		pFontPage = new CFontPropertyPage(pArxCtrl);
@@ -3104,28 +3094,28 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	}
 	
 	// Show the button styles if required
-	pProp = pArxCtrl->GetPropertyObject(nButtonStyle);
+	pProp = pArxCtrl->GetPropertyObject(Prop::ButtonStyle);
 	if (pProp != NULL)
 	{
-		pButtonPage = new CButtonStyles( pArxCtrl );
+		pButtonPage = new CButtonStyles( pArxCtrl, m_pView );
 
 		pButtonPage->m_pStyle = pProp;
-		pButtonPage->m_pPicture = pArxCtrl->GetPropertyObject(nPicture);
+		pButtonPage->m_pPicture = pArxCtrl->GetPropertyObject(Prop::Picture);
 		Dlg.AddPage(pButtonPage);
 	}
 
 	// Show the button styles if required
-	if( pArxCtrl->GetPropertyObject( nImageList ) )
+	if( pArxCtrl->GetPropertyObject( Prop::ImageList ) )
 	{
 		pImageListPage = new CImageListPage( pArxCtrl );
 		Dlg.AddPage( pImageListPage );
 	}
 	
 	bool bShowColumns = true;
-	pProp = pArxCtrl->GetPropertyObject(nColumnCaptions);
-	if (pArxCtrl->GetPropertyObject(nListViewStyle) != NULL)
+	pProp = pArxCtrl->GetPropertyObject(Prop::ColumnCaptions);
+	if (pArxCtrl->GetPropertyObject(Prop::ListViewStyle) != NULL)
 	{
-		if (pArxCtrl->GetPropertyObject(nListViewStyle)->GetLongValue() < 3)
+		if (pArxCtrl->GetPropertyObject(Prop::ListViewStyle)->GetLongValue() < 3)
 			bShowColumns = false;
 	}
 	
@@ -3135,19 +3125,19 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 
 		pColumnsPage->m_pImageListPage = pImageListPage;
 		
-		pColumnsPage->m_bShowStyles = (pArxCtrl->GetPropertyObject(nListViewStyle) == NULL);
+		pColumnsPage->m_bShowStyles = (pArxCtrl->GetPropertyObject(Prop::ListViewStyle) == NULL);
 
 		pColumnsPage->m_pColCaptions = pProp;	
-		pColumnsPage->m_pColWidths = pArxCtrl->GetPropertyObject(nColumnWidths);	
-		pColumnsPage->m_pColImages = pArxCtrl->GetPropertyObject(nColumnImages);	
-		pColumnsPage->m_pColStyles = pArxCtrl->GetPropertyObject(nColumnStyles);
-		pColumnsPage->m_pColAlignment = pArxCtrl->GetPropertyObject(nColumnAlignments);
-		pColumnsPage->m_pColDefault = pArxCtrl->GetPropertyObject(nColumnDefaultImages);	
-		pColumnsPage->m_pColAlternate = pArxCtrl->GetPropertyObject(nColumnAlternateImages);	
-		pColumnsPage->m_pColListItems = pArxCtrl->GetPropertyObject(nColumnListItems);	
-		pColumnsPage->m_pColImageItems = pArxCtrl->GetPropertyObject(nColumnListImages);	
+		pColumnsPage->m_pColWidths = pArxCtrl->GetPropertyObject(Prop::ColumnWidths);	
+		pColumnsPage->m_pColImages = pArxCtrl->GetPropertyObject(Prop::ColumnImages);	
+		pColumnsPage->m_pColStyles = pArxCtrl->GetPropertyObject(Prop::ColumnStyles);
+		pColumnsPage->m_pColAlignment = pArxCtrl->GetPropertyObject(Prop::ColumnAlignments);
+		pColumnsPage->m_pColDefault = pArxCtrl->GetPropertyObject(Prop::ColumnDefaultImages);	
+		pColumnsPage->m_pColAlternate = pArxCtrl->GetPropertyObject(Prop::ColumnAlternateImages);	
+		pColumnsPage->m_pColListItems = pArxCtrl->GetPropertyObject(Prop::ColumnListItems);	
+		pColumnsPage->m_pColImageItems = pArxCtrl->GetPropertyObject(Prop::ColumnListImages);	
 		
-		pColumnsPage->bUsesRowHeader = pArxCtrl->GetBoolProperty(nRowHeader) == TRUE;	
+		pColumnsPage->bUsesRowHeader = pArxCtrl->GetBooleanProperty(Prop::RowHeader) == TRUE;	
 
 		pColumnsPage->m_pDclForm = m_pControl->GetOwnerForm();
 		pColumnsPage->m_pControl = pArxCtrl;
@@ -3155,7 +3145,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 		Dlg.AddPage(pColumnsPage);
 	}
 
-	pProp = pArxCtrl->GetPropertyObject(nTabsCaption);	
+	pProp = pArxCtrl->GetPropertyObject(Prop::TabsCaption);	
 	if (pProp != NULL && m_pControl->GetOwnerForm() != NULL)
 	{
 		pTabs = new CTabsPane( m_pView, pArxCtrl, pImageListPage->mpImageList );
@@ -3165,25 +3155,25 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 		Dlg.AddPage(pSortTabs);
 	}
 	
-	pProp = pArxCtrl->GetPropertyObject(nToolTipTitle);		
+	pProp = pArxCtrl->GetPropertyObject(Prop::ToolTipTitle);		
 	if (pProp != NULL)
 	{
 		pToolTipsPage = new CToolTipsPage;
 		
-		pToolTipsPage->m_pToolTipBalloon = pArxCtrl->GetPropertyObject(nToolTipBalloon);	
+		pToolTipsPage->m_pToolTipBalloon = pArxCtrl->GetPropertyObject(Prop::ToolTipBalloon);	
 		pToolTipsPage->m_pToolTipTitle = pProp;	
-		pToolTipsPage->m_pToolTipLine = pArxCtrl->GetPropertyObject(nToolTipLine);	
-		pToolTipsPage->m_pToolTipBody = pArxCtrl->GetPropertyObject(nToolTipBody);	
-		pToolTipsPage->m_pToolTipPicture = pArxCtrl->GetPropertyObject(nToolTipPicture);	
-		pToolTipsPage->m_pToolTipAvi = pArxCtrl->GetPropertyObject(nToolTipAviFileName);
-		pToolTipsPage->m_pToolTipTitleColor = pArxCtrl->GetPropertyObject(nToolTipTitleColor);
+		pToolTipsPage->m_pToolTipLine = pArxCtrl->GetPropertyObject(Prop::ToolTipLine);	
+		pToolTipsPage->m_pToolTipBody = pArxCtrl->GetPropertyObject(Prop::ToolTipBody);	
+		pToolTipsPage->m_pToolTipPicture = pArxCtrl->GetPropertyObject(Prop::ToolTipPicture);	
+		pToolTipsPage->m_pToolTipAvi = pArxCtrl->GetPropertyObject(Prop::ToolTipAviFileName);
+		pToolTipsPage->m_pToolTipTitleColor = pArxCtrl->GetPropertyObject(Prop::ToolTipTitleColor);
 		Dlg.AddPage(pToolTipsPage);
 	}
 	
 	// set the title
 	CString sTitle;
 	sTitle = theWorkspace.LoadResourceString(IDS_PROPERTYWIZARD);
-	Dlg.SetTitle(sTitle + pArxCtrl->GetStrProperty(nName));
+	Dlg.SetTitle(sTitle + pArxCtrl->GetStrProperty(Prop::Name));
 
 	if (pColumnsPage)
 		Dlg.SetActivePage(pImageListPage);
@@ -3212,7 +3202,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	delete pSortTabs;	
 	delete pProgressPage;
 	// update the control no matter what, just incase the user pressed the apply button then cancel
-	UpdateControls((PropertyId)-2);
+	UpdateControls(Prop::_All);
 	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar( pArxCtrl );
 	Invalidate();
 }
@@ -3242,7 +3232,7 @@ void CPropertyListCtrl::OnEnterPressed()
 	}
 }
 
-void CPropertyListCtrl::FirePropertyChanged(PropertyId ChangedPropertyID)
+void CPropertyListCtrl::FirePropertyChanged(Prop::Id ChangedPropertyID)
 {
 	UpdateControls(ChangedPropertyID);
 }
@@ -3252,7 +3242,7 @@ void CPropertyListCtrl::FireInvokeImageList(short PropertyIndex, long PropertyID
 	ShowPropertyDlg(false, true);
 }
 
-void CPropertyListCtrl::UpdatePropHelpCtrls(RefCountedPtr< CPropertyObject > pProp)
+void CPropertyListCtrl::UpdatePropHelpCtrls(TPropertyPtr pProp)
 {
 	// set the property name
 	m_pPropTitle->SetWindowText(pProp->GetName());

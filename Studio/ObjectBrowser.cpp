@@ -193,7 +193,7 @@ void CObjectBrowser::LoadAllAssociatedOleObjects(CDclControlObject *pControl)
 	// do loop to inspect all property objects
 	while (pos != NULL)
 	{
-		RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetNext(pos);
+		TPropertyPtr pProp = pControl->GetPropertyList().GetNext(pos);
 		if (pProp != NULL)
 		{
 			AxInterfaceDescriptor* pAxDesc = pProp->GetAxInterfaceDescriptorPtr();
@@ -228,7 +228,7 @@ void CObjectBrowser::LoadAllAssociatedOleObjects(CDclControlObject *pControl)
 }
 
 
-void CObjectBrowser::SearchMethods(RefCountedPtr< CPropertyObject > pProp) 
+void CObjectBrowser::SearchMethods(TPropertyPtr pProp) 
 {
 	size_t idx = pProp->size();
 	while( idx-- > 0 )
@@ -246,7 +246,7 @@ void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, H
 	while (pos)
 	{
 		++idx;
-		RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyList().GetNext(pos);
+		TPropertyPtr pProp = pControl->GetPropertyList().GetNext(pos);
 		if (!pProp)
 			continue;
 		switch (pProp->GetType())
@@ -271,7 +271,7 @@ void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, H
 			break;
 		default:
 			{
-				if (pProp->GetID() != nName && pProp->GetID() != nGlobalVarName)
+				if (pProp->GetID() != Prop::Name && pProp->GetID() != Prop::GlobalVarName)
 				{
 					CString sTitle;
 					if( pProp->GetType() == PropActiveXEvent )
@@ -630,10 +630,10 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 	
 	int nThisItemData = m_ListBox.GetItemData(hItem);
 
-	RefCountedPtr< CPropertyObject > pProp;
+	TPropertyPtr pProp;
 	if ((long)nThisItemData < 0)
 	{
-		pProp = pControl->GetPropertyObject( nObjectBrowser );
+		pProp = pControl->GetPropertyObject( Prop::ObjectBrowser );
 		nThisItemData = -(long)nThisItemData;
 		nThisItemData--;
 	}
@@ -1029,7 +1029,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropGet);
 
 					// lets set the get property
-					sDefun2 = _T("\\par(\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_AxControl_") + theWorkspace.LoadResourceString(IDS_GETPROP) + _T("\\cf0 \\cf3 ") + sGlobalVarName + _T(" \\cf0 \\cf3\\b """);
+					sDefun2 = _T("\\par(\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_AxControl_") + theWorkspace.LoadResourceString(IDS_GETPROP) + _T("\\cf0 \\cf3 ") + sGlobalVarName + _T(" \\cf0 \\cf3\\b \"");
 					m_sClipBoardDefun2 = _T("(Setq Value (dcl_AxControl_") + theWorkspace.LoadResourceString(IDS_GETPROP) + sGlobalVarName + _T(" \"");
 					sDefun2 += m_ListBox.GetItemText(hItem) + _T("\"\\cf0\\b0 ");
 					m_sClipBoardDefun2 += m_ListBox.GetItemText(hItem) + _T("\"");
@@ -1114,60 +1114,58 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				{	
 					switch (pProp->GetID())
 					{
-					case nComboBoxStyle:
-					case nButtonStyle:
-					case nFilterStyle:
-					case nMultiRow:
-					case nOrientation:
-					case nRectStyle:
-					case nJustification:
-					case nAutoHScroll:
-					case nAutoVScroll:
-					case nDropDownHeight:
-					case nMultiColumn:
-					case nSelectStyle:
-					case nNoIntegralHeight:
-					case nSorted:
-					case nUseTabStops:
-					case nDisableNoScroll:
-					case nSmoothProgress:
-					case nAutoWrap:
-					case nMinTabWidth:
-					case nResizable:
-					case nShowSelectAlways:
-					case nHasLines:
-					case nLinesAtRoot:
-					case nHasButtons:
-					case nEditLabels:
-					case nCheckBoxes:
-					case nIcon:
-					case nShowEditBox:
-					case nInputFilter:
-					case nIsTabStop:
-					case nBeginGroup:
-					case nListViewStyle:
-					case nListViewSort:
-					case nListViewIconAlign:
-					case nBlockListStyle:
-					case nAutoArrange:
-					case nColHeader:
-					case nLabelWrap:
-					case nAllowScrolling:
-					case nIconXSpacing:
-					case nIconYSpacing:
-					case nGridLines:
-					case nFullRowSelect:
-					case nReturnAsTab:
-					case nSingleExpanded:
-					case nRowHeight:
-					case nDefSelIndex:
-					case nDockableSides:
-					case nDefaultDockedSide:
-					case nTitleBarText:
-					case nMinDialogWidth:
-					case nMaxDialogWidth:
-					case nMinDialogHeight:
-					case nMaxDialogHeight:
+					case Prop::ComboBoxStyle:
+					case Prop::ButtonStyle:
+					case Prop::FilterStyle:
+					case Prop::MultiRow:
+					case Prop::Orientation:
+					case Prop::RectStyle:
+					case Prop::Justification:
+					case Prop::AutoHScroll:
+					case Prop::AutoVScroll:
+					case Prop::DropDownHeight:
+					case Prop::MultiColumn:
+					case Prop::SelectStyle:
+					case Prop::NoIntegralHeight:
+					case Prop::Sorted:
+					case Prop::UseTabStops:
+					case Prop::DisableNoScroll:
+					case Prop::SmoothProgress:
+					case Prop::AutoWrap:
+					case Prop::MinTabWidth:
+					case Prop::Resizable:
+					case Prop::ShowSelectAlways:
+					case Prop::HasLines:
+					case Prop::LinesAtRoot:
+					case Prop::HasButtons:
+					case Prop::EditLabels:
+					case Prop::CheckBoxes:
+					case Prop::Icon:
+					case Prop::ShowEditBox:
+					case Prop::InputFilter:
+					case Prop::IsTabStop:
+					case Prop::BeginGroup:
+					case Prop::ListViewStyle:
+					case Prop::ListViewSort:
+					case Prop::ListViewIconAlign:
+					case Prop::BlockListStyle:
+					case Prop::AutoArrange:
+					case Prop::ColHeader:
+					case Prop::LabelWrap:
+					case Prop::IconXSpacing:
+					case Prop::IconYSpacing:
+					case Prop::GridLines:
+					case Prop::FullRowSelect:
+					case Prop::ReturnAsTab:
+					case Prop::SingleExpanded:
+					case Prop::DefSelIndex:
+					case Prop::DockableSides:
+					case Prop::DefaultDockedSide:
+					case Prop::TitleBarText:
+					case Prop::MinDialogWidth:
+					case Prop::MaxDialogWidth:
+					case Prop::MinDialogHeight:
+					case Prop::MaxDialogHeight:
 						{
 							CString sMsg;
 							if (m_pControl->GetType() < CtlLabel || m_pControl->GetType() > CtlFileDlgCtrl)
@@ -1308,16 +1306,16 @@ void CObjectBrowser::OnCopy2()
 			return;
 	}
 
-	CString source = m_sClipBoardDefun2; 
+	CStringA source( m_sClipBoardDefun2 ); 
 	//put your text in source
 	if(OpenClipboard())
 	{
 		HGLOBAL clipbuffer;
-		TCHAR * buffer;
+		CHAR * buffer;
 		EmptyClipboard();
-		clipbuffer = GlobalAlloc(GMEM_DDESHARE, (source.GetLength()+1) * sizeof(TCHAR));
-		buffer = (TCHAR*)GlobalLock(clipbuffer);
-		lstrcpyn(buffer, LPCTSTR(source), source.GetLength() + 1);
+		clipbuffer = GlobalAlloc(GMEM_DDESHARE, source.GetLength() + 1);
+		buffer = (CHAR*)GlobalLock(clipbuffer);
+		lstrcpynA(buffer, (LPCSTR)source, source.GetLength() + 1);
 		GlobalUnlock(clipbuffer);
 		SetClipboardData(CF_TEXT,clipbuffer);
 		CloseClipboard();
@@ -1342,21 +1340,20 @@ void CObjectBrowser::OnCopy1()
 			return;
 	}
 
-	CString source = m_sClipBoardDefun1; 
+	CStringA source( m_sClipBoardDefun1 ); 
 	//put your text in source
 	if(OpenClipboard())
 	{
 		HGLOBAL clipbuffer;
-		TCHAR * buffer;
+		CHAR * buffer;
 		EmptyClipboard();
-		clipbuffer = GlobalAlloc(GMEM_DDESHARE, (source.GetLength()+1) * sizeof(TCHAR));
-		buffer = (TCHAR*)GlobalLock(clipbuffer);
-		lstrcpyn(buffer, LPCTSTR(source), source.GetLength() + 1);
+		clipbuffer = GlobalAlloc(GMEM_DDESHARE, source.GetLength() + 1);
+		buffer = (CHAR*)GlobalLock(clipbuffer);
+		lstrcpynA(buffer, (LPCSTR)source, source.GetLength() + 1);
 		GlobalUnlock(clipbuffer);
 		SetClipboardData(CF_TEXT,clipbuffer);
 		CloseClipboard();
 	}
-	
 }
 
 void CObjectBrowser::OnDestroy() 
@@ -1464,16 +1461,16 @@ void CObjectBrowser::OnCopy3()
 			return;
 	}
 
-	CString source = m_sClipBoardDefun3; 
+	CStringA source( m_sClipBoardDefun3 );
 	//put your text in source
 	if(OpenClipboard())
 	{
 		HGLOBAL clipbuffer;
-		TCHAR * buffer;
+		CHAR * buffer;
 		EmptyClipboard();
-		clipbuffer = GlobalAlloc(GMEM_DDESHARE, (source.GetLength()+1) * sizeof(TCHAR));
-		buffer = (TCHAR*)GlobalLock(clipbuffer);
-		lstrcpyn(buffer, LPCTSTR(source), source.GetLength() + 1);
+		clipbuffer = GlobalAlloc(GMEM_DDESHARE, source.GetLength() + 1);
+		buffer = (CHAR*)GlobalLock(clipbuffer);
+		lstrcpynA(buffer, (LPCSTR)source, source.GetLength() + 1);
 		GlobalUnlock(clipbuffer);
 		SetClipboardData(CF_TEXT,clipbuffer);
 		CloseClipboard();

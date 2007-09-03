@@ -8,15 +8,17 @@
 #include "Workspace.h"
 #include "Project.h"
 #include "PropertyObject.h"
+#include "OpenDCLView.h"
 #include "SharedRes.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CButtonStyles property page
 
-CButtonStyles::CButtonStyles( CDclControlObject* pControl )
+CButtonStyles::CButtonStyles( CDclControlObject* pControl, COpenDCLView* pView )
 : CPropertyPage(CButtonStyles::IDD)
 , mpControl( pControl )
+, mpView( pView )
 {
 	//{{AFX_DATA_INIT(CButtonStyles)
 		// NOTE: the ClassWizard will add member initialization here
@@ -155,6 +157,11 @@ BOOL CButtonStyles::OnApply()
 	m_pStyle->SetLongValue(m_SelectedStyle);
 	m_pPicture->SetLongValue(static_cast< long >(m_SelectedPic));
 	theWorkspace.SetModified(true);
+	if( mpView )
+	{
+		mpView->RefreshChildControl(mpControl, Prop::ButtonStyle);
+		mpView->RefreshChildControl(mpControl, Prop::Picture);
+	}
 	return CPropertyPage::OnApply();
 }
 

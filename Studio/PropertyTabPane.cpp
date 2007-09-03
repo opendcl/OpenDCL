@@ -6,11 +6,12 @@
 #include "Resource.h"
 #include "DclControlObject.h"
 #include "ControlName.h"
+#include "ControlHolder.h"
 #include "ControlTypes.h"
 #include "OpenDCLView.h"
 #include "PropertyIds.h"
 
-#define IDC_TABCTRL 109
+#define ID_TABCTRL 109
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -29,7 +30,7 @@ BEGIN_MESSAGE_MAP(CPropertyTabPane, CDialog)
 	//{{AFX_MSG_MAP(CPropertyTabPane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
-	ON_NOTIFY(TCN_SELCHANGE, IDC_TABCTRL, OnSelchange)	
+	ON_NOTIFY(TCN_SELCHANGE, ID_TABCTRL, OnSelchange)	
 	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -71,7 +72,7 @@ int CPropertyTabPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | TCS_FOCUSNEVER | TCS_TOOLTIPS	| TCS_TABS | WS_GROUP |
 									WS_CLIPSIBLINGS	| WS_CLIPCHILDREN | TCS_MULTILINE;
 
-	if (m_TabCtrl.Create(dwStyle, CRect(0,0,10,10), this, IDC_TABCTRL))
+	if (m_TabCtrl.Create(dwStyle, CRect(0,0,10,10), this, ID_TABCTRL))
 		SetupTabs();
 
 	if (!m_font.CreateStockObject(DEFAULT_GUI_FONT) && !m_font.CreatePointFont(80, _T("MS Sans Serif")))
@@ -160,24 +161,6 @@ void CPropertyTabPane::DisplaySelectedControlProperties(CDclControlObject *pCont
 			sControlName.Format( _T("%s [%s]"), (LPCTSTR)sName, (LPCTSTR)sControlType );
 		else
 			sControlName = sName;
-
-		// get the old name
-		CString sOldName;
-		m_PropertiesTabPane.m_ControlDesc.GetWindowText(sOldName);
-
-		// check if we are displaying the properties for the same control
-		if (sOldName == sControlName) 
-		{
-			CRect rc;
-			if (pControl->m_pCtrlHolder != NULL)
-			{
-				pControl->m_pCtrlHolder->GetWindowRect(&rc);
-				pControl->m_pCtrlHolder->GetParent()->ScreenToClient(rc);
-				if (pControl->m_rcOldPosition == rc)
-					return;
-			}
-			pControl->m_rcOldPosition = rc;
-		}
 	}
 
 	// set the control description text
@@ -192,7 +175,6 @@ void CPropertyTabPane::DisplaySelectedControlProperties(CDclControlObject *pCont
 	// update the events tab pane
 	m_EventsTabPane.UpdateEvents(pControl);
 	m_EventsTabPane.m_pView = pView;
-		
 }
 
 void CPropertyTabPane::ClearControlProperties() 

@@ -4,11 +4,10 @@
 #include "stdafx.h"
 #include "ArxProject.h"
 #include "DclFormObject.h"
-#include "ModalVDcl.h"
+#include "ModalDlg.h"
 #include "ModelessDlg.h"
 #include "CfgTabPane.h"
 #include "DockingDialog.h"
-#include "ResizableDockingDialog.h"
 #include "CustomFileDialog.h"
 #include "InvokeMethod.h"
 
@@ -23,7 +22,7 @@ CArxDialogObject::CDocReactor::CDocReactor( CArxDialogObject* pDialogobject )
 	CDclControlObject* pProps = pDialogobject->GetSourceForm()->GetControlProperties();
 	if( pProps )
 	{
-		msDocActivatedEvent = pProps->GetStrProperty( nDocEventActivated );
+		msDocActivatedEvent = pProps->GetStrProperty( Prop::DocEventActivated );
 		if( !msDocActivatedEvent.IsEmpty() )
 			acDocManager->addReactor( this );
 	}
@@ -66,16 +65,10 @@ CDialogObject* CArxDialogObject::Create( CDclFormObject* pDclForm, CWnd* pParent
 	CAcAppContextModuleResourceOverride resOverride;
 	switch( pDclForm->GetType() )
 	{
-	case VdclModal: return &(new CModalVDcl( pDclForm, pParent, pParams ))->GetDialogObject();
+	case VdclModal: return &(new CModalDlg( pDclForm, pParent, pParams ))->GetDialogObject();
 	case VdclModeless: return &(new CModelessDlg( pDclForm, pParent, pParams ))->GetDialogObject();
 	case VdclConfigTab: return &(new CfgTabPane( pDclForm, pParent, pParams ))->GetDialogObject();
-	case VdclDockable:
-		{
-			RefCountedPtr< CPropertyObject > pPropResizable = pDclForm->GetControlProperties()->GetPropertyObject( nResizable );
-			if( pPropResizable && !pPropResizable->GetBooleanValue() ) //fixed size?
-				return &(new CDockingDialog( pDclForm, pParent, pParams ))->GetDialogObject();
-			return &(new CResizableDockingDialog( pDclForm, pParent, pParams ))->GetDialogObject();
-		}
+	case VdclDockable: return &(new CDockingDialog( pDclForm, pParent, pParams ))->GetDialogObject();
 	case VdclFileDialog: return &(new CCustomFileDialog( pDclForm, pParent, pParams ))->GetDialogObject();
 	}
 	return NULL;

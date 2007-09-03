@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "DialogControl.h"
 #include "DclControlObject.h"
+#include "AcadColorService.h"
+#include "ControlPane.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
@@ -20,13 +22,18 @@ CDialogControl::CDialogControl( CDclControlObject* pTemplate, CControlPane* pPan
 , mbEnumProps( false )
 {
 	pTemplate->SetControlInstance( this );
-	RefCountedPtr< CPropertyObject > pToolTipBalloon = pTemplate->GetPropertyObject(nToolTipBalloon);
+	TPropertyPtr pToolTipBalloon = pTemplate->GetPropertyObject(Prop::ToolTipBalloon);
 	mToolTip.SetDefaultSizes( !pToolTipBalloon || pToolTipBalloon->GetBooleanValue() );
 }
 
 CDialogControl::~CDialogControl()
 {
 	mpTemplate->SetControlInstance( NULL );
+}
+
+CThemeHelperST* CDialogControl::GetThemeHelper()
+{
+	return (mpControlPane? mpControlPane->GetThemeHelper() : NULL);
 }
 
 ControlType CDialogControl::GetControlType() const
@@ -55,40 +62,42 @@ CRect CDialogControl::GetWndRect() const
 #ifdef EDITOR
 	CPoint pntUpperLeft( 0, 0 );
 #else
-	CPoint pntUpperLeft( mpTemplate->GetLongProperty(nLeft), mpTemplate->GetLongProperty(nTop) );
+	CPoint pntUpperLeft( mpTemplate->GetLongProperty(Prop::Left), mpTemplate->GetLongProperty(Prop::Top) );
 #endif
 	return CRect( pntUpperLeft.x,
 								pntUpperLeft.y,
-								pntUpperLeft.x + mpTemplate->GetLongProperty(nWidth),
-								pntUpperLeft.y + mpTemplate->GetLongProperty(nHeight) );
+								pntUpperLeft.x + mpTemplate->GetLongProperty(Prop::Width),
+								pntUpperLeft.y + mpTemplate->GetLongProperty(Prop::Height) );
 }
 
 DWORD CDialogControl::GetWndStyle() const
 {
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
 
-	if( mpTemplate->GetBoolProperty(nIsTabStop) )
+	if( mpTemplate->GetBooleanProperty(Prop::IsTabStop) )
 		dwStyle |= WS_TABSTOP;
-	if( mpTemplate->GetBoolProperty(nBeginGroup) )
+	if( mpTemplate->GetBooleanProperty(Prop::BeginGroup) )
 		dwStyle |= WS_GROUP;
+	if( mpTemplate->GetBooleanProperty(Prop::VScrollBar) )
+		dwStyle |= WS_VSCROLL;
 
 	return dwStyle;
 }
 
 CString CDialogControl::GetWndCaption() const
 {
-	return mpTemplate->GetStrProperty(nCaption);
+	return mpTemplate->GetStrProperty(Prop::Caption);
 }
 
 bool CDialogControl::ApplyPropertiesEnum()
 {
 	bool bSuccess = true;
 	mbEnumProps = true;
-	RefCountedPtr< CPropertyObject > pAutoSizeProp = mpTemplate->GetPropertyObject( nAutoSize );
+	TPropertyPtr pAutoSizeProp = mpTemplate->GetPropertyObject( Prop::AutoSize );
 	POSITION pos = mpTemplate->GetPropertyList().GetHeadPosition();
 	while( pos )
 	{
-		RefCountedPtr< CPropertyObject > pProp = mpTemplate->GetPropertyList().GetNext( pos );
+		TPropertyPtr pProp = mpTemplate->GetPropertyList().GetNext( pos );
 		assert( pProp != NULL );
 		if( pProp != pAutoSizeProp ) //save autosize for last
 			OnApplyProperty( pProp );
@@ -100,41 +109,62 @@ bool CDialogControl::ApplyPropertiesEnum()
 	return bSuccess;
 }
 
-bool CDialogControl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
+bool CDialogControl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !pProp )
 		return false;
 	bool bSuccess = true;
 	switch( pProp->GetID() )
 	{
-	case nBorderStyle: if( !OnApplyBorderStyle( pProp ) ) bSuccess = false; break;
-	case nEnabled: if( !OnApplyEnabled( pProp ) ) bSuccess = false; break;
-	case nVisible: if( !OnApplyVisible( pProp ) ) bSuccess = false; break;
-	case nCaption: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
-	case nTitleBarText: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
-	case nToolTipTitle: if( !OnApplyToolTip( pProp ) ) bSuccess = false; break;
-	case nToolTipBalloon: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
-	case nToolTipLine: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
-	case nToolTipBody: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
-	case nToolTipPicture: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
-	case nToolTipAviFileName: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
-	case nToolTipTitleColor: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
-	case nLabelName: if( !OnApplyFont( pProp ) ) bSuccess = false; break;
-	case nLabelSize: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
-	case nLabelBold: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
-	case nLabelItalic: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
-	case nLabelUnderline: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
-	case nLabelStrikeOut: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case Prop::ForegroundColor: if( !OnApplyForegroundColor( pProp ) ) bSuccess = false; break;
+	case Prop::BackgroundColor: if( !OnApplyBackgroundColor( pProp ) ) bSuccess = false; break;
+	case Prop::BorderStyle: if( !OnApplyBorderStyle( pProp ) ) bSuccess = false; break;
+	case Prop::Enabled: if( !OnApplyEnabled( pProp ) ) bSuccess = false; break;
+	case Prop::Visible: if( !OnApplyVisible( pProp ) ) bSuccess = false; break;
+	case Prop::Caption: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
+	case Prop::TitleBarText: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
+	case Prop::VScrollBar: if( !OnApplyVScrollBar( pProp ) ) bSuccess = false; break;
+	case Prop::HScrollBar: if( !OnApplyHScrollBar( pProp ) ) bSuccess = false; break;
+	case Prop::ToolTipTitle: if( !OnApplyToolTip( pProp ) ) bSuccess = false; break;
+	case Prop::ToolTipBalloon: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
+	case Prop::ToolTipLine: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
+	case Prop::ToolTipBody: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
+	case Prop::ToolTipPicture: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
+	case Prop::ToolTipAviFileName: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
+	case Prop::ToolTipTitleColor: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
+	case Prop::LabelName: if( !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case Prop::LabelSize: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case Prop::LabelBold: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case Prop::LabelItalic: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case Prop::LabelUnderline: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case Prop::LabelStrikeOut: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
 	}
 	return bSuccess;
 }
 
-bool CDialogControl::OnApplyBorderStyle( RefCountedPtr< CPropertyObject > pProp )
+bool CDialogControl::OnApplyForegroundColor( TPropertyPtr pProp )
+{
+	CAcadColorService* pColorService = GetColorService();
+	if( pColorService )
+		pColorService->SetForegroundColor( pProp->GetLongValue() );
+	return true;
+}
+
+bool CDialogControl::OnApplyBackgroundColor( TPropertyPtr pProp )
+{
+	CAcadColorService* pColorService = GetColorService();
+	if( pColorService )
+		pColorService->SetBackgroundColor( pProp->GetLongValue() );
+	return true;
+}
+
+bool CDialogControl::OnApplyBorderStyle( TPropertyPtr pProp )
 {
 	switch( pProp->GetLongValue() )
 	{
 	case 0:
 		mpControl->ModifyStyle( WS_BORDER, 0, SWP_FRAMECHANGED );
+		mpControl->ModifyStyleEx( (WS_EX_STATICEDGE | WS_EX_CLIENTEDGE), 0, SWP_FRAMECHANGED );
 		break;
 	case 1:
 		mpControl->ModifyStyle( WS_BORDER, 0, SWP_FRAMECHANGED );
@@ -148,32 +178,50 @@ bool CDialogControl::OnApplyBorderStyle( RefCountedPtr< CPropertyObject > pProp 
 	return true;
 }
 
-bool CDialogControl::OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp )
+bool CDialogControl::OnApplyEnabled( TPropertyPtr pProp )
 {
 	mpControl->EnableWindow( pProp->GetBooleanValue() );
 	return true;
 }
 
-bool CDialogControl::OnApplyVisible( RefCountedPtr< CPropertyObject > pProp )
+bool CDialogControl::OnApplyVisible( TPropertyPtr pProp )
 {
 	mpControl->ShowWindow( pProp->GetBooleanValue()? SW_SHOW : SW_HIDE );
 	return true;
 }
 
-bool CDialogControl::OnApplyCaption( RefCountedPtr< CPropertyObject > pProp )
+bool CDialogControl::OnApplyCaption( TPropertyPtr pProp )
 {
 	mpControl->SetWindowText( pProp->GetStringValue() );
 	return true;
 }
 
-bool CDialogControl::OnApplyToolTip( RefCountedPtr< CPropertyObject > pProp )
+bool CDialogControl::OnApplyVScrollBar( TPropertyPtr pProp )
+{
+	if( pProp->GetBooleanValue() )
+		mpControl->ModifyStyle( 0, WS_VSCROLL, SWP_FRAMECHANGED );
+	else
+		mpControl->ModifyStyle( WS_VSCROLL, 0, SWP_FRAMECHANGED );
+	return true;
+}
+
+bool CDialogControl::OnApplyHScrollBar( TPropertyPtr pProp )
+{
+	if( pProp->GetBooleanValue() )
+		mpControl->ModifyStyle( 0, WS_HSCROLL, SWP_FRAMECHANGED );
+	else
+		mpControl->ModifyStyle( WS_HSCROLL, 0, SWP_FRAMECHANGED );
+	return true;
+}
+
+bool CDialogControl::OnApplyToolTip( TPropertyPtr pProp )
 {
 	GetToolTipCtrl().RemoveAllTools();
 	SetToolTipEx( mpControl, GetToolTipCtrl(), mpTemplate );
 	return true;
 }
 
-bool CDialogControl::OnApplyFont( RefCountedPtr< CPropertyObject > pProp )
+bool CDialogControl::OnApplyFont( TPropertyPtr pProp )
 {
 	mpControl->SetFont( theWorkspace.GetFontCollection().GetFont( mpTemplate, mpControl ) );
 	return true;

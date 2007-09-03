@@ -7,11 +7,29 @@
 #include "SharedRes.h"
 
 
+void CButtonAcadColorService::ResetButtonForegroundColor() const
+{
+	COLORREF crFgnd = GetForegroundColor();
+	mButton.SetColor( CButtonST::BTNST_COLOR_FG_IN, crFgnd, FALSE );
+	mButton.SetColor( CButtonST::BTNST_COLOR_FG_OUT, crFgnd, FALSE );
+	mButton.SetColor( CButtonST::BTNST_COLOR_FG_FOCUS, crFgnd, FALSE );
+}
+
+void CButtonAcadColorService::ResetButtonBackgroundColor() const
+{
+	COLORREF crBkgnd = GetBackgroundColor();
+	mButton.SetColor( CButtonST::BTNST_COLOR_BK_IN, crBkgnd, FALSE );
+	mButton.SetColor( CButtonST::BTNST_COLOR_BK_OUT, crBkgnd, FALSE );
+	mButton.SetColor( CButtonST::BTNST_COLOR_BK_FOCUS, crBkgnd, FALSE );
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CButtonCtrl
 
 CButtonCtrl::CButtonCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
+, mAcadColorService( *this )
 {
 	m_bDrawBorder		= TRUE;
 	if( bCreate )
@@ -29,42 +47,26 @@ bool CButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
-	//if( mpTemplate->GetLongProperty( nAutoSize ) > 0 )
+	//if( mpTemplate->GetLongProperty( Prop::AutoSize ) > 0 )
 	//	SizeToContent();
 
 	return bSuccess;
 }
 
-bool CButtonCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
+bool CButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )
 	{
-	case nAcadColor:
-		{
-			COLORREF crBkgnd = GetRGBColor( pProp->GetLongValue() );
-			SetColor( BTNST_COLOR_BK_IN, crBkgnd, FALSE );
-			SetColor( BTNST_COLOR_BK_OUT, crBkgnd, FALSE );
-			SetColor( BTNST_COLOR_BK_FOCUS, crBkgnd, FALSE );
-			break;
-		}
-	case nForeColor:
-		{
-			COLORREF crFgnd = GetRGBColor( pProp->GetLongValue() );
-			SetColor( BTNST_COLOR_FG_IN, crFgnd, FALSE );
-			SetColor( BTNST_COLOR_FG_OUT, crFgnd, FALSE );
-			SetColor( BTNST_COLOR_FG_FOCUS, crFgnd, FALSE );
-			break;
-		}
-	case nAutoSize:
+	case Prop::AutoSize:
 		{
 			if( pProp->GetBooleanValue() )
 				SizeToContent();
 			break;
 		}
-	case nButtonStyle:
+	case Prop::ButtonStyle:
 		{
 			switch( pProp->GetLongValue() )
 			{
@@ -123,10 +125,6 @@ bool CButtonCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 	return !bFailed;
 }
 
-BEGIN_MESSAGE_MAP(CButtonCtrl, CXPStyleButtonST)
-	ON_WM_KILLFOCUS()
-END_MESSAGE_MAP()
-
 void CButtonCtrl::SetResourceIcon(UINT idIcon)
 {
 	HICON hIcon = LoadIcon( theWorkspace.GetResourceModule(), MAKEINTRESOURCE(idIcon) );
@@ -143,6 +141,14 @@ void CButtonCtrl::SetResourceIcon(UINT idIcon)
 	SetIcon( imglistIcon.ExtractIcon( 0 ) );
 	imglistIcon.DeleteImageList();
 }
+
+BEGIN_MESSAGE_MAP(CButtonCtrl, CXPStyleButtonST)
+	ON_WM_KILLFOCUS()
+END_MESSAGE_MAP()
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CTextBoxCtrl message handlers
 
 void CButtonCtrl::PreSubclassWindow() 
 {

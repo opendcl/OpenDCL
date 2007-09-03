@@ -6,7 +6,7 @@
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "InvokeMethod.h"
-#include "ModalVDcl.h"
+#include "ModalDlg.h"
 #include "PropertyIds.h"
 #include "ToolTips.h"
 
@@ -52,17 +52,17 @@ BOOL VdclTextButton::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
   m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	// get the caption
-	CString Caption = pControl->GetStrProperty(nCaption);
+	CString Caption = pControl->GetStrProperty(Prop::Caption);
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_CLIPSIBLINGS | BS_MULTILINE;	
 	
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
@@ -74,7 +74,7 @@ BOOL VdclTextButton::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-	int n = m_ArxControl->GetLongProperty(nEventInvoke);
+	int n = m_ArxControl->GetLongProperty(Prop::EventInvoke);
 	switch (n)
 	{
 	case 1:
@@ -101,7 +101,7 @@ void VdclTextButton::OnClicked()
 	
 	if (m_ArxControl->m_bEventsAsAction)
 	{
-		CString sText = m_ArxControl->GetStrProperty(nEventClicked);
+		CString sText = m_ArxControl->GetStrProperty(Prop::EventClicked);
 
 		GetParent()->GetParent()->EnableWindow(TRUE);
 		int stat;
@@ -123,14 +123,14 @@ void VdclTextButton::OnClicked()
 	else
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);	
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);	
 	}
 }
 
 void VdclTextButton::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -141,7 +141,7 @@ void VdclTextButton::OnMouseMove(UINT nFlags, CPoint point)
 void VdclTextButton::OnDoubleclicked() 
 {
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventDblClicked), false);	
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventDblClicked), false);	
 }
 
 void VdclTextButton::OnKillFocus(CWnd* pNewWnd) 
@@ -209,7 +209,7 @@ void VdclTextButton::SetDragnDrop(BOOL bRegister)
 void VdclTextButton::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	//SetFocus();
-	if (m_ArxControl->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
+	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
 	{
 		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
 	}

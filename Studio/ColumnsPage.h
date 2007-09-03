@@ -75,15 +75,15 @@ public:
 	CImageListPage *m_pImageListPage;
 	bool bUsesRowHeader;
 	
-	RefCountedPtr< CPropertyObject > m_pColCaptions;	
-	RefCountedPtr< CPropertyObject > m_pColWidths;	
-	RefCountedPtr< CPropertyObject > m_pColImages;	
-	RefCountedPtr< CPropertyObject > m_pColStyles;	
-	RefCountedPtr< CPropertyObject > m_pColAlignment;	
-	RefCountedPtr< CPropertyObject > m_pColDefault;	
-	RefCountedPtr< CPropertyObject > m_pColAlternate;	
-	RefCountedPtr< CPropertyObject > m_pColListItems;	
-	RefCountedPtr< CPropertyObject > m_pColImageItems;	
+	TPropertyPtr m_pColCaptions;	
+	TPropertyPtr m_pColWidths;	
+	TPropertyPtr m_pColImages;	
+	TPropertyPtr m_pColStyles;	
+	TPropertyPtr m_pColAlignment;	
+	TPropertyPtr m_pColDefault;	
+	TPropertyPtr m_pColAlternate;	
+	TPropertyPtr m_pColListItems;	
+	TPropertyPtr m_pColImageItems;	
 
 	CArray<CColumnData, CColumnData> m_ColData;										 
 	COpenDCLView *m_pView;

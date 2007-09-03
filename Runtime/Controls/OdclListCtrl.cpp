@@ -177,22 +177,8 @@ bool OdclListCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess = (CListCtrl::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
 
-	RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
-	if( pImageList )
-	{
-		pImageList->m_ImageList.SetBkColor( GetBkColor() );
-		SetImageList( &pImageList->m_ImageList, TVSIL_NORMAL );
-		SetImageList( &pImageList->m_ImageList, LVSIL_SMALL );
-	}
-	else
-	{ //create a default image list
-		if( !mDefaultImageList.m_hImageList )
-			mDefaultImageList.Create( 1, mpTemplate->GetLongProperty( nRowHeight ), ILC_COLOR, 1, 1 );
-		mDefaultImageList.SetBkColor( GetBkColor() );
-		SetImageList( &mDefaultImageList, TVSIL_NORMAL );
-		SetImageList( &mDefaultImageList, LVSIL_SMALL );
-	}
-
+	if( bSuccess && !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::ImageList ) ) )
+		bSuccess = false;
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
@@ -209,9 +195,9 @@ bool OdclListCtrl::Create( CWnd* pParentWnd, UINT nID )
 	else
 		SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
 
-	SetAcadColor( mpTemplate->GetLongProperty( nAcadColor ) );
+	SetAcadColor( mpTemplate->GetLongProperty( Prop::BackgroundColor ) );
 
-	if( mpTemplate->GetLongProperty(nEventInvoke) == 1 )
+	if( mpTemplate->GetLongProperty(Prop::EventInvoke) == 1 )
 		m_bInvokeWithSendString = true;
 	else
 		m_bInvokeWithSendString = false;
@@ -219,14 +205,33 @@ bool OdclListCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-bool OdclListCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
+bool OdclListCtrl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
 		return false;
 	bool bFailed = false;
 	switch( pProp->GetID() )
 	{
-	case nBlockListStyle:
+	case Prop::ImageList:
+		{
+			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
+			if (pImageList)
+			{
+				pImageList->GetImageList().SetBkColor( ::GetSysColor( COLOR_BTNFACE ) );
+				SetImageList( &pImageList->GetImageList(), TVSIL_NORMAL );
+				SetImageList( &pImageList->GetImageList(), LVSIL_SMALL );
+			}
+			else
+			{
+				if( !mDefaultImageList.m_hImageList )
+					mDefaultImageList.Create( 1, mpTemplate->GetLongProperty( Prop::RowHeight ), ILC_COLOR, 1, 1 );
+				mDefaultImageList.SetBkColor( ::GetSysColor(COLOR_WINDOW ) );
+				SetImageList( &mDefaultImageList, TVSIL_NORMAL );
+				SetImageList( &mDefaultImageList, LVSIL_SMALL );
+			}
+		}
+		break;
+	case Prop::BlockListStyle:
 		{
 			assert( mbBlockList == true );
 			//create a default icon for blocks without a preview image
@@ -240,43 +245,43 @@ bool OdclListCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 			SetImageList( &mBlockViewImageList, LVSIL_SMALL );
 			break;
 		}
-	case nListViewStyle:
+	case Prop::ListViewStyle:
 		{
 			break;
 		}
-	case nIconXSpacing:
+	case Prop::IconXSpacing:
 		{
 			int nImageListIconSizeX = 0;
-			if( mpTemplate->GetPropertyObject( nBlockListStyle ) )
+			if( mpTemplate->GetPropertyObject( Prop::BlockListStyle ) )
 				nImageListIconSizeX = 32;
 			else
 			{
 				RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
 				if( pImageList )
-					nImageListIconSizeX = pImageList->m_ImageSize.cx;
+					nImageListIconSizeX = pImageList->GetSize().cx;
 			}
 			CSize sizeIconSpacing( mpControl->SendMessage( LVM_GETITEMSPACING ) );
 			sizeIconSpacing.cx = pProp->GetLongValue() + nImageListIconSizeX;
 			SetIconSpacing( sizeIconSpacing );
 			break;
 		}
-	case nIconYSpacing:
+	case Prop::IconYSpacing:
 		{
 			int nImageListIconSizeY = 0;
-			if( mpTemplate->GetPropertyObject( nBlockListStyle ) )
+			if( mpTemplate->GetPropertyObject( Prop::BlockListStyle ) )
 				nImageListIconSizeY = 32;
 			else
 			{
 				RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
 				if( pImageList )
-					nImageListIconSizeY = pImageList->m_ImageSize.cy;
+					nImageListIconSizeY = pImageList->GetSize().cy;
 			}
 			CSize sizeIconSpacing( mpControl->SendMessage( LVM_GETITEMSPACING ) );
 			sizeIconSpacing.cy = pProp->GetLongValue() + nImageListIconSizeY;
 			SetIconSpacing( sizeIconSpacing );
 			break;
 		}
-	case nGridLines:
+	case Prop::GridLines:
 		{
 			if( pProp->GetBooleanValue() )
 				SetExtendedStyle( GetExtendedStyle() | LVS_EX_GRIDLINES );
@@ -284,7 +289,7 @@ bool OdclListCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 				SetExtendedStyle( GetExtendedStyle() & ~LVS_EX_GRIDLINES );
 			break;
 		}
-	case nFullRowSelect:
+	case Prop::FullRowSelect:
 		{
 			if( pProp->GetBooleanValue() )
 				SetExtendedStyle( GetExtendedStyle() | LVS_EX_FULLROWSELECT );
@@ -292,7 +297,7 @@ bool OdclListCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 				SetExtendedStyle( GetExtendedStyle() & ~LVS_EX_FULLROWSELECT );
 			break;
 		}
-	case nMultiSelect:
+	case Prop::MultiSelect:
 		{
 			if( pProp->GetBooleanValue() )
 				ModifyStyle( LVS_SINGLESEL, 0 );
@@ -300,7 +305,7 @@ bool OdclListCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 				ModifyStyle( 0, LVS_SINGLESEL );
 			break;
 		}
-	case nColumnCaptions:
+	case Prop::ColumnCaptions:
 		{
 			CHeaderCtrl* pHdrCtrl = GetHeaderCtrl();
 			PropVal::TCStringArray* prsCaption = pProp->GetStringArrayPtr();
@@ -316,7 +321,7 @@ bool OdclListCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 			}
 			break;
 		}
-	case nColumnWidths:
+	case Prop::ColumnWidths:
 		{
 			CHeaderCtrl* pHdrCtrl = GetHeaderCtrl();
 			PropVal::TIntArray* prInt = pProp->GetIntArrayPtr();
@@ -331,7 +336,7 @@ bool OdclListCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 			}
 			break;
 		}
-	case nColumnAlignments:
+	case Prop::ColumnAlignments:
 		{
 			CHeaderCtrl* pHdrCtrl = GetHeaderCtrl();
 			PropVal::TIntArray* prInt = pProp->GetIntArrayPtr();
@@ -346,7 +351,7 @@ bool OdclListCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 			}
 			break;
 		}
-	case nColumnImages:
+	case Prop::ColumnImages:
 		{
 			CHeaderCtrl* pHdrCtrl = GetHeaderCtrl();
 			PropVal::TIntArray* prInt = pProp->GetIntArrayPtr();
@@ -361,7 +366,7 @@ bool OdclListCtrl::OnApplyProperty( RefCountedPtr< CPropertyObject > pProp )
 			}
 			break;
 		}
-	case nDragnDropAllowDrop:
+	case Prop::DragnDropAllowDrop:
 		{
 			SetDragnDrop( pProp->GetBooleanValue() );
 			break;
@@ -374,7 +379,7 @@ DWORD OdclListCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CArxDialogControl::GetWndStyle();
 
-	switch( mpTemplate->GetLongProperty( nBlockListStyle ) ) //returns -1 if not found
+	switch( mpTemplate->GetLongProperty( Prop::BlockListStyle ) ) //returns -1 if not found
 	{
 	case 0:
 		dwStyle |= (LVS_ICON | LVS_NOCOLUMNHEADER);
@@ -385,7 +390,7 @@ DWORD OdclListCtrl::GetWndStyle() const
 	case -1:
 		{ //block list style property not found, so it is not a blockview list
 			dwStyle |= LVS_SHAREIMAGELISTS; //normal listview always uses a shared image list
-			LONG fListViewStyle = mpTemplate->GetLongProperty( nListViewStyle ); //returns -1 if not found
+			LONG fListViewStyle = mpTemplate->GetLongProperty( Prop::ListViewStyle ); //returns -1 if not found
 			switch( fListViewStyle )
 			{
 			case 0:
@@ -399,17 +404,17 @@ DWORD OdclListCtrl::GetWndStyle() const
 				break;
 			default:
 				dwStyle |= (LVS_REPORT);
-				if( !mpTemplate->GetBoolProperty( nColHeader ) )
+				if( !mpTemplate->GetBooleanProperty( Prop::ColHeader ) )
 					dwStyle |= (LVS_NOCOLUMNHEADER);
 				break;
 			}
-			if( fListViewStyle < 4 && mpTemplate->GetBoolProperty( nEditLabels ) )
+			if( fListViewStyle < 4 && mpTemplate->GetBooleanProperty( Prop::EditLabels ) )
 				dwStyle |= (LVS_EDITLABELS);			
 			break;
 		}
 	}
 
-	switch( mpTemplate->GetLongProperty( nListViewSort ) )
+	switch( mpTemplate->GetLongProperty( Prop::ListViewSort ) )
 	{
 	case 1:
 		dwStyle |= (LVS_SORTDESCENDING);
@@ -419,7 +424,7 @@ DWORD OdclListCtrl::GetWndStyle() const
 		break;
 	}
 	
-	switch( mpTemplate->GetLongProperty( nListViewIconAlign ) )
+	switch( mpTemplate->GetLongProperty( Prop::ListViewIconAlign ) )
 	{
 	case 0:
 		// I know that 0 = left in the property list box in the editor, but the top must be set so
@@ -433,13 +438,13 @@ DWORD OdclListCtrl::GetWndStyle() const
 		break;
 	}
 
-	if( mpTemplate->GetBoolProperty( nAutoArrange ) )
+	if( mpTemplate->GetBooleanProperty( Prop::AutoArrange ) )
 		dwStyle |= (LVS_AUTOARRANGE);	
-	if( !mpTemplate->GetBoolProperty( nLabelWrap ) )
+	if( !mpTemplate->GetBooleanProperty( Prop::LabelWrap ) )
 		dwStyle |= (LVS_NOLABELWRAP);
-	if( mpTemplate->GetBoolProperty( nShowSelectAlways ) )
+	if( mpTemplate->GetBooleanProperty( Prop::ShowSelectAlways ) )
 		dwStyle |= (LVS_SHOWSELALWAYS);
-	if( !mpTemplate->GetBoolProperty( nMultiSelect ) )
+	if( !mpTemplate->GetBooleanProperty( Prop::MultiSelect ) )
 		dwStyle |= (LVS_SINGLESEL);
 
 	return dwStyle;
@@ -613,8 +618,8 @@ void OdclListCtrl::OnSize(UINT nType, int cx, int cy)
 	CListCtrl::OnSize(nType, cx, cy);
 	//Arrange(LVA_DEFAULT);
 	//return;
-	int nPropIconStyle = mpTemplate->GetLongProperty(nListViewStyle);
-	if (nPropIconStyle == 0 || nPropIconStyle == 1 || mpTemplate->GetLongProperty(nBlockListStyle) > -1)
+	int nPropIconStyle = mpTemplate->GetLongProperty(Prop::ListViewStyle);
+	if (nPropIconStyle == 0 || nPropIconStyle == 1 || mpTemplate->GetLongProperty(Prop::BlockListStyle) > -1)
 	{	
 		GetWorkAreas(0, NULL);
 		CRect rcThis;
@@ -630,19 +635,19 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonDown(nFlags, point);
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseDown),
+		mpTemplate->GetStrProperty(Prop::EventMouseDown),
 		1,
 		nFlags,
 		point.x,
 		point.y,
 		m_bInvokeWithSendString);
 
-	bool bDrag = mpTemplate->GetBoolProperty(nDragnDropAllowBegin);
+	bool bDrag = mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin);
 	if (!bDrag) //dragging not allowed
 		return;
 
 /*
-	int nStyle = mpTemplate->GetLongProperty(nListViewStyle);
+	int nStyle = mpTemplate->GetLongProperty(Prop::ListViewStyle);
 	LVHITTESTINFO lvhti;
 	lvhti.pt = point;
 	SubItemHitTest(&lvhti);
@@ -656,7 +661,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 			// call methods to invoke the event
 			InvokeMethodIntInt(
-				mpTemplate->GetStrProperty(nEventClicked),  
+				mpTemplate->GetStrProperty(Prop::EventClicked),  
 				lvhti.iItem,
 				lvhti.iSubItem,
 				m_bInvokeWithSendString);
@@ -667,7 +672,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 			// call methods to invoke the event
 			InvokeMethodInt(
-				mpTemplate->GetStrProperty(nEventClicked),  
+				mpTemplate->GetStrProperty(Prop::EventClicked),  
 				lvhti.iItem,
 				m_bInvokeWithSendString);
 		}
@@ -690,7 +695,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 */
 
 	// a -1 will be returned if not found
-	if (mpTemplate->GetLongProperty(nListViewStyle) > -1)
+	if (mpTemplate->GetLongProperty(Prop::ListViewStyle) > -1)
 		BeginDragnDrop(mpTemplate, point, m_bInvokeWithSendString);
 	else
 	{
@@ -713,7 +718,7 @@ void OdclListCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseUp),
+		mpTemplate->GetStrProperty(Prop::EventMouseDown),
 		1,
 		nFlags,
 		point.x,
@@ -740,14 +745,14 @@ void OdclListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* plvdi = (LV_DISPINFO*)pNMHDR;
 	
-	int nStyle = mpTemplate->GetLongProperty(nListViewStyle);
+	int nStyle = mpTemplate->GetLongProperty(Prop::ListViewStyle);
 
 	if (plvdi->item.mask < GetItemCount() && 
 		plvdi->item.mask >= 0)
 	{
 		// call methods to invoke the event
 		InvokeMethodIntInt(
-			mpTemplate->GetStrProperty(nEventClicked),  
+			mpTemplate->GetStrProperty(Prop::EventClicked),  
 			plvdi->item.mask, 
 			plvdi->item.iItem, 
 			m_bInvokeWithSendString);			
@@ -763,7 +768,7 @@ void OdclListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 void OdclListCtrl::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 	
 	*pResult = 0;
 }
@@ -776,7 +781,7 @@ void OdclListCtrl::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 	if (plvdi->item.mask < GetItemCount() && plvdi->item.mask >= 0)
 	{
 		InvokeMethodInt(
-			mpTemplate->GetStrProperty(nEventRClick),  
+			mpTemplate->GetStrProperty(Prop::EventRClick),  
 			plvdi->item.mask, 
 			m_bInvokeWithSendString);
 	}
@@ -791,7 +796,7 @@ void OdclListCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 	if (plvdi->item.mask < GetItemCount() && plvdi->item.mask >= 0)
 	{
 		InvokeMethodInt(
-			mpTemplate->GetStrProperty(nEventRDblClick),  
+			mpTemplate->GetStrProperty(Prop::EventRDblClick),  
 			plvdi->item.mask, 
 			m_bInvokeWithSendString);
 	}
@@ -800,14 +805,14 @@ void OdclListCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 
 void OdclListCtrl::OnReturn(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(mpTemplate->GetStrProperty(nEventReturnPressed), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventReturnPressed), m_bInvokeWithSendString);
 	*pResult = 0;
 }
 
 void OdclListCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 	
 	
 	*pResult = 0;
@@ -821,7 +826,7 @@ void OdclListCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 	if (pDispInfo->item.mask > 0)
 	{
 		InvokeMethodStringIntInt(
-			mpTemplate->GetStrProperty(nEventEndLabelEdit),
+			mpTemplate->GetStrProperty(Prop::EventEndLabelEdit),
 			plvItem->pszText,
 			plvItem->iItem,
 			plvItem->iSubItem,
@@ -862,7 +867,7 @@ void OdclListCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 
 	// call methods to invoke the event
 	InvokeMethodIntInt(		
-		mpTemplate->GetStrProperty(nEventBeginLabelEdit),
+		mpTemplate->GetStrProperty(Prop::EventBeginLabelEdit),
 		nItem,
 		m_nEditSubItem,
 		m_bInvokeWithSendString);
@@ -875,7 +880,7 @@ void OdclListCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
 	
-	InvokeMethodInt(mpTemplate->GetStrProperty(nEventColumnClick), pNMListView->iSubItem, m_bInvokeWithSendString);
+	InvokeMethodInt(mpTemplate->GetStrProperty(Prop::EventColumnClick), pNMListView->iSubItem, m_bInvokeWithSendString);
 	
 	*pResult = 0;
 }
@@ -888,7 +893,7 @@ void OdclListCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 	POSITION pos = GetFirstSelectedItemPosition();
 	if (pos == NULL)
 	{
-		if (mpTemplate->GetLongProperty(nListViewStyle) > -1)
+		if (mpTemplate->GetLongProperty(Prop::ListViewStyle) > -1)
 		{
 			LVHITTESTINFO lvhti;
 
@@ -919,17 +924,17 @@ void OdclListCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 		nCol = 0;
 	}
 	
-	if (mpTemplate->GetLongProperty(nListViewStyle) > -1)
+	if (mpTemplate->GetLongProperty(Prop::ListViewStyle) > -1)
 		// call methods to invoke the event
 		InvokeMethodIntInt(
-			mpTemplate->GetStrProperty(nEventDblClicked),  
+			mpTemplate->GetStrProperty(Prop::EventDblClicked),  
 			nRow, 
 			nCol, 
 			m_bInvokeWithSendString);
 	else				
 		// call methods to invoke the event
 		InvokeMethodInt(
-			mpTemplate->GetStrProperty(nEventDblClicked),  
+			mpTemplate->GetStrProperty(Prop::EventDblClicked),  
 			nRow, 
 			m_bInvokeWithSendString);
 	
@@ -1309,7 +1314,7 @@ void OdclListCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 	//HideEditControls();
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseDown),
+		mpTemplate->GetStrProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -1323,7 +1328,7 @@ void OdclListCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 	//HideEditControls();
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseUp),
+		mpTemplate->GetStrProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -1337,7 +1342,7 @@ void OdclListCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 	//HideEditControls();
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseDown),
+		mpTemplate->GetStrProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,
@@ -1351,7 +1356,7 @@ void OdclListCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 	//HideEditControls();
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseUp),
+		mpTemplate->GetStrProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,
@@ -1363,7 +1368,7 @@ void OdclListCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 void OdclListCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseDown),
+		mpTemplate->GetStrProperty(Prop::EventMouseDown),
 		2,
 		MK_RBUTTON,
 		point.x,
@@ -1375,14 +1380,14 @@ void OdclListCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 void OdclListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStrProperty(nEventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(mpTemplate->GetStrProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void OdclListCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStrProperty(nEventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(mpTemplate->GetStrProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 		
 	CListCtrl::OnKeyUp(nChar, nRepCnt, nFlags);
 }
@@ -1390,7 +1395,7 @@ void OdclListCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 void OdclListCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntInt(
-		mpTemplate->GetStrProperty(nEventMouseMove),
+		mpTemplate->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,

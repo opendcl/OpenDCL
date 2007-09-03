@@ -112,9 +112,9 @@ void CTabsPane::Setup()
 		return;
 
 	POSITION pos = NULL;
-	m_pTabCaptions = mpDclControl->GetPropertyObject(nTabsCaption);	
-	m_pTabTTT = mpDclControl->GetPropertyObject(nTabsTTT);	
-	m_pTabImages = mpDclControl->GetPropertyObject(nTabsImageList);	
+	m_pTabCaptions = mpDclControl->GetPropertyObject(Prop::TabsCaption);	
+	m_pTabTTT = mpDclControl->GetPropertyObject(Prop::TabsTTT);	
+	m_pTabImages = mpDclControl->GetPropertyObject(Prop::TabsImageList);	
 
 	// create a pointer to pass to the list to insert
 	CProject *pProject = activeProject;
@@ -261,7 +261,7 @@ void CTabsPane::OnDelete()
 		{
 			m_DeletedTabList.AddTail(pTab);
 			if( pTab->mpChildForm )
-				pTab->mpChildForm->m_bDeleted = true;
+				pTab->mpChildForm->SetDeleted();
 		}
 	}
 
@@ -356,7 +356,7 @@ BOOL CTabsPane::OnApply()
 		}	
 		
 		// call the method to update the control itself
-		mpView->RefreshChildControl(mpDclControl, (PropertyId)-2);
+		mpView->RefreshChildControl(mpDclControl, Prop::_All);
 		mpView->ResizeChildTabPanes();
 		theEditorWorkspace.GetProjectTreeCtrl()->CleanupParents();
 	}

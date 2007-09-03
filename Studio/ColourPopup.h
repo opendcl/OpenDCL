@@ -45,12 +45,12 @@ public:
     CColourPopup();
     CColourPopup(CPoint p, COLORREF crColour, CWnd* pParentWnd,
                  LPCTSTR szDefaultText = NULL, LPCTSTR szCustomText = NULL,
-				 RefCountedPtr< CPropertyObject > pProp = NULL, CControlHolder *pAxCtrl = NULL);
+				 TPropertyPtr pProp = NULL, CControlHolder *pAxCtrl = NULL);
     void Initialise();
 
 // Attributes
 public:
-	RefCountedPtr< CPropertyObject > m_pProp;
+	TPropertyPtr m_pProp;
 	CControlHolder *m_pAxCtrl;
 // Operations
 public:

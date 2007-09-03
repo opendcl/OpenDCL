@@ -1254,13 +1254,13 @@ IMPLEMENT_SERIAL(CPropertyObject, CObject, 1)
 
 CPropertyObject::CPropertyObject()
 : mbHidden( false )
-, mnID( nPrivateProperty )
+, mnID( Prop::_Private )
 {	
 	SetType( PropInvalid );
 	SetFlags( 0 );
 }
 
-CPropertyObject::CPropertyObject(PropertyType type, DWORD dwFlags /*= 0*/, PropertyId nID /*= -1*/ )
+CPropertyObject::CPropertyObject(PropertyType type, DWORD dwFlags /*= 0*/, Prop::Id nID /*= -1*/ )
 : mbHidden( false )
 , mnID( nID )
 {	
@@ -1681,13 +1681,13 @@ void CPropertyObject::Serialize(CArchive& ar)
 		{
 			long lID;
 			ar >> long(lID);
-			mnID = (PropertyId)lID;
+			mnID = (Prop::Id)lID;
 		}
 		else
 		{
 			short nID;
 			ar >> short(nID);
-			mnID = (PropertyId)nID;
+			mnID = (Prop::Id)nID;
 		}
 		long lType;
 		ar >> long(lType);
@@ -1732,7 +1732,7 @@ IOStatus CPropertyObject::ReadFromTextFile5(std::ifstream &sFile)
 {
 	int nID;
   if (!readInt(sFile, nID)) return statInvalidFormat;
-	mnID = (PropertyId)nID;
+	mnID = (Prop::Id)nID;
 	int nType;
   if (!readInt(sFile, nType)) return statInvalidFormat;
 	SetType( (PropertyType)nType );

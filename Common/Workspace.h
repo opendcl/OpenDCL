@@ -50,7 +50,7 @@ public:
 	virtual bool GetModuleVersionInfo( DWORD& dwMajor, DWORD&dwMinor, DWORD& dwThird, DWORD& dwFourth, HMODULE hmodTarget = NULL ) const;
 	virtual bool DisplayAlert( UINT nResourceId, HMODULE hmodRes = NULL ) const;
 	virtual bool DisplayStatus( UINT nResourceId, HMODULE hmodRes = NULL ) const;
-	virtual bool GetDwordSetting( DWORD& dwValue, LPCTSTR pszValueName );
+	virtual bool GetDwordSetting( DWORD& dwValue, LPCTSTR pszValueName ) const;
 	virtual bool SetDwordSetting( DWORD dwValue, LPCTSTR pszValueName );
 	virtual bool IsAutoUpdateCheckEnabled(void) const;
 	virtual bool SetAutoUpdateCheckEnabled( bool bEnabled = true );
@@ -62,5 +62,5 @@ public:
 	CFontCollection& GetFontCollection(void) { return mFonts; }
 
 protected:
-	bool GetDwordSettingImp( DWORD& dwValue, LPCTSTR pszValueName, bool bHKLM = true, bool bX32 = true );
+	bool GetDwordSettingImp( DWORD& dwValue, LPCTSTR pszValueName, bool bHKLM = true, bool bX32 = true ) const;
 };

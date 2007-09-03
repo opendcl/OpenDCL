@@ -8,9 +8,9 @@
 #include "MethodLexicon.h"
 #include "ArgumentsRetrieval.h"
 #include "ControlTypes.h"
-#include "VdclListBox.h"
-#include "OptionListBox.h"
-#include "DwgDirList.h"
+#include "ArxListBoxCtrl.h"
+#include "ArxOptionListCtrl.h"
+#include "ArxDwgListCtrl.h"
 #include "Workspace.h"
 
 
@@ -41,7 +41,7 @@ int ListBox_AddString()
 		return 0;
 	}
 
-	acedRetInt(((VdclListBox*)pControl)->AddString(sStringArg));
+	acedRetInt(((CArxListBoxCtrl*)pControl)->AddString(sStringArg));
 
 	return 0;
 }
@@ -114,7 +114,7 @@ int ListBox_AddList()
 			// get the first argument required
 			sNewString = ListData->resval.rstring;
 
-			((VdclListBox*)pControl)->AddString(sNewString);
+			((CArxListBoxCtrl*)pControl)->AddString(sNewString);
 		}
 	}
 	
@@ -444,12 +444,12 @@ int OptionList_SetEnabled()
 
 	// we actually have to use 2 as the disabled identifier flag and 0 as enabled but not selected.
 	if (nData == 0)
-		((COptionListBox*) pControl)->SetItemData(nIndex, 2);
+		((CArxOptionListCtrl*) pControl)->SetItemData(nIndex, 2);
 	else
-		((COptionListBox*) pControl)->SetItemData(nIndex, 0);
+		((CArxOptionListCtrl*) pControl)->SetItemData(nIndex, 0);
 	CRect rc;
-	((COptionListBox*) pControl)->GetItemRect(nIndex, &rc);
-	((COptionListBox*) pControl)->InvalidateRect(rc, TRUE);
+	((CArxOptionListCtrl*) pControl)->GetItemRect(nIndex, &rc);
+	((CArxOptionListCtrl*) pControl)->InvalidateRect(rc, TRUE);
 
 	acedRetVoid();
 	return 0;
@@ -705,7 +705,7 @@ int ListBox_Dir()
 		return 0;
 	}
 	
-	if (((CClrListBox*)pControl)->m_ArxControl->GetType() == CtlOptionList)
+	if (((CListBoxCtrl*)pControl)->GetTemplate()->GetType() == CtlOptionList)
 	{
 		acedRetInt(-1); 
 		return 0;
@@ -766,8 +766,8 @@ int DwgList_Dir()
 		return 0;
 	}
 	
-	((CDwgDirList*)pControl)->ResetContent();
-	((CDwgDirList*)pControl)->Dir(sDir);
+	((CArxDwgListCtrl*)pControl)->ResetContent();
+	((CArxDwgListCtrl*)pControl)->Dir(sDir);
 	
 	acedRetVoid();
 	return 0;
@@ -785,7 +785,7 @@ int DwgList_GetDir()
 		return 0;
 	}
 	
-	acedRetStr(((CDwgDirList*)pControl)->m_sPath);
+	acedRetStr(((CArxDwgListCtrl*)pControl)->m_sPath);
 	return 0;
 }
 
@@ -809,27 +809,8 @@ int DwgList_GetFileName()
 	sString.ReleaseBuffer();
 	
 	acedRetStr(
-		((CDwgDirList*)pControl)->m_sPath + "\\" +
+		((CArxDwgListCtrl*)pControl)->m_sPath + _T("\\") +
 		sString);
-	return 0;
-}
-
-int DwgList_SetRowHeight()
-{
-	int nArg=0;
-	CWnd *pControl = GetControlPointer(CtlDwgList, sDwgList_SetRowHeight, &nArg);
-	int nRowHeight;
-
-	if (pControl == NULL || !GetIntArgument(nArg, &nRowHeight, sDwgList_SetRowHeight))
-	{
-		
-		acedRetNil();
-		return 0;
-	}
-	
-	((CDwgDirList*)pControl)->SetRowHeight(nRowHeight);
-	
-	acedRetVoid();
 	return 0;
 }
 
@@ -879,13 +860,13 @@ int OptionList_SetTttTitle()
 	}
 
 	if (pArx->GetType() != CtlOptionList || // if this list box is not an option list box
-			nItem >= pArx->GetPropertyObject(nBtnCaption)->size()) // or the specified item does not exist
+			nItem >= pArx->GetPropertyObject(Prop::BtnCaption)->size()) // or the specified item does not exist
 	{
 		acedRetNil();
 		return 0;
 	}
 
-	RefCountedPtr< CPropertyObject > pTTTProperty = pArx->GetPropertyObject( nBtnTTText );
+	TPropertyPtr pTTTProperty = pArx->GetPropertyObject( Prop::BtnTTText );
 	if( !pTTTProperty )
 	{
 		acedRetNil();
@@ -902,7 +883,7 @@ int OptionList_SetTttTitle()
 		prsTTT->resize( nItem + 1 );
 	prsTTT->at( nItem ) = sText;
 
-	COptionListBox* pOptionLst = (COptionListBox*)pArx->GetWindow();
+	CArxOptionListCtrl* pOptionLst = (CArxOptionListCtrl*)pArx->GetWindow();
 	pOptionLst->ResetTooltips();
 	
 	acedRetT();

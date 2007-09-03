@@ -22,12 +22,12 @@ CFontPropertyPage::CFontPropertyPage(CDclControlObject* pDclControl /*= NULL*/)
 {
 	if( mpDclControl )
 	{
-		m_pFontName = mpDclControl->GetPropertyObject(nLabelName);
-		m_pFontSize = mpDclControl->GetPropertyObject(nLabelSize);
-		m_pFontStrikeOut = mpDclControl->GetPropertyObject(nLabelStrikeOut);
-		m_pFontUnderline = mpDclControl->GetPropertyObject(nLabelUnderline);
-		m_pFontBold = mpDclControl->GetPropertyObject(nLabelBold);
-		m_pFontItalic = mpDclControl->GetPropertyObject(nLabelItalic);
+		m_pFontName = mpDclControl->GetPropertyObject(Prop::LabelName);
+		m_pFontSize = mpDclControl->GetPropertyObject(Prop::LabelSize);
+		m_pFontStrikeOut = mpDclControl->GetPropertyObject(Prop::LabelStrikeOut);
+		m_pFontUnderline = mpDclControl->GetPropertyObject(Prop::LabelUnderline);
+		m_pFontBold = mpDclControl->GetPropertyObject(Prop::LabelBold);
+		m_pFontItalic = mpDclControl->GetPropertyObject(Prop::LabelItalic);
 	}
 	else
 	{
@@ -475,7 +475,7 @@ BOOL CFontPropertyPage::OnApply()
 		}
 	}
 	if( mpDclControl && mpDclControl->m_pCtrlHolder )
-		((CControlHolder*)mpDclControl->m_pCtrlHolder)->UpdateProperty(nLabelName);
+		((CControlHolder*)mpDclControl->m_pCtrlHolder)->UpdateProperty(Prop::LabelName);
 
 	return CPropertyPage::OnApply();
 }

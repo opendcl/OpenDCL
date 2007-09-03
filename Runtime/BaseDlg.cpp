@@ -24,14 +24,14 @@ CBaseDlg::CBaseDlg(CDclFormObject* pSourceForm, UINT idd, CWnd* pParent /*=NULL*
 , mpSourceForm( pSourceForm )
 , mnInitialX( pParams? pParams->position.x : -1 )
 , mnInitialY( pParams? pParams->position.y : -1 )
-, mbHasTitleBar( pSourceForm->GetControlProperties()->GetBoolProperty( nTitleBar ) )
+, mbHasTitleBar( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::TitleBar ) )
 , mnMinWidth( 0 )
 , mnMinHeight( 0 )
 , mnMaxWidth( 0 )
 , mnMaxHeight( 0 )
 , mnNCWidth( 0 )
 , mnNCHeight( 0 )
-, mbShowGrip( pSourceForm->GetControlProperties()->GetBoolProperty( nResizable ) )
+, mbShowGrip( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::Resizable ) )
 {
 	m_sizing = FALSE;
 	m_szGripSize.cx = GetSystemMetrics(SM_CXVSCROLL);
@@ -143,8 +143,8 @@ BOOL CBaseDlg::OnInitDialog()
 	GetClientRect( &rectClient );
 	mnNCWidth = rectWindow.Width() - rectClient.Width();
 	mnNCHeight = rectWindow.Height() - rectClient.Height();
-	rectWindow.right = rectWindow.left + pFormProps->GetLongProperty( nWidth );
-	rectWindow.bottom = rectWindow.top + pFormProps->GetLongProperty( nHeight );
+	rectWindow.right = rectWindow.left + pFormProps->GetLongProperty( Prop::Width );
+	rectWindow.bottom = rectWindow.top + pFormProps->GetLongProperty( Prop::Height );
 	bool bUsesClientRect = mpSourceForm->UsesClientRect();
 	if( bUsesClientRect )
 	{
@@ -154,10 +154,10 @@ BOOL CBaseDlg::OnInitDialog()
 
 	CDialog::OnInitDialog();
 
-	SetWindowText( pFormProps->GetStrProperty( nTitleBarText ) );
-	SetTitleBarIcon( pFormProps->GetLongProperty( nIcon ) );
-	CSize szMin( pFormProps->GetLongProperty( nMinDialogWidth ), pFormProps->GetLongProperty( nMinDialogHeight ) );
-	CSize szMax( pFormProps->GetLongProperty( nMaxDialogWidth ), pFormProps->GetLongProperty( nMaxDialogHeight ) );
+	SetWindowText( pFormProps->GetStrProperty( Prop::TitleBarText ) );
+	SetTitleBarIcon( pFormProps->GetLongProperty( Prop::Icon ) );
+	CSize szMin( pFormProps->GetLongProperty( Prop::MinDialogWidth ), pFormProps->GetLongProperty( Prop::MinDialogHeight ) );
+	CSize szMax( pFormProps->GetLongProperty( Prop::MaxDialogWidth ), pFormProps->GetLongProperty( Prop::MaxDialogHeight ) );
 	SetMinMaxSize( szMin, szMax );
 
 	//create the control pane and the design time controls
@@ -192,17 +192,17 @@ BOOL CBaseDlg::OnInitDialog()
 	SavePosition();
 	UpdateGripPos();
 	
-	InvokeMethod( pFormProps->GetStrProperty( nFormEventInitialize ), false );
+	InvokeMethod( pFormProps->GetStrProperty( Prop::FormEventInitialize ), false );
 	if( bUsesClientRect )
 		GetClientRect( &rectWindow );
-	InvokeMethodIntInt( pFormProps->GetStrProperty( nFormEventSize ), rectWindow.Width(), rectWindow.Height(), false );	
+	InvokeMethodIntInt( pFormProps->GetStrProperty( Prop::FormEventSize ), rectWindow.Width(), rectWindow.Height(), false );	
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 BOOL CBaseDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpSourceForm->GetControlProperties()->GetStrProperty(nEventOnHelp), false);
+	InvokeMethod(mpSourceForm->GetControlProperties()->GetStrProperty(Prop::EventOnHelp), false);
 	return TRUE;
 }
 
@@ -210,7 +210,7 @@ void CBaseDlg::OnClose()
 {
 	bool bCancelling = (this->m_nModalResult == IDCANCEL || this->m_nModalResult == -1);
 	if (GetDialogObject().IsClosing() ||
-			!InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventCancelClose), bCancelling))
+			!InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStrProperty(Prop::FormEventCancelClose), bCancelling))
 	{
 		GetDialogObject().SetClosing();
 		__super::OnClose();
@@ -226,7 +226,7 @@ void CBaseDlg::OnDestroy()
 	SavePosition();
 	CRect rcThis;
 	GetWindowRect( &rcThis );
-	InvokeMethodIntInt(mpSourceForm->GetControlProperties()->GetStrProperty(nFormEventClose), rcThis.left, rcThis.top, false);	
+	InvokeMethodIntInt(mpSourceForm->GetControlProperties()->GetStrProperty(Prop::FormEventClose), rcThis.left, rcThis.top, false);	
 	DestroyIcon( SetIcon(NULL, FALSE) );
 	GetControlPane().CleanUpControls();	
 	__super::OnDestroy();
@@ -293,11 +293,7 @@ void CBaseDlg::OnPaint()
 		dc.DrawFrameControl(&m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
 }
 
-#if (_ACADTARGET == 16)
-UINT CBaseDlg::OnNcHitTest(CPoint point) 
-#else
-LRESULT CBaseDlg::OnNcHitTest(CPoint point) 
-#endif
+__LRESULT CBaseDlg::OnNcHitTest(CPoint point) 
 {
 	CPoint pt = point;
 	ScreenToClient(&pt);

@@ -67,9 +67,7 @@ BOOL CEventsCheckTree::PreTranslateMessage(MSG* pMsg)
  					m_pView->PreTranslateMessage(pMsg);
 				break;
 		}
-		
 	}	
-		
 	return CTreeCtrl::PreTranslateMessage(pMsg);
 }
 

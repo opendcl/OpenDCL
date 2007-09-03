@@ -25,7 +25,7 @@ static void MoveImageListsToControls( std::vector< CImageListObject* >& rImageLi
 		POSITION posProp = pDclControl->GetPropertyList().GetHeadPosition();
 		while( posProp )
 		{
-			RefCountedPtr< CPropertyObject > pProp = pDclControl->GetPropertyList().GetNext( posProp ); 
+			TPropertyPtr pProp = pDclControl->GetPropertyList().GetNext( posProp ); 
 			if( pProp->GetType() == PropImageList )
 			{//we have a winner
 				short idx = pProp->GetShortValue();
@@ -55,11 +55,11 @@ CDclFormObject::CDclFormObject()
 , mpDlgObject( NULL )
 , mnNextId( 1 )
 , mbUsesClientRect( true )
+, mbDeleted( false )
 {
 	m_pChildWnd = NULL;
 	m_pMdiChildWnd = NULL;
 	m_htiTreeItem = NULL;
-	m_bDeleted = false;
 	m_bLoaded = false;
 }
 
@@ -71,11 +71,11 @@ CDclFormObject::CDclFormObject( CProject* Project, DclFormType type /*= VdclInva
 , mpDlgObject( NULL )
 , mnNextId( 1 )
 , mbUsesClientRect( true )
+, mbDeleted( false )
 {
 	m_pChildWnd = NULL;
 	m_pMdiChildWnd = NULL;
 	m_htiTreeItem = NULL;
-	m_bDeleted = false;
 	m_bLoaded = false;
 	CreateControlProperties();
 }
@@ -160,7 +160,7 @@ void CDclFormObject::PurgeDeletedControls()
 		POSITION posAt = pos;
 		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
 		assert( pDclControl != NULL );
-		if( pDclControl && pDclControl->m_Delete )
+		if( pDclControl && pDclControl->IsDeleted() )
 		{
 			mDclControls.RemoveAt(posAt);
 			delete pDclControl;
@@ -175,12 +175,11 @@ void CDclFormObject::PurgeDeletedImageLists()
 	if( mImageLists.empty() )
 		return;
 	std::vector< CImageListObject >::iterator iter = mImageLists.end();
-	do
+	while( iter != mImageLists.begin() );
 	{
-		if( --iter->m_Delete )
+		if( (--iter)->IsDeleted() )
 			mImageLists.erase( iter );
 	}
-	while( iter != mImageLists.begin() );
 }
 
 
@@ -236,67 +235,13 @@ void CDclFormObject::ReindexControls()
 	}
 }
 
-
-bool CDclFormObject::CanWeDeleteForm() const
-{
-	CString sTitle;
-	CString sQuestion;
-
-	// set counter for ArxControls
-	INT_PTR nCount = mDclControls.GetCount();
-	int nTotal = -1; // please note it must be set to -1 to remove the arx control object that holds the properties of the dcl form
-
-	// set start position for navigating ArxControls
-	POSITION pos = mDclControls.GetHeadPosition();
-	
-	// do loop to navigate Arx Controls
-	while (pos != NULL)
-	{
-		// get current ArxControlObject
-		CDclControlObject* pControl = mDclControls.GetNext(pos);
-
-		// count the controls
-		if (pControl->m_Delete == FALSE)
-		{
-			nTotal++;
-		}
-
-		// if the control has at a tab strip control in it we must ask the user.
-		if (pControl->GetType() == CtlTabStrip)
-		{
-			//sQuestion = theWorkspace.LoadResourceString(IDS_QDELETEFORMWTAB);
-			sQuestion = _T("Are you sure you want to remove this dialog box?\r\nDeleting it will remove the Tab control and all it's Tab pane forms with their controls.");
-			if(MessageBox(::GetActiveWindow(), sQuestion, _T("OpenDCL"), MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2) == 6)
-				return true;
-			else
-				return false;
-		}
-
-		// increment counter
-		nCount--;
-	}
-
-	// if there is more than one control we must ask the user.
-	if (nTotal > 0)
-	{
-		//sQuestion = theWorkspace.LoadResourceString(IDS_QDELETEFORM);
-		sQuestion = _T("Deleting this tab will permanently delete the controls drawn on it's form.\r\nAre you sure you wish to delete this tab and it's child controls?");
-		if(MessageBox(::GetActiveWindow(), sQuestion, _T("OpenDCL"), MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2) == 6)
-			return true;
-		else
-			return false;
-	}
-
-	return true;
-}
-
 int CDclFormObject::CountDeletedControls() const
 {
 	INT_PTR ctDeleted = 0;
 	POSITION pos = mDclControls.GetHeadPosition();
 	while (pos)
 	{
-		if (mDclControls.GetNext(pos)->m_Delete)
+		if (mDclControls.GetNext(pos)->IsDeleted())
 			ctDeleted++;
 	}
 	return ctDeleted;
@@ -308,7 +253,7 @@ void CDclFormObject::SetGlobalVariableName( LPCTSTR pszRootName /*= NULL*/, bool
 	if( sRootName.IsEmpty() )
 		sRootName = mpProject->GetKeyName();
 	CString sFormName = sRootName + _T('_') + GetKeyName();
-	GetControlProperties()->AddStringProperty( nGlobalVarName, PropString, sFormName, true );
+	GetControlProperties()->AddStringProperty( Prop::GlobalVarName, PropString, sFormName, true );
 
 	if( !bUpdateChildren )
 		return;
@@ -321,7 +266,7 @@ void CDclFormObject::SetGlobalVariableName( LPCTSTR pszRootName /*= NULL*/, bool
 
 void CDclFormObject::ClearGlobalVariableName( bool bUpdateChildren /*= true*/ )	
 {	
-	GetControlProperties()->SetStringProperty( nGlobalVarName, NULL );
+	GetControlProperties()->SetStringProperty( Prop::GlobalVarName, NULL );
 
 	if( !bUpdateChildren )
 		return;
@@ -338,7 +283,7 @@ size_t CDclFormObject::CountDeletedImageLists() const
 	size_t idx = mImageLists.size();
 	while( idx-- > 0 )
 	{
-		if( mImageLists.at( idx ).m_Delete )
+		if( mImageLists.at( idx ).IsDeleted() )
 			++ctDeleted;
 	}
 	return ctDeleted;
@@ -352,25 +297,19 @@ CDclFormObject* CDclFormObject::AddChildForm( DclFormType type )
 	return pDclForm;
 }
 
-CString CDclFormObject::GetDclFormTitle() const
+LPCTSTR CDclFormObject::GetTitleText() const
 {
-	try
-	{
-		const CDclControlObject* pControl = GetControlProperties();
-		assert(pControl != NULL);
-		if (pControl)
-			return pControl->GetStrProperty(nTitleBarText);
-	}
-	catch(...)
-	{
-	}
-	return CString();
+	const CDclControlObject* pControl = GetControlProperties();
+	assert(pControl != NULL);
+	if (pControl)
+		return pControl->GetStrProperty(Prop::TitleBarText);
+	return NULL;
 }
 
-long CDclFormObject::GetDclFormTitleBarIcon()
+UINT_PTR CDclFormObject::GetTitleBarIcon()
 {
 	CDclControlObject* pControl = GetControlProperties();
-	return pControl->GetLongProperty(nIcon);
+	return (UINT_PTR)pControl->GetLongProperty(Prop::Icon);
 }
 
 //IOStatus CDclFormObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
@@ -413,11 +352,8 @@ long CDclFormObject::GetDclFormTitleBarIcon()
 //    // get current ArxControlObject
 //    CDclControlObject* pControl = mDclControls.GetNext(pos);
 //
-//    if (pControl->m_Delete == FALSE)
-//    {
-//      // put dcl form into archive
+//    if (!pControl->IsDeleted())
 //      pControl->WriteToTextFile(pFile, fileName);
-//    }
 //  }		
 //	return statOK;
 //}
@@ -462,7 +398,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 		while (pos != NULL)
 		{
 			CDclControlObject* pControl = mDclControls.GetNext(pos);
-			if (pControl->m_Delete == FALSE)
+			if (!pControl->IsDeleted())
 			{
 				pControl->Serialize(ar);
 			#ifdef _DIAGNOSTIC
@@ -578,22 +514,21 @@ void CDclFormObject::IncrementPictureId(int nIdIncrement)
 		// get current property
 		CDclControlObject* pControlForm = mDclControls.GetAt(pos);
 		
-		int nPictureId = pControlForm->GetLongProperty(nPicture);
+		int nPictureId = pControlForm->GetLongProperty(Prop::Picture);
 		if (nPictureId > 0)
-			pControlForm->SetLongProperty(nPicture, pControlForm->GetLongProperty(nPicture) + nIdIncrement);
+			pControlForm->SetLongProperty(Prop::Picture, pControlForm->GetLongProperty(Prop::Picture) + nIdIncrement);
 
-		int nPressedPictureId = pControlForm->GetLongProperty(nPressedPicture);
+		int nPressedPictureId = pControlForm->GetLongProperty(Prop::PressedPicture);
 		if (nPressedPictureId > 0)
-			pControlForm->SetLongProperty(nPressedPicture, pControlForm->GetLongProperty(nPressedPicture) + nIdIncrement);
+			pControlForm->SetLongProperty(Prop::PressedPicture, pControlForm->GetLongProperty(Prop::PressedPicture) + nIdIncrement);
 
-		int nIconId = pControlForm->GetLongProperty(nIcon);
+		int nIconId = pControlForm->GetLongProperty(Prop::Icon);
 		if (nIconId > 0)
-			pControlForm->SetLongProperty(nIcon, pControlForm->GetLongProperty(nIcon) + nIdIncrement);
+			pControlForm->SetLongProperty(Prop::Icon, pControlForm->GetLongProperty(Prop::Icon) + nIdIncrement);
 
 		// increment counter
 		nCount--;
 	}
-	
 }
 
 
@@ -624,7 +559,7 @@ void CDclFormObject::ClearR14Events()
 	if (mType == VdclDockable)
 	{
 		CDclControlObject* pControlForm = GetControlProperties();
-		pControlForm->RemoveProperty(nResizable);
+		pControlForm->RemoveProperty(Prop::Resizable);
 	}
 }
 
@@ -684,7 +619,7 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 
     if (mType == VdclModal)
     {				
-      RefCountedPtr< CPropertyObject > pProp = pControl->GetPropertyObject(nEventInvoke);
+      TPropertyPtr pProp = pControl->GetPropertyObject(Prop::EventInvoke);
       if (pProp != NULL)
       {
         POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
@@ -724,24 +659,24 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 		switch (mType)
 		{
 		case VdclModal:
-			pControl->RemoveProperty( nEventInvoke );
+			pControl->RemoveProperty( Prop::EventInvoke );
 			//break;  This break was missing -- maybe intentional, I can't tell for sure [ORW]
 		case VdclModeless:
-			pControl->AddLongProperty( nMinDialogWidth, PropLong, 0 );
-			pControl->AddLongProperty( nMinDialogHeight, PropLong, 0 );
-			pControl->AddLongProperty( nMaxDialogWidth, PropLong, 0 );
-			pControl->AddLongProperty( nMaxDialogHeight, PropLong, 0 );
+			pControl->AddLongProperty( Prop::MinDialogWidth, PropLong, 0 );
+			pControl->AddLongProperty( Prop::MinDialogHeight, PropLong, 0 );
+			pControl->AddLongProperty( Prop::MaxDialogWidth, PropLong, 0 );
+			pControl->AddLongProperty( Prop::MaxDialogHeight, PropLong, 0 );
 			break;
 		case VdclDockable:
-			pControl->AddBooleanProperty( nResizable, PropBool, true );
-			pControl->RemoveProperty( nMinDialogWidth );
-			pControl->RemoveProperty( nMinDialogHeight );
-			pControl->RemoveProperty( nMaxDialogWidth );
-			pControl->RemoveProperty( nMaxDialogHeight );
+			pControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
+			pControl->RemoveProperty( Prop::MinDialogWidth );
+			pControl->RemoveProperty( Prop::MinDialogHeight );
+			pControl->RemoveProperty( Prop::MaxDialogWidth );
+			pControl->RemoveProperty( Prop::MaxDialogHeight );
 			break;		
 		}
   }
-	m_bDeleted = false;
+	mbDeleted = false;
 	return statOK;
 }
 
@@ -762,7 +697,7 @@ CString CDclFormObject::GetKeyName() const
 	assert( pControlProps != NULL );
 	if (!pControlProps)
 		return CString(); //properties have not yet been added!
-	CString sControlName = pControlProps->GetStrProperty(nName);
+	CString sControlName = pControlProps->GetStrProperty(Prop::Name);
 	if( sControlName.IsEmpty() )
 	{
 		if( mpParentForm )
@@ -785,6 +720,21 @@ CString CDclFormObject::GetVarName() const
 	if (!pControlProps)
 		return CString(); //properties have not yet been added!
 	return pControlProps->GetVarName();
+}
+
+bool CDclFormObject::IsModeless() const
+{
+	switch( mType )
+	{
+	case VdclInvalid: return false;
+	case VdclModal: return false;
+	case VdclModeless: return true;
+	case VdclDockable: return true;
+	case VdclConfigTab: return false;
+	case VdclTabForm: return true;
+	case VdclFileDialog: return false;
+	}
+	return false;
 }
 
 INT_PTR CDclFormObject::GetControlCount() const
@@ -817,7 +767,7 @@ CDclControlObject* CDclFormObject::GetControlProperties()
 
 CSize CDclFormObject::GetFormSize() const
 {
-	return CSize( GetControlProperties()->GetLongProperty(nWidth), GetControlProperties()->GetLongProperty(nHeight) );
+	return CSize( GetControlProperties()->GetLongProperty(Prop::Width), GetControlProperties()->GetLongProperty(Prop::Height) );
 }
 
 CDclControlObject* CDclFormObject::FindControl( LPCTSTR pszControlName ) const
@@ -870,7 +820,7 @@ CDclControlObject* CDclFormObject::FindControlWithVarName( LPCTSTR pszVarName ) 
 	while( pos )
 	{
 		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
-		if( pDclControl->GetStrProperty( nGlobalVarName ).CompareNoCase( pszVarName ) == 0 )
+		if( pDclControl->GetStrProperty( Prop::GlobalVarName ).CompareNoCase( pszVarName ) == 0 )
 			return pDclControl;
 	}
 	return NULL;

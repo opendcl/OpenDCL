@@ -12,8 +12,11 @@
 
 class CDclControlObject;
 class CControlPane;
+class CAcadColorService;
+class CThemeHelperST;
+class CDragDropService;
 class CArxControlServices;
-enum PropertyId;
+enum Prop::Id;
 enum ControlType;
 
 
@@ -106,11 +109,11 @@ public:
 
 class CDialogControl
 {
-	// Attributes
 protected:		
 	CDclControlObject* mpTemplate;
 	CControlPane* mpControlPane;
 	CWnd* mpControl;
+
 private:		
 	bool mbEnumProps;
 	CPPToolTip mToolTip;
@@ -130,6 +133,9 @@ public:
 	CControlPane* GetControlPane() { return mpControlPane; }
 	const CPPToolTip& GetToolTipCtrl() const { const_cast< CDialogControl* >(this)->CreateTooltip(); return mToolTip; }
 	CPPToolTip& GetToolTipCtrl() { CreateTooltip(); return mToolTip; }
+	virtual CAcadColorService* GetColorService() { return NULL; }
+	virtual CThemeHelperST* GetThemeHelper();
+	virtual CDragDropService* GetDragDropService() { return NULL; }
 	virtual const CWnd* GetControl() const { return mpControl; }
 	virtual CWnd* GetControl() { return mpControl; }
 	virtual ControlType GetControlType() const;
@@ -164,15 +170,19 @@ public:
 	virtual bool IsEnumeratingProperties() const { return mbEnumProps; }
 
 	// for properties without specific handlers
-	virtual bool OnApplyProperty( RefCountedPtr< CPropertyObject > pProp );
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
 	// handlers for specific properties
-	virtual bool OnApplyBorderStyle( RefCountedPtr< CPropertyObject > pProp ); //nBorder
-	virtual bool OnApplyEnabled( RefCountedPtr< CPropertyObject > pProp ); //nEnabled
-	virtual bool OnApplyVisible( RefCountedPtr< CPropertyObject > pProp ); //nVisible
-	virtual bool OnApplyCaption( RefCountedPtr< CPropertyObject > pProp ); //nCaption, nTitleBarText
-	virtual bool OnApplyToolTip( RefCountedPtr< CPropertyObject > pProp ); //nToolTipTitle
-	virtual bool OnApplyFont( RefCountedPtr< CPropertyObject > pProp ); //nLabelName
+	virtual bool OnApplyForegroundColor( TPropertyPtr pProp ); //Prop::ForegroundColor
+	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp ); //Prop::BackgroundColor
+	virtual bool OnApplyBorderStyle( TPropertyPtr pProp ); //Prop::BorderStyle
+	virtual bool OnApplyEnabled( TPropertyPtr pProp ); //Prop::Enabled
+	virtual bool OnApplyVisible( TPropertyPtr pProp ); //Prop::Visible
+	virtual bool OnApplyCaption( TPropertyPtr pProp ); //Prop::Caption, Prop::TitleBarText
+	virtual bool OnApplyVScrollBar( TPropertyPtr pProp ); //Prop::VScrollBar
+	virtual bool OnApplyHScrollBar( TPropertyPtr pProp ); //Prop::HScrollBar
+	virtual bool OnApplyToolTip( TPropertyPtr pProp ); //Prop::ToolTipTitle
+	virtual bool OnApplyFont( TPropertyPtr pProp ); //Prop::LabelName
 };
 
 

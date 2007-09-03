@@ -37,10 +37,10 @@ public:
 	CComboBox	m_Left;
 	CGeometryImage	m_ExampleImage;
 	//}}AFX_DATA
-	RefCountedPtr< CPropertyObject > m_pUseTopFromBottom;
-	RefCountedPtr< CPropertyObject > m_pUseBottomFromBottom;
-	RefCountedPtr< CPropertyObject > m_pUseLeftFromRight;
-	RefCountedPtr< CPropertyObject > m_pUseRightFromRight;
+	TPropertyPtr m_pUseTopFromBottom;
+	TPropertyPtr m_pUseBottomFromBottom;
+	TPropertyPtr m_pUseLeftFromRight;
+	TPropertyPtr m_pUseRightFromRight;
 
 	CDclControlObject *m_pControl;
 	CDclFormObject  *m_pDclForm;

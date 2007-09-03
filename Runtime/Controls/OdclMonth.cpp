@@ -49,18 +49,18 @@ BOOL OdclMonth::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
 
-	long lMaxSel = pControl->GetLongProperty(nMultiSelection);
+	long lMaxSel = pControl->GetLongProperty(Prop::MultiSelection);
 	if ( lMaxSel > 1 )
 		dwStyle = dwStyle | MCS_MULTISELECT;
 
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
@@ -77,7 +77,7 @@ BOOL OdclMonth::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	CMonthCalCtrl::GetToday(tToday);
 	CMonthCalCtrl::SetCurSel(tToday);
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -101,7 +101,7 @@ void OdclMonth::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -112,19 +112,19 @@ void OdclMonth::OnMouseMove(UINT nFlags, CPoint point)
 
 void OdclMonth::OnGetdaystate(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventGetDayState), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventGetDayState), m_bInvokeWithSendString);
 	*pResult = 0;
 }
 
 void OdclMonth::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventSelChanged), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSelChanged), m_bInvokeWithSendString);
 	*pResult = 0;
 }
 
 void OdclMonth::OnSelect(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventSelect), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSelect), m_bInvokeWithSendString);
 	*pResult = 0;
 }
 

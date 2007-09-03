@@ -168,68 +168,68 @@ void CEventsTabPane::UpdateEvents(CDclControlObject *pControl)
 	if (m_pControl == NULL)
 		return;
 	
-	TryToAddEvent(nEventFolderChanged);
-	TryToAddEvent(nEventOnHelp);
-	TryToAddEvent(nEventOnTypeChange);
-	TryToAddEvent(nEventBeginLabelEdit);
-	TryToAddEvent(nEventBtnClicked);
-	TryToAddEvent(nEventSplitterMoved);
-	TryToAddEvent(nEventChanged);
-	TryToAddEvent(nEventClicked);
-	TryToAddEvent(nEventColumnClick);
-	TryToAddEvent(nEventDblClicked);
-	TryToAddEvent(nEventDeleteItem);
-	TryToAddEvent(nEventDropDown);
-	TryToAddEvent(nEventEditChanged);
-	TryToAddEvent(nEventEndLabelEdit);
-	TryToAddEvent(nEventGetDayState);
-	TryToAddEvent(nEventItemExpanded);
-	TryToAddEvent(nEventItemExpanding);
-	TryToAddEvent(nEventMouseDown);
-	TryToAddEvent(nEventMouseUp);
-	TryToAddEvent(nEventMouseMove);
-	TryToAddEvent(nEventMouseEntered);
-	TryToAddEvent(nEventMouseMovedOff);
-	TryToAddEvent(nEventMouseDblClick);
-	TryToAddEvent(nEventMouseWheel);
-	TryToAddEvent(nEventNavigateComplete);
-	TryToAddEvent(nEventOutOfMemory);
-	TryToAddEvent(nEventKeyDown);
-	TryToAddEvent(nEventKeyUp);
-	TryToAddEvent(nEventKillFocus);
-	TryToAddEvent(nEventMaxText);
-	TryToAddEvent(nOnLMouseEvent);
-	TryToAddEvent(nOnMMouseEvent);
-	TryToAddEvent(nEventPaint);
-	TryToAddEvent(nOnRMouseEvent);
-	TryToAddEvent(nEventReturn);
-	TryToAddEvent(nEventRClick);
-	TryToAddEvent(nEventRDblClick);
-	TryToAddEvent(nEventReturnPressed);
-	TryToAddEvent(nEventSelect);
-	TryToAddEvent(nEventSelChanged);
-	TryToAddEvent(nEventSelChanging);
-	TryToAddEvent(nEventSetFocus);
-	TryToAddEvent(nEventUpdate);
-	TryToAddEvent(nEventScroll);
-	TryToAddEvent(nEventScrolled);
-	TryToAddEvent(nEventReleasedCapture);
-	TryToAddEvent(nDragnDropBegin);
-	TryToAddEvent(nDragnDropToAutoCAD);
-	TryToAddEvent(nDragnDropFromControl);
-	TryToAddEvent(nDragnDropFromAutoCAD);
-	TryToAddEvent(nFormEventCancelClose);
-	TryToAddEvent(nFormEventClose);
-  TryToAddEvent(nFormEventOnOk);
-	TryToAddEvent(nFormEventOnCancel);
-	TryToAddEvent(nFormEventInitialize);
-	TryToAddEvent(nFormEventSize);
-	TryToAddEvent(nFormEventShow);
-	TryToAddEvent(nDocEventActivated);
-	TryToAddEvent(nCfgEventCancel);
-	TryToAddEvent(nCfgEventOK);
-	TryToAddEvent(nCfgEventHelp);
-	TryToAddEvent(nCfgEventApply);
+	TryToAddEvent(Prop::EventFolderChanged);
+	TryToAddEvent(Prop::EventOnHelp);
+	TryToAddEvent(Prop::EventOnTypeChange);
+	TryToAddEvent(Prop::EventBeginLabelEdit);
+	TryToAddEvent(Prop::EventBtnClicked);
+	TryToAddEvent(Prop::EventSplitterMoved);
+	TryToAddEvent(Prop::EventChanged);
+	TryToAddEvent(Prop::EventClicked);
+	TryToAddEvent(Prop::EventColumnClick);
+	TryToAddEvent(Prop::EventDblClicked);
+	TryToAddEvent(Prop::EventDeleteItem);
+	TryToAddEvent(Prop::EventDropDown);
+	TryToAddEvent(Prop::EventEditChanged);
+	TryToAddEvent(Prop::EventEndLabelEdit);
+	TryToAddEvent(Prop::EventGetDayState);
+	TryToAddEvent(Prop::EventItemExpanded);
+	TryToAddEvent(Prop::EventItemExpanding);
+	TryToAddEvent(Prop::EventMouseDown);
+	TryToAddEvent(Prop::EventMouseDown);
+	TryToAddEvent(Prop::EventMouseMove);
+	TryToAddEvent(Prop::EventMouseEntered);
+	TryToAddEvent(Prop::EventMouseMovedOff);
+	TryToAddEvent(Prop::EventMouseDblClick);
+	TryToAddEvent(Prop::EventMouseWheel);
+	TryToAddEvent(Prop::EventNavigateComplete);
+	TryToAddEvent(Prop::EventOutOfMemory);
+	TryToAddEvent(Prop::EventKeyDown);
+	TryToAddEvent(Prop::EventKeyUp);
+	TryToAddEvent(Prop::EventKillFocus);
+	TryToAddEvent(Prop::EventMaxText);
+	TryToAddEvent(Prop::OnLMouseEvent);
+	TryToAddEvent(Prop::OnMMouseEvent);
+	TryToAddEvent(Prop::EventPaint);
+	TryToAddEvent(Prop::OnRMouseEvent);
+	TryToAddEvent(Prop::EventReturn);
+	TryToAddEvent(Prop::EventRClick);
+	TryToAddEvent(Prop::EventRDblClick);
+	TryToAddEvent(Prop::EventReturnPressed);
+	TryToAddEvent(Prop::EventSelect);
+	TryToAddEvent(Prop::EventSelChanged);
+	TryToAddEvent(Prop::EventSelChanging);
+	TryToAddEvent(Prop::EventSetFocus);
+	TryToAddEvent(Prop::EventUpdate);
+	TryToAddEvent(Prop::EventScroll);
+	TryToAddEvent(Prop::EventScrolled);
+	TryToAddEvent(Prop::EventReleasedCapture);
+	TryToAddEvent(Prop::DragnDropBegin);
+	TryToAddEvent(Prop::DragnDropToAutoCAD);
+	TryToAddEvent(Prop::DragnDropFromControl);
+	TryToAddEvent(Prop::DragnDropFromAutoCAD);
+	TryToAddEvent(Prop::FormEventCancelClose);
+	TryToAddEvent(Prop::FormEventClose);
+  TryToAddEvent(Prop::FormEventOnOk);
+	TryToAddEvent(Prop::FormEventOnCancel);
+	TryToAddEvent(Prop::FormEventInitialize);
+	TryToAddEvent(Prop::FormEventSize);
+	TryToAddEvent(Prop::FormEventShow);
+	TryToAddEvent(Prop::DocEventActivated);
+	TryToAddEvent(Prop::CfgEventCancel);
+	TryToAddEvent(Prop::CfgEventOK);
+	TryToAddEvent(Prop::CfgEventHelp);
+	TryToAddEvent(Prop::CfgEventApply);
 	
 	// call the method to add any ActiveX events.
 	AddAnyActiveXEvents();
@@ -253,7 +253,7 @@ void CEventsTabPane::AddAnyActiveXEvents()
 	POSITION pos = m_pControl->GetPropertyList().GetHeadPosition();
 	while( pos )
 	{
-		RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetNext( pos );
+		TPropertyPtr pProp = m_pControl->GetPropertyList().GetNext( pos );
 		if( pProp && pProp->GetType() == PropActiveXEvent )
 		{ //the event exists, so add it to the list
 			CString sName = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetName();
@@ -269,12 +269,12 @@ void CEventsTabPane::AddAnyActiveXEvents()
 	}
 }
 
-void CEventsTabPane::TryToAddEvent( PropertyId nEventId ) 
+void CEventsTabPane::TryToAddEvent( Prop::Id nEventId ) 
 {
 	if( m_pControl == NULL )
 		return;
 
-	RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyObject( nEventId );
+	TPropertyPtr pProp = m_pControl->GetPropertyObject( nEventId );
 	if( pProp )
 	{ //the event exists, so add it to the list
 		int idxEvent = m_EventsTree.AddString( GetPropertyName( nEventId ) );
@@ -295,7 +295,7 @@ void CEventsTabPane::OnChangeDefunedit()
 		CString sDefunEditText;
 		if (m_EventsTree.GetCheck(hItem) == BST_CHECKED)
 			m_DefunEdit.GetWindowText(sDefunEditText); // get the new defun name from the edit box
-		SetEvent((PropertyId)m_EventsTree.GetItemData(hItem), sDefunEditText); // set the property to the new defun name
+		SetEvent((Prop::Id)m_EventsTree.GetItemData(hItem), sDefunEditText); // set the property to the new defun name
 		SetDefunPreview();
 	}
 }
@@ -312,7 +312,7 @@ void CEventsTabPane::SetDefunPreview()
 	if( hItem != -1 )
 	{
 		// get the event id from the curent selection
-		PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData( hItem );
+		Prop::Id nEventId = (Prop::Id)m_EventsTree.GetItemData( hItem );
 
 		// get the defun name
 		CString sEventDefun;
@@ -329,7 +329,7 @@ void CEventsTabPane::SetDefunPreview()
 		sArgs += _T(" /");
 
 		CString sDefunBody;
-		if (nEventId == nDragnDropFromAutoCAD && m_pControl->GetOwnerForm()->GetType() != VdclFileDialog)
+		if (nEventId == Prop::DragnDropFromAutoCAD && m_pControl->GetOwnerForm()->GetType() != VdclFileDialog)
 			sDefunBody = _T("     (setq ssDragnDropSelectionSet (ssget \"P\"))"); //get the 'Previous' selection set
 		else
 		{
@@ -353,13 +353,13 @@ CString CEventsTabPane::GetDefunArguments()
 	UINT_PTR nEventId = m_EventsTree.GetItemData(m_EventsTree.GetCurSel());
 
 	if (m_pControl->GetType() != CtlActiveX)
-		LoadArgsNDesc((PropertyId)nEventId, m_pControl, sArgs, strDesc);
+		LoadArgsNDesc((Prop::Id)nEventId, m_pControl, sArgs, strDesc);
 	else
 	{
 		POSITION pos = m_pControl->GetPropertyList().FindIndex(nEventId);
 		if (pos != NULL)
 		{
-			RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetAt(pos);
+			TPropertyPtr pProp = m_pControl->GetPropertyList().GetAt(pos);
 			strDesc = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetDesc();
 			size_t ctCallingArgs = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetArgs().size();
 			for (UINT_PTR i = 0; i < ctCallingArgs; i++)
@@ -452,7 +452,7 @@ void CEventsTabPane::OnAddcancel()
 		m_DefunEdit.GetWindowText(sDefunEditText);
 
 		// get the event id from the curent selection
-		PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(hItem);
+		Prop::Id nEventId = (Prop::Id)m_EventsTree.GetItemData(hItem);
 
 		// add the ^C^C to the defun name
 		sDefunEditText = CString("^c^c") + sDefunEditText;
@@ -469,18 +469,17 @@ void CEventsTabPane::OnAddcancel()
 
 void CEventsTabPane::OnCopytoclipboard() 
 {
-	CString source;
-
-	// get the new defun name from the edit box
-	m_DefunPreview.GetWindowText(source);
+	CString sourceT;
+	m_DefunPreview.GetWindowText(sourceT);
+	CStringA source( sourceT );
 
 	//put your text in source
 	if(OpenClipboard())
 	{
 		EmptyClipboard();
-		HGLOBAL clipbuffer = GlobalAlloc(GMEM_DDESHARE, (source.GetLength() + 1) * sizeof(TCHAR));
-		TCHAR* buffer = (TCHAR*)GlobalLock(clipbuffer);
-		lstrcpyn(buffer, source, source.GetLength() + 1);
+		HGLOBAL clipbuffer = GlobalAlloc(GMEM_DDESHARE, source.GetLength() + 1);
+		CHAR* buffer = (CHAR*)GlobalLock(clipbuffer);
+		lstrcpynA(buffer, source, source.GetLength() + 1);
 		GlobalUnlock(clipbuffer);
 		SetClipboardData(CF_TEXT,clipbuffer);
 		CloseClipboard();
@@ -496,14 +495,14 @@ void CEventsTabPane::OnAddtolisp()
 		return;
 
 	// get the current event selection
-	PropertyId hItem = (PropertyId)m_EventsTree.GetCurSel();
+	Prop::Id hItem = (Prop::Id)m_EventsTree.GetCurSel();
 	
 	if (hItem != -1)
 	{
 		m_EventsTree.SetCheck(hItem, TRUE); // set the event tree item as checked.
 
 		// get the event id from the curent selection
-		PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(hItem);
+		Prop::Id nEventId = (Prop::Id)m_EventsTree.GetItemData(hItem);
 
 		// get the new defun name from the edit box
 		m_DefunPreview.GetWindowText(sDefunPreview);
@@ -573,7 +572,7 @@ void CEventsTabPane::OnSelchangeEventstree()
 	BOOL bChecked = (m_EventsTree.GetCheck(hItem) == BST_CHECKED);
 	
 	// update the defun edit box.
-	m_DefunEdit.SetWindowText(GetEvent((PropertyId)m_EventsTree.GetItemData(m_EventsTree.GetCurSel())));
+	m_DefunEdit.SetWindowText(GetEvent((Prop::Id)m_EventsTree.GetItemData(m_EventsTree.GetCurSel())));
 	GetDlgItem(IDC_ADDCANCEL)->EnableWindow(bChecked);
 	GetDlgItem(IDC_COPYTOCLIPBOARD)->EnableWindow(bChecked);
 	GetDlgItem(IDC_ADDTOLISP)->EnableWindow(bChecked);
@@ -581,14 +580,14 @@ void CEventsTabPane::OnSelchangeEventstree()
 
 void CEventsTabPane::OnCheckChanged()
 {
-	PropertyId nEventId = (PropertyId)m_EventsTree.GetItemData(m_EventsTree.GetCurSel());
+	Prop::Id nEventId = (Prop::Id)m_EventsTree.GetItemData(m_EventsTree.GetCurSel());
 	CString sEventDefun;
 	if (m_EventsTree.GetCheck(m_EventsTree.GetCurSel()) == BST_CHECKED)
 		sEventDefun = GetEvent(nEventId);
 	SetEvent(nEventId, sEventDefun);
 }
 
-void CEventsTabPane::SetEvent( PropertyId nEventId, CString sEventDefun )
+void CEventsTabPane::SetEvent( Prop::Id nEventId, CString sEventDefun )
 {
 	if (m_pControl->GetType() == CtlActiveX)
 	{
@@ -596,7 +595,7 @@ void CEventsTabPane::SetEvent( PropertyId nEventId, CString sEventDefun )
 		POSITION pos = m_pControl->GetPropertyList().FindIndex( nEventId );
 		if (pos != NULL)
 		{
-			RefCountedPtr< CPropertyObject > pProp = m_pControl->GetPropertyList().GetAt( pos );
+			TPropertyPtr pProp = m_pControl->GetPropertyList().GetAt( pos );
 			pProp->SetStringValue( sEventDefun );
 		}
 	}
@@ -604,7 +603,7 @@ void CEventsTabPane::SetEvent( PropertyId nEventId, CString sEventDefun )
 		m_pControl->SetStringProperty( nEventId, sEventDefun ); 
 }
 
-CString CEventsTabPane::GetEvent( PropertyId nEventId )
+CString CEventsTabPane::GetEvent( Prop::Id nEventId )
 {
 	CString sEventSymbol;
 	if (m_pControl->GetType() != CtlActiveX)

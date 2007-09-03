@@ -20,11 +20,10 @@
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="1"
 			UseOfATL="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -44,7 +43,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/ObjectDCL.tlb"
+				TypeLibraryName="$(OutDir)/Editor.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -56,11 +55,6 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\Debug/ObjectDCL.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
@@ -80,7 +74,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Rpcrt4.lib VFW32.LIB"
-				OutputFile="$(OutDir)/OpenDCL.exe"
+				OutputFile="$(OutDir)/OpenDCL Studio.exe"
 				Version="4"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -88,7 +82,6 @@
 				IgnoreDefaultLibraryNames=""
 				DelayLoadDLLs="urlmon.dll;avifil32.dll"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/ObjectDCL.pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -104,7 +97,6 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/ObjectDCL.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -124,11 +116,10 @@
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="1"
 			UseOfATL="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -148,7 +139,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/ObjectDCL.tlb"
+				TypeLibraryName="$(OutDir)/Editor.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -160,11 +151,6 @@
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\Release/ObjectDCL.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
-				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 			/>
@@ -183,12 +169,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Rpcrt4.lib VFW32.LIB"
-				OutputFile="$(OutDir)/OpenDCL.exe"
+				OutputFile="$(OutDir)/OpenDCL Studio.exe"
 				Version="4"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
-				DelayLoadDLLs=""
+				DelayLoadDLLs="urlmon.dll;avifil32.dll"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -204,7 +190,6 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/ObjectDCL.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -448,10 +433,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Res\OpenDCL.rc2"
-				>
-			</File>
-			<File
 				RelativePath=".\Res\OPENFOLD.BMP"
 				>
 			</File>
@@ -601,10 +582,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ColorButton.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ColorEdit.h"
 				>
 			</File>
@@ -641,6 +618,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ControlGripper.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ControlHolder.h"
 				>
 			</File>
@@ -658,6 +639,10 @@
 			</File>
 			<File
 				RelativePath=".\DropListContents.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Editor.h"
 				>
 			</File>
 			<File
@@ -705,15 +690,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\GraphicButton.h"
-				>
-			</File>
-			<File
 				RelativePath=".\GridSpacingDlg.h"
 				>
 			</File>
 			<File
-				RelativePath=".\GripRect.h"
+				RelativePath=".\GripWnd.h"
 				>
 			</File>
 			<File
@@ -757,19 +738,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\OpenDCL.h"
-				>
-			</File>
-			<File
 				RelativePath=".\OpenDCLDoc.h"
 				>
 			</File>
 			<File
 				RelativePath=".\OpenDCLView.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionListBox.h"
 				>
 			</File>
 			<File
@@ -918,10 +891,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ColorButton.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ColorEdit.cpp"
 				>
 			</File>
@@ -958,6 +927,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ControlGripper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ControlHolder.cpp"
 				>
 			</File>
@@ -975,6 +948,10 @@
 			</File>
 			<File
 				RelativePath=".\DropListContents.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Editor.cpp"
 				>
 			</File>
 			<File
@@ -1026,15 +1003,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\GraphicButton.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\GridSpacingDlg.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\GripRect.cpp"
+				RelativePath=".\GripWnd.cpp"
 				>
 			</File>
 			<File
@@ -1078,19 +1051,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\OpenDCL.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\OpenDCLDoc.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\OpenDCLView.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionListBox.cpp"
 				>
 			</File>
 			<File
@@ -1230,11 +1195,7 @@
 			Name="Common"
 			>
 			<File
-				RelativePath="..\Common\AcadColorListBox.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\AcadColorListBox.h"
+				RelativePath="..\Common\AcadColorService.h"
 				>
 			</File>
 			<File
@@ -1650,6 +1611,10 @@
 				Name="Controls"
 				>
 				<File
+					RelativePath="..\Common\Controls\AngleFilter.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Controls\AxContainerCtrl.cpp"
 					>
 				</File>
@@ -1666,6 +1631,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Common\Controls\ButtonEditCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Controls\ButtonST.cpp"
 					>
 				</File>
@@ -1674,11 +1643,55 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Common\Controls\CheckBoxCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\CheckBoxCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ComboEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\CurrencyFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\DateFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\DynamicButtonCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\DynamicButtonCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\EditEx.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\EditEx.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\FilteredEditEx.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Controls\GraphicButtonCtrl.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\Common\Controls\GraphicButtonCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\GridCellEditCtrl.h"
 					>
 				</File>
 				<File
@@ -1698,11 +1711,87 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Common\Controls\ImageComboEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\InputFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\IntegerFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ListBoxCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ListBoxCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\LowerCaseFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\MultilineFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\NumericFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\OptionListCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\OptionListCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\RadioButtonCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\RadioButtonCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\RadioEditCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Controls\TabStripCtrl.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\Common\Controls\TabStripCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\TextBoxCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\TextBoxCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\TextBoxEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\TimeFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ToggleEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\UpperCaseFilter.h"
 					>
 				</File>
 				<File
@@ -1781,7 +1870,7 @@
 			</Filter>
 		</Filter>
 		<File
-			RelativePath=".\OpenDCL.reg"
+			RelativePath=".\Editor.reg"
 			>
 		</File>
 	</Files>

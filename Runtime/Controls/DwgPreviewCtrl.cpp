@@ -63,14 +63,14 @@ BOOL CDwgPreviewCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	DWORD dwStyle = WS_CHILD|WS_VISIBLE|WS_CLIPSIBLINGS|WS_GROUP|BS_OWNERDRAW;
 
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
@@ -82,14 +82,14 @@ BOOL CDwgPreviewCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 		pParentWnd,
 		nID);
 	
-	int nColor = m_ArxControl->GetLongProperty(nAcadColor);
+	int nColor = m_ArxControl->GetLongProperty(Prop::BackgroundColor);
 	COLORREF rgb = GetRGBColor(nColor);
 	
 	m_BkColor = rgb;
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -138,7 +138,7 @@ void CDwgPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -253,14 +253,14 @@ void CDwgPreviewCtrl::Refresh(CDC *pdc)
 void CDwgPreviewCtrl::OnClicked() 
 {
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);
 	
 }
 
 void CDwgPreviewCtrl::OnDoubleclicked() 
 {
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventDblClicked), m_bInvokeWithSendString);	
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventDblClicked), m_bInvokeWithSendString);	
 }	
 
 void CDwgPreviewCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
@@ -273,7 +273,7 @@ void CDwgPreviewCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	else
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);
 	}
 	
 }
@@ -294,7 +294,7 @@ void CDwgPreviewCtrl::OnSetFocus(CWnd* pOldWnd)
 	ReleaseDC(pdc);
 	
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 	
 }
 
@@ -308,7 +308,7 @@ void CDwgPreviewCtrl::OnKillFocus(CWnd* pNewWnd)
 	ReleaseDC(pdc);
 
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 	
 }
 
@@ -340,7 +340,7 @@ void CDwgPreviewCtrl::SetDragnDrop(BOOL bRegister)
 void CDwgPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	SetFocus();
-	if (m_ArxControl->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
+	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
 		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
 		
 	CButton::OnLButtonDown(nFlags, point);

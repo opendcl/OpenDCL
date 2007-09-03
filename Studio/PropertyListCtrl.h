@@ -75,8 +75,8 @@ public:
 // Operations
 public:
 	void SetFont(CFont *pFont);
-	void UpdateControls(PropertyId nPropId);
-	void PropertyHasChanged(PropertyId nId);
+	void UpdateControls(Prop::Id nPropId);
+	void PropertyHasChanged(Prop::Id nId);
 	void SetScrollBar();
 	void ClearArea(HDC hdc);
 	void RePaint();
@@ -85,7 +85,7 @@ public:
 	void SetSelectionIndex(short nNewValue);
 	void SetTopIndex(short Index);
 	void CloseListBox(int nInstructions);
-	RefCountedPtr< CPropertyObject > GetPropertyObject(short PropertyIndex);
+	TPropertyPtr GetPropertyObject(short PropertyIndex);
 	void EditObjectbrowser();
 	
 
@@ -123,7 +123,7 @@ public:
 	afx_msg BOOL SetDclParent(short Index, LPCTSTR ParentName, short TabIndex);
 	afx_msg short GetDclParentsTabIndex(short Index);
 	afx_msg short GetArxControlClientHeight(short DclFormIndex, short ArxControlIndex);
-	afx_msg BOOL IsArxControlDeleted(short DclFormIndex, short ArxControlIndex);
+	afx_msg bool IsDclControlDeleted(short DclFormIndex, short ArxControlIndex);
 	afx_msg void DisplayVaries();
 	afx_msg void LoadPicture(LPCTSTR sFileName, short nPictureTag, bool bApplyMask);
 	afx_msg void CheckPictureRefs();
@@ -166,9 +166,9 @@ public:
 	CString GetOnePictureFile();
 	void SearchPictureRefs(CDclFormObject *pDclObject);
 	
-	void FirePropertyChanged(PropertyId ChangedPropertyID);		
+	void FirePropertyChanged(Prop::Id ChangedPropertyID);		
 	void FireInvokeImageList(short PropertyIndex, long PropertyID);
-	void UpdatePropHelpCtrls(RefCountedPtr< CPropertyObject > pProp);
+	void UpdatePropHelpCtrls(TPropertyPtr pProp);
 	void FireScrolling();
 	void FireInvokeFontPane();	
 };

@@ -28,6 +28,7 @@ protected:
 	std::vector< CImageListObject > mImageLists;
 	UINT_PTR mnNextId;
 	bool mbUsesClientRect;
+	bool mbDeleted;
 
 	//for managing tab hierarchy and order
 	CDclFormObject* mpParentForm;
@@ -37,7 +38,6 @@ protected:
 
 // Attributes
 public:
-	bool m_bDeleted;
 	bool m_bLoaded;
 	CString m_sSubFileName;
 	CString m_sFileName;
@@ -69,15 +69,10 @@ public:
 	bool ReorderControl( CDclControlObject* pDclControl, bool bToFront, bool bDeferReindexing = false );
 	bool ReorderControl( CDclControlObject* pDclControl, size_t idxNew, bool bDeferReindexing = false );
 	void ReindexControls();
-	UINT_PTR GetNextId() { if( (INT_PTR)mnNextId < mDclControls.GetCount() ) mnNextId = mDclControls.GetCount(); return mnNextId++; }
 
 	void ClearR14Events();
 	void IncrementPictureId(int nIdIncrement);
 	int CountDeletedControls() const;
-	bool CanWeDeleteForm() const;
-	size_t CountDeletedImageLists() const;
-	CString GetDclFormTitle() const;
-	long GetDclFormTitleBarIcon();
 
 	//void SaveSS(int n, int nType, class CStgFile &FileStg, CDocument *pDoc);
 	//static CDclFormObject* ReadSS(int n, int nType, CStgFile &FileStg, CDocument *pDoc);
@@ -104,12 +99,12 @@ public:
 	const CProject* GetProject() const { return mpProject; }
 	CProject* GetProject() { return mpProject; }
 	DclFormType GetType() const { return mType; }
+	bool IsModeless() const;
 	const CDialogObject* GetFormInstance() const { return mpDlgObject; }
 	CDialogObject* GetFormInstance() { return mpDlgObject; }
 	void SetFormInstance( CDialogObject* pDlgObject );
 	INT_PTR GetControlCount() const;
 	const CList< CDclControlObject* >& GetControlList() const { return mDclControls; }
-	//CList< CDclControlObject* >& GetControlList() { return mDclControls; }
 	const CDclControlObject* GetControlProperties() const;
 	CDclControlObject* GetControlProperties();
 	CSize GetFormSize() const;
@@ -126,6 +121,12 @@ public:
 	void SetTabIndex( short nIndex ) { mnTabIndex = nIndex; }
 	bool UsesClientRect() const { return mbUsesClientRect; }
 	void SetUsesClientRect( bool bUsesClientRect = true ) { mbUsesClientRect = bUsesClientRect; }
+	bool IsDeleted() const { return mbDeleted; }
+	void SetDeleted( bool bDelete = true ) { mbDeleted = bDelete; }
+	size_t CountDeletedImageLists() const;
+	LPCTSTR GetTitleText() const;
+	UINT_PTR GetTitleBarIcon();
+	UINT_PTR GetNextId() { if( (INT_PTR)mnNextId < mDclControls.GetCount() ) mnNextId = mDclControls.GetCount(); return mnNextId++; }
 
 	//File I/O
 public:

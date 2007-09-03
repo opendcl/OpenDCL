@@ -46,35 +46,35 @@ BOOL VdclSpinButton::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | UDS_ARROWKEYS | WS_CLIPSIBLINGS | WS_GROUP ;
 	
-	if (pControl->GetLongProperty(nOrientation) == 0)
+	if (pControl->GetLongProperty(Prop::Orientation) == 0)
 		dwStyle = dwStyle | UDS_HORZ;
-	if (pControl->GetBoolProperty(nAutoWrap))
+	if (pControl->GetBooleanProperty(Prop::AutoWrap))
 		dwStyle = dwStyle | UDS_WRAP;
 
 	
-	m_pWrapProp = pControl->GetPropertyObject(nAutoWrap);
-	m_pMinProp = pControl->GetPropertyObject(nMinValue);
-	m_pMaxProp = pControl->GetPropertyObject(nMaxValue);
+	m_pWrapProp = pControl->GetPropertyObject(Prop::AutoWrap);
+	m_pMinProp = pControl->GetPropertyObject(Prop::MinValue);
+	m_pMaxProp = pControl->GetPropertyObject(Prop::MaxValue);
 
-	m_Pos = pControl->GetLongProperty(nValue);
+	m_Pos = pControl->GetLongProperty(Prop::Value);
 	
 	RetVal = CSpinButtonCtrl::Create(dwStyle, ArxRect, pParentWnd, nID );
 
-	m_pValueProp = pControl->GetPropertyObject(nValue);
+	m_pValueProp = pControl->GetPropertyObject(Prop::Value);
 
 	SetPos(m_Pos);
 
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 	
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -111,7 +111,7 @@ void VdclSpinButton::OnDeltapos(NMHDR* pNMHDR, LRESULT* pResult)
 	m_pValueProp->SetLongValue(m_Pos);
 	SetPos(m_Pos);
 	// call methods to invoke the event
-	InvokeMethodIntInt(m_ArxControl->GetStrProperty(nEventChanged), m_Pos, pNMUpDown->iDelta, m_bInvokeWithSendString);
+	InvokeMethodIntInt(m_ArxControl->GetStrProperty(Prop::EventChanged), m_Pos, pNMUpDown->iDelta, m_bInvokeWithSendString);
 	
 	*pResult = 0;
 }
@@ -121,7 +121,7 @@ void VdclSpinButton::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,

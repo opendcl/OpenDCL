@@ -53,7 +53,7 @@ void CTreeCtrlEx::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -90,7 +90,7 @@ void CTreeCtrlEx::OnLButtonDown(UINT nFlags, CPoint point)
 		SetItemState(hItem, TVIS_DROPHILITED, TVIS_DROPHILITED);
 	}
 	*/	
-	if (m_ArxControl->GetBoolProperty(nDragnDropAllowBegin) == TRUE)
+	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE)
 	{
 		SetFocus();
 		if ((hItem != NULL))// && (TVHT_ONITEM & uFlags))
@@ -125,7 +125,7 @@ void CTreeCtrlEx::OnRButtonUp(UINT nFlags, CPoint point)
 {
 
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(nEventRClick),
+		m_ArxControl->GetStrProperty(Prop::EventRClick),
 		m_bInvokeWithSendString);	
 		
 	CTreeCtrl::OnRButtonUp(nFlags, point);
@@ -154,7 +154,7 @@ void CTreeCtrlEx::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult)
 	{		
 		// call methods to invoke the event
 		InvokeMethodStringString(
-			m_ArxControl->GetStrProperty(nEventSelChanged),
+			m_ArxControl->GetStrProperty(Prop::EventSelChanged),
 			sItemText,
 			sKey,
 			m_bInvokeWithSendString);
@@ -163,7 +163,7 @@ void CTreeCtrlEx::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult)
 	{		
 		// call methods to invoke the event
 		InvokeMethodStringLong(
-			m_ArxControl->GetStrProperty(nEventSelChanged),
+			m_ArxControl->GetStrProperty(Prop::EventSelChanged),
 			sItemText,
 			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);

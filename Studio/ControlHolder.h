@@ -5,7 +5,7 @@
 
 
 #include "ControlPane.h"
-#include "GripRect.h"
+#include "ControlGripper.h"
 
 #define nGripSizeConst  7
 #define nDeGridIDCounter 80
@@ -31,29 +31,9 @@ public:
 	CControlHolder( CDclControlObject* pTemplate );
 	virtual ~CControlHolder();
 
-public:	
-	bool m_bActiveXCtrl;
-
 	// Attributes
-public:
-	CString m_ClassName;
-	CFont m_Font;
-	bool m_bSelected;
-	int m_ControlType;
-	BOOL m_bGripsCreate;
-	CGripRect m_GripRect1;
-	CGripRect m_GripRect2;
-	CGripRect m_GripRect3;
-	CGripRect m_GripRect4;
-	CGripRect m_GripRect5;
-	CGripRect m_GripRect6;
-	CGripRect m_GripRect7;
-	CGripRect m_GripRect8;
-
-	RefCountedPtr< CPropertyObject > m_pLeftProp;
-	RefCountedPtr< CPropertyObject > m_pTopProp;
-	RefCountedPtr< CPropertyObject > m_pWidthProp;
-	RefCountedPtr< CPropertyObject > m_pHeightProp;
+protected:
+	CControlGripper mGripper;
 
 public:
 	const CDclControlObject* GetTemplate() const { return mpTemplate; }
@@ -61,17 +41,18 @@ public:
 	TDialogControlPtr GetControl() const { return mpDlgControl; }
 	void SetControl( TDialogControlPtr pControl ) { mpDlgControl = pControl; }
 
-	void UpdateClientHeight();
-	void CheckAutoSizeProp();
-	void UpdateProperty(PropertyId nID);
-	void ResetImageList(CWnd *pControl, int nID);
-	CSize GetControlSize(CWnd *pControl, int nControlType);
+	void UpdateProperty(Prop::Id nID);
 	void UpdateChildControl();
+	bool CreateNewDialogControl();
+	void AutoSize();
+
+protected:
+	void UpdateClientHeight();
 	void SetupTreeControl(CTreeCtrl *pControl);
+	void ResetImageList(CWnd *pControl, int nID);
+	CSize GetControlSize( CWnd* pControl, ControlType nControlType );
 	CWnd* CreateComboBox(CDclControlObject *pArxObject);
 	CWnd* CreateTextBox(CDclControlObject *pArxObject);
-	bool CreateNewDialogControl();
-
 
 // CControlPane
 public:
@@ -86,53 +67,38 @@ public:
 
 // Operations
 public:
-	CWnd *GetChildControl();
-	int GetId();
-	void SetSelected(BOOL bSelected);
-	void ReleaseSelection();
-	void ForceGripsForward();
-	void HideGrips();
-	void CreateGrips();
+	CWnd* GetControl() { return mpDlgControl? mpDlgControl->GetControl() : NULL; }
+	int GetId() const { return mnControlId; }
+	void SetSelected();
+
+	// Grip interface
+public:
+	void HideGrips() { mGripper.Hide(); }
+protected:
+	void ForceGripsForward() { mGripper.MoveToTop(); }
 	
 	// ActiveX helping methods
+public:
 	CAxContainerCtrl* GetActiveXCtrl();
-
 	void SetColor(DISPID dispid, unsigned long ulColor);
 	unsigned long GetColor(DISPID dispid);
-	
 	HRESULT GetProperty(AxPropertyDescriptor *axProp, CString &strReturnValue);
 	void SetProperty( AxPropertyDescriptor *axProp, LPCTSTR pszNewValue );
-
 	void ShowPropertyPages();
-
 	void LoadPictureFile(DISPID dispid, CString sFile, WORD flag);
 	void SetPicture(DISPID dispid, LPDISPATCH newValue, WORD flag);
 
-	
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CControlHolder)
-	public:
+public:
 	virtual BOOL Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual BOOL OnAmbientProperty(COleControlSite* pSite, DISPID dispid, VARIANT* pvar);
-	//}}AFX_VIRTUAL
+
+protected:
+	DECLARE_MESSAGE_MAP()
 
 	// Generated message map functions
 protected:
-	//{{AFX_MSG(CControlHolder)
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDestroy();
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnPaint();
-	//}}AFX_MSG
-
-	DECLARE_MESSAGE_MAP()
-public:
-	afx_msg void ParentNotify(UINT /*message*/, LPARAM /*lParam*/);
 };

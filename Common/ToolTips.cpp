@@ -44,13 +44,13 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip& tooltip, CDclControlObject *pControl)
 	tooltip.RemoveTool( pWnd );
 	tooltip.SetBehaviour( PPTOOLTIP_MULTIPLE_SHOW );
 
-	RefCountedPtr< CPropertyObject > pToolTipTitle = pControl->GetPropertyObject(nToolTipTitle);	
-	RefCountedPtr< CPropertyObject > pToolTipLine = pControl->GetPropertyObject(nToolTipLine);	
-	RefCountedPtr< CPropertyObject > pToolTipBody = pControl->GetPropertyObject(nToolTipBody);	
-	RefCountedPtr< CPropertyObject > pToolTipPicture = pControl->GetPropertyObject(nToolTipPicture);	
-	RefCountedPtr< CPropertyObject > pToolTipAvi = pControl->GetPropertyObject(nToolTipAviFileName);
-	RefCountedPtr< CPropertyObject > pToolTipTitleColor = pControl->GetPropertyObject(nToolTipTitleColor);
-	RefCountedPtr< CPropertyObject > pToolTipBalloon = pControl->GetPropertyObject(nToolTipBalloon);
+	TPropertyPtr pToolTipTitle = pControl->GetPropertyObject(Prop::ToolTipTitle);	
+	TPropertyPtr pToolTipLine = pControl->GetPropertyObject(Prop::ToolTipLine);	
+	TPropertyPtr pToolTipBody = pControl->GetPropertyObject(Prop::ToolTipBody);	
+	TPropertyPtr pToolTipPicture = pControl->GetPropertyObject(Prop::ToolTipPicture);	
+	TPropertyPtr pToolTipAvi = pControl->GetPropertyObject(Prop::ToolTipAviFileName);
+	TPropertyPtr pToolTipTitleColor = pControl->GetPropertyObject(Prop::ToolTipTitleColor);
+	TPropertyPtr pToolTipBalloon = pControl->GetPropertyObject(Prop::ToolTipBalloon);
 
 	if( pToolTipBalloon && !pToolTipBalloon->GetBooleanValue() )
 		tooltip.SetDefaultSizes( FALSE );
@@ -115,14 +115,14 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &tooltip,
 				  CString sAvi,
 				  CDclControlObject *pControl = NULL)
 {	
-	if (sTitleIn.IsEmpty() && sMainIn.IsEmpty() && nPicture == 0 && sAvi.IsEmpty())
+	if (sTitleIn.IsEmpty() && sMainIn.IsEmpty() && Prop::Picture == 0 && sAvi.IsEmpty())
 		return;
 
 	tooltip.SetBehaviour( PPTOOLTIP_MULTIPLE_SHOW );
 
 	if( pControl )
 	{
-		RefCountedPtr< CPropertyObject > pToolTipBalloon = pControl->GetPropertyObject(nToolTipBalloon);
+		TPropertyPtr pToolTipBalloon = pControl->GetPropertyObject(Prop::ToolTipBalloon);
 		if( pToolTipBalloon && !pToolTipBalloon->GetBooleanValue() )
 			tooltip.SetDefaultSizes( FALSE );
 	}
@@ -131,7 +131,7 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &tooltip,
 
 	const CProject* pProject = pControl? pControl->GetOwnerProject() : NULL;
 
-	int nPic = nPicture;
+	int nPic = Prop::Picture;
 
 	if (nPic == -1)
 		tooltip.AddTool(pWnd,  sBody, IDI_HELP);

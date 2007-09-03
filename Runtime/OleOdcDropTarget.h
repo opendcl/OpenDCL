@@ -8,8 +8,8 @@ class CDclControlObject;
 
 void CopyArxObjectToClipboard(CDclControlObject *pControl);
 COleDataSource* generateDataSource(int objType, const CRect& rect);
-void BeginDragnDrop(CDclControlObject *pControl, CPoint point, bool bInvokeWithSendString);
-void BeginDragnDropToInsertBlocks(CDclControlObject *pControl, CPoint point, bool bInvokeWithSendString, CStringArray &BlockNames);
+DROPEFFECT BeginDragnDrop(CDclControlObject *pControl, CPoint point, bool bInvokeWithSendString);
+DROPEFFECT BeginDragnDropToInsertBlocks(CDclControlObject *pControl, CPoint point, bool bInvokeWithSendString, CStringArray &BlockNames);
 
 
 class CMyOverrideDropTarget  : public COleDropTarget

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "GripRect.h"
+#include "ControlGripper.h"
 #include "UndoActions.h"
 #include "SelectedControl.h"
 #include "OpenDCLDoc.h"
@@ -14,11 +14,10 @@ class CFontCollection;
 class CDclFormObject;
 class CControlHolder;
 enum ControlType;
-enum PropertyId;
+enum Prop::Id;
 
 
 #define IDC_CONTROLHOLDER 220
-#define nGripSize 7
 #define nBtnHeight 25
 #define nBtnWidth 26
 #define PACKVERSION(major,minor) MAKELONG(minor,major)
@@ -64,23 +63,15 @@ typedef CList<CUndoActions*> CUndoCol;
 
 class COpenDCLView : public CView
 {
+	CControlGripper mGripper; //this is the one and only "hot" resizing gripper for the active control
+
 protected: // create from serialization only
 	COpenDCLView();
 	DECLARE_DYNCREATE(COpenDCLView)
 
 // Attributes
 public:
-	BOOL m_bGripsCreate;
-	CGripRect m_GripRect1;
-	CGripRect m_GripRect2;
-	CGripRect m_GripRect3;
-	CGripRect m_GripRect4;
-	CGripRect m_GripRect5;
-	CGripRect m_GripRect6;
-	CGripRect m_GripRect7;
-	CGripRect m_GripRect8;
 	void HideSizingRect();
-	void MoveGripRectsForward();
 	CSelectedControl m_SelectedControl;
 	CSelectedCol	 m_SelectedList;
 	CUndoCol		 m_UndoList;
@@ -88,7 +79,6 @@ public:
 	CString m_sBaseCode;
 	CString m_sLicenseKey;
 	CSize m_StartupSize;
-	//COpenDCLDoc* GetDocument() const;	
 	bool m_StandardCursorID; // true = cross, false = arrow	
 	short m_gridSpacing;
 	CString m_ActiveXFileName;
@@ -97,7 +87,7 @@ public:
 public:
 	int GetNextControlId();
 	CRect GetSplitterRect(int nId);
-	void CalcControlOffsetDistances(CDclControlObject *pArxObject, CRect &rcCtrl);
+	void CalcControlOffsetDistances(CDclControlObject *pArxObject, const CRect &rcCtrl);
 	void MoveThisInPosition();
 	void DrawActiveXCtrl(CDclControlObject *pCtrl, CDC* pDC);
 	CDclControlObject* InsertControl(CRect rcPos, ControlType nCtrlToInsert);
@@ -129,10 +119,9 @@ public:
 	void UpdateZOrderList();
 	void UpdateFont(CString sName);
 	void UpdateFontSize(int nSize);
-	void UpdateFontBool(bool bBool, PropertyId nId);
+	void UpdateFontBool(bool bBool, Prop::Id nId);
 	void UpdateAxFont(CSelectedControl *pSelControl, int nId, bool bBool, int nSize = 0, CString sName = "");
 	// tab pane functions
-	//void AddTabPanes();
 	bool IsTabsEnabled();
 	void ResizeChildTabPanes();
 	CDclFormObject * AddSingleTabPane(int nIndex);
@@ -165,6 +154,7 @@ public:
 	void RemoveDragRect(CSelectedControl *pSelectedControl);
 	void AllRemoveDragRects();
 	int CheckGripsMouseMoveOver(CPoint point);
+	void MoveGripsToTop() { mGripper.MoveToTop(); }
 
 public:
 	void ResizeParentToFit(BOOL bShrinkOnly);
@@ -173,7 +163,7 @@ public:
 	void AdjustOffsets(int cx, int cy);
 	CSize GetControlSize(CWnd *pControl, int nControlType);
 	CRect CalcResizeRect(int nQuadrant, CPoint point);
-	CWnd* AddCWndControl(CDclControlObject* pDclControl, CRect rcPos, bool bForceUpdate);
+	CControlHolder* AddCWndControl(CDclControlObject* pDclControl, CRect rcPos, bool bForceUpdate);
 	void NullDrawRect();
 	void PaintBackGround(HDC hdc);
 	int RoundToGridPattern(int Value);
@@ -181,14 +171,12 @@ public:
 	int GetDclFormIndex();
 	bool CheckControlsForSelection(CRect rcSelArea, bool bLookForOne);
 	bool CheckControlsForSelection(CPoint point, UINT nFlags, bool bMouseDown = false);
-	void ShowGripRects(BOOL bShow, CRect rcCtrl);
 	void MoveControl(CSelectedControl *pSelectedControl, CPoint point);
-	void HideGrips();
 	bool StoreControlsPosition(CSelectedControl *pSelectedControl);
 	void ClearSelection(bool bResetZOrder = true);
 	bool IsInSelection(CDclControlObject *pArxObject);
 	void ShowSelection();
-	void ClearChildControls(CControlHolder *pParentControl);
+	void ClearChildControls( CControlHolder* pControlHolder );
 	void ClearUndoList();
 	void UpdateGripPos();
 	void ClearEventProperties(CDclControlObject *pCtrl);
@@ -197,11 +185,9 @@ public:
 	void InsertControl		(CRect rcPos);
 
 public:
-	//void UpdateProperty(PropertyId nID, CDclControlObject *pArxObject, CControlHolder *pParent);
-	void RefreshChildControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID);
+	void RefreshChildControl(CDclControlObject *pArxObject, Prop::Id ChangedPropertyID);
 	void ResizeChildControl(CDclControlObject *pArxObject);
-	//void UpdateChildControl(CDclControlObject *pArxObject, CControlHolder *pParent);
-	void UpdateControl(CDclControlObject *pArxObject, PropertyId ChangedPropertyID);
+	void UpdateControl(CDclControlObject *pArxObject, Prop::Id ChangedPropertyID);
 
 	void FireControlSelected(CDclControlObject *pControl);
 	void FireShowFormGrips(BOOL bVisible);
@@ -255,6 +241,8 @@ public:
 	afx_msg void OnEditUndo();
 	afx_msg void OnEditCopy();
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg LRESULT OnGripStartDrag(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnGripDragging(WPARAM wParam, LPARAM lParam);
 
 protected:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);

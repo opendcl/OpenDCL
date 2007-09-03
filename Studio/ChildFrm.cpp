@@ -93,7 +93,7 @@ BOOL CChildFrame::PreCreateWindow(CREATESTRUCT& cs)
 	return TRUE;
 }
 
-void CChildFrame::SetTitleBarIcon(int nPictureID)
+void CChildFrame::SetTitleBarIcon(UINT_PTR nPictureID)
 {
 	// set start position for navigating Pictures
 	POSITION pos = activeProject->GetPictureList().GetHeadPosition();
@@ -117,7 +117,7 @@ void CChildFrame::SetTitleBarIcon(int nPictureID)
 		return;
 	}
 	
-	if (nPictureID == -1)
+	if (nPictureID == (UINT)-1)
 	{
 		HINSTANCE hInstResource = AfxFindResourceHandle(MAKEINTRESOURCE(IDI_OPENFOLDER), RT_GROUP_ICON);
 		m_hIcon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_OPENFOLDER));

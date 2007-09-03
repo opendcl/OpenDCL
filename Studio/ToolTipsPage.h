@@ -45,13 +45,13 @@ public:
 	int m_SelectedPic;
 	UINT m_nHighestId;
 	
-	RefCountedPtr< CPropertyObject > m_pToolTipBalloon;	
-	RefCountedPtr< CPropertyObject > m_pToolTipTitle;	
-	RefCountedPtr< CPropertyObject > m_pToolTipLine;	
-	RefCountedPtr< CPropertyObject > m_pToolTipBody;	
-	RefCountedPtr< CPropertyObject > m_pToolTipPicture;	
-	RefCountedPtr< CPropertyObject > m_pToolTipAvi;	
-	RefCountedPtr< CPropertyObject > m_pToolTipTitleColor;
+	TPropertyPtr m_pToolTipBalloon;	
+	TPropertyPtr m_pToolTipTitle;	
+	TPropertyPtr m_pToolTipLine;	
+	TPropertyPtr m_pToolTipBody;	
+	TPropertyPtr m_pToolTipPicture;	
+	TPropertyPtr m_pToolTipAvi;	
+	TPropertyPtr m_pToolTipTitleColor;
 
 	void Commit();
 	void ModifySelection( LPCTSTR pszPrefix, LPCTSTR pszSuffix );

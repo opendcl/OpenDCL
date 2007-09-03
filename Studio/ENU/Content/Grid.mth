@@ -462,134 +462,6 @@ ProjectFileName
 [as Integer, T or Nil] (1 or T = Ascending, 0 or Nil = Descending) 
 
 
-
-
-[Method]
-ShowTextBox
-[Prefix]
-dcl_Grid_
-[Desc]
-This method will activate a text box to edit a cell. 
-The style argument accepts a numeric value that indicated the style of the text box to be used. The values are as shown below:
-\par 
-\par 	 6 - Strings	
-\par 	 7 - AngleUnits	
-\par 	 8 - Integers	
-\par 	 9 - Units		
-\par 	10 - UpperCase	
-\par 	11 - LowerCase	
-\par 	12 - Password	
-\par 	13 - MultiLine	
-\par 	14 - Currency	
-\par 	15 - Date		
-\par 	16 - Time		
-\par 	17 - Percentage	
-\par 
-\par \b Note:\b0 If the style does not match the pre-assigned value for the cell or column, then the pre-assigned value will be used.
-[Arguments]
-ProjectFileName
-\par\tab nRow
-[as Integer]
-\par\tab nCol
-[as Integer]
-\par\tab nStyle
-[as Integer]
-
-
-[Method]
-ShowComboBox
-[Prefix]
-dcl_Grid_
-[Desc]
-This method will activate a combo box to edit a cell. 
-The style argument accepts a numeric value that indicated the style of the drop down list to be used. The values are as shown below:
-\par 
-\par 	18 - DropDown
-\par 	19 - ArrowHeads
-\par 	20 - Acad Colors
-\par 	21 - TextStyle List
-\par 	22 - PlotStyle Names
-\par 	23 - PlotStyle Tables
-\par 	24 - Plotter List	
-\par 	25 - Fonts		
-\par 	26 - Drive List
-\par 	27 - Layer List	
-\par 	28 - DimStyle List
-\par 	36 - Strings Combo
-\par 	37 - AngleUnits Combo
-\par 	38 - Integers Combo
-\par 	39 - Units Combo	
-\par 	40 - UpperCase Combo
-\par 	41 - LowerCase Combo
-\par 
-\par \b Note:\b0 If the style does not match the pre-assigned value for the cell or column, then the pre-assigned value will be used.
-[Arguments]
-ProjectFileName
-\par\tab nRow
-[as Integer]
-\par\tab nCol
-[as Integer]
-\par\tab nStyle
-[as Integer]
-\par\tab [Begin List]
-DropDownItem
-[as String]
-[End List]
-
-
-
-[Method]
-ShowImageComboBox
-[Prefix]
-dcl_Grid_
-[Desc]
-This method will activate an image combo box to edit a cell. 
-[Arguments]
-ProjectFileName
-\par\tab nRow
-[as Integer]
-\par\tab nCol
-[as Integer]
-\par\tab [Begin List]
-nImageIndex
-[as Integer]
-\par\tab DropDownItem
-[as String]
-[End List]
-
-
-
-[Method]
-ShowEllipsesButton
-[Prefix]
-dcl_Grid_
-[Desc]
-This method will display an ellipses button on the right side of a cell. An ellipses button is a button with 3 dots (...) on it.
-[Arguments]
-ProjectFileName
-\par\tab nRow
-[as Integer]
-\par\tab nCol
-[as Integer]
-
-
-[Method]
-ShowPickButton
-[Prefix]
-dcl_Grid_
-[Desc]
-This method will display an pick button on the right side of a cell. 
-[Arguments]
-ProjectFileName
-\par\tab nRow
-[as Integer]
-\par\tab nCol
-[as Integer]
-
-
-
-
-
 [Method]
 SetItemStyle
 [Prefix]
@@ -670,47 +542,6 @@ ProjectFileName
 
 
 [Method]
-ShowItemDlg
-[Prefix]
-dcl_Grid_
-[Desc]
-This method will activate a specified cell editing dialog.
-The style argument accepts a numeric value that indicated the style of the dialog box to be used. The values are as shown below:
-\par 
-\par 	30 - Acad Color Dlg
-\par 	31 - True Color Dlg
-\par 	32 - LineWeight Dlg
-\par 	33 - Linetype Dlg	
-\par 	34 - Directory Dlg
-\par 	35 - Files Dlg	
-\par 
-\par \b Note:\b0 If the style does not match the pre-assigned value for the cell or column, then the pre-assigned value will be used.
-[Arguments]
-ProjectFileName
-\par\tab nRow
-[as Integer]
-\par\tab nCol
-[as Integer]
-\par\tab nStyle
-[as Integer]
-
-
-
-[Method]
-ToggleItemImages
-[Prefix]
-dcl_Grid_
-[Desc]
-This method will toggle the image displayed in a cell if that cell's style or columns style is set to 3 - Switchable Icons.
-[Arguments]
-ProjectFileName
-\par\tab nRow
-[as Integer]
-\par\tab nCol
-[as Integer]
-
-
-[Method]
 GetItemCheck
 [Prefix]
 dcl_Grid_
@@ -722,7 +553,6 @@ ProjectFileName
 [as Integer]
 \par\tab nCol
 [as Integer]
-
 
 
 [Method]
@@ -739,7 +569,6 @@ ProjectFileName
 [as Integer]
 \par\tab nChecked
 [as Integer]
-
 
 
 [Method]
@@ -773,5 +602,18 @@ This method will cancel the editing of a cell. This is useful when you wish to e
 [Arguments]
 ProjectFileName
 
+
+[Method]
+StartItemEdit
+[Prefix]
+dcl_Grid_
+[Desc]
+This method will create an appropriate edit control allowing the user to edit the cell contents, just as if the user clicked on the cell. If the cell style is a toggle style, this method will toggle the cell state.
+[Arguments]
+ProjectFileName
+\par\tab nRow
+[as Integer]
+\par\tab nCol
+[as Integer]
 
 [End of File]

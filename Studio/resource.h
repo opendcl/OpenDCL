@@ -475,13 +475,11 @@
 #define IDS_ZHELP                       12787
 #define IDS_DCLTREEITEMNOTSEL           12788
 #define IDS_QDELETEFORM                 12789
-#define IDS_QDELETEFORMWTAB             12790
 #define IDS_CTRLBADNAME                 12791
 #define IDS_FORMBADNAME                 12792
 #define IDS_TABNO                       12793
 #define IDS_NOMORETABS                  12794
 #define IDS_NOTABWITHINTAB              12795
-#define IDS_QDELETETAB                  12796
 #define IDS_AXFILEPARENT                12797
 #define IDS_INDEX                       12798
 #define IDS_NEWITEM                     12799

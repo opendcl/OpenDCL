@@ -7,7 +7,7 @@
 class CDclControlObject;
 class CDclFormObject;
 class COpenDCLView;
-enum PropertyId;
+enum Prop::Id;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -37,12 +37,12 @@ public:
 public:
 	void UpdateEvents(CDclControlObject *pControl);
 	void AddAnyActiveXEvents();
-	void TryToAddEvent(PropertyId nEvent);
+	void TryToAddEvent(Prop::Id nEvent);
 	void ClearEvents();
 	void SetDefunPreview();
 	CString GetDefunArguments();
-	void SetEvent(PropertyId nEventId, CString sEventDefun);
-	CString GetEvent(PropertyId nEventId);
+	void SetEvent(Prop::Id nEventId, CString sEventDefun);
+	CString GetEvent(Prop::Id nEventId);
 
 // Overrides
 	// ClassWizard generated virtual function overrides

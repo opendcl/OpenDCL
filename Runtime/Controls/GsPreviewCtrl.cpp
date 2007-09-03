@@ -347,7 +347,7 @@ void CGsPreviewCtrl::init(HMODULE hRes, bool bCreateModel)
   AcGsClassFactory* pFactory = pManager->getGSClassFactory();
   //a device with standard autocad color palette
   mpDevice = pManager->createAutoCADDevice(m_hWnd);
-	RefCountedPtr< CPropertyObject > pAcadColor = m_ArxControl->GetPropertyObject(nAcadColor);
+	TPropertyPtr pAcadColor = m_ArxControl->GetPropertyObject(Prop::BackgroundColor);
 	if (pAcadColor)
 	{
 		AcGsColor color = mpDevice->getBackgroundColor();
@@ -419,7 +419,7 @@ void CGsPreviewCtrl::SetAcadColor(long nColor)
 	else if (nColor == -23 && bTilemode)
 		nColor = -22;
 
-	m_ArxControl->SetLongProperty(nAcadColor, nColor);
+	m_ArxControl->SetLongProperty(Prop::BackgroundColor, nColor);
 
 	m_pStaticBrush = new CBrush();
 	m_BackColor = GetRGBColor(nColor);
@@ -607,7 +607,7 @@ void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	SetFocus();
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDown),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
 		1,
 		nFlags,
 		point.x,
@@ -617,7 +617,7 @@ void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	if (!mpView || m_BlockName.GetLength() == 0)
 		return;
 	
-	if (m_ArxControl->GetBoolProperty(nDragnDropAllowBegin) == TRUE && nFlags == 1)
+	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
 	{
 		if (m_pLoadedDwg == NULL)
 			BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
@@ -737,15 +737,15 @@ void CGsPreviewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 	if (m_bBeingLDblClicked)
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventDblClicked), m_bInvokeWithSendString);	
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventDblClicked), m_bInvokeWithSendString);	
 		m_bBeingLDblClicked = false;
 	}
 
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventClicked), m_bInvokeWithSendString);	
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);	
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseUp),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
 		1,
 		nFlags,
 		point.x,
@@ -764,7 +764,7 @@ void CGsPreviewCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 	SetFocus();
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDown),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -807,7 +807,7 @@ void CGsPreviewCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 	SetFocus();
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseUp),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -836,7 +836,7 @@ void CGsPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -1037,11 +1037,7 @@ void CGsPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
     
 }
 
-#if (_ACADTARGET == 16)
-UINT CGsPreviewCtrl::OnNcHitTest(CPoint point) 
-#else
-LRESULT CGsPreviewCtrl::OnNcHitTest(CPoint point) 
-#endif
+__LRESULT CGsPreviewCtrl::OnNcHitTest(CPoint point) 
 {
     return HTCLIENT;
 }
@@ -1063,7 +1059,7 @@ void CGsPreviewCtrl::OnSetFocus(CWnd* pOldWnd)
 	ReleaseDC(pdc);
 
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 	
 	
 }
@@ -1086,29 +1082,29 @@ BOOL CGsPreviewCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | SS_LEFT |WS_CLIPSIBLINGS |WS_CLIPCHILDREN;
 	
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
 
 	BOOL RetVal = CStatic::Create(_T(""), dwStyle, ArxRect, pParentWnd, nID);
 	
-	m_pInterfaceMode = m_ArxControl->GetPropertyObject(nAllowOrbiting);
-	m_pAllowCircles = m_ArxControl->GetPropertyObject(nShowOrbitCirlces);
-	m_pRenderMode = m_ArxControl->GetPropertyObject(nRenderMode);
+	m_pInterfaceMode = m_ArxControl->GetPropertyObject(Prop::AllowOrbiting);
+	m_pAllowCircles = m_ArxControl->GetPropertyObject(Prop::ShowOrbitCirlces);
+	m_pRenderMode = m_ArxControl->GetPropertyObject(Prop::RenderMode);
 
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -1755,7 +1751,7 @@ BOOL CGsPreviewCtrl::DisplayHatchPattern(CString sPattern)
     vertexPts[2].set(rc.right, rc.bottom, 0.0);
     vertexPts[3].set(rc.left, rc.bottom, 0.0);
 
-	long lClr = m_ArxControl->GetLongProperty(nForeColor);
+	long lClr = m_ArxControl->GetLongProperty(Prop::ForegroundColor);
 	AcCmColor clr;
 
 	if (lClr < 1 || lClr > 255)
@@ -1804,7 +1800,7 @@ BOOL CGsPreviewCtrl::DisplayHatchPattern(CString sPattern)
 	AcGeVector3d normal(0.0, 0.0, 1.0);
 	pHatch->setNormal(normal);
 	pHatch->setElevation(0.0);
-	pHatch->setPatternScale(dblPatternScaleFactor * m_ArxControl->GetPropertyObject(nHatchScale)->GetDoubleValue());
+	pHatch->setPatternScale(dblPatternScaleFactor * m_ArxControl->GetPropertyObject(Prop::HatchScale)->GetDoubleValue());
 	pHatch->setPatternAngle(0.0);
 	//pHatch->setAssociative(Adesk::kTrue);
 	//pHatch->setHatchStyle(AcDbHatch::kNormal);
@@ -2293,7 +2289,7 @@ void CGsPreviewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 	m_bBeingLDblClicked = true;
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDblClick),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
 		1,
 		nFlags,
 		point.x,
@@ -2301,7 +2297,7 @@ void CGsPreviewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 
 	// call methods to invoke the event
-	//InvokeMethod(m_ArxControl->GetStrProperty(nEventDblClicked), false);//m_bInvokeWithSendString);	
+	//InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventDblClicked), false);//m_bInvokeWithSendString);	
 
 }
 
@@ -2315,7 +2311,7 @@ void CGsPreviewCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
 	m_bBeingRDblClicked = true;
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDblClick),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
 		2,
 		nFlags,
 		point.x,
@@ -2334,15 +2330,15 @@ void CGsPreviewCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 	if (m_bBeingRDblClicked)
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventRDblClick), m_bInvokeWithSendString);	
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventRDblClick), m_bInvokeWithSendString);	
 		m_bBeingRDblClicked = false;
 	}
 	
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventRClick), m_bInvokeWithSendString);	
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventRClick), m_bInvokeWithSendString);	
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseUp),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,
@@ -2443,7 +2439,7 @@ void CGsPreviewCtrl::OnKillFocus(CWnd* pNewWnd)
 	ReleaseDC(pdc);
 	
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 	
 }
 
@@ -2491,7 +2487,7 @@ HBRUSH CGsPreviewCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 void CGsPreviewCtrl::OnMButtonDblClk(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDblClick),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
 		4,
 		nFlags,
 		point.x,
@@ -2504,7 +2500,7 @@ void CGsPreviewCtrl::OnMButtonDblClk(UINT nFlags, CPoint point)
 void CGsPreviewCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseDown),
+		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,

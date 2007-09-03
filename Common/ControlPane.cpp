@@ -154,8 +154,8 @@ CRect CControlPane::GetSplitterRect( int nId, CRect& rectCurrent )
 		{
 			pCtrl->GetWindow()->GetWindowRect( &rectCurrent );
 			mpHostDlg->ScreenToClient( &rectCurrent );
-			CPoint pt( pCtrl->GetLongProperty( nLeft ), pCtrl->GetLongProperty( nTop ) );
-			return CRect( pt.x, pt.y, pt.x + pCtrl->GetLongProperty( nWidth ), pt.y + pCtrl->GetLongProperty( nHeight ) );
+			CPoint pt( pCtrl->GetLongProperty( Prop::Left ), pCtrl->GetLongProperty( Prop::Top ) );
+			return CRect( pt.x, pt.y, pt.x + pCtrl->GetLongProperty( Prop::Width ), pt.y + pCtrl->GetLongProperty( Prop::Height ) );
 		}
 	}
 	rectCurrent.SetRect(0,0,0,0);
@@ -166,33 +166,33 @@ void CControlPane::ResetControlsPos(CDclControlObject *pDclControl)
 {
 	if (pDclControl == NULL)
 		return;
-	if (pDclControl->GetPropertyObject(nUseLeftFromRight) == NULL)
+	if (pDclControl->GetPropertyObject(Prop::UseLeftFromRight) == NULL)
 		return;
 
 	// get the offset flags
 	int lLeftFromRight = 0;
-	if (pDclControl->GetPropertyObject(nUseLeftFromRight)->GetType() == PropBool)
-		lLeftFromRight = pDclControl->GetPropertyObject(nUseLeftFromRight)->GetBooleanValue();
+	if (pDclControl->GetPropertyObject(Prop::UseLeftFromRight)->GetType() == PropBool)
+		lLeftFromRight = pDclControl->GetPropertyObject(Prop::UseLeftFromRight)->GetBooleanValue();
 	else
-		lLeftFromRight = pDclControl->GetPropertyObject(nUseLeftFromRight)->GetLongValue();
+		lLeftFromRight = pDclControl->GetPropertyObject(Prop::UseLeftFromRight)->GetLongValue();
 
 	int lRightFromRight = 0;
-	if (pDclControl->GetPropertyObject(nUseRightFromRight)->GetType() == PropBool)
-		lRightFromRight = pDclControl->GetPropertyObject(nUseRightFromRight)->GetBooleanValue();
+	if (pDclControl->GetPropertyObject(Prop::UseRightFromRight)->GetType() == PropBool)
+		lRightFromRight = pDclControl->GetPropertyObject(Prop::UseRightFromRight)->GetBooleanValue();
 	else
-		lRightFromRight = pDclControl->GetPropertyObject(nUseRightFromRight)->GetLongValue();
+		lRightFromRight = pDclControl->GetPropertyObject(Prop::UseRightFromRight)->GetLongValue();
 
 	int lTopFromBottom = 0;
-	if (pDclControl->GetPropertyObject(nUseRightFromRight)->GetType() == PropBool)
-		lTopFromBottom = pDclControl->GetPropertyObject(nUseTopFromBottom)->GetBooleanValue();
+	if (pDclControl->GetPropertyObject(Prop::UseRightFromRight)->GetType() == PropBool)
+		lTopFromBottom = pDclControl->GetPropertyObject(Prop::UseTopFromBottom)->GetBooleanValue();
 	else
-		lTopFromBottom = pDclControl->GetPropertyObject(nUseTopFromBottom)->GetLongValue();
+		lTopFromBottom = pDclControl->GetPropertyObject(Prop::UseTopFromBottom)->GetLongValue();
 
 	int lBottomFromBottom = 0;
-	if (pDclControl->GetPropertyObject(nUseRightFromRight)->GetType() == PropBool)
-		lBottomFromBottom = pDclControl->GetPropertyObject(nUseBottomFromBottom)->GetBooleanValue();
+	if (pDclControl->GetPropertyObject(Prop::UseRightFromRight)->GetType() == PropBool)
+		lBottomFromBottom = pDclControl->GetPropertyObject(Prop::UseBottomFromBottom)->GetBooleanValue();
 	else
-		lBottomFromBottom = pDclControl->GetPropertyObject(nUseBottomFromBottom)->GetLongValue();
+		lBottomFromBottom = pDclControl->GetPropertyObject(Prop::UseBottomFromBottom)->GetLongValue();
 	
 	// get the control being moved			
 	CWnd *pControl = pDclControl->GetWindow();
@@ -223,76 +223,76 @@ void CControlPane::ResetControlsPos(CDclControlObject *pDclControl)
 		// set the left position if required
 		if (lLeftFromRight == 1)
 		{
-			int nOffsetValue = pDclControl->GetPropertyObject(nLeftFromRight)->GetLongValue();
+			int nOffsetValue = pDclControl->GetPropertyObject(Prop::LeftFromRight)->GetLongValue();
 			rcControl.left = rcThis.right - nOffsetValue;
 		}
 		else if (lLeftFromRight == 2)
 		{
 			int nFormCenter = ((rcThis.right + rcThis.left) / 2);
-			int nControlOffsetFromCenter = pDclControl->GetPropertyObject(nLeftFromRight)->GetLongValue();
+			int nControlOffsetFromCenter = pDclControl->GetPropertyObject(Prop::LeftFromRight)->GetLongValue();
 			rcControl.left = nFormCenter + nControlOffsetFromCenter;
 		}
 		else if (lLeftFromRight > 2)
 		{
 			CRect rectCurrent;
 			CRect rc = GetSplitterRect(lLeftFromRight, rectCurrent);
-			int nOffsetValue = pDclControl->GetPropertyObject(nLeftFromRight)->GetLongValue();
+			int nOffsetValue = pDclControl->GetPropertyObject(Prop::LeftFromRight)->GetLongValue();
 			rcControl.left = rectCurrent.left + nOffsetValue;
 		}		
 		else
-			rcControl.left = rcThis.left + pDclControl->GetPropertyObject(nLeft)->GetLongValue();
+			rcControl.left = rcThis.left + pDclControl->GetPropertyObject(Prop::Left)->GetLongValue();
 
 		// set the right position if required
 		if (lRightFromRight == 1 && pDclControl->GetType() != CtlCheckBox)
 		{			
-			int nOffsetValue = pDclControl->GetPropertyObject(nRightFromRight)->GetLongValue();
+			int nOffsetValue = pDclControl->GetPropertyObject(Prop::RightFromRight)->GetLongValue();
 			rcControl.right = rcThis.right - nOffsetValue;
 		}
 		else if (lRightFromRight > 1)
 		{
 			CRect rectCurrent;
 			CRect rc = GetSplitterRect(lRightFromRight, rectCurrent);
-			int nOffsetValue = pDclControl->GetPropertyObject(nRightFromRight)->GetLongValue();
+			int nOffsetValue = pDclControl->GetPropertyObject(Prop::RightFromRight)->GetLongValue();
 			rcControl.right = rectCurrent.left + nOffsetValue;
 		}		
 		else
 		{
-			int nWidthValue = pDclControl->GetPropertyObject(nWidth)->GetLongValue();				
+			int nWidthValue = pDclControl->GetPropertyObject(Prop::Width)->GetLongValue();				
 			rcControl.right = rcControl.left + nWidthValue;
 		}
 
 		// set the top position if required
 		if (lTopFromBottom == 1)
 		{
-			int nOffsetValue = pDclControl->GetPropertyObject(nTopFromBottom)->GetLongValue();				
+			int nOffsetValue = pDclControl->GetPropertyObject(Prop::TopFromBottom)->GetLongValue();				
 			rcControl.top = rcThis.bottom - nOffsetValue;
 		}
 		else if (lTopFromBottom > 1)
 		{
 			CRect rectCurrent;
 			CRect rc = GetSplitterRect(lTopFromBottom, rectCurrent);
-			int nOffsetValue = pDclControl->GetPropertyObject(nTopFromBottom)->GetLongValue();
+			int nOffsetValue = pDclControl->GetPropertyObject(Prop::TopFromBottom)->GetLongValue();
 			rcControl.top = rectCurrent.top + nOffsetValue;
 		}
 		else
-			rcControl.top = rcThis.top + pDclControl->GetPropertyObject(nTop)->GetLongValue();
+			rcControl.top = rcThis.top + pDclControl->GetPropertyObject(Prop::Top)->GetLongValue();
 
 		// set the top position if required
 		if (lBottomFromBottom  == 1 && pDclControl->GetType() != CtlCheckBox)
 		{
-			int nOffsetValue = pDclControl->GetPropertyObject(nBottomFromBottom)->GetLongValue();				
+			int nOffsetValue = pDclControl->GetPropertyObject(Prop::BottomFromBottom)->GetLongValue();				
 			rcControl.bottom = rcThis.bottom - nOffsetValue;
 		}
 		else if (lBottomFromBottom > 1)
 		{
 			CRect rectCurrent;
 			CRect rc = GetSplitterRect(lBottomFromBottom, rectCurrent);
-			int nOffsetValue = pDclControl->GetPropertyObject(nBottomFromBottom)->GetLongValue();
+			int nOffsetValue = pDclControl->GetPropertyObject(Prop::BottomFromBottom)->GetLongValue();
 			rcControl.bottom = rectCurrent.top - nOffsetValue;
 		}
 		else
 		{
-			int nHeightValue = pDclControl->GetPropertyObject(nHeight)->GetLongValue();				
+			int nHeightValue = pDclControl->GetPropertyObject(Prop::Height)->GetLongValue();				
 			rcControl.bottom = rcControl.top + nHeightValue;
 		}
 	}
@@ -300,10 +300,10 @@ void CControlPane::ResetControlsPos(CDclControlObject *pDclControl)
 	{
 		if (mpSourceForm->GetType() != VdclFileDialog)
 		{	
-			int nLeftValue = pDclControl->GetPropertyObject(nLeft)->GetLongValue();	
-			int nTopValue = pDclControl->GetPropertyObject(nTop)->GetLongValue();	
-			int nWidthValue = pDclControl->GetPropertyObject(nWidth)->GetLongValue();	
-			int nHeightValue = pDclControl->GetPropertyObject(nHeight)->GetLongValue();	
+			int nLeftValue = pDclControl->GetPropertyObject(Prop::Left)->GetLongValue();	
+			int nTopValue = pDclControl->GetPropertyObject(Prop::Top)->GetLongValue();	
+			int nWidthValue = pDclControl->GetPropertyObject(Prop::Width)->GetLongValue();	
+			int nHeightValue = pDclControl->GetPropertyObject(Prop::Height)->GetLongValue();	
 			rcControl.SetRect( rcThis.left + nLeftValue, rcThis.top + nTopValue,
 												 rcThis.left + nLeftValue + nWidthValue, rcThis.top + nTopValue + nHeightValue);	
 		}
@@ -327,7 +327,7 @@ void CControlPane::ResetControlsPos(CDclControlObject *pDclControl)
 	
 	if( (pDclControl->GetType() == CtlComboBox || pDclControl->GetType() == CtlImageComboBox) &&
 			((pControl->GetStyle() & CBS_DROPDOWN) != 0) )
-		rcControl.bottom += pDclControl->GetLongProperty( nDropDownHeight );
+		rcControl.bottom += pDclControl->GetLongProperty( Prop::DropDownHeight );
 	
 	pControl->MoveWindow( rcControl, TRUE);
 	
@@ -377,16 +377,16 @@ void CControlPane::ShowControls(BOOL bShow)
 				{
 					if (bShow == TRUE)
 					{
-						if (pArxControlForm->GetPropertyObject(nVisible) != NULL)
+						if (pArxControlForm->GetPropertyObject(Prop::Visible) != NULL)
 						{
-							BOOL bShowControl = pArxControlForm->GetPropertyObject(nVisible)->GetBooleanValue();
+							BOOL bShowControl = pArxControlForm->GetPropertyObject(Prop::Visible)->GetBooleanValue();
 							if (!pControl->IsWindowVisible() && bShowControl == TRUE)
 								if (IsWindow(pControl->m_hWnd))		
-									pControl->ShowWindow(pArxControlForm->GetPropertyObject(nVisible)->GetBooleanValue());
+									pControl->ShowWindow(pArxControlForm->GetPropertyObject(Prop::Visible)->GetBooleanValue());
 						}
 						else
 						{
-							BOOL bShowControl = pArxControlForm->GetPropertyObject(nVisible)->GetBooleanValue();
+							BOOL bShowControl = pArxControlForm->GetPropertyObject(Prop::Visible)->GetBooleanValue();
 							if (!pControl->IsWindowVisible() && bShowControl > -1)
 								if (IsWindow(pControl->m_hWnd))		
 									pControl->ShowWindow(bShowControl);
@@ -432,16 +432,16 @@ void CControlPane::ShowPictureBoxes(BOOL bShow)
 				{
 					if (bShow == TRUE)
 					{
-						if (pArxControlForm->GetPropertyObject(nVisible) != NULL)
+						if (pArxControlForm->GetPropertyObject(Prop::Visible) != NULL)
 						{
-							BOOL bShowControl = pArxControlForm->GetPropertyObject(nVisible)->GetBooleanValue();
+							BOOL bShowControl = pArxControlForm->GetPropertyObject(Prop::Visible)->GetBooleanValue();
 							if (!pControl->IsWindowVisible() && bShowControl == TRUE)
 								if (IsWindow(pControl->m_hWnd))																		
-									pControl->ShowWindow(pArxControlForm->GetPropertyObject(nVisible)->GetBooleanValue());
+									pControl->ShowWindow(pArxControlForm->GetPropertyObject(Prop::Visible)->GetBooleanValue());
 						}
 						else
 						{
-							BOOL bShowControl = pArxControlForm->GetBoolProperty(nVisible);
+							BOOL bShowControl = pArxControlForm->GetBooleanProperty(Prop::Visible);
 							if (!pControl->IsWindowVisible() && bShowControl > -1)
 								if (IsWindow(pControl->m_hWnd))									
 									pControl->ShowWindow(bShowControl);							

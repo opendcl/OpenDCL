@@ -58,27 +58,27 @@ BOOL VdclComboBoxEx::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_CLIPSIBLINGS
 			  | CBS_AUTOHSCROLL | WS_CLIPCHILDREN;
 	
-	if (pControl->GetBoolProperty(nSorted) == TRUE)
+	if (pControl->GetBooleanProperty(Prop::Sorted) == TRUE)
 		dwStyle = dwStyle | CBS_SORT;		
 
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
 
-	switch (pControl->GetLongProperty(nComboBoxStyle))
+	switch (pControl->GetLongProperty(Prop::ComboBoxStyle))
 	{
 	case 0:
 		{
-			ArxRect.bottom = ArxRect.bottom  + pControl->GetLongProperty(nDropDownHeight);
+			ArxRect.bottom = ArxRect.bottom  + pControl->GetLongProperty(Prop::DropDownHeight);
 			dwStyle = dwStyle | CBS_DROPDOWN;
 			break;
 		}
@@ -89,7 +89,7 @@ BOOL VdclComboBoxEx::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 		}
 	default:
 		{
-			ArxRect.bottom = ArxRect.bottom  + pControl->GetLongProperty(nDropDownHeight);
+			ArxRect.bottom = ArxRect.bottom  + pControl->GetLongProperty(Prop::DropDownHeight);
 			dwStyle = dwStyle | CBS_DROPDOWNLIST;
 			break;
 		}
@@ -97,12 +97,12 @@ BOOL VdclComboBoxEx::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 
 	RetVal = CComboBoxEx::Create( dwStyle, ArxRect, pParentWnd, nID );
 
-	LimitText(pControl->GetLongProperty(nLimitText));
+	LimitText(pControl->GetLongProperty(Prop::LimitText));
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
 	//SetExtendedUI(TRUE);
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -138,7 +138,7 @@ void VdclComboBoxEx::OnMouseMove(UINT nFlags, CPoint point)
 
 	if (m_ArxControl)
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(nEventMouseMove),
+		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -174,12 +174,12 @@ void VdclComboBoxEx::OnEditchange()
 
 	if (m_ArxControl)
 	{
-		CString sTestText = m_ArxControl->GetStrProperty(nText);
+		CString sTestText = m_ArxControl->GetStrProperty(Prop::Text);
 		if (sTestText != sText)
 		{
-			m_ArxControl->SetStringProperty(nText, sText);
+			m_ArxControl->SetStringProperty(Prop::Text, sText);
 			// call methods to invoke the event
-			InvokeMethodString(m_ArxControl->GetStrProperty(nEventEditChanged), sText, m_bInvokeWithSendString);
+			InvokeMethodString(m_ArxControl->GetStrProperty(Prop::EventEditChanged), sText, m_bInvokeWithSendString);
 		}
 	}
 	
@@ -222,14 +222,14 @@ void VdclComboBoxEx::OnKillfocus()
 {
 	// call methods to invoke the event
 	if (m_ArxControl)
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventKillFocus), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 }
 
 void VdclComboBoxEx::OnSetfocus() 
 {
 	// call methods to invoke the event
 	if (m_ArxControl)
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventSetFocus), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 
 }
 
@@ -265,19 +265,19 @@ void VdclComboBoxEx::OnSelchange()
 
 	if (m_ArxControl)
 	{
-		InvokeMethodIntString(m_ArxControl->GetStrProperty(nEventSelChanged), nSel, sString, m_bInvokeWithSendString);
-		m_ArxControl->SetStringProperty(nText, sString);
+		InvokeMethodIntString(m_ArxControl->GetStrProperty(Prop::EventSelChanged), nSel, sString, m_bInvokeWithSendString);
+		m_ArxControl->SetStringProperty(Prop::Text, sString);
 	}
 	
-	if (m_ArxControl == NULL && !m_bESC)
-	{
-		CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
-		
-		pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);		
-		pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, nImage);	
-		// fire the on Grid edit cell event.
-		pListCtrl->EndEditControls(pListCtrl);
-	}
+	//if (m_ArxControl == NULL && !m_bESC)
+	//{
+	//	CArxGridCtrl *pListCtrl = (CArxGridCtrl*)GetParent()->GetParent();
+	//	
+	//	pListCtrl->SetItemText(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, sString);		
+	//	pListCtrl->SetItemImage(pListCtrl->m_nRowSelected, pListCtrl->m_nColSelected, nImage);	
+	//	// fire the on Grid edit cell event.
+	//	pListCtrl->EndEditControls(pListCtrl);
+	//}
 }
 
 
@@ -285,7 +285,7 @@ void VdclComboBoxEx::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	if (m_ArxControl)
 	{
-		if (m_ArxControl->GetLongProperty(nComboBoxStyle) == CmboStyle_Simple)
+		if (m_ArxControl->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_Simple)
 		{		
  			CRect rcThis;
 			GetWindowRect(&rcThis);
@@ -314,7 +314,7 @@ BOOL VdclComboBoxEx::PreTranslateMessage(MSG* pMsg)
 			m_bAutoComplete = false;
 		if (m_ArxControl)
 		{
-			if (nVirtKey == VK_RETURN && m_ArxControl->GetBoolProperty(nReturnAsTab) == TRUE)
+			if (nVirtKey == VK_RETURN && m_ArxControl->GetBooleanProperty(Prop::ReturnAsTab) == TRUE)
 				pMsg->wParam = VK_TAB;		
 		}
 		else
@@ -337,5 +337,5 @@ void VdclComboBoxEx::OnDropdown()
 {
 	// call methods to invoke the event
 	if (m_ArxControl)
-		InvokeMethod(m_ArxControl->GetStrProperty(nEventDropDown), m_bInvokeWithSendString);	
+		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventDropDown), m_bInvokeWithSendString);	
 }

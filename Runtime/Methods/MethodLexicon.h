@@ -4,11 +4,6 @@
 extern LPCTSTR sFilesDir;
 
 extern LPCTSTR sShowToolTip;
-extern LPCTSTR sGrid_Cell_TextBox;
-extern LPCTSTR sGrid_Cell_ComboBox;
-extern LPCTSTR sGrid_Cell_ImageComboBox;
-extern LPCTSTR sGrid_Cell_EllipsesButton;
-extern LPCTSTR sGrid_Cell_PickButton;
 extern LPCTSTR sGrid_Cell_SetStyle;
 extern LPCTSTR sGrid_SelectCell;
 extern LPCTSTR sGrid_Cell_SetDropList;
@@ -17,8 +12,6 @@ extern LPCTSTR sGrid_GetColumnImage;
 extern LPCTSTR sGrid_SetColumnImage;
 extern LPCTSTR sGrid_GetCount;
 extern LPCTSTR sGrid_GetColumnCount;
-extern LPCTSTR sGrid_Cell_DoCellDlg;
-extern LPCTSTR sGrid_Cell_ToggleImages;
 extern LPCTSTR sGrid_GetCheck;
 extern LPCTSTR sGrid_SetCheck;
 extern LPCTSTR sGrid_AddColumn;

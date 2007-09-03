@@ -24,7 +24,7 @@ public:
 // Attributes
 public:
 	bool m_bInvokeWithSendString;
-	RefCountedPtr< CPropertyObject > m_pValueProp;
+	TPropertyPtr m_pValueProp;
 // Operations
 public:
 	CPPToolTip m_ToolTip;

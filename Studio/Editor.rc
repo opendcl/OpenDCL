@@ -544,17 +544,17 @@ BEGIN
 END
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 399, 319
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About OpenDCL"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     ICON            59,IDC_STATIC,7,7,20,20
-    CTEXT           "OpenDCL 4.0",IDC_STATIC,96,7,93,8,SS_NOPREFIX
+    CTEXT           "OpenDCL Studio",IDC_STATIC,96,7,93,8,SS_NOPREFIX
     CTEXT           "",IDC_APPVERSION,96,21,93,8
     DEFPUSHBUTTON   "OK",IDOK,342,7,50,14,WS_GROUP
     CONTROL         "",IDC_LICENSETXT,"RichEdit20A",ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | WS_BORDER | WS_VSCROLL | WS_TABSTOP,7,51,385,243
     LTEXT           "Copyright 2007",IDC_STATIC,7,302,188,10
-    LTEXT           "http://sourceforge.net/projects/opendcl",IDC_STATIC,204,302,188,10
+    LTEXT           "http://www.opendcl.com",IDC_STATIC,204,302,188,10
 END
 
 IDD_BLANKDIALOG DIALOG  0, 0, 5, 5
@@ -1262,8 +1262,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,1,0,3
- PRODUCTVERSION 4,1,0,3
+ FILEVERSION 4,1,0,5
+ PRODUCTVERSION 4,1,0,5
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1279,14 +1279,14 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
-            VALUE "FileDescription", "OpenDCL Dialog Editor"
-            VALUE "FileVersion", "4, 1, 0, 3"
+            VALUE "FileDescription", "OpenDCL Studio Dialog Editor"
+            VALUE "FileVersion", "4, 1, 0, 5"
             VALUE "InternalName", "OpenDCL.Editor"
             VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
-            VALUE "OriginalFilename", "OpenDCL.exe"
-            VALUE "ProductName", "OpenDCL"
-            VALUE "ProductVersion", "4, 1, 0, 3"
+            VALUE "OriginalFilename", "OpenDCL Studio.exe"
+            VALUE "ProductName", "OpenDCL Studio"
+            VALUE "ProductVersion", "4, 1, 0, 5"
         END
     END
     BLOCK "VarFileInfo"
@@ -1456,14 +1456,12 @@ BEGIN
     IDS_ZMOVEDOWN           "Move the Control Back in the Z/Tab Order by One"
     IDS_ZHELP               "Help"
     IDS_DCLTREEITEMNOTSEL   "The item selected in the Project Window is not a Form."
-    IDS_QDELETEFORM         "Are you sure you wish to remove this dialog box?"
-    IDS_QDELETEFORMWTAB     "Are you sure you wish to remove this dialog box? \r\nDeleting it will remove the Tab control and all it's Tab pane forms with their controls."
+    IDS_QDELETEFORM         "Deleting a form permanently deletes all controls and tab pages that it contains.\r\n\r\nAre you sure you wish to delete this form?"
     IDS_CTRLBADNAME         "The name of this control cannot be the same as another control on the same form."
     IDS_FORMBADNAME         "The name of this form cannot be the same as another form in this project."
     IDS_TABNO               "Tab Information: Tab "
     IDS_NOMORETABS          "Only one tab per form is allowed."
     IDS_NOTABWITHINTAB      "The Tab Control cannot be placed inside a Tab Control."
-    IDS_QDELETETAB          "Deleting this tab will permanently delete the controls drawn on it's form.\r\nAre you sure you wish to delete this tab and it's child controls?"
     IDS_AXFILEPARENT        "Referenced ActiveX Files"
     IDS_INDEX               "Index: "
     IDS_NEWITEM             "<New Item>"
@@ -2610,7 +2608,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDR_ODCDOCTEMPLATE      "\nProject\nOpenDCL\nOpenDCL Projects (*.odcl,*.lsp)\n.odcl;.lsp\nOpenDCL.Document\nOpenDCL Project"
+    IDR_ODCDOCTEMPLATE      "\nProject\nOpenDCL Studio\nOpenDCL Projects (*.odcl,*.lsp)\n.odcl;.lsp\nOpenDCL.Document\nOpenDCL Project"
 END
 
 STRINGTABLE 

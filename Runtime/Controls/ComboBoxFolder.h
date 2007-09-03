@@ -7,7 +7,7 @@
 #include "PPToolTip.h"
 
 class CDclControlObject;
-class CDwgDirList;
+class CArxDwgListCtrl;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ public:
 	CPPToolTip		m_ToolTip;
 	CDclControlObject	*m_ArxControl;
 	bool				m_bInvokeWithSendString;
-	CDwgDirList			*m_pDwgList;
+	CArxDwgListCtrl			*m_pDwgList;
 
 	// ListCtrl edit data members
 	bool m_bESC;

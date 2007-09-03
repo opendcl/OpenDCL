@@ -7,6 +7,12 @@
 #include "BaseDlg.h"
 #include "ArxDialogObject.h"
 
+#if (_MFC_VER < 0x0800)
+#define __LRESULT UINT
+#else
+#define __LRESULT LRESULT
+#endif
+
 
 #ifndef WM_ACAD_MFC_BASE
 #define WM_ACAD_MFC_BASE        (1000)
@@ -89,11 +95,11 @@ protected:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
 	afx_msg void OnMove(int x, int y);
-	afx_msg void OnCaptureChanged(CWnd* pWnd);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
+	afx_msg LRESULT OnMouseEnter(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnEnterMenuLoop(BOOL bPopupMenu);
 	afx_msg void OnExitMenuLoop(BOOL bPopupMenu);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg __LRESULT OnNcHitTest(CPoint point);
+	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 };

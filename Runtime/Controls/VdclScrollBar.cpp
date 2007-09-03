@@ -47,17 +47,17 @@ BOOL VdclScrollBar::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT n
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
-	m_nLargeChange = pControl->GetLongProperty(nLargeChange);
-	m_nSmallChange = pControl->GetLongProperty(nSmallChange);
+	m_nLargeChange = pControl->GetLongProperty(Prop::LargeChange);
+	m_nSmallChange = pControl->GetLongProperty(Prop::SmallChange);
 
 	dwStyle = WS_CHILD | SBS_BOTTOMALIGN | WS_CLIPSIBLINGS | WS_GROUP;
 
-	if (pControl->GetLongProperty(nOrientation) == 0)
+	if (pControl->GetLongProperty(Prop::Orientation) == 0)
 		dwStyle = dwStyle | SBS_HORZ;
 	else
 		dwStyle = dwStyle | SBS_VERT;
@@ -66,20 +66,20 @@ BOOL VdclScrollBar::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT n
 
 	VERIFY(CScrollBar::SubclassDlgItem(nID, pParentWnd));
 	CScrollBar::SetScrollRange(
-		pControl->GetLongProperty(nMinValue),
-		pControl->GetLongProperty(nMaxValue),
+		pControl->GetLongProperty(Prop::MinValue),
+		pControl->GetLongProperty(Prop::MaxValue),
 		TRUE);
-	m_hPos = pControl->GetLongProperty(nValue);
+	m_hPos = pControl->GetLongProperty(Prop::Value);
 	CScrollBar::SetScrollPos(m_hPos, TRUE);
 	CScrollBar::ShowScrollBar(TRUE);
 	CScrollBar::SetWindowPos(NULL, ArxRect.left, ArxRect.top, ArxRect.Width(), ArxRect.Height(), NULL);
 	
-	m_pValueProp = pControl->GetPropertyObject(nValue);
+	m_pValueProp = pControl->GetPropertyObject(Prop::Value);
 
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -175,10 +175,10 @@ void VdclScrollBar::OnScroll(UINT nSBCode, UINT nPos)
 	
 	if (nWhichEvent == 0)
 		// call methods to invoke the event
-		InvokeMethodInt(m_ArxControl->GetStrProperty(nEventScroll), m_hPos, m_bInvokeWithSendString);
+		InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), m_hPos, m_bInvokeWithSendString);
 	else
 		// call methods to invoke the event
-		InvokeMethodInt(m_ArxControl->GetStrProperty(nEventScrolled), m_hPos, m_bInvokeWithSendString);
+		InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScrolled), m_hPos, m_bInvokeWithSendString);
 	
 	
 }

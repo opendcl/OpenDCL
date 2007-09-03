@@ -40,9 +40,9 @@ class CTabsPane : public CPropertyPage
 	CComboBoxEx	m_Image;
 	CSpinButtonCtrl	m_SpinBtn;
 	CEdit	m_ToolTipTitle;
-	RefCountedPtr< CPropertyObject > m_pTabCaptions;	
-	RefCountedPtr< CPropertyObject > m_pTabTTT;	
-	RefCountedPtr< CPropertyObject > m_pTabImages;	
+	TPropertyPtr m_pTabCaptions;	
+	TPropertyPtr m_pTabTTT;	
+	TPropertyPtr m_pTabImages;	
 	CTabInfoList m_TabList;
 	CTabInfoList m_DeletedTabList;
 

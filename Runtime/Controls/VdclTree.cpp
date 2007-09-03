@@ -77,31 +77,31 @@ BOOL VdclTree::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
     m_ArxControl = pControl;
 	
 	// get the rectangle of the new control
-	ArxRect.top = pControl->GetPropertyObject(nTop)->GetLongValue();
-	ArxRect.left = pControl->GetPropertyObject(nLeft)->GetLongValue();
-	ArxRect.bottom = pControl->GetPropertyObject(nHeight)->GetLongValue() + ArxRect.top;
-	ArxRect.right = pControl->GetPropertyObject(nWidth)->GetLongValue() + ArxRect.left;
+	ArxRect.top = pControl->GetPropertyObject(Prop::Top)->GetLongValue();
+	ArxRect.left = pControl->GetPropertyObject(Prop::Left)->GetLongValue();
+	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
+	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL ;//|
 		//TVS_DISABLEDRAGDROP; //TVS_INFOTIP
 
-	if (pControl->GetBoolProperty(nIsTabStop) != FALSE)
+	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
 	else
 		dwStyle = dwStyle | WS_GROUP;
 
-	if (pControl->GetBoolProperty(nShowSelectAlways))
+	if (pControl->GetBooleanProperty(Prop::ShowSelectAlways))
 		dwStyle = dwStyle | TVS_SHOWSELALWAYS;
-	if (pControl->GetBoolProperty(nHasLines))
+	if (pControl->GetBooleanProperty(Prop::HasLines))
 		dwStyle = dwStyle | TVS_HASLINES;
-	if (pControl->GetBoolProperty(nLinesAtRoot))
+	if (pControl->GetBooleanProperty(Prop::LinesAtRoot))
 		dwStyle = dwStyle | TVS_LINESATROOT;
-	if (pControl->GetBoolProperty(nHasButtons))
+	if (pControl->GetBooleanProperty(Prop::HasButtons))
 		dwStyle = dwStyle | TVS_HASBUTTONS;
-	if (pControl->GetBoolProperty(nEditLabels))
+	if (pControl->GetBooleanProperty(Prop::EditLabels))
 		dwStyle = dwStyle | TVS_EDITLABELS;
 	
-	if (pControl->GetBoolProperty(nSingleExpanded) == TRUE)
+	if (pControl->GetBooleanProperty(Prop::SingleExpanded) == TRUE)
 	{
 		dwStyle = dwStyle | TVS_SINGLEEXPAND;
 		m_bSingleExpand = true;
@@ -130,7 +130,7 @@ BOOL VdclTree::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	SetToolTipEx(&m_ChildTree, m_ChildTree.m_ToolTip, pControl);
 
 	
-	switch (m_ArxControl->GetLongProperty(nEventInvoke))
+	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
 	{
 	case 1:
 		m_bInvokeWithSendString = true;
@@ -560,7 +560,7 @@ void VdclTree::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(nEventClicked),
+		m_ArxControl->GetStrProperty(Prop::EventClicked),
 		m_bInvokeWithSendString);
 
 	*pResult = 0;
@@ -570,7 +570,7 @@ void VdclTree::OnDblclk(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(nEventDblClicked),
+		m_ArxControl->GetStrProperty(Prop::EventDblClicked),
 		m_bInvokeWithSendString);
 
 	*pResult = 0;
@@ -580,7 +580,7 @@ void VdclTree::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(nEventKillFocus),
+		m_ArxControl->GetStrProperty(Prop::EventKillFocus),
 		m_bInvokeWithSendString);
 
 	*pResult = 0;
@@ -590,7 +590,7 @@ void VdclTree::OnChildSetfocus(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(nEventSetFocus),
+		m_ArxControl->GetStrProperty(Prop::EventSetFocus),
 		m_bInvokeWithSendString);
 
 	*pResult = 0;
@@ -600,7 +600,7 @@ void VdclTree::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(nEventRClick),
+		m_ArxControl->GetStrProperty(Prop::EventRClick),
 		m_bInvokeWithSendString);
 	
 	*pResult = 0;
@@ -610,7 +610,7 @@ void VdclTree::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(nEventRDblClick),
+		m_ArxControl->GetStrProperty(Prop::EventRDblClick),
 		m_bInvokeWithSendString);
 
 	
@@ -621,7 +621,7 @@ void VdclTree::OnReturn(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(nEventReturn),
+		m_ArxControl->GetStrProperty(Prop::EventReturn),
 		m_bInvokeWithSendString);
 
 	
@@ -639,7 +639,7 @@ void VdclTree::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 		// call methods to invoke the event
 		InvokeMethodString(		
-			m_ArxControl->GetStrProperty(nEventBeginLabelEdit),
+			m_ArxControl->GetStrProperty(Prop::EventBeginLabelEdit),
 			sKey,
 			m_bInvokeWithSendString);
 	}
@@ -647,7 +647,7 @@ void VdclTree::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 		// call methods to invoke the event
 		InvokeMethodLong(		
-			m_ArxControl->GetStrProperty(nEventBeginLabelEdit),
+			m_ArxControl->GetStrProperty(Prop::EventBeginLabelEdit),
 			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
 	}
@@ -671,7 +671,7 @@ void VdclTree::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 	if (sKey != CString())
 	{
 		InvokeMethodStringString(
-			m_ArxControl->GetStrProperty(nEventEndLabelEdit),
+			m_ArxControl->GetStrProperty(Prop::EventEndLabelEdit),
 			sNewText,
 			sKey,
 			m_bInvokeWithSendString);
@@ -679,7 +679,7 @@ void VdclTree::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 	else if (SelectedItem.hItem != NULL)
 	{
 		InvokeMethodStringLong(
-			m_ArxControl->GetStrProperty(nEventEndLabelEdit),
+			m_ArxControl->GetStrProperty(Prop::EventEndLabelEdit),
 			sNewText,
 			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
@@ -705,7 +705,7 @@ void VdclTree::OnDeleteitem(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 		// call methods to invoke the event
 		InvokeMethodStringString(
-			m_ArxControl->GetStrProperty(nEventDeleteItem),
+			m_ArxControl->GetStrProperty(Prop::EventDeleteItem),
 			sItemText,
 			sKey,
 			m_bInvokeWithSendString);
@@ -714,7 +714,7 @@ void VdclTree::OnDeleteitem(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 		// call methods to invoke the event
 		InvokeMethodStringLong(
-			m_ArxControl->GetStrProperty(nEventDeleteItem),
+			m_ArxControl->GetStrProperty(Prop::EventDeleteItem),
 			sItemText,
 			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
@@ -782,7 +782,7 @@ void VdclTree::OnItemexpanded(NMHDR* pNMHDR, LRESULT* pResult)
 
 	HTREEITEM hItem = SelectedItem.hItem;
 		
-	if (m_ArxControl->GetBoolProperty(nSingleExpanded) == TRUE)	
+	if (m_ArxControl->GetBooleanProperty(Prop::SingleExpanded) == TRUE)	
 		m_ChildTree.ModifyStyle(TVS_SINGLEEXPAND, NULL, SWP_FRAMECHANGED);
 /*
 	if (m_bAutoChangeSelection)
@@ -799,7 +799,7 @@ void VdclTree::OnItemexpanded(NMHDR* pNMHDR, LRESULT* pResult)
 			m_ChildTree.SetItemState(hItem, TVIS_DROPHILITED, TVIS_DROPHILITED);		
 		}
 
-		if (m_ArxControl->GetBoolProperty(nSingleExpanded) == TRUE)	
+		if (m_ArxControl->GetBooleanProperty(Prop::SingleExpanded) == TRUE)	
 			m_ChildTree.ModifyStyle(NULL, TVS_SINGLEEXPAND, SWP_FRAMECHANGED);
 	}
 */
@@ -809,7 +809,7 @@ void VdclTree::OnItemexpanded(NMHDR* pNMHDR, LRESULT* pResult)
 	{	
 		// call methods to invoke the event
 		InvokeMethodStringString(
-			m_ArxControl->GetStrProperty(nEventItemExpanded),
+			m_ArxControl->GetStrProperty(Prop::EventItemExpanded),
 			sItemText,
 			sKey,
 			m_bInvokeWithSendString);
@@ -818,7 +818,7 @@ void VdclTree::OnItemexpanded(NMHDR* pNMHDR, LRESULT* pResult)
 	{	
 		// call methods to invoke the event
 		InvokeMethodStringLong(
-			m_ArxControl->GetStrProperty(nEventItemExpanded),
+			m_ArxControl->GetStrProperty(Prop::EventItemExpanded),
 			sItemText,
 			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
@@ -872,7 +872,7 @@ void VdclTree::OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult)
 	
 	HTREEITEM hItem = SelectedItem.hItem;
 	
-	if (m_ArxControl->GetBoolProperty(nSingleExpanded) == TRUE)	
+	if (m_ArxControl->GetBooleanProperty(Prop::SingleExpanded) == TRUE)	
 		m_ChildTree.ModifyStyle(TVS_SINGLEEXPAND, NULL, SWP_FRAMECHANGED);
 
 	/*
@@ -889,7 +889,7 @@ void VdclTree::OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult)
 			m_ChildTree.SetItemState(hItem, TVIS_DROPHILITED, TVIS_DROPHILITED);		
 		}
 
-		if (m_ArxControl->GetBoolProperty(nSingleExpanded) == TRUE)	
+		if (m_ArxControl->GetBooleanProperty(Prop::SingleExpanded) == TRUE)	
 			m_ChildTree.ModifyStyle(NULL, TVS_SINGLEEXPAND, SWP_FRAMECHANGED);
 	}
 */
@@ -899,7 +899,7 @@ void VdclTree::OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult)
 	{	
 		// call methods to invoke the event
 		InvokeMethodStringString(
-			m_ArxControl->GetStrProperty(nEventItemExpanding),
+			m_ArxControl->GetStrProperty(Prop::EventItemExpanding),
 			sItemText,
 			sKey,
 			m_bInvokeWithSendString);
@@ -908,7 +908,7 @@ void VdclTree::OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult)
 	{	
 		// call methods to invoke the event
 		InvokeMethodStringLong(
-			m_ArxControl->GetStrProperty(nEventItemExpanding),
+			m_ArxControl->GetStrProperty(Prop::EventItemExpanding),
 			sItemText,
 			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
@@ -921,7 +921,7 @@ void VdclTree::OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult)
 void VdclTree::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(nEventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 	
 	CStatic::OnKeyDown(nChar, nRepCnt, nFlags);
 }
