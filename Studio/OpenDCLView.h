@@ -101,8 +101,6 @@ public:
 	void PasteFromClipBoard();
 	void RefreshSelectControl();
 	void ZOrdedSelectedControls(short direction);
-	short GetSelectedTabClientWidth();
-	short GetSelectedTabClientHeight();
 	void DisplayControls(CDclFormObject *pDclForm);
 	short GetSelectedArxIndex();
 	long GetSelectedType();
@@ -124,8 +122,6 @@ public:
 	// tab pane functions
 	bool IsTabsEnabled();
 	void ResizeChildTabPanes();
-	CDclFormObject * AddSingleTabPane(int nIndex);
-	void RemoveChildTabPane(CDclFormObject *pDclForm);
 	bool CanRemoveChildTabPane(int nIndex);
 
 
@@ -158,7 +154,6 @@ public:
 
 public:
 	void ResizeParentToFit(BOOL bShrinkOnly);
-	void UpdateClientHeight(CDclControlObject* pArxObject, CWnd *pControl);
 	void OnMouseButtonDown(UINT nFlags, CPoint point);
 	void AdjustOffsets(int cx, int cy);
 	CSize GetControlSize(CWnd *pControl, int nControlType);
@@ -191,9 +186,6 @@ public:
 
 	void FireControlSelected(CDclControlObject *pControl);
 	void FireShowFormGrips(BOOL bVisible);
-	void FirePopUpMenuPlease(long cx, long cy);
-	void FireTabResized(short nClientHeight);
-	void FireMouseDownEvent();
 	void FireTabControlDeleted();
 	void FireSetUndo();
 	void FireControlInserted(CDclControlObject *pControl, long ControlType);

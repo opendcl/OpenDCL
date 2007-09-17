@@ -101,7 +101,7 @@ void OdclMonth::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
+		m_ArxControl->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -112,19 +112,19 @@ void OdclMonth::OnMouseMove(UINT nFlags, CPoint point)
 
 void OdclMonth::OnGetdaystate(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventGetDayState), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventGetDayState), m_bInvokeWithSendString);
 	*pResult = 0;
 }
 
 void OdclMonth::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSelChanged), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSelChanged), m_bInvokeWithSendString);
 	*pResult = 0;
 }
 
 void OdclMonth::OnSelect(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSelect), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSelect), m_bInvokeWithSendString);
 	*pResult = 0;
 }
 

@@ -7,56 +7,34 @@
 #include "UserMessageId.h"
 #include "ErrorLexicon.h"
 #include "MethodLexicon.h"
-#include "ArxGraphicButtonCtrl.h"
-#include "ArxListBoxCtrl.h"
-#include "ArxGridCtrl.h"
-#include "ArxDwgListCtrl.h"
-#include "ArxOptionListCtrl.h"
-#include "ArxRadioButtonCtrl.h"
-#include "ArxCheckBoxCtrl.h"
-#include "OdclEdit.h"
-#include "OdclEdit.h"
-#include "OdclListCtrl.h"
-#include "OdclMonth.h"
-#include "OdclLayerCombo.h"
-#include "RoundSliderCtrl.h"
-#include "PictureBox.h"
-#include "DwgPreviewCtrl.h"
-#include "FontCombo.h"
-#include "Splitter.h"
-#include "StaticLink.h"
-#include "GsPreviewCtrl.h"
-#include "SlideHolder.h"
-#include "VdclAngleEdit.h"
-#include "VdclArrowHeadComboBox.h"
-#include "VdclColorComboBox.h"
-#include "VdclComboBox.h"
-#include "VdclComboBoxEx.h"
-#include "VdclGroupBox.h"
-#include "VdclLineWeightComboBox.h"
-#include "VdclNumericEdit.h"
-#include "VdclPlotStyleNamesComboBox.h"
-#include "VdclPlotStyleTablesComboBox.h"
-#include "VdclProgressCtrl.h"
-#include "VdclScrollBar.h"
-#include "VdclSliderCtrl.h"
-#include "VdclSpinButton.h"
-#include "VdclStatic.h"
-#include "VdclSymbolEdit.h"
-#include "VdclTree.h"
-#include "VdclTextButton.h"
-#include "HtmlCtrl.h"
-#include "PrinterComboBox.h"
-#include "AxContainerCtrl.h"
-#include "ComboBoxFolder.h"
 #include "ToolTips.h"
 #include "PropertyNames.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "ControlTypes.h"
 #include "DclFormObject.h"
+#include "ArxDialogControl.h"
 #include "ArxWorkspace.h"
 #include "ArxControlPane.h"
+#include "ArxArrowComboBoxCtrl.h"
+#include "ArxCheckBoxCtrl.h"
+#include "ArxDwgListCtrl.h"
+#include "ArxGraphicButtonCtrl.h"
+#include "ArxGridCtrl.h"
+#include "ArxListBoxCtrl.h"
+#include "ArxOptionListCtrl.h"
+#include "ArxRadioButtonCtrl.h"
+
+#include "DwgPreviewCtrl.h"
+#include "GsPreviewCtrl.h"
+#include "RoundSliderCtrl.h"
+#include "StaticLink.h"
+#include "VdclProgressCtrl.h"
+#include "OdclMonth.h"
+#include "VdclSliderCtrl.h"
+#include "PictureBox.h"
+#include "VdclTextButton.h"
+#include "VdclTree.h"
 
 
 const int nBufSize = 100;
@@ -175,7 +153,7 @@ bool GetCtrlProperty(Prop::Id id)
 	}
 	if (pProperty == NULL)
 	{
-		theWorkspace.DisplayAlert(CString (ErrorTheProperty) + GetPropertyName(id) + ErrorPropertyWasNotFound + ErrorForControl + pArxObject->GetStrProperty(Prop::Name));
+		theWorkspace.DisplayAlert(CString (ErrorTheProperty) + GetPropertyName(id) + ErrorPropertyWasNotFound + ErrorForControl + pArxObject->GetStringProperty(Prop::Name));
 		// return a negitive value to indicate to the calling autolisp function that the call failed
 		acedRetInt(-1);
 		return false;
@@ -365,7 +343,7 @@ int SetProperty()
 	if (!SetPropertyObject(pProperty, pPropArg, pArxObject))
 	{
 		// set this up latter to tell the user what was received and what it expected
-		theWorkspace.DisplayAlert(CString(ErrorWrongArgTypeForProp) + ErrorForControl + pArxObject->GetStrProperty(Prop::Name));
+		theWorkspace.DisplayAlert(CString(ErrorWrongArgTypeForProp) + ErrorForControl + pArxObject->GetStringProperty(Prop::Name));
 		// return a negitive value to indicate to the calling autolisp function that the call failed
 		acedRetInt(-1);
 		return 0;
@@ -430,7 +408,7 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 			if (ListData == NULL)
 			{
 				// inform the programmer that he did not make the correct call
-				theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSetProperty + ErrorForControl + pArxObject->GetStrProperty(Prop::Name));	
+				theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSetProperty + ErrorForControl + pArxObject->GetStringProperty(Prop::Name));	
 				
 				return false;
 			}
@@ -441,7 +419,7 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 			if (ListData->restype != RTSTR) 
 			{
 				// inform the programmer that he did not make the correct call
-				theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sSetProperty + ErrorForControl + pArxObject->GetStrProperty(Prop::Name));	
+				theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sSetProperty + ErrorForControl + pArxObject->GetStringProperty(Prop::Name));	
 				return false;
 			}				
 				
@@ -507,7 +485,7 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 						theWorkspace.DisplayAlert(
 							CString(ErrorInappropriateFound)
 							+ sSetProperty
-							+ ErrorForControl + pArxObject->GetStrProperty(Prop::Name)); 			
+							+ ErrorForControl + pArxObject->GetStringProperty(Prop::Name)); 			
 						return false; 
 						break;
 					}
@@ -515,7 +493,7 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 			if (!SetPropertyObject(pProperty, pNewProperty))
 			{
 				// set this up latter to tell the user what was received and what it expected
-				theWorkspace.DisplayAlert(CString(ErrorWrongArgTypeForProp) + ErrorForControl + pArxObject->GetStrProperty(Prop::Name));
+				theWorkspace.DisplayAlert(CString(ErrorWrongArgTypeForProp) + ErrorForControl + pArxObject->GetStringProperty(Prop::Name));
 				return false;
 			}
 
@@ -764,7 +742,7 @@ int GetProperty()
 	}
 	if (pProperty == NULL)
 	{
-		theWorkspace.DisplayAlert(CString (ErrorTheProperty) + sPropNameArg + ErrorPropertyWasNotFound + ErrorForControl + pArxObject->GetStrProperty(Prop::Name));
+		theWorkspace.DisplayAlert(CString (ErrorTheProperty) + sPropNameArg + ErrorPropertyWasNotFound + ErrorForControl + pArxObject->GetStringProperty(Prop::Name));
 		// return a negitive value to indicate to the calling autolisp function that the call failed
 		acedRetInt(-1);
 		return 0;
@@ -1666,37 +1644,9 @@ int ShowToolTip()
 		}
 	case CtlTextBox:
 		{
-			switch (pArxObject->GetLongProperty(Prop::FilterStyle))
-			{
-				case EditFilter_Symbol:
-				{
-					VdclSymbolEdit *pCtrl = (VdclSymbolEdit*)pControl;
-					if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
-						pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
-					break;
-				}
-				case EditFilter_Angle:
-				{
-					VdclAngleEdit *pCtrl = (VdclAngleEdit*)pControl;
-					if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
-						pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
-					break;
-				}
-				case EditFilter_Numeric:
-				{
-					VdclNumericEdit *pCtrl = (VdclNumericEdit*)pControl;
-					if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
-						pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
-					break;
-				}
-				default:
-				{
-					OdclEdit *pCtrl = (OdclEdit*)pControl;
-					if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
-						pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
-					break;
-				}
-			}
+		CDialogControl *pCtrl = (CDialogControl*)pControl;
+		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlStdButton:

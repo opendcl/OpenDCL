@@ -6,7 +6,6 @@
 #include "PropertyObject.h"
 #include "DclControlObject.h"
 #include "ControlPane.h"
-#include "ToolTips.h"
 #include "InvokeMethod.h"
 #include "PropertyIds.h"
 
@@ -73,7 +72,7 @@ void CArxListBoxCtrl::GetCurrentSelection()
 			sSelList.AddTail(sTextItem);
 		}
 		// call methods to invoke the event
-		InvokeMethodIntList(mpTemplate->GetStrProperty(Prop::EventSelChanged), nSelCount, &sSelList, m_bInvokeWithSendString);
+		InvokeMethodIntList(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, &sSelList, m_bInvokeWithSendString);
 	}   
 	else if (nSelCount == -1)
 	{
@@ -85,7 +84,7 @@ void CArxListBoxCtrl::GetCurrentSelection()
 			GetText(nIndex, sSelText);
 
 		// call methods to invoke the event
-		InvokeMethodIntString(mpTemplate->GetStrProperty(Prop::EventSelChanged), nSelCount, sSelText, m_bInvokeWithSendString);
+		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, sSelText, m_bInvokeWithSendString);
 	}   
 }	
 
@@ -96,7 +95,7 @@ void CArxListBoxCtrl::SetDragnDrop(BOOL bRegister)
 		BOOL success = m_DropTarget.Register(this);
 		m_DropTarget.m_pThisArxControl = mpTemplate;
 		m_DropTarget.m_pParent = this;
-    }
+	}
 	else
 		m_DropTarget.Revoke();
 }
@@ -120,7 +119,7 @@ END_MESSAGE_MAP()
 
 void CArxListBoxCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-CString sEventName = mpTemplate->GetStrProperty(Prop::EventMouseMove);
+CString sEventName = mpTemplate->GetStringProperty(Prop::EventMouseMove);
 
 	InvokeMethodIntIntInt(
 		sEventName,
@@ -149,7 +148,7 @@ void CArxListBoxCtrl::OnSelchange()
     stat = acedPutSym(_T("$value"), VarVal);
     acutRelRb(VarVal);
 
-    CString sText = mpTemplate->GetStrProperty(Prop::EventSelChanged);
+    CString sText = mpTemplate->GetStringProperty(Prop::EventSelChanged);
 
 		list = acutBuildList(RTSTR, sText, 0);
 		if (list != NULL) 
@@ -169,7 +168,7 @@ void CArxListBoxCtrl::OnSelchange()
 		if (nSelCount > -1)
 		{
 			// call methods to invoke the event
-			InvokeMethodIntString(mpTemplate->GetStrProperty(Prop::EventSelChanged), nSelCount, CString(), m_bInvokeWithSendString);
+			InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, CString(), m_bInvokeWithSendString);
 		}   
 
 		if (nSelCount == -1)
@@ -186,7 +185,7 @@ void CArxListBoxCtrl::OnSelchange()
 			}
 
 			// call methods to invoke the event
-			InvokeMethodIntString(mpTemplate->GetStrProperty(Prop::EventSelChanged), nCurSel, sSelText, m_bInvokeWithSendString);
+			InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nCurSel, sSelText, m_bInvokeWithSendString);
 		}
 	}	   
 }
@@ -194,19 +193,19 @@ void CArxListBoxCtrl::OnSelchange()
 void CArxListBoxCtrl::OnDblclk() 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
 }
 
 void CArxListBoxCtrl::OnKillfocus() 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 }
 
 void CArxListBoxCtrl::OnSetfocus() 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);	
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);	
 }
 
 BOOL CArxListBoxCtrl::PreTranslateMessage(MSG* pMsg) 
@@ -219,7 +218,7 @@ void CArxListBoxCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
     if (nChar == VK_RETURN) {
 			//Change return into a double-click
-			InvokeMethod(mpTemplate->GetStrProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+			InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
   } else {
     CListBoxCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
   }
@@ -250,8 +249,7 @@ void CArxListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CArxListBoxCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
-	CString sEventName = mpTemplate->GetStrProperty(Prop::EventRClick);
-
+	CString sEventName = mpTemplate->GetStringProperty(Prop::EventRClick);
 	if (sEventName.GetLength() > 0)
 	{
 		// do a hit test to see if the user has right clicked on a list item.

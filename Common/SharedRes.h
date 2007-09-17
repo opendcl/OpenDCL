@@ -6,6 +6,7 @@
 #define IDS_DEFAULTFONT                 26
 #define IDR_MAINFRAME                   59
 #define IDS_AXMETHODS                   74
+#define IDB_FOLDER                      129
 #define IDS_DefaultFontName             153
 #define IDS_DefaultFontSize             154
 #define IDS_DefaultFontItalic           155

@@ -242,7 +242,7 @@ void CArxTabStripCtrl::ActivateTabPage( TTabPagePtr pTabPage, bool bFireEvent /*
 	Invalidate();
 
 	if (bFireEvent)
-		InvokeMethodInt( mpTemplate->GetStrProperty(Prop::EventChanged), GetCurTabPage(), mbInvokeWithSendString );
+		InvokeMethodInt( mpTemplate->GetStringProperty(Prop::EventChanged), GetCurTabPage(), mbInvokeWithSendString );
 }
 
 void CArxTabStripCtrl::SetFirstControlFocus( CTabPage* pTabPage )
@@ -271,7 +271,7 @@ void CArxTabStripCtrl::OnSelchange( NMHDR* pNMHDR, LRESULT* pResult )
 
 void CArxTabStripCtrl::OnSelchanging( NMHDR* pNMHDR, LRESULT* pResult ) 
 {
-	InvokeMethodInt( mpTemplate->GetStrProperty(Prop::EventSelChanging), GetCurTabPage(), mbInvokeWithSendString );
+	InvokeMethodInt( mpTemplate->GetStringProperty(Prop::EventSelChanging), GetCurTabPage(), mbInvokeWithSendString );
 	*pResult = 0;
 }
 
@@ -284,11 +284,11 @@ void CArxTabStripCtrl::OnSize(UINT nType, int cx, int cy)
 void CArxTabStripCtrl::OnKillFocus( CWnd* pNewWnd ) 
 {
 	CTabCtrl::OnKillFocus( pNewWnd );
-	InvokeMethod( mpTemplate->GetStrProperty(Prop::EventKillFocus), mbInvokeWithSendString );
+	InvokeMethod( mpTemplate->GetStringProperty(Prop::EventKillFocus), mbInvokeWithSendString );
 }
 
 void CArxTabStripCtrl::OnSetFocus( CWnd* pOldWnd ) 
 {
 	CTabCtrl::OnSetFocus( pOldWnd );
-	InvokeMethod( mpTemplate->GetStrProperty(Prop::EventSetFocus), mbInvokeWithSendString );
+	InvokeMethod( mpTemplate->GetStringProperty(Prop::EventSetFocus), mbInvokeWithSendString );
 }

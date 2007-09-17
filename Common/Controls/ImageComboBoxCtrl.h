@@ -1,0 +1,46 @@
+// ImageComboBoxCtrl.h : header file
+//
+
+#pragma once
+
+#include "FilteredComboExCtrl.h"
+#include "DialogControl.h"
+
+class CDclControlObject;
+class CProject;
+class CComboHandler;
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CImageComboBoxCtrl window
+
+class CImageComboBoxCtrl : public CFilteredComboExCtrl, public CDialogControl
+{
+	CComboHandler* mpHandler;
+
+public:
+	CImageComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CComboHandler* pHandler = NULL, bool bCreate = true );
+	virtual ~CImageComboBoxCtrl();
+
+// DialogControl Interface
+public:
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual CRect GetWndRect() const;
+	virtual DWORD GetWndStyle() const;
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual CAcadColorService* GetColorService() { return CFilteredComboExCtrl::GetColorService(); }
+
+public:
+	virtual DWORD GetComboStyle() const;
+	virtual CComboHandler* GetComboHandler() { return mpHandler; }
+
+protected:
+	DECLARE_MESSAGE_MAP();
+
+protected:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual afx_msg void PostNcDestroy();
+	virtual afx_msg void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
+};

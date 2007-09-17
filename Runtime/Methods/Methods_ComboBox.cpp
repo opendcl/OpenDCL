@@ -7,15 +7,9 @@
 #include "MethodLexicon.h"
 #include "ArgumentsRetrieval.h"
 #include "ErrorLexicon.h"
-#include "VdclColorComboBox.h"
-#include "VdclLineWeightComboBox.h"
-#include "VdclArrowHeadComboBox.h"
-#include "VdclPlotStyleNamesComboBox.h"
-#include "VdclPlotStyleTablesComboBox.h"
-#include "PrinterComboBox.h"
-#include "VdclComboBox.h"
-#include "FontCombo.h"
-#include "ComboBoxFolder.h"
+#include "ArxColorComboBoxCtrl.h"
+#include "ArxLineweightComboBoxCtrl.h"
+#include "ArxFolderComboCtrl.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
@@ -55,7 +49,7 @@ int ComboBox_AddPath()
 		return 0;
 	}
 
-	((CComboBoxFolder*)pControl)->AddPath(sPath);
+	((CArxFolderComboCtrl*)pControl)->AddPath(sPath);
 
 	// return nil
 	acedRetVoid();
@@ -94,7 +88,7 @@ int ComboBox_AddColor()
 		return 0;
 	}
 
-	((VdclColorComboBox*)pControl)->AddColorToMRU(nColorIndex);
+	((CArxColorComboBoxCtrl*)pControl)->AddColorToMRU(nColorIndex);
 
 	// return nil
 	acedRetVoid();
@@ -133,7 +127,7 @@ int ComboBox_FindLineWeight()
 		return 0;
 	}
 
-	int nIndex = ((VdclLineWeightComboBox*)pControl)->FindItemByLineWeight(nColorIndex);
+	int nIndex = ((CArxLineweightComboBoxCtrl*)pControl)->FindItemByLineWeight(nColorIndex);
 
 	if (nIndex > -1)
 		// return the index
@@ -175,7 +169,7 @@ int ComboBox_FindColor()
 		return 0;
 	}
 
-	int nIndex = ((VdclColorComboBox*)pControl)->FindItemByColorIndex(nColorIndex);
+	int nIndex = ((CArxColorComboBoxCtrl*)pControl)->FindItemByColorIndex(nColorIndex);
 
 	if (nIndex > -1)
 		// return the index
@@ -298,63 +292,7 @@ int ComboBox_Clear()
 	int nArg = 0;
 	CDclControlObject *pArxObject = GetControlArxObject(sComboBox_GetDir, &nArg);
 	
-	switch (pArxObject->GetLongProperty(Prop::ComboBoxStyle))
-	{
-		case CmboStyle_Combo:
-		case CmboStyle_Simple:
-		case CmboStyle_DropDown:
-		{
-			((CComboBox*)pControl)->ResetContent();
-			break;
-		}
-		case CmboStyle_ArrowHead:			
-		{
-			((VdclArrowHeadComboBox*)pControl)->ResetContent();
-			break;
-		}
-		case CmboStyle_Color:
-		{
-			((VdclColorComboBox*)pControl)->ResetContent();
-			break;
-		}
-		case CmboStyle_LineWeight:
-		{
-			((VdclLineWeightComboBox*)pControl)->ResetContent();
-			break;
-		}
-		case CmboStyle_PlotNames:
-		{
-			((VdclPlotStyleNamesComboBox*)pControl)->ResetContent();
-			break;
-		}
-		case CmboStyle_PlotTables:
-		{
-			((VdclPlotStyleTablesComboBox*)pControl)->ResetContent();
-			break;
-		}
-		case CmboStyle_FontDropList:
-		case CmboStyle_FontSimpleList:
-		{
-			((CFontCombo*)pControl)->ResetContent();
-			break;
-		}
-		case CmboStyle_Plotters:
-		{
-			((CPrinterComboBox*)pControl)->ResetContent();
-			break;
-		}
-		case CmboStyle_PlotterPaperSizes:
-		{
-			((VdclComboBox*)pControl)->ResetContent();
-			break;
-		}
-
-		case CmboStyle_DirPicker:
-		{
-			((CComboBoxFolder*)pControl)->ResetContent();
-			break;
-		}
-	}
+	((CComboBox*)pControl)->ResetContent();
 	
 	// return nil
 	acedRetVoid();
@@ -735,7 +673,7 @@ int ComboBox_GetDir()
 		return 0;
 	}
 
-	acedRetStr(((CComboBoxFolder*)pControl)->GetSelectedPath());
+	acedRetStr(((CArxFolderComboCtrl*)pControl)->GetSelectedPath());
 	return 0;
 }
 
@@ -800,7 +738,7 @@ int ComboBox_Dir()
 	}
 	else if (pArxObject->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_DirPicker)
 	{
-		((CComboBoxFolder*)pControl)->AddPath(sDir);
+		((CArxFolderComboCtrl*)pControl)->AddPath(sDir);
 	}
 	
 	acedRetVoid();

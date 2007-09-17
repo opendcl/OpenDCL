@@ -1,0 +1,143 @@
+#include "stdafx.h"
+#include "ArxComboBoxCtrl.h"
+#include "DclControlObject.h"
+#include "ControlPane.h"
+#include "InvokeMethod.h"
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CArxComboBoxCtrl
+
+CArxComboBoxCtrl::CArxComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID,
+																		CComboHandler* pHandler /*= NULL*/, bool bCreate /*= true*/ )
+: CComboBoxCtrl( pTemplate, pPane, nID, pHandler, false )
+, mArxServices( pTemplate )
+{
+	if( bCreate )
+		Create( pPane->GetHostDialog(), nID );
+}
+
+CArxComboBoxCtrl::~CArxComboBoxCtrl()
+{
+}
+
+bool CArxComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
+{
+	bool bSuccess =
+		__super::Create( pParentWnd, nID );
+
+	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
+		m_bInvokeWithSendString = true;
+	else
+		m_bInvokeWithSendString = false;
+
+	return bSuccess;
+}
+
+bool CArxComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
+{
+	if( !__super::OnApplyProperty( pProp ) )
+		return false;
+	bool bFailed = false;
+	switch( pProp->GetID() )
+	{
+	case Prop::DragnDropAllowDrop:
+		{
+			SetDragnDrop( pProp->GetBooleanValue() );
+			break;
+		}
+	}
+	return !bFailed;
+}
+
+void CArxComboBoxCtrl::SetDragnDrop(BOOL bRegister)
+{
+	if (bRegister == TRUE)
+	{
+		BOOL success = m_DropTarget.Register(this);
+		m_DropTarget.m_pThisArxControl = mpTemplate;
+		m_DropTarget.m_pParent = this;
+	}
+	else
+		m_DropTarget.Revoke();
+}
+
+BEGIN_MESSAGE_MAP(CArxComboBoxCtrl, CComboBoxCtrl)
+	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
+	ON_CONTROL_REFLECT(CBN_KILLFOCUS, OnKillfocus)
+	ON_CONTROL_REFLECT(CBN_SETFOCUS, OnSetfocus)
+	ON_WM_MOUSEMOVE()
+END_MESSAGE_MAP()
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CArxComboBoxCtrl message handlers
+
+BOOL CArxComboBoxCtrl::PreTranslateMessage(MSG* pMsg) 
+{
+	if( pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN )
+	{
+		if( mpTemplate->GetBooleanProperty( Prop::ReturnAsTab ) )
+			pMsg->wParam = VK_TAB;		
+	}
+	return __super::PreTranslateMessage(pMsg);
+}
+
+void CArxComboBoxCtrl::OnSelchange() 
+{
+	CString sEventName = mpTemplate->GetStringProperty(Prop::EventSelChanged);
+	if( !sEventName.IsEmpty() )
+	{
+		if( mpTemplate->m_bEventsAsAction )
+		{
+			GetParent()->GetParent()->EnableWindow(TRUE);
+			CString sVal;
+			sVal.Format( _T("%d"), GetCurSel() );
+			resbuf rbVal = { NULL, RTSTR };
+			rbVal.resval.rstring = (LPTSTR)sVal.LockBuffer();
+      acedPutSym( _T("$value"), &rbVal );
+			resbuf rbEvent = { NULL, RTSTR };
+			rbEvent.resval.rstring = (LPTSTR)sEventName.LockBuffer();
+			struct resbuf* prbResult = NULL;
+			acedInvoke( &rbEvent, &prbResult );
+			if( prbResult )
+				acutRelRb( prbResult );
+			GetParent()->GetParent()->EnableWindow(FALSE);
+			GetParent()->EnableWindow(TRUE);
+		}
+		else
+		{
+			CString sText;
+			GetWindowText( sText );
+			InvokeMethodIntString( sEventName, GetCurSel(), sText, m_bInvokeWithSendString );
+			mpTemplate->SetStringProperty( Prop::Text, sText );
+		}
+	}
+}
+
+void CArxComboBoxCtrl::OnDropdown() 
+{
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDropDown), m_bInvokeWithSendString);	
+}
+
+void CArxComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point) 
+{
+	CComboBox::OnMouseMove(nFlags, point);
+	InvokeMethodIntIntInt(
+		mpTemplate->GetStringProperty(Prop::EventMouseMove),
+		nFlags,
+		point.x,
+		point.y,
+		m_bInvokeWithSendString);
+}
+
+void CArxComboBoxCtrl::OnKillfocus() 
+{
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+}
+
+void CArxComboBoxCtrl::OnSetfocus() 
+{
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+}

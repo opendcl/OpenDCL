@@ -315,7 +315,7 @@ void CMainFrameToolBar::SetFontToolBar(CDclControlObject *pCtrl)
 	else
 		m_Buttons.SetState(ID_FONTSCALED, TBSTATE_ENABLED);
 
-	m_FontNames.SelectString(0, pCtrl->GetStrProperty(Prop::LabelName));
+	m_FontNames.SelectString(0, pCtrl->GetStringProperty(Prop::LabelName));
 	CString sSize;
 	sSize.Format( _T("%d"), (m_lFontSize < 0? -m_lFontSize : m_lFontSize) );
 	m_FontSizes.SetWindowText(sSize);
@@ -481,12 +481,12 @@ void CMainFrameToolBar::AddFontToToolBar(CDclControlObject *pCtrl)
 		m_FontNames.GetLBText(nSel, sText);
 
 		// here we need to make sure that if the property does not equal the existing property it must be blanked.
-		if (sText != pCtrl->GetStrProperty(Prop::LabelName))
+		if (sText != pCtrl->GetStringProperty(Prop::LabelName))
 			// blank out the font
 			m_FontNames.SetCurSel(-1);
 		else	
 			// select the font
-			m_FontNames.SelectString(0, pCtrl->GetStrProperty(Prop::LabelName));
+			m_FontNames.SelectString(0, pCtrl->GetStringProperty(Prop::LabelName));
 	}
 	
 	CString sSize;

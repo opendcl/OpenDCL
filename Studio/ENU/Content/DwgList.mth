@@ -15,7 +15,7 @@ GetDir
 [Prefix]
 dcl_DwgList_
 [Desc]
-This method retrieve the current directory.
+This method retrieves the current directory.
 [Arguments]
 ProjectFileName
 [as String]
@@ -26,7 +26,7 @@ GetFileName
 [Prefix]
 dcl_DwgList_
 [Desc]
-This method retrieve the full file name of the currently select file or directory.
+This method retrieves the full file name of the currently selected file or directory.
 [Arguments]
 ProjectFileName
 [as String]
@@ -37,11 +37,11 @@ GetType
 [Prefix]
 dcl_DwgList_
 [Desc]
-This method list all Dwg files in the specified directory.
-[Arguments]
+This method will retrieve the type of file indicated. If a 0 is returned, the file is a directory, 1 will indicate a Dwg file.
+[Arguments Return] as Integer
 ProjectFileName
-\par\tab sDirectory
-[as String]
+\par\tab nIndex
+[as Integer]
 
 
 [Method]
@@ -49,8 +49,8 @@ GetText
 [Prefix]
 dcl_ListBox_
 [Desc]
-This method will retrieve the type of file indicated. If a 0 is returned, the file is a directory, 1 will indicate a Dwg file.
-[Arguments Return] as Integer
+This method will retrieve the displayed text of a requested list item.
+[Arguments Return] as String
 ProjectFileName
 \par\tab nIndex
 [as Integer]

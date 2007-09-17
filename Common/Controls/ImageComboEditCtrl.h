@@ -4,17 +4,17 @@
 #pragma once
 
 #include "GridCellEditCtrl.h"
-#include "FilteredEditEx.h"
+#include "FilteredComboExCtrl.h"
 #include "GridCtrl.h"
-
-class CInputFilter;
+#include "ComboHandler.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CImageComboEditCtrlBase class
 
-class CImageComboEditCtrlBase : public CComboBoxEx, public CGridCellEditCtrl
+class CImageComboEditCtrlBase : public CFilteredComboExCtrl, public CGridCellEditCtrl
 {
+	CComboHandler* mpHandler;
 	CStatic mClippingWnd;
 	std::vector< tstring > mrsComboList;
 	static CRect CalcRect( const CRect& rcCell )
@@ -22,18 +22,26 @@ class CImageComboEditCtrlBase : public CComboBoxEx, public CGridCellEditCtrl
 			return CRect( rcCell.left, rcCell.top, rcCell.right, rcCell.top + 120 );
 		}
 public:
-	CImageComboEditCtrlBase( CGridCtrl* pGridCtrl, int nRow, int nCol, DWORD dwComboStyle, CInputFilter* pFilter = NULL, UINT nID = 100 )
-		: CComboBoxEx()
+	CImageComboEditCtrlBase( CGridCtrl* pGridCtrl, int nRow, int nCol, DWORD dwComboStyle, CComboHandler* pHandler = NULL, UINT nID = 100 )
+		: CFilteredComboExCtrl( NULL )
 		, CGridCellEditCtrl( pGridCtrl, nRow, nCol )
+		, mpHandler( pHandler )
 		{
 			CRect rcCell = pGridCtrl->GetCellRect( nRow, nCol );
 			rcCell.DeflateRect( 2, 2 );
 			CRect rcCtrl = CalcRect( rcCell );
 			mClippingWnd.Create( _T(""), WS_CHILD, rcCell, pGridCtrl );
 			rcCtrl.MoveToXY( 0, 0 );
-			Create( (WS_CHILD | WS_VISIBLE | WS_VSCROLL | CBS_AUTOHSCROLL | dwComboStyle),
+			if( pHandler )
+			{
+				if( pHandler->IsAutoSorted() )
+					dwComboStyle |= CBS_SORT;
+				if( pHandler->IsOwnerDrawn() )
+					dwComboStyle |= (pHandler->GetItemHeight() > 0? CBS_OWNERDRAWFIXED : CBS_OWNERDRAWVARIABLE);
+			}
+			Create( &mClippingWnd,
 							rcCtrl,
-							&mClippingWnd,
+							dwComboStyle,
 							100 );
 			SetFont( pGridCtrl->GetFont() );
 			SetImageList( pGridCtrl->GetImageList( LVSIL_SMALL ) );
@@ -48,27 +56,41 @@ public:
 										(SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING) );
 			mClippingWnd.ShowWindow( SW_SHOW );
 			CString sText = pGridCtrl->GetCellText( nRow, nCol );
-			std::vector< int > rImage;
-			pGridCtrl->GetCellComboListItems( nRow, nCol, mrsComboList, rImage );
 			int idxMatch = -1;
-			for( size_t idx = 0; idx < mrsComboList.size(); ++idx )
+			if( pHandler )
 			{
-				CString sListText = mrsComboList.at( idx ).c_str();
-				if( idxMatch < 0 && sText == sListText )
-					idxMatch = (int)idx;
-				int nImage = (idx < rImage.size()? rImage.at( idx ) : -1);
-				COMBOBOXEXITEM cbItem = 
+				pHandler->PopulateList( this );
+				idxMatch = FindStringExact( 0, sText );
+			}
+			else
+			{
+				std::vector< int > rImage;
+				pGridCtrl->GetCellComboListItems( nRow, nCol, mrsComboList, rImage );
+				for( size_t idx = 0; idx < mrsComboList.size(); ++idx )
 				{
-					(CBEIF_TEXT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE | CBEIF_OVERLAY | CBEIF_INDENT),
-					idx,
-					sListText.LockBuffer(),
-					sListText.GetLength() + 1,
-					nImage,
-					nImage,
-					2,
-					0,
-				};
-				InsertItem( &cbItem );
+					CString sListText = mrsComboList.at( idx ).c_str();
+					if( idxMatch < 0 && sText == sListText )
+						idxMatch = (int)idx;
+					int nImage = (idx < rImage.size()? rImage.at( idx ) : -1);
+					COMBOBOXEXITEM cbItem = 
+					{
+						(CBEIF_TEXT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE | CBEIF_OVERLAY | CBEIF_INDENT),
+						idx,
+						sListText.LockBuffer(),
+						sListText.GetLength() + 1,
+						nImage,
+						nImage,
+						2,
+						0,
+					};
+					InsertItem( &cbItem );
+				}
+			}
+			if( GetCount() == 0 )
+			{
+				CRect rcWnd;
+				GetWindowRect( &rcWnd );
+				SetWindowPos( NULL, 0, 0, rcWnd.Width(), rcWnd.Height(), (SWP_NOZORDER | SWP_NOMOVE) );
 			}
 			SetWindowText( sText );
 			CComboBox* pComboCtrl = GetComboBoxCtrl();
@@ -86,6 +108,15 @@ public:
 			{
 				CString sText;
 				pEditCtrl->GetWindowText( sText );
+				CInputFilter* pFilter = GetInputFilter();
+				if( pFilter )
+				{
+					if( !pFilter->OnValidateInput( sText ) )
+					{
+						sText = pFilter->OnBadInput();
+						pFilter->ConvertForDisplay( sText );
+					}
+				}
 				mpGridCtrl->SetCellText( mnRow, mnCol, sText );
 			}
 			else
@@ -101,14 +132,50 @@ public:
 			}
 			DestroyWindow();
 			mClippingWnd.DestroyWindow();
+			delete mpHandler;
+		}
+	virtual CInputFilter* GetInputFilter() { return mpHandler? mpHandler->GetInputFilter() : NULL; }
+
+protected:
+	static const AFX_MSGMAP* PASCAL GetThisMessageMap()
+		{
+			typedef CImageComboEditCtrlBase ThisClass;
+			typedef CFilteredComboExCtrl TheBaseClass;
+			static const AFX_MSGMAP_ENTRY _messageEntries[] =
+			{
+				ON_WM_MEASUREITEM_REFLECT()
+				{0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 },
+			};
+			static const AFX_MSGMAP messageMap =  { &__super::GetThisMessageMap, &_messageEntries[0] };
+			return &messageMap; \
+		}
+	virtual const AFX_MSGMAP* GetMessageMap() const
+		{
+			return GetThisMessageMap();
+		}
+
+protected:
+	virtual afx_msg void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
+		{
+			if( mpHandler )
+				mpHandler->DrawItem( this, lpDrawItemStruct );
+		}
+	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
+		{
+			assert( mpHandler != NULL ); //should never call this function if there is no handler
+			if( !mpHandler )
+				return;
+			UINT nItemHeight = mpHandler->GetItemHeight();
+			if( nItemHeight > 0 )
+				lpMeasureItemStruct->itemHeight = nItemHeight;
 		}
 };
 
 class CImageComboDropdownListEditCtrl : public CImageComboEditCtrlBase
 {
 public:
-	CImageComboDropdownListEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol, CInputFilter* pFilter = NULL, UINT nID = 100 )
-		: CImageComboEditCtrlBase( pGridCtrl, nRow, nCol, CBS_DROPDOWNLIST, pFilter, nID )
+	CImageComboDropdownListEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol, CComboHandler* pHandler = NULL, UINT nID = 100 )
+		: CImageComboEditCtrlBase( pGridCtrl, nRow, nCol, CBS_DROPDOWNLIST, pHandler, nID )
 		{
 		}
 };
@@ -116,8 +183,8 @@ public:
 class CImageComboDropdownEditCtrl : public CImageComboEditCtrlBase
 {
 public:
-	CImageComboDropdownEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol, CInputFilter* pFilter = NULL, UINT nID = 100 )
-		: CImageComboEditCtrlBase( pGridCtrl, nRow, nCol, CBS_DROPDOWN, pFilter, nID )
+	CImageComboDropdownEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol, CComboHandler* pHandler = NULL, UINT nID = 100 )
+		: CImageComboEditCtrlBase( pGridCtrl, nRow, nCol, CBS_DROPDOWN, pHandler, nID )
 		{
 		}
 };

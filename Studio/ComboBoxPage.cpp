@@ -53,6 +53,7 @@ BOOL CComboBoxPage::OnApply()
 BOOL CComboBoxPage::OnInitDialog() 
 {
 	CPropertyPage::OnInitDialog();
+	UpdateData( FALSE );
 	CString sDesc;
 	
 	int nCount = 14;

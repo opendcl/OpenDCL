@@ -52,7 +52,7 @@ END_MESSAGE_MAP()
 void CArxCheckBoxCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntInt(
-		mpTemplate->GetStrProperty(Prop::EventMouseMove),
+		mpTemplate->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -76,7 +76,7 @@ void CArxCheckBoxCtrl::OnClicked()
     stat = acedPutSym(_T("$value"), VarVal);
     acutRelRb(VarVal);
 
-    CString sText = mpTemplate->GetStrProperty(Prop::EventClicked);
+    CString sText = mpTemplate->GetStringProperty(Prop::EventClicked);
 
 		list = acutBuildList(RTSTR, sText, 0);
 		if (list != NULL) 
@@ -95,7 +95,7 @@ void CArxCheckBoxCtrl::OnClicked()
 	{
 		// call methods to invoke the event
 		InvokeMethodInt(
-			mpTemplate->GetStrProperty(Prop::EventClicked),
+			mpTemplate->GetStringProperty(Prop::EventClicked),
 			nValue,
 			m_bInvokeWithSendString);
 	}
@@ -103,5 +103,5 @@ void CArxCheckBoxCtrl::OnClicked()
 
 void CArxCheckBoxCtrl::OnDoubleclicked() 
 {
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
 }

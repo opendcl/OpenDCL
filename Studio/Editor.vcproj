@@ -570,19 +570,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\AcadColorEdit.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ButtonStyles.h"
 				>
 			</File>
 			<File
 				RelativePath=".\ChildFrm.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ColorEdit.h"
 				>
 			</File>
 			<File
@@ -879,19 +871,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\AcadColorEdit.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ButtonStyles.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\ChildFrm.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ColorEdit.cpp"
 				>
 			</File>
 			<File
@@ -1651,7 +1635,39 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Common\Controls\ComboBoxCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ComboBoxCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ComboCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ComboCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Controls\ComboEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ComboExCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ComboExCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ComboFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ComboHandler.h"
 					>
 				</File>
 				<File
@@ -1663,6 +1679,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Common\Controls\DateTimeEditCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\DateTimeEditCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Controls\DynamicButtonCtrl.cpp"
 					>
 				</File>
@@ -1671,15 +1695,47 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Common\Controls\EditEx.cpp"
+					RelativePath="..\Common\Controls\EditCtrl.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\Common\Controls\EditEx.h"
+					RelativePath="..\Common\Controls\EditCtrl.h"
 					>
 				</File>
 				<File
-					RelativePath="..\Common\Controls\FilteredEditEx.h"
+					RelativePath="..\Common\Controls\FilteredComboCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\FilteredComboExCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\FilteredEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\FolderComboBox.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\FolderComboBox.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\FolderComboCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\FolderComboCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\FolderTreeCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\FolderTreeCtrl.h"
 					>
 				</File>
 				<File
@@ -1703,11 +1759,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Common\Controls\GridCtrlHdr.cpp"
+					RelativePath="..\Common\Controls\ImageComboBoxCtrl.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\Common\Controls\GridCtrlHdr.h"
+					RelativePath="..\Common\Controls\ImageComboBoxCtrl.h"
 					>
 				</File>
 				<File
@@ -1748,6 +1804,14 @@
 				</File>
 				<File
 					RelativePath="..\Common\Controls\OptionListCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\PasswordFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\PercentageFilter.h"
 					>
 				</File>
 				<File

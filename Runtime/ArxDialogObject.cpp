@@ -22,7 +22,7 @@ CArxDialogObject::CDocReactor::CDocReactor( CArxDialogObject* pDialogobject )
 	CDclControlObject* pProps = pDialogobject->GetSourceForm()->GetControlProperties();
 	if( pProps )
 	{
-		msDocActivatedEvent = pProps->GetStrProperty( Prop::DocEventActivated );
+		msDocActivatedEvent = pProps->GetStringProperty( Prop::DocEventActivated );
 		if( !msDocActivatedEvent.IsEmpty() )
 			acDocManager->addReactor( this );
 	}

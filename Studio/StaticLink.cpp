@@ -32,7 +32,7 @@ CStaticLink::~CStaticLink()
 BEGIN_MESSAGE_MAP(CStaticLink, CStatic)
 	//{{AFX_MSG_MAP(CStaticLink)
 	ON_WM_NCHITTEST()
-	ON_WM_CTLCOLOR()
+	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_SETCURSOR()
 	ON_WM_CREATE()
@@ -79,7 +79,7 @@ LRESULT CStaticLink::OnNcHitTest(CPoint point)
 	return HTCLIENT;
 }
 
-HBRUSH CStaticLink::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+HBRUSH CStaticLink::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
 	pDC->SetTextColor(m_color);
 	pDC->SetBkMode(TRANSPARENT);

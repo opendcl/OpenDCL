@@ -15,14 +15,14 @@
 #include "Resource.h"
 
 
-const UINT WM_FILEDLG_GETFILENAME = RegisterWindowMessage( _T("odcl.FileDialog.GetFileName") );
-const UINT WM_FILEDLG_GETFILETITLE = RegisterWindowMessage( _T("odcl.FileDialog.GetFileTitle") );
-const UINT WM_FILEDLG_GETFILEEXT = RegisterWindowMessage( _T("odcl.FileDialog.GetFileExt") );
-const UINT WM_FILEDLG_GETFILEPATH = RegisterWindowMessage( _T("odcl.FileDialog.GetFilePath") );
-const UINT WM_FILEDLG_GETFOLDERPATH = RegisterWindowMessage( _T("odcl.FileDialog.GetFolderPath") );
-const UINT WM_FILEDLG_GETFOLDERNAME = RegisterWindowMessage( _T("odcl.FileDialog.GetFolderName") );
-const UINT WM_FILEDLG_GETSELECTEDFILECOUNT = RegisterWindowMessage( _T("odcl.FileDialog.GetSelectedFileCount") );
-const UINT WM_FILEDLG_GETSELECTEDFILES = RegisterWindowMessage( _T("odcl.FileDialog.GetSelectedFiles") );
+const UINT WM_FILEDLG_GETFILENAME = RegisterWindowMessage( _T("OpenDCL.FileDialog.GetFileName") );
+const UINT WM_FILEDLG_GETFILETITLE = RegisterWindowMessage( _T("OpenDCL.FileDialog.GetFileTitle") );
+const UINT WM_FILEDLG_GETFILEEXT = RegisterWindowMessage( _T("OpenDCL.FileDialog.GetFileExt") );
+const UINT WM_FILEDLG_GETFILEPATH = RegisterWindowMessage( _T("OpenDCL.FileDialog.GetFilePath") );
+const UINT WM_FILEDLG_GETFOLDERPATH = RegisterWindowMessage( _T("OpenDCL.FileDialog.GetFolderPath") );
+const UINT WM_FILEDLG_GETFOLDERNAME = RegisterWindowMessage( _T("OpenDCL.FileDialog.GetFolderName") );
+const UINT WM_FILEDLG_GETSELECTEDFILECOUNT = RegisterWindowMessage( _T("OpenDCL.FileDialog.GetSelectedFileCount") );
+const UINT WM_FILEDLG_GETSELECTEDFILES = RegisterWindowMessage( _T("OpenDCL.FileDialog.GetSelectedFiles") );
 
 
 class CArxFileDialogControl : public CArxDialogControl
@@ -148,11 +148,11 @@ CCustomFileDialog::CCustomFileDialog( CDclFormObject* pSourceForm, CWnd* pParent
 		{
 			m_bOpenFileDialog = (mpFileDlgCtrl->GetLongProperty(Prop::FileDlgStyle) != 0)? TRUE : FALSE;
 			ofn.Flags |= GetFileDlgFlags(mpFileDlgCtrl);
-			msTitle = pProps->GetStrProperty(Prop::TitleBarText);
+			msTitle = pProps->GetStringProperty(Prop::TitleBarText);
 			if( !msTitle.IsEmpty() )
 				ofn.lpstrTitle = msTitle.LockBuffer();
 		}
-		msFilterList = mpFileDlgCtrl->GetStrProperty(Prop::Filter);
+		msFilterList = mpFileDlgCtrl->GetStringProperty(Prop::Filter);
 		if( mpParams && !mpParams->sFilterList.IsEmpty() )
 			msFilterList = mpParams->sFilterList;
 		if( !msFilterList.IsEmpty() )
@@ -297,7 +297,7 @@ void CCustomFileDialog::OnFileNameChange()
 	if (pos == NULL || nSelCount == 0)
 	{
 		// call methods to invoke the event
-		InvokeMethodIntString(mpFileDlgCtrl->GetStrProperty(Prop::EventSelChanged), -1, CString(), false);		
+		InvokeMethodIntString(mpFileDlgCtrl->GetStringProperty(Prop::EventSelChanged), -1, CString(), false);		
 		return;
 	}
 	else
@@ -305,12 +305,12 @@ void CCustomFileDialog::OnFileNameChange()
 		if (nSelCount == 1)
 		{
 			// call methods to invoke the event
-			InvokeMethodIntString(mpFileDlgCtrl->GetStrProperty(Prop::EventSelChanged), nSelCount, GetPathName(), false);			
+			InvokeMethodIntString(mpFileDlgCtrl->GetStringProperty(Prop::EventSelChanged), nSelCount, GetPathName(), false);			
 		}
 		else 
 		{
 			// call methods to invoke the event
-			InvokeMethodIntString(mpFileDlgCtrl->GetStrProperty(Prop::EventSelChanged), nSelCount, CString(), false);			
+			InvokeMethodIntString(mpFileDlgCtrl->GetStringProperty(Prop::EventSelChanged), nSelCount, CString(), false);			
 		}
 	}
 }
@@ -322,20 +322,20 @@ void CCustomFileDialog::OnTypeChange()
 		return;
 	CString sText;
 	GetParent()->GetDlgItem(cmb1)->GetWindowText(sText);
-	InvokeMethodString(mpFileDlgCtrl->GetStrProperty(Prop::EventOnTypeChange), sText, false);
+	InvokeMethodString(mpFileDlgCtrl->GetStringProperty(Prop::EventOnTypeChange), sText, false);
 }
 
 BOOL CCustomFileDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStrProperty(Prop::EventOnHelp), false);
+	InvokeMethod(pProps->GetStringProperty(Prop::EventOnHelp), false);
 	return TRUE; 
 }
 
 void CCustomFileDialog::OnHelp()
 {
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStrProperty(Prop::EventOnHelp), false);
+	InvokeMethod(pProps->GetStringProperty(Prop::EventOnHelp), false);
 }
 
 void CCustomFileDialog::OnFolderChange()
@@ -343,7 +343,7 @@ void CCustomFileDialog::OnFolderChange()
 	__super::OnFolderChange();
 	if( !mpFileDlgCtrl )
 		return;
-	InvokeMethodString(mpFileDlgCtrl->GetStrProperty(Prop::EventFolderChanged), GetFolderPath(), false);
+	InvokeMethodString(mpFileDlgCtrl->GetStringProperty(Prop::EventFolderChanged), GetFolderPath(), false);
 }
 
 void CCustomFileDialog::CloseNow() 

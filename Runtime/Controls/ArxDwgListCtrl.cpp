@@ -4,9 +4,10 @@
 #include "stdafx.h"
 #include "ArxDwgListCtrl.h"
 #include "Resource.h"
+#include "SharedRes.h"
 #include "InvokeMethod.h"
 #include "ControlPane.h"
-#include "ComboBoxFolder.h"
+#include "ArxFolderComboCtrl.h"
 #include "SADirRead.h"
 #include "PropertyIds.h"
 #include "DclControlObject.h"
@@ -834,9 +835,9 @@ void CArxDwgListCtrl::OnDblclk()
 		{
 			m_pDirComboBox->AddPath(m_sPath);
 		}	
-		InvokeMethodString(mpTemplate->GetStrProperty(Prop::EventFolderChanged), m_sPath, false);		
+		InvokeMethodString(mpTemplate->GetStringProperty(Prop::EventFolderChanged), m_sPath, false);		
 	}
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
 }
 
 
@@ -943,14 +944,14 @@ void CArxDwgListCtrl::OnSetFocus(CWnd* pOldWnd)
 	__super::OnSetFocus(pOldWnd);
 	
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 }
 
 
 void CArxDwgListCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntInt(
-		mpTemplate->GetStrProperty(Prop::EventMouseMove),
+		mpTemplate->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -963,7 +964,7 @@ void CArxDwgListCtrl::OnKillFocus(CWnd* pNewWnd)
 	__super::OnKillFocus(pNewWnd);
 	
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 }
 
 void CArxDwgListCtrl::OnSelchange() 
@@ -973,7 +974,7 @@ void CArxDwgListCtrl::OnSelchange()
 	if (nSelCount > -1)
 	{
 		// call methods to invoke the event
-		InvokeMethodIntString(mpTemplate->GetStrProperty(Prop::EventSelChanged), nSelCount, "", m_bInvokeWithSendString);
+		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, "", m_bInvokeWithSendString);
 	}   
 
 	if (nSelCount == -1)
@@ -990,6 +991,6 @@ void CArxDwgListCtrl::OnSelchange()
 		}
 
 		// call methods to invoke the event
-		InvokeMethodIntString(mpTemplate->GetStrProperty(Prop::EventSelChanged), 1, sSelText, m_bInvokeWithSendString);
+		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), 1, sSelText, m_bInvokeWithSendString);
 	}   	
 }

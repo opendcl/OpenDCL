@@ -47,12 +47,11 @@ public:
 	void AutoSize();
 
 protected:
-	void UpdateClientHeight();
 	void SetupTreeControl(CTreeCtrl *pControl);
 	void ResetImageList(CWnd *pControl, int nID);
 	CSize GetControlSize( CWnd* pControl, ControlType nControlType );
-	CWnd* CreateComboBox(CDclControlObject *pArxObject);
-	CWnd* CreateTextBox(CDclControlObject *pArxObject);
+	TDialogControlPtr CreateComboBox( CDclControlObject* pTemplate );
+	TDialogControlPtr CreateTextBox( CDclControlObject* pTemplate );
 
 // CControlPane
 public:
@@ -101,4 +100,6 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDestroy();
 	afx_msg void OnPaint();
+public:
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

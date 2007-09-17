@@ -24,11 +24,10 @@ protected:
 	CList< CDclControlObject* > mDclControls;
 	DclFormType mType;
 	CString msName;
-	CDialogObject* mpDlgObject; //informational pointer to the one and only instance of this form (or NULL)
-	std::vector< CImageListObject > mImageLists;
 	UINT_PTR mnNextId;
 	bool mbUsesClientRect;
 	bool mbDeleted;
+	CDialogObject* mpDlgObject; //informational pointer to the one and only instance of this form (or NULL)
 
 	//for managing tab hierarchy and order
 	CDclFormObject* mpParentForm;
@@ -38,12 +37,6 @@ protected:
 
 // Attributes
 public:
-	bool m_bLoaded;
-	CString m_sSubFileName;
-	CString m_sFileName;
-	CString m_sVarName;
-	//CRect m_rcPos;
-
 	//Used in editor only
 	HTREEITEM m_htiTreeItem;
 	CView *m_pChildWnd;
@@ -57,7 +50,8 @@ public:
 
 	//2007-01-30 [ORW]: save version set to 4 (no change from OpenDCL 3)
 	//2007-02-19 [ORW]: save version set to 5 (image list collection removed from form object)
-	ULONG GetCurrentSaveVersion() const { return 5; }
+	//2007-09-17 [ORW]: save version set to 6 (changed mbUsesClientRect from BOOL to bool)
+	ULONG GetCurrentSaveVersion() const { return 6; }
 
 // Operations
 public:
@@ -65,7 +59,6 @@ public:
 	CDclControlObject* AddControl( ControlType type, LPCTSTR pszKeyName );
 	void DeleteControl( CDclControlObject*& pDclControl );
 	void PurgeDeletedControls();
-	void PurgeDeletedImageLists();
 	bool ReorderControl( CDclControlObject* pDclControl, bool bToFront, bool bDeferReindexing = false );
 	bool ReorderControl( CDclControlObject* pDclControl, size_t idxNew, bool bDeferReindexing = false );
 	void ReindexControls();
@@ -123,7 +116,6 @@ public:
 	void SetUsesClientRect( bool bUsesClientRect = true ) { mbUsesClientRect = bUsesClientRect; }
 	bool IsDeleted() const { return mbDeleted; }
 	void SetDeleted( bool bDelete = true ) { mbDeleted = bDelete; }
-	size_t CountDeletedImageLists() const;
 	LPCTSTR GetTitleText() const;
 	UINT_PTR GetTitleBarIcon();
 	UINT_PTR GetNextId() { if( (INT_PTR)mnNextId < mDclControls.GetCount() ) mnNextId = mDclControls.GetCount(); return mnNextId++; }

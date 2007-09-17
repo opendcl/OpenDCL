@@ -7,7 +7,7 @@
 #include "OleOdcDropTarget.h"
 #include "ArxControlServices.h"
 
-class CComboBoxFolder;
+class CArxFolderComboCtrl;
 
 class ThumbnailFile : public CObject
 {
@@ -77,7 +77,7 @@ class CArxDwgListCtrl : public CListBoxCtrl
 
 public:
 	CString				m_sPath;
-	CComboBoxFolder		*m_pDirComboBox;
+	CArxFolderComboCtrl* m_pDirComboBox;
 
 // Construction
 public:

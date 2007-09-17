@@ -22,7 +22,7 @@ int Html_Navigate()
 		return 0;
 	}
 
-	((CHtmlCtrl*)pControl)->Navigate2(sNavigateDest, navNoHistory, NULL, NULL);
+	((CHtmlCtrl*)pControl)->Navigate2(sNavigateDest, 0, NULL, NULL);
 
 	// return nil
 	acedRetVoid();

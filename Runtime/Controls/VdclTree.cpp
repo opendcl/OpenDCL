@@ -560,7 +560,7 @@ void VdclTree::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(Prop::EventClicked),
+		m_ArxControl->GetStringProperty(Prop::EventClicked),
 		m_bInvokeWithSendString);
 
 	*pResult = 0;
@@ -570,7 +570,7 @@ void VdclTree::OnDblclk(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(Prop::EventDblClicked),
+		m_ArxControl->GetStringProperty(Prop::EventDblClicked),
 		m_bInvokeWithSendString);
 
 	*pResult = 0;
@@ -580,7 +580,7 @@ void VdclTree::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(Prop::EventKillFocus),
+		m_ArxControl->GetStringProperty(Prop::EventKillFocus),
 		m_bInvokeWithSendString);
 
 	*pResult = 0;
@@ -590,7 +590,7 @@ void VdclTree::OnChildSetfocus(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(Prop::EventSetFocus),
+		m_ArxControl->GetStringProperty(Prop::EventSetFocus),
 		m_bInvokeWithSendString);
 
 	*pResult = 0;
@@ -600,7 +600,7 @@ void VdclTree::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(Prop::EventRClick),
+		m_ArxControl->GetStringProperty(Prop::EventRClick),
 		m_bInvokeWithSendString);
 	
 	*pResult = 0;
@@ -610,7 +610,7 @@ void VdclTree::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(Prop::EventRDblClick),
+		m_ArxControl->GetStringProperty(Prop::EventRDblClick),
 		m_bInvokeWithSendString);
 
 	
@@ -621,7 +621,7 @@ void VdclTree::OnReturn(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call methods to invoke the event
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(Prop::EventReturn),
+		m_ArxControl->GetStringProperty(Prop::EventReturn),
 		m_bInvokeWithSendString);
 
 	
@@ -639,7 +639,7 @@ void VdclTree::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 		// call methods to invoke the event
 		InvokeMethodString(		
-			m_ArxControl->GetStrProperty(Prop::EventBeginLabelEdit),
+			m_ArxControl->GetStringProperty(Prop::EventBeginLabelEdit),
 			sKey,
 			m_bInvokeWithSendString);
 	}
@@ -647,7 +647,7 @@ void VdclTree::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 		// call methods to invoke the event
 		InvokeMethodLong(		
-			m_ArxControl->GetStrProperty(Prop::EventBeginLabelEdit),
+			m_ArxControl->GetStringProperty(Prop::EventBeginLabelEdit),
 			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
 	}
@@ -671,7 +671,7 @@ void VdclTree::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 	if (sKey != CString())
 	{
 		InvokeMethodStringString(
-			m_ArxControl->GetStrProperty(Prop::EventEndLabelEdit),
+			m_ArxControl->GetStringProperty(Prop::EventEndLabelEdit),
 			sNewText,
 			sKey,
 			m_bInvokeWithSendString);
@@ -679,7 +679,7 @@ void VdclTree::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 	else if (SelectedItem.hItem != NULL)
 	{
 		InvokeMethodStringLong(
-			m_ArxControl->GetStrProperty(Prop::EventEndLabelEdit),
+			m_ArxControl->GetStringProperty(Prop::EventEndLabelEdit),
 			sNewText,
 			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
@@ -705,7 +705,7 @@ void VdclTree::OnDeleteitem(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 		// call methods to invoke the event
 		InvokeMethodStringString(
-			m_ArxControl->GetStrProperty(Prop::EventDeleteItem),
+			m_ArxControl->GetStringProperty(Prop::EventDeleteItem),
 			sItemText,
 			sKey,
 			m_bInvokeWithSendString);
@@ -714,7 +714,7 @@ void VdclTree::OnDeleteitem(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 		// call methods to invoke the event
 		InvokeMethodStringLong(
-			m_ArxControl->GetStrProperty(Prop::EventDeleteItem),
+			m_ArxControl->GetStringProperty(Prop::EventDeleteItem),
 			sItemText,
 			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
@@ -809,7 +809,7 @@ void VdclTree::OnItemexpanded(NMHDR* pNMHDR, LRESULT* pResult)
 	{	
 		// call methods to invoke the event
 		InvokeMethodStringString(
-			m_ArxControl->GetStrProperty(Prop::EventItemExpanded),
+			m_ArxControl->GetStringProperty(Prop::EventItemExpanded),
 			sItemText,
 			sKey,
 			m_bInvokeWithSendString);
@@ -818,7 +818,7 @@ void VdclTree::OnItemexpanded(NMHDR* pNMHDR, LRESULT* pResult)
 	{	
 		// call methods to invoke the event
 		InvokeMethodStringLong(
-			m_ArxControl->GetStrProperty(Prop::EventItemExpanded),
+			m_ArxControl->GetStringProperty(Prop::EventItemExpanded),
 			sItemText,
 			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
@@ -899,7 +899,7 @@ void VdclTree::OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult)
 	{	
 		// call methods to invoke the event
 		InvokeMethodStringString(
-			m_ArxControl->GetStrProperty(Prop::EventItemExpanding),
+			m_ArxControl->GetStringProperty(Prop::EventItemExpanding),
 			sItemText,
 			sKey,
 			m_bInvokeWithSendString);
@@ -908,7 +908,7 @@ void VdclTree::OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult)
 	{	
 		// call methods to invoke the event
 		InvokeMethodStringLong(
-			m_ArxControl->GetStrProperty(Prop::EventItemExpanding),
+			m_ArxControl->GetStringProperty(Prop::EventItemExpanding),
 			sItemText,
 			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);
@@ -921,7 +921,7 @@ void VdclTree::OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult)
 void VdclTree::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(m_ArxControl->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 	
 	CStatic::OnKeyDown(nChar, nRepCnt, nFlags);
 }

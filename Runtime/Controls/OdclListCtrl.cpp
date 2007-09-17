@@ -635,7 +635,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonDown(nFlags, point);
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(Prop::EventMouseDown),
+		mpTemplate->GetStringProperty(Prop::EventMouseDown),
 		1,
 		nFlags,
 		point.x,
@@ -661,7 +661,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 			// call methods to invoke the event
 			InvokeMethodIntInt(
-				mpTemplate->GetStrProperty(Prop::EventClicked),  
+				mpTemplate->GetStringProperty(Prop::EventClicked),  
 				lvhti.iItem,
 				lvhti.iSubItem,
 				m_bInvokeWithSendString);
@@ -672,7 +672,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 			// call methods to invoke the event
 			InvokeMethodInt(
-				mpTemplate->GetStrProperty(Prop::EventClicked),  
+				mpTemplate->GetStringProperty(Prop::EventClicked),  
 				lvhti.iItem,
 				m_bInvokeWithSendString);
 		}
@@ -718,7 +718,7 @@ void OdclListCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(Prop::EventMouseDown),
+		mpTemplate->GetStringProperty(Prop::EventMouseDown),
 		1,
 		nFlags,
 		point.x,
@@ -752,7 +752,7 @@ void OdclListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 		// call methods to invoke the event
 		InvokeMethodIntInt(
-			mpTemplate->GetStrProperty(Prop::EventClicked),  
+			mpTemplate->GetStringProperty(Prop::EventClicked),  
 			plvdi->item.mask, 
 			plvdi->item.iItem, 
 			m_bInvokeWithSendString);			
@@ -768,7 +768,7 @@ void OdclListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 void OdclListCtrl::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 	
 	*pResult = 0;
 }
@@ -781,7 +781,7 @@ void OdclListCtrl::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 	if (plvdi->item.mask < GetItemCount() && plvdi->item.mask >= 0)
 	{
 		InvokeMethodInt(
-			mpTemplate->GetStrProperty(Prop::EventRClick),  
+			mpTemplate->GetStringProperty(Prop::EventRClick),  
 			plvdi->item.mask, 
 			m_bInvokeWithSendString);
 	}
@@ -796,7 +796,7 @@ void OdclListCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 	if (plvdi->item.mask < GetItemCount() && plvdi->item.mask >= 0)
 	{
 		InvokeMethodInt(
-			mpTemplate->GetStrProperty(Prop::EventRDblClick),  
+			mpTemplate->GetStringProperty(Prop::EventRDblClick),  
 			plvdi->item.mask, 
 			m_bInvokeWithSendString);
 	}
@@ -805,14 +805,14 @@ void OdclListCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 
 void OdclListCtrl::OnReturn(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventReturnPressed), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventReturnPressed), m_bInvokeWithSendString);
 	*pResult = 0;
 }
 
 void OdclListCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 	
 	
 	*pResult = 0;
@@ -826,7 +826,7 @@ void OdclListCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 	if (pDispInfo->item.mask > 0)
 	{
 		InvokeMethodStringIntInt(
-			mpTemplate->GetStrProperty(Prop::EventEndLabelEdit),
+			mpTemplate->GetStringProperty(Prop::EventEndLabelEdit),
 			plvItem->pszText,
 			plvItem->iItem,
 			plvItem->iSubItem,
@@ -867,7 +867,7 @@ void OdclListCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 
 	// call methods to invoke the event
 	InvokeMethodIntInt(		
-		mpTemplate->GetStrProperty(Prop::EventBeginLabelEdit),
+		mpTemplate->GetStringProperty(Prop::EventBeginLabelEdit),
 		nItem,
 		m_nEditSubItem,
 		m_bInvokeWithSendString);
@@ -880,7 +880,7 @@ void OdclListCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
 	
-	InvokeMethodInt(mpTemplate->GetStrProperty(Prop::EventColumnClick), pNMListView->iSubItem, m_bInvokeWithSendString);
+	InvokeMethodInt(mpTemplate->GetStringProperty(Prop::EventColumnClick), pNMListView->iSubItem, m_bInvokeWithSendString);
 	
 	*pResult = 0;
 }
@@ -927,14 +927,14 @@ void OdclListCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 	if (mpTemplate->GetLongProperty(Prop::ListViewStyle) > -1)
 		// call methods to invoke the event
 		InvokeMethodIntInt(
-			mpTemplate->GetStrProperty(Prop::EventDblClicked),  
+			mpTemplate->GetStringProperty(Prop::EventDblClicked),  
 			nRow, 
 			nCol, 
 			m_bInvokeWithSendString);
 	else				
 		// call methods to invoke the event
 		InvokeMethodInt(
-			mpTemplate->GetStrProperty(Prop::EventDblClicked),  
+			mpTemplate->GetStringProperty(Prop::EventDblClicked),  
 			nRow, 
 			m_bInvokeWithSendString);
 	
@@ -1314,7 +1314,7 @@ void OdclListCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 	//HideEditControls();
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(Prop::EventMouseDown),
+		mpTemplate->GetStringProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -1328,7 +1328,7 @@ void OdclListCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 	//HideEditControls();
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(Prop::EventMouseDown),
+		mpTemplate->GetStringProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -1342,7 +1342,7 @@ void OdclListCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 	//HideEditControls();
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(Prop::EventMouseDown),
+		mpTemplate->GetStringProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,
@@ -1356,7 +1356,7 @@ void OdclListCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 	//HideEditControls();
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(Prop::EventMouseDown),
+		mpTemplate->GetStringProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,
@@ -1368,7 +1368,7 @@ void OdclListCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 void OdclListCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStrProperty(Prop::EventMouseDown),
+		mpTemplate->GetStringProperty(Prop::EventMouseDown),
 		2,
 		MK_RBUTTON,
 		point.x,
@@ -1380,14 +1380,14 @@ void OdclListCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 void OdclListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStrProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void OdclListCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStrProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 		
 	CListCtrl::OnKeyUp(nChar, nRepCnt, nFlags);
 }
@@ -1395,7 +1395,7 @@ void OdclListCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 void OdclListCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntInt(
-		mpTemplate->GetStrProperty(Prop::EventMouseMove),
+		mpTemplate->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,

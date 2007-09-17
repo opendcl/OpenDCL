@@ -3,21 +3,22 @@
 
 #pragma once
 
-#include "EditEx.h"
+#include "FilteredEditCtrl.h"
 #include "DialogControl.h"
 
 class CDclControlObject;
 class CProject;
+class CInputFilter;
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CTextBoxCtrl window
 
-class CTextBoxCtrl : public CEditEx, public CDialogControl
+class CTextBoxCtrl : public CFilteredEditCtrl, public CDialogControl
 {
 
 public:
-	CTextBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CTextBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CInputFilter* pFilter = NULL, bool bCreate = true );
 	virtual ~CTextBoxCtrl();
 
 // DialogControl Interface
@@ -26,6 +27,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual CAcadColorService* GetColorService() { return CFilteredEditCtrl::GetColorService(); }
 
 public:
 
@@ -34,4 +36,5 @@ protected:
 
 protected:
 	afx_msg void PostNcDestroy();
+	afx_msg void OnEnChange();
 };

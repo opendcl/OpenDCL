@@ -67,7 +67,7 @@ void CArxGraphicButtonCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	if (GetTemplate())
 	{
 	InvokeMethodIntIntInt(
-		GetTemplate()->GetStrProperty(Prop::EventMouseMove),
+		GetTemplate()->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -81,7 +81,7 @@ void CArxGraphicButtonCtrl::OnDoubleclicked()
 	if (GetTemplate())
 	{
 		// call methods to invoke the event
-		InvokeMethod(GetTemplate()->GetStrProperty(Prop::EventDblClicked), false);
+		InvokeMethod(GetTemplate()->GetStringProperty(Prop::EventDblClicked), false);
 	}
 }
 
@@ -95,7 +95,7 @@ void CArxGraphicButtonCtrl::OnClicked()
 			int stat;
 			struct resbuf *result = NULL, *list;    
 
-			CString sText = GetTemplate()->GetStrProperty(Prop::EventClicked);
+			CString sText = GetTemplate()->GetStringProperty(Prop::EventClicked);
 			list = acutBuildList(RTSTR, sText, 0);
 			if (list != NULL) 
 			{ 
@@ -112,7 +112,7 @@ void CArxGraphicButtonCtrl::OnClicked()
 		else
 		{
 			// call methods to invoke the event
-			InvokeMethod(GetTemplate()->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);
+			InvokeMethod(GetTemplate()->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);
 		}
 	}
 }

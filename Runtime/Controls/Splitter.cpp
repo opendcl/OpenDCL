@@ -338,7 +338,7 @@ void CSplitter::OnLButtonUp(UINT nFlags, CPoint point)
 			GetWindowRect(&rcThis);
 			GetParent()->ScreenToClient(&rcThis);
 			InvokeMethodIntIntIntInt(
-				m_ArxControl->GetStrProperty(Prop::EventSplitterMoved),
+				m_ArxControl->GetStringProperty(Prop::EventSplitterMoved),
 				rcThis.left,
 				rcThis.top,
 				rcThis.Width(),

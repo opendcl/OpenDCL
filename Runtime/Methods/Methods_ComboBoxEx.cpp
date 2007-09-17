@@ -7,7 +7,7 @@
 #include "MethodLexicon.h"
 #include "ArgumentsRetrieval.h"
 #include "ErrorLexicon.h"
-#include "VdclComboBoxEx.h"
+#include "ImageComboBoxCtrl.h"
 #include "ControlTypes.h"
 
 
@@ -41,7 +41,7 @@ int ComboBoxEx_AddString()
 		return 0;
 	}
 	
-	VdclComboBoxEx *pCombo = (VdclComboBoxEx*)pArx->GetWindow();
+	CImageComboBoxCtrl *pCombo = (CImageComboBoxCtrl*)pArx->GetWindow();
 	
 	if (nSelectedImage == -1)
 		nSelectedImage = nImage;

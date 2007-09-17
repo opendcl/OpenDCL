@@ -2068,7 +2068,7 @@ int CPropertyListCtrl::SetListBox()
 							CString sName = pCtrl->GetActiveXTypeName();
 							if (sName == "ImageListCtrl")
 							{
-								sName = pCtrl->GetStrProperty(Prop::Name);
+								sName = pCtrl->GetStringProperty(Prop::Name);
 								m_pModeless->AddString(sName);
 							}
 						}
@@ -2702,15 +2702,6 @@ void CPropertyListCtrl::PropertyHasChanged(Prop::Id nId)
 	FirePropertyChanged(nId);
 }
 
-void CPropertyListCtrl::DeleteFlaggedControls(short DclFormIndex) 
-{
-	CDclFormObject *pDclForm = CPropertyListCtrl::GetDclFormObject(DclFormIndex);
-	if (pDclForm == NULL)
-		return;
-	pDclForm->PurgeDeletedControls();
-	pDclForm->PurgeDeletedImageLists();
-}
-
 CString CPropertyListCtrl::GetPictureFile(LPCTSTR Filter)
 {
 	m_FileList.RemoveAll();
@@ -2829,16 +2820,6 @@ short CPropertyListCtrl::GetDclParentsTabIndex(short Index)
 	}
 
 	return nReturn;
-}
-
-short CPropertyListCtrl::GetArxControlClientHeight(short DclFormIndex, short ArxControlIndex) 
-{
-	CDclControlObject* pControlObject = GetArxControlObject(DclFormIndex, ArxControlIndex);
-
-	if (pControlObject != NULL)
-		return pControlObject->m_ClientHeight; // return the value to equal the control type
-	else
-		return -1; // return -1 to indicate error
 }
 
 bool CPropertyListCtrl::IsDclControlDeleted(short DclFormIndex, short ArxControlIndex) 
@@ -3173,7 +3154,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	// set the title
 	CString sTitle;
 	sTitle = theWorkspace.LoadResourceString(IDS_PROPERTYWIZARD);
-	Dlg.SetTitle(sTitle + pArxCtrl->GetStrProperty(Prop::Name));
+	Dlg.SetTitle(sTitle + pArxCtrl->GetStringProperty(Prop::Name));
 
 	if (pColumnsPage)
 		Dlg.SetActivePage(pImageListPage);

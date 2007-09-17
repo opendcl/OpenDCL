@@ -34,7 +34,6 @@ protected:
 public:
 
 	//runtime state
-	short m_ClientHeight;
 	CControlHolder *m_pCtrlHolder;
 	CAxContainerCtrl* m_pAxWnd;
 
@@ -66,7 +65,8 @@ public:
 	//2007-01-30 [ORW]: save version set to 6 (no change from OpenDCL 3)
 	//2007-02-08 [ORW]: save version set to 7 (eliminated serialized MFC classes)
 	//2007-06-16 [ORW]: save version set to 8 (removed purchase state)
-	ULONG GetCurrentSaveVersion() const { return 8; }
+	//2007-09-17 [ORW]: save version set to 9 (removed m_ClientHeight member)
+	ULONG GetCurrentSaveVersion() const { return 9; }
 
 	//Attributes
 public:
@@ -125,7 +125,7 @@ public:
 																										long lValue = -1,
 																										bool bResetExisting = false );
 
-	CString GetStrProperty(Prop::Id nID) const;
+	CString GetStringProperty(Prop::Id nID) const;
 	long GetLongProperty(Prop::Id nID) const;
 	bool GetBooleanProperty(Prop::Id nID) const;
 	void SetColorProperty(Prop::Id nID, COLORREF color);

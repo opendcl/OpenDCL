@@ -292,12 +292,7 @@ void CxAcadSlide::Draw(CDC *pDC, CRect& rect)
 					rgb = RGB(0,0,0);
 			}
 			else
-			{
-				rgb = RGB(	acadcol[color][0],
-					acadcol[color][1],
-					acadcol[color][2]);
-			}
-				//rgb = RGB(acadcol[color][0], acadcol[color][1], acadcol[color][2]);
+				rgb = GetRGBColor( color );
 			lastcolor = color;
 			pen.DeleteObject();
 			pen.CreatePen(PS_SOLID, 0, rgb);
@@ -420,12 +415,7 @@ void CxAcadSlide::Draw(HDC hdc, CRect& rect)
 					rgb = RGB(0,0,0);
 			}
 			else
-			{
-				rgb = RGB(	acadcol[color][0],
-							acadcol[color][1],
-							acadcol[color][2]);
-			}
-				//rgb = RGB(acadcol[color][0], acadcol[color][1], acadcol[color][2]);
+				rgb = GetRGBColor( color );
 			lastcolor = color;
 			pen.CreatePen(PS_SOLID, 0, rgb);
 			brush.CreateSolidBrush(rgb);

@@ -83,7 +83,7 @@ bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
 			if (pImageList)
 			{
 				CImageList& ImageList = pImageList->GetImageList();
-				ImageList.SetBkColor( ::GetSysColor( COLOR_BTNFACE ) );
+				ImageList.SetBkColor( CLR_NONE );
 				SetImageList( &ImageList );
 			}
 			else
@@ -91,10 +91,18 @@ bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
 		}
 		break;
 	case Prop::MinTabWidth:
-		SetMinTabWidth(pProp->GetLongValue());
+		SetMinTabWidth( pProp->GetLongValue() );
 		if( !IsEnumeratingProperties() )
+		{
+			if( mpTemplate->GetBooleanProperty( Prop::TabFixedWidth ) )
+			{
+				CRect rectTab;
+				GetItemRect( 0, &rectTab );
+				SetItemSize( CSize( pProp->GetLongValue(), rectTab.Height() ) );
+			}
 			SetupTabs();
-		Invalidate();
+		}
+		ModifyStyle( 0, 0, SWP_FRAMECHANGED );
 		break;
 	case Prop::TabSelected:
 		SetCurSel( GetTabItemIndex( pProp->GetLongValue() ) );

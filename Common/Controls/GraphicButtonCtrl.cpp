@@ -82,11 +82,11 @@ void CGraphicButtonCtrl::UpdateButtonGraphic()
 {
 	if( (!mpPicture || mpPicture->GetPicType() == PICTYPE_BITMAP) &&
 			(!mpPressedPicture || mpPressedPicture->GetPicType() == PICTYPE_BITMAP) )
-		SetBitmaps( mpPicture? mpPicture->CloneBitmap() : NULL, RGB(192,192,192),
-								mpPressedPicture? mpPressedPicture->CloneBitmap() : NULL, RGB(192,192,192) );
+		SetBitmaps( mpPressedPicture? mpPressedPicture->CloneBitmap() : NULL, RGB(192,192,192),
+								mpPicture? mpPicture->CloneBitmap() : NULL, RGB(192,192,192) );
 	else
-		SetIcon( mpPicture? mpPicture->CloneIcon() : NULL,
-						 mpPressedPicture? mpPressedPicture->CloneIcon() : NULL );
+		SetIcon( mpPressedPicture? mpPressedPicture->CloneIcon() : NULL,
+						 mpPicture? mpPicture->CloneIcon() : NULL );
 }
 
 

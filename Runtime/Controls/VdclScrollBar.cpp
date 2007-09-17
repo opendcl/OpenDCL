@@ -175,10 +175,10 @@ void VdclScrollBar::OnScroll(UINT nSBCode, UINT nPos)
 	
 	if (nWhichEvent == 0)
 		// call methods to invoke the event
-		InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), m_hPos, m_bInvokeWithSendString);
+		InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), m_hPos, m_bInvokeWithSendString);
 	else
 		// call methods to invoke the event
-		InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScrolled), m_hPos, m_bInvokeWithSendString);
+		InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScrolled), m_hPos, m_bInvokeWithSendString);
 	
 	
 }

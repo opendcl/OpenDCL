@@ -35,8 +35,6 @@ void CListHeader::OnLButtonUp(UINT nFlags, CPoint point)
 	CColumnsPage* pPage = (CColumnsPage*)GetParent()->GetParent();
 
 	pPage->ResetWidths();
-	
-	
 }
 
 void CListHeader::OnLButtonDown(UINT nFlags, CPoint point) 
@@ -60,7 +58,4 @@ void CListHeader::OnLButtonDown(UINT nFlags, CPoint point)
 			break;
 		}
 	}
-
-	
-
 }

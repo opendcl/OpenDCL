@@ -263,7 +263,6 @@ void CDclControlObject::Serialize(CArchive& ar)
 		ar << unsigned long(nThisVersion);
 		ar << msAxTypeName;
 		ar << long(mType);
-		ar << m_ClientHeight;
 		ar << mnID;
 
 		// serialize the image if it exists
@@ -345,7 +344,11 @@ void CDclControlObject::Serialize(CArchive& ar)
 		mType = (ControlType)lType;
 		if( mType == -1 )
 			mType = CtlForm; //correct control type for controls from older ODC files
-		ar >> m_ClientHeight;
+		if (nThisVersion < 9)
+		{
+			short nClientHeight;
+			ar >> nClientHeight; //discard
+		}
 		if (nThisVersion < 8)
 		{
 			int nPurchaseState;
@@ -625,7 +628,12 @@ void CDclControlObject::Serialize(CArchive& ar)
 			{
 			case Prop::IconYSpacing: //erroneously added as an event in OpenDCL 4.1 Alpha 4
 				if( pSourceProp->GetType() == PropEvent )
-					pSourceProp->SetID( Prop::DragnDropToAutoCAD );
+				{
+					if( GetPropertyObject( Prop::DragnDropToAutoCAD ) )
+						mProperties.RemoveAt(posAt);
+					else
+						pSourceProp->SetID( Prop::DragnDropToAutoCAD );
+				}
 				else if( pSourceProp->IsHidden() )
 				{
 					long lVal = pSourceProp->GetLongValue();
@@ -881,7 +889,7 @@ CString CDclControlObject::GetActiveXTypeName() const
 	return sName;
 }
 
-CString CDclControlObject::GetStrProperty(Prop::Id nID) const
+CString CDclControlObject::GetStringProperty(Prop::Id nID) const
 {
 	POSITION posProp = mProperties.GetHeadPosition();
 	while (posProp)
@@ -996,10 +1004,10 @@ POSITION CDclControlObject::FindPropertyInsertPos( LPCTSTR pszName, bool bHidden
 	{
 		POSITION posAt = pos;
 		TPropertyPtr pProp = mProperties.GetPrev( pos );
+		assert( pProp->GetName() != pszName ); //trying to insert a property with a duplicate name?
 		if( pProp->IsHidden() != bHidden )
 			continue;
-		assert( pProp->GetName() != pszName ); //trying to insert a property with a duplicate name?
-		if( pProp->GetName() < pszName )
+		if( pProp->GetName() <= pszName )
 			return posAt;
 	}
 	return NULL;
@@ -1013,7 +1021,14 @@ bool CDclControlObject::InsertNamedProperty( TPropertyPtr pProp )
 
 	POSITION pos = FindPropertyInsertPos( pProp->GetName(), pProp->IsHidden() );
 	if( pos )
+	{
+		if( pProp->GetName() == mProperties.GetAt( pos )->GetName() )
+		{
+			TraceFmt( _T("* Attempt to insert duplicate property (%s) failed!\r\n"), (LPCTSTR)pProp->GetName() );
+			return false;
+		}
 		mProperties.InsertAfter( pos, pProp );
+	}
 	else
 		mProperties.AddHead( pProp );
 	return true;
@@ -1137,7 +1152,8 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
 	mType = (ControlType)lType;
 	if( mType == -1 )
 		mType = CtlForm; //correct control type for controls from older ODC files
-  if (!readShort(sFile, m_ClientHeight)) return statInvalidFormat;
+	short nClientHeight; //discard it
+  if (!readShort(sFile, nClientHeight)) return statInvalidFormat;
 	int nPurchaseState;
   if (!readInt(sFile, nPurchaseState)) return statInvalidFormat; //discard
   if (!readInt(sFile, mnID)) return statInvalidFormat;
@@ -1239,7 +1255,7 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
 
 CString CDclControlObject::GetKeyName() const
 {
-	return GetStrProperty( Prop::Name );
+	return GetStringProperty( Prop::Name );
 }
 
 CString CDclControlObject::GetKeyPath() const
@@ -1258,7 +1274,7 @@ CString CDclControlObject::GetKeyPath() const
 
 CString CDclControlObject::GetVarName() const
 {
-	CString sName = GetStrProperty( Prop::GlobalVarName );
+	CString sName = GetStringProperty( Prop::GlobalVarName );
 	if( sName.IsEmpty() )
 		sName = GetKeyPath();
 	return sName;

@@ -85,26 +85,26 @@ void CArxOptionListCtrl::OnSelchange()
 		sString.ReleaseBuffer();
 
 		// call methods to invoke the event
-		InvokeMethodIntString(mpTemplate->GetStrProperty(Prop::EventSelChanged), nCurSel, sString, m_bInvokeWithSendString);
+		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nCurSel, sString, m_bInvokeWithSendString);
 	}   
 }
 
 void CArxOptionListCtrl::OnDblclk() 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
 }
 
 void CArxOptionListCtrl::OnKillfocus() 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 }
 
 void CArxOptionListCtrl::OnSetfocus() 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 }
 
 void CArxOptionListCtrl::OnMouseMove(UINT nFlags, CPoint point) 
@@ -112,7 +112,7 @@ void CArxOptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	__super::OnMouseMove(nFlags, point);
 
 	InvokeMethodIntIntInt(
-		mpTemplate->GetStrProperty(Prop::EventMouseMove),
+		mpTemplate->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -122,6 +122,6 @@ void CArxOptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 void CArxOptionListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
   if (nChar == VK_RETURN)
-    InvokeMethod(mpTemplate->GetStrProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+    InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
 	__super::OnKeyDown(nChar,nRepCnt,nFlags);
 }

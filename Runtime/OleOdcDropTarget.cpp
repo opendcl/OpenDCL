@@ -11,6 +11,7 @@
 #include "DclControlObject.h"
 #include "PropertyIds.h"
 #include "DropSource.h"
+#include "AutoDocLock.h"
 #include "ControlTypes.h"
 #include "Project.h"
 
@@ -186,7 +187,7 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 		// get the path. The first item always holds the path.
 		CString sPath = m_pBlockNames->GetAt(0);
 		// get the event defun name
-		CString sEventDefun = m_pThisArxControl->GetStrProperty(Prop::DragnDropToAutoCAD);
+		CString sEventDefun = m_pThisArxControl->GetStringProperty(Prop::DragnDropToAutoCAD);
 
 		// if the event defun name is valid
 		if (sEventDefun.GetLength() > 0)
@@ -228,7 +229,7 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 	}
 	else if (m_pBlockNames != NULL)
 	{
-		CString sEventName = m_pThisArxControl->GetStrProperty(Prop::DragnDropToAutoCAD);
+		CString sEventName = m_pThisArxControl->GetStringProperty(Prop::DragnDropToAutoCAD);
 
 		if (sEventName.GetLength() > 0)
 		{
@@ -245,7 +246,7 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 
 		// Get the object ID of the m_BlockName block definition.
 		AcDbDatabase *pDb = AcApGetDatabase((CView*)pWnd);
-		acDocManager->lockDocument(acDocManager->document(pDb));
+		CAutoDocWriteLock CurDocLock( pDb );
 
 		pDb->getBlockTable(pTable, AcDb::kForRead);
 		
@@ -270,8 +271,6 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 		}
 		pTable->close();
 
-		acDocManager->unlockDocument(acDocManager->document(pDb));
-
 		// Set Focus to AutoCAD because AutoCAD doesn't update its
 		// display if it's not in focus.
 		acedGetAcadFrame()->SetActiveWindow();
@@ -284,7 +283,7 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 	else
 	{
 		InvokeMethodPoint3D(
-			m_pThisArxControl->GetStrProperty(Prop::DragnDropToAutoCAD),
+			m_pThisArxControl->GetStringProperty(Prop::DragnDropToAutoCAD),
 			dwgPt,
 			bUseSendString);
 	}
@@ -308,10 +307,8 @@ BOOL CMyOverrideDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject, DROP
 	if (rSize.IsRectEmpty() == TRUE)
 		return FALSE;
 
-	// lock DB
-	AcDbDatabase *pDb = AcApGetDatabase((CView*)pWnd);
-	acDocManager->lockDocument(acDocManager->document(pDb));
-	acDocManager->unlockDocument(acDocManager->document(pDb));
+	//toggle lock mode (I'm not sure why, but I left it here just in case it has a purpose -- ORW [2007-09-03])
+	{ CAutoDocWriteLock CurDocLock( AcApGetDatabase( (CView*)pWnd ) ); }
 
 	// Set Focus to AutoCAD because AutoCAD doesn't update its
 	// display if it's not in focus.
@@ -426,7 +423,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 			{
 				// From AcadDwgView
 				InvokeMethodLong(
-					m_pThisArxControl->GetStrProperty(Prop::DragnDropFromAutoCAD),
+					m_pThisArxControl->GetStringProperty(Prop::DragnDropFromAutoCAD),
 					(DWORD_PTR)hitem,
 					(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 			}
@@ -434,7 +431,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 			{
 				// From AcadDwgView
 				InvokeMethodString(
-					m_pThisArxControl->GetStrProperty(Prop::DragnDropFromAutoCAD),
+					m_pThisArxControl->GetStringProperty(Prop::DragnDropFromAutoCAD),
 					sTreeItemKey,
 					(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 			}
@@ -445,10 +442,10 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 			{
 				// From Control
 				InvokeMethod3StringsLong(
-					m_pThisArxControl->GetStrProperty(Prop::DragnDropFromControl), 
+					m_pThisArxControl->GetStringProperty(Prop::DragnDropFromControl), 
 					pControl->GetOwnerProject()->GetKeyName(),
 					pControl->GetOwnerForm()->GetKeyName(),
-					pControl->GetStrProperty(Prop::Name),
+					pControl->GetStringProperty(Prop::Name),
 					(DWORD_PTR)hitem,
 					(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 			}
@@ -456,10 +453,10 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 			{
 				// From Control
 				InvokeMethod4Strings(
-					m_pThisArxControl->GetStrProperty(Prop::DragnDropFromControl), 
+					m_pThisArxControl->GetStringProperty(Prop::DragnDropFromControl), 
 					pControl->GetOwnerProject()->GetKeyName(),
 					pControl->GetOwnerForm()->GetKeyName(),
-					pControl->GetStrProperty(Prop::Name),
+					pControl->GetStringProperty(Prop::Name),
 					sTreeItemKey,
 					(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 			}
@@ -472,7 +469,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 		{
 			// From AcadDwgView
 			InvokeMethodPoint(
-				m_pThisArxControl->GetStrProperty(Prop::DragnDropFromAutoCAD),
+				m_pThisArxControl->GetStringProperty(Prop::DragnDropFromAutoCAD),
 				point,
 				(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 		}
@@ -480,10 +477,10 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 		{
 			// From Control
 			InvokeMethod3StringsPoint(
-				m_pThisArxControl->GetStrProperty(Prop::DragnDropFromControl), 
+				m_pThisArxControl->GetStringProperty(Prop::DragnDropFromControl), 
 				pControl->GetOwnerProject()->GetKeyName(),
 				pControl->GetOwnerForm()->GetKeyName(),
-				pControl->GetStrProperty(Prop::Name),
+				pControl->GetStringProperty(Prop::Name),
 				point,
 				(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 		}
@@ -603,7 +600,7 @@ DROPEFFECT BeginDragnDrop(CDclControlObject *pControl, CPoint point, bool bInvok
 	CopyArxObjectToClipboard(pControl);
 
 	// call methods to invoke the event
-	InvokeMethod(pControl->GetStrProperty(Prop::DragnDropBegin), bInvokeWithSendString);
+	InvokeMethod(pControl->GetStringProperty(Prop::DragnDropBegin), bInvokeWithSendString);
 
 	int objType = 0;
 	COleDataSource *pSource = generateDataSource(objType, CRect(point, CSize(0,0)));
@@ -633,7 +630,7 @@ DROPEFFECT BeginDragnDropToInsertBlocks(CDclControlObject *pControl, CPoint poin
 	CopyArxObjectToClipboard(pControl);
 
 	// call methods to invoke the event
-	InvokeMethod(pControl->GetStrProperty(Prop::DragnDropBegin), bInvokeWithSendString);
+	InvokeMethod(pControl->GetStringProperty(Prop::DragnDropBegin), bInvokeWithSendString);
 
 	int objType = 0;
 	COleDataSource *pSource = generateDataSource(objType, CRect(point, CSize(0,0)));

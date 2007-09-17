@@ -237,7 +237,7 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
 
 	// set the window text
-	SetWindowText(pProps->GetStrProperty(Prop::TitleBarText));
+	SetWindowText(pProps->GetStringProperty(Prop::TitleBarText));
 	
 	CRect rectPane;
 	if (mDialogX.GetSourceForm()->UsesClientRect() && IsFloating())
@@ -260,7 +260,7 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	mDialogX.GetControlPane().RecalcLayout();
 
 	// call methods to invoke the event
-	InvokeMethod( pProps->GetStrProperty( Prop::FormEventInitialize ), true );	
+	InvokeMethod( pProps->GetStringProperty( Prop::FormEventInitialize ), true );	
 
 	CRect rcThis;
 	if( mDialogX.GetSourceForm()->UsesClientRect() )
@@ -268,7 +268,7 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	else
 		GetWindowRect( &rcThis );
 	// call methods to invoke the event
-	InvokeMethodIntInt( pProps->GetStrProperty( Prop::FormEventSize ), 
+	InvokeMethodIntInt( pProps->GetStringProperty( Prop::FormEventSize ), 
 											rcThis.Width(),
 											rcThis.Height(),
 											false );	
@@ -302,7 +302,7 @@ void CDockingDialog::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )
 		
 		// call methods to invoke the event
 		CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-		InvokeMethodIntInt( pProps->GetStrProperty( Prop::FormEventSize ), 
+		InvokeMethodIntInt( pProps->GetStringProperty( Prop::FormEventSize ), 
 												rcThis.Width(), 
 												rcThis.Height(),
 												true );	
@@ -311,7 +311,7 @@ void CDockingDialog::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )
 
 BOOL CDockingDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::EventOnHelp), true);
+	InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::EventOnHelp), true);
 	return TRUE;
 }
 
@@ -319,7 +319,7 @@ void CDockingDialog::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	// call methods to invoke the event
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStrProperty(Prop::FormEventShow), true);	
+	InvokeMethod(pProps->GetStringProperty(Prop::FormEventShow), true);	
 
 	mbHiding = !mDialogX.IsClosing() && !bShow;
 	__super::OnShowWindow(bShow, nStatus);
@@ -348,7 +348,7 @@ bool CDockingDialog::OnClosing()
 	CAdUiDockControlBar::OnClosing();
 	// call methods to invoke the event
 	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStrProperty(Prop::FormEventClose), true);
+	InvokeMethod(pProps->GetStringProperty(Prop::FormEventClose), true);
 	if( !mbHiding && !IsFloating() )
 		PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
 	return true;

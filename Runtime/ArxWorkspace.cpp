@@ -311,7 +311,7 @@ bool CArxWorkspace::AddExtensionTab( CDclFormObject* pDclForm, CAdUiTabExtension
 	assert( pDialog != NULL );
 	if( !pDialog )
 		return false;
-	CString sTabCaption = pDclForm->GetControlProperties()->GetStrProperty(Prop::CfgTabCaption);
+	CString sTabCaption = pDclForm->GetControlProperties()->GetStringProperty(Prop::CfgTabCaption);
 	if (!pTabXM->AddTab(_hdllInstance,
 											IDD_CFGTAB,
 											sTabCaption,

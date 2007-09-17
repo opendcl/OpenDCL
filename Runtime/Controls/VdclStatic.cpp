@@ -92,7 +92,7 @@ BOOL VdclStatic::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID 
 	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	// get the caption
-	CString Caption = pControl->GetStrProperty(Prop::Caption);
+	CString Caption = pControl->GetStringProperty(Prop::Caption);
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | SS_LEFT | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 	
@@ -117,7 +117,7 @@ void VdclStatic::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
+		m_ArxControl->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,

@@ -147,7 +147,7 @@ void CModalDlg::OnSize(UINT nType, int cx, int cy)
 			GetWindowRect( &rcThis );
 		// call methods to invoke the event
 		InvokeMethodIntInt(
-			mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventSize), 
+			mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventSize), 
 			rcThis.Width(),
 			rcThis.Height(),
 			false);	
@@ -159,15 +159,15 @@ void CModalDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	__super::OnShowWindow(bShow, nStatus);
 	// call methods to invoke the event
-	InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventShow), false);	
+	InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventShow), false);	
 }
 
 void CModalDlg::OnOK()
 {
 	if (mDialogX.IsClosing() ||
-			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventCancelClose), false))	
+			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventCancelClose), false))	
 	{
-    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventOnOk), false);
+    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventOnOk), false);
 		__super::OnOK();
 		mDialogX.CloseDialog(IDOK);
 	}
@@ -176,9 +176,9 @@ void CModalDlg::OnOK()
 void CModalDlg::OnCancel()
 {
 	if (mDialogX.IsClosing() ||
-			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventCancelClose), true))	
+			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventCancelClose), true))	
 	{
-    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventOnCancel), false);
+    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventOnCancel), false);
 		__super::OnCancel();
 		mDialogX.CloseDialog(IDCANCEL);
 	}

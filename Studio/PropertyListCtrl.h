@@ -118,11 +118,9 @@ public:
 	afx_msg short CountPictures();
 	afx_msg void ClearGrid();
 	afx_msg void DisplayProperties(CDclControlObject *pControl);
-	afx_msg void DeleteFlaggedControls(short DclFormIndex);
 	afx_msg short GetPictureID(short Index);
 	afx_msg BOOL SetDclParent(short Index, LPCTSTR ParentName, short TabIndex);
 	afx_msg short GetDclParentsTabIndex(short Index);
-	afx_msg short GetArxControlClientHeight(short DclFormIndex, short ArxControlIndex);
 	afx_msg bool IsDclControlDeleted(short DclFormIndex, short ArxControlIndex);
 	afx_msg void DisplayVaries();
 	afx_msg void LoadPicture(LPCTSTR sFileName, short nPictureTag, bool bApplyMask);

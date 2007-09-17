@@ -443,7 +443,7 @@ BEGIN
 END
 
 IDD_COMBOBOX DIALOGEX 3, 1, 248, 140
-STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION
 CAPTION "ComboBox Styles"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
@@ -453,7 +453,7 @@ BEGIN
     COMBOBOX        IDC_COMBO0,133,70,100,69,CBS_DROPDOWN | CBS_SORT | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_COMBO1,133,70,101,57,CBS_SIMPLE | CBS_SORT | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_COMBOBOXEX,"ComboBoxEx32",CBS_DROPDOWN | CBS_SORT | NOT WS_VISIBLE | WS_DISABLED | WS_VSCROLL | WS_TABSTOP,133,70,100,65
-    LISTBOX         IDC_OPTIONLIST,7,12,105,115,LBS_OWNERDRAWVARIABLE | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | NOT WS_BORDER | WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_OPTIONLIST,7,12,105,115,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_COLUMNS DIALOGEX 3, 1, 244, 134
@@ -1262,8 +1262,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,1,0,5
- PRODUCTVERSION 4,1,0,5
+ FILEVERSION 4,1,0,7
+ PRODUCTVERSION 4,1,0,7
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1280,13 +1280,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL Studio Dialog Editor"
-            VALUE "FileVersion", "4, 1, 0, 5"
+            VALUE "FileVersion", "4, 1, 0, 7"
             VALUE "InternalName", "OpenDCL.Editor"
             VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL Studio.exe"
             VALUE "ProductName", "OpenDCL Studio"
-            VALUE "ProductVersion", "4, 1, 0, 5"
+            VALUE "ProductVersion", "4, 1, 0, 7"
         END
     END
     BLOCK "VarFileInfo"
@@ -2302,8 +2302,10 @@ BEGIN
     5040                    "Indicates control needs to be repainted."
     5041                    "This event is fired after a navigation to a hyperlink is completed."
     5042                    "Indicates the mouse has moved onto this control."
-    5043                    "This event is fired when the user presses the 'Enter' key."
-    5044                    "This event is fired to query if the dialog should be closed.  Return a 1 to indicate that your program wishes to cancel the close action."
+    IDS_EVENTDESC_RETURNPRESSED 
+                            "This event is fired when the user presses the <Enter> key."
+    IDS_EVENTDESC_CANCELCLOSE 
+                            "This event is fired to query whether the dialog may close.  Return T to indicate that your program wishes to cancel the close action, or NIL to allow the form to close."
     5045                    "Indicates the user has clicked down (nAction = 0), up (nAction = 1), or double clicked (nAction = 2), on the control with the left mouse button."
     5046                    "Indicates the user has clicked down (nAction = 0), up (nAction = 1), or double clicked (nAction = 2), on the control with the middle mouse button."
     5047                    "Indicates the user has clicked down (nAction = 0), up (nAction = 1), or double clicked (nAction = 2), on the control with the right mouse button."
@@ -2555,7 +2557,7 @@ BEGIN
     1208                    "sText"
     1209                    "nUpperLeftX nUpperLeftY"
     1210                    "nWidth nHeight"
-    1211                    "bUserPressedEsc"
+    IDS_ARG_CANCELLING      "bCancelling"
     1212                    "nAction nFlags nX nY"
     1213                    "3dPoint"
     1214                    "sProjectName sDialogName sControlName sItemKey"

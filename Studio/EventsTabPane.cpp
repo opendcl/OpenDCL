@@ -607,7 +607,7 @@ CString CEventsTabPane::GetEvent( Prop::Id nEventId )
 {
 	CString sEventSymbol;
 	if (m_pControl->GetType() != CtlActiveX)
-		sEventSymbol = m_pControl->GetStrProperty(nEventId); 
+		sEventSymbol = m_pControl->GetStringProperty(nEventId); 
 	if( sEventSymbol.IsEmpty() )
 	{
 		CString sEventName = m_pControl->GetVarName();

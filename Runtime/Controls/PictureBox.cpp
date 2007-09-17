@@ -634,7 +634,7 @@ void CPictureBox::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
 		1,
 		nFlags,
 		point.x,
@@ -642,7 +642,7 @@ void CPictureBox::OnLButtonDown(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::OnLMouseEvent),
+		m_ArxControl->GetStringProperty(Prop::OnLMouseEvent),
 		0,
 		nFlags,
 		point.x,
@@ -1154,7 +1154,7 @@ void CPictureBox::OnKillFocus(CWnd* pNewWnd)
 	CWnd::OnKillFocus(pNewWnd);
 	m_bHasFocus = false;
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 }
 
 void CPictureBox::OnSetFocus(CWnd* pOldWnd) 
@@ -1162,14 +1162,14 @@ void CPictureBox::OnSetFocus(CWnd* pOldWnd)
 	CWnd::OnSetFocus(pOldWnd);
 	m_bHasFocus = true;
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 }
 
 void CPictureBox::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
 		1,
 		nFlags,
 		point.x,
@@ -1177,7 +1177,7 @@ void CPictureBox::OnLButtonUp(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::OnLMouseEvent),
+		m_ArxControl->GetStringProperty(Prop::OnLMouseEvent),
 		1,
 		nFlags,
 		point.x,
@@ -1192,7 +1192,7 @@ void CPictureBox::OnLButtonUp(UINT nFlags, CPoint point)
 void CPictureBox::OnMButtonDblClk(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDblClick),
 		4,
 		nFlags,
 		point.x,
@@ -1200,7 +1200,7 @@ void CPictureBox::OnMButtonDblClk(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::OnMMouseEvent),
+		m_ArxControl->GetStringProperty(Prop::OnMMouseEvent),
 		2,
 		nFlags,
 		point.x,
@@ -1214,7 +1214,7 @@ void CPictureBox::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -1222,7 +1222,7 @@ void CPictureBox::OnMButtonDown(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::OnMMouseEvent),
+		m_ArxControl->GetStringProperty(Prop::OnMMouseEvent),
 		0,
 		nFlags,
 		point.x,
@@ -1235,7 +1235,7 @@ void CPictureBox::OnMButtonDown(UINT nFlags, CPoint point)
 void CPictureBox::OnMButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -1243,7 +1243,7 @@ void CPictureBox::OnMButtonUp(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::OnMMouseEvent),
+		m_ArxControl->GetStringProperty(Prop::OnMMouseEvent),
 		1,
 		nFlags,
 		point.x,
@@ -1266,7 +1266,7 @@ void CPictureBox::OnMouseMove(UINT nFlags, CPoint point)
 		m_bMouseTracking = FALSE;        	
 		m_bHasFocus = false;
 		SetFocus();
-		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventMouseMovedOff), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventMouseMovedOff), m_bInvokeWithSendString);
 		CWnd::OnMouseMove(nFlags, point);
 		return;
 	}
@@ -1281,12 +1281,12 @@ void CPictureBox::OnMouseMove(UINT nFlags, CPoint point)
 		if (::_TrackMouseEvent(&tme))                
 			m_bMouseTracking = TRUE;
 		InvokeMethod(
-			m_ArxControl->GetStrProperty(Prop::EventMouseEntered),
+			m_ArxControl->GetStringProperty(Prop::EventMouseEntered),
 			m_bInvokeWithSendString);
 	}
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
+		m_ArxControl->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -1302,7 +1302,7 @@ void CPictureBox::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
+		m_ArxControl->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -1316,7 +1316,7 @@ void CPictureBox::OnMouseMove(UINT nFlags, CPoint point)
 BOOL CPictureBox::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDblClick),
 		nFlags,
 		zDelta,
 		pt.x,
@@ -1330,7 +1330,7 @@ BOOL CPictureBox::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 void CPictureBox::OnRButtonDblClk(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDblClick),
 		2,
 		nFlags,
 		point.x,
@@ -1338,11 +1338,11 @@ void CPictureBox::OnRButtonDblClk(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(Prop::EventRDblClick),
+		m_ArxControl->GetStringProperty(Prop::EventRDblClick),
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::OnRMouseEvent),
+		m_ArxControl->GetStringProperty(Prop::OnRMouseEvent),
 		2,
 		nFlags,
 		point.x,
@@ -1356,7 +1356,7 @@ void CPictureBox::OnRButtonDblClk(UINT nFlags, CPoint point)
 void CPictureBox::OnRButtonDown(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,
@@ -1364,7 +1364,7 @@ void CPictureBox::OnRButtonDown(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::OnRMouseEvent),
+		m_ArxControl->GetStringProperty(Prop::OnRMouseEvent),
 		0,
 		nFlags,
 		point.x,
@@ -1377,7 +1377,7 @@ void CPictureBox::OnRButtonDown(UINT nFlags, CPoint point)
 void CPictureBox::OnRButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,
@@ -1385,12 +1385,12 @@ void CPictureBox::OnRButtonUp(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 	
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(Prop::EventRClick),
+		m_ArxControl->GetStringProperty(Prop::EventRClick),
 		m_bInvokeWithSendString);	
 	
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::OnRMouseEvent),
+		m_ArxControl->GetStringProperty(Prop::OnRMouseEvent),
 		1,
 		nFlags,
 		point.x,
@@ -1403,7 +1403,7 @@ void CPictureBox::OnRButtonUp(UINT nFlags, CPoint point)
 void CPictureBox::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(m_ArxControl->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 		
 	CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -1411,14 +1411,14 @@ void CPictureBox::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CPictureBox::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(m_ArxControl->GetStrProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(m_ArxControl->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
 		
 	CWnd::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 LRESULT CPictureBox::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventMouseMovedOff), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventMouseMovedOff), m_bInvokeWithSendString);
 	
 	m_bMouseTracking = FALSE;        
 	return FALSE;
@@ -1483,7 +1483,7 @@ void CPictureBox::LoadPictureFile(LPCTSTR szFile, bool bStretch)
 void CPictureBox::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDblClick),
 		1,
 		nFlags,
 		point.x,
@@ -1493,11 +1493,11 @@ void CPictureBox::OnLButtonDblClk(UINT nFlags, CPoint point)
 	
 	
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(Prop::EventDblClicked),
+		m_ArxControl->GetStringProperty(Prop::EventDblClicked),
 		m_bInvokeWithSendString);
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::OnLMouseEvent),
+		m_ArxControl->GetStringProperty(Prop::OnLMouseEvent),
 		2,
 		nFlags,
 		point.x,
@@ -1559,7 +1559,7 @@ void CPictureBox::OnSize(UINT nType, int cx, int cy)
 void CPictureBox::OnClicked() 
 {
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);
 }
 
 void CPictureBox::OnPaint() 
@@ -1589,10 +1589,10 @@ void CPictureBox::OnPaint()
 
 		if (pFocusWnd != this)
 			// call methods to invoke the event
-			InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventPaint), 0, m_bInvokeWithSendString);
+			InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventPaint), 0, m_bInvokeWithSendString);
 		else
 			// call methods to invoke the event
-			InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventPaint), 1, m_bInvokeWithSendString);
+			InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventPaint), 1, m_bInvokeWithSendString);
 		
 	}
 
@@ -1628,7 +1628,7 @@ void CPictureBox::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	else
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);
 	}
 }
 

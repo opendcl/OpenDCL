@@ -6,6 +6,7 @@
 #include "Colors.h"
 #include "PropertyObject.h"
 #include "AcadColorTable.h"
+#include "IntegerFilter.h"
 
 
 static CString LTOA(int nVal)
@@ -48,6 +49,7 @@ CColors::CColors(Prop::Id idProp, CDclControlObject* pControl, COpenDCLView* pVi
 , mpView( pView )
 , msTitle( theWorkspace.LoadResourceString( GetTitleResource( idProp ) ) )
 , mpColor( pControl->GetPropertyObject( idProp ) )
+, m_Edit( new CIntegerFilter )
 {
 }
 
@@ -242,31 +244,7 @@ void CColors::DisplayColor()
 	CString sValue;
 	m_Edit.GetWindowText(sValue);
 
-	if (sValue.GetLength() > 0)
-	{
-		if (_tstol(sValue)  == -22)
-		{
-			m_Color.m_color = RGB(0,0,0);
-		}
-		else if (_tstol(sValue)  == -23)
-		{
-			m_Color.m_color = RGB(255,255,255);
-		}
-		else if (_tstol(sValue) < 0)
-		{
-			int n = _tstol(sValue);
-			n = n*-1;
-			n = n-1;
-			m_Color.m_color = GetSysColor(n);
-		}
-		else if (_tstol(sValue) > 255)
-			m_Color.m_color = _tstol(sValue);
-		else 
-		{
-			int n = _tstol(sValue);
-			m_Color.m_color = RGB(acadcol[n][0], acadcol[n][1], acadcol[n][2]);
-		}
-	}
+	m_Color.m_color = GetRGBColor( _tstol( sValue ) );
 	m_Color.Invalidate();
 
 }

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "FilteredEditEx.h"
+#include "FilteredEditCtrl.h"
 #include "GridCellEditCtrl.h"
 #include "GridCtrl.h"
 
@@ -13,20 +13,17 @@ class CInputFilter;
 /////////////////////////////////////////////////////////////////////////////
 // CTextBoxEditCtrl class
 
-class CTextBoxEditCtrl : public CFilteredEditEx, public CGridCellEditCtrl
+class CTextBoxEditCtrl : public CFilteredEditCtrl, public CGridCellEditCtrl
 {
 	static CRect CalcRect( const CRect& rcCell )
 		{
 			return CRect( rcCell.left + 4, rcCell.top + 4, rcCell.right - 4, rcCell.bottom - 4 );
 		}
 public:
-	CTextBoxEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol, CInputFilter* pFilter = NULL, UINT nID = 100 )
-		: CFilteredEditEx( pFilter )
+	CTextBoxEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol, CInputFilter* pFilter = NULL, DWORD dwStyle = GetDefaultWndStyle(), UINT nID = 100 )
+		: CFilteredEditCtrl( pGridCtrl, CalcRect( pGridCtrl->GetCellRect( nRow, nCol ) ), nID, pFilter, dwStyle )
 		, CGridCellEditCtrl( pGridCtrl, nRow, nCol )
 		{
-			Create( pGridCtrl,
-							CalcRect( pGridCtrl->GetCellRect( nRow, nCol ) ),
-							100 );
 			SetFont( pGridCtrl->GetFont() );
 			SetWindowText( pGridCtrl->GetCellText( nRow, nCol ) );
 			SetSel( 0, -1, TRUE );
@@ -36,6 +33,15 @@ public:
 		{
 			CString sText;
 			GetWindowText( sText );
+			CInputFilter* pFilter = GetInputFilter();
+			if( pFilter )
+			{
+				if( !pFilter->OnValidateInput( sText ) )
+				{
+					sText = pFilter->OnBadInput();
+					pFilter->ConvertForDisplay( sText );
+				}
+			}
 			mpGridCtrl->SetCellText( mnRow, mnCol, sText );
 			DestroyWindow();
 		}

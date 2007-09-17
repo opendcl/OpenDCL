@@ -9,6 +9,7 @@
 #include "InvokeMethod.h"
 #include "ToolTips.h"
 #include "AcadBlockReactor.h"
+#include "AutoDocLock.h"
 #include "ControlTypes.h"
 #include "PropertyIds.h"
 #include "Workspace.h"
@@ -607,7 +608,7 @@ void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	SetFocus();
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
 		1,
 		nFlags,
 		point.x,
@@ -737,15 +738,15 @@ void CGsPreviewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 	if (m_bBeingLDblClicked)
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventDblClicked), m_bInvokeWithSendString);	
+		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);	
 		m_bBeingLDblClicked = false;
 	}
 
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);	
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);	
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
 		1,
 		nFlags,
 		point.x,
@@ -764,7 +765,7 @@ void CGsPreviewCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 	SetFocus();
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -807,7 +808,7 @@ void CGsPreviewCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 	SetFocus();
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
 		4,
 		nFlags,
 		point.x,
@@ -836,7 +837,7 @@ void CGsPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
+		m_ArxControl->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -1059,7 +1060,7 @@ void CGsPreviewCtrl::OnSetFocus(CWnd* pOldWnd)
 	ReleaseDC(pdc);
 
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 	
 	
 }
@@ -1650,21 +1651,7 @@ BOOL CGsPreviewCtrl::DisplayBlock(
 		m_BlockName = CString();
         return FALSE;
 	}
-	class AutoDocLock
-	{
-		AcApDocument* mpDoc;
-	public:
-		AutoDocLock( AcApDocument* pDoc ) : mpDoc( pDoc )
-			{
-				if( Acad::eOk != acDocManager->lockDocument( pDoc, AcAp::kWrite ) )
-					mpDoc = NULL;
-			}
-		~AutoDocLock(void)
-			{
-				if( mpDoc )
-					acDocManager->unlockDocument( mpDoc );
-			}
-	} DocLock( acDocManager->curDocument() );
+	CAutoDocWriteLock CurDocLock;
 	if ((es = pDb->getBlockTable(pTab,AcDb::kForRead)) !=Acad::eOk)    
 	{
 		sBlockName = CString();
@@ -2289,7 +2276,7 @@ void CGsPreviewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 	m_bBeingLDblClicked = true;
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDblClick),
 		1,
 		nFlags,
 		point.x,
@@ -2297,7 +2284,7 @@ void CGsPreviewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 
 	// call methods to invoke the event
-	//InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventDblClicked), false);//m_bInvokeWithSendString);	
+	//InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventDblClicked), false);//m_bInvokeWithSendString);	
 
 }
 
@@ -2311,7 +2298,7 @@ void CGsPreviewCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
 	m_bBeingRDblClicked = true;
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDblClick),
 		2,
 		nFlags,
 		point.x,
@@ -2319,7 +2306,7 @@ void CGsPreviewCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
 		m_bInvokeWithSendString);
 
 	// call methods to invoke the event
-	///InvokeMethod(m_ArxControl->GetStrProperty(nEventRDblClick), false);//m_bInvokeWithSendString);	
+	///InvokeMethod(m_ArxControl->GetStringProperty(nEventRDblClick), false);//m_bInvokeWithSendString);	
 	
 }
 
@@ -2330,15 +2317,15 @@ void CGsPreviewCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 	if (m_bBeingRDblClicked)
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventRDblClick), m_bInvokeWithSendString);	
+		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventRDblClick), m_bInvokeWithSendString);	
 		m_bBeingRDblClicked = false;
 	}
 	
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventRClick), m_bInvokeWithSendString);	
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventRClick), m_bInvokeWithSendString);	
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,
@@ -2439,7 +2426,7 @@ void CGsPreviewCtrl::OnKillFocus(CWnd* pNewWnd)
 	ReleaseDC(pdc);
 	
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 	
 }
 
@@ -2487,7 +2474,7 @@ HBRUSH CGsPreviewCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 void CGsPreviewCtrl::OnMButtonDblClk(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDblClick),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDblClick),
 		4,
 		nFlags,
 		point.x,
@@ -2500,7 +2487,7 @@ void CGsPreviewCtrl::OnMButtonDblClk(UINT nFlags, CPoint point)
 void CGsPreviewCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
 		2,
 		nFlags,
 		point.x,

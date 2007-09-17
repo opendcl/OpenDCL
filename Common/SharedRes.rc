@@ -71,6 +71,7 @@ IDB_OPBTNSELH           BITMAP                  "Res\\OpButton4.bmp"
 IDB_OPBTNSEL            BITMAP                  "Res\\OpButton2.bmp"
 IDB_OPBTNNONH           BITMAP                  "Res\\OpButton3.bmp"
 IDB_OPBTNNON            BITMAP                  "Res\\OpButton1.bmp"
+IDB_FOLDER              BITMAP                  "Res\\Folder.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

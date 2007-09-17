@@ -12,6 +12,7 @@
 #include "Project.h"
 #include "ProjectTreeCtrl.h"
 #include "EditorWorkspace.h"
+#include "TabStripCtrl.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -325,7 +326,11 @@ BOOL CTabsPane::OnApply()
 		{
 			CTabInfo *pTabInfo = m_DeletedTabList.GetHead();
 			if (pTabInfo->mpChildForm)
-				mpView->RemoveChildTabPane(pTabInfo->mpChildForm);
+			{
+				if (pTabInfo->mpChildForm->m_htiTreeItem != NULL)
+					theEditorWorkspace.GetProjectTreeCtrl()->DeleteItem(pTabInfo->mpChildForm->m_htiTreeItem);
+				pTabInfo->mpChildForm->GetProject()->DeleteForm( pTabInfo->mpChildForm );
+			}
 			m_DeletedTabList.RemoveAt(pos);
 			delete pTabInfo;
 			pos = m_DeletedTabList.GetHeadPosition();
@@ -350,7 +355,20 @@ BOOL CTabsPane::OnApply()
 
 			pTab->mnOriginalIndex = idxPane;
 			if( !pTab->mpChildForm )
-				pTab->mpChildForm = mpView->AddSingleTabPane( idxPane );
+			{
+				pTab->mpChildForm = mpDclControl->GetOwnerForm()->AddChildForm( VdclTabForm );
+				if( pTab->mpChildForm )
+				{
+					CTabStripCtrl* pTabStripCtrl = (CTabStripCtrl*)mpDclControl->GetControlInstance();
+					if( pTabStripCtrl )
+					{
+						CRect rcTab = pTabStripCtrl->GetUsedArea();
+						CDclControlObject* pFormProps = pTab->mpChildForm->GetControlProperties();
+						pFormProps->AddLongProperty(Prop::Height, PropLong, rcTab.Height(), true);
+						pFormProps->AddLongProperty(Prop::Width, PropLong, rcTab.Width(), true);
+					}
+				}
+			}
 			pTab->mpChildForm->SetTabIndex( idxPane );
 			theEditorWorkspace.GetProjectTreeCtrl()->AddFormToTree( pTab->mpChildForm, true );
 		}	

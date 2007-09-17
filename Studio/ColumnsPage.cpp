@@ -186,9 +186,20 @@ BOOL CColumnsPage::OnInitDialog()
 
 	for (INT_PTR i = 0; i< m_ColData.GetCount(); i++)
 	{
-		int nWidth = m_ColData[i].m_Width;
+		LVCOLUMN lvColumn = 
+		{
+			(LVCF_FMT | LVCF_TEXT | LVCF_WIDTH),
+			LVCFMT_LEFT,
+			m_ColData[i].m_Width,
+			NULL,
+			0,
+			i,
+			m_ColData[i].m_Image,
+		};
+		if( m_ColData[i].m_Image >= 0 )
+			lvColumn.mask |= LVCF_IMAGE;
 		m_nIndex = i;
-		m_List.InsertColumn(i, _T(""), LVCFMT_LEFT, nWidth);
+		m_List.InsertColumn(i, &lvColumn);
 		SetColumn(i);
 	}
 
@@ -292,7 +303,6 @@ BOOL CColumnsPage::OnSetActive()
 		m_Default.SetImageList(pImageList);	
 		m_Alternate.SetImageList(pImageList);
 		
-		pImageList->SetBkColor(RGB(255,255,255));
 		int i;
 		for (i=0; i < pImageList->GetImageCount(); i++)
 		{
@@ -570,6 +580,7 @@ void CColumnsPage::OnChangeWidth()
 void CColumnsPage::OnColumnHeaderClicked(int nIndex) 
 {
 	m_Spin.SetPos(nIndex);
+	m_nIndex = nIndex;
 	SetControls(nIndex);
 	//SetColumn(m_nIndex);
 }
@@ -587,8 +598,8 @@ void CColumnsPage::ResetWidths()
 		CRect rc;
 		pHeader->GetItemRect(i, rc);
 		m_ColData[i].m_Width = rc.Width();
-
 	}
+	SetControls( m_nIndex );
 	SetModified();
 }
 
@@ -604,11 +615,6 @@ void CColumnsPage::OnSelchangeAlignment()
 		nAlign = LVCFMT_CENTER;
 	else if (nSel == 2)
 		nAlign = LVCFMT_RIGHT;
-
-	m_List.DeleteColumn(m_nIndex);
-
-	m_nIndex = m_List.InsertColumn(m_nIndex, CString(), nAlign, 100);
-
 	SetColumn(m_nIndex);
 	SetModified();
 }
@@ -782,11 +788,9 @@ void CColumnsPage::SetColumn(INT_PTR nIndex)
 	}
 	
 	if (m_ColData[m_nIndex].m_Image >= 0 && m_ColData[m_nIndex].m_Image < m_Image.GetCount())
-		curItem.fmt = curItem.fmt | HDF_IMAGE;
+		curItem.fmt |= HDF_IMAGE;
 
 	pHdrCtrl->SetItem(nIndex, &curItem);
-	sCaption.UnlockBuffer();
-
 }
 
 

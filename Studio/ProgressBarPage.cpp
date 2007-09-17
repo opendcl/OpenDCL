@@ -64,13 +64,13 @@ BOOL CProgressBarPage::OnInitDialog()
 	}
 	m_Time.SetCheck(m_pArxCtrl->GetBooleanProperty(Prop::DisplaySeconds));
 		
-	m_Minute.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::MinuteText));
-	m_Minutes.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::MinutesText));
+	m_Minute.SetWindowText(m_pArxCtrl->GetStringProperty(Prop::MinuteText));
+	m_Minutes.SetWindowText(m_pArxCtrl->GetStringProperty(Prop::MinutesText));
 
-	m_Second.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::SecondText));
-	m_Seconds.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::SecondsText));
+	m_Second.SetWindowText(m_pArxCtrl->GetStringProperty(Prop::SecondText));
+	m_Seconds.SetWindowText(m_pArxCtrl->GetStringProperty(Prop::SecondsText));
 	
-	m_Progress.m_sText = CString("15 ") + m_pArxCtrl->GetStrProperty(Prop::SecondsText);
+	m_Progress.m_sText = CString("15 ") + m_pArxCtrl->GetStringProperty(Prop::SecondsText);
 
 	// setup display progress bar.
 	m_Progress.SetRange(0,100);

@@ -52,7 +52,7 @@ END_MESSAGE_MAP()
 void CArxRadioButtonCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntInt(
-		mpTemplate->GetStrProperty(Prop::EventMouseMove),
+		mpTemplate->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -67,7 +67,7 @@ void CArxRadioButtonCtrl::OnClicked()
 	
 	if (mpTemplate->m_bEventsAsAction)
 	{
-		CString sText = mpTemplate->GetStrProperty(Prop::EventClicked);
+		CString sText = mpTemplate->GetStringProperty(Prop::EventClicked);
 
 		GetParent()->GetParent()->EnableWindow(TRUE);
 		int stat;
@@ -97,7 +97,7 @@ void CArxRadioButtonCtrl::OnClicked()
 		{
 			mpTemplate->SetBooleanProperty( Prop::Value, (nValue != BST_UNCHECKED) );
 			InvokeMethodInt(
-				mpTemplate->GetStrProperty(Prop::EventClicked),
+				mpTemplate->GetStringProperty(Prop::EventClicked),
 				nValue,
 				m_bInvokeWithSendString);
 		}
@@ -106,5 +106,5 @@ void CArxRadioButtonCtrl::OnClicked()
 
 void CArxRadioButtonCtrl::OnDoubleclicked() 
 {
-	InvokeMethod(mpTemplate->GetStrProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
 }

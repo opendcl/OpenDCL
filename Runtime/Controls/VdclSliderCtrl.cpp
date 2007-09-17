@@ -94,7 +94,7 @@ BOOL VdclSliderCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 void VdclSliderCtrl::OnOutofmemory(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventOutOfMemory), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventOutOfMemory), m_bInvokeWithSendString);
 	*pResult = 0;
 }
 
@@ -102,7 +102,7 @@ void VdclSliderCtrl::OnReleasedcapture(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	m_pValueProp->SetLongValue(CSliderCtrl::GetPos());
 	// call methods to invoke the event
-	InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventReleasedCapture), 
+	InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventReleasedCapture), 
 		CSliderCtrl::GetPos(),
 		m_bInvokeWithSendString);
 	*pResult = 0;
@@ -111,7 +111,7 @@ void VdclSliderCtrl::OnReleasedcapture(NMHDR* pNMHDR, LRESULT* pResult)
 void VdclSliderCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
+		m_ArxControl->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -122,7 +122,7 @@ void VdclSliderCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	{
 		m_pValueProp->SetLongValue(CSliderCtrl::GetPos());
 		// call methods to invoke the event
-		InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
+		InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 			CSliderCtrl::GetPos(),
 			m_bInvokeWithSendString);
 	}
@@ -133,7 +133,7 @@ void VdclSliderCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	m_pValueProp->SetLongValue(CSliderCtrl::GetPos());
 	// call methods to invoke the event
-	InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
+	InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 		CSliderCtrl::GetPos(),
 		m_bInvokeWithSendString);
 	CSliderCtrl::OnLButtonDblClk(nFlags, point);
@@ -143,7 +143,7 @@ void VdclSliderCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	m_pValueProp->SetLongValue(CSliderCtrl::GetPos());
 	// call methods to invoke the event
-	InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
+	InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 		CSliderCtrl::GetPos(),
 		m_bInvokeWithSendString);
 	CSliderCtrl::OnLButtonDown(nFlags, point);
@@ -153,7 +153,7 @@ void VdclSliderCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	m_pValueProp->SetLongValue(CSliderCtrl::GetPos());
 	// call methods to invoke the event
-	InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
+	InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 		CSliderCtrl::GetPos(),
 		m_bInvokeWithSendString);
 	CSliderCtrl::OnLButtonUp(nFlags, point);
@@ -163,7 +163,7 @@ void VdclSliderCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	m_pValueProp->SetLongValue(CSliderCtrl::GetPos());
 	// call methods to invoke the event
-	InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
+	InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 		CSliderCtrl::GetPos(),
 		m_bInvokeWithSendString);
 	CSliderCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
@@ -173,7 +173,7 @@ void VdclSliderCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	m_pValueProp->SetLongValue(CSliderCtrl::GetPos());
 	// call methods to invoke the event
-	InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
+	InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 		CSliderCtrl::GetPos(),
 		m_bInvokeWithSendString);
 	CSliderCtrl::OnKeyUp(nChar, nRepCnt, nFlags);

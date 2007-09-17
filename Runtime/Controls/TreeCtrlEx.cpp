@@ -53,7 +53,7 @@ void CTreeCtrlEx::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
+		m_ArxControl->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -125,7 +125,7 @@ void CTreeCtrlEx::OnRButtonUp(UINT nFlags, CPoint point)
 {
 
 	InvokeMethod(
-		m_ArxControl->GetStrProperty(Prop::EventRClick),
+		m_ArxControl->GetStringProperty(Prop::EventRClick),
 		m_bInvokeWithSendString);	
 		
 	CTreeCtrl::OnRButtonUp(nFlags, point);
@@ -154,7 +154,7 @@ void CTreeCtrlEx::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult)
 	{		
 		// call methods to invoke the event
 		InvokeMethodStringString(
-			m_ArxControl->GetStrProperty(Prop::EventSelChanged),
+			m_ArxControl->GetStringProperty(Prop::EventSelChanged),
 			sItemText,
 			sKey,
 			m_bInvokeWithSendString);
@@ -163,7 +163,7 @@ void CTreeCtrlEx::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult)
 	{		
 		// call methods to invoke the event
 		InvokeMethodStringLong(
-			m_ArxControl->GetStrProperty(Prop::EventSelChanged),
+			m_ArxControl->GetStringProperty(Prop::EventSelChanged),
 			sItemText,
 			(DWORD_PTR)SelectedItem.hItem,
 			m_bInvokeWithSendString);

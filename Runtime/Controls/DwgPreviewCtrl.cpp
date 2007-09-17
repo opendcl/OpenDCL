@@ -138,7 +138,7 @@ void CDwgPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
+		m_ArxControl->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -253,14 +253,14 @@ void CDwgPreviewCtrl::Refresh(CDC *pdc)
 void CDwgPreviewCtrl::OnClicked() 
 {
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);
 	
 }
 
 void CDwgPreviewCtrl::OnDoubleclicked() 
 {
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventDblClicked), m_bInvokeWithSendString);	
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);	
 }	
 
 void CDwgPreviewCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
@@ -273,7 +273,7 @@ void CDwgPreviewCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	else
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);
 	}
 	
 }
@@ -294,7 +294,7 @@ void CDwgPreviewCtrl::OnSetFocus(CWnd* pOldWnd)
 	ReleaseDC(pdc);
 	
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
 	
 }
 
@@ -308,7 +308,7 @@ void CDwgPreviewCtrl::OnKillFocus(CWnd* pNewWnd)
 	ReleaseDC(pdc);
 
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
 	
 }
 

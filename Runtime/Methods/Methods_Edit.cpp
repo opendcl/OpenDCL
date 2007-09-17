@@ -8,7 +8,7 @@
 #include "ArgumentsRetrieval.h"
 #include "MethodLexicon.h"
 #include "ErrorLexicon.h"
-#include "OdclEdit.h"
+#include "EditCtrl.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
@@ -16,6 +16,8 @@
 
 int TextBox_SetFilter()
 {
+	theWorkspace.DisplayAlert(_T("OpenDCL function (dcl_TextBox_SetFilter) is not yet implemented."));
+/*
 	int nArg=0;
 	CDclControlObject *pArxObject = GetControlArxObject(sTextBox_SetFilter, &nArg);
 	
@@ -45,15 +47,19 @@ int TextBox_SetFilter()
 		return 0;
 	}
 
-	((OdclEdit*)pControl)->m_sFilter = sFilter;
+	((CEditCtrl*)pControl)->m_sFilter = sFilter;
 
 	acedRetVoid();
 	return 0;
-
+*/
+	acedRetNil();
+	return 0;
 }
 
 int TextBox_GetFilter()
 {
+	theWorkspace.DisplayAlert(_T("OpenDCL function (dcl_TextBox_GetFilter) is not yet implemented."));
+/*
 	CDclControlObject *pArxObject = GetControlArxObject(sTextBox_SetFilter);
 	if (pArxObject->GetLongProperty(Prop::FilterStyle) > 0)
 	{
@@ -72,9 +78,11 @@ int TextBox_GetFilter()
 		return 0;
 	}
 	
-	acedRetStr(((OdclEdit*)pControl)->m_sFilter);
+	acedRetStr(((CEditCtrl*)pControl)->m_sFilter);
 	return 0;
-
+*/
+	acedRetNil();
+	return 0;
 }
 
 int TextBox_GetLineCount()

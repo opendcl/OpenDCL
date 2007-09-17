@@ -247,27 +247,7 @@ void CPictureBox::SetPictureBlank()
 
 void CPictureBox::SetAcadColor(long nColorArg)
 {
-	if (nColorArg > 255)
-	{
-		m_BkColor = nColorArg;
-	}
-	else if (nColorArg >= 0 && nColorArg <= 255)
-	{
-		m_BkColor = RGB(acadcol[nColorArg][0], acadcol[nColorArg][1], acadcol[nColorArg][2]);		
-	}
-	else if (nColorArg < 0 && nColorArg >= -21)
-	{
-		int nSystemColor = (nColorArg * -1) - 1; 
-		m_BkColor = GetSysColor(nSystemColor);
-	}
-	else if (nColorArg == -22)
-	{
-		m_BkColor = RGB(0,0,0);
-	}
-	else 
-	{
-		m_BkColor = RGB(255,255,255);
-	}
+	m_BkColor = GetRGBColor( nColorArg );
 	Invalidate(TRUE);
 }
 

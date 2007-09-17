@@ -10,7 +10,6 @@
 #define IDS_CLOSEMENU                   112
 #define IDS_METHODVARNAMEINCORRECT      120
 #define IDS_BANNER                      124
-#define IDB_FOLDER                      129
 #define IDI_LAYERTHAWED                 203
 #define IDI_LAYERFROZEN                 204
 #define IDI_LAYEROFF                    205

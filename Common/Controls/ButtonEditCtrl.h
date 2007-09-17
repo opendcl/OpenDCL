@@ -16,7 +16,7 @@ class CButtonEditCtrl : public CDynamicButtonCtrl, public CGridCellEditCtrl
 {
 	static CRect CalcRect( const CRect& rcCell )
 		{
-			return CRect( rcCell.right - 22, rcCell.top + 2, rcCell.right - 2, rcCell.bottom - 2 );
+			return CRect( rcCell.right - 24, rcCell.top + 2, rcCell.right - 2, rcCell.bottom - 2 );
 		}
 public:
 	CButtonEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol, UINT idIcon, UINT nID = 100 )

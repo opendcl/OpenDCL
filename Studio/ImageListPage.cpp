@@ -215,14 +215,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 			m_DispWidth.SetWindowText(Value);
 			_ltot(sizePic.cy, Value, 10);
 			m_DispHeight.SetWindowText(Value);
-			// set the background color of the image list
-			GetImageList().SetBkColor(RGB(255,255,255));		
-			
 		}
-
-		// create a temp bitmap
-		//CBitmap * TempBmp = CBitmap::FromHandle(hBitmap);
-
 		if (bRetVal)
 		{
 			// add bitmap to imagelist; mask is ignored in this sample
@@ -271,9 +264,6 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 			m_DispWidth.SetWindowText(Value);
 			_ltot(sizePic.cy, Value, 10);
 			m_DispHeight.SetWindowText(Value);
-			// set the background color of the image list
-			GetImageList().SetBkColor(RGB(255,255,255));		
-			
 		}
 		
 		if (bRetVal)

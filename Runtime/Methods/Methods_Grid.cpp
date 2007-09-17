@@ -424,19 +424,7 @@ int Grid_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
 
 	int nInsertIndex = -1;
 	if (sTextArray.GetSize() > 0)
-	{
-		LV_ITEM lvItem;
-		lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;
-		lvItem.iItem = nIndex;
-		lvItem.iSubItem = 0;		
-		lvItem.pszText = sTextArray[0].LockBuffer();
-		lvItem.cchTextMax = -1;
-		lvItem.iImage = nIntArray[0];
-		lvItem.iIndent = 0;
-		
-		// insert the row item
-		nInsertIndex = pGridCtrl->InsertItem(&lvItem);
-	}
+		nInsertIndex = pGridCtrl->InsertItem( nIndex, sTextArray[0], nIntArray[0] );
 
 	// now set the rest of the cells.
 	for (i=1; i<sTextArray.GetSize(); i++)
@@ -797,8 +785,8 @@ int Grid_Cell_SetStyle()
 	int nRow;
 	int nCol;
 	int nStyle;
-	int nData1 = 0;
-	int nData2 = 0;
+	int nData1 = -1;
+	int nData2 = -1;
 	CString sOptionalText;
 
 	CDclControlObject *pArx = GetLispInput(sGrid_Cell_SetStyle, nRow, nCol, nStyle, nData1, nData2, sOptionalText);
@@ -1070,7 +1058,6 @@ int Grid_FillGrid()
 	struct resbuf *ListData;
 	int nImage = -1;
 	CString sText;
-	int nBeforeAdditionCount;
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_FillGrid, &nArg);
 	CDclControlObject *pArx = GetControlArxObject(sGrid_FillGrid, &nArg);
@@ -1113,8 +1100,7 @@ int Grid_FillGrid()
 	// delete all the items
 	pGridCtrl->DeleteAllItems();
 	
-	// get the count before the addition of any rows
-	nBeforeAdditionCount = pGridCtrl->GetItemCount();
+	int nCurrentRow = -1;
 
 	pGridCtrl->SetRedraw(FALSE); // turn drawing off regardless of list mode
 
@@ -1184,35 +1170,9 @@ int Grid_FillGrid()
 		int nCount = pGridCtrl->GetItemCount();
 
 		if (nCurCol == 1)
-		{
-			LV_ITEM lvItem;
-			lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;
-			lvItem.iItem = nCount;
-			lvItem.iSubItem = 0;
-			TCHAR sValue [256];
-			_tcscpy(sValue, sText);
-			lvItem.pszText = sValue;
-			lvItem.iImage = nImage;
-			lvItem.iIndent = 0;
-			// insert the column
-			int nRet = pGridCtrl->InsertItem(&lvItem);			
-		}
+			nCurrentRow = pGridCtrl->InsertItem( nCount, sText, nImage );			
 		else
-		{
-			
-			LV_ITEM lvItem;
-			lvItem.mask = LVIF_TEXT|LVIF_IMAGE;
-			lvItem.iItem = nIndex + nBeforeAdditionCount-1;
-			lvItem.iSubItem = nCurCol-1;
-			TCHAR sValue [256];
-			_tcscpy(sValue, sText);
-			lvItem.pszText = sValue;
-			lvItem.iImage = nImage;
-			
-			// insert the column
-			int nRet = pGridCtrl->SetItem(&lvItem);	
-		}
-		
+			pGridCtrl->SetCellTextImage( nCurrentRow, nCurCol-1, sText, nImage );			
 
 		if (ListData->restype == RTLE) 
 		{
@@ -1669,20 +1629,9 @@ int Grid_AddString()
 		sCell.Trim(_T(" "));
 
 		if( nCol == 0 )
-		{
-			LV_ITEM lvItem;
-			lvItem.mask = LVIF_TEXT | LVIF_INDENT | LVIF_IMAGE;
-			lvItem.iItem = pGridCtrl->GetItemCount() + 1;
-			lvItem.iSubItem = 0;
-			lvItem.pszText = sCell.LockBuffer();			
-			lvItem.iImage = -1;
-			lvItem.iIndent = 0;			
-			nInsertIndex = pGridCtrl->InsertItem(&lvItem);
-		}
+			nInsertIndex = pGridCtrl->InsertItem( pGridCtrl->GetItemCount(), sCell );
 		else
-		{
-			pGridCtrl->SetItemText(nInsertIndex, nCol, sCell);
-		}
+			pGridCtrl->SetItemText( nInsertIndex, nCol, sCell );
 		++nCol;
 
 		sStringArg = sStringArg.Mid(nNext + 1);
@@ -1731,20 +1680,9 @@ int Grid_InsertString()
 		sCell.Trim(_T(" "));
 
 		if( nCol == 0 )
-		{
-			LV_ITEM lvItem;
-			lvItem.mask = LVIF_TEXT | LVIF_INDENT | LVIF_IMAGE;
-			lvItem.iItem = pGridCtrl->GetItemCount() + 1;
-			lvItem.iSubItem = 0;
-			lvItem.pszText = sCell.LockBuffer();			
-			lvItem.iImage = -1;
-			lvItem.iIndent = 0;			
-			nInsertIndex = pGridCtrl->InsertItem(&lvItem);
-		}
+			nInsertIndex = pGridCtrl->InsertItem( pGridCtrl->GetItemCount(), sCell );
 		else
-		{
-			pGridCtrl->SetItemText(nInsertIndex, nCol, sCell);
-		}
+			pGridCtrl->SetItemText( nInsertIndex, nCol, sCell );
 		++nCol;
 
 		sStringArg = sStringArg.Mid(nNext + 1);

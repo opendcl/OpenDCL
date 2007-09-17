@@ -154,7 +154,7 @@ BOOL CBaseDlg::OnInitDialog()
 
 	CDialog::OnInitDialog();
 
-	SetWindowText( pFormProps->GetStrProperty( Prop::TitleBarText ) );
+	SetWindowText( pFormProps->GetStringProperty( Prop::TitleBarText ) );
 	SetTitleBarIcon( pFormProps->GetLongProperty( Prop::Icon ) );
 	CSize szMin( pFormProps->GetLongProperty( Prop::MinDialogWidth ), pFormProps->GetLongProperty( Prop::MinDialogHeight ) );
 	CSize szMax( pFormProps->GetLongProperty( Prop::MaxDialogWidth ), pFormProps->GetLongProperty( Prop::MaxDialogHeight ) );
@@ -192,17 +192,17 @@ BOOL CBaseDlg::OnInitDialog()
 	SavePosition();
 	UpdateGripPos();
 	
-	InvokeMethod( pFormProps->GetStrProperty( Prop::FormEventInitialize ), false );
+	InvokeMethod( pFormProps->GetStringProperty( Prop::FormEventInitialize ), false );
 	if( bUsesClientRect )
 		GetClientRect( &rectWindow );
-	InvokeMethodIntInt( pFormProps->GetStrProperty( Prop::FormEventSize ), rectWindow.Width(), rectWindow.Height(), false );	
+	InvokeMethodIntInt( pFormProps->GetStringProperty( Prop::FormEventSize ), rectWindow.Width(), rectWindow.Height(), false );	
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 BOOL CBaseDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpSourceForm->GetControlProperties()->GetStrProperty(Prop::EventOnHelp), false);
+	InvokeMethod(mpSourceForm->GetControlProperties()->GetStringProperty(Prop::EventOnHelp), false);
 	return TRUE;
 }
 
@@ -210,7 +210,7 @@ void CBaseDlg::OnClose()
 {
 	bool bCancelling = (this->m_nModalResult == IDCANCEL || this->m_nModalResult == -1);
 	if (GetDialogObject().IsClosing() ||
-			!InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStrProperty(Prop::FormEventCancelClose), bCancelling))
+			!InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStringProperty(Prop::FormEventCancelClose), bCancelling))
 	{
 		GetDialogObject().SetClosing();
 		__super::OnClose();
@@ -226,7 +226,7 @@ void CBaseDlg::OnDestroy()
 	SavePosition();
 	CRect rcThis;
 	GetWindowRect( &rcThis );
-	InvokeMethodIntInt(mpSourceForm->GetControlProperties()->GetStrProperty(Prop::FormEventClose), rcThis.left, rcThis.top, false);	
+	InvokeMethodIntInt(mpSourceForm->GetControlProperties()->GetStringProperty(Prop::FormEventClose), rcThis.left, rcThis.top, false);	
 	DestroyIcon( SetIcon(NULL, FALSE) );
 	GetControlPane().CleanUpControls();	
 	__super::OnDestroy();

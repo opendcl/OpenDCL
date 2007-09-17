@@ -32,13 +32,9 @@ public:
 	//void ShowImageComboBox(int nRow, int nCol, CStringArray &sStrings, CArray<int, int> &nItems);
 
 protected:
-	void DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText );
-	void DrawFontIcons( CDC& cdc, const CRect& rcIcon, int nImage, const CString& sText );
 	void DoFileDlg(CellStyle nStyle);
-	void CheckLayer(CString &sLayer, int &nImage);
 	//void DrawLineWeights(CDC* pDC, CRect rc, AcDb::LineWeight LW);
 	//void DrawArrowHeads(CDC* pDC, CRect rc, int &nImage, CString &sText);
-	//void ShowEllipsesButton(int nRow, int nCol, int nAsPick);
 	//void ShowTextBox(int nRow, int nCol, int nStyle, UINT nChar = 0);
 
 protected:

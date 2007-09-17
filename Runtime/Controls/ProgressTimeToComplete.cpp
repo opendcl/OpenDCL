@@ -235,13 +235,13 @@ CString TProgressTimeToComplete::GetRemainingText(double lfPercent, double lfSec
 			if (nSeconds < 1)
 			{	
 				str.Format(CString("%d ") + 
-						   m_ArxControl->GetStrProperty(Prop::SecondText), 
+						   m_ArxControl->GetStringProperty(Prop::SecondText), 
 						   nSeconds);
 			}
 			else
 			{
 				str.Format(CString("%d ") + 
-						   m_ArxControl->GetStrProperty(Prop::SecondsText), 
+						   m_ArxControl->GetStringProperty(Prop::SecondsText), 
 						   nSeconds);
 			}
 		}
@@ -253,11 +253,11 @@ CString TProgressTimeToComplete::GetRemainingText(double lfPercent, double lfSec
 		}
 	}
 /*
-	m_Minute.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::MinuteText));
-	m_Minutes.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::MinutesText));
+	m_Minute.SetWindowText(m_pArxCtrl->GetStringProperty(Prop::MinuteText));
+	m_Minutes.SetWindowText(m_pArxCtrl->GetStringProperty(Prop::MinutesText));
 
-	m_Second.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::SecondText));
-	m_Seconds.SetWindowText(m_pArxCtrl->GetStrProperty(Prop::SecondsText));
+	m_Second.SetWindowText(m_pArxCtrl->GetStringProperty(Prop::SecondText));
+	m_Seconds.SetWindowText(m_pArxCtrl->GetStringProperty(Prop::SecondsText));
 */	
 
     return str;

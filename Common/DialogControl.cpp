@@ -86,7 +86,7 @@ DWORD CDialogControl::GetWndStyle() const
 
 CString CDialogControl::GetWndCaption() const
 {
-	return mpTemplate->GetStrProperty(Prop::Caption);
+	return mpTemplate->GetStringProperty(Prop::Caption);
 }
 
 bool CDialogControl::ApplyPropertiesEnum()

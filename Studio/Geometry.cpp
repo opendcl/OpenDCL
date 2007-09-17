@@ -147,17 +147,17 @@ BOOL CGeometry::OnInitDialog()
 			if (nTheWidth > nTheHeight)
 			{
 				int n;
-				n = m_Top.AddString(pCtrl->GetStrProperty(Prop::Name));
+				n = m_Top.AddString(pCtrl->GetStringProperty(Prop::Name));
 				m_Top.SetItemData(n, pCtrl->GetID());
-				n = m_Bottom.AddString(pCtrl->GetStrProperty(Prop::Name));
+				n = m_Bottom.AddString(pCtrl->GetStringProperty(Prop::Name));
 				m_Bottom.SetItemData(n, pCtrl->GetID());
 			}
 			else
 			{
 				int n;
-				n = m_Left.AddString(pCtrl->GetStrProperty(Prop::Name));
+				n = m_Left.AddString(pCtrl->GetStringProperty(Prop::Name));
 				m_Left.SetItemData(n, pCtrl->GetID());
-				n = m_Right.AddString(pCtrl->GetStrProperty(Prop::Name));
+				n = m_Right.AddString(pCtrl->GetStringProperty(Prop::Name));
 				m_Right.SetItemData(n, pCtrl->GetID());
 			}
 		}

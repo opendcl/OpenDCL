@@ -7,8 +7,10 @@
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "PropertyIds.h"
+#include "FolderComboBox.h"
 #include "ButtonEditCtrl.h"
 #include "ComboEditCtrl.h"
+#include "DateTimeEditCtrl.h"
 #include "ImageComboEditCtrl.h"
 #include "TextBoxEditCtrl.h"
 #include "ToggleEditCtrl.h"
@@ -20,8 +22,11 @@
 #include "LowerCaseFilter.h"
 #include "MultilineFilter.h"
 #include "NumericFilter.h"
+#include "PasswordFilter.h"
+#include "PercentageFilter.h"
 #include "TimeFilter.h"
 #include "UpperCaseFilter.h"
+#include "ComboFilter.h"
 #include "Workspace.h"
 #include "AcadColorTable.h"
 #include "SharedRes.h"
@@ -48,7 +53,61 @@
 
 #define HP_HEADERITEM			0x00000001
 
-#define GLYPH_WIDTH 17 
+
+class CDriveComboDropdownListEditCtrl : public CFolderComboBox, public CGridCellEditCtrl
+{
+	CStatic mClippingWnd;
+	static CRect CalcRect( const CRect& rcCell )
+		{
+			return CRect( rcCell.left, rcCell.top, rcCell.right, rcCell.top + 120 );
+		}
+public:
+	CDriveComboDropdownListEditCtrl( CGridCtrl* pGridCtrl, int nRow, int nCol, UINT nID = 100 )
+		: CFolderComboBox()
+		, CGridCellEditCtrl( pGridCtrl, nRow, nCol )
+		{
+			CRect rcCell = pGridCtrl->GetCellRect( nRow, nCol );
+			rcCell.DeflateRect( 2, 2 );
+			CRect rcCtrl = CalcRect( rcCell );
+			mClippingWnd.Create( _T(""), WS_CHILD, rcCell, pGridCtrl );
+			rcCtrl.MoveToXY( 0, 0 );
+			Create( &mClippingWnd,
+							rcCtrl,
+							0,
+							100 );
+			SetFont( pGridCtrl->GetFont() );
+			GetWindowRect( &rcCtrl );
+			mClippingWnd.ScreenToClient( &rcCtrl );
+			CRect rcClip;
+			rcClip.IntersectRect( &rcCtrl, &CRect( 0, 0, rcCell.Width(), rcCell.Height() ) );
+			mClippingWnd.SetWindowPos( NULL, 0, 0, rcClip.Width(), rcClip.Height(),
+																 (SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING) );
+			rcCtrl.MoveToY( rcCtrl.top + rcClip.Height() - rcCtrl.Height() );
+			SetWindowPos( NULL, 0, rcCtrl.top, 0, 0,
+										(SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING) );
+			mClippingWnd.ShowWindow( SW_SHOW );
+			if( GetCount() == 0 )
+			{
+				CRect rcWnd;
+				GetWindowRect( &rcWnd );
+				SetWindowPos( NULL, 0, 0, rcWnd.Width(), rcWnd.Height(), (SWP_NOZORDER | SWP_NOMOVE) );
+			}
+			CString sText = pGridCtrl->GetCellText( nRow, nCol );
+			SelectPath( sText );
+			//SetWindowText( sText );
+			//int idxMatch = FindStringExact( 0, sText );
+			//if( idxMatch >= 0 )
+			//	SetCurSel( idxMatch );
+			SetFocus();
+		}
+	virtual ~CDriveComboDropdownListEditCtrl()
+		{
+			CString sText = GetSelectedPath();
+			mpGridCtrl->SetCellText( mnRow, mnCol, sText );
+			DestroyWindow();
+			mClippingWnd.DestroyWindow();
+		}
+};
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -56,7 +115,6 @@
 
 CGridCtrl::CGridCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
-, mHeaderCtrl( this )
 , mcColumns( 0 )
 , mbHasRowHeader( pTemplate->GetBooleanProperty( Prop::RowHeader ) )
 , mbHasGridLines( pTemplate->GetBooleanProperty( Prop::GridLines ) )
@@ -72,8 +130,6 @@ CGridCtrl::CGridCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nI
 CGridCtrl::~CGridCtrl()
 {
 	HideEditControls();
-	if( mHeaderCtrl.m_hWnd )
-		mHeaderCtrl.DestroyWindow();
 }
 
 #undef SubclassWindow
@@ -81,12 +137,7 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess = (__super::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
 
-	if( mpTemplate->GetBooleanProperty( Prop::ColHeader ) )
-	{
-		HWND hHdrCtrl = GetHeaderCtrl()->m_hWnd;
-		mHeaderCtrl.SubclassWindow( hHdrCtrl );
-	}
-	SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
+	//SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
 
 	if( bSuccess && !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::ImageList ) ) )
 		bSuccess = false;
@@ -132,7 +183,7 @@ bool CGridCtrl::OnApplyProperty( TPropertyPtr pProp )
 			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
 			if (pImageList)
 			{
-				pImageList->GetImageList().SetBkColor( ::GetSysColor( COLOR_BTNFACE ) );
+				pImageList->GetImageList().SetBkColor( CLR_NONE );
 				SetImageList( &pImageList->GetImageList(), TVSIL_NORMAL );
 				SetImageList( &pImageList->GetImageList(), LVSIL_SMALL );
 			}
@@ -140,7 +191,7 @@ bool CGridCtrl::OnApplyProperty( TPropertyPtr pProp )
 			{
 				if( !mDefaultImageList.m_hImageList )
 					mDefaultImageList.Create( 1, mpTemplate->GetLongProperty( Prop::RowHeight ), ILC_COLOR, 1, 1 );
-				mDefaultImageList.SetBkColor( ::GetSysColor(COLOR_WINDOW ) );
+				mDefaultImageList.SetBkColor( CLR_NONE );
 				SetImageList( &mDefaultImageList, TVSIL_NORMAL );
 				SetImageList( &mDefaultImageList, LVSIL_SMALL );
 			}
@@ -320,8 +371,9 @@ const _CellData* CGridCtrl::GetCellData( size_t nRow, size_t nCol ) const
 	if( nCol < pRowData->mCellData.size() )
 	{
 		const _CellData& CellData = pRowData->mCellData.at( nCol );
-		if( CellData.mType != Grid_Undefined )
-			return &CellData;
+		//if( CellData.mType != Grid_Undefined )
+		//	return &CellData;
+		return &CellData;
 	}
 	return NULL;
 }
@@ -383,29 +435,21 @@ void CGridCtrl::SetCellStyle( int nRow, int nCol, CellStyle nStyle, int image /*
 		CellData.mrsComboList.push_back( pszListText );
 	switch(nStyle)
 	{
-	case Grid_ImageDropList:
-	case Grid_AcadColorCell:
-	case Grid_TrueColorCell:
-	case Grid_LineWeightCell:
-	case Grid_LinetypeCell:
-	case Grid_DirectoryCell:
-	case Grid_DwgFilesCell:
-		SetCellImage( nRow, nCol, image );
-		break;
-	default:
-		SetCellImage( nRow, nCol, -1 );
-	}
-	switch(nStyle)
-	{
 	case Grid_CheckBoxes:
 		{
-			LVITEM lvi = { LVIF_STATE, nRow, nCol, 1, LVIS_STATEIMAGEMASK };
+			LVITEM lvi = { LVIF_STATE, nRow, nCol, (1 << 12), LVIS_STATEIMAGEMASK };
 			SetItem( &lvi );
 			break;
 		}	
 	case Grid_OptionButtons:
 		{
-			LVITEM lvi = { LVIF_STATE, nRow, nCol, 1, LVIS_STATEIMAGEMASK };
+			LVITEM lvi = { LVIF_STATE, nRow, nCol, (1 << 12), LVIS_STATEIMAGEMASK };
+			SetItem( &lvi );
+			break;
+		}	
+	case Grid_SwitchableIcons:
+		{
+			LVITEM lvi = { LVIF_STATE, nRow, nCol, (altImage << 12), LVIS_STATEIMAGEMASK };
 			SetItem( &lvi );
 			break;
 		}	
@@ -436,16 +480,22 @@ void CGridCtrl::SetCurCellText( LPCTSTR pszText )
 
 int CGridCtrl::GetCellImage( int nRow, int nCol )  
 {
-	LV_ITEM lvItem = { LVIF_IMAGE, nRow, nCol };
-	GetItem( &lvItem );
-	return lvItem.iImage;
+	//LV_ITEM lvItem = { LVIF_IMAGE, nRow, nCol };
+	//GetItem( &lvItem );
+	//return lvItem.iImage;
+	const _CellData* pCellData = GetCellData( nRow, nCol );
+	if( pCellData )
+		return pCellData->midxImage;
+	return -1;
 }
 
 void CGridCtrl::SetCellImage( int nRow, int nCol, int nImage)  
 {
-	LV_ITEM lvItem = { LVIF_IMAGE, nRow, nCol };
-	lvItem.iImage = nImage;	
-	SetItem( &lvItem );
+	//LV_ITEM lvItem = { LVIF_IMAGE, nRow, nCol };
+	//lvItem.iImage = nImage;	
+	//SetItem( &lvItem );
+	_CellData& CellData = GetCellDataRef( nRow, nCol );
+	CellData.midxImage = nImage;
 }
 
 int CGridCtrl::GetCellUncheckedImage( int nRow, int nCol )
@@ -592,42 +642,50 @@ DWORD_PTR CGridCtrl::GetItemData( int nRow ) const
 	return pRowData->mnItemData;
 }
 
+int CGridCtrl::InsertItem( int nRow, LPCTSTR lpszText, int nImageIndex /*= -1*/ )
+{
+	int nNewItem = __super::InsertItem( nRow, lpszText );
+	SetCellImage( nNewItem, 0, nImageIndex );
+	Invalidate();
+	return nNewItem;
+}
+
 int CGridCtrl::InsertColumn( int nCol, LPCTSTR lpszColumnHeading, int nFormat /*= LVCFMT_LEFT*/,
 														 int nWidth /*= -1*/, int nImageIndex /*= -1*/ )
 {
 	if( nCol < 0 )
 		return -1;
+	CString sHeading = lpszColumnHeading;
 	LVCOLUMN lvColumn = 
 	{
-		(LVCF_FMT | LVCF_IMAGE | LVCF_TEXT | LVCF_WIDTH),
-		nFormat | (nImageIndex >= 0? LVCFMT_COL_HAS_IMAGES : 0),
+		(LVCF_FMT | LVCF_TEXT | LVCF_WIDTH),
+		nFormat,
 		nWidth,
-		(LPTSTR)lpszColumnHeading,
-		-1,
-		0,
+		sHeading.LockBuffer(),
+		sHeading.GetLength() + 1,
+		nCol,
 		nImageIndex,
 	};
+	if( nImageIndex >= 0 )
+		lvColumn.mask |= LVCF_IMAGE;
 	int nRet = __super::InsertColumn( nCol, &lvColumn );
 	if( nRet >= 0 )
 	{
+		++mcColumns;
 		size_t ctRows = mRowData.size();
 		for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
 		{
 			_ColumnData& ColumnData = mRowData.at( idxRow ).mCellData;
-			if( ColumnData.size() > (size_t)nCol )
-				ColumnData.insert( ColumnData.begin() + (size_t)nCol, _CellData( Grid_Runtime, nImageIndex ) );
+			if( ColumnData.size() > (size_t)nRet )
+				ColumnData.insert( ColumnData.begin() + (size_t)nRet, _CellData( Grid_Runtime ) );
 			else
 			{
-				ColumnData.resize( (size_t)nCol );
-				ColumnData.push_back( _CellData( Grid_Runtime, nImageIndex ) );
+				ColumnData.resize( (size_t)nRet );
+				ColumnData.push_back( _CellData( Grid_Runtime ) );
 			}
 		}
-		if( mHeaderCtrl.m_hWnd )
-		{
-			HDITEM hdrItem = { HDI_IMAGE, 0, NULL, NULL, 0, 0, NULL, nImageIndex };
-			mHeaderCtrl.SetItem( nCol, &hdrItem );
-		}
 	}
+	Invalidate();
 	return nRet;
 }
 
@@ -637,6 +695,8 @@ BOOL CGridCtrl::DeleteItem( int nRow )
 		return FALSE;
 	if( !__super::DeleteItem( nRow ) )
 		return FALSE;
+	if( mCurrentCell.row() == nRow )
+		SetCurCell( -1, -1 );
 	if( mRowData.size() > (size_t)nRow )
 		mRowData.erase( mRowData.begin() + (size_t)nRow );
 	return TRUE;
@@ -648,6 +708,8 @@ BOOL CGridCtrl::DeleteColumn( int nCol )
 		return FALSE;
 	if( !__super::DeleteColumn( nCol ) )
 		return FALSE;
+	if( mCurrentCell.col() == nCol )
+		SetCurCell( -1, -1 );
 	size_t ctRows = mRowData.size();
 	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
 	{
@@ -655,6 +717,8 @@ BOOL CGridCtrl::DeleteColumn( int nCol )
 		if( ColumnData.size() > (size_t)nCol )
 			ColumnData.erase( ColumnData.begin() + (size_t)nCol );
 	}
+	if( mcColumns > 0 )
+		--mcColumns;
 	return TRUE;
 }
 
@@ -701,18 +765,9 @@ void CGridCtrl::SetupColumns()
 		CString sCaption;
 		if( idxColumn < rsCaptions.size() )
 			sCaption = rsCaptions.at( idxColumn );
-		LVCOLUMN lvColumn =
-		{
-			(LVCF_FMT | LVCF_IMAGE | LVCF_TEXT | LVCF_WIDTH),
-			nAlignment,
-			(idxColumn < rnWidths.size()? rnWidths.at( idxColumn ) : 50),
-			sCaption.LockBuffer(),
-			sCaption.GetLength() + 1,
-			0,
-			(idxColumn < rnImages.size()? rnImages.at( idxColumn ) : 50),
-		};
-		__super::InsertColumn( idxColumn, &lvColumn );
-		++mcColumns;
+		InsertColumn( idxColumn, sCaption, nAlignment,
+									(idxColumn < rnWidths.size()? rnWidths.at( idxColumn ) : 50),
+									(idxColumn < rnImages.size()? rnImages.at( idxColumn ) : -1) );
 	}
 }
 
@@ -759,16 +814,16 @@ CGridCellEditCtrl* CGridCtrl::CreateEditControl( int nRow, int nCol )
 		case Grid_Strings: return new CTextBoxEditCtrl( this, nRow, nCol );
 		case Grid_AngleUnits: return new CTextBoxEditCtrl( this, nRow, nCol, new CAngleFilter );
 		case Grid_Integers: return new CTextBoxEditCtrl( this, nRow, nCol, new CIntegerFilter );
-		case Grid_Units: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid_Units: return new CTextBoxEditCtrl( this, nRow, nCol, new CNumericFilter );
 		case Grid_UpperCase: return new CTextBoxEditCtrl( this, nRow, nCol, new CUpperCaseFilter );
 		case Grid_LowerCase: return new CTextBoxEditCtrl( this, nRow, nCol, new CLowerCaseFilter );
-		case Grid_Password: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid_Password: return new CTextBoxEditCtrl( this, nRow, nCol, new CPasswordFilter );
 		case Grid_MultiLine: return new CTextBoxEditCtrl( this, nRow, nCol, new CMultilineFilter );
 		case Grid_Currency: return new CTextBoxEditCtrl( this, nRow, nCol, new CCurrencyFilter );
-		case Grid_Date: return new CTextBoxEditCtrl( this, nRow, nCol, new CDateFilter );
-		case Grid_Time: return new CTextBoxEditCtrl( this, nRow, nCol, new CTimeFilter );
-		case Grid_Percentage: return new CTextBoxEditCtrl( this, nRow, nCol, new CIntegerFilter );
-		case Grid_DropDown:
+		case Grid_Date: return new CDateTimeEditCtrl( this, nRow, nCol, true );
+		case Grid_Time: return new CDateTimeEditCtrl( this, nRow, nCol, false );
+		case Grid_Percentage: return new CTextBoxEditCtrl( this, nRow, nCol, new CPercentageFilter );
+		case Grid_DropDown: return new CComboDropdownListEditCtrl( this, nRow, nCol );
 		case Grid_ArrowHead:
 		case Grid_AcadColors:
 		case Grid_TextStyleList:
@@ -776,7 +831,8 @@ CGridCellEditCtrl* CGridCtrl::CreateEditControl( int nRow, int nCol )
 		case Grid_PlotStyleTables:
 		case Grid_PlotterList:
 		case Grid_Fonts:
-		case Grid_DriveList:
+			return new CComboDropdownListEditCtrl( this, nRow, nCol );
+		case Grid_DriveList: return new CDriveComboDropdownListEditCtrl( this, nRow, nCol );
 		case Grid_LayerList:
 		case Grid_DimStyleList:
 			return new CComboDropdownListEditCtrl( this, nRow, nCol );
@@ -788,11 +844,11 @@ CGridCellEditCtrl* CGridCtrl::CreateEditControl( int nRow, int nCol )
 		case Grid_DirectoryCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
 		case Grid_DwgFilesCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
 		case Grid_Strings_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol );
-		case Grid_AngleUnits_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CAngleFilter );
-		case Grid_Integers_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CIntegerFilter );
+		case Grid_AngleUnits_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CAngleFilter ) );
+		case Grid_Integers_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CIntegerFilter ) );
 		case Grid_Units_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol );
-		case Grid_UpperCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CUpperCaseFilter );
-		case Grid_LowerCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CLowerCaseFilter );
+		case Grid_UpperCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CUpperCaseFilter ) );
+		case Grid_LowerCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CLowerCaseFilter ) );
 		//default: return new CTextBoxEditCtrl( this, nRow, nCol );
 	}
 	return NULL;
@@ -843,7 +899,6 @@ bool CGridCtrl::CellHitTest( const CPoint& point, int& nRow, int& nCol )
 		if( rcRow.PtInRect( point ) )
 		{
 			CPoint ptTest( point );
-			//ptTest.x += GetScrollPos( SB_HORZ );
 			for( int idxColumn = mcColumns - 1; idxColumn >= 0; --idxColumn )
 			{
 				if( GetCellRect( idxRow, idxColumn, LVIR_BOUNDS ).PtInRect( ptTest ) )
@@ -862,7 +917,8 @@ void CGridCtrl::SetCellTextImage( int nRow, int nCol, LPCTSTR pszText, int nImag
 {
 	if( nRow < 0 || nCol <= 0 ) //CListCtrl won't allow images in the first column
 		return;
-	SetItem( nRow, nCol, (LVIF_IMAGE | LVIF_TEXT), pszText, nImage, 0, 0, NULL );
+	SetCellText( nRow, nCol, pszText );
+	SetCellImage( nRow, nCol, nImage );
 }
 
 UINT CGridCtrl::GetCellState( int nRow, int nCol )
@@ -892,7 +948,7 @@ bool CGridCtrl::ToggleCellState( int nRow, int nCol )
 void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 {
 	CellStyle nCellStyle = GetCellStyle( nRow, nCol );
-	LV_ITEM lvi = { LVIF_IMAGE | LVIF_STATE, nRow, nCol, 0, (UINT)-1, };
+	LV_ITEM lvi = { LVIF_STATE, nRow, nCol, 0, (UINT)-1, };
   GetItem( &lvi );
 	bool bHighlight = ((GetFocus() == this || (GetStyle() & LVS_SHOWSELALWAYS)) &&
 										 ((lvi.state & LVIS_DROPHILITED) || (lvi.state & LVIS_SELECTED)));
@@ -929,16 +985,12 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			hTheme = pTheme->OpenThemeData( GetSafeHwnd(), L"HEADER" );
 		if( !hTheme )
 		{			
-			//if( nRow == GetTopIndex() )
-			//	rcHeader.top -= 2;
 			CBrush br( ::GetSysColor( COLOR_BTNFACE ) );
 			cdc.FillRect( &rcHeader, &br );
 			cdc.DrawEdge( &rcHeader, BDR_RAISEDINNER, BF_RECT );
 		}    
 		else
 		{
-			//rcHeader.right += 1;
-			//rcHeader.bottom += 1;
 			pTheme->DrawThemeBackground( hTheme, m_hWnd, cdc.GetSafeHdc(), HP_HEADERITEM, 0, &rcHeader, NULL );
 			pTheme->CloseThemeData( hTheme );
 			CPen penHighlight( PS_SOLID, 1, ::GetSysColor( COLOR_BTNHIGHLIGHT ) );
@@ -946,15 +998,6 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			cdc.MoveTo( rcHeader.left, rcHeader.top );
 			cdc.LineTo( rcHeader.right, rcHeader.top );
 			cdc.SelectObject( pOldPen );
-				
-			//if( nRow == GetItemCount() - 1 )
-			//{
-			//	CPen penBackground( PS_SOLID, 1, mColorService.GetBackgroundColor() );
-			//	CPen* pOldPen = cdc.SelectObject( &penBackground );
-			//	cdc.MoveTo( rcHeader.left, rcHeader.bottom );
-			//	cdc.LineTo( rcHeader.right + 1, rcHeader.bottom );
-			//	cdc.SelectObject( pOldPen );
-			//}
 		}
 		cdc.SetBkColor( crBackground );
 		cdc.SetTextColor( mColorService.GetForegroundColor() ); 
@@ -1008,6 +1051,16 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 		DrawOptionButton( cdc, rcIcon, (((lvi.state & LVIS_STATEIMAGEMASK) >> 12) > 1), bHighlight );
 		rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		break;
+	case Grid_ArrowHead:
+		{
+			rcIcon += CSize( 4, 4 );
+			rcIcon.right = rcIcon.left + 14;
+			rcIcon.bottom = rcIcon.top + 14;
+			int nCellImage = GetCellImage( nRow, nCol );;
+			DrawArrow( cdc, rcIcon, nCellImage, sLabel );
+			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
+		}
+		break;
 	case Grid_AcadColors:
 		{
 			rcIcon += CSize( 4, 4 );
@@ -1023,9 +1076,8 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
 			rcIcon.bottom = rcIcon.top + 14;
-			//int nCellImage = GetCellImage( nRow, nCol );;
-			int nCellImage = 0; //hard code to truetype icon for now
-			DrawFontIcons( cdc, rcIcon, nCellImage, sLabel );
+			int nFontImage = (GetCellText( nRow, nCol ).Right( 4 ) == _T(".shx")? 1 : 0);
+			DrawFontIcons( cdc, rcIcon, nFontImage, sLabel );
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
 		break;
@@ -1036,8 +1088,18 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcIcon.right = rcIcon.left + 14;
 			rcIcon.bottom = rcIcon.top + 14;
 			int nCellImage = GetCellImage( nRow, nCol );;
-			DrawTrueColor( cdc, rcIcon, nCellImage, sLabel );
+			DrawColor( cdc, rcIcon, nCellImage, sLabel );
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
+		}
+		break;
+	case Grid_LineWeightCell:
+		{
+			rcIcon += CSize( 4, 4 );
+			rcIcon.right = rcIcon.left + 48;
+			rcIcon.bottom = rcIcon.top + 14;
+			int nCellImage = GetCellImage( nRow, nCol );;
+			DrawLineWeight( cdc, rcIcon, nCellImage, sLabel );
+			rcLabel.left = rcIcon.right + 1; //shift label rect to leave space for image
 		}
 		break;
 	default:
@@ -1045,7 +1107,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			int nCellImage = GetCellImage( nRow, nCol );;
 			if( nCellStyle == Grid_SwitchableIcons )
 			{
-				nCellImage = (lvi.state >> 12) - 1;
+				nCellImage = ((lvi.state & LVIS_STATEIMAGEMASK) >> 12) - 1;
 				int nCheckedImage = GetCellCheckedImage( nRow, nCol );
 				int nUncheckedImage = GetCellUncheckedImage( nRow, nCol );
 				if( nCheckedImage >= 0 && nCellImage != nCheckedImage )
@@ -1057,7 +1119,6 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 				CImageList* pImageList = GetImageList( LVSIL_SMALL );
 				if( pImageList ) 
 				{
-					pImageList->SetBkColor( cdc.GetBkColor() );
 					IMAGEINFO inf;
 					pImageList->GetImageInfo( nCellImage, &inf );
 					rcIcon.right = rcIcon.left + inf.rcImage.right - inf.rcImage.left;
@@ -1082,6 +1143,13 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 		rcLabel.left += 4;
 		cdc.SetBkMode( TRANSPARENT );
 		UINT fWordBreak = (bWordWrap? DT_WORDBREAK : (DT_SINGLELINE | DT_END_ELLIPSIS));
+		if( nCellStyle == Grid_Password )
+		{
+			int cchLabel = sLabel.GetLength();
+			sLabel.Empty();
+			for( int cch = cchLabel; cch > 0; --cch )
+				sLabel += _T('*');
+		}
 		cdc.DrawText( sLabel, -1, &rcLabel, (DT_LEFT | DT_NOPREFIX | DT_NOCLIP | DT_TOP | fWordBreak) );
 	}
 
@@ -1242,10 +1310,10 @@ void CGridCtrl::DrawCheckBox( CDC& cdc, const CRect& rcIcon, bool bPressed, bool
 	}
 }
 
-void CGridCtrl::DrawTrueColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText )
+void CGridCtrl::DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText )
 {
 	COLORREF crFill = RGB(255,255,255);
-	if( nColor > 0 && nColor < 256 )
+	if( nColor >= 0 && nColor <= 256 )
 		crFill = GetRGBColor( nColor );
 	else if( !sText.IsEmpty() )					
 	{
@@ -1264,9 +1332,18 @@ void CGridCtrl::DrawTrueColor( CDC& cdc, const CRect& rcIcon, int nColor, const 
 	cdc.FillRect( &rcFill, &brFill );
 }
 
-void CGridCtrl::DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText )
+void CGridCtrl::DrawArrow( CDC& cdc, const CRect& rcIcon, int nArrow, const CString& sText )
 {
-	DrawTrueColor( cdc, rcIcon, nColor, sText );
+	if( nArrow < 0 || nArrow > 20 )
+		return;
+	if( !mArrowImageList.m_hImageList )
+	{
+		HINSTANCE hOldRes = AfxGetResourceHandle();
+		AfxSetResourceHandle( theWorkspace.GetResourceModule() );
+		mArrowImageList.Create( IDB_ARROWHEADS, 11, 1, CLR_NONE );
+		AfxSetResourceHandle( hOldRes );
+	}
+	mArrowImageList.Draw( &cdc, nArrow, rcIcon.TopLeft(), ILD_TRANSPARENT );
 }
 
 void CGridCtrl::DrawFontIcons( CDC& cdc, const CRect& rcIcon, int nImage, const CString& sText )
@@ -1277,14 +1354,91 @@ void CGridCtrl::DrawFontIcons( CDC& cdc, const CRect& rcIcon, int nImage, const 
 	{
 		HMODULE hmodRes = theWorkspace.GetResourceModule();
 		mFontImageList.Create( 15, 13, ILC_COLOR4 | ILC_MASK, 3, 1 );
-		HICON hIcon = (HICON)::LoadImage( hmodRes, MAKEINTRESOURCE(IDI_TRUEFONT), IMAGE_ICON, 0, 0, 0 );
-		mFontImageList.Add( hIcon );
-		DestroyIcon( hIcon );
-		hIcon = (HICON)::LoadImage( hmodRes, MAKEINTRESOURCE(IDI_ACADFONT), IMAGE_ICON, 0, 0, 0 );
-		mFontImageList.Add( hIcon );
-		DestroyIcon( hIcon );
+		mFontImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE(IDI_TRUEFONT) ) );
+		mFontImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE(IDI_ACADFONT) ) );
 	}
 	mFontImageList.Draw( &cdc, nImage, rcIcon.TopLeft(), ILD_TRANSPARENT );
+}
+
+void CGridCtrl::DrawLineWeight( CDC& cdc, const CRect& rcIcon, int LW, const CString& sText )
+{
+	if( LW < 30 )
+	{
+		CPen penLW( PS_SOLID, 1, cdc.GetTextColor() );
+		CPen* pOldPen = cdc.SelectObject( &penLW );
+		cdc.MoveTo( rcIcon.left, rcIcon.top + 6 );
+		cdc.LineTo( rcIcon.right, rcIcon.top + 6 );
+		cdc.SelectObject( pOldPen );
+		return;
+	}
+	CRect rc( rcIcon );
+	switch( LW )
+	{
+		case 30:
+		case 35:
+		{
+			rc.top += 5;
+			rc.bottom = rc.top + 3;
+			break;
+		}
+		case 40:
+		{
+			rc.top += 5;
+			rc.bottom = rc.top + 4;	
+			break;
+		}
+		case 50:
+		case 53:
+		{
+			rc.top += 4;
+			rc.bottom = rc.top + 5;
+			break;
+		}
+		case 60:
+		{
+			rc.top += 4;
+			rc.bottom = rc.top + 6;
+			break;
+		}
+		case 70:
+		{
+			rc.top += 3;
+			rc.bottom = rc.top + 7;
+			break;
+		}
+		case 80:
+		{
+			rc.top += 3;
+			rc.bottom = rc.top + 8;
+			break;
+		}
+		case 90:
+		{
+			rc.top += 3;
+			rc.bottom = rc.top + 9;
+			break;
+		}
+		case 100:
+		case 106:
+		{
+			rc.top += 3;
+			rc.bottom = rc.top + 10;
+			break;
+		}
+		case 120:
+		{
+			rc.top += 2;
+			rc.bottom = rc.top + 12;
+			break;
+		}
+		default:
+		{
+			rc.bottom = rc.top + 14;
+			break;
+		}
+	}
+	CBrush brFill( cdc.GetTextColor() );
+	cdc.FillRect( &rc, &brFill );
 }
 
 // SortTextItems - Sort the list based on column text
@@ -1528,7 +1682,6 @@ bool CGridCtrl::SortNumericItems( int nCol, BOOL bAscending,int low, int high)
 }
 
 BEGIN_MESSAGE_MAP(CGridCtrl, CListCtrl)
-	ON_WM_MEASUREITEM()
 	ON_WM_NCCALCSIZE()	
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_WM_LBUTTONDOWN()
@@ -1603,12 +1756,6 @@ void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 void CGridCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
 	lpMeasureItemStruct->itemHeight = mpTemplate->GetLongProperty( Prop::RowHeight );
-}
-
-void CGridCtrl::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct) 
-{
-	lpMeasureItemStruct->itemHeight = mpTemplate->GetLongProperty( Prop::RowHeight );
-	__super::OnMeasureItem(nIDCtl, lpMeasureItemStruct);
 }
 
 void CGridCtrl::PostNcDestroy() 

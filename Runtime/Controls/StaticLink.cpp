@@ -123,9 +123,9 @@ void CStaticLink::OnLButtonDown(UINT nFlags, CPoint point)
 	//
 	HINSTANCE h;
 	if (m_ArxControl->GetLongProperty(Prop::URLLinkType) == 0)
-		h = m_link.Navigate(m_ArxControl->GetStrProperty(Prop::URLAddress));
+		h = m_link.Navigate(m_ArxControl->GetStringProperty(Prop::URLAddress));
 	else
-		h = m_link.Navigate(CString(_T("mailto:")) + m_ArxControl->GetStrProperty(Prop::URLAddress));
+		h = m_link.Navigate(CString(_T("mailto:")) + m_ArxControl->GetStringProperty(Prop::URLAddress));
 
 	if ((UINT_PTR)h > 32) 
 	{						 // success!
@@ -214,7 +214,7 @@ void CStaticLink::OnDestroy()
 void CStaticLink::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
+		m_ArxControl->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,

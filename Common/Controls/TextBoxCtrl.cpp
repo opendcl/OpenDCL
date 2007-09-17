@@ -7,8 +7,10 @@
 /////////////////////////////////////////////////////////////////////////////
 // CTextBoxCtrl
 
-CTextBoxCtrl::CTextBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CTextBoxCtrl::CTextBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID,
+														CInputFilter* pFilter /*= NULL*/, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
+, CFilteredEditCtrl( pFilter )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -20,7 +22,7 @@ CTextBoxCtrl::~CTextBoxCtrl()
 
 bool CTextBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
-	bool bSuccess = __super::Create( pParentWnd, GetWndRect(), nID );
+	bool bSuccess = __super::Create( pParentWnd, GetWndRect(), nID, GetWndStyle(), GetInputFilter() );
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
@@ -31,7 +33,7 @@ bool CTextBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 DWORD CTextBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
-	dwStyle |= (ES_WANTRETURN | ES_AUTOHSCROLL);
+	dwStyle |= (ES_WANTRETURN);
 	switch( mpTemplate->GetLongProperty( Prop::Justification ) )
 	{
 	case 0:
@@ -54,6 +56,8 @@ bool CTextBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	bool bFailed = false;
 	switch( pProp->GetID() )
 	{
+	case Prop::FilterStyle: //can't currently change style at runtime -- [ORW] 2007-09-10
+		break;
 	case Prop::Justification:
 		{
 			switch( pProp->GetLongValue() )
@@ -81,11 +85,23 @@ bool CTextBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 			SetLimitText( pProp->GetLongValue() );
 			break;
 		}
+	case Prop::MarginLeft:
+		{
+			SetMargins( pProp->GetLongValue(), mpTemplate->GetLongProperty( Prop::MarginRight ) );
+			break;
+		}
+	case Prop::MarginRight:
+		{
+			if( !IsEnumeratingProperties() )
+				SetMargins( mpTemplate->GetLongProperty( Prop::MarginLeft ), pProp->GetLongValue() );
+			break;
+		}
 	}
 	return !bFailed;
 }
 
-BEGIN_MESSAGE_MAP(CTextBoxCtrl, CEditEx)
+BEGIN_MESSAGE_MAP(CTextBoxCtrl, CFilteredEditCtrl)
+	ON_CONTROL_REFLECT(EN_CHANGE, &CTextBoxCtrl::OnEnChange)
 END_MESSAGE_MAP()
 
 
@@ -96,4 +112,11 @@ void CTextBoxCtrl::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	delete this;
+}
+
+void CTextBoxCtrl::OnEnChange()
+{
+	CString sText;
+	GetWindowText( sText );
+	mpTemplate->SetStringProperty( Prop::Text, sText );
 }

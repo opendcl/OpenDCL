@@ -130,7 +130,7 @@ void CMainFileDlg::Initialize()
 			szMax.cy += mnNCHeight;
 	}
 
-	SetWindowText( pFormProps->GetStrProperty( Prop::TitleBarText ) );
+	SetWindowText( pFormProps->GetStringProperty( Prop::TitleBarText ) );
 	SetMinMaxSize( szMin, szMax );
 
 	//create the control pane and the design time controls
@@ -165,24 +165,24 @@ void CMainFileDlg::Initialize()
 	MoveWindow( &rectWindow, FALSE );
 	SavePosition();
 	
-	InvokeMethod( pFormProps->GetStrProperty( Prop::FormEventInitialize ), false );
+	InvokeMethod( pFormProps->GetStringProperty( Prop::FormEventInitialize ), false );
 	if( bUsesClientRect )
 		GetClientRect( &rectWindow );
 	else
 		GetWindowRect( &rectWindow );
-	InvokeMethodIntInt( pFormProps->GetStrProperty( Prop::FormEventSize ), rectWindow.Width(), rectWindow.Height(), false );	
+	InvokeMethodIntInt( pFormProps->GetStringProperty( Prop::FormEventSize ), rectWindow.Width(), rectWindow.Height(), false );	
 }
 
 BOOL CMainFileDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpSourceForm->GetControlProperties()->GetStrProperty(Prop::EventOnHelp), false);
+	InvokeMethod(mpSourceForm->GetControlProperties()->GetStringProperty(Prop::EventOnHelp), false);
 	return TRUE;
 }
 
 void CMainFileDlg::OnOK() 
 {
 	if (mpSourceForm->GetFormInstance()->IsClosing() ||
-			!(InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStrProperty(Prop::FormEventCancelClose), false)))
+			!(InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStringProperty(Prop::FormEventCancelClose), false)))
 	{
 		mpSourceForm->GetFormInstance()->SetClosing();
 		__super::OnOK();
@@ -194,7 +194,7 @@ void CMainFileDlg::OnOK()
 void CMainFileDlg::OnCancel() 
 {
 	if (mpSourceForm->GetFormInstance()->IsClosing() ||
-			!(InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStrProperty(Prop::FormEventCancelClose), true)))
+			!(InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStringProperty(Prop::FormEventCancelClose), true)))
 	{
 		mpSourceForm->GetFormInstance()->SetClosing();
 		__super::OnCancel();
@@ -206,7 +206,7 @@ void CMainFileDlg::OnCancel()
 void CMainFileDlg::OnClose() 
 {
 	if (mpSourceForm->GetFormInstance()->IsClosing() ||
-			!(InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStrProperty(Prop::FormEventCancelClose), true)))
+			!(InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStringProperty(Prop::FormEventCancelClose), true)))
 	{
 		mpSourceForm->GetFormInstance()->SetClosing();
 		__super::OnClose();
@@ -220,7 +220,7 @@ void CMainFileDlg::OnDestroy()
 	SavePosition();
 	CRect rcThis;
 	GetWindowRect( &rcThis );
-	InvokeMethodIntInt(mpSourceForm->GetControlProperties()->GetStrProperty(Prop::FormEventClose), rcThis.left, rcThis.top, false);	
+	InvokeMethodIntInt(mpSourceForm->GetControlProperties()->GetStringProperty(Prop::FormEventClose), rcThis.left, rcThis.top, false);	
 	CDialogObject* mpDlg = mpSourceForm->GetFormInstance();
 	mpDlg->GetControlPane().CleanUpControls();	
 	__super::OnDestroy();
@@ -276,7 +276,7 @@ void CMainFileDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 			GetClientRect( &rectWindow );
 		else
 			GetWindowRect( &rectWindow );
-		InvokeMethodIntInt( mpSourceForm->GetControlProperties()->GetStrProperty( Prop::FormEventSize ), rectWindow.Width(), rectWindow.Height(), false );	
+		InvokeMethodIntInt( mpSourceForm->GetControlProperties()->GetStringProperty( Prop::FormEventSize ), rectWindow.Width(), rectWindow.Height(), false );	
 		SavePosition();
 	}
 }

@@ -303,13 +303,15 @@ bool CProject::AddPicture( CPictureObject* pPicture )
 	if( !pPicture )
 		return false;
 	UINT_PTR nID = pPicture->GetID();
+	POSITION posInsert = NULL;
 	POSITION posPic = mPictures.GetHeadPosition();
 	while( posPic )
 	{
 		POSITION posAt = posPic;
 		CPictureObject* pPictureAt = mPictures.GetNext( posPic );
 		assert( pPictureAt != NULL );
-		if( pPictureAt->GetID() == nID )
+		UINT id = pPictureAt->GetID();
+		if( id == nID )
 		{
 			delete pPictureAt;
 			mPictures.SetAt( posAt, pPicture );
@@ -335,8 +337,13 @@ bool CProject::AddPicture( CPictureObject* pPicture )
 			}
 			return true;
 		}
+		else if( !posInsert && id > nID )
+			posInsert = posAt;
 	}
-	mPictures.AddTail(pPicture);
+	if( posInsert )
+		mPictures.InsertBefore( posInsert, pPicture );
+	else
+		mPictures.AddTail( pPicture );
 	return true;
 }
 

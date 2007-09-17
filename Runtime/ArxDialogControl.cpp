@@ -8,34 +8,45 @@
 #include "InvokeMethod.h"
 #include "ToolTips.h"
 #include "ArxWorkspace.h"
+#include "PropertyObject.h"
 
 #include "ControlTypes.h"
+#include "ArxArrowComboBoxCtrl.h"
 #include "ArxAxContainerCtrl.h"
-#include "ArxListBoxCtrl.h"
+#include "ArxColorComboBoxCtrl.h"
 #include "ArxDwgListCtrl.h"
-#include "ArxOptionListCtrl.h"
 #include "ArxCheckBoxCtrl.h"
+#include "ArxFolderComboCtrl.h"
+#include "ArxFontComboBoxCtrl.h"
+#include "ArxGraphicButtonCtrl.h"
+#include "ArxGridCtrl.h"
+#include "ArxImageComboBoxCtrl.h"
+#include "ArxLayerComboBoxCtrl.h"
+#include "ArxLineweightComboBoxCtrl.h"
+#include "ArxListBoxCtrl.h"
+#include "ArxOptionListCtrl.h"
+#include "ArxPaperComboBoxCtrl.h"
+#include "ArxPlotStyleNameComboBoxCtrl.h"
+#include "ArxPlotStyleTableComboBoxCtrl.h"
+#include "ArxPrinterComboBoxCtrl.h"
 #include "ArxRadioButtonCtrl.h"
-#include "VdclAngleEdit.h"
-#include "OdclEdit.h"
-#include "VdclNumericEdit.h"
-#include "VdclSymbolEdit.h"
-#include "VdclComboBoxEx.h"
-#include "VdclComboBox.h"
-#include "VdclArrowHeadComboBox.h"
-#include "VdclColorComboBox.h"
-#include "VdclLineWeightComboBox.h"
-#include "VdclPlotStyleNamesComboBox.h"
-#include "VdclPlotStyleTablesComboBox.h"
-#include "FontCombo.h"
-#include "PrinterComboBox.h"
-#include "ComboBoxFolder.h"
-#include "OdclLayerCombo.h"
-#include "PropertyObject.h"
+#include "ArxTabStripCtrl.h"
+#include "ArxTextBoxCtrl.h"
+
+#include "AngleFilter.h"
+#include "CurrencyFilter.h"
+#include "DateFilter.h"
+#include "IntegerFilter.h"
+#include "LowerCaseFilter.h"
+#include "MultilineFilter.h"
+#include "NumericFilter.h"
+#include "PasswordFilter.h"
+#include "TimeFilter.h"
+#include "UpperCaseFilter.h"
+
 #include "Splitter.h"
 #include "VdclStatic.h"
 #include "GsPreviewCtrl.h"
-#include "ArxGridCtrl.h"
 #include "OdclListCtrl.h"
 #include "VdclGroupBox.h"
 #include "DwgPreviewCtrl.h"
@@ -49,11 +60,26 @@
 #include "SlideHolder.h"
 #include "StaticLink.h"
 #include "HtmlCtrl.h"
-#include "ArxTabStripCtrl.h"
 #include "VdclTree.h"
 #include "VdclTextButton.h"
 #include "TabPage.h"
-#include "ArxGraphicButtonCtrl.h"
+
+
+static CDclControlObject* FindPaperCombo( CDclFormObject* pForm )
+{
+	if( !pForm )
+		return NULL;
+	CList< CDclControlObject* > listCombos;
+	pForm->FindControls( CtlComboBox, listCombos );
+	POSITION pos = listCombos.GetHeadPosition();
+	while( pos )
+	{
+		CDclControlObject* pTemplate = listCombos.GetNext( pos );
+		if( pTemplate->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_PlotterPaperSizes )
+			return pTemplate;
+	}
+	return NULL;
+}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -97,11 +123,9 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			UpdateChildControl(pControl, pTemplate, pPane, nID);
 			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
-	case CtlImageComboBox:
-		{			
-			return CreateComboExControl(pTemplate, pPane, nID);
-			break;
-		}		
+
+	case CtlImageComboBox: return CreateComboExControl(pTemplate, pPane, nID);
+
 	case CtlSplitter:
 		{
 			CSplitter *pControl = new CSplitter;
@@ -143,11 +167,8 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 	case CtlListView: return *new OdclListCtrl( *pPane, pTemplate, nID );
 	case CtlBlockList: return *new OdclListCtrl( *pPane, pTemplate, nID );
 	case CtlCheckBox: return *new CArxCheckBoxCtrl( pTemplate, pPane, nID );
+	case CtlComboBox: return CreateComboControl(pTemplate, pPane, nID);
 
-	case CtlComboBox:
-		{			
-			return CreateComboControl(pTemplate, pPane, nID);
-		}		
 	case CtlDwgPreview:
 		{
 			CDwgPreviewCtrl *pControl = new CDwgPreviewCtrl;
@@ -267,11 +288,8 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 			// ZOrderFront(pControl);
 			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
-	case CtlTextBox:
-		{			
-			return CreateEditControl(pTemplate, pPane, nID);
-		}			
-	
+
+	case CtlTextBox: return CreateEditControl(pTemplate, pPane, nID);
 	case CtlTabStrip: return *new CArxTabStripCtrl( pTemplate, pPane, nID );
 
 	case CtlTree:	
@@ -292,48 +310,17 @@ TDialogControlPtr CArxDialogControl::CreateEditControl(CDclControlObject* pTempl
 	CWnd* pParentWnd = pPane->GetHostDialog();
 
 	// check the control type to determine which control to create
-	switch(pTemplate->GetLongProperty(Prop::FilterStyle))
+	switch( pTemplate->GetLongProperty( Prop::FilterStyle ) )
 	{
-	case EditFilter_Angle:
-		{
-			VdclAngleEdit *pControl = new VdclAngleEdit;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	case EditFilter_Integer:
-		{
-			OdclEdit *pControl = new OdclEdit;
-			pControl->Create(pTemplate, pParentWnd, nID);		
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	case EditFilter_Numeric:
-		{
-			VdclNumericEdit *pControl = new VdclNumericEdit;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	case EditFilter_Symbol:
-		{
-			VdclSymbolEdit *pControl = new VdclSymbolEdit;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	default:
-		{
-			OdclEdit *pControl = new OdclEdit;
-			pControl->Create(pTemplate, pParentWnd, nID);	
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
+	case EditFilter_String: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, NULL, AC_ES_STRING );
+	case EditFilter_Angle: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CAngleFilter, (AC_ES_ANGLE | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
+	case EditFilter_Integer: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CIntegerFilter, (AC_ES_NUMERIC | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
+	case EditFilter_Numeric: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CNumericFilter, (AC_ES_NUMERIC | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
+	case EditFilter_Symbol: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, NULL, (AC_ES_SYMBOL | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
+	case EditFilter_UpperCase: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CUpperCaseFilter );
+	case EditFilter_LowerCase: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CUpperCaseFilter );
+	case EditFilter_Password: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CPasswordFilter );
+	case EditFilter_Multiline: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CMultilineFilter );
 	}
 	return NULL;
 }
@@ -341,137 +328,29 @@ TDialogControlPtr CArxDialogControl::CreateEditControl(CDclControlObject* pTempl
 //static
 TDialogControlPtr CArxDialogControl::CreateComboExControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID)
 {
-	CWnd* pParentWnd = pPane->GetHostDialog();
-
-	VdclComboBoxEx *pControl = new VdclComboBoxEx;
-	pControl->Create(pTemplate, pParentWnd, nID);
-	UpdateChildControl(pControl, pTemplate, pPane, nID);
-	// can't do ZOrderFront, it fucks up the display of the CComboBoxEx for some unknown reason.
-	// // ZOrderFront(pControl);
-	return new CArxAutoDialogControl( pTemplate, pPane, pControl );
+	return *new CArxImageComboBoxCtrl( pTemplate, pPane, nID );
 }
 
 //static
 TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID)
 {
-	CWnd* pParentWnd = pPane->GetHostDialog();
-
 	// check the control type to determine which control to create
 	switch(pTemplate->GetLongProperty(Prop::ComboBoxStyle))
 	{
-	case CmboStyle_Combo:
-		{
-			VdclComboBox *pControl = new VdclComboBox;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	case CmboStyle_Simple:
-		{			
-			VdclComboBox *pControl = new VdclComboBox;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	case CmboStyle_DropDown:
-		{			
-			VdclComboBox *pControl = new VdclComboBox;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	case CmboStyle_ArrowHead:
-		{	
-			VdclArrowHeadComboBox *pControl = new VdclArrowHeadComboBox;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	case CmboStyle_Color:
-		{
-			VdclColorComboBox *pControl = new VdclColorComboBox;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}			
-	case CmboStyle_LineWeight:
-		{			
-			VdclLineWeightComboBox *pControl = new VdclLineWeightComboBox;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	case CmboStyle_PlotNames:
-		{			
-			VdclPlotStyleNamesComboBox *pControl = new VdclPlotStyleNamesComboBox;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	case CmboStyle_PlotTables:
-		{			
-			VdclPlotStyleTablesComboBox *pControl = new VdclPlotStyleTablesComboBox;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	
-	case CmboStyle_FontDropList:
-		{			
-			CFontCombo *pControl = new CFontCombo;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			// ZOrderFront(pControl);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	
-	case CmboStyle_FontSimpleList:
-		{			
-			CFontCombo *pControl = new CFontCombo;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			// ZOrderFront(pControl);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	case CmboStyle_Plotters: return *new CPrinterComboBox( *pPane, pTemplate, nID );
-	case CmboStyle_PlotterPaperSizes:
-		{
-			VdclComboBox *pControl = new VdclComboBox;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	case CmboStyle_DirPicker:
-		{
-			CComboBoxFolder *pControl = new CComboBoxFolder;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			int nDropHeight = pTemplate->GetLongProperty(Prop::DropDownHeight);
-			if (nDropHeight < 300)
-				nDropHeight = 300;
-			pControl->Init(0, nDropHeight); 
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			SetDwgListComboFolderLink(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
-	
-	case CmboStyle_Layers:
-		{
-			OdclLayerCombo *pControl = new OdclLayerCombo;
-			pControl->Create(pTemplate, pParentWnd, nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
+	case CmboStyle_Combo: return *new CArxComboBoxCtrl( pTemplate, pPane, nID );
+	case CmboStyle_Simple: return *new CArxComboBoxCtrl( pTemplate, pPane, nID );
+	case CmboStyle_DropDown: return *new CArxComboBoxCtrl( pTemplate, pPane, nID );
+	case CmboStyle_ArrowHead: return *new CArxArrowComboBoxCtrl( pTemplate, pPane, nID );
+	case CmboStyle_Color: return *new CArxColorComboBoxCtrl( pTemplate, pPane, nID );
+	case CmboStyle_LineWeight: return *new CArxLineweightComboBoxCtrl( pTemplate, pPane, nID );
+	case CmboStyle_PlotNames: return *new CArxPlotStyleNameComboBoxCtrl( pTemplate, pPane, nID );
+	case CmboStyle_PlotTables: return *new CArxPlotStyleTableComboBoxCtrl( pTemplate, pPane, nID );
+	case CmboStyle_FontDropList: return *new CArxFontComboBoxCtrl( pTemplate, pPane, nID );
+	case CmboStyle_FontSimpleList: return *new CArxFontComboBoxCtrl( pTemplate, pPane, nID );
+	case CmboStyle_Plotters: return *new CArxPrinterComboBoxCtrl( pTemplate, pPane, nID, FindPaperCombo( pTemplate->GetOwnerForm() ) );
+	case CmboStyle_PlotterPaperSizes: return *new CArxPaperComboBoxCtrl( pTemplate, pPane, nID );
+	case CmboStyle_DirPicker: return *new CArxFolderComboCtrl( pTemplate, pPane, nID );
+	case CmboStyle_Layers: return *new CArxLayerComboBoxCtrl( pTemplate, pPane, nID );
 	}
 	return NULL;
 }
@@ -508,15 +387,18 @@ void CArxDialogControl::UpdateProperty(CDclControlObject *pControl, CControlPane
 	case CtlActiveX:
 	case CtlBlockList:
 	case CtlCheckBox:
+	case CtlComboBox:
 	case CtlDwgList:
 	case CtlGraphicButton:
 	case CtlGrid:
+	case CtlImageComboBox:
 	case CtlListBox:
 	case CtlListView:
 	case CtlOptionButton:
 	case CtlOptionList:
 	case CtlSlideView:
 	case CtlTabStrip:
+	case CtlTextBox:
 		CDialogControl* pDlgControl = pControl->GetControlInstance();
 		if( !pDlgControl )
 			return;
@@ -527,52 +409,6 @@ void CArxDialogControl::UpdateProperty(CDclControlObject *pControl, CControlPane
 	CWnd* pControlWnd = pControl->GetWindow();
 	UpdatePropertyInt(pControlWnd, pControl, pPane, nID);
 	pControlWnd->Invalidate();
-}
-
-// This function is being phased out as control classes are changed to implement their own CDialogControl interface
-//static
-bool CArxDialogControl::IsSelfPopulatedList(CDclControlObject *pControl)
-{
-	if (pControl->GetType() == CtlComboBox)
-	{
-		switch (pControl->GetLongProperty(Prop::ComboBoxStyle) )
-		{
-			case CmboStyle_FontDropList:
-			case CmboStyle_FontSimpleList:
-			case CmboStyle_ArrowHead:
-			case CmboStyle_Color:
-			case CmboStyle_LineWeight:
-			case CmboStyle_PlotNames:
-			case CmboStyle_PlotTables:
-			case CmboStyle_Plotters:
-			case CmboStyle_PlotterPaperSizes:
-			case CmboStyle_DirPicker:	
-			case CmboStyle_Layers:		
-				return true;
-				break;
-		}
-	}
-	return false;
-}
-
-// This function is being phased out as control classes are changed to implement their own CDialogControl interface
-//static
-void CArxDialogControl::SetDwgListComboFolderLink(CComboBoxFolder *pComboFolder)
-{
-	POSITION pos = pComboFolder->m_ArxControl->GetOwnerForm()->GetControlList().GetHeadPosition();
-	// increment to the next arx object so we will bypass the
-	// arx object that holds the dialog box's properties.
-	CDclControlObject* pControl = pComboFolder->m_ArxControl->GetOwnerForm()->GetControlList().GetNext(pos);
-	while (pos != NULL)
-	{
-		pControl = pComboFolder->m_ArxControl->GetOwnerForm()->GetControlList().GetNext(pos);
-		if (pControl->GetType() == CtlDwgList && pControl->GetWindow() != NULL)
-		{
-			CArxDwgListCtrl *pDwgList = (CArxDwgListCtrl*)pControl->GetWindow();
-			pDwgList->m_pDirComboBox = pComboFolder;
-			pComboFolder->m_pDwgList = pDwgList;		
-		}		
-	}
 }
 
 // This function is being phased out as control classes are changed to implement their own CDialogControl interface
@@ -591,8 +427,8 @@ void CArxDialogControl::SetDwgListComboFolderLink(CArxDwgListCtrl *pDwgList)
 			// check the control type to determine which control to create
 			if (pControl->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_DirPicker)
 			{				
-				CComboBoxFolder *pComboFolder = (CComboBoxFolder*)pControl->GetWindow();
-				pComboFolder->m_pDwgList = pDwgList;
+				CArxFolderComboCtrl* pComboFolder = (CArxFolderComboCtrl*)pControl->GetWindow();
+				pComboFolder->SetDwgListCtrl( pDwgList );
 				pDwgList->m_pDirComboBox = pComboFolder;			
 			}
 		}		
@@ -615,35 +451,7 @@ void CArxDialogControl::ResetImageList(CDclControlObject *pArxObject, CWnd *pCon
 			}
 			break;
 		}
-		case CtlImageComboBox:
-		{	
-			RefCountedPtr< CImageListObject > pImageList = pArxObject->GetImageList();
-			if( pImageList )
-				((VdclComboBoxEx*)pControl)->SetImageList(&pImageList->GetImageList());
-			break;
-		}
-		//case CtlGrid:
-		//{
-		//	CArxGridCtrl* pListCtrl = (CArxGridCtrl*)pControl;
-		//	RefCountedPtr< CImageListObject > pImageList = pArxObject->GetImageList();
-		//	if (pImageList)
-		//	{
-		//		pImageList->m_ImageList.SetBkColor(::GetSysColor(COLOR_BTNFACE));
-		//		pListCtrl->SetImageList(&pImageList->m_ImageList, TVSIL_NORMAL);
-		//		pListCtrl->SetImageList(&pImageList->m_ImageList, LVSIL_SMALL);
-		//	}
-		//	else
-		//	{
-		//		if( !pListCtrl->mDefaultImageList.m_hImageList )
-		//			pListCtrl->mDefaultImageList.Create(1, pArxObject->GetLongProperty(Prop::RowHeight), ILC_COLOR, 1, 1);
-		//		pListCtrl->mDefaultImageList.SetBkColor(::GetSysColor(COLOR_WINDOW));
-		//		pListCtrl->SetImageList(&pListCtrl->mDefaultImageList, TVSIL_NORMAL);
-		//		pListCtrl->SetImageList(&pListCtrl->mDefaultImageList, LVSIL_SMALL);
-		//	}
-		//	break;
-		//}
 	}
-			
 }
 
 // This function is being phased out as control classes are changed to implement their own CDialogControl interface
@@ -662,131 +470,17 @@ void CArxDialogControl::UpdateFont(CDclControlObject *pArxObject, CWnd *pControl
 		((VdclTextButton*)pControl)->SetFont(pFont);
 		break;
 		}
-	case CtlImageComboBox:
-		{
-		((VdclComboBoxEx*)pControl)->SetFont(pFont);	
-		break;
-		}	
-	//case CtlGraphicButton:
-	//	{
-	//	((CArxGraphicButtonCtrl*)pControl)->SetFont(pFont);
-	//	break;
-	//	}
 	case CtlFrame:		
 		{		
 		((VdclGroupBox*)pControl)->m_Frame.SetFont(NULL);	
 		((VdclGroupBox*)pControl)->m_Frame.SetFont(pFont);		
 		break;
 		}
-	case CtlTextBox:		
-		{		
-		// check the control type to determine which control to create
-		switch(pArxObject->GetLongProperty(Prop::FilterStyle))
-		{
-		case EditFilter_Angle:
-			{
-			// create the control
-			((VdclAngleEdit *)pControl)->SetFont(pFont);
-			break;
-			}
-		case EditFilter_Numeric:
-			{
-			// create the control
-			((VdclNumericEdit *)pControl)->SetFont(pFont);
-			break;
-			}
-		case EditFilter_Symbol:
-			{
-			// create the control
-			((VdclSymbolEdit *)pControl)->SetFont(pFont);
-			break;
-			}
-		default:
-			{
-			((OdclEdit *)pControl)->SetFont(pFont);
-			break;
-			}
-		}
-		break;
-		}
-	//case CtlCheckBox:		
-	//	{		
-	//	((VdclCheckBox*)pControl)->SetFont(pFont);		
-	//	break;
-	//	}
-	//case CtlOptionButton:		
-	//	{		
-	//	((VdclRadioButton*)pControl)->SetFont(pFont);		
-	//	break;
-	//	}
-	case CtlComboBox:
-		{
-			switch (pArxObject->GetLongProperty(Prop::ComboBoxStyle))
-			{
-			case CmboStyle_ArrowHead:
-				{	
-				((VdclArrowHeadComboBox*)pControl)->SetFont(pFont);	
-				break;
-				}
-			case CmboStyle_Color:
-				{
-				((VdclColorComboBox*)pControl)->SetFont(pFont);	
-				break;
-				}			
-			case CmboStyle_LineWeight:
-				{			
-				((VdclLineWeightComboBox*)pControl)->SetFont(pFont);	
-				break;
-				}
-			case CmboStyle_PlotNames:
-				{			
-				((VdclPlotStyleNamesComboBox*)pControl)->SetFont(pFont);	
-				break;
-				}
-			case CmboStyle_PlotTables:
-				{	
-				((VdclPlotStyleTablesComboBox*)pControl)->SetFont(pFont);	
-				break;
-				}
-			case CmboStyle_Plotters:
-				{	
-				((CPrinterComboBox*)pControl)->SetFont(pFont);	
-				break;
-				}			
-			default:
-				{
-				((VdclComboBox*)pControl)->SetFont(pFont);	
-				break;
-				}
-			}
-			break;
-		}
-	//case CtlListBox:		
-	//	{		
-	//	((CArxListBoxCtrl*)pControl)->SetFont(pFont);		
-	//	break;
-	//	}
-	//case CtlDwgList:
-	//	{		
-	//	((CDwgDirList*)pControl)->SetFont(pFont);		
-	//	break;
-	//	}		
-	//case CtlOptionList:		
-	//	{		
-	//	((COptionListBox*)pControl)->SetFont(pFont);		
-	//	break;
-	//	}		
 	case CtlPictureBox:		
 		{		
 		((CPictureBox*)pControl)->SetFont(pFont);		
 		break;
 		}
-	//case CtlTabStrip:		
-	//	{		
-	//	((CArxTabStripCtrl*)pControl)->GetTabCtrl().SetFont(NULL);	
-	//	((CArxTabStripCtrl*)pControl)->GetTabCtrl().SetFont(pFont);		
-	//	break;
-	//	}
 	case CtlMonth:
 		{
 		((OdclMonth*)pControl)->SetFont(pFont);
@@ -808,17 +502,6 @@ void CArxDialogControl::UpdateFont(CDclControlObject *pArxObject, CWnd *pControl
 		pControl->RedrawWindow();
 		break;
 		}
-	//case CtlListView:	
-	//case CtlBlockList:
-	//	{		
-	//	((OdclListCtrl*)pControl)->SetFont(pFont);		
-	//	break;
-	//	}	
-	//case CtlGrid:	
-	//	{		
-	//	((CArxGridCtrl*)pControl)->SetFont(pFont);		
-	//	break;
-	//	}	
 	}
 	pControl->Invalidate();
 }
@@ -852,50 +535,12 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			case CtlPictureBox:
 				((CPictureBox*)pControlWnd)->SetAcadColor(pControl->GetLongProperty(Prop::BackgroundColor));
 				break;
-			//case CtlSlideView:		
-			//	((CSlideHolder*)pControlWnd)->SetAcadColor(pControl->GetLongProperty(Prop::BackgroundColor));
-			//	break;
-			//case CtlListView:		
-			//case CtlBlockList:				
-			//	((OdclListCtrl*)pControlWnd)->SetAcadColor(pControl->GetLongProperty(Prop::BackgroundColor));
-			//	break;
-				
 			case CtlLabel:
 				((VdclStatic*)pControlWnd)->SetAcadColor(pControl->GetLongProperty(Prop::BackgroundColor));
 				break;
-				
-			//case CtlOptionButton:
-			//case CtlCheckBox:
-			//	((CClrButton*)pControlWnd)->SetAcadColor(pControl->GetLongProperty(Prop::BackgroundColor));
-			//	break;
-
-			case CtlTextBox:
-				switch (pControl->GetLongProperty(Prop::FilterStyle))
-				{
-				//case EditFilter_Multiline:
-				case EditFilter_Symbol:
-					break;
-				default:
-					((CColorEdit*)pControlWnd)->SetAcadColor(pControl->GetLongProperty(Prop::BackgroundColor));
-					
-					break;
-				}				
-				break;
-			
-			//case CtlListBox:
-			//case CtlOptionList:
-			//case CtlDwgList:
-			//	((CClrListBox*)pControlWnd)->SetAcadColor(pControl->GetLongProperty(Prop::BackgroundColor));
-			//	break;		
-			
 			case CtlStaticURL:
 				((CStaticLink*)pControlWnd)->SetAcadColor(pControl->GetLongProperty(Prop::BackgroundColor));
 				break;		
-
-			//case CtlGraphicButton:
-			//	((CArxGraphicButtonCtrl*)pControlWnd)->SetAcadColor(pControl->GetLongProperty(Prop::BackgroundColor));
-			//	break;
-			
 			}
 		if (pControl->GetType() != CtlPictureBox && 
 			pControl->GetType() != CtlSlideView)
@@ -910,45 +555,14 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			case CtlLabel:
 				((VdclStatic*)pControlWnd)->SetForeColor(pControl->GetLongProperty(Prop::ForegroundColor));
 				break;		
-
-			//case CtlOptionButton:
-			//case CtlCheckBox:
-			//	((CClrButton*)pControlWnd)->SetForeColor(pControl->GetLongProperty(Prop::ForegroundColor));
-			//	break;
-			//case CtlGraphicButton:
-			//	((CArxGraphicButtonCtrl*)pControlWnd)->SetForeColor(pControl->GetLongProperty(Prop::ForegroundColor));
-			//	break;
-			case CtlTextBox:
-				switch (pControl->GetLongProperty(Prop::FilterStyle))
-				{
-				//case EditFilter_Multiline:
-				//	
-				case EditFilter_Symbol:
-					break;
-				default:
-					((CColorEdit*)pControlWnd)->SetForeColor(pControl->GetLongProperty(Prop::ForegroundColor));
-					break;
-				}				
-				break;
 			case CtlStaticURL:
 				((CStaticLink*)pControlWnd)->SetForeColor(pControl->GetLongProperty(Prop::ForegroundColor));
 				break;
-			//case CtlListBox:
-			//case CtlOptionList:
-			//case CtlDwgList:
-			//	((CClrListBox*)pControlWnd)->SetForeColor(pControl->GetLongProperty(Prop::ForegroundColor));
-			//
 			}
 			
 			pControlWnd->Invalidate();
 			break;
 		}	
-
-		//case Prop::RowHeader:
-		//{
-		//	((CArxGridCtrl*)pControlWnd)->m_bHasRowHeader = pControl->GetBooleanProperty(Prop::RowHeader) == TRUE;
-		//	break;
-		//}
 
 		case Prop::AllowOrbiting:
 		{
@@ -965,110 +579,49 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			case CtlPictureBox:
 				((CPictureBox*)pControlWnd)->m_AutoSize = pControl->GetBooleanProperty(Prop::AutoSize);
 				break;
-			//case CtlGraphicButton:		
-			//	((CBtnST*)pControlWnd)->SetAcadColor(pControl->GetLongProperty(Prop::AutoSize));
-			//	break;
 			}
 			break;
 		}
 		
 		case Prop::BlockName:
 		{
-			((CGsPreviewCtrl*)pControlWnd)->DisplayBlock(pControl->GetStrProperty(Prop::BlockName));
+			((CGsPreviewCtrl*)pControlWnd)->DisplayBlock(pControl->GetStringProperty(Prop::BlockName));
 			break;
 		}
 		case Prop::BorderStyle:
 		{
+			switch(pControl->GetLongProperty(Prop::BorderStyle))
+			{
+			case 0:
+				pControlWnd->ModifyStyle(WS_BORDER, 0, SWP_FRAMECHANGED);
+				pControlWnd->ModifyStyleEx(WS_EX_STATICEDGE, 0, SWP_FRAMECHANGED);
+				pControlWnd->ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
+				break;
+					
+			case 1:
+				pControlWnd->ModifyStyle(WS_BORDER, 0, SWP_FRAMECHANGED);
+				pControlWnd->ModifyStyleEx(WS_EX_STATICEDGE, 0, SWP_FRAMECHANGED);
+				pControlWnd->ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
+				break;
+
+			case 2:
+				pControlWnd->ModifyStyle(WS_BORDER, 0, SWP_FRAMECHANGED);
+				pControlWnd->ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
+				pControlWnd->ModifyStyleEx(0, WS_EX_STATICEDGE, SWP_FRAMECHANGED);
+				break;
+			}
 			switch (pControl->GetType())
 			{
-			case CtlTree:
-				{
-				switch(pControl->GetLongProperty(Prop::BorderStyle))
-				{
-				case 0:
-					((VdclTree*)pControlWnd)->m_ChildTree.ModifyStyle(WS_BORDER, 0, SWP_FRAMECHANGED);
-					((VdclTree*)pControlWnd)->m_ChildTree.ModifyStyleEx(WS_EX_STATICEDGE, 0, SWP_FRAMECHANGED);
-					((VdclTree*)pControlWnd)->m_ChildTree.ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
-					break;
-						
-				case 1:
-					((VdclTree*)pControlWnd)->m_ChildTree.ModifyStyle(WS_BORDER, 0, SWP_FRAMECHANGED);
-					((VdclTree*)pControlWnd)->m_ChildTree.ModifyStyleEx(WS_EX_STATICEDGE, 0, SWP_FRAMECHANGED);
-					((VdclTree*)pControlWnd)->m_ChildTree.ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
-					break;
-
-				case 2:
-					((VdclTree*)pControlWnd)->m_ChildTree.ModifyStyle(WS_BORDER, 0, SWP_FRAMECHANGED);
-					((VdclTree*)pControlWnd)->m_ChildTree.ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
-					((VdclTree*)pControlWnd)->m_ChildTree.ModifyStyleEx(0, WS_EX_STATICEDGE, SWP_FRAMECHANGED);
-					break;
-				}
-				
-			
+			case CtlPictureBox:
+				((CPictureBox*)pControlWnd)->m_BorderStyle = pControl->GetLongProperty(Prop::BorderStyle);				
 				break;
-				}
-			default:
-				{
-				switch(pControl->GetLongProperty(Prop::BorderStyle))
-				{
-				case 0:
-					pControlWnd->ModifyStyle(WS_BORDER, 0, SWP_FRAMECHANGED);
-					pControlWnd->ModifyStyleEx(WS_EX_STATICEDGE, 0, SWP_FRAMECHANGED);
-					pControlWnd->ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
-					break;
-						
-				case 1:
-					pControlWnd->ModifyStyle(WS_BORDER, 0, SWP_FRAMECHANGED);
-					pControlWnd->ModifyStyleEx(WS_EX_STATICEDGE, 0, SWP_FRAMECHANGED);
-					pControlWnd->ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
-					break;
-
-				case 2:
-					pControlWnd->ModifyStyle(WS_BORDER, 0, SWP_FRAMECHANGED);
-					pControlWnd->ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
-					pControlWnd->ModifyStyleEx(0, WS_EX_STATICEDGE, SWP_FRAMECHANGED);
-					break;
-				}
-				
-				switch (pControl->GetType())
-				{
-				case CtlPictureBox:
-					((CPictureBox*)pControlWnd)->m_BorderStyle = pControl->GetLongProperty(Prop::BorderStyle);				
-					break;
-				}
-				break;
-				}
 			}
-			break;
 		}	
 		case Prop::Caption:
 		{				
-			UpdateText(pControl, pControlWnd, pControl->GetStrProperty(Prop::Caption));
+			UpdateText(pControl, pControlWnd, pControl->GetStringProperty(Prop::Caption));
 			break;
 		}	
-		case Prop::ColumnWidth:
-		{	
-			int nNewColWidth = pControl->GetLongProperty(Prop::ColumnWidth);
-			if (nNewColWidth > 0)
-				((CListBox*)pControlWnd)->SetColumnWidth(nNewColWidth);
-			break;
-		}	
-				
-		//case Prop::DefSelIndex:
-		//{
-		//	int nDefSelection = pControl->GetLongProperty(Prop::DefSelIndex) ;
-		//	((COptionListBox *)pControlWnd)->SetCurSel(nDefSelection);
-		//	break;
-		//}
-		
-		case Prop::DisableNoScroll:
-		{
-			if (pControl->GetBooleanProperty(Prop::DisableNoScroll) == FALSE)
-				((CListBox*)pControlWnd)->ModifyStyle(LBS_DISABLENOSCROLL, 0, SWP_FRAMECHANGED);
-			else
-				((CListBox*)pControlWnd)->ModifyStyle(0, LBS_DISABLENOSCROLL, SWP_FRAMECHANGED);
-			break;
-		}
 
 		case Prop::DragnDropAllowDrop:
 		{
@@ -1077,35 +630,9 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			case CtlStdButton:
 				((VdclTextButton*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
 				break;
-			//case CtlGraphicButton:
-			//	((CArxGraphicButtonCtrl*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
-			//	break;			
-			//case CtlDwgList:
-			//	((CDwgDirList*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
-			//	break;			
 			case CtlBlockView:
 			case CtlHatch:
 				((CGsPreviewCtrl*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
-				break;
-			case CtlTextBox:
-				switch (pControl->GetLongProperty(Prop::FilterStyle))
-				{
-				case EditFilter_Angle:
-					((VdclAngleEdit*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
-					break;
-				case EditFilter_Numeric:
-					((VdclNumericEdit*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
-					break;
-				case EditFilter_Symbol:
-					((VdclSymbolEdit*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
-					break;
-				default:
-					((OdclEdit*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
-					break;
-				}
-				break;
-			//case CtlListBox:
-			//	((CArxListBoxCtrl*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
 				break;
 			case CtlLabel:
 				((VdclStatic*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
@@ -1113,19 +640,12 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			case CtlPictureBox:
 				((CPictureBox*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
 				break;
-			//case CtlSlideView:
-			//	((CSlideHolder*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
-			//	break;
 			case CtlTree:
 				((VdclTree*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
 				break;
 			case CtlDwgPreview:
 				((CDwgPreviewCtrl*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
 				break;
-			//case CtlListView:
-			//case CtlBlockList:
-			//	((OdclListCtrl*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
-			//	break;
 			}
 			break;
 		} 
@@ -1136,20 +656,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 				((CSliderCtrl *)pControlWnd)->EnableWindow(pControl->GetBooleanProperty(Prop::Enabled));
 			else if (pControl->GetType() == CtlTree)
 				((VdclTree *)pControlWnd)->m_ChildTree.EnableWindow(pControl->GetBooleanProperty(Prop::Enabled));
-			//else if (pControl->GetType() == CtlTabStrip)
-			//	((CArxTabStripCtrl *)pControlWnd)->GetTabCtrl().EnableWindow(pControl->GetBooleanProperty(Prop::Enabled));
-			//else if (pControl->GetType() == CtlOptionList)
-			//{
-			//	int nData=0;
-			//	if (pControl->GetBooleanProperty(Prop::Enabled) == FALSE)
-			//		nData = 2;
-			//	for (int i=0; i<((COptionListBox*) pControlWnd)->GetCount(); i++)
-			//	{
-			//		((COptionListBox*) pControlWnd)->SetItemData(i, nData);
-			//	}
-			//	pControlWnd->EnableWindow(pControl->GetBooleanProperty(Prop::Enabled));
-			//	pControlWnd->Invalidate();				
-			//}			
 			else
 			{
 				pControlWnd->EnableWindow(pControl->GetBooleanProperty(Prop::Enabled) != FALSE);
@@ -1162,45 +668,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			}
 			break;				
 		}	
-		case Prop::FilterStyle:
-			{
-			switch (pControl->GetLongProperty(Prop::FilterStyle))
-			{
-			case 5:/*Upper case*/
-				{
-				((CEdit*)pControlWnd)->ModifyStyle(ES_PASSWORD, 0, SWP_FRAMECHANGED);
-				((CEdit*)pControlWnd)->ModifyStyle(ES_LOWERCASE, ES_UPPERCASE, SWP_FRAMECHANGED);
-				((CEdit*)pControlWnd)->SetPasswordChar(0);
-				break;
-				}
-			case 6:/*lower case*/
-				{
-				((CEdit*)pControlWnd)->ModifyStyle(ES_PASSWORD, 0, SWP_FRAMECHANGED);
-				((CEdit*)pControlWnd)->ModifyStyle(ES_UPPERCASE, ES_LOWERCASE, SWP_FRAMECHANGED);
-				((CEdit*)pControlWnd)->SetPasswordChar(0);
-				break;
-				}
-			case 7:/*password*/
-				{
-				((CEdit*)pControlWnd)->ModifyStyle(ES_LOWERCASE|ES_UPPERCASE, ES_PASSWORD, SWP_FRAMECHANGED);
-				((CEdit*)pControlWnd)->SetPasswordChar('*');
-				break;
-				}
-			case 8:/*MultiLine*/
-				{
-				((CEdit*)pControlWnd)->ModifyStyle(ES_LOWERCASE|ES_UPPERCASE|ES_PASSWORD, ES_MULTILINE, SWP_FRAMECHANGED);
-				((CEdit*)pControlWnd)->SetPasswordChar(0);
-				break;
-				}
-			default:
-				{
-				((CEdit*)pControlWnd)->ModifyStyle(ES_LOWERCASE|ES_UPPERCASE|ES_PASSWORD, 0, SWP_FRAMECHANGED);
-				((CEdit*)pControlWnd)->SetPasswordChar(0);
-				break;
-				}
-			}
-			break;
-		}
 	
 		case Prop::Indent:
 		{
@@ -1218,28 +685,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 		{
 			switch (pControl->GetType())
 			{
-			case CtlTextBox:
-				{
-				/*
-					((CEdit*)pControlWnd)->ModifyStyle(ES_RIGHT, 0, SWP_FRAMECHANGED);
-					((CEdit*)pControlWnd)->ModifyStyle(ES_CENTER, 0, SWP_FRAMECHANGED);
-					((CEdit*)pControlWnd)->ModifyStyle(ES_LEFT, 0, SWP_FRAMECHANGED);
-					
-					switch (pControl->GetLongProperty(Prop::Justification))
-					{
-					case 0:// Left
-						((CEdit*)pControlWnd)->ModifyStyle(0, ES_LEFT, SWP_FRAMECHANGED);
-						break;
-					case 1:// Center
-						((CEdit*)pControlWnd)->ModifyStyle(0, ES_CENTER, SWP_FRAMECHANGED);
-						break;
-					case 2:// Right
-						((CEdit*)pControlWnd)->ModifyStyle(0, ES_RIGHT, SWP_FRAMECHANGED);
-						break;
-					}
-					*/
-					break;
-				}
 			case CtlLabel:
 				{
 					pControlWnd->ModifyStyle(SS_RIGHT, 0, SWP_FRAMECHANGED);
@@ -1273,78 +718,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			break;
 		}
 
-		case Prop::LimitText:
-		{
-			switch (pControl->GetType())
-			{
-			case CtlTextBox:
-				{
-				((CEdit*)pControlWnd)->SetLimitText(pControl->GetLongProperty(Prop::LimitText));
-				break;
-				}
-			case CtlComboBox:
-				{
-				((CComboBox*)pControlWnd)->LimitText(pControl->GetLongProperty(Prop::LimitText));
-				break;				
-				}
-			case CtlImageComboBox:
-				{
-				((CComboBoxEx*)pControlWnd)->LimitText(pControl->GetLongProperty(Prop::LimitText));
-				break;				
-				}
-			}
-			break;
-		}
-		
-		case Prop::List:
-		{
-			switch (pControl->GetType())
-			{
-			//case CtlListBox:
-			//	{
-			//		CString sListItem;
-			//		((CListBox *)pControlWnd)->ResetContent();					
-			//		for (size_t i = 0; i < pProp->size(); i++)
-			//		{				
-			//			sListItem = pProp->GetStringItem(i);
-			//			if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
-			//				((CListBox *)pControlWnd)->AddString(sListItem);
-			//		}
-			//		break;
-			//	}
-			case CtlComboBox:
-				{
-					if (!IsSelfPopulatedList(pControl))
-					{
-						CString sListItem;
-						((CComboBox *)pControlWnd)->ResetContent();
-						for (size_t i = 0; i < pProp->size(); i++)
-						{			
-							sListItem = pProp->GetStringItem(i);
-							if (!sListItem.IsEmpty() && sListItem.GetLength() > 0)
-								((CComboBox *)pControlWnd)->AddString(pProp->GetStringItem(i));
-						}
-					}
-					break;
-				}
-			}
-			break;				
-		}
-		case Prop::MarginLeft:
-		{
-			((CEdit*)pControlWnd)->SetMargins(
-				pControl->GetLongProperty(Prop::MarginLeft),
-				pControl->GetLongProperty(Prop::MarginRight));
-			break;
-		}
-		
-		//case Prop::MinTabWidth:
-		//{
-		//	int n = pControl->GetLongProperty(Prop::MinTabWidth);
-		//	((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().SetMinTabWidth(pControl->GetLongProperty(Prop::MinTabWidth));
-		//	((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().RedrawWindow(NULL, NULL, RDW_UPDATENOW);
-		//	break;
-		//}
 		case Prop::MultiSelection:
 		{
 			((OdclMonth*)pControlWnd)->SetMaxSelCount(
@@ -1409,11 +782,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 		{
 			switch (pControl->GetType())
 			{
-			//case CtlGraphicButton:		
-			//	((CArxGraphicButtonCtrl *)pControlWnd)->SetPictureID(pControl->GetLongProperty(Prop::Picture));
-			//	((CArxGraphicButtonCtrl *)pControlWnd)->SetPressedPictureID(pControl->GetLongProperty(Prop::PressedPicture));
-			//	pControlWnd->Invalidate();
-			//	break;
 			case CtlPictureBox:		
 				((CPictureBox *)pControlWnd)->SetPictureID(pControl->GetLongProperty(Prop::Picture));
 				break;
@@ -1432,20 +800,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			((CGsPreviewCtrl*)pControlWnd)->Invalidate();
 			break;
 		}
-		
-		//case Prop::RowHeight:
-		//{			
-		//	if (pControl->GetType() == CtlDwgList)
-		//	{
-		//		CDwgDirList* pDwgList = (CDwgDirList*)pControlWnd;
-		//		pDwgList->m_RowHeight = pControl->GetLongProperty(Prop::RowHeight);
-		//		int nCurSel = pDwgList->GetCurSel();
-		//		pDwgList->Dir(pDwgList->m_sPath);
-		//		pDwgList->SetCurSel(nCurSel);
-		//	}
-		//	break;
-		//}
-		
 		case Prop::ShowTicks:
 		{
 			if (pControl->GetBooleanProperty(Prop::ShowTicks) == FALSE)
@@ -1469,56 +823,15 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			break;
 			
 		}
-		//case Prop::TabSelected:
-		//{
-		//	((CListBox*)pControlWnd)->SetCurSel(pControl->GetLongProperty(Prop::TabSelected));
-		//	break;
-		//}
-		//case Prop::TabStyle:
-		//{
-		//	if (pControl->GetLongProperty(Prop::TabStyle) == 0)
-		//		((CListBox*)pControlWnd)->ModifyStyle(TCS_BUTTONS, TCS_TABS, SWP_FRAMECHANGED);
-		//	else
-		//		((CListBox*)pControlWnd)->ModifyStyle(TCS_TABS, TCS_BUTTONS, SWP_FRAMECHANGED);
-		//	break;
-		//}
-		//
-		//case Prop::TabLabelAlign:
-		//{
-		//	if (pControl->GetLongProperty(Prop::TabLabelAlign) == 0)
-		//		((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().ModifyStyle(0, TCS_FORCELABELLEFT, SWP_FRAMECHANGED);
-		//	else
-		//		((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().ModifyStyle(TCS_FORCELABELLEFT, 0, SWP_FRAMECHANGED);
-		//	break;
-		//}
-		//case Prop::TabFixedWidth:
-		//{
-		//	if (pControl->GetBooleanProperty(Prop::TabFixedWidth) == TRUE)
-		//	{
-		//		((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().ModifyStyle(0, TCS_FIXEDWIDTH, SWP_FRAMECHANGED);
-		//		CRect rc;
-		//		((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().GetItemRect(0, &rc);
-		//		CSize szTabs;
-		//		szTabs.cx = pControl->GetLongProperty(Prop::MinTabWidth);
-		//		szTabs.cy = rc.Height();
-		//		((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().SetItemSize(szTabs);
-		//	}
-		//	else
-		//		((CArxTabStripCtrl*)pControlWnd)->GetTabCtrl().ModifyStyle(TCS_FIXEDWIDTH, 0, SWP_FRAMECHANGED);
-		//	break;
-		//}
 		case Prop::Text:
 		{
-			if (!IsSelfPopulatedList(pControl))
-			{							
-				int nTextLimit = pControl->GetLongProperty(Prop::LimitText);
-				CString sNewText = pControl->GetStrProperty(Prop::Text);
+			int nTextLimit = pControl->GetLongProperty(Prop::LimitText);
+			CString sNewText = pControl->GetStringProperty(Prop::Text);
 
-				if (nTextLimit > -1) 
-					sNewText = sNewText.Left(nTextLimit);
+			if (nTextLimit > -1) 
+				sNewText = sNewText.Left(nTextLimit);
 
-				UpdateText(pControl, pControlWnd, sNewText);
-			}
+			UpdateText(pControl, pControlWnd, sNewText);
 			break;
 		}
 		case Prop::TickFrequency:
@@ -1530,7 +843,7 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 		
 		case Prop::TitleBarText:
 		{
-			pControlWnd->SetWindowText(pControl->GetStrProperty(Prop::TitleBarText));
+			pControlWnd->SetWindowText(pControl->GetStringProperty(Prop::TitleBarText));
 			break;
 		}
 		case Prop::BtnTTText:
@@ -1556,7 +869,7 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 		case Prop::URLAddress:
 		{
 			if (pControl->GetType() == CtlStaticURL)
-				((CStaticLink*)pControlWnd)->m_link = pControl->GetStrProperty(Prop::URLAddress);
+				((CStaticLink*)pControlWnd)->m_link = pControl->GetStringProperty(Prop::URLAddress);
 			break;
 		}
 		case Prop::Visible:
@@ -1571,11 +884,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 		{
 			switch (pControl->GetType())
 			{
-			case CtlCheckBox:
-			case CtlOptionButton:
-				((CButton *)pControlWnd)->SetCheck(pControl->GetBooleanProperty(Prop::Value));
-				pControlWnd->RedrawWindow();
-				break;									
 			case CtlRoundSlider:
 				((CRoundSliderCtrl *)pControlWnd)->SetPos(pControl->GetLongProperty(Prop::Value));
 				pControlWnd->RedrawWindow();
@@ -1610,29 +918,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 				pControlWnd->ModifyStyle(0, WS_HSCROLL, SWP_FRAMECHANGED);
 			break;
 		}
-		case Prop::VScrollBar:
-		{
-			switch (pControl->GetType())
-			{
-			case CtlTextBox:
-				{			
-				if (pControl->GetBooleanProperty(Prop::VScrollBar) == FALSE)
-					((OdclEdit*)pControlWnd)->ModifyStyle(WS_VSCROLL, 0, SWP_FRAMECHANGED);
-				else
-					((OdclEdit*)pControlWnd)->ModifyStyle(0, WS_VSCROLL, SWP_FRAMECHANGED);
-				break;
-				}
-			//case CtlListBox:
-			//	{			
-			//	if (pControl->GetBooleanProperty(Prop::VScrollBar) == FALSE)
-			//		((CListBox*)pControlWnd)->ModifyStyle(WS_VSCROLL, 0, SWP_FRAMECHANGED);
-			//	else
-			//		((CListBox*)pControlWnd)->ModifyStyle(0, WS_VSCROLL, SWP_FRAMECHANGED);
-			//	break;
-			//	}
-			}
-			break;
-		}
 	}	
 	}
 	catch(...)
@@ -1659,123 +944,10 @@ void CArxDialogControl::UpdateText(CDclControlObject *pTemplate, CWnd *pControl,
 			((VdclTextButton*)pControl)->SetWindowText(sText);
 			break;
 			}
-		case CtlImageComboBox:
-			{
-			((VdclComboBoxEx*)pControl)->SetWindowText(sText);	
-			break;
-			}
-		//case CtlGraphicButton:
-		//	{
-		//	CString sOldText;
-		//	((CArxGraphicButtonCtrl*)pControl)->GetWindowText(sOldText);
-		//	if (sOldText != sText)
-		//	{
-		//		((CArxGraphicButtonCtrl*)pControl)->SetWindowText(sText);
-		//		((CArxGraphicButtonCtrl*)pControl)->Invalidate();
-		//	}
-		//	break;
-		//	}
 		case CtlFrame:		
 			{		
 			((VdclGroupBox*)pControl)->m_Frame.SetWindowText(sText);	
 			break;
-			}
-		case CtlTextBox:		
-			{		
-			// check the control type to determine which control to create
-			switch(pTemplate->GetLongProperty(Prop::FilterStyle))
-			{
-			case EditFilter_Angle:
-				{
-				// create the control
-				((VdclAngleEdit *)pControl)->SetWindowText(sText);
-				break;
-				}
-			case EditFilter_Numeric:
-				{
-				// create the control
-				((VdclNumericEdit *)pControl)->SetWindowText(sText);
-				break;
-				}
-			case EditFilter_Symbol:
-				{
-				// create the control
-				((VdclSymbolEdit *)pControl)->SetWindowText(sText);
-				break;
-				}
-			default:
-				{
-				((OdclEdit*)pControl)->SetWindowText(sText);
-				break;
-				}
-			}
-			break;
-			}
-		//case CtlCheckBox:		
-		//	{		
-		//	((VdclCheckBox*)pControl)->SetWindowText(sText);		
-		//	break;
-		//	}
-		//case CtlOptionButton:		
-		//	{		
-		//	((VdclRadioButton*)pControl)->SetWindowText(sText);		
-		//	break;
-		//	}
-		case CtlComboBox:
-			{
-				switch (pTemplate->GetLongProperty(Prop::ComboBoxStyle))
-				{
-				case CmboStyle_ArrowHead:
-					{	
-					((VdclArrowHeadComboBox*)pControl)->SetWindowText(sText);	
-					if (((CComboBox*)pControl)->GetCount() > 0)
-						((CComboBox*)pControl)->SetCurSel(0);					
-					break;
-					}
-				case CmboStyle_Color:
-					{
-					((VdclColorComboBox*)pControl)->SetWindowText(sText);	
-					if (((CComboBox*)pControl)->GetCount() > 0)
-						((CComboBox*)pControl)->SetCurSel(0);	
-					break;
-					}			
-				case CmboStyle_Layers:
-					{
-					((OdclLayerCombo*)pControl)->SetWindowText(sText);	
-					if (((CComboBox*)pControl)->GetCount() > 0)
-						((CComboBox*)pControl)->SetCurSel(0);	
-					break;
-					}		
-				case CmboStyle_LineWeight:
-					{			
-					((VdclLineWeightComboBox*)pControl)->SetWindowText(sText);	
-					if (((CComboBox*)pControl)->GetCount() > 0)
-						((CComboBox*)pControl)->SetCurSel(0);	
-					break;
-					}
-				case CmboStyle_PlotNames:
-					{			
-					((VdclPlotStyleNamesComboBox*)pControl)->SetWindowText(sText);	
-					if (((CComboBox*)pControl)->GetCount() > 0)
-						((CComboBox*)pControl)->SetCurSel(0);	
-					break;
-					}
-				case CmboStyle_PlotTables:
-					{	
-					((VdclPlotStyleTablesComboBox*)pControl)->SetWindowText(sText);	
-					if (((CComboBox*)pControl)->GetCount() > 0)
-						((CComboBox*)pControl)->SetCurSel(0);	
-					break;
-					}
-				default:
-					{
-					if (((CComboBox*)pControl)->GetCount() > 0)
-						((CComboBox*)pControl)->SetCurSel(0);	
-					((VdclComboBox*)pControl)->SetWindowText(sText);	
-					break;
-					}
-				}
-				break;
 			}
 		case CtlStaticURL:
 			{
@@ -1793,7 +965,7 @@ void CArxDialogControl::UpdateText(CDclControlObject *pTemplate, CWnd *pControl,
 //static
 void CArxDialogControl::UpdateToolTip(CDclControlObject *pArxObject, CWnd *pControl)
 {
-	CString sToolTipTitle = pArxObject->GetStrProperty(Prop::ToolTipTitle);
+	CString sToolTipTitle = pArxObject->GetStringProperty(Prop::ToolTipTitle);
 	switch (pArxObject->GetType())
 	{
 	case CtlDwgPreview:
@@ -1844,53 +1016,6 @@ void CArxDialogControl::UpdateToolTip(CDclControlObject *pArxObject, CWnd *pCont
 		//((CPictureBox*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
-	//case CtlListBox:
-	//	{
-	//	SetToolTipEx(pControl, ((CArxListBoxCtrl*)pControl)->m_ToolTip, pArxObject);
-	//	//((CArxListBoxCtrl*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
-	//	break;
-	//	}
-	//case CtlOptionButton:
-	//	{
-	//	SetToolTipEx(pControl, ((VdclRadioButton*)pControl)->m_ToolTip, pArxObject);
-	//	//((VdclRadioButton*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
-	//	break;
-	//	}
-	//case CtlOptionList:
-	//	{
-	//	//SetToolTipEx(pControl, ((COptionListBox*)pControl)->m_ToolTip, pArxObject);
-	//	((COptionListBox*)pControl)->ResetTooltips();
-	//	break;
-	//	}
-	//case CtlCheckBox:
-	//	{
-	//	SetToolTipEx(pControl, ((VdclCheckBox*)pControl)->m_ToolTip, pArxObject);
-	//	//((VdclCheckBox*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
-	//	break;
-	//	}
-	case CtlTextBox:
-		{
-			switch (pArxObject->GetLongProperty(Prop::FilterStyle))
-			{
-				case EditFilter_Symbol:
-					SetToolTipEx(pControl, ((VdclSymbolEdit*)pControl)->m_ToolTip, pArxObject);
-					//((VdclSymbolEdit*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
-					break;
-				case EditFilter_Angle:
-					SetToolTipEx(pControl, ((VdclAngleEdit*)pControl)->m_ToolTip, pArxObject);
-					//((VdclAngleEdit*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
-					break;
-				case EditFilter_Numeric:
-					SetToolTipEx(pControl, ((VdclNumericEdit*)pControl)->m_ToolTip, pArxObject);
-					//((VdclNumericEdit*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
-					break;
-				default:
-					SetToolTipEx(pControl, ((OdclEdit*)pControl)->m_ToolTip, pArxObject);
-					//((OdclEdit*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
-					break;
-			}
-		break;
-		}
 	case CtlStdButton:
 		{
 		SetToolTipEx(pControl, ((VdclTextButton*)pControl)->m_ToolTip, pArxObject);
@@ -1903,11 +1028,5 @@ void CArxDialogControl::UpdateToolTip(CDclControlObject *pArxObject, CWnd *pCont
 		//((VdclTree*)pControl)->m_ChildTree.SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
-	//case CtlDwgList:
-	//	{
-	//	SetToolTipEx(pControl, ((CDwgDirList*)pControl)->m_ToolTip, pArxObject);
-	//	//((CDwgDirList*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
-	//	break;
-	//	}
 	}
 }

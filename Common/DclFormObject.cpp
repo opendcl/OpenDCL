@@ -60,7 +60,6 @@ CDclFormObject::CDclFormObject()
 	m_pChildWnd = NULL;
 	m_pMdiChildWnd = NULL;
 	m_htiTreeItem = NULL;
-	m_bLoaded = false;
 }
 
 CDclFormObject::CDclFormObject( CProject* Project, DclFormType type /*= VdclInvalid*/ )
@@ -76,7 +75,6 @@ CDclFormObject::CDclFormObject( CProject* Project, DclFormType type /*= VdclInva
 	m_pChildWnd = NULL;
 	m_pMdiChildWnd = NULL;
 	m_htiTreeItem = NULL;
-	m_bLoaded = false;
 	CreateControlProperties();
 }
 
@@ -166,19 +164,6 @@ void CDclFormObject::PurgeDeletedControls()
 			delete pDclControl;
 		}
 		pDclControl->SetZOrder( idxCurrent++ );
-	}
-}
-
-
-void CDclFormObject::PurgeDeletedImageLists()
-{
-	if( mImageLists.empty() )
-		return;
-	std::vector< CImageListObject >::iterator iter = mImageLists.end();
-	while( iter != mImageLists.begin() );
-	{
-		if( (--iter)->IsDeleted() )
-			mImageLists.erase( iter );
 	}
 }
 
@@ -277,18 +262,6 @@ void CDclFormObject::ClearGlobalVariableName( bool bUpdateChildren /*= true*/ )
 		mDclControls.GetNext(pos)->ClearGlobalVariableName();
 }
 
-size_t CDclFormObject::CountDeletedImageLists() const
-{
-	size_t ctDeleted = 0;
-	size_t idx = mImageLists.size();
-	while( idx-- > 0 )
-	{
-		if( mImageLists.at( idx ).IsDeleted() )
-			++ctDeleted;
-	}
-	return ctDeleted;
-}
-
 CDclFormObject* CDclFormObject::AddChildForm( DclFormType type )
 {
 	CDclFormObject* pDclForm = mpProject->AddForm( type, this );
@@ -302,7 +275,7 @@ LPCTSTR CDclFormObject::GetTitleText() const
 	const CDclControlObject* pControl = GetControlProperties();
 	assert(pControl != NULL);
 	if (pControl)
-		return pControl->GetStrProperty(Prop::TitleBarText);
+		return pControl->GetStringProperty(Prop::TitleBarText);
 	return NULL;
 }
 
@@ -391,7 +364,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 			msUUID = (LPCTSTR)pUUID;
 		}
 		ar << msUUID;
-		ar << BOOL(mbUsesClientRect);
+		ar << mbUsesClientRect;
 		nCount = (WORD)mDclControls.GetCount() - CountDeletedControls();
 		ar << nCount;
 		pos = mDclControls.GetHeadPosition();
@@ -433,9 +406,19 @@ void CDclFormObject::Serialize(CArchive& ar)
 
 		if (nThisVersion >= 4)
 		{
-			BOOL bUsesClientRect;
-			ar >> bUsesClientRect;
-			mbUsesClientRect = (bUsesClientRect != FALSE);
+			if( nThisVersion >= 6 )
+			{
+				ar >> mbUsesClientRect;
+				assert( mbUsesClientRect || mType != VdclTabForm ); //tab form must always use client rect!
+			}
+			else
+			{
+				BOOL bUsesClientRect;
+				ar >> bUsesClientRect;
+				mbUsesClientRect = (bUsesClientRect != FALSE);
+				if( !mbUsesClientRect && mType == VdclTabForm )
+					mbUsesClientRect = true;
+			}
 		}
 		else
 			mbUsesClientRect = false;
@@ -697,7 +680,7 @@ CString CDclFormObject::GetKeyName() const
 	assert( pControlProps != NULL );
 	if (!pControlProps)
 		return CString(); //properties have not yet been added!
-	CString sControlName = pControlProps->GetStrProperty(Prop::Name);
+	CString sControlName = pControlProps->GetStringProperty(Prop::Name);
 	if( sControlName.IsEmpty() )
 	{
 		if( mpParentForm )
@@ -820,7 +803,7 @@ CDclControlObject* CDclFormObject::FindControlWithVarName( LPCTSTR pszVarName ) 
 	while( pos )
 	{
 		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
-		if( pDclControl->GetStrProperty( Prop::GlobalVarName ).CompareNoCase( pszVarName ) == 0 )
+		if( pDclControl->GetStringProperty( Prop::GlobalVarName ).CompareNoCase( pszVarName ) == 0 )
 			return pDclControl;
 	}
 	return NULL;

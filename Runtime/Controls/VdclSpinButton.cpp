@@ -111,7 +111,7 @@ void VdclSpinButton::OnDeltapos(NMHDR* pNMHDR, LRESULT* pResult)
 	m_pValueProp->SetLongValue(m_Pos);
 	SetPos(m_Pos);
 	// call methods to invoke the event
-	InvokeMethodIntInt(m_ArxControl->GetStrProperty(Prop::EventChanged), m_Pos, pNMUpDown->iDelta, m_bInvokeWithSendString);
+	InvokeMethodIntInt(m_ArxControl->GetStringProperty(Prop::EventChanged), m_Pos, pNMUpDown->iDelta, m_bInvokeWithSendString);
 	
 	*pResult = 0;
 }
@@ -121,7 +121,7 @@ void VdclSpinButton::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
+		m_ArxControl->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,

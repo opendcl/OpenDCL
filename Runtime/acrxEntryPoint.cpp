@@ -1490,7 +1490,7 @@ public:
 
 		if (pCtrl->GetWindow() == NULL)
 		{ //the control has not been created yet
-			acedRetStr(pCtrl->GetStrProperty(Prop::Text));
+			acedRetStr(pCtrl->GetStringProperty(Prop::Text));
 		}
 		else
 		{ //we are changing an already created control
@@ -2402,7 +2402,7 @@ public:
 		CDclControlObject* pPropObj = pDialog->GetSourceForm()->GetControlProperties();
 		assert(pPropObj != NULL);
 		if(pPropObj)
-			acedRetStr(pPropObj->GetStrProperty(Prop::TitleBarText));
+			acedRetStr(pPropObj->GetStringProperty(Prop::TitleBarText));
 
 		return (RSRSLT) ;
 	}

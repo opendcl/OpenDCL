@@ -87,7 +87,7 @@ protected:
 protected:
 	//{{AFX_MSG(CStaticLink)
 	afx_msg LRESULT OnNcHitTest(CPoint point);
-	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);

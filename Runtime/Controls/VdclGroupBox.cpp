@@ -51,7 +51,7 @@ BOOL VdclGroupBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nI
 	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	// get the caption
-	CString Caption = pControl->GetStrProperty(Prop::Caption);
+	CString Caption = pControl->GetStringProperty(Prop::Caption);
 	
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;	

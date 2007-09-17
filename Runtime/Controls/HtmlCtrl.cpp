@@ -231,7 +231,7 @@ BOOL CHtmlCtrl::LoadFromResource(UINT nRes)
 void CHtmlCtrl::OnNavigateComplete2(LPCTSTR strURL) 
 {
 	// call methods to invoke the event
-	InvokeMethodString(m_ArxControl->GetStrProperty(Prop::EventNavigateComplete), strURL, m_bInvokeWithSendString);
+	InvokeMethodString(m_ArxControl->GetStringProperty(Prop::EventNavigateComplete), strURL, m_bInvokeWithSendString);
 	CHtmlView::OnNavigateComplete2(strURL);
 }
 
@@ -239,7 +239,7 @@ void CHtmlCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
+		m_ArxControl->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,

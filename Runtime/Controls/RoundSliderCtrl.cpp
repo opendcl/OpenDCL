@@ -353,7 +353,7 @@ void CRoundSliderCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		RedrawWindow();
 		m_pValueProp->SetLongValue(m_nPos);
 		// call methods to invoke the event
-		InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
+		InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 			m_nPos,
 			m_bInvokeWithSendString);
 
@@ -368,7 +368,7 @@ void CRoundSliderCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
+		m_ArxControl->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -385,7 +385,7 @@ void CRoundSliderCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 			m_pValueProp->SetLongValue(m_nPos);
 			// call methods to invoke the event
-			InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
+			InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 				m_nPos,
 				m_bInvokeWithSendString);
 	
@@ -416,7 +416,7 @@ void CRoundSliderCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		RedrawWindow();
 		m_pValueProp->SetLongValue(m_nPos);
 		// call methods to invoke the event
-		InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
+		InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 			m_nPos,
 			m_bInvokeWithSendString);
 
@@ -479,7 +479,7 @@ void CRoundSliderCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			RedrawWindow();
 			m_pValueProp->SetLongValue(m_nPos);
 			// call methods to invoke the event
-			InvokeMethodInt(m_ArxControl->GetStrProperty(Prop::EventScroll), 
+			InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 				m_nPos,
 				m_bInvokeWithSendString);
 

@@ -45,7 +45,7 @@ static CDclControlObject* FindArxControlObject(CDclFormObject *pDclForm, CString
 		if (ControlPos != NULL)
 		{
 			CDclControlObject *pControl = pDclForm->GetControlList().GetAt(ControlPos);
-			if (pControl->GetStrProperty(Prop::Name) == sArxControlName && pCtrl != pControl)
+			if (pControl->GetStringProperty(Prop::Name) == sArxControlName && pCtrl != pControl)
 			{
 				// return the object found
 				return pControl;

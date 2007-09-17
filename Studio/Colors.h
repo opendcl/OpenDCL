@@ -5,7 +5,7 @@
 
 #include "Resource.h"
 #include "PropertyObject.h"
-#include "AcadColorEdit.h"
+#include "FilteredEditCtrl.h"
 #include "ColorPickerCB.h"
 #include "ColorListBox.h"
 #include "ColorPatch.h"
@@ -33,7 +33,7 @@ public:
 	//{{AFX_DATA(CColors)
 	enum { IDD = IDD_BACKCOLORS };
 	CColorPickerCB	m_ColorCB;
-	CAcadColorEdit	m_Edit;
+	CFilteredEditCtrl	m_Edit;
 	CColorListBox	m_SystemColors;
 	CColorPatch		m_Color;
 	//}}AFX_DATA

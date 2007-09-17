@@ -366,6 +366,7 @@
 #define IDS_ARGS_ROWCOL                 1187
 #define IDS_ARGS_ITEM                   1193
 #define IDS_ARGS_KEY                    1194
+#define IDS_ARG_CANCELLING              1211
 #define IDS_ARGS_RECT                   1331
 #define IDS_FILTERSTYLE_0               1701
 #define IDS_FILTERSTYLE_1               1702
@@ -436,6 +437,8 @@
 #define IDS_EVENTDESC_BTNCLICKED        5000
 #define IDS_EVENTDESC_RCLICK            5009
 #define IDS_EVENTDESC_RDBLCLICK         5010
+#define IDS_EVENTDESC_RETURNPRESSED     5043
+#define IDS_EVENTDESC_CANCELCLOSE       5044
 #define IDS_SELECTSTYLE_0               5101
 #define IDS_SELECTSTYLE_1               5102
 #define IDS_SELECTSTYLE_2               5103

@@ -157,7 +157,7 @@ void CModelessDlg::OnSize(UINT nType, int cx, int cy)
 			GetWindowRect( &rcThis );
 		// call methods to invoke the event
 		InvokeMethodIntInt(
-			mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventSize), 
+			mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventSize), 
 			rcThis.Width(),
 			rcThis.Height(),
 			false);	
@@ -170,7 +170,7 @@ void CModelessDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	CBaseDlg::OnShowWindow(bShow, nStatus);
 	
 	// call methods to invoke the event
-	InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventShow), false);	
+	InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventShow), false);	
 }
 
 void CModelessDlg::OnDestroy() 
@@ -182,9 +182,9 @@ void CModelessDlg::OnDestroy()
 void CModelessDlg::OnOK()
 {
 	if (mDialogX.IsClosing() ||
-			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventCancelClose), false))	
+			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventCancelClose), false))	
 	{
-    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventOnOk), true);
+    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventOnOk), true);
 		__super::OnOK();
 		mDialogX.CloseDialog(IDOK);
 	}
@@ -193,9 +193,9 @@ void CModelessDlg::OnOK()
 void CModelessDlg::OnCancel()
 {
 	if (mDialogX.IsClosing() ||
-			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventCancelClose), true))	
+			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventCancelClose), true))	
 	{
-    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventOnCancel), true);
+    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventOnCancel), true);
 		__super::OnCancel();
 		mDialogX.CloseDialog(IDCANCEL);
 	}
@@ -232,7 +232,7 @@ void CModelessDlg::SizeDialog ()
 				GetWindowRect( &rcThis );
 			// call methods to invoke the event
 			InvokeMethodIntInt(
-				mDialogX.GetSourceForm()->GetControlProperties()->GetStrProperty(Prop::FormEventSize), 
+				mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventSize), 
 				rcThis.Width(),
 				rcThis.Height(),
 				true );

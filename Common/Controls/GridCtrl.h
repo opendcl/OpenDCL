@@ -4,7 +4,6 @@
 #pragma once
 
 #include "DialogControl.h"
-#include "GridCtrlHdr.h"
 #include "AcadColorService.h"
 #include <string>
 #include <locale>
@@ -108,7 +107,6 @@ struct _RowData
 class CGridCtrl : public CListCtrl, public CDialogControl
 {
 	CAcadColorService mColorService;
-	CGridCtrlHdr mHeaderCtrl;
 	ULONG mcColumns;
 	bool mbHasRowHeader;
 	bool mbHasGridLines;
@@ -196,6 +194,7 @@ protected:
 public:
 	BOOL SetItemData( int nRow, DWORD_PTR dwData );
 	DWORD_PTR GetItemData( int nRow ) const;
+	int InsertItem( int nRow, LPCTSTR lpszText, int nImageIndex = -1 );
 	int InsertColumn( int nCol, LPCTSTR lpszColumnHeading, int nFormat = LVCFMT_LEFT, int nWidth = -1,
 										int nImageIndex = -1 );
 	CString GetItemText( int nRow, int nCol ) { return GetCellText( nRow, nCol ); }
@@ -216,9 +215,10 @@ protected:
 protected:
 	void DrawOptionButton( CDC& cdc, const CRect& rcIcon, bool bPressed, bool bHighlight );
 	void DrawCheckBox( CDC& cdc, const CRect& rcIcon, bool bPressed, bool bHighlight );
-	void DrawTrueColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText );
+	void DrawArrow( CDC& cdc, const CRect& rcIcon, int nArrow, const CString& sText );
 	void DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText );
 	void DrawFontIcons( CDC& cdc, const CRect& rcIcon, int nImage, const CString& sText );
+	void DrawLineWeight( CDC& cdc, const CRect& rcIcon, int LW, const CString& sText );
 
 public:
 	BOOL SortTextItems( int nCol, BOOL bAscending, int low = 0, int high = -1 );
@@ -232,7 +232,6 @@ protected:
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp);
-	afx_msg void OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void PostNcDestroy();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);

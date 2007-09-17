@@ -58,7 +58,7 @@ BOOL VdclTextButton::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
 	// get the caption
-	CString Caption = pControl->GetStrProperty(Prop::Caption);
+	CString Caption = pControl->GetStringProperty(Prop::Caption);
 	
 	dwStyle = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_CLIPSIBLINGS | BS_MULTILINE;	
 	
@@ -101,7 +101,7 @@ void VdclTextButton::OnClicked()
 	
 	if (m_ArxControl->m_bEventsAsAction)
 	{
-		CString sText = m_ArxControl->GetStrProperty(Prop::EventClicked);
+		CString sText = m_ArxControl->GetStringProperty(Prop::EventClicked);
 
 		GetParent()->GetParent()->EnableWindow(TRUE);
 		int stat;
@@ -123,14 +123,14 @@ void VdclTextButton::OnClicked()
 	else
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventClicked), m_bInvokeWithSendString);	
+		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);	
 	}
 }
 
 void VdclTextButton::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntInt(
-		m_ArxControl->GetStrProperty(Prop::EventMouseMove),
+		m_ArxControl->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
@@ -141,7 +141,7 @@ void VdclTextButton::OnMouseMove(UINT nFlags, CPoint point)
 void VdclTextButton::OnDoubleclicked() 
 {
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStrProperty(Prop::EventDblClicked), false);	
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventDblClicked), false);	
 }
 
 void VdclTextButton::OnKillFocus(CWnd* pNewWnd) 
