@@ -157,7 +157,7 @@ static HANDLE readDibFromMemory(LPVOID pDibSrc)
 /////////////////////////////////////////////////////////////////////////////
 // OdclListCtrl
 
-OdclListCtrl::OdclListCtrl( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID )
+OdclListCtrl::OdclListCtrl( CControlPane& Pane, TDclControlPtr pTemplate, UINT nID )
 : CArxDialogControl( pTemplate, &Pane, this )
 , mpDocReactor( NULL )
 , mpBlockReactor( NULL )
@@ -196,11 +196,6 @@ bool OdclListCtrl::Create( CWnd* pParentWnd, UINT nID )
 		SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
 
 	SetAcadColor( mpTemplate->GetLongProperty( Prop::BackgroundColor ) );
-
-	if( mpTemplate->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
 
 	return bSuccess;
 }
@@ -640,7 +635,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	bool bDrag = mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin);
 	if (!bDrag) //dragging not allowed
@@ -664,7 +659,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 				mpTemplate->GetStringProperty(Prop::EventClicked),  
 				lvhti.iItem,
 				lvhti.iSubItem,
-				m_bInvokeWithSendString);
+				IsAsyncEvents());
 		}
 		else
 		{
@@ -674,7 +669,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			InvokeMethodInt(
 				mpTemplate->GetStringProperty(Prop::EventClicked),  
 				lvhti.iItem,
-				m_bInvokeWithSendString);
+				IsAsyncEvents());
 		}
 	}
 */
@@ -696,7 +691,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 	// a -1 will be returned if not found
 	if (mpTemplate->GetLongProperty(Prop::ListViewStyle) > -1)
-		BeginDragnDrop(mpTemplate, point, m_bInvokeWithSendString);
+		BeginDragnDrop(mpTemplate, point, IsAsyncEvents());
 	else
 	{
 		CStringArray saBlockNames;
@@ -709,7 +704,7 @@ void OdclListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			//!CHANGED! 10-5-04 SRM
 			//didnt allow user to drag and drop blocks from external dwgs
 			//if (m_pLoadedDwg == NULL)
-			BeginDragnDropToInsertBlocks(mpTemplate, point, m_bInvokeWithSendString, saBlockNames);
+			BeginDragnDropToInsertBlocks(mpTemplate, point, IsAsyncEvents(), saBlockNames);
 		}
 	}
 }
@@ -723,7 +718,7 @@ void OdclListCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnLButtonUp(nFlags, point);
 }
 
@@ -755,7 +750,7 @@ void OdclListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 			mpTemplate->GetStringProperty(Prop::EventClicked),  
 			plvdi->item.mask, 
 			plvdi->item.iItem, 
-			m_bInvokeWithSendString);			
+			IsAsyncEvents());			
 	}
 /*	else
 	{
@@ -768,7 +763,7 @@ void OdclListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 void OdclListCtrl::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 	
 	*pResult = 0;
 }
@@ -783,7 +778,7 @@ void OdclListCtrl::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 		InvokeMethodInt(
 			mpTemplate->GetStringProperty(Prop::EventRClick),  
 			plvdi->item.mask, 
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 	
 	*pResult = 0;
@@ -798,21 +793,21 @@ void OdclListCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 		InvokeMethodInt(
 			mpTemplate->GetStringProperty(Prop::EventRDblClick),  
 			plvdi->item.mask, 
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 	*pResult = 0;
 }
 
 void OdclListCtrl::OnReturn(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventReturnPressed), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventReturnPressed), IsAsyncEvents());
 	*pResult = 0;
 }
 
 void OdclListCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
 	
 	
 	*pResult = 0;
@@ -830,7 +825,7 @@ void OdclListCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 			plvItem->pszText,
 			plvItem->iItem,
 			plvItem->iSubItem,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 
 		SetItemText(plvItem->iItem, plvItem->iSubItem, plvItem->pszText);
 		//SetItemText(nItem, m_nEditSubItem, sNewText);
@@ -870,7 +865,7 @@ void OdclListCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 		mpTemplate->GetStringProperty(Prop::EventBeginLabelEdit),
 		nItem,
 		m_nEditSubItem,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	
 	*pResult = 0;
@@ -880,7 +875,7 @@ void OdclListCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
 	
-	InvokeMethodInt(mpTemplate->GetStringProperty(Prop::EventColumnClick), pNMListView->iSubItem, m_bInvokeWithSendString);
+	InvokeMethodInt(mpTemplate->GetStringProperty(Prop::EventColumnClick), pNMListView->iSubItem, IsAsyncEvents());
 	
 	*pResult = 0;
 }
@@ -930,13 +925,13 @@ void OdclListCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 			mpTemplate->GetStringProperty(Prop::EventDblClicked),  
 			nRow, 
 			nCol, 
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	else				
 		// call methods to invoke the event
 		InvokeMethodInt(
 			mpTemplate->GetStringProperty(Prop::EventDblClicked),  
 			nRow, 
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	
 }
 
@@ -1319,7 +1314,7 @@ void OdclListCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnMButtonDown(nFlags, point);
 }
 
@@ -1333,7 +1328,7 @@ void OdclListCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnMButtonUp(nFlags, point);
 }
 
@@ -1347,7 +1342,7 @@ void OdclListCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnRButtonDown(nFlags, point);
 }
 
@@ -1361,7 +1356,7 @@ void OdclListCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnRButtonUp(nFlags, point);
 }
 
@@ -1373,21 +1368,21 @@ void OdclListCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 		MK_RBUTTON,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnContextMenu(pTarget, point);
 }
 
 void OdclListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, IsAsyncEvents());
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void OdclListCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, IsAsyncEvents());
 		
 	CListCtrl::OnKeyUp(nChar, nRepCnt, nFlags);
 }
@@ -1399,7 +1394,7 @@ void OdclListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	CListCtrl::OnMouseMove(nFlags, point);
 }

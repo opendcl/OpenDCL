@@ -5,6 +5,7 @@
 
 #include "Resource.h"
 #include "PictureBox.h"
+#include "PtrTypes.h"
 
 class CDclControlObject;
 class CPropertyObject;
@@ -16,7 +17,7 @@ class COpenDCLView;
 
 class CButtonStyles : public CPropertyPage
 {
-	CDclControlObject* mpControl;
+	TDclControlPtr mpControl;
 	COpenDCLView* mpView;
 	CPictureBox	m_Picture;
 	CListBox	m_PicList;
@@ -35,7 +36,7 @@ protected:
 
 // Construction
 public:
-	CButtonStyles( CDclControlObject* pControl, COpenDCLView* pView );
+	CButtonStyles( TDclControlPtr pControl, COpenDCLView* pView );
 	~CButtonStyles();
 
 public:

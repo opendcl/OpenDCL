@@ -13,7 +13,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxRadioButtonCtrl
 
-CArxRadioButtonCtrl::CArxRadioButtonCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CArxRadioButtonCtrl::CArxRadioButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CRadioButtonCtrl( pTemplate, pPane, nID, false )
 , mArxServices( pTemplate )
 {
@@ -29,11 +29,6 @@ bool CArxRadioButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
-
-	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
 
 	return bSuccess;
 }
@@ -56,7 +51,7 @@ void CArxRadioButtonCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnMouseMove(nFlags, point);
 }
 
@@ -99,12 +94,12 @@ void CArxRadioButtonCtrl::OnClicked()
 			InvokeMethodInt(
 				mpTemplate->GetStringProperty(Prop::EventClicked),
 				nValue,
-				m_bInvokeWithSendString);
+				IsAsyncEvents());
 		}
 	}
 }
 
 void CArxRadioButtonCtrl::OnDoubleclicked() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
 }

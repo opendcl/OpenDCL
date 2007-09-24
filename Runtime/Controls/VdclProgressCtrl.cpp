@@ -39,7 +39,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // VdclProgressCtrl message handlers
 
-BOOL VdclProgressCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
+BOOL VdclProgressCtrl::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID ) 
 {
 	BOOL RetVal;
 	CRect ArxRect;

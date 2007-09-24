@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "PropertiesTabPane.h"
+#include "Workspace.h"
 #include "SharedRes.h"
 
 

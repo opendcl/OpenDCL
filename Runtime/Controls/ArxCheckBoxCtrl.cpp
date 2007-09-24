@@ -13,7 +13,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxCheckBoxCtrl
 
-CArxCheckBoxCtrl::CArxCheckBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CArxCheckBoxCtrl::CArxCheckBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CCheckBoxCtrl( pTemplate, pPane, nID, false )
 , mArxServices( pTemplate )
 {
@@ -29,11 +29,6 @@ bool CArxCheckBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
-
-	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
 
 	return bSuccess;
 }
@@ -56,7 +51,7 @@ void CArxCheckBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnMouseMove(nFlags, point);
 }
 
@@ -97,11 +92,11 @@ void CArxCheckBoxCtrl::OnClicked()
 		InvokeMethodInt(
 			mpTemplate->GetStringProperty(Prop::EventClicked),
 			nValue,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 }
 
 void CArxCheckBoxCtrl::OnDoubleclicked() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
 }

@@ -5,9 +5,9 @@
 
 #include "Resource.h"
 #include "TabsPane.h"
+#include "DclControlObject.h"
 
 class CDclFormObject;
-class CDclControlObject;
 class COpenDCLView;
 
 
@@ -17,7 +17,7 @@ class COpenDCLView;
 class CSortTabs : public CPropertyPage
 {
 	COpenDCLView* mpView;
-	CDclControlObject* mpDclControl;
+	TDclControlPtr mpDclControl;
 	CTabsPane* mpTabsPane;
 	CListBox	m_List;
 
@@ -26,7 +26,7 @@ class CSortTabs : public CPropertyPage
 
 // Construction
 public:
-	CSortTabs( COpenDCLView* pView, CDclControlObject* pControl, CTabsPane* pTabsPane );
+	CSortTabs( COpenDCLView* pView, TDclControlPtr pControl, CTabsPane* pTabsPane );
 	~CSortTabs();
 
 // Overrides

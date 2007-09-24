@@ -135,12 +135,12 @@ protected:
 
 // Construction
 public:
-	CGridCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CGridCtrl();
 
 // DialogControl Interface
 public:
-	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual DWORD GetWndStyle() const;

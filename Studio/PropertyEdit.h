@@ -5,10 +5,10 @@
 
 #include "FormVarNameUpdate.h"
 #include "PropertyObject.h"
+#include "DclControlObject.h"
 
 class COpenDCLView;
 class CControlHolder;
-class CDclControlObject;
 
 #define nCharReturn 13
 #define nCharEsc	27
@@ -33,7 +33,7 @@ public:
 	bool m_bAllowReturn;
 	TPropertyPtr m_pProp;
 	CControlHolder *m_pAxContainer;
-	CDclControlObject	*m_pControl;
+	TDclControlPtr m_pControl;
 	COpenDCLView		*m_pView;
 // Operations
 public:

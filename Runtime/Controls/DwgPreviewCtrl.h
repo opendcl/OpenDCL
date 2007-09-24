@@ -5,6 +5,7 @@
 
 #include "OleOdcDropTarget.h"
 #include "PPToolTip.h"
+#include "PtrTypes.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -26,9 +27,8 @@ public:
 	bool				m_bSelectedRect;
 	COLORREF			m_HighlightColor;
 	CString				m_filename;
-	CDclControlObject	*m_ArxControl;
+	TDclControlPtr m_ArxControl;
 	COLORREF			m_BkColor;
-	bool				m_bInvokeWithSendString;		
 	CRect				m_rcFocus;
 	
 // Operations
@@ -53,7 +53,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDwgPreviewCtrl)
 	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID );
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	//}}AFX_VIRTUAL

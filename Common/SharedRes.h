@@ -180,7 +180,7 @@
 #define IDS_PROP_ISTABSTOP              360
 #define IDS_PROP_EVENTMOUSEENTERED      361
 #define IDS_PROP_GROUP                  362
-#define IDS_PROP_PRESSEDPICT            363
+#define IDS_PROP_MOUSEOVERPICT          363
 #define IDS_PROP_RENDERMODE             364
 #define IDS_PROP_EVENTRETURNPRESSED     365
 #define IDS_PROP_FORMEVENTCANCELCLOSE   366
@@ -278,6 +278,8 @@
 #define IDS_PROP_TITLEBAR               462
 #define IDS_EVENT_FORM_ONCANCEL         463
 #define IDS_PROP_TOOLTIP_BALLOON        464
+#define IDS_EVENT_ENTERINGNODOCSTATE    465
+#define IDS_EVENT_FORM_ENTERINGNODOCSTATE 465
 #define IDI_LABEL                       10000
 #define IDS_THE                         10001
 #define IDS_RESETPROP                   10002

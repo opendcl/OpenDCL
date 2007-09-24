@@ -9,8 +9,6 @@
 #include <string>
 #include <map>
 
-class CDclControlObject;
-
 #define TRUETYPE_FONT		0x0001
 #define PRINTER_FONT		0x0002
 #define DEVICE_FONT			0x0004

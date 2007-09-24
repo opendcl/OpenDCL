@@ -113,13 +113,13 @@ enum Id
 	EventDropDown = 103,
 	EventScroll = 104,
 	EventReleasedCapture = 105,
-	LabelUnderline = 106,
-	LabelItalic = 107,
-	LabelBold = 108,
-	LabelSize = 109,
-	LabelName = 110,
-	LabelStrikeOut = 111,
-	LabelColor = 112,
+	FontUnderline = 106,
+	FontItalic = 107,
+	FontBold = 108,
+	FontSize = 109,
+	FontName = 110,
+	FontStrikeout = 111,
+	FontColor = 112,
 	BlockName = 113,
 	SlideFileName = 114, //unused
 	Color = 115,
@@ -160,7 +160,7 @@ enum Id
 	IsTabStop = 150,
 	EventMouseEntered = 151,
 	BeginGroup = 152,
-	PressedPicture = 153,
+	MouseOverPicture = 153,
 	RenderMode = 154,
 	EventReturnPressed = 155,
 	FormEventCancelClose = 156,
@@ -259,8 +259,9 @@ enum Id
 	TitleBar = 252,
 	FormEventOnCancel = 253,
 	ToolTipBalloon = 254,
+	DocEventEnteringNoDocState = 255,
 	_MinId = 1,
-	_MaxId = 254
+	_MaxId = 255
 };
 
 }; //namespace Prop

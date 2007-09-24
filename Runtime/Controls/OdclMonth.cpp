@@ -9,6 +9,9 @@
 #include "PropertyIds.h"
 #include "ToolTips.h"
 
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
+
 
 /////////////////////////////////////////////////////////////////////////////
 // OdclMonth
@@ -38,7 +41,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // OdclMonth message handlers
 
-BOOL OdclMonth::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
+BOOL OdclMonth::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID ) 
 {
 
 	BOOL RetVal;
@@ -77,16 +80,6 @@ BOOL OdclMonth::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	CMonthCalCtrl::GetToday(tToday);
 	CMonthCalCtrl::SetCurSel(tToday);
 
-	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
-
 	return RetVal;
 }
 
@@ -105,26 +98,26 @@ void OdclMonth::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	CMonthCalCtrl::OnMouseMove(nFlags, point);
 }
 
 
 void OdclMonth::OnGetdaystate(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventGetDayState), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventGetDayState), IsAsyncEvents());
 	*pResult = 0;
 }
 
 void OdclMonth::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSelChanged), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSelChanged), IsAsyncEvents());
 	*pResult = 0;
 }
 
 void OdclMonth::OnSelect(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSelect), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSelect), IsAsyncEvents());
 	*pResult = 0;
 }
 

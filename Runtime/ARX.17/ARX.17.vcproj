@@ -239,10 +239,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ArxProjectCollection.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\ArxWorkspace.cpp"
 				>
 			</File>
@@ -360,10 +356,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\ArxProjectCollection.h"
-				>
-			</File>
-			<File
 				RelativePath="..\ArxWorkspace.h"
 				>
 			</File>
@@ -453,11 +445,11 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="..\Res\Folder.bmp"
+				RelativePath="..\..\Common\Res\Folder.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\Res\Folder.bmp"
+				RelativePath="..\Res\Folder.bmp"
 				>
 			</File>
 			<File
@@ -1451,19 +1443,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\ProjectCollection.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\ProjectCollection.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Common\PropertyIds.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\PropertyList.h"
 				>
 			</File>
 			<File
@@ -1483,6 +1463,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\PtrTypes.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\RefCountedPtr.h"
 				>
 			</File>
@@ -1492,6 +1476,14 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\ResizableDialog.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\SafeImageListWrite.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\SafeImageListWrite.h"
 				>
 			</File>
 			<File

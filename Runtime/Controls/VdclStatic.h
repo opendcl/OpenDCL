@@ -6,8 +6,6 @@
 #include "OleOdcDropTarget.h"
 #include "PPToolTip.h"
 
-class CDclControlObject;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // VdclStatic window
@@ -20,7 +18,6 @@ public:
 	COLORREF m_ForeColor;
 	COLORREF m_BkColor;
 	bool m_bTransparent;
-	bool m_bInvokeWithSendString;
 
 // Construction
 public:
@@ -47,7 +44,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(VdclStatic)
 	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID );
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp);	
@@ -69,5 +66,5 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	CDclControlObject *m_ArxControl;
+	TDclControlPtr m_ArxControl;
 };

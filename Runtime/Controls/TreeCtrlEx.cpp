@@ -8,6 +8,9 @@
 #include "PropertyIds.h"
 #include "DclControlObject.h"
 
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CTreeCtrlEx
@@ -57,7 +60,7 @@ void CTreeCtrlEx::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	CTreeCtrl::OnMouseMove(nFlags, point);
 }
 
@@ -95,7 +98,7 @@ void CTreeCtrlEx::OnLButtonDown(UINT nFlags, CPoint point)
 		SetFocus();
 		if ((hItem != NULL))// && (TVHT_ONITEM & uFlags))
 		   Select(hItem, TVGN_CARET);
-		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
+		BeginDragnDrop(m_ArxControl, point, IsAsyncEvents());
 	}
 	
 	CTreeCtrl::OnLButtonDown(nFlags, point);
@@ -126,7 +129,7 @@ void CTreeCtrlEx::OnRButtonUp(UINT nFlags, CPoint point)
 
 	InvokeMethod(
 		m_ArxControl->GetStringProperty(Prop::EventRClick),
-		m_bInvokeWithSendString);	
+		IsAsyncEvents());	
 		
 	CTreeCtrl::OnRButtonUp(nFlags, point);
 }
@@ -157,7 +160,7 @@ void CTreeCtrlEx::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult)
 			m_ArxControl->GetStringProperty(Prop::EventSelChanged),
 			sItemText,
 			sKey,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 	else if (SelectedItem.hItem != NULL)
 	{		
@@ -166,7 +169,7 @@ void CTreeCtrlEx::OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult)
 			m_ArxControl->GetStringProperty(Prop::EventSelChanged),
 			sItemText,
 			(DWORD_PTR)SelectedItem.hItem,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 	SelectDropTarget(SelectedItem.hItem);
 	Invalidate();

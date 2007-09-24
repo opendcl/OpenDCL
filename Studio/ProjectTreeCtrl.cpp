@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ProjectTreeCtrl.h"
-#include "Project.h"
+#include "Workspace.h"
 #include "Editor.h"
 #include "OpenDCLView.h"
 #include "DclFormObject.h"
@@ -25,23 +25,22 @@ static CString StripPathFromFileName(CString sFullPath)
 }
 
 
-static CString FindTabCaption2(CDclFormObject *pDclTab, int nTabIndex)
+static CString FindTabCaption2(TDclFormPtr pDclTab, int nTabIndex)
 {
-	CDclControlObject* pControl = pDclTab->FindFirstControlOfType(CtlTabStrip);
+	TDclControlPtr pControl = pDclTab->FindFirstControlOfType(CtlTabStrip);
 	if (pControl)
 		return pControl->GetPropertyListItem(Prop::TabsCaption, nTabIndex);
 	return CString();
 }
 
 
-static CString FindTabCaption(CDclFormObject *pDclTabPage)
+static CString FindTabCaption(TDclFormPtr pDclTabPage)
 {
-	POSITION pos = pDclTabPage->GetProject()->GetDclFormList().GetHeadPosition();
-	while( pos )
+	const TDclFormList& Forms = pDclTabPage->GetProject()->GetDclFormList();
+	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
 	{
-		CDclFormObject *pDclParent = pDclTabPage->GetProject()->GetDclFormList().GetNext( pos );
-		if( pDclTabPage->GetParentName() == pDclParent->GetUniqueName() )
-			return FindTabCaption2( pDclParent, pDclTabPage->GetTabIndex() );
+		if( pDclTabPage->GetParentName() == (*iter)->GetUniqueName() )
+			return FindTabCaption2( (*iter), pDclTabPage->GetTabIndex() );
 	}
 	return CString();
 }
@@ -131,20 +130,16 @@ void CProjectTreeCtrl::OnDblclk(NMHDR* pNMHDR, LRESULT* pResult)
 	}
 
 	assert( mpProject != NULL );
-	for (int i=0; i<mpProject->GetDclFormList().GetCount(); i++)
+	const TDclFormList& Forms = mpProject->GetDclFormList();
+	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
 	{
-		POSITION pos = mpProject->GetDclFormList().FindIndex(i);
-		if (pos != NULL)
+		if( (*iter)->m_htiTreeItem == hItem )
 		{
-			CDclFormObject *pDcl = mpProject->GetDclFormList().GetAt(pos);
-			if (pDcl->m_htiTreeItem == hItem)
-			{
-				if (pDcl->m_pMdiChildWnd == NULL)
-					((COpenDCLApp*)AfxGetApp())->OpenExistingForm(pDcl);
-				else
-					pDcl->m_pMdiChildWnd->SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
-				return;
-			}
+			if( !(*iter)->m_pMdiChildWnd )
+				((COpenDCLApp*)AfxGetApp())->OpenExistingForm( (*iter) );
+			else
+				(*iter)->m_pMdiChildWnd->SetWindowPos( &CWnd::wndTop, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+			break;
 		}
 	}
 }
@@ -153,13 +148,11 @@ void CProjectTreeCtrl::RemoveViewPointer(CView *pView)
 {
 	if(!mpProject)
 		return;
-	POSITION pos = mpProject->GetDclFormList().GetHeadPosition();
-	while( pos )
+	const TDclFormList& Forms = mpProject->GetDclFormList();
+	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
 	{
-		CDclFormObject* pDclForm = mpProject->GetDclFormList().GetNext( pos );
-		assert( pDclForm != NULL );
-		if( pDclForm->m_pMdiChildWnd == (CChildFrame*)pView->GetParentFrame() )
-			pDclForm->m_pMdiChildWnd = NULL;
+		if( (*iter)->m_pMdiChildWnd == (CChildFrame*)pView->GetParentFrame() )
+			(*iter)->m_pMdiChildWnd = NULL;
 	}
 }
 
@@ -191,21 +184,16 @@ void CProjectTreeCtrl::SetPassword( LPCTSTR pszPassword )
 	SetItemText(mhtiPassword, sPassword);
 }
 
-void CProjectTreeCtrl::SetupProjectTree(CProject* pProject /*= NULL*/)
+void CProjectTreeCtrl::SetupProjectTree(TEditorProjectPtr pProject /*= NULL*/)
 {
 	ClearTree();
 	mpProject = pProject;
 
 	if(mpProject)
 	{
-		POSITION pos = mpProject->GetDclFormList().GetHeadPosition();
-		while( pos )
-		{
-			CDclFormObject* pDclForm = mpProject->GetDclFormList().GetNext( pos );
-			assert( pDclForm != NULL );
-			if( pDclForm )
-				AddFormToTree( pDclForm, false );
-		}
+		const TDclFormList& Forms = mpProject->GetDclFormList();
+		for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
+			AddFormToTree( (*iter), false );
 	}
 	
 	CString sText;
@@ -276,7 +264,7 @@ void CProjectTreeCtrl::AddActiveXFileTree(CString sFileName)
 	SetItemImage(htiTreeItem, 8,8);
 }
 
-void CProjectTreeCtrl::AddFormToTree(CDclFormObject *pDcl, bool bForceShow)
+void CProjectTreeCtrl::AddFormToTree(TDclFormPtr pDcl, bool bForceShow)
 {
 	CString sText;
 	
@@ -371,9 +359,9 @@ void CProjectTreeCtrl::AddFormToTree(CDclFormObject *pDcl, bool bForceShow)
 }
 
 
-HTREEITEM CProjectTreeCtrl::FindTabParent(CDclFormObject *pDclTab)
+HTREEITEM CProjectTreeCtrl::FindTabParent(TDclFormPtr pDclTab)
 {
-	CDclFormObject* pParentForm = pDclTab->GetParentForm();
+	TDclFormPtr pParentForm = pDclTab->GetParentForm();
 	assert( pParentForm != NULL );
 	if( !pParentForm )
 		return NULL;

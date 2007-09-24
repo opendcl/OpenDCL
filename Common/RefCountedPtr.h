@@ -98,9 +98,18 @@ public:
 public:
 	RefCounter<T>* Copy()
 		{
-			AddRef();
+			if( AddRef() == ~0 )
+			{
+				RefCounter<T>* pNewT = new RefCounter<T>( pT );
+				pNewT->Lock();
+				return pNewT;
+			}
 			return this;
 		}
+
+public:
+	//for use by locked ref counter to prevent pT from being deleted on destruction
+	T Swap( T NewTarget ) { T OldT = pT; pT = NewTarget; return OldT; }
 };
 
 template< typename T, typename R = RefCounter<T*> >
@@ -119,8 +128,7 @@ public:
 		{}
 	virtual ~RefCountedPtr<T,_R>(void)
 		{
-			if( pW )
-				pW->Release();
+			Release();
 		}
 
 	// copy and assignment
@@ -131,39 +139,47 @@ public:
 		{
 			if( !pW || !src.pW || (pW != src.pW) )
 			{
-				if( pW )
-					pW->Release();
+				Release();
 				pW = src.pW? src.pW->Copy() : NULL;
 			}
 			return *this;
 		}
-	T* operator=(const T* src)
+
+private:
+	void Release()
 		{
-			if( !pW || !src || (*pW != src) )
-			{
-				if( pW )
-					pW->Release();
-				pW = src? new _R( const_cast<T*>(src) ) : NULL;
-			}
 			if( pW )
-				return *pW;
-			return NULL;
+			{
+				if( pW->Release() == ~0 )
+				{
+					pW->Swap( NULL );
+					delete pW;
+					pW = NULL;
+				}
+			}
 		}
 
 protected:
 	bool isNull() const { return (!pW || pW->isNull()); }
 
 public:
-	operator const T* () const { if( pW ) return *pW; return NULL; }
-	operator T* () { if( pW ) return *pW; return NULL; }
-
-  const T* operator->() const { if( pW ) return *pW; return NULL; }
-  T* operator->() { if( pW ) return *pW; return NULL; }
-
+	operator T* () const { if( pW ) return *pW; return NULL; }
+  T* operator->() const { if( pW ) return *pW; return NULL; }
 	bool operator < ( const RefCountedPtr<T,_R>& Right ) const
 		{
 			return ((const T*)(*this) < (const T*)Right);
 		}
 
 	void Lock() { if( pW ) pW->Lock(); }
+};
+
+template< typename T, typename R = RefCounter<T*> >
+class LockedPtr : public RefCountedPtr< T, R >
+{
+private:
+	typedef RefCountedPtr< T, R > _base;
+
+public:
+	LockedPtr( T* pTarget ) : _base( pTarget ) { Lock(); }
+	virtual ~LockedPtr(void) {}
 };

@@ -3,7 +3,7 @@ ForceUpdateNow
 [Prefix]
 dcl_Control_
 [Desc]
-This method is used to force a control to update itself instead of waiting for any major processes to be completed.
+This method is used to force a control to repaint itself immediately instead of waiting for idle time.
 [Arguments]
 ProjectFileName
 
@@ -13,9 +13,10 @@ GetCurPos
 [Prefix]
 dcl_Control_
 [Desc]
-This method will return a list indicating the current left, top, width and height of the control queried.
+This method will return a list indicating the current left, top, width and height of the control.
 [Arguments Return] as List
 ProjectFileName
+
 
 [Method]
 SetFocus
@@ -32,7 +33,7 @@ GetFocus
 [Prefix]
 dcl_
 [Desc]
-This method will return a list indicating the project name, dialog box name and the name of the control that has the current focus. If the control name is blank than the dialog box has the focus.
+This method will return a list indicating the project name, dialog box name and the name of the control that has the current focus. If the control name is blank then the dialog box has the focus.
 [Arguments Return] as List of Strings 
 
 
@@ -41,7 +42,7 @@ SetPos
 [Prefix]
 dcl_Control_
 [Desc]
-This method will move a control to the new position specified.  When repositioning the control, optional width and height parameters can be specified.
+This method will move a control to a new position. Optional width and height parameters can be specified to change the control's size.
 [Arguments]
 ProjectFileName
 \par\tab Left
@@ -72,7 +73,17 @@ GetHwnd
 dcl_Control_
 [Desc]
 This method will return the Hwnd value of the control. This may be required by an ActiveX control.
-[Arguments Return] as Integer
+[Arguments Return] as Entity Name
+ProjectFileName
+
+
+[Method]
+GetProperties
+[Prefix]
+dcl_Control_
+[Desc]
+Returns a list of names of all properties attached to the control. This list includes hidden properties and properties of types that cannot be managed from AutoLISP.
+[Arguments Return] as List of Strings
 ProjectFileName
 
 

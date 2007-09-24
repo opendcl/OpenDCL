@@ -16,10 +16,9 @@ class CArxImageComboBoxCtrl : public CImageComboBoxCtrl
 	CArxControlServices	mArxServices;
 
 	COleOdcDropTarget m_DropTarget;
-	bool m_bInvokeWithSendString;
 
 public:
-	CArxImageComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CComboHandler* pHandler = NULL, bool bCreate = true );
+	CArxImageComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, CComboHandler* pHandler = NULL, bool bCreate = true );
 	virtual ~CArxImageComboBoxCtrl();
 
 // DialogControl Interface

@@ -7,8 +7,6 @@
 #include "ArxDialogObject.h"
 
 class CFontCollection;
-class CDclControlObject;
-class CDclFormObject;
 
 
 struct FileDialogParams
@@ -35,7 +33,7 @@ class CFileDialogX : public CArxDialogObject
 	CCustomFileDialog* mpOwner;
 	FileDialogParams* mpParams;
 protected:
-	CFileDialogX( CCustomFileDialog& Owner, CDclFormObject* pDclForm, FileDialogParams* pParams = NULL );
+	CFileDialogX( CCustomFileDialog& Owner, TDclFormPtr pDclForm, FileDialogParams* pParams = NULL );
 	~CFileDialogX();
 
 	virtual DclFormType GetType() const;
@@ -62,10 +60,10 @@ class CCustomFileDialog : public CFileDialog
 	CString msResultBuf;
 	FileDialogParams* mpParams;
 	CMainFileDlg mMainFileDlg;
-	CDclControlObject* mpFileDlgCtrl;
+	TDclControlPtr mpFileDlgCtrl;
 
 public:
-	CCustomFileDialog( CDclFormObject* pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
+	CCustomFileDialog( TDclFormPtr pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
 	~CCustomFileDialog();
 
 	//Attributes

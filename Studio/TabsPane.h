@@ -6,9 +6,9 @@
 #include "Resource.h"
 #include "PictureBox.h"
 #include "PropertyObject.h"
+#include "DclControlObject.h"
 
 class CDclFormObject;
-class CDclControlObject;
 class COpenDCLView;
 
 class CTabInfo
@@ -18,7 +18,7 @@ public:
 	int mnImageIndex;
 	CString msToolTipTitle;
 	int mnOriginalIndex;
-	CDclFormObject* mpChildForm;
+	TDclFormPtr mpChildForm;
 	CTabInfo(int nIndex = -1) : mnOriginalIndex( nIndex ), mpChildForm( NULL ) {}
 };
 
@@ -31,7 +31,7 @@ typedef CList<CTabInfo*> CTabInfoList;
 class CTabsPane : public CPropertyPage
 {
 	COpenDCLView* mpView;
-	CDclControlObject* mpDclControl;
+	TDclControlPtr mpDclControl;
 	RefCountedPtr< CImageList >& mpImageList; //address of image list pointer used by image list property page
 	int mnTabIndex;
 
@@ -51,7 +51,7 @@ class CTabsPane : public CPropertyPage
 	
 	// Construction
 public:
-	CTabsPane( COpenDCLView* pView, CDclControlObject* pControl, RefCountedPtr< CImageList >& pImageList );   // standard constructor
+	CTabsPane( COpenDCLView* pView, TDclControlPtr pControl, RefCountedPtr< CImageList >& pImageList );   // standard constructor
 	~CTabsPane();   // standard constructor
 
 public:

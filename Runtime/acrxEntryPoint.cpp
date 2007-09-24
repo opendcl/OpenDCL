@@ -24,7 +24,7 @@
 //-----------------------------------------------------------------------------
 #include "StdAfx.h"
 #include "Resource.h"
-#include "ArxProject.h"
+#include "ArxWorkspace.h"
 #include "PropertyNames.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
@@ -493,7 +493,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 
 
 // Helper function to process lisp arguments (returns false to signal an argument exception)
-bool RetrieveProjectFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CProject*& pProject )
+bool RetrieveProjectFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ TArxProjectPtr& pProject )
 {
 	if (!pArgs)
 		return false; //arguments expected
@@ -502,13 +502,13 @@ bool RetrieveProjectFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CProject*& pPro
 	switch (pArgs->restype)	
 	{
 	case RTSHORT:
-		pProject = (CProject*)pArgs->resval.rint;
+		pProject = TArxProjectLockedPtr( (CArxProject*)pArgs->resval.rint );
 		break;
 	case RTLONG:
-		pProject = (CProject*)pArgs->resval.rlong;
+		pProject = TArxProjectLockedPtr( (CArxProject*)pArgs->resval.rlong );
 		break;
 	case RTENAME:
-		pProject = (CProject*)pArgs->resval.rlname[0];
+		pProject = TArxProjectLockedPtr( (CArxProject*)pArgs->resval.rlname[0] );
 		break;
 	case RTSTR:
 		pProject = theArxWorkspace.FindProject( pArgs->resval.rstring );
@@ -521,12 +521,12 @@ bool RetrieveProjectFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CProject*& pPro
 }
 
 
-bool RetrieveFormFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDclFormObject*& pForm )
+bool RetrieveFormFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ TDclFormPtr& pForm )
 {
+	pForm = NULL;
 	if (!pArgs)
 		return false; //arguments expected
 
-	pForm = NULL;
 	switch (pArgs->restype)	
 	{
 	// Uncomment this code to accept nil arguments without generating an exception
@@ -534,13 +534,13 @@ bool RetrieveFormFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDclFormObject*& p
 	//	pForm = NULL;
 	//	break;
 	case RTSHORT:
-		pForm = (CDclFormObject*)pArgs->resval.rint;
+		pForm = TDclFormLockedPtr( (CDclFormObject*)pArgs->resval.rint );
 		break;
 	case RTLONG:
-		pForm = (CDclFormObject*)pArgs->resval.rlong;
+		pForm = TDclFormLockedPtr( (CDclFormObject*)pArgs->resval.rlong );
 		break;
 	case RTENAME:
-		pForm = (CDclFormObject*)pArgs->resval.rlname[0];
+		pForm = TDclFormLockedPtr( (CDclFormObject*)pArgs->resval.rlname[0] );
 		break;
 	case RTSTR:
 		{
@@ -565,7 +565,7 @@ bool RetrieveFormFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDclFormObject*& p
 }
 
 
-bool RetrieveControlFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDclControlObject*& pControl )
+bool RetrieveControlFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ TDclControlPtr& pControl )
 {
 	if (!pArgs)
 		return false; //arguments expected
@@ -578,13 +578,13 @@ bool RetrieveControlFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDclControlObje
 	//	pForm = NULL;
 	//	break;
 	case RTSHORT:
-		pControl = (CDclControlObject*)pArgs->resval.rint;
+		pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rint );
 		break;
 	case RTLONG:
-		pControl = (CDclControlObject*)pArgs->resval.rlong;
+		pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rlong );
 		break;
 	case RTENAME:
-		pControl = (CDclControlObject*)pArgs->resval.rlname[0];
+		pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rlname[0] );
 		break;
 	case RTSTR:
 		{
@@ -621,7 +621,7 @@ bool RetrieveControlFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDclControlObje
 
 bool RetrieveDialogFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDialogObject*& pDialog )
 {
-	CDclFormObject* pForm = NULL;
+	TDclFormPtr pForm;
 	if (!RetrieveFormFromArgs (pArgs, pForm))
 		return false;
 	pDialog = pForm? pForm->GetFormInstance() : NULL;
@@ -681,9 +681,9 @@ protected:
 	//dcl dialog state, probably should be stored in document state
 	static CString msDialogToBeShown;
 	static CPoint mptToBeShown;
-	static CProject* mpProjectToBeShown;
+	static TArxProjectPtr mpProjectToBeShown;
 	static CString msActionToBeShown;
-	static CDclFormObject* mpDclToBeShown;
+	static TDclFormPtr mpDclToBeShown;
 	static int mnDoneDialogValue;
 	static int mnListOperation; //1 = change selection, 2 = append item, 3 = replace all (default)
 
@@ -729,8 +729,7 @@ public:
 	virtual AcRx::AppRetCode On_kUnloadAppMsg (void *pkt) {
 		try
 		{
-			theArxWorkspace.CloseAllDialogs();
-			theArxWorkspace.GetProjectHolder().ClearProjects();
+			theArxWorkspace.UnloadAllProjects();
 		}
 		catch(...)
 		{
@@ -949,10 +948,10 @@ public:
 		switch (pArgs->restype)
 		{
 		case RTLONG:
-			mpProjectToBeShown = (CProject*)pArgs->resval.rlong;
+			mpProjectToBeShown = TArxProjectLockedPtr( (CArxProject*)pArgs->resval.rlong );
 			break;
 		case RTENAME:
-			mpProjectToBeShown = (CProject*)pArgs->resval.rlname[0];
+			mpProjectToBeShown = TArxProjectLockedPtr( (CArxProject*)pArgs->resval.rlname[0] );
 			break;
 		default:
 			return RSERR; //wrong argument type
@@ -985,7 +984,7 @@ public:
 		
 		// get the dcl form object that will be displayed
 		mpDclToBeShown = mpProjectToBeShown->FindDclForm(msDialogToBeShown);
-		CDclControlObject *pProps = mpDclToBeShown->GetControlProperties();
+		TDclControlPtr pProps = mpDclToBeShown->GetControlProperties();
 		pProps->SetStringProperty(Prop::FormEventInitialize, msActionToBeShown);
 		
 		TCHAR lpPathBuffer[MAX_PATH];
@@ -1099,7 +1098,7 @@ public:
 			}
 		}
 
-		CDclControlObject* pCtrl = mpDclToBeShown->FindControl(pszListKey);
+		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszListKey);
 		assert (pCtrl != NULL);
 		if( !pCtrl)
 			return RSERR;
@@ -1164,7 +1163,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pCtrl = mpDclToBeShown->FindControl(pszListKey);
+		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszListKey);
 		assert (pCtrl != NULL);
 		if( !pCtrl)
 			return RSERR;
@@ -1284,7 +1283,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pCtrl = mpDclToBeShown->FindControl(pszKey);
+		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
 		assert (pCtrl != NULL);
 		if( !pCtrl)
 			return RSERR;
@@ -1368,7 +1367,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pCtrl = mpDclToBeShown->FindControl(pszKey);
+		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
 		assert (pCtrl != NULL);
 		if( !pCtrl)
 			return RSERR;
@@ -1402,7 +1401,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pCtrl = mpDclToBeShown->FindControl(pszKey);
+		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
 		assert (pCtrl != NULL);
 		if( !pCtrl)
 			return RSERR;
@@ -1483,7 +1482,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pCtrl = mpDclToBeShown->FindControl(pszKey);
+		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
 		assert (pCtrl != NULL);
 		if( !pCtrl)
 			return RSERR;
@@ -1526,7 +1525,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pCtrl = mpDclToBeShown->FindControl(pszKey);
+		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
 		assert (pCtrl != NULL);
 		if( !pCtrl)
 			return RSERR;
@@ -1591,7 +1590,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pCtrl = mpDclToBeShown->FindControl(pszKey);
+		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
 		assert (pCtrl != NULL);
 		if( !pCtrl)
 			return RSERR;
@@ -1672,7 +1671,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pCtrl = mpDclToBeShown->FindControl(pszKey);
+		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
 		assert (pCtrl != NULL);
 		if( !pCtrl)
 			return RSERR;
@@ -1712,7 +1711,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pCtrl = mpDclToBeShown->FindControl(pszKey);
+		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
 		assert (pCtrl != NULL);
 		if( !pCtrl)
 			return RSERR;
@@ -1738,7 +1737,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pCtrl = mpDclToBeShown->FindControl(pszKey);
+		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
 		assert (pCtrl != NULL);
 		if( !pCtrl)
 			return RSERR;
@@ -1764,7 +1763,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pCtrl = mpDclToBeShown->FindControl(pszKey);
+		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
 		assert (pCtrl != NULL);
 		if( !pCtrl)
 			return RSERR;
@@ -1829,7 +1828,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pCtrl = mpDclToBeShown->FindControl(pszKey);
+		TDclControlPtr pCtrl = mpDclToBeShown->FindControl(pszKey);
 		assert (pCtrl != NULL);
 		if( !pCtrl)
 			return RSERR;
@@ -1924,12 +1923,14 @@ public:
 	static int ads_dcl_form_show(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
 
-		CDclFormObject* pDclObject = NULL;
-		if (!RetrieveFormFromArgs (pArgs, pDclObject))
+		TDclFormPtr pDclForm;
+		if (!RetrieveFormFromArgs (pArgs, pDclForm))
 			return RSERR; //invalid input
 
-		if (!pDclObject)
+		if (!pDclForm)
 			return RSRSLT; //form not found
 
 		//optional arguments
@@ -1981,7 +1982,7 @@ public:
 
 		// call method to display the requested form
 		FileDialogParams fdp( TRUE, NULL, NULL, 0, NULL );
-		bool bHasFileParams = (pDclObject->GetType() == VdclFileDialog);
+		bool bHasFileParams = (pDclForm->GetType() == VdclFileDialog);
 		if( bHasFileParams )
 		{
 			CString sFilename = pszDefaultDirectory;
@@ -1992,11 +1993,11 @@ public:
 			fdp.sDefaultExtension = pszDefaultExtension;
 		}
 		DialogParams params( CPoint( nX, nY ), CRect(0,0,0,0), bHasFileParams? (LPARAM)&fdp : NULL );
-		int nResult = theArxWorkspace.ActivateDclForm(pDclObject, &params);
+		int nResult = theArxWorkspace.ActivateDclForm(pDclForm, &params);
 
 		if (nResult >= 0)
 		{
-			if (nResult == IDOK && pDclObject->GetType() == VdclFileDialog)
+			if (nResult == IDOK && pDclForm->GetType() == VdclFileDialog)
 			{
 				if( (fdp.dwFlags & OFN_ALLOWMULTISELECT) )
 				{
@@ -2039,6 +2040,8 @@ public:
 	static int ads_dcl_form_center(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
 
 		CDialogObject* pDialog = NULL;
 		if (!RetrieveDialogFromArgs (pArgs, pDialog))
@@ -2088,6 +2091,8 @@ public:
 	static int ads_dcl_form_resize(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
 
 		CDialogObject* pDialog = NULL;
 		if (!RetrieveDialogFromArgs (pArgs, pDialog))
@@ -2129,6 +2134,8 @@ public:
 	static int ads_dcl_form_setfocus(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
 
 		CDialogObject* pDialog = NULL;
 		if (!RetrieveDialogFromArgs (pArgs, pDialog))
@@ -2149,6 +2156,8 @@ public:
 	static int ads_dcl_form_hide(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
 
 		CDialogObject* pDialog = NULL;
 		if (!RetrieveDialogFromArgs (pArgs, pDialog))
@@ -2178,6 +2187,8 @@ public:
 	static int ads_dcl_form_close(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
 
 		CDialogObject* pDialog = NULL;
 		if (!RetrieveDialogFromArgs (pArgs, pDialog))
@@ -2210,6 +2221,8 @@ public:
 	static int ads_dcl_form_getrectangle(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
 
 		CDialogObject* pDialog = NULL;
 		if (!RetrieveDialogFromArgs (pArgs, pDialog))
@@ -2241,6 +2254,8 @@ public:
 	static int ads_dcl_form_getcontrolarea(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
 
 		CDialogObject* pDialog = NULL;
 		if (!RetrieveDialogFromArgs (pArgs, pDialog))
@@ -2268,6 +2283,8 @@ public:
 	static int ads_dcl_form_closeall(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
 
 		//optional arguments
 		DWORD fMask = -1;
@@ -2291,6 +2308,8 @@ public:
 	static int ads_dcl_form_isfloating(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
 
 		CDialogObject* pDialog = NULL;
 		if (!RetrieveDialogFromArgs (pArgs, pDialog))
@@ -2313,6 +2332,8 @@ public:
 	static int ads_dcl_form_isactive(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
 
 		CDialogObject* pDialog = NULL;
 		if (!RetrieveDialogFromArgs (pArgs, pDialog))
@@ -2399,7 +2420,7 @@ public:
 		if (pArgs)
 			return RSERR; //too many arguments
 
-		CDclControlObject* pPropObj = pDialog->GetSourceForm()->GetControlProperties();
+		TDclControlPtr pPropObj = pDialog->GetSourceForm()->GetControlProperties();
 		assert(pPropObj != NULL);
 		if(pPropObj)
 			acedRetStr(pPropObj->GetStringProperty(Prop::TitleBarText));
@@ -2430,7 +2451,7 @@ public:
 				return RSERR; //too many arguments
 		}
 
-		CDclControlObject *pPropObj = pDialog->GetSourceForm()->GetControlProperties();
+		TDclControlPtr pPropObj = pDialog->GetSourceForm()->GetControlProperties();
 		pPropObj->SetStringProperty(Prop::TitleBarText, pszTitle);
 		::SetWindowText( pDialog->GetHWnd(), pszTitle );
 
@@ -2702,7 +2723,7 @@ public:
 		if (hwndFocus)
 		{
 			CString sControlName;
-			const CDclFormObject* pDclObject = theArxWorkspace.FindDclFormControl (hwndFocus, sControlName);
+			const TDclFormPtr pDclObject = theArxWorkspace.FindDclFormControl (hwndFocus, sControlName);
 			if (pDclObject)
 			{
 				resbuf rbControlName = {NULL, RTSTR};
@@ -2795,18 +2816,18 @@ public:
 		if (!pArgs)
 			return RSERR; //arguments expected
 
-		CDclControlObject* pControl = NULL;
+		TDclControlPtr pControl;
 		LPCTSTR pszProject = NULL;
 		switch (pArgs->restype)	
 		{
 		case RTSHORT:
-			pControl = (CDclControlObject*)pArgs->resval.rint;
+			pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rint );
 			break;
 		case RTLONG:
-			pControl = (CDclControlObject*)pArgs->resval.rlong;
+			pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rlong );
 			break;
 		case RTENAME:
-			pControl = (CDclControlObject*)pArgs->resval.rlname[0];
+			pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rlname[0] );
 			break;
 		case RTSTR:
 			{
@@ -3525,7 +3546,7 @@ public:
 		if (pArgs->rbnext)
 			return RSERR; //too many arguments
 
-		CArxProject* pProject = theArxWorkspace.FindProject(pszProject);
+		TArxProjectPtr pProject = theArxWorkspace.FindProject(pszProject);
 		if (!pProject)
 			return RSRSLT; //project not found
 
@@ -3853,8 +3874,8 @@ public:
 			}
 		}
 
-		CProject *pProject = theArxWorkspace.LoadProjectFile(pszFilename, pszKeyName, bReload);
-		if (pProject == NULL)
+		TArxProjectPtr pProject = theArxWorkspace.LoadProjectFile( pszFilename, pszKeyName, bReload );
+		if( !pProject )
 		{
 			CString sAlertMsg;
 			sAlertMsg.Format( _T("Project failed to load!\r\nThe file could not be found ")
@@ -3862,7 +3883,7 @@ public:
 			theWorkspace.DisplayAlert( sAlertMsg );
 			return RSRSLT; 
 		}
-		acedRetStr( pProject->GetProjectFilePath() );
+		acedRetStr( pProject->GetKeyName() );
 
 		return (RSRSLT) ;
 	}
@@ -3871,18 +3892,18 @@ public:
 	static int ads_dcl_project_unload(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
+		if( pArgs == NULL )
 			return RSERR; //argument expected
 
-		CProject* pProject = NULL;
-		if (!RetrieveProjectFromArgs( pArgs, pProject ))
+		TArxProjectPtr pProject;
+		if( !RetrieveProjectFromArgs( pArgs, pProject ) )
 			return RSERR; //wrong argument type
 		if( !pProject )
 			return RSERR; //too many arguments
 
 		//optional arguments
 		bool bForce = false;
-		if (pArgs)
+		if( pArgs )
 		{
 			bForce = (pArgs->restype != RTNIL);
 
@@ -3890,7 +3911,7 @@ public:
 				return RSERR; //too many arguments
 		}
 
-		if (theArxWorkspace.UnloadProject(pProject, bForce))
+		if( theArxWorkspace.UnloadProject( pProject, bForce ) )
 			acedRetT();
 
 		return (RSRSLT) ;
@@ -3903,13 +3924,12 @@ public:
 		if (pArgs == NULL)
 			return RSERR; //argument expected
 
-		CProject* pProject = NULL;
-		if (!RetrieveProjectFromArgs( pArgs, pProject ))
+		TArxProjectPtr pProject;
+		if( !RetrieveProjectFromArgs( pArgs, pProject ) )
 			return RSERR; //wrong argument type
 		if( !pProject )
 			return RSERR; //project not found
 
-		pArgs = pArgs->rbnext;
 		if (pArgs == NULL)
 			return RSERR; //argument expected
 
@@ -4021,7 +4041,7 @@ public:
 			}
 		}
 
-		CArxProject* pProject = NULL;
+		TArxProjectPtr pProject;
 		std::string sRawData;
 	#ifdef _UNICODE
 		CStringA sRawDataA( pszRawData );
@@ -4043,7 +4063,6 @@ public:
 		}
 		catch( ... )
 		{
-			delete pProject;
 			return RSERR; 
 		}
 
@@ -4057,13 +4076,12 @@ public:
 		if (pArgs == NULL)
 			return RSERR; //argument expected
 
-		CProject* pProject = NULL;
+		TArxProjectPtr pProject;
 		if (!RetrieveProjectFromArgs( pArgs, pProject ))
 			return RSERR; //wrong argument type
 		if( !pProject )
 			return RSERR; //project not found
 
-		pArgs = pArgs->rbnext;
 		LPCTSTR pszPassword = NULL;
 		if (pArgs)
 		{
@@ -4136,13 +4154,160 @@ public:
 
 		return (RSRSLT) ;
 	}
+
+	// ----- ads_dcl_getprojects symbol (do not rename)
+	static int ads_dcl_getprojects(void)
+	{
+		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs)
+			return RSERR; //no arguments expected
+
+		resbuf* prbProjects = NULL;
+		resbuf* prbTail = NULL;
+		const TProjectList& Projects = theArxWorkspace.GetProjects();
+		for( TProjectList::const_iterator iter = Projects.begin(); iter != Projects.end(); ++iter )
+		{
+			resbuf* prbProject = acutNewRb( RTSTR );
+			acutNewString( (*iter)->GetKeyName(), prbProject->resval.rstring );
+			if( prbTail )
+				prbTail->rbnext = prbProject;
+			else
+				prbProjects = prbProject;
+			prbTail = prbProjects;
+		}
+		acedRetList( prbProjects );
+		acutRelRb( prbProjects );
+
+		return (RSRSLT) ;
+	}
+
+	// ----- ads_dcl_project_getforms symbol (do not rename)
+	static int ads_dcl_project_getforms(void)
+	{
+		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
+
+		TArxProjectPtr pProject;
+		if (!RetrieveProjectFromArgs( pArgs, pProject ))
+			return RSERR; //wrong argument type
+		if( !pProject )
+			return RSERR; //project not found
+
+		LPCTSTR pszPassword = NULL;
+		if (pArgs)
+		{
+			switch (pArgs->restype)
+			{
+			case RTSTR:
+				pszPassword = pArgs->resval.rstring;
+				break;
+			case RTNIL:
+				break;
+			default:
+				return RSERR; //wrong argument type
+			}
+
+			if (pArgs->rbnext)
+				return RSERR; //too many arguments
+		}
+
+		if( pProject->GetPassword() != CString( pszPassword ) )
+			return RSERR; //wrong password
+
+		resbuf* prbForms = NULL;
+		resbuf* prbTail = NULL;
+		const TDclFormList& Forms = pProject->GetDclFormList();
+		for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
+		{
+			resbuf* prbForm = acutNewRb( RTENAME );
+			prbForm->resval.rlname[0] = (LONG_PTR)(const CDclFormObject*)(*iter);
+			prbForm->resval.rlname[1] = 0;
+			if( prbTail )
+				prbTail->rbnext = prbForm;
+			else
+				prbForms = prbForm;
+			prbTail = prbForm;
+		}
+		acedRetList( prbForms );
+		acutRelRb( prbForms );
+
+		return (RSRSLT) ;
+	}
+
+	// ----- ads_dcl_form_getcontrols symbol (do not rename)
+	static int ads_dcl_form_getcontrols(void)
+	{
+		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
+
+		TDclFormPtr pDclForm;
+		if (!RetrieveFormFromArgs (pArgs, pDclForm))
+			return RSERR; //invalid input
+
+		if (!pDclForm)
+			return RSRSLT; //form not found
+
+		resbuf* prbControls = NULL;
+		resbuf* prbTail = NULL;
+		const TDclControlList& Controls = pDclForm->GetControlList();
+		for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
+		{
+			resbuf* prbControl = acutNewRb( RTENAME );
+			prbControl->resval.rlname[0] = (LONG_PTR)(const CDclControlObject*)(*iter);
+			prbControl->resval.rlname[1] = 0;
+			if( prbTail )
+				prbTail->rbnext = prbControl;
+			else
+				prbControls = prbControl;
+			prbTail = prbControl;
+		}
+		acedRetList( prbControls );
+		acutRelRb( prbControls );
+
+		return (RSRSLT) ;
+	}
+
+	// ----- ads_dcl_control_getproperties symbol (do not rename)
+	static int ads_dcl_control_getproperties(void)
+	{
+		struct resbuf *pArgs =acedGetArgs () ;
+		if (pArgs == NULL)
+			return RSERR; //argument expected
+
+		TDclControlPtr pDclControl = NULL;
+		if (!RetrieveControlFromArgs (pArgs, pDclControl))
+			return RSERR; //invalid input
+
+		if (!pDclControl)
+			return RSRSLT; //form not found
+
+		resbuf* prbProperties = NULL;
+		resbuf* prbTail = NULL;
+		const TPropertyList& Props = pDclControl->GetPropertyList();
+		for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
+		{
+			resbuf* prbProp = acutNewRb( RTSTR );
+			acutNewString( (*iter)->GetName(), prbProp->resval.rstring );
+			if( prbTail )
+				prbTail->rbnext = prbProp;
+			else
+				prbProperties = prbProp;
+			prbTail = prbProp;
+		}
+		acedRetList( prbProperties );
+		acutRelRb( prbProperties );
+
+		return (RSRSLT) ;
+	}
 } ;
 
 CString CARXApp::msDialogToBeShown;
 CPoint CARXApp::mptToBeShown;
-CProject* CARXApp::mpProjectToBeShown = NULL;
+TArxProjectPtr CARXApp::mpProjectToBeShown = NULL;
 CString CARXApp::msActionToBeShown;
-CDclFormObject* CARXApp::mpDclToBeShown = NULL;
+TDclFormPtr CARXApp::mpDclToBeShown = NULL;
 int CARXApp::mnDoneDialogValue = -1;
 int CARXApp::mnListOperation = 3; //1 = change selection, 2 = append item, 3 = replace all (default)
 
@@ -4179,7 +4344,7 @@ static int DumpProject(void)
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
-	CProject* pProject = NULL;
+	TArxProjectPtr pProject = NULL;
 	if (!RetrieveProjectFromArgs (pArgs, pProject))
 		return RSERR; //invalid input
 
@@ -4205,7 +4370,7 @@ static int DumpForm(void)
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
-	CDclFormObject* pForm = NULL;
+	TDclFormPtr pForm;
 	if (!RetrieveFormFromArgs (pArgs, pForm))
 		return RSERR; //invalid input
 
@@ -4231,7 +4396,7 @@ static int DumpControl(void)
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
-	CDclControlObject* pControl = NULL;
+	TDclControlPtr pControl = NULL;
 	if (!RetrieveControlFromArgs (pArgs, pControl))
 		return RSERR; //invalid input
 
@@ -4337,3 +4502,7 @@ ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_import, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_export, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_updatecheck, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_setautoupdatecheck, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getprojects, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_getforms, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_getcontrols, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_control_getproperties, true)

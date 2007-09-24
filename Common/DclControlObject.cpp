@@ -18,16 +18,6 @@
 #include "DclControlProp.h"
 
 
-static void AddControlProperty(CDclControlObject *pControl, Prop::Id nID, LPCTSTR strValue, PropertyType ValueType)
-{
-	// create new property object pointer to pass to AddTail method
-	TPropertyPtr pProp = new CPropertyObject( ValueType, 0, nID );
-	pProp->SetStringValue(strValue);
-	pProp->SetHidden(false);
-	pControl->InsertNamedProperty( pProp );
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CDclControlObject
 
@@ -94,14 +84,13 @@ CDclControlObject::CDclControlObject(ControlType type, CDclFormObject* pOwner, L
 
 CDclControlObject::~CDclControlObject()
 {
-	ClearProperties();
 	ClearStream();
 }
 
 
 CWnd* CDclControlObject::GetWindow() const
 {
-	return mpDlgControl? mpDlgControl->GetControl() : NULL;
+	return mpDlgControl? mpDlgControl->GetControlWnd() : NULL;
 }
 
 
@@ -256,7 +245,6 @@ void CDclControlObject::Serialize(CArchive& ar)
 	DWORD nThisVersion = GetCurrentSaveVersion();
 	short nCount;
 	BOOL bImageList;
-	POSITION pos;
 	CObject::Serialize( ar );
 	if (ar.IsStoring())
 	{
@@ -319,15 +307,13 @@ void CDclControlObject::Serialize(CArchive& ar)
 			}
 		}
 		// write property list
-		ar << (WORD)mProperties.GetCount();
-		pos = mProperties.GetHeadPosition();
-		while (pos != NULL)
+		ar << (WORD)mProperties.size();
+		for( TPropertyList::iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 		{
-			TPropertyPtr pProp = mProperties.GetNext(pos);
-			pProp->Serialize(ar);
+			(*iter)->Serialize(ar);
 			#ifdef _DIAGNOSTIC
 				if( (GetAsyncKeyState( VK_CONTROL ) & 0x8000) == 0x8000 )
-					TraceFmt( _T("> %s\r\n"), pProp->toString() );
+					TraceFmt( _T("> %s\r\n"), (*iter)->toString() );
 			#endif //_DIAGNOSTIC
 		}
 	}
@@ -428,14 +414,14 @@ void CDclControlObject::Serialize(CArchive& ar)
 			}	
 		}
 
+		mProperties.clear();
 		if (nThisVersion >= 2)
 		{
 			// get counter for objects
 			ar >> nCount;		
-			ClearProperties();
 			while (nCount-- > 0)
 			{
-				TPropertyPtr pProp = new CPropertyObject( PropInvalid );
+				TPropertyPtr pProp = new CPropertyObject( TDclControlLockedPtr( this ), PropInvalid );
 				pProp->Serialize(ar);
 				InsertNamedProperty( pProp );
 			#ifdef _DIAGNOSTIC
@@ -446,11 +432,18 @@ void CDclControlObject::Serialize(CArchive& ar)
 		}
 		else
 		{
-			mProperties.Serialize(ar);
+			CList< CPropertyObject* > listProps;
+			listProps.Serialize(ar);
+			POSITION pos = listProps.GetHeadPosition();
+			while( pos )
+			{
+				CPropertyObject* pProp = listProps.GetNext( pos );
+				mProperties.push_back( pProp );
+			}
 		}
 		// here were are going to add the font of this object to the font collection
 		// before any pictures are loaded or any dialogs are displayed.
-		theWorkspace.GetFontCollection().GetFont( this, NULL );
+		theWorkspace.GetFontCollection().GetFont( TDclControlLockedPtr( this ), NULL );
 	}
 
 	if (!ar.IsStoring())
@@ -459,24 +452,23 @@ void CDclControlObject::Serialize(CArchive& ar)
 		DclFormType eFormType = VdclInvalid;
 		if( mpOwner )
 		{
-			CDclFormObject* pOwnerForm = mpOwner;
+			TDclFormPtr pOwnerForm = mpOwner;
 			while( pOwnerForm->GetParentForm() )
 				pOwnerForm = pOwnerForm->GetParentForm(); //get top level parent
 			eFormType = pOwnerForm->GetType();
 		}
-		POSITION pos = mProperties.GetHeadPosition();
-		while (pos)
+		TPropertyList::iterator iter = mProperties.begin();
+		while( iter != mProperties.end() )
 		{
-			POSITION posAt = pos;
-			TPropertyPtr pSourceProp = mProperties.GetNext( pos );
-			Prop::Id nID = pSourceProp->GetID();
+			TPropertyList::iterator iterAt = iter++;
+			Prop::Id nID = (*iterAt)->GetID();
 			switch( mType )
 			{
 			case CtlComboBox:
 				switch( nID )
 				{
 				case Prop::EventUpdate:
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				break;
@@ -485,7 +477,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				{
 				case Prop::BackgroundColor:
 				case Prop::ForegroundColor:
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				break;
@@ -494,7 +486,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				{
 				case Prop::EventDblClicked:
 				case Prop::ImageList:
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				break;
@@ -508,7 +500,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				case Prop::DragnDropAllowBegin:
 				case Prop::DragnDropAllowDrop:
 				case Prop::EventReturnPressed:
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				break;
@@ -516,7 +508,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				switch( nID )
 				{
 				case Prop::EventUpdate:
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				break;
@@ -524,7 +516,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				switch( nID )
 				{
 				case Prop::ToolTipTitle:
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				break;
@@ -533,7 +525,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				{
 				case Prop::HScrollBar:
 				case Prop::EventClicked:
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				break;
@@ -541,7 +533,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				switch( nID )
 				{
 				case Prop::NoIntegralHeight:
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				break;
@@ -549,7 +541,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				switch( nID )
 				{
 				case Prop::ImageList:
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				break;
@@ -557,7 +549,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				switch( nID )
 				{
 				case Prop::EventDblClicked:
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				break;
@@ -571,14 +563,14 @@ void CDclControlObject::Serialize(CArchive& ar)
 					case Prop::GlobalVarName:
 					case Prop::UseBottomFromBottom:
 					case Prop::UseTopFromBottom:
-						mProperties.RemoveAt(posAt); //tab pages should not have these properties
+						mProperties.erase( iterAt ); //tab pages should not have these properties
 						continue;
 					}
 				}
 				switch( nID )
 				{
 				case Prop::ImageList:
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				switch( eFormType )
@@ -590,7 +582,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 					case Prop::DockableSides:
 					case Prop::EventOnHelp:
 					case Prop::EventInvoke:
-						mProperties.RemoveAt(posAt);
+						mProperties.erase( iterAt );
 						continue;
 					}
 					break;
@@ -598,7 +590,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 					switch( nID )
 					{
 					case Prop::EventInvoke:
-						mProperties.RemoveAt(posAt);
+						mProperties.erase( iterAt );
 						continue;
 					}
 					break;
@@ -606,7 +598,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 					switch( nID )
 					{
 					case Prop::Icon:
-						mProperties.RemoveAt(posAt);
+						mProperties.erase( iterAt );
 						continue;
 					}
 					break;
@@ -617,7 +609,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 					case Prop::MinDialogHeight:
 					case Prop::MaxDialogWidth:
 					case Prop::MaxDialogHeight:
-						mProperties.RemoveAt(posAt);
+						mProperties.erase( iterAt );
 						continue;
 					}
 					break;
@@ -627,49 +619,49 @@ void CDclControlObject::Serialize(CArchive& ar)
 			switch( nID )
 			{
 			case Prop::IconYSpacing: //erroneously added as an event in OpenDCL 4.1 Alpha 4
-				if( pSourceProp->GetType() == PropEvent )
+				if( (*iterAt)->GetType() == PropEvent )
 				{
 					if( GetPropertyObject( Prop::DragnDropToAutoCAD ) )
-						mProperties.RemoveAt(posAt);
+						mProperties.erase( iterAt );
 					else
-						pSourceProp->SetID( Prop::DragnDropToAutoCAD );
+						(*iterAt)->SetID( Prop::DragnDropToAutoCAD );
 				}
-				else if( pSourceProp->IsHidden() )
+				else if( (*iterAt)->IsHidden() )
 				{
-					long lVal = pSourceProp->GetLongValue();
+					long lVal = (*iterAt)->GetLongValue();
 					if( lVal == 0 )
 						lVal = 32;
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					AddLongProperty( Prop::IconYSpacing, PropLong, lVal ); //re-insert it where it belongs
 				}
 				continue;
 			case Prop::TabOrder:
-			case Prop::LabelColor:
+			case Prop::FontColor:
 			case Prop::TabLabelAlign:
 			case Prop::TabSelected:
-				mProperties.RemoveAt(posAt);
+				mProperties.erase( iterAt );
 				continue;
 			case Prop::AllowOrbiting:
-				if( pSourceProp->GetType() == PropBool )
+				if( (*iterAt)->GetType() == PropBool )
 				{
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				break;
 			case Prop::FontSizeStyle:
 				{
-					long lFontSize = GetLongProperty( Prop::LabelSize );
-					if( pSourceProp->GetBooleanValue() )
+					long lFontSize = GetLongProperty( Prop::FontSize );
+					if( (*iterAt)->GetBooleanValue() )
 					{
 						if( lFontSize < 0 )
-							SetLongProperty( Prop::LabelSize, -lFontSize );
+							SetLongProperty( Prop::FontSize, -lFontSize );
 					}
 					else
 					{
 						if( lFontSize > 0 )
-							SetLongProperty( Prop::LabelSize, -lFontSize );
+							SetLongProperty( Prop::FontSize, -lFontSize );
 					}
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				break;
@@ -680,7 +672,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				switch( nID )
 				{
 				case Prop::EventInvoke:
-					mProperties.RemoveAt(posAt);
+					mProperties.erase( iterAt );
 					continue;
 				}
 				break;
@@ -689,57 +681,44 @@ void CDclControlObject::Serialize(CArchive& ar)
 	}
 }
 
-size_t CDclControlObject::CountPropertyListItems(Prop::Id nID)
+size_t CDclControlObject::CountPropertyListItems( Prop::Id nID )
 {
-	POSITION pos = mProperties.GetHeadPosition();	
-	while (pos)
-	{
-		TPropertyPtr pProperty = mProperties.GetNext(pos);
-		if (pProperty->GetID() == nID)
-			return pProperty->size(); // return the value
-	}
+	TPropertyPtr pProp = GetPropertyObject( nID );
+	if( pProp )
+		return pProp->size();
 	return 0;
 }
 
-CString CDclControlObject::GetPropertyListItem(Prop::Id nID, size_t nIndex)
+CString CDclControlObject::GetPropertyListItem( Prop::Id nID, size_t nIndex )
 {
-	POSITION pos = mProperties.GetHeadPosition();	
-	while (pos)
+	CString sValue;
+	TPropertyPtr pProp = GetPropertyObject( nID );
+	if( pProp && nIndex < pProp->size() )
 	{
-		TPropertyPtr pProperty = mProperties.GetNext(pos);
-		if (pProperty->GetID() == nID)
-		{
-			CString sValue;
-			if (pProperty->GetType() == PropStringArray && nIndex < pProperty->size())
-				sValue = pProperty->GetStringArrayPtr()->at(nIndex);
-			else if( pProperty->GetType() == PropIntArray && nIndex < pProperty->size() )
-				sValue.Format( _T("%d"), pProperty->GetIntArrayPtr()->at(nIndex) );
-			return sValue;
-		}
+		if( pProp->GetType() == PropStringArray )
+			sValue = pProp->GetStringArrayPtr()->at( nIndex );
+		else if( pProp->GetType() == PropIntArray )
+			sValue.Format( _T("%d"), pProp->GetIntArrayPtr()->at( nIndex ) );
 	}
-	return CString();
+	return sValue;
 }
 
 TPropertyPtr CDclControlObject::GetPropertyObject( Prop::Id nID ) const
 {
-	POSITION posProp = mProperties.GetHeadPosition();
-	while (posProp)
+	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
-		TPropertyPtr pProperty = mProperties.GetNext(posProp);
-		if (pProperty && pProperty->GetID() == nID)
-			return pProperty;
+		if( (*iter)->GetID() == nID )
+			return (*iter);
 	}
 	return NULL;
 }
 
 TPropertyPtr CDclControlObject::FindPropertyObject( LPCTSTR pszName ) const
 {
-	POSITION posProp = mProperties.GetHeadPosition();
-	while (posProp)
+	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
-		TPropertyPtr pProperty = mProperties.GetNext(posProp);
-		if (pProperty && pProperty->GetName() == pszName)
-			return pProperty;
+		if( (*iter)->GetName() == pszName )
+			return (*iter);
 	}
 	return NULL;
 }
@@ -767,14 +746,14 @@ bool CDclControlObject::SetStringProperty( Prop::Id nID, LPCTSTR pszValue )
 }
 
 TPropertyPtr CDclControlObject::AddStringProperty( Prop::Id nID,
-																																			 PropertyType type /*= PropString*/,
-																																			 LPCTSTR pszValue /*= NULL*/,
-																																			 bool bResetExisting /*= false*/ )
+																									 PropertyType type /*= PropString*/,
+																									 LPCTSTR pszValue /*= NULL*/,
+																									 bool bResetExisting /*= false*/ )
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( !pProp )
 	{
-		pProp = new CPropertyObject( type, 0, nID );
+		pProp = new CPropertyObject( TDclControlLockedPtr( this ), type, 0, nID );
 		InsertNamedProperty( pProp );
 		pProp->SetStringValue( pszValue );
 	}
@@ -802,7 +781,7 @@ TPropertyPtr CDclControlObject::AddBooleanProperty( Prop::Id nID,
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( !pProp )
 	{
-		pProp = new CPropertyObject( type, 0, nID );
+		pProp = new CPropertyObject( TDclControlLockedPtr( this ), type, 0, nID );
 		InsertNamedProperty( pProp );
 		pProp->SetBooleanValue( bValue );
 	}
@@ -830,7 +809,7 @@ TPropertyPtr CDclControlObject::AddLongProperty( Prop::Id nID,
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( !pProp )
 	{
-		pProp = new CPropertyObject( type, 0, nID );
+		pProp = new CPropertyObject( TDclControlLockedPtr( this ), type, 0, nID );
 		InsertNamedProperty( pProp );
 		pProp->SetLongValue( lValue );
 	}
@@ -885,132 +864,104 @@ CString CDclControlObject::GetActiveXTypeName() const
 	sName = sName.Right(sName.GetLength() - sName.SpanIncluding(_T("0123456789.")).GetLength()).SpanExcluding(_T("."));
 	sName.MakeReverse();
 	
-	const_cast<CDclControlObject*>(this)->msAxTypeName = sName; //cache it
+	const_cast< CDclControlObject* >(this)->msAxTypeName = sName; //cache it
 	return sName;
 }
 
 CString CDclControlObject::GetStringProperty(Prop::Id nID) const
 {
-	POSITION posProp = mProperties.GetHeadPosition();
-	while (posProp)
-	{
-		TPropertyPtr pProperty = mProperties.GetNext(posProp);
-		assert(pProperty != NULL);
-		if (pProperty->GetID() == nID)
-			return pProperty->GetStdProperty();
-	}
-	return CString();
+	CString sValue;
+	TPropertyPtr pProp = GetPropertyObject( nID );
+	if( pProp )
+		sValue = pProp->GetStdProperty();
+	return sValue;
 }
 
 long CDclControlObject::GetLongProperty(Prop::Id nID) const
 {
-	POSITION posProp = mProperties.GetHeadPosition();
-	while (posProp)
+	TPropertyPtr pProp = GetPropertyObject( nID );
+	if( pProp )
 	{
-		TPropertyPtr pProperty = mProperties.GetNext(posProp);
-		assert(pProperty != NULL);
-		if (pProperty->GetID() == nID)
+		//some boolean properties are read and written as longs,
+		//so that case gets special handling here [ORW]
+		if (pProp->GetType() == PropBool)
 		{
-			//some boolean properties are read and written as longs,
-			//so that case gets special handling here [ORW]
-			if (pProperty->GetType() == PropBool)
-			{
-				TraceFmt( _T("* 'PropLong' value requested from 'PropBool' property (ID: %d)! [%s]\r\n"), nID, _T(__FUNCTION__));
-				return (long)pProperty->GetBooleanValue();
-			}
-			return pProperty->GetLongValue();
+			TraceFmt( _T("* 'PropLong' value requested from 'PropBool' property (ID: %d)! [%s]\r\n"), nID, _T(__FUNCTION__));
+			return (long)pProp->GetBooleanValue();
 		}
+		return pProp->GetLongValue();
 	}
 	return -1;
 }
 
 void CDclControlObject::SetColorProperty(Prop::Id nID, COLORREF color)
 {
-	POSITION posProp = mProperties.GetHeadPosition();
-	while (posProp)
-	{
-		TPropertyPtr pProperty = mProperties.GetNext(posProp);
-		assert(pProperty != NULL);
-		if (pProperty->GetID() == nID)
-		{
-			pProperty->SetOLEColorValue(color);
-			return;
-		}
-	}
+	TPropertyPtr pProp = GetPropertyObject( nID );
+	if( pProp )
+		pProp->SetOLEColorValue(color);
 }
 
 COLORREF CDclControlObject::GetColorProperty(Prop::Id nID) const
 {
-	POSITION posProp = mProperties.GetHeadPosition();
-	while (posProp)
-	{
-		TPropertyPtr pProperty = mProperties.GetNext(posProp);
-		assert(pProperty != NULL);
-		if (pProperty->GetID() == nID)
-			return GetRGBColor(pProperty->GetLongValue());
-	}
+	TPropertyPtr pProp = GetPropertyObject( nID );
+	if( pProp )
+		return GetRGBColor( pProp->GetLongValue() );
 	return RGB(0,0,0);
 }
 	
 bool CDclControlObject::GetBooleanProperty(Prop::Id nID) const
 {
-	POSITION posProp = mProperties.GetHeadPosition();
-	while (posProp)
+	TPropertyPtr pProp = GetPropertyObject( nID );
+	if( pProp )
 	{
-		TPropertyPtr pProperty = mProperties.GetNext(posProp);
-		assert(pProperty != NULL);
-		if (pProperty->GetID() == nID)
+		//some enum properties are read and written as booleans,
+		//so that case gets special handling here [ORW]
+		if( pProp->GetType() == PropEnum )
 		{
-			//some enum properties are read and written as booleans,
-			//so that case gets special handling here [ORW]
-			if (pProperty->GetType() == PropEnum)
-			{
-				TraceFmt( _T("* 'PropBool' value requested from 'PropEnum' property (ID: %d)! [%s]\r\n"), nID, _T(__FUNCTION__));
-				return (pProperty->GetEnumValue() != 0);
-			}
-			return pProperty->GetBooleanValue();
+			TraceFmt( _T("* 'PropBool' value requested from 'PropEnum' property (ID: %d)! [%s]\r\n"), nID, _T(__FUNCTION__));
+			return (pProp->GetEnumValue() != 0);
 		}
+		return pProp->GetBooleanValue();
 	}
 	return false;
 }
 
 TPropertyPtr CDclControlObject::GetMethods() const
 { 
-	POSITION posProp = mProperties.GetHeadPosition();
-	while (posProp)
+	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
-		TPropertyPtr pProperty = mProperties.GetNext(posProp);
-		assert(pProperty != NULL);
-		if (pProperty->GetType() == PropActiveXMethods)
-			return pProperty;
+		if( (*iter)->GetType() == PropActiveXMethods )
+			return (*iter);
 	}
 	return NULL;
 }
 
-POSITION CDclControlObject::FindPropertyInsertPos( Prop::Id nID, bool bHidden ) const
+TPropertyList::iterator CDclControlObject::FindPropertyInsertPos( Prop::Id nID, bool bHidden )
 {
-	if (nID == Prop::ObjectBrowser)
-		return mProperties.GetHeadPosition();		
-	return FindPropertyInsertPos(GetPropertyName(nID), bHidden);
+	if( nID == Prop::ObjectBrowser )
+		return mProperties.begin();		
+	return FindPropertyInsertPos( GetPropertyName(nID), bHidden );
 }
 
-POSITION CDclControlObject::FindPropertyInsertPos( LPCTSTR pszName, bool bHidden ) const
+TPropertyList::iterator CDclControlObject::FindPropertyInsertPos( LPCTSTR pszName, bool bHidden )
 {
 	if( !pszName || !*pszName )
-		return NULL;
+		return mProperties.begin();
+	if( mProperties.empty() )
+		return mProperties.begin();
 
-	POSITION pos = mProperties.GetTailPosition();
-	while( pos )
+	TPropertyList::iterator iter = mProperties.end();
+	do
 	{
-		POSITION posAt = pos;
-		TPropertyPtr pProp = mProperties.GetPrev( pos );
-		assert( pProp->GetName() != pszName ); //trying to insert a property with a duplicate name?
-		if( pProp->IsHidden() != bHidden )
+		--iter;
+		assert( (*iter)->GetName() != pszName ); //trying to insert a property with a duplicate name?
+		if( (*iter)->IsHidden() != bHidden )
 			continue;
-		if( pProp->GetName() <= pszName )
-			return posAt;
+		if( (*iter)->GetName() <= pszName )
+			break;
 	}
-	return NULL;
+	while( iter != mProperties.begin() );
+	return iter;
 }
 
 bool CDclControlObject::InsertNamedProperty( TPropertyPtr pProp )
@@ -1019,112 +970,33 @@ bool CDclControlObject::InsertNamedProperty( TPropertyPtr pProp )
 	if( !pProp )
 		return false;
 
-	POSITION pos = FindPropertyInsertPos( pProp->GetName(), pProp->IsHidden() );
-	if( pos )
+	TPropertyList::iterator iter = FindPropertyInsertPos( pProp->GetName(), pProp->IsHidden() );
+	if( !mProperties.empty() && pProp->GetName() == (*iter)->GetName() )
 	{
-		if( pProp->GetName() == mProperties.GetAt( pos )->GetName() )
-		{
-			TraceFmt( _T("* Attempt to insert duplicate property (%s) failed!\r\n"), (LPCTSTR)pProp->GetName() );
-			return false;
-		}
-		mProperties.InsertAfter( pos, pProp );
+		TraceFmt( _T("* Attempt to insert duplicate property (%s) failed!\r\n"), (LPCTSTR)pProp->GetName() );
+		return false;
 	}
-	else
-		mProperties.AddHead( pProp );
+	mProperties.insert( iter, pProp );
 	return true;
 }
 
-void CDclControlObject::ClearProperties()
+void CDclControlObject::ResetProperty( Prop::Id nId )
 {
-#ifdef _DEBUG
-	POSITION posProp = mProperties.GetHeadPosition();
-	while (posProp)
-	{
-		TPropertyPtr pProp = mProperties.GetNext(posProp);
-		assert( pProp != NULL );
-		assert(!IsBadWritePtr(pProp, sizeof(CPropertyObject)));
-	}
-#endif
-	mProperties.RemoveAll();
+	TPropertyPtr pProp = GetPropertyObject( nId );
+	if( pProp )
+		pProp->clear();
 }
 
-void CDclControlObject::ResetProperty(Prop::Id nId)
+void CDclControlObject::RemoveProperty( Prop::Id nId )
 {
-	POSITION posProp = mProperties.GetHeadPosition();
-	while (posProp)
+	for( TPropertyList::iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
-		TPropertyPtr pProp = mProperties.GetNext(posProp);
-		assert( pProp != NULL );
-		if( pProp->GetID() == nId )
+		if( (*iter)->GetID() == nId )
 		{
-			pProp->clear();
-			return;
+			mProperties.erase( iter );
+			break;
 		}
 	}
-}
-
-void CDclControlObject::RemoveProperty(Prop::Id nId)
-{
-	POSITION posProp = mProperties.GetHeadPosition();
-	while (posProp)
-	{
-		POSITION posAt = posProp;
-		TPropertyPtr pProp = mProperties.GetNext(posProp);
-		assert( pProp != NULL );
-		if( pProp->GetID() == nId )
-		{
-			mProperties.RemoveAt( posAt );
-			return;
-		}
-	}
-}
-
-void CDclControlObject::ClearR14Events()
-{
-	// create a position variable to hold the counter increment
-	POSITION pos;	
-		
-	// set counter for CPropertyObject
-	int nCount = mProperties.GetCount()-1;
-
-	while(nCount >= 0)
-	{
-		// get position
-		pos = mProperties.FindIndex(nCount);
-		
-		if (pos != NULL)
-		{
-			// get current property
-			TPropertyPtr pPropObject = mProperties.GetAt(pos);
-			
-			if (mType == CtlTextBox)
-			{
-				switch (pPropObject->GetID())
-				{
-				case Prop::EventUpdate:
-				case Prop::EventMaxText:
-				case Prop::EventEditChanged:
-				case Prop::EventSetFocus:
-				case Prop::EventKeyDown:
-				case Prop::EventKeyUp:
-				case Prop::EventReturnPressed:
-				case Prop::EventInvoke:
-					mProperties.RemoveAt(pos);
-					break;
-				}
-			}
-			switch (pPropObject->GetID())
-			{
-			case Prop::DragnDropFromAutoCAD:
-				mProperties.RemoveAt(pos);
-				break;
-			}
-		}
-		
-		// increment counter
-		nCount--;
-	}
-	////ASSERT(nCount == 0);
 }
 
 IOStatus CDclControlObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
@@ -1216,15 +1088,10 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
   int nCount;
   if (!readInt(sFile, nCount)) return statInvalidFormat;
 
-  ClearProperties();
-
-  // do loop to navigate objects
+  mProperties.clear();
   while (nCount-- > 0)
   {
-    // get current object
-    TPropertyPtr pProp = new CPropertyObject(PropInvalid);
-
-    // get object from archive
+    TPropertyPtr pProp = new CPropertyObject(TDclControlLockedPtr( this ), PropInvalid);
 		IOStatus stat = pProp->ReadFromTextFile(sFile);
     if (stat != statOK) return stat;
 
@@ -1240,15 +1107,13 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
 				pProp->SetStringValue( pProp->GetAxInterfaceDescriptorPtr()->GetName() );
 			}
 		}
-
-    // add that ArxControlObject to the list object
-    mProperties.AddTail(pProp);		
+    mProperties.push_back(pProp);		
   }
 
   // here were are going to add the font of this object to the font collection
   // before any pictures are loaded or any dialogs are displayed.
   CFontCollection *pFontCol = &theWorkspace.GetFontCollection();
-  pFontCol->GetFont(this, NULL);
+  pFontCol->GetFont(TDclControlLockedPtr( this ), NULL);
 
   return statOK;
 }
@@ -1299,10 +1164,11 @@ void CDclControlObject::dump( bool bDeep /*= true*/ ) const
 	theWorkspace.DisplayStatus( sOut );
 	if( !bDeep )
 		return;
-	for( INT_PTR idx = 0; idx < mProperties.GetCount(); ++idx )
+	size_t idx = 0;
+	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
 		CString sProp;
-		sProp.Format( _T("  #%4s: %s\r\n"), asString( idx ), mProperties.GetAt( mProperties.FindIndex( idx ) )->toString() );
+		sProp.Format( _T("  #%4s: %s\r\n"), asString( idx++ ), (*iter)->toString() );
 		theWorkspace.DisplayStatus( sProp );
 	}
 }
@@ -1315,7 +1181,8 @@ void CDclControlObject::dumpDebugger( bool bDeep /*= true*/ ) const
 	TraceFmt( _T("%s\r\n"), toString() );
 	if( !bDeep )
 		return;
-	for( INT_PTR idx = 0; idx < mProperties.GetCount(); ++idx )
-		TraceFmt( _T("  #%4s: %s\r\n"), asString( idx ), mProperties.GetAt( mProperties.FindIndex( idx ) )->toString() );
+	size_t idx = 0;
+	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
+		TraceFmt( _T("  #%4s: %s\r\n"), asString( idx++ ), (*iter)->toString() );
 }
 #endif

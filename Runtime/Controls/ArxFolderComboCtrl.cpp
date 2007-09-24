@@ -12,7 +12,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxFolderComboCtrl
 
-CArxFolderComboCtrl::CArxFolderComboCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CArxFolderComboCtrl::CArxFolderComboCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CFolderComboCtrl( pTemplate, pPane, nID, false )
 , mArxServices( pTemplate )
 , mpDwgList( NULL )
@@ -30,18 +30,12 @@ bool CArxFolderComboCtrl::Create( CWnd* pParentWnd, UINT nID )
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
 
-	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
-
-	POSITION pos = mpTemplate->GetOwnerForm()->GetControlList().GetHeadPosition();
-	while( pos )
+	const TDclControlList& Controls = mpTemplate->GetOwnerForm()->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		CDclControlObject* pDclControl = mpTemplate->GetOwnerForm()->GetControlList().GetNext( pos );
-		if( pDclControl->GetType() == CtlDwgList && pDclControl->GetWindow() )
+		if( (*iter)->GetType() == CtlDwgList && (*iter)->GetWindow() )
 		{
-			CArxDwgListCtrl* pDwgList = (CArxDwgListCtrl*)pDclControl->GetWindow();
+			CArxDwgListCtrl* pDwgList = (CArxDwgListCtrl*)(*iter)->GetWindow();
 			pDwgList->m_pDirComboBox = this;
 			mpDwgList = pDwgList;
 			break;
@@ -126,7 +120,7 @@ LRESULT CArxFolderComboCtrl::OnSelchange( WPARAM wParam, LPARAM lParam )
 		{
 			CString sLispSafePath = sPath;
 			sLispSafePath.Replace( _T("\\"), _T("\\\\") );
-			InvokeMethodIntString( sEventName, GetCurSel(), sLispSafePath, m_bInvokeWithSendString );
+			InvokeMethodIntString( sEventName, GetCurSel(), sLispSafePath, IsAsyncEvents() );
 			mpTemplate->SetStringProperty( Prop::Text, sPath );
 		}
 	}
@@ -135,7 +129,7 @@ LRESULT CArxFolderComboCtrl::OnSelchange( WPARAM wParam, LPARAM lParam )
 
 void CArxFolderComboCtrl::OnDropdown() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDropDown), m_bInvokeWithSendString);	
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDropDown), IsAsyncEvents());	
 }
 
 void CArxFolderComboCtrl::OnMouseMove(UINT nFlags, CPoint point) 
@@ -146,15 +140,15 @@ void CArxFolderComboCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 }
 
 void CArxFolderComboCtrl::OnKillfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }
 
 void CArxFolderComboCtrl::OnSetfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
 }

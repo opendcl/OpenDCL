@@ -11,27 +11,27 @@
 #include "StgFile.h"
 #include "Filing.h"
 #include "ControlTypes.h"
-#include "Project.h"
+#include "Workspace.h"
 #include "DclControlProp.h"
+#include "FontCollection.h"
 
 
 //moving all image lists from the form to individual controls while reading older ODC files
-static void MoveImageListsToControls( std::vector< CImageListObject* >& rImageLists, CDclFormObject* pDclForm )
+static void MoveImageListsToControls( std::vector< CImageListObject* >& rImageLists, TDclFormPtr pDclForm )
 {
-	POSITION pos = pDclForm->GetControlList().GetHeadPosition();
-	while( pos )
+	const TDclControlList& Controls = pDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		CDclControlObject* pDclControl = pDclForm->GetControlList().GetNext( pos );
-		POSITION posProp = pDclControl->GetPropertyList().GetHeadPosition();
-		while( posProp )
+		TDclControlPtr pDclControl = *iter;
+		const TPropertyList& Props = pDclControl->GetPropertyList();
+		for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 		{
-			TPropertyPtr pProp = pDclControl->GetPropertyList().GetNext( posProp ); 
-			if( pProp->GetType() == PropImageList )
+			if( (*iter)->GetType() == PropImageList )
 			{//we have a winner
-				short idx = pProp->GetShortValue();
+				short idx = (*iter)->GetShortValue();
 				if( idx >= 0 && (size_t)idx < rImageLists.size() )
 					pDclControl->SetImageList( new CImageListObject( *rImageLists.at( idx ) ) );
-				pDclControl->RemoveProperty( pProp->GetID() );
+				pDclControl->RemoveProperty( (*iter)->GetID() );
 				break; //stop looking and ignore any additional PropImageList properties, since there should only be one
 			}
 		}
@@ -39,6 +39,7 @@ static void MoveImageListsToControls( std::vector< CImageListObject* >& rImageLi
 	size_t idx = rImageLists.size();
 	while( idx-- > 0 )
 		delete rImageLists.at( idx );
+	rImageLists.clear();
 }
 
 
@@ -62,8 +63,8 @@ CDclFormObject::CDclFormObject()
 	m_htiTreeItem = NULL;
 }
 
-CDclFormObject::CDclFormObject( CProject* Project, DclFormType type /*= VdclInvalid*/ )
-: mpProject( Project )
+CDclFormObject::CDclFormObject( CProject* pProject, DclFormType type /*= VdclInvalid*/ )
+: mpProject( pProject )
 , mType( type )
 , mnTabIndex( -1 )
 , mpParentForm( NULL )
@@ -84,7 +85,7 @@ CDclFormObject::~CDclFormObject()
 }
 
 
-void CDclFormObject::SetParentForm( CDclFormObject* pParentForm )
+void CDclFormObject::SetParentForm( TDclFormPtr pParentForm )
 {
 	mpParentForm = pParentForm;
 	if( pParentForm )
@@ -97,7 +98,7 @@ void CDclFormObject::SetParentForm( LPCTSTR pszParentUniqueName )
 	CString sNewParentName = pszParentUniqueName;
 	if( sNewParentName.IsEmpty() )
 		return; //calling with an empty name is an error; use the other SetParentForm() to clear the parent
-	CDclFormObject* pParentForm = mpProject->FindParentDclForm( sNewParentName );
+	TDclFormPtr pParentForm = mpProject->FindParentDclForm( sNewParentName );
 	if( pParentForm )
 		SetParentForm( pParentForm );
 }
@@ -111,40 +112,38 @@ void CDclFormObject::SetFormInstance( CDialogObject* pDlgObject )
 }
 
 
-void CDclFormObject::AddControl( CDclControlObject* pDclControl )
+void CDclFormObject::AddControl( TDclControlPtr pDclControl )
 {
-	mDclControls.AddTail( pDclControl );
-	INT_PTR idxNewControl = mDclControls.GetCount() - 1;
+	mDclControls.push_back( pDclControl );
+	size_t idxNewControl = mDclControls.size() - 1;
 	pDclControl->SetZOrder( idxNewControl );
 	if( pDclControl->GetID() < 0 )
 		pDclControl->SetID( idxNewControl );
 }
 
 
-CDclControlObject* CDclFormObject::AddControl( ControlType type, LPCTSTR pszKeyName )
+TDclControlPtr CDclFormObject::AddControl( ControlType type, LPCTSTR pszKeyName )
 {
-	CDclControlObject* pNewControl = new CDclControlObject( type, this, pszKeyName );
+	TDclControlPtr pNewControl = new CDclControlObject( type, this, pszKeyName );
 	AddControl( pNewControl );
 	return pNewControl;
 }
 
 
-void CDclFormObject::DeleteControl( CDclControlObject*& pDclControl )
+void CDclFormObject::DeleteControl( TDclControlPtr& pDclControl )
 {
-	POSITION pos = mDclControls.Find( pDclControl );
-	if( pos )
+	TDclControlList::iterator iter = mDclControls.begin();
+	while( iter != mDclControls.end() )
 	{
-		POSITION posDelete = pos;
-		INT_PTR idxCurrent = pDclControl->GetZOrder();
-		do //reindex remaining controls
-		{
-			CDclControlObject* pDclControl = mDclControls.GetNext( pos );
-			assert( pDclControl != NULL );
-			pDclControl->SetZOrder( idxCurrent++ );
-		}
-		while( pos );
-		mDclControls.RemoveAt( posDelete );
+		TDclControlList::iterator iterAt = iter++;
+		if( pDclControl != (*iterAt) )
+			continue;
+		INT_PTR idxCurrent = (*iterAt)->GetZOrder();
+		while( iter != mDclControls.end() ) //reindex remaining controls
+			(*iter++)->SetZOrder( idxCurrent++ );
+		mDclControls.erase( iterAt );
 		delete pDclControl;
+		break;
 	}
 }
 
@@ -152,81 +151,83 @@ void CDclFormObject::DeleteControl( CDclControlObject*& pDclControl )
 void CDclFormObject::PurgeDeletedControls()
 {
 	INT_PTR idxCurrent = 0;
-	POSITION pos = mDclControls.GetHeadPosition();
-	while( pos )
+	TDclControlList::iterator iter = mDclControls.begin();
+	while( iter != mDclControls.end() )
 	{
-		POSITION posAt = pos;
-		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
-		assert( pDclControl != NULL );
-		if( pDclControl && pDclControl->IsDeleted() )
+		TDclControlList::iterator iterAt = iter++;
+		if( (*iterAt)->IsDeleted() )
 		{
-			mDclControls.RemoveAt(posAt);
-			delete pDclControl;
+			delete *iterAt;
+			mDclControls.erase( iterAt );
+			continue;
 		}
-		pDclControl->SetZOrder( idxCurrent++ );
+		(*iterAt)->SetZOrder( idxCurrent++ );
 	}
 }
 
 
-bool CDclFormObject::ReorderControl( CDclControlObject* pDclControl, bool bToFront, bool bDeferReindexing /*= false*/ )
+bool CDclFormObject::ReorderControl( TDclControlPtr pDclControl, bool bToFront, bool bDeferReindexing /*= false*/ )
 {
 	assert( pDclControl != NULL );
 	assert( pDclControl->GetOwnerForm() == this );
-	POSITION pos = mDclControls.Find( pDclControl );
-	assert( pos != NULL );
-	if( !pos )
-		return false;
-	mDclControls.RemoveAt( pos );
-	if( bToFront )
-		mDclControls.InsertAfter( mDclControls.GetHeadPosition(), pDclControl ); //insert at second position (skipping form properties)
-	else
-		mDclControls.AddTail( pDclControl );
-	if( !bDeferReindexing )
-		ReindexControls();
-	return true;
+	TDclControlList::iterator iter = mDclControls.begin();
+	while( iter != mDclControls.end() )
+	{
+		TDclControlList::iterator iterAt = iter++;
+		if( pDclControl != (*iterAt) )
+			continue;
+		mDclControls.erase( iterAt );
+		if( bToFront )
+			mDclControls.insert( ++mDclControls.begin(), pDclControl );
+		else
+			mDclControls.push_back( pDclControl );
+		if( !bDeferReindexing )
+			ReindexControls();
+		return true;
+	}
+	return false;
 }
 
 
-bool CDclFormObject::ReorderControl( CDclControlObject* pDclControl, size_t idxNew, bool bDeferReindexing /*= false*/ )
+bool CDclFormObject::ReorderControl( TDclControlPtr pDclControl, size_t idxNew, bool bDeferReindexing /*= false*/ )
 {
 	assert( idxNew > 0 ); //should never try to insert at index zero -- that is reserved for form properties!
+	assert( idxNew <= mDclControls.size() );
 	assert( pDclControl != NULL );
 	assert( pDclControl->GetOwnerForm() == this );
-	POSITION pos = mDclControls.Find( pDclControl );
-	assert( pos != NULL );
-	if( !pos )
+	if( idxNew > mDclControls.size() )
 		return false;
-	mDclControls.RemoveAt( pos );
-	pos = mDclControls.FindIndex( idxNew );
-	if( pos )
-		mDclControls.InsertAfter( pos, pDclControl ); //insert at new position
-	else
-		mDclControls.AddTail( pDclControl );
-	if( !bDeferReindexing )
-		ReindexControls();
-	return true;
+	TDclControlList::iterator iter = mDclControls.begin();
+	while( iter != mDclControls.end() )
+	{
+		TDclControlList::iterator iterAt = iter++;
+		if( pDclControl != (*iterAt) )
+			continue;
+		mDclControls.erase( iterAt );
+		TDclControlList::iterator iterInsert = mDclControls.begin();
+		while( idxNew-- > 0 ) ++iterInsert;
+		mDclControls.insert( iterInsert, pDclControl );
+		if( !bDeferReindexing )
+			ReindexControls();
+		return true;
+	}
+	return false;
 }
 
 
 void CDclFormObject::ReindexControls()
 {
 	INT_PTR idxCurrent = 0;
-	POSITION pos = mDclControls.GetHeadPosition();
-	while( pos )
-	{
-		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
-		assert( pDclControl != NULL );
-		pDclControl->SetZOrder( idxCurrent++ );
-	}
+	for( TDclControlList::iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
+		(*iter)->SetZOrder( idxCurrent++ );
 }
 
-int CDclFormObject::CountDeletedControls() const
+size_t CDclFormObject::CountDeletedControls() const
 {
-	INT_PTR ctDeleted = 0;
-	POSITION pos = mDclControls.GetHeadPosition();
-	while (pos)
+	size_t ctDeleted = 0;
+	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
 	{
-		if (mDclControls.GetNext(pos)->IsDeleted())
+		if( (*iter)->IsDeleted() )
 			ctDeleted++;
 	}
 	return ctDeleted;
@@ -243,10 +244,8 @@ void CDclFormObject::SetGlobalVariableName( LPCTSTR pszRootName /*= NULL*/, bool
 	if( !bUpdateChildren )
 		return;
 
-	POSITION pos = mDclControls.GetHeadPosition();
-	mDclControls.GetNext(pos); //skip the form properties control
-	while( pos )
-		mDclControls.GetNext(pos)->SetGlobalVariableName( sFormName );
+	for( TDclControlList::iterator iter = ++mDclControls.begin(); iter != mDclControls.end(); ++iter )
+		(*iter)->SetGlobalVariableName( sFormName );
 }
 
 void CDclFormObject::ClearGlobalVariableName( bool bUpdateChildren /*= true*/ )	
@@ -256,15 +255,13 @@ void CDclFormObject::ClearGlobalVariableName( bool bUpdateChildren /*= true*/ )
 	if( !bUpdateChildren )
 		return;
 
-	POSITION pos = mDclControls.GetHeadPosition();
-	mDclControls.GetNext(pos); //skip the form properties control
-	while( pos )
-		mDclControls.GetNext(pos)->ClearGlobalVariableName();
+	for( TDclControlList::iterator iter = ++mDclControls.begin(); iter != mDclControls.end(); ++iter )
+		(*iter)->ClearGlobalVariableName();
 }
 
-CDclFormObject* CDclFormObject::AddChildForm( DclFormType type )
+TDclFormPtr CDclFormObject::AddChildForm( DclFormType type )
 {
-	CDclFormObject* pDclForm = mpProject->AddForm( type, this );
+	TDclFormPtr pDclForm = mpProject->AddForm( type, TDclFormLockedPtr( this ) );
 	if( pDclForm )
 		pDclForm->SetUsesClientRect( true );
 	return pDclForm;
@@ -272,7 +269,7 @@ CDclFormObject* CDclFormObject::AddChildForm( DclFormType type )
 
 LPCTSTR CDclFormObject::GetTitleText() const
 {
-	const CDclControlObject* pControl = GetControlProperties();
+	const TDclControlPtr pControl = GetControlProperties();
 	assert(pControl != NULL);
 	if (pControl)
 		return pControl->GetStringProperty(Prop::TitleBarText);
@@ -281,7 +278,7 @@ LPCTSTR CDclFormObject::GetTitleText() const
 
 UINT_PTR CDclFormObject::GetTitleBarIcon()
 {
-	CDclControlObject* pControl = GetControlProperties();
+	TDclControlPtr pControl = GetControlProperties();
 	return (UINT_PTR)pControl->GetLongProperty(Prop::Icon);
 }
 
@@ -307,7 +304,7 @@ UINT_PTR CDclFormObject::GetTitleBarIcon()
 //    unsigned char *pUUID;
 //    UuidCreate(&uuid);
 //    UuidToStringA(&uuid, &pUUID);
-//    const_cast<CDclFormObject*>(this)->msUUID = CString(pUUID);
+//    const_cast<TDclFormPtr>(this)->msUUID = CString(pUUID);
 //  }
 //  writeString(pFile, msUUID);
 //  writeBOOL(pFile, mbUsesClientRect);
@@ -323,7 +320,7 @@ UINT_PTR CDclFormObject::GetTitleBarIcon()
 //  while (pos != NULL)
 //  {
 //    // get current ArxControlObject
-//    CDclControlObject* pControl = mDclControls.GetNext(pos);
+//    TDclControlPtr pControl = mDclControls.GetNext(pos);
 //
 //    if (!pControl->IsDeleted())
 //      pControl->WriteToTextFile(pFile, fileName);
@@ -334,8 +331,6 @@ UINT_PTR CDclFormObject::GetTitleBarIcon()
 void CDclFormObject::Serialize(CArchive& ar)
 {
 	CObject::Serialize( ar );
-	// create a position variable to hold the counter increment
-	POSITION pos;	
 	short nCount;
 	DWORD nThisVersion = GetCurrentSaveVersion();
 
@@ -365,18 +360,16 @@ void CDclFormObject::Serialize(CArchive& ar)
 		}
 		ar << msUUID;
 		ar << mbUsesClientRect;
-		nCount = (WORD)mDclControls.GetCount() - CountDeletedControls();
+		nCount = (WORD)(mDclControls.size() - CountDeletedControls());
 		ar << nCount;
-		pos = mDclControls.GetHeadPosition();
-		while (pos != NULL)
+		for( TDclControlList::iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
 		{
-			CDclControlObject* pControl = mDclControls.GetNext(pos);
-			if (!pControl->IsDeleted())
+			if( !(*iter)->IsDeleted() )
 			{
-				pControl->Serialize(ar);
+				(*iter)->Serialize(ar);
 			#ifdef _DIAGNOSTIC
 				if( (GetAsyncKeyState( VK_CONTROL ) & 0x8000) == 0x8000 )
-					TraceFmt( _T("> %s\r\n"), pControl->toString() );
+					TraceFmt( _T("> %s\r\n"), (*iter)->toString() );
 			#endif //_DIAGNOSTIC
 			}
 		}		
@@ -427,7 +420,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 		ClearControls();
 		while (nCount-- > 0)
 		{
-			CDclControlObject* pControl = new CDclControlObject( this );
+			TDclControlPtr pControl = new CDclControlObject( this );
 			pControl->Serialize(ar);
 			AddControl( pControl );
 			#ifdef _DIAGNOSTIC
@@ -482,68 +475,21 @@ void CDclFormObject::Serialize(CArchive& ar)
 }
 
 
-void CDclFormObject::IncrementPictureId(int nIdIncrement)
-{
-	// create a position variable to hold the counter increment
-	POSITION pos;	
-		
-	// set counter for clipboard
-	int nCount = mDclControls.GetCount()- 1;
-	
-	while(nCount >= 0)
-	{
-		// get position
-		pos = mDclControls.FindIndex(nCount);
-		// get current property
-		CDclControlObject* pControlForm = mDclControls.GetAt(pos);
-		
-		int nPictureId = pControlForm->GetLongProperty(Prop::Picture);
-		if (nPictureId > 0)
-			pControlForm->SetLongProperty(Prop::Picture, pControlForm->GetLongProperty(Prop::Picture) + nIdIncrement);
-
-		int nPressedPictureId = pControlForm->GetLongProperty(Prop::PressedPicture);
-		if (nPressedPictureId > 0)
-			pControlForm->SetLongProperty(Prop::PressedPicture, pControlForm->GetLongProperty(Prop::PressedPicture) + nIdIncrement);
-
-		int nIconId = pControlForm->GetLongProperty(Prop::Icon);
-		if (nIconId > 0)
-			pControlForm->SetLongProperty(Prop::Icon, pControlForm->GetLongProperty(Prop::Icon) + nIdIncrement);
-
-		// increment counter
-		nCount--;
-	}
-}
-
-
 void CDclFormObject::ClearControls()
 {
-	POSITION posControl = mDclControls.GetTailPosition();
-	while(posControl)
+	if( mDclControls.empty() )
+		return;
+#ifdef _DEBUG
+	TDclControlList::iterator iter = mDclControls.end();
+	do
 	{
-		CDclControlObject* pCtrl = mDclControls.GetPrev(posControl);
-		assert( pCtrl != NULL );
-		assert( pCtrl->GetControlInstance() == NULL ); //there should be no outstanding control instances!
-		delete pCtrl;
+		--iter;
+		assert( (*iter) != NULL );
+		assert( (*iter)->GetControlInstance() == NULL ); //there should be no outstanding control instances!
 	}
-	mDclControls.RemoveAll();
-}
-
-void CDclFormObject::ClearR14Events()
-{
-	POSITION pos = mDclControls.GetTailPosition();
-	while(pos != NULL)
-	{
-		CDclControlObject* pCtrl = mDclControls.GetPrev(pos);
-		assert( pCtrl != NULL );
-		if( pCtrl )
-			pCtrl->ClearR14Events();
-	}
-
-	if (mType == VdclDockable)
-	{
-		CDclControlObject* pControlForm = GetControlProperties();
-		pControlForm->RemoveProperty(Prop::Resizable);
-	}
+	while( iter != mDclControls.begin() );
+#endif //_DEBUG
+	mDclControls.clear();
 }
 
 IOStatus CDclFormObject::ReadFromTextFile(std::ifstream &sFile, const CString &fileName)
@@ -592,7 +538,7 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 
   while (nCount-- > 0)
   {
-    CDclControlObject* pControl = new CDclControlObject( this );
+    TDclControlPtr pControl = new CDclControlObject( this );
 
 		IOStatus stat = pControl->ReadFromTextFile(sFile, fileName);
     if (stat != statOK) return stat;
@@ -601,14 +547,7 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
     AddControl(pControl);
 
     if (mType == VdclModal)
-    {				
-      TPropertyPtr pProp = pControl->GetPropertyObject(Prop::EventInvoke);
-      if (pProp != NULL)
-      {
-        POSITION pos = pControl->GetPropertyList().Find(pProp, NULL);
-        pControl->GetPropertyList().RemoveAt(pos);
-      }
-    }
+			pControl->RemoveProperty(Prop::EventInvoke);
   }
 
 	int ctImageLists;
@@ -635,9 +574,9 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 	if( !rImageLists.empty() )
 		MoveImageListsToControls( rImageLists, this ); //moving all control image lists to the individual controls
 
-  if (mDclControls.GetCount() > 0)
+  if( !mDclControls.empty() )
   {
-    CDclControlObject* pControl = GetControlProperties();		
+    TDclControlPtr pControl = GetControlProperties();		
 
 		switch (mType)
 		{
@@ -676,7 +615,7 @@ UUID CDclFormObject::GetUUID() const
 
 CString CDclFormObject::GetKeyName() const
 {
-	const CDclControlObject* pControlProps = GetControlProperties();
+	const TDclControlPtr pControlProps = GetControlProperties();
 	assert( pControlProps != NULL );
 	if (!pControlProps)
 		return CString(); //properties have not yet been added!
@@ -698,7 +637,7 @@ CString CDclFormObject::GetKeyPath() const
 
 CString CDclFormObject::GetVarName() const
 {
-	const CDclControlObject* pControlProps = GetControlProperties();
+	const TDclControlPtr pControlProps = GetControlProperties();
 	assert( pControlProps != NULL );
 	if (!pControlProps)
 		return CString(); //properties have not yet been added!
@@ -720,32 +659,27 @@ bool CDclFormObject::IsModeless() const
 	return false;
 }
 
-INT_PTR CDclFormObject::GetControlCount() const
+TDclControlPtr CDclFormObject::CreateControlProperties()
 {
-	return mDclControls.GetCount();
-}
-
-CDclControlObject* CDclFormObject::CreateControlProperties()
-{
-	if( !mDclControls.IsEmpty() )
-		return mDclControls.GetHead();
-	CDclControlObject* pProps = new CDclControlObject(this);
-	mDclControls.AddHead(pProps);
+	if( !mDclControls.empty() )
+		return mDclControls.front();
+	TDclControlPtr pProps = new CDclControlObject( this );
+	mDclControls.push_back( pProps );
 	return pProps;
 }
 
-const CDclControlObject* CDclFormObject::GetControlProperties() const
+const TDclControlPtr CDclFormObject::GetControlProperties() const
 {
-	if( mDclControls.IsEmpty() )
+	if( mDclControls.empty() )
 		return NULL;
-	return mDclControls.GetHead();
+	return mDclControls.front();
 }
 
-CDclControlObject* CDclFormObject::GetControlProperties()
+TDclControlPtr CDclFormObject::GetControlProperties()
 {
-	if( mDclControls.IsEmpty() )
-		return CreateControlProperties();
-	return mDclControls.GetHead();
+	if( mDclControls.empty() )
+		return NULL;
+	return mDclControls.front();
 }
 
 CSize CDclFormObject::GetFormSize() const
@@ -753,85 +687,66 @@ CSize CDclFormObject::GetFormSize() const
 	return CSize( GetControlProperties()->GetLongProperty(Prop::Width), GetControlProperties()->GetLongProperty(Prop::Height) );
 }
 
-CDclControlObject* CDclFormObject::FindControl( LPCTSTR pszControlName ) const
+TDclControlPtr CDclFormObject::FindControl( LPCTSTR pszControlName ) const
 {
-	POSITION pos = mDclControls.GetHeadPosition();
-	while( pos )
+	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
 	{
-		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
-		if( pDclControl->GetKeyName().CompareNoCase( pszControlName ) == 0 )
-			return pDclControl;
+		if( (*iter)->GetKeyName().CompareNoCase( pszControlName ) == 0 )
+			return *iter;
 	}
 	return NULL;
 }
 
-CDclControlObject* CDclFormObject::FindControl( LPCTSTR pszControlName, ControlType eType ) const
+TDclControlPtr CDclFormObject::FindControl( LPCTSTR pszControlName, ControlType eType ) const
 {
-	CDclControlObject* pDclControl = FindControl( pszControlName );
-	if( pDclControl && pDclControl->GetType() == eType )
-		return pDclControl;
-	return NULL;
-}
-
-CDclControlObject* CDclFormObject::FindFirstControlOfType( ControlType eType ) const
-{
-	POSITION pos = mDclControls.GetHeadPosition();
-	while (pos != NULL)
+	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
 	{
-		CDclControlObject* pDclControl = mDclControls.GetNext(pos);
-		if (pDclControl->GetType() == eType)
-			return pDclControl;
+		if( (*iter)->GetKeyName().CompareNoCase( pszControlName ) == 0 )
+		{
+			if( (*iter)->GetType() == eType )
+				return *iter;
+			break;
+		}
 	}
 	return NULL;
 }
 
-bool CDclFormObject::FindControls( ControlType eType, CList< CDclControlObject* >& Results ) const
+TDclControlPtr CDclFormObject::FindFirstControlOfType( ControlType eType ) const
 {
-	POSITION pos = mDclControls.GetHeadPosition();
-	while (pos != NULL)
+	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
 	{
-		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
-		if( pDclControl->GetType() == eType )
-			Results.AddTail(pDclControl);
+		if( (*iter)->GetType() == eType )
+			return *iter;
+	}
+	return NULL;
+}
+
+bool CDclFormObject::FindControls( ControlType eType, TDclControlList& Results ) const
+{
+	Results.clear();
+	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
+	{
+		if( (*iter)->GetType() == eType )
+			Results.push_back( (*iter) );
 	}
 	return true;
 }
 
-CDclControlObject* CDclFormObject::FindControlWithVarName( LPCTSTR pszVarName ) const
+TDclControlPtr CDclFormObject::FindControlWithVarName( LPCTSTR pszVarName ) const
 {
-	POSITION pos = mDclControls.GetHeadPosition();
-	while( pos )
+	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
 	{
-		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
-		if( pDclControl->GetStringProperty( Prop::GlobalVarName ).CompareNoCase( pszVarName ) == 0 )
-			return pDclControl;
+		if( (*iter)->GetStringProperty( Prop::GlobalVarName ).CompareNoCase( pszVarName ) == 0 )
+			return *iter;
 	}
 	return NULL;
 }
 
 bool CDclFormObject::GetControlFonts( CFontCollection& Fonts ) const
 {
-	POSITION pos = mDclControls.GetHeadPosition();
-	while( pos )
-	{
-		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
-		assert( pDclControl != NULL );
-		Fonts.GetFont( pDclControl, NULL );
-	}
+	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
+		Fonts.GetFont( (*iter), NULL );
 	return true;
-}
-
-void CDclFormObject::ZOrderFrontAddTabControls()
-{
-	POSITION pos = mDclControls.GetHeadPosition();
-	mDclControls.GetNext( pos ); //skip the properties control
-	while( pos )
-	{
-		CDclControlObject* pDclControl = mDclControls.GetNext( pos );
-		CWnd* pWnd = pDclControl->GetWindow();
-		if (pWnd != NULL)
-			pWnd->SetWindowPos( &CWnd::wndTop, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
-	}
 }
 
 
@@ -853,9 +768,8 @@ void CDclFormObject::dump( bool bDeep /*= true*/ ) const
 	theWorkspace.DisplayStatus( sOut );
 	if( !bDeep )
 		return;
-	POSITION pos = mDclControls.GetHeadPosition();
-	while( pos )
-		mDclControls.GetNext( pos )->dump( true );
+	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
+		(*iter)->dump( true );
 	theWorkspace.DisplayStatus( _T("========================================\r\n") );
 }
 #endif
@@ -867,9 +781,8 @@ void CDclFormObject::dumpDebugger( bool bDeep /*= true*/ ) const
 	TraceFmt( _T("%s\r\n"), toString() );
 	if( !bDeep )
 		return;
-	POSITION pos = mDclControls.GetHeadPosition();
-	while( pos )
-		mDclControls.GetNext( pos )->dumpDebugger( true );
+	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
+		(*iter)->dumpDebugger( true );
 	Trace( _T("========================================\r\n") );
 }
 #endif

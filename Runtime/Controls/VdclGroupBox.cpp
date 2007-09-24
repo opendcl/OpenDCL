@@ -35,7 +35,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // VdclGroupBox message handlers
 
-BOOL VdclGroupBox::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
+BOOL VdclGroupBox::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID ) 
 {
 	BOOL RetVal;
 	DWORD dwStyle;

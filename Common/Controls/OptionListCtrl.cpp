@@ -16,7 +16,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // COptionListCtrl
 
-COptionListCtrl::COptionListCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+COptionListCtrl::COptionListCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CListBoxCtrl( pTemplate, pPane, nID, false )
 , mnRowHeight( 20 )
 {
@@ -60,8 +60,8 @@ bool COptionListCtrl::Create( CWnd* pParentWnd, UINT nID )
 DWORD COptionListCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = __super::GetWndStyle();
-	dwStyle &= ~(LBS_DISABLENOSCROLL | LBS_USETABSTOPS);
-	dwStyle |= LBS_OWNERDRAWVARIABLE;
+	dwStyle &= ~(LBS_USETABSTOPS);
+	dwStyle |= LBS_OWNERDRAWFIXED;
 	return dwStyle;
 }
 
@@ -74,12 +74,9 @@ bool COptionListCtrl::OnApplyProperty( TPropertyPtr pProp )
 	{
 	case Prop::RowHeight:
 		{
-			if( !IsEnumeratingProperties() )
-			{
-				SetRowHeight( pProp->GetLongValue() );
-				if( !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::BtnCaption ) ) )
-					bFailed = true;
-			}
+			long nNewHeight = pProp->GetLongValue();
+			mnRowHeight = nNewHeight > 0? nNewHeight : 20;
+			SetItemHeight( 0, mnRowHeight );
 			break;
 		}
 	case Prop::DefSelIndex:
@@ -97,33 +94,24 @@ bool COptionListCtrl::OnApplyProperty( TPropertyPtr pProp )
 		}
 	case Prop::BtnCaption:
 		{
+			OnApplyProperty( mpTemplate->GetPropertyObject( Prop::RowHeight ) );
+			OnApplyProperty( mpTemplate->GetPropertyObject( Prop::FontName ) );
 			int nCurSel = GetCurSel();
 			ResetContent();					
-			if( IsEnumeratingProperties() )
-				SetRowHeight( mpTemplate->GetPropertyObject( Prop::RowHeight )->GetLongValue() );
-			CRect rc;
-			GetClientRect( &rc );
-			for( size_t idx = 0; idx < pProp->size(); ++idx )
+			size_t nMax = pProp->size();
+			for( size_t idx = 0; idx < nMax; ++idx )
 			{				
 				CString sOption = pProp->GetStringItem( idx );
-				AddString( sOption );
-				SetItemData( idx, (idx == nCurSel)? 1 : 0 );
-				SetItemHeight( idx, mnRowHeight );
+				int nNewItem = AddString( sOption );
+				SetItemData( nNewItem, (idx == nCurSel)? 1 : 0 );
 			}
 			ResetTooltips();
 			SetCurSel( nCurSel );
-			Invalidate();				
+			Invalidate();
 			break;
 		}
 	}
 	return !bFailed;
-}
-
-void COptionListCtrl::SetRowHeight(int nNewHeight)
-{
-	mnRowHeight = nNewHeight > 0? nNewHeight : 20;
-	if( !IsEnumeratingProperties() )
-		OnApplyProperty( mpTemplate->GetPropertyObject( Prop::BtnCaption ) );
 }
 
 void COptionListCtrl::ResetTooltips()
@@ -153,6 +141,7 @@ void COptionListCtrl::ResetTooltips()
 BEGIN_MESSAGE_MAP(COptionListCtrl, CListBoxCtrl)
 	ON_WM_MOUSEMOVE()
 	ON_MESSAGE(WM_MOUSELEAVE, OnMouseLeave)   	
+	ON_WM_MEASUREITEM_REFLECT()
 END_MESSAGE_MAP()
 
 

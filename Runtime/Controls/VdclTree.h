@@ -5,8 +5,6 @@
 
 #include "TreeCtrlEx.h"
 
-class CDclControlObject;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // VdclTree window
@@ -36,9 +34,8 @@ public:
 public:
 	bool m_bDeleting;
 	CTreeCtrlEx m_ChildTree;
-	bool m_bInvokeWithSendString;
 	CTreeItemList m_TreeItems;
-	CDclControlObject *m_ArxControl;
+	TDclControlPtr m_ArxControl;
 	bool m_bSingleExpand;
 	HTREEITEM m_hOldItem;
 	bool m_bAutoChangeSelection;
@@ -67,7 +64,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(VdclTree)
 	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID );
 	//}}AFX_VIRTUAL
 
 // Implementation

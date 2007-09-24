@@ -155,7 +155,7 @@ CString VARTYPEtoString(VARTYPE vt)
 			//	return _T("OLE Object");
 			//else if (pProperty != NULL)
 			//{
-			//	CDclControlObject *pOleObject = activeProject->GetAxOleObject(pProperty);
+			//	TDclControlPtr pOleObject = activeProject->GetAxOleObject(pProperty);
 			//	if (pOleObject != NULL)
 			//	{
 			//		CString sType = pOleObject->m_Name;
@@ -169,7 +169,7 @@ CString VARTYPEtoString(VARTYPE vt)
 			//}
 			//else if (pMethod != NULL)
 			//{
-			//	CDclControlObject *pOleObject = activeProject->GetAxOleObject(pMethod);
+			//	TDclControlPtr pOleObject = activeProject->GetAxOleObject(pMethod);
 			//	if (pOleObject != NULL)
 			//	{
 			//		if (pObjectBrowser != NULL)

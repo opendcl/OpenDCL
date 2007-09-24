@@ -8,7 +8,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CUndoActions
 
-CUndoActions::CUndoActions(int nAction, CDclControlObject *pArxObject, CWnd *pControl)
+CUndoActions::CUndoActions(int nAction, TDclControlPtr pArxObject, CWnd *pControl)
 {
 	m_nAction = nAction;
 	m_pArxObject = pArxObject;

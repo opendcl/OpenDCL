@@ -7,7 +7,6 @@
 #include "DialogControl.h"
 #include "AcadColorService.h"
 
-class CDclControlObject;
 class CArxDwgListCtrl;
 
 
@@ -19,12 +18,12 @@ class CFolderComboCtrl : public CFolderComboBox, public CDialogControl
 	CAcadColorService mColorService;
 
 public:
-	CFolderComboCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CFolderComboCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CFolderComboCtrl();
 
 // DialogControl Interface
 public:
-	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual CRect GetWndRect() const;
 	virtual DWORD GetWndStyle() const;

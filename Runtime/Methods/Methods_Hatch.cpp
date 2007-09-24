@@ -50,7 +50,7 @@ int Hatch_SetPattern()
 {
 	CString sPattern;
 	
-	CDclControlObject *pArx = GetLispInput(_T("Hatch_SetPattern"), sPattern);
+	TDclControlPtr pArx = GetLispInput(_T("Hatch_SetPattern"), sPattern);
 
 	if (pArx == NULL)
 	{		

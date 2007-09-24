@@ -15,10 +15,10 @@ class CPictureObject;
 class CGraphicButtonCtrl : public CButtonCtrl
 {
 	CPictureObject* mpPicture;
-	CPictureObject* mpPressedPicture;
+	CPictureObject* mpMouseOverPicture;
 
 public:
-	CGraphicButtonCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CGraphicButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CGraphicButtonCtrl();
 
 // DialogControl Interface
@@ -29,8 +29,8 @@ public:
 public:
 	void SetPicture( CPictureObject* pPict );
 	CPictureObject* GetPicture() const { return mpPicture; }
-	void SetPressedPicture( CPictureObject* pPict );
-	CPictureObject* GetPressedPicture() const { return mpPressedPicture; }
+	void SetMouseOverPicture( CPictureObject* pPict );
+	CPictureObject* GetMouseOverPicture() const { return mpMouseOverPicture; }
 
 protected:
 	DECLARE_MESSAGE_MAP();

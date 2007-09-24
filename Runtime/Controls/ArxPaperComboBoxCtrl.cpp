@@ -13,18 +13,16 @@
 #include "AutoDocLock.h"
 
 
-static CDclControlObject* FindPrinterCombo( CDclFormObject* pForm )
+static TDclControlPtr FindPrinterCombo( TDclFormPtr pForm )
 {
 	if( !pForm )
 		return NULL;
-	CList< CDclControlObject* > listCombos;
+	TDclControlList listCombos;
 	pForm->FindControls( CtlComboBox, listCombos );
-	POSITION pos = listCombos.GetHeadPosition();
-	while( pos )
+	for( TDclControlList::iterator iter = listCombos.begin(); iter != listCombos.end(); ++iter )
 	{
-		CDclControlObject* pTemplate = listCombos.GetNext( pos );
-		if( pTemplate->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_Plotters )
-			return pTemplate;
+		if( (*iter)->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_Plotters )
+			return *iter;
 	}
 	return NULL;
 }
@@ -33,7 +31,7 @@ static CDclControlObject* FindPrinterCombo( CDclFormObject* pForm )
 /////////////////////////////////////////////////////////////////////////////
 // CArxPaperComboBoxCtrl
 
-CArxPaperComboBoxCtrl::CArxPaperComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID,
+CArxPaperComboBoxCtrl::CArxPaperComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID,
 																							bool bCreate /*= true*/ )
 : CArxComboBoxCtrl( pTemplate, pPane, nID, new CPaperComboHandler( FindPrinterCombo( pTemplate->GetOwnerForm() ) ), false )
 {

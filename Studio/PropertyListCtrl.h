@@ -2,10 +2,11 @@
 
 #pragma once
 
+#include "PtrTypes.h"
 #include "PropertyButton.h"
 #include "PropertyEdit.h"
-#include "PropertyList.h"
 #include "EditorProject.h"
+#include <vector>
 
 class CProjectCollection;
 class CObjectBrowser;
@@ -53,6 +54,7 @@ class CColourPopup;
 
 class CPropertyListCtrl : public CWnd
 {
+	std::vector< TPropertyPtr > mProperties;
 
 // Constructor
 public:
@@ -62,8 +64,7 @@ public:
 // Atributes
 public:
 	HCURSOR				m_Cursor;
-	CDclControlObject	*m_pControl;
-	CPropertyList		m_PropertyList;
+	TDclControlPtr m_pControl;
 	CString				m_ClassName;
 	COpenDCLView		*m_pView;
 	CStatic				*m_pPropTitle;
@@ -85,7 +86,7 @@ public:
 	void SetSelectionIndex(short nNewValue);
 	void SetTopIndex(short Index);
 	void CloseListBox(int nInstructions);
-	TPropertyPtr GetPropertyObject(short PropertyIndex);
+	TPropertyPtr GetPropertyObject( size_t nIndex );
 	void EditObjectbrowser();
 	
 
@@ -117,14 +118,10 @@ public:
 public:
 	afx_msg short CountPictures();
 	afx_msg void ClearGrid();
-	afx_msg void DisplayProperties(CDclControlObject *pControl);
+	afx_msg void DisplayProperties(TDclControlPtr pControl);
 	afx_msg short GetPictureID(short Index);
-	afx_msg BOOL SetDclParent(short Index, LPCTSTR ParentName, short TabIndex);
-	afx_msg short GetDclParentsTabIndex(short Index);
-	afx_msg bool IsDclControlDeleted(short DclFormIndex, short ArxControlIndex);
 	afx_msg void DisplayVaries();
 	afx_msg void LoadPicture(LPCTSTR sFileName, short nPictureTag, bool bApplyMask);
-	afx_msg void CheckPictureRefs();
 	afx_msg void DefaultFontDlg();
 	afx_msg void ShowPropertyDlg(bool bFontActive = false, bool bImageListActive = false);
 	afx_msg void Refresh();
@@ -136,12 +133,12 @@ public:
 	void DrawRowGrid(int nRow, CRect *pRcClientArea, HDC hdc);
 	void DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRcClientArea, HDC hdc);
 	int GetSelectedIndex(long y);
-	CRect ChangeSelectedItem(int nNewSelectionIndex);	
+	CRect ChangeSelectedItem(size_t nNewSelectionIndex);	
 	BOOL m_ScrollBarNeeded;
 	BOOL m_ScrollBarCreated;
-	int m_SelectedIndex;
-	int m_TopIndex;
-	int m_RowsPerPage;
+	size_t m_SelectedIndex;
+	size_t m_TopIndex;
+	size_t m_RowsPerPage;
 	CScrollBar m_ScrollBar;
 	CPropertyButton m_Button;
 	CPropertyEdit	m_Edit;
@@ -157,12 +154,10 @@ public:
 	CString GetPictureFile(LPCTSTR Filter);
 
 public:	
-	CDclControlObject* GetArxControlObject(short DclFormIndex, short ArxControlIndex);
-	CDclFormObject* GetDclFormObject(short DclFormIndex);
 	CStringList m_FileList;
 	BOOL ImageListAddPicture(CPictureHolder *NewPicture, CImageListObject *pImageListObj, CImageList *pImageList, CSize *pImageSize, BOOL ApplyMask);
 	CString GetOnePictureFile();
-	void SearchPictureRefs(CDclFormObject *pDclObject);
+	void SearchPictureRefs( TDclFormPtr pDclForm );
 	
 	void FirePropertyChanged(Prop::Id ChangedPropertyID);		
 	void FireInvokeImageList(short PropertyIndex, long PropertyID);

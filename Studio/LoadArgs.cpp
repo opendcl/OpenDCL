@@ -12,7 +12,7 @@
 #include "DclFormObject.h"
 
 
-void LoadArgsNDesc(Prop::Id nEventId, const CDclControlObject *pControl, CString &sArgs, CString &sDesc)
+void LoadArgsNDesc(Prop::Id nEventId, const TDclControlPtr pControl, CString &sArgs, CString &sDesc)
 {
 	// here we need to test the event defun id type to see what arguments need to be added.
 	switch (nEventId)

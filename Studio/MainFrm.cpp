@@ -180,7 +180,7 @@ void CMainFrame::CreateToolBoxBar()
 	m_wndToolBoxBar.EnableDocking(CBRS_ALIGN_LEFT|CBRS_ALIGN_RIGHT);
 }
 
-void CMainFrame::CreateProjectDockingBar(CProject* pProject /*= NULL*/)
+void CMainFrame::CreateProjectDockingBar(TEditorProjectPtr pProject /*= NULL*/)
 {
 	// --- project bar ---
 	if (!m_wndProjectTreeBar.Create(_T("Instant Bar"), this, 128))
@@ -502,7 +502,7 @@ void CMainFrame::OnRemove()
 	ASSERT(pProjTree != NULL);
 	if (!pProjTree)
 		return;
-	CProject* pProject = pProjTree->GetProject();
+	TEditorProjectPtr pProject = pProjTree->GetProject();
 	ASSERT(pProject != NULL);
 	if (!pProject)
 		return;
@@ -539,7 +539,7 @@ void CMainFrame::OnRemove()
 		return;
 	}
 	
-	CDclFormObject* pDclForm = pProject->FindDclForm( pProjTree->GetItemText( hDclForm ) );
+	TDclFormPtr pDclForm = pProject->FindDclForm( pProjTree->GetItemText( hDclForm ) );
 	if( !pDclForm )
 	{ //the form was not found for some reason
 		MessageBox( theWorkspace.LoadResourceString(IDS_DCLTREEITEMNOTSEL),
@@ -572,7 +572,7 @@ void CMainFrame::OnSetautolispfilename()
 	ASSERT(pProjTree != NULL);
 	if (!pProjTree)
 		return;
-	CProject* pProject = pProjTree->GetProject();
+	TEditorProjectPtr pProject = pProjTree->GetProject();
 	ASSERT(pProject != NULL);
 	if (!pProject)
 		return;
@@ -603,7 +603,7 @@ void CMainFrame::OnSetpassword()
 	ASSERT(pProjTree != NULL);
 	if (!pProjTree)
 		return;
-	CProject* pProject = pProjTree->GetProject();
+	TEditorProjectPtr pProject = pProjTree->GetProject();
 	ASSERT(pProject != NULL);
 	if (!pProject)
 		return;

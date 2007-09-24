@@ -6,30 +6,36 @@
 
 class CArxDialogObject : public CDialogObject
 {
-	// Attributes
-protected:
 	CArxControlPane mControlPane;
+	bool mbEnteringNoDocState;
 	class CDocReactor : public AcApDocManagerReactor
 	{
 		CArxDialogObject* mpDialogobject;
 		CString msDocActivatedEvent;
+		CString msEnteringNoDocStateEvent;
 	public:
 		CDocReactor( CArxDialogObject* pDialogobject );
 		~CDocReactor();
-		void documentActivated(AcApDocument* pActivatedDoc);
+		virtual void documentActivated(AcApDocument* pActivatedDoc);
+		virtual void documentToBeDestroyed(AcApDocument* pDocToDestroy);
 	} mDocReactor;
 
 public:
-	CArxDialogObject( CDclFormObject* pSourceForm, CWnd* pHostDlg );
+	CArxDialogObject( TDclFormPtr pSourceForm, CWnd* pHostDlg );
 	virtual ~CArxDialogObject();
 
-	// Properties
 public:
 	virtual const CControlPane& GetControlPane() const { return mControlPane; }
 	virtual CControlPane& GetControlPane() { return mControlPane; }
 
-// Operations
 public:
-	static CDialogObject* Create( CDclFormObject* pDclForm, CWnd* pParent = NULL,
+	bool IsEnteringNoDocState() const { return mbEnteringNoDocState; }
+
+protected:
+	friend CDocReactor;
+	void OnEnteringNoDocState();
+
+public:
+	static CDialogObject* Create( TDclFormPtr pDclForm, CWnd* pParent = NULL,
 																DialogParams* pParams = NULL );
 };

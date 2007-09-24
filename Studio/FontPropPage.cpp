@@ -4,7 +4,8 @@
 #include "stdafx.h"
 #include "FontPropPage.h"
 #include "PropertyObject.h"
-#include "Project.h"
+#include "EditorWorkspace.h"
+#include "DclControlObject.h"
 #include "ControlHolder.h"
 #include "SharedRes.h"
 
@@ -16,18 +17,18 @@
 
 IMPLEMENT_DYNCREATE(CFontPropertyPage, CPropertyPage)
 
-CFontPropertyPage::CFontPropertyPage(CDclControlObject* pDclControl /*= NULL*/)
+CFontPropertyPage::CFontPropertyPage(TDclControlPtr pDclControl /*= NULL*/)
 : CPropertyPage(CFontPropertyPage::IDD)
 , mpDclControl( pDclControl )
 {
 	if( mpDclControl )
 	{
-		m_pFontName = mpDclControl->GetPropertyObject(Prop::LabelName);
-		m_pFontSize = mpDclControl->GetPropertyObject(Prop::LabelSize);
-		m_pFontStrikeOut = mpDclControl->GetPropertyObject(Prop::LabelStrikeOut);
-		m_pFontUnderline = mpDclControl->GetPropertyObject(Prop::LabelUnderline);
-		m_pFontBold = mpDclControl->GetPropertyObject(Prop::LabelBold);
-		m_pFontItalic = mpDclControl->GetPropertyObject(Prop::LabelItalic);
+		m_pFontName = mpDclControl->GetPropertyObject(Prop::FontName);
+		m_pFontSize = mpDclControl->GetPropertyObject(Prop::FontSize);
+		m_pFontStrikeOut = mpDclControl->GetPropertyObject(Prop::FontStrikeout);
+		m_pFontUnderline = mpDclControl->GetPropertyObject(Prop::FontUnderline);
+		m_pFontBold = mpDclControl->GetPropertyObject(Prop::FontBold);
+		m_pFontItalic = mpDclControl->GetPropertyObject(Prop::FontItalic);
 	}
 	else
 	{
@@ -113,7 +114,7 @@ END_MESSAGE_MAP()
 BOOL CFontPropertyPage::OnInitDialog() 
 {
 	CPropertyPage::OnInitDialog();
-	CProject* pProject = activeProject;
+	TEditorProjectPtr pProject = activeProject;
 
 	try
 	{
@@ -354,7 +355,7 @@ void CFontPropertyPage::OnDestroy()
 BOOL CFontPropertyPage::OnApply() 
 {
 	CWinApp* pApp = AfxGetApp();
-	CProject *pProject = activeProject;
+	TEditorProjectPtr pProject = activeProject;
 	
 	// set the font name
 	CString sFontName;	
@@ -475,7 +476,7 @@ BOOL CFontPropertyPage::OnApply()
 		}
 	}
 	if( mpDclControl && mpDclControl->m_pCtrlHolder )
-		((CControlHolder*)mpDclControl->m_pCtrlHolder)->UpdateProperty(Prop::LabelName);
+		((CControlHolder*)mpDclControl->m_pCtrlHolder)->UpdateProperty(Prop::FontName);
 
 	return CPropertyPage::OnApply();
 }

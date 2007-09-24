@@ -8,7 +8,6 @@
 #include "TabPage.h"
 #include "ArxControlServices.h"
 
-class CDclControlObject;
 class CDclFormObject;
 class VdclTab;
 
@@ -30,7 +29,7 @@ private:
 
 // Construction
 public:
-	CArxTabStripCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CArxTabStripCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxTabStripCtrl();
 
 // DialogControl Interface
@@ -49,7 +48,7 @@ public:
 	size_t GetTabPageCount() const { return mTabPages.size(); }
 	size_t GetTabPageIndex( int nItemIndex ) const;
 	TTabPagePtr GetTabPageAt( size_t nPageIndex ) const;
-	const CDclFormObject* GetTabSourceFormAt( size_t nPageIndex ) const;
+	const TDclFormPtr GetTabSourceFormAt( size_t nPageIndex ) const;
 	const CControlPane* GetTabControlPaneAt( size_t nPageIndex ) const;
 
 public:

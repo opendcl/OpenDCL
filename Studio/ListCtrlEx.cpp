@@ -59,7 +59,7 @@ void CListCtrlEx::OnSize(UINT nType, int cx, int cy)
 }
 
 
-void CListCtrlEx::SetupColumns(CDclControlObject *pControl)
+void CListCtrlEx::SetupColumns(TDclControlPtr pControl)
 {	
 	while (m_Child.GetItemCount() > 0)
 		m_Child.DeleteItem(0);

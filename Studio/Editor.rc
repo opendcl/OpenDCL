@@ -1262,8 +1262,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,1,0,7
- PRODUCTVERSION 4,1,0,7
+ FILEVERSION 4,1,0,8
+ PRODUCTVERSION 4,1,0,8
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1280,13 +1280,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL Studio Dialog Editor"
-            VALUE "FileVersion", "4, 1, 0, 7"
+            VALUE "FileVersion", "4, 1, 0, 8"
             VALUE "InternalName", "OpenDCL.Editor"
             VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL Studio.exe"
             VALUE "ProductName", "OpenDCL Studio"
-            VALUE "ProductVersion", "4, 1, 0, 7"
+            VALUE "ProductVersion", "4, 1, 0, 8"
         END
     END
     BLOCK "VarFileInfo"
@@ -2163,7 +2163,7 @@ END
 STRINGTABLE 
 BEGIN
     2208                    "This setting will set the font as bold."
-    2209                    "This setting will set the font's size."
+    2209                    "A positive font size represents character height in points (i.e. ""Font Size Scaled to Monitor"", where 1 point = 1/72 inch), and a negative size represents character height in pixels (""Font Size in Pixels"")."
     2210                    "This setting will set the font's name."
     2211                    "This setting will force the text to be drawn with a strike line through it."
     2212                    "This setting will set the text's color."

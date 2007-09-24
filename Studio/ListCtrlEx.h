@@ -4,8 +4,7 @@
 #pragma once
 
 #include "PictureBox.h"
-
-class CDclControlObject;
+#include "DclControlObject.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -23,7 +22,7 @@ public:
 
 // Operations
 public:
-	void SetupColumns(CDclControlObject *pControl);
+	void SetupColumns(TDclControlPtr pControl);
 	
 // Overrides
 	// ClassWizard generated virtual function overrides

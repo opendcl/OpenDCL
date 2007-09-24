@@ -39,7 +39,7 @@ dcl_
 This method loads the requested project into memory for later use. If you specify a T after the file name the odc file will be reloaded, but only if it is an .odcl file.
 The file passed will be searched for if no path is included in the file name.  If a path is included in the file name, the entire path is assumed to be correct.
 \par *This function is deprecated. Use (dcl_Project_Load) instead.
-[Arguments Return] as String "Qualified Path"
+[Arguments Return] as String "ProjectName"
 \par\tab FileName
 [as Integer]
 \par\tab \i [Optional] \i0 Reload
@@ -59,7 +59,7 @@ This method loads the requested project file into memory. If you specify a T aft
 \par will load the project if it isn't loaded and allow you to refer to it as Proj01, so a call to show one of its forms might be:
 \par (dcl_Form_Show Proj01_Form)*
 \par\par * If you specify explicit values for the VarName property of a form or control, then you must use that symbol name regardless of the project name.
-[Arguments Return] as String "Qualified Path"
+[Arguments Return] as String "ProjectName"
 \par\tab FileName
 [as String]
 \par\tab \i [Optional] \i0 Reload
@@ -123,15 +123,47 @@ This method exports the specified project to base64 encoded binary data. The pas
 
 
 [Method]
+GetProjects
+[Prefix]
+dcl_
+[Desc]
+Returns a list of all loaded projects.
+[Arguments Return] as List of Loaded Projects
+
+
+[Method]
+Project_GetForms
+[Prefix]
+dcl_
+[Desc]
+Returns a list of all forms in the project.
+[Arguments Return] as List of Forms
+\par\tab ProjectName
+[as String]
+\par\tab \i [Optional] \i0 Password
+[as String]
+
+
+[Method]
+GetControls
+[Prefix]
+dcl_Form_
+[Desc]
+Returns a list of all controls on the form.
+[Arguments Return] as List of Controls
+ProjectFileName
+
+
+[Method]
 Enable
 [Prefix]
 dcl_Form_
 [Desc]
-This method will disable or enable a dialog box, or config tab (but not the dockable form) to be enabled or disabled. 0 = Disabled, 1 or T = Enabled. When using this call with a Modal dialog box ensure you have the means re-enable the dialog box otherwise AutoCAD will be permantly locked.
+This method will disable or enable a dialog box, or config tab (but not the dockable form) to be enabled or disabled. Nil = Disabled, T = Enabled. When using this call with a Modal dialog box ensure you have the means re-enable the dialog box otherwise AutoCAD will be permantly locked.
 [Arguments]
 ProjectFileName
 \par\tab Enabled
-[as Integer]
+[as Boolean]
 
 
 [Method]
@@ -140,7 +172,7 @@ IsEnabled
 dcl_Form_
 [Desc]
 This method will return T if the form is enabled and Nil if the form is disabled.
-[Arguments]
+[Arguments Return] as T or Nil
 ProjectFileName
 
 
@@ -160,7 +192,7 @@ GetHwnd
 dcl_Form_
 [Desc]
 This method will return the Hwnd value of the dialog box. This may be required by an ActiveX control.
-[Arguments]
+[Arguments Return] as Entity Name
 ProjectFileName
 
 
@@ -264,7 +296,7 @@ Show
 dcl_Form_
 [Desc]
 This method displays a dialog box from a loaded project. \par \par \b *Important  Notes: \b0 \par \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-720\li720 The optional upper left coordinates only affect Modal and Modeless dialog boxes. \par {\pntext\f1\'B7\tab} If the dialog box being shown is a modal dialog box, this method will wait until the user has exited the dialog box before returning to AutoLISP. \par{\pntext\f1\'B7\tab}Do not call this method from within a MouseDown event of any control. \par{\pntext\f1\'B7\tab}File Dialog Box forms use an alternate function signature that expects the form name followed by optional string arguments for the initial folder, the initial filename, and the default file extension. \par \pard
-[Arguments Return] as Integer Dialog Status
+[Arguments Return] as Integer DialogStatus
 ProjectFileName
 \par\tab \i [Optional] \i0 UpperLeftXCoordinate
 [as Integer]

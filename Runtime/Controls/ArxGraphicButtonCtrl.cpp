@@ -11,7 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxGraphicButtonCtrl
 
-CArxGraphicButtonCtrl::CArxGraphicButtonCtrl( CDclControlObject* pTemplate,
+CArxGraphicButtonCtrl::CArxGraphicButtonCtrl( TDclControlPtr pTemplate,
 																							CControlPane* pPane,
 																							UINT nID,
 																							bool bCreate /*= true*/ )
@@ -30,11 +30,6 @@ bool CArxGraphicButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
-
-	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
 
 	return bSuccess;
 }
@@ -71,7 +66,7 @@ void CArxGraphicButtonCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	}
 	__super::OnMouseMove(nFlags, point);
 }
@@ -112,7 +107,7 @@ void CArxGraphicButtonCtrl::OnClicked()
 		else
 		{
 			// call methods to invoke the event
-			InvokeMethod(GetTemplate()->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);
+			InvokeMethod(GetTemplate()->GetStringProperty(Prop::EventClicked), IsAsyncEvents());
 		}
 	}
 }
@@ -135,5 +130,5 @@ void CArxGraphicButtonCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	__super::OnLButtonDown(nFlags, point);
 
 	if (GetTemplate() && GetTemplate()->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
-		BeginDragnDrop(GetTemplate(), point, m_bInvokeWithSendString);
+		BeginDragnDrop(GetTemplate(), point, IsAsyncEvents());
 }

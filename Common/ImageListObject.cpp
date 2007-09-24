@@ -3,9 +3,7 @@
 #include "ArchiveEx.h"
 #include "Filing.h"
 #include "Project.h"
-
-
-static const int CURRENTVERSION = 1;
+#include "SafeImageListWrite.h"
 
 
 IMPLEMENT_SERIAL(CImageListObject, CObject, 1)
@@ -66,38 +64,49 @@ void CImageListObject::Serialize(CArchive& ar)
 {
 	CObject::Serialize( ar );
 	
+	DWORD nThisVersion = GetCurrentSaveVersion();
 	if (ar.IsStoring())
 	{
-		ar << CURRENTVERSION;		
-		ar << mszImage;
+		ar << nThisVersion;		
 
-		// if the image list is null than save a flag that indicates image list is null
-		if (mImageList.m_hImageList == NULL)
-		{
-			ar << TRUE;
-		}
+		// if the image list is deleted or null, just flag it as null
+		if (mbDeleted || mImageList.m_hImageList == NULL)
+			ar << true;
 		else
 		{
-			// this indicates the imagelist in not null and we are to write the image list
-			ar << FALSE;
-			mImageList.Write(&ar);
+			ar << false;
+			SafeImageListWrite( mImageList.m_hImageList, &CArchiveStream( &ar ) );
 		}
-		
 	}
 	else
 	{
-		int nThisVersion;
-		BOOL bNull;
-		ar >> nThisVersion;		
-		ar >> mszImage;		
-		ar >> bNull;
-		
-		// set the delete flag as false
+		ar >> nThisVersion;
+		if (nThisVersion > GetCurrentSaveVersion())
+			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
+
 		mbDeleted = false;
 
-		// if the flag indicates that the image list in not null, then read the image list
-		if (bNull == FALSE)
+		bool bNull = true;
+		if( nThisVersion < 2 )
+		{
+			CSize szDiscard;
+			ar >> szDiscard;
+			BOOL bNullTemp;
+			ar >> bNullTemp;
+			bNull = (bNullTemp != FALSE);
+		}
+		else
+			ar >> bNull;
+		
+		// if the flag indicates that the image list is not null, then read the image list
+		if( !bNull )
+		{
 			mImageList.Read(&ar);
+			int cx = -1;
+			int cy = -1;
+			ImageList_GetIconSize( mImageList.m_hImageList, &cx, &cy );
+			mszImage.SetSize( cx, cy );
+		}
 		else
 			mImageList.DeleteImageList();
 	}

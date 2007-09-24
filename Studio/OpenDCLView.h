@@ -3,11 +3,13 @@
 
 #pragma once
 
+#include "PtrTypes.h"
 #include "ControlGripper.h"
 #include "UndoActions.h"
 #include "SelectedControl.h"
 #include "OpenDCLDoc.h"
 #include "Resource.h"
+#include "DclControlObject.h"
 
 
 class CFontCollection;
@@ -87,10 +89,10 @@ public:
 public:
 	int GetNextControlId();
 	CRect GetSplitterRect(int nId);
-	void CalcControlOffsetDistances(CDclControlObject *pArxObject, const CRect &rcCtrl);
+	void CalcControlOffsetDistances(TDclControlPtr pArxObject, const CRect &rcCtrl);
 	void MoveThisInPosition();
-	void DrawActiveXCtrl(CDclControlObject *pCtrl, CDC* pDC);
-	CDclControlObject* InsertControl(CRect rcPos, ControlType nCtrlToInsert);
+	void DrawActiveXCtrl(TDclControlPtr pCtrl, CDC* pDC);
+	TDclControlPtr InsertControl(CRect rcPos, ControlType nCtrlToInsert);
 	void PreDestroy();
 	void OnGridSpacingChanged();
 	void OnControlToInsertChanged();
@@ -101,15 +103,13 @@ public:
 	void PasteFromClipBoard();
 	void RefreshSelectControl();
 	void ZOrdedSelectedControls(short direction);
-	void DisplayControls(CDclFormObject *pDclForm);
+	void DisplayControls(TDclFormPtr pDclForm);
 	short GetSelectedArxIndex();
 	long GetSelectedType();
 	void OnLostFocus();
 	BOOL CanUndo();
 	void UndoAction();
-	short ResetDclFormIndex();
 	void CheckPictureRefs();
-	void SelectControl(short nArxControlIndex);
 	void SelectControl(CString sName);
 	void CalcAllOffsets();
 	void RefreshControlsWithPictures();
@@ -131,12 +131,11 @@ public:
 	CRect	m_rcDrawLast;
 	CRect	m_rcDraw;
 	CPoint	m_DrawStartPoint;
-	CDclFormObject *m_pThisDclForm;
+	TDclFormPtr m_pThisDclForm;
 	bool	m_MouseDown;
 	bool	m_bMoving;
 	int		m_nResizeQuadrant;
 	int		m_ControlId;
-	bool	m_bShowGrip;
 	CRect	m_rcGripRect;
 	CSize				m_szGripSize;
 	CFontCollection *m_pFontCollection;
@@ -158,38 +157,37 @@ public:
 	void AdjustOffsets(int cx, int cy);
 	CSize GetControlSize(CWnd *pControl, int nControlType);
 	CRect CalcResizeRect(int nQuadrant, CPoint point);
-	CControlHolder* AddCWndControl(CDclControlObject* pDclControl, CRect rcPos, bool bForceUpdate);
+	CControlHolder* AddCWndControl(TDclControlPtr pDclControl, CRect rcPos, bool bForceUpdate);
 	void NullDrawRect();
 	void PaintBackGround(HDC hdc);
 	int RoundToGridPattern(int Value);
 	CString FindNextControlName(CString sControlName);
-	int GetDclFormIndex();
 	bool CheckControlsForSelection(CRect rcSelArea, bool bLookForOne);
 	bool CheckControlsForSelection(CPoint point, UINT nFlags, bool bMouseDown = false);
 	void MoveControl(CSelectedControl *pSelectedControl, CPoint point);
 	bool StoreControlsPosition(CSelectedControl *pSelectedControl);
 	void ClearSelection(bool bResetZOrder = true);
-	bool IsInSelection(CDclControlObject *pArxObject);
+	bool IsInSelection(TDclControlPtr pArxObject);
 	void ShowSelection();
 	void ClearChildControls( CControlHolder* pControlHolder );
 	void ClearUndoList();
 	void UpdateGripPos();
-	void ClearEventProperties(CDclControlObject *pCtrl);
+	void ClearEventProperties(TDclControlPtr pCtrl);
 // control creation operations
 public:
 	void InsertControl		(CRect rcPos);
 
 public:
-	void RefreshChildControl(CDclControlObject *pArxObject, Prop::Id ChangedPropertyID);
-	void ResizeChildControl(CDclControlObject *pArxObject);
-	void UpdateControl(CDclControlObject *pArxObject, Prop::Id ChangedPropertyID);
+	void RefreshChildControl(TDclControlPtr pArxObject, Prop::Id ChangedPropertyID);
+	void ResizeChildControl(TDclControlPtr pArxObject);
+	void UpdateControl(TDclControlPtr pArxObject, Prop::Id ChangedPropertyID);
 
-	void FireControlSelected(CDclControlObject *pControl);
+	void FireControlSelected(TDclControlPtr pControl);
 	void FireShowFormGrips(BOOL bVisible);
 	void FireTabControlDeleted();
 	void FireSetUndo();
-	void FireControlInserted(CDclControlObject *pControl, long ControlType);
-	void FireShowPropertyWizard(CDclControlObject *pControl);
+	void FireControlInserted(TDclControlPtr pControl, long ControlType);
+	void FireShowPropertyWizard(TDclControlPtr pControl);
 
 // default font members
 public:

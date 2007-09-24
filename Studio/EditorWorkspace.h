@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Workspace.h"
+#include "EditorProject.h"
 #include <list>
 
 class CProjectTreeCtrl;
@@ -22,11 +23,8 @@ class COleControlObject;
 class CEditorWorkspace : public CWorkspace
 {
 	CMainFrame* mpMainFrame;
-	CEditorProject* mpActiveProject;
+	TEditorProjectPtr mpActiveProject;
 	CDocument* mpActiveDoc;
-
-	//temporary kludge to save old projects (because destroying them immediately causes mondo exceptions)
-	std::list< CProject* > mDiscardedProjects;
 
 public:
 	CEditorWorkspace();
@@ -34,14 +32,14 @@ public:
 
 public:
 	virtual void SetModified( bool bModified );
-	virtual CProject* GetActiveProject() const;
-	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxPropertyDescriptor* pProperty ) const;
-	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxMethodDescriptor* pMethod ) const;
+	virtual TEditorProjectPtr GetActiveProject();
+	virtual TOleControlPtr GetOleControlFor( const AxPropertyDescriptor* pProperty );
+	virtual TOleControlPtr GetOleControlFor( const AxMethodDescriptor* pMethod );
 
 	//Attributes
 	CMainFrame* GetMainFrame() const;
 	//void SetMainFrame( CMainFrame* pMainFrame ) { mpMainFrame = pMainFrame; }
-	void SetActiveProject( CEditorProject* pProject );
+	void SetActiveProject( TEditorProjectPtr pProject );
 	CDocument* GetActiveDocument() const;
 	void SetActiveDocument( CDocument* pDoc ) { mpActiveDoc = pDoc; } //kludge! [ORW]
 	CProjectTreeCtrl* GetProjectTreeCtrl() const;

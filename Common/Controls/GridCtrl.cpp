@@ -113,7 +113,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // CGridCtrl
 
-CGridCtrl::CGridCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CGridCtrl::CGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , mcColumns( 0 )
 , mbHasRowHeader( pTemplate->GetBooleanProperty( Prop::RowHeader ) )

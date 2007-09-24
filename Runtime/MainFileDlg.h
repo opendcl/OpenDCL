@@ -13,7 +13,7 @@ class CDclFormObject;
 
 class CMainFileDlg : public CCommonDialog
 {
-	CDclFormObject* mpSourceForm;
+	TDclFormPtr mpSourceForm;
 	int mnInitialX;
 	int mnInitialY;
 	int mnMinWidth;
@@ -26,7 +26,7 @@ class CMainFileDlg : public CCommonDialog
 
 // Construction
 public:
-	CMainFileDlg( CDclFormObject* pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL );
+	CMainFileDlg( TDclFormPtr pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL );
 	virtual ~CMainFileDlg();
 
 public:

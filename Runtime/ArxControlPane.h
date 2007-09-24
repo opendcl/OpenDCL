@@ -18,7 +18,7 @@ class CArxControlPane : public CControlPane
 protected:
 	CArxControlPane();
 public:
-	CArxControlPane(CDclFormObject* pSourceForm, CWnd* pHostDlg);
+	CArxControlPane(TDclFormPtr pSourceForm, CWnd* pHostDlg);
 	virtual ~CArxControlPane();
 
 // Operations
@@ -26,7 +26,7 @@ public:
 	BOOL PreTranslateOLEMessage(MSG* pMsg) const;
 
 protected:
-	CDclFormObject* FindDclObject(CString sControlName) const;
+	TDclFormPtr FindDclObject(CString sControlName) const;
 
 // Implementation
 public:
@@ -37,5 +37,5 @@ public:
 	virtual void SetGlobalLispSymbols( bool bResetToNil = false ) const;
 
 protected:
-	virtual TDialogControlPtr CreateNewDialogControl( CDclControlObject* pTemplate, UINT nID );
+	virtual TDialogControlPtr CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID );
 };

@@ -61,7 +61,7 @@ CControlHolder::CControlHolder()
 {
 }
 
-CControlHolder::CControlHolder( CDclControlObject* mpTemplate )
+CControlHolder::CControlHolder( TDclControlPtr mpTemplate )
 : CControlPane( mpTemplate->GetOwnerForm(), this )
 , mpTemplate( mpTemplate )
 , mpDlgControl( NULL )
@@ -129,7 +129,7 @@ void CControlHolder::OnSize(UINT nType, int cx, int cy)
 	}
 	else if( mpDlgControl )
 	{
-		CWnd *pControl = mpDlgControl->GetControl();
+		CWnd *pControl = mpDlgControl->GetControlWnd();
 		if (pControl != NULL)
 		{
 			pControl->MoveWindow( 0, 0, cx, cy, TRUE);
@@ -199,7 +199,7 @@ CAxContainerCtrl* CControlHolder::GetActiveXCtrl()
 {
 	if( !mpDlgControl || mpDlgControl->GetControlType() != CtlActiveX )
 		return NULL;
-	return (CAxContainerCtrl*)mpDlgControl->GetControl();
+	return (CAxContainerCtrl*)mpDlgControl->GetControlWnd();
 }
 
 void CControlHolder::SetColor(DISPID dispid, unsigned long ulColor)
@@ -332,7 +332,7 @@ CSize CControlHolder::GetControlSize( CWnd* pControl, ControlType nControlType )
 	return retSize;
 }
 
-TDialogControlPtr CControlHolder::CreateComboBox( CDclControlObject* pTemplate )
+TDialogControlPtr CControlHolder::CreateComboBox( TDclControlPtr pTemplate )
 {
 	// check the control type to determine which control to create
 	switch(pTemplate->GetLongProperty(Prop::ComboBoxStyle))
@@ -355,7 +355,7 @@ TDialogControlPtr CControlHolder::CreateComboBox( CDclControlObject* pTemplate )
 	return NULL;
 }
 
-TDialogControlPtr CControlHolder::CreateTextBox( CDclControlObject* pTemplate )
+TDialogControlPtr CControlHolder::CreateTextBox( TDclControlPtr pTemplate )
 {
 	// check the control type to determine which control to create
 	switch( pTemplate->GetLongProperty( Prop::FilterStyle ) )
@@ -376,7 +376,13 @@ TDialogControlPtr CControlHolder::CreateTextBox( CDclControlObject* pTemplate )
 
 bool CControlHolder::CreateNewDialogControl()
 {
-	mpDlgControl = NULL; //this should decrement the previous control's ref count to zero and destroy it
+	if( mpDlgControl )
+	{
+		CWnd* pOldCtrl = mpDlgControl->GetControlWnd();
+		mpDlgControl = NULL; //this should decrement the previous control's ref count to zero and destroy it
+		if( pOldCtrl && pOldCtrl->m_hWnd )
+			pOldCtrl->DestroyWindow();
+	}
 	// create the appropriate control to display
 	CWnd* pNewControl = NULL;
 	CRect rcThis;
@@ -659,7 +665,7 @@ bool CControlHolder::CreateNewDialogControl()
 
 void CControlHolder::AutoSize()
 {
-	CWnd *pControl = GetControl();
+	CWnd *pControl = GetControlWnd();
 	if (pControl == NULL)
 		return;
 	
@@ -761,12 +767,12 @@ void CControlHolder::UpdateProperty(Prop::Id nID)
 	case CtlTextBox:
 	case CtlTabStrip:
 		mpDlgControl->OnApplyProperty( pProp );
-		mpDlgControl->GetControl()->ShowWindow( SW_SHOW ); //make it visible even if the 'Prop::Visible' property is false
-		mpDlgControl->GetControl()->Invalidate();
+		mpDlgControl->GetControlWnd()->ShowWindow( SW_SHOW ); //make it visible even if the 'Prop::Visible' property is false
+		mpDlgControl->GetControlWnd()->Invalidate();
 		return;
 	}
 
-	CWnd* pControl = mpDlgControl->GetControl();
+	CWnd* pControl = mpDlgControl->GetControlWnd();
 	assert( pControl != NULL );
 	if( !pControl )
 		return;
@@ -882,15 +888,6 @@ void CControlHolder::UpdateProperty(Prop::Id nID)
 			break;
 		}	
 		
-		case Prop::DisableNoScroll:
-		{
-			if (mpTemplate->GetBooleanProperty(Prop::DisableNoScroll) == FALSE)
-				pControl->ModifyStyle(LBS_DISABLENOSCROLL, 0, SWP_FRAMECHANGED);
-			else
-				pControl->ModifyStyle(0, LBS_DISABLENOSCROLL, SWP_FRAMECHANGED);
-			break;
-		}
-		
 		case Prop::Enabled:
 		{
 			if (mpTemplate->GetType() == CtlSlider)
@@ -947,7 +944,7 @@ void CControlHolder::UpdateProperty(Prop::Id nID)
 			
 		}
 
-		case Prop::LabelName:
+		case Prop::FontName:
 		{			
 			CFont *pFont = theWorkspace.GetFontCollection().GetFont(mpTemplate, pControl);
 			
@@ -1174,13 +1171,13 @@ void CControlHolder::UpdateChildControl()
 		case CtlTextBox:
 		case CtlTabStrip:
 			mpDlgControl->ApplyPropertiesEnum();
-			mpDlgControl->GetControl()->ShowWindow( SW_SHOW ); //make it visible even if the 'Prop::Visible' property is false
-			mpDlgControl->GetControl()->Invalidate();
+			mpDlgControl->GetControlWnd()->ShowWindow( SW_SHOW ); //make it visible even if the 'Prop::Visible' property is false
+			mpDlgControl->GetControlWnd()->Invalidate();
 			break;
 		default:
-			POSITION pos = mpTemplate->GetPropertyList().GetHeadPosition();
-			while( pos )
-				UpdateProperty( mpTemplate->GetPropertyList().GetNext( pos )->GetID() );
+			const TPropertyList& Props = mpTemplate->GetPropertyList();
+			for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
+				UpdateProperty( (*iter)->GetID() );
 			break;
 		}
 	}

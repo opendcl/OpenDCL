@@ -4,11 +4,11 @@
 #pragma once
 
 
-class CImageListPage;
-
 #include "Resource.h"
 #include "ListHeader.h"
 #include "PropertyObject.h"
+#include "DclControlObject.h"
+#include "PtrTypes.h"
 
 class CImageListPage;
 class CDclFormObject;
@@ -87,8 +87,8 @@ public:
 
 	CArray<CColumnData, CColumnData> m_ColData;										 
 	COpenDCLView *m_pView;
-	CDclFormObject *m_pDclForm;
-	CDclControlObject *m_pControl;
+	TDclFormPtr m_pDclForm;
+	TDclControlPtr m_pControl;
 
 // Construction
 public:

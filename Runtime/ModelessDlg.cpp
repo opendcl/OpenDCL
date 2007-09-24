@@ -21,7 +21,7 @@ static const UINT& refWM_MOUSEENTER()
 
 
 // CModelessDialogX interface implementation
-CModelessDialogX::CModelessDialogX( CModelessDlg& Owner, CDclFormObject* pDclForm )
+CModelessDialogX::CModelessDialogX( CModelessDlg& Owner, TDclFormPtr pDclForm )
 : CArxDialogObject( pDclForm, &Owner )
 , mpOwner( &Owner )
 {
@@ -71,7 +71,7 @@ bool CModelessDialogX::SetMinMaxSize( const CSize& min, const CSize& max )
 /////////////////////////////////////////////////////////////////////////////
 // CModelessDlg dialog
 
-CModelessDlg::CModelessDlg( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+CModelessDlg::CModelessDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CBaseDlg( pSourceForm, CModelessDlg::IDD, pParent, pParams )
 , mpParent( pParent )
 , mDialogX( *this, pSourceForm )
@@ -80,8 +80,6 @@ CModelessDlg::CModelessDlg( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/
 , mbInMenuLoop( false )
 , mhwndKeyboardFocus( NULL )
 {
-	m_bAsModal = false;
-	m_bAboutToClose = false;
 }
 
 CModelessDlg::~CModelessDlg()
@@ -123,12 +121,6 @@ BOOL CModelessDlg::OnInitDialog()
 	ModifyStyleEx( 0, WS_EX_TOOLWINDOW );
 	CBaseDlg::OnInitDialog();
 
-	if( m_bAsModal )
-	{
-		GetParent()->EnableWindow( FALSE );
-		EnableWindow( TRUE );
-	}
-
 	// Modify the style
 	//GetLayeredDialog()->AddLayeredStyle(m_hWnd);
 
@@ -148,14 +140,13 @@ void CModelessDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CBaseDlg::OnSize(nType, cx, cy);
 	mDialogX.GetControlPane().RecalcLayout();
-	if (IsWindowVisible() && !mDialogX.IsClosing() && m_bAboutToClose == false)
+	if( IsWindowVisible() && !mDialogX.IsClosing() )
 	{
 		CRect rcThis;
 		if( mDialogX.GetSourceForm()->UsesClientRect() )
 			GetClientRect( &rcThis );
 		else
 			GetWindowRect( &rcThis );
-		// call methods to invoke the event
 		InvokeMethodIntInt(
 			mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventSize), 
 			rcThis.Width(),
@@ -204,16 +195,6 @@ void CModelessDlg::OnCancel()
 void CModelessDlg::OnMove(int x, int y) 
 {
 	CBaseDlg::OnMove(x, y);
-
-  //Removed 10-19-06	
-  /*BOOL bVisible = CDialog::IsWindowVisible();
-  if (!m_bAboutToClose && bVisible)
-  {
-    CRect rc;
-    CWnd::GetWindowRect(&rc);
-    m_nX = rc.left;
-    m_nY = rc.top;
-  }*/
 }
 
 
@@ -223,21 +204,16 @@ void CModelessDlg::SizeDialog ()
 	{
 		mDialogX.GetControlPane().RecalcLayout();
 		
-		if (!m_bAboutToClose)
-		{
-			CRect rcThis;
-			if( mDialogX.GetSourceForm()->UsesClientRect() )
-				GetClientRect( &rcThis );
-			else
-				GetWindowRect( &rcThis );
-			// call methods to invoke the event
-			InvokeMethodIntInt(
-				mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventSize), 
-				rcThis.Width(),
-				rcThis.Height(),
-				true );
-		}
-
+		CRect rcThis;
+		if( mDialogX.GetSourceForm()->UsesClientRect() )
+			GetClientRect( &rcThis );
+		else
+			GetWindowRect( &rcThis );
+		InvokeMethodIntInt(
+			mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventSize), 
+			rcThis.Width(),
+			rcThis.Height(),
+			true );
 	}
 }
 

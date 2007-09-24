@@ -13,7 +13,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CFolderComboCtrl
 
-CFolderComboCtrl::CFolderComboCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CFolderComboCtrl::CFolderComboCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CFolderComboBox()
 , CDialogControl( pTemplate, pPane, this )
 {

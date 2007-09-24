@@ -17,7 +17,10 @@
 const int nOrbitOffset = 20;
 const int nOrbitQuadCircleDia = 19;
 const TCHAR sModelSpace[] = _T("*Model_Space");
-	
+
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CGsPreviewCtrl
@@ -613,7 +616,7 @@ void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	if (!mpView || m_BlockName.GetLength() == 0)
 		return;
@@ -621,7 +624,7 @@ void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
 	{
 		if (m_pLoadedDwg == NULL)
-			BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
+			BeginDragnDrop(m_ArxControl, point, IsAsyncEvents());
 		return;
 	}
 
@@ -738,12 +741,12 @@ void CGsPreviewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 	if (m_bBeingLDblClicked)
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);	
+		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());	
 		m_bBeingLDblClicked = false;
 	}
 
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);	
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), IsAsyncEvents());	
 	
 	InvokeMethodIntIntIntInt(
 		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
@@ -751,7 +754,7 @@ void CGsPreviewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	if (!mpView || m_BlockName.GetLength() == 0)
 	{
@@ -770,7 +773,7 @@ void CGsPreviewCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	if (!mpView || m_BlockName.GetLength() == 0)
 		return;
@@ -813,7 +816,7 @@ void CGsPreviewCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	if (!mpView || m_BlockName.GetLength() == 0)
 		return;
@@ -841,7 +844,7 @@ void CGsPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	try
 	{
@@ -1060,13 +1063,13 @@ void CGsPreviewCtrl::OnSetFocus(CWnd* pOldWnd)
 	ReleaseDC(pdc);
 
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
 	
 	
 }
 
 
-BOOL CGsPreviewCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID)
+BOOL CGsPreviewCtrl::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID)
 {	
 	DWORD dwStyle;
 	CRect ArxRect;
@@ -1103,17 +1106,6 @@ BOOL CGsPreviewCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
-
-
-	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
 
 	// create and add the new reactor
 	m_pBlockReactor = new CAcadBlockReactor(NULL, this);
@@ -2281,10 +2273,10 @@ void CGsPreviewCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	// call methods to invoke the event
-	//InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventDblClicked), false);//m_bInvokeWithSendString);	
+	//InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventDblClicked), false);//IsAsyncEvents());	
 
 }
 
@@ -2303,10 +2295,10 @@ void CGsPreviewCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	// call methods to invoke the event
-	///InvokeMethod(m_ArxControl->GetStringProperty(nEventRDblClick), false);//m_bInvokeWithSendString);	
+	///InvokeMethod(m_ArxControl->GetStringProperty(nEventRDblClick), false);//IsAsyncEvents());	
 	
 }
 
@@ -2317,12 +2309,12 @@ void CGsPreviewCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 	if (m_bBeingRDblClicked)
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventRDblClick), m_bInvokeWithSendString);	
+		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventRDblClick), IsAsyncEvents());	
 		m_bBeingRDblClicked = false;
 	}
 	
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventRClick), m_bInvokeWithSendString);	
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventRClick), IsAsyncEvents());	
 	
 	InvokeMethodIntIntIntInt(
 		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
@@ -2330,7 +2322,7 @@ void CGsPreviewCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	
 	if (!mpView || m_BlockName.GetLength() == 0)
@@ -2426,7 +2418,7 @@ void CGsPreviewCtrl::OnKillFocus(CWnd* pNewWnd)
 	ReleaseDC(pdc);
 	
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 	
 }
 
@@ -2479,7 +2471,7 @@ void CGsPreviewCtrl::OnMButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	CStatic::OnMButtonDblClk(nFlags, point);
 }
@@ -2492,7 +2484,7 @@ void CGsPreviewCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	CStatic::OnRButtonDown(nFlags, point);
 }

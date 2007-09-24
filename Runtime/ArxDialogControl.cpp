@@ -65,18 +65,16 @@
 #include "TabPage.h"
 
 
-static CDclControlObject* FindPaperCombo( CDclFormObject* pForm )
+static TDclControlPtr FindPaperCombo( TDclFormPtr pForm )
 {
 	if( !pForm )
 		return NULL;
-	CList< CDclControlObject* > listCombos;
+	TDclControlList listCombos;
 	pForm->FindControls( CtlComboBox, listCombos );
-	POSITION pos = listCombos.GetHeadPosition();
-	while( pos )
+	for( TDclControlList::iterator iter = listCombos.begin(); iter != listCombos.end(); ++iter )
 	{
-		CDclControlObject* pTemplate = listCombos.GetNext( pos );
-		if( pTemplate->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_PlotterPaperSizes )
-			return pTemplate;
+		if( (*iter)->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_PlotterPaperSizes )
+			return *iter;
 	}
 	return NULL;
 }
@@ -85,13 +83,14 @@ static CDclControlObject* FindPaperCombo( CDclFormObject* pForm )
 /////////////////////////////////////////////////////////////////////////////
 // CArxDialogControl
 
-CArxDialogControl::CArxDialogControl( CDclControlObject* pTemplate, CControlPane* pPane,
+CArxDialogControl::CArxDialogControl( TDclControlPtr pTemplate, CControlPane* pPane,
 																			CWnd* pControl )
 : CDialogControl( pTemplate, pPane, pControl )
 , mArxServices( pTemplate )
 {
 	TraceFmt( _T("> CArxDialogControl::CArxDialogControl(%s [%p], [%p], %s [HWND: %p]) [this: %p]\r\n"),
-						pTemplate->GetKeyPath(), pTemplate, pPane, CString(pControl->GetRuntimeClass()->m_lpszClassName),
+						(LPCTSTR)pTemplate->GetKeyPath(), (const CDclControlObject*)pTemplate, pPane,
+						(LPCTSTR)CString(pControl->GetRuntimeClass()->m_lpszClassName),
 						pControl->m_hWnd, this );
 }
 
@@ -101,7 +100,7 @@ CArxDialogControl::~CArxDialogControl()
 }
 
 //static
-TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CControlPane* pPane,
+TDialogControlPtr CArxDialogControl::Create( TDclControlPtr pTemplate, CControlPane* pPane,
 																						 UINT nID, ControlParams* pParams /*= NULL*/ )
 {
 	// check the control type to determine which control to create
@@ -305,7 +304,7 @@ TDialogControlPtr CArxDialogControl::Create( CDclControlObject* pTemplate, CCont
 }
 
 //static
-TDialogControlPtr CArxDialogControl::CreateEditControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID)
+TDialogControlPtr CArxDialogControl::CreateEditControl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nID)
 {
 	CWnd* pParentWnd = pPane->GetHostDialog();
 
@@ -326,13 +325,13 @@ TDialogControlPtr CArxDialogControl::CreateEditControl(CDclControlObject* pTempl
 }
 
 //static
-TDialogControlPtr CArxDialogControl::CreateComboExControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID)
+TDialogControlPtr CArxDialogControl::CreateComboExControl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nID)
 {
 	return *new CArxImageComboBoxCtrl( pTemplate, pPane, nID );
 }
 
 //static
-TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID)
+TDialogControlPtr CArxDialogControl::CreateComboControl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nID)
 {
 	// check the control type to determine which control to create
 	switch(pTemplate->GetLongProperty(Prop::ComboBoxStyle))
@@ -357,13 +356,13 @@ TDialogControlPtr CArxDialogControl::CreateComboControl(CDclControlObject* pTemp
 
 // This function is being phased out as control classes are changed to implement their own CDialogControl interface
 //static
-void CArxDialogControl::UpdateChildControl( CWnd* pControlWnd, CDclControlObject* pTemplate, CControlPane* pPane, UINT nControlId )
+void CArxDialogControl::UpdateChildControl( CWnd* pControlWnd, TDclControlPtr pTemplate, CControlPane* pPane, UINT nControlId )
 {
-	POSITION pos = pTemplate->GetPropertyList().GetHeadPosition();
-	while( pos )
+	const TPropertyList& Props = pTemplate->GetPropertyList();
+	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 	{
-		TPropertyPtr pProp = pTemplate->GetPropertyList().GetNext( pos );
-		switch( pProp->GetID() )
+		Prop::Id nID = (*iter)->GetID();
+		switch( nID )
 		{
 		case Prop::ToolTipBalloon:
 		case Prop::ToolTipLine:
@@ -373,14 +372,14 @@ void CArxDialogControl::UpdateChildControl( CWnd* pControlWnd, CDclControlObject
 		case Prop::ToolTipTitleColor:
 			break; //skip related properties that all get set at once with the main property of the group
 		default:
-			UpdatePropertyInt( pControlWnd, pTemplate, pPane, pProp->GetID() );
+			UpdatePropertyInt( pControlWnd, pTemplate, pPane, nID );
 		}
 	}
 }
 
 // This function is being phased out as control classes are changed to implement their own CDialogControl interface
 //static
-void CArxDialogControl::UpdateProperty(CDclControlObject *pControl, CControlPane* pPane, UINT nControlId, Prop::Id nID)
+void CArxDialogControl::UpdateProperty(TDclControlPtr pControl, CControlPane* pPane, UINT nControlId, Prop::Id nID)
 {
 	switch( pControl->GetType() )
 	{ //these controls implement the new CDialogControl interface, so use that
@@ -403,7 +402,7 @@ void CArxDialogControl::UpdateProperty(CDclControlObject *pControl, CControlPane
 		if( !pDlgControl )
 			return;
 		pDlgControl->OnApplyProperty( pControl->GetPropertyObject( nID ) );
-		pDlgControl->GetControl()->Invalidate();
+		pDlgControl->GetControlWnd()->Invalidate();
 		return;
 	};
 	CWnd* pControlWnd = pControl->GetWindow();
@@ -415,19 +414,15 @@ void CArxDialogControl::UpdateProperty(CDclControlObject *pControl, CControlPane
 //static
 void CArxDialogControl::SetDwgListComboFolderLink(CArxDwgListCtrl *pDwgList)
 {
-	POSITION pos = pDwgList->GetTemplate()->GetOwnerForm()->GetControlList().GetHeadPosition();
-	// increment to the next arx object so we will bypass the
-	// arx object that holds the dialog box's properties.
-	CDclControlObject* pControl = pDwgList->GetTemplate()->GetOwnerForm()->GetControlList().GetNext(pos);
-	while (pos != NULL)
+	const TDclControlList& Controls = pDwgList->GetTemplate()->GetOwnerForm()->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		pControl = pDwgList->GetTemplate()->GetOwnerForm()->GetControlList().GetNext(pos);
-		if (pControl->GetType() == CtlComboBox && pControl->GetWindow() != NULL)
+		if ((*iter)->GetType() == CtlComboBox && (*iter)->GetWindow() != NULL)
 		{
 			// check the control type to determine which control to create
-			if (pControl->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_DirPicker)
+			if ((*iter)->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_DirPicker)
 			{				
-				CArxFolderComboCtrl* pComboFolder = (CArxFolderComboCtrl*)pControl->GetWindow();
+				CArxFolderComboCtrl* pComboFolder = (CArxFolderComboCtrl*)(*iter)->GetWindow();
 				pComboFolder->SetDwgListCtrl( pDwgList );
 				pDwgList->m_pDirComboBox = pComboFolder;			
 			}
@@ -437,7 +432,7 @@ void CArxDialogControl::SetDwgListComboFolderLink(CArxDwgListCtrl *pDwgList)
 
 // This function is being phased out as control classes are changed to implement their own CDialogControl interface
 //static
-void CArxDialogControl::ResetImageList(CDclControlObject *pArxObject, CWnd *pControl, int nID)
+void CArxDialogControl::ResetImageList(TDclControlPtr pArxObject, CWnd *pControl, int nID)
 {
 	switch (pArxObject->GetType())
 	{
@@ -456,7 +451,7 @@ void CArxDialogControl::ResetImageList(CDclControlObject *pArxObject, CWnd *pCon
 
 // This function is being phased out as control classes are changed to implement their own CDialogControl interface
 //static
-void CArxDialogControl::UpdateFont(CDclControlObject *pArxObject, CWnd *pControl, CFont *pFont)
+void CArxDialogControl::UpdateFont(TDclControlPtr pArxObject, CWnd *pControl, CFont *pFont)
 {
 	switch (pArxObject->GetType())
 	{
@@ -507,7 +502,7 @@ void CArxDialogControl::UpdateFont(CDclControlObject *pArxObject, CWnd *pControl
 }
 
 //static
-void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *pControl, CControlPane* pPane, Prop::Id nID)
+void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, TDclControlPtr pControl, CControlPane* pPane, Prop::Id nID)
 {
 	//I'm moving pPane logic into the child control's Create() function as I work on individual controls. Controls 
 	//that don't have their own class I'll leave here for now. 2007-02-05 [ORW]
@@ -710,7 +705,7 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 			break;
 		}
 
-		case Prop::LabelName:
+		case Prop::FontName:
 		{
 			const CFont *pFont = theWorkspace.GetFontCollection().GetFont(pControl, pControlWnd);
 
@@ -928,7 +923,7 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, CDclControlObject *
 
 // This function is being phased out as control classes are changed to implement their own CDialogControl interface
 //static
-void CArxDialogControl::UpdateText(CDclControlObject *pTemplate, CWnd *pControl, CString sText)
+void CArxDialogControl::UpdateText(TDclControlPtr pTemplate, CWnd *pControl, CString sText)
 {
 	try
 	{
@@ -963,7 +958,7 @@ void CArxDialogControl::UpdateText(CDclControlObject *pTemplate, CWnd *pControl,
 
 // This function is being phased out as control classes are changed to implement their own CDialogControl interface
 //static
-void CArxDialogControl::UpdateToolTip(CDclControlObject *pArxObject, CWnd *pControl)
+void CArxDialogControl::UpdateToolTip(TDclControlPtr pArxObject, CWnd *pControl)
 {
 	CString sToolTipTitle = pArxObject->GetStringProperty(Prop::ToolTipTitle);
 	switch (pArxObject->GetType())

@@ -31,7 +31,6 @@
 #include "ColumnsPage.h"
 #include "ToolTipsPage.h"
 #include "ProgressBarPage.h"
-#include "ProjectCollection.h"
 #include "Editor.h"
 #include "EditorWorkspace.h"
 #include "SharedRes.h"
@@ -153,7 +152,7 @@ BOOL CPropertyListCtrl::PreTranslateMessage(MSG* pMsg)
 						UpdateControls(m_Edit.m_pProp->GetID());
 				}
 					
-				if (m_SelectedIndex < m_PropertyList.GetCount()-1)
+				if ((size_t)m_SelectedIndex < mProperties.size() - 1)
 				{
 					if (m_Edit.IsWindowVisible())
 						m_Edit.ShowWindow(FALSE);
@@ -161,29 +160,25 @@ BOOL CPropertyListCtrl::PreTranslateMessage(MSG* pMsg)
 					if (m_Button.IsWindowVisible())
 						m_Button.ShowWindow(FALSE);
 
+					int nNewSelectedIndex = m_SelectedIndex + 1;
 					
-					if (m_SelectedIndex < m_PropertyList.GetCount()- 1)
-					{
-						int nNewSelectedIndex = m_SelectedIndex + 1;
-						
-						ChangeSelectedItem(nNewSelectedIndex);
-						DoSetupInputType(nNewSelectedIndex);
-						m_SelectedIndex = nNewSelectedIndex;
-						pMsg->wParam = NULL;
-						pMsg->message = NULL;
+					ChangeSelectedItem(nNewSelectedIndex);
+					DoSetupInputType(nNewSelectedIndex);
+					m_SelectedIndex = nNewSelectedIndex;
+					pMsg->wParam = NULL;
+					pMsg->message = NULL;
 
-						if (m_ScrollBar.IsWindowVisible())
+					if (m_ScrollBar.IsWindowVisible())
+					{
+						int nPos = m_ScrollBar.GetScrollPos();
+						int nMax, nMin;
+						m_ScrollBar.GetScrollRange(&nMin, &nMax);
+						if (nPos < nMax)
 						{
-							int nPos = m_ScrollBar.GetScrollPos();
-							int nMax, nMin;
-							m_ScrollBar.GetScrollRange(&nMin, &nMax);
-							if (nPos < nMax)
-							{
-								nPos++;
-								m_ScrollBar.SetScrollPos(nPos, TRUE);
-							}
-							OnVScroll(SB_LINEDOWN, nPos, &m_ScrollBar);
+							nPos++;
+							m_ScrollBar.SetScrollPos(nPos, TRUE);
 						}
+						OnVScroll(SB_LINEDOWN, nPos, &m_ScrollBar);
 					}
 				}
 				
@@ -291,7 +286,7 @@ void CPropertyListCtrl::Refresh()
 
 void CPropertyListCtrl::RefreshGrid(HDC hdc) 
 {
-	int nCount = m_PropertyList.GetCount();
+	size_t nCount = mProperties.size();
 	if (nCount <= 0)
 		return;
 
@@ -330,7 +325,7 @@ void CPropertyListCtrl::RefreshGrid(HDC hdc)
 		nItemRowHeight = szText.cy + 3;
 
 		
-		if((nTopIndexIndex + (nCount * nItemRowHeight)) > rcPropArea.Height() - 4)
+		if( (int)(nTopIndexIndex + (nCount * nItemRowHeight)) > rcPropArea.Height() - 4)
 		{	
 			rcPropArea.right = rcPropArea.right - nScrollBarWidth;
 			m_ScrollBarNeeded = TRUE;
@@ -341,29 +336,24 @@ void CPropertyListCtrl::RefreshGrid(HDC hdc)
 		SetScrollBar();
 		
 		// test for a need for a scroll bar and draw accordingly
-		for(int i = m_TopIndex; i < nCount; i++)
+		for(size_t i = m_TopIndex; i < nCount; i++)
 		{	
-			// get the text position
-			POSITION pos = m_PropertyList.FindIndex(i);
-			if (pos != NULL)
-			{
-				// get the property Name text
-				TPropertyPtr pProperty = m_PropertyList.GetAt(pos);
+			// get the property Name text
+			TPropertyPtr pProperty = mProperties.at(i);
 
-				int nDrawStyle;
-				
-				if (m_SelectedIndex == i)
-					nDrawStyle = nDrawStyle_SelectedRow;
-				else
-					nDrawStyle = nDrawStyle_NonSelectedRow;
-				
-				
-				DrawRow(
-					i,
-					nDrawStyle,
-					&rcPropArea, 
-					hdc);
-			}
+			int nDrawStyle;
+			
+			if (m_SelectedIndex == i)
+				nDrawStyle = nDrawStyle_SelectedRow;
+			else
+				nDrawStyle = nDrawStyle_NonSelectedRow;
+			
+			DrawRow(
+				i,
+				nDrawStyle,
+				&rcPropArea, 
+				hdc);
+
 			nTopIndexIndex = nTopIndexIndex + nItemRowHeight;
 		}	
 		
@@ -392,15 +382,10 @@ void CPropertyListCtrl::RePaint()
 
 	// repaint the entire control	
 	HDC hdc = ::GetDC(m_hWnd);
-	if (m_PropertyList.GetCount() == 0)
-	{
+	if (mProperties.empty())
 		ClearArea(hdc);
-	}
 	else	
-	{
-
 		RefreshGrid(hdc);
-	}
 
 	// then releasing the DC itself
 	::ReleaseDC(m_hWnd, hdc);
@@ -420,18 +405,13 @@ void CPropertyListCtrl::RePaint()
 }
 
 
-TPropertyPtr CPropertyListCtrl::GetPropertyObject(short PropertyIndex) 
+TPropertyPtr CPropertyListCtrl::GetPropertyObject( size_t nIndex ) 
 {
-	if (m_PropertyList.GetCount() == 0)
+	if (mProperties.empty())
 		return NULL;
-	POSITION pos = m_PropertyList.FindIndex(PropertyIndex);
-
-	if (pos == NULL)
+	if( nIndex >= mProperties.size() )
 		return NULL;
-
-	TPropertyPtr pPropertyObject = m_PropertyList.GetAt(pos);
-
-	return pPropertyObject;
+	return mProperties.at( nIndex );
 }
 
 //void CPropertyListCtrl::ClearImageListPropery(short DclFormIndex, short ArxControlIndex, short PropertyIndex) 
@@ -444,7 +424,7 @@ TPropertyPtr CPropertyListCtrl::GetPropertyObject(short PropertyIndex)
 //		if (pPropertyObject->GetShortValue() > -1)
 //		{
 //			// get requested dcl form
-//			CDclFormObject *pDclForm = GetDclFormObject(DclFormIndex);
+//			TDclFormPtr pDclForm = GetDclFormObject(DclFormIndex);
 //		
 //			// check if the index were correct
 //			if (pDclForm != NULL)
@@ -485,7 +465,7 @@ TPropertyPtr CPropertyListCtrl::GetPropertyObject(short PropertyIndex)
 //		NewPicture.SetPictureDispatch(newPicture);
 //		
 //		// get requested dcl form
-//		CDclFormObject *pDclForm = CPropertyListCtrl::GetDclFormObject(DclFormIndex);
+//		TDclFormPtr pDclForm = CPropertyListCtrl::GetDclFormObject(DclFormIndex);
 //		
 //		// check if the index were correct
 //		if (pDclForm == NULL)
@@ -527,7 +507,7 @@ TPropertyPtr CPropertyListCtrl::GetPropertyObject(short PropertyIndex)
 //			pImageList->m_ImageList.m_hImageList = NULL;
 //			
 //			// get requested dcl form
-//			CDclFormObject *pDclForm = CPropertyListCtrl::GetDclFormObject(DclFormIndex);
+//			TDclFormPtr pDclForm = CPropertyListCtrl::GetDclFormObject(DclFormIndex);
 //			
 //			// check if the index were correct
 //			if (pDclForm != NULL)
@@ -562,7 +542,7 @@ short CPropertyListCtrl::CountPictures()
 //		return NULL;
 //	
 //	// get requested dcl form
-//	CDclFormObject *pDclForm = CPropertyListCtrl::GetDclFormObject(DclFormIndex);
+//	TDclFormPtr pDclForm = CPropertyListCtrl::GetDclFormObject(DclFormIndex);
 //	
 //	// if the object is null return a blank picture
 //	if (pDclForm == NULL)
@@ -614,7 +594,7 @@ short CPropertyListCtrl::CountPictures()
 //	else
 //	{
 //		// get requested dcl form
-//		CDclFormObject *pDclForm = CPropertyListCtrl::GetDclFormObject(DclFormIndex);
+//		TDclFormPtr pDclForm = CPropertyListCtrl::GetDclFormObject(DclFormIndex);
 //		
 //		// check if the index were correct
 //		if (pDclForm == NULL)
@@ -648,7 +628,7 @@ short CPropertyListCtrl::CountPictures()
 //	else
 //	{
 //		// get requested dcl form
-//		CDclFormObject *pDclForm = CPropertyListCtrl::GetDclFormObject(DclFormIndex);
+//		TDclFormPtr pDclForm = CPropertyListCtrl::GetDclFormObject(DclFormIndex);
 //		
 //		// check if the index were correct
 //		if (pDclForm == NULL)
@@ -671,82 +651,9 @@ short CPropertyListCtrl::CountPictures()
 //}
 
 
-
-
-CDclControlObject* CPropertyListCtrl::GetArxControlObject(short DclFormIndex, short ArxControlIndex)
-{
-	if (ArxControlIndex < 0)
-		return NULL;
-
-	CDclControlObject *pRetObject;
-	bool bRetVal;
- 	if(m_pControl->GetOwnerProject()->GetDclFormList().GetCount() > DclFormIndex)
-	{
-		// create a position variable to hold the converted DclFormIndex
-		POSITION FormPos;
-			
-		// set the position variable to be equal the index to passing to the GetAt method
-		FormPos = m_pControl->GetOwnerProject()->GetDclFormList().FindIndex(DclFormIndex);	
-		// create a new DclFormObject object and point it at the object in the list
-		CDclFormObject* pNewDclForm = m_pControl->GetOwnerProject()->GetDclFormList().GetAt(FormPos);	
-		
-
-		if(pNewDclForm->GetControlList().GetCount() >= ArxControlIndex)
-		{
-			// create a position variable to hold the converted ArxControlIndex
-			POSITION ControlPos;
-			
-			// set the position variable to be equal the index to passing to the GetAt method
-			ControlPos = pNewDclForm->GetControlList().FindIndex(ArxControlIndex);	
-			
-			// set the pass pointer to point at the object in the list
-			pRetObject = pNewDclForm->GetControlList().GetAt(ControlPos);
-			
-			bRetVal = true;
-		}				
-		else
-			bRetVal = false;
-	}
-	else
-		bRetVal = false;
-
-	if (bRetVal)
-		return pRetObject;
-	else
-		return NULL;
-}
-
-CDclFormObject* CPropertyListCtrl::GetDclFormObject(short DclFormIndex)
-{
-	CDclFormObject *pRetObject;
-	bool bRetVal;
-
-	
-	if(m_pControl->GetOwnerProject()->GetDclFormList().GetCount() > DclFormIndex)
-	{
-		// set the position variable to be equal the index to passing to the GetAt method
-		POSITION pos = m_pControl->GetOwnerProject()->GetDclFormList().FindIndex(DclFormIndex);	
-		
-		if (pos == NULL)
-			return NULL;
-		// set the pass pointer to point at the object in the list
-		pRetObject = m_pControl->GetOwnerProject()->GetDclFormList().GetAt(pos);
-		
-		bRetVal = true;
-	}
-	else
-		bRetVal = false;
-
-	if (bRetVal)
-		return pRetObject;
-	else
-		return NULL;
-}
-
-
 void CPropertyListCtrl::ClearGrid() 
 {
-	m_PropertyList.RemoveAll();
+	mProperties.clear();
 
 	if (!IsWindow(m_hWnd))
 		return;
@@ -791,7 +698,7 @@ void CPropertyListCtrl::ClearArea(HDC hdc)
 	}
 }
 
-void CPropertyListCtrl::DisplayProperties(CDclControlObject *pControl) 
+void CPropertyListCtrl::DisplayProperties(TDclControlPtr pControl) 
 {
 	if( pControl == m_pControl )
 		return;
@@ -811,17 +718,16 @@ void CPropertyListCtrl::DisplayProperties(CDclControlObject *pControl)
 	}
 
 	// clear the property list
-	m_PropertyList.RemoveAll();
-	POSITION posProp = pControl->GetPropertyList().GetHeadPosition();
-	while (posProp != NULL)
+	mProperties.clear();
+	const TPropertyList& Props = pControl->GetPropertyList();
+	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 	{
-		TPropertyPtr pProp = pControl->GetPropertyList().GetNext(posProp);
-		if (!pProp->IsHidden()) // if not a hidden property add it to the property list
-			m_PropertyList.AddTail(pProp);
+		if( !(*iter)->IsHidden() ) // if not a hidden property add it to the property list
+			mProperties.push_back( (*iter) );
 	}
 
 	// if the selected index is greater than the available properties for this control, set it to zero
-	if (m_SelectedIndex > m_PropertyList.GetCount() - 1)
+	if (m_SelectedIndex > mProperties.size() - 1)
 		m_SelectedIndex = 0;
 
 	// get the property selected
@@ -851,7 +757,7 @@ void CPropertyListCtrl::OnDestroy()
 
 void CPropertyListCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
-	if (m_PropertyList.GetCount() == 0)
+	if( mProperties.empty() )
 		return;
 
 	// get the selected index
@@ -876,7 +782,7 @@ void CPropertyListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		m_PopUpCreated = FALSE;
 	}
 
-	if (m_PropertyList.GetCount() == 0)
+	if (mProperties.empty())
 		return;
 
 	if (m_Button.IsWindowVisible())
@@ -915,7 +821,7 @@ void CPropertyListCtrl::DoSetupInputType(int nNewSelectedIndex)
 {
 	int nType = -1;
 
-	if (m_PropertyList.GetCount() == 0)
+	if (mProperties.empty())
 		return;
 
 	if (m_Button.IsWindowVisible())
@@ -937,11 +843,7 @@ void CPropertyListCtrl::DoSetupInputType(int nNewSelectedIndex)
 		if (rcCell.top == nReturnError && rcCell.left == nReturnError)
 			return;
 
-		POSITION pos = m_PropertyList.FindIndex(m_SelectedIndex);
-		if (pos == NULL)
-			return;
-
-		TPropertyPtr pProp = m_PropertyList.GetAt(pos);
+		TPropertyPtr pProp = mProperties.at(m_SelectedIndex);
 		
 		// if this is an ActiveX property of type BOOL then
 		if (pProp->GetType() == PropActiveXProp)
@@ -1065,7 +967,7 @@ void CPropertyListCtrl::DoSetupInputType(int nNewSelectedIndex)
 			case PropString:
 			case PropDouble:
 			{
-				if (pProp->GetID() == Prop::LabelName)
+				if (pProp->GetID() == Prop::FontName)
 				{
 					if (m_Button.GetButtonStyle() != nDotsImage)
 					{
@@ -1192,7 +1094,7 @@ void CPropertyListCtrl::DoSetupInputType(int nNewSelectedIndex)
 
 void CPropertyListCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	if (m_PropertyList.GetCount() == 0)
+	if (mProperties.empty())
 		return;
 
 	if (nFlags == MK_LBUTTON)
@@ -1256,9 +1158,9 @@ void CPropertyListCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBa
 			break;
 		}
 	}
-	if (m_TopIndex < MinPos)
+	if (m_TopIndex < (size_t)MinPos)
 		m_TopIndex = MinPos;
-	if (m_TopIndex > MaxPos)
+	if (m_TopIndex > (size_t)MaxPos)
 		m_TopIndex = MaxPos;
 		
 	m_ScrollBar.SetScrollPos(m_TopIndex, TRUE);	
@@ -1283,21 +1185,15 @@ void CPropertyListCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBa
 void CPropertyListCtrl::SetScrollBar() 
 {
 	CRect rcThis;	
-	
-	int nCount = 0;
-	
 	GetWindowRect(&rcThis);
-	
-	nCount = m_PropertyList.GetCount();						
-	
-	if (nCount <=0)
+	size_t nCount = mProperties.size();						
+	if( nCount == 0 )
 		return;
-	
+
 	int nTopIndexIndex = -1;
-	
-	
+
 	// check for the need for a scroll bar
-	if((nTopIndexIndex + (nCount * nItemRowHeight) ) > (rcThis.Height() - 4) && m_ScrollBarCreated == TRUE)
+	if( (int)(nTopIndexIndex + (nCount * nItemRowHeight)) > (rcThis.Height() - 4) && m_ScrollBarCreated == TRUE)
 	{		
 		m_ScrollBarNeeded = TRUE;
 		// move the scroll bar to the right side of the control
@@ -1319,7 +1215,7 @@ void CPropertyListCtrl::SetScrollBar()
 	
 		m_ScrollBar.GetScrollRange(&MinPos, &MaxPos);
 	
-		if (m_TopIndex > MaxPos)
+		if (m_TopIndex > (size_t)MaxPos)
 			m_TopIndex = MaxPos;
 
 		m_ScrollBar.SetScrollPos(m_TopIndex, TRUE);
@@ -1491,28 +1387,15 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 		::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &rcCell, NULL, 0, NULL);
 
 		CString CellText;
-		POSITION pos;
 
 		if (nCell == 0)
 		{
-			// get the text position
-			pos = m_PropertyList.FindIndex(nRow);
-			
-			// get the property Name text
-			TPropertyPtr pProperty = m_PropertyList.GetAt(pos);
-			
 			// get the property desc name.
-			CellText = pProperty->GetName();			
+			CellText = mProperties.at( nRow )->GetName();			
 		}
 		else
 		{
-			// get the text position
-			pos = m_PropertyList.FindIndex(nRow);
-			if (pos == NULL)
-				return;
-			// get the property Name text
-			TPropertyPtr pProperty = m_PropertyList.GetAt(pos);
-
+			TPropertyPtr pProperty = mProperties.at( nRow );
 			switch (pProperty->GetType())				
 			{
 			case PropEnum:
@@ -1656,7 +1539,7 @@ void CPropertyListCtrl::DrawCell(int nRow, int nCell, int nDrawStyle, CRect *pRc
 	}
 }
 
-CRect CPropertyListCtrl::ChangeSelectedItem(int nNewSelectionIndex) 
+CRect CPropertyListCtrl::ChangeSelectedItem(size_t nNewSelectionIndex) 
 {	
 	CRect rcAbort(nReturnError,nReturnError, 0, 0);
 	
@@ -1664,15 +1547,15 @@ CRect CPropertyListCtrl::ChangeSelectedItem(int nNewSelectionIndex)
 	CRect rcPropArea;
 	GetClientRect(&rcPropArea);
 	
-	int nCount = m_PropertyList.GetCount();
+	size_t nCount = mProperties.size();
 		
-	if((-1 + ((nNewSelectionIndex - m_TopIndex) * nItemRowHeight)) >= rcPropArea.bottom)
+	if( ((int)((nNewSelectionIndex - m_TopIndex) * nItemRowHeight) - 1) >= rcPropArea.bottom)
 	{		
 		return rcAbort;
 	}
 	
 	// is a scroll bar is required adjust the size of the drawing area accordingly
-	if((-1 + (nCount * nItemRowHeight)) > rcPropArea.Height())
+	if( ((int)(nCount * nItemRowHeight) - 1) > rcPropArea.Height())
 	{		
 		rcPropArea.right = rcPropArea.right - nScrollBarWidth;
 	}
@@ -1734,16 +1617,15 @@ CRect CPropertyListCtrl::ChangeSelectedItem(int nNewSelectionIndex)
 
 int CPropertyListCtrl::GetSelectedIndex(long y)
 {
-	int nTopIndex = -1;
-	 
-	int nCount = m_PropertyList.GetCount();
+	long nTopIndex = -1;
+	size_t nCount = mProperties.size();
 	
 	// test for a need for a scroll bar and set accordingly
-	for(int i = m_TopIndex; i < nCount; i++)
+	for(size_t i = m_TopIndex; i < nCount; i++)
 	{	
 		if(nTopIndex < y && (nTopIndex + nItemRowHeight) >= y)
 		{
-			return i;
+			return (int)i;
 		}
 		// set the top value for the next property to be drawn
 		nTopIndex = nTopIndex + nItemRowHeight;
@@ -1808,7 +1690,7 @@ void CPropertyListCtrl::OnButtonPressed()
 		case PropString:
 			{
 				// if the property is font name invoke the font dialog
-				if (pProp->GetID() == Prop::LabelName)
+				if (pProp->GetID() == Prop::FontName)
 				{					
 					FireInvokeFontPane();
 				}
@@ -2060,7 +1942,7 @@ int CPropertyListCtrl::SetListBox()
 				POSITION pos = m_pDclForm->GetControlList().GetHeadPosition();
 				while (pos != NULL)
 				{
-					CDclControlObject *pCtrl = m_pDclForm->GetControlList().GetNext(pos);
+					TDclControlPtr pCtrl = m_pDclForm->GetControlList().GetNext(pos);
 					if (pCtrl != NULL)
 					{
 						if (pCtrl->GetType() == CtlActiveX && pCtrl->IsMicrosoftActiveXCtrl())
@@ -2788,53 +2670,9 @@ CString CPropertyListCtrl::GetOnePictureFile()
 
 }
 
-
-BOOL CPropertyListCtrl::SetDclParent(short nIndex, LPCTSTR sParentName, short nTabIndex) 
-{
-	CDclFormObject* pNewDclForm = GetDclFormObject(nIndex);
-
-	if (pNewDclForm == NULL)
-		return FALSE;
-
-	// retreive the string name value required.
-	pNewDclForm->SetParentForm(sParentName);
-	pNewDclForm->SetTabIndex(nTabIndex);
-	return TRUE;
-}
-
-short CPropertyListCtrl::GetDclParentsTabIndex(short Index) 
-{
-	short nReturn;
-
-	CDclFormObject* pNewDclForm = GetDclFormObject(Index);
-
-	if (pNewDclForm != NULL)
-	{
-		// retreive the string name value required.
-		nReturn = pNewDclForm->GetTabIndex();
-	}
-	else
-	{
-		// return This quote to indicate error
-		nReturn = -1;
-	}
-
-	return nReturn;
-}
-
-bool CPropertyListCtrl::IsDclControlDeleted(short DclFormIndex, short ArxControlIndex) 
-{
-	CDclControlObject *pControl = GetArxControlObject(DclFormIndex, ArxControlIndex);
-
-	if (pControl == NULL)
-		return false;
-		
-	return pControl->IsDeleted();
-}
-
 void CPropertyListCtrl::DisplayVaries() 
 {
-	m_PropertyList.RemoveAll();
+	mProperties.clear();
 
 	if (!IsWindow(m_hWnd))
 		return;
@@ -2891,55 +2729,31 @@ void CPropertyListCtrl::LoadPicture(LPCTSTR sFileName, short nPictureTag, bool b
 }
 
 
-void CPropertyListCtrl::SearchPictureRefs(CDclFormObject *pDclObject) 
+void CPropertyListCtrl::SearchPictureRefs( TDclFormPtr pDclForm ) 
 {
-	for (int i=0; i<pDclObject->GetControlList().GetCount(); i++)
+	const TDclControlList& Controls = pDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		POSITION pos = pDclObject->GetControlList().FindIndex(i);
-		if (pos != NULL)
+		TDclControlPtr pDclControl = *iter;
+		int nPictureId = pDclControl->GetLongProperty(Prop::Picture);
+		if (nPictureId > -1)
 		{
-			CDclControlObject *pControl = pDclObject->GetControlList().GetAt(pos);
-			int nPictureId = pControl->GetLongProperty(Prop::Picture);
-			if (nPictureId > -1)
-			{
-				if (!pDclObject->GetProject()->FindPicture(nPictureId))
-					pControl->SetLongProperty(Prop::Picture, 0);
-			}
-			int nPressedPictureId = pControl->GetLongProperty(Prop::PressedPicture);
-			if (nPressedPictureId > -1)
-			{
-				if (!pDclObject->GetProject()->FindPicture(nPressedPictureId))
-					pControl->SetLongProperty(Prop::PressedPicture, 0);
-			}
-			int nIconId = pControl->GetLongProperty(Prop::Icon);
-			if (nIconId > -1)
-			{
-				if (!pDclObject->GetProject()->FindPicture(nIconId))
-					pControl->SetLongProperty(Prop::Icon, 0);
-			}
+			if (!pDclForm->GetProject()->FindPicture(nPictureId))
+				pDclControl->SetLongProperty(Prop::Picture, 0);
+		}
+		int nPressedPictureId = pDclControl->GetLongProperty(Prop::MouseOverPicture);
+		if (nPressedPictureId > -1)
+		{
+			if (!pDclForm->GetProject()->FindPicture(nPressedPictureId))
+				pDclControl->SetLongProperty(Prop::MouseOverPicture, 0);
+		}
+		int nIconId = pDclControl->GetLongProperty(Prop::Icon);
+		if (nIconId > -1)
+		{
+			if (!pDclForm->GetProject()->FindPicture(nIconId))
+				pDclControl->SetLongProperty(Prop::Icon, 0);
 		}
 	}
-	
-}
-
-// search every picture id property and ensure it's id is still valid
-void CPropertyListCtrl::CheckPictureRefs() 
-{
-	// do loops to search every picture id property and ensure it's id is still valid
-	for (int i=0; i<m_pControl->GetOwnerProject()->GetDclFormList().GetCount(); i++)
-	{
-		POSITION pos = m_pControl->GetOwnerProject()->GetDclFormList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CDclFormObject *pDclObject = m_pControl->GetOwnerProject()->GetDclFormList().GetAt(pos);
-			if (pDclObject != NULL)
-			{
-				// call method search this dcl form's controls for invalide picture id's
-				SearchPictureRefs(pDclObject);
-			}
-		}	
-	}
-	
 }
 
 void CPropertyListCtrl::DefaultFontDlg() 
@@ -2980,7 +2794,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	CProgressBarPage *pProgressPage = NULL;
 
 
-	CDclControlObject *pArxCtrl = m_pControl;
+	TDclControlPtr pArxCtrl = m_pControl;
 
 	if (pArxCtrl == NULL)
 		return;
@@ -3067,7 +2881,7 @@ void CPropertyListCtrl::ShowPropertyDlg(bool bFontActive, bool bImageListActive)
 	}
 
 	// Show the font page if required
-	pProp = pArxCtrl->GetPropertyObject(Prop::LabelName);
+	pProp = pArxCtrl->GetPropertyObject(Prop::FontName);
 	if (pProp != NULL)
 	{
 		pFontPage = new CFontPropertyPage(pArxCtrl);
@@ -3192,9 +3006,9 @@ void CPropertyListCtrl::OnEnterPressed()
 {
 	UpdateControls(m_Edit.m_pProp->GetID());
 
-	if (m_SelectedIndex < m_PropertyList.GetCount()-1)
+	if (m_SelectedIndex < mProperties.size()-1)
 	{
-		int nNewSelectedIndex = m_SelectedIndex +1;
+		size_t nNewSelectedIndex = m_SelectedIndex +1;
 		try
 		{
 			ChangeSelectedItem(nNewSelectedIndex);
@@ -3246,7 +3060,7 @@ void CPropertyListCtrl::OnPaint()
 		PAINTSTRUCT ps; 
 		CDC* pdc = BeginPaint(&ps);    
 		
-		if (m_PropertyList.GetCount() == 0)
+		if (mProperties.empty())
 			ClearArea(pdc->m_hDC);
 		else
 			RefreshGrid(pdc->m_hDC);	
@@ -3281,8 +3095,7 @@ void CPropertyListCtrl::EditObjectbrowser()
 	if (pApp->m_pCtrlHelp == NULL)
 	{
 		CObjectBrowser Dlg;
-		Dlg.m_pControl = (COleControlObject*)m_pControl;
-		Dlg.m_pControl.Lock();
+		Dlg.m_pControl = m_pControl;
 		Dlg.m_pDclForm = m_pControl->GetOwnerForm();
 		Dlg.m_sDclFormName = m_pControl->GetOwnerForm()->GetKeyName();
 		Dlg.DoModal();
@@ -3292,16 +3105,14 @@ void CPropertyListCtrl::EditObjectbrowser()
 	if (m_pIntelHelp == NULL)
 	{
 		m_pIntelHelp = new CObjectBrowser();
-		m_pIntelHelp->m_pControl = (COleControlObject*)m_pControl;
-		m_pIntelHelp->m_pControl.Lock();
+		m_pIntelHelp->m_pControl = m_pControl;
 		m_pIntelHelp->m_pDclForm = m_pControl->GetOwnerForm();
 		m_pIntelHelp->m_sDclFormName = m_pControl->GetOwnerForm()->GetKeyName();
 		m_pIntelHelp->Create(MAKEINTRESOURCE(IDD_OBJECTBROWSER), AfxGetApp()->m_pMainWnd);
 	}
 	else
 	{
-		m_pIntelHelp->m_pControl = (COleControlObject*)m_pControl;
-		m_pIntelHelp->m_pControl.Lock();
+		m_pIntelHelp->m_pControl = m_pControl;
 		m_pIntelHelp->m_pDclForm = m_pControl->GetOwnerForm();
 		m_pIntelHelp->m_sDclFormName = m_pControl->GetOwnerForm()->GetKeyName();
 		m_pIntelHelp->Setup();

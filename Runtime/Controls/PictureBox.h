@@ -7,7 +7,6 @@
 #include "PPToolTip.h"
 #include "ControlPane.h"
 
-class CDclControlObject;
 class CPictureObject;
 
 const int nUseBackColor = -100;
@@ -60,12 +59,11 @@ public:
 public:
 	CControlPane	*m_pParentPane;
 	bool			m_bHasFocus;
-	bool			m_bInvokeWithSendString;
 	int				m_cxIcon;
 	int				m_cyIcon;
 	BOOL			m_AutoSize;
 	int				m_BorderStyle;
-	CProject*	m_pProject;
+	TProjectPtr	m_pProject;
 	COLORREF		m_BkColor;
 	BOOL			m_bMouseTracking;
 	LPPICTURE		m_pPictureHolder;
@@ -81,7 +79,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CPictureBox)
 	public:
-	virtual BOOL Create(CDclControlObject* pControl, CProject *pProject, CWnd* pParentWnd, UINT nID );
+	virtual BOOL Create(TDclControlPtr pControl, TProjectPtr pProject, CWnd* pParentWnd, UINT nID );
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	//}}AFX_VIRTUAL
 
@@ -124,7 +122,7 @@ private:
 	int					m_ButtonStyle;
 	//CPictureHolder		*m_pPropPictureHolder;	
 	int					m_PictureID;
-	CDclControlObject	*m_ArxControl;
+	TDclControlPtr m_ArxControl;
 	CPictureObject		*m_pPicture;
 	bool				m_bLoadPicture;
 	UINT				m_hPos;

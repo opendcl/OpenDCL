@@ -30,7 +30,7 @@ static void HIMETRICtoDP(HDC hdc, LPSIZE lpSize)
 /////////////////////////////////////////////////////////////////////////////
 // CPictureFolder dialog
 
-CPictureFolder::CPictureFolder(CProject* pProject, CWnd* pParent /*=NULL*/)
+CPictureFolder::CPictureFolder(TEditorProjectPtr pProject, CWnd* pParent /*=NULL*/)
 : CDialog(CPictureFolder::IDD, pParent)
 , mpProject( pProject )
 {

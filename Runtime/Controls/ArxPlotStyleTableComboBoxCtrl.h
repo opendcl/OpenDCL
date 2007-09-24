@@ -6,8 +6,6 @@
 #include "DialogControl.h"
 #include "ArxControlServices.h"
 
-class CDclControlObject;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxPlotStyleTableComboBoxCtrl window
@@ -16,15 +14,13 @@ class CArxPlotStyleTableComboBoxCtrl : public CAcUiPlotStyleTablesComboBox, publ
 {
 	CArxControlServices	mArxServices;
 
-	bool m_bInvokeWithSendString;
-
 public:
-	CArxPlotStyleTableComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CArxPlotStyleTableComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxPlotStyleTableComboBoxCtrl();
 
 // DialogControl Interface
 public:
-	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual CRect GetWndRect() const;

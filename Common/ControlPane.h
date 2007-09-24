@@ -5,10 +5,9 @@
 
 #include "DialogControl.h"
 #include "ThemeHelperST.h"
+#include "Project.h"
 #include <vector>
 
-class CProject;
-class CDclControlObject;
 class CDclFormObject;
 class CFontCollection;
 enum Prop::Id;
@@ -50,8 +49,8 @@ public:
 
 // Attributes
 protected:
-	CProject* mpProject;
-	CDclFormObject* mpSourceForm;
+	TProjectPtr mpProject;
+	TDclFormPtr mpSourceForm;
 	TDialogControls mControls;
 	CWnd* mpHostDlg;
 	long mlLeftOffset;
@@ -64,17 +63,16 @@ protected:
 protected:
 	CControlPane();
 public:
-	CControlPane(CDclFormObject* pSourceForm, CWnd* pHostDlg );
+	CControlPane(TDclFormPtr pSourceForm, CWnd* pHostDlg );
 	virtual ~CControlPane();
 
 // Properties
 public:
-	CProject* GetProject() const { return mpProject; }
-	CDclFormObject* GetSourceForm() const { return mpSourceForm; }
+	TProjectPtr GetProject() const { return mpProject; }
+	TDclFormPtr GetSourceForm() const { return mpSourceForm; }
 	CWnd* GetHostDialog() const { return mpHostDlg; }
 	void SetPanePos( CRect rectNew, bool bRecalc = true ); //set current control area and recalculate layout
 	const TDialogControls& GetControlsList() const { return mControls; }
-	//TDialogControls& GetControlsList() { return mControls; }
 
 // Operations
 public:
@@ -82,10 +80,7 @@ public:
 	bool CreateControls( UINT& nId );
 	void AddControl( TDialogControlPtr pControl );
 	void RecalcLayout();
-	void ResetControlsPos(CDclControlObject *pControl);
-
-	void ShowControls(BOOL bShow);
-	void ShowPictureBoxes(BOOL bShow);
+	void ResetControlsPos(TDclControlPtr pControl);
 
 protected:
 	CRect GetSplitterRect(int nId, CRect& rectCurrent);
@@ -103,5 +98,5 @@ public:
 	virtual void SetGlobalLispSymbols( bool bResetToNil = false ) const {}
 
 protected:
-	virtual TDialogControlPtr CreateNewDialogControl( CDclControlObject* pTemplate, UINT nID ) = 0;
+	virtual TDialogControlPtr CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID ) = 0;
 };

@@ -3,12 +3,10 @@
 
 #pragma once
 
-class CImageListObject;
-
 #include "Resource.h"
 #include "PropertyObject.h"
+#include "DclControlObject.h"
 
-class CDclControlObject;
 class CImageListObject;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -20,13 +18,13 @@ class CImageListPage : public CPropertyPage
 
 	friend class CPropertyListCtrl;
 
-	CDclControlObject* mpDclControl;
+	TDclControlPtr mpDclControl;
 	RefCountedPtr< CImageList > mpImageList;
 
 // Construction
 //protected:
 public:
-	CImageListPage( CDclControlObject* pDclControl );
+	CImageListPage( TDclControlPtr pDclControl );
 	~CImageListPage();
 
 // Dialog Data

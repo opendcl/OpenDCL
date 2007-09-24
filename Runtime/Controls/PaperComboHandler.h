@@ -13,10 +13,10 @@
 
 class CPaperComboHandler : public CComboHandler
 {
-	CDclControlObject* mpPrinterCombo;
+	TDclControlPtr mpPrinterCombo;
 
 public:
-	CPaperComboHandler( CDclControlObject* pPrinterCombo = NULL ) : mpPrinterCombo( pPrinterCombo ) {}
+	CPaperComboHandler( TDclControlPtr pPrinterCombo = NULL ) : mpPrinterCombo( pPrinterCombo ) {}
 	virtual ~CPaperComboHandler() {}
 
 public:
@@ -54,7 +54,7 @@ public:
 				{
 					CDialogControl* pDclControl = mpPrinterCombo->GetControlInstance();
 					if( pDclControl )
-						pDclControl->GetControl()->GetWindowText( sPlotter );
+						pDclControl->GetControlWnd()->GetWindowText( sPlotter );
 				}
 				pPlotSettingsValidator->setPlotCfgName( pLayout.object(), sPlotter );
 			}
@@ -72,5 +72,5 @@ public:
 			pCombo->SetCurSel( pCombo->FindString( 0, sSelection ) );
 			return true;
 		}
-	void SetPrinterCombo( CDclControlObject* pCombo ) { mpPrinterCombo = pCombo; }
+	void SetPrinterCombo( TDclControlPtr pCombo ) { mpPrinterCombo = pCombo; }
 };

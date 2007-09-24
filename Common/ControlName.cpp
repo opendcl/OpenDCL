@@ -53,7 +53,7 @@ CString GetControlName( ControlType type )
 }
 
 
-CString GetControlName( CDclControlObject* pTemplate )
+CString GetControlName( TDclControlPtr pTemplate )
 {
 	switch (pTemplate->GetType())
 	{

@@ -27,7 +27,7 @@ void CButtonAcadColorService::ResetButtonBackgroundColor() const
 /////////////////////////////////////////////////////////////////////////////
 // CButtonCtrl
 
-CButtonCtrl::CButtonCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CButtonCtrl::CButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , mAcadColorService( *this )
 {

@@ -11,10 +11,9 @@
 class CArxAxContainerCtrl : public CAxContainerCtrl
 {
 	CArxControlServices	mArxServices;
-	bool m_bInvokeWithSendString;
 
 public:
-	CArxAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true);
+	CArxAxContainerCtrl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true);
 	virtual ~CArxAxContainerCtrl();
 
 // DialogControl Interface
@@ -24,7 +23,7 @@ public:
 
 protected:
 	void TryToFireAxEvent(UINT idCtrl, AFX_EVENT* pEvent);
-	void FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_EVENT* pEvent);
+	void FireAxEvent(UINT idCtrl, const CPropertyObject* pProp, AFX_EVENT* pEvent);
 
 protected:
 	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);

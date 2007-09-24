@@ -8,9 +8,9 @@
 #pragma once
 
 #include "PPToolTip.h"
+#include "DclControlObject.h"
 #include <list>
 
-class CDclControlObject;
 class CControlPane;
 class CAcadColorService;
 class CThemeHelperST;
@@ -87,30 +87,14 @@ typedef RefCountedPtr< class CDialogControl > TDialogControlPtr;
 //solves the problem of distinguishing between pointers to objects that must be destroyed by the 
 //reference counter and pointers to new style controls that will be destroyed when their window is 
 //destroyed.
-class TDialogControlLockedPtr : public TDialogControlPtr
-{
-private:
-	typedef TDialogControlPtr _base;
-
-public:
-	TDialogControlLockedPtr( TDialogControlPtr pTarget ) : _base( pTarget ) { Lock(); }
-	TDialogControlLockedPtr( CDialogControl& Target ) : _base( &Target ) { Lock(); }
-	virtual ~TDialogControlLockedPtr(void) {}
-
-	// copy and assignment
-	TDialogControlLockedPtr(const TDialogControlLockedPtr & src) : _base( src ) {}
-	TDialogControlLockedPtr(const _base & src) : _base( src ) {}
-	TDialogControlLockedPtr& operator=(const TDialogControlLockedPtr & src) { _base::operator=( src ); return *this; }
-	TDialogControlLockedPtr& operator=(const _base & src) { _base::operator=( src ); return *this; }
-	TDialogControlPtr operator=(TDialogControlPtr src) { return _base::operator=( src ); }
-};
+typedef LockedPtr< class CDialogControl > TDialogControlLockedPtr;
 
 
 
 class CDialogControl
 {
 protected:		
-	CDclControlObject* mpTemplate;
+	TDclControlPtr mpTemplate;
 	CControlPane* mpControlPane;
 	CWnd* mpControl;
 
@@ -119,16 +103,16 @@ private:
 	CPPToolTip mToolTip;
 
 public:
-	CDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pControl );
+	CDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl );
 	virtual ~CDialogControl();
 
-	//static TDialogControlPtr Create( CDclControlObject* pTemplate, CControlPane* pPane,
+	//static TDialogControlPtr Create( TDclControlPtr pTemplate, CControlPane* pPane,
 	//																 UINT nID, ControlParams* pParams = NULL );
 
 	// Properties
 public:
-	const CDclControlObject* GetTemplate() const { return mpTemplate; }
-	CDclControlObject* GetTemplate() { return mpTemplate; }
+	const TDclControlPtr GetTemplate() const { return mpTemplate; }
+	TDclControlPtr GetTemplate() { return mpTemplate; }
 	const CControlPane* GetControlPane() const { return mpControlPane; }
 	CControlPane* GetControlPane() { return mpControlPane; }
 	const CPPToolTip& GetToolTipCtrl() const { const_cast< CDialogControl* >(this)->CreateTooltip(); return mToolTip; }
@@ -136,14 +120,15 @@ public:
 	virtual CAcadColorService* GetColorService() { return NULL; }
 	virtual CThemeHelperST* GetThemeHelper();
 	virtual CDragDropService* GetDragDropService() { return NULL; }
-	virtual const CWnd* GetControl() const { return mpControl; }
-	virtual CWnd* GetControl() { return mpControl; }
+	virtual const CWnd* GetControlWnd() const { return mpControl; }
+	virtual CWnd* GetControlWnd() { return mpControl; }
 	virtual ControlType GetControlType() const;
 	virtual UINT GetControlId() const { return (mpControl? mpControl->GetDlgCtrlID() : (UINT)-1); }
 	virtual bool GetChildPanes( std::list< const CControlPane* >& listChildren ) const { return false; }
 
 	// ARX specific services
 	virtual const CArxControlServices* GetArxServices() const { return NULL; }
+	virtual bool IsAsyncEvents() const;
 
 	// Name rendition
 public:
@@ -182,7 +167,7 @@ public:
 	virtual bool OnApplyVScrollBar( TPropertyPtr pProp ); //Prop::VScrollBar
 	virtual bool OnApplyHScrollBar( TPropertyPtr pProp ); //Prop::HScrollBar
 	virtual bool OnApplyToolTip( TPropertyPtr pProp ); //Prop::ToolTipTitle
-	virtual bool OnApplyFont( TPropertyPtr pProp ); //Prop::LabelName
+	virtual bool OnApplyFont( TPropertyPtr pProp ); //Prop::FontName
 };
 
 
@@ -191,7 +176,7 @@ public:
 class CAutoDialogControl : public CDialogControl
 {
 public:
-	CAutoDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pControl )
+	CAutoDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl )
 		: CDialogControl( pTemplate, pPane, pControl ) {}
 	virtual ~CAutoDialogControl() { delete mpControl; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }

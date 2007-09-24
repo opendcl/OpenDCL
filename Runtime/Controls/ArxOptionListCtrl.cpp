@@ -4,21 +4,16 @@
 #include "stdafx.h"
 #include "ArxOptionListCtrl.h"
 #include "InvokeMethod.h"
-#include "SharedRes.h"
-#include "AcadColorTable.h"
 #include "PropertyIds.h"
 #include "DclControlObject.h"
 #include "ControlPane.h"
 #include "PropertyObject.h"
-#include "ToolTips.h"
-
-#define GLYPH_WIDTH 17 
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxOptionListCtrl
 
-CArxOptionListCtrl::CArxOptionListCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CArxOptionListCtrl::CArxOptionListCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : COptionListCtrl( pTemplate, pPane, nID, false )
 , mArxServices( pTemplate )
 {
@@ -34,11 +29,6 @@ bool CArxOptionListCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
-
-	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
 
 	return bSuccess;
 }
@@ -60,51 +50,24 @@ END_MESSAGE_MAP()
 void CArxOptionListCtrl::OnSelchange() 
 {
 	int nCurSel = GetCurSel();
-	
-	//if (GetItemData(nCurSel) == 2)
-	//{
-	//	SetCurSel(m_CurSel);
-	//	return;
-	//}
-	//if (m_CurSel != nCurSel)
-	//{
-	//	// we must redraw the default selected item because it will not redraw itself.
-	//	CRect rc;
-	//	GetItemRect(m_CurSel, rc);
-	//	InvalidateRect(rc);		
-	//}
-	//
-	//m_CurSel = nCurSel;
-
-	if (nCurSel > -1)
-	{
-		CString sString;
-	
-		int n = GetTextLen(nCurSel);      
-		GetText(nCurSel, sString.GetBuffer(n));
-		sString.ReleaseBuffer();
-
-		// call methods to invoke the event
-		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nCurSel, sString, m_bInvokeWithSendString);
-	}   
+	CString sString;
+	GetText(nCurSel, sString);
+	InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nCurSel, sString, IsAsyncEvents());
 }
 
 void CArxOptionListCtrl::OnDblclk() 
 {
-	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
 }
 
 void CArxOptionListCtrl::OnKillfocus() 
 {
-	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }
 
 void CArxOptionListCtrl::OnSetfocus() 
 {
-	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
 }
 
 void CArxOptionListCtrl::OnMouseMove(UINT nFlags, CPoint point) 
@@ -116,12 +79,12 @@ void CArxOptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 }
 
 void CArxOptionListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
   if (nChar == VK_RETURN)
-    InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+    InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
 	__super::OnKeyDown(nChar,nRepCnt,nFlags);
 }

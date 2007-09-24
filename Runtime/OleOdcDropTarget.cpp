@@ -13,7 +13,7 @@
 #include "DropSource.h"
 #include "AutoDocLock.h"
 #include "ControlTypes.h"
-#include "Project.h"
+#include "Workspace.h"
 
 
 BOOL acedStartOverrideDropTarget(COleDropTarget* pTarget);
@@ -401,7 +401,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 	if (m_pThisArxControl->GetOwnerForm()->GetType() == VdclFileDialog)
 		bUseSendString = false;
 	
-	CDclControlObject *pControl = PasteArxObjectFromClipboard();
+	TDclControlPtr pControl = PasteArxObjectFromClipboard();
 	if (m_pThisArxControl->GetType() == CtlDwgList)
 		CArxDwgListCtrl *pDwgList = (CArxDwgListCtrl*)pControl->GetWindow();
 	
@@ -496,9 +496,9 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 	return TRUE;
 }
 
-CDclControlObject * COleOdcDropTarget::PasteArxObjectFromClipboard()
+TDclControlPtr  COleOdcDropTarget::PasteArxObjectFromClipboard()
 {
-	CDclControlObject *pControl = NULL; 
+	TDclControlPtr pControl = NULL; 
 			
 	// CG: This block was added by the Clipboard Assistant component
 	if (m_pParent->OpenClipboard())
@@ -565,7 +565,7 @@ void COleOdcDropTarget::ClearTheClipboard()
 }
 
 
-void CopyArxObjectToClipboard(CDclControlObject *pControl)
+void CopyArxObjectToClipboard(TDclControlPtr pControl)
 {
    // CG: This block was added by the Clipboard Assistant component
 	CSharedFile memFile;
@@ -594,7 +594,7 @@ void CopyArxObjectToClipboard(CDclControlObject *pControl)
 		AfxMessageBox(_T("Error, cannot open clipboard."));
 }
 
-DROPEFFECT BeginDragnDrop(CDclControlObject *pControl, CPoint point, bool bInvokeWithSendString)
+DROPEFFECT BeginDragnDrop(TDclControlPtr pControl, CPoint point, bool bInvokeWithSendString)
 {
 	// copy this control's Arx control object to the clip board
 	CopyArxObjectToClipboard(pControl);
@@ -624,7 +624,7 @@ DROPEFFECT BeginDragnDrop(CDclControlObject *pControl, CPoint point, bool bInvok
 	return dwEffect;
 }
 
-DROPEFFECT BeginDragnDropToInsertBlocks(CDclControlObject *pControl, CPoint point, bool bInvokeWithSendString, CStringArray &BlockNames)
+DROPEFFECT BeginDragnDropToInsertBlocks(TDclControlPtr pControl, CPoint point, bool bInvokeWithSendString, CStringArray &BlockNames)
 {
 	// copy this control's Arx control object to the clip board
 	CopyArxObjectToClipboard(pControl);

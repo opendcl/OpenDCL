@@ -6,7 +6,6 @@
 #include "RadioButtonCtrl.h"
 #include "ArxControlServices.h"
 
-class CDclControlObject;
 class CPropertyObject;
 
 
@@ -17,11 +16,8 @@ class CArxRadioButtonCtrl : public CRadioButtonCtrl
 {
 	CArxControlServices	mArxServices;
 
-	bool m_bInvokeWithSendString;
-
-// Construction
 public:
-	CArxRadioButtonCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CArxRadioButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxRadioButtonCtrl();
 
 // DialogControl Interface

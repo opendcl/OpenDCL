@@ -6,7 +6,6 @@
 #include "FilteredComboCtrl.h"
 #include "DialogControl.h"
 
-class CDclControlObject;
 class CProject;
 class CComboHandler;
 
@@ -19,12 +18,12 @@ class CComboBoxCtrl : public CFilteredComboCtrl, public CDialogControl
 	CComboHandler* mpHandler;
 
 public:
-	CComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CComboHandler* pHandler = NULL, bool bCreate = true );
+	CComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, CComboHandler* pHandler = NULL, bool bCreate = true );
 	virtual ~CComboBoxCtrl();
 
 // DialogControl Interface
 public:
-	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual CRect GetWndRect() const;
 	virtual DWORD GetWndStyle() const;
@@ -43,6 +42,6 @@ protected:
 	virtual afx_msg void PostNcDestroy();
 	virtual afx_msg void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	afx_msg void OnDropDown();
+	afx_msg void OnDropdown();
 	afx_msg void OnCloseUp();
 };

@@ -17,7 +17,7 @@ const int SHX_FONTTYPE = 6;
 /////////////////////////////////////////////////////////////////////////////
 // CArxFontComboBoxCtrl
 
-CArxFontComboBoxCtrl::CArxFontComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID,
+CArxFontComboBoxCtrl::CArxFontComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID,
 																						bool bCreate /*= true*/ )
 : CArxComboBoxCtrl( pTemplate, pPane, nID, new CFontComboHandler, false )
 , mhwndList( NULL )

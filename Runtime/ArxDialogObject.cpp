@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "ArxProject.h"
+#include "ArxWorkspace.h"
 #include "DclFormObject.h"
 #include "ModalDlg.h"
 #include "ModelessDlg.h"
@@ -19,18 +19,19 @@
 CArxDialogObject::CDocReactor::CDocReactor( CArxDialogObject* pDialogobject )
 : mpDialogobject( pDialogobject )
 {
-	CDclControlObject* pProps = pDialogobject->GetSourceForm()->GetControlProperties();
+	TDclControlPtr pProps = pDialogobject->GetSourceForm()->GetControlProperties();
 	if( pProps )
 	{
 		msDocActivatedEvent = pProps->GetStringProperty( Prop::DocEventActivated );
-		if( !msDocActivatedEvent.IsEmpty() )
+		msEnteringNoDocStateEvent = pProps->GetStringProperty( Prop::DocEventEnteringNoDocState );
+		if( !msDocActivatedEvent.IsEmpty() || !msEnteringNoDocStateEvent.IsEmpty() )
 			acDocManager->addReactor( this );
 	}
 }
 
 CArxDialogObject::CDocReactor::~CDocReactor()
 {
-	if( !msDocActivatedEvent.IsEmpty() )
+	if( !msDocActivatedEvent.IsEmpty() || !msEnteringNoDocStateEvent.IsEmpty() )
 		acDocManager->removeReactor( this );
 }
 
@@ -40,15 +41,26 @@ void CArxDialogObject::CDocReactor::documentActivated(AcApDocument* pActivatedDo
 		InvokeMethod( msDocActivatedEvent, true, pActivatedDoc );
 }
 
+void CArxDialogObject::CDocReactor::documentToBeDestroyed(AcApDocument* pDocToDestroy)
+{
+	if( acDocManager->documentCount() == 1 )
+	{
+		mpDialogobject->OnEnteringNoDocState();
+		InvokeMethod( msEnteringNoDocStateEvent, false, pDocToDestroy );
+	}
+}
 
-CArxDialogObject::CArxDialogObject( CDclFormObject* pSourceForm, CWnd* pHostDlg )
+
+CArxDialogObject::CArxDialogObject( TDclFormPtr pSourceForm, CWnd* pHostDlg )
 : CDialogObject( pSourceForm, pHostDlg )
 , mControlPane( pSourceForm, pHostDlg )
+, mbEnteringNoDocState( false )
 , mDocReactor( this )
 {
 	theArxWorkspace.RegisterDialog( this );
 	TraceFmt( _T("> CArxDialogObject::CArxDialogObject(%s [%p], %s [HWND: %p]) [this: %p]\r\n"),
-						pSourceForm->GetKeyPath(), pSourceForm, CString(pHostDlg->GetRuntimeClass()->m_lpszClassName),
+						(LPCTSTR)pSourceForm->GetKeyPath(), pSourceForm,
+						(LPCTSTR)CString(pHostDlg->GetRuntimeClass()->m_lpszClassName),
 						pHostDlg->m_hWnd, this );
 }
 
@@ -59,7 +71,7 @@ CArxDialogObject::~CArxDialogObject()
 }
 
 //static
-CDialogObject* CArxDialogObject::Create( CDclFormObject* pDclForm, CWnd* pParent /*= NULL*/,
+CDialogObject* CArxDialogObject::Create( TDclFormPtr pDclForm, CWnd* pParent /*= NULL*/,
 																				 DialogParams* pParams /*= NULL*/ )
 {
 	CAcAppContextModuleResourceOverride resOverride;
@@ -72,4 +84,9 @@ CDialogObject* CArxDialogObject::Create( CDclFormObject* pDclForm, CWnd* pParent
 	case VdclFileDialog: return &(new CCustomFileDialog( pDclForm, pParent, pParams ))->GetDialogObject();
 	}
 	return NULL;
+}
+
+void CArxDialogObject::OnEnteringNoDocState()
+{
+	mbEnteringNoDocState = true;
 }

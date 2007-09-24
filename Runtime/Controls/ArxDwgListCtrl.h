@@ -68,7 +68,6 @@ class CArxDwgListCtrl : public CListBoxCtrl
 	int mnRowHeight;
 
 	COleOdcDropTarget m_DropTarget;
-	bool m_bInvokeWithSendString;
 	CThumbnailFileList	m_ThumbnailFileList;
 	short				m_CurSel;
 	CImageList			m_imageList;
@@ -81,7 +80,7 @@ public:
 
 // Construction
 public:
-	CArxDwgListCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CArxDwgListCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxDwgListCtrl();
 
 // DialogControl Interface

@@ -37,13 +37,13 @@ class CDialogObject
 	// Attributes
 protected:
 	UINT mnID;
-	CDclFormObject* mpSourceForm;
-	CProject* mpProject;
+	TDclFormPtr mpSourceForm;
+	TProjectPtr mpProject;
 	CWnd* mpHostDlg;
 	bool mbClosing;
 
 public:
-	CDialogObject( CDclFormObject* pDclForm, CWnd* pHostDlg );
+	CDialogObject( TDclFormPtr pDclForm, CWnd* pHostDlg );
 	virtual ~CDialogObject();
 
 	// Services
@@ -77,16 +77,16 @@ public:
 	// Properties
 public:
 	UINT GetID() const { return mnID; }
-	const CDclFormObject* GetSourceForm() const { return mpSourceForm; }
-	CDclFormObject* GetSourceForm() { return mpSourceForm; }
-	const CProject* GetProject() const { return mpProject; }
-	CProject* GetProject() { return mpProject; }
+	const TDclFormPtr GetSourceForm() const { return mpSourceForm; }
+	TDclFormPtr GetSourceForm() { return mpSourceForm; }
+	const TProjectPtr GetProject() const { return mpProject; }
+	TProjectPtr GetProject() { return mpProject; }
 	const CWnd* GetWindow() const { return mpHostDlg; }
 	CWnd* GetWindow() { return mpHostDlg; }
 
 // Operations
 public:
-	//static CDialogObject* Create( CDclFormObject* pDclForm, CWnd* pParent = NULL,
+	//static CDialogObject* Create( TDclFormPtr pDclForm, CWnd* pParent = NULL,
 	//															DialogParams* pParams = NULL );
 
 // Implementation

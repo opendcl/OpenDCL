@@ -3,7 +3,8 @@
 
 #pragma once
 
-class CProject;
+#include "EditorProject.h"
+
 class COpenDCLDoc;
 
 
@@ -18,7 +19,7 @@ public:
 
 // Attributes
 protected:
-	CProject* mpProject;
+	TEditorProjectPtr mpProject;
 	COpenDCLDoc* mpDocument;
 	HTREEITEM mhtiModalParent;
 	HTREEITEM mhtiModelessParent;
@@ -44,17 +45,17 @@ public:
 	HTREEITEM GetAxFilesParentTreeItem() const { return mhtiAxFilesParent; }
 	void SetAutoLispFilename( LPCTSTR pszLispFilename );
 	void SetPassword( LPCTSTR pszPassword );
-	void SetupProjectTree( CProject* pProject = NULL );
-	CProject* GetProject() const { return mpProject; }
+	void SetupProjectTree( TEditorProjectPtr pProject = NULL );
+	TEditorProjectPtr GetProject() const { return mpProject; }
 	COpenDCLDoc* GetDocument() const { return mpDocument; }
 	void SetDocument(COpenDCLDoc* pDocument) { mpDocument = pDocument; }
 
 // Operations
 public:
 	void ClearTree();
-	HTREEITEM FindTabParent(class CDclFormObject *pDclTab);
+	HTREEITEM FindTabParent(TDclFormPtr pDclTab);
 	void RemoveViewPointer(CView *pView);
-	void AddFormToTree(CDclFormObject *pDcl, bool bForceShow);
+	void AddFormToTree(TDclFormPtr pDcl, bool bForceShow);
 	void RemoveChildren(HTREEITEM hParent);
 	void CleanupParents();
 	void AddActiveXFileTree(CString sFileName);

@@ -537,7 +537,7 @@ int BlockView_GetViewInfo()
 
 int BlockView_SetView()
 {
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sBlockView_SetView, pArxObject);
 
 	

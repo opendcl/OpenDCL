@@ -4,8 +4,8 @@
 #pragma once
 
 #include "Resource.h"
+#include "DclControlObject.h"
 
-class CDclControlObject;
 class COpenDCLView;
 class CPropertyObject;
 class CControlHolder;
@@ -56,6 +56,6 @@ protected:
 public:
 	BOOL m_ListBoxCreated;
 	TPropertyPtr m_pPropObject;
-	CDclControlObject *m_pControl;
+	TDclControlPtr m_pControl;
 	COpenDCLView *m_pView;
 };

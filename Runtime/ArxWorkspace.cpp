@@ -64,6 +64,11 @@ CString CArxWorkspace::GetUserProfilePrefix() const
 	return CString( _T("Profiles\\") ) +  rbProfile.resval.rstring + _T("\\OpenDCL\\");
 }
 
+HMODULE CArxWorkspace::GetThisModule() const
+{
+	return _hdllInstance;
+}
+
 HMODULE CArxWorkspace::GetResourceModule() const
 {
 	return _hdllInstance;
@@ -74,11 +79,6 @@ HMODULE CArxWorkspace::GetLocalResourceModule() const
 	return _hdllInstance;
 }
 
-CProject* CArxWorkspace::GetActiveProject() const
-{
-	return mProjects.mProjectCollection.GetTail();
-}
-
 CString CArxWorkspace::FindFile( LPCTSTR pszFilePath ) const
 {
 	CString sPath;
@@ -86,14 +86,6 @@ CString CArxWorkspace::FindFile( LPCTSTR pszFilePath ) const
 		return CWorkspace::FindFile( pszFilePath );
 	sPath.ReleaseBuffer();
 	return sPath;
-}
-
-CString CArxWorkspace::GetActiveProjectName() const
-{
-	CString sShortFileName = StripPathFromFileName(GetActiveProject()->GetKeyName());
-	if (sShortFileName[sShortFileName.GetLength()-4] == _T('.'))
-		sShortFileName = sShortFileName.Left(sShortFileName.GetLength()-4);
-	return sShortFileName;
 }
 
 bool CArxWorkspace::IsModalFormOpen() const
@@ -138,55 +130,47 @@ HWND CArxWorkspace::GetTopmostModalForm() const
 	return adsw_acadMainWnd();
 }
 
-CArxProject* CArxWorkspace::FindProject( LPCTSTR pszKeyName ) const
+TArxProjectPtr CArxWorkspace::FindProject( LPCTSTR pszKeyName ) const
 {
-	POSITION posProject = mProjects.mProjectCollection.GetHeadPosition();
-	while( posProject != NULL )
+	for( TProjectList::const_iterator iter = mProjects.begin(); iter != mProjects.end(); ++iter )
 	{
-		CProject* pProject = mProjects.mProjectCollection.GetNext( posProject );
-		if( pProject->GetKeyName().CompareNoCase( pszKeyName ) == 0 )
-			return static_cast<CArxProject*>(pProject);
+		if( (*iter)->GetKeyName().CompareNoCase( pszKeyName ) == 0 )
+			return *iter;
 	}
 	return NULL;
 }
 
-bool CArxWorkspace::AddProject( CArxProject* pProject )
+bool CArxWorkspace::AddProject( TArxProjectPtr pProject )
 {
 	if( FindProject( pProject->GetKeyName() ) )
 		return false; //can't allow duplicate keys
 	pProject->SetProjectLispSymbols();
-	mProjects.mProjectCollection.AddTail( pProject );
+	mProjects.push_back( pProject );
 	return true;
 }
 
-bool CArxWorkspace::UnloadProject( CProject *pProject, bool bForce )
+bool CArxWorkspace::UnloadProject( TArxProjectPtr pProject, bool bForce )
 {
-	POSITION posForm = pProject->GetDclFormList().GetHeadPosition();
-	while( posForm )
+	const TDclFormList& Forms = pProject->GetDclFormList();
+	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
 	{
-		CDclFormObject* pForm = pProject->GetDclFormList().GetNext( posForm );
-		assert( pForm != NULL );
-		if( !pForm )
-			continue;
-		CDialogObject* pDialog = pForm->GetFormInstance();
+		CDialogObject* pDialog = (*iter)->GetFormInstance();
 		if( pDialog )
 		{
 			if( !bForce )
 				return false;
 			pDialog->CloseDialog(); //there is an active dialog using this form
-			if( pForm->GetFormInstance() )
+			if( (*iter)->GetFormInstance() )
 				return false; //for some reason the form didn't close
 		}
 	}
-	POSITION posProject = mProjects.mProjectCollection.GetHeadPosition();
-	while( posProject != NULL )
+	for( TProjectList::iterator iter = mProjects.begin(); iter != mProjects.end(); ++iter )
 	{
-		POSITION posAt = posProject;
-		if( pProject == mProjects.mProjectCollection.GetNext( posProject ) )
+		TArxProjectPtr pThisProject = *iter;
+		if( pProject == pThisProject )
 		{
-			mProjects.mProjectCollection.RemoveAt( posAt );
-			((CArxProject*)pProject)->SetProjectLispSymbols( true );
-			delete pProject;
+			pThisProject->SetProjectLispSymbols( true );
+			mProjects.erase( iter );
 			return true;
 		}
 	}
@@ -259,13 +243,9 @@ void CArxWorkspace::SetLispSymbol( LPCTSTR pszLispSymbol, UINT_PTR pValue ) cons
 bool CArxWorkspace::UpdateGlobalLispSymbols() const
 {
 	bool bFailed = false;
-	POSITION posProject = mProjects.mProjectCollection.GetHeadPosition();
-	while (posProject != NULL)
+	for( TProjectList::const_iterator iter = mProjects.begin(); iter != mProjects.end(); ++iter )
 	{
-		CArxProject* pProject = (CArxProject*)mProjects.mProjectCollection.GetNext(posProject);
-		assert( pProject != NULL);
-		if( !pProject )
-			continue;
+		TArxProjectPtr pProject = *iter;
 		if( !pProject->SetProjectLispSymbols() )
 			bFailed = true;
 	}
@@ -280,7 +260,7 @@ bool CArxWorkspace::UpdateGlobalLispSymbols() const
 			continue;
 		CString sVarName = pDialog->GetSourceForm()->GetVarName();
 		if (!sVarName.IsEmpty())
-			SetLispSymbol(sVarName, (UINT_PTR)pDialog->GetSourceForm());
+			SetLispSymbol(sVarName, (UINT_PTR)(const CDclFormObject*)pDialog->GetSourceForm());
 		pDialog->GetControlPane().SetGlobalLispSymbols();
 	}
 
@@ -289,17 +269,16 @@ bool CArxWorkspace::UpdateGlobalLispSymbols() const
 
 bool CArxWorkspace::OnExtendTabbedDialog( CAdUiTabExtensionManager* pTabXM )
 {
-	POSITION posProject = mProjects.mProjectCollection.GetHeadPosition();
-	while (posProject)
+	for( TProjectList::const_iterator iter = mProjects.begin(); iter != mProjects.end(); ++iter )
 	{
-		CArxProject *pProject = (CArxProject*)mProjects.mProjectCollection.GetNext(posProject);
-		if (pProject && !pProject->OnExtendTabbedDialog( pTabXM ))
+		TArxProjectPtr pProject = *iter;
+		if( !pProject->OnExtendTabbedDialog( pTabXM ) )
 			return false;
 	}
 	return true;
 }
 
-bool CArxWorkspace::AddExtensionTab( CDclFormObject* pDclForm, CAdUiTabExtensionManager* pTabXM )
+bool CArxWorkspace::AddExtensionTab( TDclFormPtr pDclForm, CAdUiTabExtensionManager* pTabXM )
 {
 	if( !pTabXM )
 		return false; //need to register the tab extension manager first!
@@ -320,15 +299,21 @@ bool CArxWorkspace::AddExtensionTab( CDclFormObject* pDclForm, CAdUiTabExtension
 	return true;
 }
 
+void CArxWorkspace::UnloadAllProjects()
+{
+	CloseAllDialogs();
+	mProjects.clear();
+}
+
 bool CArxWorkspace::UnloadProject( LPCTSTR pszKeyName, bool bForce )
 {
-	CProject* pProject = FindProject( pszKeyName );
+	TArxProjectPtr pProject = FindProject( pszKeyName );
 	if( !pProject )
 		return true; //project is not loaded
 	return UnloadProject( pProject, bForce );
 }
 
-CDclFormObject* CArxWorkspace::FindDclFormControl( HWND hwndControl, /*out*/ CString& sControlName ) const
+TDclFormPtr CArxWorkspace::FindDclFormControl( HWND hwndControl, /*out*/ CString& sControlName ) const
 {
 	sControlName.Empty();
 	POSITION pos = mDialogs.GetHeadPosition();
@@ -361,75 +346,61 @@ CDialogObject* CArxWorkspace::FindDialog( LPCTSTR pszProjectName, LPCTSTR pszFor
 	return NULL;
 }
 
-CDclControlObject* CArxWorkspace::FindControl( LPCTSTR pszProject, LPCTSTR pszFormName, LPCTSTR pszControl ) const
+TDclControlPtr CArxWorkspace::FindControl( LPCTSTR pszProject, LPCTSTR pszFormName, LPCTSTR pszControl ) const
 {
-	CArxProject* pProject = FindProject( pszProject );
+	const TArxProjectPtr pProject = FindProject( pszProject );
 	if( !pProject )
 		return NULL;
-	CDclFormObject* pDclForm = pProject->FindDclForm( pszFormName );
+	TDclFormPtr pDclForm = pProject->FindDclForm( pszFormName );
 	if( pDclForm )
 	{
-		CDclControlObject* pControl = pDclForm->FindControl( pszControl );
+		TDclControlPtr pControl = pDclForm->FindControl( pszControl );
 		if( pControl )
 			return pControl;
 	}
 	return pProject->FindControlWithVarName( CString( pszProject ) + _T('_') + pszFormName + _T('_') + pszControl );
 }
 
-CDclFormObject* CArxWorkspace::FindForm( LPCTSTR pszProjectName, LPCTSTR pszFormName ) const
+TDclFormPtr CArxWorkspace::FindForm( LPCTSTR pszProjectName, LPCTSTR pszFormName ) const
 {
-	CArxProject* pProject = FindProject( pszProjectName );
+	TArxProjectPtr pProject = FindProject( pszProjectName );
 	if( !pProject )
 		return NULL;
-	CDclFormObject* pDclForm = pProject->FindDclForm( pszFormName );
+	TDclFormPtr pDclForm = pProject->FindDclForm( pszFormName );
 	if( pDclForm )
 		return pDclForm;
 	return pProject->FindDclFormWithVarName( CString( pszProjectName ) + _T('_') + pszFormName );
 }
 
-CArxProject* CArxWorkspace::GetProjectFor( const CDclFormObject *pDclObject ) const
+TOleControlPtr CArxWorkspace::GetOleControlFor( const AxPropertyDescriptor* pProperty )
 {
-	CProject* pProject = const_cast<CProject*>(pDclObject->GetProject());
-	return static_cast<CArxProject*>(pProject);
-}
-
-RefCountedPtr< COleControlObject > CArxWorkspace::GetOleControlFor( const AxPropertyDescriptor* pProperty ) const
-{
-	POSITION pos = mProjects.mProjectCollection.GetHeadPosition();
-	while (pos != NULL)
+	for( TProjectList::const_iterator iter = mProjects.begin(); iter != mProjects.end(); ++iter )
 	{
-		CProject* pProject = mProjects.mProjectCollection.GetNext(pos);
-		if (pProject != NULL)
-		{
-			RefCountedPtr< COleControlObject > pObject = pProject->GetOleObject(pProperty);
-			if (pObject != NULL)
-				return pObject;
-		}
+		TArxProjectPtr pProject = *iter;
+		TOleControlPtr pObject = pProject->GetOleObject( pProperty );
+		if( pObject )
+			return pObject;
 	}
 	return NULL;
 }
 
-RefCountedPtr< COleControlObject > CArxWorkspace::GetOleControlFor( const AxMethodDescriptor* pMethod ) const
+TOleControlPtr CArxWorkspace::GetOleControlFor( const AxMethodDescriptor* pMethod )
 {
-	POSITION pos = mProjects.mProjectCollection.GetHeadPosition();
-	while (pos != NULL)
+	for( TProjectList::const_iterator iter = mProjects.begin(); iter != mProjects.end(); ++iter )
 	{
-		CProject* pProject = mProjects.mProjectCollection.GetNext(pos);
-		if (pProject != NULL)
-		{
-			RefCountedPtr< COleControlObject > pObject = pProject->GetOleObject(pMethod);
-			if (pObject != NULL)
-				return pObject;
-		}
+		TArxProjectPtr pProject = *iter;
+		TOleControlPtr pObject = pProject->GetOleObject( pMethod );
+		if( pObject )
+			return pObject;
 	}
 	return NULL;
 }
 
 
-CArxProject* CArxWorkspace::ImportProject( CFile& src, LPCTSTR pszKeyName /*= NULL*/ )
+TArxProjectPtr CArxWorkspace::ImportProject( CFile& src, LPCTSTR pszKeyName /*= NULL*/ )
 {
 	// create a new project
-	CArxProject* pProject = new CArxProject( pszKeyName );
+	TArxProjectPtr pProject = new CArxProject( pszKeyName );
 	try
 	{
 		CArchiveEx ar( &src, CArchive::load | CArchive::bNoFlushOnDelete, NULL, _T("ObjectDCL"), TRUE);
@@ -437,29 +408,22 @@ CArxProject* CArxWorkspace::ImportProject( CFile& src, LPCTSTR pszKeyName /*= NU
 	}
 	catch( ... )
 	{
-		delete pProject;
 		return NULL; 
 	}
-	if (pProject->GetDclFormList().GetCount() == 0) //file had nothing in it
-	{		
-		delete pProject;
-		return NULL; 
-	}
+	if( pProject->GetDclFormList().empty() )
+		return NULL; //file had nothing in it
 
 	if( pProject->GetKeyName().IsEmpty() )
 		pProject->SetKeyName( CreateUniqueName() );
 	UnloadProject( pProject->GetKeyName(), true );
 	if( !AddProject( pProject ) )
-	{ //couldn't add the new project, probably because of a name collision
-		delete pProject;
-		return NULL;
-	}
+		return NULL; //couldn't add the new project, probably because of a name collision
 
 	return pProject;
 }
 
 
-bool CArxWorkspace::ExportProject( CProject* pProject, CFile& dest )
+bool CArxWorkspace::ExportProject( TArxProjectPtr pProject, CFile& dest )
 {
 	try
 	{
@@ -475,7 +439,7 @@ bool CArxWorkspace::ExportProject( CProject* pProject, CFile& dest )
 }
 
 
-CArxProject* CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKeyName /*= NULL*/, bool bReload /*= false*/ )
+TArxProjectPtr CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKeyName /*= NULL*/, bool bReload /*= false*/ )
 {
 	CString sFilePath( pszFilePath );
 	if( sFilePath.IsEmpty() )
@@ -488,7 +452,7 @@ CArxProject* CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKey
 			sKeyName = StripPathFromFileName( sFilePath ).SpanExcluding( _T(".") );
 		sKeyName.Replace( _T(' '), _T('_') );
 
-		CArxProject* pProject = FindProject( sKeyName );
+		TArxProjectPtr pProject = FindProject( sKeyName );
 		if( pProject )
 			return pProject; //already loaded, just return it
 	}
@@ -504,30 +468,21 @@ CArxProject* CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszKey
 		return NULL; //file not found
 
 	// create a new project
-	CArxProject* pProject = new CArxProject( pszKeyName );
-	if (pProject->ReadFromFile(sFoundFile) != statOK || //failed to read file
-			pProject->GetDclFormList().GetCount() == 0) //file had nothing in it
-	{		
-		delete pProject;
+	TArxProjectPtr pProject = new CArxProject( pszKeyName );
+	if( pProject->ReadFromFile(sFoundFile) != statOK || //failed to read file
+			pProject->GetDclFormList().empty() ) //file had nothing in it
 		return NULL; 
-	}
 
 	if( bReload )
 		UnloadProject( pProject->GetKeyName(), true );
 	else if( !pszKeyName || *pszKeyName == _T('\0') )
 	{
-		CArxProject* pExistingProject = FindProject( pProject->GetKeyName() );
+		TArxProjectPtr pExistingProject = FindProject( pProject->GetKeyName() );
 		if( pExistingProject )
-		{
-			delete pProject;
 			return pExistingProject; //already loaded, just return it
-		}
 	}
 	if( !AddProject( pProject ) )
-	{ //couldn't add the new project, probably because of a name collision
-		delete pProject;
-		return NULL;
-	}
+		return NULL; //couldn't add the new project, probably because of a name collision
 
 	return pProject;
 }
@@ -552,7 +507,7 @@ bool CArxWorkspace::DisplayStatus( LPCTSTR pszMessage ) const
 	return true;
 }
 
-int CArxWorkspace::ActivateDclForm( CDclFormObject* pDclForm, DialogParams* pParams /*= NULL*/ )
+int CArxWorkspace::ActivateDclForm( TDclFormPtr pDclForm, DialogParams* pParams /*= NULL*/ )
 {
 	assert (pDclForm != NULL);
 	if( pDclForm->GetParentForm() )
@@ -567,7 +522,7 @@ int CArxWorkspace::ActivateDclForm( CDclFormObject* pDclForm, DialogParams* pPar
 			pDlgObject->SetFocus();
 		return pDlgObject->GetID();
 	}
-	const CProject* pProject = pDclForm->GetProject();
+	const TProjectPtr pProject = pDclForm->GetProject();
 	assert (pProject != NULL);
 	if( !pProject )
 		return -1;

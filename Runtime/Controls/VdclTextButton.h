@@ -6,8 +6,6 @@
 #include "OleOdcDropTarget.h"
 #include "PPToolTip.h"
 
-class CDclControlObject;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // VdclTextButton window
@@ -17,10 +15,6 @@ class VdclTextButton : public CButton
 // Construction
 public:
 	VdclTextButton();
-
-// Attributes
-public:
-	bool m_bInvokeWithSendString;
 	
 // Operations
 public:
@@ -40,7 +34,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(VdclTextButton)
 	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID );
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	//}}AFX_VIRTUAL
 
@@ -64,5 +58,5 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	CDclControlObject *m_ArxControl;
+	TDclControlPtr m_ArxControl;
 };

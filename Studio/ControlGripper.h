@@ -26,6 +26,7 @@ protected:
 	bool EnsureCreated();
 
 public:
+	bool IsVisible() const;
 	void Hide();
 	void MoveToTop();
 	void MoveTo( const CRect& rcPos /*client coordinates*/, bool bShow = true );

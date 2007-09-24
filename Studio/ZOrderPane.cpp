@@ -50,17 +50,18 @@ int CZOrderPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect rc(0,0,2,2);
 
 	// create the ZOrder List
-	if (!m_ZOrderList.Create( WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_SHOWSELALWAYS |
-															LVS_NOCOLUMNHEADER | LVS_REPORT | LVS_SHOWSELALWAYS,
+	if (!m_ZOrderList.Create( WS_CHILD | WS_VISIBLE | WS_TABSTOP |
+														LVS_NOCOLUMNHEADER | LVS_REPORT,
 														rc,
 														this,
 														ZOrderListID))
 		return -1;
 
-	m_ZOrderList.InsertColumn(0, _T("Controls"), LVCFMT_LEFT, nDeColWidth200);
+	m_ZOrderList.InsertColumn(0, _T("Controls"), LVCFMT_LEFT, 190);
 	m_ZOrderList.ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
+	m_ZOrderList.SetExtendedStyle( m_ZOrderList.GetExtendedStyle() | LVS_EX_FULLROWSELECT );
 
-	if (!m_font.CreateStockObject(DEFAULT_GUI_FONT) && !m_font.CreatePointFont(nDeFontPtSize, _T("MS Sans Serif")))
+	if (!m_font.CreateStockObject(DEFAULT_GUI_FONT) && !m_font.CreatePointFont(nDeFontPtSize, _T("MS Shell Dlg")))
 		return -1;
 	
 	m_ZOrderList.SetFont(&m_font);
@@ -293,8 +294,10 @@ void CZOrderPane::OnSize(UINT nType, int cx, int cy)
 	// resize the ZOrder list 
 	CRect rcZOrder(0,rc.bottom + 1,cx-2, cy);
 	m_ZOrderList.MoveWindow(rcZOrder, TRUE);
-
-	
+	int nColWidth = rcZOrder.Width() - 4;
+	if( m_ZOrderList.GetCountPerPage() < m_ZOrderList.GetItemCount() )
+		nColWidth -= GetSystemMetrics( SM_CXVSCROLL );
+	m_ZOrderList.SetColumnWidth( 0, nColWidth );
 }
 
 void CZOrderPane::OnBringtofront() 

@@ -15,7 +15,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CDialogControl
 
-CDialogControl::CDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pControl )
+CDialogControl::CDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl )
 : mpTemplate( pTemplate )
 , mpControl( pControl )
 , mpControlPane( pPane )
@@ -41,6 +41,13 @@ ControlType CDialogControl::GetControlType() const
 	if( mpTemplate )
 		return mpTemplate->GetType();
 	return CtlInvalid;
+}
+
+bool CDialogControl::IsAsyncEvents() const
+{
+	if( mpTemplate )
+		return (mpTemplate->GetLongProperty(Prop::EventInvoke) == 1);
+	return false;
 }
 
 CString CDialogControl::GetKeyName() const
@@ -94,13 +101,11 @@ bool CDialogControl::ApplyPropertiesEnum()
 	bool bSuccess = true;
 	mbEnumProps = true;
 	TPropertyPtr pAutoSizeProp = mpTemplate->GetPropertyObject( Prop::AutoSize );
-	POSITION pos = mpTemplate->GetPropertyList().GetHeadPosition();
-	while( pos )
+	const TPropertyList& Props = mpTemplate->GetPropertyList();
+	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 	{
-		TPropertyPtr pProp = mpTemplate->GetPropertyList().GetNext( pos );
-		assert( pProp != NULL );
-		if( pProp != pAutoSizeProp ) //save autosize for last
-			OnApplyProperty( pProp );
+		if( (*iter) != pAutoSizeProp ) //save autosize for last
+			OnApplyProperty( (*iter) );
 	}
 	if( pAutoSizeProp )
 		OnApplyProperty( pAutoSizeProp );
@@ -132,12 +137,12 @@ bool CDialogControl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::ToolTipPicture: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
 	case Prop::ToolTipAviFileName: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
 	case Prop::ToolTipTitleColor: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
-	case Prop::LabelName: if( !OnApplyFont( pProp ) ) bSuccess = false; break;
-	case Prop::LabelSize: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
-	case Prop::LabelBold: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
-	case Prop::LabelItalic: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
-	case Prop::LabelUnderline: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
-	case Prop::LabelStrikeOut: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case Prop::FontName: if( !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case Prop::FontSize: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case Prop::FontBold: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case Prop::FontItalic: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case Prop::FontUnderline: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case Prop::FontStrikeout: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
 	}
 	return bSuccess;
 }

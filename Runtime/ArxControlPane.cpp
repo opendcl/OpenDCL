@@ -18,11 +18,12 @@ CArxControlPane::CArxControlPane()
 	TraceFmt( _T("> CArxControlPane::CArxControlPane() [this = %p]\r\n"), this );
 }
 
-CArxControlPane::CArxControlPane( CDclFormObject* pSourceForm, CWnd* pHostDlg )
+CArxControlPane::CArxControlPane( TDclFormPtr pSourceForm, CWnd* pHostDlg )
 : CControlPane( pSourceForm, pHostDlg )
 {
 	TraceFmt( _T("> CArxControlPane::CArxControlPane(%s [%p], %s [HWND: %p]) [this: %p]\r\n"),
-						pSourceForm->GetKeyPath(), pSourceForm, CString(pHostDlg->GetRuntimeClass()->m_lpszClassName),
+						(LPCTSTR)pSourceForm->GetKeyPath(), pSourceForm,
+						(LPCTSTR)CString(pHostDlg->GetRuntimeClass()->m_lpszClassName),
 						pHostDlg->m_hWnd, this );
 }
 
@@ -49,7 +50,7 @@ void CArxControlPane::SetGlobalLispSymbols( bool bResetToNil /*= false*/ ) const
 	}
 }
 
-TDialogControlPtr CArxControlPane::CreateNewDialogControl( CDclControlObject* pTemplate,
+TDialogControlPtr CArxControlPane::CreateNewDialogControl( TDclControlPtr pTemplate,
 																													 UINT nID )
 {
 	return CArxDialogControl::Create( pTemplate, this, nID );
@@ -61,7 +62,7 @@ void CArxControlPane::CleanUpControls()
 	{
 		TDialogControlPtr pControl = mControls[idx];
 		if( pControl->GetControlType() == CtlActiveX )
-			((CAxContainerCtrl*)&*(pControl->GetControl()))->CloseWindow();
+			((CAxContainerCtrl*)&*(pControl->GetControlWnd()))->CloseWindow();
 	}
 	CControlPane::CleanUpControls();
 }
@@ -72,7 +73,7 @@ bool CArxControlPane::FindControl( HWND hwndControl, /*out*/ CString& sControlNa
 		return false;
 	for( TDialogControls::const_iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
 	{
-		if( (*iter)->GetControl()->m_hWnd == hwndControl )
+		if( (*iter)->GetControlWnd()->m_hWnd == hwndControl )
 		{
 			sControlName = (*iter)->GetKeyName();
 			return true;
@@ -97,7 +98,7 @@ TDialogControlPtr CArxControlPane::FindControl( HWND hwndControl ) const
 		return false;
 	for( TDialogControls::const_iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
 	{
-		if( (*iter)->GetControl()->m_hWnd == hwndControl )
+		if( (*iter)->GetControlWnd()->m_hWnd == hwndControl )
 			return (*iter);
 		std::list< const CControlPane* > listChildren;
 		if( (*iter)->GetChildPanes( listChildren ) )

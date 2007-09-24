@@ -4,9 +4,9 @@
 #pragma once
 
 #include "Resource.h"
+#include "DclControlObject.h"
 
 class CPropertyObject;
-class CDclControlObject;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -17,7 +17,7 @@ class CFontPropertyPage : public CPropertyPage
 
 // Construction
 public:
-	CFontPropertyPage(CDclControlObject* pDclControl = NULL);
+	CFontPropertyPage(TDclControlPtr pDclControl = NULL);
 	~CFontPropertyPage();
 
 // Dialog Data
@@ -38,7 +38,7 @@ public:
 	//}}AFX_DATA
 	
 	CString sOpenDCLProf;
-	CDclControlObject* mpDclControl;
+	TDclControlPtr mpDclControl;
 	TPropertyPtr m_pFontName;
 	TPropertyPtr m_pFontSize;
 	TPropertyPtr m_pFontStrikeOut;

@@ -5,7 +5,7 @@
 #include "Methods_Animate.h"
 #include "DclControlObject.h"
 #include "ArgumentsRetrieval.h"
-#include "ArxProject.h"
+#include "ArxWorkspace.h"
 #include "MethodLexicon.h"
 #include "ControlTypes.h"
 
@@ -14,7 +14,7 @@ int AnimateCtrl_Load()
 {
 	CString sFileName;
 	
-	CDclControlObject *pArx = GetLispInput(_T("Animate_Load"), sFileName);
+	TDclControlPtr pArx = GetLispInput(_T("Animate_Load"), sFileName);
 	
 	if (pArx == NULL)	
 	{
@@ -31,7 +31,7 @@ int AnimateCtrl_Load()
 	CString sPath = theWorkspace.FindFile( sFileName ); 
 	if( sPath.IsEmpty() )
 	{
-		const CProject *pProject = pArx->GetOwnerProject();
+		const TProjectPtr pProject = pArx->GetOwnerProject();
 		if (pProject)
 		{
 			CString sAvi = sFileName;
@@ -73,7 +73,7 @@ int AnimateCtrl_Load()
 int AnimateCtrl_Seek()
 {
 	int nFrame;
-	CDclControlObject *pArx = GetLispInput(_T("Animate_Seek"), nFrame);
+	TDclControlPtr pArx = GetLispInput(_T("Animate_Seek"), nFrame);
 	
 	if (pArx == NULL)	
 	{

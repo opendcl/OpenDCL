@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "MainFileDlg.h"
-#include "Project.h"
+#include "Workspace.h"
 #include "PropertyIds.h"
 #include "DclControlObject.h"
 #include "InvokeMethod.h"
@@ -18,7 +18,7 @@ const TCHAR sTopLeftY[] = _T("nTopLeftY");
 /////////////////////////////////////////////////////////////////////////////
 // CMainFileDlg dialog
 
-CMainFileDlg::CMainFileDlg(CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/)
+CMainFileDlg::CMainFileDlg(TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/)
 : CCommonDialog( pParent )
 , mpSourceForm( pSourceForm )
 , mnInitialX( pParams? pParams->position.x : -1 )
@@ -104,7 +104,7 @@ void CMainFileDlg::Initialize()
 {
 	CRect rectSaved = ReadPosition(); //get the saved position before it gets overwritten during SetWindowPos()
 
-	CDclControlObject* pFormProps = mpSourceForm->GetControlProperties();
+	TDclControlPtr pFormProps = mpSourceForm->GetControlProperties();
 	CRect rectWindow;
 	GetWindowRect( &rectWindow );
 	CRect rectClient;

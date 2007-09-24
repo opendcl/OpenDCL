@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "PropertyTabPane.h"
+#include "Workspace.h"
 #include "Resource.h"
 #include "DclControlObject.h"
 #include "ControlName.h"
@@ -147,7 +148,7 @@ void CPropertyTabPane::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CPropertyTabPane::DisplaySelectedControlProperties(CDclControlObject *pControl, COpenDCLView *pView) 
+void CPropertyTabPane::DisplaySelectedControlProperties(TDclControlPtr pControl, COpenDCLView *pView) 
 {
 	if (m_PropertiesTabPane.GetPropertiesCtrl().m_pControl == pControl)
 		return;

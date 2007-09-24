@@ -53,7 +53,7 @@ int Grid_AddColumn()
 	int nWidth;
 	int nImageIndex = -1;
 	int nArg=0;
-	CDclControlObject *pArx = GetControlArxObject(sGrid_AddColumn, &nArg);
+	TDclControlPtr pArx = GetControlArxObject(sGrid_AddColumn, &nArg);
 
 	if (pArx == NULL)
 	{
@@ -317,7 +317,7 @@ int Grid_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
 	CArray<int, int> nIntArray;
 	int nArg=0;
 
-	CDclControlObject *pArx = GetControlArxObject(sMethodName, &nArg);
+	TDclControlPtr pArx = GetControlArxObject(sMethodName, &nArg);
 	if (pArx == NULL)
 	{
 		acedRetInt(-1);
@@ -459,7 +459,7 @@ int Grid_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
 int Grid_Clear()
 {
 	int nArg=0;
-	CDclControlObject *pArx = GetControlArxObject(sGrid_Clear, &nArg);
+	TDclControlPtr pArx = GetControlArxObject(sGrid_Clear, &nArg);
 	if (pArx == NULL)		
 	{
 		// return nil
@@ -497,7 +497,7 @@ int Grid_Clear()
 int Grid_GetItemData()
 {
 	int nIndex;
-	CDclControlObject *pArx = GetLispInput(sGrid_SelectCell, nIndex);
+	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nIndex);
 
 	if (pArx == NULL)
 	{		
@@ -527,7 +527,7 @@ int Grid_GetItemImage()
 {
 	int nIndex = 0;
 	int nColIndex = 0;
-	CDclControlObject *pArx = GetLispInput(sGrid_SelectCell, nIndex, nColIndex);
+	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nIndex, nColIndex);
 
 	if (pArx == NULL)
 	{		
@@ -559,7 +559,7 @@ int Grid_SetItemData()
 	int nIndex=0;
 	long lItemData = 0;
 
-	CDclControlObject *pArx = GetLispInput(sGrid_SelectCell, nIndex, lItemData);
+	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nIndex, lItemData);
 
 	if (pArx == NULL)
 	{		
@@ -590,7 +590,7 @@ int Grid_GetItemText()
 	int nRowIndex;
 	int nColIndex = 0;
 	
-	CDclControlObject *pArx = GetLispInput(sGrid_SelectCell, nRowIndex, nColIndex);
+	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nRowIndex, nColIndex);
 
 	if (pArx == NULL)
 	{		
@@ -621,7 +621,7 @@ int Grid_GetItemText()
 int Grid_GetRow()
 {
 	int nRowIndex;
-	CDclControlObject *pArx = GetLispInput(sGrid_SelectCell, nRowIndex);
+	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nRowIndex);
 
 	if (pArx == NULL)
 	{		
@@ -686,7 +686,7 @@ int Grid_GetColumn()
 {
 	int nColumnIndex;
 	
-	CDclControlObject *pArx = GetLispInput(sGrid_GetColumn, nColumnIndex);
+	TDclControlPtr pArx = GetLispInput(sGrid_GetColumn, nColumnIndex);
 	
 	if (pArx == NULL)	
 	{
@@ -751,7 +751,7 @@ int Grid_SetItemText()
 	int nColIndex;
 	CString sNewText;
 
-	CDclControlObject *pArx = GetLispInput(sGrid_SetItemImage, nRowIndex, nColIndex, sNewText);
+	TDclControlPtr pArx = GetLispInput(sGrid_SetItemImage, nRowIndex, nColIndex, sNewText);
 
 	if (pArx == NULL)
 	{		
@@ -789,7 +789,7 @@ int Grid_Cell_SetStyle()
 	int nData2 = -1;
 	CString sOptionalText;
 
-	CDclControlObject *pArx = GetLispInput(sGrid_Cell_SetStyle, nRow, nCol, nStyle, nData1, nData2, sOptionalText);
+	TDclControlPtr pArx = GetLispInput(sGrid_Cell_SetStyle, nRow, nCol, nStyle, nData1, nData2, sOptionalText);
 
 	if (pArx == NULL)
 	{		
@@ -811,7 +811,7 @@ int Grid_HitPointTest()
 	int nY;
 	int nArg=0;
 
-	CDclControlObject *pArx = GetLispInput(sGrid_HitPointTest, nX, nY);
+	TDclControlPtr pArx = GetLispInput(sGrid_HitPointTest, nX, nY);
 	
 	if (pArx == NULL)	
 	{
@@ -840,7 +840,7 @@ int Grid_Cell_SetDropList()
 	CStringArray sStrings;
 	CArray<int, int> nInts;
 
-	CDclControlObject *pArx = GetLispInput(sGrid_Cell_SetDropList, nRow, nCol, &nInts, &sStrings);
+	TDclControlPtr pArx = GetLispInput(sGrid_Cell_SetDropList, nRow, nCol, &nInts, &sStrings);
 
 	if (pArx == NULL)
 	{		
@@ -871,7 +871,7 @@ int Grid_SetItemImage()
 	int nArg1;
 	int nArg2;
 	int nArg3;
-	CDclControlObject *pArx = GetLispInput(sGrid_SetItemImage, nArg1, nArg2, nArg3);
+	TDclControlPtr pArx = GetLispInput(sGrid_SetItemImage, nArg1, nArg2, nArg3);
 
 	if (pArx == NULL)
 	{		
@@ -904,7 +904,7 @@ int Grid_GetColWidth()
 {
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_GetColWidth, &nArg);
-	CDclControlObject *pArx = GetControlArxObject(sGrid_GetColWidth, &nArg);
+	TDclControlPtr pArx = GetControlArxObject(sGrid_GetColWidth, &nArg);
 
 	int nColIndex;
 	
@@ -939,7 +939,7 @@ int Grid_SetColWidth()
 	int nColIndex = 0;
 	int nNewWidth = 0;
 	
-	CDclControlObject *pArx = GetLispInput(sGrid_SelectCell, nColIndex, nNewWidth);
+	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nColIndex, nNewWidth);
 
 	if (pArx == NULL)
 	{		
@@ -971,7 +971,7 @@ int Grid_CalcColumnWidth()
 {
 	CString sText;
 	
-	CDclControlObject *pArx = GetLispInput(sGrid_CalcColumnWidth, sText);
+	TDclControlPtr pArx = GetLispInput(sGrid_CalcColumnWidth, sText);
 		
 	if (pArx != NULL)
 	{
@@ -998,7 +998,7 @@ int Grid_DeleteItems()
 {
 	int nRow;
 	
-	CDclControlObject *pArx = GetLispInput(sGrid_DeleteItems, nRow);
+	TDclControlPtr pArx = GetLispInput(sGrid_DeleteItems, nRow);
 
 	if (pArx == NULL)
 	{		
@@ -1028,7 +1028,7 @@ int Grid_DeleteColumns()
 {
 	int nCol;
 	
-	CDclControlObject *pArx = GetLispInput(sGrid_DeleteColumns, nCol);
+	TDclControlPtr pArx = GetLispInput(sGrid_DeleteColumns, nCol);
 
 	if (pArx == NULL)
 	{		
@@ -1060,7 +1060,7 @@ int Grid_FillGrid()
 	CString sText;
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_FillGrid, &nArg);
-	CDclControlObject *pArx = GetControlArxObject(sGrid_FillGrid, &nArg);
+	TDclControlPtr pArx = GetControlArxObject(sGrid_FillGrid, &nArg);
 	if (pArx == NULL)
 	{
 		acedRetInt(-1);
@@ -1202,7 +1202,7 @@ int Grid_FillGrid()
 int Grid_GetSelectedCell()
 {
 	int nArg=0;
-	CDclControlObject *pArx = GetControlArxObject(sGrid_GetSelectedCell, &nArg);
+	TDclControlPtr pArx = GetControlArxObject(sGrid_GetSelectedCell, &nArg);
 	if (pArx == NULL)
 	{
 		acedRetNil();
@@ -1218,7 +1218,7 @@ int Grid_GetSelectedCell()
 int Grid_CancelLabelEdit()
 {	
 	int nArg = 0;
-	CDclControlObject *pArx = GetControlArxObject(sGrid_CancelLabelEdit, &nArg);
+	TDclControlPtr pArx = GetControlArxObject(sGrid_CancelLabelEdit, &nArg);
 	if (pArx == NULL)
 	{
 		acedRetInt(-1);
@@ -1242,7 +1242,7 @@ int Grid_SortColTextItems()
 	int nArg=0;
 
 	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_SortTextItems, &nArg);
-	CDclControlObject *pArx = GetControlArxObject(sGrid_SortTextItems, &nArg);
+	TDclControlPtr pArx = GetControlArxObject(sGrid_SortTextItems, &nArg);
 	if (pArx == NULL || !GetIntArgument(nArg, &nCol, sGrid_SortTextItems))	
 	{
 		// return nil
@@ -1276,7 +1276,7 @@ int Grid_SortColNumericItems()
 	int nArg=0;
 
 	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_SortNumericItems, &nArg);
-	CDclControlObject *pArx = GetControlArxObject(sGrid_SortNumericItems, &nArg);
+	TDclControlPtr pArx = GetControlArxObject(sGrid_SortNumericItems, &nArg);
 	if (pArx == NULL || !GetIntArgument(nArg, &nCol, sGrid_SortNumericItems))	
 	{
 		// return nil
@@ -1323,7 +1323,7 @@ int Grid_SetColumnImage()
 	int nCol = -1;
 	int nImage = -1;
 
-	CDclControlObject *pArx = GetLispInput(sGrid_SetColumnImage, nCol, nImage);
+	TDclControlPtr pArx = GetLispInput(sGrid_SetColumnImage, nCol, nImage);
 	
 	if (pArx == NULL)	
 	{
@@ -1385,7 +1385,7 @@ int Grid_GetColumnImage()
 {
 	int nCol;
 
-	CDclControlObject *pArx = GetLispInput(sGrid_GetColumnImage, nCol);
+	TDclControlPtr pArx = GetLispInput(sGrid_GetColumnImage, nCol);
 	
 	if (pArx == NULL)	
 	{
@@ -1415,7 +1415,7 @@ int Grid_GetCount()
 {
 	int nArg;
 	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_SetItemImage, &nArg);
-	CDclControlObject *pArx = GetControlArxObject(sGrid_GetCount, &nArg);
+	TDclControlPtr pArx = GetControlArxObject(sGrid_GetCount, &nArg);
 
 	if (pArx == NULL)	
 	{
@@ -1434,7 +1434,7 @@ int Grid_GetColumnCount()
 {
 	int nArg;
 	
-	CDclControlObject *pArx = GetControlArxObject(sGrid_GetColumnCount, &nArg);
+	TDclControlPtr pArx = GetControlArxObject(sGrid_GetColumnCount, &nArg);
 	
 	if (pArx == NULL)	
 	{
@@ -1471,7 +1471,7 @@ int Grid_SelCurCell()
 	int nRow;
 	int nCol;
 	
-	CDclControlObject *pArx = GetLispInput(sGrid_SelectCell, nRow, nCol);
+	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nRow, nCol);
 
 	if (pArx == NULL)
 	{		
@@ -1494,7 +1494,7 @@ int Grid_SelCurRow()
 	int nRow;
 	int nCol;
 	
-	CDclControlObject *pArx = GetLispInput(sGrid_SelCurRow, nRow, nCol);
+	TDclControlPtr pArx = GetLispInput(sGrid_SelCurRow, nRow, nCol);
 
 	if (pArx == NULL)
 	{		
@@ -1516,7 +1516,7 @@ int Grid_Cell_StartItemEdit()
 	int nRow;
 	int nCol;
 	
-	CDclControlObject *pArx = GetLispInput(sGrid_SelectCell, nRow, nCol);
+	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nRow, nCol);
 
 	if (pArx == NULL)
 	{		
@@ -1539,7 +1539,7 @@ int Grid_GetCheck()
 	int nRow;
 	int nCol;
 	
-	CDclControlObject *pArx = GetLispInput(sGrid_GetCheck, nRow, nCol);
+	TDclControlPtr pArx = GetLispInput(sGrid_GetCheck, nRow, nCol);
 
 	if (pArx == NULL)
 	{		
@@ -1571,7 +1571,7 @@ int Grid_SetCheck()
 	int nCol;
 	int nChecked;
 	
-	CDclControlObject *pArx = GetLispInput(sGrid_SetCheck, nRow, nCol, nChecked);
+	TDclControlPtr pArx = GetLispInput(sGrid_SetCheck, nRow, nCol, nChecked);
 
 	if (pArx == NULL)
 	{		
@@ -1608,7 +1608,7 @@ int Grid_AddString()
 	int nInsertIndex = -1;
 	CString sStringArg;
 	CString sDivider = _T("\t");
-	CDclControlObject *pArx = GetLispInput(sGrid_AddString, sStringArg, sDivider);
+	TDclControlPtr pArx = GetLispInput(sGrid_AddString, sStringArg, sDivider);
 	if (pArx == NULL)
 	{
 		acedRetInt(-1);
@@ -1659,7 +1659,7 @@ int Grid_InsertString()
 	int nInsertIndex = -1;
 	CString sStringArg;
 	CString sDivider = _T("\t");
-	CDclControlObject *pArx = GetLispInput(sGrid_InsertString, nInsertIndex, sStringArg, sDivider);
+	TDclControlPtr pArx = GetLispInput(sGrid_InsertString, nInsertIndex, sStringArg, sDivider);
 	if (pArx == NULL)
 	{
 		acedRetInt(-1);

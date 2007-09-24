@@ -43,7 +43,7 @@ const TCHAR sT[] = _T("T");
 const TCHAR sGetPropertry [] = _T("dcl_Control_Get");
 const TCHAR sSetPropertry [] = _T("dcl_Control_Set");
 
-bool SetPropertyObject(TPropertyPtr pProperty, struct resbuf *ListData, CDclControlObject *pArxObject);
+bool SetPropertyObject(TPropertyPtr pProperty, struct resbuf *ListData, TDclControlPtr pArxObject);
 
 
 
@@ -62,7 +62,7 @@ bool SetCtrlProperty(Prop::Id id)
 {
 	CString sProp = CString(sSetPropertry) + GetPropertyName(id);
 
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sProp, pArxObject);
 	if (pArxObject == NULL)
 		return false;
@@ -97,7 +97,7 @@ bool GetCtrlProperty(Prop::Id id)
 {
 	CString sProp = CString(sGetPropertry) + GetPropertyName(id);
 
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sProp, pArxObject);
 	if (pArxObject == NULL)
 		return false;
@@ -163,7 +163,7 @@ bool GetCtrlProperty(Prop::Id id)
 	return true;
 }
 
-bool SetPropertyObject(TPropertyPtr pProperty, struct resbuf *ListData, CDclControlObject *pCtrl)
+bool SetPropertyObject(TPropertyPtr pProperty, struct resbuf *ListData, TDclControlPtr pCtrl)
 {
 	// here we are going to accept any numeric value for a text property and convert it to text.
 	// just to make it easier for the programmers.
@@ -301,7 +301,7 @@ int SetProperty()
 	CString sPropNameArg;
 
 	// call the method to get the property object
-	CDclControlObject *pArxObject = GetControlArxObject(sSetProperty, &nArgs);
+	TDclControlPtr pArxObject = GetControlArxObject(sSetProperty, &nArgs);
 	
 
 	if (!GetStringArgument(nArgs, &sPropNameArg, sSetProperty) || pArxObject == NULL)
@@ -331,7 +331,7 @@ int SetProperty()
 	}
 
 	// get the argument sent by AutoLISP and return it as a CPropertyObject pointer
-	TPropertyPtr pPropArg = GetPropertyArgument(nArgs, sSetProperty);
+	TPropertyPtr pPropArg = GetPropertyArgument(pArxObject, nArgs, sSetProperty);
 
 	if (pPropArg == NULL)
 	{
@@ -367,7 +367,7 @@ int SetProperty()
 }
 
 
-bool Property_SetByList(CDclControlObject *pArxObject)
+bool Property_SetByList(TDclControlPtr pArxObject)
 {
 	struct resbuf *ListData;
 	//ensure AutoLISP has passed Arguments	
@@ -439,42 +439,42 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 				case RTREAL:
 				case RTANG:
 					{
-						pNewProperty = new CPropertyObject(PropDouble);
+						pNewProperty = new CPropertyObject(pArxObject, PropDouble);
 						// get the first argument required
 						pNewProperty->SetDoubleValue(ListData->resval.rreal);				
 						break;
 					}
 				case RTSHORT:
 					{
-						pNewProperty = new CPropertyObject(PropLong);
+						pNewProperty = new CPropertyObject(pArxObject, PropLong);
 						// get the first argument required
 						pNewProperty->SetLongValue(ListData->resval.rint);
 						break;
 					}
 				case RTLONG:
 					{
-						pNewProperty = new CPropertyObject(PropLong);
+						pNewProperty = new CPropertyObject(pArxObject, PropLong);
 						// get the first argument required
 						pNewProperty->SetLongValue(ListData->resval.rlong);
 						break;
 					}
 				case RTSTR:
 					{
-						pNewProperty = new CPropertyObject(PropString);
+						pNewProperty = new CPropertyObject(pArxObject, PropString);
 						// get the first argument required
 						pNewProperty->SetStringValue(ListData->resval.rstring);				
 						break;
 					}
 				case RTT:
 					{
-						pNewProperty = new CPropertyObject(PropBool);
+						pNewProperty = new CPropertyObject(pArxObject, PropBool);
 						// get the first argument required
 						pNewProperty->SetBooleanValue(true);				
 						break;
 					}
 				case RTNIL:
 					{
-						pNewProperty = new CPropertyObject(PropBool);
+						pNewProperty = new CPropertyObject(pArxObject, PropBool);
 						// get the first argument required
 						pNewProperty->SetBooleanValue(false);				
 						break;
@@ -508,7 +508,7 @@ bool Property_SetByList(CDclControlObject *pArxObject)
 	return true;
 }
 
-bool SetPropertyObject(TPropertyPtr pProperty, TPropertyPtr pPropArg, CDclControlObject *pCtrl)
+bool SetPropertyObject(TPropertyPtr pProperty, TPropertyPtr pPropArg, TDclControlPtr pCtrl)
 {
 	// here we are going to accept any numeric value for a text property and convert it to text.
 	// just to make it easier for the programmers.
@@ -617,7 +617,7 @@ bool SetPropertyObject(TPropertyPtr pProperty, TPropertyPtr pPropArg, CDclContro
 
 }
 
-void UpdateControl(CWnd *pControl,TPropertyPtr pProperty, CDclControlObject *pTemplate, Prop::Id nPropertyId)
+void UpdateControl(CWnd *pControl,TPropertyPtr pProperty, TDclControlPtr pTemplate, Prop::Id nPropertyId)
 {
 	CRect rcThisControl;
 	pControl->GetWindowRect(&rcThisControl);
@@ -639,26 +639,26 @@ void UpdateControl(CWnd *pControl,TPropertyPtr pProperty, CDclControlObject *pTe
 		}
 	// if the font size property has been found pass it the font name only
 	// and set it's size properly
-	case Prop::LabelSize:
+	case Prop::FontSize:
 		{
 			CArxDialogControl::UpdateProperty(pTemplate,
 																				pTemplate->GetControlInstance()->GetControlPane(),
 																				pTemplate->GetControlInstance()->GetControlId(),
-																				Prop::LabelName);
+																				Prop::FontName);
 		break;
 		}
 	// if a font property has been found pass it the font name only
 	// otherwise the font will not be updated.
-	case Prop::LabelUnderline:
-	case Prop::LabelItalic:
-	case Prop::LabelBold:
-	case Prop::LabelStrikeOut:
+	case Prop::FontUnderline:
+	case Prop::FontItalic:
+	case Prop::FontBold:
+	case Prop::FontStrikeout:
 		{
 		// call the method to update the control
 		CArxDialogControl::UpdateProperty(pTemplate,
 																			pTemplate->GetControlInstance()->GetControlPane(),
 																			pTemplate->GetControlInstance()->GetControlId(),
-																			Prop::LabelName);
+																			Prop::FontName);
 		break;
 		}
 	default:
@@ -681,7 +681,7 @@ int GetProperty()
 	CString sPropNameArg;
 
 	// call the method to get the property object
-	CDclControlObject *pArxObject = GetControlArxObject(sGetProperty, &nArgs);
+	TDclControlPtr pArxObject = GetControlArxObject(sGetProperty, &nArgs);
 	
 	if (!GetStringArgument(nArgs, &sPropNameArg, sGetProperty) || pArxObject == NULL)
 	{
@@ -789,7 +789,7 @@ void SetReturnValue(int nType, TPropertyPtr pProperty)
 int SetControlFocus()
 {
 	// call the method to get the property object
-	CDclControlObject *pArxObject = GetControlArxObject(sSetFocus);
+	TDclControlPtr pArxObject = GetControlArxObject(sSetFocus);
 	if (pArxObject == NULL)
 	{
 		acedRetInt(-1);
@@ -819,7 +819,7 @@ int ZOrder()
 {
 	int nArg;
 	// call the method to get the property object
-	CDclControlObject *pArxObject = GetControlArxObject(sZOrder, &nArg);
+	TDclControlPtr pArxObject = GetControlArxObject(sZOrder, &nArg);
 
 	if (pArxObject == NULL)
 	{
@@ -852,7 +852,7 @@ int ZOrder()
 int Control_GetCurPos()
 {
 	// call the method to get the property object
-	CDclControlObject *pArxObject = GetControlArxObject(sControl_GetCurPos);
+	TDclControlPtr pArxObject = GetControlArxObject(sControl_GetCurPos);
 	
 	if (pArxObject == NULL)
 	{
@@ -938,19 +938,13 @@ bool DoSetPosByPtrList()
 	if (ListData == NULL)
 		return false;
 
-	CDclControlObject *pControl = NULL;
-
-	if (lPointer != 0)
+	TDclControlLockedPtr pControl = (CDclControlObject*)lPointer;
+	if (!pControl)
 	{
-		pControl = (CDclControlObject*)lPointer;
-
-		if (pControl == NULL)
-		{
-			// inform the programmer that he did not make the correct call
-			theWorkspace.DisplayAlert(CString(ErrorControlNotFound) + sControl_SetPos);	
-			return false;
-		}						
-	}
+		// inform the programmer that he did not make the correct call
+		theWorkspace.DisplayAlert(CString(ErrorControlNotFound) + sControl_SetPos);	
+		return false;
+	}						
 	
 	if (ListData->restype == RTPOINT)
 	{
@@ -1136,7 +1130,7 @@ bool DoSetPosByPtrList()
 				lPointer = (LONG_PTR)ListData->resval.rlname[0];
 			
 			
-			CDclControlObject *pControl = (CDclControlObject*)lPointer;
+			TDclControlLockedPtr pControl = (CDclControlObject*)lPointer;
 
 			if (pControl == NULL)
 			{
@@ -1375,7 +1369,7 @@ bool DoSetPosByList()
 			// get the next argument required
 			CString sControlName = ListData->resval.rstring;
 			
-			CDclControlObject *pControl = theArxWorkspace.FindControl(sProjectName, sFormName, sControlName);
+			TDclControlPtr pControl = theArxWorkspace.FindControl(sProjectName, sFormName, sControlName);
 
 			if (pControl == NULL)
 			{
@@ -1517,7 +1511,7 @@ bool DoSetPosByList()
 int ForceUpdateNow()
 {
 	// call the method to get the property object
-	CDclControlObject *pArxObject = GetControlArxObject(sForceUpdateNow);
+	TDclControlPtr pArxObject = GetControlArxObject(sForceUpdateNow);
 
 	if (pArxObject == NULL)
 	{
@@ -1538,7 +1532,7 @@ int ForceUpdateNow()
 int ShowToolTip()
 {
 	CPoint pt(-1,-1);
-	CDclControlObject *pArxObject = GetLispInput(sShowToolTip, pt);
+	TDclControlPtr pArxObject = GetLispInput(sShowToolTip, pt);
 
 	CWnd *pControl  = pArxObject->GetWindow();
 

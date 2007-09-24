@@ -13,7 +13,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxListBoxCtrl
 
-CArxListBoxCtrl::CArxListBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CArxListBoxCtrl::CArxListBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CListBoxCtrl( pTemplate, pPane, nID, false )
 , mArxServices( pTemplate )
 {
@@ -29,11 +29,6 @@ bool CArxListBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
-
-	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
 
 	return bSuccess;
 }
@@ -72,7 +67,7 @@ void CArxListBoxCtrl::GetCurrentSelection()
 			sSelList.AddTail(sTextItem);
 		}
 		// call methods to invoke the event
-		InvokeMethodIntList(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, &sSelList, m_bInvokeWithSendString);
+		InvokeMethodIntList(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, &sSelList, IsAsyncEvents());
 	}   
 	else if (nSelCount == -1)
 	{
@@ -84,7 +79,7 @@ void CArxListBoxCtrl::GetCurrentSelection()
 			GetText(nIndex, sSelText);
 
 		// call methods to invoke the event
-		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, sSelText, m_bInvokeWithSendString);
+		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, sSelText, IsAsyncEvents());
 	}   
 }	
 
@@ -126,7 +121,7 @@ CString sEventName = mpTemplate->GetStringProperty(Prop::EventMouseMove);
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	
 	CListBoxCtrl::OnMouseMove(nFlags, point);
@@ -168,7 +163,7 @@ void CArxListBoxCtrl::OnSelchange()
 		if (nSelCount > -1)
 		{
 			// call methods to invoke the event
-			InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, CString(), m_bInvokeWithSendString);
+			InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, CString(), IsAsyncEvents());
 		}   
 
 		if (nSelCount == -1)
@@ -185,7 +180,7 @@ void CArxListBoxCtrl::OnSelchange()
 			}
 
 			// call methods to invoke the event
-			InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nCurSel, sSelText, m_bInvokeWithSendString);
+			InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nCurSel, sSelText, IsAsyncEvents());
 		}
 	}	   
 }
@@ -193,19 +188,19 @@ void CArxListBoxCtrl::OnSelchange()
 void CArxListBoxCtrl::OnDblclk() 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
 }
 
 void CArxListBoxCtrl::OnKillfocus() 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }
 
 void CArxListBoxCtrl::OnSetfocus() 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);	
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());	
 }
 
 BOOL CArxListBoxCtrl::PreTranslateMessage(MSG* pMsg) 
@@ -218,7 +213,7 @@ void CArxListBoxCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
     if (nChar == VK_RETURN) {
 			//Change return into a double-click
-			InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+			InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
   } else {
     CListBoxCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
   }
@@ -234,7 +229,7 @@ void CArxListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
     
 	if (mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE)
 	{
-		DWORD dwDropEffect = BeginDragnDrop(mpTemplate, point, m_bInvokeWithSendString);
+		DWORD dwDropEffect = BeginDragnDrop(mpTemplate, point, IsAsyncEvents());
 		OnSelchange();
 
 		// We need to send WM_LBUTTONUP to control or else the selection rectangle 
@@ -267,7 +262,7 @@ void CArxListBoxCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 			}
 		}
 		// call methods to invoke the event
-		InvokeMethod(sEventName, m_bInvokeWithSendString);
+		InvokeMethod(sEventName, IsAsyncEvents());
 	}
 	CListBoxCtrl::OnRButtonUp(nFlags, point);
 }

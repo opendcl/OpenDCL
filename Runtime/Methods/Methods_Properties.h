@@ -4,9 +4,9 @@
 #pragma once
 
 #include "PropertyIds.h"
+#include "PtrTypes.h"
 
 class CPropertyObject;
-class CDclControlObject;
 
 
 bool SetCtrlProperty(Prop::Id id);
@@ -18,9 +18,9 @@ int SetControlFocus();
 int SetProperty();
 int GetProperty();
 int ZOrder();
-void UpdateControl(CWnd *pWnd, TPropertyPtr pProperty, CDclControlObject *pControl, Prop::Id nPropertyId);
-bool Property_SetByList(CDclControlObject *pControl);
-bool SetPropertyObject(TPropertyPtr pProperty, TPropertyPtr pPropArg, CDclControlObject *pCtrl = NULL);
+void UpdateControl(CWnd *pWnd, TPropertyPtr pProperty, TDclControlPtr pControl, Prop::Id nPropertyId);
+bool Property_SetByList(TDclControlPtr pControl);
+bool SetPropertyObject(TPropertyPtr pProperty, TPropertyPtr pPropArg, TDclControlPtr pCtrl = NULL);
 int Control_GetCurPos();
 int Control_SetPos();
 bool DoSetPosByList();

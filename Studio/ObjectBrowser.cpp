@@ -124,13 +124,13 @@ void CObjectBrowser::Setup()
 	ResizeControls();
 }
 
-HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(RefCountedPtr< COleControlObject > pControl) 
+HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(TDclControlPtr pControl) 
 {
-	std::vector< RefCountedPtr< COleControlObject > >::const_iterator pos = m_OleObjectList.begin();
+	std::vector< TDclControlPtr >::const_iterator pos = m_OleObjectList.begin();
 	// lets make sure we do not insert any OleObjects more than once.
 	while (pos != m_OleObjectList.end())
 	{
-		RefCountedPtr< COleControlObject > pObject = *pos++;
+		TDclControlPtr pObject = *pos++;
 		if (pObject == pControl)
 			return NULL;
 	}
@@ -186,43 +186,38 @@ HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(RefCountedPtr< COleControlObject
 	return hItem;
 }
 
-void CObjectBrowser::LoadAllAssociatedOleObjects(CDclControlObject *pControl) 
+void CObjectBrowser::LoadAllAssociatedOleObjects(TDclControlPtr pControl) 
 {
-	POSITION pos = pControl->GetPropertyList().GetHeadPosition();
-
-	// do loop to inspect all property objects
-	while (pos != NULL)
+	const TPropertyList& Props = pControl->GetPropertyList();
+	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 	{
-		TPropertyPtr pProp = pControl->GetPropertyList().GetNext(pos);
-		if (pProp != NULL)
+		const AxInterfaceDescriptor* pAxDesc = (*iter)->GetAxInterfaceDescriptorPtr();
+		if( pAxDesc )
 		{
-			AxInterfaceDescriptor* pAxDesc = pProp->GetAxInterfaceDescriptorPtr();
-			if( pAxDesc )
-			{
-				SearchMethods(pProp);
-				RefCountedPtr< COleControlObject > pOleObject;
-				// check events
-				pOleObject = activeProject->GetOleObject(pAxDesc->GetEvent());
-				if (pOleObject != NULL)
-					LoadOleObjectIntoTree(pOleObject);
-				
-				// check each property pointer type
-				pOleObject = activeProject->GetOleObject(pAxDesc->GetProp());
-				if (pOleObject != NULL)
-					LoadOleObjectIntoTree(pOleObject);
-				
-				pOleObject = activeProject->GetOleObject(pAxDesc->GetPropGet());
-				if (pOleObject != NULL)
-					LoadOleObjectIntoTree(pOleObject);
-				
-				pOleObject = activeProject->GetOleObject(pAxDesc->GetPropPut());
-				if (pOleObject != NULL)
-					LoadOleObjectIntoTree(pOleObject);
-				
-				pOleObject = activeProject->GetOleObject(pAxDesc->GetPropPutRef());
-				if (pOleObject != NULL)
-					LoadOleObjectIntoTree(pOleObject);
-			}
+			SearchMethods( (*iter) );
+			TOleControlPtr pOleObject;
+
+			// check events
+			pOleObject = activeProject->GetOleObject(pAxDesc->GetEvent());
+			if (pOleObject != NULL)
+				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
+			
+			// check each property pointer type
+			pOleObject = activeProject->GetOleObject(pAxDesc->GetProp());
+			if (pOleObject != NULL)
+				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
+			
+			pOleObject = activeProject->GetOleObject(pAxDesc->GetPropGet());
+			if (pOleObject != NULL)
+				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
+			
+			pOleObject = activeProject->GetOleObject(pAxDesc->GetPropPut());
+			if (pOleObject != NULL)
+				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
+			
+			pOleObject = activeProject->GetOleObject(pAxDesc->GetPropPutRef());
+			if (pOleObject != NULL)
+				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
 		}
 	}
 }
@@ -233,23 +228,20 @@ void CObjectBrowser::SearchMethods(TPropertyPtr pProp)
 	size_t idx = pProp->size();
 	while( idx-- > 0 )
 	{
-		RefCountedPtr< COleControlObject > pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->at(idx));
+		TOleControlPtr pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->at(idx));
 		if (pOleObject != NULL)
-			LoadOleObjectIntoTree(pOleObject);			
+			LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));			
 	}
 }
 
-void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, HTREEITEM hParentItem, int nIndex) 
+void CObjectBrowser::LoadInfoTree(TDclControlPtr pControl, HTREEITEM hParentItem, int nIndex) 
 {
-	POSITION pos = pControl->GetPropertyList().GetHeadPosition();
+	const TPropertyList& Props = pControl->GetPropertyList();
 	size_t idx = 0;
-	while (pos)
+	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 	{
 		++idx;
-		TPropertyPtr pProp = pControl->GetPropertyList().GetNext(pos);
-		if (!pProp)
-			continue;
-		switch (pProp->GetType())
+		switch ((*iter)->GetType())
 		{
 		case PropCustom:
 		case PropImageList:
@@ -259,10 +251,10 @@ void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, H
 			break;
 		case PropActiveXMethods:
 			{
-				int nCount = pProp->size();
+				int nCount = (*iter)->size();
 				for (int j = 0; j < nCount; j++)
 				{
-					CString sTitle = pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->at(j)->GetName();								
+					CString sTitle = (*iter)->GetAxInterfaceDescriptorPtr()->GetMethods()->at(j)->GetName();								
 					HTREEITEM hItem = m_ListBox.InsertItem(sTitle, hParentItem, TVI_SORT);
 					m_ListBox.SetItemData(hItem, (DWORD_PTR)(-((long)j + 1)));
 					m_ListBox.SetItemImage(hItem, 3, 3);
@@ -271,18 +263,18 @@ void CObjectBrowser::LoadInfoTree(RefCountedPtr< COleControlObject > pControl, H
 			break;
 		default:
 			{
-				if (pProp->GetID() != Prop::Name && pProp->GetID() != Prop::GlobalVarName)
+				if ((*iter)->GetID() != Prop::Name && (*iter)->GetID() != Prop::GlobalVarName)
 				{
 					CString sTitle;
-					if( pProp->GetType() == PropActiveXEvent )
-						sTitle = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetName();
+					if( (*iter)->GetType() == PropActiveXEvent )
+						sTitle = (*iter)->GetAxInterfaceDescriptorPtr()->GetEvent()->GetName();
 					else
-						sTitle = pProp->GetName();
+						sTitle = (*iter)->GetName();
 					if (sTitle.GetLength() > 0)
 					{
 						HTREEITEM hItem = m_ListBox.InsertItem(sTitle, hParentItem, TVI_SORT);
 						m_ListBox.SetItemData(hItem, idx);
-						switch (pProp->GetType())
+						switch ((*iter)->GetType())
 						{
 						case PropActiveXEvent:
 						case PropEvent:
@@ -619,7 +611,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 		return;
 	}
 
-	RefCountedPtr< COleControlObject > pControl = m_OleObjectList.at(m_ListBox.GetItemData(hParent));
+	TDclControlPtr pControl = m_OleObjectList.at(m_ListBox.GetItemData(hParent));
 	if (pControl == NULL)
 		return;
 
@@ -639,9 +631,10 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 	}
 	else if( nThisItemData > 0 )
 	{
-		POSITION pos = pControl->GetPropertyList().FindIndex( nThisItemData - 1 );
-		if( pos )
-			pProp = pControl->GetPropertyList().GetAt( pos );
+		const TPropertyList& Props = pControl->GetPropertyList();
+		TPropertyList::const_iterator iter = Props.begin();
+		while( nThisItemData-- > 1 ) ++iter;
+		pProp = *iter;
 	}
 
 	CString sTitle;
@@ -1100,7 +1093,18 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				}		
 				sTitle = _T("\\b0 ") + theWorkspace.LoadResourceString(IDS_PROPERTY) + _T(" \\b ") + sItemText + _T(" \\b0 \\cf0");
 				sDesc = pProp->GetDocumentationDesc();
-				if (pProp->IsHidden())
+				bool bHidden = pProp->IsHidden();
+				switch( pProp->GetID() )
+				{
+				case Prop::FontSize:
+				case Prop::FontBold:
+				case Prop::FontItalic:
+				case Prop::FontStrikeout:
+				case Prop::FontUnderline:
+					bHidden = false; //these hidden properties should be treated like normal properties
+					break;
+				}
+				if (bHidden)
 				{
 					sDesc += _T(" \\par \\par ");
 					sDesc += theWorkspace.LoadResourceString(IDS_HIDDENPROP);
@@ -1484,19 +1488,19 @@ CString CObjectBrowser::GetTypeName( VARTYPE vt, AxMethodDescriptor *pMethod, Ax
 	{
 		if (pProperty != NULL)
 		{
-			RefCountedPtr< COleControlObject > pOleObject = theWorkspace.GetOleControlFor(pProperty);
+			TOleControlPtr pOleObject = theWorkspace.GetOleControlFor(pProperty);
 			if (pOleObject != NULL)
 			{
-				LoadOleObjectIntoTree(pOleObject);
+				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
 				return pOleObject->GetActiveXTypeName();
 			}
 		}
 		else
 		{
-			RefCountedPtr< COleControlObject > pOleObject = theWorkspace.GetOleControlFor(pMethod);
+			TOleControlPtr pOleObject = theWorkspace.GetOleControlFor(pMethod);
 			if (pOleObject != NULL)
 			{
-				LoadOleObjectIntoTree(pOleObject);
+				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
 				return pOleObject->GetActiveXTypeName();
 			}			
 		}

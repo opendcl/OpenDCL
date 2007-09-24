@@ -6,7 +6,6 @@
 #include "DialogObject.h"
 #include "AxArg.h"
 
-class CDclControlObject;
 class CPropertyObject;
 
 
@@ -41,25 +40,25 @@ inline void acedRetLong(LONG lValue)
 }
 
 
-struct resbuf *getLispTargetInput(LPCTSTR sMethod, CDclControlObject *&pArg);
+struct resbuf *getLispTargetInput(LPCTSTR sMethod, TDclControlPtr &pArg);
 void GetLispRealInput(struct resbuf *ListData, double &dArg1);
 void GetLispBoolInput(struct resbuf *ListData, bool &bArg1);
 
-CDclControlObject * GetLispInput(LPCTSTR sMethod, CPoint &Arg1);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, CString &sArg2);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, CString &sArg1, CString &sArg2);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, CString &sArg1);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, CString &sArg3);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5, CString &sOptionalString);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, CString &sArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, CArray<int, int> *pIntArray, CStringArray *pStrings);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, long &lArg2);
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int nArg1, CString &sArg2, CString &sArg3);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, CPoint &Arg1);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, CString &sArg2);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, CString &sArg1, CString &sArg2);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, CString &sArg1);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, CString &sArg3);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5, CString &sOptionalString);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, CString &sArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, CArray<int, int> *pIntArray, CStringArray *pStrings);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, long &lArg2);
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int nArg1, CString &sArg2, CString &sArg3);
 
 struct resbuf *GetProjectAndFormName(CString *pArg1, CString *pArg2, CString sMethod);
 bool GetNextString(struct resbuf *ListData, CString *pArg, int nIndex, CString sMethod);
@@ -67,15 +66,15 @@ bool GetStringArgument(int nIndex, CString *pArg, CString sMethod);
 bool GetIntArgument(int nIndex, int *pArg, CString sMethod);
 bool GetDoubleArgument(int nIndex, double *pArg, CString sMethod);
 bool GetDateArgument(int nIndex, COleDateTime *pArg, CString sMethod);
-TPropertyPtr GetPropertyArgument(int nIndex, CString sMethod);
-CDclFormObject * FindDclObject(CDclControlObject *pControl);
+TPropertyPtr GetPropertyArgument(TDclControlPtr pTemplate, int nIndex, CString sMethod);
+TDclFormPtr  FindDclObject(TDclControlPtr pControl);
 
 bool FindOptionalStringArgument(int nIndex, CString *pArg, CString sMethod);
 bool FindOptionalIntArgument(int nIndex, int *pArg, CString sMethod);
 bool FindOptionalDoubleArgument(int nIndex, double *pArg, CString sMethod);
 
 CWnd * GetControlPointer(int nControlType, CString sMethod, int *pnArgs = NULL);
-CDclControlObject * GetControlArxObject(CString sMethod, int *pnArgs = NULL);
+TDclControlPtr  GetControlArxObject(CString sMethod, int *pnArgs = NULL);
 bool GetControlInfo(int nControlType, CString sMethod, CWnd *pParent, CWnd *pControl);
 bool IsArgumentString(short restype, int index, CString sMethod);
 bool IsArgumentInt(short restype, int index, CString sMethod);

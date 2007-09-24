@@ -6,7 +6,7 @@
 #include "AxContainerCtrl.h"
 #include "VarUtils.h"
 #include "Filing.h"
-#include "Project.h"
+#include "Workspace.h"
 
 
 AxPropertyDescriptor::AxPropertyDescriptor(void)
@@ -268,8 +268,7 @@ HRESULT AxPropertyDescriptor::GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype,
 				mType = VT_DISPATCH;
 				mGuid = pTA->guid;
 				if( pContainer )
-					//pContainer->GetParent()->GetProject()->AddOleObject(pTA->guid, pContainer); // add this OLE object
-				  theWorkspace.GetActiveProject()->AddOleObject(pTA->guid, pContainer);
+					pContainer->GetTemplate()->GetOwnerProject()->AddOleObject(pTA->guid, pContainer); // add this OLE object
 				break;
 			case TKIND_ENUM:
 				{

@@ -3,7 +3,8 @@
 
 #pragma once
 
-class CDclControlObject;
+#include "DclControlObject.h"
+
 class CControlHolder;
 
 
@@ -12,21 +13,21 @@ class CControlHolder;
 
 class CSelectedControl : public CObject
 {
-	CDclControlObject* mpTemplate;
+	TDclControlPtr mpTemplate;
 	CControlHolder* mpControlHolder;
 	int mnIndex;
 public:
 	CRect m_rcLastDrawn;
 
 public:
-	CSelectedControl( CDclControlObject* pTemplate = NULL, CControlHolder* pControlHolder = NULL, int idxControl = -1 )
+	CSelectedControl( TDclControlPtr pTemplate = NULL, CControlHolder* pControlHolder = NULL, int idxControl = -1 )
 	: mpTemplate( pTemplate )
 	, mpControlHolder( pControlHolder )
 	, mnIndex( idxControl )
 	, m_rcLastDrawn( 0, 0, 0, 0 )
 	{
 	}
-	void Set( CDclControlObject* pTemplate = NULL, CControlHolder* pControlHolder = NULL, int idxControl = -1 )
+	void Set( TDclControlPtr pTemplate = NULL, CControlHolder* pControlHolder = NULL, int idxControl = -1 )
 	{	
 		mpTemplate = pTemplate;
 		mpControlHolder = pControlHolder;
@@ -39,7 +40,7 @@ public:
 		mpControlHolder = NULL;
 		mnIndex = -1;
 	}
-	CDclControlObject* GetTemplate() const { return mpTemplate; }
+	TDclControlPtr GetTemplate() const { return mpTemplate; }
 	CControlHolder* GetControlHolder() const { return mpControlHolder; }
 	int GetIndex() const { return mnIndex; }
 };

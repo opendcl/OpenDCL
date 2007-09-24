@@ -21,7 +21,7 @@
 int ComboBox_AddPath()
 {
 	int nArg = 0;
-	CDclControlObject *pArxObject = GetControlArxObject(sComboBox_AddPath, &nArg);
+	TDclControlPtr pArxObject = GetControlArxObject(sComboBox_AddPath, &nArg);
 
 	if (pArxObject == NULL)
 	{
@@ -60,7 +60,7 @@ int ComboBox_AddPath()
 int ComboBox_AddColor()
 {
 	int nArg = 0;
-	CDclControlObject *pArxObject = GetControlArxObject(sComboBox_AddColor, &nArg);
+	TDclControlPtr pArxObject = GetControlArxObject(sComboBox_AddColor, &nArg);
 
 	if (pArxObject == NULL)
 	{
@@ -99,7 +99,7 @@ int ComboBox_AddColor()
 int ComboBox_FindLineWeight()
 {
 	int nArg=0;
-	CDclControlObject *pArxObject = GetControlArxObject(sComboBox_FindLineWeight, &nArg);
+	TDclControlPtr pArxObject = GetControlArxObject(sComboBox_FindLineWeight, &nArg);
 	
 	if (pArxObject == NULL)
 	{
@@ -141,7 +141,7 @@ int ComboBox_FindLineWeight()
 int ComboBox_FindColor()
 {
 	int nArg=0;
-	CDclControlObject *pArxObject = GetControlArxObject(sComboBox_FindColor, &nArg);
+	TDclControlPtr pArxObject = GetControlArxObject(sComboBox_FindColor, &nArg);
 	
 	if (pArxObject == NULL)
 	{
@@ -290,7 +290,7 @@ int ComboBox_Clear()
 	CWnd *pControl = GetControlPointer(CtlComboBox, sComboBox_Clear);
 
 	int nArg = 0;
-	CDclControlObject *pArxObject = GetControlArxObject(sComboBox_GetDir, &nArg);
+	TDclControlPtr pArxObject = GetControlArxObject(sComboBox_GetDir, &nArg);
 	
 	((CComboBox*)pControl)->ResetContent();
 	
@@ -660,7 +660,7 @@ int ComboBox_GetEBText()
 int ComboBox_GetDir()
 {
 	int nArg = 0;
-	CDclControlObject *pArxObject = GetControlArxObject(sComboBox_GetDir, &nArg);
+	TDclControlPtr pArxObject = GetControlArxObject(sComboBox_GetDir, &nArg);
 	if (pArxObject == NULL)
 	{
 		acedRetNil();
@@ -680,7 +680,7 @@ int ComboBox_GetDir()
 int ComboBox_Dir()
 {
 	int nArg = 0;
-	CDclControlObject *pArxObject = GetControlArxObject(sComboBox_Dir, &nArg);
+	TDclControlPtr pArxObject = GetControlArxObject(sComboBox_Dir, &nArg);
 	if (pArxObject == NULL)
 	{
 		acedRetNil();

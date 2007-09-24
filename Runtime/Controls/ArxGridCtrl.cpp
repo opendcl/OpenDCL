@@ -332,7 +332,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // CArxGridCtrl
 
-CArxGridCtrl::CArxGridCtrl( CDclControlObject* pTemplate,
+CArxGridCtrl::CArxGridCtrl( TDclControlPtr pTemplate,
 														CControlPane* pPane,
 														UINT nID,
 														bool bCreate /*= true*/ )
@@ -488,7 +488,6 @@ BEGIN_MESSAGE_MAP(CArxGridCtrl, CGridCtrl)
 	ON_WM_DESTROY()
 	ON_WM_HSCROLL()
 	ON_WM_VSCROLL()
-	ON_WM_DRAWITEM_REFLECT()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()	
 	ON_WM_RBUTTONDOWN()

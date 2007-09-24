@@ -12,7 +12,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CListBoxCtrl
 
-CListBoxCtrl::CListBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CListBoxCtrl::CListBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 {
 	if( bCreate )
@@ -30,12 +30,6 @@ bool CListBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
-	//// fix up 3D styles
-	//ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
-	//CListBox::ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
-	//ModifyStyleEx(0, WS_VSCROLL);
-	//CListBox::ModifyStyleEx(0, WS_VSCROLL);
-
 	return bSuccess;
 }
 
@@ -43,10 +37,12 @@ DWORD CListBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 
-	dwStyle |= (WS_CLIPSIBLINGS | LBS_HASSTRINGS | LBS_NOTIFY | LBS_DISABLENOSCROLL | LBS_USETABSTOPS);
+	dwStyle |= (WS_CLIPSIBLINGS | LBS_HASSTRINGS | LBS_NOTIFY | LBS_USETABSTOPS);
 	TPropertyPtr pPropNoIntegralHeight = mpTemplate->GetPropertyObject( Prop::NoIntegralHeight );
 	if( !pPropNoIntegralHeight || pPropNoIntegralHeight->GetBooleanValue() )
 		dwStyle |= LBS_NOINTEGRALHEIGHT;
+	if( mpTemplate->GetBooleanProperty( Prop::DisableNoScroll ) )
+		dwStyle |= LBS_DISABLENOSCROLL;
 	if( mpTemplate->GetBooleanProperty( Prop::MultiColumn ) )
 		dwStyle |= LBS_MULTICOLUMN;
 	if( mpTemplate->GetBooleanProperty( Prop::Sorted ) )
@@ -61,6 +57,21 @@ DWORD CListBoxCtrl::GetWndStyle() const
 		break;
 	}
 	return dwStyle;
+}
+
+bool CListBoxCtrl::ApplyPropertiesEnum()
+{
+	bool bSuccess = __super::ApplyPropertiesEnum();
+
+	//The automatic vertical scroll bar doesn't get initialized correctly unless the listbox window is
+	//first resized small enough that the scroll bar would be needed
+	CRect rc;
+	GetWindowRect( &rc );
+	GetParent()->ScreenToClient( &rc );
+	MoveWindow( &CRect( 0, 0, 0, 0 ) );
+	MoveWindow( &rc );
+
+	return bSuccess;
 }
 
 bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
@@ -92,18 +103,37 @@ bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 				ModifyStyle( LBS_DISABLENOSCROLL, 0, SWP_FRAMECHANGED );
 		}
 		break;
+	case Prop::MultiColumn:
+		{
+			if( pProp->GetBooleanValue() )
+				ModifyStyle( 0, LBS_MULTICOLUMN, SWP_FRAMECHANGED );
+			else
+				ModifyStyle( LBS_MULTICOLUMN, 0, SWP_FRAMECHANGED );
+		}
+		break;
+	case Prop::SelectStyle:
+		{
+			switch( pProp->GetLongValue() )
+			{
+			case 1:
+				ModifyStyle( LBS_MULTIPLESEL, LBS_EXTENDEDSEL, SWP_FRAMECHANGED );
+				break;
+			case 2:
+				ModifyStyle( LBS_EXTENDEDSEL, LBS_MULTIPLESEL, SWP_FRAMECHANGED );
+				break;
+			}
+		}
+		break;
 	case Prop::List:
 		{
 			ResetContent();
 			for (size_t idx = 0; idx < pProp->size(); idx++)
 				AddString( pProp->GetStringItem( idx ) );
-			Invalidate();
 		}
 		break;
 	}
 	return !bFailed;
 }
-
 
 BEGIN_MESSAGE_MAP(CListBoxCtrl, CListBox)
 	ON_WM_CTLCOLOR_REFLECT()

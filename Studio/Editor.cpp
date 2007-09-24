@@ -11,7 +11,6 @@
 #include "PropertyIds.h"
 #include "ControlTypes.h"
 #include "PropertyObject.h"
-#include "ProjectCollection.h"
 #include "ArchiveEx.h"
 #include "FontPropPage.h"
 #include "GridSpacingDlg.h"
@@ -21,24 +20,17 @@
 #include "SharedRes.h"
 
 
-static CString FindTabCaption(CDclFormObject *pDclTab)
+static CString FindTabCaption(TDclFormPtr pDclTab)
 {
-	for (int i=0; i < pDclTab->GetProject()->GetDclFormList().GetCount(); i++)
+	const TDclFormList& Forms = pDclTab->GetProject()->GetDclFormList();
+	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
 	{
-		POSITION pos = pDclTab->GetProject()->GetDclFormList().FindIndex(i);
-		if (pos != NULL)
+		if( pDclTab->GetParentName() == (*iter)->GetUniqueName() )
 		{
-			CDclFormObject *pDcl = pDclTab->GetProject()->GetDclFormList().GetAt(pos);
-			if (pDcl != NULL)
-			{
-				if (pDclTab->GetParentName() == pDcl->GetUniqueName())
-				{
-					CDclControlObject* pControl = pDcl->FindFirstControlOfType(CtlTabStrip);
-					if (!pControl)
-						return CString();
-					return pControl->GetPropertyListItem(Prop::TabsCaption, pDclTab->GetTabIndex());
-				}
-			}			
+			TDclControlPtr pControl = (*iter)->FindFirstControlOfType( CtlTabStrip );
+			if( !pControl )
+				break;
+			return pControl->GetPropertyListItem( Prop::TabsCaption, pDclTab->GetTabIndex() );
 		}
 	}
 	return CString();
@@ -324,9 +316,9 @@ CMDIChildWnd* COpenDCLApp::CreateOrActivateFrame(CDocument* pDoc, CSize ViewSize
   return (CMDIChildWnd*)pNewFrame;
 }
 
-COpenDCLView* COpenDCLApp::OpenExistingForm(CDclFormObject *pDclForm)
+COpenDCLView* COpenDCLApp::OpenExistingForm(TDclFormPtr pDclForm)
 {
-	CDclControlObject* pDclProperties = pDclForm->GetControlProperties();
+	TDclControlPtr pDclProperties = pDclForm->GetControlProperties();
 	CSize StartupSize(pDclProperties->GetLongProperty(Prop::Width), pDclProperties->GetLongProperty(Prop::Height));
 	
 	// create the new view
@@ -383,8 +375,8 @@ COpenDCLView* COpenDCLApp::AddDclFormAndView(DclFormType nType)
 	CRect rcNewDialog;
 	CMDIChildWnd* pNewFrame;
 
-	CDclFormObject* pNewDcl = AddNewDclForm(nType);
-	CDclControlObject *pDclProperties = pNewDcl->GetControlProperties();
+	TDclFormPtr pNewDcl = AddNewDclForm(nType);
+	TDclControlPtr pDclProperties = pNewDcl->GetControlProperties();
 	assert(pDclProperties != NULL);
 
 	// get the arx object that holds the dialog's properties
@@ -435,11 +427,11 @@ COpenDCLView* COpenDCLApp::AddDclFormAndView(DclFormType nType)
 	if (pNewDcl->GetType() == VdclFileDialog && pNewDcl->GetControlCount() == 1)
 	{
 		CRect rc(0, 0, 556, 386); //size of IDD_FILEDLGCTRL bitmap
-		CDclControlObject* pDclControl = pNewView->InsertControl(rc, CtlFileDlgCtrl);
+		TDclControlPtr pDclControl = pNewView->InsertControl(rc, CtlFileDlgCtrl);
 		if( pDclControl )
 		{
 			CRect rcCtrl;
-			pDclControl->GetControlInstance()->GetControl()->GetWindowRect( &rcCtrl );
+			pDclControl->GetControlInstance()->GetControlWnd()->GetWindowRect( &rcCtrl );
 			CRect rcClient;
 			pNewFrame->GetClientRect( &rcClient );
 			pNewFrame->GetWindowRect( &rc );
@@ -468,10 +460,10 @@ COpenDCLView* COpenDCLApp::AddDclFormAndView(DclFormType nType)
 	return pNewView;
 }
 
-CDclFormObject* COpenDCLApp::AddNewDclForm(DclFormType nType) 
+TDclFormPtr COpenDCLApp::AddNewDclForm(DclFormType nType) 
 {
 	// create a pointer to pass to the list to insert
-	CDclFormObject* pNewDclForm = activeProject->AddForm( nType );
+	TDclFormPtr pNewDclForm = activeProject->AddForm( nType );
 	if( pNewDclForm )
 	{	
 		AddDefaultProperties(pNewDclForm->GetControlProperties(), -1, -1); //add properties to the new dcl form object

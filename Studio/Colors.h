@@ -9,8 +9,8 @@
 #include "ColorPickerCB.h"
 #include "ColorListBox.h"
 #include "ColorPatch.h"
+#include "DclControlObject.h"
 
-class CDclControlObject;
 class COpenDCLView;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -19,14 +19,14 @@ class COpenDCLView;
 class CColors : public CPropertyPage
 {
 	Prop::Id midProp;
-	CDclControlObject* mpControl;
+	TDclControlPtr mpControl;
 	COpenDCLView* mpView;
 	CString msTitle;
 	TPropertyPtr mpColor;
 	
 // Construction
 public:
-	CColors(Prop::Id idProp, CDclControlObject* pControl, COpenDCLView* pView);
+	CColors(Prop::Id idProp, TDclControlPtr pControl, COpenDCLView* pView);
 	~CColors();
 
 // Dialog Data

@@ -12,7 +12,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CCheckBoxCtrl
 
-CCheckBoxCtrl::CCheckBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CCheckBoxCtrl::CCheckBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 {
 	if( bCreate )

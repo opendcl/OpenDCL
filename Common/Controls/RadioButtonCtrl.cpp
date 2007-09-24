@@ -12,7 +12,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CRadioButtonCtrl
 
-CRadioButtonCtrl::CRadioButtonCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CRadioButtonCtrl::CRadioButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 {
 	if( bCreate )

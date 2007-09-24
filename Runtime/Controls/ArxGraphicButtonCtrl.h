@@ -18,10 +18,7 @@ class CArxGraphicButtonCtrl : public CGraphicButtonCtrl
 	COleOdcDropTarget mDropTarget;	
 
 public:
-	bool			m_bInvokeWithSendString;
-
-public:
-	CArxGraphicButtonCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CArxGraphicButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxGraphicButtonCtrl();
 
 // DialogControl Interface

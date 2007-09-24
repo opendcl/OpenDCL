@@ -12,7 +12,7 @@
 
 
 // CConfigTabPaneX interface implementation
-CConfigTabPaneX::CConfigTabPaneX( CfgTabPane& Owner, CDclFormObject* pDclForm )
+CConfigTabPaneX::CConfigTabPaneX( CfgTabPane& Owner, TDclFormPtr pDclForm )
 : CArxDialogObject( pDclForm, &Owner )
 , mpOwner( &Owner )
 {
@@ -55,7 +55,7 @@ void CConfigTabPaneX::CloseDialog(int nStatus)
 /////////////////////////////////////////////////////////////////////////////
 // CfgTabPane dialog
 
-CfgTabPane::CfgTabPane( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+CfgTabPane::CfgTabPane( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CAcUiTabChildDialog( pParent, pParams? (HINSTANCE)pParams->lpData : NULL ) 
 , mDialogX( *this, pSourceForm )
 {
@@ -107,7 +107,7 @@ BOOL CfgTabPane::OnInitDialog()
 	SetWindowPos(NULL, pt.x, pt.y, rectWindow.Width(), rectWindow.Height(), SWP_NOZORDER | SWP_NOACTIVATE);
 	
 	//  setup for assigning the form it's properties
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	
 	// call methods to invoke the event
 	InvokeMethod(pProps->GetStringProperty(Prop::FormEventInitialize), false);	
@@ -125,7 +125,7 @@ void CfgTabPane::OnMainDialogOK()
 // This function is called when the main dialog OK button is pressed.
 {
 	// call methods to invoke the event
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStringProperty(Prop::CfgEventOK), false);	
 }
 
@@ -133,7 +133,7 @@ void CfgTabPane::OnMainDialogAPPLY()
 // This function is called when the main dialog Apply button is pressed.
 {
 	// call methods to invoke the event
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStringProperty(Prop::CfgEventApply), false);	
 }
 
@@ -141,7 +141,7 @@ void CfgTabPane::OnMainDialogCancel()
 // This function is called when the main dialog CANCEL button is pressed.
 {
     // call methods to invoke the event
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStringProperty(Prop::CfgEventCancel), false);	
 }
 
@@ -150,7 +150,7 @@ BOOL CfgTabPane::OnMainDialogHelp()
 // and this is the active tab.
 {
   // call methods to invoke the event
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStringProperty(Prop::CfgEventHelp), false);	
   // Return TRUE if handled.
   return TRUE;
@@ -165,7 +165,7 @@ void CfgTabPane::PostNcDestroy()
 void CfgTabPane::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	CAcUiTabExtension::OnShowWindow(bShow, nStatus);
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod( mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventShow), false);	
 }
 

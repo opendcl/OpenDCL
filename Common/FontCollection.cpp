@@ -21,18 +21,18 @@ CFontCollection::~CFontCollection()
 	}
 }
 
-CFont* CFontCollection::GetFont(CDclControlObject *pControl, CWnd *pWnd)
+CFont* CFontCollection::GetFont(TDclControlPtr pControl, CWnd *pWnd)
 {
-	if (pControl->GetPropertyObject(Prop::LabelName) == NULL)
+	if (pControl->GetPropertyObject(Prop::FontName) == NULL)
 		return NULL;
 
 	LOGFONT stTargetFont = {0};
-	lstrcpyn( stTargetFont.lfFaceName, pControl->GetStringProperty(Prop::LabelName), LF_FACESIZE );
-	int nFontSize = pControl->GetLongProperty(Prop::LabelSize);
-	stTargetFont.lfWeight = (pControl->GetBooleanProperty(Prop::LabelBold)? FW_BOLD : FW_NORMAL);
-	stTargetFont.lfItalic = pControl->GetBooleanProperty(Prop::LabelItalic);
-	stTargetFont.lfUnderline = pControl->GetBooleanProperty(Prop::LabelUnderline);
-	stTargetFont.lfStrikeOut = pControl->GetBooleanProperty(Prop::LabelStrikeOut);
+	lstrcpyn( stTargetFont.lfFaceName, pControl->GetStringProperty(Prop::FontName), LF_FACESIZE );
+	int nFontSize = pControl->GetLongProperty(Prop::FontSize);
+	stTargetFont.lfWeight = (pControl->GetBooleanProperty(Prop::FontBold)? FW_BOLD : FW_NORMAL);
+	stTargetFont.lfItalic = pControl->GetBooleanProperty(Prop::FontItalic);
+	stTargetFont.lfUnderline = pControl->GetBooleanProperty(Prop::FontUnderline);
+	stTargetFont.lfStrikeOut = pControl->GetBooleanProperty(Prop::FontStrikeout);
 	if( nFontSize > 0 )
 	{ //calculate point size
 		HWND hwndControl = (pWnd? pWnd->m_hWnd : ::GetDesktopWindow());

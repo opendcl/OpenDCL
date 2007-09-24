@@ -3,7 +3,7 @@
 
 #pragma once
 
-class CDclControlObject;
+#include "PtrTypes.h"
 
 
-void LoadArgsNDesc(Prop::Id nEventId, const CDclControlObject *pControl, CString &sArgs, CString &sDesc);
+void LoadArgsNDesc(Prop::Id nEventId, const TDclControlPtr pControl, CString &sArgs, CString &sDesc);

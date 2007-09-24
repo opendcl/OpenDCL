@@ -4,9 +4,9 @@
 #pragma once
 
 #include "PPToolTip.h"
+#include "PtrTypes.h"
 
 class CPropertyObject;
-class CDclControlObject;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -20,7 +20,6 @@ public:
 
 // Attributes
 public:
-	bool m_bInvokeWithSendString;
 	TPropertyPtr m_pValueProp;
 	TPropertyPtr m_pWrapProp;
 	TPropertyPtr m_pMinProp;
@@ -35,7 +34,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(VdclSpinButton)
 	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID );
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	//}}AFX_VIRTUAL
 
@@ -54,5 +53,5 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	CDclControlObject *m_ArxControl;
+	TDclControlPtr m_ArxControl;
 };

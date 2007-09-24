@@ -34,24 +34,35 @@ public:
 public:
 	AxPropertyDescriptor*& GetProp()
 		{ return mpProp; }
+	AxPropertyDescriptor* const& GetProp() const
+		{ return mpProp; }
 	void SetProp( AxPropertyDescriptor* pProp )
 		{ mpProp = pProp; }
 	AxPropertyDescriptor*& GetPropGet()
+		{ return mpPropGet; }
+	AxPropertyDescriptor* const& GetPropGet() const
 		{ return mpPropGet; }
 	void SetPropGet( AxPropertyDescriptor* pProp )
 		{ mpPropGet = pProp; }
 	AxPropertyDescriptor*& GetPropPut()
 		{ return mpPropPut; }
+	AxPropertyDescriptor* const& GetPropPut() const
+		{ return mpPropPut; }
 	void SetPropPut( AxPropertyDescriptor* pProp )
 		{ mpPropPut = pProp; }
 	AxPropertyDescriptor*& GetPropPutRef()
 		{ return mpPropPutRef; }
+	AxPropertyDescriptor* const& GetPropPutRef() const
+		{ return mpPropPutRef; }
 	void SetPropPutRef( AxPropertyDescriptor* pProp )
 		{ mpPropPutRef = pProp; }
 	AxEventDescriptor*& GetEvent() { return mpEvent; }
+	AxEventDescriptor* const& GetEvent() const { return mpEvent; }
 	void SetEvent( AxEventDescriptor* pEvent )
 		{ mpEvent = pEvent; }
 	std::vector< RefCountedPtr< AxMethodDescriptor > >*& GetMethods()
+		{ return mpMethods; }
+	std::vector< RefCountedPtr< AxMethodDescriptor > >* const& GetMethods() const
 		{ return mpMethods; }
 	void SetMethods( std::vector< RefCountedPtr< AxMethodDescriptor > >* pMethods )
 		{ mpMethods = pMethods; }

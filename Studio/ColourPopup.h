@@ -25,6 +25,7 @@
 #define CPN_SELENDCANCEL     WM_USER + 1005        // Colour Picker end (cancelled)
 
 #include "PropertyObject.h"
+#include "PtrTypes.h"
 
 // forward declaration
 class CControlHolder;

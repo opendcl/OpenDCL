@@ -6,9 +6,9 @@
 #pragma once
 
 #include "PPToolTip.h"
+#include "PtrTypes.h"
 
 class CPropertyObject;
-class CDclControlObject;
 
 
 class CRoundSliderCtrl : public CSliderCtrl
@@ -33,7 +33,6 @@ public:
 	void SetPos(int nPos);
 	int		m_nPos;
 	CFont	*m_pFont;
-	bool m_bInvokeWithSendString;
 	TPropertyPtr m_pValueProp;
 public:
 	//DECLARE_DYNAMIC(CRoundSliderCtrl)
@@ -61,7 +60,7 @@ public:
 
 	//{{AFX_VIRTUAL(CRoundSliderCtrl)
 	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID );
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	//}}AFX_VIRTUAL
 
@@ -86,7 +85,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	CDclControlObject *m_ArxControl;
+	TDclControlPtr m_ArxControl;
 	UINT m_hPos;
 
 #ifdef _DEBUG

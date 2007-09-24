@@ -25,7 +25,7 @@ CControlPane::CControlPane()
 {
 }
 
-CControlPane::CControlPane(CDclFormObject* pSourceForm, CWnd* pHostDlg)
+CControlPane::CControlPane(TDclFormPtr pSourceForm, CWnd* pHostDlg)
 : mpSourceForm( pSourceForm )
 , mpProject( pSourceForm? pSourceForm->GetProject() : NULL )
 , mpHostDlg( pHostDlg )
@@ -72,21 +72,22 @@ void CControlPane::AddControl( TDialogControlPtr pControl )
 
 bool CControlPane::CreateControls(UINT& nId)
 {
+	TDclControlList& Controls = mpSourceForm->mDclControls;
+	if( Controls.empty() )
+		return true;
 	bool bFailed = false;
-	POSITION pos = mpSourceForm->mDclControls.GetTailPosition();
-	while (pos != NULL)
+	TDclControlList::iterator iter = Controls.end();
+	while( iter != Controls.begin() )
 	{
-		CDclControlObject* pTemplate = mpSourceForm->mDclControls.GetPrev(pos);
-		if( !pos)
-			break; //we've reached the properties control at the head of the list, just skip it
-		if (pTemplate->GetType() < 0)
+		--iter;
+		if ((*iter)->GetType() <= CtlForm)
 			continue;
-		if (pTemplate->GetType() == CtlFileDlgCtrl)
+		if ((*iter)->GetType() == CtlFileDlgCtrl)
 			continue;
-		UINT idDlg = pTemplate->GetID();
+		UINT idDlg = (*iter)->GetID();
 		if( idDlg <= 0 || mpSourceForm->GetType() != CtlSplitter )
 			idDlg = nId++;
-		TDialogControlPtr pControl = CreateNewDialogControl( pTemplate, idDlg );
+		TDialogControlPtr pControl = CreateNewDialogControl( (*iter), idDlg );
 		assert( pControl != NULL );
 		if( pControl )
 			mControls.push_back( pControl );
@@ -101,27 +102,22 @@ void CControlPane::RecalcLayout()
 	if( !mpSourceForm )
 		return;
 
-	if( mpSourceForm->mDclControls.GetCount() == 0 )
+	if( mpSourceForm->GetControlCount() == 0 )
 		return;
 
 	// first lets calc all the control positions for any splitter controls.
-	POSITION pos = mpSourceForm->mDclControls.GetHeadPosition();
-	mpSourceForm->mDclControls.GetNext( pos );
-	while( pos )
+	TDclControlList& Controls = mpSourceForm->mDclControls;
+	for( TDclControlList::iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		CDclControlObject* pControl = mpSourceForm->mDclControls.GetNext( pos );
-		if( pControl != NULL && pControl->GetType() == CtlSplitter )
-			ResetControlsPos( pControl );
+		if( (*iter)->GetType() == CtlSplitter )
+			ResetControlsPos( (*iter) );
 	}
 
 	//next lets calc all the control positions for all NON-splitter controls.
-	pos = mpSourceForm->mDclControls.GetHeadPosition();
-	mpSourceForm->mDclControls.GetNext( pos );
-	while( pos )
+	for( TDclControlList::iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		CDclControlObject* pControl = mpSourceForm->mDclControls.GetNext( pos );
-		if( pControl->GetType() != CtlSplitter )
-			ResetControlsPos( pControl );
+		if( (*iter)->GetType() != CtlSplitter )
+			ResetControlsPos( (*iter) );
 	}
 	//mpHostDlg->Invalidate(); //can't do this: it paints over the controls in Windows XP with Window Classic theme
 }
@@ -131,13 +127,12 @@ void CControlPane::InvalidateControls()
 	if( !mpSourceForm )
 		return;
 
-	POSITION pos = mpSourceForm->mDclControls.GetHeadPosition();
-	while( pos )
+	const TDclControlList& Controls = mpSourceForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		CDclControlObject *pControl = mpSourceForm->mDclControls.GetNext( pos );
-		if( pControl->GetType() != CtlBlockView && pControl->GetType() != CtlHatch )
+		if( (*iter)->GetType() != CtlBlockView && (*iter)->GetType() != CtlHatch )
 		{
-			CWnd* pWnd = pControl->GetWindow();
+			CWnd* pWnd = (*iter)->GetWindow();
 			if( pWnd )
 				pWnd->Invalidate();
 		}
@@ -146,23 +141,22 @@ void CControlPane::InvalidateControls()
 
 CRect CControlPane::GetSplitterRect( int nId, CRect& rectCurrent ) 
 {
-	POSITION pos = mpSourceForm->mDclControls.GetHeadPosition();
-	while( pos )
+	const TDclControlList& Controls = mpSourceForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		CDclControlObject *pCtrl = mpSourceForm->mDclControls.GetNext( pos );
-		if( pCtrl->GetType() == CtlSplitter && pCtrl->GetID() == nId )
+		if( (*iter)->GetType() == CtlSplitter && (*iter)->GetID() == nId )
 		{
-			pCtrl->GetWindow()->GetWindowRect( &rectCurrent );
+			(*iter)->GetWindow()->GetWindowRect( &rectCurrent );
 			mpHostDlg->ScreenToClient( &rectCurrent );
-			CPoint pt( pCtrl->GetLongProperty( Prop::Left ), pCtrl->GetLongProperty( Prop::Top ) );
-			return CRect( pt.x, pt.y, pt.x + pCtrl->GetLongProperty( Prop::Width ), pt.y + pCtrl->GetLongProperty( Prop::Height ) );
+			CPoint pt( (*iter)->GetLongProperty( Prop::Left ), (*iter)->GetLongProperty( Prop::Top ) );
+			return CRect( pt.x, pt.y, pt.x + (*iter)->GetLongProperty( Prop::Width ), pt.y + (*iter)->GetLongProperty( Prop::Height ) );
 		}
 	}
 	rectCurrent.SetRect(0,0,0,0);
 	return CRect(0,0,0,0);	
 }
 
-void CControlPane::ResetControlsPos(CDclControlObject *pDclControl)
+void CControlPane::ResetControlsPos(TDclControlPtr pDclControl)
 {
 	if (pDclControl == NULL)
 		return;
@@ -339,124 +333,11 @@ void CControlPane::CleanUpControls()
 {	
 	for (int idx = mControls.size() - 1; idx >= 0; --idx)
 	{
-		CWnd* pControl = mControls[idx]->GetControl();
+		CWnd* pControl = mControls[idx]->GetControlWnd();
 		if( pControl )
 			pControl->DestroyWindow();
 	}
 	mControls.clear();
-}
-
-void CControlPane::ShowControls(BOOL bShow)
-{
-	// create a position variable to hold the counter increment
-	POSITION pos;	
-	
-	if (mpSourceForm == NULL)
-		return;
-
-	// set counter for clipboard
-	int nCount = 1;
-	int nTotal = mpSourceForm->mDclControls.GetCount();
-	if (nTotal == 0)
-		return;
-
-	while(nCount < mpSourceForm->mDclControls.GetCount())
-	{
-		// get position
-		pos = mpSourceForm->mDclControls.FindIndex(nCount);
-		if (pos != NULL)
-		{
-			// get current property
-			CDclControlObject* pArxControlForm = mpSourceForm->mDclControls.GetAt(pos);
-			
-			if (pArxControlForm != NULL)
-			{
-				// return a pointer to the CWnd control
-				CWnd *pControl = pArxControlForm->GetWindow();// mpHostDlg->GetDlgItem(pArxControlForm->m_Id);
-				if (pControl != NULL)
-				{
-					if (bShow == TRUE)
-					{
-						if (pArxControlForm->GetPropertyObject(Prop::Visible) != NULL)
-						{
-							BOOL bShowControl = pArxControlForm->GetPropertyObject(Prop::Visible)->GetBooleanValue();
-							if (!pControl->IsWindowVisible() && bShowControl == TRUE)
-								if (IsWindow(pControl->m_hWnd))		
-									pControl->ShowWindow(pArxControlForm->GetPropertyObject(Prop::Visible)->GetBooleanValue());
-						}
-						else
-						{
-							BOOL bShowControl = pArxControlForm->GetPropertyObject(Prop::Visible)->GetBooleanValue();
-							if (!pControl->IsWindowVisible() && bShowControl > -1)
-								if (IsWindow(pControl->m_hWnd))		
-									pControl->ShowWindow(bShowControl);
-						}
-					}
-				}
-			}
-		}
-		// increment counter
-		nCount++;
-	}
-
-}
-
-void CControlPane::ShowPictureBoxes(BOOL bShow)
-{
-	// create a position variable to hold the counter increment
-	POSITION pos;	
-	
-	if (mpSourceForm == NULL)
-		return;
-
-	// set counter for clipboard
-	int nCount = 1;
-	int nTotal = mpSourceForm->mDclControls.GetCount();
-	if (nTotal == 0)
-		return;
-
-	while(nCount < mpSourceForm->mDclControls.GetCount())
-	{
-		// get position
-		pos = mpSourceForm->mDclControls.FindIndex(nCount);
-		if (pos != NULL)
-		{
-			// get current property
-			CDclControlObject* pArxControlForm = mpSourceForm->mDclControls.GetAt(pos);
-			
-			if (pArxControlForm && pArxControlForm->GetType() == CtlPictureBox)
-			{
-				// return a pointer to the CWnd control
-				CWnd *pControl = pArxControlForm->GetWindow(); 
-				if (pControl != NULL)
-				{
-					if (bShow == TRUE)
-					{
-						if (pArxControlForm->GetPropertyObject(Prop::Visible) != NULL)
-						{
-							BOOL bShowControl = pArxControlForm->GetPropertyObject(Prop::Visible)->GetBooleanValue();
-							if (!pControl->IsWindowVisible() && bShowControl == TRUE)
-								if (IsWindow(pControl->m_hWnd))																		
-									pControl->ShowWindow(pArxControlForm->GetPropertyObject(Prop::Visible)->GetBooleanValue());
-						}
-						else
-						{
-							BOOL bShowControl = pArxControlForm->GetBooleanProperty(Prop::Visible);
-							if (!pControl->IsWindowVisible() && bShowControl > -1)
-								if (IsWindow(pControl->m_hWnd))									
-									pControl->ShowWindow(bShowControl);							
-						}
-					}
-					else
-						if (IsWindow(pControl->m_hWnd))									
-							pControl->ShowWindow(bShow);			
-					
-				}
-			}
-		}
-		// increment counter
-		nCount++;
-	}
 }
 
 
@@ -464,14 +345,13 @@ void CControlPane::SetFirstControlFocus() const
 {
 	if(!mpSourceForm)
 		return;
-	POSITION pos = mpSourceForm->mDclControls.GetTailPosition();
-	while( pos )
+	const TDclControlList& Controls = mpSourceForm->GetControlList();
+	TDclControlList::const_iterator iter = Controls.end();
+	while( iter != Controls.begin() )
 	{
-		CDclControlObject* pControl = mpSourceForm->mDclControls.GetPrev( pos );
-		if (pControl == NULL )
-			continue;
-		CWnd* pWnd = pControl->GetWindow();
-		if( pWnd == NULL)
+		--iter;
+		CWnd* pWnd = (*iter)->GetWindow();
+		if( !pWnd )
 			continue;
 		if( (pWnd->GetStyle() & (WS_VISIBLE | WS_TABSTOP | WS_DISABLED)) != (WS_VISIBLE | WS_TABSTOP) )
 			continue;

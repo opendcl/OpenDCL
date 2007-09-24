@@ -27,30 +27,17 @@
 static const TCHAR *sAllChars = _T("*");
 
 
-static CDclControlObject* FindArxControlObject(CDclFormObject *pDclForm, CString sArxControlName, CDclControlObject *pCtrl = NULL )
+static TDclControlPtr FindArxControlObject(TDclFormPtr pDclForm, CString sArxControlName, TDclControlPtr pCtrl = NULL )
 {
-	CDclControlObject *pRetObject = NULL;
-		
 	if (pDclForm == NULL)
 		return NULL;
 
-	// create a position variable to hold the converted ArxControlIndex
-	POSITION ControlPos;
-	
-	for (int i=0;i<pDclForm->GetControlList().GetCount();i++)
+	const TDclControlList& Controls = pDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		// set the position variable to be equal the index to passing to the GetAt method
-		ControlPos = pDclForm->GetControlList().FindIndex(i);	
-		
-		if (ControlPos != NULL)
-		{
-			CDclControlObject *pControl = pDclForm->GetControlList().GetAt(ControlPos);
-			if (pControl->GetStringProperty(Prop::Name) == sArxControlName && pCtrl != pControl)
-			{
-				// return the object found
-				return pControl;
-			}
-		}
+		TDclControlPtr pDclControl = *iter;
+		if (pDclControl->GetStringProperty(Prop::Name) == sArxControlName && pCtrl != pDclControl)
+			return pDclControl;
 	}
 	return NULL;
 }
@@ -185,7 +172,7 @@ void CPropertyEdit::CommitValue()
 	{
 		if (m_pProp->GetID() == Prop::Name)
 		{			
-			CDclFormObject *pDclForm = activeProject->FindDclForm(sText);
+			TDclFormPtr pDclForm = activeProject->FindDclForm(sText);
 			if (pDclForm != NULL)
 			{
 				return;
@@ -381,7 +368,7 @@ void CPropertyEdit::SetNameProp()
 
 	if (m_pControl->GetType() != CtlForm)
 	{
-		CDclControlObject *pFormPropHolder = FindArxControlObject(m_pView->m_pThisDclForm, sText, m_pControl);
+		TDclControlPtr pFormPropHolder = FindArxControlObject(m_pView->m_pThisDclForm, sText, m_pControl);
 		
 		// if an identical arx control has been found and it's not this one
 		if (pFormPropHolder != NULL && pFormPropHolder != m_pControl)
@@ -405,7 +392,7 @@ void CPropertyEdit::SetNameProp()
 	}
 	else
 	{	
-		CDclFormObject *pDclForm = activeProject->FindDclForm(sText);
+		TDclFormPtr pDclForm = activeProject->FindDclForm(sText);
 		
 		// if an identical form has been found and it's not this one
 		if (pDclForm != NULL &&

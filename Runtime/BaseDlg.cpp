@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "BaseDlg.h"
-#include "Project.h"
+#include "Workspace.h"
 #include "PropertyIds.h"
 #include "DclControlObject.h"
 #include "PictureObject.h"
@@ -19,7 +19,7 @@ const TCHAR sTopLeftY[] = _T("nTopLeftY");
 /////////////////////////////////////////////////////////////////////////////
 // CBaseDlg dialog
 
-CBaseDlg::CBaseDlg(CDclFormObject* pSourceForm, UINT idd, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/)
+CBaseDlg::CBaseDlg(TDclFormPtr pSourceForm, UINT idd, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/)
 : CDialog(idd, pParent)
 , mpSourceForm( pSourceForm )
 , mnInitialX( pParams? pParams->position.x : -1 )
@@ -136,7 +136,7 @@ BOOL CBaseDlg::OnInitDialog()
 		ModifyStyle( WS_CAPTION, 0, 0 );
 	SetWindowPos( NULL, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING );
 
-	CDclControlObject* pFormProps = mpSourceForm->GetControlProperties();
+	TDclControlPtr pFormProps = mpSourceForm->GetControlProperties();
 	CRect rectWindow;
 	GetWindowRect( &rectWindow );
 	CRect rectClient;

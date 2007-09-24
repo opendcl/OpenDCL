@@ -14,7 +14,7 @@ class CModalDialogX : public CArxDialogObject
 	friend class CModalDlg;
 	CModalDlg* mpOwner;
 protected:
-	CModalDialogX( CModalDlg& Owner, CDclFormObject* pDclForm );
+	CModalDialogX( CModalDlg& Owner, TDclFormPtr pDclForm );
 	~CModalDialogX();
 
 	virtual DclFormType GetType() const;
@@ -41,14 +41,14 @@ class CModalDlg : public CBaseDlg
 
 // Construction
 public:
-	CModalDlg(CDclFormObject* pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL);
+	CModalDlg(TDclFormPtr pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL);
 	~CModalDlg();
 
 public:
 	virtual CControlPane& GetControlPane() { return mDialogX.GetControlPane(); }
 	virtual const CDialogObject& GetDialogObject() const { return mDialogX; }
 	virtual CDialogObject& GetDialogObject() { return mDialogX; }
-	void SetDclForm(CDclFormObject *pDclFormObject);
+	void SetDclForm(TDclFormPtr pDclFormObject);
 	bool IsResizable() const { return mbResizable; }
 
 // Overrides

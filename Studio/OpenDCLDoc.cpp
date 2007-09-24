@@ -78,7 +78,7 @@ BOOL COpenDCLDoc::OnNewDocument()
 	if (!CDocument::OnNewDocument())
 		return FALSE;
 	
-	CEditorProject* pProject = new CEditorProject( m_strTitle );
+	TEditorProjectPtr pProject = new CEditorProject( m_strTitle );
 	theEditorWorkspace.SetActiveProject( pProject );
 	theEditorWorkspace.SetActiveDocument(this); //kludge [ORW]
 	CProjectTreeCtrl* pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
@@ -99,7 +99,7 @@ BOOL COpenDCLDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	// begin reading
 	CWaitCursor wait;
 
-	CEditorProject* pProject = new CEditorProject;
+	TEditorProjectPtr pProject = new CEditorProject;
 	theEditorWorkspace.SetActiveProject( pProject );
 	theEditorWorkspace.SetActiveDocument(this); //kludge [ORW]
 
@@ -165,8 +165,5 @@ void COpenDCLDoc::OnCloseDocument()
 	theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
 	CToolBarCtrl *pCtrl = &theEditorWorkspace.GetMainFrame()->m_wndToolBar.GetToolBarCtrl();
 	theEditorWorkspace.SetActiveDocument(NULL);
-	CProject *pProject = activeProject;
-	if (pProject)
-		pProject->ClearProject();
 	theEditorWorkspace.SetActiveProject( NULL );
 }

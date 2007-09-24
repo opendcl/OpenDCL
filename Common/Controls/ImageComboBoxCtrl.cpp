@@ -8,7 +8,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CImageComboBoxCtrl
 
-CImageComboBoxCtrl::CImageComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID,
+CImageComboBoxCtrl::CImageComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID,
 																				CComboHandler* pHandler /*= NULL*/, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , CFilteredComboExCtrl( pHandler? pHandler->GetInputFilter() : NULL )
@@ -42,10 +42,13 @@ bool CImageComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 CRect CImageComboBoxCtrl::GetWndRect() const
 {
 	CRect rectCombo = CDialogControl::GetWndRect();
-	long nListHeight = mpTemplate->GetLongProperty( Prop::DropDownHeight );
-	if( nListHeight < 40 )
-		nListHeight = 40;
-	rectCombo.bottom += nListHeight;
+	if( (GetComboStyle() & CBS_DROPDOWN) != 0 )
+	{
+		long nListHeight = mpTemplate->GetLongProperty( Prop::DropDownHeight );
+		if( nListHeight < 40 )
+			nListHeight = 40;
+		rectCombo.bottom += nListHeight;
+	}
 	return rectCombo;
 }
 

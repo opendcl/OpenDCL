@@ -20,7 +20,7 @@ class AxPropertyDescriptor;
 
 class CControlHolder : public CStatic, public CControlPane
 {
-	CDclControlObject* mpTemplate;
+	TDclControlPtr mpTemplate;
 	TDialogControlPtr mpDlgControl;
 	int mnControlId;
 
@@ -28,7 +28,7 @@ class CControlHolder : public CStatic, public CControlPane
 protected:
 	CControlHolder();
 public:
-	CControlHolder( CDclControlObject* pTemplate );
+	CControlHolder( TDclControlPtr pTemplate );
 	virtual ~CControlHolder();
 
 	// Attributes
@@ -36,9 +36,9 @@ protected:
 	CControlGripper mGripper;
 
 public:
-	const CDclControlObject* GetTemplate() const { return mpTemplate; }
-	CDclControlObject* GetTemplate() { return mpTemplate; }
-	TDialogControlPtr GetControl() const { return mpDlgControl; }
+	const TDclControlPtr GetTemplate() const { return mpTemplate; }
+	TDclControlPtr GetTemplate() { return mpTemplate; }
+	TDialogControlPtr GetControlWnd() const { return mpDlgControl; }
 	void SetControl( TDialogControlPtr pControl ) { mpDlgControl = pControl; }
 
 	void UpdateProperty(Prop::Id nID);
@@ -50,8 +50,8 @@ protected:
 	void SetupTreeControl(CTreeCtrl *pControl);
 	void ResetImageList(CWnd *pControl, int nID);
 	CSize GetControlSize( CWnd* pControl, ControlType nControlType );
-	TDialogControlPtr CreateComboBox( CDclControlObject* pTemplate );
-	TDialogControlPtr CreateTextBox( CDclControlObject* pTemplate );
+	TDialogControlPtr CreateComboBox( TDclControlPtr pTemplate );
+	TDialogControlPtr CreateTextBox( TDclControlPtr pTemplate );
 
 // CControlPane
 public:
@@ -59,20 +59,22 @@ public:
 	virtual TDialogControlPtr FindControl(HWND hwndControl) const { return NULL; }
 	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const { return NULL; }
 protected:
-	virtual TDialogControlPtr CreateNewDialogControl( CDclControlObject* pTemplate, UINT nID ) { return NULL; }
+	virtual TDialogControlPtr CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID ) { return NULL; }
 
 public:
 	HRESULT SaveToStream( IStream* pStream );
 
 // Operations
 public:
-	CWnd* GetControl() { return mpDlgControl? mpDlgControl->GetControl() : NULL; }
+	CWnd* GetControlWnd() { return mpDlgControl? mpDlgControl->GetControlWnd() : NULL; }
 	int GetId() const { return mnControlId; }
-	void SetSelected();
 
 	// Grip interface
 public:
+	void SetSelected();
 	void HideGrips() { mGripper.Hide(); }
+	bool IsSelected() { return mGripper.IsVisible(); }
+
 protected:
 	void ForceGripsForward() { mGripper.MoveToTop(); }
 	

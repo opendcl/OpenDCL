@@ -18,7 +18,7 @@ static double acedVarToDouble(VARIANT *pVarGet);
 static CString LongToA(long lValue);
 
 
-CArxAxContainerCtrl::CArxAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate) 
+CArxAxContainerCtrl::CArxAxContainerCtrl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate) 
 : CAxContainerCtrl(pTemplate, pPane, nID, false)
 , mArxServices( pTemplate )
 {
@@ -40,11 +40,6 @@ bool CArxAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess = __super::Create( pParentWnd, nID );
 
-	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
-
 	return bSuccess;
 }
 
@@ -59,37 +54,27 @@ BOOL CArxAxContainerCtrl::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHAN
 
 void CArxAxContainerCtrl::TryToFireAxEvent(UINT idCtrl, AFX_EVENT* pEvent)
 {
-	const AFX_EVENTSINKMAP* pSinkMap = GetEventSinkMap();
-	//const AFX_EVENTSINKMAP_ENTRY* pEntry;
-	size_t flag = (pEvent->m_eventKind != AFX_EVENT::event);
-
-	POSITION pos = GetTemplate()->GetPropertyList().GetHeadPosition();
-	while (pos != NULL)
+	const TPropertyList& Props = GetTemplate()->GetPropertyList();
+	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 	{
-		// get a pointer to the property
-		CPropertyObject *pProp = GetTemplate()->GetPropertyList().GetNext(pos);
-		if (pProp == NULL) {
+		const CPropertyObject* pProp = (*iter);
+		if( !pProp )
 			continue;
-		}
-		AxInterfaceDescriptor* pID = pProp->GetAxInterfaceDescriptorPtr();
-		if (pID == NULL) {
+		const AxInterfaceDescriptor* pID = pProp->GetAxInterfaceDescriptorPtr();
+		if( !pID )
 			continue;
-		}
-		AxEventDescriptor* pED = pID->GetEvent();
-		if (pED == NULL) {
+		const AxEventDescriptor* pED = pID->GetEvent();
+		if( !pED )
 			continue;
-		}
 
 		// is this is the event that we are looking for?
 		// if the event defun has been set
 		if (pED->GetDispId() == pEvent->m_dispid && !pProp->GetStringValue().IsEmpty())
-		{
   		FireAxEvent(idCtrl, pProp, pEvent);
-		}
 	}
 }
 
-void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_EVENT* pEvent)
+void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, const CPropertyObject* pProp, AFX_EVENT* pEvent)
 {
 	try
 	{
@@ -115,7 +100,7 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_E
 			{				
 				// just call InvokeMethod
 				delete [] dispparams.rgvarg;
-				InvokeMethod(pProp->GetStringValue(), m_bInvokeWithSendString);
+				InvokeMethod(pProp->GetStringValue(), IsAsyncEvents());
 				return;
 			}
 			// this code is used if the programmer want to call the defun using the default option
@@ -125,17 +110,17 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_E
 			CString sCommand = CString("(") + FireCancel(pProp->GetStringValue()) + " ";
 
 			// again this code is for allow (Command ...)
-			if (m_bInvokeWithSendString)
+			if (IsAsyncEvents())
 			{
-				if (pProp->GetStringValue().Left(1) == "'")
+				if (pProp->GetStringValue().Left(1) == _T("'"))
 				{
-					sCommand = pProp->GetStringValue() + " ";
+					sCommand = pProp->GetStringValue() + _T(" ");
 					bShowCommand = true;
 				}
 			}
 
 			// Again this code is used if the programmer want to call the defun using the default option
-			if (!m_bInvokeWithSendString)
+			if (!IsAsyncEvents())
 			{
 				pRBFinal = acutNewRb(RTSTR);	//	create new resbuf
 				acutNewString(pProp->GetStringValue(), pRBFinal->resval.rstring);
@@ -155,13 +140,13 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_E
 				VARIANT* pVarArg = &dispparams.rgvarg[i];
 
 				// again this code is for allow (Command ...)
-				if (m_bInvokeWithSendString)
+				if (IsAsyncEvents())
 				{
 					sCommand += acedVarToString(pVarArg) + " ";
 				}
 
 				// Again this code is used if the programmer want to call the defun using the default option
-				if (!m_bInvokeWithSendString)
+				if (!IsAsyncEvents())
 				{
 					// get the type of argument to return;
 					int nRtType = acedGetRtType(pVarArg);
@@ -243,7 +228,7 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_E
 								// get the ITypeInfo
 								ITypeInfo *TheInfo = NULL;
 								// get this project
-								CProject *pProject = theWorkspace.GetActiveProject();
+								TProjectPtr pProject = GetTemplate()->GetOwnerProject();
 
 								pDisp->GetTypeInfo(0, ::GetUserDefaultLCID(), &TheInfo);
 
@@ -252,8 +237,9 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_E
 								TheInfo->GetTypeAttr(&TheAttr);
 
 								// Get the CArxControlObject
-								COleControlObject *pOleObject = pProject->GetOleObject(TheAttr->guid);
-								pRB->resval.rlname[0] = (DWORD_PTR)pOleObject;
+								GetTemplate()->GetOwnerProject();
+								TOleControlPtr pOleObject = pProject->GetOleObject(TheAttr->guid);
+								pRB->resval.rlname[0] = (DWORD_PTR)(COleControlObject*)pOleObject;
 
 								// Build up the linked list
 								// Remember that pRBList still points
@@ -311,7 +297,7 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_E
 			}
 
 			// Again this code is used if the programmer want to call the defun using the default option
-			if (!m_bInvokeWithSendString)
+			if (!IsAsyncEvents())
 			{	
 				struct resbuf *result = NULL;    
 				int stat = acedInvoke(pRBFinal, &result);
@@ -319,7 +305,7 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, CPropertyObject* pProp, AFX_E
 			}
 
 			// again this code is for allow (Command ...)
-			if (m_bInvokeWithSendString)
+			if (IsAsyncEvents())
 			{
 				sCommand += ") ";
 

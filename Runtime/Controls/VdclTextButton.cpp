@@ -10,6 +10,9 @@
 #include "PropertyIds.h"
 #include "ToolTips.h"
 
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
+
 
 /////////////////////////////////////////////////////////////////////////////
 // VdclTextButton
@@ -42,7 +45,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // VdclTextButton message handlers
 
-BOOL VdclTextButton::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
+BOOL VdclTextButton::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID ) 
 {
 	BOOL RetVal;
 	DWORD dwStyle;
@@ -74,18 +77,6 @@ BOOL VdclTextButton::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-	int n = m_ArxControl->GetLongProperty(Prop::EventInvoke);
-	switch (n)
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	case -1:
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
-	
 	return RetVal;
 }
 
@@ -123,7 +114,7 @@ void VdclTextButton::OnClicked()
 	else
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);	
+		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), IsAsyncEvents());	
 	}
 }
 
@@ -134,7 +125,7 @@ void VdclTextButton::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	CButton::OnMouseMove(nFlags, point);
 }
 
@@ -211,7 +202,7 @@ void VdclTextButton::OnLButtonDown(UINT nFlags, CPoint point)
 	//SetFocus();
 	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
 	{
-		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
+		BeginDragnDrop(m_ArxControl, point, IsAsyncEvents());
 	}
 	
 	CButton::OnLButtonDown(nFlags, point);

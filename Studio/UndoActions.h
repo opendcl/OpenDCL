@@ -3,7 +3,7 @@
 
 #pragma once
 
-class CDclControlObject;
+#include "DclControlObject.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -23,12 +23,12 @@ class CUndoActions : public CObject
 {
 // Construction
 public:
-	CUndoActions(int nAction, CDclControlObject *pArxObject, CWnd *pControl);
+	CUndoActions(int nAction, TDclControlPtr pArxObject, CWnd *pControl);
 	~CUndoActions();
 // Attributes
 public:
 	int m_nAction;
-	CDclControlObject *m_pArxObject;
+	TDclControlPtr m_pArxObject;
 	CWnd *m_pControl;
 	CRect rcPos;
 	CString sString;

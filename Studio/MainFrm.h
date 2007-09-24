@@ -62,7 +62,7 @@ public:  // control bar embedded members
 	CSizingControlBarG		m_wndPropertyBar; // toolbox bar
 	CPropertyTabPane	m_PropertyTabPane;
 	
-	void CreateProjectDockingBar(CProject* pProject = NULL);
+	void CreateProjectDockingBar(TEditorProjectPtr pProject = NULL);
 	void CreateToolBoxBar();
 	void CreateZOrderDockingBar();
 	void CreatePropertyDockingBar();

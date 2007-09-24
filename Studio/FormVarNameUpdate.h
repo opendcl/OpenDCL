@@ -4,8 +4,7 @@
 #pragma once
 
 #include "Resource.h"
-
-class CDclFormObject;
+#include "PtrTypes.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -13,13 +12,13 @@ class CDclFormObject;
 
 class CFormVarNameUpdate : public CDialog
 {
-	CDclFormObject* mpDclForm;
+	TDclFormPtr mpDclForm;
 	CString msFormName;
 	bool mbSetControls;
 
 // Construction
 public:
-	CFormVarNameUpdate( CDclFormObject* pDclForm, LPCTSTR pszFormName = NULL, CWnd* pParent = NULL );
+	CFormVarNameUpdate( TDclFormPtr pDclForm, LPCTSTR pszFormName = NULL, CWnd* pParent = NULL );
 
 // Dialog Data
 	enum { IDD = IDD_FORMVARNAMEUPDATE_DIALOG };

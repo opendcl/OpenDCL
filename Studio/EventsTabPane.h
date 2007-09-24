@@ -3,8 +3,8 @@
 #pragma once
 
 #include "Resource.h"
+#include "DclControlObject.h"
 
-class CDclControlObject;
 class CDclFormObject;
 class COpenDCLView;
 enum Prop::Id;
@@ -28,14 +28,14 @@ private:
 	CEdit				m_DefunEdit;
 	CCheckListBox		m_EventsTree;
 	bool m_bInitialized;
-	CDclControlObject	*m_pControl;
+	TDclControlPtr m_pControl;
 	CSize mszDlg;
 public:
 	COpenDCLView		*m_pView;
 	
 // operations
 public:
-	void UpdateEvents(CDclControlObject *pControl);
+	void UpdateEvents(TDclControlPtr pControl);
 	void AddAnyActiveXEvents();
 	void TryToAddEvent(Prop::Id nEvent);
 	void ClearEvents();

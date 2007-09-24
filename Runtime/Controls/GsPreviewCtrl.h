@@ -9,7 +9,6 @@
 
 class CAcadDocReactor;
 class CAcadBlockReactor;
-class CDclControlObject;
 class CPropertyObject;
 
 #if (_MFC_VER < 0x0800)
@@ -160,7 +159,6 @@ public:
 	void DrawOrbitCircles(CDC* pDC = NULL);
     void DrawOrbitQuadCircle(CDC *pdc, int nX, int nY);
 	void AllowOrbiting(bool bOrbiting);
-	bool m_bInvokeWithSendString;
 	void Zoom(double dZfactor);
 	void SetRenderMode();
 	void SetDragnDrop(BOOL bRegister);
@@ -177,7 +175,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CGsPreviewCtrl)
 	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID);
+	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);	
 	//}}AFX_VIRTUAL
 
@@ -326,9 +324,9 @@ private:
     bool				mbOrbiting;
     CPoint				mStartPt;
 public:
-	CDclControlObject	*m_ArxControl;
-	CPropertyObject		*m_pInterfaceMode;
-	CPropertyObject		*m_pAllowCircles;
-	CPropertyObject		*m_pRenderMode;
+	TDclControlPtr m_ArxControl;
+	TPropertyPtr m_pInterfaceMode;
+	TPropertyPtr m_pAllowCircles;
+	TPropertyPtr m_pRenderMode;
 	CRect				m_rcFocus;
 };

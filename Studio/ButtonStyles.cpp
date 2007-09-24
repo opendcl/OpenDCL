@@ -15,7 +15,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CButtonStyles property page
 
-CButtonStyles::CButtonStyles( CDclControlObject* pControl, COpenDCLView* pView )
+CButtonStyles::CButtonStyles( TDclControlPtr pControl, COpenDCLView* pView )
 : CPropertyPage(CButtonStyles::IDD)
 , mpControl( pControl )
 , mpView( pView )
@@ -276,7 +276,7 @@ BOOL CButtonStyles::OnInitDialog()
 	CString sAdd;
 	sAdd = theWorkspace.LoadResourceString(IDS_ADD);
 	m_PicList.AddString(sAdd);
-	CProject* pProject = mpControl->GetOwnerProject();
+	TProjectPtr pProject = mpControl->GetOwnerProject();
 	INT_PTR nIndex = 0;
 	INT_PTR ctPic = pProject->GetPictureList().GetCount();
 	while(nIndex < ctPic)

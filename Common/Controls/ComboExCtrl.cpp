@@ -28,6 +28,10 @@ bool CComboExCtrl::Create( CWnd* pParentWnd, const CRect& rectWnd, DWORD dwCombo
 	DWORD dwStyle = (WS_CHILD | WS_VISIBLE | WS_VSCROLL | dwComboStyle);
 	bool bSuccess = (__super::Create( dwStyle, rectWnd, pParentWnd, nID ) != FALSE);
 
+	CComboBox* pComboCtrl = GetComboBoxCtrl();
+	if( pComboCtrl )
+		pComboCtrl->ModifyStyle( 0, CBS_HASSTRINGS | CBS_NOINTEGRALHEIGHT );
+
 	return bSuccess;
 }
 

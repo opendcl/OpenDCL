@@ -1,7 +1,7 @@
 #pragma once
 
-class CDclControlObject;
+#include "PtrTypes.h"
 
 CString GetControlName( ControlType type );
-CString GetControlName( CDclControlObject* pTemplate );
+CString GetControlName( TDclControlPtr pTemplate );
 CString GetControlName( CLSID clsid );

@@ -8,9 +8,6 @@
 #include "ArxDialogObject.h"
 
 class CFontCollection;
-class CDialogControl;
-class CDclFormObject;
-class CDclControlObject;
 
 #if (_MFC_VER < 0x0800)
 #define __LRESULT UINT
@@ -24,7 +21,7 @@ class CDockingDialogX : public CArxDialogObject
 	friend class CDockingDialog;
 	CDockingDialog* mpOwner;
 protected:
-	CDockingDialogX( CDockingDialog& Owner, CDclFormObject* pDclForm );
+	CDockingDialogX( CDockingDialog& Owner, TDclFormPtr pDclForm );
 	~CDockingDialogX();
 
 	virtual DclFormType GetType() const;
@@ -55,7 +52,7 @@ class CDockingDialog : public CAdUiDockControlBar
 
 // Construction
 public:
-	CDockingDialog( CDclFormObject* pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
+	CDockingDialog( TDclFormPtr pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
 	virtual ~CDockingDialog();
 
 public:

@@ -4,10 +4,10 @@
 #pragma once
 
 #include "Project.h"
-#include "ArxWorkspace.h"
+#include "RefCountedPtr.h"
 
-#define activeArxProject ((CArxProject*)theWorkspace.GetActiveProject()) //shortcut to the active project
 
+#define activeArxProject ((TArxProjectPtr)theWorkspace.GetActiveProject()) //shortcut to the active project
 
 class CArxProject : public CProject
 {
@@ -25,3 +25,6 @@ public:
 protected:
 	DECLARE_SERIAL(CArxProject)
 };
+
+typedef RefCountedPtr< CArxProject > TArxProjectPtr;
+typedef LockedPtr< CArxProject > TArxProjectLockedPtr;

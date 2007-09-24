@@ -3,13 +3,13 @@
 
 #pragma once
 
-class CDclControlObject;
+#include "PtrTypes.h"
 
 
-void CopyArxObjectToClipboard(CDclControlObject *pControl);
+void CopyArxObjectToClipboard(TDclControlPtr pControl);
 COleDataSource* generateDataSource(int objType, const CRect& rect);
-DROPEFFECT BeginDragnDrop(CDclControlObject *pControl, CPoint point, bool bInvokeWithSendString);
-DROPEFFECT BeginDragnDropToInsertBlocks(CDclControlObject *pControl, CPoint point, bool bInvokeWithSendString, CStringArray &BlockNames);
+DROPEFFECT BeginDragnDrop(TDclControlPtr pControl, CPoint point, bool bInvokeWithSendString);
+DROPEFFECT BeginDragnDropToInsertBlocks(TDclControlPtr pControl, CPoint point, bool bInvokeWithSendString, CStringArray &BlockNames);
 
 
 class CMyOverrideDropTarget  : public COleDropTarget
@@ -17,7 +17,7 @@ class CMyOverrideDropTarget  : public COleDropTarget
 public:
     CMyOverrideDropTarget();
     ~CMyOverrideDropTarget();
-	CDclControlObject *m_pThisArxControl;
+	TDclControlPtr m_pThisArxControl;
 	virtual DROPEFFECT OnDragEnter(CWnd* pWnd, COleDataObject* pDataObject,
 		DWORD dwKeyState, CPoint point);
 	virtual DROPEFFECT OnDragOver(CWnd* pWnd, COleDataObject* pDataObject,
@@ -47,12 +47,12 @@ class COleOdcDropTarget : public COleDropTarget
 public:
 	COleOdcDropTarget();
 	CWnd *m_pParent;
-	CDclControlObject *m_pThisArxControl;
+	TDclControlPtr m_pThisArxControl;
 
 // Implementation
 public:
 	virtual ~COleOdcDropTarget(); 
-	CDclControlObject * PasteArxObjectFromClipboard();
+	TDclControlPtr  PasteArxObjectFromClipboard();
 	void ClearTheClipboard();
 
  //

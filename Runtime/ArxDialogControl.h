@@ -17,25 +17,25 @@ protected:
 	CArxControlServices	mArxServices;
 	
 public:
-	CArxDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pControl );
+	CArxDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl );
 	virtual ~CArxDialogControl();
 
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 
-	static TDialogControlPtr Create( CDclControlObject* pTemplate, CControlPane* pPane,
+	static TDialogControlPtr Create( TDclControlPtr pTemplate, CControlPane* pPane,
 																	 UINT nID, ControlParams* pParams = NULL );
 
-	static TDialogControlPtr CreateComboExControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nId);	
-	static TDialogControlPtr CreateEditControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nId);
-	static TDialogControlPtr CreateComboControl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nId);
-	static void UpdateChildControl(CWnd* pControlWnd, CDclControlObject *pControl, CControlPane* pPane, UINT nControlId);
-	static void UpdatePropertyInt(CWnd *pWnd, CDclControlObject *pControl, CControlPane* pPane, Prop::Id nID);
-	static void UpdateProperty(CDclControlObject *pControl, CControlPane* pPane, UINT nControlId, Prop::Id nID);
-	static void UpdateText(CDclControlObject *pControl, CWnd *pWnd, CString sText);
-	static void UpdateFont(CDclControlObject *pControl, CWnd *pWnd, CFont *pFont);
-	static void UpdateToolTip(CDclControlObject *pControl, CWnd *pWnd);
+	static TDialogControlPtr CreateComboExControl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nId);	
+	static TDialogControlPtr CreateEditControl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nId);
+	static TDialogControlPtr CreateComboControl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nId);
+	static void UpdateChildControl(CWnd* pControlWnd, TDclControlPtr pControl, CControlPane* pPane, UINT nControlId);
+	static void UpdatePropertyInt(CWnd *pWnd, TDclControlPtr pControl, CControlPane* pPane, Prop::Id nID);
+	static void UpdateProperty(TDclControlPtr pControl, CControlPane* pPane, UINT nControlId, Prop::Id nID);
+	static void UpdateText(TDclControlPtr pControl, CWnd *pWnd, CString sText);
+	static void UpdateFont(TDclControlPtr pControl, CWnd *pWnd, CFont *pFont);
+	static void UpdateToolTip(TDclControlPtr pControl, CWnd *pWnd);
 	static void SetDwgListComboFolderLink(CArxDwgListCtrl *pDwgList);
-	static void ResetImageList(CDclControlObject *pControl, CWnd *pWnd, int nID);
+	static void ResetImageList(TDclControlPtr pControl, CWnd *pWnd, int nID);
 };
 
 
@@ -44,7 +44,7 @@ public:
 class CArxAutoDialogControl : public CArxDialogControl
 {
 public:
-	CArxAutoDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pControl )
+	CArxAutoDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl )
 		: CArxDialogControl( pTemplate, pPane, pControl ) {}
 	virtual ~CArxAutoDialogControl() { delete mpControl; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }

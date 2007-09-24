@@ -15,6 +15,10 @@ public:
 	CImageListObject( const CImageList* pSrc );
 	virtual ~CImageListObject();
 
+protected:
+	//2007-09-19 [ORW]: save version set to 2 (removed image size from serialized data and changed BOOL to bool)
+	ULONG GetCurrentSaveVersion() const { return 2; }
+
 // Operations
 public:
 	CImageListObject& operator =( const CImageListObject& Src );

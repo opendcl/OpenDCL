@@ -11,7 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CTabStripCtrl
 
-CTabStripCtrl::CTabStripCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CTabStripCtrl::CTabStripCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , mbrushBackground( RGB(0,0,0) )
 {

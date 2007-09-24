@@ -14,7 +14,7 @@
 // CFormVarNameUpdate dialog
 
 
-CFormVarNameUpdate::CFormVarNameUpdate( CDclFormObject* pDclForm,
+CFormVarNameUpdate::CFormVarNameUpdate( TDclFormPtr pDclForm,
 																				LPCTSTR pszFormName /*= NULL*/,
 																				CWnd* pParent /*= NULL*/ )
 	: CDialog(CFormVarNameUpdate::IDD, pParent)

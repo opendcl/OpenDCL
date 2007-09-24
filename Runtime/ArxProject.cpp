@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "ArxProject.h"
+#include "ArxWorkspace.h"
 #include "DclFormObject.h"
 #include "DclControlObject.h"
 #include "PropertyIds.h"
@@ -35,15 +36,10 @@ bool CArxProject::OnExtendTabbedDialog( CAdUiTabExtensionManager* pTabXM ) const
 	if (!pTabXM)
 		return false;
 	bool bFailed = false;
-	POSITION posDclForm = mDclForms.GetHeadPosition();
-	while (posDclForm)
+	for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
 	{
-		CDclFormObject *pDclForm = mDclForms.GetNext(posDclForm);
-		if (pDclForm && pDclForm->GetType() == VdclConfigTab)
-		{
-			if (!theArxWorkspace.AddExtensionTab(pDclForm, pTabXM))
-				bFailed = true;
-		}
+		if( (*iter)->GetType() == VdclConfigTab && !theArxWorkspace.AddExtensionTab( *iter, pTabXM ) )
+			bFailed = true;
 	}
 	return !bFailed;
 }
@@ -51,22 +47,17 @@ bool CArxProject::OnExtendTabbedDialog( CAdUiTabExtensionManager* pTabXM ) const
 
 bool CArxProject::SetProjectLispSymbols( bool bResetToNil /*= false*/ ) const
 {
-	POSITION posDclForm = mDclForms.GetHeadPosition();
-	while( posDclForm != NULL )
+	for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
 	{
-		CDclFormObject *pDclForm = mDclForms.GetNext( posDclForm );
-		assert( pDclForm != NULL);
-		if( !pDclForm )
-			continue;
-		if( pDclForm->GetParentForm() )
+		if( (*iter)->GetParentForm() )
 			continue; //ignore child forms, since they will use the same name as their parent
-		CString sVarName = pDclForm->GetVarName();
+		CString sVarName = (*iter)->GetVarName();
 		if( !sVarName.IsEmpty() )
 		{
 			if( bResetToNil )
 				theArxWorkspace.ResetLispSymbol( sVarName );
 			else
-				theArxWorkspace.SetLispSymbol( sVarName, (UINT_PTR)pDclForm );
+				theArxWorkspace.SetLispSymbol( sVarName, (UINT_PTR)(const CDclFormObject*)(*iter) );
 		}
 	}
 	return true;

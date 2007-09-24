@@ -4,8 +4,7 @@
 #pragma once
 
 #include "PPToolTip.h"
-
-class CDclControlObject;
+#include "PtrTypes.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -13,41 +12,28 @@ class CDclControlObject;
 
 class OdclMonth : public CMonthCalCtrl
 {
-// Construction
-public:
-	OdclMonth();
+	TDclControlPtr m_ArxControl;
 
-// Attributes
-public:
-	bool m_bInvokeWithSendString;
-	
-// Operations
 public:
 	CPPToolTip m_ToolTip;
+
+public:
+	OdclMonth();
+	virtual ~OdclMonth();
 	
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(OdclMonth)
-	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
-
-// Implementation
 public:
-	virtual ~OdclMonth();
+	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 	// Generated message map functions
 protected:
-	//{{AFX_MSG(OdclMonth)
 	afx_msg void OnDestroy();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnGetdaystate(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnSelchange(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnSelect(NMHDR* pNMHDR, LRESULT* pResult);
-	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()
-private:
-	CDclControlObject *m_ArxControl;
 };

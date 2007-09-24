@@ -10,6 +10,9 @@
 #include "PropertyIds.h"
 #include "ToolTips.h"
 
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
+
 
 /////////////////////////////////////////////////////////////////////////////
 // VdclStatic
@@ -76,7 +79,7 @@ void VdclStatic::SetForeColor(long nColor)
 /////////////////////////////////////////////////////////////////////////////
 // VdclStatic message handlers
 
-BOOL VdclStatic::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
+BOOL VdclStatic::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID ) 
 {
 	BOOL RetVal;
 	DWORD dwStyle;
@@ -121,7 +124,7 @@ void VdclStatic::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	CStatic::OnMouseMove(nFlags, point);
 }
 
@@ -147,7 +150,7 @@ void VdclStatic::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
 	{
-		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
+		BeginDragnDrop(m_ArxControl, point, IsAsyncEvents());
 	}
 	CStatic::OnLButtonDown(nFlags, point);
 }

@@ -5,8 +5,7 @@
 
 #include "Resource.h"
 #include "ProgressTimeToComplete.h"
-
-class CDclControlObject;
+#include "DclControlObject.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -32,7 +31,7 @@ public:
 
 	CString			m_sTitle;
 
-	CDclControlObject *m_pArxCtrl;
+	TDclControlPtr m_pArxCtrl;
 
 	void ShowEditFrame();
 

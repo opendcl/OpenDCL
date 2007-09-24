@@ -6,8 +6,6 @@
 #include "DialogControl.h"
 #include "ArxControlServices.h"
 
-class CDclControlObject;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxArrowComboBoxCtrl window
@@ -16,15 +14,13 @@ class CArxColorComboBoxCtrl : public CAcUiColorComboBox, public CDialogControl
 {
 	CArxControlServices	mArxServices;
 
-	bool m_bInvokeWithSendString;
-
 public:
-	CArxColorComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CArxColorComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxColorComboBoxCtrl();
 
 // DialogControl Interface
 public:
-	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual CRect GetWndRect() const;
@@ -32,6 +28,9 @@ public:
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
 public:
+virtual void    DrawItemImage (CDC& dc, CRect& r, int cargo) { __super::DrawItemImage( dc, r, cargo ); }
+virtual void    OnAddItems () { __super::OnAddItems(); }
+virtual BOOL    OnSelectOther (BOOL isOther2, int curSel, int& newSel) { return __super::OnSelectOther( isOther2, curSel, newSel ); }
 
 protected:
 	DECLARE_MESSAGE_MAP();

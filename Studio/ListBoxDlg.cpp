@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "ListBoxDlg.h"
+#include "Workspace.h"
 #include "SharedRes.h"
 #include "PropertyObject.h"
 #include "OpenDCLView.h"
@@ -98,7 +99,7 @@ void CListBoxDlg::OnSelchangeListbox()
 		nInstructions = -1;
 		if (m_pAxContainer != NULL)
 		{
-			CDclControlObject *pCtrl = m_pView->m_pThisDclForm->FindControl(sName);
+			TDclControlPtr pCtrl = m_pView->m_pThisDclForm->FindControl(sName);
 			if (pCtrl != NULL)
 			{
 				DISPID dispid;

@@ -15,6 +15,9 @@
 const int nReturnChar = 13;
 const int nHardReturnChar = 10;
 
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CDwgPreviewCtrl
@@ -54,7 +57,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CDwgPreviewCtrl message handlers
 
-BOOL CDwgPreviewCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID)
+BOOL CDwgPreviewCtrl::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID)
 					 
 {	
 	BOOL RetVal;
@@ -89,15 +92,6 @@ BOOL CDwgPreviewCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
 	return RetVal;
 }
 
@@ -142,7 +136,7 @@ void CDwgPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	
 	CWnd::OnMouseMove(nFlags, point);
@@ -253,14 +247,14 @@ void CDwgPreviewCtrl::Refresh(CDC *pdc)
 void CDwgPreviewCtrl::OnClicked() 
 {
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), IsAsyncEvents());
 	
 }
 
 void CDwgPreviewCtrl::OnDoubleclicked() 
 {
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);	
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());	
 }	
 
 void CDwgPreviewCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
@@ -273,7 +267,7 @@ void CDwgPreviewCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	else
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), IsAsyncEvents());
 	}
 	
 }
@@ -294,7 +288,7 @@ void CDwgPreviewCtrl::OnSetFocus(CWnd* pOldWnd)
 	ReleaseDC(pdc);
 	
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
 	
 }
 
@@ -308,7 +302,7 @@ void CDwgPreviewCtrl::OnKillFocus(CWnd* pNewWnd)
 	ReleaseDC(pdc);
 
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 	
 }
 
@@ -341,7 +335,7 @@ void CDwgPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	SetFocus();
 	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
-		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
+		BeginDragnDrop(m_ArxControl, point, IsAsyncEvents());
 		
 	CButton::OnLButtonDown(nFlags, point);
 }

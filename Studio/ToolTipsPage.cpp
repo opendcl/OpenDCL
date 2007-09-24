@@ -5,7 +5,7 @@
 #include "ToolTipsPage.h"
 #include "ToolTips.h"
 #include "AcadColorTable.h"
-#include "Project.h"
+#include "EditorWorkspace.h"
 #include "PictureObject.h"
 #include "PropertyObject.h"
 #include "SharedRes.h"
@@ -103,7 +103,7 @@ BOOL CToolTipsPage::OnInitDialog()
 	m_Pictures.AddString(_T("< X >"));
 	
 	int nIndex=0;
-	CProject *pProjectList = activeProject;
+	TEditorProjectPtr pProjectList = activeProject;
 	int n = pProjectList->GetPictureList().GetCount();
 	while(nIndex < pProjectList->GetPictureList().GetCount())
 	{

@@ -9,7 +9,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxControlServices
 
-CArxControlServices::CArxControlServices( CDclControlObject* pTemplate )
+CArxControlServices::CArxControlServices( TDclControlPtr pTemplate )
 : mpTemplate( pTemplate )
 , msLispSymbolName( pTemplate->GetVarName() )
 {
@@ -26,7 +26,7 @@ void CArxControlServices::SetLispSymbol( bool bResetToNil /*= false*/ ) const
 	if( msLispSymbolName.IsEmpty() )
 		return;
 	if( !bResetToNil )
-		theArxWorkspace.SetLispSymbol( msLispSymbolName, (UINT_PTR)mpTemplate );
+		theArxWorkspace.SetLispSymbol( msLispSymbolName, (UINT_PTR)(const CDclControlObject*)mpTemplate );
 	else
 		theArxWorkspace.ResetLispSymbol( msLispSymbolName );
 }

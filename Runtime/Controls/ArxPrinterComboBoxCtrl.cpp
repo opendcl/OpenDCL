@@ -16,8 +16,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxPrinterComboBoxCtrl
 
-CArxPrinterComboBoxCtrl::CArxPrinterComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID,
-																									CDclControlObject* pPaperCombo /*= NULL*/, bool bCreate /*= true*/ )
+CArxPrinterComboBoxCtrl::CArxPrinterComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID,
+																									TDclControlPtr pPaperCombo /*= NULL*/, bool bCreate /*= true*/ )
 : CArxComboBoxCtrl( pTemplate, pPane, nID, new CPrinterComboHandler, false )
 , mpPaperCombo( NULL )
 {
@@ -62,7 +62,7 @@ bool CArxPrinterComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
-void CArxPrinterComboBoxCtrl::SetPaperSizeCombo( CDclControlObject* pPaperCombo )
+void CArxPrinterComboBoxCtrl::SetPaperSizeCombo( TDclControlPtr pPaperCombo )
 {
 	mpPaperCombo = pPaperCombo;
 	if( pPaperCombo )
@@ -70,7 +70,7 @@ void CArxPrinterComboBoxCtrl::SetPaperSizeCombo( CDclControlObject* pPaperCombo 
 		CDialogControl* pDclControl = pPaperCombo->GetControlInstance();
 		if( pDclControl )
 		{
-			CArxPaperComboBoxCtrl* pComboCtrl = (CArxPaperComboBoxCtrl*)pDclControl->GetControl();
+			CArxPaperComboBoxCtrl* pComboCtrl = (CArxPaperComboBoxCtrl*)pDclControl->GetControlWnd();
 			CComboHandler* pComboHandler = pComboCtrl->GetComboHandler();
 			if( pComboHandler )
 				pComboHandler->PopulateList( pComboCtrl );
@@ -95,7 +95,7 @@ void CArxPrinterComboBoxCtrl::OnSelchange()
 		CDialogControl* pDclControl = mpPaperCombo->GetControlInstance();
 		if( pDclControl )
 		{
-			CArxPaperComboBoxCtrl* pComboCtrl = (CArxPaperComboBoxCtrl*)pDclControl->GetControl();
+			CArxPaperComboBoxCtrl* pComboCtrl = (CArxPaperComboBoxCtrl*)pDclControl->GetControlWnd();
 			CComboHandler* pComboHandler = pComboCtrl->GetComboHandler();
 			if( pComboHandler )
 				pComboHandler->PopulateList( pComboCtrl );

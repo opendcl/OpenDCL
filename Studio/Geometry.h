@@ -7,8 +7,8 @@
 #include "GeometryImage.h"
 #include "Splitter.h"
 #include "PropertyObject.h"
+#include "DclControlObject.h"
 
-class CDclControlObject;
 class CDclFormObject;
 
 
@@ -42,7 +42,7 @@ public:
 	TPropertyPtr m_pUseLeftFromRight;
 	TPropertyPtr m_pUseRightFromRight;
 
-	CDclControlObject *m_pControl;
+	TDclControlPtr m_pControl;
 	CDclFormObject  *m_pDclForm;
 
 	void ShowSplitter(CString sName);

@@ -14,6 +14,9 @@
 const int IDC_TREE = 77;
 const TCHAR *pKeyStart = _T("k");
 
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
+
 
 OdclTreeItem::OdclTreeItem()
 {
@@ -68,7 +71,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // VdclTree message handlers
 
-BOOL VdclTree::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
+BOOL VdclTree::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID ) 
 {
 	BOOL RetVal;
 	CRect ArxRect;
@@ -129,17 +132,6 @@ BOOL VdclTree::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 	m_ChildTree.m_ToolTip.Create(this);
 	SetToolTipEx(&m_ChildTree, m_ChildTree.m_ToolTip, pControl);
 
-	
-	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
-	m_ChildTree.m_bInvokeWithSendString = m_bInvokeWithSendString;
 	return RetVal;
 }
 
@@ -561,7 +553,7 @@ void VdclTree::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 	// call methods to invoke the event
 	InvokeMethod(
 		m_ArxControl->GetStringProperty(Prop::EventClicked),
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	*pResult = 0;
 }
@@ -571,7 +563,7 @@ void VdclTree::OnDblclk(NMHDR* pNMHDR, LRESULT* pResult)
 	// call methods to invoke the event
 	InvokeMethod(
 		m_ArxControl->GetStringProperty(Prop::EventDblClicked),
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	*pResult = 0;
 }
@@ -581,7 +573,7 @@ void VdclTree::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult)
 	// call methods to invoke the event
 	InvokeMethod(
 		m_ArxControl->GetStringProperty(Prop::EventKillFocus),
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	*pResult = 0;
 }
@@ -591,7 +583,7 @@ void VdclTree::OnChildSetfocus(NMHDR* pNMHDR, LRESULT* pResult)
 	// call methods to invoke the event
 	InvokeMethod(
 		m_ArxControl->GetStringProperty(Prop::EventSetFocus),
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	*pResult = 0;
 }
@@ -601,7 +593,7 @@ void VdclTree::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 	// call methods to invoke the event
 	InvokeMethod(
 		m_ArxControl->GetStringProperty(Prop::EventRClick),
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	*pResult = 0;
 }
@@ -611,7 +603,7 @@ void VdclTree::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 	// call methods to invoke the event
 	InvokeMethod(
 		m_ArxControl->GetStringProperty(Prop::EventRDblClick),
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	
 	*pResult = 0;
@@ -622,7 +614,7 @@ void VdclTree::OnReturn(NMHDR* pNMHDR, LRESULT* pResult)
 	// call methods to invoke the event
 	InvokeMethod(
 		m_ArxControl->GetStringProperty(Prop::EventReturn),
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	
 	*pResult = 0;
@@ -641,7 +633,7 @@ void VdclTree::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 		InvokeMethodString(		
 			m_ArxControl->GetStringProperty(Prop::EventBeginLabelEdit),
 			sKey,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 	else if (SelectedItem.hItem != NULL)
 	{
@@ -649,7 +641,7 @@ void VdclTree::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 		InvokeMethodLong(		
 			m_ArxControl->GetStringProperty(Prop::EventBeginLabelEdit),
 			(DWORD_PTR)SelectedItem.hItem,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 	
 	*pResult = 0;
@@ -674,7 +666,7 @@ void VdclTree::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 			m_ArxControl->GetStringProperty(Prop::EventEndLabelEdit),
 			sNewText,
 			sKey,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 	else if (SelectedItem.hItem != NULL)
 	{
@@ -682,7 +674,7 @@ void VdclTree::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 			m_ArxControl->GetStringProperty(Prop::EventEndLabelEdit),
 			sNewText,
 			(DWORD_PTR)SelectedItem.hItem,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 	
 	*pResult = 0;
@@ -708,7 +700,7 @@ void VdclTree::OnDeleteitem(NMHDR* pNMHDR, LRESULT* pResult)
 			m_ArxControl->GetStringProperty(Prop::EventDeleteItem),
 			sItemText,
 			sKey,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 	else if (SelectedItem.hItem != NULL)
 	{
@@ -717,7 +709,7 @@ void VdclTree::OnDeleteitem(NMHDR* pNMHDR, LRESULT* pResult)
 			m_ArxControl->GetStringProperty(Prop::EventDeleteItem),
 			sItemText,
 			(DWORD_PTR)SelectedItem.hItem,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 	
 	*pResult = 0;
@@ -812,7 +804,7 @@ void VdclTree::OnItemexpanded(NMHDR* pNMHDR, LRESULT* pResult)
 			m_ArxControl->GetStringProperty(Prop::EventItemExpanded),
 			sItemText,
 			sKey,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 	else		
 	{	
@@ -821,7 +813,7 @@ void VdclTree::OnItemexpanded(NMHDR* pNMHDR, LRESULT* pResult)
 			m_ArxControl->GetStringProperty(Prop::EventItemExpanded),
 			sItemText,
 			(DWORD_PTR)SelectedItem.hItem,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 }
 
@@ -902,7 +894,7 @@ void VdclTree::OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult)
 			m_ArxControl->GetStringProperty(Prop::EventItemExpanding),
 			sItemText,
 			sKey,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 	else		
 	{	
@@ -911,7 +903,7 @@ void VdclTree::OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult)
 			m_ArxControl->GetStringProperty(Prop::EventItemExpanding),
 			sItemText,
 			(DWORD_PTR)SelectedItem.hItem,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 
 	
@@ -921,7 +913,7 @@ void VdclTree::OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult)
 void VdclTree::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(m_ArxControl->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(m_ArxControl->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, IsAsyncEvents());
 	
 	CStatic::OnKeyDown(nChar, nRepCnt, nFlags);
 }

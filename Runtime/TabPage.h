@@ -17,19 +17,19 @@ typedef RefCountedPtr< class CTabPage > TTabPagePtr;
 class CTabPage : public CDialog
 {
 protected:
-	CDclFormObject* mpSourceForm;
+	TDclFormPtr mpSourceForm;
 	CArxControlPane mControlPane;
 
 	enum { IDD = IDD_TABPAGE };
 
 // Construction
 public:
-	CTabPage( CDclFormObject* pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId );
+	CTabPage( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId );
 	~CTabPage();
 
 	//Attributes
-	const CDclFormObject* GetSourceForm() const { return mpSourceForm; }
-	CDclFormObject* GetSourceForm() { return mpSourceForm; }
+	const TDclFormPtr GetSourceForm() const { return mpSourceForm; }
+	TDclFormPtr GetSourceForm() { return mpSourceForm; }
 	const CControlPane& GetControlPane() const { return mControlPane; }
 	CControlPane& GetControlPane() { return mControlPane; }
 

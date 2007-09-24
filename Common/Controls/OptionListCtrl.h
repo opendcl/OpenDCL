@@ -16,7 +16,7 @@ class COptionListCtrl : public CListBoxCtrl
 
 // Construction
 public:
-	COptionListCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	COptionListCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~COptionListCtrl();
 
 // DialogControl Interface
@@ -27,7 +27,6 @@ public:
 
 // Operations
 public:
-	void SetRowHeight(int nNewHeight);
 	void ResetTooltips();
 
 // Overrides

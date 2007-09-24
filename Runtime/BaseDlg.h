@@ -9,10 +9,7 @@
 #include "ControlPane.h"
 #include "ArxDialogObject.h"
 
-class CDclFormObject;
-class CDclControlObject;
 class CFontCollection;
-class CDialogControl;
 
 #if (_MFC_VER < 0x0800)
 #define __LRESULT UINT
@@ -26,7 +23,7 @@ class CDialogControl;
 
 class CBaseDlg : public CDialog
 {
-	CDclFormObject* mpSourceForm;
+	TDclFormPtr mpSourceForm;
 	int mnInitialX;
 	int mnInitialY;
 	bool mbHasTitleBar;
@@ -44,7 +41,7 @@ class CBaseDlg : public CDialog
 
 // Construction
 public:
-	CBaseDlg( CDclFormObject* pSourceForm, UINT idd, CWnd* pParent = NULL, DialogParams* pParams = NULL );
+	CBaseDlg( TDclFormPtr pSourceForm, UINT idd, CWnd* pParent = NULL, DialogParams* pParams = NULL );
 	virtual ~CBaseDlg();
 
 public:

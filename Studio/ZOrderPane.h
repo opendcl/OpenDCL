@@ -15,7 +15,6 @@
 #define nDeToolTipTitleLen  79
 
 #define nDeFontPtSize 80
-#define nDeColWidth200 200
 #define nDeIconW 19
 #define nDeIconHt 16
 

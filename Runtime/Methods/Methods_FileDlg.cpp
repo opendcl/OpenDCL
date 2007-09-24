@@ -13,7 +13,7 @@
 int FileDlgGetFileName()
 {
 	int nArg=0;
-	CDclControlObject *pControl = GetControlArxObject(sFileDlgGetFileName, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetFileName, &nArg);
 	
 	if (pControl == NULL)
 	{
@@ -29,7 +29,7 @@ int FileDlgGetFileName()
 int FileDlgGetFileTitle()
 {
 	int nArg=0;
-	CDclControlObject *pControl = GetControlArxObject(sFileDlgGetFileTitle, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetFileTitle, &nArg);
 	
 	if (pControl == NULL)
 	{
@@ -46,7 +46,7 @@ int FileDlgGetFileTitle()
 int FileDlgGetFileExt()
 {
 	int nArg=0;
-	CDclControlObject *pControl = GetControlArxObject(sFileDlgGetFileTitle, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetFileTitle, &nArg);
 	
 	if (pControl == NULL)
 	{
@@ -63,7 +63,7 @@ int FileDlgGetFileExt()
 int FileDlgGetPathName()
 {
 	int nArg=0;
-	CDclControlObject *pControl = GetControlArxObject(sFileDlgGetPathName, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetPathName, &nArg);
 	
 	if (pControl == NULL)
 	{
@@ -79,7 +79,7 @@ int FileDlgGetPathName()
 int FileDlgGetFolderPath()
 {
 	int nArg=0;
-	CDclControlObject *pControl = GetControlArxObject(sFileDlgGetFolderPath, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetFolderPath, &nArg);
 	
 	if (pControl == NULL)
 	{
@@ -96,7 +96,7 @@ int FileDlgGetFolderPath()
 int FileDlgGetFolderName()
 {
 	int nArg=0;
-	CDclControlObject *pControl = GetControlArxObject(sFileDlgGetFolderName, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetFolderName, &nArg);
 	
 	if (pControl == NULL)
 	{
@@ -113,7 +113,7 @@ int FileDlgGetFolderName()
 int FileDlgGetSelectionCount()
 {
 	int nArg=0;
-	CDclControlObject *pControl = GetControlArxObject(sFileDlgGetSelectionCount, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetSelectionCount, &nArg);
 	
 	if (pControl == NULL)
 	{
@@ -133,7 +133,7 @@ int FileDlgGetSelectionCount()
 int FileDlgGetFileNameList()
 {
 	int nArg=0;
-	CDclControlObject *pControl = GetControlArxObject(sFileDlgGetFileNameList, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetFileNameList, &nArg);
 	
 	if (pControl == NULL)
 	{
@@ -176,7 +176,7 @@ int FileDlgGetFileNameList()
 int FileDlgSetOkButtonText()
 {
 	int nArg=0;
-	CDclControlObject *pControl = GetControlArxObject(sFileDlgSetOkButtonText, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sFileDlgSetOkButtonText, &nArg);
 	
 	if (pControl == NULL)
 	{

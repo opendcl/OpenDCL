@@ -5,8 +5,7 @@
 
 #include "PPToolTip.h"
 #include <afxhtml.h>
-
-class CDclControlObject;
+#include "PtrTypes.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -41,9 +40,8 @@ public:
 
 // normal methods
 public:
-	bool m_bInvokeWithSendString;
-	CDclControlObject	*m_ArxControl;
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	TDclControlPtr m_ArxControl;
+	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID );
     // Normally, CHtmlView destroys itself in PostNcDestroy,
     // but we don't want to do that for a control since a control
     // is usually implemented as a stack object in a dialog.

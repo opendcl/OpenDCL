@@ -173,7 +173,7 @@ void CMainFrameToolBar::AddTheButtons()
 	VERIFY(m_Buttons.AddButtons(1,&m_pTBButtons[13]));
 }
 
-void CMainFrameToolBar::SetFontToolBar(CDclControlObject *pCtrl)
+void CMainFrameToolBar::SetFontToolBar(TDclControlPtr pCtrl)
 {
 	if (pCtrl == NULL)
 	{
@@ -213,16 +213,15 @@ void CMainFrameToolBar::SetFontToolBar(CDclControlObject *pCtrl)
 		{
 			TPropertyPtr pProp;
 			TPropertyPtr pFontProp = NULL;
-			POSITION pos = pCtrl->GetPropertyList().GetHeadPosition();
-			while (pos != NULL)
+			const TPropertyList& Props = pCtrl->GetPropertyList();
+			for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 			{
-				pProp = pCtrl->GetPropertyList().GetNext(pos);
-				if (pProp->GetType() == PropActiveXProp)
+				if ((*iter)->GetType() == PropActiveXProp)
 				{
-					if (pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFontDisp ||
-							pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFont)
+					if ((*iter)->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFontDisp ||
+							(*iter)->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFont)
 					{
-						pFontProp = pProp;
+						pFontProp = (*iter);
 						break;
 					}
 				}
@@ -285,9 +284,9 @@ void CMainFrameToolBar::SetFontToolBar(CDclControlObject *pCtrl)
 		return;
 	}
 
-	m_bBold = pCtrl->GetBooleanProperty(Prop::LabelBold);
-	m_bItalic = pCtrl->GetBooleanProperty(Prop::LabelItalic);
-	m_bUnderline = pCtrl->GetBooleanProperty(Prop::LabelUnderline);
+	m_bBold = pCtrl->GetBooleanProperty(Prop::FontBold);
+	m_bItalic = pCtrl->GetBooleanProperty(Prop::FontItalic);
+	m_bUnderline = pCtrl->GetBooleanProperty(Prop::FontUnderline);
 
 	// set the bold button state
 	if (m_bBold)
@@ -307,7 +306,7 @@ void CMainFrameToolBar::SetFontToolBar(CDclControlObject *pCtrl)
 	else
 		m_Buttons.SetState(ID_FONTUNDERLINEBTN, TBSTATE_ENABLED);
 	
-	m_lFontSize = pCtrl->GetLongProperty(Prop::LabelSize);
+	m_lFontSize = pCtrl->GetLongProperty(Prop::FontSize);
 	// set the scaled button state
 	m_bScaled = (m_lFontSize > 0);
 	if (m_bScaled)
@@ -315,15 +314,15 @@ void CMainFrameToolBar::SetFontToolBar(CDclControlObject *pCtrl)
 	else
 		m_Buttons.SetState(ID_FONTSCALED, TBSTATE_ENABLED);
 
-	m_FontNames.SelectString(0, pCtrl->GetStringProperty(Prop::LabelName));
+	m_FontNames.SelectString(0, pCtrl->GetStringProperty(Prop::FontName));
 	CString sSize;
 	sSize.Format( _T("%d"), (m_lFontSize < 0? -m_lFontSize : m_lFontSize) );
 	m_FontSizes.SetWindowText(sSize);
 }
 
-void CMainFrameToolBar::AddFontToToolBar(CDclControlObject *pCtrl)
+void CMainFrameToolBar::AddFontToToolBar(TDclControlPtr pCtrl)
 {
-	if (pCtrl == NULL || pCtrl->GetPropertyObject(Prop::LabelBold) == NULL)
+	if (pCtrl == NULL || pCtrl->GetPropertyObject(Prop::FontBold) == NULL)
 		return;
 
 	if (pCtrl->GetType() == CtlActiveX)
@@ -332,20 +331,16 @@ void CMainFrameToolBar::AddFontToToolBar(CDclControlObject *pCtrl)
 		CY cyFontSize;
 		try
 		{
-			TPropertyPtr pProp;
 			TPropertyPtr pFontProp = NULL;
-			POSITION pos = pCtrl->GetPropertyList().GetHeadPosition();
-			while (pos != NULL)
+			const TPropertyList& Props = pCtrl->GetPropertyList();
+			for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
+			if( (*iter)->GetType() == PropActiveXProp )
 			{
-				pProp = pCtrl->GetPropertyList().GetNext(pos);
-				if (pProp->GetType() == PropActiveXProp)
+				if( (*iter)->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFontDisp ||
+						(*iter)->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFont)
 				{
-					if (pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFontDisp ||
-							pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFont)
-					{
-						pFontProp = pProp;
-						break;
-					}
+					pFontProp = (*iter);
+					break;
 				}
 			}
 			if (pFontProp == NULL) 
@@ -432,21 +427,21 @@ void CMainFrameToolBar::AddFontToToolBar(CDclControlObject *pCtrl)
 	}
 
 	// here we need to make sure that if the property does not equal the existing property it must be blanked.
-	if (m_bBold != (pCtrl->GetBooleanProperty(Prop::LabelBold) == TRUE))
+	if (m_bBold != (pCtrl->GetBooleanProperty(Prop::FontBold) == TRUE))
 		m_bBold = false;
 	else
-		m_bBold = (pCtrl->GetBooleanProperty(Prop::LabelBold) == TRUE);
-	if (m_bItalic != (pCtrl->GetBooleanProperty(Prop::LabelItalic) == TRUE))
+		m_bBold = (pCtrl->GetBooleanProperty(Prop::FontBold) == TRUE);
+	if (m_bItalic != (pCtrl->GetBooleanProperty(Prop::FontItalic) == TRUE))
 		m_bItalic = false;
 	else
-		m_bItalic = (pCtrl->GetBooleanProperty(Prop::LabelItalic) == TRUE);
+		m_bItalic = (pCtrl->GetBooleanProperty(Prop::FontItalic) == TRUE);
 	
-	if (m_bUnderline != (pCtrl->GetBooleanProperty(Prop::LabelUnderline) == TRUE))
+	if (m_bUnderline != (pCtrl->GetBooleanProperty(Prop::FontUnderline) == TRUE))
 		m_bUnderline = false;
 	else
-		m_bUnderline = (pCtrl->GetBooleanProperty(Prop::LabelUnderline) == TRUE);
+		m_bUnderline = (pCtrl->GetBooleanProperty(Prop::FontUnderline) == TRUE);
 
-	if (m_bScaled != (pCtrl->GetLongProperty(Prop::LabelSize) > 0))
+	if (m_bScaled != (pCtrl->GetLongProperty(Prop::FontSize) > 0))
 		m_bScaled = false;	
 
 	// set the bold button state
@@ -481,12 +476,12 @@ void CMainFrameToolBar::AddFontToToolBar(CDclControlObject *pCtrl)
 		m_FontNames.GetLBText(nSel, sText);
 
 		// here we need to make sure that if the property does not equal the existing property it must be blanked.
-		if (sText != pCtrl->GetStringProperty(Prop::LabelName))
+		if (sText != pCtrl->GetStringProperty(Prop::FontName))
 			// blank out the font
 			m_FontNames.SetCurSel(-1);
 		else	
 			// select the font
-			m_FontNames.SelectString(0, pCtrl->GetStringProperty(Prop::LabelName));
+			m_FontNames.SelectString(0, pCtrl->GetStringProperty(Prop::FontName));
 	}
 	
 	CString sSize;
@@ -647,7 +642,7 @@ void CMainFrameToolBar::OnFontBold()
 	if (m_pActiveView == NULL)
 		activeProject->m_bDefaultFontBold = m_bBold;
 	else
-		((COpenDCLView*)m_pActiveView)->UpdateFontBool(m_bBold, Prop::LabelBold);
+		((COpenDCLView*)m_pActiveView)->UpdateFontBool(m_bBold, Prop::FontBold);
 }
 
 void CMainFrameToolBar::OnFontItalic()
@@ -659,7 +654,7 @@ void CMainFrameToolBar::OnFontItalic()
 	if (m_pActiveView == NULL)
 		activeProject->m_bDefaultFontItalic = m_bItalic;
 	else
-		((COpenDCLView*)m_pActiveView)->UpdateFontBool(m_bItalic, Prop::LabelItalic);
+		((COpenDCLView*)m_pActiveView)->UpdateFontBool(m_bItalic, Prop::FontItalic);
 }
 
 void CMainFrameToolBar::OnFontUnderline()
@@ -671,7 +666,7 @@ void CMainFrameToolBar::OnFontUnderline()
 	if (m_pActiveView == NULL)
 		activeProject->m_bDefaultFontUnderLine = m_bUnderline;
 	else
-		((COpenDCLView*)m_pActiveView)->UpdateFontBool(m_bUnderline, Prop::LabelUnderline);
+		((COpenDCLView*)m_pActiveView)->UpdateFontBool(m_bUnderline, Prop::FontUnderline);
 }
 
 void CMainFrameToolBar::OnFontScaled()

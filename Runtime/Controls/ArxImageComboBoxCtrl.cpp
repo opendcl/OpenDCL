@@ -8,7 +8,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxImageComboBoxCtrl
 
-CArxImageComboBoxCtrl::CArxImageComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID,
+CArxImageComboBoxCtrl::CArxImageComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID,
 																							CComboHandler* pHandler /*= NULL*/, bool bCreate /*= true*/ )
 : CImageComboBoxCtrl( pTemplate, pPane, nID, pHandler, false )
 , mArxServices( pTemplate )
@@ -25,11 +25,6 @@ bool CArxImageComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
-
-	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
 
 	return bSuccess;
 }
@@ -109,8 +104,21 @@ void CArxImageComboBoxCtrl::OnSelchange()
 		else
 		{
 			CString sText;
-			GetWindowText( sText );
-			InvokeMethodIntString( sEventName, GetCurSel(), sText, m_bInvokeWithSendString );
+			CEdit* pEditCtrl = GetEditCtrl();
+			if( pEditCtrl )
+				pEditCtrl->GetWindowText( sText );
+			else
+			{
+				CComboBox* pComboCtrl = GetComboBoxCtrl();
+				ASSERT( pComboCtrl != NULL );
+				if( pComboCtrl )
+				{
+					int nCurSel = pComboCtrl->GetCurSel();
+					if( nCurSel >= 0 )
+						pComboCtrl->GetLBText( nCurSel, sText );
+				}
+			}
+			InvokeMethodIntString( sEventName, GetCurSel(), sText, IsAsyncEvents() );
 			mpTemplate->SetStringProperty( Prop::Text, sText );
 		}
 	}
@@ -118,7 +126,7 @@ void CArxImageComboBoxCtrl::OnSelchange()
 
 void CArxImageComboBoxCtrl::OnDropdown() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDropDown), m_bInvokeWithSendString);	
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDropDown), IsAsyncEvents());	
 }
 
 void CArxImageComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point) 
@@ -129,15 +137,15 @@ void CArxImageComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 }
 
 void CArxImageComboBoxCtrl::OnKillfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }
 
 void CArxImageComboBoxCtrl::OnSetfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
 }

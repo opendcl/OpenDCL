@@ -6,9 +6,6 @@
 #include "Resource.h"
 #include "ArxDialogObject.h"
 
-class CDclFormObject;
-class CDclControlObject;
-class CArxDialogControl;
 class CControlobject;
 class CFontCollection;
 
@@ -18,7 +15,7 @@ class CConfigTabPaneX : public CArxDialogObject
 	friend class CfgTabPane;
 	CfgTabPane* mpOwner;
 protected:
-	CConfigTabPaneX( CfgTabPane& Owner, CDclFormObject* pDclForm );
+	CConfigTabPaneX( CfgTabPane& Owner, TDclFormPtr pDclForm );
 	~CConfigTabPaneX();
 
 	virtual DclFormType GetType() const;
@@ -43,7 +40,7 @@ class CfgTabPane : public CAcUiTabChildDialog
 
 	// Construction
 public:
-	CfgTabPane(CDclFormObject* pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL) ;
+	CfgTabPane(TDclFormPtr pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL) ;
 	virtual ~CfgTabPane();
 
 public:

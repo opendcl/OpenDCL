@@ -43,7 +43,7 @@ void TProgressTimeToComplete::ResetStartTime(void)
 }
 
 
-BOOL TProgressTimeToComplete::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
+BOOL TProgressTimeToComplete::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID ) 
 {
 	BOOL RetVal;
 	CRect ArxRect;

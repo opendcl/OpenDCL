@@ -82,7 +82,7 @@ BOOL CGeometry::OnApply()
 
 void CGeometry::ShowSplitter(CString sName) 
 {
-	CDclControlObject *pCtrl = m_pDclForm->FindControl(sName, CtlSplitter);
+	TDclControlPtr pCtrl = m_pDclForm->FindControl(sName, CtlSplitter);
 	if (pCtrl)
 	{
 		int nTheWidth = pCtrl->GetLongProperty(Prop::Width);
@@ -134,31 +134,23 @@ BOOL CGeometry::OnInitDialog()
 	m_Right.SetItemData(0, 0);
 	m_Right.SetItemData(1, 1);
 
-	CList< CDclControlObject* > Splitters;
+	TDclControlList Splitters;
 	m_pDclForm->FindControls(CtlSplitter, Splitters);
-	POSITION pos = Splitters.GetHeadPosition();
-	while (pos != NULL)
+	for( TDclControlList::const_iterator iter = Splitters.begin(); iter != Splitters.end(); ++iter )
 	{
-		CDclControlObject *pCtrl = Splitters.GetNext(pos);
-		if (!pCtrl->IsDeleted())
+		if (!(*iter)->IsDeleted())
 		{
-			int nTheWidth = pCtrl->GetLongProperty(Prop::Width);
-			int nTheHeight = pCtrl->GetLongProperty(Prop::Height);
+			int nTheWidth = (*iter)->GetLongProperty(Prop::Width);
+			int nTheHeight = (*iter)->GetLongProperty(Prop::Height);
 			if (nTheWidth > nTheHeight)
 			{
-				int n;
-				n = m_Top.AddString(pCtrl->GetStringProperty(Prop::Name));
-				m_Top.SetItemData(n, pCtrl->GetID());
-				n = m_Bottom.AddString(pCtrl->GetStringProperty(Prop::Name));
-				m_Bottom.SetItemData(n, pCtrl->GetID());
+				m_Top.SetItemData(m_Top.AddString((*iter)->GetStringProperty(Prop::Name)), (*iter)->GetID());
+				m_Bottom.SetItemData(m_Bottom.AddString((*iter)->GetStringProperty(Prop::Name)), (*iter)->GetID());
 			}
 			else
 			{
-				int n;
-				n = m_Left.AddString(pCtrl->GetStringProperty(Prop::Name));
-				m_Left.SetItemData(n, pCtrl->GetID());
-				n = m_Right.AddString(pCtrl->GetStringProperty(Prop::Name));
-				m_Right.SetItemData(n, pCtrl->GetID());
+				m_Left.SetItemData(m_Left.AddString((*iter)->GetStringProperty(Prop::Name)), (*iter)->GetID());
+				m_Right.SetItemData(m_Right.AddString((*iter)->GetStringProperty(Prop::Name)), (*iter)->GetID());
 			}
 		}
 	}

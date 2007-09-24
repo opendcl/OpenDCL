@@ -16,10 +16,9 @@ class CArxComboBoxCtrl : public CComboBoxCtrl
 	CArxControlServices	mArxServices;
 
 	COleOdcDropTarget m_DropTarget;
-	bool m_bInvokeWithSendString;
 
 public:
-	CArxComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CComboHandler* pHandler = NULL, bool bCreate = true );
+	CArxComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, CComboHandler* pHandler = NULL, bool bCreate = true );
 	virtual ~CArxComboBoxCtrl();
 
 // DialogControl Interface

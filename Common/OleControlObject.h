@@ -1,8 +1,8 @@
 #pragma once
 
 
-#include "PropertyList.h"
 #include "DclControlObject.h"
+#include "Project.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -10,16 +10,16 @@
 
 class COleControlObject : public CDclControlObject
 {
-	CProject* mpProject;
+	TProjectLockedPtr mpProject;
 protected:
 	COleControlObject( const COleControlObject& ); //declared protected to prevent copy construction
 	COleControlObject& operator=( const COleControlObject& ); //declared protected to prevent copy construction
 public:
-	COleControlObject( ControlType type ); //special constructor used for temporary controls used in the object browser
+	COleControlObject( ControlType type ); //special constructor for temporary controls used in the object browser
 	COleControlObject( CProject* pOwner );
 	COleControlObject( CProject* pOwner, const CLSID& clsid );
 	~COleControlObject();
 public:
-	virtual const CProject* GetOwnerProject() const { return mpProject; }
-	virtual CProject* GetOwnerProject() { return mpProject; }
+	virtual const TProjectPtr GetOwnerProject() const { return mpProject; }
+	virtual TProjectPtr GetOwnerProject() { return mpProject; }
 };

@@ -11,6 +11,9 @@
 #include "ToolTips.h"
 #include "Workspace.h"
 
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
+
 
  IMPLEMENT_DYNAMIC(CHtmlCtrl, CHtmlView)
  BEGIN_MESSAGE_MAP(CHtmlCtrl, CHtmlView)
@@ -23,7 +26,7 @@
  // Create control in same position as an existing static control with
  // the same ID (could be any kind of control, really)
  //
- BOOL CHtmlCtrl::Create(CDclControlObject* pControl, CWnd* pParent, UINT nID)
+ BOOL CHtmlCtrl::Create(TDclControlPtr pControl, CWnd* pParent, UINT nID)
  {
 	m_ArxControl = pControl;	
 	CRect ArxRect;   
@@ -53,17 +56,6 @@
 
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
-
-
-	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
 
 	return bReturn;
  }
@@ -231,7 +223,7 @@ BOOL CHtmlCtrl::LoadFromResource(UINT nRes)
 void CHtmlCtrl::OnNavigateComplete2(LPCTSTR strURL) 
 {
 	// call methods to invoke the event
-	InvokeMethodString(m_ArxControl->GetStringProperty(Prop::EventNavigateComplete), strURL, m_bInvokeWithSendString);
+	InvokeMethodString(m_ArxControl->GetStringProperty(Prop::EventNavigateComplete), strURL, IsAsyncEvents());
 	CHtmlView::OnNavigateComplete2(strURL);
 }
 
@@ -243,7 +235,7 @@ void CHtmlCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	CHtmlView::OnMouseMove(nFlags, point);
 }
 

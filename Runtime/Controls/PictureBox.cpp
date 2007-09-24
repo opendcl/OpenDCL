@@ -33,6 +33,9 @@ const TCHAR sL[] = _T("L");
 const TCHAR sR[] = _T("R");
 const TCHAR sC[] = _T("C");
 
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
+
 
 CRect CalcFitRect(int nPicWidth, int nPicHeight, int nCtrlWidth, int nCtrlHeight)
 {
@@ -158,7 +161,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CPictureBox message handlers
 
-BOOL CPictureBox::Create(CDclControlObject* pControl, CProject *pProject, CWnd* pParentWnd, UINT nID) 
+BOOL CPictureBox::Create(TDclControlPtr pControl, TProjectPtr pProject, CWnd* pParentWnd, UINT nID) 
 {
 	BOOL bReturn;
 	m_bMouseTracking = FALSE;        
@@ -198,16 +201,6 @@ BOOL CPictureBox::Create(CDclControlObject* pControl, CProject *pProject, CWnd* 
 	SetAllProperties();
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
-
-	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
 
 	return bReturn;
 }
@@ -630,7 +623,7 @@ void CPictureBox::OnLButtonDown(UINT nFlags, CPoint point)
 	SetFocus();
 	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
 	{
-		BeginDragnDrop(m_ArxControl, point, m_bInvokeWithSendString);
+		BeginDragnDrop(m_ArxControl, point, IsAsyncEvents());
 	}
 
 	InvokeMethodIntIntIntInt(
@@ -639,7 +632,7 @@ void CPictureBox::OnLButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
 		m_ArxControl->GetStringProperty(Prop::OnLMouseEvent),
@@ -647,7 +640,7 @@ void CPictureBox::OnLButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	
 	CWnd::OnLButtonDown(nFlags, point);
@@ -1154,7 +1147,7 @@ void CPictureBox::OnKillFocus(CWnd* pNewWnd)
 	CWnd::OnKillFocus(pNewWnd);
 	m_bHasFocus = false;
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }
 
 void CPictureBox::OnSetFocus(CWnd* pOldWnd) 
@@ -1162,7 +1155,7 @@ void CPictureBox::OnSetFocus(CWnd* pOldWnd)
 	CWnd::OnSetFocus(pOldWnd);
 	m_bHasFocus = true;
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
 }
 
 void CPictureBox::OnLButtonUp(UINT nFlags, CPoint point) 
@@ -1174,7 +1167,7 @@ void CPictureBox::OnLButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	InvokeMethodIntIntIntInt(
 		m_ArxControl->GetStringProperty(Prop::OnLMouseEvent),
@@ -1182,7 +1175,7 @@ void CPictureBox::OnLButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	
 	CWnd::OnLButtonUp(nFlags, point);
@@ -1197,7 +1190,7 @@ void CPictureBox::OnMButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
 		m_ArxControl->GetStringProperty(Prop::OnMMouseEvent),
@@ -1205,7 +1198,7 @@ void CPictureBox::OnMButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 		
 	CWnd::OnMButtonDblClk(nFlags, point);
 }
@@ -1219,7 +1212,7 @@ void CPictureBox::OnMButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
 		m_ArxControl->GetStringProperty(Prop::OnMMouseEvent),
@@ -1227,7 +1220,7 @@ void CPictureBox::OnMButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	CWnd::OnMButtonDown(nFlags, point);
 }
@@ -1240,7 +1233,7 @@ void CPictureBox::OnMButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
 		m_ArxControl->GetStringProperty(Prop::OnMMouseEvent),
@@ -1248,7 +1241,7 @@ void CPictureBox::OnMButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	
 	CWnd::OnMButtonUp(nFlags, point);
@@ -1266,7 +1259,7 @@ void CPictureBox::OnMouseMove(UINT nFlags, CPoint point)
 		m_bMouseTracking = FALSE;        	
 		m_bHasFocus = false;
 		SetFocus();
-		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventMouseMovedOff), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventMouseMovedOff), IsAsyncEvents());
 		CWnd::OnMouseMove(nFlags, point);
 		return;
 	}
@@ -1282,7 +1275,7 @@ void CPictureBox::OnMouseMove(UINT nFlags, CPoint point)
 			m_bMouseTracking = TRUE;
 		InvokeMethod(
 			m_ArxControl->GetStringProperty(Prop::EventMouseEntered),
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 
 	InvokeMethodIntIntInt(
@@ -1290,7 +1283,7 @@ void CPictureBox::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	
 	CWnd::OnMouseMove(nFlags, point);
@@ -1306,7 +1299,7 @@ void CPictureBox::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	
 	CWnd::OnMouseMove(nFlags, point);
@@ -1321,7 +1314,7 @@ BOOL CPictureBox::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 		zDelta,
 		pt.x,
 		pt.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	
 	return CWnd::OnMouseWheel(nFlags, zDelta, pt);
@@ -1335,11 +1328,11 @@ void CPictureBox::OnRButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethod(
 		m_ArxControl->GetStringProperty(Prop::EventRDblClick),
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
 		m_ArxControl->GetStringProperty(Prop::OnRMouseEvent),
@@ -1347,7 +1340,7 @@ void CPictureBox::OnRButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	
 	CWnd::OnRButtonDblClk(nFlags, point);
@@ -1361,7 +1354,7 @@ void CPictureBox::OnRButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
 		m_ArxControl->GetStringProperty(Prop::OnRMouseEvent),
@@ -1369,7 +1362,7 @@ void CPictureBox::OnRButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	CWnd::OnRButtonDown(nFlags, point);
 }
@@ -1382,11 +1375,11 @@ void CPictureBox::OnRButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethod(
 		m_ArxControl->GetStringProperty(Prop::EventRClick),
-		m_bInvokeWithSendString);	
+		IsAsyncEvents());	
 	
 
 	InvokeMethodIntIntIntInt(
@@ -1395,7 +1388,7 @@ void CPictureBox::OnRButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	CWnd::OnRButtonUp(nFlags, point);
 }
@@ -1403,7 +1396,7 @@ void CPictureBox::OnRButtonUp(UINT nFlags, CPoint point)
 void CPictureBox::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(m_ArxControl->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(m_ArxControl->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, IsAsyncEvents());
 		
 	CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -1411,14 +1404,14 @@ void CPictureBox::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CPictureBox::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(m_ArxControl->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(m_ArxControl->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, IsAsyncEvents());
 		
 	CWnd::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 LRESULT CPictureBox::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventMouseMovedOff), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventMouseMovedOff), IsAsyncEvents());
 	
 	m_bMouseTracking = FALSE;        
 	return FALSE;
@@ -1488,13 +1481,13 @@ void CPictureBox::OnLButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	
 	
 	InvokeMethod(
 		m_ArxControl->GetStringProperty(Prop::EventDblClicked),
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	InvokeMethodIntIntIntInt(
 		m_ArxControl->GetStringProperty(Prop::OnLMouseEvent),
@@ -1502,7 +1495,7 @@ void CPictureBox::OnLButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	
 	CWnd::OnLButtonDblClk(nFlags, point);
@@ -1559,7 +1552,7 @@ void CPictureBox::OnSize(UINT nType, int cx, int cy)
 void CPictureBox::OnClicked() 
 {
 	// call methods to invoke the event
-	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);
+	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), IsAsyncEvents());
 }
 
 void CPictureBox::OnPaint() 
@@ -1589,10 +1582,10 @@ void CPictureBox::OnPaint()
 
 		if (pFocusWnd != this)
 			// call methods to invoke the event
-			InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventPaint), 0, m_bInvokeWithSendString);
+			InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventPaint), 0, IsAsyncEvents());
 		else
 			// call methods to invoke the event
-			InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventPaint), 1, m_bInvokeWithSendString);
+			InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventPaint), 1, IsAsyncEvents());
 		
 	}
 
@@ -1628,7 +1621,7 @@ void CPictureBox::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	else
 	{
 		// call methods to invoke the event
-		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);
+		InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), IsAsyncEvents());
 	}
 }
 

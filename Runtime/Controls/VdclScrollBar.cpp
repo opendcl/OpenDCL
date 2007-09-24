@@ -9,6 +9,9 @@
 #include "InvokeMethod.h"
 #include "PropertyIds.h"
 
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
+
 
 /////////////////////////////////////////////////////////////////////////////
 // VdclScrollBar
@@ -37,7 +40,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // VdclScrollBar message handlers
 
-BOOL VdclScrollBar::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID) 
+BOOL VdclScrollBar::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID) 
 {
 	BOOL RetVal;
 	DWORD dwStyle;
@@ -79,15 +82,6 @@ BOOL VdclScrollBar::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT n
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
 	return RetVal;
 }
 
@@ -175,10 +169,10 @@ void VdclScrollBar::OnScroll(UINT nSBCode, UINT nPos)
 	
 	if (nWhichEvent == 0)
 		// call methods to invoke the event
-		InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), m_hPos, m_bInvokeWithSendString);
+		InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), m_hPos, IsAsyncEvents());
 	else
 		// call methods to invoke the event
-		InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScrolled), m_hPos, m_bInvokeWithSendString);
+		InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScrolled), m_hPos, IsAsyncEvents());
 	
 	
 }

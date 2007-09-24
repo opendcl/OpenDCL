@@ -6,7 +6,6 @@
 #include "DialogControl.h"
 #include "AcadColorService.h"
 
-class CDclControlObject;
 class CPropertyObject;
 
 
@@ -19,12 +18,12 @@ class CCheckBoxCtrl : public CButton, public CDialogControl
 
 // Construction
 public:
-	CCheckBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CCheckBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CCheckBoxCtrl();
 
 // DialogControl Interface
 public:
-	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );

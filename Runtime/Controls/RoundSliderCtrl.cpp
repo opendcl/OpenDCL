@@ -26,6 +26,9 @@
 #include "PropertyIds.h"
 #include "ToolTips.h"
 
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
+
 #define USE_MEM_DC // Remove this, if you don't want to use CMemDC
 
 static const double pi = 3.141592653589793238462643383279;
@@ -355,7 +358,7 @@ void CRoundSliderCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		// call methods to invoke the event
 		InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 			m_nPos,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 
 	}
 	else
@@ -372,7 +375,7 @@ void CRoundSliderCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 
 	if(m_bDragging)
@@ -387,7 +390,7 @@ void CRoundSliderCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			// call methods to invoke the event
 			InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 				m_nPos,
-				m_bInvokeWithSendString);
+				IsAsyncEvents());
 	
 		}
 	}
@@ -418,7 +421,7 @@ void CRoundSliderCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		// call methods to invoke the event
 		InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 			m_nPos,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 
 	}
 	else
@@ -481,7 +484,7 @@ void CRoundSliderCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// call methods to invoke the event
 			InvokeMethodInt(m_ArxControl->GetStringProperty(Prop::EventScroll), 
 				m_nPos,
-				m_bInvokeWithSendString);
+				IsAsyncEvents());
 
 			PostMessageToParent(TB_LINEUP);
 		}
@@ -632,7 +635,7 @@ void CRoundSliderCtrl::Dump(CDumpContext& dc) const
 }
 #endif // _DEBUG
 
-BOOL CRoundSliderCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
+BOOL CRoundSliderCtrl::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID )
 {
 	CRect ArxRect;
 
@@ -664,16 +667,6 @@ BOOL CRoundSliderCtrl::Create(CDclControlObject* pControl, CWnd* pParentWnd, UIN
 	CRoundSliderCtrl::SetPos(m_pValueProp->GetLongValue());
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
-
-	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
 
 	return RetVal;
 	

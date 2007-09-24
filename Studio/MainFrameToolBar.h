@@ -6,6 +6,7 @@
 #include "Resource.h"
 #include "FontCombo.h"
 #include "FontSizes.h"
+#include "PtrTypes.h"
 
 class CDclControlObject;
 
@@ -41,8 +42,8 @@ public:
 	CFont			m_font;
 	CView			*m_pActiveView;
 
-	void SetFontToolBar(CDclControlObject *pCtrl);
-	void AddFontToToolBar(CDclControlObject *pCtrl);
+	void SetFontToolBar(TDclControlPtr pCtrl);
+	void AddFontToToolBar(TDclControlPtr pCtrl);
 	void SetActiveView(CView *pView);
 	void Setup();
 	void AddTheButtons();

@@ -2,8 +2,6 @@
 
 #include "ArxComboBoxCtrl.h"
 
-class CDclControlObject;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxPaperComboBoxCtrl window
@@ -12,7 +10,7 @@ class CArxPaperComboBoxCtrl : public CArxComboBoxCtrl
 {
 // Construction
 public:
-	CArxPaperComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CArxPaperComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxPaperComboBoxCtrl();
 
 // DialogControl Interface

@@ -3,12 +3,15 @@
 
 #include "stdafx.h"
 #include "FolderTreeCtrl.h"
-#include "Sharedres.h"
+#include "SharedRes.h"
+#include "Workspace.h"
 #include "FolderComboBox.h"
 
 // multi-monitor stubs to fake support for multiple monitors in Win95 and WinNT
 //#define COMPILE_MULTIMON_STUBS //stubs are already defined by PPToolTip.cpp
 #include "MultiMon.h"
+
+#undef SubclassWindow
 
 #define FOLDER_ICON			0
 #define FOLDER_EXPAND_ICON	1
@@ -38,8 +41,19 @@ CFolderTreeCtrl::~CFolderTreeCtrl()
 bool CFolderTreeCtrl::Create( CFolderComboBox* pFolderCombo, const CRect& rectWnd, DWORD dwStyle, UINT nID )
 {
 	mpFolderCombo = pFolderCombo;
-	if( !__super::Create( dwStyle, rectWnd, pFolderCombo->GetParent(), nID ) )
+
+	//CTreeCtrl::Create() calls CWnd::Create(), which causes an assert when creating a WS_POPUP window.
+	//The workaround is to create the tree control using the Windows API, then subclass it - 2007-09-23 [ORW]
+	INITCOMMONCONTROLSEX ICC = { sizeof(INITCOMMONCONTROLSEX), ICC_TREEVIEW_CLASSES };
+	InitCommonControlsEx( &ICC );
+	HWND hwndTreeCtrl =
+		::CreateWindow( _T("SysTreeView32"), _T(""), dwStyle, rectWnd.left, rectWnd.top, rectWnd.Width(), rectWnd.Height(),
+										pFolderCombo->GetParent()->m_hWnd, NULL, theWorkspace.GetThisModule(), NULL );
+	if( !hwndTreeCtrl )
 		return false;
+	if( !SubclassWindow( hwndTreeCtrl ) )
+		return false;
+
 	CBitmap bitmap;
 	bitmap.LoadBitmap(IDB_FOLDER);
 	mImageList.Create(16, 16, ILC_COLOR24, 10, 5);

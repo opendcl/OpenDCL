@@ -4,8 +4,7 @@
 #pragma once
 
 #include "PPToolTip.h"
-
-class CDclControlObject;
+#include "PtrTypes.h"
 
 #if (_MFC_VER < 0x0800)
 #define __LRESULT UINT
@@ -40,14 +39,11 @@ public:
 
 class CStaticLink : public CStatic
 {
-// Construction
-public:
-	CStaticLink();
 	DECLARE_DYNAMIC(CStaticLink)
 
-// Attributes
+	// Construction
 public:
-	bool m_bInvokeWithSendString;
+	CStaticLink();
 
 	// Operations
 public:
@@ -61,7 +57,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CStaticLink)
 	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID );
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	//}}AFX_VIRTUAL
 
@@ -101,6 +97,6 @@ protected:
 private:
 	void CStaticLink::Refresh(CDC *pdc);
 
-	CDclControlObject *m_ArxControl;
+	TDclControlPtr m_ArxControl;
 	UINT m_hPos;
 };

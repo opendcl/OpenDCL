@@ -8,7 +8,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxColorComboBoxCtrl
 
-CArxColorComboBoxCtrl::CArxColorComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CArxColorComboBoxCtrl::CArxColorComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , CAcUiColorComboBox()
 , mArxServices( pTemplate )
@@ -25,19 +25,17 @@ bool CArxColorComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess = __super::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID );
 
+	m_mruLen = 0;
+
 	if( bSuccess )
 	{
-		SetUseOther1( TRUE );
-		SetUseOther2( TRUE );
+		SetUseWindows( TRUE );
+		SetUseOther( TRUE );
+		AddItems();
 	}
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
-
-	if( mpTemplate->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
 
 	return bSuccess;
 }
@@ -55,11 +53,11 @@ CRect CArxColorComboBoxCtrl::GetWndRect() const
 DWORD CArxColorComboBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
-	dwStyle |= (CBS_HASSTRINGS | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED);
-	if( mpTemplate->GetBooleanProperty( Prop::Sorted ) )
-		dwStyle |= CBS_SORT;
-	else
-		dwStyle &= ~(DWORD)CBS_SORT;
+	dwStyle |= (WS_VSCROLL | CBS_HASSTRINGS | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT);
+	//if( mpTemplate->GetBooleanProperty( Prop::Sorted ) )
+	//	dwStyle |= CBS_SORT;
+	//else
+	//	dwStyle &= ~(DWORD)CBS_SORT;
 	return dwStyle;
 }
 
@@ -73,20 +71,15 @@ bool CArxColorComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::List:
 		break;
 	case Prop::ItemData:
-		{
-			const PropVal::TIntArray& rInt = *pProp->GetIntArrayPtr();
-			for( int idx = 0; (size_t)idx < rInt.size(); ++idx )
-				SetItemData( idx, (DWORD_PTR)rInt.at( idx ) );
-		}
 		break;
 	case Prop::LimitText:
 		LimitText( pProp->GetLongValue() );
 		break;
 	case Prop::Sorted:
-		if( pProp->GetBooleanValue() )
-			ModifyStyle( 0, CBS_SORT, SWP_FRAMECHANGED );
-		else
-			ModifyStyle( CBS_SORT, 0, SWP_FRAMECHANGED );
+		//if( pProp->GetBooleanValue() )
+		//	ModifyStyle( 0, CBS_SORT, SWP_FRAMECHANGED );
+		//else
+		//	ModifyStyle( CBS_SORT, 0, SWP_FRAMECHANGED );
 		break;
 	}
 	return !bFailed;
@@ -120,13 +113,13 @@ void CArxColorComboBoxCtrl::OnSetFocus(CWnd* pOldWnd)
 {
 	__super::OnSetFocus( pOldWnd );
 	SetEditSel( 0 , -1 );	//combobox is gaining focus, highlight text in edit control
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), m_bInvokeWithSendString );
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), IsAsyncEvents() );
 }
 
 void CArxColorComboBoxCtrl::OnKillFocus(CWnd* pNewWnd)
 {
 	__super::OnKillFocus( pNewWnd );
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventKillFocus ), m_bInvokeWithSendString );
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventKillFocus ), IsAsyncEvents() );
 }
 
 void CArxColorComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
@@ -136,7 +129,7 @@ void CArxColorComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			nFlags,
 			point.x,
 			point.y,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	__super::OnMouseMove(nFlags, point);
 }
 
@@ -147,11 +140,12 @@ void CArxColorComboBoxCtrl::OnSelchange()
 	InvokeMethodIntString( mpTemplate->GetStringProperty( Prop::EventSelChanged ),
 												 GetCurSel(),
 												 sText,
-												 m_bInvokeWithSendString );
+												 IsAsyncEvents() );
 	mpTemplate->SetStringProperty( Prop::Text, sText );
 }
 
 void CArxColorComboBoxCtrl::OnDropdown()
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventDropDown ), m_bInvokeWithSendString );
+	__super::OnDropDown();
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventDropDown ), IsAsyncEvents() );
 }

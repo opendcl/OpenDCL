@@ -28,7 +28,7 @@ class CModelessDialogX : public CArxDialogObject
 	friend class CModelessDlg;
 	CModelessDlg* mpOwner;
 protected:
-	CModelessDialogX( CModelessDlg& Owner, CDclFormObject* pDclForm );
+	CModelessDialogX( CModelessDlg& Owner, TDclFormPtr pDclForm );
 	~CModelessDialogX();
 
 	virtual DclFormType GetType() const;
@@ -53,15 +53,12 @@ class CModelessDlg : public CBaseDlg
 	bool mbTrackingMouse;
 	bool mbInMenuLoop;
 	HWND mhwndKeyboardFocus;
-
-	bool				m_bAboutToClose;
-	bool m_bAsModal;
 	
 	enum { IDD = IDD_RESIZEABLE };
 
 // Construction	
 public:
-	CModelessDlg( CDclFormObject* pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL );
+	CModelessDlg( TDclFormPtr pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL );
 	~CModelessDlg();
 
 public:

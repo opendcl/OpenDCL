@@ -28,14 +28,14 @@ const UINT WM_FILEDLG_GETSELECTEDFILES = RegisterWindowMessage( _T("OpenDCL.File
 class CArxFileDialogControl : public CArxDialogControl
 {
 public:
-	CArxFileDialogControl( CDclControlObject* pTemplate, CControlPane* pPane, CWnd* pControl )
+	CArxFileDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl )
 		: CArxDialogControl( pTemplate, pPane, pControl ) {}
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
 };
 
 
 // CFileDialogX interface implementation
-CFileDialogX::CFileDialogX( CCustomFileDialog& Owner, CDclFormObject* pDclForm, FileDialogParams* pParams /*= NULL*/ )
+CFileDialogX::CFileDialogX( CCustomFileDialog& Owner, TDclFormPtr pDclForm, FileDialogParams* pParams /*= NULL*/ )
 : CArxDialogObject( pDclForm, &Owner )
 , mpOwner( &Owner )
 , mpParams( pParams )
@@ -93,7 +93,7 @@ bool IsWindows98orLater()
 }
 
 
-static DWORD GetFileDlgFlags( CDclControlObject* pFileDlgProperties )
+static DWORD GetFileDlgFlags( TDclControlPtr pFileDlgProperties )
 {
 	assert (pFileDlgProperties != NULL);
 	DWORD dwFlags = OFN_EXPLORER | OFN_ENABLEHOOK | OFN_ENABLETEMPLATE;
@@ -130,7 +130,7 @@ static DWORD GetFileDlgFlags( CDclControlObject* pFileDlgProperties )
 /////////////////////////////////////////////////////////////////////////////
 // CCustomFileDialog
 
-CCustomFileDialog::CCustomFileDialog( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+CCustomFileDialog::CCustomFileDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent )
 , mDialogX( *this, pSourceForm, pParams? (FileDialogParams*)pParams->lpData : NULL )
 , mpParams( pParams? (FileDialogParams*)pParams->lpData : NULL )
@@ -139,7 +139,7 @@ CCustomFileDialog::CCustomFileDialog( CDclFormObject* pSourceForm, CWnd* pParent
 {
 	SetTemplate(IDD_CUSTOM_FILE_DIALOG, IDD_CUSTOM_FILE_DIALOG);
 	OPENFILENAME& ofn = GetOFN();
-	CDclControlObject* pProps = pSourceForm->GetControlProperties();
+	TDclControlPtr pProps = pSourceForm->GetControlProperties();
 	if (pProps->GetBooleanProperty(Prop::Resizable))
 		ofn.Flags |= OFN_ENABLESIZING;
 	if( pSourceForm )
@@ -216,7 +216,7 @@ BOOL CCustomFileDialog::OnInitDialog()
 	mMainFileDlg.SubclassWindow( ::GetParent( m_hWnd ) );
 
 	// here we need to hide specified controls
-	CDclControlObject* pCtrl = mDialogX.GetSourceForm()->FindFirstControlOfType( CtlFileDlgCtrl );
+	TDclControlPtr pCtrl = mDialogX.GetSourceForm()->FindFirstControlOfType( CtlFileDlgCtrl );
 	if( pCtrl )
 	{
 		if (!pCtrl->GetBooleanProperty(Prop::ShowOK))
@@ -290,7 +290,7 @@ void CCustomFileDialog::OnFileNameChange()
 	
 	CListCtrl* wndLst1 = (CListCtrl*)(pWnd->GetDlgItem(1));
 	
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	int nSelCount = wndLst1->GetSelectedCount();
 	
 	POSITION pos = wndLst1->GetFirstSelectedItemPosition();
@@ -327,14 +327,14 @@ void CCustomFileDialog::OnTypeChange()
 
 BOOL CCustomFileDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStringProperty(Prop::EventOnHelp), false);
 	return TRUE; 
 }
 
 void CCustomFileDialog::OnHelp()
 {
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStringProperty(Prop::EventOnHelp), false);
 }
 

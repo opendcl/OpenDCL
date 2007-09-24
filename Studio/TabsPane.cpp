@@ -19,7 +19,7 @@
 // CTabsPane dialog
 
 CTabsPane::CTabsPane( COpenDCLView* pView,
-											CDclControlObject* pControl,
+											TDclControlPtr pControl,
 											RefCountedPtr< CImageList >& pImageList )
 : CPropertyPage(CTabsPane::IDD)
 , mpView( pView )
@@ -118,7 +118,7 @@ void CTabsPane::Setup()
 	m_pTabImages = mpDclControl->GetPropertyObject(Prop::TabsImageList);	
 
 	// create a pointer to pass to the list to insert
-	CProject *pProject = activeProject;
+	TEditorProjectPtr pProject = activeProject;
 	
 	for (size_t i = 0; i < m_pTabCaptions->GetStringArrayPtr()->size(); i++ )
 	{
@@ -363,7 +363,7 @@ BOOL CTabsPane::OnApply()
 					if( pTabStripCtrl )
 					{
 						CRect rcTab = pTabStripCtrl->GetUsedArea();
-						CDclControlObject* pFormProps = pTab->mpChildForm->GetControlProperties();
+						TDclControlPtr pFormProps = pTab->mpChildForm->GetControlProperties();
 						pFormProps->AddLongProperty(Prop::Height, PropLong, rcTab.Height(), true);
 						pFormProps->AddLongProperty(Prop::Width, PropLong, rcTab.Width(), true);
 					}

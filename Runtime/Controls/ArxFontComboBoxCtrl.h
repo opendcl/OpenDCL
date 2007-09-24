@@ -3,8 +3,6 @@
 #include "ArxComboBoxCtrl.h"
 #include "TipWnd.h"
 
-class CDclControlObject;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxFontComboBoxCtrl window
@@ -16,7 +14,7 @@ class CArxFontComboBoxCtrl : public CArxComboBoxCtrl
 
 // Construction
 public:
-	CArxFontComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CArxFontComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxFontComboBoxCtrl();
 
 // DialogControl Interface

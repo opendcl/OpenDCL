@@ -24,7 +24,7 @@ static const UINT& refWM_MOUSEENTER()
 
 
 // CDockingDialogX interface implementation
-CDockingDialogX::CDockingDialogX( CDockingDialog& Owner, CDclFormObject* pDclForm )
+CDockingDialogX::CDockingDialogX( CDockingDialog& Owner, TDclFormPtr pDclForm )
 : CArxDialogObject( pDclForm, &Owner )
 , mpOwner( &Owner )
 {
@@ -56,7 +56,7 @@ bool CDockingDialogX::IsFloating() const
 
 bool CDockingDialogX::CreateModeless( UINT nID ) const
 {
-	CDclControlObject* pProps = mpSourceForm->GetControlProperties();
+	TDclControlPtr pProps = mpSourceForm->GetControlProperties();
 	int nWindowHeight = pProps->GetLongProperty(Prop::Height);
 	DWORD dwDockableSides = 0;
 	DWORD dwDefaultDockableSide = 0;
@@ -166,7 +166,7 @@ bool CDockingDialogX::GetClientRect( CRect& rcDlg ) const
 /////////////////////////////////////////////////////////////////////////////
 // CDockingDialog dialog
 
-CDockingDialog::CDockingDialog( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+CDockingDialog::CDockingDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CAdUiDockControlBar( ADUI_DOCK_CS_STDMOUSECLICKS | ADUI_DOCK_CS_DESTROY_ON_CLOSE )
 , mpParent( pParent )
 , mDialogX( *this, pSourceForm )
@@ -176,7 +176,7 @@ CDockingDialog::CDockingDialog( CDclFormObject* pSourceForm, CWnd* pParent /*=NU
 , mhwndKeyboardFocus( NULL )
 , mbResizable( true )
 {
-	CDclControlObject* pProps = pSourceForm->GetControlProperties();
+	TDclControlPtr pProps = pSourceForm->GetControlProperties();
 	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::Resizable );
 	mbResizable = (!pResizableProp || pResizableProp->GetBooleanValue());
 }
@@ -234,7 +234,7 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	
 	//  setup for assigning the form it's properties
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
 
 	// set the window text
 	SetWindowText(pProps->GetStringProperty(Prop::TitleBarText));
@@ -301,7 +301,7 @@ void CDockingDialog::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )
 			GetWindowRect( &rcThis );
 		
 		// call methods to invoke the event
-		CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+		TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
 		InvokeMethodIntInt( pProps->GetStringProperty( Prop::FormEventSize ), 
 												rcThis.Width(), 
 												rcThis.Height(),
@@ -318,7 +318,7 @@ BOOL CDockingDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 void CDockingDialog::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	// call methods to invoke the event
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
 	InvokeMethod(pProps->GetStringProperty(Prop::FormEventShow), true);	
 
 	mbHiding = !mDialogX.IsClosing() && !bShow;
@@ -347,8 +347,8 @@ bool CDockingDialog::OnClosing()
 	mDialogX.SetClosing();
 	CAdUiDockControlBar::OnClosing();
 	// call methods to invoke the event
-	CDclControlObject* pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStringProperty(Prop::FormEventClose), true);
+	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	InvokeMethod(pProps->GetStringProperty(Prop::FormEventClose), !mDialogX.IsEnteringNoDocState());
 	if( !mbHiding && !IsFloating() )
 		PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
 	return true;

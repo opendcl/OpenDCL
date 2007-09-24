@@ -6,8 +6,6 @@
 #include "OleOdcDropTarget.h"
 #include "PPToolTip.h"
 
-class CDclControlObject;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CTreeCtrlEx window
@@ -21,8 +19,7 @@ public:
 // Attributes
 public:
 	CPPToolTip m_ToolTip;
-	CDclControlObject	*m_ArxControl;
-	bool m_bInvokeWithSendString;
+	TDclControlPtr m_ArxControl;
 
 // Operations
 public:

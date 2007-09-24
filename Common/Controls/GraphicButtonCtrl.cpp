@@ -3,6 +3,7 @@
 #include "ControlPane.h"
 #include "PictureObject.h"
 #include "Project.h"
+#include "DclControlObject.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -21,13 +22,13 @@
 #endif
 #endif
 
-CGraphicButtonCtrl::CGraphicButtonCtrl( CDclControlObject* pTemplate,
+CGraphicButtonCtrl::CGraphicButtonCtrl( TDclControlPtr pTemplate,
 																				CControlPane* pPane,
 																				UINT nID,
 																				bool bCreate /*= true*/ )
 : CButtonCtrl( pTemplate, pPane, nID, false )
 , mpPicture( NULL )
-, mpPressedPicture( NULL )
+, mpMouseOverPicture( NULL )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -57,9 +58,9 @@ bool CGraphicButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 				OnApplyProperty( mpTemplate->GetPropertyObject( Prop::AutoSize ) );
 			break;
 		}
-	case Prop::PressedPicture:
+	case Prop::MouseOverPicture:
 		{
-			SetPressedPicture( mpTemplate->GetOwnerProject()->FindPicture( pProp->GetLongValue() ) );
+			SetMouseOverPicture( mpTemplate->GetOwnerProject()->FindPicture( pProp->GetLongValue() ) );
 			break;
 		}
 	}
@@ -72,21 +73,21 @@ void CGraphicButtonCtrl::SetPicture( CPictureObject* pPict )
 	UpdateButtonGraphic();
 }
 
-void CGraphicButtonCtrl::SetPressedPicture( CPictureObject* pPict )
+void CGraphicButtonCtrl::SetMouseOverPicture( CPictureObject* pPict )
 {
-	mpPressedPicture = pPict;
+	mpMouseOverPicture = pPict;
 	UpdateButtonGraphic();
 }
 
 void CGraphicButtonCtrl::UpdateButtonGraphic()
 {
 	if( (!mpPicture || mpPicture->GetPicType() == PICTYPE_BITMAP) &&
-			(!mpPressedPicture || mpPressedPicture->GetPicType() == PICTYPE_BITMAP) )
-		SetBitmaps( mpPressedPicture? mpPressedPicture->CloneBitmap() : NULL, RGB(192,192,192),
-								mpPicture? mpPicture->CloneBitmap() : NULL, RGB(192,192,192) );
+			(!mpMouseOverPicture || mpMouseOverPicture->GetPicType() == PICTYPE_BITMAP) )
+		SetBitmaps( mpPicture? mpPicture->CloneBitmap() : NULL, RGB(192,192,192),
+								mpMouseOverPicture? mpMouseOverPicture->CloneBitmap() : NULL, RGB(192,192,192) );
 	else
-		SetIcon( mpPressedPicture? mpPressedPicture->CloneIcon() : NULL,
-						 mpPicture? mpPicture->CloneIcon() : NULL );
+		SetIcon( mpPicture? mpPicture->CloneIcon() : NULL,
+						 mpMouseOverPicture? mpMouseOverPicture->CloneIcon() : NULL );
 }
 
 

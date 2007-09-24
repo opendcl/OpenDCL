@@ -16,7 +16,7 @@
 ULONG CDialogObject::mnNextFormId = 1;
 
 
-CDialogObject::CDialogObject( CDclFormObject* pDclForm, CWnd* pHostDlg )
+CDialogObject::CDialogObject( TDclFormPtr pDclForm, CWnd* pHostDlg )
 : mnID( GetNextDialogId() )
 , mpSourceForm( pDclForm )
 , mpProject( pDclForm->GetProject() )
@@ -116,7 +116,7 @@ bool CDialogObject::GetClientRect( CRect& rcDlg ) const
 
 bool CDialogObject::SetMinMaxSize( const CSize& min, const CSize& max )
 {
-	CDclControlObject *pPropObj = mpSourceForm->GetControlProperties();
+	TDclControlPtr pPropObj = mpSourceForm->GetControlProperties();
 	assert(pPropObj != NULL);
 	if (pPropObj)
 	{

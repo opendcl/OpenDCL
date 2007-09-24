@@ -91,19 +91,18 @@ public:
 public:
   COleDataSource m_COleDataSource; // Needed to make this control an OLE data SOURCE (see OnLButtonDown)
   COleOdcDropTarget m_DropTarget;
-	bool m_bInvokeWithSendString;
 	int					m_nEditSubItem;
 	CLVEdit				m_LVEdit;
 	//bool				m_bEditCells;
 
 // Construction
 public:
-	OdclListCtrl( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID );
+	OdclListCtrl( CControlPane& Pane, TDclControlPtr pTemplate, UINT nID );
 	virtual ~OdclListCtrl();
 
 // DialogControl Interface
 public:
-	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );

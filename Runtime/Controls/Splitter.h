@@ -6,7 +6,6 @@
 #include "ControlPane.h"
 
 class CPropertyObject;
-class CDclControlObject;
 
 #define Splitter_Raised 0
 #define Splitter_DoubleRaised 1
@@ -41,8 +40,7 @@ public:
 	CString m_ClassName;	
 	HCURSOR hCursor;
 	int m_nStyle;
-	bool m_bInvokeWithSendString;
-	CDclControlObject *m_ArxControl;
+	TDclControlPtr m_ArxControl;
 	int			m_nX, m_nY;
 	int			m_nMin, m_nMax;
 	int			m_nSavePos;		// Save point on the lbutton down 
@@ -64,7 +62,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CSplitter)
 	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID );
 	//}}AFX_VIRTUAL
 
 // Implementation

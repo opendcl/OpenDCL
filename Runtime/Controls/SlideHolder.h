@@ -9,7 +9,6 @@
 #include "ArxDialogControl.h"
 
 class CControlPane;
-class CDclControlObject;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -20,7 +19,6 @@ class CSlideHolder : public CButton, public CArxDialogControl
 	CxAcadSlide mSlideCtrl;
 
 public:
-	bool				m_bInvokeWithSendString;	
 	CRect				m_rcFocus;
 	bool				m_bSelectedRect;
 	COLORREF			m_HighlightColor;
@@ -32,12 +30,12 @@ public:
 
 // Construction
 public:
-	CSlideHolder( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID );
+	CSlideHolder( CControlPane& Pane, TDclControlPtr pTemplate, UINT nID );
 	virtual ~CSlideHolder();
 
 // DialogControl Interface
 public:
-	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }

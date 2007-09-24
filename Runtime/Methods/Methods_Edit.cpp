@@ -19,7 +19,7 @@ int TextBox_SetFilter()
 	theWorkspace.DisplayAlert(_T("OpenDCL function (dcl_TextBox_SetFilter) is not yet implemented."));
 /*
 	int nArg=0;
-	CDclControlObject *pArxObject = GetControlArxObject(sTextBox_SetFilter, &nArg);
+	TDclControlPtr pArxObject = GetControlArxObject(sTextBox_SetFilter, &nArg);
 	
 	if (pArxObject == NULL)
 	{
@@ -60,7 +60,7 @@ int TextBox_GetFilter()
 {
 	theWorkspace.DisplayAlert(_T("OpenDCL function (dcl_TextBox_GetFilter) is not yet implemented."));
 /*
-	CDclControlObject *pArxObject = GetControlArxObject(sTextBox_SetFilter);
+	TDclControlPtr pArxObject = GetControlArxObject(sTextBox_SetFilter);
 	if (pArxObject->GetLongProperty(Prop::FilterStyle) > 0)
 	{
 		theWorkspace.DisplayAlert(ErrorWrongFilterStyle);

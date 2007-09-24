@@ -3,10 +3,11 @@
 
 #pragma once
 
+#include "DclControlObject.h"
+
 class COpenDCLView;
 
 #define nValueSize 256
-#define nType100 100
 #define nImage29 29
 
 
@@ -18,6 +19,7 @@ class CZOrderListCtrl : public CListCtrl
 // Construction
 public:
 	CZOrderListCtrl();
+	virtual ~CZOrderListCtrl();
 
 // Attributes
 public:
@@ -26,7 +28,7 @@ public:
 
 // Operations
 public:
-	void AddControlToList(CString sName, int nType);
+	void AddControlToList( TDclControlPtr pDclControl, bool bSelected = true, bool bEnsureVisible = false );
 	void ClearList(COpenDCLView *pView);
 	void RemoveControlFromList(CString sName);
 	void RenameControlInList(CString sOldName, CString sNewName);
@@ -39,23 +41,13 @@ public:
 	int GetSelectedCount();
 	void DoZOrderUpdate();
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CZOrderListCtrl)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
-
-// Implementation
-public:
-	virtual ~CZOrderListCtrl();
-
-	// Generated message map functions
+// Generated message map functions
 protected:
-	//{{AFX_MSG(CZOrderListCtrl)
+	DECLARE_MESSAGE_MAP()
+
+protected:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnClick(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnEditPaste();
-	//}}AFX_MSG
-
-	DECLARE_MESSAGE_MAP()
+	afx_msg void OnCustomdraw(NMHDR* pNMHDR, LRESULT* pResult);
 };

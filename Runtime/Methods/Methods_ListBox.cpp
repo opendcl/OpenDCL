@@ -851,7 +851,7 @@ int OptionList_SetTttTitle()
 {
 	int nItem;
 	CString sText;
-	CDclControlObject *pArx = GetLispInput(sOptionList_SetTttTitle, nItem, sText);
+	TDclControlPtr pArx = GetLispInput(sOptionList_SetTttTitle, nItem, sText);
 
 	if (pArx == NULL || nItem < 0)
 	{

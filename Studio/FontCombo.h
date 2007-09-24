@@ -49,7 +49,7 @@ protected:
 	void AddFont(CString strName, DWORD dwFlags);
 	void SetCurrentFont();
 	void SetFontInUse(const CString& strFont);
-	//CDclControlObject *m_ArxControl;
+	//TDclControlPtr m_ArxControl;
 public:
 	static BOOL CALLBACK AFX_EXPORT EnumFamScreenCallBackEx(
 	ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int FontType, 

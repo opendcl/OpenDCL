@@ -17,7 +17,7 @@ class CArxGridCtrl : public CGridCtrl
 	bool mbInvokeWithSendString;
 
 public:
-	CArxGridCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CArxGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxGridCtrl();
 
 // DialogControl Interface

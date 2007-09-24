@@ -40,44 +40,18 @@ static CString LTOA(int nVal)
 }
 
 
-static CDclControlObject* FindArxControlObject(CDclFormObject *pDclForm, CString sControlName, CDclControlObject *pCtrl = NULL )
+static TDclControlPtr FindArxControlObject(TDclFormPtr pDclForm, CString sControlName, TDclControlPtr pCtrl = NULL )
 {
-	CDclControlObject *pRetObject = NULL;
-		
 	if (pDclForm == NULL)
 		return NULL;
 
-	// create a position variable to hold the converted ArxControlIndex
-	POSITION pos = pDclForm->GetControlList().GetHeadPosition();
-	while (pos)
+	const TDclControlList& Controls = pDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		CDclControlObject *pControl = pDclForm->GetControlList().GetNext(pos);
-		if (pControl->GetStringProperty(Prop::Name) == sControlName && pCtrl != pControl)
-			return pControl;
+		if ((*iter)->GetStringProperty(Prop::Name) == sControlName && (*iter) != pCtrl)
+			return (*iter);
 	}
 	return NULL;
-}
-
-
-static CDclControlObject* GetArxControlObject(CDclFormObject *pDclForm, short ArxControlIndex)
-{
-	CDclControlObject *pRetObject;
-
-	if(pDclForm->GetControlList().GetCount() > ArxControlIndex)
-	{
-		// create a position variable to hold the converted ArxControlIndex
-		POSITION ControlPos;
-		
-		// set the position variable to be equal the index to passing to the GetAt method
-		ControlPos = pDclForm->GetControlList().FindIndex(ArxControlIndex);	
-		
-		// set the pass pointer to point at the object in the list
-		pRetObject = pDclForm->GetControlList().GetAt(ControlPos);
-	}				
-	else
-		return NULL;
-		
-	return pRetObject;
 }
 
 static bool AddControlPropertyListItem( TPropertyPtr pProp, LPCTSTR pszNewValue ) 
@@ -98,7 +72,7 @@ static bool AddControlPropertyListItem( TPropertyPtr pProp, int nNewValue )
 	return true;
 }
 
-static TPropertyPtr AddControlHiddenProperty( CDclControlObject* pDclControl,
+static TPropertyPtr AddControlHiddenProperty( TDclControlPtr pDclControl,
 																																	Prop::Id nID,
 																																	LPCTSTR pszValue,
 																																	PropertyType type )
@@ -111,54 +85,7 @@ static TPropertyPtr AddControlHiddenProperty( CDclControlObject* pDclControl,
 }
 
 
-static CString FindTabCaption2(CDclFormObject *pDclTab, int nTabIndex)
-{
-	// set counter for ArxControls
-	int nCount = pDclTab->GetControlList().GetCount();
-	
-	// set start position for navigating ArxControls
-	POSITION pos = pDclTab->GetControlList().GetHeadPosition();
-	
-	// do loop to navigate Arx Controls
-	while (pos != NULL)
-	{
-		// get current ArxControlObject
-		CDclControlObject* pArxControl = pDclTab->GetControlList().GetNext(pos);
-
-		if (pArxControl->GetType() == CtlTabStrip)
-		{
-			return pArxControl->GetPropertyListItem(Prop::TabsCaption, nTabIndex);
-		}
-
-		// increment counter
-		nCount--;
-	}
-	
-	return CString();
-}
-
-
-static CString FindTabCaption(CDclFormObject *pDclTab)
-{
-	// do loop to add all the tree items
-	for (int i=0; i<activeProject->GetDclFormList().GetCount(); i++)
-	{
-		POSITION pos = activeProject->GetDclFormList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CDclFormObject *pDcl = activeProject->GetDclFormList().GetAt(pos);
-			if (pDcl != NULL)
-			{
-				if (pDclTab->GetParentName() == pDcl->GetUniqueName())
-					return FindTabCaption2(pDcl, pDclTab->GetTabIndex());
-			}			
-		}
-	}
-	return CString();
-}
-
-
-typedef CTypedPtrList< CObList, CDclControlObject* > CClipboardObject;
+typedef CTypedPtrList< CObList, TDclControlPtr > CClipboardObject;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -208,7 +135,6 @@ COpenDCLView::COpenDCLView():CView()//(COpenDCLView::IDD)
     
 	NullDrawRect();
 	m_ControlId = nControlStartId;
-	m_bShowGrip = true;
 	m_MouseDown = false;
 	m_bMoving = false;
 	m_SelectedControl.Clear();
@@ -343,7 +269,7 @@ void COpenDCLView::Dump(CDumpContext& dc) const
 /////////////////////////////////////////////////////////////////////////////
 // COpenDCLView message handlers
 
-void COpenDCLView::DrawActiveXCtrl(CDclControlObject *pCtrl, CDC* pDC) 
+void COpenDCLView::DrawActiveXCtrl(TDclControlPtr pCtrl, CDC* pDC) 
 {
 	/*
 	if (pCtrl->m_Delete == TRUE)
@@ -474,7 +400,7 @@ void COpenDCLView::OnControlToInsertChanged()
 
 void COpenDCLView::SelectControl(CString sName) 
 {
-	CDclControlObject* pArxObject = FindArxControlObject(m_pThisDclForm, sName);
+	TDclControlPtr pArxObject = FindArxControlObject(m_pThisDclForm, sName);
 	if (pArxObject == NULL)
 		return;
 	if (IsInSelection(pArxObject))
@@ -509,21 +435,22 @@ bool COpenDCLView::CheckControlsForSelection( CRect rcSelArea, bool bLookForOne 
 		pZOrderList->ClearSelection();
 		ClearSelection();
 	}
+	const TDclControlList& Controls = m_pThisDclForm->GetControlList();
+	if( Controls.empty() )
+		return false;
 	bool bReturn = false;
 	//check each control to see whether it intersects the selection rectangle
-	const CList< CDclControlObject* >& ControlList = m_pThisDclForm->GetControlList();
-	int idx = ControlList.GetCount();
-	POSITION pos = ControlList.GetTailPosition();
-	while( pos )
+	size_t idx = Controls.size();
+	TDclControlList::const_iterator iter = Controls.end();
+	do
 	{
 		--idx;
-		CDclControlObject* pDclObject = ControlList.GetPrev( pos );
-		assert( pDclObject != NULL );
-		if( pDclObject->IsDeleted() )
+		TDclControlPtr pDclControl = *(--iter);
+		if( pDclControl->IsDeleted() )
 			continue;
-		if( pDclObject->GetType() <= CtlForm )
+		if( pDclControl->GetType() <= CtlForm )
 			continue;
-		CControlHolder* pControl = (CControlHolder*)pDclObject->m_pCtrlHolder;
+		CControlHolder* pControl = (CControlHolder*)pDclControl->m_pCtrlHolder;
 		assert( pControl != NULL );
 		if( !pControl )
 			continue;
@@ -533,27 +460,27 @@ bool COpenDCLView::CheckControlsForSelection( CRect rcSelArea, bool bLookForOne 
 		ScreenToClient( rcCtrl );
 		if( !CRect().IntersectRect( rcSelArea, rcCtrl ) )
 			continue; //no intersection, so skip this control
-		if( IsInSelection( pDclObject ) ||  pDclObject == m_SelectedControl.GetTemplate() )
+		if( IsInSelection( pDclControl ) ||  pDclControl == m_SelectedControl.GetTemplate() )
 			continue; //it's already selected
 		bReturn = true;
-		theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar( pDclObject );
+		theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar( pDclControl );
 		bool bFirstSelectedControl = (m_SelectedControl.GetTemplate() == NULL);
-		pZOrderList->SelectItem( pDclObject->GetStringProperty( Prop::Name ), true );
+		pZOrderList->SelectItem( pDclControl->GetStringProperty( Prop::Name ), true );
 
 		if( bFirstSelectedControl )
 		{
-			m_SelectedControl.Set( pDclObject, pControl, idx );
+			m_SelectedControl.Set( pDclControl, pControl, idx );
 			mGripper.MoveTo( rcCtrl );
 			if( bLookForOne )
 				return true;
 		}
 		else
 		{
-			CSelectedControl* pSelection = new CSelectedControl( pDclObject, pControl, idx );
+			CSelectedControl* pSelection = new CSelectedControl( pDclControl, pControl, idx );
 			m_SelectedList.AddTail( pSelection );
 			pControl->SetSelected();
 		}
-	}
+	} while( iter != Controls.begin() );
 	return bReturn;
 }
 
@@ -562,62 +489,60 @@ bool COpenDCLView::CheckControlsForSelection(CPoint point, UINT nFlags, bool bMo
 	CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();	
 	if (m_SelectedList.GetCount() == 0 && nFlags > 1 && m_SelectedControl.GetIndex() == -1)
 		nFlags = 1;
-	// we are going to do a loop to querry each control if it's to be selected
-	for (int i=m_pThisDclForm->GetControlList().GetCount()- 1; i>0; i--)
+	const TDclControlList& Controls = m_pThisDclForm->GetControlList();
+	size_t idx = Controls.size();
+	TDclControlList::const_iterator iter = Controls.end();
+	do
 	{
-		POSITION pos = m_pThisDclForm->GetControlList().FindIndex(i);
-		if (pos != NULL)
+		--idx;
+		TDclControlPtr pDclControl = *--iter;
+		if (!pDclControl->IsDeleted())
 		{
-			// get the control
-			CDclControlObject *pArxObject = m_pThisDclForm->GetControlList().GetAt(pos);
-			if (pArxObject && !pArxObject->IsDeleted())
-			{
-				CControlHolder *pControl = (CControlHolder*)pArxObject->m_pCtrlHolder;
-				if (!pControl)
-					continue;
-				// get the control's position
-				CRect rcCtrl;
-				pControl->GetWindowRect(&rcCtrl);
-				ScreenToClient(rcCtrl);								
+			CControlHolder *pControl = pDclControl->m_pCtrlHolder;
+			if (!pControl)
+				continue;
+			// get the control's position
+			CRect rcCtrl;
+			pControl->GetWindowRect(&rcCtrl);
+			ScreenToClient(rcCtrl);								
 
-				// is the point inside the control
-				if (rcCtrl.PtInRect(point))
+			// is the point inside the control
+			if (rcCtrl.PtInRect(point))
+			{
+				if (nFlags == 1 && 
+					!IsInSelection(pDclControl) &&
+					pDclControl != m_SelectedControl.GetTemplate())
 				{
-					if (nFlags == 1 && 
-						!IsInSelection(pArxObject) &&
-						pArxObject != m_SelectedControl.GetTemplate())
+					ClearSelection();
+					mGripper.Hide();
+					pZOrderList->ClearSelection();
+					pZOrderList->SelectItem(pDclControl->GetStringProperty(Prop::Name), true);
+					// call the method to setup the fonts in the font tool bar.
+					theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar(pDclControl);
+
+					m_SelectedControl.Set( pDclControl, pControl, idx );
+					mGripper.MoveTo(rcCtrl);
+					FireControlSelected(pDclControl);
+				}
+				else // add the selected control to the multi selection
+				{
+					if (!IsInSelection(pDclControl) && pDclControl != m_SelectedControl.GetTemplate())
 					{
-						mGripper.Hide();
-						pZOrderList->ClearSelection();
-						pZOrderList->SelectItem(pArxObject->GetStringProperty(Prop::Name), true);
+						pZOrderList->SelectItem(pDclControl->GetStringProperty(Prop::Name), false);
 						// call the method to setup the fonts in the font tool bar.
-						theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar(pArxObject);
-	
-						ClearSelection();
-						m_SelectedControl.Set( pArxObject, pControl, i );
-						mGripper.MoveTo(rcCtrl);
-						FireControlSelected(pArxObject);
+						theEditorWorkspace.GetMainFrame()->m_wndDlgBar.AddFontToToolBar(pDclControl);
+
+						CSelectedControl *pSelection = new CSelectedControl( pDclControl, pControl, idx );
+						m_SelectedList.AddTail(pSelection);
+						pControl->SetSelected();
+						if (!bMouseDown)
+							FireControlSelected(NULL);
 					}
-					else // add the selected control to the multi selection
-					{
-						if (!IsInSelection(pArxObject) && pArxObject != m_SelectedControl.GetTemplate())
-						{
-							pZOrderList->SelectItem(pArxObject->GetStringProperty(Prop::Name), false);
-							// call the method to setup the fonts in the font tool bar.
-							theEditorWorkspace.GetMainFrame()->m_wndDlgBar.AddFontToToolBar(pArxObject);
-	
-							CSelectedControl *pSelection = new CSelectedControl( pArxObject, pControl, i );
-							m_SelectedList.AddTail(pSelection);
-							pControl->SetSelected();
-							if (!bMouseDown)
-								FireControlSelected(NULL);
-						}
-					}
-					return true;
-				}			
-			} 
+				}
+				return true;
+			}
 		}
-	}
+	} while( iter != Controls.begin() );
 	
 	return false;
 }
@@ -755,7 +680,7 @@ bool COpenDCLView::StoreControlsPosition(CSelectedControl *pSelectedControl)
 	return true;
 }
 
-void COpenDCLView::CalcControlOffsetDistances(CDclControlObject *pArxObject, const CRect &rcCtrl)
+void COpenDCLView::CalcControlOffsetDistances(TDclControlPtr pArxObject, const CRect &rcCtrl)
 {
 	CRect rcThis;
 	GetClientRect(&rcThis);
@@ -845,10 +770,10 @@ CRect COpenDCLView::GetSplitterRect(int nId)
 	GetClientRect( &rc );
 
 	// now find and retrieve the rectangle for the splitter.
-	POSITION pos = m_pThisDclForm->GetControlList().GetHeadPosition();
-	while( pos != NULL )
+	const TDclControlList& Controls = m_pThisDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		CDclControlObject* pCtrl = m_pThisDclForm->GetControlList().GetNext( pos );
+		TDclControlPtr pCtrl = *iter;
 		if( pCtrl->GetType() == CtlSplitter && pCtrl->GetID() == nId )
 		{
 			rc.SetRect( pCtrl->GetLongProperty( Prop::Left ), pCtrl->GetLongProperty( Prop::Top ),
@@ -1157,6 +1082,11 @@ void COpenDCLView::ClearSelection(bool bResetZOrder)
 {
 	AllRemoveDragRects();
 	HideSizingRect();
+	if (bResetZOrder)
+	{
+		CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
+		pZOrderList->ClearSelection();
+	}
 	m_SelectedControl.Clear();
 	if (m_SelectedList.GetCount() == 0)
 		return;
@@ -1178,12 +1108,6 @@ void COpenDCLView::ClearSelection(bool bResetZOrder)
 		}
 	}
 	m_SelectedList.RemoveAll();
-
-	if (bResetZOrder)
-	{
-		CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
-		pZOrderList->ClearSelection();
-	}
 }
 
 void COpenDCLView::ShowSelection()
@@ -1196,7 +1120,7 @@ void COpenDCLView::ShowSelection()
 	}
 }
 
-bool COpenDCLView::IsInSelection(CDclControlObject *pArxObject)
+bool COpenDCLView::IsInSelection(TDclControlPtr pArxObject)
 {
 	POSITION pos = m_SelectedList.GetHeadPosition();
 	while( pos )
@@ -1342,7 +1266,7 @@ void COpenDCLView::InsertControl(CRect rcPos)
 }
 
 
-CDclControlObject* COpenDCLView::InsertControl(CRect rcPos, ControlType nCtrlToInsert)
+TDclControlPtr COpenDCLView::InsertControl(CRect rcPos, ControlType nCtrlToInsert)
 {
 
 	// if the dcl form is not valid, exit here
@@ -1360,7 +1284,7 @@ CDclControlObject* COpenDCLView::InsertControl(CRect rcPos, ControlType nCtrlToI
 	else
 		sControlName = FindNextControlName(GetControlName(nCtrlToInsert));
 	
-	CDclControlObject *pDclControl = m_pThisDclForm->AddControl( nCtrlToInsert, sControlName );
+	TDclControlPtr pDclControl = m_pThisDclForm->AddControl( nCtrlToInsert, sControlName );
 	assert( pDclControl != NULL );
 
 	if( nCtrlToInsert == CtlActiveX )
@@ -1398,10 +1322,8 @@ CDclControlObject* COpenDCLView::InsertControl(CRect rcPos, ControlType nCtrlToI
 	
 	// add the new control to the Zorder list
 	CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
-	pZOrderList->m_pView = this;
 	pZOrderList->ClearSelection();
-	pZOrderList->AddControlToList(pDclControl->GetStringProperty(Prop::Name), pDclControl->GetType());
-	pZOrderList->SelectItem(pDclControl->GetStringProperty(Prop::Name), true);
+	pZOrderList->AddControlToList(pDclControl, true, true);
 	// call the method to setup the fonts in the font tool bar.
 	theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar(pDclControl);
 	return pDclControl;
@@ -1410,17 +1332,17 @@ CDclControlObject* COpenDCLView::InsertControl(CRect rcPos, ControlType nCtrlToI
 int COpenDCLView::GetNextControlId()
 {
 	int nHighest = -1;
-	POSITION pos = m_pThisDclForm->GetControlList().GetHeadPosition();
-	while (pos != NULL)
+	const TDclControlList& Controls = m_pThisDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		CDclControlObject *pCtrl = m_pThisDclForm->GetControlList().GetNext(pos);
+		TDclControlPtr pCtrl = *iter;
 		if (pCtrl->GetID() > nHighest)
 			nHighest = pCtrl->GetID();
 	}
 	return nHighest + nControlStartId + 1;
 }
 
-CControlHolder* COpenDCLView::AddCWndControl( CDclControlObject* pDclControl, CRect rcPos, bool bForceUpdate )
+CControlHolder* COpenDCLView::AddCWndControl( TDclControlPtr pDclControl, CRect rcPos, bool bForceUpdate )
 {
 	if (pDclControl->GetID() < 0)
 		return NULL;
@@ -1460,7 +1382,9 @@ CControlHolder* COpenDCLView::AddCWndControl( CDclControlObject* pDclControl, CR
 	}
 
 	// set the position properties
-	pControl->GetControl()->GetWindowRect( &rcPos );
+	CWnd* pControlWnd = pControl->GetControlWnd();
+	if( pControlWnd && pControlWnd->m_hWnd )
+		pControlWnd->GetWindowRect( &rcPos );
 	ScreenToClient( &rcPos );
 	pDclControl->SetLongProperty( Prop::Left, rcPos.left );
 	pDclControl->SetLongProperty( Prop::Top, rcPos.top );
@@ -1517,31 +1441,8 @@ int COpenDCLView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
-int COpenDCLView::GetDclFormIndex() 
-{
-	POSITION pos;
-	int nCount = 0;
-
-	while (nCount < activeProject->GetDclFormList().GetCount())
-	{
-		pos = activeProject->GetDclFormList().FindIndex(nCount);
-		if (pos != NULL)
-		{
-			CDclFormObject *m_pThisDclForm = activeProject->GetDclFormList().GetAt(pos);
-			if (m_pThisDclForm->GetUniqueName() == m_DclFormName)
-			{
-				return nCount;
-			}
-		}
-		nCount++;
-	}
-	return -1;
-}
-
 void COpenDCLView::OnDclFormNameChange() 
 {
-	GetDclFormIndex();
-
 	GetDocument()->SetModifiedFlag(TRUE);
 }
 
@@ -1549,7 +1450,7 @@ CString COpenDCLView::FindNextControlName(CString sControlName)
 {
 	if( !m_pThisDclForm )
 		return CString();
-	CDclFormObject* pRoot = m_pThisDclForm;
+	TDclFormPtr pRoot = m_pThisDclForm;
 	while( pRoot->GetParentForm() )
 		pRoot = pRoot->GetParentForm();
 	CString sId;
@@ -1604,11 +1505,11 @@ void COpenDCLView::ClearControls()
 	if (m_pThisDclForm->GetType() < -1 || m_pThisDclForm->GetType() > 5)
 		return;
 
-	POSITION pos = m_pThisDclForm->GetControlList().GetHeadPosition();
-	while (pos != NULL)
+	const TDclControlList& Controls = m_pThisDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		CDclControlObject *pCtrl = m_pThisDclForm->GetControlList().GetNext(pos);
-		CControlHolder *pCtrlHolder = (CControlHolder*)pCtrl->m_pCtrlHolder;
+		TDclControlPtr pCtrl = *iter;
+		CControlHolder *pCtrlHolder = pCtrl->m_pCtrlHolder;
 		if (pCtrlHolder != NULL)
 		{
 			ClearChildControls(pCtrlHolder);
@@ -1626,12 +1527,12 @@ void COpenDCLView::ClearControls()
 
 void COpenDCLView::ClearChildControls( CControlHolder* pControlHolder ) 
 {
-	CDclControlObject* pTemplate = pControlHolder->GetTemplate();
+	TDclControlPtr pTemplate = pControlHolder->GetTemplate();
 	if( pTemplate && pTemplate->GetType() == CtlActiveX )
 		pTemplate->SaveToStream( pControlHolder->GetActiveXCtrl() );
 }
 
-void COpenDCLView::RefreshChildControl(CDclControlObject *pArxObject, Prop::Id ChangedPropertyID)
+void COpenDCLView::RefreshChildControl(TDclControlPtr pArxObject, Prop::Id ChangedPropertyID)
 {
 	if (pArxObject == NULL)
 		return;
@@ -1717,12 +1618,12 @@ void COpenDCLView::RefreshChildControl(CDclControlObject *pArxObject, Prop::Id C
 
 			break;
 		}
-	case Prop::LabelName:
-	case Prop::LabelBold:
-	case Prop::LabelSize:
-	case Prop::LabelItalic:
-	case Prop::LabelUnderline:
-	case Prop::LabelStrikeOut:
+	case Prop::FontName:
+	case Prop::FontBold:
+	case Prop::FontSize:
+	case Prop::FontItalic:
+	case Prop::FontUnderline:
+	case Prop::FontStrikeout:
 		{		
 			// call the method to update the arx control's property that was requested to be changed
 			pParent->UpdateProperty(ChangedPropertyID);
@@ -1739,7 +1640,7 @@ void COpenDCLView::RefreshChildControl(CDclControlObject *pArxObject, Prop::Id C
 	}
 }
 
-void COpenDCLView::ResizeChildControl(CDclControlObject *pArxObject)
+void COpenDCLView::ResizeChildControl(TDclControlPtr pArxObject)
 {
 	if (pArxObject == NULL)
 		return;
@@ -1747,7 +1648,7 @@ void COpenDCLView::ResizeChildControl(CDclControlObject *pArxObject)
 	CControlHolder *pParent = (CControlHolder*)pArxObject->m_pCtrlHolder;
 	if (pParent == NULL)
 		return;
-	CWnd *pControl = pParent->GetControl();
+	CWnd *pControl = pParent->GetControlWnd();
 	
 	if (pControl == NULL)
 		return;
@@ -1923,7 +1824,7 @@ void COpenDCLView::UpdateFont(CString sName)
 
 	if (m_SelectedControl.GetTemplate()->GetType() == CtlActiveX)
 	{	
-		UpdateAxFont(&m_SelectedControl, Prop::LabelName, false, -1, sName);		
+		UpdateAxFont(&m_SelectedControl, Prop::FontName, false, -1, sName);		
 		// add the event to the undo list
 		CUndoActions *pUndo = new CUndoActions(
 			uaFontName,
@@ -1934,7 +1835,7 @@ void COpenDCLView::UpdateFont(CString sName)
 	else
 	{	
 		// get the  property object
-		TPropertyPtr pProp = m_SelectedControl.GetTemplate()->GetPropertyObject(Prop::LabelName);
+		TPropertyPtr pProp = m_SelectedControl.GetTemplate()->GetPropertyObject(Prop::FontName);
 		
 		if (pProp != NULL)
 		{
@@ -1952,7 +1853,7 @@ void COpenDCLView::UpdateFont(CString sName)
 			pProp->SetStringValue(sName);
 
 			// call the method to update the control
-			((CControlHolder*)m_SelectedControl.GetTemplate()->m_pCtrlHolder)->UpdateProperty(Prop::LabelName);
+			((CControlHolder*)m_SelectedControl.GetTemplate()->m_pCtrlHolder)->UpdateProperty(Prop::FontName);
 		}
 	}
 
@@ -1966,7 +1867,7 @@ void COpenDCLView::UpdateFont(CString sName)
 			{
 				if (pSelControl->GetTemplate()->GetType() == CtlActiveX)
 				{	
-					UpdateAxFont(pSelControl, Prop::LabelName, false, -1, sName);		
+					UpdateAxFont(pSelControl, Prop::FontName, false, -1, sName);		
 
 					// add the event to the undo list
 					CUndoActions *pUndo = new CUndoActions(
@@ -1978,7 +1879,7 @@ void COpenDCLView::UpdateFont(CString sName)
 				else
 				{		
 					// get the  property object
-					TPropertyPtr pProp = pSelControl->GetTemplate()->GetPropertyObject(Prop::LabelName);
+					TPropertyPtr pProp = pSelControl->GetTemplate()->GetPropertyObject(Prop::FontName);
 					
 					if (pProp != NULL)
 					{
@@ -1996,7 +1897,7 @@ void COpenDCLView::UpdateFont(CString sName)
 						pProp->SetStringValue(sName);
 						
 						// call the method to update the control
-						pSelControl->GetControlHolder()->UpdateProperty(Prop::LabelName);
+						pSelControl->GetControlHolder()->UpdateProperty(Prop::FontName);
 					}
 				}
 			}
@@ -2010,20 +1911,17 @@ void COpenDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool bBo
 	CString	sFontName;
 	try
 	{
-		TPropertyPtr pProp;
 		TPropertyPtr pFontProp = NULL;
-		CDclControlObject *pCtrl = pSelControl->GetTemplate();
-		POSITION pos = pCtrl->GetPropertyList().GetHeadPosition();
-	
-		while (pos != NULL)
+		TDclControlPtr pCtrl = pSelControl->GetTemplate();
+		const TPropertyList& Props = pCtrl->GetPropertyList();
+		for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 		{
-			pProp = pCtrl->GetPropertyList().GetNext(pos);
-			if (pProp->GetType() == PropActiveXProp)
+			if( (*iter)->GetType() == PropActiveXProp )
 			{
-				if (pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFontDisp ||
-						pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFont)
+				if( (*iter)->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFontDisp ||
+						(*iter)->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IFont )
 				{
-					pFontProp = pProp;
+					pFontProp = (*iter);
 					break;
 				}
 			}
@@ -2042,31 +1940,30 @@ void COpenDCLView::UpdateAxFont(CSelectedControl *pSelControl, int nId, bool bBo
 		int m_nFontWeight = font.GetWeight();
 		int m_nFontCharset = font.GetCharset();
 
-
 		switch (nId)
 		{
-			case Prop::LabelName:
+			case Prop::FontName:
 				{
 				sFontName = sName;
 				break;
 				}
-			case Prop::LabelSize:
+			case Prop::FontSize:
 				{
 				cyFontSize.Lo = nSize * 10000;
 				cyFontSize.Hi = 0;
 				break;
 				}
-			case Prop::LabelBold:
+			case Prop::FontBold:
 				{
 				m_bBold = bBool;
 				break;
 				}
-			case Prop::LabelItalic:
+			case Prop::FontItalic:
 				{
 				m_bItalic = bBool;
 				break;
 				}
-			case Prop::LabelUnderline:
+			case Prop::FontUnderline:
 				{
 				m_bUnderline = bBool;
 				break;
@@ -2103,13 +2000,13 @@ void COpenDCLView::UpdateFontBool(bool bBool, Prop::Id nId)
 	int nAction = 0;
 	switch( nId )
 	{
-	case Prop::LabelBold:
+	case Prop::FontBold:
 		nAction = uaFontBold;
 		break;
-	case Prop::LabelUnderline:
+	case Prop::FontUnderline:
 		nAction = uaFontUnderline;
 		break;
-	case Prop::LabelItalic:
+	case Prop::FontItalic:
 		nAction = uaFontItalic;
 		break;
 	};
@@ -2143,7 +2040,7 @@ void COpenDCLView::UpdateFontBool(bool bBool, Prop::Id nId)
 			pProp->SetBooleanValue(bBool);
 
 			// call the method to update the control
-			((CControlHolder*)m_SelectedControl.GetTemplate()->m_pCtrlHolder)->UpdateProperty(Prop::LabelName);
+			((CControlHolder*)m_SelectedControl.GetTemplate()->m_pCtrlHolder)->UpdateProperty(Prop::FontName);
 		}
 	}
 
@@ -2186,7 +2083,7 @@ void COpenDCLView::UpdateFontBool(bool bBool, Prop::Id nId)
 						pProp->SetBooleanValue(bBool);
 						
 						// call the method to update the control
-						pSelControl->GetControlHolder()->UpdateProperty(Prop::LabelName);
+						pSelControl->GetControlHolder()->UpdateProperty(Prop::FontName);
 					}
 				}
 			}
@@ -2206,7 +2103,7 @@ void COpenDCLView::UpdateFontSize(int nSize)
 	
 	if (m_SelectedControl.GetTemplate()->GetType() == CtlActiveX)
 	{	
-		UpdateAxFont(&m_SelectedControl, Prop::LabelSize, false, nSize);		
+		UpdateAxFont(&m_SelectedControl, Prop::FontSize, false, nSize);		
 
 		// add the event to the undo list
 		CUndoActions *pUndo = new CUndoActions(
@@ -2218,7 +2115,7 @@ void COpenDCLView::UpdateFontSize(int nSize)
 	else
 	{
 		// get the  property object
-		TPropertyPtr pProp = m_SelectedControl.GetTemplate()->GetPropertyObject(Prop::LabelSize);
+		TPropertyPtr pProp = m_SelectedControl.GetTemplate()->GetPropertyObject(Prop::FontSize);
 
 		if (pProp != NULL)
 		{
@@ -2236,7 +2133,7 @@ void COpenDCLView::UpdateFontSize(int nSize)
 			pProp->SetLongValue(nSize);
 
 			// call the method to update the control
-			((CControlHolder*)m_SelectedControl.GetTemplate()->m_pCtrlHolder)->UpdateProperty(Prop::LabelName);
+			((CControlHolder*)m_SelectedControl.GetTemplate()->m_pCtrlHolder)->UpdateProperty(Prop::FontName);
 		}
 	}
 
@@ -2250,7 +2147,7 @@ void COpenDCLView::UpdateFontSize(int nSize)
 			{
 				if (pSelControl->GetTemplate()->GetType() == CtlActiveX)
 				{	
-					UpdateAxFont(pSelControl, Prop::LabelSize, false, nSize);		
+					UpdateAxFont(pSelControl, Prop::FontSize, false, nSize);		
 
 					// add the event to the undo list
 					CUndoActions *pUndo = new CUndoActions(
@@ -2261,7 +2158,7 @@ void COpenDCLView::UpdateFontSize(int nSize)
 				else
 				{				
 					// get the  property object
-					TPropertyPtr pProp = pSelControl->GetTemplate()->GetPropertyObject(Prop::LabelSize);
+					TPropertyPtr pProp = pSelControl->GetTemplate()->GetPropertyObject(Prop::FontSize);
 					
 					if (pProp != NULL)
 					{
@@ -2279,7 +2176,7 @@ void COpenDCLView::UpdateFontSize(int nSize)
 						pProp->SetLongValue(nSize);
 						
 						// call the method to update the control
-						pSelControl->GetControlHolder()->UpdateProperty(Prop::LabelName);
+						pSelControl->GetControlHolder()->UpdateProperty(Prop::FontName);
 					}
 				}
 			}
@@ -2350,7 +2247,7 @@ void COpenDCLView::PasteFromClipBoard()
 		while (pos != NULL)
 		{
 			// get current clipboard control
-			CDclControlObject* pCopy = ClipBoard.GetNext(pos);
+			TDclControlPtr pCopy = ClipBoard.GetNext(pos);
 			pCopy->SetOwnerForm(m_pThisDclForm);
 					
 			ClearEventProperties(pCopy);
@@ -2399,12 +2296,6 @@ void COpenDCLView::PasteFromClipBoard()
 			CControlHolder *pControl = AddCWndControl(pCopy, rcPos, true);
 			if (pControl == NULL)
 				return;
-			
-			// add the new control to the Zorder list
-			pZOrderList->AddControlToList(sNameOfCopy, pCopy->GetType());
-			pZOrderList->SelectItem(sNameOfCopy, false);			
-			// call the method to setup the fonts in the font tool bar.
-			theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar(pCopy);
 	
 			// increment counter
 			nCount--;
@@ -2417,6 +2308,11 @@ void COpenDCLView::PasteFromClipBoard()
 				pControl->SetSelected();
 				m_SelectedList.AddTail(pSelCtrl);
 			}			
+			
+			// add the new control to the Zorder list
+			pZOrderList->AddControlToList(pCopy, true, (pCopy == m_SelectedControl.GetTemplate()));
+			// call the method to setup the fonts in the font tool bar.
+			theEditorWorkspace.GetMainFrame()->m_wndDlgBar.SetFontToolBar(pCopy);
 		}
 		// call method to ensure the selection set is highlighted
 		CRect rcCtrl;
@@ -2473,7 +2369,7 @@ void COpenDCLView::SetupDragResize(int nQuadrant)
 
 }
 
-void COpenDCLView::ClearEventProperties(CDclControlObject *pCtrl)
+void COpenDCLView::ClearEventProperties(TDclControlPtr pCtrl)
 {
 	pCtrl->ResetProperty(Prop::EventBtnClicked);
 	pCtrl->ResetProperty(Prop::EventClicked);
@@ -2561,6 +2457,7 @@ void COpenDCLView::DragResized(int nQuadrant, CPoint point)
 	
 	m_rcDraw = m_rcDrawLast;
 }
+
 CRect COpenDCLView::CalcResizeRect(int nQuadrant, CPoint point)
 {
 	CRect rcForm;
@@ -2687,42 +2584,41 @@ void COpenDCLView::CompletedDragResize(int nQuadrant, CPoint point)
 	m_bDrawing = false;	
 		
 	if (m_rcDraw.Width() <= 0 ||
-		m_rcDraw.Height() <= 0 ||
-		m_rcDraw.right <= 0 ||
-		m_rcDraw.bottom <= 0)
+			m_rcDraw.Height() <= 0 ||
+			m_rcDraw.right <= 0 ||
+			m_rcDraw.bottom <= 0)
 		return;
 
-	// get the new size of the control
-	CRect rcPos = m_rcDraw;
+	CControlHolder* pControlHolder = m_SelectedControl.GetControlHolder();
+	CRect rcOldPos;
+	pControlHolder->GetWindowRect( &rcOldPos );
+	ScreenToClient( &rcOldPos );
 
-	// we have to move the control up by -3,-3 because of a positioning bug that I can't seem to trace down to.
-	rcPos.left -= 3;
-	rcPos.right -= 3;
-	rcPos.top -= 3;
-	rcPos.bottom -= 3;
-		
-	CWnd *pControl = m_SelectedControl.GetControlHolder()->GetControl();
+	// add the event to the undo list
+	CUndoActions *pUndo = new CUndoActions( uaMoved, m_SelectedControl.GetTemplate(), pControlHolder);
+	pUndo->rcPos = rcOldPos;
+	m_UndoList.AddTail( pUndo );
+
+	CWnd *pControl = pControlHolder->GetControlWnd();
 	assert( pControl != NULL );
 	if( !pControl )
 		return;
 
+	CRect rcPos = m_rcDraw;
+	ScreenToClient( &rcPos );
+	pControlHolder->MoveWindow( &rcPos );
+	mGripper.MoveTo( rcPos );
 	CRect rcNewPos( 0, 0, rcPos.Width(), rcPos.Height() );
-	pControl->MoveWindow( &rcNewPos, TRUE );
-	m_SelectedControl.GetControlHolder()->AutoSize();
+	pControl->MoveWindow( &rcNewPos );
 	pControl->GetWindowRect( &rcNewPos );
 	ScreenToClient( &rcNewPos );
-
-	// add the event to the undo list
-	CUndoActions *pUndo = new CUndoActions(
-		uaMoved,
-		m_SelectedControl.GetTemplate(),
-		m_SelectedControl.GetControlHolder());		
-	
-	CRect rcOldPos;
-	m_SelectedControl.GetControlHolder()->GetWindowRect(rcOldPos);
-	ScreenToClient(rcOldPos);
-	pUndo->rcPos = rcOldPos;
-	m_UndoList.AddTail(pUndo);
+	pControlHolder->MoveWindow( &rcNewPos );
+	pControl->ShowWindow( SW_SHOW );
+	pControlHolder->ShowWindow( SW_SHOW );
+	pControl->Invalidate();
+	pControlHolder->Invalidate();
+	InvalidateRect( &CRect( rcOldPos | rcNewPos ), TRUE );
+	UpdateWindow();
 
 	// set the position properties
 	m_SelectedControl.GetTemplate()->SetLongProperty(Prop::Left, rcNewPos.left);
@@ -2730,11 +2626,7 @@ void COpenDCLView::CompletedDragResize(int nQuadrant, CPoint point)
 	m_SelectedControl.GetTemplate()->SetLongProperty(Prop::Width, rcNewPos.Width());
 	m_SelectedControl.GetTemplate()->SetLongProperty(Prop::Height, rcNewPos.Height());
 	CalcControlOffsetDistances(m_SelectedControl.GetTemplate(), rcNewPos);
-
-	mGripper.MoveTo(rcNewPos);
-	m_SelectedControl.GetControlHolder()->MoveWindow( &rcNewPos );
-	pControl->ShowWindow(TRUE);
-	m_SelectedControl.GetControlHolder()->ShowWindow(TRUE);
+	pControlHolder->AutoSize();
 
 	if (m_SelectedControl.GetTemplate()->GetType() == CtlTabStrip)
 		ResizeChildTabPanes();
@@ -2749,7 +2641,7 @@ void COpenDCLView::OnSize(UINT nType, int cx, int cy)
 	CView::OnSize(nType, cx, cy);
 	if (m_pThisDclForm != NULL)
 	{
-		CDclControlObject *pDclProps = m_pThisDclForm->GetControlProperties();
+		TDclControlPtr pDclProps = m_pThisDclForm->GetControlProperties();
 	
 		CRect rc;
 		if( m_pThisDclForm->UsesClientRect() )
@@ -2791,33 +2683,16 @@ void COpenDCLView::AdjustOffsets(int cx, int cy)
 	GetClientRect(&rcThis);
 
 	// do loop to reset the offset distance properties
-	for (int i=1; i<m_pThisDclForm->GetControlList().GetCount(); i++)
+	const TDclControlList& Controls = m_pThisDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		POSITION pos = m_pThisDclForm->GetControlList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CDclControlObject *pArxObject = m_pThisDclForm->GetControlList().GetAt(pos);
-			if (pArxObject != NULL)
-			{
-				// get the position of the control
-				CRect rcPos(
-					pArxObject->GetLongProperty(Prop::Left),
-					pArxObject->GetLongProperty(Prop::Top),
-					pArxObject->GetLongProperty(Prop::Width),
-					pArxObject->GetLongProperty(Prop::Height));
-
-				// set the offset position properties
-				CalcControlOffsetDistances(pArxObject, rcPos);
-				/*
-				pArxObject->SetLongProperty(Prop::LeftFromRight, rcThis.Width() - rcPos.left);
-				pArxObject->SetLongProperty(Prop::TopFromBottom, rcThis.Height() - rcPos.top);
-				pArxObject->SetLongProperty(Prop::RightFromRight, rcThis.Width() - rcPos.right);
-				pArxObject->SetLongProperty(Prop::BottomFromBottom, rcThis.Height() - rcPos.bottom);
-				*/
-			}
-		}
+		TDclControlPtr pDclControl = *iter;
+		CRect rcPos( pDclControl->GetLongProperty(Prop::Left),
+								 pDclControl->GetLongProperty(Prop::Top),
+								 pDclControl->GetLongProperty(Prop::Width),
+								 pDclControl->GetLongProperty(Prop::Height) );
+		CalcControlOffsetDistances( pDclControl, rcPos );
 	}
-	
 }
 
 
@@ -2833,10 +2708,10 @@ void COpenDCLView::RefreshSelectControl()
 	}
 	
 	// if the program made it this far, destroy the previous control
-	CControlHolder *pParent = (CControlHolder*)m_SelectedControl.GetTemplate()->m_pCtrlHolder;
+	CControlHolder *pParent = m_SelectedControl.GetTemplate()->m_pCtrlHolder;
 	if (pParent == NULL)
 		return;
-	CWnd *pControl = pParent->GetControl();
+	CWnd *pControl = pParent->GetControlWnd();
 	if (pControl == NULL)
 		return;
 	
@@ -2892,89 +2767,31 @@ void COpenDCLView::ZOrdedSelectedControls(short direction)
 }
 
 
-void COpenDCLView::DisplayControls(CDclFormObject *pDclForm) 
+void COpenDCLView::DisplayControls(TDclFormPtr pDclForm) 
 {
-	CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
 	m_pThisDclForm = pDclForm;
 	if (m_pThisDclForm == NULL)
 		return;
 
-	pZOrderList->ClearList(this);
-	
-	CRect rcThis;
-	GetClientRect(&rcThis);
-	ScreenToClient(rcThis);
-
-	// clear the zorder list box
-	pZOrderList->ClearList(this);
-	pZOrderList->SetRedraw(FALSE); // turn drawing off regardless of list mode
-
-	// do loop to reset the offset distance properties
-	for (int i=1; i<m_pThisDclForm->GetControlList().GetCount(); i++)
-	{
-		POSITION pos = m_pThisDclForm->GetControlList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CDclControlObject *pArxObject = m_pThisDclForm->GetControlList().GetAt(pos);
-			if (pArxObject != NULL)
-			{
-				bool bMoveControl = false;
-				// get the position of the control
-				CRect rcPos;
-				rcPos.left = pArxObject->GetLongProperty(Prop::Left);
-				rcPos.top = pArxObject->GetLongProperty(Prop::Top);
-				rcPos.right = rcPos.left + pArxObject->GetLongProperty(Prop::Width);
-				rcPos.bottom = rcPos.top + pArxObject->GetLongProperty(Prop::Height);
-				
-				if (rcPos.Width() <= 0)
-				{
-					rcPos.right = rcPos.left + nDeMoveBy50;
-					bMoveControl = true;
-				}
-				if (rcPos.Height() <= 0)
-				{
-					rcPos.bottom = rcPos.top + nDeMoveBy50;
-					bMoveControl = true;
-				}
-				// if the control was just moved
-				if (bMoveControl == true)
-				{
-					// update the postion properties
-					pArxObject->SetLongProperty(Prop::Left, rcPos.left);
-					pArxObject->SetLongProperty(Prop::Top, rcPos.top);
-					pArxObject->SetLongProperty(Prop::Width, rcPos.Width());
-					pArxObject->SetLongProperty(Prop::Height, rcPos.Height());
-					// set the offset position properties
-					CalcControlOffsetDistances(pArxObject, rcPos);
-				}
-
-				// call the method to add the new control
-				CControlHolder *pControl = AddCWndControl( pArxObject, rcPos, false);
-				if (pControl == NULL)
-				{
-					mGripper.Hide();
-					HideSizingRect();
-					//return;
-				}
-				
-				// if the control has not been deleted.
-				if (!pArxObject->IsDeleted())
-				{
-					pZOrderList->AddControlToList(pArxObject->GetStringProperty(Prop::Name), pArxObject->GetType());
-					pZOrderList->m_pView = this;
-				}
-			}
-		}
-	}
-
-	pZOrderList->SetRedraw(TRUE); // turn drawing back on and update the window
-	pZOrderList->Invalidate();
-	pZOrderList->UpdateWindow(); 
+	UpdateZOrderList();
 	
 	mGripper.Hide();
 	HideSizingRect();
-	// move the grips forward so they don't appear behind the controls
-	mGripper.MoveToTop();
+
+	const TDclControlList& Controls = pDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
+	{
+		TDclControlPtr pDclControl = *iter;
+		if( !pDclControl->IsDeleted() && pDclControl->GetType() > CtlForm )
+		{
+			CRect rcPos;
+			rcPos.left = pDclControl->GetLongProperty(Prop::Left);
+			rcPos.top = pDclControl->GetLongProperty(Prop::Top);
+			rcPos.right = rcPos.left + pDclControl->GetLongProperty(Prop::Width);
+			rcPos.bottom = rcPos.top + pDclControl->GetLongProperty(Prop::Height);
+			AddCWndControl( pDclControl, rcPos, false);
+		}
+	}
 
 	CalcAllOffsets();
 
@@ -2983,8 +2800,7 @@ void COpenDCLView::DisplayControls(CDclFormObject *pDclForm)
 		GetClientRect(&rc);
 	else
 		GetParent()->GetWindowRect(&rc);
-		 
-	CDclControlObject *pDclProps = m_pThisDclForm->GetControlProperties();
+	TDclControlPtr pDclProps = m_pThisDclForm->GetControlProperties();
 	pDclProps->SetLongProperty(Prop::Width, rc.Width());
 	pDclProps->SetLongProperty(Prop::Height, rc.Height());
 }
@@ -3061,19 +2877,19 @@ void COpenDCLView::UndoAction()
 			{
 			case uaFontName:
 				{
-				pUndoAction->m_pArxObject->SetStringProperty(Prop::LabelName, pUndoAction->sString);
+				pUndoAction->m_pArxObject->SetStringProperty(Prop::FontName, pUndoAction->sString);
 				
 				// call the method to update the control
-				((CControlHolder*)m_SelectedControl.GetTemplate()->m_pCtrlHolder)->UpdateProperty(Prop::LabelName);
+				((CControlHolder*)m_SelectedControl.GetTemplate()->m_pCtrlHolder)->UpdateProperty(Prop::FontName);
 
 				break;
 				}
 			case uaFontSize:
 				{
-				pUndoAction->m_pArxObject->SetLongProperty(Prop::LabelSize, pUndoAction->lLong);
+				pUndoAction->m_pArxObject->SetLongProperty(Prop::FontSize, pUndoAction->lLong);
 				
 				// call the method to update the control
-				((CControlHolder*)m_SelectedControl.GetTemplate()->m_pCtrlHolder)->UpdateProperty(Prop::LabelName);
+				((CControlHolder*)m_SelectedControl.GetTemplate()->m_pCtrlHolder)->UpdateProperty(Prop::FontName);
 
 				break;
 				}
@@ -3148,7 +2964,7 @@ void COpenDCLView::UndoAction()
 	
 }
 
-void COpenDCLView::UpdateControl(CDclControlObject *pArxObject, Prop::Id ChangedPropertyID) 
+void COpenDCLView::UpdateControl(TDclControlPtr pArxObject, Prop::Id ChangedPropertyID) 
 {
 	
 	if (m_pThisDclForm == NULL)
@@ -3173,49 +2989,16 @@ void COpenDCLView::UpdateControl(CDclControlObject *pArxObject, Prop::Id Changed
 		{
 		}		
 	}
-
-}
-
-short COpenDCLView::ResetDclFormIndex() 
-{
-	return GetDclFormIndex();
 }
 
 void COpenDCLView::CheckPictureRefs() 
 {
-	
-	for (int i=1; i<m_pThisDclForm->GetControlList().GetCount(); i++)
+	const TDclControlList& Controls = m_pThisDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		POSITION pos = m_pThisDclForm->GetControlList().FindIndex(i);
-		if (pos != NULL)
-		{
-			CDclControlObject *pArxObject = m_pThisDclForm->GetControlList().GetAt(pos);
-			int nPictureId = pArxObject->GetLongProperty(Prop::Picture);
-			if (nPictureId >= 0)
-			{
-				CWnd *pCtrl = pArxObject->m_pCtrlHolder;				
-				((CControlHolder*)pCtrl)->UpdateProperty( Prop::Picture);
-			}
-		}
-	}
-
-}
-
-void COpenDCLView::SelectControl(short nArxControlIndex) 
-{
-	CDclControlObject* pArxObject = GetArxControlObject(m_pThisDclForm, nArxControlIndex);
-	if (pArxObject == NULL)
-		return;
-	CControlHolder *pControl = pArxObject->m_pCtrlHolder;
-	m_SelectedControl.Set( pArxObject, pControl, pArxObject->GetZOrder() );
-	ClearSelection();
-
-	CRect rcCtrl;
-	if (pControl != NULL)
-	{
-		pControl->GetWindowRect(&rcCtrl);
-		ScreenToClient(rcCtrl);
-		mGripper.MoveTo(rcCtrl);
+		TDclControlPtr pDclControl = *iter;
+		if( pDclControl->GetPropertyObject(Prop::Picture) )
+			pDclControl->m_pCtrlHolder->UpdateProperty( Prop::Picture);
 	}
 }
 
@@ -3246,51 +3029,30 @@ void COpenDCLView::CalcAllOffsets()
 		return;
 
 	// we are going to do a loop to ensure each control's offset properties are calculated correctly
-	for (int i=m_pThisDclForm->GetControlList().GetCount()-1; i> 0; i--)
+	const TDclControlList& Controls = m_pThisDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		POSITION pos = m_pThisDclForm->GetControlList().FindIndex(i);
-		if (pos != NULL)
+		TDclControlPtr pDclControl = *iter;
+		if (!pDclControl->IsDeleted())
 		{
-			// get the control
-			CDclControlObject *pArxObject = m_pThisDclForm->GetControlList().GetAt(pos);
-			if (pArxObject && !pArxObject->IsDeleted())
-			{
-				int nW = pArxObject->GetLongProperty(Prop::Width);
-				int nL = pArxObject->GetLongProperty(Prop::Left);
-
-				CRect rcPos(pArxObject->GetLongProperty(Prop::Left),
-							pArxObject->GetLongProperty(Prop::Top),
-							pArxObject->GetLongProperty(Prop::Width) - pArxObject->GetLongProperty(Prop::Left),
-							pArxObject->GetLongProperty(Prop::Height) - pArxObject->GetLongProperty(Prop::Top));
-				// set the offset position properties
-				CalcControlOffsetDistances(pArxObject, rcPos);
-			}
+			CRect rcPos(pDclControl->GetLongProperty(Prop::Left),
+									pDclControl->GetLongProperty(Prop::Top),
+									pDclControl->GetLongProperty(Prop::Width),
+									pDclControl->GetLongProperty(Prop::Height));
+			CalcControlOffsetDistances(pDclControl, rcPos);
 		}
 	}
 }
 
 void COpenDCLView::RefreshControlsWithPictures() 
 {
-	CRect rcThis;
-	GetClientRect(&rcThis);
-	
-	
-	// we are going to do a loop to force all controls with a picture property to refresh
-	for (int i=m_pThisDclForm->GetControlList().GetCount()-1; i> 0; i--)
+	const TDclControlList& Controls = m_pThisDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		POSITION pos = m_pThisDclForm->GetControlList().FindIndex(i);
-		if (pos != NULL)
-		{
-			// get the control
-			CDclControlObject *pArxObject = m_pThisDclForm->GetControlList().GetAt(pos);
-			if (pArxObject != NULL)
-			{
-				if (pArxObject->GetPropertyObject(Prop::Picture) != NULL)
-					RefreshChildControl(pArxObject, Prop::_Private);
-			}
-		}
+		TDclControlPtr pDclControl = *iter;
+		if( pDclControl->GetPropertyObject(Prop::Picture) )
+			RefreshChildControl( pDclControl, Prop::_Private );
 	}
-
 }
 
 void COpenDCLView::ZOrderUpdateOfSelCtrl(short ZIndex) 
@@ -3317,16 +3079,13 @@ bool COpenDCLView::IsTabsEnabled()
 		return true;
 
 	// do loop to find out if this form has a tab on it.
-	int nCount = 1;
-	while (nCount < m_pThisDclForm->GetControlList().GetCount())
+	const TDclControlList& Controls = m_pThisDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		// get the current position
-		POSITION CtrlPos = m_pThisDclForm->GetControlList().FindIndex(nCount);
-		CDclControlObject* pArxObject = m_pThisDclForm->GetControlList().GetAt(CtrlPos);
+		TDclControlPtr pDclControl = *iter;
 		// if it does, we must return a false to indicate the tab toolbox button should be disabled.
-		if (pArxObject->GetType() == CtlTabStrip && !pArxObject->IsDeleted())
+		if (pDclControl->GetType() == CtlTabStrip && !pDclControl->IsDeleted())
 			return false;
-		nCount++;
 	}
 	// if it doesn't, we must return a true to indicate the tab toolbox button should be enabled.
 	return true;
@@ -3353,10 +3112,10 @@ void COpenDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* p
 	if (bActivate && pActivateView == this)
 	{
 		UpdateZOrderList();
-		CDclControlObject* pCurrentCtrl = m_SelectedControl.GetTemplate();
+		TDclControlPtr pCurrentCtrl = m_SelectedControl.GetTemplate();
 		if( !pCurrentCtrl )
 		{
-			CDclFormObject* pCurrentForm = ((COpenDCLView*)pActivateView)->m_pThisDclForm;
+			TDclFormPtr pCurrentForm = ((COpenDCLView*)pActivateView)->m_pThisDclForm;
 			if( pCurrentForm )
 				pCurrentCtrl = pCurrentForm->GetControlProperties();
 		}
@@ -3369,50 +3128,42 @@ void COpenDCLView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* p
 
 void COpenDCLView::UpdateZOrderList() 
 {
-	
-	if (m_pThisDclForm == NULL)
+	if( !m_pThisDclForm )
 		return;
 
 	CZOrderListCtrl* pZOrderList = theEditorWorkspace.GetZOrderListCtrl();
+	pZOrderList->ClearList( this );
+	pZOrderList->SetRedraw( FALSE ); // turn drawing off regardless of list mode
 
-	// clear the list
-	pZOrderList->ClearList(this);
-	pZOrderList->SetRedraw(FALSE); // turn drawing off regardless of list mode
-
-	for (int i = 1; i<m_pThisDclForm->GetControlList().GetCount(); i++)
+	const TDclControlList& Controls = m_pThisDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		POSITION pos = m_pThisDclForm->GetControlList().FindIndex(i);
-		if (pos != NULL)
+		TDclControlPtr pDclControl = *iter;
+		if( !pDclControl->IsDeleted() && pDclControl->GetType() > CtlForm )
 		{
-			CDclControlObject *pArxObject = m_pThisDclForm->GetControlList().GetAt(pos);
-			// if this control is not deleted add it to the list
-			if (pArxObject && !pArxObject->IsDeleted())
-			{				
-				pZOrderList->AddControlToList(pArxObject->GetStringProperty(Prop::Name), pArxObject->GetType());
-				pZOrderList->m_pView = this;
-			}
+			bool bIsHot = (pDclControl == m_SelectedControl.GetTemplate());
+			pZOrderList->AddControlToList( pDclControl,
+																		 (bIsHot ||
+																			(pDclControl->m_pCtrlHolder && pDclControl->m_pCtrlHolder->IsSelected())),
+																		 bIsHot );
 		}
 	}
-	pZOrderList->SetRedraw(TRUE); // turn drawing back on and update the window
+	pZOrderList->SetRedraw( TRUE ); // turn drawing back on and update the window
 	pZOrderList->Invalidate();
 	pZOrderList->UpdateWindow(); 
 	
-	if (m_pThisDclForm->m_htiTreeItem != NULL)
-	{
-		CProjectTreeCtrl *pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
-		pProjTree->SelectItem(m_pThisDclForm->m_htiTreeItem);
-	}
+	if( m_pThisDclForm->m_htiTreeItem )
+		theEditorWorkspace.GetProjectTreeCtrl()->SelectItem( m_pThisDclForm->m_htiTreeItem );
 }
+
 void COpenDCLView::OnBringtofront() 
 {
 	ZOrdedSelectedControls(0);
-	
 }
 
 void COpenDCLView::OnSendtoback() 
 {
 	ZOrdedSelectedControls(1);
-	
 }
 
 void COpenDCLView::OnEditCut() 
@@ -3441,7 +3192,6 @@ void COpenDCLView::OnEditUndo()
 void COpenDCLView::OnEditCopy() 
 {
 	CopyControlToClipBoard();
-	
 }
 
 void COpenDCLView::OnContextMenu(CWnd* pWnd, CPoint point) 
@@ -3494,7 +3244,7 @@ BOOL COpenDCLView::PreTranslateMessage(MSG* pMsg)
 	return CView::PreTranslateMessage(pMsg);
 }
 
-void COpenDCLView::FireControlSelected(CDclControlObject *pArxControl)
+void COpenDCLView::FireControlSelected(TDclControlPtr pArxControl)
 {
 	if (pArxControl != NULL)
 	{
@@ -3533,14 +3283,11 @@ void COpenDCLView::FireShowFormGrips(BOOL bVisible)
 void COpenDCLView::FireTabControlDeleted()
 {
 	theEditorWorkspace.GetProjectTreeCtrl()->RemoveChildren( m_pThisDclForm->m_htiTreeItem );
-	CProject* pProject = m_pThisDclForm->GetProject();
-	POSITION pos = pProject->GetDclFormList().GetHeadPosition();
-	while( pos )
+	const TDclFormList& Forms = m_pThisDclForm->GetProject()->GetDclFormList();
+	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
 	{
-		CDclFormObject* pDclForm = pProject->GetDclFormList().GetNext( pos );
-		assert( pDclForm != NULL );
-		if( pDclForm && pDclForm->GetParentForm() == m_pThisDclForm )
-			pDclForm->SetDeleted();
+		if( (*iter)->GetParentForm() == m_pThisDclForm )
+			(*iter)->SetDeleted();
 	}
 }
 
@@ -3549,7 +3296,7 @@ void COpenDCLView::FireSetUndo()
 	theWorkspace.SetModified(true);
 }
 
-void COpenDCLView::FireControlInserted(CDclControlObject *pArxControl, long ControlType)
+void COpenDCLView::FireControlInserted(TDclControlPtr pArxControl, long ControlType)
 {
 	// have the property list show the new control
 	if (pArxControl != NULL)
@@ -3571,11 +3318,11 @@ void COpenDCLView::FireControlInserted(CDclControlObject *pArxControl, long Cont
 //{
 //	COpenDCLApp* pApp = (COpenDCLApp*)AfxGetApp();
 //	// create a pointer to pass to the list to insert
-//	CProject *pProject = activeProject;
+//	TEditorProjectPtr pProject = activeProject;
 //	
 //	for (int i=0; i<3; i++)
 //	{
-//		CDclFormObject* pNewDclForm = new CDclFormObject( pProject, VdclTabForm );
+//		TDclFormPtr pNewDclForm = new CDclFormObject( pProject, VdclTabForm );
 //		// assign the unique name and dcl form type to the dcl form object
 //		pNewDclForm->SetUniqueName(pApp->CreateUniqueName());
 //		pNewDclForm->SetParentForm(m_pThisDclForm);
@@ -3587,7 +3334,7 @@ void COpenDCLView::FireControlInserted(CDclControlObject *pArxControl, long Cont
 //		// make the call to add the properties to the new dcl form object.
 //		pApp->AddDclFormProperties(pNewDclForm, VdclTabForm);
 //		
-//		CDclControlObject *pDclProperties = pNewDclForm->GetControlProperties();
+//		TDclControlPtr pDclProperties = pNewDclForm->GetControlProperties();
 //		if (pDclProperties != NULL)
 //		{
 //			pDclProperties->SetLongProperty(Prop::Height, GetSelectedTabClientHeight());
@@ -3605,37 +3352,19 @@ bool COpenDCLView::CanRemoveChildTabPane(int nIndex)
 {
 	if (nIndex == -1)
 		return true;
-
-	// create a pointer to pass to the list to insert
-	CProject *pProject = activeProject;
-	
-	TPropertyPtr pProp = m_SelectedControl.GetTemplate()->GetPropertyObject(Prop::TabsCaption);
-
-	POSITION pos = pProject->GetDclFormList().FindIndex(nIndex);
-	if (pos != NULL)
-	{
-		CDclFormObject *pTabForm = pProject->FindDclTabChildForm(m_pThisDclForm->GetUniqueName(), nIndex);
-		assert( pTabForm != NULL );
-		if( !pTabForm )
-			return true;
-		if (pTabForm->GetControlList().GetCount() > 1)		
-		{
-			CString sMsg;
-			CString sTitle;
-			sMsg = theWorkspace.LoadResourceString(IDS_QDELETEFORM);
-			sTitle = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-			if (MessageBox(sMsg, sTitle, MB_ICONEXCLAMATION|MB_YESNO) == 6)
-				return true;
-			else
-				return false;			
-		}
-	}	
-	return true;
+	TDclFormPtr pTabForm = m_pThisDclForm->GetProject()->FindDclTabChildForm(m_pThisDclForm->GetUniqueName(), nIndex);
+	if( !pTabForm || pTabForm->GetControlList().size() <= 1 )
+		return true;
+	if( MessageBox( theWorkspace.LoadResourceString(IDS_QDELETEFORM),
+									theWorkspace.LoadResourceString(IDR_MAINFRAME),
+									MB_ICONEXCLAMATION | MB_YESNO) == 6 )
+		return true;
+	return false;
 }
 
 void COpenDCLView::ResizeChildTabPanes()
 {
-	CDclControlObject* pDclControl = m_SelectedControl.GetTemplate();
+	TDclControlPtr pDclControl = m_SelectedControl.GetTemplate();
 	assert( pDclControl->GetType() == CtlTabStrip );
 	TPropertyPtr pProp = pDclControl->GetPropertyObject(Prop::TabsCaption);
 	if( !pProp )
@@ -3651,10 +3380,10 @@ void COpenDCLView::ResizeChildTabPanes()
 	}
 	for (size_t i=0; i<pProp->GetStringArrayPtr()->size(); i++)
 	{
-		CDclFormObject *pTabForm = pDclControl->GetOwnerProject()->FindDclTabChildForm(m_pThisDclForm->GetUniqueName(), i);
+		TDclFormPtr pTabForm = pDclControl->GetOwnerProject()->FindDclTabChildForm(m_pThisDclForm->GetUniqueName(), i);
 		if (!pTabForm)
 			continue;
-		CDclControlObject *pDclProperties = pTabForm->GetControlProperties();
+		TDclControlPtr pDclProperties = pTabForm->GetControlProperties();
 		pDclProperties->SetLongProperty(Prop::Width, nNewWidth);
 		pDclProperties->SetLongProperty(Prop::Height, nNewHeight);
 		if (pTabForm->m_pMdiChildWnd != NULL)
@@ -3671,7 +3400,7 @@ void COpenDCLView::ResizeChildTabPanes()
 	theWorkspace.SetModified(true);
 }
 
-void COpenDCLView::FireShowPropertyWizard(CDclControlObject *pArxControl)
+void COpenDCLView::FireShowPropertyWizard(TDclControlPtr pArxControl)
 {
 	if (theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().m_pControl != NULL)
 		theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().ShowPropertyDlg();
@@ -3717,39 +3446,13 @@ void COpenDCLView::OnDraw(CDC* pDC)
 	if (m_pThisDclForm == NULL)
 		return;
 
-	try
+	TDclControlPtr pCtrl = m_pThisDclForm->GetControlProperties();
+	if( pCtrl && pCtrl->GetBooleanProperty(Prop::Resizable) )
 	{
-		int nCount = m_pThisDclForm->GetControlList().GetCount();		
-
-		if (nCount > 0)
-		{
-			CDclControlObject *pCtrl = m_pThisDclForm->GetControlProperties();
-
-			if (pCtrl != NULL)
-			{
-				if (pCtrl->GetBooleanProperty(Prop::Resizable) == TRUE)
-					m_bShowGrip = true;
-				else 
-					m_bShowGrip = false;
-			}
-			else
-				m_bShowGrip = false;
-
-			if (m_bShowGrip)
-			{
-				UpdateGripPos();
-				// draw size-grip
-				DrawFrameControl(hdc, &m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
-			}	
-		}
-	}
-	catch(...)
-	{
-	}
-	// then releasing the DC itself
+		UpdateGripPos();
+		DrawFrameControl(hdc, &m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
+	}	
 	::ReleaseDC(m_hWnd, hdc);
-
-	
 }
 
 void COpenDCLView::OnEditObjectbrowser() 

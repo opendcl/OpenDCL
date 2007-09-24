@@ -34,6 +34,11 @@ bool CControlGripper::EnsureCreated()
 					mGrip8.EnsureCreated());
 }
 
+bool CControlGripper::IsVisible() const
+{
+	return (mGrip1.m_hWnd && mGrip1.IsWindowVisible() != FALSE);
+}
+
 void CControlGripper::Hide()
 {
 	EnsureCreated();

@@ -8,7 +8,6 @@
 #include "DialogControl.h"
 #include "AcadColorService.h"
 
-class CDclControlObject;
 class CProject;
 
 enum ButtonStyle
@@ -73,12 +72,12 @@ class CButtonCtrl : public CXPStyleButtonST, public CDialogControl
 	CButtonAcadColorService mAcadColorService;
 
 public:
-	CButtonCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CButtonCtrl();
 
 // DialogControl Interface
 public:
-	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }

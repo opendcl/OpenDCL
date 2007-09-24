@@ -7,7 +7,7 @@
 #include "ErrorLexicon.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
-#include "ArxProject.h"
+#include "ArxWorkspace.h"
 #include "DclFormObject.h"
 #include "ControlPane.h"
 #include "VarUtils.h"
@@ -29,7 +29,7 @@ CControlPane* GetRequestedControlPane(CString sFileName, CString sDialogName)
 	return NULL;
 }
 
-//CDclControlObject * GetRequestedArxObject(CString sFileName, CString sDialogName, CString sControlName)
+//TDclControlPtr  GetRequestedArxObject(CString sFileName, CString sDialogName, CString sControlName)
 //{
 //	CDialogObject* pDialog = theArxWorkspace.FindDialog(sFileName, sDialogName);
 //	if (!pDialog)
@@ -55,10 +55,10 @@ CWnd* GetRequestedControlWnd( LPCTSTR pszProjectKey,
 	TDialogControlPtr pControl = GetRequestedControl( pszProjectKey, pszDialogName, pszControlName, nControlType );
 	if( !pControl )
 		return NULL;
-	return pControl->GetControl();
+	return pControl->GetControlWnd();
 }
 
-CDclControlObject* GetRequestedDclControl( LPCTSTR pszProjectKey,
+TDclControlPtr GetRequestedDclControl( LPCTSTR pszProjectKey,
 																					 LPCTSTR pszDialogName,
 																					 LPCTSTR pszControlName,
 																					 ControlType nControlType = CtlInvalid )
@@ -594,7 +594,7 @@ CWnd * GetControlPointer(int nControlType, CString sMethod, int *pnArgs)
 	CString sDialogBox;
 	CString sControlName;
 	CString sItem;
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject;
 	struct resbuf *ListData;
 	CWnd *pControl = NULL;
 
@@ -617,20 +617,20 @@ CWnd * GetControlPointer(int nControlType, CString sMethod, int *pnArgs)
 
 	else if (ListData->restype == RTSHORT)
 	{	
-		pArxObject = (CDclControlObject *)ListData->resval.rint;
+		pArxObject = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rint );
 	}
 	else if (ListData->restype == RTLONG)
 	{	
-		pArxObject = (CDclControlObject *)ListData->resval.rlong;
+		pArxObject = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rlong );
 	}
 	else if (ListData->restype == RTENAME)
 	{	
-		pArxObject = (CDclControlObject *)ListData->resval.rlname[0];
+		pArxObject = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rlname[0] );
 	}
 	else if (ListData->restype == RTREAL)
 	{	
 		double dValue = ListData->resval.rreal;
-		pArxObject = (CDclControlObject *)((LONG_PTR)dValue);
+		pArxObject = TDclControlLockedPtr( (CDclControlObject*)((LONG_PTR)dValue) );
 	}
 	else if (ListData->restype == RTSTR)
 	{		
@@ -699,7 +699,7 @@ CWnd * GetControlPointer(int nControlType, CString sMethod, int *pnArgs)
 	return pArxObject->GetWindow();
 }
 
-CWnd * GetControlPointer(ControlType nControlType, CString sMethod, CDclFormObject *pDclObject)
+CWnd * GetControlPointer(ControlType nControlType, CString sMethod, TDclFormPtr pDclObject)
 {
 	CString sProject;
 	CString sDialogBox;
@@ -730,16 +730,16 @@ CWnd * GetControlPointer(ControlType nControlType, CString sMethod, CDclFormObje
 // 
 // Parameters: none
 // 
-// Returns:	CDclControlObject *
+// Returns:	TDclControlPtr 
 // 
 //*****************************************************************************
-CDclControlObject * GetControlArxObject(CString sMethod, int *pnArgs)
+TDclControlPtr  GetControlArxObject(CString sMethod, int *pnArgs)
 {
 	CString sProject;
 	CString sDialogBox;
 	CString sControlName;
 	CString sItem;
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject;
 	struct resbuf *ListData;
 	CWnd *pControl = NULL;
 
@@ -761,20 +761,20 @@ CDclControlObject * GetControlArxObject(CString sMethod, int *pnArgs)
 
 	else if (ListData->restype == RTSHORT)
 	{	
-		pArxObject = (CDclControlObject *)ListData->resval.rint;
+		pArxObject = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rint );
 	}
 	else if (ListData->restype == RTLONG)
 	{	
-		pArxObject = (CDclControlObject *)ListData->resval.rlong;
+		pArxObject = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rlong );
 	}
 	else if (ListData->restype == RTENAME)
 	{	
-		pArxObject = (CDclControlObject *)ListData->resval.rlname[0];
+		pArxObject = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rlname[0] );
 	}
 	else if (ListData->restype == RTREAL)
 	{	
 		double dValue = ListData->resval.rreal;
-		pArxObject = (CDclControlObject *)((LONG_PTR)dValue);
+		pArxObject = TDclControlLockedPtr( (CDclControlObject*)((LONG_PTR)dValue) );
 	}
 	else if (ListData->restype == RTSTR)
 	{		
@@ -823,28 +823,13 @@ CDclControlObject * GetControlArxObject(CString sMethod, int *pnArgs)
 	
 		if (pnArgs != NULL)
 			*pnArgs = 3;
-		CDclControlObject *pArxObject = GetRequestedDclControl(sProject, sDialogBox, sControlName);
-
-		if (pArxObject == NULL)
-		{
-			return NULL;
-		}
-		
-		return pArxObject;
+		return GetRequestedDclControl(sProject, sDialogBox, sControlName);
 	}
 	else
-	{		
 		return NULL; 
-	}
 
 	if (pnArgs != NULL)
 		*pnArgs = 1;
-	
-	
-	if (pArxObject == NULL)
-	{
-		return NULL;
-	}
 	
 	return pArxObject;
 }
@@ -861,7 +846,7 @@ CDclControlObject * GetControlArxObject(CString sMethod, int *pnArgs)
 // Returns:	TPropertyPtr 
 // 
 //*****************************************************************************
-TPropertyPtr GetPropertyArgument(int nIndex, CString sMethod)
+TPropertyPtr GetPropertyArgument(TDclControlPtr pTemplate, int nIndex, CString sMethod)
 {
 	struct resbuf *ListData;
 
@@ -895,42 +880,42 @@ TPropertyPtr GetPropertyArgument(int nIndex, CString sMethod)
 		case RTREAL:
 		case RTANG:
 			{
-				pProperty = new CPropertyObject(PropDouble);
+				pProperty = new CPropertyObject(pTemplate, PropDouble);
 				// get the first argument required
 				pProperty->SetDoubleValue(ListData->resval.rreal);
 				break;
 			}
 		case RTSHORT:
 			{
-				pProperty = new CPropertyObject(PropLong);
+				pProperty = new CPropertyObject(pTemplate, PropLong);
 				// get the first argument required
 				pProperty->SetLongValue(ListData->resval.rint);
 				break;
 			}
 		case RTLONG:
 			{
-				pProperty = new CPropertyObject(PropLong);
+				pProperty = new CPropertyObject(pTemplate, PropLong);
 				// get the first argument required
 				pProperty->SetLongValue(ListData->resval.rlong);
 				break;
 			}
 		case RTSTR:
 			{
-				pProperty = new CPropertyObject(PropString);
+				pProperty = new CPropertyObject(pTemplate, PropString);
 				// get the first argument required
 				pProperty->SetStringValue(ListData->resval.rstring);
 				break;
 			}
 		case RTT:
 			{
-				pProperty = new CPropertyObject(PropBool);
+				pProperty = new CPropertyObject(pTemplate, PropBool);
 				// get the first argument required
 				pProperty->SetBooleanValue(true);				
 				break;
 			}
 		case RTNIL:
 			{
-				pProperty = new CPropertyObject(PropBool);
+				pProperty = new CPropertyObject(pTemplate, PropBool);
 				// get the first argument required
 				pProperty->SetBooleanValue(false);				
 				break;
@@ -2095,12 +2080,12 @@ CWnd * GetArgsControlStringIntInt(int nControlType, CString sMethod, CString &sS
 	return pControl;
 }
 
-struct resbuf *getLispTargetInput(LPCTSTR sMethod, CDclControlObject *&pArg)
+struct resbuf *getLispTargetInput(LPCTSTR sMethod, TDclControlPtr& pArg)
 {
 	CString sProject;
 	CString sDialogBox;
 	CString sControlName;
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData;
 	
 	ListData = acedGetArgs();
@@ -2121,23 +2106,23 @@ struct resbuf *getLispTargetInput(LPCTSTR sMethod, CDclControlObject *&pArg)
 
 	else if (ListData->restype == RTSHORT)
 	{	
-		pArg = (CDclControlObject *)ListData->resval.rint;
+		pArg = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rint );
 		return ListData;
 	}
 	else if (ListData->restype == RTLONG)
 	{	
-		pArg = (CDclControlObject *)ListData->resval.rlong;
+		pArg = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rlong );
 		return ListData;
 	}
 	else if (ListData->restype == RTENAME)
 	{	
-		pArg = (CDclControlObject *)ListData->resval.rlname[0];
+		pArg = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rlname[0] );
 		return ListData;
 	}
 	else if (ListData->restype == RTREAL)
 	{	
 		double dValue = ListData->resval.rreal;
-		pArg = (CDclControlObject *)((LONG_PTR)dValue);
+		pArg = TDclControlLockedPtr( (CDclControlObject*)((LONG_PTR)dValue) );
 		return ListData;
 	}
 	else if (ListData->restype == RTSTR)
@@ -2185,7 +2170,7 @@ struct resbuf *getLispTargetInput(LPCTSTR sMethod, CDclControlObject *&pArg)
 			return ListData;
 		}
 	
-		CDclControlObject *pArxObject = GetRequestedDclControl(sProject, sDialogBox, sControlName);
+		TDclControlPtr pArxObject = GetRequestedDclControl(sProject, sDialogBox, sControlName);
 
 		if (pArxObject == NULL)
 		{
@@ -2336,12 +2321,12 @@ void GetLispLongInput(struct resbuf *ListData, long &lArg1)
 // 
 // Parameters: none
 // 
-// Returns:	CDclControlObject *
+// Returns:	TDclControlPtr 
 // 
 //*****************************************************************************
-CDclControlObject * GetLispInput(LPCTSTR sMethod, CString &sArg1, CString &sArg2)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, CString &sArg1, CString &sArg2)
 {
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
 
 	if (pArxObject == NULL)
@@ -2368,9 +2353,9 @@ CDclControlObject * GetLispInput(LPCTSTR sMethod, CString &sArg1, CString &sArg2
 
 	return pArxObject;
 }
-CDclControlObject * GetLispInput(LPCTSTR sMethod, CPoint &Arg1)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, CPoint &Arg1)
 {
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
 
 	if (pArxObject == NULL)
@@ -2396,9 +2381,9 @@ CDclControlObject * GetLispInput(LPCTSTR sMethod, CPoint &Arg1)
 
 	return pArxObject;
 }
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, CString &sArg2)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, CString &sArg2)
 {
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
 
 	if (pArxObject == NULL)
@@ -2434,12 +2419,12 @@ CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, CString &sArg2)
 // 
 // Parameters: none
 // 
-// Returns:	CDclControlObject *
+// Returns:	TDclControlPtr 
 // 
 //*****************************************************************************
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int nArg1, CString &sArg2, CString &sArg3)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int nArg1, CString &sArg2, CString &sArg3)
 {
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
 
 	if (pArxObject == NULL)
@@ -2478,40 +2463,40 @@ CDclControlObject * GetLispInput(LPCTSTR sMethod, int nArg1, CString &sArg2, CSt
 
 	return pArxObject;
 }
-CDclControlObject * GetLispInput(LPCTSTR sMethod, CString &sArg1)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, CString &sArg1)
 {
 	CString sEmpty;
 	return GetLispInput(sMethod, sArg1, sEmpty);
 }
 
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2)
 {
 	int nArg3;
 	return GetLispInput(sMethod, nArg1, nArg2, nArg3);
 }
 
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1)
 {
 	int nArg2;
 	return GetLispInput(sMethod, nArg1, nArg2);
 
 }
 
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3)
 {
 	int nArg4;
 	return GetLispInput(sMethod, nArg1, nArg2, nArg3, nArg4);
 }
 
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4)
 {
 	int nArg5;
 	return GetLispInput(sMethod, nArg1, nArg2, nArg3, nArg4, nArg5);
 }
 
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, long &lArg2)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, long &lArg2)
 {
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
 
 	if (pArxObject == NULL)
@@ -2540,9 +2525,9 @@ CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, long &lArg2)
 	
 }
 
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5)
 {
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
 
 	if (pArxObject == NULL)
@@ -2606,9 +2591,9 @@ CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &n
 	return pArxObject;
 }
 
-CDclControlObject * GetLispInput(LPCTSTR sMethod, CString &sArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, CString &sArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5)
 {
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
 
 	if (pArxObject == NULL)
@@ -2671,9 +2656,9 @@ CDclControlObject * GetLispInput(LPCTSTR sMethod, CString &sArg1, int &nArg2, in
 
 	return pArxObject;
 }
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5, CString &sOptionalString)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5, CString &sOptionalString)
 {
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
 
 	if (pArxObject == NULL)
@@ -2749,9 +2734,9 @@ CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &n
 	return pArxObject;
 }
 
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, CString &sArg3)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, CString &sArg3)
 {
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
 
 	if (pArxObject == NULL)
@@ -2792,9 +2777,9 @@ CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, CStrin
 }
 
 
-CDclControlObject * GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, CArray<int, int> *pIntArray, CStringArray *pStrings)
+TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, CArray<int, int> *pIntArray, CStringArray *pStrings)
 {
-	CDclControlObject *pArxObject = NULL;
+	TDclControlPtr pArxObject = NULL;
 	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
 
 	if (pArxObject == NULL)

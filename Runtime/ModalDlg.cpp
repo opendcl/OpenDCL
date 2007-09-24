@@ -17,7 +17,7 @@ static int ChildFrameID = 10101;
 
 
 // CModalDialogX interface implementation
-CModalDialogX::CModalDialogX( CModalDlg& Owner, CDclFormObject* pDclForm )
+CModalDialogX::CModalDialogX( CModalDlg& Owner, TDclFormPtr pDclForm )
 : CArxDialogObject( pDclForm, &Owner )
 , mpOwner( &Owner )
 {
@@ -66,9 +66,9 @@ bool CModalDialogX::SetMinMaxSize( const CSize& min, const CSize& max )
 }
 
 
-static UINT GetDialogTemplateIdFromForm( CDclFormObject* pSourceForm )
+static UINT GetDialogTemplateIdFromForm( TDclFormPtr pSourceForm )
 {
-	CDclControlObject *pDclProperties = pSourceForm->GetControlProperties();
+	TDclControlPtr pDclProperties = pSourceForm->GetControlProperties();
 	if (pDclProperties->GetBooleanProperty(Prop::Resizable))
 		return IDD_RESIZEABLE;
 	return IDD_MODALDIALOG;
@@ -78,7 +78,7 @@ static UINT GetDialogTemplateIdFromForm( CDclFormObject* pSourceForm )
 // CModalDlg dialog
 
 
-CModalDlg::CModalDlg( CDclFormObject* pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+CModalDlg::CModalDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CBaseDlg( pSourceForm, GetDialogTemplateIdFromForm( pSourceForm ), pParent, pParams )
 , mDialogX( *this, pSourceForm )
 , mbResizable( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::Resizable ) )

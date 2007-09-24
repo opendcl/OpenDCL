@@ -8,7 +8,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CComboBoxCtrl
 
-CComboBoxCtrl::CComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID,
+CComboBoxCtrl::CComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID,
 															CComboHandler* pHandler /*= NULL*/, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , CFilteredComboCtrl( pHandler? pHandler->GetInputFilter() : NULL )
@@ -45,17 +45,26 @@ bool CComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 CRect CComboBoxCtrl::GetWndRect() const
 {
 	CRect rectCombo = CDialogControl::GetWndRect();
-	long nListHeight = mpTemplate->GetLongProperty( Prop::DropDownHeight );
-	if( nListHeight < 40 )
-		nListHeight = 40;
-	rectCombo.bottom += nListHeight;
+	if( (GetComboStyle() & CBS_DROPDOWN) != 0 )
+	{
+		long nListHeight = mpTemplate->GetLongProperty( Prop::DropDownHeight );
+		//if( nListHeight < 40 )
+		//	nListHeight = 40;
+		//long nItemHeight = 16;
+		//CComboHandler* pHandler = const_cast< CComboBoxCtrl* >(this)->GetComboHandler();
+		//if( pHandler )
+		//	nItemHeight = pHandler->GetItemHeight();
+		//nListHeight = nItemHeight * ((nListHeight + nItemHeight - 3) / nItemHeight) + 2; //make it an integral height, + 2 pixels for the border
+		//mpTemplate->SetLongProperty( Prop::DropDownHeight, nListHeight );
+		rectCombo.bottom += nListHeight;
+	}
 	return rectCombo;
 }
 
 DWORD CComboBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
-	dwStyle |= (CBS_HASSTRINGS);
+	dwStyle |= (CBS_NOINTEGRALHEIGHT);
 	dwStyle |= GetComboStyle();
 	const CComboHandler* pHandler = const_cast< CComboBoxCtrl* >(this)->GetComboHandler();
 	if( pHandler )
@@ -133,7 +142,7 @@ DWORD CComboBoxCtrl::GetComboStyle() const
 
 BEGIN_MESSAGE_MAP(CComboBoxCtrl, CFilteredComboCtrl)
 	ON_WM_MEASUREITEM_REFLECT()
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropDown)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
 	ON_CONTROL_REFLECT(CBN_CLOSEUP, OnCloseUp)
 END_MESSAGE_MAP()
 
@@ -172,14 +181,10 @@ void CComboBoxCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		lpMeasureItemStruct->itemHeight = nItemHeight;
 }
 
-void CComboBoxCtrl::OnDropDown()
+void CComboBoxCtrl::OnDropdown()
 {
-	if( GetCount() == 0 )
-	{
-		CRect rcWnd;
-		GetWindowRect( &rcWnd );
-		SetWindowPos( NULL, 0, 0, rcWnd.Width(), 0, (SWP_NOZORDER | SWP_NOMOVE) );
-	}
+	//if( GetCount() == 0 )
+	//	SetWindowPos( NULL, 0, 0, GetWndRect().Width(), 0, (SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE) );
 }
 
 void CComboBoxCtrl::OnCloseUp()

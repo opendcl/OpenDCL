@@ -15,20 +15,17 @@
 #define nOnEditUndo		26
 
 
-static CDclControlObject* FindArxControlObject(CDclFormObject *pDclForm, CString sControlName, CDclControlObject *pCtrl = NULL )
+static TDclControlPtr FindArxControlObject(TDclFormPtr pDclForm, CString sControlName, TDclControlPtr pCtrl = NULL )
 {
-	CDclControlObject *pRetObject = NULL;
-		
 	if (pDclForm == NULL)
 		return NULL;
 
-	// create a position variable to hold the converted ArxControlIndex
-	POSITION pos = pDclForm->GetControlList().GetHeadPosition();
-	while (pos)
+	const TDclControlList& Controls = pDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		CDclControlObject *pControl = pDclForm->GetControlList().GetNext(pos);
-		if (pControl->GetStringProperty(Prop::Name) == sControlName && pCtrl != pControl)
-			return pControl;
+		TDclControlPtr pDclControl = *iter;
+		if (pDclControl->GetStringProperty(Prop::Name) == sControlName && pCtrl != pDclControl)
+			return pDclControl;
 	}
 	return NULL;
 }
@@ -48,10 +45,9 @@ CZOrderListCtrl::~CZOrderListCtrl()
 
 
 BEGIN_MESSAGE_MAP(CZOrderListCtrl, CListCtrl)
-	//{{AFX_MSG_MAP(CZOrderListCtrl)
 	ON_NOTIFY_REFLECT(NM_CLICK, OnClick)
 	ON_COMMAND(ID_EDIT_PASTE, OnEditPaste)
-	//}}AFX_MSG_MAP
+	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, &CZOrderListCtrl::OnCustomdraw)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -60,29 +56,41 @@ END_MESSAGE_MAP()
 void CZOrderListCtrl::ClearList(COpenDCLView *pView)
 {
 	m_pView = pView;
-	// delete all the items
-	if (m_hWnd)
+	if( m_hWnd )
 		DeleteAllItems();
 }
 
-void CZOrderListCtrl::AddControlToList(CString sName, int nType)
+void CZOrderListCtrl::AddControlToList( TDclControlPtr pDclControl,
+																				bool bSelected /*= true*/,
+																				bool bEnsureVisible /*= false*/ )
 {
+	CString sName = pDclControl->GetStringProperty( Prop::Name );
 	LV_ITEM lvItem;
-	lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;
+	lvItem.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_INDENT;
 	lvItem.iItem = GetItemCount();
 	lvItem.iSubItem = 0;
 	lvItem.pszText = sName.LockBuffer();
 	lvItem.cchTextMax = sName.GetLength() + 1;
-	if (nType == nType100)
-		lvItem.iImage = m_ImageList.GetImageCount() -1;
+	ControlType nType = pDclControl->GetType();
+	if (nType == CtlFileDlgCtrl)
+		lvItem.iImage = m_ImageList.GetImageCount() - 1;
 	else
 		lvItem.iImage = nType - 2;
 	lvItem.iIndent = 0;
-	
+
+	if( bSelected )
+	{
+		lvItem.mask |= LVIF_STATE;
+		lvItem.state = LVIS_SELECTED;
+		lvItem.stateMask = LVIS_SELECTED;
+	}
+
 	// insert the row item
 	int nIndex = InsertItem(&lvItem);
 	assert(nIndex > -1);
 	SetItemData(nIndex, nType);
+	if( bEnsureVisible )
+		EnsureVisible( nIndex, FALSE );
 }
 
 void CZOrderListCtrl::RemoveControlFromList(CString sName)
@@ -115,8 +123,10 @@ void CZOrderListCtrl::SelectItem(CString sName, bool bEnsureVisible)
 	{
 		if (GetItemText(i, 0) == sName)
 		{
-			SetItem(i, 0, LVIF_STATE, NULL, 0, LVIS_SELECTED, LVIS_SELECTED, 0);
-			EnsureVisible(i, bEnsureVisible);			
+			SetItemState(i, LVIS_SELECTED, LVIS_SELECTED);
+			if( bEnsureVisible )
+				EnsureVisible(i, FALSE);
+			Invalidate();
 			return;
 		}
 	}
@@ -125,7 +135,7 @@ void CZOrderListCtrl::SelectItem(CString sName, bool bEnsureVisible)
 void CZOrderListCtrl::ClearSelection()
 {
 	for (int i=0; i<GetItemCount(); i++)
-		SetItemState(i, NULL, LVIS_SELECTED);
+		SetItemState(i, 0, LVIS_SELECTED);
 }
 
 int CZOrderListCtrl::GetSelectedCount() 
@@ -428,35 +438,32 @@ void CZOrderListCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult)
 void CZOrderListCtrl::DoZOrderUpdate()
 {
 	// this temp list will be used to re-order the controls in the dcl form's control list.
-	CList< CDclControlObject* > ControlList;
+	std::list< TDclControlPtr > ControlList;
 
 	for( int idx = 0; idx < GetItemCount(); ++idx )
 	{
-		CDclControlObject* pDclControl = FindArxControlObject( m_pView->m_pThisDclForm, GetItemText( idx, 0 ) );
+		TDclControlPtr pDclControl = FindArxControlObject( m_pView->m_pThisDclForm, GetItemText( idx, 0 ) );
 		if( pDclControl )
-			ControlList.AddTail( pDclControl );
+			ControlList.push_back( pDclControl );
 	}
 
 	// here we need to loop thru the dcl form control list to extract all the deleted controls so they don't get lost in space
-	POSITION pos = m_pView->m_pThisDclForm->GetControlList().GetHeadPosition();
-	while( pos )
+	const TDclControlList& Controls = m_pView->m_pThisDclForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		// if the control has been marked as deleted we need to place it in the front of the list
-		CDclControlObject* pDclControl = m_pView->m_pThisDclForm->GetControlList().GetNext( pos );
+		TDclControlPtr pDclControl = *iter;
 		if (pDclControl->IsDeleted())
-			ControlList.AddHead(pDclControl);	
+			ControlList.push_front(pDclControl);	
 	}
 
-	pos = ControlList.GetHeadPosition();
-	while( pos )
+	for( TDclControlList::const_iterator iter = ControlList.begin(); iter != ControlList.end(); ++iter )
 	{
-		CDclControlObject* pDclControl = ControlList.GetNext( pos );
+		TDclControlPtr pDclControl = *iter;
 		m_pView->m_pThisDclForm->ReorderControl( pDclControl, false, true );
-		CWnd* pControlWnd = pDclControl->GetControlInstance()->GetControl();
-		assert( pControlWnd != NULL );
-		if( pControlWnd )
-			// move this control to the front of the Zorder. This is ok because we do it to every control to get the correct zorder position set.
-			pControlWnd->SetWindowPos( &CWnd::wndTop, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+		CWnd* pControlHolder = pDclControl->m_pCtrlHolder;
+		assert( pControlHolder != NULL );
+		if( pControlHolder )
+			pControlHolder->SetWindowPos( &CWnd::wndTop, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
 	}
 	m_pView->m_pThisDclForm->ReindexControls();
 	m_pView->MoveGripsToTop();
@@ -504,4 +511,19 @@ void CZOrderListCtrl::OnEditPaste()
 {
 	if (m_pView != NULL)
  		m_pView->OnEditPaste();
+}
+
+void CZOrderListCtrl::OnCustomdraw(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	NMLVCUSTOMDRAW* pLVCD = reinterpret_cast<NMLVCUSTOMDRAW*>( pNMHDR );
+	*pResult = CDRF_DODEFAULT;
+	if( CDDS_PREPAINT == pLVCD->nmcd.dwDrawStage )
+  {
+    *pResult = CDRF_NOTIFYITEMDRAW;
+  }
+  else if ( CDDS_ITEMPREPAINT == pLVCD->nmcd.dwDrawStage )
+  {
+		if( GetItemState( pLVCD->nmcd.dwItemSpec, LVIS_SELECTED ) )
+			pLVCD->clrTextBk = RGB(192,192,192);
+  }
 }

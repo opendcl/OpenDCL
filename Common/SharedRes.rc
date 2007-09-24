@@ -271,7 +271,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_PROP_LABEL_NAME     "Font"
-    IDS_PROP_LABEL_FLASHTEXT "FontStrikeOut"
+    IDS_PROP_LABEL_FLASHTEXT "FontStrikeout"
     IDS_PROP_LABEL_ROTATIONANGLE "FontColor"
     IDS_PROP_BLOCKNAME      "BlockName"
     IDS_PROP_FILENAME       "FileName"
@@ -321,7 +321,7 @@ BEGIN
     IDS_PROP_ISTABSTOP      "IsTabStop"
     IDS_PROP_EVENTMOUSEENTERED "MouseEntered"
     IDS_PROP_GROUP          "BeginGroup"
-    IDS_PROP_PRESSEDPICT    "PressedPicture"
+    IDS_PROP_MOUSEOVERPICT  "MouseOverPicture"
     IDS_PROP_RENDERMODE     "RenderMode"
     IDS_PROP_EVENTRETURNPRESSED "ReturnPressed"
     IDS_PROP_FORMEVENTCANCELCLOSE "CancelClose"
@@ -510,6 +510,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_PROP_TOOLTIP_BALLOON "ToolTipBalloon"
+    IDS_EVENT_FORM_ENTERINGNODOCSTATE "EnteringNoDocState"
 END
 
 #endif    // English (U.S.) resources

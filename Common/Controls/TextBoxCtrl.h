@@ -6,7 +6,6 @@
 #include "FilteredEditCtrl.h"
 #include "DialogControl.h"
 
-class CDclControlObject;
 class CProject;
 class CInputFilter;
 
@@ -18,12 +17,12 @@ class CTextBoxCtrl : public CFilteredEditCtrl, public CDialogControl
 {
 
 public:
-	CTextBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CInputFilter* pFilter = NULL, bool bCreate = true );
+	CTextBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, CInputFilter* pFilter = NULL, bool bCreate = true );
 	virtual ~CTextBoxCtrl();
 
 // DialogControl Interface
 public:
-	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
@@ -36,5 +35,5 @@ protected:
 
 protected:
 	afx_msg void PostNcDestroy();
-	afx_msg void OnEnChange();
+	afx_msg void OnChange();
 };

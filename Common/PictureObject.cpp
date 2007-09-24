@@ -4,6 +4,7 @@
 #include "ArchiveEx.h"
 #include "Filing.h"
 #include "Project.h"
+#include "SafeImageListWrite.h"
 
 //#include <AtlImage.h> //for CImage
 
@@ -205,10 +206,8 @@ static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList,
 
 		// convert coordinates from units to logical units
 		CSize sizePic( lPicWidth, lPicHeight );
-		HDC hdc = ::GetDC(GetDesktopWindow());
-		CDC* cdc = CDC::FromHandle(hdc);
-		cdc->HIMETRICtoLP(&sizePic);
-		cdc->DeleteDC();
+		CDC* pDC = CDC::FromHandle( ::GetDC( NULL ) );
+		pDC->HIMETRICtoLP( &sizePic );
 
 		// if image list has not been created
 		if (!ImageList.m_hImageList)
@@ -247,10 +246,8 @@ static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList,
 
 		// convert coordinates from units to logical units
 		CSize sizePic( lPicWidth, lPicHeight );
-		HDC hdc = ::GetDC(GetDesktopWindow());
-		CDC* cdc = CDC::FromHandle(hdc);
-		cdc->HIMETRICtoLP(&sizePic);
-		cdc->DeleteDC();
+		CDC* pDC = CDC::FromHandle( ::GetDC( NULL ) );
+		pDC->HIMETRICtoLP( &sizePic );
 
 		// if image list has not been created
 		if (!ImageList.m_hImageList)
@@ -527,6 +524,7 @@ void CPictureObject::LoadFile( LPCTSTR szFile, bool bApplyMask /*= false*/ )
 //	return statOK;
 //}
 
+
 void CPictureObject::Serialize(CArchive& ar)
 {
   CObject::Serialize( ar );
@@ -557,7 +555,12 @@ void CPictureObject::Serialize(CArchive& ar)
 				CImageList ImageList;
 				ImageList.Create(msizePic.cx, msizePic.cy, ILC_COLOR8 | ILC_MASK, 1, 1);
 				ImageList.Add(hIconPic);
-				ImageList.Write(&ar);
+				ar.Flush();
+				ULONGLONG lPos1 = ar.GetFile()->GetPosition();
+				SafeImageListWrite( ImageList.m_hImageList, &CArchiveStream( &ar ) );
+				ar.Flush();
+				ULONGLONG lPos2 = ar.GetFile()->GetPosition();
+				ULONGLONG lSize = lPos2 - lPos1;
 				ImageList.DeleteImageList();
 				break;
 			}
@@ -964,8 +967,6 @@ void CPictureObject::CalcLogicalSize()
 	msizePic.SetSize( lPicWidth, lPicHeight );
 
 	// convert coordinates from units to logical units
-	HDC hdc = ::GetDC(GetDesktopWindow());
-	CDC * cdc = CDC::FromHandle(hdc);
-	cdc->HIMETRICtoLP( &msizePic );
-	cdc->DeleteDC();
+	CDC* pDC = CDC::FromHandle( ::GetDC( NULL ) );
+	pDC->HIMETRICtoLP( &msizePic );
 }

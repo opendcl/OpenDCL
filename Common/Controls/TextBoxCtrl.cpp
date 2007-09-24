@@ -7,7 +7,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CTextBoxCtrl
 
-CTextBoxCtrl::CTextBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID,
+CTextBoxCtrl::CTextBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID,
 														CInputFilter* pFilter /*= NULL*/, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , CFilteredEditCtrl( pFilter )
@@ -101,7 +101,7 @@ bool CTextBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 }
 
 BEGIN_MESSAGE_MAP(CTextBoxCtrl, CFilteredEditCtrl)
-	ON_CONTROL_REFLECT(EN_CHANGE, &CTextBoxCtrl::OnEnChange)
+	ON_CONTROL_REFLECT(EN_CHANGE, &CTextBoxCtrl::OnChange)
 END_MESSAGE_MAP()
 
 
@@ -114,7 +114,7 @@ void CTextBoxCtrl::PostNcDestroy()
 	delete this;
 }
 
-void CTextBoxCtrl::OnEnChange()
+void CTextBoxCtrl::OnChange()
 {
 	CString sText;
 	GetWindowText( sText );

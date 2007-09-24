@@ -15,7 +15,7 @@
 
 //IMPLEMENT_DYNCREATE(CImageListPage, CPropertyPage)
 
-CImageListPage::CImageListPage( CDclControlObject* pDclControl )
+CImageListPage::CImageListPage( TDclControlPtr pDclControl )
 : CPropertyPage(CImageListPage::IDD)
 , mpDclControl( pDclControl )
 , mpImageList( new CImageList )

@@ -6,7 +6,6 @@
 #include "CheckBoxCtrl.h"
 #include "ArxControlServices.h"
 
-class CDclControlObject;
 class CPropertyObject;
 
 
@@ -17,11 +16,9 @@ class CArxCheckBoxCtrl : public CCheckBoxCtrl
 {
 	CArxControlServices	mArxServices;
 
-	bool m_bInvokeWithSendString;
-
 // Construction
 public:
-	CArxCheckBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CArxCheckBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxCheckBoxCtrl();
 
 // DialogControl Interface

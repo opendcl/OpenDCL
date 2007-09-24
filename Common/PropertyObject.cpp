@@ -1253,15 +1253,20 @@ public:
 IMPLEMENT_SERIAL(CPropertyObject, CObject, 1)
 
 CPropertyObject::CPropertyObject()
-: mbHidden( false )
+: mpOwnerControl( NULL )
+, mbHidden( false )
 , mnID( Prop::_Private )
 {	
 	SetType( PropInvalid );
 	SetFlags( 0 );
 }
 
-CPropertyObject::CPropertyObject(PropertyType type, DWORD dwFlags /*= 0*/, Prop::Id nID /*= -1*/ )
-: mbHidden( false )
+CPropertyObject::CPropertyObject( CDclControlObject* pOwnerControl,
+																	PropertyType type,
+																	DWORD dwFlags /*= 0*/,
+																	Prop::Id nID /*= -1*/ )
+: mpOwnerControl( pOwnerControl )
+, mbHidden( false )
 , mnID( nID )
 {	
 	SetType( type );
@@ -1534,6 +1539,8 @@ const AxInterfaceDescriptor* CPropertyObject::GetAxInterfaceDescriptorPtr() cons
 	AxInterfaceDescriptor* const* v = NULL;
 	bool bSuccess = mpValue->GetValue( v );
 	//assert( bSuccess == true );
+	if( !bSuccess )
+		return NULL;
 	return (*v);
 }
 
@@ -1562,7 +1569,7 @@ size_t CPropertyObject::size() const
 	return mpValue->size();
 }
 
-CString CPropertyObject::GetName()
+CString CPropertyObject::GetName() const
 {
 	switch( GetType() )
 	{
@@ -1579,10 +1586,10 @@ CString CPropertyObject::GetName()
 	return GetPropertyName(GetID());
 }
 
-CString CPropertyObject::GetDocumentationDesc()
+CString CPropertyObject::GetDocumentationDesc() const
 {
 	CString sDesc;
-	AxInterfaceDescriptor** v;
+	AxInterfaceDescriptor* const* v;
 	if( mpValue->GetValue( v ) && *v )
 		sDesc = (*v)->GetDesc();
 	if( sDesc.IsEmpty() )
@@ -1602,7 +1609,7 @@ CString CPropertyObject::GetStringItem(short ListIndex)
 	return sItem;
 }
 
-CString CPropertyObject::GetStdProperty()
+CString CPropertyObject::GetStdProperty() const
 {		
 	CString RetString;
 	switch (GetType())

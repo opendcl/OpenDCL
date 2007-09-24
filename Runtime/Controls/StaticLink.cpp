@@ -11,6 +11,9 @@
 #include "PropertyIds.h"
 #include "ToolTips.h"
 
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CStaticLink
@@ -61,7 +64,7 @@ void CStaticLink::SetForeColor(long nColor)
 }
 
 
-BOOL CStaticLink::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
+BOOL CStaticLink::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID ) 
 {
 	CString lpszWindowName;// = "Default";
 	CRect ArxRect;
@@ -89,15 +92,6 @@ BOOL CStaticLink::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 
-	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
 	return bCreated;
 }
 
@@ -218,7 +212,7 @@ void CStaticLink::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	CStatic::OnMouseMove(nFlags, point);
 }
 

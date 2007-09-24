@@ -39,7 +39,7 @@ CString ConstructTooltipHtml( LPCTSTR pszTitle, COLORREF crTitleColor /*= RGB(0,
 }
 
 
-void SetToolTipEx(CWnd *pWnd, CPPToolTip& tooltip, CDclControlObject *pControl)
+void SetToolTipEx(CWnd *pWnd, CPPToolTip& tooltip, TDclControlPtr pControl)
 {
 	tooltip.RemoveTool( pWnd );
 	tooltip.SetBehaviour( PPTOOLTIP_MULTIPLE_SHOW );
@@ -77,7 +77,7 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip& tooltip, CDclControlObject *pControl)
 													(pToolTipLine && pToolTipLine->GetBooleanValue()),
 													sMain );
 
-	CProject* pProject = pControl->GetOwnerProject();
+	TProjectPtr pProject = pControl->GetOwnerProject();
 
 	if( pToolTipPicture )
 	{
@@ -113,7 +113,7 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &tooltip,
 				  int nColor, 
 				  int nPicture,
 				  CString sAvi,
-				  CDclControlObject *pControl = NULL)
+				  TDclControlPtr pControl = NULL)
 {	
 	if (sTitleIn.IsEmpty() && sMainIn.IsEmpty() && Prop::Picture == 0 && sAvi.IsEmpty())
 		return;
@@ -129,7 +129,7 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &tooltip,
 
 	CString sBody = ConstructTooltipHtml( sTitleIn, GetRGBColor( nColor ), (nLine != 0), sMainIn );
 
-	const CProject* pProject = pControl? pControl->GetOwnerProject() : NULL;
+	const TProjectPtr pProject = pControl? pControl->GetOwnerProject() : NULL;
 
 	int nPic = Prop::Picture;
 

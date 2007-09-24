@@ -4,8 +4,7 @@
 #pragma once
 
 #include "PPToolTip.h"
-
-class CDclControlObject;
+#include "PtrTypes.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -19,7 +18,6 @@ public:
 
 // Attributes
 public:
-	bool m_bInvokeWithSendString;
 	CButton m_Frame;
 // Operations
 public:
@@ -30,7 +28,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(VdclGroupBox)
 	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID );
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	//}}AFX_VIRTUAL
 
@@ -47,5 +45,5 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	CDclControlObject *m_ArxControl;
+	TDclControlPtr m_ArxControl;
 };

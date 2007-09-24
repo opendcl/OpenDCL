@@ -215,15 +215,15 @@ static bool ObjectTypeInfoProperties( LPUNKNOWN pObj, LPTYPEINFO* ppAxTypeInfo )
 }
 
 
-static void AddAxProp(CDclControlObject *pControl, long lId, CString sName, CString sDesc, VARTYPE vt, bool bGet=true, bool bSet=true)
+static void AddAxProp(TDclControlPtr pControl, long lId, CString sName, CString sDesc, VARTYPE vt, bool bGet=true, bool bSet=true)
 {
-	TPropertyPtr pProp = new CPropertyObject(PropActiveXProp);
+	TPropertyPtr pProp = new CPropertyObject(pControl, PropActiveXProp);
 	AxPropertyDescriptor* axPropPut =
 		new AxPropertyDescriptor( lId, sName, sDesc, vt, bSet? INVOKE_PROPERTYPUT : INVOKE_PROPERTYGET );
 	pControl->InsertNamedProperty( pProp );
 }
 
-static void SetupFont(CDclControlObject *pControl)
+static void SetupFont(TDclControlPtr pControl)
 {
 	AddAxProp(pControl, 0, _T("Name"), _T("Indicates the name of the font to be used."), VT_BSTR);
 	AddAxProp(pControl, 2, _T("Size"), _T("Indicates the size of the font to be used. \\par \\par \\b1Note: \\b0 To properly calculate the font size, multiply your new font size by 10000."), VT_CY);
@@ -235,7 +235,7 @@ static void SetupFont(CDclControlObject *pControl)
 	AddAxProp(pControl, 8, _T("Charset"), _T("Indicates the charset of the font to be used."), VT_I2);	
 }
 
-static void SetupPicture(CDclControlObject *pControl)
+static void SetupPicture(TDclControlPtr pControl)
 {
 	AddAxProp(pControl, 0, _T("Handle"), _T("Retrieve the picture Handle."), VT_I4, true, false);
 	AddAxProp(pControl, 2, _T("HPal"), _T("Retrieve or set the Handle to the Palette."), VT_I4);
@@ -248,7 +248,7 @@ static void SetupPicture(CDclControlObject *pControl)
 /////////////////////////////////////////////////////////////////////////////
 // CAxContainerCtrl
 
-CAxContainerCtrl::CAxContainerCtrl(CDclControlObject* pTemplate,
+CAxContainerCtrl::CAxContainerCtrl(TDclControlPtr pTemplate,
 																	 CControlPane* pPane,
 																	 UINT nID,
 																	 bool bCreate /*= true*/)
@@ -260,7 +260,7 @@ CAxContainerCtrl::CAxContainerCtrl(CDclControlObject* pTemplate,
 		Create(pPane->GetHostDialog(), nID);
 	}
 }
-CAxContainerCtrl::CAxContainerCtrl(CDclControlObject* pTemplate
+CAxContainerCtrl::CAxContainerCtrl(TDclControlPtr pTemplate
 																	 , CControlPane* pPane
 																	 , UINT nID
 																	 , CRect ArxRect
@@ -566,14 +566,14 @@ void CAxContainerCtrl::LoadPictureFile(DISPID dispid, CString sFile, WORD flag)
 	Invalidate();
 }
 
-UINT CAxContainerCtrl::ExtractEventInfo(CDclControlObject *pControl, LPOLEOBJECT pIObject, bool bUseAsType)
+UINT CAxContainerCtrl::ExtractEventInfo(TDclControlPtr pControl, LPOLEOBJECT pIObject, bool bUseAsType)
 {
 	ITypeInfo *TheInfo = NULL;
 	ObjectTypeInfoEvents(pIObject,&TheInfo);
 	return ExtractEventInfo(pControl, TheInfo, bUseAsType);
 }
 
-UINT CAxContainerCtrl::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo* pTypeInfo, bool bUseAsType)
+UINT CAxContainerCtrl::ExtractEventInfo(TDclControlPtr pControl, ITypeInfo* pTypeInfo, bool bUseAsType)
 {
 	assert( pTypeInfo != NULL );
 	if( !pTypeInfo )
@@ -603,29 +603,25 @@ UINT CAxContainerCtrl::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo* 
 
 		if( !pAxEventDesc->GetName().IsEmpty() )
 		{
-			//Before adding event to this list, see if it already exists.
-			//If it does, don't add it.
-			bool bExists = false;
-			for (POSITION pos = pControl->GetPropertyList().GetHeadPosition();
-				pos != NULL; 
-				pControl->GetPropertyList().GetNext(pos))
+			TPropertyList& Props = pControl->GetPropertyList();
+			bool bFoundIt = false;
+			for( TPropertyList::iterator iter = Props.begin(); iter != Props.end(); ++iter )
 			{
-				TPropertyPtr pProp = pControl->GetPropertyList().GetAt(pos);
-				if (pProp->GetType() == PropActiveXEvent) {
-					AxEventDescriptor* pAxEvent = pProp->GetAxInterfaceDescriptorPtr()->GetEvent();
-					if (pAxEvent->GetName() == pAxEventDesc->GetName()) {
-						//Event exists, set flag to not add it
-						bExists = true;
+				if( (*iter)->GetType() == PropActiveXEvent )
+				{
+					const AxEventDescriptor* pAxEvent = (*iter)->GetAxInterfaceDescriptorPtr()->GetEvent();
+					if( pAxEvent->GetName() == pAxEventDesc->GetName() )
+					{
+						bFoundIt = true; //event already exists
 						break;
 					}
 				}
 			}
-			if (!bExists) 
+			if( !bFoundIt ) //event must be added to property list
 			{
-				//Event did not exist, add it to the list
-				TPropertyPtr pProp = new CPropertyObject( PropActiveXEvent );
+				TPropertyPtr pProp = new CPropertyObject( pControl, PropActiveXEvent );
 				pProp->SetHidden();
-				pControl->GetPropertyList().AddTail( pProp );
+				Props.push_back( pProp );
 				++ctEvents;
 				pProp->GetAxInterfaceDescriptorPtr()->SetEvent( pAxEventDesc.release() );
 			}
@@ -635,14 +631,14 @@ UINT CAxContainerCtrl::ExtractEventInfo(CDclControlObject *pControl, ITypeInfo* 
 	return ctEvents;
 }
 
-UINT CAxContainerCtrl::ExtractMethodInfo(CDclControlObject *pControl, LPOLEOBJECT pIObject)
+UINT CAxContainerCtrl::ExtractMethodInfo(TDclControlPtr pControl, LPOLEOBJECT pIObject)
 {
 	ITypeInfo *TheInfo = NULL;
 	ObjectTypeInfoProperties(pIObject,&TheInfo);
 	return ExtractMethodInfo(pControl, TheInfo);
 }
 
-UINT CAxContainerCtrl::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo* pTypeInfo)
+UINT CAxContainerCtrl::ExtractMethodInfo(TDclControlPtr pControl, ITypeInfo* pTypeInfo)
 {
 	assert( pTypeInfo != NULL );
 	if( !pTypeInfo )
@@ -660,18 +656,17 @@ UINT CAxContainerCtrl::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo*
 	pTypeInfo->ReleaseTypeAttr( pTypeAttr );
 
 	//Remove any existing ActiveX methods properties before inserting the new ones
-	POSITION pos = pControl->GetPropertyList().GetHeadPosition();
-	while( pos )
+	TPropertyList& Props = mpTemplate->GetPropertyList();
+	TPropertyList::iterator iter = Props.begin();
+	while( iter != Props.end() )
 	{
-		POSITION posAt = pos;
-		TPropertyPtr pProp = pControl->GetPropertyList().GetNext( pos );
-		assert( pProp != NULL );
-		if( pProp->GetType() == PropActiveXMethods )
-			pControl->GetPropertyList().RemoveAt( posAt );
+		TPropertyList::iterator iterAt = iter++;
+		if( (*iterAt)->GetType() == PropActiveXMethods )
+			Props.erase( iterAt );
 	}
 
 	// create the new property and insert at the second position after the (ActiveX PropertyObject) property item
-	TPropertyPtr pProp = new CPropertyObject(PropActiveXMethods);
+	TPropertyPtr pProp = new CPropertyObject(pControl, PropActiveXMethods);
 	pProp->GetAxInterfaceDescriptorPtr()->SetMethods( new std::vector< RefCountedPtr< AxMethodDescriptor > > );
 	pProp->SetID( Prop::ObjectBrowser ); // set the id of the new property
 	pControl->InsertNamedProperty( pProp );
@@ -700,7 +695,7 @@ UINT CAxContainerCtrl::ExtractMethodInfo(CDclControlObject *pControl, ITypeInfo*
 	return ctMethods;
 }
 
-BOOL CAxContainerCtrl::ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID clsid)
+BOOL CAxContainerCtrl::ExtractComponentsFromTLB(TDclControlPtr pControl, CLSID clsid)
 {
 	long lTypeInfoCount = 0;
 	CComBSTR bstrName;
@@ -769,7 +764,7 @@ BOOL CAxContainerCtrl::ExtractComponentsFromTLB(CDclControlObject *pControl, CLS
 	return TRUE;
 }
 
-UINT CAxContainerCtrl::ExtractPropertyInfo( CDclControlObject* pControl, LPOLEOBJECT pIObject, bool bEnumList /*=false*/ )
+UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, LPOLEOBJECT pIObject, bool bEnumList /*=false*/ )
 {
 	CComPtr< ITypeInfo > pTypeInfo;
 	ObjectTypeInfoProperties( pIObject, &pTypeInfo );
@@ -780,7 +775,7 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( CDclControlObject* pControl, LPOLEOB
 	return ExtractPropertyInfo( pControl, pTypeInfo, pIObject, bEnumList );
 }
 
-UINT CAxContainerCtrl::ExtractPropertyInfo( CDclControlObject* pControl, ITypeInfo* pTypeInfo, LPOLEOBJECT pIObject, bool bEnumList /*=false*/ )
+UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* pTypeInfo, LPOLEOBJECT pIObject, bool bEnumList /*=false*/ )
 {
 	assert( pTypeInfo != NULL );
 	if( !pTypeInfo )
@@ -823,7 +818,7 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( CDclControlObject* pControl, ITypeIn
 				}
 				if( !pProp )
 				{ //add a new property object
-					pProp = new CPropertyObject( PropActiveXEnum );
+					pProp = new CPropertyObject( pControl, PropActiveXEnum );
 					pProp->SetHidden();
 					pProp->SetStringValue( sPropName );
 					pControl->InsertNamedProperty( pProp );
@@ -870,11 +865,11 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( CDclControlObject* pControl, ITypeIn
 				{ //add a new property object
 					if( pAxPropDesc->IsReadOnly() || !bBrowsable )
 					{
-						pProp = new CPropertyObject( PropActiveXRunTime );
+						pProp = new CPropertyObject( pControl, PropActiveXRunTime );
 						pProp->SetHidden();
 					}
 					else
-						pProp = new CPropertyObject( PropActiveXProp );
+						pProp = new CPropertyObject( pControl, PropActiveXProp );
 					pProp->SetStringValue( sPropName );
 					if( pAxPropDesc->GetInvKind() == DISPATCH_PROPERTYGET && !pAxPropDesc->GetArgs().empty() )
 						pProp->SetHidden();

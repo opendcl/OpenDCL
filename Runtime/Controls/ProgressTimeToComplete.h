@@ -1,6 +1,6 @@
 #pragma once
 
-class CDclControlObject;
+#include "PtrTypes.h"
 
 
 class TProgressTimeToComplete : public CProgressCtrl
@@ -10,7 +10,7 @@ class TProgressTimeToComplete : public CProgressCtrl
     clock_t m_start;
     CFont   m_fountHorz;
     CFont   m_fountVert;
-	CDclControlObject *m_ArxControl;
+	TDclControlPtr m_ArxControl;
   protected:
     //{{AFX_VIRTUAL(TProgressTimeToComplete)
     //}}AFX_VIRTUAL
@@ -30,6 +30,6 @@ class TProgressTimeToComplete : public CProgressCtrl
     TProgressTimeToComplete();
     virtual ~TProgressTimeToComplete();
     void ResetStartTime(void);
-	BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID );
     DECLARE_MESSAGE_MAP()
 };

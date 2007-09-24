@@ -6,16 +6,16 @@
 
 #pragma once
 
-class CDclControlObject;
+#include "PtrTypes.h"
 
 
 class CArxControlServices
 {
-	CDclControlObject* mpTemplate;
+	TDclControlPtr mpTemplate;
 	CString	msLispSymbolName; //the lisp symbol name being used for this control
 	
 public:
-	CArxControlServices( CDclControlObject* pTemplate );
+	CArxControlServices( TDclControlPtr pTemplate );
 	virtual ~CArxControlServices();
 
 	// Properties

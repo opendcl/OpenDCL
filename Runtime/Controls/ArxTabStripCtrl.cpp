@@ -17,7 +17,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxTabStripCtrl
 
-CArxTabStripCtrl::CArxTabStripCtrl( CDclControlObject* pTemplate,
+CArxTabStripCtrl::CArxTabStripCtrl( TDclControlPtr pTemplate,
 																		CControlPane* pPane,
 																		UINT nID,
 																		bool bCreate /*= true*/ )
@@ -87,7 +87,7 @@ TTabPagePtr CArxTabStripCtrl::GetTabPageAt( size_t nPageIndex ) const
 	return mTabPages.at( nPageIndex );
 }
 
-const CDclFormObject* CArxTabStripCtrl::GetTabSourceFormAt( size_t nPageIndex ) const
+const TDclFormPtr CArxTabStripCtrl::GetTabSourceFormAt( size_t nPageIndex ) const
 {
 	if( nPageIndex >= mTabPages.size() )
 		return NULL;
@@ -183,14 +183,13 @@ bool CArxTabStripCtrl::CreateTabPages( UINT& nId )
 	bool bFailed = false;
 
 	CRect rectPage = GetUsedArea();
-	POSITION pos = mpTemplate->GetOwnerProject()->GetDclFormList().GetHeadPosition();
-	while (pos)
+	const TDclFormList& Forms = mpTemplate->GetOwnerProject()->GetDclFormList();
+	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
 	{
-		CDclFormObject* pDclForm = mpTemplate->GetOwnerProject()->GetDclFormList().GetNext( pos );
-		if( pDclForm->GetParentForm() == mpTemplate->GetOwnerForm() )
+		if( (*iter)->GetParentForm() == mpTemplate->GetOwnerForm() )
 		{
-			CTabPage* pNewPage = new CTabPage( pDclForm, this, rectPage, nId );
-			short nTabIndex = pDclForm->GetTabIndex();
+			CTabPage* pNewPage = new CTabPage( (*iter), this, rectPage, nId );
+			short nTabIndex = (*iter)->GetTabIndex();
 			if( nTabIndex >= mTabPages.size() )
 				mTabPages.push_back( pNewPage );
 			else
@@ -222,7 +221,7 @@ void CArxTabStripCtrl::ActivateTabPage( TTabPagePtr pTabPage, bool bFireEvent /*
 	if( !pTabPage )
 		return;
 
-	CDclFormObject* pSourceForm = pTabPage->GetSourceForm();
+	TDclFormPtr pSourceForm = pTabPage->GetSourceForm();
 	if( !pSourceForm )
 		return;
 
@@ -233,10 +232,8 @@ void CArxTabStripCtrl::ActivateTabPage( TTabPagePtr pTabPage, bool bFireEvent /*
 													rectTab.Width(),
 													rectTab.Height(),
 													SWP_FRAMECHANGED | SWP_NOCOPYBITS | SWP_NOZORDER | SWP_NOOWNERZORDER );
-	pTabPage->GetControlPane().ShowPictureBoxes(FALSE);
 	pTabPage->GetControlPane().RecalcLayout();
 	pTabPage->ShowWindow( SW_SHOW );
-	pTabPage->GetControlPane().ShowPictureBoxes(TRUE);
 	if( bNewPage )
 		SetFirstControlFocus( pTabPage );
 	Invalidate();

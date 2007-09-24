@@ -8,7 +8,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxComboBoxCtrl
 
-CArxComboBoxCtrl::CArxComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID,
+CArxComboBoxCtrl::CArxComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID,
 																		CComboHandler* pHandler /*= NULL*/, bool bCreate /*= true*/ )
 : CComboBoxCtrl( pTemplate, pPane, nID, pHandler, false )
 , mArxServices( pTemplate )
@@ -25,11 +25,6 @@ bool CArxComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
-
-	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
 
 	return bSuccess;
 }
@@ -110,7 +105,7 @@ void CArxComboBoxCtrl::OnSelchange()
 		{
 			CString sText;
 			GetWindowText( sText );
-			InvokeMethodIntString( sEventName, GetCurSel(), sText, m_bInvokeWithSendString );
+			InvokeMethodIntString( sEventName, GetCurSel(), sText, IsAsyncEvents() );
 			mpTemplate->SetStringProperty( Prop::Text, sText );
 		}
 	}
@@ -118,26 +113,27 @@ void CArxComboBoxCtrl::OnSelchange()
 
 void CArxComboBoxCtrl::OnDropdown() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDropDown), m_bInvokeWithSendString);	
+	__super::OnDropdown();
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDropDown), IsAsyncEvents());	
 }
 
 void CArxComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	CComboBox::OnMouseMove(nFlags, point);
+	__super::OnMouseMove(nFlags, point);
 	InvokeMethodIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseMove),
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 }
 
 void CArxComboBoxCtrl::OnKillfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }
 
 void CArxComboBoxCtrl::OnSetfocus() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
 }

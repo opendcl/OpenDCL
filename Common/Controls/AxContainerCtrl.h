@@ -7,7 +7,6 @@
 
 class AxPropertyDescriptor;
 class CControlPane;
-class CDclControlObject;
 class CDclFormObject;
 class COleFont;
 class CProject;
@@ -25,29 +24,29 @@ protected:
 
 // Construction
 public:
-	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true);
-	CAxContainerCtrl(CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, CRect ArxRect, bool bAddPropInfo, bool bCreate = true);
+	CAxContainerCtrl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true);
+	CAxContainerCtrl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, CRect ArxRect, bool bAddPropInfo, bool bCreate = true);
 	virtual ~CAxContainerCtrl();
 
 // DialogControl Interface
 public:
-	operator TDialogControlPtr () { return TDialogControlLockedPtr( *this ); } //to ensure it doesn't get auto deleted
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
 // Operations
 public:
-	CDclControlObject* GetOleControl() const { return mpTemplate; }
+	TDclControlPtr GetOleControl() const { return mpTemplate; }
 
 	HRESULT SaveToStream( IStream* pStream );
 	HRESULT GetOleDispatch( IDispatch** ppDispatch );
 	HRESULT GetOleObject( IOleObject** ppOleObject );
-	UINT ExtractPropertyInfo( CDclControlObject *pControl, LPOLEOBJECT pIObject, bool bEnumList = false );
-	UINT ExtractPropertyInfo( CDclControlObject *pControl, ITypeInfo* pTI, LPOLEOBJECT pIObject = NULL, bool bEnumList = false );
-	UINT ExtractEventInfo( CDclControlObject *pControl, LPOLEOBJECT pIObject, bool bUseAsType );
-	UINT ExtractEventInfo( CDclControlObject *pControl, ITypeInfo* pTypeInfo, bool bUseAsType );
-	UINT ExtractMethodInfo( CDclControlObject *pControl, LPOLEOBJECT pIObject );
-	UINT ExtractMethodInfo( CDclControlObject *pControl, ITypeInfo* pTypeInfo );
+	UINT ExtractPropertyInfo( TDclControlPtr pControl, LPOLEOBJECT pIObject, bool bEnumList = false );
+	UINT ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* pTI, LPOLEOBJECT pIObject = NULL, bool bEnumList = false );
+	UINT ExtractEventInfo( TDclControlPtr pControl, LPOLEOBJECT pIObject, bool bUseAsType );
+	UINT ExtractEventInfo( TDclControlPtr pControl, ITypeInfo* pTypeInfo, bool bUseAsType );
+	UINT ExtractMethodInfo( TDclControlPtr pControl, LPOLEOBJECT pIObject );
+	UINT ExtractMethodInfo( TDclControlPtr pControl, ITypeInfo* pTypeInfo );
 
 	IDispatch *GetChildIDispatch(DISPID dispid);
 
@@ -76,7 +75,7 @@ public:
 	HRESULT SetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs );
 	HRESULT SetProperty( AxPropertyDescriptor* axProp, COleVariant varArg );
 	HRESULT Invoke( AxMethodDescriptor* axMethod, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
-	BOOL ExtractComponentsFromTLB(CDclControlObject *pControl, CLSID clsid);
+	BOOL ExtractComponentsFromTLB(TDclControlPtr pControl, CLSID clsid);
 
 	// Generated message map functions
 protected:

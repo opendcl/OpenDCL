@@ -2,8 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "Editor.h"
 #include "Colors.h"
+#include "Workspace.h"
+#include "Editor.h"
 #include "PropertyObject.h"
 #include "AcadColorTable.h"
 #include "IntegerFilter.h"
@@ -42,7 +43,7 @@ static UINT GetTitleResource( Prop::Id idProp )
 // CColors property page
 
 
-CColors::CColors(Prop::Id idProp, CDclControlObject* pControl, COpenDCLView* pView)
+CColors::CColors(Prop::Id idProp, TDclControlPtr pControl, COpenDCLView* pView)
 : CPropertyPage( GetDialogResourceId( idProp ) )
 , midProp( idProp )
 , mpControl( pControl )

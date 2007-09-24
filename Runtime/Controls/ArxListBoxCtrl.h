@@ -16,11 +16,9 @@ class CArxListBoxCtrl : public CListBoxCtrl
 	CArxControlServices	mArxServices;
 
 	COleOdcDropTarget m_DropTarget;
-	bool m_bInvokeWithSendString;
 
-// Construction
 public:
-	CArxListBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CArxListBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxListBoxCtrl();
 
 // DialogControl Interface

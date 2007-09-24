@@ -9,6 +9,9 @@
 #include "PropertyIds.h"
 #include "ToolTips.h"
 
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
+
 
 /////////////////////////////////////////////////////////////////////////////
 // VdclSpinButton
@@ -37,7 +40,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // VdclSpinButton message handlers
 
-BOOL VdclSpinButton::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
+BOOL VdclSpinButton::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID ) 
 {
 	BOOL RetVal;
 	CRect ArxRect;
@@ -74,15 +77,6 @@ BOOL VdclSpinButton::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT 
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
 	
-	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
 	return RetVal;
 }
 
@@ -111,7 +105,7 @@ void VdclSpinButton::OnDeltapos(NMHDR* pNMHDR, LRESULT* pResult)
 	m_pValueProp->SetLongValue(m_Pos);
 	SetPos(m_Pos);
 	// call methods to invoke the event
-	InvokeMethodIntInt(m_ArxControl->GetStringProperty(Prop::EventChanged), m_Pos, pNMUpDown->iDelta, m_bInvokeWithSendString);
+	InvokeMethodIntInt(m_ArxControl->GetStringProperty(Prop::EventChanged), m_Pos, pNMUpDown->iDelta, IsAsyncEvents());
 	
 	*pResult = 0;
 }
@@ -125,7 +119,7 @@ void VdclSpinButton::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	
 	CSpinButtonCtrl::OnMouseMove(nFlags, point);

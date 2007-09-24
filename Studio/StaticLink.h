@@ -3,10 +3,10 @@
 
 #pragma once
 
+#include "DclControlObject.h"
+
 #define nButtonFace -16
 #define nButtonText -19
-
-class CDclControlObject;
 
 
 //////////////////
@@ -42,7 +42,7 @@ public:
 
 // Attributes
 public:
-	CDclControlObject *m_pControl;
+	TDclControlPtr m_pControl;
 	CBrush *m_pStaticBrush;		
 
 // Operations

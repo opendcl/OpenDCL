@@ -11,7 +11,7 @@
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "ArgumentsRetrieval.h"
-#include "ArxProject.h"
+#include "ArxWorkspace.h"
 #include "ErrorLexicon.h"
 #include "MethodLexicon.h"
 #include "AcadColorTable.h"
@@ -41,8 +41,8 @@ int SetAxObjColorProperty()
 	CString sPropNameArg;
 	int nArg = 0;
 	int nArgCount=0;
-	ULONG lObject;
-	ULONG lDispatch;
+	LONG_PTR lObject;
+	LONG_PTR lDispatch;
 	struct resbuf *ListData;
 
 	//ensure AutoLISP has passed Arguments	
@@ -87,6 +87,11 @@ int SetAxObjColorProperty()
 			// get the argument
 			lObject = ListData->resval.rint;				
 		}
+		else if (ListData->restype == RTENAME)
+		{
+			// get the argument
+			lObject = ListData->resval.rlname[0];				
+		}
 		
 		// iterate forward to the next required argument	
 		ListData = ListData->rbnext;
@@ -97,10 +102,20 @@ int SetAxObjColorProperty()
 			return 0; 
 		}
 		
-		if (ListData->restype == RTSHORT)
+		if (ListData->restype == RTLONG)
+		{
+			// get the argument
+			lDispatch = ListData->resval.rlong;				
+		}
+		else if (ListData->restype == RTSHORT)
 		{
 			// get the argument
 			lDispatch = ListData->resval.rint;				
+		}
+		else if (ListData->restype == RTENAME)
+		{
+			// get the argument
+			lDispatch = ListData->resval.rlname[0];				
 		}
 		// iterate forward to the next required argument
 		ListData = ListData->rbnext;
@@ -125,7 +140,7 @@ int SetAxObjColorProperty()
         return 0; 
 	}
 
-	CDclControlObject *pControl = (CDclControlObject*) lObject;
+	TDclControlLockedPtr pControl = (CDclControlObject*)lObject;
 
 	TPropertyPtr pProp = pControl->FindPropertyObject(sPropNameArg);
 	int nParams;
@@ -224,8 +239,8 @@ int SetAxObjectPictureProperty()
 {
 	CString sPropNameArg;
 	struct resbuf *ListData = NULL;
-	DWORD_PTR lObject = 0;
-	DWORD_PTR lDispatch = 0;
+	LONG_PTR lObject = 0;
+	LONG_PTR lDispatch = 0;
 	CString sFileName;
 	int nPictureId = 0;
 
@@ -275,6 +290,11 @@ int SetAxObjectPictureProperty()
 		{
 			// get the argument
 			lObject = ListData->resval.rint;				
+		}
+		else if (ListData->restype == RTENAME)
+		{
+			// get the argument
+			lObject = ListData->resval.rlname[0];				
 		}
 		
 		// iterate forward to the next required argument	
@@ -354,7 +374,7 @@ int SetAxObjectPictureProperty()
 		nPictureId = ListData->resval.rlong;
 	}
 		
-	CDclControlObject *pControl = (CDclControlObject*) lObject;
+	TDclControlLockedPtr pControl = (CDclControlObject*)lObject;
 	TPropertyPtr pProp = pControl->FindPropertyObject(sPropNameArg);
 
 	AxPropertyDescriptor *pAxProp = NULL;
@@ -420,7 +440,7 @@ int AxGetObject()
 	int nArg = 0;
 	
 	// call the method to get the property object
-	CDclControlObject *pControl = GetControlArxObject(sAxSetProperty, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sAxSetProperty, &nArg);
 		
 	if (pControl == NULL)
 	{
@@ -434,7 +454,7 @@ int AxGetObject()
 		IDispatch* pDisp;
 		pAxCont->GetOleDispatch( &pDisp );
 		resbuf rbAxObject = { NULL, RTENAME };
-		rbAxObject.resval.rlname[0] = (LONG_PTR)pControl;
+		rbAxObject.resval.rlname[0] = (LONG_PTR)(CDclControlObject*)pControl;
 		rbAxObject.resval.rlname[1] = (LONG_PTR)pDisp;
 		acedRetVal( &rbAxObject );
 	}
@@ -668,7 +688,7 @@ int GetAxObjectProperty()
 	ListData = ListData->rbnext;
 	
 
-	CDclControlObject *pControl = (CDclControlObject*) lObject;
+	TDclControlLockedPtr pControl = (CDclControlObject*)lObject;
 	TPropertyPtr pProp = pControl->FindPropertyObject(sPropNameArg);
 	if (pProp == NULL)
 	{
@@ -849,7 +869,7 @@ int SetAxObjectProperty()
         return 0; 
 	}
 
-	CDclControlObject *pControl = (CDclControlObject*) lObject;
+	TDclControlLockedPtr pControl = (CDclControlObject*)lObject;
 	if (pControl == NULL)
 	{
 		acedRetVoid();
@@ -1038,7 +1058,7 @@ int DoAxObjectMethod()
 	ListData = ListData->rbnext;
 
 /* broken [ORW]
-	CDclControlObject *pControl = (CDclControlObject*) lObject;
+	TDclControlPtr pControl = (TDclControlPtr) lObject;
 	TPropertyPtr pProp = pControl->GetMethods();
 	int nParams;
 	
@@ -1126,7 +1146,7 @@ int SetAxColorProperty()
 	int nArg = 0;
 	int nArgCount=0;
 	// call the method to get the property object
-	CDclControlObject *pControl = GetControlArxObject(sAxSetProperty, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sAxSetProperty, &nArg);
 		
 	if (pControl == NULL || !GetStringArgument(nArg, &sPropNameArg, sAxSetProperty))
 	{
@@ -1280,7 +1300,7 @@ int SetAxPictureProperty()
 	int nArgCount=0;
 	
 	// call the method to get the property object
-	CDclControlObject *pControl = GetControlArxObject(sAxSetProperty, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sAxSetProperty, &nArg);
 		
 	if (pControl == NULL || !GetStringArgument(nArg, &sPropNameArg, sAxSetProperty))
 	{
@@ -1395,7 +1415,7 @@ int SetAxProperty()
 	int nArgCount=0;
 	
 	// call the method to get the property object
-	CDclControlObject *pControl = GetControlArxObject(sAxSetProperty, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sAxSetProperty, &nArg);
 		
 	if (pControl == NULL || !GetStringArgument(nArg, &sPropNameArg, sAxSetProperty))
 	{
@@ -1502,7 +1522,7 @@ int SetFlexGridColorProperty()
 	int nArgCount=0;
 
 	// call the method to get the property object
-	CDclControlObject *pControl = GetControlArxObject(sAxSetProperty, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sAxSetProperty, &nArg);
 
 	if (pControl == NULL || !GetStringArgument(nArg, &sPropNameArg, sAxSetProperty))
 	{
@@ -1608,7 +1628,7 @@ int GetAxProperty()
 	int nArgCount=0;
 	
 	// call the method to get the property object
-	CDclControlObject *pControl = GetControlArxObject(sAxGetProperty, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sAxGetProperty, &nArg);
 	
 	if (pControl == NULL || !GetStringArgument(nArg, &sPropNameArg, sAxGetProperty))
 	{
@@ -1693,7 +1713,7 @@ int GetFlexGridColorProperty()
 	int nArgCount=0;
 
 	// call the method to get the property object
-	CDclControlObject *pControl = GetControlArxObject(sAxGetProperty, &nArg);
+	TDclControlPtr pControl = GetControlArxObject(sAxGetProperty, &nArg);
 
 	if (pControl == NULL || !GetStringArgument(nArg, &sPropNameArg, sAxGetProperty))
 	{
@@ -1777,7 +1797,7 @@ int DoAxMethod()
 	int nArgCount=0;
 	
 	// call the method to get the property object
-	CDclControlObject *pControl = GetControlArxObject(sDoAxMethod, &nArg);	
+	TDclControlPtr pControl = GetControlArxObject(sDoAxMethod, &nArg);	
 	if (pControl == NULL || !GetStringArgument(nArg, &sMethodNameArg, sDoAxMethod))
 	{
 		acedRetVoid();
@@ -1976,7 +1996,7 @@ void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, AxMethodDescriptor *
 			}
 		case VT_DISPATCH:
 			{
-				RefCountedPtr< COleControlObject > pObject = NULL;
+				TOleControlPtr pObject = NULL;
 				
 				if (pMethod != NULL)
 					pObject = theArxWorkspace.GetOleControlFor(pMethod);

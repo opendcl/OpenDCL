@@ -17,10 +17,8 @@ class CArxFolderComboCtrl : public CFolderComboCtrl
 	CArxControlServices	mArxServices;
 	CArxDwgListCtrl* mpDwgList;
 
-	bool m_bInvokeWithSendString;
-
 public:
-	CArxFolderComboCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CArxFolderComboCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxFolderComboCtrl();
 
 // DialogControl Interface

@@ -2,19 +2,17 @@
 
 #include "ArxComboBoxCtrl.h"
 
-class CDclControlObject;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxPrinterComboBoxCtrl window
 
 class CArxPrinterComboBoxCtrl : public CArxComboBoxCtrl
 {
-	CDclControlObject* mpPaperCombo;
+	TDclControlPtr mpPaperCombo;
 
 public:
-	CArxPrinterComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID,
-													 CDclControlObject* pPaperCombo = NULL, bool bCreate = true );
+	CArxPrinterComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID,
+													 TDclControlPtr pPaperCombo = NULL, bool bCreate = true );
 	virtual ~CArxPrinterComboBoxCtrl();
 
 // DialogControl Interface
@@ -24,7 +22,7 @@ public:
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
 public:
-	void SetPaperSizeCombo( CDclControlObject* pPaperCombo );
+	void SetPaperSizeCombo( TDclControlPtr pPaperCombo );
 
 	// Generated message map functions
 protected:

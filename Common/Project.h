@@ -57,12 +57,10 @@ and the subject control. It would make sense to define a standard name rendition
 class that all named objects derive from or export. This I leave as an exercise for the future.
 */
 
-#include "Workspace.h"
 #include <vector>
+#include <list>
+#include "PtrTypes.h"
 
-class CDclFormObject;
-class CDclControlObject;
-class COleControlObject;
 class CStgFile;
 class CPictureObject;
 class AxPropertyDescriptor;
@@ -70,13 +68,7 @@ class AxMethodDescriptor;
 class AxEventDescriptor;
 class CAxContainerCtrl;
 
-#define activeProject (theWorkspacePtr()->GetActiveProject()) //shortcut to the active project*
-//* The concept of an active project is only useful in the editor, and even there, it is used only 
-//because there is no reliable system in place that allows every project element to identify 
-//its containing project. In the future this should be rectified in the editor in the same way it 
-//has been in the ARX modules (by requiring every element to be able to identify its owner), thus 
-//removing the primary limitation preventing the editor from handling multiple simultaneous 
-//projects.  2007-02-07 [ORW]
+typedef std::list< TDclFormPtr > TDclFormList;
 
 
 //Error status returned by file I/O functions
@@ -91,15 +83,13 @@ enum IOStatus
 };
 
 
-
 //CProject represents the contents of a single .odcl file
 class CProject : public CObject
 {
 protected:		
 	CList< CPictureObject* > mPictures;
-	CList< CDclFormObject* > mDclForms;
-	std::vector< RefCountedPtr< COleControlObject > > mOleControls;
-	CList< CDclControlObject* > mClipBoard;
+	TDclFormList mDclForms;
+	std::vector< TOleControlPtr > mOleControls;
 	CString msKeyName;
 	CString msProjectFilePath;
 	CString msBaseFileName; //the project file base name (no path, no extension)
@@ -149,7 +139,7 @@ public:
 	//Attributes
 	const CList<CPictureObject*>& GetPictureList() const { return mPictures; }
 	CList<CPictureObject*>& GetPictureList() { return mPictures; }
-	const CList< CDclFormObject* >& GetDclFormList() const { return mDclForms; }
+	const TDclFormList& GetDclFormList() const { return mDclForms; }
 	const CString& GetKeyName() const { return msKeyName; }
 	void SetKeyName( LPCTSTR pszKeyName );
 	const CString& GetBaseFileName() const { return msBaseFileName; }
@@ -160,9 +150,9 @@ public:
 	void SetPassword( LPCTSTR pszPassword ) { msPassword = pszPassword; }
 
 	//Services
-	virtual void DeleteForm( CDclFormObject*& pDclForm );
-	virtual CDclFormObject* AddForm( DclFormType nType );
-	virtual CDclFormObject* AddForm( DclFormType nType, CDclFormObject* pParentForm );
+	virtual void DeleteForm( TDclFormPtr pDclForm );
+	virtual TDclFormPtr AddForm( DclFormType nType );
+	virtual TDclFormPtr AddForm( DclFormType nType, TDclFormPtr pParentForm );
 	virtual void SetGlobalVariableNames( LPCTSTR pszRootName = NULL );
 	virtual void ClearGlobalVariableNames();
 	bool AddActiveXFile( LPCTSTR pszFileName );
@@ -171,24 +161,23 @@ public:
 	bool AddPicture( CPictureObject* pPicture );
 	void DeletePicture( int nID );
 	bool LoadPictureFile( LPCTSTR szFile, UINT_PTR nID, bool bApplyMask = false );
-	CDclFormObject* FindDclForm( LPCTSTR pszDclFormName ) const;
-	CDclFormObject* FindDclFormWithVarName( LPCTSTR pszVarName ) const;
-	CDclControlObject* FindControlWithVarName( LPCTSTR pszVarName ) const;
-	CDclFormObject* FindDclTabChildForm( LPCTSTR pszParentFormName, int nTabIndex ) const;
-	CDclFormObject* FindParentDclForm( LPCTSTR pszParentFormName ) const;
+	TDclFormPtr FindDclForm( LPCTSTR pszDclFormName ) const;
+	TDclFormPtr FindDclFormWithVarName( LPCTSTR pszVarName ) const;
+	TDclControlPtr FindControlWithVarName( LPCTSTR pszVarName ) const;
+	TDclFormPtr FindDclTabChildForm( LPCTSTR pszParentFormName, int nTabIndex ) const;
+	TDclFormPtr FindParentDclForm( LPCTSTR pszParentFormName ) const;
 	size_t CountDeletedForms() const;
 	void ClearProject();
-	void ClearR14Events();
 
 	// OLE object management
 public:
 	void AddOleObject(const CLSID& clsid, CAxContainerCtrl *pAxCont);
 	bool HasOleObject(const CLSID& clsid);
 	CString GetOleObjectName(const AxPropertyDescriptor *pProperty);
-	RefCountedPtr< COleControlObject > GetOleObject(const CLSID& clsid);
-	RefCountedPtr< COleControlObject > GetOleObject(const AxPropertyDescriptor *pProperty);
-	RefCountedPtr< COleControlObject > GetOleObject(const AxMethodDescriptor *pProperty);
-	RefCountedPtr< COleControlObject > GetOleObject(const AxEventDescriptor *pEvent);
+	TOleControlPtr GetOleObject(const CLSID& clsid);
+	TOleControlPtr GetOleObject(const AxPropertyDescriptor *pProperty);
+	TOleControlPtr GetOleObject(const AxMethodDescriptor *pProperty);
+	TOleControlPtr GetOleObject(const AxEventDescriptor *pEvent);
 
 public:
 	virtual void Serialize(CArchive& ar);

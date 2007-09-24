@@ -8,7 +8,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CTabPage property page
 
-CTabPage::CTabPage( CDclFormObject* pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId )
+CTabPage::CTabPage( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId )
 : CDialog(CTabPage::IDD, pTabCtrl)
 , mpSourceForm( pSourceForm )
 , mControlPane( pSourceForm, this )

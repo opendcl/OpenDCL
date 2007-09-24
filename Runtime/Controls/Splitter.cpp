@@ -7,7 +7,10 @@
 #include "PropertyObject.h"
 #include "InvokeMethod.h"
 #include "PropertyIds.h"
-#include "Project.h"
+#include "Workspace.h"
+
+//needed until this control is derived from CDialogObject
+#define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -52,7 +55,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CSplitter message handlers
 
-BOOL CSplitter::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID ) 
+BOOL CSplitter::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID ) 
 {
 	BOOL RetVal;
 	DWORD dwStyle;
@@ -91,16 +94,6 @@ BOOL CSplitter::Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID )
 		nID+2500,
 		NULL);
 
-	switch (m_ArxControl->GetLongProperty(Prop::EventInvoke))
-	{
-	case 1:
-		m_bInvokeWithSendString = true;
-		break;
-	default:
-		m_bInvokeWithSendString = false;
-		break;
-	}
-	
 	m_nStyle = m_ArxControl->GetLongProperty(Prop::SplitterStyle);
 
 	if (ArxRect.Width() < ArxRect.Height())
@@ -343,7 +336,7 @@ void CSplitter::OnLButtonUp(UINT nFlags, CPoint point)
 				rcThis.top,
 				rcThis.Width(),
 				rcThis.Height(),
-				m_bInvokeWithSendString);
+				IsAsyncEvents());
 	
 		}
 		Invalidate();

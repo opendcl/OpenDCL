@@ -412,7 +412,7 @@ void ThumbnailFile::DrawBitmap(CDC* pDC, CPoint pt, int nPaintableWidth, int nPa
 /////////////////////////////////////////////////////////////////////////////
 // CArxDwgListCtrl
 
-CArxDwgListCtrl::CArxDwgListCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CArxDwgListCtrl::CArxDwgListCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CListBoxCtrl( pTemplate, pPane, nID, false )
 , mArxServices( pTemplate )
 , mnRowHeight( -1 )
@@ -432,11 +432,6 @@ bool CArxDwgListCtrl::Create( CWnd* pParentWnd, UINT nID )
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
 
-	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
-
 	CreateImageList();
 	m_hR14LogoLarge = (HBITMAP)::LoadImage(_hdllInstance, MAKEINTRESOURCE(IDB_R14LARGE), IMAGE_BITMAP, 0, 0, 0);
 	m_hR14LogoSmall = (HBITMAP)::LoadImage(_hdllInstance, MAKEINTRESOURCE(IDB_R14SMALL), IMAGE_BITMAP, 0, 0, 0);
@@ -447,7 +442,7 @@ bool CArxDwgListCtrl::Create( CWnd* pParentWnd, UINT nID )
 DWORD CArxDwgListCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = __super::GetWndStyle();
-	dwStyle &= ~(DWORD)(LBS_DISABLENOSCROLL | LBS_USETABSTOPS);
+	dwStyle &= ~(DWORD)(LBS_USETABSTOPS);
 	dwStyle |= LBS_OWNERDRAWVARIABLE;
 	return dwStyle;
 }
@@ -837,7 +832,7 @@ void CArxDwgListCtrl::OnDblclk()
 		}	
 		InvokeMethodString(mpTemplate->GetStringProperty(Prop::EventFolderChanged), m_sPath, false);		
 	}
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
 }
 
 
@@ -925,7 +920,7 @@ void CArxDwgListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			}
 		}
 
-		DWORD dwDropEffect = BeginDragnDropToInsertBlocks(mpTemplate, point, m_bInvokeWithSendString, saBlockNames);
+		DWORD dwDropEffect = BeginDragnDropToInsertBlocks(mpTemplate, point, IsAsyncEvents(), saBlockNames);
 		OnSelchange();
 
 		// We need to send WM_LBUTTONUP to control or else the selection rectangle 
@@ -944,7 +939,7 @@ void CArxDwgListCtrl::OnSetFocus(CWnd* pOldWnd)
 	__super::OnSetFocus(pOldWnd);
 	
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
 }
 
 
@@ -955,7 +950,7 @@ void CArxDwgListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnMouseMove(nFlags, point);
 }
 
@@ -964,7 +959,7 @@ void CArxDwgListCtrl::OnKillFocus(CWnd* pNewWnd)
 	__super::OnKillFocus(pNewWnd);
 	
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }
 
 void CArxDwgListCtrl::OnSelchange() 
@@ -974,7 +969,7 @@ void CArxDwgListCtrl::OnSelchange()
 	if (nSelCount > -1)
 	{
 		// call methods to invoke the event
-		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, "", m_bInvokeWithSendString);
+		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, "", IsAsyncEvents());
 	}   
 
 	if (nSelCount == -1)
@@ -991,6 +986,6 @@ void CArxDwgListCtrl::OnSelchange()
 		}
 
 		// call methods to invoke the event
-		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), 1, sSelText, m_bInvokeWithSendString);
+		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), 1, sSelText, IsAsyncEvents());
 	}   	
 }

@@ -29,7 +29,7 @@ class CArxLayerComboBoxCtrl : public CArxComboBoxCtrl
 			{ if( mpHandler ) mpHandler->PopulateList( mpCombo ); }
 	} mDocReactor;
 public:
-	CArxLayerComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true )
+	CArxLayerComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true )
 		: CArxComboBoxCtrl( pTemplate, pPane, nID, new CLayerComboHandler, bCreate )
 		, mDocReactor( this )
 		{}

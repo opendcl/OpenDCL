@@ -17,7 +17,7 @@ const int nHardReturnChar = 10;
 /////////////////////////////////////////////////////////////////////////////
 // CSlideHolder
 
-CSlideHolder::CSlideHolder( CControlPane& Pane, CDclControlObject* pTemplate, UINT nID )
+CSlideHolder::CSlideHolder( CControlPane& Pane, TDclControlPtr pTemplate, UINT nID )
 : CArxDialogControl( pTemplate, &Pane, this )
 {
 	m_bMouseTracking = FALSE;
@@ -43,11 +43,6 @@ bool CSlideHolder::Create( CWnd* pParentWnd, UINT nID )
 	int nColor = mpTemplate->GetLongProperty(Prop::BackgroundColor);
 	mSlideCtrl.SetBackColor( GetRGBColor(nColor) );
 	SetAcadColor( nColor );
-
-	if( mpTemplate->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
 
 	return bSuccess;
 }
@@ -125,10 +120,10 @@ void CSlideHolder::OnPaint()
 
 		if (pFocusWnd != this)
 			// call methods to invoke the event
-			InvokeMethodInt(mpTemplate->GetStringProperty(Prop::EventPaint), 0, m_bInvokeWithSendString);
+			InvokeMethodInt(mpTemplate->GetStringProperty(Prop::EventPaint), 0, IsAsyncEvents());
 		else
 			// call methods to invoke the event
-			InvokeMethodInt(mpTemplate->GetStringProperty(Prop::EventPaint), 1, m_bInvokeWithSendString);
+			InvokeMethodInt(mpTemplate->GetStringProperty(Prop::EventPaint), 1, IsAsyncEvents());
 	}
 }
 
@@ -336,11 +331,11 @@ void CSlideHolder::OnRButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethod(
 		mpTemplate->GetStringProperty(Prop::EventRDblClick),
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::OnRMouseEvent),
@@ -348,7 +343,7 @@ void CSlideHolder::OnRButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	CWnd::OnRButtonDblClk(nFlags, point);
 }
@@ -361,11 +356,11 @@ void CSlideHolder::OnRButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethod(
 		mpTemplate->GetStringProperty(Prop::EventRClick),
-		m_bInvokeWithSendString);	
+		IsAsyncEvents());	
 	
 
 	InvokeMethodIntIntIntInt(
@@ -374,7 +369,7 @@ void CSlideHolder::OnRButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	
 	CWnd::OnRButtonUp(nFlags, point);
@@ -390,7 +385,7 @@ void CSlideHolder::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	else
 	{
 		// call methods to invoke the event
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);
+		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), IsAsyncEvents());
 	}
 	
 }
@@ -421,7 +416,7 @@ void CSlideHolder::OnClicked()
 	else
 	{
 		// call methods to invoke the event
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);	
+		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), IsAsyncEvents());	
 	}
 	
 }
@@ -429,7 +424,7 @@ void CSlideHolder::OnClicked()
 void CSlideHolder::OnDoubleclicked() 
 {
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), m_bInvokeWithSendString);	
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());	
 	
 	
 }
@@ -466,7 +461,7 @@ void CSlideHolder::OnSetFocus(CWnd* pOldWnd)
 	ReleaseDC(pdc);
 	
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
 	
 }
 
@@ -480,7 +475,7 @@ void CSlideHolder::OnKillFocus(CWnd* pNewWnd)
 	ReleaseDC(pdc);
 	m_bHasFocus = false;
 	// call methods to invoke the event
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }
 
 void CSlideHolder::SetHighLight(int nColorIndex)
@@ -619,9 +614,9 @@ void CSlideHolder::OnLButtonDown(UINT nFlags, CPoint point)
 	SetFocus();
 	if (mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
 	{
-		BeginDragnDrop(mpTemplate, point, m_bInvokeWithSendString);
+		BeginDragnDrop(mpTemplate, point, IsAsyncEvents());
 		// call methods to invoke the event
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), m_bInvokeWithSendString);	
+		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), IsAsyncEvents());	
 		return;
 	}
 	
@@ -631,7 +626,7 @@ void CSlideHolder::OnLButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::OnLMouseEvent),
@@ -639,7 +634,7 @@ void CSlideHolder::OnLButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	CButton::OnLButtonDown(nFlags, point);
 }
@@ -652,7 +647,7 @@ void CSlideHolder::OnLButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::OnLMouseEvent),
@@ -660,7 +655,7 @@ void CSlideHolder::OnLButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);	
+		IsAsyncEvents());	
 
 	CButton::OnLButtonUp(nFlags, point);
 }
@@ -673,7 +668,7 @@ void CSlideHolder::OnMButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::OnMMouseEvent),
@@ -681,7 +676,7 @@ void CSlideHolder::OnMButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 			
 	CButton::OnMButtonDblClk(nFlags, point);
 }
@@ -695,7 +690,7 @@ void CSlideHolder::OnMButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::OnMMouseEvent),
@@ -703,7 +698,7 @@ void CSlideHolder::OnMButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 		
 	CButton::OnMButtonDown(nFlags, point);
 }
@@ -716,7 +711,7 @@ void CSlideHolder::OnMButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::OnMMouseEvent),
@@ -724,7 +719,7 @@ void CSlideHolder::OnMButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	CButton::OnMButtonUp(nFlags, point);
 }
@@ -740,7 +735,7 @@ void CSlideHolder::OnMouseMove(UINT nFlags, CPoint point)
 	{
 		m_bMouseTracking = FALSE;        	
 		m_bHasFocus = false;
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventMouseMovedOff), m_bInvokeWithSendString);
+		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventMouseMovedOff), IsAsyncEvents());
 		CButton::OnMouseMove(nFlags, point);
 		return;
 	}
@@ -756,7 +751,7 @@ void CSlideHolder::OnMouseMove(UINT nFlags, CPoint point)
 			m_bMouseTracking = TRUE;
 		InvokeMethod(
 			mpTemplate->GetStringProperty(Prop::EventMouseEntered),
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	}
 
 	InvokeMethodIntIntInt(
@@ -764,7 +759,7 @@ void CSlideHolder::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	
 	
@@ -779,7 +774,7 @@ BOOL CSlideHolder::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 		zDelta,
 		pt.x,
 		pt.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	
 	return CButton::OnMouseWheel(nFlags, zDelta, pt);
@@ -793,7 +788,7 @@ void CSlideHolder::OnRButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::OnRMouseEvent),
@@ -801,7 +796,7 @@ void CSlideHolder::OnRButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 
 	
@@ -811,7 +806,7 @@ void CSlideHolder::OnRButtonDown(UINT nFlags, CPoint point)
 void CSlideHolder::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, IsAsyncEvents());
 	
 	CButton::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -819,7 +814,7 @@ void CSlideHolder::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CSlideHolder::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
-	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, m_bInvokeWithSendString);
+	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, IsAsyncEvents());
 	
 	
 	CButton::OnKeyUp(nChar, nRepCnt, nFlags);
@@ -828,7 +823,7 @@ void CSlideHolder::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 LRESULT CSlideHolder::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventMouseMovedOff), m_bInvokeWithSendString);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventMouseMovedOff), IsAsyncEvents());
 	
 	m_bMouseTracking = FALSE;        
 	return FALSE;
@@ -843,7 +838,7 @@ void CSlideHolder::OnLButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 
 	
 	InvokeMethodIntIntIntInt(
@@ -852,7 +847,7 @@ void CSlideHolder::OnLButtonDblClk(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		m_bInvokeWithSendString);
+		IsAsyncEvents());
 	
 	CButton::OnLButtonDblClk(nFlags, point);
 }

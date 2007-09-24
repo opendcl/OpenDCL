@@ -3,9 +3,10 @@
 
 #pragma once
 
-class CPropertyObject;
-
 #include "Resource.h"
+#include "PtrTypes.h"
+
+class CPropertyObject;
 
 
 /////////////////////////////////////////////////////////////////////////////

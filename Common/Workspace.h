@@ -2,8 +2,8 @@
 
 #include "FontCollection.h"
 #include "OleControlObject.h"
+#include "Project.h"
 
-class CProject;
 class AxPropertyDescriptor;
 class AxMethodDescriptor;
 
@@ -34,6 +34,7 @@ public:
 	//Services
 	virtual CString GetSettingsRegPath(void) const { return _T("Software\\OpenDCL"); }
 	virtual CString GetUserProfilePrefix(void) const { return CString(); }
+	virtual HMODULE GetThisModule(void) const { return GetModuleHandle( NULL ); }
 	virtual HMODULE GetResourceModule(void) const { return GetModuleHandle( NULL ); }
 	virtual HMODULE GetLocalResourceModule(void) const { return GetModuleHandle( NULL ); }
 	virtual CString LoadResourceString( int nResId, HMODULE hmodRes = NULL ) const;
@@ -41,10 +42,9 @@ public:
 	virtual bool DisplayAlert( LPCTSTR pszMessage ) const; //display alert dialog; returns true if displayed, false if suppressed
 	virtual bool DisplayStatus( LPCTSTR pszMessage ) const; //display modeless status message; returns true if displayed, false if suppressed
 	virtual void SetModified( bool bModified ) {}
-	virtual CProject* GetActiveProject(void) const = 0; //must be overridden in derived class
 	virtual CDocument* GetActiveDocument(void) const { return NULL; }
-	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxPropertyDescriptor* pProperty ) const = 0;
-	virtual RefCountedPtr< COleControlObject > GetOleControlFor( const AxMethodDescriptor* pMethod ) const = 0;
+	virtual TOleControlPtr GetOleControlFor( const AxPropertyDescriptor* pProperty ) = 0;
+	virtual TOleControlPtr GetOleControlFor( const AxMethodDescriptor* pMethod ) = 0;
 	virtual CString FindFile( LPCTSTR pszFilePath ) const;
 
 	virtual bool GetModuleVersionInfo( DWORD& dwMajor, DWORD&dwMinor, DWORD& dwThird, DWORD& dwFourth, HMODULE hmodTarget = NULL ) const;

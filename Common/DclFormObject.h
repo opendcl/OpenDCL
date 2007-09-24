@@ -2,13 +2,15 @@
 
 #include "DclFormTypes.h"
 #include "ImageListObject.h"
+#include "Project.h"
+#include "PtrTypes.h"
+#include <list>
 
-class CProject;
-class CDclControlObject;
 class CFontCollection;
 class CDialogObject;
 enum ControlType;
 
+typedef std::list< TDclControlPtr > TDclControlList;
 
 /////////////////////////////////////////////////////////////////////////////
 // CDclFormObject document
@@ -16,12 +18,10 @@ enum ControlType;
 class CDclFormObject : public CObject
 {
 	friend class CControlPane;
-public:
-	typedef CList< CDclFormObject* > collection;
 
 protected:
-	CProject* mpProject;
-	CList< CDclControlObject* > mDclControls;
+	TProjectLockedPtr mpProject;
+	TDclControlList mDclControls;
 	DclFormType mType;
 	CString msName;
 	UINT_PTR mnNextId;
@@ -30,7 +30,7 @@ protected:
 	CDialogObject* mpDlgObject; //informational pointer to the one and only instance of this form (or NULL)
 
 	//for managing tab hierarchy and order
-	CDclFormObject* mpParentForm;
+	TDclFormPtr mpParentForm;
 	CString msUniqueName;
 	CString msUUID;
 	short mnTabIndex;
@@ -55,60 +55,56 @@ public:
 
 // Operations
 public:
-	void AddControl( CDclControlObject* pDclControl );
-	CDclControlObject* AddControl( ControlType type, LPCTSTR pszKeyName );
-	void DeleteControl( CDclControlObject*& pDclControl );
+	void AddControl( TDclControlPtr pDclControl );
+	TDclControlPtr AddControl( ControlType type, LPCTSTR pszKeyName );
+	void DeleteControl( TDclControlPtr& pDclControl );
 	void PurgeDeletedControls();
-	bool ReorderControl( CDclControlObject* pDclControl, bool bToFront, bool bDeferReindexing = false );
-	bool ReorderControl( CDclControlObject* pDclControl, size_t idxNew, bool bDeferReindexing = false );
+	bool ReorderControl( TDclControlPtr pDclControl, bool bToFront, bool bDeferReindexing = false );
+	bool ReorderControl( TDclControlPtr pDclControl, size_t idxNew, bool bDeferReindexing = false );
 	void ReindexControls();
-
-	void ClearR14Events();
-	void IncrementPictureId(int nIdIncrement);
-	int CountDeletedControls() const;
+	size_t CountDeletedControls() const;
 
 	//void SaveSS(int n, int nType, class CStgFile &FileStg, CDocument *pDoc);
-	//static CDclFormObject* ReadSS(int n, int nType, CStgFile &FileStg, CDocument *pDoc);
+	//static TDclFormPtr ReadSS(int n, int nType, CStgFile &FileStg, CDocument *pDoc);
 
 protected:
-	CDclControlObject* CreateControlProperties();
+	TDclControlPtr CreateControlProperties();
 
 	//Services
 public:
 	void ClearControls();
-	CDclControlObject* FindControl( LPCTSTR pszControlName ) const;
-	CDclControlObject* FindControl( LPCTSTR pszControlName, ControlType eType ) const;
-	CDclControlObject* FindFirstControlOfType( ControlType eType ) const;
-	bool FindControls( ControlType eType, CList< CDclControlObject* >& Results ) const;
-	CDclControlObject* FindControlWithVarName( LPCTSTR pszVarName ) const;
+	TDclControlPtr FindControl( LPCTSTR pszControlName ) const;
+	TDclControlPtr FindControl( LPCTSTR pszControlName, ControlType eType ) const;
+	TDclControlPtr FindFirstControlOfType( ControlType eType ) const;
+	bool FindControls( ControlType eType, TDclControlList& Results ) const;
+	TDclControlPtr FindControlWithVarName( LPCTSTR pszVarName ) const;
 	bool GetControlFonts( CFontCollection& Fonts ) const;
-	void ZOrderFrontAddTabControls();
 	void SetGlobalVariableName( LPCTSTR pszRootName = NULL, bool bUpdateChildren = true );
 	void ClearGlobalVariableName( bool bUpdateChildren = true );
-	CDclFormObject* AddChildForm( DclFormType type );
+	TDclFormPtr AddChildForm( DclFormType type );
 
 	//Attributes
 public:
-	const CProject* GetProject() const { return mpProject; }
-	CProject* GetProject() { return mpProject; }
+	const TProjectPtr GetProject() const { return mpProject; }
+	TProjectPtr GetProject() { return mpProject; }
 	DclFormType GetType() const { return mType; }
 	bool IsModeless() const;
 	const CDialogObject* GetFormInstance() const { return mpDlgObject; }
 	CDialogObject* GetFormInstance() { return mpDlgObject; }
 	void SetFormInstance( CDialogObject* pDlgObject );
-	INT_PTR GetControlCount() const;
-	const CList< CDclControlObject* >& GetControlList() const { return mDclControls; }
-	const CDclControlObject* GetControlProperties() const;
-	CDclControlObject* GetControlProperties();
+	size_t GetControlCount() const { return mDclControls.size(); }
+	const TDclControlList& GetControlList() const { return mDclControls; }
+	const TDclControlPtr GetControlProperties() const;
+	TDclControlPtr GetControlProperties();
 	CSize GetFormSize() const;
 	UUID GetUUID() const;
 	const CString& GetUUIDAsString() const { return msUUID; }
 	const CString& GetUniqueName() const { return msUniqueName; }
 	void SetUniqueName( LPCTSTR pszName ) { msUniqueName = pszName; }
 	CString GetParentName() const { return mpParentForm? mpParentForm->GetUniqueName() : CString(); }
-	const CDclFormObject* GetParentForm() const { return mpParentForm; }
-	CDclFormObject* GetParentForm() { return mpParentForm; }
-	void SetParentForm( CDclFormObject* pParentForm );
+	const TDclFormPtr GetParentForm() const { return mpParentForm; }
+	TDclFormPtr GetParentForm() { return mpParentForm; }
+	void SetParentForm( TDclFormPtr pParentForm );
 	void SetParentForm( LPCTSTR pszParentUniqueName );
 	short GetTabIndex() const { return mnTabIndex; }
 	void SetTabIndex( short nIndex ) { mnTabIndex = nIndex; }
@@ -118,7 +114,7 @@ public:
 	void SetDeleted( bool bDelete = true ) { mbDeleted = bDelete; }
 	LPCTSTR GetTitleText() const;
 	UINT_PTR GetTitleBarIcon();
-	UINT_PTR GetNextId() { if( (INT_PTR)mnNextId < mDclControls.GetCount() ) mnNextId = mDclControls.GetCount(); return mnNextId++; }
+	UINT_PTR GetNextId() { if( mnNextId < mDclControls.size() ) mnNextId = mDclControls.size(); return mnNextId++; }
 
 	//File I/O
 public:

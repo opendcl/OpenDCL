@@ -1,8 +1,9 @@
 #pragma once
 
 
-#include "PropertyList.h"
 #include "DclFormObject.h"
+#include "Project.h"
+#include <list>
 
 class CImageListObject;
 class CAxContainerCtrl;
@@ -10,6 +11,8 @@ class CDialogControl;
 class CControlHolder;
 enum IOStatus;
 enum Prop::Id;
+
+typedef std::list< TPropertyPtr > TPropertyList;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -21,11 +24,11 @@ class CDclControlObject : public CObject
 
 // Attributes
 protected:
-	CDclFormObject* mpOwner;
+	TDclFormLockedPtr mpOwner;
 	ControlType mType;
 	CDialogControl* mpDlgControl; //informational pointer to the one and only instance of this control (or NULL)
 	CString msAxTypeName; //this should be moved to AxContainer -- unfortunately it's filed from here [ORW]
-	CPropertyList mProperties;
+	TPropertyList mProperties;
 	RefCountedPtr< CImageListObject > mpImageList;
 	int mnID;
 	int midxZOrder;
@@ -74,13 +77,13 @@ public:
 	const CDialogControl* GetControlInstance() const { return mpDlgControl; }
 	CDialogControl* GetControlInstance() { return mpDlgControl; }
 	void SetControlInstance( CDialogControl* pDlgControl );
-	virtual CDclFormObject* GetOwnerForm() { return mpOwner; }
-	virtual const CDclFormObject* GetOwnerForm() const { return mpOwner; }
+	virtual TDclFormPtr GetOwnerForm() { return mpOwner; }
+	virtual const TDclFormPtr GetOwnerForm() const { return mpOwner; }
 	void SetOwnerForm( CDclFormObject* pNewOwner ) { assert( pNewOwner != NULL ); mpOwner = pNewOwner; }
-	virtual CProject* GetOwnerProject() { return mpOwner? mpOwner->GetProject() : NULL; }
-	virtual const CProject* GetOwnerProject() const { return mpOwner? mpOwner->GetProject() : NULL; }
-	const CPropertyList& GetPropertyList() const { return mProperties; }
-	CPropertyList& GetPropertyList() { return mProperties; }
+	virtual TProjectPtr GetOwnerProject() { return mpOwner? mpOwner->GetProject() : NULL; }
+	virtual const TProjectPtr GetOwnerProject() const { return mpOwner? mpOwner->GetProject() : NULL; }
+	const TPropertyList& GetPropertyList() const { return mProperties; }
+	TPropertyList& GetPropertyList() { return mProperties; }
 	const CString& GetAxTypeName() const { return msAxTypeName; }
 	void SetAxTypeName( LPCTSTR pszAxTypeName ) { msAxTypeName = pszAxTypeName; }
 	int GetID() const { return mnID; }
@@ -91,6 +94,8 @@ public:
 protected: //for use by parent form only
 	void SetID( int nID ) { mnID = nID; }
 	void SetZOrder( int idxZOrder ) { midxZOrder = idxZOrder; }
+	TPropertyList::iterator FindPropertyInsertPos( LPCTSTR pszName, bool bHidden );
+	TPropertyList::iterator FindPropertyInsertPos( Prop::Id nID, bool bHidden );
 
 // Operations
 public:
@@ -99,39 +104,35 @@ public:
 	TPropertyPtr GetPropertyObject( Prop::Id nID ) const;
 	TPropertyPtr FindPropertyObject( LPCTSTR pszName ) const;
 	TPropertyPtr GetMethods() const;
-	void RemoveProperty(Prop::Id nId);
-	void ResetProperty(Prop::Id nId);
-	size_t CountPropertyListItems(Prop::Id nID);
-	CString GetPropertyListItem(Prop::Id nID, size_t nIndex);
+	void RemoveProperty( Prop::Id nId );
+	void ResetProperty( Prop::Id nId );
+	size_t CountPropertyListItems( Prop::Id nID );
+	CString GetPropertyListItem( Prop::Id nID, size_t nIndex );
 	RefCountedPtr< CImageListObject > GetImageList() const { return mpImageList; }
 	void SetImageList( RefCountedPtr< CImageListObject > pImageList ) { mpImageList = pImageList; }
-	POSITION FindPropertyInsertPos( LPCTSTR pszName, bool bHidden ) const;
-	POSITION FindPropertyInsertPos( Prop::Id nID, bool bHidden ) const;
 	bool InsertNamedProperty( TPropertyPtr pProp );
 
 	bool SetStringProperty( Prop::Id nID, LPCTSTR pszValue );
 	TPropertyPtr AddStringProperty( Prop::Id nID,
-																											PropertyType type = PropString,
-																											LPCTSTR pszValue = NULL,
-																											bool bResetExisting = false );
+																	PropertyType type = PropString,
+																	LPCTSTR pszValue = NULL,
+																	bool bResetExisting = false );
 	bool SetBooleanProperty( Prop::Id nID, bool bValue = true );
 	TPropertyPtr AddBooleanProperty( Prop::Id nID,
-																											 PropertyType type = PropBool,
-																											 bool bValue = true,
-																											 bool bResetExisting = false );
+																	 PropertyType type = PropBool,
+																	 bool bValue = true,
+																	 bool bResetExisting = false );
 	bool SetLongProperty( Prop::Id nID, long lValue = -1 );
 	TPropertyPtr AddLongProperty( Prop::Id nID,
-																										PropertyType type = PropLong,
-																										long lValue = -1,
-																										bool bResetExisting = false );
+																PropertyType type = PropLong,
+																long lValue = -1,
+																bool bResetExisting = false );
 
 	CString GetStringProperty(Prop::Id nID) const;
 	long GetLongProperty(Prop::Id nID) const;
 	bool GetBooleanProperty(Prop::Id nID) const;
 	void SetColorProperty(Prop::Id nID, COLORREF color);
 	COLORREF GetColorProperty(Prop::Id nID) const;
-	void ClearProperties();
-	void ClearR14Events();
 
 	//Implementation
 	CString GetActiveXTypeName() const;

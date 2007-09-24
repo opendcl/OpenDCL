@@ -3,6 +3,7 @@
 #include <vector>
 #include "PropertyIds.h"
 
+class CDclControlObject;
 class AxPropertyDescriptor;
 class AxEventDescriptor;
 class AxMethodDescriptor;
@@ -122,6 +123,7 @@ namespace PropVal
 class CPropertyObject : public CObject
 {
 	RefCountedPtr< PropVal::CPropertyValueBase > mpValue;
+	CDclControlObject* mpOwnerControl;
 
 protected:
 	bool mbHidden;
@@ -137,7 +139,7 @@ protected:
 	CPropertyObject();
 	virtual ~CPropertyObject();
 public:
-	CPropertyObject(PropertyType type, DWORD dwFlags = 0, Prop::Id nID = (Prop::Id)-1);
+	CPropertyObject( CDclControlObject* pOwnerControl, PropertyType type, DWORD dwFlags = 0, Prop::Id nID = (Prop::Id)-1);
 
 	//2007-01-30 [ORW]: save version set to 5 (no change from OpenDCL 3)
 	//2007-02-08 [ORW]: save version set to 6 (eliminate MFC serialized classes)
@@ -192,10 +194,9 @@ public:
 	
 	//Implementation
 public:
-	
-	CString GetName();
-	CString GetDocumentationDesc();
-	CString GetStdProperty();
+	CString GetName() const;
+	CString GetDocumentationDesc() const;
+	CString GetStdProperty() const;
 	
 	void AddStringItem(CString NewString);
 	CString GetStringItem(short ListIndex);
@@ -215,5 +216,3 @@ public:
 	virtual LPCTSTR toString() const;
 #endif
 };
-
-typedef RefCountedPtr< CPropertyObject > TPropertyPtr;

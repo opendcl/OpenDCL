@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "Project.h"
+#include "Workspace.h"
 #include "PropertyIds.h"
 #include "SharedRes.h"
 #include "DclControlObject.h"
@@ -20,7 +21,6 @@
 #include "AxPropertyDescriptor.h"
 #include "AxEventDescriptor.h"
 #include "AxMethodDescriptor.h"
-#include "ProjectCollection.h"
 #include "Base64.h"
 #include <fstream>
 #include <stdio.h>
@@ -63,25 +63,6 @@ static CString CreateUniqueName()
 	UuidToString(&uuid, &pUUID);
 	sUniqueName = (LPCTSTR)pUUID;
 	return sUniqueName;
-}
-
-static void AddControlProperty(CDclControlObject *pControl, Prop::Id nID, LPCTSTR strValue, PropertyType ValueType)
-{
-	// find the insert position for this new property
-	POSITION InsertPos = pControl->FindPropertyInsertPos(nID, false);
-
-	// create new property object pointer to pass to AddTail method
-	TPropertyPtr pPropertyObect = new CPropertyObject( ValueType, 0, nID );
-
-	// assign values
-	pPropertyObect->SetStringValue(strValue);
-	pPropertyObect->SetHidden(false);
-
-	// reset the name to the new value
-	if (InsertPos == NULL)
-		pControl->GetPropertyList().AddTail(pPropertyObect);
-	else
-		pControl->GetPropertyList().InsertAfter(InsertPos, pPropertyObect);
 }
 
 
@@ -127,19 +108,7 @@ void CProject::Initialize()
 
 CProject::~CProject()
 {
-  // clear the project
   ClearProject();
-
-  // create a position variable to hold the counter increment
-	POSITION pos = mClipBoard.GetHeadPosition();	
-  while(pos)
-  {
-		POSITION posAt = pos;
-    CDclControlObject* pControl = mClipBoard.GetNext(pos);
-    pControl->ClearProperties(); // clear properties in this control
-    mClipBoard.RemoveAt(posAt);
-    delete pControl;
-  }
 }
 
 void CProject::SetKeyName( LPCTSTR pszKeyName )
@@ -152,47 +121,48 @@ void CProject::SetKeyName( LPCTSTR pszKeyName )
 	msKeyName = sKey;
 }
 
-void CProject::DeleteForm( CDclFormObject*& pDclForm )
+void CProject::DeleteForm( TDclFormPtr pDclForm )
 {
-	POSITION pos = mDclForms.GetHeadPosition();
-	while( pos )
+	TDclFormList::iterator iterEraseAt = mDclForms.end();
+	TDclFormList::iterator iter = mDclForms.begin();
+	while( iter != mDclForms.end() )
 	{
-		POSITION posAt = pos;
-		CDclFormObject* pThisForm = mDclForms.GetNext( pos );
-		assert( pThisForm != NULL );
-		if( pThisForm == pDclForm )
-			mDclForms.RemoveAt( posAt ); // and remove the form from the list
-		CDclFormObject* pParentForm = pThisForm->GetParentForm();
-		if( pParentForm == pDclForm )
+		TDclFormList::iterator iterAt = iter++;
+		if( (*iterAt) == pDclForm )
+			iterEraseAt = iterAt; //remove the form from the list
+		else
 		{
-			if( pThisForm->m_pMdiChildWnd ) // if the child form has a view open
-				pThisForm->m_pMdiChildWnd->DestroyWindow(); // close the view
-			delete pThisForm; // delete the object
-			mDclForms.RemoveAt( posAt ); // and remove it from the list
+			TDclFormPtr pParentForm = (*iterAt)->GetParentForm();
+			if( pParentForm == pDclForm )
+			{
+				if( (*iterAt)->m_pMdiChildWnd ) // if the child form has a view open
+					(*iterAt)->m_pMdiChildWnd->DestroyWindow(); // close the view
+				mDclForms.erase( iterAt ); // and remove it from the list
+			}
 		}
 	}
 	if( pDclForm->m_pMdiChildWnd ) // if the form has a view open
 		pDclForm->m_pMdiChildWnd->DestroyWindow(); // close the view
-	delete pDclForm; // delete the object
-	pDclForm = NULL;
+	if( iterEraseAt != mDclForms.end() )
+		mDclForms.erase( iterEraseAt ); //remove the form from the list
 }
 
-CDclFormObject* CProject::AddForm( DclFormType nType )
+TDclFormPtr CProject::AddForm( DclFormType nType )
 {
-	CDclFormObject* pNewDclForm = new CDclFormObject( this, nType );
+	TDclFormPtr pNewDclForm = new CDclFormObject( this, nType );
 	pNewDclForm->SetUniqueName( CreateUniqueName() );
-	mDclForms.AddTail( pNewDclForm );
+	mDclForms.push_back( pNewDclForm );
 	return pNewDclForm;
 }
 
-CDclFormObject* CProject::AddForm( DclFormType nType, CDclFormObject* pParentForm )
+TDclFormPtr CProject::AddForm( DclFormType nType, TDclFormPtr pParentForm )
 {
 	assert( pParentForm != NULL );
 	assert( pParentForm->GetProject() == this );
-	CDclFormObject* pNewDclForm = new CDclFormObject( this, nType );
+	TDclFormPtr pNewDclForm = new CDclFormObject( this, nType );
 	pNewDclForm->SetUniqueName( pParentForm->GetUniqueName() );
 	pNewDclForm->SetParentForm( pParentForm );
-	mDclForms.AddTail( pNewDclForm );
+	mDclForms.push_back( pNewDclForm );
 	return pNewDclForm;
 }
 
@@ -200,26 +170,14 @@ void CProject::SetGlobalVariableNames( LPCTSTR pszRootName /*= NULL*/ )
 {
 	if( pszRootName )
 		SetKeyName( pszRootName );
-	POSITION pos = mDclForms.GetHeadPosition();
-	while( pos )
-	{
-		POSITION posAt = pos;
-		CDclFormObject* pDclForm = mDclForms.GetNext( pos );
-		assert( pDclForm != NULL );
-		pDclForm->SetGlobalVariableName( pszRootName, true );
-	}
+	for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
+		(*iter)->SetGlobalVariableName( pszRootName, true );
 }
 
 void CProject::ClearGlobalVariableNames()
 {
-	POSITION pos = mDclForms.GetHeadPosition();
-	while( pos )
-	{
-		POSITION posAt = pos;
-		CDclFormObject* pDclForm = mDclForms.GetNext( pos );
-		assert( pDclForm != NULL );
-		pDclForm->ClearGlobalVariableName( true );
-	}
+	for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
+		(*iter)->ClearGlobalVariableName( true );
 }
 
 bool CProject::AddActiveXFile( LPCTSTR pszFileName )
@@ -261,17 +219,7 @@ void CProject::ClearProject()
 	msLispFileName.Empty();
 	msBaseFileName.Empty();
 	msPassword.Empty();
-
-	// clear dcl forms
-  POSITION posDclForm = mDclForms.GetHeadPosition();	
-	while (posDclForm)
-	{
-    CDclFormObject* pDclFormObject = mDclForms.GetNext(posDclForm);
-		if (pDclFormObject)
-			pDclFormObject->ClearControls();
-    delete pDclFormObject;
-	}
-	mDclForms.RemoveAll();
+	mDclForms.clear();
 
   // clear pictures
   POSITION posPicture = mPictures.GetHeadPosition();	
@@ -283,18 +231,6 @@ void CProject::ClearProject()
 	mOleControls.clear();
 
   mrsActiveXFiles.RemoveAll();
-}
-
-void CProject::ClearR14Events()
-{
-  POSITION pos = mDclForms.GetHeadPosition();	
-	while (pos)
-	{
-    CDclFormObject* pDclFormObject = mDclForms.GetNext(pos);
-		if (pDclFormObject)
-			pDclFormObject->ClearR14Events();
-    delete pDclFormObject;
-	}
 }
 
 bool CProject::AddPicture( CPictureObject* pPicture ) 
@@ -316,22 +252,18 @@ bool CProject::AddPicture( CPictureObject* pPicture )
 			delete pPictureAt;
 			mPictures.SetAt( posAt, pPicture );
 			//update any instances of controls or forms referencing the updated picture
-			POSITION posForm = mDclForms.GetHeadPosition();
-			while( posForm )
+			for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 			{
-				CDclFormObject* pDclForm = mDclForms.GetNext( posForm );
-				POSITION posControl = pDclForm->GetControlList().GetHeadPosition();
-				while( posControl )
+				const TDclControlList& Controls = (*iterForm)->GetControlList();
+				for( TDclControlList::const_iterator iterControl = Controls.begin(); iterControl != Controls.end(); ++iterControl )
 				{
-					CDclControlObject* pDclControl = pDclForm->GetControlList().GetNext( posControl );
-					if( !pDclControl->GetControlInstance() )
+					if( !(*iterControl)->GetControlInstance() )
 						continue; //no instance of this control, so skip it
-					POSITION posProp = pDclControl->GetPropertyList().GetHeadPosition();
-					while( posProp )
+					const TPropertyList& Props = (*iterControl)->GetPropertyList();
+					for( TPropertyList::const_iterator iterProp = Props.begin(); iterProp != Props.end(); ++iterProp )
 					{
-						TPropertyPtr pProp = pDclControl->GetPropertyList().GetNext( posProp );
-						if( pProp->GetType() == PropPicture && pProp->GetLongValue() == nID )
-							pDclControl->GetControlInstance()->OnApplyProperty( pProp ); //apply the updated picture
+						if( (*iterProp)->GetType() == PropPicture && (*iterProp)->GetLongValue() == nID )
+							(*iterControl)->GetControlInstance()->OnApplyProperty( (*iterProp) ); //apply the updated picture
 					}
 				}
 			}
@@ -366,23 +298,19 @@ void CProject::DeletePicture( int nID )
 		return;
 
 	//remove all references to this picture before deleting it
-	POSITION posForm = mDclForms.GetHeadPosition();
-	while( posForm )
+	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-		CDclFormObject* pDclForm = mDclForms.GetNext( posForm );
-		POSITION posControl = pDclForm->GetControlList().GetHeadPosition();
-		while( posControl )
+		const TDclControlList& Controls = (*iterForm)->GetControlList();
+		for( TDclControlList::const_iterator iterControl = Controls.begin(); iterControl != Controls.end(); ++iterControl )
 		{
-			CDclControlObject* pDclControl = pDclForm->GetControlList().GetNext( posControl );
-			POSITION posProp = pDclControl->GetPropertyList().GetHeadPosition();
-			while( posProp )
+			TPropertyList& Props = (*iterControl)->GetPropertyList();
+			for( TPropertyList::iterator iterProp = Props.begin(); iterProp != Props.end(); ++iterProp )
 			{
-				TPropertyPtr pProp = pDclControl->GetPropertyList().GetNext( posProp );
-				if( pProp->GetType() == PropPicture && pProp->GetLongValue() == nID )
+				if( (*iterProp)->GetType() == PropPicture && (*iterProp)->GetLongValue() == nID )
 				{
-					pProp->SetShortValue( -1 ); //reset the picture ID
-					if( pDclControl->GetControlInstance() )
-						pDclControl->GetControlInstance()->OnApplyProperty( pProp ); //apply the deleted picture
+					(*iterProp)->SetShortValue( -1 ); //reset the picture ID
+					if( (*iterControl)->GetControlInstance() )
+						(*iterControl)->GetControlInstance()->OnApplyProperty( (*iterProp) ); //apply the deleted picture
 				}
 			}
 		}
@@ -407,7 +335,7 @@ void CProject::AddOleObject(const CLSID& clsid, CAxContainerCtrl *pAxCont)
 {
 	if (HasOleObject (clsid))
 		return;
-  COleControlObject *pObject = new COleControlObject( this, clsid );
+  COleControlObject* pObject = new COleControlObject( this, clsid );
 
   if (clsid == IID_IPictureDisp)
     pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_PROP_PICTURE) );
@@ -421,10 +349,10 @@ void CProject::AddOleObject(const CLSID& clsid, CAxContainerCtrl *pAxCont)
 
 bool CProject::HasOleObject(const CLSID& clsid)
 {
-	std::vector< RefCountedPtr< COleControlObject > >::const_iterator pos = mOleControls.begin();
+	std::vector< TOleControlPtr >::const_iterator pos = mOleControls.begin();
   while (pos != mOleControls.end())
   {
-    RefCountedPtr< COleControlObject > pObject = *pos++;
+    TOleControlPtr pObject = *pos++;
 		assert( pObject != NULL );
     if (pObject != NULL && pObject->m_clsid == clsid)
       return true;
@@ -432,12 +360,12 @@ bool CProject::HasOleObject(const CLSID& clsid)
   return false;
 }
 
-RefCountedPtr< COleControlObject > CProject::GetOleObject(const CLSID& clsid)
+TOleControlPtr CProject::GetOleObject(const CLSID& clsid)
 {
-	std::vector< RefCountedPtr< COleControlObject > >::const_iterator pos = mOleControls.begin();
+	std::vector< TOleControlPtr >::const_iterator pos = mOleControls.begin();
   while (pos != mOleControls.end())
   {
-    RefCountedPtr< COleControlObject > pObject = *pos++;
+    TOleControlPtr pObject = *pos++;
 		assert( pObject != NULL );
     if (pObject != NULL && pObject->m_clsid == clsid)
       return pObject;
@@ -447,22 +375,22 @@ RefCountedPtr< COleControlObject > CProject::GetOleObject(const CLSID& clsid)
 
 CString CProject::GetOleObjectName(const AxPropertyDescriptor *pProperty)
 {
-	RefCountedPtr< COleControlObject > pOleControl = GetOleObject( pProperty );
+	TOleControlPtr pOleControl = GetOleObject( pProperty );
 	if( pOleControl )
 		pOleControl->GetAxTypeName();
   return theWorkspace.LoadResourceString(IDS_OLEOBJECT);
 }
 
 
-RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxEventDescriptor *pEvent)
+TOleControlPtr CProject::GetOleObject(const AxEventDescriptor *pEvent)
 {	
   if (pEvent == NULL)
     return NULL;
 
-	std::vector< RefCountedPtr< COleControlObject > >::iterator pos = mOleControls.begin();
+	std::vector< TOleControlPtr >::iterator pos = mOleControls.begin();
   while (pos != mOleControls.end())
   {
-    RefCountedPtr< COleControlObject > pObject = *pos++;
+    TOleControlPtr pObject = *pos++;
 		assert( pObject != NULL );
     if (pObject != NULL)
     {
@@ -479,15 +407,15 @@ RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxEventDescripto
   return NULL;
 }
 
-RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxPropertyDescriptor *pProperty)
+TOleControlPtr CProject::GetOleObject(const AxPropertyDescriptor *pProperty)
 {	
   if (pProperty == NULL)
     return NULL;
 
-	std::vector< RefCountedPtr< COleControlObject > >::iterator pos = mOleControls.begin();
+	std::vector< TOleControlPtr >::iterator pos = mOleControls.begin();
   while (pos != mOleControls.end())
   {
-    RefCountedPtr< COleControlObject > pObject = *pos++;
+    TOleControlPtr pObject = *pos++;
 		assert( pObject != NULL );
     if (pObject != NULL)
     {
@@ -504,15 +432,15 @@ RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxPropertyDescri
   return NULL;
 }
 
-RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxMethodDescriptor *pMethod)
+TOleControlPtr CProject::GetOleObject(const AxMethodDescriptor *pMethod)
 {	
   if (pMethod == NULL)
     return NULL;
 
-	std::vector< RefCountedPtr< COleControlObject > >::iterator pos = mOleControls.begin();
+	std::vector< TOleControlPtr >::iterator pos = mOleControls.begin();
   while (pos != mOleControls.end())
   {
-    RefCountedPtr< COleControlObject > pObject = *pos++;
+    TOleControlPtr pObject = *pos++;
 		assert( pObject != NULL );
     if (pObject != NULL)
     {
@@ -528,63 +456,53 @@ RefCountedPtr< COleControlObject > CProject::GetOleObject(const AxMethodDescript
   return NULL;
 }
 
-CDclFormObject* CProject::FindDclForm( LPCTSTR pszDclFormName ) const
+TDclFormPtr CProject::FindDclForm( LPCTSTR pszDclFormName ) const
 {
-	POSITION pos = mDclForms.GetHeadPosition();
-	while( pos )
+	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-    CDclFormObject* pDclForm = mDclForms.GetNext( pos );
-    if( pDclForm->GetKeyName().CompareNoCase( pszDclFormName ) == 0 )
-      return pDclForm;
+    if( (*iterForm)->GetKeyName().CompareNoCase( pszDclFormName ) == 0 )
+      return (*iterForm);
 	}
   return NULL;
 }
 
-CDclFormObject* CProject::FindDclFormWithVarName( LPCTSTR pszVarName ) const
+TDclFormPtr CProject::FindDclFormWithVarName( LPCTSTR pszVarName ) const
 {
-	POSITION pos = mDclForms.GetHeadPosition();
-	while( pos )
+	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-    CDclFormObject* pDclForm = mDclForms.GetNext( pos );
-    if( pDclForm->GetVarName().CompareNoCase( pszVarName ) == 0 )
-      return pDclForm;
+    if( (*iterForm)->GetVarName().CompareNoCase( pszVarName ) == 0 )
+      return (*iterForm);
 	}
   return NULL;
 }
 
-CDclControlObject* CProject::FindControlWithVarName( LPCTSTR pszVarName ) const
+TDclControlPtr CProject::FindControlWithVarName( LPCTSTR pszVarName ) const
 {
-	POSITION pos = mDclForms.GetHeadPosition();
-	while( pos )
+	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-    CDclFormObject* pDclForm = mDclForms.GetNext( pos );
-		CDclControlObject* pControl = pDclForm->FindControlWithVarName( pszVarName );
+		TDclControlPtr pControl = (*iterForm)->FindControlWithVarName( pszVarName );
     if( pControl )
       return pControl;
 	}
   return NULL;
 }
 
-CDclFormObject* CProject::FindParentDclForm( LPCTSTR pszParentFormName ) const
+TDclFormPtr CProject::FindParentDclForm( LPCTSTR pszParentFormName ) const
 {
-	POSITION pos = mDclForms.GetHeadPosition();
-	while( pos )
+	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-		CDclFormObject* pDclForm = mDclForms.GetNext( pos );
-    if( pDclForm->GetUniqueName() == pszParentFormName )
-      return pDclForm;
+    if( (*iterForm)->GetUniqueName() == pszParentFormName )
+      return (*iterForm);
 	}
   return NULL;
 }
 
-CDclFormObject* CProject::FindDclTabChildForm( LPCTSTR pszParentFormName, int nTabIndex ) const
+TDclFormPtr CProject::FindDclTabChildForm( LPCTSTR pszParentFormName, int nTabIndex ) const
 {
-	POSITION pos = mDclForms.GetHeadPosition();
-	while (pos)
+	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-		CDclFormObject* pDclForm = mDclForms.GetNext(pos);
-    if (pDclForm->GetParentName() == pszParentFormName && pDclForm->GetTabIndex() == nTabIndex)
-      return pDclForm;
+    if ((*iterForm)->GetParentName() == pszParentFormName && (*iterForm)->GetTabIndex() == nTabIndex)
+      return (*iterForm);
 	}
   return NULL;
 }
@@ -592,11 +510,9 @@ CDclFormObject* CProject::FindDclTabChildForm( LPCTSTR pszParentFormName, int nT
 size_t CProject::CountDeletedForms() const
 {
   size_t ctDeleted = 0;
-  POSITION pos = mDclForms.GetHeadPosition();
-  while( pos )
+	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
   {
-    CDclFormObject* pDclForm = mDclForms.GetNext( pos );
-    if( pDclForm->IsDeleted() )
+    if( (*iterForm)->IsDeleted() )
       ++ctDeleted;
   }
   return ctDeleted;
@@ -648,14 +564,9 @@ bool CProject::GetPictureSize( UINT_PTR nID, CSize& size ) const
 
 bool CProject::IsInUse() const
 {
-	POSITION pos = mDclForms.GetHeadPosition();
-	while( pos )
+	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 	{
-		CDclFormObject* pForm = mDclForms.GetNext( pos );
-		assert( pForm != NULL );
-		if( !pForm )
-			continue;
-		if( pForm->GetFormInstance() )
+		if( (*iterForm)->GetFormInstance() )
 			return true; //there is an active dialog using this form
 	}
 	return false;
@@ -669,11 +580,15 @@ IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 	{
 		try
 		{
-			CStdioFile SourceFile( pszFilePath, CFile::modeRead );
-			if (!SourceFile)
+			CStdioFile SrcFile( pszFilePath, CFile::modeRead );
+			if (!SrcFile)
 				return statFileNotFound;
+
+			msProjectFilePath = SrcFile.GetFilePath();
+			msBaseFileName = StripPathFromFileName( msProjectFilePath );
+
 			CStringA sRawData;
-			UINT cchData = SourceFile.Read( sRawData.GetBuffer( (int)SourceFile.GetLength() ), (UINT)SourceFile.GetLength() );
+			UINT cchData = SrcFile.Read( sRawData.GetBuffer( (int)SrcFile.GetLength() ), (UINT)SrcFile.GetLength() );
 			sRawData.ReleaseBufferSetLength( cchData );
 			if( cchData == 0 )
 				return statReadFailed;
@@ -848,18 +763,16 @@ void CProject::Serialize(CArchive& ar)
     ar << msLispFileName;
     ar << msKeyName; //project key
 
-    ar << unsigned long(mDclForms.GetCount() - CountDeletedForms());
+    ar << unsigned long(mDclForms.size() - CountDeletedForms());
     ar << mnAutoCADVersion;
 
-    POSITION pos = mDclForms.GetHeadPosition();
-    while (pos != NULL)
+		for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
     {
-      CDclFormObject* pDclForm = mDclForms.GetNext(pos);
-      if( !pDclForm->IsDeleted() )
+      if( !(*iter)->IsDeleted() )
 			{
-        pDclForm->Serialize(ar);
+        (*iter)->Serialize(ar);
 			#ifdef _DEBUG
-				pDclForm->dumpDebugger( false );
+				(*iter)->dumpDebugger( false );
 			#endif
 			}
     }
@@ -875,7 +788,7 @@ void CProject::Serialize(CArchive& ar)
 			mOleControls.at( idx )->Serialize( ar );
 
     ar << unsigned long(mPictures.GetCount());		
-    pos = mPictures.GetHeadPosition();
+    POSITION pos = mPictures.GetHeadPosition();
     while (pos != NULL)
       mPictures.GetNext(pos)->Serialize(ar);
   }
@@ -955,19 +868,15 @@ void CProject::Serialize(CArchive& ar)
     // do loop to navigate dcl forms
     while (ctForms-- > 0)
     {
-      CDclFormObject* pDclForm = new CDclFormObject( this );
+      TDclFormPtr pDclForm = new CDclFormObject( this );
       pDclForm->Serialize(ar);
 
 			//Some projects for whatever reason have parentless tab page forms. This code removes those 
 			//forms so they don't confuse the project list in the editor. [ORW]
 			if( pDclForm->GetType() == VdclTabForm && !pDclForm->GetParentForm() )
-			{
-				delete pDclForm;
 				continue;
-			}
 
-			//pDclForm->UpdateGlobalVariable(GetKeyName());
-      mDclForms.AddTail(pDclForm);
+			mDclForms.push_back(pDclForm);
 		#ifdef _DEBUG
 			pDclForm->dumpDebugger( false );
 		#endif
@@ -1152,14 +1061,14 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
   while (nCount-- > 0)
   {
     // get current Dcl form
-    CDclFormObject* pDclForm = new CDclFormObject( this );
+    TDclFormPtr pDclForm = new CDclFormObject( this );
 
     // get dcl form into archive
 		IOStatus stat = pDclForm->ReadFromTextFile(sFile, fileName);
     if (stat != statOK) return stat;
 
     // add this dcl form to the list object
-    mDclForms.AddTail(pDclForm);
+    mDclForms.push_back(pDclForm);
 
   }	
 
@@ -1237,8 +1146,8 @@ LPCTSTR CProject::toString() const
 {
 	static TCHAR buf[1024];
 	_sntprintf( buf, _elements(buf), _T("CProject [%s] (%s forms, %s images, %s ActiveX controls)"),
-																	 GetKeyName(),
-																	 asString( mDclForms.GetCount() ),
+																	 (LPCTSTR)GetKeyName(),
+																	 asString( mDclForms.size() ),
 																	 asString( mPictures.GetCount() ),
 																	 asString( mOleControls.size() ) );
 	return buf;
@@ -1251,10 +1160,9 @@ void CProject::dump( bool bDeep /*= true*/ ) const
 	theWorkspace.DisplayStatus( sOut );
 	if( !bDeep )
 		return;
-	POSITION pos = mDclForms.GetHeadPosition();
-	while( pos )
-		mDclForms.GetNext( pos )->dump( true );
-	sOut.Format( _T("#####    End of project [%s]    #####\r\n"), GetKeyName() );
+	for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
+		(*iter)->dump( true );
+	sOut.Format( _T("#####    End of project [%s]    #####\r\n"), (LPCTSTR)GetKeyName() );
 	theWorkspace.DisplayStatus( sOut );
 }
 #endif
@@ -1266,9 +1174,8 @@ void CProject::dumpDebugger( bool bDeep /*= true*/ ) const
 	TraceFmt( _T("############################################################\r\n%s\r\n"), toString() );
 	if( !bDeep )
 		return;
-	POSITION pos = mDclForms.GetHeadPosition();
-	while( pos )
-		mDclForms.GetNext( pos )->dumpDebugger( true );
-	TraceFmt( _T("#####    End of project [%s]    #####\r\n"), GetKeyName() );
+	for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
+		(*iter)->dumpDebugger( true );
+	TraceFmt( _T("#####    End of project [%s]    #####\r\n"), (LPCTSTR)GetKeyName() );
 }
 #endif

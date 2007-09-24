@@ -130,7 +130,7 @@ void CEditCtrl::OnKillFocus( CWnd* pNewWnd )
 
 BOOL CEditCtrl::PreTranslateMessage( MSG* pMsg )
 {
-	if( pMsg->message == WM_CHAR )
+	if( pMsg->message == WM_CHAR && (TCHAR)pMsg->wParam >= _T(' ') )
 	{
 		CInputFilter* pFilter = GetInputFilter();
 		if( pFilter )

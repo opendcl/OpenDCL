@@ -155,7 +155,7 @@ void CEventsTabPane::OnSize(UINT nType, int cx, int cy)
 	GetDlgItem(IDC_ADDTOLISP)->MoveWindow(rcAddToLisp, TRUE);
 }
 
-void CEventsTabPane::UpdateEvents(CDclControlObject *pControl)
+void CEventsTabPane::UpdateEvents(TDclControlPtr pControl)
 {
 	m_pControl = pControl;
 	
@@ -226,6 +226,7 @@ void CEventsTabPane::UpdateEvents(CDclControlObject *pControl)
 	TryToAddEvent(Prop::FormEventSize);
 	TryToAddEvent(Prop::FormEventShow);
 	TryToAddEvent(Prop::DocEventActivated);
+	TryToAddEvent(Prop::DocEventEnteringNoDocState);
 	TryToAddEvent(Prop::CfgEventCancel);
 	TryToAddEvent(Prop::CfgEventOK);
 	TryToAddEvent(Prop::CfgEventHelp);
@@ -249,23 +250,21 @@ void CEventsTabPane::AddAnyActiveXEvents()
 	//The ActiveX event item data is the property item index because a control can have multiple 
 	//ActiveX 'Event' properties, so the index must be used to determine which property object 
 	//the event is associated with.
-	INT_PTR idxProp = 0;
-	POSITION pos = m_pControl->GetPropertyList().GetHeadPosition();
-	while( pos )
+	size_t idxProp = 0;
+	const TPropertyList& Props = m_pControl->GetPropertyList();
+	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter, ++idxProp )
 	{
-		TPropertyPtr pProp = m_pControl->GetPropertyList().GetNext( pos );
-		if( pProp && pProp->GetType() == PropActiveXEvent )
-		{ //the event exists, so add it to the list
-			CString sName = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetName();
+		if( (*iter)->GetType() == PropActiveXEvent )
+		{
+			CString sName = (*iter)->GetAxInterfaceDescriptorPtr()->GetEvent()->GetName();
 			if( !sName.IsEmpty() )
 			{
 				int idxEvent = m_EventsTree.AddString( sName );
 				m_EventsTree.SetItemData( idxEvent, idxProp );
-				if( !pProp->GetName().IsEmpty() ) // if the event has been set...
+				if( !(*iter)->GetName().IsEmpty() ) // if the event has been set...
 					m_EventsTree.SetCheck( idxEvent, BST_CHECKED ); // set the event tree item as checked.
 			}
 		}
-		idxProp++;
 	}
 }
 
@@ -356,18 +355,15 @@ CString CEventsTabPane::GetDefunArguments()
 		LoadArgsNDesc((Prop::Id)nEventId, m_pControl, sArgs, strDesc);
 	else
 	{
-		POSITION pos = m_pControl->GetPropertyList().FindIndex(nEventId);
-		if (pos != NULL)
+		TPropertyList::const_iterator iter = m_pControl->GetPropertyList().begin();
+		while( nEventId-- > 0 ) ++iter;
+		strDesc = (*iter)->GetAxInterfaceDescriptorPtr()->GetEvent()->GetDesc();
+		size_t ctCallingArgs = (*iter)->GetAxInterfaceDescriptorPtr()->GetEvent()->GetArgs().size();
+		for (UINT_PTR i = 0; i < ctCallingArgs; i++)
 		{
-			TPropertyPtr pProp = m_pControl->GetPropertyList().GetAt(pos);
-			strDesc = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetDesc();
-			size_t ctCallingArgs = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetArgs().size();
-			for (UINT_PTR i = 0; i < ctCallingArgs; i++)
-			{
-				sArgs += pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetArgs().at( i ).name;
-				if (i < ctCallingArgs - 1)
-					sArgs += " ";
-			}
+			sArgs += (*iter)->GetAxInterfaceDescriptorPtr()->GetEvent()->GetArgs().at( i ).name;
+			if (i < ctCallingArgs - 1)
+				sArgs += _T(" ");
 		}
 	}
 
@@ -511,7 +507,7 @@ void CEventsTabPane::OnAddtolisp()
 		m_DefunEdit.GetWindowText(sDefunEditText);
 
 		// if the file name has not been set, prompt for it
-		CProject* pProject = m_pControl->GetOwnerProject();
+		TProjectPtr pProject = m_pControl->GetOwnerProject();
 		CString sLispFileName = pProject->GetLispFileName();
 		if (sLispFileName.IsEmpty())
 		{
@@ -592,12 +588,7 @@ void CEventsTabPane::SetEvent( Prop::Id nEventId, CString sEventDefun )
 	if (m_pControl->GetType() == CtlActiveX)
 	{
 		//if it's an ActiveX event, then nEventId is actually an index into the property list
-		POSITION pos = m_pControl->GetPropertyList().FindIndex( nEventId );
-		if (pos != NULL)
-		{
-			TPropertyPtr pProp = m_pControl->GetPropertyList().GetAt( pos );
-			pProp->SetStringValue( sEventDefun );
-		}
+		(*m_pControl->GetPropertyList().begin() + nEventId)->SetStringValue( sEventDefun );
 	}
 	else
 		m_pControl->SetStringProperty( nEventId, sEventDefun ); 

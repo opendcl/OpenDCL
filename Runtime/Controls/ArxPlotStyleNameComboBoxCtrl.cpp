@@ -8,7 +8,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxPlotStyleNameComboBoxCtrl
 
-CArxPlotStyleNameComboBoxCtrl::CArxPlotStyleNameComboBoxCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CArxPlotStyleNameComboBoxCtrl::CArxPlotStyleNameComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , CAcUiPlotStyleNamesComboBox()
 , mArxServices( pTemplate )
@@ -28,11 +28,6 @@ bool CArxPlotStyleNameComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
-	if( mpTemplate->GetLongProperty(Prop::EventInvoke) == 1 )
-		m_bInvokeWithSendString = true;
-	else
-		m_bInvokeWithSendString = false;
-
 	return bSuccess;
 }
 
@@ -49,7 +44,7 @@ CRect CArxPlotStyleNameComboBoxCtrl::GetWndRect() const
 DWORD CArxPlotStyleNameComboBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
-	dwStyle |= (CBS_HASSTRINGS | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED);
+	dwStyle |= (WS_VSCROLL | CBS_HASSTRINGS | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_NOINTEGRALHEIGHT);
 	if( mpTemplate->GetBooleanProperty( Prop::Sorted ) )
 		dwStyle |= CBS_SORT;
 	else
@@ -114,13 +109,13 @@ void CArxPlotStyleNameComboBoxCtrl::OnSetFocus(CWnd* pOldWnd)
 {
 	__super::OnSetFocus( pOldWnd );
 	SetEditSel( 0 , -1 );	//combobox is gaining focus, highlight text in edit control
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), m_bInvokeWithSendString );
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), IsAsyncEvents() );
 }
 
 void CArxPlotStyleNameComboBoxCtrl::OnKillFocus(CWnd* pNewWnd)
 {
 	__super::OnKillFocus( pNewWnd );
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventKillFocus ), m_bInvokeWithSendString );
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventKillFocus ), IsAsyncEvents() );
 }
 
 void CArxPlotStyleNameComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
@@ -130,7 +125,7 @@ void CArxPlotStyleNameComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			nFlags,
 			point.x,
 			point.y,
-			m_bInvokeWithSendString);
+			IsAsyncEvents());
 	__super::OnMouseMove(nFlags, point);
 }
 
@@ -141,11 +136,12 @@ void CArxPlotStyleNameComboBoxCtrl::OnSelchange()
 	InvokeMethodIntString( mpTemplate->GetStringProperty( Prop::EventSelChanged ),
 												 GetCurSel(),
 												 sText,
-												 m_bInvokeWithSendString );
+												 IsAsyncEvents() );
 	mpTemplate->SetStringProperty( Prop::Text, sText );
 }
 
 void CArxPlotStyleNameComboBoxCtrl::OnDropdown()
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventDropDown ), m_bInvokeWithSendString );
+	__super::OnDropDown();
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventDropDown ), IsAsyncEvents() );
 }

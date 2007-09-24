@@ -16,11 +16,10 @@ class CArxOptionListCtrl : public COptionListCtrl
 	CArxControlServices	mArxServices;
 
 	COleOdcDropTarget m_DropTarget;
-	bool m_bInvokeWithSendString;
 
 // Construction
 public:
-	CArxOptionListCtrl( CDclControlObject* pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	CArxOptionListCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxOptionListCtrl();
 
 // DialogControl Interface

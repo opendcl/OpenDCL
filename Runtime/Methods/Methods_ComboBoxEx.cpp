@@ -33,7 +33,7 @@ int ComboBoxEx_AddString()
 	int nIndent = 0;
 	int nIndex = -1;
 
-	CDclControlObject *pArx = GetLispInput(sComboBoxEx_AddString, sStringArg, nImage, nSelectedImage, nIndent, nIndex);
+	TDclControlPtr pArx = GetLispInput(sComboBoxEx_AddString, sStringArg, nImage, nSelectedImage, nIndent, nIndex);
 	
 	if (pArx == NULL)	
 	{
@@ -512,7 +512,7 @@ int ComboBoxEx_GetEBText()
 int ComboBoxEx_GetItem()
 {
 	int nIndex = -1;
-	CDclControlObject* pDclObject = GetLispInput(sGrid_SelectCell, nIndex);
+	TDclControlPtr pDclObject = GetLispInput(sGrid_SelectCell, nIndex);
 	if (pDclObject == NULL || nIndex < 0 || nIndex >= ((CComboBoxEx*)pDclObject->GetWindow())->GetCount())
 	{		
 		acedRetNil();

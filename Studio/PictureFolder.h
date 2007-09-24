@@ -5,12 +5,12 @@
 
 #include "Resource.h"
 #include "PictureBox.h"
+#include "EditorProject.h"
 #include <set>
 #include <list>
 
 class CDclFormObject;
 class CPictureObject;
-class CProject;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -18,13 +18,13 @@ class CProject;
 
 class CPictureFolder : public CDialog
 {
-	CProject* mpProject;
+	TEditorProjectPtr mpProject;
 	std::set< int > msetIdsToDelete;
 	std::list< CPictureObject* > mlistPicsToAdd;
 
 // Construction
 public:
-	CPictureFolder(CProject* pProject, CWnd* pParent = NULL);   // standard constructor
+	CPictureFolder(TEditorProjectPtr pProject, CWnd* pParent = NULL);   // standard constructor
 	virtual ~CPictureFolder();
 
 // Dialog Data
@@ -39,7 +39,7 @@ public:
 	void MultiFileDialog();
 	CPictureObject *GetSelectedPictureObject();
 	void CheckPictureRefs();
-	void SearchPictureRefs(CDclFormObject *pDclObject);
+	void SearchPictureRefs(TDclFormPtr pDclObject);
 
 // Overrides
 	// ClassWizard generated virtual function overrides

@@ -43,13 +43,13 @@ public:
 	CTreeCtrl			m_ListBox;
 
 	CImageList			m_ImageList;
-	RefCountedPtr< COleControlObject > m_pControl;
+	TDclControlPtr m_pControl;
 	CDclFormObject		*m_pDclForm;
 	CString				m_sDclFormName;
 	CString				m_sClipBoardDefun1;
 	CString				m_sClipBoardDefun2;
 	CString				m_sClipBoardDefun3;
-	std::vector< RefCountedPtr< COleControlObject > > m_OleObjectList;
+	std::vector< TDclControlPtr > m_OleObjectList;
 	
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -59,10 +59,10 @@ protected:
 public:
 	void Setup();
 	void ResizeControls(int cx=-1, int cy=-1);
-	HTREEITEM LoadOleObjectIntoTree(RefCountedPtr< COleControlObject > pControl);
+	HTREEITEM LoadOleObjectIntoTree(TDclControlPtr pControl);
 	void SearchMethods(TPropertyPtr pProp);
-	void LoadAllAssociatedOleObjects(CDclControlObject *pControl);
-	void LoadInfoTree(RefCountedPtr< COleControlObject > pControl, HTREEITEM hParentItem, int nIndex);
+	void LoadAllAssociatedOleObjects(TDclControlPtr pControl);
+	void LoadInfoTree(TDclControlPtr pControl, HTREEITEM hParentItem, int nIndex);
 	void SelectionChanged(HTREEITEM hItem);
 	void LoadMethods(CString sFileName, HTREEITEM hParentItem);
 	bool LoadFullMethod(CString sFileName, CString sMethodName, CString &sTitle, CString &sDesc, CString &sDefun1);

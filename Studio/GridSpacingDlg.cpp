@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "GridSpacingDlg.h"
-#include "Project.h"
+#include "EditorWorkspace.h"
 #include "DclFormObject.h"
 #include "OpenDCLView.h"
 
@@ -15,26 +15,19 @@
 CGridSpacingDlg::CGridSpacingDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CGridSpacingDlg::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CGridSpacingDlg)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
 }
 
 
 void CGridSpacingDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CGridSpacingDlg)
 	DDX_Control(pDX, IDC_GRIDSLIDER, m_Slider);
 	DDX_Control(pDX, IDC_CURRENTSPACING, m_CurrentSpacing);
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CGridSpacingDlg, CDialog)
-	//{{AFX_MSG_MAP(CGridSpacingDlg)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_GRIDSLIDER, OnReleasedcaptureGridslider)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -96,7 +89,7 @@ void CGridSpacingDlg::SetDispaySetting()
 
 void CGridSpacingDlg::OnOK() 
 {
-	CProject *pProject = activeProject;
+	TEditorProjectPtr pProject = activeProject;
 	CWinApp* pApp = AfxGetApp();
 	CString sProfileName;
 	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
@@ -107,31 +100,15 @@ void CGridSpacingDlg::OnOK()
     pApp->WriteProfileInt(sProfileName, _T("nGridSpacing"), m_GridSpacing);
     
 
-	try
+	// do look to ensure all open CViews are repainted with the new grid spacing.
+	const TDclFormList& Forms = pProject->GetDclFormList();
+	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
 	{
-		// do look to ensure all open CViews are repainted with the new grid spacing.
-		POSITION pos = pProject->GetDclFormList().GetHeadPosition();
-		while (pos != NULL)
+		if( (*iter)->m_pChildWnd )
 		{
-			CDclFormObject *pDclForm = pProject->GetDclFormList().GetNext(pos);
-			if (pDclForm != NULL && pDclForm->m_pChildWnd != NULL)
-			{
-				if (pDclForm->m_pChildWnd != NULL)
-				{
-					try
-					{
-						((COpenDCLView*)pDclForm->m_pChildWnd)->m_gridSpacing = m_GridSpacing;
-						((COpenDCLView*)pDclForm->m_pChildWnd)->OnGridSpacingChanged();
-					}
-					catch(...)
-					{
-					}
-				}
-			}
+			((COpenDCLView*)(*iter)->m_pChildWnd)->m_gridSpacing = m_GridSpacing;
+			((COpenDCLView*)(*iter)->m_pChildWnd)->OnGridSpacingChanged();
 		}
-	}
-	catch(...)
-	{
 	}
 	CDialog::OnOK();
 }

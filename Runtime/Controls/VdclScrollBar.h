@@ -6,7 +6,6 @@
 #include "PPToolTip.h"
 
 class CPropertyObject;
-class CDclControlObject;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -24,7 +23,6 @@ public:
 	int m_nSmallChange;
 	int m_hPos;
 	TPropertyPtr m_pValueProp;
-	bool m_bInvokeWithSendString;
 // Operations
 public:
 	CPPToolTip m_ToolTip;
@@ -34,7 +32,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(VdclScrollBar)
 	public:
-	virtual BOOL Create(CDclControlObject* pControl, CWnd* pParentWnd, UINT nID );
+	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID );
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	//}}AFX_VIRTUAL
 
@@ -55,5 +53,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 private:
 	void OnScroll(UINT nSBCode, UINT nPos);
-	CDclControlObject *m_ArxControl;
+	TDclControlPtr m_ArxControl;
 };

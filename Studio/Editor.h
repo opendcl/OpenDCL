@@ -60,8 +60,8 @@ public:
 
 // operations
 public:
-	COpenDCLView* OpenExistingForm(CDclFormObject *pDclForm);
-	CDclFormObject* AddNewDclForm(DclFormType nType);
+	COpenDCLView* OpenExistingForm(TDclFormPtr pDclForm);
+	TDclFormPtr AddNewDclForm(DclFormType nType);
 	COpenDCLView* AddDclFormAndView(DclFormType nType);
 	CString CreateUniqueName();
 	

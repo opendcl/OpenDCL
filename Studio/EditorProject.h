@@ -4,7 +4,7 @@
 
 #include "Project.h"
 
-#define activeEditorProject ((CEditorProject*)theWorkspace.GetActiveProject()) //shortcut to the active project
+#define activeProject (theEditorWorkspace.GetActiveProject()) //shortcut to the active project
 
 
 class CEditorProject : public CProject
@@ -17,3 +17,5 @@ public:
 protected:
 	DECLARE_SERIAL(CEditorProject)
 };
+
+typedef RefCountedPtr< CEditorProject > TEditorProjectPtr;
