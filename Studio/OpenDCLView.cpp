@@ -85,7 +85,7 @@ static TPropertyPtr AddControlHiddenProperty( TDclControlPtr pDclControl,
 }
 
 
-typedef CTypedPtrList< CObList, TDclControlPtr > CClipboardObject;
+typedef CTypedPtrList< CObList, CDclControlObject* > CClipboardObject;
 
 
 /////////////////////////////////////////////////////////////////////////////

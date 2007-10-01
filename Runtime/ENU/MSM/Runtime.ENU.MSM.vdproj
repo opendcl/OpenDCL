@@ -21,12 +21,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_1D9B72DDA5DD2DE92E37CE1C6E62F877"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_26E57A7EF12C4DD9A0F0FD5723014FCA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -41,18 +35,6 @@
         {
         "MsmKey" = "8:_2F1249E18EE19CC341A78512939F2683"
         "OwnerKey" = "8:_F5C37871D48C41698866DF24FCCC7D05"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2F1249E18EE19CC341A78512939F2683"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_35566EB0217548C46ED6619C10B76647"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -81,24 +63,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_836509EA009262CE7116380579D81874"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_97C54C998D83357B1F726417C3C33E5C"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_98BC43B44D7541788E4489D2B09EADAB"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_98BEFE54D9628B0C11B4D0DFED41D131"
         "OwnerKey" = "8:_436F30F4FD774E29AF69CE552865F84D"
         "MsmSig" = "8:_UNDEFINED"
@@ -111,44 +75,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_98BEFE54D9628B0C11B4D0DFED41D131"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9BA15010415BC7BB10AF4A9C4C30DE1D"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B2C30EE299C7AC3E3FD66AB6F50E6DD0"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_ECB386FC3E3448BCB1689857B7B76BCA"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_F5C37871D48C41698866DF24FCCC7D05"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FE024208178A5CACACE17F4EE978260B"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -270,26 +204,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1D9B72DDA5DD2DE92E37CE1C6E62F877"
-            {
-            "SourcePath" = "8:acdb16.dll"
-            "TargetName" = "8:acdb16.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_26E57A7EF12C4DD9A0F0FD5723014FCA"
             {
             "SourcePath" = "8:..\\Content\\GNU-GPL.txt"
@@ -330,26 +244,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_35566EB0217548C46ED6619C10B76647"
-            {
-            "SourcePath" = "8:AcGe16.dll"
-            "TargetName" = "8:AcGe16.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_836509EA009262CE7116380579D81874"
             {
             "SourcePath" = "8:VERSION.dll"
@@ -370,90 +264,10 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_97C54C998D83357B1F726417C3C33E5C"
-            {
-            "SourcePath" = "8:acui16.dll"
-            "TargetName" = "8:acui16.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_98BEFE54D9628B0C11B4D0DFED41D131"
             {
             "SourcePath" = "8:WININET.dll"
             "TargetName" = "8:WININET.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9BA15010415BC7BB10AF4A9C4C30DE1D"
-            {
-            "SourcePath" = "8:MSVCR70.dll"
-            "TargetName" = "8:MSVCR70.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B2C30EE299C7AC3E3FD66AB6F50E6DD0"
-            {
-            "SourcePath" = "8:MFC70.DLL"
-            "TargetName" = "8:MFC70.DLL"
-            "Tag" = "8:"
-            "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:4"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FE024208178A5CACACE17F4EE978260B"
-            {
-            "SourcePath" = "8:adui16.dll"
-            "TargetName" = "8:adui16.dll"
             "Tag" = "8:"
             "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
             "Condition" = "8:"
@@ -518,33 +332,11 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_98BC43B44D7541788E4489D2B09EADAB"
-            {
-            "UseDynamicProperties" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_atl70.msm"
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_ECB386FC3E3448BCB1689857B7B76BCA"
-            {
-            "UseDynamicProperties" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_stl.msm"
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
         }
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.AB3E18A6FF0546C88AF1C135EBDD6FCF"
-        "Version" = "8:4.1.0.8"
+        "Version" = "8:4.1.0.9"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"
@@ -561,7 +353,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_436F30F4FD774E29AF69CE552865F84D"
             {
-            "SourcePath" = "8:..\\..\\ARX.17\\Release\\OpenDCL.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.17\\Debug\\OpenDCL.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
@@ -589,7 +381,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6CDF45B99B0749C7A381B69B2CDDF2C4"
             {
-            "SourcePath" = "8:..\\..\\RxInstall\\Release\\RxInstall.dll"
+            "SourcePath" = "8:..\\..\\RxInstall\\Debug\\RxInstall.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
@@ -617,7 +409,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D33787FAC7DF4D278BEBDDCA23DD682E"
             {
-            "SourcePath" = "8:..\\..\\ARX.16\\Release\\OpenDCL.16.arx"
+            "SourcePath" = "8:..\\..\\ARX.16\\Debug\\OpenDCL.16.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
@@ -645,7 +437,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_F5C37871D48C41698866DF24FCCC7D05"
             {
-            "SourcePath" = "8:..\\..\\ARX.x64.17\\Release\\OpenDCL.x64.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.x64.17\\Debug\\OpenDCL.x64.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"

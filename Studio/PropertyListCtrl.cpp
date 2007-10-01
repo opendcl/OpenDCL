@@ -1046,7 +1046,7 @@ void CPropertyListCtrl::DoSetupInputType(int nNewSelectedIndex)
 									break;				
 								case VT_UI1:
 								case VT_I1:
-									m_Edit.m_sFilter = LTOA(10);
+									m_Edit.m_sFilter = _T("10");
 									break;				
 								
 							}

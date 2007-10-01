@@ -73,18 +73,7 @@ END_MESSAGE_MAP()
 void CPropertyEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	if (nChar == nCharReturn && m_bAllowReturn == false)
-	{		
-		// if returns are allowed then
-		if (m_bAllowReturn)
-			// call CommitList to update the list
-			CommitList();
-		else	
-			// otherwise call CommitValue to update the text value
-			CommitValue();
-
-		if (m_pView != NULL)
-			m_pView->UpdateControl(m_pControl, m_pProp->GetID());
-	}
+		return;
 	
 	if (nChar == nCharEsc)
 	{
