@@ -35,7 +35,6 @@ protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnSelchange();
 	afx_msg void OnDropdown();
 	afx_msg void OnDestroy();	

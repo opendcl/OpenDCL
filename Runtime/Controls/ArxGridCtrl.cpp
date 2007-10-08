@@ -635,7 +635,7 @@ void CArxGridCtrl::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult)
 void CArxGridCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
+		mpTemplate->GetStringProperty(Prop::EventMouseUp),
 		1,
 		nFlags,
 		point.x,
@@ -647,7 +647,7 @@ void CArxGridCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 void CArxGridCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
+		mpTemplate->GetStringProperty(Prop::EventMouseUp),
 		2,
 		nFlags,
 		point.x,
@@ -659,7 +659,7 @@ void CArxGridCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 void CArxGridCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
+		mpTemplate->GetStringProperty(Prop::EventMouseUp),
 		4,
 		nFlags,
 		point.x,

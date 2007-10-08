@@ -749,7 +749,7 @@ void CGsPreviewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventClicked), IsAsyncEvents());	
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseUp),
 		1,
 		nFlags,
 		point.x,
@@ -811,7 +811,7 @@ void CGsPreviewCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 	SetFocus();
 
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseUp),
 		4,
 		nFlags,
 		point.x,
@@ -2317,7 +2317,7 @@ void CGsPreviewCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 	InvokeMethod(m_ArxControl->GetStringProperty(Prop::EventRClick), IsAsyncEvents());	
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseUp),
 		2,
 		nFlags,
 		point.x,

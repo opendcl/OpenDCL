@@ -351,7 +351,7 @@ void CSlideHolder::OnRButtonDblClk(UINT nFlags, CPoint point)
 void CSlideHolder::OnRButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
+		mpTemplate->GetStringProperty(Prop::EventMouseUp),
 		2,
 		nFlags,
 		point.x,
@@ -642,7 +642,7 @@ void CSlideHolder::OnLButtonDown(UINT nFlags, CPoint point)
 void CSlideHolder::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
+		mpTemplate->GetStringProperty(Prop::EventMouseUp),
 		1,
 		nFlags,
 		point.x,
@@ -706,7 +706,7 @@ void CSlideHolder::OnMButtonDown(UINT nFlags, CPoint point)
 void CSlideHolder::OnMButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseDown),
+		mpTemplate->GetStringProperty(Prop::EventMouseUp),
 		4,
 		nFlags,
 		point.x,

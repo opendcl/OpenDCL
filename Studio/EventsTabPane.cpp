@@ -186,7 +186,7 @@ void CEventsTabPane::UpdateEvents(TDclControlPtr pControl)
 	TryToAddEvent(Prop::EventItemExpanded);
 	TryToAddEvent(Prop::EventItemExpanding);
 	TryToAddEvent(Prop::EventMouseDown);
-	TryToAddEvent(Prop::EventMouseDown);
+	TryToAddEvent(Prop::EventMouseUp);
 	TryToAddEvent(Prop::EventMouseMove);
 	TryToAddEvent(Prop::EventMouseEntered);
 	TryToAddEvent(Prop::EventMouseMovedOff);

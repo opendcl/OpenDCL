@@ -241,8 +241,6 @@ dcl_Grid_
 This method will return the current row and column indexes of the currently selected cell. If the column index is -1 and the row index is 0 or above, this indicates the entire row is selected.
 [Arguments]
 ProjectFileName
-\par\tab nIndex
-[as Integer]
 
 
 [Method]

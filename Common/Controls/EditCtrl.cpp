@@ -8,12 +8,14 @@
 
 CEditCtrl::CEditCtrl()
 : _TEditBase()
+, mColorService( RGB(0,0,0), RGB(255,255,255) )
 {
 }
 
 CEditCtrl::CEditCtrl( CWnd* pParentWnd, const CRect& rectWnd, UINT nID,
 											DWORD dwStyle /*= GetDefaultWndStyle()*/, CInputFilter* pFilter /*= NULL*/ )
 : _TEditBase()
+, mColorService( RGB(0,0,0), RGB(255,255,255) )
 {
 	Create( pParentWnd, rectWnd, nID, dwStyle, pFilter );
 }

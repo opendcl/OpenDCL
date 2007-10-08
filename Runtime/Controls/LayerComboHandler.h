@@ -125,10 +125,11 @@ public:
 				else
 				{
 					int idx = pCombo->AddString( pszName );
-					mrLayerProperties.push_back( _lprop( pszName,
-																							 pLayerTableRecord->color(),
-																							 pLayerTableRecord->isFrozen(),
-																							 pLayerTableRecord->isOff() ) );
+					mrLayerProperties.insert( mrLayerProperties.begin() + idx,
+																		_lprop( pszName,
+																						pLayerTableRecord->color(),
+																						pLayerTableRecord->isFrozen(),
+																						pLayerTableRecord->isOff() ) );
 					if( idxMatch < 0 && sSelection.CompareNoCase( pszName ) == 0 )
 						idxMatch = idx;
 				}

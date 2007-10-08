@@ -1645,7 +1645,7 @@ void COpenDCLView::ResizeChildControl(TDclControlPtr pArxObject)
 	if (pArxObject == NULL)
 		return;
 
-	CControlHolder *pParent = (CControlHolder*)pArxObject->m_pCtrlHolder;
+	CControlHolder *pParent = pArxObject->m_pCtrlHolder;
 	if (pParent == NULL)
 		return;
 	CWnd *pControl = pParent->GetControlWnd();
@@ -1661,10 +1661,6 @@ void COpenDCLView::ResizeChildControl(TDclControlPtr pArxObject)
 	int nCalcWidth = pArxObject->GetLongProperty(Prop::Width);
 	rcControl.right = rcControl.left + pArxObject->GetLongProperty(Prop::Width);
 	rcControl.bottom = rcControl.top + pArxObject->GetLongProperty(Prop::Height);
-	
-	CRect rcThis;
-	GetClientRect(&rcThis);
-	
 	CalcControlOffsetDistances(pArxObject, rcControl);
 
 	// resize this control no mater what property was asked for
@@ -2395,7 +2391,7 @@ void COpenDCLView::ClearEventProperties(TDclControlPtr pCtrl)
 	pCtrl->ResetProperty(Prop::EventKeyDown);
 	pCtrl->ResetProperty(Prop::EventKeyUp);
 	pCtrl->ResetProperty(Prop::EventMouseDown);
-	pCtrl->ResetProperty(Prop::EventMouseDown);
+	pCtrl->ResetProperty(Prop::EventMouseUp);
 	pCtrl->ResetProperty(Prop::EventMouseMove);
 	pCtrl->ResetProperty(Prop::EventMouseMovedOff);
 	pCtrl->ResetProperty(Prop::EventMouseEntered);

@@ -34,6 +34,7 @@ protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
-	afx_msg void PostNcDestroy();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual afx_msg void PostNcDestroy();
 	afx_msg void OnChange();
 };

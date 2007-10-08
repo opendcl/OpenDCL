@@ -153,6 +153,11 @@ END_MESSAGE_MAP()
 BOOL CComboBoxCtrl::PreTranslateMessage(MSG* pMsg) 
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
+	if( pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN )
+	{
+		if( mpTemplate->GetBooleanProperty( Prop::ReturnAsTab ) )
+			pMsg->wParam = VK_TAB;		
+	}
 	return __super::PreTranslateMessage(pMsg);
 }
 

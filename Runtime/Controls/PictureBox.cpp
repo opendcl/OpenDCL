@@ -1162,7 +1162,7 @@ void CPictureBox::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseUp),
 		1,
 		nFlags,
 		point.x,
@@ -1228,7 +1228,7 @@ void CPictureBox::OnMButtonDown(UINT nFlags, CPoint point)
 void CPictureBox::OnMButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseUp),
 		4,
 		nFlags,
 		point.x,
@@ -1370,7 +1370,7 @@ void CPictureBox::OnRButtonDown(UINT nFlags, CPoint point)
 void CPictureBox::OnRButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
-		m_ArxControl->GetStringProperty(Prop::EventMouseDown),
+		m_ArxControl->GetStringProperty(Prop::EventMouseUp),
 		2,
 		nFlags,
 		point.x,

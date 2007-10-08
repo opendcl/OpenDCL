@@ -328,7 +328,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventRClick );
 		AddControlEvent( pDclControl, Prop::EventRDblClick );
 		AddControlEvent( pDclControl, Prop::EventMouseDown );
-		AddControlEvent( pDclControl, Prop::EventMouseDown );
+		AddControlEvent( pDclControl, Prop::EventMouseUp );
 		AddControlEvent( pDclControl, Prop::EventMouseDblClick );
 		break;
 
@@ -553,7 +553,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventEndLabelEdit );
 		AddControlEvent( pDclControl, Prop::EventColumnClick );
 		AddControlEvent( pDclControl, Prop::EventMouseDown );
-		AddControlEvent( pDclControl, Prop::EventMouseDown );
+		AddControlEvent( pDclControl, Prop::EventMouseUp );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
 		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
 		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
@@ -589,7 +589,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventRClick );
 		AddControlEvent( pDclControl, Prop::EventRDblClick );
 		AddControlEvent( pDclControl, Prop::EventMouseDown );
-		AddControlEvent( pDclControl, Prop::EventMouseDown );
+		AddControlEvent( pDclControl, Prop::EventMouseUp );
 		AddControlEvent( pDclControl, Prop::EventMouseDblClick );
 		break;
 
@@ -741,7 +741,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventKeyDown );
 		AddControlEvent( pDclControl, Prop::EventKeyUp );
 		AddControlEvent( pDclControl, Prop::EventMouseDown );
-		AddControlEvent( pDclControl, Prop::EventMouseDown );
+		AddControlEvent( pDclControl, Prop::EventMouseUp );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
 		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
 		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
@@ -855,7 +855,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventKeyDown);
 		AddControlEvent( pDclControl, Prop::EventKeyUp );
 		AddControlEvent( pDclControl, Prop::EventMouseDown );
-		AddControlEvent( pDclControl, Prop::EventMouseDown );
+		AddControlEvent( pDclControl, Prop::EventMouseUp );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
 		AddControlEvent( pDclControl, Prop::EventMouseMovedOff );
 		AddControlEvent( pDclControl, Prop::EventMouseDblClick );
@@ -971,7 +971,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventKeyDown);
 		AddControlEvent( pDclControl, Prop::EventKeyUp );
 		AddControlEvent( pDclControl, Prop::EventMouseDown );
-		AddControlEvent( pDclControl, Prop::EventMouseDown );
+		AddControlEvent( pDclControl, Prop::EventMouseUp );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
 		AddControlEvent( pDclControl, Prop::EventMouseMovedOff );
 		AddControlEvent( pDclControl, Prop::EventMouseDblClick );

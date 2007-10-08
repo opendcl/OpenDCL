@@ -144,7 +144,6 @@ void CControlHolder::OnSize(UINT nType, int cx, int cy)
 				rcThis.bottom = rcThis.top + rc.Height();
 				MoveWindow(rcThis, TRUE);
 			}
-			// force a proper repaint.
 			pControl->RedrawWindow(NULL, NULL);
 		}
 	}

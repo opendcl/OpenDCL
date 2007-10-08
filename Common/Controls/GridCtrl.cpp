@@ -118,7 +118,7 @@ CGridCtrl::CGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, b
 , mcColumns( 0 )
 , mbHasRowHeader( pTemplate->GetBooleanProperty( Prop::RowHeader ) )
 , mbHasGridLines( pTemplate->GetBooleanProperty( Prop::GridLines ) )
-, mbAlternateColumnColors( pTemplate->GetBooleanProperty( Prop::AlternateOrient ) )
+, mbAlternateColumnColors( pTemplate->GetLongProperty( Prop::AlternateOrient ) != 0 )
 , mclrAlternate( pTemplate->GetColorProperty( Prop::AlternateColor ) )
 , mpCellEditCtrl( NULL )
 {
@@ -150,7 +150,7 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 DWORD CGridCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
-	dwStyle |= WS_CLIPCHILDREN | LVS_REPORT | LVS_OWNERDRAWFIXED | LVS_SINGLESEL | LVS_SHAREIMAGELISTS;
+	dwStyle |= LVS_REPORT | LVS_OWNERDRAWFIXED | LVS_SINGLESEL | LVS_SHAREIMAGELISTS;
 	if( !mpTemplate->GetBooleanProperty( Prop::ColHeader ) )
 		dwStyle |= LVS_NOCOLUMNHEADER;
 	switch( mpTemplate->GetLongProperty( Prop::ListViewSort ) )
@@ -350,7 +350,7 @@ enum CellStyle CGridCtrl::GetCellStyle( int nRow, int nCol )
 
 	// otherwise return the default style for the column
 	const PropVal::TIntArray* pColStyles = mpTemplate->GetPropertyObject( Prop::ColumnStyles )->GetIntArrayPtr();
-	if( nCol < (int)pColStyles->size() )
+	if( nCol >= 0 && (size_t)nCol < pColStyles->size() )
 		return (CellStyle)pColStyles->at( nCol );
 
 	return Grid_Undefined;
@@ -950,8 +950,9 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 	CellStyle nCellStyle = GetCellStyle( nRow, nCol );
 	LV_ITEM lvi = { LVIF_STATE, nRow, nCol, 0, (UINT)-1, };
   GetItem( &lvi );
-	bool bHighlight = ((GetFocus() == this || (GetStyle() & LVS_SHOWSELALWAYS)) &&
-										 ((lvi.state & LVIS_DROPHILITED) || (lvi.state & LVIS_SELECTED)));
+	bool bHighlight = false;
+	//bool bHighlight = ((GetFocus() == this || (GetStyle() & LVS_SHOWSELALWAYS)) &&
+	//									 ((lvi.state & LVIS_DROPHILITED) || (lvi.state & LVIS_SELECTED)));
 
   CRect rcBounds = GetCellRect( nRow, nCol, LVIR_BOUNDS );
 	CRect rcLabel = GetCellRect( nRow, nCol, LVIR_LABEL ); 

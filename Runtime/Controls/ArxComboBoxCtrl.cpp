@@ -69,16 +69,6 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CArxComboBoxCtrl message handlers
 
-BOOL CArxComboBoxCtrl::PreTranslateMessage(MSG* pMsg) 
-{
-	if( pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN )
-	{
-		if( mpTemplate->GetBooleanProperty( Prop::ReturnAsTab ) )
-			pMsg->wParam = VK_TAB;		
-	}
-	return __super::PreTranslateMessage(pMsg);
-}
-
 void CArxComboBoxCtrl::OnSelchange() 
 {
 	CString sEventName = mpTemplate->GetStringProperty(Prop::EventSelChanged);
