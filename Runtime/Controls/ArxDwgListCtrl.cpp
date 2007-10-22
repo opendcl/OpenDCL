@@ -969,23 +969,14 @@ void CArxDwgListCtrl::OnSelchange()
 	if (nSelCount > -1)
 	{
 		// call methods to invoke the event
-		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, "", IsAsyncEvents());
+		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, _T(""), IsAsyncEvents());
 	}   
 
 	if (nSelCount == -1)
 	{
 		int nCurSel = GetCurSel();
-	
-		CString sSelText = CString();
-		
-		if (nCurSel > -1)
-		{
-			int n = GetTextLen(nCurSel);      
-			GetText(nCurSel, sSelText.GetBuffer(n));
-			sSelText.ReleaseBuffer();
-		}
-
-		// call methods to invoke the event
-		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), 1, sSelText, IsAsyncEvents());
+		CString sText;
+		GetText( nCurSel, sText );
+		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), 1, sText, IsAsyncEvents());
 	}   	
 }

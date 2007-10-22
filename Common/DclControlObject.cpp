@@ -957,7 +957,7 @@ TPropertyList::iterator CDclControlObject::FindPropertyInsertPos( LPCTSTR pszNam
 		assert( (*iter)->GetName() != pszName ); //trying to insert a property with a duplicate name?
 		if( (*iter)->IsHidden() != bHidden )
 			continue;
-		if( (*iter)->GetName() <= pszName )
+		if( (*iter)->GetName() < pszName )
 			break;
 	}
 	while( iter != mProperties.begin() );

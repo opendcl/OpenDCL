@@ -588,7 +588,11 @@ void CEventsTabPane::SetEvent( Prop::Id nEventId, CString sEventDefun )
 	if (m_pControl->GetType() == CtlActiveX)
 	{
 		//if it's an ActiveX event, then nEventId is actually an index into the property list
-		(*m_pControl->GetPropertyList().begin() + nEventId)->SetStringValue( sEventDefun );
+		TPropertyList::iterator iterProp = m_pControl->GetPropertyList().begin();
+		size_t idxProp = nEventId;
+		while( idxProp-- > 0 )
+			++iterProp;
+		(*iterProp)->SetStringValue( sEventDefun );
 	}
 	else
 		m_pControl->SetStringProperty( nEventId, sEventDefun ); 

@@ -1078,6 +1078,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::ForegroundColor, PropLong, -19 );
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -6 );
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 1 );
+		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::FilterStyle, PropEnum, 0 );
 		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );

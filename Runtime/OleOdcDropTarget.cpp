@@ -487,11 +487,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 	}
 	
 	if (pControl != NULL)
-	{
-		// we must delete the arx object now!!!
-		delete pControl;
-		pControl = NULL;
-	}
+		pControl = NULL; // we must delete the arx object now!!!
 
 	return TRUE;
 }

@@ -178,8 +178,8 @@ void CToolTipsPage::OnPreview()
 	m_MainText.GetWindowText(sBody);
 	CString sAviFile;
 	m_Avi.GetWindowText(sAviFile);
-	int nColor = m_Color.GetColour();
-	CString sTooltipText = ConstructTooltipHtml( sTitle, GetRGBColor( nColor ), (nLine != 0), sBody );
+	COLORREF crTitle = m_Color.GetColour();
+	CString sTooltipText = ConstructTooltipHtml( sTitle, crTitle, (nLine != 0), sBody );
 
 	CRect rect;
 	GetDlgItem(IDC_PREVIEW)->GetWindowRect(&rect);

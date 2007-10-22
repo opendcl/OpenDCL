@@ -22,7 +22,8 @@ public:
 			CString sSelection;
 			pCombo->GetWindowText( sSelection );
 			int idxMatch = -1;
-			pCombo->ResetContent();
+			if( pCombo->GetCount() > 0 )
+				pCombo->ResetContent();
 
 			CAutoDocReadLock CurDocLock;
 			AcDbDimStyleTable* pDimStyleTable;

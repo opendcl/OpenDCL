@@ -19,8 +19,8 @@ public:
 	virtual ~CDynamicButtonCtrl();
 
 protected:
-	afx_msg void OnClicked();	
+	DECLARE_MESSAGE_MAP();
 
 protected:
-	DECLARE_MESSAGE_MAP();
+	afx_msg void OnClicked();	
 };

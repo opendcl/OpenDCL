@@ -144,6 +144,9 @@ DWORD CImageComboBoxCtrl::GetComboStyle() const
 
 BEGIN_MESSAGE_MAP(CImageComboBoxCtrl, CFilteredComboExCtrl)
 	ON_WM_MEASUREITEM_REFLECT()
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CImageComboBoxCtrl::OnDropdown)
+	ON_CONTROL_REFLECT(CBN_CLOSEUP, &CImageComboBoxCtrl::OnCloseUp)
+	ON_MESSAGE(CB_RESETCONTENT, &CImageComboBoxCtrl::OnResetContent)
 END_MESSAGE_MAP()
 
 
@@ -178,4 +181,24 @@ void CImageComboBoxCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	UINT nItemHeight = pHandler->GetItemHeight();
 	if( nItemHeight > 0 )
 		lpMeasureItemStruct->itemHeight = nItemHeight;
+}
+
+void CImageComboBoxCtrl::OnDropdown()
+{
+}
+
+void CImageComboBoxCtrl::OnCloseUp()
+{
+	CComboHandler* pHandler = GetComboHandler();
+	if( pHandler )
+		pHandler->OnDropdownClose( this );
+}
+
+LRESULT CImageComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
+{
+	Default();
+	CComboHandler* pHandler = GetComboHandler();
+	if( pHandler )
+		pHandler->PopulateList( this );
+	return (LRESULT)TRUE;
 }

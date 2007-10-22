@@ -695,7 +695,7 @@ UINT CAxContainerCtrl::ExtractMethodInfo(TDclControlPtr pControl, ITypeInfo* pTy
 	return ctMethods;
 }
 
-BOOL CAxContainerCtrl::ExtractComponentsFromTLB(TDclControlPtr pControl, CLSID clsid)
+BOOL CAxContainerCtrl::ExtractComponentsFromTLB(TOleControlPtr pOleControl, CLSID clsid)
 {
 	long lTypeInfoCount = 0;
 	CComBSTR bstrName;
@@ -714,6 +714,8 @@ BOOL CAxContainerCtrl::ExtractComponentsFromTLB(TDclControlPtr pControl, CLSID c
 	{
 		bSuccess = FALSE;
 	}
+
+	TDclControlLockedPtr pControl = &(*pOleControl);
 	
 	if (clsid == IID_IFont)
 	{

@@ -15,18 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_2D7184611E5C4E7DADEB6941A086FB6B"
-        "OwnerKey" = "8:_A6F0C39BAEAD47D6B66ADBBFAB6227E0"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_7DDFEEBFAFEE42DA8C92DEFEACD68253"
-        "OwnerKey" = "8:_A6F0C39BAEAD47D6B66ADBBFAB6227E0"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_8A29144591804BB98139A320BBA88B36"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -221,14 +209,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Runtime"
-        "ProductCode" = "8:{D91A70B0-5E80-4D85-9EEC-95FC98A95E66}"
-        "PackageCode" = "8:{1BDE1619-91C0-48C4-B6A0-37E2490D2E0C}"
+        "ProductCode" = "8:{BCD7740F-77B8-4E1D-9DFD-484DB284B927}"
+        "PackageCode" = "8:{09682D32-6DB7-4C96-A7E8-ED858C890F1B}"
         "UpgradeCode" = "8:{D0AC879B-97D1-49C1-8DD6-70CEAA1950FC}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:4.1.0010"
+        "ProductVersion" = "8:4.1.0102"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://sourceforge.net/projects/opendcl/"
@@ -413,56 +401,6 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_2D7184611E5C4E7DADEB6941A086FB6B"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_stl.msm"
-                "Properties"
-                {
-                    "DIR_RETARGET_TARGETDIR"
-                    {
-                    "Name" = "8:DIR_RETARGET_TARGETDIR"
-                    "DisplayName" = "8:Module Retargetable Folder"
-                    "Description" = "8:"
-                    "Type" = "3:10"
-                    "ContextData" = "8:IsolationDir"
-                    "Attributes" = "3:6"
-                    "Setting" = "3:1"
-                    "UsePlugInResources" = "11:FALSE"
-                    }
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_7DDFEEBFAFEE42DA8C92DEFEACD68253"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_atl70.msm"
-                "Properties"
-                {
-                    "DIR_RETARGET_TARGETDIR"
-                    {
-                    "Name" = "8:DIR_RETARGET_TARGETDIR"
-                    "DisplayName" = "8:Module Retargetable Folder"
-                    "Description" = "8:"
-                    "Type" = "3:10"
-                    "ContextData" = "8:IsolationDir"
-                    "Attributes" = "3:6"
-                    "Setting" = "3:1"
-                    "UsePlugInResources" = "11:FALSE"
-                    }
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
         }
         "ProjectOutput"
         {

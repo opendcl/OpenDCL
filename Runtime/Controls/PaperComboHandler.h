@@ -24,7 +24,8 @@ public:
 		{
 			CString sSelection;
 			pCombo->GetWindowText( sSelection );
-			pCombo->ResetContent();
+			if( pCombo->GetCount() > 0 )
+				pCombo->ResetContent();
 
 			CWaitCursor WaitCursor;
 			CAutoDocWriteLock CurDocLock;

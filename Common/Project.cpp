@@ -335,7 +335,7 @@ void CProject::AddOleObject(const CLSID& clsid, CAxContainerCtrl *pAxCont)
 {
 	if (HasOleObject (clsid))
 		return;
-  COleControlObject* pObject = new COleControlObject( this, clsid );
+  TOleControlPtr pObject = new COleControlObject( this, clsid );
 
   if (clsid == IID_IPictureDisp)
     pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_PROP_PICTURE) );
@@ -695,7 +695,7 @@ IOStatus CProject::WriteToFile( LPCTSTR pszFilePath )
 		CString sExt = CString( pszFilePath ).Right( 4 );
 		if( sExt.CompareNoCase( _T(".lsp") ) == 0 )
 		{
-			CStdioFile DestFile( pszFilePath, CFile::modeWrite | CFile::shareExclusive | CFile::modeCreate );
+			CStdioFile DestFile( pszFilePath, CFile::modeWrite | CFile::typeBinary | CFile::shareExclusive | CFile::modeCreate );
 			if (!DestFile)
 				return statFileNotFound;
 			CMemFile Data( 0x10000 );
@@ -709,10 +709,14 @@ IOStatus CProject::WriteToFile( LPCTSTR pszFilePath )
 			CString sRawData = base64_encode( pbData, cbData ).c_str();
 			Data.Attach( pbData, cbData );
 			Data.Close();
-			sRawData.Replace( _T("\r\n"), _T("\"\n\"") );
+			sRawData.Replace( _T("\r\n"), _T("\"\r\n\"") );
 			CString sFormattedData;
 			sFormattedData.Format( _T("'(\"%s\")"), (LPCTSTR)sRawData );
-			DestFile.Write( sFormattedData, sFormattedData.GetLength() );
+		#ifdef _UNICODE
+			static const WORD wUnicodeSentinel = 0xfeff;
+			DestFile.Write( &wUnicodeSentinel, sizeof(wUnicodeSentinel) );
+		#endif //_UNICODE
+			DestFile.Write( (LPCTSTR)sFormattedData, sFormattedData.GetLength() * sizeof(TCHAR) );
 			DestFile.Flush();
 		}
 		else

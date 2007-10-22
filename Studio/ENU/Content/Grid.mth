@@ -343,7 +343,6 @@ ProjectFileName
 [as Integer]
 
 
-
 [Method]
 SetItemText
 [Prefix]
@@ -352,13 +351,12 @@ dcl_Grid_
 This method will set the text of an item in a Grid control. 
 [Arguments]
 ProjectFileName
-\par\tab NewText
-[as String]
 \par\tab nRowIndex
 [as Integer]
-\par\tab\i{Optional}\i0 nColIndex 
+\par\tab nColIndex 
 [as Integer]
-
+\par\tab NewText
+[as String]
 
 
 [Method]
@@ -397,8 +395,6 @@ This method will calculate the minimum required width of a column to ensure the 
 ProjectFileName
 \par\tab sColText
 [as String]
-
-
 
 
 [Method]

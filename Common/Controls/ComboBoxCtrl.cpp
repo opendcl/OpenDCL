@@ -142,8 +142,9 @@ DWORD CComboBoxCtrl::GetComboStyle() const
 
 BEGIN_MESSAGE_MAP(CComboBoxCtrl, CFilteredComboCtrl)
 	ON_WM_MEASUREITEM_REFLECT()
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
-	ON_CONTROL_REFLECT(CBN_CLOSEUP, OnCloseUp)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CComboBoxCtrl::OnDropdown)
+	ON_CONTROL_REFLECT(CBN_CLOSEUP, &CComboBoxCtrl::OnCloseUp)
+	ON_MESSAGE(CB_RESETCONTENT, &CComboBoxCtrl::OnResetContent)
 END_MESSAGE_MAP()
 
 
@@ -188,8 +189,6 @@ void CComboBoxCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 
 void CComboBoxCtrl::OnDropdown()
 {
-	//if( GetCount() == 0 )
-	//	SetWindowPos( NULL, 0, 0, GetWndRect().Width(), 0, (SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE) );
 }
 
 void CComboBoxCtrl::OnCloseUp()
@@ -197,4 +196,13 @@ void CComboBoxCtrl::OnCloseUp()
 	CComboHandler* pHandler = GetComboHandler();
 	if( pHandler )
 		pHandler->OnDropdownClose( this );
+}
+
+LRESULT CComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
+{
+	Default();
+	CComboHandler* pHandler = GetComboHandler();
+	if( pHandler )
+		pHandler->PopulateList( this );
+	return (LRESULT)TRUE;
 }

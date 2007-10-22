@@ -1179,8 +1179,11 @@ int Tree_SetItemImages()
 		hItem = ((VdclTree*)pControl)->Get_hItem(sSelectKey);	
 		int nIndex = ((VdclTree*)pControl)->FindItemIndex(sSelectKey);
 		OdclTreeItem *pItem = ((VdclTree*)pControl)->GetTreeItem(nIndex);
-		pItem->m_ImageIndex = nImage;
-		pItem->m_SelectedImageIndex = nSelectedImage;			
+		if( pItem )
+		{
+			pItem->m_ImageIndex = nImage;
+			pItem->m_SelectedImageIndex = nSelectedImage;
+		}
 	}
 	if (uLong != 0)
 		hItem = (HTREEITEM)uLong;

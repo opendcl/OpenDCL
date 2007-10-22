@@ -621,7 +621,7 @@ void CPictureBox::SetProperty(int nID)
 void CPictureBox::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	SetFocus();
-	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
+	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == MK_LBUTTON)
 	{
 		BeginDragnDrop(m_ArxControl, point, IsAsyncEvents());
 	}

@@ -129,6 +129,6 @@ void CArxGraphicButtonCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonDown(nFlags, point);
 
-	if (GetTemplate() && GetTemplate()->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
+	if (GetTemplate() && GetTemplate()->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == MK_LBUTTON)
 		BeginDragnDrop(GetTemplate(), point, IsAsyncEvents());
 }

@@ -180,7 +180,7 @@ void CArxTextBoxCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CArxTextBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) && nFlags == 1 )
+	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) && nFlags == MK_LBUTTON )
 		BeginDragnDrop( mpTemplate, point, IsAsyncEvents() );
 	__super::OnLButtonDown(nFlags, point);
 }

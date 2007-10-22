@@ -134,10 +134,11 @@ void CArxLineweightComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 void CArxLineweightComboBoxCtrl::OnSelchange()
 {
+	int nCurSel = GetCurSel();
 	CString sText;
-	GetWindowText( sText );
+	GetLBText( nCurSel, sText );
 	InvokeMethodIntString( mpTemplate->GetStringProperty( Prop::EventSelChanged ),
-												 GetCurSel(),
+												 nCurSel,
 												 sText,
 												 IsAsyncEvents() );
 	mpTemplate->SetStringProperty( Prop::Text, sText );

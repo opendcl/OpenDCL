@@ -783,12 +783,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, TDclControlPtr pCon
 			}		
 			break;
 		}
-
-		case Prop::ReadOnly:
-		{
-			((CEdit*)pControlWnd)->SetReadOnly(pControl->GetBooleanProperty(Prop::ReadOnly));
-			break;
-		}
 		case Prop::RenderMode:
 		{			
 			((CGsPreviewCtrl*)pControlWnd)->SetRenderMode();

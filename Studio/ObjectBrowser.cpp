@@ -513,8 +513,8 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 						}						
 						else if (sLine == theWorkspace.LoadResourceString(IDS_PROJECTNAME))
 						{
-							sDefun1 += _T("\\cf3") + theEditorWorkspace.GetActiveProjectName() + _T("\\cf0");
-							m_sClipBoardDefun2 += theEditorWorkspace.GetActiveProjectName();
+							sDefun1 += _T("\\cf3\"") + theEditorWorkspace.GetActiveProjectName() + _T("\"\\cf0");
+							m_sClipBoardDefun2 += _T("\"") + theEditorWorkspace.GetActiveProjectName() + _T("\"");
 						}						
 						else if (sLine.Left(1) == _T("[") && sLine.Mid(1, 2) == theWorkspace.LoadResourceString(IDS_AS))
 						{
@@ -556,17 +556,18 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 					}
 
 					sDefun1 += _T("\\par \\par ");
+
+					// hide the first copy button
+					m_Copy1.ShowWindow(FALSE);
+
+					// set the second copy button
+					CString sCopy2Text;
+					sCopy2Text = theWorkspace.LoadResourceString(IDS_COPYTOCLIP);			
+					m_Copy2.SetWindowText(sCopy2Text);
+					m_Copy2.ShowWindow(TRUE);
+
 					break;
 				}
-
-				// hide the first copy button
-				m_Copy1.ShowWindow(FALSE);
-
-				// set the second copy button
-				CString sCopy2Text;
-				sCopy2Text = theWorkspace.LoadResourceString(IDS_COPYTOCLIP);			
-				m_Copy2.SetWindowText(sCopy2Text);
-				m_Copy2.ShowWindow(TRUE);
 			}
 			if( fMthFile.GetPosition() >= fMthFile.GetLength() )
 				break;
@@ -1125,8 +1126,6 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					case Prop::Orientation:
 					case Prop::RectStyle:
 					case Prop::Justification:
-					case Prop::AutoHScroll:
-					case Prop::AutoVScroll:
 					case Prop::DropDownHeight:
 					case Prop::MultiColumn:
 					case Prop::SelectStyle:

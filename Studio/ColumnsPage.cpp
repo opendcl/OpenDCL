@@ -155,22 +155,16 @@ BOOL CColumnsPage::OnInitDialog()
 	
 		// copy string array data.
 		m_ColData[i].m_ListItems.RemoveAll();
-		for( size_t idxL = 0; idxL < m_pColListItems->GetStringArrayListPtr()->size(); idxL++)
-		{
-			PropVal::TCStringArray& rStr = m_pColListItems->GetStringArrayListPtr()->at(idxL);
-			for( size_t idx = 0; idx < rStr.size(); idx++)
-				m_ColData[i].m_ListItems.Add(rStr[idx]);
-		}
+		PropVal::TCStringArray& rStr = m_pColListItems->GetStringArrayListPtr()->at(i);
+		for( size_t idx = 0; idx < rStr.size(); idx++)
+			m_ColData[i].m_ListItems.Add(rStr[idx]);
 	
 		// copy int array data
-		for( size_t k = 0; k < m_pColImageItems->GetIntArrayListPtr()->size(); k++)
-		{
-			PropVal::TIntArray& rIntV = m_pColImageItems->GetIntArrayListPtr()->at(k);
-			CArray< int, int > rInt;
-			for(size_t idx = 0; idx < rIntV.size(); idx++)
-				rInt.Add(rIntV[idx]);
-			m_ColData[i].m_ImageItems.Copy(rInt);
-		}
+		PropVal::TIntArray& rIntV = m_pColImageItems->GetIntArrayListPtr()->at(i);
+		CArray< int, int > rInt;
+		for(size_t idx = 0; idx < rIntV.size(); idx++)
+			rInt.Add(rIntV[idx]);
+		m_ColData[i].m_ImageItems.Copy(rInt);
 	
 	}
 	m_Style.SetDroppedWidth(170);
@@ -877,11 +871,9 @@ void CColumnsPage::OnDroplistbtn()
 		
 		if (Dlg.DoModal() == 1)
 		{
+			m_ColData[m_nIndex].m_ListItems.RemoveAll();
 			if (Dlg.sStrings.GetSize() == 0)
 				return;
-
-			// get the text
-			m_ColData[m_nIndex].m_ListItems.RemoveAll();
 
       int i;
 			for (i=0; i<Dlg.sStrings.GetSize(); i++)
@@ -910,10 +902,10 @@ void CColumnsPage::OnDroplistbtn()
 
 		if (Dlg.DoModal() == 1)
 		{
+			m_ColData[m_nIndex].m_ListItems.RemoveAll();
 			if (Dlg.sStrings.GetSize() == 0)
 				return;
 
-			m_ColData[m_nIndex].m_ListItems.RemoveAll();
 
 			for (int i=0; i<Dlg.sStrings.GetSize(); i++)
 			{

@@ -700,9 +700,6 @@ void CPropertyListCtrl::ClearArea(HDC hdc)
 
 void CPropertyListCtrl::DisplayProperties(TDclControlPtr pControl) 
 {
-	if( pControl == m_pControl )
-		return;
-	
 	if (pControl != NULL)
 	{
 		m_pControl = pControl;

@@ -319,14 +319,14 @@ CMDIChildWnd* COpenDCLApp::CreateOrActivateFrame(CDocument* pDoc, CSize ViewSize
 COpenDCLView* COpenDCLApp::OpenExistingForm(TDclFormPtr pDclForm)
 {
 	TDclControlPtr pDclProperties = pDclForm->GetControlProperties();
-	CSize StartupSize(pDclProperties->GetLongProperty(Prop::Width), pDclProperties->GetLongProperty(Prop::Height));
+	CSize sizeStartup(pDclProperties->GetLongProperty(Prop::Width), pDclProperties->GetLongProperty(Prop::Height));
 	
 	// create the new view
 	bool bResizable = true;
 	if (pDclForm->GetType() == VdclConfigTab || pDclForm->GetType() == VdclTabForm)
 		bResizable = false;
 	
-	CMDIChildWnd* pNewFrame = CreateOrActivateFrame(theWorkspace.GetActiveDocument()/*m_pMainFrame->GetActiveDocument()*/, StartupSize, bResizable);
+	CMDIChildWnd* pNewFrame = CreateOrActivateFrame(theWorkspace.GetActiveDocument()/*m_pMainFrame->GetActiveDocument()*/, sizeStartup, bResizable);
 	COpenDCLView* pNewView = (COpenDCLView*)pNewFrame->GetActiveView();
 
 	// set the dcl pointers
@@ -340,12 +340,17 @@ COpenDCLView* COpenDCLApp::OpenExistingForm(TDclFormPtr pDclForm)
 	if (pDclForm->UsesClientRect())
 	{
 		CRect rcNewDialog;
-		pNewFrame->GetWindowRect(rcNewDialog);
+		pNewFrame->GetWindowRect( &rcNewDialog );
 		CRect rcView;
 		pNewView->GetClientRect(&rcView);
+		int nNewHeight =
+			(rcView.Height() == 0)?
+				rcNewDialog.Height() + sizeStartup.cy :
+				rcNewDialog.Height() * 2 - rcView.Height();
+		int nNewWidth = rcNewDialog.Width() * 2 - rcView.Width();
 		pNewFrame->SetWindowPos(NULL, -1, -1,
-														rcNewDialog.Width() * 2 - rcView.Width(),
-														rcNewDialog.Height() * 2 - rcView.Height(),
+														nNewWidth,
+														nNewHeight,
 														SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 

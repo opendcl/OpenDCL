@@ -130,7 +130,8 @@ protected:
 		}
 	virtual bool PopulateList( CComboBox* pCombo )
 		{
-			pCombo->ResetContent();
+			if( pCombo->GetCount() > 0 )
+				pCombo->ResetContent();
 			mmapFonts.clear();
 			// get the list of existing AutoCAD shx fonts
 			CString sFontPath = GetFontPath();	

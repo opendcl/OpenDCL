@@ -612,7 +612,7 @@ void CSlideHolder::SetDragnDrop(BOOL bRegister)
 void CSlideHolder::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	SetFocus();
-	if (mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
+	if (mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == MK_LBUTTON)
 	{
 		BeginDragnDrop(mpTemplate, point, IsAsyncEvents());
 		// call methods to invoke the event

@@ -44,4 +44,5 @@ protected:
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void OnDropdown();
 	afx_msg void OnCloseUp();
+	afx_msg LRESULT OnResetContent( WPARAM wParam, LPARAM lParam );
 };

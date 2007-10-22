@@ -95,7 +95,6 @@ void LoadArgsNDesc(Prop::Id nEventId, const TDclControlPtr pControl, CString &sA
 				sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ROWCOL);
 				sDesc = theWorkspace.LoadResourceString(5004);			
 				break;
-		
 			}
 		case CtlComboBox:
 			if (pControl->GetLongProperty(Prop::ComboBoxStyle) == 12)
@@ -121,6 +120,10 @@ void LoadArgsNDesc(Prop::Id nEventId, const TDclControlPtr pControl, CString &sA
 			break;
 		case CtlFileDlgCtrl:
 			sArgs = theWorkspace.LoadResourceString(1191);
+			sDesc = theWorkspace.LoadResourceString(5004);
+			break;
+		case CtlMonth:
+			sArgs.Empty();
 			sDesc = theWorkspace.LoadResourceString(5004);
 			break;
 		default:
@@ -254,26 +257,36 @@ void LoadArgsNDesc(Prop::Id nEventId, const TDclControlPtr pControl, CString &sA
 			break;
 		}
 		sDesc = theWorkspace.LoadResourceString(5018);
+		sDesc += _T(" ");
+		sDesc += theWorkspace.LoadResourceString(IDS_STATEFLAGDESC);
 		break;
     
 	case Prop::EventKeyUp:
 		sArgs = theWorkspace.LoadResourceString(1199);
 		sDesc = theWorkspace.LoadResourceString(5033);
+		sDesc += _T(" ");
+		sDesc += theWorkspace.LoadResourceString(IDS_STATEFLAGDESC);
 		break;
     
 	case Prop::EventMouseDown:
 		sArgs = theWorkspace.LoadResourceString(1200);
 		sDesc = theWorkspace.LoadResourceString(5034);
+		sDesc += _T(" ");
+		sDesc += theWorkspace.LoadResourceString(IDS_STATEFLAGDESC);
 		break;
     
 	case Prop::EventMouseUp:
 		sArgs = theWorkspace.LoadResourceString(1200);
 		sDesc = theWorkspace.LoadResourceString(5035);
+		sDesc += _T(" ");
+		sDesc += theWorkspace.LoadResourceString(IDS_STATEFLAGDESC);
 		break;
     
 	case Prop::EventMouseMove:
 		sArgs = theWorkspace.LoadResourceString(1201);
 		sDesc = theWorkspace.LoadResourceString(5036);
+		sDesc += _T(" ");
+		sDesc += theWorkspace.LoadResourceString(IDS_STATEFLAGDESC);
 		break;
     
 	case Prop::EventMouseMovedOff:
@@ -294,11 +307,15 @@ void LoadArgsNDesc(Prop::Id nEventId, const TDclControlPtr pControl, CString &sA
 	case Prop::EventMouseDblClick:
 		sArgs = theWorkspace.LoadResourceString(1200);
 		sDesc = theWorkspace.LoadResourceString(5038);
+		sDesc += _T(" ");
+		sDesc += theWorkspace.LoadResourceString(IDS_STATEFLAGDESC);
 		break;
     
 	case Prop::EventMouseWheel:
 		sArgs = theWorkspace.LoadResourceString(1203);
 		sDesc = theWorkspace.LoadResourceString(5039);
+		sDesc += _T(" ");
+		sDesc += theWorkspace.LoadResourceString(IDS_STATEFLAGDESC);
 		break;
     
 	case Prop::EventPaint:
@@ -436,14 +453,20 @@ void LoadArgsNDesc(Prop::Id nEventId, const TDclControlPtr pControl, CString &sA
 	case Prop::OnLMouseEvent:
 		sArgs = theWorkspace.LoadResourceString(1212);
 		sDesc = theWorkspace.LoadResourceString(5045);
+		sDesc += _T(" ");
+		sDesc += theWorkspace.LoadResourceString(IDS_STATEFLAGDESC);
 		break;
 	case Prop::OnMMouseEvent:
 		sArgs = theWorkspace.LoadResourceString(1212);
 		sDesc = theWorkspace.LoadResourceString(5046);
+		sDesc += _T(" ");
+		sDesc += theWorkspace.LoadResourceString(IDS_STATEFLAGDESC);
 		break;
 	case Prop::OnRMouseEvent:
 		sArgs = theWorkspace.LoadResourceString(1212);
 		sDesc = theWorkspace.LoadResourceString(5047);
+		sDesc += _T(" ");
+		sDesc += theWorkspace.LoadResourceString(IDS_STATEFLAGDESC);
 		break;
       
 	case Prop::DragnDropToAutoCAD:

@@ -150,9 +150,6 @@ void CPropertyTabPane::OnSelchange(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CPropertyTabPane::DisplaySelectedControlProperties(TDclControlPtr pControl, COpenDCLView *pView) 
 {
-	if (m_PropertiesTabPane.GetPropertiesCtrl().m_pControl == pControl)
-		return;
-
 	CString sControlName;
 	if( pControl )
 	{

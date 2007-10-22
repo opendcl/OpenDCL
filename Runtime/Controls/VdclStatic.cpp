@@ -43,6 +43,9 @@ BEGIN_MESSAGE_MAP(VdclStatic, CStatic)
 	//ON_WM_PAINT()
 	ON_WM_SIZE()
 	//}}AFX_MSG_MAP
+	ON_WM_NCLBUTTONDOWN()
+	ON_WM_NCHITTEST()
+	ON_WM_ACTIVATE()
 END_MESSAGE_MAP()
 
 
@@ -101,7 +104,6 @@ BOOL VdclStatic::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID )
 	
 
 	RetVal = CStatic::Create(Caption, dwStyle, ArxRect, pParentWnd, nID);
-	VERIFY(CStatic::SubclassDlgItem(nID, pParentWnd));
 
 	m_ToolTip.Create(this);
 	SetToolTipEx(this, m_ToolTip, pControl);
@@ -148,7 +150,8 @@ void VdclStatic::SetDragnDrop(BOOL bRegister)
 
 void VdclStatic::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
+	InvokeMethod( m_ArxControl->GetStringProperty(Prop::EventClicked), IsAsyncEvents());
+	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) && nFlags == MK_LBUTTON)
 	{
 		BeginDragnDrop(m_ArxControl, point, IsAsyncEvents());
 	}
@@ -237,4 +240,9 @@ void VdclStatic::OnSize(UINT nType, int cx, int cy)
 {
 	CStatic::OnSize(nType, cx, cy);
 	RedrawWindow();
+}
+
+__LRESULT VdclStatic::OnNcHitTest(CPoint point)
+{
+	return HTCLIENT;
 }

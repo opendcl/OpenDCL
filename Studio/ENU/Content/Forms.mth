@@ -1,15 +1,4 @@
 [Method]
-Close
-[Prefix]
-dcl_Form_
-[Desc]
-This method will close the indicated dialog. This method returns a list indicating the last upper left coordinates of Modal or Modeless dialog boxes.
-[Arguments]
-\par\tab \i [Optional] \i0 DialogStatus
-[as Integer]
-
-
-[Method]
 UpdateVarNames 
 [Prefix]
 dcl_
@@ -40,8 +29,7 @@ This method loads the requested project into memory for later use. If you specif
 The file passed will be searched for if no path is included in the file name.  If a path is included in the file name, the entire path is assumed to be correct.
 \par *This function is deprecated. Use (dcl_Project_Load) instead.
 [Arguments Return] as String "ProjectName"
-\par\tab FileName
-[as Integer]
+ProjectName
 \par\tab \i [Optional] \i0 Reload
 [as T]
 \par\tab \i [Optional] \i0 AliasProjectName
@@ -60,8 +48,7 @@ This method loads the requested project file into memory. If you specify a T aft
 \par (dcl_Form_Show Proj01_Form)*
 \par\par * If you specify explicit values for the VarName property of a form or control, then you must use that symbol name regardless of the project name.
 [Arguments Return] as String "ProjectName"
-\par\tab FileName
-[as String]
+ProjectName
 \par\tab \i [Optional] \i0 Reload
 [as T]
 \par\tab \i [Optional] \i0 AliasProjectName
@@ -75,8 +62,7 @@ dcl_
 [Desc]
 This method unloads the requested project from memory, freeing any resources that it used.
 [Arguments Return] as T or Nil 
-\par\tab ProjectName
-[as String]
+ProjectName
 
 
 [Method]
@@ -86,8 +72,7 @@ dcl_
 [Desc]
 This method writes a project from memory to an ODC file. The password must match the project password, or the call will fail.
 [Arguments Return] as T or Nil
-\par\tab ProjectName
-[as String]
+ProjectName
 \par\tab FilePath
 [as String]
 \par\tab \i [Optional] \i0 Password
@@ -116,8 +101,7 @@ dcl_
 [Desc]
 This method exports the specified project to base64 encoded binary data. The password must match the project password, or the export will fail.
 [Arguments Return] as String "Base64EncodedData"
-\par\tab ProjectName
-[as String]
+ProjectName
 \par\tab \i [Optional] \i0 Password
 [as String]
 
@@ -138,8 +122,7 @@ dcl_
 [Desc]
 Returns a list of all forms in the project.
 [Arguments Return] as List of Forms
-\par\tab ProjectName
-[as String]
+ProjectName
 \par\tab \i [Optional] \i0 Password
 [as String]
 
@@ -152,6 +135,18 @@ dcl_Form_
 Returns a list of all controls on the form.
 [Arguments Return] as List of Controls
 ProjectFileName
+
+
+[Method]
+Close
+[Prefix]
+dcl_Form_
+[Desc]
+This method will close the indicated dialog. This method returns a list indicating the last upper left coordinates of Modal or Modeless dialog boxes.
+[Arguments]
+ProjectFileName
+\par\tab \i [Optional] \i0 DialogStatus
+[as Integer]
 
 
 [Method]

@@ -6,6 +6,12 @@
 #include "OleOdcDropTarget.h"
 #include "PPToolTip.h"
 
+#if (_MFC_VER < 0x0800)
+#define __LRESULT UINT
+#else
+#define __LRESULT LRESULT
+#endif
+
 
 /////////////////////////////////////////////////////////////////////////////
 // VdclStatic window
@@ -13,6 +19,8 @@
 class VdclStatic : public CStatic
 {
 	CBrush mbrushBackground;
+	TDclControlPtr m_ArxControl;
+
 // Attributes
 public:
 	COLORREF m_ForeColor;
@@ -40,31 +48,21 @@ public:
     COleOdcDropTarget m_DropTarget;
 	
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(VdclStatic)
-	public:
+// Generated message map functions
+protected:
+	DECLARE_MESSAGE_MAP()
+
+public:
 	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID );
+protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp);	
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	//}}AFX_VIRTUAL
-
-// Implementation
-public:
-
-	// Generated message map functions
-protected:
-	//{{AFX_MSG(VdclStatic)
 	afx_msg void OnDestroy();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg HBRUSH CtlColor ( CDC* pDC, UINT nCtlColor );
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnPaint();
-	//}}AFX_MSG
-
-	DECLARE_MESSAGE_MAP()
-private:
-	TDclControlPtr m_ArxControl;
+	afx_msg __LRESULT OnNcHitTest(CPoint point);
 };

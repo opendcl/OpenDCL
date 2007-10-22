@@ -389,11 +389,13 @@ void CArxGridCtrl::OnEditCurCell()
 
 void CArxGridCtrl::OnEndEditCurCell()
 {
+	__super::OnEndEditCurCell();
 	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::EventEndLabelEdit),
 											mCurrentCell.row(),
 											mCurrentCell.col(),
 											mbInvokeWithSendString);
-	__super::OnEndEditCurCell();
+	if( GetFocus() != this )
+		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), mbInvokeWithSendString);
 }
 
 
@@ -486,8 +488,6 @@ CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 
 BEGIN_MESSAGE_MAP(CArxGridCtrl, CGridCtrl)
 	ON_WM_DESTROY()
-	ON_WM_HSCROLL()
-	ON_WM_VSCROLL()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()	
 	ON_WM_RBUTTONDOWN()
@@ -499,12 +499,12 @@ BEGIN_MESSAGE_MAP(CArxGridCtrl, CGridCtrl)
 	ON_WM_LBUTTONDBLCLK()	
 	ON_WM_SIZE()
 	ON_NOTIFY_REFLECT(NM_SETFOCUS, OnSetfocus)
-	ON_NOTIFY_REFLECT(NM_KILLFOCUS, OnKillfocus)
 	ON_NOTIFY_REFLECT(LVN_COLUMNCLICK, OnColumnclick)		
 	ON_WM_MOUSEMOVE()
 	ON_WM_KEYUP()
 	ON_WM_CONTEXTMENU()
 	ON_COMMAND(ID_CELLBUTTON, OnCellButtonClicked)
+	ON_WM_KILLFOCUS()
 END_MESSAGE_MAP()
 
 
@@ -626,12 +626,6 @@ void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
-void CArxGridCtrl::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult) 
-{
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), mbInvokeWithSendString);
-	*pResult = 0;
-}
-
 void CArxGridCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
@@ -721,18 +715,9 @@ void CArxGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc
 	__super::DrawCell( nRow, nCol, rectCell, cdc );
 }
 
-void CArxGridCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void CArxGridCtrl::OnKillFocus(CWnd* pNewWnd)
 {
-	if( GetFocus() != this) 
-		SetFocus();
-	HideEditControls();
-	__super::OnHScroll(nSBCode, nPos, pScrollBar);
-}
-
-void CArxGridCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
-{
-	if( GetFocus() != this) 
-		SetFocus();
-	HideEditControls();
-	__super::OnVScroll(nSBCode, nPos, pScrollBar);
+	CGridCtrl::OnKillFocus(pNewWnd);
+	if( pNewWnd->GetParent() != this )
+		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), mbInvokeWithSendString);
 }

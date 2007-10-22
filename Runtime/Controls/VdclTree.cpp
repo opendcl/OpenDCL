@@ -12,7 +12,6 @@
 #include "Workspace.h"
 
 const int IDC_TREE = 77;
-const TCHAR *pKeyStart = _T("k");
 
 //needed until this control is derived from CDialogObject
 #define IsAsyncEvents() (m_ArxControl->GetLongProperty( Prop::EventInvoke ) == 1)
@@ -203,6 +202,7 @@ OdclTreeItem *VdclTree::GetTreeItem(int nIndex)
 	else
 		return NULL;
 }
+
 //*****************************************************************************
 // 
 // Method: VdclTree::Get_hItem()
@@ -217,8 +217,6 @@ OdclTreeItem *VdclTree::GetTreeItem(int nIndex)
 //*****************************************************************************
 HTREEITEM VdclTree::Get_hItem(CString sKey)
 {
-	HTREEITEM hReturn = NULL;
-
 	int nCount = m_TreeItems.GetCount();
 	if (nCount == 0)
 		return NULL;
@@ -226,16 +224,12 @@ HTREEITEM VdclTree::Get_hItem(CString sKey)
 	// do loop to find the hitem by key
 	for (int i=0; i < nCount; i++)
 	{
-		
-		if (GetTreeItem(i)->sKey == sKey)
-		{
-			hReturn = GetTreeItem(i)->hItem;
-			// end loop
-			return hReturn;
-		}
+		OdclTreeItem* pItem = GetTreeItem(i);
+		if (pItem->sKey.CompareNoCase( sKey ) == 0 )
+			return pItem->hItem;
 	}
 
-	return hReturn;
+	return NULL;
 }
 
 CString VdclTree::GetNextAvailableKey()
@@ -244,18 +238,12 @@ CString VdclTree::GetNextAvailableKey()
 
 	int nCount = m_TreeItems.GetCount();
 	CString sNextKey;
-	char value[80];
-	// do loop to find the hitem by key
-	for (int i=0; i < nCount+1; i++)
+	for (int i=0; i <= nCount; i++)
 	{
-		_ltoa(i, value, 10);
-		sNextKey = CString(pKeyStart) + value;
+		sNextKey.Format( _T("k%d"), i );
 		if (Get_hItem(sNextKey) == NULL)
-		{
-			return sNextKey;		
-		}
+			break;		
 	}
-
 	return sNextKey;
 }
 
@@ -305,21 +293,13 @@ CString VdclTree::Get_hItemKey(HTREEITEM hItem)
 //*****************************************************************************
 int VdclTree::FindItemIndex(CString sKey)
 {
-	int nReturn = -1;
-	// do loop to find hte hitem by key
 	for (int i=0; i < m_TreeItems.GetCount(); i++)
 	{
-		if (GetTreeItem(i) != NULL)
-		{
-			if (GetTreeItem(i)->sKey == sKey)
-			{
-				nReturn = i;
-				// set i so the loop will end
-				i = m_TreeItems.GetCount();		
-			}
-		}
+		OdclTreeItem* pItem = GetTreeItem(i);
+		if (pItem && pItem->sKey.CompareNoCase( sKey ) == 0)
+			return i;
 	}
- 	return nReturn;
+ 	return -1;
 }
 
 HTREEITEM VdclTree::AddChild(CString sChildText, CString sParentKey, CString sKey, int nImage, int nSelectedImage, int nExpandedImage)

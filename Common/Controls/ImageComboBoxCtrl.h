@@ -42,4 +42,7 @@ protected:
 	virtual afx_msg void PostNcDestroy();
 	virtual afx_msg void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
+	afx_msg void OnDropdown();
+	afx_msg void OnCloseUp();
+	afx_msg LRESULT OnResetContent( WPARAM wParam, LPARAM lParam );
 };

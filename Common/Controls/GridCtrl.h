@@ -132,6 +132,7 @@ protected:
 			{ mRow = row; if( row < 0 ) mCol = -1; else mCol = col; }
 	} mCurrentCell;
 	std::vector< _RowData > mRowData;
+	static const UINT& refWM_CHECKFOCUS();
 
 // Construction
 public:
@@ -231,8 +232,14 @@ protected:
 protected:
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual afx_msg void PostNcDestroy();
+	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	afx_msg void PostNcDestroy();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnLvnBeginScroll(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg LRESULT OnCheckFocus( WPARAM wParam, LPARAM lParam );
 };

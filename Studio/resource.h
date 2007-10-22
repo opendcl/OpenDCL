@@ -443,6 +443,7 @@
 #define IDS_SELECTSTYLE_1               5102
 #define IDS_SELECTSTYLE_2               5103
 #define IDS_EVENTDESC_SPLITTERMOVED     5224
+#define IDS_STATEFLAGDESC               5226
 #define IDS_TAB_JUSTIFY_0               6201
 #define IDS_TAB_JUSTIFY_1               6202
 #define IDS_TABSTYLE_0                  6301

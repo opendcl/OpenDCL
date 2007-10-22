@@ -75,7 +75,7 @@ public:
 	HRESULT SetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs );
 	HRESULT SetProperty( AxPropertyDescriptor* axProp, COleVariant varArg );
 	HRESULT Invoke( AxMethodDescriptor* axMethod, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
-	BOOL ExtractComponentsFromTLB(TDclControlPtr pControl, CLSID clsid);
+	BOOL ExtractComponentsFromTLB(TOleControlPtr pOleControl, CLSID clsid);
 
 	// Generated message map functions
 protected:

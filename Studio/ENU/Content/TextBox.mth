@@ -20,7 +20,6 @@ ProjectFileName
 [as Integer]
 
 
-
 [Method]
 ReplaceSel
 [Prefix]
@@ -31,7 +30,6 @@ This method replaces the currently selected text in a TextBox with the specified
 ProjectFileName
 \par\tab NewText
 [as String]
-
 
 
 [Method]
@@ -46,7 +44,6 @@ ProjectFileName
 [as Integer]
 
 
-
 [Method]
 GetSel
 [Prefix]
@@ -55,6 +52,7 @@ dcl_TextBox_
 This method returns the starting and ending character positions of the current selection in a TextBox.
 [Arguments Return] as List of Integers
 ProjectFileName
+
 
 [Method]
 SetSel
@@ -94,7 +92,6 @@ ProjectFileName
 [as Integer]
 
 
-
 [Method]
 GetLineLength
 [Prefix]
@@ -117,7 +114,6 @@ This method counts the number of lines in a multiple-line TextBox.
 ProjectFileName
 
 
-
 [Method]
 GetFirstVisibleLine
 [Prefix]
@@ -126,7 +122,6 @@ dcl_TextBox_
 This method returns the line number of the first visible line in a multiple line TextBox.
 [Arguments Return] as Integer
 ProjectFileName
-
 
 
 [Method]

@@ -93,9 +93,10 @@ void CArxComboBoxCtrl::OnSelchange()
 		}
 		else
 		{
+			int nCurSel = GetCurSel();
 			CString sText;
-			GetWindowText( sText );
-			InvokeMethodIntString( sEventName, GetCurSel(), sText, IsAsyncEvents() );
+			GetLBText( nCurSel, sText );
+			InvokeMethodIntString( sEventName, nCurSel, sText, IsAsyncEvents() );
 			mpTemplate->SetStringProperty( Prop::Text, sText );
 		}
 	}

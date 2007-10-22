@@ -59,7 +59,7 @@ CArxDialogObject::CArxDialogObject( TDclFormPtr pSourceForm, CWnd* pHostDlg )
 {
 	theArxWorkspace.RegisterDialog( this );
 	TraceFmt( _T("> CArxDialogObject::CArxDialogObject(%s [%p], %s [HWND: %p]) [this: %p]\r\n"),
-						(LPCTSTR)pSourceForm->GetKeyPath(), pSourceForm,
+						(LPCTSTR)pSourceForm->GetKeyPath(), (CDclFormObject*)pSourceForm,
 						(LPCTSTR)CString(pHostDlg->GetRuntimeClass()->m_lpszClassName),
 						pHostDlg->m_hWnd, this );
 }

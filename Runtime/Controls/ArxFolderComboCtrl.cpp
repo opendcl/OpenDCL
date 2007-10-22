@@ -91,7 +91,6 @@ LRESULT CArxFolderComboCtrl::OnSelchange( WPARAM wParam, LPARAM lParam )
 	CFolder* pFolderInfo = (CFolder*)lParam;
 	if( pFolderInfo )
 		sPath = (LPCTSTR)pFolderInfo->m_path;
-	//GetWindowText( sPath );
 
 	if( mpDwgList )
 		mpDwgList->Dir( sPath );

@@ -621,7 +621,7 @@ void CGsPreviewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	if (!mpView || m_BlockName.GetLength() == 0)
 		return;
 	
-	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == 1)
+	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == MK_LBUTTON)
 	{
 		if (m_pLoadedDwg == NULL)
 			BeginDragnDrop(m_ArxControl, point, IsAsyncEvents());

@@ -1383,6 +1383,7 @@ CControlHolder* COpenDCLView::AddCWndControl( TDclControlPtr pDclControl, CRect 
 
 	// set the position properties
 	CWnd* pControlWnd = pControl->GetControlWnd();
+	pControlWnd->ShowWindow( SW_SHOW ); //make sure the control is visible even if its Visible property is False
 	if( pControlWnd && pControlWnd->m_hWnd )
 		pControlWnd->GetWindowRect( &rcPos );
 	ScreenToClient( &rcPos );

@@ -1262,8 +1262,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,1,0,10
- PRODUCTVERSION 4,1,0,10
+ FILEVERSION 4,1,1,2
+ PRODUCTVERSION 4,1,1,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1280,13 +1280,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL Studio Dialog Editor"
-            VALUE "FileVersion", "4, 1, 0, 10"
+            VALUE "FileVersion", "4, 1, 1, 2"
             VALUE "InternalName", "OpenDCL.Editor"
             VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL Studio.exe"
             VALUE "ProductName", "OpenDCL Studio"
-            VALUE "ProductVersion", "4, 1, 0, 10"
+            VALUE "ProductVersion", "4, 1, 1, 2"
         END
     END
     BLOCK "VarFileInfo"
@@ -2108,8 +2108,8 @@ BEGIN
     2144                    "Sets the left margin in the control where the text will be placed from."
     2145                    "Sets the right margin in the control where the text will not be placeable."
     2146                    "Limits the number of characters the user can input into the control."
-    2147                    "If True, the control will automatically detect if a horizontal scroll bar is needed."
-    2148                    "If True, the control will automatically detect if a vertical scroll bar is needed. Only in the editor will the scroll bar will be show always."
+    2147                    "When true, automatically scrolls text to the right by 10 characters when the user types a character at the end of the line. When the user presses the ENTER key, the control scrolls all text back to position zero."
+    2148                    "When true, automatically scrolls text up one page when the user presses the ENTER key on the last line."
     2149                    "Sets the height of the drop down list box."
     2150                    "If True, the control can have multiple columns."
     2151                    "Sets the way a user can select items in the list."
@@ -2288,7 +2288,7 @@ BEGIN
     5030                    "Indicates that the form is reacting to a change in the active AutoCAD DWG document."
     5031                    "Indicates that the user has clicked the Preferances dialog box's Cancel button."
     5032                    "Indicates that the user has clicked the Preferances dialog box's OK button."
-    5033                    "Indicates that the user has release a pressed key."
+    5033                    "Indicates that the user has released a pressed key."
     5034                    "Indicates a mouse button was pressed over this control."
     5035                    "Indicates a mouse button was released over this control."
     5036                    "Indicates the mouse is moving over this control."
@@ -2512,6 +2512,7 @@ BEGIN
     IDS_EVENTDESC_SPLITTERMOVED 
                             "Fired when the user moves a splitter control."
     5225                    "Indicates that the user has finished editing the grid cell."
+    IDS_STATEFLAGDESC       "The nFlags argument is a bit coded value as follows:\\par\tbit 0 (1): Left button pressed\\par\tbit 1 (2): Right button pressed\\par\tbit 2 (4): Shift key pressed\\par\tbit 3 (8): Ctrl key pressed\\par\tbit 4 (16): Middle button pressed"
 END
 
 STRINGTABLE 

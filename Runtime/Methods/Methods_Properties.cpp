@@ -106,6 +106,7 @@ bool GetCtrlProperty(Prop::Id id)
 	if (pProperty == NULL)
 		return false;
 
+/* Should use the current property values (they should be synchronized with the actual position of the control)
 	// here we need to do special position lookups for width, height, left and top properties.
 	if (id == Prop::Width)
 	{
@@ -137,6 +138,7 @@ bool GetCtrlProperty(Prop::Id id)
 		acedRetInt(rc.left);
 		return true;
 	}
+*/
 
 	// if this control is a radio or option button
 	// and the request property is the value

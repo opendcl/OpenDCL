@@ -80,6 +80,22 @@ bool CTextBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 			SetWindowText( pProp->GetStringValue() );
 			break;
 		}
+	case Prop::AutoVScroll:
+		{
+			if( pProp->GetBooleanValue() )
+				ModifyStyle( 0, ES_AUTOVSCROLL, 0 );
+			else
+				ModifyStyle( ES_AUTOVSCROLL, 0, 0 );
+			break;
+		}
+	case Prop::AutoHScroll:
+		{
+			if( pProp->GetBooleanValue() )
+				ModifyStyle( 0, ES_AUTOHSCROLL, 0 );
+			else
+				ModifyStyle( ES_AUTOHSCROLL, 0, 0 );
+			break;
+		}
 	case Prop::LimitText:
 		{
 			SetLimitText( pProp->GetLongValue() );
@@ -95,6 +111,11 @@ bool CTextBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 			if( !IsEnumeratingProperties() )
 				SetMargins( mpTemplate->GetLongProperty( Prop::MarginLeft ), pProp->GetLongValue() );
 			break;
+	case Prop::ReadOnly:
+		{
+			SetReadOnly( pProp->GetBooleanValue() );
+			break;
+		}
 		}
 	}
 	return !bFailed;

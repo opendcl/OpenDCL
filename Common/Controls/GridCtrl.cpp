@@ -53,6 +53,18 @@
 
 #define HP_HEADERITEM			0x00000001
 
+#if (_WIN32_WINNT < 0x501)
+typedef struct tagNMLVSCROLL
+{
+    NMHDR   hdr;
+    int     dx;
+    int     dy;
+} NMLVSCROLL, *LPNMLVSCROLL;
+
+#define LVN_BEGINSCROLL          (LVN_FIRST-80)          
+#define LVN_ENDSCROLL            (LVN_FIRST-81)
+#endif //(_WIN32_WINNT < 0x501)
+
 
 class CDriveComboDropdownListEditCtrl : public CFolderComboBox, public CGridCellEditCtrl
 {
@@ -130,6 +142,13 @@ CGridCtrl::CGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, b
 CGridCtrl::~CGridCtrl()
 {
 	HideEditControls();
+}
+
+//static
+const UINT& CGridCtrl::refWM_CHECKFOCUS()
+{
+	static const UINT WM_CHECKFOCUS = RegisterWindowMessage( _T("OpenDCL.Grid.CheckFocus") );
+	return WM_CHECKFOCUS;
 }
 
 #undef SubclassWindow
@@ -345,7 +364,7 @@ enum CellStyle CGridCtrl::GetCurCellStyle()
 enum CellStyle CGridCtrl::GetCellStyle( int nRow, int nCol )
 {
 	const _CellData* pCellData = GetCellData( nRow, nCol );
-	if( pCellData )
+	if( pCellData && pCellData->mType != Grid_Undefined )
 		return pCellData->mType;
 
 	// otherwise return the default style for the column
@@ -798,8 +817,9 @@ void CGridCtrl::OnEndEditCurCell()
 	CWnd* pParent = GetParent();
 	if( pParent )
 		pParent->SendMessage( WM_NOTIFY, (WPARAM)GetControlId(), (LPARAM)&lvdi );
-	delete mpCellEditCtrl;
+	CGridCellEditCtrl* pCellEditCtrl = mpCellEditCtrl;
 	mpCellEditCtrl = NULL;
+	delete pCellEditCtrl;
 }
 
 CGridCellEditCtrl* CGridCtrl::CreateEditControl( int nRow, int nCol )
@@ -1682,10 +1702,15 @@ bool CGridCtrl::SortNumericItems( int nCol, BOOL bAscending,int low, int high)
 	return TRUE;
 }
 
+
 BEGIN_MESSAGE_MAP(CGridCtrl, CListCtrl)
 	ON_WM_NCCALCSIZE()	
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_HSCROLL()
+	ON_WM_VSCROLL()
+	ON_NOTIFY_REFLECT(LVN_BEGINSCROLL, &CGridCtrl::OnLvnBeginScroll)
+	ON_REGISTERED_MESSAGE(refWM_CHECKFOCUS(), &CGridCtrl::OnCheckFocus)
 END_MESSAGE_MAP()
 
 
@@ -1759,8 +1784,65 @@ void CGridCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	lpMeasureItemStruct->itemHeight = mpTemplate->GetLongProperty( Prop::RowHeight );
 }
 
+void CGridCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+{
+	if( GetFocus() != this) 
+		SetFocus();
+	PostMessage( refWM_CHECKFOCUS(), 0, 0 );
+	__super::OnHScroll(nSBCode, nPos, pScrollBar);
+}
+
+void CGridCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+{
+	if( GetFocus() != this) 
+		SetFocus();
+	PostMessage( refWM_CHECKFOCUS(), 0, 0 );
+	__super::OnVScroll(nSBCode, nPos, pScrollBar);
+}
+
 void CGridCtrl::PostNcDestroy() 
 {
 	__super::PostNcDestroy();
 	delete this;
+}
+
+BOOL CGridCtrl::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
+{
+	BOOL bResult = __super::OnNotify(wParam, lParam, pResult);
+	if( ((NMHDR*)lParam)->code == NM_KILLFOCUS )
+		PostMessage( refWM_CHECKFOCUS(), 0, 0 );
+	return bResult;
+}
+
+BOOL CGridCtrl::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	BOOL bResult = __super::OnCommand(wParam, lParam);
+	if( lParam ) //child control notification?
+	{
+		switch( HIWORD(wParam) )
+		{
+		case BN_KILLFOCUS:
+		case EN_KILLFOCUS:
+		case CBN_KILLFOCUS:
+		case LBN_KILLFOCUS:
+			PostMessage( refWM_CHECKFOCUS(), 0, 0 );
+			break;
+		}
+	}
+	return bResult;
+}
+
+void CGridCtrl::OnLvnBeginScroll(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLVSCROLL pStateChanged = reinterpret_cast<LPNMLVSCROLL>(pNMHDR);
+	PostMessage( refWM_CHECKFOCUS(), 0, 0 );
+	*pResult = 0;
+}
+
+LRESULT CGridCtrl::OnCheckFocus( WPARAM wParam, LPARAM lParam )
+{
+	CWnd* pFocusWnd = GetFocus();
+	if( !pFocusWnd || pFocusWnd->GetParent() != this )
+		HideEditControls();
+	return 0;
 }
