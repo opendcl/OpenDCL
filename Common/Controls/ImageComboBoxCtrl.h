@@ -28,6 +28,7 @@ public:
 	virtual CRect GetWndRect() const;
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool OnApplyUseVisualStyle( TPropertyPtr pProp ); //Prop::UseVisualStyle
 	virtual CAcadColorService* GetColorService() { return CFilteredComboExCtrl::GetColorService(); }
 
 public:

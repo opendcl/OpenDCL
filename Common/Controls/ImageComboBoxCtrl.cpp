@@ -131,6 +131,24 @@ bool CImageComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+bool CImageComboBoxCtrl::OnApplyUseVisualStyle( TPropertyPtr pProp )
+{
+	if( !__super::OnApplyUseVisualStyle( pProp ) )
+		return false;
+	CThemeHelperST* pThemeHelper = mpControlPane->GetThemeHelper();
+	if( !pThemeHelper || !pThemeHelper->IsThemeActive() )
+		return false; //visual styles not supported
+	CComboBox* pComboCtrl = GetComboBoxCtrl();
+	if( !pComboCtrl )
+		return false;
+	HWND hwnd = pComboCtrl->m_hWnd;
+	if( pProp->GetBooleanValue() )
+		pThemeHelper->SetWindowTheme( hwnd, NULL, NULL );
+	else
+		pThemeHelper->SetWindowTheme( hwnd, L"", L"" );
+	return true;
+}
+
 DWORD CImageComboBoxCtrl::GetComboStyle() const
 {
 	switch( mpTemplate->GetLongProperty( Prop::ComboBoxStyle ) )

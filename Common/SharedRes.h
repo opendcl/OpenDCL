@@ -18,6 +18,7 @@
 #define IDS_OLEOBJECT                   164
 #define IDS_THEFILE                     165
 #define IDS_COULDNOTOPEN                166
+#define IDS_REMAINING                   167
 #define IDS_ODCFILTER                   179
 #define IDB_ARROWHEADS                  202
 #define IDI_FOLDER                      208
@@ -278,8 +279,8 @@
 #define IDS_PROP_TITLEBAR               462
 #define IDS_EVENT_FORM_ONCANCEL         463
 #define IDS_PROP_TOOLTIP_BALLOON        464
-#define IDS_EVENT_ENTERINGNODOCSTATE    465
 #define IDS_EVENT_FORM_ENTERINGNODOCSTATE 465
+#define IDS_PROP_USEVISUALSTYLE         466
 #define IDI_LABEL                       10000
 #define IDS_THE                         10001
 #define IDS_RESETPROP                   10002

@@ -1,8 +1,8 @@
-// RadioButtonCtrl.cpp : implementation file
+// TextButtonCtrl.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "RadioButtonCtrl.h"
+#include "TextButtonCtrl.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "ControlPane.h"
@@ -10,20 +10,20 @@
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CRadioButtonCtrl
+// CTextButtonCtrl
 
-CRadioButtonCtrl::CRadioButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
+CTextButtonCtrl::CTextButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
 }
 
-CRadioButtonCtrl::~CRadioButtonCtrl()
+CTextButtonCtrl::~CTextButtonCtrl()
 {
 }
 
-bool CRadioButtonCtrl::Create( CWnd* pParentWnd, UINT nID ) 
+bool CTextButtonCtrl::Create( CWnd* pParentWnd, UINT nID ) 
 {
 	bool bSuccess = (__super::Create( NULL, GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
 
@@ -33,15 +33,15 @@ bool CRadioButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-DWORD CRadioButtonCtrl::GetWndStyle() const
+DWORD CTextButtonCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 
-	dwStyle |= (WS_CLIPSIBLINGS | BS_AUTORADIOBUTTON);
+	dwStyle |= (WS_CLIPSIBLINGS | BS_PUSHBUTTON | BS_MULTILINE);
 	return dwStyle;
 }
 
-bool CRadioButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CTextButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
 		return false;
@@ -53,48 +53,29 @@ bool CRadioButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 			SetWindowText( pProp->GetStringValue() );
 		}
 		break;
-	case Prop::Value:
-		{
-			SetCheck( pProp->GetBooleanValue()? BST_CHECKED : BST_UNCHECKED );
-		}
-		break;
 	}
 	return !bFailed;
 }
 
 
-BEGIN_MESSAGE_MAP(CRadioButtonCtrl, CButton)
-	ON_WM_SETFOCUS()
-	ON_WM_KILLFOCUS()
+BEGIN_MESSAGE_MAP(CTextButtonCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
-	ON_NOTIFY_REFLECT (NM_CUSTOMDRAW, &CRadioButtonCtrl::OnNotifyCustomDraw)
+	ON_NOTIFY_REFLECT (NM_CUSTOMDRAW, &CTextButtonCtrl::OnNotifyCustomDraw)
+	ON_WM_KILLFOCUS()
+	ON_WM_NCPAINT()
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CRadioButtonCtrl message handlers
+// CTextButtonCtrl message handlers
 
-BOOL CRadioButtonCtrl::PreTranslateMessage(MSG* pMsg) 
+BOOL CTextButtonCtrl::PreTranslateMessage(MSG* pMsg) 
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
-	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
-		pMsg->wParam = VK_TAB;		
 	return __super::PreTranslateMessage(pMsg);
 }
 
-void CRadioButtonCtrl::OnSetFocus(CWnd* pOldWnd) 
-{
-	__super::OnSetFocus(pOldWnd);
-	mpTemplate->SetBooleanProperty( Prop::Value, (GetCheck() != BST_UNCHECKED) );
-}
-
-void CRadioButtonCtrl::OnKillFocus(CWnd* pNewWnd) 
-{
-	__super::OnKillFocus(pNewWnd);
-	mpTemplate->SetBooleanProperty( Prop::Value, (GetCheck() != BST_UNCHECKED) );
-}
-
-HBRUSH CRadioButtonCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
+HBRUSH CTextButtonCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
 	if( !IsWindowEnabled() )
 		return NULL;
@@ -103,13 +84,13 @@ HBRUSH CRadioButtonCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 	return mAcadColorService.GetBackgroundBrush();	
 }
 
-void CRadioButtonCtrl::PostNcDestroy() 
+void CTextButtonCtrl::PostNcDestroy() 
 {
 	__super::PostNcDestroy();
 	delete this;
 }
 
-void CRadioButtonCtrl::OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result )
+void CTextButtonCtrl::OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result )
 {
 	LPNMCUSTOMDRAW pCustomDraw = (LPNMCUSTOMDRAW)pNotifyStruct;
 	ASSERT (pCustomDraw->hdr.hwndFrom == m_hWnd);
@@ -121,4 +102,18 @@ void CRadioButtonCtrl::OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* resu
 		::SetBkColor( pCustomDraw->hdc, mAcadColorService.GetBackgroundColor() );
 	}
 	*result = CDRF_DODEFAULT;
+}
+
+void CTextButtonCtrl::OnKillFocus(CWnd* pNewWnd) 
+{
+	__super::OnKillFocus(pNewWnd);
+	ModifyStyle( BS_DEFPUSHBUTTON, BS_PUSHBUTTON, SWP_FRAMECHANGED );
+}
+
+void CTextButtonCtrl::OnNcPaint() 
+{
+	if( GetFocus() != this )
+		ModifyStyle( BS_DEFPUSHBUTTON, BS_PUSHBUTTON, SWP_FRAMECHANGED );
+	else
+		ModifyStyle( BS_PUSHBUTTON, BS_DEFPUSHBUTTON, SWP_FRAMECHANGED );
 }

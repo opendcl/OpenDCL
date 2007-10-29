@@ -23,17 +23,17 @@
 #include "ArxGridCtrl.h"
 #include "ArxListBoxCtrl.h"
 #include "ArxOptionListCtrl.h"
+#include "ArxProgressBarCtrl.h"
 #include "ArxRadioButtonCtrl.h"
+#include "ArxTextButtonCtrl.h"
 
 #include "DwgPreviewCtrl.h"
 #include "GsPreviewCtrl.h"
 #include "RoundSliderCtrl.h"
 #include "StaticLink.h"
-#include "VdclProgressCtrl.h"
 #include "OdclMonth.h"
 #include "VdclSliderCtrl.h"
 #include "PictureBox.h"
-#include "VdclTextButton.h"
 #include "VdclTree.h"
 
 
@@ -1536,7 +1536,8 @@ int ShowToolTip()
 	CPoint pt(-1,-1);
 	TDclControlPtr pArxObject = GetLispInput(sShowToolTip, pt);
 
-	CWnd *pControl  = pArxObject->GetWindow();
+	CDialogControl* pDlgControl = pArxObject->GetControlInstance();
+	CWnd* pControl = pDlgControl->GetControlWnd();
 
 	CRect rc;
 	pControl->GetWindowRect(rc);
@@ -1563,9 +1564,8 @@ int ShowToolTip()
 		}
 	case CtlSlideView:
 		{
-		CDialogControl *pCtrl = (CDialogControl*)pControl;
-		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
+		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlRoundSlider:
@@ -1584,9 +1584,8 @@ int ShowToolTip()
 		}
 	case CtlProgress:
 		{
-		VdclProgressCtrl *pCtrl = (VdclProgressCtrl*)pControl;
-		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
+		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlMonth:
@@ -1612,44 +1611,38 @@ int ShowToolTip()
 		}
 	case CtlListBox:
 		{
-		CDialogControl *pCtrl = (CDialogControl*)pControl;
-		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
+		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlOptionButton:
 		{
-		CDialogControl *pCtrl = (CDialogControl*)pControl;
-		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
+		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlOptionList:
 		{
-		CDialogControl *pCtrl = (CDialogControl*)pControl;
-		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
+		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlCheckBox:
 		{
-		CDialogControl *pCtrl = (CDialogControl*)pControl;
-		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
+		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlTextBox:
 		{
-		CDialogControl *pCtrl = (CDialogControl*)pControl;
-		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
+		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlStdButton:
 		{
-		VdclTextButton *pCtrl = (VdclTextButton*)pControl;
-		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
+		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlTree:
@@ -1662,23 +1655,20 @@ int ShowToolTip()
 
 	case CtlGraphicButton:
 		{
-		CDialogControl *pCtrl = (CDialogControl*)pControl;
-		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
+		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlActiveX:
 		{
-		CDialogControl *pCtrl = (CDialogControl*)pControl;
-		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
+		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlDwgList:
 		{
-		CDialogControl *pCtrl = (CDialogControl*)pControl;
-		if( pCtrl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pCtrl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
+		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
+			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	}
@@ -1687,14 +1677,11 @@ int ShowToolTip()
 }
 
 
-
-const char sProgressBarSetPos[] = "ProgressBar_SetPos";
-
 int ProgressBar_SetPos()
 {
 	int nPos;
 
-	CWnd *pControl = GetArgsControlInt(CtlTextBox, sProgressBarSetPos, nPos);
+	CWnd *pControl = GetArgsControlInt(CtlTextBox, _T("ProgressBar_SetPos"), nPos);
 
 	if (pControl == NULL)
 	{

@@ -152,9 +152,7 @@ void VdclStatic::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	InvokeMethod( m_ArxControl->GetStringProperty(Prop::EventClicked), IsAsyncEvents());
 	if (m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) && nFlags == MK_LBUTTON)
-	{
 		BeginDragnDrop(m_ArxControl, point, IsAsyncEvents());
-	}
 	CStatic::OnLButtonDown(nFlags, point);
 }
 
@@ -244,5 +242,9 @@ void VdclStatic::OnSize(UINT nType, int cx, int cy)
 
 __LRESULT VdclStatic::OnNcHitTest(CPoint point)
 {
-	return HTCLIENT;
+	if( !m_ArxControl->GetStringProperty(Prop::EventMouseMove).IsEmpty() ||
+			!m_ArxControl->GetStringProperty(Prop::EventClicked).IsEmpty() ||
+			m_ArxControl->GetBooleanProperty(Prop::DragnDropAllowBegin) )
+		return HTCLIENT;
+	return __super::OnNcHitTest( point );
 }

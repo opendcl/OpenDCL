@@ -24,6 +24,7 @@
 			UseOfATL="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
+			ExcludeBuckets="8;14"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -79,6 +80,7 @@
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
+				GenerateManifest="false"
 				IgnoreDefaultLibraryNames=""
 				DelayLoadDLLs="urlmon.dll;avifil32.dll"
 				GenerateDebugInformation="true"
@@ -90,6 +92,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				EmbedManifest="false"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -120,6 +123,7 @@
 			UseOfATL="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
+			ExcludeBuckets="8;14"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -174,6 +178,7 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
+				GenerateManifest="false"
 				DelayLoadDLLs="urlmon.dll;avifil32.dll"
 				SubSystem="2"
 				TargetMachine="1"
@@ -1815,6 +1820,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Common\Controls\ProgressBarCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\ProgressBarCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Controls\RadioButtonCtrl.cpp"
 					>
 				</File>
@@ -1844,6 +1857,14 @@
 				</File>
 				<File
 					RelativePath="..\Common\Controls\TextBoxEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\TextButtonCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\TextButtonCtrl.h"
 					>
 				</File>
 				<File
@@ -1935,6 +1956,10 @@
 		</Filter>
 		<File
 			RelativePath=".\Editor.reg"
+			>
+		</File>
+		<File
+			RelativePath=".\OpenDCL Studio.exe.manifest"
 			>
 		</File>
 	</Files>

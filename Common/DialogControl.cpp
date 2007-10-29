@@ -130,6 +130,7 @@ bool CDialogControl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::TitleBarText: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
 	case Prop::VScrollBar: if( !OnApplyVScrollBar( pProp ) ) bSuccess = false; break;
 	case Prop::HScrollBar: if( !OnApplyHScrollBar( pProp ) ) bSuccess = false; break;
+	case Prop::UseVisualStyle: if( !OnApplyUseVisualStyle( pProp ) ) bSuccess = false; break;
 	case Prop::ToolTipTitle: if( !OnApplyToolTip( pProp ) ) bSuccess = false; break;
 	case Prop::ToolTipBalloon: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
 	case Prop::ToolTipLine: if( !IsEnumeratingProperties() && !OnApplyToolTip( pProp ) ) bSuccess = false; break;
@@ -216,6 +217,19 @@ bool CDialogControl::OnApplyHScrollBar( TPropertyPtr pProp )
 		mpControl->ModifyStyle( 0, WS_HSCROLL, SWP_FRAMECHANGED );
 	else
 		mpControl->ModifyStyle( WS_HSCROLL, 0, SWP_FRAMECHANGED );
+	return true;
+}
+
+bool CDialogControl::OnApplyUseVisualStyle( TPropertyPtr pProp )
+{
+	CThemeHelperST* pThemeHelper = mpControlPane->GetThemeHelper();
+	if( !pThemeHelper || !pThemeHelper->IsThemeActive() )
+		return false; //visual styles not supported
+	HWND hwnd = mpControl->m_hWnd;
+	if( pProp->GetBooleanValue() )
+		pThemeHelper->SetWindowTheme( hwnd, NULL, NULL );
+	else
+		pThemeHelper->SetWindowTheme( hwnd, L"", L"" );
 	return true;
 }
 

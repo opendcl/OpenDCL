@@ -29,6 +29,7 @@ bool CArxColorComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	if( bSuccess )
 	{
+		SetBlockColorIndex( 0 );
 		SetUseWindows( TRUE );
 		SetUseOther( TRUE );
 		AddItems();
@@ -89,8 +90,8 @@ BEGIN_MESSAGE_MAP(CArxColorComboBoxCtrl, CAcUiColorComboBox)
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
 	ON_WM_MOUSEMOVE()
-	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
+	ON_CONTROL_REFLECT(CBN_SELCHANGE, &CArxColorComboBoxCtrl::OnSelchange)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CArxColorComboBoxCtrl::OnDropdown)
 END_MESSAGE_MAP()
 
 

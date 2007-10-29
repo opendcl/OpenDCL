@@ -29,9 +29,11 @@
 #include "ArxPlotStyleNameComboBoxCtrl.h"
 #include "ArxPlotStyleTableComboBoxCtrl.h"
 #include "ArxPrinterComboBoxCtrl.h"
+#include "ArxProgressBarCtrl.h"
 #include "ArxRadioButtonCtrl.h"
 #include "ArxTabStripCtrl.h"
 #include "ArxTextBoxCtrl.h"
+#include "ArxTextButtonCtrl.h"
 
 #include "AngleFilter.h"
 #include "CurrencyFilter.h"
@@ -52,7 +54,6 @@
 #include "DwgPreviewCtrl.h"
 #include "OdclMonth.h"
 #include "PictureBox.h"
-#include "ProgressTimeToComplete.h"
 #include "RoundSliderCtrl.h"
 #include "VdclSliderCtrl.h"
 #include "VdclScrollBar.h"
@@ -61,7 +62,6 @@
 #include "StaticLink.h"
 #include "HtmlCtrl.h"
 #include "VdclTree.h"
-#include "VdclTextButton.h"
 #include "TabPage.h"
 
 
@@ -217,14 +217,8 @@ TDialogControlPtr CArxDialogControl::Create( TDclControlPtr pTemplate, CControlP
 			// ZOrderFront(pControl);
 			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
-	case CtlProgress:
-		{
-			TProgressTimeToComplete *pControl = new TProgressTimeToComplete;
-			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}			
+
+	case CtlProgress: return *new CArxProgressBarCtrl( pTemplate, pPane, nID );
 		
 	case CtlRoundSlider:
 		{
@@ -278,16 +272,8 @@ TDialogControlPtr CArxDialogControl::Create( TDclControlPtr pTemplate, CControlP
 			// ZOrderFront(pControl);
 			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
 		}
-	case CtlStdButton:
-		{
-			VdclTextButton *pControl = new VdclTextButton;
-			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
-			// set the properties of the control
-			UpdateChildControl(pControl, pTemplate, pPane, nID);
-			// ZOrderFront(pControl);
-			return new CArxAutoDialogControl( pTemplate, pPane, pControl );
-		}
 
+	case CtlStdButton: return *new CArxTextButtonCtrl( pTemplate, pPane, nID );
 	case CtlTextBox: return CreateEditControl(pTemplate, pPane, nID);
 	case CtlTabStrip: return *new CArxTabStripCtrl( pTemplate, pPane, nID );
 
@@ -395,7 +381,9 @@ void CArxDialogControl::UpdateProperty(TDclControlPtr pControl, CControlPane* pP
 	case CtlListView:
 	case CtlOptionButton:
 	case CtlOptionList:
+	case CtlProgress:
 	case CtlSlideView:
+	case CtlStdButton:
 	case CtlTabStrip:
 	case CtlTextBox:
 		CDialogControl* pDlgControl = pControl->GetControlInstance();
@@ -458,11 +446,6 @@ void CArxDialogControl::UpdateFont(TDclControlPtr pArxObject, CWnd *pControl, CF
 	case CtlLabel:
 		{
 		((VdclStatic*)pControl)->SetFont(pFont);
-		break;
-		}
-	case CtlStdButton:
-		{
-		((VdclTextButton*)pControl)->SetFont(pFont);
 		break;
 		}
 	case CtlFrame:		
@@ -622,9 +605,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, TDclControlPtr pCon
 		{
 			switch (pControl->GetType())
 			{
-			case CtlStdButton:
-				((VdclTextButton*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
-				break;
 			case CtlBlockView:
 			case CtlHatch:
 				((CGsPreviewCtrl*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
@@ -724,11 +704,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, TDclControlPtr pCon
 		{
 			switch (pControl->GetType())
 			{
-			case CtlProgress:
-				((CProgressCtrl*)pControlWnd)->SetRange(
-					(int)pControl->GetLongProperty(Prop::MinValue),
-					(int)pControl->GetLongProperty(Prop::MaxValue));
-				break;				
 			case CtlScrollBar:
 				((CScrollBar*)pControlWnd)->SetScrollRange(
 					(int)pControl->GetLongProperty(Prop::MinValue),
@@ -888,10 +863,6 @@ void CArxDialogControl::UpdatePropertyInt(CWnd* pControlWnd, TDclControlPtr pCon
 					pControlWnd->RedrawWindow();
 					break;
 				}
-			case CtlProgress:
-				((CProgressCtrl*)pControlWnd)->SetPos(pControl->GetLongProperty(Prop::Value));
-				pControlWnd->RedrawWindow();
-				break;
 			case CtlSpinButton:
 				((VdclSpinButton*)pControlWnd)->m_Pos = pControl->GetLongProperty(Prop::Value);
 				((VdclSpinButton*)pControlWnd)->SetPos(((VdclSpinButton*)pControlWnd)->m_Pos);				
@@ -926,11 +897,6 @@ void CArxDialogControl::UpdateText(TDclControlPtr pTemplate, CWnd *pControl, CSt
 		case CtlLabel:
 			{
 			((VdclStatic*)pControl)->SetWindowText(sText);
-			break;
-			}
-		case CtlStdButton:
-			{
-			((VdclTextButton*)pControl)->SetWindowText(sText);
 			break;
 			}
 		case CtlFrame:		
@@ -981,12 +947,6 @@ void CArxDialogControl::UpdateToolTip(TDclControlPtr pArxObject, CWnd *pControl)
 		//((CStaticLink*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
-	case CtlProgress:
-		{
-		//SetToolTipEx(pControl, ((TProgressTimeToComplete*)pControl)->m_ToolTip, pArxObject);
-		//((VdclProgressCtrl*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
-		break;
-		}
 	case CtlMonth:
 		{
 		SetToolTipEx(pControl, ((OdclMonth*)pControl)->m_ToolTip, pArxObject);
@@ -1003,12 +963,6 @@ void CArxDialogControl::UpdateToolTip(TDclControlPtr pArxObject, CWnd *pControl)
 		{
 		SetToolTipEx(pControl, ((CPictureBox*)pControl)->m_ToolTip, pArxObject);
 		//((CPictureBox*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
-		break;
-		}
-	case CtlStdButton:
-		{
-		SetToolTipEx(pControl, ((VdclTextButton*)pControl)->m_ToolTip, pArxObject);
-		//((VdclTextButton*)pControl)->SetTooltipText(&sToolTipTitle, TRUE);
 		break;
 		}
 	case CtlTree:

@@ -695,6 +695,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Controls\ArxProgressBarCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxProgressBarCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxRadioButtonCtrl.cpp"
 				>
 			</File>
@@ -716,6 +724,14 @@
 			</File>
 			<File
 				RelativePath="..\Controls\ArxTextBoxCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxTextButtonCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxTextButtonCtrl.h"
 				>
 			</File>
 			<File
@@ -803,14 +819,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Controls\ProgressTimeToComplete.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\ProgressTimeToComplete.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Controls\RoundSliderCtrl.cpp"
 				>
 			</File>
@@ -875,14 +883,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Controls\VdclProgressCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclProgressCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Controls\VdclScrollBar.cpp"
 				>
 			</File>
@@ -912,14 +912,6 @@
 			</File>
 			<File
 				RelativePath="..\Controls\VdclStatic.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclTextButton.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclTextButton.h"
 				>
 			</File>
 			<File
@@ -1824,6 +1816,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\ProgressBarCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ProgressBarCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\RadioButtonCtrl.cpp"
 					>
 				</File>
@@ -1853,6 +1853,14 @@
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\TextBoxEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\TextButtonCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\TextButtonCtrl.h"
 					>
 				</File>
 				<File

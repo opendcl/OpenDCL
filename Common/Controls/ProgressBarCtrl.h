@@ -1,4 +1,4 @@
-// RadioButtonCtrl.h : header file
+// ProgressBarCtrl.h : header file
 //
 
 #pragma once
@@ -10,16 +10,21 @@ class CPropertyObject;
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CRadioButtonCtrl window
+// CProgressBarCtrl window
 
-class CRadioButtonCtrl : public CButton, public CDialogControl
+class CProgressBarCtrl : public CProgressCtrl, public CDialogControl
 {
 	CAcadColorService mAcadColorService;
+  clock_t mStartTime;
+	bool mbPercentage;
+	bool mbTime;
+  CFont mfontHoriz;
+  CFont mfontVert;
 
 // Construction
 public:
-	CRadioButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
-	virtual ~CRadioButtonCtrl();
+	CProgressBarCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	virtual ~CProgressBarCtrl();
 
 // DialogControl Interface
 public:
@@ -30,14 +35,18 @@ public:
 	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
 
 protected:
+  virtual CString GetRemainingText(double lfPercent, double lfSecsRemaining);
+  virtual void ResetStartTime(void);
+
+protected:
 	DECLARE_MESSAGE_MAP()
 
 // Generated message map functions
 protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual afx_msg void PostNcDestroy();
-	afx_msg void OnSetFocus(CWnd* pOldWnd);
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg void OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result );
+	afx_msg void OnPaint();
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

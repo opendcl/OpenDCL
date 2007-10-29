@@ -65,6 +65,7 @@ bool CCheckBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 
 BEGIN_MESSAGE_MAP(CCheckBoxCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_NOTIFY_REFLECT (NM_CUSTOMDRAW, &CCheckBoxCtrl::OnNotifyCustomDraw)
 END_MESSAGE_MAP()
 
 
@@ -92,4 +93,18 @@ void CCheckBoxCtrl::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	delete this;
+}
+
+void CCheckBoxCtrl::OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result )
+{
+	LPNMCUSTOMDRAW pCustomDraw = (LPNMCUSTOMDRAW)pNotifyStruct;
+	ASSERT (pCustomDraw->hdr.hwndFrom == m_hWnd);
+	ASSERT (pCustomDraw->hdr.code = NM_CUSTOMDRAW);
+
+	if( pCustomDraw->dwDrawStage == CDDS_PREPAINT )
+	{
+		::SetTextColor( pCustomDraw->hdc, mAcadColorService.GetForegroundColor() );
+		::SetBkColor( pCustomDraw->hdc, mAcadColorService.GetBackgroundColor() );
+	}
+	*result = CDRF_DODEFAULT;
 }

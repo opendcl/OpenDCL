@@ -50,6 +50,7 @@ public:
 	CThemeHelperST();
 	virtual ~CThemeHelperST();
 
+	HRESULT SetWindowTheme(HWND hwnd, LPCWSTR pszSubAppName, LPCWSTR pszSubIdList);
 	HTHEME OpenThemeData(HWND hwnd, LPCWSTR pszClassList);
 	HRESULT CloseThemeData(HTHEME hTheme);
 	HRESULT DrawThemeBackground(HTHEME hTheme, HWND hWnd, HDC hdc, int iPartId, int iStateId, const RECT* pRect, const RECT* pClipRect);
@@ -62,6 +63,9 @@ public:
 
 private:
 	LPVOID GetProc(LPCSTR szProc, LPVOID pfnFail);
+
+	typedef HRESULT(__stdcall *PFNSETWINDOWTHEME)(HWND hwnd, LPCWSTR pszSubAppName, LPCWSTR pszSubIdList);
+	static HRESULT __stdcall SetWindowThemeFail(HWND, LPCWSTR, LPCWSTR)	{return E_FAIL;}
 
 	typedef HTHEME(__stdcall *PFNOPENTHEMEDATA)(HWND hwnd, LPCWSTR pszClassList);
 	static HTHEME __stdcall OpenThemeDataFail(HWND, LPCWSTR)	{return NULL;}

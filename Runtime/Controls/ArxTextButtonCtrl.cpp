@@ -1,32 +1,32 @@
-// ArxGraphicButtonCtrl.cpp : implementation file
+// ArxTextButtonCtrl.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "ArxGraphicButtonCtrl.h"
+#include "ArxTextButtonCtrl.h"
 #include "DclControlObject.h"
 #include "InvokeMethod.h"
 #include "ControlPane.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CArxGraphicButtonCtrl
+// CArxTextButtonCtrl
 
-CArxGraphicButtonCtrl::CArxGraphicButtonCtrl( TDclControlPtr pTemplate,
-																							CControlPane* pPane,
-																							UINT nID,
-																							bool bCreate /*= true*/ )
-: CGraphicButtonCtrl( pTemplate, pPane, nID, false )
+CArxTextButtonCtrl::CArxTextButtonCtrl( TDclControlPtr pTemplate,
+																				CControlPane* pPane,
+																				UINT nID,
+																				bool bCreate /*= true*/ )
+: CTextButtonCtrl( pTemplate, pPane, nID, false )
 , mArxServices( pTemplate )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
 }
 
-CArxGraphicButtonCtrl::~CArxGraphicButtonCtrl()
+CArxTextButtonCtrl::~CArxTextButtonCtrl()
 {
 }
 
-bool CArxGraphicButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
+bool CArxTextButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
@@ -34,7 +34,7 @@ bool CArxGraphicButtonCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-bool CArxGraphicButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
+bool CArxTextButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
 		return false;
@@ -50,7 +50,7 @@ bool CArxGraphicButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
-void CArxGraphicButtonCtrl::SetDragnDrop(BOOL bRegister)
+void CArxTextButtonCtrl::SetDragnDrop(BOOL bRegister)
 {
 	if( bRegister )
 	{
@@ -62,7 +62,7 @@ void CArxGraphicButtonCtrl::SetDragnDrop(BOOL bRegister)
 		mDropTarget.Revoke();
 }
 
-BEGIN_MESSAGE_MAP(CArxGraphicButtonCtrl, CGraphicButtonCtrl)
+BEGIN_MESSAGE_MAP(CArxTextButtonCtrl, CTextButtonCtrl)
 	ON_WM_MOUSEMOVE()
 	ON_CONTROL_REFLECT(BN_CLICKED, OnClicked)
 	ON_CONTROL_REFLECT(BN_DOUBLECLICKED, OnDoubleclicked)
@@ -73,7 +73,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // VdclTextButton message handlers
 
-void CArxGraphicButtonCtrl::OnMouseMove(UINT nFlags, CPoint point)
+void CArxTextButtonCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 	InvokeMethodIntIntInt( mpTemplate->GetStringProperty( Prop::EventMouseMove ),
 												 nFlags,
@@ -83,12 +83,12 @@ void CArxGraphicButtonCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	__super::OnMouseMove( nFlags, point );
 }
 
-void CArxGraphicButtonCtrl::OnDoubleclicked() 
+void CArxTextButtonCtrl::OnDoubleclicked() 
 {
 	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventDblClicked ), false );
 }
 
-void CArxGraphicButtonCtrl::OnClicked() 
+void CArxTextButtonCtrl::OnClicked() 
 {	
 	if( mpTemplate->m_bEventsAsAction )
 	{
@@ -111,7 +111,7 @@ void CArxGraphicButtonCtrl::OnClicked()
 		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventClicked ), IsAsyncEvents() );
 }
 
-void CArxGraphicButtonCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
+void CArxTextButtonCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	__super::OnLButtonDown( nFlags, point );
 

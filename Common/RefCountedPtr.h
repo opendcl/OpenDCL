@@ -171,6 +171,13 @@ public:
 		}
 
 	void Lock() { if( pW ) pW->Lock(); }
+	bool isLocked()
+		{
+			if( !pW )
+				return false;
+			pW->AddRef();
+			return (pW->Release() == ~0);
+		}
 };
 
 template< typename T, typename R = RefCounter<T*> >

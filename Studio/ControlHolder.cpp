@@ -19,6 +19,8 @@
 #include "ComboBoxCtrl.h"
 #include "TextBoxCtrl.h"
 #include "FolderComboCtrl.h"
+#include "TextButtonCtrl.h"
+#include "ProgressBarCtrl.h"
 #include "StaticLink.h"
 #include "3DRect.h"
 #include "Splitter.h"
@@ -377,9 +379,9 @@ bool CControlHolder::CreateNewDialogControl()
 {
 	if( mpDlgControl )
 	{
-		CWnd* pOldCtrl = mpDlgControl->GetControlWnd();
+		CWnd* pOldCtrl = (mpDlgControl.isLocked()? mpDlgControl->GetControlWnd() : NULL);
 		mpDlgControl = NULL; //this should decrement the previous control's ref count to zero and destroy it
-		if( pOldCtrl && pOldCtrl->m_hWnd )
+		if( pOldCtrl && ::IsWindow( pOldCtrl->m_hWnd ) )
 			pOldCtrl->DestroyWindow();
 	}
 	// create the appropriate control to display
@@ -398,15 +400,7 @@ bool CControlHolder::CreateNewDialogControl()
 			pNewControl = pControl;
 			break;
 		}
-	case CtlStdButton:
-		{
-			CButton *pControl = new CButton;
-			pControl->Create( mpTemplate->GetStringProperty(Prop::Caption),
-												WS_CHILD|WS_VISIBLE|WS_CLIPCHILDREN|WS_CLIPSIBLINGS|BS_MULTILINE,
-												rc, this, GetId());
-			pNewControl = pControl;
-			break;
-		}
+	case CtlStdButton : return ((mpDlgControl = new CTextButtonCtrl( mpTemplate, this, GetId() )) != NULL);
 	case CtlGraphicButton : return ((mpDlgControl = new CGraphicButtonCtrl( mpTemplate, this, GetId() )) != NULL);
 	case CtlFrame:
 		{
@@ -496,18 +490,7 @@ bool CControlHolder::CreateNewDialogControl()
 			pNewControl = pControl;
 			break;
 		}
-	case CtlProgress:
-		{
-			DWORD dwStyle = WS_CHILD|WS_VISIBLE |WS_CLIPSIBLINGS;
-			if (mpTemplate->GetBooleanProperty(Prop::SmoothProgress) == TRUE)
-				dwStyle = dwStyle | PBS_SMOOTH;
-			if (mpTemplate->GetLongProperty(Prop::Orientation) == 1)
-				dwStyle = dwStyle | PBS_VERTICAL ;
-			CProgressCtrl *pControl = new CProgressCtrl;
-			pControl->Create(dwStyle, rc, this, GetId());		
-			pNewControl = pControl;
-			break;
-		}
+	case CtlProgress : return ((mpDlgControl = new CProgressBarCtrl( mpTemplate, this, GetId() )) != NULL);
 	case CtlSpinButton:
 		{
 			DWORD dwStyle = WS_CHILD | WS_VISIBLE | UDS_ARROWKEYS |WS_CLIPSIBLINGS ;
@@ -762,7 +745,9 @@ void CControlHolder::UpdateProperty(Prop::Id nID)
 	//case CtlListView:
 	case CtlOptionList:
 	case CtlOptionButton:
+	case CtlProgress:
 	//case CtlSlideView:
+	case CtlStdButton:
 	case CtlTextBox:
 	case CtlTabStrip:
 		mpDlgControl->OnApplyProperty( pProp );
@@ -984,11 +969,6 @@ void CControlHolder::UpdateProperty(Prop::Id nID)
 		{
 			switch (mpTemplate->GetType())
 			{
-			case CtlProgress:
-				((CProgressCtrl*)pControl)->SetRange(
-					(short)mpTemplate->GetLongProperty(Prop::MinValue),
-					(short)mpTemplate->GetLongProperty(Prop::MaxValue));
-				break;				
 			case CtlScrollBar:
 				((CScrollBar*)pControl)->SetScrollRange(
 					mpTemplate->GetLongProperty(Prop::MinValue),
@@ -1105,10 +1085,6 @@ void CControlHolder::UpdateProperty(Prop::Id nID)
 			case CtlScrollBar:
 				((CScrollBar *)pControl)->SetScrollPos(mpTemplate->GetLongProperty(Prop::Value), TRUE);
 				break;
-			case CtlProgress:
-				((CProgressCtrl*)pControl)->SetPos(mpTemplate->GetLongProperty(Prop::Value));
-				break;
-			
 			}
 			break;
 		}

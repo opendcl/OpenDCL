@@ -1401,6 +1401,11 @@ CControlHolder* COpenDCLView::AddCWndControl( TDclControlPtr pDclControl, CRect 
 			// lets get the correct name set here.
 			pDclControl->SetStringProperty(Prop::Name, FindNextControlName(pDclControl->GetActiveXTypeName()));		
 	}
+	else if (pDclControl->GetType() == CtlProgress)
+	{
+		pDclControl->SetLongProperty( Prop::Value, 30 ); //give it a value so it looks nicer in the editor
+		pControl->UpdateProperty( Prop::Value );
+	}
 	
 	if (IsWindow(pControl->m_hWnd)) // set the new control to the top of the Z-order
 		pControl->SetWindowPos(&CWnd::wndTop, 0, 0, rcPos.Width(), rcPos.Height(), SWP_NOMOVE);
@@ -1567,7 +1572,6 @@ void COpenDCLView::RefreshChildControl(TDclControlPtr pArxObject, Prop::Id Chang
 	switch(ChangedPropertyID)
 	{
 	case -1:
-	case Prop::SmoothProgress:
 	case Prop::Sorted:
 	case Prop::ImageList:
 	case Prop::MultiColumn:

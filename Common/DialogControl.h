@@ -166,6 +166,7 @@ public:
 	virtual bool OnApplyCaption( TPropertyPtr pProp ); //Prop::Caption, Prop::TitleBarText
 	virtual bool OnApplyVScrollBar( TPropertyPtr pProp ); //Prop::VScrollBar
 	virtual bool OnApplyHScrollBar( TPropertyPtr pProp ); //Prop::HScrollBar
+	virtual bool OnApplyUseVisualStyle( TPropertyPtr pProp ); //Prop::UseVisualStyle
 	virtual bool OnApplyToolTip( TPropertyPtr pProp ); //Prop::ToolTipTitle
 	virtual bool OnApplyFont( TPropertyPtr pProp ); //Prop::FontName
 };

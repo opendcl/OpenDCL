@@ -31,6 +31,12 @@ LPVOID CThemeHelperST::GetProc(LPCSTR szProc, LPVOID pfnFail)
 	return lpRet;
 } // End of GetProc
 
+HRESULT CThemeHelperST::SetWindowTheme(HWND hwnd, LPCWSTR pszSubAppName, LPCWSTR pszSubIdList)
+{
+	PFNSETWINDOWTHEME pfnSetWindowTheme = (PFNSETWINDOWTHEME)GetProc("SetWindowTheme", (LPVOID)SetWindowThemeFail);
+	return (*pfnSetWindowTheme)(hwnd, pszSubAppName, pszSubIdList);
+} // End of SetWindowTheme
+
 HTHEME CThemeHelperST::OpenThemeData(HWND hwnd, LPCWSTR pszClassList)
 {
 	PFNOPENTHEMEDATA pfnOpenThemeData = (PFNOPENTHEMEDATA)GetProc("OpenThemeData", (LPVOID)OpenThemeDataFail);

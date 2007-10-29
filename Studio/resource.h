@@ -75,6 +75,7 @@
 #define IDD_PROJECTPASSWORD             109
 #define IDI_PASSWORD                    110
 #define IDB_FILEDLGCTRL                 112
+#define IDR_RT_MANIFEST1                113
 #define IDS_FILEDLG                     135
 #define IDS_COPYTOCLIPBOARD             137
 #define IDS_STRINGBOLD                  138
@@ -394,6 +395,7 @@
 #define IDS_ALTROWCOLORDESC11           2343
 #define IDS_PROP_TITLEBAR_DESC          2352
 #define IDS_PROP_TOOLTIPBALLOON_DESC    2354
+#define IDS_PROP_USEVISUALSTYLE_DESC    2356
 #define IDS_ORIENTATION_0               2601
 #define IDS_ORIENTATION_1               2602
 #define IDS_SPLITTERStyle_0             2603
@@ -689,7 +691,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        113
+#define _APS_NEXT_RESOURCE_VALUE        114
 #define _APS_NEXT_COMMAND_VALUE         40008
 #define _APS_NEXT_CONTROL_VALUE         1007
 #define _APS_NEXT_SYMED_VALUE           103

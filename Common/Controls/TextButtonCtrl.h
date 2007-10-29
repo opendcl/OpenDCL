@@ -1,4 +1,4 @@
-// RadioButtonCtrl.h : header file
+// TextButtonCtrl.h : header file
 //
 
 #pragma once
@@ -10,16 +10,16 @@ class CPropertyObject;
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CRadioButtonCtrl window
+// CTextButtonCtrl window
 
-class CRadioButtonCtrl : public CButton, public CDialogControl
+class CTextButtonCtrl : public CButton, public CDialogControl
 {
 	CAcadColorService mAcadColorService;
 
 // Construction
 public:
-	CRadioButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
-	virtual ~CRadioButtonCtrl();
+	CTextButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	virtual ~CTextButtonCtrl();
 
 // DialogControl Interface
 public:
@@ -36,8 +36,8 @@ protected:
 protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual afx_msg void PostNcDestroy();
-	afx_msg void OnSetFocus(CWnd* pOldWnd);
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg void OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result );
+	afx_msg void OnKillFocus(CWnd* pNewWnd);
+	afx_msg void OnNcPaint();
 };

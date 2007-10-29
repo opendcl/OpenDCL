@@ -113,6 +113,7 @@ BEGIN
     IDS_OLEOBJECT           "OleObject"
     IDS_THEFILE             "The file "
     IDS_COULDNOTOPEN        " could not be opened."
+    IDS_REMAINING           " remaining"
 END
 
 STRINGTABLE 
@@ -511,6 +512,7 @@ STRINGTABLE
 BEGIN
     IDS_PROP_TOOLTIP_BALLOON "ToolTipBalloon"
     IDS_EVENT_FORM_ENTERINGNODOCSTATE "EnteringNoDocState"
+    IDS_PROP_USEVISUALSTYLE "UseVisualStyle"
 END
 
 #endif    // English (U.S.) resources

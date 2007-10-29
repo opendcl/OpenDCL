@@ -260,8 +260,9 @@ enum Id
 	FormEventOnCancel = 253,
 	ToolTipBalloon = 254,
 	DocEventEnteringNoDocState = 255,
+	UseVisualStyle = 256,
 	_MinId = 1,
-	_MaxId = 255
+	_MaxId = 256
 };
 
 }; //namespace Prop

@@ -27,11 +27,6 @@ public:
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
-public:
-virtual void    DrawItemImage (CDC& dc, CRect& r, int cargo) { __super::DrawItemImage( dc, r, cargo ); }
-virtual void    OnAddItems () { __super::OnAddItems(); }
-virtual BOOL    OnSelectOther (BOOL isOther2, int curSel, int& newSel) { return __super::OnSelectOther( isOther2, curSel, newSel ); }
-
 protected:
 	DECLARE_MESSAGE_MAP();
 
