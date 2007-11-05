@@ -22,10 +22,7 @@ public:
 public:
 	virtual bool PopulateList( CComboBox* pCombo )
 		{
-			CString sSelection;
-			pCombo->GetWindowText( sSelection );
-			if( pCombo->GetCount() > 0 )
-				pCombo->ResetContent();
+			assert( pCombo->GetCount() == 0 );
 
 			CWaitCursor WaitCursor;
 			CAutoDocWriteLock CurDocLock;
@@ -42,23 +39,14 @@ public:
 			if( !pPlotSettingsValidator ) 
 				return true;
 
-			int nCurSel = pCombo->GetCurSel();
-			if( nCurSel == 0 )
+			CString sPlotter;
+			if( mpPrinterCombo )
 			{
-				pPlotSettingsValidator->setPlotCfgName( pLayout.object(), _T("None"), _T("none_user_media") );
-				return true;
+				CDialogControl* pDclControl = mpPrinterCombo->GetControlInstance();
+				if( pDclControl )
+					pDclControl->GetControlWnd()->GetWindowText( sPlotter );
 			}
-			else
-			{
-				CString sPlotter;
-				if( mpPrinterCombo )
-				{
-					CDialogControl* pDclControl = mpPrinterCombo->GetControlInstance();
-					if( pDclControl )
-						pDclControl->GetControlWnd()->GetWindowText( sPlotter );
-				}
-				pPlotSettingsValidator->setPlotCfgName( pLayout.object(), sPlotter );
-			}
+			pPlotSettingsValidator->setPlotCfgName( pLayout.object(), sPlotter );
 			pPlotSettingsValidator->refreshLists( pLayout.object() );
 			AcArray< const TCHAR* > mediaList;
 			Acad::ErrorStatus es = pPlotSettingsValidator->canonicalMediaNameList( pLayout.object(), mediaList );
@@ -70,7 +58,6 @@ public:
 				pPlotSettingsValidator->getLocaleMediaName( pLayout.object(), idx, pszPaperSize );
 				pCombo->AddString( pszPaperSize );
 			}
-			pCombo->SetCurSel( pCombo->FindString( 0, sSelection ) );
 			return true;
 		}
 	void SetPrinterCombo( TDclControlPtr pCombo ) { mpPrinterCombo = pCombo; }

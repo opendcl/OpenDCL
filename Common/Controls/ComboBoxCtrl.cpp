@@ -33,11 +33,7 @@ bool CComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 		bSuccess = false;
 
 	if( bSuccess )
-	{
-		CComboHandler* pHandler = GetComboHandler();
-		if( pHandler )
-			bSuccess = pHandler->PopulateList( this );
-	}
+		ResetContent();  //populate list
 
 	return bSuccess;
 }
@@ -200,9 +196,19 @@ void CComboBoxCtrl::OnCloseUp()
 
 LRESULT CComboBoxCtrl::OnResetContent( WPARAM wParam, LPARAM lParam )
 {
+	CString sSelection;
+	GetWindowText( sSelection );
 	Default();
 	CComboHandler* pHandler = GetComboHandler();
 	if( pHandler )
+	{
 		pHandler->PopulateList( this );
+		if( !sSelection.IsEmpty() )
+		{
+			int idx = FindStringExact( -1, sSelection );
+			if( idx >= 0 )
+				SetCurSel( idx );
+		}
+	}
 	return (LRESULT)TRUE;
 }

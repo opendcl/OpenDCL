@@ -71,9 +71,7 @@ void CArxPrinterComboBoxCtrl::SetPaperSizeCombo( TDclControlPtr pPaperCombo )
 		if( pDclControl )
 		{
 			CArxPaperComboBoxCtrl* pComboCtrl = (CArxPaperComboBoxCtrl*)pDclControl->GetControlWnd();
-			CComboHandler* pComboHandler = pComboCtrl->GetComboHandler();
-			if( pComboHandler )
-				pComboHandler->PopulateList( pComboCtrl );
+			pComboCtrl->ResetContent();
 		}
 	}
 }
@@ -96,9 +94,7 @@ void CArxPrinterComboBoxCtrl::OnSelchange()
 		if( pDclControl )
 		{
 			CArxPaperComboBoxCtrl* pComboCtrl = (CArxPaperComboBoxCtrl*)pDclControl->GetControlWnd();
-			CComboHandler* pComboHandler = pComboCtrl->GetComboHandler();
-			if( pComboHandler )
-				pComboHandler->PopulateList( pComboCtrl );
+			pComboCtrl->ResetContent();
 		}
 	}
 }

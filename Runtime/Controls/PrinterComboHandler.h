@@ -59,11 +59,7 @@ public:
 		}
 	virtual bool PopulateList( CComboBox* pCombo )
 		{
-			CString sSelection;
-			pCombo->GetWindowText( sSelection );
-			int idxMatch = -1;
-			if( pCombo->GetCount() > 0 )
-				pCombo->ResetContent();
+			assert( pCombo->GetCount() == 0 );
 			mrImage.clear();
 
 			CWaitCursor WaitCursor;

@@ -19,11 +19,7 @@ public:
 public:
 	virtual bool PopulateList( CComboBox* pCombo )
 		{
-			CString sSelection;
-			pCombo->GetWindowText( sSelection );
-			int idxMatch = -1;
-			if( pCombo->GetCount() > 0 )
-				pCombo->ResetContent();
+			assert( pCombo->GetCount() == 0 );
 
 			CAutoDocReadLock CurDocLock;
 			AcDbDimStyleTable* pDimStyleTable;
@@ -49,16 +45,10 @@ public:
 				if( pDimStyleTableRecord->getName( pszName ) != Acad::eOk )
 					bSuccess = false;
 				else
-				{
-					int idx = pCombo->AddString( pszName );
-					if( idxMatch < 0 && sSelection.CompareNoCase( pszName ) == 0 )
-						idxMatch = idx;
-				}
+					pCombo->AddString( pszName );
 				pDimStyleTableRecord->close();
 			}
 			delete pIterator;
-			if( idxMatch >= 0 )
-				pCombo->SetCurSel( idxMatch );
 			return bSuccess;
 		}
 };

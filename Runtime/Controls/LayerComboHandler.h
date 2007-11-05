@@ -93,11 +93,7 @@ public:
 		}
 	virtual bool PopulateList( CComboBox* pCombo )
 		{
-			CString sSelection;
-			pCombo->GetWindowText( sSelection );
-			int idxMatch = -1;
-			if( pCombo->GetCount() > 0 )
-				pCombo->ResetContent();
+			assert( pCombo->GetCount() == 0 );
 			mrLayerProperties.clear();
 
 			CAutoDocReadLock CurDocLock;
@@ -131,14 +127,10 @@ public:
 																						pLayerTableRecord->color(),
 																						pLayerTableRecord->isFrozen(),
 																						pLayerTableRecord->isOff() ) );
-					if( idxMatch < 0 && sSelection.CompareNoCase( pszName ) == 0 )
-						idxMatch = idx;
 				}
 				pLayerTableRecord->close();
 			}
 			delete pIterator;
-			if( idxMatch >= 0 )
-				pCombo->SetCurSel( idxMatch );
 			return bSuccess;
 		}
 };
