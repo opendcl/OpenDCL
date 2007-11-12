@@ -26,11 +26,11 @@ bool CImageComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess = __super::Create( pParentWnd, GetWndRect(), GetWndStyle(), nID );
 
+	if( bSuccess && GetComboHandler() )
+		ResetContent();  //populate list
+
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
-
-	if( bSuccess )
-		ResetContent();  //populate list
 
 	return bSuccess;
 }

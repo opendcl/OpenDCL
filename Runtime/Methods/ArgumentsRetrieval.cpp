@@ -823,7 +823,10 @@ TDclControlPtr  GetControlArxObject(CString sMethod, int *pnArgs)
 	
 		if (pnArgs != NULL)
 			*pnArgs = 3;
-		return GetRequestedDclControl(sProject, sDialogBox, sControlName);
+		pArxObject = GetRequestedDclControl(sProject, sDialogBox, sControlName);
+		if( !pArxObject )
+			theWorkspace.DisplayAlert(CString(ErrorControlNotFound) + sMethod);
+		return pArxObject;
 	}
 	else
 		return NULL; 
@@ -2174,6 +2177,7 @@ struct resbuf *getLispTargetInput(LPCTSTR sMethod, TDclControlPtr& pArg)
 
 		if (pArxObject == NULL)
 		{
+			theWorkspace.DisplayAlert(CString(ErrorControlNotFound) + sMethod);
 			return ListData;
 		}
 		pArg = pArxObject;

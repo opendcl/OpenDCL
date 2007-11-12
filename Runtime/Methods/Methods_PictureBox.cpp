@@ -2879,12 +2879,12 @@ int PictureBox_LoadPictureFile()
 		acedRetInt(-1); 
 		return 0;
 	}
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
-	{
-		
-		acedRetVoid();	
-		return 0;
-	}
+	//if (pControl && !pControl->GetParent()->IsWindowVisible())		
+	//{
+	//	
+	//	acedRetVoid();	
+	//	return 0;
+	//}
 
 
 	CString sFileName;

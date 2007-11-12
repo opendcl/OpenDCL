@@ -29,11 +29,11 @@ bool CComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess )
 		SetExtendedUI();
 
+	if( bSuccess && GetComboHandler() )
+		ResetContent();  //populate list
+
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
-
-	if( bSuccess )
-		ResetContent();  //populate list
 
 	return bSuccess;
 }
