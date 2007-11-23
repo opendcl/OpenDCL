@@ -41,5 +41,6 @@ protected:
 	afx_msg void OnDestroy();	
 	afx_msg void OnKillfocus();
 	afx_msg void OnSetfocus();
+	afx_msg void OnEditchange();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };

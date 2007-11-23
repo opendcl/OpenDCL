@@ -15,6 +15,24 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_16ABB8D2CF6347F09690DD4A2791DFA5"
+        "OwnerKey" = "8:_A6F0C39BAEAD47D6B66ADBBFAB6227E0"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_41D34F6445224FF2A0D5480DB688BCDE"
+        "OwnerKey" = "8:_A6F0C39BAEAD47D6B66ADBBFAB6227E0"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6D0A89DB007A47F987EF7CB2E7F6F79C"
+        "OwnerKey" = "8:_A6F0C39BAEAD47D6B66ADBBFAB6227E0"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8A29144591804BB98139A320BBA88B36"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -23,6 +41,12 @@
         {
         "MsmKey" = "8:_A6F0C39BAEAD47D6B66ADBBFAB6227E0"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C73974C525674A0E94F62315E7F04275"
+        "OwnerKey" = "8:_A6F0C39BAEAD47D6B66ADBBFAB6227E0"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -209,14 +233,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Runtime"
-        "ProductCode" = "8:{4591BF07-0DEB-4908-A347-57F1C9A1F136}"
-        "PackageCode" = "8:{96314248-6F60-4AE3-A2D7-863FD6F33F6E}"
+        "ProductCode" = "8:{724E2EC6-B4E4-4FC8-9B8B-B8117C9C4046}"
+        "PackageCode" = "8:{749529B3-35E9-4D7F-8494-F5F845131718}"
         "UpgradeCode" = "8:{D0AC879B-97D1-49C1-8DD6-70CEAA1950FC}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:4.1.0105"
+        "ProductVersion" = "8:4.1.0200"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://sourceforge.net/projects/opendcl/"
@@ -401,12 +425,112 @@
         }
         "MergeModule"
         {
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_16ABB8D2CF6347F09690DD4A2791DFA5"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:vc_mfc.msm"
+                "Properties"
+                {
+                    "DIR_RETARGET_TARGETDIR"
+                    {
+                    "Name" = "8:DIR_RETARGET_TARGETDIR"
+                    "DisplayName" = "8:Module Retargetable Folder"
+                    "Description" = "8:"
+                    "Type" = "3:10"
+                    "ContextData" = "8:IsolationDir"
+                    "Attributes" = "3:6"
+                    "Setting" = "3:1"
+                    "UsePlugInResources" = "11:FALSE"
+                    }
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_41D34F6445224FF2A0D5480DB688BCDE"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:vc_crt.msm"
+                "Properties"
+                {
+                    "DIR_RETARGET_TARGETDIR"
+                    {
+                    "Name" = "8:DIR_RETARGET_TARGETDIR"
+                    "DisplayName" = "8:Module Retargetable Folder"
+                    "Description" = "8:"
+                    "Type" = "3:10"
+                    "ContextData" = "8:IsolationDir"
+                    "Attributes" = "3:6"
+                    "Setting" = "3:1"
+                    "UsePlugInResources" = "11:FALSE"
+                    }
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_6D0A89DB007A47F987EF7CB2E7F6F79C"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:vc_stl.msm"
+                "Properties"
+                {
+                    "DIR_RETARGET_TARGETDIR"
+                    {
+                    "Name" = "8:DIR_RETARGET_TARGETDIR"
+                    "DisplayName" = "8:Module Retargetable Folder"
+                    "Description" = "8:"
+                    "Type" = "3:10"
+                    "ContextData" = "8:IsolationDir"
+                    "Attributes" = "3:6"
+                    "Setting" = "3:1"
+                    "UsePlugInResources" = "11:FALSE"
+                    }
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_C73974C525674A0E94F62315E7F04275"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:vc_atl70.msm"
+                "Properties"
+                {
+                    "DIR_RETARGET_TARGETDIR"
+                    {
+                    "Name" = "8:DIR_RETARGET_TARGETDIR"
+                    "DisplayName" = "8:Module Retargetable Folder"
+                    "Description" = "8:"
+                    "Type" = "3:10"
+                    "ContextData" = "8:IsolationDir"
+                    "Attributes" = "3:6"
+                    "Setting" = "3:1"
+                    "UsePlugInResources" = "11:FALSE"
+                    }
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
         }
         "ProjectOutput"
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A6F0C39BAEAD47D6B66ADBBFAB6227E0"
             {
-            "SourcePath" = "8:MSM\\Debug\\OpenDCL.Runtime.ENU.msm"
+            "SourcePath" = "8:MSM\\Release\\OpenDCL.Runtime.ENU.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_DCA8372A944B4B6780F9B78BD25CC17E"

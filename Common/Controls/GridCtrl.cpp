@@ -427,6 +427,8 @@ bool CGridCtrl::SetCellText( int nRow, int nCol, LPCTSTR pszText )
 	bool bSuccess = (__super::SetItemText( nRow, nCol, pszText ) != FALSE);
 	switch( GetCellStyle( nRow, nCol ) )
 	{
+	case Grid_ArrowHead:
+	case Grid_AcadColors:
 	case Grid_ImageDropList:
 	case Grid_AcadColorCell:
 	case Grid_TrueColorCell:
@@ -515,6 +517,7 @@ void CGridCtrl::SetCellImage( int nRow, int nCol, int nImage)
 	//SetItem( &lvItem );
 	_CellData& CellData = GetCellDataRef( nRow, nCol );
 	CellData.midxImage = nImage;
+	InvalidateCell( nRow, nCol );
 }
 
 int CGridCtrl::GetCellUncheckedImage( int nRow, int nCol )
@@ -1077,7 +1080,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
 			rcIcon.bottom = rcIcon.top + 14;
-			int nCellImage = GetCellImage( nRow, nCol );;
+			int nCellImage = GetCellImage( nRow, nCol );
 			DrawArrow( cdc, rcIcon, nCellImage, sLabel );
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
@@ -1087,7 +1090,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
 			rcIcon.bottom = rcIcon.top + 14;
-			int nCellImage = GetCellImage( nRow, nCol );;
+			int nCellImage = GetCellImage( nRow, nCol );
 			DrawColor( cdc, rcIcon, nCellImage, sLabel );
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
@@ -1108,7 +1111,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
 			rcIcon.bottom = rcIcon.top + 14;
-			int nCellImage = GetCellImage( nRow, nCol );;
+			int nCellImage = GetCellImage( nRow, nCol );
 			DrawColor( cdc, rcIcon, nCellImage, sLabel );
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}

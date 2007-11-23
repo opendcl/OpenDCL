@@ -32,14 +32,6 @@
 #define DELETE_EXCEPTION(e) do { e->Delete(); } while (0)
 
 
-static CString LTOA(int nVal)
-{
-  CString sLong;
-	sLong.Format(_T("%d"), nVal);
-  return sLong;
-}
-
-
 static CString StripPathFromFileName( LPCTSTR pszFilePath )
 {
 	CString sShortName = pszFilePath;
@@ -158,7 +150,7 @@ TDclFormPtr CProject::AddForm( DclFormType nType )
 TDclFormPtr CProject::AddForm( DclFormType nType, TDclFormPtr pParentForm )
 {
 	assert( pParentForm != NULL );
-	assert( pParentForm->GetProject() == this );
+	assert( pParentForm->GetProject() == (const CProject*)this );
 	TDclFormPtr pNewDclForm = new CDclFormObject( this, nType );
 	pNewDclForm->SetUniqueName( pParentForm->GetUniqueName() );
 	pNewDclForm->SetParentForm( pParentForm );

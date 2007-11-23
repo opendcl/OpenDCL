@@ -32,6 +32,9 @@ protected:
 	virtual bool IsFloating() const;
 	virtual bool CreateModeless( UINT nID ) const;
 	virtual void CloseDialog(int nStatus);
+	virtual bool CenterDialog();
+	virtual bool ResizeDialog( long nNewWidth, long nNewHeight );
+	virtual bool CenterAndResizeDialog( long nNewWidth, long nNewHeight );
 	virtual bool GetWindowRect( CRect& rcDlg ) const;
 	virtual bool GetClientRect( CRect& rcDlg ) const;
 };

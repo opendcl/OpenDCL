@@ -129,10 +129,10 @@ SetFilter
 [Prefix]
 dcl_TextBox_
 [Desc]
-This method retrieves the filter string used by a TextBox control to filter the text entered by the user. \par \par For example a setting of "0123456789" for the \cf1 FilterStringCollection \cf0 argument will tell the TextBox to only accept keyboard keys of that are in the string.
+This method sets the custom input filter string used by a TextBox control that has a '0 - String' input filter style (other filter styles do not use custom filter strings). \par \par For example a setting of "0123456789" for the \cf1 FilterString \cf0 argument will cause the TextBox to discard any non-numeric input.
 [Arguments]
 ProjectFileName
-\par\tab FilterStringCollection
+\par\tab FilterString
 [as String]
 
 
@@ -141,7 +141,7 @@ GetFilter
 [Prefix]
 dcl_TextBox_
 [Desc]
-This method sets the filter string used by a TextBox control to filter the text entered by the user.
+This method gets the custom input filter string used by a TextBox control that has a '0 - String' input filter style (other filter styles do not use custom filter strings).
 [Arguments Return] as String
 ProjectFileName
 

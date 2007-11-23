@@ -299,8 +299,8 @@ void CFontPropertyPage::OnSelChange()
 	logfont.lfUnderline = m_bUnderline;
 	lstrcpyn( logfont.lfFaceName, m_sFont, LF_FACESIZE );
 	int nSel = m_comboSize.GetCurSel();
-	int n = m_comboSize.GetLBTextLen(nSel);      
-	m_comboSize.GetLBText(nSel, m_sSize);
+	if( nSel >= 0 )
+		m_comboSize.GetLBText(nSel, m_sSize);
 
 	if (m_ScaledOpt.GetCheck() == BST_CHECKED)
 	{

@@ -342,6 +342,7 @@ void AxPropertyDescriptor::Serialize( CArchive& ar, int nPropertyVersion )
 		SerializeCLSID(ar, mGuid);
 		size_t ctEnum;
 		ar >> ctEnum;
+		assert( ctEnum < 0x7FFFFFFF ); //found one .odc file where this value was -2! --ORW [2007-11-13]
 		mrEnum.resize( ctEnum );
 		size_t ctParams;
 		ar >> ctParams;

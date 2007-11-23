@@ -48,5 +48,5 @@ LPCTSTR ErrorListArgNotStr			= _T("An argument passed in the list, was not a str
 LPCTSTR ErrorFormIdArgNotInt		= _T("The #1 argument is not an integer.");
 LPCTSTR ErrorPropertyWasNotFound			= _T("was not found.");
 LPCTSTR ErrorTheProperty			= _T("The property ");
-LPCTSTR ErrorWrongFilterStyle		= _T("Filters string cannot be modified or retrieved from TextBoxes with a FilterStyle PropertyObject other than 0-String.");
+LPCTSTR ErrorWrongFilterStyle		= _T("Filters string cannot be modified or retrieved from TextBoxes with a FilterStyle PropertyObject other than '0 - String'.");
 LPCTSTR ErrorWrongColorStyle		= _T("A color cannot be added to a ComboBox with a style other than Color.");

@@ -8,7 +8,7 @@ Ensure all images within the 'images' folder are included in the project search 
 
 Compile the project in Helpmaker. Helpmaker will recreate all .htm files to reflect any edits to topics.
 
-Copy and paste the two .htm files in the 'special files' folder into the _tmphhp folder following the HelpMaker compilation, overwriting existing files. This is required as the audtutorial.htm and tool toolbar.htm files are standalone files that have been edited outside of Helpmaker due to limitations of the software.  
+Copy and paste the 3 .htm files in the 'special files' folder into the _tmphhp folder following the HelpMaker compilation, overwriting existing files. This is required as the audtutorial.htm and tool toolbar.htm files are standalone files that have been edited outside of Helpmaker due to limitations of the software.  
 
 Open the opendcl.hhp file in the '_tmphhp' directory using Microsoft HTML Help Workshop (included in the installation of Helpmaker). Edit the font for the main window by clicking Project Options (top left button on project tab) to Verdana.
 

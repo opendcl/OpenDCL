@@ -30,4 +30,5 @@ public:
 
 public:
 	virtual CInputFilter* GetInputFilter() { return mpFilter; }
+	virtual void SetInputFilter( CInputFilter* pFilter ) { delete mpFilter; mpFilter = pFilter; }
 };

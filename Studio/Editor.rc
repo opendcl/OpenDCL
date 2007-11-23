@@ -1262,8 +1262,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,1,1,5
- PRODUCTVERSION 4,1,1,5
+ FILEVERSION 4,1,2,0
+ PRODUCTVERSION 4,1,2,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1280,13 +1280,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL Studio Dialog Editor"
-            VALUE "FileVersion", "4, 1, 1, 5"
+            VALUE "FileVersion", "4, 1, 2, 0"
             VALUE "InternalName", "OpenDCL.Editor"
             VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL Studio.exe"
             VALUE "ProductName", "OpenDCL Studio"
-            VALUE "ProductVersion", "4, 1, 1, 5"
+            VALUE "ProductVersion", "4, 1, 2, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -2587,7 +2587,7 @@ STRINGTABLE
 BEGIN
     IDS_COMBODESC6          "This setting indicates that the combo box will be displayed as a drop down box that displays all the available AutoCAD plot style names."
     IDS_COMBODESC7          "This setting indicates that the combo box will be displayed as a drop down box that displays all the available AutoCAD plot style tables."
-    IDS_TEXTBOXFILTER0      "This setting indicates that any key the user presses will be entered into the text box without scrutiny."
+    IDS_TEXTBOXFILTER0      "This setting indicates that any key the user presses will be entered into the text box without scrutiny. You can apply a custom input filter at runtime for this style of text box."
     IDS_TEXTBOXFILTER1      "This setting indicates that characters corresponding with the current AutoCAD Angle unit settings will be allowed into the text box."
     IDS_TEXTBOXFILTER2      "This setting indicates that only integers (1 through 9 and 0) will be allowed into the text box."
     IDS_TEXTBOXFILTER3      "This setting indicates that characters corresponding with the current AutoCAD coordinate unit settings will be allowed into the text box."

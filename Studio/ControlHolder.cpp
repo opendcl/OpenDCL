@@ -35,12 +35,14 @@
 #include "Project.h"
 #include "AngleFilter.h"
 #include "CurrencyFilter.h"
+#include "CustomFilter.h"
 #include "DateFilter.h"
 #include "IntegerFilter.h"
 #include "LowerCaseFilter.h"
 #include "MultilineFilter.h"
 #include "NumericFilter.h"
 #include "PasswordFilter.h"
+#include "SymbolNameFilter.h"
 #include "TimeFilter.h"
 #include "UpperCaseFilter.h"
 
@@ -361,11 +363,11 @@ TDialogControlPtr CControlHolder::CreateTextBox( TDclControlPtr pTemplate )
 	// check the control type to determine which control to create
 	switch( pTemplate->GetLongProperty( Prop::FilterStyle ) )
 	{
-	case EditFilter_String: return *new CTextBoxCtrl( pTemplate, this, GetId() );
+	case EditFilter_String: return *new CTextBoxCtrl( pTemplate, this, GetId(), new CCustomFilter );
 	case EditFilter_Angle: return *new CTextBoxCtrl( pTemplate, this, GetId(), new CAngleFilter );
 	case EditFilter_Integer: return *new CTextBoxCtrl( pTemplate, this, GetId(), new CIntegerFilter );
 	case EditFilter_Numeric: return *new CTextBoxCtrl( pTemplate, this, GetId(), new CNumericFilter );
-	case EditFilter_Symbol: return *new CTextBoxCtrl( pTemplate, this, GetId() );
+	case EditFilter_Symbol: return *new CTextBoxCtrl( pTemplate, this, GetId(), new CSymbolNameFilter );
 	case EditFilter_UpperCase: return *new CTextBoxCtrl( pTemplate, this, GetId(), new CUpperCaseFilter );
 	case EditFilter_LowerCase: return *new CTextBoxCtrl( pTemplate, this, GetId(), new CUpperCaseFilter );
 	case EditFilter_Password: return *new CTextBoxCtrl( pTemplate, this, GetId(), new CPasswordFilter );

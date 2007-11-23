@@ -1680,6 +1680,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Common\Controls\CustomFilter.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Controls\DateFilter.h"
 					>
 				</File>
@@ -1837,6 +1841,10 @@
 				</File>
 				<File
 					RelativePath="..\Common\Controls\RadioEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\SymbolNameFilter.h"
 					>
 				</File>
 				<File

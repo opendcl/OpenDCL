@@ -17,7 +17,7 @@
 
 
 //moving all image lists from the form to individual controls while reading older ODC files
-static void MoveImageListsToControls( std::vector< CImageListObject* >& rImageLists, TDclFormPtr pDclForm )
+static void MoveImageListsToControls( std::vector< CImageListObject* >& rImageLists, const CDclFormObject* pDclForm )
 {
 	const TDclControlList& Controls = pDclForm->GetControlList();
 	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
@@ -169,7 +169,7 @@ void CDclFormObject::PurgeDeletedControls()
 bool CDclFormObject::ReorderControl( TDclControlPtr pDclControl, bool bToFront, bool bDeferReindexing /*= false*/ )
 {
 	assert( pDclControl != NULL );
-	assert( pDclControl->GetOwnerForm() == this );
+	assert( pDclControl->GetOwnerForm() == (const CDclFormObject*)this );
 	TDclControlList::iterator iter = mDclControls.begin();
 	while( iter != mDclControls.end() )
 	{
@@ -194,7 +194,7 @@ bool CDclFormObject::ReorderControl( TDclControlPtr pDclControl, size_t idxNew, 
 	assert( idxNew > 0 ); //should never try to insert at index zero -- that is reserved for form properties!
 	assert( idxNew <= mDclControls.size() );
 	assert( pDclControl != NULL );
-	assert( pDclControl->GetOwnerForm() == this );
+	assert( pDclControl->GetOwnerForm() == (const CDclFormObject*)this );
 	if( idxNew > mDclControls.size() )
 		return false;
 	TDclControlList::iterator iter = mDclControls.begin();

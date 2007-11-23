@@ -147,6 +147,87 @@ void CDockingDialogX::CloseDialog(int nStatus)
 		::DestroyWindow( hwndOwner );
 }
 
+bool CDockingDialogX::CenterDialog()
+{
+	if( !IsFloating() )
+		return false;
+	HWND hwndContainer = ::GetParent( GetHWnd() );
+	for( HWND hwndParent = NULL;
+			 hwndParent = (::GetWindowLongPtr( hwndContainer, GWL_STYLE ) & WS_CHILD)? ::GetParent( hwndContainer ) : NULL;
+			 hwndContainer = hwndParent );
+	CRect rectWindow;
+	::GetWindowRect( hwndContainer, &rectWindow );
+	CPoint pt( (::GetSystemMetrics(SM_CYSCREEN) - rectWindow.Height()) / 2,
+						 (::GetSystemMetrics(SM_CXSCREEN) - rectWindow.Width()) / 2 );
+	BOOL bSuccess = ::SetWindowPos( hwndContainer, NULL, pt.x, pt.y, 0, 0,
+																	SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOZORDER);
+	return (bSuccess != FALSE);
+}
+
+bool CDockingDialogX::ResizeDialog( long nNewWidth, long nNewHeight )
+{
+	if( !IsFloating() )
+		return false;
+	HWND hwndContainer = ::GetParent( GetHWnd() );
+	for( HWND hwndParent = NULL;
+			 hwndParent = (::GetWindowLongPtr( hwndContainer, GWL_STYLE ) & WS_CHILD)? ::GetParent( hwndContainer ) : NULL;
+			 hwndContainer = hwndParent );
+	CRect rectWindow;
+	GetWindowRect( rectWindow );
+	if( mpSourceForm->UsesClientRect() )
+	{
+		CRect rectClient;
+		GetClientRect( rectClient );
+		nNewWidth += (rectWindow.Width() - rectClient.Width());
+		nNewHeight += (rectWindow.Height() - rectClient.Height());
+	}
+	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Width, nNewWidth );
+	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Height, nNewHeight );
+	CRect rectContainer;
+	::GetWindowRect( hwndContainer, &rectContainer );
+	nNewWidth += (rectContainer.Width() - rectWindow.Width());
+	nNewHeight += (rectContainer.Height() - rectWindow.Height());
+	BOOL bSuccess = ::SetWindowPos( hwndContainer, NULL, 0, 0, nNewWidth, nNewHeight,
+																	SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER );
+	GetControlPane().RecalcLayout();
+	return (bSuccess != FALSE);
+}
+
+bool CDockingDialogX::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
+{
+	if( !IsFloating() )
+		return false;
+	HWND hwndContainer = ::GetParent( GetHWnd() );
+	for( HWND hwndParent = NULL;
+			 hwndParent = (::GetWindowLongPtr( hwndContainer, GWL_STYLE ) & WS_CHILD)? ::GetParent( hwndContainer ) : NULL;
+			 hwndContainer = hwndParent );
+	CRect rectWindow;
+	GetWindowRect( rectWindow );
+	if( mpSourceForm->UsesClientRect() )
+	{
+		CRect rectClient;
+		GetClientRect( rectClient );
+		nNewWidth += (rectWindow.Width() - rectClient.Width());
+		nNewHeight += (rectWindow.Height() - rectClient.Height());
+	}
+	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Width, nNewWidth );
+	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Height, nNewHeight );
+	CPoint pt( (::GetSystemMetrics(SM_CYSCREEN) - nNewHeight) / 2,
+						 (::GetSystemMetrics(SM_CXSCREEN) - nNewWidth) / 2 );
+	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Left, pt.x );
+	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Top, pt.y );
+	CRect rectContainer;
+	::GetWindowRect( hwndContainer, &rectContainer );
+	nNewWidth += (rectContainer.Width() - rectWindow.Width());
+	nNewHeight += (rectContainer.Height() - rectWindow.Height());
+	CPoint ptContainer( (::GetSystemMetrics(SM_CYSCREEN) - nNewHeight) / 2,
+											(::GetSystemMetrics(SM_CXSCREEN) - nNewWidth) / 2 );
+	BOOL bSuccess = ::SetWindowPos( hwndContainer, NULL, ptContainer.x, ptContainer.y,
+																	nNewWidth, nNewHeight, SWP_NOACTIVATE | SWP_NOZORDER );
+	GetControlPane().RecalcLayout();
+	return (bSuccess != FALSE);
+}
+
 bool CDockingDialogX::GetWindowRect( CRect& rcDlg ) const
 {
 	if (mpOwner->IsFloating())

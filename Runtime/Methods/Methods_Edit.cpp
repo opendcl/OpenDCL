@@ -8,7 +8,8 @@
 #include "ArgumentsRetrieval.h"
 #include "MethodLexicon.h"
 #include "ErrorLexicon.h"
-#include "EditCtrl.h"
+#include "TextBoxCtrl.h"
+#include "CustomFilter.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
@@ -16,56 +17,45 @@
 
 int TextBox_SetFilter()
 {
-	theWorkspace.DisplayAlert(_T("OpenDCL function (dcl_TextBox_SetFilter) is not yet implemented."));
-/*
 	int nArg=0;
 	TDclControlPtr pArxObject = GetControlArxObject(sTextBox_SetFilter, &nArg);
 	
 	if (pArxObject == NULL)
 	{
-		// return nil
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 	
-	if (pArxObject->GetLongProperty(Prop::FilterStyle) > 0 &&
-		pArxObject->GetLongProperty(Prop::FilterStyle) < 8)
+	if( pArxObject->GetLongProperty(Prop::FilterStyle) != 0 )
 	{
 		theWorkspace.DisplayAlert(ErrorWrongFilterStyle);
-		// return nil
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 
 	CWnd *pControl = pArxObject->GetWindow();
-
-	CString sFilter;
-	if (!GetStringArgument(nArg, &sFilter, sTextBox_SetFilter) || pControl == NULL)
+	if (pControl == NULL)
 	{
-		// return nil
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 
-	((CEditCtrl*)pControl)->m_sFilter = sFilter;
+	CString sFilter;
+	GetStringArgument(nArg, &sFilter, sTextBox_SetFilter);
 
-	acedRetVoid();
-	return 0;
-*/
-	acedRetNil();
+	((CTextBoxCtrl*)pControl)->SetInputFilter( sFilter.IsEmpty()? NULL : new CCustomFilter( sFilter ) );
+
+	acedRetT();
 	return 0;
 }
 
 int TextBox_GetFilter()
 {
-	theWorkspace.DisplayAlert(_T("OpenDCL function (dcl_TextBox_GetFilter) is not yet implemented."));
-/*
 	TDclControlPtr pArxObject = GetControlArxObject(sTextBox_SetFilter);
-	if (pArxObject->GetLongProperty(Prop::FilterStyle) > 0)
+	if (pArxObject->GetLongProperty(Prop::FilterStyle) != 0)
 	{
 		theWorkspace.DisplayAlert(ErrorWrongFilterStyle);
-		// return nil
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
 	
@@ -73,15 +63,15 @@ int TextBox_GetFilter()
 
 	if (pControl == NULL)
 	{
-		// return nil
-		acedRetInt(-1);
+		acedRetNil();
 		return 0;
 	}
-	
-	acedRetStr(((CEditCtrl*)pControl)->m_sFilter);
-	return 0;
-*/
-	acedRetNil();
+
+	CInputFilter* pFilter = ((CTextBoxCtrl*)pControl)->GetInputFilter();
+	CString sFilter;
+	if( pFilter )
+		sFilter = pFilter->GetFilter();
+	acedRetStr( sFilter );
 	return 0;
 }
 

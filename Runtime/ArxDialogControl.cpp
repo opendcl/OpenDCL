@@ -37,12 +37,14 @@
 
 #include "AngleFilter.h"
 #include "CurrencyFilter.h"
+#include "CustomFilter.h"
 #include "DateFilter.h"
 #include "IntegerFilter.h"
 #include "LowerCaseFilter.h"
 #include "MultilineFilter.h"
 #include "NumericFilter.h"
 #include "PasswordFilter.h"
+#include "SymbolNameFilter.h"
 #include "TimeFilter.h"
 #include "UpperCaseFilter.h"
 
@@ -297,11 +299,11 @@ TDialogControlPtr CArxDialogControl::CreateEditControl(TDclControlPtr pTemplate,
 	// check the control type to determine which control to create
 	switch( pTemplate->GetLongProperty( Prop::FilterStyle ) )
 	{
-	case EditFilter_String: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, NULL, AC_ES_STRING );
+	case EditFilter_String: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CCustomFilter, AC_ES_STRING );
 	case EditFilter_Angle: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CAngleFilter, (AC_ES_ANGLE | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
 	case EditFilter_Integer: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CIntegerFilter, (AC_ES_NUMERIC | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
 	case EditFilter_Numeric: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CNumericFilter, (AC_ES_NUMERIC | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
-	case EditFilter_Symbol: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, NULL, (AC_ES_SYMBOL | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
+	case EditFilter_Symbol: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CSymbolNameFilter, (AC_ES_SYMBOL | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
 	case EditFilter_UpperCase: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CUpperCaseFilter );
 	case EditFilter_LowerCase: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CUpperCaseFilter );
 	case EditFilter_Password: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CPasswordFilter );

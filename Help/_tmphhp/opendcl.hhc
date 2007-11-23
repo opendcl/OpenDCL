@@ -39,6 +39,7 @@
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Error Handling">	<PARAM name="Local" value="errorhandling.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Cancel Close">	<PARAM name="Local" value="aboutcancelclose.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="OpenDCL MessageBox">	<PARAM name="Local" value="alertvsodcl_messagebox.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Managing Dialog Appearance">	<PARAM name="Local" value="managingdialogappearance.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Tips and Tricks">	<PARAM name="Local" value="tipsandtricks.htm">	<PARAM name="ImageNumber" value="1">	</OBJECT>
 <UL>
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Hiding Controls">	<PARAM name="Local" value="abouthidingcontrols.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
@@ -52,6 +53,7 @@
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Using Entmake">	<PARAM name="Local" value="aboutentmake.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Graphic Button">	<PARAM name="Local" value="aboutgraphicbutton.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="DialogClose">	<PARAM name="Local" value="dialogclose.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="EventInvoke">	<PARAM name="Local" value="eventinvoke.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 </UL>
 </UL>
 <LI>	<OBJECT type="text/sitemap">	<param name="Name" value="Advanced Topics">	<PARAM name="ImageNumber" value="0">	</OBJECT>
@@ -61,11 +63,12 @@
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Multiple Document Modes">	<PARAM name="Local" value="sdimode.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Separate Namespaces">	<PARAM name="Local" value="separatenamespace.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="ActiveX Support">	<PARAM name="Local" value="activex.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Modify Projects Programmatically">	<PARAM name="Local" value="makeprojectchanges.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 </UL>
 <LI>	<OBJECT type="text/sitemap">	<param name="Name" value="Reference">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 <UL>
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="What's Changed">	<PARAM name="Local" value="whatschanged.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
-<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Functions New to Ver. 4.0">	<PARAM name="Local" value="functionsnewtover4.htm">	<PARAM name="ImageNumber" value="1">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="New Functions">	<PARAM name="Local" value="functionsnewtover4.htm">	<PARAM name="ImageNumber" value="1">	</OBJECT>
 <UL>
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="CheckBin">	<PARAM name="Local" value="checkbin.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="CloseBin">	<PARAM name="Local" value="closebin.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
@@ -85,6 +88,10 @@
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="SetAutoUpdateCheck">	<PARAM name="Local" value="setautoupdatecheck.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="UpdateCheck">	<PARAM name="Local" value="updatecheck.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 <LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="WriteBin">	<PARAM name="Local" value="writebin.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="GetControls">	<PARAM name="Local" value="getcontrols.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="GetProjects">	<PARAM name="Local" value="getprojects.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="Project_GetForms">	<PARAM name="Local" value="porject_getforms.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
+<LI>	<OBJECT type="text/sitemap">	<PARAM name="Name" value="GetProperties">	<PARAM name="Local" value="getproperties.htm">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 </UL>
 <LI>	<OBJECT type="text/sitemap">	<param name="Name" value="Additional (Bonus) Functions">	<PARAM name="ImageNumber" value="0">	</OBJECT>
 <UL>

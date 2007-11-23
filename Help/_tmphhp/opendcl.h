@@ -20,6 +20,7 @@
 #define errorhandling 330
 #define aboutcancelclose 380
 #define alertvsodcl_messagebox 280
+#define managingdialogappearance 731
 #define tipsandtricks 50
 #define abouthidingcontrols 211
 #define aboutdisablecontrols 231
@@ -32,11 +33,13 @@
 #define aboutentmake 421
 #define aboutgraphicbutton 300
 #define dialogclose 601
+#define eventinvoke 671
 #define pictureboxprogramming 350
 #define transparentcontrols 340
 #define sdimode 420
 #define separatenamespace 401
 #define activex 40
+#define makeprojectchanges 721
 #define whatschanged 351
 #define checkbin 561
 #define closebin 551
@@ -56,6 +59,10 @@
 #define setautoupdatecheck 641
 #define updatecheck 631
 #define writebin 541
+#define getcontrols 681
+#define getprojects 691
+#define porject_getforms 701
+#define getproperties 711
 #define odcl_activateemail 530
 #define odcl_browsefolder 480
 #define odcl_getcolorvalue 490
@@ -84,6 +91,7 @@
 #define form_show 591
 #define form_isactive 611
 #define form_isenabled 621
+#define sendstring 661
 #define demandloading 571
 #define distribsample 581
 #define usinghelp 191

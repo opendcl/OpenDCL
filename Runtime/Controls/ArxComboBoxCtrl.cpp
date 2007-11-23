@@ -62,6 +62,7 @@ BEGIN_MESSAGE_MAP(CArxComboBoxCtrl, CComboBoxCtrl)
 	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
 	ON_CONTROL_REFLECT(CBN_KILLFOCUS, OnKillfocus)
 	ON_CONTROL_REFLECT(CBN_SETFOCUS, OnSetfocus)
+	ON_CONTROL_REFLECT(CBN_EDITCHANGE, &CArxComboBoxCtrl::OnEditchange)
 	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
@@ -127,4 +128,11 @@ void CArxComboBoxCtrl::OnKillfocus()
 void CArxComboBoxCtrl::OnSetfocus() 
 {
 	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
+}
+
+void CArxComboBoxCtrl::OnEditchange()
+{
+	CString sText;
+	GetWindowText( sText );
+	InvokeMethodString(mpTemplate->GetStringProperty(Prop::EventEditChanged), sText, IsAsyncEvents());
 }

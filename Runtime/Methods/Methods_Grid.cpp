@@ -868,9 +868,9 @@ int Grid_Cell_SetDropList()
 
 int Grid_SetItemImage()
 {
-	int nArg1;
-	int nArg2;
-	int nArg3;
+	int nArg1 = -1;
+	int nArg2 = -1;
+	int nArg3 = -1;
 	TDclControlPtr pArx = GetLispInput(sGrid_SetItemImage, nArg1, nArg2, nArg3);
 
 	if (pArx == NULL)

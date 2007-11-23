@@ -718,6 +718,6 @@ void CArxGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc
 void CArxGridCtrl::OnKillFocus(CWnd* pNewWnd)
 {
 	CGridCtrl::OnKillFocus(pNewWnd);
-	if( pNewWnd->GetParent() != this )
+	if( !pNewWnd || pNewWnd->GetParent() != this )
 		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), mbInvokeWithSendString);
 }

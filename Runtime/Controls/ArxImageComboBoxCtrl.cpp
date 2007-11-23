@@ -62,6 +62,7 @@ BEGIN_MESSAGE_MAP(CArxImageComboBoxCtrl, CImageComboBoxCtrl)
 	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
 	ON_CONTROL_REFLECT(CBN_KILLFOCUS, OnKillfocus)
 	ON_CONTROL_REFLECT(CBN_SETFOCUS, OnSetfocus)
+	ON_CONTROL_REFLECT(CBN_EDITCHANGE, &CArxImageComboBoxCtrl::OnEditchange)
 	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
@@ -129,6 +130,25 @@ void CArxImageComboBoxCtrl::OnDropdown()
 	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDropDown), IsAsyncEvents());	
 }
 
+void CArxImageComboBoxCtrl::OnKillfocus() 
+{
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
+}
+
+void CArxImageComboBoxCtrl::OnSetfocus() 
+{
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
+}
+
+void CArxImageComboBoxCtrl::OnEditchange()
+{
+	CString sText;
+	CEdit* pEditCtrl = GetEditCtrl();
+	if( pEditCtrl )
+		pEditCtrl->GetWindowText( sText );
+	InvokeMethodString(mpTemplate->GetStringProperty(Prop::EventEditChanged), sText, IsAsyncEvents());
+}
+
 void CArxImageComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	CComboBox::OnMouseMove(nFlags, point);
@@ -138,14 +158,4 @@ void CArxImageComboBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		point.x,
 		point.y,
 		IsAsyncEvents());
-}
-
-void CArxImageComboBoxCtrl::OnKillfocus() 
-{
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
-}
-
-void CArxImageComboBoxCtrl::OnSetfocus() 
-{
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());
 }
