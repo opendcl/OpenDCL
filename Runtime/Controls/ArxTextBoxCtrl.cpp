@@ -78,6 +78,13 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CArxTextBoxCtrl message handlers
 
+BOOL CArxTextBoxCtrl::PreTranslateMessage(MSG* pMsg) 
+{
+	if( pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN )
+		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventReturnPressed), IsAsyncEvents());
+	return __super::PreTranslateMessage(pMsg);
+}
+
 void CArxTextBoxCtrl::OnChange() 
 {
 	CString sOldValue = mpTemplate->GetStringProperty( Prop::Text );

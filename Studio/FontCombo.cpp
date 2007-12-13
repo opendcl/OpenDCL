@@ -39,20 +39,11 @@ const int SHX_FONTTYPE = 6;
 CFontCombo::CFontCombo()
 {
 	// Load up glyphs
-	m_img.Create(15,13,ILC_COLOR | ILC_MASK, 3, 1);
-
+	m_img.Create(15,13,ILC_COLOR | ILC_MASK, 1, 1);
 	HINSTANCE hInstResource = AfxFindResourceHandle(MAKEINTRESOURCE(IDI_TRUEFONT), RT_GROUP_ICON);
-
-	
 	HICON hIcon = (HICON)::LoadImage(hInstResource, MAKEINTRESOURCE(IDI_TRUEFONT), IMAGE_ICON, 0, 0, 0);	
 	m_img.Add(hIcon);
 	DestroyIcon(hIcon);
-
-	hIcon = (HICON)::LoadImage(hInstResource, MAKEINTRESOURCE(IDI_ACADFONT), IMAGE_ICON, 0, 0, 0);
-	m_img.Add(hIcon);
-	DestroyIcon(hIcon);
-
-	
 }
 	
 
@@ -194,11 +185,8 @@ void CFontCombo::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	DWORD dwData = GetFontTypeId(strCurFont);// GetItemData(lpDIS->itemID);//pFontObj->GetFlags();
 	
 	// Render Bitmaps
-	if (dwData == 4)
+	if (dwData == 4 || dwData == 6)
 		m_img.Draw(pDC,0, CPoint(rc.left,rc.top-nOffset2),ILD_TRANSPARENT);
-
-	else if (dwData == 6)
-		m_img.Draw(pDC,1, CPoint(rc.left,rc.top-nOffset2),ILD_TRANSPARENT);
 	
 	int nX = rc.left; // Save for lines
 

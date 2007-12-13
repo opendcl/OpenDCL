@@ -37,6 +37,7 @@ protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnChange();
 	afx_msg void OnErrspace();
 	afx_msg void OnMaxtext();

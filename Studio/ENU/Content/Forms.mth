@@ -142,7 +142,7 @@ Close
 [Prefix]
 dcl_Form_
 [Desc]
-This method will close the indicated dialog. This method returns a list indicating the last upper left coordinates of Modal or Modeless dialog boxes.
+This method will close the indicated dialog. This method returns a list indicating the last upper left coordinates of Modal or Modeless dialog boxes. The optional 'DialogStatus' will be the return value for (dcl_Form_Show) if showing a modal form.
 [Arguments]
 ProjectFileName
 \par\tab \i [Optional] \i0 DialogStatus

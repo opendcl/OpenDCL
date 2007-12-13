@@ -1562,12 +1562,6 @@ int ShowToolTip()
 			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
-	case CtlSlideView:
-		{
-		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
-		break;
-		}
 	case CtlRoundSlider:
 		{
 		CRoundSliderCtrl *pCtrl = (CRoundSliderCtrl*)pControl;
@@ -1580,12 +1574,6 @@ int ShowToolTip()
 		CStaticLink *pCtrl = (CStaticLink*)pControl;
 		if( pCtrl->m_ToolTip.GetToolInfo( TI, pControl, DWORD(0) ) )
 			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
-		break;
-		}
-	case CtlProgress:
-		{
-		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 		break;
 		}
 	case CtlMonth:
@@ -1609,42 +1597,6 @@ int ShowToolTip()
 			pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
 		break;
 		}
-	case CtlListBox:
-		{
-		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
-		break;
-		}
-	case CtlOptionButton:
-		{
-		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
-		break;
-		}
-	case CtlOptionList:
-		{
-		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
-		break;
-		}
-	case CtlCheckBox:
-		{
-		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
-		break;
-		}
-	case CtlTextBox:
-		{
-		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
-		break;
-		}
-	case CtlStdButton:
-		{
-		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
-		break;
-		}
 	case CtlTree:
 		{
 		VdclTree *pCtrl = (VdclTree*)pControl;
@@ -1653,19 +1605,7 @@ int ShowToolTip()
 		break;
 		}
 
-	case CtlGraphicButton:
-		{
-		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
-		break;
-		}
-	case CtlActiveX:
-		{
-		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
-			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
-		break;
-		}
-	case CtlDwgList:
+	default:
 		{
 		if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pControl, DWORD(0) ) )
 			pDlgControl->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);

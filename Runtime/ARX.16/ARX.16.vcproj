@@ -431,11 +431,11 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="..\..\Common\Res\Folder.bmp"
+				RelativePath="..\Res\Folder.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\Res\Folder.bmp"
+				RelativePath="..\..\Common\Res\Folder.bmp"
 				>
 			</File>
 			<File
@@ -1949,8 +1949,8 @@
 	</Files>
 	<Globals>
 		<Global
-			Name="VCBuildHookUseVC7Paths"
-			Value="True"
+			Name="VCBuildHookBuildToolVersion"
+			Value="VC7"
 		/>
 	</Globals>
 </VisualStudioProject>

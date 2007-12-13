@@ -1262,8 +1262,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,1,2,0
- PRODUCTVERSION 4,1,2,0
+ FILEVERSION 4,1,2,1
+ PRODUCTVERSION 4,1,2,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1280,13 +1280,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL Studio Dialog Editor"
-            VALUE "FileVersion", "4, 1, 2, 0"
+            VALUE "FileVersion", "4, 1, 2, 1"
             VALUE "InternalName", "OpenDCL.Editor"
             VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL Studio.exe"
             VALUE "ProductName", "OpenDCL Studio"
-            VALUE "ProductVersion", "4, 1, 2, 0"
+            VALUE "ProductVersion", "4, 1, 2, 1"
         END
     END
     BLOCK "VarFileInfo"

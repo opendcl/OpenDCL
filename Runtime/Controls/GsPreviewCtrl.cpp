@@ -295,7 +295,7 @@ void CGsPreviewCtrl::setModel(AcGsModel* pModel)
 
 void CGsPreviewCtrl::clearAll()
 {	
-	m_BlockName = CString();
+	m_BlockName.Empty();
 	try
 	{
 		if (mpView)
@@ -1148,8 +1148,8 @@ bool CGsPreviewCtrl::PreLoadDwg(CString sFileName)
 			{
 			}
 			m_pLoadedDwg = NULL;
-			m_BlockName = CString();
-			m_FileName = CString();
+			m_BlockName.Empty();
+			m_FileName.Empty();
 		}
 
 		// set the default block name
@@ -1278,9 +1278,6 @@ bool CGsPreviewCtrl::LoadPreviewDwg(
 
 	try
 	{
-		sFileName.Replace(_T("\\"), _T("/"));
-		sFileName.Replace(_T("//"), _T("/"));
-		
 		CString sPath = theWorkspace.FindFile( sFileName ); 
 		if( sPath.IsEmpty() )
 		{				
@@ -1313,8 +1310,8 @@ bool CGsPreviewCtrl::LoadPreviewDwg(
 			}
 			// m_pLog->WriteString("\r\nLoadDwg 3");
 			m_pLoadedDwg = NULL;
-			m_BlockName = CString();
-			m_FileName = CString();
+			m_BlockName.Empty();
+			m_FileName.Empty();
 		}
 		// m_pLog->WriteString("\r\nLoadDwg 1b");
 		m_BlockName = sModelSpace;
@@ -1339,7 +1336,7 @@ bool CGsPreviewCtrl::LoadPreviewDwg(
 			}
 			// m_pLog->WriteString("\r\nLoadDwg 6");
 			m_pLoadedDwg = NULL;
-			m_BlockName = CString();
+			m_BlockName.Empty();
 		}
 
 		try
@@ -1377,11 +1374,11 @@ bool CGsPreviewCtrl::LoadPreviewDwg(
 		// m_pLog->WriteString("\r\nLoadDwg 12");
 				
 		// set the file name to "" so that the block view control does not need to be reset when using the next DisplayBlock.
-		m_FileName = CString();
+		m_FileName.Empty();
 		
 		if (m_pLoadedDwg==NULL)
 		{
-			m_BlockName = CString();
+			m_BlockName.Empty();
 			return FALSE;			
 		}
 // m_pLog->WriteString("\r\nLoadDwg 13");
@@ -1397,7 +1394,7 @@ bool CGsPreviewCtrl::LoadPreviewDwg(
 			{
 			}			
 			m_pLoadedDwg = NULL;
-			m_BlockName = CString();
+			m_BlockName.Empty();
 			return FALSE;
 		}
 // m_pLog->WriteString("\r\nLoadDwg 14");
@@ -1414,7 +1411,7 @@ bool CGsPreviewCtrl::LoadPreviewDwg(
 			{
 			}
 			m_pLoadedDwg = NULL;
-			m_BlockName = CString();
+			m_BlockName.Empty();
 		    return FALSE;
 		}
 		pTab->close();
@@ -1497,7 +1494,7 @@ void CGsPreviewCtrl::GetBlockSize(CString sBlockName)
     
 	if (pDb==NULL)
 	{
-		sBlockName = CString();
+		sBlockName.Empty();
 	    
 		acedRetNil();
 	    return;
@@ -1505,7 +1502,7 @@ void CGsPreviewCtrl::GetBlockSize(CString sBlockName)
     
 	if ((es = pDb->getBlockTable(pTab,AcDb::kForRead)) !=Acad::eOk)    
 	{
-		sBlockName = CString();
+		sBlockName.Empty();
 		
 		acedRetNil();
 	    return;
@@ -1514,7 +1511,7 @@ void CGsPreviewCtrl::GetBlockSize(CString sBlockName)
 	if (!pTab->has(sBlockName))
     {
         pTab->close();
-	    sBlockName = CString();
+	    sBlockName.Empty();
         
 		acedRetNil();
 	    return;
@@ -1522,7 +1519,7 @@ void CGsPreviewCtrl::GetBlockSize(CString sBlockName)
 
     if ((es = pTab->getAt(sBlockName,pRec,AcDb::kForRead)) !=Acad::eOk)
     {
-		sBlockName = CString();
+		sBlockName.Empty();
         pTab->close();
 		acedRetNil();
 	    return;
@@ -1639,28 +1636,28 @@ BOOL CGsPreviewCtrl::DisplayBlock(
 
 	if (pDb==NULL)
 	{
-		sBlockName = CString();
-		m_BlockName = CString();
+		sBlockName.Empty();
+		m_BlockName.Empty();
         return FALSE;
 	}
 	CAutoDocWriteLock CurDocLock;
 	if ((es = pDb->getBlockTable(pTab,AcDb::kForRead)) !=Acad::eOk)    
 	{
-		sBlockName = CString();
-		m_BlockName = CString();
+		sBlockName.Empty();
+		m_BlockName.Empty();
 		return FALSE;
 	}
 	if (!pTab->has(sBlockName))
     {
         pTab->close();
-	    sBlockName = CString();
-		m_BlockName = CString();
+	    sBlockName.Empty();
+		m_BlockName.Empty();
         return FALSE;
     }
     if ((es = pTab->getAt(sBlockName,pRec,AcDb::kForWrite)) !=Acad::eOk)
     {
-		sBlockName = CString();
-		m_BlockName = CString();
+		sBlockName.Empty();
+		m_BlockName.Empty();
         pTab->close();
 	    return FALSE;
     }
@@ -1861,30 +1858,30 @@ BOOL CGsPreviewCtrl::DisplayExternalBlock(
     
 	if (pDb==NULL)
 	{
-		sBlockName = CString();
-		m_BlockName = CString();
+		sBlockName.Empty();
+		m_BlockName.Empty();
         return FALSE;
 	}
     
 	if ((es = pDb->getBlockTable(pTab,AcDb::kForRead)) !=Acad::eOk)    
 	{
-		sBlockName = CString();
-		m_BlockName = CString();
+		sBlockName.Empty();
+		m_BlockName.Empty();
 		return FALSE;
 	}
 	
 	if (!pTab->has(sBlockName))
     {
         pTab->close();
-	    sBlockName = CString();
-		m_BlockName = CString();
+	    sBlockName.Empty();
+		m_BlockName.Empty();
         return FALSE;
     }
 
     if ((es = pTab->getAt(sBlockName,pRec,AcDb::kForRead)) !=Acad::eOk)
     {
-		sBlockName = CString();
-		m_BlockName = CString();
+		sBlockName.Empty();
+		m_BlockName.Empty();
         pTab->close();
 	    return FALSE;
     }
@@ -2384,7 +2381,7 @@ void CGsPreviewCtrl::OnDestroy()
 		if (m_pLoadedDwg != NULL)
 		{
 			clearAll();
-			m_BlockName = CString();
+			m_BlockName.Empty();
 			try
 			{
 				delete m_pLoadedDwg;

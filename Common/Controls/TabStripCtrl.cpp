@@ -254,6 +254,7 @@ BEGIN_MESSAGE_MAP(CTabStripCtrl, CTabCtrl)
 	ON_WM_DESTROY()
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_HSCROLL()
+	ON_NOTIFY_REFLECT(TCN_SELCHANGE, OnSelchange)
 END_MESSAGE_MAP()
 
 
@@ -282,6 +283,12 @@ void CTabStripCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	__super::OnHScroll(nSBCode, nPos, pScrollBar);
 	ResetTooltips();
+}
+
+void CTabStripCtrl::OnSelchange( NMHDR* pNMHDR, LRESULT* pResult ) 
+{
+	ResetTooltips();
+	*pResult = 0;
 }
 
 void CTabStripCtrl::PostNcDestroy() 

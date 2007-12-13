@@ -21,19 +21,18 @@ CTabPage::CTabPage( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane,
 
 CTabPage::~CTabPage()
 {
-
 }
-
-
-BEGIN_MESSAGE_MAP(CTabPage, CDialog)
-	ON_WM_ERASEBKGND()
-END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CTabPage message handlers
 
-BOOL CTabPage::OnEraseBkgnd(CDC* pDC)
+BOOL CTabPage::OnCommand(WPARAM wParam, LPARAM lParam)
 {
-	return CDialog::OnEraseBkgnd(pDC);
-	//return TRUE;
+	switch( LOWORD(wParam) )
+	{
+	case IDCANCEL:
+	case IDOK:
+		return FALSE;
+	}
+	return __super::OnCommand( wParam, lParam );
 }

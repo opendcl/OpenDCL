@@ -109,11 +109,19 @@ void CComboCtrl::OnKillFocus( CWnd* pNewWnd )
 	CInputFilter* pFilter = GetInputFilter();
 	if( pFilter )
 	{
+		DWORD dwCurSel = GetEditSel(); // Currently selected range
+		int nSelStart = LOWORD(dwCurSel);
+		int nSelEnd   = HIWORD(dwCurSel);
 		CString sText;
 		GetRawWindowText( sText );
 		if( !pFilter->OnValidateInput( sText ) )
+		{
 			sText = pFilter->GetLastValidInput();
+			nSelStart = -1;
+			nSelEnd = -1;
+		}
 		SetWindowText( sText ); //validate and set the input
+		SetEditSel( nSelStart, nSelEnd );
 	}
 }
 

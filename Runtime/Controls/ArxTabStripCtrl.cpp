@@ -264,6 +264,7 @@ void CArxTabStripCtrl::OnSelchange( NMHDR* pNMHDR, LRESULT* pResult )
 {
 	ActivateTabPage( GetTabPageAt( GetCurTabPage() ), true );
 	*pResult = 0;
+	__super::OnSelchange( pNMHDR, pResult );
 }
 
 void CArxTabStripCtrl::OnSelchanging( NMHDR* pNMHDR, LRESULT* pResult ) 

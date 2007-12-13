@@ -35,8 +35,5 @@ public:
 
 // Implementation
 protected:
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-
-protected:
-	DECLARE_MESSAGE_MAP()
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 };

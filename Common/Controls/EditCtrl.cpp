@@ -122,11 +122,19 @@ void CEditCtrl::OnKillFocus( CWnd* pNewWnd )
 	CInputFilter* pFilter = GetInputFilter();
 	if( pFilter )
 	{
+		int nSelStart = -1;
+		int nSelEnd = -1;
+		GetSel( nSelStart, nSelEnd );
 		CString sText;
 		GetRawWindowText( sText );
 		if( !pFilter->OnValidateInput( sText ) )
+		{
 			sText = pFilter->GetLastValidInput();
+			nSelStart = -1;
+			nSelEnd = -1;
+		}
 		SetWindowText( sText ); //validate and set the input
+		SetSel( nSelStart, nSelEnd, TRUE );
 	}
 }
 

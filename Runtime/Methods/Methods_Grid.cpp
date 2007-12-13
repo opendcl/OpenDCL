@@ -1586,7 +1586,7 @@ int Grid_SetCheck()
 	if (nCellStyle == Grid_CheckBoxes ||
 		nCellStyle == Grid_OptionButtons)
 	{
-		pGridCtrl->SetCellImage(nRow, nCol, nChecked);
+		pGridCtrl->SetCellChecked(nRow, nCol, (nChecked > 0));
 	}
 
 	acedRetT();

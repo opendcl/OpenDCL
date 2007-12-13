@@ -1976,9 +1976,5 @@
 			Name="RESOURCE_FILE"
 			Value="Editor.rc"
 		/>
-		<Global
-			Name="VCBuildHookUseVC7Paths"
-			Value="False"
-		/>
 	</Globals>
 </VisualStudioProject>

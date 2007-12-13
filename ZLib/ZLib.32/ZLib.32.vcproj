@@ -260,8 +260,8 @@
 	</Files>
 	<Globals>
 		<Global
-			Name="VCBuildHookUseVC7Paths"
-			Value="True"
+			Name="VCBuildHookBuildToolVersion"
+			Value="VC7"
 		/>
 	</Globals>
 </VisualStudioProject>

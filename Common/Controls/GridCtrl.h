@@ -166,6 +166,7 @@ public:
 	int GetCellUncheckedImage( int nRow, int nCol );
 	int GetCellCheckedImage( int nRow, int nCol );
 	bool IsCellChecked( int nRow, int nCol );
+	bool SetCellChecked( int nRow, int nCol, bool bChecked );
 	bool SetCellListData( int nRow, int nCol, const CArray<int, int>& rnImage, const CStringArray& rsList );
 	bool GetCellComboListItems( int nRow, int nCol, std::vector< tstring >& rsList, std::vector< int >& ridxImage );
 	UINT GetCellState( int nRow, int nCol );
@@ -181,6 +182,7 @@ protected:
 	_RowData& GetRowDataRef( size_t nRow );
 	_CellData& GetCellDataRef( size_t nRow, size_t nCol );
 	int GetCellListImage( int nRow, int nCol, LPCTSTR pszListText );
+	bool SetCellState( int nRow, int nCol, UINT nState );
 	CRect GetCurSelRect();
 	CRect GetCurCellRect( int area = LVIR_BOUNDS );
 	void InvalidateCell( int nRow, int nCol );

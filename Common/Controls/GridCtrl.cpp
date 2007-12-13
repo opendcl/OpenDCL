@@ -547,6 +547,11 @@ bool CGridCtrl::IsCellChecked( int nRow, int nCol )
 	return (GetCellState( nRow, nCol ) - 1) == GetCellCheckedImage( nRow, nCol );
 }
 
+bool CGridCtrl::SetCellChecked( int nRow, int nCol, bool bChecked )
+{
+	return (SetCellState( nRow, nCol, (bChecked? GetCellCheckedImage( nRow, nCol ) : GetCellUncheckedImage( nRow, nCol )) + 1 ));
+}
+
 bool CGridCtrl::SetCellListData( int nRow, int nCol, const CArray<int, int>& rnImage, const CStringArray& rsList )
 {
 	_CellData& CellData = GetCellDataRef( nRow, nCol );
@@ -952,6 +957,12 @@ UINT CGridCtrl::GetCellState( int nRow, int nCol )
 	return (lv.state >> 12);
 }
 
+bool CGridCtrl::SetCellState( int nRow, int nCol, UINT nState )
+{
+	LVITEM lv = { LVIF_STATE, nRow, nCol, nState << 12, LVIS_STATEIMAGEMASK, };
+	return (SetItem( &lv ) != FALSE);
+}
+
 bool CGridCtrl::ToggleCellState( int nRow, int nCol )
 {
 	int nCheckedImage = GetCellCheckedImage( nRow, nCol ) + 1;
@@ -1058,22 +1069,28 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 	switch( nCellStyle )
 	{
 	case Grid_CheckBoxes:
-		rcIcon += CSize( 4, 4 );
-		rcIcon.right = rcIcon.left + 14;
-		rcIcon.bottom = rcIcon.top + 14;
-		if( sLabel.IsEmpty() )
-			rcIcon.MoveToX( rcBounds.left + (rcBounds.Width() - 14) / 2 ); //center the icon in an empty cell
-		DrawCheckBox( cdc, rcIcon, (((lvi.state & LVIS_STATEIMAGEMASK) >> 12) > 1), bHighlight );
-		rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
+		{
+			rcIcon += CSize( 4, 4 );
+			rcIcon.right = rcIcon.left + 14;
+			rcIcon.bottom = rcIcon.top + 14;
+			if( sLabel.IsEmpty() )
+				rcIcon.MoveToX( rcBounds.left + (rcBounds.Width() - 14) / 2 ); //center the icon in an empty cell
+			bool bChecked = (((lvi.state & LVIS_STATEIMAGEMASK) >> 12) > 1);
+			DrawCheckBox( cdc, rcIcon, bChecked, bHighlight );
+			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
+		}
 		break;
 	case Grid_OptionButtons:
-		rcIcon += CSize( 4, 4 );
-		rcIcon.right = rcIcon.left + 14;
-		rcIcon.bottom = rcIcon.top + 14;
-		if( sLabel.IsEmpty() )
-			rcIcon.MoveToX( rcBounds.left + (rcBounds.Width() - 14) / 2 ); //center the icon in an empty cell
-		DrawOptionButton( cdc, rcIcon, (((lvi.state & LVIS_STATEIMAGEMASK) >> 12) > 1), bHighlight );
-		rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
+		{
+			rcIcon += CSize( 4, 4 );
+			rcIcon.right = rcIcon.left + 14;
+			rcIcon.bottom = rcIcon.top + 14;
+			if( sLabel.IsEmpty() )
+				rcIcon.MoveToX( rcBounds.left + (rcBounds.Width() - 14) / 2 ); //center the icon in an empty cell
+			bool bChecked = (((lvi.state & LVIS_STATEIMAGEMASK) >> 12) > 1);
+			DrawOptionButton( cdc, rcIcon, bChecked, bHighlight );
+			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
+		}
 		break;
 	case Grid_ArrowHead:
 		{

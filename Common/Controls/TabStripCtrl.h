@@ -50,5 +50,6 @@ protected:
 	afx_msg void OnDestroy();
 	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnSelchange( NMHDR* pNMHDR, LRESULT* pResult );
 	afx_msg void PostNcDestroy();
 };
