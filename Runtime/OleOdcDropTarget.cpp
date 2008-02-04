@@ -6,20 +6,16 @@
 #include "InvokeMethod.h"
 #include "UserMessageId.h"
 #include "ArxDwgListCtrl.h"
-#include "VdclTree.h"
+#include "ImageTreectrl.h"
 #include "AxContainerCtrl.h"
 #include "DclControlObject.h"
+#include "DclFormObject.h"
 #include "PropertyIds.h"
-#include "DropSource.h"
+#include "StdDropSource.h"
 #include "AutoDocLock.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
 
-
-BOOL acedStartOverrideDropTarget(COleDropTarget* pTarget);
-BOOL acedEndOverrideDropTarget(COleDropTarget* pTarget);
-BOOL acedAddDropTarget(COleDropTarget* pTarget);
-BOOL acedRemoveDropTarget(COleDropTarget* pTarget);
 
 const TCHAR *formatname = _T("CDclControlObject");
 
@@ -371,12 +367,11 @@ DROPEFFECT COleOdcDropTarget::OnDragOver(CWnd* pWnd, COleDataObject*
 		HTREEITEM	hitem;
 		UINT		flags = 0;
 
-		hitem = ((VdclTree*)m_pThisArxControl->GetWindow())->m_ChildTree.HitTest(point, &flags);
+		hitem = ((CImageTreeCtrl*)m_pThisArxControl->GetWindow())->HitTest(point, &flags);
 
 		if (hitem != NULL && (TVHT_ONITEM & flags))
 		{
-			((VdclTree*)m_pThisArxControl->GetWindow())->m_ChildTree.SelectDropTarget(hitem);
-			ASSERT(pmyTreeCtrl->GetDropHilightItem() == hItem);
+			((CImageTreeCtrl*)m_pThisArxControl->GetWindow())->SelectDropTarget(hitem);
 		}
 	}
 
@@ -410,11 +405,11 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 		HTREEITEM	hitem;
 		UINT		flags = 0;
 		CString		sTreeItemKey;
-		VdclTree *pTree = (VdclTree*)m_pThisArxControl->GetWindow();
+		CImageTreeCtrl *pTree = (CImageTreeCtrl*)m_pThisArxControl->GetWindow();
 
-		if ((hitem = pTree->m_ChildTree.HitTest(point, &flags)) != NULL)
+		if ((hitem = pTree->HitTest(point, &flags)) != NULL)
 		{
-			sTreeItemKey = pTree->Get_hItemKey(hitem);			
+			sTreeItemKey = pTree->GetItemKey(hitem);			
 		}
 		
 		if (pControl == NULL)
@@ -602,7 +597,7 @@ DROPEFFECT BeginDragnDrop(TDclControlPtr pControl, CPoint point, bool bInvokeWit
 	COleDataSource *pSource = generateDataSource(objType, CRect(point, CSize(0,0)));
 	
 	CMyOverrideDropTarget myDT;
-	CDropSource myDS;
+	CStdDropSource myDS;
 
 	myDT.m_pThisArxControl = pControl;
 	// Start overriding AutoCAD's Droptarget
@@ -632,7 +627,7 @@ DROPEFFECT BeginDragnDropToInsertBlocks(TDclControlPtr pControl, CPoint point, b
 	COleDataSource *pSource = generateDataSource(objType, CRect(point, CSize(0,0)));
 	
 	CMyOverrideDropTarget myDT;
-	CDropSource myDS;
+	CStdDropSource myDS;
 
 	myDT.m_pBlockNames = &BlockNames;
 

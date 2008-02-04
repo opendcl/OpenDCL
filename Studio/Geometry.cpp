@@ -6,7 +6,8 @@
 #include "PropertyObject.h"
 #include "DclFormObject.h"
 #include "DclControlObject.h"
-#include "OpenDCLView.h"
+#include "DclFormView.h"
+#include "StudioDialogControl.h"
 #include "ControlTypes.h"
 #include "PropertyIds.h"
 
@@ -14,9 +15,13 @@
 /////////////////////////////////////////////////////////////////////////////
 // CGeometry property page
 
-IMPLEMENT_DYNCREATE(CGeometry, CPropertyPage)
-
-CGeometry::CGeometry() : CPropertyPage(CGeometry::IDD)
+CGeometry::CGeometry( TDclControlPtr pDclControl )
+: CPropertyPage(CGeometry::IDD)
+, mpDclControl( pDclControl )
+, m_pUseTopFromBottom( pDclControl->GetPropertyObject( Prop::UseTopFromBottom ) )
+, m_pUseBottomFromBottom( pDclControl->GetPropertyObject( Prop::UseBottomFromBottom ) )
+, m_pUseLeftFromRight( pDclControl->GetPropertyObject( Prop::UseLeftFromRight ) )
+, m_pUseRightFromRight( pDclControl->GetPropertyObject( Prop::UseRightFromRight ) )
 {
 	//{{AFX_DATA_INIT(CGeometry)
 	//}}AFX_DATA_INIT
@@ -59,67 +64,23 @@ BOOL CGeometry::OnApply()
 {
 	m_pUseTopFromBottom->SetType(PropLong);
 	m_pUseTopFromBottom->SetLongValue(m_Top.GetItemData(m_Top.GetCurSel()));
-
 	m_pUseLeftFromRight->SetType(PropLong);
 	m_pUseLeftFromRight->SetLongValue(m_Left.GetItemData(m_Left.GetCurSel()));
-
 	m_pUseBottomFromBottom->SetType(PropLong);
 	m_pUseBottomFromBottom->SetLongValue(m_Bottom.GetItemData(m_Bottom.GetCurSel()));
-
-	
 	m_pUseRightFromRight->SetType(PropLong);
 	m_pUseRightFromRight->SetLongValue(m_Right.GetItemData(m_Right.GetCurSel()));
-
-	
-	COpenDCLView *pView = (COpenDCLView *)m_pDclForm->m_pChildWnd;
-	
-	pView->CalcAllOffsets();
-	
+	CStudioDialogControl::UpdateProperty( mpDclControl, Prop::Top );
+	CStudioDialogControl::UpdateProperty( mpDclControl, Prop::Left );
+	CStudioDialogControl::UpdateProperty( mpDclControl, Prop::Height );
+	CStudioDialogControl::UpdateProperty( mpDclControl, Prop::Width );
 	return CPropertyPage::OnApply();
 }
 
 
-
-void CGeometry::ShowSplitter(CString sName) 
-{
-	TDclControlPtr pCtrl = m_pDclForm->FindControl(sName, CtlSplitter);
-	if (pCtrl)
-	{
-		int nTheWidth = pCtrl->GetLongProperty(Prop::Width);
-		int nTheHeight = pCtrl->GetLongProperty(Prop::Height);
-		int nTheLeft = pCtrl->GetLongProperty(Prop::Left);
-		int nTheTop = pCtrl->GetLongProperty(Prop::Top);
-		
-		if (nTheWidth > nTheHeight)
-		{
-			if (m_pControl->GetLongProperty(Prop::Top) < nTheTop)
-				m_BottomSplitter.ShowWindow(TRUE);
-			else
-				m_TopSplitter.ShowWindow(TRUE);
-		}
-		else
-		{
-			if (m_pControl->GetLongProperty(Prop::Left) < nTheLeft)
-				m_RightSplitter.ShowWindow(TRUE);
-			else
-				m_LeftSplitter.ShowWindow(TRUE);
-		}
-	}
-}
-
 BOOL CGeometry::OnInitDialog() 
 {
 	CPropertyPage::OnInitDialog();
-	
-	m_LeftSplitter.Create(WS_CHILD, CRect (10,10,90,90), &m_ExampleImage, 10101);
-	m_TopSplitter.Create(WS_CHILD, CRect (10,10,90,90), &m_ExampleImage, 10102);
-	m_RightSplitter.Create(WS_CHILD, CRect (10,10,90,90), &m_ExampleImage, 10103);
-	m_BottomSplitter.Create(WS_CHILD, CRect (10,10,90,90), &m_ExampleImage, 10104);
-
-	m_LeftSplitter.MoveWindow(50-10, 79+2-9, 6, 81);
-	m_TopSplitter.MoveWindow(37-9, 70+2-9, 141, 6);
-	m_RightSplitter.MoveWindow(37+141-6-13-9, 79+2-9, 6, 81);
-	m_BottomSplitter.MoveWindow(37-9, 166-1-9, 141, 6);
 
 	m_Top.SetItemData(0, 0);
 	m_Top.SetItemData(1, 1);
@@ -135,31 +96,22 @@ BOOL CGeometry::OnInitDialog()
 	m_Right.SetItemData(1, 1);
 
 	TDclControlList Splitters;
-	m_pDclForm->FindControls(CtlSplitter, Splitters);
+	mpDclControl->GetOwnerForm()->FindControls(CtlSplitter, Splitters);
 	for( TDclControlList::const_iterator iter = Splitters.begin(); iter != Splitters.end(); ++iter )
 	{
-		if (!(*iter)->IsDeleted())
+		int nTheWidth = (*iter)->GetLongProperty(Prop::Width);
+		int nTheHeight = (*iter)->GetLongProperty(Prop::Height);
+		if (nTheWidth > nTheHeight)
 		{
-			int nTheWidth = (*iter)->GetLongProperty(Prop::Width);
-			int nTheHeight = (*iter)->GetLongProperty(Prop::Height);
-			if (nTheWidth > nTheHeight)
-			{
-				m_Top.SetItemData(m_Top.AddString((*iter)->GetStringProperty(Prop::Name)), (*iter)->GetID());
-				m_Bottom.SetItemData(m_Bottom.AddString((*iter)->GetStringProperty(Prop::Name)), (*iter)->GetID());
-			}
-			else
-			{
-				m_Left.SetItemData(m_Left.AddString((*iter)->GetStringProperty(Prop::Name)), (*iter)->GetID());
-				m_Right.SetItemData(m_Right.AddString((*iter)->GetStringProperty(Prop::Name)), (*iter)->GetID());
-			}
+			m_Top.SetItemData(m_Top.AddString((*iter)->GetStringProperty(Prop::Name)), (*iter)->GetID());
+			m_Bottom.SetItemData(m_Bottom.AddString((*iter)->GetStringProperty(Prop::Name)), (*iter)->GetID());
+		}
+		else
+		{
+			m_Left.SetItemData(m_Left.AddString((*iter)->GetStringProperty(Prop::Name)), (*iter)->GetID());
+			m_Right.SetItemData(m_Right.AddString((*iter)->GetStringProperty(Prop::Name)), (*iter)->GetID());
 		}
 	}
-	
-	m_LeftSplitter.ShowWindow(FALSE);
-	m_TopSplitter.ShowWindow(FALSE);
-	m_RightSplitter.ShowWindow(FALSE);
-	m_BottomSplitter.ShowWindow(FALSE);
-
 
 	if (m_pUseRightFromRight->GetType() == PropLong)
 	{
@@ -207,10 +159,6 @@ BOOL CGeometry::OnInitDialog()
 	}
 	else
 		m_Left.SetCurSel(m_pUseLeftFromRight->GetBooleanValue() == TRUE);
-	
-
-	ShowAllSplitters();
-	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
@@ -233,85 +181,29 @@ void CGeometry::OnSelchangeLeft()
 
 	m_ExampleImage.Invalidate();
 	SetModified(TRUE);
-	
-
-	ShowAllSplitters();
-}
-
-void CGeometry::ShowAllSplitters() 
-{
-	CString sSplitterName;
-
-	m_LeftSplitter.ShowWindow(FALSE);
-	m_TopSplitter.ShowWindow(FALSE);
-	m_RightSplitter.ShowWindow(FALSE);
-	m_BottomSplitter.ShowWindow(FALSE);
-
-	if (m_Left.GetCurSel() > 2)
-	{
-		m_Left.GetLBText(m_Left.GetCurSel(), sSplitterName);
-		ShowSplitter(sSplitterName);
-	}
-	
-	if (m_Top.GetCurSel() > 1)
-	{
-		m_Top.GetLBText(m_Top.GetCurSel(), sSplitterName);
-		ShowSplitter(sSplitterName);
-		m_TopSplitter.Invalidate();
-	}
-
-	if (m_Bottom.GetCurSel() > 1)
-	{
-		m_Bottom.GetLBText(m_Bottom.GetCurSel(), sSplitterName);
-		ShowSplitter(sSplitterName);
-		m_BottomSplitter.Invalidate();
-	}
-
-	if (m_Right.GetCurSel() > 1)
-	{
-		m_Right.GetLBText(m_Right.GetCurSel(), sSplitterName);
-		ShowSplitter(sSplitterName);
-		m_RightSplitter.Invalidate();
-	}
-
 }
 
 void CGeometry::OnSelchangeTop() 
 {
 	m_ExampleImage.Invalidate();
 	SetModified(TRUE);	
-
-	ShowAllSplitters();
-	
 }
 
 void CGeometry::OnSelchangeBottom() 
 {
 	m_ExampleImage.Invalidate();
 	SetModified(TRUE);	
-
-	ShowAllSplitters();
-
 }
 
 void CGeometry::OnSelchangeRight() 
 {
 	m_ExampleImage.Invalidate();
 	SetModified(TRUE);	
-
-	ShowAllSplitters();
-	
-	
 }
 
 void CGeometry::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
-	
-	m_TopSplitter.Invalidate();
-	m_LeftSplitter.Invalidate();
-	m_RightSplitter.Invalidate();
-	m_BottomSplitter.Invalidate();
 	// Do not call CPropertyPage::OnPaint() for painting messages
 }
 

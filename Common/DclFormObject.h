@@ -3,7 +3,7 @@
 #include "DclFormTypes.h"
 #include "ImageListObject.h"
 #include "Project.h"
-#include "PtrTypes.h"
+#include "DclControlObject.h"
 #include <list>
 
 class CFontCollection;
@@ -26,7 +26,6 @@ protected:
 	CString msName;
 	UINT_PTR mnNextId;
 	bool mbUsesClientRect;
-	bool mbDeleted;
 	CDialogObject* mpDlgObject; //informational pointer to the one and only instance of this form (or NULL)
 
 	//for managing tab hierarchy and order
@@ -39,8 +38,6 @@ protected:
 public:
 	//Used in editor only
 	HTREEITEM m_htiTreeItem;
-	CView *m_pChildWnd;
-	CMDIChildWnd *m_pMdiChildWnd;
 
 protected:
 	CDclFormObject();
@@ -55,23 +52,22 @@ public:
 
 // Operations
 public:
-	void AddControl( TDclControlPtr pDclControl );
-	TDclControlPtr AddControl( ControlType type, LPCTSTR pszKeyName );
-	void DeleteControl( TDclControlPtr& pDclControl );
-	void PurgeDeletedControls();
-	bool ReorderControl( TDclControlPtr pDclControl, bool bToFront, bool bDeferReindexing = false );
-	bool ReorderControl( TDclControlPtr pDclControl, size_t idxNew, bool bDeferReindexing = false );
-	void ReindexControls();
-	size_t CountDeletedControls() const;
+	virtual void AddControl( TDclControlPtr pDclControl, bool bAssignNewID = false );
+	virtual TDclControlPtr AddControl( ControlType type, LPCTSTR pszKeyName, const CRect& rcControl );
+	virtual void DeleteControl( TDclControlPtr& pDclControl );
+	virtual bool ReorderControl( TDclControlPtr pDclControl, bool bToFront );
+	virtual bool ReorderControl( TDclControlPtr pDclControl, size_t idxNew );
 
 	//void SaveSS(int n, int nType, class CStgFile &FileStg, CDocument *pDoc);
 	//static TDclFormPtr ReadSS(int n, int nType, CStgFile &FileStg, CDocument *pDoc);
 
 protected:
+	virtual void OnModified();
 	TDclControlPtr CreateControlProperties();
 
 	//Services
 public:
+	TDclControlPtr GetRefCountedPtr( CDclControlObject* pDclControl ) const;
 	void ClearControls();
 	TDclControlPtr FindControl( LPCTSTR pszControlName ) const;
 	TDclControlPtr FindControl( LPCTSTR pszControlName, ControlType eType ) const;
@@ -88,7 +84,9 @@ public:
 	const TProjectPtr GetProject() const { return mpProject; }
 	TProjectPtr GetProject() { return mpProject; }
 	DclFormType GetType() const { return mType; }
+	CUndoManager* GetUndoManager() const { return (mpProject? mpProject->GetUndoManager() : NULL); }
 	bool IsModeless() const;
+	CWnd* GetFormWindow() const;
 	const CDialogObject* GetFormInstance() const { return mpDlgObject; }
 	CDialogObject* GetFormInstance() { return mpDlgObject; }
 	void SetFormInstance( CDialogObject* pDlgObject );
@@ -100,21 +98,21 @@ public:
 	UUID GetUUID() const;
 	const CString& GetUUIDAsString() const { return msUUID; }
 	const CString& GetUniqueName() const { return msUniqueName; }
-	void SetUniqueName( LPCTSTR pszName ) { msUniqueName = pszName; }
+	void SetUniqueName( LPCTSTR pszName ) { msUniqueName = pszName; OnModified(); }
 	CString GetParentName() const { return mpParentForm? mpParentForm->GetUniqueName() : CString(); }
 	const TDclFormPtr GetParentForm() const { return mpParentForm; }
 	TDclFormPtr GetParentForm() { return mpParentForm; }
 	void SetParentForm( TDclFormPtr pParentForm );
 	void SetParentForm( LPCTSTR pszParentUniqueName );
 	short GetTabIndex() const { return mnTabIndex; }
-	void SetTabIndex( short nIndex ) { mnTabIndex = nIndex; }
+	void SetTabIndex( short nIndex ) { mnTabIndex = nIndex; OnModified(); }
 	bool UsesClientRect() const { return mbUsesClientRect; }
-	void SetUsesClientRect( bool bUsesClientRect = true ) { mbUsesClientRect = bUsesClientRect; }
-	bool IsDeleted() const { return mbDeleted; }
-	void SetDeleted( bool bDelete = true ) { mbDeleted = bDelete; }
+	void SetUsesClientRect( bool bUsesClientRect = true ) { mbUsesClientRect = bUsesClientRect; OnModified(); }
 	LPCTSTR GetTitleText() const;
 	UINT_PTR GetTitleBarIcon();
 	UINT_PTR GetNextId() { if( mnNextId < mDclControls.size() ) mnNextId = mDclControls.size(); return mnNextId++; }
+public:
+	static size_t GetCurrentControlIndex( TDclControlPtr pDclControl );
 
 	//File I/O
 public:

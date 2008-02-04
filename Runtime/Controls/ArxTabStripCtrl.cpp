@@ -22,8 +22,7 @@ CArxTabStripCtrl::CArxTabStripCtrl( TDclControlPtr pTemplate,
 																		UINT nID,
 																		bool bCreate /*= true*/ )
 : CTabStripCtrl( pTemplate, pPane, nID, false )
-, mArxServices( pTemplate )
-, mbInvokeWithSendString( false )
+, mArxServices( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -40,10 +39,6 @@ bool CArxTabStripCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( !bSuccess )
 		return false;
 
-	ModifyStyleEx( 0, WS_EX_CONTROLPARENT ); //this prevents the TAB key from locking up the dialog!
-
-	mbInvokeWithSendString = (GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1);
-
 	CreateTabPages( nID );
 	ActivateTabPage( GetTabPageAt( GetCurTabPage() ), true );
 
@@ -54,7 +49,7 @@ bool CArxTabStripCtrl::GetChildPanes( std::list< const CControlPane* >& listChil
 {
 	size_t idx = mTabPages.size();
 	while( idx-- > 0 )
-		listChildren.push_back( &mTabPages.at( idx )->GetControlPane() );
+		listChildren.push_back( mTabPages.at( idx )->GetControlPane() );
 	return true;
 }
 
@@ -93,13 +88,13 @@ const TDclFormPtr CArxTabStripCtrl::GetTabSourceFormAt( size_t nPageIndex ) cons
 		return NULL;
 	return mTabPages.at( nPageIndex )->GetSourceForm();
 }
-
-const CControlPane* CArxTabStripCtrl::GetTabControlPaneAt( size_t nPageIndex ) const
-{
-	if( nPageIndex >= mTabPages.size() )
-		return NULL;
-	return &mTabPages.at( nPageIndex )->GetControlPane();
-}
+//
+//const CControlPane* CArxTabStripCtrl::GetTabControlPaneAt( size_t nPageIndex ) const
+//{
+//	if( nPageIndex >= mTabPages.size() )
+//		return NULL;
+//	return mTabPages.at( nPageIndex )->GetControlPane();
+//}
 
 bool CArxTabStripCtrl::SetCurrentTab( size_t nPageIndex )
 {
@@ -205,7 +200,7 @@ void CArxTabStripCtrl::DestroyTabPages()
 	while( idx-- > 0 )
 	{
 		TTabPagePtr pTabPage = mTabPages.at( idx );
-		pTabPage->GetControlPane().CleanUpControls();
+		pTabPage->GetControlPane()->CleanUpControls();
 		pTabPage->DestroyWindow();
 	}
 	mTabPages.clear();
@@ -225,33 +220,32 @@ void CArxTabStripCtrl::ActivateTabPage( TTabPagePtr pTabPage, bool bFireEvent /*
 	if( !pSourceForm )
 		return;
 
-	CRect rectTab = GetUsedArea();
-	pTabPage->SetWindowPos( NULL, 
-													rectTab.left,
-													rectTab.top,
-													rectTab.Width(),
-													rectTab.Height(),
-													SWP_FRAMECHANGED | SWP_NOCOPYBITS | SWP_NOZORDER | SWP_NOOWNERZORDER );
-	pTabPage->GetControlPane().RecalcLayout();
+	//CRect rectTab = GetUsedArea();
+	//pTabPage->SetWindowPos( NULL, 
+	//												rectTab.left,
+	//												rectTab.top,
+	//												rectTab.Width(),
+	//												rectTab.Height(),
+	//												SWP_FRAMECHANGED | SWP_NOCOPYBITS | SWP_NOZORDER | SWP_NOOWNERZORDER );
+	//pTabPage->GetControlPane()->RecalcLayout();
 	pTabPage->ShowWindow( SW_SHOW );
 	if( bNewPage )
 		SetFirstControlFocus( pTabPage );
 	Invalidate();
 
 	if (bFireEvent)
-		InvokeMethodInt( mpTemplate->GetStringProperty(Prop::EventChanged), GetCurTabPage(), mbInvokeWithSendString );
+		InvokeMethodInt( mpTemplate->GetStringProperty(Prop::EventChanged), GetCurTabPage(), IsAsyncEvents() );
 }
 
 void CArxTabStripCtrl::SetFirstControlFocus( CTabPage* pTabPage )
 {
-	pTabPage->GetControlPane().SetFirstControlFocus();
+	pTabPage->GetControlPane()->SetFirstControlFocus();
 }
 
 
 BEGIN_MESSAGE_MAP(CArxTabStripCtrl, CTabCtrl)
 	ON_NOTIFY_REFLECT(TCN_SELCHANGE, OnSelchange)
 	ON_NOTIFY_REFLECT(TCN_SELCHANGING, OnSelchanging)	
-	ON_WM_SIZE()
 	ON_WM_KILLFOCUS()
 	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
@@ -269,24 +263,18 @@ void CArxTabStripCtrl::OnSelchange( NMHDR* pNMHDR, LRESULT* pResult )
 
 void CArxTabStripCtrl::OnSelchanging( NMHDR* pNMHDR, LRESULT* pResult ) 
 {
-	InvokeMethodInt( mpTemplate->GetStringProperty(Prop::EventSelChanging), GetCurTabPage(), mbInvokeWithSendString );
+	InvokeMethodInt( mpTemplate->GetStringProperty(Prop::EventSelChanging), GetCurTabPage(), IsAsyncEvents() );
 	*pResult = 0;
-}
-
-void CArxTabStripCtrl::OnSize(UINT nType, int cx, int cy) 
-{
-	CTabCtrl::OnSize(nType, cx, cy);
-	ActivateTabPage( GetTabPageAt( GetCurTabPage() ), false );
 }
 
 void CArxTabStripCtrl::OnKillFocus( CWnd* pNewWnd ) 
 {
-	CTabCtrl::OnKillFocus( pNewWnd );
-	InvokeMethod( mpTemplate->GetStringProperty(Prop::EventKillFocus), mbInvokeWithSendString );
+	__super::OnKillFocus( pNewWnd );
+	InvokeMethod( mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents() );
 }
 
 void CArxTabStripCtrl::OnSetFocus( CWnd* pOldWnd ) 
 {
-	CTabCtrl::OnSetFocus( pOldWnd );
-	InvokeMethod( mpTemplate->GetStringProperty(Prop::EventSetFocus), mbInvokeWithSendString );
+	__super::OnSetFocus( pOldWnd );
+	InvokeMethod( mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents() );
 }

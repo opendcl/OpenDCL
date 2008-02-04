@@ -5,9 +5,10 @@ dcl_Animate_
 [Desc]
 This method will load an animated file and activate it.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab sFileName
 [as String]
+
 
 [Method]
 Stop
@@ -16,7 +17,7 @@ dcl_Animate_
 [Desc]
 This stops the animation from playing.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -26,7 +27,7 @@ dcl_Animate_
 [Desc]
 This method will display a specific frame of the animation file.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab FrameIndex
 [as Integer]
 
@@ -38,7 +39,7 @@ dcl_Animate_
 [Desc]
 This method closes the animate file previously opened.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 [End of File]

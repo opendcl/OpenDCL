@@ -37,8 +37,10 @@
 #include "WinColorDlg.h"
 #include "AxContainerCtrl.h"
 #include "AxInterfaceDescriptor.h"
-#include "ControlHolder.h"
+#include "ControlManager.h"
 #include "PropertyObject.h"
+#include "Workspace.h"
+#include "Resource.h"
 
 
 #define DEFAULT_BOX_VALUE -3
@@ -48,53 +50,65 @@
 #define MAX_COLOURS      100
 
 
-ColourTableEntry CColourPopup::m_crColours[] = 
+// To hold the colours and their names
+typedef struct {
+    COLORREF crColour;
+    CString szName;
+} ColourTableEntry;
+
+static const ColourTableEntry* GetColors( UINT* pCount = NULL )
 {
-    { RGB(0x00, 0x00, 0x00),    _T("Black")             },
-    { RGB(0xA5, 0x2A, 0x00),    _T("Brown")             },
-    { RGB(0x00, 0x40, 0x40),    _T("Dark Olive Green")  },
-    { RGB(0x00, 0x55, 0x00),    _T("Dark Green")        },
-    { RGB(0x00, 0x00, 0x5E),    _T("Dark Teal")         },
-    { RGB(0x00, 0x00, 0x8B),    _T("Dark blue")         },
-    { RGB(0x4B, 0x00, 0x82),    _T("Indigo")            },
-    { RGB(0x28, 0x28, 0x28),    _T("Dark grey")         },
+	static const ColourTableEntry Colours[] = 
+	{
+			{ RGB(0x00, 0x00, 0x00),    theWorkspace.LoadResourceString( IDS_COLOR_BLACK ) },
+			{ RGB(0xA5, 0x2A, 0x00),    theWorkspace.LoadResourceString( IDS_COLOR_BROWN ) },
+			{ RGB(0x00, 0x40, 0x40),    theWorkspace.LoadResourceString( IDS_COLOR_DARKOLIVEGREEN ) },
+			{ RGB(0x00, 0x55, 0x00),    theWorkspace.LoadResourceString( IDS_COLOR_DARKGREEN ) },
+			{ RGB(0x00, 0x00, 0x5E),    theWorkspace.LoadResourceString( IDS_COLOR_DARKTEAL ) },
+			{ RGB(0x00, 0x00, 0x8B),    theWorkspace.LoadResourceString( IDS_COLOR_DARKBLUE ) },
+			{ RGB(0x4B, 0x00, 0x82),    theWorkspace.LoadResourceString( IDS_COLOR_INDIGO ) },
+			{ RGB(0x28, 0x28, 0x28),    theWorkspace.LoadResourceString( IDS_COLOR_DARKGRAY ) },
 
-    { RGB(0x8B, 0x00, 0x00),    _T("Dark red")          },
-    { RGB(0xFF, 0x68, 0x20),    _T("Orange")            },
-    { RGB(0x8B, 0x8B, 0x00),    _T("Dark yellow")       },
-    { RGB(0x00, 0x93, 0x00),    _T("Green")             },
-    { RGB(0x38, 0x8E, 0x8E),    _T("Teal")              },
-    { RGB(0x00, 0x00, 0xFF),    _T("Blue")              },
-    { RGB(0x7B, 0x7B, 0xC0),    _T("Blue-grey")         },
-    { RGB(0x66, 0x66, 0x66),    _T("Grey - 40")         },
+			{ RGB(0x8B, 0x00, 0x00),    theWorkspace.LoadResourceString( IDS_COLOR_DARKRED ) },
+			{ RGB(0xFF, 0x68, 0x20),    theWorkspace.LoadResourceString( IDS_COLOR_ORANGE ) },
+			{ RGB(0x8B, 0x8B, 0x00),    theWorkspace.LoadResourceString( IDS_COLOR_DARKYELLOW ) },
+			{ RGB(0x00, 0x93, 0x00),    theWorkspace.LoadResourceString( IDS_COLOR_GREEN ) },
+			{ RGB(0x38, 0x8E, 0x8E),    theWorkspace.LoadResourceString( IDS_COLOR_TEAL ) },
+			{ RGB(0x00, 0x00, 0xFF),    theWorkspace.LoadResourceString( IDS_COLOR_BLUE ) },
+			{ RGB(0x7B, 0x7B, 0xC0),    theWorkspace.LoadResourceString( IDS_COLOR_BLUEGRAY ) },
+			{ RGB(0x66, 0x66, 0x66),    theWorkspace.LoadResourceString( IDS_COLOR_GRAY40 ) },
 
-    { RGB(0xFF, 0x00, 0x00),    _T("Red")               },
-    { RGB(0xFF, 0xAD, 0x5B),    _T("Light orange")      },
-    { RGB(0x32, 0xCD, 0x32),    _T("Lime")              }, 
-    { RGB(0x3C, 0xB3, 0x71),    _T("Sea green")         },
-    { RGB(0x7F, 0xFF, 0xD4),    _T("Aqua")              },
-    { RGB(0x7D, 0x9E, 0xC0),    _T("Light blue")        },
-    { RGB(0x80, 0x00, 0x80),    _T("Violet")            },
-    { RGB(0x7F, 0x7F, 0x7F),    _T("Grey - 50")         },
+			{ RGB(0xFF, 0x00, 0x00),    theWorkspace.LoadResourceString( IDS_COLOR_RED ) },
+			{ RGB(0xFF, 0xAD, 0x5B),    theWorkspace.LoadResourceString( IDS_COLOR_LIGHTORANGE ) },
+			{ RGB(0x32, 0xCD, 0x32),    theWorkspace.LoadResourceString( IDS_COLOR_LIME ) }, 
+			{ RGB(0x3C, 0xB3, 0x71),    theWorkspace.LoadResourceString( IDS_COLOR_SEAGREEN ) },
+			{ RGB(0x7F, 0xFF, 0xD4),    theWorkspace.LoadResourceString( IDS_COLOR_AQUA ) },
+			{ RGB(0x7D, 0x9E, 0xC0),    theWorkspace.LoadResourceString( IDS_COLOR_LIGHTBLUE ) },
+			{ RGB(0x80, 0x00, 0x80),    theWorkspace.LoadResourceString( IDS_COLOR_VIOLET ) },
+			{ RGB(0x7F, 0x7F, 0x7F),    theWorkspace.LoadResourceString( IDS_COLOR_GRAY50 ) },
 
-    { RGB(0xFF, 0xC0, 0xCB),    _T("Pink")              },
-    { RGB(0xFF, 0xD7, 0x00),    _T("Gold")              },
-    { RGB(0xFF, 0xFF, 0x00),    _T("Yellow")            },    
-    { RGB(0x00, 0xFF, 0x00),    _T("Bright green")      },
-    { RGB(0x40, 0xE0, 0xD0),    _T("Turquoise")         },
-    { RGB(0xC0, 0xFF, 0xFF),    _T("Skyblue")           },
-    { RGB(0x48, 0x00, 0x48),    _T("Plum")              },
-    { RGB(0xC0, 0xC0, 0xC0),    _T("Light grey")        },
+			{ RGB(0xFF, 0xC0, 0xCB),    theWorkspace.LoadResourceString( IDS_COLOR_PINK ) },
+			{ RGB(0xFF, 0xD7, 0x00),    theWorkspace.LoadResourceString( IDS_COLOR_GOLD ) },
+			{ RGB(0xFF, 0xFF, 0x00),    theWorkspace.LoadResourceString( IDS_COLOR_YELLOW ) },    
+			{ RGB(0x00, 0xFF, 0x00),    theWorkspace.LoadResourceString( IDS_COLOR_BRIGHTGREEN ) },
+			{ RGB(0x40, 0xE0, 0xD0),    theWorkspace.LoadResourceString( IDS_COLOR_TURQUOISE ) },
+			{ RGB(0xC0, 0xFF, 0xFF),    theWorkspace.LoadResourceString( IDS_COLOR_SKYBLUE ) },
+			{ RGB(0x48, 0x00, 0x48),    theWorkspace.LoadResourceString( IDS_COLOR_PLUM ) },
+			{ RGB(0xC0, 0xC0, 0xC0),    theWorkspace.LoadResourceString( IDS_COLOR_LIGHTGRAY ) },
 
-    { RGB(0xFF, 0xE4, 0xE1),    _T("Rose")              },
-    { RGB(0xD2, 0xB4, 0x8C),    _T("Tan")               },
-    { RGB(0xFF, 0xFF, 0xE0),    _T("Light yellow")      },
-    { RGB(0x98, 0xFB, 0x98),    _T("Pale green ")       },
-    { RGB(0xAF, 0xEE, 0xEE),    _T("Pale turquoise")    },
-    { RGB(0x68, 0x83, 0x8B),    _T("Pale blue")         },
-    { RGB(0xE6, 0xE6, 0xFA),    _T("Lavender")          },
-    { RGB(0xFF, 0xFF, 0xFF),    _T("White")             }
-};
+			{ RGB(0xFF, 0xE4, 0xE1),    theWorkspace.LoadResourceString( IDS_COLOR_ROSE ) },
+			{ RGB(0xD2, 0xB4, 0x8C),    theWorkspace.LoadResourceString( IDS_COLOR_TAN ) },
+			{ RGB(0xFF, 0xFF, 0xE0),    theWorkspace.LoadResourceString( IDS_COLOR_LIGHTYELLOW ) },
+			{ RGB(0x98, 0xFB, 0x98),    theWorkspace.LoadResourceString( IDS_COLOR_PALEGREEN ) },
+			{ RGB(0xAF, 0xEE, 0xEE),    theWorkspace.LoadResourceString( IDS_COLOR_PALETURQUOISE ) },
+			{ RGB(0x68, 0x83, 0x8B),    theWorkspace.LoadResourceString( IDS_COLOR_PALEBLUE ) },
+			{ RGB(0xE6, 0xE6, 0xFA),    theWorkspace.LoadResourceString( IDS_COLOR_LAVENDER ) },
+			{ RGB(0xFF, 0xFF, 0xFF),    theWorkspace.LoadResourceString( IDS_COLOR_WHITE ) }
+	};
+	if( pCount )
+		*pCount = (sizeof(Colours) / sizeof(Colours[0]));
+	return Colours;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CColourPopup
@@ -102,20 +116,20 @@ ColourTableEntry CColourPopup::m_crColours[] =
 CColourPopup::CColourPopup()
 {
 	Initialise();
-	m_pAxCtrl = NULL;
+	m_pCtrl = NULL;
     m_pProp = NULL;
 }
 
 CColourPopup::CColourPopup(CPoint p, COLORREF crColour, CWnd* pParentWnd,
                            LPCTSTR szDefaultText /* = NULL */,
                            LPCTSTR szCustomText  /* = NULL */,
-						   TPropertyPtr pProp /*= NULL */,
-						   CControlHolder *pAxCtrl /* = NULL */)
+													 TPropertyPtr pProp /*= NULL */,
+													 CDialogControl *pCtrl /* = NULL */)
 {
     Initialise();
 	
 	m_pProp			 = pProp;
-    m_pAxCtrl		 = pAxCtrl;
+    m_pCtrl		 = pCtrl;
     m_crColour       = m_crInitialColour = crColour;
     m_pParent        = pParentWnd;
     m_strDefaultText = (szDefaultText)? szDefaultText : _T("");
@@ -126,7 +140,7 @@ CColourPopup::CColourPopup(CPoint p, COLORREF crColour, CWnd* pParentWnd,
 
 void CColourPopup::Initialise()
 {
-    m_nNumColours       = sizeof(m_crColours)/sizeof(ColourTableEntry);
+		GetColors( &m_nNumColours );
     ASSERT(m_nNumColours <= MAX_COLOURS);
     if (m_nNumColours > MAX_COLOURS)
         m_nNumColours = MAX_COLOURS;
@@ -161,11 +175,11 @@ void CColourPopup::Initialise()
     pLogPalette->palVersion    = 0x300;
     pLogPalette->palNumEntries = (WORD) m_nNumColours; 
 
-    for (int i = 0; i < m_nNumColours; i++)
+    for (UINT i = 0; i < m_nNumColours; i++)
     {
-        pLogPalette->palPalEntry[i].peRed   = GetRValue(m_crColours[i].crColour);
-        pLogPalette->palPalEntry[i].peGreen = GetGValue(m_crColours[i].crColour);
-        pLogPalette->palPalEntry[i].peBlue  = GetBValue(m_crColours[i].crColour);
+        pLogPalette->palPalEntry[i].peRed   = GetRValue(GetColors()[i].crColour);
+        pLogPalette->palPalEntry[i].peGreen = GetGValue(GetColors()[i].crColour);
+        pLogPalette->palPalEntry[i].peBlue  = GetBValue(GetColors()[i].crColour);
         pLogPalette->palPalEntry[i].peFlags = 0;
     }
 
@@ -176,6 +190,16 @@ CColourPopup::~CColourPopup()
 {
     m_Font.DeleteObject();
     m_Palette.DeleteObject();
+}
+
+COLORREF CColourPopup::GetColour(int nIndex)
+{
+	return GetColors()[nIndex].crColour;
+}
+
+LPCTSTR CColourPopup::GetColourName(int nIndex)
+{
+	return GetColors()[nIndex].szName;
 }
 
 BOOL CColourPopup::Create(CPoint p, COLORREF crColour, CWnd* pParentWnd,
@@ -416,7 +440,7 @@ void CColourPopup::OnPaint()
         DrawCell(&dc, DEFAULT_BOX_VALUE);
  
     // Draw colour cells
-    for (int i = 0; i < m_nNumColours; i++)
+    for (UINT i = 0; i < m_nNumColours; i++)
         DrawCell(&dc, i);
     
     // Draw custom text
@@ -455,7 +479,7 @@ void CColourPopup::OnMouseMove(UINT nFlags, CPoint point)
         nNewSelection = GetIndex(point.y / m_nBoxSize, point.x / m_nBoxSize);
 
         // In range? If not, default and exit
-        if (nNewSelection < 0 || nNewSelection >= m_nNumColours)
+        if (nNewSelection < 0 || (UINT)nNewSelection >= m_nNumColours)
         {
             CWnd::OnMouseMove(nFlags, point);
             return;
@@ -500,7 +524,7 @@ int CColourPopup::GetIndex(int row, int col) const
         return INVALID_COLOUR;
     else
     {
-        if (row*m_nNumColumns + col >= m_nNumColours)
+        if (row*m_nNumColumns + col >= (int)m_nNumColours)
             return INVALID_COLOUR;
         else
             return row*m_nNumColumns + col;
@@ -513,7 +537,7 @@ int CColourPopup::GetRow(int nIndex) const
         return CUSTOM_BOX_VALUE;
     else if (nIndex == DEFAULT_BOX_VALUE && m_strDefaultText.GetLength())
         return DEFAULT_BOX_VALUE;
-    else if (nIndex < 0 || nIndex >= m_nNumColours)
+    else if (nIndex < 0 || (UINT)nIndex >= m_nNumColours)
         return INVALID_COLOUR;
     else
         return nIndex / m_nNumColumns; 
@@ -525,7 +549,7 @@ int CColourPopup::GetColumn(int nIndex) const
         return CUSTOM_BOX_VALUE;
     else if (nIndex == DEFAULT_BOX_VALUE && m_strDefaultText.GetLength())
         return DEFAULT_BOX_VALUE;
-    else if (nIndex < 0 || nIndex >= m_nNumColours)
+    else if (nIndex < 0 || (UINT)nIndex >= m_nNumColours)
         return INVALID_COLOUR;
     else
         return nIndex % m_nNumColumns; 
@@ -539,7 +563,7 @@ void CColourPopup::FindCellFromColour(COLORREF crColour)
         return;
     }
 
-    for (int i = 0; i < m_nNumColours; i++)
+    for (UINT i = 0; i < m_nNumColours; i++)
     {
         if (GetColour(i) == crColour)
         {
@@ -572,7 +596,7 @@ BOOL CColourPopup::GetCellRect(int nIndex, const LPRECT& rect)
         return TRUE;
     }
 
-    if (nIndex < 0 || nIndex >= m_nNumColours)
+    if (nIndex < 0 || (UINT)nIndex >= m_nNumColours)
         return FALSE;
 
     rect->left = GetColumn(nIndex) * m_nBoxSize + m_nMargin;
@@ -699,7 +723,7 @@ void CColourPopup::CreateToolTips()
     if (!m_ToolTip.Create(this)) return;
 
     // Add a tool for each cell
-    for (int i = 0; i < m_nNumColours; i++)
+    for (UINT i = 0; i < m_nNumColours; i++)
     {
         CRect rect;
         if (!GetCellRect(i, rect)) continue;
@@ -712,10 +736,10 @@ void CColourPopup::ChangeSelection(int nIndex)
     CClientDC dc(this);        // device context for drawing
 
 	try{
-    if (nIndex > m_nNumColours)
+    if ((UINT)nIndex > m_nNumColours)
         nIndex = CUSTOM_BOX_VALUE; 
 
-    if ((m_nCurrentSel >= 0 && m_nCurrentSel < m_nNumColours) ||
+    if ((m_nCurrentSel >= 0 && (UINT)m_nCurrentSel < m_nNumColours) ||
         m_nCurrentSel == CUSTOM_BOX_VALUE || m_nCurrentSel == DEFAULT_BOX_VALUE)
     {
         // Set Current selection as invalid and redraw old selection (this way
@@ -782,9 +806,9 @@ void CColourPopup::EndSelection(int nMessage)
         m_crColour = m_crInitialColour;
 	else
 	{
-		if (m_pProp != NULL && m_pAxCtrl != NULL)
+		if (m_pProp != NULL && m_pCtrl != NULL)
 		{
-			m_pAxCtrl->SetColor(m_pProp->GetAxInterfaceDescriptorPtr()->GetPutDispId(), m_crColour);
+			m_pCtrl->GetActiveXCtrl()->SetColor(m_pProp->GetConstAxInterfaceDescriptorPtr()->GetPutDispId(), m_crColour);
 			m_pParent->Invalidate();
 		}
 	}

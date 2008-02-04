@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "FolderTreeCtrl.h"
-#include "SharedRes.h"
+#include "Resource.h"
 #include "Workspace.h"
 #include "FolderComboBox.h"
 

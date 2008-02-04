@@ -73,7 +73,7 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip& tooltip, TDclControlPtr pControl)
 		return;
 	CString sBody =
 		ConstructTooltipHtml( sTitle,
-													(pToolTipTitleColor? pToolTipTitleColor->GetOLEColorValue() : RGB(0,0,0)),
+													(pToolTipTitleColor? GetRGBColor( pToolTipTitleColor->GetLongValue() ) : RGB(0,0,0)),
 													(pToolTipLine && pToolTipLine->GetBooleanValue()),
 													sMain );
 
@@ -88,7 +88,7 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip& tooltip, TDclControlPtr pControl)
 		else if (nPic == -3)
 			tooltip.AddTool(pWnd, sBody, IDI_WARN);
 		else if (nPic == -4)
-			tooltip.AddTool(pWnd, sBody, IDI_X);
+			tooltip.AddTool(pWnd, sBody, IDI_ERR);
 		else if (nPic == 0)	
 			tooltip.AddTool(pWnd, sBody);
 		else if (nPic > 0 && pProject)
@@ -134,13 +134,13 @@ void SetToolTipEx(CWnd *pWnd, CPPToolTip &tooltip,
 	int nPic = Prop::Picture;
 
 	if (nPic == -1)
-		tooltip.AddTool(pWnd,  sBody, IDI_HELP);
+		tooltip.AddTool(pWnd, sBody, IDI_HELP);
 	else if (nPic == -2)
-		tooltip.AddTool(pWnd,  sBody, IDI_INFO);
+		tooltip.AddTool(pWnd, sBody, IDI_INFO);
 	else if (nPic == -3)
 		tooltip.AddTool(pWnd, sBody, IDI_WARN);
 	else if (nPic == -4)
-		tooltip.AddTool(pWnd, sBody, IDI_X);
+		tooltip.AddTool(pWnd, sBody, IDI_ERR);
 	else if (nPic == 0)	
 		tooltip.AddTool(pWnd, sBody);
 	else if (nPic > 0 && pProject)

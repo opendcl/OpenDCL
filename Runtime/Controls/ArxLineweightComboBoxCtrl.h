@@ -5,10 +5,11 @@
 
 #include "DialogControl.h"
 #include "ArxControlServices.h"
+#include "R2006AcUiMRUComboBoxFixup.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CArxArrowComboBoxCtrl window
+// CArxLineweightComboBoxCtrl window
 
 class CArxLineweightComboBoxCtrl : public CAcUiLineWeightComboBox, public CDialogControl
 {

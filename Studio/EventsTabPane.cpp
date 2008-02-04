@@ -11,12 +11,13 @@
 #include "PropertyObject.h"
 #include "AxEventDescriptor.h"
 #include "AxInterfaceDescriptor.h"
-#include "OpenDCLView.h"
+#include "OpenDCLDoc.h"
 #include "Project.h"
-#include "EditorWorkspace.h"
-#include "MainFrm.h"
+#include "StudioWorkspace.h"
+#include "StudioFrame.h"
 #include "LoadArgs.h"
 #include "PropertyNames.h"
+#include "ProjectPane.h"
 
 const int nTreeBottom = 150;
 const int nLabelBottom = 135;
@@ -29,12 +30,11 @@ const int nDescBottom = 26;
 // CEventsTabPane dialog
 
 CEventsTabPane::CEventsTabPane(CWnd* pParent /*=NULL*/)
-	: CDialog(CEventsTabPane::IDD, pParent)
-	, mszDlg( 0, 0 )
+: CDialog(CEventsTabPane::IDD, pParent)
+, mszDlg( 0, 0 )
 {
 	m_bInitialized = false;
 	m_pControl = NULL;
-	m_pView = NULL;
 }
 
 
@@ -66,9 +66,9 @@ BOOL CEventsTabPane::OnInitDialog()
 	CDialog::OnInitDialog();
 	m_bInitialized = true;
 
-	if (!AfxGetApp()->GetProfileInt(theWorkspace.LoadResourceString(IDR_MAINFRAME), _T("EventsCopyToClipboard"), TRUE))
+	if (!AfxGetApp()->GetProfileInt(theWorkspace.GetAppKey(), _T("EventsCopyToClipboard"), TRUE))
 		GetDlgItem(IDC_COPYTOCLIPBOARD)->ShowWindow(SW_HIDE);
-	if (!AfxGetApp()->GetProfileInt(theWorkspace.LoadResourceString(IDR_MAINFRAME), _T("EventsWriteToLispFile"), FALSE))
+	if (!AfxGetApp()->GetProfileInt(theWorkspace.GetAppKey(), _T("EventsWriteToLispFile"), FALSE))
 		GetDlgItem(IDC_ADDTOLISP)->ShowWindow(SW_HIDE);
 
 	CRect rectDlg;
@@ -256,7 +256,8 @@ void CEventsTabPane::AddAnyActiveXEvents()
 	{
 		if( (*iter)->GetType() == PropActiveXEvent )
 		{
-			CString sName = (*iter)->GetAxInterfaceDescriptorPtr()->GetEvent()->GetName();
+			const AxInterfaceDescriptor* pDescriptor = (*iter)->GetConstAxInterfaceDescriptorPtr();
+			CString sName = pDescriptor->GetEvent()->GetName();
 			if( !sName.IsEmpty() )
 			{
 				int idxEvent = m_EventsTree.AddString( sName );
@@ -357,11 +358,11 @@ CString CEventsTabPane::GetDefunArguments()
 	{
 		TPropertyList::const_iterator iter = m_pControl->GetPropertyList().begin();
 		while( nEventId-- > 0 ) ++iter;
-		strDesc = (*iter)->GetAxInterfaceDescriptorPtr()->GetEvent()->GetDesc();
-		size_t ctCallingArgs = (*iter)->GetAxInterfaceDescriptorPtr()->GetEvent()->GetArgs().size();
+		strDesc = (*iter)->GetConstAxInterfaceDescriptorPtr()->GetEvent()->GetDesc();
+		size_t ctCallingArgs = (*iter)->GetConstAxInterfaceDescriptorPtr()->GetEvent()->GetArgs().size();
 		for (UINT_PTR i = 0; i < ctCallingArgs; i++)
 		{
-			sArgs += (*iter)->GetAxInterfaceDescriptorPtr()->GetEvent()->GetArgs().at( i ).name;
+			sArgs += (*iter)->GetConstAxInterfaceDescriptorPtr()->GetEvent()->GetArgs().at( i ).name;
 			if (i < ctCallingArgs - 1)
 				sArgs += _T(" ");
 		}
@@ -390,46 +391,12 @@ void CEventsTabPane::ClearEvents()
 
 BOOL CEventsTabPane::PreTranslateMessage(MSG* pMsg) 
 {
-	//if( pMsg->message == WM_KEYDOWN ||  pMsg->message == WM_CHAR )
-	//{
-	//	// lets make sure the user can't press the [Esc] key and close the tab pane
-	//	switch (pMsg->wParam)
-	//	{			
-	//		case VK_ESCAPE:
-	//			{
-	//				return 1;
-	//			break;
-	//			}
-	//		case VK_DELETE:
-	//			{
-	//				m_pView->DeleteSelectedControls();
-	//			break;
-	//			}
-	//		case 3:
-	//			if (m_pView != NULL)
- //					m_pView->OnEditCopy();
-	//			break;
-	//		case 22:
-	//			if (m_pView != NULL)
- //					m_pView->OnEditPaste();
-	//			break;
-	//		case 24:
-	//			if (m_pView != NULL)
- //					m_pView->OnEditCut();
-	//			break;
-	//		case 26:
-	//			if (m_pView != NULL)
- //					m_pView->OnEditUndo();
-	//			break;
-	//		default:
-	//			if (m_pView != NULL)
- //					m_pView->PreTranslateMessage(pMsg);
-	//			break;
-	//	}
-	//	
-	//}	
-	
-	return CDialog::PreTranslateMessage(pMsg);
+	if( pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST )
+	{
+		if( AfxGetMainWnd()->PreTranslateMessage( pMsg ) )
+			return TRUE;
+	}
+	return CWnd::PreTranslateMessage(pMsg);
 }
 
 void CEventsTabPane::OnAddcancel() 
@@ -515,7 +482,7 @@ void CEventsTabPane::OnAddtolisp()
 											 _T(".lsp"), 
 											 sLispFileName, 
 											 OFN_HIDEREADONLY | OFN_ENABLESIZING | OFN_EXPLORER,
-											 theWorkspace.LoadResourceString(IDS_AUTOLISPFILE),
+											 theWorkspace.LoadResourceString(IDS_FILTERAUTOLISPFILE),
 											 CWnd::GetActiveWindow() );
 			CString sTitle = theWorkspace.LoadResourceString(IDS_SELECTPROJECTLISPFILE);
 			Dlg.m_pOFN->lpstrTitle = sTitle.LockBuffer();
@@ -525,8 +492,8 @@ void CEventsTabPane::OnAddtolisp()
 			if( sLispFileName.IsEmpty() )
 				return;
 			pProject->SetLispFileName( sLispFileName );
-			theEditorWorkspace.GetProjectTreeCtrl()->SetAutoLispFilename(sLispFileName);
-			CDocument* pDoc = m_pView->GetDocument();
+			theStudioWorkspace.GetProjectPane()->SetAutoLispFilename(sLispFileName);
+			CDocument* pDoc = theStudioWorkspace.GetActiveDocument();
 			if( pDoc )
 				pDoc->SetModifiedFlag();
 		}
@@ -545,7 +512,7 @@ void CEventsTabPane::OnAddtolisp()
 		
 		fout.Close();
 
-		MessageBox(theWorkspace.LoadResourceString(IDS_FUNCADDED), theWorkspace.LoadResourceString(IDR_MAINFRAME), MB_OK);
+		MessageBox(theWorkspace.LoadResourceString(IDS_FUNCADDED), theWorkspace.GetAppKey(), MB_OK);
 	}
 }
 

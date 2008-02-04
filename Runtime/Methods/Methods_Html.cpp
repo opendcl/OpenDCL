@@ -3,314 +3,299 @@
 
 #include "stdafx.h"
 #include "Methods_Html.h"
-#include "ControlTypes.h"
 #include "ArgumentsRetrieval.h"
-#include "MethodLexicon.h"
 #include "HtmlCtrl.h"
+#include "ControlTypes.h"
 
 
-int Html_Navigate()
+ADSRESULT Html::Navigate()
 {
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
+
 	CString sNavigateDest;
-	int nArg=0;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_Navigate, &nArg);
+	if (!GetStringArgument (pArgs, sNavigateDest))
+		return RSERR; //invalid input
 
-	if (!GetStringArgument(nArg, &sNavigateDest, sHtml_Navigate) || pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	((CHtmlCtrl*)pControl)->Navigate2(sNavigateDest, 0, NULL, NULL);
-
-	// return nil
-	acedRetVoid();
-	return 0;
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->Navigate2(sNavigateDest, 0, NULL, NULL);
+	acedRetT();
+	return RSRSLT;
 }
 
-
-
-int Html_Stop()
+ADSRESULT Html::Stop()
 {
-	CString sNavigateDest;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_Stop);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
 
-	((CHtmlCtrl*)pControl)->Stop();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	// return nil
-	acedRetVoid();
-	return 0;
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->Stop();
+	acedRetT();
+	return RSRSLT;
 }
 
-int Html_Refresh()
+ADSRESULT Html::Refresh()
 {
-	CString sNavigateDest;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_Refresh);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
 
-	((CHtmlCtrl*)pControl)->Refresh();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	// return nil
-	acedRetVoid();
-	return 0;
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->Refresh();
+	acedRetT();
+	return RSRSLT;
 }
 
-int Html_GoBack()
+ADSRESULT Html::GoBack()
 {
-	CString sNavigateDest;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_GoBack);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
 
-	((CHtmlCtrl*)pControl)->GoBack();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	// return nil
-	acedRetVoid();
-	return 0;
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->GoBack();
+	acedRetT();
+	return RSRSLT;
 }
 
-
-
-int Html_GoForward()
+ADSRESULT Html::GoForward()
 {
-	CString sNavigateDest;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_GoForward);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
 
-	((CHtmlCtrl*)pControl)->GoForward();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	// return nil
-	acedRetVoid();
-	return 0;
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->GoForward();
+	acedRetT();
+	return RSRSLT;
 }
-int Html_GoHome()
+
+ADSRESULT Html::GoHome()
 {
-	CString sNavigateDest;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_GoHome);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
 
-	((CHtmlCtrl*)pControl)->GoHome();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	// return nil
-	acedRetVoid();
-	return 0;
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->GoHome();
+	acedRetT();
+	return RSRSLT;
 }
-int Html_GoSearch()
+
+ADSRESULT Html::GoSearch()
 {
-	CString sNavigateDest;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_GoSearch);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
 
-	((CHtmlCtrl*)pControl)->GoSearch();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	// return nil
-	acedRetVoid();
-	return 0;
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->GoSearch();
+	acedRetT();
+	return RSRSLT;
 }
-int Html_GetLocationName()
+
+ADSRESULT Html::GetLocationName()
 {
-	CString sNavigateDest;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_GetLocationName);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
 
-	CString sLocation = ((CHtmlCtrl*)pControl)->GetLocationName();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	// return nil
-	acedRetStr(sLocation);
-	return 0;
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	acedRetStr( pCtrl->GetLocationName() );
+	return RSRSLT;
 }
-int Html_GetLocationURL()
+
+ADSRESULT Html::GetLocationURL()
 {
-	CString sNavigateDest;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_GetLocationURL);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
 
-	CString sLocation = ((CHtmlCtrl*)pControl)->GetLocationURL();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	// return nil
-	acedRetStr(sLocation);
-	return 0;
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	acedRetStr( pCtrl->GetLocationURL() );
+	return RSRSLT;
 }
-int Html_GetOffline()
+
+ADSRESULT Html::GetOffline()
 {
-	CString sNavigateDest;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_GetOffline);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetNil();
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
 
-	BOOL bOffline = ((CHtmlCtrl*)pControl)->GetOffline();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	if (bOffline)
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	if( pCtrl->GetOffline() )
 		acedRetT();
 	else
 		acedRetNil();
-	return 0;
+	return RSRSLT;
 }
-int Html_SetOffline()
+
+ADSRESULT Html::SetOffline()
 {
-	int nOffLine;
-	int nArg=0;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_SetOffline, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (!GetIntArgument(nArg, &nOffLine, sHtml_SetOffline) || pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
 
-	((CHtmlCtrl*)pControl)->SetOffline(nOffLine);
+	bool bOffline = true;
+	if (!GetBoolArgument (pArgs, bOffline))
+		return RSERR; //invalid input
 
-	// return nil
-	acedRetVoid();
-	return 0;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->SetOffline( bOffline );
+	acedRetT();
+	return RSRSLT;
 }
-int Html_GetBusy()
+
+ADSRESULT Html::GetBusy()
 {
-	CString sNavigateDest;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_GetBusy);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetNil();
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
 
-	BOOL bBusy = ((CHtmlCtrl*)pControl)->GetBusy();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	// return nil
-	if (bBusy)
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	if( pCtrl->GetBusy() )
 		acedRetT();
 	else
 		acedRetNil();
-	return 0;
+	return RSRSLT;
 }
 
-int Html_GetFullName()
+ADSRESULT Html::GetFullName()
 {
-	CString sNavigateDest;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_GetFullName);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
 
-	CString sFullName = ((CHtmlCtrl*)pControl)->GetFullName();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	// return nil
-	acedRetStr(sFullName);
-	return 0;
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	acedRetStr( pCtrl->GetFullName() );
+	return RSRSLT;
 }
 
-int Html_GetHtmlDocument()
+ADSRESULT Html::GetHtmlDocument()
 {
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_GetHtmlDocument);
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	struct resbuf *pArgs =acedGetArgs () ;
 
-  CString sHtmlText = ((CHtmlCtrl*)pControl)->GetHtmlText();
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
 
-	acedRetStr(sHtmlText);
-	return 0;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	acedRetStr( pCtrl->GetHtmlText() );
+	return RSRSLT;
 }
 
-int Html_ReplaceText()
+ADSRESULT Html::ReplaceText()
 {
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
+
 	CString sOldText;
+	if (!GetStringArgument (pArgs, sOldText))
+		return RSERR; //invalid input
+
 	CString sNewText;
+	if (!GetStringArgument (pArgs, sNewText))
+		return RSERR; //invalid input
 
-	CWnd *pControl =  GetArgsControlStringString(CtlHtmlCtrl, sHtml_ReplaceText, sOldText, sNewText);
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-
-	((CHtmlCtrl*)pControl)->ReplaceText(sOldText, sNewText);
-	acedRetVoid(); 
-	return 0;
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->ReplaceText( sOldText, sNewText );
+	acedRetT();
+	return RSRSLT;
 }
 
-
-int Html_UpdateHtmlCode()
+ADSRESULT Html::UpdateHtmlCode()
 {
-	int nArg=0;
-	CWnd *pControl = GetControlPointer(CtlHtmlCtrl, sHtml_UpdateHtmlCode, &nArg);
-	CString sHtmlCode;
-	
-	if (pControl == NULL || !GetStringArgument(nArg, &sHtmlCode, sHtml_UpdateHtmlCode))
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	((CHtmlCtrl*)pControl)->LoadHtmlCode(sHtmlCode);
-	acedRetVoid();
-	return 0;
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+		return RSERR; //invalid input
+
+	CString sHtmlCode;
+	if (!GetStringArgument (pArgs, sHtmlCode))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CHtmlCtrl* pCtrl = (CHtmlCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->LoadHtmlCode( sHtmlCode );
+	acedRetT();
+	return RSRSLT;
 }

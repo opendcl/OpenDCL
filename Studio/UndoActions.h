@@ -3,35 +3,269 @@
 
 #pragma once
 
+#include "PtrTypes.h"
+#include "DclFormObject.h"
 #include "DclControlObject.h"
+#include "PropertyObject.h"
 
 
-/////////////////////////////////////////////////////////////////////////////
-// CUndoActions window
-
-#define uaDeleted  1
-#define uaMoved	 2
-#define uaZOrder	 3
-#define uaInsert	 4
-#define uaFontName  5
-#define uaFontSize  6
-#define uaFontBold  7
-#define uaFontItalic  8
-#define uaFontUnderline  9
-
-class CUndoActions : public CObject
+namespace Undo
 {
-// Construction
+	enum Action
+	{
+		BeginGroup,
+		EndGroup,
+		AddForm,
+		DeleteForm,
+		SelectForm,
+		AddControl,
+		DeleteControl,
+		SelectControl,
+		ReorderControl,
+		PropertyChange,
+	};
+};
+
+
+class CUndoAction
+{
+	Undo::Action mType;
+
 public:
-	CUndoActions(int nAction, TDclControlPtr pArxObject, CWnd *pControl);
-	~CUndoActions();
-// Attributes
+	CUndoAction( Undo::Action type )
+		: mType( type ) {}
+	virtual ~CUndoAction() {}
+
+	Undo::Action GetType() const { return mType; }
+	virtual CString GetDisplayName() const = 0;
+	virtual bool Undo() = 0;
+
+#ifdef _DIAGNOSTIC
 public:
-	int m_nAction;
-	TDclControlPtr m_pArxObject;
-	CWnd *m_pControl;
-	CRect rcPos;
-	CString sString;
-	long lLong;
-	BOOL bBool;
+	virtual CString toString() const = 0;
+#endif
+};
+
+
+class CBeginGroupUA : public CUndoAction
+{
+	CString msDisplayName;
+public:
+	CBeginGroupUA( LPCTSTR pszDisplayName )
+		: CUndoAction( Undo::BeginGroup ), msDisplayName( pszDisplayName ) {}
+	virtual ~CBeginGroupUA() {}
+
+	virtual CString GetDisplayName() const { return msDisplayName; }
+	virtual bool Undo() { return true; }
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual CString toString() const
+	{
+		CString sResult;
+		sResult.Format( _T("BeginGroup[%s]"), (LPCTSTR)msDisplayName );
+		return sResult;
+	}
+#endif
+};
+
+class CEndGroupUA : public CUndoAction
+{
+public:
+	CEndGroupUA()
+		: CUndoAction( Undo::EndGroup ) {}
+	virtual ~CEndGroupUA() {}
+
+	virtual CString GetDisplayName() const { return NULL; }
+	virtual bool Undo() { return true; }
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual CString toString() const { return _T("EndGroup"); }
+#endif
+};
+
+class CSelectFormUA : public CUndoAction
+{
+	TDclFormPtr mpForm;
+
+public:
+	CSelectFormUA( TDclFormPtr pNewForm )
+		: CUndoAction( Undo::SelectForm ), mpForm( pNewForm ) {}
+	virtual ~CSelectFormUA() {}
+
+	virtual CString GetDisplayName() const;
+	virtual bool Undo();
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual CString toString() const
+	{
+		CString sResult;
+		sResult.Format( _T("SelectForm[%s]"), (LPCTSTR)mpForm->GetKeyName() );
+		return sResult;
+	}
+#endif
+};
+
+class CAddFormUA : public CUndoAction
+{
+	TDclFormPtr mpForm;
+
+public:
+	CAddFormUA( TDclFormPtr pNewForm )
+		: CUndoAction( Undo::AddForm ), mpForm( pNewForm ) {}
+	virtual ~CAddFormUA() {}
+
+	virtual CString GetDisplayName() const;
+	virtual bool Undo();
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual CString toString() const
+	{
+		CString sResult;
+		sResult.Format( _T("AddForm[%s]"), (LPCTSTR)mpForm->GetKeyName() );
+		return sResult;
+	}
+#endif
+};
+
+class CDeleteFormUA : public CUndoAction
+{
+	TDclFormPtr mpForm;
+
+public:
+	CDeleteFormUA( TDclFormPtr pNewForm )
+		: CUndoAction( Undo::DeleteForm ), mpForm( pNewForm ) {}
+	virtual ~CDeleteFormUA() {}
+
+	virtual CString GetDisplayName() const;
+	virtual bool Undo();
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual CString toString() const
+	{
+		CString sResult;
+		sResult.Format( _T("DeleteForm[%s]"), (LPCTSTR)mpForm->GetKeyName() );
+		return sResult;
+	}
+#endif
+};
+
+class CSelectControlUA : public CUndoAction
+{
+	TDclControlPtr mpDclControl;
+
+public:
+	CSelectControlUA( TDclControlPtr pDclControl )
+		: CUndoAction( Undo::SelectControl ), mpDclControl( pDclControl ) {}
+	virtual ~CSelectControlUA() {}
+
+	virtual CString GetDisplayName() const;
+	virtual bool Undo();
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual CString toString() const
+	{
+		CString sResult;
+		sResult.Format( _T("SelectControl[%s]"), (LPCTSTR)mpDclControl->GetKeyName() );
+		return sResult;
+	}
+#endif
+};
+
+class CAddControlUA : public CUndoAction
+{
+	TDclControlPtr mpDclControl;
+
+public:
+	CAddControlUA( TDclControlPtr pDclControl )
+		: CUndoAction( Undo::AddControl ), mpDclControl( pDclControl ) {}
+	virtual ~CAddControlUA() {}
+
+	virtual CString GetDisplayName() const;
+	virtual bool Undo();
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual CString toString() const
+	{
+		CString sResult;
+		sResult.Format( _T("AddControl[%s]"), (LPCTSTR)mpDclControl->GetKeyName() );
+		return sResult;
+	}
+#endif
+};
+
+class CDeleteControlUA : public CUndoAction
+{
+	TDclControlPtr mpDclControl;
+	size_t mIdx;
+
+public:
+	CDeleteControlUA( TDclControlPtr pDclControl );
+	virtual ~CDeleteControlUA() {}
+
+	virtual CString GetDisplayName() const;
+	virtual bool Undo();
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual CString toString() const
+	{
+		CString sResult;
+		sResult.Format( _T("DeleteControl[%s]"), (LPCTSTR)mpDclControl->GetKeyName() );
+		return sResult;
+	}
+#endif
+};
+
+class CReorderControlUA : public CUndoAction
+{
+	TDclControlPtr mpDclControl;
+	size_t mIdx;
+
+public:
+	CReorderControlUA( TDclControlPtr pDclControl );
+	virtual ~CReorderControlUA() {}
+
+	virtual CString GetDisplayName() const;
+	virtual bool Undo();
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual CString toString() const
+	{
+		CString sResult;
+		sResult.Format( _T("ReorderControl[%s]"), (LPCTSTR)mpDclControl->GetKeyName() );
+		return sResult;
+	}
+#endif
+};
+
+class CPropertyChangeUA : public CUndoAction
+{
+	TDclControlPtr mpDclControl;
+	Prop::Id mId;
+	CMemFile mValue;
+
+public:
+	CPropertyChangeUA( TPropertyPtr pProperty );
+	virtual ~CPropertyChangeUA() {}
+
+	virtual CString GetDisplayName() const;
+	virtual bool Undo();
+
+#ifdef _DIAGNOSTIC
+public:
+	virtual CString toString() const
+	{
+		CString sResult;
+		sResult.Format( _T("PropertyChange[%s/%s]"), (LPCTSTR)mpDclControl->GetKeyName(), GetPropertyName( mId ) );
+		return sResult;
+	}
+#endif
 };

@@ -3,11 +3,12 @@
 
 #include "stdafx.h"
 #include "ControlPane.h"
-#include "DialogControl.h"
+#include "DialogObject.h"
 #include "DclFormObject.h"
 #include "DclControlObject.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
+#include "UndoManager.h"
 #include "Project.h"
 
 
@@ -17,22 +18,20 @@
 CControlPane::CControlPane()
 : mpSourceForm( NULL )
 , mpProject( NULL )
+, mpDlgObject( NULL )
 , mpHostDlg( NULL )
-, mlLeftOffset( 0 )
-, mlRightOffset( 0 )
-, mlTopOffset( 0 )
-, mlBottomOffset( 0 )
+, mbRecalcInProgress( false )
+, mhDeferredPos( NULL )
 {
 }
 
 CControlPane::CControlPane(TDclFormPtr pSourceForm, CWnd* pHostDlg)
 : mpSourceForm( pSourceForm )
 , mpProject( pSourceForm? pSourceForm->GetProject() : NULL )
+, mpDlgObject( pSourceForm? pSourceForm->GetFormInstance() : NULL )
 , mpHostDlg( pHostDlg )
-, mlLeftOffset( 0 )
-, mlRightOffset( 0 )
-, mlTopOffset( 0 )
-, mlBottomOffset( 0 )
+, mbRecalcInProgress( false )
+, mhDeferredPos( NULL )
 {
 }
 
@@ -40,34 +39,51 @@ CControlPane::~CControlPane()
 {
 }
 
-void CControlPane::SetPanePos( CRect rectNew, bool bRecalc /*= true*/ )
+CRect CControlPane::GetControlArea() const
 {
-	assert( mpHostDlg->m_hWnd != NULL );
-	CRect rectHostClient;
-	mpHostDlg->GetClientRect( &rectHostClient );
-	mlLeftOffset = rectNew.left - rectHostClient.left;
-	mlTopOffset = rectNew.top - rectHostClient.top;
-	mlRightOffset = rectNew.right - rectHostClient.right;
-	mlBottomOffset = rectNew.bottom - rectHostClient.bottom;
-	if( bRecalc )
-		RecalcLayout();
+	assert( mpDlgObject != NULL );
+	return mpDlgObject->GetWndRect();
 }
 
-void CControlPane::ZOrderFront(CWnd *pControl)
+void CControlPane::ZOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred /*= NULL*/ )
 {
-	if (pControl != NULL)
-		pControl->SetWindowPos(&CWnd::wndTop, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
+	CWnd* pControlWnd = pDlgControl->GetControlWnd();
+	if( pControlWnd )
+	{
+		if( hDeferred )
+			DeferWindowPos( hDeferred, pControlWnd->m_hWnd, HWND_TOP, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+		else
+			pControlWnd->SetWindowPos( &CWnd::wndTop, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+	}
 }
 
-void CControlPane::ZOrderBack(CWnd *pControl)
+void CControlPane::ZOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred /*= NULL*/ )
 {
-	if (pControl != NULL)
-		pControl->SetWindowPos(&CWnd::wndBottom, 0,0,-1,-1, SWP_NOSIZE|SWP_NOMOVE);
+	CWnd* pControlWnd = pDlgControl->GetControlWnd();
+	if( pControlWnd )
+	{
+		if( hDeferred )
+			DeferWindowPos( hDeferred, pControlWnd->m_hWnd, HWND_BOTTOM, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+		else
+			pControlWnd->SetWindowPos( &CWnd::wndBottom, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+	}
 }
 
-void CControlPane::AddControl( TDialogControlPtr pControl )
+void CControlPane::AddControl( TDialogControlPtr pDlgControl )
 {
-	mControls.push_back( pControl );
+	mControls.push_back( pDlgControl );
+}
+
+void CControlPane::RemoveControl( TDialogControlPtr pDlgControl )
+{
+	for( TDialogControls::iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
+	{
+		if( (*iter) == pDlgControl )
+		{
+			mControls.erase( iter );
+			return;
+		}
+	}
 }
 
 bool CControlPane::CreateControls(UINT& nId)
@@ -76,23 +92,30 @@ bool CControlPane::CreateControls(UINT& nId)
 	if( Controls.empty() )
 		return true;
 	bool bFailed = false;
-	TDclControlList::iterator iter = Controls.end();
-	while( iter != Controls.begin() )
+	bool bVisible = (mpHostDlg->IsWindowVisible() != FALSE);
+	if( bVisible )
+		mpHostDlg->SetRedraw( FALSE );
+	for( TDclControlList::iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		--iter;
-		if ((*iter)->GetType() <= CtlForm)
+		TDclControlPtr pDclControl = (*iter);
+		if (pDclControl->GetType() <= _CtlForm)
 			continue;
-		if ((*iter)->GetType() == CtlFileDlgCtrl)
+		if (pDclControl->GetType() == CtlFileDlgCtrl)
 			continue;
-		UINT idDlg = (*iter)->GetID();
-		if( idDlg <= 0 || mpSourceForm->GetType() != CtlSplitter )
+		UINT idDlg = pDclControl->GetID();
+		if( idDlg <= 0 || pDclControl->GetType() != CtlSplitter )
 			idDlg = nId++;
-		TDialogControlPtr pControl = CreateNewDialogControl( (*iter), idDlg );
+		TDialogControlPtr pControl = CreateNewDialogControl( pDclControl, idDlg );
 		assert( pControl != NULL );
 		if( pControl )
 			mControls.push_back( pControl );
 		else
 			bFailed = true;
+	}
+	if( bVisible )
+	{
+		mpHostDlg->RedrawWindow( NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_ALLCHILDREN );
+		mpHostDlg->SetRedraw( TRUE );
 	}
 	return !bFailed;
 }
@@ -105,20 +128,34 @@ void CControlPane::RecalcLayout()
 	if( mpSourceForm->GetControlCount() == 0 )
 		return;
 
-	// first lets calc all the control positions for any splitter controls.
+	DisableUndoManager DisableUndo( mpSourceForm->GetUndoManager() ); //no need to record undo during recalc
+
+	mbRecalcInProgress = true;
 	TDclControlList& Controls = mpSourceForm->mDclControls;
-	for( TDclControlList::iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
+	assert( mhDeferredPos == NULL );
+	mhDeferredPos = BeginDeferWindowPos( 2 );
+
+	// first lets calc all the control positions for any splitter controls.
+	for( TDclControlList::iterator iter = ++Controls.begin(); iter != Controls.end(); ++iter )
 	{
 		if( (*iter)->GetType() == CtlSplitter )
 			ResetControlsPos( (*iter) );
 	}
 
+	EndDeferWindowPos( mhDeferredPos );
+	mhDeferredPos = BeginDeferWindowPos( Controls.size() );
+
 	//next lets calc all the control positions for all NON-splitter controls.
-	for( TDclControlList::iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
+	for( TDclControlList::iterator iter = ++Controls.begin(); iter != Controls.end(); ++iter )
 	{
 		if( (*iter)->GetType() != CtlSplitter )
 			ResetControlsPos( (*iter) );
 	}
+
+	EndDeferWindowPos( mhDeferredPos );
+	mhDeferredPos = NULL;
+	InvalidateControls();
+	mbRecalcInProgress = false;
 	//mpHostDlg->Invalidate(); //can't do this: it paints over the controls in Windows XP with Window Classic theme
 }
 
@@ -139,194 +176,45 @@ void CControlPane::InvalidateControls()
 	}
 }
 
-CRect CControlPane::GetSplitterRect( int nId, CRect& rectCurrent ) 
+CPoint CControlPane::GetSplitterPos( int nSplitterId )
 {
 	const TDclControlList& Controls = mpSourceForm->GetControlList();
 	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		if( (*iter)->GetType() == CtlSplitter && (*iter)->GetID() == nId )
-		{
-			(*iter)->GetWindow()->GetWindowRect( &rectCurrent );
-			mpHostDlg->ScreenToClient( &rectCurrent );
-			CPoint pt( (*iter)->GetLongProperty( Prop::Left ), (*iter)->GetLongProperty( Prop::Top ) );
-			return CRect( pt.x, pt.y, pt.x + (*iter)->GetLongProperty( Prop::Width ), pt.y + (*iter)->GetLongProperty( Prop::Height ) );
-		}
+		TDclControlPtr pDclControl = (*iter);
+		if( pDclControl->GetType() == CtlSplitter && pDclControl->GetID() == nSplitterId )
+			return pDclControl->GetWndRect().TopLeft();
 	}
-	rectCurrent.SetRect(0,0,0,0);
-	return CRect(0,0,0,0);	
+	return CPoint( 0, 0 );	
 }
 
-void CControlPane::ResetControlsPos(TDclControlPtr pDclControl)
+void CControlPane::ResetControlsPos( TDclControlPtr pDclControl )
 {
-	if (pDclControl == NULL)
+	if( !pDclControl )
 		return;
-	if (pDclControl->GetPropertyObject(Prop::UseLeftFromRight) == NULL)
-		return;
-
-	// get the offset flags
-	int lLeftFromRight = 0;
-	if (pDclControl->GetPropertyObject(Prop::UseLeftFromRight)->GetType() == PropBool)
-		lLeftFromRight = pDclControl->GetPropertyObject(Prop::UseLeftFromRight)->GetBooleanValue();
-	else
-		lLeftFromRight = pDclControl->GetPropertyObject(Prop::UseLeftFromRight)->GetLongValue();
-
-	int lRightFromRight = 0;
-	if (pDclControl->GetPropertyObject(Prop::UseRightFromRight)->GetType() == PropBool)
-		lRightFromRight = pDclControl->GetPropertyObject(Prop::UseRightFromRight)->GetBooleanValue();
-	else
-		lRightFromRight = pDclControl->GetPropertyObject(Prop::UseRightFromRight)->GetLongValue();
-
-	int lTopFromBottom = 0;
-	if (pDclControl->GetPropertyObject(Prop::UseRightFromRight)->GetType() == PropBool)
-		lTopFromBottom = pDclControl->GetPropertyObject(Prop::UseTopFromBottom)->GetBooleanValue();
-	else
-		lTopFromBottom = pDclControl->GetPropertyObject(Prop::UseTopFromBottom)->GetLongValue();
-
-	int lBottomFromBottom = 0;
-	if (pDclControl->GetPropertyObject(Prop::UseRightFromRight)->GetType() == PropBool)
-		lBottomFromBottom = pDclControl->GetPropertyObject(Prop::UseBottomFromBottom)->GetBooleanValue();
-	else
-		lBottomFromBottom = pDclControl->GetPropertyObject(Prop::UseBottomFromBottom)->GetLongValue();
-	
-	// get the control being moved			
-	CWnd *pControl = pDclControl->GetWindow();
-
-	//TODO: move this to ArxControlPane.cpp
-	//if (pDclControl->GetType() == CtlGraphicButton)
-	//{
-	//	((CButtonST*)pControl)->m_bDrawTransparent = FALSE;
-	//}
-
-	if (pControl == NULL)
+	CDialogControl* pDlgControl = pDclControl->GetControlInstance();
+	if( !pDlgControl )
 		return;
 
-	CRect rcControl;
-	pControl->GetWindowRect( &rcControl );
-	mpHostDlg->ScreenToClient( &rcControl );
-
-	CRect rcThis;
-	mpHostDlg->GetClientRect(&rcThis);
-	rcThis.top += mlTopOffset;
-	rcThis.bottom += mlBottomOffset;
-	rcThis.left += mlLeftOffset;
-	rcThis.right += mlRightOffset;
-
-	// if mpHostDlg control is to be moved according to the right or bottom side of the form
-	if (lLeftFromRight  > 0 || lRightFromRight > 0 || lTopFromBottom  > 0 || lBottomFromBottom > 0)
-	{	
-		// set the left position if required
-		if (lLeftFromRight == 1)
-		{
-			int nOffsetValue = pDclControl->GetPropertyObject(Prop::LeftFromRight)->GetLongValue();
-			rcControl.left = rcThis.right - nOffsetValue;
-		}
-		else if (lLeftFromRight == 2)
-		{
-			int nFormCenter = ((rcThis.right + rcThis.left) / 2);
-			int nControlOffsetFromCenter = pDclControl->GetPropertyObject(Prop::LeftFromRight)->GetLongValue();
-			rcControl.left = nFormCenter + nControlOffsetFromCenter;
-		}
-		else if (lLeftFromRight > 2)
-		{
-			CRect rectCurrent;
-			CRect rc = GetSplitterRect(lLeftFromRight, rectCurrent);
-			int nOffsetValue = pDclControl->GetPropertyObject(Prop::LeftFromRight)->GetLongValue();
-			rcControl.left = rectCurrent.left + nOffsetValue;
-		}		
-		else
-			rcControl.left = rcThis.left + pDclControl->GetPropertyObject(Prop::Left)->GetLongValue();
-
-		// set the right position if required
-		if (lRightFromRight == 1 && pDclControl->GetType() != CtlCheckBox)
-		{			
-			int nOffsetValue = pDclControl->GetPropertyObject(Prop::RightFromRight)->GetLongValue();
-			rcControl.right = rcThis.right - nOffsetValue;
-		}
-		else if (lRightFromRight > 1)
-		{
-			CRect rectCurrent;
-			CRect rc = GetSplitterRect(lRightFromRight, rectCurrent);
-			int nOffsetValue = pDclControl->GetPropertyObject(Prop::RightFromRight)->GetLongValue();
-			rcControl.right = rectCurrent.left + nOffsetValue;
-		}		
-		else
-		{
-			int nWidthValue = pDclControl->GetPropertyObject(Prop::Width)->GetLongValue();				
-			rcControl.right = rcControl.left + nWidthValue;
-		}
-
-		// set the top position if required
-		if (lTopFromBottom == 1)
-		{
-			int nOffsetValue = pDclControl->GetPropertyObject(Prop::TopFromBottom)->GetLongValue();				
-			rcControl.top = rcThis.bottom - nOffsetValue;
-		}
-		else if (lTopFromBottom > 1)
-		{
-			CRect rectCurrent;
-			CRect rc = GetSplitterRect(lTopFromBottom, rectCurrent);
-			int nOffsetValue = pDclControl->GetPropertyObject(Prop::TopFromBottom)->GetLongValue();
-			rcControl.top = rectCurrent.top + nOffsetValue;
-		}
-		else
-			rcControl.top = rcThis.top + pDclControl->GetPropertyObject(Prop::Top)->GetLongValue();
-
-		// set the top position if required
-		if (lBottomFromBottom  == 1 && pDclControl->GetType() != CtlCheckBox)
-		{
-			int nOffsetValue = pDclControl->GetPropertyObject(Prop::BottomFromBottom)->GetLongValue();				
-			rcControl.bottom = rcThis.bottom - nOffsetValue;
-		}
-		else if (lBottomFromBottom > 1)
-		{
-			CRect rectCurrent;
-			CRect rc = GetSplitterRect(lBottomFromBottom, rectCurrent);
-			int nOffsetValue = pDclControl->GetPropertyObject(Prop::BottomFromBottom)->GetLongValue();
-			rcControl.bottom = rectCurrent.top - nOffsetValue;
-		}
-		else
-		{
-			int nHeightValue = pDclControl->GetPropertyObject(Prop::Height)->GetLongValue();				
-			rcControl.bottom = rcControl.top + nHeightValue;
-		}
-	}
-	else // if not to be offset at all
+	bool bDeferred = (mhDeferredPos != NULL);
+	if( !bDeferred )
+		mhDeferredPos = BeginDeferWindowPos( 1 );
+	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseLeftFromRight ) );
+	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseRightFromRight ) );
+	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseTopFromBottom ) );
+	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseBottomFromBottom ) );
+	if( !bDeferred )
 	{
-		if (mpSourceForm->GetType() != VdclFileDialog)
-		{	
-			int nLeftValue = pDclControl->GetPropertyObject(Prop::Left)->GetLongValue();	
-			int nTopValue = pDclControl->GetPropertyObject(Prop::Top)->GetLongValue();	
-			int nWidthValue = pDclControl->GetPropertyObject(Prop::Width)->GetLongValue();	
-			int nHeightValue = pDclControl->GetPropertyObject(Prop::Height)->GetLongValue();	
-			rcControl.SetRect( rcThis.left + nLeftValue, rcThis.top + nTopValue,
-												 rcThis.left + nLeftValue + nWidthValue, rcThis.top + nTopValue + nHeightValue);	
-		}
+		EndDeferWindowPos( mhDeferredPos );
+		pDlgControl->GetControlWnd()->RedrawWindow();
 	}
 
-	// check the width to ensure that it is at least 2
-	if (rcControl.right - rcControl.left < 2)
-		rcControl.right = rcControl.left + 2;
-
-	// check the height to ensure that it is at least 2
-	if (rcControl.bottom - rcControl.top < 2)
-		rcControl.bottom = rcControl.top + 2;
-
-	// check the top is less then 1 then keep it at 0
-	if (rcControl.top < 1)
-		rcControl.top = 1;
+	//if( (pDclControl->GetType() == CtlComboBox || pDclControl->GetType() == CtlImageComboBox) &&
+	//		((pControl->GetStyle() & CBS_DROPDOWN) != 0) )
+	//	rcControl.bottom += pDclControl->GetLongProperty( Prop::DropDownHeight );
 	
-	// check the left is less then 1 then keep it at 0
-	if (rcControl.left < 1)
-		rcControl.left = 1;
-	
-	if( (pDclControl->GetType() == CtlComboBox || pDclControl->GetType() == CtlImageComboBox) &&
-			((pControl->GetStyle() & CBS_DROPDOWN) != 0) )
-		rcControl.bottom += pDclControl->GetLongProperty( Prop::DropDownHeight );
-	
-	pControl->MoveWindow( rcControl, TRUE);
-	
-	if (pDclControl->GetType() == CtlMonth)
-		((CMonthCalCtrl*)pControl)->SizeMinReq(TRUE);
+	//if (pDclControl->GetType() == CtlMonth)
+	//	((CMonthCalCtrl*)pControl)->SizeMinReq(TRUE);
 }
 
 void CControlPane::CleanUpControls() 
@@ -340,6 +228,56 @@ void CControlPane::CleanUpControls()
 	mControls.clear();
 }
 
+void CControlPane::ApplyZOrder()
+{
+	const TDclControlList& Controls = mpSourceForm->GetControlList();
+	HDWP hdwp = (Controls.empty()? NULL : BeginDeferWindowPos( Controls.size() ));
+	for( TDclControlList::const_reverse_iterator iter = Controls.rbegin();
+			 iter != Controls.rend();
+			 ++iter )
+	{
+		TDclControlPtr pDclControl = *iter;
+		if( !pDclControl->IsZOrderAllowed() )
+			continue;
+		TDialogControlLockedPtr pDlgControl = pDclControl->GetControlInstance();
+		if( !pDlgControl )
+			continue;
+		ZOrderFront( pDlgControl, hdwp );
+	}
+	if( hdwp )
+		EndDeferWindowPos( hdwp );
+}
+
+void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
+{
+	CWnd* pWndToMove = pDlgControl->GetControlWnd();
+	//if the control is hosted inside another window, find the ancestor that is a child
+	//of the host dialog and move it instead
+	assert( mpHostDlg->IsChild( pWndToMove ) );
+	while( (pWndToMove->GetControlUnknown() || (pWndToMove->GetStyle() & WS_CHILD)) &&
+				 pWndToMove->GetParent() != mpHostDlg )
+		pWndToMove = pWndToMove->GetParent();
+	CRect rcNew = pDlgControl->GetWndRect();
+	if( mhDeferredPos )
+		DeferWindowPos( mhDeferredPos, pWndToMove->m_hWnd, NULL, rcNew.left, rcNew.top, rcNew.Width(), rcNew.Height(), SWP_NOZORDER | SWP_NOREDRAW | SWP_NOACTIVATE );
+	else
+		pWndToMove->MoveWindow( &rcNew, TRUE );
+}
+
+void CControlPane::ApplyVisibility( TDialogControlPtr pDlgControl )
+{
+	if( !IsInvisibleControlAllowed( pDlgControl ) )
+		return;
+	CWnd* pWndToMove = pDlgControl->GetControlWnd();
+	//if the control is hosted inside another window, find the ancestor that is a child
+	//of the host dialog and show or hide it instead
+	assert( mpHostDlg->IsChild( pWndToMove ) );
+	while( (pWndToMove->GetStyle() & WS_CHILD) && pWndToMove->GetParent() != mpHostDlg )
+		pWndToMove = pWndToMove->GetParent();
+	TPropertyPtr pVisibility = pDlgControl->GetTemplate()->GetPropertyObject( Prop::Visible );
+	bool bHide = (pVisibility && !pVisibility->GetBooleanValue());
+	pWndToMove->ShowWindow( bHide? SW_HIDE : SW_SHOW );
+}
 
 void CControlPane::SetFirstControlFocus() const
 {
@@ -358,4 +296,73 @@ void CControlPane::SetFirstControlFocus() const
 		pWnd->SetFocus();
 		return;
 	}
+}
+
+bool CControlPane::FindControl( HWND hwndControl, /*out*/ CString& sControlName ) const
+{
+	if (!hwndControl)
+		return false;
+	for( TDialogControls::const_iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
+	{
+		if( (*iter)->GetControlWnd()->m_hWnd == hwndControl )
+		{
+			sControlName = (*iter)->GetKeyName();
+			return true;
+		}
+		std::list< const CControlPane* > listChildren;
+		if( (*iter)->GetChildPanes( listChildren ) )
+		{
+			std::list< const CControlPane* >::const_iterator iterChild = listChildren.begin();
+			for( ; iterChild != listChildren.end(); ++iterChild )
+			{
+				if( (*iterChild)->FindControl( hwndControl, sControlName ) )
+					return true;
+			}
+		}
+	}
+	return false;
+}
+
+TDialogControlPtr CControlPane::FindControl( HWND hwndControl ) const
+{
+	if (!hwndControl)
+		return false;
+	for( TDialogControls::const_iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
+	{
+		if( (*iter)->GetControlWnd()->m_hWnd == hwndControl )
+			return (*iter);
+		std::list< const CControlPane* > listChildren;
+		if( (*iter)->GetChildPanes( listChildren ) )
+		{
+			std::list< const CControlPane* >::const_iterator iterChild = listChildren.begin();
+			for( ; iterChild != listChildren.end(); ++iterChild )
+			{
+				TDialogControlPtr pControl = (*iterChild)->FindControl( hwndControl );
+				if( pControl )
+					return pControl;
+			}
+		}
+	}
+	return NULL;
+}
+
+TDialogControlPtr CControlPane::FindControl( LPCTSTR pszControlName, ControlType type /*= _CtlInvalid*/ ) const
+{
+	for( TDialogControls::const_iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
+	{
+		if( (type == _CtlInvalid || (*iter)->GetControlType() == type) && (*iter)->GetKeyName() == pszControlName )
+			return (*iter);
+		std::list< const CControlPane* > listChildren;
+		if( (*iter)->GetChildPanes( listChildren ) )
+		{
+			std::list< const CControlPane* >::const_iterator iterChild = listChildren.begin();
+			for( ; iterChild != listChildren.end(); ++iterChild )
+			{
+				TDialogControlPtr pControl = (*iterChild)->FindControl( pszControlName, type );
+				if( pControl )
+					return pControl;
+			}
+		}
+	}
+	return NULL;
 }

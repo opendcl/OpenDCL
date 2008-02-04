@@ -79,8 +79,9 @@ AxPropertyDescriptor::AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTyp
 		mInvKind = pFuncDesc->invkind;
 
 		mType = vtProp;
-		mbReadOnly = ((pFuncDesc->wFuncFlags & FUNCFLAG_FNONBROWSABLE) &&
-									((pFuncDesc->invkind == DISPATCH_PROPERTYGET && pFuncDesc->cParams == 0) || pFuncDesc->cParams == 1));
+		mbReadOnly = ((pFuncDesc->wFuncFlags & FUNCFLAG_FNONBROWSABLE) ||
+									(pFuncDesc->invkind != INVOKE_PROPERTYPUT && pFuncDesc->invkind != INVOKE_PROPERTYPUTREF) ||
+									pFuncDesc->cParams != 1);
 		mbArray = true; //not really, but this was being set in the original code [ORW]
 
 		if( pIObject )
@@ -149,31 +150,36 @@ HRESULT AxPropertyDescriptor::Get( IDispatch* pObjectDisp, VARIANTARG* rvarArgs,
 															&dpParams, &varResult, &excepInfo, &iArgErr );
 }
 
-HRESULT AxPropertyDescriptor::Set( IDispatch* pObjectDisp, VARIANTARG* rvarArgs, UINT ctArgs ) const
+HRESULT AxPropertyDescriptor::Set( IDispatch* pObjectDisp, const VARIANTARG* rvarArgs, UINT ctArgs ) const
 {
+	if( ctArgs == 0 )
+		return E_INVALIDARG;
 	size_t ctArgTypes = mrArgs.size();
+	COleVariant* rArgs = new COleVariant[ctArgs];
+	for( UINT idxArg = 0; idxArg < ctArgs; ++idxArg )
+		rArgs[idxArg] = rvarArgs[idxArg];
 	if( ctArgTypes == 0 && ctArgs > 0 )
 	{
 		if( mType == VT_BOOL && rvarArgs[0].vt == VT_BSTR )
 		{
-			rvarArgs[0].vt = VT_BOOL;
-			rvarArgs[0].boolVal = (lstrcmpi( bstr_t( rvarArgs[0].bstrVal ), _T("True") ) == 0)? VARIANT_TRUE : VARIANT_FALSE;
+			rArgs[0].vt = VT_BOOL;
+			rArgs[0].boolVal = (lstrcmpi( bstr_t( rvarArgs[0].bstrVal ), _T("True") ) == 0)? VARIANT_TRUE : VARIANT_FALSE;
 		}
 		else
-			VariantChangeType( &rvarArgs[0], &rvarArgs[0], 0, mType );
+			rArgs[0].ChangeType( mType );
 	}
 	else
 	{
 		for( size_t idxArg = 0; idxArg < ctArgs && idxArg < ctArgTypes; ++idxArg )
 		{
 			size_t idxRvar = ctArgs - idxArg - 1;
-			if( mrArgs[idxArg].vt == VT_BOOL && rvarArgs[idxRvar].vt == VT_BSTR )
+			if( mrArgs[idxArg].vt == VT_BOOL && rArgs[idxRvar].vt == VT_BSTR )
 			{
-				rvarArgs[idxRvar].vt = VT_BOOL;
-				rvarArgs[idxRvar].boolVal = (lstrcmpi( bstr_t( rvarArgs[idxRvar].bstrVal ), _T("True") ) == 0)? VARIANT_TRUE : VARIANT_FALSE;
+				rArgs[idxRvar].vt = VT_BOOL;
+				rArgs[idxRvar].boolVal = (lstrcmpi( bstr_t( rvarArgs[idxRvar].bstrVal ), _T("True") ) == 0)? VARIANT_TRUE : VARIANT_FALSE;
 			}
 			else
-				VariantChangeType( &rvarArgs[idxRvar], &rvarArgs[idxRvar], 0, mrArgs[idxArg].vt );
+				rArgs[idxRvar].ChangeType( mrArgs[idxArg].vt );
 		}
 	}
 
@@ -184,13 +190,15 @@ HRESULT AxPropertyDescriptor::Set( IDispatch* pObjectDisp, VARIANTARG* rvarArgs,
 	DISPID dispidPropset = DISPID_PROPERTYPUT;
 	DISPPARAMS dpParams;
 	dpParams.cArgs = ctArgs;
-	dpParams.rgvarg = rvarArgs;
+	dpParams.rgvarg = rArgs;
 	dpParams.rgdispidNamedArgs = &dispidPropset;
 	dpParams.cNamedArgs = 1;
 
 	COleVariant varResult;
-	return pObjectDisp->Invoke( mDispId, GUID_NULL, LOCALE_USER_DEFAULT, 
-															wFlags, &dpParams, &varResult, NULL, NULL );
+	HRESULT hr = pObjectDisp->Invoke( mDispId, GUID_NULL, LOCALE_USER_DEFAULT, 
+																		wFlags, &dpParams, &varResult, NULL, NULL );
+	delete[] rArgs;
+	return hr;
 }
 
 

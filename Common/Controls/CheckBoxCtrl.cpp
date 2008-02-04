@@ -37,7 +37,7 @@ DWORD CCheckBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 
-	dwStyle |= (WS_CLIPSIBLINGS | BS_AUTOCHECKBOX);
+	dwStyle |= (/*WS_CLIPSIBLINGS | */BS_AUTOCHECKBOX);
 	return dwStyle;
 }
 
@@ -84,9 +84,7 @@ HBRUSH CCheckBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	pDC->SetBkMode( TRANSPARENT );	
-	pDC->SetTextColor( mAcadColorService.GetForegroundColor() );
-	return mAcadColorService.GetBackgroundBrush();	
+	return mAcadColorService.CtlColor( pDC, nCtlColor );
 }
 
 void CCheckBoxCtrl::PostNcDestroy() 

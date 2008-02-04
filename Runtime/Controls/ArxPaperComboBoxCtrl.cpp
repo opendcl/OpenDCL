@@ -21,7 +21,7 @@ static TDclControlPtr FindPrinterCombo( TDclFormPtr pForm )
 	pForm->FindControls( CtlComboBox, listCombos );
 	for( TDclControlList::iterator iter = listCombos.begin(); iter != listCombos.end(); ++iter )
 	{
-		if( (*iter)->GetLongProperty(Prop::ComboBoxStyle) == CmboStyle_Plotters )
+		if( (*iter)->GetLongProperty(Prop::ComboBoxStyle) == ComboStyle::Plotters )
 			return *iter;
 	}
 	return NULL;

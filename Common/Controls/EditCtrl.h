@@ -50,4 +50,6 @@ protected:
 	virtual BOOL PreTranslateMessage( MSG* pMsg );
 	afx_msg void OnKillFocus( CWnd* pNewWnd );
 	afx_msg HBRUSH CtlColor( CDC* pDC, UINT nCtlColor );
+public:
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

@@ -2,11 +2,11 @@
 //
 
 #include "Stdafx.h"
-#include "SharedRes.h"
 #include "FontCombo.h"
-#include "ToolBox.h"
-#include "OpenDCLView.h"
-#include "EditorWorkspace.h"
+#include "Resource.h"
+#include "ToolboxPane.h"
+#include "StudioFrame.h"
+#include "StudioWorkspace.h"
 
 
 // Constant and should not be changed unless 
@@ -40,8 +40,8 @@ CFontCombo::CFontCombo()
 {
 	// Load up glyphs
 	m_img.Create(15,13,ILC_COLOR | ILC_MASK, 1, 1);
-	HINSTANCE hInstResource = AfxFindResourceHandle(MAKEINTRESOURCE(IDI_TRUEFONT), RT_GROUP_ICON);
-	HICON hIcon = (HICON)::LoadImage(hInstResource, MAKEINTRESOURCE(IDI_TRUEFONT), IMAGE_ICON, 0, 0, 0);	
+	HINSTANCE hInstResource = AfxFindResourceHandle(MAKEINTRESOURCE(IDI_TTFONT), RT_GROUP_ICON);
+	HICON hIcon = (HICON)::LoadImage(hInstResource, MAKEINTRESOURCE(IDI_TTFONT), IMAGE_ICON, 0, 0, 0);	
 	m_img.Add(hIcon);
 	DestroyIcon(hIcon);
 }
@@ -78,7 +78,6 @@ BEGIN_MESSAGE_MAP(CFontCombo, CComboBox)
 	ON_CONTROL_REFLECT(CBN_SETFOCUS, OnSetfocus)
 	ON_CONTROL_REFLECT(CBN_CLOSEUP, OnCloseUp)
 	ON_WM_TIMER()
-	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
 	ON_WM_MEASUREITEM()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -534,43 +533,43 @@ void CFontCombo::Initialize()
 	EnumerateFonts();
 	
 	// add a list of acad fonts
-	m_AcadFontFileList.Add("bigfont");
-	m_AcadFontFileList.Add("chineset");
-	m_AcadFontFileList.Add("complex");
-	m_AcadFontFileList.Add("extfont");
-	m_AcadFontFileList.Add("gbcbig");
-	m_AcadFontFileList.Add("gbeitc");
-	m_AcadFontFileList.Add("gbenor");
-	m_AcadFontFileList.Add("gothice");
-	m_AcadFontFileList.Add("gothicg");
-	m_AcadFontFileList.Add("gothici");
-	m_AcadFontFileList.Add("greekc");
-	m_AcadFontFileList.Add("greeks");
-	m_AcadFontFileList.Add("isocp");
-	m_AcadFontFileList.Add("isocp2");
-	m_AcadFontFileList.Add("isocp3");
-	m_AcadFontFileList.Add("isoct");
-	m_AcadFontFileList.Add("isoct2");
-	m_AcadFontFileList.Add("isoct3");
-	m_AcadFontFileList.Add("italic");
-	m_AcadFontFileList.Add("italicc");
-	m_AcadFontFileList.Add("italict");
-	m_AcadFontFileList.Add("monotxt");
-	m_AcadFontFileList.Add("romanc");
-	m_AcadFontFileList.Add("romand");
-	m_AcadFontFileList.Add("romans");
-	m_AcadFontFileList.Add("romant");
-	m_AcadFontFileList.Add("scriptc");
-	m_AcadFontFileList.Add("scripts");
-	m_AcadFontFileList.Add("syastro");
-	m_AcadFontFileList.Add("symap");
-	m_AcadFontFileList.Add("symeteo");
-	m_AcadFontFileList.Add("symusic");
-	m_AcadFontFileList.Add("txt");
-	m_AcadFontFileList.Add("whgdtxt");
-	m_AcadFontFileList.Add("whgtxt");
-	m_AcadFontFileList.Add("whtgtxt");
-	m_AcadFontFileList.Add("whtmtxt");
+	m_AcadFontFileList.Add(_T("bigfont"));
+	m_AcadFontFileList.Add(_T("chineset"));
+	m_AcadFontFileList.Add(_T("complex"));
+	m_AcadFontFileList.Add(_T("extfont"));
+	m_AcadFontFileList.Add(_T("gbcbig"));
+	m_AcadFontFileList.Add(_T("gbeitc"));
+	m_AcadFontFileList.Add(_T("gbenor"));
+	m_AcadFontFileList.Add(_T("gothice"));
+	m_AcadFontFileList.Add(_T("gothicg"));
+	m_AcadFontFileList.Add(_T("gothici"));
+	m_AcadFontFileList.Add(_T("greekc"));
+	m_AcadFontFileList.Add(_T("greeks"));
+	m_AcadFontFileList.Add(_T("isocp"));
+	m_AcadFontFileList.Add(_T("isocp2"));
+	m_AcadFontFileList.Add(_T("isocp3"));
+	m_AcadFontFileList.Add(_T("isoct"));
+	m_AcadFontFileList.Add(_T("isoct2"));
+	m_AcadFontFileList.Add(_T("isoct3"));
+	m_AcadFontFileList.Add(_T("italic"));
+	m_AcadFontFileList.Add(_T("italicc"));
+	m_AcadFontFileList.Add(_T("italict"));
+	m_AcadFontFileList.Add(_T("monotxt"));
+	m_AcadFontFileList.Add(_T("romanc"));
+	m_AcadFontFileList.Add(_T("romand"));
+	m_AcadFontFileList.Add(_T("romans"));
+	m_AcadFontFileList.Add(_T("romant"));
+	m_AcadFontFileList.Add(_T("scriptc"));
+	m_AcadFontFileList.Add(_T("scripts"));
+	m_AcadFontFileList.Add(_T("syastro"));
+	m_AcadFontFileList.Add(_T("symap"));
+	m_AcadFontFileList.Add(_T("symeteo"));
+	m_AcadFontFileList.Add(_T("symusic"));
+	m_AcadFontFileList.Add(_T("txt"));
+	m_AcadFontFileList.Add(_T("whgdtxt"));
+	m_AcadFontFileList.Add(_T("whgtxt"));
+	m_AcadFontFileList.Add(_T("whtgtxt"));
+	m_AcadFontFileList.Add(_T("whtmtxt"));
 	
 
 	POSITION pos = m_mapFonts.GetStartPosition();
@@ -677,7 +676,6 @@ void CFontCombo::OnTimer(UINT nIDEvent)
 		}
 	}
 	CComboBox::OnTimer(nIDEvent);
-
 }
 
 BOOL CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(ENUMLOGFONTEX* pelf, 
@@ -699,32 +697,13 @@ BOOL CALLBACK AFX_EXPORT CFontCombo::EnumFamScreenCallBackEx(ENUMLOGFONTEX* pelf
 	return 1; // Call me back
 }
 
-void CFontCombo::OnSelchange() 
-{
-	
-	CString sString;
-	int nSel = GetCurSel();
-	int nTextLength = GetLBTextLen(nSel);      
-	GetLBText(nSel, sString.GetBuffer(nTextLength));
-	sString.ReleaseBuffer();
-	
-	if (theEditorWorkspace.GetToolBox()->m_pActiveView == NULL)
-		return;
-	if (((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->m_pThisDclForm == NULL)
-		return;
-	
-	((COpenDCLView*)theEditorWorkspace.GetToolBox()->m_pActiveView)->UpdateFont(sString);
-}
-
 BOOL CFontCombo::PreTranslateMessage(MSG* pMsg) 
 {
-	
 	return CComboBox::PreTranslateMessage(pMsg);
 }
 
 void CFontCombo::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct) 
 {
 	lpMeasureItemStruct->itemHeight = 15;
-	
 	CComboBox::OnMeasureItem(nIDCtl, lpMeasureItemStruct);
 }

@@ -4,29 +4,10 @@
 #pragma once
 
 #include "BaseDlg.h"
+#include "DclFormTypes.h"
 #include "Resource.h"
 
 class CDclFormObject;
-
-
-class CModalDialogX : public CArxDialogObject
-{
-	friend class CModalDlg;
-	CModalDlg* mpOwner;
-protected:
-	CModalDialogX( CModalDlg& Owner, TDclFormPtr pDclForm );
-	~CModalDialogX();
-
-	virtual DclFormType GetType() const;
-	virtual bool IsModeless() const { return false; }
-	virtual bool IsDockable() const { return false; }
-	virtual bool IsResizable() const;
-	virtual HWND GetHWnd() const;
-	virtual void CloseDialog(int nStatus);
-	virtual INT_PTR DoModal();
-	//virtual bool Show(bool bShow = true) { return false; }
-	virtual bool SetMinMaxSize( const CSize& min, const CSize& max );
-};
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -34,8 +15,6 @@ protected:
 
 class CModalDlg : public CBaseDlg
 {
-	CModalDialogX mDialogX;
-	bool mbResizable;
 
 	enum { IDD = IDD_MODALDIALOG };
 
@@ -44,12 +23,18 @@ public:
 	CModalDlg(TDclFormPtr pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL);
 	~CModalDlg();
 
-public:
-	virtual CControlPane& GetControlPane() { return mDialogX.GetControlPane(); }
-	virtual const CDialogObject& GetDialogObject() const { return mDialogX; }
-	virtual CDialogObject& GetDialogObject() { return mDialogX; }
+protected:
 	void SetDclForm(TDclFormPtr pDclFormObject);
-	bool IsResizable() const { return mbResizable; }
+
+// CDialogObject overrides
+public:
+	virtual DclFormType GetType() const { return VdclModal; }
+	virtual bool IsModeless() const { return false; }
+	virtual bool IsDockable() const { return false; }
+	virtual void CloseDialog(int nStatus);
+	virtual INT_PTR DoModal();
+	//virtual bool Show(bool bShow = true) { return false; }
+	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
 
 // Overrides
 protected:

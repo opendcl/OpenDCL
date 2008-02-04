@@ -14,7 +14,6 @@
 class CArxGridCtrl : public CGridCtrl
 {
 	CArxControlServices	mArxServices;
-	bool mbInvokeWithSendString;
 
 public:
 	CArxGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -43,6 +42,7 @@ protected:
 	virtual CGridCellEditCtrl* CreateEditControl( int nRow, int nCol );
 	virtual void OnEndEditCurCell();
 	virtual void DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc );
+	virtual void DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText );
 
 protected:
 	DECLARE_MESSAGE_MAP()

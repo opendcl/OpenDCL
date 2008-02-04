@@ -80,6 +80,15 @@ struct _CellData
 		, mnDateTimeStyle( -1 )
 	{
 	} 
+	_CellData( const _CellData& _Right )
+		: mType( _Right.mType )
+		, midxImage( _Right.midxImage )
+		, midxAltImage( _Right.midxAltImage )
+		, mnDateTimeStyle( _Right.mnDateTimeStyle )
+		, mrsComboList( _Right.mrsComboList )
+		, mrnComboImage( _Right.mrnComboImage )
+	{
+	} 
 	_CellData( CellStyle type, int image = -1, int altImage = -1, int dateTimeStyle = -1 )
 		: mType( type )
 		, midxImage( image )
@@ -88,6 +97,16 @@ struct _CellData
 	{
 	} 
 	virtual ~_CellData() {}
+	_CellData& operator =( const _CellData& _Right )
+	{
+		mType = _Right.mType;
+		midxImage = _Right.midxImage;
+		midxAltImage = _Right.midxAltImage;
+		mnDateTimeStyle = _Right.mnDateTimeStyle;
+		mrsComboList = _Right.mrsComboList;
+		mrnComboImage = _Right.mrnComboImage;
+		return *this;
+	} 
 };
 
 typedef std::vector< _CellData > _ColumnData;
@@ -97,7 +116,14 @@ struct _RowData
 	_ColumnData mCellData;
 
 	_RowData( DWORD_PTR nItemData = 0 ) : mnItemData( nItemData ) {}
+	_RowData( const _RowData& _Right ) : mnItemData( _Right.mnItemData ), mCellData( _Right.mCellData ) {}
 	virtual ~_RowData() {}
+	_RowData& operator =( const _RowData& _Right )
+	{
+		mnItemData = _Right.mnItemData;
+		mCellData = _Right.mCellData;
+		return *this;
+	} 
 };
 
 
@@ -151,6 +177,7 @@ public:
 	void SetCurCell( int nRow, int nCol );
 	int GetCurRow() const { return mCurrentCell.row(); }
 	int GetCurColumn() const { return mCurrentCell.col(); }
+	ULONG GetColumnCount() const { return mcColumns; }
 	CellStyle GetCellStyle( int nRow, int nCol );
 	CellStyle GetCurCellStyle();
 	void SetCellStyle( int nRow, int nCol, CellStyle nStyle, int image = -1, int altImage = -1,
@@ -216,16 +243,16 @@ protected:
 
 // Operations
 protected:
-	void DrawOptionButton( CDC& cdc, const CRect& rcIcon, bool bPressed, bool bHighlight );
-	void DrawCheckBox( CDC& cdc, const CRect& rcIcon, bool bPressed, bool bHighlight );
-	void DrawArrow( CDC& cdc, const CRect& rcIcon, int nArrow, const CString& sText );
-	void DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText );
-	void DrawFontIcons( CDC& cdc, const CRect& rcIcon, int nImage, const CString& sText );
-	void DrawLineWeight( CDC& cdc, const CRect& rcIcon, int LW, const CString& sText );
+	virtual void DrawOptionButton( CDC& cdc, const CRect& rcIcon, bool bPressed, bool bHighlight );
+	virtual void DrawCheckBox( CDC& cdc, const CRect& rcIcon, bool bPressed, bool bHighlight );
+	virtual void DrawArrow( CDC& cdc, const CRect& rcIcon, int nArrow, const CString& sText );
+	virtual void DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText );
+	virtual void DrawFontIcons( CDC& cdc, const CRect& rcIcon, int nImage, const CString& sText );
+	virtual void DrawLineWeight( CDC& cdc, const CRect& rcIcon, int LW, const CString& sText );
 
 public:
-	BOOL SortTextItems( int nCol, BOOL bAscending, int low = 0, int high = -1 );
-	bool SortNumericItems( int nCol, BOOL bAscending, int low = 0, int high = -1 );
+	bool SortTextItems( int nCol, bool bAscending );
+	bool SortNumericItems( int nCol, bool bAscending );
 
 protected:
 	DECLARE_MESSAGE_MAP()

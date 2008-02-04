@@ -6,7 +6,7 @@
 #include "DialogObject.h"
 #include "DclFormTypes.h"
 #include "PropertyIds.h"
-#include "Project.h"
+#include "Workspace.h"
 #include "DialogControl.h"
 #include "InvokeMethod.h"
 #include "ArxDialogControl.h"
@@ -34,54 +34,7 @@ public:
 };
 
 
-// CFileDialogX interface implementation
-CFileDialogX::CFileDialogX( CCustomFileDialog& Owner, TDclFormPtr pDclForm, FileDialogParams* pParams /*= NULL*/ )
-: CArxDialogObject( pDclForm, &Owner )
-, mpOwner( &Owner )
-, mpParams( pParams )
-{
-}
-
-CFileDialogX::~CFileDialogX()
-{
-}
-
-DclFormType CFileDialogX::GetType() const
-{
-	return VdclFileDialog;
-}
-
-HWND CFileDialogX::GetHWnd() const
-{
-	return mpOwner->m_hWnd;
-}
-
-void CFileDialogX::CloseDialog(int nStatus)
-{
-	if( IsClosing() )
-		return; //already in the process of closing
-	SetClosing();
-	mpOwner->GetMainDialog().EndDialog( nStatus );
-	mpOwner->GetMainDialog().SendMessage( WM_CLOSE, 0, 0 );
-}
-
-INT_PTR CFileDialogX::DoModal()
-{
-	INT_PTR nResult = mpOwner->DoModal();
-	if( nResult == IDOK && mpParams )
-	{
-		mpParams->sFilename = mpOwner->GetPathName();
-		mpParams->rsFilenames.RemoveAll();
-		POSITION pos = mpOwner->GetStartPosition();
-		while( pos )
-			mpParams->rsFilenames.Add( mpOwner->GetNextPathName( pos ) );
-	}
-	delete mpOwner;
-	return nResult;
-}
-
-
-bool IsWindows98orLater()
+static bool IsWindows98orLater()
 {
 	OSVERSIONINFO osvi;
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -132,10 +85,14 @@ static DWORD GetFileDlgFlags( TDclControlPtr pFileDlgProperties )
 
 CCustomFileDialog::CCustomFileDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CFileDialog( TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, NULL, pParent )
-, mDialogX( *this, pSourceForm, pParams? (FileDialogParams*)pParams->lpData : NULL )
+, CArxDialogObject( pSourceForm, this )
 , mpParams( pParams? (FileDialogParams*)pParams->lpData : NULL )
-, mMainFileDlg( pSourceForm, pParent, pParams )
+, mnInitialX( pParams? pParams->position.x : -1 )
+, mnInitialY( pParams? pParams->position.y : -1 )
+, mMainFileDlg( this, pParent )
 , mpFileDlgCtrl( pSourceForm->FindFirstControlOfType(CtlFileDlgCtrl) )
+, mnRightBorder( 0 )
+, mnBottomBorder( 0 )
 {
 	SetTemplate(IDD_CUSTOM_FILE_DIALOG, IDD_CUSTOM_FILE_DIALOG);
 	OPENFILENAME& ofn = GetOFN();
@@ -187,6 +144,104 @@ CCustomFileDialog::~CCustomFileDialog()
 {
 }
 
+void CCustomFileDialog::CloseDialog(int nStatus)
+{
+	if( IsClosing() )
+		return; //already in the process of closing
+	SetClosing();
+	GetMainDialog().EndDialog( nStatus );
+	GetMainDialog().SendMessage( WM_CLOSE, 0, 0 );
+}
+
+INT_PTR CCustomFileDialog::DoModal()
+{
+	mbIgnoreSizing = true;
+	INT_PTR nResult = CFileDialog::DoModal();
+	if( nResult == IDOK && mpParams )
+	{
+		mpParams->sFilename = GetPathName();
+		mpParams->rsFilenames.RemoveAll();
+		POSITION pos = GetStartPosition();
+		while( pos )
+			mpParams->rsFilenames.Add( GetNextPathName( pos ) );
+	}
+	delete this;
+	return nResult;
+}
+
+void CCustomFileDialog::SavePosition()
+{
+	if( !IsWindow( m_hWnd ) )
+		return;
+	CWinApp* pApp = AfxGetApp();
+	CRect rcThis;
+	mMainFileDlg.GetWindowRect( &rcThis );
+	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath(); 
+	pApp->WriteProfileInt( sProfileName, _T("Width"), rcThis.Width() );
+	pApp->WriteProfileInt( sProfileName, _T("Height"), rcThis.Height() );
+	pApp->WriteProfileInt( sProfileName, _T("TopLeftX"), rcThis.left );
+	pApp->WriteProfileInt( sProfileName, _T("TopLeftY"), rcThis.top );
+}
+
+CRect CCustomFileDialog::ReadPosition() const
+{	
+	CRect rcRet;
+	CWinApp* pApp = AfxGetApp();
+	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath();
+	rcRet.left = pApp->GetProfileInt( sProfileName, _T("TopLeftX"), -100 );
+	rcRet.top = pApp->GetProfileInt( sProfileName, _T("TopLeftY"), -100 );
+	rcRet.right = rcRet.left + pApp->GetProfileInt( sProfileName, _T("Width"), -100 );
+	rcRet.bottom = rcRet.top + pApp->GetProfileInt( sProfileName, _T("Height"), -100 );
+	return rcRet;
+}
+
+void CCustomFileDialog::OnInitializationComplete()
+{
+	CRect rectSaved = ReadPosition(); //get the saved position before it gets overwritten during SetWindowPos()
+
+	CRect rectWindow;
+	mMainFileDlg.GetWindowRect( &rectWindow );
+	CRect rectClient;
+	mMainFileDlg.GetClientRect( &rectClient );
+	SetNCWidth( rectWindow.Width() - rectClient.Width() );
+	SetNCHeight( rectWindow.Height() - rectClient.Height() );
+	mpTemplate->SetLongProperty( Prop::Width, rectClient.Width() );
+	mpTemplate->SetLongProperty( Prop::Height, rectClient.Height() );
+	MoveWindow( &rectClient );
+	ApplyPropertiesEnum();
+
+	//create the control pane and the design time controls
+	UINT nID = 1000;
+	GetControlPane()->CreateControls( nID );
+	GetControlPane()->RecalcLayout();
+
+	CRect rectParent;
+	::GetWindowRect( ::GetParent(m_hWnd), &rectParent );
+	if( mnInitialX >= 0 )
+		rectWindow.MoveToX( mnInitialX );
+	else if( rectSaved.left >= -10 && rectSaved.left < (::GetSystemMetrics( SM_CXSCREEN ) - 10) )
+		rectWindow.MoveToX( rectSaved.left );
+	else
+		rectWindow.MoveToX( rectParent.left + (rectParent.Width() - rectWindow.Width()) / 2 );
+	if( mnInitialY >= 0 )
+		rectWindow.MoveToY( mnInitialY );
+	else if( rectSaved.top >= -10 && rectSaved.top < (::GetSystemMetrics( SM_CYSCREEN ) - 10) )
+		rectWindow.MoveToY( rectSaved.top );
+	else
+		rectWindow.MoveToY( rectParent.top + (rectParent.Height() - rectWindow.Height()) / 2 );
+	if( IsResizable() && rectSaved.right > rectSaved.left && rectSaved.bottom > rectSaved.top )
+	{
+		rectWindow.right = rectWindow.left + rectSaved.Width();
+		rectWindow.bottom = rectWindow.top + rectSaved.Height();
+	}
+	if( mMainFileDlg.GetStyle() & WS_CHILD )
+		mMainFileDlg.GetParent()->ScreenToClient( &rectWindow );
+	
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::FormEventInitialize ), false );
+	mMainFileDlg.MoveWindow( &rectWindow, FALSE );
+	mbIgnoreSizing = false;
+}
+
 
 BEGIN_MESSAGE_MAP(CCustomFileDialog, CFileDialog)
 	ON_WM_HELPINFO()
@@ -216,12 +271,11 @@ BOOL CCustomFileDialog::OnInitDialog()
 	mMainFileDlg.SubclassWindow( ::GetParent( m_hWnd ) );
 
 	// here we need to hide specified controls
-	TDclControlPtr pCtrl = mDialogX.GetSourceForm()->FindFirstControlOfType( CtlFileDlgCtrl );
-	if( pCtrl )
+	if( mpFileDlgCtrl )
 	{
-		if (!pCtrl->GetBooleanProperty(Prop::ShowOK))
+		if (!mpFileDlgCtrl->GetBooleanProperty(Prop::ShowOK))
 			HideControl(IDOK);
-		if (!pCtrl->GetBooleanProperty(Prop::ShowCancel))
+		if (!mpFileDlgCtrl->GetBooleanProperty(Prop::ShowCancel))
 			HideControl(IDCANCEL);
 
 		if(IsWindows98orLater())
@@ -232,14 +286,14 @@ BOOL CCustomFileDialog::OnInitDialog()
 				::ShowWindow(pScrollBar->m_hWnd, SW_HIDE);
 		}
 
-		if (!pCtrl->GetBooleanProperty(Prop::ShowTypeComboBox))
+		if (!mpFileDlgCtrl->GetBooleanProperty(Prop::ShowTypeComboBox))
 			HideControl(cmb1);
-		if (!pCtrl->GetBooleanProperty(Prop::ShowNameTextBox))
+		if (!mpFileDlgCtrl->GetBooleanProperty(Prop::ShowNameTextBox))
 			HideControl(edt1);
 
-		if (!pCtrl->GetBooleanProperty(Prop::ShowTypeLabel))
+		if (!mpFileDlgCtrl->GetBooleanProperty(Prop::ShowTypeLabel))
 			HideControl(stc2);
-		if (!pCtrl->GetBooleanProperty(Prop::ShowNameLabel))
+		if (!mpFileDlgCtrl->GetBooleanProperty(Prop::ShowNameLabel))
 			HideControl(stc3);
 
 		CtrlModifyStyle(cmb1);
@@ -252,21 +306,21 @@ BOOL CCustomFileDialog::OnInitDialog()
 
 		//add right and bottom borders for custom controls by calculating what the right and left borders
 		//are on the template, then add the same amount of border to this dialog.
-		int nRightBorder =
-			mDialogX.GetSourceForm()->GetControlProperties()->GetLongProperty( Prop::Width ) - pCtrl->GetLongProperty( Prop::Width );
-		int nBottomBorder =
-			mDialogX.GetSourceForm()->GetControlProperties()->GetLongProperty( Prop::Height ) - pCtrl->GetLongProperty( Prop::Height );
+		mnRightBorder =
+			mpTemplate->GetLongProperty( Prop::Width ) - mpFileDlgCtrl->GetLongProperty( Prop::Width );
+		mnBottomBorder =
+			mpTemplate->GetLongProperty( Prop::Height ) - mpFileDlgCtrl->GetLongProperty( Prop::Height );
 
 		CRect rectWindow;
 		mMainFileDlg.GetWindowRect( &rectWindow );
 		mMainFileDlg.GetParent()->ScreenToClient( &rectWindow );
-		rectWindow.right += nRightBorder;
-		rectWindow.bottom += nBottomBorder;
+		rectWindow.right += mnRightBorder;
+		rectWindow.bottom += mnBottomBorder;
 		mMainFileDlg.MoveWindow( &rectWindow, TRUE );
 
-		CControlPane& CtrlPane = mDialogX.GetControlPane();
-		CArxDialogControl *pCtrlObj = new CArxFileDialogControl( pCtrl, &CtrlPane, this );
-		CtrlPane.AddControl( pCtrlObj );
+		CControlPane* pCtrlPane = GetControlPane();
+		CArxDialogControl* pCtrlObj = new CArxFileDialogControl( mpFileDlgCtrl, pCtrlPane, this );
+		pCtrlPane->AddControl( pCtrlObj );
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -290,7 +344,7 @@ void CCustomFileDialog::OnFileNameChange()
 	
 	CListCtrl* wndLst1 = (CListCtrl*)(pWnd->GetDlgItem(1));
 	
-	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	TDclControlPtr pProps = mpTemplate;
 	int nSelCount = wndLst1->GetSelectedCount();
 	
 	POSITION pos = wndLst1->GetFirstSelectedItemPosition();
@@ -327,15 +381,13 @@ void CCustomFileDialog::OnTypeChange()
 
 BOOL CCustomFileDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStringProperty(Prop::EventOnHelp), false);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventOnHelp), false);
 	return TRUE; 
 }
 
 void CCustomFileDialog::OnHelp()
 {
-	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStringProperty(Prop::EventOnHelp), false);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventOnHelp), false);
 }
 
 void CCustomFileDialog::OnFolderChange()
@@ -348,7 +400,7 @@ void CCustomFileDialog::OnFolderChange()
 
 void CCustomFileDialog::CloseNow() 
 {
-	mDialogX.CloseDialog( IDOK );
+	CloseDialog( IDOK );
 }
 
 LRESULT CCustomFileDialog::OnGetFileName( WPARAM wParam, LPARAM lParam )

@@ -62,7 +62,7 @@ BOOL CWinColorDlg::OnInitDialog()
 	SetFocus();	
 
 	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_SCROLLBARCOLOR), GetSysColor(0));
-	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_BACKGROUND), GetSysColor(1));
+	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_DESKTOP), GetSysColor(1));
 	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_ACTCAPTION), GetSysColor(2));
 	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_INACTCAPT), GetSysColor(3));
 	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_MENU), GetSysColor(4));
@@ -74,8 +74,8 @@ BOOL CWinColorDlg::OnInitDialog()
 	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_ACTBORDER), GetSysColor(10));
 	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_INACTBORDER), GetSysColor(11));
 	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_APPWORK), GetSysColor(12));
-	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_Highlight), GetSysColor(13));
-	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_HighlightText), GetSysColor(14));
+	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_HIGHLIGHT), GetSysColor(13));
+	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_HIGHLIGHTTEXT), GetSysColor(14));
 	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_BTNFACE), GetSysColor(15));
 	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_BTNSHDOW), GetSysColor(16));
 	m_WinColorListBox.AddColor(theWorkspace.LoadResourceString(IDS_GREYTEXT), GetSysColor(17));

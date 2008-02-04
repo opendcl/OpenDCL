@@ -3,267 +3,239 @@
 
 #include "stdafx.h"
 #include "Methods_Month.h"
-#include "MethodLexicon.h"
 #include "ArgumentsRetrieval.h"
 #include "ControlTypes.h"
 
 
-void ReturnDate(COleDateTime *pDate)
+static void ReturnDate( const COleDateTime& Date )
 {
-	
-	// this code is for all other dialogs
-	int stat;
-	struct resbuf *list;    
-
-	list = acutBuildList(
-		RTSHORT, pDate->GetYear(),
-		RTSHORT, pDate->GetMonth(),
-		RTSHORT, pDate->GetDay(),
-		RTNONE);
-
-	if (list != NULL) { 	    
-		stat = acedRetList(list);		
-		acutRelRb(list); 
-	} 
-
+	resbuf rbDay = { NULL, RTSHORT };
+	rbDay.resval.rint = Date.GetDay();
+	resbuf rbMonth = { &rbDay, RTSHORT };
+	rbMonth.resval.rint = Date.GetMonth();
+	resbuf rbYear = { &rbMonth, RTSHORT };
+	rbYear.resval.rint = Date.GetYear();
+	acedRetList( &rbYear );
 }
 
-int Month_SetCurSel()
+
+ADSRESULT Month::SetCurSel()
 {
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlMonth))
+		return RSERR; //invalid input
+
 	COleDateTime dtDate;
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlMonth, sMonth_SetCurSel, &nArg);
+	if( !GetDateArgument( pArgs, dtDate ) )
+		return RSERR; //invalid input
 
-	if (!GetDateArgument(nArg, &dtDate, sMonth_SetCurSel) || pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	
-	((CMonthCalCtrl*)pControl)->SetCurSel(dtDate);
-	
-	return 0;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CMonthCalCtrl* pCtrl = (CMonthCalCtrl*)pDlgControl->GetControlWnd();
+	if( pCtrl->SetCurSel( dtDate ) )
+		acedRetT();
+	return RSRSLT;
 }
-int Month_GetCurSel()
+
+ADSRESULT Month::GetCurSel()
 {	
-	CWnd *pControl = GetControlPointer(CtlMonth, sMonth_GetCurSel);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlMonth))
+		return RSERR; //invalid input
 
-	SYSTEMTIME sysTime;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	BOOL bRet = ((CMonthCalCtrl*)pControl)->GetCurSel(&sysTime);
-
-	sysTime.wHour = sysTime.wMinute = sysTime.wSecond =
-	sysTime.wMilliseconds = 0;
-
-	COleDateTime dtDate(sysTime);
-
-	if (bRet)
-		ReturnDate(&dtDate);
-	else
-		acedRetNil();
-
-	return 0;
-}
-int Month_SetRange()
-{
-	COleDateTime dtStartDate;
-	COleDateTime dtEndDate;
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlMonth, sMonth_SetRange, &nArg);
-
-	if (!GetDateArgument(nArg, &dtStartDate, sMonth_SetRange) || pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
-	nArg++;
-	if (!GetDateArgument(nArg, &dtEndDate, sMonth_SetRange) || pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	((CMonthCalCtrl*)pControl)->SetRange(&dtStartDate, &dtEndDate);
-	
-	acedRetNil();
-	return 0;
-}
-int Month_GetRangeStart()
-{
-	COleDateTime dtStartDate;
-	COleDateTime dtEndDate;
-	
-	CWnd *pControl = GetControlPointer(CtlMonth, sMonth_GetRangeStart);
-
-	if (pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	
-	((CMonthCalCtrl*)pControl)->GetRange(&dtStartDate, &dtEndDate);
-	
-	ReturnDate(&dtStartDate);
-	return 0;
-
-}
-
-int Month_GetRangeEnd()
-{
-	COleDateTime dtStartDate;
-	COleDateTime dtEndDate;
-	
-	CWnd *pControl = GetControlPointer(CtlMonth, sMonth_GetRangeEnd);
-
-	if (pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}	
-	
-	((CMonthCalCtrl*)pControl)->GetRange(&dtStartDate, &dtEndDate);
-	
-	ReturnDate(&dtEndDate);
-	return 0;
-
-}
-int Month_GetMonthRangeStart()
-{
-	COleDateTime dtStartDate;
-	COleDateTime dtEndDate;
-	
-	CWnd *pControl = GetControlPointer(CtlMonth, sMonth_GetMonthRangeStart);
-
-	if (pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}	
-	
-	((CMonthCalCtrl*)pControl)->GetMonthRange(dtStartDate, dtEndDate, GMR_DAYSTATE);
-	
-	ReturnDate(&dtStartDate);
-	return 0;
-
-}
-int Month_GetMonthRangeEnd()
-{
-	COleDateTime dtStartDate;
-	COleDateTime dtEndDate;
-	
-	CWnd *pControl = GetControlPointer(CtlMonth, sMonth_GetMonthRangeEnd);
-
-	if (pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}	
-	
-	((CMonthCalCtrl*)pControl)->GetMonthRange(dtStartDate, dtEndDate, GMR_DAYSTATE);
-	
-	ReturnDate(&dtEndDate);
-	return 0;
-
-}
-int Month_SetSelRange()
-{
-	COleDateTime dtStartDate;
-	COleDateTime dtEndDate;
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlMonth, sMonth_SetSelRange, &nArg);
-
-	if (!GetDateArgument(nArg, &dtStartDate, sMonth_SetSelRange) || pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
-	nArg++;
-	if (!GetDateArgument(nArg, &dtEndDate, sMonth_SetSelRange) || pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	((CMonthCalCtrl*)pControl)->SetSelRange(dtStartDate, dtEndDate);
-	
-	acedRetNil();
-	return 0;
-}
-int Month_GetSelRangeStart()
-{
-	COleDateTime dtStartDate;
-	COleDateTime dtEndDate;
-	
-	CWnd *pControl = GetControlPointer(CtlMonth, sMonth_GetSelRangeStart);
-
-	if (pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	
-	((CMonthCalCtrl*)pControl)->SetSelRange(dtStartDate, dtEndDate);
-	
-	ReturnDate(&dtStartDate);
-	return 0;
-}
-int Month_GetSelRangeEnd()
-{
-	COleDateTime dtStartDate;
-	COleDateTime dtEndDate;
-	
-	CWnd *pControl = GetControlPointer(CtlMonth, sMonth_GetSelRangeEnd);
-
-	if (pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	
-	((CMonthCalCtrl*)pControl)->SetSelRange(dtStartDate, dtEndDate);
-	
-	ReturnDate(&dtEndDate);
-	return 0;
-}
-
-int Month_GetToday()
-{
-	CWnd *pControl = GetControlPointer(CtlMonth, sMonth_GetToday);
-
-	if (pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
+	CMonthCalCtrl* pCtrl = (CMonthCalCtrl*)pDlgControl->GetControlWnd();
 	COleDateTime dtDate;
-	
-	((CMonthCalCtrl*)pControl)->GetToday(dtDate);
-	
-	ReturnDate(&dtDate);
-	return 0;
+	if( pCtrl->GetCurSel( dtDate ) )
+		ReturnDate( dtDate );
+	return RSRSLT;
 }
-/////////////////////////////////////////////////////////////////////////////
-// Methods_Month
+
+ADSRESULT Month::SetRange()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlMonth))
+		return RSERR; //invalid input
+
+	COleDateTime dtStart;
+	if( !GetDateArgument( pArgs, dtStart ) )
+		return RSERR; //invalid input
+
+	COleDateTime dtEnd;
+	if( !GetDateArgument( pArgs, dtEnd ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CMonthCalCtrl* pCtrl = (CMonthCalCtrl*)pDlgControl->GetControlWnd();
+	if( pCtrl->SetRange( &dtStart, &dtEnd ) )
+		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Month::GetRangeStart()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlMonth))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CMonthCalCtrl* pCtrl = (CMonthCalCtrl*)pDlgControl->GetControlWnd();
+	COleDateTime dtStart;
+	COleDateTime dtEnd;
+	if( (GDTR_MIN & pCtrl->GetRange( &dtStart, &dtEnd )) != 0 )
+		ReturnDate( dtStart );
+	return RSRSLT;
+}
+
+ADSRESULT Month::GetRangeEnd()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlMonth))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CMonthCalCtrl* pCtrl = (CMonthCalCtrl*)pDlgControl->GetControlWnd();
+	COleDateTime dtStart;
+	COleDateTime dtEnd;
+	if( (GDTR_MAX & pCtrl->GetRange( &dtStart, &dtEnd )) != 0 )
+		ReturnDate( dtEnd );
+	return RSRSLT;
+}
+
+ADSRESULT Month::GetMonthRangeStart()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlMonth))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CMonthCalCtrl* pCtrl = (CMonthCalCtrl*)pDlgControl->GetControlWnd();
+	COleDateTime dtStart;
+	COleDateTime dtEnd;
+	pCtrl->GetMonthRange( dtStart, dtEnd, GMR_DAYSTATE );
+	ReturnDate( dtStart );
+	return RSRSLT;
+}
+
+ADSRESULT Month::GetMonthRangeEnd()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlMonth))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CMonthCalCtrl* pCtrl = (CMonthCalCtrl*)pDlgControl->GetControlWnd();
+	COleDateTime dtStart;
+	COleDateTime dtEnd;
+	pCtrl->GetMonthRange( dtStart, dtEnd, GMR_DAYSTATE );
+	ReturnDate( dtEnd );
+	return RSRSLT;
+}
+
+ADSRESULT Month::SetSelRange()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlMonth))
+		return RSERR; //invalid input
+
+	COleDateTime dtStart;
+	if( !GetDateArgument( pArgs, dtStart ) )
+		return RSERR; //invalid input
+
+	COleDateTime dtEnd;
+	if( !GetDateArgument( pArgs, dtEnd ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CMonthCalCtrl* pCtrl = (CMonthCalCtrl*)pDlgControl->GetControlWnd();
+	if( pCtrl->SetSelRange( dtStart, dtEnd ) )
+		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Month::GetSelRangeStart()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlMonth))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CMonthCalCtrl* pCtrl = (CMonthCalCtrl*)pDlgControl->GetControlWnd();
+	COleDateTime dtStart;
+	COleDateTime dtEnd;
+	if( pCtrl->GetSelRange( dtStart, dtEnd ) )
+		ReturnDate( dtStart );
+	return RSRSLT;
+}
+
+ADSRESULT Month::GetSelRangeEnd()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlMonth))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CMonthCalCtrl* pCtrl = (CMonthCalCtrl*)pDlgControl->GetControlWnd();
+	COleDateTime dtStart;
+	COleDateTime dtEnd;
+	if( pCtrl->GetSelRange( dtStart, dtEnd ) )
+		ReturnDate( dtEnd );
+	return RSRSLT;
+}
+
+ADSRESULT Month::GetToday()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlMonth))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CMonthCalCtrl* pCtrl = (CMonthCalCtrl*)pDlgControl->GetControlWnd();
+	COleDateTime dtToday;
+	if( pCtrl->GetToday( dtToday ) )
+		ReturnDate( dtToday );
+	return RSRSLT;
+}

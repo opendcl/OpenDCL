@@ -16,19 +16,20 @@ class CFormVarNameUpdate : public CDialog
 	CString msFormName;
 	bool mbSetControls;
 
+// Dialog Data
+	enum { IDD = IDD_FORMVARNAMEUPDATE };
+
 // Construction
 public:
 	CFormVarNameUpdate( TDclFormPtr pDclForm, LPCTSTR pszFormName = NULL, CWnd* pParent = NULL );
 
-// Dialog Data
-	enum { IDD = IDD_FORMVARNAMEUPDATE_DIALOG };
-
-// Implementation
-protected:
-	virtual void OnOK();
-	afx_msg void OnCtrlcheck();
-	virtual BOOL OnInitDialog();
+public:
+	virtual INT_PTR DoModal();
 
 protected:
 	DECLARE_MESSAGE_MAP()
+
+	virtual void OnOK();
+	virtual BOOL OnInitDialog();
+	afx_msg void OnCtrlcheck();
 };

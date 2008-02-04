@@ -21,7 +21,7 @@ public:
 	CPrinterComboHandler()
 		{
 			mImageList.Create( 16, 14, ILC_COLOR4 | ILC_MASK, 3, 1 );
-			HMODULE hRes = theWorkspace.GetResourceModule();
+			HMODULE hRes = theWorkspace.GetLocalResourceModule();
 			mImageList.Add( LoadIcon( hRes, MAKEINTRESOURCE(IDI_PRINTER) ) );
 			mImageList.Add( LoadIcon( hRes, MAKEINTRESOURCE(IDI_PLOTTER) ) );
 		}

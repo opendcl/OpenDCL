@@ -14,6 +14,8 @@
 
 CListBoxCtrl::CListBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
+, mnDragSource( -1 )
+, mrcDropInsertMark( 0, 0, 0, 0 )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -37,7 +39,7 @@ DWORD CListBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 
-	dwStyle |= (WS_CLIPSIBLINGS | LBS_HASSTRINGS | LBS_NOTIFY | LBS_USETABSTOPS);
+	dwStyle |= (/*WS_CLIPSIBLINGS | */LBS_HASSTRINGS | LBS_NOTIFY | LBS_USETABSTOPS);
 	TPropertyPtr pPropNoIntegralHeight = mpTemplate->GetPropertyObject( Prop::NoIntegralHeight );
 	if( !pPropNoIntegralHeight || pPropNoIntegralHeight->GetBooleanValue() )
 		dwStyle |= LBS_NOINTEGRALHEIGHT;
@@ -68,7 +70,7 @@ bool CListBoxCtrl::ApplyPropertiesEnum()
 	CRect rc;
 	GetWindowRect( &rc );
 	GetParent()->ScreenToClient( &rc );
-	MoveWindow( &CRect( 0, 0, 0, 0 ) );
+	MoveWindow( &CRect( 0, 0, 0, 0 ), FALSE );
 	MoveWindow( &rc );
 
 	return bSuccess;
@@ -135,24 +137,166 @@ bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+DROPEFFECT CListBoxCtrl::OnBeginDrag( const CPoint& point, COleDataSource& SourceData )
+{
+	DROPEFFECT dwEffect = __super::OnBeginDrag( point, SourceData );
+	int nCurSel = GetCurSel();
+	if( nCurSel < 0 )
+		return dwEffect;
+	CString sText;
+	GetText( nCurSel, sText );
+	if( sText.IsEmpty() )
+		return dwEffect;
+	CStringA sTextA( sText );
+	SIZE_T cchText = sTextA.GetLength() + 1;
+	HGLOBAL hData = GlobalAlloc( GHND, cchText );
+	if( !hData )
+		return dwEffect;
+	lstrcpynA( (char*)GlobalLock( hData ), sTextA, cchText );
+	GlobalUnlock( hData );
+	SourceData.CacheGlobalData( CF_TEXT, hData );
+	return (dwEffect | DROPEFFECT_MOVE | DROPEFFECT_COPY);
+}
+
+DROPEFFECT CListBoxCtrl::OnDragEnter( const CPoint& point, COleDataObject* pSourceData,
+																			DWORD dwKeyState )
+{
+	return __super::OnDragEnter( point, pSourceData, dwKeyState );
+}
+
+DROPEFFECT CListBoxCtrl::OnDragOver( const CPoint& point, COleDataObject* pSourceData,
+																		 DWORD dwKeyState )
+{
+	BOOL bOutside = TRUE;
+	UINT idxItem = ItemFromPoint( point, bOutside );
+	CRect rcItem;
+	if( idxItem < 0 || GetCount() == 0 )
+	{
+		GetClientRect( &rcItem );
+		rcItem.bottom = rcItem.top + 2;
+	}
+	else
+	{
+		GetItemRect( idxItem, &rcItem );
+		if( point.y > ((rcItem.top + rcItem.bottom) / 2) )
+		{
+			if( ++idxItem >= (UINT)GetCount() )
+				rcItem.top = rcItem.bottom - 2;
+			else
+			{
+				CRect rcNextItem;
+				GetItemRect( idxItem, &rcNextItem );
+				CRect rcClient;
+				GetClientRect( &rcClient );
+				if( rcNextItem.top + 2 > rcClient.bottom )
+					rcItem.top = rcItem.bottom - 2;
+				else
+				{
+					rcItem = rcNextItem;
+					rcItem.bottom = rcItem.top + 2;
+				}
+			}
+		}
+		else
+			rcItem.bottom = rcItem.top + 2;
+	}
+	if( mrcDropInsertMark != rcItem )
+	{
+		if( !mrcDropInsertMark.IsRectNull() )
+			InvalidateRect( &mrcDropInsertMark );
+		CDC* pDC = GetDC();
+		mrcDropInsertMark = rcItem;
+		pDC->FillSolidRect( &mrcDropInsertMark, RGB(0,0,0) );
+	}
+	return __super::OnDragOver( point, pSourceData, dwKeyState );
+}
+
+void CListBoxCtrl::OnDragLeave()
+{
+	if( !mrcDropInsertMark.IsRectNull() )
+		InvalidateRect( &mrcDropInsertMark );
+	mrcDropInsertMark.SetRectEmpty();
+	__super::OnDragLeave();
+}
+
+bool CListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
+													 DROPEFFECT dropEffect )
+{
+	OnDragLeave(); //to make sure everything gets cleaned up
+	HGLOBAL hData = pSourceData->GetGlobalData( CF_TEXT );
+	if( !hData )
+		return false;
+	CStringA sTextA = (char*)GlobalLock( hData );
+	GlobalUnlock( hData );
+	GlobalFree( hData );
+	BOOL bOutside = TRUE;
+	UINT idxItem = ItemFromPoint( point, bOutside );
+	CRect rcItem;
+	GetItemRect( idxItem, &rcItem );
+	if( point.y > ((rcItem.top + rcItem.bottom) / 2) )
+		++idxItem;
+	if( mnDragSource >= 0 && dropEffect == DROPEFFECT_MOVE )
+	{
+		DeleteString( mnDragSource );
+		if( (UINT)mnDragSource < idxItem )
+			--idxItem;
+		mnDragSource = -1;
+	}
+	int idxInsert = InsertString( idxItem, CString( sTextA ) );
+	SetCurSel( idxInsert );
+	return true;
+}
+
 BEGIN_MESSAGE_MAP(CListBoxCtrl, CListBox)
+	ON_WM_LBUTTONDOWN()
 	ON_WM_CTLCOLOR_REFLECT()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CListBoxCtrl message handlers
 
-HBRUSH CListBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
-{
-	if( !IsWindowEnabled() )
-		return NULL;
-	pDC->SetBkMode( TRANSPARENT );	
-	pDC->SetTextColor( mAcadColorService.GetForegroundColor() );
-	return mAcadColorService.GetBackgroundBrush();	
-}
-
 void CListBoxCtrl::PostNcDestroy() 
 {
 	__super::PostNcDestroy();
 	delete this;
+}
+
+BOOL CListBoxCtrl::PreTranslateMessage(MSG* pMsg) 
+{
+	GetToolTipCtrl().RelayEvent(pMsg);
+	return __super::PreTranslateMessage(pMsg);
+}
+
+void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
+{	
+	__super::OnLButtonDown(nFlags, point);
+
+	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) )
+	{
+		mnDragSource = GetCurSel();
+		if( mnDragSource >= 0 )
+		{
+			DWORD dwDropEffect = BeginDragDrop( point );
+			if( mnDragSource >= 0 ) //if drop was on this control, mnDragSource gets reset to -1
+			{
+				// We need to send WM_LBUTTONUP to control or else the selection rectangle 
+				// will "follow" the mouse (like when you hold the left mouse down and 
+				// scroll through a regular listbox). WM_LBUTTONUP was sent to window that 
+				// received the drag/drop, not the one that initiated it, so we simulate
+				// an WM_LBUTTONUP to the initiating window.
+				if( dwDropEffect != DROPEFFECT_NONE )
+					SendMessage( WM_LBUTTONUP, 0, MAKELPARAM(point.x,point.y) );	
+				if( dwDropEffect == DROPEFFECT_MOVE )
+					DeleteString( mnDragSource );
+				mnDragSource = -1;
+			}
+		}
+	}
+}
+
+HBRUSH CListBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
+{
+	if( !IsWindowEnabled() )
+		return NULL;
+	return mAcadColorService.CtlColor( pDC, nCtlColor );
 }

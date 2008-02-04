@@ -1,4 +1,4 @@
-// TextStyleComboHandler.h : header file
+// LinetypeComboHandler.h : header file
 //
 
 #pragma once
@@ -8,13 +8,13 @@
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CTextStyleComboHandler class
+// CLinetypeComboHandler class
 
-class CTextStyleComboHandler : public CComboHandler
+class CLinetypeComboHandler : public CComboHandler
 {
 public:
-	CTextStyleComboHandler() {}
-	virtual ~CTextStyleComboHandler() {}
+	CLinetypeComboHandler() {}
+	virtual ~CLinetypeComboHandler() {}
 
 public:
 	virtual bool PopulateList( CComboBox* pCombo )
@@ -22,31 +22,31 @@ public:
 			assert( pCombo->GetCount() == 0 );
 
 			CAutoDocReadLock CurDocLock;
-			AcDbTextStyleTable* pTextStyleTable;
+			AcDbLinetypeTable* pLinetypeTable;
 			Acad::ErrorStatus es = 
-				acdbHostApplicationServices()->workingDatabase()->getSymbolTable( pTextStyleTable, AcDb::kForRead );
+				acdbHostApplicationServices()->workingDatabase()->getSymbolTable( pLinetypeTable, AcDb::kForRead );
 			if( es != Acad::eOk )
 				return false;
-			AcDbTextStyleTableIterator* pIterator = NULL;
-			es = pTextStyleTable->newIterator( pIterator );
-			pTextStyleTable->close();
+			AcDbLinetypeTableIterator* pIterator = NULL;
+			es = pLinetypeTable->newIterator( pIterator );
+			pLinetypeTable->close();
 			if( es != Acad::eOk )
 				return false;
 			bool bSuccess = true;
 			for( ; !pIterator->done(); pIterator->step() )
 			{
-				AcDbTextStyleTableRecord* pTextStyleTableRecord = NULL;
-				if( pIterator->getRecord( pTextStyleTableRecord, AcDb::kForRead ) != Acad::eOk )
+				AcDbLinetypeTableRecord* pLinetypeTableRecord = NULL;
+				if( pIterator->getRecord( pLinetypeTableRecord, AcDb::kForRead ) != Acad::eOk )
 				{
 					bSuccess = false;
 					continue;
 				}
 				const ACHAR* pszName;
-				if( pTextStyleTableRecord->getName( pszName ) != Acad::eOk )
+				if( pLinetypeTableRecord->getName( pszName ) != Acad::eOk )
 					bSuccess = false;
 				else
 					pCombo->AddString( pszName );
-				pTextStyleTableRecord->close();
+				pLinetypeTableRecord->close();
 			}
 			delete pIterator;
 			return bSuccess;

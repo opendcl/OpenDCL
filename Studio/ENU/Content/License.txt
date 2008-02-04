@@ -1,6 +1,6 @@
 OpenDCL for AutoCAD
 
-Copyright (C) 2007 OpenDCL Consortium
+Copyright (C) 2007 - 2008 OpenDCL Consortium
 www.opendcl.com
 
 See GNU-GPL.txt for license terms and conditions
@@ -41,7 +41,7 @@ PROGRAMMING
 owenwengerd (Owen Wengerd)
 davidrobison (David Robison)
 
-DOCUMENTATION/EXAMPLES
+DOCUMENTATION/SAMPLES
 davic_jg_white (David White)
 bazzacad (Barry Ralphs)
 kerrybrown (Kerry Brown)
@@ -100,7 +100,7 @@ Paramax Technology Limited
 CTipWnd tooltip window control
 
 Paolo Messina (ppescher@yahoo.com)
-CResizableDialog manges control repositioning during resizing
+CResizableDialog manages control repositioning during resizing
 
 Eugene Pustovoyt
 CPPToolTip MFC tooltip class

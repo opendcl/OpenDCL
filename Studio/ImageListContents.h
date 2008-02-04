@@ -54,7 +54,7 @@ protected:
 	afx_msg void OnItemchangedThelist(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnKeydownThelist(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnChangeEdit1();
-	afx_msg void OnSelchangeComboboxex2();
+	afx_msg void OnSelchangeComboboxex();
 	afx_msg void OnUpdate();
 	virtual void OnOK();
 	afx_msg void OnOdstatechangedThelist(NMHDR* pNMHDR, LRESULT* pResult);

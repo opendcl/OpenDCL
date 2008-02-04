@@ -62,6 +62,7 @@ void CEditCtrl::GetRawWindowText( CString& sText )
 BEGIN_MESSAGE_MAP(CEditCtrl, _TEditBase)
 	ON_WM_KILLFOCUS()
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -166,7 +167,14 @@ HBRUSH CEditCtrl::CtlColor( CDC* pDC, UINT nCtlColor )
 	if( !pColorService )
 		return NULL;
 
-	pDC->SetBkColor( pColorService->GetBackgroundColor() );
-	pDC->SetTextColor( pColorService->GetForegroundColor() );
-	return pColorService->GetBackgroundBrush();
+	return pColorService->CtlColor( pDC, nCtlColor );
+}
+
+BOOL CEditCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	CAcadColorService* pColorService = GetColorService();
+	if( pColorService && pColorService->IsBackgroundTransparent() )
+		return TRUE;
+
+	return __super::OnEraseBkgnd(pDC);
 }

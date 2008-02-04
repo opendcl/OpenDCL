@@ -25,8 +25,8 @@ public:
 	virtual ~CArxDialogObject();
 
 public:
-	virtual const CControlPane& GetControlPane() const { return mControlPane; }
-	virtual CControlPane& GetControlPane() { return mControlPane; }
+	virtual const CControlPane* GetControlPane() const { return &mControlPane; }
+	virtual CControlPane* GetControlPane() { return &mControlPane; }
 
 public:
 	bool IsEnteringNoDocState() const { return mbEnteringNoDocState; }

@@ -1,0 +1,276 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "..\..\RuntimeRes.Local.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "SharedRes.Local.h"
+#include "afxres.h"
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "..\\..\\RuntimeRes.Local.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""SharedRes.Local.h""\r\n"
+    "#include ""afxres.h""\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#include ""SharedRes.ENU.rc""\r\n"
+    "#include ""AfxRes.rc""\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_R14LARGE            BITMAP                  "Res\\R14Large.bmp"
+IDB_R14SMALL            BITMAP                  "Res\\R14Small.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDI_CROSS               CURSOR                  "Res\\Cross.cur"
+IDI_ORBIT               CURSOR                  "Res\\Orbit.cur"
+IDI_PAN                 CURSOR                  "Res\\Pan.cur"
+IDI_ZOOM                CURSOR                  "Res\\Zoom.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_CFGTAB DIALOG  0, 0, 128, 87
+STYLE DS_SETFONT | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg"
+BEGIN
+END
+
+IDD_MODALDIALOG DIALOGEX 0, 0, 78, 18
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+END
+
+IDD_RESIZEABLE DIALOGEX 0, 0, 78, 17
+STYLE DS_SETFONT | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+END
+
+IDD_TABPAGE DIALOGEX 0, 0, 120, 80
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+EXSTYLE WS_EX_TRANSPARENT
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+END
+
+IDD_CUSTOM_FILE_DIALOG DIALOGEX 0, 0, 276, 146
+STYLE DS_SETFONT | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    CTEXT           "This is where the standard controls will go!",1119,0,0,275,145,NOT WS_VISIBLE
+END
+
+IDD_DOCKINGDLGHOST DIALOGEX 0, 0, 186, 94
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_VISIBLE
+EXSTYLE WS_EX_TRANSPARENT | WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_LAYERTHAWED         ICON                    "Res\\LayerThawed.ico"
+IDI_LAYERFROZEN         ICON                    "Res\\LayerFrozen.ico"
+IDI_LAYEROFF            ICON                    "Res\\LayerOff.ico"
+IDI_LAYERON             ICON                    "Res\\LayerOn.ico"
+IDI_PLOTTER             ICON                    "Res\\Plotter.ico"
+IDI_PRINTER             ICON                    "Res\\Printer.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 5,0,0,3
+ PRODUCTVERSION 5,0,0,3
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "OpenDCL Consortium"
+            VALUE "FileDescription", "OpenDCL Runtime Resources - English"
+            VALUE "FileVersion", "5, 0, 0, 3"
+            VALUE "InternalName", "OpenDCL.Runtime"
+            VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
+            VALUE "LegalTrademarks", "OpenDCL(tm)"
+            VALUE "OriginalFilename", "Runtime.Res.dll"
+            VALUE "ProductName", "OpenDCL Runtime"
+            VALUE "ProductVersion", "5, 0, 0, 3"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_CFGTAB, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 121
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 80
+    END
+
+    IDD_MODALDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 62
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 11
+    END
+
+    IDD_RESIZEABLE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 68
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 10
+    END
+
+    IDD_TABPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 113
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 73
+    END
+
+    IDD_DOCKINGDLGHOST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 87
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_OLDERSLD            "An older format slide file file from an AutoCAD version earlier than V9 cannot be displayed in OpenDCL."
+    IDS_DWGNOTLOADING       "Could not load the drawing file: "
+    IDS_BLANKHTML           "An Html file must first be loaded before it can be updated."
+    IDS_ERR_INVALIDARGUMENTTYPE "Expected: %s\r\nReceived: %s"
+    IDS_AUTOUPDATECHECK     "Automatic &Update Check"
+    IDS_CLOSEMENU           "&Close Menu"
+    IDS_METHODVARNAMEINCORRECT 
+                            "The first argument for method [%s] was NIL. Please ensure that the variable being used to specify the control matches the value placed in the (VarName) property of the control."
+    IDS_BANNER              "\nOpenDCL Runtime [%s] loaded\n"
+    IDS_ERR_ARGEXCEPTION    "An OpenDCL function argument processing exception has occurred!\r\n\r\nError: %s\r\nFunction: %s\r\nArgument: %s"
+    IDS_ERR_TITLE           "OpenDCL Runtime Error"
+    IDS_ERR_NOTAPROPERTY    "Property <%s> not found"
+    IDS_ERR_NOTAMETHOD      "Method <%s> not found"
+    IDS_ERRNOTDIRPICKERCOMBO "Combo box is not directory picker style"
+    IDS_ERRNOTCOLORCOMBO    "Combo box is not color style"
+    IDS_ERRNOTLINEWEIGHTCOMBO "Combo box is not lineweight style"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ARG_NIL             "NIL value not allowed"
+    IDS_ARG_NOTENOUGH       "Expected more arguments"
+    IDS_ARG_WRONGTYPE       "Invalid argument type"
+    IDS_ARG_TOOMANY         "Too many arguments"
+    IDS_ARG_INVALID         "Invalid argument"
+    IDS_ARG_NOINSTANCE      "No object instance"
+    IDS_ARG_IMAGENOTFOUND   "No image at specified index"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROJECTLOADFAILURE  "Project failed to load!\r\nThe file could not be found or an error occurred while reading the file.\r\n\r\n[%s]"
+    IDS_ERR_AXPARAM         "ActiveX parameter error (%s)"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#include "SharedRes.ENU.rc"
+#include "AfxRes.rc"
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

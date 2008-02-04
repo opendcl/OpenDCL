@@ -37,7 +37,7 @@ DWORD CRadioButtonCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 
-	dwStyle |= (WS_CLIPSIBLINGS | BS_AUTORADIOBUTTON);
+	dwStyle |= (/*WS_CLIPSIBLINGS | */BS_AUTORADIOBUTTON);
 	return dwStyle;
 }
 
@@ -98,9 +98,7 @@ HBRUSH CRadioButtonCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	pDC->SetBkMode( TRANSPARENT );	
-	pDC->SetTextColor( mAcadColorService.GetForegroundColor() );
-	return mAcadColorService.GetBackgroundBrush();	
+	return mAcadColorService.CtlColor( pDC, nCtlColor );
 }
 
 void CRadioButtonCtrl::PostNcDestroy() 

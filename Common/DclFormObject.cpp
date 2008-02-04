@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "DclFormObject.h"
 #include "DclControlObject.h"
+#include "UndoManager.h"
 #include "UserMessageID.h"
 #include "PropertyIds.h"
 #include "PropertyObject.h"
@@ -13,6 +14,8 @@
 #include "ControlTypes.h"
 #include "Workspace.h"
 #include "DclControlProp.h"
+#include "DialogObject.h"
+#include "ControlPane.h"
 #include "FontCollection.h"
 
 
@@ -56,10 +59,7 @@ CDclFormObject::CDclFormObject()
 , mpDlgObject( NULL )
 , mnNextId( 1 )
 , mbUsesClientRect( true )
-, mbDeleted( false )
 {
-	m_pChildWnd = NULL;
-	m_pMdiChildWnd = NULL;
 	m_htiTreeItem = NULL;
 }
 
@@ -71,27 +71,47 @@ CDclFormObject::CDclFormObject( CProject* pProject, DclFormType type /*= VdclInv
 , mpDlgObject( NULL )
 , mnNextId( 1 )
 , mbUsesClientRect( true )
-, mbDeleted( false )
 {
-	m_pChildWnd = NULL;
-	m_pMdiChildWnd = NULL;
 	m_htiTreeItem = NULL;
 	CreateControlProperties();
 }
 
 CDclFormObject::~CDclFormObject()
 {
+	assert( mpDlgObject == NULL );
 	ClearControls();
 }
 
+//static
+size_t CDclFormObject::GetCurrentControlIndex( TDclControlPtr pDclControl )
+{
+	TDclFormPtr pForm = pDclControl->GetOwnerForm();
+	if( !pForm )
+		return 0;
+	size_t idxControl = 0;
+	for( TDclControlList::const_iterator iter = pForm->mDclControls.begin();
+			 iter != pForm->mDclControls.end();
+			 ++iter, ++idxControl )
+	{
+		if( pDclControl == (*iter) )
+			return idxControl;
+	}
+	return 0;
+}
+
+void CDclFormObject::OnModified()
+{
+	theWorkspace.SetModified();
+}
 
 void CDclFormObject::SetParentForm( TDclFormPtr pParentForm )
 {
 	mpParentForm = pParentForm;
-	if( pParentForm )
-		msUniqueName = pParentForm->GetUniqueName();
+	if( !pParentForm )
+		return;
+	msUniqueName = pParentForm->GetUniqueName();
+	OnModified();
 }
-
 
 void CDclFormObject::SetParentForm( LPCTSTR pszParentUniqueName )
 {
@@ -100,7 +120,10 @@ void CDclFormObject::SetParentForm( LPCTSTR pszParentUniqueName )
 		return; //calling with an empty name is an error; use the other SetParentForm() to clear the parent
 	TDclFormPtr pParentForm = mpProject->FindParentDclForm( sNewParentName );
 	if( pParentForm )
+	{
 		SetParentForm( pParentForm );
+		OnModified();
+	}
 }
 
 void CDclFormObject::SetFormInstance( CDialogObject* pDlgObject )
@@ -112,19 +135,29 @@ void CDclFormObject::SetFormInstance( CDialogObject* pDlgObject )
 }
 
 
-void CDclFormObject::AddControl( TDclControlPtr pDclControl )
+void CDclFormObject::AddControl( TDclControlPtr pDclControl, bool bAssignNewID /*= false*/ )
 {
+	if( !pDclControl )
+		return;
 	mDclControls.push_back( pDclControl );
-	size_t idxNewControl = mDclControls.size() - 1;
-	pDclControl->SetZOrder( idxNewControl );
-	if( pDclControl->GetID() < 0 )
-		pDclControl->SetID( idxNewControl );
+	CUndoManager* pUndoManager = GetUndoManager();
+	if( pUndoManager )
+		pUndoManager->AddControl( pDclControl );
+	OnModified();
+	if( bAssignNewID || pDclControl->GetID() < 0 )
+		pDclControl->SetID( mDclControls.size() - 1 );
 }
 
 
-TDclControlPtr CDclFormObject::AddControl( ControlType type, LPCTSTR pszKeyName )
+TDclControlPtr CDclFormObject::AddControl( ControlType type, LPCTSTR pszKeyName, const CRect& rcControl )
 {
+	CUndoManager* pUndoManager = GetUndoManager();
+	if( pUndoManager )
+		pUndoManager->setEnabled( false );
 	TDclControlPtr pNewControl = new CDclControlObject( type, this, pszKeyName );
+	AddDefaultProperties( pNewControl, rcControl.Width(), rcControl.Height() );
+	if( pUndoManager )
+		pUndoManager->setEnabled( true );
 	AddControl( pNewControl );
 	return pNewControl;
 }
@@ -132,41 +165,39 @@ TDclControlPtr CDclFormObject::AddControl( ControlType type, LPCTSTR pszKeyName 
 
 void CDclFormObject::DeleteControl( TDclControlPtr& pDclControl )
 {
+	if( pDclControl->GetType() == CtlTabStrip )
+	{ //delete children also
+		TProjectPtr pProject = pDclControl->GetOwnerProject();
+		if( pProject )
+		{
+			TDclFormList ChildForms;
+			if( pProject->FindChildForms( pDclControl->GetOwnerForm(), ChildForms ) )
+			{
+				for( TDclFormList::reverse_iterator iter = ChildForms.rbegin(); iter != ChildForms.rend(); ++iter )
+					pProject->DeleteForm( *iter );
+			}
+		}
+	}
+	CUndoManager* pUndoManager = GetUndoManager();
 	TDclControlList::iterator iter = mDclControls.begin();
 	while( iter != mDclControls.end() )
 	{
 		TDclControlList::iterator iterAt = iter++;
 		if( pDclControl != (*iterAt) )
 			continue;
-		INT_PTR idxCurrent = (*iterAt)->GetZOrder();
-		while( iter != mDclControls.end() ) //reindex remaining controls
-			(*iter++)->SetZOrder( idxCurrent++ );
+		OnModified();
+		if( pUndoManager )
+		{
+			pUndoManager->DeleteControl( pDclControl );
+		}
 		mDclControls.erase( iterAt );
-		delete pDclControl;
+		pDclControl = NULL;
 		break;
 	}
 }
 
 
-void CDclFormObject::PurgeDeletedControls()
-{
-	INT_PTR idxCurrent = 0;
-	TDclControlList::iterator iter = mDclControls.begin();
-	while( iter != mDclControls.end() )
-	{
-		TDclControlList::iterator iterAt = iter++;
-		if( (*iterAt)->IsDeleted() )
-		{
-			delete *iterAt;
-			mDclControls.erase( iterAt );
-			continue;
-		}
-		(*iterAt)->SetZOrder( idxCurrent++ );
-	}
-}
-
-
-bool CDclFormObject::ReorderControl( TDclControlPtr pDclControl, bool bToFront, bool bDeferReindexing /*= false*/ )
+bool CDclFormObject::ReorderControl( TDclControlPtr pDclControl, bool bToFront )
 {
 	assert( pDclControl != NULL );
 	assert( pDclControl->GetOwnerForm() == (const CDclFormObject*)this );
@@ -176,20 +207,22 @@ bool CDclFormObject::ReorderControl( TDclControlPtr pDclControl, bool bToFront, 
 		TDclControlList::iterator iterAt = iter++;
 		if( pDclControl != (*iterAt) )
 			continue;
+		CUndoManager* pUndoManager = GetUndoManager();
+		if( pUndoManager )
+			pUndoManager->ReorderControl( pDclControl );
 		mDclControls.erase( iterAt );
 		if( bToFront )
 			mDclControls.insert( ++mDclControls.begin(), pDclControl );
 		else
 			mDclControls.push_back( pDclControl );
-		if( !bDeferReindexing )
-			ReindexControls();
+		OnModified();
 		return true;
 	}
 	return false;
 }
 
 
-bool CDclFormObject::ReorderControl( TDclControlPtr pDclControl, size_t idxNew, bool bDeferReindexing /*= false*/ )
+bool CDclFormObject::ReorderControl( TDclControlPtr pDclControl, size_t idxNew )
 {
 	assert( idxNew > 0 ); //should never try to insert at index zero -- that is reserved for form properties!
 	assert( idxNew <= mDclControls.size() );
@@ -203,58 +236,39 @@ bool CDclFormObject::ReorderControl( TDclControlPtr pDclControl, size_t idxNew, 
 		TDclControlList::iterator iterAt = iter++;
 		if( pDclControl != (*iterAt) )
 			continue;
+		CUndoManager* pUndoManager = GetUndoManager();
+		if( pUndoManager )
+			pUndoManager->ReorderControl( pDclControl );
 		mDclControls.erase( iterAt );
 		TDclControlList::iterator iterInsert = mDclControls.begin();
 		while( idxNew-- > 0 ) ++iterInsert;
 		mDclControls.insert( iterInsert, pDclControl );
-		if( !bDeferReindexing )
-			ReindexControls();
+		OnModified();
 		return true;
 	}
 	return false;
 }
 
-
-void CDclFormObject::ReindexControls()
-{
-	INT_PTR idxCurrent = 0;
-	for( TDclControlList::iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
-		(*iter)->SetZOrder( idxCurrent++ );
-}
-
-size_t CDclFormObject::CountDeletedControls() const
-{
-	size_t ctDeleted = 0;
-	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
-	{
-		if( (*iter)->IsDeleted() )
-			ctDeleted++;
-	}
-	return ctDeleted;
-}
-
 void CDclFormObject::SetGlobalVariableName( LPCTSTR pszRootName /*= NULL*/, bool bUpdateChildren /*= true*/ )	
-{	
+{
+	OnModified();
 	CString sRootName = pszRootName;
 	if( sRootName.IsEmpty() )
 		sRootName = mpProject->GetKeyName();
 	CString sFormName = sRootName + _T('_') + GetKeyName();
 	GetControlProperties()->AddStringProperty( Prop::GlobalVarName, PropString, sFormName, true );
-
 	if( !bUpdateChildren )
 		return;
-
 	for( TDclControlList::iterator iter = ++mDclControls.begin(); iter != mDclControls.end(); ++iter )
 		(*iter)->SetGlobalVariableName( sFormName );
 }
 
 void CDclFormObject::ClearGlobalVariableName( bool bUpdateChildren /*= true*/ )	
 {	
+	OnModified();
 	GetControlProperties()->SetStringProperty( Prop::GlobalVarName, NULL );
-
 	if( !bUpdateChildren )
 		return;
-
 	for( TDclControlList::iterator iter = ++mDclControls.begin(); iter != mDclControls.end(); ++iter )
 		(*iter)->ClearGlobalVariableName();
 }
@@ -263,7 +277,10 @@ TDclFormPtr CDclFormObject::AddChildForm( DclFormType type )
 {
 	TDclFormPtr pDclForm = mpProject->AddForm( type, TDclFormLockedPtr( this ) );
 	if( pDclForm )
+	{
 		pDclForm->SetUsesClientRect( true );
+		OnModified();
+	}
 	return pDclForm;
 }
 
@@ -360,22 +377,19 @@ void CDclFormObject::Serialize(CArchive& ar)
 		}
 		ar << msUUID;
 		ar << mbUsesClientRect;
-		nCount = (WORD)(mDclControls.size() - CountDeletedControls());
-		ar << nCount;
+		ar << (WORD)mDclControls.size();
 		for( TDclControlList::iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
 		{
-			if( !(*iter)->IsDeleted() )
-			{
-				(*iter)->Serialize(ar);
-			#ifdef _DIAGNOSTIC
-				if( (GetAsyncKeyState( VK_CONTROL ) & 0x8000) == 0x8000 )
-					TraceFmt( _T("> %s\r\n"), (*iter)->toString() );
-			#endif //_DIAGNOSTIC
-			}
+			(*iter)->Serialize(ar);
+		#ifdef _DIAGNOSTIC
+			if( (GetAsyncKeyState( VK_CONTROL ) & 0x8000) == 0x8000 )
+				TraceFmt( _T("> %s\r\n"), (*iter)->toString() );
+		#endif //_DIAGNOSTIC
 		}		
 	}
 	else
-	{	
+	{
+		OnModified();
 		ar >> nThisVersion;
 		if (nThisVersion > GetCurrentSaveVersion())
 			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
@@ -474,6 +488,15 @@ void CDclFormObject::Serialize(CArchive& ar)
 	}
 }
 
+TDclControlPtr CDclFormObject::GetRefCountedPtr( CDclControlObject* pDclControl ) const
+{
+	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
+	{
+		if( (*iter) == pDclControl )
+			return *iter;
+	}
+	return TDclControlLockedPtr( pDclControl );
+}
 
 void CDclFormObject::ClearControls()
 {
@@ -511,7 +534,8 @@ IOStatus CDclFormObject::ReadFromTextFile(std::ifstream &sFile, const CString &f
 
 IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &fileName)
 {
-  // Get this dcl form's name and type from archive
+	OnModified();
+	// Get this dcl form's name and type from archive
   if (!readString(sFile, msName)) return statInvalidFormat;
 	long lType;
   if (!readLong(sFile, lType)) return statInvalidFormat;
@@ -598,7 +622,6 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 			break;		
 		}
   }
-	mbDeleted = false;
 	return statOK;
 }
 
@@ -657,6 +680,13 @@ bool CDclFormObject::IsModeless() const
 	case VdclFileDialog: return false;
 	}
 	return false;
+}
+
+CWnd* CDclFormObject::GetFormWindow() const
+{
+	if( !mpDlgObject )
+		return NULL;
+	return mpDlgObject->GetControlPane()->GetHostDialog();
 }
 
 TDclControlPtr CDclFormObject::CreateControlProperties()

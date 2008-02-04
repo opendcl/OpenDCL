@@ -14,7 +14,7 @@
 
 CArxFolderComboCtrl::CArxFolderComboCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CFolderComboCtrl( pTemplate, pPane, nID, false )
-, mArxServices( pTemplate )
+, mArxServices( this )
 , mpDwgList( NULL )
 {
 	if( bCreate )
@@ -91,37 +91,34 @@ LRESULT CArxFolderComboCtrl::OnSelchange( WPARAM wParam, LPARAM lParam )
 	CFolder* pFolderInfo = (CFolder*)lParam;
 	if( pFolderInfo )
 		sPath = (LPCTSTR)pFolderInfo->m_path;
+	mpTemplate->SetStringProperty( Prop::Text, sPath );
 
 	if( mpDwgList )
 		mpDwgList->Dir( sPath );
 
-	CString sEventName = mpTemplate->GetStringProperty(Prop::EventSelChanged);
-	if( !sEventName.IsEmpty() )
+	CString sEvent = mpTemplate->GetStringProperty(Prop::EventSelChanged);
+	if( sEvent.SpanExcluding( _T("_") ) == _T("c:OnActionEvent") )
 	{
-		if( mpTemplate->m_bEventsAsAction )
-		{
-			GetParent()->GetParent()->EnableWindow(TRUE);
-			CString sVal;
-			sVal.Format( _T("%d"), GetCurSel() );
-			resbuf rbVal = { NULL, RTSTR };
-			rbVal.resval.rstring = (LPTSTR)sVal.LockBuffer();
-      acedPutSym( _T("$value"), &rbVal );
-			resbuf rbEvent = { NULL, RTSTR };
-			rbEvent.resval.rstring = (LPTSTR)sEventName.LockBuffer();
-			struct resbuf* prbResult = NULL;
-			acedInvoke( &rbEvent, &prbResult );
-			if( prbResult )
-				acutRelRb( prbResult );
-			GetParent()->GetParent()->EnableWindow(FALSE);
-			GetParent()->EnableWindow(TRUE);
-		}
-		else
-		{
-			CString sLispSafePath = sPath;
-			sLispSafePath.Replace( _T("\\"), _T("\\\\") );
-			InvokeMethodIntString( sEventName, GetCurSel(), sLispSafePath, IsAsyncEvents() );
-			mpTemplate->SetStringProperty( Prop::Text, sPath );
-		}
+		GetParent()->GetParent()->EnableWindow( TRUE );
+		CString sVal;
+		sVal.Format( _T("%d"), GetCurSel() );
+		resbuf rbValue = { NULL, RTSTR };
+		rbValue.resval.rstring = sVal.LockBuffer();
+    acedPutSym( _T("$value"), &rbValue );
+		resbuf rbEvent = { NULL, RTSTR };
+		rbEvent.resval.rstring = sEvent.LockBuffer();
+		resbuf* prbResult = NULL;
+		acedInvoke( &rbEvent, &prbResult ); 
+		if( prbResult ) 
+			acutRelRb( prbResult ); 
+		GetParent()->GetParent()->EnableWindow( FALSE );
+		GetParent()->EnableWindow( TRUE );
+	}
+	else if( !sEvent.IsEmpty() )
+	{
+		CString sLispSafePath = sPath;
+		sLispSafePath.Replace( _T("\\"), _T("\\\\") );
+		InvokeMethodIntString( sEvent, GetCurSel(), sLispSafePath, IsAsyncEvents() );
 	}
 	return 0;
 }

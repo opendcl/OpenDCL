@@ -3,84 +3,71 @@
 
 #include "stdafx.h"
 #include "Methods_Hatch.h"
-#include "DclControlObject.h"
-#include "MethodLexicon.h"
 #include "ArgumentsRetrieval.h"
 #include "GsPreviewCtrl.h"
 #include "ControlTypes.h"
 
 
-int Hatch_Clear()
+ADSRESULT Hatch::Clear()
 {
-	CWnd *pControl = GetControlPointer(CtlHatch, _T("Hatch_Clear"));
-	
-	if (pControl == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	CGsPreviewCtrl *pCtrl = (CGsPreviewCtrl*)pControl;
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHatch))
+		return RSERR; //invalid input
 
-	if (pCtrl != NULL)
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->clearAll();	
+	pCtrl->m_Line[0] = NULL;
+	pCtrl->m_Line[1] = NULL;
+	pCtrl->m_Line[2] = NULL;
+	pCtrl->m_Line[3] = NULL;			
+	pCtrl->m_BlockName.Empty();
+	pCtrl->m_FileName.Empty();
+	pCtrl->m_bSelectedRect = false;
+	if( pCtrl->m_pLoadedDwg )
 	{
-		pCtrl->clearAll();	
-		pCtrl->m_Line[0] = NULL;
-		pCtrl->m_Line[1] = NULL;
-		pCtrl->m_Line[2] = NULL;
-		pCtrl->m_Line[3] = NULL;			
-		pCtrl->m_BlockName = CString();
-		pCtrl->m_FileName = CString();
-		pCtrl->m_bSelectedRect = false;
-		if (pCtrl->m_pLoadedDwg != NULL)
-		{
-			delete pCtrl->m_pLoadedDwg;
-			pCtrl->m_pLoadedDwg = NULL;
-		}
-		pCtrl->RedrawWindow();
+		delete pCtrl->m_pLoadedDwg;
+		pCtrl->m_pLoadedDwg = NULL;
 	}
-
-	acedRetVoid();
-	return 0;
+	pCtrl->RedrawWindow();
+	acedRetT();
+	return RSRSLT;
 }
 
-
-
-int Hatch_SetPattern()
+ADSRESULT Hatch::SetPattern()
 {
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHatch))
+		return RSERR; //invalid input
+
 	CString sPattern;
-	
-	TDclControlPtr pArx = GetLispInput(_T("Hatch_SetPattern"), sPattern);
+	if (!GetStringArgument (pArgs, sPattern))
+		return RSERR; //invalid input
 
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	CGsPreviewCtrl *pBlock = (CGsPreviewCtrl*)pArx->GetWindow();
-	
-	if (pBlock != NULL)
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->clearAll();	
+	pCtrl->m_Line[0] = NULL;
+	pCtrl->m_Line[1] = NULL;
+	pCtrl->m_Line[2] = NULL;
+	pCtrl->m_Line[3] = NULL;			
+	pCtrl->m_BlockName.Empty();
+	pCtrl->m_FileName.Empty();
+	pCtrl->m_bSelectedRect = false;
+	if( pCtrl->m_pLoadedDwg )
 	{
-		pBlock->clearAll();	
-		pBlock->m_Line[0] = NULL;
-		pBlock->m_Line[1] = NULL;
-		pBlock->m_Line[2] = NULL;
-		pBlock->m_Line[3] = NULL;			
-		pBlock->m_BlockName = CString();
-		pBlock->m_FileName = CString();
-		pBlock->m_bSelectedRect = false;
-		if (pBlock->m_pLoadedDwg != NULL)
-		{
-			delete pBlock->m_pLoadedDwg;
-			pBlock->m_pLoadedDwg = NULL;
-		}
-		pBlock->RedrawWindow();
+		delete pCtrl->m_pLoadedDwg;
+		pCtrl->m_pLoadedDwg = NULL;
 	}
-
-	pBlock->DisplayHatchPattern(sPattern);
-
-	acedRetVoid();	
-	return 0;
-
+	if( pCtrl->DisplayHatchPattern( sPattern ) )
+		acedRetT();
+	return RSRSLT;
 }

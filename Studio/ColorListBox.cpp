@@ -4,7 +4,7 @@
 #include "stdafx.h"
 //#include "ami.h"
 #include "ColorListBox.h"
-#include "Colors.h"
+#include "ColorsPage.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ END_MESSAGE_MAP()
 
 void CColorListBox::DrawItem(LPDRAWITEMSTRUCT pDIStruct) 
 {
-   CString  sColor = "";                       // No Need To Reallocate Each Time
+   CString  sColor;                       // No Need To Reallocate Each Time
 
    HDC		   hdc = pDIStruct->hDC;
    CRect	   rItemRect( pDIStruct -> rcItem );

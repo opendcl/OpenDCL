@@ -4,19 +4,20 @@
 #pragma once
 
 
-int AxGetObject();
-int CloseAxObject();
+namespace AxControl
+{
+ADSRESULT GetProperty();
+ADSRESULT SetProperty();
+ADSRESULT DoMethod();
+ADSRESULT SetColorProperty();
+ADSRESULT SetPictureProperty();
+ADSRESULT GetOleObject();
+};
 
-int SetAxProperty();
-int GetAxProperty();
-int DoAxMethod();
-int SetFlexGridColorProperty();
-int GetFlexGridColorProperty();
-
-int SetAxObjectProperty();
-int GetAxObjectProperty();
-int DoAxObjectMethod();
-int SetAxPictureProperty();
-int SetAxObjectPictureProperty();
-int SetAxColorProperty();
-int SetAxObjColorProperty();
+namespace AxObject
+{
+ADSRESULT GetProperty();
+ADSRESULT SetProperty();
+ADSRESULT DoMethod();
+ADSRESULT Close();
+};

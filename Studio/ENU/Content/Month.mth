@@ -4,8 +4,8 @@ GetCurSel
 dcl_Month_
 [Desc]
 This method returns the currently selected date.
-[Arguments Return] as List
-ProjectFileName
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
 
 
 [Method]
@@ -14,8 +14,8 @@ GetMonthRangeStart
 dcl_Month_
 [Desc]
 This method gets the lowest allowable date limit of the MonthCalender.
-[Arguments Return] as List
-ProjectFileName
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
 
 
 [Method]
@@ -24,8 +24,8 @@ GetMonthRangeEnd
 dcl_Month_
 [Desc]
 This method gets the largest allowable date limit of the MonthCalender.
-[Arguments Return] as List
-ProjectFileName
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
 
 
 [Method]
@@ -34,9 +34,8 @@ GetRangeStart
 dcl_Month_
 [Desc]
 This method gets the current minimum dates set in the MonthCalender.
-[Arguments Return] as List
-ProjectFileName
-
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
 
 
 [Method]
@@ -45,8 +44,8 @@ GetRangeEnd
 dcl_Month_
 [Desc]
 This method gets the current maximum dates set in the MonthCalender.
-[Arguments Return] as List
-ProjectFileName
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
 
 
 [Method]
@@ -55,9 +54,8 @@ GetSelRangeStart
 dcl_Month_
 [Desc]
 This method gets the lowest selected date of the MonthCalender.
-[Arguments Return] as List
-ProjectFileName
-
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
 
 
 [Method]
@@ -66,9 +64,8 @@ GetSelRangeEnd
 dcl_Month_
 [Desc]
 This method gets the highest selected date of the MonthCalender.
-[Arguments Return] as List
-ProjectFileName
-
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
 
 
 [Method]
@@ -78,7 +75,7 @@ dcl_Month_
 [Desc]
 This method sets the currently selected date for a MonthCalender.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 \par\tab Year
@@ -97,7 +94,7 @@ dcl_Month_
 [Desc]
 This method sets the lowest and highest allowable dates for the MonthCalender.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 \par\tab LowerYear
@@ -116,7 +113,6 @@ ProjectFileName
 \par\tab Day
 [as Integer]
 [End List]
-
 
 
 [Method]
@@ -126,7 +122,7 @@ dcl_Month_
 [Desc]
 This method sets the selection for the MonthCalender to the indicated date range.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 \par\tab LowerYear
@@ -147,7 +143,6 @@ ProjectFileName
 [End List]
 
 
-
 [Method]
 GetToday
 [Prefix]
@@ -155,7 +150,6 @@ dcl_Month_
 [Desc]
 This method returns today’s date.
 [Arguments Return] as List
-ProjectFileName
-
+<CONTROL>
 
 [End of File]

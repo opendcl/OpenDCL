@@ -20,6 +20,7 @@ public:
 public:
 
 	void DrawDimensions(HDC hdc);
+	void DrawSplitter(HDC hdc, const CRect& rcSplitter);
 	void DrawArrow(HDC hdc, int x,int Y, int Direction);
 // Overrides
 	// ClassWizard generated virtual function overrides

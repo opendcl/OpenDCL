@@ -4,2916 +4,893 @@
 #include "stdafx.h"
 #include "Methods_PictureBox.h"
 #include "ArgumentsRetrieval.h"
-#include "PictureBox.h"
-#include "ErrorLexicon.h"
-#include "MethodLexicon.h"
+#include "ArxPictureBoxCtrl.h"
 #include "ControlTypes.h"
 #include "AcadColorTable.h"
 #include "Workspace.h"
 
 
-/////////////////////////////////////////////////////////////////////////////
-// Methods_PictureBox
-int PictureBox_DrawLine()
+ADSRESULT PictureBox::DrawLine()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_DrawLine, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
+
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	if( !pCtrl->IsWindowVisible() )
+		return RSRSLT;
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1);
-		return 0;		
+		acedRetT();
+		return RSRSLT;
 	}
-	
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	do
 	{
+		int nStartX;
+		if( !GetIntArgument( pArgs, nStartX ) )
+			return RSERR; //invalid input
+
+		int nStartY;
+		if( !GetIntArgument( pArgs, nStartY ) )
+			return RSERR; //invalid input
+
+		int nEndX;
+		if( !GetIntArgument( pArgs, nEndX ) )
+			return RSERR; //invalid input
+
+		int nEndY;
+		if( !GetIntArgument( pArgs, nEndY ) )
+			return RSERR; //invalid input
+
+		COLORREF crColor;
+		if( !GetColorArgument( pArgs, crColor ) )
+			return RSERR; //invalid input
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		pCtrl->DrawLine( nStartX, nStartY, nEndX, nEndY, crColor );
 		
-		acedRetVoid();	
-		return 0;
-	}
+	} while( GetListBeginArgument( pArgs, true ) );
 
-	struct resbuf *ListData;
-	int nStartX;
-	int nStartY;
-	int nEndX;
-	int nEndY;
-	
-	
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	
-
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				
-				
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawLine);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawLine);	
-					acedRetInt(-1);  return 0; 
-				}
-
-				// get the first argument required
-				nStartX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawLine);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawLine);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the second argument required
-				nStartY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawLine);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawLine);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the third argument required
-				nEndX = ListData->resval.rint;
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawLine);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawLine);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the fourth argument required
-				nEndY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawLine);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype == RTSHORT) 
-				{
-					// get the next argument required
-					int nLineColor = ListData->resval.rint;
-					
-					((CPictureBox*)pControl)->DrawLine(
-						nStartX,
-						nStartY,
-						nEndX,
-						nEndY,
-						GetRGBColor(nLineColor));
-				}
-				else if (ListData->restype == RTLONG) 
-				{
-					// get the next argument required
-					long lLineColor = ListData->resval.rlong;
-					
-					((CPictureBox*)pControl)->DrawLine(
-						nStartX,
-						nStartY,
-						nEndX,
-						nEndY,
-						lLineColor);
-				}
-				else if (ListData->restype == RT3DPOINT) 
-				{
-					int nRed = (int)ListData->resval.rpoint[X];
-					int nGreen = (int)ListData->resval.rpoint[Y];
-					int nBlue = (int)ListData->resval.rpoint[Z];
-				
-					
-					((CPictureBox*)pControl)->DrawLine(
-						nStartX,
-						nStartY,
-						nEndX,
-						nEndY,
-						RGB(nRed, nGreen, nBlue));
-				}
-				else
-				{					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawLine);	
-					acedRetInt(-1);  return 0; 
-				}
-				// advance to the next list item
-				ListData = ListData->rbnext;
-
-				if (ListData->restype != RTLE) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sPictureBox_DrawLine);	
-					acedRetInt(-1);  return 0; 
-				}			
-			}
-		}
-	}
-	else
-	{	
-		
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_DrawLine);			
-        acedRetInt(-1);  return 0; 
-	}
-
-	
-	
-	
-	acedRetVoid();
-	return 0;
+	acedRetT();
+	return RSRSLT;
 }
 
-int PictureBox_DrawPoint()
+ADSRESULT PictureBox::DrawPoint()
 {	
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_DrawRect, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
 
-	if (!pControl->GetParent()->IsWindowVisible())		
-	{
-		
-		acedRetVoid();	
-		return 0;
-	}
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	if( !pCtrl->IsWindowVisible() )
+		return RSRSLT;
 
-	int nStartX;
-	int nStartY;
-	
-	struct resbuf *ListData;
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
+	int nX;
+	if( !GetIntArgument( pArgs, nX ) )
+		return RSERR; //invalid input
 
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
+	int nY;
+	if( !GetIntArgument( pArgs, nY ) )
+		return RSERR; //invalid input
 
-	
+	COLORREF crColor;
+	if( !GetColorArgument( pArgs, crColor ) )
+		return RSERR; //invalid input
 
-	if (ListData->restype != RTSHORT) 
-	{
-		
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawRect);	
-		acedRetInt(-1);  return 0; 
-	}
-	
-	// get the first argument required
-	nStartX = ListData->resval.rint;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	// advance to the next list item
-	ListData = ListData->rbnext;
-	if (ListData == NULL)
-	{
-		
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawRect);	
-		acedRetInt(-1);  return 0; 
-	}
-	if (ListData->restype != RTSHORT) 
-	{
-		
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawRect);	
-		acedRetInt(-1);  return 0; 
-	}
-	
-	// get the second argument required
-	nStartY = ListData->resval.rint;
+	pCtrl->DrawPoint( nX, nY, crColor );
 
-		// advance to the next list item
-	ListData = ListData->rbnext;
-	
-	if (ListData == NULL)
-	{
-		
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawRect);	
-		acedRetInt(-1);  return 0; 
-	}
-
-	if (ListData->restype == RTSHORT) 
-	{
-		// get the next argument required
-		int nLineColor = ListData->resval.rint;
-		
-		((CPictureBox*)pControl)->DrawPoint(
-				nStartX,
-				nStartY,
-				GetRGBColor(nLineColor));
-	}
-	else if (ListData->restype == RTLONG) 
-	{
-		// get the next argument required
-		long lLineColor = ListData->resval.rlong;
-		
-		((CPictureBox*)pControl)->DrawPoint(
-			nStartX,
-			nStartY,
-			lLineColor);		
-	}
-	else if (ListData->restype == RT3DPOINT) 
-	{
-		int nRed = (int)ListData->resval.rpoint[X];
-		int nGreen = (int)ListData->resval.rpoint[Y];
-		int nBlue = (int)ListData->resval.rpoint[Z];
-	
-		
-		((CPictureBox*)pControl)->DrawPoint(
-			nStartX,
-			nStartY,
-			RGB(nRed, nGreen, nBlue));
-	}
-	else
-	{
-		
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawRect);	
-		acedRetInt(-1);  return 0; 
-	}				
-	
-	acedRetVoid();
-	return 0;
-	
-
-	/*
-	int nStartX;
-	int nStartY;
-	int nLineColor;
-
-	CWnd *pControl = GetArgsControlIntIntInt(
-		CtlPictureBox, 
-		sPictureBox_DrawPoint, 
-		nStartX,
-		nStartY,
-		GetRGBColor(nLineColor));
-
-	if (pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	if (!pControl->GetParent()->IsWindowVisible())		
-	{
-		
-		acedRetVoid();	
-		return 0;
-	}
-
-	((CPictureBox*)pControl)->DrawPoint(
-		nStartX,
-		nStartY,
-		GetRGBColor(nLineColor));
-	
-	
-	acedRetVoid();
-	return 0;
-	*/
+	acedRetT();
+	return RSRSLT;
 }
 
-
-int PictureBox_DrawEdge()
+ADSRESULT PictureBox::DrawEdge()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_DrawEdge, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
+
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	if( !pCtrl->IsWindowVisible() )
+		return RSRSLT;
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1); 
-		return 0;
+		acedRetT();
+		return RSRSLT;
 	}
 
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	do
 	{
+		int nStartX;
+		if( !GetIntArgument( pArgs, nStartX ) )
+			return RSERR; //invalid input
+
+		int nStartY;
+		if( !GetIntArgument( pArgs, nStartY ) )
+			return RSERR; //invalid input
+
+		int nWidth;
+		if( !GetIntArgument( pArgs, nWidth ) )
+			return RSERR; //invalid input
+
+		int nHeight;
+		if( !GetIntArgument( pArgs, nHeight ) )
+			return RSERR; //invalid input
+
+		int nBorder;
+		if( !GetIntArgument( pArgs, nBorder ) )
+			return RSERR; //invalid input
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		pCtrl->DrawEdge( nStartX, nStartY, nStartX + nWidth + 1, nStartY + nHeight + 1, nBorder );
 		
-		acedRetVoid();	
-		return 0;
-	}
+	} while( GetListBeginArgument( pArgs, true ) );
 
-	int nStartX;
-	int nStartY;
-	int nEndX;
-	int nEndY;
-	int nEdge;
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	struct resbuf *ListData;
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	
-
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawEdge);	
-					acedRetInt(-1);  
-					return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawEdge);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the first argument required
-				nStartX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawEdge);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawEdge);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				// get the second argument required
-				nStartY = ListData->resval.rint;
-
-					// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawEdge);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawEdge);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the third argument required
-				nEndX = ListData->resval.rint;
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawEdge);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawEdge);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the fourth argument required
-				nEndY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawEdge);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawEdge);	
-					acedRetInt(-1);  return 0; 
-				}				
-				
-				// get the next argument required
-				nEdge = ListData->resval.rint;
-
-				((CPictureBox*)pControl)->DrawEdge(
-					nStartX,
-					nStartY,
-					nEndX + nStartX + 1,
-					nEndY + nStartY + 1,
-					nEdge);
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-
-				if (ListData->restype != RTLE) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sPictureBox_DrawEdge);	
-					acedRetInt(-1);  return 0; 
-				}			
-			}
-		}
-	}
-	else
-	{	
-		
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_DrawEdge);			
-        acedRetInt(-1);  return 0; 
-	}
-
-	
-	
-	
-	acedRetVoid();
-	return 0;
+	acedRetT();
+	return RSRSLT;
 }
 
-
-int PictureBox_DrawFocusRect()
+ADSRESULT PictureBox::DrawFocusRect()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_DrawFocusRect, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
+
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	if( !pCtrl->IsWindowVisible() )
+		return RSRSLT;
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1); 
-		return 0;
+		acedRetT();
+		return RSRSLT;
 	}
 
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	do
 	{
+		int nStartX;
+		if( !GetIntArgument( pArgs, nStartX ) )
+			return RSERR; //invalid input
+
+		int nStartY;
+		if( !GetIntArgument( pArgs, nStartY ) )
+			return RSERR; //invalid input
+
+		int nWidth;
+		if( !GetIntArgument( pArgs, nWidth ) )
+			return RSERR; //invalid input
+
+		int nHeight;
+		if( !GetIntArgument( pArgs, nHeight ) )
+			return RSERR; //invalid input
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		pCtrl->DrawFocusRect( nStartX, nStartY, nStartX + nWidth + 1, nStartY + nHeight + 1 );
 		
-		acedRetVoid();	
-		return 0;
-	}
+	} while( GetListBeginArgument( pArgs, true ) );
 
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	int nStartX;
-	int nStartY;
-	int nEndX;
-	int nEndY;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	struct resbuf *ListData;
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	
-
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawFocusRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawFocusRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the first argument required
-				nStartX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawFocusRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawFocusRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				// get the second argument required
-				nStartY = ListData->resval.rint;
-
-					// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawFocusRect);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawFocusRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the third argument required
-				nEndX = ListData->resval.rint;
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawFocusRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawFocusRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the fourth argument required
-				nEndY = ListData->resval.rint;
-
-				((CPictureBox*)pControl)->DrawFocusRect(
-					nStartX,
-					nStartY,
-					nEndX + nStartX + 1,
-					nEndY + nStartY + 1);
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-
-				if (ListData->restype != RTLE) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sPictureBox_DrawFocusRect);	
-					acedRetInt(-1);  return 0; 
-				}			
-			}
-		}
-	}
-	else
-	{	
-		
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_DrawFocusRect);			
-        acedRetInt(-1);  return 0; 
-	}
-
-	
-	
-	
-	acedRetVoid();
-	return 0;
-
-
+	acedRetT();
+	return RSRSLT;
 }
 
-int PictureBox_DrawRect()
+ADSRESULT PictureBox::DrawRect()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_DrawRect, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
+
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	if( !pCtrl->IsWindowVisible() )
+		return RSRSLT;
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1); 
-		return 0;
+		acedRetT();
+		return RSRSLT;
 	}
 
-	if (!pControl->GetParent()->IsWindowVisible())		
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	do
 	{
+		int nStartX;
+		if( !GetIntArgument( pArgs, nStartX ) )
+			return RSERR; //invalid input
+
+		int nStartY;
+		if( !GetIntArgument( pArgs, nStartY ) )
+			return RSERR; //invalid input
+
+		int nWidth;
+		if( !GetIntArgument( pArgs, nWidth ) )
+			return RSERR; //invalid input
+
+		int nHeight;
+		if( !GetIntArgument( pArgs, nHeight ) )
+			return RSERR; //invalid input
+
+		COLORREF crColor;
+		if( !GetColorArgument( pArgs, crColor ) )
+			return RSERR; //invalid input
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		pCtrl->DrawRect( nStartX, nStartY, nStartX + nWidth + 1, nStartY + nHeight + 1, crColor );
 		
-		acedRetVoid();	
-		return 0;
-	}
+	} while( GetListBeginArgument( pArgs, true ) );
 
-	int nStartX;
-	int nStartY;
-	int nEndX;
-	int nEndY;
-	
-	struct resbuf *ListData;
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	
-
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the first argument required
-				nStartX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				// get the second argument required
-				nStartY = ListData->resval.rint;
-
-					// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawRect);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the third argument required
-				nEndX = ListData->resval.rint;
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the fourth argument required
-				nEndY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawRect);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype == RTSHORT) 
-				{
-					// get the next argument required
-					int nLineColor = ListData->resval.rint;
-					
-					((CPictureBox*)pControl)->DrawRect(
-						nStartX,
-						nStartY,
-						nEndX + nStartX + 1,
-						nEndY + nStartY + 1,
-						GetRGBColor(nLineColor));
-				}
-				else if (ListData->restype == RTLONG) 
-				{
-					// get the next argument required
-					long lLineColor = ListData->resval.rlong;
-					
-					((CPictureBox*)pControl)->DrawRect(
-						nStartX,
-						nStartY,
-						nEndX + nStartX + 1,
-						nEndY + nStartY + 1,
-						lLineColor);
-				}
-				else if (ListData->restype == RT3DPOINT) 
-				{
-					int nRed = (int)ListData->resval.rpoint[X];
-					int nGreen = (int)ListData->resval.rpoint[Y];
-					int nBlue = (int)ListData->resval.rpoint[Z];
-				
-					
-					((CPictureBox*)pControl)->DrawRect(
-						nStartX,
-						nStartY,
-						nEndX + nStartX + 1,
-						nEndY + nStartY + 1,
-						RGB(nRed, nGreen, nBlue));
-				}
-				else
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawRect);	
-					acedRetInt(-1);  return 0; 
-				}				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-
-				if (ListData->restype != RTLE) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sPictureBox_DrawRect);	
-					acedRetInt(-1);  return 0; 
-				}			
-			}
-		}
-	}
-	else
-	{	
-		
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_DrawRect);			
-        acedRetInt(-1);  return 0; 
-	}
-
-	
-	
-	
-	acedRetVoid();
-	return 0;
-	
-
+	acedRetT();
+	return RSRSLT;
 }
 
-
-int PictureBox_DrawFillRect()
+ADSRESULT PictureBox::DrawFillRect()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_DrawFillRect, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
+
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	if( !pCtrl->IsWindowVisible() )
+		return RSRSLT;
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1); 
-		return 0;
+		acedRetT();
+		return RSRSLT;
 	}
 
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	do
 	{
+		int nStartX;
+		if( !GetIntArgument( pArgs, nStartX ) )
+			return RSERR; //invalid input
+
+		int nStartY;
+		if( !GetIntArgument( pArgs, nStartY ) )
+			return RSERR; //invalid input
+
+		int nWidth;
+		if( !GetIntArgument( pArgs, nWidth ) )
+			return RSERR; //invalid input
+
+		int nHeight;
+		if( !GetIntArgument( pArgs, nHeight ) )
+			return RSERR; //invalid input
+
+		COLORREF crColor;
+		if( !GetColorArgument( pArgs, crColor ) )
+			return RSERR; //invalid input
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		pCtrl->DrawFillRect( nStartX, nStartY, nStartX + nWidth, nStartY + nHeight, crColor );
 		
-		acedRetVoid();	
-		return 0;
-	}
+	} while( GetListBeginArgument( pArgs, true ) );
 
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	int nStartX;
-	int nStartY;
-	int nEndX;
-	int nEndY;
-	
-	struct resbuf *ListData;
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				
-				
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawFillRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawFillRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the first argument required
-				nStartX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawFillRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawFillRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				// get the second argument required
-				nStartY = ListData->resval.rint;
-
-					// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawFillRect);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawFillRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the third argument required
-				nEndX = ListData->resval.rint;
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawFillRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawFillRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the fourth argument required
-				nEndY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawFillRect);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype == RTSHORT) 
-				{
-					// get the next argument required
-					int nLineColor = ListData->resval.rint;
-
-					((CPictureBox*)pControl)->DrawFillRect(
-						nStartX,
-						nStartY,
-						nEndX + nStartX,
-						nEndY + nStartY,
-						GetRGBColor(nLineColor));	
-				
-				}
-				else if (ListData->restype == RTLONG) 
-				{
-					// get the next argument required
-					long lLineColor = ListData->resval.rlong;
-
-					((CPictureBox*)pControl)->DrawFillRect(
-						nStartX,
-						nStartY,
-						nEndX + nStartX,
-						nEndY + nStartY,
-						lLineColor);
-				}
-				else if (ListData->restype == RT3DPOINT) 
-				{
-					int nRed = (int)ListData->resval.rpoint[X];
-					int nGreen = (int)ListData->resval.rpoint[Y];
-					int nBlue = (int)ListData->resval.rpoint[Z];
-					
-					((CPictureBox*)pControl)->DrawFillRect(
-						nStartX,
-						nStartY,
-						nEndX + nStartX,
-						nEndY + nStartY,
-						RGB(nRed, nGreen, nBlue));	
-				
-				}
-				else
-				{				
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawFillRect);	
-					acedRetInt(-1);  return 0; 
-				}
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-
-				if (ListData->restype != RTLE) 
-				{
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sPictureBox_DrawFillRect);	
-					acedRetInt(-1);  return 0; 
-				}
-			}
-		}
-	}
-	else
-	{	
-		
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_DrawFillRect);			
-        acedRetInt(-1);  return 0; 
-	}
-	
-	
-	
-	acedRetVoid();
-	return 0;
-		
-	
+	acedRetT();
+	return RSRSLT;
 }
 
-
-int PictureBox_Clear()
+ADSRESULT PictureBox::Clear()
 {
-	
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_Clear);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
 
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
-	{
-		
-		acedRetVoid();	
-		return 0;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-    ((CPictureBox*)pControl)->Clear();
-	
-	
-	acedRetVoid();
-	return 0;
-
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->Clear();
+	acedRetT();
+	return RSRSLT;
 }
 
-int PictureBox_StoreImage()
+ADSRESULT PictureBox::StoreImage()
 {
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_StoreImage);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
 
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
-	{
-		
-		acedRetVoid();	
-		return 0;
-	}
-	
-	((CPictureBox*)pControl)->CopyDC();
-	
-	
-	
-	acedRetVoid();
-	return 0;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->CopyDC();
+	acedRetT();
+	return RSRSLT;
 }
 
-int PictureBox_Refresh()
+ADSRESULT PictureBox::Refresh()
 {
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_Refresh);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
 
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
-	{
-		
-		acedRetVoid();	
-		return 0;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-
-
-	if (pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
-	((CPictureBox*)pControl)->Refresh();
-	
-	acedRetVoid();
-	return 0;
-
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->Refresh();
+	acedRetT();
+	return RSRSLT;
 }
 
-int PictureBox_DrawArc()
+ADSRESULT PictureBox::DrawArc()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_DrawArc, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
+
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	if( !pCtrl->IsWindowVisible() )
+		return RSRSLT;
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1); 
-		return 0;
+		acedRetT();
+		return RSRSLT;
 	}
 
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	do
 	{
+		int nCenterX;
+		if( !GetIntArgument( pArgs, nCenterX ) )
+			return RSERR; //invalid input
+
+		int nCenterY;
+		if( !GetIntArgument( pArgs, nCenterY ) )
+			return RSERR; //invalid input
+
+		int nRadius;
+		if( !GetIntArgument( pArgs, nRadius ) )
+			return RSERR; //invalid input
+
+		int nStartAngleX;
+		if( !GetIntArgument( pArgs, nStartAngleX ) )
+			return RSERR; //invalid input
+
+		int nStartAngleY;
+		if( !GetIntArgument( pArgs, nStartAngleY ) )
+			return RSERR; //invalid input
+
+		int nEndAngleX;
+		if( !GetIntArgument( pArgs, nEndAngleX ) )
+			return RSERR; //invalid input
+
+		int nEndAngleY;
+		if( !GetIntArgument( pArgs, nEndAngleY ) )
+			return RSERR; //invalid input
+
+		COLORREF crColor;
+		if( !GetColorArgument( pArgs, crColor ) )
+			return RSERR; //invalid input
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		pCtrl->DrawArc( nCenterX - nRadius, nCenterY - nRadius, nCenterX + nRadius, nCenterY + nRadius,
+										nStartAngleX, nStartAngleY, nEndAngleX, nEndAngleY, crColor );
 		
-		acedRetVoid();	
-		return 0;
-	}
+	} while( GetListBeginArgument( pArgs, true ) );
 
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	int nCenterX;
-	int nCenterY;
-	int nRadius;
-	int nStartAngleX;
-	int nStartAngleY;
-	int nEndAngleX;
-	int nEndAngleY;
-	
-	struct resbuf *ListData;
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	
-
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-
-				// get the first argument required
-				nCenterX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the second argument required
-				nCenterY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the third argument required
-				nRadius = ListData->resval.rint;
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the next argument required
-				nStartAngleX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the next argument required
-				nStartAngleY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the next argument required
-				nEndAngleX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the next argument required
-				nEndAngleY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype == RTSHORT)
-				{
-					// get the next argument required
-					int nLineColor = ListData->resval.rint;
-
-					((CPictureBox*)pControl)->DrawArc(
-						nCenterX-nRadius,
-						nCenterY-nRadius,
-						nCenterX+nRadius,
-						nCenterY+nRadius,
-						nStartAngleX,
-						nStartAngleY,
-						nEndAngleX,
-						nEndAngleY,	
-						GetRGBColor(nLineColor));
-				}
-				else if (ListData->restype == RTLONG)
-				{
-					// get the next argument required
-					long lLineColor = ListData->resval.rlong;
-
-					((CPictureBox*)pControl)->DrawArc(
-						nCenterX-nRadius,
-						nCenterY-nRadius,
-						nCenterX+nRadius,
-						nCenterY+nRadius,
-						nStartAngleX,
-						nStartAngleY,
-						nEndAngleX,
-						nEndAngleY,	
-						lLineColor);
-				}
-				else if (ListData->restype == RT3DPOINT) 
-				{
-					int nRed = (int)ListData->resval.rpoint[X];
-					int nGreen = (int)ListData->resval.rpoint[Y];
-					int nBlue = (int)ListData->resval.rpoint[Z];
-									
-					((CPictureBox*)pControl)->DrawArc(
-						nCenterX-nRadius,
-						nCenterY-nRadius,
-						nCenterX+nRadius,
-						nCenterY+nRadius,
-						nStartAngleX,
-						nStartAngleY,
-						nEndAngleX,
-						nEndAngleY,	
-						RGB(nRed, nGreen, nBlue));
-				}
-				else
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}
-				// advance to the next list item
-				ListData = ListData->rbnext;
-
-				if (ListData->restype != RTLE) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sPictureBox_DrawArc);	
-					acedRetInt(-1);  return 0; 
-				}			
-			}
-		}
-	}
-	else
-	{	
-		
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_DrawArc);			
-        acedRetInt(-1);  return 0; 
-	}
-
-	
-	
-	
-	acedRetVoid();
-	return 0;
-
-}
-int PictureBox_DrawCircle()
-{
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_DrawCircle, &nArg);
-
-	if (pControl == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
-	{
-		
-		acedRetVoid();	
-		return 0;
-	}
-
-
-	int	nUpperLeftX;
-	int	nUpperLeftY;
-	int	nLowerRightX;
-	int	nLowerRightY;
-	
-	struct resbuf *ListData;
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	
-
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawCircle);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawCircle);	
-					acedRetInt(-1);  return 0; 
-				}
-
-				// get the first argument required
-				nUpperLeftX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawCircle);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawCircle);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the second argument required
-				nUpperLeftY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawCircle);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawCircle);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the third argument required
-				nLowerRightX = ListData->resval.rint;
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawCircle);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawCircle);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the fourth argument required
-				nLowerRightY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawCircle);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype == RTSHORT) 
-				{
-					// get the next argument required
-					int nLineColor = ListData->resval.rint;
-
-					
-					((CPictureBox*)pControl)->DrawCircle(
-						nUpperLeftX,
-						nUpperLeftY,
-						nUpperLeftX + nLowerRightX + 1,
-						nUpperLeftY + nLowerRightY + 1,
-						GetRGBColor(nLineColor));
-				}
-				else if (ListData->restype == RTLONG) 
-				{
-					// get the next argument required
-					long lLineColor = ListData->resval.rlong;
-
-					
-					((CPictureBox*)pControl)->DrawCircle(
-						nUpperLeftX,
-						nUpperLeftY,
-						nUpperLeftX + nLowerRightX + 1,
-						nUpperLeftY + nLowerRightY + 1,
-						lLineColor);
-				}
-				else if (ListData->restype == RT3DPOINT) 
-				{
-					int nRed = (int)ListData->resval.rpoint[X];
-					int nGreen = (int)ListData->resval.rpoint[Y];
-					int nBlue = (int)ListData->resval.rpoint[Z];
-				
-					
-					((CPictureBox*)pControl)->DrawCircle(
-						nUpperLeftX,
-						nUpperLeftY,
-						nUpperLeftX + nLowerRightX + 1,
-						nUpperLeftY + nLowerRightY + 1,
-						RGB(nRed, nGreen, nBlue));
-				}
-				else
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawCircle);	
-					acedRetInt(-1);  return 0; 
-				}
-				// advance to the next list item
-				ListData = ListData->rbnext;
-
-				if (ListData->restype != RTLE) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sPictureBox_DrawCircle);	
-					acedRetInt(-1);  return 0; 
-				}			
-			}
-		}
-	}
-	else
-	{	
-		
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_DrawCircle);			
-        acedRetInt(-1); 
-		return 0; 
-	}
-
-		
-	
-	acedRetVoid();
-	return 0;
-	
-
+	acedRetT();
+	return RSRSLT;
 }
 
-int PictureBox_DrawHatchRect()
+ADSRESULT PictureBox::DrawCircle()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_DrawHatchRect, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
+
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	if( !pCtrl->IsWindowVisible() )
+		return RSRSLT;
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1); 
-		return 0;
+		acedRetT();
+		return RSRSLT;
 	}
 
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	do
 	{
+		int nStartX;
+		if( !GetIntArgument( pArgs, nStartX ) )
+			return RSERR; //invalid input
+
+		int nStartY;
+		if( !GetIntArgument( pArgs, nStartY ) )
+			return RSERR; //invalid input
+
+		int nWidth;
+		if( !GetIntArgument( pArgs, nWidth ) )
+			return RSERR; //invalid input
+
+		int nHeight;
+		if( !GetIntArgument( pArgs, nHeight ) )
+			return RSERR; //invalid input
+
+		COLORREF crColor;
+		if( !GetColorArgument( pArgs, crColor ) )
+			return RSERR; //invalid input
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		pCtrl->DrawCircle( nStartX, nStartY, nStartX + nWidth + 1, nStartY + nHeight + 1, crColor );
 		
-		acedRetVoid();	
-		return 0;
-	}
+	} while( GetListBeginArgument( pArgs, true ) );
 
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	int nStartX;
-	int nStartY;
-	int nEndX;
-	int nEndY;
-	int nHatchPattern;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	struct resbuf *ListData;
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	
-
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawHatchRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawHatchRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the first argument required
-				nStartX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawHatchRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawHatchRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				// get the second argument required
-				nStartY = ListData->resval.rint;
-
-					// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawHatchRect);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawHatchRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the third argument required
-				nEndX = ListData->resval.rint;
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawHatchRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawHatchRect);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the fourth argument required
-				nEndY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawHatchRect);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype == RTSHORT) 
-				{
-					// get the next argument required
-					int nLineColor = ListData->resval.rint;
-
-					ListData = ListData->rbnext;
-					if (ListData == NULL)
-					{
-						
-						// inform the programmer that he did not make the correct call
-						theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawHatchRect);	
-						acedRetInt(-1);  return 0; 
-					}
-				
-					if (ListData->restype != RTSHORT) 
-					{
-						
-						// inform the programmer that he did not make the correct call
-						theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawHatchRect);	
-						acedRetInt(-1);  return 0; 
-					}				
-					
-					// get the next argument required
-					nHatchPattern = ListData->resval.rint;
-					
-					((CPictureBox*)pControl)->DrawHatchRect(
-						nStartX,
-						nStartY,
-						nEndX + nStartX + 1,
-						nEndY + nStartY + 1,
-						GetRGBColor(nLineColor),
-						nHatchPattern);
-				}
-				else if (ListData->restype == RTLONG) 
-				{
-					// get the next argument required
-					long lLineColor = ListData->resval.rlong;
-
-					ListData = ListData->rbnext;
-					if (ListData == NULL)
-					{
-						
-						// inform the programmer that he did not make the correct call
-						theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawHatchRect);	
-						acedRetInt(-1);  return 0; 
-					}
-				
-					if (ListData->restype != RTSHORT) 
-					{
-						
-						// inform the programmer that he did not make the correct call
-						theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawHatchRect);	
-						acedRetInt(-1);  return 0; 
-					}				
-					
-					// get the next argument required
-					nHatchPattern = ListData->resval.rint;
-					
-					((CPictureBox*)pControl)->DrawHatchRect(
-						nStartX,
-						nStartY,
-						nEndX + nStartX + 1,
-						nEndY + nStartY + 1,
-						lLineColor,
-						nHatchPattern);
-				}
-				else if (ListData->restype == RT3DPOINT) 
-				{
-					int nRed = (int)ListData->resval.rpoint[X];
-					int nGreen = (int)ListData->resval.rpoint[Y];
-					int nBlue = (int)ListData->resval.rpoint[Z];
-				
-					// gets the hatch type
-					ListData = ListData->rbnext;
-										
-					if (ListData->restype != RTSHORT) 
-					{
-						
-						// inform the programmer that he did not make the correct call
-						theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawHatchRect);	
-						acedRetInt(-1);  return 0; 
-					}				
-					
-					// get the next argument required
-					nHatchPattern = ListData->resval.rint;
-					
-					((CPictureBox*)pControl)->DrawHatchRect(
-						nStartX,
-						nStartY,
-						nEndX + nStartX + 1,
-						nEndY + nStartY + 1,
-						RGB(nRed, nGreen, nBlue),
-						nHatchPattern);
-				}
-				else
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawHatchRect);	
-					acedRetInt(-1);  return 0; 
-				}				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-
-				if (ListData->restype != RTLE) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sPictureBox_DrawHatchRect);	
-					acedRetInt(-1);  return 0; 
-				}			
-			}
-		}
-	}
-	else
-	{	
-		
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_DrawHatchRect);			
-        acedRetInt(-1);  return 0; 
-	}
-
-	
-	
-	
-	acedRetVoid();
-	return 0;
-		
-
-	
+	acedRetT();
+	return RSRSLT;
 }
 
-int PictureBox_DrawWrappedText()
+ADSRESULT PictureBox::DrawHatchRect()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_DrawWrappedText, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
+
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	if( !pCtrl->IsWindowVisible() )
+		return RSRSLT;
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1); 
-		return 0;
+		acedRetT();
+		return RSRSLT;
 	}
 
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	do
 	{
+		int nStartX;
+		if( !GetIntArgument( pArgs, nStartX ) )
+			return RSERR; //invalid input
+
+		int nStartY;
+		if( !GetIntArgument( pArgs, nStartY ) )
+			return RSERR; //invalid input
+
+		int nWidth;
+		if( !GetIntArgument( pArgs, nWidth ) )
+			return RSERR; //invalid input
+
+		int nHeight;
+		if( !GetIntArgument( pArgs, nHeight ) )
+			return RSERR; //invalid input
+
+		COLORREF crColor;
+		if( !GetColorArgument( pArgs, crColor ) )
+			return RSERR; //invalid input
+
+		int nPattern;
+		if( !GetIntArgument( pArgs, nPattern ) )
+			return RSERR; //invalid input
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		pCtrl->DrawHatchRect( nStartX, nStartY, nStartX + nWidth + 1, nStartY + nHeight + 1, crColor, nPattern );
 		
-		acedRetVoid();	
-		return 0;
-	}
+	} while( GetListBeginArgument( pArgs, true ) );
 
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	int nStartX;
-	int nStartY;
-	int nTextWidth;
-	int nForeColor;
-	int nBackColor;
-	CString sText;
-	CString sJustification;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	int nTextHeight;
-	
-	struct resbuf *ListData;
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	
-
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawWrappedText);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawWrappedText);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the first argument required
-				nStartX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawWrappedText);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawWrappedText);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				// get the second argument required
-				nStartY = ListData->resval.rint;
-
-					// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawWrappedText);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawWrappedText);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the third argument required
-				nTextWidth = ListData->resval.rint;
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawWrappedText);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawWrappedText);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the fourth argument required
-				nForeColor = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawWrappedText);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSTR) 
-				{
-					if (ListData->restype != RTSHORT) 
-					{
-						
-						// inform the programmer that he did not make the correct call
-						theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawText);	
-						acedRetInt(-1);  return 0; 
-					}				
-					
-					// get the next argument required
-					nBackColor = ListData->resval.rint;
-				
-					ListData = ListData->rbnext;
-					if (ListData == NULL)
-					{
-						
-						// inform the programmer that he did not make the correct call
-						theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawText);	
-						acedRetInt(-1);  return 0; 
-					}
-			
-				}
-				else
-				{
-					nBackColor = nUseBackColor;
-				}
-				
-				
-				if (ListData->restype != RTSTR) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sPictureBox_DrawWrappedText);	
-					acedRetInt(-1);  return 0; 
-				}				
-				
-				// get the next argument required
-				sText = ListData->resval.rstring;
-			
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawWrappedText);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSTR) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sPictureBox_DrawWrappedText);	
-					acedRetInt(-1);  return 0; 
-				}				
-				
-				// get the next argument required
-				sJustification = ListData->resval.rstring;
-				
-				nTextHeight = ((CPictureBox*)pControl)->DrawWrappedText(
-					nStartX,
-					nStartY,
-					nStartX + nTextWidth,
-					nForeColor,
-					nBackColor,
-					sText,
-					sJustification);
-			
-				// advance to the next list item
-				ListData = ListData->rbnext;
-
-				if (ListData->restype != RTLE) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sPictureBox_DrawWrappedText);	
-					acedRetInt(-1);  return 0; 
-				}			
-			}
-		}
-	}
-	else
-	{	
-		
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_DrawWrappedText);			
-        acedRetInt(-1);  return 0; 
-	}
-
-	
-		
-	// return nTextHeight
-	acedRetInt(nTextHeight);
-	return 0;
-
+	acedRetT();
+	return RSRSLT;
 }
-int PictureBox_GetTextExtent()
+
+ADSRESULT PictureBox::DrawWrappedText()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_GetTextExtent, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
+
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	if( !pCtrl->IsWindowVisible() )
+		return RSRSLT;
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1); 
-		return 0;
+		acedRetT();
+		return RSRSLT;
 	}
 
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	do
 	{
+		int nStartX;
+		if( !GetIntArgument( pArgs, nStartX ) )
+			return RSERR; //invalid input
+
+		int nStartY;
+		if( !GetIntArgument( pArgs, nStartY ) )
+			return RSERR; //invalid input
+
+		int nWidth;
+		if( !GetIntArgument( pArgs, nWidth ) )
+			return RSERR; //invalid input
+
+		COLORREF crFore;
+		if( !GetColorArgument( pArgs, crFore ) )
+			return RSERR; //invalid input
+
+		COLORREF crBack = COLOR_USEBACKGROUND;
+		GetColorArgument( pArgs, crBack, true );
+
+		CString sText;
+		if( !GetStringArgument( pArgs, sText ) )
+			return RSERR; //invalid input
+
+		CString sJustification;
+		if( !GetStringArgument( pArgs, sJustification ) )
+			return RSERR; //invalid input
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		pCtrl->DrawWrappedText( nStartX, nStartY, nStartX + nWidth + 1, crFore, crBack, sText, sJustification );
 		
-		acedRetVoid();	
-		return 0;
-	}
+	} while( GetListBeginArgument( pArgs, true ) );
+
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT PictureBox::GetTextExtent()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
 
 	CString sText;
+	if( !GetStringArgument( pArgs, sText ) )
+		return RSERR; //invalid input
 
-	if (!GetStringArgument(nArg, &sText, sPictureBox_GetTextExtent) || pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	((CPictureBox*)pControl)->GetTextExtent(sText);
-	
-	return 0;
-
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	CSize szExt;
+	pCtrl->GetTextExtent( sText, szExt );
+	resbuf rbHeight = { NULL, RTSHORT };
+	rbHeight.resval.rint = szExt.cy;
+	resbuf rbWidth = { &rbHeight, RTSHORT };
+	rbWidth.resval.rint = szExt.cx;
+	acedRetList( &rbWidth );
+	return RSRSLT;
 }
-int PictureBox_DrawText()
+
+ADSRESULT PictureBox::DrawText()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_DrawText, &nArg);
-	
-	if (pControl == NULL)
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
+
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	if( !pCtrl->IsWindowVisible() )
+		return RSRSLT;
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1); 
-		return 0;
+		acedRetT();
+		return RSRSLT;
 	}
-	
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	do
 	{
+		int nStartX;
+		if( !GetIntArgument( pArgs, nStartX ) )
+			return RSERR; //invalid input
+
+		int nStartY;
+		if( !GetIntArgument( pArgs, nStartY ) )
+			return RSERR; //invalid input
+
+		COLORREF crFore;
+		if( !GetColorArgument( pArgs, crFore ) )
+			return RSERR; //invalid input
+
+		COLORREF crBack = COLOR_USEBACKGROUND;
+		GetColorArgument( pArgs, crBack, true );
+
+		CString sText;
+		if( !GetStringArgument( pArgs, sText ) )
+			return RSERR; //invalid input
+
+		CString sJustification;
+		if( !GetStringArgument( pArgs, sJustification ) )
+			return RSERR; //invalid input
+
+		bool bDisabled = false;
+		GetBoolArgument( pArgs, bDisabled, true );
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		pCtrl->DrawText( nStartX, nStartY, crFore, crBack, sText, sJustification, (bDisabled? 1 : 0) );
 		
-		acedRetVoid();	
-		return 0;
-	}
-	
-	int nStartX;
-	int nStartY;
-	int nForeColor;
-	int nBackColor;
-	CString sText;
-	CString sJustification;
-	int nDisabled;
+	} while( GetListBeginArgument( pArgs, true ) );
 
-	struct resbuf *ListData;
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				//
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawText);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawText);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the first argument required
-				nStartX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawText);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawText);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				// get the second argument required
-				nStartY = ListData->resval.rint;
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawText);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawText);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the fourth argument required
-				nForeColor = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawText);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSTR) 
-				{
-					if (ListData->restype != RTSHORT) 
-					{
-						
-						// inform the programmer that he did not make the correct call
-						theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawText);	
-						acedRetInt(-1);  return 0; 
-					}				
-					
-					// get the next argument required
-					nBackColor = ListData->resval.rint;
-				
-					ListData = ListData->rbnext;
-					if (ListData == NULL)
-					{
-						
-						// inform the programmer that he did not make the correct call
-						theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawText);	
-						acedRetInt(-1);  return 0; 
-					}
-			
-				}
-				else
-				{
-					nBackColor = nUseBackColor;
-				}
-				
-				if (ListData->restype != RTSTR) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sPictureBox_DrawText);	
-					acedRetInt(-1);  return 0; 
-				}				
-				
-				// get the next argument required
-				sText = ListData->resval.rstring;
-			
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_DrawText);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSTR) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sPictureBox_DrawText);	
-					acedRetInt(-1);  return 0; 
-				}				
-				
-				// get the next argument required
-				sJustification = ListData->resval.rstring;
-				
-				ListData = ListData->rbnext;
-				if (ListData->restype == RTLE)
-				{
-					nDisabled = 0;
-				}
-				else if (ListData->restype != RTSHORT && ListData->restype != RTLONG && ListData->restype != RTT && ListData->restype != RTNIL) 
-				{					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_DrawText);	
-					acedRetInt(-1);  return 0; 
-				}	
-				else if (ListData->restype == RTSHORT) 
-					// get the next argument required
-					nDisabled = ListData->resval.rint;
-				else if (ListData->restype == RTLONG) 
-					// get the next argument required
-					nDisabled = ListData->resval.rlong;
-				else if (ListData->restype == RTT) 
-					// get the next argument required
-					nDisabled = 1;
-				else if (ListData->restype == RTNIL) 
-					// get the next argument required
-					nDisabled = 0;
-
-				((CPictureBox*)pControl)->DrawText(
-					nStartX,
-					nStartY,
-					nForeColor,
-					nBackColor,
-					sText,
-					sJustification,
-					nDisabled);
-				
-				if (ListData->restype != RTLE) 
-					// advance to the next list item
-					ListData = ListData->rbnext;
-
-				if (ListData->restype != RTLE) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sPictureBox_DrawText);	
-					acedRetInt(-1);  return 0; 
-				}			
-			}
-		}
-	}
-	else
-	{	
-		
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_DrawText);			
-        acedRetInt(-1);  return 0; 
-	}
-
-		
-	
-	
-	acedRetVoid();
-	return 0;
-
+	acedRetT();
+	return RSRSLT;
 }
 
-int PictureBox_PaintPicture()
+ADSRESULT PictureBox::PaintPicture()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_PaintPicture, &nArg);
-	
-	if (pControl == NULL)
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
+
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	if( !pCtrl->IsWindowVisible() )
+		return RSRSLT;
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1); 
-		return 0;
+		acedRetT();
+		return RSRSLT;
 	}
 
-	if (pControl && !pControl->GetParent()->IsWindowVisible())		
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	do
 	{
+		int nStartX;
+		if( !GetIntArgument( pArgs, nStartX ) )
+			return RSERR; //invalid input
+
+		int nStartY;
+		if( !GetIntArgument( pArgs, nStartY ) )
+			return RSERR; //invalid input
+
+		int nPicID;
+		if( !GetIntArgument( pArgs, nPicID ) )
+			return RSERR; //invalid input
+
+		bool bEnabled = false;
+		GetBoolArgument( pArgs, bEnabled, true );
+
+		bool bMasked = false;
+		GetBoolArgument( pArgs, bMasked, true );
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		pCtrl->PaintPicture( nStartX, nStartY, nPicID, (bEnabled? 1 : 0), (bMasked? 1 : 0) );
 		
-		acedRetVoid();	
-		return 0;
-	}
+	} while( GetListBeginArgument( pArgs, true ) );
 
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	int sX; 
-	int sY;
-	int	nPictureID;
-	int	nEnabled = 1;
-	int nUseMask = 1;
-	
-	struct resbuf *ListData;
-	
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	
-
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_PaintPicture);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintPicture);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the first argument required
-				sX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_PaintPicture);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintPicture);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				// get the second argument required
-				sY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sPictureBox_PaintPicture);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintPicture);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the third argument required
-				nPictureID = ListData->resval.rint;
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				
-				if (ListData->restype == RTLE)
-				{
-					nEnabled = 1;
-				}				
-				else if (ListData->restype != RTSHORT &&
-					ListData->restype != RTLONG &&
-					ListData->restype != RTT &&
-					ListData->restype != RTNIL) 
-				{					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintPicture);	
-					acedRetInt(-1);  return 0; 
-				}
-				else if (ListData->restype == RTSHORT) 
-					// get the fourth argument required
-					nEnabled = ListData->resval.rint;
-				else if (ListData->restype == RTLONG) 
-					// get the fourth argument required
-					nEnabled = ListData->resval.rlong;
-				else if (ListData->restype == RTT) 
-					// get the fourth argument required
-					nEnabled = 1;
-				else if (ListData->restype == RTNIL) 
-					// get the fourth argument required
-					nEnabled = 0;
-
-				if (ListData->restype != RTLE) 
-					// advance to the next list item
-					ListData = ListData->rbnext;
-
-				if (ListData->restype == RTLE)
-				{
-					nUseMask = 0;
-				}				
-				
-				else if (ListData->restype != RTSHORT &&
-					ListData->restype != RTLONG &&
-					ListData->restype != RTT &&
-					ListData->restype != RTNIL) 
-				{
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sPictureBox_PaintPicture);	
-					acedRetInt(-1);  return 0; 
-				}
-				else if (ListData->restype == RTSHORT) 
-					// get the fourth argument required
-					nUseMask = ListData->resval.rint;
-				else if (ListData->restype == RTLONG) 
-					// get the fourth argument required
-					nUseMask = ListData->resval.rlong;
-				else if (ListData->restype == RTT) 
-					// get the fourth argument required
-					nUseMask = 1;
-				else if (ListData->restype == RTNIL) 
-					// get the fourth argument required
-					nUseMask = 0;
-
-				if (ListData->restype != RTLE) 
-					// advance to the next list item
-					ListData = ListData->rbnext;
-
-				((CPictureBox*)pControl)->PaintPicture(
-						sX, 
-						sY, 
-						nPictureID,
-						nEnabled,
-						nUseMask);
-
-				if (ListData->restype != RTLE) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sPictureBox_PaintPicture);	
-					acedRetInt(-1);  return 0; 
-				}			
-			}
-		}
-	}
-	else
-	{	
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sPictureBox_PaintPicture);			
-        acedRetInt(-1);  return 0; 
-	}
-	acedRetVoid();
-	return 0;
+	acedRetT();
+	return RSRSLT;
 }
 
-
-int PictureBox_LoadPictureFile()
+ADSRESULT PictureBox::LoadPictureFile()
 {
-	int nArg;
-	int nStretch = 0;
-	
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sPictureBox_LoadPictureFile, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-	//if (pControl && !pControl->GetParent()->IsWindowVisible())		
-	//{
-	//	
-	//	acedRetVoid();	
-	//	return 0;
-	//}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlPictureBox))
+		return RSERR; //invalid input
+
+	CString sFilename;
+	if( !GetStringArgument( pArgs, sFilename ) )
+		return RSERR; //invalid input
+
+	bool bStretch = false;
+	GetBoolArgument( pArgs, bStretch, true );
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
 
-	CString sFileName;
-
-	if (!GetStringArgument(nArg, &sFileName, sPictureBox_LoadPictureFile))
-	{	
-	 	acedRetInt(-1);
-		return 0;
-	}
-
-	nArg++;
-
-	if (!FindOptionalIntArgument(nArg, &nStretch, sPictureBox_LoadPictureFile))
-	{
-		//nAscending = nCol;
-	}
-
-	CString sPath = theWorkspace.FindFile( sFileName ); 
-	if( sPath.IsEmpty() )
-	{
-		theWorkspace.DisplayAlert(ErrorFileNotFound);
-		return 0;
-	}
-
-	((CPictureBox*)pControl)->LoadPictureFile(sPath, nStretch == 1);
-	
-	
-	acedRetVoid();
-	return 0;
-
+	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->LoadPictureFile( sFilename, bStretch );
+	acedRetT();
+	return RSRSLT;
 }
-

@@ -93,3 +93,13 @@ void CGraphicButtonCtrl::UpdateButtonGraphic()
 
 BEGIN_MESSAGE_MAP(CGraphicButtonCtrl, CButtonCtrl)
 END_MESSAGE_MAP()
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CGraphicButtonCtrl message handlers
+
+BOOL CGraphicButtonCtrl::PreTranslateMessage(MSG* pMsg)
+{
+	GetToolTipCtrl().RelayEvent( pMsg );
+	return __super::PreTranslateMessage( pMsg );
+}

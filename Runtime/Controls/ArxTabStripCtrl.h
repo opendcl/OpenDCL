@@ -49,7 +49,6 @@ public:
 	size_t GetTabPageIndex( int nItemIndex ) const;
 	TTabPagePtr GetTabPageAt( size_t nPageIndex ) const;
 	const TDclFormPtr GetTabSourceFormAt( size_t nPageIndex ) const;
-	const CControlPane* GetTabControlPaneAt( size_t nPageIndex ) const;
 
 public:
 
@@ -66,7 +65,6 @@ protected:
 protected:
 	afx_msg void OnSelchange( NMHDR* pNMHDR, LRESULT* pResult );
 	afx_msg void OnSelchanging( NMHDR* pNMHDR, LRESULT* pResult );	
-	afx_msg void OnSize( UINT nType, int cx, int cy );
 	afx_msg void OnKillFocus( CWnd* pNewWnd );
 	afx_msg void OnSetFocus( CWnd* pOldWnd );
 };

@@ -8,17 +8,24 @@
 #include "ControlPane.h"
 #include "PropertyIds.h"
 #include "Workspace.h"
-#include "SharedRes.h"
+#include "Resource.h"
 #include "MemDC.h"
 
+
+static CString GetDisplayText( TDclControlPtr pControl, Prop::Id id, UINT idRes )
+{
+	CString sText = pControl->GetStringProperty( id );
+	if( sText.IsEmpty() )
+		sText = theWorkspace.LoadResourceString( idRes );
+	return sText;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CProgressBarCtrl
 
 CProgressBarCtrl::CProgressBarCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
-, mbPercentage( false )
-, mbTime( false )
+, meLegend( lgNone )
 , mStartTime( clock() )
 {
   mfontHoriz.CreatePointFont( 90, _T("MS Shell Dlg"), NULL );
@@ -63,11 +70,8 @@ bool CProgressBarCtrl::OnApplyProperty( TPropertyPtr pProp )
 	bool bFailed = false;
 	switch( pProp->GetID() )
 	{
-	case Prop::DisplaySeconds:
-		mbTime = pProp->GetBooleanValue();
-		break;
-	case Prop::DisplayPercentage:
-		mbPercentage = pProp->GetBooleanValue();
+	case Prop::ProgressLegend:
+		meLegend = (Legend)pProp->GetLongValue();
 		break;
 	case Prop::SmoothProgress:
 		{
@@ -116,46 +120,54 @@ void CProgressBarCtrl::ResetStartTime(void)
 CString CProgressBarCtrl::GetRemainingText( double lfPercent, double lfSecsRemaining )
 {
   CString sResult;
-	if( mbPercentage )
+	switch( meLegend )
 	{
-		int nPos = GetPos();
-		int nLower, nUpper;
-		GetRange( nLower, nUpper );
-		if( nLower != 0 )
+	case lgPercent:
 		{
-			nUpper -= nLower;
-			nPos -= nLower;
+			int nPos = GetPos();
+			int nLower, nUpper;
+			GetRange( nLower, nUpper );
+			if( nLower != 0 )
+			{
+				nUpper -= nLower;
+				nPos -= nLower;
+			}
+			sResult.Format( _T("%d"), (int)(double(nPos * 100) / double(nUpper)) );
+			sResult += _T('%');
 		}
-		sResult.Format( _T("%d"), (int)(double(nPos * 100) / double(nUpper)) );
-		sResult += _T('%');
-	}
-	else if( mbTime )
-	{
-		if( lfSecsRemaining >= 60 )
+		break;
+	case lgTime:
 		{
-			int nMinutes = (int)(lfSecsRemaining / 60.0);
-			lfSecsRemaining -= (nMinutes * 60);
-			CString sMinutes;
-			if( nMinutes == 1 )
-				sMinutes.Format( _T("%d %s"), nMinutes, (LPCTSTR)mpTemplate->GetStringProperty( Prop::MinuteText ) );
-			else
-				sMinutes.Format( _T("%d %s"), nMinutes, (LPCTSTR)mpTemplate->GetStringProperty( Prop::MinutesText ) );
-			sResult += sMinutes;
-		}
-		if( lfSecsRemaining > 0 )
-		{
-			int nMinutes = (int)lfSecsRemaining;
-			CString sSeconds;
-			if( lfSecsRemaining == 1 )
-				sSeconds.Format( _T("%d %s"), nMinutes, (LPCTSTR)mpTemplate->GetStringProperty( Prop::SecondText ) );
-			else
-				sSeconds.Format( _T("%d %s"), nMinutes, (LPCTSTR)mpTemplate->GetStringProperty( Prop::SecondsText ) );
+			if( lfSecsRemaining >= 60 )
+			{
+				int nMinutes = (int)(lfSecsRemaining / 60.0);
+				lfSecsRemaining -= (nMinutes * 60);
+				CString sMinutes;
+				if( nMinutes == 1 )
+					sMinutes.Format( _T("%d %s"), nMinutes, (LPCTSTR)GetDisplayText( mpTemplate, Prop::MinuteText, IDS_MINUTETEXT ) );
+				else
+					sMinutes.Format( _T("%d %s"), nMinutes, (LPCTSTR)GetDisplayText( mpTemplate, Prop::MinutesText, IDS_MINUTESTEXT ) );
+				sResult += sMinutes;
+			}
+			if( lfSecsRemaining > 0 )
+			{
+				int nMinutes = (int)lfSecsRemaining;
+				CString sSeconds;
+				if( lfSecsRemaining == 1 )
+					sSeconds.Format( _T("%d %s"), nMinutes, (LPCTSTR)GetDisplayText( mpTemplate, Prop::SecondText, IDS_SECONDTEXT ) );
+				else
+					sSeconds.Format( _T("%d %s"), nMinutes, (LPCTSTR)GetDisplayText( mpTemplate, Prop::SecondsText, IDS_SECONDSTEXT ) );
+				if( !sResult.IsEmpty() )
+					sResult += _T(", ");
+				sResult += sSeconds;
+			}
 			if( !sResult.IsEmpty() )
-				sResult += _T(", ");
-			sResult += sSeconds;
+			{
+				sResult += _T(' ');
+				sResult += GetDisplayText( mpTemplate, Prop::RemainingText, IDS_REMAININGTEXT );
+			}
 		}
-		if( !sResult.IsEmpty() )
-			sResult += theWorkspace.LoadResourceString( IDS_REMAINING );
+		break;
 	}
 
   return sResult;
@@ -183,9 +195,7 @@ HBRUSH CProgressBarCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	pDC->SetBkMode( TRANSPARENT );	
-	pDC->SetTextColor( mAcadColorService.GetForegroundColor() );
-	return mAcadColorService.GetBackgroundBrush();	
+	return mAcadColorService.CtlColor( pDC, nCtlColor );
 }
 
 void CProgressBarCtrl::PostNcDestroy() 

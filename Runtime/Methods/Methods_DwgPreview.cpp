@@ -3,114 +3,105 @@
 
 #include "stdafx.h"
 #include "Methods_DwgPreview.h"
-#include "MethodLexicon.h"
 #include "ArgumentsRetrieval.h"
 #include "DwgPreviewCtrl.h"
-#include "ErrorLexicon.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
 
 
-int DwgPreview_LoadDwg()
+ADSRESULT DwgPreview::LoadDwg()
 {
-	int nArg=0;
-	CWnd *pControl = GetControlPointer(
-		CtlDwgPreview,
-		sDwgPreview_LoadDwg, 
-		&nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlDwgPreview ) )
+		return RSERR; //invalid input
 
 	CString sFileName;
-
-	if (!GetStringArgument(nArg, &sFileName, sDwgPreview_LoadDwg) || pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	if( !GetStringArgument( pArgs, sFileName ) )
+		return RSERR; //invalid input
 
 	CString sPath = theWorkspace.FindFile( sFileName ); 
 	if( sPath.IsEmpty() )
-		return 0;
+		return RSRSLT;
 
-	((CDwgPreviewCtrl*)pControl)->LoadDwg(sFileName);
-	// return nil
-	acedRetVoid();
-	return 0;
+	CDwgPreviewCtrl* pCtrl = (CDwgPreviewCtrl*)pDlgControl->GetControlWnd();
+
+	pCtrl->LoadDwg( sFileName );
+	acedRetT();
+	return RSRSLT;
 }
 
-int DwgPreview_GetDwgName()
+ADSRESULT DwgPreview::GetDwgName()
 {
-	CWnd *pControl = GetControlPointer(
-		CtlDwgPreview,
-		sDwgPreview_GetDwgName);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlDwgPreview ) )
+		return RSERR; //invalid input
 
-	acedRetStr(((CDwgPreviewCtrl*)pControl)->m_filename);
-	return 0;
+	CDwgPreviewCtrl* pCtrl = (CDwgPreviewCtrl*)pDlgControl->GetControlWnd();
+
+	acedRetStr( pCtrl->m_filename );
+	return RSRSLT;
 }
 
-
-
-int DwgPreview_SetHighLight()
+ADSRESULT DwgPreview::SetHighLight()
 {
-	int nArg = 0;
-	CWnd *pControl = GetControlPointer(
-		CtlDwgPreview,
-		sDwgPreview_SetHighLight, 
-		&nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	int nColor;
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlDwgPreview ) )
+		return RSERR; //invalid input
 
-	if (!GetIntArgument(nArg, &nColor, sDwgPreview_SetHighLight) || pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	int nColor = 0;
+	if( !GetIntArgument( pArgs, nColor ) )
+		return RSERR; //invalid input
 
-	
-	((CDwgPreviewCtrl*)pControl)->SetHighLight(nColor);
-	
-	// return nil
-	acedRetVoid();
-	return 0;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CDwgPreviewCtrl* pCtrl = (CDwgPreviewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->SetHighLight( nColor );
+
+	acedRetT();
+	return RSRSLT;
 }
 
-int DwgPreview_RemoveHighLight()
+ADSRESULT DwgPreview::RemoveHighLight()
 {
-	CWnd *pControl = GetControlPointer(
-		CtlDwgPreview,
-		sDwgPreview_RemoveHighLight);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl != NULL)
-		((CDwgPreviewCtrl*)pControl)->RemoveHighLight();
-	
-	// return nil
-	acedRetVoid();
-	return 0;
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlDwgPreview ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CDwgPreviewCtrl* pCtrl = (CDwgPreviewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->RemoveHighLight();
+
+	acedRetT();
+	return RSRSLT;
 }
 
-
-
-int DwgPreview_Clear()
+ADSRESULT DwgPreview::Clear()
 {
-	CWnd *pControl = GetControlPointer(
-		CtlDwgPreview,
-		sDwgPreview_Clear);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl != NULL)
-	{
-		((CDwgPreviewCtrl*)pControl)->m_filename = "";
-		((CDwgPreviewCtrl*)pControl)->m_bSelectedRect = false;
-		pControl->Invalidate();
-	}
-	// return nil
-	acedRetVoid();
-	return 0;
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlDwgPreview))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CDwgPreviewCtrl* pCtrl = (CDwgPreviewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->m_filename.Empty();
+	pCtrl->m_bSelectedRect = false;
+	pCtrl->Invalidate();
+
+	acedRetT();
+	return RSRSLT;
 }

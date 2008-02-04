@@ -3,10 +3,8 @@
 
 #include "stdafx.h"
 #include "Methods_SlideView.h"
-#include "SlideHolder.h"
 #include "ArgumentsRetrieval.h"
-#include "ErrorLexicon.h"
-#include "MethodLexicon.h"
+#include "SlideHolder.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
 
@@ -14,767 +12,303 @@ const TCHAR sIsPathed[] = _T(":\\");
 const TCHAR sNextLine[] = _T("\n");
 
 
-/////////////////////////////////////////////////////////////////////////////
-// Methods_SlideView
-//*****************************************************************************
-// 
-// Method: SlideView_SetFileName()
-// 
-// Purpose: [load and redisplay the control with the requested slide]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-int SlideView_SetFileName()
+ADSRESULT SlideView::Load()
 {
-	bool bFoundFile;
-	CString sFileName;
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlSlideView))
+		return RSERR; //invalid input
+
+	CString sFilename;
+	if( !GetStringArgument( pArgs, sFilename ) )
+		return RSERR; //invalid input
+
 	CString sSlideName;
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlSlideView, sSlideView_SetFileName, &nArg);
+	GetStringArgument( pArgs, sSlideName, true );
 
-	if (!GetStringArgument(nArg, &sFileName, sSlideView_SetFileName) || pControl == NULL)
-	{		
-		acedRetNil();
-		return 0;
-	}
-	if (sFileName.Find(sIsPathed) == -1)
-	{
-		CString sPath = theWorkspace.FindFile( sFileName );
-		if( sPath.IsEmpty() )
-		{
-			theWorkspace.DisplayAlert(CString(ErrorFileNotFound) + sNextLine + sFileName);
-			acedRetNil();
-			return 0;
-		}
-		nArg++;
-		if (!FindOptionalStringArgument(nArg, &sSlideName, sSlideView_SetFileName) || pControl == NULL)
-			bFoundFile = ((CSlideHolder*)pControl)->SetFileName(sPath, false, CString());
-		else
-			bFoundFile = ((CSlideHolder*)pControl)->SetFileName(sPath, true, sSlideName);
-	}
-	else
-	{
-		nArg++;
-		if (!FindOptionalStringArgument(nArg, &sSlideName, sSlideView_SetFileName) || pControl == NULL)
-			bFoundFile = ((CSlideHolder*)pControl)->SetFileName(sFileName, false, CString());
-		else
-			bFoundFile = ((CSlideHolder*)pControl)->SetFileName(sFileName, true, sSlideName);
-	}
-	
-	if (bFoundFile)
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CString sSlidePath = theWorkspace.FindFile( sFilename );
+	if( sSlidePath.IsEmpty() )
+		return RSRSLT;
+
+	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->SetFileName( sSlidePath, sSlideName.IsEmpty()? NULL : (LPCTSTR)sSlideName ) )
 		acedRetT();
-	else
-		acedRetNil();
-
-	return 0;
+	return RSRSLT;
 }
 
-int SlideView_Clear()
+ADSRESULT SlideView::Clear()
 {
-	CWnd *pControl = GetControlPointer(CtlSlideView, sSlideView_Clear);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)		
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
-	// call the method to clear the control
-	((CSlideHolder*)pControl)->Clear();
-	
-	acedRetVoid();
-	return 0;
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlSlideView))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+
+	pCtrl->Clear();
+	acedRetT();
+	return RSRSLT;
 }
 
-int SlideView_SetHighLight()
+ADSRESULT SlideView::SetHighLight()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(
-		CtlSlideView,
-		sSlideView_SetHighLight,
-		&nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlSlideView))
+		return RSERR; //invalid input
 
 	int nColor;
+	if( !GetIntArgument( pArgs, nColor ) )
+		return RSERR; //invalid input
 
-	if (!GetIntArgument(nArg, &nColor, sSlideView_SetHighLight) || pControl == NULL)
-	{
-		
-		acedRetInt(-1);
-		return 0;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	
-	((CSlideHolder*)pControl)->SetHighLight(nColor);
-	
-	
-	acedRetVoid();
-	return 0;
+	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+
+	pCtrl->SetHighLight( nColor );
+	acedRetT();
+	return RSRSLT;
 }
 
-int SlideView_RemoveHighLight()
+ADSRESULT SlideView::RemoveHighLight()
 {
-	CWnd *pControl = GetControlPointer(
-		CtlSlideView,
-		sSlideView_RemoveHighLight);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl != NULL)
-		((CSlideHolder*)pControl)->RemoveHighLight();
-	
-	
-	acedRetVoid();
-	return 0;
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlSlideView))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+
+	pCtrl->RemoveHighLight();
+	acedRetT();
+	return RSRSLT;
 }
 
-int SlideView_VectorImage()
+ADSRESULT SlideView::VectorImage()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlSlideView, sSlideView_VectorImage, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlSlideView))
+		return RSERR; //invalid input
+
+	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1);
-		return 0;		
+		acedRetT();
+		return RSRSLT;
 	}
-	
-	
-	struct resbuf *ListData;
-	int nStartX;
-	int nStartY;
-	int nEndX;
-	int nEndY;
-	int nLineColor;
 
-	
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	do
 	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
+		int nStartX;
+		if( !GetIntArgument( pArgs, nStartX ) )
+			return RSERR; //invalid input
 
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
+		int nStartY;
+		if( !GetIntArgument( pArgs, nStartY ) )
+			return RSERR; //invalid input
 
-	
+		int nEndX;
+		if( !GetIntArgument( pArgs, nEndX ) )
+			return RSERR; //invalid input
 
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
+		int nEndY;
+		if( !GetIntArgument( pArgs, nEndY ) )
+			return RSERR; //invalid input
 
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				
-				
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_VectorImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_VectorImage);	
-					acedRetInt(-1);  return 0; 
-				}
+		COLORREF crColor;
+		if( !GetColorArgument( pArgs, crColor ) )
+			return RSERR; //invalid input
 
-				// get the first argument required
-				nStartX = ListData->resval.rint;
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
 
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_VectorImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_VectorImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the second argument required
-				nStartY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_VectorImage);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_VectorImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the third argument required
-				nEndX = ListData->resval.rint;
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_VectorImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_VectorImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the fourth argument required
-				nEndY = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_VectorImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_VectorImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the next argument required
-				nLineColor = ListData->resval.rint;
-
-				((CSlideHolder*)pControl)->DrawLine(
-					nStartX,
-					nStartY,
-					nEndX,
-					nEndY,
-					nLineColor);
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-
-				if (ListData->restype != RTLE) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sSlideView_VectorImage);	
-					acedRetInt(-1);  return 0; 
-				}			
-			}
-		}
-	}
-	else
-	{	
+		pCtrl->DrawLine( nStartX, nStartY, nEndX, nEndY, crColor );
 		
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sSlideView_VectorImage);			
-        acedRetInt(-1);  return 0; 
-	}
+	} while( GetListBeginArgument( pArgs, true ) );
 
-	
-	
-	
-	acedRetVoid();
-	return 0;
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	acedRetT();
+	return RSRSLT;
 }
 
-int SlideView_FillImage()
+ADSRESULT SlideView::FillImage()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlSlideView, sSlideView_FillImage, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlSlideView))
+		return RSERR; //invalid input
+
+	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1); 
-		return 0;
+		acedRetT();
+		return RSRSLT;
 	}
 
-	
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
 
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
 
-	int nStartX;
-	int nStartY;
-	int nEndX;
-	int nEndY;
-	int nLineColor;
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	struct resbuf *ListData;
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
+	do
 	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
+		int nStartX;
+		if( !GetIntArgument( pArgs, nStartX ) )
+			return RSERR; //invalid input
 
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
+		int nStartY;
+		if( !GetIntArgument( pArgs, nStartY ) )
+			return RSERR; //invalid input
 
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
+		int nWidth;
+		if( !GetIntArgument( pArgs, nWidth ) )
+			return RSERR; //invalid input
 
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				
-				
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_FillImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_FillImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the first argument required
-				nStartX = ListData->resval.rint;
+		int nHeight;
+		if( !GetIntArgument( pArgs, nHeight ) )
+			return RSERR; //invalid input
 
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_FillImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_FillImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				// get the second argument required
-				nStartY = ListData->resval.rint;
+		COLORREF crColor;
+		if( !GetColorArgument( pArgs, crColor ) )
+			return RSERR; //invalid input
 
-					// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_FillImage);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_FillImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the third argument required
-				nEndX = ListData->resval.rint;
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_FillImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_FillImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the fourth argument required
-				nEndY = ListData->resval.rint;
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
 
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_FillImage);	
-					acedRetInt(-1);  return 0; 
-				}
-			
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_FillImage);	
-					acedRetInt(-1);  return 0; 
-				}				
-				
-				// get the next argument required
-				nLineColor = ListData->resval.rint;
-
-				((CSlideHolder*)pControl)->DrawFillRect(
-					nStartX,
-					nStartY,
-					nEndX + nStartX,
-					nEndY + nStartY,
-					nLineColor);
-	
-				// advance to the next list item
-				ListData = ListData->rbnext;
-
-				if (ListData->restype != RTLE) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sSlideView_FillImage);	
-					acedRetInt(-1);  return 0; 
-				}			
-			}
-		}
-	}
-	else
-	{	
+		pCtrl->DrawFillRect( nStartX, nStartY, nStartX + nWidth, nStartY + nHeight, crColor );
 		
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sSlideView_FillImage);			
-        acedRetInt(-1);  return 0; 
-	}
-	
-	
-	
-	acedRetVoid();
-	return 0;
+	} while( GetListBeginArgument( pArgs, true ) );
+
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	acedRetT();
+	return RSRSLT;
 }
 
-int SlideView_EndImage()
+ADSRESULT SlideView::EndImage()
 {
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sSlideView_EndImage);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlSlideView))
+		return RSERR; //invalid input
 
-	
-	
-	
-	((CSlideHolder*)pControl)->CopyDC();
-	
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	
-	acedRetVoid();
-	return 0;
+	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
 
+	pCtrl->CopyDC();
+	acedRetT();
+	return RSRSLT;
 }
 
 
-int SlideView_SlideImage()
+ADSRESULT SlideView::SlideImage()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlPictureBox, sSlideView_SlideImage, &nArg);
-	
-	if (pControl == NULL)
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlSlideView))
+		return RSERR; //invalid input
+
+	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+
+	if( GetNilArgument( pArgs, true ) )
 	{
-		acedRetInt(-1); 
-		return 0;
+		acedRetT();
+		return RSRSLT;
 	}
 
-	if (pControl->m_hWnd == NULL)
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( GetListEndArgument( pArgs, true ) )
+		return RSRSLT;
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	do
 	{
+		int nStartX;
+		if( !GetIntArgument( pArgs, nStartX ) )
+			return RSERR; //invalid input
+
+		int nStartY;
+		if( !GetIntArgument( pArgs, nStartY ) )
+			return RSERR; //invalid input
+
+		int nWidth;
+		if( !GetIntArgument( pArgs, nWidth ) )
+			return RSERR; //invalid input
+
+		int nHeight;
+		if( !GetIntArgument( pArgs, nHeight ) )
+			return RSERR; //invalid input
+
+		CString sFilename;
+		if( !GetStringArgument( pArgs, sFilename ) )
+			return RSERR; //invalid input
+
+		CString sSlideName;
+		GetStringArgument( pArgs, sSlideName, true );
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		pCtrl->DrawASlide( nStartX, nStartY, nStartX + nWidth, nStartY + nHeight, sFilename, (sSlideName.IsEmpty()? NULL : (LPCTSTR)sSlideName) );
 		
-		acedRetVoid();	
-		return 0;
-	}
+	} while( GetListBeginArgument( pArgs, true ) );
 
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	int sX; 
-	int sY;
-	
-	struct resbuf *ListData;
-	
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	
-
-	if (ListData->restype == RTLB) 
-	{		
-		bool bDoLoop = true;
-		while (bDoLoop)
-		{
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			if (ListData->restype == RTLE ||
-				ListData->restype == NULL) 
-			{
-				
-				
-				acedRetVoid();
-				return 0;
-			}
-			if (ListData->restype == RTLB) 
-			{		
-			
-				// advance to the first list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_SlideImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_SlideImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the first argument required
-				sX = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_SlideImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_SlideImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				// get the second argument required
-				sY = ListData->resval.rint;
-
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_SlideImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_SlideImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				// get the second argument required
-				int nDrawWidth = ListData->resval.rint;
-
-				
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_SlideImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				if (ListData->restype != RTSHORT) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sSlideView_SlideImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				
-				// get the second argument required
-				int nDrawHeight = ListData->resval.rint;
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-				
-				if (ListData == NULL)
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_SlideImage);	
-					acedRetInt(-1);  return 0; 
-				}				
-				
-				if (ListData->restype != RTSTR) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sSlideView_SlideImage);	
-					acedRetInt(-1);  return 0; 
-				}
-				// get the fourth argument required
-				CString sFileName = theWorkspace.FindFile( ListData->resval.rstring );
-				if( sFileName.IsEmpty() )
-				{
-					theWorkspace.DisplayAlert(CString(ErrorFileNotFound) + sNextLine + ListData->resval.rstring);
-					acedRetInt(-1);
-					return 0;
-				}
-
-				// advance to the next list item
-				ListData = ListData->rbnext;
-
-				if (ListData->restype == RTLE) 
-				{
-					((CSlideHolder*)pControl)->DrawASlide(
-							sX, 
-							sY, 
-							nDrawWidth,
-							nDrawHeight,
-							sFileName);
-				}
-				else
-				{
-					if (ListData == NULL)
-					{
-						
-						// inform the programmer that he did not make the correct call
-						theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sSlideView_SlideImage);	
-						acedRetInt(-1);  return 0; 
-					}				
-					
-					if (ListData->restype != RTSTR) 
-					{
-						
-						// inform the programmer that he did not make the correct call
-						theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sSlideView_SlideImage);	
-						acedRetInt(-1);  return 0; 
-					}
-					// get the fourth argument required
-					CString sLibSldName = ListData->resval.rstring;
-
-					// advance to the next list item
-					ListData = ListData->rbnext;
-
-
-
-					((CSlideHolder*)pControl)->DrawASlide(
-							sX, 
-							sY, 
-							nDrawWidth,
-							nDrawHeight,
-							sFileName,
-							sLibSldName);
-				}
-
-				if (ListData->restype != RTLE) 
-				{
-					
-					// inform the programmer that he did not make the correct call
-					theWorkspace.DisplayAlert(CString(ErrorToManyItemsInList) + sSlideView_SlideImage);	
-					acedRetInt(-1);  return 0; 
-				}			
-			}
-		}
-	}
-	else
-	{	
-		
-		// inform the programer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListWasExpected) + sSlideView_SlideImage);			
-        acedRetInt(-1);  return 0; 
-	}
-
-	
-	
-	
-	acedRetVoid();
-	return 0;
-		
-
-	
-
+	acedRetT();
+	return RSRSLT;
 }
-
-
-

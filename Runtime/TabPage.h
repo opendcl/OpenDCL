@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Resource.h"
+#include "DialogObject.h"
 #include "ArxControlPane.h"
 
 class CDclFormObject;
@@ -14,10 +15,9 @@ typedef RefCountedPtr< class CTabPage > TTabPagePtr;
 /////////////////////////////////////////////////////////////////////////////
 // CTabPage dialog
 
-class CTabPage : public CDialog
+class CTabPage : public CDialog, public CDialogObject
 {
 protected:
-	TDclFormPtr mpSourceForm;
 	CArxControlPane mControlPane;
 
 	enum { IDD = IDD_TABPAGE };
@@ -28,12 +28,21 @@ public:
 	~CTabPage();
 
 	//Attributes
-	const TDclFormPtr GetSourceForm() const { return mpSourceForm; }
-	TDclFormPtr GetSourceForm() { return mpSourceForm; }
-	const CControlPane& GetControlPane() const { return mControlPane; }
-	CControlPane& GetControlPane() { return mControlPane; }
+	const CControlPane* GetControlPane() const { return &mControlPane; }
+	CControlPane* GetControlPane() { return &mControlPane; }
 
-// Implementation
+// CDialogObject overrides
+public:
+	virtual DclFormType GetType() const { return VdclTabForm; }
+	virtual bool IsModeless() const { return true; }
+	virtual bool IsDockable() const { return false; }
+	virtual bool IsResizable() const { return false; }
+	virtual void CloseDialog(int nStatus) {}
+	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
+
 protected:
+	DECLARE_MESSAGE_MAP()
+
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

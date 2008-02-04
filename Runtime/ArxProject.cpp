@@ -13,8 +13,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // CArxProject
 
-IMPLEMENT_SERIAL(CArxProject, CProject, 1)
-
 CArxProject::CArxProject()
 {
 }
@@ -57,7 +55,7 @@ bool CArxProject::SetProjectLispSymbols( bool bResetToNil /*= false*/ ) const
 			if( bResetToNil )
 				theArxWorkspace.ResetLispSymbol( sVarName );
 			else
-				theArxWorkspace.SetLispSymbol( sVarName, (UINT_PTR)(const CDclFormObject*)(*iter) );
+				theArxWorkspace.SetLispSymbol( sVarName, (UINT_PTR)(const CDclControlObject*)(*iter)->GetControlProperties() );
 		}
 	}
 	return true;

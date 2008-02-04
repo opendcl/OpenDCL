@@ -30,10 +30,6 @@ protected:
 
 // Implementation
 public:
-	virtual void CleanUpControls();
-	virtual bool FindControl(HWND hwndControl, /*out*/ CString& sControlName) const; //if found, returns true & sets sControlName
-	virtual TDialogControlPtr FindControl(HWND hwndControl) const;
-	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const;
 	virtual void SetGlobalLispSymbols( bool bResetToNil = false ) const;
 
 protected:

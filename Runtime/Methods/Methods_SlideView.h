@@ -4,11 +4,14 @@
 #pragma once
 
 
-int SlideView_SetFileName();
-int SlideView_Clear();
-int SlideView_SetHighLight();
-int SlideView_RemoveHighLight();
-int SlideView_VectorImage();
-int SlideView_FillImage();
-int SlideView_EndImage();
-int SlideView_SlideImage();
+namespace SlideView
+{
+ADSRESULT Load();
+ADSRESULT Clear();
+ADSRESULT SetHighLight();
+ADSRESULT RemoveHighLight();
+ADSRESULT VectorImage();
+ADSRESULT FillImage();
+ADSRESULT EndImage();
+ADSRESULT SlideImage();
+};

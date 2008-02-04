@@ -4,7 +4,8 @@
 #include "stdafx.h"
 #include "ArxDwgListCtrl.h"
 #include "Resource.h"
-#include "SharedRes.h"
+#include "Resource.h"
+#include "Workspace.h"
 #include "InvokeMethod.h"
 #include "ControlPane.h"
 #include "ArxFolderComboCtrl.h"
@@ -414,7 +415,7 @@ void ThumbnailFile::DrawBitmap(CDC* pDC, CPoint pt, int nPaintableWidth, int nPa
 
 CArxDwgListCtrl::CArxDwgListCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CListBoxCtrl( pTemplate, pPane, nID, false )
-, mArxServices( pTemplate )
+, mArxServices( this )
 , mnRowHeight( -1 )
 {
 	//m_RowHeight = 120;
@@ -433,8 +434,8 @@ bool CArxDwgListCtrl::Create( CWnd* pParentWnd, UINT nID )
 		__super::Create( pParentWnd, nID );
 
 	CreateImageList();
-	m_hR14LogoLarge = (HBITMAP)::LoadImage(_hdllInstance, MAKEINTRESOURCE(IDB_R14LARGE), IMAGE_BITMAP, 0, 0, 0);
-	m_hR14LogoSmall = (HBITMAP)::LoadImage(_hdllInstance, MAKEINTRESOURCE(IDB_R14SMALL), IMAGE_BITMAP, 0, 0, 0);
+	m_hR14LogoLarge = (HBITMAP)::LoadImage(theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(IDB_R14LARGE), IMAGE_BITMAP, 0, 0, 0);
+	m_hR14LogoSmall = (HBITMAP)::LoadImage(theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(IDB_R14SMALL), IMAGE_BITMAP, 0, 0, 0);
 
 	return bSuccess;
 }

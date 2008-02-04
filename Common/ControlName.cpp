@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ControlName.h"
-#include "SharedRes.h"
+#include "Resource.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
 #include "DclControlObject.h"
@@ -13,7 +13,7 @@ CString GetControlName( ControlType type )
 {
 	switch (type)
 	{
-	case CtlForm: return theWorkspace.LoadResourceString(IDS_DCLFORM);
+	case _CtlForm: return theWorkspace.LoadResourceString(IDS_DCLFORM);
 	case CtlLabel: return theWorkspace.LoadResourceString(IDS_LABEL);
 	case CtlStdButton: return theWorkspace.LoadResourceString(IDS_TEXTBUTTON);
 	case CtlGraphicButton: return theWorkspace.LoadResourceString(IDS_GRAPHICBUTTON);
@@ -29,11 +29,11 @@ CString GetControlName( ControlType type )
 	case CtlTabStrip: return theWorkspace.LoadResourceString(IDS_TABS);
 	case CtlMonth: return theWorkspace.LoadResourceString(IDS_MONTHCAL);
 	case CtlTree: return theWorkspace.LoadResourceString(IDS_TREE);
-	case Ctl3DRect: return theWorkspace.LoadResourceString(IDS_RECT);
+	case CtlRectangle: return theWorkspace.LoadResourceString(IDS_RECT);
 	case CtlProgress: return theWorkspace.LoadResourceString(IDS_PROGRESSBAR);
 	case CtlSpinButton: return theWorkspace.LoadResourceString(IDS_SPINBUTTON);
-	case CtlStaticURL: return theWorkspace.LoadResourceString(IDS_URL);
-	case CtlRoundSlider: return theWorkspace.LoadResourceString(IDS_ROUNDSLIDER);
+	case CtlUrlLink: return theWorkspace.LoadResourceString(IDS_URL);
+	case CtlAngleSlider: return theWorkspace.LoadResourceString(IDS_ROUNDSLIDER);
 	case CtlBlockView: return theWorkspace.LoadResourceString(IDS_BLOCKVIEW);
 	case CtlSlideView: return theWorkspace.LoadResourceString(IDS_SLIDEVIEW);
 	case CtlHtmlCtrl: return theWorkspace.LoadResourceString(IDS_HTML);

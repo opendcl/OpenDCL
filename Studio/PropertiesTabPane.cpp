@@ -4,15 +4,16 @@
 #include "stdafx.h"
 #include "PropertiesTabPane.h"
 #include "Workspace.h"
-#include "SharedRes.h"
+#include "Resource.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CPropertiesTabPane dialog
 
 
-CPropertiesTabPane::CPropertiesTabPane(CWnd* pParent /*=NULL*/)
-	: CDialog(CPropertiesTabPane::IDD, pParent)
+CPropertiesTabPane::CPropertiesTabPane( const std::vector< TDclControlPtr >& ActiveControls, CWnd* pParent /*=NULL*/ )
+: CDialog(CPropertiesTabPane::IDD, pParent)
+, mPropGridCtrl( this, ActiveControls )
 {
 	//{{AFX_DATA_INIT(CPropertiesTabPane)
 		// NOTE: the ClassWizard will add member initialization here
@@ -20,24 +21,29 @@ CPropertiesTabPane::CPropertiesTabPane(CWnd* pParent /*=NULL*/)
 	m_bInitialized = false;
 }
 
+void CPropertiesTabPane::ActivateProperty( Prop::Id id )
+{
+	CString sName;
+	CString sDesc;
+	if( id >= Prop::_MinId && id <= Prop::_MaxId )
+	{
+		sName = GetPropertyName( id );
+		sDesc = theWorkspace.LoadResourceString( IDS_PROPD_NAME + id - 1 );
+	}
+	GetDlgItem( IDC_PROPERTYTITLE )->SetWindowText( sName );
+	GetDlgItem( IDC_PROPDESCEDIT )->SetWindowText( sDesc );
+}
 
 void CPropertiesTabPane::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CPropertiesTabPane)
-	DDX_Control(pDX, IDC_PROPDESCEDIT, m_PropertyDesc);
-	DDX_Control(pDX, IDC_PROPERTYTITLE, m_PropertyTitle);
-	DDX_Control(pDX, IDC_CTRL_DESC, m_ControlDesc);
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CPropertiesTabPane, CDialog)
-	//{{AFX_MSG_MAP(CPropertiesTabPane)
 	ON_WM_SIZE()
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -50,18 +56,14 @@ void CPropertiesTabPane::OnSize(UINT nType, int cx, int cy)
 	if (!m_bInitialized) 
 		return;
 
-	CRect rcTitle (2,0,cx,nTitleHeight);
-	m_ControlDesc.MoveWindow(rcTitle, TRUE);
+	CRect rcPropertyTitle (0,cy-nPropertyListHeight,cx,cy - nPropertyDescWidth);
+	GetDlgItem( IDC_PROPERTYTITLE )->MoveWindow(rcPropertyTitle, FALSE);	
+
+	CRect rcPropertyDesc (0,cy-nPropertyDescWidth,cx,cy);
+	GetDlgItem( IDC_PROPDESCEDIT )->MoveWindow(rcPropertyDesc, FALSE);
 		
-	CRect rcList (0,nTitleHeight,cx,cy-nPropertyListHeight);
-	mPropListCtrl.MoveWindow(rcList, TRUE);
-
-	CRect rcPropertyTitle (0,cy-nPropertyListHeight - 1,cx,cy);
-	m_PropertyTitle.MoveWindow(rcPropertyTitle, TRUE);	
-
-	CRect rcPropertyDesc (2,cy-nPropertyDescWidth,cx-2,cy-2);
-	m_PropertyDesc.MoveWindow(rcPropertyDesc, TRUE);
-
+	CRect rcList (0,0,cx,cy-nPropertyListHeight);
+	mPropGridCtrl.MoveWindow(rcList, FALSE);
 }
 
 int CPropertiesTabPane::OnCreate(LPCREATESTRUCT lpCreateStruct) 
@@ -80,21 +82,13 @@ BOOL CPropertiesTabPane::OnInitDialog()
 
 	CRect rc(0,0,2,2);	
 
-	mPropListCtrl.Create(rc, this, nPropertyListID);
-
-	m_ControlDesc.SetWindowText(CString());
-	m_PropertyTitle.SetWindowText(CString());
-
-	mPropListCtrl.m_pPropTitle = &m_PropertyTitle;
-	mPropListCtrl.m_pPropDesc = &m_PropertyDesc;
-
-	m_PropertyDesc.SetFont(m_ControlDesc.GetFont());
+	mPropGridCtrl.Create(this, rc, nPropertyListID);
 
 	// set the font	
 	LOGFONT	lf;
 	memset(&lf, 0, sizeof(LOGFONT));
-	lstrcpyn(lf.lfFaceName, theWorkspace.LoadResourceString(IDS_DEFAULTFONT), _elements(lf.lfFaceName));
-	CDC *pDC = mPropListCtrl.GetDC();
+	lstrcpyn(lf.lfFaceName, theWorkspace.GetDefaultFontName(), _elements(lf.lfFaceName));
+	CDC *pDC = mPropGridCtrl.GetDC();
 	lf.lfHeight = -::MulDiv(nDeFontSize, pDC->GetDeviceCaps(LOGPIXELSY), nDePixels); // create font size as scaled
 	lf.lfQuality = PROOF_QUALITY;
 	lf.lfWeight = FW_BOLD;
@@ -115,14 +109,5 @@ void CPropertiesTabPane::OnDestroy()
 
 BOOL CPropertiesTabPane::PreTranslateMessage(MSG* pMsg) 
 {
-	if (pMsg->message== WM_KEYDOWN )
-	{
-		if (pMsg->wParam==VK_RETURN && !mPropListCtrl.m_Edit.IsWindowVisible())
-		{
-			pMsg->wParam = NULL;
-			pMsg->message = NULL;
-		}
-	}		
-		
-	return CDialog::PreTranslateMessage(pMsg);
+	return CWnd::PreTranslateMessage(pMsg); //bypass CDialog
 }

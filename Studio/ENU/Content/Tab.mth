@@ -5,10 +5,9 @@ dcl_Tab_
 [Desc]
 This method will set the current tab selection.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
-
 
 
 [Method]
@@ -18,10 +17,9 @@ dcl_Tab_
 [Desc]
 This method will hide a specified tab of a tab control.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
-
 
 
 [Method]
@@ -31,7 +29,7 @@ dcl_Tab_
 [Desc]
 This method will reshow an already hidden tab of a tab control.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 
@@ -43,10 +41,10 @@ dcl_Tab_
 [Desc]
 This method change the text displayed of a specified tab of the tab control.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
-\par\tab text
+\par\tab Text
 [as string]
 
 
@@ -57,8 +55,7 @@ dcl_Tab_
 [Desc]
 This method will get the current tab selection.
 [Arguments Return] as Integer
-ProjectFileName
-
+<CONTROL>
 
 
 [Method]
@@ -68,7 +65,16 @@ dcl_Tab_
 [Desc]
 This method will return the number of tab rows in the tab control.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 
+
+[Method]
+GetControlArea
+[Prefix]
+dcl_Tab_
+[Desc]
+This method returns the size of the tab control's client area.
+[Arguments Return] as List (Width Height)
+<CONTROL>
 
 [End of File]

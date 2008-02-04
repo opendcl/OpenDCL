@@ -11,52 +11,52 @@
 #include "ArxDialogControl.h"
 #include "DclControlObject.h"
 
+extern bool AcadIsQuitting(void);
 
-const int nDeflateRect = 3;
-const int nBottomAdjustment = 5;
-const int nHeightOffset = 2;
 
-static const UINT& refWM_MOUSEENTER()
+/////////////////////////////////////////////////////////////////////////////
+// CDockingDialog dialog
+
+CDockingDialog::CDockingDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
+: CDialog( IDD_DOCKINGDLGHOST, &mHostControlBar )
+, CArxDialogObject( pSourceForm, this )
+, mpParent( pParent )
+, mHostControlBar( *new CAcadDockBarHost( this, pParent ) )
+, mbResizable( true )
+, mbHiding( false )
 {
-	static const UINT WM_MOUSEENTER = RegisterWindowMessage( _T("OpenDCL.MouseEnter") );
-	return WM_MOUSEENTER;
+	TDclControlPtr pProps = pSourceForm->GetControlProperties();
+	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::Resizable );
+	mbResizable = (!pResizableProp || pResizableProp->GetBooleanValue());
 }
 
 
-// CDockingDialogX interface implementation
-CDockingDialogX::CDockingDialogX( CDockingDialog& Owner, TDclFormPtr pDclForm )
-: CArxDialogObject( pDclForm, &Owner )
-, mpOwner( &Owner )
+CDockingDialog::~CDockingDialog()
 {
 }
 
-CDockingDialogX::~CDockingDialogX()
+bool CDockingDialog::IsFloating() const
 {
+	return (const_cast< CAcadDockBarHost* >( &mHostControlBar )->IsFloating() != FALSE);
 }
 
-DclFormType CDockingDialogX::GetType() const
+CWnd* CDockingDialog::GetTopLevelWnd()
 {
-	return VdclDockable;
+	HWND hwndControlBar = mHostControlBar.m_hWnd;
+	if( !hwndControlBar )
+		return NULL;
+	if( IsFloating() )
+	{
+		HWND hwndTopLevel = ::GetParent( ::GetParent( hwndControlBar ) );
+		if( hwndTopLevel )
+			return CWnd::FromHandle( hwndTopLevel );
+	}
+	return &mHostControlBar;
 }
 
-bool CDockingDialogX::IsResizable() const
+bool CDockingDialog::CreateModeless( UINT nID )
 {
-	return mpOwner->IsResizable();
-}
-
-HWND CDockingDialogX::GetHWnd() const
-{
-	return mpOwner->m_hWnd;
-}
-
-bool CDockingDialogX::IsFloating() const
-{
-	return (mpOwner->IsFloating() != FALSE);
-}
-
-bool CDockingDialogX::CreateModeless( UINT nID ) const
-{
-	TDclControlPtr pProps = mpSourceForm->GetControlProperties();
+	TDclControlPtr pProps = mpTemplate;
 	int nWindowHeight = pProps->GetLongProperty(Prop::Height);
 	DWORD dwDockableSides = 0;
 	DWORD dwDefaultDockableSide = 0;
@@ -67,631 +67,250 @@ bool CDockingDialogX::CreateModeless( UINT nID ) const
 		// set the form to only dock on the top side
 		dwDockableSides = CBRS_ALIGN_TOP;
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
-		if( !mpSourceForm->UsesClientRect() )
-			nWindowHeight += 8;
 		break;
 	case 2:
 		// set the form to only dock on the bottom side
 		dwDockableSides = CBRS_ALIGN_BOTTOM;
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_BOTTOM;
-		if( !mpSourceForm->UsesClientRect() )
-			nWindowHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	case 3:
 		// set the form to only dock on the top or bottom sides
 		dwDockableSides = CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;				
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
-		if( !mpSourceForm->UsesClientRect() )
-			nWindowHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	case 4:
 		// set the form to only dock on the any side
 		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP;				
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
-		if( !mpSourceForm->UsesClientRect() )
-			nWindowHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	case 5:
 		// set the form to only dock on the any side
 		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM;
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
-		if( !mpSourceForm->UsesClientRect() )
-			nWindowHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	default:
 		// set the form to only dock on the left or right sides
 		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT;
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
-		if( !mpSourceForm->UsesClientRect() )
-			nWindowHeight -= ::GetSystemMetrics(SM_CYSMCAPTION) - 4;
 		break;
 	}
 
-	CRect rect = CFrameWnd::rectDefault;
-	if (rect.left < 0)
-		rect.left = 0;
-	if (rect.top < 0)
-		rect.top = 0;				
-	rect.bottom = rect.top + nWindowHeight;
-	rect.right = rect.left + pProps->GetLongProperty( Prop::Width );
-
-	if( !mpOwner->Create( mpSourceForm->GetKeyPath(), rect, nID ) )
+	mbIgnoreSizing = true;
+  if( !mHostControlBar.Create( mpSourceForm->GetKeyName(), GetWndRect(), nID ) )
 		return false;
+	if( !CDialog::Create( IDD_DOCKINGDLGHOST, &mHostControlBar ) )
+		return false;
+
 	if( mpSourceForm->GetUUIDAsString().IsEmpty() )
 	{
 		UUID uuid;
 		UuidCreate( &uuid );
-		mpOwner->SetToolID( &uuid );
+		mHostControlBar.SetToolID( &uuid );
 	}
 	else
 	{
     UUID uuid = mpSourceForm->GetUUID();
-		mpOwner->SetToolID( &uuid );
+		mHostControlBar.SetToolID( &uuid );
 	}			
-	mpOwner->EnableDocking( dwDockableSides );
-	mpOwner->RestoreControlBar( dwDefaultDockableSide ); // loads the dockable form but does not display it
+	mHostControlBar.EnableDocking( dwDockableSides );
+	mHostControlBar.RestoreControlBar( dwDefaultDockableSide ); // loads the dockable form but does not display it
 	return true;
 }
 
-void CDockingDialogX::CloseDialog(int nStatus)
+void CDockingDialog::CloseDialog(int nStatus)
 {
 	if( IsClosing() )
 		return;
-	CWnd* pTopLevel = IsFloating()? (mpOwner->m_hWnd? mpOwner->GetParent()->GetParent() : NULL) : mpOwner;
+	CWnd* pTopLevel = GetTopLevelWnd();
 	HWND hwndTopLevel = pTopLevel? pTopLevel->m_hWnd : NULL;
-	HWND hwndOwner = mpOwner->m_hWnd;
-	mpOwner->EndModalLoop( nStatus ); //set the status
+	HWND hwndOwner = mHostControlBar.m_hWnd;
+	mHostControlBar.EndModalLoop( nStatus ); //set the status
 	if( hwndTopLevel && ::IsWindow( hwndTopLevel ) )
 		::SendMessage( hwndTopLevel, WM_CLOSE, 0, 0 );
-	if( hwndOwner && ::IsWindow( hwndOwner ) )
-		::DestroyWindow( hwndOwner );
+	//if( hwndOwner && ::IsWindow( hwndOwner ) )
+	//	::DestroyWindow( hwndOwner );
 }
 
-bool CDockingDialogX::CenterDialog()
+bool CDockingDialog::CenterDialog()
 {
 	if( !IsFloating() )
 		return false;
-	HWND hwndContainer = ::GetParent( GetHWnd() );
-	for( HWND hwndParent = NULL;
-			 hwndParent = (::GetWindowLongPtr( hwndContainer, GWL_STYLE ) & WS_CHILD)? ::GetParent( hwndContainer ) : NULL;
-			 hwndContainer = hwndParent );
-	CRect rectWindow;
-	::GetWindowRect( hwndContainer, &rectWindow );
-	CPoint pt( (::GetSystemMetrics(SM_CYSCREEN) - rectWindow.Height()) / 2,
-						 (::GetSystemMetrics(SM_CXSCREEN) - rectWindow.Width()) / 2 );
-	BOOL bSuccess = ::SetWindowPos( hwndContainer, NULL, pt.x, pt.y, 0, 0,
-																	SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOZORDER);
-	return (bSuccess != FALSE);
+	return __super::CenterDialog();
 }
 
-bool CDockingDialogX::ResizeDialog( long nNewWidth, long nNewHeight )
+bool CDockingDialog::ResizeDialog( long nNewWidth, long nNewHeight )
 {
 	if( !IsFloating() )
 		return false;
-	HWND hwndContainer = ::GetParent( GetHWnd() );
-	for( HWND hwndParent = NULL;
-			 hwndParent = (::GetWindowLongPtr( hwndContainer, GWL_STYLE ) & WS_CHILD)? ::GetParent( hwndContainer ) : NULL;
-			 hwndContainer = hwndParent );
-	CRect rectWindow;
-	GetWindowRect( rectWindow );
-	if( mpSourceForm->UsesClientRect() )
+	return __super::ResizeDialog( nNewWidth, nNewHeight );
+}
+
+bool CDockingDialog::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
+{
+	if( !IsFloating() )
+		return false;
+	return __super::ResizeDialog( nNewWidth, nNewHeight );
+}
+
+bool CDockingDialog::GetEffectiveWindowRect( CRect& rcDlg ) const
+{
+	if (!IsFloating())
+		return GetEffectiveClientRect( rcDlg );
+	const_cast< CDockingDialog* >( this )->mHostControlBar.GetFloatingRect( &rcDlg );
+	return true;
+}
+
+bool CDockingDialog::GetEffectiveClientRect( CRect& rcDlg ) const
+{
+	const_cast< CDockingDialog* >( this )->mHostControlBar.GetClientArea( rcDlg );
+	return true;
+}
+
+void CDockingDialog::GetClientArea( CRect& rect )
+{
+	if( !IsFloating() )
 	{
-		CRect rectClient;
-		GetClientRect( rectClient );
-		nNewWidth += (rectWindow.Width() - rectClient.Width());
-		nNewHeight += (rectWindow.Height() - rectClient.Height());
+		mHostControlBar.GetClientArea( rect );
+		rect.top += 5;
 	}
-	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Width, nNewWidth );
-	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Height, nNewHeight );
-	CRect rectContainer;
-	::GetWindowRect( hwndContainer, &rectContainer );
-	nNewWidth += (rectContainer.Width() - rectWindow.Width());
-	nNewHeight += (rectContainer.Height() - rectWindow.Height());
-	BOOL bSuccess = ::SetWindowPos( hwndContainer, NULL, 0, 0, nNewWidth, nNewHeight,
-																	SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER );
-	GetControlPane().RecalcLayout();
-	return (bSuccess != FALSE);
-}
-
-bool CDockingDialogX::CenterAndResizeDialog( long nNewWidth, long nNewHeight )
-{
-	if( !IsFloating() )
-		return false;
-	HWND hwndContainer = ::GetParent( GetHWnd() );
-	for( HWND hwndParent = NULL;
-			 hwndParent = (::GetWindowLongPtr( hwndContainer, GWL_STYLE ) & WS_CHILD)? ::GetParent( hwndContainer ) : NULL;
-			 hwndContainer = hwndParent );
-	CRect rectWindow;
-	GetWindowRect( rectWindow );
-	if( mpSourceForm->UsesClientRect() )
-	{
-		CRect rectClient;
-		GetClientRect( rectClient );
-		nNewWidth += (rectWindow.Width() - rectClient.Width());
-		nNewHeight += (rectWindow.Height() - rectClient.Height());
-	}
-	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Width, nNewWidth );
-	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Height, nNewHeight );
-	CPoint pt( (::GetSystemMetrics(SM_CYSCREEN) - nNewHeight) / 2,
-						 (::GetSystemMetrics(SM_CXSCREEN) - nNewWidth) / 2 );
-	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Left, pt.x );
-	mpSourceForm->GetControlProperties()->SetLongProperty( Prop::Top, pt.y );
-	CRect rectContainer;
-	::GetWindowRect( hwndContainer, &rectContainer );
-	nNewWidth += (rectContainer.Width() - rectWindow.Width());
-	nNewHeight += (rectContainer.Height() - rectWindow.Height());
-	CPoint ptContainer( (::GetSystemMetrics(SM_CYSCREEN) - nNewHeight) / 2,
-											(::GetSystemMetrics(SM_CXSCREEN) - nNewWidth) / 2 );
-	BOOL bSuccess = ::SetWindowPos( hwndContainer, NULL, ptContainer.x, ptContainer.y,
-																	nNewWidth, nNewHeight, SWP_NOACTIVATE | SWP_NOZORDER );
-	GetControlPane().RecalcLayout();
-	return (bSuccess != FALSE);
-}
-
-bool CDockingDialogX::GetWindowRect( CRect& rcDlg ) const
-{
-	if (mpOwner->IsFloating())
-		mpOwner->GetFloatingRect( &rcDlg );
 	else
-		mpOwner->GetClientArea( rcDlg );
-	return true;
+		mHostControlBar.GetClientRect( &rect );
 }
 
-bool CDockingDialogX::GetClientRect( CRect& rcDlg ) const
+void CDockingDialog::OnFrameChanged()
 {
-	mpOwner->GetClientArea( rcDlg );
-	return true;
+	CRect rectWindow;
+	mHostControlBar.GetWindowRect( &rectWindow );
+	CRect rcClient;
+	GetClientArea( rcClient );
+	SetNCWidth( rectWindow.Width() - rcClient.Width() );
+	SetNCHeight( rectWindow.Height() - rcClient.Height() );
+	OnApplyMinMaxSize( NULL );
+	ApplyPosition();
 }
 
-
-/////////////////////////////////////////////////////////////////////////////
-// CDockingDialog dialog
-
-CDockingDialog::CDockingDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
-: CAdUiDockControlBar( ADUI_DOCK_CS_STDMOUSECLICKS | ADUI_DOCK_CS_DESTROY_ON_CLOSE )
-, mpParent( pParent )
-, mDialogX( *this, pSourceForm )
-, mbHiding( false )
-, mbTrackingMouse( false )
-, mbInMenuLoop( false )
-, mhwndKeyboardFocus( NULL )
-, mbResizable( true )
+void CDockingDialog::ApplyPosition()
 {
-	TDclControlPtr pProps = pSourceForm->GetControlProperties();
-	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::Resizable );
-	mbResizable = (!pResizableProp || pResizableProp->GetBooleanValue());
+	mbIgnoreSizing = true;
+	mHostControlBar.SetWindowPos( NULL, 0, 0,
+																mpTemplate->GetLongProperty(Prop::Width) + GetNCWidth(),
+																mpTemplate->GetLongProperty(Prop::Height) + GetNCHeight(),
+																SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+	SetWindowPos( NULL, 0, 0,
+								mpTemplate->GetLongProperty(Prop::Width),
+								mpTemplate->GetLongProperty(Prop::Height),
+								SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+	mpControlPane->RecalcLayout();
+	mbIgnoreSizing = false;
 }
 
-
-CDockingDialog::~CDockingDialog()
+bool CDockingDialog::OnApplyResizable( TPropertyPtr pProp )
 {
-	if( mbTrackingMouse )
-	{
-		TRACKMOUSEEVENT tm = { sizeof(TRACKMOUSEEVENT), TME_CANCEL | TME_LEAVE, NULL, 0 };
-		_TrackMouseEvent( &tm );
-	}
+	mbResizable = pProp->GetBooleanValue();
+	return true; //skip base class
 }
 
 
-BEGIN_MESSAGE_MAP(CDockingDialog, CAdUiDockControlBar)
+BEGIN_MESSAGE_MAP(CDockingDialog, CDialog)
 	ON_WM_HELPINFO()
 	ON_WM_CREATE()
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
-	ON_REGISTERED_MESSAGE(refWM_MOUSEENTER(),OnMouseEnter)
-	ON_MESSAGE(WM_MOUSELEAVE,OnMouseLeave)
-	ON_WM_ENTERMENULOOP()
-	ON_WM_EXITMENULOOP()
-	ON_WM_TIMER()
-	ON_WM_NCHITTEST()
-	ON_WM_SETCURSOR()
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CDockingDialog message handlers
 
-bool CDockingDialog::Create( LPCTSTR lpszTitle, CRect rect, UINT nID ) 
-{
-	CString strWndClass = AfxRegisterWndClass( CS_DBLCLKS, LoadCursor( NULL, IDC_ARROW ) );	
-	bool bDisabled = (mpParent && !mpParent->IsWindowEnabled());
-  if( !__super::Create( strWndClass, lpszTitle,
-												WS_VISIBLE | WS_CHILD | (bDisabled? WS_DISABLED : 0) /*| WS_CLIPCHILDREN*/,
-												rect, mpParent, nID ) )
-		return false;
-	ModifyStyleEx( 0, WS_EX_CONTROLPARENT );
-	__if_exists(idPinBtn)
-	{
-	CWnd* pPinBtn = GetDlgItem( idPinBtn );
-	if( pPinBtn )
-		pPinBtn->DestroyWindow();
-	}
-	return true;
-}
-
 int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
 	if (__super::OnCreate(lpCreateStruct) == -1)
 		return -1;
-	
-	//  setup for assigning the form it's properties
-	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
 
 	// set the window text
-	SetWindowText(pProps->GetStringProperty(Prop::TitleBarText));
+	mHostControlBar.SetWindowText(mpTemplate->GetStringProperty(Prop::TitleBarText));
 	
-	CRect rectPane;
-	if (mDialogX.GetSourceForm()->UsesClientRect() && IsFloating())
-		GetClientArea( rectPane );
-	else
-	{
-		GetWindowRect( &rectPane );
-		ScreenToClient( &rectPane );
-	}
+	CRect rectWindow;
+	mHostControlBar.GetWindowRect( &rectWindow );
+	CRect rcClient;
+	GetClientArea( rcClient );
+	SetNCWidth( rectWindow.Width() - rcClient.Width() );
+	SetNCHeight( rectWindow.Height() - rcClient.Height() );
+	SetWindowPos( NULL, rcClient.left, rcClient.top, 0, 0,
+								SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
 
-	rectPane.top += (nDeflateRect + 2);
-	rectPane.left += nDeflateRect;
-	rectPane.bottom += (nBottomAdjustment - nHeightOffset);
-
-	mDialogX.GetControlPane().SetPanePos( rectPane );
-
-	// call method to create the controls
+	ApplyPropertiesEnum();
+	mbIgnoreSizing = false;
 	UINT nID = 1000;
-	mDialogX.GetControlPane().CreateControls(nID);
-	mDialogX.GetControlPane().RecalcLayout();
+	GetControlPane()->CreateControls(nID);
+	GetControlPane()->RecalcLayout();
 
-	// call methods to invoke the event
-	InvokeMethod( pProps->GetStringProperty( Prop::FormEventInitialize ), true );	
-
-	CRect rcThis;
-	if( mDialogX.GetSourceForm()->UsesClientRect() )
-		GetClientRect( &rcThis );
-	else
-		GetWindowRect( &rcThis );
-	// call methods to invoke the event
-	InvokeMethodIntInt( pProps->GetStringProperty( Prop::FormEventSize ), 
-											rcThis.Width(),
-											rcThis.Height(),
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::FormEventInitialize ), true );	
+	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventSize ), 
+											mpTemplate->GetLongProperty( Prop::Width ),
+											mpTemplate->GetLongProperty( Prop::Height ),
 											false );	
 
 	return 1;
 }
 
-void CDockingDialog::GetClientArea( CRect& rect )
+void CDockingDialog::OnSize(UINT nType, int cx, int cy) 
 {
-	GetUsedRect( rect );
-}
-
-
-void CDockingDialog::SizeChanged( CRect *lpRect, BOOL bFloating, int flags ) 
-{
-	__super::SizeChanged( lpRect, bFloating, flags );
-	if( !mDialogX.IsClosing() )
-	{
-		lpRect->top += (nDeflateRect + 2);
-		lpRect->left += nDeflateRect;
-		lpRect->bottom += (nBottomAdjustment - nHeightOffset);
-
-		// resize the control pane so all offsets are set correctly
-		mDialogX.GetControlPane().SetPanePos( *lpRect );
-
-		CRect rcThis;
-		if( mDialogX.GetSourceForm()->UsesClientRect() )
-			GetClientRect( &rcThis );
-		else
-			GetWindowRect( &rcThis );
-		
-		// call methods to invoke the event
-		TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
-		InvokeMethodIntInt( pProps->GetStringProperty( Prop::FormEventSize ), 
-												rcThis.Width(), 
-												rcThis.Height(),
-												true );	
-	}
+	__super::OnSize(nType, cx, cy);
+	if( mbIgnoreSizing )
+		return;
+	mpTemplate->SetLongProperty( Prop::Width, cx );
+	mpTemplate->SetLongProperty( Prop::Height, cy );
+	mpControlPane->RecalcLayout();
+	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventSize ), 
+											mpTemplate->GetLongProperty( Prop::Width ), 
+											mpTemplate->GetLongProperty( Prop::Height ),
+											true );	
 }
 
 BOOL CDockingDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::EventOnHelp), true);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventOnHelp), true);
 	return TRUE;
 }
 
 void CDockingDialog::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
-	// call methods to invoke the event
-	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStringProperty(Prop::FormEventShow), true);	
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventShow), true);	
 
-	mbHiding = !mDialogX.IsClosing() && !bShow;
+	mbHiding = !IsClosing() && !bShow;
 	__super::OnShowWindow(bShow, nStatus);
-}
-
-bool CDockingDialog::CanFrameworkTakeFocus ()
-{
-	// return false to tell AutoCAD not to steal this form's focus on WM_MOUSEMOVE
-	return false;
 }
 
 void CDockingDialog::PostNcDestroy() 
 {
-	CAdUiDockControlBar::PostNcDestroy();
-	//the floating docbar container will 'delete this' when floating because 
-	//the ADUI_DOCK_CS_DESTROY_ON_CLOSE style is set in the constructor
-	if( !IsFloating() )
-		delete this;
-}
-
-bool CDockingDialog::OnClosing()
-{
-	if( mDialogX.IsClosing() )
-		return true;
-	mDialogX.SetClosing();
-	CAdUiDockControlBar::OnClosing();
-	// call methods to invoke the event
-	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStringProperty(Prop::FormEventClose), !mDialogX.IsEnteringNoDocState());
-	if( !mbHiding && !IsFloating() )
-		PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
-	return true;
-}
-
-//*****************************************************************************
-// 
-// Method: CDockingDialog::AddCustomMenuItems()
-// 
-// Purpose: [Override for removing right click pop-up menu]
-// 
-// Parameters:  
-//		[hMenu]:  [pointer to the pop-up menu]
-// 
-// Returns:	BOOL
-// 
-//*****************************************************************************
-BOOL CDockingDialog::AddCustomMenuItems(LPARAM hMenu)
-{
-	if (IsWindowVisible())
-	{
-		// Get the menu object.
-		CMenu menu;
-		menu.Attach((HMENU) hMenu);
-
-		// remove the menu its
-		// I am doing this so the user can right click on the ISO view picture and have
-		// is scroll thru the different ISO Plane Options
-		menu.RemoveMenu(ID_ADUI_ALLOWDOCK, MF_BYCOMMAND);
-		menu.RemoveMenu(ID_ADUI_HIDEBAR, MF_BYCOMMAND);
-
-		// Release the menu object.
-		menu.Detach();
-	}
-	
-	return TRUE;
-}
-
-//*****************************************************************************
-// 
-// Method: CDockingDialog::OnUserSizing()
-// 
-// Purpose: [Overrides the OnSizing event and allows us to force the Recomended width 
-//			while the user is resizing]
-// 
-// Parameters:  
-//		[nSide]:  [which side is being stretched]
-//		[pRect]:  [a pointer to the CRect of the Floating form]
-// 
-// Returns:	nothing
-// 
-//*****************************************************************************
-void CDockingDialog::OnUserSizing(UINT nSide, LPRECT pRect)
-{	
-	if( !mbResizable )
-	{
-		GetParent()->GetParent()->SendMessage( WM_CANCELMODE, 0, 0 );
-		return;
-	}
-	__super::OnUserSizing( nSide, pRect );
-}
-
-
-//*****************************************************************************
-// 
-// Method: CDockingDialog::CalcDynamicLayout()
-// 
-// Purpose: [Call what floating to query what the form size should be]
-// 
-// Returns:	CSize
-// 
-//*****************************************************************************
-CSize CDockingDialog::CalcDynamicLayout( int nLength, DWORD dwMode )
-{
-	return __super::CalcDynamicLayout( nLength, dwMode );
-}
-
-//*****************************************************************************
-// 
-// Method: CDockingDialog::CalcFixedLayout()
-// 
-// Purpose: [Called when docked to query what the docked form size should be]
-// 
-// 
-// Returns:	CSize
-// 
-//*****************************************************************************
-
-CSize CDockingDialog::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
-{		
-	if( !mbResizable )
-		return CSize( mDialogX.GetSourceForm()->GetControlProperties()->GetLongProperty( Prop::Width ),
-									mDialogX.GetSourceForm()->GetControlProperties()->GetLongProperty( Prop::Height ) );
-	return __super::CalcFixedLayout( bStretch, bHorz );
-}
-
-//*****************************************************************************
-// 
-// Method: CDockingDialog::GetFloatingMinSize()
-// 
-// Purpose: [This method is pressent to allow a smaller than normal minum width and heigth of
-//			 the floating form.  Removing this method would make the min width to big]
-// 
-// Parameters:  
-//		[pnMinWidth]:  [Mininum width]
-//		[pnMinHeight]:  [Mininum height]
-// 
-// Returns:	nothing
-// 
-//*****************************************************************************
-void CDockingDialog::GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight)
-{
-	// by not adjusting the pnMinWidth or pnMinHeight, the min pnMinWidth will become small enough
-	// that the OnResizeEvent will take care of the width size itself.
+	__super::PostNcDestroy();
+	CAcadDockBarHost* pHostToDelete = NULL;
+	if( !IsFloating() && !AcadIsQuitting() )
+		pHostToDelete = &mHostControlBar;
+	delete this;
+	delete pHostToDelete;
 }
 
 BOOL CDockingDialog::PreTranslateMessage(MSG* pMsg) 
 {
-	if (pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST)
-	{
-		if (pMsg->message == WM_KEYDOWN && (pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_CANCEL))
-		{
-			HWND hItem = ::GetDlgItem(m_hWnd, IDCANCEL);
-			if (hItem == NULL || ::IsWindowEnabled(hItem))
-			{
-				SendMessage(WM_COMMAND, IDCANCEL, 0);
-				return TRUE;
-			}
-		}
-		if( mhwndKeyboardFocus )
-		{
-			pMsg->hwnd = mhwndKeyboardFocus;
-			if( !IsDialogMessage( pMsg ) && !TranslateMessage( pMsg ) )
-				DispatchMessage( pMsg );
-			return TRUE;
-		}
-		TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
-		if( pControl && pControl->GetControlType() == CtlActiveX )
-			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
-	}
-	if( GetCapture() == this )
-	{
-		if( mhwndKeyboardFocus && 
-				pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MOUSELAST &&
-				pMsg->message != WM_MOUSEMOVE && pMsg->message != WM_NCMOUSEMOVE )
-		{
-			CWnd* pTarget = WindowFromPoint( pMsg->pt );
-			if( pTarget )
-			{
-				if( pTarget == this || IsChild( pTarget ) )
-				{
-					mhwndKeyboardFocus = pTarget->m_hWnd;
-					pMsg->hwnd = mhwndKeyboardFocus;
-					SendMessage( refWM_MOUSEENTER(), 0, 0 );
-					if( !pTarget->PreTranslateMessage( pMsg ) )
-					{
-						CPoint ptMouse( pMsg->pt );
-						pTarget->ScreenToClient( &ptMouse );
-						LPARAM lParam = MAKELPARAM(ptMouse.x, ptMouse.y);
-						pTarget->SendMessage( pMsg->message, pMsg->wParam, lParam );
-					}
-					return TRUE;
-				}
-				::SetCapture( NULL );
-				pTarget->SetFocus();
-			}
-			return TRUE;
-		}
-	}
+	return CWnd::PreTranslateMessage(pMsg);
+}
 
-	return __super::PreTranslateMessage(pMsg);
+bool CDockingDialog::OnClosing()
+{
+	if( IsClosing() )
+		return true;
+	SetClosing();
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventClose), false);
+	if( !mbHiding && !IsFloating() )
+		mHostControlBar.PostMessage(WM_CLOSE); //to make sure the window gets destroyed no matter how we got here
+	return true;
 }
 
 void CDockingDialog::OnDestroy() 
 {
-	OnClosing();
-	mDialogX.GetControlPane().CleanUpControls();
+	GetControlPane()->CleanUpControls();
 	__super::OnDestroy();
-}
-
-LRESULT CDockingDialog::OnMouseEnter(WPARAM wParam, LPARAM lParam)
-{
-	if( !mbTrackingMouse )
-	{
-		SetTimer( WM_MOUSELEAVE, 200, NULL );
-		mbTrackingMouse = true;
-	}
-	if( mhwndKeyboardFocus )
-	{
-		::SetFocus( mhwndKeyboardFocus );
-		ReleaseCapture();
-		mhwndKeyboardFocus = NULL;
-	}
-	return 0;
-}
-
-LRESULT CDockingDialog::OnMouseLeave(WPARAM wParam, LPARAM lParam)
-{
-	mbTrackingMouse = false;
-	if( !mbInMenuLoop && !::GetCapture() )
-	{
-		CWnd* pFocusWnd = GetFocus();
-		if( !pFocusWnd || ((pFocusWnd->SendMessage( WM_GETDLGCODE, 0, 0 ) & (DLGC_WANTCHARS | DLGC_WANTARROWS)) == 0) )
-		{
-			CWnd* pCmdLine = acedGetAcadDockCmdLine();
-			if( pCmdLine && pCmdLine->IsWindowEnabled() && pCmdLine->IsWindowVisible() )
-				pCmdLine->SetFocus();
-		}
-		else if( pFocusWnd && IsChild( pFocusWnd ) )
-		{
-			mhwndKeyboardFocus = pFocusWnd->m_hWnd;
-			SetCapture();
-			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
-		}
-	}
-	return 0;
-}
-
-void CDockingDialog::OnEnterMenuLoop(BOOL bPopupMenu)
-{
-	mbInMenuLoop = true;
-	__super::OnEnterMenuLoop(bPopupMenu);
-}
-
-void CDockingDialog::OnExitMenuLoop(BOOL bPopupMenu)
-{
-	mbInMenuLoop = false;
-	__super::OnExitMenuLoop(bPopupMenu);
-}
-
-void CDockingDialog::OnTimer(UINT_PTR nIDEvent)
-{
-	if( nIDEvent == WM_MOUSELEAVE )
-	{
-		CPoint ptCursor;
-		if( GetCursorPos( &ptCursor ) )
-		{
-			CWnd* pTarget = WindowFromPoint( ptCursor );
-			if( pTarget != this && !IsChild( pTarget ) )
-			{
-				PostMessage( WM_MOUSELEAVE, 0, 0 );
-				KillTimer( WM_MOUSELEAVE );
-			}
-		}
-	}
-	__super::OnTimer(nIDEvent);
-}
-
-__LRESULT CDockingDialog::OnNcHitTest(CPoint point)
-{
-	SendMessage( refWM_MOUSEENTER(), 0, 0 );
-	return __super::OnNcHitTest(point);
-}
-
-BOOL CDockingDialog::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
-{
-	CPoint ptCursor;
-	if( ::GetCursorPos( &ptCursor ) )
-	{
-		CWnd* pTarget = WindowFromPoint( ptCursor );
-		if( pTarget && (pTarget == this || IsChild( pTarget )) )
-			SendMessage( refWM_MOUSEENTER(), 0, 0 );
-	}
-	return __super::OnSetCursor(pWnd, nHitTest, message);
 }

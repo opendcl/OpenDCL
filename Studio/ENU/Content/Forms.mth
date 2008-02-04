@@ -134,7 +134,7 @@ dcl_Form_
 [Desc]
 Returns a list of all controls on the form.
 [Arguments Return] as List of Controls
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -144,7 +144,7 @@ dcl_Form_
 [Desc]
 This method will close the indicated dialog. This method returns a list indicating the last upper left coordinates of Modal or Modeless dialog boxes. The optional 'DialogStatus' will be the return value for (dcl_Form_Show) if showing a modal form.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab \i [Optional] \i0 DialogStatus
 [as Integer]
 
@@ -156,7 +156,7 @@ dcl_Form_
 [Desc]
 This method will disable or enable a dialog box, or config tab (but not the dockable form) to be enabled or disabled. Nil = Disabled, T = Enabled. When using this call with a Modal dialog box ensure you have the means re-enable the dialog box otherwise AutoCAD will be permantly locked.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Enabled
 [as Boolean]
 
@@ -168,7 +168,7 @@ dcl_Form_
 [Desc]
 This method will return T if the form is enabled and Nil if the form is disabled.
 [Arguments Return] as T or Nil
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -178,7 +178,7 @@ dcl_Form_
 [Desc]
 This method will center only modal dialogs requested to the center of the screen.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -188,7 +188,7 @@ dcl_Form_
 [Desc]
 This method will return the Hwnd value of the dialog box. This may be required by an ActiveX control.
 [Arguments Return] as Entity Name
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -198,7 +198,7 @@ dcl_Form_
 [Desc]
 This method will retrieve the title bar text or config tab text of the dialog requested. 
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -206,9 +206,9 @@ GetRectangle
 [Prefix]
 dcl_Form_
 [Desc]
-This method returns a list indicating the left, top, width and height values of the dialog box.
-[Arguments Return] as List
-ProjectFileName
+This method returns a list indicating the left, top, width and height values of the form window. If the form window is a child window, the coordinates are client coordinates of its parent window, otherwise they are screen coordinates.
+[Arguments Return] as List (Top Left Width height)
+<CONTROL>
 
 
 [Method]
@@ -216,9 +216,9 @@ GetControlArea
 [Prefix]
 dcl_Form_
 [Desc]
-This method returns a list indicating the width and height of the dialog box's client area.  This would be the area of the dialog box excluding the title bar and border of the dialog box.
-[Arguments Return] as List
-ProjectFileName
+This method returns a list indicating the width and height of the form's control area. The control area is the area where you can place child controls (i.e. it does not include a form's title bar or border). Coordinates are in client coordinates of the host form.
+[Arguments Return] as List (Top Left Width height)
+<CONTROL>
 
 
 [Method]
@@ -228,7 +228,7 @@ dcl_Form_
 [Desc]
 All dialog boxes that are displayed are referenced in an active dialog list.  To find out if a dialog box is active, (as in the case where a secondary Modeless dialog box has been closed by the user and you need to know if you should call the dcl_Form_Close method) use this method to query the active dialog list for the dialog box you need to ensure is present.
 [Arguments Return] as T or Nil
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -238,7 +238,7 @@ dcl_Form_
 [Desc]
 This method is for dockable forms only. It will indicate if the dockable form is (T) floating or (Nil) docked to the AutoCAD frame.
 [Arguments Return] as T or Nil
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -246,12 +246,30 @@ Resize
 [Prefix]
 dcl_Form_
 [Desc]
-This method will resize a dialog box.
+This method will resize a form by setting both its Width and Height properties simultaneously.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Width
 [as Integer]
 \par\tab Height
+[as Integer]
+
+
+[Method]
+SetPos
+[Prefix]
+dcl_Form_
+[Desc]
+This method will move a form to a new position. Optional width and height parameters can be specified to change the form's size. If the form window is a child window, the coordinates are interpreted as client coordinates of its parent window, otherwise they are screen coordinates.
+[Arguments]
+<CONTROL>
+\par\tab Left
+[as Integer]
+\par\tab Top
+[as Integer]
+\par\tab\i{Optional} \i0 Width
+[as Integer]
+\par\tab\i{Optional} \i0 Height
 [as Integer]
 
 
@@ -260,9 +278,9 @@ SetDialogMinMaxSizes
 [Prefix]
 dcl_Form_
 [Desc]
-This method sets the minimum and maximum extents allowed for a specified dialog box.
+This method sets the minimum and maximum sizes when the user resizes a resizable form. Set a value to zero to permit any size. Note that these properties are ignored when setting the form size programmatically.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab MinWidth
 [as Integer]
 \par\tab MinHeight
@@ -280,7 +298,7 @@ dcl_Form_
 [Desc]
 This method will change the title bar text of any modal or modeless dockable dialog box indicated.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab NewText
 [as String]
 
@@ -292,7 +310,7 @@ dcl_Form_
 [Desc]
 This method displays a dialog box from a loaded project. \par \par \b *Important  Notes: \b0 \par \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-720\li720 The optional upper left coordinates only affect Modal and Modeless dialog boxes. \par {\pntext\f1\'B7\tab} If the dialog box being shown is a modal dialog box, this method will wait until the user has exited the dialog box before returning to AutoLISP. \par{\pntext\f1\'B7\tab}Do not call this method from within a MouseDown event of any control. \par{\pntext\f1\'B7\tab}File Dialog Box forms use an alternate function signature that expects the form name followed by optional string arguments for the initial folder, the initial filename, and the default file extension. \par \pard
 [Arguments Return] as Integer DialogStatus
-ProjectFileName
+<CONTROL>
 \par\tab \i [Optional] \i0 UpperLeftXCoordinate
 [as Integer]
 \par\tab \i [Optional] \i0 UpperLeftYCoordinate

@@ -32,13 +32,14 @@
 #include "Methods_ActiveX.h"
 #include "Methods_Animate.h"
 #include "Methods_ListBox.h"
+#include "Methods_BlockList.h"
 #include "Methods_Grid.h"
 #include "Methods_Hatch.h"
-#include "Methods_ListCtrl.h"
+#include "Methods_ListView.h"
 #include "Methods_PictureBox.h"
 #include "Methods_Properties.h"
 #include "Methods_SlideView.h"
-#include "Methods_tree.h"
+#include "Methods_Tree.h"
 #include "Methods_Edit.h"
 #include "Methods_Tab.h"
 #include "Methods_ComboBox.h"
@@ -47,11 +48,11 @@
 #include "Methods_Month.h"
 #include "Methods_BlockView.h"
 #include "Methods_DwgPreview.h"
-#include "Methods_Files.h"
 #include "Methods_ActiveX.h"
 #include "Methods_FileDlg.h"
 #include "Methods_BinFiles.h"
-#include "MethodLexicon.h"
+#include "Methods_OptionList.h"
+#include "Methods_DwgList.h"
 #include "DialogObject.h"
 #include "CustomFileDialog.h"
 #include "ErrorLexicon.h"
@@ -111,522 +112,399 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("CheckBin"),			CheckBinFile},						
 
 	// general control methods
-	{_T("Control_SetProperty"),			SetProperty}, // this method is used to set any property of any control
-	{_T("Control_GetProperty"),			GetProperty}, // this method is used to get any property of any control
-	{_T("Control_ShowToolTip"),			ShowToolTip},
-	{_T("Control_SetFocus"),				SetControlFocus},
-	{_T("Control_ZOrder"),				ZOrder},
-	{_T("Control_GetCurPos"),			Control_GetCurPos},
-	{_T("Control_SetPos"),				Control_SetPos},
-	{_T("Control_ForceUpdateNow"),		ForceUpdateNow},
+	{_T("Control_SetProperty"),			Control::SetProperty}, // this method is used to set any property of any control
+	{_T("Control_GetProperty"),			Control::GetProperty}, // this method is used to get any property of any control
+	{_T("Control_ShowToolTip"),			Control::ShowToolTip},
+	{_T("Control_SetFocus"),				Control::SetFocus},
+	{_T("Control_ZOrder"),				Control::ZOrder},
+	{_T("Control_GetCurPos"),			Control::GetCurPos},
+	{_T("Control_SetPos"),				Control::SetPos},
+	{_T("Control_ForceUpdateNow"),		Control::ForceUpdateNow},
 
-	{_T("ProgressBar_SetPos"),	ProgressBar_SetPos},
-	{_T("Files_Dir"),						FilesDir},
+	{_T("ProgressBar_SetPos"),	ProgressBar::SetPos},
 
 	// animation control methods
-	{_T("Animate_Load"),			AnimateCtrl_Load},
-	{_T("Animate_Seek"),			AnimateCtrl_Seek},
-	{_T("Animate_Stop"),			AnimateCtrl_Stop},
-	{_T("Animate_Close"),			AnimateCtrl_Close},
+	{_T("Animate_Load"),			Animate::Load},
+	{_T("Animate_Seek"),			Animate::Seek},
+	{_T("Animate_Stop"),			Animate::Stop},
+	{_T("Animate_Close"),			Animate::Close},
 
-	{_T("Hatch_Clear"),			Hatch_Clear},
-	{_T("Hatch_SetPattern"), Hatch_SetPattern},
+	{_T("Hatch_Clear"),			Hatch::Clear},
+	{_T("Hatch_SetPattern"), Hatch::SetPattern},
 
 	// file dialog box methods
-	{sFileDlgGetFileName,		FileDlgGetFileName},
-	{sFileDlgGetFileTitle,		FileDlgGetFileTitle},
-	{sFileDlgGetPathName,		FileDlgGetPathName},
-	{sFileDlgGetSelectionCount,	FileDlgGetSelectionCount},
-	{sFileDlgGetFolderPath,		FileDlgGetFolderPath},
-	{sFileDlgGetFileNameList,	FileDlgGetFileNameList},
-	{sFileDlgSetOkButtonText,	FileDlgSetOkButtonText},
-	{sFileDlgGetFileExt,		FileDlgGetFileExt},
-	{sFileDlgGetFolderName,		FileDlgGetFolderName},
+	{_T("FileDlg_GetFileName"),		FileDlg::GetFileName},
+	{_T("FileDlg_GetFileTitle"),		FileDlg::GetFileTitle},
+	{_T("FileDlg_GetPathName"),		FileDlg::GetPathName},
+	{_T("FileDlg_GetSelectionCount"),	FileDlg::GetSelectionCount},
+	{_T("FileDlg_GetFolderPath"),		FileDlg::GetFolderPath},
+	{_T("FileDlg_GetFileNameList"),	FileDlg::GetFileNameList},
+	{_T("FileDlg_SetOkButtonText"),	FileDlg::SetOkButtonText},
+	{_T("FileDlg_GetFileExt"),		FileDlg::GetFileExt},
+	{_T("FileDlg_GetFolderName"),		FileDlg::GetFolderName},
 
 	// ActiveX control methods
-	{sAxSetProperty,			SetAxProperty},
-	{sAxGetProperty,			GetAxProperty},
-	{sDoAxMethod,				DoAxMethod},
-	{sAxObjectSetProperty,		SetAxObjectProperty},
-	{sAxObjectGetProperty,		GetAxObjectProperty},
-	{sObjectDoAxMethod,			DoAxObjectMethod},
-	{sSetAxColorProperty,		SetAxColorProperty},
-	{sSetAxObjColorProperty,	SetAxObjColorProperty},
-	{sSetAxPictureProperty,		SetAxPictureProperty},
-	{sSetAxObjPictureProperty,	SetAxObjectPictureProperty},
-	{sAxGetObject,				AxGetObject},
-	{sCloseAxObject,			CloseAxObject},
-	{sReleaseAxObject,			CloseAxObject},
+	{_T("AxControl_GetProperty"),		AxControl::GetProperty},
+	{_T("AxControl_SetProperty"),		AxControl::SetProperty},
+	{_T("AxControl_DoMethod"),		AxControl::DoMethod},
+	{_T("AxControl_SetColor"),		AxControl::SetColorProperty},
+	{_T("AxControl_SetPicture"),		AxControl::SetPictureProperty},
+	{_T("AxControl_GetOleObject"),		AxControl::GetOleObject},
+	{_T("AxObject_GetProperty"),		AxObject::GetProperty},
+	{_T("AxObject_SetProperty"),		AxObject::SetProperty},
+	{_T("AxObject_DoMethod"),		AxObject::DoMethod},
+	{_T("AxObject_Close"),		AxObject::Close},
 
 	// block view control methods
-	{sBlockView_Clear,				BlockView_Clear},
-	{sBlockView_SetHighLight,		BlockView_SetHighLight},
-	{sBlockView_RemoveHighLight,	BlockView_RemoveHighLight},
-	{sBlockView_Zoom,				BlockView_Zoom},
-	{sBlockView_ViewBlock,			BlockView_ViewBlock},
-	{sBlockView_ViewPaperSpace,		BlockView_ViewPaperSpace},											
-	{sBlockView_ViewBlockToScale,	BlockView_ViewBlockToScale},
-	{sBlockView_LoadDwg,			BlockView_LoadDwg},	
-	{sBlockView_LoadDwgToScale,		BlockView_LoadDwgToScale},
-	{sBlockView_PreLoadDwg,			BlockView_PreLoadDwg},
-	{sBlockView_GetBlockList,		BlockView_GetBlockList},
-	{sBlockView_GetBlockSize,		BlockView_GetBlockSize},
-	{sBlockView_GetDwgSize,			BlockView_GetDwgSize},
-	{sBlockView_RefreshBlock,		BlockView_RefreshBlock},
-	{sBlockView_GetViewInfo,		BlockView_GetViewInfo},
-	{sBlockView_SetView,			BlockView_SetView},
+	{_T("BlockView_Clear"),				BlockView::Clear},
+	{_T("BlockView_SetHighLight"),		BlockView::SetHighLight},
+	{_T("BlockView_RemoveHighLight"),	BlockView::RemoveHighLight},
+	{_T("BlockView_Zoom"),				BlockView::Zoom},
+	{_T("BlockView_DisplayBlock"),			BlockView::DisplayBlock},
+	{_T("BlockView_DisplayBlockToScale"),	BlockView::DisplayBlockToScale},
+	{_T("BlockView_DisplayPaperSpace"),		BlockView::DisplayPaperSpace},											
+	{_T("BlockView_LoadDwg"),			BlockView::LoadDwg},	
+	{_T("BlockView_LoadDwgToScale"),		BlockView::LoadDwgToScale},
+	{_T("BlockView_PreLoadDwg"),			BlockView::PreLoadDwg},
+	{_T("BlockView_GetBlockList"),		BlockView::GetBlockList},
+	{_T("BlockView_GetDwgSize"),			BlockView::GetDwgSize},
+	{_T("BlockView_RefreshBlock"),		BlockView::RefreshBlock},
+	//{_T("BlockView_GetViewInfo"),		BlockView_GetViewInfo},
+	//{_T("BlockView_SetView"),			BlockView_SetView},
 
 	// dwg preview control methods 
-	{sDwgPreview_LoadDwg,			DwgPreview_LoadDwg},
-	{sDwgPreview_GetDwgName,		DwgPreview_GetDwgName},
-	{sDwgPreview_Clear,				DwgPreview_Clear},
-	{sDwgPreview_SetHighLight,		DwgPreview_SetHighLight},
-	{sDwgPreview_RemoveHighLight,	DwgPreview_RemoveHighLight},
+	{_T("DwgPreview_LoadDwg"),			DwgPreview::LoadDwg},
+	{_T("DwgPreview_GetDwgName"),		DwgPreview::GetDwgName},
+	{_T("DwgPreview_Clear"),				DwgPreview::Clear},
+	{_T("DwgPreview_SetHighLight"),		DwgPreview::SetHighLight},
+	{_T("DwgPreview_RemoveHighLight"),	DwgPreview::RemoveHighLight},
 
-	// list box control methods 
-	{sDwgList_Dir,				DwgList_Dir},
-	{sDwgList_GetDir,			DwgList_GetDir},
-	{sDwgList_GetFileName,		DwgList_GetFileName},
-	{sDwgList_GetType,			DwgList_GetType},
+	// dwglist control methods 
+	{_T("DwgList_Dir"),				DwgList::Dir},
+	{_T("DwgList_GetDir"),			DwgList::GetDir},
+	{_T("DwgList_GetFileName"),		DwgList::GetFileName},
+	{_T("DwgList_GetType"),			DwgList::GetType},
+	{_T("DwgList_GetText"),			DwgList::GetText},
+	{_T("DwgList_GetSelectedItems"),	DwgList::GetSelectedItems},	
+	{_T("DwgList_GetSelectedNths"),	DwgList::GetSelectedNths},	
+	{_T("DwgList_GetCurSel"),		DwgList::GetCurSel},
+	{_T("DwgList_SetCurSel"),		DwgList::SetCurSel},
+	{_T("DwgList_GetCount"),			DwgList::GetCount},
+	{_T("DwgList_GetTopIndex"),		DwgList::GetTopIndex},
+	{_T("DwgList_SetTopIndex"),		DwgList::SetTopIndex},
+	{_T("DwgList_DeleteString"),		DwgList::DeleteString},
+	{_T("DwgList_SetSel"),			DwgList::SetSel},
+	{_T("DwgList_GetSel"),			DwgList::GetSel},
+	{_T("DwgList_SetFocusIndex"),	DwgList::SetFocusIndex},
+	{_T("DwgList_GetFocusIndex"),	DwgList::GetFocusIndex},
+	{_T("DwgList_GetSelCount"),		DwgList::GetSelCount},
+	{_T("DwgList_SelItemRange"),		DwgList::SelItemRange},
+	{_T("DwgList_SetAnchorIndex"),	DwgList::SetAnchorIndex},
+	{_T("DwgList_GetAnchorIndex"),	DwgList::GetAnchorIndex},
 
-	{sOptionList_SetEnabled,		OptionList_SetEnabled},
-	{sOptionList_SetTttTitle,		OptionList_SetTttTitle},
+	// optionlist control methods 
+	{_T("OptionList_SetEnabled"),		OptionList::SetEnabled},
+	{_T("OptionList_SetTttTitle"),		OptionList::SetTttTitle},
+	{_T("OptionList_AddList"),		OptionList::AddList},
+	{_T("OptionList_AddString"),		OptionList::AddString},
+	{_T("OptionList_Clear"),			OptionList::Clear},
+	{_T("OptionList_GetText"),		OptionList::GetText},
+	{_T("OptionList_GetCurSel"),		OptionList::GetCurSel},
+	{_T("OptionList_GetCount"),		OptionList::GetCount},
+	{_T("OptionList_SetCurSel"),		OptionList::SetCurSel},
+	{_T("OptionList_GetTopIndex"),   OptionList::GetTopIndex},
+	{_T("OptionList_SetTopIndex"),   OptionList::SetTopIndex},
+	{_T("OptionList_DeleteString"),  OptionList::DeleteString},
+	{_T("OptionList_InsertString"),	OptionList::InsertString},
 
-	{sOptionList_AddList,		ListBox_AddList},
-	{sOptionList_AddString,		ListBox_AddString},
-	{sOptionList_Clear,			ListBox_Clear},
-	{sOptionList_GetText,		ListBox_GetText},
-	{sOptionList_GetCurSel,		ListBox_GetCurSel},
-	{sOptionList_GetCount,		ListBox_GetCount},
-	{sOptionList_SetCurSel,		ListBox_SetCurSel},
-	{sOptionList_GetTopIndex,   ListBox_GetTopIndex},
-	{sOptionList_SetTopIndex,   ListBox_SetTopIndex},
-	{sOptionList_DeleteString,  ListBox_DeleteString},
-	{sOptionList_InsertString,	ListBox_InsertString},
-
-	{sListBox_Dir,				ListBox_Dir},
-	{sListBox_AddString,		ListBox_AddString},
-	{sListBox_AddList,			ListBox_AddList},		
-	{sListBox_Clear,			ListBox_Clear},											
-	{sListBox_GetText,			ListBox_GetText},
-	{sListBox_GetSelectedItems,	ListBox_GetSelectedItems},	
-	{sListBox_GetSelectedNths,	ListBox_GetSelectedNths},	
-	{sListBox_GetCurSel,		ListBox_GetCurSel},
-	{sListBox_GetCount,			ListBox_GetCount},
-	{sListBox_SetCurSel,		ListBox_SetCurSel},
-	{sListBox_GetTopIndex,		ListBox_GetTopIndex},
-	{sListBox_SetTopIndex,		ListBox_SetTopIndex},
-	{sListBox_SetItemData,		ListBox_SetItemData},
-	{sListBox_GetItemData,		ListBox_GetItemData},
-	{sListBox_DeleteString,		ListBox_DeleteString},
-	{sListBox_InsertString,		ListBox_InsertString},
-	{sListBox_FindString,		ListBox_FindString},
-	{sListBox_SelectString,		ListBox_SelectString},
-	{sListBox_FindStringExact,	ListBox_FindStringExact},
-	{sListBox_SetSel,			ListBox_SetSel},
-	{sListBox_GetSel,			ListBox_GetSel},
-	{sListBox_SetFocusIndex,	ListBox_SetFocusIndex},
-	{sListBox_GetFocusIndex,	ListBox_GetFocusIndex},
-	{sListBox_GetSelCount,		ListBox_GetSelCount},
-	{sListBox_SelItemRange,		ListBox_SelItemRange},
-	{sListBox_SetAnchorIndex,	ListBox_SetAnchorIndex},
-	{sListBox_GetAnchorIndex,	ListBox_GetAnchorIndex},
+	// listbox control methods 
+	{_T("ListBox_Dir"),				ListBox::Dir},
+	{_T("ListBox_AddString"),		ListBox::AddString},
+	{_T("ListBox_AddList"),			ListBox::AddList},		
+	{_T("ListBox_Clear"),			ListBox::Clear},											
+	{_T("ListBox_GetText"),			ListBox::GetText},
+	{_T("ListBox_GetSelectedItems"),	ListBox::GetSelectedItems},	
+	{_T("ListBox_GetSelectedNths"),	ListBox::GetSelectedNths},	
+	{_T("ListBox_GetCurSel"),		ListBox::GetCurSel},
+	{_T("ListBox_GetCount"),			ListBox::GetCount},
+	{_T("ListBox_SetCurSel"),		ListBox::SetCurSel},
+	{_T("ListBox_GetTopIndex"),		ListBox::GetTopIndex},
+	{_T("ListBox_SetTopIndex"),		ListBox::SetTopIndex},
+	{_T("ListBox_SetItemData"),		ListBox::SetItemData},
+	{_T("ListBox_GetItemData"),		ListBox::GetItemData},
+	{_T("ListBox_DeleteString"),		ListBox::DeleteString},
+	{_T("ListBox_InsertString"),		ListBox::InsertString},
+	{_T("ListBox_FindString"),		ListBox::FindString},
+	{_T("ListBox_SelectString"),		ListBox::SelectString},
+	{_T("ListBox_FindStringExact"),	ListBox::FindStringExact},
+	{_T("ListBox_SetSel"),			ListBox::SetSel},
+	{_T("ListBox_GetSel"),			ListBox::GetSel},
+	{_T("ListBox_SetFocusIndex"),	ListBox::SetFocusIndex},
+	{_T("ListBox_GetFocusIndex"),	ListBox::GetFocusIndex},
+	{_T("ListBox_GetSelCount"),		ListBox::GetSelCount},
+	{_T("ListBox_SelItemRange"),		ListBox::SelItemRange},
+	{_T("ListBox_SetAnchorIndex"),	ListBox::SetAnchorIndex},
+	{_T("ListBox_GetAnchorIndex"),	ListBox::GetAnchorIndex},
 
 	// grid control methods 
-	{sGrid_AddString,			Grid_AddString},
-	{_T("Grid_StartItemEdit"),	Grid_Cell_StartItemEdit},
-	{sGrid_Cell_SetStyle,		Grid_Cell_SetStyle},											
-	{sGrid_SelectCell,			Grid_SelCurCell},
-
-	{sGrid_SelCurRow,			Grid_SelCurRow},
-	{sGrid_HitPointTest,		Grid_HitPointTest},
-	{sGrid_Cell_SetDropList,	Grid_Cell_SetDropList},
-	{sGrid_AddColumn,			Grid_AddColumn},
-	{sGrid_AddRow,				Grid_AddRow},
-	{sGrid_CalcColumnWidth,		Grid_CalcColumnWidth},
-	{sGrid_Clear,				Grid_Clear},
-	{sGrid_DeleteColumn,		Grid_DeleteColumns},
-	{sGrid_DeleteColumns,		Grid_DeleteColumns},
-	{sGrid_DeleteItem,			Grid_DeleteItems},
-	{sGrid_FillGrid,			Grid_FillGrid},
-	{sGrid_GetColWidth,			Grid_GetColWidth},
-	{sGrid_GetItemData,			Grid_GetItemData},
-	{sGrid_GetItemImage,		Grid_GetItemImage},
-	{sGrid_GetItemText,			Grid_GetItemText},
-	{sGrid_GetSelectedCell,		Grid_GetSelectedCell},	
-	{sGrid_SetColWidth,			Grid_SetColWidth},
-	{sGrid_SetItemData,			Grid_SetItemData},
-	{sGrid_SetItemImage,		Grid_SetItemImage},
-	{sGrid_SetItemText,			Grid_SetItemText},
-	{sGrid_CancelLabelEdit,		Grid_CancelLabelEdit},
-	{sGrid_SortTextItems,		Grid_SortColTextItems},
-	{sGrid_SortNumericItems,	Grid_SortColNumericItems},											
-	{sGrid_GetRow,				Grid_GetRow},
-	{sGrid_GetColumn,			Grid_GetColumn},
-	{sGrid_GetColumnImage,		Grid_GetColumnImage},
-	{sGrid_SetColumnImage,		Grid_SetColumnImage},
-	{sGrid_GetCount,			Grid_GetCount},
-	{sGrid_GetColumnCount,		Grid_GetColumnCount},
-	{sGrid_GetCheck,			Grid_GetCheck},
-	{sGrid_SetCheck,			Grid_SetCheck},
-	{sGrid_InsertRow,			Grid_InsertRow},
-	{sGrid_InsertString,		Grid_InsertString},
-	{sGrid_SetCurRow,			Grid_SelCurRow},
+	{_T("Grid_AddString"),			Grid::AddString},
+	{_T("Grid_StartItemEdit"),	Grid::StartItemEdit},
+	{_T("Grid_SetItemStyle"),		Grid::SetItemStyle},											
+	{_T("Grid_SetCurSel"),			Grid::SetCurSel},
+	{_T("Grid_HitPointTest"),		Grid::HitPointTest},
+	{_T("Grid_SetItemDropList"),	Grid::SetItemDropList},
+	{_T("Grid_AddColumns"),			Grid::AddColumns},
+	{_T("Grid_AddRow"),				Grid::AddRow},
+	{_T("Grid_CalcColWidth"),		Grid::CalcColWidth},
+	{_T("Grid_Clear"),				Grid::Clear},
+	{_T("Grid_DeleteColumn"),		Grid::DeleteColumn},
+	{_T("Grid_DeleteRow"),			Grid::DeleteRow},
+	{_T("Grid_FillList"),			Grid::FillList},
+	{_T("Grid_GetColWidth"),			Grid::GetColWidth},
+	{_T("Grid_GetItemData"),			Grid::GetItemData},
+	{_T("Grid_GetItemImage"),		Grid::GetItemImage},
+	{_T("Grid_GetItemText"),			Grid::GetItemText},
+	{_T("Grid_GetCurSel"),		Grid::GetCurSel},	
+	{_T("Grid_SetColWidth"),			Grid::SetColWidth},
+	{_T("Grid_SetItemData"),			Grid::SetItemData},
+	{_T("Grid_SetItemImage"),		Grid::SetItemImage},
+	{_T("Grid_SetItemText"),			Grid::SetItemText},
+	{_T("Grid_CancelItemEdit"),		Grid::CancelItemEdit},
+	{_T("Grid_SortTextItems"),		Grid::SortTextItems},
+	{_T("Grid_SortNumericItems"),	Grid::SortNumericItems},											
+	{_T("Grid_GetRowItems"),				Grid::GetRowItems},
+	{_T("Grid_GetColumnItems"),			Grid::GetColumnItems},
+	{_T("Grid_GetColumnImage"),		Grid::GetColumnImage},
+	{_T("Grid_SetColumnImage"),		Grid::SetColumnImage},
+	{_T("Grid_GetRowCount"),			Grid::GetRowCount},
+	{_T("Grid_GetColumnCount"),		Grid::GetColumnCount},
+	{_T("Grid_GetItemCheck"),			Grid::GetItemCheck},
+	{_T("Grid_SetItemCheck"),			Grid::SetItemCheck},
+	{_T("Grid_InsertRow"),			Grid::InsertRow},
+	{_T("Grid_InsertColumn"),			Grid::InsertColumn},
+	{_T("Grid_InsertString"),		Grid::InsertString},
 
 	// flex grid control methods
-	{_T("FlexGrid_GetColor"), GetFlexGridColorProperty},
-	{_T("FlexGrid_SetColor"), SetFlexGridColorProperty},
+	//{_T("FlexGrid_GetColor"), GetFlexGridColorProperty},
+	//{_T("FlexGrid_SetColor"), SetFlexGridColorProperty},
 
 	// list view control methods 
-	{sListCtrl_AddString,		ListCtrl_AddString},
-	{sListCtrl_AddColumn,		ListCtrl_AddColumn},
-	{sListCtrl_AddRow,			ListCtrl_AddRow},
-	{sListCtrl_Arrange,			ListCtrl_Arrange},
-	{sListCtrl_CalcColumnWidth, ListCtrl_CalcColumnWidth},
-	{sListCtrl_Clear,			ListCtrl_Clear},
-	{sListCtrl_CountItems,		ListCtrl_CountItems},
-	{sListCtrl_DeleteColumn,	ListCtrl_DeleteColumns},
-	{sListCtrl_DeleteColumns,	ListCtrl_DeleteColumns},
-	{sListCtrl_DeleteItem,		ListCtrl_DeleteItems},
-	{sListCtrl_DeleteItems,		ListCtrl_DeleteItems},
-	{sListCtrl_FillGrid,		ListCtrl_FillGrid},
-	{sListCtrl_GetColWidth,		ListCtrl_GetColWidth},
-	{sListCtrl_GetFileName,		ListCtrl_GetFileName},											
-	{sListCtrl_GetItemData,		ListCtrl_GetItemData},
-	{sListCtrl_GetItemImage,	ListCtrl_GetItemImage},
-	{sListCtrl_GetItemText,		ListCtrl_GetItemText},
-	{sListCtrl_GetSelectedCount,ListCtrl_GetSelectedCount},
-	{sListCtrl_GetSelectedItems,ListCtrl_GetSelectedItems},	
-	{sListCtrl_GetSelectedNths,	ListCtrl_GetSelectedNths},												
-	{sListCtrl_HitPointTest,    ListCtrl_HitPointTest},
-	{sListCtrl_InsertItem,		ListCtrl_InsertItem},
-	{sListCtrl_LoadDwg,			ListCtrl_LoadDwg},
-	{sListCtrl_Reset,			ListCtrl_Reset},											
-	{sListCtrl_SetColWidth,		ListCtrl_SetColWidth},
-	{sListCtrl_SetCurSel,		ListCtrl_SetCurSel},
-	{sListCtrl_SetItemData,		ListCtrl_SetItemData},
-	{sListCtrl_SetItemImage,	ListCtrl_SetItemImage},
-	{sListCtrl_SetItemText,		ListCtrl_SetItemText},
-	{sListCtrl_StartLabelEdit,	ListCtrl_StartLabelEdit},
-	{sListCtrl_CancelLabelEdit,	ListCtrl_CancelLabelEdit},
-	{sListCtrl_SortTextItems,	ListCtrl_SortColTextItems},
-	{sListCtrl_SortNumericItems,ListCtrl_SortColNumericItems},											
-	{sListCtrl_GetRow,			ListCtrl_GetRow},
-	{sListCtrl_GetColumn,		ListCtrl_GetColumn},
-	{sListCtrl_GetColumnImage,	ListCtrl_GetColumnImage},
-	{sListCtrl_SetColumnImage,	ListCtrl_SetColumnImage},
-	{sListCtrl_GetCount,		ListCtrl_GetCount},
-	{sListCtrl_GetColumnCount,	ListCtrl_GetColumnCount},
+	{_T("ListView_AddString"),		ListView::AddString},
+	{_T("ListView_AddColumns"),		ListView::AddColumns},
+	{_T("ListView_AddItem"),			ListView::AddItem},
+	{_T("ListView_Arrange"),			ListView::Arrange},
+	{_T("ListView_CalcColWidth"), ListView::CalcColWidth},
+	{_T("ListView_Clear"),			ListView::Clear},
+	{_T("ListView_CountItems"),		ListView::CountItems},
+	{_T("ListView_DeleteItem"),	ListView::DeleteItem},
+	{_T("ListView_DeleteItems"),	ListView::DeleteItems},
+	{_T("ListView_DeleteColumn"),	ListView::DeleteColumn},
+	{_T("ListView_DeleteColumns"),	ListView::DeleteColumns},
+	{_T("ListView_FillList"),		ListView::FillList},
+	{_T("ListView_GetColWidth"),		ListView::GetColWidth},
+	{_T("ListView_GetItemData"),		ListView::GetItemData},
+	{_T("ListView_GetItemImage"),	ListView::GetItemImage},
+	{_T("ListView_GetItemText"),		ListView::GetItemText},
+	{_T("ListView_GetSelCount"),ListView::GetSelCount},
+	{_T("ListView_GetSelectedItems"),ListView::GetSelectedItems},	
+	{_T("ListView_GetSelectedNths"),	ListView::GetSelectedNths},
+	{_T("ListView_HitPointTest"),    ListView::HitPointTest},
+	{_T("ListView_InsertItem"),		ListView::InsertItem},
+	{_T("ListView_SetColWidth"),		ListView::SetColWidth},
+	{_T("ListView_GetCurSel"),		ListView::GetCurSel},
+	{_T("ListView_SetCurSel"),		ListView::SetCurSel},
+	{_T("ListView_SetItemData"),		ListView::SetItemData},
+	{_T("ListView_SetItemImage"),	ListView::SetItemImage},
+	{_T("ListView_SetItemText"),		ListView::SetItemText},
+	{_T("ListView_StartLabelEdit"),	ListView::StartLabelEdit},
+	{_T("ListView_CancelLabelEdit"),	ListView::CancelLabelEdit},
+	{_T("ListView_SortTextItems"),	ListView::SortTextItems},
+	{_T("ListView_SortNumericItems"),ListView::SortNumericItems},
+	{_T("ListView_GetRowItems"),			ListView::GetRowItems},
+	{_T("ListView_GetColumnItems"),		ListView::GetColumnItems},
+	{_T("ListView_GetColumnImage"),	ListView::GetColumnImage},
+	{_T("ListView_SetColumnImage"),	ListView::SetColumnImage},
+	{_T("ListView_GetCount"),		ListView::GetCount},
+	{_T("ListView_GetColumnCount"),	ListView::GetColumnCount},
+
+	// blocklist control methods 
+	{_T("BlockList_LoadDwg"),			BlockList::LoadDwg},
+	{_T("BlockList_Reset"),			BlockList::Reset},											
+	{_T("BlockList_GetFileName"),		BlockList::GetFileName},
 
 	// combo box control methods 
-	{sComboBox_Dir,					ComboBox_Dir},
-	{sComboBox_GetDir,				ComboBox_GetDir},
-	{sComboBox_AddPath,				ComboBox_AddPath},											
-	{sComboBox_AddColor,			ComboBox_AddColor},
-	{sComboBox_FindColor,			ComboBox_FindColor},
-	{sComboBox_FindLineWeight,		ComboBox_FindLineWeight},
-	{sComboBox_AddString,			ComboBox_AddString},
-	{sComboBox_AddList,				ComboBox_AddList},
-	{sComboBox_GetCurSel,			ComboBox_GetCurSel},
-	{sComboBox_GetCount,			ComboBox_GetCount},
-	{sComboBox_Clear,				ComboBox_Clear},
-	{sComboBox_DeleteString,		ComboBox_DeleteString},
-	{sComboBox_InsertString,		ComboBox_InsertString},
-	{sComboBox_FindString,			ComboBox_FindString},											
-	{sComboBox_FindStringExact,		ComboBox_FindStringExact},
-	{sComboBox_SelectString,		ComboBox_SelectString},
-	{sComboBox_SetCurSel,			ComboBox_SetCurSel},
-	{sComboBox_GetEditSel,			ComboBox_GetEditSel},
-	{sComboBox_SetEditSel,			ComboBox_SetEditSel},
-	{sComboBox_SetItemData,			ComboBox_SetItemData},
-	{sComboBox_GetItemData,			ComboBox_GetItemData},
-	{sComboBox_GetTopIndex,			ComboBox_GetTopIndex},
-	{sComboBox_SetTopIndex,			ComboBox_SetTopIndex},
-	{sComboBox_GetDroppedWidth,		ComboBox_GetDroppedWidth},
-	{sComboBox_SetDroppedWidth,		ComboBox_SetDroppedWidth},
-	{sComboBox_ClearEdit,			ComboBox_ClearEdit},
-	{sComboBox_GetLBText,			ComboBox_GetLBText},
-	{sComboBox_GetEBText,			ComboBox_GetEBText},
+	{_T("ComboBox_Dir"),					ComboBox::Dir},
+	{_T("ComboBox_GetDir"),				ComboBox::GetDir},
+	{_T("ComboBox_AddPath"),				ComboBox::AddPath},											
+	{_T("ComboBox_AddColor"),			ComboBox::AddColor},
+	{_T("ComboBox_FindColor"),			ComboBox::FindColor},
+	{_T("ComboBox_FindLineWeight"),		ComboBox::FindLineWeight},
+	{_T("ComboBox_AddString"),			ComboBox::AddString},
+	{_T("ComboBox_AddList"),				ComboBox::AddList},
+	{_T("ComboBox_GetCurSel"),			ComboBox::GetCurSel},
+	{_T("ComboBox_GetCount"),			ComboBox::GetCount},
+	{_T("ComboBox_Clear"),				ComboBox::Clear},
+	{_T("ComboBox_DeleteString"),		ComboBox::DeleteString},
+	{_T("ComboBox_InsertString"),		ComboBox::InsertString},
+	{_T("ComboBox_FindString"),			ComboBox::FindString},											
+	{_T("ComboBox_FindStringExact"),		ComboBox::FindStringExact},
+	{_T("ComboBox_SelectString"),		ComboBox::SelectString},
+	{_T("ComboBox_SetCurSel"),			ComboBox::SetCurSel},
+	{_T("ComboBox_GetEditSel"),			ComboBox::GetEditSel},
+	{_T("ComboBox_SetEditSel"),			ComboBox::SetEditSel},
+	{_T("ComboBox_SetItemData"),			ComboBox::SetItemData},
+	{_T("ComboBox_GetItemData"),			ComboBox::GetItemData},
+	{_T("ComboBox_GetTopIndex"),			ComboBox::GetTopIndex},
+	{_T("ComboBox_SetTopIndex"),			ComboBox::SetTopIndex},
+	{_T("ComboBox_GetDroppedWidth"),		ComboBox::GetDroppedWidth},
+	{_T("ComboBox_SetDroppedWidth"),		ComboBox::SetDroppedWidth},
+	{_T("ComboBox_ClearEdit"),			ComboBox::ClearEdit},
+	{_T("ComboBox_GetLBText"),			ComboBox::GetLBText},
+	{_T("ComboBox_GetTBText"),			ComboBox::GetEBText},
 
-	{sComboBoxEx_AddString,			ComboBoxEx_AddString},
-	{sComboBoxEx_SetItem,			ComboBoxEx_SetItem},
-	{sComboBoxEx_GetItem,			ComboBoxEx_GetItem},
-	{sComboBoxEx_GetCurSel,			ComboBoxEx_GetCurSel},
-	{sComboBoxEx_GetCount,			ComboBoxEx_GetCount},
-	{sComboBoxEx_Clear,				ComboBoxEx_Clear},
-	{sComboBoxEx_DeleteString,		ComboBoxEx_DeleteString},
-	{sComboBoxEx_FindString,		ComboBoxEx_FindString},											
-	{sComboBoxEx_FindStringExact,	ComboBoxEx_FindStringExact},
-	{sComboBoxEx_SelectString,		ComboBoxEx_SelectString},
-	{sComboBoxEx_SetCurSel,			ComboBoxEx_SetCurSel},
-	{sComboBoxEx_GetEditSel,		ComboBoxEx_GetEditSel},
-	{sComboBoxEx_SetEditSel,		ComboBoxEx_SetEditSel},
-	{sComboBoxEx_SetItemData,		ComboBoxEx_SetItemData},
-	{sComboBoxEx_GetItemData,		ComboBoxEx_GetItemData},
-	{sComboBoxEx_GetTopIndex,		ComboBoxEx_GetTopIndex},
-	{sComboBoxEx_SetTopIndex,		ComboBoxEx_SetTopIndex},
-	{sComboBoxEx_GetDroppedWidth,	ComboBoxEx_GetDroppedWidth},
-	{sComboBoxEx_SetDroppedWidth,	ComboBoxEx_SetDroppedWidth},
-	{sComboBoxEx_ClearEdit,			ComboBoxEx_ClearEdit},
-	{sComboBoxEx_GetLBText,			ComboBoxEx_GetLBText},
-	{sComboBoxEx_GetEBText,			ComboBoxEx_GetEBText},
+	{_T("ImageComboBox_AddString"),			ImageComboBox::AddString},
+	{_T("ImageComboBox_SetItem"),			ImageComboBox::SetItem},
+	{_T("ImageComboBox_GetItem"),			ImageComboBox::GetItem},
+	{_T("ImageComboBox_GetCurSel"),			ImageComboBox::GetCurSel},
+	{_T("ImageComboBox_GetCount"),			ImageComboBox::GetCount},
+	{_T("ImageComboBox_Clear"),				ImageComboBox::Clear},
+	{_T("ImageComboBox_DeleteString"),		ImageComboBox::DeleteString},
+	{_T("ImageComboBox_FindString"),		ImageComboBox::FindString},											
+	{_T("ImageComboBox_FindStringExact"),	ImageComboBox::FindStringExact},
+	{_T("ImageComboBox_SelectString"),		ImageComboBox::SelectString},
+	{_T("ImageComboBox_SetCurSel"),			ImageComboBox::SetCurSel},
+	{_T("ImageComboBox_GetEditSel"),		ImageComboBox::GetEditSel},
+	{_T("ImageComboBox_SetEditSel"),		ImageComboBox::SetEditSel},
+	{_T("ImageComboBox_SetItemData"),		ImageComboBox::SetItemData},
+	{_T("ImageComboBox_GetItemData"),		ImageComboBox::GetItemData},
+	{_T("ImageComboBox_GetTopIndex"),		ImageComboBox::GetTopIndex},
+	{_T("ImageComboBox_SetTopIndex"),		ImageComboBox::SetTopIndex},
+	{_T("ImageComboBox_GetDroppedWidth"),	ImageComboBox::GetDroppedWidth},
+	{_T("ImageComboBox_SetDroppedWidth"),	ImageComboBox::SetDroppedWidth},
+	{_T("ImageComboBox_ClearEdit"),			ImageComboBox::ClearEdit},
+	{_T("ImageComboBox_GetLBText"),			ImageComboBox::GetLBText},
+	{_T("ImageComboBox_GetEBText"),			ImageComboBox::GetEBText},
 
 	// month control methods 
-	{sMonth_SetCurSel,				Month_SetCurSel},
-	{sMonth_GetCurSel,				Month_GetCurSel},
-	{sMonth_SetRange,				Month_SetRange},
-	{sMonth_GetRangeStart,			Month_GetRangeStart},
-	{sMonth_GetRangeEnd,			Month_GetRangeEnd},
-	{sMonth_GetMonthRangeStart,		Month_GetMonthRangeStart},
-	{sMonth_GetMonthRangeEnd,		Month_GetMonthRangeEnd},
-	{sMonth_SetSelRange,			Month_SetSelRange},
-	{sMonth_GetSelRangeStart,		Month_GetSelRangeStart},
-	{sMonth_GetSelRangeEnd,			Month_GetSelRangeEnd},
-	{sMonth_GetToday,				Month_GetToday},
+	{_T("Month_SetCurSel"),				Month::SetCurSel},
+	{_T("Month_GetCurSel"),				Month::GetCurSel},
+	{_T("Month_SetRange"),				Month::SetRange},
+	{_T("Month_GetRangeStart"),			Month::GetRangeStart},
+	{_T("Month_GetRangeEnd"),			Month::GetRangeEnd},
+	{_T("Month_GetMonthRangeStart"),		Month::GetMonthRangeStart},
+	{_T("Month_GetMonthRangeEnd"),		Month::GetMonthRangeEnd},
+	{_T("Month_SetSelRange"),			Month::SetSelRange},
+	{_T("Month_GetSelRangeStart"),		Month::GetSelRangeStart},
+	{_T("Month_GetSelRangeEnd"),			Month::GetSelRangeEnd},
+	{_T("Month_GetToday"),				Month::GetToday},
 
 	// slide view control methods 
-	{sSlideView_SetFileName,		SlideView_SetFileName},
-	{sSlideView_Clear,				SlideView_Clear},
-	{sSlideView_SetHighLight,		SlideView_SetHighLight},
-	{sSlideView_RemoveHighLight,	SlideView_RemoveHighLight},
-	{sSlideView_VectorImage,		SlideView_VectorImage},
-	{sSlideView_FillImage,			SlideView_FillImage},
-	{sSlideView_SlideImage,			SlideView_SlideImage},											
-	{sSlideView_EndImage,			SlideView_EndImage},
+	{_T("SlideView_Load"),		SlideView::Load},
+	{_T("SlideView_Clear"),				SlideView::Clear},
+	{_T("SlideView_SetHighLight"),		SlideView::SetHighLight},
+	{_T("SlideView_RemoveHighLight"),	SlideView::RemoveHighLight},
+	{_T("SlideView_VectorImage"),		SlideView::VectorImage},
+	{_T("SlideView_FillImage"),			SlideView::FillImage},
+	{_T("SlideView_SlideImage"),			SlideView::SlideImage},											
+	{_T("SlideView_EndImage"),			SlideView::EndImage},
 
 	// picture box control methods 
-	{sPictureBox_StoreImage,		PictureBox_StoreImage},
-	{sPictureBox_Clear,				PictureBox_Clear},
-	{sPictureBox_Refresh,			PictureBox_Refresh},
-	{sPictureBox_DrawLine,			PictureBox_DrawLine},
-	{sPictureBox_DrawArc,			PictureBox_DrawArc},
-	{sPictureBox_DrawCircle,		PictureBox_DrawCircle},
-	{sPictureBox_DrawFillRect,		PictureBox_DrawFillRect},
-	{sPictureBox_DrawEdge,			PictureBox_DrawEdge},
-	{sPictureBox_DrawHatchRect,		PictureBox_DrawHatchRect},
-	{sPictureBox_DrawWrappedText,	PictureBox_DrawWrappedText},
-	{sPictureBox_DrawText,			PictureBox_DrawText},
-	{sPictureBox_GetTextExtent,		PictureBox_GetTextExtent},
-	{sPictureBox_PaintPicture,		PictureBox_PaintPicture},
-	{sPictureBox_DrawPoint,			PictureBox_DrawPoint},
-	{sPictureBox_LoadPictureFile,	PictureBox_LoadPictureFile},
-	{sPictureBox_DrawFocusRect,		PictureBox_DrawFocusRect},
-	{sPictureBox_DrawRect,			PictureBox_DrawRect},
+	{_T("PictureBox_StoreImage"),		PictureBox::StoreImage},
+	{_T("PictureBox_Clear"),				PictureBox::Clear},
+	{_T("PictureBox_Refresh"),			PictureBox::Refresh},
+	{_T("PictureBox_DrawLine"),			PictureBox::DrawLine},
+	{_T("PictureBox_DrawArc"),			PictureBox::DrawArc},
+	{_T("PictureBox_DrawCircle"),		PictureBox::DrawCircle},
+	{_T("PictureBox_DrawFillRect"),		PictureBox::DrawFillRect},
+	{_T("PictureBox_DrawEdge"),			PictureBox::DrawEdge},
+	{_T("PictureBox_DrawHatchRect"),		PictureBox::DrawHatchRect},
+	{_T("PictureBox_DrawWrappedText"),	PictureBox::DrawWrappedText},
+	{_T("PictureBox_DrawText"),			PictureBox::DrawText},
+	{_T("PictureBox_GetTextExtent"),		PictureBox::GetTextExtent},
+	{_T("PictureBox_PaintPicture"),		PictureBox::PaintPicture},
+	{_T("PictureBox_DrawPoint"),			PictureBox::DrawPoint},
+	{_T("PictureBox_LoadPictureFile"),	PictureBox::LoadPictureFile},
+	{_T("PictureBox_DrawFocusRect"),		PictureBox::DrawFocusRect},
+	{_T("PictureBox_DrawRect"),			PictureBox::DrawRect},
 
 	// html control methods
-	{sHtml_Navigate,		Html_Navigate},
-	{sHtml_Stop,			Html_Stop},
-	{sHtml_Refresh,			Html_Refresh},
-	{sHtml_GoBack,			Html_GoBack},
-	{sHtml_GoForward,		Html_GoForward},
-	{sHtml_GoHome,			Html_GoHome},
-	{sHtml_GoSearch,		Html_GoSearch},
-	{sHtml_GetLocationName,	Html_GetLocationName},
-	{sHtml_GetLocationURL,	Html_GetLocationURL},
-	{sHtml_GetOffline,		Html_GetOffline},
-	{sHtml_SetOffline,		Html_SetOffline},
-	{sHtml_GetBusy,			Html_GetBusy},
-	{sHtml_GetFullName,		Html_GetFullName},
-	{sHtml_UpdateHtmlCode,	Html_UpdateHtmlCode},
-	{sHtml_ReplaceText,		Html_ReplaceText},
-	{sHtml_GetHtmlDocument,	Html_GetHtmlDocument},
+	{_T("Html_Navigate"),		Html::Navigate},
+	{_T("Html_Stop"),			Html::Stop},
+	{_T("Html_Refresh"),			Html::Refresh},
+	{_T("Html_GoBack"),			Html::GoBack},
+	{_T("Html_GoForward"),		Html::GoForward},
+	{_T("Html_GoHome"),			Html::GoHome},
+	{_T("Html_GoSearch"),		Html::GoSearch},
+	{_T("Html_GetLocationName"),	Html::GetLocationName},
+	{_T("Html_GetLocationURL"),	Html::GetLocationURL},
+	{_T("Html_GetOffline"),		Html::GetOffline},
+	{_T("Html_SetOffline"),		Html::SetOffline},
+	{_T("Html_GetBusy"),			Html::GetBusy},
+	{_T("Html_GetFullName"),		Html::GetFullName},
+	{_T("Html_UpdateHtmlCode"),	Html::UpdateHtmlCode},
+	{_T("Html_ReplaceText"),		Html::ReplaceText},
+	{_T("Html_GetHtmlDocument"),	Html::GetHtmlDocument},
 
 	// tree control methods 
-	{sTree_IsItemExpanded,			Tree_IsItemExpanded},
-	{sTree_AddParent,				Tree_AddParent},
-	{sTree_AddChild,				Tree_AddChild},
-	{sTree_InsertAfter,				Tree_InsertAfter},
-	{sTree_GetParent,				Tree_GetParent},
-	{sTree_Clear,					Tree_Clear},
-	{sTree_CountItems,				Tree_CountItems},
-	{sTree_SelectItem,				Tree_SelectItem},
-	{sTree_ItemHasChildren,			Tree_ItemHasChildren},
-	{sTree_GetNextSiblingItem,		Tree_GetNextSiblingItem},
-	{sTree_GetPrevSiblingItem,		Tree_GetPrevSiblingItem},
-	{sTree_GetFirstVisibleItem,		Tree_GetFirstVisibleItem},
-	{sTree_GetNextVisibleItem,		Tree_GetNextVisibleItem},
-	{sTree_GetPrevVisibleItem,		Tree_GetPrevVisibleItem},
-	{sTree_GetSelectedItem,			Tree_GetSelectedItem},
-	{sTree_GetRootItem,				Tree_GetRootItem},
-	{sTree_GetItem,					Tree_GetItem},
-	{sTree_SetItemImages,			Tree_SetItemImages},
-	{sTree_GetItemImages,			Tree_GetItemImages},
-	{sTree_GetItemText,				Tree_GetItemText},
-	{sTree_SetItemText,				Tree_SetItemText},
-	{sTree_GetItemData,				Tree_GetItemData},
-	{sTree_SetItemData,				Tree_SetItemData},
-	{sTree_GetVisibleCount,			Tree_GetVisibleCount},
-	{sTree_DeleteItem,				Tree_DeleteItem},
-	{sTree_ExpandItem,				Tree_ExpandItem},
-	{sTree_SelectSetFirstVisible,	Tree_SelectSetFirstVisible},
-	{sTree_EditLabel,				Tree_EditLabel},
-	{sTree_SortChildren,			Tree_SortChildren},
-	{sTree_EnsureVisible,			Tree_EnsureVisible},
-	{sTree_GetFirstChildItem,		Tree_GetFirstChildItem},
-	{sTree_SetExpanedImage,			Tree_SetExpanedImage},
-	{sTree_GetExpanedImage,			Tree_GetExpanedImage},
-	{sTree_CancelEditLabel,			Tree_CancelEditLabel},
+	{_T("Tree_IsItemExpanded"),			Tree::IsItemExpanded},
+	{_T("Tree_AddParent"),				Tree::AddParent},
+	{_T("Tree_AddChild"),				Tree::AddChild},
+	{_T("Tree_InsertAfter"),				Tree::InsertAfter},
+	{_T("Tree_GetParent"),				Tree::GetParent},
+	{_T("Tree_Clear"),					Tree::Clear},
+	{_T("Tree_CountItems"),				Tree::CountItems},
+	{_T("Tree_SelectItem"),				Tree::SelectItem},
+	{_T("Tree_ItemHasChildren"),			Tree::ItemHasChildren},
+	{_T("Tree_GetNextSiblingItem"),		Tree::GetNextSiblingItem},
+	{_T("Tree_GetPrevSiblingItem"),		Tree::GetPrevSiblingItem},
+	{_T("Tree_GetFirstVisibleItem"),		Tree::GetFirstVisibleItem},
+	{_T("Tree_GetNextVisibleItem"),		Tree::GetNextVisibleItem},
+	{_T("Tree_GetPrevVisibleItem"),		Tree::GetPrevVisibleItem},
+	{_T("Tree_GetSelectedItem"),			Tree::GetSelectedItem},
+	{_T("Tree_GetRootItem"),				Tree::GetRootItem},
+	{_T("Tree_GetItem"),					Tree::GetItem},
+	{_T("Tree_SetItemImages"),			Tree::SetItemImages},
+	{_T("Tree_GetItemImages"),			Tree::GetItemImages},
+	{_T("Tree_GetItemText"),				Tree::GetItemText},
+	{_T("Tree_SetItemText"),				Tree::SetItemText},
+	{_T("Tree_GetItemData"),				Tree::GetItemData},
+	{_T("Tree_SetItemData"),				Tree::SetItemData},
+	{_T("Tree_GetVisibleCount"),			Tree::GetVisibleCount},
+	{_T("Tree_DeleteItem"),				Tree::DeleteItem},
+	{_T("Tree_ExpandItem"),				Tree::ExpandItem},
+	{_T("Tree_SelectSetFirstVisible"),	Tree::SelectSetFirstVisible},
+	{_T("Tree_EditLabel"),				Tree::EditLabel},
+	{_T("Tree_SortChildren"),			Tree::SortChildren},
+	{_T("Tree_EnsureVisible"),			Tree::EnsureVisible},
+	{_T("Tree_GetFirstChildItem"),		Tree::GetFirstChildItem},
+	{_T("Tree_SetExpandedImage"),			Tree::SetExpandedImage},
+	{_T("Tree_GetExpandedImage"),			Tree::GetExpandedImage},
+	{_T("Tree_CancelEditLabel"),			Tree::CancelEditLabel},
 
 	// tab control methods 
-	{sTabControl_SetCurSel,			TabControl_SetCurSel},
-	{sTabControl_GetCurSel,			TabControl_GetCurSel},
-	{sTabControl_GetRowCount,		TabControl_GetRowCount},
-	{sTabControl_SetTabText,		TabControl_SetTabText},
-	{sTabControl_HideTab,			TabControl_HideTab},
-	{sTabControl_ShowTab,			TabControl_ShowTab},
+	{_T("Tab_SetCurSel"),			Tab::SetCurSel},
+	{_T("Tab_GetCurSel"),			Tab::GetCurSel},
+	{_T("Tab_GetRowCount"),		Tab::GetRowCount},
+	{_T("Tab_SetTabText"),		Tab::SetTabText},
+	{_T("Tab_HideTab"),			Tab::HideTab},
+	{_T("Tab_ShowTab"),			Tab::ShowTab},
+	{_T("Tab_GetControlArea"),	Tab::GetControlArea},
 
 	// text box control methods 
-	{sTextBox_GetFilter,			TextBox_GetFilter},
-	{sTextBox_SetFilter,			TextBox_SetFilter},
-	{sTextBox_GetLineCount,			TextBox_GetLineCount},
-	{sTextBox_GetModify,			TextBox_GetModify},
-	{sTextBox_GetSel,				TextBox_GetSel},
-	{sTextBox_GetLine,				TextBox_GetLine},
-	{sTextBox_GetFirstVisibleLine,	TextBox_GetFirstVisibleLine},
-	{sTextBox_GetLineLength,		TextBox_GetLineLength},
-	{sTextBox_LineScroll,			TextBox_LineScroll},
-	{sTextBox_ReplaceSel,			TextBox_ReplaceSel},
-	{sTextBox_SetSel,				TextBox_SetSel},
-	{sTextBox_SetTabStops,			TextBox_SetTabStops},
-	{sTextBox_Undo,					TextBox_Undo},
+	{_T("TextBox_GetFilter"),			TextBox::GetFilter},
+	{_T("TextBox_SetFilter"),			TextBox::SetFilter},
+	{_T("TextBox_GetLineCount"),			TextBox::GetLineCount},
+	{_T("TextBox_GetModify"),			TextBox::GetModify},
+	{_T("TextBox_GetSel"),				TextBox::GetSel},
+	{_T("TextBox_GetLine"),				TextBox::GetLine},
+	{_T("TextBox_GetFirstVisibleLine"),	TextBox::GetFirstVisibleLine},
+	{_T("TextBox_GetLineLength"),		TextBox::GetLineLength},
+	{_T("TextBox_LineScroll"),			TextBox::LineScroll},
+	{_T("TextBox_ReplaceSel"),			TextBox::ReplaceSel},
+	{_T("TextBox_SetSel"),				TextBox::SetSel},
+	{_T("TextBox_SetTabStops"),			TextBox::SetTabStops},
+	{_T("TextBox_Undo"),					TextBox::Undo},
 };
-
-
-// Helper function to process lisp arguments (returns false to signal an argument exception)
-bool RetrieveProjectFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ TArxProjectPtr& pProject )
-{
-	if (!pArgs)
-		return false; //arguments expected
-
-	pProject = NULL;
-	switch (pArgs->restype)	
-	{
-	case RTSHORT:
-		pProject = TArxProjectLockedPtr( (CArxProject*)pArgs->resval.rint );
-		break;
-	case RTLONG:
-		pProject = TArxProjectLockedPtr( (CArxProject*)pArgs->resval.rlong );
-		break;
-	case RTENAME:
-		pProject = TArxProjectLockedPtr( (CArxProject*)pArgs->resval.rlname[0] );
-		break;
-	case RTSTR:
-		pProject = theArxWorkspace.FindProject( pArgs->resval.rstring );
-		break;
-	default:
-		return false; //wrong argument type
-	}
-	pArgs = pArgs->rbnext; //move to the next argument
-	return true;
-}
-
-
-bool RetrieveFormFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ TDclFormPtr& pForm )
-{
-	pForm = NULL;
-	if (!pArgs)
-		return false; //arguments expected
-
-	switch (pArgs->restype)	
-	{
-	// Uncomment this code to accept nil arguments without generating an exception
-	//case RTNIL:
-	//	pForm = NULL;
-	//	break;
-	case RTSHORT:
-		pForm = TDclFormLockedPtr( (CDclFormObject*)pArgs->resval.rint );
-		break;
-	case RTLONG:
-		pForm = TDclFormLockedPtr( (CDclFormObject*)pArgs->resval.rlong );
-		break;
-	case RTENAME:
-		pForm = TDclFormLockedPtr( (CDclFormObject*)pArgs->resval.rlname[0] );
-		break;
-	case RTSTR:
-		{
-			LPCTSTR pszProjectName = pArgs->resval.rstring;
-			if (!pszProjectName)
-				return false; //invalid argument
-
-			pArgs = pArgs->rbnext; //move to the next argument
-			if (!pArgs)
-				return false; //not enough arguments
-
-			if (pArgs->restype != RTSTR)
-				return false; //wrong argument type
-			pForm = theArxWorkspace.FindForm(pszProjectName, pArgs->resval.rstring);
-			break;
-		}
-	default:
-		return false; //wrong argument type
-	}
-	pArgs = pArgs->rbnext; //move to the next argument
-	return true;
-}
-
-
-bool RetrieveControlFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ TDclControlPtr& pControl )
-{
-	if (!pArgs)
-		return false; //arguments expected
-
-	pControl = NULL;
-	switch (pArgs->restype)	
-	{
-	// Uncomment this code to accept nil arguments without generating an exception
-	//case RTNIL:
-	//	pForm = NULL;
-	//	break;
-	case RTSHORT:
-		pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rint );
-		break;
-	case RTLONG:
-		pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rlong );
-		break;
-	case RTENAME:
-		pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rlname[0] );
-		break;
-	case RTSTR:
-		{
-			LPCTSTR pszProjectName = pArgs->resval.rstring;
-			if (!pszProjectName)
-				return false; //invalid argument
-
-			pArgs = pArgs->rbnext; //move to the next argument
-			if (!pArgs)
-				return false; //not enough arguments
-
-			if (pArgs->restype != RTSTR)
-				return false; //wrong argument type
-			LPCTSTR pszFormName = pArgs->resval.rstring;
-			if (!pszFormName)
-				return false; //invalid argument
-
-			pArgs = pArgs->rbnext; //move to the next argument
-			if (!pArgs)
-				return false; //not enough arguments
-
-			if (pArgs->restype != RTSTR)
-				return false; //wrong argument type
-			pControl = theArxWorkspace.FindControl(pszProjectName, pszFormName, pArgs->resval.rstring);
-			break;
-		}
-	default:
-		return false; //wrong argument type
-	}
-	pArgs = pArgs->rbnext; //move to the next argument
-	return true;
-}
-
-
-bool RetrieveDialogFromArgs( /*in-out*/ resbuf*& pArgs, /*out*/ CDialogObject*& pDialog )
-{
-	TDclFormPtr pForm;
-	if (!RetrieveFormFromArgs (pArgs, pForm))
-		return false;
-	pDialog = pForm? pForm->GetFormInstance() : NULL;
-	return true;
-}
 
 
 BOOL GetDiscSpace(LPCTSTR lpszPath, DWORDLONG *pnFree)
@@ -689,10 +567,60 @@ protected:
 
 public:
 	size_t GetPropertyIdCount() const { return mPropIds.size(); }
+	CString GetCurrentFunctionName() const
+		{
+			int nFunctionCode = acedGetFunCode();
+			if( nFunctionCode >= ADSFUNCBASE && nFunctionCode < (ADSFUNCBASE + _elements(grAdsFunctionTable)) )
+				return (dclPrefix() + grAdsFunctionTable[nFunctionCode - ADSFUNCBASE].pszFunctionName);
+			if( nFunctionCode >= ADSPROPFUNCBASE && nFunctionCode < ADSPROPFUNCBASE + Prop::_MaxId )
+			{
+				LPCTSTR pszPropName = GetPropertyName( (Prop::Id)(nFunctionCode - ADSPROPFUNCBASE) );
+				if( pszPropName && *pszPropName != _T('(') )
+					return (controlGetPrefix() + pszPropName);
+			}
+			else if( nFunctionCode >= (ADSPROPFUNCBASE + Prop::_MaxId) &&
+							 nFunctionCode < (ADSPROPFUNCBASE + Prop::_MaxId + Prop::_MaxId) )
+			{
+				LPCTSTR pszPropName = GetPropertyName( (Prop::Id)(nFunctionCode - (ADSPROPFUNCBASE + Prop::_MaxId)) );
+				if( pszPropName && *pszPropName != _T('(') )
+					return (controlSetPrefix() + pszPropName);
+			}
+			else
+			{
+				_ADSSYMBOL_ENTRY** ppAdsSymbolMapEntryFirst = &__pAdsSymbolMapEntryFirst + 1;
+				_ADSSYMBOL_ENTRY** ppAdsSymbolMapEntryLast = &__pAdsSymbolMapEntryLast;
+        int paramIter = 0;
+				for( _ADSSYMBOL_ENTRY** ppEntry = ppAdsSymbolMapEntryFirst;
+						 ppEntry < ppAdsSymbolMapEntryLast;
+						 ppEntry++ )
+				{
+					if( !*ppEntry )
+						continue;
+					if( paramIter++ == nFunctionCode )
+						return (*ppEntry)->pszName;
+				}
+			}
+			return _T("");
+		}
 
 protected:
 	static int ads_dcl_GetCtrlProperty(void);
 	static int ads_dcl_SetCtrlProperty(void);
+	static const CString& dclPrefix()
+		{
+			static const CString sPrefix = _T("dcl_");
+			return sPrefix;
+		}
+	static const CString& controlGetPrefix()
+		{
+			static const CString sPrefix = dclPrefix() + _T("Control_Get");
+			return sPrefix;
+		}
+	static const CString& controlSetPrefix()
+		{
+			static const CString sPrefix = dclPrefix() + _T("Control_Set");
+			return sPrefix;
+		}
 
 public:
 	CARXApp () : AcRxArxApp () {}
@@ -749,24 +677,25 @@ public:
 		assert( retCode == AcRx::kRetOK );
 		if( retCode == AcRx::kRetOK )
 		{
+			acedRetNil();
 			int nFunctionCode = acedGetFunCode();
 			if( nFunctionCode >= 0 && nFunctionCode < _elements(grAdsFunctionTable) )
 			{
-				int nRet = grAdsFunctionTable[nFunctionCode].pfHandler();
-				assert( nRet == AcRx::kRetOK );
+				if( RTNORM != grAdsFunctionTable[nFunctionCode].pfHandler() )
+					return AcRx::kRetError;
 				return AcRx::kRetOK;
 			}
 			if( nFunctionCode >= ADSPROPFUNCBASE && nFunctionCode < ADSPROPFUNCBASE + Prop::_MaxId )
 			{
-				bool bSuccess = GetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - ADSPROPFUNCBASE) );
-				assert( bSuccess == true );
+				if( !GetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - ADSPROPFUNCBASE) ) )
+					return AcRx::kRetError;
 				return AcRx::kRetOK;
 			}
 			int nSetPropertyBase = ADSPROPFUNCBASE + Prop::_MaxId;
 			if( nFunctionCode >= nSetPropertyBase && nFunctionCode < nSetPropertyBase + Prop::_MaxId )
 			{
-				bool bSuccess = SetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - nSetPropertyBase) );
-				assert( bSuccess == true );
+				if( !SetCtrlProperty( static_cast<Prop::Id>(nFunctionCode - nSetPropertyBase) ) )
+					return AcRx::kRetError;
 				return AcRx::kRetOK;
 			}
 		}
@@ -779,25 +708,22 @@ public:
 		if( retCode == AcRx::kRetOK )
 		{
 			//register control specific ADS functions
-			static const CString sPrefix = _T("dcl_");
 			for( int idxFunction = 0; idxFunction < _elements(grAdsFunctionTable); ++idxFunction )
 			{
 				const AdsFunctionTableEntry& Entry = grAdsFunctionTable[idxFunction];
-				acedDefun( sPrefix + Entry.pszFunctionName, ADSFUNCBASE + idxFunction );
+				acedDefun( dclPrefix() + Entry.pszFunctionName, ADSFUNCBASE + idxFunction );
 				acedRegFunc( Entry.pfHandler, ADSFUNCBASE + idxFunction );
 			}
 
 			//register general property get and set functions
-			static const CString sGetPrefix = sPrefix + _T("Control_Get");
-			static const CString sSetPrefix = sPrefix + _T("Control_Set");
 			for( T_PropertyIdSet::const_iterator iter = mPropIds.begin(); iter != mPropIds.end(); ++iter )
 			{
 				Prop::Id id = *iter;
 				LPCTSTR pszPropName = GetPropertyName( id );
 				if( pszPropName && *pszPropName != _T('(') )
 				{
-					acedDefun( sGetPrefix + pszPropName, ADSPROPFUNCBASE + id );
-					acedDefun( sSetPrefix + pszPropName, ADSPROPFUNCBASE + id + Prop::_MaxId );
+					acedDefun( controlGetPrefix() + pszPropName, ADSPROPFUNCBASE + id );
+					acedDefun( controlSetPrefix() + pszPropName, ADSPROPFUNCBASE + id + Prop::_MaxId );
 					acedRegFunc( ads_dcl_GetCtrlProperty, ADSPROPFUNCBASE + id );
 					acedRegFunc( ads_dcl_SetCtrlProperty, ADSPROPFUNCBASE + id + Prop::_MaxId );
 				}
@@ -832,8 +758,8 @@ public:
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
-		if( pArgs )
-			return RSERR; //no arguments allowed
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		DWORD dwMajor;
 		DWORD dwMinor;
@@ -854,8 +780,8 @@ public:
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
-		if( pArgs )
-			return RSERR; //no arguments allowed
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		DWORD dwMajor;
 		DWORD dwMinor;
@@ -886,15 +812,13 @@ public:
 	static int ads_dcl_sendstring(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszStringToSend = pArgs->resval.rstring;
+		CString sToSend;
+		if( !GetStringArgument( pArgs, sToSend ) )
+			return RSERR; //invalid input
 
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		AcApDocument* pDoc = acDocManager->curDocument();
 		if (pDoc)
@@ -903,7 +827,7 @@ public:
 			CWnd* wndCommandLine = acedGetAcadDockCmdLine();
 			if( wndCommandLine )
 				wndCommandLine->SetFocus();		
-			acDocManager->sendStringToExecute(pDoc, pszStringToSend, false, true, false);
+			acDocManager->sendStringToExecute(pDoc, sToSend, false, true, false);
 		}
 
 		return (RSRSLT) ;
@@ -913,18 +837,16 @@ public:
 	static int ads_dcl_invokefunc(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszTargetFunction = pArgs->resval.rstring;
+		CString sTargetFunction;
+		if( !GetStringArgument( pArgs, sTargetFunction ) )
+			return RSERR; //invalid input
 
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		resbuf rbCallee = { NULL, RTSTR };
-		rbCallee.resval.rstring = (ACHAR*)pszTargetFunction;
+		rbCallee.resval.rstring = sTargetFunction.LockBuffer();
 		resbuf* prbResult = NULL;
 		if( acedInvoke (&rbCallee, &prbResult) == RTNORM )
 			acedRetList (prbResult);
@@ -996,7 +918,7 @@ public:
 		// create and open the action events lsp file to be loaded.
 		CStdioFile tempFile(sTempFile, CFile::modeCreate|CFile::modeNoTruncate|CFile::modeWrite);
 		tempFile.WriteString(_T("; This temp file is used for managing the events of dialog boxes using\n"));
-		tempFile.WriteString(_T("; DCL equivilent functions in ObjectDCL.\n"));
+		tempFile.WriteString(_T("; DCL equivalent functions in ObjectDCL.\n"));
 		tempFile.Close();
 
 		acedRetT();
@@ -1290,7 +1212,6 @@ public:
 
 		CString sAction;
 		sAction.Format(gpszOnActionEventLispFunction, pszKey, pszAction);
-		pCtrl->m_bEventsAsAction = true;
 
 		switch(pCtrl->GetType())
 		{
@@ -1846,7 +1767,7 @@ public:
 				acedRetInt(-1);
 				return RSRSLT;
 			}
-			((CSlideHolder*)pCtrl->GetWindow())->DrawASlide(nX, nY, nWidth, nHeight, sPath);
+			((CSlideHolder*)pCtrl->GetWindow())->DrawASlide(nX, nY, nWidth, nHeight, sPath, NULL);
 		}
 		else
 		{ //displaying a slide library
@@ -1871,16 +1792,18 @@ public:
 	// ----- ads_dcl_getlinetype symbol (do not rename)
 	static int ads_dcl_getlinetype(void)
 	{
-		//----- Remove the following line if you do not expect any argument for this ADS function
 		struct resbuf *pArgs =acedGetArgs () ;
 
-		if (pArgs)
-			return RSERR; //too many arguments
+		bool bIncludeMetaTypes = true;
+		GetBoolArgument( pArgs, bIncludeMetaTypes, true );
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		AcDbObjectId id;
 		CString sLinetype;
-		if (SelectLinetypeUI(id, sLinetype))
-			acedRetStr(sLinetype);
+		if( SelectLinetypeUI( id, sLinetype, bIncludeMetaTypes ) )
+			acedRetStr( sLinetype );
 
 		return (RSRSLT) ;
 	}
@@ -1888,33 +1811,19 @@ public:
 	// ----- ads_dcl_getlineweight symbol (do not rename)
 	static int ads_dcl_getlineweight(void)
 	{
-		//----- Remove the following line if you do not expect any argument for this ADS function
 		struct resbuf *pArgs =acedGetArgs () ;
 
-		AcDb::LineWeight newLW = AcDb::kLnWtByLwDefault;
-		if (pArgs)
-		{
-			switch (pArgs->restype)	
-			{
-			case RTSHORT:
-				newLW = (AcDb::LineWeight)pArgs->resval.rint;
-				break;
-			case RTLONG:
-				newLW = (AcDb::LineWeight)pArgs->resval.rlong;
-				break;
-			case RTREAL:
-				newLW = (AcDb::LineWeight)(long)pArgs->resval.rreal;
-				break;
-			default:
-				return RSERR; //wrong argument type
-			}
+		long newLW = AcDb::kLnWtByLwDefault;
+		GetLongArgument( pArgs, newLW, true );
 
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
-		}
+		bool bIncludeMetaTypes = true;
+		GetBoolArgument( pArgs, bIncludeMetaTypes, true );
 
-		if (SelectLineWeightUI(newLW))
-			acedRetLong((LONG)newLW);
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( SelectLineWeightUI( (AcDb::LineWeight&)newLW, bIncludeMetaTypes ) )
+			acedRetLong( newLW );
 
 		return (RSRSLT) ;
 	}
@@ -1923,74 +1832,47 @@ public:
 	static int ads_dcl_form_show(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
 		TDclFormPtr pDclForm;
-		if (!RetrieveFormFromArgs (pArgs, pDclForm))
+		if( !GetFormArgument( pArgs, pDclForm ) )
 			return RSERR; //invalid input
-
-		if (!pDclForm)
-			return RSRSLT; //form not found
 
 		//optional arguments
 		int nX = -1;
 		int nY = -1;
-		LPCTSTR pszDefaultDirectory = NULL;
-		LPCTSTR pszDefaultFileName = NULL;
-		LPCTSTR pszDefaultExtension = NULL;
-		if (pArgs)
+		CString sDefaultDirectory;
+		CString sDefaultFileName;
+		CString sDefaultExtension;
+		if( GetStringArgument( pArgs, sDefaultDirectory, true ) )
 		{
-			if (pArgs->restype == RTSTR)
-			{
-				pszDefaultDirectory = pArgs->resval.rstring;
-
-				if (pArgs->rbnext)
-				{
-					pArgs = pArgs->rbnext; //move to the next argument
-					if (pArgs->restype != RTSTR)
-						return RSERR; //wrong argument type
-					pszDefaultFileName = pArgs->resval.rstring;
-
-					if (pArgs->rbnext)
-					{
-						pArgs = pArgs->rbnext; //move to the next argument
-						if (pArgs->restype != RTSTR)
-							return RSERR; //wrong argument type
-						pszDefaultExtension = pArgs->resval.rstring;
-					}
-				}
-			}
-			else if (pArgs->restype == RTSHORT)
-			{
-				nX = pArgs->resval.rint;
-				pArgs = pArgs->rbnext; //move to the next argument
-
-				if (!pArgs)
-					return RSERR; //not enough arguments
-
-				if (pArgs->restype != RTSHORT)
-					return RSERR; //wrong argument type
-				nY = pArgs->resval.rint;
-			}
-			else
-				return RSERR; //wrong argument type
-
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
+			if( !GetStringArgument( pArgs, sDefaultFileName ) )
+				return RSERR; //invalid input
+			if( !GetStringArgument( pArgs, sDefaultExtension ) )
+				return RSERR; //invalid input
 		}
+		else if( GetIntArgument( pArgs, nX, true ) )
+		{
+			if( !GetIntArgument( pArgs, nY ) )
+				return RSERR; //invalid input
+		}
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDclForm )
+			return RSRSLT; //form not found
 
 		// call method to display the requested form
 		FileDialogParams fdp( TRUE, NULL, NULL, 0, NULL );
 		bool bHasFileParams = (pDclForm->GetType() == VdclFileDialog);
 		if( bHasFileParams )
 		{
-			CString sFilename = pszDefaultDirectory;
+			CString sFilename = sDefaultDirectory;
 			if( !sFilename.IsEmpty() && !sFilename.Right(1).SpanExcluding( _T("\\/") ).IsEmpty() )
 				sFilename += _T('\\');
-			sFilename += pszDefaultFileName;
+			sFilename += sDefaultFileName;
 			fdp.sFilename = sFilename;
-			fdp.sDefaultExtension = pszDefaultExtension;
+			fdp.sDefaultExtension = sDefaultExtension;
 		}
 		DialogParams params( CPoint( nX, nY ), CRect(0,0,0,0), bHasFileParams? (LPARAM)&fdp : NULL );
 		int nResult = theArxWorkspace.ActivateDclForm(pDclForm, &params);
@@ -2040,47 +1922,34 @@ public:
 	static int ads_dcl_form_center(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
 			return RSERR; //arguments expected
-		if (!pDialog)
-			return RSRSLT; //dialog not found
 
 		//optional arguments
 		int nX = -1;
 		int nY = -1;
-		if (pArgs)
+		if( GetIntArgument( pArgs, nX, true ) )
 		{
-			if (pArgs->restype == RTSHORT)
-			{
-				nX = pArgs->resval.rint;
-				pArgs = pArgs->rbnext; //move to the next argument
-
-				if (!pArgs)
-					return RSERR; //not enough arguments
-
-				if (pArgs->restype != RTSHORT)
-					return RSERR; //wrong argument type
-				nY = pArgs->resval.rint;
-			}
-			else
-				return RSERR; //wrong argument type
-
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
+			if( !GetIntArgument( pArgs, nY ) )
+				return RSERR; //invalid input
 		}
 
-		if (nX <= 0 || nY <= 0)
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDlgObject )
+			return RSRSLT; //dialog not found
+
+		if( nX <= 0 || nY <= 0 )
 		{
-			if( pDialog->CenterDialog() )
+			if( pDlgObject->CenterDialog() )
 				acedRetT();
 		}
 		else
 		{
-			if( pDialog->CenterAndResizeDialog( nX, nY ) )
+			if( pDlgObject->CenterAndResizeDialog( nX, nY ) )
 				acedRetT();
 		}
 
@@ -2091,40 +1960,27 @@ public:
 	static int ads_dcl_form_resize(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
 			return RSERR; //arguments expected
-		if (!pDialog)
-			return RSRSLT; //dialog not found
 
 		//optional arguments
 		int nNewWidth = -1;
 		int nNewHeight = -1;
-		if (pArgs)
+		if( GetIntArgument( pArgs, nNewWidth, true ) )
 		{
-			if (pArgs->restype == RTSHORT)
-			{
-				nNewWidth = pArgs->resval.rint;
-				pArgs = pArgs->rbnext; //move to the next argument
-
-				if (!pArgs)
-					return RSERR; //not enough arguments
-
-				if (pArgs->restype != RTSHORT)
-					return RSERR; //wrong argument type
-				nNewHeight = pArgs->resval.rint;
-			}
-			else
-				return RSERR; //wrong argument type
-
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
+			if( !GetIntArgument( pArgs, nNewHeight ) )
+				return RSERR; //invalid input
 		}
 
-		if( pDialog->ResizeDialog( nNewWidth, nNewHeight ) )
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDlgObject )
+			return RSRSLT; //dialog not found
+
+		if( pDlgObject->ResizeDialog( nNewWidth, nNewHeight ) )
 			acedRetT();
 
 		return (RSRSLT) ;
@@ -2134,19 +1990,18 @@ public:
 	static int ads_dcl_form_setfocus(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
 			return RSERR; //arguments expected
-		if (!pDialog)
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDlgObject )
 			return RSRSLT; //dialog not found
 
-		if (pArgs)
-			return RSERR; //too many arguments
-
-		if (pDialog->SetFocus())
+		if( pDlgObject->Focus() )
 			acedRetT();
 
 		return (RSRSLT) ;
@@ -2156,28 +2011,22 @@ public:
 	static int ads_dcl_form_hide(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
 			return RSERR; //arguments expected
-		if (!pDialog)
-			return RSRSLT; //dialog not found
 
 		//optional arguments
 		bool bHide = true;
-		if (pArgs)
-		{
-			bHide = (pArgs->restype != RTNIL);
-			if( bHide && pArgs->restype == RTSHORT && pArgs->resval.rint == 0 )
-				bHide = false; //special case (for legacy behavior): a zero integer is interpreted as unhide
+		GetBoolArgument( pArgs, bHide, true );
 
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
-		}
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
-		if (pDialog->Show( !bHide ))
+		if( !pDlgObject )
+			return RSRSLT; //dialog not found
+
+		if( pDlgObject->Show( !bHide ) )
 			acedRetT();
 
 		return (RSRSLT) ;
@@ -2187,32 +2036,27 @@ public:
 	static int ads_dcl_form_close(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
 			return RSERR; //arguments expected
-		if (!pDialog)
+
+		//optional arguments
+		int nStatus = 0;
+		GetIntArgument( pArgs, nStatus, true );
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDlgObject )
 			return RSRSLT; //dialog not found
 
-		int nStatus = 0;
-		if (pArgs)
-		{
-			if (pArgs->restype != RTSHORT)
-				return RSERR; //wrong argument type
-			nStatus = pArgs->resval.rint;
-
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
-		}
-
-		CRect rcDlg;
-		pDialog->GetWindowRect( rcDlg );
-		ads_point ptUL = { rcDlg.left, rcDlg.top, 0 };
+		CPoint ptXlate( 0, 0 );
+		pDlgObject->GetControlWnd()->ClientToScreen( &ptXlate );
+		ads_point ptUL = { ptXlate.x, ptXlate.y, 0 };
 		acedRetPoint( ptUL ); //return the upper left corner as a 2D point
 
-		pDialog->CloseDialog( nStatus );
+		pDlgObject->CloseDialog( nStatus );
 
 		return (RSRSLT) ;
 	}
@@ -2221,20 +2065,19 @@ public:
 	static int ads_dcl_form_getrectangle(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
 			return RSERR; //arguments expected
-		if (!pDialog)
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDlgObject )
 			return RSRSLT; //dialog not found
 
-		if (pArgs)
-			return RSERR; //too many arguments
-
-		CRect rcDlg(0, 0, 0, 0);
-		if( pDialog->GetWindowRect( rcDlg ) )
+		CRect rcDlg = pDlgObject->GetEffectiveWindowRect();
+		if( !rcDlg.IsRectNull() )
 		{
 			resbuf rbHeight = {NULL, RTSHORT};
 			rbHeight.resval.rint = rcDlg.Height();
@@ -2254,50 +2097,46 @@ public:
 	static int ads_dcl_form_getcontrolarea(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
-			return RSERR; //arguments expected
-		if (!pDialog)
+		TDclFormPtr pDclForm;
+		if( !GetFormArgument( pArgs, pDclForm ) )
+			return RSERR; //invalid input
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDclForm )
 			return RSRSLT; //dialog not found
 
-		if (pArgs)
-			return RSERR; //too many arguments
+		TDclControlPtr pPropObj = pDclForm->GetControlProperties();
+		assert( pPropObj != NULL );
 
-		CRect rcDlg(0, 0, 0, 0);
-		if (pDialog->GetClientRect(rcDlg))
-		{
-			resbuf rbHeight = {NULL, RTSHORT};
-			rbHeight.resval.rint = rcDlg.Height();
-			resbuf rbWidth = {&rbHeight, RTSHORT};
-			rbWidth.resval.rint = rcDlg.Width();
-			acedRetList(&rbWidth);		
-		}
+		resbuf rbHeight = {NULL, RTSHORT};
+		rbHeight.resval.rint = pPropObj->GetLongProperty( Prop::Height );
+		resbuf rbWidth = {&rbHeight, RTSHORT};
+		rbWidth.resval.rint = pPropObj->GetLongProperty( Prop::Width );
+		acedRetList(&rbWidth);		
 
 		return (RSRSLT) ;
+	}
+
+	// ----- ads_dcl_form_setpos symbol (do not rename)
+	static int ads_dcl_form_setpos(void)
+	{
+		return Control::SetPos();
 	}
 
 	// ----- ads_dcl_form_closeall symbol (do not rename)
 	static int ads_dcl_form_closeall(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
 		//optional arguments
-		DWORD fMask = -1;
-		if (pArgs)
-		{
-			if (pArgs->restype != RTSHORT)
-				return RSERR; //wrong argument type
+		UINT fMask = -1;
+		GetUIntArgument( pArgs, fMask, true );
 
-			fMask = pArgs->resval.rint;
-
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
-		}
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		theArxWorkspace.CloseAllDialogs( fMask );
 
@@ -2308,22 +2147,19 @@ public:
 	static int ads_dcl_form_isfloating(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
 			return RSERR; //arguments expected
-		if (!pDialog)
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDlgObject )
 			return RSRSLT; //dialog not found
 
-		if (pArgs)
-			return RSERR; //too many arguments
-
-		if (pDialog->IsFloating())
+		if( pDlgObject->IsFloating() )
 			acedRetT();
-		else
-			acedRetNil();
 
 		return (RSRSLT) ;
 	}
@@ -2332,19 +2168,21 @@ public:
 	static int ads_dcl_form_isactive(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
+		if( GetNilArgument( pArgs, true ) )
+			return RSRSLT; //accept a NIL argument and return quietly
+
+		TDclFormPtr pDclForm;
+		if( !GetFormArgument( pArgs, pDclForm ) )
 			return RSERR; //arguments expected
-		if (!pDialog)
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDclForm )
 			return RSRSLT; //dialog not found
 
-		if (pArgs)
-			return RSERR; //too many arguments
-
-		if (pDialog->GetHWnd()/* && CWnd::FromHandle( pDialog->GetHWnd() )->IsWindowVisible()*/)
+		if( pDclForm->GetFormInstance() )
 			acedRetT();
 
 		return (RSRSLT) ;
@@ -2355,16 +2193,17 @@ public:
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
 			return RSERR; //arguments expected
-		if (!pDialog)
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDlgObject )
 			return RSRSLT; //dialog not found
 
-		if (pArgs)
-			return RSERR; //too many arguments
-
-		if (pDialog->IsDirty())
+		if( pDlgObject->IsDirty() )
 			acedRetT();
 
 		return (RSRSLT) ;
@@ -2375,16 +2214,17 @@ public:
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
 			return RSERR; //arguments expected
-		if (!pDialog)
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDlgObject )
 			return RSRSLT; //dialog not found
 
-		if (pArgs)
-			return RSERR; //too many arguments
-
-		if (pDialog->SetDirty())
+		if( pDlgObject->SetDirty() )
 			acedRetT();
 
 		return (RSRSLT) ;
@@ -2394,8 +2234,9 @@ public:
 	static int ads_dcl_getscreensize(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs)
-			return RSERR; //no arguments expected
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		resbuf rbScreenHeight = {NULL, RTSHORT};
 		rbScreenHeight.resval.rint = ::GetSystemMetrics(SM_CYSCREEN);
@@ -2409,21 +2250,8 @@ public:
 	// ----- ads_dcl_form_gettitlebartext symbol (do not rename)
 	static int ads_dcl_form_gettitlebartext(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
-			return RSERR; //arguments expected
-		if (!pDialog)
-			return RSRSLT; //dialog not found
-
-		if (pArgs)
-			return RSERR; //too many arguments
-
-		TDclControlPtr pPropObj = pDialog->GetSourceForm()->GetControlProperties();
-		assert(pPropObj != NULL);
-		if(pPropObj)
-			acedRetStr(pPropObj->GetStringProperty(Prop::TitleBarText));
+		if( !GetCtrlProperty( Prop::TitleBarText ) )
+			return RSERR;
 
 		return (RSRSLT) ;
 	}
@@ -2431,29 +2259,8 @@ public:
 	// ----- ads_dcl_form_settitlebartext symbol (do not rename)
 	static int ads_dcl_form_settitlebartext(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
-			return RSERR; //arguments expected
-		if (!pDialog)
-			return RSRSLT; //dialog not found
-
-		//optional arguments
-		LPCTSTR pszTitle = NULL;
-		if (pArgs)
-		{
-			if (pArgs->restype != RTSTR)
-				return RSERR; //wrong argument type
-			pszTitle = pArgs->resval.rstring;
-
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
-		}
-
-		TDclControlPtr pPropObj = pDialog->GetSourceForm()->GetControlProperties();
-		pPropObj->SetStringProperty(Prop::TitleBarText, pszTitle);
-		::SetWindowText( pDialog->GetHWnd(), pszTitle );
+		if( !SetCtrlProperty( Prop::TitleBarText ) )
+			return RSERR;
 
 		return (RSRSLT) ;
 	}
@@ -2462,89 +2269,61 @@ public:
 	static int ads_dcl_messagebox(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		LPCTSTR pszMessage = NULL;
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		pszMessage = pArgs->resval.rstring;
-		pArgs = pArgs->rbnext; //move to the next argument
+		CString sMessage;
+		if( !GetStringArgument( pArgs, sMessage ) )
+			return RSERR; //arguments expected
 
+		CString sTitle = theWorkspace.GetAppKey();
+		GetStringArgument( pArgs, sTitle, true );
+
+		DWORD dwMsgBoxType = 0;
 		//optional arguments
-		LPCTSTR pszTitle = NULL;
 		int fButtonStyle = 0;
 		int fIconStyle = 0;
 		bool bShowHelpButton = false;
-		if (pArgs)
+		if( GetIntArgument( pArgs, fButtonStyle, true ) )
 		{
-			if (pArgs->restype != RTSTR)
-				return RSERR; //wrong argument type
-			pszTitle = pArgs->resval.rstring;
-			pArgs = pArgs->rbnext; //move to the next argument
-
-			if (pArgs)
+			//convert the arguments into windows messagebox type flags
+			switch (fButtonStyle)
+			{	
+			case 1: dwMsgBoxType = MB_ABORTRETRYIGNORE|MB_DEFBUTTON1; break;
+			case -1: case 0: case 2: dwMsgBoxType = MB_OK|MB_DEFBUTTON1; break;
+			case 3: dwMsgBoxType = MB_OKCANCEL|MB_DEFBUTTON1; break;
+			case 4: dwMsgBoxType = MB_RETRYCANCEL|MB_DEFBUTTON1; break;
+			case 5: dwMsgBoxType = MB_YESNO|MB_DEFBUTTON1; break;
+			case 6: dwMsgBoxType = MB_YESNOCANCEL|MB_DEFBUTTON1; break;
+			case 11: dwMsgBoxType = MB_ABORTRETRYIGNORE|MB_DEFBUTTON2; break;
+			case 13: dwMsgBoxType = MB_OKCANCEL|MB_DEFBUTTON2; break;
+			case 14: dwMsgBoxType = MB_RETRYCANCEL|MB_DEFBUTTON2; break;
+			case 15: dwMsgBoxType = MB_YESNO|MB_DEFBUTTON2; break;
+			case 16: dwMsgBoxType = MB_YESNOCANCEL|MB_DEFBUTTON2; break;
+			case 21: dwMsgBoxType = MB_ABORTRETRYIGNORE|MB_DEFBUTTON3; break;
+			case 26: dwMsgBoxType = MB_YESNOCANCEL|MB_DEFBUTTON3; break;
+			default: HandleArgValueError( pArgs ); return RSERR; //invalid argument value
+			}
+			if( GetIntArgument( pArgs, fIconStyle, true ) )
 			{
-				if (pArgs->restype != RTSHORT)
-					return RSERR; //wrong argument type
-				fButtonStyle = pArgs->resval.rint;
-				pArgs = pArgs->rbnext; //move to the next argument
-
-				if (pArgs)
+				switch (fIconStyle)
 				{
-					if (pArgs->restype != RTSHORT)
-						return RSERR; //wrong argument type
-					fIconStyle = pArgs->resval.rint;
-					pArgs = pArgs->rbnext; //move to the next argument
-
-					if (pArgs)
-					{
-						if (pArgs->restype == RTSHORT)
-							bShowHelpButton = (pArgs->resval.rint != 0);
-						else
-							bShowHelpButton = (pArgs->restype != RTNIL);
-
-						if (pArgs->rbnext)
-							return RSERR; //too many arguments
-					}
+				case 0: break;
+				case 1: dwMsgBoxType |= MB_ICONEXCLAMATION; break;
+				case 2: dwMsgBoxType |= MB_ICONINFORMATION; break;
+				case 3: dwMsgBoxType |= MB_ICONQUESTION; break;
+				case 4: dwMsgBoxType |= MB_ICONSTOP; break;
+				default: HandleArgValueError( pArgs ); return RSERR; //invalid argument value
 				}
+				GetBoolArgument( pArgs, bShowHelpButton, true );
 			}
 		}
 
-		//convert the arguments into windows messagebox type flags
-		DWORD dwMsgBoxType = 0;
-		switch (fButtonStyle)
-		{	
-		case 1: dwMsgBoxType = MB_ABORTRETRYIGNORE|MB_DEFBUTTON1; break;
-		case -1: case 0: case 2: dwMsgBoxType = MB_OK|MB_DEFBUTTON1; break;
-		case 3: dwMsgBoxType = MB_OKCANCEL|MB_DEFBUTTON1; break;
-		case 4: dwMsgBoxType = MB_RETRYCANCEL|MB_DEFBUTTON1; break;
-		case 5: dwMsgBoxType = MB_YESNO|MB_DEFBUTTON1; break;
-		case 6: dwMsgBoxType = MB_YESNOCANCEL|MB_DEFBUTTON1; break;
-		case 11: dwMsgBoxType = MB_ABORTRETRYIGNORE|MB_DEFBUTTON2; break;
-		case 13: dwMsgBoxType = MB_OKCANCEL|MB_DEFBUTTON2; break;
-		case 14: dwMsgBoxType = MB_RETRYCANCEL|MB_DEFBUTTON2; break;
-		case 15: dwMsgBoxType = MB_YESNO|MB_DEFBUTTON2; break;
-		case 16: dwMsgBoxType = MB_YESNOCANCEL|MB_DEFBUTTON2; break;
-		case 21: dwMsgBoxType = MB_ABORTRETRYIGNORE|MB_DEFBUTTON3; break;
-		case 26: dwMsgBoxType = MB_YESNOCANCEL|MB_DEFBUTTON3; break;
-		default: return RSERR; //invalid argument value
-		}
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
-		switch (fIconStyle)
-		{
-		case 0: break;
-		case 1: dwMsgBoxType |= MB_ICONEXCLAMATION; break;
-		case 2: dwMsgBoxType |= MB_ICONINFORMATION; break;
-		case 3: dwMsgBoxType |= MB_ICONQUESTION; break;
-		case 4: dwMsgBoxType |= MB_ICONSTOP; break;
-		default: return RSERR; //invalid argument value
-		}
-
-		if (bShowHelpButton)
+		if( bShowHelpButton )
 			dwMsgBoxType |= MB_HELP;
 
-		acedRetInt(MessageBox(theArxWorkspace.GetTopmostModalForm(), pszMessage, pszTitle, dwMsgBoxType));
+		acedRetInt( MessageBox( theArxWorkspace.GetTopmostModalForm(), sMessage, sTitle, dwMsgBoxType ) );
 		
 		return (RSRSLT) ;
 	}
@@ -2554,47 +2333,41 @@ public:
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
-			return RSERR; //arguments expected
-		if (!pDialog)
-			return RSRSLT; //dialog not found
+		TDclControlPtr pControl;
+		if( !GetControlArgument( pArgs, pControl ) )
+			return RSERR; //invalid input
 
-		if (!pArgs)
-			return RSERR; //not enough arguments
+		int nMinWidth = 0;
+		if( !GetIntArgument( pArgs, nMinWidth ) )
+			return RSERR; //invalid input
 
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nMinWidth = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
+		int nMinHeight = 0;
+		if( !GetIntArgument( pArgs, nMinWidth ) )
+			return RSERR; //invalid input
 
-		if (!pArgs)
-			return RSERR; //not enough arguments
+		int nMaxWidth = 0;
+		if( !GetIntArgument( pArgs, nMinWidth ) )
+			return RSERR; //invalid input
 
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nMinHeight = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
+		int nMaxHeight = 0;
+		if( !GetIntArgument( pArgs, nMinWidth ) )
+			return RSERR; //invalid input
 
-		if (!pArgs)
-			return RSERR; //not enough arguments
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nMaxWidth = pArgs->resval.rint;
-		pArgs = pArgs->rbnext; //move to the next argument
+		bool bFailed = false;
+		if( !pControl->SetLongProperty( Prop::MinDialogWidth, nMinWidth ) )
+			bFailed = true;
+		if( !pControl->SetLongProperty( Prop::MinDialogHeight, nMinHeight ) )
+			bFailed = true;
+		if( !pControl->SetLongProperty( Prop::MaxDialogWidth, nMaxWidth ) )
+			bFailed = true;
+		if( !pControl->SetLongProperty( Prop::MaxDialogHeight, nMaxHeight ) )
+			bFailed = true;
+		CArxDialogControl::UpdateProperty( pControl, Prop::MaxDialogHeight );
 
-		if (!pArgs)
-			return RSERR; //not enough arguments
-
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		int nMaxHeight = pArgs->resval.rint;
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		if (pDialog->SetMinMaxSize(CSize(nMinWidth, nMinHeight), CSize(nMaxWidth, nMaxHeight)))
+		if( !bFailed )
 			acedRetT();
 
 		return (RSRSLT) ;
@@ -2605,16 +2378,17 @@ public:
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
 			return RSERR; //arguments expected
-		if (!pDialog)
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDlgObject )
 			return RSRSLT; //dialog not found
 
-		if (pArgs)
-			return RSERR; //too many arguments
-
-		acedRetLong((LONG)pDialog->GetHWnd());
+		acedRetHandle( (DWORD_PTR)pDlgObject->GetHWnd() );
 
 		return (RSRSLT) ;
 	}
@@ -2622,19 +2396,8 @@ public:
 	// ----- ads_dcl_form_isenabled symbol (do not rename)
 	static int ads_dcl_form_isenabled(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
-			return RSERR; //arguments expected
-		if (!pDialog)
-			return RSRSLT; //dialog not found
-
-		if (pArgs)
-			return RSERR; //too many arguments
-
-		if (IsWindowEnabled(pDialog->GetHWnd()))
-			acedRetT();
+		if( !GetCtrlProperty( Prop::Enabled ) )
+			return RSERR;
 
 		return (RSRSLT) ;
 	}
@@ -2642,19 +2405,8 @@ public:
 	// ----- ads_dcl_form_isvisible symbol (do not rename)
 	static int ads_dcl_form_isvisible(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
-			return RSERR; //arguments expected
-		if (!pDialog)
-			return RSRSLT; //dialog not found
-
-		if (pArgs)
-			return RSERR; //too many arguments
-
-		if (IsWindowVisible(pDialog->GetHWnd()))
-			acedRetT();
+		if( !GetCtrlProperty( Prop::Visible ) )
+			return RSERR;
 
 		return (RSRSLT) ;
 	}
@@ -2662,28 +2414,8 @@ public:
 	// ----- ads_dcl_form_enable symbol (do not rename)
 	static int ads_dcl_form_enable(void)
 	{
-		struct resbuf *pArgs =acedGetArgs () ;
-
-		CDialogObject* pDialog = NULL;
-		if (!RetrieveDialogFromArgs (pArgs, pDialog))
-			return RSERR; //arguments expected
-		if (!pDialog)
-			return RSRSLT; //dialog not found
-
-		//optional arguments
-		BOOL bEnable = TRUE;
-		if (pArgs)
-		{
-			if (pArgs->restype == RTSHORT)
-				bEnable = (pArgs->resval.rint != 0);
-			else
-				bEnable = (pArgs->restype != RTNIL);
-
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
-		}
-
-		EnableWindow(pDialog->GetHWnd(), bEnable);
+		if( !SetCtrlProperty( Prop::Enabled ) )
+			return RSERR;
 
 		return (RSRSLT) ;
 	}
@@ -2692,22 +2424,20 @@ public:
 	static int ads_dcl_getharddrivesize(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszDrive = pArgs->resval.rstring;
+		CString sDrive;
+		if( !GetStringArgument( pArgs, sDrive ) )
+			return RSERR; //nvalid argument
 
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
-		if (!pszDrive)
-			return RSERR; //invalid argument
+		if( sDrive.IsEmpty() )
+			return RSERR; //i
 
 		DWORDLONG nFree;
-		if (GetDiscSpace(pszDrive, &nFree))
-			acedRetReal((double)nFree);
+		if( GetDiscSpace( sDrive, &nFree ) )
+			acedRetReal( (double)nFree );
 
 		return (RSRSLT) ;
 	}
@@ -2716,8 +2446,9 @@ public:
 	static int ads_dcl_getfocus(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs)
-			return RSERR; //no arguments expected
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		HWND hwndFocus = GetFocus();
 		if (hwndFocus)
@@ -2743,8 +2474,9 @@ public:
 	static int ads_dcl_hideerrormsgbox(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs)
-			return RSERR; //no arguments expected
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		theWorkspace.SetMessagesSuppressed();
 
@@ -2755,8 +2487,9 @@ public:
 	static int ads_dcl_showerrormsgbox(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs)
-			return RSERR; //no arguments expected
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		theWorkspace.SetMessagesSuppressed(false);
 
@@ -2767,18 +2500,16 @@ public:
 	static int ads_dcl_getblocksize(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszBlockName = pArgs->resval.rstring;
-
-		if (!pszBlockName)
+		CString sBlockName;
+		if( !GetStringArgument( pArgs, sBlockName ) )
 			return RSERR; //invalid argument
 
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( sBlockName.IsEmpty() )
+			return RSERR; //invalid argument
 
     AcDbDatabase* pDb = acdbCurDwg();
 		assert(pDb != NULL);
@@ -2789,7 +2520,7 @@ public:
 		if (es != Acad::eOk)
 			return RSRSLT;
 		AcDbBlockTableRecord* pBTR;
-		es = pBlockTable->getAt (pszBlockName, pBTR, AcDb::kForRead);
+		es = pBlockTable->getAt (sBlockName, pBTR, AcDb::kForRead);
 		pBlockTable->close();
 		if (es != Acad::eOk)
 			return RSRSLT;
@@ -2813,55 +2544,15 @@ public:
 	static int ads_dcl_control_gethwnd(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (!pArgs)
-			return RSERR; //arguments expected
 
-		TDclControlPtr pControl;
-		LPCTSTR pszProject = NULL;
-		switch (pArgs->restype)	
-		{
-		case RTSHORT:
-			pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rint );
-			break;
-		case RTLONG:
-			pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rlong );
-			break;
-		case RTENAME:
-			pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rlname[0] );
-			break;
-		case RTSTR:
-			{
-				pszProject = pArgs->resval.rstring;
+		CDialogControl* pDlgControl;
+		if( !GetDlgControlArgument( pArgs, pDlgControl, _CtlInvalid ) )
+			return RSERR; //invalid argument
 
-				pArgs = pArgs->rbnext; //move to the next argument
-				if (!pArgs)
-					return RSERR; //not enough arguments
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
-				if (pArgs->restype != RTSTR)
-					return RSERR; //wrong argument type
-				LPCTSTR pszDialog = pArgs->resval.rstring;
-
-				pArgs = pArgs->rbnext; //move to the next argument
-				if (!pArgs)
-					return RSERR; //not enough arguments
-
-				if (pArgs->restype != RTSTR)
-					return RSERR; //wrong argument type
-				LPCTSTR pszControl = pArgs->resval.rstring;
-				pControl = theArxWorkspace.FindControl (pszProject, pszDialog, pszControl);
-				break;
-			}
-		default:
-			return RSERR; //wrong argument type
-		}
-
-		if (!pControl)
-			return RSRSLT; //dialog not found
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		acedRetLong((LONG)pControl->GetWindow()->m_hWnd);
+		acedRetHandle( (DWORD_PTR)pDlgControl->GetHWnd() );
 
 		return (RSRSLT) ;
 	}
@@ -2870,20 +2561,18 @@ public:
 	static int ads_dcl_navigatetourl(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszURL = pArgs->resval.rstring;
-
-		if (!pszURL)
+		CString sURL;
+		if( !GetStringArgument( pArgs, sURL ) )
 			return RSERR; //invalid argument
 
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
-		ShellExecute(0, _T("open"), pszURL, 0, 0, SW_SHOWNORMAL);
+		if( sURL.IsEmpty() )
+			return RSERR; //invalid argument
+
+		ShellExecute(0, _T("open"), sURL, 0, 0, SW_SHOWNORMAL);
 
 		return (RSRSLT) ;
 	}
@@ -2892,33 +2581,25 @@ public:
 	static int ads_dcl_activateemail(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszEmailAddress = pArgs->resval.rstring;
-
-		if (!pszEmailAddress)
+		CString sEmailAddress;
+		if( !GetStringArgument( pArgs, sEmailAddress ) )
 			return RSERR; //invalid argument
 
-		LPCTSTR pszParams = NULL;
-		pArgs = pArgs->rbnext;
-		if (pArgs)
-		{
-			if (pArgs->restype != RTSTR)
-				return RSERR; //wrong argument type
-			pszParams = pArgs->resval.rstring;
+		//optional arguments
+		CString sParams;
+		GetStringArgument( pArgs, sParams, true );
 
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
-		}
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( sEmailAddress.IsEmpty() )
+			return RSERR; //invalid argument
 
 		CString sTarget = _T("mailto:");
-		sTarget += pszEmailAddress;
-		if (pszParams)
+		sTarget += sEmailAddress;
+		if (!sParams.IsEmpty())
 		{
-			CString sParams = pszParams;
 			if( sParams.Left( 1 ) == _T("?") )
 				sParams = sParams.Mid( 1 );
 			sParams.Replace( _T(" "), _T("%20") );
@@ -2938,57 +2619,28 @@ public:
 	static int ads_dcl_browsefolder(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszCaption = pArgs->resval.rstring;
-
-		if (!pszCaption)
+		CString sCaption;
+		if( !GetStringArgument( pArgs, sCaption ) )
 			return RSERR; //invalid argument
 
 		//optional arguments
-		LPCTSTR pszInitialFolder = NULL;
-		LPCTSTR pszRootFolder = NULL;
-		DWORD dwFlags = BIF_RETURNONLYFSDIRS;
-		pArgs = pArgs->rbnext;
-		if (pArgs)
+		CString sInitialFolder;
+		CString sRootFolder;
+		UINT nFlags = BIF_RETURNONLYFSDIRS;
+		if( GetStringArgument( pArgs, sInitialFolder, true ) )
 		{
-			if (pArgs->restype == RTSTR)
-				pszInitialFolder = pArgs->resval.rstring;
-			else if (pArgs->restype == RTNIL)
-				pszInitialFolder = NULL;
-			else
-				return RSERR; //wrong argument type
-
-			pArgs = pArgs->rbnext;
-			if (pArgs)
-			{
-				if (pArgs->restype == RTSTR)
-					pszRootFolder = pArgs->resval.rstring;
-				else if (pArgs->restype == RTNIL)
-					pszRootFolder = NULL;
-				else
-					return RSERR; //wrong argument type
-
-				pArgs = pArgs->rbnext;
-				if (pArgs)
-				{
-					if (pArgs->restype == RTSHORT)
-						dwFlags = (DWORD)pArgs->resval.rint;
-					else if (pArgs->restype == RTREAL)
-						dwFlags = (DWORD)pArgs->resval.rreal;
-					else
-						return RSERR; //wrong argument type
-
-					if (pArgs->rbnext)
-						return RSERR; //too many arguments
-				}
-			}
+			if( GetStringArgument( pArgs, sRootFolder, true ) )
+				GetUIntArgument( pArgs, nFlags, true );
 		}
 
-		CDirDialog dlg( pszCaption, pszInitialFolder, pszRootFolder, dwFlags );
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( sCaption.IsEmpty() )
+			return RSERR; //invalid argument
+
+		CDirDialog dlg( sCaption, sInitialFolder, sRootFolder, nFlags );
 		if (dlg.DoBrowse(CWnd::FromHandle(theArxWorkspace.GetTopmostModalForm())))
 			acedRetStr(dlg.GetSelectedFolder());
 
@@ -2999,72 +2651,39 @@ public:
 	static int ads_dcl_insert(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		CString sPath = pArgs->resval.rstring;
+		CString sPath;
+		if( !GetStringArgument( pArgs, sPath ) )
+			return RSERR; //invalid argument
 
-		CString sBlockName;
+		//optional arguments
 		AcGePoint3d ptBase;
 		double dblRotation = 0.0;
-		pArgs = pArgs->rbnext;
-		if (pArgs)
+		CString sBlockName;
+		if( Get3dPointArgument( pArgs, ptBase, true ) )
 		{
-			switch (pArgs->restype)
+			if( GetDoubleArgument( pArgs, dblRotation, true ) )
 			{
-			case RT3DPOINT:
-				ptBase.set( pArgs->resval.rpoint[X], pArgs->resval.rpoint[Y], pArgs->resval.rpoint[Z]);
-				break;
-			case RTPOINT:
-				ptBase.set( pArgs->resval.rpoint[X], pArgs->resval.rpoint[Y], 0);
-				break;
-			default:
-				return RSERR; //wrong argument type
-			}
-
-			pArgs = pArgs->rbnext;
-			if (pArgs)
-			{
-				switch (pArgs->restype)
-				{
-				case RTREAL:
-				case RTANG:
-					dblRotation = pArgs->resval.rreal;
-					break;
-				default:
-					return RSERR; //wrong argument type
-				}
-
-				pArgs = pArgs->rbnext;
-				if (pArgs)
-				{
-					switch (pArgs->restype)
-					{
-					case RTSTR:
-						sBlockName = pArgs->resval.rstring;
-						break;
-					case RTNIL:
-						//use the filename without extension
-						sBlockName = sPath;
-						sBlockName.MakeReverse();
-						sBlockName = sBlockName.SpanExcluding(_T("\\/:"));
-						sBlockName.MakeReverse();
-						sBlockName = sBlockName.SpanExcluding(_T("."));
-						break;
-					default:
-						return RSERR; //wrong argument type
-					}
-
-					if (pArgs->rbnext)
-						return RSERR; //too many arguments
-				}
+				if( !GetStringArgument( pArgs, sBlockName, true ) )
+					GetNilArgument( pArgs, true );
 			}
 		}
 
-		if (sPath.IsEmpty())
-			sPath = sBlockName;
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( sPath.IsEmpty() )
+			return RSERR; //invalid argument
+
+		if( sBlockName.IsEmpty() )
+		{
+			//use the filename without extension
+			sBlockName = sPath;
+			sBlockName.MakeReverse();
+			sBlockName = sBlockName.SpanExcluding(_T("\\/:"));
+			sBlockName.MakeReverse();
+			sBlockName = sBlockName.SpanExcluding(_T("."));
+		}
 
 		//----- Read the external DWG file
 		AcDbObjectId blockId;
@@ -3243,73 +2862,40 @@ public:
 				argument is not supplied, or is nil, then the block name defaults to the filename without extension.
 		*/
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		CString sPath = pArgs->resval.rstring;
+		CString sPath;
+		if( !GetStringArgument( pArgs, sPath ) )
+			return RSERR; //invalid argument
 
+		//optional arguments
 		CString sBlockName;
 		AcGePoint3d ptBase;
 		double dblRotation = 0.0;
-		pArgs = pArgs->rbnext;
-		if (pArgs)
+		if( GetStringArgument( pArgs, sBlockName, true ) )
 		{
-			switch (pArgs->restype)
-			{
-			case RTSTR:
-				sBlockName = pArgs->resval.rstring;
-				break;
-			case RTNIL:
-				//use the filename without extension
-				sBlockName = sPath;
-				sBlockName.MakeReverse();
-				sBlockName = sBlockName.SpanExcluding(_T("\\/:"));
-				sBlockName.MakeReverse();
-				sBlockName = sBlockName.SpanExcluding(_T("."));
-				break;
-			default:
-				return RSERR; //wrong argument type
-			}
+			if( Get3dPointArgument( pArgs, ptBase, true ) )
+				GetDoubleArgument( pArgs, dblRotation, true );
+		}
+		else
+			GetNilArgument( pArgs, true );
 
-			pArgs = pArgs->rbnext;
-			if (pArgs)
-			{
-				switch (pArgs->restype)
-				{
-				case RT3DPOINT:
-					ptBase.set( pArgs->resval.rpoint[X], pArgs->resval.rpoint[Y], pArgs->resval.rpoint[Z]);
-					break;
-				case RTPOINT:
-					ptBase.set( pArgs->resval.rpoint[X], pArgs->resval.rpoint[Y], 0);
-					break;
-				default:
-					return RSERR; //wrong argument type
-				}
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
-				pArgs = pArgs->rbnext;
-				if (pArgs)
-				{
-					switch (pArgs->restype)
-					{
-					case RTREAL:
-					case RTANG:
-						dblRotation = pArgs->resval.rreal;
-						break;
-					default:
-						return RSERR; //wrong argument type
-					}
+		if( sPath.IsEmpty() )
+			return RSERR; //invalid argument
 
-					if (pArgs->rbnext)
-						return RSERR; //too many arguments
-				}
-			}
+		if( sBlockName.IsEmpty() )
+		{
+			//use the filename without extension
+			sBlockName = sPath;
+			sBlockName.MakeReverse();
+			sBlockName = sBlockName.SpanExcluding(_T("\\/:"));
+			sBlockName.MakeReverse();
+			sBlockName = sBlockName.SpanExcluding(_T("."));
 		}
 
-		if (sPath.IsEmpty())
-			sPath = sBlockName;
-    acedXrefAttach(sPath, sBlockName, NULL, NULL, &ptBase, &AcGeScale3d(1, 1, 1), &dblRotation, Adesk::kFalse);
+		acedXrefAttach(sPath, sBlockName, NULL, NULL, &ptBase, &AcGeScale3d(1, 1, 1), &dblRotation, Adesk::kFalse);
 
 		return (RSRSLT) ;
 	}
@@ -3318,8 +2904,9 @@ public:
 	static int ads_dcl_updatevarnames(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs)
-			return RSERR; //no arguments expected
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		if (theArxWorkspace.UpdateGlobalLispSymbols())
 			acedRetT();
@@ -3331,8 +2918,9 @@ public:
 	static int ads_dcl_forcedwgredraw(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs)
-			return RSERR; //no arguments expected
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		CView* pDwgView = acedGetAcadDwgView();
 		assert(pDwgView != NULL);
@@ -3345,8 +2933,9 @@ public:
 	static int ads_dcl_getmousecoords(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs)
-			return RSERR; //no arguments expected
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		CPoint pt;
 		GetCursorPos(&pt);
@@ -3362,8 +2951,9 @@ public:
 	static int ads_dcl_getdwgmousecoords(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs)
-			return RSERR; //no arguments expected
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		CPoint ptMouse;
 		GetCursorPos(&ptMouse);
@@ -3427,64 +3017,34 @@ public:
 		struct resbuf *pArgs =acedGetArgs () ;
 
 		//optional arguments
-		CString sFilterList = _T("AutoCAD Drawing (*.dwg)|*.dwg|");
-		LPCTSTR pszCaption = NULL;
-		LPCTSTR pszPath = NULL;
-
-		if (pArgs)
+		CString sFilterList;
+		CString sCaption;
+		CString sPath;
+		CStringArray rsFilters;
+		if( GetStringArrayArgument( pArgs, rsFilters, true ) )
 		{
-			if (pArgs->restype == RTSTR)
+			for( INT_PTR idx = 0; idx < rsFilters.GetCount(); ++idx )
 			{
-				sFilterList = pArgs->resval.rstring;
-				if (!sFilterList.IsEmpty() && sFilterList.Right(1) != _T("|"))
+				sFilterList += rsFilters.GetAt( idx );
+				if( !sFilterList.IsEmpty() && sFilterList.Right( 1 ) != _T("|") )
 					sFilterList += _T('|');
 			}
-			else if (pArgs->restype == RTLB)
-			{
-				sFilterList.Empty();
-				for (pArgs = pArgs->rbnext; pArgs && pArgs->restype != RTLE; pArgs = pArgs->rbnext)
-				{
-					if (pArgs->restype != RTSTR)
-						return RSERR; //wrong argument type
-
-					sFilterList += pArgs->resval.rstring;
-					if (!sFilterList.IsEmpty() && sFilterList.Right(1) != _T("|"))
-						sFilterList += _T('|');
-				}
-
-				if (!pArgs)
-					return RSERR; //unterminated list argument
-			}
-			else
-				return RSERR; //wrong argument type
-
-			pArgs = pArgs->rbnext;
-			if (pArgs)
-			{
-				if (pArgs->restype != RTSTR)
-					return RSERR; //wrong argument type
-				pszCaption = pArgs->resval.rstring;
-
-				pArgs = pArgs->rbnext;
-				if (pArgs)
-				{
-					if (pArgs->restype != RTSTR)
-						return RSERR; //wrong argument type
-					pszPath = pArgs->resval.rstring;
-
-					if (pArgs->rbnext)
-						return RSERR; //too many arguments
-				}
-			}
+			if( GetStringArgument( pArgs, sCaption, true ) )
+				GetStringArgument( pArgs, sPath, true );
 		}
+		else
+			sFilterList = _T("AutoCAD Drawing (*.dwg)|*.dwg|");
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		CWnd *pParent = CWnd::FromHandle(theArxWorkspace.GetTopmostModalForm());
 		DWORD dwFlags = OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING |
 										OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
 		// create the open dialog box
 		CFileDialog BrowseWnd(TRUE, NULL, NULL, dwFlags, sFilterList, pParent);
-		BrowseWnd.m_ofn.lpstrInitialDir = pszPath;
-		BrowseWnd.m_ofn.lpstrTitle = pszCaption;
+		BrowseWnd.m_ofn.lpstrInitialDir = sPath.LockBuffer();
+		BrowseWnd.m_ofn.lpstrTitle = sCaption.LockBuffer();
 		CString sResults;
 		// proceed to setup the file buffer size
 		BrowseWnd.m_ofn.nMaxFile = 8192;
@@ -3525,28 +3085,18 @@ public:
 	static int ads_dcl_getpicturesize(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszProject = pArgs->resval.rstring;
-
-		if (!pszProject)
+		TArxProjectPtr pProject;
+		if( !GetProjectArgument( pArgs, pProject ) )
 			return RSERR; //invalid argument
 
-		pArgs = pArgs->rbnext;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
+		long id = -1;
+		if( !GetLongArgument( pArgs, id ) )
+			return RSERR; //invalid argument
 
-		if (pArgs->restype != RTSHORT)
-			return RSERR; //wrong argument type
-		long id = pArgs->resval.rint;
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		TArxProjectPtr pProject = theArxWorkspace.FindProject(pszProject);
 		if (!pProject)
 			return RSRSLT; //project not found
 
@@ -3567,8 +3117,9 @@ public:
 	static int ads_dcl_setcmdbarfocus(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs)
-			return RSERR; //no argument expected
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
 		if (CmdBarWnd)
@@ -3584,33 +3135,18 @@ public:
 	static int ads_dcl_flushgraphicbuttons(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszProject = pArgs->resval.rstring;
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
+			return RSERR; //arguments expected
 
-		if (!pszProject)
-			return RSERR; //invalid argument
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
-		pArgs = pArgs->rbnext;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszDialog = pArgs->resval.rstring;
-
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		CDialogObject* pDialog = theArxWorkspace.FindDialog(pszProject, pszDialog);
-		if (!pDialog)
+		if( !pDlgObject )
 			return RSRSLT; //dialog not found
 
-		// call the size changed method to force the graphic buttons to refresh
-		pDialog->GetControlPane().RecalcLayout();
+		pDlgObject->GetControlPane()->RecalcLayout();
 
 		return (RSRSLT) ;
 	}
@@ -3619,27 +3155,13 @@ public:
 	static int ads_dcl_xtwipstopixels(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (!pArgs)
-			return RSERR; //arguments expected
 
 		long twips = 0;
-		switch (pArgs->restype)
-		{
-		case RTSHORT:
-			twips = pArgs->resval.rint;
-			break;
-		case RTLONG:
-			twips = pArgs->resval.rlong;
-			break;
-		case RTREAL:
-			twips = (long)pArgs->resval.rreal;
-			break;
-		default:
-			return RSERR; //invalid argument type
-		}
+		if( !GetLongArgument( pArgs, twips ) )
+			return RSERR; //invalid argument
 
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		CDC dc;
 		acedRetLong (MulDiv (GetDeviceCaps (dc, LOGPIXELSX), twips, 1440));
@@ -3652,30 +3174,16 @@ public:
 	static int ads_dcl_ytwipstopixels(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (!pArgs)
-			return RSERR; //arguments expected
 
-		long pixels = 0;
-		switch (pArgs->restype)
-		{
-		case RTSHORT:
-			pixels = pArgs->resval.rint;
-			break;
-		case RTLONG:
-			pixels = pArgs->resval.rlong;
-			break;
-		case RTREAL:
-			pixels = (long)pArgs->resval.rreal;
-			break;
-		default:
-			return RSERR; //invalid argument type
-		}
+		long twips = 0;
+		if( !GetLongArgument( pArgs, twips ) )
+			return RSERR; //invalid argument
 
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		CDC dc;
-		acedRetLong (MulDiv (pixels, 1440, GetDeviceCaps (dc, LOGPIXELSX)));
+		acedRetLong (MulDiv (GetDeviceCaps (dc, LOGPIXELSY), twips, 1440));
 		dc.DeleteDC();
 
 		return (RSRSLT) ;
@@ -3685,30 +3193,16 @@ public:
 	static int ads_dcl_xpixelstotwips(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (!pArgs)
-			return RSERR; //arguments expected
 
 		long pixels = 0;
-		switch (pArgs->restype)
-		{
-		case RTSHORT:
-			pixels = pArgs->resval.rint;
-			break;
-		case RTLONG:
-			pixels = pArgs->resval.rlong;
-			break;
-		case RTREAL:
-			pixels = (long)pArgs->resval.rreal;
-			break;
-		default:
-			return RSERR; //invalid argument type
-		}
+		if( !GetLongArgument( pArgs, pixels ) )
+			return RSERR; //invalid argument
 
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		CDC dc;
-		acedRetLong (MulDiv (pixels, 1440, GetDeviceCaps (dc, LOGPIXELSY)));
+		acedRetLong (MulDiv (pixels, 1440, GetDeviceCaps (dc, LOGPIXELSX)));
 		dc.DeleteDC();
 
 		return (RSRSLT) ;
@@ -3718,30 +3212,16 @@ public:
 	static int ads_dcl_ypixelstotwips(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (!pArgs)
-			return RSERR; //arguments expected
 
-		long twips = 0;
-		switch (pArgs->restype)
-		{
-		case RTSHORT:
-			twips = pArgs->resval.rint;
-			break;
-		case RTLONG:
-			twips = pArgs->resval.rlong;
-			break;
-		case RTREAL:
-			twips = (long)pArgs->resval.rreal;
-			break;
-		default:
-			return RSERR; //invalid argument type
-		}
+		long pixels = 0;
+		if( !GetLongArgument( pArgs, pixels ) )
+			return RSERR; //invalid argument
 
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		CDC dc;
-		acedRetLong (MulDiv (GetDeviceCaps (dc, LOGPIXELSX), twips, 1440));
+		acedRetLong (MulDiv (pixels, 1440, GetDeviceCaps (dc, LOGPIXELSY)));
 		dc.DeleteDC();
 
 		return (RSRSLT) ;
@@ -3751,62 +3231,15 @@ public:
 	static int ads_dcl_getcolorvalue(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (!pArgs)
-			return RSERR; //arguments expected
 
-		short lRed = 0;
-		switch (pArgs->restype)
-		{
-		case RTSHORT:
-			lRed = pArgs->resval.rint;
-			break;
-		case RTLONG:
-			lRed = pArgs->resval.rlong;
-			break;
-		default:
-			return RSERR; //invalid argument type
-		}
+		COLORREF crArg;
+		if( !GetColorArgument( pArgs, crArg ) )
+			return RSERR; //invalid input
 
-		pArgs = pArgs->rbnext;
-		if (pArgs)
-		{
-			short lGreen = 0;
-			switch (pArgs->restype)
-			{
-			case RTSHORT:
-				lGreen = pArgs->resval.rint;
-				break;
-			case RTLONG:
-				lGreen = pArgs->resval.rlong;
-				break;
-			default:
-				return RSERR; //invalid argument type
-			}
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
-			pArgs = pArgs->rbnext;
-			if (!pArgs)
-				return RSERR; //expected more arguments
-
-			short lBlue = 0;
-			switch (pArgs->restype)
-			{
-			case RTSHORT:
-				lBlue = pArgs->resval.rint;
-				break;
-			case RTLONG:
-				lBlue = pArgs->resval.rlong;
-				break;
-			default:
-				return RSERR; //invalid argument type
-			}
-
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
-
-			acedRetLong (RGB(lRed,lGreen,lBlue));
-		}
-		else
-			acedRetLong (GetRGBColor(lRed));
+		acedRetLong( crArg );
 
 		return (RSRSLT) ;
 	}
@@ -3815,20 +3248,17 @@ public:
 	static int ads_dcl_registeractivexctrl(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (!pArgs)
-			return RSERR; //expected arguments
 
-		if (pArgs->restype != RTSTR)
-			return RSERR; //invalid argument type
+		CString sPath;
+		if( !GetStringArgument( pArgs, sPath ) )
+			return RSERR; //invalid input
 
-		LPCTSTR pszPath = pArgs->resval.rstring;
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
-		if (pArgs->rbnext)
-			return RSERR; //too many arguments
-
-		HMODULE hAxServer = LoadLibrary (pszPath);
+		HMODULE hAxServer = LoadLibrary (sPath);
 		if (!hAxServer)
-			hAxServer = LoadLibrary (theWorkspace.FindFile(pszPath));
+			hAxServer = LoadLibrary (theWorkspace.FindFile(sPath));
 		if (!hAxServer)
 			return RSRSLT;
 
@@ -3842,45 +3272,87 @@ public:
 		return (RSRSLT) ;
 	}
 
+	// ----- ads_dcl_files_dir symbol (do not rename)
+	static int ads_dcl_files_dir(void)
+	{
+		struct resbuf *pArgs =acedGetArgs () ;
+
+		CString sPath;
+		if( !GetStringArgument( pArgs, sPath ) )
+			return RSERR; //invalid input
+
+		CString sFilter = _T("*.*");
+		GetStringArgument( pArgs, sFilter, true );
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( sPath.Right( 1 ) != _T("\\") )
+			sPath += _T('\\');
+
+		struct resbuf* prbFiles = NULL;
+		struct resbuf* prbTail = NULL;
+		CFileFind finder;
+		BOOL bResult = finder.FindFile( sPath + sFilter );
+		while( bResult )
+		{	
+			bResult = finder.FindNextFile();
+			if( finder.IsDots() )
+				continue;
+			
+			if( !prbTail )
+			{
+				prbFiles = acutNewRb( RTSTR );
+				prbTail = prbFiles;
+			}
+			else
+			{
+				prbTail = acutNewRb( RTSTR );
+				prbTail = prbTail->rbnext;
+			}
+			acutNewString( finder.GetFileName(), prbTail->resval.rstring );
+		}
+		finder.Close();
+		acedRetList( prbFiles );
+		acutRelRb( prbFiles );
+
+		return (RSRSLT) ;
+	}
+
 	// ----- ads_dcl_project_load symbol (do not rename)
 	static int ads_dcl_project_load(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
-		if (pArgs == NULL)
-			return RSERR; //argument expected
-
-		if (pArgs->restype != RTSTR)
-			return RSERR; //wrong argument type
-		LPCTSTR pszFilename = pArgs->resval.rstring;
-		pArgs = pArgs->rbnext; //move to the next argument
+		CString sPath;
+		if( !GetStringArgument( pArgs, sPath ) )
+			return RSERR; //invalid argument
 
 		//optional arguments
 		bool bReload = false;
-		LPCTSTR pszKeyName = NULL;
-		if (pArgs)
+		CString sKeyName;
+		if( GetBoolArgument( pArgs, bReload, true ) )
 		{
-			bReload = (pArgs->restype != RTNIL);
-			pArgs = pArgs->rbnext; //move to the next argument
-
-			if (pArgs)
-			{
-				if (pArgs->restype != RTSTR)
-					return RSERR; //wrong argument type
-				pszKeyName = pArgs->resval.rstring;
-
-				if (pArgs->rbnext != NULL)
-					return RSERR; //too many arguments
-			}
+			if( !GetStringArgument( pArgs, sKeyName, true ) )
+				GetNilArgument( pArgs, true );
 		}
 
-		TArxProjectPtr pProject = theArxWorkspace.LoadProjectFile( pszFilename, pszKeyName, bReload );
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( sPath.IsEmpty() )
+			return RSERR; //invalid argument
+
+		TArxProjectPtr pProject = theArxWorkspace.LoadProjectFile( sPath, sKeyName, bReload );
 		if( !pProject )
 		{
-			CString sAlertMsg;
-			sAlertMsg.Format( _T("Project failed to load!\r\nThe file could not be found ")
-												_T("or an error occurred while reading the file.\r\n\r\n[%s]"), pszFilename );
-			theWorkspace.DisplayAlert( sAlertMsg );
+			CString sFmt = theWorkspace.LoadResourceString( IDS_PROJECTLOADFAILURE );
+			if( !sFmt.IsEmpty() )
+			{
+				CString sAlertMsg;
+				sAlertMsg.Format( sFmt, (LPCTSTR)sPath );
+				theWorkspace.DisplayAlert( sAlertMsg );
+			}
 			return RSRSLT; 
 		}
 		acedRetStr( pProject->GetKeyName() );
@@ -3892,24 +3364,20 @@ public:
 	static int ads_dcl_project_unload(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if( pArgs == NULL )
-			return RSERR; //argument expected
 
 		TArxProjectPtr pProject;
-		if( !RetrieveProjectFromArgs( pArgs, pProject ) )
+		if( !GetProjectArgument( pArgs, pProject ) )
 			return RSERR; //wrong argument type
-		if( !pProject )
-			return RSERR; //too many arguments
 
 		//optional arguments
 		bool bForce = false;
-		if( pArgs )
-		{
-			bForce = (pArgs->restype != RTNIL);
+		GetBoolArgument( pArgs, bForce, true );
 
-			if (pArgs->rbnext != NULL)
-				return RSERR; //too many arguments
-		}
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pProject )
+			return RSERR; //too many arguments
 
 		if( theArxWorkspace.UnloadProject( pProject, bForce ) )
 			acedRetT();
@@ -3921,47 +3389,29 @@ public:
 	static int ads_dcl_project_saveas(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
 		TArxProjectPtr pProject;
-		if( !RetrieveProjectFromArgs( pArgs, pProject ) )
+		if( !GetProjectArgument( pArgs, pProject ) )
 			return RSERR; //wrong argument type
+
+		CString sFilename;
+		if( !GetStringArgument( pArgs, sFilename ) )
+			return RSERR; //wrong argument type
+
+		//optional arguments
+		CString sPassword;
+		GetStringArgument( pArgs, sPassword, true );
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
 		if( !pProject )
-			return RSERR; //project not found
+			return RSERR; //too many arguments
 
-		if (pArgs == NULL)
-			return RSERR; //argument expected
+		if( pProject->GetPassword() != sPassword )
+			return RSRSLT; //wrong password
 
-		LPCTSTR pszFilename = NULL;
-		if( pArgs->restype == RTSTR )
-			pszFilename = pArgs->resval.rstring;
-		else
-			return RSERR; //wrong argument type
-
-		pArgs = pArgs->rbnext;
-		LPCTSTR pszPassword = NULL;
-		if (pArgs)
-		{
-			switch (pArgs->restype)
-			{
-			case RTSTR:
-				pszPassword = pArgs->resval.rstring;
-				break;
-			case RTNIL:
-				break;
-			default:
-				return RSERR; //wrong argument type
-			}
-
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
-		}
-
-		if( pProject->GetPassword() != CString( pszPassword ) )
-			return RSERR; //wrong password
-
-		if (pProject->WriteToFile(pszFilename) == statOK)
+		if (pProject->WriteToFile( sFilename ) == statOK)
 			acedRetT();
 
 		return (RSRSLT) ;
@@ -3971,93 +3421,41 @@ public:
 	static int ads_dcl_project_import(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		LPCTSTR pszRawData = NULL;
 		CString sRawDataIn;
-		switch( pArgs->restype )
-		{
-		case RTSTR:
-			pszRawData = pArgs->resval.rstring;
-			break;
-		case RTLB:
-			{
-				while( (pArgs = pArgs->rbnext) && pArgs->restype != RTLE )
-				{
-					switch (pArgs->restype)
-					{
-					case RTSTR:
-						sRawDataIn += pArgs->resval.rstring;
-						break;
-					case RTNIL:
-						break;
-					default:
-						return RSERR; //wrong argument type
-					}
-				}
-				if( !pArgs )
-					return RSERR; //no matching RTLE found
-				pszRawData = sRawDataIn;
-			}
-			break;
-		default:
+		CStringArray rsRawData;
+		if( !GetStringArrayArgument( pArgs, rsRawData ) )
 			return RSERR; //wrong argument type
-		}
 
-		pArgs = pArgs->rbnext;
-		LPCTSTR pszPassword = NULL;
-		LPCTSTR pszProjectKey = NULL;
-		if (pArgs)
-		{
-			switch (pArgs->restype)
-			{
-			case RTSTR:
-				pszPassword = pArgs->resval.rstring;
-				break;
-			case RTNIL:
-				break;
-			default:
-				return RSERR; //wrong argument type
-			}
+		for( INT_PTR idx = 0; idx < rsRawData.GetCount(); ++idx )
+			sRawDataIn += rsRawData.GetAt( idx );
 
-			pArgs = pArgs->rbnext;
+		//optional arguments
+		CString sPassword;
+		CString sProjectKey;
+		if( GetStringArgument( pArgs, sPassword, true ) )
+			GetStringArgument( pArgs, sProjectKey, true );
 
-			if (pArgs)
-			{
-				switch (pArgs->restype)
-				{
-				case RTSTR:
-					pszProjectKey = pArgs->resval.rstring;
-					break;
-				case RTNIL:
-					break;
-				default:
-					return RSERR; //wrong argument type
-				}
-
-				if (pArgs->rbnext)
-					return RSERR; //too many arguments
-			}
-		}
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		TArxProjectPtr pProject;
 		std::string sRawData;
 	#ifdef _UNICODE
-		CStringA sRawDataA( pszRawData );
+		CStringA sRawDataA( sRawDataIn );
 		sRawData = (LPCSTR)sRawDataA;
 	#else
-		sRawData = pszRawData;
+		sRawData = sRawDataIn;
 	#endif
 		try
 		{
 			std::string sDecodedData = base64_decode( sRawData );
 			CMemFile Data( (BYTE*)sDecodedData.c_str(), sDecodedData.length() );
-			pProject = theArxWorkspace.ImportProject( Data, pszProjectKey );
+			pProject = theArxWorkspace.ImportProject( Data, sProjectKey );
 			if (pProject)
 			{
-				if( pszPassword )
-					pProject->SetPassword( pszPassword );
+				if( !sPassword.IsEmpty() )
+					pProject->SetPassword( sPassword );
 				acedRetStr( pProject->GetKeyName() );
 			}
 		}
@@ -4073,35 +3471,27 @@ public:
 	static int ads_dcl_project_export(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
 		TArxProjectPtr pProject;
-		if (!RetrieveProjectFromArgs( pArgs, pProject ))
+		if( !GetProjectArgument( pArgs, pProject ) )
 			return RSERR; //wrong argument type
+
+		CString sFilename;
+		if( !GetStringArgument( pArgs, sFilename ) )
+			return RSERR; //wrong argument type
+
+		//optional arguments
+		CString sPassword;
+		GetStringArgument( pArgs, sPassword, true );
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
 		if( !pProject )
-			return RSERR; //project not found
+			return RSERR; //too many arguments
 
-		LPCTSTR pszPassword = NULL;
-		if (pArgs)
-		{
-			switch (pArgs->restype)
-			{
-			case RTSTR:
-				pszPassword = pArgs->resval.rstring;
-				break;
-			case RTNIL:
-				break;
-			default:
-				return RSERR; //wrong argument type
-			}
-
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
-		}
-
-		if( pProject->GetPassword() != CString( pszPassword ) )
-			return RSERR; //wrong password
+		if( pProject->GetPassword() != sPassword )
+			return RSRSLT; //wrong password
 
 		CMemFile bufData( 0x10000 );
 		if (theArxWorkspace.ExportProject(pProject, bufData))
@@ -4120,8 +3510,9 @@ public:
 	static int ads_dcl_updatecheck(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs != NULL)
-			return RSERR; //no arguments expected
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		DWORD dwMajor;
 		DWORD dwMinor;
@@ -4142,12 +3533,12 @@ public:
 	static int ads_dcl_setautoupdatecheck(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
-		bool bEnable = (pArgs == NULL || pArgs->restype != RTNIL);
-		if (pArgs && pArgs->rbnext)
-			return RSERR; //too many arguments
+		bool bEnable = true;
+		GetBoolArgument( pArgs, bEnable, true );
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		if( theWorkspace.SetAutoUpdateCheckEnabled( bEnable ) )
 			acedRetT();
@@ -4159,8 +3550,9 @@ public:
 	static int ads_dcl_getprojects(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs)
-			return RSERR; //no arguments expected
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
 
 		resbuf* prbProjects = NULL;
 		resbuf* prbTail = NULL;
@@ -4185,35 +3577,23 @@ public:
 	static int ads_dcl_project_getforms(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
 		TArxProjectPtr pProject;
-		if (!RetrieveProjectFromArgs( pArgs, pProject ))
+		if( !GetProjectArgument( pArgs, pProject ) )
 			return RSERR; //wrong argument type
+
+		//optional arguments
+		CString sPassword;
+		GetStringArgument( pArgs, sPassword, true );
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
 		if( !pProject )
-			return RSERR; //project not found
+			return RSERR; //too many arguments
 
-		LPCTSTR pszPassword = NULL;
-		if (pArgs)
-		{
-			switch (pArgs->restype)
-			{
-			case RTSTR:
-				pszPassword = pArgs->resval.rstring;
-				break;
-			case RTNIL:
-				break;
-			default:
-				return RSERR; //wrong argument type
-			}
-
-			if (pArgs->rbnext)
-				return RSERR; //too many arguments
-		}
-
-		if( pProject->GetPassword() != CString( pszPassword ) )
-			return RSERR; //wrong password
+		if( pProject->GetPassword() != sPassword )
+			return RSRSLT; //wrong password
 
 		resbuf* prbForms = NULL;
 		resbuf* prbTail = NULL;
@@ -4239,14 +3619,15 @@ public:
 	static int ads_dcl_form_getcontrols(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
 		TDclFormPtr pDclForm;
-		if (!RetrieveFormFromArgs (pArgs, pDclForm))
+		if( !GetFormArgument( pArgs, pDclForm ) )
 			return RSERR; //invalid input
 
-		if (!pDclForm)
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDclForm )
 			return RSRSLT; //form not found
 
 		resbuf* prbControls = NULL;
@@ -4273,14 +3654,15 @@ public:
 	static int ads_dcl_control_getproperties(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
-		if (pArgs == NULL)
-			return RSERR; //argument expected
 
 		TDclControlPtr pDclControl = NULL;
-		if (!RetrieveControlFromArgs (pArgs, pDclControl))
+		if( !GetControlArgument( pArgs, pDclControl ) )
 			return RSERR; //invalid input
 
-		if (!pDclControl)
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		if( !pDclControl )
 			return RSRSLT; //form not found
 
 		resbuf* prbProperties = NULL;
@@ -4314,6 +3696,8 @@ int CARXApp::mnListOperation = 3; //1 = change selection, 2 = append item, 3 = r
 //-----------------------------------------------------------------------------
 IMPLEMENT_ARX_ENTRYPOINT(CARXApp)
 
+CString GetCurrentFunctionName() { return theRxApp.GetCurrentFunctionName(); }
+
 //static
 int CARXApp::ads_dcl_GetCtrlProperty(void)
 {
@@ -4345,21 +3729,18 @@ static int DumpProject(void)
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	TArxProjectPtr pProject = NULL;
-	if (!RetrieveProjectFromArgs (pArgs, pProject))
+	if( !GetProjectArgument( pArgs, pProject ) )
 		return RSERR; //invalid input
-
-	if (!pProject)
-		return RSRSLT; //project not found
 
 	//optional arguments
 	bool bDeep = false;
-	if (pArgs)
-	{
-		bDeep = (pArgs->restype != RTNIL);
+	GetBoolArgument( pArgs, bDeep, true );
 
-		if (pArgs->rbnext != NULL)
-			return RSERR; //too many arguments
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	if( !pProject )
+		return RSRSLT; //project not found
 
 	pProject->dump( bDeep );
 
@@ -4371,21 +3752,18 @@ static int DumpForm(void)
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	TDclFormPtr pForm;
-	if (!RetrieveFormFromArgs (pArgs, pForm))
+	if( !GetFormArgument( pArgs, pForm ) )
 		return RSERR; //invalid input
-
-	if (!pForm)
-		return RSRSLT; //form not found
 
 	//optional arguments
 	bool bDeep = false;
-	if (pArgs)
-	{
-		bDeep = (pArgs->restype != RTNIL);
+	GetBoolArgument( pArgs, bDeep, true );
 
-		if (pArgs->rbnext != NULL)
-			return RSERR; //too many arguments
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	if( !pForm )
+		return RSRSLT; //form not found
 
 	pForm->dump( bDeep );
 
@@ -4396,24 +3774,21 @@ static int DumpControl(void)
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
-	TDclControlPtr pControl = NULL;
-	if (!RetrieveControlFromArgs (pArgs, pControl))
+	TDclControlPtr pDclControl = NULL;
+	if( !GetControlArgument( pArgs, pDclControl ) )
 		return RSERR; //invalid input
-
-	if (!pControl)
-		return RSRSLT; //control not found
 
 	//optional arguments
 	bool bDeep = false;
-	if (pArgs)
-	{
-		bDeep = (pArgs->restype != RTNIL);
+	GetBoolArgument( pArgs, bDeep, true );
 
-		if (pArgs->rbnext != NULL)
-			return RSERR; //too many arguments
-	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	pControl->dump( bDeep );
+	if( !pDclControl )
+		return RSRSLT; //control not found
+
+	pDclControl->dump( bDeep );
 
 	return RSRSLT;
 }
@@ -4454,6 +3829,7 @@ ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_resize, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_setfocus, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_hide, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_close, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_setpos, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_getrectangle, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_getcontrolarea, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_form_closeall, true)
@@ -4495,6 +3871,7 @@ ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_xpixelstotwips, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_ypixelstotwips, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getcolorvalue, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_registeractivexctrl, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_files_dir, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_load, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_unload, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_saveas, true)

@@ -5,10 +5,9 @@ dcl_ListBox_
 [Desc]
 This method will add a string to the specified ListBox. This method will return the index of the new inserted item.
 [Arguments as Integer]
-ProjectFileName
+<CONTROL>
 NewString
 [as String]
-
 
 
 [Method]
@@ -18,10 +17,9 @@ dcl_ListBox_
 [Desc]
 This method will add a list of strings to the specified ListBox.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab StringList
 [as List of Strings]
-
 
 
 [Method]
@@ -31,10 +29,10 @@ dcl_ListBox_
 [Desc]
 This method will fill the ListBox with a list of files found in the directory search that matches the \cf1 sExtension \cf0 argument.  If the \cf1 sExtension \cf0 is not specified *.* is assumed.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab sDirectory
 [as String]
-\par\tab\i{Optional}\i0 sExtension
+\par\tab\i{Optional} \i0 sExtension
 [as String]
 
 
@@ -45,7 +43,8 @@ dcl_ListBox_
 [Desc]
 This method will clear the ListBox of all its items.
 [Arguments]
-ProjectFileName
+<CONTROL>
+
 
 [Method]
 GetText
@@ -54,10 +53,9 @@ dcl_ListBox_
 [Desc]
 This method will retrieve a requested list item.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
-
 
 
 [Method]
@@ -67,7 +65,7 @@ dcl_ListBox_
 [Desc]
 This method will return a list of all selected items in the ListBox. This method is useful only for ListBoxes with multiple selection.
 [Arguments Return] as List of Strings
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -75,9 +73,10 @@ GetSelectedNths
 [Prefix]
 dcl_ListBox_
 [Desc]
-This method will return a list of all indexes of the selected items in the ListBox. This method is useful only for ListBoxes with multiple selection.
+This method will return a list of indices of the selected items in the ListBox. This method is useful only for ListBoxes with multiple selection.
 [Arguments Return] as List of Integers
-ProjectFileName
+<CONTROL>
+
 
 [Method]
 GetCount
@@ -86,7 +85,7 @@ dcl_ListBox_
 [Desc]
 This method will return the total number of list items.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -96,7 +95,7 @@ dcl_ListBox_
 [Desc]
 This method will set the currently selected list item in a single selection ListBox. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 
@@ -108,7 +107,7 @@ dcl_ListBox_
 [Desc]
 This method will return the index of the currently selected list item in a single selection ListBox. -1 will be returned if nothing is selected.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -118,7 +117,8 @@ dcl_ListBox_
 [Desc]
 This method retrieves the index of the first visible item in a ListBox.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
+
 
 [Method]
 SetTopIndex
@@ -127,7 +127,7 @@ dcl_ListBox_
 [Desc]
 This method ensures that the indicated ListBox item is visible. If it's not the ListBox is scrolled to ensure the item is visible.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 
@@ -139,7 +139,7 @@ dcl_ListBox_
 [Desc]
 This method will set the associated item data for the indicated list item. The item data will only accept integer values.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 \par\tab IntegerData
@@ -153,7 +153,7 @@ dcl_ListBox_
 [Desc]
 This method will retrieve the associated item data for the indicated list item.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 
@@ -165,7 +165,7 @@ dcl_ListBox_
 [Desc]
 This method will delete a list item from the ListBox.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 
@@ -177,7 +177,7 @@ dcl_ListBox_
 [Desc]
 This method will insert a list item in the ListBox.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 \par\tab NewString
@@ -191,7 +191,7 @@ dcl_ListBox_
 [Desc]
 This method finds the first string in a ListBox that contains a list item with the exact string match without changing the ListBox selection. A search for "Example Text" will find "Example Text". Use the dcl_ListBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 \par\tab SearchString
 [as String]
 
@@ -203,7 +203,7 @@ dcl_ListBox_
 [Desc]
 This method finds the first string in a ListBox that contains a list item with the specified prefix or partial match without changing the ListBox selection. A search for "Text" will find "Example Text". Use the dcl_ListBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 \par\tab SearchString
 [as String]
 
@@ -215,7 +215,7 @@ dcl_ListBox_
 [Desc]
 This method finds the first string in a ListBox that contains the specified prefix and selects this list item in the ListBox.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 \par\tab SearchString
 [as String]
 
@@ -227,11 +227,11 @@ dcl_ListBox_
 [Desc]
 This method will set the indicated list item in a multiple selection ListBox as selected or unselected. 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
-\par\tab nIsSelected
-[as Integer: 0 = Not Selected, 1 = Selected]
+\par\tab bIsSelected
+[as Boolean (T = selected, Nil = unselected)]
 
 
 [Method]
@@ -240,8 +240,8 @@ GetSel
 dcl_ListBox_
 [Desc]
 This method is used to determine if an item in the list box is currently selected.  This method is useful in a multiple selection ListBox. 
-[Arguments Return] as Integer
-ProjectFileName
+[Arguments Return] as Boolean T or nil
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 
@@ -253,7 +253,7 @@ dcl_ListBox_
 [Desc]
 This method sets the focus rectangle of the ListBox to show around item at the specified index in a multiple selection ListBox.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 
@@ -265,7 +265,7 @@ dcl_ListBox_
 [Desc]
 This method returns the index of the list item that has the focus rectangle in a multiple selection ListBox around it.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -275,7 +275,7 @@ dcl_ListBox_
 [Desc]
 This method returns the number of list items currently selected in a multiple selection ListBox.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -285,14 +285,13 @@ dcl_ListBox_
 [Desc]
 This method selects or deselects a range of list items in a multiple selection ListBox.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nStartIndex 
 [as Integer]
 \par\tab nEndIndex 
 [as Integer]
 \par\tab nIsSelected
-[as Integer: 0 = Not Selected, 1 = Selected]
-
+[as Boolean (T = selected, Nil = unselected)]
 
 
 [Method]
@@ -302,7 +301,7 @@ dcl_ListBox_
 [Desc]
 This method sets the anchor list item in a multiple selection ListBox to begin an extended selection.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 
@@ -314,7 +313,6 @@ dcl_ListBox_
 [Desc]
 This method retrieves the index of the current anchor list item in a ListBox.
 [Arguments Return] as Integer
-ProjectFileName
-
+<CONTROL>
 
 [End of File]

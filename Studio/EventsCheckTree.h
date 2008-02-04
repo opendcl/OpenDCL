@@ -3,7 +3,7 @@
 
 #pragma once
 
-class COpenDCLView;
+class CDclFormView;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -17,7 +17,7 @@ public:
 
 // Attributes
 public:
-	COpenDCLView *m_pView;
+	CDclFormView *m_pView;
 
 // Overrides
 	// ClassWizard generated virtual function overrides

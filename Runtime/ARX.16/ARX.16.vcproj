@@ -43,7 +43,7 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="..\;..\Controls;..\Methods;.\VI;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
 				AdditionalUsingDirectories="C:\Program Files\AutoCAD 2004"
-				PreprocessorDefinitions="WIN32;_WINDOWS;ARX_MODULE;_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="WIN32;_WINDOWS;ARX_MODULE;_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE"
 				StringPooling="false"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -135,7 +135,7 @@
 				Optimization="2"
 				AdditionalIncludeDirectories="..\;..\Controls;..\Methods;.\VI;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
 				AdditionalUsingDirectories="C:\Program Files\AutoCAD 2004"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;ARX_MODULE;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;ARX_MODULE;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE"
 				StringPooling="true"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -205,7 +205,15 @@
 			Filter="cpp;c;cc;cxx;def;idl;odl"
 			>
 			<File
+				RelativePath="..\AcadBlockInsertDropTarget.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\AcadBlockReactor.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\AcadDockBarHost.cpp"
 				>
 			</File>
 			<File
@@ -218,6 +226,14 @@
 			</File>
 			<File
 				RelativePath="..\ARX.rc"
+				>
+			</File>
+			<File
+				RelativePath="..\ArxControlAcadDropTarget.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\ArxControlDropTarget.cpp"
 				>
 			</File>
 			<File
@@ -234,6 +250,10 @@
 			</File>
 			<File
 				RelativePath="..\ArxDialogObject.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\ArxDragDropService.cpp"
 				>
 			</File>
 			<File
@@ -318,7 +338,23 @@
 			Filter="h;hh;hxx"
 			>
 			<File
+				RelativePath="..\AcadBlockInsertDropTarget.h"
+				>
+			</File>
+			<File
 				RelativePath="..\AcadBlockReactor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\AcadDockBarHost.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ArxControlAcadDropTarget.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ArxControlDropTarget.h"
 				>
 			</File>
 			<File
@@ -335,6 +371,10 @@
 			</File>
 			<File
 				RelativePath="..\ArxDialogObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ArxDragDropService.h"
 				>
 			</File>
 			<File
@@ -406,6 +446,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\RuntimeRes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\RuntimeRes.Local.h"
+				>
+			</File>
+			<File
 				RelativePath="..\SADirRead.h"
 				>
 			</File>
@@ -431,11 +479,11 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="..\Res\Folder.bmp"
+				RelativePath="..\..\Common\Res\Folder.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\Res\Folder.bmp"
+				RelativePath="..\Res\Folder.bmp"
 				>
 			</File>
 			<File
@@ -535,6 +583,14 @@
 			Name="Controls"
 			>
 			<File
+				RelativePath="..\Controls\ArxAngleSlideCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxAngleSlideCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxArrowComboBoxCtrl.cpp"
 				>
 			</File>
@@ -599,6 +655,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Controls\ArxFrameCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxFrameCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxGraphicButtonCtrl.cpp"
 				>
 			</File>
@@ -623,8 +687,42 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Controls\ArxImageTreeCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxImageTreeCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxLabelCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxLabelCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxLayerComboBoxCtrl.h"
 				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxLinetypeComboBoxCtrl.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\Controls\ArxLineweightComboBoxCtrl.cpp"
@@ -643,6 +741,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Controls\ArxListViewCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxListViewCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxMonthCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxMonthCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxOptionListCtrl.cpp"
 				>
 			</File>
@@ -656,6 +770,14 @@
 			</File>
 			<File
 				RelativePath="..\Controls\ArxPaperComboBoxCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxPictureBoxCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxPictureBoxCtrl.h"
 				>
 			</File>
 			<File
@@ -691,11 +813,55 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Controls\ArxR16LinetypeComboBoxCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxRadioButtonCtrl.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\Controls\ArxRadioButtonCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxRectangleCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxRectangleCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxScrollBarCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxScrollBarCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxSlideCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxSlideCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxSpinnerCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxSpinnerCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxSplitterCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxSplitterCtrl.h"
 				>
 			</File>
 			<File
@@ -720,6 +886,14 @@
 			</File>
 			<File
 				RelativePath="..\Controls\ArxTextButtonCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxUrlLinkCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxUrlLinkCtrl.h"
 				>
 			</File>
 			<File
@@ -775,31 +949,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Controls\OdclListCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\OdclListCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\OdclMonth.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\OdclMonth.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Controls\PaperComboHandler.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\PictureBox.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\PictureBox.h"
 				>
 			</File>
 			<File
@@ -807,11 +957,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Controls\RoundSliderCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\RoundSliderCtrl.h"
+				RelativePath="..\Controls\R2006AcUiMRUComboBoxFixup.h"
 				>
 			</File>
 			<File
@@ -823,97 +969,21 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Controls\Splitter.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\Splitter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\StaticLink.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\StaticLink.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Controls\TextStyleComboHandler.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\TreeCtrlEx.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\TreeCtrlEx.h"
 				>
 			</File>
 			<File
 				RelativePath="..\Controls\UnitsNumericFilter.h"
 				>
 			</File>
-			<File
-				RelativePath="..\Controls\Vdcl3DRect.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\Vdcl3DRect.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclGroupBox.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclGroupBox.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclScrollBar.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclScrollBar.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclSliderCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclSliderCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclSpinButton.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclSpinButton.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclStatic.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclStatic.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclTree.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\VdclTree.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Common"
 			>
+			<File
+				RelativePath="..\..\Common\AcadColorService.cpp"
+				>
+			</File>
 			<File
 				RelativePath="..\..\Common\AcadColorService.h"
 				>
@@ -1063,11 +1133,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\DropSource.cpp"
+				RelativePath="..\..\Common\DragDropService.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\DropSource.h"
+				RelativePath="..\..\Common\DragDropService.h"
 				>
 			</File>
 			<File
@@ -1092,6 +1162,14 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\FontCollection.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\FontSettings.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\FontSettings.h"
 				>
 			</File>
 			<File
@@ -1141,29 +1219,12 @@
 			<File
 				RelativePath="..\..\Common\PictureBox.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Common\PictureBox.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1171,7 +1232,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1287,44 +1347,12 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\Common\Splitter.cpp"
+				RelativePath="..\..\Common\StdDropSource.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\Common\Splitter.h"
+				RelativePath="..\..\Common\StdDropSource.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Common\StgFile.cpp"
@@ -1359,6 +1387,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\UndoManager.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\UserMessageID.h"
 				>
 			</File>
@@ -1383,6 +1415,14 @@
 				>
 				<File
 					RelativePath="..\..\Common\Controls\AngleFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\AngleSlideCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\AngleSlideCtrl.h"
 					>
 				</File>
 				<File
@@ -1526,6 +1566,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\FrameCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\FrameCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\GraphicButtonCtrl.cpp"
 					>
 				</File>
@@ -1558,11 +1606,35 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\ImageTreeCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ImageTreeCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ImageTreeHolderCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ImageTreeHolderCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\InputFilter.h"
 					>
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\IntegerFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\LabelCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\LabelCtrl.h"
 					>
 				</File>
 				<File
@@ -1574,7 +1646,23 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\ListViewCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ListViewCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\LowerCaseFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\MonthCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\MonthCtrl.h"
 					>
 				</File>
 				<File
@@ -1602,6 +1690,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\PictureBoxCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\PictureBoxCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\ProgressBarCtrl.cpp"
 					>
 				</File>
@@ -1619,6 +1715,54 @@
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\RadioEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\RectangleCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\RectangleCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\RoundSliderCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\RoundSliderCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ScrollBarCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\ScrollBarCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\SlideCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\SlideCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\SpinnerCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\SpinnerCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\SplitterCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\SplitterCtrl.h"
 					>
 				</File>
 				<File
@@ -1662,7 +1806,19 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\UnsignedIntegerFilter.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\UpperCaseFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\UrlLinkCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\UrlLinkCtrl.h"
 					>
 				</File>
 				<File
@@ -1671,71 +1827,6 @@
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\XPStyleButtonST.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Resource Files"
-				Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-				>
-				<File
-					RelativePath="..\..\Common\Res\arrowheads.bmp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\Filter.ico"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\Folder.ico"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\Hand.cur"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\idr_main.ico"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\Label.ico"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\OpButton1.bmp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\OpButton2.bmp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\OpButton3.bmp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\OpButton4.bmp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\pick.ico"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\PickSmall.ico"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\Select.ico"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\SHXFont.ico"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Res\truefont.ico"
 					>
 				</File>
 			</Filter>
@@ -1756,10 +1847,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\MethodLexicon.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Methods\Methods_ActiveX.h"
 					>
 				</File>
@@ -1769,6 +1856,10 @@
 				</File>
 				<File
 					RelativePath="..\Methods\Methods_BinFiles.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_BlockList.h"
 					>
 				</File>
 				<File
@@ -1784,6 +1875,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Methods\Methods_DwgList.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Methods\Methods_DwgPreview.h"
 					>
 				</File>
@@ -1793,10 +1888,6 @@
 				</File>
 				<File
 					RelativePath="..\Methods\Methods_FileDlg.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Files.h"
 					>
 				</File>
 				<File
@@ -1816,11 +1907,15 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_ListCtrl.h"
+					RelativePath="..\Methods\Methods_ListView.h"
 					>
 				</File>
 				<File
 					RelativePath="..\Methods\Methods_Month.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_OptionList.h"
 					>
 				</File>
 				<File
@@ -1857,10 +1952,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\MethodLexicon.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\Methods\Methods_ActiveX.cpp"
 					>
 				</File>
@@ -1870,6 +1961,10 @@
 				</File>
 				<File
 					RelativePath="..\Methods\Methods_BinFiles.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_BlockList.cpp"
 					>
 				</File>
 				<File
@@ -1885,6 +1980,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Methods\Methods_DwgList.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Methods\Methods_DwgPreview.cpp"
 					>
 				</File>
@@ -1894,10 +1993,6 @@
 				</File>
 				<File
 					RelativePath="..\Methods\Methods_FileDlg.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Files.cpp"
 					>
 				</File>
 				<File
@@ -1917,11 +2012,15 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_ListCtrl.cpp"
+					RelativePath="..\Methods\Methods_ListView.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\Methods\Methods_Month.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_OptionList.cpp"
 					>
 				</File>
 				<File

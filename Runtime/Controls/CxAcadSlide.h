@@ -7,7 +7,7 @@ const int nModelSpace = -22;
 const int nPaperSpace = -23;
 
 
-class CxAcadSlide : public CObject
+class CxAcadSlide
 {
 public:
 	void FreeData();
@@ -16,7 +16,7 @@ public:
 	CxAcadSlide();
 	CxAcadSlide(COLORREF backcolor);
 	virtual ~CxAcadSlide();
-	bool Load(CString filename, bool slb, CString slbSldName);
+	bool Load( LPCTSTR pszFilename, LPCTSTR pszSlide );
 	void Draw(CDC *pDC, CRect& rect);
 	void Draw(HDC hdc, CRect& rect);
 	void SetBackColor(COLORREF newBkColor);

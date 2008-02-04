@@ -37,35 +37,35 @@ public:
 	AxPropertyDescriptor* const& GetProp() const
 		{ return mpProp; }
 	void SetProp( AxPropertyDescriptor* pProp )
-		{ mpProp = pProp; }
+		{ delete mpProp; mpProp = pProp; }
 	AxPropertyDescriptor*& GetPropGet()
 		{ return mpPropGet; }
 	AxPropertyDescriptor* const& GetPropGet() const
 		{ return mpPropGet; }
 	void SetPropGet( AxPropertyDescriptor* pProp )
-		{ mpPropGet = pProp; }
+		{ delete mpPropGet; mpPropGet = pProp; }
 	AxPropertyDescriptor*& GetPropPut()
 		{ return mpPropPut; }
 	AxPropertyDescriptor* const& GetPropPut() const
 		{ return mpPropPut; }
 	void SetPropPut( AxPropertyDescriptor* pProp )
-		{ mpPropPut = pProp; }
+		{ delete mpPropPut; mpPropPut = pProp; }
 	AxPropertyDescriptor*& GetPropPutRef()
 		{ return mpPropPutRef; }
 	AxPropertyDescriptor* const& GetPropPutRef() const
 		{ return mpPropPutRef; }
 	void SetPropPutRef( AxPropertyDescriptor* pProp )
-		{ mpPropPutRef = pProp; }
+		{ delete mpPropPutRef; mpPropPutRef = pProp; }
 	AxEventDescriptor*& GetEvent() { return mpEvent; }
 	AxEventDescriptor* const& GetEvent() const { return mpEvent; }
 	void SetEvent( AxEventDescriptor* pEvent )
-		{ mpEvent = pEvent; }
+		{ delete mpEvent; mpEvent = pEvent; }
 	std::vector< RefCountedPtr< AxMethodDescriptor > >*& GetMethods()
 		{ return mpMethods; }
 	std::vector< RefCountedPtr< AxMethodDescriptor > >* const& GetMethods() const
 		{ return mpMethods; }
 	void SetMethods( std::vector< RefCountedPtr< AxMethodDescriptor > >* pMethods )
-		{ mpMethods = pMethods; }
+		{ delete mpMethods; mpMethods = pMethods; }
 
 	//Operations
 public:
@@ -87,13 +87,13 @@ public:
 	CString GetEnumDesc(CString sValue) const;
 	CString GetEnumValue(int nEnumIndex) const;
 	void DoActiveXFontPropDlg(CAxContainerCtrl *axContainer);
-	CString GetAxMethodDesc(size_t nIndex);
-	size_t CountAxMethodParams(size_t nIndex);
-	GUID GetAxMethodParamGUID(size_t nIndex, int nParam);
-	CString GetAxMethodParamName(size_t nIndex, int nParam);
-	CString GetAxMethodParamVarType(size_t nIndex, int nParam);
-	VARTYPE GetAxMethodReturnType(size_t nIndex);
-	AxMethodDescriptor *GetAxMethod(size_t nIndex);
+	CString GetAxMethodDesc(size_t nIndex) const;
+	size_t CountAxMethodParams(size_t nIndex) const;
+	GUID GetAxMethodParamGUID(size_t nIndex, int nParam) const;
+	CString GetAxMethodParamName(size_t nIndex, int nParam) const;
+	CString GetAxMethodParamVarType(size_t nIndex, int nParam) const;
+	VARTYPE GetAxMethodReturnType(size_t nIndex) const;
+	const AxMethodDescriptor* GetAxMethod(size_t nIndex) const;
 
 
 	// FIle I/O

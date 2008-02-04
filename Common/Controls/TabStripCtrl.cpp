@@ -6,6 +6,7 @@
 #include "ControlPane.h"
 #include "ImageListObject.h"
 #include "DclControlObject.h"
+#include "DialogObject.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -13,7 +14,6 @@
 
 CTabStripCtrl::CTabStripCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
-, mbrushBackground( RGB(0,0,0) )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -21,14 +21,14 @@ CTabStripCtrl::CTabStripCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UIN
 
 CTabStripCtrl::~CTabStripCtrl()
 {
-	mbrushBackground.DeleteObject();
 }
 
 bool CTabStripCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
-	CRect rectPane = GetWndRect();
+	bool bSuccess = (CTabCtrl::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
 
-	bool bSuccess = (CTabCtrl::Create( GetWndStyle(), rectPane, pParentWnd, nID ) != FALSE);
+	if( bSuccess )
+		ModifyStyleEx( 0, WS_EX_CONTROLPARENT ); //this prevents the TAB key from locking up the dialog!
 
 	if( bSuccess && !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::ImageList ) ) )
 		bSuccess = false;
@@ -62,6 +62,11 @@ DWORD CTabStripCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
+void CTabStripCtrl::ApplyPosition()
+{
+	__super::ApplyPosition();
+}
+
 bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
@@ -80,7 +85,7 @@ bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::ImageList:
 		{
 			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
-			if (pImageList)
+			if (pImageList && pImageList->GetImageList().GetSafeHandle())
 			{
 				CImageList& ImageList = pImageList->GetImageList();
 				ImageList.SetBkColor( CLR_NONE );
@@ -176,6 +181,8 @@ CRect CTabStripCtrl::GetUsedArea() const
 			nMaxTabHeight = rectItem.bottom;
 	}
 	rectTab.top = nMaxTabHeight;
+	if( rectTab.bottom < rectTab.top )
+		rectTab.bottom = rectTab.top;
 	rectTab.DeflateRect( 1, 1, 3, 3 ); //kludge to leave room for the tab control border
 	return rectTab;
 }
@@ -204,9 +211,9 @@ void CTabStripCtrl::SetupTabs()
 
 		// set the image list item number is required
 		TPropertyPtr pImageListProp = mpTemplate->GetPropertyObject(Prop::TabsImageList);
-		if (pImageListProp && i < pImageListProp->GetIntArrayPtr()->size())
+		if (pImageListProp && i < pImageListProp->size())
 		{
-			TabCtrlItem.iImage = pImageListProp->GetIntArrayPtr()->at(i);
+			TabCtrlItem.iImage = pImageListProp->GetConstIntArrayPtr()->at(i);
 			TabCtrlItem.mask |= TCIF_IMAGE;
 		}
 					
@@ -255,6 +262,7 @@ BEGIN_MESSAGE_MAP(CTabStripCtrl, CTabCtrl)
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_HSCROLL()
 	ON_NOTIFY_REFLECT(TCN_SELCHANGE, OnSelchange)
+	ON_WM_NCHITTEST()
 END_MESSAGE_MAP()
 
 
@@ -265,18 +273,20 @@ void CTabStripCtrl::OnDestroy()
 {	
 	SetImageList(NULL);
 	GetToolTipCtrl().RemoveAllTools();
-	CTabCtrl::OnDestroy();
+	__super::OnDestroy();
 }
 
 BOOL CTabStripCtrl::PreTranslateMessage(MSG* pMsg) 
 {
 	GetToolTipCtrl().RelayEvent(pMsg);	
-	return CTabCtrl::PreTranslateMessage(pMsg);
+	return __super::PreTranslateMessage(pMsg);
 }
 
-HBRUSH CTabStripCtrl::CtlColor(CDC* pDC, UINT /*nCtlColor*/)
+HBRUSH CTabStripCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
-	return mbrushBackground;
+	if( !IsWindowEnabled() )
+		return NULL;
+	return mAcadColorService.CtlColor( pDC, nCtlColor );
 }
 
 void CTabStripCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -291,8 +301,56 @@ void CTabStripCtrl::OnSelchange( NMHDR* pNMHDR, LRESULT* pResult )
 	*pResult = 0;
 }
 
+__UINT_LRESULT CTabStripCtrl::OnNcHitTest(CPoint point)
+{
+	__UINT_LRESULT nHitTest = __super::OnNcHitTest(point);
+	if( nHitTest == HTTRANSPARENT )
+		nHitTest = HTCLIENT;
+	return nHitTest;
+}
+
+LRESULT CTabStripCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	LRESULT lResult = __super::WindowProc(message, wParam, lParam);
+	switch( message )
+	{
+	case WM_WINDOWPOSCHANGING:
+		break;
+	case WM_WINDOWPOSCHANGED:
+		break;
+	case WM_SIZE:
+		{ //subclass' OnSize() never gets called, so intercept it here
+			TPropertyPtr pTabsProp = mpTemplate->GetPropertyObject( Prop::TabsCaption );
+			if( !pTabsProp )
+				return lResult;
+			const TProjectPtr pProject = mpTemplate->GetOwnerProject();
+			TDclFormPtr pOwnerForm = mpTemplate->GetOwnerForm();
+			CRect rcControlArea = GetUsedArea();
+			long lNewWidth = rcControlArea.Width();
+			long lNewHeight = rcControlArea.Height();
+			for( size_t idxTab = pTabsProp->size(); idxTab > 0; --idxTab )
+			{
+				TDclFormPtr pChildForm = pProject->FindDclTabChildForm( pOwnerForm->GetUniqueName(), idxTab - 1 );
+				if( !pChildForm )
+					continue;
+				TDclControlPtr pFormProps = pChildForm->GetControlProperties();
+				if( lNewWidth != pFormProps->GetLongProperty( Prop::Width ) )
+					pFormProps->SetLongProperty( Prop::Width, lNewWidth );
+				if( lNewHeight != pFormProps->GetLongProperty( Prop::Height ) )
+					pFormProps->SetLongProperty( Prop::Height, lNewHeight );
+				CDialogObject* pDlgObject = pChildForm->GetFormInstance();
+				if( !pDlgObject )
+					continue;
+				pDlgObject->ApplyPosition();
+			}
+		}
+		break;
+	}
+	return lResult;
+}
+
 void CTabStripCtrl::PostNcDestroy() 
 {
-	CTabCtrl::PostNcDestroy();
+	__super::PostNcDestroy();
 	delete this;
 }

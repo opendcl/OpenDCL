@@ -5,7 +5,7 @@
 
 #include "DialogObject.h"
 
-class CDclFormObject;
+class CCustomFileDialog;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -13,31 +13,13 @@ class CDclFormObject;
 
 class CMainFileDlg : public CCommonDialog
 {
-	TDclFormPtr mpSourceForm;
-	int mnInitialX;
-	int mnInitialY;
-	int mnMinWidth;
-	int mnMinHeight;
-	int mnMaxWidth;
-	int mnMaxHeight;
-	int mnNCWidth; //width of non-client window area
-	int mnNCHeight; //height of non-client window area
+	CCustomFileDialog* mpDlgObject;
 	bool mbInitialized;
 
 // Construction
 public:
-	CMainFileDlg( TDclFormPtr pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL );
+	CMainFileDlg( CCustomFileDialog* pDlgObject, CWnd* pParent = NULL );
 	virtual ~CMainFileDlg();
-
-public:
-	virtual void SetMinMaxSize( const CSize& szMin, const CSize& szMax );
-
-protected:
-	int GetNCWidth() const { return mnNCWidth; }
-	int GetNCHeight() const { return mnNCHeight; }
-	void SavePosition();
-	CRect ReadPosition() const;
-	void Initialize();
 
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -52,6 +34,5 @@ protected:
 	afx_msg void OnDestroy();
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
-public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 };

@@ -31,7 +31,7 @@ public:
 	CLayerComboHandler()
 		{
 			mImageList.Create( 16, 16, ILC_COLOR8 | ILC_MASK, 3, 1 );
-			HMODULE hRes = theWorkspace.GetResourceModule();
+			HMODULE hRes = theWorkspace.GetLocalResourceModule();
 			mImageList.Add( LoadIcon( hRes, MAKEINTRESOURCE(IDI_LAYERON) ) );
 			mImageList.Add( LoadIcon( hRes, MAKEINTRESOURCE(IDI_LAYEROFF) ) );
 			mImageList.Add( LoadIcon( hRes, MAKEINTRESOURCE(IDI_LAYERTHAWED) ) );

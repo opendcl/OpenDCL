@@ -35,11 +35,10 @@ protected:
 	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
+// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 
-// Generated message map functions
-protected:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);	
 };

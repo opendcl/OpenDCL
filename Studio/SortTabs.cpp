@@ -9,9 +9,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // CSortTabs property page
 
-CSortTabs::CSortTabs( COpenDCLView* pView, TDclControlPtr pControl, CTabsPane* pTabsPane )
+CSortTabs::CSortTabs( TDclControlPtr pControl, CTabsPane* pTabsPane )
 : CPropertyPage(CSortTabs::IDD)
-, mpView( pView )
 , mpDclControl( pControl )
 , mpTabsPane( pTabsPane )
 {
@@ -108,6 +107,5 @@ void CSortTabs::OnDeltaposSpin(NMHDR* pNMHDR, LRESULT* pResult)
 BOOL CSortTabs::OnApply() 
 {
 	mpTabsPane->OnApply();
-	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();
 }

@@ -3,125 +3,117 @@
 
 #include "stdafx.h"
 #include "Methods_Animate.h"
-#include "DclControlObject.h"
 #include "ArgumentsRetrieval.h"
-#include "ArxWorkspace.h"
-#include "MethodLexicon.h"
 #include "ControlTypes.h"
+#include "Workspace.h"
 
 
-int AnimateCtrl_Load()
+ADSRESULT Animate::Load()
 {
-	CString sFileName;
-	
-	TDclControlPtr pArx = GetLispInput(_T("Animate_Load"), sFileName);
-	
-	if (pArx == NULL)	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	CAnimateCtrl *pCtrl = (CAnimateCtrl*)pArx->GetWindow();
-	
-	if (_tcsicmp(sFileName.Right(4), _T(".avi")) != 0)
-		sFileName += _T(".avi");
+	struct resbuf *pArgs =acedGetArgs () ;
 
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimate ) )
+		return RSERR; //invalid input
+
+	CString sFileName;
+	if( !GetStringArgument( pArgs, sFileName, true ) )
+	{
+		const TProjectPtr pProject = pDlgControl->GetTemplate()->GetOwnerProject();
+		if( !pProject )
+			return RSERR; //invalid input
+		sFileName = pProject->GetBaseFileName();
+		if( sFileName.Find( _T('.') ) > 0 )
+		{
+			sFileName.MakeReverse();
+			sFileName = sFileName.Mid( sFileName.SpanExcluding( _T(".") ).GetLength() );
+			sFileName.MakeReverse();
+			sFileName += _T("avi");
+		}
+	}
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CAnimateCtrl* pCtrl = (CAnimateCtrl*)pDlgControl->GetControlWnd();
+
+	if( sFileName.Right( 4 ).CompareNoCase( _T(".avi") ) != 0 )
+		sFileName += _T(".avi");
 	CString sPath = theWorkspace.FindFile( sFileName ); 
 	if( sPath.IsEmpty() )
 	{
-		const TProjectPtr pProject = pArx->GetOwnerProject();
-		if (pProject)
+		const TProjectPtr pProject = pDlgControl->GetTemplate()->GetOwnerProject();
+		if( pProject )
 		{
-			CString sAvi = sFileName;
-			int n = pProject->GetBaseFileName().Find(_T("\\"));
-			if (n == -1)
-				n = pProject->GetBaseFileName().Find(_T("/"));
-
-			int nNext = n;
-			while (nNext > -1)
-			{
-				nNext = pProject->GetBaseFileName().Find(_T("\\"), n+1);
-				if (nNext == -1)
-					nNext = pProject->GetBaseFileName().Find(_T("/"), n+1);
-				if (nNext > -1)
-					n = nNext;	
-			}
-
-			sAvi = pProject->GetBaseFileName().Right(n+1) + sAvi;
-			if (_tcsicmp(sAvi.Left(4), _T(".avi")) != 0)
-				sAvi += _T(".avi");
-
-			sFileName = sAvi;
+			CString sAvi = pProject->GetProjectFilePath();
+			sAvi.MakeReverse();
+			sAvi = sAvi.Mid( sAvi.SpanExcluding( _T("\\/:") ).GetLength() );
+			sAvi.MakeReverse();
+			sAvi += sFileName;
+			sPath = sAvi;
 		}
-		else
-			sFileName = sPath;
 	}	
-	else
-		sFileName = sPath;
 
-	
-	
-	pCtrl->Open(sFileName);
-	
-	acedRetVoid();
-	return 0;
+	if( pCtrl->Open( sPath ) )
+		acedRetT();
+	return RSRSLT;
 }
 
 
-int AnimateCtrl_Seek()
+ADSRESULT Animate::Seek()
 {
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimate ) )
+		return RSERR; //invalid input
+
 	int nFrame;
-	TDclControlPtr pArx = GetLispInput(_T("Animate_Seek"), nFrame);
-	
-	if (pArx == NULL)	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	CAnimateCtrl *pCtrl = (CAnimateCtrl*)pArx->GetWindow();
-	pCtrl->Seek(nFrame);
-	
-	acedRetVoid();
-	return 0;
+	if( !GetIntArgument( pArgs, nFrame ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CAnimateCtrl* pCtrl = (CAnimateCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->Seek( nFrame ) )
+		acedRetT();
+	return RSRSLT;
 }
 
-int AnimateCtrl_Close()
+ADSRESULT Animate::Close()
 {
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlTabStrip, _T("Animate_Close"), &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-	
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimate ) )
+		return RSERR; //invalid input
 
-	((CAnimateCtrl*)pControl)->Close();
-	
-	acedRetVoid();
-	return 0;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CAnimateCtrl* pCtrl = (CAnimateCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->Close() )
+		acedRetT();
+	return RSRSLT;
 }
 
-
-int AnimateCtrl_Stop()
+ADSRESULT Animate::Stop()
 {	
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlTabStrip, _T("Animate_Stop"), &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-	
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimate ) )
+		return RSERR; //invalid input
 
-	((CAnimateCtrl*)pControl)->Stop();
-	
-	acedRetVoid();
-	return 0;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CAnimateCtrl* pCtrl = (CAnimateCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->Stop() )
+		acedRetT();
+	return RSRSLT;
 }

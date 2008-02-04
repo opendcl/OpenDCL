@@ -47,12 +47,13 @@ public:
 
 public:
 	//CWorkspace overrides
+	virtual CString GetLocalResourceModuleFilename() const { return _T("Runtime.Res.dll"); }
 	virtual TOleControlPtr GetOleControlFor( const AxPropertyDescriptor* pProperty );
 	virtual TOleControlPtr GetOleControlFor( const AxMethodDescriptor* pMethod );
 	virtual CString GetUserProfilePrefix() const;
 	virtual HMODULE GetThisModule(void) const;
 	virtual HMODULE GetResourceModule() const;
-	virtual HMODULE GetLocalResourceModule() const;
+	virtual FontSettings GetDefaultFontSettings() const;
 	virtual bool DisplayAlert( LPCTSTR pszMessage ) const; //display alert dialog; returns true if displayed, false if suppressed
 	virtual bool DisplayStatus( LPCTSTR pszMessage ) const; //display modeless status message; returns true if displayed, false if suppressed
 	virtual CString FindFile( LPCTSTR pszFilePath ) const;

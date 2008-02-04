@@ -32,7 +32,7 @@ CDialogObject      DialogObject.h/cpp       : instantiated ODCL form interface (
 CControlPane       ControlPane.h/cpp        : manages a collection of control windows (can be nested via tab pages)
 CDialogControl     DialogControl.h/cpp      : instantiated ODCL control interface (analagous to CDclControlObject)
 
-The OpenDCL editor defines CEditorProject and CEditorWorkspace that customize and extend the common
+The OpenDCL editor defines CStudioProject and CStudioWorkspace that customize and extend the common
 CProject/CWorkspace classes. Likewise, the ARX modules define CArxProject/CArxWorkspace to customize and 
 extend the common classes with ARX-specific data and services.
 
@@ -60,8 +60,10 @@ class that all named objects derive from or export. This I leave as an exercise 
 #include <vector>
 #include <list>
 #include "PtrTypes.h"
+#include "FontSettings.h"
 
 class CStgFile;
+class CUndoManager;
 class CPictureObject;
 class AxPropertyDescriptor;
 class AxMethodDescriptor;
@@ -82,9 +84,8 @@ enum IOStatus
 	statWriteFailed,
 };
 
-
 //CProject represents the contents of a single .odcl file
-class CProject : public CObject
+class CProject
 {
 protected:		
 	CList< CPictureObject* > mPictures;
@@ -97,13 +98,6 @@ protected:
 	CString msLispFileName;
 	CString msPassword;
 	DWORD mnAutoCADVersion;
-	
-public:		
-	CString m_sDefaultFontName;
-	long m_nDefaultFontSize; //positive means point size, negative means normal character size in pixels
-	BOOL m_bDefaultFontItalic;
-	BOOL m_bDefaultFontUnderLine;
-	BOOL m_bDefaultFontBold;
 
 public:
 	CProject();
@@ -111,6 +105,7 @@ public:
 	virtual ~CProject();
 protected:
 	void Initialize();
+	virtual void OnModified();
 
 	//2007-01-30 [ORW]: save version set to 9 (no change from OpenDCL 3)
 	//2007-02-09 [ORW]: save version set to 10
@@ -135,8 +130,10 @@ protected:
   IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName); //read from text file
   IOStatus ReadFromTextFile9(std::ifstream &sFile, const CString &fileName); //read version 9 text file
 
-public:
 	//Attributes
+public:
+	virtual CDocument* GetDocument() const { return NULL; }
+	virtual CUndoManager* GetUndoManager() { return NULL; }
 	const CList<CPictureObject*>& GetPictureList() const { return mPictures; }
 	CList<CPictureObject*>& GetPictureList() { return mPictures; }
 	const TDclFormList& GetDclFormList() const { return mDclForms; }
@@ -145,16 +142,19 @@ public:
 	const CString& GetBaseFileName() const { return msBaseFileName; }
 	const CString& GetProjectFilePath() const { return msProjectFilePath; }
 	const CString& GetLispFileName() const { return msLispFileName; }
-	void SetLispFileName( LPCTSTR pszLispFileName ) { msLispFileName = pszLispFileName; }
+	void SetLispFileName( LPCTSTR pszLispFileName ) { msLispFileName = pszLispFileName; OnModified(); }
 	const CString& GetPassword() const { return msPassword; }
-	void SetPassword( LPCTSTR pszPassword ) { msPassword = pszPassword; }
+	void SetPassword( LPCTSTR pszPassword ) { msPassword = pszPassword; OnModified(); }
 
 	//Services
+public:
 	virtual void DeleteForm( TDclFormPtr pDclForm );
 	virtual TDclFormPtr AddForm( DclFormType nType );
 	virtual TDclFormPtr AddForm( DclFormType nType, TDclFormPtr pParentForm );
+	virtual void AddInitializedForm( TDclFormPtr pForm );
 	virtual void SetGlobalVariableNames( LPCTSTR pszRootName = NULL );
 	virtual void ClearGlobalVariableNames();
+	TDclFormPtr GetRefCountedPtr( CDclFormObject* pDclForm ) const;
 	bool AddActiveXFile( LPCTSTR pszFileName );
 	bool RemoveActiveXFile( LPCTSTR pszFileName );
 	bool HasActiveXFile( LPCTSTR pszFileName ) const;
@@ -166,8 +166,8 @@ public:
 	TDclControlPtr FindControlWithVarName( LPCTSTR pszVarName ) const;
 	TDclFormPtr FindDclTabChildForm( LPCTSTR pszParentFormName, int nTabIndex ) const;
 	TDclFormPtr FindParentDclForm( LPCTSTR pszParentFormName ) const;
-	size_t CountDeletedForms() const;
-	void ClearProject();
+	bool FindChildForms( TDclFormPtr pParentForm, TDclFormList& ChildForms ) const;
+
 
 	// OLE object management
 public:
@@ -181,9 +181,6 @@ public:
 
 public:
 	virtual void Serialize(CArchive& ar);
-
-protected:
-	DECLARE_SERIAL(CProject)
 
 #ifdef _DIAGNOSTIC
 public:

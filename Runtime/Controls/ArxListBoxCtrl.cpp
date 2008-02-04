@@ -15,7 +15,8 @@
 
 CArxListBoxCtrl::CArxListBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CListBoxCtrl( pTemplate, pPane, nID, false )
-, mArxServices( pTemplate )
+, mArxServices( this )
+, mDragDropService( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -33,68 +34,6 @@ bool CArxListBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-bool CArxListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
-{
-	if( !__super::OnApplyProperty( pProp ) )
-		return false;
-	bool bFailed = false;
-	switch( pProp->GetID() )
-	{
-	case Prop::DragnDropAllowDrop:
-		{
-			SetDragnDrop( pProp->GetBooleanValue() );
-			break;
-		}
-	}
-	return !bFailed;
-}
-
-void CArxListBoxCtrl::GetCurrentSelection() 
-{
-	int nSelCount = CListBoxCtrl::GetSelCount();
-	
-	if (nSelCount > -1)
-	{
-		// Get the indexes of all the selected items.
-		CArray<int,int> aryListBoxSel;
-		aryListBoxSel.SetSize(nSelCount);
-		CListBoxCtrl::GetSelItems(nSelCount, aryListBoxSel.GetData());
-		CStringList sSelList;
-		for (int i=0; i<nSelCount; i++)
-		{
-			CString sTextItem;
-			GetText(aryListBoxSel[i], sTextItem);
-			sSelList.AddTail(sTextItem);
-		}
-		// call methods to invoke the event
-		InvokeMethodIntList(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, &sSelList, IsAsyncEvents());
-	}   
-	else if (nSelCount == -1)
-	{
-		nSelCount = CListBoxCtrl::GetCurSel();
-	
-		CString sSelText;
-		int nIndex = CListBoxCtrl::GetCurSel();
-		if (nIndex > -1)
-			GetText(nIndex, sSelText);
-
-		// call methods to invoke the event
-		InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, sSelText, IsAsyncEvents());
-	}   
-}	
-
-void CArxListBoxCtrl::SetDragnDrop(BOOL bRegister)
-{
-	if (bRegister == TRUE)
-	{
-		BOOL success = m_DropTarget.Register(this);
-		m_DropTarget.m_pThisArxControl = mpTemplate;
-		m_DropTarget.m_pParent = this;
-	}
-	else
-		m_DropTarget.Revoke();
-}
-
 
 BEGIN_MESSAGE_MAP(CArxListBoxCtrl, CListBoxCtrl)
 	ON_WM_CREATE()
@@ -104,165 +43,109 @@ BEGIN_MESSAGE_MAP(CArxListBoxCtrl, CListBoxCtrl)
 	ON_CONTROL_REFLECT(LBN_DBLCLK, OnDblclk)
 	ON_CONTROL_REFLECT(LBN_KILLFOCUS, OnKillfocus)
 	ON_CONTROL_REFLECT(LBN_SETFOCUS, OnSetfocus)
-	ON_WM_LBUTTONDOWN()
 	ON_WM_RBUTTONUP()
   ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxListBoxCtrl message handlers
 
 void CArxListBoxCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-CString sEventName = mpTemplate->GetStringProperty(Prop::EventMouseMove);
-
-	InvokeMethodIntIntInt(
-		sEventName,
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
-	
-	
-	CListBoxCtrl::OnMouseMove(nFlags, point);
+	InvokeMethodIntIntInt( mpTemplate->GetStringProperty( Prop::EventMouseMove ),
+												 nFlags,
+												 point.x,
+												 point.y,
+												 IsAsyncEvents() );
+	__super::OnMouseMove(nFlags, point);
 }
 
 void CArxListBoxCtrl::OnSelchange() 
 {
 	int nSelCount = GetSelCount();
-	
-	if (mpTemplate->m_bEventsAsAction)
+
+	CString sEvent = mpTemplate->GetStringProperty(Prop::EventSelChanged);
+	if( sEvent.SpanExcluding( _T("_") ) == _T("c:OnActionEvent") )
 	{
-		int nCurSel = GetCurSel();
-		GetParent()->GetParent()->EnableWindow(TRUE);
-		int stat;
-		struct resbuf *result = NULL, *list;    
+		GetParent()->GetParent()->EnableWindow( TRUE );
 		CString sVal;
-		sVal.Format(_T("%d"), nCurSel);
-    struct resbuf *VarVal = acutBuildList(RTSTR, (LPCTSTR)sVal, 0);
-    stat = acedPutSym(_T("$value"), VarVal);
-    acutRelRb(VarVal);
-
-    CString sText = mpTemplate->GetStringProperty(Prop::EventSelChanged);
-
-		list = acutBuildList(RTSTR, sText, 0);
-		if (list != NULL) 
-		{ 
-			stat = acedInvoke(list, &result); 
-			acutRelRb(list); 
-			if(result != NULL) 
-			{
-				acutRelRb(result); 
-			}
-		}
-		GetParent()->GetParent()->EnableWindow(FALSE);
-		GetParent()->EnableWindow(TRUE);
+		sVal.Format( _T("%d"), GetCurSel() );
+		resbuf rbValue = { NULL, RTSTR };
+		rbValue.resval.rstring = sVal.LockBuffer();
+    acedPutSym( _T("$value"), &rbValue );
+		resbuf rbEvent = { NULL, RTSTR };
+		rbEvent.resval.rstring = sEvent.LockBuffer();
+		resbuf* prbResult = NULL;
+		acedInvoke( &rbEvent, &prbResult ); 
+		if( prbResult ) 
+			acutRelRb( prbResult ); 
+		GetParent()->GetParent()->EnableWindow( FALSE );
+		GetParent()->EnableWindow( TRUE );
 	}
 	else
 	{	
 		if (nSelCount > -1)
+			InvokeMethodIntString(sEvent, nSelCount, CString(), IsAsyncEvents());
+		else if (nSelCount == -1)
 		{
-			// call methods to invoke the event
-			InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nSelCount, CString(), IsAsyncEvents());
-		}   
-
-		if (nSelCount == -1)
-		{
-			int nCurSel = GetCurSel();
-		
 			CString sSelText;
-			
+			int nCurSel = GetCurSel();
 			if (nCurSel > -1)
-			{
-				int n = GetTextLen(nCurSel);      
-				GetText(nCurSel, sSelText.GetBuffer(n));
-				sSelText.ReleaseBuffer();
-			}
-
-			// call methods to invoke the event
-			InvokeMethodIntString(mpTemplate->GetStringProperty(Prop::EventSelChanged), nCurSel, sSelText, IsAsyncEvents());
+				GetText( nCurSel, sSelText );
+			InvokeMethodIntString(sEvent, nCurSel, sSelText, IsAsyncEvents());
 		}
 	}	   
 }
 
 void CArxListBoxCtrl::OnDblclk() 
 {
-	// call methods to invoke the event
 	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
 }
 
 void CArxListBoxCtrl::OnKillfocus() 
 {
-	// call methods to invoke the event
 	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }
 
 void CArxListBoxCtrl::OnSetfocus() 
 {
-	// call methods to invoke the event
 	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventSetFocus), IsAsyncEvents());	
 }
 
 BOOL CArxListBoxCtrl::PreTranslateMessage(MSG* pMsg) 
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
-	return CListBoxCtrl::PreTranslateMessage(pMsg);
+	return __super::PreTranslateMessage(pMsg);
 }
 
 void CArxListBoxCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-    if (nChar == VK_RETURN) {
+  if (nChar == VK_RETURN)
+	{
 			//Change return into a double-click
 			InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
-  } else {
-    CListBoxCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
   }
-}
-
-void CArxListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
-{	
-	CListBoxCtrl::OnLButtonDown(nFlags, point);
-
-	// Get the currently selected Item
-  if(GetCurSel() == LB_ERR)
-      return;
-    
-	if (mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE)
-	{
-		DWORD dwDropEffect = BeginDragnDrop(mpTemplate, point, IsAsyncEvents());
-		OnSelchange();
-
-		// We need to send WM_LBUTTONUP to control or else the selection rectangle 
-		// will "follow" the mouse (like when you hold the left mouse down and 
-		// scroll through a regular listbox). WM_LBUTTONUP was sent to window that 
-		// recieved the drag/drop, not the one that initiated it, so we simulate
-		// an WM_LBUTTONUP to the initiating window.
-		if( dwDropEffect != DROPEFFECT_NONE )
-			SendMessage(WM_LBUTTONUP,0,MAKELPARAM(point.x,point.y));	
-	}
+	else
+    __super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void CArxListBoxCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
 	CString sEventName = mpTemplate->GetStringProperty(Prop::EventRClick);
-	if (sEventName.GetLength() > 0)
+	if( !sEventName.IsEmpty() )
 	{
-		// do a hit test to see if the user has right clicked on a list item.
-		for (int i=0; i<GetCount(); i++)
+		// see if the user has right clicked on a list item.
+		for( int i = 0; i < GetCount(); ++i )
 		{
 			CRect rc;
-			GetItemRect(i, rc);
-
-			// if the point is in the rect of this item.
-			if (rc.PtInRect(point))
-			{
-				// select the item
-				CListBoxCtrl::SetCurSel(i);
-				break;
-			}
+			GetItemRect( i, rc );
+			if( !rc.PtInRect( point ) )
+				continue;
+			__super::SetCurSel( i );
+			break;
 		}
-		// call methods to invoke the event
-		InvokeMethod(sEventName, IsAsyncEvents());
+		InvokeMethod( sEventName, IsAsyncEvents() );
 	}
-	CListBoxCtrl::OnRButtonUp(nFlags, point);
+	__super::OnRButtonUp( nFlags, point );
 }

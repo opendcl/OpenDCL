@@ -68,10 +68,10 @@ DWORD CArxFontComboBoxCtrl::GetWndStyle() const
 	dwStyle |= (CBS_NOINTEGRALHEIGHT | CBS_OWNERDRAWFIXED);
 	switch( mpTemplate->GetLongProperty( Prop::ComboBoxStyle ) )
 	{
-	case CmboStyle_FontDropList:
+	case ComboStyle::FontDropList:
 		dwStyle |= CBS_DROPDOWNLIST;
 		break;
-	case CmboStyle_FontSimpleList:
+	case ComboStyle::FontSimpleList:
 		dwStyle |= CBS_SIMPLE;
 		dwStyle &= ~(DWORD)CBS_DROPDOWN;
 		break;

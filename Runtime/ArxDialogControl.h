@@ -25,27 +25,25 @@ public:
 	static TDialogControlPtr Create( TDclControlPtr pTemplate, CControlPane* pPane,
 																	 UINT nID, ControlParams* pParams = NULL );
 
+	static void UpdateAllProperties(TDclControlPtr pTemplate);
+	static void UpdateProperty(TDclControlPtr pTemplate, Prop::Id id);
+
+protected:
 	static TDialogControlPtr CreateComboExControl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nId);	
 	static TDialogControlPtr CreateEditControl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nId);
 	static TDialogControlPtr CreateComboControl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nId);
-	static void UpdateChildControl(CWnd* pControlWnd, TDclControlPtr pControl, CControlPane* pPane, UINT nControlId);
-	static void UpdatePropertyInt(CWnd *pWnd, TDclControlPtr pControl, CControlPane* pPane, Prop::Id nID);
-	static void UpdateProperty(TDclControlPtr pControl, CControlPane* pPane, UINT nControlId, Prop::Id nID);
-	static void UpdateText(TDclControlPtr pControl, CWnd *pWnd, CString sText);
-	static void UpdateFont(TDclControlPtr pControl, CWnd *pWnd, CFont *pFont);
-	static void UpdateToolTip(TDclControlPtr pControl, CWnd *pWnd);
-	static void SetDwgListComboFolderLink(CArxDwgListCtrl *pDwgList);
-	static void ResetImageList(TDclControlPtr pControl, CWnd *pWnd, int nID);
+	static void UpdatePropertyInt(TDclControlPtr pControl, Prop::Id id);
+	static void UpdateToolTip(TDclControlPtr pControl);
 };
 
 
 //This class deletes the control object in its destructor (used for old style and other dynamically 
 //created controls)
-class CArxAutoDialogControl : public CArxDialogControl
+class CAutoArxDialogControl : public CArxDialogControl
 {
 public:
-	CArxAutoDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl )
-		: CArxDialogControl( pTemplate, pPane, pControl ) {}
-	virtual ~CArxAutoDialogControl() { delete mpControl; }
+	CAutoArxDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControlWnd )
+		: CArxDialogControl( pTemplate, pPane, pControlWnd ) { UpdateAllProperties( pTemplate ); }
+	virtual ~CAutoArxDialogControl() { delete mpControlWnd; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
 };

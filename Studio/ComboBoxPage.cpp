@@ -5,17 +5,17 @@
 #include "ComboBoxPage.h"
 #include "PropertyObject.h"
 #include "ControlTypes.h"
+#include "StudioDialogControl.h"
 #include "Workspace.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CComboBoxPage dialog
 
-CComboBoxPage::CComboBoxPage() : CPropertyPage(CComboBoxPage::IDD)
+CComboBoxPage::CComboBoxPage( TDclControlPtr pControl ) : CPropertyPage(CComboBoxPage::IDD)
+, mpControl( pControl )
 {
-	//{{AFX_DATA_INIT(CComboBoxPage)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
+	m_nCtrl = pControl->GetType();
 }
 
 CComboBoxPage::~CComboBoxPage()
@@ -26,11 +26,9 @@ CComboBoxPage::~CComboBoxPage()
 void CComboBoxPage::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CComboBoxPage)
 	DDX_Control(pDX, IDC_COMBOBOXEX, m_ComboBoxEx);
 	DDX_Control(pDX, IDC_OPTIONLIST, m_OptionList);
 	DDX_Control(pDX, IDC_DESCRIPTION, m_Desc);
-	//}}AFX_DATA_MAP
 }
 
 
@@ -45,8 +43,8 @@ END_MESSAGE_MAP()
 
 BOOL CComboBoxPage::OnApply() 
 {
-	m_pStyle->SetLongValue(m_SelectedStyle);
-	theWorkspace.SetModified(true);
+	mpControl->SetLongProperty(Prop::ComboBoxStyle, m_SelectedStyle);
+	CStudioDialogControl::UpdateProperty(mpControl, Prop::ComboBoxStyle);
 	return CPropertyPage::OnApply();
 }
 
@@ -56,7 +54,7 @@ BOOL CComboBoxPage::OnInitDialog()
 	UpdateData( FALSE );
 	CString sDesc;
 	
-	int nCount = 14;
+	int nCount = 15;
 
 	if (m_nCtrl == CtlImageComboBox)
 		nCount = 3;
@@ -67,10 +65,10 @@ BOOL CComboBoxPage::OnInitDialog()
 		m_OptionList.AddString(sDesc);
 	}
 
-	m_SelectedStyle = m_pStyle->GetLongValue();
-	m_OptionList.SetCurSel(m_pStyle->GetLongValue());
+	m_SelectedStyle = mpControl->GetLongProperty(Prop::ComboBoxStyle);
+	m_OptionList.SetCurSel(m_SelectedStyle);
 
-	DisplayDesc(m_pStyle->GetLongValue());
+	DisplayDesc(m_SelectedStyle);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
@@ -122,7 +120,6 @@ void CComboBoxPage::DisplayDesc(int nSetting)
 		break;
 	case 4:
 		sDesc = theWorkspace.LoadResourceString(IDS_COMBODESC4);
-		
 		pCombo0->ShowWindow(TRUE);
 		pCombo1->ShowWindow(FALSE);
 		pComboEx->ShowWindow(FALSE);
@@ -132,18 +129,15 @@ void CComboBoxPage::DisplayDesc(int nSetting)
 		break;
 	case 5:
 		sDesc = theWorkspace.LoadResourceString(IDS_COMBODESC5);
-		
 		pCombo0->ShowWindow(TRUE);
 		pCombo1->ShowWindow(FALSE);
 		pComboEx->ShowWindow(FALSE);
 		pCombo0->ResetContent();
 		pCombo0->AddString(_T("0.13 mm"));
 		pCombo0->SetCurSel(0);
-
 		break;
 	case 6:
 		sDesc = theWorkspace.LoadResourceString(IDS_COMBODESC6);
-		
 		pCombo0->ShowWindow(TRUE);
 		pCombo1->ShowWindow(FALSE);
 		pComboEx->ShowWindow(FALSE);
@@ -208,17 +202,35 @@ void CComboBoxPage::DisplayDesc(int nSetting)
 		pCombo0->ResetContent();
 		pCombo0->AddString(_T("Folder"));
 		pCombo0->SetCurSel(0);
-	
+		break;
+	case 13:
+		sDesc = theWorkspace.LoadResourceString(IDS_COMBODESC13);
+		pCombo0->ShowWindow(TRUE);
+		pCombo1->ShowWindow(FALSE);
+		pComboEx->ShowWindow(FALSE);
+		pCombo0->ResetContent();
+		pCombo0->AddString(_T("0"));
+		pCombo0->SetCurSel(0);
+		break;
+	case 14:
+		sDesc = theWorkspace.LoadResourceString(IDS_COMBODESC14);
+		pCombo0->ShowWindow(TRUE);
+		pCombo1->ShowWindow(FALSE);
+		pComboEx->ShowWindow(FALSE);
+		pCombo0->ResetContent();
+		pCombo0->AddString(_T("ByBlock"));
+		pCombo0->AddString(_T("ByLayer"));
+		pCombo0->AddString(_T("Continuous"));
+		pCombo0->SetCurSel(0);
+		break;
 	}
 
 	m_SelectedStyle = nSetting;
 	m_Desc.SetWindowText(sDesc);
 }
 
-
 void CComboBoxPage::OnSelchangeOptionlist() 
 {
 	DisplayDesc(m_OptionList.GetCurSel());	
 	SetModified(TRUE);
-	
 }

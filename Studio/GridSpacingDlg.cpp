@@ -3,17 +3,16 @@
 
 #include "stdafx.h"
 #include "GridSpacingDlg.h"
-#include "EditorWorkspace.h"
-#include "DclFormObject.h"
-#include "OpenDCLView.h"
+#include "OpenDCL.h"
+#include "Workspace.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CGridSpacingDlg dialog
 
 
-CGridSpacingDlg::CGridSpacingDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CGridSpacingDlg::IDD, pParent)
+CGridSpacingDlg::CGridSpacingDlg()
+	: CDialog(CGridSpacingDlg::IDD, AfxGetApp()->GetMainWnd())
 {
 }
 
@@ -35,20 +34,12 @@ END_MESSAGE_MAP()
 
 BOOL CGridSpacingDlg::OnInitDialog() 
 {
+	GetDlgItemText( IDC_CURRENTSPACING, sCurrentSettingFmt );
+	ASSERT( !sCurrentSettingFmt.IsEmpty() ); //getting the format string from the dialog resource!
 	CDialog::OnInitDialog();
-	
-	
-	CWinApp* pApp = AfxGetApp();
-	CString sProfileName;
-	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-    
-	
-    m_GridSpacing = pApp->GetProfileInt(sProfileName, _T("nGridSpacing"), 8);
-    
-
-	m_Slider.SetRange(0, 16, TRUE);
-	m_Slider.SetPos(m_GridSpacing-4);
-	
+	m_GridSpacing = theApp.GetGridSpacing();
+	m_Slider.SetRange( 0, 17, TRUE );
+	m_Slider.SetPos( m_GridSpacing > 0? m_GridSpacing - 3 : 0 );
 	SetDispaySetting();
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -64,51 +55,25 @@ void CGridSpacingDlg::OnReleasedcaptureGridslider(NMHDR* pNMHDR, LRESULT* pResul
 void CGridSpacingDlg::SetDispaySetting()
 {
 	CString sValue;
-	m_GridSpacing = m_Slider.GetPos() + 4;
-	
-	
-	if (m_GridSpacing == 4)
+	int nSetting = m_Slider.GetPos();
+	if( nSetting == 0 )
 	{
 		m_GridSpacing = 0;
-		sValue = theWorkspace.LoadResourceString(IDS_NOGRID);
+		sValue = theWorkspace.LoadResourceString( IDS_NONE );
 	}
 	else
 	{
-		sValue = theWorkspace.LoadResourceString(IDS_AGRID);
-		CString sSpacing;
-		sSpacing.Format(_T("%d"), m_GridSpacing);
-		CString sWillBe;
-		sWillBe = theWorkspace.LoadResourceString(IDS_WILLBE);
-		sValue += sSpacing + sWillBe;
+		m_GridSpacing = nSetting + 3;
+		sValue.Format( theWorkspace.LoadResourceString( IDS_GRIDSPACING ), m_GridSpacing );
 	}
-
-	m_CurrentSpacing.SetWindowText(sValue);
-
-
+	ASSERT( !sCurrentSettingFmt.IsEmpty() ); //getting the format string from the dialog resource!
+	CString sDisplayText;
+	sDisplayText.Format( sCurrentSettingFmt, (LPCTSTR)sValue );
+	m_CurrentSpacing.SetWindowText( sDisplayText );
 }
 
 void CGridSpacingDlg::OnOK() 
 {
-	TEditorProjectPtr pProject = activeProject;
-	CWinApp* pApp = AfxGetApp();
-	CString sProfileName;
-	sProfileName = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-    
-	if (m_GridSpacing <= 4)
-		m_GridSpacing = 0;
-	
-    pApp->WriteProfileInt(sProfileName, _T("nGridSpacing"), m_GridSpacing);
-    
-
-	// do look to ensure all open CViews are repainted with the new grid spacing.
-	const TDclFormList& Forms = pProject->GetDclFormList();
-	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
-	{
-		if( (*iter)->m_pChildWnd )
-		{
-			((COpenDCLView*)(*iter)->m_pChildWnd)->m_gridSpacing = m_GridSpacing;
-			((COpenDCLView*)(*iter)->m_pChildWnd)->OnGridSpacingChanged();
-		}
-	}
+	theApp.SetGridSpacing( m_GridSpacing );
 	CDialog::OnOK();
 }

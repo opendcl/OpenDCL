@@ -9,7 +9,7 @@ This method is intended to force all GraphicButtons to repaint themselves.  This
     (dcl_Control_SetProperty Test_DclForm2_GraphicButton1 "Visible" 1)
     (dcl_FlushGraphicButtons Test_DclForm2)
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 [End of File]

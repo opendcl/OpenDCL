@@ -21,6 +21,7 @@ class CWorkspace
 
 	//global settings
 	bool mbMessagesSuppressed;
+	HMODULE mhmodLocalRes;
 
 public:
 	CWorkspace();
@@ -28,20 +29,25 @@ public:
 
 public:
 	//Workspace constants
+	virtual CString GetAppKey(void) const { return _T("OpenDCL"); }
 	virtual DWORD GetMinSupportedAcadVersion(void) const { return 2000; }
 	virtual CString GetProjectFileExtension(void) const { return _T(".odcl"); }
+	virtual CString GetLocalResourceModuleFilename() const { return CString(); }
+	virtual CString GetDefaultFontName(void) const { return _T("MS Shell Dlg"); }
 
 	//Services
 	virtual CString GetSettingsRegPath(void) const { return _T("Software\\OpenDCL"); }
 	virtual CString GetUserProfilePrefix(void) const { return CString(); }
 	virtual HMODULE GetThisModule(void) const { return GetModuleHandle( NULL ); }
 	virtual HMODULE GetResourceModule(void) const { return GetModuleHandle( NULL ); }
-	virtual HMODULE GetLocalResourceModule(void) const { return GetModuleHandle( NULL ); }
+	virtual HMODULE GetLocalResourceModule(void) const;
 	virtual CString LoadResourceString( int nResId, HMODULE hmodRes = NULL ) const;
-	virtual CString GetLanguage(void);
+	virtual CString GetLanguage(void) const;
+	virtual CString GetLanguageSubfolderPath(void) const;
+	virtual FontSettings GetDefaultFontSettings(void) const = 0;
 	virtual bool DisplayAlert( LPCTSTR pszMessage ) const; //display alert dialog; returns true if displayed, false if suppressed
 	virtual bool DisplayStatus( LPCTSTR pszMessage ) const; //display modeless status message; returns true if displayed, false if suppressed
-	virtual void SetModified( bool bModified ) {}
+	virtual void SetModified( bool bModified = true );
 	virtual CDocument* GetActiveDocument(void) const { return NULL; }
 	virtual TOleControlPtr GetOleControlFor( const AxPropertyDescriptor* pProperty ) = 0;
 	virtual TOleControlPtr GetOleControlFor( const AxMethodDescriptor* pMethod ) = 0;

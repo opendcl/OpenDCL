@@ -52,7 +52,7 @@ void CArxDialogObject::CDocReactor::documentToBeDestroyed(AcApDocument* pDocToDe
 
 
 CArxDialogObject::CArxDialogObject( TDclFormPtr pSourceForm, CWnd* pHostDlg )
-: CDialogObject( pSourceForm, pHostDlg )
+: CDialogObject( pSourceForm, &mControlPane, pHostDlg )
 , mControlPane( pSourceForm, pHostDlg )
 , mbEnteringNoDocState( false )
 , mDocReactor( this )
@@ -70,6 +70,11 @@ CArxDialogObject::~CArxDialogObject()
 	TraceFmt( _T("< CArxDialogObject::~CArxDialogObject() [this: %p]\r\n"), this );
 }
 
+void CArxDialogObject::OnEnteringNoDocState()
+{
+	mbEnteringNoDocState = true;
+}
+
 //static
 CDialogObject* CArxDialogObject::Create( TDclFormPtr pDclForm, CWnd* pParent /*= NULL*/,
 																				 DialogParams* pParams /*= NULL*/ )
@@ -77,16 +82,11 @@ CDialogObject* CArxDialogObject::Create( TDclFormPtr pDclForm, CWnd* pParent /*=
 	CAcAppContextModuleResourceOverride resOverride;
 	switch( pDclForm->GetType() )
 	{
-	case VdclModal: return &(new CModalDlg( pDclForm, pParent, pParams ))->GetDialogObject();
-	case VdclModeless: return &(new CModelessDlg( pDclForm, pParent, pParams ))->GetDialogObject();
-	case VdclConfigTab: return &(new CfgTabPane( pDclForm, pParent, pParams ))->GetDialogObject();
-	case VdclDockable: return &(new CDockingDialog( pDclForm, pParent, pParams ))->GetDialogObject();
-	case VdclFileDialog: return &(new CCustomFileDialog( pDclForm, pParent, pParams ))->GetDialogObject();
+	case VdclModal: return new CModalDlg( pDclForm, pParent, pParams );
+	case VdclModeless: return new CModelessDlg( pDclForm, pParent, pParams );
+	case VdclConfigTab: return new CfgTabPane( pDclForm, pParent, pParams );
+	case VdclDockable: return new CDockingDialog( pDclForm, pParent, pParams );
+	case VdclFileDialog: return new CCustomFileDialog( pDclForm, pParent, pParams );
 	}
 	return NULL;
-}
-
-void CArxDialogObject::OnEnteringNoDocState()
-{
-	mbEnteringNoDocState = true;
 }

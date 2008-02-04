@@ -33,8 +33,10 @@ public:
 	CPictureObject* GetMouseOverPicture() const { return mpMouseOverPicture; }
 
 protected:
-	DECLARE_MESSAGE_MAP();
+	void UpdateButtonGraphic();
 
 protected:
-	void UpdateButtonGraphic();
+	DECLARE_MESSAGE_MAP();
+
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

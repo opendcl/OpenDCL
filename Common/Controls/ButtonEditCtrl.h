@@ -24,7 +24,7 @@ public:
 		, CGridCellEditCtrl( pGridCtrl, nRow, nCol )
 		{
 			HICON hIcon =
-				(HICON)::LoadImage( theWorkspace.GetResourceModule(), MAKEINTRESOURCE(idIcon), IMAGE_ICON, 0, 0, 0 );
+				(HICON)::LoadImage( theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(idIcon), IMAGE_ICON, 0, 0, 0 );
 			SetIcon( hIcon );
 			SetThemeHelper( pGridCtrl->GetControlPane()->GetThemeHelper() );
 			SetFlat( FALSE );

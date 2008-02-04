@@ -11,7 +11,7 @@
 CArxArrowComboBoxCtrl::CArxArrowComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , CAcUiArrowHeadComboBox()
-, mArxServices( pTemplate )
+, mArxServices( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );

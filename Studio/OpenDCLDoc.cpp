@@ -2,93 +2,75 @@
 //
 
 #include "stdafx.h"
+#include "OpenDCL.h"
 #include "OpenDCLDoc.h"
 #include "Resource.h"
-#include "Project.h"
-#include "MainFrm.h"
-#include "Editor.h"
+#include "StudioProject.h"
+#include "StudioFrame.h"
 #include "ArchiveEx.h"
 #include "StgFile.h"
-#include "DclFormObject.h"
-#include "EditorWorkspace.h"
+#include "StudioWorkspace.h"
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
 
 
-#define DELETE_EXCEPTION(e) do { e->Delete(); } while (0)
-
-/////////////////////////////////////////////////////////////////////////////
 // COpenDCLDoc
 
 IMPLEMENT_DYNCREATE(COpenDCLDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(COpenDCLDoc, CDocument)
-	//{{AFX_MSG_MAP(COpenDCLDoc)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////
+
 // COpenDCLDoc construction/destruction
 
 COpenDCLDoc::COpenDCLDoc()
 {
-	m_strPathName = CString();
-	SetTitle(m_strPathName);
+	// TODO: add one-time construction code here
+
 }
 
 COpenDCLDoc::~COpenDCLDoc()
 {
 }
 
-
-/////////////////////////////////////////////////////////////////////////////
-// COpenDCLDoc serialization
-
-void COpenDCLDoc::Serialize(CArchive& ar)
+void COpenDCLDoc::SetModifiedFlag(BOOL bModified /*= TRUE*/)
 {
-	if (ar.IsStoring())
-	{
-		// TODO: add storing code here
+	if( bModified )
+	{ //save document state
 	}
-	else
-	{
-		// TODO: add loading code here
-	}
-	
+	__super::SetModifiedFlag( bModified );
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// COpenDCLDoc diagnostics
-
-#ifdef _DEBUG
-void COpenDCLDoc::AssertValid() const
-{
-	CDocument::AssertValid();
-}
-
-void COpenDCLDoc::Dump(CDumpContext& dc) const
-{
-	CDocument::Dump(dc);
-}
-#endif //_DEBUG
-
-/////////////////////////////////////////////////////////////////////////////
-// COpenDCLDoc commands
 
 BOOL COpenDCLDoc::OnNewDocument()
 {
 	if (!CDocument::OnNewDocument())
 		return FALSE;
+
+	// TODO: add reinitialization code here
+	// (SDI documents will reuse this document)
 	
-	TEditorProjectPtr pProject = new CEditorProject( m_strTitle );
-	theEditorWorkspace.SetActiveProject( pProject );
-	theEditorWorkspace.SetActiveDocument(this); //kludge [ORW]
-	CProjectTreeCtrl* pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
-	ASSERT(pProjTree != NULL);
-	pProjTree->SetupProjectTree( pProject );
-	pProjTree->SetDocument(this);
+	if( mpProject )
+		mpProject->ClearDocument();
+	mpProject = new CStudioProject( this, m_strTitle );
+	SetModifiedFlag(FALSE);     // start off with unmodified
+	theStudioWorkspace.ActivateProject( mpProject, this );
+
 	return TRUE;
 }
 
-BOOL COpenDCLDoc::OnOpenDocument(LPCTSTR lpszPathName) 
+void COpenDCLDoc::OnCloseDocument()
+{
+	theStudioWorkspace.ActivateProject( NULL, NULL );
+	if( mpProject )
+		mpProject->ClearDocument();
+	CDocument::OnCloseDocument();
+}
+
+BOOL COpenDCLDoc::OnOpenDocument(LPCTSTR lpszPathName)
 {
 	if (!CDocument::OnOpenDocument(lpszPathName))
 		return FALSE;
@@ -99,11 +81,10 @@ BOOL COpenDCLDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	// begin reading
 	CWaitCursor wait;
 
-	TEditorProjectPtr pProject = new CEditorProject;
-	theEditorWorkspace.SetActiveProject( pProject );
-	theEditorWorkspace.SetActiveDocument(this); //kludge [ORW]
-
-	IOStatus stat = pProject->ReadFromFile( lpszPathName );
+	if( mpProject )
+		mpProject->ClearDocument();
+	mpProject = new CStudioProject( this );
+	IOStatus stat = mpProject->ReadFromFile( lpszPathName );
 	if( stat != statOK )
 	{
 		ReportSaveLoadException(lpszPathName, NULL, FALSE, AFX_IDP_FAILED_TO_OPEN_DOC);
@@ -111,10 +92,7 @@ BOOL COpenDCLDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	}
 
 	SetModifiedFlag(FALSE);     // start off with unmodified
-	CProjectTreeCtrl* pProjTree = theEditorWorkspace.GetProjectTreeCtrl();
-	ASSERT(pProjTree != NULL);
-	pProjTree->SetupProjectTree(pProject);
-	pProjTree->SetDocument(this);
+	theStudioWorkspace.ActivateProject( mpProject, this );
   return TRUE;
 }
 
@@ -132,38 +110,48 @@ BOOL COpenDCLDoc::OnSaveDocument(LPCTSTR lpszPathName)
 	// begin saving.
 	CWaitCursor wait;
 
-	activeProject->SetKeyName( lpszPathName ); //updating the key name *before* saving
-	if (activeProject->WriteToFile(sFileName) != statOK)
+	mpProject->SetKeyName( lpszPathName ); //updating the key name *before* saving
+	if (mpProject->WriteToFile(sFileName) != statOK)
 	{
 		ReportSaveLoadException(sFileName, NULL, TRUE, AFX_IDP_FAILED_TO_SAVE_DOC);
 		return FALSE;
 	}
-
-	theEditorWorkspace.GetProjectTreeCtrl()->SetWindowText( lpszPathName );
 	SetModifiedFlag(FALSE);     // back to unmodified
-	((CMainFrame*)AfxGetApp()->GetMainWnd())->DelayUpdateFrameTitle();
+	((CStudioFrame*)AfxGetApp()->GetMainWnd())->DelayUpdateFrameTitle();
 
 	return TRUE;
 }
 
-void COpenDCLDoc::SetGlobalVariableNames( LPCTSTR pszRootName )
+
+
+// COpenDCLDoc serialization
+
+void COpenDCLDoc::Serialize(CArchive& ar)
 {
-	if( pszRootName )
-		activeProject->SetGlobalVariableNames( pszRootName );
+	if (ar.IsStoring())
+	{
+		// TODO: add storing code here
+	}
 	else
-		activeProject->ClearGlobalVariableNames();
-
-	// force the redraw of the property list box so any (VarName) will be updated.
-	theEditorWorkspace.GetPropertyTabs()->m_PropertiesTabPane.GetPropertiesCtrl().Invalidate();
-	theWorkspace.SetModified(true);
+	{
+		// TODO: add loading code here
+	}
 }
 
-void COpenDCLDoc::OnCloseDocument() 
+
+// COpenDCLDoc diagnostics
+
+#ifdef _DEBUG
+void COpenDCLDoc::AssertValid() const
 {
-	CDocument::OnCloseDocument();
-	theEditorWorkspace.GetProjectTreeCtrl()->ClearTree();		
-	theEditorWorkspace.GetPropertyTabs()->ClearControlProperties();
-	CToolBarCtrl *pCtrl = &theEditorWorkspace.GetMainFrame()->m_wndToolBar.GetToolBarCtrl();
-	theEditorWorkspace.SetActiveDocument(NULL);
-	theEditorWorkspace.SetActiveProject( NULL );
+	CDocument::AssertValid();
 }
+
+void COpenDCLDoc::Dump(CDumpContext& dc) const
+{
+	CDocument::Dump(dc);
+}
+#endif //_DEBUG
+
+
+// COpenDCLDoc commands

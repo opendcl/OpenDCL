@@ -1,14 +1,14 @@
 #pragma once
 
 
-#include "DclFormObject.h"
 #include "Project.h"
+#include "FontSettings.h"
+#include "ImageListObject.h"
 #include <list>
 
-class CImageListObject;
 class CAxContainerCtrl;
+class CDclFormObject;
 class CDialogControl;
-class CControlHolder;
 enum IOStatus;
 enum Prop::Id;
 
@@ -20,35 +20,21 @@ typedef std::list< TPropertyPtr > TPropertyList;
 
 class CDclControlObject : public CObject
 {
-	friend class CDclFormObject;
-
-// Attributes
 protected:
-	TDclFormLockedPtr mpOwner;
-	ControlType mType;
+	CDclFormObject* mpOwner;
 	CDialogControl* mpDlgControl; //informational pointer to the one and only instance of this control (or NULL)
+	ControlType mType;
+
+private:
 	CString msAxTypeName; //this should be moved to AxContainer -- unfortunately it's filed from here [ORW]
 	TPropertyList mProperties;
 	RefCountedPtr< CImageListObject > mpImageList;
 	int mnID;
-	int midxZOrder;
-	bool mbDeleted;
 
 public:
-
-	//runtime state
-	CControlHolder *m_pCtrlHolder;
-	CAxContainerCtrl* m_pAxWnd;
-
-	//ARX only
-	bool m_bEventsAsAction;
-
 	// ActiveX members
-	BOOL	m_bLicenseChecked;
 	CString m_sLicenseKey;
-	CString m_sBaseCode;
 	CLSID   m_clsid;
-	ULONG	m_nTotalBytes;
 
 	//storage stream
 	CComPtr<IStream> m_pStream;
@@ -69,48 +55,56 @@ public:
 	//2007-02-08 [ORW]: save version set to 7 (eliminated serialized MFC classes)
 	//2007-06-16 [ORW]: save version set to 8 (removed purchase state)
 	//2007-09-17 [ORW]: save version set to 9 (removed m_ClientHeight member)
-	ULONG GetCurrentSaveVersion() const { return 9; }
+	//2008-01-12 [ORW]: save version set to 10 (removed m_bLicenseChecked, m_sBaseCode members)
+	ULONG GetCurrentSaveVersion() const { return 10; }
 
-	//Attributes
+// Attributes
 public:
+	CUndoManager* GetUndoManager() const;
 	CWnd* GetWindow() const;
 	const CDialogControl* GetControlInstance() const { return mpDlgControl; }
 	CDialogControl* GetControlInstance() { return mpDlgControl; }
-	void SetControlInstance( CDialogControl* pDlgControl );
-	virtual TDclFormPtr GetOwnerForm() { return mpOwner; }
-	virtual const TDclFormPtr GetOwnerForm() const { return mpOwner; }
+	virtual TDclFormPtr GetOwnerForm();
+	virtual const TDclFormPtr GetOwnerForm() const;
 	void SetOwnerForm( CDclFormObject* pNewOwner ) { assert( pNewOwner != NULL ); mpOwner = pNewOwner; }
-	virtual TProjectPtr GetOwnerProject() { return mpOwner? mpOwner->GetProject() : NULL; }
-	virtual const TProjectPtr GetOwnerProject() const { return mpOwner? mpOwner->GetProject() : NULL; }
+	virtual TProjectPtr GetOwnerProject();
+	virtual const TProjectPtr GetOwnerProject() const;
 	const TPropertyList& GetPropertyList() const { return mProperties; }
 	TPropertyList& GetPropertyList() { return mProperties; }
+	RefCountedPtr< CImageListObject > GetImageList() const { return mpImageList; }
+	void SetImageList( RefCountedPtr< CImageListObject > pImageList ) { mpImageList = pImageList; }
 	const CString& GetAxTypeName() const { return msAxTypeName; }
 	void SetAxTypeName( LPCTSTR pszAxTypeName ) { msAxTypeName = pszAxTypeName; }
 	int GetID() const { return mnID; }
-	int GetZOrder() const { return midxZOrder; }
-	bool IsDeleted() const { return mbDeleted; }
-	void SetDeleted( bool bDelete = true ) { mbDeleted = bDelete; }
+	virtual bool IsZOrderAllowed() const;
 
 protected: //for use by parent form only
+	friend class CDclFormObject;
 	void SetID( int nID ) { mnID = nID; }
-	void SetZOrder( int idxZOrder ) { midxZOrder = idxZOrder; }
-	TPropertyList::iterator FindPropertyInsertPos( LPCTSTR pszName, bool bHidden );
-	TPropertyList::iterator FindPropertyInsertPos( Prop::Id nID, bool bHidden );
+
+protected: //for use by control instance only
+	friend class CDialogControl;
+	void SetControlInstance( CDialogControl* pDlgControl );
 
 // Operations
 public:
 	void SetGlobalVariableName( LPCTSTR pszParentName = NULL );
 	void ClearGlobalVariableName();
-	TPropertyPtr GetPropertyObject( Prop::Id nID ) const;
+
+// Property access
+public:
+	TPropertyPtr GetRefCountedPtr( const CPropertyObject* pProperty ) const;
+	const TPropertyPtr GetPropertyObject( Prop::Id nID ) const;
+	TPropertyPtr GetPropertyObject( Prop::Id nID );
 	TPropertyPtr FindPropertyObject( LPCTSTR pszName ) const;
-	TPropertyPtr GetMethods() const;
+	bool InsertNamedProperty( TPropertyPtr pProp );
 	void RemoveProperty( Prop::Id nId );
 	void ResetProperty( Prop::Id nId );
+	TPropertyPtr GetMethods() const;
 	size_t CountPropertyListItems( Prop::Id nID );
 	CString GetPropertyListItem( Prop::Id nID, size_t nIndex );
-	RefCountedPtr< CImageListObject > GetImageList() const { return mpImageList; }
-	void SetImageList( RefCountedPtr< CImageListObject > pImageList ) { mpImageList = pImageList; }
-	bool InsertNamedProperty( TPropertyPtr pProp );
+	CRect GetWndRect() const;
+	void SetFontProperties( const FontSettings& FS );
 
 	bool SetStringProperty( Prop::Id nID, LPCTSTR pszValue );
 	TPropertyPtr AddStringProperty( Prop::Id nID,
@@ -134,17 +128,23 @@ public:
 	void SetColorProperty(Prop::Id nID, COLORREF color);
 	COLORREF GetColorProperty(Prop::Id nID) const;
 
-	//Implementation
+// Implementation
+public:
 	CString GetActiveXTypeName() const;
 	bool IsMicrosoftActiveXCtrl() const;
 
-	//File I/O
+protected:
+	TPropertyList::iterator FindPropertyInsertPos( LPCTSTR pszName, bool bHidden );
+	TPropertyList::iterator FindPropertyInsertPos( Prop::Id nID, bool bHidden );
+
+// File I/O
+public:
 	virtual void Serialize(CArchive& ar);	
   IOStatus ReadFromTextFile(std::ifstream &sFile, const CString &fileName);
   IOStatus ReadFromTextFile6(std::ifstream &sFile, const CString &fileName);
   //IOStatus WriteToTextFile(FILE* pFile, const CString &fileName) const;
 	
-	//Name rendition
+// Name rendition
 public:
 	CString GetKeyName() const;
 	CString GetKeyPath() const;

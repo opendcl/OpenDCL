@@ -28,13 +28,8 @@
 #include "PtrTypes.h"
 
 // forward declaration
-class CControlHolder;
+class CDialogControl;
 
-// To hold the colours and their names
-typedef struct {
-    COLORREF crColour;
-    TCHAR    *szName;
-} ColourTableEntry;
 
 /////////////////////////////////////////////////////////////////////////////
 // CColourPopup window
@@ -44,15 +39,15 @@ class CColourPopup : public CWnd
 // Construction
 public:
     CColourPopup();
-    CColourPopup(CPoint p, COLORREF crColour, CWnd* pParentWnd,
-                 LPCTSTR szDefaultText = NULL, LPCTSTR szCustomText = NULL,
-				 TPropertyPtr pProp = NULL, CControlHolder *pAxCtrl = NULL);
+    CColourPopup( CPoint p, COLORREF crColour, CWnd* pParentWnd,
+                  LPCTSTR szDefaultText = NULL, LPCTSTR szCustomText = NULL,
+									TPropertyPtr pProp = NULL, CDialogControl *pCtrl = NULL );
     void Initialise();
 
 // Attributes
 public:
 	TPropertyPtr m_pProp;
-	CControlHolder *m_pAxCtrl;
+	CDialogControl* m_pCtrl;
 // Operations
 public:
     BOOL Create(CPoint p, COLORREF crColour, CWnd* pParentWnd, 
@@ -78,16 +73,15 @@ protected:
     void EndSelection(int nMessage);
     void DrawCell(CDC* pDC, int nIndex);
 
-    COLORREF GetColour(int nIndex)              { return m_crColours[nIndex].crColour; }
-    LPCTSTR GetColourName(int nIndex)           { return m_crColours[nIndex].szName; }
+    COLORREF GetColour(int nIndex);
+    LPCTSTR GetColourName(int nIndex);
     int  GetIndex(int row, int col) const;
     int  GetRow(int nIndex) const;
     int  GetColumn(int nIndex) const;
 
 // protected attributes
 protected:
-    static ColourTableEntry m_crColours[];
-    int            m_nNumColours;
+    UINT           m_nNumColours;
     int            m_nNumColumns, m_nNumRows;
     int            m_nBoxSize, m_nMargin;
     int            m_nCurrentSel;

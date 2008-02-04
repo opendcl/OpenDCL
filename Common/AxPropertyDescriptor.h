@@ -52,7 +52,7 @@ public:
 
 	// Operations
 	HRESULT Get( IDispatch* pObjectDisp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult ) const;
-	HRESULT Set( IDispatch* pObjectDisp, VARIANTARG* rvarArgs, UINT ctArgs ) const;
+	HRESULT Set( IDispatch* pObjectDisp, const VARIANTARG* rvarArgs, UINT ctArgs ) const;
 
 protected:
 	HRESULT PerPropertyBrowsing( LPOLEOBJECT pIObject );

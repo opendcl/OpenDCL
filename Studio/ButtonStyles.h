@@ -9,7 +9,6 @@
 
 class CDclControlObject;
 class CPropertyObject;
-class COpenDCLView;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -18,7 +17,6 @@ class COpenDCLView;
 class CButtonStyles : public CPropertyPage
 {
 	TDclControlPtr mpControl;
-	COpenDCLView* mpView;
 	CPictureBox	m_Picture;
 	CListBox	m_PicList;
 	CStatic	m_Desc;
@@ -36,7 +34,7 @@ protected:
 
 // Construction
 public:
-	CButtonStyles( TDclControlPtr pControl, COpenDCLView* pView );
+	CButtonStyles( TDclControlPtr pControl );
 	~CButtonStyles();
 
 public:

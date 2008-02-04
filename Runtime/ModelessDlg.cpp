@@ -19,52 +19,20 @@ static const UINT& refWM_MOUSEENTER()
 	return WM_MOUSEENTER;
 }
 
-
-// CModelessDialogX interface implementation
-CModelessDialogX::CModelessDialogX( CModelessDlg& Owner, TDclFormPtr pDclForm )
-: CArxDialogObject( pDclForm, &Owner )
-, mpOwner( &Owner )
+static bool IsDescendant( CWnd* pParent, CWnd* pDescendant )
 {
-}
-
-CModelessDialogX::~CModelessDialogX()
-{
-}
-
-DclFormType CModelessDialogX::GetType() const
-{
-	return VdclModeless;
-}
-
-bool CModelessDialogX::IsResizable() const
-{
-	return mpOwner->IsResizable();
-}
-
-HWND CModelessDialogX::GetHWnd() const
-{
-	return mpOwner->m_hWnd;
-}
-
-bool CModelessDialogX::CreateModeless( UINT nID ) const
-{
-	return mpOwner->Create( IsResizable()? IDD_RESIZEABLE : IDD_MODALDIALOG );
-}
-
-void CModelessDialogX::CloseDialog(int nStatus)
-{
-	if( IsClosing() )
-		return; //already in the process of closing
-	SetClosing();
-	mpOwner->EndDialog(nStatus);
-	mpOwner->DestroyWindow();
-}
-
-bool CModelessDialogX::SetMinMaxSize( const CSize& min, const CSize& max )
-{
-	CDialogObject::SetMinMaxSize( min, max );
-	mpOwner->SetMinMaxSize (min, max);
-	return true;
+	if( !pParent )
+		return false;
+	if( pParent == pDescendant )
+		return true;
+	CWnd* pNextParent = pDescendant->GetParent();
+	while( pNextParent )
+	{
+		if( pNextParent == pParent )
+			return true;
+		pNextParent = pNextParent->GetParent();
+	}
+	return false;
 }
 
 
@@ -74,8 +42,6 @@ bool CModelessDialogX::SetMinMaxSize( const CSize& min, const CSize& max )
 CModelessDlg::CModelessDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CBaseDlg( pSourceForm, CModelessDlg::IDD, pParent, pParams )
 , mpParent( pParent )
-, mDialogX( *this, pSourceForm )
-, mbResizable( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::Resizable ) )
 , mbTrackingMouse( false )
 , mbInMenuLoop( false )
 , mhwndKeyboardFocus( NULL )
@@ -88,13 +54,22 @@ CModelessDlg::~CModelessDlg()
 		KillTimer( WM_MOUSELEAVE );
 }
 
-bool CModelessDlg::Create( UINT nTemplateID )
+bool CModelessDlg::CreateModeless( UINT nID )
 {
-	if( __super::Create( nTemplateID, mpParent ) == FALSE )
+	if( CDialog::Create( (IsResizable()? IDD_RESIZEABLE : IDD_MODALDIALOG), mpParent ) == FALSE )
 		return false;
 	if( mpParent && !mpParent->IsWindowEnabled() )
 		EnableWindow( FALSE );
 	return true;
+}
+
+void CModelessDlg::CloseDialog(int nStatus)
+{
+	if( IsClosing() )
+		return; //already in the process of closing
+	SetClosing();
+	EndDialog(nStatus);
+	DestroyWindow();
 }
 
 BEGIN_MESSAGE_MAP(CModelessDlg, CBaseDlg)
@@ -103,7 +78,6 @@ BEGIN_MESSAGE_MAP(CModelessDlg, CBaseDlg)
 	ON_WM_SIZE()
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
-	ON_WM_MOVE()
 	ON_REGISTERED_MESSAGE(refWM_MOUSEENTER(),OnMouseEnter)
 	ON_MESSAGE(WM_MOUSELEAVE,OnMouseLeave)
 	ON_WM_ENTERMENULOOP()
@@ -119,7 +93,7 @@ END_MESSAGE_MAP()
 BOOL CModelessDlg::OnInitDialog() 
 {
 	ModifyStyleEx( 0, WS_EX_TOOLWINDOW );
-	CBaseDlg::OnInitDialog();
+	__super::OnInitDialog();
 
 	// Modify the style
 	//GetLayeredDialog()->AddLayeredStyle(m_hWnd);
@@ -138,82 +112,50 @@ LRESULT CModelessDlg::onAcadKeepFocus(WPARAM, LPARAM)
 
 void CModelessDlg::OnSize(UINT nType, int cx, int cy) 
 {
-	CBaseDlg::OnSize(nType, cx, cy);
-	mDialogX.GetControlPane().RecalcLayout();
-	if( IsWindowVisible() && !mDialogX.IsClosing() )
-	{
-		CRect rcThis;
-		if( mDialogX.GetSourceForm()->UsesClientRect() )
-			GetClientRect( &rcThis );
-		else
-			GetWindowRect( &rcThis );
+	__super::OnSize(nType, cx, cy);
+	if (IsWindowVisible())
+	{	
 		InvokeMethodIntInt(
-			mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventSize), 
-			rcThis.Width(),
-			rcThis.Height(),
+			mpTemplate->GetStringProperty(Prop::FormEventSize), 
+			mpTemplate->GetLongProperty(Prop::Width),
+			mpTemplate->GetLongProperty(Prop::Height),
 			false);	
-	}
-	RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+	}	
 }
 
 void CModelessDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
-	CBaseDlg::OnShowWindow(bShow, nStatus);
+	__super::OnShowWindow(bShow, nStatus);
 	
 	// call methods to invoke the event
-	InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventShow), false);	
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventShow), false);	
 }
 
 void CModelessDlg::OnDestroy() 
 {
-	mDialogX.SetClosing();
+	SetClosing();
 	__super::OnDestroy();
 }
 
 void CModelessDlg::OnOK()
 {
-	if (mDialogX.IsClosing() ||
-			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventCancelClose), false))	
+	if (IsClosing() ||
+			!InvokeCancelMethod(mpTemplate->GetStringProperty(Prop::FormEventCancelClose), false))	
 	{
-    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventOnOk), true);
+    InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventOnOk), true);
 		__super::OnOK();
-		mDialogX.CloseDialog(IDOK);
+		CloseDialog(IDOK);
 	}
 }
 
 void CModelessDlg::OnCancel()
 {
-	if (mDialogX.IsClosing() ||
-			!InvokeCancelMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventCancelClose), true))	
+	if (IsClosing() ||
+			!InvokeCancelMethod(mpTemplate->GetStringProperty(Prop::FormEventCancelClose), true))	
 	{
-    InvokeMethod(mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventOnCancel), true);
+    InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventOnCancel), true);
 		__super::OnCancel();
-		mDialogX.CloseDialog(IDCANCEL);
-	}
-}
-
-void CModelessDlg::OnMove(int x, int y) 
-{
-	CBaseDlg::OnMove(x, y);
-}
-
-
-void CModelessDlg::SizeDialog ()
-{
-	if (CWnd::IsWindowVisible() && !mDialogX.IsClosing())
-	{
-		mDialogX.GetControlPane().RecalcLayout();
-		
-		CRect rcThis;
-		if( mDialogX.GetSourceForm()->UsesClientRect() )
-			GetClientRect( &rcThis );
-		else
-			GetWindowRect( &rcThis );
-		InvokeMethodIntInt(
-			mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventSize), 
-			rcThis.Width(),
-			rcThis.Height(),
-			true );
+		CloseDialog(IDCANCEL);
 	}
 }
 
@@ -237,7 +179,7 @@ BOOL CModelessDlg::PreTranslateMessage(MSG* pMsg)
 				DispatchMessage( pMsg );
 			return TRUE;
 		}
-		TDialogControlPtr pControl = GetDialogObject().GetControlPane().FindControl( pMsg->hwnd );
+		TDialogControlPtr pControl = GetControlPane()->FindControl( pMsg->hwnd );
 		if( pControl && pControl->GetControlType() == CtlActiveX )
 			return CWnd::PreTranslateMessage(pMsg); //if it's for an ActiveX control, bypass the immediate base class
 	}
@@ -250,7 +192,7 @@ BOOL CModelessDlg::PreTranslateMessage(MSG* pMsg)
 			CWnd* pTarget = WindowFromPoint( pMsg->pt );
 			if( pTarget )
 			{
-				if( pTarget == this || IsChild( pTarget ) )
+				if( IsDescendant( this, pTarget ) )
 				{
 					mhwndKeyboardFocus = pTarget->m_hWnd;
 					pMsg->hwnd = mhwndKeyboardFocus;
@@ -271,7 +213,7 @@ BOOL CModelessDlg::PreTranslateMessage(MSG* pMsg)
 		}
 	}
 
-	return CBaseDlg::PreTranslateMessage(pMsg);
+	return __super::PreTranslateMessage(pMsg);
 }
 
 LRESULT CModelessDlg::OnMouseEnter(WPARAM wParam, LPARAM lParam)
@@ -302,7 +244,7 @@ LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 			if( pCmdLine && pCmdLine->IsWindowEnabled() && pCmdLine->IsWindowVisible() )
 				pCmdLine->SetFocus();
 		}
-		else if( pFocusWnd && IsChild( pFocusWnd ) )
+		else if( IsDescendant( this, pFocusWnd ) )
 		{
 			mhwndKeyboardFocus = pFocusWnd->m_hWnd;
 			SetCapture();
@@ -332,7 +274,7 @@ void CModelessDlg::OnTimer(UINT_PTR nIDEvent)
 		if( GetCursorPos( &ptCursor ) )
 		{
 			CWnd* pTarget = WindowFromPoint( ptCursor );
-			if( pTarget != this && !IsChild( pTarget ) )
+			if( !IsDescendant( this, pTarget ) )
 			{
 				PostMessage( WM_MOUSELEAVE, 0, 0 );
 				KillTimer( WM_MOUSELEAVE );
@@ -342,7 +284,7 @@ void CModelessDlg::OnTimer(UINT_PTR nIDEvent)
 	__super::OnTimer(nIDEvent);
 }
 
-__LRESULT CModelessDlg::OnNcHitTest(CPoint point)
+__UINT_LRESULT CModelessDlg::OnNcHitTest(CPoint point)
 {
 	SendMessage( refWM_MOUSEENTER(), 0, 0 );
 	return __super::OnNcHitTest(point);
@@ -354,7 +296,7 @@ BOOL CModelessDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 	if( ::GetCursorPos( &ptCursor ) )
 	{
 		CWnd* pTarget = WindowFromPoint( ptCursor );
-		if( pTarget && (pTarget == this || IsChild( pTarget )) )
+		if( IsDescendant( this, pTarget ) )
 			SendMessage( refWM_MOUSEENTER(), 0, 0 );
 	}
 	return __super::OnSetCursor(pWnd, nHitTest, message);

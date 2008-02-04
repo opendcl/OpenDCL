@@ -8,7 +8,7 @@
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CTextBoxEditCtrl class
+// CDateTimeEditCtrl class
 
 class CDateTimeEditCtrl : public CDateTimeCtrl, public CGridCellEditCtrl
 {

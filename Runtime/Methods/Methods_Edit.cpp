@@ -4,299 +4,287 @@
 
 #include "stdafx.h"
 #include "Methods_Edit.h"
-#include "DclControlObject.h"
 #include "ArgumentsRetrieval.h"
-#include "MethodLexicon.h"
-#include "ErrorLexicon.h"
 #include "TextBoxCtrl.h"
 #include "CustomFilter.h"
-#include "PropertyIds.h"
-#include "ControlTypes.h"
-#include "Workspace.h"
 
 
-int TextBox_SetFilter()
+ADSRESULT TextBox::GetFilter()
 {
-	int nArg=0;
-	TDclControlPtr pArxObject = GetControlArxObject(sTextBox_SetFilter, &nArg);
-	
-	if (pArxObject == NULL)
-	{
-		acedRetNil();
-		return 0;
-	}
-	
-	if( pArxObject->GetLongProperty(Prop::FilterStyle) != 0 )
-	{
-		theWorkspace.DisplayAlert(ErrorWrongFilterStyle);
-		acedRetNil();
-		return 0;
-	}
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	CWnd *pControl = pArxObject->GetWindow();
-	if (pControl == NULL)
-	{
-		acedRetNil();
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlTextBox ) )
+		return RSERR; //invalid input
 
-	CString sFilter;
-	GetStringArgument(nArg, &sFilter, sTextBox_SetFilter);
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	((CTextBoxCtrl*)pControl)->SetInputFilter( sFilter.IsEmpty()? NULL : new CCustomFilter( sFilter ) );
+	CTextBoxCtrl* pCtrl = (CTextBoxCtrl*)pDlgControl->GetControlWnd();
 
-	acedRetT();
-	return 0;
-}
-
-int TextBox_GetFilter()
-{
-	TDclControlPtr pArxObject = GetControlArxObject(sTextBox_SetFilter);
-	if (pArxObject->GetLongProperty(Prop::FilterStyle) != 0)
-	{
-		theWorkspace.DisplayAlert(ErrorWrongFilterStyle);
-		acedRetNil();
-		return 0;
-	}
-	
-	CWnd *pControl = GetControlPointer(CtlTextBox, sTextBox_GetFilter);
-
-	if (pControl == NULL)
-	{
-		acedRetNil();
-		return 0;
-	}
-
-	CInputFilter* pFilter = ((CTextBoxCtrl*)pControl)->GetInputFilter();
+	CInputFilter* pFilter = pCtrl->GetInputFilter();
 	CString sFilter;
 	if( pFilter )
 		sFilter = pFilter->GetFilter();
 	acedRetStr( sFilter );
-	return 0;
+	return RSRSLT;
 }
 
-int TextBox_GetLineCount()
+ADSRESULT TextBox::SetFilter()
 {
-	CWnd *pControl = GetControlPointer(CtlTextBox, sTextBox_GetLineCount);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	
-	acedRetInt(((CEdit*)pControl)->GetLineCount());
-	return 0;
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlTextBox ) )
+		return RSERR; //invalid input
 
+	CString sFilter;
+	if( !GetStringArgument( pArgs, sFilter ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CTextBoxCtrl* pCtrl = (CTextBoxCtrl*)pDlgControl->GetControlWnd();
+
+	pCtrl->SetInputFilter( sFilter.IsEmpty()? NULL : new CCustomFilter( sFilter ) );
+	acedRetT();
+	return RSRSLT;
 }
-int TextBox_GetModify()
-{
-	CWnd *pControl = GetControlPointer(CtlTextBox, sTextBox_GetModify);
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetNil();
-		return 0;
-	}
-	
-	if (((CEdit*)pControl)->GetModify())
+ADSRESULT TextBox::GetLineCount()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlTextBox ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CTextBoxCtrl* pCtrl = (CTextBoxCtrl*)pDlgControl->GetControlWnd();
+
+	acedRetInt( pCtrl->GetLineCount() );
+	return RSRSLT;
+}
+
+ADSRESULT TextBox::GetModify()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlTextBox ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CTextBoxCtrl* pCtrl = (CTextBoxCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->GetModify() )
 		acedRetT();
-	else
-		acedRetNil();
-
-	return 0;
-
+	return RSRSLT;
 }
-int TextBox_GetSel()
+
+ADSRESULT TextBox::GetSel()
 {
-	CWnd *pControl = GetControlPointer(CtlTextBox, sTextBox_GetSel);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlTextBox ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CEdit* pCtrl = (CEdit*)pDlgControl->GetControlWnd();
+
+	DWORD dwSel = pCtrl->GetSel();
+	if( dwSel != CB_ERR )
 	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
+		resbuf rbEnd = { NULL, RTSHORT };
+		rbEnd.resval.rint = LOWORD(dwSel);
+		resbuf rbStart = { &rbEnd, RTSHORT };
+		rbStart.resval.rint = HIWORD(dwSel);
+		acedRetList( &rbStart );
 	}
-	
-	int nStart;
-	int nEnd;
-	((CEdit*)pControl)->GetSel(nStart, nEnd);
-
-	// this code is for all other dialogs
-	int stat;
-	struct resbuf *list;    
-
-	list = acutBuildList(
-		RTSHORT, nStart,
-		RTSHORT, nEnd,
-		RTNONE);
-
-	if (list != NULL) { 	    
-		stat = acedRetList(list);		
-		acutRelRb(list); 
-	} 
-
-	return 0;
+	return RSRSLT;
 }
-int TextBox_GetLine()
+
+ADSRESULT TextBox::GetLine()
 {
-	int nLine;
-	int nArg=0;
-	CWnd *pControl = GetControlPointer(CtlTextBox, sTextBox_GetLine, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (!GetIntArgument(nArg, &nLine, sTextBox_GetLine) || pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlTextBox ) )
+		return RSERR; //invalid input
 
-	CString sText;			
-	int cb;         
-	TCHAR *pch; 
-	pch = sText.GetBuffer(_MAX_PATH); 
-	
-	cb = ((CEdit*)pControl)->GetLine(nLine, pch, _MAX_PATH); 
-	pch[cb] = _T('\0'); 
-	sText.ReleaseBuffer(); 
-	
+	int nLine = 0;
+	if( !GetIntArgument( pArgs, nLine ) )
+		return RSERR; //invalid input
 
-	acedRetStr(sText);
-	return 0;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
+	CEdit* pCtrl = (CEdit*)pDlgControl->GetControlWnd();
+
+	int cchLine = pCtrl->LineLength( pCtrl->LineIndex( nLine ) );
+	CString sText;
+	sText.ReleaseBuffer( pCtrl->GetLine( nLine, sText.GetBuffer( cchLine ), cchLine ) ); 
+	acedRetStr( sText );
+	return RSRSLT;
 }
-int TextBox_GetFirstVisibleLine()
+
+ADSRESULT TextBox::GetFirstVisibleLine()
 {
-	CWnd *pControl = GetControlPointer(CtlTextBox, sTextBox_GetFirstVisibleLine);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	
-	acedRetInt(((CEdit*)pControl)->GetFirstVisibleLine());
-	return 0;
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlTextBox ) )
+		return RSERR; //invalid input
 
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CEdit* pCtrl = (CEdit*)pDlgControl->GetControlWnd();
+
+	acedRetInt( pCtrl->GetFirstVisibleLine() );
+	return RSRSLT;
 }
-int TextBox_GetLineLength()
-{
-	int nLine;
-	int nArg=0;
-	CWnd *pControl = GetControlPointer(CtlTextBox, sTextBox_GetLineLength, &nArg);
 
-	if (!GetIntArgument(nArg, &nLine, sTextBox_GetLineLength) || pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-		
-	
-	acedRetInt(((CEdit*)pControl)->LineLength(nLine));
-	return 0;
+ADSRESULT TextBox::GetLineLength()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlTextBox ) )
+		return RSERR; //invalid input
+
+	int nLine = 0;
+	if( !GetIntArgument( pArgs, nLine ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CEdit* pCtrl = (CEdit*)pDlgControl->GetControlWnd();
+
+	acedRetInt( pCtrl->LineLength( pCtrl->LineIndex( nLine ) ) );
+	return RSRSLT;
 }
-int TextBox_LineScroll()
-{
-	int nLine;
-	int nArg=0;
-	CWnd *pControl = GetControlPointer(CtlTextBox, sTextBox_LineScroll, &nArg);
 
-	if (!GetIntArgument(nArg, &nLine, sTextBox_LineScroll) || pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-		
-	((CEdit*)pControl)->LineScroll(nLine, 0);
-	acedRetVoid();
-	return 0;
+ADSRESULT TextBox::LineScroll()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlTextBox ) )
+		return RSERR; //invalid input
+
+	int nLine = 0;
+	if( !GetIntArgument( pArgs, nLine ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CEdit* pCtrl = (CEdit*)pDlgControl->GetControlWnd();
+
+	pCtrl->LineScroll( nLine, 0 );
+	acedRetT();
+	return RSRSLT;
 }
-int TextBox_ReplaceSel()
-{
-	CString sReplacementText;
-	int nArg=0;
-	CWnd *pControl = GetControlPointer(CtlTextBox, sTextBox_ReplaceSel, &nArg);
 
-	if (!GetStringArgument(nArg, &sReplacementText, sTextBox_ReplaceSel) || pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	
-	((CEdit*)pControl)->ReplaceSel(sReplacementText, TRUE);
-	
-	// return nil
-	acedRetVoid();
-	return 0;
+ADSRESULT TextBox::ReplaceSel()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlTextBox ) )
+		return RSERR; //invalid input
+
+	CString sText;
+	if( !GetStringArgument( pArgs, sText ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CEdit* pCtrl = (CEdit*)pDlgControl->GetControlWnd();
+
+	pCtrl->ReplaceSel( sText, TRUE );
+	acedRetT();
+	return RSRSLT;
 }
-int TextBox_SetSel()
+
+ADSRESULT TextBox::SetSel()
 {
-	int nStart;
-	int nEnd;
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	CWnd *pControl = GetArgsControlIntInt(CtlTextBox, sTextBox_SetSel, nStart, nEnd);
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlTextBox ) )
+		return RSERR; //invalid input
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	((CEdit*)pControl)->SetSel(nStart,nEnd, TRUE);
-	((CEdit*)pControl)->SetFocus();
-	
-	// return nil
-	acedRetVoid();
-	return 0;
+	int nStart = 0;
+	if( !GetIntArgument( pArgs, nStart ) )
+		return RSERR; //invalid input
+
+	int nEnd = 0;
+	if( !GetIntArgument( pArgs, nEnd ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CEdit* pCtrl = (CEdit*)pDlgControl->GetControlWnd();
+
+	pCtrl->SetSel( nStart, nEnd, TRUE );
+	pCtrl->SetFocus();
+	acedRetT();
+	return RSRSLT;
 }
-int TextBox_SetTabStops()
-{
-	int nUnits;
-	int nArg=0;
-	CWnd *pControl = GetControlPointer(CtlTextBox, sTextBox_SetTabStops, &nArg);
 
-	if (!GetIntArgument(nArg, &nUnits, sTextBox_SetTabStops) || pControl == NULL)
-	{
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	CDC *pdc = pControl->GetDC();
+ADSRESULT TextBox::SetTabStops()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlTextBox ) )
+		return RSERR; //invalid input
+
+	int nUnits = 0;
+	if( !GetIntArgument( pArgs, nUnits ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CEdit* pCtrl = (CEdit*)pDlgControl->GetControlWnd();
+
+	CDC* pdc = pCtrl->GetDC();
 	TEXTMETRIC tm;
-	pdc->GetTextMetrics(&tm);
-	pControl->ReleaseDC(pdc);
-
-	((CEdit*)pControl)->SetTabStops(nUnits * tm.tmAveCharWidth);
-
-	// return nil
-	acedRetVoid();
-	return 0;
+	pdc->GetTextMetrics( &tm );
+	pCtrl->ReleaseDC( pdc );
+	if( pCtrl->SetTabStops( nUnits * tm.tmAveCharWidth ) )
+		acedRetT();
+	return RSRSLT;
 }
-int TextBox_Undo()
+
+ADSRESULT TextBox::Undo()
 {
-	CWnd *pControl = GetControlPointer(CtlTextBox, sTextBox_Undo);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlTextBox ) )
+		return RSERR; //invalid input
 
-	if (((CEdit*)pControl)->CanUndo())
-		((CEdit*)pControl)->Undo();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	// return nil
-	acedRetVoid();
-	return 0;
+	CEdit* pCtrl = (CEdit*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->Undo() )
+		acedRetT();
+	return RSRSLT;
 }

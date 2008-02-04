@@ -21,6 +21,21 @@ CWorkspace* theWorkspacePtr()
 	return &workspace;
 }
 
+//Constant strings
+#define S_DefaultFontName _T("DefaultFontName")
+#define S_DefaultFontSize _T("DefaultFontSize")
+#define S_DefaultFontItalic _T("DefaultFontItalic")
+#define S_DefaultFontUnderLine _T("DefaultFontUnderLine")
+#define S_DefaultFontBold _T("DefaultFontBold")
+#define S_DefaultFontSizeStyle _T("DefaultFontSizeStyle")
+
+
+//function used by CLocalResourceModuleOverride defined in StdAfx.h
+HMODULE appLocalResModule(void)
+{
+	return theWorkspace.GetLocalResourceModule();
+}
+
 
 static CString StripPathFromFileName( LPCTSTR pszFilePath )
 {
@@ -74,11 +89,6 @@ HMODULE CArxWorkspace::GetResourceModule() const
 	return _hdllInstance;
 }
 
-HMODULE CArxWorkspace::GetLocalResourceModule() const
-{
-	return _hdllInstance;
-}
-
 CString CArxWorkspace::FindFile( LPCTSTR pszFilePath ) const
 {
 	CString sPath;
@@ -124,7 +134,7 @@ HWND CArxWorkspace::GetTopmostModalForm() const
 	{
 		CDialogObject *pDialog = mDialogs.GetPrev(pos);
 		assert(pDialog != NULL);
-		if (pDialog && !pDialog->IsModeless() && pDialog->GetWindow()->IsWindowVisible())
+		if (pDialog && !pDialog->IsModeless() && pDialog->GetControlWnd()->IsWindowVisible())
 			return pDialog->GetHWnd();
 	}
 	return adsw_acadMainWnd();
@@ -260,8 +270,8 @@ bool CArxWorkspace::UpdateGlobalLispSymbols() const
 			continue;
 		CString sVarName = pDialog->GetSourceForm()->GetVarName();
 		if (!sVarName.IsEmpty())
-			SetLispSymbol(sVarName, (UINT_PTR)(const CDclFormObject*)pDialog->GetSourceForm());
-		pDialog->GetControlPane().SetGlobalLispSymbols();
+			SetLispSymbol(sVarName, (UINT_PTR)(const CDclControlObject*)pDialog->GetSourceForm()->GetControlProperties());
+		pDialog->GetControlPane()->SetGlobalLispSymbols();
 	}
 
 	return !bFailed;
@@ -291,10 +301,10 @@ bool CArxWorkspace::AddExtensionTab( TDclFormPtr pDclForm, CAdUiTabExtensionMana
 	if( !pDialog )
 		return false;
 	CString sTabCaption = pDclForm->GetControlProperties()->GetStringProperty(Prop::CfgTabCaption);
-	if (!pTabXM->AddTab(_hdllInstance,
-											IDD_CFGTAB,
-											sTabCaption,
-											(CAdUiTabChildDialog*)pDialog->GetWindow()))
+	if( !pTabXM->AddTab( theWorkspace.GetLocalResourceModule(),
+											 IDD_CFGTAB,
+											 sTabCaption,
+											 (CAdUiTabChildDialog*)pDialog->GetControlWnd() ) )
 		return false;
 	return true;
 }
@@ -323,10 +333,10 @@ TDclFormPtr CArxWorkspace::FindDclFormControl( HWND hwndControl, /*out*/ CString
 		if (pDialog != NULL)
 		{
 			if (hwndControl == pDialog->GetHWnd())
-				return pDialog->GetControlPane().GetSourceForm();
-			CControlPane& Pane = pDialog->GetControlPane();
-			if (Pane.FindControl(hwndControl, sControlName))
-				return Pane.GetSourceForm();
+				return pDialog->GetControlPane()->GetSourceForm();
+			CControlPane* pPane = pDialog->GetControlPane();
+			if (pPane->FindControl(hwndControl, sControlName))
+				return pPane->GetSourceForm();
 		}
 	}
 	return NULL;
@@ -487,6 +497,25 @@ TArxProjectPtr CArxWorkspace::LoadProjectFile( LPCTSTR pszFilePath, LPCTSTR pszK
 	return pProject;
 }
 
+FontSettings CArxWorkspace::GetDefaultFontSettings() const
+{
+	CWinApp* pApp = AfxGetApp();
+	static const CString sSection = theWorkspace.GetAppKey();
+	FontSettings FS( pApp->GetProfileString( sSection, S_DefaultFontName, NULL ),
+									 pApp->GetProfileInt( sSection, S_DefaultFontSize, -10 ),
+									 pApp->GetProfileInt( sSection, S_DefaultFontBold, 0 ),
+									 pApp->GetProfileInt( sSection, S_DefaultFontUnderLine, 0 ),
+									 pApp->GetProfileInt( sSection, S_DefaultFontItalic, 0 ) );
+  if( !FS )
+    FS.setName( theWorkspace.GetDefaultFontName() );
+	if( pApp->GetProfileInt( sSection, S_DefaultFontSizeStyle, 0 ) != 0 )
+	{
+		if( !FS.isScaled() )
+			FS.setSize( -FS.size() ); //if "size style" is non-zero, make the size positive to indicate "point size"
+	}
+	return FS;
+}
+
 //display alert dialog; returns true if displayed, false if suppressed
 bool CArxWorkspace::DisplayAlert( LPCTSTR pszMessage ) const
 {
@@ -519,7 +548,7 @@ int CArxWorkspace::ActivateDclForm( TDclFormPtr pDclForm, DialogParams* pParams 
 	{ //I think this should result in failure, but for now it just shows the current dialog [ORW]
 		pDlgObject->Show();
 		if( !pDlgObject->IsModeless() )
-			pDlgObject->SetFocus();
+			pDlgObject->Focus();
 		return pDlgObject->GetID();
 	}
 	const TProjectPtr pProject = pDclForm->GetProject();
@@ -537,7 +566,7 @@ int CArxWorkspace::ActivateDclForm( TDclFormPtr pDclForm, DialogParams* pParams 
 			assert (pDlg != NULL);
 			if( !pDlg->IsModeless() )
 			{
-				pParent = pDlg->GetWindow();
+				pParent = pDlg->GetControlWnd();
 				break;
 			}
 		}

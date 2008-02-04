@@ -3,1694 +3,1101 @@
 
 #include "stdafx.h"
 #include "Methods_Grid.h"
-#include "DclControlObject.h"
-#include "PropertyObject.h"
-#include "ErrorLexicon.h"
-#include "MethodLexicon.h"
 #include "ArgumentsRetrieval.h"
 #include "ArxGridCtrl.h"
-#include "PropertyIds.h"
-#include "ControlTypes.h"
+#include "Resource.h"
 #include "Workspace.h"
 
 
 static void ReturnRowCol(int nRow, int nCol)
 {
-	// this code is for all other dialogs
-	int stat;
-	struct resbuf *list;    
-
-	list = acutBuildList(
-		RTSHORT, nRow,
-		RTSHORT, nCol,
-		RTNONE);
-
-	if (list != NULL) { 	    
-		stat = acedRetList(list);		
-		acutRelRb(list); 
-	} 
+	resbuf rbColumn = { NULL, RTSHORT };
+	rbColumn.resval.rint = nCol;
+	resbuf rbRow = { &rbColumn, RTSHORT };
+	rbRow.resval.rint = nRow;
+	acedRetList( &rbRow );
 }
 
 
-//*****************************************************************************
-// 
-// Method: Grid_AddColumn()
-// 
-// Purpose: [Add a column to a list ctrl]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-int Grid_AddColumn()
+ADSRESULT Grid::AddColumns()
 {
-	CString sStringArg;
-	struct resbuf *ListData;
-	int nCol;
-	CString sColumnHeading;
-	int nFormat;
-	int nWidth;
-	int nImageIndex = -1;
-	int nArg=0;
-	TDclControlPtr pArx = GetControlArxObject(sGrid_AddColumn, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pArx == NULL)
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	bool bNestedLists = GetListBeginArgument( pArgs, true );
+
+	CString sCaption;
+	while( GetStringArgument( pArgs, sCaption, true ) )
 	{
-		acedRetInt(-1);
-		return 0;		
+		int nFormat = LVCFMT_CENTER;
+		int nColWidth = -1;
+		int nImage = -1;
+		int nJustification;
+		if( GetIntArgument( pArgs, nJustification, true ) )
+		{
+			switch( nJustification )
+			{
+			case 1:
+				nFormat = LVCFMT_CENTER;
+				break;
+			case 2:
+				nFormat = LVCFMT_RIGHT;
+				break;
+			case 0:
+				nFormat = LVCFMT_LEFT;
+				break;
+			default:
+				HandleArgValueError( pArgs );
+				return RSERR;
+			}
+
+			if( GetIntArgument( pArgs, nColWidth, true ) )
+				GetIntArgument( pArgs, nImage, true );
+		}
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		if( -1 == pCtrl->InsertColumn( pCtrl->GetColumnCount(), sCaption, nFormat, nColWidth, nImage ) )
+			return RSRSLT;
+
+		if( !GetListBeginArgument( pArgs, true ) )
+			break;
 	}
 
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();	
-  TPropertyPtr m_pColCaptions = pArx->GetPropertyObject(Prop::ColumnCaptions);	
+	if( bNestedLists && !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	for (int i = 0; i < nArg; i++)
+	acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::InsertColumn()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nInsertIdx;
+	if( !GetIntArgument( pArgs, nInsertIdx ) )
+		return RSERR; //invalid input
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	CString sCaption;
+	if( !GetStringArgument( pArgs, sCaption ) )
+		return RSERR; //invalid input
+
+	int nFormat = LVCFMT_CENTER;
+	int nColWidth = -1;
+	int nImage = -1;
+	int nJustification;
+	if( GetIntArgument( pArgs, nJustification, true ) )
 	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
+		switch( nJustification )
+		{
+		case 1:
+			nFormat = LVCFMT_CENTER;
+			break;
+		case 2:
+			nFormat = LVCFMT_RIGHT;
+			break;
+		case 0:
+			nFormat = LVCFMT_LEFT;
+			break;
+		default:
+			HandleArgValueError( pArgs );
+			return RSERR;
+		}
+
+		if( GetIntArgument( pArgs, nColWidth, true ) )
+			GetIntArgument( pArgs, nImage, true );
 	}
 
-	if (ListData == NULL)
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	if( -1 == pCtrl->InsertColumn( nInsertIdx, sCaption, nFormat, nColWidth, nImage ) )
+		return RSRSLT;
+
+	acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::AddRow()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	int nImage = -1;
+	GetIntArgument( pArgs, nImage, true );
+
+	CString sItemText;
+	if( !GetStringArgument( pArgs, sItemText ) )
+		return RSERR; //invalid input
+
+	CStringArray rsText;
+	GetStringArrayArgument( pArgs, rsText, true );
+
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	int nRow = pCtrl->InsertItem( pCtrl->GetItemCount(), sItemText, nImage );
+	if( nRow == -1 )
+		return RSRSLT;
+	for( int idx = rsText.GetCount() - 1; idx >= 0; --idx )
+		pCtrl->SetCellText( nRow, idx + 1, rsText.GetAt( idx ) );
+
+	acedRetInt( nRow );
+	return RSRSLT;
+}
+
+ADSRESULT Grid::InsertRow()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nInsertIdx;
+	if( !GetIntArgument( pArgs, nInsertIdx ) )
+		return RSERR; //invalid input
+
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	int nImage = -1;
+	GetIntArgument( pArgs, nImage, true );
+
+	CString sItemText;
+	if( !GetStringArgument( pArgs, sItemText ) )
+		return RSERR; //invalid input
+
+	CStringArray rsText;
+	GetStringArrayArgument( pArgs, rsText, true );
+
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	int nRow = pCtrl->InsertItem( nInsertIdx, sItemText, nImage );
+	if( nRow == -1 )
+		return RSRSLT;
+	for( int idx = rsText.GetCount() - 1; idx >= 0; --idx )
+		pCtrl->SetCellText( nRow, idx + 1, rsText.GetAt( idx ) );
+
+	acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::Clear()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->DeleteAllItems() )
+		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::GetItemData()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nItem = -1;
+	if( !GetIntArgument( pArgs, nItem ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	acedRetHandle( pCtrl->GetItemData( nItem ) );
+	return RSRSLT;
+}
+
+ADSRESULT Grid::SetItemData()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nItem = -1;
+	if( !GetIntArgument( pArgs, nItem ) )
+		return RSERR; //invalid input
+
+	DWORD_PTR dwData = -1;
+	if( !GetHandleArgument( pArgs, dwData ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->SetItemData( nItem, dwData ) )
+		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::GetItemImage()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nRow = -1;
+	if( !GetIntArgument( pArgs, nRow ) )
+		return RSERR; //invalid input
+
+	int nCol = 0;
+	GetIntArgument( pArgs, nCol, true );
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	acedRetInt( pCtrl->GetCellImage( nRow, nCol ) );
+	return RSRSLT;
+}
+
+ADSRESULT Grid::GetItemText()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nRow = -1;
+	if( !GetIntArgument( pArgs, nRow ) )
+		return RSERR; //invalid input
+
+	int nCol = 0;
+	GetIntArgument( pArgs, nCol, true );
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	acedRetStr( pCtrl->GetCellText( nRow, nCol ) );
+	return RSRSLT;
+}
+
+ADSRESULT Grid::GetRowItems()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nItem = -1;
+	if( !GetIntArgument( pArgs, nItem ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	resbuf* prbResult = NULL;
+	resbuf* prbTail = NULL;
+	size_t ctCol = pCtrl->GetColumnCount();
+	for( int idxCol = 0; idxCol < ctCol; ++idxCol )
 	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	
-	bool bDoLoop = true;
-	while (bDoLoop)
-	{
-		if (ListData->restype == RTLB) 
-		{			
-			// advance to the first list item
-			ListData = ListData->rbnext;
-
-			// start of inner list
-			if (ListData->restype == RTLB) 
-			{				
-				// advance to the first list item
-				ListData = ListData->rbnext;
-			}
-
-			if (ListData == NULL)
-			{
-				// inform the programmer that he did not make the correct call
-				acedAlert(CString(ErrorListNotSet) + sGrid_AddColumn);	
-				acedRetInt(-1);  return 0; 
-			}
-			
-			if (ListData->restype != RTSHORT) 
-			{
-				// inform the programmer that he did not make the correct call
-				acedAlert(CString(ErrorListArgNotInt) + sGrid_AddColumn);	
-				acedRetInt(-1);  return 0; 
-			}
-			
-			// get the first argument required
-			nCol = ListData->resval.rint;
-
-			// advance to the next list item
-			ListData = ListData->rbnext;
-
-			if (ListData == NULL)
-			{
-				// inform the programmer that he did not make the correct call
-				acedAlert(CString(ErrorListNotSet) + sGrid_AddColumn);	
-				acedRetInt(-1);  return 0; 
-			}
-			
-			if (ListData->restype != RTSTR) 
-			{
-				// inform the programmer that he did not make the correct call
-				acedAlert(CString(ErrorListArgNotStr) + sGrid_AddColumn);	
-				acedRetInt(-1);  return 0; 
-			}
-
-			// get the second argument required
-			sColumnHeading = ListData->resval.rstring;
-
-			// advance to the next list item
-			ListData = ListData->rbnext;
-			if (ListData == NULL)
-			{
-				// inform the programmer that he did not make the correct call
-				acedAlert(CString(ErrorListNotSet) + sGrid_AddColumn);	
-				acedRetInt(-1);  return 0; 
-			}
-		
-
-			if (ListData->restype != RTSHORT) 
-			{
-				// inform the programmer that he did not make the correct call
-				acedAlert(CString(ErrorListArgNotInt) + sGrid_AddColumn);	
-				acedRetInt(-1);  return 0; 
-			}
-			// get the third argument required
-			nFormat = ListData->resval.rint;
-			
-			// advance to the next list item
-			ListData = ListData->rbnext;
-
-			if (ListData == NULL)
-			{
-				// inform the programmer that he did not make the correct call
-				acedAlert(CString(ErrorListNotSet) + sGrid_AddColumn);	
-				acedRetInt(-1);  return 0; 
-			}
-			if (ListData->restype != RTSHORT) 
-			{
-				// inform the programmer that he did not make the correct call
-				acedAlert(CString(ErrorListArgNotInt) + sGrid_AddColumn);	
-				acedRetInt(-1);  return 0; 
-			}
-			// get the fourth argument required
-			nWidth = ListData->resval.rint;
-
-			// advance to the next list item
-			ListData = ListData->rbnext;
-			if (ListData == NULL)
-			{
-				// inform the programmer that he did not make the correct call
-				acedAlert(CString(ErrorListNotSet) + sGrid_AddColumn);	
-				acedRetInt(-1);  return 0; 
-			}
-			if (ListData->restype == RTSHORT) 
-			{
-				// get the next argument required
-				nImageIndex = ListData->resval.rint;
-	
-				// advance to the next list item
-				ListData = ListData->rbnext;			
-			}
-			else
-				nImageIndex = -1;
-			
-			// convert the format to the required setting
-			switch(nFormat)
-			{
-				case 1:
-					nFormat = LVCFMT_CENTER;
-					break;
-				case 2:
-					nFormat = LVCFMT_RIGHT;
-					break;
-				case 0:
-				default:
-					nFormat = LVCFMT_LEFT;
-					break;
-			}
-			// insert the column
-			int nRet = pGridCtrl->InsertColumn(
-							nCol,
-							sColumnHeading,
-							nFormat,
-							nWidth,
-							nImageIndex);
-
-			if (ListData->restype != RTLE) 
-			{
-				// inform the programmer that he did not make the correct call
-				acedAlert(CString(ErrorToManyItemsInList) + sGrid_AddColumn);	
-				acedRetInt(-1);  return 0; 
-			}	
-			else
-			{
-				// advance to the next list item
-				ListData = ListData->rbnext;
-
-				// if no more lists are found then exit here
-				if (ListData == NULL)
-				{
-					// return nil
-					acedRetT();
-					return 0;
-				}
-				// start of inner list
-				if (ListData->restype == RTLE) 
-				{
-					// advance to the first list item
-					ListData = ListData->rbnext;
-					// if no more lists are found then exit here
-					if (ListData == NULL)
-					{
-						// return nil
-						acedRetT();
-						return 0;
-					}
-				}
-			}
-			// if no more lists are found then exit here
-			if (ListData == NULL)
-			{
-				// return nil
-				acedRetT();
-				return 0;
-			}
+		if( prbTail )
+		{
+			prbTail->rbnext = acutNewRb( RTSTR );
+			prbTail = prbTail->rbnext;
 		}
 		else
-		{	
-			// inform the programer that he did not make the correct call
-			acedAlert(CString(ErrorListWasExpected) + sGrid_AddColumn);			
-			acedRetInt(-1);  return 0; 
-		}
-	}
-	
-	// return nil
-	acedRetT();
-	return 0;
-}
-
-
-
-//*****************************************************************************
-// 
-// Method: Grid_AddRow()
-// 
-// Purpose: [Add a row to a list ctrl]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-int Grid_AddRow()
-{
-	Grid_ApplyNewRow(false, sGrid_AddRow);
-	return 0;
-}
-//*****************************************************************************
-// 
-// Method: Grid_InsertRow()
-// 
-// Purpose: [inserts a row to a grid ctrl]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-int Grid_InsertRow()
-{
-	Grid_ApplyNewRow(true, sGrid_InsertRow);
-	return 0;
-}
-
-//*****************************************************************************
-// 
-// Method: Grid_ApplyNewRow()
-// 
-// Purpose: [does the actual insertion of a new row to a list ctrl]
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-int Grid_ApplyNewRow(bool bLookForInsertIndex, CString sMethodName)
-{
-	CString sStringArg;
-	struct resbuf *ListData;
-	int nIndex;
-	int nImage = -1;
-	CStringArray sTextArray;
-	CArray<int, int> nIntArray;
-	int nArg=0;
-
-	TDclControlPtr pArx = GetControlArxObject(sMethodName, &nArg);
-	if (pArx == NULL)
-	{
-		acedRetInt(-1);
-		return 0;		
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();	
-
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-
-  int i;	
-	for (i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	if (bLookForInsertIndex)
-	{
-		if (ListData->restype != RTSHORT) 
 		{
-			// inform the programmer that he did not make the correct call
-			acedAlert(CString(ErrorListArgNotInt) + sMethodName);	
-			acedRetInt(-1);  return 0; 
+			prbTail = acutNewRb( RTSTR );
+			prbResult = prbTail;
 		}
-
-		// get the first argument required
-		nIndex = ListData->resval.rint;
-
-		// advance to the next list item
-		ListData = ListData->rbnext;
+		acutNewString( pCtrl->GetCellText( nItem, idxCol ), prbTail->resval.rstring );
 	}
-	else
-		nIndex = pGridCtrl->GetItemCount();
-	
+	acedRetList( prbResult );
+	acutRelRb( prbResult );
+	return RSRSLT;
+}
 
-	// see if an image has been requested to be associated
-	if (ListData->restype == RTSHORT) 
+ADSRESULT Grid::GetColumnItems()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	resbuf* prbResult = NULL;
+	resbuf* prbTail = NULL;
+	int ctRow = pCtrl->GetItemCount();
+	for( int idxRow = 0; idxRow < ctRow; ++idxRow )
 	{
-		// get the first argument required
-		nIntArray.Add(ListData->resval.rint);
-
-		// advance to the next list item
-		ListData = ListData->rbnext;	
-	}
-	else
-	{
-		// get the first argument required
-		nIntArray.Add(-1);
-
-	}
-
-	// clear the array
-	sTextArray.RemoveAll();
-
-	// do loop to get all the strings passed by AutoLISP
-	bool bDoLoop = true;
-	while (bDoLoop)
-	{
-		if (ListData->restype == RTLB) 
-		{				
-			// advance to the first list item
-			ListData = ListData->rbnext;
-		}
-
-		// if no more lists are found then exit here
-		if (ListData->restype == RTSHORT)
+		if( prbTail )
 		{
-			nIntArray.Add(ListData->resval.rint);
-			ListData = ListData->rbnext;
+			prbTail->rbnext = acutNewRb( RTSTR );
+			prbTail = prbTail->rbnext;
 		}
-		else if (ListData->restype == RTLONG)
+		else
 		{
-			nIntArray.Add(ListData->resval.rlong);
-			ListData = ListData->rbnext;
+			prbTail = acutNewRb( RTSTR );
+			prbResult = prbTail;
 		}
-		else if (ListData->restype == RTREAL)
-		{
-			nIntArray.Add(ListData->resval.rreal);
-			ListData = ListData->rbnext;
-		}
-
-
-		// get the second argument required
-		sTextArray.Add(ListData->resval.rstring);
-
-		// advance to the next list item
-		ListData = ListData->rbnext;
-		
-		
-		// if no more lists are found then exit here
-		if (ListData == NULL || ListData->restype == RTLE)
-		{
-			bDoLoop = false;
-		}
+		acutNewString( pCtrl->GetCellText( idxRow, nCol ), prbTail->resval.rstring );
 	}
-
-	int nInsertIndex = -1;
-	if (sTextArray.GetSize() > 0)
-		nInsertIndex = pGridCtrl->InsertItem( nIndex, sTextArray[0], nIntArray[0] );
-
-	// now set the rest of the cells.
-	for (i=1; i<sTextArray.GetSize(); i++)
-	{
-		pGridCtrl->SetCellTextImage(nInsertIndex,
-																i,
-																sTextArray[i],
-																(i < nIntArray.GetSize())? nIntArray[i] : nIntArray[0]);
-	}
-	
-	// clear the text array
-	sTextArray.RemoveAll();
-	
-	// return the insertion index
-	acedRetInt(nInsertIndex);
-
-	return 0;
+	acedRetList( prbResult );
+	acutRelRb( prbResult );
+	return RSRSLT;
 }
 
-//*****************************************************************************
-// 
-// Method: Grid_Clear()
-// 
-// Purpose: [return the item count]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-
-int Grid_Clear()
+ADSRESULT Grid::SetItemText()
 {
-	int nArg=0;
-	TDclControlPtr pArx = GetControlArxObject(sGrid_Clear, &nArg);
-	if (pArx == NULL)		
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();	
-	for (int i=0; i<pGridCtrl->GetItemCount(); i++)
-	{
-		if (pGridCtrl->GetItemData(i) > 0)
-		{
-			delete (_RowData *)pGridCtrl->GetItemData(i);
-		}
-	}
-	// delete all the items
-	pGridCtrl->DeleteAllItems();
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
 
-	// return nil
-	acedRetT();
-	return 0;
-}
-//*****************************************************************************
-// 
-// Method: Grid_GetItemData()
-// 
-// Purpose: [return the item data of an item]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
+	int nRow = -1;
+	if( !GetIntArgument( pArgs, nRow ) )
+		return RSERR; //invalid input
 
-int Grid_GetItemData()
-{
-	int nIndex;
-	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nIndex);
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
 
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
+	CString sText;
+	if( !GetStringArgument( pArgs, sText ) )
+		return RSERR; //invalid input
 
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	acedRetInt(pGridCtrl->GetItemData(nIndex));
-	return 0;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->SetItemText( nRow, nCol, sText ) )
+		acedRetT();
+	return RSRSLT;
 }
 
-
-//*****************************************************************************
-// 
-// Method: Grid_GetItemImage()
-// 
-// Purpose: [return the item image of an item]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-
-int Grid_GetItemImage()
+ADSRESULT Grid::SetItemStyle()
 {
-	int nIndex = 0;
-	int nColIndex = 0;
-	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nIndex, nColIndex);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
 
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
+	int nRow = -1;
+	if( !GetIntArgument( pArgs, nRow ) )
+		return RSERR; //invalid input
 
-	// return the count
-	acedRetInt(pGridCtrl->GetCellImage(nIndex, nColIndex));
-	return 0;
-}
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
 
-//*****************************************************************************
-// 
-// Method: Grid_SetItemData()
-// 
-// Purpose: [return the sets the item data of an item]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
+	int nStyle = -1;
+	if( !GetIntArgument( pArgs, nStyle ) )
+		return RSERR; //invalid input
 
-int Grid_SetItemData()
-{
-	int nIndex=0;
-	long lItemData = 0;
-
-	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nIndex, lItemData);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	pGridCtrl->SetItemData(nIndex, (DWORD_PTR)lItemData);
-	acedRetT();
-	return 0;
-}
-
-//*****************************************************************************
-// 
-// Method: Grid_GetItemText()
-// 
-// Purpose: [return the item's Text]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-
-int Grid_GetItemText()
-{
-	int nRowIndex;
-	int nColIndex = 0;
-	
-	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nRowIndex, nColIndex);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-		
-	// return the count
-	acedRetStr(pGridCtrl->GetItemText(nRowIndex, nColIndex));
-	return 0;
-}
-
-
-//*****************************************************************************
-// 
-// Method: Grid_GetRow()
-// 
-// Purpose: [return the row Text in a list]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-
-int Grid_GetRow()
-{
-	int nRowIndex;
-	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nRowIndex);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-		
-	// Convert the array to a list that can be returned
-	struct resbuf* rbpRetList = acutNewRb(RTSTR);
-	struct resbuf* rbpTail = rbpRetList;
- 
-	// Get the indexes of all the selected items.
-	int nCount = pGridCtrl->GetItemCount();
-
-	// if nothing selected
-	if (nCount == 0)
-	{
-		// return nil
-		acedRetNil();
-		return 0;
-	}
-	
-	if (pGridCtrl->GetHeaderCtrl() != NULL)
-	{
-		// get the column count
-		int nColumnCount = pGridCtrl->GetHeaderCtrl()->GetItemCount();
-
-		for (int j=0; j<nColumnCount; j++)
-		{	
-			// get the text name of the selected line number
-			CString sTextItem = pGridCtrl->GetItemText(nRowIndex, j);
-
-			acutNewString(sTextItem, rbpTail->resval.rstring);
-			if ((j+1) < nColumnCount)
-			{
-				rbpTail->rbnext = acutNewRb(RTSTR);
-				rbpTail = rbpTail->rbnext;
-			}
-		}
-	}
-	
-	acedRetList(rbpRetList);
-	acutRelRb(rbpRetList);
-	return 0;
-}
-
-//*****************************************************************************
-// 
-// Method: Grid_GetColumn()
-// 
-// Purpose: [return the column Text in a list]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-
-int Grid_GetColumn()
-{
-	int nColumnIndex;
-	
-	TDclControlPtr pArx = GetLispInput(sGrid_GetColumn, nColumnIndex);
-	
-	if (pArx == NULL)	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	// Convert the array to a list that can be returned
-	struct resbuf* rbpRetList = acutNewRb(RTSTR);
-	struct resbuf* rbpTail = rbpRetList;
- 
-	// Get the indexes of all the selected items.
-	int nCount = pGridCtrl->GetItemCount();
-	// get the column count
-	int nColumnCount = pGridCtrl->GetHeaderCtrl()->GetItemCount();
-
-	// if nothing selected
-	if (nCount == 0 || nColumnCount == 0 || nColumnCount <= nColumnIndex)
-	{
-		// return nil
-		acedRetNil();
-		return 0;
-	}
-
-	
-	for (int j=0; j<nCount; j++)
-	{	
-		// get the text name of the selected line number
-		CString sTextItem = pGridCtrl->GetItemText(j, nColumnIndex);
-
-		acutNewString(sTextItem, rbpTail->resval.rstring);
-		if ((j+1) < nCount)
-		{
-			rbpTail->rbnext = acutNewRb(RTSTR);
-			rbpTail = rbpTail->rbnext;
-		}
-	}
-
-
-	acedRetList(rbpRetList);
-	acutRelRb(rbpRetList);
-	return 0;
-}
-
-//*****************************************************************************
-// 
-// Method: Grid_SetItemText()
-// 
-// Purpose: [sets the item's Text]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-
-int Grid_SetItemText()
-{
-	int nRowIndex;
-	int nColIndex;
-	CString sNewText;
-
-	TDclControlPtr pArx = GetLispInput(sGrid_SetItemImage, nRowIndex, nColIndex, sNewText);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-		
-	pGridCtrl->SetItemText(nRowIndex, nColIndex, sNewText);
-	
-	acedRetT();
-	return 0;
-}
-
-		
-//*****************************************************************************
-// 
-// Method: Grid_Cell_SetStyle()
-// 
-// Purpose: [sets the cell editing style]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-
-int Grid_Cell_SetStyle()
-{
-	int nRow;
-	int nCol;
-	int nStyle;
 	int nData1 = -1;
 	int nData2 = -1;
+	if( GetIntArgument( pArgs, nData1, true ) )
+		GetIntArgument( pArgs, nData2, true );
+
 	CString sOptionalText;
+	GetStringArgument( pArgs, sOptionalText, true );
 
-	TDclControlPtr pArx = GetLispInput(sGrid_Cell_SetStyle, nRow, nCol, nStyle, nData1, nData2, sOptionalText);
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	pGridCtrl->SetCellStyle(nRow, nCol, (CellStyle)nStyle, nData1, nData2, nData2, sOptionalText);
-
+	pCtrl->SetCellStyle( nRow, nCol, (CellStyle)nStyle, nData1, nData2, nData2, sOptionalText );
 	acedRetT();
-	return 0;
+	return RSRSLT;
 }			
 
-
-int Grid_HitPointTest()
+ADSRESULT Grid::HitPointTest()
 {
-	int nX;
-	int nY;
-	int nArg=0;
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	TDclControlPtr pArx = GetLispInput(sGrid_HitPointTest, nX, nY);
-	
-	if (pArx == NULL)	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	CArxGridCtrl *pGrid = (CArxGridCtrl*)pArx->GetWindow();
-	
-	CPoint pt(nX, nY);
-	int nRow, nCol;
-	pGrid->CellHitTest(pt, nRow, nCol);
-	
-	ReturnRowCol(nRow, nCol);
-	return 0;
-	
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nX = -1;
+	if( !GetIntArgument( pArgs, nX ) )
+		return RSERR; //invalid input
+
+	int nY = -1;
+	if( !GetIntArgument( pArgs, nY ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	int nRow = -1, nCol = -1;
+	pCtrl->CellHitTest( CPoint( nX, nY ), nRow, nCol );
+	ReturnRowCol( nRow, nCol );
+	return RSRSLT;
 }
 
-int Grid_Cell_SetDropList()
+ADSRESULT Grid::SetItemDropList()
 {
-	int nRow;
-	int nCol;
-	int nData1 = 0;
-	int nData2 = 0;
-	CStringArray sStrings;
-	CArray<int, int> nInts;
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	TDclControlPtr pArx = GetLispInput(sGrid_Cell_SetDropList, nRow, nCol, &nInts, &sStrings);
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
 
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
+	int nRow = -1;
+	if( !GetIntArgument( pArgs, nRow ) )
+		return RSERR; //invalid input
 
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	pGridCtrl->SetCellListData( nRow, nCol, nInts, sStrings );
-	
-	acedRetT();
-	return 0;
-}			
-//*****************************************************************************
-// 
-// Method: Grid_SetItemImage()
-// 
-// Purpose: [sets the item's Image]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-
-int Grid_SetItemImage()
-{
-	int nArg1 = -1;
-	int nArg2 = -1;
-	int nArg3 = -1;
-	TDclControlPtr pArx = GetLispInput(sGrid_SetItemImage, nArg1, nArg2, nArg3);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-		
-	pGridCtrl->SetCellImage(nArg1, nArg2, nArg3);
-
-	
-	acedRetT();
-	return 0;
-}
-
-//*****************************************************************************
-// 
-// Method: Grid_SetColWidth()
-// 
-// Purpose: [sets the column width]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-
-int Grid_GetColWidth()
-{
-	int nArg;
-	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_GetColWidth, &nArg);
-	TDclControlPtr pArx = GetControlArxObject(sGrid_GetColWidth, &nArg);
-
-	int nColIndex;
-	
-	if (pArx == NULL || !GetIntArgument(nArg, &nColIndex, sGrid_GetColWidth))	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	acedRetInt(pGridCtrl->GetColumnWidth(nColIndex));
-	return 0;
-}
-
-
-//*****************************************************************************
-// 
-// Method: Grid_SetColWidth()
-// 
-// Purpose: [sets the column width]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-
-int Grid_SetColWidth()
-{
-	int nColIndex = 0;
-	int nNewWidth = 0;
-	
-	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nColIndex, nNewWidth);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-
-	pGridCtrl->SetColumnWidth(nColIndex, nNewWidth);
-
-	acedRetT();
-	return 0;
-}
-
-
-//*****************************************************************************
-// 
-// Method: Grid_CalcColumnWidth()
-// 
-// Purpose: [returns the min required width of a column]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-int Grid_CalcColumnWidth()
-{
-	CString sText;
-	
-	TDclControlPtr pArx = GetLispInput(sGrid_CalcColumnWidth, sText);
-		
-	if (pArx != NULL)
-	{
-		CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-		acedRetInt(pGridCtrl->GetStringWidth(sText)*0.5*3);
-	}
-	else
-		acedRetNil();
-
-	return 0;
-}
-//*****************************************************************************
-// 
-// Method: Grid_DeleteItems()
-// 
-// Purpose: [Forces an item to be selected]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-int Grid_DeleteItems()
-{
-	int nRow;
-	
-	TDclControlPtr pArx = GetLispInput(sGrid_DeleteItems, nRow);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	pGridCtrl->DeleteItem(nRow);
-
-	acedRetT();
-	return 0;
-}
-
-//*****************************************************************************
-// 
-// Method: Grid_DeleteColumns()
-// 
-// Purpose: [Forces an item to be selected]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-int Grid_DeleteColumns()
-{
-	int nCol;
-	
-	TDclControlPtr pArx = GetLispInput(sGrid_DeleteColumns, nCol);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	pGridCtrl->DeleteColumn(nCol);
-	
-	acedRetT();
-	return 0;
-}
-//*****************************************************************************
-// 
-// Method: Grid_FillGrid()
-// 
-// Purpose: [Adds multiple rows to a list ctrl]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-int Grid_FillGrid()
-{
-	struct resbuf *ListData;
-	int nImage = -1;
-	CString sText;
-	int nArg;
-	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_FillGrid, &nArg);
-	TDclControlPtr pArx = GetControlArxObject(sGrid_FillGrid, &nArg);
-	if (pArx == NULL)
-	{
-		acedRetInt(-1);
-		return 0;		
-	}
-	
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-
-  int i;	
-	for (i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	int nCurCol = 0;
-	int nIndex = -1;
-	bool bDoLoop = true;
-
-	for (i=0; i<pGridCtrl->GetItemCount(); i++)
-	{
-		if (pGridCtrl->GetItemData(i) > 0)
-		{
-			delete (_RowData *)pGridCtrl->GetItemData(i);
-		}
-	}
-	
-	// delete all the items
-	pGridCtrl->DeleteAllItems();
-	
-	int nCurrentRow = -1;
-
-	pGridCtrl->SetRedraw(FALSE); // turn drawing off regardless of list mode
-
-	while (bDoLoop)
-	{
-		// start of main list
-		if (ListData->restype == RTLB) 
-		{				
-			// advance to the first list item
-			ListData = ListData->rbnext;
-			nIndex = 1;
-			nCurCol++;
-		}
-		// start of inner list
-		if (ListData->restype == RTLB) 
-		{				
-			// advance to the first list item
-			ListData = ListData->rbnext;
-		}
-		if (ListData == NULL)
-		{
-			pGridCtrl->SetRedraw(TRUE); // turn drawing back on and update the window
-			pGridCtrl->Invalidate();
-			pGridCtrl->UpdateWindow(); 
-			// inform the programmer that he did not make the correct call
-			acedAlert(CString(ErrorListNotSet) + sGrid_FillGrid);	
-			acedRetInt(-1);  return 0; 
-		}
-		
-		if (ListData->restype != RTSTR) 
-		{
-			pGridCtrl->SetRedraw(TRUE); // turn drawing back on and update the window
-			pGridCtrl->Invalidate();
-			pGridCtrl->UpdateWindow(); 
-			// inform the programmer that he did not make the correct call
-			acedAlert(CString(ErrorListArgNotStr) + sGrid_FillGrid);	
-			acedRetInt(-1);  return 0; 
-		}
-
-		// get the first argument required
-		sText = ListData->resval.rstring;
-		
-		// advance to the next list item
-		ListData = ListData->rbnext;				
-		
-		if (ListData == NULL)
-		{
-			pGridCtrl->SetRedraw(TRUE); // turn drawing back on and update the window
-			pGridCtrl->Invalidate();
-			pGridCtrl->UpdateWindow(); 
-			// inform the programmer that he did not make the correct call
-			acedAlert(CString(ErrorListNotSet) + sGrid_FillGrid);	
-			acedRetInt(-1);  return 0; 
-		}
-		
-		if (ListData->restype == RTSHORT) 
-		{
-			// get the second argument required
-			nImage = ListData->resval.rint;
-
-			// advance to the next list item
-			ListData = ListData->rbnext;				
-		}
-		//else
-		//	nImage = -1;
-
-		int nCount = pGridCtrl->GetItemCount();
-
-		if (nCurCol == 1)
-			nCurrentRow = pGridCtrl->InsertItem( nCount, sText, nImage );			
-		else
-			pGridCtrl->SetCellTextImage( nCurrentRow, nCurCol-1, sText, nImage );			
-
-		if (ListData->restype == RTLE) 
-		{
-			// advance to the next list item
-			ListData = ListData->rbnext;	
-
-			if (ListData == NULL || ListData->restype == RTLE) 
-				bDoLoop = false;
-		}	
-
-		// increment the index counter
-		nIndex++;
-		
-		// if no more lists are found then exit here
-		if (ListData == NULL)
-			bDoLoop = false;
-	}
-	
-	pGridCtrl->SetRedraw(TRUE); // turn drawing back on and update the window
-	pGridCtrl->Invalidate();
-	pGridCtrl->UpdateWindow(); 
-		
-	acedRetT();
-	return 0;
-}
-
-int Grid_GetSelectedCell()
-{
-	int nArg=0;
-	TDclControlPtr pArx = GetControlArxObject(sGrid_GetSelectedCell, &nArg);
-	if (pArx == NULL)
-	{
-		acedRetNil();
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	ReturnRowCol( pGridCtrl->GetCurRow(), pGridCtrl->GetCurColumn() );
-	return 0;
-}
-
-
-int Grid_CancelLabelEdit()
-{	
-	int nArg = 0;
-	TDclControlPtr pArx = GetControlArxObject(sGrid_CancelLabelEdit, &nArg);
-	if (pArx == NULL)
-	{
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	// Make sure the focus is set to the list view control.
-	pGridCtrl->HideEditControls();
-
-	acedRetT();
-	return 0;
-}
-
-
-int Grid_SortColTextItems()
-{
-	int nCol=0;
-	int nAscending;
-	int nArg=0;
-
-	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_SortTextItems, &nArg);
-	TDclControlPtr pArx = GetControlArxObject(sGrid_SortTextItems, &nArg);
-	if (pArx == NULL || !GetIntArgument(nArg, &nCol, sGrid_SortTextItems))	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	nArg++;
-	if (!FindOptionalIntArgument(nArg, &nAscending, sGrid_SortTextItems))
-	{
-		//nAscending = nCol;
-	}
-
-    try
-	{
-		pGridCtrl->SortTextItems(nCol, nAscending);
-	}
-	catch(...)
-	{
-	}
-	
-	acedRetT();
-	return 0;
-}
-
-int Grid_SortColNumericItems()
-{
-	int nCol;
-	int nAscending;
-	int nArg=0;
-
-	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_SortNumericItems, &nArg);
-	TDclControlPtr pArx = GetControlArxObject(sGrid_SortNumericItems, &nArg);
-	if (pArx == NULL || !GetIntArgument(nArg, &nCol, sGrid_SortNumericItems))	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	nArg++;
-	if (!FindOptionalIntArgument(nArg, &nAscending, sGrid_SortNumericItems))
-	{
-		//nAscending = nCol;
-	}
-
-	try
-	{
-		pGridCtrl->SortNumericItems(nCol, nAscending);
-	}
-	catch(...)
-	{
-	}
-	
-	acedRetT();
-	return 0;
-}
-
-
-
-
-//*****************************************************************************
-// 
-// Method: Grid_SetColumnImage()
-// 
-// Purpose: [sets the column's Image]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-
-int Grid_SetColumnImage()
-{
 	int nCol = -1;
-	int nImage = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
 
-	TDclControlPtr pArx = GetLispInput(sGrid_SetColumnImage, nCol, nImage);
-	
-	if (pArx == NULL)	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	CStringArray rsText;
+	if( !GetStringArrayArgument( pArgs, rsText ) )
+		return RSERR; //invalid input
 
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
+	CArray< int, int > rnImage;
+	GetIntArrayArgument( pArgs, rnImage, true );
 
-	CHeaderCtrl *pHeader = pGridCtrl->GetHeaderCtrl();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	if (pHeader == NULL)
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->SetCellListData( nRow, nCol, rnImage, rsText ) )
+		acedRetT();
+	return RSRSLT;
+}			
+
+ADSRESULT Grid::SetItemImage()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nRow = -1;
+	if( !GetIntArgument( pArgs, nRow ) )
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	int nImage;
+	if( !GetIntArgument( pArgs, nImage ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	pCtrl->SetCellImage( nRow, nCol, nImage );
+	acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::GetColWidth()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	acedRetInt( pCtrl->GetColumnWidth( nCol ) );
+	return RSRSLT;
+}
+
+ADSRESULT Grid::SetColWidth()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	int nColWidth = -1;
+	if( !GetIntArgument( pArgs, nColWidth ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->SetColumnWidth( nCol, nColWidth ) )
+		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::CalcColWidth()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	CString sText;
+	if( !GetStringArgument( pArgs, sText ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	acedRetInt( pCtrl->GetStringWidth( sText ) );
+	return RSRSLT;
+}
+
+ADSRESULT Grid::DeleteRow()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nRow = -1;
+	if( !GetIntArgument( pArgs, nRow ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->DeleteItem( nRow ) )
+		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::DeleteColumn()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->DeleteColumn( nCol ) )
+		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::FillList()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->DeleteAllItems();
+
+	if( GetNilArgument( pArgs, true ) )
 	{
 		acedRetT();
-		return 0;
+		return RSRSLT;
 	}
-	
-	if (pHeader->GetImageList() == NULL)
-	{
-		acedRetT();
-		return 0;
-	}
-	
-	HDITEM item;
 
-	TCHAR  lpBuffer[256];
-	item.mask = HDI_TEXT|HDI_IMAGE;
-	item.pszText = lpBuffer;
-	item.cchTextMax = 256;
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	try
+	if( !GetListBeginArgument( pArgs ) )
+		return RSERR; //invalid input
+
+	bool bVisible = (pCtrl->IsWindowVisible() != FALSE);
+	if( bVisible )
+		pCtrl->SetRedraw( FALSE );
+	int nRow = 0;
+	do
 	{
-		if (pHeader->GetItem(nCol, &item) == FALSE)
+		int nCol = 0;
+		while( !GetListEndArgument( pArgs, true ) )
 		{
-			acedRetT();
-			return 0;
+			CString sCaption;
+			if( !GetStringArgument( pArgs, sCaption ) )
+			{
+				if( bVisible )
+					pCtrl->SetRedraw( TRUE );
+				pCtrl->Invalidate();
+				return RSERR; //invalid input
+			}
+
+			int nImage = -1;
+			GetIntArgument( pArgs, nImage, true );
+
+			if( nCol == 0 )
+				pCtrl->InsertItem( nRow, sCaption, nImage );
+			else
+				pCtrl->SetCellTextImage( nRow, nCol, sCaption, nImage );
+			++nCol;
 		}
-	}
-	catch(...)
-	{
-	}
-	
-	item.iImage = nImage;
+		++nRow;
+	} while( GetListBeginArgument( pArgs, true ) );
 
-	try
-	{
-		pHeader->SetItem(nCol, &item);
-	}
-	catch(...)
-	{
-	}
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
-	acedRetT();
-	return 0;
-}
+	if( bVisible )
+		pCtrl->SetRedraw( TRUE );
+	pCtrl->Invalidate();
+	pCtrl->UpdateWindow(); 
 
-int Grid_GetColumnImage()
-{
-	int nCol;
-
-	TDclControlPtr pArx = GetLispInput(sGrid_GetColumnImage, nCol);
-	
-	if (pArx == NULL)	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-
-	CHeaderCtrl *pHeader = pGridCtrl->GetHeaderCtrl();
-
-	HDITEM item;
-
-	TCHAR  lpBuffer[256];
-	item.mask = HDI_TEXT|HDI_IMAGE;
-	item.pszText = lpBuffer;
-	item.cchTextMax = 256;
-
-	pHeader->GetItem(nCol, &item);
-
-	acedRetInt(item.iImage);
-	return 0;
-}
-
-int Grid_GetCount()
-{
-	int nArg;
-	//CWnd *pControl = GetControlPointer(CtlListView, sGrid_SetItemImage, &nArg);
-	TDclControlPtr pArx = GetControlArxObject(sGrid_GetCount, &nArg);
-
-	if (pArx == NULL)	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-		
-	acedRetInt(pGridCtrl->GetItemCount());
-	return 0;
-}
-
-int Grid_GetColumnCount()
-{
-	int nArg;
-	
-	TDclControlPtr pArx = GetControlArxObject(sGrid_GetColumnCount, &nArg);
-	
-	if (pArx == NULL)	
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-		
-	CHeaderCtrl *pHeader = pGridCtrl->GetHeaderCtrl();
-
-	if (pHeader != NULL)
-		acedRetInt(pHeader->GetItemCount());
-	else
-		acedRetInt(0);
-
-	return 0;
-}
-
-//*****************************************************************************
-// 
-// Method: Grid_SelectCell()
-// 
-// Purpose: [Forces an item to be selected]
-// 
-// Parameters: none
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-int Grid_SelCurCell()
-{
-	int nRow;
-	int nCol;
-	
-	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nRow, nCol);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	pGridCtrl->SetCurCell(nRow, nCol);
-	pGridCtrl->EnsureVisible(nRow, false);
-	acedRetT();
-	return 0;
-}
-
-
-
-int Grid_SelCurRow()
-{
-	int nRow;
-	int nCol;
-	
-	TDclControlPtr pArx = GetLispInput(sGrid_SelCurRow, nRow, nCol);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	pGridCtrl->SetCurCell(nRow, -1);
-	pGridCtrl->EnsureVisible(nRow, false);
-	acedRetT();
-	return 0;
-}
-
-
-int Grid_Cell_StartItemEdit()
-{
-	int nRow;
-	int nCol;
-	
-	TDclControlPtr pArx = GetLispInput(sGrid_SelectCell, nRow, nCol);
-
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	pGridCtrl->SetCurCell(nRow, nCol);
-	pGridCtrl->EnsureVisible(nRow, false);
-	pGridCtrl->EditCurCell();
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
 	acedRetT();
-	return 0;
+	return RSRSLT;
+}
+
+ADSRESULT Grid::GetCurSel()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	ReturnRowCol( pCtrl->GetCurRow(), pCtrl->GetCurColumn() );
+	return RSRSLT;
+}
+
+ADSRESULT Grid::CancelItemEdit()
+{	
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->HideEditControls();
+	acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::SortTextItems()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	bool bAscending = true;
+	GetBoolArgument( pArgs, bAscending, true );
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->SortTextItems( nCol, bAscending ) )
+		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::SortNumericItems()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	bool bAscending = true;
+	GetBoolArgument( pArgs, bAscending, true );
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->SortNumericItems( nCol, bAscending ) )
+		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::SetColumnImage()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	int nImage = -1;
+	if( !GetIntArgument( pArgs, nImage ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	CHeaderCtrl* pHeader = pCtrl->GetHeaderCtrl();
+	if( !pHeader )
+		return RSRSLT;
+
+	CImageList* pImageList = pHeader->GetImageList();
+	if( !pImageList || nImage < 0 || nImage >= pImageList->GetImageCount() )
+		return HandleArgValueError( pArgs, IDS_ARG_IMAGENOTFOUND );
+
+	HDITEM hdi = { HDI_IMAGE };
+	hdi.iImage = nImage;
+	if( pHeader->SetItem( nCol, &hdi ) )
+		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::GetColumnImage()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	CHeaderCtrl* pHeader = pCtrl->GetHeaderCtrl();
+	if( !pHeader )
+		return RSRSLT;
+
+	HDITEM hdi = { HDI_IMAGE };
+	if( pHeader->GetItem( nCol, &hdi ) )
+		acedRetInt( hdi.iImage );
+	return RSRSLT;
+}
+
+ADSRESULT Grid::GetRowCount()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	acedRetInt( pCtrl->GetItemCount() );
+	return RSRSLT;
+}
+
+ADSRESULT Grid::GetColumnCount()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	acedRetInt( pCtrl->GetColumnCount() );
+	return RSRSLT;
+}
+
+ADSRESULT Grid::SetCurSel()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nRow = -1;
+	if( !GetIntArgument( pArgs, nRow ) )
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	GetIntArgument( pArgs, nCol, true );
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->SetCurCell( nRow, nCol );
+	acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::StartItemEdit()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nRow = -1;
+	if( !GetIntArgument( pArgs, nRow ) )
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	GetIntArgument( pArgs, nCol, true );
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->SetCurCell( nRow, nCol );
+	pCtrl->EditCurCell();
+	acedRetT();
+	return RSRSLT;
 }
 
 
-int Grid_GetCheck()
+ADSRESULT Grid::GetItemCheck()
 {
-	int nRow;
-	int nCol;
-	
-	TDclControlPtr pArx = GetLispInput(sGrid_GetCheck, nRow, nCol);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
 
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
+	int nRow = -1;
+	if( !GetIntArgument( pArgs, nRow ) )
+		return RSERR; //invalid input
 
-	if (nCellStyle == Grid_CheckBoxes ||
-		nCellStyle == Grid_OptionButtons)
-	{
-		if (pGridCtrl->IsCellChecked(nRow, nCol))
-		{
-			acedRetT();
-			return 0;
-		}			
-	}
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
 
-	acedRetNil();
-	return 0;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	if( pCtrl->IsCellChecked( nRow, nCol ) )
+		acedRetT();
+	return RSRSLT;
 }
 
-int Grid_SetCheck()
+ADSRESULT Grid::SetItemCheck()
 {
-	int nRow;
-	int nCol;
-	int nChecked;
-	
-	TDclControlPtr pArx = GetLispInput(sGrid_SetCheck, nRow, nCol, nChecked);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pArx == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
 
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();
-	
-	int nCellStyle = pGridCtrl->GetCellStyle(nRow, nCol);
+	int nRow = -1;
+	if( !GetIntArgument( pArgs, nRow ) )
+		return RSERR; //invalid input
 
-	if (nCellStyle == Grid_CheckBoxes ||
-		nCellStyle == Grid_OptionButtons)
-	{
-		pGridCtrl->SetCellChecked(nRow, nCol, (nChecked > 0));
-	}
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	int nChecked = 1;
+	if( !GetIntArgument( pArgs, nChecked ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+	if( pCtrl->SetCellChecked( nRow, nCol, (nChecked > 0) ) )
+		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Grid::AddString()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	CString sRowText;
+	if( !GetStringArgument( pArgs, sRowText ) )
+		return RSERR; //invalid input
+
+	CString sDelimiters = _T("\t");
+	GetStringArgument( pArgs, sDelimiters, true );
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	int nTokenPos = 0;
+	int nRow = pCtrl->InsertItem( pCtrl->GetItemCount(), sRowText.Tokenize( sDelimiters, nTokenPos ) );
+	if( nRow == -1 )
+		return RSRSLT;
+	int idxCol = 0;
+	while( nTokenPos > 0 )
+		pCtrl->SetCellText( nRow, ++idxCol, sRowText.Tokenize( sDelimiters, nTokenPos ) );
+
+	acedRetInt( nRow );
+	return RSRSLT;
+}
+
+ADSRESULT Grid::InsertString()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nInsertIdx;
+	if( !GetIntArgument( pArgs, nInsertIdx ) )
+		return RSERR; //invalid input
+
+	CString sRowText;
+	if( !GetStringArgument( pArgs, sRowText ) )
+		return RSERR; //invalid input
+
+	CString sDelimiters = _T("\t");
+	GetStringArgument( pArgs, sDelimiters, true );
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	int nTokenPos = 0;
+	int nRow = pCtrl->InsertItem( nInsertIdx, sRowText.Tokenize( sDelimiters, nTokenPos ) );
+	if( nRow == -1 )
+		return RSRSLT;
+	int idxCol = 0;
+	while( nTokenPos > 0 )
+		pCtrl->SetCellText( nRow, ++idxCol, sRowText.Tokenize( sDelimiters, nTokenPos ) );
 
 	acedRetT();
-	return 0;
-}
-
-//*****************************************************************************
-// 
-// Method: Grid_AddString()
-// 
-// Purpose: [does the actual insertion of a new row to a list ctrl]
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-
-int Grid_AddString()
-{
-	int nInsertIndex = -1;
-	CString sStringArg;
-	CString sDivider = _T("\t");
-	TDclControlPtr pArx = GetLispInput(sGrid_AddString, sStringArg, sDivider);
-	if (pArx == NULL)
-	{
-		acedRetInt(-1);
-		return 0;		
-	}
-	
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();	
-
-	int nStart = -1;
-
-	int nNext = sStringArg.Find(sDivider, 0);
-	if (nNext == -1)
-		nNext = sStringArg.GetLength();
-	int nCol = 0;
-	while (nNext > -1)
-	{
-		CString sCell = sStringArg.Mid(nStart + 1, nNext);
-		sCell.Trim(_T(" "));
-
-		if( nCol == 0 )
-			nInsertIndex = pGridCtrl->InsertItem( pGridCtrl->GetItemCount(), sCell );
-		else
-			pGridCtrl->SetItemText( nInsertIndex, nCol, sCell );
-		++nCol;
-
-		sStringArg = sStringArg.Mid(nNext + 1);
-		nNext = sStringArg.Find(sDivider, 0);
-		if (nNext == -1 && sStringArg.GetLength() > 0)
-			nNext = sStringArg.GetLength();
-	}
-
-	acedRetInt(nInsertIndex);
-	return 0;
-}
-
-//*****************************************************************************
-// 
-// Method: Grid_InsertString()
-// 
-// Purpose: [does the actual insertion of a new row to a list ctrl]
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-
-int Grid_InsertString()
-{
-	int nInsertIndex = -1;
-	CString sStringArg;
-	CString sDivider = _T("\t");
-	TDclControlPtr pArx = GetLispInput(sGrid_InsertString, nInsertIndex, sStringArg, sDivider);
-	if (pArx == NULL)
-	{
-		acedRetInt(-1);
-		return 0;		
-	}
-	
-	CArxGridCtrl *pGridCtrl = (CArxGridCtrl*)pArx->GetWindow();	
-
-	int nStart = -1;
-
-	int nNext = sStringArg.Find(sDivider, 0);
-	if (nNext == -1)
-		nNext = sStringArg.GetLength();
-	int nCol = 0;
-	while (nNext > -1)
-	{
-		CString sCell = sStringArg.Mid(nStart + 1, nNext);
-		sCell.Trim(_T(" "));
-
-		if( nCol == 0 )
-			nInsertIndex = pGridCtrl->InsertItem( pGridCtrl->GetItemCount(), sCell );
-		else
-			pGridCtrl->SetItemText( nInsertIndex, nCol, sCell );
-		++nCol;
-
-		sStringArg = sStringArg.Mid(nNext + 1);
-		nNext = sStringArg.Find(sDivider, 0);
-		if (nNext == -1 && sStringArg.GetLength() > 0)
-			nNext = sStringArg.GetLength();
-	}
-
-	acedRetInt(nInsertIndex);
-	return 0;
+	return RSRSLT;
 }

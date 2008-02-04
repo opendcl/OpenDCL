@@ -1041,7 +1041,7 @@ void CGsPreviewCtrl::OnMouseMove(UINT nFlags, CPoint point)
     
 }
 
-__LRESULT CGsPreviewCtrl::OnNcHitTest(CPoint point) 
+__UINT_LRESULT CGsPreviewCtrl::OnNcHitTest(CPoint point) 
 {
     return HTCLIENT;
 }
@@ -1075,7 +1075,7 @@ BOOL CGsPreviewCtrl::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID)
 	CRect ArxRect;
 	mhArrowCursor = LoadCursor(NULL,IDC_ARROW);
     
-	HMODULE hRes = _hdllInstance;
+	HMODULE hRes = theWorkspace.GetLocalResourceModule();
     //Load our special cursors
     mhZoomCursor = LoadCursor(hRes,MAKEINTRESOURCE(IDI_ZOOM));
 	mhPanCursor = LoadCursor(hRes,MAKEINTRESOURCE(IDI_PAN));
@@ -1091,7 +1091,7 @@ BOOL CGsPreviewCtrl::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID)
 	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
-	dwStyle = WS_CHILD | WS_VISIBLE | SS_LEFT |WS_CLIPSIBLINGS |WS_CLIPCHILDREN;
+	dwStyle = WS_CHILD | WS_VISIBLE | SS_LEFT/* |WS_CLIPSIBLINGS*/ |WS_CLIPCHILDREN;
 	
 	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;
@@ -1190,71 +1190,6 @@ bool CGsPreviewCtrl::PreLoadDwg(CString sFileName)
 	}
 	return true;			
 		
-}
-
-
-void CGsPreviewCtrl::GetBlockList() 
-{
-	
-	AcDbBlockTable *pBlockTable;
-
-	if (m_pLoadedDwg == NULL)
-	{
-		if (acdbHostApplicationServices()->workingDatabase() == NULL)
-		{
-			acedRetInt(-1);
-			return;
-		}
-		acdbHostApplicationServices()->workingDatabase()->getSymbolTable(pBlockTable, AcDb::kForRead);
-	}
-	else
-		if (Acad::eOk != m_pLoadedDwg->getSymbolTable(pBlockTable, AcDb::kForRead))
-		{
-			acedRetInt(-1);
-			return;
-		}
-
-	// Convert the array to a list that can be returned
-	struct resbuf* rbpRetList = acutNewRb(RTSTR);
-	struct resbuf* rbpTail = rbpRetList;
- 
-	// Iterate through the block table and disaply the names in the ListCtrl.
-	const TCHAR *pName;
-	AcDbBlockTableIterator *pBTItr;
-	if (pBlockTable->newIterator(pBTItr) == Acad::eOk) 
-	{
-		int nCount = 0;
-		while (!pBTItr->done()) 
-		{
-			AcDbBlockTableRecord *pRecord;
-			if (pBTItr->getRecord(pRecord, AcDb::kForRead) == Acad::eOk)
-			{
-	
-				pRecord->getName(pName);
-				CString sBlockName = pName;
-				if (sBlockName.Left(6) != "*Model" &&
-					sBlockName.Left(6) != "*Paper")
-				{		
-					if (nCount > 0)
-					{
-						rbpTail->rbnext = acutNewRb(RTSTR);
-						rbpTail = rbpTail->rbnext;
-					}
-	
-					acutNewString(sBlockName, rbpTail->resval.rstring);
-					nCount++;
-				
-				}
-				pRecord->close();
-			}
-			pBTItr->step();
-		}
-	}
-	pBlockTable->close();
-	
-	acedRetList(rbpRetList);
-	acutRelRb(rbpRetList);
-
 }
 
 bool CGsPreviewCtrl::LoadPreviewDwg(CString sFileName)
@@ -1436,160 +1371,40 @@ bool CGsPreviewCtrl::LoadPreviewDwg(
 
 	return TRUE; 
 }
-void CGsPreviewCtrl::GetDwgSize()
+
+bool CGsPreviewCtrl::GetDwgSize( AcDbExtents& ext )
 {
-	AcGePoint3d extMax;
-	AcGePoint3d extMin;
-	
-	if (m_pLoadedDwg != NULL)
-	{
-		//get the extension values for the model space block
-		extMax = m_pLoadedDwg->extmax();
-		extMin = m_pLoadedDwg->extmin();
-	}
-	else
-	{
-		acedRetInt(-1);
-		return;
-	}
-
-	
-	// this code is for all other dialogs
-	int stat;
-	struct resbuf *list;    
-
-	list = acutBuildList(
-		RTREAL, extMax[0]-extMin[0],
-		RTREAL, extMax[1]-extMin[1],
-		RTNONE);
-
-	if (list != NULL) { 	    
-		stat = acedRetList(list);		
-		acutRelRb(list); 
-	} 
-	else 
-		acedRetNil();	
+	if( !m_pLoadedDwg )
+		return false;
+	AcGePoint3d ptMin = m_pLoadedDwg->extmin();
+	AcGePoint3d ptMax = m_pLoadedDwg->extmax();
+	ext.set( ptMin, ptMax );
+	return true;
 }
-void CGsPreviewCtrl::GetBlockSize(CString sBlockName)
+
+bool CGsPreviewCtrl::GetBlockSize( LPCTSTR pszBlockName, AcDbExtents& ext )
 {
-	if (sBlockName.GetLength() == 0)
-	{		
-		acedRetNil();
-	    return;
-	}
+	if( !pszBlockName || !*pszBlockName )
+		return false;
+	AcDbDatabase* pDb = (m_pLoadedDwg? m_pLoadedDwg : acdbCurDwg());
+	if( !pDb )
+		return false;
+  AcDbBlockTable* pBlockTable;
+	if( Acad::eOk != pDb->getBlockTable( pBlockTable, AcDb::kForRead ) )
+		return false;
 
-    AcDbBlockTableRecord *pRec;
-    AcDbBlockTable *pTab;
-    Acad::ErrorStatus es;
-    AcDbDatabase* pDb;
-
-	if (m_pLoadedDwg == NULL)
-	{
-		pDb = acdbHostApplicationServices()->workingDatabase(); 
-	}
-	else
-	{
-		pDb = m_pLoadedDwg;
-	}
-    
-	if (pDb==NULL)
-	{
-		sBlockName.Empty();
-	    
-		acedRetNil();
-	    return;
-	}
-    
-	if ((es = pDb->getBlockTable(pTab,AcDb::kForRead)) !=Acad::eOk)    
-	{
-		sBlockName.Empty();
-		
-		acedRetNil();
-	    return;
-	}
-	
-	if (!pTab->has(sBlockName))
-    {
-        pTab->close();
-	    sBlockName.Empty();
-        
-		acedRetNil();
-	    return;
-    }
-
-    if ((es = pTab->getAt(sBlockName,pRec,AcDb::kForRead)) !=Acad::eOk)
-    {
-		sBlockName.Empty();
-        pTab->close();
-		acedRetNil();
-	    return;
-    }
-    pTab->close();
-	
-
-	AcDbExtents extents;
-	AcGePoint3d extMax;
-	AcGePoint3d extMin;
-	
-	// now create a way of looping through the entities in the block using iterators
-	AcDbBlockTableRecordIterator *pBlockIterator;
-	
-	// loop thru them
-	for (pRec->newIterator (pBlockIterator); !pBlockIterator->done(); pBlockIterator->step())
-	{
-		AcDbEntity *pEntity = NULL;  
-		// open the entity for read
-		if (pBlockIterator->getEntity (pEntity, AcDb::kForRead) != Acad::eOk)
-			continue;
-
-		AcDbExtents temp;
-		// get the extents of the entity
-		pEntity->getGeomExtents (temp);
-
-		// sometimes mtext objects can be pressent and empty
-		// if they are the wreck the extents calculation
-		// so we must ignore empty MText entities.
-		if (pEntity->isA() == AcDbMText::desc())
-		{
-			AcDbMText *pMText = (AcDbMText*)pEntity;
-			CString sContents = pMText->contents();
-
-			// if the Mext is empty, don't include it's extents.
-			if (sContents.GetLength() == 0)
-				continue;
-		}
-
-		// add this entity to the total extents
-		extents.addExt (temp);
-
-		// of course we must close it
-		pEntity->close();
-	}
-	
-	//!CHANGED! 9-16-04 SRM
-	//Table was not closed causing block viewer to not load block
-	pRec->close();	
-
-	// Calculate the extents in WCS
-	extMax = extents.maxPoint ();  
-	extMin = extents.minPoint ();   
-	
-	// this code is for all other dialogs
-	int stat;
-	struct resbuf *list;    
-
-	list = acutBuildList(
-		RTREAL, extMax[0]-extMin[0],
-		RTREAL, extMax[1]-extMin[1],
-		RTNONE);
-
-	if (list != NULL) { 	    
-		stat = acedRetList(list);		
-		acutRelRb(list); 
-	} 
-	else 
-		acedRetNil();	
+	AcDbBlockTableRecord* pBTR;
+	Acad::ErrorStatus es = pBlockTable->getAt( pszBlockName, pBTR, AcDb::kForRead );
+	pBlockTable->close();
+	if( es != Acad::eOk )
+		return false;
+	es = ext.addBlockExt( pBTR );
+	pBTR->close();
+	if( es != Acad::eOk )
+		return false;
+	return true;
 }
+
 BOOL CGsPreviewCtrl::DisplayBlock(CString sBlockName)
 {
 	return DisplayBlock(sBlockName, 1.0, true, 1, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
@@ -1915,7 +1730,7 @@ void CGsPreviewCtrl::DisplayTheBlock(
 		double dCameraZ)
 {
 	//initialize the preview control
-    init(_hdllInstance,true);
+	init(theWorkspace.GetLocalResourceModule(),true);
 	AcDbExtents extents;
 	AcGePoint3d extMax;
 	AcGePoint3d extMin;

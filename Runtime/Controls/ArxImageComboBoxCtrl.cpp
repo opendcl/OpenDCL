@@ -11,7 +11,7 @@
 CArxImageComboBoxCtrl::CArxImageComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID,
 																							CComboHandler* pHandler /*= NULL*/, bool bCreate /*= true*/ )
 : CImageComboBoxCtrl( pTemplate, pPane, nID, pHandler, false )
-, mArxServices( pTemplate )
+, mArxServices( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -82,47 +82,44 @@ BOOL CArxImageComboBoxCtrl::PreTranslateMessage(MSG* pMsg)
 
 void CArxImageComboBoxCtrl::OnSelchange() 
 {
-	CString sEventName = mpTemplate->GetStringProperty(Prop::EventSelChanged);
-	if( !sEventName.IsEmpty() )
+	CString sText;
+	int nCurSel = -1;
+	CEdit* pEditCtrl = GetEditCtrl();
+	if( pEditCtrl )
+		pEditCtrl->GetWindowText( sText );
+	else
 	{
-		if( mpTemplate->m_bEventsAsAction )
+		CComboBox* pComboCtrl = GetComboBoxCtrl();
+		ASSERT( pComboCtrl != NULL );
+		if( pComboCtrl )
 		{
-			GetParent()->GetParent()->EnableWindow(TRUE);
-			CString sVal;
-			sVal.Format( _T("%d"), GetCurSel() );
-			resbuf rbVal = { NULL, RTSTR };
-			rbVal.resval.rstring = (LPTSTR)sVal.LockBuffer();
-      acedPutSym( _T("$value"), &rbVal );
-			resbuf rbEvent = { NULL, RTSTR };
-			rbEvent.resval.rstring = (LPTSTR)sEventName.LockBuffer();
-			struct resbuf* prbResult = NULL;
-			acedInvoke( &rbEvent, &prbResult );
-			if( prbResult )
-				acutRelRb( prbResult );
-			GetParent()->GetParent()->EnableWindow(FALSE);
-			GetParent()->EnableWindow(TRUE);
-		}
-		else
-		{
-			CString sText;
-			CEdit* pEditCtrl = GetEditCtrl();
-			if( pEditCtrl )
-				pEditCtrl->GetWindowText( sText );
-			else
-			{
-				CComboBox* pComboCtrl = GetComboBoxCtrl();
-				ASSERT( pComboCtrl != NULL );
-				if( pComboCtrl )
-				{
-					int nCurSel = pComboCtrl->GetCurSel();
-					if( nCurSel >= 0 )
-						pComboCtrl->GetLBText( nCurSel, sText );
-				}
-			}
-			InvokeMethodIntString( sEventName, GetCurSel(), sText, IsAsyncEvents() );
-			mpTemplate->SetStringProperty( Prop::Text, sText );
+			nCurSel = pComboCtrl->GetCurSel();
+			if( nCurSel >= 0 )
+				pComboCtrl->GetLBText( nCurSel, sText );
 		}
 	}
+	mpTemplate->SetStringProperty( Prop::Text, sText );
+
+	CString sEvent = mpTemplate->GetStringProperty(Prop::EventSelChanged);
+	if( sEvent.SpanExcluding( _T("_") ) == _T("c:OnActionEvent") )
+	{
+		GetParent()->GetParent()->EnableWindow( TRUE );
+		CString sVal;
+		sVal.Format( _T("%d"), nCurSel );
+		resbuf rbValue = { NULL, RTSTR };
+		rbValue.resval.rstring = sVal.LockBuffer();
+    acedPutSym( _T("$value"), &rbValue );
+		resbuf rbEvent = { NULL, RTSTR };
+		rbEvent.resval.rstring = sEvent.LockBuffer();
+		resbuf* prbResult = NULL;
+		acedInvoke( &rbEvent, &prbResult ); 
+		if( prbResult ) 
+			acutRelRb( prbResult ); 
+		GetParent()->GetParent()->EnableWindow( FALSE );
+		GetParent()->EnableWindow( TRUE );
+	}
+	else
+		InvokeMethodIntString( sEvent, GetCurSel(), sText, IsAsyncEvents() );
 }
 
 void CArxImageComboBoxCtrl::OnDropdown() 

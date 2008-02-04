@@ -17,50 +17,26 @@ class CAcadColorService
 
 // Construction
 public:
-	CAcadColorService()
-		: mclrForeground( GetRGBColor( -19 /*button text*/ ) )
-		, mclrBackground( GetRGBColor( -16 /*button face*/ ) )
-		, mbrushBackground( GetRGBColor( -16 /*button face*/ ) )
-		{}
-	CAcadColorService( COLORREF colorForeground, COLORREF colorBackground )
-		: mclrForeground( colorForeground )
-		, mclrBackground( colorBackground )
-		, mbrushBackground( colorBackground )
-		{}
-	CAcadColorService( long nAcadColorForeground, long nAcadColorBackground )
-		: mclrForeground( GetRGBColor( nAcadColorForeground ) )
-		, mclrBackground( GetRGBColor( nAcadColorBackground ) )
-		, mbrushBackground( mclrBackground )
-		{}
-	virtual ~CAcadColorService()
-		{
-		}
+	CAcadColorService();
+	CAcadColorService( COLORREF colorForeground, COLORREF colorBackground );
+	CAcadColorService( long nAcadColorForeground, long nAcadColorBackground );
+	virtual ~CAcadColorService();
 
 // Operations
 public:
-	virtual void SetBackgroundColor( long nAcadColor )
-	{
-		mclrBackground = GetRGBColor( nAcadColor );
-		mbrushBackground.DeleteObject();
-		mbrushBackground.CreateSolidBrush( mclrBackground );
-	}
-	virtual void SetBackgroundColor( COLORREF color )
-	{
-		mclrBackground = color;
-		mbrushBackground.DeleteObject();
-		mbrushBackground.CreateSolidBrush( color );
-	}
-	virtual void SetForegroundColor( long nAcadColor )
-	{
-		mclrForeground = GetRGBColor( nAcadColor );
-	}
-	virtual void SetForegroundColor( COLORREF color )
-	{
-		mclrForeground = color;
-	}
+	virtual void SetBackgroundColor( long nAcadColor );
+	virtual void SetBackgroundColor( COLORREF color );
+	virtual void SetForegroundColor( long nAcadColor );
+	virtual void SetForegroundColor( COLORREF color );
 
 // Attributes
-	COLORREF GetForegroundColor() const { return mclrForeground; }
-	COLORREF GetBackgroundColor() const { return mclrBackground; }
-	HBRUSH GetBackgroundBrush() const { return mbrushBackground; }
+	COLORREF GetForegroundColor() const;
+	COLORREF GetBackgroundColor() const;
+	HBRUSH GetBackgroundBrush() const;
+	CBrush* GetBackgroundCBrush() const;
+	bool IsBackgroundTransparent() const;
+	static CBrush& GetTransparentBrush();
+
+// Control painting helpers
+	HBRUSH CtlColor( CDC* pDC, UINT nCtlColor );
 };

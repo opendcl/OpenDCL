@@ -26,11 +26,6 @@
 //-----------------------------------------------------------------------------
 #include "StdAfx.h"
 
-HMODULE appResModule(void) //get the localized resource module
-{
-	return _hdllInstance;
-}
-
 
 #if (_MSC_VER >= 1300) && (_MSC_VER < 1400) && (WINVER < 0x0500)
 //VC7 or later, building with pre-VC7 runtime libraries

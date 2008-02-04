@@ -5,12 +5,11 @@ dcl_SlideView_
 [Desc]
 This method loads a slide image or slide library and then displays the slide in the control.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab FileName
 [as String]
-\par\tab\i{Optional}\i0 SlideLibraryImageName
+\par\tab\i{Optional} \i0 SlideLibraryImageName
 [as String]
-
 
 
 [Method]
@@ -20,8 +19,7 @@ dcl_SlideView_
 [Desc]
 This method clears the control.
 [Arguments]
-ProjectFileName
-
+<CONTROL>
 
 
 [Method]
@@ -30,12 +28,8 @@ SlideImage
 dcl_SlideView_
 [Desc]
 This method will load a slide image from a slide file or slide library file and paint it anywhere on the control.
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ... 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -49,13 +43,11 @@ ProjectFileName
 [as Integer]
 \par\tab FileName
 [as String]
-\par\tab\i{Optional}\i0 SlideLibraryImageName
+\par\tab\i{Optional} \i0 SlideLibraryImageName
 [as String]
 [End List]
 \par\tab ...
 [End List]
-
-
 
 
 [Method]
@@ -64,12 +56,8 @@ VectorImage
 dcl_SlideView_
 [Desc]
 This method draws a list of lines in the control.
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ... 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -82,11 +70,10 @@ ProjectFileName
 \par\tab EndY
 [as Integer]
 \par\tab LineColor
-[as Integer]
+[as Integer or (R G B)]
 [End List]
 \par\tab ...
 [End List]
-
 
 
 [Method]
@@ -95,12 +82,8 @@ FillImage
 dcl_SlideView_
 [Desc]
 This method draws a solid rectangle on the control.
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ... 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -113,7 +96,7 @@ ProjectFileName
 \par\tab Height
 [as Integer]
 \par\tab Color
-[as Integer]
+[as Integer or (R G B)]
 [End List]
 \par\tab ...
 [End List]
@@ -126,8 +109,7 @@ dcl_SlideView_
 [Desc]
 This method is used to store what has been drawn or painted to the SlideView’s paint able area to memory.  What this does is make all lines, arcs, text, etc. become part of the stored picture that the SlideView uses to paint from.  This method must be called after all objects have been drawn to the SlideView, or possible visual errors could occur, especially if another dialog box is moved over the SlideView and what has been drawn will be erased.
 [Arguments]
-ProjectFileName
-
+<CONTROL>
 
 
 [Method]
@@ -137,7 +119,7 @@ dcl_SlideView_
 [Desc]
 This method draws a rectangle around the inside of the border as indication that the control has been selected or highlighted for some purpose. 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab ColorIndex
 [as Integer]
 
@@ -149,7 +131,6 @@ dcl_SlideView_
 [Desc]
 This method removes the drawn rectangle around the inside of the border that indicates the control has been selected or highlighted for some purpose.
 [Arguments]
-ProjectFileName
-
+<CONTROL>
 
 [End of File]

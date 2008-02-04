@@ -5,7 +5,7 @@ dcl_TextBox_
 [Desc]
 This method calls the system undo function in the TextBox.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -15,7 +15,7 @@ dcl_TextBox_
 [Desc]
 This method sets the tab stop positions in a multiple-line TextBox.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Units
 [as Integer]
 
@@ -27,7 +27,7 @@ dcl_TextBox_
 [Desc]
 This method replaces the currently selected text in a TextBox with the specified text.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab NewText
 [as String]
 
@@ -39,7 +39,7 @@ dcl_TextBox_
 [Desc]
 This method returns a T if the contents of an edit control have been modified, or a NIL if the TextBox has not been modified.
 [Arguments Return] as T or Nil
-ProjectFileName
+<CONTROL>
 \par\tab LineNumber
 [as Integer]
 
@@ -51,7 +51,7 @@ dcl_TextBox_
 [Desc]
 This method returns the starting and ending character positions of the current selection in a TextBox.
 [Arguments Return] as List of Integers
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -61,7 +61,7 @@ dcl_TextBox_
 [Desc]
 This method highlights a selection of text in a TextBox by the indicated start and end positions.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab FirstChar
 [as Integer]
 \par\tab LastChar
@@ -75,7 +75,7 @@ dcl_TextBox_
 [Desc]
 This method scrolls to the indicated line in a multiple line TextBox.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab LineNumber
 [as Integer]
 
@@ -87,7 +87,7 @@ dcl_TextBox_
 [Desc]
 This method gets a line of text from a TextBox.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 \par\tab LineNumber
 [as Integer]
 
@@ -99,7 +99,7 @@ dcl_TextBox_
 [Desc]
 This method returns the length of a line in a TextBox.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 \par\tab LineNumber
 [as Integer]
 
@@ -111,7 +111,7 @@ dcl_TextBox_
 [Desc]
 This method counts the number of lines in a multiple-line TextBox.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -121,7 +121,7 @@ dcl_TextBox_
 [Desc]
 This method returns the line number of the first visible line in a multiple line TextBox.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -131,7 +131,7 @@ dcl_TextBox_
 [Desc]
 This method sets the custom input filter string used by a TextBox control that has a '0 - String' input filter style (other filter styles do not use custom filter strings). \par \par For example a setting of "0123456789" for the \cf1 FilterString \cf0 argument will cause the TextBox to discard any non-numeric input.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab FilterString
 [as String]
 
@@ -143,6 +143,6 @@ dcl_TextBox_
 [Desc]
 This method gets the custom input filter string used by a TextBox control that has a '0 - String' input filter style (other filter styles do not use custom filter strings).
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 
 [End of File]

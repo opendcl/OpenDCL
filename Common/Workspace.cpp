@@ -32,21 +32,67 @@ bool IsWow64()
 
 CWorkspace::CWorkspace()
 : mbMessagesSuppressed( false )
+, mhmodLocalRes( NULL )
 {
 }
 
 CWorkspace::~CWorkspace()
 {
+	FreeLibrary( mhmodLocalRes );
+}
+
+HMODULE CWorkspace::GetLocalResourceModule(void) const
+{
+	if( !mhmodLocalRes )
+	{
+		CString sResRoot;
+		int cchPath = ::GetModuleFileName( GetResourceModule(), sResRoot.GetBuffer( MAX_PATH ), MAX_PATH );
+		sResRoot.ReleaseBuffer( cchPath );
+		if( sResRoot.IsEmpty() )
+			return NULL;
+		sResRoot.MakeReverse();
+		CString sResModuleFilename = GetLocalResourceModuleFilename();
+		if( sResModuleFilename.IsEmpty() )
+		{
+			CString sExt = sResRoot.SpanExcluding( _T(".") );
+			CString sFilenameBase = sResRoot.Mid( sExt.GetLength() ).SpanExcluding( _T("\\/:") );
+			sFilenameBase.MakeReverse();
+			sExt.MakeReverse();
+			sResModuleFilename = sFilenameBase + _T("Res.") + sExt;
+		}
+		sResRoot = sResRoot.Mid( sResRoot.SpanExcluding( _T("\\/:") ).GetLength() );
+		sResRoot.MakeReverse();
+		CString sLanguage = GetLanguage();
+		CString sLocalResPath = sResRoot + sLanguage + _T('\\') + sResModuleFilename;
+		HMODULE hmodLocalRes = LoadLibrary( sLocalResPath );
+		if( !hmodLocalRes )
+		{
+			CString sMsg;
+			sMsg.Format( _T("Missing language: %s\r\nReverting to US English"), (LPCTSTR)sLanguage );
+			AfxMessageBox( sMsg, MB_OK );
+			hmodLocalRes = LoadLibrary( sResRoot + _T("ENU\\") + sResModuleFilename );
+		}
+		if( hmodLocalRes )
+			const_cast< CWorkspace* >( this )->mhmodLocalRes = hmodLocalRes;
+	}
+	return (mhmodLocalRes? mhmodLocalRes : GetResourceModule());
 }
 
 CString CWorkspace::LoadResourceString(int nResId, HMODULE hmodRes /*= NULL*/) const
 {
 	CString sRes;
-	sRes.LoadString( hmodRes? hmodRes : GetLocalResourceModule(), nResId );
+	if( !hmodRes )
+	{
+		sRes.LoadString( GetLocalResourceModule(), nResId );
+		if( sRes.IsEmpty() )
+			sRes.LoadString( GetResourceModule(), nResId );
+	}
+	else
+		sRes.LoadString( hmodRes, nResId );
 	return sRes;
 }
 
-CString CWorkspace::GetLanguage(void)
+CString CWorkspace::GetLanguage(void) const
 {
 	static const LPCTSTR pszRKLanguage = _T("Language");
 	CString sLanguage;
@@ -57,7 +103,7 @@ CString CWorkspace::GetLanguage(void)
 		DWORD cbValue = 64 - sizeof(TCHAR);
 		if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszRKLanguage, NULL, &dwType, (BYTE*)sLanguage.GetBuffer( 64 ), &cbValue ) &&
 				dwType == REG_SZ )
-			sLanguage.ReleaseBuffer( cbValue / sizeof(TCHAR) );
+			sLanguage.ReleaseBuffer();
 		else
 			sLanguage.ReleaseBuffer( 0 );
 		RegCloseKey( hkReg );
@@ -70,7 +116,7 @@ CString CWorkspace::GetLanguage(void)
 		DWORD cbValue = 64 - sizeof(TCHAR);
 		if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszRKLanguage, NULL, &dwType, (BYTE*)sLanguage.GetBuffer( 64 ), &cbValue ) &&
 				dwType == REG_SZ )
-			sLanguage.ReleaseBuffer( cbValue / sizeof(TCHAR) );
+			sLanguage.ReleaseBuffer();
 		else
 			sLanguage.ReleaseBuffer( 0 );
 		RegCloseKey( hkReg );
@@ -83,6 +129,20 @@ CString CWorkspace::GetLanguage(void)
 		return sLanguage;
 	}
 	return _T("ENU");
+}
+
+CString CWorkspace::GetLanguageSubfolderPath(void) const
+{
+	CString sLangSubfolder;
+	int cchPath = ::GetModuleFileName( GetResourceModule(), sLangSubfolder.GetBuffer( MAX_PATH ), MAX_PATH );
+	sLangSubfolder.ReleaseBuffer( cchPath );
+	if( sLangSubfolder.IsEmpty() )
+		return CString();
+	sLangSubfolder.MakeReverse();
+	sLangSubfolder = sLangSubfolder.Mid( sLangSubfolder.SpanExcluding( _T("\\/:") ).GetLength() );
+	sLangSubfolder.MakeReverse();
+	sLangSubfolder = sLangSubfolder + GetLanguage() + _T("\\");
+	return sLangSubfolder;
 }
 
 //display alert dialog; returns true if displayed, false if suppressed
@@ -109,6 +169,13 @@ bool CWorkspace::DisplayAlert( UINT nResourceId, HMODULE hmodRes /*= NULL*/ ) co
 bool CWorkspace::DisplayStatus( UINT nResourceId, HMODULE hmodRes /*= NULL*/ ) const
 {
 	return DisplayStatus( LoadResourceString( nResourceId, hmodRes ) );
+}
+
+void CWorkspace::SetModified( bool bModified /*= true*/ )
+{
+	CDocument* pDoc = GetActiveDocument();
+	if( pDoc )
+		pDoc->SetModifiedFlag( bModified? TRUE : FALSE );
 }
 
 bool CWorkspace::GetDwordSetting( DWORD& dwValue, LPCTSTR pszValueName ) const
@@ -189,15 +256,22 @@ CString CWorkspace::FindFile( LPCTSTR pszFilePath ) const
 	DWORD ctPath = SearchPath( NULL, pszFilePath, NULL, MAX_PATH, sPath.GetBuffer( MAX_PATH ), NULL );
 	sPath.ReleaseBuffer();
 	if( ctPath == 0 )
-	{ //check the app folder yet
-		CString sAppFolder;
-		if( 0 < GetModuleFileName( NULL, sAppFolder.GetBuffer( MAX_PATH ), MAX_PATH ) )
+	{ //check the language and app folder yet
+		CString sLanguageFolder = theWorkspace.GetLanguageSubfolderPath();
+		ctPath = SearchPath( sLanguageFolder, pszFilePath, NULL, MAX_PATH, sPath.GetBuffer( MAX_PATH ), NULL );
+		sPath.ReleaseBuffer();
+		if( sPath.IsEmpty() )
 		{
-			sAppFolder.ReleaseBuffer();
-			sAppFolder = sAppFolder.Mid( sAppFolder.MakeReverse().SpanExcluding( _T("\\/:") ).GetLength() );
-			sAppFolder.MakeReverse();
-			DWORD ctPath = SearchPath( sAppFolder, pszFilePath, NULL, MAX_PATH, sPath.GetBuffer( MAX_PATH ), NULL );
-			sPath.ReleaseBuffer();
+			CString sAppFolder;
+			if( 0 < GetModuleFileName( NULL, sAppFolder.GetBuffer( MAX_PATH ), MAX_PATH ) )
+			{
+				sAppFolder.ReleaseBuffer();
+				sAppFolder.MakeReverse();
+				sAppFolder = sAppFolder.Mid( sAppFolder.SpanExcluding( _T("\\/:") ).GetLength() );
+				sAppFolder.MakeReverse();
+				ctPath = SearchPath( sAppFolder, pszFilePath, NULL, MAX_PATH, sPath.GetBuffer( MAX_PATH ), NULL );
+				sPath.ReleaseBuffer();
+			}
 		}
 	}
 	return sPath;

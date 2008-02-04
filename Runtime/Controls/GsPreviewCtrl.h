@@ -12,9 +12,9 @@ class CAcadBlockReactor;
 class CPropertyObject;
 
 #if (_MFC_VER < 0x0800)
-#define __LRESULT UINT
+#define __UINT_LRESULT UINT
 #else
-#define __LRESULT LRESULT
+#define __UINT_LRESULT LRESULT
 #endif
 
 
@@ -113,7 +113,6 @@ public:
 	void UpdateBlock();
 	void ResizeHatch();
 
-	void GetBlockList();
 	void SetAcadColor(long nColor);
 	bool GetActiveViewPortInfo (ads_real &height, ads_real &width, AcGePoint3d &target, AcGeVector3d &viewDir, ads_real &viewTwist, bool getViewCenter);
 	void SetHighLight(int nColorIndex);
@@ -256,13 +255,13 @@ public:
 			DeleteObject(mhArrowCursor);		
 	}
 
-    void init(HMODULE hRes, bool bCreateModel = true);
-    void erasePreview();
-    void clearAll();
+	void init(HMODULE hRes, bool bCreateModel = true);
+	void erasePreview();
+	void clearAll();
 	void ClearScreenArea();
 	bool PreLoadDwg(CString sFileName);
-	void GetBlockSize(CString sBlockName);
-	void GetDwgSize();
+	bool GetBlockSize( LPCTSTR pszBlockName, AcDbExtents& ext );
+	bool GetDwgSize( AcDbExtents& ext );
 	BOOL DisplayBlock(CString sBlockName);
 	BOOL DisplayBlock(CString sBlockName, 
 						double dZoomFactor,
@@ -290,7 +289,7 @@ protected:
 	afx_msg void OnMButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-  afx_msg __LRESULT OnNcHitTest(CPoint point);
+  afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);

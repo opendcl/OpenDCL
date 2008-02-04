@@ -24,19 +24,20 @@ protected:
 
 // Construction
 public:
-	CAxContainerCtrl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true);
-	CAxContainerCtrl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, CRect ArxRect, bool bAddPropInfo, bool bCreate = true);
+	CAxContainerCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CAxContainerCtrl();
 
 // DialogControl Interface
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
+	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
 // Operations
 public:
 	TDclControlPtr GetOleControl() const { return mpTemplate; }
+	bool ParseTypeLibInfo();
 
 	HRESULT SaveToStream( IStream* pStream );
 	HRESULT GetOleDispatch( IDispatch** ppDispatch );
@@ -50,11 +51,7 @@ public:
 
 	IDispatch *GetChildIDispatch(DISPID dispid);
 
-	void Initialize();
-	virtual bool Create(CWnd* pParentWnd, UINT nID);
 	bool Create(CWnd* pParentWnd, UINT nID, CRect ArxRect, bool bAddPropInfo);
-	unsigned long GetFlexGridColorProperty(AxPropertyDescriptor *axProp);//
-	void SetFlexGridColorProperty(AxPropertyDescriptor *axProp, unsigned long newValue);//
 	COleFont GetFont(DISPID dispid);
 	void SetFont(DISPID dispid, LPDISPATCH newValue);
 	unsigned long GetColor(DISPID dispid);
@@ -70,9 +67,10 @@ public:
 
 	//ActiveX Helpers
 public:
+	bool SetProperty( TPropertyPtr pProp, LPCTSTR pszValue );
 	HRESULT GetProperty(AxPropertyDescriptor* axProp, CString &strReturnValue);
 	HRESULT GetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
-	HRESULT SetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs );
+	HRESULT SetProperty( AxPropertyDescriptor* axProp, const VARIANTARG* rvarArgs, UINT ctArgs );
 	HRESULT SetProperty( AxPropertyDescriptor* axProp, COleVariant varArg );
 	HRESULT Invoke( AxMethodDescriptor* axMethod, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
 	BOOL ExtractComponentsFromTLB(TOleControlPtr pOleControl, CLSID clsid);
@@ -80,5 +78,6 @@ public:
 	// Generated message map functions
 protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual BOOL DestroyWindow();
 	//OnChildNotify has not been recreated yet.
 };

@@ -309,10 +309,10 @@ const TCHAR* asString( ControlType type )
 {
 	switch( type )
 	{
-	case CtlInvalid:
-		return _T("CtlInvalid");
-	case CtlForm:
-		return _T("CtlForm");
+	case _CtlInvalid:
+		return _T("_CtlInvalid");
+	case _CtlForm:
+		return _T("_CtlForm");
 	case CtlLabel:
 		return _T("CtlLabel");
 	case CtlStdButton:
@@ -343,16 +343,16 @@ const TCHAR* asString( ControlType type )
 		return _T("CtlMonth");
 	case CtlTree:
 		return _T("CtlTree");
-	case Ctl3DRect:
-		return _T("Ctl3DRect");
+	case CtlRectangle:
+		return _T("CtlRectangle");
 	case CtlProgress:
 		return _T("CtlProgress");
 	case CtlSpinButton:
 		return _T("CtlSpinButton");
-	case CtlStaticURL:
-		return _T("CtlStaticURL");
-	case CtlRoundSlider:
-		return _T("CtlRoundSlider");
+	case CtlUrlLink:
+		return _T("CtlUrlLink");
+	case CtlAngleSlider:
+		return _T("CtlAngleSlider");
 	case CtlBlockView:
 		return _T("CtlBlockView");
 	case CtlSlideView:

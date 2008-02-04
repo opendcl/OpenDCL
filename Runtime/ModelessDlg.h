@@ -5,12 +5,11 @@
 
 #include "Resource.h"
 #include "BaseDlg.h"
-#include "ArxDialogObject.h"
 
 #if (_MFC_VER < 0x0800)
-#define __LRESULT UINT
+#define __UINT_LRESULT UINT
 #else
-#define __LRESULT LRESULT
+#define __UINT_LRESULT LRESULT
 #endif
 
 
@@ -23,33 +22,12 @@
 #endif
 
 
-class CModelessDialogX : public CArxDialogObject
-{
-	friend class CModelessDlg;
-	CModelessDlg* mpOwner;
-protected:
-	CModelessDialogX( CModelessDlg& Owner, TDclFormPtr pDclForm );
-	~CModelessDialogX();
-
-	virtual DclFormType GetType() const;
-	virtual bool IsModeless() const { return true; }
-	virtual bool IsDockable() const { return false; }
-	virtual bool IsResizable() const;
-	virtual HWND GetHWnd() const;
-	virtual bool CreateModeless( UINT nID ) const;
-	virtual void CloseDialog(int nStatus);
-	virtual bool SetMinMaxSize( const CSize& min, const CSize& max );
-};
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CModelessDlg dialog
 
 class CModelessDlg : public CBaseDlg
 {
 	CWnd* mpParent;
-	CModelessDialogX mDialogX;
-	bool mbResizable;
 	bool mbTrackingMouse;
 	bool mbInMenuLoop;
 	HWND mhwndKeyboardFocus;
@@ -61,18 +39,16 @@ public:
 	CModelessDlg( TDclFormPtr pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL );
 	~CModelessDlg();
 
+// CDialogObject overrides
 public:
-	virtual CControlPane& GetControlPane() { return mDialogX.GetControlPane(); }
-	virtual const CDialogObject& GetDialogObject() const { return mDialogX; }
-	virtual CDialogObject& GetDialogObject() { return mDialogX; }
-
-	bool Create( UINT nTemplateID );
+	virtual DclFormType GetType() const { return VdclModeless; }
+	virtual bool IsModeless() const { return true; }
+	virtual bool IsDockable() const { return false; }
+	virtual bool CreateModeless( UINT nID );
+	virtual void CloseDialog(int nStatus);
+	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
 
 public:
-	bool IsResizable() const { return mbResizable; }
-
-	void SizeDialog ();
-	void SetTitleBarIcon(int nPictureID);
 
 // Overrides
 public:
@@ -91,12 +67,11 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
-	afx_msg void OnMove(int x, int y);
 	afx_msg LRESULT OnMouseEnter(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnEnterMenuLoop(BOOL bPopupMenu);
 	afx_msg void OnExitMenuLoop(BOOL bPopupMenu);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	afx_msg __LRESULT OnNcHitTest(CPoint point);
+	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 };

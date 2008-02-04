@@ -5,17 +5,19 @@
 #include "Project.h"
 #include "Workspace.h"
 #include "PropertyIds.h"
-#include "SharedRes.h"
+#include "Resource.h"
 #include "DclControlObject.h"
 #include "OleControlObject.h"
 #include "PropertyObject.h"
+#include "DclControlProp.h"
+#include "UndoManager.h"
 #include "VarUtils.h"
 #include "ArchiveEx.h"
 #include "AxContainerCtrl.h"
 #include "StgFile.h"
 #include "Filing.h"
 #include "DclFormObject.h"
-#include "DialogControl.h"
+#include "DialogObject.h"
 #include "PictureObject.h"
 #include "ControlTypes.h"
 #include "AxPropertyDescriptor.h"
@@ -24,12 +26,6 @@
 #include "Base64.h"
 #include <fstream>
 #include <stdio.h>
-
-
-#define RELEASE(lpUnk) do \
-	{ if ((lpUnk) != NULL) { (lpUnk)->Release(); (lpUnk) = NULL; } } while (0)
-
-#define DELETE_EXCEPTION(e) do { e->Delete(); } while (0)
 
 
 static CString StripPathFromFileName( LPCTSTR pszFilePath )
@@ -60,7 +56,6 @@ static CString CreateUniqueName()
 
 /////////////////////////////////////////////////////////////////////////////
 // CProject
-IMPLEMENT_SERIAL(CProject, CObject, 1)
 
 CProject::CProject()
 {
@@ -73,6 +68,15 @@ CProject::CProject( LPCTSTR pszKeyName )
 	Initialize();
 }
 
+CProject::~CProject()
+{
+  // clear pictures
+  POSITION posPicture = mPictures.GetHeadPosition();	
+	while (posPicture)
+		try{ delete mPictures.GetNext(posPicture); } catch(...){}
+	mPictures.RemoveAll();
+}
+
 void CProject::Initialize()
 {
   mrsActiveXFiles.RemoveAll();
@@ -80,27 +84,11 @@ void CProject::Initialize()
   msPassword.Empty();
   msLispFileName.Empty();	
   mnAutoCADVersion = theWorkspace.GetMinSupportedAcadVersion();
-
-  CString sSection = theWorkspace.LoadResourceString(IDR_MAINFRAME);
-	CWinApp* pApp = AfxGetApp();
-  m_sDefaultFontName = pApp->GetProfileString( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontName), NULL);
-  m_nDefaultFontSize = pApp->GetProfileInt( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontSize), -10);
-  m_bDefaultFontItalic = pApp->GetProfileInt( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontItalic), 0);
-  m_bDefaultFontUnderLine = pApp->GetProfileInt( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontUnderLine), 0);
-  m_bDefaultFontBold = pApp->GetProfileInt( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontBold), 0);
-  if (m_sDefaultFontName.IsEmpty())
-    m_sDefaultFontName = theWorkspace.LoadResourceString(IDS_DEFAULTFONT);
-	if( pApp->GetProfileInt( sSection, theWorkspace.LoadResourceString(IDS_DefaultFontSizeStyle), 0 ) != 0 )
-	{
-		if( m_nDefaultFontSize < 0 )
-			m_nDefaultFontSize *= -1; //if "size style" is non-zero, make the size positive to indicate "point size"
-	}
 }
 
-
-CProject::~CProject()
+void CProject::OnModified()
 {
-  ClearProject();
+	theWorkspace.SetModified();
 }
 
 void CProject::SetKeyName( LPCTSTR pszKeyName )
@@ -111,39 +99,46 @@ void CProject::SetKeyName( LPCTSTR pszKeyName )
 	sKey = sKey.MakeReverse().SpanExcluding( _T("\\/:") ).MakeReverse().SpanExcluding( _T(".") );
 	sKey.Replace(_T(' '), _T('|'));
 	msKeyName = sKey;
+	OnModified();
 }
 
 void CProject::DeleteForm( TDclFormPtr pDclForm )
 {
-	TDclFormList::iterator iterEraseAt = mDclForms.end();
-	TDclFormList::iterator iter = mDclForms.begin();
-	while( iter != mDclForms.end() )
+	// delete child forms first
+	TDclFormList ChildForms;
+	if( FindChildForms( pDclForm, ChildForms ) )
 	{
-		TDclFormList::iterator iterAt = iter++;
-		if( (*iterAt) == pDclForm )
-			iterEraseAt = iterAt; //remove the form from the list
+		for( TDclFormList::reverse_iterator iter = ChildForms.rbegin(); iter != ChildForms.rend(); ++iter )
+			DeleteForm( *iter );
+		DeleteForm( pDclForm );
+	}
+	for( TDclFormList::iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
+	{
+		if( (*iter) != pDclForm )
+			continue;
+		CDialogObject* pDlgObject = pDclForm->GetFormInstance();
+		if( pDlgObject )
+			pDlgObject->CloseDialog();
 		else
 		{
-			TDclFormPtr pParentForm = (*iterAt)->GetParentForm();
-			if( pParentForm == pDclForm )
-			{
-				if( (*iterAt)->m_pMdiChildWnd ) // if the child form has a view open
-					(*iterAt)->m_pMdiChildWnd->DestroyWindow(); // close the view
-				mDclForms.erase( iterAt ); // and remove it from the list
-			}
+			CWnd* pFormWnd = pDclForm->GetFormWindow();
+			if( pFormWnd ) // if the form has a view open
+				pFormWnd->DestroyWindow(); // close the view
 		}
+		CUndoManager* pUndoManager = GetUndoManager();
+		if( pUndoManager )
+			pUndoManager->DeleteForm( pDclForm );
+		mDclForms.erase( iter ); //remove the form from the list
+		OnModified();
+		break;
 	}
-	if( pDclForm->m_pMdiChildWnd ) // if the form has a view open
-		pDclForm->m_pMdiChildWnd->DestroyWindow(); // close the view
-	if( iterEraseAt != mDclForms.end() )
-		mDclForms.erase( iterEraseAt ); //remove the form from the list
 }
 
 TDclFormPtr CProject::AddForm( DclFormType nType )
 {
 	TDclFormPtr pNewDclForm = new CDclFormObject( this, nType );
 	pNewDclForm->SetUniqueName( CreateUniqueName() );
-	mDclForms.push_back( pNewDclForm );
+	AddInitializedForm( pNewDclForm );
 	return pNewDclForm;
 }
 
@@ -154,8 +149,40 @@ TDclFormPtr CProject::AddForm( DclFormType nType, TDclFormPtr pParentForm )
 	TDclFormPtr pNewDclForm = new CDclFormObject( this, nType );
 	pNewDclForm->SetUniqueName( pParentForm->GetUniqueName() );
 	pNewDclForm->SetParentForm( pParentForm );
-	mDclForms.push_back( pNewDclForm );
+	AddInitializedForm( pNewDclForm );
 	return pNewDclForm;
+}
+
+bool CProject::FindChildForms( TDclFormPtr pParentForm, TDclFormList& ChildForms ) const
+{
+	bool bFoundOne = false;
+	for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
+	{
+		TDclFormPtr pTestParentForm = (*iter)->GetParentForm();
+		if( pParentForm == pTestParentForm )
+		{
+			ChildForms.push_back( *iter );
+			bFoundOne = true;
+		}
+	}
+	return bFoundOne;
+}
+
+void CProject::AddInitializedForm( TDclFormPtr pForm )
+{
+	if( !pForm )
+		return;
+	CUndoManager* pUndoManager = GetUndoManager();
+	if( pUndoManager )
+		pUndoManager->setEnabled( false );
+	mDclForms.push_back( pForm );
+	AddDefaultProperties( pForm->GetControlProperties(), -1, -1 ); //add properties to the new dcl form object
+	if( pUndoManager )
+	{
+		pUndoManager->setEnabled();
+		pUndoManager->AddForm( pForm );
+	}
+	OnModified();
 }
 
 void CProject::SetGlobalVariableNames( LPCTSTR pszRootName /*= NULL*/ )
@@ -164,12 +191,24 @@ void CProject::SetGlobalVariableNames( LPCTSTR pszRootName /*= NULL*/ )
 		SetKeyName( pszRootName );
 	for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
 		(*iter)->SetGlobalVariableName( pszRootName, true );
+	OnModified();
 }
 
 void CProject::ClearGlobalVariableNames()
 {
 	for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
 		(*iter)->ClearGlobalVariableName( true );
+	OnModified();
+}
+
+TDclFormPtr CProject::GetRefCountedPtr( CDclFormObject* pDclForm ) const
+{
+	for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
+	{
+		if( (*iter) == pDclForm )
+			return *iter;
+	}
+	return TDclFormLockedPtr( pDclForm );
 }
 
 bool CProject::AddActiveXFile( LPCTSTR pszFileName )
@@ -177,6 +216,7 @@ bool CProject::AddActiveXFile( LPCTSTR pszFileName )
 	if( HasActiveXFile( pszFileName ) )
 		return false; //can't add (case insensitive) duplicate filename
 	mrsActiveXFiles.Add( pszFileName );
+	OnModified();
 	return true;
 }
 
@@ -188,6 +228,7 @@ bool CProject::RemoveActiveXFile( LPCTSTR pszFileName )
 		if( mrsActiveXFiles.GetAt( idx ).CompareNoCase( pszFileName ) == 0 )
 		{
 			mrsActiveXFiles.RemoveAt( idx );
+			OnModified();
 			return true;
 		}
 	}
@@ -205,31 +246,12 @@ bool CProject::HasActiveXFile( LPCTSTR pszFileName ) const
 	return false;
 }
 
-void CProject::ClearProject()
-{
-  //msKeyName.Empty(); //this should remain unchanged for the life of the project unless explicitly changed!
-	msLispFileName.Empty();
-	msBaseFileName.Empty();
-	msPassword.Empty();
-	mDclForms.clear();
-
-  // clear pictures
-  POSITION posPicture = mPictures.GetHeadPosition();	
-	while (posPicture)
-		try{ delete mPictures.GetNext(posPicture); } catch(...){}
-	mPictures.RemoveAll();
-
-  // clear OLE controls
-	mOleControls.clear();
-
-  mrsActiveXFiles.RemoveAll();
-}
-
 bool CProject::AddPicture( CPictureObject* pPicture ) 
 {
 	assert( pPicture != NULL );
 	if( !pPicture )
 		return false;
+	OnModified();
 	UINT_PTR nID = pPicture->GetID();
 	POSITION posInsert = NULL;
 	POSITION posPic = mPictures.GetHeadPosition();
@@ -288,6 +310,7 @@ void CProject::DeletePicture( int nID )
 	}
 	if( !posPicToDelete )
 		return;
+	OnModified();
 
 	//remove all references to this picture before deleting it
 	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
@@ -337,6 +360,7 @@ void CProject::AddOleObject(const CLSID& clsid, CAxContainerCtrl *pAxCont)
     pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_COLOR) );
   mOleControls.push_back(pObject);	
   pAxCont->ExtractComponentsFromTLB(pObject, clsid);
+	OnModified();
 }
 
 bool CProject::HasOleObject(const CLSID& clsid)
@@ -369,8 +393,8 @@ CString CProject::GetOleObjectName(const AxPropertyDescriptor *pProperty)
 {
 	TOleControlPtr pOleControl = GetOleObject( pProperty );
 	if( pOleControl )
-		pOleControl->GetAxTypeName();
-  return theWorkspace.LoadResourceString(IDS_OLEOBJECT);
+		return pOleControl->GetAxTypeName();
+  return _T("OleObject");
 }
 
 
@@ -499,17 +523,6 @@ TDclFormPtr CProject::FindDclTabChildForm( LPCTSTR pszParentFormName, int nTabIn
   return NULL;
 }
 
-size_t CProject::CountDeletedForms() const
-{
-  size_t ctDeleted = 0;
-	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
-  {
-    if( (*iterForm)->IsDeleted() )
-      ++ctDeleted;
-  }
-  return ctDeleted;
-}
-
 HBITMAP CProject::CloneBitmap(UINT_PTR nID, CSize &sz) const
 {
 	CPictureObject* pPicture = FindPicture( nID );
@@ -567,6 +580,7 @@ bool CProject::IsInUse() const
 
 IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 {
+	DisableUndoManager DisableUndo( GetUndoManager() );
 	CString sExt = CString( pszFilePath ).Right( 4 );
 	if( sExt.CompareNoCase( _T(".lsp") ) == 0 )
 	{
@@ -580,10 +594,28 @@ IOStatus CProject::ReadFromFile( LPCTSTR pszFilePath )
 			msBaseFileName = StripPathFromFileName( msProjectFilePath );
 
 			CStringA sRawData;
-			UINT cchData = SrcFile.Read( sRawData.GetBuffer( (int)SrcFile.GetLength() ), (UINT)SrcFile.GetLength() );
-			sRawData.ReleaseBufferSetLength( cchData );
-			if( cchData == 0 )
-				return statReadFailed;
+			size_t cbData = (size_t)SrcFile.GetLength();
+			static const WORD wUnicodeSentinel = 0xfeff;
+			WORD wSentinel = 0;
+			SrcFile.Read( &wSentinel, sizeof(wSentinel) );
+			if( wSentinel == wUnicodeSentinel )
+			{
+				cbData -= sizeof(wSentinel);
+				CStringW sDataW;
+				cbData = SrcFile.Read( sDataW.GetBuffer( cbData / sizeof(WCHAR) ), cbData );
+				sDataW.ReleaseBufferSetLength( cbData / sizeof(WCHAR) );
+				if( cbData == 0 )
+					return statReadFailed;
+				sRawData = sDataW;
+			}
+			else
+			{
+				SrcFile.SeekToBegin();
+				UINT cchData = SrcFile.Read( sRawData.GetBuffer( (int)SrcFile.GetLength() ), (UINT)SrcFile.GetLength() );
+				sRawData.ReleaseBufferSetLength( cchData );
+				if( cchData == 0 )
+					return statReadFailed;
+			}
 			std::string sData = base64_decode( (LPCSTR)sRawData );
 			if( sData.length() == 0 )
 				return statReadFailed;
@@ -698,7 +730,7 @@ IOStatus CProject::WriteToFile( LPCTSTR pszFilePath )
 			if( cbData == 0 )
 				return statWriteFailed;
 			BYTE* pbData = Data.Detach();
-			CString sRawData = base64_encode( pbData, cbData ).c_str();
+			CString sRawData( base64_encode( pbData, cbData ).c_str() );
 			Data.Attach( pbData, cbData );
 			Data.Close();
 			sRawData.Replace( _T("\r\n"), _T("\"\r\n\"") );
@@ -750,8 +782,6 @@ void CProject::Serialize(CArchive& ar)
 {
   ULONG nThisVersion = GetCurrentSaveVersion();
 
-  CObject::Serialize(ar);
-
   if (ar.IsStoring())
   {
     ar << GetCurrentSaveVersion();
@@ -759,18 +789,15 @@ void CProject::Serialize(CArchive& ar)
     ar << msLispFileName;
     ar << msKeyName; //project key
 
-    ar << unsigned long(mDclForms.size() - CountDeletedForms());
+    ar << unsigned long(mDclForms.size());
     ar << mnAutoCADVersion;
 
 		for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
     {
-      if( !(*iter)->IsDeleted() )
-			{
-        (*iter)->Serialize(ar);
-			#ifdef _DEBUG
-				(*iter)->dumpDebugger( false );
-			#endif
-			}
+      (*iter)->Serialize(ar);
+		#ifdef _DEBUG
+			(*iter)->dumpDebugger( false );
+		#endif
     }
 
 		unsigned long ctAxFiles = unsigned long(mrsActiveXFiles.GetCount());

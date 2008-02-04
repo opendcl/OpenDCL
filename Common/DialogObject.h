@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DialogControl.h"
 #include "ControlPane.h"
 
 class CDclFormObject;
@@ -30,49 +31,27 @@ struct DialogParams
 //be removed or replaced with a collection of pointers.*
 // * 2007-02-04 [ORW]
 
-class CDialogObject
+class CDialogObject : public CDialogControl
 {
 	static ULONG mnNextFormId; //constantly incremented unique dialog id
+	int mnNCWidth; //width of non-client window area
+	int mnNCHeight; //height of non-client window area
+	int mnMinWidth;
+	int mnMinHeight;
+	int mnMaxWidth;
+	int mnMaxHeight;
+	bool mbClosing;
+	UINT mnID;
 
 	// Attributes
 protected:
-	UINT mnID;
 	TDclFormPtr mpSourceForm;
 	TProjectPtr mpProject;
-	CWnd* mpHostDlg;
-	bool mbClosing;
+	bool mbIgnoreSizing;
 
 public:
-	CDialogObject( TDclFormPtr pDclForm, CWnd* pHostDlg );
+	CDialogObject( TDclFormPtr pSourceForm, CControlPane* pPane, CWnd* pHostDlg );
 	virtual ~CDialogObject();
-
-	// Services
-public:
-	virtual DclFormType GetType() const = 0;
-	virtual const CControlPane& GetControlPane() const = 0; //control pane should be a member of the derived class
-	virtual CControlPane& GetControlPane() = 0; //control pane should be a member of the derived class
-	virtual bool IsModeless() const = 0;
-	virtual bool IsDockable() const = 0;
-	virtual bool IsResizable() const = 0;
-	virtual HWND GetHWnd() const = 0;
-	virtual bool IsFloating() const { return true; }
-	virtual bool IsDirty() const { return false; }
-	virtual bool SetDirty( bool bDirty = true ) { return false; }
-	virtual bool IsClosing() const { return mbClosing; }
-	virtual void SetClosing( bool bClosing = true ) { mbClosing = bClosing; }
-
-	// Dialog
-	virtual bool CreateModeless( UINT nID ) const { return false; }
-	virtual void CloseDialog(int nStatus = -1) = 0;
-	virtual INT_PTR DoModal() { return -1; }
-	virtual bool Show(bool bShow = true);
-	virtual bool CenterDialog();
-	virtual bool ResizeDialog( long nNewWidth, long nNewHeight );
-	virtual bool CenterAndResizeDialog( long nNewWidth, long nNewHeight );
-	virtual bool SetFocus();
-	virtual bool GetWindowRect( CRect& rcDlg ) const;
-	virtual bool GetClientRect( CRect& rcDlg ) const;
-	virtual bool SetMinMaxSize( const CSize& min, const CSize& max );
 
 	// Properties
 public:
@@ -81,8 +60,6 @@ public:
 	TDclFormPtr GetSourceForm() { return mpSourceForm; }
 	const TProjectPtr GetProject() const { return mpProject; }
 	TProjectPtr GetProject() { return mpProject; }
-	const CWnd* GetWindow() const { return mpHostDlg; }
-	CWnd* GetWindow() { return mpHostDlg; }
 
 // Operations
 public:
@@ -92,4 +69,56 @@ public:
 // Implementation
 protected:
 	static UINT GetNextDialogId() { return mnNextFormId++; }
+	virtual void SetNCWidth( int nWidth ) { mnNCWidth = nWidth; }
+	virtual void SetNCHeight( int nHeight ) { mnNCHeight = nHeight; }
+	virtual int GetNCWidth() const { return mnNCWidth; }
+	virtual int GetNCHeight() const { return mnNCHeight; }
+
+	// Services
+public:
+	virtual DclFormType GetType() const = 0;
+	virtual const CControlPane* GetControlPane() const = 0; //control pane should be a member of the derived class
+	virtual CControlPane* GetControlPane() = 0; //control pane should be a member of the derived class
+	virtual CWnd* GetTopLevelWnd() { return mpControlWnd; }
+	virtual bool IsModeless() const = 0;
+	virtual bool IsDockable() const = 0;
+	virtual bool IsResizable() const = 0;
+	virtual bool IsFloating() const { return true; }
+	virtual bool IsDirty() const { return false; }
+	virtual bool SetDirty( bool bDirty = true ) { return false; }
+	virtual bool IsClosing() const { return mbClosing; }
+	virtual void SetClosing( bool bClosing = true ) { mbClosing = bClosing; }
+
+	// Dialog
+public:
+	virtual bool CreateModeless( UINT nID ) { return false; }
+	virtual void CloseDialog(int nStatus = -1) = 0;
+	virtual INT_PTR DoModal() { return -1; }
+	virtual bool Show(bool bShow = true);
+	virtual bool CenterDialog();
+	virtual bool ResizeDialog( long nNewWidth, long nNewHeight );
+	virtual bool CenterAndResizeDialog( long nNewWidth, long nNewHeight );
+	virtual CRect GetEffectiveWindowRect() const; //returns control's window rect in parent's client coordinates
+	virtual CRect GetEffectiveClientRect() const; //return control's client rect
+protected:
+	virtual void GetMinMaxSize( CSize& szMin, CSize& szMax ); //returns min/max size in window coordinates
+
+	// Creation & Property Application
+public:
+	virtual CRect GetWndRect() const; //get window position from properties
+	virtual DWORD GetWndStyle() const; //get window style from properties
+	virtual CString GetWndCaption() const; //get window caption from properties
+	virtual void OnFrameChanged(); //called by member functions that change the non-client size
+	virtual void ApplyPosition(); //move control window to new position
+
+	// for properties without specific handlers
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
+
+	// handlers for specific properties
+	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::Resizable
+	virtual bool OnApplyWidth( TPropertyPtr pProp ); //Prop::Width
+	virtual bool OnApplyHeight( TPropertyPtr pProp ); //Prop::Height
+	virtual bool OnApplyMinMaxSize( TPropertyPtr pProp ); //min/max width properties
+	virtual bool OnApplyIcon( TPropertyPtr pProp ); //Prop::Icon
+	virtual bool OnApplyTitleBar( TPropertyPtr pProp ); //Prop::TitleBar
 };

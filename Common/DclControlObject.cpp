@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "DclControlObject.h"
+#include "DclFormObject.h"
 #include "PropertyObject.h"
 #include "ImageListObject.h"
 #include "AxContainerCtrl.h"
@@ -25,40 +26,22 @@ IMPLEMENT_SERIAL(CDclControlObject, CObject, 1)
 
 CDclControlObject::CDclControlObject()
 : mpOwner( NULL )
-, mType( CtlForm )
+, mType( _CtlForm )
 , mpDlgControl( NULL )
 , mnID( -1 )
-, midxZOrder( -1 )
-, mbDeleted( false )
 {
-	m_nTotalBytes = 0;
-	m_pCtrlHolder = NULL;
-	m_sLicenseKey.Empty();
-	m_sBaseCode.Empty();
-	m_bLicenseChecked = FALSE;
 	::memset(&m_clsid, 0, sizeof(GUID));	
 	m_pStream = NULL;	
-	m_pAxWnd = NULL;
-	m_bEventsAsAction = false;
 }
 
 CDclControlObject::CDclControlObject(CDclFormObject* pOwner)
 : mpOwner( pOwner )
-, mType( CtlForm )
+, mType( _CtlForm )
 , mpDlgControl( NULL )
 , mnID( -1 )
-, midxZOrder( -1 )
-, mbDeleted( false )
 {
-	m_nTotalBytes = 0;
-	m_pCtrlHolder = NULL;
-	m_sLicenseKey.Empty();
-	m_sBaseCode.Empty();
-	m_bLicenseChecked = FALSE;
 	::memset(&m_clsid, 0, sizeof(GUID));	
 	m_pStream = NULL;	
-	m_pAxWnd = NULL;
-	m_bEventsAsAction = false;
 }
 
 CDclControlObject::CDclControlObject(ControlType type, CDclFormObject* pOwner, LPCTSTR pszName /*= NULL*/)
@@ -66,20 +49,11 @@ CDclControlObject::CDclControlObject(ControlType type, CDclFormObject* pOwner, L
 , mType( type )
 , mpDlgControl( NULL )
 , mnID( -1 )
-, midxZOrder( -1 )
-, mbDeleted( false )
 {
 	if( pszName )
 		AddStringProperty(Prop::Name, PropString, pszName);
-	m_nTotalBytes = 0;
-	m_pCtrlHolder = NULL;
-	m_sLicenseKey.Empty();
-	m_sBaseCode.Empty();
-	m_bLicenseChecked = FALSE;
 	::memset(&m_clsid, 0, sizeof(GUID));	
 	m_pStream = NULL;	
-	m_pAxWnd = NULL;
-	m_bEventsAsAction = false;
 }
 
 CDclControlObject::~CDclControlObject()
@@ -87,12 +61,60 @@ CDclControlObject::~CDclControlObject()
 	ClearStream();
 }
 
+bool CDclControlObject::IsZOrderAllowed() const
+{
+	if( mType == _CtlForm || mType == CtlFileDlgCtrl )
+		return false;
+	return true;
+}
+
+CUndoManager* CDclControlObject::GetUndoManager() const
+{
+	if( !mpOwner )
+		return NULL;
+	return mpOwner->GetUndoManager();
+}
 
 CWnd* CDclControlObject::GetWindow() const
 {
-	return mpDlgControl? mpDlgControl->GetControlWnd() : NULL;
+	if( !mpDlgControl )
+		return NULL;
+	return mpDlgControl->GetControlWnd();
 }
 
+TProjectPtr CDclControlObject::GetOwnerProject()
+{
+	if( !mpOwner )
+		return NULL;
+	return mpOwner->GetProject();
+}
+
+const TProjectPtr CDclControlObject::GetOwnerProject() const
+{
+	if( !mpOwner )
+		return NULL;
+	return mpOwner->GetProject();
+}
+
+TDclFormPtr CDclControlObject::GetOwnerForm()
+{
+	if( !mpOwner )
+		return NULL;
+	TProjectPtr pProject = mpOwner->GetProject();
+	if( !pProject )
+		return TDclFormLockedPtr( mpOwner );
+	return pProject->GetRefCountedPtr( mpOwner );
+}
+
+const TDclFormPtr CDclControlObject::GetOwnerForm() const
+{
+	if( !mpOwner )
+		return NULL;
+	const TProjectPtr pProject = mpOwner->GetProject();
+	if( !pProject )
+		return TDclFormLockedPtr( mpOwner );
+	return pProject->GetRefCountedPtr( mpOwner );
+}
 
 void CDclControlObject::SetControlInstance( CDialogControl* pDlgControl )
 {
@@ -115,9 +137,8 @@ void CDclControlObject::SaveToStream(CAxContainerCtrl *pCtrl)
 
 #ifdef _DEBUG
 	ULARGE_INTEGER iSeekPtr;
-	LARGE_INTEGER nDisplacement;
-	nDisplacement.QuadPart = 0;
-	hr = pStream->Seek( nDisplacement, STREAM_SEEK_CUR, &iSeekPtr );
+	LARGE_INTEGER nZeroDisp = { 0, 0 };
+	hr = pStream->Seek( nZeroDisp, STREAM_SEEK_CUR, &iSeekPtr );
 	ASSERT( SUCCEEDED( hr ) );
 	ASSERT( iSeekPtr.QuadPart > 0 );
 #endif
@@ -126,14 +147,11 @@ void CDclControlObject::SaveToStream(CAxContainerCtrl *pCtrl)
 
 IStream *CDclControlObject::GetLoadStream()
 {
-	LARGE_INTEGER nDisplacement;
-   
 	if (!m_pStream)
 	   return NULL;
    
-	nDisplacement.QuadPart = 0;
-	m_pStream->Seek( nDisplacement, STREAM_SEEK_SET, NULL );
-
+	LARGE_INTEGER nZeroDisp = { 0, 0 };
+	m_pStream->Seek( nZeroDisp, STREAM_SEEK_SET, NULL );
 	HRESULT hr = ReadClassStm( m_pStream, &m_clsid );	  
 	ASSERT( SUCCEEDED( hr ) );
 	if( FAILED(hr) )
@@ -179,28 +197,21 @@ void CDclControlObject::ClearStream()
 //  {
 //    // save the activeX info.
 //    writeString(pFile, m_sLicenseKey);
-//    writeString(pFile, m_sBaseCode);
-//    writeBOOL(pFile, m_bLicenseChecked);
 //    writeCLSID(pFile, m_clsid);
 //    try
 //    {		
-//      LARGE_INTEGER nDisplacement;
-//      ULONG nBytesRead;
-//      ULONG nBytesLeft;
-//      ULARGE_INTEGER iSeekPtr;
-//      HRESULT hr;
-//
-//      nDisplacement.QuadPart = 0;
-//
 //      if (m_pStream) {
-//        hr = m_pStream->Seek( nDisplacement, STREAM_SEEK_CUR, &iSeekPtr );
-//        nBytesLeft = ULONG( iSeekPtr.QuadPart );
-//
-//        if (nBytesLeft == 0 && m_nTotalBytes > 0)
-//          nBytesLeft = m_nTotalBytes;
-//
-//        hr = m_pStream->Seek( nDisplacement, STREAM_SEEK_SET, NULL );
-//
+//				LARGE_INTEGER nZeroDisp = { 0, 0 };
+//				ULARGE_INTEGER iSeekPtr;
+//				HRESULT hr = m_pStream->Seek( nZeroDisp, STREAM_SEEK_END, &iSeekPtr );
+//				ULONG cbStream = ULONG( iSeekPtr.QuadPart );
+//				ULONG nBytesLeft = cbStream;
+//				
+//				// store the bytes left
+//				ar << nBytesLeft;
+//				
+//				hr = m_pStream->Seek( nZeroDisp, STREAM_SEEK_SET, NULL );
+//				ULONG nBytesRead;
 //        BYTE* abData = new BYTE[nBytesLeft];
 //        hr = m_pStream->Read( abData, nBytesLeft, &nBytesRead );
 //        if ( nBytesRead > 0 ) {
@@ -209,6 +220,7 @@ void CDclControlObject::ClearStream()
 //        } else {
 //          writeBool(pFile, false);
 //        }
+//				delete[] abData;
 //      } else {
 //        writeBool(pFile, false);
 //      }
@@ -255,48 +267,37 @@ void CDclControlObject::Serialize(CArchive& ar)
 
 		// serialize the image if it exists
 		ar << BOOL(mpImageList != NULL);
-		if (mpImageList != NULL)
+		if( mpImageList )
 			mpImageList->Serialize(ar);
 			
-		if (mType == CtlActiveX)
+		if( mType == CtlActiveX )
 		{
 			// save the activeX info.
 			ar << m_sLicenseKey;
-			ar << m_sBaseCode;
-			ar << m_bLicenseChecked;
 			SerializeCLSID(ar, m_clsid);
 			try
 			{		
-				LARGE_INTEGER nDisplacement;
-				ULONG nBytesRead;
-				BYTE abData[512];
- 				ULONG nBytesLeft;
-				ULARGE_INTEGER iSeekPtr;
-				HRESULT hr;
-
-				nDisplacement.QuadPart = 0;
-
 				BOOL bHasStream = (!!m_pStream);
 				ar << bHasStream;
 				if (m_pStream)
 				{
-					hr = m_pStream->Seek( nDisplacement, STREAM_SEEK_CUR, &iSeekPtr );
-					nBytesLeft = ULONG( iSeekPtr.QuadPart );
-					
-					if (nBytesLeft == 0 && m_nTotalBytes > 0)
-						nBytesLeft = m_nTotalBytes;
+					ULARGE_INTEGER iSeekPtr;
+					LARGE_INTEGER nZeroDisp = { 0, 0 };
+					HRESULT hr = m_pStream->Seek( nZeroDisp, STREAM_SEEK_END, &iSeekPtr );
+					ULONG cbStream = ULONG( iSeekPtr.QuadPart );
+					ULONG nBytesLeft = cbStream;
 					
 					// store the bytes left
 					ar << nBytesLeft;
 					
-					hr = m_pStream->Seek( nDisplacement, STREAM_SEEK_SET, NULL );
+					hr = m_pStream->Seek( nZeroDisp, STREAM_SEEK_SET, NULL );
+					ULONG nBytesRead;
+					BYTE abData[512];
 					while( nBytesLeft > 0 )
 					{
 						hr = m_pStream->Read( abData, std::min<ULONG>( nBytesLeft, sizeof( abData ) ), &nBytesRead );
 						if ( nBytesRead > 0 )
-						{
 							ar.Write( abData, nBytesRead );
-						}
 						nBytesLeft -= nBytesRead;
 					}
 				}
@@ -328,8 +329,10 @@ void CDclControlObject::Serialize(CArchive& ar)
 		long lType;
 		ar >> lType;
 		mType = (ControlType)lType;
-		if( mType == -1 )
-			mType = CtlForm; //correct control type for controls from older ODC files
+		if( mType < 0 )
+			mType = _CtlForm; //correct control type for controls from older ODC files
+		else if( mType == _CtlOldFileDlgCtrl )
+			mType = CtlFileDlgCtrl; //changed value, so need to correct type saved in older files
 		if (nThisVersion < 9)
 		{
 			short nClientHeight;
@@ -362,9 +365,13 @@ void CDclControlObject::Serialize(CArchive& ar)
 			{
 				// get the activeX info.
 				ar >> m_sLicenseKey;
-				ar >> m_sBaseCode;
-				if (nThisVersion >= 4)
-					ar >> m_bLicenseChecked;
+				if (nThisVersion >= 4 && nThisVersion <= 9)
+				{
+					CString sBaseCode;
+					ar >> sBaseCode;
+					BOOL bLicenseChecked;
+					ar >> bLicenseChecked;
+				}
 
 				SerializeCLSID(ar, m_clsid);
 
@@ -388,9 +395,9 @@ void CDclControlObject::Serialize(CArchive& ar)
 						if( FAILED( hResult ) )
 							return;
 
-						// get the bytes left
-						ar >> m_nTotalBytes;
-						nBytesLeft = m_nTotalBytes;
+						ULONG cbStream;
+						ar >> cbStream;
+						nBytesLeft = cbStream;
 					
 						while( nBytesLeft > 0 )
 						{
@@ -452,7 +459,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 		DclFormType eFormType = VdclInvalid;
 		if( mpOwner )
 		{
-			TDclFormPtr pOwnerForm = mpOwner;
+			CDclFormObject* pOwnerForm = mpOwner;
 			while( pOwnerForm->GetParentForm() )
 				pOwnerForm = pOwnerForm->GetParentForm(); //get top level parent
 			eFormType = pOwnerForm->GetType();
@@ -512,6 +519,20 @@ void CDclControlObject::Serialize(CArchive& ar)
 					continue;
 				}
 				break;
+			case CtlFileDlgCtrl:
+				switch( nID )
+				{
+				case Prop::Left:
+				case Prop::Top:
+					mProperties.erase( iterAt );
+					continue;
+				case Prop::Width:
+				case Prop::Height:
+					if( !(*iterAt)->IsHidden() )
+						(*iterAt)->SetHidden();
+					continue;
+				}
+				break;
 			case CtlLabel:
 				switch( nID )
 				{
@@ -545,6 +566,53 @@ void CDclControlObject::Serialize(CArchive& ar)
 					continue;
 				}
 				break;
+			case CtlProgress:
+				switch( nID )
+				{
+				case Prop::DisplaySeconds:
+					{
+						bool bSet = (*iterAt)->GetBooleanValue();
+						mProperties.erase( iterAt );
+						if( bSet && !GetPropertyObject( Prop::ProgressLegend ) )
+							AddLongProperty( Prop::ProgressLegend, PropEnum, 1 );
+						continue;
+					}
+				case Prop::DisplayPercentage:
+					{
+						bool bSet = (*iterAt)->GetBooleanValue();
+						mProperties.erase( iterAt );
+						if( bSet && !GetPropertyObject( Prop::ProgressLegend ) )
+							AddLongProperty( Prop::ProgressLegend, PropEnum, 2 );
+						continue;
+					}
+				case Prop::SecondText:
+					{
+						CString sVal = (*iterAt)->GetStringValue();
+						if( sVal == _T("second") || sVal == _T("second remaining") )
+							(*iterAt)->SetStringValue( _T("") ); //revert to default from resources
+						continue;
+					}
+				case Prop::SecondsText:
+					{
+						CString sVal = (*iterAt)->GetStringValue();
+						if( sVal == _T("seconds") || sVal == _T("seconds remaining") )
+							(*iterAt)->SetStringValue( _T("") ); //revert to default from resources
+						continue;
+					}
+				case Prop::MinuteText:
+					{
+						if( (*iterAt)->GetStringValue() == _T("minute") )
+							(*iterAt)->SetStringValue( _T("") ); //revert to default from resources
+						continue;
+					}
+				case Prop::MinutesText:
+					{
+						if( (*iterAt)->GetStringValue() == _T("minutes") )
+							(*iterAt)->SetStringValue( _T("") ); //revert to default from resources
+						continue;
+					}
+				}
+				break;
 			case CtlStdButton:
 				switch( nID )
 				{
@@ -553,7 +621,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 					continue;
 				}
 				break;
-			case CtlForm:
+			case _CtlForm:
 				if( mpOwner && mpOwner->GetParentForm() )
 				{
 					switch( nID )
@@ -561,6 +629,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 					case Prop::Name:
 					case Prop::ObjectBrowser:
 					case Prop::GlobalVarName:
+					case Prop::Custom:
 					case Prop::UseBottomFromBottom:
 					case Prop::UseTopFromBottom:
 						mProperties.erase( iterAt ); //tab pages should not have these properties
@@ -639,6 +708,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 			case Prop::FontColor:
 			case Prop::TabLabelAlign:
 			case Prop::TabSelected:
+			case Prop::ZOrder:
 				mProperties.erase( iterAt );
 				continue;
 			case Prop::AllowOrbiting:
@@ -696,14 +766,31 @@ CString CDclControlObject::GetPropertyListItem( Prop::Id nID, size_t nIndex )
 	if( pProp && nIndex < pProp->size() )
 	{
 		if( pProp->GetType() == PropStringArray )
-			sValue = pProp->GetStringArrayPtr()->at( nIndex );
+			sValue = pProp->GetConstStringArrayPtr()->at( nIndex );
 		else if( pProp->GetType() == PropIntArray )
-			sValue.Format( _T("%d"), pProp->GetIntArrayPtr()->at( nIndex ) );
+			sValue.Format( _T("%d"), pProp->GetConstIntArrayPtr()->at( nIndex ) );
 	}
 	return sValue;
 }
 
-TPropertyPtr CDclControlObject::GetPropertyObject( Prop::Id nID ) const
+TPropertyPtr CDclControlObject::GetRefCountedPtr( const CPropertyObject* pProperty ) const
+{
+	if( !pProperty )
+		return NULL;
+	return GetPropertyObject( pProperty->GetID() );
+}
+
+const TPropertyPtr CDclControlObject::GetPropertyObject( Prop::Id nID ) const
+{
+	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
+	{
+		if( (*iter)->GetID() == nID )
+			return (*iter);
+	}
+	return NULL;
+}
+
+TPropertyPtr CDclControlObject::GetPropertyObject( Prop::Id nID )
 {
 	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
@@ -721,6 +808,22 @@ TPropertyPtr CDclControlObject::FindPropertyObject( LPCTSTR pszName ) const
 			return (*iter);
 	}
 	return NULL;
+}
+
+CRect CDclControlObject::GetWndRect() const
+{
+	CPoint ptThis( GetLongProperty( Prop::Left ), GetLongProperty( Prop::Top ) );
+	CSize sizeThis( GetLongProperty( Prop::Width ), GetLongProperty( Prop::Height ) );
+	return CRect( ptThis, sizeThis );
+}
+
+void CDclControlObject::SetFontProperties( const FontSettings& FS )
+{
+	SetStringProperty( Prop::FontName, FS.name() );
+	SetLongProperty( Prop::FontSize, FS.size() );
+	SetBooleanProperty( Prop::FontBold, FS.isBold() );
+	SetBooleanProperty( Prop::FontItalic, FS.isItalic() );
+	SetBooleanProperty( Prop::FontUnderline, FS.isUnderlined() );
 }
 
 void CDclControlObject::SetGlobalVariableName( LPCTSTR pszParentName /*= NULL*/ )	
@@ -873,7 +976,7 @@ CString CDclControlObject::GetStringProperty(Prop::Id nID) const
 	CString sValue;
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( pProp )
-		sValue = pProp->GetStdProperty();
+		sValue = pProp->GetStringValue();
 	return sValue;
 }
 
@@ -970,6 +1073,12 @@ bool CDclControlObject::InsertNamedProperty( TPropertyPtr pProp )
 	if( !pProp )
 		return false;
 
+	if( pProp->GetID() == Prop::_Private )
+	{
+		mProperties.push_back( pProp );
+		return true;
+	}
+
 	TPropertyList::iterator iter = FindPropertyInsertPos( pProp->GetName(), pProp->IsHidden() );
 	if( iter != mProperties.end() && pProp->GetName() == (*iter)->GetName() )
 	{
@@ -1023,7 +1132,7 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
   if (!readLong(sFile, lType)) return statInvalidFormat;
 	mType = (ControlType)lType;
 	if( mType == -1 )
-		mType = CtlForm; //correct control type for controls from older ODC files
+		mType = _CtlForm; //correct control type for controls from older ODC files
 	short nClientHeight; //discard it
   if (!readShort(sFile, nClientHeight)) return statInvalidFormat;
 	int nPurchaseState;
@@ -1043,9 +1152,10 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
   {
     // get the activeX info.
     if (!readString(sFile, m_sLicenseKey)) return statInvalidFormat;
-    if (!readString(sFile, m_sBaseCode)) return statInvalidFormat;
-    BOOL m_bLicenseChecked;
-    if (!readBOOL(sFile, m_bLicenseChecked)) return statInvalidFormat;
+		CString sBaseCode; //ignored
+    if (!readString(sFile, sBaseCode)) return statInvalidFormat;
+    BOOL bLicenseChecked; //ignored
+    if (!readBOOL(sFile, bLicenseChecked)) return statInvalidFormat;
 
     if (!readCLSID(sFile, m_clsid)) return statInvalidFormat;
 
@@ -1104,7 +1214,7 @@ IOStatus CDclControlObject::ReadFromTextFile6(std::ifstream &sFile, const CStrin
 			case PropActiveXEvent:
 			case PropActiveXRunTime:
 			case PropActiveXMethods:
-				pProp->SetStringValue( pProp->GetAxInterfaceDescriptorPtr()->GetName() );
+				pProp->SetStringValue( pProp->GetConstAxInterfaceDescriptorPtr()->GetName() );
 			}
 		}
     mProperties.push_back(pProp);		
@@ -1129,7 +1239,7 @@ CString CDclControlObject::GetKeyPath() const
 	if( mpOwner )
 	{
 		sPath = mpOwner->GetKeyPath();
-		if( mType != CtlForm )
+		if( mType != _CtlForm )
 			sPath += _T('_') + GetKeyName();
 	}
 	else

@@ -7,8 +7,6 @@
 #include "DialogControl.h"
 #include "AcadColorService.h"
 
-class CArxDwgListCtrl;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CFolderComboCtrl window

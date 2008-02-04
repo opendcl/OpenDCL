@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "MainFileDlg.h"
 #include "ArxDialogObject.h"
+#include "MainFileDlg.h"
 
 class CFontCollection;
 
@@ -27,32 +27,11 @@ struct FileDialogParams
 };
 
 
-class CFileDialogX : public CArxDialogObject
-{
-	friend class CCustomFileDialog;
-	CCustomFileDialog* mpOwner;
-	FileDialogParams* mpParams;
-protected:
-	CFileDialogX( CCustomFileDialog& Owner, TDclFormPtr pDclForm, FileDialogParams* pParams = NULL );
-	~CFileDialogX();
-
-	virtual DclFormType GetType() const;
-	virtual bool IsModeless() const { return false; }
-	virtual bool IsDockable() const { return false; }
-	virtual bool IsResizable() const { return true; }
-	virtual HWND GetHWnd() const;
-	virtual void CloseDialog(int nStatus);
-	virtual INT_PTR DoModal();
-	virtual bool Show(bool bShow = true) { return false; }
-};
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CCustomFileDialog dialog
 
-class CCustomFileDialog : public CFileDialog
+class CCustomFileDialog : public CFileDialog, public CArxDialogObject
 {
-	CFileDialogX mDialogX;
 	CString msTitle;
 	CString msFilterList;
 	CString msDefaultExtension;
@@ -61,21 +40,43 @@ class CCustomFileDialog : public CFileDialog
 	FileDialogParams* mpParams;
 	CMainFileDlg mMainFileDlg;
 	TDclControlPtr mpFileDlgCtrl;
+	int mnInitialX;
+	int mnInitialY;
+	int mnRightBorder;
+	int mnBottomBorder;
 
 public:
 	CCustomFileDialog( TDclFormPtr pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
 	~CCustomFileDialog();
 
-	//Attributes
+// Attributes
 public:
-	CControlPane& GetControlPane() { return mDialogX.GetControlPane(); }
-	CDialogObject& GetDialogObject() { return mDialogX; }
-	const CDialogObject& GetDialogObject() const { return mDialogX; }
 	CMainFileDlg& GetMainDialog() { return mMainFileDlg; }
 
+// Implementation
+public:
 	void GetResults();	
 	void CloseNow();
 	void CtrlModifyStyle(int nCtrl);
+
+protected:
+friend class CMainFileDlg;
+	void SavePosition();
+	CRect ReadPosition() const;
+	void OnInitializationComplete();
+
+// CDialogObject overrides
+public:
+	virtual DclFormType GetType() const { return VdclFileDialog; }
+	virtual CWnd* GetTopLevelWnd() { return &mMainFileDlg; }
+	virtual bool IsModeless() const { return false; }
+	virtual bool IsDockable() const { return false; }
+	virtual bool IsResizable() const { return true; }
+	virtual void CloseDialog(int nStatus);
+	virtual INT_PTR DoModal();
+	virtual bool Show(bool bShow = true) { return false; }
+protected:
+	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
 
 protected:	
 	DECLARE_MESSAGE_MAP()

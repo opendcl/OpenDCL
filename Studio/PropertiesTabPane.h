@@ -4,12 +4,12 @@
 #pragma once
 
 #include "Resource.h"
-#include "PropertyListCtrl.h"
+#include "PropertyGridCtrl.h"
+//#include "PropertyListCtrl.h"
 
 #define nPropertyListID 1103
 #define nPropertyListHeight 72
 #define nPropertyDescWidth 55
-#define nTitleHeight 15
 #define nDeFontSize 8
 #define nDePixels 72
 
@@ -18,24 +18,22 @@
 
 class CPropertiesTabPane : public CDialog
 {
-	CPropertyListCtrl	mPropListCtrl;
+	CPropertyGridCtrl	mPropGridCtrl;
 
 	enum { IDD = IDD_TABPAGE_PROPERTIES };
 
 public:
-	CStatic				m_PropertyTitle;
-	CEdit				m_PropertyDesc;
-	CStatic				m_ControlDesc;
 	CFont				m_font;
 	bool m_bInitialized;
 
 // Construction
 public:
-	CPropertiesTabPane(CWnd* pParent = NULL);   // standard constructor
+	CPropertiesTabPane( const std::vector< TDclControlPtr >& ActiveControls, CWnd* pParent = NULL );   // standard constructor
 
 public:
-	const CPropertyListCtrl& GetPropertiesCtrl() const { return mPropListCtrl; }
-	CPropertyListCtrl& GetPropertiesCtrl() { return mPropListCtrl; }
+	const CPropertyGridCtrl& GetPropertiesCtrl() const { return mPropGridCtrl; }
+	CPropertyGridCtrl& GetPropertiesCtrl() { return mPropGridCtrl; }
+	void ActivateProperty( Prop::Id id );
 
 // Overrides
 public:

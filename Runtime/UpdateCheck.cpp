@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "UpdateCheck.h"
 #include "Workspace.h"
-#include "SharedRes.h"
 #include "Resource.h"
 #include <memory>
 #include <set>
@@ -396,7 +395,7 @@ LRESULT CALLBACK TrayIconWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 			NI.uID = 1;
 			NI.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
 			NI.uCallbackMessage = WM_MMTRAY_NOTIFY;
-			NI.hIcon = LoadIcon( _hdllInstance, MAKEINTRESOURCE(IDR_MAINFRAME) );
+			NI.hIcon = LoadIcon( theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(IDR_MAINFRAME) );
 			lstrcpyn( NI.szTip, CString( pParams->sMessage ), _elements(NI.szTip) );
 		#if (_WIN32_IE >= 0x0500)
 			if( !isUsingShellV1() )

@@ -20,10 +20,10 @@ static CString LongToA(long lValue);
 
 CArxAxContainerCtrl::CArxAxContainerCtrl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate) 
 : CAxContainerCtrl(pTemplate, pPane, nID, false)
-, mArxServices( pTemplate )
+, mArxServices( this )
 {
 	TraceFmt( _T("> CArxAxContainerCtrl::CArxAxContainerCtrl(%s [%p], [%p], %s [HWND: %p]) [this: %p]\r\n"),
-		pTemplate->GetKeyPath(), pTemplate, pPane, CString(mpTemplate->GetRuntimeClass()->m_lpszClassName),
+		(LPCTSTR)pTemplate->GetKeyPath(), &*pTemplate, pPane, (LPCTSTR)CString(mpTemplate->GetRuntimeClass()->m_lpszClassName),
 		mpTemplate->GetWindow(), this );
 
 	if( bCreate ) 
@@ -60,7 +60,7 @@ void CArxAxContainerCtrl::TryToFireAxEvent(UINT idCtrl, AFX_EVENT* pEvent)
 		const CPropertyObject* pProp = (*iter);
 		if( !pProp )
 			continue;
-		const AxInterfaceDescriptor* pID = pProp->GetAxInterfaceDescriptorPtr();
+		const AxInterfaceDescriptor* pID = pProp->GetConstAxInterfaceDescriptorPtr();
 		if( !pID )
 			continue;
 		const AxEventDescriptor* pED = pID->GetEvent();

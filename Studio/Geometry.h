@@ -5,7 +5,6 @@
 
 #include "Resource.h"
 #include "GeometryImage.h"
-#include "Splitter.h"
 #include "PropertyObject.h"
 #include "DclControlObject.h"
 
@@ -17,36 +16,27 @@ class CDclFormObject;
 
 class CGeometry : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CGeometry)
-
-// Construction
-public:
-	CGeometry();
-	~CGeometry();
-
-// Dialog Data
-	//{{AFX_DATA(CGeometry)
-	enum { IDD = IDD_GEOMETRY };
-	CSplitter	m_TopSplitter;
-	CSplitter	m_RightSplitter;
-	CSplitter	m_LeftSplitter;
-	CSplitter	m_BottomSplitter;
-	CComboBox	m_Right;
-	CComboBox	m_Bottom;
-	CComboBox	m_Top;
-	CComboBox	m_Left;
+	TDclControlPtr mpDclControl;
 	CGeometryImage	m_ExampleImage;
-	//}}AFX_DATA
 	TPropertyPtr m_pUseTopFromBottom;
 	TPropertyPtr m_pUseBottomFromBottom;
 	TPropertyPtr m_pUseLeftFromRight;
 	TPropertyPtr m_pUseRightFromRight;
 
-	TDclControlPtr m_pControl;
-	CDclFormObject  *m_pDclForm;
+protected:
+friend class CGeometryImage;
+	CComboBox	m_Right;
+	CComboBox	m_Bottom;
+	CComboBox	m_Top;
+	CComboBox	m_Left;
 
-	void ShowSplitter(CString sName);
-	void ShowAllSplitters();
+// Dialog Data
+	enum { IDD = IDD_GEOMETRY };
+
+// Construction
+public:
+	CGeometry( TDclControlPtr pDclControl );
+	~CGeometry();
 
 // Overrides
 	// ClassWizard generate virtual function overrides

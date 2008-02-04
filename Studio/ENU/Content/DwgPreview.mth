@@ -5,7 +5,7 @@ dcl_DwgPreview_
 [Desc]
 This method will load a drawing file’s thumbnail bitmap preview into the DwgPreview control for display.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab sFileName
 [as String]
 
@@ -17,7 +17,7 @@ dcl_DwgPreview_
 [Desc]
 This method clears the display.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -27,7 +27,7 @@ dcl_DwgPreview_
 [Desc]
 This method will return the name of the drawing file that is currently being displayed.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -37,7 +37,7 @@ dcl_DwgPreview_
 [Desc]
 This method draws a rectangle around the inside of the border as indication that the control has been selected or indicated for some purpose.	
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab ColorIndex
 [as Integer]
 
@@ -49,7 +49,7 @@ dcl_DwgPreview_
 [Desc]
 This method removes the drawn rectangle around the inside of the border that indicates the control has been selected or indicated for some purpose
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 

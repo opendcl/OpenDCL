@@ -8,21 +8,20 @@
 #include "Workspace.h"
 #include "Project.h"
 #include "PropertyObject.h"
-#include "OpenDCLView.h"
-#include "SharedRes.h"
+#include "StudioDialogControl.h"
+#include "Resource.h"
+#include "DclFormView.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CButtonStyles property page
 
-CButtonStyles::CButtonStyles( TDclControlPtr pControl, COpenDCLView* pView )
+CButtonStyles::CButtonStyles( TDclControlPtr pControl )
 : CPropertyPage(CButtonStyles::IDD)
 , mpControl( pControl )
-, mpView( pView )
 {
-	//{{AFX_DATA_INIT(CButtonStyles)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
+	m_pStyle = pControl->GetPropertyObject(Prop::ButtonStyle);
+	m_pPicture = pControl->GetPropertyObject(Prop::Picture);
 	m_nHighestId = 99;
 }
 
@@ -110,7 +109,7 @@ void CButtonStyles::OnSelchangePiclist()
 	{
 		CString sFilter;
 
-		sFilter = theWorkspace.LoadResourceString(IDS_FILTER);
+		sFilter = theWorkspace.LoadResourceString(IDS_IMAGEFILEFILTER);
 	
 		// create the open dialog box
 		CPreviewFileDlg BrowseWnd(
@@ -156,12 +155,8 @@ BOOL CButtonStyles::OnApply()
 {
 	m_pStyle->SetLongValue(m_SelectedStyle);
 	m_pPicture->SetLongValue(static_cast< long >(m_SelectedPic));
-	theWorkspace.SetModified(true);
-	if( mpView )
-	{
-		mpView->RefreshChildControl(mpControl, Prop::ButtonStyle);
-		mpView->RefreshChildControl(mpControl, Prop::Picture);
-	}
+	CStudioDialogControl::UpdateProperty(mpControl, Prop::ButtonStyle);
+	CStudioDialogControl::UpdateProperty(mpControl, Prop::Picture);
 	return CPropertyPage::OnApply();
 }
 

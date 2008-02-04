@@ -5,6 +5,7 @@
 #include "ArgumentsRetrieval.h"
 #include "Resource.h"
 #include "ErrorLexicon.h"
+#include "AcadColorTable.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "ArxWorkspace.h"
@@ -13,1016 +14,845 @@
 #include "VarUtils.h"
 
 
+extern CString GetCurrentFunctionName();
+static void HandleArgError( /*in*/ const resbuf* pArgs, /*in*/ odcl::ArgErr stat,
+														/*in*/ LPCTSTR pszAdditional = NULL, /*in*/ bool bPreviousArg = false );
 
-CString LtoString (long nLong)
+static CString GetErrorName( odcl::ArgErr stat )
 {
-	char Value[80];
-	_ltoa(nLong, Value, 10);
-	return Value;
-}
-
-CControlPane* GetRequestedControlPane(CString sFileName, CString sDialogName)
-{
-	CDialogObject* pDialog = theArxWorkspace.FindDialog(sFileName, sDialogName);
-	if (pDialog)
-		return &pDialog->GetControlPane();
-	return NULL;
-}
-
-//TDclControlPtr  GetRequestedArxObject(CString sFileName, CString sDialogName, CString sControlName)
-//{
-//	CDialogObject* pDialog = theArxWorkspace.FindDialog(sFileName, sDialogName);
-//	if (!pDialog)
-//		return NULL;
-//	return pDialog->GetControlPane().FindArxObject(sControlName);
-//	//return theArxWorkspace.FindControl(sFileName, sDialogName, sControlName);
-//}
-
-TDialogControlPtr GetRequestedControl( LPCTSTR pszProjectKey, LPCTSTR pszDialogName, LPCTSTR pszControlName,
-																			 ControlType nControlType = CtlInvalid )
-{
-	CDialogObject *pDialog = theArxWorkspace.FindDialog( pszProjectKey, pszDialogName );
-	if( !pDialog )
-		return NULL;
-	return pDialog->GetControlPane().FindControl( pszControlName, nControlType );
-}
-
-CWnd* GetRequestedControlWnd( LPCTSTR pszProjectKey,
-															LPCTSTR pszDialogName,
-															LPCTSTR pszControlName,
-															ControlType nControlType = CtlInvalid )
-{
-	TDialogControlPtr pControl = GetRequestedControl( pszProjectKey, pszDialogName, pszControlName, nControlType );
-	if( !pControl )
-		return NULL;
-	return pControl->GetControlWnd();
-}
-
-TDclControlPtr GetRequestedDclControl( LPCTSTR pszProjectKey,
-																					 LPCTSTR pszDialogName,
-																					 LPCTSTR pszControlName,
-																					 ControlType nControlType = CtlInvalid )
-{
-	TDialogControlPtr pControl = GetRequestedControl( pszProjectKey, pszDialogName, pszControlName, nControlType );
-	if( !pControl )
-		return NULL;
-	return pControl->GetTemplate();
-}
-
-///////////////////1//////////////////////////////////////////////////////////
-// ArgumentsRetrieval
-
-//*****************************************************************************
-// 
-// Method: IsArgumentString()
-// 
-// Purpose: [check if this arg is a string]
-// 
-// Parameters:  
-//		[restype]:  [TODO: Write the description of this parameter]
-// 
-// Returns:	int
-// 
-//*****************************************************************************
-bool IsArgumentString(short restype, int index, CString sMethod)
-{
-	if (restype != RTSTR)
+	switch( stat )
 	{
-		CString sIndex = LtoString(index);
-		if (sMethod.GetLength() > 0)
+	case odcl::argNil: return theWorkspace.LoadResourceString( IDS_ARG_NIL );
+	case odcl::argNotEnough: return theWorkspace.LoadResourceString( IDS_ARG_NOTENOUGH );
+	case odcl::argWrongType: return theWorkspace.LoadResourceString( IDS_ARG_WRONGTYPE );
+	case odcl::argTooMany: return theWorkspace.LoadResourceString( IDS_ARG_TOOMANY );
+	case odcl::argInvalid: return theWorkspace.LoadResourceString( IDS_ARG_INVALID );
+	case odcl::argNoInstance: return theWorkspace.LoadResourceString( IDS_ARG_NOINSTANCE );
+	}
+	return _T("");
+}
+
+ADSRESULT HandleArgValueError( /*in*/ const resbuf* pArgs, /*in*/ UINT nMsgId /*= ~UINT(0)*/, ... )
+{
+	CString sAdditional;
+	if( nMsgId != ~UINT(0) )
+	{
+		CString sFmt = theWorkspace.LoadResourceString( nMsgId );
+		if( !sFmt.IsEmpty() )
 		{
-			// inform the programmer that he did not make the correct call
-			theWorkspace.DisplayAlert(
-				CString(ErrorTheErrorStart) + sIndex + ErrorTheErrorMiddle + sMethod +
-				ErrorEndErrorNotaString	);	
-		}
-		return false;
-	}
-
-	return true;
-}
-
-bool IsArgumentInt(short restype, int index, CString sMethod)
-{
-	if (restype != RTSHORT)
-	{
-		CString sIndex = LtoString(index);
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(
-			CString(ErrorTheErrorStart) + sIndex + ErrorTheErrorMiddle + sMethod +
-			ErrorEndErrorNotanInt);	
-		return false;
-	}
-
-	return true;
-}
-
-bool IsArgumentDouble(short restype, int index, CString sMethod)
-{
-	if (restype != RTREAL && restype != RTSHORT)
-	{
-		CString sIndex = LtoString(index);
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(
-			CString(ErrorTheErrorStart) + sIndex + ErrorTheErrorMiddle + sMethod +
-			ErrorEndErrorNotaDbl);
-		return false;
-	}
-
-	return true;
-}
-
-
-//*****************************************************************************
-// 
-// Method: GetProjectAndFormName()
-// 
-// Purpose: [Get the arguments sent by AutoCAD. 
-//			 With this overloaded version get 2 strings]
-// 
-// Parameters:  
-//		[*pArg1]:  [TODO: Write the description of this parameter]
-//		[*pArg2]:  [TODO: Write the description of this parameter]
-// 
-// 
-//*****************************************************************************
-struct resbuf *GetProjectAndFormName(CString *pArg1, CString *pArg2, CString sMethod)
-{	
-	struct resbuf *ListData;
-
- 	//ensure AutoLISP has passed Arguments	
-	if ((ListData = acedGetArgs()) == NULL) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod); 			
-        return NULL; 
-	}
-	
-	if (IsArgumentString(ListData->restype, 0, sMethod)) 
-	{		
-		// get the first argument required
-		*pArg1 = ListData->resval.rstring;				
-	}
-	else
-	{	
-	    return NULL; 
-	}
-
-	
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// check if the argument is missing
-	if (ListData == NULL) 
-	{
-		CString sIndex = LtoString(1);
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(
-			CString(ErrorTheErrorStart) + sIndex + ErrorTheErrorMiddle + sMethod +
-			ErrorArgumentMissing);	
-		        return NULL; 
-	} 
-
-	if (IsArgumentString(ListData->restype, 1, sMethod))
-	{
-		// get the argument required
-		*pArg2 = ListData->resval.rstring;			
-	}
-	else
-	{
-		return NULL; 
-	}
-	
-	return ListData;
-}
-
-//*****************************************************************************
-// 
-// Method: GetStringArgument()
-// 
-// Purpose: [gets the expected string argument from AutoLISP]
-// 
-// Parameters:  
-//		[nIndex]:  [0 based index]
-//		[*pArg]:  [TODO: Write the description of this parameter]
-// 
-// Returns:	bool
-// 
-//*****************************************************************************
-bool GetStringArgument(int nIndex, CString *pArg, CString sMethod)
-{
-	struct resbuf *ListData;
-
-	//ensure AutoLISP has passed Arguments	
-	if ((ListData = acedGetArgs()) == NULL) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod); 			
-        return false; 
-	}
-
-	for (int i = 0; i < nIndex; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		return false;
-	}
-
-	// if this argument is the begining of a list
-	if (ListData->restype == RTLB)
-		return false; 
-
-	if (IsArgumentString(ListData->restype, nIndex, sMethod)) 
-	{		
-		// get the first argument required
-		*pArg = ListData->resval.rstring;				
-	}
-	else
-	{	
-		return false; 
-	}
-	return true; 
-}
-
-bool GetStringOrHandleArgument(int nIndex, CString& sArg, DWORD_PTR& hdl, LPCTSTR pszMethod)
-{
-	struct resbuf *ListData;
-
-	//ensure AutoLISP has passed Arguments	
-	if ((ListData = acedGetArgs()) == NULL) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + pszMethod); 			
-        return false; 
-	}
-
-	for (int i = 0; i < nIndex; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-		return false;
-
-	// if this argument is the begining of a list
-	if (ListData->restype == RTLB)
-		return false; 
-
-	if (ListData->restype == RTLONG)
-		hdl = ListData->resval.rlong;				
-	else if (ListData->restype == RTENAME)
-		hdl = ListData->resval.rlname[0];				
-	else if (ListData->restype == RTSHORT)
-		hdl = ListData->resval.rint;				
-	else if (IsArgumentString(ListData->restype, nIndex, pszMethod)) 
-	{		
-		// get the first argument required
-		sArg = ListData->resval.rstring;				
-		hdl = 0;
-	}
-	else
-		return false; 
-	return true; 
-}
-
-//*****************************************************************************
-// 
-// Method: FindOptionalStringArgument()
-// 
-// Purpose: [looks for optional to get the expected string argument from AutoLISP, but does not
-//			 prompt the user if not found]
-// 
-// Parameters:  
-//		[nIndex]:  [TODO: Write the description of this parameter]
-//		[*pArg]:  [TODO: Write the description of this parameter]
-// 
-// Returns:	bool
-// 
-//*****************************************************************************
-bool FindOptionalStringArgument(int nIndex, CString *pArg, CString sMethod)
-{
-	struct resbuf *ListData;
-
-	//ensure AutoLISP has passed Arguments	
-	if ((ListData = acedGetArgs()) == NULL) 
-	{
-		return false; 
-	}
-
-	for (int i = 0; i < nIndex; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-		
-		if (ListData == NULL)
-		{
-			return false;
+			va_list args;
+			va_start(args, nMsgId);
+			sAdditional.FormatV( sFmt, args );
+			va_end(args);
 		}
 	}
-
-
-	if (ListData->restype == RTSTR)
-	{		
-		// get the first argument required
-		*pArg = ListData->resval.rstring;				
-	}
-	else
-	{	
-		return false; 
-	}
-	return true; 
+	HandleArgError( pArgs, odcl::argInvalid, sAdditional, true );
+	return RSERR;
 }
-//*****************************************************************************
-// 
-// Method: GetDoubleArgument()
-// 
-// Purpose: [gets the expected int argument from AutoLISP]
-// 
-// Parameters:  
-//		[nIndex]:  [0 base index]
-//		[*pArg]:  [TODO: Write the description of this parameter]
-// 
-// Returns:	bool
-// 
-//*****************************************************************************
-bool GetDoubleArgument(int nIndex, double *pArg, CString sMethod)
+
+void HandleArgError( /*in*/ const resbuf* pArgs, /*in*/ odcl::ArgErr stat,
+										 /*in*/ LPCTSTR pszAdditional /*= NULL*/, /*in*/ bool bPreviousArg /*= false*/ )
 {
-	struct resbuf *ListData;
-
-	//ensure AutoLISP has passed Arguments	
-	if ((ListData = acedGetArgs()) == NULL) 
+	if( theWorkspace.IsMessagesSuppressed() )
+		return;
+	resbuf* pOriginalArgs = acedGetArgs();
+	int idxArg = 0;
+	while( pOriginalArgs && pOriginalArgs != pArgs )
 	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod); 			
-        return false; 
+		pOriginalArgs = pOriginalArgs->rbnext;
+		++idxArg;
 	}
-
-	for (int i = 0; i < nIndex; i++)
+	CString sArgIndex;
+	sArgIndex.Format( _T("%d"), bPreviousArg? idxArg - 1 : idxArg );
+	CString sErrMsg;
+	sErrMsg.Format( theWorkspace.LoadResourceString( IDS_ERR_ARGEXCEPTION ),
+									(LPCTSTR)GetErrorName( stat ),
+									(LPCTSTR)GetCurrentFunctionName(),
+									(LPCTSTR)sArgIndex );
+	if( pszAdditional && *pszAdditional )
 	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
+		sErrMsg += _T("\r\n\r\n");
+		sErrMsg += pszAdditional;
 	}
+	MessageBox( adsw_acadMainWnd(),
+							sErrMsg,
+							theWorkspace.LoadResourceString( IDS_ERR_TITLE ),
+							MB_OK | MB_ICONERROR );
+}
 
-	if (ListData == NULL)
-	{
-		return false;
-	}
-
-	if (ListData->restype == RTSHORT)
-	{
-		// get the argument required as an int and convert it to a double
-		*pArg = (double)ListData->resval.rint;				
+bool AssertOutOfArgs( /*in*/ const resbuf* pArgs, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
 		return true;
-	}
-	else if (IsArgumentDouble(ListData->restype, nIndex, sMethod)) 
-	{		
-		// get the argument required
-		*pArg = ListData->resval.rreal;				
-	}
-	else
-	{	
-		// inform the programmer that he did not make the correct call
-	   return false; 
-	}
-	return true; 
+	if( !bQuiet )
+		HandleArgError( pArgs, odcl::argTooMany );
+	return false;
 }
 
-//*****************************************************************************
-// 
-// Method: GetIntArgument()
-// 
-// Purpose: [gets the expected int argument from AutoLISP]
-// 
-// Parameters:  
-//		[nIndex]:  [0 base index]
-//		[*pArg]:  [TODO: Write the description of this parameter]
-// 
-// Returns:	bool
-// 
-//*****************************************************************************
-bool GetIntArgument(int nIndex, int *pArg, CString sMethod)
+bool GetProjectArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TArxProjectPtr& pProject, /*in*/ bool bQuiet /*= false*/ )
 {
-	struct resbuf *ListData;
-
-	//ensure AutoLISP has passed Arguments	
-	if ((ListData = acedGetArgs()) == NULL) 
+	if( !pArgs )
 	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod); 			
-        return false; 
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
 	}
 
-	for (int i = 0; i < nIndex; i++)
+	pProject = NULL;
+	switch( pArgs->restype )	
 	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
+	case RTNIL:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNil );
+		return false; //wrong argument type
+	case RTENAME:
+		pProject = TArxProjectLockedPtr( (CArxProject*)pArgs->resval.rlname[0] );
+		break;
+	case RTSTR:
+		pProject = theArxWorkspace.FindProject( pArgs->resval.rstring );
+		break;
+	default:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong argument type
 	}
-
-	if (ListData == NULL)
-		return false;
-
-	if (!IsArgumentInt(ListData->restype, nIndex, sMethod))
-		return false;
-	*pArg = ListData->resval.rint;		
-	return true; 
-}
-
-//*****************************************************************************
-// 
-// Method: FindOptionalIntArgument()
-// 
-// Purpose: [gets the optional int argument from AutoLISP]
-// 
-// Parameters:  
-//		[nIndex]:  [0 base index]
-//		[*pArg]:  [TODO: Write the description of this parameter]
-// 
-// Returns:	bool
-// 
-//*****************************************************************************
-bool FindOptionalIntArgument(int nIndex, int *pArg, CString sMethod)
-{
-	struct resbuf *ListData;
-
-	//ensure AutoLISP has passed Arguments	
-	if ((ListData = acedGetArgs()) == NULL) 
+	pArgs = pArgs->rbnext; //move to the next argument
+	if( !pProject )
 	{
-		*pArg = -1;
-		// inform the programmer that he did not make the correct call
-		return false; 
-	}
-
-	for (int i = 0; i < nIndex; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-		if (ListData == NULL)
-		{
-			*pArg = -1;
-			return false;
-		}
-	}
-
-	
-	if (ListData->restype == RTSHORT)
-	{		
-		// get the first argument required
-		*pArg = ListData->resval.rint;				
-	}
-	else if (ListData->restype == RTREAL)
-	{		
-		// get the first argument required
-		*pArg = ListData->resval.rreal;				
-	}
-	else
-	{
-		*pArg = -1;
-		// inform the programmer that he did not make the correct call
-		return false; 
-	}
-	return true; 
-}
-
-//*****************************************************************************
-// 
-// Method: FindOptionalDoubleArgument()
-// 
-// Purpose: [gets the optional int argument from AutoLISP]
-// 
-// Parameters:  
-//		[nIndex]:  [0 base index]
-//		[*pArg]:  [TODO: Write the description of this parameter]
-// 
-// Returns:	bool
-// 
-//*****************************************************************************
-bool FindOptionalDoubleArgument(int nIndex, double *pArg, CString sMethod)
-{
-	struct resbuf *ListData;
-
-	//ensure AutoLISP has passed Arguments	
-	if ((ListData = acedGetArgs()) == NULL) 
-	{
-		// inform the programmer that he did not make the correct call
-		return false; 
-	}
-
-	for (int i = 0; i < nIndex; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-		if (ListData == NULL)
-		{
-			return false;
-		}
-	}
-
-	
-	if (ListData->restype == RTSHORT)
-	{		
-		// get the first argument required
-		*pArg = (double)ListData->resval.rint;				
-	}
-	else if (ListData->restype == RTREAL)
-	{		
-		// get the first argument required
-		*pArg = ListData->resval.rreal;				
-	}
-	else
-	{
-		// inform the programmer that he did not make the correct call
-		return false; 
-	}
-	return true; 
-}
-
-
-//*****************************************************************************
-// 
-// Method: GetNextString()
-// 
-// Purpose: [get the next argument assuming it's a string]
-// 
-// Parameters:  
-//		[*ListData]:  [TODO: Write the description of this parameter]
-//		[*pArg]:  [TODO: Write the description of this parameter]
-// 
-// Returns:	bool
-// 
-//*****************************************************************************
-bool GetNextString(struct resbuf *ListData, CString *pArg, int nIndex, CString sMethod)
-{
-	// first iterate forward to the next required argument
-	ListData = ListData->rbnext;
-	if (ListData == NULL)
-	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNoInstance );
 		return false;
 	}
-
-	if (IsArgumentString(ListData->restype, nIndex, sMethod)) 
-	{		
-		// get the first argument required
-		*pArg = ListData->resval.rstring;				
-	}
-	else
-	{	
-		return false; 
-	}
-
 	return true;
 }
 
-//*****************************************************************************
-// 
-// Method: GetControlPointer()
-// 
-// Purpose: [gets a pointer to the requested CWnd control]
-// 
-// Parameters: none
-// 
-// Returns:	CWnd *
-// 
-//*****************************************************************************
-CWnd * GetControlPointer(int nControlType, CString sMethod, int *pnArgs)
+bool GetFormArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TDclFormPtr& pForm, /*in*/ bool bQuiet /*= false*/ )
 {
-	CString sProject;
-	CString sDialogBox;
-	CString sControlName;
-	CString sItem;
-	TDclControlPtr pArxObject;
-	struct resbuf *ListData;
-	CWnd *pControl = NULL;
-
-	ListData = acedGetArgs();
-
-	if (ListData == NULL)
+	pForm = NULL;
+	if( !pArgs )
 	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod); 			
-        return NULL; 
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
 	}
 
-	if (ListData->restype == RTNIL)
-	{		
-		CString sError;
-		sError.Format( theWorkspace.LoadResourceString(IDS_METHODVARNAMEINCORRECT), (LPCTSTR)sMethod );
-		theWorkspace.DisplayAlert(sError); 
-		return NULL; 
-	}
-
-	else if (ListData->restype == RTSHORT)
-	{	
-		pArxObject = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rint );
-	}
-	else if (ListData->restype == RTLONG)
-	{	
-		pArxObject = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rlong );
-	}
-	else if (ListData->restype == RTENAME)
-	{	
-		pArxObject = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rlname[0] );
-	}
-	else if (ListData->restype == RTREAL)
-	{	
-		double dValue = ListData->resval.rreal;
-		pArxObject = TDclControlLockedPtr( (CDclControlObject*)((LONG_PTR)dValue) );
-	}
-	else if (ListData->restype == RTSTR)
-	{		
-		// get the first argument required
-		sProject = ListData->resval.rstring;				
-	
-		// iterate forward to the next required argument
-		ListData = ListData->rbnext;
-
-		if (ListData == NULL)
-		{
-			theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod);
-			return NULL;
-		}
-
-		if (ListData->restype == RTSTR)
-		{		
-			// get the argument required
-			sDialogBox = ListData->resval.rstring;				
-		}
-		else
-		{
-			theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sMethod);
-			return NULL;
-		}
-	
-		// iterate forward to the next required argument
-		ListData = ListData->rbnext;
-
-		if (ListData == NULL)
-		{
-			theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod);
-			return NULL;
-		}
-
-		if (ListData->restype == RTSTR)
-		{		
-			// get the argument required
-			sControlName = ListData->resval.rstring;				
-		}
-		else
-		{
-			theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sMethod);
-			return NULL;
-		}
-	
-		if (pnArgs != NULL)
-			*pnArgs = 3;
-
-		return GetRequestedControlWnd(sProject, sDialogBox, sControlName);
-	}
-	else
-	{		
-		return NULL; 
-	}
-
-	if (pnArgs != NULL)
-		*pnArgs = 1;
-	
-	
-	if (pArxObject == NULL)
+	switch( pArgs->restype )	
 	{
-		return NULL;
+	case RTNIL:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNil );
+		return false; //wrong argument type
+	case RTENAME:
+		{
+			TDclControlLockedPtr pDclControl( (CDclControlObject*)pArgs->resval.rlname[0] );
+			if( pDclControl )
+				pForm = pDclControl->GetOwnerForm();
+		}
+		break;
+	case RTSTR:
+		{
+			LPCTSTR pszProjectName = pArgs->resval.rstring;
+			if( !pszProjectName )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argInvalid );
+				return false; //invalid argument
+			}
+
+			pArgs = pArgs->rbnext; //move to the next argument
+			if( !pArgs )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argNotEnough );
+				return false; //not enough arguments
+			}
+
+			if( pArgs->restype != RTSTR )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong argument type
+			}
+			pForm = theArxWorkspace.FindForm(pszProjectName, pArgs->resval.rstring);
+			break;
+		}
+	default:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong argument type
 	}
-	
-	return pArxObject->GetWindow();
+	pArgs = pArgs->rbnext; //move to the next argument
+	if( !pForm )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNoInstance );
+		return false;
+	}
+	return true;
 }
 
-CWnd * GetControlPointer(ControlType nControlType, CString sMethod, TDclFormPtr pDclObject)
+bool GetControlArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TDclControlPtr& pControl, /*in*/ bool bQuiet /*= false*/ )
 {
-	CString sProject;
-	CString sDialogBox;
-	CString sControlName;
-	CString sItem;
-	struct resbuf *ListData;
-
-	// call the method to get 2 expected string arguments from AutoLISP
-	ListData = GetProjectAndFormName(&sProject, &sDialogBox, sMethod);
-	
-	if (ListData == NULL)
-		return NULL;
-
-	if (!GetNextString(ListData, &sControlName, 2, sMethod))
+	if( !pArgs )
 	{
-		theWorkspace.DisplayAlert(CString(ErrorNoControlNameArgument) + sMethod);
-		return NULL;
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
 	}
 
-	return GetRequestedControlWnd(sProject, sDialogBox, sControlName, nControlType);
+	pControl = NULL;
+	switch( pArgs->restype )	
+	{
+	case RTNIL:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNil );
+		return false; //wrong argument type
+	case RTENAME:
+		pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rlname[0] );
+		break;
+	case RTSTR:
+		{
+			LPCTSTR pszProjectName = pArgs->resval.rstring;
+			if (!pszProjectName)
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argInvalid );
+				return false; //invalid argument
+			}
+
+			pArgs = pArgs->rbnext; //move to the next argument
+			if( !pArgs )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argNotEnough );
+				return false; //not enough arguments
+			}
+
+			if( pArgs->restype != RTSTR )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong argument type
+			}
+			LPCTSTR pszFormName = pArgs->resval.rstring;
+			if (!pszFormName)
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argInvalid );
+				return false; //invalid argument
+			}
+
+			pArgs = pArgs->rbnext; //move to the next argument
+			if( !pArgs )
+			{
+				TDclFormPtr pForm = theArxWorkspace.FindForm(pszProjectName, pszFormName);
+				if( !pForm )
+				{
+					if( !bQuiet )
+						HandleArgError( pArgs, odcl::argNoInstance );
+					return false; //not enough arguments
+				}
+				pControl = pForm->GetControlProperties();
+			}
+
+			if( pArgs->restype != RTSTR )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong argument type
+			}
+			pControl = theArxWorkspace.FindControl(pszProjectName, pszFormName, pArgs->resval.rstring);
+			break;
+		}
+	default:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong argument type
+	}
+	pArgs = pArgs->rbnext; //move to the next argument
+	if( !pControl )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNoInstance );
+		return false;
+	}
+	return true;
 }
 
-//*****************************************************************************
-// 
-// Method: GetControlArxObject()
-// 
-// Purpose: [gets a pointer to the arx control object requested]
-// 
-// Parameters: none
-// 
-// Returns:	TDclControlPtr 
-// 
-//*****************************************************************************
-TDclControlPtr  GetControlArxObject(CString sMethod, int *pnArgs)
+bool GetDialogArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CDialogObject*& pDialog, /*in*/ bool bQuiet /*= false*/ )
 {
-	CString sProject;
-	CString sDialogBox;
-	CString sControlName;
-	CString sItem;
-	TDclControlPtr pArxObject;
-	struct resbuf *ListData;
-	CWnd *pControl = NULL;
-
-	ListData = acedGetArgs();
-
-	if (ListData == NULL)
+	TDclFormPtr pForm;
+	if( !GetFormArgument( pArgs, pForm, bQuiet ) )
+		return false;
+	pDialog = pForm? pForm->GetFormInstance() : NULL;
+	if( !pDialog )
 	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod); 			
-        return NULL; 
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNoInstance );
+		return false;
 	}
-
-	if (ListData->restype == RTNIL)
-	{		
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString("The control variable argument passed to ") + sMethod + " was NIL."); 			
-        return NULL; 
-	}
-
-	else if (ListData->restype == RTSHORT)
-	{	
-		pArxObject = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rint );
-	}
-	else if (ListData->restype == RTLONG)
-	{	
-		pArxObject = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rlong );
-	}
-	else if (ListData->restype == RTENAME)
-	{	
-		pArxObject = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rlname[0] );
-	}
-	else if (ListData->restype == RTREAL)
-	{	
-		double dValue = ListData->resval.rreal;
-		pArxObject = TDclControlLockedPtr( (CDclControlObject*)((LONG_PTR)dValue) );
-	}
-	else if (ListData->restype == RTSTR)
-	{		
-		// get the first argument required
-		sProject = ListData->resval.rstring;				
-	
-		// iterate forward to the next required argument
-		ListData = ListData->rbnext;
-
-		if (ListData == NULL)
-		{
-			theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod);
-			return NULL;
-		}
-
-		if (ListData->restype == RTSTR)
-		{		
-			// get the argument required
-			sDialogBox = ListData->resval.rstring;				
-		}
-		else
-		{
-			theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sMethod);
-			return NULL;
-		}
-	
-		// iterate forward to the next required argument
-		ListData = ListData->rbnext;
-
-		if (ListData == NULL)
-		{
-			theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod);
-			return NULL;
-		}
-
-		if (ListData->restype == RTSTR)
-		{		
-			// get the argument required
-			sControlName = ListData->resval.rstring;				
-		}
-		else
-		{
-			theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sMethod);
-			return NULL;
-		}
-	
-		if (pnArgs != NULL)
-			*pnArgs = 3;
-		pArxObject = GetRequestedDclControl(sProject, sDialogBox, sControlName);
-		if( !pArxObject )
-			theWorkspace.DisplayAlert(CString(ErrorControlNotFound) + sMethod);
-		return pArxObject;
-	}
-	else
-		return NULL; 
-
-	if (pnArgs != NULL)
-		*pnArgs = 1;
-	
-	return pArxObject;
+	return true;
 }
 
-//*****************************************************************************
-// 
-// Method: GetPropertyArgument()
-// 
-// Purpose: [gets the argument at the requested index and returns a CPropertyObject]
-// 
-// Parameters:  
-//		[nIndex]:  [0 based argument index]
-// 
-// Returns:	TPropertyPtr 
-// 
-//*****************************************************************************
-TPropertyPtr GetPropertyArgument(TDclControlPtr pTemplate, int nIndex, CString sMethod)
+bool GetDlgControlArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CDialogControl*& pDlgControl, /*in*/ ControlType type, /*in*/ bool bQuiet /*= false*/ )
 {
-	struct resbuf *ListData;
-
-	//ensure AutoLISP has passed Arguments	
-	if ((ListData = acedGetArgs()) == NULL) 
+	TDclControlPtr pControl;
+	if( !GetControlArgument( pArgs, pControl, bQuiet ) )
+		return false;
+	if( !pControl || (type != _CtlInvalid && pControl->GetType() != type) )
 	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod); 			
-        return false; 
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false;
+	}
+	pDlgControl = pControl->GetControlInstance();
+	if( !pDlgControl )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNoInstance );
+		return false;
+	}
+	return true;
+}
+
+bool GetPropertyArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TPropertyPtr& pProperty, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
 	}
 
-	for (int i = 0; i < nIndex; i++)
+	switch( pProperty->GetType() )
 	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		return NULL;
-	}
-	if (ListData->restype == RTLB)
-	{
-		return NULL;
-	}
-	
-	TPropertyPtr pProperty;
-
-	switch (ListData->restype)
-	{	
+	case PropOLEColor:
+		{
+			COLORREF crArg;
+			if( !GetColorArgument( pArgs, crArg, bQuiet ) )
+				return false;
+			if( !pProperty->SetOLEColorValue( crArg ) )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong type
+			}
+		}
+		return true;
+	case PropStringArray:
+		{
+			CStringArray rsArg;
+			if( !GetStringArrayArgument( pArgs, rsArg, bQuiet ) )
+				return false;
+			PropVal::TCStringArray* prProp = pProperty->GetStringArrayPtr();
+			if( !prProp )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong type
+			}
+			prProp->clear();
+			INT_PTR ctArg = rsArg.GetSize();
+			for( INT_PTR idx = 0; idx < ctArg; ++idx )
+				prProp->push_back( rsArg.GetAt( idx ) );
+		}
+		return true;
+	case PropIntArray:
+		{
+			CArray< int, int > rnArg;
+			if( !GetIntArrayArgument( pArgs, rnArg, bQuiet ) )
+				return false;
+			PropVal::TIntArray* prProp = pProperty->GetIntArrayPtr();
+			if( !prProp )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong type
+			}
+			prProp->clear();
+			INT_PTR ctArg = rnArg.GetSize();
+			for( INT_PTR idx = 0; idx < ctArg; ++idx )
+				prProp->push_back( rnArg.GetAt( idx ) );
+		}
+		return true;
+	default:
+		switch( pArgs->restype )
+		{
+		case RTT:
+			if( !pProperty->SetBooleanValue( true ) )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong type
+			}
+			pArgs = pArgs->rbnext;
+			break;
+		case RTNIL:
+			if( !pProperty->SetBooleanValue( false ) )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong type
+			}
+			pArgs = pArgs->rbnext;
+			break;
+		case RTSHORT:
+			if( !pProperty->SetLongValue( pArgs->resval.rint ) )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong type
+			}
+			pArgs = pArgs->rbnext;
+			break;
+		case RTLONG:
+			if( !pProperty->SetLongValue( pArgs->resval.rlong ) )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong type
+			}
+			pArgs = pArgs->rbnext;
+			break;
 		case RTREAL:
 		case RTANG:
+		case RTORINT:
+			if( !pProperty->SetDoubleValue( pArgs->resval.rreal ) )
 			{
-				pProperty = new CPropertyObject(pTemplate, PropDouble);
-				// get the first argument required
-				pProperty->SetDoubleValue(ListData->resval.rreal);
-				break;
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong type
 			}
-		case RTSHORT:
-			{
-				pProperty = new CPropertyObject(pTemplate, PropLong);
-				// get the first argument required
-				pProperty->SetLongValue(ListData->resval.rint);
-				break;
-			}
-		case RTLONG:
-			{
-				pProperty = new CPropertyObject(pTemplate, PropLong);
-				// get the first argument required
-				pProperty->SetLongValue(ListData->resval.rlong);
-				break;
-			}
+			pArgs = pArgs->rbnext;
+			break;
 		case RTSTR:
+			if( !pProperty->SetStringValue( pArgs->resval.rstring ) )
 			{
-				pProperty = new CPropertyObject(pTemplate, PropString);
-				// get the first argument required
-				pProperty->SetStringValue(ListData->resval.rstring);
-				break;
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong type
 			}
-		case RTT:
-			{
-				pProperty = new CPropertyObject(pTemplate, PropBool);
-				// get the first argument required
-				pProperty->SetBooleanValue(true);				
-				break;
-			}
-		case RTNIL:
-			{
-				pProperty = new CPropertyObject(pTemplate, PropBool);
-				// get the first argument required
-				pProperty->SetBooleanValue(false);				
-				break;
-			}
+			pArgs = pArgs->rbnext;
+			break;
 		default:
-			{
-				// inform the programmer that he did not make the correct call
-				theWorkspace.DisplayAlert(
-					CString(ErrorInappropriateFound)
-					+ sMethod); 			
-				return NULL; 
-				break;
-			}		
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argWrongType );
+			return false; //wrong argument type
+		}
+		break;
 	}
-	//acutRelRb(ListData);
-	return pProperty; 
+	return true;
 }
 
-bool GetAxPropertyArgument(struct resbuf*& ListData, COleVariant *oleVar, const AxArg& type)
-{	
-	oleVar->Clear();
-	switch (ListData->restype)
+bool GetBoolArgument( /*in-out*/ resbuf*& pArgs, /*out*/ bool& bArg, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
+	}
+	switch( pArgs->restype )
+	{
+	case RTT:
+		bArg = true;
+		break;
+	case RTNIL:
+		bArg = false;
+		break;
+	default:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	pArgs = pArgs->rbnext; //move to the next argument
+	return true;
+}
+
+bool GetStringArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CString& sArg, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
+	}
+	if( pArgs->restype != RTSTR )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	sArg = pArgs->resval.rstring;
+	pArgs = pArgs->rbnext; //move to the next argument
+	return true;
+}
+
+bool GetIntArgument( /*in-out*/ resbuf*& pArgs, /*out*/ int& nArg, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
+	}
+	switch( pArgs->restype )
+	{
+	case RTSHORT:
+		nArg = pArgs->resval.rint;
+		break;
+	case RTLONG:
+		nArg = pArgs->resval.rlong;
+		break;
+	default:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	pArgs = pArgs->rbnext; //move to the next argument
+	return true;
+}
+
+bool GetUIntArgument( /*in-out*/ resbuf*& pArgs, /*out*/ unsigned int& nArg, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
+	}
+	switch( pArgs->restype )
+	{
+	case RTSHORT:
+		if( pArgs->resval.rint < 0 )
+		{
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argInvalid );
+			return false;
+		}
+		nArg = pArgs->resval.rint;
+		break;
+	case RTLONG:
+		if( pArgs->resval.rlong < 0 )
+		{
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argInvalid );
+			return false;
+		}
+		nArg = pArgs->resval.rlong;
+		break;
+	case RTREAL:
+	case RTANG:
+	case RTORINT:
+		if( pArgs->resval.rreal < 0 ||
+				pArgs->resval.rreal < UINT_MAX ||
+				fabs( pArgs->resval.rreal - (ads_real)(unsigned int)pArgs->resval.rreal ) > 0.00000001 )
+		{
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argInvalid );
+			return false;
+		}
+		nArg = (unsigned int)pArgs->resval.rreal;
+		break;
+	default:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	pArgs = pArgs->rbnext; //move to the next argument
+	return true;
+}
+
+bool GetLongArgument( /*in-out*/ resbuf*& pArgs, /*out*/ long& nArg, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
+	}
+	switch( pArgs->restype )
+	{
+	case RTSHORT:
+		nArg = pArgs->resval.rint;
+		break;
+	case RTLONG:
+		nArg = pArgs->resval.rlong;
+		break;
+	case RTREAL:
+	case RTANG:
+	case RTORINT:
+		if( pArgs->resval.rreal < LONG_MIN ||
+				pArgs->resval.rreal < LONG_MAX ||
+				fabs( pArgs->resval.rreal - (ads_real)(long)pArgs->resval.rreal ) > 0.00000001 )
+		{
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argInvalid );
+			return false;
+		}
+		nArg = (long)pArgs->resval.rreal;
+		break;
+	default:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	pArgs = pArgs->rbnext; //move to the next argument
+	return true;
+}
+
+bool GetHandleArgument( /*in-out*/ resbuf*& pArgs, /*out*/ DWORD_PTR& nArg, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
+	}
+	switch( pArgs->restype )
+	{
+	case RTSHORT:
+		nArg = pArgs->resval.rint;
+		break;
+	case RTLONG:
+		nArg = pArgs->resval.rlong;
+		break;
+	case RTENAME:
+		nArg = pArgs->resval.rlname[0];
+		break;
+	default:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	pArgs = pArgs->rbnext; //move to the next argument
+	return true;
+}
+
+bool GetDoubleArgument( /*in-out*/ resbuf*& pArgs, /*out*/ double& dblArg, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
+	}
+	switch( pArgs->restype )
+	{
+	case RTREAL:
+	case RTANG:
+	case RTORINT:
+		dblArg = pArgs->resval.rreal;
+		break;
+	case RTSHORT:
+		dblArg = pArgs->resval.rint;
+		break;
+	default:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	pArgs = pArgs->rbnext; //move to the next argument
+	return true;
+}
+
+bool Get3dPointArgument( /*in-out*/ resbuf*& pArgs, /*out*/ AcGePoint3d& pntArg, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
+	}
+	switch( pArgs->restype )
+	{
+	case RT3DPOINT:
+		pntArg.set( pArgs->resval.rpoint[X], pArgs->resval.rpoint[Y], pArgs->resval.rpoint[Z] );
+		break;
+	case RTPOINT:
+		pntArg.set( pArgs->resval.rpoint[X], pArgs->resval.rpoint[Y], 0 );
+		break;
+	default:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	pArgs = pArgs->rbnext; //move to the next argument
+	return true;
+}
+
+bool GetDateArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleDateTime& dtArg, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
+	}
+	int nYear = -1;
+	int nMonth = -1;
+	int nDay = -1;
+	switch( pArgs->restype )
+	{
+	case RT3DPOINT:
+		nYear = pArgs->resval.rpoint[X];
+		nMonth = pArgs->resval.rpoint[Y];
+		nDay = pArgs->resval.rpoint[Z];
+		break;
+	case RTLB:
+		{
+			resbuf* pArgC = pArgs->rbnext;
+			if( !GetIntArgument( pArgC, nYear ) )
+				return false;
+			if( !GetIntArgument( pArgC, nMonth ) )
+				return false;
+			if( !GetIntArgument( pArgC, nDay ) )
+				return false;
+			if( pArgC->restype != RTLE )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argNotEnough );
+				return false;
+			}
+			pArgs = pArgC;
+		}
+		break;
+	default:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	if( 0 != dtArg.SetDate( nYear, nMonth, nDay ) )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argInvalid );
+		return false;
+	}
+	return true;
+}
+
+bool GetIUnknownArgument( /*in-out*/ resbuf*& pArgs, /*out*/ IUnknown*& pUnk, /*in*/ bool bQuiet /*= false*/ )
+{
+	switch( pArgs->restype )
+	{	
+		case RTENAME:
+			pUnk = (IUnknown*)pArgs->resval.rlname[0];
+			pArgs = pArgs->rbnext;
+			break;
+		case RTNIL:
+			pUnk = NULL;
+			pArgs = pArgs->rbnext;
+			break;
+		default:
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argWrongType );
+			return false; 
+	}
+	return true; 
+}
+
+bool GetIDispatchArgument( /*in-out*/ resbuf*& pArgs, /*out*/ IDispatch*& pDisp, /*in*/ bool bQuiet /*= false*/ )
+{
+	switch( pArgs->restype )
+	{	
+		case RTENAME:
+			{
+				IUnknown* pUnk = (IUnknown*)pArgs->resval.rlname[0];
+				if( !pUnk )
+					pDisp = NULL;
+				else
+				{
+					if( FAILED(pUnk->QueryInterface( IID_IDispatch, (void**)&pDisp )) )
+					{
+						if( !bQuiet )
+							HandleArgError( pArgs, odcl::argWrongType );
+						return false; 
+					}
+				}
+				pArgs = pArgs->rbnext;
+			}
+			break;
+		case RTNIL:
+			pDisp = NULL;
+			pArgs = pArgs->rbnext;
+			break;
+		default:
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argWrongType );
+			return false; 
+	}
+	return true; 
+}
+
+bool GetVariantArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleVariant& varArg, /*in*/ const AxArg& type, /*in*/ bool bQuiet /*= false*/ )
+{
+	switch( pArgs->restype )
 	{	
 		case RTREAL:
 		case RTANG:
 		case RTORINT:
 			{
-				oleVar->vt = VT_R8;
-				oleVar->dblVal = ListData->resval.rreal;
-				ListData = ListData->rbnext;
+				varArg.vt = VT_R8;
+				varArg.dblVal = pArgs->resval.rreal;
+				pArgs = pArgs->rbnext;
 				break;
 			}
 		case RTSHORT:
 			{
-				oleVar->vt = VT_I2;
-				oleVar->iVal = ListData->resval.rint;
-				if (type.vt == VT_DISPATCH)
-				{
-					oleVar->vt = VT_DISPATCH;
-					COleDispatchDriver *pDisp = (COleDispatchDriver *)ListData->resval.rint;
-					oleVar->pdispVal = pDisp->m_lpDispatch;
-					pDisp->m_lpDispatch = NULL;
-				}
-				ListData = ListData->rbnext;
+				varArg.vt = VT_I2;
+				varArg.iVal = pArgs->resval.rint;
+				pArgs = pArgs->rbnext;
 				break;
 			}
 		case RTLONG:
 			{
-				if (type.vt == VT_DISPATCH)
-				{
-					oleVar->vt = VT_DISPATCH;
-					COleDispatchDriver *pDisp = (COleDispatchDriver *)ListData->resval.rlong;
-					oleVar->pdispVal = pDisp->m_lpDispatch;
-					pDisp->m_lpDispatch = NULL;
-				}
-				else
-				{
-					oleVar->vt = VT_I4;
-					oleVar->lVal = ListData->resval.rlong;
-				}
-				ListData = ListData->rbnext;
+				varArg.vt = VT_I4;
+				varArg.lVal = pArgs->resval.rlong;
+				pArgs = pArgs->rbnext;
 				break;
 			}
 		case RTENAME:
 			{
-				if (type.vt == VT_DISPATCH)
+				if (type.vt == VT_UNKNOWN)
 				{
-					oleVar->vt = VT_DISPATCH;
-					COleDispatchDriver *pDisp = (COleDispatchDriver *)ListData->resval.rlname[0];
-					oleVar->pdispVal = pDisp->m_lpDispatch;
-					pDisp->m_lpDispatch = NULL;
-					ListData = ListData->rbnext;
+					varArg.vt = VT_UNKNOWN;
+					varArg.punkVal = (IUnknown*)pArgs->resval.rlname[0];
+					pArgs = pArgs->rbnext;
 				}
 				else
+				{
+					if( !bQuiet )
+						HandleArgError( pArgs, odcl::argWrongType );
 					return false;
+				}
 				break;
 			}
 		case RTSTR:
 			{
-				//oleVar->vt = VT_LPSTR;
-				*oleVar = ListData->resval.rstring;				
-				ListData = ListData->rbnext;
+				varArg = pArgs->resval.rstring;				
+				pArgs = pArgs->rbnext;
 				break;
 			}
 		case RTT:
 			{
-				oleVar->vt = VT_BOOL;
-				oleVar->boolVal = VARIANT_TRUE;				
-				ListData = ListData->rbnext;
+				varArg.vt = VT_BOOL;
+				varArg.boolVal = VARIANT_TRUE;				
+				pArgs = pArgs->rbnext;
 				break;
 			}
 		case RTNIL:
 			{
 				if (type.vt == VT_VARIANT)
 				{
-					oleVar->vt = VT_VARIANT|VT_BYREF;
-					oleVar->pvarVal = NULL;
+					varArg.vt = VT_VARIANT|VT_BYREF;
+					varArg.pvarVal = NULL;
 				}
 				else
 				{
-					oleVar->vt = VT_BOOL;
-					oleVar->boolVal = VARIANT_FALSE;				
+					varArg.vt = VT_BOOL;
+					varArg.boolVal = VARIANT_FALSE;				
 				}
-				ListData = ListData->rbnext;
+				pArgs = pArgs->rbnext;
 				break;
 			}
 			// must be a list
@@ -1031,44 +861,23 @@ bool GetAxPropertyArgument(struct resbuf*& ListData, COleVariant *oleVar, const 
 			{
 				switch (type.vt)
 				{
-				case VT_DISPATCH:
-				case VT_UNKNOWN:
-					{
-						oleVar->vt = VT_DISPATCH;
-						COleDispatchDriver *pDisp = (COleDispatchDriver *)((ULONG)ListData->resval.rpoint[1]);
-						oleVar->pdispVal = pDisp->m_lpDispatch;
-						pDisp->m_lpDispatch = NULL;
-						ListData = ListData->rbnext;
-						break;
-					}
-				case VT_DISPATCH|VT_BYREF:
-				case VT_UNKNOWN|VT_BYREF:
-					{
-						oleVar->vt = VT_DISPATCH|VT_BYREF;
-						COleDispatchDriver *pDisp = NULL;
-						pDisp = (COleDispatchDriver *)((ULONG)ListData->resval.rpoint[1]);
-						oleVar->ppdispVal = &pDisp->m_lpDispatch;
-						pDisp->m_lpDispatch = NULL;
-						ListData = ListData->rbnext;
-						break;
-					}
 				case VT_DATE:
 					{
 						COleDateTime Date;
 						Date.SetDate(
-							ListData->resval.rpoint[0],
-							ListData->resval.rpoint[1],
-							ListData->resval.rpoint[2]);
-						oleVar->vt = VT_DATE;
-						oleVar->date = Date;
-						ListData = ListData->rbnext;
+							pArgs->resval.rpoint[0],
+							pArgs->resval.rpoint[1],
+							pArgs->resval.rpoint[2]);
+						varArg.vt = VT_DATE;
+						varArg.date = Date;
+						pArgs = pArgs->rbnext;
 						break;
 					}
 				case VT_UI4:
 					{
-						oleVar->vt = VT_UI4;
-						oleVar->ulVal = RGB(ListData->resval.rpoint[0], ListData->resval.rpoint[1], ListData->resval.rpoint[2]);
-						ListData = ListData->rbnext;
+						varArg.vt = VT_UI4;
+						varArg.ulVal = RGB(pArgs->resval.rpoint[0], pArgs->resval.rpoint[1], pArgs->resval.rpoint[2]);
+						pArgs = pArgs->rbnext;
 						break;
 					}
 				}
@@ -1076,1959 +885,197 @@ bool GetAxPropertyArgument(struct resbuf*& ListData, COleVariant *oleVar, const 
 			}
 		default:
 			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
 				return false; 
-				break;
 			}		
 	}
-	bool bReturn = (type.vt == VT_VARIANT || S_OK == VariantChangeType( oleVar, oleVar, 0, type.vt ));
-
-/*
-	// set to converted as false for default
-
-	// here we need to check the COleVariant to ensure that it is set to the correct type and that the 
-	// user did not pass in a value that is not allowed.
-	switch(varType)
-	{
-		case VT_UI1:
-	
-			if (oleVar->vt == VT_BOOL)
-			{
-				oleVar->vt = VT_UI1;
-				oleVar->bVal = oleVar->boolVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_UI1;
-				if (oleVar->iVal == 0)
-					oleVar->bVal = TRUE;
-				else
-					oleVar->bVal = FALSE;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I4)
-			{
-				oleVar->vt = VT_UI1;
-				if (oleVar->lVal == 0)
-					oleVar->bVal = TRUE;
-				else
-					oleVar->bVal = FALSE;
-				bReturn = true;
-			}			
-			break;
-
-		case VT_I2:
-			if (oleVar->vt == VT_I2)
-				bReturn = true;
-			if (oleVar->vt == VT_I4)
-			{
-				oleVar->vt = VT_I2;
-				oleVar->iVal = oleVar->lVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_R8)
-			{
-				// convert to an float
-				oleVar->vt = VT_I2;
-				oleVar->iVal = oleVar->dblVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_R4)
-			{
-				// convert to an float
-				oleVar->vt = VT_I2;
-				oleVar->iVal = oleVar->dblVal;
-				bReturn = true;
-			}
-			break;
-		case VT_I4:
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_I4;
-				oleVar->lVal = oleVar->iVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I4)
-				bReturn = true;
-			if (oleVar->vt == VT_R8)
-			{
-				// convert to an float
-				oleVar->vt = VT_I4;
-				oleVar->lVal = oleVar->dblVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_R4)
-			{
-				// convert to an float
-				oleVar->vt = VT_I4;
-				oleVar->lVal = oleVar->dblVal;
-				bReturn = true;
-			}
-			break;
-		case VT_UI4:
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_I4;
-				oleVar->lVal = oleVar->iVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I4)
-				bReturn = true;
-			if (oleVar->vt == VT_R8)
-			{
-				// convert to an float
-				oleVar->vt = VT_I4;
-				oleVar->lVal = oleVar->dblVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_R4)
-			{
-				// convert to an float
-				oleVar->vt = VT_I4;
-				oleVar->lVal = oleVar->dblVal;
-				bReturn = true;
-			}
-			break;
-		case VT_R4:
-			if (oleVar->vt == VT_R8)
-			{
-				// convert to an float
-				oleVar->vt = VT_R4;
-				oleVar->fltVal = oleVar->dblVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_R4)
-				bReturn = true;
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_R4;
-				oleVar->fltVal = oleVar->iVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I4)
-			{
-				oleVar->vt = VT_R4;
-				oleVar->fltVal = oleVar->lVal;
-				bReturn = true;
-			}
-			break;
-		case VT_R8:
-			if (oleVar->vt == VT_R4)
-			{
-				// convert to an float
-				oleVar->vt = VT_R8;
-				oleVar->dblVal = oleVar->fltVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_R8)
-				bReturn = true;
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_R8;
-				oleVar->dblVal = oleVar->iVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I4)
-			{
-				oleVar->vt = VT_R8;
-				oleVar->dblVal = oleVar->lVal;
-				bReturn = true;
-			}
-			break;
-		case VT_DATE:
-			{
-			return true;
-			break;
-			}
-		case VT_CY:
-			{
-			// convert the values to the correct type
-			if (oleVar->vt == RTREAL || oleVar->vt == RTANG)
-			{
-				oleVar->vt = VT_CY;
-				oleVar->cyVal.Lo = oleVar->dblVal;
-				oleVar->cyVal.Hi = 0;
-				oleVar->cyVal.int64 = oleVar->cyVal.Lo;
-				
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_CY;
-				oleVar->cyVal.Lo = oleVar->iVal;
-				oleVar->cyVal.Hi = 0;
-				oleVar->cyVal.int64 = oleVar->cyVal.Lo ;
-				
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I4)
-			{
-				oleVar->vt = VT_CY;
-				oleVar->cyVal.Lo = oleVar->lVal;
-				oleVar->cyVal.Hi = 0;
-				oleVar->cyVal.int64 = oleVar->cyVal.Lo ;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_R4)
-			{
-				oleVar->vt = VT_CY;
-				oleVar->cyVal.Lo = oleVar->fltVal;
-				oleVar->cyVal.Hi = 0;
-				oleVar->cyVal.int64 = oleVar->cyVal.Lo ;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_R8)
-			{
-				oleVar->vt = VT_CY;
-				oleVar->cyVal.Lo = oleVar->dblVal;
-				oleVar->cyVal.Hi = 0;
-				oleVar->cyVal.int64 = oleVar->cyVal.Lo ;
-				bReturn = true;
-			}
-			break;
-			}
-		case VT_BSTR:
-#if !defined(_UNICODE) && !defined(OLE2ANSI)
-		case VT_BSTRA:
-#endif
-			{
-			bReturn = true;
-			break;
-			}
-		case VT_DISPATCH:
-			return true;
-			break;
-		case VT_ERROR:
-			{
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_ERROR;
-				oleVar->scode = oleVar->iVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I4)
-			{
-				oleVar->vt = VT_ERROR;
-				oleVar->scode = oleVar->lVal;
-				bReturn = true;
-			}			
-			break;
-			}
-		case VT_BOOL:			
-			{
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_BOOL;
-				if (oleVar->iVal == 0)
-					oleVar->boolVal = FALSE;
-				else
-					oleVar->boolVal = TRUE;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I4)
-			{
-				oleVar->vt = VT_BOOL;
-				if (oleVar->lVal == 0)
-					oleVar->boolVal = FALSE;
-				else
-					oleVar->boolVal = TRUE;
-				bReturn = true;
-			}
-			if (oleVar->vt = VT_BOOL)			
-				bReturn = true;
-			break;
-			}
-		case VT_VARIANT:
-			{			
-			bReturn = true;
-			break;
-			}
-		case VT_UNKNOWN:
-			acedAlert (_T("VT_UNKNOWN To Do"));
-			return false;
-			break;
-
-		case VT_UI1|VT_BYREF:
-			if (oleVar->vt == VT_BOOL)
-			{
-				oleVar->vt = VT_UI1|VT_BYREF;
-				oleVar->bVal = oleVar->boolVal;
-				oleVar->pbVal = &oleVar->bVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_UI1|VT_BYREF;
-				oleVar->bVal = oleVar->iVal;
-				oleVar->pbVal = &oleVar->bVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I4)
-			{
-				oleVar->vt = VT_UI1|VT_BYREF;
-				oleVar->bVal = oleVar->lVal;
-				oleVar->pbVal = &oleVar->bVal;
-				bReturn = true;
-			}			
-			break;
-		case VT_I2|VT_BYREF:			
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_I2|VT_BYREF;
-				oleVar->piVal = &oleVar->iVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I4)
-			{
-				oleVar->vt = VT_I2|VT_BYREF;
-				oleVar->iVal = oleVar->lVal;
-				oleVar->piVal = &oleVar->iVal;
-				bReturn = true;
-			}
-			break;		
-		case VT_I4|VT_BYREF:
-			{
-			if (oleVar->vt == VT_I4)
-			{
-				oleVar->vt = VT_I4|VT_BYREF;
-				oleVar->plVal = &oleVar->lVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_I4|VT_BYREF;
-				oleVar->lVal = oleVar->iVal;
-				oleVar->plVal = &oleVar->lVal;
-				bReturn = true;
-			}
-			
-			break;
-			}
-		case VT_R4|VT_BYREF:
-			if (oleVar->vt == VT_R4)
-			{
-				oleVar->vt = VT_R4|VT_BYREF;
-				oleVar->pfltVal = &oleVar->fltVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_R8)
-			{
-				oleVar->vt = VT_R4|VT_BYREF;
-				oleVar->fltVal = oleVar->dblVal;
-				oleVar->pfltVal = &oleVar->fltVal;
-				bReturn = true;
-			}
-			break;
-		case VT_R8|VT_BYREF:
-			if (oleVar->vt == VT_R4)
-			{
-				oleVar->vt = VT_R4|VT_BYREF;
-				oleVar->dblVal = oleVar->fltVal;
-				oleVar->pdblVal = &oleVar->dblVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_R8)
-			{
-				oleVar->vt = VT_R8|VT_BYREF;
-				oleVar->pdblVal = &oleVar->dblVal;
-				bReturn = true;
-			}
-			
-			break;
-		case VT_DATE|VT_BYREF:
-			{			
-			return true;
-			break;
-			}
-		case VT_CY|VT_BYREF:
-			{
-			if (oleVar->vt == VT_I4)
-			{
-				oleVar->vt = VT_CY|VT_BYREF;
-				oleVar->cyVal.Lo = oleVar->lVal;
-				oleVar->pcyVal = &oleVar->cyVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_CY|VT_BYREF;
-				oleVar->cyVal.Lo = oleVar->iVal;
-				oleVar->pcyVal = &oleVar->cyVal;
-				bReturn = true;
-			}
-			
-			break;
-			}
-		case VT_BSTR|VT_BYREF:
-			{
-			if (oleVar->vt == VT_BSTR)
-			{
-				oleVar->vt = VT_BSTR|VT_BYREF;
-				oleVar->pbstrVal = &oleVar->bstrVal;
-				bReturn = true;
-			}
-			break;
-			}
-		case VT_DISPATCH|VT_BYREF:
-			acedAlert (_T("VT_DISPATCH|VT_BYREF To Do"));
-			return false;
-			//varGet.ppdispVal = argList->m_Variant[i].ppdispVal;
-			break;
-		case VT_ERROR|VT_BYREF:
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_ERROR|VT_BYREF;
-				oleVar->scode = oleVar->iVal;
-				oleVar->pscode = &oleVar->scode;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I4)
-			{
-				oleVar->vt = VT_ERROR|VT_BYREF;
-				oleVar->scode = oleVar->lVal;
-				oleVar->pscode = &oleVar->scode;
-				bReturn = true;
-			}						
-			break;
-		case VT_BOOL|VT_BYREF:
-			if (oleVar->vt == VT_BOOL)
-			{
-				oleVar->vt = VT_BOOL|VT_BYREF;
-				oleVar->pboolVal = &oleVar->boolVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I2)
-			{
-				oleVar->vt = VT_BOOL|VT_BYREF;
-				oleVar->boolVal  = oleVar->iVal;
-				oleVar->pboolVal = &oleVar->boolVal;
-				bReturn = true;
-			}
-			if (oleVar->vt == VT_I4)
-			{
-				oleVar->vt = VT_BOOL|VT_BYREF;
-				oleVar->boolVal  = oleVar->lVal;
-				oleVar->pboolVal = &oleVar->boolVal;
-				bReturn = true;
-			}	
-			break;
-		case VT_VARIANT|VT_BYREF:
-			acedAlert (_T("VT_VARIANT|VT_BYREF To Do"));
-			return false;
-			//varGet.pvarVal = argList->m_Variant[i].pvarVal;
-			break;
-		case VT_UNKNOWN|VT_BYREF:
-			acedAlert (_T("VT_UNKNOWN|VT_BYREF To Do"));
-			return false;
-			break;
-	}
-*/
-
-	if (!bReturn)
+	bool bSuccess = (type.vt == VT_VARIANT ||
+									 type.vt == VT_EMPTY ||
+									 S_OK == VariantChangeType( &varArg, &varArg, 0, type.vt ));
+	if (!bSuccess)
 	{
 		CString sArgErr;
-		sArgErr.Format( theWorkspace.LoadResourceString( IDS_ERR_INVALIDARGUMENTTYPE ), VTToString( type.vt ), VTToString( oleVar->vt ) );
-		theWorkspace.DisplayAlert( sArgErr );
-	}
-
-	return bReturn; 
-}
-
-bool GetDateArgument(int nIndex, COleDateTime *pArg, CString sMethod)
-{
-	struct resbuf *ListData;
-	int nYear;
-	int nMonth;
-	int nDay;
-
-	//ensure AutoLISP has passed Arguments	
-	if ((ListData = acedGetArgs()) == NULL) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod); 					 
-        return false; 
-	}
-
-	for (int i = 0; i < nIndex; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
+		sArgErr.Format( theWorkspace.LoadResourceString( IDS_ERR_INVALIDARGUMENTTYPE ), VTToString( type.vt ), VTToString( varArg.vt ) );
+		HandleArgError( pArgs, odcl::argWrongType, sArgErr );
 		return false;
 	}
 
-
-	if (ListData->restype == RT3DPOINT) 
-	{
-		nYear = ListData->resval.rpoint[X];
-		nMonth = ListData->resval.rpoint[Y];
-		nDay = ListData->resval.rpoint[Z];
-	}
-	else if (ListData->restype == RTLB) 
-	{		
-		// advance to the first list item
-		ListData = ListData->rbnext;
-		if (ListData == NULL)
-		{
-			// inform the programmer that he did not make the correct call
-			theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sMethod);			
-			return false; 
-		}
-
-		// get the first argument required
-		nYear = ListData->resval.rint;
-
-		// advance to the first list item
-		ListData = ListData->rbnext;
-		if (ListData == NULL)
-		{
-			// inform the programmer that he did not make the correct call
-			theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sMethod);			
-			return false; 
-		}
-		
-		// get the argument required
-		nMonth = ListData->resval.rint;
-
-		// advance to the first list item
-		ListData = ListData->rbnext;
-		if (ListData == NULL)
-		{
-			// inform the programmer that he did not make the correct call
-			theWorkspace.DisplayAlert(CString(ErrorListNotSet) + sMethod);			
-			return false; 
-		}
-		
-		// get the third argument required
-		nDay = ListData->resval.rint;
-	}
-	else
-	{	
-		// inform the programmer that he did not make the correct call
-		return false; 
-	}
-
-	pArg->SetDate(
-		nYear,
-		nMonth,
-		nDay);
-
-	//acutRelRb(ListData);
 	return true; 
 }
 
-CWnd * GetArgsControlInt(int nControlType, CString sMethod, int &nInt)
+bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*/ bool bQuiet /*= false*/ )
 {
-	int nArgs = 0;
-	CWnd *pControl = GetControlPointer(
-		nControlType,
-		sMethod,
-		&nArgs);
-
-
-	if (pControl == NULL || !GetIntArgument(nArgs, &nInt, sMethod))
+	if( !pArgs )
 	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
 	}
-	return pControl;
-}
-
-CWnd * GetArgsControlDouble(int nControlType, CString sMethod, double &dDouble)
-{
-	int nArgs = 0;
-	CWnd *pControl = GetControlPointer(
-		nControlType,
-		sMethod,
-		&nArgs);
-
-
-	if (pControl == NULL || !GetDoubleArgument(nArgs, &dDouble, sMethod))
+	switch( pArgs->restype )
 	{
-		// return nil
-		acedRetInt(-1);
-		return NULL;
-	}
-	return pControl;
-}
-
-CWnd * GetArgsControlString(int nControlType, CString sMethod, CString &sString)
-{
-	int nArgs = 0;
-	CWnd *pControl = GetControlPointer(
-		nControlType,
-		sMethod,
-		&nArgs);
-
-
-	if (pControl == NULL || !GetStringArgument(nArgs, &sString, sMethod))
-	{
-		// return nil
-		acedRetInt(-1);
-		return NULL;
-	}
-	return pControl;
-}
-
-
-CWnd * GetArgsControlIntString(int nControlType, CString sMethod, int &nInt, CString &sString)
-{
-	int nArg = 0;
-	CWnd *pControl = GetControlPointer(
-		nControlType,
-		sMethod,
-		&nArg);
-
-
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return NULL;
-	}
-	struct resbuf *ListData;
-	CString sNewString;
-	
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-
-	if (ListData->restype != RTSHORT && ListData->restype != RTLONG) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sMethod);	
-		acedRetInt(-1);  return NULL; 
-	}
-
-	if (ListData->restype == RTSHORT)
-		// get the first argument required
-		nInt = ListData->resval.rint;
-
-	if (ListData->restype == RTLONG)
-		// get the first argument required
-		nInt = ListData->resval.rlong;
-
-	ListData = ListData->rbnext;
-
-	if (ListData->restype != RTSTR) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sMethod);	
-		acedRetInt(-1);  return NULL; 
-	}
-
-	// get the first argument required
-	sString = ListData->resval.rstring;
-
-
-	return pControl;
-}
-
-CWnd * GetArgsControlStringString(int nControlType, CString sMethod, CString &sString, CString &sString2)
-{
-	int nArg = 0;
-	CWnd *pControl = GetControlPointer(
-		nControlType,
-		sMethod,
-		&nArg);
-
-
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return NULL;
-	}
-	struct resbuf *ListData;
-	CString sNewString;
-	
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	if (ListData->restype != RTSTR) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sMethod);	
-		acedRetInt(-1);  return NULL; 
-	}
-
-	// get the first argument required
-	sString = ListData->resval.rstring;
-
-	ListData = ListData->rbnext;
-
-	if (ListData->restype != RTSTR) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sMethod);	
-		acedRetInt(-1);  return NULL; 
-	}
-
-	// get the first argument required
-	sString2 = ListData->resval.rstring;
-
-
-	return pControl;
-}
-
-
-CWnd * GetArgsControlIntInt(int nControlType, CString sMethod, int &nInt, int &nInt2)
-{
-	int nArg = 0;
-	CWnd *pControl = GetControlPointer(
-		nControlType,
-		sMethod,
-		&nArg);
-
-
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return NULL;
-	}
-	struct resbuf *ListData;
-	CString sNewString;
-	
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	if (ListData->restype != RTSHORT && ListData->restype != RTLONG) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sMethod);	
-		acedRetInt(-1);  return NULL; 
-	}
-
-	if (ListData->restype == RTSHORT)
-		// get the first argument required
-		nInt = ListData->resval.rint;
-
-	if (ListData->restype == RTLONG)
-		// get the first argument required
-		nInt = ListData->resval.rlong;
-
-	ListData = ListData->rbnext;
-
-	if (ListData->restype != RTSHORT && ListData->restype != RTLONG && 
-		ListData->restype != RTT && ListData->restype != RTNIL) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sMethod);	
-		acedRetInt(-1);  return NULL; 
-	}
-
-	if (ListData->restype == RTSHORT)
-		// get the first argument required
-		nInt2 = ListData->resval.rint;
-
-	if (ListData->restype == RTLONG)
-		// get the first argument required
-		nInt2 = ListData->resval.rlong;
-
-	if (ListData->restype == RTT)
-		// get the first argument required
-		nInt2 = 1;
-
-	if (ListData->restype == RTNIL)
-		// get the first argument required
-		nInt2 = 0;
-
-	return pControl;
-}
-
-
-CWnd * GetArgsControlIntIntInt(int nControlType, CString sMethod, int &nInt, int &nInt2, int &nInt3)
-{
-	int nArg = 0;
-	CWnd *pControl = GetControlPointer(
-		nControlType,
-		sMethod,
-		&nArg);
-
-
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return NULL;
-	}
-	struct resbuf *ListData;
-	CString sNewString;
-	
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	if (ListData->restype != RTSHORT && ListData->restype != RTLONG) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sMethod);	
-		acedRetInt(-1);  return NULL; 
-	}
-
-	if (ListData->restype == RTSHORT)
-		// get the first argument required
-		nInt = ListData->resval.rint;
-
-	if (ListData->restype == RTLONG)
-		// get the first argument required
-		nInt = ListData->resval.rlong;
-
-	ListData = ListData->rbnext;
-
-	if (ListData->restype != RTSHORT && ListData->restype != RTLONG && 
-		ListData->restype != RTT && ListData->restype != RTNIL) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sMethod);	
-		acedRetInt(-1);  return NULL; 
-	}
-
-	if (ListData->restype == RTSHORT)
-		// get the first argument required
-		nInt2 = ListData->resval.rint;
-
-	if (ListData->restype == RTLONG)
-		// get the first argument required
-		nInt2 = ListData->resval.rlong;
-
-	if (ListData->restype == RTT)
-		// get the first argument required
-		nInt2 = 1;
-
-	if (ListData->restype == RTNIL)
-		// get the first argument required
-		nInt2 = 0;
-
-		ListData = ListData->rbnext;
-
-	if (ListData->restype != RTSHORT && ListData->restype != RTLONG && 
-		ListData->restype != RTT && ListData->restype != RTNIL) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sMethod);	
-		acedRetInt(-1);  return NULL; 
-	}
-
-	if (ListData->restype == RTSHORT)
-		// get the first argument required
-		nInt3 = ListData->resval.rint;
-
-	if (ListData->restype == RTLONG)
-		// get the first argument required
-		nInt3 = ListData->resval.rlong;
-
-	if (ListData->restype == RTT)
-		// get the first argument required
-		nInt3 = 1;
-
-	if (ListData->restype == RTNIL)
-		// get the first argument required
-		nInt3 = 0;
-
-
-
-	return pControl;
-}
-
-CWnd * GetArgsControlStringIntInt(int nControlType, CString sMethod, CString &sString, int &nInt, int &nInt2)
-{
-	int nArg = 0;
-	CWnd *pControl = GetControlPointer(
-		nControlType,
-		sMethod,
-		&nArg);
-
-
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return NULL;
-	}
-	struct resbuf *ListData;
-	CString sNewString;
-	
-	//ensure AutoLISP has passed Arguments	
-	ListData = acedGetArgs();
-	
-	for (int i = 0; i < nArg; i++)
-	{
-		// first iterate forward to the next required argument
-		ListData = ListData->rbnext;
-	}
-
-	if (ListData == NULL)
-	{
-		acedRetInt(-1); 
-		return 0;
-	}
-
-	if (ListData->restype != RTSTR) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sMethod);	
-		acedRetInt(-1);  return NULL; 
-	}
-
-	// get the first argument required
-	sString = ListData->resval.rstring;
-
-	ListData = ListData->rbnext;
-
-	if (ListData->restype != RTSHORT && ListData->restype != RTLONG && 
-		ListData->restype != RTT && ListData->restype != RTNIL) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sMethod);	
-		acedRetInt(-1);  return NULL; 
-	}
-
-	if (ListData->restype == RTSHORT)
-		// get the first argument required
-		nInt = ListData->resval.rint;
-
-	if (ListData->restype == RTLONG)
-		// get the first argument required
-		nInt = ListData->resval.rlong;
-
-	
-	if (ListData->restype == RTT)
-		// get the first argument required
-		nInt = 1;
-
-	if (ListData->restype == RTNIL)
-		// get the first argument required
-		nInt = 0;
-
-	ListData = ListData->rbnext;
-
-	if (ListData->restype != RTSHORT && ListData->restype != RTLONG && 
-		ListData->restype != RTT && ListData->restype != RTNIL) 
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorListArgNotInt) + sMethod);	
-		acedRetInt(-1);  return NULL; 
-	}
-
-	if (ListData->restype == RTSHORT)
-		// get the first argument required
-		nInt2 = ListData->resval.rint;
-
-	if (ListData->restype == RTLONG)
-		// get the first argument required
-		nInt2 = ListData->resval.rlong;
-
-	
-	if (ListData->restype == RTT)
-		// get the first argument required
-		nInt2 = 1;
-
-	if (ListData->restype == RTNIL)
-		// get the first argument required
-		nInt2 = 0;
-
-	return pControl;
-}
-
-struct resbuf *getLispTargetInput(LPCTSTR sMethod, TDclControlPtr& pArg)
-{
-	CString sProject;
-	CString sDialogBox;
-	CString sControlName;
-	TDclControlPtr pArxObject = NULL;
-	struct resbuf *ListData;
-	
-	ListData = acedGetArgs();
-
-	if (ListData == NULL)
-	{
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod); 			
-        return ListData; 
-	}
-
-	if (ListData->restype == RTNIL)
-	{		
-		// inform the programmer that he did not make the correct call
-		theWorkspace.DisplayAlert(CString("The control variable argument passed to ") + sMethod + " was NIL."); 			
-        return ListData; 
-	}
-
-	else if (ListData->restype == RTSHORT)
-	{	
-		pArg = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rint );
-		return ListData;
-	}
-	else if (ListData->restype == RTLONG)
-	{	
-		pArg = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rlong );
-		return ListData;
-	}
-	else if (ListData->restype == RTENAME)
-	{	
-		pArg = TDclControlLockedPtr( (CDclControlObject*)ListData->resval.rlname[0] );
-		return ListData;
-	}
-	else if (ListData->restype == RTREAL)
-	{	
-		double dValue = ListData->resval.rreal;
-		pArg = TDclControlLockedPtr( (CDclControlObject*)((LONG_PTR)dValue) );
-		return ListData;
-	}
-	else if (ListData->restype == RTSTR)
-	{		
-		// get the first argument required
-		sProject = ListData->resval.rstring;				
-	
-		// iterate forward to the next required argument
-		ListData = ListData->rbnext;
-
-		if (ListData == NULL)
+	case RT3DPOINT:
 		{
-			theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod);
-			return ListData;
-		}
-
-		if (ListData->restype == RTSTR)
-		{		
-			// get the argument required
-			sDialogBox = ListData->resval.rstring;				
-		}
-		else
-		{
-			theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sMethod);
-			return ListData;
-		}
-	
-		// iterate forward to the next required argument
-		ListData = ListData->rbnext;
-
-		if (ListData == NULL)
-		{
-			theWorkspace.DisplayAlert(CString(ErrorNoArgumentsFound) + sMethod);
-			return ListData;
-		}
-
-		if (ListData->restype == RTSTR)
-		{		
-			// get the argument required
-			sControlName = ListData->resval.rstring;				
-		}
-		else
-		{
-			theWorkspace.DisplayAlert(CString(ErrorListArgNotStr) + sMethod);
-			return ListData;
-		}
-	
-		TDclControlPtr pArxObject = GetRequestedDclControl(sProject, sDialogBox, sControlName);
-
-		if (pArxObject == NULL)
-		{
-			theWorkspace.DisplayAlert(CString(ErrorControlNotFound) + sMethod);
-			return ListData;
-		}
-		pArg = pArxObject;
-		return ListData;
-	}
-
-	return ListData; 	
-}
-
-void GetLispStrInput(struct resbuf *ListData, CString &sArg1)
-{
-	// get the argument
-	if (ListData->restype == RTSTR)
-	{		
-		// get the first argument required
-		sArg1 = ListData->resval.rstring;					
-	}
-
-}
-
-void GetLispIntInput(struct resbuf *ListData, int &nArg1)
-{
-	// get the first argument
-	if (ListData->restype == RTSHORT)
-	{		
-		// get the first argument required
-		nArg1 = ListData->resval.rint;		
-	}
-	else if (ListData->restype == RTREAL ||
-			 ListData->restype == RTORINT ||
-			 ListData->restype == RTANG)
-	{		
-		// get the first argument required
-		nArg1 = (int)ListData->resval.rreal;				
-	}	
-	else if (ListData->restype == RTLONG)
-	{		
-		// get the first argument required
-		nArg1 = (int)ListData->resval.rlong;				
-	}
-	else if (ListData->restype == RTT)
-	{
-		nArg1 = 1;
-	}
-	else if (ListData->restype == RTNIL)
-	{
-		nArg1 = 0;
-	}
-}
-
-void GetLispBoolInput(struct resbuf *ListData, bool &bArg1)
-{
-	// get the first argument
-	if (ListData->restype == RTSHORT)
-	{		
-		// get the first argument required
-		bArg1 = ListData->resval.rint == 1;		
-	}
-	else if (ListData->restype == RTREAL ||
-			 ListData->restype == RTORINT ||
-			 ListData->restype == RTANG)
-	{		
-		// get the first argument required
-		bArg1 = ListData->resval.rreal == 1.0;				
-	}	
-	else if (ListData->restype == RTLONG)
-	{		
-		// get the first argument required
-		bArg1 = ListData->resval.rlong == 1;				
-	}
-	else if (ListData->restype == RTT)
-	{
-		bArg1 = true;
-	}
-	else if (ListData->restype == RTNIL)
-	{
-		bArg1 = false;
-	}
-}
-
-void GetLispRealInput(struct resbuf *ListData, double &dArg1)
-{
-	// get the first argument
-	if (ListData->restype == RTSHORT)
-	{		
-		// get the first argument required
-		dArg1 = ListData->resval.rint;		
-	}
-	else if (ListData->restype == RTREAL ||
-			 ListData->restype == RTORINT ||
-			 ListData->restype == RTANG)
-	{		
-		// get the first argument required
-		dArg1 = ListData->resval.rreal;				
-	}	
-	else if (ListData->restype == RTLONG)
-	{		
-		// get the first argument required
-		dArg1 = ListData->resval.rlong;				
-	}
-	else if (ListData->restype == RTT)
-	{
-		dArg1 = 1;
-	}
-	else if (ListData->restype == RTNIL)
-	{
-		dArg1 = 0;
-	}
-}
-void GetLispLongInput(struct resbuf *ListData, long &lArg1)
-{
-	// get the first argument
-	if (ListData->restype == RTSHORT)
-	{		
-		// get the first argument required
-		lArg1 = (long)ListData->resval.rint;		
-	}
-	else if (ListData->restype == RTREAL ||
-			 ListData->restype == RTORINT ||
-			 ListData->restype == RTANG)
-	{		
-		// get the first argument required
-		lArg1 = (long)ListData->resval.rreal;				
-	}	
-	else if (ListData->restype == RTLONG)
-	{		
-		// get the first argument required
-		lArg1 = ListData->resval.rlong;				
-	}
-	else if (ListData->restype == RTT)
-	{
-		lArg1 = 1;
-	}
-	else if (ListData->restype == RTNIL)
-	{
-		lArg1 = 0;
-	}
-}
-
-//*****************************************************************************
-// 
-// Method: GetLispInput()
-// 
-// Purpose: [gets the lisp input data]
-// 
-// Parameters: none
-// 
-// Returns:	TDclControlPtr 
-// 
-//*****************************************************************************
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, CString &sArg1, CString &sArg2)
-{
-	TDclControlPtr pArxObject = NULL;
-	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
-
-	if (pArxObject == NULL)
-	{
-		return NULL;
-	}
-
-	ListData = ListData->rbnext;
-
-	// get the first argument
-	GetLispStrInput(ListData, sArg1);
-
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-
-	// get the argument
-	GetLispStrInput(ListData, sArg2);
-
-	return pArxObject;
-}
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, CPoint &Arg1)
-{
-	TDclControlPtr pArxObject = NULL;
-	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
-
-	if (pArxObject == NULL)
-	{
-		return NULL;
-	}
-
-	ListData = ListData->rbnext;
-
-	if (ListData == NULL)
-		return pArxObject;
-
-	if (ListData->restype == RT3DPOINT)
-	{
-		Arg1.x = ListData->resval.rpoint[X];
-		Arg1.y = ListData->resval.rpoint[Y];
-	}
-	else if (ListData->restype == RTPOINT)
-	{
-		Arg1.x = ListData->resval.rpoint[X];
-		Arg1.y = ListData->resval.rpoint[Y];
-	}
-
-	return pArxObject;
-}
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, CString &sArg2)
-{
-	TDclControlPtr pArxObject = NULL;
-	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
-
-	if (pArxObject == NULL)
-	{
-		return NULL;
-	}
-
-	ListData = ListData->rbnext;
-
-	// get the first argument
-	GetLispIntInput(ListData, nArg1);
-
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-
-	// get the argument
-	GetLispStrInput(ListData, sArg2);
-
-	return pArxObject;
-}
-
-//*****************************************************************************
-// 
-// Method: GetLispInput()
-// 
-// Purpose: [gets the lisp input data]
-// 
-// Parameters: none
-// 
-// Returns:	TDclControlPtr 
-// 
-//*****************************************************************************
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, int nArg1, CString &sArg2, CString &sArg3)
-{
-	TDclControlPtr pArxObject = NULL;
-	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
-
-	if (pArxObject == NULL)
-	{
-		return NULL;
-	}
-
-	ListData = ListData->rbnext;
-
-	// get the first argument
-	GetLispIntInput(ListData, nArg1);
-
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-
-	// get the first argument
-	GetLispStrInput(ListData, sArg2);
-
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-
-	// get the argument
-	GetLispStrInput(ListData, sArg3);
-
-	return pArxObject;
-}
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, CString &sArg1)
-{
-	CString sEmpty;
-	return GetLispInput(sMethod, sArg1, sEmpty);
-}
-
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2)
-{
-	int nArg3;
-	return GetLispInput(sMethod, nArg1, nArg2, nArg3);
-}
-
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1)
-{
-	int nArg2;
-	return GetLispInput(sMethod, nArg1, nArg2);
-
-}
-
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3)
-{
-	int nArg4;
-	return GetLispInput(sMethod, nArg1, nArg2, nArg3, nArg4);
-}
-
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4)
-{
-	int nArg5;
-	return GetLispInput(sMethod, nArg1, nArg2, nArg3, nArg4, nArg5);
-}
-
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, long &lArg2)
-{
-	TDclControlPtr pArxObject = NULL;
-	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
-
-	if (pArxObject == NULL)
-	{
-		return NULL;
-	}
-
-	ListData = ListData->rbnext;
-
-	// get the first argument
-	GetLispIntInput(ListData, nArg1);
-	
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-
-	// get the argument
-	GetLispLongInput(ListData, lArg2);
-	
-	return pArxObject;
-	
-}
-
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5)
-{
-	TDclControlPtr pArxObject = NULL;
-	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
-
-	if (pArxObject == NULL)
-	{
-		return NULL;
-	}
-
-	ListData = ListData->rbnext;
-
-	// get the first argument
-	GetLispIntInput(ListData, nArg1);
-	
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-
-	// get the argument
-	GetLispIntInput(ListData, nArg2);
-	
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-	
-	// get the argument
-	GetLispIntInput(ListData, nArg3);
-
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-	
-	// get the argument
-	GetLispIntInput(ListData, nArg4);
-
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-	
-	// get the argument
-	GetLispIntInput(ListData, nArg5);
-
-	return pArxObject;
-}
-
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, CString &sArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5)
-{
-	TDclControlPtr pArxObject = NULL;
-	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
-
-	if (pArxObject == NULL)
-	{
-		return NULL;
-	}
-
-	ListData = ListData->rbnext;
-
-	// get the first argument
-	GetLispStrInput(ListData, sArg1);
-	
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-
-	// get the argument
-	GetLispIntInput(ListData, nArg2);
-	
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-	
-	// get the argument
-	GetLispIntInput(ListData, nArg3);
-
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-	
-	// get the argument
-	GetLispIntInput(ListData, nArg4);
-
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-
-	// get the argument
-	GetLispIntInput(ListData, nArg5);
-
-	return pArxObject;
-}
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, int &nArg3, int &nArg4, int &nArg5, CString &sOptionalString)
-{
-	TDclControlPtr pArxObject = NULL;
-	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
-
-	if (pArxObject == NULL)
-	{
-		return NULL;
-	}
-
-	ListData = ListData->rbnext;
-
-	// get the first argument
-	GetLispIntInput(ListData, nArg1);
-	
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-
-	// get the argument
-	GetLispIntInput(ListData, nArg2);
-	
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-	
-	// get the argument
-	GetLispIntInput(ListData, nArg3);
-
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-	
-	if (ListData->restype == RTSTR)
-	{
-		// get the argument
-		GetLispStrInput(ListData, sOptionalString);
-		return pArxObject;
-	}
-	// get the argument
-	GetLispIntInput(ListData, nArg4);
-
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-	if (ListData->restype == RTSTR)
-	{
-		// get the argument
-		GetLispStrInput(ListData, sOptionalString);
-		return pArxObject;
-	}
-	
-	// get the argument
-	GetLispIntInput(ListData, nArg5);
-
-	return pArxObject;
-}
-
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, CString &sArg3)
-{
-	TDclControlPtr pArxObject = NULL;
-	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
-
-	if (pArxObject == NULL)
-	{
-		return NULL;
-	}
-
-	ListData = ListData->rbnext;
-
-	// get the first argument
-	GetLispIntInput(ListData, nArg1);
-
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-	
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-
-	// get the argument
-	GetLispIntInput(ListData, nArg2);
-	
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-
-	// get the third argument
-	GetLispStrInput(ListData, sArg3);
-
-	return pArxObject;
-}
-
-
-TDclControlPtr  GetLispInput(LPCTSTR sMethod, int &nArg1, int &nArg2, CArray<int, int> *pIntArray, CStringArray *pStrings)
-{
-	TDclControlPtr pArxObject = NULL;
-	struct resbuf *ListData = getLispTargetInput(sMethod, pArxObject);
-
-	if (pArxObject == NULL)
-	{
-		return NULL;
-	}
-
-	ListData = ListData->rbnext;
-
-	// get the first argument
-	GetLispIntInput(ListData, nArg1);
-	
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-
-	// get the argument
-	GetLispIntInput(ListData, nArg2);
-	
-	// iterate forward to the next required argument
-	ListData = ListData->rbnext;
-
-	// if the argument is missing
-	if (ListData == NULL)
-	{
-		return pArxObject;
-	}
-	
-	if (ListData->restype == RTLB)
-	{	
-		while (ListData != NULL)
-		{
-			if (ListData->restype == RTSTR)
+			UINT red = pArgs->resval.rpoint[X];
+			UINT green = pArgs->resval.rpoint[Y];
+			UINT blue = pArgs->resval.rpoint[Z];
+			if( red > 255 || green > 255 || blue > 255 )
 			{
-				CString sText;
-				// get the argument
-				GetLispStrInput(ListData, sText);
-				
-				pStrings->Add(sText);
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argInvalid );
+				return false;
 			}
-			else if (ListData->restype == RTSHORT ||
-				ListData->restype == RTLONG ||
-				ListData->restype == RTREAL ||
-				ListData->restype == RTANG ||
-				ListData->restype == RTORINT)
-			{
-				int nArg;
-				// get the argument
-				GetLispIntInput(ListData, nArg);
-
-				if (pIntArray != NULL)
-					pIntArray->Add(nArg);
-			}
-
-			// iterate forward to the next required argument
-			ListData = ListData->rbnext;
+			color = RGB(red, green, blue);
 		}
-		return pArxObject;
+		break;
+	case RTLB:
+		{
+			resbuf* pArgC = pArgs->rbnext;
+			int red;
+			if( !GetIntArgument( pArgC, red, bQuiet ) )
+				return false;
+			int green;
+			if( !GetIntArgument( pArgC, green, bQuiet ) )
+				return false;
+			int blue;
+			if( !GetIntArgument( pArgC, blue, bQuiet ) )
+				return false;
+			if( pArgC->restype != RTLE )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argNotEnough );
+				return false;
+			}
+			if( red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255 )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argInvalid );
+				return false;
+			}
+			color = RGB(red, green, blue);
+			pArgs = pArgC;
+		}
+		break;
+	default:
+		{
+			int nColor = 0;
+			if( !GetIntArgument( pArgs, nColor, bQuiet ) )
+				return false;
+			color = GetRGBColor( nColor );
+		}
+		break;
 	}
-	
-	return pArxObject;
-}
-
-
-bool isPairArgument(struct resbuf* args) {
-	return (args->rbnext != NULL 
-		&& args->rbnext->rbnext != NULL 
-		&& args->rbnext->rbnext->rbnext != NULL 
-		&& args->restype == RTLB 
-		&& args->rbnext->rbnext->rbnext->restype == RTDOTE);
-}
-bool getStringArgument(struct resbuf* &args, CString &str) {
-	if (args == NULL || args->restype != RTSTR) return false;
-	str = args->resval.rstring;
-	args = args->rbnext;
-	return true;
-};
-bool getCharStrArgument(struct resbuf* &args, char* str) {
-	if (args == NULL || args->restype != RTSTR) return false;
-	int len = _tcslen(args->resval.rstring);
-	str = new char[len + 1];
-	int i;
-	for (i = 0; i < len; i++) {
-		str[i] = (char)(args->resval.rstring[i]);
-	}
-	str[i] = '\0';
-	args = args->rbnext;
-	return true;
-};
-bool getDoubleArgument(struct resbuf* &args, double &d) {
-	if (args == NULL || args->restype != RTREAL) {
-		//If it is not a double, try it as an int. 
-		int temp;
-		if (!getIntArgument(args, temp)) return false;
-		d = (double)temp;
-		return true;
-	}
-	d = args->resval.rreal;
-	args = args->rbnext;
 	return true;
 }
-bool getIntArgument(struct resbuf* &args, int &i) {
-	if (args == NULL) return false;
-	if (args->restype == RTSHORT) {
-		i = args->resval.rint;
-		args = args->rbnext;
-		return true;
-	} else if (args->restype == RTLONG) {
-		i = args->resval.rlong;
-		args = args->rbnext;
-		return true;
-	} else if (args->restype == RTREAL) {
-		i = (int)args->resval.rreal;
-		args = args->rbnext;
-		return true;
-	} else if (args->restype < 1000) {
-		//Don't advance in this case
-		i = args->restype;
-		return true;
-	}
-	return false;
-}
-bool getPointArgument(struct resbuf* &args, AcGePoint3d &p) {
-	if (args == NULL) return false;
-	if (args->restype == RTPOINT 
-		|| args->restype == RT3DPOINT
-		|| (10 <= args->restype && args->restype <= 17)) {
-			p[X] = args->resval.rpoint[X];
-			p[Y] = args->resval.rpoint[Y];
-			if (args->restype == RTPOINT) {
-				p[Z] = 0;
-			} else {
-				p[Z] = args->resval.rpoint[Z];
-			}
-			args = args->rbnext;
-			return true;
-	} 
-	if ((args->restype == RTREAL || args->restype == RTLONG || args->restype == RTSHORT)
-		&& args->rbnext != NULL 
-		&& (args->rbnext->restype == RTREAL || args->rbnext->restype == RTLONG || args->restype == RTSHORT))
-	{
-		if (args->restype == RTREAL)
-			p[X] = args->resval.rreal;
-		else
-			p[X] = args->resval.rlong;
 
-		if (args->rbnext->restype == RTREAL)
-			p[Y] = args->rbnext->resval.rreal;
-		else
-			p[Y] = args->rbnext->resval.rlong;
-
-		args = args->rbnext->rbnext;
-		if (args != NULL && (args->restype == RTREAL || args->restype == RTLONG || args->restype == RTSHORT)) {
-			if (args->restype == RTREAL)
-				p[Z] = args->resval.rreal;
-			else
-				p[Z] = args->resval.rlong;
-			args = args->rbnext;
-		} else {
-			p[Z] = 0;
-		}
-		return true;
-	}
-	return false;
-}
-bool get2DPointArgument(struct resbuf* &args, AcGePoint2d &p) {
-	if (args == NULL) return false;
-	if (args->restype == RTPOINT 
-		|| args->restype == RT3DPOINT
-		|| (10 <= args->restype && args->restype <= 17)) {
-			p[X] = args->resval.rpoint[X];
-			p[Y] = args->resval.rpoint[Y];
-			args = args->rbnext;
-			return true;
-	} 
-	if (args->restype == RTREAL
-		&& args->rbnext != NULL && args->rbnext->restype == RTREAL)
+bool GetStringArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CStringArray& rsArg, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
 	{
-		p[X] = args->resval.rreal;
-		p[Y] = args->rbnext->resval.rreal;
-		args = args->rbnext->rbnext;
-		return true;
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
 	}
-	return false;
+	rsArg.RemoveAll();
+	if( GetNilArgument( pArgs, true ) )
+		return true;
+	bool bLB = GetListBeginArgument( pArgs, true );
+	CString sArg;
+	while( GetStringArgument( pArgs, sArg, true ) )
+		rsArg.Add( sArg );
+	if( bLB )
+		return GetListEndArgument( pArgs );
+	return true;
 }
-bool getBoolArgument(struct resbuf* &args, bool& b) {
-	if (args == NULL) return false;
-	if (args->restype == RTNIL) {
-		args = args->rbnext;
-		b = false;
-		return true;
-	} else if (args->restype == RTLE) {
-		//The end of a list will be considered nil, but we won't move to the next argument.
-		//This handles dotted pairs where the second half is nil.
-		b = false;
-		return true;
-	} else {
-		//Anything that is not NIL is true.
-		//Don't check for RTT because people keep using T as a variable. Sigh.
-		//Since it could be anything, it might be a list. If that happens, then we will
-		//need to consume the list here. For the moment, I will simply crash on that, because I
-		//don't think it will happen.
-		if (args->restype != RTLB) {
-			args = args->rbnext;
-			b = true;
-			return true;
-		}
+
+bool GetIntArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CArray< int, int >& rnArg, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
 	}
-	return false;
-};
-bool getOLEArgument(struct resbuf* &args, COleVariant &ole) {
-	switch (args->restype) {
-		case RTREAL:
-			ole.vt = VT_R8;  
-			ole.dblVal = args->resval.rreal;
-			return true;
-		case RTSHORT:
-			ole.vt = VT_I4;  
-			ole.lVal = args->resval.rlong;
-			return true;
-		case RTLONG:
-			ole.vt = VT_I4;  
-			ole.lVal = args->resval.rlong;
-			return true;
-		case RTSTR:
-			{
-				ole.vt = VT_BSTR;  
-				CString str(args->resval.rstring);
-				ole.bstrVal = str.AllocSysString();
-				return true;
-			}
-		case RTT:
-			ole.vt = VT_BOOL;  
-			ole.boolVal = true;
-			return true;
-		case RTNIL:
-			ole.vt = VT_BOOL;  
-			ole.boolVal = false;
-			return true;
-		default:
-			return false;
+	rnArg.RemoveAll();
+	if( GetNilArgument( pArgs, true ) )
+		return true;
+	bool bLB = GetListBeginArgument( pArgs, true );
+	int nArg;
+	while( GetIntArgument( pArgs, nArg, true ) )
+		rnArg.Add( nArg );
+	if( bLB )
+		return GetListEndArgument( pArgs );
+	return true;
+}
+
+bool GetTArgument( /*in-out*/ resbuf*& pArgs, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
 	}
+	if( pArgs->restype != RTT )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	pArgs = pArgs->rbnext;
+	return true;
+}
+
+bool GetNilArgument( /*in-out*/ resbuf*& pArgs, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
+	}
+	if( pArgs->restype != RTNIL )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	pArgs = pArgs->rbnext;
+	return true;
+}
+
+bool GetListBeginArgument( /*in-out*/ resbuf*& pArgs, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
+	}
+	if( pArgs->restype != RTLB )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	pArgs = pArgs->rbnext;
+	return true;
+}
+
+bool GetListEndArgument( /*in-out*/ resbuf*& pArgs, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
+	}
+	if( pArgs->restype != RTLE )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	pArgs = pArgs->rbnext;
+	return true;
 }

@@ -253,16 +253,18 @@ enum Id
 	SecondsText = 246,
 	MinuteText = 247,
 	MinutesText = 248,
-	DisplaySeconds = 249,
-	DisplayPercentage = 250,
+	DisplaySeconds = 249, //deprecated
+	DisplayPercentage = 250, //deprecated
 	FormEventOnOk = 251,
 	TitleBar = 252,
 	FormEventOnCancel = 253,
 	ToolTipBalloon = 254,
 	DocEventEnteringNoDocState = 255,
 	UseVisualStyle = 256,
+	RemainingText = 257,
+	ProgressLegend = 258,
 	_MinId = 1,
-	_MaxId = 256
+	_MaxId = 258
 };
 
 }; //namespace Prop

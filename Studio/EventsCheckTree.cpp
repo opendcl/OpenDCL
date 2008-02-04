@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "EventsCheckTree.h"
-#include "OpenDCLView.h"
+#include "DclFormView.h"
 #include "UserMessageID.h"
 
 #define nOnEditCopy		3
@@ -38,36 +38,9 @@ BOOL CEventsCheckTree::PreTranslateMessage(MSG* pMsg)
 {
 	if( pMsg->message == WM_KEYDOWN ||  pMsg->message == WM_CHAR )
 	{
-		
-		switch (pMsg->wParam)
-		{			
-			case VK_DELETE:
-				{
-					m_pView->DeleteSelectedControls();
-				break;
-				}
-			case nOnEditCopy:
-				if (m_pView != NULL)
- 					m_pView->OnEditCopy();
-				break;
-			case nOnEditPaste:
-				if (m_pView != NULL)
- 					m_pView->OnEditPaste();
-				break;
-			case nOnEditCut:
-				if (m_pView != NULL)
- 					m_pView->OnEditCut();
-				break;
-			case nOnEditUndo:
-				if (m_pView != NULL)
- 					m_pView->OnEditUndo();
-				break;
-			default:
-				if (m_pView != NULL)
- 					m_pView->PreTranslateMessage(pMsg);
-				break;
-		}
-	}	
+		if( m_pView->PreTranslateMessage(pMsg) )
+			return TRUE;
+	}
 	return CTreeCtrl::PreTranslateMessage(pMsg);
 }
 

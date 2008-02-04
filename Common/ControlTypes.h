@@ -6,8 +6,8 @@
 
 enum ControlType
 {
-	CtlInvalid = 0,
-	CtlForm = 1,
+	_CtlInvalid = 0,
+	_CtlForm = 1,
 	CtlLabel = 2,
 	CtlStdButton = 3,
 	CtlGraphicButton = 4,
@@ -23,11 +23,11 @@ enum ControlType
 	CtlTabStrip = 14,
 	CtlMonth = 15,
 	CtlTree = 16,
-	Ctl3DRect = 17,
+	CtlRectangle = 17,
 	CtlProgress = 18,
 	CtlSpinButton = 19,
-	CtlStaticURL = 20,
-	CtlRoundSlider = 21,
+	CtlUrlLink = 20,
+	CtlAngleSlider = 21,
 	CtlBlockView = 22,
 	CtlSlideView = 23,
 	CtlHtmlCtrl = 24,
@@ -42,5 +42,47 @@ enum ControlType
 	CtlGrid = 33,
 	CtlSplitter = 34,
 	CtlHatch = 35,
-	CtlFileDlgCtrl = 100,
+	CtlFileDlgCtrl = 36,
+	_CtlFirst = 2,
+	_CtlMax = 36,
+	_CtlOldFileDlgCtrl = 100, //old value is still accepted when reading older files
+};
+
+
+namespace EditFilter
+{
+	enum Type
+	{
+		String = 0,
+		Angle = 1,
+		Integer = 2,
+		Numeric = 3,
+		Symbol = 4,
+		UpperCase = 5,
+		LowerCase = 6,
+		Password = 7,
+		Multiline = 8,
+	};
+};
+
+namespace ComboStyle
+{
+	enum Type
+	{
+		Combo = 0,
+		Simple = 1,
+		DropDown = 2,
+		ArrowHead = 3,
+		Color = 4,
+		LineWeight = 5,
+		PlotNames = 6,
+		PlotTables = 7,
+		FontDropList = 8,
+		FontSimpleList = 9,
+		Plotters = 10,
+		PlotterPaperSizes = 11,
+		DirPicker = 12,
+		Layers = 13,
+		Linetypes = 14,
+	};
 };

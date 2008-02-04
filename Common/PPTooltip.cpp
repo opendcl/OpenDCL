@@ -21,6 +21,10 @@
 #include "stdafx.h"
 #include "PPTooltip.h"
 
+#undef TRACE
+#define TRACE __noop  //to prevent clutter of trace messages [ORW]
+
+
 // allow multi-monitor-aware code on Win95 systems
 // comment out the first line if you already define it in another file
 // comment out both lines if you don't care about Win95

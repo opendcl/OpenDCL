@@ -4,9 +4,13 @@
 #pragma once
 
 
-int TabControl_SetTabText();
-int TabControl_HideTab();
-int TabControl_ShowTab();
-int TabControl_SetCurSel();
-int TabControl_GetCurSel();
-int TabControl_GetRowCount();
+namespace Tab
+{
+ADSRESULT SetTabText();
+ADSRESULT HideTab();
+ADSRESULT ShowTab();
+ADSRESULT SetCurSel();
+ADSRESULT GetCurSel();
+ADSRESULT GetRowCount();
+ADSRESULT GetControlArea();
+};

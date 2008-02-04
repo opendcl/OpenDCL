@@ -32,7 +32,7 @@ bool CTextBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 DWORD CTextBoxCtrl::GetWndStyle() const
 {
-	DWORD dwStyle = CDialogControl::GetWndStyle();
+	DWORD dwStyle = __super::GetWndStyle();
 	dwStyle |= (ES_WANTRETURN);
 	switch( mpTemplate->GetLongProperty( Prop::Justification ) )
 	{
@@ -150,5 +150,6 @@ void CTextBoxCtrl::OnChange()
 {
 	CString sText;
 	GetWindowText( sText );
-	mpTemplate->SetStringProperty( Prop::Text, sText );
+	if( mpTemplate->GetStringProperty( Prop::Text ) != sText )
+		mpTemplate->SetStringProperty( Prop::Text, sText );
 }

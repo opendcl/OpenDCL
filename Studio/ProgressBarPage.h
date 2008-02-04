@@ -5,7 +5,7 @@
 
 #include "Resource.h"
 #include "ProgressTimeToComplete.h"
-#include "DclControlObject.h"
+#include "PtrTypes.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -13,13 +13,7 @@
 
 class CProgressBarPage : public CPropertyPage
 {
-// Construction
-public:
-	CProgressBarPage(UINT unID);
-
-// Dialog Data
-	//{{AFX_DATA(CProgressBarPage)
-	enum { IDD = IDD_PROGRESSBAR };
+	TDclControlPtr mpDclControl;
 	TProgressTimeToComplete	m_Progress;
 	CButton	m_Time;
 	CButton	m_Percentage;
@@ -27,33 +21,22 @@ public:
 	CEdit	m_Seconds;
 	CEdit	m_Minute;
 	CEdit	m_Minutes;
-	//}}AFX_DATA
 
-	CString			m_sTitle;
+	enum { IDD = IDD_PROGRESSBAR };
 
-	TDclControlPtr m_pArxCtrl;
+// Construction
+public:
+	CProgressBarPage( TDclControlPtr pDclControl );
 
 	void ShowEditFrame();
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CProgressBarPage)
-	protected:
+protected:
+	DECLARE_MESSAGE_MAP()
+
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual BOOL OnApply();
-	//}}AFX_VIRTUAL
-
-
-
-// Implementation
-protected:
-
-	// Generated message map functions
-	//{{AFX_MSG(CProgressBarPage)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPercentage();
 	afx_msg void OnTime();
 	afx_msg void OnChangeSeconds();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
 };

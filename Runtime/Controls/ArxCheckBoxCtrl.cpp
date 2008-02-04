@@ -15,7 +15,7 @@
 
 CArxCheckBoxCtrl::CArxCheckBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CCheckBoxCtrl( pTemplate, pPane, nID, false )
-, mArxServices( pTemplate )
+, mArxServices( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -60,40 +60,26 @@ void CArxCheckBoxCtrl::OnClicked()
 	int nValue = GetCheck();
 	mpTemplate->SetLongProperty( Prop::Value, nValue );
 
-	if (mpTemplate->m_bEventsAsAction)
+  CString sEvent = mpTemplate->GetStringProperty(Prop::EventClicked);
+	if( sEvent.SpanExcluding( _T("_") ) == _T("c:OnActionEvent") )
 	{
-		GetParent()->GetParent()->EnableWindow(TRUE);
-		int stat;
-		struct resbuf *result = NULL, *list;    
+		GetParent()->GetParent()->EnableWindow( TRUE );
 		CString sVal;
-		sVal.Format(_T("%d"), nValue);
-    struct resbuf *VarVal = acutBuildList(RTSTR, (LPCTSTR)sVal, 0);
-    stat = acedPutSym(_T("$value"), VarVal);
-    acutRelRb(VarVal);
-
-    CString sText = mpTemplate->GetStringProperty(Prop::EventClicked);
-
-		list = acutBuildList(RTSTR, sText, 0);
-		if (list != NULL) 
-		{ 
-			stat = acedInvoke(list, &result); 
-			acutRelRb(list); 
-			if(result != NULL) 
-			{
-				acutRelRb(result); 
-			}
-		}
-		GetParent()->GetParent()->EnableWindow(FALSE);
-		GetParent()->EnableWindow(TRUE);
+		sVal.Format( _T("%d"), nValue );
+		resbuf rbValue = { NULL, RTSTR };
+		rbValue.resval.rstring = sVal.LockBuffer();
+    acedPutSym( _T("$value"), &rbValue );
+		resbuf rbEvent = { NULL, RTSTR };
+		rbEvent.resval.rstring = sEvent.LockBuffer();
+		resbuf* prbResult = NULL;
+		acedInvoke( &rbEvent, &prbResult ); 
+		if( prbResult ) 
+			acutRelRb( prbResult ); 
+		GetParent()->GetParent()->EnableWindow( FALSE );
+		GetParent()->EnableWindow( TRUE );
 	}
 	else
-	{
-		// call methods to invoke the event
-		InvokeMethodInt(
-			mpTemplate->GetStringProperty(Prop::EventClicked),
-			nValue,
-			IsAsyncEvents());
-	}
+		InvokeMethodInt( sEvent, nValue, IsAsyncEvents());
 }
 
 void CArxCheckBoxCtrl::OnDoubleclicked() 

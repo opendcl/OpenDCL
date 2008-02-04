@@ -21,9 +21,6 @@ public:
 	//Services
 	bool OnExtendTabbedDialog( CAdUiTabExtensionManager* pTabXM ) const;
 	bool SetProjectLispSymbols( bool bResetToNil = false ) const;
-
-protected:
-	DECLARE_SERIAL(CArxProject)
 };
 
 typedef RefCountedPtr< CArxProject > TArxProjectPtr;

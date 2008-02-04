@@ -4,7 +4,10 @@
 #pragma once
 
 
-int AnimateCtrl_Load();
-int AnimateCtrl_Seek();
-int AnimateCtrl_Stop();
-int AnimateCtrl_Close();
+namespace Animate
+{
+ADSRESULT Load();
+ADSRESULT Seek();
+ADSRESULT Stop();
+ADSRESULT Close();
+};

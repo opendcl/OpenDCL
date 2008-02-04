@@ -11,7 +11,7 @@
 CArxComboBoxCtrl::CArxComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID,
 																		CComboHandler* pHandler /*= NULL*/, bool bCreate /*= true*/ )
 : CComboBoxCtrl( pTemplate, pPane, nID, pHandler, false )
-, mArxServices( pTemplate )
+, mArxServices( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -72,35 +72,30 @@ END_MESSAGE_MAP()
 
 void CArxComboBoxCtrl::OnSelchange() 
 {
-	CString sEventName = mpTemplate->GetStringProperty(Prop::EventSelChanged);
-	if( !sEventName.IsEmpty() )
+	int nCurSel = GetCurSel();
+	CString sText;
+	GetLBText( nCurSel, sText );
+	mpTemplate->SetStringProperty( Prop::Text, sText );
+	CString sEvent = mpTemplate->GetStringProperty(Prop::EventSelChanged);
+	if( sEvent.SpanExcluding( _T("_") ) == _T("c:OnActionEvent") )
 	{
-		if( mpTemplate->m_bEventsAsAction )
-		{
-			GetParent()->GetParent()->EnableWindow(TRUE);
-			CString sVal;
-			sVal.Format( _T("%d"), GetCurSel() );
-			resbuf rbVal = { NULL, RTSTR };
-			rbVal.resval.rstring = (LPTSTR)sVal.LockBuffer();
-      acedPutSym( _T("$value"), &rbVal );
-			resbuf rbEvent = { NULL, RTSTR };
-			rbEvent.resval.rstring = (LPTSTR)sEventName.LockBuffer();
-			struct resbuf* prbResult = NULL;
-			acedInvoke( &rbEvent, &prbResult );
-			if( prbResult )
-				acutRelRb( prbResult );
-			GetParent()->GetParent()->EnableWindow(FALSE);
-			GetParent()->EnableWindow(TRUE);
-		}
-		else
-		{
-			int nCurSel = GetCurSel();
-			CString sText;
-			GetLBText( nCurSel, sText );
-			InvokeMethodIntString( sEventName, nCurSel, sText, IsAsyncEvents() );
-			mpTemplate->SetStringProperty( Prop::Text, sText );
-		}
+		GetParent()->GetParent()->EnableWindow( TRUE );
+		CString sVal;
+		sVal.Format( _T("%d"), nCurSel );
+		resbuf rbValue = { NULL, RTSTR };
+		rbValue.resval.rstring = sVal.LockBuffer();
+    acedPutSym( _T("$value"), &rbValue );
+		resbuf rbEvent = { NULL, RTSTR };
+		rbEvent.resval.rstring = sEvent.LockBuffer();
+		resbuf* prbResult = NULL;
+		acedInvoke( &rbEvent, &prbResult ); 
+		if( prbResult ) 
+			acutRelRb( prbResult ); 
+		GetParent()->GetParent()->EnableWindow( FALSE );
+		GetParent()->EnableWindow( TRUE );
 	}
+	else
+		InvokeMethodIntString( sEvent, nCurSel, sText, IsAsyncEvents() );
 }
 
 void CArxComboBoxCtrl::OnDropdown() 

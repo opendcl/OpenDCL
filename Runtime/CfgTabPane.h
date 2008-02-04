@@ -3,38 +3,18 @@
 
 #pragma once
 
-#include "Resource.h"
 #include "ArxDialogObject.h"
+#include "Resource.h"
 
 class CControlobject;
 class CFontCollection;
 
 
-class CConfigTabPaneX : public CArxDialogObject
-{
-	friend class CfgTabPane;
-	CfgTabPane* mpOwner;
-protected:
-	CConfigTabPaneX( CfgTabPane& Owner, TDclFormPtr pDclForm );
-	~CConfigTabPaneX();
-
-	virtual DclFormType GetType() const;
-	virtual bool IsModeless() const { return true; }
-	virtual bool IsDockable() const { return false; }
-	virtual bool IsResizable() const { return true; }
-	virtual HWND GetHWnd() const;
-	virtual bool IsDirty() const;
-	virtual bool SetDirty( bool bDirty = true );
-	virtual void CloseDialog(int nStatus);
-};
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CfgTabPane dialog
 
-class CfgTabPane : public CAcUiTabChildDialog
+class CfgTabPane : public CAcUiTabChildDialog, public CArxDialogObject
 {
-	CConfigTabPaneX mDialogX;
 
 	enum { IDD = IDD_CFGTAB };
 
@@ -43,10 +23,19 @@ public:
 	CfgTabPane(TDclFormPtr pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL) ;
 	virtual ~CfgTabPane();
 
+// CDialogObject overrides
 public:
-	CDialogObject& GetDialogObject() { return mDialogX; }
-	const CDialogObject& GetDialogObject() const { return mDialogX; }
+	virtual DclFormType GetType() const { return VdclConfigTab; }
+	virtual bool IsModeless() const { return true; }
+	virtual bool IsDockable() const { return false; }
+	virtual bool IsResizable() const { return true; }
+	//virtual bool IsDirty() const;
+	//virtual bool SetDirty( bool bDirty = true );
+	virtual void CloseDialog(int nStatus);
+	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
+	virtual bool OnApplyResizable( TPropertyPtr pProp ) { return true; }
 
+// CAcUiTabChildDialog overrides
 	virtual void OnMainDialogAPPLY();
   virtual void OnMainDialogCancel();
   virtual void OnMainDialogOK();
@@ -54,16 +43,13 @@ public:
 	virtual void OnTabActivation (BOOL bActivate) ;
 	virtual BOOL OnTabChanging () ;
 
-	// Overrides
-protected:
-	virtual void PostNcDestroy();
-
 	// Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
 
-protected:
+	virtual void PostNcDestroy();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

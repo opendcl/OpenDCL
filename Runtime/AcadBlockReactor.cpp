@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "AcadBlockReactor.h"
-#include "OdclListCtrl.h"
+#include "ArxListViewCtrl.h"
 #include "GsPreviewCtrl.h"
 
 
@@ -27,7 +27,7 @@ void CAcadBlockReactor::endInsert(AcDbDatabase* pTo)
 		return;
 
 	if (m_pParentBlockList)
-		((OdclListCtrl*)m_pParentBlockList)->RefreshBlockList();
+		((CArxListViewCtrl*)m_pParentBlockList)->RefreshBlockList();
 
 	if (m_pParentBlockView != NULL)
 		((CGsPreviewCtrl*)m_pParentBlockView)->UpdateBlock();
@@ -36,7 +36,7 @@ void CAcadBlockReactor::endInsert(AcDbDatabase* pTo)
 void CAcadBlockReactor::endDeepClone(AcDbIdMapping& idMap)
 {
 	if (m_pParentBlockList)
-		((OdclListCtrl*)m_pParentBlockList)->RefreshBlockList();
+		((CArxListViewCtrl*)m_pParentBlockList)->RefreshBlockList();
 
 	if (m_pParentBlockView != NULL)
 		((CGsPreviewCtrl*)m_pParentBlockView)->UpdateBlock();
@@ -49,7 +49,7 @@ void CAcadBlockReactor::commandEnded(const char * cmdStr)
 	if (sCommand == _T("PURGE"))
 	{
 		if (m_pParentBlockList)
-			((OdclListCtrl*)m_pParentBlockList)->RefreshBlockList();
+			((CArxListViewCtrl*)m_pParentBlockList)->RefreshBlockList();
 
 		if (m_pParentBlockView != NULL)
 			((CGsPreviewCtrl*)m_pParentBlockView)->UpdateBlock();

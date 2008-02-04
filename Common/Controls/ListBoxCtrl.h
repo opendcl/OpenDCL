@@ -5,7 +5,6 @@
 
 #include "DialogControl.h"
 #include "AcadColorService.h"
-#include "PPToolTip.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -14,6 +13,8 @@
 class CListBoxCtrl : public CListBox, public CDialogControl
 {
 	CAcadColorService mAcadColorService;
+	int mnDragSource;
+	CRect mrcDropInsertMark;
 
 // Construction
 public:
@@ -28,12 +29,17 @@ public:
 	virtual bool ApplyPropertiesEnum();
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
+	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData );
+	virtual DROPEFFECT OnDragEnter( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
+	virtual DROPEFFECT OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
+	virtual void OnDragLeave();
+	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
 
 protected:
 	DECLARE_MESSAGE_MAP()
 
-// Generated message map functions
-protected:
-	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg void PostNcDestroy();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 };

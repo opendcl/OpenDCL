@@ -5,7 +5,7 @@ dcl_ListView_
 [Desc]
 This method will return total number of items in the ListView control.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -15,10 +15,9 @@ dcl_ListView_
 [Desc]
 This method will force an item to be selected and will also scroll the ListView to ensure the item is displayed. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
-
 
 
 [Method]
@@ -33,10 +32,9 @@ This method will format the layout of all the items in the ListView control. \pa
 \par \pard\fi-1100\li1100 3   \b GridSnap\b0 \tab Snaps all icons to the nearest grid position 
 \par \pard\fi-0\li0
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nStyle
 [as Integer]
-
 
 
 [Method]
@@ -46,7 +44,7 @@ dcl_ListView_
 [Desc]
 This method will return the selected item count.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -56,7 +54,7 @@ dcl_ListView_
 [Desc]
 This method will return the text of an item in a ListView control. 
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 \par\tab nRowIndex
 [as Integer]
 
@@ -68,7 +66,8 @@ dcl_ListView_
 [Desc]
 This method will return a list of all selected items in the ListView control. 
 [Arguments Return] as List as Strings
-ProjectFileName
+<CONTROL>
+
 
 [Method]
 GetSelectedNths
@@ -77,7 +76,7 @@ dcl_ListView_
 [Desc]
 This method will return a list of all indexes of the selected items in the ListView control. 
 [Arguments Return] as List of Integers
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -87,10 +86,9 @@ dcl_ListView_
 [Desc]
 This method will sort the columns in ascending or descending order, based on the column index provided.  
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab bAscending
-[as Integer, T or Nil] (1 or T = Ascending, 0 or Nil = Descending) 
-
+[as Boolean T or Nil] (T = Ascending, Nil = Descending) 
 
 
 [Method]
@@ -100,10 +98,9 @@ dcl_BlockList_
 [Desc]
 This method will load an external Dwg file and list the blocks available in it. 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab sFileName
 [as String]
-
 
 
 [Method]
@@ -113,8 +110,7 @@ dcl_BlockList_
 [Desc]
 This method will reset the BlockList to display the blocks of the current Dwg file.
 [Arguments]
-ProjectFileName
-
+<CONTROL>
 
 
 [Method]
@@ -124,7 +120,7 @@ dcl_BlockList_
 [Desc]
 This method will return the file name of the external loaded Dwg file. If Nil is returned no external Dwg file was loaded.
 [Arguments Return] as String or Nil
-ProjectFileName
+<CONTROL>
 
 
 [End of File]

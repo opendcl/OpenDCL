@@ -4,7 +4,7 @@
 #include "DclControlObject.h"
 #include "ControlPane.h"
 #include "Workspace.h"
-#include "SharedRes.h"
+#include "Resource.h"
 
 
 void CButtonAcadColorService::ResetButtonForegroundColor() const
@@ -127,7 +127,7 @@ bool CButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 
 void CButtonCtrl::SetResourceIcon(UINT idIcon)
 {
-	HICON hIcon = LoadIcon( theWorkspace.GetResourceModule(), MAKEINTRESOURCE(idIcon) );
+	HICON hIcon = LoadIcon( theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(idIcon) );
 	ICONINFO ii;
 	GetIconInfo( hIcon, &ii );
 	::DeleteObject(ii.hbmMask);

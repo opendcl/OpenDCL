@@ -6,7 +6,8 @@
 #include "DclControlObject.h"
 
 class CDclFormObject;
-class COpenDCLView;
+class CStudioDialogObject;
+
 enum Prop::Id;
 
 
@@ -31,7 +32,6 @@ private:
 	TDclControlPtr m_pControl;
 	CSize mszDlg;
 public:
-	COpenDCLView		*m_pView;
 	
 // operations
 public:

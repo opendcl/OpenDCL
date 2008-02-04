@@ -4,10 +4,10 @@
 #include "stdafx.h"
 #include "FormVarNameUpdate.h"
 #include "DclControlObject.h"
-#include "PropertyTabPane.h"
+#include "PropertyPane.h"
 #include "DclFormObject.h"
-#include "MainFrm.h"
-#include "EditorWorkspace.h"
+#include "StudioFrame.h"
+#include "StudioWorkspace.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -26,14 +26,17 @@ CFormVarNameUpdate::CFormVarNameUpdate( TDclFormPtr pDclForm,
 
 
 BEGIN_MESSAGE_MAP(CFormVarNameUpdate, CDialog)
-	//{{AFX_MSG_MAP(CFormVarNameUpdate)
 	ON_BN_CLICKED(IDC_CTRLCHECK, OnCtrlcheck)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CFormVarNameUpdate message handlers
 
+INT_PTR CFormVarNameUpdate::DoModal()
+{
+	AutoUndoGroup UndoGroup( mpDclForm->GetUndoManager(), IDS_UNDO_VARNAMEUPDATE );
+	return __super::DoModal();
+}
 
 void CFormVarNameUpdate::OnOK() 
 {
@@ -44,7 +47,7 @@ void CFormVarNameUpdate::OnOK()
 		mpDclForm->GetControlProperties()->AddStringProperty( Prop::Name, PropString, msFormName );
 		mpDclForm->SetGlobalVariableName( NULL, mbSetControls );
 	}
-	CDialog::OnOK();
+	__super::OnOK();
 }
 
 void CFormVarNameUpdate::OnCtrlcheck() 
@@ -55,7 +58,7 @@ void CFormVarNameUpdate::OnCtrlcheck()
 
 BOOL CFormVarNameUpdate::OnInitDialog()
 {
-	CDialog::OnInitDialog();
+	__super::OnInitDialog();
 	CButton* pSetControlsBtn = (CButton*)GetDlgItem( IDC_CTRLCHECK );
 	pSetControlsBtn->SetCheck( mbSetControls? BST_CHECKED : BST_UNCHECKED );
 

@@ -3,7 +3,7 @@
 #include "StgFile.h"
 #include "ArchiveEx.h"
 #include "Filing.h"
-#include "Project.h"
+#include "Workspace.h"
 #include "SafeImageListWrite.h"
 
 //#include <AtlImage.h> //for CImage
@@ -332,9 +332,7 @@ CPictureObject::~CPictureObject()
 CPictureObject* CPictureObject::CreatePictureObject(short nID, LPPICTUREDISP NewPicture)
 {
 	//create new picture object
-	CPictureObject *pPicture = new CPictureObject;
-	
-	pPicture->mnID = nID;
+	CPictureObject *pPicture = new CPictureObject( nID );
 	pPicture->m_hPicture.SetPictureDispatch(NewPicture);
 	pPicture->CalcLogicalSize();
 	return pPicture;
@@ -423,6 +421,18 @@ short CPictureObject::GetPicType() const
 void CPictureObject::Update(LPPICTUREDISP NewPicture) 
 {
 	m_hPicture.SetPictureDispatch(NewPicture);
+	CalcLogicalSize();
+}
+
+void CPictureObject::LoadResourceIcon( UINT nIconResId, HMODULE hResMod /*= NULL*/ )
+{
+	if( !hResMod )
+		hResMod = theWorkspace.GetLocalResourceModule();
+	HICON hIcon = LoadIcon( hResMod, MAKEINTRESOURCE(nIconResId) );
+	if( hIcon )
+		m_hPicture.CreateFromIcon( hIcon );
+	else
+		m_hPicture.CreateEmpty();
 	CalcLogicalSize();
 }
 

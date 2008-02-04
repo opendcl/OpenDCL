@@ -23,6 +23,7 @@
 #include "NumericFilter.h"
 #include "PasswordFilter.h"
 #include "PercentageFilter.h"
+#include "SymbolNameFilter.h"
 #include "TimeFilter.h"
 #include "UnitsNumericFilter.h"
 #include "UpperCaseFilter.h"
@@ -32,10 +33,11 @@
 #include "LayerComboHandler.h"
 #include "PrinterComboHandler.h"
 #include "TextStyleComboHandler.h"
+#include "R2006AcUiMRUComboBoxFixup.h"
 #include "DirDialog.h"
 #include "Workspace.h"
 #include "AcadColorTable.h"
-#include "SharedRes.h"
+#include "Resource.h"
 
 
 template< typename TAcUiBase, DWORD _Style = 0, DWORD _AcUiStyle = (DWORD)-1 >
@@ -83,6 +85,7 @@ template< typename TAcUiBase >
 class CAcUiComboHelper
 {
 public:
+	static void Init( TAcUiBase* pCombo ) {}
 	static int GetCellValue( TAcUiBase* pCombo ) { return -1; }
 	static void SetCurSelFromValue( TAcUiBase* pCombo, int nValue, const CString& sText )
 		{
@@ -97,6 +100,7 @@ template<>
 class CAcUiComboHelper< CAcUiColorComboBox >
 {
 public:
+	static void Init( CAcUiColorComboBox* pCombo ) {}
 	static int GetCellValue( CAcUiColorComboBox* pCombo ) { return pCombo->GetCurrentItemColorIndex(); }
 	static void SetCurSelFromValue( CAcUiColorComboBox* pCombo, int nValue, const CString& sText )
 		{
@@ -108,12 +112,48 @@ template<>
 class CAcUiComboHelper< CAcUiLineWeightComboBox >
 {
 public:
+	static void Init( CAcUiLineWeightComboBox* pCombo )
+		{
+			pCombo->SetUseDefault( TRUE );
+		}
 	static int GetCellValue( CAcUiLineWeightComboBox* pCombo ) { return pCombo->GetCurrentItemLineWeight(); }
 	static void SetCurSelFromValue( CAcUiLineWeightComboBox* pCombo, int nValue, const CString& sText )
 		{
 			pCombo->SetCurSel( (nValue < 0)? -1 : pCombo->FindItemByLineWeight( nValue ) );
 		}
 };
+
+template<>
+class CAcUiComboHelper< CAcUiArrowHeadComboBox >
+{
+public:
+	static void Init( CAcUiArrowHeadComboBox* pCombo ) { pCombo->SetUseOrigin2( TRUE ); }
+	static int GetCellValue( CAcUiArrowHeadComboBox* pCombo ) { return -1; }
+	static void SetCurSelFromValue( CAcUiArrowHeadComboBox* pCombo, int nValue, const CString& sText )
+		{
+			if( nValue >= 0 )
+				pCombo->SetCurSel( nValue );
+			else
+				pCombo->SetCurSel( pCombo->FindString( 0, sText ) );
+		}
+};
+
+#if (_ACADTARGET >= 17)
+template<>
+class CAcUiComboHelper< CAcUiLineTypeComboBox >
+{
+public:
+	static void Init( CAcUiLineTypeComboBox* pCombo ) { pCombo->SetUseOther( FALSE ); }
+	static int GetCellValue( CAcUiLineTypeComboBox* pCombo ) { return -1; }
+	static void SetCurSelFromValue( CAcUiLineTypeComboBox* pCombo, int nValue, const CString& sText )
+		{
+			if( nValue >= 0 )
+				pCombo->SetCurSel( nValue );
+			else
+				pCombo->SetCurSel( pCombo->FindString( 0, sText ) );
+		}
+};
+#endif //(_ACADTARGET >= 17)
 
 template< typename TAcUiBase, DWORD _Style = 0, DWORD _AcUiStyle = (DWORD)-1 >
 class CAcUiComboEditCtrl : public TAcUiBase, public CGridCellEditCtrl
@@ -130,10 +170,7 @@ public:
 		: TAcUiBase()
 		, CGridCellEditCtrl( pGridCtrl, nRow, nCol )
 		{
-			__if_exists(SetUseOrigin2)
-			{ //needed for arrowhead combo
-				SetUseOrigin2( TRUE );
-			}
+			CAcUiComboHelper< TAcUiBase >::Init( this );
 			CRect rcCell = pGridCtrl->GetCellRect( nRow, nCol );
 			rcCell.DeflateRect( 2, 2 );
 			CRect rcCtrl = CalcRect( rcCell );
@@ -192,6 +229,9 @@ typedef CAcUiComboEditCtrl< CAcUiAngleComboBox, CBS_DROPDOWN > CAcUiAngleComboEd
 typedef CAcUiComboEditCtrl< CAcUiSymbolComboBox, CBS_DROPDOWN > CAcUiIntegerComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiColorComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiColorComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiLineWeightComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiLineWeightComboEditCtrl;
+#if (_ACADTARGET >= 17)
+typedef CAcUiComboEditCtrl< CAcUiLineTypeComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiLineTypeComboEditCtrl;
+#endif //(_ACADTARGET >= 17)
 
 
 bool getvar(LPCTSTR pszVarName)
@@ -247,7 +287,7 @@ static CString GetColorDisplayName( int nAcadColor )
 		return rszColors[nAcadColor];
 	}
 	CString sColor;
-	sColor.Format( _T("Color %d"), nAcadColor );
+	sColor.Format( theWorkspace.LoadResourceString( IDS_COLORDISPLAYTEXT ), nAcadColor );
 	return sColor;
 }
 
@@ -296,7 +336,7 @@ public:
 				rbColor.resval.rlong =
 					(long)RGB(_tstol( sBlue ), _tstol( sGreen ), _tstol( sRed ) ); //note: BGR instead of RGB!
 			}
-			else if( !sText.IsEmpty() )
+			else if( nCellImage == -2 )
 			{
 				rbColor.restype = 430;
 				rbColor.resval.rstring = sText.LockBuffer(); //color book color
@@ -312,7 +352,7 @@ public:
 				resbuf* prbTrueColor = prbResult->rbnext;
 				resbuf* prbColorBook = (prbTrueColor? prbTrueColor->rbnext : NULL);
 				if( prbColorBook && prbColorBook->restype == 430 )
-					pGridCtrl->SetCellTextImage( nRow, nCol, prbColorBook->resval.rstring, 300 );
+					pGridCtrl->SetCellTextImage( nRow, nCol, prbColorBook->resval.rstring, -2 );
 				else if( prbTrueColor && prbTrueColor->restype == 420 )
 					pGridCtrl->SetCellTextImage( nRow, nCol, GetColorDisplayName( prbTrueColor->resval.rlong ), -1 );
 				else
@@ -337,7 +377,7 @@ CArxGridCtrl::CArxGridCtrl( TDclControlPtr pTemplate,
 														UINT nID,
 														bool bCreate /*= true*/ )
 : CGridCtrl( pTemplate, pPane, nID, false )
-, mArxServices( pTemplate )
+, mArxServices( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -351,11 +391,6 @@ bool CArxGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
-
-	if( GetTemplate()->GetLongProperty(Prop::EventInvoke) == 1 )
-		mbInvokeWithSendString = true;
-	else
-		mbInvokeWithSendString = false;
 
 	return bSuccess;
 }
@@ -384,7 +419,7 @@ void CArxGridCtrl::OnEditCurCell()
 	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::EventBeginLabelEdit),
 											mCurrentCell.row(),
 											mCurrentCell.col(),
-											mbInvokeWithSendString);
+											IsAsyncEvents());
 }
 
 void CArxGridCtrl::OnEndEditCurCell()
@@ -393,9 +428,9 @@ void CArxGridCtrl::OnEndEditCurCell()
 	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::EventEndLabelEdit),
 											mCurrentCell.row(),
 											mCurrentCell.col(),
-											mbInvokeWithSendString);
+											IsAsyncEvents());
 	if( GetFocus() != this )
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), mbInvokeWithSendString);
+		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }
 
 
@@ -412,22 +447,33 @@ void CArxGridCtrl::DoFileDlg(CellStyle nStyle)
 		}
 		case Grid_DwgFilesCell:
 		{
+			if( !acDocManager->curDocument() )
+				break; //ARX docs say you can't call acedGetFileD in zero doc state
 			struct resbuf * result;
 			CString sFileExt = _T("dwg;dxf");
 			CString sFile = GetItemText(mCurrentCell.row(), mCurrentCell.col());
+			CString sTitle;
 			result = acutNewRb(RTSTR);
 
 			const _CellData* pCellData = GetCellData( mCurrentCell.row(), mCurrentCell.col() );
 			if( pCellData && !pCellData->mrsComboList.empty() )
+			{
 				sFileExt = pCellData->mrsComboList.front().c_str();
+				if( pCellData->mrsComboList.size() > 1 )
+					sTitle = (++pCellData->mrsComboList.begin())->c_str();
+			}
 			else
 			{
 				std::vector< tstring > rsList;
 				std::vector< int > ridxImage;
 				if( GetCellComboListItems( mCurrentCell.row(), mCurrentCell.col(), rsList, ridxImage ) && !rsList.empty() )
+				{
 					sFileExt = rsList.front().c_str();
+					if( rsList.size() > 1 )
+						sTitle = (++rsList.begin())->c_str();
+				}
 			}
-			if (acedGetFileD(sFile, sFile, sFileExt, 8, result) == RTNORM)
+			if( acedGetFileD( sTitle, sFile, sFileExt, 8, result ) == RTNORM )
 				SetCellTextImage( mCurrentCell.row(), mCurrentCell.col(), result->resval.rstring, -1 );
 			acutRelRb(result);
 			break;
@@ -443,7 +489,7 @@ CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 		//case Grid_OptionButtons: return new CRadioEditCtrl( this, nRow, nCol );
 		//case Grid_SwitchableIcons: return new CToggleEditCtrl( this, nRow, nCol );
 		//case Grid_EllipsesButtons: return new CButtonEditCtrl( this, nRow, nCol, _T("..."), ID_CELLBUTTON );
-		//case Grid_PickButtons: return new CButtonEditCtrl( this, nRow, nCol, IDI_PICSM, ID_CELLBUTTON );
+		//case Grid_PickButtons: return new CButtonEditCtrl( this, nRow, nCol, IDI_PICKSMALL, ID_CELLBUTTON );
 		case Grid_Strings: return new CAcUiStringEditCtrl( this, nRow, nCol );
 		case Grid_AngleUnits: return new CAcUiAngleEditCtrl( this, nRow, nCol );
 		case Grid_Integers: return new CTextBoxEditCtrl( this, nRow, nCol, new CIntegerFilter );
@@ -471,7 +517,12 @@ CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 		case Grid_AcadColorCell: return new CAcadColorEditCtrl( this, nRow, nCol );
 		case Grid_TrueColorCell: return new CTrueColorEditCtrl( this, nRow, nCol );
 		case Grid_LineWeightCell: return new CAcUiLineWeightComboEditCtrl( this, nRow, nCol );
-		case Grid_LinetypeCell: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid_LinetypeCell:
+	#if (_ACADTARGET >= 17)
+			return new CAcUiLineTypeComboEditCtrl( this, nRow, nCol );
+	#else //line type combo was not introduced until R2006
+			return new CTextBoxEditCtrl( this, nRow, nCol, new CSymbolNameFilter );
+	#endif //(_ACADTARGET >= 17)
 		case Grid_DirectoryCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
 		case Grid_DwgFilesCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
 		case Grid_Strings_Combo: return new CAcUiStringComboEditCtrl( this, nRow, nCol );
@@ -483,6 +534,26 @@ CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 		//default: return new CTextBoxEditCtrl( this, nRow, nCol );
 	}
 	return __super::CreateEditControl( nRow, nCol );
+}
+
+void CArxGridCtrl::DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText )
+{
+	if( nColor == -2 ) //color book color?
+	{
+		COLORREF crFill = RGB(255,255,255);
+		CString sColorBook = sText.SpanExcluding( _T("$") );
+		CString sColorName = sText.Mid( sColorBook.GetLength() + 1 );
+		AcCmColor color;
+		if( Acad::eOk == accmGetColorFromColorBookName( color, sColorBook, sColorName ) )
+			crFill = RGB(color.red(),color.green(),color.blue());
+		cdc.Rectangle( &rcIcon );
+		CRect rcFill = rcIcon;
+		rcFill.DeflateRect( 1, 1 );
+		CBrush brFill( crFill );
+		cdc.FillRect( &rcFill, &brFill );
+	}
+	else
+		__super::DrawColor( cdc, rcIcon, nColor, sText );
 }
 
 
@@ -521,7 +592,7 @@ void CArxGridCtrl::OnCellButtonClicked(void)
 	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::EventBtnClicked),
 											mCurrentCell.row(),
 											mCurrentCell.col(),
-											mbInvokeWithSendString);
+											IsAsyncEvents());
 }
 
 void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
@@ -531,7 +602,7 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 														nFlags,
 														point.x,
 														point.y,
-														mbInvokeWithSendString);
+														IsAsyncEvents());
 
 	__super::OnLButtonDown(nFlags, point);
 
@@ -542,7 +613,7 @@ void CArxGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::EventClicked),
 											mCurrentCell.row(),
 											mCurrentCell.col(),
-											mbInvokeWithSendString);
+											IsAsyncEvents());
 }
 
 void CArxGridCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
@@ -553,7 +624,7 @@ void CArxGridCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		mbInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnRButtonDown(nFlags, point);
 }
 
@@ -565,7 +636,7 @@ void CArxGridCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		mbInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnMButtonDown(nFlags, point);
 }
 
@@ -577,13 +648,13 @@ void CArxGridCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::EventDblClicked),
 											mCurrentCell.row(),
 											mCurrentCell.col(),
-											mbInvokeWithSendString);
+											IsAsyncEvents());
 }
 
 void CArxGridCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	if (mpTemplate)		
-		InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), CString() + (char)nChar,  (int)nRepCnt,  (int)nFlags, mbInvokeWithSendString);
+		InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), CString() + (char)nChar,  (int)nRepCnt,  (int)nFlags, IsAsyncEvents());
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
@@ -592,7 +663,7 @@ void CArxGridCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	if (mpTemplate)
 	{
 		TCHAR sChar = nChar;
-		InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), CString( (TCHAR)sChar ),  (int)nRepCnt, (int)nFlags, mbInvokeWithSendString);
+		InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), CString( (TCHAR)sChar ),  (int)nRepCnt, (int)nFlags, IsAsyncEvents());
 	}
 
 	switch (nChar) 
@@ -634,7 +705,7 @@ void CArxGridCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		mbInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnLButtonUp(nFlags, point);
 }
 
@@ -646,7 +717,7 @@ void CArxGridCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		mbInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnRButtonUp(nFlags, point);
 }
 
@@ -658,7 +729,7 @@ void CArxGridCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		mbInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnMButtonUp(nFlags, point);
 }
 
@@ -670,7 +741,7 @@ void CArxGridCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 		MK_RBUTTON,
 		point.x,
 		point.y,
-		mbInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnContextMenu(pTarget, point);
 }
 
@@ -681,13 +752,13 @@ void CArxGridCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		nFlags,
 		point.x,
 		point.y,
-		mbInvokeWithSendString);
+		IsAsyncEvents());
 	__super::OnMouseMove(nFlags, point);
 }
 
 void CArxGridCtrl::OnSelectionChanged() 
 {
-	InvokeMethodIntInt(mpTemplate->GetStringProperty(Prop::EventSelChanged), mCurrentCell.row(), mCurrentCell.col(), mbInvokeWithSendString);
+	InvokeMethodIntInt(mpTemplate->GetStringProperty(Prop::EventSelChanged), mCurrentCell.row(), mCurrentCell.col(), IsAsyncEvents());
 }
 
 void CArxGridCtrl::OnSetfocus(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -706,7 +777,7 @@ void CArxGridCtrl::OnSize(UINT nType, int cx, int cy)
 void CArxGridCtrl::OnColumnclick(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
-	InvokeMethodInt(mpTemplate->GetStringProperty(Prop::EventColumnClick), pNMListView->iSubItem, mbInvokeWithSendString);
+	InvokeMethodInt(mpTemplate->GetStringProperty(Prop::EventColumnClick), pNMListView->iSubItem, IsAsyncEvents());
 	*pResult = 0;
 }
 
@@ -719,5 +790,5 @@ void CArxGridCtrl::OnKillFocus(CWnd* pNewWnd)
 {
 	CGridCtrl::OnKillFocus(pNewWnd);
 	if( !pNewWnd || pNewWnd->GetParent() != this )
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), mbInvokeWithSendString);
+		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }

@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "OptionListCtrl.h"
-#include "SharedRes.h"
+#include "Resource.h"
 #include "PropertyIds.h"
 #include "DclControlObject.h"
 #include "ControlPane.h"
@@ -23,19 +23,19 @@ COptionListCtrl::COptionListCtrl( TDclControlPtr pTemplate, CControlPane* pPane,
 	mImageList.Create(13, 13, ILC_COLOR8 | ILC_MASK, 0, 1);
 	
 	CBitmap bitmap1;
-	bitmap1.LoadBitmap(IDB_OPBTNNON);
+	bitmap1.LoadBitmap(IDB_OPTBTN);
 	mImageList.Add( &bitmap1, RGB(255,0,255) );
 	
 	CBitmap bitmap2;
-	bitmap2.LoadBitmap(IDB_OPBTNNONH);
+	bitmap2.LoadBitmap(IDB_OPTBTNH);
 	mImageList.Add( &bitmap2, RGB(255,0,255) );
 	
 	CBitmap bitmap3;
-	bitmap3.LoadBitmap(IDB_OPBTNSEL);
+	bitmap3.LoadBitmap(IDB_OPTBTNSEL);
 	mImageList.Add( &bitmap3, RGB(255,0,255) );
 	
 	CBitmap bitmap4;
-	bitmap4.LoadBitmap(IDB_OPBTNSELH);
+	bitmap4.LoadBitmap(IDB_OPTBTNSELH);
 	mImageList.Add( &bitmap4, RGB(255,0,255) );
 
 	if( bCreate )
@@ -142,6 +142,7 @@ BEGIN_MESSAGE_MAP(COptionListCtrl, CListBoxCtrl)
 	ON_WM_MOUSEMOVE()
 	ON_MESSAGE(WM_MOUSELEAVE, OnMouseLeave)   	
 	ON_WM_MEASUREITEM_REFLECT()
+	ON_WM_WINDOWPOSCHANGING()
 END_MESSAGE_MAP()
 
 
@@ -155,25 +156,21 @@ void COptionListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	// Lets make a CDC for ease of use
 	CDC *pDC = CDC::FromHandle(lpDrawItemStruct->hDC);
+	ASSERT(pDC); // Attached failed
+	
+	// Save off context attributes
+	int nIndexDC = pDC->SaveDC();
 	
 	pDC->SetBkColor(GetColorService()->GetBackgroundColor());
-	
-	ASSERT(pDC); // Attached failed
 	
 	CRect rc(lpDrawItemStruct->rcItem);
 	
 	// Draw focus rectangle
 	if (lpDrawItemStruct->itemState & ODS_FOCUS)
 		pDC->DrawFocusRect(rc);
-	
-	// Save off context attributes
-	int nIndexDC = pDC->SaveDC();
 
 	pDC->SetBkMode(TRANSPARENT);
-
-	CBrush brBkGnd(GetColorService()->GetBackgroundColor());
-	pDC->FillRect(rc, &brBkGnd);
-	brBkGnd.DeleteObject();
+	pDC->FillRect(rc, GetColorService()->GetBackgroundCBrush());
 
 	CString strCurFont,strNextFont;
 	GetText(lpDrawItemStruct->itemID, strCurFont);
@@ -319,25 +316,30 @@ void COptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	CDC *pDC = GetDC();
 	int nSel = GetCurSel();
 
-	// here we need to find the item the mouse is over
-	CRect rc;
-	for (int i=0; i<GetCount(); i++)
+	CRect rcClient;
+	GetClientRect( &rcClient );
+	rcClient.InflateRect( 1, 1 );
+	for( int idxItem = 0; idxItem < GetCount(); ++idxItem )
 	{		
-		GetItemRect(i, rc);
-		rc.bottom = rc.top + mnRowHeight;
-		if (rc.PtInRect(point))		
+		CRect rcItem;
+		if( LB_ERR == GetItemRect( idxItem, &rcItem ) )
+			continue;
+		rcItem.bottom = rcItem.top + mnRowHeight;
+		if( !rcClient.PtInRect( rcItem.TopLeft() ) || !rcClient.PtInRect( rcItem.BottomRight() ) )
+			continue;
+		if( rcItem.PtInRect( point ) )
 		{
-			if (nSel == i)
-				mImageList.Draw(pDC, 3, CPoint(2, rc.top+2), ILD_NORMAL);//ILD_TRANSPARENT);
+			if( nSel == idxItem )
+				mImageList.Draw( pDC, 3, CPoint( 2, rcItem.top + 2), ILD_NORMAL );//ILD_TRANSPARENT);
 			else
-				mImageList.Draw(pDC, 1, CPoint(2, rc.top+2), ILD_NORMAL);//ILD_TRANSPARENT);
+				mImageList.Draw( pDC, 1, CPoint( 2, rcItem.top + 2), ILD_NORMAL );//ILD_TRANSPARENT);
 		}
 		else
 		{
-			if (nSel == i)
-				mImageList.Draw(pDC, 2, CPoint(2, rc.top+2), ILD_NORMAL);//ILD_TRANSPARENT);
+			if( nSel == idxItem )
+				mImageList.Draw( pDC, 2, CPoint( 2, rcItem.top + 2), ILD_NORMAL );//ILD_TRANSPARENT);
 			else
-				mImageList.Draw(pDC, 0, CPoint(2, rc.top+2), ILD_NORMAL);//ILD_TRANSPARENT);
+				mImageList.Draw( pDC, 0, CPoint( 2, rcItem.top + 2), ILD_NORMAL );//ILD_TRANSPARENT);
 		}
 	}
 	ReleaseDC(pDC);

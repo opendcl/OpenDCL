@@ -11,7 +11,7 @@
 CArxColorComboBoxCtrl::CArxColorComboBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , CAcUiColorComboBox()
-, mArxServices( pTemplate )
+, mArxServices( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -25,14 +25,11 @@ bool CArxColorComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess = __super::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID );
 
-	m_mruLen = 0;
-
 	if( bSuccess )
 	{
 		SetBlockColorIndex( 0 );
 		SetUseWindows( TRUE );
 		SetUseOther( TRUE );
-		AddItems();
 	}
 
 	if( bSuccess && !ApplyPropertiesEnum() )

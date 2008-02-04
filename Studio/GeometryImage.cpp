@@ -31,10 +31,7 @@ CGeometryImage::CGeometryImage()
 
 CGeometryImage::~CGeometryImage()
 {
-	if (m_pBitmap != NULL)
-	{
-		delete m_pBitmap;
-	}
+	delete m_pBitmap;
 }
 
 
@@ -115,21 +112,7 @@ void CGeometryImage::DrawDimensions(HDC hdc)
 	  // check if the user has selected the bottom from bottom toggle
 	switch (pParent->m_Bottom.GetCurSel())
 	{
-	case 1:
-		{
-		// draw the dimension line for the Height dimension
-		MoveToEx(hdc, nRightX + nDimensionOffset, rcExampe.Height(), &point);
-		LineTo(hdc, nRightX + nDimensionOffset, nBottomY);
-
-		// draw the Bottom arrow
-		DrawArrow(hdc, nRightX + nDimensionOffset, nBottomY, aUp);
-
-		// draw the top arrow
-		DrawArrow(hdc, nRightX + nDimensionOffset, rcExampe.Height() + 1, aDown);
-		break;
-		}	
 	case 0:
-		{
 		// draw the other extension line for the Height dimension
 		MoveToEx(hdc, nRightX + nExtensionOffset + 1, nTopY, &point);
 		LineTo(hdc, nRightX + nExtensionLength + 1, nTopY);
@@ -144,56 +127,47 @@ void CGeometryImage::DrawDimensions(HDC hdc)
 		// draw the Bottom arrow
 		DrawArrow(hdc, nRightX + nDimensionOffset, nBottomY, aDown);
 		break;
-		}
-	default:
-		{
-		if (pParent->m_BottomSplitter.IsWindowVisible() == TRUE)
-		{
-			// draw the dimension line for the Height dimension
-			MoveToEx(hdc, nRightX + nDimensionOffset, rcExampe.Height()-12, &point);
-			LineTo(hdc, nRightX + nDimensionOffset, nBottomY);
+	case 1:
+		// draw the dimension line for the Height dimension
+		MoveToEx(hdc, nRightX + nDimensionOffset, rcExampe.Height(), &point);
+		LineTo(hdc, nRightX + nDimensionOffset, nBottomY);
 
-			// draw the Bottom arrow
-			DrawArrow(hdc, nRightX + nDimensionOffset, nBottomY, aUp);
+		// draw the Bottom arrow
+		DrawArrow(hdc, nRightX + nDimensionOffset, nBottomY, aUp);
 
-			// draw the top arrow
-			DrawArrow(hdc, nRightX + nDimensionOffset, rcExampe.Height() -11, aDown);
-
-		}
-		else
-		{
-			// draw the dimension line for the Height dimension
-			MoveToEx(hdc, nRightX + nDimensionOffset, nFormTopY+13, &point);
-			LineTo(hdc, nRightX + nDimensionOffset, nBottomY);
-
-			// draw the top arrow
-			DrawArrow(hdc, nRightX + nDimensionOffset, nFormTopY+12, aUp);
-
-			// draw the Bottom arrow
-			DrawArrow(hdc, nRightX + nDimensionOffset, nBottomY, aDown);
-		}
+		// draw the top arrow
+		DrawArrow(hdc, nRightX + nDimensionOffset, rcExampe.Height() + 1, aDown);
 		break;
-		}
+	//case 2:
+	//	DrawSplitter( hdc, CRect( nFormLeftX, nFormTopY + 13 - 4, rcExampe.Width(), nFormTopY + 13 ) );
+	//	// draw the dimension line for the Height dimension
+	//	MoveToEx(hdc, nRightX + nDimensionOffset, nFormTopY+13, &point);
+	//	LineTo(hdc, nRightX + nDimensionOffset, nBottomY);
+
+	//	// draw the top arrow
+	//	DrawArrow(hdc, nRightX + nDimensionOffset, nFormTopY+12, aUp);
+
+	//	// draw the Bottom arrow
+	//	DrawArrow(hdc, nRightX + nDimensionOffset, nBottomY, aDown);
+	//	break;
+	default:
+		DrawSplitter( hdc, CRect( nFormLeftX, rcExampe.Height() - 11, rcExampe.Width(), rcExampe.Height() - 11 + 4 ) );
+		// draw the dimension line for the Height dimension
+		MoveToEx(hdc, nRightX + nDimensionOffset, rcExampe.Height()-12, &point);
+		LineTo(hdc, nRightX + nDimensionOffset, nBottomY);
+
+		// draw the Bottom arrow
+		DrawArrow(hdc, nRightX + nDimensionOffset, nBottomY, aUp);
+
+		// draw the top arrow
+		DrawArrow(hdc, nRightX + nDimensionOffset, rcExampe.Height() - 11, aDown);
+		break;
 	}
 
 	  // check if the user has selected the top from bottom toggle
 	switch (pParent->m_Top.GetCurSel())
 	{      
-	case 1:
-		{
-		// draw the dimension line for the Height dimension
-		MoveToEx(hdc, nLeftX - nDimensionOffset, rcExampe.Height(), &point);
-		LineTo(hdc, nLeftX - nDimensionOffset, nTopY);
-
-		// draw the Bottom arrow
-		DrawArrow(hdc, nLeftX - nDimensionOffset, nTopY, aUp);
-
-		// draw the top arrow
-		DrawArrow(hdc, nLeftX - nDimensionOffset, rcExampe.Height() + 1, aDown);
-		break;
-		}
 	case 0:
-		{
 		// draw the dimension line for the Height dimension
 		MoveToEx(hdc, nLeftX - nDimensionOffset, nTopY, &point);
 		LineTo(hdc, nLeftX - nDimensionOffset, nFormTopY);
@@ -204,55 +178,46 @@ void CGeometryImage::DrawDimensions(HDC hdc)
 		// draw the Bottom arrow
 		DrawArrow(hdc, nLeftX - nDimensionOffset, nTopY, aDown);
 		break;
-		}
+	case 1:
+		// draw the dimension line for the Height dimension
+		MoveToEx(hdc, nLeftX - nDimensionOffset, rcExampe.Height(), &point);
+		LineTo(hdc, nLeftX - nDimensionOffset, nTopY);
+
+		// draw the Bottom arrow
+		DrawArrow(hdc, nLeftX - nDimensionOffset, nTopY, aUp);
+
+		// draw the top arrow
+		DrawArrow(hdc, nLeftX - nDimensionOffset, rcExampe.Height() + 1, aDown);
+		break;
 	default:
-		{
-		if (pParent->m_TopSplitter.IsWindowVisible() == FALSE)
-		{
-			// draw the dimension line for the Height dimension
-			MoveToEx(hdc, nLeftX - nDimensionOffset, rcExampe.Height()-12, &point);
-			LineTo(hdc, nLeftX - nDimensionOffset, nTopY);
+		DrawSplitter( hdc, CRect( nFormLeftX, nFormTopY+12 - 4, rcExampe.Width(), nFormTopY+12 ) );
+		// draw the dimension line for the Height dimension
+		MoveToEx(hdc, nLeftX - nDimensionOffset, nTopY, &point);
+		LineTo(hdc, nLeftX - nDimensionOffset, nFormTopY+12);
 
-			// draw the Bottom arrow
-			DrawArrow(hdc, nLeftX - nDimensionOffset, nTopY, aUp);
+		// draw the top arrow
+		DrawArrow(hdc, nLeftX - nDimensionOffset, nFormTopY+12, aUp);
 
-			// draw the top arrow
-			DrawArrow(hdc, nLeftX - nDimensionOffset, rcExampe.Height() -11, aDown);			
-		}
-		else
-		{
-			// draw the dimension line for the Height dimension
-			MoveToEx(hdc, nLeftX - nDimensionOffset, nTopY, &point);
-			LineTo(hdc, nLeftX - nDimensionOffset, nFormTopY+12);
+		// draw the Bottom arrow
+		DrawArrow(hdc, nLeftX - nDimensionOffset, nTopY, aDown);			
+		break;
+	//default:
+	//	// draw the dimension line for the Height dimension
+	//	MoveToEx(hdc, nLeftX - nDimensionOffset, rcExampe.Height()-12, &point);
+	//	LineTo(hdc, nLeftX - nDimensionOffset, nTopY);
 
-			// draw the top arrow
-			DrawArrow(hdc, nLeftX - nDimensionOffset, nFormTopY+12, aUp);
+	//	// draw the Bottom arrow
+	//	DrawArrow(hdc, nLeftX - nDimensionOffset, nTopY, aUp);
 
-			// draw the Bottom arrow
-			DrawArrow(hdc, nLeftX - nDimensionOffset, nTopY, aDown);			
-		}
-		break;	
-		}
+	//	// draw the top arrow
+	//	DrawArrow(hdc, nLeftX - nDimensionOffset, rcExampe.Height() -11, aDown);			
+	//	break;	
 	}
 
-	  // check if the user has selected the bottom from bottom toggle
+	  // check if the user has selected the right from right toggle
 	switch (pParent->m_Right.GetCurSel())
 	{
-	case 1:
-		{
-		// draw the dimension line for the Height dimension
-		MoveToEx(hdc, nRightX, nBottomY + nDimensionOffset, &point);
-		LineTo(hdc, rcExampe.Width(), nBottomY + nDimensionOffset);
-
-		// draw the left arrow
-		DrawArrow(hdc, nRightX, nBottomY + nDimensionOffset, aLeft);
-
-		// draw the right arrow
-		DrawArrow(hdc, rcExampe.Width(), nBottomY + nDimensionOffset, aRight);
-		break;
-		}
 	case 0:
-		{
 		// draw the other extension line for the Height dimension
 		MoveToEx(hdc, nLeftX, nBottomY + nExtensionOffset + 1, &point);
 		LineTo(hdc, nLeftX, nBottomY + nExtensionLength + 1);
@@ -267,55 +232,46 @@ void CGeometryImage::DrawDimensions(HDC hdc)
 		// draw the right arrow
 		DrawArrow(hdc, nRightX, nBottomY + nDimensionOffset, aRight);
 		break;
-		}
-	default:
-		{
-		if (pParent->m_RightSplitter.IsWindowVisible() == TRUE)
-		{
-			// draw the dimension line for the Height dimension
-			MoveToEx(hdc, nRightX, nBottomY + nDimensionOffset, &point);
-			LineTo(hdc, rcExampe.Width()-24, nBottomY + nDimensionOffset);
-
-			// draw the left arrow
-			DrawArrow(hdc, nRightX, nBottomY + nDimensionOffset, aLeft);
-
-			// draw the right arrow
-			DrawArrow(hdc, rcExampe.Width()-24, nBottomY + nDimensionOffset, aRight);
-		}
-		else
-		{
-			// draw the dimension line for the Height dimension
-			MoveToEx(hdc, nLeftX-10, nBottomY + nDimensionOffset, &point);
-			LineTo(hdc, nRightX, nBottomY + nDimensionOffset);
-
-			// draw the left arrow
-			DrawArrow(hdc, nLeftX-10, nBottomY + nDimensionOffset, aLeft);
-
-			// draw the right arrow
-			DrawArrow(hdc, nRightX, nBottomY + nDimensionOffset, aRight);
-		}
-		break;
-		}
-	}
-
-	// check if the user has selected the bottom from bottom toggle
-	switch (pParent->m_Left.GetCurSel())
-	{
 	case 1:
-		{
 		// draw the dimension line for the Height dimension
-		MoveToEx(hdc, nLeftX, nTopY - nDimensionOffset, &point);
-		LineTo(hdc, rcExampe.Width(), nTopY - nDimensionOffset);
+		MoveToEx(hdc, nRightX, nBottomY + nDimensionOffset, &point);
+		LineTo(hdc, rcExampe.Width(), nBottomY + nDimensionOffset);
 
 		// draw the left arrow
-		DrawArrow(hdc, nLeftX, nTopY - nDimensionOffset, aLeft);
+		DrawArrow(hdc, nRightX, nBottomY + nDimensionOffset, aLeft);
 
 		// draw the right arrow
-		DrawArrow(hdc, rcExampe.Width(), nTopY - nDimensionOffset, aRight);
+		DrawArrow(hdc, rcExampe.Width(), nBottomY + nDimensionOffset, aRight);
 		break;
-		}
+	//case 2:
+	//	// draw the dimension line for the Height dimension
+	//	MoveToEx(hdc, nLeftX-10, nBottomY + nDimensionOffset, &point);
+	//	LineTo(hdc, nRightX, nBottomY + nDimensionOffset);
+
+	//	// draw the left arrow
+	//	DrawArrow(hdc, nLeftX-10, nBottomY + nDimensionOffset, aLeft);
+
+	//	// draw the right arrow
+	//	DrawArrow(hdc, nRightX, nBottomY + nDimensionOffset, aRight);
+	//	break;
+	default:
+		DrawSplitter( hdc, CRect( rcExampe.Width()-24, nFormTopY + 1, rcExampe.Width()-24 + 4, nFormTopY + 112 ) );
+		// draw the dimension line for the Height dimension
+		MoveToEx(hdc, nRightX, nBottomY + nDimensionOffset, &point);
+		LineTo(hdc, rcExampe.Width()-24, nBottomY + nDimensionOffset);
+
+		// draw the left arrow
+		DrawArrow(hdc, nRightX, nBottomY + nDimensionOffset, aLeft);
+
+		// draw the right arrow
+		DrawArrow(hdc, rcExampe.Width()-24, nBottomY + nDimensionOffset, aRight);
+		break;
+	}
+
+	// check if the user has selected the left from right toggle
+	switch (pParent->m_Left.GetCurSel())
+	{
 	case 0:
-		{
 		// draw the dimension line for the Height dimension
 		MoveToEx(hdc, nFormLeftX, nTopY - nDimensionOffset, &point);
 		LineTo(hdc, nLeftX, nTopY - nDimensionOffset);
@@ -326,66 +282,56 @@ void CGeometryImage::DrawDimensions(HDC hdc)
 		// draw the right arrow
 		DrawArrow(hdc, nLeftX, nTopY - nDimensionOffset, aRight);
 		break;
-		} 
-	case 2:
-		{
-		int nX = ((rcExampe.Width() - nFormLeftX) / 2) + nFormLeftX;
+	case 1:
 		// draw the dimension line for the Height dimension
 		MoveToEx(hdc, nLeftX, nTopY - nDimensionOffset, &point);
-		LineTo(hdc, nX, nTopY - nDimensionOffset);
-
-		MoveToEx(hdc, nX, nTopY-nDimensionOffset+3, &point);
-		LineTo(hdc, nX, nFormTopY);
+		LineTo(hdc, rcExampe.Width(), nTopY - nDimensionOffset);
 
 		// draw the left arrow
-		DrawArrow(hdc, nLeftX - 1, nTopY - nDimensionOffset, aLeft);
+		DrawArrow(hdc, nLeftX, nTopY - nDimensionOffset, aLeft);
 
 		// draw the right arrow
-		DrawArrow(hdc, nX, nTopY - nDimensionOffset, aRight);
+		DrawArrow(hdc, rcExampe.Width(), nTopY - nDimensionOffset, aRight);
 		break;
+	case 2:
+		{
+			int nX = ((rcExampe.Width() - nFormLeftX) / 2) + nFormLeftX;
+			// draw the dimension line for the Height dimension
+			MoveToEx(hdc, nLeftX, nTopY - nDimensionOffset, &point);
+			LineTo(hdc, nX, nTopY - nDimensionOffset);
+
+			MoveToEx(hdc, nX, nTopY-nDimensionOffset+3, &point);
+			LineTo(hdc, nX, nFormTopY);
+
+			// draw the left arrow
+			DrawArrow(hdc, nLeftX - 1, nTopY - nDimensionOffset, aLeft);
+
+			// draw the right arrow
+			DrawArrow(hdc, nX, nTopY - nDimensionOffset, aRight);
 		}
+		break;
 	default:
-		{
-		if (pParent->m_LeftSplitter.IsWindowVisible() == FALSE)
-		{
-			// draw the dimension line for the Height dimension
-			MoveToEx(hdc, nLeftX, nTopY - nDimensionOffset, &point);
-			LineTo(hdc, rcExampe.Width()-24, nTopY - nDimensionOffset);
+		DrawSplitter( hdc, CRect( rcExampe.Width()-24, nFormTopY + 1, rcExampe.Width()-24 + 4, nFormTopY + 112 ) );
+		// draw the dimension line for the Height dimension
+		MoveToEx(hdc, nLeftX, nTopY - nDimensionOffset, &point);
+		LineTo(hdc, rcExampe.Width()-24, nTopY - nDimensionOffset);
 
-			// draw the left arrow
-			DrawArrow(hdc, nLeftX, nTopY - nDimensionOffset, aLeft);
+		// draw the left arrow
+		DrawArrow(hdc, nLeftX, nTopY - nDimensionOffset, aLeft);
 
-			// draw the right arrow
-			DrawArrow(hdc, rcExampe.Width()-24, nTopY - nDimensionOffset, aRight);
-			
-		}
-		else
-		{
-			// draw the dimension line for the Height dimension
-			MoveToEx(hdc, nFormLeftX+18, nTopY - nDimensionOffset, &point);
-			LineTo(hdc, nFormLeftX+1, nTopY - nDimensionOffset);
-
-			// draw the dimension line for the Height dimension
-			MoveToEx(hdc, nLeftX, nTopY - nDimensionOffset, &point);
-			LineTo(hdc, nLeftX+17, nTopY - nDimensionOffset);
-
-			// draw the left arrow
-			DrawArrow(hdc, nLeftX, nTopY - nDimensionOffset, aLeft);
-
-			// draw the right arrow
-			DrawArrow(hdc, nFormLeftX+17, nTopY - nDimensionOffset, aRight);
-		} 
-		}
+		// draw the right arrow
+		DrawArrow(hdc, rcExampe.Width()-24, nTopY - nDimensionOffset, aRight);
+		break;
 	}
 	SelectObject(hdc, OldPen);			
 	DeleteObject(pen);
+}
 
-	
-/*	pParent->m_LeftSplitter.RedrawWindow();
-	pParent->m_TopSplitter.RedrawWindow();
-	pParent->m_RightSplitter.RedrawWindow();
-	pParent->m_BottomSplitter.RedrawWindow();
-	*/
+
+void CGeometryImage::DrawSplitter(HDC hdc, const CRect& rcSplitter)
+{
+	CRect rc( rcSplitter );
+	DrawEdge( hdc, &rc, EDGE_SUNKEN, BF_RECT );
 }
 
 

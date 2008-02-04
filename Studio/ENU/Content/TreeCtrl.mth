@@ -3,9 +3,9 @@ GetFirstChildItem
 [Prefix]
 dcl_Tree_
 [Desc]
-This method gets the key of the first child tree item. Nil is return if not children are found.
+This method gets the key of the first child tree item. Nil is return if no children are found.
 [Arguments Return] as Integer or Nil
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -17,9 +17,10 @@ dcl_Tree_
 [Desc]
 This method ensures that the indicated tree item is visible.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
+
 
 [Method]
 IsItemExpanded
@@ -28,7 +29,7 @@ dcl_Tree_
 [Desc]
 This method will return a T if the item is expanded and Nil if not expanded.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -40,7 +41,7 @@ dcl_Tree_
 [Desc]
 This method sorts the children of an indicated parent or child tree item.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -52,7 +53,7 @@ dcl_Tree_
 [Desc]
 This method starts the edit process of a tree item by displaying a TextBox on top of the tree item. This method will not start the editing process if the EditLabel property of the control is set to False.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -64,7 +65,7 @@ dcl_Tree_
 [Desc]
 This method cancels the edit process of a tree item.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -72,9 +73,9 @@ SelectSetFirstVisible
 [Prefix]
 dcl_Tree_
 [Desc]
-This method selects the indicated tree item tries to make it the first visible item in the control.
+This method selects the indicated tree item and attempts to make it the first visible item in the control.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -84,9 +85,9 @@ SetExpandedImage
 [Prefix]
 dcl_Tree_
 [Desc]
-This method assigns an image from the image list as the image to be displayed once tree item has been expanded. \par \par \b1 Please note! \b0 Items with \cf1 String Keys \cf0 attached to them \b1 can \b0 have expanded images. Also note that this call must be made before the tree item is expanded. The best coding practice would be to call this method just after the required tree item has been added to the tree control.
+This method assigns an image from the image list as the image to be displayed when the tree item is expanded.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 \par\tab ExpandImageIndex
@@ -98,9 +99,9 @@ GetExpandedImage
 [Prefix]
 dcl_Tree_
 [Desc]
-This method retrieves the index of an assigned image in the tree control’s image list that is to be the image to be displayed once the tree item has been expanded. If a node item does not have a \cf1 String Key \cf0 assigned to it, it will not have an expanded image.
+This method retrieves the image to be displayed when the tree item is expanded.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -118,7 +119,7 @@ This method expands any visible node item to display its children. \par
 \par \pard\fi-710\li710 1 \tab Expands the tree branch.	
 \par \pard\fi-0\li0
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 \par\tab ExpandStyle
@@ -130,10 +131,9 @@ DeleteItem
 [Prefix]
 dcl_Tree_
 [Desc]
-This method deletes any tree item and its children. \par \par \b1 Please note! \b0 If the tree control was populated using \cf1 String Keys \cf0, this method may incorrectly re-order the internal Key list so that \cf1 String Keys \cf0 will not match the correct node items. This is a design flaw of the Microsoft Tree control and a work around has not be found.
-
+This method deletes any tree item and its children.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -145,7 +145,8 @@ dcl_Tree_
 [Desc]
 This method gets the total number of visible tree items. 
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
+
 
 [Method]
 GetItemData
@@ -154,7 +155,7 @@ dcl_Tree_
 [Desc]
 This method gets integer item data of any tree item.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -166,11 +167,12 @@ dcl_Tree_
 [Desc]
 This method sets integer item data of any tree item.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 \par\tab nItemData
 [as Integer]
+
 
 [Method]
 GetItemText
@@ -179,7 +181,7 @@ dcl_Tree_
 [Desc]
 This method gets the text of any tree item.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -191,7 +193,7 @@ dcl_Tree_
 [Desc]
 This method sets the text of any tree item.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 \par\tab Text
@@ -205,7 +207,7 @@ dcl_Tree_
 [Desc]
 This method returns a list indicating the unselected and selected images of the requested tree item.
 [Arguments Return] as List
-ProjectFileName
+<CONTROL>
 Key
 [as String or Long]
 
@@ -217,12 +219,12 @@ dcl_Tree_
 [Desc]
 This method sets the unselected and selected images of any tree item.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 \par\tab ImageIndex 
 [as Integer]
-\par\tab\i{Optional}\i0 SelectedImageIndex
+\par\tab\i{Optional} \i0 SelectedImageIndex
 [as Integer]
 
 
@@ -232,8 +234,8 @@ GetItem
 dcl_Tree_
 [Desc]
 This method retrieves the information of any tree item. Nil will be returned if the Key argument is invalid.
-[Arguments Return] as List or Nil
-ProjectFileName
+[Arguments Return] as List (Text Image SelectedImage Key) or Nil
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -245,7 +247,7 @@ dcl_Tree_
 [Desc]
 This method retrieves the key of the first parent tree item.
 [Arguments Return] as String or Long
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -255,7 +257,7 @@ dcl_Tree_
 [Desc]
 This method retrieves the key of the selected tree item.
 [Arguments Return] as String or Long
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -265,7 +267,8 @@ dcl_Tree_
 [Desc]
 This method retrieves the unique key of the first visible tree item.
 [Arguments Return] as String or Long
-ProjectFileName
+<CONTROL>
+
 
 [Method]
 GetNextVisibleItem
@@ -274,7 +277,7 @@ dcl_Tree_
 [Desc]
 This method retrieves the unique key of the next visible tree item.
 [Arguments Return] as String or Long
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -286,7 +289,7 @@ dcl_Tree_
 [Desc]
 This method retrieves the unique key of the previous visible tree item.
 [Arguments Return] as String or Long
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -298,7 +301,7 @@ dcl_Tree_
 [Desc]
 This method retrieves the unique key of the next sibling tree item.
 [Arguments Return] as String or Long
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -310,9 +313,10 @@ dcl_Tree_
 [Desc]
 This method retrieves the unique key of the previous sibling tree item.
 [Arguments Return] as String or Long
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
+
 
 [Method]
 ItemHasChildren
@@ -321,7 +325,7 @@ dcl_Tree_
 [Desc]
 This method indicates if a tree item has any children.
 [Arguments Return] as T or Nil
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
 
@@ -333,10 +337,9 @@ dcl_Tree_
 [Desc]
 This method selects the indicated tree item.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Key
 [as String or Long]
-
 
 
 [Method]
@@ -346,7 +349,7 @@ dcl_Tree_
 [Desc]
 This method counts the number of tree items in the TreeControl.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -354,10 +357,10 @@ GetParent
 [Prefix]
 dcl_Tree_
 [Desc]
-This method gets the unique Key of any parent tree item in the TreeControl or returns Nil if none is found.  \par \par \b1 Please note! \b0 Adding node items with \cf1 String Keys \cf0 attached to them \b1 can \b0 have expanded images. 
+This method gets the Key of the item's parent key.
 [Arguments Return] as String or Long
-ProjectFileName
-\par\tab ParentKey
+<CONTROL>
+\par\tab ChildKey
 [as String or Long]
 
 
@@ -367,12 +370,8 @@ AddChild (Using Lists)
 dcl_Tree_
 [Desc]
 This method adds a child tree item to a top level tree item or other child tree item. 
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ...  \par \par \b1 Please note! \b0 Adding node items with \cf1 String Keys \cf0 attached to them \b1 can \b0 have expanded images. 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -380,18 +379,17 @@ ProjectFileName
 [as String or Long]
 \par\tab Text 
 [as String]
-\par\tab\i{Optional}\i0 Key 
+\par\tab\i{Optional} \i0 Key 
 [as String]
-\par\tab\i{Optional}\i0 ImageIndex
+\par\tab\i{Optional} \i0 ImageIndex
 [as Integer]
-\par\tab\i{Optional}\i0 SelectedImageIndex 
+\par\tab\i{Optional} \i0 SelectedImageIndex 
 [as Integer]
-\par\tab\i{Optional}\i0 ExpandedImageIndex
+\par\tab\i{Optional} \i0 ExpandedImageIndex
 [as Integer]
 [End List]
 \par\tab ...
 [End List]
-
 
 
 [Method]
@@ -399,22 +397,21 @@ AddChild (Without Lists)
 [Prefix]
 dcl_Tree_
 [Desc]
-This method adds a child tree item to a top level tree item or other child tree item. A child is a tree item that is connected to a parent or owner tree item. This method returns the long integer value of the new node item key. \par \par \b1 Please note! \b0 Adding node items with \cf1 String Keys \cf0 attached to them \b1 can \b0 have expanded images. 
-[Arguments Return] as Long
-ProjectFileName
+This method adds a child tree item to the specified parent item. This method returns the key of the new item.
+[Arguments Return] as String or Long
+<CONTROL>
 \par\tab ParentKey
 [as String or Long]
 \par\tab Text 
 [as String]
-\par\tab\i{Optional}\i0 Key 
+\par\tab\i{Optional} \i0 Key 
 [as String]
-\par\tab\i{Optional}\i0 ImageIndex
+\par\tab\i{Optional} \i0 ImageIndex
 [as Integer]
-\par\tab\i{Optional}\i0 SelectedImageIndex 
+\par\tab\i{Optional} \i0 SelectedImageIndex 
 [as Integer]
-\par\tab\i{Optional}\i0 ExpandedImageIndex
+\par\tab\i{Optional} \i0 ExpandedImageIndex
 [as Integer]
-
 
 
 [Method]
@@ -422,24 +419,21 @@ InsertAfter
 [Prefix]
 dcl_Tree_
 [Desc]
-This method adds a child tree item or top level tree item after an indicated tree a child tree item or top level. This method returns the long integer value of the new node item key. \par \par \b1 Please note! \b0 If the tree control was populated using \cf1 String Keys \cf0, this method may incorrectly re-order the internal Key list so that \cf1 String Keys \cf0 will not match the correct node items. This is a design flaw of the Microsoft Tree control and a work around has not be found.
- \par \par \b1 Please note! \b0 Adding node items with \cf1 String Keys \cf0 attached to them \b1 can \b0 have expanded images. 
-[Arguments Return] as Long
-ProjectFileName
+This method adds a tree item after the specified tree item. This method returns the key of the new item.
+[Arguments Return] as String or Long
+<CONTROL>
 \par\tab ReferenceKey 
 [as String or Long]
 \par\tab Text 
 [as String]
-\par\tab\i{Optional}\i0 Key 
+\par\tab\i{Optional} \i0 Key 
 [as String]
-\par\tab\i{Optional}\i0 ImageIndex
+\par\tab\i{Optional} \i0 ImageIndex
 [as Integer]
-\par\tab\i{Optional}\i0 SelectedImageIndex 
+\par\tab\i{Optional} \i0 SelectedImageIndex 
 [as Integer]
-\par\tab\i{Optional}\i0 ExpandedImageIndex
+\par\tab\i{Optional} \i0 ExpandedImageIndex
 [as Integer]
-
-
 
 
 [Method]
@@ -447,30 +441,25 @@ AddParent (Using Lists)
 [Prefix]
 dcl_Tree_
 [Desc]
-This method adds a multiple top level tree items.
-\par \par \b Note:\b0 \par Create list in the manor shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ... \par \par \b1 Please note! \b0 Adding node items with \cf1 String Keys \cf0 attached to them \b1 can \b0 have expanded images. 
+This method adds multiple top level tree items.
 [Argument]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
 \par\tab Text 
 [as String]
-\par\tab\i{Optional}\i0 Key 
+\par\tab\i{Optional} \i0 Key 
 [as String]
-\par\tab\i{Optional}\i0 ImageIndex
+\par\tab\i{Optional} \i0 ImageIndex
 [as Integer]
-\par\tab\i{Optional}\i0 SelectedImageIndex 
+\par\tab\i{Optional} \i0 SelectedImageIndex 
 [as Integer]
-\par\tab\i{Optional}\i0 ExpandedImageIndex
+\par\tab\i{Optional} \i0 ExpandedImageIndex
 [as Integer]
 [End List]
 \par\tab ...
 [End List]
-
 
 
 [Method]
@@ -478,19 +467,20 @@ AddParent (Without Lists)
 [Prefix]
 dcl_Tree_
 [Desc]
-This method adds a top level tree item. This is a tree item that is not connected to a parent or owner tree item. This method returns the long integer value of the new node item key. \par \par \b1 Please note! \b0 Adding node items with \cf1 String Keys \cf0 attached to them \b1 can \b0 have expanded images. 
+This method adds a top level tree item. This method returns the key of the new item.
 [Arguments Return] or Long
-ProjectFileName
+<CONTROL>
 \par\tab Text 
 [as String]
-\par\tab\i{Optional}\i0 Key 
+\par\tab\i{Optional} \i0 Key 
 [as String]
-\par\tab\i{Optional}\i0 ImageIndex
+\par\tab\i{Optional} \i0 ImageIndex
 [as Integer]
-\par\tab\i{Optional}\i0 SelectedImageIndex 
+\par\tab\i{Optional} \i0 SelectedImageIndex 
 [as Integer]
-\par\tab\i{Optional}\i0 ExpandedImageIndex
+\par\tab\i{Optional} \i0 ExpandedImageIndex
 [as Integer]
+
 
 [Method]
 Clear
@@ -499,6 +489,6 @@ dcl_Tree_
 [Desc]
 This method clears the TreeControl of all node items.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 [End of File]

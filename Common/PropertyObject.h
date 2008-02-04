@@ -1,9 +1,12 @@
 #pragma once
 
+class CPropertyObject;
 #include <vector>
 #include "PropertyIds.h"
+#include "PtrTypes.h"
 
 class CDclControlObject;
+class CUndoManager;
 class AxPropertyDescriptor;
 class AxEventDescriptor;
 class AxMethodDescriptor;
@@ -58,15 +61,22 @@ namespace PropVal
 	class CPropertyValueBase
 	{
 	protected:
+		CPropertyObject* mpProperty;
+	private:
+		CPropertyValueBase();
+		CPropertyValueBase( const CPropertyValueBase& );
+	protected:
 		friend class CPropertyObject;
-		CPropertyValueBase() {}
+		CPropertyValueBase( CPropertyObject* pProperty ) : mpProperty( pProperty ) {}
 	public:
 		virtual ~CPropertyValueBase() {}
 
 		//attributes
 		virtual PropertyType GetType() const = 0;
+		virtual LPCTSTR GetName() const { return NULL; }
 		virtual DWORD GetFlags() const { return 0; }
 		virtual DWORD SetFlags(DWORD dwFlags) { return 0; }
+		virtual bool IsReadOnly() const { return false; }
 
 		//simple types
 		virtual bool GetValue( short& v ) const { return false; }
@@ -120,7 +130,7 @@ namespace PropVal
 /////////////////////////////////////////////////////////////////////////////
 // CPropertyObject
 
-class CPropertyObject : public CObject
+class CPropertyObject
 {
 	RefCountedPtr< PropVal::CPropertyValueBase > mpValue;
 	CDclControlObject* mpOwnerControl;
@@ -149,7 +159,9 @@ public:
 	//Attributes
 protected:
 	RefCountedPtr< PropVal::CPropertyValueBase > GetValue() const { return mpValue; }
+	void OnChanging() const;
 public:
+	CUndoManager* GetUndoManager() const;
 	PropertyType GetType() const { return mpValue->GetType(); }
 	void SetType( PropertyType type );
 	DWORD GetFlags() const { return mpValue->GetFlags(); }
@@ -158,6 +170,8 @@ public:
 	void SetHidden( bool bHidden = true ) { mbHidden = bHidden; }
 	Prop::Id GetID() const { return mnID; }
 	void SetID( Prop::Id nID ) { mnID = nID; }
+	bool IsReadOnly() const { return (mpValue? mpValue->IsReadOnly() : false); }
+	TDclControlPtr GetOwnerControl() const;
 
 	//simple value access
 	CString GetStringValue() const;
@@ -176,15 +190,15 @@ public:
 	bool SetShortValue( short idxValue );
 
 	//complex value access
-	const PropVal::TCStringArray* GetStringArrayPtr() const;
+	const PropVal::TCStringArray* GetConstStringArrayPtr() const;
 	PropVal::TCStringArray* GetStringArrayPtr();
-	const PropVal::TCStringArrayList* GetStringArrayListPtr() const;
+	const PropVal::TCStringArrayList* GetConstStringArrayListPtr() const;
 	PropVal::TCStringArrayList* GetStringArrayListPtr();
-	const PropVal::TIntArray* GetIntArrayPtr() const;
+	const PropVal::TIntArray* GetConstIntArrayPtr() const;
 	PropVal::TIntArray* GetIntArrayPtr();
-	const PropVal::TIntArrayList* GetIntArrayListPtr() const;
+	const PropVal::TIntArrayList* GetConstIntArrayListPtr() const;
 	PropVal::TIntArrayList* GetIntArrayListPtr();
-	const AxInterfaceDescriptor* GetAxInterfaceDescriptorPtr() const;
+	const AxInterfaceDescriptor* GetConstAxInterfaceDescriptorPtr() const;
 	AxInterfaceDescriptor* GetAxInterfaceDescriptorPtr();
 
 	//Operations
@@ -196,10 +210,9 @@ public:
 public:
 	CString GetName() const;
 	CString GetDocumentationDesc() const;
-	CString GetStdProperty() const;
 	
-	void AddStringItem(CString NewString);
-	CString GetStringItem(short ListIndex);
+	void AddStringItem( LPCTSTR pszItem );
+	CString GetStringItem( size_t idxItem );
 
 	//File I/O
 public:
@@ -207,9 +220,6 @@ public:
   IOStatus ReadFromTextFile(std::ifstream &sFile);
   IOStatus ReadFromTextFile5(std::ifstream &sFile);
   //IOStatus WriteToTextFile(FILE* pFile) const;
-
-protected:
-	DECLARE_SERIAL(CPropertyObject)
 
 #ifdef _DIAGNOSTIC
 public:

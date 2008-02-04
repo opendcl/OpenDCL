@@ -296,52 +296,29 @@ typedef HRESULT (STDAPICALLTYPE* PDLLREGISTERSERVER)( void );
 
 static void RegisterServer( LPCTSTR pszPathName )
 {
-   HINSTANCE hLibrary;
-   PDLLREGISTERSERVER pDllRegisterServer;
-   HRESULT hResult;
-   
-   CString sText;
-   sText = theWorkspace.LoadResourceString(IDS_DllRegisterServer);
-
-   hLibrary = LoadLibrary( pszPathName );
-   if( hLibrary != NULL )
-   {
-	  pDllRegisterServer = PDLLREGISTERSERVER( GetProcAddress( hLibrary, CStringA(sText)) );
-	  if( pDllRegisterServer != NULL )
-	  {
-		 hResult = pDllRegisterServer();
+	HINSTANCE hLibrary = LoadLibrary( pszPathName );
+	if( hLibrary )
+	{
+		PDLLREGISTERSERVER pDllRegisterServer =
+			(PDLLREGISTERSERVER)GetProcAddress( hLibrary, "DllRegisterServer" );
+		if( pDllRegisterServer )
+			HRESULT hResult = pDllRegisterServer();
+		FreeLibrary( hLibrary );
 	}
-	  FreeLibrary( hLibrary );
-   }
 }
 
 void CInsertControlDlg::OnRegister() 
 {
-	POSITION posPathName;
-	CString strPathName;
-	int nResult;
+	CFileDialog dlg( TRUE, NULL, NULL,
+									 OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
+									 theWorkspace.LoadResourceString(IDS_AXFILEFILTER) );
 
-	CString sText;
-    sText = theWorkspace.LoadResourceString(IDS_AXFILTER);
-
-	CFileDialog dlg( TRUE, sText, NULL, OFN_HIDEREADONLY|
-		OFN_FILEMUSTEXIST|OFN_ALLOWMULTISELECT, sText);
-
-	nResult = dlg.DoModal();
-	if( nResult != IDOK )
-	{
+	if( dlg.DoModal() != IDOK )
 		return;
-	}
 
 	CWaitCursor wait;
-
-	posPathName = dlg.GetStartPosition();
+	POSITION posPathName = dlg.GetStartPosition();
 	while( posPathName != NULL )
-	{
-		strPathName = dlg.GetNextPathName( posPathName );
-		RegisterServer(strPathName);
-		//OleRegisterServer(
-	}
-
+		RegisterServer(dlg.GetNextPathName( posPathName ));
 	RefreshControlList();
 }

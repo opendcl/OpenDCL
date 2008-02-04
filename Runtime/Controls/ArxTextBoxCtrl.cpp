@@ -12,7 +12,7 @@ CArxTextBoxCtrl::CArxTextBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane,
 																	CInputFilter* pFilter /*= NULL*/, DWORD dwAcUiStyle /*= 0*/,
 																	bool bCreate /*= true*/ )
 : CTextBoxCtrl( pTemplate, pPane, nID, pFilter, false )
-, mArxServices( pTemplate )
+, mArxServices( this )
 , mbFocusClick( false )
 {
 	SetStyleMask( dwAcUiStyle );
@@ -127,27 +127,25 @@ void CArxTextBoxCtrl::OnKillFocus( CWnd* pFocus )
 {
 	mbFocusClick = false;
 	__super::OnKillFocus( pFocus );
-	if( mpTemplate->m_bEventsAsAction )
+	CString sEvent = mpTemplate->GetStringProperty(Prop::EventKillFocus);
+	if( sEvent.SpanExcluding( _T("_") ) == _T("c:OnActionEvent") )
 	{
-		GetParent()->GetParent()->EnableWindow(TRUE);
-		struct resbuf *result = NULL, *list;    
+		GetParent()->GetParent()->EnableWindow( TRUE );
+		resbuf rbValue = { NULL, RTSTR };
 		CString sVal = mpTemplate->GetStringProperty( Prop::Text );
-    struct resbuf *VarVal = acutBuildList(RTSTR, (LPCTSTR)sVal, 0);
-		int stat = acedPutSym(_T("$value"), VarVal);
-    acutRelRb(VarVal);
-		list = acutBuildList(RTSTR, (LPCTSTR)mpTemplate->GetStringProperty( Prop::EventEditChanged ), 0);
-		if (list != NULL) 
-		{ 
-			stat = acedInvoke(list, &result); 
-			acutRelRb(list); 
-			if(result != NULL) 
-				acutRelRb(result); 
-		}
-		GetParent()->GetParent()->EnableWindow(FALSE);
-		GetParent()->EnableWindow(TRUE);
+		rbValue.resval.rstring = sVal.LockBuffer();
+    acedPutSym( _T("$value"), &rbValue );
+		resbuf rbEvent = { NULL, RTSTR };
+		rbEvent.resval.rstring = sEvent.LockBuffer();
+		resbuf* prbResult = NULL;
+		acedInvoke( &rbEvent, &prbResult ); 
+		if( prbResult ) 
+			acutRelRb( prbResult ); 
+		GetParent()->GetParent()->EnableWindow( FALSE );
+		GetParent()->EnableWindow( TRUE );
 	}
 	else
-		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventKillFocus ), IsAsyncEvents() );
+		InvokeMethod( sEvent, IsAsyncEvents() );
 }
 
 void CArxTextBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)

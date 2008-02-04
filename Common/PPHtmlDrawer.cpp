@@ -5,6 +5,7 @@
 #include <shellapi.h>
 #pragma comment(lib, "comctl32.lib")
 
+#include "Workspace.h"
 
 
 /*
@@ -104,13 +105,13 @@ HICON CPPHtmlDrawer::GetIconFromResources(DWORD dwID, int nWidth /* = 0 */, int 
 	if (0 == dwID) return NULL;
 
 	// Find correct resource handle
-#ifdef _MFC_VER
-	HINSTANCE hInstResource = AfxFindResourceHandle(MAKEINTRESOURCE(dwID), RT_GROUP_ICON);
-#else
-	HINSTANCE hInstResource = ::GetModuleHandle(NULL);
-#endif
+//#ifdef _MFC_VER
+//	HINSTANCE hInstResource = AfxFindResourceHandle(MAKEINTRESOURCE(dwID), RT_GROUP_ICON);
+//#else
+//	HINSTANCE hInstResource = ::GetModuleHandle(NULL);
+//#endif
 	// Set icon when the mouse is IN the button
-	HICON hIcon = (HICON)::LoadImage(hInstResource, MAKEINTRESOURCE(dwID), IMAGE_ICON, nWidth, nHeight, LR_DEFAULTCOLOR);
+	HICON hIcon = (HICON)::LoadImage(theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(dwID), IMAGE_ICON, nWidth, nHeight, LR_DEFAULTCOLOR);
 	
 	return hIcon;
 }

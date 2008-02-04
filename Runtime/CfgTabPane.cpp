@@ -11,53 +11,12 @@
 #include "ArxProject.h"
 
 
-// CConfigTabPaneX interface implementation
-CConfigTabPaneX::CConfigTabPaneX( CfgTabPane& Owner, TDclFormPtr pDclForm )
-: CArxDialogObject( pDclForm, &Owner )
-, mpOwner( &Owner )
-{
-}
-
-CConfigTabPaneX::~CConfigTabPaneX()
-{
-}
-
-DclFormType CConfigTabPaneX::GetType() const
-{
-	return VdclConfigTab;
-}
-
-HWND CConfigTabPaneX::GetHWnd() const
-{
-	return mpOwner->m_hWnd;
-}
-
-bool CConfigTabPaneX::IsDirty() const
-{
-	return mpOwner->IsDirty();
-}
-
-bool CConfigTabPaneX::SetDirty( bool bDirty )
-{
-	mpOwner->SetDirty( bDirty );
-	return true;
-}
-
-void CConfigTabPaneX::CloseDialog(int nStatus)
-{
-	if( IsClosing() )
-		return;
-	SetClosing();
-	mpOwner->GetMainDialog()->EndDialog( nStatus );
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CfgTabPane dialog
 
 CfgTabPane::CfgTabPane( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CAcUiTabChildDialog( pParent, pParams? (HINSTANCE)pParams->lpData : NULL ) 
-, mDialogX( *this, pSourceForm )
+, CArxDialogObject( pSourceForm, this )
 {
 }
 
@@ -65,10 +24,19 @@ CfgTabPane::~CfgTabPane()
 {
 }
 
+void CfgTabPane::CloseDialog(int nStatus)
+{
+	if( IsClosing() )
+		return;
+	SetClosing();
+	GetMainDialog()->EndDialog( nStatus );
+}
+
 
 BEGIN_MESSAGE_MAP(CfgTabPane, CAcUiTabChildDialog)
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -88,34 +56,28 @@ BOOL CfgTabPane::OnTabChanging () {
 BOOL CfgTabPane::OnInitDialog() 
 {
 	CAcUiTabExtension::OnInitDialog();
-	
-	CRect rectWindow;
-	GetWindowRect( &rectWindow );
-	
-	// set the control pane position and size
-	mDialogX.GetControlPane().SetPanePos( rectWindow );
+	ApplyPropertiesEnum();
 
 	// call method to create the controls
 	UINT nID = 1000;
-	mDialogX.GetControlPane().CreateControls(nID);
+	GetControlPane()->CreateControls(nID);
+	GetControlPane()->RecalcLayout();
 
 	// get the left and top values to center the form on the screen	
-	CPoint pt( (::GetSystemMetrics(SM_CYSCREEN) - rectWindow.Width()) / 2,
-						 (::GetSystemMetrics(SM_CXSCREEN) - rectWindow.Height()) / 2 );
+	CRect rectWindow;
+	GetWindowRect( &rectWindow );
+	CPoint pt( (::GetSystemMetrics(SM_CXSCREEN) - rectWindow.Width()) / 2,
+						 (::GetSystemMetrics(SM_CYSCREEN) - rectWindow.Height()) / 2 );
 	
 	// call method to set the start width and position of the form
-	SetWindowPos(NULL, pt.x, pt.y, rectWindow.Width(), rectWindow.Height(), SWP_NOZORDER | SWP_NOACTIVATE);
-	
-	//  setup for assigning the form it's properties
-	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
+	SetWindowPos( NULL, pt.x, pt.y, rectWindow.Width(), rectWindow.Height(),
+								SWP_NOZORDER | SWP_NOACTIVATE );
 	
 	// call methods to invoke the event
-	InvokeMethod(pProps->GetStringProperty(Prop::FormEventInitialize), false);	
-
-	// call methods to invoke the event
-	if( mDialogX.GetSourceForm()->UsesClientRect() )
-		GetClientRect( &rectWindow );
-	InvokeMethodIntInt(pProps->GetStringProperty(Prop::FormEventSize), rectWindow.Width(), rectWindow.Height(), false);	
+	InvokeMethod( mpTemplate->GetStringProperty(Prop::FormEventInitialize), false );	
+	GetClientRect( &rectWindow );
+	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::FormEventSize),
+											rectWindow.Width(), rectWindow.Height(), false );	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
@@ -124,35 +86,26 @@ BOOL CfgTabPane::OnInitDialog()
 void CfgTabPane::OnMainDialogOK()
 // This function is called when the main dialog OK button is pressed.
 {
-	// call methods to invoke the event
-	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStringProperty(Prop::CfgEventOK), false);	
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::CfgEventOK), false);	
 }
 
 void CfgTabPane::OnMainDialogAPPLY()
 // This function is called when the main dialog Apply button is pressed.
 {
-	// call methods to invoke the event
-	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStringProperty(Prop::CfgEventApply), false);	
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::CfgEventApply), false);	
 }
 
 void CfgTabPane::OnMainDialogCancel()
 // This function is called when the main dialog CANCEL button is pressed.
 {
-    // call methods to invoke the event
-	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStringProperty(Prop::CfgEventCancel), false);	
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::CfgEventCancel), false);	
 }
 
 BOOL CfgTabPane::OnMainDialogHelp()
 // This function is called when the main dialog HELP button is pressed
 // and this is the active tab.
 {
-  // call methods to invoke the event
-	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod(pProps->GetStringProperty(Prop::CfgEventHelp), false);	
-  // Return TRUE if handled.
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::CfgEventHelp), false);	
   return TRUE;
 }
 
@@ -165,12 +118,21 @@ void CfgTabPane::PostNcDestroy()
 void CfgTabPane::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	CAcUiTabExtension::OnShowWindow(bShow, nStatus);
-	TDclControlPtr pProps = mDialogX.GetSourceForm()->GetControlProperties();
-	InvokeMethod( mDialogX.GetSourceForm()->GetControlProperties()->GetStringProperty(Prop::FormEventShow), false);	
+	InvokeMethod( mpTemplate->GetStringProperty(Prop::FormEventShow), false);	
 }
 
 void CfgTabPane::OnDestroy() 
 {
-	mDialogX.GetControlPane().CleanUpControls();
+	GetControlPane()->CleanUpControls();
 	CAcUiTabExtension::OnDestroy();
+}
+
+void CfgTabPane::OnSize(UINT nType, int cx, int cy)
+{
+	//__super::OnSize(nType, cx, cy);
+	if( mbIgnoreSizing )
+		return;
+	mpTemplate->SetLongProperty( Prop::Width, cx );
+	mpTemplate->SetLongProperty( Prop::Height, cy );
+	mpControlPane->RecalcLayout();
 }

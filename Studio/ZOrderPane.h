@@ -3,7 +3,11 @@
 
 #pragma once
 
-#include "ZOrderListCtrl.h"
+#include "ZOrderListBox.h"
+#include "PtrTypes.h"
+
+class CStudioDialogObject;
+
 
 #define ZOrderListID  107
 #define SendToBackId  108
@@ -24,49 +28,36 @@
 
 class CZOrderPane : public CDialog
 {
+	CZOrderListBox mZOrderList;
+	CToolBarCtrl	m_Buttons;
+	TBBUTTON		*m_pTBButtons;
+
 // Construction
 public:
 	CZOrderPane();
+	virtual ~CZOrderPane();
 
 // Attributes
 public:	
-	CZOrderListCtrl m_ZOrderList;
-	CToolBarCtrl	m_Buttons;
-	TBBUTTON		*m_pTBButtons;
-	CFont			m_font;
+
 // Operations
 public:
+	void OnActivateDlgObject( CStudioDialogObject* pDlgObject ) { mZOrderList.OnActivateDlgObject( pDlgObject ); }
+	void OnActivateDclControl( TDclControlPtr pDclControl ) { mZOrderList.OnActivateDclControl( pDclControl ); }
 	void AddTheButtons();
 	CString NeedText( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult );
-	
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CZOrderPane)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
-	//}}AFX_VIRTUAL
-
-// Implementation
-public:
-	virtual ~CZOrderPane();
 
 	// Generated message map functions
 protected:
-	//{{AFX_MSG(CZOrderPane)
+	DECLARE_MESSAGE_MAP()
+protected:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnBringtofront();
-	afx_msg void OnSendtoback();
-	afx_msg void OnMovezbackby1();
-	afx_msg void OnMovezfrontby1();
-	afx_msg void OnZorderhelp();
 	afx_msg void OnDestroy();
-	//}}AFX_MSG
 	BOOL OnNeedText( UINT id, NMHDR * pTTTStruct, LRESULT * pResult );
 	void OnNeedTextA( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult );
 	void OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult );
-
-	DECLARE_MESSAGE_MAP()
 };

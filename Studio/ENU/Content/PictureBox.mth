@@ -5,7 +5,7 @@ dcl_PictureBox_
 [Desc]
 This method is used to store what has been drawn or printed to the PictureBox’s paint-able area to memory.  What this does is makes all lines, arcs, text, etc. become part of the stored picture that the PictureBox uses to paint from.  This method must be called after all objects have been drawn to the PictureBox, or possible errors could occur, especially if another dialog box is moved of the PictureBox and what has been drawn will be erased.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -27,7 +27,7 @@ dcl_PictureBox_
 [Desc]
 This method repaints the PictureBox using the image last stored by dcl_PictureBox_StoreImage.  Any pictures set using the Picture property or dcl_PictureBox_LoadPicture  will not be removed. 
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -36,12 +36,8 @@ DrawLine
 dcl_PictureBox_
 [Desc]
 This method draws a list of lines in the control.
-\par \par \b Note:\b0 \par Create list in the manner shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ... 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -54,7 +50,7 @@ ProjectFileName
 \par\tab EndY
 [as Integer]
 \par\tab LineColor
-[as Integer]
+[as Integer or (R G B)]
 [End List]
 \par\tab ...
 [End List]
@@ -66,27 +62,25 @@ DrawArc
 dcl_PictureBox_
 [Desc]
 This method draws an arc on the control by specifying a center point, radius, and start and end points to calculate the start and end angles of the arc. Start and end points don’t need to fall directly on the arc -- they are only used to calculate the start and end angles.
-\par \par \b Note:\b0 \par Create the list in this format: \par 
-          (List (List x y ...) (List x y ...) ...)
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab
 [Begin List]
 [Begin List]
 \par\tab CenterX
-[as Real]
+[as Integer]
 \par\tab CenterY
-[as Real]
+[as Integer]
 \par\tab Radius
-[as Real]
+[as Integer]
 \par\tab StartAngleX
-[as Real]
+[as Integer]
 \par\tab StartAngleY
-[as Real]
+[as Integer]
 \par\tab EndAngleX
-[as Real]
+[as Integer]
 \par\tab EndAngleY
-[as Real]
+[as Integer]
 \par\tab Color
 [as Integer or (R G B)]
 [End List]
@@ -100,12 +94,8 @@ DrawCircle
 dcl_PictureBox_
 [Desc]
 This method draws a circle on the control. A rectangle is used because it allows both circles and ellipses to be drawn using the same method.
-\par \par \b Note:\b0 \par Create list in the manner shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ... 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -118,7 +108,7 @@ ProjectFileName
 \par\tab Height
 [as Integer]
 \par\tab Color
-[as Integer]
+[as Integer or (R G B)]
 [End List]
 \par\tab ...
 [End List]
@@ -130,12 +120,8 @@ DrawFillRect
 dcl_PictureBox_
 [Desc]
 This method draws a solid rectangle on the control.
-\par \par \b Note:\b0 \par Create list in the manner shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ... 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -148,7 +134,7 @@ ProjectFileName
 \par\tab Height
 [as Integer]
 \par\tab Color
-[as Integer]
+[as Integer or (R G B)]
 [End List]
 \par\tab ...
 [End List]
@@ -167,13 +153,8 @@ This method draws a hatched rectangle on the control. There are five styles of w
 \par \pard\fi-710\li710 3 \tab Left slanted lines.	
 \par \pard\fi-710\li710 4 \tab Horizontal, vertical grid pattern.	
 \par \pard\fi-710\li710 5 \tab Diagonal grid pattern.	
-
-\par \par \b Note:\b0 \par Create list in the manner shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ... 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -186,7 +167,7 @@ ProjectFileName
 \par\tab Height
 [as Integer]
 \par\tab LineColor
-[as Integer]
+[as Integer or (R G B)]
 \par\tab HatchPattern
 [as Integer]
 [End List]
@@ -209,12 +190,8 @@ This method draws various standard windows control borders. Color control is aut
 \par \pard\fi-710\li710 5 \tab Edge etched.	
 \par \pard\fi-710\li710 6 \tab Edge raised.	
 \par \pard\fi-710\li710 7 \tab Edge sunken.
-\par \par \b Note:\b0 \par Create list in the manner shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ... 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -239,12 +216,8 @@ DrawFocusRect
 dcl_PictureBox_
 [Desc]
 This method draws a focus rectangle used to indicate the control has focus. This method is a Boolean XOR function, calling this function a second time with the same rectangle removes the rectangle from the display. 
-\par \par \b Note:\b0 \par Create list in the manner shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ... 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -267,12 +240,8 @@ DrawRect
 dcl_PictureBox_
 [Desc]
 This method draws a standard rectangle.
-\par \par \b Note:\b0 \par Create list in the manner shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ... 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -285,7 +254,7 @@ ProjectFileName
 \par\tab Height
 [as Integer]
 \par\tab Color
-[as Integer]
+[as Integer or (R G B)]
 [End List]
 \par\tab ...
 [End List]
@@ -297,16 +266,12 @@ DrawWrappedText
 dcl_PictureBox_
 [Desc]
 This method draws text on the control. If the text is going to be drawn outside the allowable width area the text is automatically wrapped around to the next line or lines. A bounding rectangle is used to define where the text is to be drawn.
-\par If a 0 or -27 is passed into BackColor, then the text is draw transparently.
+\par If BackColor is 0, the text is drawn transparently.
 \par \par \b Note:\b0
 \par \pard\fi-310\li310 1.\tab The height parameter is automatically calculated and returned with the method. If the BackColor argument is not passed the PictureBox’s BackColor property is used.
-\par \pard\fi-310\li310 2.\tab Create list in the manner shown as follows:
-\par \tab \tab (List (List x y ...) (List x y ...) ...)
-\par \pard\fi-310\li310 \tab We have found ObjectARX does not always like lists created as follows:
-\par \tab \tab '(x y ...) (x y ...) ... 
 \par \pard\fi-0\li0  
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -317,9 +282,9 @@ ProjectFileName
 \par\tab Width
 [as Integer]
 \par\tab ForeColor
-[as Integer]
-\par\tab\i{Optional}\i0 BackColor 
-[as Integer]
+[as Integer or (R G B)]
+\par\tab\i{Optional} \i0 BackColor 
+[as Integer or (R G B)]
 \par\tab Text
 [as String]
 \par\tab Justification
@@ -335,7 +300,7 @@ DrawText
 dcl_PictureBox_
 [Desc]
 This method draws text on the control. If the BackColor argument is not passed the PictureBox’s BackColor property is used. 
-\par If a 0 or -27 is passed into BackColor, then the text is draw transparently.
+\par If BackColor is 0, the text is drawn transparently.
 \par \par \b Justification \b0
 \par \pard\fi-410\li410 TL \tab Top Left	
 \par \pard\fi-410\li410 TC \tab Top Center	
@@ -343,12 +308,8 @@ This method draws text on the control. If the BackColor argument is not passed t
 \par \pard\fi-410\li410 BL \tab Bottom Left	
 \par \pard\fi-410\li410 BC \tab Bottom Center	
 \par \pard\fi-410\li410 BR \tab Bottom Right	
-\par \pard\fi-0\li0 \par \b Note:\b0 \par Create list in the manner shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ... 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -356,18 +317,16 @@ ProjectFileName
 [as Integer]
 \par\tab UpperLeftY
 [as Integer]
-\par\tab Width
-[as Integer]
 \par\tab ForeColor
-[as Integer]
-\par\tab\i{Optional}\i0 BackColor 
-[as Integer]
+[as Integer or (R G B)]
+\par\tab\i{Optional} \i0 BackColor 
+[as Integer or (R G B)]
 \par\tab Text
 [as String]
 \par\tab Justification
 [as String]
-\par\tab\i{Optional}\i0 Disabled
-[as Integer: 1, or T = Disabled, 0 or Nil = Enabled]
+\par\tab\i{Optional} \i0 Disabled
+[as Boolean (T = Disabled, Nil = Enabled)]
 [End List]
 \par\tab ...
 [End List]
@@ -380,7 +339,7 @@ dcl_PictureBox_
 [Desc]
 This method will return the height and width of the text passed in for calculation.
 [Arguments Return] as List (Width Height)
-ProjectFileName
+<CONTROL>
 \par\tab Text
 [as String]
 
@@ -391,12 +350,8 @@ PaintPicture
 dcl_PictureBox_
 [Desc]
 This method will paint a picture anywhere on the control. The dialog box must be visible. If you intend to use this method to show a picture of pictures on the the PictureBox, make this call from the OnPaint event of the PictureBox so that the image is shown at the correct time.
-\par \par \b Note:\b0 \par Create list in the manner shown as follows: \par 
-          (List (List x y ...) (List x y ...) ...)
-\par We have found ObjectARX does not always like lists created as follows:
-\par          '(x y ...) (x y ...) ... 
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab 
 [Begin List]
 [Begin List]
@@ -406,10 +361,10 @@ ProjectFileName
 [as Integer]
 \par\tab PictureID
 [as Integer]
-\par\tab\i{Optional}\i0 Enabled
-[as Integer: 1, or T = Disabled, 0 or Nil = Enabled]
-\par\tab\i{Optional}\i0 UseMask
-[as Integer: 1, or T = Use, 0 or Nil = Don't Use]
+\par\tab\i{Optional} \i0 Enabled
+[as Boolean (T = Enabled, Nil = Disabled)]
+\par\tab\i{Optional} \i0 UseMask
+[as Boolean (T = Use, Nil = Don't Use)]
 [End List]
 \par\tab ...
 [End List]
@@ -422,9 +377,11 @@ dcl_PictureBox_
 [Desc]
 This method will load a picture file of type .bmp, .ico, .jpg, and .wmf, into the PictureBox control.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab FileName
 [as String]
+\par\tab\i{Optional} \i0 Stretch
+[as Boolean T or Nil]
 
 
 [Method]
@@ -434,13 +391,13 @@ dcl_PictureBox_
 [Desc]
 This method will paint a single point on the control any specified color. Note: this method does not accept lists passed in to specify a group of points to be drawn.  Due to ObjectARX limitations in lists, at this time, small lists cannot be supported.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nX
 [as Integer]
 \par\tab nY
 [as Integer]
 \par\tab Color
-[as Integer]
+[as Integer or (R G B)]
 
 
 [Method]
@@ -450,6 +407,6 @@ dcl_PictureBox_
 [Desc]
 This method clears the control, including any pictures set using the Picture property.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 [End of File]

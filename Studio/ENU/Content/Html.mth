@@ -3,12 +3,11 @@ Navigate
 [Prefix]
 dcl_Html_
 [Desc]
-This method will force the HtmlControl to navigate to a URL or directory.  For example “https://sourceforge.net/projects/opendcl/” or “c:\\temp”
+This method loads a web page into the control (e.g. “https://sourceforge.net/projects/opendcl/” or “file://c:/temp”).
 [Arguments]
-ProjectFileName
-\par\tab Destination
+<CONTROL>
+\par\tab URL
 [as String]
-
 
 
 [Method]
@@ -16,9 +15,9 @@ Refresh
 [Prefix]
 dcl_Html_
 [Desc]
-This method forces the HtmlControl to reload the current file.
+This method forces the HtmlControl to reload the current page.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -26,9 +25,19 @@ GoBack
 [Prefix]
 dcl_Html_
 [Desc]
-This method forces the HtmlControl to go back to its previously selected file.
+This method loads the previous page in the history list.
 [Arguments]
-ProjectFileName
+<CONTROL>
+
+
+[Method]
+GoForward
+[Prefix]
+dcl_Html_
+[Desc]
+This method loads the next page in the history list.
+[Arguments]
+<CONTROL>
 
 
 [Method]
@@ -36,10 +45,9 @@ GoHome
 [Prefix]
 dcl_Html_
 [Desc]
-This method forces the HtmlControl to go to the system’s selected home URL page.
+This method loads the default home page.
 [Arguments]
-ProjectFileName
-
+<CONTROL>
 
 
 [Method]
@@ -47,10 +55,9 @@ GoSearch
 [Prefix]
 dcl_Html_
 [Desc]
-This method forces the HtmlControl to go to the system’s selected search page.
+This method loads the default search page.
 [Arguments]
-ProjectFileName
-
+<CONTROL>
 
 
 [Method]
@@ -58,9 +65,9 @@ GetLocationName
 [Prefix]
 dcl_Html_
 [Desc]
-This method retrieves the name of the HtmlControl’s currently selected location.
+This method retrieves the name of the current page.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -68,9 +75,9 @@ GetLocationURL
 [Prefix]
 dcl_Html_
 [Desc]
-This method retrieves the URL of the HtmlControl’s currently selected location.
+This method retrieves the URL of the current page.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -78,22 +85,21 @@ GetOffline
 [Prefix]
 dcl_Html_
 [Desc]
-This method will return a 0 or 1 indicating if the web browsing system is currently online (1) or off-line (0).
-[Arguments Return] as Integer
-ProjectFileName
+This method will return a T or nil indicating whether the browser is currently online (nil) or offline (T).
+[Arguments Return] as Boolean T or Nil
+<CONTROL>
+
 
 [Method]
 SetOffline
 [Prefix]
 dcl_Html_
 [Desc]
-This method will force the web browsing system to go online if a value of 1 is passed through the flag, or will for the web browsing system to go off-line if a value of 0 was passed.
+This method sets the browser to online (nil) or offline (T) mode.
 [Arguments]
-ProjectFileName
-\par\tab GoOnline
-[as Integer]
-
-
+<CONTROL>
+\par\tab Offline
+[as Boolean T or Nil]
 
 
 [Method]
@@ -101,9 +107,9 @@ GetGetBusy
 [Prefix]
 dcl_Html_
 [Desc]
-This method returns a 1 if the HtmlControl is busy loading a page or 0 if it’s not.
-[Arguments Return] as Integer
-ProjectFileName
+This method checks whether thr browser is busy waiting for or loading a web page.
+[Arguments Return] as Boolean T or Nil
+<CONTROL>
 
 
 [Method]
@@ -111,9 +117,9 @@ GetFullName
 [Prefix]
 dcl_Html_
 [Desc]
-This method returns the full name of the HtmlControl’s currently select page, including its path.
+This method retrieves the complete name (including path) of the current page.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -121,9 +127,9 @@ UpdateHtmlCode
 [Prefix]
 dcl_Html_
 [Desc]
-This method will update the entire Html document currently loaded. Please note that an Html document must have already been loaded to use this method successfully.
+This method replaces the entire HTML code for the current page. Note that this method fails when no document is loaded.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab NewHtmlCode
 [as String]
 
@@ -133,22 +139,23 @@ ReplaceText
 [Prefix]
 dcl_Html_
 [Desc]
-This method will update a portion of the Html document currently loaded, by replacing specified text with new text. This method is useful for retrieving input values of form controls in the Html document.
+This method will search and replace a portion of the current page's HTML code.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab OldHtmlCode
 [as String]
 \par\tab NewHtmlCode
 [as String]
+
 
 [Method]
 GetHtmlDocument
 [Prefix]
 dcl_Html_
 [Desc]
-This method will retrieve the main portion of the Html document currently loaded. It will not retrieve Java code, header or footer portions of the Html document.
+This method will retrieve the body of the current page. It will not retrieve document headers.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -156,9 +163,9 @@ Stop
 [Prefix]
 dcl_Html_
 [Desc]
-This method forces the HtmlControl to stop its current activity.
+This method forces the control to cancel its current activity.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 [End of File]

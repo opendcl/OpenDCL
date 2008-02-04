@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "ProgressBarPage.h"
 #include "DclControlObject.h"
+#include "StudioDialogControl.h"
 #include "Workspace.h"
 #include "PropertyIds.h"
 
@@ -12,7 +13,9 @@
 // CProgressBarPage dialog
 
 
-CProgressBarPage::CProgressBarPage(UINT unID) : CPropertyPage(unID)
+CProgressBarPage::CProgressBarPage( TDclControlPtr pDclControl )
+: CPropertyPage( IDD )
+, mpDclControl( pDclControl )
 {
 	//{{AFX_DATA_INIT(CProgressBarPage)
 	//}}AFX_DATA_INIT
@@ -22,7 +25,6 @@ CProgressBarPage::CProgressBarPage(UINT unID) : CPropertyPage(unID)
 void CProgressBarPage::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CProgressBarPage)
 	DDX_Control(pDX, IDC_PROGRESS1, m_Progress);
 	DDX_Control(pDX, IDC_TIME, m_Time);
 	DDX_Control(pDX, IDC_PERCENTAGE, m_Percentage);
@@ -30,16 +32,13 @@ void CProgressBarPage::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT5, m_Seconds);
 	DDX_Control(pDX, IDC_EDIT4, m_Minute);
 	DDX_Control(pDX, IDC_EDIT1, m_Minutes);
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CProgressBarPage, CPropertyPage)
-	//{{AFX_MSG_MAP(CProgressBarPage)
 	ON_BN_CLICKED(IDC_PERCENTAGE, OnPercentage)
 	ON_BN_CLICKED(IDC_TIME, OnTime)
 	ON_EN_CHANGE(IDC_EDIT5, OnChangeSeconds)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -47,30 +46,30 @@ END_MESSAGE_MAP()
 
 BOOL CProgressBarPage::OnInitDialog() 
 {
-	CPropertyPage::OnInitDialog();
+	__super::OnInitDialog();
 	
-	SetWindowText(m_sTitle);
+	SetWindowText( theWorkspace.LoadResourceString( IDS_CAPTIONTEXTOPTIONS ) );
 		
-	m_pArxCtrl->GetPropertyObject(Prop::DisplayPercentage);
+	mpDclControl->GetPropertyObject(Prop::DisplayPercentage);
 
-	if (m_pArxCtrl->GetBooleanProperty(Prop::DisplayPercentage) == TRUE)
+	if (mpDclControl->GetBooleanProperty(Prop::DisplayPercentage) == TRUE)
 	{
 		m_Percentage.SetCheck(TRUE);
 		m_Progress.m_bPercentage = true;
 	}
-	else if (m_pArxCtrl->GetBooleanProperty(Prop::DisplaySeconds) == TRUE)
+	else if (mpDclControl->GetBooleanProperty(Prop::DisplaySeconds) == TRUE)
 	{
 		m_Progress.m_bTime = true;
 	}
-	m_Time.SetCheck(m_pArxCtrl->GetBooleanProperty(Prop::DisplaySeconds));
+	m_Time.SetCheck(mpDclControl->GetBooleanProperty(Prop::DisplaySeconds));
 		
-	m_Minute.SetWindowText(m_pArxCtrl->GetStringProperty(Prop::MinuteText));
-	m_Minutes.SetWindowText(m_pArxCtrl->GetStringProperty(Prop::MinutesText));
+	m_Minute.SetWindowText(mpDclControl->GetStringProperty(Prop::MinuteText));
+	m_Minutes.SetWindowText(mpDclControl->GetStringProperty(Prop::MinutesText));
 
-	m_Second.SetWindowText(m_pArxCtrl->GetStringProperty(Prop::SecondText));
-	m_Seconds.SetWindowText(m_pArxCtrl->GetStringProperty(Prop::SecondsText));
+	m_Second.SetWindowText(mpDclControl->GetStringProperty(Prop::SecondText));
+	m_Seconds.SetWindowText(mpDclControl->GetStringProperty(Prop::SecondsText));
 	
-	m_Progress.m_sText = CString("15 ") + m_pArxCtrl->GetStringProperty(Prop::SecondsText);
+	m_Progress.m_sText = CString("15 ") + mpDclControl->GetStringProperty(Prop::SecondsText);
 
 	// setup display progress bar.
 	m_Progress.SetRange(0,100);
@@ -86,24 +85,23 @@ BOOL CProgressBarPage::OnInitDialog()
 BOOL CProgressBarPage::OnApply() 
 {
 	CString sValue;
-	
 	m_Minute.GetWindowText(sValue);
-	m_pArxCtrl->SetStringProperty(Prop::MinuteText, sValue);
-
+	mpDclControl->SetStringProperty(Prop::MinuteText, sValue);
 	m_Minutes.GetWindowText(sValue);
-	m_pArxCtrl->SetStringProperty(Prop::MinutesText, sValue);
-
+	mpDclControl->SetStringProperty(Prop::MinutesText, sValue);
 	m_Second.GetWindowText(sValue);
-	m_pArxCtrl->SetStringProperty(Prop::SecondText, sValue);
-	
+	mpDclControl->SetStringProperty(Prop::SecondText, sValue);
 	m_Seconds.GetWindowText(sValue);
-	m_pArxCtrl->SetStringProperty(Prop::SecondsText, sValue);
-	
-	m_pArxCtrl->SetBooleanProperty(Prop::DisplayPercentage, m_Percentage.GetCheck() != 0);
-	
-	m_pArxCtrl->SetBooleanProperty(Prop::DisplaySeconds, m_Time.GetCheck() != 0);
+	mpDclControl->SetStringProperty(Prop::SecondsText, sValue);
+	mpDclControl->SetBooleanProperty(Prop::DisplayPercentage, m_Percentage.GetCheck() != 0);
+	mpDclControl->SetBooleanProperty(Prop::DisplaySeconds, m_Time.GetCheck() != 0);
+	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::MinuteText);
+	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::MinutesText);
+	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::SecondText);
+	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::SecondsText);
+	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::DisplayPercentage);
+	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::DisplaySeconds);
 
-	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();
 }
 

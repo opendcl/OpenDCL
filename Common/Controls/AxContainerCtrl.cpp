@@ -17,7 +17,7 @@
 #include "Workspace.h"
 #include "VarUtils.h"
 #include "PropertyIds.h"
-#include "SharedRes.h"
+#include "Resource.h"
 
 
 // function type to return script language dependent strings
@@ -248,10 +248,10 @@ static void SetupPicture(TDclControlPtr pControl)
 /////////////////////////////////////////////////////////////////////////////
 // CAxContainerCtrl
 
-CAxContainerCtrl::CAxContainerCtrl(TDclControlPtr pTemplate,
-																	 CControlPane* pPane,
-																	 UINT nID,
-																	 bool bCreate /*= true*/)
+CAxContainerCtrl::CAxContainerCtrl( TDclControlPtr pTemplate,
+																		CControlPane* pPane,
+																		UINT nID,
+																		bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this)
 , mpTypeLib( NULL )
 , mnTypeLibCount( 0 )
@@ -260,33 +260,20 @@ CAxContainerCtrl::CAxContainerCtrl(TDclControlPtr pTemplate,
 		Create(pPane->GetHostDialog(), nID);
 	}
 }
-CAxContainerCtrl::CAxContainerCtrl(TDclControlPtr pTemplate
-																	 , CControlPane* pPane
-																	 , UINT nID
-																	 , CRect ArxRect
-																	 , bool bAddPropInfo
-																	 , bool bCreate /*= true*/)
-: CDialogControl( pTemplate, pPane, this)
-, mpTypeLib( NULL )
-, mnTypeLibCount( 0 )
-{
-	if (bCreate) {
-		Create(pPane->GetHostDialog(), nID, ArxRect, bAddPropInfo);
-	}
-}
+
 CAxContainerCtrl::~CAxContainerCtrl()
 {
 }
 
-void CAxContainerCtrl::Initialize()
+bool CAxContainerCtrl::ParseTypeLibInfo()
 {
 	CComPtr< IOleObject > pOleObject;
-	if( SUCCEEDED(GetOleObject( &pOleObject )) )
-	{
-		ExtractPropertyInfo(GetTemplate(), pOleObject, TRUE);
-		ExtractMethodInfo(GetTemplate(), pOleObject);
-		ExtractEventInfo(GetTemplate(), pOleObject, FALSE);
-	}
+	if( FAILED(GetOleObject( &pOleObject )) )
+		return false;
+	ExtractPropertyInfo( GetTemplate(), pOleObject, TRUE );
+	ExtractMethodInfo( GetTemplate(), pOleObject);
+	ExtractEventInfo( GetTemplate(), pOleObject, FALSE );
+	return true;
 }
 
 HRESULT CAxContainerCtrl::GetOleDispatch( IDispatch** ppDispatch )
@@ -311,12 +298,7 @@ HRESULT CAxContainerCtrl::GetOleObject( IOleObject** ppOleObject )
 	return pUnknown->QueryInterface( IID_IOleObject, (void**)ppOleObject );
 }
 
-bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID)
-{
-	return Create(pParentWnd, nID, GetWndRect(), false);
-}
-
-bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect rcWnd, bool bAddPropInfo)
+bool CAxContainerCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	DWORD dwStyle = GetWndStyle();
 
@@ -333,20 +315,20 @@ bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect rcWnd, bool bAdd
 	try
 	{		
 		//Create the control, passing the OleStream and license key.
-		bSuccess = (FALSE != CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
+		bSuccess = (FALSE != CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, GetWndRect(), pParentWnd, nID,
 																				pOleStreamFile, FALSE, bstrLicenseKey ));
 		if (!bSuccess && pOleStreamFile)
 		{
 			//Creation failed.
 			//Try again, this time without the OleStream.
-			bSuccess = (FALSE != CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
+			bSuccess = (FALSE != CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, GetWndRect(), pParentWnd, nID,
 																					NULL, FALSE, bstrLicenseKey ));
 		}
 		if (!bSuccess && (BSTR)bstrLicenseKey)
 		{
 			//Creation failed.
 			//Try again, this time without the OleStream and without the license key.
-			bSuccess = (FALSE != CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, rcWnd, pParentWnd, nID,
+			bSuccess = (FALSE != CreateControl( GetTemplate()->m_clsid, NULL, dwStyle, GetWndRect(), pParentWnd, nID,
 																					NULL, FALSE, NULL ));
 		}
 	}
@@ -357,9 +339,6 @@ bool CAxContainerCtrl::Create(CWnd* pParentWnd, UINT nID, CRect rcWnd, bool bAdd
 
 	if (pOleStreamFile != NULL)
 		delete pOleStreamFile;
-
-	if (bSuccess && bAddPropInfo) 
-		Initialize();
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
@@ -388,6 +367,23 @@ DWORD CAxContainerCtrl::GetWndStyle() const
 	return (WS_CHILD | WS_VISIBLE);
 }
 
+bool CAxContainerCtrl::SetProperty( TPropertyPtr pProp, LPCTSTR pszValue )
+{
+	assert( pProp != NULL ); //trying to set a non-existent custom property
+	if( !pProp )
+		return false;
+	const AxInterfaceDescriptor* pAxID = pProp->GetConstAxInterfaceDescriptorPtr();
+	assert( pAxID != NULL ); //no interface descriptor for this property
+	if( !pAxID )
+		return false;
+	AxPropertyDescriptor* pPropPutDesc = pAxID->GetPutDescriptor();
+	assert( pPropPutDesc != NULL ); //no 'put' method for this property
+	if( !pPropPutDesc )
+		return false;
+	if( FAILED(SetProperty( pPropPutDesc, pszValue )) )
+		return false;
+	return true;
+}
 
 //[DPR] Recreated for methods_activex.cpp
 HRESULT CAxContainerCtrl::GetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult )
@@ -426,7 +422,7 @@ HRESULT CAxContainerCtrl::GetProperty(AxPropertyDescriptor* axProp, CString &str
 	return S_OK;
 }
 
-HRESULT CAxContainerCtrl::SetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs )
+HRESULT CAxContainerCtrl::SetProperty( AxPropertyDescriptor* axProp, const VARIANTARG* rvarArgs, UINT ctArgs )
 {
 	if( !axProp )
 		return E_POINTER;
@@ -452,20 +448,6 @@ IDispatch * CAxContainerCtrl::GetChildIDispatch(DISPID dispid)
 	LPDISPATCH pDispatch;
 	InvokeHelper(dispid, DISPATCH_PROPERTYGET, VT_DISPATCH, (void*)&pDispatch, NULL);
 	return pDispatch;
-}
-
-unsigned long CAxContainerCtrl::GetFlexGridColorProperty(AxPropertyDescriptor *axProp)
-{
-	unsigned long result;
-	InvokeHelper(axProp->GetDispId(), DISPATCH_PROPERTYGET, VT_I4, (void*)&result, NULL);
-	return result;
-}
-
-void CAxContainerCtrl::SetFlexGridColorProperty(AxPropertyDescriptor *axProp
-																						, unsigned long newValue)
-{
-	static BYTE parms[] = VTS_I4;
-	InvokeHelper(axProp->GetDispId(), DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms, newValue);
 }
 
 COleFont CAxContainerCtrl::GetFont(DISPID dispid)
@@ -609,7 +591,7 @@ UINT CAxContainerCtrl::ExtractEventInfo(TDclControlPtr pControl, ITypeInfo* pTyp
 			{
 				if( (*iter)->GetType() == PropActiveXEvent )
 				{
-					const AxEventDescriptor* pAxEvent = (*iter)->GetAxInterfaceDescriptorPtr()->GetEvent();
+					const AxEventDescriptor* pAxEvent = (*iter)->GetConstAxInterfaceDescriptorPtr()->GetEvent();
 					if( pAxEvent->GetName() == pAxEventDesc->GetName() )
 					{
 						bFoundIt = true; //event already exists
@@ -686,7 +668,7 @@ UINT CAxContainerCtrl::ExtractMethodInfo(TDclControlPtr pControl, ITypeInfo* pTy
 
 			if( !pAxMethodDesc->GetName().IsEmpty() )
 			{
-				pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->push_back( pAxMethodDesc.release() );
+				pProp->GetConstAxInterfaceDescriptorPtr()->GetMethods()->push_back( pAxMethodDesc.release() );
 				++ctMethods;
 			}
 		}
@@ -813,7 +795,7 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 				CString sBaseName = pAxPropDesc->GetName();
 				CString sPropName = sBaseName;
 				TPropertyPtr pProp = pControl->FindPropertyObject( sPropName );
-				while( pProp && !pProp->GetAxInterfaceDescriptorPtr() )
+				while( pProp && !pProp->GetConstAxInterfaceDescriptorPtr() )
 				{ //found a different type of property with the same name, so decorate the name
 					sPropName.Format( _T("%s%d"), (LPCTSTR)sBaseName, nDecorator++ );
 					pProp = pControl->FindPropertyObject( sPropName );
@@ -839,9 +821,9 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 		assert( SUCCEEDED(hr) );
 		if( FAILED(hr) )
 			continue;
-		if( (pFuncDesc->invkind == DISPATCH_PROPERTYGET ||
-				 pFuncDesc->invkind == DISPATCH_PROPERTYPUT ||
-				 pFuncDesc->invkind == DISPATCH_PROPERTYPUTREF) &&
+		if( (pFuncDesc->invkind == INVOKE_PROPERTYGET ||
+				 pFuncDesc->invkind == INVOKE_PROPERTYPUT ||
+				 pFuncDesc->invkind == INVOKE_PROPERTYPUTREF) &&
 				pFuncDesc->wFuncFlags != FUNCFLAG_FHIDDEN )
 		{
 			std::auto_ptr< AxPropertyDescriptor > pAxPropDesc( new AxPropertyDescriptor( pFuncDesc, pTypeInfo, this, pIObject ) );
@@ -858,7 +840,7 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 				CString sBaseName = pAxPropDesc->GetName();
 				CString sPropName = sBaseName;
 				TPropertyPtr pProp = pControl->FindPropertyObject( sPropName );
-				while( pProp && !pProp->GetAxInterfaceDescriptorPtr() )
+				while( pProp && !pProp->GetConstAxInterfaceDescriptorPtr() )
 				{ //found a different type of property with the same name, so decorate the name
 					sPropName.Format( _T("%s%d"), (LPCTSTR)sBaseName, nDecorator++ );
 					pProp = pControl->FindPropertyObject( sPropName );
@@ -873,7 +855,7 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 					else
 						pProp = new CPropertyObject( pControl, PropActiveXProp );
 					pProp->SetStringValue( sPropName );
-					if( pAxPropDesc->GetInvKind() == DISPATCH_PROPERTYGET && !pAxPropDesc->GetArgs().empty() )
+					if( pAxPropDesc->GetInvKind() == INVOKE_PROPERTYGET && !pAxPropDesc->GetArgs().empty() )
 						pProp->SetHidden();
 					pControl->InsertNamedProperty( pProp );
 				}
@@ -889,7 +871,7 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 					pProp->GetAxInterfaceDescriptorPtr()->SetPropPutRef( pAxPropDesc.release() );
 					break;
 				default:
-					if( !pProp->GetAxInterfaceDescriptorPtr()->GetProp() )
+					if( !pProp->GetConstAxInterfaceDescriptorPtr()->GetProp() )
 						pProp->GetAxInterfaceDescriptorPtr()->SetProp( pAxPropDesc.release() );
 					break;
 				}
@@ -994,6 +976,7 @@ void CAxContainerCtrl::ShowPropertyPages()
 
 	if( aclsidCommonPages.GetSize() > 0 )
 	{
+		CWnd* pFocusWnd = GetFocus();
 		CComPtr< IDispatch > pDispatch;
 		HRESULT hr = GetOleDispatch( &pDispatch );
 		assert( SUCCEEDED(hr) );
@@ -1006,7 +989,10 @@ void CAxContainerCtrl::ShowPropertyPages()
 
 	  //WINBUG: OleCreatePropertyFrame doesn't return focus to its parent when
 	  // it closes
-	  SetFocus();
+		if( pFocusWnd )
+			pFocusWnd->SetFocus();
+		else
+			SetFocus();
 	}
    
 	GetTemplate()->SaveToStream(this);
@@ -1088,4 +1074,11 @@ BOOL CAxContainerCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
 	return __super::PreTranslateMessage(pMsg);
+}
+
+BOOL CAxContainerCtrl::DestroyWindow()
+{
+	__super::DestroyWindow();
+	delete this;
+	return true;
 }

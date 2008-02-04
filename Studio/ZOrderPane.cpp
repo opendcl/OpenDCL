@@ -4,9 +4,10 @@
 #include "stdafx.h"
 #include "ZOrderPane.h"
 #include "Resource.h"
-#include "SharedRes.h"
-#include "OpenDCLView.h"
-#include "Workspace.h"
+#include "StudioWorkspace.h"
+#include "ControlManager.h"
+#include "DclFormView.h"
+#include "DialogControl.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -23,20 +24,12 @@ CZOrderPane::~CZOrderPane()
 		delete []m_pTBButtons;
 }
 
-
 BEGIN_MESSAGE_MAP(CZOrderPane, CDialog)
-	//{{AFX_MSG_MAP(CZOrderPane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()	
-	ON_COMMAND(ID_BRINGTOFRONT, OnBringtofront)
-	ON_COMMAND(ID_SENDTOBACK, OnSendtoback)
-	ON_COMMAND(ID_MOVEZBACKBY1, OnMovezbackby1)
-	ON_COMMAND(ID_MOVEZFRONTBY1, OnMovezfrontby1)
-	ON_COMMAND(ID_ZORDERHELP, OnZorderhelp)
 	ON_WM_DESTROY()
-	//}}AFX_MSG_MAP
-	ON_NOTIFY_RANGE( TTN_NEEDTEXTA, ID_BRINGTOFRONT, ID_MOVEZBACKBY1, OnNeedTextA)
-	ON_NOTIFY_RANGE( TTN_NEEDTEXTW, ID_BRINGTOFRONT, ID_MOVEZBACKBY1, OnNeedTextW)
+	ON_NOTIFY_RANGE( TTN_NEEDTEXTA, ID_SENDTOFRONT, ID_MOVEZBACKBY1, OnNeedTextA)
+	ON_NOTIFY_RANGE( TTN_NEEDTEXTW, ID_SENDTOFRONT, ID_MOVEZBACKBY1, OnNeedTextW)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -50,173 +43,11 @@ int CZOrderPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect rc(0,0,2,2);
 
 	// create the ZOrder List
-	if (!m_ZOrderList.Create( WS_CHILD | WS_VISIBLE | WS_TABSTOP |
-														LVS_NOCOLUMNHEADER | LVS_REPORT,
-														rc,
-														this,
-														ZOrderListID))
+	if (!mZOrderList.Create( WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER,
+													 rc,
+													 this,
+													 ZOrderListID))
 		return -1;
-
-	m_ZOrderList.InsertColumn(0, _T("Controls"), LVCFMT_LEFT, 190);
-	m_ZOrderList.ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
-	m_ZOrderList.SetExtendedStyle( m_ZOrderList.GetExtendedStyle() | LVS_EX_FULLROWSELECT );
-
-	if (!m_font.CreateStockObject(DEFAULT_GUI_FONT) && !m_font.CreatePointFont(nDeFontPtSize, _T("MS Shell Dlg")))
-		return -1;
-	
-	m_ZOrderList.SetFont(&m_font);
-
-	// set the image list
-	m_ZOrderList.m_ImageList.Create(nDeIconW,nDeIconHt, ILC_COLOR | ILC_MASK, 1, 1);
-	HINSTANCE hInstResource = AfxFindResourceHandle(MAKEINTRESOURCE(IDI_LABEL), RT_GROUP_ICON);
-
-	HICON hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_LABEL));
-  	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_STDBUTTON));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_GRAPHICBUTTON));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_FRAME));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_TEXTBOX));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_CHECKBOX));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_OPTION));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_COMBOBOX));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_LISTBOX));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_SCROLLBAR));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_SLIDERBAR));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_PICTUREBOX));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_TABS));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_MONTH));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_TREE));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_3DRECT));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_PROGRESSBAR));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_SPINBUTTON));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_URL));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_ANGLESLIDER));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_BLOCKVIEW));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_SLIDEVW));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_HTML));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_DWGPREVIEW));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_LISTVIEW));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_BLOCKLIST));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_OPTIONLIST));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_ACTIVEX));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_DWGLIST));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_ANIMATE));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_IMAGECOMBOBOX));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_GRID));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_SPLITTER));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_HATCH));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	hicon = LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_OPENFOLDER));
-	m_ZOrderList.m_ImageList.Add(hicon);
-	DestroyIcon(hicon);
-
-	int cx, cy;
-	::ImageList_GetIconSize(m_ZOrderList.m_ImageList.m_hImageList, &cx, &cy);
-	//
-	//// set the project point 
-	//SetZOrderList(&m_ZOrderList);
-
-	m_ZOrderList.SetImageList(&m_ZOrderList.m_ImageList, LVSIL_SMALL);
 
 	DWORD dwStyle = WS_VISIBLE | WS_CHILD | CCS_NODIVIDER | CCS_NOPARENTALIGN      
 			| CCS_ADJUSTABLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT | TBSTYLE_WRAPABLE;
@@ -274,7 +105,7 @@ void CZOrderPane::AddTheButtons()
 	m_pTBButtons[3].fsStyle = BYTE(TBSTYLE_BUTTON|TBSTYLE_TOOLTIPS);
 	m_pTBButtons[3].dwData = 0;
 	m_pTBButtons[3].iBitmap = 3;
-	m_pTBButtons[3].idCommand = ID_BRINGTOFRONT;
+	m_pTBButtons[3].idCommand = ID_SENDTOFRONT;
 	m_pTBButtons[3].iString = IDS_TTTSENDTOBACK;		
 	VERIFY(m_Buttons.AddButtons(1,&m_pTBButtons[3]));		
 
@@ -293,41 +124,7 @@ void CZOrderPane::OnSize(UINT nType, int cx, int cy)
 	ScreenToClient(rc);
 	// resize the ZOrder list 
 	CRect rcZOrder(0,rc.bottom + 1,cx-2, cy);
-	m_ZOrderList.MoveWindow(rcZOrder, TRUE);
-	int nColWidth = rcZOrder.Width() - 4;
-	if( m_ZOrderList.GetCountPerPage() < m_ZOrderList.GetItemCount() )
-		nColWidth -= GetSystemMetrics( SM_CXVSCROLL );
-	m_ZOrderList.SetColumnWidth( 0, nColWidth );
-}
-
-void CZOrderPane::OnBringtofront() 
-{
-	m_ZOrderList.Bringtofront();
-	
-}
-
-void CZOrderPane::OnSendtoback() 
-{
-	m_ZOrderList.SendtoBack();
-	
-}
-
-void CZOrderPane::OnMovezbackby1() 
-{
-	m_ZOrderList.SentToBackBy1();
-	
-}
-
-void CZOrderPane::OnMovezfrontby1() 
-{
-	m_ZOrderList.BringtofrontBy1();
-	
-}
-
-void CZOrderPane::OnZorderhelp() 
-{
-	// TODO: Add your command handler code here
-	
+	mZOrderList.MoveWindow(rcZOrder, TRUE);
 }
 
 CString CZOrderPane::NeedText( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
@@ -339,7 +136,7 @@ CString CZOrderPane::NeedText( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResul
 
 	switch (nID)
 	{
-	case ID_BRINGTOFRONT:
+	case ID_SENDTOFRONT:
 		toolTipText = theWorkspace.LoadResourceString(IDS_TTTBRINGTOFRONT);
 		break;
 	case ID_SENDTOBACK:
@@ -368,7 +165,7 @@ CString CZOrderPane::NeedText( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResul
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CToolBox message handlers
+// CToolboxPane message handlers
 void CZOrderPane::OnNeedTextW( UINT nID, NMHDR * pNotifyStruct, LRESULT * lResult )
 {
 	CString toolTipText = NeedText(nID, pNotifyStruct, lResult);
@@ -467,9 +264,10 @@ BOOL CZOrderPane::PreTranslateMessage(MSG* pMsg)
 			pMsg->wParam = NULL;
 			pMsg->message = NULL;
 		}
-		if (m_ZOrderList.m_pView != NULL)
+		CDclFormView* pFormView = theStudioWorkspace.GetActiveFormView();
+		if( pFormView )
 		{
-			if( m_ZOrderList.m_pView->PreTranslateMessage(pMsg) )
+			if( pFormView->PreTranslateMessage(pMsg) )
 				return TRUE;
 		}
 	}		
@@ -480,6 +278,12 @@ BOOL CZOrderPane::PreTranslateMessage(MSG* pMsg)
 void CZOrderPane::OnDestroy() 
 {
 	CDialog::OnDestroy();
-	
-	m_font.DeleteObject();		
+}
+
+BOOL CZOrderPane::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	if( (BOOL)mZOrderList.SendMessage( WM_COMMAND, wParam, lParam ) )
+		return TRUE;
+
+	return __super::OnCommand(wParam, lParam);
 }

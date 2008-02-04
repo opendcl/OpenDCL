@@ -11,13 +11,15 @@
 
 class CGridSpacingDlg : public CDialog
 {
+	CString sCurrentSettingFmt;
+
 // Construction
 public:
-	CGridSpacingDlg(CWnd* pParent = NULL);   // standard constructor
+	CGridSpacingDlg();   // standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(CGridSpacingDlg)
-	enum { IDD = IDD_GRIDSPACING_DIALOG };
+	enum { IDD = IDD_GRIDSPACING };
 	CSliderCtrl	m_Slider;
 	CStatic	m_CurrentSpacing;
 	//}}AFX_DATA

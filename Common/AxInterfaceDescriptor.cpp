@@ -366,7 +366,7 @@ CString AxInterfaceDescriptor::GetDesc() const
 	return CString();
 }
 
-CString AxInterfaceDescriptor::GetAxMethodDesc(size_t nIndex)
+CString AxInterfaceDescriptor::GetAxMethodDesc( size_t nIndex ) const
 {
 	if (mpMethods && nIndex < mpMethods->size())
 		return mpMethods->at(nIndex)->GetDesc();
@@ -375,21 +375,21 @@ CString AxInterfaceDescriptor::GetAxMethodDesc(size_t nIndex)
 
 
 
-size_t AxInterfaceDescriptor::CountAxMethodParams( size_t nIndex )
+size_t AxInterfaceDescriptor::CountAxMethodParams( size_t nIndex ) const
 {
 	if (mpMethods && nIndex < mpMethods->size())
 		return mpMethods->at(nIndex)->GetArgs().size();
 	return 0;
 }
 
-CString AxInterfaceDescriptor::GetAxMethodParamName(size_t nIndex, int nParam)
+CString AxInterfaceDescriptor::GetAxMethodParamName( size_t nIndex, int nParam ) const
 {
 	if (mpMethods && nIndex < mpMethods->size())
 		return mpMethods->at(nIndex)->GetArgs().at(nParam).name;
 	return CString();
 }
 
-VARTYPE AxInterfaceDescriptor::GetAxMethodReturnType(size_t nIndex)
+VARTYPE AxInterfaceDescriptor::GetAxMethodReturnType( size_t nIndex ) const
 {
 	if (mpMethods && nIndex < mpMethods->size())
 		return mpMethods->at(nIndex)->GetReturnType();
@@ -397,21 +397,21 @@ VARTYPE AxInterfaceDescriptor::GetAxMethodReturnType(size_t nIndex)
 }
 
 
-AxMethodDescriptor * AxInterfaceDescriptor::GetAxMethod(size_t nIndex)
+const AxMethodDescriptor* AxInterfaceDescriptor::GetAxMethod( size_t nIndex ) const
 {
 	if (mpMethods && nIndex < mpMethods->size())
 		return mpMethods->at(nIndex);
 	return NULL;
 }
 
-CString AxInterfaceDescriptor::GetAxMethodParamVarType(size_t nIndex, int nParam)
+CString AxInterfaceDescriptor::GetAxMethodParamVarType( size_t nIndex, int nParam ) const
 {
 	if (mpMethods && nIndex < mpMethods->size())
 		return VARTYPEtoString(mpMethods->at(nIndex)->GetArgs().at(nParam).vt);
 	return CString();
 }
 
-GUID AxInterfaceDescriptor::GetAxMethodParamGUID(size_t nIndex, int nParam)
+GUID AxInterfaceDescriptor::GetAxMethodParamGUID( size_t nIndex, int nParam ) const
 {
 	if (mpMethods && nIndex < mpMethods->size())
 		return mpMethods->at(nIndex)->GetArgs().at(nParam).clsid;

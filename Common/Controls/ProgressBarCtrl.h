@@ -16,8 +16,8 @@ class CProgressBarCtrl : public CProgressCtrl, public CDialogControl
 {
 	CAcadColorService mAcadColorService;
   clock_t mStartTime;
-	bool mbPercentage;
-	bool mbTime;
+	enum Legend { lgNone = 0, lgTime = 1, lgPercent = 2, };
+	Legend meLegend;
   CFont mfontHoriz;
   CFont mfontVert;
 

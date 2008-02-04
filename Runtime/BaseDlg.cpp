@@ -10,32 +10,20 @@
 #include "InvokeMethod.h"
 
 
-const TCHAR sSizeWidth[] = _T("sizeWidth");
-const TCHAR sSizeHeight[] = _T("sizeHeight");
-const TCHAR sTopLeftX[] = _T("nTopLeftX");
-const TCHAR sTopLeftY[] = _T("nTopLeftY");
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CBaseDlg dialog
 
 CBaseDlg::CBaseDlg(TDclFormPtr pSourceForm, UINT idd, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/)
 : CDialog(idd, pParent)
-, mpSourceForm( pSourceForm )
+, CArxDialogObject( pSourceForm, this )
 , mnInitialX( pParams? pParams->position.x : -1 )
 , mnInitialY( pParams? pParams->position.y : -1 )
 , mbHasTitleBar( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::TitleBar ) )
-, mnMinWidth( 0 )
-, mnMinHeight( 0 )
-, mnMaxWidth( 0 )
-, mnMaxHeight( 0 )
-, mnNCWidth( 0 )
-, mnNCHeight( 0 )
-, mbShowGrip( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::Resizable ) )
+, mbResizable( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::Resizable ) )
 {
-	m_sizing = FALSE;
 	m_szGripSize.cx = GetSystemMetrics(SM_CXVSCROLL);
 	m_szGripSize.cy = GetSystemMetrics(SM_CYHSCROLL);
+	mbIgnoreSizing = true;
 }
 
 CBaseDlg::~CBaseDlg()
@@ -44,26 +32,7 @@ CBaseDlg::~CBaseDlg()
 
 void CBaseDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
-}
-
-void CBaseDlg::SetMinMaxSize( const CSize& szMin, const CSize& szMax )
-{
-	mnMinWidth = szMin.cx;
-	mnMinHeight = szMin.cy;
-	mnMaxWidth = szMax.cx;
-	mnMaxHeight = szMax.cy;
-	if( mpSourceForm->UsesClientRect() )
-	{
-		if( mnMinWidth > 0 )
-			mnMinWidth += mnNCWidth;
-		if( mnMinHeight > 0 )
-			mnMinHeight += mnNCHeight;
-		if( mnMaxWidth > 0 )
-			mnMaxWidth += mnNCWidth;
-		if( mnMaxHeight > 0 )
-			mnMaxHeight += mnNCHeight;
-	}
+	__super::DoDataExchange(pDX);
 }
 
 void CBaseDlg::SavePosition()
@@ -74,10 +43,10 @@ void CBaseDlg::SavePosition()
 	CRect rcThis;
 	GetWindowRect( &rcThis );
 	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath(); 
-	pApp->WriteProfileInt( sProfileName, sSizeWidth, rcThis.Width() );
-	pApp->WriteProfileInt( sProfileName, sSizeHeight, rcThis.Height() );
-	pApp->WriteProfileInt( sProfileName, sTopLeftX, rcThis.left );
-	pApp->WriteProfileInt( sProfileName, sTopLeftY, rcThis.top );
+	pApp->WriteProfileInt( sProfileName, _T("Width"), rcThis.Width() );
+	pApp->WriteProfileInt( sProfileName, _T("Height"), rcThis.Height() );
+	pApp->WriteProfileInt( sProfileName, _T("TopLeftX"), rcThis.left );
+	pApp->WriteProfileInt( sProfileName, _T("TopLeftY"), rcThis.top );
 }
 
 CRect CBaseDlg::ReadPosition() const
@@ -85,10 +54,10 @@ CRect CBaseDlg::ReadPosition() const
 	CRect rcRet;
 	CWinApp* pApp = AfxGetApp();
 	CString sProfileName = theWorkspace.GetUserProfilePrefix() + _T("Dialogs\\") + mpSourceForm->GetKeyPath();
-	rcRet.left = pApp->GetProfileInt( sProfileName, sTopLeftX, -5000 );
-	rcRet.top = pApp->GetProfileInt( sProfileName, sTopLeftY, -5000 );
-	rcRet.right = rcRet.left + pApp->GetProfileInt( sProfileName, sSizeWidth, -5000 );
-	rcRet.bottom = rcRet.top + pApp->GetProfileInt( sProfileName, sSizeHeight, -5000 );
+	rcRet.left = pApp->GetProfileInt( sProfileName, _T("TopLeftX"), -5000 );
+	rcRet.top = pApp->GetProfileInt( sProfileName, _T("TopLeftY"), -5000 );
+	rcRet.right = rcRet.left + pApp->GetProfileInt( sProfileName, _T("Width"), -5000 );
+	rcRet.bottom = rcRet.top + pApp->GetProfileInt( sProfileName, _T("Height"), -5000 );
 	return rcRet;
 }
 
@@ -101,14 +70,10 @@ void CBaseDlg::UpdateGripPos()
 	m_rcGripRect.top = m_rcGripRect.bottom - m_szGripSize.cy;
 }
 
-void CBaseDlg::SetTitleBarIcon(int nPictureID)
+bool CBaseDlg::OnApplyResizable( TPropertyPtr pProp )
 {
-	DestroyIcon( SetIcon( NULL, FALSE ) );
-	CPictureObject* pPicture = mpSourceForm->GetProject()->FindPicture( nPictureID );
-	if( pPicture )
-		SetIcon( pPicture->CloneIcon(), FALSE );
-	else
-		SetIcon( CopyIcon( AfxGetApp()->GetMainWnd()->GetIcon( FALSE ) ), FALSE );
+	mbResizable = pProp->GetBooleanValue();
+	return __super::OnApplyResizable( pProp );
 }
 
 BEGIN_MESSAGE_MAP(CBaseDlg, CDialog)
@@ -131,41 +96,32 @@ BOOL CBaseDlg::OnInitDialog()
 {
 	CRect rectSaved = ReadPosition(); //get the saved position before it gets overwritten during SetWindowPos()
 	if( mbHasTitleBar )
-		ModifyStyle( 0, WS_CAPTION, 0 );
+		ModifyStyle( 0, WS_CAPTION, SWP_FRAMECHANGED );
 	else
-		ModifyStyle( WS_CAPTION, 0, 0 );
-	SetWindowPos( NULL, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING );
+		ModifyStyle( WS_CAPTION, 0, SWP_FRAMECHANGED );
 
-	TDclControlPtr pFormProps = mpSourceForm->GetControlProperties();
 	CRect rectWindow;
 	GetWindowRect( &rectWindow );
 	CRect rectClient;
 	GetClientRect( &rectClient );
-	mnNCWidth = rectWindow.Width() - rectClient.Width();
-	mnNCHeight = rectWindow.Height() - rectClient.Height();
-	rectWindow.right = rectWindow.left + pFormProps->GetLongProperty( Prop::Width );
-	rectWindow.bottom = rectWindow.top + pFormProps->GetLongProperty( Prop::Height );
+	SetNCWidth( rectWindow.Width() - rectClient.Width() );
+	SetNCHeight( rectWindow.Height() - rectClient.Height() );
+	rectWindow.right = rectWindow.left + mpTemplate->GetLongProperty( Prop::Width );
+	rectWindow.bottom = rectWindow.top + mpTemplate->GetLongProperty( Prop::Height );
 	bool bUsesClientRect = mpSourceForm->UsesClientRect();
+	assert( bUsesClientRect ); //should already be converted!
 	if( bUsesClientRect )
 	{
-		rectWindow.right += mnNCWidth;
-		rectWindow.bottom += mnNCHeight;
+		rectWindow.right += GetNCWidth();
+		rectWindow.bottom += GetNCHeight();
 	}
+	MoveWindow( &rectWindow, FALSE );
+	ApplyPropertiesEnum();
 
-	CDialog::OnInitDialog();
+	__super::OnInitDialog();
 
-	SetWindowText( pFormProps->GetStringProperty( Prop::TitleBarText ) );
-	SetTitleBarIcon( pFormProps->GetLongProperty( Prop::Icon ) );
-	CSize szMin( pFormProps->GetLongProperty( Prop::MinDialogWidth ), pFormProps->GetLongProperty( Prop::MinDialogHeight ) );
-	CSize szMax( pFormProps->GetLongProperty( Prop::MaxDialogWidth ), pFormProps->GetLongProperty( Prop::MaxDialogHeight ) );
-	SetMinMaxSize( szMin, szMax );
-
-	//create the control pane and the design time controls
-	GetClientRect( &rectClient );
-	GetControlPane().SetPanePos( rectClient, false );
-	UINT nID = 1000;
-	GetControlPane().CreateControls( nID );
-	GetControlPane().RecalcLayout();
+	//SetWindowText( pFormProps->GetStringProperty( Prop::TitleBarText ) );
+	//SetTitleBarIcon( pFormProps->GetLongProperty( Prop::Icon ) );
 
 	CRect rectParent;
 	::GetWindowRect( ::GetParent(m_hWnd), &rectParent );
@@ -181,44 +137,48 @@ BOOL CBaseDlg::OnInitDialog()
 		rectWindow.MoveToY( rectSaved.top );
 	else
 		rectWindow.MoveToY( rectParent.top + (rectParent.Height() - rectWindow.Height()) / 2 );
-	if( GetDialogObject().IsResizable() && rectSaved.right > rectSaved.left && rectSaved.bottom > rectSaved.top )
+	if( IsResizable() && rectSaved.right > rectSaved.left && rectSaved.bottom > rectSaved.top )
 	{
 		rectWindow.right = rectWindow.left + rectSaved.Width();
 		rectWindow.bottom = rectWindow.top + rectSaved.Height();
 	}
 	if( GetStyle() & WS_CHILD )
 		GetParent()->ScreenToClient( &rectWindow );
+	mbIgnoreSizing = false;
 	MoveWindow( &rectWindow, FALSE );
-	SavePosition();
-	UpdateGripPos();
-	
-	InvokeMethod( pFormProps->GetStringProperty( Prop::FormEventInitialize ), false );
-	if( bUsesClientRect )
-		GetClientRect( &rectWindow );
-	InvokeMethodIntInt( pFormProps->GetStringProperty( Prop::FormEventSize ), rectWindow.Width(), rectWindow.Height(), false );	
+
+	UINT nID = 1000;
+	GetControlPane()->CreateControls( nID );
+	GetControlPane()->RecalcLayout();
+
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::FormEventInitialize ), false );
+	InvokeMethodIntInt( mpTemplate->GetStringProperty( Prop::FormEventSize ),
+											mpTemplate->GetLongProperty( Prop::Width ),
+											mpTemplate->GetLongProperty( Prop::Height ),
+											false );	
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 BOOL CBaseDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpSourceForm->GetControlProperties()->GetStringProperty(Prop::EventOnHelp), false);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventOnHelp), false);
 	return TRUE;
 }
 
 void CBaseDlg::OnClose() 
 {
 	bool bCancelling = (this->m_nModalResult == IDCANCEL || this->m_nModalResult == -1);
-	if (GetDialogObject().IsClosing() ||
-			!InvokeCancelMethod(mpSourceForm->GetControlProperties()->GetStringProperty(Prop::FormEventCancelClose), bCancelling))
+	if (IsClosing() ||
+			!InvokeCancelMethod(mpTemplate->GetStringProperty(Prop::FormEventCancelClose), bCancelling))
 	{
-		GetDialogObject().SetClosing();
+		SetClosing();
 		__super::OnClose();
-		if( GetDialogObject().IsModeless() && ::IsWindow( m_hWnd ) )
+		if( IsModeless() && ::IsWindow( m_hWnd ) )
 			DestroyWindow(); //if it's a modeless dialog, we have to destroy it yet
 	}
 	else
-		GetDialogObject().SetClosing( false );
+		SetClosing( false );
 }
 
 void CBaseDlg::OnDestroy() 
@@ -226,9 +186,9 @@ void CBaseDlg::OnDestroy()
 	SavePosition();
 	CRect rcThis;
 	GetWindowRect( &rcThis );
-	InvokeMethodIntInt(mpSourceForm->GetControlProperties()->GetStringProperty(Prop::FormEventClose), rcThis.left, rcThis.top, false);	
+	InvokeMethodIntInt(mpTemplate->GetStringProperty(Prop::FormEventClose), rcThis.left, rcThis.top, false);	
 	DestroyIcon( SetIcon(NULL, FALSE) );
-	GetControlPane().CleanUpControls();	
+	GetControlPane()->CleanUpControls();	
 	__super::OnDestroy();
 }
 
@@ -236,68 +196,69 @@ void CBaseDlg::OnSizing(UINT fwSide, LPRECT pRect)
 {
 	int nNewWidth = pRect->right - pRect->left;
 	int nNewHeight = pRect->bottom - pRect->top;
+	CSize szMin( 0, 0 );
+	CSize szMax( 0, 0 );
+	GetMinMaxSize( szMin, szMax );
 
 	if( fwSide == WMSZ_BOTTOMLEFT || fwSide == WMSZ_LEFT || fwSide == WMSZ_TOPLEFT )
 	{
-		if (mnMinWidth > 0 && nNewWidth < mnMinWidth)
-			pRect->left = pRect->right - mnMinWidth;
-		if (mnMaxWidth > 0 && nNewWidth > mnMaxWidth)
-			pRect->left = pRect->right - mnMaxWidth;
+		if (szMin.cx > 0 && nNewWidth < szMin.cx)
+			pRect->left = pRect->right - szMin.cx;
+		if (szMax.cx > 0 && nNewWidth > szMax.cx)
+			pRect->left = pRect->right - szMax.cx;
 	}
 
 	if( fwSide == WMSZ_BOTTOMRIGHT || fwSide == WMSZ_RIGHT || fwSide == WMSZ_TOPRIGHT )
 	{
-		if (mnMinWidth > 0 && nNewWidth < mnMinWidth)
-			pRect->right = pRect->left + mnMinWidth;
-		if (mnMaxWidth > 0 && nNewWidth > mnMaxWidth)
-			pRect->right = pRect->left + mnMaxWidth;
+		if (szMin.cx > 0 && nNewWidth < szMin.cx)
+			pRect->right = pRect->left + szMin.cx;
+		if (szMax.cx > 0 && nNewWidth > szMax.cx)
+			pRect->right = pRect->left + szMax.cx;
 	}
 
 	if( fwSide == WMSZ_BOTTOMLEFT || fwSide == WMSZ_BOTTOM || fwSide == WMSZ_BOTTOMRIGHT )
 	{
-		if (mnMinHeight > 0 && nNewHeight < mnMinHeight)
-			pRect->bottom = pRect->top + mnMinHeight;
-		if (mnMaxHeight > 0 && nNewHeight > mnMaxHeight)
-			pRect->bottom = pRect->top + mnMaxHeight;
+		if (szMin.cy > 0 && nNewHeight < szMin.cy)
+			pRect->bottom = pRect->top + szMin.cy;
+		if (szMax.cy > 0 && nNewHeight > szMax.cy)
+			pRect->bottom = pRect->top + szMax.cy;
 	}
 
 	if( fwSide == WMSZ_TOPLEFT || fwSide == WMSZ_TOP || fwSide == WMSZ_TOPRIGHT )
 	{
-		if (mnMinHeight > 0 && nNewHeight < mnMinHeight)
-			pRect->top = pRect->bottom - mnMinHeight;
-		if (mnMaxHeight > 0 && nNewHeight > mnMaxHeight)
-			pRect->top = pRect->bottom - mnMaxHeight;
+		if (szMin.cy > 0 && nNewHeight < szMin.cy)
+			pRect->top = pRect->bottom - szMin.cy;
+		if (szMax.cy > 0 && nNewHeight > szMax.cy)
+			pRect->top = pRect->bottom - szMax.cy;
 	}
 
 	__super::OnSizing(fwSide, pRect);
-	
-	m_sizing = TRUE;
-}
-
-void CBaseDlg::OnCaptureChanged(CWnd *pWnd) 
-{
-	m_sizing = FALSE;
-	__super::OnCaptureChanged(pWnd);
 }
 
 void CBaseDlg::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize(nType, cx, cy);
 	UpdateGripPos();
+	if( mbIgnoreSizing )
+		return;
+	mpTemplate->SetLongProperty( Prop::Width, cx );
+	mpTemplate->SetLongProperty( Prop::Height, cy );
+	mpControlPane->RecalcLayout();
+	//RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 }
 
 void CBaseDlg::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
-	if (mbShowGrip)
+	if (mbResizable)
 		dc.DrawFrameControl(&m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
 }
 
-__LRESULT CBaseDlg::OnNcHitTest(CPoint point) 
+__UINT_LRESULT CBaseDlg::OnNcHitTest(CPoint point) 
 {
 	CPoint pt = point;
 	ScreenToClient(&pt);
-	if (mbShowGrip && m_rcGripRect.PtInRect(pt) && pt.x >= 0 && pt.y >= 0) // if in size grip and in client area
+	if (mbResizable && m_rcGripRect.PtInRect(pt) && pt.x >= 0 && pt.y >= 0) // if in size grip and in client area
 		return HTBOTTOMRIGHT;
 
 	if( !mbHasTitleBar ) //if no title bar, return HTCAPTION for any uninhabited area of the dialog
@@ -312,12 +273,15 @@ __LRESULT CBaseDlg::OnNcHitTest(CPoint point)
 void CBaseDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 {
 	__super::OnWindowPosChanged(lpwndpos);
-	SavePosition();
+	if( mbIgnoreSizing )
+		return;
+	if( (lpwndpos->flags & (SWP_NOSIZE | SWP_NOMOVE) != (SWP_NOSIZE | SWP_NOMOVE)) )
+		SavePosition();
 }
 
 void CBaseDlg::PostNcDestroy() 
 {
 	__super::PostNcDestroy();
-	if( GetDialogObject().IsModeless() )
+	if( IsModeless() )
 		delete this;
 }

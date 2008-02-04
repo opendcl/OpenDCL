@@ -22,7 +22,7 @@ void CImageListContents::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CImageListContents)
-	DDX_Control(pDX, IDC_COMBOBOXEX2, m_Image);
+	DDX_Control(pDX, IDC_COMBOBOXEX, m_Image);
 	DDX_Control(pDX, IDC_EDIT1, m_Edit);
 	DDX_Control(pDX, IDC_THELIST, m_TheList);
 	//}}AFX_DATA_MAP
@@ -41,7 +41,7 @@ BEGIN_MESSAGE_MAP(CImageListContents, CDialog)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_THELIST, OnItemchangedThelist)
 	ON_NOTIFY(LVN_KEYDOWN, IDC_THELIST, OnKeydownThelist)
 	ON_EN_CHANGE(IDC_EDIT1, OnChangeEdit1)
-	ON_CBN_SELCHANGE(IDC_COMBOBOXEX2, OnSelchangeComboboxex2)
+	ON_CBN_SELCHANGE(IDC_COMBOBOXEX, OnSelchangeComboboxex)
 	ON_BN_CLICKED(IDUPDATE, OnUpdate)
 	ON_NOTIFY(LVN_ODSTATECHANGED, IDC_THELIST, OnOdstatechangedThelist)
 	//}}AFX_MSG_MAP
@@ -54,14 +54,14 @@ BOOL CImageListContents::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	m_Image.SetImageList(&m_pImageListPage->GetImageList());
-	m_TheList.SetImageList(&m_pImageListPage->GetImageList(), LVSIL_SMALL);
-	m_TheList.SetImageList(&m_pImageListPage->GetImageList(), TVSIL_NORMAL);
+	m_Image.SetImageList(m_pImageListPage->GetImageList());
+	m_TheList.SetImageList(m_pImageListPage->GetImageList(), LVSIL_SMALL);
+	m_TheList.SetImageList(m_pImageListPage->GetImageList(), TVSIL_NORMAL);
 
-	m_pImageListPage->GetImageList().SetBkColor(RGB(255,255,255));
+	m_pImageListPage->GetImageList()->SetBkColor(RGB(255,255,255));
 
 	int i;
-  for (i=0; i<m_pImageListPage->GetImageList().GetImageCount(); i++)
+  for (i=0; i<m_pImageListPage->GetImageList()->GetImageCount(); i++)
 	{
 		COMBOBOXEXITEM cbi;
 
@@ -186,7 +186,7 @@ void CImageListContents::OnChangeEdit1()
 	OnUpdate();	
 }
 
-void CImageListContents::OnSelchangeComboboxex2() 
+void CImageListContents::OnSelchangeComboboxex() 
 {
 	OnUpdate();
 }

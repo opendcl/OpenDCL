@@ -171,10 +171,7 @@ HBRUSH CComboCtrl::CtlColor( CDC* pDC, UINT nCtlColor )
 	CAcadColorService* pColorService = GetColorService();
 	if( !pColorService )
 		return NULL;
-
-	pDC->SetBkColor( pColorService->GetBackgroundColor() );
-	pDC->SetTextColor( pColorService->GetForegroundColor() );
-	return pColorService->GetBackgroundBrush();
+	return pColorService->CtlColor( pDC, nCtlColor );	
 }
 
 void CComboCtrl::OnEditchange()

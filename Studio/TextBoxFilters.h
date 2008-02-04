@@ -14,37 +14,25 @@ class CPropertyObject;
 
 class CTextBoxFilters : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CTextBoxFilters)
-
-// Construction
-public:
-	CTextBoxFilters();
-	~CTextBoxFilters();
-
-// Dialog Data
-	//{{AFX_DATA(CTextBoxFilters)
-	enum { IDD = IDD_EDITFILTERS };
+	TDclControlPtr mpDclControl;
 	CStatic	m_Desc;
-	//}}AFX_DATA
-
 	int m_SelectedStyle;
 	TPropertyPtr m_pStyle;
+
+	enum { IDD = IDD_EDITFILTERS };
+
+public:
+	CTextBoxFilters( TDclControlPtr pDclControl );
+	~CTextBoxFilters();
+
 	void DisplayDesc(int nSetting);
 
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CTextBoxFilters)
-	public:
-	virtual BOOL OnApply();
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CTextBoxFilters)
+	DECLARE_MESSAGE_MAP()
+
 	virtual BOOL OnInitDialog();
+	virtual BOOL OnApply();
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	afx_msg void OnFilter0();
 	afx_msg void OnFilter1();
 	afx_msg void OnFilter2();
@@ -54,7 +42,4 @@ protected:
 	afx_msg void OnFilter6();
 	afx_msg void OnFilter7();
 	afx_msg void OnFilter8();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-
 };

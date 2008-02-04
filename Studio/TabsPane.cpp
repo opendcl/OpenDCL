@@ -4,25 +4,25 @@
 #include "stdafx.h"
 #include "TabsPane.h"
 #include "DclControlObject.h"
-#include "OpenDCLView.h"
+#include "DclFormView.h"
+#include "StudioDialogControl.h"
 #include "PropertyIds.h"
 #include "DclFormObject.h"
 #include "PropertyObject.h"
-#include "SharedRes.h"
+#include "Resource.h"
 #include "Project.h"
-#include "ProjectTreeCtrl.h"
-#include "EditorWorkspace.h"
+#include "ProjectPane.h"
+#include "StudioWorkspace.h"
 #include "TabStripCtrl.h"
+#include "StudioDialogObject.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CTabsPane dialog
 
-CTabsPane::CTabsPane( COpenDCLView* pView,
-											TDclControlPtr pControl,
+CTabsPane::CTabsPane( TDclControlPtr pControl,
 											RefCountedPtr< CImageList >& pImageList )
 : CPropertyPage(CTabsPane::IDD)
-, mpView( pView )
 , mpDclControl( pControl )
 , mpImageList( pImageList )
 , mnTabIndex( -1 )
@@ -118,19 +118,19 @@ void CTabsPane::Setup()
 	m_pTabImages = mpDclControl->GetPropertyObject(Prop::TabsImageList);	
 
 	// create a pointer to pass to the list to insert
-	TEditorProjectPtr pProject = activeProject;
+	TStudioProjectPtr pProject = activeProject;
 	
-	for (size_t i = 0; i < m_pTabCaptions->GetStringArrayPtr()->size(); i++ )
+	for (size_t i = 0; i < m_pTabCaptions->size(); i++ )
 	{
 		CTabInfo *pTab = new CTabInfo(i);
-		pTab->mpChildForm = pProject->FindDclTabChildForm(mpView->m_pThisDclForm->GetUniqueName(), i);
-		pTab->msCaption = m_pTabCaptions->GetStringArrayPtr()->at(i);
-		if (i < m_pTabImages->GetIntArrayPtr()->size())
-			pTab->mnImageIndex = m_pTabImages->GetIntArrayPtr()->at(i);
+		pTab->mpChildForm = pProject->FindDclTabChildForm(mpDclControl->GetOwnerForm()->GetUniqueName(), i);
+		pTab->msCaption = m_pTabCaptions->GetConstStringArrayPtr()->at(i);
+		if (i < m_pTabImages->size())
+			pTab->mnImageIndex = m_pTabImages->GetConstIntArrayPtr()->at(i);
 		else
 			pTab->mnImageIndex = -1;
-		if (i < m_pTabTTT->GetStringArrayPtr()->size())
-			pTab->msToolTipTitle = m_pTabTTT->GetStringArrayPtr()->at(i);
+		if (i < m_pTabTTT->size())
+			pTab->msToolTipTitle = m_pTabTTT->GetConstStringArrayPtr()->at(i);
 		m_TabList.AddTail(pTab);
 	}
 
@@ -229,7 +229,7 @@ void CTabsPane::OnAdd()
 		m_TabList.AddTail(pTab);
 
 	CString sCaption;
-	sCaption.Format( _T("%s%d"), theWorkspace.LoadResourceString(IDS_TAB), mnTabIndex + 1 );
+	sCaption.Format( theWorkspace.LoadResourceString(IDS_TAB), mnTabIndex + 1 );
 	m_Caption.SetWindowText( sCaption );
 	m_ToolTipTitle.SetWindowText( _T("") );
 
@@ -251,19 +251,15 @@ void CTabsPane::OnDelete()
 	if (pos != NULL)
 	{
 		CTabInfo *pTab = m_TabList.GetAt(pos);
-		
+		CStudioDialogObject* pDlgObject = (CStudioDialogObject*)mpDclControl->GetOwnerForm()->GetFormInstance();
 		// check to see if the user wishes to delete this tab if it has controls on it.
-		if (!mpView->CanRemoveChildTabPane(pTab->mnOriginalIndex))
+		if( pDlgObject && !pDlgObject->PromptRemoveChildTabPane(pTab->mnOriginalIndex) )
 			return;
 
 		m_TabList.RemoveAt(pos);
 		// move the deleted tab item over to the deleted tab list for later cleanup
 		if (pTab != NULL)
-		{
 			m_DeletedTabList.AddTail(pTab);
-			if( pTab->mpChildForm )
-				pTab->mpChildForm->SetDeleted();
-		}
 	}
 
 	// increment the index to the new tab
@@ -328,7 +324,7 @@ BOOL CTabsPane::OnApply()
 			if (pTabInfo->mpChildForm)
 			{
 				if (pTabInfo->mpChildForm->m_htiTreeItem != NULL)
-					theEditorWorkspace.GetProjectTreeCtrl()->DeleteItem(pTabInfo->mpChildForm->m_htiTreeItem);
+					theStudioWorkspace.GetProjectPane()->GetTreeCtrl().DeleteItem(pTabInfo->mpChildForm->m_htiTreeItem);
 				pTabInfo->mpChildForm->GetProject()->DeleteForm( pTabInfo->mpChildForm );
 			}
 			m_DeletedTabList.RemoveAt(pos);
@@ -340,7 +336,7 @@ BOOL CTabsPane::OnApply()
 		m_pTabCaptions->clear();
 		m_pTabTTT->clear();
 		m_pTabImages->clear();
-		theEditorWorkspace.GetProjectTreeCtrl()->RemoveChildren( mpDclControl->GetOwnerForm()->m_htiTreeItem );
+		theStudioWorkspace.GetProjectPane()->RemoveChildren( mpDclControl->GetOwnerForm()->m_htiTreeItem );
 
 		// repopulate the tab info lists
 		int idxPane = -1;
@@ -349,9 +345,9 @@ BOOL CTabsPane::OnApply()
 		{
 			++idxPane;
 			CTabInfo* pTab = m_TabList.GetNext( posTab );
-			m_pTabCaptions->GetStringArrayPtr()->push_back( pTab->msCaption );
-			m_pTabTTT->GetStringArrayPtr()->push_back( pTab->msToolTipTitle );
 			m_pTabImages->GetIntArrayPtr()->push_back( pTab->mnImageIndex );
+			m_pTabTTT->GetStringArrayPtr()->push_back( pTab->msToolTipTitle );
+			m_pTabCaptions->GetStringArrayPtr()->push_back( pTab->msCaption );
 
 			pTab->mnOriginalIndex = idxPane;
 			if( !pTab->mpChildForm )
@@ -370,18 +366,17 @@ BOOL CTabsPane::OnApply()
 				}
 			}
 			pTab->mpChildForm->SetTabIndex( idxPane );
-			theEditorWorkspace.GetProjectTreeCtrl()->AddFormToTree( pTab->mpChildForm, true );
+			theStudioWorkspace.GetProjectPane()->AddFormToTree( pTab->mpChildForm, true );
 		}	
 		
 		// call the method to update the control itself
-		mpView->RefreshChildControl(mpDclControl, Prop::_All);
-		mpView->ResizeChildTabPanes();
-		theEditorWorkspace.GetProjectTreeCtrl()->CleanupParents();
+		CStudioDialogControl::UpdateAllProperties( mpDclControl );
+		CStudioDialogObject* pDlgObject = (CStudioDialogObject*)mpDclControl->GetOwnerForm()->GetFormInstance();
+		theStudioWorkspace.GetProjectPane()->CleanupParents();
 	}
 	catch(...)
 	{
 	}
-	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();
 }
 

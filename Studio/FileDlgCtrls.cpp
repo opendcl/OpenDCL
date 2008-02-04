@@ -22,7 +22,7 @@ CFileDlgCtrls::~CFileDlgCtrls()
 
 bool CFileDlgCtrls::Initialize()
 {
-	HBITMAP hbmpFileDlgCtrl = ::LoadBitmap( theWorkspace.GetResourceModule(), MAKEINTRESOURCE(IDB_FILEDLGCTRL) );
+	HBITMAP hbmpFileDlgCtrl = ::LoadBitmap( theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(IDB_FILEDLGCTRL) );
 	if( !hbmpFileDlgCtrl )
 		return false;
 	CBitmap bmpScreen;
@@ -37,6 +37,7 @@ bool CFileDlgCtrls::Initialize()
 
 BEGIN_MESSAGE_MAP(CFileDlgCtrls, CStatic)
 	ON_WM_SIZE()
+	ON_WM_NCHITTEST()
 END_MESSAGE_MAP()
 
 
@@ -70,4 +71,9 @@ BOOL CFileDlgCtrls::Create(LPCTSTR lpszText, DWORD dwStyle, const RECT& rect, CW
 	if( !bResult )
 		return FALSE;
 	return Initialize()? TRUE : FALSE;
+}
+
+LRESULT CFileDlgCtrls::OnNcHitTest(CPoint point)
+{
+	return HTOBJECT;
 }

@@ -29,7 +29,7 @@
 #include "ComboFilter.h"
 #include "Workspace.h"
 #include "AcadColorTable.h"
-#include "SharedRes.h"
+#include "Resource.h"
 #include <algorithm>
 
 #define BP_PUSHBUTTON			0x00000001
@@ -169,7 +169,7 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 DWORD CGridCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
-	dwStyle |= LVS_REPORT | LVS_OWNERDRAWFIXED | LVS_SINGLESEL | LVS_SHAREIMAGELISTS;
+	dwStyle |= LVS_REPORT | LVS_OWNERDRAWFIXED | LVS_SHAREIMAGELISTS;
 	if( !mpTemplate->GetBooleanProperty( Prop::ColHeader ) )
 		dwStyle |= LVS_NOCOLUMNHEADER;
 	switch( mpTemplate->GetLongProperty( Prop::ListViewSort ) )
@@ -200,7 +200,7 @@ bool CGridCtrl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::ImageList:
 		{
 			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
-			if (pImageList)
+			if (pImageList && pImageList->GetImageList().GetSafeHandle())
 			{
 				pImageList->GetImageList().SetBkColor( CLR_NONE );
 				SetImageList( &pImageList->GetImageList(), TVSIL_NORMAL );
@@ -368,9 +368,12 @@ enum CellStyle CGridCtrl::GetCellStyle( int nRow, int nCol )
 		return pCellData->mType;
 
 	// otherwise return the default style for the column
-	const PropVal::TIntArray* pColStyles = mpTemplate->GetPropertyObject( Prop::ColumnStyles )->GetIntArrayPtr();
-	if( nCol >= 0 && (size_t)nCol < pColStyles->size() )
-		return (CellStyle)pColStyles->at( nCol );
+	const PropVal::TIntArray* pColStyles = mpTemplate->GetPropertyObject( Prop::ColumnStyles )->GetConstIntArrayPtr();
+	if( pColStyles )
+	{
+		if( nCol >= 0 && (size_t)nCol < pColStyles->size() )
+			return (CellStyle)pColStyles->at( nCol );
+	}
 
 	return Grid_Undefined;
 }
@@ -525,9 +528,12 @@ int CGridCtrl::GetCellUncheckedImage( int nRow, int nCol )
 	const _CellData* pCellData = GetCellData( nRow, nCol );
 	if( pCellData )
 		return pCellData->midxImage;
-	PropVal::TIntArray& rnDefImage = *mpTemplate->GetPropertyObject( Prop::ColumnDefaultImages )->GetIntArrayPtr();
-	if( (size_t)nCol < rnDefImage.size() )
-		return rnDefImage.at( nCol );
+	const PropVal::TIntArray* prnDefImage = mpTemplate->GetPropertyObject( Prop::ColumnDefaultImages )->GetConstIntArrayPtr();
+	if( prnDefImage )
+	{
+		if( (size_t)nCol < prnDefImage->size() )
+			return prnDefImage->at( nCol );
+	}
 	return -1;
 }
 
@@ -536,9 +542,12 @@ int CGridCtrl::GetCellCheckedImage( int nRow, int nCol )
 	const _CellData* pCellData = GetCellData( nRow, nCol );
 	if( pCellData )
 		return pCellData->midxAltImage;
-	PropVal::TIntArray& rnAltImage = *mpTemplate->GetPropertyObject( Prop::ColumnAlternateImages )->GetIntArrayPtr();
-	if( (size_t)nCol < rnAltImage.size() )
-		return rnAltImage.at( nCol );
+	const PropVal::TIntArray* prnAltImage = mpTemplate->GetPropertyObject( Prop::ColumnAlternateImages )->GetConstIntArrayPtr();
+	if( prnAltImage )
+	{
+		if( (size_t)nCol < prnAltImage->size() )
+			return prnAltImage->at( nCol );
+	}
 	return -1;
 }
 
@@ -591,17 +600,17 @@ bool CGridCtrl::GetCellComboListItems( int nRow, int nCol,
 		rsList = pCellData->mrsComboList;
 		return true;
 	}
-	PropVal::TCStringArrayList* pItemList =
-		mpTemplate->GetPropertyObject( Prop::ColumnListItems )->GetStringArrayListPtr();	
+	const PropVal::TCStringArrayList* pItemList =
+		mpTemplate->GetPropertyObject( Prop::ColumnListItems )->GetConstStringArrayListPtr();	
 	if( pItemList && nCol < (int)pItemList->size() )
 	{
 		rsList.clear();
-		PropVal::TCStringArray& rStrings = pItemList->at( nCol );
+		const PropVal::TCStringArray& rStrings = pItemList->at( nCol );
 		for( PropVal::TCStringArray::const_iterator iter = rStrings.begin(); iter != rStrings.end(); ++iter )
 			rsList.push_back( (LPCTSTR)*iter );
 	}
-	PropVal::TIntArrayList* pImageList =
-		mpTemplate->GetPropertyObject( Prop::ColumnListImages )->GetIntArrayListPtr();
+	const PropVal::TIntArrayList* pImageList =
+		mpTemplate->GetPropertyObject( Prop::ColumnListImages )->GetConstIntArrayListPtr();
 	if( pImageList && nCol < (int)pImageList->size() )
 		ridxImage = pImageList->at( nCol );
 	return true;
@@ -760,23 +769,23 @@ void CGridCtrl::SetupColumns()
 	for( int idxColumn = mcColumns; idxColumn >= 0; --idxColumn )
 		DeleteColumn( idxColumn );
 	mcColumns = 0;
-	PropVal::TIntArray& rnWidths = *mpTemplate->GetPropertyObject( Prop::ColumnWidths )->GetIntArrayPtr();	
-	PropVal::TCStringArray& rsCaptions = *mpTemplate->GetPropertyObject( Prop::ColumnCaptions )->GetStringArrayPtr();	
-	PropVal::TIntArray& rnImages = *mpTemplate->GetPropertyObject( Prop::ColumnImages )->GetIntArrayPtr();	
-	PropVal::TIntArray& rnAlignment = *mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetIntArrayPtr();	
-	size_t idxMax = rsCaptions.size();
-	if( rnWidths.size() > idxMax )
-		idxMax = rnWidths.size();
-	if( rnImages.size() > idxMax )
-		idxMax = rnImages.size();
-	if( rnAlignment.size() > idxMax )
-		idxMax = rnAlignment.size();
+	const PropVal::TIntArray* prnWidths = mpTemplate->GetPropertyObject( Prop::ColumnWidths )->GetConstIntArrayPtr();	
+	const PropVal::TCStringArray* prsCaptions = mpTemplate->GetPropertyObject( Prop::ColumnCaptions )->GetConstStringArrayPtr();	
+	const PropVal::TIntArray* prnImages = mpTemplate->GetPropertyObject( Prop::ColumnImages )->GetConstIntArrayPtr();	
+	const PropVal::TIntArray* prnAlignment = mpTemplate->GetPropertyObject( Prop::ColumnAlignments )->GetConstIntArrayPtr();	
+	size_t idxMax = prsCaptions? prsCaptions->size() : 0;
+	if( prnWidths && prnWidths->size() > idxMax )
+		idxMax = prnWidths->size();
+	if( prnImages && prnImages->size() > idxMax )
+		idxMax = prnImages->size();
+	if( prnAlignment && prnAlignment->size() > idxMax )
+		idxMax = prnAlignment->size();
 	for( size_t idxColumn = 0; idxColumn < idxMax; ++idxColumn )
 	{
 		int nAlignment = HDF_LEFT;
-		if( idxColumn < rnAlignment.size() )
+		if( prnAlignment && idxColumn < prnAlignment->size() )
 		{
-			switch( rnAlignment.at( idxColumn ) )
+			switch( prnAlignment->at( idxColumn ) )
 			{					
 			case 1:
 				nAlignment = HDF_CENTER;
@@ -790,11 +799,11 @@ void CGridCtrl::SetupColumns()
 			}
 		}
 		CString sCaption;
-		if( idxColumn < rsCaptions.size() )
-			sCaption = rsCaptions.at( idxColumn );
+		if( prsCaptions && idxColumn < prsCaptions->size() )
+			sCaption = prsCaptions->at( idxColumn );
 		InsertColumn( idxColumn, sCaption, nAlignment,
-									(idxColumn < rnWidths.size()? rnWidths.at( idxColumn ) : 50),
-									(idxColumn < rnImages.size()? rnImages.at( idxColumn ) : -1) );
+									((prnWidths && idxColumn < prnWidths->size())? prnWidths->at( idxColumn ) : 50),
+									((prnImages && idxColumn < prnImages->size())? prnImages->at( idxColumn ) : -1) );
 	}
 }
 
@@ -838,7 +847,7 @@ CGridCellEditCtrl* CGridCtrl::CreateEditControl( int nRow, int nCol )
 		case Grid_OptionButtons: return new CRadioEditCtrl( this, nRow, nCol );
 		case Grid_SwitchableIcons: return new CToggleEditCtrl( this, nRow, nCol );
 		case Grid_EllipsesButtons: return new CButtonEditCtrl( this, nRow, nCol, _T("..."), ID_CELLBUTTON );
-		case Grid_PickButtons: return new CButtonEditCtrl( this, nRow, nCol, IDI_PICSM, ID_CELLBUTTON );
+		case Grid_PickButtons: return new CButtonEditCtrl( this, nRow, nCol, IDI_PICKSMALL, ID_CELLBUTTON );
 		case Grid_Strings: return new CTextBoxEditCtrl( this, nRow, nCol );
 		case Grid_AngleUnits: return new CTextBoxEditCtrl( this, nRow, nCol, new CAngleFilter );
 		case Grid_Integers: return new CTextBoxEditCtrl( this, nRow, nCol, new CIntegerFilter );
@@ -1284,19 +1293,19 @@ void CGridCtrl::DrawOptionButton( CDC& cdc, const CRect& rcIcon, bool bPressed, 
 		{
 			mOptionButtonImageList.Create( 13, 13, ILC_COLOR8 | ILC_MASK, 0, 1 );
 			CBitmap bmpNon;
-			bmpNon.LoadBitmap(IDB_OPBTNNON);
+			bmpNon.LoadBitmap(IDB_OPTBTN);
 			mOptionButtonImageList.Add( &bmpNon, RGB(255,0,255) );
 
 			CBitmap bmpSel;
-			bmpSel.LoadBitmap(IDB_OPBTNSEL);
+			bmpSel.LoadBitmap(IDB_OPTBTNSEL);
 			mOptionButtonImageList.Add( &bmpSel, RGB(255,0,255) );
 
 			//CBitmap bmpNonH;
-			//bmpNonH.LoadBitmap(IDB_OPBTNNONH);
+			//bmpNonH.LoadBitmap(IDB_OPTBTNH);
 			//mOptionButtonImageList.Add( &bmpNonH, RGB(255,0,255) );
 
 			//CBitmap bmpSelH;
-			//bmpSelH.LoadBitmap(IDB_OPBTNSELH);
+			//bmpSelH.LoadBitmap(IDB_OPTBTNSELH);
 			//mOptionButtonImageList.Add( &bmpSelH, RGB(255,0,255) );
 		}
 		mOptionButtonImageList.Draw( &cdc, (bPressed? 1 : 0), rc.TopLeft(), ILD_TRANSPARENT );
@@ -1380,7 +1389,7 @@ void CGridCtrl::DrawArrow( CDC& cdc, const CRect& rcIcon, int nArrow, const CStr
 	if( !mArrowImageList.m_hImageList )
 	{
 		HINSTANCE hOldRes = AfxGetResourceHandle();
-		AfxSetResourceHandle( theWorkspace.GetResourceModule() );
+		AfxSetResourceHandle( theWorkspace.GetLocalResourceModule() );
 		mArrowImageList.Create( IDB_ARROWHEADS, 11, 1, CLR_NONE );
 		AfxSetResourceHandle( hOldRes );
 	}
@@ -1393,10 +1402,10 @@ void CGridCtrl::DrawFontIcons( CDC& cdc, const CRect& rcIcon, int nImage, const 
 		return;
 	if( !mFontImageList.m_hImageList )
 	{
-		HMODULE hmodRes = theWorkspace.GetResourceModule();
+		HMODULE hmodRes = theWorkspace.GetLocalResourceModule();
 		mFontImageList.Create( 15, 13, ILC_COLOR4 | ILC_MASK, 3, 1 );
-		mFontImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE(IDI_TRUEFONT) ) );
-		mFontImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE(IDI_ACADFONT) ) );
+		mFontImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE(IDI_TTFONT) ) );
+		mFontImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE(IDI_SHXFONT) ) );
 	}
 	mFontImageList.Draw( &cdc, nImage, rcIcon.TopLeft(), ILD_TRANSPARENT );
 }
@@ -1482,244 +1491,178 @@ void CGridCtrl::DrawLineWeight( CDC& cdc, const CRect& rcIcon, int LW, const CSt
 	cdc.FillRect( &rc, &brFill );
 }
 
-// SortTextItems - Sort the list based on column text
-// Returns		 - Returns true for success
-// nCol			 - column that contains the text to be sorted
-// bAscending	 - indicate sort order
-// low			 - row to start scanning from - default row is 0
-// high			 - row to end scan. -1 indicates last row
-BOOL CGridCtrl::SortTextItems( int nCol, BOOL bAscending, int low, int high)
+bool CGridCtrl::SortTextItems( int nCol, bool bAscending )
 {
-	if (GetDlgItem(0) != NULL)
+	if( nCol < 0 || (size_t)nCol >= mcColumns )
+		return false;
+	size_t ctRows = mRowData.size();
+	if( ctRows <= 1 )
+		return true;
+	std::vector< size_t > rnSortXForm;
+	rnSortXForm.resize( ctRows );
+	size_t idx = ctRows;
+	while( idx-- > 0 )
+		rnSortXForm[idx] = idx;
+	bool bAlreadySorted = true;
+	bool bDoneSorting = false;
+	while( !bDoneSorting )
 	{
- 		if( nCol >= ((CHeaderCtrl*)GetDlgItem(0))->GetItemCount() )
-			return FALSE;
-	}
-	if( high == -1 ) high = GetItemCount() - 1;
-
-	int lo = low;
-	int hi = high;
-	CString midItem;
-
-	if( hi <= lo ) return FALSE;
-
-	midItem = GetItemText( (lo+hi)/2, nCol );
-
-	// loop through the list until indices cross
-	while( lo <= hi )
-	{
-		// rowText will hold all column text for one row
-		CStringArray rowText;
-
-		// find the first element that is greater than or equal to 
-		// the partition element starting from the left Index.
-		if( bAscending )
-			while( ( lo < high ) && ( GetItemText(lo, nCol) < midItem ) )
-				++lo;
-		else
-			while( ( lo < high ) && ( GetItemText(lo, nCol) > midItem ) )
-				++lo;
-
-		// find an element that is smaller than or equal to 
-		// the partition element starting from the right Index.
-		if( bAscending )
-			while( ( hi > low ) && ( GetItemText(hi, nCol) > midItem ) )
-				--hi;
-		else
-			while( ( hi > low ) && ( GetItemText(hi, nCol) < midItem ) )
-				--hi;
-
-		// if the indexes have not crossed, swap
-		// and if the items are not equal
-		if( lo <= hi )
+		bDoneSorting = true;
+		for( size_t idxRow = 1; idxRow < ctRows; ++idxRow )
 		{
-			// swap only if the items are not equal
-			if( GetItemText(lo, nCol) != GetItemText(hi, nCol))
+			size_t idxLo = rnSortXForm[idxRow - 1];
+			size_t idxHi = rnSortXForm[idxRow];
+			CString sHi = GetCellText( idxHi, nCol );
+			CString sLo = GetCellText( idxLo, nCol );
+			bool bOrdered = true;
+			if( bAscending )
 			{
-				// swap the rows
-				LV_ITEM lvitemlo, lvitemhi;
-				
-				int nColCount = 0;
-				if (GetDlgItem(0) != NULL)
-				{
-					nColCount = ((CHeaderCtrl*)GetDlgItem(0))->GetItemCount();
-				}
-				else
-				{
-					nColCount = GetItemCount();
-				}
-				rowText.SetSize( nColCount );
-				int i;
-				for( i=0; i<nColCount; i++)
-					rowText[i] = GetItemText(lo, i);
-				lvitemlo.mask = LVIF_IMAGE | LVIF_PARAM | LVIF_STATE;
-				lvitemlo.iItem = lo;
-				lvitemlo.iSubItem = 0;				
-				lvitemlo.stateMask = LVIS_CUT | LVIS_DROPHILITED | 
-						LVIS_FOCUSED |  LVIS_SELECTED | 
-						LVIS_OVERLAYMASK | LVIS_STATEIMAGEMASK;
-
-				lvitemhi = lvitemlo;
-				lvitemhi.iItem = hi;
-				
-				GetItem( &lvitemlo );
-				GetItem( &lvitemhi );
-
-				// here we are going to swap the text of all the items and sub items
-				for( i=0; i<nColCount; i++)
-				{ 
-					CString sText = GetItemText(hi, i);
-					int nImageHi = GetCellImage(hi, i);
-					int nImageLo = GetCellImage(lo, i);
-					SetCellTextImage(lo, i, sText, nImageHi);
-					SetCellTextImage(hi, i, rowText[i], nImageLo);										
-					SetItemText(lo, i, sText);
-				}
-
-				lvitemhi.iItem = lo;
-				SetItem( &lvitemhi );
-
-				for( i=0; i<nColCount; i++)
-					SetItemText(hi, i, rowText[i]);
-
-				lvitemlo.iItem = hi;
-				SetItem( &lvitemlo );
+				if( sLo > sHi )
+					bOrdered = false;
 			}
-
-			++lo;
-			--hi;
+			else
+			{
+				if( sHi > sLo )
+					bOrdered = false;
+			}
+			if( !bOrdered )
+			{
+				bDoneSorting = false;
+				bAlreadySorted = false;
+				rnSortXForm[idxRow] = idxLo;
+				rnSortXForm[idxRow - 1] = idxHi;
+			}
 		}
 	}
-
-	// If the right index has not reached the left side of array
-	// must now sort the left partition.
-	if( low < hi )
-		SortTextItems( nCol, bAscending , low, hi);
-
-	// If the left index has not reached the right side of array
-	// must now sort the right partition.
-	if( lo < high )
-		SortTextItems( nCol, bAscending , lo, high );
-
-	return TRUE;
+	if( bAlreadySorted )
+		return true; //nothing to do
+	SetRedraw( FALSE );
+	std::vector< _RowData > rTempRowData;
+	rTempRowData.swap( mRowData );
+	typedef std::pair< UINT, CString > TCellState;
+	typedef std::vector< TCellState > TRowState;
+	std::vector< TRowState > rGridState;
+	rGridState.resize( ctRows );
+	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
+	{
+		TRowState& RowState = rGridState[idxRow];
+		RowState.resize( mcColumns );
+		for( size_t idxCol = 0; idxCol < mcColumns; ++idxCol )
+		{
+			TCellState& CellState = RowState[idxCol];
+			CellState.first = GetCellState( idxRow, idxCol );
+			CellState.second = GetCellText( idxRow, idxCol );
+		}
+	}
+	mRowData.resize( ctRows );
+	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
+	{
+		size_t idxOldRow = rnSortXForm[idxRow];
+		TRowState& RowState = rGridState[idxOldRow];
+		for( size_t idxCol = 0; idxCol < mcColumns; ++idxCol )
+		{
+			TCellState& CellState = RowState[idxCol];
+			SetCellState( idxRow, idxCol, CellState.first );
+			SetCellText( idxRow, idxCol, CellState.second );
+		}
+		mRowData[idxRow] = rTempRowData[idxOldRow];
+	}
+	SetRedraw( TRUE );
+	Invalidate();
+	return true;
 }
 
-bool CGridCtrl::SortNumericItems( int nCol, BOOL bAscending,int low, int high)
+bool CGridCtrl::SortNumericItems( int nCol, bool bAscending )
 {
-	if (GetDlgItem(0) != NULL)
+	if( nCol < 0 || (size_t)nCol >= mcColumns )
+		return false;
+	size_t ctRows = mRowData.size();
+	if( ctRows <= 1 )
+		return true;
+	std::vector< size_t > rnSortXForm;
+	rnSortXForm.resize( ctRows );
+	size_t idx = ctRows;
+	while( idx-- > 0 )
+		rnSortXForm[idx] = idx;
+	bool bAlreadySorted = true;
+	bool bDoneSorting = false;
+	while( !bDoneSorting )
 	{
-		if( nCol >= ((CHeaderCtrl*)GetDlgItem(0))->GetItemCount() )
-			return FALSE;
-	}
-	
-	if( high == -1 ) high = GetItemCount() - 1;
-	int lo = low;   
-	int hi = high;
-	
-	int midItem;
-	
-	if( hi <= lo ) return FALSE;
-	
-	midItem = _ttoi(GetItemText( (lo+hi)/2, nCol ));
-	
-	// loop through the list until indices cross
-	while( lo <= hi )
-	{
-		// rowText will hold all column text for one row
-		CStringArray rowText;
-		
-		// find the first element that is greater than or equal to 
-		// the partition element starting from the left Index.
-		if( bAscending )
-			while( ( lo < high ) && (_ttoi(GetItemText(lo, nCol)) < midItem ) )
-				++lo;           
-		else
-			while( ( lo < high ) && (_ttoi(GetItemText(lo, nCol)) > midItem ) )
-				++lo;
-                
-		// find an element that is smaller than or equal to 
-		// the partition element starting from the right Index.
-		if( bAscending )
-			while( ( hi > low ) && (_ttoi(GetItemText(hi, nCol)) > midItem ) )
-				--hi;           
-		else
-			while( ( hi > low ) && (_ttoi(GetItemText(hi, nCol)) < midItem ) )
-				--hi;
-				
-		// if the indexes have not crossed, swap                
-		// and if the items are not equal
-		if( lo <= hi )
+		bDoneSorting = true;
+		for( size_t idxRow = 1; idxRow < ctRows; ++idxRow )
 		{
-			// swap only if the items are not equal
-			if(_ttoi(GetItemText(lo, nCol)) != _ttoi(GetItemText(hi, nCol)) )
-			{                               
-				// swap the rows
-				LV_ITEM lvitemlo, lvitemhi;
-                
-				int nColCount = 0;
-				if (GetDlgItem(0) != NULL)
+			size_t idxLo = rnSortXForm[idxRow - 1];
+			size_t idxHi = rnSortXForm[idxRow];
+			CString sLo = GetCellText( idxLo, nCol );
+			CString sHi = GetCellText( idxHi, nCol );
+			long nLo = GetCellState( idxLo, nCol );
+			long nHi = GetCellState( idxHi, nCol );
+			if( nLo == nHi )
+			{
+				nLo = GetCellImage( idxLo, nCol );
+				nHi = GetCellImage( idxHi, nCol );
+				if( nLo == nHi )
 				{
-					nColCount = ((CHeaderCtrl*)GetDlgItem(0))->GetItemCount();
+					nLo = _tstol( GetCellText( idxLo, nCol ) );
+					nHi = _tstol( GetCellText( idxHi, nCol ) );
 				}
-				else
-				{
-					nColCount = GetItemCount();
-				}
-
-				rowText.SetSize( nColCount );
-                
-				int i;
-				for( i=0; i < nColCount; i++)
-							rowText[i] = GetItemText(lo, i);
-                
-				lvitemlo.mask = LVIF_IMAGE | LVIF_PARAM | LVIF_STATE;
-				lvitemlo.iItem = lo;
-				lvitemlo.iSubItem = 0;
-				lvitemlo.stateMask = LVIS_CUT | LVIS_DROPHILITED |
-							LVIS_FOCUSED |  LVIS_SELECTED |
-							LVIS_OVERLAYMASK | LVIS_STATEIMAGEMASK;
-				lvitemhi = lvitemlo;
-				lvitemhi.iItem = hi;
-                
-				GetItem( &lvitemlo );
-				GetItem( &lvitemhi );
-                
-				for( i=0; i< nColCount; i++)
-				{
-					CString sText = GetItemText(hi, i);
-					int nImageHi = GetCellImage(hi, i);
-					int nImageLo = GetCellImage(lo, i);
-					SetCellTextImage(lo, i, sText, nImageHi);
-					SetCellTextImage(hi, i, rowText[i], nImageLo);										
-					SetItemText(lo, i, sText);
-				}
-                
-				lvitemhi.iItem = lo;
-				SetItem( &lvitemhi );
-                
-				for( i=0; i< nColCount; i++)
-							SetItemText(hi, i, rowText[i]);
-                
-				lvitemlo.iItem = hi;
-				SetItem( &lvitemlo );
 			}
-			
-			++lo;
-			--hi;
+			bool bOrdered = true;
+			if( bAscending )
+			{
+				if( nLo > nHi )
+					bOrdered = false;
+			}
+			else
+			{
+				if( nHi > nLo )
+					bOrdered = false;
+			}
+			if( !bOrdered )
+			{
+				bDoneSorting = false;
+				bAlreadySorted = false;
+				rnSortXForm[idxRow] = idxLo;
+				rnSortXForm[idxRow - 1] = idxHi;
+			}
 		}
 	}
-	
-	// If the right index has not reached the left side of array
-	// must now sort the left partition.
-	if( low < hi )
-		SortNumericItems( nCol, bAscending , low, hi);
-	
-	// If the left index has not reached the right side of array
-	// must now sort the right partition.
-	if( lo < high )
-		SortNumericItems( nCol, bAscending , lo, high );
-	
-	return TRUE;
+	if( bAlreadySorted )
+		return true; //nothing to do
+	SetRedraw( FALSE );
+	std::vector< _RowData > rTempRowData;
+	rTempRowData.swap( mRowData );
+	typedef std::pair< UINT, CString > TCellState;
+	typedef std::vector< TCellState > TRowState;
+	std::vector< TRowState > rGridState;
+	rGridState.resize( ctRows );
+	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
+	{
+		TRowState& RowState = rGridState[idxRow];
+		RowState.resize( mcColumns );
+		for( size_t idxCol = 0; idxCol < mcColumns; ++idxCol )
+		{
+			TCellState& CellState = RowState[idxCol];
+			CellState.first = GetCellState( idxRow, idxCol );
+			CellState.second = GetCellText( idxRow, idxCol );
+		}
+	}
+	mRowData.resize( ctRows );
+	for( size_t idxRow = 0; idxRow < ctRows; ++idxRow )
+	{
+		size_t idxOldRow = rnSortXForm[idxRow];
+		TRowState& RowState = rGridState[idxOldRow];
+		for( size_t idxCol = 0; idxCol < mcColumns; ++idxCol )
+		{
+			TCellState& CellState = RowState[idxCol];
+			SetCellState( idxRow, idxCol, CellState.first );
+			SetCellText( idxRow, idxCol, CellState.second );
+		}
+		mRowData[idxRow] = rTempRowData[idxOldRow];
+	}
+	SetRedraw( TRUE );
+	Invalidate();
+	return true;
 }
 
 
@@ -1855,7 +1798,7 @@ BOOL CGridCtrl::OnCommand(WPARAM wParam, LPARAM lParam)
 void CGridCtrl::OnLvnBeginScroll(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLVSCROLL pStateChanged = reinterpret_cast<LPNMLVSCROLL>(pNMHDR);
-	PostMessage( refWM_CHECKFOCUS(), 0, 0 );
+	HideEditControls();
 	*pResult = 0;
 }
 

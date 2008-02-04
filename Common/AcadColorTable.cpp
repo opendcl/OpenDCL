@@ -299,6 +299,11 @@ COLORREF GetRGBColor( long nColorIndex )
 	#endif //_ACADTARGET
 	}
 
+	if( nColorIndex == -24 )
+	{ //transparent
+		return ~COLORREF(0);
+	}
+
 	if( nColorIndex == 256 )
 	{
 	#ifdef _ACADTARGET

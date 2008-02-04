@@ -16,7 +16,7 @@ CArxGraphicButtonCtrl::CArxGraphicButtonCtrl( TDclControlPtr pTemplate,
 																							UINT nID,
 																							bool bCreate /*= true*/ )
 : CGraphicButtonCtrl( pTemplate, pPane, nID, false )
-, mArxServices( pTemplate )
+, mArxServices( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -90,25 +90,21 @@ void CArxGraphicButtonCtrl::OnDoubleclicked()
 
 void CArxGraphicButtonCtrl::OnClicked() 
 {	
-	if( mpTemplate->m_bEventsAsAction )
+	CString sEvent = mpTemplate->GetStringProperty(Prop::EventClicked);
+	if( sEvent.SpanExcluding( _T("_") ) == _T("c:OnActionEvent") )
 	{
 		GetParent()->GetParent()->EnableWindow( TRUE );
-		struct resbuf *result = NULL, *list;    
-
-		CString sText = mpTemplate->GetStringProperty( Prop::EventClicked );
-		list = acutBuildList( RTSTR, sText, 0 );
-		if( list != NULL ) 
-		{ 
-			int stat = acedInvoke( list, &result ); 
-			acutRelRb( list ); 
-			if( result ) 
-				acutRelRb( result ); 
-		}
+		resbuf rbEvent = { NULL, RTSTR };
+		rbEvent.resval.rstring = sEvent.LockBuffer();
+		resbuf* prbResult = NULL;
+		acedInvoke( &rbEvent, &prbResult ); 
+		if( prbResult ) 
+			acutRelRb( prbResult ); 
 		GetParent()->GetParent()->EnableWindow( FALSE );
 		GetParent()->EnableWindow( TRUE );
 	}
 	else
-		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventClicked ), IsAsyncEvents() );
+		InvokeMethod( sEvent, IsAsyncEvents() );
 }
 
 void CArxGraphicButtonCtrl::OnLButtonDown(UINT nFlags, CPoint point) 

@@ -8,8 +8,8 @@
 #include "ImageListContents.h"
 #include "DropListContents.h"
 #include "Workspace.h"
-#include "SharedRes.h"
-#include "OpenDCLView.h"
+#include "Resource.h"
+#include "StudioDialogControl.h"
 
 
 CColumnData::CColumnData()
@@ -51,12 +51,24 @@ CColumnData::CColumnData(const CColumnData &Other)
 /////////////////////////////////////////////////////////////////////////////
 // CColumnsPage property page
 
-CColumnsPage::CColumnsPage() : CPropertyPage(CColumnsPage::IDD)
+CColumnsPage::CColumnsPage( TDclControlPtr pDclControl, CImageListPage* pImageListPage )
+: CPropertyPage(CColumnsPage::IDD)
+, mpDclControl( pDclControl )
+, mpImageListPage( pImageListPage )
 {
-	//{{AFX_DATA_INIT(CColumnsPage)
-	//}}AFX_DATA_INIT
 	m_bChangingIndex = false;
 	m_nIndex = -1;
+	m_bShowStyles = (pDclControl->GetPropertyObject(Prop::ListViewStyle) == NULL);
+	m_pColCaptions = pDclControl->GetPropertyObject(Prop::ColumnCaptions);
+	m_pColWidths = pDclControl->GetPropertyObject(Prop::ColumnWidths);
+	m_pColImages = pDclControl->GetPropertyObject(Prop::ColumnImages);
+	m_pColStyles = pDclControl->GetPropertyObject(Prop::ColumnStyles);
+	m_pColAlignment = pDclControl->GetPropertyObject(Prop::ColumnAlignments);
+	m_pColDefault = pDclControl->GetPropertyObject(Prop::ColumnDefaultImages);
+	m_pColAlternate = pDclControl->GetPropertyObject(Prop::ColumnAlternateImages);
+	m_pColListItems = pDclControl->GetPropertyObject(Prop::ColumnListItems);
+	m_pColImageItems = pDclControl->GetPropertyObject(Prop::ColumnListImages);
+	bUsesRowHeader = pDclControl->GetBooleanProperty(Prop::RowHeader) == TRUE;
 }
 
 CColumnsPage::~CColumnsPage()
@@ -129,42 +141,39 @@ BOOL CColumnsPage::OnInitDialog()
 	rc.bottom = rc.top + 300;
 	m_Style.MoveWindow(rc);
 
-	size_t nCount = m_pColCaptions->GetStringArrayPtr()->size();
+	size_t nCount = m_pColCaptions->size();
 	m_ColData.SetSize(nCount);
 	for (size_t i=0; i<nCount; i++)
 	{
-		m_ColData[i].m_Caption = m_pColCaptions->GetStringArrayPtr()->at(i);
-
-		// copy width data
-		m_ColData[i].m_Width = m_pColWidths->GetIntArrayPtr()->at(i);
-		
-		// copy image data
-		m_ColData[i].m_Image = m_pColImages->GetIntArrayPtr()->at(i);
-		
-		// copy style data
-		m_ColData[i].m_Style = m_pColStyles->GetIntArrayPtr()->at(i);
-		
-		// copy the alignment data
-		m_ColData[i].m_Alignment = m_pColAlignment->GetIntArrayPtr()->at(i);
-
-		// copy the default data
-		m_ColData[i].m_Default = m_pColDefault->GetIntArrayPtr()->at(i);
-
-		// copy the alternate data
-		m_ColData[i].m_Alternate = m_pColAlternate->GetIntArrayPtr()->at(i);
-	
-		// copy string array data.
+		if( i < m_pColCaptions->size() )
+			m_ColData[i].m_Caption = m_pColCaptions->GetConstStringArrayPtr()->at(i);
+		if( i < m_pColWidths->size() )
+			m_ColData[i].m_Width = m_pColWidths->GetConstIntArrayPtr()->at(i);
+		if( i < m_pColImages->size() )
+			m_ColData[i].m_Image = m_pColImages->GetConstIntArrayPtr()->at(i);
+		if( i < m_pColStyles->size() )
+			m_ColData[i].m_Style = m_pColStyles->GetConstIntArrayPtr()->at(i);
+		if( i < m_pColAlignment->size() )
+			m_ColData[i].m_Alignment = m_pColAlignment->GetConstIntArrayPtr()->at(i);
+		if( i < m_pColDefault->size() )
+			m_ColData[i].m_Default = m_pColDefault->GetConstIntArrayPtr()->at(i);
+		if( i < m_pColAlternate->size() )
+			m_ColData[i].m_Alternate = m_pColAlternate->GetConstIntArrayPtr()->at(i);
 		m_ColData[i].m_ListItems.RemoveAll();
-		PropVal::TCStringArray& rStr = m_pColListItems->GetStringArrayListPtr()->at(i);
-		for( size_t idx = 0; idx < rStr.size(); idx++)
-			m_ColData[i].m_ListItems.Add(rStr[idx]);
-	
-		// copy int array data
-		PropVal::TIntArray& rIntV = m_pColImageItems->GetIntArrayListPtr()->at(i);
-		CArray< int, int > rInt;
-		for(size_t idx = 0; idx < rIntV.size(); idx++)
-			rInt.Add(rIntV[idx]);
-		m_ColData[i].m_ImageItems.Copy(rInt);
+		if( i < m_pColListItems->size() )
+		{
+			const PropVal::TCStringArray& rStr = m_pColListItems->GetConstStringArrayListPtr()->at(i);
+			for( size_t idx = 0; idx < rStr.size(); idx++)
+				m_ColData[i].m_ListItems.Add(rStr[idx]);
+		}
+		if( i < m_pColImageItems->size() )
+		{
+			const PropVal::TIntArray& rIntV = m_pColImageItems->GetConstIntArrayListPtr()->at(i);
+			CArray< int, int > rInt;
+			for(size_t idx = 0; idx < rIntV.size(); idx++)
+				rInt.Add(rIntV[idx]);
+			m_ColData[i].m_ImageItems.Copy(rInt);
+		}
 	
 	}
 	m_Style.SetDroppedWidth(170);
@@ -176,7 +185,7 @@ BOOL CColumnsPage::OnInitDialog()
 		m_HeaderCtrl.SubclassDlgItem(nID, &m_List);
 
 	if (pHeader->GetImageList() == NULL)
-		pHeader->SetImageList(&m_pImageListPage->GetImageList());
+		pHeader->SetImageList(mpImageListPage->GetImageList());
 
 	for (INT_PTR i = 0; i< m_ColData.GetCount(); i++)
 	{
@@ -222,39 +231,30 @@ void CColumnsPage::CommitLists()
 	CHeaderCtrl *pHeader = m_List.GetHeaderCtrl();
 
 	// copy all the data over to the property data holderes of the control
-	for (int i=0; i<pHeader->GetItemCount(); i++)
+	for (int i=0; i < pHeader->GetItemCount(); i++)
 	{
 		m_pColCaptions->GetStringArrayPtr()->push_back(m_ColData[i].m_Caption);
-	
 		m_pColWidths->GetIntArrayPtr()->push_back(m_ColData[i].m_Width);
-	
 		m_pColImages->GetIntArrayPtr()->push_back(m_ColData[i].m_Image);
-	
 		m_pColStyles->GetIntArrayPtr()->push_back(m_ColData[i].m_Style);
-	
 		m_pColAlignment->GetIntArrayPtr()->push_back(m_ColData[i].m_Alignment);
-
 		m_pColDefault->GetIntArrayPtr()->push_back(m_ColData[i].m_Default);
-		
 		m_pColAlternate->GetIntArrayPtr()->push_back(m_ColData[i].m_Alternate);
-		
 		PropVal::TCStringArray rStr;
 		for( int idx = 0; idx < m_ColData[i].m_ListItems.GetSize(); idx++ )
 			rStr.push_back(m_ColData[i].m_ListItems[idx]);
 		m_pColListItems->GetStringArrayListPtr()->push_back(rStr);
-	
 		PropVal::TIntArray rInt;
 		for( int idx = 0; idx < m_ColData[i].m_ImageItems.GetSize(); idx++ )
 			rInt.push_back(m_ColData[i].m_ImageItems[idx]);
 		m_pColImageItems->GetIntArrayListPtr()->push_back(rInt);
 	}
-	m_pView->RefreshChildControl(m_pControl, Prop::_All);
+	CStudioDialogControl::UpdateAllProperties(mpDclControl);
 }
 
 BOOL CColumnsPage::OnApply() 
 {
 	CommitLists();
-	theWorkspace.SetModified(true);
 	return CPropertyPage::OnApply();
 }
 
@@ -266,18 +266,18 @@ void CColumnsPage::OnOK()
 
 bool CColumnsPage::IsImageListValid()
 {
-	if (m_pImageListPage != NULL)
+	if (mpImageListPage != NULL)
 	{
-		if (m_pImageListPage->m_hWnd == NULL)
+		if (mpImageListPage->m_hWnd == NULL)
 			return false;
 		
-		if (m_pImageListPage->GetImageList().m_hImageList == NULL)
+		if (mpImageListPage->GetImageList()->m_hImageList == NULL)
 			return false;
 	}
 	else
 		return false;
-	m_List.SetImageList(&m_pImageListPage->GetImageList(), TVSIL_NORMAL);
-	m_List.SetImageList(&m_pImageListPage->GetImageList(), LVSIL_SMALL);
+	m_List.SetImageList(mpImageListPage->GetImageList(), TVSIL_NORMAL);
+	m_List.SetImageList(mpImageListPage->GetImageList(), LVSIL_SMALL);
 	return true;
 }
 
@@ -292,7 +292,7 @@ BOOL CColumnsPage::OnSetActive()
 	m_Alternate.ResetContent();
 	if (IsImageListValid())
 	{
-		CImageList* pImageList = &m_pImageListPage->GetImageList();
+		CImageList* pImageList = mpImageListPage->GetImageList();
 		m_Image.SetImageList(pImageList);
 		m_Default.SetImageList(pImageList);	
 		m_Alternate.SetImageList(pImageList);
@@ -617,19 +617,19 @@ void CColumnsPage::OnSelchangeStyle()
 {
 	if (m_Style.GetCurSel() == 3 || m_Style.GetCurSel() == 29)
 	{
-		if (m_pImageListPage == NULL)
+		if (mpImageListPage == NULL)
 		{
 			m_Style.SetCurSel(0);
 			return;
 		}
 
-		if (m_pImageListPage->GetImageList().m_hImageList == NULL)
+		if (mpImageListPage->GetImageList()->m_hImageList == NULL)
 		{
 			m_Style.SetCurSel(0);
 			return;
 		}
 
-		if (m_pImageListPage->GetImageList().GetImageCount() == 0)
+		if (mpImageListPage->GetImageList()->GetImageCount() == 0)
 		{
 			m_Style.SetCurSel(0);
 			return;
@@ -802,7 +802,7 @@ void CColumnsPage::OnSelchangeImage()
 	CHeaderCtrl *pHeader = m_List.GetHeaderCtrl();
 	
 	if (pHeader->GetImageList() == NULL)
-		pHeader->SetImageList(&m_pImageListPage->GetImageList());
+		pHeader->SetImageList(mpImageListPage->GetImageList());
 	
 	SetColumn(m_nIndex);
 	SetModified();
@@ -867,7 +867,7 @@ void CColumnsPage::OnDroplistbtn()
 			Dlg.sImages.Add(m_ColData[m_nIndex].m_ImageItems[i]);
 		}
 		
-		Dlg.m_pImageListPage = m_pImageListPage;
+		Dlg.m_pImageListPage = mpImageListPage;
 		
 		if (Dlg.DoModal() == 1)
 		{

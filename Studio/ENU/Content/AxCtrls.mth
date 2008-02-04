@@ -9,17 +9,6 @@ The method dcl_RegisterActiveXCtrl is used to register an ActiveX control. When 
 [as String]
 
 
-
-[Method]
-Release
-[Prefix]
-dcl_AxObject_
-[Desc]
-When a property or method passes back an OleObject handle consisting of a list with to long integers in it is passing an address to a OleObject device. The device must be cleared from memory eventually. OpenDCL will clear all the OleObject devices for you once the dialog boxes are closed. If you wish to keep the memory clean use this method to clean the OleObject device from memory once you are finished with it. This method will not delete the item it handles, just the internal device used to modify the control or object belonging to the control.
-[Arguments]
-\par\tab OleObject
-[as List]
-
 [Method]
 XTwipsToPixels
 [Prefix]
@@ -29,7 +18,6 @@ Some ActiveX controls calculate their distances not in Pixels but in a unit call
 [Arguments Return] as Integer
 \par\tab Twips
 [as Long]
-
 
 
 [Method]
@@ -54,7 +42,6 @@ Some ActiveX controls calculate their distances not in Pixels but in a unit call
 [as Integer]
 
 
-
 [Method]
 YPixelsToTwips
 [Prefix]
@@ -67,14 +54,86 @@ Some ActiveX controls calculate their distances not in Pixels but in a unit call
 
 
 [Method]
+GetColorValue
+[Prefix]
+dcl_
+[Desc]
+This function converts an AutoCAD, system, or (Red Green Blue) color value into an OLE color suitable for use with an ActiveX control or OLE object.
+[Arguments Return] as Long
+<CONTROL>
+\par\tab Color
+[as Integer or (R G B)]
+
+
+[Method]
 GetOleObject
 [Prefix]
 dcl_AxControl_
 [Desc]
-Some ActiveX control's methods or properties required the OleObject to be passed in as an argument (for example to set the ImageList property of a Microsoft ImageComboBox you need to pass in the OleObject). Calling this method on an ActiveX control will pass back the numeric value indicated by the OleObject. When finished using the OleObject, call \cf2dcl_AxObject_Close \cf0 to release the OleObject from memory, failure to do so means the space occupied in memory by the OleObject will not be released for use by another application.
-[Arguments Return] as List
-ProjectFileName
+Returns the OLE object handle for this control. When finished using the handle, call \cf2dcl_AxObject_Close \cf0 to release it from memory.
+[Arguments Return] as Handle
+<CONTROL>
 
+
+GetProperty
+[Prefix]
+dcl_AxControl_
+[Desc]
+Gets the value of any property of an OLE object. The type of the return value will depend on the type of the property.
+[Arguments Return] as Varied
+<CONTROL>
+\par\tab PropName
+[as String]
+
+
+SetColorProperty
+[Prefix]
+dcl_AxControl_
+[Desc]
+Returns the value of a color property. The result is automatically converted into an OpenDCL color value.
+[Arguments Return] as Varied
+<CONTROL>
+\par\tab \i{Optional} \i0 PropName (default: "Color")
+[as String]
+\par\tab Color
+[as Integer or (R G B)]
+
+
+SetPictureProperty
+[Prefix]
+dcl_AxControl_
+[Desc]
+Returns the value of a color property. The result is automatically converted into an OpenDCL color value.
+[Arguments Return] as Varied
+<CONTROL>
+\par\tab \i{Optional} \i0 PropName (default: "Picture")
+[as String]
+\par\tab PictureID
+[as Integer]
+
+
+SetProperty
+[Prefix]
+dcl_AxControl_
+[Desc]
+Sets the value of any property of an OLE object. The type of the argument should match (or be convertable to) the type of the property.
+[Arguments Return] as Varied
+<CONTROL>
+\par\tab PropName
+[as String]
+\par \tab ...
+
+
+DoMethod
+[Prefix]
+dcl_AxControl_
+[Desc]
+Calls any method of an OLE object. The type of the arguments should match (or be convertable to) the argument types of the method.
+[Arguments Return] as Varied
+<CONTROL>
+\par\tab MethodName
+[as String]
+\par \tab ...
 
 
 [End of File]

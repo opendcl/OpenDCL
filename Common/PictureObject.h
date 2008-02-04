@@ -39,6 +39,7 @@ public:
 	const HICON GetIcon() const;
 	HBITMAP CloneBitmap() const;
 	HICON CloneIcon() const;
+	void LoadResourceIcon( UINT nIconResId, HMODULE hResMod = NULL );
 
 	//Copied from non-member utility function in Editor
 	void Update( LPPICTUREDISP NewPicture );

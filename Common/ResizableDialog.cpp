@@ -132,7 +132,7 @@ void CResizableDialog::OnSize(UINT nType, int cx, int cy)
 	}
 }
 
-__LRESULT CResizableDialog::OnNcHitTest(CPoint point) 
+__UINT_LRESULT CResizableDialog::OnNcHitTest(CPoint point) 
 {
 	CPoint pt = point;
 	ScreenToClient(&pt);

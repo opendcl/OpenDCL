@@ -5,6 +5,7 @@
 
 #include "DialogControl.h"
 #include "ArxControlServices.h"
+#include "R2006AcUiMRUComboBoxFixup.h"
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -6,37 +6,12 @@
 #include "DialogControl.h"
 #include "ThemeHelperST.h"
 #include "Project.h"
+#include "DclFormObject.h"
 #include <vector>
 
-class CDclFormObject;
+class CDialogObject;
 class CFontCollection;
 enum Prop::Id;
-
-
-const int EditFilter_String		= 0;
-const int EditFilter_Angle		= 1;
-const int EditFilter_Integer	= 2;
-const int EditFilter_Numeric	= 3;
-const int EditFilter_Symbol		= 4;
-const int EditFilter_UpperCase	= 5;
-const int EditFilter_LowerCase	= 6;
-const int EditFilter_Password	= 7;
-const int EditFilter_Multiline	= 8;
-
-const int CmboStyle_Combo		= 0;
-const int CmboStyle_Simple		= 1;
-const int CmboStyle_DropDown	= 2;
-const int CmboStyle_ArrowHead	= 3;
-const int CmboStyle_Color		= 4;
-const int CmboStyle_LineWeight	= 5;
-const int CmboStyle_PlotNames	= 6;
-const int CmboStyle_PlotTables	= 7;
-const int CmboStyle_FontDropList	= 8;
-const int CmboStyle_FontSimpleList	= 9;
-const int CmboStyle_Plotters		= 10;
-const int CmboStyle_PlotterPaperSizes = 11;
-const int CmboStyle_DirPicker = 12;
-const int CmboStyle_Layers = 13;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -50,20 +25,19 @@ public:
 // Attributes
 protected:
 	TProjectPtr mpProject;
+	CDialogObject* mpDlgObject;
 	TDclFormPtr mpSourceForm;
 	TDialogControls mControls;
 	CWnd* mpHostDlg;
-	long mlLeftOffset;
-	long mlRightOffset;
-	long mlTopOffset;
-	long mlBottomOffset;
 	CThemeHelperST mThemeHelper;
+	bool mbRecalcInProgress;
+	HDWP mhDeferredPos;
 
 // Construction
 protected:
 	CControlPane();
 public:
-	CControlPane(TDclFormPtr pSourceForm, CWnd* pHostDlg );
+	CControlPane( TDclFormPtr pSourceForm, CWnd* pHostDlg );
 	virtual ~CControlPane();
 
 // Properties
@@ -71,31 +45,37 @@ public:
 	TProjectPtr GetProject() const { return mpProject; }
 	TDclFormPtr GetSourceForm() const { return mpSourceForm; }
 	CWnd* GetHostDialog() const { return mpHostDlg; }
-	void SetPanePos( CRect rectNew, bool bRecalc = true ); //set current control area and recalculate layout
+	CRect GetControlArea() const;
 	const TDialogControls& GetControlsList() const { return mControls; }
+	CPoint GetSplitterPos( int nSplitterId );
+	bool IsRecalcInProgress() const { return mbRecalcInProgress; }
 
 // Operations
 public:
-	void SetFirstControlFocus() const;
 	bool CreateControls( UINT& nId );
-	void AddControl( TDialogControlPtr pControl );
-	void RecalcLayout();
-	void ResetControlsPos(TDclControlPtr pControl);
+	void AddControl( TDialogControlPtr pDlgControl );
+	void RemoveControl( TDialogControlPtr pDlgControl );
+	void ResetControlsPos( TDclControlPtr pControl );
+	void SetFirstControlFocus() const;
 
 protected:
-	CRect GetSplitterRect(int nId, CRect& rectCurrent);
 	void InvalidateControls();
-	void ZOrderFront(CWnd *pControl);
-	void ZOrderBack(CWnd *pControl);
+	virtual void ZOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
+	virtual void ZOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred = NULL );
+	virtual bool IsInvisibleControlAllowed( TDialogControlPtr pDlgControl ) const { return true; }
 
 // Implementation
 public:
 	virtual void CleanUpControls();
 	virtual CThemeHelperST* GetThemeHelper() { return &mThemeHelper; }
-	virtual bool FindControl(HWND hwndControl, /*out*/ CString& sControlName) const = 0; //if found, returns true & sets sControlName
-	virtual TDialogControlPtr FindControl(HWND hwndControl) const = 0;
-	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = CtlInvalid ) const = 0;
+	virtual bool FindControl( HWND hwndControl, /*out*/ CString& sControlName ) const; //if found, returns true & sets sControlName
+	virtual TDialogControlPtr FindControl( HWND hwndControl ) const;
+	virtual TDialogControlPtr FindControl( LPCTSTR pszControlName, ControlType type = _CtlInvalid ) const;
 	virtual void SetGlobalLispSymbols( bool bResetToNil = false ) const {}
+	virtual void RecalcLayout(); //recalculate control positions
+	virtual void ApplyZOrder(); //reorder all control windows to reflect current Z order
+	virtual void ApplyPosition( TDialogControlPtr pDlgControl ); //move control window to new position
+	virtual void ApplyVisibility( TDialogControlPtr pDlgControl ); //show or hide control
 
 protected:
 	virtual TDialogControlPtr CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID ) = 0;

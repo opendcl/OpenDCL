@@ -12,7 +12,7 @@
 #include "DclFormObject.h"
 #include "ControlName.h"
 #include "Project.h"
-#include "EditorWorkspace.h"
+#include "StudioWorkspace.h"
 #include "PropertyNames.h"
 #include "PropertyObject.h"
 #include "AxMethodDescriptor.h"
@@ -20,19 +20,18 @@
 #include "AxEventDescriptor.h"
 #include "AxInterfaceDescriptor.h"
 #include "AxContainerCtrl.h"
-#include "ControlHolder.h"
+#include "StudioDialogControl.h"
 #include "LoadArgs.h"
-#include "SharedRes.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CObjectBrowser dialog
 
-CObjectBrowser::CObjectBrowser(CWnd* pParent /*=NULL*/)
-	: CResizableDialog(CObjectBrowser::IDD, pParent)
+CObjectBrowser::CObjectBrowser( TDclControlPtr pDclControl, CWnd* pParent /*=NULL*/ )
+: CResizableDialog(CObjectBrowser::IDD, pParent)
+, mpDclControl( pDclControl )
 {
-	m_pControl = NULL;
-	m_sDclFormName = theWorkspace.LoadResourceString(IDS_DclFormName);
+	m_sDclFormName = pDclControl->GetOwnerForm()->GetKeyName();
 }
 
 
@@ -60,6 +59,12 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CObjectBrowser message handlers
+
+INT_PTR CObjectBrowser::DoModal()
+{
+	DisableUndoManager DisableUndo( mpDclControl->GetUndoManager() );
+	return __super::DoModal();
+}
 
 BOOL CObjectBrowser::OnInitDialog() 
 {
@@ -96,24 +101,12 @@ BOOL CObjectBrowser::OnInitDialog()
 	m_ListBox.SetImageList(&m_ImageList, TVSIL_NORMAL);
 	m_ImageList.SetBkColor(m_ListBox.GetBkColor());
 
-	Setup();
-
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
-}
-
-void CObjectBrowser::Setup() 
-{
 	m_ListBox.DeleteAllItems();
-	EnableSaveRestore(theWorkspace.LoadResourceString(IDS_ObjectBrowser),
-										theWorkspace.LoadResourceString(IDS_PROP_FORMEVENTSIZE));
-	
-	if (m_pControl == NULL)
-		return;
+	EnableSaveRestore(_T("ObjectBrowser"), _T("Size"));
 
 	// begin loading the main OleControl into the tree control
-	HTREEITEM hMainParent = LoadOleObjectIntoTree(m_pControl);
-	LoadAllAssociatedOleObjects(m_pControl);
+	HTREEITEM hMainParent = LoadOleObjectIntoTree(mpDclControl);
+	LoadAllAssociatedOleObjects(mpDclControl);
 
 	if (hMainParent != NULL)
 		m_ListBox.Expand(hMainParent, TVE_EXPAND);
@@ -122,6 +115,9 @@ void CObjectBrowser::Setup()
 
 	//ResizeControls(m_ptMinTrackSize.x, m_ptMinTrackSize.y);
 	ResizeControls();
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
 
 HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(TDclControlPtr pControl) 
@@ -145,21 +141,21 @@ HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(TDclControlPtr pControl)
 	}
 	else
 	{
-		if (pControl->GetType() < CtlLabel || pControl->GetType() > CtlFileDlgCtrl)		
+		if (pControl->GetType() < _CtlFirst || pControl->GetType() > _CtlMax)		
 		{
-			switch (m_pDclForm->GetType())
+			switch (mpDclControl->GetOwnerForm()->GetType())
 			{
 			case VdclModal:
-				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_MODALFORM2), TVI_ROOT, TVI_SORT);		
+				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_MODALFORM), TVI_ROOT, TVI_SORT);		
 				break;
 			case VdclModeless:
-				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_MODELESSFORM2), TVI_ROOT, TVI_SORT);		
+				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_MODELESSFORM), TVI_ROOT, TVI_SORT);		
 				break;
 			case VdclDockable:
-				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_DOCKABLEFORM2), TVI_ROOT, TVI_SORT);		
+				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_DOCKABLEFORM), TVI_ROOT, TVI_SORT);		
 				break;
 			case VdclConfigTab:
-				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_CONFIGTAB2), TVI_ROOT, TVI_SORT);		
+				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_CONFIGTAB), TVI_ROOT, TVI_SORT);		
 				break;
 			case VdclFileDialog:
 				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_FILEDLG), TVI_ROOT, TVI_SORT);		
@@ -171,7 +167,7 @@ HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(TDclControlPtr pControl)
 	}
 		
 	size_t nCount = m_OleObjectList.size();
-	// set the item data to the index where the main m_pControl object goes.
+	// set the item data to the index where the main mpDclControl object goes.
 	m_ListBox.SetItemData(hItem, nCount);
 
 	// here we are going to hold the pointers to the ole object's arx control object info holders
@@ -186,36 +182,37 @@ HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(TDclControlPtr pControl)
 	return hItem;
 }
 
-void CObjectBrowser::LoadAllAssociatedOleObjects(TDclControlPtr pControl) 
+void CObjectBrowser::LoadAllAssociatedOleObjects( TDclControlPtr pControl ) 
 {
+	const TProjectPtr pProject = pControl->GetOwnerProject();
 	const TPropertyList& Props = pControl->GetPropertyList();
 	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 	{
-		const AxInterfaceDescriptor* pAxDesc = (*iter)->GetAxInterfaceDescriptorPtr();
+		const AxInterfaceDescriptor* pAxDesc = (*iter)->GetConstAxInterfaceDescriptorPtr();
 		if( pAxDesc )
 		{
 			SearchMethods( (*iter) );
 			TOleControlPtr pOleObject;
 
 			// check events
-			pOleObject = activeProject->GetOleObject(pAxDesc->GetEvent());
+			pOleObject = pProject->GetOleObject(pAxDesc->GetEvent());
 			if (pOleObject != NULL)
 				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
 			
 			// check each property pointer type
-			pOleObject = activeProject->GetOleObject(pAxDesc->GetProp());
+			pOleObject = pProject->GetOleObject(pAxDesc->GetProp());
 			if (pOleObject != NULL)
 				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
 			
-			pOleObject = activeProject->GetOleObject(pAxDesc->GetPropGet());
+			pOleObject = pProject->GetOleObject(pAxDesc->GetPropGet());
 			if (pOleObject != NULL)
 				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
 			
-			pOleObject = activeProject->GetOleObject(pAxDesc->GetPropPut());
+			pOleObject = pProject->GetOleObject(pAxDesc->GetPropPut());
 			if (pOleObject != NULL)
 				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
 			
-			pOleObject = activeProject->GetOleObject(pAxDesc->GetPropPutRef());
+			pOleObject = pProject->GetOleObject(pAxDesc->GetPropPutRef());
 			if (pOleObject != NULL)
 				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
 		}
@@ -228,7 +225,7 @@ void CObjectBrowser::SearchMethods(TPropertyPtr pProp)
 	size_t idx = pProp->size();
 	while( idx-- > 0 )
 	{
-		TOleControlPtr pOleObject = activeProject->GetOleObject(pProp->GetAxInterfaceDescriptorPtr()->GetMethods()->at(idx));
+		TOleControlPtr pOleObject = activeProject->GetOleObject(pProp->GetConstAxInterfaceDescriptorPtr()->GetMethods()->at(idx));
 		if (pOleObject != NULL)
 			LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));			
 	}
@@ -254,7 +251,7 @@ void CObjectBrowser::LoadInfoTree(TDclControlPtr pControl, HTREEITEM hParentItem
 				int nCount = (*iter)->size();
 				for (int j = 0; j < nCount; j++)
 				{
-					CString sTitle = (*iter)->GetAxInterfaceDescriptorPtr()->GetMethods()->at(j)->GetName();								
+					CString sTitle = (*iter)->GetConstAxInterfaceDescriptorPtr()->GetMethods()->at(j)->GetName();								
 					HTREEITEM hItem = m_ListBox.InsertItem(sTitle, hParentItem, TVI_SORT);
 					m_ListBox.SetItemData(hItem, (DWORD_PTR)(-((long)j + 1)));
 					m_ListBox.SetItemImage(hItem, 3, 3);
@@ -267,7 +264,7 @@ void CObjectBrowser::LoadInfoTree(TDclControlPtr pControl, HTREEITEM hParentItem
 				{
 					CString sTitle;
 					if( (*iter)->GetType() == PropActiveXEvent )
-						sTitle = (*iter)->GetAxInterfaceDescriptorPtr()->GetEvent()->GetName();
+						sTitle = (*iter)->GetConstAxInterfaceDescriptorPtr()->GetEvent()->GetName();
 					else
 						sTitle = (*iter)->GetName();
 					if (sTitle.GetLength() > 0)
@@ -303,8 +300,8 @@ void CObjectBrowser::LoadInfoTree(TDclControlPtr pControl, HTREEITEM hParentItem
 
 	if (nIndex == 0)
 	{
-		if (pControl->GetType() != CtlForm &&
-				pControl->GetType() != CtlInvalid &&
+		if (pControl->GetType() != _CtlForm &&
+				pControl->GetType() != _CtlInvalid &&
 				pControl->GetType() != CtlFileDlgCtrl)
 			LoadMethods(_T("AllCtrls.mth"), hParentItem);
 		
@@ -321,9 +318,9 @@ void CObjectBrowser::LoadInfoTree(TDclControlPtr pControl, HTREEITEM hParentItem
 			LoadMethods(_T("ListBox.mth"), hParentItem);
 			break;
 		case CtlListView:
-			LoadMethods(_T("ListCtrl.mth"), hParentItem);
+			LoadMethods(_T("ListView.mth"), hParentItem);
 			break;
-		case CtlForm: // a form
+		case _CtlForm: // a form
 			LoadMethods(_T("Forms.mth"), hParentItem);
 			break;
 		case CtlGrid:
@@ -505,16 +502,16 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 					// here we loop through all the remaining arguments and add to them to the tail of the autolisp syntax structure
 					while (sLine != sMethod2 && !sLine.IsEmpty() && sLine != sEOF)
 					{
-						if (sLine == theWorkspace.LoadResourceString(IDS_PROJECTFILENAME))
+						if (sLine == _T("<CONTROL>"))
 						{
-							CString sControlName = m_pControl->GetVarName();
+							CString sControlName = mpDclControl->GetVarName();
 							sDefun1 += _T("\\cf3") + sControlName + _T("\\cf0");
 							m_sClipBoardDefun2 += sControlName;
 						}						
-						else if (sLine == theWorkspace.LoadResourceString(IDS_PROJECTNAME))
+						else if (sLine == _T("ProjectName"))
 						{
-							sDefun1 += _T("\\cf3\"") + theEditorWorkspace.GetActiveProjectName() + _T("\"\\cf0");
-							m_sClipBoardDefun2 += _T("\"") + theEditorWorkspace.GetActiveProjectName() + _T("\"");
+							sDefun1 += _T("\\cf3\"") + theStudioWorkspace.GetActiveProjectName() + _T("\"\\cf0");
+							m_sClipBoardDefun2 += _T("\"") + theStudioWorkspace.GetActiveProjectName() + _T("\"");
 						}						
 						else if (sLine.Left(1) == _T("[") && sLine.Mid(1, 2) == theWorkspace.LoadResourceString(IDS_AS))
 						{
@@ -618,8 +615,8 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 
 	sGlobalVarName = pControl->GetVarName();
 	
-	if (pControl != m_pControl)
-		sGlobalVarName = theWorkspace.LoadResourceString(IDS_OLEOBJECT);
+	if( pControl != mpDclControl )
+		sGlobalVarName = _T("OleObject");
 	
 	int nThisItemData = m_ListBox.GetItemData(hItem);
 
@@ -654,7 +651,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 			// call the method to load info from the appropriate method info files.
 			LoadFullMethod(_T("AllCtrls.mth"), sItemText, sTitle, sDesc, sDefun1);					
 		}
-		else if (pControl->GetType() == CtlForm || pControl->GetID() == -1)
+		else if (pControl->GetType() == _CtlForm || pControl->GetID() == -1)
 			LoadFullMethod(_T("Forms.mth"), sItemText, sTitle, sDesc, sDefun1);	
 		else
 		{
@@ -678,15 +675,15 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				break;
 
 			case CtlListView:
-				LoadFullMethod(_T("ListCtrl.mth"), sItemText, sTitle, sDesc, sDefun1);
+				LoadFullMethod(_T("ListView.mth"), sItemText, sTitle, sDesc, sDefun1);
 				break;
 
 			case CtlGrid:
 				LoadFullMethod(_T("Grid.mth"), sItemText, sTitle, sDesc, sDefun1);
 				break;
 
-			case CtlForm: // a form
-				if (m_pDclForm->GetType() == VdclFileDialog && pControl->GetType() != CtlFileDlgCtrl)
+			case _CtlForm: // a form
+				if (mpDclControl->GetOwnerForm()->GetType() == VdclFileDialog && pControl->GetType() != CtlFileDlgCtrl)
 					LoadFullMethod(_T("FileDlg.mth"), sItemText, sTitle, sDesc, sDefun1);
 				else
 					LoadFullMethod(_T("Forms.mth"), sItemText, sTitle, sDesc, sDefun1);
@@ -769,19 +766,19 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 		case PropActiveXMethods:
 			{
 				sTitle = _T("\\b0 ") + theWorkspace.LoadResourceString(IDS_METHOD) + _T(" \\b ") + sItemText + _T(" \\b0 \\cf0");
-				if (pProp->GetAxInterfaceDescriptorPtr() != NULL)
+				if (pProp->GetConstAxInterfaceDescriptorPtr() != NULL)
 				{
-					sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodDesc(nThisItemData);
-					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData),
-																 pProp->GetAxInterfaceDescriptorPtr()->GetAxMethod(nThisItemData));
+					sDesc = pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodDesc(nThisItemData);
+					sVarType = GetTypeName(pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData),
+																 pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethod(nThisItemData));
 					
 					// here we need to put in OleObject closing instructions if required.
-					if (pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_DISPATCH ||
-						pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_UNKNOWN)
+					if (pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_DISPATCH ||
+						pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_UNKNOWN)
 					{
 						if (!sDesc.IsEmpty())
 							sDesc += _T(" \\par \\par ");						
-						if (sVarType.IsEmpty() || sVarType == theWorkspace.LoadResourceString(IDS_OLEOBJECT))
+						if (sVarType.IsEmpty() || sVarType == _T("OleObject"))
 							sDesc += theWorkspace.LoadResourceString(IDS_OLENOTE1);
 						else					
 							sDesc += theWorkspace.LoadResourceString(IDS_OLENOTE2) + sVarType + theWorkspace.LoadResourceString(IDS_OLENOTE3);
@@ -798,22 +795,23 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					m_sClipBoardDefun2 = _T("(Setq rValue ( ");						
 				}
 				// add the DoMethod
-				sDefun1 += CString(_T("(\\cf2 dcl_AxControl_DoMethod \\cf0 \\cf3 ")) + sGlobalVarName + _T(" \\cf0 \\cf3\\b \"");
-				m_sClipBoardDefun2 += _T("(dcl_AxControl_DoMethod ") + sGlobalVarName + _T(" \"");
+				CString sCtlType = (pControl != mpDclControl)? _T("AxObject") : _T("AxControl");
+				sDefun1 += CString(_T("(\\cf2 dcl_") + sCtlType + _T("_DoMethod \\cf0 \\cf3 ")) + sGlobalVarName + _T(" \\cf0 \\cf3\\b \"");
+				m_sClipBoardDefun2 += _T("(dcl_") + sCtlType + _T("_DoMethod ") + sGlobalVarName + _T(" \"");
 				// add the method name
 				sDefun1 += m_ListBox.GetItemText(hItem) + _T("\"\\cf0\\b0 ");
 				m_sClipBoardDefun2 += m_ListBox.GetItemText(hItem) + _T("\"");
 				
-				if (pProp->GetAxInterfaceDescriptorPtr() != NULL)
+				if (pProp->GetConstAxInterfaceDescriptorPtr() != NULL)
 				{
-					size_t nCount = pProp->GetAxInterfaceDescriptorPtr()->CountAxMethodParams(nThisItemData);
+					size_t nCount = pProp->GetConstAxInterfaceDescriptorPtr()->CountAxMethodParams(nThisItemData);
 					for (size_t i = 0; i < nCount; ++i)
 					{
 						// add the argument name
-						sDefun1 += _T(" \\cf1 ") + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i);
-						m_sClipBoardDefun2 += CString(_T(" ")) + pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i); 
+						sDefun1 += _T(" \\cf1 ") + pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i);
+						m_sClipBoardDefun2 += CString(_T(" ")) + pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodParamName(nThisItemData, i); 
 						// add the [as ...]
-						sArgType = pProp->GetAxInterfaceDescriptorPtr()->GetAxMethodParamVarType(nThisItemData, i);
+						sArgType = pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodParamVarType(nThisItemData, i);
 				
 						if (sArgType == CString())
 						{
@@ -863,11 +861,11 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 			break;
 		case PropActiveXEvent:
 			{
-				CString sEventName = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetName();
+				CString sEventName = pProp->GetConstAxInterfaceDescriptorPtr()->GetEvent()->GetName();
 				if (!sEventName.IsEmpty())
 					sDefun1.Format( _T(" \\par c:%s_On%s () \\par "), (LPCTSTR)sGlobalVarName, (LPCTSTR)sEventName );
 				sTitle = _T("\\b0 ") + theWorkspace.LoadResourceString(IDS_EVENTTITLE) + _T(" \\b ") + (sEventName.IsEmpty()? sItemText : sEventName) + _T(" \\b0 \\cf0");
-				sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetEvent()->GetDesc();
+				sDesc = pProp->GetConstAxInterfaceDescriptorPtr()->GetEvent()->GetDesc();
 			}
 			break;
 		case PropEvent:
@@ -906,9 +904,9 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 			{
 				m_sClipBoardDefun1.Empty();
 				m_sClipBoardDefun2.Empty();
-				AxPropertyDescriptor* pAxPropGet = pProp->GetAxInterfaceDescriptorPtr()->GetGetDescriptor();
-				AxPropertyDescriptor* pAxPropPut = pProp->GetAxInterfaceDescriptorPtr()->GetPutDescriptor();
-				sDesc = pProp->GetAxInterfaceDescriptorPtr()->GetDesc();
+				AxPropertyDescriptor* pAxPropGet = pProp->GetConstAxInterfaceDescriptorPtr()->GetGetDescriptor();
+				AxPropertyDescriptor* pAxPropPut = pProp->GetConstAxInterfaceDescriptorPtr()->GetPutDescriptor();
+				sDesc = pProp->GetConstAxInterfaceDescriptorPtr()->GetDesc();
 				sTitle = _T("\\b0 ") + theWorkspace.LoadResourceString(IDS_PROPERTYTITLE) + _T(" \\b ") + sItemText + _T(" \\b0 \\cf0");
 				
 				// do a special override for the color set properties
@@ -916,10 +914,11 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				{
 					if (pAxPropPut->GetGuid() == GUID_COLOR)
 					{
-						sDefun1 = _T("\\par(\\cf2 dcl_AxControl_SetColor \\cf0 \\cf3 ") + sGlobalVarName + _T(" \\cf0 \\cf3  \\b1 \"") + m_ListBox.GetItemText(hItem) + _T("\" \\b0");
-						m_sClipBoardDefun1 = _T("(dcl_AxControl_SetColor ") + sGlobalVarName + _T(" \"") + m_ListBox.GetItemText(hItem) + _T("\" ");
+						CString sCtlType = (pControl != mpDclControl)? _T("AxObject") : _T("AxControl");
+						sDefun1 = _T("\\par(\\cf2 dcl_") + sCtlType + _T("_SetColor \\cf0 \\cf3 ") + sGlobalVarName + _T(" \\cf0 \\cf3  \\b1 \"") + m_ListBox.GetItemText(hItem) + _T("\" \\b0");
+						m_sClipBoardDefun1 = _T("(dcl_") + sCtlType + _T("_SetColor ") + sGlobalVarName + _T(" \"") + m_ListBox.GetItemText(hItem) + _T("\" ");
 			
-						sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropPut);
+						sVarType = GetTypeName(pProp->GetConstAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropPut);
 			
 						sDefun1 += theWorkspace.LoadResourceString(IDS_REDCOLORDESC2);
 						m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_REDCOLORDESC);
@@ -937,42 +936,47 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					else
 					{
 						// lets set the put property
-						sDefun1 = _T("\\par(\\cf2 dcl_AxControl_SetProperty \\cf0 \\cf3 ") + sGlobalVarName + _T(" \\cf0 \\cf3\\b \"");
-						m_sClipBoardDefun1 = _T("(dcl_AxControl_SetProperty ") + sGlobalVarName + _T(" \"");
+						CString sCtlType = (pControl != mpDclControl)? _T("AxObject") : _T("AxControl");
+						sDefun1 = _T("\\par(\\cf2 dcl_") + sCtlType + _T("_SetProperty \\cf0 \\cf3 ") + sGlobalVarName + _T(" \\cf0 \\cf3\\b \"");
+						m_sClipBoardDefun1 = _T("(dcl_") + sCtlType + _T("_SetProperty ") + sGlobalVarName + _T(" \"");
 
-						sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropPut);
+						sVarType = GetTypeName(pProp->GetConstAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropPut);
 			
 						if (sVarType == theWorkspace.LoadResourceString(IDS_PROP_PICTURE))
 						{
-							if (pProp->GetAxInterfaceDescriptorPtr()->GetGuid() == IID_IPictureDisp)
+							if (pProp->GetConstAxInterfaceDescriptorPtr()->GetGuid() == IID_IPictureDisp)
 							{
 								CString sLoad;
 								sExtraText = theWorkspace.LoadResourceString(IDS_PICTURESHORTCUT);
-								sExtraText += _T("dcl_AxControl_LoadPicture \\cf0 \\cf3") + sGlobalVarName;
+								sExtraText += _T("dcl_") + sCtlType + _T("_LoadPicture \\cf0 \\cf3") + sGlobalVarName;
 								sLoad = theWorkspace.LoadResourceString(IDS_PICTURESHORTCUT2);
-								m_sClipBoardDefun3 = _T("(dcl_AxControl_LoadPicture ") + sGlobalVarName + theWorkspace.LoadResourceString(IDS_PICDESC);
+								m_sClipBoardDefun3 = _T("(dcl_") + sCtlType + _T("_LoadPicture ") + sGlobalVarName + theWorkspace.LoadResourceString(IDS_PICDESC);
 								sExtraText += sLoad;
 								m_Copy3.ShowWindow(TRUE);
 							}
 						}
 						
 						// here we need to put in OleObject closing instructions if required.
-						if (pProp->GetAxInterfaceDescriptorPtr()->GetType() == VT_DISPATCH ||
-								pProp->GetAxInterfaceDescriptorPtr()->GetType() == VT_UNKNOWN)
+						if (pProp->GetConstAxInterfaceDescriptorPtr()->GetType() == VT_DISPATCH ||
+								pProp->GetConstAxInterfaceDescriptorPtr()->GetType() == VT_UNKNOWN)
 						{
 							if (!sDesc.IsEmpty())
 								sDesc += _T(" \\par \\par ");
-							if (sVarType == theWorkspace.LoadResourceString(IDS_OLEOBJECT) || sVarType == CString())
+							if (sVarType.IsEmpty() || sVarType == _T("OleObject"))
 								sDesc += theWorkspace.LoadResourceString(IDS_WHENFIN);
-							else						
-								sDesc += theWorkspace.LoadResourceString(IDS_WHENFIN2) + sVarType + theWorkspace.LoadResourceString(IDS_WHENFIN3);
+							else
+							{
+								CString sFmt;
+								sFmt.Format( theWorkspace.LoadResourceString(IDS_WHENFIN2), (LPCTSTR)sVarType );
+								sDesc += sFmt;
+							}
 						}
 						
 						// if the set property does not have arguments
 						if (pAxPropPut == NULL || pAxPropPut->GetArgs().empty())
 						{
-							sDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_NEWVAL2);
-							m_sClipBoardDefun1 += m_ListBox.GetItemText(hItem) + theWorkspace.LoadResourceString(IDS_NEWVAL);
+							sDefun1 += m_ListBox.GetItemText(hItem) + _T("\"\\cf0\\b0  \\cf1 ") + theWorkspace.LoadResourceString(IDS_NEWVAL) + _T("\\cf0 ");
+							m_sClipBoardDefun1 += m_ListBox.GetItemText(hItem) + _T("\" ") + theWorkspace.LoadResourceString(IDS_NEWVAL);
 						}
 						// if it does have arguments then we must add them
 						else
@@ -985,7 +989,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 							{
 								CString sArg = pAxPropPut->GetArgs()[i].name;
 								if (sArg.IsEmpty())
-									sArg = theWorkspace.LoadResourceString(IDS_NEWVAL3);
+									sArg = theWorkspace.LoadResourceString(IDS_NEWVAL);
 								sDefun1 += _T(" \\cf1 ") + sArg;
 								m_sClipBoardDefun1 += _T(" ") + sArg;
 								sArgType = GetTypeName(pAxPropPut->GetArgs()[i].vt, NULL, pAxPropPut);
@@ -1020,11 +1024,12 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 
 				if (pAxPropGet)
 				{
-					sVarType = GetTypeName(pProp->GetAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropGet);
+					sVarType = GetTypeName(pProp->GetConstAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropGet);
 
 					// lets set the get property
-					sDefun2 = _T("\\par(\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_AxControl_") + theWorkspace.LoadResourceString(IDS_GETPROP) + _T("\\cf0 \\cf3 ") + sGlobalVarName + _T(" \\cf0 \\cf3\\b \"");
-					m_sClipBoardDefun2 = _T("(Setq Value (dcl_AxControl_") + theWorkspace.LoadResourceString(IDS_GETPROP) + sGlobalVarName + _T(" \"");
+					CString sCtlType = (pControl != mpDclControl)? _T("AxObject") : _T("AxControl");
+					sDefun2 = _T("\\par(\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_") + sCtlType + _T("_GetProperty \\cf0 \\cf3 ") + sGlobalVarName + _T(" \\cf0 \\cf3\\b \"");
+					m_sClipBoardDefun2 = _T("(Setq Value (dcl_") + sCtlType + _T("_GetProperty ") + sGlobalVarName + _T(" \"");
 					sDefun2 += m_ListBox.GetItemText(hItem) + _T("\"\\cf0\\b0 ");
 					m_sClipBoardDefun2 += m_ListBox.GetItemText(hItem) + _T("\"");
 
@@ -1036,7 +1041,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 						{
 							CString sArg = pAxPropGet->GetArgs()[i].name;
 							if (sArg.IsEmpty())
-								sArg = theWorkspace.LoadResourceString(IDS_NEWVAL3);
+								sArg = theWorkspace.LoadResourceString(IDS_NEWVAL);
 							sDefun2 += _T(" \\cf1 ") + sArg;
 							m_sClipBoardDefun2 += _T(" ") + sArg;
 							sArgType = GetTypeName(pAxPropGet->GetArgs()[i].vt, NULL, pAxPropGet);
@@ -1110,7 +1115,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					sDesc += _T(" \\par \\par ");
 					sDesc += theWorkspace.LoadResourceString(IDS_HIDDENPROP);
 				}
-				else if(m_pControl->GetType() == CtlFileDlgCtrl || m_pControl->GetType() <= CtlInvalid)
+				else if(mpDclControl->GetType() == CtlFileDlgCtrl || mpDclControl->GetType() <= _CtlInvalid)
 				{
 					sDesc += _T(" \\par \\par ");
 					sDesc += theWorkspace.LoadResourceString(IDS_DESIGNTIMEONLY);
@@ -1171,7 +1176,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					case Prop::MaxDialogHeight:
 						{
 							CString sMsg;
-							if (m_pControl->GetType() < CtlLabel || m_pControl->GetType() > CtlFileDlgCtrl)
+							if (mpDclControl->GetType() < _CtlFirst || mpDclControl->GetType() > _CtlMax)
 								sMsg = theWorkspace.LoadResourceString(IDS_RUNTIMENOTALLOWEDDLG);
 							else
 								sMsg = theWorkspace.LoadResourceString(IDS_RUNTIMENOTALLOWEDCTRL);
@@ -1180,20 +1185,20 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 						}
 					default:
 						{
-							if (pControl->GetType() == CtlForm)
+							if (pControl->GetType() == _CtlForm)
 								sDesc += CString(_T(" \\par \\par ")) + theWorkspace.LoadResourceString(IDS_DESIGNTIMEONLY);
 							else
 							{
 								// lets set the Put property
-								sDefun1 = CString("\\par (\\cf2 dcl_Control_Set") + m_ListBox.GetItemText(hItem) + " \\cf0 \\cf3" + sGlobalVarName + " ";
+								sDefun1 = CString(_T("\\par (\\cf2 dcl_Control_Set")) + m_ListBox.GetItemText(hItem) + _T(" \\cf0 \\cf3") + sGlobalVarName + _T(" ");
 								m_sClipBoardDefun1 = CString("(dcl_Control_Set") + m_ListBox.GetItemText(hItem) + _T(" ");
-								sDefun1 += "\\par \\cf1 newValue [as " + sVarType + "]\\cf0 ) " + _T(" \\par ");
-								m_sClipBoardDefun1 += sGlobalVarName + "\r\n\t newValue [as " + sVarType + _T("])");
+								sDefun1 += _T("\\par \\cf1 newValue [as ") + sVarType + _T("]\\cf0 ) ") + _T(" \\par ");
+								m_sClipBoardDefun1 += sGlobalVarName + _T("\r\n\t newValue [as ") + sVarType + _T("])");
 								
 								// lets set the get property
-								sDefun2 = CString("\\par (\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_Control_Get") + m_ListBox.GetItemText(hItem) + " \\cf0 \\cf3";
-								m_sClipBoardDefun2 = "(Setq Value (dcl_Control_Get" + m_ListBox.GetItemText(hItem) + _T(" ");
-								sDefun2 += sGlobalVarName + "\\cf0))";
+								sDefun2 = CString(_T("\\par (\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_Control_Get")) + m_ListBox.GetItemText(hItem) + _T(" \\cf0 \\cf3");
+								m_sClipBoardDefun2 = _T("(Setq Value (dcl_Control_Get") + m_ListBox.GetItemText(hItem) + _T(" ");
+								sDefun2 += sGlobalVarName + _T("\\cf0))");
 								m_sClipBoardDefun2 += sGlobalVarName + _T("))");
 								
 								// hide the first copy button
@@ -1236,7 +1241,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 	if (!sVarType.IsEmpty())
 	{
 		// add it to the RTF text as the color red.
-		sRtf += _T(" \\cf1 ") + theWorkspace.LoadResourceString(IDS_ISA) + sVarType + _T("\\cf0  ");
+		sRtf += _T(" \\cf1 ") + theWorkspace.LoadResourceString(IDS_ISA) + _T(" ") + sVarType + _T("\\cf0  ");
 	}
 	sRtf += _T(" \\par \\par ");
 	// add the description
@@ -1297,7 +1302,7 @@ void CObjectBrowser::OnCopy2()
 	if( theWorkspace.GetActiveDocument()->GetPathName().IsEmpty() )
 	{
 		int nWhatNext = MessageBox( theWorkspace.LoadResourceString(IDS_RENAMEPROJECT),
-																theWorkspace.LoadResourceString(IDR_MAINFRAME),
+																theWorkspace.GetAppKey(),
 																MB_YESNOCANCEL | MB_ICONEXCLAMATION | MB_DEFBUTTON1 );
 		if( nWhatNext == IDYES )
 		{
@@ -1331,7 +1336,7 @@ void CObjectBrowser::OnCopy1()
 	if( theWorkspace.GetActiveDocument()->GetPathName().IsEmpty() )
 	{
 		int nWhatNext = MessageBox( theWorkspace.LoadResourceString(IDS_RENAMEPROJECT),
-																theWorkspace.LoadResourceString(IDR_MAINFRAME),
+																theWorkspace.GetAppKey(),
 																MB_YESNOCANCEL | MB_ICONEXCLAMATION | MB_DEFBUTTON1 );
 		if( nWhatNext == IDYES )
 		{
@@ -1452,7 +1457,7 @@ void CObjectBrowser::OnCopy3()
 	if( theWorkspace.GetActiveDocument()->GetPathName().IsEmpty() )
 	{
 		int nWhatNext = MessageBox( theWorkspace.LoadResourceString(IDS_RENAMEPROJECT),
-																theWorkspace.LoadResourceString(IDR_MAINFRAME),
+																theWorkspace.GetAppKey(),
 																MB_YESNOCANCEL | MB_ICONEXCLAMATION | MB_DEFBUTTON1 );
 		if( nWhatNext == IDYES )
 		{
@@ -1480,7 +1485,7 @@ void CObjectBrowser::OnCopy3()
 	}
 }
 
-CString CObjectBrowser::GetTypeName( VARTYPE vt, AxMethodDescriptor *pMethod, AxPropertyDescriptor *pProperty )
+CString CObjectBrowser::GetTypeName( VARTYPE vt, const AxMethodDescriptor *pMethod, const AxPropertyDescriptor *pProperty )
 {
 	CString sType = VARTYPEtoString(vt);
 	if(sType == _T("OLE Object") && (pMethod || pProperty))

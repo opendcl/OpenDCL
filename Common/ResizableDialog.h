@@ -30,9 +30,9 @@ const CSize
 #endif // !defined(__SIZE_ANCHORS_)
 
 #if (_MFC_VER < 0x0800)
-#define __LRESULT UINT
+#define __UINT_LRESULT UINT
 #else
-#define __LRESULT LRESULT
+#define __UINT_LRESULT LRESULT
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -150,7 +150,7 @@ public:
 protected:
 	//{{AFX_MSG(CResizableDialog)
 	virtual BOOL OnInitDialog();
-	afx_msg __LRESULT OnNcHitTest(CPoint point);
+	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDestroy();

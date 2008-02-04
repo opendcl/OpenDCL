@@ -42,14 +42,13 @@ public:
 
 // Implementation
 public:
-	void DrawLine(int sX, int sY, int eX, int eY, int nLineColor);
-	void DrawFillRect(int sX, int sY, int eX, int eY, int nLineColor);
-	void SetHighLight(int nColorIndex);
-	void DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight, CString sFileName);
-	void DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight, CString sFileName, CString sLibSldName);
+	void DrawLine(int sX, int sY, int eX, int eY, const COLORREF& rgb);
+	void DrawFillRect(int sX, int sY, int eX, int eY, const COLORREF& rgb);
+	void SetHighLight(const COLORREF& rgb);
+	void DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight, LPCTSTR pszFilename, LPCTSTR pszSlideName);
 	void RemoveHighLight();
 	void SetAcadColor(long nColor);
-	bool SetFileName(CString sFileName, bool slb, CString slbSldName);
+	bool SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide );
 	void Clear();
 	void CopyDC();
 	void SetDragnDrop(BOOL bRegister);

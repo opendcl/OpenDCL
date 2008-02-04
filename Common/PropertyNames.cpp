@@ -19,7 +19,7 @@ typedef std::string tstring;
 //property id to resource id. This may need to be done if resource id collisions occur. [ORW]
 static UINT GetPropertyNameResourceId( Prop::Id eProp )
 {
-	static const int PROPRESIDBASE = 210;
+	static const int PROPRESIDBASE = 3200;
 	return eProp + PROPRESIDBASE;
 }
 

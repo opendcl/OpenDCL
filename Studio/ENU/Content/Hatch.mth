@@ -5,7 +5,7 @@ dcl_Hatch_
 [Desc]
 This method will display the specified hatch pattern.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab Pattern 
 [as String]
 
@@ -17,7 +17,7 @@ dcl_Hatch_
 [Desc]
 This method clears the hatch control of its contents.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 [End of File]

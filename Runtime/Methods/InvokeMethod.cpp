@@ -957,11 +957,8 @@ void InvokeMethodPoint(
 			
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket) 
-				+ sLispFunction
-				+ sAddSpace
-				+ sInt1 + sComma
-				+ sInt2 + sEndBracket;
+			CString sCommand;
+			sCommand.Format( _T("(%s '(%d %d)) "), (LPCTSTR)sLispFunction, ptPoint.x, ptPoint.y );
 			
 			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
 				sCommand = sLispFunction + sAddSpace;

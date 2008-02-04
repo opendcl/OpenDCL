@@ -6,36 +6,27 @@
 
 #pragma once
 
-#include "ControlPane.h"
 #include "ArxDialogObject.h"
 
 class CFontCollection;
 
 #if (_MFC_VER < 0x0800)
-#define __LRESULT UINT
+#define __UINT_LRESULT UINT
 #else
-#define __LRESULT LRESULT
+#define __UINT_LRESULT LRESULT
 #endif
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CBaseDlg dialog
 
-class CBaseDlg : public CDialog
+class CBaseDlg : public CDialog, public CArxDialogObject
 {
-	TDclFormPtr mpSourceForm;
 	int mnInitialX;
 	int mnInitialY;
 	bool mbHasTitleBar;
-	int mnMinWidth;
-	int mnMinHeight;
-	int mnMaxWidth;
-	int mnMaxHeight;
-	int mnNCWidth; //width of non-client window area
-	int mnNCHeight; //height of non-client window area
-	bool mbShowGrip;
+	bool mbResizable;
 
-	BOOL m_sizing;
 	CSize				m_szGripSize;
 	CRect				m_rcGripRect;
 
@@ -44,19 +35,17 @@ public:
 	CBaseDlg( TDclFormPtr pSourceForm, UINT idd, CWnd* pParent = NULL, DialogParams* pParams = NULL );
 	virtual ~CBaseDlg();
 
+// CDialogObject overrides
 public:
-	virtual CControlPane& GetControlPane() = 0;
-	virtual const CDialogObject& GetDialogObject() const = 0;
-	virtual CDialogObject& GetDialogObject() = 0;
-	virtual void SetMinMaxSize( const CSize& szMin, const CSize& szMax );
+	virtual const CDialogObject& GetDialogObject() const { return *this; }
+	virtual CDialogObject& GetDialogObject() { return *this; }
+	virtual bool IsResizable() const { return mbResizable; }
+	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::Resizable
 
 protected:
-	int GetNCWidth() const { return mnNCWidth; }
-	int GetNCHeight() const { return mnNCHeight; }
 	void SavePosition();
 	CRect ReadPosition() const;
 	void UpdateGripPos();
-	void SetTitleBarIcon( int nPictureID );
 
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -69,10 +58,9 @@ protected:
 	afx_msg void OnClose();
 	afx_msg void OnDestroy();
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
-	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnPaint();
-  afx_msg __LRESULT OnNcHitTest(CPoint point);
+  afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 	afx_msg void PostNcDestroy();
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 };

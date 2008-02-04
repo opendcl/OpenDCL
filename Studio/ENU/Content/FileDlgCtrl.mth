@@ -5,7 +5,7 @@ dcl_FileDlg_
 [Desc]
 This method retrieves the currently selected file(s).
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -15,7 +15,7 @@ dcl_FileDlg_
 [Desc]
 This method retrieves the currently selected file(s)' title.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 
 [Method]
 GetFileExt
@@ -24,7 +24,7 @@ dcl_FileDlg_
 [Desc]
 This method retrieves the extension that is currently selected.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -34,7 +34,7 @@ dcl_FileDlg_
 [Desc]
 This method retrieves the currently selected folder path.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 
 [Method]
 GetFolderName
@@ -43,7 +43,7 @@ dcl_FileDlg_
 [Desc]
 This method retrieves the currently selected folder name.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -53,7 +53,7 @@ dcl_FileDlg_
 [Desc]
 This method retrieves the currently selected file(s)' path name.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -63,7 +63,7 @@ dcl_FileDlg_
 [Desc]
 This method retrieves the current selection count.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 
 
 
@@ -74,7 +74,7 @@ dcl_FileDlg_
 [Desc]
 This method retrieves the current file selection list.
 [Arguments Return] as List
-ProjectFileName
+<CONTROL>
 
 
 
@@ -85,7 +85,7 @@ dcl_FileDlg_
 [Desc]
 This method will change the text of OK button.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 
 

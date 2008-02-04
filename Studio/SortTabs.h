@@ -16,7 +16,6 @@ class COpenDCLView;
 
 class CSortTabs : public CPropertyPage
 {
-	COpenDCLView* mpView;
 	TDclControlPtr mpDclControl;
 	CTabsPane* mpTabsPane;
 	CListBox	m_List;
@@ -26,7 +25,7 @@ class CSortTabs : public CPropertyPage
 
 // Construction
 public:
-	CSortTabs( COpenDCLView* pView, TDclControlPtr pControl, CTabsPane* pTabsPane );
+	CSortTabs( TDclControlPtr pControl, CTabsPane* pTabsPane );
 	~CSortTabs();
 
 // Overrides

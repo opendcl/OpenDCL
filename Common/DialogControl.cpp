@@ -10,25 +10,32 @@
 #include "ControlTypes.h"
 #include "Workspace.h"
 #include "ToolTips.h"
+#include "UndoManager.h"
+#include "DragDropService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CDialogControl
 
-CDialogControl::CDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl )
+CDialogControl::CDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControlWnd )
 : mpTemplate( pTemplate )
-, mpControl( pControl )
+, mpControlWnd( pControlWnd )
 , mpControlPane( pPane )
 , mbEnumProps( false )
+, mpControlManager( NULL )
 {
-	pTemplate->SetControlInstance( this );
-	TPropertyPtr pToolTipBalloon = pTemplate->GetPropertyObject(Prop::ToolTipBalloon);
-	mToolTip.SetDefaultSizes( !pToolTipBalloon || pToolTipBalloon->GetBooleanValue() );
+	if( mpTemplate )
+	{
+		pTemplate->SetControlInstance( this );
+		TPropertyPtr pToolTipBalloon = pTemplate->GetPropertyObject(Prop::ToolTipBalloon);
+		mToolTip.SetDefaultSizes( !pToolTipBalloon || pToolTipBalloon->GetBooleanValue() );
+	}
 }
 
 CDialogControl::~CDialogControl()
 {
-	mpTemplate->SetControlInstance( NULL );
+	if( mpTemplate )
+		mpTemplate->SetControlInstance( NULL );
 }
 
 CThemeHelperST* CDialogControl::GetThemeHelper()
@@ -40,7 +47,74 @@ ControlType CDialogControl::GetControlType() const
 {
 	if( mpTemplate )
 		return mpTemplate->GetType();
-	return CtlInvalid;
+	return _CtlInvalid;
+}
+
+DROPEFFECT CDialogControl::BeginDragDrop( const CPoint& point )
+{
+	CDragDropService* pDragDropService = GetDragDropService();
+	if( !pDragDropService )
+		return DROPEFFECT_NONE;
+	return pDragDropService->BeginDragDrop( point );
+}
+
+DROPEFFECT CDialogControl::OnBeginDrag( const CPoint& point, COleDataSource& SourceData )
+{
+	UINT CF_DclControl = CDragDropService::GetDclControlClipboardFormat();
+	HGLOBAL hDclControlPtr = GlobalAlloc( GHND, sizeof(CDclControlObject*) );
+	if( !hDclControlPtr )
+		return DROPEFFECT_NONE;
+	*(CDclControlObject**)GlobalLock( hDclControlPtr ) = &(*mpTemplate);
+	GlobalUnlock( hDclControlPtr );
+	SourceData.CacheGlobalData( CF_DclControl, hDclControlPtr );
+	DWORD dwDropEffect = DROPEFFECT_COPY;
+
+	CString sText;
+	mpControlWnd->GetWindowText( sText );
+	if( sText.IsEmpty() )
+		return dwDropEffect;
+	CStringA sTextA( sText );
+	SIZE_T cchText = sTextA.GetLength() + 1;
+	HGLOBAL hData = GlobalAlloc( GHND, cchText );
+	if( !hData )
+		return dwDropEffect;
+	lstrcpynA( (char*)GlobalLock( hData ), sTextA, cchText );
+	GlobalUnlock( hData );
+	SourceData.CacheGlobalData( CF_TEXT, hData );
+	return dwDropEffect;
+}
+
+DROPEFFECT CDialogControl::OnDragEnter( const CPoint& point, COleDataObject* pSourceData,
+																				DWORD dwKeyState )
+{
+	return OnDragOver( point, pSourceData, dwKeyState );
+}
+
+DROPEFFECT CDialogControl::OnDragOver( const CPoint& point, COleDataObject* pSourceData,
+																			 DWORD dwKeyState )
+{
+	if( (dwKeyState & MK_CONTROL) != MK_CONTROL )
+		return DROPEFFECT_MOVE;    
+	return DROPEFFECT_COPY;
+}
+
+bool CDialogControl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
+														 DROPEFFECT dropEffect )
+{
+	return false;
+}
+
+CWnd* CDialogControl::GetTopLevelWnd()
+{
+	CWnd* pTopLevelWnd = mpControlWnd;
+	//if the control is hosted inside another window, find the ancestor
+	//that is a child of the host dialog
+	CWnd* pHostDlg = GetControlPane()->GetHostDialog();
+	assert( pHostDlg->IsChild( pTopLevelWnd ) );
+	while( (pTopLevelWnd->GetControlUnknown() || (pTopLevelWnd->GetStyle() & WS_CHILD)) &&
+				 pTopLevelWnd->GetParent() != pHostDlg )
+		pTopLevelWnd = pTopLevelWnd->GetParent();
+	return pTopLevelWnd;
 }
 
 bool CDialogControl::IsAsyncEvents() const
@@ -64,13 +138,57 @@ CString CDialogControl::GetKeyPath() const
 	return CString();
 }
 
+CAxContainerCtrl* CDialogControl::GetActiveXCtrl() const
+{
+	if( mpTemplate->GetType() != CtlActiveX )
+		return NULL;
+	return (CAxContainerCtrl*)mpControlWnd;
+}
+
+bool CDialogControl::Focus()
+{
+	if( !mpControlWnd )
+		return false;
+	mpControlWnd->SetFocus();
+	return true;
+}
+
+CRect CDialogControl::GetEffectiveWindowRect() const
+{
+	CRect rcWnd( 0, 0, 0, 0 );
+	if( mpControlWnd )
+	{
+		CWnd* pWndChildOfHost = mpControlWnd;
+		//if the control is hosted inside another window, use the parent instead
+		if( (pWndChildOfHost->GetControlUnknown() || (pWndChildOfHost->GetStyle() & WS_CHILD)) &&
+				pWndChildOfHost->GetParent() != mpControlPane->GetHostDialog() )
+			pWndChildOfHost = pWndChildOfHost->GetParent();
+
+		pWndChildOfHost->GetWindowRect( &rcWnd );
+		mpControlPane->GetHostDialog()->ScreenToClient( &rcWnd );
+	}
+	return rcWnd;
+}
+
+CRect CDialogControl::GetEffectiveClientRect() const
+{
+	CRect rcClient( 0, 0, 0, 0 );
+	if( mpControlWnd )
+	{
+		CWnd* pWndChildOfHost = mpControlWnd;
+		//if the control is hosted inside another window, use the parent instead
+		if( (pWndChildOfHost->GetStyle() & WS_CHILD) &&
+				pWndChildOfHost->GetParent() != mpControlPane->GetHostDialog() )
+			pWndChildOfHost = pWndChildOfHost->GetParent();
+
+		pWndChildOfHost->GetClientRect( &rcClient );
+	}
+	return rcClient;
+}
+
 CRect CDialogControl::GetWndRect() const
 {
-#ifdef EDITOR
-	CPoint pntUpperLeft( 0, 0 );
-#else
 	CPoint pntUpperLeft( mpTemplate->GetLongProperty(Prop::Left), mpTemplate->GetLongProperty(Prop::Top) );
-#endif
 	return CRect( pntUpperLeft.x,
 								pntUpperLeft.y,
 								pntUpperLeft.x + mpTemplate->GetLongProperty(Prop::Width),
@@ -79,7 +197,7 @@ CRect CDialogControl::GetWndRect() const
 
 DWORD CDialogControl::GetWndStyle() const
 {
-	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
+	DWORD dwStyle = WS_CHILD /*| WS_VISIBLE | WS_CLIPSIBLINGS*/;
 
 	if( mpTemplate->GetBooleanProperty(Prop::IsTabStop) )
 		dwStyle |= WS_TABSTOP;
@@ -96,21 +214,44 @@ CString CDialogControl::GetWndCaption() const
 	return mpTemplate->GetStringProperty(Prop::Caption);
 }
 
+void CDialogControl::ApplyPosition()
+{
+	mpControlPane->ApplyPosition( TDialogControlLockedPtr( this ) );
+}
+
 bool CDialogControl::ApplyPropertiesEnum()
 {
 	bool bSuccess = true;
 	mbEnumProps = true;
-	TPropertyPtr pAutoSizeProp = mpTemplate->GetPropertyObject( Prop::AutoSize );
+	//make sure the position offsets are corrected before changing anything else
+	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::UseLeftFromRight ) );
+	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::UseRightFromRight ) );
+	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::UseTopFromBottom ) );
+	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::UseBottomFromBottom ) );
+	TPropertyPtr pAutoSizeProp = NULL;
 	const TPropertyList& Props = mpTemplate->GetPropertyList();
 	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 	{
-		if( (*iter) != pAutoSizeProp ) //save autosize for last
-			OnApplyProperty( (*iter) );
+		TPropertyPtr pProp = (*iter);
+		switch( pProp->GetID() )
+		{
+		case Prop::AutoSize: //save autosize for last
+			pAutoSizeProp = pProp;
+			break;
+		case Prop::UseLeftFromRight: //already applied these
+		case Prop::UseRightFromRight:
+		case Prop::UseTopFromBottom:
+		case Prop::UseBottomFromBottom:
+			break;
+		default:
+			OnApplyProperty( pProp );
+			break;
+		}
 	}
 	if( pAutoSizeProp )
 		OnApplyProperty( pAutoSizeProp );
 	mbEnumProps = false;
-	mpControl->Invalidate();
+	mpControlWnd->Invalidate();
 	return bSuccess;
 }
 
@@ -118,13 +259,16 @@ bool CDialogControl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !pProp )
 		return false;
+	DisableUndoManager DisableUndo( mpTemplate->GetUndoManager() );
 	bool bSuccess = true;
 	switch( pProp->GetID() )
 	{
+	case Prop::Name: if( !OnApplyName( pProp ) ) bSuccess = false; break;
 	case Prop::ForegroundColor: if( !OnApplyForegroundColor( pProp ) ) bSuccess = false; break;
 	case Prop::BackgroundColor: if( !OnApplyBackgroundColor( pProp ) ) bSuccess = false; break;
 	case Prop::BorderStyle: if( !OnApplyBorderStyle( pProp ) ) bSuccess = false; break;
 	case Prop::Enabled: if( !OnApplyEnabled( pProp ) ) bSuccess = false; break;
+	case Prop::DragnDropAllowDrop: if( !OnApplyDragDropAllowDrop( pProp ) ) bSuccess = false; break;
 	case Prop::Visible: if( !OnApplyVisible( pProp ) ) bSuccess = false; break;
 	case Prop::Caption: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
 	case Prop::TitleBarText: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
@@ -144,8 +288,25 @@ bool CDialogControl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::FontItalic: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
 	case Prop::FontUnderline: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
 	case Prop::FontStrikeout: if( !IsEnumeratingProperties() && !OnApplyFont( pProp ) ) bSuccess = false; break;
+	case Prop::Left: if( !OnApplyLeft( pProp ) ) bSuccess = false; break;
+	case Prop::Top: if( !OnApplyTop( pProp ) ) bSuccess = false; break;
+	case Prop::Width: if( !OnApplyWidth( pProp ) ) bSuccess = false; break;
+	case Prop::Height: if( !OnApplyHeight( pProp ) ) bSuccess = false; break;
+	case Prop::LeftFromRight: if( !OnApplyLeftFromRight( pProp ) ) bSuccess = false; break;
+	case Prop::RightFromRight: if( !OnApplyRightFromRight( pProp ) ) bSuccess = false; break;
+	case Prop::TopFromBottom: if( !OnApplyTopFromBottom( pProp ) ) bSuccess = false; break;
+	case Prop::BottomFromBottom: if( !OnApplyBottomFromBottom( pProp ) ) bSuccess = false; break;
+	case Prop::UseLeftFromRight: if( !OnApplyUseLeftFromRight( pProp ) ) bSuccess = false; break;
+	case Prop::UseRightFromRight: if( !OnApplyUseRightFromRight( pProp ) ) bSuccess = false; break;
+	case Prop::UseTopFromBottom: if( !OnApplyUseTopFromBottom( pProp ) ) bSuccess = false; break;
+	case Prop::UseBottomFromBottom: if( !OnApplyUseBottomFromBottom( pProp ) ) bSuccess = false; break;
 	}
 	return bSuccess;
+}
+
+bool CDialogControl::OnApplyName( TPropertyPtr pProp )
+{
+	return true;
 }
 
 bool CDialogControl::OnApplyForegroundColor( TPropertyPtr pProp )
@@ -153,6 +314,7 @@ bool CDialogControl::OnApplyForegroundColor( TPropertyPtr pProp )
 	CAcadColorService* pColorService = GetColorService();
 	if( pColorService )
 		pColorService->SetForegroundColor( pProp->GetLongValue() );
+	mpControlWnd->Invalidate();
 	return true;
 }
 
@@ -160,7 +322,27 @@ bool CDialogControl::OnApplyBackgroundColor( TPropertyPtr pProp )
 {
 	CAcadColorService* pColorService = GetColorService();
 	if( pColorService )
+	{
 		pColorService->SetBackgroundColor( pProp->GetLongValue() );
+		if( pColorService->IsBackgroundTransparent() )
+		{
+			mpControlWnd->ModifyStyleEx( 0, WS_EX_TRANSPARENT );
+			if( mpControlWnd->IsWindowVisible() )
+			{ //force the background to be redrawn
+				CWnd* pHostDlg = mpControlPane->GetHostDialog();
+				if( pHostDlg )
+				{
+					CRect rcControl;
+					mpControlWnd->GetWindowRect( &rcControl );
+					pHostDlg->ScreenToClient( &rcControl );
+					pHostDlg->InvalidateRect( &rcControl, TRUE );
+				}
+			}
+		}
+		else
+			mpControlWnd->ModifyStyleEx( WS_EX_TRANSPARENT, 0 );
+	}
+	mpControlWnd->Invalidate();
 	return true;
 }
 
@@ -169,54 +351,69 @@ bool CDialogControl::OnApplyBorderStyle( TPropertyPtr pProp )
 	switch( pProp->GetLongValue() )
 	{
 	case 0:
-		mpControl->ModifyStyle( WS_BORDER, 0, SWP_FRAMECHANGED );
-		mpControl->ModifyStyleEx( (WS_EX_STATICEDGE | WS_EX_CLIENTEDGE), 0, SWP_FRAMECHANGED );
+		mpControlWnd->ModifyStyle( WS_BORDER, 0, SWP_FRAMECHANGED );
+		mpControlWnd->ModifyStyleEx( (WS_EX_STATICEDGE | WS_EX_CLIENTEDGE), 0, SWP_FRAMECHANGED );
 		break;
 	case 1:
-		mpControl->ModifyStyle( WS_BORDER, 0, SWP_FRAMECHANGED );
-		mpControl->ModifyStyleEx( WS_EX_STATICEDGE, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED );
+		mpControlWnd->ModifyStyle( WS_BORDER, 0, SWP_FRAMECHANGED );
+		mpControlWnd->ModifyStyleEx( WS_EX_STATICEDGE, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED );
 		break;
 	case 2:
-		mpControl->ModifyStyle( WS_BORDER, 0, SWP_FRAMECHANGED );
-		mpControl->ModifyStyleEx( WS_EX_CLIENTEDGE, WS_EX_STATICEDGE, SWP_FRAMECHANGED );
+		mpControlWnd->ModifyStyle( WS_BORDER, 0, SWP_FRAMECHANGED );
+		mpControlWnd->ModifyStyleEx( WS_EX_CLIENTEDGE, WS_EX_STATICEDGE, SWP_FRAMECHANGED );
 		break;
 	}
+	OnFrameChanged();
 	return true;
 }
 
 bool CDialogControl::OnApplyEnabled( TPropertyPtr pProp )
 {
-	mpControl->EnableWindow( pProp->GetBooleanValue() );
+	mpControlWnd->EnableWindow( pProp->GetBooleanValue() );
+	return true;
+}
+
+bool CDialogControl::OnApplyDragDropAllowDrop( TPropertyPtr pProp )
+{
+	CDragDropService* pDragDropService = GetDragDropService();
+	if( !pDragDropService )
+		return false;
+	if( pProp->GetBooleanValue() )
+		pDragDropService->RegisterControlAsDropTarget();
+	else
+		pDragDropService->RevokeControlAsDropTarget();
 	return true;
 }
 
 bool CDialogControl::OnApplyVisible( TPropertyPtr pProp )
 {
-	mpControl->ShowWindow( pProp->GetBooleanValue()? SW_SHOW : SW_HIDE );
+	mpControlWnd->ShowWindow( pProp->GetBooleanValue()? SW_SHOW : SW_HIDE );
 	return true;
 }
 
 bool CDialogControl::OnApplyCaption( TPropertyPtr pProp )
 {
-	mpControl->SetWindowText( pProp->GetStringValue() );
+	mpControlWnd->SetWindowText( pProp->GetStringValue() );
 	return true;
 }
 
 bool CDialogControl::OnApplyVScrollBar( TPropertyPtr pProp )
 {
 	if( pProp->GetBooleanValue() )
-		mpControl->ModifyStyle( 0, WS_VSCROLL, SWP_FRAMECHANGED );
+		mpControlWnd->ModifyStyle( 0, WS_VSCROLL, SWP_FRAMECHANGED );
 	else
-		mpControl->ModifyStyle( WS_VSCROLL, 0, SWP_FRAMECHANGED );
+		mpControlWnd->ModifyStyle( WS_VSCROLL, 0, SWP_FRAMECHANGED );
+	OnFrameChanged();
 	return true;
 }
 
 bool CDialogControl::OnApplyHScrollBar( TPropertyPtr pProp )
 {
 	if( pProp->GetBooleanValue() )
-		mpControl->ModifyStyle( 0, WS_HSCROLL, SWP_FRAMECHANGED );
+		mpControlWnd->ModifyStyle( 0, WS_HSCROLL, SWP_FRAMECHANGED );
 	else
-		mpControl->ModifyStyle( WS_HSCROLL, 0, SWP_FRAMECHANGED );
+		mpControlWnd->ModifyStyle( WS_HSCROLL, 0, SWP_FRAMECHANGED );
+	OnFrameChanged();
 	return true;
 }
 
@@ -225,23 +422,297 @@ bool CDialogControl::OnApplyUseVisualStyle( TPropertyPtr pProp )
 	CThemeHelperST* pThemeHelper = mpControlPane->GetThemeHelper();
 	if( !pThemeHelper || !pThemeHelper->IsThemeActive() )
 		return false; //visual styles not supported
-	HWND hwnd = mpControl->m_hWnd;
+	HWND hwnd = mpControlWnd->m_hWnd;
 	if( pProp->GetBooleanValue() )
 		pThemeHelper->SetWindowTheme( hwnd, NULL, NULL );
 	else
 		pThemeHelper->SetWindowTheme( hwnd, L"", L"" );
+	mpControlWnd->Invalidate();
 	return true;
 }
 
 bool CDialogControl::OnApplyToolTip( TPropertyPtr pProp )
 {
 	GetToolTipCtrl().RemoveAllTools();
-	SetToolTipEx( mpControl, GetToolTipCtrl(), mpTemplate );
+	SetToolTipEx( mpControlWnd, GetToolTipCtrl(), mpTemplate );
 	return true;
 }
 
 bool CDialogControl::OnApplyFont( TPropertyPtr pProp )
 {
-	mpControl->SetFont( theWorkspace.GetFontCollection().GetFont( mpTemplate, mpControl ) );
+	mpControlWnd->SetFont( theWorkspace.GetFontCollection().GetFont( mpTemplate, mpControlWnd ) );
+	mpControlWnd->Invalidate();
 	return true;
+}
+
+bool CDialogControl::OnApplyLeft( TPropertyPtr pProp )
+{
+	//if( pProp->GetLongValue() < 0 )
+	//	pProp->SetLongValue( 0 );
+
+	TPropertyPtr pLeftFromRightProp = mpTemplate->GetPropertyObject( Prop::LeftFromRight );
+	if( pLeftFromRightProp )
+	{
+		long lLeftFromRight = mpTemplate->GetLongProperty( Prop::UseLeftFromRight );
+		switch( lLeftFromRight  )
+		{
+		case 0:
+		case 1: //offset from right edge of control area
+			pLeftFromRightProp->SetLongValue( mpControlPane->GetControlArea().right - pProp->GetLongValue() );
+			break;
+		case 2: //offset from center of control area
+			pLeftFromRightProp->SetLongValue( pProp->GetLongValue() - mpControlPane->GetControlArea().CenterPoint().x );
+			break;
+		default: //offset from splitter
+			pLeftFromRightProp->SetLongValue( pProp->GetLongValue() - mpControlPane->GetSplitterPos( lLeftFromRight ).x );
+			break;
+		}
+	}
+	ApplyPosition();
+	return true;
+}
+
+bool CDialogControl::OnApplyTop( TPropertyPtr pProp )
+{
+	//if( pProp->GetLongValue() < 0 )
+	//	pProp->SetLongValue( 0 );
+
+	TPropertyPtr pTopFromBottomProp = mpTemplate->GetPropertyObject( Prop::TopFromBottom );
+	if( pTopFromBottomProp )
+	{
+		long lTopFromBottom = mpTemplate->GetLongProperty( Prop::UseTopFromBottom );
+		switch( lTopFromBottom  )
+		{
+		case 0:
+		case 1: //offset from right edge of control area
+			pTopFromBottomProp->SetLongValue( mpControlPane->GetControlArea().bottom - pProp->GetLongValue() );
+			break;
+		case 2: //offset from center of control area
+			pTopFromBottomProp->SetLongValue( pProp->GetLongValue() - mpControlPane->GetControlArea().CenterPoint().y );
+			break;
+		default: //offset from splitter
+			pTopFromBottomProp->SetLongValue( pProp->GetLongValue() - mpControlPane->GetSplitterPos( lTopFromBottom ).y );
+			break;
+		}
+	}
+	ApplyPosition();
+	return true;
+}
+
+bool CDialogControl::OnApplyWidth( TPropertyPtr pProp )
+{
+	//if( pProp->GetLongValue() < 0 )
+	//	pProp->SetLongValue( 0 );
+
+	TPropertyPtr pRightFromRightProp = mpTemplate->GetPropertyObject( Prop::RightFromRight );
+	if( pRightFromRightProp )
+	{
+		long lLeft = mpTemplate->GetLongProperty( Prop::Left );
+		long lRightFromRight = mpTemplate->GetLongProperty( Prop::UseRightFromRight );
+		switch( lRightFromRight  )
+		{
+		case 0:
+		case 1: //offset from right edge of control area
+			pRightFromRightProp->SetLongValue( mpControlPane->GetControlArea().right - lLeft - pProp->GetLongValue() );
+			break;
+		default: //offset from splitter
+			pRightFromRightProp->SetLongValue( lLeft + pProp->GetLongValue() - mpControlPane->GetSplitterPos( lRightFromRight ).x );
+			break;
+		}
+	}
+	ApplyPosition();
+	return true;
+}
+
+bool CDialogControl::OnApplyHeight( TPropertyPtr pProp )
+{
+	//if( pProp->GetLongValue() < 0 )
+	//	pProp->SetLongValue( 0 );
+
+	TPropertyPtr pBottomFromBottomProp = mpTemplate->GetPropertyObject( Prop::BottomFromBottom );
+	if( pBottomFromBottomProp )
+	{
+		long lTop = mpTemplate->GetLongProperty( Prop::Top );
+		long lBottomFromBottom = mpTemplate->GetLongProperty( Prop::UseBottomFromBottom );
+		switch( lBottomFromBottom  )
+		{
+		case 0:
+		case 1: //offset from right edge of control area
+			pBottomFromBottomProp->SetLongValue( mpControlPane->GetControlArea().bottom - lTop - pProp->GetLongValue() );
+			break;
+		default: //offset from splitter
+			pBottomFromBottomProp->SetLongValue( mpControlPane->GetSplitterPos( lBottomFromBottom ).y - pProp->GetLongValue() - lTop );
+			break;
+		}
+	}
+	ApplyPosition();
+	return true;
+}
+
+bool CDialogControl::OnApplyLeftFromRight( TPropertyPtr pProp )
+{
+	TPropertyPtr pLeftProp = mpTemplate->GetPropertyObject( Prop::Left );
+	if( !pLeftProp )
+		return false;
+	long lUseLeftFromRight = mpTemplate->GetLongProperty( Prop::UseLeftFromRight );
+	long lNewLeft = 0;
+	switch( lUseLeftFromRight  )
+	{
+	case 0:
+	case 1: //offset from right edge of control area
+		lNewLeft = mpControlPane->GetControlArea().right - pProp->GetLongValue();
+		break;
+	case 2: //offset from center of control area
+		lNewLeft = mpControlPane->GetControlArea().CenterPoint().x + pProp->GetLongValue();
+		break;
+	default: //offset from splitter
+		lNewLeft = mpControlPane->GetSplitterPos( lUseLeftFromRight ).x + pProp->GetLongValue();
+		break;
+	}
+	if( pLeftProp->GetLongValue() != lNewLeft )
+	{
+		pLeftProp->SetLongValue( lNewLeft );
+		return OnApplyLeft( pLeftProp );
+	}
+	return true;
+}
+
+bool CDialogControl::OnApplyRightFromRight( TPropertyPtr pProp )
+{
+	TPropertyPtr pWidthProp = mpTemplate->GetPropertyObject( Prop::Width );
+	if( !pWidthProp )
+		return false;
+	long lLeft = mpTemplate->GetLongProperty( Prop::Left );
+	long lUseRightFromRight = mpTemplate->GetLongProperty( Prop::UseRightFromRight );
+	long lNewWidth = 0;
+	switch( lUseRightFromRight  )
+	{
+	case 0:
+	case 1: //offset from right edge of control area
+		lNewWidth = mpControlPane->GetControlArea().right - pProp->GetLongValue() - lLeft;
+		break;
+	default: //offset from splitter
+		lNewWidth = mpControlPane->GetSplitterPos( lUseRightFromRight ).x + pProp->GetLongValue() - lLeft;
+		break;
+	}
+	if( pWidthProp->GetLongValue() != lNewWidth )
+	{
+		pWidthProp->SetLongValue( lNewWidth );
+		return OnApplyWidth( pWidthProp );
+	}
+	return true;
+}
+
+bool CDialogControl::OnApplyTopFromBottom( TPropertyPtr pProp )
+{
+	TPropertyPtr pTopProp = mpTemplate->GetPropertyObject( Prop::Top );
+	if( !pTopProp )
+		return false;
+	long lUseTopFromBottom = mpTemplate->GetLongProperty( Prop::UseTopFromBottom );
+	long lNewTop = 0;
+	switch( lUseTopFromBottom  )
+	{
+	case 0:
+	case 1: //offset from right edge of control area
+		lNewTop = mpControlPane->GetControlArea().bottom - pProp->GetLongValue();
+		break;
+	case 2: //offset from center of control area
+		lNewTop = mpControlPane->GetControlArea().CenterPoint().y + pProp->GetLongValue();
+		break;
+	default: //offset from splitter
+		lNewTop = mpControlPane->GetSplitterPos( lUseTopFromBottom ).y + pProp->GetLongValue();
+		break;
+	}
+	if( pTopProp->GetLongValue() != lNewTop )
+	{
+		pTopProp->SetLongValue( lNewTop );
+		return OnApplyTop( pTopProp );
+	}
+	return true;
+}
+
+bool CDialogControl::OnApplyBottomFromBottom( TPropertyPtr pProp )
+{
+	TPropertyPtr pHeightProp = mpTemplate->GetPropertyObject( Prop::Height );
+	if( !pHeightProp )
+		return false;
+	long lTop = mpTemplate->GetLongProperty( Prop::Top );
+	long lUseBottomFromBottom = mpTemplate->GetLongProperty( Prop::UseBottomFromBottom );
+	long lNewHeight = 0;
+	switch( lUseBottomFromBottom  )
+	{
+	case 0:
+	case 1: //offset from right edge of control area
+		lNewHeight = mpControlPane->GetControlArea().bottom - pProp->GetLongValue() - lTop;
+		break;
+	default: //offset from splitter
+		lNewHeight = mpControlPane->GetSplitterPos( lUseBottomFromBottom ).y - pProp->GetLongValue() - lTop;
+		break;
+	}
+	if( pHeightProp->GetLongValue() != lNewHeight )
+	{
+		pHeightProp->SetLongValue( lNewHeight );
+		return OnApplyHeight( pHeightProp );
+	}
+	return true;
+}
+
+bool CDialogControl::OnApplyUseLeftFromRight( TPropertyPtr pProp )
+{
+	if( pProp->GetLongValue() > 0 )
+	{
+		TPropertyPtr pLeftFromRightProp = mpTemplate->GetPropertyObject( Prop::LeftFromRight );
+		if( !pLeftFromRightProp )
+			return false;
+		return OnApplyLeftFromRight( pLeftFromRightProp );
+	}
+	TPropertyPtr pLeftProp = mpTemplate->GetPropertyObject( Prop::Left );
+	if( !pLeftProp )
+		return false;
+	return OnApplyLeft( pLeftProp );
+}
+
+bool CDialogControl::OnApplyUseRightFromRight( TPropertyPtr pProp )
+{
+	if( pProp->GetLongValue() > 0 )
+	{
+		TPropertyPtr pRightFromRightProp = mpTemplate->GetPropertyObject( Prop::RightFromRight );
+		if( !pRightFromRightProp )
+			return false;
+		return OnApplyRightFromRight( pRightFromRightProp );
+	}
+	TPropertyPtr pWidthProp = mpTemplate->GetPropertyObject( Prop::Width );
+	if( !pWidthProp )
+		return false;
+	return OnApplyWidth( pWidthProp );
+}
+
+bool CDialogControl::OnApplyUseTopFromBottom( TPropertyPtr pProp )
+{
+	if( pProp->GetLongValue() > 0 )
+	{
+		TPropertyPtr pTopFromBottomProp = mpTemplate->GetPropertyObject( Prop::TopFromBottom );
+		if( !pTopFromBottomProp )
+			return false;
+		return OnApplyTopFromBottom( pTopFromBottomProp );
+	}
+	TPropertyPtr pTopProp = mpTemplate->GetPropertyObject( Prop::Top );
+	if( !pTopProp )
+		return false;
+	return OnApplyTop( pTopProp );
+}
+
+bool CDialogControl::OnApplyUseBottomFromBottom( TPropertyPtr pProp )
+{
+	if( pProp->GetLongValue() > 0 )
+	{
+		TPropertyPtr pBottomFromBottomProp = mpTemplate->GetPropertyObject( Prop::BottomFromBottom );
+		if( !pBottomFromBottomProp )
+			return false;
+		return OnApplyBottomFromBottom( pBottomFromBottomProp );
+	}
+	TPropertyPtr pHeightProp = mpTemplate->GetPropertyObject( Prop::Height );
+	if( !pHeightProp )
+		return false;
+	return OnApplyHeight( pHeightProp );
 }

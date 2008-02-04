@@ -70,9 +70,12 @@ bool CFolderComboCtrl::OnApplyProperty( TPropertyPtr pProp )
 		break;
 	case Prop::ItemData:
 		{
-			const PropVal::TIntArray& rInt = *pProp->GetIntArrayPtr();
-			for( int idx = 0; (size_t)idx < rInt.size(); ++idx )
-				SetItemData( idx, (DWORD_PTR)rInt.at( idx ) );
+			const PropVal::TIntArray* prInt = pProp->GetConstIntArrayPtr();
+			if( prInt )
+			{
+				for( int idx = 0; (size_t)idx < prInt->size(); ++idx )
+					SetItemData( idx, (DWORD_PTR)prInt->at( idx ) );
+			}
 		}
 		break;
 	case Prop::Text:

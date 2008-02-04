@@ -225,8 +225,11 @@ LRESULT CFolderComboBox::OnSelchange( WPARAM wParam, LPARAM lParam )
 
 void CFolderComboBox::OnDestroy() 
 {
-	m_treeCtrl.FreeMemory(m_treeCtrl.GetRootItem());
-	m_treeCtrl.DeleteAllItems();
-	m_treeCtrl.DestroyWindow();	
+	if( m_treeCtrl.m_hWnd )
+	{
+		m_treeCtrl.FreeMemory(m_treeCtrl.GetRootItem());
+		m_treeCtrl.DeleteAllItems();
+		m_treeCtrl.DestroyWindow();
+	}
 	__super::OnDestroy();
 }

@@ -5,7 +5,7 @@ dcl_OptionList_
 [Desc]
 This method will add a string to the specified ListBox.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab NewString
 [as String]
 
@@ -15,9 +15,9 @@ SetEnabled
 dcl_OptionList_
 [Prefix]
 [Desc]
-This method will force an option list item as enabled (T or 1) or disabled (Nil or 0).
+This method will set an option list item as enabled (T) or disabled (Nil).
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 \par\tab nEnabled
@@ -31,7 +31,7 @@ dcl_OptionList_
 [Desc]
 This method will add a list of strings to the specified ListBox.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab StringList
 [as List of Strings]
 
@@ -43,7 +43,7 @@ dcl_OptionList_
 [Desc]
 This method will retrieve a requested list item.
 [Arguments Return] as String
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 
@@ -55,8 +55,7 @@ dcl_OptionList_
 [Desc]
 This method will return the total number of list items.
 [Arguments Return] as Integer
-ProjectFileName
-
+<CONTROL>
 
 
 [Method]
@@ -66,7 +65,7 @@ dcl_OptionList_
 [Desc]
 This method will set the currently selected list item in a single selection ListBox. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 
@@ -78,7 +77,7 @@ dcl_OptionList_
 [Desc]
 This method will return the index of the currently selected list item in a single selection ListBox. -1 will be returned if nothing is selected.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -88,7 +87,7 @@ dcl_OptionList_
 [Desc]
 This method retrieves the index of the first visible item in a ListBox.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 
 
 [Method]
@@ -98,7 +97,7 @@ dcl_OptionList_
 [Desc]
 This method ensures that the indicated ListBox item is visible. If it’s not the ListBox is scrolled to ensure the item is visible.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 
@@ -110,7 +109,7 @@ dcl_OptionList_
 [Desc]
 This method will delete a list item from the ListBox.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 
@@ -122,7 +121,7 @@ dcl_OptionList_
 [Desc]
 This method will insert a list item in the ListBox.
 [Arguments Return] as Integer
-ProjectFileName
+<CONTROL>
 \par\tab nIndex
 [as Integer]
 \par\tab NewString
@@ -136,7 +135,7 @@ dcl_OptionList_
 [Desc]
 This method sets the title text of the tool tip text for an option button in the list.
 [Arguments]
-ProjectFileName
+<CONTROL>
 \par\tab nItem
 [as Integer]
 \par\tab sTitleText
@@ -150,6 +149,6 @@ dcl_OptionList_
 [Desc]
 This method will clear the ListBox of all its items.
 [Arguments]
-ProjectFileName
+<CONTROL>
 
 [End of File]

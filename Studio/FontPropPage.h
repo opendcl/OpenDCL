@@ -15,6 +15,8 @@ class CFontPropertyPage : public CPropertyPage
 {
 	DECLARE_DYNCREATE(CFontPropertyPage)
 
+	TDclControlPtr mpDclControl;
+
 // Construction
 public:
 	CFontPropertyPage(TDclControlPtr pDclControl = NULL);
@@ -37,14 +39,6 @@ public:
 	CString	m_sStyle;
 	//}}AFX_DATA
 	
-	CString sOpenDCLProf;
-	TDclControlPtr mpDclControl;
-	TPropertyPtr m_pFontName;
-	TPropertyPtr m_pFontSize;
-	TPropertyPtr m_pFontStrikeOut;
-	TPropertyPtr m_pFontUnderline;
-	TPropertyPtr m_pFontBold;
-	TPropertyPtr m_pFontItalic;
 
 // Overrides
 	// ClassWizard generate virtual function overrides
@@ -69,7 +63,6 @@ protected:
 
 private:
 	CFont m_fontSample;
-	int m_cyPixelsPerInch;
 	static int CALLBACK FontEnumProc(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, 
 		int FontType, CFontPropertyPage* pFontPage );
 };

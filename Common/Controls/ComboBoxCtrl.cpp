@@ -94,24 +94,33 @@ bool CComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::List:
 		if( !GetComboHandler() )
 		{
-			const PropVal::TCStringArray& rString = *pProp->GetStringArrayPtr();
+			const PropVal::TCStringArray* prString = pProp->GetConstStringArrayPtr();
 			ResetContent();
-			for( int idx = 0; (size_t)idx < rString.size(); ++idx )
-				AddString( rString.at( idx ) );
+			if( prString )
+			{
+				for( int idx = 0; (size_t)idx < prString->size(); ++idx )
+					AddString( prString->at( idx ) );
+			}
 			if( IsEnumeratingProperties() )
 			{
-				const PropVal::TIntArray& rInt = *mpTemplate->GetPropertyObject( Prop::ItemData )->GetIntArrayPtr();
-				for( int idx = 0; (size_t)idx < rInt.size(); ++idx )
-					SetItemData( idx, (DWORD_PTR)rInt.at( idx ) );
+				const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
+				if( prInt )
+				{
+					for( int idx = 0; (size_t)idx < prInt->size(); ++idx )
+						SetItemData( idx, (DWORD_PTR)prInt->at( idx ) );
+				}
 			}
 		}
 		break;
 	case Prop::ItemData:
 		if( !IsEnumeratingProperties() || GetComboHandler() )
 		{
-			const PropVal::TIntArray& rInt = *pProp->GetIntArrayPtr();
-			for( int idx = 0; (size_t)idx < rInt.size(); ++idx )
-				SetItemData( idx, (DWORD_PTR)rInt.at( idx ) );
+			const PropVal::TIntArray* prInt = pProp->GetConstIntArrayPtr();
+			if( prInt )
+			{
+				for( int idx = 0; (size_t)idx < prInt->size(); ++idx )
+					SetItemData( idx, (DWORD_PTR)prInt->at( idx ) );
+			}
 		}
 		break;
 	case Prop::Text:
@@ -128,10 +137,10 @@ DWORD CComboBoxCtrl::GetComboStyle() const
 {
 	switch( mpTemplate->GetLongProperty( Prop::ComboBoxStyle ) )
 	{
-	case CmboStyle_Combo: return CBS_DROPDOWN;
-	case CmboStyle_Simple: return CBS_SIMPLE;
-	case CmboStyle_DropDown: return CBS_DROPDOWNLIST;
-	case CmboStyle_FontSimpleList: return CBS_SIMPLE;
+	case ComboStyle::Combo: return CBS_DROPDOWN;
+	case ComboStyle::Simple: return CBS_SIMPLE;
+	case ComboStyle::DropDown: return CBS_DROPDOWNLIST;
+	case ComboStyle::FontSimpleList: return CBS_SIMPLE;
 	}
 	return CBS_DROPDOWNLIST;
 }

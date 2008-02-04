@@ -13,32 +13,8 @@
 
 #include "stdafx.h"
 #include "ColorPickerCB.h"
-
-
-//
-//	Load Standard Colors...
-//	(If You Change This, Be Sure To Load CCB_MAX_COLORS Colors...)
-//
-SColorAndName	CColorPickerCB::ms_pColors[ CCB_MAX_COLORS ] =
-{
-	
-	SColorAndName( RGB( 0x00, 0x00, 0x00 ),	"Black" ),
-	SColorAndName( RGB( 0x80, 0x00, 0x00 ),	"Maroon" ),
-	SColorAndName( RGB( 0x00, 0x80, 0x00 ),	"Green" ),
-	SColorAndName( RGB( 0x80, 0x80, 0x00 ),	"Olive" ),
-	SColorAndName( RGB( 0x00, 0x00, 0x80 ),	"Navy" ),
-	SColorAndName( RGB( 0x80, 0x00, 0x80 ),	"Purple" ),
-	SColorAndName( RGB( 0x00, 0x80, 0x80 ),	"Teal" ),
-	SColorAndName( RGB( 0x80, 0x80, 0x80 ),	"Grey" ),
-	SColorAndName( RGB( 0xC0, 0xC0, 0xC0 ),	"Silver" ),
-	SColorAndName( RGB( 0xFF, 0x00, 0x00 ),	"Red" ),
-	SColorAndName( RGB( 0x00, 0xFF, 0x00 ),	"Lime" ),
-	SColorAndName( RGB( 0xFF, 0xFF, 0x00 ),	"Yellow" ),
-	SColorAndName( RGB( 0x00, 0x00, 0xFF ),	"Blue" ),
-	SColorAndName( RGB( 0xFF, 0x00, 0xFF ),	"Fushcia" ),
-	SColorAndName( RGB( 0x00, 0xFF, 0xFF ),	"Aqua" ),
-	SColorAndName( RGB( 0xFF, 0xFF, 0xFF ),	"White" ),
-};
+#include "Workspace.h"
+#include "Resource.h"
 
 
 CColorPickerCB::CColorPickerCB()

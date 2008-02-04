@@ -31,7 +31,8 @@ Day Software that was released as open source under the GNU
 General Public License in 2006 by owner Chad Wanless. OpenDCL 
 represents the combined work of the original authors and the 
 following individuals who contributed in various ways to the 
-OpenDCL open source project on SourceForge at:
+OpenDCL open source project at:
+http://www.opendcl.com
 http://www.sourceforge.net/projects/opendcl
 
 Credits include SourceForge handles with real names in 
@@ -41,7 +42,7 @@ PROGRAMMING
 owenwengerd (Owen Wengerd)
 davidrobison (David Robison)
 
-DOCUMENTATION/EXAMPLES
+DOCUMENTATION/SAMPLES
 davic_jg_white (David White)
 bazzacad (Barry Ralphs)
 kerrybrown (Kerry Brown)

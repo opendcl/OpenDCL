@@ -5,7 +5,7 @@
 
 #include "ComboHandler.h"
 #include "Workspace.h"
-#include "SharedRes.h"
+#include "Resource.h"
 #include <string>
 #include <map>
 
@@ -50,9 +50,9 @@ public:
 	CFontComboHandler()
 		{
 			mImageList.Create( 15, 13, ILC_COLOR4 | ILC_MASK, 3, 1 );
-			HMODULE hRes = theWorkspace.GetResourceModule();
-			mImageList.Add( LoadIcon( hRes, MAKEINTRESOURCE( IDI_TRUEFONT ) ) );
-			mImageList.Add( LoadIcon( hRes, MAKEINTRESOURCE( IDI_ACADFONT ) ) );
+			HMODULE hRes = theWorkspace.GetLocalResourceModule();
+			mImageList.Add( LoadIcon( hRes, MAKEINTRESOURCE( IDI_TTFONT ) ) );
+			mImageList.Add( LoadIcon( hRes, MAKEINTRESOURCE( IDI_SHXFONT ) ) );
 		}
 	virtual ~CFontComboHandler() {}
 

@@ -5,27 +5,27 @@
 #include "ToolTipsPage.h"
 #include "ToolTips.h"
 #include "AcadColorTable.h"
-#include "EditorWorkspace.h"
+#include "StudioWorkspace.h"
+#include "StudioDialogControl.h"
 #include "PictureObject.h"
 #include "PropertyObject.h"
-#include "SharedRes.h"
-
-
-static CString LTOA(int nVal)
-{
-  CString sLong;
-	sLong.Format(_T("%d"), nVal);
-  return sLong;
-}
+#include "Resource.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // CToolTipsPage property page
 
-IMPLEMENT_DYNCREATE(CToolTipsPage, CPropertyPage)
-
-CToolTipsPage::CToolTipsPage() : CPropertyPage(CToolTipsPage::IDD)
+CToolTipsPage::CToolTipsPage( TDclControlPtr pDclControl )
+: CPropertyPage(CToolTipsPage::IDD)
+, mpDclControl( pDclControl )
 {
+	m_pToolTipBalloon = pDclControl->GetPropertyObject(Prop::ToolTipBalloon);	
+	m_pToolTipTitle = pDclControl->GetPropertyObject(Prop::ToolTipTitle);	
+	m_pToolTipLine = pDclControl->GetPropertyObject(Prop::ToolTipLine);	
+	m_pToolTipBody = pDclControl->GetPropertyObject(Prop::ToolTipBody);	
+	m_pToolTipPicture = pDclControl->GetPropertyObject(Prop::ToolTipPicture);	
+	m_pToolTipAvi = pDclControl->GetPropertyObject(Prop::ToolTipAviFileName);
+	m_pToolTipTitleColor = pDclControl->GetPropertyObject(Prop::ToolTipTitleColor);
 }
 
 CToolTipsPage::~CToolTipsPage()
@@ -103,7 +103,7 @@ BOOL CToolTipsPage::OnInitDialog()
 	m_Pictures.AddString(_T("< X >"));
 	
 	int nIndex=0;
-	TEditorProjectPtr pProjectList = activeProject;
+	TStudioProjectPtr pProjectList = activeProject;
 	int n = pProjectList->GetPictureList().GetCount();
 	while(nIndex < pProjectList->GetPictureList().GetCount())
 	{
@@ -196,7 +196,7 @@ void CToolTipsPage::OnPreview()
 	else if (sPic == _T("<  !  >"))
 		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_WARN);
 	else if (sPic == _T("< X >"))
-		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_X);
+		m_tooltip.ShowHelpTooltip(&pt, sTooltipText, IDI_ERR);
 	else if (sPic.Left(1) == _T("<"))	
 		m_tooltip.ShowHelpTooltip(&pt, sTooltipText);
 	else if (sPic.GetLength() > 0)
@@ -293,7 +293,13 @@ void CToolTipsPage::Commit()
 	m_pToolTipAvi->SetStringValue(sAviFile);
 
 	m_pToolTipTitleColor->SetLongValue(m_Color.GetColour());
-	theWorkspace.SetModified(true);
+
+	CStudioDialogControl::UpdateProperty(mpDclControl, m_pToolTipBalloon->GetID());
+	CStudioDialogControl::UpdateProperty(mpDclControl, m_pToolTipTitle->GetID());
+	CStudioDialogControl::UpdateProperty(mpDclControl, m_pToolTipLine->GetID());
+	CStudioDialogControl::UpdateProperty(mpDclControl, m_pToolTipPicture->GetID());
+	CStudioDialogControl::UpdateProperty(mpDclControl, m_pToolTipAvi->GetID());
+	CStudioDialogControl::UpdateProperty(mpDclControl, m_pToolTipTitleColor->GetID());
 }
 
 BOOL CToolTipsPage::OnApply() 

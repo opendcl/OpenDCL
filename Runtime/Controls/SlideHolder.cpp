@@ -133,23 +133,12 @@ void CSlideHolder::SetAcadColor(long nColor)
 	Invalidate();
 }
 
-bool CSlideHolder::SetFileName(CString sFileName, bool slb, CString slbSldName)
+bool CSlideHolder::SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide )
 {	
-	bool bReturn;
-	if (slb)
-	{		 
-		bReturn = mSlideCtrl.Load(sFileName, slb, slbSldName);	
-	}
-	else
-	{
-		bReturn = mSlideCtrl.Load(sFileName, false, CString());
-	}
-
-	if (bReturn)
-		Invalidate();
-	
-	return bReturn;
-
+	if (!mSlideCtrl.Load(pszFilename, pszSlide))
+		return false;
+	Invalidate();
+	return true;
 }
 
 void CSlideHolder::Clear()
@@ -274,34 +263,14 @@ void CSlideHolder::PaintControl(CDC *pdc)
 	
 }
 
-void CSlideHolder::DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight, CString sFileName)
-{
-	HDC hdc = ::GetDC(m_hWnd);
-	
-	CRect rcCell(nX, nY, nX + nSlideWidth, nY + nSlideHeight);
-	CxAcadSlide tSlide;
-
-	tSlide.Load(sFileName, false, CString());
-	//tSlide.Load(sFileName);
-
-	// draw the slide
-	tSlide.Draw(hdc, rcCell);
-
-	tSlide.FreeData();
-	tSlide.m_FileName = CString();
-
-	// then releasing the DC itself
-	::ReleaseDC(m_hWnd, hdc);
-
-}
-void CSlideHolder::DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight, CString sFileName, CString sLibSldName)
+void CSlideHolder::DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight, LPCTSTR pszFilename, LPCTSTR pszSlideName)
 {
 	HDC hdc = ::GetDC(m_hWnd);
 
 	CRect rcCell(nX, nY, nX + nSlideWidth, nY + nSlideHeight);
 	CxAcadSlide tSlide;
 
-	tSlide.Load(sFileName, true, sLibSldName);
+	tSlide.Load(pszFilename, pszSlideName);
 	//tSlide.Load(sFileName, sLibSldName);
 
 	// draw the slide
@@ -392,33 +361,21 @@ void CSlideHolder::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CSlideHolder::OnClicked() 
 {
-	if (mpTemplate->m_bEventsAsAction)
+	CString sEvent = mpTemplate->GetStringProperty(Prop::EventClicked);
+	if( sEvent.SpanExcluding( _T("_") ) == _T("c:OnActionEvent") )
 	{
-		GetParent()->GetParent()->EnableWindow(TRUE);
-		int stat;
-		struct resbuf *result = NULL, *list;    
-
-		CString sText = mpTemplate->GetStringProperty(Prop::EventClicked);
-		
-		list = acutBuildList(RTSTR, sText, 0);
-		if (list != NULL) 
-		{ 
-			stat = acedInvoke(list, &result); 
-			acutRelRb(list); 
-			if(result != NULL) 
-			{
-				acutRelRb(result); 
-			}
-		}
-		GetParent()->GetParent()->EnableWindow(FALSE);
-		GetParent()->EnableWindow(TRUE);
+		GetParent()->GetParent()->EnableWindow( TRUE );
+		resbuf rbEvent = { NULL, RTSTR };
+		rbEvent.resval.rstring = sEvent.LockBuffer();
+		resbuf* prbResult = NULL;
+		acedInvoke( &rbEvent, &prbResult ); 
+		if( prbResult ) 
+			acutRelRb( prbResult ); 
+		GetParent()->GetParent()->EnableWindow( FALSE );
+		GetParent()->EnableWindow( TRUE );
 	}
 	else
-	{
-		// call methods to invoke the event
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), IsAsyncEvents());	
-	}
-	
+		InvokeMethod( sEvent, IsAsyncEvents() );	
 }
 
 void CSlideHolder::OnDoubleclicked() 
@@ -478,10 +435,10 @@ void CSlideHolder::OnKillFocus(CWnd* pNewWnd)
 	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }
 
-void CSlideHolder::SetHighLight(int nColorIndex)
+void CSlideHolder::SetHighLight(const COLORREF& rgb)
 {
 	m_bSelectedRect = true;
-	m_HighlightColor = GetRGBColor(nColorIndex);		
+	m_HighlightColor = rgb;		
 	Invalidate();
 }
 
@@ -497,12 +454,11 @@ BOOL CSlideHolder::PreTranslateMessage(MSG* pMsg)
 	return __super::PreTranslateMessage(pMsg);
 }
 
-void CSlideHolder::DrawLine(int sX, int sY, int eX, int eY, int nLineColor)
+void CSlideHolder::DrawLine(int sX, int sY, int eX, int eY, const COLORREF& rgb)
 {
 	HDC hdc = ::GetDC(m_hWnd);
 	CPoint point;
 	
-	COLORREF rgb = GetRGBColor(nLineColor);
 	HGDIOBJ pen = ::CreatePen(PS_SOLID, 1, rgb);
 	HGDIOBJ OldPen = SelectObject(hdc, pen);
 	
@@ -519,7 +475,7 @@ void CSlideHolder::DrawLine(int sX, int sY, int eX, int eY, int nLineColor)
 
 }
 
-void CSlideHolder::DrawFillRect(int sX, int sY, int eX, int eY, int nLineColor)
+void CSlideHolder::DrawFillRect(int sX, int sY, int eX, int eY, const COLORREF& rgb)
 {
 	HDC hdc = ::GetDC(m_hWnd);
 
@@ -531,7 +487,7 @@ void CSlideHolder::DrawFillRect(int sX, int sY, int eX, int eY, int nLineColor)
 	rcCell.bottom = eY;
 
 	// draw the solid rectangle
-	::SetBkColor(hdc, GetRGBColor(nLineColor));
+	::SetBkColor(hdc, rgb);
 	::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &rcCell, NULL, 0, NULL);
 
 	// then releasing the DC itself

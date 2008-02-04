@@ -13,34 +13,6 @@
 #pragma once
 
 
-//
-//	Constants...
-//
-#define		CCB_MAX_COLORS			16							// Colors In List
-#define		CCB_MAX_COLOR_NAME		16							// Max Chars For Color Name - 1
-
-
-//
-//	Internal Structure For Color/Name Storage...
-//
-struct	SColorAndName
-{
-	/**/	SColorAndName()
-	{
-		ZeroMemory( this, sizeof( SColorAndName ) );		// Init Structure
-	};
-	/**/	SColorAndName( COLORREF crColor, PCSTR cpColor )
-	{
-		ZeroMemory( this, sizeof( SColorAndName ) );		// Init Structure
-		m_crColor = crColor;								// Set Color RGB Value
-		strncpy( m_cColor, cpColor, CCB_MAX_COLOR_NAME );	// Set Color Name
-	};
-	COLORREF	m_crColor;									// Actual Color RGB Value
-	char		m_cColor[ CCB_MAX_COLOR_NAME ];				// Actual Name For Color
-};
-
-
-
 class CColorPickerCB : public CComboBox
 {
 // Construction
@@ -51,8 +23,6 @@ public:
 private:
 	bool			m_bInitialized;							// Control Initialized?
 	CString			m_sColorName;							// Name Of Selected Color
-	static
-	SColorAndName	ms_pColors[ CCB_MAX_COLORS ];			// Array Of Colors And Names
 
 private:
 

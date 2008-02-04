@@ -112,6 +112,7 @@
 //#define _RENDER_SUPPORT_			//- Support for the AutoCAD Render API
 //#define _ARX_CUSTOM_DRAG_N_DROP_	//- Support for the ObjectARX Drag'n Drop API
 //#define _INC_LEAGACY_HEADERS_		//- Include legacy headers in this project
+#define _ARX_CUSTOM_DRAG_N_DROP_		//- Support custom drag/drop
 #include "ARXVI.h" //include AutoCAD target version independence header before ObjectARX headers
 #include "arxHeaders.h"
 
@@ -142,7 +143,9 @@ extern AcApDataManager<CDocData> DocVars ;
 typedef ACHAR* LPACRXSTR;
 typedef const ACHAR* LPCACRXSTR;
 
-extern HMODULE appResModule(void); //get the localized resource module
+typedef int ADSRESULT; //to make code more readable
+
+extern HMODULE appLocalResModule(void); //get the localized resource module
 
 //We need a custom resource override function that uses AfxSetResourceHandle() instead of
 //AcApDocManager::pushResourceHandle() because the latter crashes in a zero-doc state
@@ -154,7 +157,7 @@ public:
 	CAcAppContextModuleResourceOverride()
 		:	m_hmodOriginal( AfxGetResourceHandle() ), mbMustRestore( true )
 	{
-		AfxSetResourceHandle( appResModule() );
+		AfxSetResourceHandle( appLocalResModule() );
 	}
 	CAcAppContextModuleResourceOverride( HMODULE hmodNew )
 		:	m_hmodOriginal( AfxGetResourceHandle() ), mbMustRestore( true )

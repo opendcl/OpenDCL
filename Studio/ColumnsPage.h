@@ -13,7 +13,6 @@
 class CImageListPage;
 class CDclFormObject;
 class CDclControlObject;
-class COpenDCLView;
 
 
 class CColumnData : public CObject
@@ -42,6 +41,9 @@ public:
 
 class CColumnsPage : public CPropertyPage
 {
+	TDclControlPtr mpDclControl;
+	CImageListPage* mpImageListPage;
+
 	CStatic	m_StyleTitle;
 	CEdit	m_IndexEdit;
 	CEdit	m_FileExt;
@@ -63,16 +65,10 @@ class CColumnsPage : public CPropertyPage
 	CStatic	m_Index;
 	CComboBox	m_Alignment;
 
-// Dialog Data
-	enum { IDD = IDD_COLUMNS };
-
-// members
-public:
 	bool m_bShowStyles;
 	INT_PTR m_nIndex;
 	CListHeader    m_HeaderCtrl;
 	bool m_bChangingIndex;
-	CImageListPage *m_pImageListPage;
 	bool bUsesRowHeader;
 	
 	TPropertyPtr m_pColCaptions;	
@@ -86,13 +82,12 @@ public:
 	TPropertyPtr m_pColImageItems;	
 
 	CArray<CColumnData, CColumnData> m_ColData;										 
-	COpenDCLView *m_pView;
-	TDclFormPtr m_pDclForm;
-	TDclControlPtr m_pControl;
+
+	enum { IDD = IDD_COLUMNS };
 
 // Construction
 public:
-	CColumnsPage();
+	CColumnsPage( TDclControlPtr pDclControl, CImageListPage* pImageListPage );
 	~CColumnsPage();
 
 // Operators

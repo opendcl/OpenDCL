@@ -16,6 +16,7 @@ class CAcadColorService;
 class CThemeHelperST;
 class CDragDropService;
 class CArxControlServices;
+class CControlManager;
 enum Prop::Id;
 enum ControlType;
 
@@ -96,14 +97,15 @@ class CDialogControl
 protected:		
 	TDclControlPtr mpTemplate;
 	CControlPane* mpControlPane;
-	CWnd* mpControl;
+	CWnd* mpControlWnd;
+	CControlManager* mpControlManager;
 
 private:		
 	bool mbEnumProps;
 	CPPToolTip mToolTip;
 
 public:
-	CDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl );
+	CDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControlWnd );
 	virtual ~CDialogControl();
 
 	//static TDialogControlPtr Create( TDclControlPtr pTemplate, CControlPane* pPane,
@@ -119,16 +121,24 @@ public:
 	CPPToolTip& GetToolTipCtrl() { CreateTooltip(); return mToolTip; }
 	virtual CAcadColorService* GetColorService() { return NULL; }
 	virtual CThemeHelperST* GetThemeHelper();
-	virtual CDragDropService* GetDragDropService() { return NULL; }
-	virtual const CWnd* GetControlWnd() const { return mpControl; }
-	virtual CWnd* GetControlWnd() { return mpControl; }
+	virtual const CWnd* GetControlWnd() const { return mpControlWnd; }
+	virtual CWnd* GetControlWnd() { return mpControlWnd; }
+	virtual CWnd* GetTopLevelWnd();
 	virtual ControlType GetControlType() const;
-	virtual UINT GetControlId() const { return (mpControl? mpControl->GetDlgCtrlID() : (UINT)-1); }
+	virtual UINT GetControlId() const { return (mpControlWnd? mpControlWnd->GetDlgCtrlID() : (UINT)-1); }
 	virtual bool GetChildPanes( std::list< const CControlPane* >& listChildren ) const { return false; }
+	virtual HWND GetHWnd() const { return mpControlWnd? mpControlWnd->m_hWnd : NULL; }
+	virtual bool Focus();
+	virtual CRect GetEffectiveWindowRect() const; //returns control's window rect in parent's client coordinates
+	virtual CRect GetEffectiveClientRect() const; //return control's client rect
 
 	// ARX specific services
 	virtual const CArxControlServices* GetArxServices() const { return NULL; }
 	virtual bool IsAsyncEvents() const;
+
+	// Editor specific services
+	CControlManager* GetControlManager() const { return mpControlManager; }
+	void SetControlManager( CControlManager* pManager ) { mpControlManager = pManager; }
 
 	// Name rendition
 public:
@@ -140,14 +150,29 @@ public:
 
 	// Services
 public:
+	CAxContainerCtrl* GetActiveXCtrl() const;
 private:
-	void CreateTooltip() { if( !mToolTip.m_hWnd ) mToolTip.Create( mpControl ); }
+	void CreateTooltip() { if( !mToolTip.m_hWnd ) mToolTip.Create( mpControlWnd ); }
 
-	// Control
+	// Drag and Drop Support
+public:
+	virtual CDragDropService* GetDragDropService() { return NULL; }
+	virtual COleDropSource* GetDropSource() const { return NULL; }
+	virtual COleDropTarget* GetDropTarget() const { return NULL; }
+	virtual DROPEFFECT BeginDragDrop( const CPoint& point ); //point in client coordinates
+	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
+	virtual DROPEFFECT OnDragEnter( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
+	virtual DROPEFFECT OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
+	virtual void OnDragLeave() {}
+	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
+
+	// Creation & Property Application
 public:
 	virtual CRect GetWndRect() const; //get window position from properties
 	virtual DWORD GetWndStyle() const; //get window style from properties
 	virtual CString GetWndCaption() const; //get window caption from properties
+	virtual void OnFrameChanged() {} //called by member functions that change the non-client size
+	virtual void ApplyPosition(); //move control window to new position
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) = 0;
 
 	// control properties
@@ -158,10 +183,12 @@ public:
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
 	// handlers for specific properties
+	virtual bool OnApplyName( TPropertyPtr pProp ); //Prop::Name
 	virtual bool OnApplyForegroundColor( TPropertyPtr pProp ); //Prop::ForegroundColor
 	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp ); //Prop::BackgroundColor
 	virtual bool OnApplyBorderStyle( TPropertyPtr pProp ); //Prop::BorderStyle
 	virtual bool OnApplyEnabled( TPropertyPtr pProp ); //Prop::Enabled
+	virtual bool OnApplyDragDropAllowDrop( TPropertyPtr pProp ); //Prop::DragDropAllowDrop
 	virtual bool OnApplyVisible( TPropertyPtr pProp ); //Prop::Visible
 	virtual bool OnApplyCaption( TPropertyPtr pProp ); //Prop::Caption, Prop::TitleBarText
 	virtual bool OnApplyVScrollBar( TPropertyPtr pProp ); //Prop::VScrollBar
@@ -169,6 +196,18 @@ public:
 	virtual bool OnApplyUseVisualStyle( TPropertyPtr pProp ); //Prop::UseVisualStyle
 	virtual bool OnApplyToolTip( TPropertyPtr pProp ); //Prop::ToolTipTitle
 	virtual bool OnApplyFont( TPropertyPtr pProp ); //Prop::FontName
+	virtual bool OnApplyLeft( TPropertyPtr pProp ); //Prop::Left
+	virtual bool OnApplyTop( TPropertyPtr pProp ); //Prop::Top
+	virtual bool OnApplyWidth( TPropertyPtr pProp ); //Prop::Width
+	virtual bool OnApplyHeight( TPropertyPtr pProp ); //Prop::Height
+	virtual bool OnApplyLeftFromRight( TPropertyPtr pProp ); //Prop::LeftFromRight
+	virtual bool OnApplyRightFromRight( TPropertyPtr pProp ); //Prop::RightFromRight
+	virtual bool OnApplyTopFromBottom( TPropertyPtr pProp ); //Prop::TopFromBottom
+	virtual bool OnApplyBottomFromBottom( TPropertyPtr pProp ); //Prop::BottomFromBottom
+	virtual bool OnApplyUseLeftFromRight( TPropertyPtr pProp ); //Prop::UseLeftFromRight
+	virtual bool OnApplyUseRightFromRight( TPropertyPtr pProp ); //Prop::UseRightFromRight
+	virtual bool OnApplyUseTopFromBottom( TPropertyPtr pProp ); //Prop::UseTopFromBottom
+	virtual bool OnApplyUseBottomFromBottom( TPropertyPtr pProp ); //Prop::UseBottomFromBottom
 };
 
 
@@ -177,8 +216,8 @@ public:
 class CAutoDialogControl : public CDialogControl
 {
 public:
-	CAutoDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl )
-		: CDialogControl( pTemplate, pPane, pControl ) {}
-	virtual ~CAutoDialogControl() { delete mpControl; }
+	CAutoDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControlWnd )
+		: CDialogControl( pTemplate, pPane, pControlWnd ) {}
+	virtual ~CAutoDialogControl() { delete mpControlWnd; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
 };

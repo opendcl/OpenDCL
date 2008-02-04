@@ -35,7 +35,7 @@ public:
 	CListCtrl	m_PicList;
 	//}}AFX_DATA
 
-	CImageList& GetImageList() { return *mpImageList; }
+	RefCountedPtr< CImageList >& GetImageList() { return mpImageList; }
 
 	void LoadPictureFile(LPCTSTR szFile);
 	BOOL ImageListAddPicture(LPPICTUREDISP iPic);

@@ -5,7 +5,7 @@
 
 #include "DclControlObject.h"
 
-class CControlHolder;
+class CDialogControl;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -14,33 +14,43 @@ class CControlHolder;
 class CSelectedControl : public CObject
 {
 	TDclControlPtr mpTemplate;
-	CControlHolder* mpControlHolder;
+	CControlManager* mpControlManager;
 	int mnIndex;
 public:
 	CRect m_rcLastDrawn;
 
 public:
-	CSelectedControl( TDclControlPtr pTemplate = NULL, CControlHolder* pControlHolder = NULL, int idxControl = -1 )
+	CSelectedControl( TDclControlPtr pTemplate = NULL, CControlManager* pControlManager = NULL, int idxControl = -1 )
 	: mpTemplate( pTemplate )
-	, mpControlHolder( pControlHolder )
+	, mpControlManager( pControlManager )
 	, mnIndex( idxControl )
 	, m_rcLastDrawn( 0, 0, 0, 0 )
 	{
 	}
-	void Set( TDclControlPtr pTemplate = NULL, CControlHolder* pControlHolder = NULL, int idxControl = -1 )
+	CSelectedControl( const CSelectedControl& src )
+	: mpTemplate( src.mpTemplate )
+	, mpControlManager( src.mpControlManager )
+	, mnIndex( src.mnIndex )
+	, m_rcLastDrawn( src.m_rcLastDrawn )
+	{
+	}
+	void Set( TDclControlPtr pTemplate = NULL, CControlManager* pControlManager = NULL, int idxControl = -1 )
 	{	
 		mpTemplate = pTemplate;
-		mpControlHolder = pControlHolder;
+		mpControlManager = pControlManager;
 		mnIndex = idxControl;
 	}
 	void Reset() { m_rcLastDrawn.SetRect( 0, 0, 0, 0 ); }
 	void Clear()
 	{	
 		mpTemplate = NULL;
-		mpControlHolder = NULL;
+		mpControlManager = NULL;
 		mnIndex = -1;
 	}
 	TDclControlPtr GetTemplate() const { return mpTemplate; }
-	CControlHolder* GetControlHolder() const { return mpControlHolder; }
+	CControlManager* GetControlManager() const { return mpControlManager; }
+	CDialogControl* GetControlInstance() const
+		{ return mpTemplate? mpTemplate->GetControlInstance() : NULL; }
 	int GetIndex() const { return mnIndex; }
+	operator bool() const { return (!!mpControlManager); }
 };

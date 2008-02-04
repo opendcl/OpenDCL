@@ -7,6 +7,7 @@
 #include "ImageListObject.h"
 #include "DclFormObject.h"
 #include "PropertyObject.h"
+#include "StudioDialogControl.h"
 #include "Workspace.h"
 
 
@@ -23,7 +24,7 @@ CImageListPage::CImageListPage( TDclControlPtr pDclControl )
 , nCurrentHeight( 0 )
 {
 	RefCountedPtr< CImageListObject > pImageList = pDclControl->GetImageList();
-	if( pImageList )
+	if( pImageList && pImageList->GetImageList().GetSafeHandle() )
 	{
 		mpImageList->Create( &pImageList->GetImageList() );
 		const CSize& szImage = pImageList->GetSize();
@@ -62,7 +63,7 @@ void CImageListPage::OnAddimage()
 	CString sFilter;
 	CStringList m_FileList;
 
-	sFilter = theWorkspace.LoadResourceString(IDS_FILTER);
+	sFilter = theWorkspace.LoadResourceString(IDS_IMAGEFILEFILTER);
 
 	m_FileList.RemoveAll();
 
@@ -198,7 +199,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 		cdc->HIMETRICtoLP(&sizePic);
 
 		// if image list has not been created
-		if (NULL == GetImageList().m_hImageList)
+		if (NULL == GetImageList()->m_hImageList)
 		{			
 			if (nCurrentWidth == 0)
 			{
@@ -207,9 +208,9 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 			}
 
 			// create the image list
-			bRetVal = GetImageList().Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | ILC_MASK, 0, 1);
-			m_PicList.SetImageList(&GetImageList(), TVSIL_NORMAL);
-			m_PicList.SetImageList(&GetImageList(), LVSIL_SMALL);
+			bRetVal = GetImageList()->Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | ILC_MASK, 0, 1);
+			m_PicList.SetImageList(GetImageList(), TVSIL_NORMAL);
+			m_PicList.SetImageList(GetImageList(), LVSIL_SMALL);
 			TCHAR Value[80];
 			_ltot(sizePic.cx, Value, 10);
 			m_DispWidth.SetWindowText(Value);
@@ -219,7 +220,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 		if (bRetVal)
 		{
 			// add bitmap to imagelist; mask is ignored in this sample
-			nRetVal = GetImageList().Add(
+			nRetVal = GetImageList()->Add(
 				CBitmap::FromHandle(hBitmap),
 				RGB(192, 192, 192) ) ;
 			bRetVal = (nRetVal != -1);			
@@ -247,7 +248,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 		cdc->HIMETRICtoLP(&sizePic);
 
 		// if image list has not been created
-		if (NULL == GetImageList().m_hImageList)
+		if (NULL == GetImageList()->m_hImageList)
 		{
 			if (nCurrentWidth == 0)
 			{
@@ -256,9 +257,9 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 			}
 			
 			// create the image list
-			bRetVal = GetImageList().Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | ILC_MASK, 1, 1);
-			m_PicList.SetImageList(&GetImageList(), TVSIL_NORMAL);
-			m_PicList.SetImageList(&GetImageList(), LVSIL_SMALL);
+			bRetVal = GetImageList()->Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | ILC_MASK, 1, 1);
+			m_PicList.SetImageList(GetImageList(), TVSIL_NORMAL);
+			m_PicList.SetImageList(GetImageList(), LVSIL_SMALL);
 			TCHAR Value[80];
 			_ltot(sizePic.cx, Value, 10);
 			m_DispWidth.SetWindowText(Value);
@@ -269,7 +270,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 		if (bRetVal)
 		{
 			// add icon to image list
-			nRetVal = GetImageList().Add(hIcon);
+			nRetVal = GetImageList()->Add(hIcon);
 			bRetVal = (nRetVal != -1);
 		}
 		//DestroyIcon(hIcon);		
@@ -280,7 +281,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 		return bRetVal;
 	}
 	
-	int nImage = GetImageList().GetImageCount()-1;
+	int nImage = GetImageList()->GetImageCount()-1;
 	int nPicIndex = m_PicList.GetItemCount();
 	LV_ITEM lvItem;
 	lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;
@@ -315,7 +316,7 @@ void CImageListPage::OnRemoveimage()
 		nItem = m_PicList.GetNextSelectedItem(pos);
 		if (nItem != -1)
 			m_PicList.DeleteItem(nItem);
-		GetImageList().Remove(nItem);
+		GetImageList()->Remove(nItem);
 	}
 	
 
@@ -362,7 +363,7 @@ BOOL CImageListPage::OnApply()
 		mpDclControl->SetImageList( new CImageListObject( mpImageList ) );
 	else
 		mpDclControl->SetImageList( NULL );
-	theWorkspace.SetModified(true);
+	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::ImageList);
 	return CPropertyPage::OnApply();
 }
 
@@ -370,7 +371,7 @@ BOOL CImageListPage::OnInitDialog()
 {
 	CPropertyPage::OnInitDialog();
 	
-	if (GetImageList().m_hImageList != NULL)
+	if (GetImageList()->m_hImageList != NULL)
 	{
 		TCHAR sValue [80];
 		_ltot(nCurrentWidth, sValue, 10);
@@ -378,11 +379,11 @@ BOOL CImageListPage::OnInitDialog()
 		_ltot(nCurrentHeight, sValue, 10);
 		m_DispHeight.SetWindowText(sValue);
 
-		m_PicList.SetImageList(&GetImageList(), TVSIL_NORMAL);
-		m_PicList.SetImageList(&GetImageList(), LVSIL_SMALL);
+		m_PicList.SetImageList(GetImageList(), TVSIL_NORMAL);
+		m_PicList.SetImageList(GetImageList(), LVSIL_SMALL);
 		
 		//m_PicList.SetIconSpacing(16);
-		for (int i=0; i < GetImageList().GetImageCount(); i++)
+		for (int i=0; i < GetImageList()->GetImageCount(); i++)
 		{
 			LV_ITEM lvItem;
 			lvItem.mask = LVIF_TEXT|LVIF_IMAGE|LVIF_INDENT;

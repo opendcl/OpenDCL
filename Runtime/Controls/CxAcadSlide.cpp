@@ -71,9 +71,9 @@ void CxAcadSlide::SetBackColor(COLORREF newBkColor)
 	m_Redraw = true;
 }
 
-bool CxAcadSlide::Load(CString filename, bool slb, CString slbSldName)
+bool CxAcadSlide::Load( LPCTSTR pszFilename, LPCTSTR pszSlide )
 {
-	m_FileName = filename;
+	m_FileName = pszFilename;
 	TRACE("GdiGetBatchLimit: %i\n", GdiGetBatchLimit());
 	// dump the last one
 	FreeData();
@@ -88,7 +88,7 @@ bool CxAcadSlide::Load(CString filename, bool slb, CString slbSldName)
 	CFile file;
 	try
 	{
-		if(!file.Open(filename, CFile::modeRead))
+		if(!file.Open(m_FileName, CFile::modeRead))
 		{
 			FreeData();
 			return false;
@@ -100,7 +100,7 @@ bool CxAcadSlide::Load(CString filename, bool slb, CString slbSldName)
 		return false;
 	}
 	DWORD size = 0;
-	if(slb)
+	if(pszSlide && *pszSlide)
 	{
 		char tmp[32];
 		ZeroMemory(tmp, sizeof(tmp));
@@ -108,15 +108,16 @@ bool CxAcadSlide::Load(CString filename, bool slb, CString slbSldName)
 			return false;
 		TRACE("Slide Library Header read...\n");
 		// strip parenthesis
-		TRACE("Looking for %s...\n", slbSldName);
+		TRACE("Looking for %s...\n", pszSlide);
 		CxSlideEntry sldentry;
 		int namelen = 0;
+		CStringA sSlide( pszSlide );
 		do {
 			file.Read(&sldentry, sizeof(CxSlideEntry));
 			TRACE("Slide entry for: %s, offset: %i\n", sldentry.Name, sldentry.Offset);
 			namelen = lstrlenA(sldentry.Name);
 		}
-		while((slbSldName.CompareNoCase(CString(sldentry.Name)) != 0) && (namelen > 0));
+		while((sSlide.CompareNoCase(sldentry.Name) != 0) && (namelen > 0));
 		
 		if(namelen > 0)
 		{

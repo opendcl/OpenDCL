@@ -3,104 +3,72 @@
 
 #pragma once
 
-#include "AcUiDock.h"
-#include "Resource.h"
+#include "AcadDockBarHost.h"
 #include "ArxDialogObject.h"
+#include "Resource.h"
 
 class CFontCollection;
 
 #if (_MFC_VER < 0x0800)
-#define __LRESULT UINT
+#define __UINT_LRESULT UINT
 #else
-#define __LRESULT LRESULT
+#define __UINT_LRESULT LRESULT
 #endif
-
-
-class CDockingDialogX : public CArxDialogObject
-{
-	friend class CDockingDialog;
-	CDockingDialog* mpOwner;
-protected:
-	CDockingDialogX( CDockingDialog& Owner, TDclFormPtr pDclForm );
-	~CDockingDialogX();
-
-	virtual DclFormType GetType() const;
-	virtual bool IsModeless() const { return true; }
-	virtual bool IsDockable() const { return true; }
-	virtual bool IsResizable() const;
-	virtual HWND GetHWnd() const;
-	virtual bool IsFloating() const;
-	virtual bool CreateModeless( UINT nID ) const;
-	virtual void CloseDialog(int nStatus);
-	virtual bool CenterDialog();
-	virtual bool ResizeDialog( long nNewWidth, long nNewHeight );
-	virtual bool CenterAndResizeDialog( long nNewWidth, long nNewHeight );
-	virtual bool GetWindowRect( CRect& rcDlg ) const;
-	virtual bool GetClientRect( CRect& rcDlg ) const;
-};
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CDockingDialog dialog
 
-class CDockingDialog : public CAdUiDockControlBar
+class CDockingDialog : public CDialog, public CArxDialogObject
 {
 	CWnd* mpParent;
-	CDockingDialogX mDialogX;
-	bool mbHiding;
-	bool mbTrackingMouse;
-	bool mbInMenuLoop;
-	HWND mhwndKeyboardFocus;
+	CAcadDockBarHost& mHostControlBar;
 	bool mbResizable;
+	bool mbHiding;
 
 // Construction
 public:
 	CDockingDialog( TDclFormPtr pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
 	virtual ~CDockingDialog();
 
+// CDialogObject overrides
 public:
-	CDialogObject& GetDialogObject() { return mDialogX; }
-	const CDialogObject& GetDialogObject() const { return mDialogX; }
+	virtual DclFormType GetType() const { return VdclDockable; }
+	virtual CWnd* GetTopLevelWnd();
+	virtual bool IsModeless() const { return true; }
+	virtual bool IsDockable() const { return !IsFloating(); }
+	virtual bool IsResizable() const { return mbResizable; }
+	virtual bool IsFloating() const;
+	virtual bool CreateModeless( UINT nID );
+	virtual void CloseDialog(int nStatus);
+	virtual bool CenterDialog();
+	virtual bool ResizeDialog( long nNewWidth, long nNewHeight );
+	virtual bool CenterAndResizeDialog( long nNewWidth, long nNewHeight );
+	virtual bool GetEffectiveWindowRect( CRect& rcDlg ) const;
+	virtual bool GetEffectiveClientRect( CRect& rcDlg ) const;
+	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::Resizable
+protected:
+	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
+	virtual void OnFrameChanged(); //called by member functions that change the non-client size
+	virtual void ApplyPosition(); //move control window to new position
 
-public:
-	virtual bool Create( LPCTSTR lpszTitle, CRect rect, UINT nID );
+protected:
+friend class CAcadDockBarHost;
 	virtual void GetClientArea(CRect &rect);
-	bool IsResizable() const { return mbResizable; }
+	virtual bool OnClosing();
 
 // Overrides
 public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-
-private:
-	// this override is to make the any control
-	// that extends beyond the dockbar to be
-	// selectable. Otherwise, the default
-	// is to restore Acad cursor so the portion
-	// is repainted immediately.
-	bool CanFrameworkTakeFocus();
-	virtual void OnUserSizing(UINT nSide, LPRECT pRect);
-	virtual CSize CalcDynamicLayout( int nLength, DWORD dwMode );
-	virtual CSize CalcFixedLayout( BOOL bStretch, BOOL bHorz );	
-	virtual void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight);	
-	virtual void SizeChanged (CRect *lpRect, BOOL bFloating, int flags);
-	virtual bool OnClosing();
-	virtual BOOL AddCustomMenuItems(LPARAM hMenu);
 
 // Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
 
-protected:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnDestroy();
 	afx_msg void PostNcDestroy();
-	afx_msg LRESULT OnMouseEnter(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
-	afx_msg void OnEnterMenuLoop(BOOL bPopupMenu);
-	afx_msg void OnExitMenuLoop(BOOL bPopupMenu);
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	afx_msg __LRESULT OnNcHitTest(CPoint point);
-	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

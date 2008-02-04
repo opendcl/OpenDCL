@@ -18,11 +18,11 @@ class CPropertyObject;
 
 class CToolTipsPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CToolTipsPage)
+	TDclControlPtr mpDclControl;
 
 // Construction
 public:
-	CToolTipsPage();
+	CToolTipsPage( TDclControlPtr pDclControl );
 	~CToolTipsPage();
 
 // Dialog Data

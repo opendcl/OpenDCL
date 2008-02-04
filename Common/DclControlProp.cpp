@@ -3,17 +3,18 @@
 
 #include "stdafx.h"
 #include "DclControlObject.h"
+#include "DclFormObject.h"
 #include "PropertyObject.h"
-#include "SharedRes.h"
+#include "Resource.h"
 #include "Workspace.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
 
 
 static TPropertyPtr AddControlHiddenProperty( TDclControlPtr pDclControl,
-																																	Prop::Id nID,
-																																	LPCTSTR pszValue,
-																																	PropertyType type )
+																							Prop::Id nID,
+																							LPCTSTR pszValue,
+																							PropertyType type )
 {
 	TPropertyPtr pProp = pDclControl->AddStringProperty( nID, type, pszValue );
 	assert( pProp != NULL );
@@ -23,9 +24,9 @@ static TPropertyPtr AddControlHiddenProperty( TDclControlPtr pDclControl,
 }
 
 static TPropertyPtr AddControlHiddenProperty( TDclControlPtr pDclControl,
-																																	Prop::Id nID,
-																																	long lValue,
-																																	PropertyType type )
+																							Prop::Id nID,
+																							long lValue,
+																							PropertyType type )
 {
 	TPropertyPtr pProp = pDclControl->AddLongProperty( nID, type, lValue );
 	assert( pProp != NULL );
@@ -35,9 +36,9 @@ static TPropertyPtr AddControlHiddenProperty( TDclControlPtr pDclControl,
 }
 
 static TPropertyPtr AddControlHiddenProperty( TDclControlPtr pDclControl,
-																																	Prop::Id nID,
-																																	bool bValue,
-																																	PropertyType type )
+																							Prop::Id nID,
+																							bool bValue,
+																							PropertyType type )
 {
 	TPropertyPtr pProp = pDclControl->AddBooleanProperty( nID, type, bValue );
 	assert( pProp != NULL );
@@ -59,10 +60,17 @@ static bool AddDefaultFormName( TDclControlPtr pDclControl )
 {
 	if( !pDclControl->GetPropertyObject( Prop::Name ) )
 	{
+		TProjectPtr pProject = pDclControl->GetOwnerProject();
+		UINT nFormId = 1;
 		CString sFormName;
-		sFormName.Format( _T("%s%d"),
-											theWorkspace.LoadResourceString( IDS_DCLFORM ),
-											pDclControl->GetOwnerProject()->GetDclFormList().size() );
+		bool bFoundUnusedName = false;
+		while( !bFoundUnusedName )
+		{
+			sFormName.Format( _T("%s%d"),
+												theWorkspace.LoadResourceString( IDS_DCLFORM ),
+												nFormId++ );
+			bFoundUnusedName = !pProject->FindDclForm( sFormName );
+		}
 		pDclControl->AddStringProperty( Prop::Name, PropString, sFormName );
 	}
 	return true;
@@ -70,7 +78,7 @@ static bool AddDefaultFormName( TDclControlPtr pDclControl )
 
 static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*= 32*/, long lHeight /*= 32*/ )
 {
-	assert( pDclControl->GetType() == CtlForm );
+	assert( pDclControl->GetType() == _CtlForm );
 	TDclFormPtr pOwnerForm = pDclControl->GetOwnerForm();
 	assert( pOwnerForm != NULL );
 	if( !pOwnerForm )
@@ -161,8 +169,8 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		pDclControl->AddStringProperty( Prop::ObjectBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
 		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
-		pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth > 0? lWidth : 427 );
-		pDclControl->AddLongProperty( Prop::Height, PropLong, lHeight > 0? lHeight : 296 );
+		pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth > 0? lWidth : 556 );
+		pDclControl->AddLongProperty( Prop::Height, PropLong, lHeight > 0? lHeight : 386 );
 		pDclControl->AddStringProperty( Prop::TitleBarText, PropString, theWorkspace.LoadResourceString( IDS_OPEN ) );
 		AddControlEvent( pDclControl, Prop::FormEventInitialize );
 		AddControlEvent( pDclControl, Prop::FormEventCancelClose );
@@ -188,43 +196,46 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 {
 	assert( pDclControl != NULL );
 	ControlType type = pDclControl->GetType();
-	assert( type != CtlInvalid );
-	if( type == CtlInvalid )
+	assert( type != _CtlInvalid );
+	if( type == _CtlInvalid )
 		return false;
-	if( type == CtlForm )
+	if( type == _CtlForm )
 		return AddDefaultFormProperties( pDclControl, lWidth, lHeight );
 	TDclFormPtr pOwnerForm = pDclControl->GetOwnerForm();
 	assert( pOwnerForm != NULL );
 	if( !pOwnerForm )
 		return false;
 
-	CString sList = theWorkspace.LoadResourceString( IDS_LIST );
-
 	//Add default properties that apply to every control type
 	pDclControl->AddStringProperty( Prop::Name, PropString, pDclControl->GetKeyName() );
 	pDclControl->AddStringProperty( Prop::ObjectBrowser, PropActiveXMethods );
 	pDclControl->AddStringProperty( Prop::Custom, PropCustom ); // add the Custom property (to display the button)
 	pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
-	pDclControl->AddLongProperty( Prop::Left, PropLong, 0 );
-	pDclControl->AddLongProperty( Prop::Top, PropLong, 0 );
 	if( lWidth <= 0 )
 		lWidth = 32;
-	pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth );
 	if( lHeight <= 0 )
 		lHeight = 32;
-	pDclControl->AddLongProperty( Prop::Height, PropLong, lHeight );
 
 	if( type != CtlFileDlgCtrl )
 	{
+		pDclControl->AddLongProperty( Prop::Left, PropLong, 0 );
+		pDclControl->AddLongProperty( Prop::Top, PropLong, 0 );
+		pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth );
+		pDclControl->AddLongProperty( Prop::Height, PropLong, lHeight );
 		pDclControl->AddLongProperty( Prop::BottomFromBottom, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::LeftFromRight, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::RightFromRight, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::TopFromBottom, PropLong, 0 );
-		pDclControl->AddLongProperty( Prop::UseBottomFromBottom, PropLong, (type == CtlTabStrip)? 1 : 0 );
+		pDclControl->AddLongProperty( Prop::UseBottomFromBottom, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::UseLeftFromRight, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::UseRightFromRight, PropLong, 0 );
-		pDclControl->AddLongProperty( Prop::UseTopFromBottom, PropLong, (type == CtlTabStrip)? 1 : 0 );
+		pDclControl->AddLongProperty( Prop::UseTopFromBottom, PropLong, 0 );
 		pDclControl->AddBooleanProperty( Prop::Visible, PropBool, true );
+	}
+	else
+	{
+		AddControlHiddenProperty( pDclControl, Prop::Width, lWidth, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::Height, lHeight, PropLong );
 	}
 
 	if (type != CtlActiveX && type != CtlFileDlgCtrl)
@@ -242,10 +253,12 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		break;
 	}
 
+	FontSettings FS = theWorkspace.GetDefaultFontSettings();
+
 	//Add control specific properties
 	switch( type )
 	{
-	case Ctl3DRect:
+	case CtlRectangle:
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 2 );
 		break;
 
@@ -254,11 +267,31 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
 		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
+		break;
+
+	case CtlAngleSlider:
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
+		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
+		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
+		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
+		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
+		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
+		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
+		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
+		pDclControl->AddLongProperty( Prop::Value, PropLong, 0 );
+		AddControlEvent( pDclControl, Prop::EventMouseMove );
+		AddControlEvent( pDclControl, Prop::EventScroll );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlAnimate:
@@ -270,7 +303,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddStringProperty( Prop::BlockName, PropString );
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 1 );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, true );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddLongProperty( Prop::IconXSpacing, PropLong, 20 );
 		pDclControl->AddLongProperty( Prop::IconYSpacing, PropLong, 32 );
 		pDclControl->AddBooleanProperty( Prop::LabelWrap, PropBool, true );
@@ -282,7 +315,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::BlockListStyle, PropEnum, 0 );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -311,7 +344,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::ShowOrbitCirlces, PropBool, false );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -334,13 +367,13 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 
 	case CtlCheckBox:
 		pDclControl->AddLongProperty( Prop::ForegroundColor, PropLong, -19 );
-		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -16 );
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddStringProperty( Prop::Caption, PropString, pDclControl->GetKeyName() );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -350,27 +383,27 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::EventDblClicked );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlComboBox:
 		pDclControl->AddLongProperty( Prop::DropDownHeight, PropLong, 100 );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
-		pDclControl->AddStringProperty( Prop::ItemData, PropIntArray, sList );
+		pDclControl->AddStringProperty( Prop::ItemData, PropIntArray );
 		pDclControl->AddLongProperty( Prop::LimitText, PropLong, 256 );
-		pDclControl->AddStringProperty( Prop::List, PropStringArray, sList );
+		pDclControl->AddStringProperty( Prop::List, PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::ReturnAsTab, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::Sorted, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ComboBoxStyle, PropEnum, 0 );
 		pDclControl->AddStringProperty( Prop::Text, PropString, pDclControl->GetKeyName() );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -383,11 +416,11 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		//AddControlEvent( pDclControl, Prop::EventUpdate );
 		AddControlEvent( pDclControl, Prop::EventDropDown );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlDwgList:
@@ -397,13 +430,13 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::DisableNoScroll, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, true );
 		pDclControl->AddLongProperty( Prop::InsertOrXref, PropEnum, 0 );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::SelectStyle, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::RowHeight, PropLong, -1 );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -420,11 +453,11 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventSetFocus );
 		AddControlEvent( pDclControl, Prop::EventSelChanged );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlDwgPreview:
@@ -435,7 +468,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -477,13 +510,13 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 
 	case CtlFrame:
 		pDclControl->AddStringProperty( Prop::Caption, PropString, pDclControl->GetKeyName() );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::UseVisualStyle, PropBool, true );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlGraphicButton:
@@ -492,14 +525,14 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddStringProperty( Prop::Caption, PropString );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
-		pDclControl->AddStringProperty( Prop::Picture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
-		pDclControl->AddStringProperty( Prop::MouseOverPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::Picture, PropPicture );
+		pDclControl->AddStringProperty( Prop::MouseOverPicture, PropPicture );
 		pDclControl->AddLongProperty( Prop::ButtonStyle, PropEnum, 0 );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -510,11 +543,11 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::DragnDropFromAutoCAD );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlGrid:
@@ -524,26 +557,26 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::AlternateOrient, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 1 );
 		pDclControl->AddBooleanProperty( Prop::ColHeader, PropBool, true );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		//pDclControl->AddBooleanProperty( Prop::FullRowSelect, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::GridLines, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::LabelWrap, PropBool, true );
-		pDclControl->AddStringProperty( Prop::ImageList, PropImageList, theWorkspace.LoadResourceString( IDS_IMAGELIST ) );
+		pDclControl->AddStringProperty( Prop::ImageList, PropImageList );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::ListViewSort, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::RowHeight, PropLong, 24 );
-		AddControlHiddenProperty( pDclControl, Prop::ColumnCaptions, sList, PropStringArray );
-		AddControlHiddenProperty( pDclControl, Prop::ColumnAlignments, sList, PropIntArray );
-		AddControlHiddenProperty( pDclControl, Prop::ColumnImages, sList, PropIntArray );
-		AddControlHiddenProperty( pDclControl, Prop::ColumnWidths, sList, PropIntArray );
-		AddControlHiddenProperty( pDclControl, Prop::ColumnStyles, sList, PropIntArray );
-		AddControlHiddenProperty( pDclControl, Prop::ColumnDefaultImages, sList, PropIntArray );
-		AddControlHiddenProperty( pDclControl, Prop::ColumnAlternateImages, sList, PropIntArray );
-		AddControlHiddenProperty( pDclControl, Prop::ColumnListItems, sList, PropStringArrayList );
-		AddControlHiddenProperty( pDclControl, Prop::ColumnListImages, sList, PropIntArrayList );
+		AddControlHiddenProperty( pDclControl, Prop::ColumnCaptions, _T(""), PropStringArray );
+		AddControlHiddenProperty( pDclControl, Prop::ColumnAlignments, _T(""), PropIntArray );
+		AddControlHiddenProperty( pDclControl, Prop::ColumnImages, _T(""), PropIntArray );
+		AddControlHiddenProperty( pDclControl, Prop::ColumnWidths, _T(""), PropIntArray );
+		AddControlHiddenProperty( pDclControl, Prop::ColumnStyles, _T(""), PropIntArray );
+		AddControlHiddenProperty( pDclControl, Prop::ColumnDefaultImages, _T(""), PropIntArray );
+		AddControlHiddenProperty( pDclControl, Prop::ColumnAlternateImages, _T(""), PropIntArray );
+		AddControlHiddenProperty( pDclControl, Prop::ColumnListItems, _T(""), PropStringArrayList );
+		AddControlHiddenProperty( pDclControl, Prop::ColumnListImages, _T(""), PropIntArrayList );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -558,11 +591,11 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventMouseDown );
 		AddControlEvent( pDclControl, Prop::EventMouseUp );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlHatch:
@@ -575,7 +608,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -605,8 +638,8 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 
 	case CtlImageComboBox:
 		pDclControl->AddLongProperty( Prop::DropDownHeight, PropLong, 100 );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
-		pDclControl->AddStringProperty( Prop::ImageList, PropImageList, theWorkspace.LoadResourceString(IDS_IMAGELIST) );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
+		pDclControl->AddStringProperty( Prop::ImageList, PropImageList );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::LimitText, PropLong, 256 );
 		pDclControl->AddBooleanProperty( Prop::ReturnAsTab, PropBool, false );
@@ -615,7 +648,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddStringProperty( Prop::Text, PropString, pDclControl->GetKeyName() );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -628,21 +661,21 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		//AddControlEvent( pDclControl, Prop::EventUpdate );
 		AddControlEvent( pDclControl, Prop::EventDropDown );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlLabel:
 		pDclControl->AddLongProperty( Prop::ForegroundColor, PropLong, -19 );
-		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -16 );
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 0 );
 		pDclControl->AddStringProperty( Prop::Caption, PropString, pDclControl->GetKeyName() );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddLongProperty( Prop::Justification, PropEnum, 0 );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
@@ -650,11 +683,11 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::DragnDropFromAutoCAD );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlListBox:
@@ -665,17 +698,17 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::DisableNoScroll, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
-		pDclControl->AddStringProperty( Prop::ItemData, PropIntArray, sList );
-		pDclControl->AddStringProperty( Prop::List, PropStringArray, sList );
+		pDclControl->AddStringProperty( Prop::ItemData, PropIntArray );
+		pDclControl->AddStringProperty( Prop::List, PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::MultiColumn, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::NoIntegralHeight, PropBool, true );
 		pDclControl->AddLongProperty( Prop::SelectStyle, PropEnum, 0 );
 		pDclControl->AddBooleanProperty( Prop::Sorted, PropBool, false );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -692,11 +725,11 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventSelChanged );
 		AddControlEvent( pDclControl, Prop::EventRClick );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlListView:
@@ -706,7 +739,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::EditLabels, PropBool, true );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::FullRowSelect, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::GridLines, PropBool, false );
 		pDclControl->AddLongProperty( Prop::IconXSpacing, PropLong, 20 );
@@ -714,7 +747,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::LabelWrap, PropBool, true );
 		pDclControl->AddLongProperty( Prop::ListViewIconAlign, PropEnum, 0 );
 		pDclControl->AddBooleanProperty( Prop::AutoArrange, PropBool, false );
-		pDclControl->AddStringProperty( Prop::ImageList, PropImageList, theWorkspace.LoadResourceString(IDS_IMAGELIST) );
+		pDclControl->AddStringProperty( Prop::ImageList, PropImageList );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::MultiSelect, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::ShowSelectAlways, PropBool, false );
@@ -722,7 +755,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::ListViewStyle, PropEnum, 3 );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -747,20 +780,20 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventMouseDown );
 		AddControlEvent( pDclControl, Prop::EventMouseUp );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlMonth:
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::MultiSelection, PropLong, 1 );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -768,23 +801,23 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventSelChanged );
 		AddControlEvent( pDclControl, Prop::EventGetDayState );
 		AddControlEvent( pDclControl, Prop::EventSelect );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlOptionButton:
 		pDclControl->AddLongProperty( Prop::ForegroundColor, PropLong, -19 );
-		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -16 );
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddBooleanProperty( Prop::BeginGroup, PropBool, false );
 		pDclControl->AddStringProperty( Prop::Caption, PropString, pDclControl->GetKeyName() );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -794,30 +827,30 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::EventDblClicked );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlOptionList:
 		pDclControl->AddLongProperty( Prop::ForegroundColor, PropLong, -19 );
-		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -16 );
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 0 );
 		{
-			TPropertyPtr pProp = pDclControl->AddStringProperty( Prop::BtnCaption, PropStringArray, sList );
-			if( pProp->GetStringArrayPtr()->empty() )
+			TPropertyPtr pProp = pDclControl->AddStringProperty( Prop::BtnCaption, PropStringArray );
+			if( pProp->size() == 0 )
 			{ // add three default option values
 				pProp->GetStringArrayPtr()->push_back( theWorkspace.LoadResourceString( IDS_OPTION1 ) );
 				pProp->GetStringArrayPtr()->push_back( theWorkspace.LoadResourceString( IDS_OPTION2 ) );
 				pProp->GetStringArrayPtr()->push_back( theWorkspace.LoadResourceString( IDS_OPTION3 ) );
 			}
 		}
-		pDclControl->AddStringProperty( Prop::BtnTTText, PropStringArray, sList );
+		pDclControl->AddStringProperty( Prop::BtnTTText, PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
 		pDclControl->AddLongProperty( Prop::DefSelIndex, PropLong, 0 );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::RowHeight, PropLong, -1 );
 		pDclControl->AddBooleanProperty( Prop::VScrollBar, PropBool, false );
@@ -826,11 +859,11 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventSetFocus );
 		AddControlEvent( pDclControl, Prop::EventSelChanged );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlPictureBox:
@@ -839,12 +872,12 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 1 );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
-		pDclControl->AddStringProperty( Prop::Picture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::Picture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -869,20 +902,20 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventMouseEntered );
 		AddControlEvent( pDclControl, Prop::EventRClick );
 		AddControlEvent( pDclControl, Prop::EventRDblClick );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlProgress:
-		pDclControl->AddStringProperty( Prop::SecondText, PropString, _T("second") );
-		pDclControl->AddStringProperty( Prop::SecondsText, PropString, _T("seconds") );
-		pDclControl->AddStringProperty( Prop::MinuteText, PropString, _T("minute") );
-		pDclControl->AddStringProperty( Prop::MinutesText, PropString, _T("minutes") );
-		pDclControl->AddBooleanProperty( Prop::DisplaySeconds, PropBool, false );
-		pDclControl->AddBooleanProperty( Prop::DisplayPercentage, PropBool, true );
+		pDclControl->AddStringProperty( Prop::SecondText, PropString );
+		pDclControl->AddStringProperty( Prop::SecondsText, PropString );
+		pDclControl->AddStringProperty( Prop::MinuteText, PropString );
+		pDclControl->AddStringProperty( Prop::MinutesText, PropString );
+		pDclControl->AddStringProperty( Prop::RemainingText, PropString );
+		pDclControl->AddLongProperty( Prop::ProgressLegend, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 2 );
 		pDclControl->AddLongProperty( Prop::MaxValue, PropLong, 100 );
 		pDclControl->AddLongProperty( Prop::MinValue, PropLong, 1 );
@@ -890,37 +923,18 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::SmoothProgress, PropBool, false );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
 		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::UseVisualStyle, PropBool, true );
-		pDclControl->AddLongProperty( Prop::Value, PropLong, 0 );
-		break;
-
-	case CtlRoundSlider:
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
-		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
-		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
-		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
-		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
-		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
-		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
-		pDclControl->AddLongProperty( Prop::Value, PropLong, 0 );
-		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlEvent( pDclControl, Prop::EventScroll );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
-		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		pDclControl->AddLongProperty( Prop::Value, PropLong, 10 );
 		break;
 
 	case CtlScrollBar:
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -16 );
 		pDclControl->AddLongProperty( Prop::LargeChange, PropLong, 5 );
 		pDclControl->AddLongProperty( Prop::MaxValue, PropLong, 100 );
 		pDclControl->AddLongProperty( Prop::MinValue, PropLong, 1 );
@@ -934,6 +948,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 
 	case CtlSlider:
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -16 );
 		pDclControl->AddLongProperty( Prop::LargeChange, PropLong, 5 );
 		pDclControl->AddLongProperty( Prop::MaxValue, PropLong, 100 );
 		pDclControl->AddLongProperty( Prop::MinValue, PropLong, 1 );
@@ -943,7 +958,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::TickFrequency, PropLong, 10 );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -963,7 +978,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -1008,37 +1023,37 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::SplitterMax, PropLong, 30 );
 		break;
 
-	case CtlStaticURL:
+	case CtlUrlLink:
 		pDclControl->AddLongProperty( Prop::ForegroundColor, PropLong, 5 );
-		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -16 );
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddStringProperty( Prop::Caption, PropString, pDclControl->GetKeyName() );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::URLLinkType, PropEnum, 0 );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
 		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
-		pDclControl->AddStringProperty( Prop::URLAddress, PropString );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		pDclControl->AddStringProperty( Prop::URLAddress, PropString, _T("www.OpenDCL.com") );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlStdButton:
 		pDclControl->AddStringProperty( Prop::Caption, PropString, pDclControl->GetKeyName() );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -1050,37 +1065,34 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::DragnDropFromAutoCAD );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlTabStrip:
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddLongProperty( Prop::TabLabelAlign, PropEnum, 1 );
 		pDclControl->AddLongProperty( Prop::MinTabWidth, PropLong, -1 );
 		pDclControl->AddBooleanProperty( Prop::TabFixedWidth, PropBool, false );
 		pDclControl->AddLongProperty( Prop::TabStyle, PropEnum, 0 );
 		pDclControl->AddBooleanProperty( Prop::MultiRow, PropBool, false );
 		//pDclControl->AddLongProperty( Prop::TabJustified, PropEnum, 0 );
-		AddControlHiddenProperty( pDclControl, Prop::TabsCaption, sList, PropStringArray );
-		//AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_TAB1));
-		//AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_TAB2));
-		//AddControlPropertyListItem(pProp, theWorkspace.LoadResourceString(IDS_TAB3));
-		AddControlHiddenProperty( pDclControl, Prop::TabsImageList, sList, PropIntArray );
-		AddControlHiddenProperty( pDclControl, Prop::TabsTTT, sList, PropStringArray );
+		AddControlHiddenProperty( pDclControl, Prop::TabsCaption, _T(""), PropStringArray );
+		AddControlHiddenProperty( pDclControl, Prop::TabsImageList, _T(""), PropIntArray );
+		AddControlHiddenProperty( pDclControl, Prop::TabsTTT, _T(""), PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::UseVisualStyle, PropBool, true );
-		AddControlHiddenProperty( pDclControl, Prop::ImageList, theWorkspace.LoadResourceString( IDS_IMAGELIST ), PropImageList );
+		AddControlHiddenProperty( pDclControl, Prop::ImageList, _T(""), PropImageList );
 		AddControlEvent( pDclControl, Prop::EventChanged );
 		AddControlEvent( pDclControl, Prop::EventSelChanging );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlTextBox:
@@ -1092,7 +1104,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::FilterStyle, PropEnum, 0 );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::HScrollBar, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::Justification, PropEnum, 0 );
@@ -1104,7 +1116,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddStringProperty( Prop::Text, PropString, pDclControl->GetKeyName() );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -1121,11 +1133,11 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventKeyDown );
 		AddControlEvent( pDclControl, Prop::EventKeyUp );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	case CtlTree:
@@ -1133,10 +1145,10 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::EditLabels, PropBool, false );
-		pDclControl->AddStringProperty( Prop::FontName, PropString, pDclControl->GetOwnerProject()->m_sDefaultFontName );
+		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::HasButtons, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::HasLines, PropBool, true );
-		pDclControl->AddStringProperty( Prop::ImageList, PropImageList, theWorkspace.LoadResourceString( IDS_IMAGELIST ) );
+		pDclControl->AddStringProperty( Prop::ImageList, PropImageList );
 		pDclControl->AddLongProperty( Prop::Indent, PropLong, 17 );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::LinesAtRoot, PropBool, true );
@@ -1144,7 +1156,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::SingleExpanded, PropBool, false );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
-		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture, theWorkspace.LoadResourceString( IDS_NONE ) );
+		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipAviFileName, PropString );
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
@@ -1166,11 +1178,11 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventEndLabelEdit );
 		AddControlEvent( pDclControl, Prop::EventItemExpanded );
 		AddControlEvent( pDclControl, Prop::EventItemExpanding );
-		AddControlHiddenProperty( pDclControl, Prop::FontBold, (pDclControl->GetOwnerProject()->m_bDefaultFontBold != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontItalic, (pDclControl->GetOwnerProject()->m_bDefaultFontItalic != FALSE), PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontSize, pDclControl->GetOwnerProject()->m_nDefaultFontSize, PropLong );
+		AddControlHiddenProperty( pDclControl, Prop::FontBold, FS.isBold(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontItalic, FS.isItalic(), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontSize, FS.size(), PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::FontStrikeout, false, PropBool );
-		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, (pDclControl->GetOwnerProject()->m_bDefaultFontUnderLine != FALSE), PropBool );
+		AddControlHiddenProperty( pDclControl, Prop::FontUnderline, FS.isUnderlined(), PropBool );
 		break;
 
 	default:

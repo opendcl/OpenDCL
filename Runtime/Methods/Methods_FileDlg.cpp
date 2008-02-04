@@ -3,199 +3,199 @@
 
 #include "stdafx.h"
 #include "Methods_FileDlg.h"
-#include "DclControlObject.h"
-#include "MethodLexicon.h"
 #include "ArgumentsRetrieval.h"
-#include "UserMessageId.h"
 #include "CustomFileDialog.h"
+#include "UserMessageId.h"
 
 
-int FileDlgGetFileName()
+ADSRESULT FileDlg::GetFileName()
 {
-	int nArg=0;
-	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetFileName, &nArg);
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+
+	acedRetStr( pCtrl->GetFileName() );
+	return RSRSLT;
+}
+
+ADSRESULT FileDlg::GetFileTitle()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+
+	acedRetStr( pCtrl->GetFileTitle() );
+	return RSRSLT;
+}
+
+ADSRESULT FileDlg::GetFileExt()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+
+	acedRetStr( pCtrl->GetFileExt() );
+	return RSRSLT;
+}
+
+ADSRESULT FileDlg::GetPathName()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+
+	acedRetStr( pCtrl->GetPathName() );
+	return RSRSLT;
+}
+
+ADSRESULT FileDlg::GetFolderPath()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+
+	acedRetStr( pCtrl->GetFolderPath() );
+	return RSRSLT;
+}
 	
-	if (pControl == NULL)
+ADSRESULT FileDlg::GetFolderName()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+
+	acedRetStr( pCtrl->GetFolderPath().MakeReverse().SpanExcluding(_T("\\/:")).MakeReverse() );
+	return RSRSLT;
+}
+
+ADSRESULT FileDlg::GetSelectionCount()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+
+	CWnd* pMainWnd = pCtrl->GetParent()->GetDlgItem(lst2);
+	if( pMainWnd )
 	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
+		CListCtrl* pFileListCtrl = (CListCtrl*)pMainWnd->GetDlgItem( 1 );
+		acedRetInt( pFileListCtrl->GetSelectedCount() );
 	}
-
-	CCustomFileDialog *pFileDlg = (CCustomFileDialog*)pControl->GetWindow();
-	acedRetStr(pFileDlg->GetFileName());
-	return 0;
-}
-int FileDlgGetFileTitle()
-{
-	int nArg=0;
-	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetFileTitle, &nArg);
-	
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}	
-
-	CCustomFileDialog *pFileDlg = (CCustomFileDialog*)pControl->GetWindow();
-	acedRetStr(pFileDlg->GetFileTitle());
-	
-	return 0;
-}
-int FileDlgGetFileExt()
-{
-	int nArg=0;
-	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetFileTitle, &nArg);
-	
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}	
-
-	CCustomFileDialog *pFileDlg = (CCustomFileDialog*)pControl->GetWindow();
-	acedRetStr(pFileDlg->GetFileExt());
-	return 0;
+	return RSRSLT;
 }
 
-int FileDlgGetPathName()
+ADSRESULT FileDlg::GetFileNameList()
 {
-	int nArg=0;
-	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetPathName, &nArg);
-	
-	if (pControl == NULL)
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+
+	CWnd* pMainWnd = pCtrl->GetParent()->GetDlgItem(lst2);
+	if( pMainWnd )
 	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}	
-
-	CCustomFileDialog *pFileDlg = (CCustomFileDialog*)pControl->GetWindow();
-	acedRetStr(pFileDlg->GetPathName());	
-	return 0;
-}
-int FileDlgGetFolderPath()
-{
-	int nArg=0;
-	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetFolderPath, &nArg);
-	
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}	
-
-	CCustomFileDialog *pFileDlg = (CCustomFileDialog*)pControl->GetWindow();
-	acedRetStr(pFileDlg->GetFolderPath());
-	return 0;
-}
-	
-int FileDlgGetFolderName()
-{
-	int nArg=0;
-	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetFolderName, &nArg);
-	
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}	
-
-	CCustomFileDialog *pFileDlg = (CCustomFileDialog*)pControl->GetWindow();
-	acedRetStr(pFileDlg->GetFolderPath().MakeReverse().SpanExcluding(_T("\\/:")).MakeReverse());
-	return 0;
-}
-
-int FileDlgGetSelectionCount()
-{
-	int nArg=0;
-	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetSelectionCount, &nArg);
-	
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}	
-
-	CCustomFileDialog *pFileDlg = (CCustomFileDialog*)pControl->GetWindow();
-	CWnd* pMainWnd = pFileDlg->GetParent()->GetDlgItem(lst2);
-	if (pMainWnd == NULL)
-		return 0;
-	CListCtrl* pFileListCtrl = (CListCtrl*)(pMainWnd->GetDlgItem(1));
-	acedRetInt(pFileListCtrl->GetSelectedCount());
-	return 0;
-}
-int FileDlgGetFileNameList()
-{
-	int nArg=0;
-	TDclControlPtr pControl = GetControlArxObject(sFileDlgGetFileNameList, &nArg);
-	
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}	
-
-	CCustomFileDialog *pFileDlg = (CCustomFileDialog*)pControl->GetWindow();
-	CWnd* pMainWnd = pFileDlg->GetParent()->GetDlgItem(lst2);
-	if (pMainWnd == NULL)
-		return 0;
-	CListCtrl* pFileListCtrl = (CListCtrl*)(pMainWnd->GetDlgItem(1));
-
-	struct resbuf* prbFileList = NULL;
-	struct resbuf* prbTail = NULL;
-	POSITION pos = pFileListCtrl->GetFirstSelectedItemPosition();
-	while( pos )
-	{
-		resbuf* prbFile = acutNewRb(RTSTR);
-		int idxSelected = pFileListCtrl->GetNextSelectedItem(pos);
-		acutNewString(pFileListCtrl->GetItemText(idxSelected, 0), prbFile->resval.rstring);
-		if (!prbTail)
+		CListCtrl* pFileListCtrl = (CListCtrl*)(pMainWnd->GetDlgItem(1));
+		struct resbuf* prbFileList = NULL;
+		struct resbuf* prbTail = NULL;
+		POSITION pos = pFileListCtrl->GetFirstSelectedItemPosition();
+		while( pos )
 		{
-			prbFileList = prbFile;
-			prbTail = prbFileList;
+			resbuf* prbFile = acutNewRb( RTSTR );
+			int idxSelected = pFileListCtrl->GetNextSelectedItem( pos );
+			acutNewString( pFileListCtrl->GetItemText( idxSelected, 0 ), prbFile->resval.rstring );
+			if( !prbTail )
+			{
+				prbFileList = prbFile;
+				prbTail = prbFileList;
+			}
+			else
+			{
+				prbTail->rbnext = prbFile;
+				prbTail = prbTail->rbnext;
+			}
 		}
-		else
-		{
-			prbTail->rbnext = prbFile;
-			prbTail = prbTail->rbnext;
-		}
+		acedRetList( prbFileList );
+		acutRelRb( prbFileList );
 	}
-	acedRetList(prbFileList);
-	acutRelRb(prbFileList);
-
-	return 0;
+	return RSRSLT;
 }
 
-int FileDlgSetOkButtonText()
+ADSRESULT FileDlg::SetOkButtonText()
 {
-	int nArg=0;
-	TDclControlPtr pControl = GetControlArxObject(sFileDlgSetOkButtonText, &nArg);
-	
-	if (pControl == NULL)
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}	
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+		return RSERR; //invalid input
 
 	CString sCaption;
-	if (!GetStringArgument(nArg, &sCaption, sFileDlgSetOkButtonText))
-	{
-		// return nil
-		acedRetInt(-1);
-		return 0;
-	}
+	if( !GetStringArgument( pArgs, sCaption ) )
+		return RSERR; //invalid input
 
-	CCustomFileDialog *pFileDlg = (CCustomFileDialog*)pControl->GetWindow();
-	
-	pFileDlg->GetParent()->GetDlgItem(IDOK)->SetWindowText(sCaption);
-	acedRetNil();
-	return 0;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CCustomFileDialog* pCtrl = (CCustomFileDialog*)pDlgControl->GetControlWnd();
+
+	CWnd* pOkButton = pCtrl->GetParent()->GetDlgItem( IDOK );
+	if( pOkButton )
+	{
+		pOkButton->SetWindowText( sCaption );
+		acedRetT();
+	}
+	return RSRSLT;
 }

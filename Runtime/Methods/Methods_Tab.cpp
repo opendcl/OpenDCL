@@ -5,126 +5,155 @@
 #include "Methods_Tab.h"
 #include "DclControlObject.h"
 #include "ArgumentsRetrieval.h"
-#include "MethodLexicon.h"
 #include "ArxTabStripCtrl.h"
 #include "ControlTypes.h"
 
 
-int TabControl_SetTabText()
+ADSRESULT Tab::SetTabText()
 {
-	CString sString;
-	int nIndex = -1;
-	int nArg;
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_SetTabText, &nArg);
-	if (!pControl ||
-			!GetIntArgument(nArg, &nIndex, sTabControl_SetTabText) ||
-			(nIndex = ((CArxTabStripCtrl*)pControl)->GetTabItemIndex( nIndex )) < 0)
-	{
-		acedRetNil();
-		return 0;
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTabStrip))
+		return RSERR; //invalid input
 
-	nArg++;
-	
-	if (!GetStringArgument(nArg, &sString, sTabControl_SetTabText))
-	{
-		acedRetNil();
-		return 0;
-	}
-	
+	int nIndex;
+	if( !GetIntArgument( pArgs, nIndex ) )
+		return RSERR; //invalid input
+
+	CString sText;
+	if( !GetStringArgument( pArgs, sText ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxTabStripCtrl* pCtrl = (CArxTabStripCtrl*)pDlgControl->GetControlWnd();
+
 	TCITEM tcItem = { TCIF_TEXT };
-	tcItem.pszText = sString.LockBuffer();
-	((CArxTabStripCtrl*)pControl)->GetTabCtrl().SetItem(nIndex, &tcItem);
-
+	tcItem.pszText = sText.LockBuffer();
+	pCtrl->GetTabCtrl().SetItem( nIndex, &tcItem );
 	acedRetT();
-	return 0;
+	return RSRSLT;
 }
 
-int TabControl_ShowTab()
+ADSRESULT Tab::ShowTab()
 {
-	int nIndex = -1;
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_ShowTab, &nArg);
-	if (!pControl ||
-			!GetIntArgument(nArg, &nIndex, sTabControl_ShowTab) ||
-			nIndex < 0 ||
-			nIndex >= ((CArxTabStripCtrl*)pControl)->GetTabPageCount())
-	{
-		acedRetNil();
-		return 0;
-	}
-	
-	((CArxTabStripCtrl*)pControl)->ShowTab(nIndex);
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTabStrip))
+		return RSERR; //invalid input
+
+	int nIndex;
+	if( !GetIntArgument( pArgs, nIndex ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxTabStripCtrl* pCtrl = (CArxTabStripCtrl*)pDlgControl->GetControlWnd();
+
+	pCtrl->ShowTab( nIndex );
 	acedRetT();
-	return 0;
+	return RSRSLT;
 }
 
-int TabControl_HideTab()
+ADSRESULT Tab::HideTab()
 {
-	int nIndex = -1;
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_HideTab, &nArg);
-	if (!pControl ||
-			!GetIntArgument(nArg, &nIndex, sTabControl_HideTab) ||
-			nIndex < 0 ||
-			nIndex >= ((CArxTabStripCtrl*)pControl)->GetTabPageCount())
-	{
-		acedRetNil();
-		return 0;
-	}
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	((CArxTabStripCtrl*)pControl)->HideTab(nIndex);
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTabStrip))
+		return RSERR; //invalid input
+
+	int nIndex;
+	if( !GetIntArgument( pArgs, nIndex ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxTabStripCtrl* pCtrl = (CArxTabStripCtrl*)pDlgControl->GetControlWnd();
+
+	pCtrl->HideTab( nIndex );
 	acedRetT();
-	return 0;
+	return RSRSLT;
 }
 
-int TabControl_SetCurSel()
+ADSRESULT Tab::SetCurSel()
 {
-	int nIndex = -1;
-	int nArg;
-	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_SetCurSel, &nArg);
-	if (!pControl ||
-			!GetIntArgument(nArg, &nIndex, sTabControl_SetCurSel) ||
-			!((CArxTabStripCtrl*)pControl)->SetCurrentTab(nIndex))
-	{
-		acedRetNil();
-		return 0;
-	}
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if( ((CArxTabStripCtrl*)pControl)->SetCurrentTab(nIndex) )
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTabStrip))
+		return RSERR; //invalid input
+
+	int nIndex;
+	if( !GetIntArgument( pArgs, nIndex ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxTabStripCtrl* pCtrl = (CArxTabStripCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->SetCurrentTab( nIndex ) )
 		acedRetT();
-	else
-		acedRetNil();
-	return 0;
+	return RSRSLT;
 }
 
-int TabControl_GetCurSel()
+ADSRESULT Tab::GetCurSel()
 {
-	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_GetCurSel);
-	if (pControl == NULL)
-	{
-		acedRetNil();
-		return 0;
-	}
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	acedRetInt(((CArxTabStripCtrl*)pControl)->GetCurTabPage());
-	return 0;
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTabStrip))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxTabStripCtrl* pCtrl = (CArxTabStripCtrl*)pDlgControl->GetControlWnd();
+
+	acedRetInt( pCtrl->GetCurTabPage() );
+	return RSRSLT;
 }
 
-int TabControl_GetRowCount()
+ADSRESULT Tab::GetRowCount()
 {
-	CWnd *pControl = GetControlPointer(CtlTabStrip, sTabControl_GetRowCount);
-	if (pControl == NULL)
-	{
-		acedRetNil();
-		return 0;
-	}
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	acedRetInt(((CArxTabStripCtrl*)pControl)->GetTabCtrl().GetRowCount());
-	return 0;
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTabStrip))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxTabStripCtrl* pCtrl = (CArxTabStripCtrl*)pDlgControl->GetControlWnd();
+
+	acedRetInt( pCtrl->GetTabCtrl().GetRowCount() );
+	return RSRSLT;
 }
 
+ADSRESULT Tab::GetControlArea()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
 
-/////////////////////////////////////////////////////////////////////////////
-// Methods_Tab
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTabStrip))
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxTabStripCtrl* pCtrl = (CArxTabStripCtrl*)pDlgControl->GetControlWnd();
+	CRect rcClient = pCtrl->GetTabPageAt( pCtrl->GetCurTabPage() )->GetWndRect();
+	resbuf rbHeight = { NULL, RTSHORT };
+	rbHeight.resval.rint = rcClient.Height();
+	resbuf rbWidth = { &rbHeight, RTSHORT };
+	rbWidth.resval.rint = rcClient.Width();
+	acedRetList( &rbWidth );
+	return RSRSLT;
+}

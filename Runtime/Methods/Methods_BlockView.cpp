@@ -5,485 +5,510 @@
 #include "Methods_BlockView.h"
 #include "ArgumentsRetrieval.h"
 #include "ControlTypes.h"
-#include "MethodLexicon.h"
 #include "GsPreviewCtrl.h"
-#include "DclControlObject.h"
 
 
-int BlockView_Clear()
+static ADSRESULT LoadDwgImp( bool bToScale );
+static ADSRESULT DisplayBlockImp( bool bToScale );
+
+
+ADSRESULT BlockView::Clear()
 {
-	CWnd *pControl = GetControlPointer(CtlBlockView, sBlockView_Clear);
+	struct resbuf *pArgs =acedGetArgs () ;
 
-	if (pControl != NULL)
-	{
-		CGsPreviewCtrl *pCtrl = (CGsPreviewCtrl*)pControl;
-		pCtrl->clearAll();				
-		pCtrl->m_BlockName = CString();
-		pCtrl->m_FileName = CString();
-		pCtrl->m_bSelectedRect = false;
-		if (pCtrl->m_pLoadedDwg != NULL)
-		{
-			delete pCtrl->m_pLoadedDwg;
-			pCtrl->m_pLoadedDwg = NULL;
-		}
-		pCtrl->RedrawWindow();
-	}
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlBlockView))
+		return RSERR; //invalid input
 
-	acedRetVoid();
-	return 0;
-}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-
-int BlockView_SetHighLight()
-{
-	int nColor;
-
-	CWnd *pControl = GetArgsControlInt(CtlBlockView,sBlockView_SetHighLight, nColor);
-	
-	if (pControl == NULL)
-	{
-		return 0;
-	}
-
-	
-	((CGsPreviewCtrl*)pControl)->SetHighLight(nColor);
-	
-	
-	acedRetVoid();
-	return 0;
-}
-
-int BlockView_RemoveHighLight()
-{
-	CWnd *pControl = GetControlPointer(
-		CtlBlockView,
-		sBlockView_RemoveHighLight);
-
-	if (pControl != NULL)
-		((CGsPreviewCtrl*)pControl)->RemoveHighLight();
-	
-	
-	acedRetVoid();
-	return 0;
-}
-
-int BlockView_Zoom()
-{
-	double dZfactor;
-	CWnd *pControl = GetArgsControlDouble(CtlBlockView,sBlockView_RemoveHighLight, dZfactor);
-	
-	if (pControl == NULL)
-	{
-		return 0;
-	}
-
-	((CGsPreviewCtrl*)pControl)->Zoom(dZfactor);
-	
-	
-	acedRetVoid();
-	return 0;
-}
-
-int BlockView_LoadDwgToScale()
-{
-	BlockView_LoadDwgAndDisplay(1, sBlockView_LoadDwgToScale);
-	return 0;
-}
-int BlockView_LoadDwg()
-{
-	BlockView_LoadDwgAndDisplay(0, sBlockView_LoadDwg);
-	return 0;
-}
-int BlockView_PreLoadDwg()
-{	
-	CString sFileName;
-	int nIndex = 0;
-	CWnd *pControl = GetControlPointer(CtlBlockView, sBlockView_PreLoadDwg, &nIndex);
-	
-	if (pControl == NULL || !GetStringArgument(nIndex, &sFileName, sBlockView_PreLoadDwg))
-	{		
-		acedRetNil();
-		return 0;
-	}
-	
-	CGsPreviewCtrl *pCtrl = (CGsPreviewCtrl*)pControl;
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
 	pCtrl->clearAll();				
-	pCtrl->m_BlockName = CString();
-	pCtrl->m_FileName = CString();
+	pCtrl->m_BlockName.Empty();
+	pCtrl->m_FileName.Empty();
 	pCtrl->m_bSelectedRect = false;
-	if (pCtrl->m_pLoadedDwg != NULL)
+	if( pCtrl->m_pLoadedDwg )
 	{
 		delete pCtrl->m_pLoadedDwg;
 		pCtrl->m_pLoadedDwg = NULL;
 	}
 	pCtrl->RedrawWindow();
-	pCtrl->PreLoadDwg(sFileName);
 
-	acedRetNil();		
-	return 0;
+	acedRetT();
+	return RSRSLT;
 }
 
-int BlockView_GetBlockSize()	
+ADSRESULT BlockView::SetHighLight()
 {
-	CString sBlockName;
-	int nIndex = 0;
-	CWnd *pControl = GetControlPointer(CtlBlockView, sBlockView_GetBlockSize, &nIndex);
-	
-	if (pControl == NULL || !GetStringArgument(nIndex, &sBlockName, sBlockView_GetBlockSize))
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	((CGsPreviewCtrl*)pControl)->GetBlockSize(sBlockName);
-	// no acedRetList here, it's in the GetBlockSize() method.
-	return 0;
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlBlockView ) )
+		return RSERR; //invalid input
+
+	int nColor = 0;
+	if( !GetIntArgument( pArgs, nColor ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->SetHighLight( nColor );
+
+	acedRetT();
+	return RSRSLT;
 }
 
-int BlockView_GetDwgSize()
+ADSRESULT BlockView::RemoveHighLight()
 {
-	CString sBlockName;
-	int nIndex = 0;
-	CWnd *pControl = GetControlPointer(CtlBlockView, sBlockView_GetDwgSize, &nIndex);
-	
-	if (pControl == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	((CGsPreviewCtrl*)pControl)->GetDwgSize();
-	// no acedRetList here, it's in the GetDwgSize() method.
-	return 0;
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlBlockView ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->RemoveHighLight();
+
+	acedRetT();
+	return RSRSLT;
 }
 
+ADSRESULT BlockView::Zoom()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
 
-int BlockView_GetBlockList()
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlBlockView ) )
+		return RSERR; //invalid input
+
+	double dblZoomFactor;
+	if( !GetDoubleArgument( pArgs, dblZoomFactor ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->Zoom(dblZoomFactor);
+
+	acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT BlockView::PreLoadDwg()
 {	
-	int nIndex = 0;
-	CWnd *pControl = GetControlPointer(CtlBlockView, sBlockView_GetBlockList, &nIndex);
-	
-	if (pControl == NULL)
-	{		
-		acedRetInt(-1);
-		return 0;
-	}
-	
-	((CGsPreviewCtrl*)pControl)->GetBlockList();
-	// no acedRetList here, it's in the GetBlockList() method.
-	return 0;
-}
+	struct resbuf *pArgs =acedGetArgs () ;
 
-void BlockView_LoadDwgAndDisplay(int nScaleType, CString sDefunName)
-{
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlBlockView ) )
+		return RSERR; //invalid input
+
 	CString sFileName;
-	double dZoom = 1.0;	
-	bool   dZoomExtents = false;
-	double dCameraX;
-	double dCameraY;
-	double dCameraZ;
-	double dUpX = 0.0;
-	double dUpY = 1.0;
-	double dUpZ = 0.0;
-	bool bCamera = false;
-	int nIndex = 0;
-	
-	CWnd *pControl = GetControlPointer(CtlBlockView, sDefunName, &nIndex);
-	
+	if( !GetStringArgument( pArgs, sFileName ) )
+		return RSERR; //invalid input
 
-	if (!GetStringArgument(nIndex, &sFileName, sDefunName) || pControl == NULL)
-	{		
-		acedRetInt(-1);
-		return;
-	}
-	nIndex++;
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	
-	if (!FindOptionalDoubleArgument(nIndex, &dCameraX, sDefunName))
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->clearAll();				
+	pCtrl->m_BlockName.Empty();
+	pCtrl->m_FileName.Empty();
+	pCtrl->m_bSelectedRect = false;
+	if( pCtrl->m_pLoadedDwg )
 	{
-		((CGsPreviewCtrl*)pControl)->LoadPreviewDwg(sFileName);
-		
-		acedRetVoid();
-		return;
+		delete pCtrl->m_pLoadedDwg;
+		pCtrl->m_pLoadedDwg = NULL;
 	}
-	nIndex++;
+	pCtrl->RedrawWindow();
+	if( !pCtrl->PreLoadDwg( sFileName ) )
+		return RSRSLT;
 
-	if(FindOptionalDoubleArgument(nIndex, &dCameraY, sDefunName))
-	{
-		nIndex++;
-		if (FindOptionalDoubleArgument(nIndex, &dCameraZ, sDefunName))
-		{
-			nIndex++;
-			if (!FindOptionalDoubleArgument(nIndex, &dZoom, sDefunName))
-				dZoomExtents = true;
-			else 
-				nIndex++;
-			bCamera = true;
-		}
-		else
-		{
-			dZoom = dCameraY;
-			bCamera = false;
-		}
-	}
-	else
-	{
-		// if zoom to scale and only the dCameraX has been set.
-		if (nScaleType == 1)
-		{
-			// set the zoom factor to dCameraX and dCameraX = 0 (top)
-			dZoom = dCameraX;
-			dCameraX = 0;
-			bCamera = false;
-		}
-	}
-
-	try
-	{
-		// check if the x, y and z coords were specified
-		if (bCamera)
-		{		
-			((CGsPreviewCtrl*)pControl)->LoadPreviewDwg(
-				sFileName,
-				dZoom,
-				dZoomExtents,
-				nScaleType,
-				dUpX, dUpY, dUpZ,
-				dCameraX, dCameraY, dCameraZ);
-		}
-		else
-		{
-			int nPreset = int(dCameraX);
-			switch(nPreset)
-			{
-			case 0: // top
-				((CGsPreviewCtrl*)pControl)->LoadPreviewDwg(sFileName, dZoom, dZoomExtents, nScaleType, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
-				break;
-				
-			case 1: // bottom
-				((CGsPreviewCtrl*)pControl)->LoadPreviewDwg(sFileName, dZoom, dZoomExtents, nScaleType, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0);
-				break;
-			
-			case 2: // right
-				((CGsPreviewCtrl*)pControl)->LoadPreviewDwg(sFileName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0);
-				break;
-				
-			case 3: // left
-				((CGsPreviewCtrl*)pControl)->LoadPreviewDwg(sFileName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, 0.0, 0.0);
-				break;
-			
-			case 4: // front
-				((CGsPreviewCtrl*)pControl)->LoadPreviewDwg(sFileName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0);
-				break;
-
-			case 5: // back
-				((CGsPreviewCtrl*)pControl)->LoadPreviewDwg(sFileName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
-				break;
-			
-			case 6: // SW
-				((CGsPreviewCtrl*)pControl)->LoadPreviewDwg(sFileName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, -1.0, 1.0);
-				break;
-			
-			case 7: // SE
-				((CGsPreviewCtrl*)pControl)->LoadPreviewDwg(sFileName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, -1.0, 1.0);
-				break;
-			
-			case 8: // NW
-				((CGsPreviewCtrl*)pControl)->LoadPreviewDwg(sFileName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, 1.0, 1.0);
-				break;
-			
-			case 9: // NE
-				((CGsPreviewCtrl*)pControl)->LoadPreviewDwg(sFileName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
-				break;
-			}
-		}	
-	}
-	catch(...)
-	{	
-	}
-
-	acedRetVoid();	
+	acedRetT();
+	return RSRSLT;
 }
 
-int BlockView_DisplayBlock(int nScaleType, CString sDefunName)
+ADSRESULT BlockView::GetBlockSize()	
 {
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlBlockView ) )
+		return RSERR; //invalid input
+
 	CString sBlockName;
-	double dZoom = 1.0;	
-	bool   dZoomExtents = false;
-	double dCameraX;
-	double dCameraY;
-	double dCameraZ;
-	double dUpX = 0.0;
-	double dUpY = 1.0;
-	double dUpZ = 0.0;
-	bool bCamera = false;
-	int nIndex = 0;
-	
-	CWnd *pControl = GetControlPointer(CtlBlockView, sDefunName, &nIndex);
-	
-	if (!GetStringArgument(nIndex, &sBlockName, sDefunName) || pControl == NULL)
-	{
-		acedRetInt(-1);
-		return 0;
-	}
-	nIndex++;
-	
-	if (!FindOptionalDoubleArgument(nIndex, &dCameraX, sDefunName))
-	{
-		((CGsPreviewCtrl*)pControl)->DisplayBlock(sBlockName);
-		
-		acedRetVoid();
-		return 0;
-	}
-	nIndex++;
+	if( !GetStringArgument( pArgs, sBlockName ) )
+		return RSERR; //invalid input
 
-	if(FindOptionalDoubleArgument(nIndex, &dCameraY, sDefunName))
-	{
-		nIndex++;
-		if (FindOptionalDoubleArgument(nIndex, &dCameraZ, sDefunName))
-		{
-			nIndex++;
-			if (!FindOptionalDoubleArgument(nIndex, &dZoom, sDefunName))
-				dZoomExtents = true;
-			else 
-				nIndex++;
-			bCamera = true;
-		}
-		else
-		{
-			dZoom = dCameraY;
-			bCamera = false;
-		}
-	}
-	else
-	{
-		// if zoom to scale and only the dCameraX has been set.
-		if (nScaleType == 1)
-		{
-			// set the zoom factor to dCameraX and dCameraX = 0 (top)
-			dZoom = dCameraX;
-			dCameraX = 0;
-			bCamera = false;
-		}
-	}
-	
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
 
-	try
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+	AcDbExtents ext;
+	if( !pCtrl->GetBlockSize( sBlockName, ext ) )
+		return RSRSLT;
+	AcGePoint3d ptMin = ext.minPoint();
+	AcGePoint3d ptMax = ext.maxPoint();
+	resbuf rbHeight = { NULL, RTREAL };
+	rbHeight.resval.rreal = ptMax.y - ptMin.y;
+	resbuf rbWidth = { &rbHeight, RTREAL };
+	rbWidth.resval.rreal = ptMax.x - ptMin.x;
+	acedRetList( &rbWidth );
+	return RSRSLT;
+}
+
+ADSRESULT BlockView::GetDwgSize()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlBlockView ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+	AcDbExtents ext;
+	if( !pCtrl->GetDwgSize( ext ) )
+		return RSRSLT;
+	AcGePoint3d ptMin = ext.minPoint();
+	AcGePoint3d ptMax = ext.maxPoint();
+	resbuf rbHeight = { NULL, RTREAL };
+	rbHeight.resval.rreal = ptMax.y - ptMin.y;
+	resbuf rbWidth = { &rbHeight, RTREAL };
+	rbWidth.resval.rreal = ptMax.x - ptMin.x;
+	acedRetList( &rbWidth );
+	return RSRSLT;
+}
+
+
+ADSRESULT BlockView::GetBlockList()
+{	
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlBlockView ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+	AcDbDatabase* pDb = (pCtrl->m_pLoadedDwg? pCtrl->m_pLoadedDwg : acdbCurDwg());
+	if( !pDb )
+		return RSRSLT;
+  AcDbBlockTable* pBlockTable;
+	if( Acad::eOk != pDb->getBlockTable( pBlockTable, AcDb::kForRead ) )
+		return RSRSLT;
+
+	AcDbBlockTableIterator* pIter;
+	Acad::ErrorStatus es = pBlockTable->newIterator( pIter );
+	pBlockTable->close();
+	if( es != Acad::eOk )
+		return RSRSLT;
+
+	resbuf* prbResult = NULL;
+	resbuf* prbTail = NULL;
+	for( pIter->start(); !pIter->done(); pIter->step() )
 	{
-		
-		// check if the x, y and z coords were specified
-		if (bCamera)
+		AcDbBlockTableRecord* pBTR;
+		Acad::ErrorStatus es = pIter->getRecord( pBTR, AcDb::kForRead );
+		if( es != Acad::eOk )
+			continue;
+		const ACHAR* pszBlockName = NULL;
+		if( Acad::eOk == pBTR->getName( pszBlockName ) )
 		{
-			((CGsPreviewCtrl*)pControl)->DisplayBlock(
-				sBlockName,
-				dZoom,
-				dZoomExtents,
-				nScaleType,
-				dUpX, dUpY, dUpZ,
-				dCameraX, dCameraY, dCameraZ);
-		}
-		else
-		{
-			int nPreset = int(dCameraX);
-			switch(nPreset)
+			if( prbTail )
 			{
-			case 0: // top
-				((CGsPreviewCtrl*)pControl)->DisplayBlock(sBlockName, dZoom, dZoomExtents, nScaleType, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
-				break;
-				
-			case 1: // bottom
-				((CGsPreviewCtrl*)pControl)->DisplayBlock(sBlockName, dZoom, dZoomExtents, nScaleType, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0);
-				break;
-			
-			case 2: // right
-				((CGsPreviewCtrl*)pControl)->DisplayBlock(sBlockName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0);
-				break;
-				
-			case 3: // left
-				((CGsPreviewCtrl*)pControl)->DisplayBlock(sBlockName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, 0.0, 0.0);
-				break;
-			
-			case 4: // front
-				((CGsPreviewCtrl*)pControl)->DisplayBlock(sBlockName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0);
-				break;
-
-			case 5: // back
-				((CGsPreviewCtrl*)pControl)->DisplayBlock(sBlockName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
-				break;
-			
-			case 6: // SW
-				((CGsPreviewCtrl*)pControl)->DisplayBlock(sBlockName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, -1.0, 1.0);
-				break;
-			
-			case 7: // SE
-				((CGsPreviewCtrl*)pControl)->DisplayBlock(sBlockName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, -1.0, 1.0);
-				break;
-			
-			case 8: // NW
-				((CGsPreviewCtrl*)pControl)->DisplayBlock(sBlockName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, 1.0, 1.0);
-				break;
-			
-			case 9: // NE
-				((CGsPreviewCtrl*)pControl)->DisplayBlock(sBlockName, dZoom, dZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
-				break;
+				prbTail->rbnext = acutNewRb( RTSTR );
+				prbTail = prbTail->rbnext;
 			}
+			else
+			{
+				prbTail = acutNewRb( RTSTR );
+				prbResult = prbTail;
+			}
+			acutNewString( pszBlockName, prbTail->resval.rstring );
 		}
+		pBTR->close();
 	}
-	catch(...)
+	delete pIter;
+	acedRetList( prbResult );
+	acutRelRb( prbResult );
+	return RSRSLT;
+}
+
+ADSRESULT LoadDwgImp( bool bToScale )
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlBlockView ) )
+		return RSERR; //invalid input
+
+	CString sFileName;
+	if( !GetStringArgument( pArgs, sFileName ) )
+		return RSERR; //invalid input
+
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+
+	if( !pArgs )
 	{
+		if( pCtrl->LoadPreviewDwg( sFileName ) )
+			acedRetT();
+		return RSRSLT;
 	}
 
-	acedRetVoid();
-	return 0;
+	int nPresetView = 0;
+	if( GetIntArgument( pArgs, nPresetView, true ) )
+	{
+		double dblZoom = 0;
+		GetDoubleArgument( pArgs, dblZoom, true );
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		bool bZoomExtents = (dblZoom == 0);
+		if( bZoomExtents )
+			dblZoom = 1.0;
+		int nScaleType = (bToScale? 1 : 0);
+		bool bSuccess = false;
+		switch( nPresetView )
+		{
+		case 0: // top
+			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 );
+			break;
+		case 1: // bottom
+			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0 );
+			break;
+		case 2: // right
+			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0 );
+			break;
+		case 3: // left
+			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, 0.0, 0.0 );
+			break;
+		case 4: // front
+			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0 );
+			break;
+		case 5: // back
+			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0 );
+			break;
+		case 6: // SW
+			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, -1.0, 1.0 );
+			break;
+		case 7: // SE
+			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, -1.0, 1.0 );
+			break;
+		case 8: // NW
+			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, 1.0, 1.0 );
+			break;
+		case 9: // NE
+			bSuccess = pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0 );
+			break;
+		default:
+			HandleArgValueError( pArgs );
+			return RSERR;
+		}
+		if( bSuccess )
+			acedRetT();
+		return RSRSLT;
+	}
+
+	double dblZoom = 0;
+	double dblCameraX = 0;
+	double dblCameraY = 0;
+	double dblCameraZ = 0;
+	if( !GetDoubleArgument( pArgs, dblCameraX ) )
+		return RSERR;
+	if( !GetDoubleArgument( pArgs, dblCameraY ) )
+		return RSERR;
+	if( !GetDoubleArgument( pArgs, dblCameraZ ) )
+		return RSERR;
+	if( !GetDoubleArgument( pArgs, dblZoom ) )
+	{
+		dblZoom = dblCameraZ;
+		dblCameraZ = 0;
+	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	bool bZoomExtents = (dblZoom == 0);
+	if( bZoomExtents )
+		dblZoom = 1.0;
+	int nScaleType = (bToScale? 1 : 0);
+	if( pCtrl->LoadPreviewDwg( sFileName, dblZoom, bZoomExtents, nScaleType,
+														 0.0, 1.0, 0.0, dblCameraX, dblCameraY, dblCameraZ ) )
+		acedRetT();
+	return RSRSLT;
 }
 
-
-int BlockView_ViewPaperSpace()
+ADSRESULT BlockView::LoadDwg()
 {
-	int nScaleType = 0;
-	CString sDefunName = sBlockView_ViewPaperSpace;
-
-	double dZoom = 1.0;	
-	bool   dZoomExtents = false;
-	int nIndex = 0;	
-
-	CWnd *pControl = GetControlPointer(CtlBlockView, sDefunName, &nIndex);
-	
-//n	((CGsPreviewCtrl*)pControl)->SetAcadColor(-23);
-	
-	((CGsPreviewCtrl*)pControl)->DisplayBlock(ACDB_PAPER_SPACE, dZoom, dZoomExtents, nScaleType, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
-	
-	acedRetVoid();
-	return 0;
+	return LoadDwgImp( false );
 }
 
-
-int BlockView_ViewBlock()
+ADSRESULT BlockView::LoadDwgToScale()
 {
-	return BlockView_DisplayBlock(0, sBlockView_ViewBlock);
+	return LoadDwgImp( true );
 }
 
-int BlockView_ViewBlockToScale()
+ADSRESULT DisplayBlockImp( bool bToScale )
 {
-	return BlockView_DisplayBlock(1, sBlockView_ViewBlockToScale);	
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlBlockView ) )
+		return RSERR; //invalid input
+
+	CString sBlockName;
+	if( !GetStringArgument( pArgs, sBlockName ) )
+		return RSERR; //invalid input
+
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+
+	if( !pArgs )
+	{
+		if( !pCtrl->DisplayBlock( sBlockName ) )
+			return RSRSLT;
+	}
+
+	int nPresetView = 0;
+	if( GetIntArgument( pArgs, nPresetView, true ) )
+	{
+		double dblZoom = 0;
+		GetDoubleArgument( pArgs, dblZoom, true );
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		bool bZoomExtents = (dblZoom == 0);
+		if( bZoomExtents )
+			dblZoom = 1.0;
+		int nScaleType = (bToScale? 1 : 0);
+		bool bSuccess = false;
+		switch( nPresetView )
+		{
+		case 0: // top
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 );
+			break;
+		case 1: // bottom
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0 );
+			break;
+		case 2: // right
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0 );
+			break;
+		case 3: // left
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, 0.0, 0.0 );
+			break;
+		case 4: // front
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0 );
+			break;
+		case 5: // back
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0 );
+			break;
+		case 6: // SW
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, -1.0, 1.0 );
+			break;
+		case 7: // SE
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, -1.0, 1.0 );
+			break;
+		case 8: // NW
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, -1.0, 1.0, 1.0 );
+			break;
+		case 9: // NE
+			bSuccess = pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0 );
+			break;
+		default:
+			HandleArgValueError( pArgs );
+			return RSERR;
+		}
+		if( bSuccess )
+			acedRetT();
+		return RSRSLT;
+	}
+
+	double dblZoom = 0;
+	double dblCameraX = 0;
+	double dblCameraY = 0;
+	double dblCameraZ = 0;
+	if( !GetDoubleArgument( pArgs, dblCameraX ) )
+		return RSERR;
+	if( !GetDoubleArgument( pArgs, dblCameraY ) )
+		return RSERR;
+	if( !GetDoubleArgument( pArgs, dblCameraZ ) )
+		return RSERR;
+	if( !GetDoubleArgument( pArgs, dblZoom ) )
+	{
+		dblZoom = dblCameraZ;
+		dblCameraZ = 0;
+	}
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	bool bZoomExtents = (dblZoom == 0);
+	if( bZoomExtents )
+		dblZoom = 1.0;
+	int nScaleType = (bToScale? 1 : 0);
+	if( pCtrl->DisplayBlock( sBlockName, dblZoom, bZoomExtents, nScaleType,
+													 0.0, 1.0, 0.0, dblCameraX, dblCameraY, dblCameraZ ) )
+		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT BlockView::DisplayBlock()
+{
+	return DisplayBlockImp( false );
+}
+
+ADSRESULT BlockView::DisplayBlockToScale()
+{
+	return DisplayBlockImp( true );
 }
 
 
-int BlockView_RefreshBlock()
+ADSRESULT BlockView::DisplayPaperSpace()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlBlockView ) )
+		return RSERR; //invalid input
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+	if( pCtrl->DisplayBlock( ACDB_PAPER_SPACE, 1.0, false, 0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 ) )
+		acedRetT();
+	return RSRSLT;
+}
+
+
+ADSRESULT BlockView::RefreshBlock()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlBlockView ) )
+		return RSERR; //invalid input
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->UpdateBlock();
+	acedRetT();
+	return RSRSLT;
+}
+
+/*
+ADSRESULT BlockView::GetViewInfo()
 {
 	int nIndex = 0;
-	CWnd *pControl = GetControlPointer(CtlBlockView, sBlockView_RefreshBlock, &nIndex);
-	
-	((CGsPreviewCtrl*)pControl)->UpdateBlock();
-	
-	acedRetVoid();
-	return 0;
-}
-
-int BlockView_GetViewInfo()
-{
-	int nIndex = 0;
-	CGsPreviewCtrl *pControl = (CGsPreviewCtrl*)GetControlPointer(CtlBlockView, sBlockView_GetViewInfo, &nIndex);
+	CGsPreviewCtrl *pControl = (CGsPreviewCtrl*)GetControlPointer(CtlBlockView, sBlockView::GetViewInfo, &nIndex);
 	
 	if (pControl != NULL && pControl->view() != NULL)
 	{
@@ -535,10 +560,10 @@ int BlockView_GetViewInfo()
 }
 
 
-int BlockView_SetView()
+ADSRESULT BlockView::SetView()
 {
 	TDclControlPtr pArxObject = NULL;
-	struct resbuf *ListData = getLispTargetInput(sBlockView_SetView, pArxObject);
+	struct resbuf *ListData = getLispTargetInput(sBlockView::SetView, pArxObject);
 
 	
 	if (pArxObject == NULL)
@@ -636,3 +661,4 @@ int BlockView_SetView()
 	acedRetVoid();
 	return 0;
 }
+*/

@@ -4,19 +4,18 @@
 #include "stdafx.h"
 #include "TextBoxFilters.h"
 #include "PropertyObject.h"
+#include "StudioDialogControl.h"
 #include "Workspace.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CTextBoxFilters property page
 
-IMPLEMENT_DYNCREATE(CTextBoxFilters, CPropertyPage)
-
-CTextBoxFilters::CTextBoxFilters() : CPropertyPage(CTextBoxFilters::IDD)
+CTextBoxFilters::CTextBoxFilters( TDclControlPtr pDclControl )
+: CPropertyPage(CTextBoxFilters::IDD)
+, mpDclControl ( pDclControl )
 {
-	//{{AFX_DATA_INIT(CTextBoxFilters)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
+	m_pStyle = pDclControl->GetPropertyObject(Prop::FilterStyle);
 }
 
 CTextBoxFilters::~CTextBoxFilters()
@@ -91,7 +90,7 @@ void CTextBoxFilters::DisplayDesc(int nSetting)
 BOOL CTextBoxFilters::OnApply() 
 {
 	m_pStyle->SetLongValue(m_SelectedStyle);
-	theWorkspace.SetModified(true);
+	CStudioDialogControl::UpdateProperty(mpDclControl, m_pStyle->GetID());
 	return CPropertyPage::OnApply();
 }
 
