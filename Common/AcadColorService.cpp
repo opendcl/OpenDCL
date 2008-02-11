@@ -21,14 +21,14 @@ CAcadColorService::CAcadColorService()
 CAcadColorService::CAcadColorService( COLORREF colorForeground, COLORREF colorBackground )
 : mclrForeground( colorForeground )
 , mclrBackground( colorBackground )
-, mbrushBackground( colorBackground )
+, mbrushBackground( colorBackground & 0x00FFFFFF )
 {
 }
 
 CAcadColorService::CAcadColorService( long nAcadColorForeground, long nAcadColorBackground )
 : mclrForeground( GetRGBColor( nAcadColorForeground ) )
 , mclrBackground( GetRGBColor( nAcadColorBackground ) )
-, mbrushBackground( mclrBackground )
+, mbrushBackground( GetRGBColor( nAcadColorBackground ) & 0x00FFFFFF )
 {
 }
 
@@ -40,14 +40,14 @@ void CAcadColorService::SetBackgroundColor( long nAcadColor )
 {
 	mclrBackground = GetRGBColor( nAcadColor );
 	mbrushBackground.DeleteObject();
-	mbrushBackground.CreateSolidBrush( mclrBackground );
+	mbrushBackground.CreateSolidBrush( GetBackgroundColor() );
 }
 
 void CAcadColorService::SetBackgroundColor( COLORREF color )
 {
 	mclrBackground = color;
 	mbrushBackground.DeleteObject();
-	mbrushBackground.CreateSolidBrush( color );
+	mbrushBackground.CreateSolidBrush( GetBackgroundColor() );
 }
 
 void CAcadColorService::SetForegroundColor( long nAcadColor )
@@ -67,7 +67,7 @@ COLORREF CAcadColorService::GetForegroundColor() const
 
 COLORREF CAcadColorService::GetBackgroundColor() const
 {
-	return mclrBackground;
+	return (mclrBackground & 0x0FFFFFF);
 }
 
 HBRUSH CAcadColorService::GetBackgroundBrush() const
@@ -86,7 +86,7 @@ CBrush* CAcadColorService::GetBackgroundCBrush() const
 
 bool CAcadColorService::IsBackgroundTransparent() const
 {
-	return (mclrBackground == ~COLORREF(0));
+	return ((mclrBackground & 0x80000000) != 0);
 }
 
 CBrush& CAcadColorService::GetTransparentBrush()
@@ -103,6 +103,6 @@ HBRUSH CAcadColorService::CtlColor( CDC* pDC, UINT nCtlColor )
 		pDC->SetBkMode( TRANSPARENT );
 		return GetTransparentBrush();
 	}
-	pDC->SetBkColor( mclrBackground );
+	pDC->SetBkColor( GetBackgroundColor() );
 	return mbrushBackground;
 }

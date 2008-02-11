@@ -68,12 +68,12 @@ BOOL CImageListContents::OnInitDialog()
 		cbi.mask = CBEIF_IMAGE | CBEIF_INDENT | CBEIF_OVERLAY |
 		 CBEIF_SELECTEDIMAGE | CBEIF_TEXT;
 
-		char value[80];
-		_ltoa(i, value, 10);
+		CString sValue;
+		sValue.Format( _T("%u"), i );
 		
 		cbi.iItem = i;
-		cbi.pszText = (LPTSTR)(LPCTSTR)value;
-		cbi.cchTextMax = strlen(value);
+		cbi.pszText = sValue.LockBuffer();
+		cbi.cchTextMax = -1;
 		cbi.iImage = i;
 		cbi.iSelectedImage = i;
 		cbi.iOverlay = 2;

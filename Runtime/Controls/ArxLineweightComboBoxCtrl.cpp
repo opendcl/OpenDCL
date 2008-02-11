@@ -23,10 +23,9 @@ CArxLineweightComboBoxCtrl::~CArxLineweightComboBoxCtrl()
 
 bool CArxLineweightComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
-	bool bSuccess = __super::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID );
+	SetUseDefault( TRUE );
 
-	if( bSuccess )
-		SetUseDefault( FALSE );
+	bool bSuccess = __super::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID );
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;

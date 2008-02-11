@@ -31,7 +31,7 @@ protected:
 	CWnd* mpHostDlg;
 	CThemeHelperST mThemeHelper;
 	bool mbRecalcInProgress;
-	HDWP mhDeferredPos;
+	bool mbDeferWindowPos;
 
 // Construction
 protected:
@@ -54,7 +54,7 @@ public:
 public:
 	bool CreateControls( UINT& nId );
 	void AddControl( TDialogControlPtr pDlgControl );
-	void RemoveControl( TDialogControlPtr pDlgControl );
+	void RemoveControl( CDialogControl* pDlgControl );
 	void ResetControlsPos( TDclControlPtr pControl );
 	void SetFirstControlFocus() const;
 

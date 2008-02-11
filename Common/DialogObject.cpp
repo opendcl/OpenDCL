@@ -167,6 +167,7 @@ void CDialogObject::OnFrameChanged()
 	SetNCHeight( rectWindow.Height() - rectClient.Height() );
 	OnApplyMinMaxSize( NULL );
 	ApplyPosition();
+	OnNeedRepaint();
 }
 
 void CDialogObject::ApplyPosition()
@@ -260,6 +261,7 @@ bool CDialogObject::OnApplyIcon( TPropertyPtr pProp )
 		mpControlWnd->SetIcon( pPicture->CloneIcon(), FALSE );
 	else
 		mpControlWnd->SetIcon( CopyIcon( AfxGetApp()->GetMainWnd()->GetIcon( FALSE ) ), FALSE );
+	OnFrameChanged();
 	return true;
 }
 

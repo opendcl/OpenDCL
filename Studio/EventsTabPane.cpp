@@ -159,7 +159,7 @@ void CEventsTabPane::UpdateEvents(TDclControlPtr pControl)
 {
 	m_pControl = pControl;
 	
-	if (pControl && pControl->GetOwnerForm()->GetType() == VdclDockable)
+	if (pControl && pControl->GetOwnerForm()->GetType() == FrmDockableDlg)
 		GetDlgItem(IDC_ADDCANCEL)->ShowWindow(SW_SHOW);
 	else
 		GetDlgItem(IDC_ADDCANCEL)->ShowWindow(SW_HIDE);
@@ -329,13 +329,14 @@ void CEventsTabPane::SetDefunPreview()
 		sArgs += _T(" /");
 
 		CString sDefunBody;
-		if (nEventId == Prop::DragnDropFromAutoCAD && m_pControl->GetOwnerForm()->GetType() != VdclFileDialog)
+		if (nEventId == Prop::DragnDropFromAutoCAD && m_pControl->GetOwnerForm()->GetType() != FrmFileDlg)
 			sDefunBody = _T("     (setq ssDragnDropSelectionSet (ssget \"P\"))"); //get the 'Previous' selection set
 		else
 		{
 			// add the default message box to show the programmer the event has not been updated
-			sDefunBody.Format( _T("     (dcl_MessageBox \"To Do: code must be added to event handler\\r\\n%s\" \"To do\")"),
-												 sEventDefun );
+			CString sToDoMsgBox;
+			sToDoMsgBox.Format( theWorkspace.LoadResourceString( IDS_MSG_TODOLISPFUNC ), (LPCTSTR)sEventDefun );
+			sDefunBody.Format( _T("     %s"), (LPCTSTR)sToDoMsgBox );
 		}
 
 		sPreview.Format( _T("(defun %s (%s)\r\n%s\r\n)\r\n"), (LPCTSTR)sEventDefun, (LPCTSTR)sArgs, (LPCTSTR)sDefunBody );
@@ -393,8 +394,14 @@ BOOL CEventsTabPane::PreTranslateMessage(MSG* pMsg)
 {
 	if( pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST )
 	{
-		if( AfxGetMainWnd()->PreTranslateMessage( pMsg ) )
-			return TRUE;
+		if( pMsg->message == WM_KEYDOWN )
+		{
+			if( pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_RETURN )
+				return TRUE; //prevent dialog from closing
+			if( pMsg->wParam == VK_CONTROL || pMsg->wParam == 'C' )
+				return __super::PreTranslateMessage(pMsg); //allow Ctrl-C to copy to clipboard
+		}
+		return AfxGetMainWnd()->PreTranslateMessage( pMsg );
 	}
 	return CWnd::PreTranslateMessage(pMsg);
 }
@@ -573,9 +580,7 @@ CString CEventsTabPane::GetEvent( Prop::Id nEventId )
 	if( sEventSymbol.IsEmpty() )
 	{
 		CString sEventName = m_pControl->GetVarName();
-		CString sItemText;
-		m_EventsTree.GetText(m_EventsTree.GetCurSel(), sItemText);
-		sEventSymbol.Format( _T("c:%s_On%s"), (LPCTSTR)sEventName, (LPCTSTR)sItemText );
+		sEventSymbol.Format( _T("c:%s_On%s"), (LPCTSTR)sEventName, GetPropertyName( nEventId ) );
 	}
 
 	return sEventSymbol;

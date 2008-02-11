@@ -346,6 +346,14 @@ void CDclControlObject::Serialize(CArchive& ar)
 
 		if (nThisVersion >= 6)
 			ar >> mnID;
+		else if( mpOwner )
+			mnID = mpOwner->GetNextId();
+		if( mType == CtlSplitter )
+		{
+			assert( mnID > 2 ); //illegal splitter ID
+			if( mnID <= 2 )
+				mnID += 100;
+		}
 		mpImageList = NULL;
 		if (nThisVersion >= 5)
 		{
@@ -456,7 +464,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 	if (!ar.IsStoring())
 	{
 		// remove any properties that shouldn't have been persisted or that were added erroneously in the past
-		DclFormType eFormType = VdclInvalid;
+		FormType eFormType = _FrmInvalid;
 		if( mpOwner )
 		{
 			CDclFormObject* pOwnerForm = mpOwner;
@@ -530,7 +538,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				case Prop::Height:
 					if( !(*iterAt)->IsHidden() )
 						(*iterAt)->SetHidden();
-					continue;
+					break;
 				}
 				break;
 			case CtlLabel:
@@ -590,26 +598,26 @@ void CDclControlObject::Serialize(CArchive& ar)
 						CString sVal = (*iterAt)->GetStringValue();
 						if( sVal == _T("second") || sVal == _T("second remaining") )
 							(*iterAt)->SetStringValue( _T("") ); //revert to default from resources
-						continue;
+						break;
 					}
 				case Prop::SecondsText:
 					{
 						CString sVal = (*iterAt)->GetStringValue();
 						if( sVal == _T("seconds") || sVal == _T("seconds remaining") )
 							(*iterAt)->SetStringValue( _T("") ); //revert to default from resources
-						continue;
+						break;
 					}
 				case Prop::MinuteText:
 					{
 						if( (*iterAt)->GetStringValue() == _T("minute") )
 							(*iterAt)->SetStringValue( _T("") ); //revert to default from resources
-						continue;
+						break;
 					}
 				case Prop::MinutesText:
 					{
 						if( (*iterAt)->GetStringValue() == _T("minutes") )
 							(*iterAt)->SetStringValue( _T("") ); //revert to default from resources
-						continue;
+						break;
 					}
 				}
 				break;
@@ -644,7 +652,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				}
 				switch( eFormType )
 				{
-				case VdclConfigTab:
+				case FrmConfigTab:
 					switch( nID )
 					{
 					case Prop::Custom:
@@ -655,7 +663,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 						continue;
 					}
 					break;
-				case VdclModal:
+				case FrmModalDlg:
 					switch( nID )
 					{
 					case Prop::EventInvoke:
@@ -663,7 +671,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 						continue;
 					}
 					break;
-				case VdclModeless:
+				case FrmModelessDlg:
 					switch( nID )
 					{
 					case Prop::Icon:
@@ -671,22 +679,33 @@ void CDclControlObject::Serialize(CArchive& ar)
 						continue;
 					}
 					break;
-				case VdclDockable:
-					switch( nID )
-					{
-					case Prop::MinDialogWidth:
-					case Prop::MinDialogHeight:
-					case Prop::MaxDialogWidth:
-					case Prop::MaxDialogHeight:
-						mProperties.erase( iterAt );
-						continue;
-					}
+				case FrmDockableDlg:
+					//switch( nID )
+					//{
+					//case Prop::MinDialogWidth:
+					//case Prop::MinDialogHeight:
+					//case Prop::MaxDialogWidth:
+					//case Prop::MaxDialogHeight:
+					//	mProperties.erase( iterAt );
+					//	continue;
+					//}
 					break;
 				}
 				break;
 			}
 			switch( nID )
 			{
+			case Prop::UseLeftFromRight:
+			case Prop::UseRightFromRight:
+			case Prop::UseTopFromBottom:
+			case Prop::UseBottomFromBottom:
+				if( (*iterAt)->GetType() == PropBool )
+				{
+					long lVal = (*iterAt)->GetLongValue();
+					(*iterAt)->SetType( PropLong );
+					(*iterAt)->SetLongValue( lVal );
+				}
+				break;
 			case Prop::IconYSpacing: //erroneously added as an event in OpenDCL 4.1 Alpha 4
 				if( (*iterAt)->GetType() == PropEvent )
 				{
@@ -706,7 +725,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				continue;
 			case Prop::TabOrder:
 			case Prop::FontColor:
-			case Prop::TabLabelAlign:
+			case Prop::LabelAlignment:
 			case Prop::TabSelected:
 			case Prop::ZOrder:
 				mProperties.erase( iterAt );
@@ -738,7 +757,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 			}
 			switch( eFormType )
 			{
-			case VdclModal:
+			case FrmModalDlg:
 				switch( nID )
 				{
 				case Prop::EventInvoke:
@@ -877,9 +896,9 @@ bool CDclControlObject::SetBooleanProperty( Prop::Id nID, bool bValue /*= true*/
 }
 
 TPropertyPtr CDclControlObject::AddBooleanProperty( Prop::Id nID,
-																																				PropertyType type /*= PropBool*/,
-																																				bool bValue /*= true*/,
-																																				bool bResetExisting /*= false*/ )
+																										PropertyType type /*= PropBool*/,
+																										bool bValue /*= true*/,
+																										bool bResetExisting /*= false*/ )
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( !pProp )
@@ -1039,11 +1058,11 @@ TPropertyPtr CDclControlObject::GetMethods() const
 	return NULL;
 }
 
-TPropertyList::iterator CDclControlObject::FindPropertyInsertPos( Prop::Id nID, bool bHidden )
+TPropertyList::iterator CDclControlObject::FindPropertyInsertPos( Prop::Id id, bool bHidden )
 {
-	if( nID == Prop::ObjectBrowser )
+	if( id == Prop::ObjectBrowser )
 		return mProperties.begin();		
-	return FindPropertyInsertPos( GetPropertyName(nID), bHidden );
+	return FindPropertyInsertPos( GetPropertyApiName( id ), bHidden );
 }
 
 TPropertyList::iterator CDclControlObject::FindPropertyInsertPos( LPCTSTR pszName, bool bHidden )

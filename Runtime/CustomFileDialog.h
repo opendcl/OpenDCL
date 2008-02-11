@@ -67,7 +67,7 @@ friend class CMainFileDlg;
 
 // CDialogObject overrides
 public:
-	virtual DclFormType GetType() const { return VdclFileDialog; }
+	virtual FormType GetType() const { return FrmFileDlg; }
 	virtual CWnd* GetTopLevelWnd() { return &mMainFileDlg; }
 	virtual bool IsModeless() const { return false; }
 	virtual bool IsDockable() const { return false; }

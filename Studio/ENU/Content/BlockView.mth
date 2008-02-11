@@ -1,7 +1,7 @@
 [Method]
 RefreshBlock
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_RefreshBlock
 [Desc]
 This method will refresh the block. This is function useful when the block has been modified and you wish to display the changes.
 [Arguments]
@@ -10,8 +10,8 @@ This method will refresh the block. This is function useful when the block has b
 
 [Method]
 DisplayBlock (using preset views)
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_DisplayBlock
 [Desc]
 This method loads a block from the current drawing or pre-loaded dwg file into the control for display. This method will allow the camera viewing angle to be set by a standard preset (SW, NW, Top, Front, etc.) When this method is called the block will always be zoomed to its extents unless the \cf1 ZoomFactor \cf0 argument has been submitted. \par \par If the \cf1 ZoomFactor \cf0 has been included then the block is scaled according to the zoom extents. For example: 1.0 = zoomed to extents, 0.5 = 1/2 the zoom extents making the block half the size and 2.0 = doubles the extents making the block zoomed in. \par \par \trowd\trgaph108\trleft750\trbrdrt\brdrs\brdrw10 \trbrdrl\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx1665\clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx7920\pard\intbl\nowidctlpar\b Flag\cell Preset View\cell\row\intbl 0\cell\b0 Top\cell\b\row\intbl 1\cell\b0 Bottom\cell\b\row\intbl 2\cell\b0 Right\cell\b\row\intbl 3\cell\b0 Left\cell\b\row\intbl 4\cell\b0 Front\cell\b\row\intbl 5\cell\b0 Back\cell\b\row\intbl 6\cell\b0 SW - isometric\cell\b\row\intbl 7\cell\b0 SE - isometric\cell\b\row\intbl 8\cell\b0 NW - isometric\cell\b\row\intbl 9\cell\b0 NE - isometric\cell\b\row\pard\lang4105\b0\f1\fs20
 [Arguments]
@@ -26,8 +26,8 @@ This method loads a block from the current drawing or pre-loaded dwg file into t
 
 [Method]
 DisplayBlock (using camera offset)
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_DisplayBlock
 [Desc]
 This method loads a block from the current drawing or pre-loaded dwg file into the control for display. This method will allow the camera viewing angle to be set manually by submitting the offset vector camera placement in relation from the center of the block.  When this method is called the block will always be zoomed to its extents unless the \cf1 ZoomFactor \cf0 argument has been submitted. \par \par If the \cf1 ZoomFactor \cf0 has been included then the block is scaled according to the zoom extents. For example: 1.0 = zoomed to extents, 0.5 = 1/2 the zoom extents making the block half the size and 2.0 = doubles the extents making the block zoomed in.
 [Arguments]
@@ -46,8 +46,8 @@ This method loads a block from the current drawing or pre-loaded dwg file into t
 
 [Method]
 DisplayBlockToScale (using preset views)
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_DisplayBlockToScale
 [Desc]
 This method loads a block from the current drawing or pre-loaded dwg file into the control for display at an exact scale. This method will allow the camera viewing angle to be set by a standard preset (SW, NW, Top, Front, etc.) \par \par To set the exact scale the \cf1 ZoomFactor \cf0 argument can be calculated as Units per Pixel. So for example a 10 inch by 10 inch block displayed with a value of 0.5 will display about 20 pixels by 20 pixels (+ or - one pixel) in size in the control. \par        \cf1 ZoomFactor \cf0 = Actual Units / ScreenUnits. \par \par \trowd\trgaph108\trleft750\trbrdrt\brdrs\brdrw10 \trbrdrl\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx1665\clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx7920\pard\intbl\nowidctlpar\b Flag\cell Preset View\cell\row\intbl 0\cell\b0 Top\cell\b\row\intbl 1\cell\b0 Bottom\cell\b\row\intbl 2\cell\b0 Right\cell\b\row\intbl 3\cell\b0 Left\cell\b\row\intbl 4\cell\b0 Front\cell\b\row\intbl 5\cell\b0 Back\cell\b\row\intbl 6\cell\b0 SW - isometric\cell\b\row\intbl 7\cell\b0 SE - isometric\cell\b\row\intbl 8\cell\b0 NW - isometric\cell\b\row\intbl 9\cell\b0 NE - isometric\cell\b\row\pard\lang4105\b0\f1\fs20
 [Arguments]
@@ -62,8 +62,8 @@ This method loads a block from the current drawing or pre-loaded dwg file into t
 
 [Method]
 DisplayBlockToScale (using camera offset)
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_DisplayBlockToScale
 [Desc]
 This method loads a block from the current drawing or pre-loaded dwg file into the control for display at an exact scale. This method will allow the camera viewing angle to be set manually by submitting the offset vector camera placement in relation from the center of the block. \par \par To set the exact scale the \cf1 ZoomFactor \cf0 argument can be calculated as Units per Pixel. So for example a 10 inch by 10 inch block displayed with a value of 0.5 will display about 20 pixels by 20 pixels (+ or - one pixel) in size in the control. \par \cf1 ZoomFactor \cf0 = Actual Units / ScreenUnits.
 [Arguments]
@@ -82,8 +82,8 @@ This method loads a block from the current drawing or pre-loaded dwg file into t
 
 [Method]
 DisplayPaperSpace
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_DisplayPaperSpace
 [Desc]
 This method will display the paper space of the current drawing or drawing loaded using \cf2 dcl_BlockView_PreLoadDwg \cf0.
 [Arguments]
@@ -92,8 +92,8 @@ This method will display the paper space of the current drawing or drawing loade
 
 [Method]
 GetBlockList
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_GetBlockList
 [Desc]
 This method will return a list of the names of blocks in the current drawing or the drawing previously loaded using \cf2 dcl_BlockView_PreLoadDwg \cf0.
 [Arguments Return] as List
@@ -102,8 +102,8 @@ This method will return a list of the names of blocks in the current drawing or 
 
 [Method]
 GetBlockSize
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_GetBlockSize
 [Desc]
 This method will return a list indicating the size of a block. If an external Dwg file was previously loaded using \cf2 dcl_BlockView_PreLoadDwg \cf0 this method will look for the block in the loaded Dwg file instead of the current drawing being edited.
 [Arguments Return] as List
@@ -114,8 +114,8 @@ This method will return a list indicating the size of a block. If an external Dw
 
 [Method]
 GetDwgSize
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_GetDwgSize
 [Desc]
 This method will return a list indicating the size of an external Dwg file that was loaded using \cf2 dcl_BlockView_PreLoadDwg \cf0.
 [Arguments Return] as List
@@ -124,8 +124,8 @@ This method will return a list indicating the size of an external Dwg file that 
 
 [Method]
 PreLoadDwg
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_PreLoadDwg
 [Desc]
 This method preload a drawing into the BlockView control for displaying it's internal blocks. Use the \cf2 dcl_BlockView_DisplayBlock \cf0 method to display any blocks that reside in the Dwg file that this method will have just loaded.
 [Arguments]
@@ -136,8 +136,8 @@ This method preload a drawing into the BlockView control for displaying it's int
 
 [Method]
 Zoom
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_Zoom
 [Desc]
 This method will recalculate the zoom scale by the \cf1 ZoomFactor \cf0 provided.  For example a \cf1 ZoomFactor \cf0 setting of 1.1 will zoom in on the block object, and a \cf1 ZoomFactor \cf0 setting of 0.9 will recalculate the zoom scale based on the current zoom setting.
 [Arguments]
@@ -148,8 +148,8 @@ This method will recalculate the zoom scale by the \cf1 ZoomFactor \cf0 provided
 
 [Method]
 LoadDwg (using preset views)
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_LoadDwg
 [Desc]
 This method loads an external drawing file into the control for display just as the BlockView control displays other blocks. This method will allow the camera viewing angle to be set by a standard preset (SW, NW, Top, Front, etc.) When this method is called the block will always be zoomed to its extents unless the \cf1 ZoomFactor \cf0 argument has been submitted. \par \par If the \cf1 ZoomFactor \cf0 has been included then the block is scaled according to the zoom extents. For example: 1.0 = zoomed to extents, 0.5 = 1/2 the zoom extents making the block half the size and 2.0 = doubles the extents making the block zoomed in. \par \par \trowd\trgaph108\trleft750\trbrdrt\brdrs\brdrw10 \trbrdrl\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx1665\clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx7920\pard\intbl\nowidctlpar\b Flag\cell Preset View\cell\row\intbl 0\cell\b0 Top\cell\b\row\intbl 1\cell\b0 Bottom\cell\b\row\intbl 2\cell\b0 Right\cell\b\row\intbl 3\cell\b0 Left\cell\b\row\intbl 4\cell\b0 Front\cell\b\row\intbl 5\cell\b0 Back\cell\b\row\intbl 6\cell\b0 SW - isometric\cell\b\row\intbl 7\cell\b0 SE - isometric\cell\b\row\intbl 8\cell\b0 NW - isometric\cell\b\row\intbl 9\cell\b0 NE - isometric\cell\b\row\pard\lang4105\b0\f1\fs20
 [Arguments]
@@ -164,8 +164,8 @@ This method loads an external drawing file into the control for display just as 
 
 [Method]
 LoadDwg (using camera offset)
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_LoadDwg
 [Desc]
 This method loads an external drawing file into the control for display just as the BlockView control displays other blocks. This method will allow the camera viewing angle to be set manually by submitting the offset vector camera placement in relation from the center of the block.  When this method is called the block will always be zoomed to its extents unless the \cf1 ZoomFactor \cf0 argument has been submitted. \par \par If the \cf1 ZoomFactor \cf0 has been included then the block is scaled according to the zoom extents. For example: 1.0 = zoomed to extents, 0.5 = 1/2 the zoom extents making the block half the size and 2.0 = doubles the extents making the block zoomed in.
 [Arguments]
@@ -184,8 +184,8 @@ This method loads an external drawing file into the control for display just as 
 
 [Method]
 LoadDwgToScale (using preset views)
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_LoadDwgToScale
 [Desc]
 This method loads an external drawing file into the control at an exact scale for display just as the BlockView control displays other blocks. This method will allow the camera viewing angle to be set by a standard preset (SW, NW, Top, Front, etc.) \par \par To set the exact scale the \cf1 ZoomFactor \cf0 argument can be calculated as Units per Pixel. So for example a 10 inch by 10 inch block displayed with a value of 0.5 will display about 20 pixels by 20 pixels (+ or - one pixel) in size in the control. \par        \cf1 ZoomFactor \cf0 = Actual Units / ScreenUnits. \par \par \trowd\trgaph108\trleft750\trbrdrt\brdrs\brdrw10 \trbrdrl\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx1665\clbrdrt\brdrw15\brdrs\clbrdrl\brdrw15\brdrs\clbrdrb\brdrw15\brdrs\clbrdrr\brdrw15\brdrs \cellx7920\pard\intbl\nowidctlpar\b Flag\cell Preset View\cell\row\intbl 0\cell\b0 Top\cell\b\row\intbl 1\cell\b0 Bottom\cell\b\row\intbl 2\cell\b0 Right\cell\b\row\intbl 3\cell\b0 Left\cell\b\row\intbl 4\cell\b0 Front\cell\b\row\intbl 5\cell\b0 Back\cell\b\row\intbl 6\cell\b0 SW - isometric\cell\b\row\intbl 7\cell\b0 SE - isometric\cell\b\row\intbl 8\cell\b0 NW - isometric\cell\b\row\intbl 9\cell\b0 NE - isometric\cell\b\row\pard\lang4105\b0\f1\fs20
 [Arguments]
@@ -200,8 +200,8 @@ This method loads an external drawing file into the control at an exact scale fo
 
 [Method]
 LoadDwgToScale (using camera offset)
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_LoadDwgToScale
 [Desc]
 This method loads an external drawing file into the control at an exact scale for display just as the BlockView control displays other blocks.  This method will allow the camera viewing angle to be set manually by submitting the offset vector camera placement in relation from the center of the block.  \par \par To set the exact scale the \cf1 ZoomFactor \cf0 argument can be calculated as Units per Pixel. So for example a 10 inch by 10 inch block displayed with a value of 0.5 will display about 20 pixels by 20 pixels (+ or - one pixel) in size in the control. \par        \cf1 ZoomFactor \cf0 = Actual Units / ScreenUnits
 [Arguments]
@@ -220,11 +220,12 @@ This method loads an external drawing file into the control at an exact scale fo
 
 [Method]
 Clear
-[Prefix]
-dcl_BlockView_
+[Function]
+dcl_BlockView_Clear
 [Desc]
 This method clears the block view control of its contents.
 [Arguments]
 <CONTROL>
+
 
 [End of File]

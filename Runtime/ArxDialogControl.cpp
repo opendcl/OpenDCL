@@ -280,7 +280,7 @@ void CArxDialogControl::UpdateAllProperties( TDclControlPtr pTemplate )
 	case CtlTextBox:
 	case CtlTree:
 	case CtlUrlLink:
-		pDlgControl->GetControlWnd()->Invalidate();
+		pDlgControl->OnNeedRepaint();
 		return;
 	};
 	const TPropertyList& Props = pTemplate->GetPropertyList();
@@ -300,13 +300,16 @@ void CArxDialogControl::UpdateAllProperties( TDclControlPtr pTemplate )
 			UpdateProperty( pTemplate, id );
 		}
 	}
-	pDlgControl->GetControlWnd()->Invalidate();
+	pDlgControl->OnNeedRepaint();
 }
 
 // This function is being phased out as control classes are changed to implement their own CDialogControl interface
 //static
 void CArxDialogControl::UpdateProperty( TDclControlPtr pTemplate, Prop::Id id )
 {
+	CDialogControl* pDlgControl = pTemplate->GetControlInstance();
+	if( !pDlgControl )
+		return;
 	switch( pTemplate->GetType() )
 	{ //these controls implement the new CDialogControl interface, so use that
 	case _CtlForm:
@@ -338,16 +341,12 @@ void CArxDialogControl::UpdateProperty( TDclControlPtr pTemplate, Prop::Id id )
 	case CtlTextBox:
 	case CtlTree:
 	case CtlUrlLink:
-		CDialogControl* pDlgControl = pTemplate->GetControlInstance();
-		if( !pDlgControl )
-			return;
 		pDlgControl->OnApplyProperty( pTemplate->GetPropertyObject( id ) );
-		pDlgControl->GetControlWnd()->Invalidate();
+		pDlgControl->OnNeedRepaint();
 		return;
 	};
-	CWnd* pControlWnd = pTemplate->GetWindow();
 	UpdatePropertyInt( pTemplate, id );
-	pControlWnd->Invalidate();
+	pDlgControl->OnNeedRepaint();
 }
 
 //static

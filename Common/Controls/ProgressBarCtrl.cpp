@@ -176,9 +176,7 @@ CString CProgressBarCtrl::GetRemainingText( double lfPercent, double lfSecsRemai
 
 BEGIN_MESSAGE_MAP(CProgressBarCtrl, CProgressCtrl)
 	ON_WM_CTLCOLOR_REFLECT()
-	ON_NOTIFY_REFLECT (NM_CUSTOMDRAW, &CProgressBarCtrl::OnNotifyCustomDraw)
 	ON_WM_PAINT()
-	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -195,27 +193,14 @@ HBRUSH CProgressBarCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	return NULL;
+	//return mAcadColorService.CtlColor( pDC, nCtlColor );
 }
 
 void CProgressBarCtrl::PostNcDestroy() 
 {
 	__super::PostNcDestroy();
 	delete this;
-}
-
-void CProgressBarCtrl::OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result )
-{
-	LPNMCUSTOMDRAW pCustomDraw = (LPNMCUSTOMDRAW)pNotifyStruct;
-	ASSERT (pCustomDraw->hdr.hwndFrom == m_hWnd);
-	ASSERT (pCustomDraw->hdr.code = NM_CUSTOMDRAW);
-
-	if( pCustomDraw->dwDrawStage == CDDS_PREPAINT )
-	{
-		::SetTextColor( pCustomDraw->hdc, mAcadColorService.GetForegroundColor() );
-		::SetBkColor( pCustomDraw->hdc, mAcadColorService.GetBackgroundColor() );
-	}
-	*result = CDRF_DODEFAULT;
 }
 
 void CProgressBarCtrl::OnPaint() 
@@ -333,9 +318,4 @@ void CProgressBarCtrl::OnPaint()
       dc.SelectObject(pFount);
     }
   }
-}
-
-BOOL CProgressBarCtrl::OnEraseBkgnd(CDC* pDC) 
-{
-	return TRUE;
 }

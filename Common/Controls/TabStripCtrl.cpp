@@ -56,7 +56,7 @@ DWORD CTabStripCtrl::GetWndStyle() const
 	if( mpTemplate->GetBooleanProperty( Prop::TabFixedWidth ) )
 		dwStyle |= TCS_FIXEDWIDTH;
 	
-	if( mpTemplate->GetLongProperty( Prop::TabLabelAlign ) == 0 )
+	if( mpTemplate->GetLongProperty( Prop::LabelAlignment ) == 0 )
 		dwStyle |= (TCS_FORCEICONLEFT | TCS_FORCELABELLEFT);
 
 	return dwStyle;
@@ -75,12 +75,12 @@ bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
 	{
 	case Prop::TabsCaption:
 		SetupTabs();
-		Invalidate();
+		OnNeedRepaint();
 		break;
 	case Prop::TabsImageList:
 		if( !IsEnumeratingProperties() )
 			SetupTabs();
-		Invalidate();
+		OnNeedRepaint();
 		break;
 	case Prop::ImageList:
 		{
@@ -119,7 +119,7 @@ bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
 			ModifyStyle( TCS_TABS, TCS_BUTTONS, SWP_FRAMECHANGED );
 		ResetTooltips();
 		break;
-	case Prop::TabJustified: //not used
+	case Prop::TabJustification: //not used
 		break;
 	case Prop::MultiRow:
 		if( pProp->GetLongValue() == 0 )
@@ -128,7 +128,7 @@ bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
 			ModifyStyle( TCS_SINGLELINE, TCS_MULTILINE, SWP_FRAMECHANGED );
 		ResetTooltips();
 		break;
-	case Prop::TabLabelAlign:
+	case Prop::LabelAlignment:
 		if( pProp->GetLongValue() == 0 )
 			ModifyStyle( 0, TCS_FORCEICONLEFT | TCS_FORCELABELLEFT, SWP_FRAMECHANGED );
 		else

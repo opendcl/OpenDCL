@@ -235,18 +235,18 @@ void CArxWorkspace::ResetLispSymbol( LPCTSTR pszLispSymbol ) const
 #endif
 }
 
-void CArxWorkspace::SetLispSymbol( LPCTSTR pszLispSymbol, UINT_PTR pValue ) const
+void CArxWorkspace::SetLispSymbol( LPCTSTR pszLispSymbol, const void* ptr, odcl::PtrType type ) const
 {
 	if( !pszLispSymbol )
 		return; //no-op
 
 	struct resbuf rbPtr = { NULL, RTENAME };;
-	rbPtr.resval.rlname[0] = pValue;
-	rbPtr.resval.rlname[1] = 0;
+	rbPtr.resval.rlname[0] = (LONG_PTR)ptr;
+	rbPtr.resval.rlname[1] = type;
 	acedPutSym( pszLispSymbol, &rbPtr );
 
 #ifdef _DEBUG
-	TraceFmt( _T("Lisp Symbol %s set to %s\r\n"), pszLispSymbol, asString( pValue ) );
+	TraceFmt( _T("Lisp Symbol %s set to %p\r\n"), pszLispSymbol, ptr );
 #endif
 }
 
@@ -270,7 +270,7 @@ bool CArxWorkspace::UpdateGlobalLispSymbols() const
 			continue;
 		CString sVarName = pDialog->GetSourceForm()->GetVarName();
 		if (!sVarName.IsEmpty())
-			SetLispSymbol(sVarName, (UINT_PTR)(const CDclControlObject*)pDialog->GetSourceForm()->GetControlProperties());
+			SetLispSymbol( sVarName, (const CDclControlObject*)pDialog->GetSourceForm()->GetControlProperties(), odcl::ptrDclControl );
 		pDialog->GetControlPane()->SetGlobalLispSymbols();
 	}
 
@@ -294,7 +294,7 @@ bool CArxWorkspace::AddExtensionTab( TDclFormPtr pDclForm, CAdUiTabExtensionMana
 		return false; //need to register the tab extension manager first!
 	if( pDclForm->GetFormInstance() )
 		return true; //it's already there
-	assert( pDclForm->GetType() == VdclConfigTab );
+	assert( pDclForm->GetType() == FrmConfigTab );
 
 	CDialogObject* pDialog = CArxDialogObject::Create( pDclForm );
 	assert( pDialog != NULL );
@@ -541,7 +541,7 @@ int CArxWorkspace::ActivateDclForm( TDclFormPtr pDclForm, DialogParams* pParams 
 	assert (pDclForm != NULL);
 	if( pDclForm->GetParentForm() )
 		return -1; //can only activate top level forms from here!
-	if( pDclForm->GetType() == VdclConfigTab )
+	if( pDclForm->GetType() == FrmConfigTab )
 		return -1; //cannot directly activate config tabs
 	CDialogObject* pDlgObject = pDclForm->GetFormInstance();
 	if( pDlgObject ) //form already created?

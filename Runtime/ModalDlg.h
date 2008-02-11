@@ -4,7 +4,7 @@
 #pragma once
 
 #include "BaseDlg.h"
-#include "DclFormTypes.h"
+#include "FormTypes.h"
 #include "Resource.h"
 
 class CDclFormObject;
@@ -28,7 +28,7 @@ protected:
 
 // CDialogObject overrides
 public:
-	virtual DclFormType GetType() const { return VdclModal; }
+	virtual FormType GetType() const { return FrmModalDlg; }
 	virtual bool IsModeless() const { return false; }
 	virtual bool IsDockable() const { return false; }
 	virtual void CloseDialog(int nStatus);

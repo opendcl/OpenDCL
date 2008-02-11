@@ -1,7 +1,7 @@
 [Method]
 GetFirstChildItem
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetFirstChildItem
 [Desc]
 This method gets the key of the first child tree item. Nil is return if no children are found.
 [Arguments Return] as Integer or Nil
@@ -12,8 +12,8 @@ This method gets the key of the first child tree item. Nil is return if no child
 
 [Method]
 EnsureVisible
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_EnsureVisible
 [Desc]
 This method ensures that the indicated tree item is visible.
 [Arguments]
@@ -24,8 +24,8 @@ This method ensures that the indicated tree item is visible.
 
 [Method]
 IsItemExpanded
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_IsItemExpanded
 [Desc]
 This method will return a T if the item is expanded and Nil if not expanded.
 [Arguments]
@@ -36,8 +36,8 @@ This method will return a T if the item is expanded and Nil if not expanded.
 
 [Method]
 SortChildren
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_SortChildren
 [Desc]
 This method sorts the children of an indicated parent or child tree item.
 [Arguments]
@@ -48,8 +48,8 @@ This method sorts the children of an indicated parent or child tree item.
 
 [Method]
 EditLabel
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_EditLabel
 [Desc]
 This method starts the edit process of a tree item by displaying a TextBox on top of the tree item. This method will not start the editing process if the EditLabel property of the control is set to False.
 [Arguments]
@@ -60,8 +60,8 @@ This method starts the edit process of a tree item by displaying a TextBox on to
 
 [Method]
 CancelEditLabel
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_CancelEditLabel
 [Desc]
 This method cancels the edit process of a tree item.
 [Arguments]
@@ -70,8 +70,8 @@ This method cancels the edit process of a tree item.
 
 [Method]
 SelectSetFirstVisible
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_SelectSetFirstVisible
 [Desc]
 This method selects the indicated tree item and attempts to make it the first visible item in the control.
 [Arguments]
@@ -82,8 +82,8 @@ This method selects the indicated tree item and attempts to make it the first vi
 
 [Method]
 SetExpandedImage
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_SetExpandedImage
 [Desc]
 This method assigns an image from the image list as the image to be displayed when the tree item is expanded.
 [Arguments]
@@ -96,8 +96,8 @@ This method assigns an image from the image list as the image to be displayed wh
 
 [Method]
 GetExpandedImage
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetExpandedImage
 [Desc]
 This method retrieves the image to be displayed when the tree item is expanded.
 [Arguments Return] as Integer
@@ -108,8 +108,8 @@ This method retrieves the image to be displayed when the tree item is expanded.
 
 [Method]
 ExpandItem
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_ExpandItem
 [Desc]
 This method expands any visible node item to display its children. \par
 \par \b ExpandStyle Flags:
@@ -128,8 +128,8 @@ This method expands any visible node item to display its children. \par
 
 [Method]
 DeleteItem
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_DeleteItem
 [Desc]
 This method deletes any tree item and its children.
 [Arguments]
@@ -140,8 +140,8 @@ This method deletes any tree item and its children.
 
 [Method]
 GetVisibleCount
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetVisibleCount
 [Desc]
 This method gets the total number of visible tree items. 
 [Arguments Return] as Integer
@@ -150,8 +150,8 @@ This method gets the total number of visible tree items.
 
 [Method]
 GetItemData
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetItemData
 [Desc]
 This method gets integer item data of any tree item.
 [Arguments Return] as Integer
@@ -162,8 +162,8 @@ This method gets integer item data of any tree item.
 
 [Method]
 SetItemData
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_SetItemData
 [Desc]
 This method sets integer item data of any tree item.
 [Arguments]
@@ -176,8 +176,8 @@ This method sets integer item data of any tree item.
 
 [Method]
 GetItemText
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetItemText
 [Desc]
 This method gets the text of any tree item.
 [Arguments Return] as String
@@ -188,8 +188,8 @@ This method gets the text of any tree item.
 
 [Method]
 SetItemText
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_SetItemText
 [Desc]
 This method sets the text of any tree item.
 [Arguments]
@@ -202,8 +202,8 @@ This method sets the text of any tree item.
 
 [Method]
 GetItemImages
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetItemImages
 [Desc]
 This method returns a list indicating the unselected and selected images of the requested tree item.
 [Arguments Return] as List
@@ -214,8 +214,8 @@ Key
 
 [Method]
 SetItemImages
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_SetItemImages
 [Desc]
 This method sets the unselected and selected images of any tree item.
 [Arguments]
@@ -230,8 +230,8 @@ This method sets the unselected and selected images of any tree item.
 
 [Method]
 GetItem
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetItem
 [Desc]
 This method retrieves the information of any tree item. Nil will be returned if the Key argument is invalid.
 [Arguments Return] as List (Text Image SelectedImage Key) or Nil
@@ -242,8 +242,8 @@ This method retrieves the information of any tree item. Nil will be returned if 
 
 [Method]
 GetRootItem
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetRootItem
 [Desc]
 This method retrieves the key of the first parent tree item.
 [Arguments Return] as String or Long
@@ -252,8 +252,8 @@ This method retrieves the key of the first parent tree item.
 
 [Method]
 GetSelectedItem
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetSelectedItem
 [Desc]
 This method retrieves the key of the selected tree item.
 [Arguments Return] as String or Long
@@ -262,8 +262,8 @@ This method retrieves the key of the selected tree item.
 
 [Method]
 GetFirstVisibleItem
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetFirstVisibleItem
 [Desc]
 This method retrieves the unique key of the first visible tree item.
 [Arguments Return] as String or Long
@@ -272,8 +272,8 @@ This method retrieves the unique key of the first visible tree item.
 
 [Method]
 GetNextVisibleItem
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetNextVisibleItem
 [Desc]
 This method retrieves the unique key of the next visible tree item.
 [Arguments Return] as String or Long
@@ -284,8 +284,8 @@ This method retrieves the unique key of the next visible tree item.
 
 [Method]
 GetPrevVisibleItem
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetPrevVisibleItem
 [Desc]
 This method retrieves the unique key of the previous visible tree item.
 [Arguments Return] as String or Long
@@ -296,8 +296,8 @@ This method retrieves the unique key of the previous visible tree item.
 
 [Method]
 GetNextSiblingItem
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetNextSiblingItem
 [Desc]
 This method retrieves the unique key of the next sibling tree item.
 [Arguments Return] as String or Long
@@ -308,8 +308,8 @@ This method retrieves the unique key of the next sibling tree item.
 
 [Method]
 GetPrevSiblingItem
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetPrevSiblingItem
 [Desc]
 This method retrieves the unique key of the previous sibling tree item.
 [Arguments Return] as String or Long
@@ -320,8 +320,8 @@ This method retrieves the unique key of the previous sibling tree item.
 
 [Method]
 ItemHasChildren
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_ItemHasChildren
 [Desc]
 This method indicates if a tree item has any children.
 [Arguments Return] as T or Nil
@@ -332,8 +332,8 @@ This method indicates if a tree item has any children.
 
 [Method]
 SelectItem
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_SelectItem
 [Desc]
 This method selects the indicated tree item.
 [Arguments]
@@ -344,8 +344,8 @@ This method selects the indicated tree item.
 
 [Method]
 CountItems
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_CountItems
 [Desc]
 This method counts the number of tree items in the TreeControl.
 [Arguments Return] as Integer
@@ -354,8 +354,8 @@ This method counts the number of tree items in the TreeControl.
 
 [Method]
 GetParent
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_GetParent
 [Desc]
 This method gets the Key of the item's parent key.
 [Arguments Return] as String or Long
@@ -366,8 +366,8 @@ This method gets the Key of the item's parent key.
 
 [Method]
 AddChild (Using Lists)
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_AddChild
 [Desc]
 This method adds a child tree item to a top level tree item or other child tree item. 
 [Arguments]
@@ -394,8 +394,8 @@ This method adds a child tree item to a top level tree item or other child tree 
 
 [Method]
 AddChild (Without Lists)
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_AddChild
 [Desc]
 This method adds a child tree item to the specified parent item. This method returns the key of the new item.
 [Arguments Return] as String or Long
@@ -416,8 +416,8 @@ This method adds a child tree item to the specified parent item. This method ret
 
 [Method]
 InsertAfter
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_InsertAfter
 [Desc]
 This method adds a tree item after the specified tree item. This method returns the key of the new item.
 [Arguments Return] as String or Long
@@ -438,8 +438,8 @@ This method adds a tree item after the specified tree item. This method returns 
 
 [Method]
 AddParent (Using Lists)
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_AddParent
 [Desc]
 This method adds multiple top level tree items.
 [Argument]
@@ -464,8 +464,8 @@ This method adds multiple top level tree items.
 
 [Method]
 AddParent (Without Lists)
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_AddParent
 [Desc]
 This method adds a top level tree item. This method returns the key of the new item.
 [Arguments Return] or Long
@@ -484,11 +484,12 @@ This method adds a top level tree item. This method returns the key of the new i
 
 [Method]
 Clear
-[Prefix]
-dcl_Tree_
+[Function]
+dcl_Tree_Clear
 [Desc]
 This method clears the TreeControl of all node items.
 [Arguments]
 <CONTROL>
+
 
 [End of File]

@@ -224,7 +224,7 @@ bool CGridCtrl::OnApplyProperty( TPropertyPtr pProp )
 	//		else
 	//			dwExStyle &= ~LVS_EX_FULLROWSELECT;
 	//		SetExtendedStyle( dwExStyle );
-	//		Invalidate();
+	//		OnNeedRepaint();
 	//	}
 	//	break;
 	case Prop::GridLines:
@@ -235,7 +235,7 @@ bool CGridCtrl::OnApplyProperty( TPropertyPtr pProp )
 			else
 				dwExStyle &= ~LVS_EX_GRIDLINES;
 			SetExtendedStyle( dwExStyle );
-			Invalidate();
+			OnNeedRepaint();
 		}
 		break;
 	case Prop::RowHeight:
@@ -259,67 +259,46 @@ bool CGridCtrl::OnApplyProperty( TPropertyPtr pProp )
 		}
 		break;
 	case Prop::ColHeader:
-		{
-			if( pProp->GetBooleanValue() )
-				ModifyStyle( LVS_NOCOLUMNHEADER, 0, SWP_FRAMECHANGED );
-			else
-				ModifyStyle( 0, LVS_NOCOLUMNHEADER, SWP_FRAMECHANGED );
-		}
+		if( pProp->GetBooleanValue() )
+			ModifyStyle( LVS_NOCOLUMNHEADER, 0, SWP_FRAMECHANGED );
+		else
+			ModifyStyle( 0, LVS_NOCOLUMNHEADER, SWP_FRAMECHANGED );
+		OnFrameChanged();
 		break;
 	case Prop::RowHeader:
-		{
-			mbHasRowHeader = pProp->GetBooleanValue();
-			Invalidate();
-		}
+		mbHasRowHeader = pProp->GetBooleanValue();
+		OnNeedRepaint();
 		break;
 	case Prop::ColumnWidths:
-		{
-			SetupColumns();
-			Invalidate();
-		}
+		SetupColumns();
+		OnNeedRepaint();
 		break;
 	case Prop::ColumnCaptions:
-		{
-			if( !IsEnumeratingProperties() )
-				SetupColumns();
-		}
+		if( !IsEnumeratingProperties() )
+			SetupColumns();
 		break;
 	case Prop::ColumnImages:
-		{
-			if( !IsEnumeratingProperties() )
-				SetupColumns();
-		}
+		if( !IsEnumeratingProperties() )
+			SetupColumns();
 		break;
 	case Prop::ColumnAlignments:
-		{
-			if( !IsEnumeratingProperties() )
-				SetupColumns();
-		}
+		if( !IsEnumeratingProperties() )
+			SetupColumns();
 		break;
 	case Prop::ColumnStyles:
-		{
-			Invalidate();
-		}
+		OnNeedRepaint();
 		break;
 	case Prop::ColumnDefaultImages:
-		{
-		}
 		break;
 	case Prop::ColumnAlternateImages:
-		{
-		}
 		break;
 	case Prop::AlternateOrient:
-		{
-			mbAlternateColumnColors = (pProp->GetLongValue() != 0);
-			Invalidate();
-		}
+		mbAlternateColumnColors = (pProp->GetLongValue() != 0);
+		OnNeedRepaint();
 		break;
 	case Prop::AlternateColor:
-		{
-			mclrAlternate = GetRGBColor( pProp->GetLongValue() );
-			Invalidate();
-		}
+		mclrAlternate = GetRGBColor( pProp->GetLongValue() );
+		OnNeedRepaint();
 		break;
 	}
 	return !bFailed;
@@ -451,7 +430,7 @@ void CGridCtrl::SetCellStyle( int nRow, int nCol, CellStyle nStyle, int image /*
 	_CellData& CellData = GetCellDataRef( nRow, nCol );
 	CellData.mType = nStyle;
 	CellData.midxImage = image;
-	CellData.midxAltImage = (nStyle == Grid_OptionButtons || nStyle == Grid_CheckBoxes)? 1 : altImage;
+	CellData.midxAltImage = altImage;
 	CellData.mnDateTimeStyle = dateTimeStyle;
 	CellData.mrnComboImage.clear();
 	CellData.mrsComboList.clear();
@@ -525,30 +504,42 @@ void CGridCtrl::SetCellImage( int nRow, int nCol, int nImage)
 
 int CGridCtrl::GetCellUncheckedImage( int nRow, int nCol )
 {
+	int nImage = -1;
 	const _CellData* pCellData = GetCellData( nRow, nCol );
 	if( pCellData )
-		return pCellData->midxImage;
-	const PropVal::TIntArray* prnDefImage = mpTemplate->GetPropertyObject( Prop::ColumnDefaultImages )->GetConstIntArrayPtr();
-	if( prnDefImage )
+		nImage = pCellData->midxImage;
+	else
 	{
-		if( (size_t)nCol < prnDefImage->size() )
-			return prnDefImage->at( nCol );
+		const PropVal::TIntArray* prnDefImage = mpTemplate->GetPropertyObject( Prop::ColumnDefaultImages )->GetConstIntArrayPtr();
+		if( prnDefImage )
+		{
+			if( (size_t)nCol < prnDefImage->size() )
+				nImage = prnDefImage->at( nCol );
+		}
 	}
-	return -1;
+	if( nImage < 0 )
+		nImage = 0;
+	return nImage;
 }
 
 int CGridCtrl::GetCellCheckedImage( int nRow, int nCol )
 {
+	int nImage = -1;
 	const _CellData* pCellData = GetCellData( nRow, nCol );
 	if( pCellData )
-		return pCellData->midxAltImage;
-	const PropVal::TIntArray* prnAltImage = mpTemplate->GetPropertyObject( Prop::ColumnAlternateImages )->GetConstIntArrayPtr();
-	if( prnAltImage )
+		nImage = pCellData->midxAltImage;
+	else
 	{
-		if( (size_t)nCol < prnAltImage->size() )
-			return prnAltImage->at( nCol );
+		const PropVal::TIntArray* prnAltImage = mpTemplate->GetPropertyObject( Prop::ColumnAlternateImages )->GetConstIntArrayPtr();
+		if( prnAltImage )
+		{
+			if( (size_t)nCol < prnAltImage->size() )
+				nImage = prnAltImage->at( nCol );
+		}
 	}
-	return -1;
+	if( nImage < 1 )
+		nImage = 1;
+	return nImage;
 }
 
 bool CGridCtrl::IsCellChecked( int nRow, int nCol )
@@ -682,7 +673,7 @@ int CGridCtrl::InsertItem( int nRow, LPCTSTR lpszText, int nImageIndex /*= -1*/ 
 {
 	int nNewItem = __super::InsertItem( nRow, lpszText );
 	SetCellImage( nNewItem, 0, nImageIndex );
-	Invalidate();
+	InvalidateCell( nRow, -1 );
 	return nNewItem;
 }
 
@@ -721,7 +712,7 @@ int CGridCtrl::InsertColumn( int nCol, LPCTSTR lpszColumnHeading, int nFormat /*
 			}
 		}
 	}
-	Invalidate();
+	OnNeedRepaint();
 	return nRet;
 }
 
@@ -1568,7 +1559,7 @@ bool CGridCtrl::SortTextItems( int nCol, bool bAscending )
 		mRowData[idxRow] = rTempRowData[idxOldRow];
 	}
 	SetRedraw( TRUE );
-	Invalidate();
+	OnNeedRepaint();
 	return true;
 }
 
@@ -1661,7 +1652,7 @@ bool CGridCtrl::SortNumericItems( int nCol, bool bAscending )
 		mRowData[idxRow] = rTempRowData[idxOldRow];
 	}
 	SetRedraw( TRUE );
-	Invalidate();
+	OnNeedRepaint();
 	return true;
 }
 

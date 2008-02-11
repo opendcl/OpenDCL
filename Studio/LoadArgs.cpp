@@ -389,9 +389,9 @@ void LoadArgsNDesc(Prop::Id nEventId, const TDclControlPtr pControl, CString &sA
 	case Prop::FormEventClose:
 		switch( pControl->GetOwnerForm()->GetType() )
 		{
-		case VdclFileDialog:
-		case VdclModal:
-		case VdclModeless:
+		case FrmFileDlg:
+		case FrmModalDlg:
+		case FrmModelessDlg:
 			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_UPLEFT);
 		  break;
 		default:
@@ -505,7 +505,7 @@ void LoadArgsNDesc(Prop::Id nEventId, const TDclControlPtr pControl, CString &sA
 			sArgs = theWorkspace.LoadResourceString(IDS_ARG_ITEMKEY);			
 		else
 			sArgs = theWorkspace.LoadResourceString(IDS_ARG_ITEMPOINT);
-		if (pControl->GetOwnerForm()->GetType() == VdclFileDialog)
+		if (pControl->GetOwnerForm()->GetType() == FrmFileDlg)
 			sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_DRAGFILEFROMACAD);
 		else
 			sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_DRAGFROMACAD);

@@ -352,7 +352,7 @@ BOOL CTabsPane::OnApply()
 			pTab->mnOriginalIndex = idxPane;
 			if( !pTab->mpChildForm )
 			{
-				pTab->mpChildForm = mpDclControl->GetOwnerForm()->AddChildForm( VdclTabForm );
+				pTab->mpChildForm = mpDclControl->GetOwnerForm()->AddChildForm( FrmTabPage );
 				if( pTab->mpChildForm )
 				{
 					CTabStripCtrl* pTabStripCtrl = (CTabStripCtrl*)mpDclControl->GetControlInstance();

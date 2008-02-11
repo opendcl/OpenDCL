@@ -89,7 +89,7 @@ bool COptionListCtrl::OnApplyProperty( TPropertyPtr pProp )
 			int nData = pProp->GetBooleanValue()? 0 : 2;
 			for( int i = 0; i < GetCount(); i++ )
 				SetItemData( i, nData );
-			Invalidate();				
+			OnNeedRepaint();				
 			break;
 		}
 	case Prop::BtnCaption:
@@ -107,7 +107,7 @@ bool COptionListCtrl::OnApplyProperty( TPropertyPtr pProp )
 			}
 			ResetTooltips();
 			SetCurSel( nCurSel );
-			Invalidate();
+			OnNeedRepaint();
 			break;
 		}
 	}
@@ -272,7 +272,7 @@ BOOL COptionListCtrl::PreTranslateMessage(MSG* pMsg)
 			//else
 			//	nCaret = GetCount() - 1;
 			//SetCaretIndex(nCaret);
-			//Invalidate();
+			//OnNeedRepaint();
 			int nCurSel = GetCurSel();
 			if( nCurSel > 0 )
 				--nCurSel;
@@ -289,7 +289,7 @@ BOOL COptionListCtrl::PreTranslateMessage(MSG* pMsg)
 			//else
 			//	nCaret = 0;
 			//SetCaretIndex(nCaret);
-			//Invalidate();
+			//OnNeedRepaint();
 			int nCurSel = GetCurSel();
 			if( nCurSel < GetCount() - 1 )
 				++nCurSel;

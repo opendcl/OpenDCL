@@ -1,7 +1,7 @@
 [Method]
 GetFileName
-[Prefix]
-dcl_FileDlg_
+[Function]
+dcl_FileDlg_GetFileName
 [Desc]
 This method retrieves the currently selected file(s).
 [Arguments Return] as String
@@ -10,17 +10,18 @@ This method retrieves the currently selected file(s).
 
 [Method]
 GetFileTitle
-[Prefix]
-dcl_FileDlg_
+[Function]
+dcl_FileDlg_GetFileTitle
 [Desc]
 This method retrieves the currently selected file(s)' title.
 [Arguments Return] as String
 <CONTROL>
 
+
 [Method]
 GetFileExt
-[Prefix]
-dcl_FileDlg_
+[Function]
+dcl_FileDlg_GetFileExt
 [Desc]
 This method retrieves the extension that is currently selected.
 [Arguments Return] as String
@@ -29,17 +30,18 @@ This method retrieves the extension that is currently selected.
 
 [Method]
 GetFolderPath
-[Prefix]
-dcl_FileDlg_
+[Function]
+dcl_FileDlg_GetFolderPath
 [Desc]
 This method retrieves the currently selected folder path.
 [Arguments Return] as String
 <CONTROL>
 
+
 [Method]
 GetFolderName
-[Prefix]
-dcl_FileDlg_
+[Function]
+dcl_FileDlg_GetFolderName
 [Desc]
 This method retrieves the currently selected folder name.
 [Arguments Return] as String
@@ -48,8 +50,8 @@ This method retrieves the currently selected folder name.
 
 [Method]
 GetPathName
-[Prefix]
-dcl_FileDlg_
+[Function]
+dcl_FileDlg_GetPathName
 [Desc]
 This method retrieves the currently selected file(s)' path name.
 [Arguments Return] as String
@@ -58,36 +60,32 @@ This method retrieves the currently selected file(s)' path name.
 
 [Method]
 GetSelectionCount
-[Prefix]
-dcl_FileDlg_
+[Function]
+dcl_FileDlg_GetSelectionCount
 [Desc]
 This method retrieves the current selection count.
 [Arguments Return] as Integer
 <CONTROL>
 
 
-
 [Method]
 GetFileNameList
-[Prefix]
-dcl_FileDlg_
+[Function]
+dcl_FileDlg_GetFileNameList
 [Desc]
 This method retrieves the current file selection list.
 [Arguments Return] as List
 <CONTROL>
 
 
-
 [Method]
 SetOkButtonText
-[Prefix]
-dcl_FileDlg_
+[Function]
+dcl_FileDlg_SetOkButtonText
 [Desc]
 This method will change the text of OK button.
 [Arguments]
 <CONTROL>
-
-
 
 
 [End of File]

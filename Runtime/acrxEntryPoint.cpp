@@ -61,6 +61,7 @@
 #include "ArchiveEx.h"
 #include "SlideHolder.h"
 #include "InvokeMethod.h"
+#include "DelayedInvoke.h"
 #include "DialogControl.h"
 #include "StringCompare.h"
 #include "DirDialog.h"
@@ -383,7 +384,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("ImageComboBox_SetDroppedWidth"),	ImageComboBox::SetDroppedWidth},
 	{_T("ImageComboBox_ClearEdit"),			ImageComboBox::ClearEdit},
 	{_T("ImageComboBox_GetLBText"),			ImageComboBox::GetLBText},
-	{_T("ImageComboBox_GetEBText"),			ImageComboBox::GetEBText},
+	{_T("ImageComboBox_GetTBText"),			ImageComboBox::GetTBText},
 
 	// month control methods 
 	{_T("Month_SetCurSel"),				Month::SetCurSel},
@@ -574,14 +575,14 @@ public:
 				return (dclPrefix() + grAdsFunctionTable[nFunctionCode - ADSFUNCBASE].pszFunctionName);
 			if( nFunctionCode >= ADSPROPFUNCBASE && nFunctionCode < ADSPROPFUNCBASE + Prop::_MaxId )
 			{
-				LPCTSTR pszPropName = GetPropertyName( (Prop::Id)(nFunctionCode - ADSPROPFUNCBASE) );
+				LPCTSTR pszPropName = GetPropertyApiName( (Prop::Id)(nFunctionCode - ADSPROPFUNCBASE) );
 				if( pszPropName && *pszPropName != _T('(') )
 					return (controlGetPrefix() + pszPropName);
 			}
 			else if( nFunctionCode >= (ADSPROPFUNCBASE + Prop::_MaxId) &&
 							 nFunctionCode < (ADSPROPFUNCBASE + Prop::_MaxId + Prop::_MaxId) )
 			{
-				LPCTSTR pszPropName = GetPropertyName( (Prop::Id)(nFunctionCode - (ADSPROPFUNCBASE + Prop::_MaxId)) );
+				LPCTSTR pszPropName = GetPropertyApiName( (Prop::Id)(nFunctionCode - (ADSPROPFUNCBASE + Prop::_MaxId)) );
 				if( pszPropName && *pszPropName != _T('(') )
 					return (controlSetPrefix() + pszPropName);
 			}
@@ -627,6 +628,11 @@ public:
 
 	virtual AcRx::AppRetCode On_kInitAppMsg (void *pkt) {
 		// Load dependencies here
+		if( !theWorkspace.GetLocalResourceModule() )
+		{
+			AfxMessageBox( _T("The OpenDCL local language resource module was not found or could not be loaded. OpenDCL cannot continue.\r\nPlease reinstall OpenDCL Runtime to correct the problem."), MB_OK | MB_ICONHAND );
+			return AcRx::kRetError;
+		}
 
 		// You *must* call On_kInitAppMsg here
 		AcRx::AppRetCode retCode =AcRxArxApp::On_kInitAppMsg (pkt) ;
@@ -634,9 +640,9 @@ public:
 		CString sModulePath;
 		DWORD cchPath = GetModuleFileName( _hdllInstance, sModulePath.GetBuffer( MAX_PATH ), MAX_PATH );
 		sModulePath.ReleaseBuffer( cchPath );
-		BOOL ret=acedRegisterExtendedTab( sModulePath, _T("OptionsDialog") );
+		acedRegisterExtendedTab( sModulePath, _T("OptionsDialog") );
 
-		GetPropertyIdSet( mPropIds );
+		GetApiPropertyIdSet( mPropIds );
 
 		DWORD dwMajor;
 		DWORD dwMinor;
@@ -672,16 +678,16 @@ public:
 	}
 
 	virtual AcRx::AppRetCode On_kInvkSubrMsg (void *pkt) {
+		acedRetNil();
 		AcRx::AppRetCode retCode =AcRxArxApp::On_kInvkSubrMsg (pkt) ;
 
 		assert( retCode == AcRx::kRetOK );
 		if( retCode == AcRx::kRetOK )
 		{
-			acedRetNil();
 			int nFunctionCode = acedGetFunCode();
-			if( nFunctionCode >= 0 && nFunctionCode < _elements(grAdsFunctionTable) )
+			if( nFunctionCode >= ADSFUNCBASE && nFunctionCode < ADSFUNCBASE + _elements(grAdsFunctionTable) )
 			{
-				if( RTNORM != grAdsFunctionTable[nFunctionCode].pfHandler() )
+				if( RTNORM != grAdsFunctionTable[nFunctionCode - ADSFUNCBASE].pfHandler() )
 					return AcRx::kRetError;
 				return AcRx::kRetOK;
 			}
@@ -719,7 +725,7 @@ public:
 			for( T_PropertyIdSet::const_iterator iter = mPropIds.begin(); iter != mPropIds.end(); ++iter )
 			{
 				Prop::Id id = *iter;
-				LPCTSTR pszPropName = GetPropertyName( id );
+				LPCTSTR pszPropName = GetPropertyApiName( id );
 				if( pszPropName && *pszPropName != _T('(') )
 				{
 					acedDefun( controlGetPrefix() + pszPropName, ADSPROPFUNCBASE + id );
@@ -1864,7 +1870,7 @@ public:
 
 		// call method to display the requested form
 		FileDialogParams fdp( TRUE, NULL, NULL, 0, NULL );
-		bool bHasFileParams = (pDclForm->GetType() == VdclFileDialog);
+		bool bHasFileParams = (pDclForm->GetType() == FrmFileDlg);
 		if( bHasFileParams )
 		{
 			CString sFilename = sDefaultDirectory;
@@ -1879,7 +1885,7 @@ public:
 
 		if (nResult >= 0)
 		{
-			if (nResult == IDOK && pDclForm->GetType() == VdclFileDialog)
+			if (nResult == IDOK && pDclForm->GetType() == FrmFileDlg)
 			{
 				if( (fdp.dwFlags & OFN_ALLOWMULTISELECT) )
 				{
@@ -2238,11 +2244,15 @@ public:
 		if( !AssertOutOfArgs( pArgs ) )
 			return RSERR;
 
-		resbuf rbScreenHeight = {NULL, RTSHORT};
-		rbScreenHeight.resval.rint = ::GetSystemMetrics(SM_CYSCREEN);
-		resbuf rbScreenWidth = {&rbScreenHeight, RTSHORT};
-		rbScreenWidth.resval.rint = ::GetSystemMetrics(SM_CXSCREEN);
-		acedRetList(&rbScreenWidth);
+		CRect rcWorkArea;
+		if( SystemParametersInfo( SPI_GETWORKAREA, 0, &rcWorkArea, 0 ) > 0 )
+		{
+			resbuf rbHeight = {NULL, RTSHORT};
+			rbHeight.resval.rint = rcWorkArea.Height();
+			resbuf rbWidth = {&rbHeight, RTSHORT};
+			rbWidth.resval.rint = rcWorkArea.Width();
+			acedRetList(&rbWidth);
+		}
 
 		return (RSRSLT) ;
 	}
@@ -2342,15 +2352,15 @@ public:
 			return RSERR; //invalid input
 
 		int nMinHeight = 0;
-		if( !GetIntArgument( pArgs, nMinWidth ) )
+		if( !GetIntArgument( pArgs, nMinHeight ) )
 			return RSERR; //invalid input
 
 		int nMaxWidth = 0;
-		if( !GetIntArgument( pArgs, nMinWidth ) )
+		if( !GetIntArgument( pArgs, nMaxWidth ) )
 			return RSERR; //invalid input
 
 		int nMaxHeight = 0;
-		if( !GetIntArgument( pArgs, nMinWidth ) )
+		if( !GetIntArgument( pArgs, nMaxHeight ) )
 			return RSERR; //invalid input
 
 		if( !AssertOutOfArgs( pArgs ) )
@@ -3131,6 +3141,33 @@ public:
 		return (RSRSLT) ;
 	}
 
+	// ----- ads_dcl_delayedinvoke symbol (do not rename)
+	static int ads_dcl_delayedinvoke(void)
+	{
+		struct resbuf *pArgs =acedGetArgs () ;
+
+		UINT cMsDelay = 0;
+		if( !GetUIntArgument( pArgs, cMsDelay ) )
+			return RSERR; //invalid argument
+
+		CString sCallbackName;
+		if( !GetStringArgument( pArgs, sCallbackName ) )
+			return RSERR; //invalid argument
+
+		if( sCallbackName.IsEmpty() )
+		{
+			HandleArgValueError( pArgs );
+			return RSRSLT; //invalid value
+		}
+
+		if( !AssertOutOfArgs( pArgs ) )
+			return RSERR;
+
+		new CDelayedInvoke( sCallbackName, cMsDelay );
+
+		return (RSRSLT) ;
+	}
+
 	// ----- ads_dcl_flushgraphicbuttons symbol (do not rename)
 	static int ads_dcl_flushgraphicbuttons(void)
 	{
@@ -3864,6 +3901,7 @@ ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getdwgmousecoords, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_multifiledialog, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getpicturesize, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_setcmdbarfocus, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_delayedinvoke, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_flushgraphicbuttons, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_xtwipstopixels, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_ytwipstopixels, true)

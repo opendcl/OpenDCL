@@ -824,7 +824,7 @@ ADSRESULT ListView::FillList()
 			{
 				if( bVisible )
 					pCtrl->SetRedraw( TRUE );
-				pCtrl->Invalidate();
+				pCtrl->OnNeedRepaint();
 				return RSERR; //invalid input
 			}
 
@@ -848,7 +848,7 @@ ADSRESULT ListView::FillList()
 
 	if( bVisible )
 		pCtrl->SetRedraw( TRUE );
-	pCtrl->Invalidate();
+	pCtrl->OnNeedRepaint();
 	pCtrl->UpdateWindow(); 
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -1126,7 +1126,8 @@ ADSRESULT ListView::AddString()
 	if( nRow == -1 )
 		return RSRSLT;
 	int idxCol = 0;
-	while( nTokenPos > 0 )
+	int cchText = sRowText.GetLength();
+	while( nTokenPos >= 0 && nTokenPos < cchText )
 		pCtrl->SetItemText( nRow, ++idxCol, sRowText.Tokenize( sDelimiters, nTokenPos ) );
 
 	acedRetInt( nRow );

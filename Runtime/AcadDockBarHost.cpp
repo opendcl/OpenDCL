@@ -94,15 +94,18 @@ END_MESSAGE_MAP()
 // CAcadDockBarHost message handlers
 
 
-void CAcadDockBarHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags ) 
-{
-	__super::SizeChanged( lpRect, bFloating, flags );
-}
-
 bool CAcadDockBarHost::CanFrameworkTakeFocus ()
 {
+	return !(GetCapture() || !mpDlgObject->IsKeepFocus());
 	// return false to tell AutoCAD not to steal this form's focus on WM_MOUSEMOVE
 	return false;
+}
+
+void CAcadDockBarHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags ) 
+{
+	if( flags & ADUI_DOCK_NF_FRAMECHANGED )
+		mpDlgObject->OnFrameChanged();
+	__super::SizeChanged( lpRect, bFloating, flags );
 }
 
 bool CAcadDockBarHost::OnClosing()
@@ -111,18 +114,6 @@ bool CAcadDockBarHost::OnClosing()
 	return __super::OnClosing();
 }
 
-//*****************************************************************************
-// 
-// Method: CAcadDockBarHost::AddCustomMenuItems()
-// 
-// Purpose: [Override for removing right click pop-up menu]
-// 
-// Parameters:  
-//		[hMenu]:  [pointer to the pop-up menu]
-// 
-// Returns:	BOOL
-// 
-//*****************************************************************************
 BOOL CAcadDockBarHost::AddCustomMenuItems(LPARAM hMenu)
 {
 	if (IsWindowVisible())
@@ -144,79 +135,67 @@ BOOL CAcadDockBarHost::AddCustomMenuItems(LPARAM hMenu)
 	return TRUE;
 }
 
-//*****************************************************************************
-// 
-// Method: CAcadDockBarHost::OnUserSizing()
-// 
-// Purpose: [Overrides the OnSizing event and allows us to force the Recomended width 
-//			while the user is resizing]
-// 
-// Parameters:  
-//		[nSide]:  [which side is being stretched]
-//		[pRect]:  [a pointer to the CRect of the Floating form]
-// 
-// Returns:	nothing
-// 
-//*****************************************************************************
-void CAcadDockBarHost::OnUserSizing(UINT nSide, LPRECT pRect)
+void CAcadDockBarHost::OnUserSizing(UINT fwSide, LPRECT pRect)
 {	
 	if( !mpDlgObject->IsResizable() )
 	{
 		GetParent()->GetParent()->SendMessage( WM_CANCELMODE, 0, 0 );
 		return;
 	}
-	__super::OnUserSizing( nSide, pRect );
+	int nNewWidth = pRect->right - pRect->left;
+	int nNewHeight = pRect->bottom - pRect->top;
+	CSize szMin( 0, 0 );
+	CSize szMax( 0, 0 );
+	mpDlgObject->GetMinMaxSize( szMin, szMax );
+
+	if( fwSide == WMSZ_BOTTOMLEFT || fwSide == WMSZ_LEFT || fwSide == WMSZ_TOPLEFT )
+	{
+		if (szMin.cx > 0 && nNewWidth < szMin.cx)
+			pRect->left = pRect->right - szMin.cx;
+		if (szMax.cx > 0 && nNewWidth > szMax.cx)
+			pRect->left = pRect->right - szMax.cx;
+	}
+
+	if( fwSide == WMSZ_BOTTOMRIGHT || fwSide == WMSZ_RIGHT || fwSide == WMSZ_TOPRIGHT )
+	{
+		if (szMin.cx > 0 && nNewWidth < szMin.cx)
+			pRect->right = pRect->left + szMin.cx;
+		if (szMax.cx > 0 && nNewWidth > szMax.cx)
+			pRect->right = pRect->left + szMax.cx;
+	}
+
+	if( fwSide == WMSZ_BOTTOMLEFT || fwSide == WMSZ_BOTTOM || fwSide == WMSZ_BOTTOMRIGHT )
+	{
+		if (szMin.cy > 0 && nNewHeight < szMin.cy)
+			pRect->bottom = pRect->top + szMin.cy;
+		if (szMax.cy > 0 && nNewHeight > szMax.cy)
+			pRect->bottom = pRect->top + szMax.cy;
+	}
+
+	if( fwSide == WMSZ_TOPLEFT || fwSide == WMSZ_TOP || fwSide == WMSZ_TOPRIGHT )
+	{
+		if (szMin.cy > 0 && nNewHeight < szMin.cy)
+			pRect->top = pRect->bottom - szMin.cy;
+		if (szMax.cy > 0 && nNewHeight > szMax.cy)
+			pRect->top = pRect->bottom - szMax.cy;
+	}
+	__super::OnUserSizing( fwSide, pRect );
 }
 
 
-//*****************************************************************************
-// 
-// Method: CAcadDockBarHost::CalcDynamicLayout()
-// 
-// Purpose: [Call what floating to query what the form size should be]
-// 
-// Returns:	CSize
-// 
-//*****************************************************************************
 CSize CAcadDockBarHost::CalcDynamicLayout( int nLength, DWORD dwMode )
 {
 	return __super::CalcDynamicLayout( nLength, dwMode );
 }
 
-//*****************************************************************************
-// 
-// Method: CAcadDockBarHost::CalcFixedLayout()
-// 
-// Purpose: [Called when docked to query what the docked form size should be]
-// 
-// 
-// Returns:	CSize
-// 
-//*****************************************************************************
-
 CSize CAcadDockBarHost::CalcFixedLayout( BOOL bStretch, BOOL bHorz )
 {
-	mpDlgObject->OnFrameChanged();
 	if( !mpDlgObject->IsResizable() )
-		return CSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ),
-									mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) );
+		return CSize( mpDlgObject->GetTemplate()->GetLongProperty( Prop::Width ) + mpDlgObject->GetNCWidth(),
+									mpDlgObject->GetTemplate()->GetLongProperty( Prop::Height ) + mpDlgObject->GetNCHeight() );
 	return __super::CalcFixedLayout( bStretch, bHorz );
 }
 
-//*****************************************************************************
-// 
-// Method: CAcadDockBarHost::GetFloatingMinSize()
-// 
-// Purpose: [This method is pressent to allow a smaller than normal minum width and heigth of
-//			 the floating form.  Removing this method would make the min width to big]
-// 
-// Parameters:  
-//		[pnMinWidth]:  [Mininum width]
-//		[pnMinHeight]:  [Mininum height]
-// 
-// Returns:	nothing
-// 
-//*****************************************************************************
 void CAcadDockBarHost::GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight)
 {
 	// by not adjusting the pnMinWidth or pnMinHeight, the min pnMinWidth will become small enough
@@ -225,7 +204,7 @@ void CAcadDockBarHost::GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight)
 
 void CAcadDockBarHost::OnSize(UINT nType, int cx, int cy)
 {
-	CAdUiDockControlBar::OnSize(nType, cx, cy);
+	__super::OnSize(nType, cx, cy);
 	CRect rcClient;
 	mpDlgObject->GetClientArea( rcClient );
 	mpDlgObject->SetWindowPos( NULL, rcClient.left, rcClient.top,
@@ -314,7 +293,7 @@ LRESULT CAcadDockBarHost::OnMouseEnter(WPARAM wParam, LPARAM lParam)
 LRESULT CAcadDockBarHost::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 {
 	mbTrackingMouse = false;
-	if( !mbInMenuLoop && !::GetCapture() )
+	if( !mbInMenuLoop && mpDlgObject->IsKeepFocus() && !::GetCapture() )
 	{
 		CWnd* pFocusWnd = GetFocus();
 		if( !pFocusWnd || ((pFocusWnd->SendMessage( WM_GETDLGCODE, 0, 0 ) & (DLGC_WANTCHARS | DLGC_WANTARROWS)) == 0) )

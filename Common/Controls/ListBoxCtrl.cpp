@@ -49,7 +49,7 @@ DWORD CListBoxCtrl::GetWndStyle() const
 		dwStyle |= LBS_MULTICOLUMN;
 	if( mpTemplate->GetBooleanProperty( Prop::Sorted ) )
 		dwStyle |= LBS_SORT;
-	switch( mpTemplate->GetLongProperty( Prop::SelectStyle ) )
+	switch( mpTemplate->GetLongProperty( Prop::SelectionStyle ) )
 	{
 	case 1:
 		dwStyle |= LBS_EXTENDEDSEL;
@@ -89,7 +89,7 @@ bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 				ModifyStyle( 0, LBS_SORT, 0 );
 			else
 				ModifyStyle( LBS_SORT, 0, 0 );
-			Invalidate();
+			OnNeedRepaint();
 		}
 		break;
 	case Prop::ColumnWidth:
@@ -113,7 +113,7 @@ bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 				ModifyStyle( LBS_MULTICOLUMN, 0, SWP_FRAMECHANGED );
 		}
 		break;
-	case Prop::SelectStyle:
+	case Prop::SelectionStyle:
 		{
 			switch( pProp->GetLongValue() )
 			{

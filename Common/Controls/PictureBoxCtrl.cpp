@@ -101,16 +101,15 @@ bool CPictureBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	switch( pProp->GetID() )
 	{
 		case Prop::Picture:
-		{
 			SetPictureID( pProp->GetLongValue() );
-		}
+			break;
 	}
 	return !bFailed;
 }
 
 DWORD CPictureBoxCtrl::GetWndStyle() const
 {
-	DWORD dwStyle = (__super::GetWndStyle() | WS_CLIPCHILDREN | BS_OWNERDRAW);
+	DWORD dwStyle = (__super::GetWndStyle() | WS_CLIPCHILDREN);
 
 	return dwStyle;
 }
@@ -129,41 +128,23 @@ void CPictureBoxCtrl::AutoSize()
 {
 	if( !IsAutoSized() )
 		return;
-	
-	if (m_pPictureHolder == NULL)
-		return;
 
-	CRect rcThis;
-	rcThis.left = mpTemplate->GetPropertyObject(Prop::Left)->GetLongValue();
-	rcThis.top = mpTemplate->GetPropertyObject(Prop::Top)->GetLongValue();
-	
-	switch (mpTemplate->GetLongProperty(Prop::BorderStyle))
+	int nBorderSize = 0;
+	switch( mpTemplate->GetLongProperty( Prop::BorderStyle ) )
 	{		
 	case 0:
-		{
-		rcThis.right = rcThis.left + m_cxIcon;
-		rcThis.bottom = rcThis.top + m_cyIcon;
 		break;
-		}
 	case 1:
-		{
-		rcThis.right = rcThis.left + m_cxIcon + nClientBorderSize;
-		rcThis.bottom = rcThis.top + m_cyIcon + nClientBorderSize;
+		nBorderSize = nClientBorderSize;
 		break;
-		}
 	case 2:
-		{
-		rcThis.right = rcThis.left + m_cxIcon + nStaticBorderSize;
-		rcThis.bottom = rcThis.top + m_cyIcon + nStaticBorderSize;
+		nBorderSize = nStaticBorderSize;
 		break;
-		}		
 	}
-	
-	CRect rcControl;
-	GetWindowRect(&rcControl);
-	// if the control's size is not the same, resize it.
-	if (rcControl.Width() != rcThis.Width() && rcControl.Height() != rcThis.Height())
-		MoveWindow(rcThis, TRUE);
+
+	mpTemplate->SetLongProperty( Prop::Width, m_cxIcon + nBorderSize );
+	mpTemplate->SetLongProperty( Prop::Height, m_cyIcon + nBorderSize );
+	ApplyPosition();
 }
 
 void CPictureBoxCtrl::Clear()
@@ -216,8 +197,7 @@ void CPictureBoxCtrl::PaintPicture(int sX, int sY, int nPictureID, int nEnabled,
 	{
 		if (nUseMask)
 		{
-			HICON hIcon = pPicture->CloneIcon();
-
+			HICON hIcon = pPicture->GetIcon();
 			if (nEnabled)
 			{
 				DrawState(hdc, NULL, NULL,
@@ -227,28 +207,26 @@ void CPictureBoxCtrl::PaintPicture(int sX, int sY, int nPictureID, int nEnabled,
 			{					
 				DrawState(hdc, NULL, NULL,
 					(LPARAM)hIcon, 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_DISABLED|DST_ICON);
-			}				
+			}
 		}
 		else
 		{
-			if (nEnabled)
-			{
-				::DrawState(hdc, NULL,
-					NULL, (LPARAM)pPicture->CloneBitmap(), 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_NORMAL|DST_BITMAP);
-			}
+			HBITMAP hBmp = pPicture->GetBitmap();
+			if( nEnabled )
+				DrawState( hdc, NULL, NULL, (LPARAM)hBmp, 0,
+									 iconRect.left, iconRect.top, IconSize.cx, IconSize.cy,
+									 DSS_NORMAL | DST_BITMAP );
 			else
-			{
-				
-				::DrawState(hdc, NULL,
-					NULL, (LPARAM)pPicture->CloneBitmap(), 0, iconRect.left, iconRect.top, IconSize.cx, IconSize.cy, DSS_DISABLED|DST_BITMAP);
-			}
+				DrawState( hdc, NULL, NULL, (LPARAM)hBmp, 0,
+									 iconRect.left, iconRect.top, IconSize.cx, IconSize.cy,
+									 DSS_DISABLED | DST_BITMAP );
 		}
 	}
 
 	// else if picture is an icon
 	else if (PICTYPE_ICON == pPicture->GetPicType())
 	{
-		HICON hIconOut = pPicture->CloneIcon();
+		HICON hIconOut = pPicture->GetIcon();
 		
 		if (nEnabled)
 		{

@@ -648,7 +648,7 @@ ADSRESULT Tree::SetItemImages()
 	HTREEITEM hItem = ((dwRefKey != -1)? (HTREEITEM)dwRefKey : pCtrl->FindItem( sRefKey ) );
 	if( hItem && pCtrl->SetItemImage( hItem, nImage, nSelectedImage ) )
 	{
-		pCtrl->Invalidate();
+		pCtrl->OnNeedRepaint();
 		acedRetT();
 	}
 	return RSRSLT;
@@ -681,7 +681,7 @@ ADSRESULT Tree::SetExpandedImage()
 	HTREEITEM hItem = ((dwRefKey != -1)? (HTREEITEM)dwRefKey : pCtrl->FindItem( sRefKey ) );
 	if( hItem && pCtrl->SetExpandedImage( hItem, nExpandedImage ) )
 	{
-		pCtrl->Invalidate();
+		pCtrl->OnNeedRepaint();
 		acedRetT();
 	}
 	return RSRSLT;
@@ -912,7 +912,7 @@ ADSRESULT Tree::ExpandItem()
 	{
 		if( pCtrl->Expand( hItem, nStyle ) )
 		{
-			pCtrl->Invalidate();
+			pCtrl->OnNeedRepaint();
 			acedRetT();
 		}
 	}
@@ -1015,7 +1015,7 @@ ADSRESULT Tree::SortChildren()
 	HTREEITEM hItem = ((dwRefKey != -1)? (HTREEITEM)dwRefKey : pCtrl->FindItem( sRefKey ) );
 	if( hItem && pCtrl->SortChildren( hItem ) )
 	{
-		pCtrl->Invalidate();
+		pCtrl->OnNeedRepaint();
 		acedRetT();
 	}
 	return RSRSLT;

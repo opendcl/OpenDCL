@@ -206,7 +206,7 @@ void CArxListViewCtrl::RefreshBlockList()
 
 	if( bVisible )
 		SetRedraw(TRUE); // turn drawing back on and update the window
-	Invalidate();
+	OnNeedRepaint();
 	UpdateWindow(); 
 }
 	

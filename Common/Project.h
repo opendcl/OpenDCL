@@ -149,8 +149,8 @@ public:
 	//Services
 public:
 	virtual void DeleteForm( TDclFormPtr pDclForm );
-	virtual TDclFormPtr AddForm( DclFormType nType );
-	virtual TDclFormPtr AddForm( DclFormType nType, TDclFormPtr pParentForm );
+	virtual TDclFormPtr AddForm( FormType nType );
+	virtual TDclFormPtr AddForm( FormType nType, TDclFormPtr pParentForm );
 	virtual void AddInitializedForm( TDclFormPtr pForm );
 	virtual void SetGlobalVariableNames( LPCTSTR pszRootName = NULL );
 	virtual void ClearGlobalVariableNames();

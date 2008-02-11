@@ -539,7 +539,7 @@ ADSRESULT ImageComboBox::GetLBText()
 	return RSRSLT;
 }
 
-ADSRESULT ImageComboBox::GetEBText()
+ADSRESULT ImageComboBox::GetTBText()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 

@@ -1,0 +1,75 @@
+// PaletteDialog.h : header file
+//
+
+#pragma once
+
+#include "ArxDialogObject.h"
+#include "AcadPaletteHost.h"
+#include "Resource.h"
+
+
+#if (_MFC_VER < 0x0800)
+#define __UINT_LRESULT UINT
+#else
+#define __UINT_LRESULT LRESULT
+#endif
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CPaletteDialog dialog
+
+class CPaletteDialog : public CDialog, public CArxDialogObject
+{
+	CWnd* mpParent;
+	CAcadPaletteHost& mHostPaletteSet;
+	bool mbKeepFocus;
+	bool mbResizable;
+	//bool mbHiding;
+
+// Construction
+public:
+	CPaletteDialog( TDclFormPtr pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL );
+	virtual ~CPaletteDialog();
+
+// Atributes
+public:
+	bool IsKeepFocus() const { return mbKeepFocus; }
+
+// CDialogObject overrides
+public:
+	virtual FormType GetType() const { return FrmPaletteDlg; }
+	virtual CWnd* GetTopLevelWnd();
+	virtual bool IsModeless() const { return true; }
+	virtual bool IsDockable() const { return false; }
+	virtual bool IsResizable() const { return mbResizable; }
+	virtual bool IsFloating() const;
+	virtual bool CreateModeless( UINT nID );
+	virtual void CloseDialog(int nStatus);
+	virtual bool CenterDialog();
+	virtual bool ResizeDialog( long nNewWidth, long nNewHeight );
+	virtual bool CenterAndResizeDialog( long nNewWidth, long nNewHeight );
+	virtual bool GetEffectiveWindowRect( CRect& rcDlg ) const;
+	virtual bool GetEffectiveClientRect( CRect& rcDlg ) const;
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual bool OnApplyCaption( TPropertyPtr pProp ); //Prop::Caption, Prop::TitleBarText
+	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::Resizable
+protected:
+	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
+	virtual void OnFrameChanged(); //called by member functions that change the non-client size
+	virtual void ApplyPosition(); //move control window to new position
+
+protected:
+friend class CAcadPaletteHost;
+	virtual bool OnClosing();
+
+protected:
+	DECLARE_MESSAGE_MAP()
+
+	virtual afx_msg void PostNcDestroy();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnDestroy();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+};

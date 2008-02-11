@@ -18,12 +18,11 @@ static UINT GetTreeItemClipboardFormat()
 
 CImageTreeCtrl::CImageTreeCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
-, mImageTreeHolder( this, pTemplate->GetWndRect(), pPane->GetHostDialog() )
 , mbDeleting( false )
 , mhtiDragSource( NULL )
 {
 	if( bCreate )
-		Create( &mImageTreeHolder, nID );
+		Create( pPane->GetHostDialog(), nID );
 }
 
 CImageTreeCtrl::~CImageTreeCtrl()
@@ -382,5 +381,6 @@ HBRUSH CImageTreeCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	return NULL;
+	//return mAcadColorService.CtlColor( pDC, nCtlColor );
 }

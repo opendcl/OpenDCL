@@ -110,7 +110,7 @@ BOOL CArxControlDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject,
 	CWnd* pDwgView = acedGetAcadDwgView();
 
 	bool bUseSendString = true;
-	if (mpDclControl->GetOwnerForm()->GetType() == VdclFileDialog)
+	if (mpDclControl->GetOwnerForm()->GetType() == FrmFileDlg)
 		bUseSendString = false;
 	
 	TDclControlPtr pControl = PasteArxObjectFromClipboard();

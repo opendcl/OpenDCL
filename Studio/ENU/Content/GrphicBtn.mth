@@ -1,7 +1,7 @@
 [Method]
 FlushGraphicButtons
-[Prefix]
-dcl_
+[Function]
+dcl_FlushGraphicButtons
 [Desc]
 This method is intended to force all GraphicButtons to repaint themselves.  This method is usefull when controling transparency of GraphicButtons.  This method is intended to be called after the GraphicButton(s) has first been hidden, then reshown.
 \par For Example

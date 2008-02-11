@@ -1,7 +1,7 @@
 [Method]
 AddColumns
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_AddColumns
 [Desc]
 This method adds columns to a Grid control. The width, justification, and optional image from the image list can or must be specified for each column.
 \par \par The column justification is to be set using:
@@ -29,8 +29,8 @@ This method adds columns to a Grid control. The width, justification, and option
 
 [Method]
 AddRow
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_AddRow
 [Desc]
 This method adds a new item to the end of a Grid control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list. Use \cf1 dcl_Grid_SetItemImage \cf0 to set the icons of any column cell.
 \par \b Note:\b0 The style of the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
@@ -50,8 +50,8 @@ This method adds a new item to the end of a Grid control and will also fill in t
 
 [Method]
 AddString
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_AddString
 [Desc]
 This method adds a new row to the end of a Grid control and fills in each of the cells using a single delimited string to specify the contents of each cell in the row. 
 If the sDelimiter argument of this function is not specified, "\t" is assumed.
@@ -70,8 +70,8 @@ If the sDelimiter argument of this function is not specified, "\t" is assumed.
 
 [Method]
 InsertString
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_InsertString
 [Desc]
 This method inserts a new row at the specified position of a Grid control and fills in each of the cells using a single delimited string to specify the contents of each cell in the row. 
 If the sDelimiter argument of this function is not specified, "\t" is assumed.
@@ -92,8 +92,8 @@ If the sDelimiter argument of this function is not specified, "\t" is assumed.
 
 [Method]
 GetColumnImage
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_GetColumnImage
 [Desc]
 This method returns the image of a column header in a Grid control. 
 [Arguments Return] as Integer
@@ -104,8 +104,8 @@ This method returns the image of a column header in a Grid control.
 
 [Method]
 SetColumnImage
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_SetColumnImage
 [Desc]
 This method sets the image of a column header in a Grid control. Set to -1 for no image.
 [Arguments]
@@ -118,8 +118,8 @@ This method sets the image of a column header in a Grid control. Set to -1 for n
 
 [Method]
 GetColumnCount
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_GetColumnCount
 [Desc]
 This method returns number of columns in a Grid control. 
 [Arguments Return] as Integer
@@ -128,8 +128,8 @@ This method returns number of columns in a Grid control.
 
 [Method]
 GetRowCount
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_GetRowCount
 [Desc]
 This method returns number of rows in a Grid control. 
 [Arguments Return] as Integer
@@ -138,8 +138,8 @@ This method returns number of rows in a Grid control.
 
 [Method]
 InsertRow
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_InsertRow
 [Desc]
 This method inserts a new item anywhere in a Grid control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list.  Use \cf2 dcl_Grid_SetItemImage \cf0 to set the icons of any column cell.
 \par \b Note:\b0 The style of the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
@@ -161,8 +161,8 @@ This method inserts a new item anywhere in a Grid control and will also fill in 
 
 [Method]
 InsertColumn
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_InsertColumn
 [Desc]
 This method inserts a column in a Grid control. The width, justification, and optional image from the image list can or must be specified for each column.
 \par \par The column justification is to be set using:
@@ -188,8 +188,8 @@ This method inserts a column in a Grid control. The width, justification, and op
 
 [Method]
 FillList
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_FillList
 [Desc]
 This method will clear and fill a Grid control with multiple rows and will fill in the cells in each row according to how many columns have been previously setup. 
 [Arguments]
@@ -216,8 +216,8 @@ sCol3Text
 
 [Method]
 SetCurSel
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_SetCurSel
 [Desc]
 This method will force a cell (or entire row if nColumn is omitted or set to -1) to be selected and will also scroll the Grid to ensure the item is displayed.
 [Arguments]
@@ -230,8 +230,8 @@ This method will force a cell (or entire row if nColumn is omitted or set to -1)
 
 [Method]
 GetCurSel
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_GetCurSel
 [Desc]
 This method will return the current row and column indexes of the currently selected cell. If the column index is -1 and the row index is 0 or above, this indicates the entire row is selected.
 [Arguments]
@@ -240,8 +240,8 @@ This method will return the current row and column indexes of the currently sele
 
 [Method]
 Clear
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_Clear
 [Desc]
 This method will clear the Grid of all its items.
 [Arguments]
@@ -250,8 +250,8 @@ This method will clear the Grid of all its items.
 
 [Method]
 DeleteRow
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_DeleteRow
 [Desc]
 This method will delete the specified row from the Grid control.
 [Arguments]
@@ -262,8 +262,8 @@ This method will delete the specified row from the Grid control.
 
 [Method]
 DeleteColumn
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_DeleteColumn
 [Desc]
 This method will delete the specified column from the Grid control.
 \b Note:\b0 A column can only be deleted if that column was not added using the properties wizard. A value of (-1 -1) means now cell has been selected.
@@ -275,8 +275,8 @@ This method will delete the specified column from the Grid control.
 
 [Method]
 SetItemData
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_SetItemData
 [Desc]
 This method will set the associated item data for the row. The item data will only accept integer values.
 \par \b Note:\b0 The item data can only be set per individual row and not per cell.
@@ -290,8 +290,8 @@ This method will set the associated item data for the row. The item data will on
 
 [Method]
 GetItemData
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_GetItemData
 [Desc]
 This method will retrieve the associated item data for the indicated row.
 [Arguments Return] as Integer
@@ -302,8 +302,8 @@ This method will retrieve the associated item data for the indicated row.
 
 [Method]
 GetItemText
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_GetItemText
 [Desc]
 This method will return the text of a cell in a Grid control. 
 [Arguments Return] as String
@@ -316,8 +316,8 @@ This method will return the text of a cell in a Grid control.
 
 [Method]
 GetRowItems
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_GetRowItems
 [Desc]
 This method will return a list containing the text of a specified row in a Grid control. 
 [Arguments Return] as List of Strings
@@ -328,8 +328,8 @@ This method will return a list containing the text of a specified row in a Grid 
 
 [Method]
 GetColumnItems
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_GetColumnItems
 [Desc]
 This method will return a list containing the strings of a specified column in a Grid control.
 [Arguments Return] as List of Strings
@@ -340,8 +340,8 @@ This method will return a list containing the strings of a specified column in a
 
 [Method]
 SetItemText
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_SetItemText
 [Desc]
 This method will set the text of an item in a Grid control. 
 [Arguments]
@@ -356,8 +356,8 @@ This method will set the text of an item in a Grid control.
 
 [Method]
 GetColWidth
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_GetColWidth
 [Desc]
 This method will return the width of a column.
 [Arguments Return] as Integer
@@ -368,8 +368,8 @@ This method will return the width of a column.
 
 [Method]
 SetColWidth
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_SetColWidth
 [Desc]
 This method will set the width of a column.
 [Arguments]
@@ -382,8 +382,8 @@ This method will set the width of a column.
 
 [Method]
 CalcColWidth
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_CalcColWidth
 [Desc]
 This method will calculate the minimum required width of a column to ensure the entire text will appear.
 [Arguments Return] as Integer
@@ -394,8 +394,8 @@ This method will calculate the minimum required width of a column to ensure the 
 
 [Method]
 GetItemImage
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_GetItemImage
 [Desc]
 This method will retrieve the image index of an item in a Grid control. The image index is also used to represent the index of the current selection in cell styles with a list selection.
 [Arguments Return] as Integer
@@ -408,8 +408,8 @@ This method will retrieve the image index of an item in a Grid control. The imag
 
 [Method]
 SetItemImage
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_SetItemImage
 [Desc]
 This method will set the image index of an item in a Grid control. This method is also used to select an item from an indexed list if the cell style offers such a selection. For cell style '31 - True Colors', set the image index to the special values -2 to specify an AutoCAD color book color, or -1 to specify an RGB color as a comma separated list of integers.
 [Arguments]
@@ -424,8 +424,8 @@ This method will set the image index of an item in a Grid control. This method i
 
 [Method]
 SortTextItems
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_SortTextItems
 [Desc]
 This method will sort the columns in ascending or descending order, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
 [Arguments]
@@ -438,8 +438,8 @@ This method will sort the columns in ascending or descending order, based on the
 
 [Method]
 SortNumericItems
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_SortNumericItems
 [Desc]
 This method will sort the columns in ascending or descending order using a numeric comparison, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
 [Arguments]
@@ -452,8 +452,8 @@ This method will sort the columns in ascending or descending order using a numer
 
 [Method]
 SetItemStyle
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_SetItemStyle
 [Desc]
 This method will set the editing style of a single cell. The styles that are available are as shown below.
 \par 	
@@ -531,8 +531,8 @@ This method will set the editing style of a single cell. The styles that are ava
 
 [Method]
 GetItemCheck
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_GetItemCheck
 [Desc]
 This method will indicate if a cell of style 1 - Check Boxes or 2 - Option Buttons has been checked off.
 [Arguments Return] as Integer
@@ -545,8 +545,8 @@ This method will indicate if a cell of style 1 - Check Boxes or 2 - Option Butto
 
 [Method]
 SetItemCheck
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_SetItemCheck
 [Desc]
 This method will set a cell of style 1 - Check Boxes or 2 - Option Buttons as checked or unchecked. A value of 1 = checked and 0 = unchecked.
 [Arguments]
@@ -561,8 +561,8 @@ This method will set a cell of style 1 - Check Boxes or 2 - Option Buttons as ch
 
 [Method]
 SetItemDropList
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_SetItemDropList
 [Desc]
 This method will set the drop down lists for cells with such styles. If the column has been preset with list items, this function will override the default column list for the specified cell only.
 \par 
@@ -581,8 +581,8 @@ This method will set the drop down lists for cells with such styles. If the colu
 
 [Method]
 CancelItemEdit
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_CancelItemEdit
 [Desc]
 This method will cancel the editing of a cell. This is useful when you wish to ensure that some items may be edited while others may not.  This method is not available for BlockList controls.
 [Arguments]
@@ -591,8 +591,8 @@ This method will cancel the editing of a cell. This is useful when you wish to e
 
 [Method]
 StartItemEdit
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_StartItemEdit
 [Desc]
 This method will create an appropriate edit control allowing the user to edit the cell contents, just as if the user clicked on the cell. If the cell style is a toggle style, this method will toggle the cell state.
 [Arguments]
@@ -601,5 +601,6 @@ This method will create an appropriate edit control allowing the user to edit th
 [as Integer]
 \par\tab nCol
 [as Integer]
+
 
 [End of File]

@@ -1,7 +1,7 @@
 [Method]
 Load
-[Prefix]
-dcl_Animate_
+[Function]
+dcl_Animate_Load
 [Desc]
 This method will load an animated file and activate it.
 [Arguments]
@@ -12,8 +12,8 @@ This method will load an animated file and activate it.
 
 [Method]
 Stop
-[Prefix]
-dcl_Animate_
+[Function]
+dcl_Animate_Stop
 [Desc]
 This stops the animation from playing.
 [Arguments Return] as String
@@ -22,8 +22,8 @@ This stops the animation from playing.
 
 [Method]
 Seek
-[Prefix]
-dcl_Animate_
+[Function]
+dcl_Animate_Seek
 [Desc]
 This method will display a specific frame of the animation file.
 [Arguments]
@@ -34,8 +34,8 @@ This method will display a specific frame of the animation file.
 
 [Method]
 Close
-[Prefix]
-dcl_Animate_
+[Function]
+dcl_Animate_Close
 [Desc]
 This method closes the animate file previously opened.
 [Arguments]

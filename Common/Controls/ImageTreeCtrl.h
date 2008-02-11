@@ -4,7 +4,6 @@
 #pragma once
 
 #include "DialogControl.h"
-#include "ImageTreeHolderCtrl.h"
 #include "AcadColorService.h"
 #include <list>
 
@@ -39,7 +38,6 @@ public:
 class CImageTreeCtrl : public CTreeCtrl, public CDialogControl
 {
 	CAcadColorService mAcadColorService;
-	CImageTreeHolderCtrl mImageTreeHolder;
 	CImageList mImageList;
 	std::list< CTreeItem > mTreeItems;
 	HTREEITEM mhtiDragSource;

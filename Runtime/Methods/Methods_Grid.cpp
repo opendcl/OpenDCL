@@ -723,7 +723,7 @@ ADSRESULT Grid::FillList()
 			{
 				if( bVisible )
 					pCtrl->SetRedraw( TRUE );
-				pCtrl->Invalidate();
+				pCtrl->OnNeedRepaint();
 				return RSERR; //invalid input
 			}
 
@@ -744,7 +744,7 @@ ADSRESULT Grid::FillList()
 
 	if( bVisible )
 		pCtrl->SetRedraw( TRUE );
-	pCtrl->Invalidate();
+	pCtrl->OnNeedRepaint();
 	pCtrl->UpdateWindow(); 
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -1059,7 +1059,8 @@ ADSRESULT Grid::AddString()
 	if( nRow == -1 )
 		return RSRSLT;
 	int idxCol = 0;
-	while( nTokenPos > 0 )
+	int cchText = sRowText.GetLength();
+	while( nTokenPos >= 0 && nTokenPos < cchText )
 		pCtrl->SetCellText( nRow, ++idxCol, sRowText.Tokenize( sDelimiters, nTokenPos ) );
 
 	acedRetInt( nRow );
@@ -1095,7 +1096,8 @@ ADSRESULT Grid::InsertString()
 	if( nRow == -1 )
 		return RSRSLT;
 	int idxCol = 0;
-	while( nTokenPos > 0 )
+	int cchText = sRowText.GetLength();
+	while( nTokenPos >= 0 && nTokenPos < cchText )
 		pCtrl->SetCellText( nRow, ++idxCol, sRowText.Tokenize( sDelimiters, nTokenPos ) );
 
 	acedRetT();

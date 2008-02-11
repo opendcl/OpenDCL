@@ -2,6 +2,8 @@
 // Microsoft Visual C++ generated include file.
 // Used by w:\OpenDCL\Build 5.0\Studio\ENU\Studio.Res\Studio.ENU.rc
 //
+#define IDI_ICON1                       115
+#define IDI_PALETTE                     115
 #define grp1                            0x0430
 #define grp2                            0x0431
 #define stc1                            0x0440
@@ -61,6 +63,7 @@
 #define ID_WINDOW_CLOSEALL              12044
 #define ID_WINDOW_NEXTFORM              12045
 #define ID_WINDOW_PREVFORM              12046
+#define ID_ADDPALETTE                   12047
 #define ID_TOOLBOX_POINTER              13000
 #define ID_TOOLBOX_LABEL                13001
 #define ID_TOOLBOX_TEXTBUTTON           13002
@@ -404,6 +407,7 @@
 #define IDS_DESIGNTIMEONLY              20106
 #define IDS_HIDDENPROP                  20107
 #define IDS_GRIDSPACING                 20108
+#define IDS_MSG_TODOLISPFUNC            20109
 #define IDS_COPYTOCLIP                  20110
 #define IDS_COPYGETTOCLIP               20111
 #define IDS_RENAMEPROJECT               20112
@@ -486,11 +490,13 @@
 #define IDS_DOCKABLEFORM                25002
 #define IDS_CONFIGTAB                   25003
 #define IDS_FILEDLG                     25004
+#define IDS_PALETTEFORM                 25005
 #define IDS_MODALFORMS                  25100
 #define IDS_MODELESSFORMS               25101
 #define IDS_DOCKABLEFORMS               25102
 #define IDS_CONFIGTABS                  25103
 #define IDS_FILEDLGS                    25104
+#define IDS_PALETTEFORMS                25105
 #define IDS_COLOR_RED                   27000
 #define IDS_COLOR_YELLOW                27001
 #define IDS_COLOR_GREEN                 27002
@@ -743,8 +749,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        115
-#define _APS_NEXT_COMMAND_VALUE         40016
+#define _APS_NEXT_RESOURCE_VALUE        116
+#define _APS_NEXT_COMMAND_VALUE         40017
 #define _APS_NEXT_CONTROL_VALUE         1007
 #define _APS_NEXT_SYMED_VALUE           103
 #endif

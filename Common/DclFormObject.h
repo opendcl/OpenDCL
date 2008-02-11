@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DclFormTypes.h"
+#include "FormTypes.h"
 #include "ImageListObject.h"
 #include "Project.h"
 #include "DclControlObject.h"
@@ -22,7 +22,7 @@ class CDclFormObject : public CObject
 protected:
 	TProjectLockedPtr mpProject;
 	TDclControlList mDclControls;
-	DclFormType mType;
+	FormType mType;
 	CString msName;
 	UINT_PTR mnNextId;
 	bool mbUsesClientRect;
@@ -42,7 +42,7 @@ public:
 protected:
 	CDclFormObject();
 public:
-	CDclFormObject( CProject* pProject, DclFormType type = VdclInvalid );
+	CDclFormObject( CProject* pProject, FormType type = _FrmInvalid );
 	virtual ~CDclFormObject();
 
 	//2007-01-30 [ORW]: save version set to 4 (no change from OpenDCL 3)
@@ -77,13 +77,13 @@ public:
 	bool GetControlFonts( CFontCollection& Fonts ) const;
 	void SetGlobalVariableName( LPCTSTR pszRootName = NULL, bool bUpdateChildren = true );
 	void ClearGlobalVariableName( bool bUpdateChildren = true );
-	TDclFormPtr AddChildForm( DclFormType type );
+	TDclFormPtr AddChildForm( FormType type );
 
 	//Attributes
 public:
 	const TProjectPtr GetProject() const { return mpProject; }
 	TProjectPtr GetProject() { return mpProject; }
-	DclFormType GetType() const { return mType; }
+	FormType GetType() const { return mType; }
 	CUndoManager* GetUndoManager() const { return (mpProject? mpProject->GetUndoManager() : NULL); }
 	bool IsModeless() const;
 	CWnd* GetFormWindow() const;

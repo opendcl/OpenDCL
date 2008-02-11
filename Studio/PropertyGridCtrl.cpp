@@ -234,7 +234,7 @@ public:
 	template<>
 		static CPropertyEditCtrl* Create< NullInputFilter >( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
 			{ return new CFilteredTextEditCtrl( pGridCtrl, idxCell ); }
-	void ApplyValue( LPCTSTR pszValue )
+	virtual void ApplyValue( LPCTSTR pszValue )
 		{
 			CPropertyGridCtrl::TPropertySet& PropSet = mpGridCtrl->GetPropertySet( midxCell );
 			for( CPropertyGridCtrl::TPropertySet::iterator iter = PropSet.begin();
@@ -243,34 +243,8 @@ public:
 			{
 				TPropertyPtr pProp = *iter;
 				TDclControlPtr pDclControl = pProp->GetOwnerControl();
-				CDialogControl* pDlgControl = pDclControl? pDclControl->GetControlInstance() : NULL;
-				if( pDclControl )
-				{
-					if( pProp->GetID() == Prop::Name )
-					{
-						if( pDclControl->GetType() == _CtlForm )
-						{
-							TDclFormPtr pCheckForm = pDclControl->GetOwnerProject()->FindDclForm( pszValue );
-							if( pCheckForm && pCheckForm != pDclControl->GetOwnerForm() )
-							{
-								OnCancel();
-								theWorkspace.DisplayAlert( IDS_FORMBADNAME );
-								return;
-							}
-						}
-						else
-						{
-							TDclControlPtr pCheckControl = pDclControl->GetOwnerForm()->FindControl( pszValue );
-							if( pCheckControl && pCheckControl != pDclControl )
-							{
-								OnCancel();
-								theWorkspace.DisplayAlert( IDS_CTRLBADNAME );
-								return;
-							}
-						}
-					}
-				}
 				pProp->SetStringValue( pszValue );
+				CDialogControl* pDlgControl = pDclControl? pDclControl->GetControlInstance() : NULL;
 				if( pDlgControl )
 					CStudioDialogControl::UpdateProperty( pDclControl, pProp->GetID() );
 			}
@@ -338,6 +312,53 @@ protected:
 BEGIN_MESSAGE_MAP(CFilteredTextEditCtrl, CFilteredEditCtrl)
 	ON_CONTROL_REFLECT(EN_CHANGE, &CFilteredTextEditCtrl::OnChange)
 END_MESSAGE_MAP()
+
+
+class CControlNameEditCtrl : public CFilteredTextEditCtrl
+{
+public:
+	CControlNameEditCtrl( CPropertyGridCtrl* pGridCtrl, size_t idxCell, CInputFilter* pFilter = NULL, DWORD dwStyle = GetDefaultWndStyle(), UINT nID = 100 )
+		: CFilteredTextEditCtrl( pGridCtrl, idxCell, pFilter, dwStyle, nID )
+		{
+		}
+	virtual ~CControlNameEditCtrl()
+		{
+		}
+	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
+		{ return new CControlNameEditCtrl( pGridCtrl, idxCell ); }
+	void ApplyValue( LPCTSTR pszValue )
+		{
+			CPropertyGridCtrl::TPropertySet& PropSet = mpGridCtrl->GetPropertySet( midxCell );
+			assert( PropSet.size() == 1 );
+			TPropertyPtr pProp = PropSet.front();
+			TDclControlPtr pDclControl = pProp->GetOwnerControl();
+			if( pDclControl )
+			{
+				if( pDclControl->GetType() == _CtlForm )
+				{
+					TDclFormPtr pCheckForm = pDclControl->GetOwnerProject()->FindDclForm( pszValue );
+					if( pCheckForm && pCheckForm != pDclControl->GetOwnerForm() )
+					{
+						OnCancel();
+						theWorkspace.DisplayAlert( IDS_FORMBADNAME );
+						return;
+					}
+				}
+				else
+				{
+					TDclControlPtr pCheckControl = pDclControl->GetOwnerForm()->FindControl( pszValue );
+					if( pCheckControl && pCheckControl != pDclControl )
+					{
+						OnCancel();
+						theWorkspace.DisplayAlert( IDS_CTRLBADNAME );
+						return;
+					}
+				}
+			}
+			__super::ApplyValue( pszValue );
+			theStudioWorkspace.GetZOrderPane()->Invalidate();
+		}
+};
 
 
 class CBooleanCheckBoxCtrl : public CButton, public CPropertyEditCtrl
@@ -543,6 +564,7 @@ public:
 			CString sValue = mpGridCtrl->GetItemText( idxCell, 1 );
 			__super::Create( WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, CalcRect( pGridCtrl->GetEditRect( idxCell ) ), pGridCtrl, 100 );
 			SetFont( pGridCtrl->GetFont() );
+			AddString( theStudioWorkspace.LoadResourceString( IDS_NONE ) );
 			TStudioProjectPtr pProject = theStudioWorkspace.GetActiveProject();
 			const CList< CPictureObject* >& Pictures = pProject->GetPictureList();
 			POSITION pos = Pictures.GetHeadPosition();
@@ -572,7 +594,8 @@ public:
 	void ApplyValue( int nValue )
 		{
 			CString sValue;
-			GetLBText( nValue, sValue );
+			if( GetCurSel() > 0 )
+				GetLBText( nValue, sValue );
 			mpGridCtrl->SetItemText( midxCell, 1, sValue );
 			CPropertyGridCtrl::TPropertySet& PropSet = mpGridCtrl->GetPropertySet( midxCell );
 			for( CPropertyGridCtrl::TPropertySet::iterator iter = PropSet.begin();
@@ -778,6 +801,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::IsTabStop: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ItemData: return &CFilteredTextEditCtrl::Create< CIntegerListFilter >;
 	case Prop::Justification: return &CEnumComboBoxCtrl::Create;
+	case Prop::KeepFocus: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::LabelWrap: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::LargeChange: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::Left: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
@@ -802,7 +826,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::MouseOverPicture: return &CPicFolderComboBoxCtrl::Create;
 	case Prop::MultiColumn: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::MultiSelect: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::Name: if( bMultiple ) return NULL; return PF_UnfilteredTextEditCreator;
+	case Prop::Name: if( bMultiple ) return NULL; return &CControlNameEditCtrl::Create;
 	case Prop::NoIntegralHeight: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ObjectBrowser: if( bMultiple ) return NULL; return &CCommandButtonEditCtrl::Create< ID_OBJECTBROWSER >;
 	case Prop::Orientation: return &CEnumComboBoxCtrl::Create;
@@ -820,7 +844,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::RowHeight: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::SecondText: return PF_UnfilteredTextEditCreator;
 	case Prop::SecondsText: return PF_UnfilteredTextEditCreator;
-	case Prop::SelectStyle: return &CEnumComboBoxCtrl::Create;
+	case Prop::SelectionStyle: return &CEnumComboBoxCtrl::Create;
 	case Prop::ShowCancel: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ShowHelp: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ShowNameLabel: return &CBooleanCheckBoxCtrl::Create;
@@ -840,8 +864,8 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::SplitterMin: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::SplitterStyle: return &CEnumComboBoxCtrl::Create;
 	case Prop::TabFixedWidth: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::TabJustified: return &CEnumComboBoxCtrl::Create;
-	case Prop::TabLabelAlign: return &CEnumComboBoxCtrl::Create;
+	case Prop::TabJustification: return &CEnumComboBoxCtrl::Create;
+	case Prop::LabelAlignment: return &CEnumComboBoxCtrl::Create;
 	case Prop::TabsCaption: return PF_UnfilteredTextEditCreator;
 	case Prop::TabsImageList: return &CFilteredTextEditCtrl::Create< CIntegerListFilter >;
 	case Prop::TabsTTT: return PF_UnfilteredTextEditCreator;

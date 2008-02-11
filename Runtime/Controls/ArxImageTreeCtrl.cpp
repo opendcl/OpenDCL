@@ -290,6 +290,6 @@ void CArxImageTreeCtrl::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 														(DWORD_PTR)hItem,
 														IsAsyncEvents() );
 	SelectDropTarget( hItem );
-	Invalidate();
+	OnNeedRepaint();
 	*pResult = 0;
 }

@@ -9,6 +9,7 @@
 #include "CfgTabPane.h"
 #include "DockingDialog.h"
 #include "CustomFileDialog.h"
+#include "PaletteDialog.h"
 #include "InvokeMethod.h"
 
 
@@ -82,11 +83,12 @@ CDialogObject* CArxDialogObject::Create( TDclFormPtr pDclForm, CWnd* pParent /*=
 	CAcAppContextModuleResourceOverride resOverride;
 	switch( pDclForm->GetType() )
 	{
-	case VdclModal: return new CModalDlg( pDclForm, pParent, pParams );
-	case VdclModeless: return new CModelessDlg( pDclForm, pParent, pParams );
-	case VdclConfigTab: return new CfgTabPane( pDclForm, pParent, pParams );
-	case VdclDockable: return new CDockingDialog( pDclForm, pParent, pParams );
-	case VdclFileDialog: return new CCustomFileDialog( pDclForm, pParent, pParams );
+	case FrmModalDlg: return new CModalDlg( pDclForm, pParent, pParams );
+	case FrmModelessDlg: return new CModelessDlg( pDclForm, pParent, pParams );
+	case FrmConfigTab: return new CfgTabPane( pDclForm, pParent, pParams );
+	case FrmDockableDlg: return new CDockingDialog( pDclForm, pParent, pParams );
+	case FrmFileDlg: return new CCustomFileDialog( pDclForm, pParent, pParams );
+	case FrmPaletteDlg: return new CPaletteDialog( pDclForm, pParent, pParams );
 	}
 	return NULL;
 }

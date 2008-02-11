@@ -43,16 +43,17 @@ CControlManager::CControlManager( CDialogControl* pDlgControl, bool bCreate /*= 
 , mnSizingType( 0 )
 , mbUndoGroupActive( false )
 {
+	CWnd* pTopLevelWnd = pDlgControl->GetTopLevelWnd();
 	TraceFmt( _T("> CControlManager::CControlManager(%s [%p], [%p], %s [HWND: %p]) [this: %p]\r\n"),
 						(LPCTSTR)mpTemplate->GetKeyPath(), (const CDclControlObject*)mpTemplate, pDlgControl->GetControlPane(),
 						(LPCTSTR)CString(mpControlWnd->GetRuntimeClass()->m_lpszClassName),
-						mpControlWnd->m_hWnd, this );
+						pTopLevelWnd->m_hWnd, this );
 	pDlgControl->SetControlManager( this );
 	if( bCreate )
 	{
-		mpControlWnd->SetRedraw( FALSE );
+		pTopLevelWnd->SetRedraw( FALSE );
 		CRect rcControl = pDlgControl->GetEffectiveWindowRect();
-		Create( _T(""), WS_CHILD | WS_DISABLED, rcControl, mpControlWnd->GetParent() );
+		Create( _T(""), WS_CHILD | WS_DISABLED, rcControl, pTopLevelWnd->GetParent() );
 		ModifyStyle( WS_CLIPCHILDREN, 0, 0 );
 		ModifyStyleEx( 0, WS_EX_TRANSPARENT, 0 );
 		rcControl.MoveToXY( 0, 0 );
@@ -60,9 +61,9 @@ CControlManager::CControlManager( CDialogControl* pDlgControl, bool bCreate /*= 
 		mGripper.ModifyStyleEx( 0, WS_EX_TRANSPARENT, 0 );
 		//SetWindowPos( mpControlWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING );
 		//mpControlWnd->SetWindowPos( this, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING );
-		mpControlWnd->SetParent( this );
-		mpControlWnd->SetWindowPos( NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING );
-		mpControlWnd->SetRedraw( TRUE );
+		pTopLevelWnd->SetParent( this );
+		pTopLevelWnd->SetWindowPos( NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING );
+		pTopLevelWnd->SetRedraw( TRUE );
 		ShowWindow( SW_SHOW );
 	}
 }

@@ -145,21 +145,24 @@ HTREEITEM CObjectBrowser::LoadOleObjectIntoTree(TDclControlPtr pControl)
 		{
 			switch (mpDclControl->GetOwnerForm()->GetType())
 			{
-			case VdclModal:
+			case FrmModalDlg:
 				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_MODALFORM), TVI_ROOT, TVI_SORT);		
 				break;
-			case VdclModeless:
+			case FrmModelessDlg:
 				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_MODELESSFORM), TVI_ROOT, TVI_SORT);		
 				break;
-			case VdclDockable:
+			case FrmDockableDlg:
 				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_DOCKABLEFORM), TVI_ROOT, TVI_SORT);		
 				break;
-			case VdclConfigTab:
+			case FrmConfigTab:
 				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_CONFIGTAB), TVI_ROOT, TVI_SORT);		
 				break;
-			case VdclFileDialog:
+			case FrmFileDlg:
 				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_FILEDLG), TVI_ROOT, TVI_SORT);		
 				break;			
+			case FrmPaletteDlg:
+				hItem = m_ListBox.InsertItem(theWorkspace.LoadResourceString(IDS_PALETTEFORM), TVI_ROOT, TVI_SORT);		
+				break;
 			}
 		}
 		else
@@ -464,9 +467,13 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 				// if this is the method we are looking for.
 				if (sMethodName == sLine)
 				{
-					fMthFile.ReadString(sLine);	// get past the [Prefix]
+					CString sNameForm;
+					fMthFile.ReadString(sNameForm);	// should be [Prefix] or [Function]
 					fMthFile.ReadString(sLine);	
-					sFuncName = sLine + StripMethodNameOfBrackets(sMethodName);
+					if( sNameForm == _T("[Prefix]") )
+						sFuncName = sLine + StripMethodNameOfBrackets(sMethodName);
+					else
+						sFuncName = sLine;
 					fMthFile.ReadString(sLine);	// get past the [Desc]
 					while (sLine.Left(10) != _T("[Arguments") &&
 								 sLine != _T("[Argument]") &&
@@ -683,7 +690,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				break;
 
 			case _CtlForm: // a form
-				if (mpDclControl->GetOwnerForm()->GetType() == VdclFileDialog && pControl->GetType() != CtlFileDlgCtrl)
+				if (mpDclControl->GetOwnerForm()->GetType() == FrmFileDlg && pControl->GetType() != CtlFileDlgCtrl)
 					LoadFullMethod(_T("FileDlg.mth"), sItemText, sTitle, sDesc, sDefun1);
 				else
 					LoadFullMethod(_T("Forms.mth"), sItemText, sTitle, sDesc, sDefun1);
@@ -850,7 +857,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				// add a more info disclaimer.
 				sDefun1 += _T("\\par ") + theWorkspace.LoadResourceString(IDS_FORMOREINFO);
 				// add a microsoft disclaimer.
-				if (pControl->IsMicrosoftActiveXCtrl() == TRUE)
+				if( pControl->IsMicrosoftActiveXCtrl() )
 					sDefun1 += theWorkspace.LoadResourceString(IDS_TOFINDIT);
 						
 				// set the second copy button
@@ -1097,7 +1104,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 						sVarType = theWorkspace.LoadResourceString(IDS_BOOLEAN);
 						break;					
 				}		
-				sTitle = _T("\\b0 ") + theWorkspace.LoadResourceString(IDS_PROPERTY) + _T(" \\b ") + sItemText + _T(" \\b0 \\cf0");
+				sTitle = _T("\\b0 ") + theWorkspace.LoadResourceString(IDS_PROPERTY) + _T(" \\b ") + GetPropertyName( pProp->GetID() ) + _T(" \\b0 \\cf0");
 				sDesc = pProp->GetDocumentationDesc();
 				bool bHidden = pProp->IsHidden();
 				switch( pProp->GetID() )
@@ -1129,51 +1136,10 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 					case Prop::FilterStyle:
 					case Prop::MultiRow:
 					case Prop::Orientation:
-					case Prop::RectStyle:
-					case Prop::Justification:
-					case Prop::DropDownHeight:
-					case Prop::MultiColumn:
-					case Prop::SelectStyle:
-					case Prop::NoIntegralHeight:
-					case Prop::Sorted:
-					case Prop::UseTabStops:
-					case Prop::DisableNoScroll:
-					case Prop::SmoothProgress:
-					case Prop::AutoWrap:
-					case Prop::MinTabWidth:
-					case Prop::Resizable:
-					case Prop::ShowSelectAlways:
-					case Prop::HasLines:
-					case Prop::LinesAtRoot:
-					case Prop::HasButtons:
-					case Prop::EditLabels:
-					case Prop::CheckBoxes:
-					case Prop::Icon:
-					case Prop::ShowEditBox:
-					case Prop::InputFilter:
-					case Prop::IsTabStop:
-					case Prop::BeginGroup:
-					case Prop::ListViewStyle:
-					case Prop::ListViewSort:
-					case Prop::ListViewIconAlign:
+					case Prop::SelectionStyle:
 					case Prop::BlockListStyle:
-					case Prop::AutoArrange:
-					case Prop::ColHeader:
-					case Prop::LabelWrap:
-					case Prop::IconXSpacing:
-					case Prop::IconYSpacing:
-					case Prop::GridLines:
-					case Prop::FullRowSelect:
-					case Prop::ReturnAsTab:
-					case Prop::SingleExpanded:
-					case Prop::DefSelIndex:
 					case Prop::DockableSides:
 					case Prop::DefaultDockedSide:
-					case Prop::TitleBarText:
-					case Prop::MinDialogWidth:
-					case Prop::MaxDialogWidth:
-					case Prop::MinDialogHeight:
-					case Prop::MaxDialogHeight:
 						{
 							CString sMsg;
 							if (mpDclControl->GetType() < _CtlFirst || mpDclControl->GetType() > _CtlMax)
@@ -1190,14 +1156,14 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 							else
 							{
 								// lets set the Put property
-								sDefun1 = CString(_T("\\par (\\cf2 dcl_Control_Set")) + m_ListBox.GetItemText(hItem) + _T(" \\cf0 \\cf3") + sGlobalVarName + _T(" ");
-								m_sClipBoardDefun1 = CString("(dcl_Control_Set") + m_ListBox.GetItemText(hItem) + _T(" ");
+								sDefun1 = CString(_T("\\par (\\cf2 dcl_Control_Set")) + GetPropertyApiName( pProp->GetID() ) + _T(" \\cf0 \\cf3") + sGlobalVarName + _T(" ");
+								m_sClipBoardDefun1 = CString("(dcl_Control_Set") + GetPropertyApiName( pProp->GetID() ) + _T(" ");
 								sDefun1 += _T("\\par \\cf1 newValue [as ") + sVarType + _T("]\\cf0 ) ") + _T(" \\par ");
 								m_sClipBoardDefun1 += sGlobalVarName + _T("\r\n\t newValue [as ") + sVarType + _T("])");
 								
 								// lets set the get property
-								sDefun2 = CString(_T("\\par (\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_Control_Get")) + m_ListBox.GetItemText(hItem) + _T(" \\cf0 \\cf3");
-								m_sClipBoardDefun2 = _T("(Setq Value (dcl_Control_Get") + m_ListBox.GetItemText(hItem) + _T(" ");
+								sDefun2 = CString(_T("\\par (\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_Control_Get")) + GetPropertyApiName( pProp->GetID() ) + _T(" \\cf0 \\cf3");
+								m_sClipBoardDefun2 = CString( _T("(Setq Value (dcl_Control_Get") ) + GetPropertyApiName( pProp->GetID() ) + _T(" ");
 								sDefun2 += sGlobalVarName + _T("\\cf0))");
 								m_sClipBoardDefun2 += sGlobalVarName + _T("))");
 								

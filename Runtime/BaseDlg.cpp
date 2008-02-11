@@ -100,6 +100,8 @@ BOOL CBaseDlg::OnInitDialog()
 	else
 		ModifyStyle( WS_CAPTION, 0, SWP_FRAMECHANGED );
 
+	__super::OnInitDialog();
+
 	CRect rectWindow;
 	GetWindowRect( &rectWindow );
 	CRect rectClient;
@@ -115,13 +117,6 @@ BOOL CBaseDlg::OnInitDialog()
 		rectWindow.right += GetNCWidth();
 		rectWindow.bottom += GetNCHeight();
 	}
-	MoveWindow( &rectWindow, FALSE );
-	ApplyPropertiesEnum();
-
-	__super::OnInitDialog();
-
-	//SetWindowText( pFormProps->GetStringProperty( Prop::TitleBarText ) );
-	//SetTitleBarIcon( pFormProps->GetLongProperty( Prop::Icon ) );
 
 	CRect rectParent;
 	::GetWindowRect( ::GetParent(m_hWnd), &rectParent );
@@ -144,8 +139,11 @@ BOOL CBaseDlg::OnInitDialog()
 	}
 	if( GetStyle() & WS_CHILD )
 		GetParent()->ScreenToClient( &rectWindow );
-	mbIgnoreSizing = false;
 	MoveWindow( &rectWindow, FALSE );
+	mpTemplate->SetLongProperty( Prop::Width, rectWindow.Width() - GetNCWidth() );
+	mpTemplate->SetLongProperty( Prop::Height, rectWindow.Height() - GetNCHeight() );
+	mbIgnoreSizing = false;
+	ApplyPropertiesEnum();
 
 	UINT nID = 1000;
 	GetControlPane()->CreateControls( nID );

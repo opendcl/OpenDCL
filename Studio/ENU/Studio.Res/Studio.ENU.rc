@@ -884,6 +884,7 @@ BEGIN
         MENUITEM "Add &Dockable Form",          ID_ADDDOCKABLE
         MENUITEM "Add &Config Tab",             ID_ADDCONFIG
         MENUITEM "Add &File Dialog Box",        ID_ADDFILEDIALOGBOX
+        MENUITEM "Add &Palette Form",           ID_ADDPALETTE
         MENUITEM SEPARATOR
         MENUITEM "&View/Edit Picture Folder",   ID_PICTUREFOLDER
         MENUITEM "&Set AutoLISP File Name",     ID_SETAUTOLISPFILENAME
@@ -995,6 +996,7 @@ BEGIN
         MENUITEM "Add &Dockable Form",          ID_ADDDOCKABLE
         MENUITEM "Add &Config Tab",             ID_ADDCONFIG
         MENUITEM "Add &File Dialog Box",        ID_ADDFILEDIALOGBOX
+        MENUITEM "Add &Palette Form",           ID_ADDPALETTE
     END
     POPUP "&Edit"
     BEGIN
@@ -1029,8 +1031,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 5,0,0,3
- PRODUCTVERSION 5,0,0,3
+ FILEVERSION 5,0,0,4
+ PRODUCTVERSION 5,0,0,4
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1047,13 +1049,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL Studio Resources - English"
-            VALUE "FileVersion", "5, 0, 0, 3"
+            VALUE "FileVersion", "5, 0, 0, 4"
             VALUE "InternalName", "OpenDCL.Editor"
-            VALUE "LegalCopyright", "Copyright © 2007 OpenDCL Consortium.  All rights reserved."
+            VALUE "LegalCopyright", "Copyright © 2008 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "Studio.Res.dll"
             VALUE "ProductName", "OpenDCL Studio"
-            VALUE "ProductVersion", "5, 0, 0, 3"
+            VALUE "ProductVersion", "5, 0, 0, 4"
         END
     END
     BLOCK "VarFileInfo"
@@ -1197,6 +1199,7 @@ IDB_FILEDLGCTRL         BITMAP                  "res\\FileDlg.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
+IDI_PALETTE             ICON                    "Res\\Palette.ico"
 IDI_PASSWORD            ICON                    "res\\Password.ico"
 IDI_UNDERLINE           ICON                    "res\\Underline.ico"
 IDI_ITALIC              ICON                    "res\\Italic.ico"
@@ -1368,6 +1371,7 @@ BEGIN
     ID_FONTSIZES            "Changes the font size for selected controls."
     ID_WINDOW_NEXTFORM      "Switch to the next window pane\nNext Pane"
     ID_WINDOW_PREVFORM      "Switch back to the previous window pane\nPrevious Pane"
+    ID_ADDPALETTE           "Add a palette dialog box"
 END
 
 STRINGTABLE 
@@ -1598,6 +1602,7 @@ BEGIN
     IDS_DESIGNTIMEONLY      "This property can only be set at design time."
     IDS_HIDDENPROP          "This is a hidden property that can not be set directly."
     IDS_GRIDSPACING         "%d pixels"
+    IDS_MSG_TODOLISPFUNC    "(dcl_MessageBox ""To Do: code must be added to event handler\\r\\n%s"" ""To do"")"
     IDS_COPYTOCLIP          "Copy To Clipboard"
     IDS_COPYGETTOCLIP       "Copy Get To Clipboard"
 END
@@ -1671,6 +1676,7 @@ BEGIN
     IDS_DOCKABLEFORM        "Dockable Form"
     IDS_CONFIGTAB           "Config Tab"
     IDS_FILEDLG             "Custom File Dialog"
+    IDS_PALETTEFORM         "Palette Form"
 END
 
 STRINGTABLE 
@@ -1684,6 +1690,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_FILEDLGS            "Custom File Dialogs"
+    IDS_PALETTEFORMS        "Palette Forms"
 END
 
 STRINGTABLE 

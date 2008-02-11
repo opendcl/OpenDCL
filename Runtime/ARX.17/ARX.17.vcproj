@@ -215,6 +215,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\AcadPaletteHost.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\acrxEntryPoint.cpp"
 				>
 			</File>
@@ -275,6 +279,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\DelayedInvoke.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\DirDialog.cpp"
 				>
 			</File>
@@ -312,6 +320,10 @@
 			</File>
 			<File
 				RelativePath="..\OleOdcDropTarget.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\PaletteDialog.cpp"
 				>
 			</File>
 			<File
@@ -361,6 +373,10 @@
 			</File>
 			<File
 				RelativePath="..\AcadDockBarHost.h"
+				>
+			</File>
+			<File
+				RelativePath="..\AcadPaletteHost.h"
 				>
 			</File>
 			<File
@@ -416,6 +432,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\DelayedInvoke.h"
+				>
+			</File>
+			<File
 				RelativePath="..\DirDialog.h"
 				>
 			</File>
@@ -440,6 +460,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\LispIO.h"
+				>
+			</File>
+			<File
 				RelativePath="..\MainFileDlg.h"
 				>
 			</File>
@@ -453,6 +477,10 @@
 			</File>
 			<File
 				RelativePath="..\OleOdcDropTarget.h"
+				>
+			</File>
+			<File
+				RelativePath="..\PaletteDialog.h"
 				>
 			</File>
 			<File
@@ -1339,10 +1367,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\DclFormTypes.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Common\Diagnostic.h"
 				>
 			</File>
@@ -1400,6 +1424,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\FontSettings.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\FormTypes.h"
 				>
 			</File>
 			<File
@@ -1845,14 +1873,6 @@
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\ImageTreeCtrl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Controls\ImageTreeHolderCtrl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Controls\ImageTreeHolderCtrl.h"
 					>
 				</File>
 				<File

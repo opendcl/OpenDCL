@@ -39,7 +39,7 @@ public:
 
 private:
 	virtual bool CanFrameworkTakeFocus();
-	virtual void OnUserSizing(UINT nSide, LPRECT pRect);
+	virtual void OnUserSizing(UINT fwSide, LPRECT pRect);
 	virtual CSize CalcDynamicLayout( int nLength, DWORD dwMode );
 	virtual CSize CalcFixedLayout( BOOL bStretch, BOOL bHorz );	
 	virtual void GetFloatingMinSize(long* pnMinWidth, long* pnMinHeight);	

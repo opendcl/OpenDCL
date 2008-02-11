@@ -109,7 +109,7 @@ void CStudioFrame::OnFontChange( const FontSettings& FS )
 		theApp.SetDefaultFontSettings( FS );
 }
 
-TDclFormPtr CStudioFrame::AddNewDclFormView( DclFormType nType )
+TDclFormPtr CStudioFrame::AddNewDclFormView( FormType nType )
 {
 	TStudioProjectPtr pProject = theStudioWorkspace.GetActiveProject();
 	if( !pProject )
@@ -142,7 +142,8 @@ CDclFormView* CStudioFrame::OpenDclFormView( TDclFormPtr pDclForm )
 		ctxtFormView.m_pLastView = NULL;
 		ctxtFormView.m_pCurrentFrame = this;
 		CDclFormFrame* pDclFormFrame = (CDclFormFrame*)theStudioWorkspace.GetStudioFrame()->CreateNewChild( RUNTIME_CLASS(CDclFormFrame), IDD_FORMVIEW );
-		pDclFormFrame->MDIMaximize();
+		if( !theStudioWorkspace.GetActiveFormView() )
+			pDclFormFrame->MDIMaximize();
 		pFormView = (CDclFormView*)pDclFormFrame->CreateView( &ctxtFormView );
 		if( !pFormView )
 			return NULL;

@@ -86,7 +86,7 @@ bool CScrollBarCtrl::OnApplyForegroundColor( TPropertyPtr pProp )
 		pColorService->SetForegroundColor( pProp->GetLongValue() );
 		pColorService->SetBackgroundColor( pProp->GetLongValue() );
 	}
-	mpControlWnd->Invalidate();
+	OnNeedRepaint();
 	return true;
 }
 

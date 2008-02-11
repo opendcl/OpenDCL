@@ -8,6 +8,19 @@
 #include "ControlPane.h"
 #include "PropertyIds.h"
 
+#define BP_PUSHBUTTON			0x00000001
+#define BP_RADIOBUTTON			0x00000002
+#define BP_CHECKBOX				0x00000003
+
+#define RBS_UNCHECKEDNORMAL		0x00000001
+#define RBS_UNCHECKEDHOT		0x00000002
+#define RBS_UNCHECKEDPRESSED	0x00000003
+#define RBS_UNCHECKEDDISABLED	0x00000004
+#define RBS_CHECKEDNORMAL		0x00000005
+#define RBS_CHECKEDHOT			0x00000006
+#define RBS_CHECKEDPRESSED		0x00000007
+#define RBS_CHECKEDDISABLED		0x00000008
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CCheckBoxCtrl
@@ -49,14 +62,10 @@ bool CCheckBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	switch( pProp->GetID() )
 	{
 	case Prop::Caption:
-		{
-			SetWindowText( pProp->GetStringValue() );
-		}
+		SetWindowText( pProp->GetStringValue() );
 		break;
 	case Prop::Value:
-		{
-			SetCheck( pProp->GetLongValue() );
-		}
+		SetCheck( pProp->GetLongValue() );
 		break;
 	}
 	return !bFailed;
@@ -65,7 +74,6 @@ bool CCheckBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 
 BEGIN_MESSAGE_MAP(CCheckBoxCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
-	ON_NOTIFY_REFLECT (NM_CUSTOMDRAW, &CCheckBoxCtrl::OnNotifyCustomDraw)
 END_MESSAGE_MAP()
 
 
@@ -84,25 +92,14 @@ HBRUSH CCheckBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	HBRUSH hbrBackground = mAcadColorService.CtlColor( pDC, nCtlColor );
+	if( GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
+		return NULL; //must use class brush when themes are active, else XP paints a black background
+	return hbrBackground;
 }
 
 void CCheckBoxCtrl::PostNcDestroy() 
 {
 	__super::PostNcDestroy();
 	delete this;
-}
-
-void CCheckBoxCtrl::OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result )
-{
-	LPNMCUSTOMDRAW pCustomDraw = (LPNMCUSTOMDRAW)pNotifyStruct;
-	ASSERT (pCustomDraw->hdr.hwndFrom == m_hWnd);
-	ASSERT (pCustomDraw->hdr.code = NM_CUSTOMDRAW);
-
-	if( pCustomDraw->dwDrawStage == CDDS_PREPAINT )
-	{
-		::SetTextColor( pCustomDraw->hdc, mAcadColorService.GetForegroundColor() );
-		::SetBkColor( pCustomDraw->hdc, mAcadColorService.GetBackgroundColor() );
-	}
-	*result = CDRF_DODEFAULT;
 }

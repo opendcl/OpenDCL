@@ -7,6 +7,7 @@
 #include "ArxProject.h"
 #include "ControlTypes.h"
 #include "AxArg.h"
+#include "LispIO.h"
 
 class CPropertyObject;
 
@@ -42,6 +43,7 @@ bool GetLongArgument( /*in-out*/ resbuf*& pArgs, /*out*/ long& nArg, /*in*/ bool
 bool GetHandleArgument( /*in-out*/ resbuf*& pArgs, /*out*/ DWORD_PTR& nArg, /*in*/ bool bQuiet = false );
 bool GetDoubleArgument( /*in-out*/ resbuf*& pArgs, /*out*/ double& dblArg, /*in*/ bool bQuiet = false );
 bool Get3dPointArgument( /*in-out*/ resbuf*& pArgs, /*out*/ AcGePoint3d& pntArg, /*in*/ bool bQuiet = false );
+bool Get2dPointArgument( /*in-out*/ resbuf*& pArgs, /*out*/ AcGePoint2d& pntArg, /*in*/ bool bQuiet = false );
 bool GetDateArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleDateTime& dtArg, /*in*/ bool bQuiet = false );
 bool GetIUnknownArgument( /*in-out*/ resbuf*& pArgs, /*out*/ IUnknown*& pUnk, /*in*/ bool bQuiet = false );
 bool GetIDispatchArgument( /*in-out*/ resbuf*& pArgs, /*out*/ IDispatch*& pDisp, /*in*/ bool bQuiet = false );
@@ -54,53 +56,3 @@ bool GetTArgument( /*in-out*/ resbuf*& pArgs, /*in*/ bool bQuiet = false );
 bool GetNilArgument( /*in-out*/ resbuf*& pArgs, /*in*/ bool bQuiet = false );
 bool GetListBeginArgument( /*in-out*/ resbuf*& pArgs, /*in*/ bool bQuiet = false );
 bool GetListEndArgument( /*in-out*/ resbuf*& pArgs, /*in*/ bool bQuiet = false );
-
-
-inline void acedRetPointer(void* ptr)
-{
-	struct resbuf RetVal = {NULL,RTENAME};
-	RetVal.resval.rlname[0] = (LONG_PTR)ptr;
-	RetVal.resval.rlname[1] = 0;
-	acedRetVal(&RetVal);
-}
-
-
-inline void acedRetLong(LONG lValue)
-{
-	struct resbuf RetVal = {NULL,RTLONG};
-	RetVal.resval.rlong = lValue;
-	acedRetVal(&RetVal);
-}
-
-
-inline void acedRetHandle(DWORD_PTR hdl)
-{
-	//if( hdl == 0 )
-	//{
-	//	acedRetNil();
-	//	return;
-	//}
-	if( hdl <= LONG_MAX )
-	{
-		acedRetLong( (long)hdl );
-		return;
-	}
-	struct resbuf RetVal = {NULL,RTENAME};
-	RetVal.resval.rlname[0] = (LONG_PTR)hdl;
-	RetVal.resval.rlname[1] = 0;
-	acedRetVal(&RetVal);
-}
-
-
-inline void acedRetIUnknown( IUnknown* pUnknown )
-{
-	if( !pUnknown )
-	{
-		acedRetNil();
-		return;
-	}
-	struct resbuf RetVal = {NULL,RTENAME};
-	RetVal.resval.rlname[0] = (LONG_PTR)pUnknown;
-	RetVal.resval.rlname[1] = 0;
-	acedRetVal(&RetVal);
-}

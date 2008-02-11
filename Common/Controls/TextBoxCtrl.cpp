@@ -72,12 +72,13 @@ bool CTextBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 				ModifyStyle( (ES_LEFT | ES_CENTER), ES_RIGHT, 0 );
 				break;
 			}
-			Invalidate();
+			OnNeedRepaint();
 			break;
 		}
 	case Prop::Text:
 		{
 			SetWindowText( pProp->GetStringValue() );
+			OnNeedRepaint();
 			break;
 		}
 	case Prop::AutoVScroll:

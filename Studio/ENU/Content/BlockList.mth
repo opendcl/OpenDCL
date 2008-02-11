@@ -1,7 +1,7 @@
 [Method]
 CountItems
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_CountItems
 [Desc]
 This method will return total number of items in the ListView control.
 [Arguments Return] as Integer
@@ -10,8 +10,8 @@ This method will return total number of items in the ListView control.
 
 [Method]
 SetCurSel
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_SetCurSel
 [Desc]
 This method will force an item to be selected and will also scroll the ListView to ensure the item is displayed. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
@@ -22,8 +22,8 @@ This method will force an item to be selected and will also scroll the ListView 
 
 [Method]
 Arrange
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_Arrange
 [Desc]
 This method will format the layout of all the items in the ListView control. \par
 \par \pard\fi-1100\li1100 0   \b Left\b0 \tab Aligns items along the left edge of the ListView
@@ -39,8 +39,8 @@ This method will format the layout of all the items in the ListView control. \pa
 
 [Method]
 GetSelCount
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetSelCount
 [Desc]
 This method will return the selected item count.
 [Arguments Return] as Integer
@@ -49,8 +49,8 @@ This method will return the selected item count.
 
 [Method]
 GetItemText
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetItemText
 [Desc]
 This method will return the text of an item in a ListView control. 
 [Arguments Return] as String
@@ -61,8 +61,8 @@ This method will return the text of an item in a ListView control.
 
 [Method]
 GetSelectedItems
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetSelectedItems
 [Desc]
 This method will return a list of all selected items in the ListView control. 
 [Arguments Return] as List as Strings
@@ -71,8 +71,8 @@ This method will return a list of all selected items in the ListView control.
 
 [Method]
 GetSelectedNths
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetSelectedNths
 [Desc]
 This method will return a list of all indexes of the selected items in the ListView control. 
 [Arguments Return] as List of Integers
@@ -81,8 +81,8 @@ This method will return a list of all indexes of the selected items in the ListV
 
 [Method]
 SortTextItems
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_SortTextItems
 [Desc]
 This method will sort the columns in ascending or descending order, based on the column index provided.  
 [Arguments]
@@ -93,8 +93,8 @@ This method will sort the columns in ascending or descending order, based on the
 
 [Method]
 LoadDwg
-[Prefix]
-dcl_BlockList_
+[Function]
+dcl_BlockList_LoadDwg
 [Desc]
 This method will load an external Dwg file and list the blocks available in it. 
 [Arguments]
@@ -105,8 +105,8 @@ This method will load an external Dwg file and list the blocks available in it.
 
 [Method]
 Reset
-[Prefix]
-dcl_BlockList_
+[Function]
+dcl_BlockList_Reset
 [Desc]
 This method will reset the BlockList to display the blocks of the current Dwg file.
 [Arguments]
@@ -115,8 +115,8 @@ This method will reset the BlockList to display the blocks of the current Dwg fi
 
 [Method]
 GetFileName
-[Prefix]
-dcl_BlockList_
+[Function]
+dcl_BlockList_GetFileName
 [Desc]
 This method will return the file name of the external loaded Dwg file. If Nil is returned no external Dwg file was loaded.
 [Arguments Return] as String or Nil

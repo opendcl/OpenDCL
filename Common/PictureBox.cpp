@@ -86,6 +86,10 @@ CPictureBox::CPictureBox()
 	m_bStretchLoadedPicture = false;
 	m_cxIcon = 16;
 	m_cyIcon = 16;
+
+	CAcadColorService* pColorService = GetColorService();
+	if( pColorService )
+		pColorService->SetBackgroundColor( RGB(255,255,255) );
 }
 
 CPictureBox::CPictureBox( CWnd* pParentWnd, UINT nID, const CRect& rcWnd, UINT nIconResId /*= -1*/ )
@@ -166,20 +170,18 @@ void CPictureBox::Refresh()
 	ReleaseDC(pdc);
 }
 
-void CPictureBox::Refresh(CDC *pdc)
+void CPictureBox::Refresh( CDC* pdc )
 {	
 	AutoSize();
 
 	CRect rcCell;	
 	GetClientRect(&rcCell);
-	CAcadColorService* pColorService = GetColorService();
-	if( pColorService )
-		pdc->FillRect(rcCell, pColorService->GetBackgroundCBrush());
+	if( !mColorService.IsBackgroundTransparent() )
+		pdc->FillSolidRect(rcCell, mColorService.GetBackgroundColor());
+	pdc->IntersectClipRect( &rcCell );
 		
 	if (mpPicture)
 	{
-		CSize IconSize(mpPicture->GetWidth(), mpPicture->GetHeight());
-
 		int nPicWidth = m_cxIcon;
 		int nPicHeight = m_cyIcon;
 		int nPicLeft = 0;
@@ -190,54 +192,24 @@ void CPictureBox::Refresh(CDC *pdc)
 			nPicLeft = ((rcCell.Width() - nPicWidth)/2); // Center the icon horizontally
 		}
 
-		CRect rcPic(
-			nPicLeft,
-			nPicTop,
-			nPicLeft + nPicWidth,
-			nPicTop + nPicHeight
-			);
-		if (PICTYPE_BITMAP == mpPicture->GetPicType())
+		CRect rcPic( nPicLeft, nPicTop, nPicLeft + nPicWidth, nPicTop + nPicHeight );
+		if( PICTYPE_BITMAP == mpPicture->GetPicType() )
 		{			
-			if (Prop::Enabled)
-			{
-				// and finish!
-				pdc->DrawState(	rcPic.TopLeft(),
-								IconSize, 
-								mpPicture->GetBitmap(), 
-								DSS_NORMAL, 
-								NULL);				
-			}
+			if( IsWindowEnabled() )
+				pdc->DrawState(	rcPic.TopLeft(), CSize( nPicWidth, nPicHeight ),
+												mpPicture->GetBitmap(), DSS_NORMAL, NULL );
 			else
-			{			
-				// and finish!
-				pdc->DrawState(	rcPic.TopLeft(),
-								IconSize, 
-								mpPicture->GetBitmap(), 
-								DSS_DISABLED, 
-								NULL);				
-			}
+				pdc->DrawState(	rcPic.TopLeft(), CSize( nPicWidth, nPicHeight ),
+												mpPicture->GetBitmap(), DSS_DISABLED, NULL );
 		}
-		// else if picture is an icon
-		else if (PICTYPE_ICON == mpPicture->GetPicType())
+		else if( PICTYPE_ICON == mpPicture->GetPicType() )
 		{
-			if (Prop::Enabled)
-			{
-				// and finish!
-				pdc->DrawState(	rcPic.TopLeft(),
-								IconSize, 
-								mpPicture->CloneIcon(), 
-								DSS_NORMAL, 
-								(CBrush*)NULL);
-			}
+			if( IsWindowEnabled() )
+				pdc->DrawState(	rcPic.TopLeft(), CSize( nPicWidth, nPicHeight ),
+												mpPicture->GetIcon(), DSS_NORMAL, (HBRUSH)NULL );
 			else
-			{				
-				// and finish!
-				pdc->DrawState(	rcPic.TopLeft(),
-								IconSize, 
-								mpPicture->CloneIcon(), 
-								DSS_DISABLED, 
-								(CBrush*)NULL);
-			}
+				pdc->DrawState(	rcPic.TopLeft(), CSize( nPicWidth, nPicHeight ),
+												mpPicture->GetIcon(), DSS_DISABLED, (HBRUSH)NULL );
 		}
 		else
 		{
@@ -856,6 +828,7 @@ BEGIN_MESSAGE_MAP(CPictureBox, CButton)
 	ON_WM_PAINT()
 	ON_WM_CHAR()
 	ON_WM_DESTROY()
+	ON_WM_CTLCOLOR_REFLECT()
 END_MESSAGE_MAP()
 
 
@@ -968,21 +941,7 @@ void CPictureBox::OnDestroy()
 	__super::OnDestroy();
 }
 
-/*
 HBRUSH CPictureBox::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if (!IsWindowEnabled())
-	{
-		m_brBackground.DeleteObject();
-		m_brBackground.CreateSolidBrush(GetRGBColor(-16));
-	}
-
-	m_BkColor = GetRGBColor(mpTemplate->GetLongProperty(Prop::BackgroundColor));	
-	pDC->SetBkColor(m_BkColor); 
-	pDC->SetBkMode(OPAQUE); 
-	return m_brBackground; 
-
-
+	return mColorService.CtlColor( pDC, nCtlColor );
 }
-
-*/

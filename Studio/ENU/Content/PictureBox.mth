@@ -1,7 +1,7 @@
 [Method]
 StoreImage
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_StoreImage
 [Desc]
 This method is used to store what has been drawn or printed to the PictureBox’s paint-able area to memory.  What this does is makes all lines, arcs, text, etc. become part of the stored picture that the PictureBox uses to paint from.  This method must be called after all objects have been drawn to the PictureBox, or possible errors could occur, especially if another dialog box is moved of the PictureBox and what has been drawn will be erased.
 [Arguments]
@@ -10,8 +10,8 @@ This method is used to store what has been drawn or printed to the PictureBox’s 
 
 [Method]
 GetPictureSize
-[Prefix]
-dcl_
+[Function]
+dcl_GetPictureSize
 [Desc]
 This method will return the size of a picture, indicated by its Id.
 [Arguments Return] as List
@@ -22,8 +22,8 @@ ProjectName
 
 [Method]
 Refresh
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_Refresh
 [Desc]
 This method repaints the PictureBox using the image last stored by dcl_PictureBox_StoreImage.  Any pictures set using the Picture property or dcl_PictureBox_LoadPicture  will not be removed. 
 [Arguments]
@@ -32,8 +32,8 @@ This method repaints the PictureBox using the image last stored by dcl_PictureBo
 
 [Method]
 DrawLine
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_DrawLine
 [Desc]
 This method draws a list of lines in the control.
 [Arguments]
@@ -58,8 +58,8 @@ This method draws a list of lines in the control.
 
 [Method]
 DrawArc
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_DrawArc
 [Desc]
 This method draws an arc on the control by specifying a center point, radius, and start and end points to calculate the start and end angles of the arc. Start and end points don’t need to fall directly on the arc -- they are only used to calculate the start and end angles.
 [Arguments]
@@ -90,8 +90,8 @@ This method draws an arc on the control by specifying a center point, radius, an
 
 [Method]
 DrawCircle
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_DrawCircle
 [Desc]
 This method draws a circle on the control. A rectangle is used because it allows both circles and ellipses to be drawn using the same method.
 [Arguments]
@@ -116,8 +116,8 @@ This method draws a circle on the control. A rectangle is used because it allows
 
 [Method]
 DrawFillRect
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_DrawFillRect
 [Desc]
 This method draws a solid rectangle on the control.
 [Arguments]
@@ -142,8 +142,8 @@ This method draws a solid rectangle on the control.
 
 [Method]
 DrawHatchRect
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_DrawHatchRect
 [Desc]
 This method draws a hatched rectangle on the control. There are five styles of windows hatches available, an integer of 1 - 5 will indicate which one is to be drawn. \par
 \par \b Hatch Pattern Flags:
@@ -177,8 +177,8 @@ This method draws a hatched rectangle on the control. There are five styles of w
 
 [Method]
 DrawEdge
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_DrawEdge
 [Desc]
 This method draws various standard windows control borders. Color control is automatically handled by this method.\par
 \par \b Border Flags:
@@ -212,8 +212,8 @@ This method draws various standard windows control borders. Color control is aut
 
 [Method]
 DrawFocusRect
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_DrawFocusRect
 [Desc]
 This method draws a focus rectangle used to indicate the control has focus. This method is a Boolean XOR function, calling this function a second time with the same rectangle removes the rectangle from the display. 
 [Arguments]
@@ -236,8 +236,8 @@ This method draws a focus rectangle used to indicate the control has focus. This
 
 [Method]
 DrawRect
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_DrawRect
 [Desc]
 This method draws a standard rectangle.
 [Arguments]
@@ -262,8 +262,8 @@ This method draws a standard rectangle.
 
 [Method]
 DrawWrappedText
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_DrawWrappedText
 [Desc]
 This method draws text on the control. If the text is going to be drawn outside the allowable width area the text is automatically wrapped around to the next line or lines. A bounding rectangle is used to define where the text is to be drawn.
 \par If BackColor is 0, the text is drawn transparently.
@@ -296,8 +296,8 @@ This method draws text on the control. If the text is going to be drawn outside 
 
 [Method]
 DrawText
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_DrawText
 [Desc]
 This method draws text on the control. If the BackColor argument is not passed the PictureBox’s BackColor property is used. 
 \par If BackColor is 0, the text is drawn transparently.
@@ -334,8 +334,8 @@ This method draws text on the control. If the BackColor argument is not passed t
 
 [Method]
 GetTextExtent
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_GetTextExtent
 [Desc]
 This method will return the height and width of the text passed in for calculation.
 [Arguments Return] as List (Width Height)
@@ -346,8 +346,8 @@ This method will return the height and width of the text passed in for calculati
 
 [Method]
 PaintPicture
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_PaintPicture
 [Desc]
 This method will paint a picture anywhere on the control. The dialog box must be visible. If you intend to use this method to show a picture of pictures on the the PictureBox, make this call from the OnPaint event of the PictureBox so that the image is shown at the correct time.
 [Arguments]
@@ -372,8 +372,8 @@ This method will paint a picture anywhere on the control. The dialog box must be
 
 [Method]
 LoadPictureFile
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_LoadPictureFile
 [Desc]
 This method will load a picture file of type .bmp, .ico, .jpg, and .wmf, into the PictureBox control.
 [Arguments]
@@ -386,8 +386,8 @@ This method will load a picture file of type .bmp, .ico, .jpg, and .wmf, into th
 
 [Method]
 DrawPoint
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_DrawPoint
 [Desc]
 This method will paint a single point on the control any specified color. Note: this method does not accept lists passed in to specify a group of points to be drawn.  Due to ObjectARX limitations in lists, at this time, small lists cannot be supported.
 [Arguments]
@@ -402,11 +402,12 @@ This method will paint a single point on the control any specified color. Note: 
 
 [Method]
 Clear
-[Prefix]
-dcl_PictureBox_
+[Function]
+dcl_PictureBox_Clear
 [Desc]
 This method clears the control, including any pictures set using the Picture property.
 [Arguments]
 <CONTROL>
+
 
 [End of File]

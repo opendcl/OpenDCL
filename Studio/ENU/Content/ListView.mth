@@ -1,7 +1,7 @@
 [Method]
 AddColumns
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_AddColumns
 [Desc]
 This method adds columns to a ListView control with the Report style set. The width, justification, and optional image from the image list can or must be specified for each column.
 \par \par The column justification is to be set using:
@@ -29,8 +29,8 @@ This method adds columns to a ListView control with the Report style set. The wi
 
 [Method]
 AddItem (For Report Style)
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_AddItem
 [Desc]
 This method adds a new item to the end of a ListView control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list. Use \cf1 dcl_ListView_SetItemImage \cf0 to set the icons of any column cell.
 [Arguments Return] as Integer
@@ -48,8 +48,8 @@ This method adds a new item to the end of a ListView control and will also fill 
 
 [Method]
 AddItem
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_AddItem
 [Desc]
 This method adds a new item to the end of a ListView control. 
 [Arguments Return] as Integer
@@ -62,8 +62,8 @@ This method adds a new item to the end of a ListView control.
 
 [Method]
 GetColumnImage
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetColumnImage
 [Desc]
 This method returns the image of a column header in a ListView control. 
 [Arguments Return] as Integer
@@ -76,8 +76,8 @@ This method returns the image of a column header in a ListView control.
 
 [Method]
 SetColumnImage
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_SetColumnImage
 [Desc]
 This method sets the image of a column header in a ListView control. Set to -1 to show now images.
 [Arguments]
@@ -90,8 +90,8 @@ This method sets the image of a column header in a ListView control. Set to -1 t
 
 [Method]
 GetColumnCount
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetColumnCount
 [Desc]
 This method returns number of a columns in a ListView control. 
 [Arguments Return] as Integer
@@ -100,8 +100,8 @@ This method returns number of a columns in a ListView control.
 
 [Method]
 GetCount
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetCount
 [Desc]
 This method returns number of items or rows in a ListView control. 
 [Arguments Return] as Integer
@@ -110,8 +110,8 @@ This method returns number of items or rows in a ListView control.
 
 [Method]
 InsertItem (For Report Style)
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_InsertItem
 [Desc]
 This method inserts a new item anywhere in a ListView control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list.  Use \cf2 dcl_ListView_SetItemImage \cf0 to set the icons of any column cell.
 [Arguments Return] as Integer
@@ -131,8 +131,8 @@ This method inserts a new item anywhere in a ListView control and will also fill
 
 [Method]
 InsertItem
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_InsertItem
 [Desc]
 This method inserts a new item anywhere in a ListView control.
 [Arguments Return] as Integer
@@ -147,8 +147,8 @@ This method inserts a new item anywhere in a ListView control.
 
 [Method]
 FillList (For Report Style)
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_FillList
 [Desc]
 This method will clear and fill a ListView control with multiple rows and will fill in the cells in each row according to how many columns have been previously setup. 
 [Arguments]
@@ -175,8 +175,8 @@ sCol3Text
 
 [Method]
 FillList
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_FillList
 [Desc]
 This method will clear and fill a ListView control with multiple items. 
 [Arguments]
@@ -200,8 +200,8 @@ sItem2Text
 
 [Method]
 CountItems
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_CountItems
 [Desc]
 This method will return total number of items in the ListView control.
 [Arguments Return] as Integer
@@ -210,8 +210,8 @@ This method will return total number of items in the ListView control.
 
 [Method]
 SetCurSel
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_SetCurSel
 [Desc]
 This method will force an item to be selected and will also scroll the ListView to ensure the item is displayed. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
@@ -222,8 +222,8 @@ This method will force an item to be selected and will also scroll the ListView 
 
 [Method]
 GetCurSel
-[Prefix]
-dcl_Grid_
+[Function]
+dcl_Grid_GetCurSel
 [Desc]
 This method will return the index of the currently selected item.
 [Arguments]
@@ -232,8 +232,8 @@ This method will return the index of the currently selected item.
 
 [Method]
 Clear
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_Clear
 [Desc]
 This method will clear the ListView of all its items.
 [Arguments]
@@ -242,8 +242,8 @@ This method will clear the ListView of all its items.
 
 [Method]
 DeleteItems
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_DeleteItems
 [Desc]
 This method will delete the items specified in a list in the ListView control.
 [Arguments]
@@ -262,8 +262,8 @@ This method will delete the items specified in a list in the ListView control.
 
 [Method]
 DeleteItem
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_DeleteItem
 [Desc]
 This method will delete the specified item from the ListView control.
 [Arguments]
@@ -274,8 +274,8 @@ This method will delete the specified item from the ListView control.
 
 [Method]
 DeleteColumns
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_DeleteColumns
 [Desc]
 This method will delete the columns specified in a list in the ListView control.
 [Arguments]
@@ -294,8 +294,8 @@ This method will delete the columns specified in a list in the ListView control.
 
 [Method]
 DeleteColumn
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_DeleteColumn
 [Desc]
 This method will delete the specified column from the ListView control.
 [Arguments]
@@ -306,8 +306,8 @@ This method will delete the specified column from the ListView control.
 
 [Method]
 Arrange
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_Arrange
 [Desc]
 This method will format the layout of all the items in the ListView control. \par
 \par \pard\fi-1100\li1100 0   \b Left\b0 \tab Aligns items along the left edge of the ListView
@@ -323,8 +323,8 @@ This method will format the layout of all the items in the ListView control. \pa
 
 [Method]
 GetSelCount
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetSelCount
 [Desc]
 This method will return the selected item count.
 [Arguments Return] as Integer
@@ -333,8 +333,8 @@ This method will return the selected item count.
 
 [Method]
 SetItemData
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_SetItemData
 [Desc]
 This method will set the associated item data for the indicated list item. The item data will only accept integer values.
 [Arguments]
@@ -347,8 +347,8 @@ This method will set the associated item data for the indicated list item. The i
 
 [Method]
 GetItemData
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetItemData
 [Desc]
 This method will retrieve the associated item data for the indicated list item.
 [Arguments Return] as Integer
@@ -359,8 +359,8 @@ This method will retrieve the associated item data for the indicated list item.
 
 [Method]
 GetItemText
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetItemText
 [Desc]
 This method will return the text of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex \cf0 may need to be used, otherwise it's not required for any other style of ListView.
 [Arguments Return] as String
@@ -373,8 +373,8 @@ This method will return the text of an item in a ListView control. If a ListView
 
 [Method]
 GetRowItems
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetRowItems
 [Desc]
 This method will return a list containing the text of a specified row in a ListView control. This method is useful for ListView controls with the Report style set.
 [Arguments Return] as List of Strings
@@ -385,8 +385,8 @@ This method will return a list containing the text of a specified row in a ListV
 
 [Method]
 GetColumnItems
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetColumnItems
 [Desc]
 This method will return a list containing the strings of a specified column in a ListView control. This method is useful for ListView controls with the Report style set.
 [Arguments Return] as List of Strings
@@ -397,24 +397,24 @@ This method will return a list containing the strings of a specified column in a
 
 [Method]
 SetItemText
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_SetItemText
 [Desc]
 This method will set the text of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex \cf0 may need to be used, otherwise it's not required for any other style of ListView.
 [Arguments]
 <CONTROL>
-\par\tab NewText
-[as String]
 \par\tab nRowIndex
 [as Integer]
 \par\tab\i{Optional} \i0 nColIndex 
 [as Integer]
+\par\tab sNewText
+[as String]
 
 
 [Method]
 GetColWidth
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetColWidth
 [Desc]
 This method will return the width of a column.
 [Arguments Return] as Integer
@@ -425,8 +425,8 @@ This method will return the width of a column.
 
 [Method]
 SetColWidth
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_SetColWidth
 [Desc]
 This method will set the width of a column.
 [Arguments]
@@ -439,8 +439,8 @@ This method will set the width of a column.
 
 [Method]
 CalcColWidth
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_CalcColWidth
 [Desc]
 This method will calculate the minimum required width of a column to ensure the entire text will appear.
 [Arguments Return] as Integer
@@ -451,8 +451,8 @@ This method will calculate the minimum required width of a column to ensure the 
 
 [Method]
 GetSelectedItems
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetSelectedItems
 [Desc]
 This method will return a list of all selected items in the ListView control. 
 [Arguments Return] as List as Strings
@@ -461,8 +461,8 @@ This method will return a list of all selected items in the ListView control.
 
 [Method]
 GetSelectedNths
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetSelectedNths
 [Desc]
 This method will return a list of all indexes of the selected items in the ListView control. 
 [Arguments Return] as List of Integers
@@ -471,8 +471,8 @@ This method will return a list of all indexes of the selected items in the ListV
 
 [Method]
 GetItemImage
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_GetItemImage
 [Desc]
 This method will retrieve the image of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex \cf0 may need to be used, otherwise it's not required for any other style of ListView. This method is not available for the BlockList control.
 [Arguments Return] as Integer
@@ -485,8 +485,8 @@ This method will retrieve the image of an item in a ListView control. If a ListV
 
 [Method]
 HitPointTest
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_HitPointTest
 [Desc]
 This method will test to see which row and column (if columns exit) a point belongs to. 
 [Arguments Return] as List
@@ -499,8 +499,8 @@ This method will test to see which row and column (if columns exit) a point belo
 
 [Method]
 SetItemImage
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_SetItemImage
 [Desc]
 This method will set the image of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex 
 \cf0 may need to be used, otherwise it's not required for any other style of ListView. This method is not available for the BlockList control.
@@ -516,8 +516,8 @@ This method will set the image of an item in a ListView control. If a ListView w
 
 [Method]
 SortTextItems
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_SortTextItems
 [Desc]
 This method will sort the columns in ascending or descending order, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
 [Arguments]
@@ -530,8 +530,8 @@ This method will sort the columns in ascending or descending order, based on the
 
 [Method]
 SortNumericItems
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_SortNumericItems
 [Desc]
 This method will sort the columns in ascending or descending order using a numeric comparison, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
 [Arguments]
@@ -544,8 +544,8 @@ This method will sort the columns in ascending or descending order using a numer
 
 [Method]
 StartLabelEdit
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_StartLabelEdit
 [Desc]
 This method will force the label of an item to show the edit box, so the user may rename the text content of that item.  When using this method on a ListView control with the Report style setting only the item in the first column may be edited.  This method will not start the editing process if the EditLabel property of the control is set to False. This method is not available for BlockList controls.
 [Arguments]
@@ -556,11 +556,12 @@ This method will force the label of an item to show the edit box, so the user ma
 
 [Method]
 CancelLabelEdit
-[Prefix]
-dcl_ListView_
+[Function]
+dcl_ListView_CancelLabelEdit
 [Desc]
 This method will cancel the label editing of an item, so the user may not rename the text content of that item. This is useful when you wish to ensure that some items may be edited while others may not.  This method is not available for BlockList controls.
 [Arguments]
 <CONTROL>
+
 
 [End of File]

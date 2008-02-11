@@ -124,8 +124,8 @@ bool CStudioDialogObject::IsModeless() const
 {
 	switch( mpSourceForm->GetType() )
 	{
-	case VdclModal:
-	case VdclFileDialog:
+	case FrmModalDlg:
+	case FrmFileDlg:
 		return false;
 	};
 	return true;
@@ -144,7 +144,7 @@ void CStudioDialogObject::CloseDialog(int nStatus /*= -1*/)
 		DestroyWindow();
 }
 
-DclFormType CStudioDialogObject::GetType() const
+FormType CStudioDialogObject::GetType() const
 {
 	return mpSourceForm->GetType();
 }
@@ -238,7 +238,7 @@ void CStudioDialogObject::OnGridSpacingChange( UINT nGridSpacing )
 
 int CStudioDialogObject::GetNextControlId()
 {
-	int nHighest = -1;
+	int nHighest = 10;
 	const TDclControlList& Controls = mpSourceForm->GetControlList();
 	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
@@ -246,7 +246,7 @@ int CStudioDialogObject::GetNextControlId()
 		if (pCtrl->GetID() > nHighest)
 			nHighest = pCtrl->GetID();
 	}
-	return nHighest + 101;
+	return nHighest + 1;
 }
 
 CString CStudioDialogObject::GetNextControlName( LPCTSTR pszRootName )
@@ -256,9 +256,12 @@ CString CStudioDialogObject::GetNextControlName( LPCTSTR pszRootName )
 	TDclFormPtr pRoot = mpSourceForm;
 	while( pRoot->GetParentForm() )
 		pRoot = pRoot->GetParentForm();
-	CString sId;
-	sId.Format( _T("%d"), pRoot->GetNextId() );
-	return CString( pszRootName ) + sId;
+	CString sName;
+	UINT nID = 1;
+	do
+		sName.Format( _T("%s%u"), pszRootName, nID++ );
+	while( pRoot->FindControl( sName ) );
+	return sName;
 }
 
 CDialogControl* CStudioDialogObject::GetControlAtPoint( const CPoint& pt )
@@ -605,7 +608,7 @@ BOOL CStudioDialogObject::OnInitDialog()
 	size_t ctActions = pUndoManager? pUndoManager->size() : 0;
 	UINT nID = 1000;
 	GetControlPane()->CreateControls( nID );
-	if( mpSourceForm->GetType() == VdclFileDialog )
+	if( mpSourceForm->GetType() == FrmFileDlg )
 	{
 		TDclControlPtr pFileDlgCtrl = mpSourceForm->FindFirstControlOfType( CtlFileDlgCtrl );
 		if( pFileDlgCtrl )
@@ -792,7 +795,7 @@ void CStudioDialogObject::OnEditPaste()
 						pDclControl = NULL; //can't add a second tab strip control!
 						MessageBox( theWorkspace.LoadResourceString(IDS_NOMORETABS), theWorkspace.GetAppKey(), MB_ICONERROR );
 					}
-					else if( mpSourceForm->GetType() == VdclTabForm )
+					else if( mpSourceForm->GetType() == FrmTabPage )
 					{
 						pDclControl = NULL; //can't add a second tab strip control!
 						MessageBox( theWorkspace.LoadResourceString(IDS_NOTABWITHINTAB), theWorkspace.GetAppKey(), MB_ICONERROR );

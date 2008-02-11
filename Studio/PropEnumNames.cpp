@@ -42,10 +42,10 @@ static std::map< Prop::Id, TEnumNames >& GetEnumNamesMap()
 		FillEnumNamesList( Map[Prop::ProgressLegend], IDS_PROGRESSLEGEND_0, 3 );
 		FillEnumNamesList( Map[Prop::RectStyle], IDS_RECTSTYLE_0, 5 );
 		FillEnumNamesList( Map[Prop::RenderMode], IDS_BV_RM_0, 8 );
-		FillEnumNamesList( Map[Prop::SelectStyle], IDS_SELECTSTYLE_0, 3 );
+		FillEnumNamesList( Map[Prop::SelectionStyle], IDS_SELECTSTYLE_0, 3 );
 		FillEnumNamesList( Map[Prop::SplitterStyle], IDS_SPLITTERSTYLE_0, 4 );
-		FillEnumNamesList( Map[Prop::TabJustified], IDS_TAB_JUSTIFY_0, 2 );
-		FillEnumNamesList( Map[Prop::TabLabelAlign], IDS_JUSTIFICATION_0, 2 );
+		FillEnumNamesList( Map[Prop::TabJustification], IDS_TAB_JUSTIFY_0, 2 );
+		FillEnumNamesList( Map[Prop::LabelAlignment], IDS_JUSTIFICATION_0, 2 );
 		FillEnumNamesList( Map[Prop::TabStyle], IDS_TABSTYLE_0, 2 );
 		FillEnumNamesList( Map[Prop::URLLinkType], IDS_URL_TYPE_0, 2 );
 		pMap = &Map;

@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "CustomFileDialog.h"
 #include "DialogObject.h"
-#include "DclFormTypes.h"
+#include "FormTypes.h"
 #include "PropertyIds.h"
 #include "Workspace.h"
 #include "DialogControl.h"

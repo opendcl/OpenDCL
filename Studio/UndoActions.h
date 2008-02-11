@@ -264,7 +264,7 @@ public:
 	virtual CString toString() const
 	{
 		CString sResult;
-		sResult.Format( _T("PropertyChange[%s/%s]"), (LPCTSTR)mpDclControl->GetKeyName(), GetPropertyName( mId ) );
+		sResult.Format( _T("PropertyChange[%s/%s]"), (LPCTSTR)mpDclControl->GetKeyName(), GetPropertyApiName( mId ) );
 		return sResult;
 	}
 #endif

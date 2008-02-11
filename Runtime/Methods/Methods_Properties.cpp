@@ -60,7 +60,7 @@ bool SetCtrlProperty( Prop::Id id )
 
 	TPropertyPtr pProperty = pControl->GetPropertyObject( id );
 	if( !pProperty )
-		return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, GetPropertyName( id ) );
+		return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, GetPropertyApiName( id ) );
 
 	if( !GetPropertyArgument( pArgs, pProperty ) )
 		return false; //invalid input
@@ -84,7 +84,7 @@ bool GetCtrlProperty( Prop::Id id )
 
 	TPropertyPtr pProperty = pControl->GetPropertyObject( id );
 	if( !pProperty )
-		return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, GetPropertyName( id ) );
+		return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, GetPropertyApiName( id ) );
 
 	ReturnPropertyValue( pProperty );
 	return true;
@@ -282,7 +282,7 @@ ADSRESULT Control::SetPos()
 		rcControl.bottom = rcControl.top + lHeight;
 		pDlgControl->GetControlWnd()->MoveWindow( &rcControl );
 	}
-	pDlgControl->GetControlWnd()->Invalidate();
+	pDlgControl->OnNeedRepaint();
 	acedRetT();
 	return RSRSLT;
 }

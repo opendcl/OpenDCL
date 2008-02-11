@@ -171,7 +171,8 @@ public:
 	virtual CRect GetWndRect() const; //get window position from properties
 	virtual DWORD GetWndStyle() const; //get window style from properties
 	virtual CString GetWndCaption() const; //get window caption from properties
-	virtual void OnFrameChanged() {} //called by member functions that change the non-client size
+	virtual void OnFrameChanged(); //called by member functions that change the non-client size
+	virtual void OnNeedRepaint( bool bRepaintBackground = true ) const; //called when a property change requires a repaint
 	virtual void ApplyPosition(); //move control window to new position
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) = 0;
 

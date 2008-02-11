@@ -6,6 +6,7 @@
 #include "Workspace.h"
 #include "ArxProject.h"
 #include "OleControlObject.h"
+#include "LispIO.h"
 #include <list>
 
 
@@ -50,6 +51,7 @@ public:
 	virtual CString GetLocalResourceModuleFilename() const { return _T("Runtime.Res.dll"); }
 	virtual TOleControlPtr GetOleControlFor( const AxPropertyDescriptor* pProperty );
 	virtual TOleControlPtr GetOleControlFor( const AxMethodDescriptor* pMethod );
+	virtual CString GetSettingsRegPath(void) const { return _T("Software\\OpenDCL\\Runtime"); }
 	virtual CString GetUserProfilePrefix() const;
 	virtual HMODULE GetThisModule(void) const;
 	virtual HMODULE GetResourceModule() const;
@@ -82,7 +84,7 @@ public:
 	int ActivateDclForm( TDclFormPtr pDclObject, DialogParams* pParams );
 	void CloseAllDialogs( DWORD dwMask = (DWORD)-1 );
 	void ResetLispSymbol( LPCTSTR pszLispSymbol ) const;
-	void SetLispSymbol( LPCTSTR pszLispSymbol, UINT_PTR pValue ) const;
+	void SetLispSymbol( LPCTSTR pszLispSymbol, const void* ptr, odcl::PtrType type ) const;
 	bool UpdateGlobalLispSymbols() const;
 	bool OnExtendTabbedDialog( CAdUiTabExtensionManager* pTabXM );
 	bool AddExtensionTab( TDclFormPtr pDclForm, CAdUiTabExtensionManager* pTabXM );

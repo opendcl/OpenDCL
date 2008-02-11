@@ -32,10 +32,7 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-// Generated message map functions
-protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual afx_msg void PostNcDestroy();
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
-	afx_msg void OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result );
 };

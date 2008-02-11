@@ -36,7 +36,7 @@ bool CArxProject::OnExtendTabbedDialog( CAdUiTabExtensionManager* pTabXM ) const
 	bool bFailed = false;
 	for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
 	{
-		if( (*iter)->GetType() == VdclConfigTab && !theArxWorkspace.AddExtensionTab( *iter, pTabXM ) )
+		if( (*iter)->GetType() == FrmConfigTab && !theArxWorkspace.AddExtensionTab( *iter, pTabXM ) )
 			bFailed = true;
 	}
 	return !bFailed;
@@ -55,7 +55,7 @@ bool CArxProject::SetProjectLispSymbols( bool bResetToNil /*= false*/ ) const
 			if( bResetToNil )
 				theArxWorkspace.ResetLispSymbol( sVarName );
 			else
-				theArxWorkspace.SetLispSymbol( sVarName, (UINT_PTR)(const CDclControlObject*)(*iter)->GetControlProperties() );
+				theArxWorkspace.SetLispSymbol( sVarName, (const CDclControlObject*)(*iter)->GetControlProperties(), odcl::ptrDclControl );
 		}
 	}
 	return true;

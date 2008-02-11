@@ -1,7 +1,7 @@
 [Method]
 SetCurSel 
-[Prefix]
-dcl_Tab_
+[Function]
+dcl_Tab_SetCurSel
 [Desc]
 This method will set the current tab selection.
 [Arguments]
@@ -12,8 +12,8 @@ This method will set the current tab selection.
 
 [Method]
 HideTab 
-[Prefix]
-dcl_Tab_
+[Function]
+dcl_Tab_HideTab
 [Desc]
 This method will hide a specified tab of a tab control.
 [Arguments]
@@ -24,8 +24,8 @@ This method will hide a specified tab of a tab control.
 
 [Method]
 ShowTab 
-[Prefix]
-dcl_Tab_
+[Function]
+dcl_Tab_ShowTab
 [Desc]
 This method will reshow an already hidden tab of a tab control.
 [Arguments]
@@ -36,8 +36,8 @@ This method will reshow an already hidden tab of a tab control.
 
 [Method]
 SetTabText 
-[Prefix]
-dcl_Tab_
+[Function]
+dcl_Tab_SetTabText
 [Desc]
 This method change the text displayed of a specified tab of the tab control.
 [Arguments]
@@ -50,8 +50,8 @@ This method change the text displayed of a specified tab of the tab control.
 
 [Method]
 GetCurSel 
-[Prefix]
-dcl_Tab_
+[Function]
+dcl_Tab_GetCurSel
 [Desc]
 This method will get the current tab selection.
 [Arguments Return] as Integer
@@ -60,8 +60,8 @@ This method will get the current tab selection.
 
 [Method]
 GetRowCount
-[Prefix]
-dcl_Tab_
+[Function]
+dcl_Tab_GetRowCount
 [Desc]
 This method will return the number of tab rows in the tab control.
 [Arguments Return] as Integer
@@ -70,11 +70,12 @@ This method will return the number of tab rows in the tab control.
 
 [Method]
 GetControlArea
-[Prefix]
-dcl_Tab_
+[Function]
+dcl_Tab_GetControlArea
 [Desc]
 This method returns the size of the tab control's client area.
 [Arguments Return] as List (Width Height)
 <CONTROL>
+
 
 [End of File]

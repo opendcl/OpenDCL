@@ -1,7 +1,7 @@
 [Method]
 RegisterActiveXCtrl
-[Prefix]
-dcl_
+[Function]
+dcl_RegisterActiveXCtrl
 [Desc]
 The method dcl_RegisterActiveXCtrl is used to register an ActiveX control. When installing your software to another machine each ActiveX control that is used in your program must be registered to the users machine. There are two ways to do this. The most common is to use a proper installation package that will register the ActiveX controls for you. The other is to use this method to register the controls. It is your responsibility to ensure that you do not call this method on any ActiveX control more than once. No damage will be done, but registering ActiveX controls consumes a noticeable amount of time.
 [Arguments]
@@ -11,8 +11,8 @@ The method dcl_RegisterActiveXCtrl is used to register an ActiveX control. When 
 
 [Method]
 XTwipsToPixels
-[Prefix]
-dcl_
+[Function]
+dcl_XTwipsToPixels
 [Desc]
 Some ActiveX controls calculate their distances not in Pixels but in a unit called Twips. Twips are used to calculate the screen in actual inches. There are 1440 Twips per inch. If you require the units in Pixels, use this method to convert the X coordinate Twips to Pixels.
 [Arguments Return] as Integer
@@ -22,8 +22,8 @@ Some ActiveX controls calculate their distances not in Pixels but in a unit call
 
 [Method]
 YTwipsToPixels
-[Prefix]
-dcl_
+[Function]
+dcl_YTwipsToPixels
 [Desc]
 Some ActiveX controls calculate their distances not in Pixels but in a unit called Twips. Twips are used to calculate the screen in actual inches. There are 1440 Twips per inch. If you require the units in Pixels, use this method to convert the Y coordinate Twips to Pixels.
 [Arguments Return] as Integer
@@ -33,8 +33,8 @@ Some ActiveX controls calculate their distances not in Pixels but in a unit call
 
 [Method]
 XPixelsToTwips
-[Prefix]
-dcl_
+[Function]
+dcl_XPixelsToTwips
 [Desc]
 Some ActiveX controls calculate their distances not in Pixels but in a unit called Twips. Twips are used to calculate the screen in actual inches. There are 1440 Twips per inch. Use this method to convert the X coordinate Pixels to Twips.
 [Arguments Return] as Long
@@ -44,8 +44,8 @@ Some ActiveX controls calculate their distances not in Pixels but in a unit call
 
 [Method]
 YPixelsToTwips
-[Prefix]
-dcl_
+[Function]
+dcl_YPixelsToTwips
 [Desc]
 Some ActiveX controls calculate their distances not in Pixels but in a unit called Twips. Twips are used to calculate the screen in actual inches. There are 1440 Twips per inch. Use this method to convert the X coordinate Pixels to Twips.
 [Arguments Return] as Long
@@ -55,8 +55,8 @@ Some ActiveX controls calculate their distances not in Pixels but in a unit call
 
 [Method]
 GetColorValue
-[Prefix]
-dcl_
+[Function]
+dcl_GetColorValue
 [Desc]
 This function converts an AutoCAD, system, or (Red Green Blue) color value into an OLE color suitable for use with an ActiveX control or OLE object.
 [Arguments Return] as Long
@@ -67,17 +67,18 @@ This function converts an AutoCAD, system, or (Red Green Blue) color value into 
 
 [Method]
 GetOleObject
-[Prefix]
-dcl_AxControl_
+[Function]
+dcl_AxControl_GetOleObject
 [Desc]
 Returns the OLE object handle for this control. When finished using the handle, call \cf2dcl_AxObject_Close \cf0 to release it from memory.
 [Arguments Return] as Handle
 <CONTROL>
 
 
+[Method]
 GetProperty
-[Prefix]
-dcl_AxControl_
+[Function]
+dcl_AxControl_GetProperty
 [Desc]
 Gets the value of any property of an OLE object. The type of the return value will depend on the type of the property.
 [Arguments Return] as Varied
@@ -86,9 +87,10 @@ Gets the value of any property of an OLE object. The type of the return value wi
 [as String]
 
 
+[Method]
 SetColorProperty
-[Prefix]
-dcl_AxControl_
+[Function]
+dcl_AxControl_SetColorProperty
 [Desc]
 Returns the value of a color property. The result is automatically converted into an OpenDCL color value.
 [Arguments Return] as Varied
@@ -99,9 +101,10 @@ Returns the value of a color property. The result is automatically converted int
 [as Integer or (R G B)]
 
 
+[Method]
 SetPictureProperty
-[Prefix]
-dcl_AxControl_
+[Function]
+dcl_AxControl_SetPictureProperty
 [Desc]
 Returns the value of a color property. The result is automatically converted into an OpenDCL color value.
 [Arguments Return] as Varied
@@ -112,9 +115,10 @@ Returns the value of a color property. The result is automatically converted int
 [as Integer]
 
 
+[Method]
 SetProperty
-[Prefix]
-dcl_AxControl_
+[Function]
+dcl_AxControl_SetProperty
 [Desc]
 Sets the value of any property of an OLE object. The type of the argument should match (or be convertable to) the type of the property.
 [Arguments Return] as Varied
@@ -124,9 +128,10 @@ Sets the value of any property of an OLE object. The type of the argument should
 \par \tab ...
 
 
+[Method]
 DoMethod
-[Prefix]
-dcl_AxControl_
+[Function]
+dcl_AxControl_DoMethod
 [Desc]
 Calls any method of an OLE object. The type of the arguments should match (or be convertable to) the argument types of the method.
 [Arguments Return] as Varied

@@ -70,7 +70,7 @@ bool CLabelCtrl::OnApplyProperty( TPropertyPtr pProp )
 				ModifyStyle( (SS_LEFT | SS_CENTER), SS_RIGHT, 0 );
 				break;
 			}
-			Invalidate();
+			OnNeedRepaint();
 		}
 		break;
 	}

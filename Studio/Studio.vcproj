@@ -1492,14 +1492,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Common\Controls\ImageTreeHolderCtrl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Common\Controls\ImageTreeHolderCtrl.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Common\Controls\InputFilter.h"
 					>
 				</File>

@@ -128,7 +128,7 @@ void CArxTabStripCtrl::HideTab( size_t nPageIndex )
 		SetCurSel( nItemIndex );
 		ActivateTabPage( GetTabPageAt( GetTabPageIndex( nItemIndex ) ), true );
 	}
-	Invalidate();
+	OnNeedRepaint();
 }
 
 void CArxTabStripCtrl::ShowTab( size_t nPageIndex )
@@ -170,7 +170,7 @@ void CArxTabStripCtrl::ShowTab( size_t nPageIndex )
 	ResetTooltips();
 	if( GetCurSel() == idxToInsertAt )
 		ActivateTabPage( pTabPage, true );
-	Invalidate();
+	OnNeedRepaint();
 }
 
 bool CArxTabStripCtrl::CreateTabPages( UINT& nId )
@@ -231,7 +231,7 @@ void CArxTabStripCtrl::ActivateTabPage( TTabPagePtr pTabPage, bool bFireEvent /*
 	pTabPage->ShowWindow( SW_SHOW );
 	if( bNewPage )
 		SetFirstControlFocus( pTabPage );
-	Invalidate();
+	OnNeedRepaint();
 
 	if (bFireEvent)
 		InvokeMethodInt( mpTemplate->GetStringProperty(Prop::EventChanged), GetCurTabPage(), IsAsyncEvents() );

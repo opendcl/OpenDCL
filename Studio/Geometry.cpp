@@ -62,13 +62,9 @@ END_MESSAGE_MAP()
 
 BOOL CGeometry::OnApply() 
 {
-	m_pUseTopFromBottom->SetType(PropLong);
 	m_pUseTopFromBottom->SetLongValue(m_Top.GetItemData(m_Top.GetCurSel()));
-	m_pUseLeftFromRight->SetType(PropLong);
 	m_pUseLeftFromRight->SetLongValue(m_Left.GetItemData(m_Left.GetCurSel()));
-	m_pUseBottomFromBottom->SetType(PropLong);
 	m_pUseBottomFromBottom->SetLongValue(m_Bottom.GetItemData(m_Bottom.GetCurSel()));
-	m_pUseRightFromRight->SetType(PropLong);
 	m_pUseRightFromRight->SetLongValue(m_Right.GetItemData(m_Right.GetCurSel()));
 	CStudioDialogControl::UpdateProperty( mpDclControl, Prop::Top );
 	CStudioDialogControl::UpdateProperty( mpDclControl, Prop::Left );

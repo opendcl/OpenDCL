@@ -25,7 +25,7 @@ public:
 
 // CDialogObject overrides
 public:
-	virtual DclFormType GetType() const { return VdclConfigTab; }
+	virtual FormType GetType() const { return FrmConfigTab; }
 	virtual bool IsModeless() const { return true; }
 	virtual bool IsDockable() const { return false; }
 	virtual bool IsResizable() const { return true; }

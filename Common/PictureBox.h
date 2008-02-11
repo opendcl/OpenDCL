@@ -66,4 +66,5 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnDestroy();
+	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
 };

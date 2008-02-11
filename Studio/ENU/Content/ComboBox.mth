@@ -1,7 +1,7 @@
 [Method]
 AddString
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_AddString
 [Desc]
 This method will add a string to the specified ComboBox. This method will return the index of the new inserted item.
 [Arguments as Integer]
@@ -12,8 +12,8 @@ This method will add a string to the specified ComboBox. This method will return
 
 [Method]
 AddPath
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_AddPath
 [Desc]
 This method will add a path to a directory selection ComboBox.
 [Arguments]
@@ -24,18 +24,18 @@ This method will add a path to a directory selection ComboBox.
 
 [Method]
 GetTBText
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_GetTBText
 [Desc]
-This method gets the text in the control's internal TextBox.
+This method gets the text in the control's internal edit control.
 [Arguments Return] as String
 <CONTROL>
 
 
 [Method]
 Dir
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_Dir
 [Desc]
 This method will fill the ComboBox with a list of files found in the directory search that matches the \cf1 sExtension \cf0 argument.  If the \cf1 sExtension \cf0 is not specified *.* is assumed.
 [Arguments]
@@ -48,8 +48,8 @@ This method will fill the ComboBox with a list of files found in the directory s
 
 [Method]
 GetDir
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_GetDir
 [Desc]
 This method will retrieve the currently selected directory of the directory combo box.
 [Arguments]
@@ -58,8 +58,8 @@ This method will retrieve the currently selected directory of the directory comb
 
 [Method]
 GetLBText
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_GetLBText
 [Desc]
 This method gets the text of a list item from the control's internal ListBox.
 [Arguments Return] as String
@@ -70,8 +70,8 @@ This method gets the text of a list item from the control's internal ListBox.
 
 [Method]
 SetDroppedWidth
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_SetDroppedWidth
 [Desc]
 This method sets the minimum allowable width for the control's drop-down ListBox.
 [Arguments]
@@ -82,8 +82,8 @@ This method sets the minimum allowable width for the control's drop-down ListBox
 
 [Method]
 GetDroppedWidth
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_GetDroppedWidth
 [Desc]
 This method retrieves the minimum allowable width for the control's drop-down ListBox.
 [Arguments Return] as Integer
@@ -92,8 +92,8 @@ This method retrieves the minimum allowable width for the control's drop-down Li
 
 [Method]
 SetEditSel
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_SetEditSel
 [Desc]
 This method highlights characters in the edit control of a ComboBox using a start and end position.
 [Arguments]
@@ -106,8 +106,8 @@ This method highlights characters in the edit control of a ComboBox using a star
 
 [Method]
 GetEditSel
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_GetEditSel
 [Desc]
 This method will return a list indicating the start and end position of the selected characters in the edit control of a ComboBox.
 [Arguments Return] as List of Integers
@@ -116,8 +116,8 @@ This method will return a list indicating the start and end position of the sele
 
 [Method]
 FindLineWeight
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_FindLineWeight
 [Desc]
 This method will return the index of a specified line weight in a ComboBox that has the Style property set to 5 - LineWeight.
 [Arguments Return] as Integer
@@ -128,8 +128,8 @@ This method will return the index of a specified line weight in a ComboBox that 
 
 [Method]
 FindColor
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_FindColor
 [Desc]
 This method will return the index of a specified color in a ComboBox that has the Style property set to 4 - Color.
 [Arguments Return] as Integer
@@ -140,8 +140,8 @@ This method will return the index of a specified color in a ComboBox that has th
 	
 [Method]
 AddColor
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_AddColor
 [Desc]
 This method will add a color to the specified ComboBox that has the Style property set to 4 - Color.
 [Arguments]
@@ -152,8 +152,8 @@ This method will add a color to the specified ComboBox that has the Style proper
 
 [Method]
 AddList
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_AddList
 [Desc]
 This method will add a list of strings to the specified ComboBox.
 [Arguments]
@@ -164,8 +164,8 @@ This method will add a list of strings to the specified ComboBox.
 
 [Method]
 Clear
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_Clear
 [Desc]
 This method will clear the ComboBox of all its items. If the combo box style is a pre-populated list, this method will cause the list to get reset and repopulated.
 [Arguments]
@@ -174,8 +174,8 @@ This method will clear the ComboBox of all its items. If the combo box style is 
 
 [Method]
 GetCount
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_GetCount
 [Desc]
 This method will return the total number of list items.
 [Arguments Return] as Integer
@@ -184,8 +184,8 @@ This method will return the total number of list items.
 
 [Method]
 SetCurSel
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_SetCurSel
 [Desc]
 This method will set the currently selected list item in a single selection ComboBox. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
@@ -196,8 +196,8 @@ This method will set the currently selected list item in a single selection Comb
 
 [Method]
 GetCurSel
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_GetCurSel
 [Desc]
 This method will return the index of the currently selected list item in a single selection ComboBox. -1 will be returned if nothing is selected.
 [Arguments Return] as Integer
@@ -206,8 +206,8 @@ This method will return the index of the currently selected list item in a singl
 
 [Method]
 GetTopIndex
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_GetTopIndex
 [Desc]
 This method retrieves the index of the first visible item in a ComboBox.
 [Arguments Return] as Integer
@@ -216,8 +216,8 @@ This method retrieves the index of the first visible item in a ComboBox.
 
 [Method]
 SetTopIndex
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_SetTopIndex
 [Desc]
 This method ensures that the indicated ComboBox item is visible. If it's not the ComboBox is scrolled to ensure the item is visible.
 [Arguments]
@@ -228,8 +228,8 @@ This method ensures that the indicated ComboBox item is visible. If it's not the
 
 [Method]
 SetItemData
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_SetItemData
 [Desc]
 This method will set the associated item data for the indicated list item. The item data will only accept integer values.
 [Arguments]
@@ -242,8 +242,8 @@ This method will set the associated item data for the indicated list item. The i
 
 [Method]
 GetItemData
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_GetItemData
 [Desc]
 This method will retrieve the associated item data for the indicated list item.
 [Arguments Return] as Integer
@@ -254,8 +254,8 @@ This method will retrieve the associated item data for the indicated list item.
 
 [Method]
 DeleteString
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_DeleteString
 [Desc]
 This method will delete a list item from the ComboBox.
 [Arguments]
@@ -266,8 +266,8 @@ This method will delete a list item from the ComboBox.
 
 [Method]
 InsertString
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_InsertString
 [Desc]
 This method will insert a list item in the ComboBox.
 [Arguments Return] as Integer
@@ -280,8 +280,8 @@ This method will insert a list item in the ComboBox.
 
 [Method]
 FindStringExact
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_FindStringExact
 [Desc]
 This method finds the first string in a ComboBox that contains a list item with the exact string match without changing the ComboBox selection. A search for "Example Text" will find "Example Text". Use the dcl_ComboBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
@@ -292,8 +292,8 @@ This method finds the first string in a ComboBox that contains a list item with 
 
 [Method]
 FindString
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_FindString
 [Desc]
 This method finds the first string in a ComboBox that contains a list item with the specified prefix or partial match without changing the ComboBox selection. A search for "Text" will find "Example Text". Use the dcl_ComboBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
@@ -304,8 +304,8 @@ This method finds the first string in a ComboBox that contains a list item with 
 
 [Method]
 SelectString
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_SelectString
 [Desc]
 This method finds the first string in a ComboBox that contains the specified prefix and selects this list item in the ComboBox.
 [Arguments Return] as Integer
@@ -316,8 +316,8 @@ This method finds the first string in a ComboBox that contains the specified pre
 
 [Method]
 ClearEdit
-[Prefix]
-dcl_ComboBox_
+[Function]
+dcl_ComboBox_ClearEdit
 [Desc]
 This method clears the control's internal TextBox selection (if any)
 [Arguments]

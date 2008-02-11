@@ -81,7 +81,7 @@ int OpenBinFile()
     //set ISOpen
     pFile->m_bIsOpen = true;
 
-    acedRetPointer( pFile );
+    acedRetPointer( pFile, odcl::ptrBinFile );
     return 0;
 }
 

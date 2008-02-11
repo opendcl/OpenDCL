@@ -42,6 +42,7 @@ static bool IsDescendant( CWnd* pParent, CWnd* pDescendant )
 CModelessDlg::CModelessDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, DialogParams* pParams /*= NULL*/ )
 : CBaseDlg( pSourceForm, CModelessDlg::IDD, pParent, pParams )
 , mpParent( pParent )
+, mbKeepFocus( true )
 , mbTrackingMouse( false )
 , mbInMenuLoop( false )
 , mhwndKeyboardFocus( NULL )
@@ -71,6 +72,21 @@ void CModelessDlg::CloseDialog(int nStatus)
 	EndDialog(nStatus);
 	DestroyWindow();
 }
+
+bool CModelessDlg::OnApplyProperty( TPropertyPtr pProp )
+{
+	if( !__super::OnApplyProperty( pProp ) )
+		return false;
+	bool bFailed = false;
+	switch( pProp->GetID() )
+	{
+	case Prop::KeepFocus:
+		mbKeepFocus = pProp->GetBooleanValue();
+		break;
+	}
+	return !bFailed;
+}
+
 
 BEGIN_MESSAGE_MAP(CModelessDlg, CBaseDlg)
 	ON_WM_CLOSE()
@@ -107,7 +123,7 @@ BOOL CModelessDlg::OnInitDialog()
 
 LRESULT CModelessDlg::onAcadKeepFocus(WPARAM, LPARAM)
 {
-	return TRUE;
+	return LRESULT(GetCapture() || mbKeepFocus);
 }
 
 void CModelessDlg::OnSize(UINT nType, int cx, int cy) 
@@ -126,8 +142,6 @@ void CModelessDlg::OnSize(UINT nType, int cx, int cy)
 void CModelessDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	__super::OnShowWindow(bShow, nStatus);
-	
-	// call methods to invoke the event
 	InvokeMethod(mpTemplate->GetStringProperty(Prop::FormEventShow), false);	
 }
 
@@ -235,7 +249,7 @@ LRESULT CModelessDlg::OnMouseEnter(WPARAM wParam, LPARAM lParam)
 LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 {
 	mbTrackingMouse = false;
-	if( !mbInMenuLoop && !::GetCapture() )
+	if( !mbInMenuLoop && mbKeepFocus &&  !::GetCapture() )
 	{
 		CWnd* pFocusWnd = GetFocus();
 		if( !pFocusWnd || ((pFocusWnd->SendMessage( WM_GETDLGCODE, 0, 0 ) & (DLGC_WANTCHARS | DLGC_WANTARROWS)) == 0) )

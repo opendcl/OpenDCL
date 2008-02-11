@@ -466,7 +466,7 @@ bool CArxDwgListCtrl::OnApplyProperty( TPropertyPtr pProp )
 			int nCurSel = GetCurSel();
 			Dir(m_sPath);
 			SetCurSel( nCurSel );
-			Invalidate();
+			OnNeedRepaint();
 			break;
 		}
 	}
@@ -880,7 +880,7 @@ void CArxDwgListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	SetCurSel(nIndex);
 	OnSelchange();
 
-	Invalidate();    
+	OnNeedRepaint();    
 
 	// Get the currently selected Item
     if(GetCurSel() == LB_ERR)

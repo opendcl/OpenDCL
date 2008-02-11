@@ -27,5 +27,5 @@ ADSRESULT GetDroppedWidth();
 ADSRESULT SetDroppedWidth();
 ADSRESULT ClearEdit();
 ADSRESULT GetLBText();
-ADSRESULT GetEBText();
+ADSRESULT GetTBText();
 };

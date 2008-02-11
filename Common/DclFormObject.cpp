@@ -53,23 +53,23 @@ IMPLEMENT_SERIAL(CDclFormObject, CObject, 1)
 
 CDclFormObject::CDclFormObject()
 : mpProject( NULL )
-, mType( VdclInvalid )
+, mType( _FrmInvalid )
 , mnTabIndex( -1 )
 , mpParentForm( NULL )
 , mpDlgObject( NULL )
-, mnNextId( 1 )
+, mnNextId( 10 )
 , mbUsesClientRect( true )
 {
 	m_htiTreeItem = NULL;
 }
 
-CDclFormObject::CDclFormObject( CProject* pProject, DclFormType type /*= VdclInvalid*/ )
+CDclFormObject::CDclFormObject( CProject* pProject, FormType type /*= _FrmInvalid*/ )
 : mpProject( pProject )
 , mType( type )
 , mnTabIndex( -1 )
 , mpParentForm( NULL )
 , mpDlgObject( NULL )
-, mnNextId( 1 )
+, mnNextId( 10 )
 , mbUsesClientRect( true )
 {
 	m_htiTreeItem = NULL;
@@ -145,7 +145,7 @@ void CDclFormObject::AddControl( TDclControlPtr pDclControl, bool bAssignNewID /
 		pUndoManager->AddControl( pDclControl );
 	OnModified();
 	if( bAssignNewID || pDclControl->GetID() < 0 )
-		pDclControl->SetID( mDclControls.size() - 1 );
+		pDclControl->SetID( GetNextId() );
 }
 
 
@@ -158,7 +158,7 @@ TDclControlPtr CDclFormObject::AddControl( ControlType type, LPCTSTR pszKeyName,
 	AddDefaultProperties( pNewControl, rcControl.Width(), rcControl.Height() );
 	if( pUndoManager )
 		pUndoManager->setEnabled( true );
-	AddControl( pNewControl );
+	AddControl( pNewControl, true );
 	return pNewControl;
 }
 
@@ -273,7 +273,7 @@ void CDclFormObject::ClearGlobalVariableName( bool bUpdateChildren /*= true*/ )
 		(*iter)->ClearGlobalVariableName();
 }
 
-TDclFormPtr CDclFormObject::AddChildForm( DclFormType type )
+TDclFormPtr CDclFormObject::AddChildForm( FormType type )
 {
 	TDclFormPtr pDclForm = mpProject->AddForm( type, TDclFormLockedPtr( this ) );
 	if( pDclForm )
@@ -397,9 +397,9 @@ void CDclFormObject::Serialize(CArchive& ar)
 		long lType;
 		ar >> lType;
 		if (lType < -1)
-			mType = VdclInvalid;
+			mType = _FrmInvalid;
 		else
-			mType = (DclFormType)lType;
+			mType = (FormType)lType;
 		ar >> msUniqueName;
 		CString sParentName;
 		ar >> sParentName;
@@ -416,14 +416,14 @@ void CDclFormObject::Serialize(CArchive& ar)
 			if( nThisVersion >= 6 )
 			{
 				ar >> mbUsesClientRect;
-				assert( mbUsesClientRect || mType != VdclTabForm ); //tab form must always use client rect!
+				assert( mbUsesClientRect || mType != FrmTabPage ); //tab form must always use client rect!
 			}
 			else
 			{
 				BOOL bUsesClientRect;
 				ar >> bUsesClientRect;
 				mbUsesClientRect = (bUsesClientRect != FALSE);
-				if( !mbUsesClientRect && mType == VdclTabForm )
+				if( !mbUsesClientRect && mType == FrmTabPage )
 					mbUsesClientRect = true;
 			}
 		}
@@ -434,15 +434,15 @@ void CDclFormObject::Serialize(CArchive& ar)
 		ClearControls();
 		while (nCount-- > 0)
 		{
-			TDclControlPtr pControl = new CDclControlObject( this );
-			pControl->Serialize(ar);
-			AddControl( pControl );
+			TDclControlPtr pDclControl = new CDclControlObject( this );
+			pDclControl->Serialize(ar);
+			AddControl( pDclControl );
 			#ifdef _DIAGNOSTIC
 				if( (GetAsyncKeyState( VK_CONTROL ) & 0x8000) == 0x8000 )
-					TraceFmt( _T("< %s\r\n"), pControl->toString() );
+					TraceFmt( _T("< %s\r\n"), pDclControl->toString() );
 			#endif //_DIAGNOSTIC
 			// Add new properties that have been added since this file was created
-			AddDefaultProperties( pControl );
+			AddDefaultProperties( pDclControl );
 		}
 
 		//ensure that we have a form properties control at the head of the list
@@ -540,9 +540,9 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 	long lType;
   if (!readLong(sFile, lType)) return statInvalidFormat;
   if (lType < -1)
-		mType = VdclInvalid;
+		mType = _FrmInvalid;
 	else
-		mType = (DclFormType)lType;
+		mType = (FormType)lType;
   if (!readString(sFile, msUniqueName)) return statInvalidFormat;
 	CString sParentName;
   if (!readString(sFile, sParentName)) return statInvalidFormat;
@@ -570,7 +570,7 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 		AddDefaultProperties( pControl );
     AddControl(pControl);
 
-    if (mType == VdclModal)
+    if (mType == FrmModalDlg)
 			pControl->RemoveProperty(Prop::EventInvoke);
   }
 
@@ -604,22 +604,22 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 
 		switch (mType)
 		{
-		case VdclModal:
+		case FrmModalDlg:
 			pControl->RemoveProperty( Prop::EventInvoke );
 			//break;  This break was missing -- maybe intentional, I can't tell for sure [ORW]
-		case VdclModeless:
+		case FrmModelessDlg:
 			pControl->AddLongProperty( Prop::MinDialogWidth, PropLong, 0 );
 			pControl->AddLongProperty( Prop::MinDialogHeight, PropLong, 0 );
 			pControl->AddLongProperty( Prop::MaxDialogWidth, PropLong, 0 );
 			pControl->AddLongProperty( Prop::MaxDialogHeight, PropLong, 0 );
 			break;
-		case VdclDockable:
-			pControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
-			pControl->RemoveProperty( Prop::MinDialogWidth );
-			pControl->RemoveProperty( Prop::MinDialogHeight );
-			pControl->RemoveProperty( Prop::MaxDialogWidth );
-			pControl->RemoveProperty( Prop::MaxDialogHeight );
-			break;		
+		//case FrmDockableDlg:
+		//	pControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
+		//	pControl->RemoveProperty( Prop::MinDialogWidth );
+		//	pControl->RemoveProperty( Prop::MinDialogHeight );
+		//	pControl->RemoveProperty( Prop::MaxDialogWidth );
+		//	pControl->RemoveProperty( Prop::MaxDialogHeight );
+		//	break;		
 		}
   }
 	return statOK;
@@ -671,13 +671,14 @@ bool CDclFormObject::IsModeless() const
 {
 	switch( mType )
 	{
-	case VdclInvalid: return false;
-	case VdclModal: return false;
-	case VdclModeless: return true;
-	case VdclDockable: return true;
-	case VdclConfigTab: return false;
-	case VdclTabForm: return true;
-	case VdclFileDialog: return false;
+	case _FrmInvalid: return false;
+	case FrmModalDlg: return false;
+	case FrmModelessDlg: return true;
+	case FrmDockableDlg: return true;
+	case FrmConfigTab: return false;
+	case FrmTabPage: return true;
+	case FrmFileDlg: return false;
+	case FrmPaletteDlg: return true;
 	}
 	return false;
 }

@@ -295,7 +295,6 @@ void CStudioDialogControl::UpdateAllProperties( TDclControlPtr pTemplate )
 	case CtlTextBox:
 	case CtlTree:
 	case CtlUrlLink:
-		//pDlgControl->GetControlWnd()->Invalidate();
 		break;
 	default:
 		{
@@ -316,7 +315,7 @@ void CStudioDialogControl::UpdateAllProperties( TDclControlPtr pTemplate )
 					UpdateProperty( pTemplate, id );
 				}
 			}
-			pDlgControl->GetControlWnd()->Invalidate();
+			pDlgControl->OnNeedRepaint();
 		}
 		break;
 	};
@@ -365,15 +364,11 @@ void CStudioDialogControl::UpdateProperty( TDclControlPtr pTemplate, Prop::Id id
 	case CtlTree:
 	case CtlUrlLink:
 		pDlgControl->OnApplyProperty( pTemplate->GetPropertyObject( id ) );
-		//pDlgControl->GetControlWnd()->Invalidate();
 		break;
 	default:
 		UpdatePropertyInt( pTemplate, id );
 		break;
 	};
-	//CWnd* pControlWnd = pTemplate->GetWindow();
-	//if( pControlWnd )
-	//	pControlWnd->Invalidate();
 	CControlManager* pManager = pDlgControl->GetControlManager();
 	if( pManager && pManager->IsSelected() )
 		pManager->Invalidate();

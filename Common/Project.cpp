@@ -134,7 +134,7 @@ void CProject::DeleteForm( TDclFormPtr pDclForm )
 	}
 }
 
-TDclFormPtr CProject::AddForm( DclFormType nType )
+TDclFormPtr CProject::AddForm( FormType nType )
 {
 	TDclFormPtr pNewDclForm = new CDclFormObject( this, nType );
 	pNewDclForm->SetUniqueName( CreateUniqueName() );
@@ -142,7 +142,7 @@ TDclFormPtr CProject::AddForm( DclFormType nType )
 	return pNewDclForm;
 }
 
-TDclFormPtr CProject::AddForm( DclFormType nType, TDclFormPtr pParentForm )
+TDclFormPtr CProject::AddForm( FormType nType, TDclFormPtr pParentForm )
 {
 	assert( pParentForm != NULL );
 	assert( pParentForm->GetProject() == (const CProject*)this );
@@ -355,7 +355,7 @@ void CProject::AddOleObject(const CLSID& clsid, CAxContainerCtrl *pAxCont)
   if (clsid == IID_IPictureDisp)
     pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_PROP_PICTURE) );
   else if (pObject->m_clsid == IID_IFontDisp)
-    pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_PROP_LABEL_NAME) );
+    pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_PROP_FONTNAME) );
   else if (pObject->m_clsid == GUID_COLOR)
     pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_COLOR) );
   mOleControls.push_back(pObject);	
@@ -896,7 +896,7 @@ void CProject::Serialize(CArchive& ar)
 
 			//Some projects for whatever reason have parentless tab page forms. This code removes those 
 			//forms so they don't confuse the project list in the editor. [ORW]
-			if( pDclForm->GetType() == VdclTabForm && !pDclForm->GetParentForm() )
+			if( pDclForm->GetType() == FrmTabPage && !pDclForm->GetParentForm() )
 				continue;
 
 			mDclForms.push_back(pDclForm);

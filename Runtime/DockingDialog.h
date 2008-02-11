@@ -7,7 +7,6 @@
 #include "ArxDialogObject.h"
 #include "Resource.h"
 
-class CFontCollection;
 
 #if (_MFC_VER < 0x0800)
 #define __UINT_LRESULT UINT
@@ -23,6 +22,7 @@ class CDockingDialog : public CDialog, public CArxDialogObject
 {
 	CWnd* mpParent;
 	CAcadDockBarHost& mHostControlBar;
+	bool mbKeepFocus;
 	bool mbResizable;
 	bool mbHiding;
 
@@ -31,9 +31,13 @@ public:
 	CDockingDialog( TDclFormPtr pSourceForm, CWnd *pParent = NULL, DialogParams* pParams = NULL );
 	virtual ~CDockingDialog();
 
+// Atributes
+public:
+	bool IsKeepFocus() const { return mbKeepFocus; }
+
 // CDialogObject overrides
 public:
-	virtual DclFormType GetType() const { return VdclDockable; }
+	virtual FormType GetType() const { return FrmDockableDlg; }
 	virtual CWnd* GetTopLevelWnd();
 	virtual bool IsModeless() const { return true; }
 	virtual bool IsDockable() const { return !IsFloating(); }
@@ -46,6 +50,7 @@ public:
 	virtual bool CenterAndResizeDialog( long nNewWidth, long nNewHeight );
 	virtual bool GetEffectiveWindowRect( CRect& rcDlg ) const;
 	virtual bool GetEffectiveClientRect( CRect& rcDlg ) const;
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::Resizable
 protected:
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
@@ -57,10 +62,6 @@ friend class CAcadDockBarHost;
 	virtual void GetClientArea(CRect &rect);
 	virtual bool OnClosing();
 
-// Overrides
-public:
-
-// Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
 

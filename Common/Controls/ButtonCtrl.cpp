@@ -159,7 +159,7 @@ void CButtonCtrl::PreSubclassWindow()
 void CButtonCtrl::OnKillFocus(CWnd * pNewWnd)
 {
 	m_bIsDefault = FALSE;
-	Invalidate();
+	OnNeedRepaint();
 	__super::OnKillFocus( pNewWnd );
 }
 

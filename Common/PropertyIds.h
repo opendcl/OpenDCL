@@ -1,6 +1,28 @@
 #pragma once
 
 
+// To add a new property, take the following steps:
+//
+// 1) Add a new property ID to the Id enumeration in this file (PropertyIds.h). Make sure you
+//    update the _MaxId property id value so it is equal to the value of the highest property id
+// 2) Define an API name for the new property by adding it at the bottom of PropertyNames.cpp
+// 3) Add a localizable string resource for the property display name to all shared local language
+//    resource files (SharedRes.*.rc). The resource ID must be [3200 + property id].
+// 4) Add a localizable string resource for the property description to all studio local language
+//    resource files (Studio.*.rc). The resource ID must be [55000 + property id].
+// 5) If the property is not hidden, edit GetEditControlCreator() in PropertyGridCtrl.cpp
+//    to return a function that creates an appropriate edit control for the property.
+// 6) If the new property is an enumeration value, add resource strings for the display name of
+//    each possible value to each local language resource file (SharedRes.*.rc), then add an
+//    entry in PropEnumNames.cpp for defining the list of enumeration names.
+// 7) If the new property is an event, add it to the list of events in the
+//    CEventsTabPane::UpdateEvents() function (in EventsTabPane.cpp) and to the LoadArgsNDesc()
+//    function (in LoadArgs.cpp).
+// 8) Edit DclControlProp.cpp and add the property to any controls that support it.
+// 9) Edit the relevant controls' OnApplyProperty() function to apply the value of the new
+//    property to an instance of the control.
+
+
 namespace Prop
 {
 
@@ -14,9 +36,9 @@ enum Id
 	BorderStyle = 4,
 	ButtonStyle = 5,
 	Caption = 6,
-	Cancel = 7,
+	Cancel = 7, //unused
 	ComboBoxStyle = 8,
-	Default = 9,
+	Default = 9, //unused
 	Enabled = 10,
 	EventBtnClicked = 11,
 	EventClicked = 12,
@@ -58,7 +80,7 @@ enum Id
 	AutoVScroll = 48,
 	DropDownHeight = 49,
 	MultiColumn = 50,
-	SelectStyle = 51,
+	SelectionStyle = 51, //unused
 	NoIntegralHeight = 52,
 	Sorted = 53,
 	UseTabStops = 54,
@@ -69,9 +91,9 @@ enum Id
 	SmoothProgress = 59,
 	AutoWrap = 60,
 	URLAddress = 61,
-	TabJustified = 62,
+	TabJustification = 62,
 	TabStyle = 63,
-	TabLabelAlign = 64,
+	LabelAlignment = 64, //unused
 	TabFixedWidth = 65,
 	URLLinkType = 66,
 	MinTabWidth = 67,
@@ -121,8 +143,8 @@ enum Id
 	FontStrikeout = 111,
 	FontColor = 112,
 	BlockName = 113,
-	SlideFileName = 114, //unused
-	Color = 115,
+	FileName = 114, //unused
+	Color = 115, //unused
 	CfgTabCaption = 116,
 	AllowOrbiting = 117,
 	FormEventClose = 118,
@@ -263,8 +285,9 @@ enum Id
 	UseVisualStyle = 256,
 	RemainingText = 257,
 	ProgressLegend = 258,
+	KeepFocus = 259,
 	_MinId = 1,
-	_MaxId = 258
+	_MaxId = 259
 };
 
 }; //namespace Prop

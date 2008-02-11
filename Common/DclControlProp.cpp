@@ -85,7 +85,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		return false;
 	switch( pOwnerForm->GetType() )
 	{
-	case VdclModal:
+	case FrmModalDlg:
 		AddDefaultFormName( pDclControl );
 		pDclControl->AddStringProperty( Prop::ObjectBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
@@ -107,10 +107,11 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::FormEventCancelClose );
 		AddControlEvent( pDclControl, Prop::EventOnHelp );
 		break;
-	case VdclModeless:
+	case FrmModelessDlg:
 		AddDefaultFormName( pDclControl );
 		pDclControl->AddStringProperty( Prop::ObjectBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		pDclControl->AddBooleanProperty( Prop::KeepFocus, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
 		pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth > 0? lWidth : 250 );
@@ -131,11 +132,16 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::DocEventEnteringNoDocState );
 		AddControlEvent( pDclControl, Prop::EventOnHelp );
 		break;
-	case VdclDockable:
+	case FrmDockableDlg:
 		AddDefaultFormName( pDclControl );
 		pDclControl->AddStringProperty( Prop::ObjectBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		pDclControl->AddBooleanProperty( Prop::KeepFocus, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
+		pDclControl->AddLongProperty( Prop::MinDialogWidth, PropLong, 0 );
+		pDclControl->AddLongProperty( Prop::MinDialogHeight, PropLong, 0 );
+		pDclControl->AddLongProperty( Prop::MaxDialogWidth, PropLong, 0 );
+		pDclControl->AddLongProperty( Prop::MaxDialogHeight, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth > 0? lWidth : 250 );
 		pDclControl->AddLongProperty( Prop::Height, PropLong, lHeight > 0? lHeight : 450 );
@@ -148,7 +154,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::DocEventEnteringNoDocState );
 		AddControlEvent( pDclControl, Prop::EventOnHelp );
 		break;
-	case VdclConfigTab:
+	case FrmConfigTab:
 		AddDefaultFormName( pDclControl );
 		pDclControl->AddStringProperty( Prop::ObjectBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
@@ -164,7 +170,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::CfgEventHelp );
 		AddControlEvent( pDclControl, Prop::CfgEventOK );
 		break;
-	case VdclFileDialog:
+	case FrmFileDlg:
 		AddDefaultFormName( pDclControl );
 		pDclControl->AddStringProperty( Prop::ObjectBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
@@ -178,9 +184,31 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::FormEventSize );
 		AddControlEvent( pDclControl, Prop::EventOnHelp );
 		break;
-	case VdclTabForm:
+	case FrmTabPage:
 		AddControlHiddenProperty( pDclControl, Prop::Width, lWidth > 0? lWidth : 600, PropLong );
 		AddControlHiddenProperty( pDclControl, Prop::Height, lHeight > 0? lHeight : 380, PropLong );
+		break;
+	case FrmPaletteDlg:
+		AddDefaultFormName( pDclControl );
+		pDclControl->AddStringProperty( Prop::ObjectBrowser, PropActiveXMethods );
+		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		pDclControl->AddBooleanProperty( Prop::KeepFocus, PropBool, true );
+		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
+		pDclControl->AddLongProperty( Prop::MinDialogWidth, PropLong, 0 );
+		pDclControl->AddLongProperty( Prop::MinDialogHeight, PropLong, 0 );
+		pDclControl->AddLongProperty( Prop::MaxDialogWidth, PropLong, 0 );
+		pDclControl->AddLongProperty( Prop::MaxDialogHeight, PropLong, 0 );
+		pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );
+		pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth > 0? lWidth : 250 );
+		pDclControl->AddLongProperty( Prop::Height, PropLong, lHeight > 0? lHeight : 450 );
+		pDclControl->AddStringProperty( Prop::TitleBarText, PropString, pOwnerForm->GetKeyName() );
+		pDclControl->AddLongProperty( Prop::DockableSides, PropEnum, 0 );
+		AddControlEvent( pDclControl, Prop::FormEventInitialize );
+		AddControlEvent( pDclControl, Prop::FormEventClose );
+		AddControlEvent( pDclControl, Prop::FormEventSize );
+		AddControlEvent( pDclControl, Prop::DocEventActivated );
+		AddControlEvent( pDclControl, Prop::DocEventEnteringNoDocState );
+		AddControlEvent( pDclControl, Prop::EventOnHelp );
 		break;
 	default:
 		TraceFmt( _T("* AddDefaultFormProperties() called with unknown form type (%d)\r\n"), pOwnerForm->GetType() );
@@ -244,11 +272,12 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 	TDclFormPtr pTopLevelParentForm = pOwnerForm;
 	while( pTopLevelParentForm->GetParentForm() )
 		pTopLevelParentForm = pTopLevelParentForm->GetParentForm();
-	DclFormType eFormType = pTopLevelParentForm->GetType();
+	FormType eFormType = pTopLevelParentForm->GetType();
 	switch( eFormType )
 	{
-	case VdclDockable:
-	case VdclModeless:
+	case FrmDockableDlg:
+	case FrmModelessDlg:
+	case FrmPaletteDlg:
 		pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );
 		break;
 	}
@@ -432,7 +461,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::InsertOrXref, PropEnum, 0 );
 		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
-		pDclControl->AddLongProperty( Prop::SelectStyle, PropEnum, 0 );
+		pDclControl->AddLongProperty( Prop::SelectionStyle, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::RowHeight, PropLong, -1 );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
@@ -704,7 +733,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddStringProperty( Prop::List, PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::MultiColumn, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::NoIntegralHeight, PropBool, true );
-		pDclControl->AddLongProperty( Prop::SelectStyle, PropEnum, 0 );
+		pDclControl->AddLongProperty( Prop::SelectionStyle, PropEnum, 0 );
 		pDclControl->AddBooleanProperty( Prop::Sorted, PropBool, false );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
@@ -1074,7 +1103,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 
 	case CtlTabStrip:
 		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
-		pDclControl->AddLongProperty( Prop::TabLabelAlign, PropEnum, 1 );
+		pDclControl->AddLongProperty( Prop::LabelAlignment, PropEnum, 1 );
 		pDclControl->AddLongProperty( Prop::MinTabWidth, PropLong, -1 );
 		pDclControl->AddBooleanProperty( Prop::TabFixedWidth, PropBool, false );
 		pDclControl->AddLongProperty( Prop::TabStyle, PropEnum, 0 );

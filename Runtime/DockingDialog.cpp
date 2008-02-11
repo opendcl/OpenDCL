@@ -5,7 +5,6 @@
 #include "DockingDialog.h"
 #include "DclFormObject.h"
 #include "InvokeMethod.h"
-#include "ControlTypes.h"
 #include "PropertyIds.h"
 #include "ArxProject.h"
 #include "ArxDialogControl.h"
@@ -22,6 +21,7 @@ CDockingDialog::CDockingDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/
 , CArxDialogObject( pSourceForm, this )
 , mpParent( pParent )
 , mHostControlBar( *new CAcadDockBarHost( this, pParent ) )
+, mbKeepFocus( true )
 , mbResizable( true )
 , mbHiding( false )
 {
@@ -48,16 +48,16 @@ CWnd* CDockingDialog::GetTopLevelWnd()
 	if( IsFloating() )
 	{
 		HWND hwndTopLevel = ::GetParent( ::GetParent( hwndControlBar ) );
-		if( hwndTopLevel )
+		if( hwndTopLevel && hwndTopLevel != AfxGetMainWnd()->m_hWnd )
 			return CWnd::FromHandle( hwndTopLevel );
+		return &mHostControlBar;
 	}
-	return &mHostControlBar;
+	return mHostControlBar.GetParent();
 }
 
 bool CDockingDialog::CreateModeless( UINT nID )
 {
 	TDclControlPtr pProps = mpTemplate;
-	int nWindowHeight = pProps->GetLongProperty(Prop::Height);
 	DWORD dwDockableSides = 0;
 	DWORD dwDefaultDockableSide = 0;
 
@@ -96,7 +96,7 @@ bool CDockingDialog::CreateModeless( UINT nID )
 	}
 
 	mbIgnoreSizing = true;
-  if( !mHostControlBar.Create( mpSourceForm->GetKeyName(), GetWndRect(), nID ) )
+  if( !mHostControlBar.Create( GetWndCaption(), GetWndRect(), nID ) )
 		return false;
 	if( !CDialog::Create( IDD_DOCKINGDLGHOST, &mHostControlBar ) )
 		return false;
@@ -191,17 +191,40 @@ void CDockingDialog::OnFrameChanged()
 
 void CDockingDialog::ApplyPosition()
 {
+	if( mbIgnoreSizing )
+		return;
+	if( !IsFloating() )
+		return; //size cannot be changed while docked
 	mbIgnoreSizing = true;
-	mHostControlBar.SetWindowPos( NULL, 0, 0,
-																mpTemplate->GetLongProperty(Prop::Width) + GetNCWidth(),
-																mpTemplate->GetLongProperty(Prop::Height) + GetNCHeight(),
-																SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+	CWnd* pTopLevelWnd = GetTopLevelWnd();
+	pTopLevelWnd->SetWindowPos( NULL, 0, 0,
+															mpTemplate->GetLongProperty(Prop::Width) + GetNCWidth(),
+															mpTemplate->GetLongProperty(Prop::Height) + GetNCHeight(),
+															SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+	//mHostControlBar.SetWindowPos( NULL, 0, 0,
+	//															mpTemplate->GetLongProperty(Prop::Width) + GetNCWidth(),
+	//															mpTemplate->GetLongProperty(Prop::Height) + GetNCHeight(),
+	//															SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
 	SetWindowPos( NULL, 0, 0,
 								mpTemplate->GetLongProperty(Prop::Width),
 								mpTemplate->GetLongProperty(Prop::Height),
 								SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
 	mpControlPane->RecalcLayout();
 	mbIgnoreSizing = false;
+}
+
+bool CDockingDialog::OnApplyProperty( TPropertyPtr pProp )
+{
+	if( !__super::OnApplyProperty( pProp ) )
+		return false;
+	bool bFailed = false;
+	switch( pProp->GetID() )
+	{
+	case Prop::KeepFocus:
+		mbKeepFocus = pProp->GetBooleanValue();
+		break;
+	}
+	return !bFailed;
 }
 
 bool CDockingDialog::OnApplyResizable( TPropertyPtr pProp )

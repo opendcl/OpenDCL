@@ -1,7 +1,7 @@
 [Method]
 Undo
-[Prefix]
-dcl_TextBox_
+[Function]
+dcl_TextBox_Undo
 [Desc]
 This method calls the system undo function in the TextBox.
 [Arguments]
@@ -10,8 +10,8 @@ This method calls the system undo function in the TextBox.
 
 [Method]
 SetTabStops
-[Prefix]
-dcl_TextBox_
+[Function]
+dcl_TextBox_SetTabStops
 [Desc]
 This method sets the tab stop positions in a multiple-line TextBox.
 [Arguments]
@@ -22,8 +22,8 @@ This method sets the tab stop positions in a multiple-line TextBox.
 
 [Method]
 ReplaceSel
-[Prefix]
-dcl_TextBox_
+[Function]
+dcl_TextBox_ReplaceSel
 [Desc]
 This method replaces the currently selected text in a TextBox with the specified text.
 [Arguments]
@@ -34,8 +34,8 @@ This method replaces the currently selected text in a TextBox with the specified
 
 [Method]
 GetModify
-[Prefix]
-dcl_TextBox_
+[Function]
+dcl_TextBox_GetModify
 [Desc]
 This method returns a T if the contents of an edit control have been modified, or a NIL if the TextBox has not been modified.
 [Arguments Return] as T or Nil
@@ -46,8 +46,8 @@ This method returns a T if the contents of an edit control have been modified, o
 
 [Method]
 GetSel
-[Prefix]
-dcl_TextBox_
+[Function]
+dcl_TextBox_GetSel
 [Desc]
 This method returns the starting and ending character positions of the current selection in a TextBox.
 [Arguments Return] as List of Integers
@@ -56,8 +56,8 @@ This method returns the starting and ending character positions of the current s
 
 [Method]
 SetSel
-[Prefix]
-dcl_TextBox_
+[Function]
+dcl_TextBox_SetSel
 [Desc]
 This method highlights a selection of text in a TextBox by the indicated start and end positions.
 [Arguments]
@@ -70,8 +70,8 @@ This method highlights a selection of text in a TextBox by the indicated start a
 
 [Method]
 LineScroll
-[Prefix]
-dcl_TextBox_
+[Function]
+dcl_TextBox_LineScroll
 [Desc]
 This method scrolls to the indicated line in a multiple line TextBox.
 [Arguments]
@@ -82,8 +82,8 @@ This method scrolls to the indicated line in a multiple line TextBox.
 
 [Method]
 GetLine
-[Prefix]
-dcl_TextBox_
+[Function]
+dcl_TextBox_GetLine
 [Desc]
 This method gets a line of text from a TextBox.
 [Arguments Return] as String
@@ -94,8 +94,8 @@ This method gets a line of text from a TextBox.
 
 [Method]
 GetLineLength
-[Prefix]
-dcl_TextBox_
+[Function]
+dcl_TextBox_GetLineLength
 [Desc]
 This method returns the length of a line in a TextBox.
 [Arguments Return] as Integer
@@ -106,8 +106,8 @@ This method returns the length of a line in a TextBox.
 
 [Method]
 GetLineCount
-[Prefix]
-dcl_TextBox_
+[Function]
+dcl_TextBox_GetLineCount
 [Desc]
 This method counts the number of lines in a multiple-line TextBox.
 [Arguments Return] as Integer
@@ -116,8 +116,8 @@ This method counts the number of lines in a multiple-line TextBox.
 
 [Method]
 GetFirstVisibleLine
-[Prefix]
-dcl_TextBox_
+[Function]
+dcl_TextBox_GetFirstVisibleLine
 [Desc]
 This method returns the line number of the first visible line in a multiple line TextBox.
 [Arguments Return] as Integer
@@ -126,8 +126,8 @@ This method returns the line number of the first visible line in a multiple line
 
 [Method]
 SetFilter
-[Prefix]
-dcl_TextBox_
+[Function]
+dcl_TextBox_SetFilter
 [Desc]
 This method sets the custom input filter string used by a TextBox control that has a '0 - String' input filter style (other filter styles do not use custom filter strings). \par \par For example a setting of "0123456789" for the \cf1 FilterString \cf0 argument will cause the TextBox to discard any non-numeric input.
 [Arguments]
@@ -138,11 +138,12 @@ This method sets the custom input filter string used by a TextBox control that h
 
 [Method]
 GetFilter
-[Prefix]
-dcl_TextBox_
+[Function]
+dcl_TextBox_GetFilter
 [Desc]
 This method gets the custom input filter string used by a TextBox control that has a '0 - String' input filter style (other filter styles do not use custom filter strings).
 [Arguments Return] as String
 <CONTROL>
+
 
 [End of File]

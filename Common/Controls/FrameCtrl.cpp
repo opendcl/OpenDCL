@@ -11,6 +11,7 @@
 
 CFrameCtrl::CFrameCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
+, mAcadColorService( long(-COLOR_CAPTIONTEXT), long(-COLOR_BTNSHADOW) )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -34,7 +35,7 @@ DWORD CFrameCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 
-	dwStyle |= (/*WS_CLIPSIBLINGS | */BS_PUSHBUTTON | BS_GROUPBOX);
+	dwStyle |= (/*WS_CLIPSIBLINGS | */BS_GROUPBOX);
 	return dwStyle;
 }
 
@@ -57,7 +58,7 @@ bool CFrameCtrl::OnApplyProperty( TPropertyPtr pProp )
 
 BEGIN_MESSAGE_MAP(CFrameCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
-	ON_NOTIFY_REFLECT (NM_CUSTOMDRAW, &CFrameCtrl::OnNotifyCustomDraw)
+	//ON_NOTIFY_REFLECT (NM_CUSTOMDRAW, &CFrameCtrl::OnNotifyCustomDraw)
 END_MESSAGE_MAP()
 
 
@@ -82,17 +83,17 @@ void CFrameCtrl::PostNcDestroy()
 	__super::PostNcDestroy();
 	delete this;
 }
-
-void CFrameCtrl::OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result )
-{
-	LPNMCUSTOMDRAW pCustomDraw = (LPNMCUSTOMDRAW)pNotifyStruct;
-	ASSERT (pCustomDraw->hdr.hwndFrom == m_hWnd);
-	ASSERT (pCustomDraw->hdr.code = NM_CUSTOMDRAW);
-
-	if( pCustomDraw->dwDrawStage == CDDS_PREPAINT )
-	{
-		::SetTextColor( pCustomDraw->hdc, mAcadColorService.GetForegroundColor() );
-		::SetBkColor( pCustomDraw->hdc, mAcadColorService.GetBackgroundColor() );
-	}
-	*result = CDRF_DODEFAULT;
-}
+//
+//void CFrameCtrl::OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result )
+//{
+//	LPNMCUSTOMDRAW pCustomDraw = (LPNMCUSTOMDRAW)pNotifyStruct;
+//	ASSERT (pCustomDraw->hdr.hwndFrom == m_hWnd);
+//	ASSERT (pCustomDraw->hdr.code = NM_CUSTOMDRAW);
+//
+//	if( pCustomDraw->dwDrawStage == CDDS_PREPAINT )
+//	{
+//		::SetTextColor( pCustomDraw->hdc, mAcadColorService.GetForegroundColor() );
+//		::SetBkColor( pCustomDraw->hdc, mAcadColorService.GetBackgroundColor() );
+//	}
+//	*result = CDRF_DODEFAULT;
+//}

@@ -62,10 +62,8 @@ bool CUrlLinkCtrl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::URLLinkType:
 		break;
 	case Prop::URLAddress:
-		{
-			SetWindowText( pProp->GetStringValue() );
-			Invalidate();
-		}
+		SetWindowText( pProp->GetStringValue() );
+		OnNeedRepaint();
 		break;
 	}
 	return !bFailed;
@@ -128,7 +126,7 @@ void CUrlLinkCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	if ((UINT_PTR)hShell > 32) 
 	{ // success!
 		mAcadColorService.SetForegroundColor( g_colorVisited );
-		Invalidate();
+		OnNeedRepaint();
 	}
 	else 
 	{

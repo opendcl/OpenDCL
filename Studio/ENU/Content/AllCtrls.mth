@@ -1,7 +1,7 @@
 [Method]
 ForceUpdateNow
-[Prefix]
-dcl_Control_
+[Function]
+dcl_Control_ForceUpdateNow
 [Desc]
 This method is used to force a control to repaint itself immediately instead of waiting for idle time.
 [Arguments]
@@ -10,8 +10,8 @@ This method is used to force a control to repaint itself immediately instead of 
 
 [Method]
 GetCurPos
-[Prefix]
-dcl_Control_
+[Function]
+dcl_Control_GetCurPos
 [Desc]
 This method will return a list indicating the current left, top, width and height of the control. If the control window is a child window, the coordinates are client coordinates of its parent window, otherwise they are screen coordinates.
 [Arguments Return] as (Left Top Width Height)
@@ -20,27 +20,27 @@ This method will return a list indicating the current left, top, width and heigh
 
 [Method]
 SetFocus
-[Prefix]
-dcl_Control_
+[Function]
+dcl_Control_SetFocus
 [Desc]
-This method will force the indicated control to take focus. \par \par \b1 Note: \b0 But do not use it from the OnInitial event, rather use the dcl_Control_ZOrder to force the control to the top of the Tab/ZOrder list. This will allow the control to receive focus first when the dialog box is displayed.
+This method will force the indicated control to take focus. \par \par \b1 Note: \b0 But do not use it from the OnInitialize event, rather use the dcl_Control_ZOrder to force the control to the top of the Tab/ZOrder list. This will allow the control to receive focus first when the dialog box is displayed.
 [Arguments]
 <CONTROL>
 
 
 [Method]
 GetFocus
-[Prefix]
-dcl_
+[Function]
+dcl_GetFocus
 [Desc]
-This method will return the id of the control that has the current keyboard focus.
-[Arguments Return] as List of Strings 
+This method will return the id of the control that has the current keyboard focus. Returns NIL if the keyboard focus is not on an OpenDCl control.
+[Arguments Return] as List ("<project>" "<form>" "<control>") 
 
 
 [Method]
 SetPos
-[Prefix]
-dcl_Control_
+[Function]
+dcl_Control_SetPos
 [Desc]
 This method will move a control to a new position. Optional width and height parameters can be specified to change the control's size. This function simply updates the control's size and position properties. If the control window is a child window, the coordinates are interpreted as client coordinates of its parent window, otherwise they are screen coordinates.
 [Arguments]
@@ -57,8 +57,8 @@ This method will move a control to a new position. Optional width and height par
 
 [Method]
 ZOrder
-[Prefix]
-dcl_Control_
+[Function]
+dcl_Control_ZOrder
 [Desc]
 This method will move the control to the front of all controls or behind all controls. \par      \cf1 Direction \cf0 = \b1 0 \b0 (Move to the \b1 Bottom \b0 of the Tab/ZOrder list) \par      \cf1 Direction \cf0 = \b1 1 \b0 (Move to the \b1 Top \b0 of the Tab/ZOrder list)
 [Arguments]
@@ -69,8 +69,8 @@ This method will move the control to the front of all controls or behind all con
 
 [Method]
 ShowToolTip
-[Prefix]
-dcl_Control_
+[Function]
+dcl_Control_ShowToolTip
 [Desc]
 This method will display the tooltip for the control. The tooltip will remain on the screen until the user dismisses it by clicking on it.
 [Arguments]
@@ -79,8 +79,8 @@ This method will display the tooltip for the control. The tooltip will remain on
 
 [Method]
 GetHwnd
-[Prefix]
-dcl_Control_
+[Function]
+dcl_Control_GetHwnd
 [Desc]
 This method will return the Hwnd value of the control. This may be required by an ActiveX control.
 [Arguments Return] as Entity Name
@@ -89,8 +89,8 @@ This method will return the Hwnd value of the control. This may be required by a
 
 [Method]
 GetProperties
-[Prefix]
-dcl_Control_
+[Function]
+dcl_Control_GetProperties
 [Desc]
 Returns a list of names of all properties attached to the control. This list includes hidden properties and properties of types that cannot be managed from AutoLISP.
 [Arguments Return] as List of Strings

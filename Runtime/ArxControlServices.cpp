@@ -27,7 +27,7 @@ void CArxControlServices::SetLispSymbol( bool bResetToNil /*= false*/ ) const
 	if( msLispSymbolName.IsEmpty() )
 		return;
 	if( !bResetToNil )
-		theArxWorkspace.SetLispSymbol( msLispSymbolName, (UINT_PTR)(const CDclControlObject*)mpDlgControl->GetTemplate() );
+		theArxWorkspace.SetLispSymbol( msLispSymbolName, (const CDclControlObject*)mpDlgControl->GetTemplate(), odcl::ptrDclControl );
 	else
 		theArxWorkspace.ResetLispSymbol( msLispSymbolName );
 }

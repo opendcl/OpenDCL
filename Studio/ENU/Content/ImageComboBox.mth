@@ -1,7 +1,7 @@
 [Method]
 AddString
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_AddString
 [Desc]
 This method will add a new item to the specified ComboBox. This method will return the index of the new inserted item.  
 [Arguments as Integer]
@@ -19,9 +19,9 @@ This method will add a new item to the specified ComboBox. This method will retu
 
 
 [Method]
-GetEBText
-[Prefix]
-dcl_ImageComboBox_
+GetTBText
+[Function]
+dcl_ImageComboBox_GetTBText
 [Desc]
 This method gets the text in the control's internal edit control.
 [Arguments Return] as String
@@ -30,8 +30,8 @@ This method gets the text in the control's internal edit control.
 
 [Method]
 GetItem
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_GetItem
 [Desc]
 This method gets the text, image, selected image and indent of the indicated item. A list is returned indicating (String, Image, Selected Image and Indent).
 [Arguments as List]
@@ -42,8 +42,8 @@ This method gets the text, image, selected image and indent of the indicated ite
 
 [Method]
 SetItem
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_SetItem
 [Desc]
 This method sets the text, image, selected image and indent of the indicated item.
 [Arguments]
@@ -62,8 +62,8 @@ This method sets the text, image, selected image and indent of the indicated ite
 
 [Method]
 SetDroppedWidth
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_SetDroppedWidth
 [Desc]
 This method sets the minimum allowable width for the control's drop-down ListBox.
 [Arguments]
@@ -74,8 +74,8 @@ This method sets the minimum allowable width for the control's drop-down ListBox
 
 [Method]
 GetDroppedWidth
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_GetDroppedWidth
 [Desc]
 This method retrieves the minimum allowable width for the control's drop-down ListBox.
 [Arguments Return] as Integer
@@ -84,8 +84,8 @@ This method retrieves the minimum allowable width for the control's drop-down Li
 
 [Method]
 SetEditSel
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_SetEditSel
 [Desc]
 This method highlights characters in the edit control of a ComboBox using a start and end position.
 [Arguments]
@@ -98,8 +98,8 @@ This method highlights characters in the edit control of a ComboBox using a star
 
 [Method]
 GetEditSel
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_GetEditSel
 [Desc]
 This method will return a list indicating the start and end position of the selected characters in the edit control of a ComboBox.
 [Arguments Return] as List of Integers
@@ -108,8 +108,8 @@ This method will return a list indicating the start and end position of the sele
 
 [Method]
 Clear
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_Clear
 [Desc]
 This method will clear the ComboBox of all its items.
 [Arguments]
@@ -118,8 +118,8 @@ This method will clear the ComboBox of all its items.
 
 [Method]
 GetCount
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_GetCount
 [Desc]
 This method will return the total number of list items.
 [Arguments Return] as Integer
@@ -128,8 +128,8 @@ This method will return the total number of list items.
 
 [Method]
 SetCurSel
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_SetCurSel
 [Desc]
 This method will set the currently selected list item in a single selection ComboBox. Pass in a -1 if you wish to deselect the current selection.
 [Arguments]
@@ -140,8 +140,8 @@ This method will set the currently selected list item in a single selection Comb
 
 [Method]
 GetCurSel
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_GetCurSel
 [Desc]
 This method will return the index of the currently selected list item in a single selection ComboBox. -1 will be returned if nothing is selected.
 [Arguments Return] as Integer
@@ -150,8 +150,8 @@ This method will return the index of the currently selected list item in a singl
 
 [Method]
 GetTopIndex
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_GetTopIndex
 [Desc]
 This method retrieves the index of the first visible item in a ComboBox.
 [Arguments Return] as Integer
@@ -160,8 +160,8 @@ This method retrieves the index of the first visible item in a ComboBox.
 
 [Method]
 SetTopIndex
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_SetTopIndex
 [Desc]
 This method ensures that the indicated ComboBox item is visible. If it's not the ComboBox is scrolled to ensure the item is visible.
 [Arguments]
@@ -172,8 +172,8 @@ This method ensures that the indicated ComboBox item is visible. If it's not the
 
 [Method]
 SetItemData
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_SetItemData
 [Desc]
 This method will set the associated item data for the indicated list item. The item data will only accept integer values.
 [Arguments]
@@ -186,8 +186,8 @@ This method will set the associated item data for the indicated list item. The i
 
 [Method]
 GetItemData
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_GetItemData
 [Desc]
 This method will retrieve the associated item data for the indicated list item.
 [Arguments Return] as Integer
@@ -198,8 +198,8 @@ This method will retrieve the associated item data for the indicated list item.
 
 [Method]
 DeleteItem
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_DeleteItem
 [Desc]
 This method will delete an item from the ComboBox.
 [Arguments]
@@ -210,8 +210,8 @@ This method will delete an item from the ComboBox.
 
 [Method]
 FindStringExact
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_FindStringExact
 [Desc]
 This method finds the first string in a ComboBox that contains a list item with the exact string match without changing the ComboBox selection. A search for "Example Text" will find "Example Text". Use the dcl_ImageComboBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
@@ -222,8 +222,8 @@ This method finds the first string in a ComboBox that contains a list item with 
 
 [Method]
 FindString
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_FindString
 [Desc]
 This method finds the first string in a ComboBox that contains a list item with the specified prefix or partial match without changing the ComboBox selection. A search for "Text" will find "Example Text". Use the dcl_ImageComboBox_SelectString function instead to both find and select a string.
 [Arguments Return] as Integer
@@ -234,8 +234,8 @@ This method finds the first string in a ComboBox that contains a list item with 
 
 [Method]
 SelectString
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_SelectString
 [Desc]
 This method finds the first string in a ComboBox that contains the specified prefix and selects this list item in the ComboBox.
 [Arguments Return] as Integer
@@ -246,8 +246,8 @@ This method finds the first string in a ComboBox that contains the specified pre
 
 [Method]
 ClearEdit
-[Prefix]
-dcl_ImageComboBox_
+[Function]
+dcl_ImageComboBox_ClearEdit
 [Desc]
 This method clears the control's internal TextBox selection (if any)
 [Arguments]

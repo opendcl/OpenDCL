@@ -5,7 +5,7 @@
 
 class CDclFormObject;
 class CProject;
-enum DclFormType;
+enum FormType;
 
 
 //This struct is used to pass standard and custom initialization data to the dialog creation function
@@ -76,7 +76,7 @@ protected:
 
 	// Services
 public:
-	virtual DclFormType GetType() const = 0;
+	virtual FormType GetType() const = 0;
 	virtual const CControlPane* GetControlPane() const = 0; //control pane should be a member of the derived class
 	virtual CControlPane* GetControlPane() = 0; //control pane should be a member of the derived class
 	virtual CWnd* GetTopLevelWnd() { return mpControlWnd; }

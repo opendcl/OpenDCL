@@ -74,11 +74,11 @@ bool CSlideCtrl::OnApplyProperty( TPropertyPtr pProp )
 			ModifyStyle( TBS_NOTICKS, 0 );
 		else
 			ModifyStyle( 0, TBS_NOTICKS );
-		Invalidate();
+		OnNeedRepaint();
 		break;
 	case Prop::TickFrequency:
 		SetTicFreq( pProp->GetLongValue() );
-		Invalidate();
+		OnNeedRepaint();
 		break;
 	case Prop::Orientation:
 		if( pProp->GetLongValue() == 0 )

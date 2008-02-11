@@ -28,6 +28,7 @@
 class CModelessDlg : public CBaseDlg
 {
 	CWnd* mpParent;
+	bool mbKeepFocus;
 	bool mbTrackingMouse;
 	bool mbInMenuLoop;
 	HWND mhwndKeyboardFocus;
@@ -39,30 +40,30 @@ public:
 	CModelessDlg( TDclFormPtr pSourceForm, CWnd* pParent = NULL, DialogParams* pParams = NULL );
 	~CModelessDlg();
 
+// Atributes
+public:
+	bool IsKeepFocus() const { return mbKeepFocus; }
+
 // CDialogObject overrides
 public:
-	virtual DclFormType GetType() const { return VdclModeless; }
+	virtual FormType GetType() const { return FrmModelessDlg; }
 	virtual bool IsModeless() const { return true; }
 	virtual bool IsDockable() const { return false; }
 	virtual bool CreateModeless( UINT nID );
 	virtual void CloseDialog(int nStatus);
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
-public:
-
-// Overrides
-public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+// CDialog Overrides
 protected:
 	virtual void OnOK();
 	virtual void OnCancel();
 
-	// Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
 
-protected:
 	virtual BOOL OnInitDialog();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg LRESULT onAcadKeepFocus(WPARAM, LPARAM);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);

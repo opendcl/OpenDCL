@@ -1,7 +1,7 @@
 [Method]
 SetPattern
-[Prefix]
-dcl_Hatch_
+[Function]
+dcl_Hatch_SetPattern
 [Desc]
 This method will display the specified hatch pattern.
 [Arguments]
@@ -12,8 +12,8 @@ This method will display the specified hatch pattern.
 
 [Method]
 Clear
-[Prefix]
-dcl_Hatch_
+[Function]
+dcl_Hatch_Clear
 [Desc]
 This method clears the hatch control of its contents.
 [Arguments]

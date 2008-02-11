@@ -545,7 +545,7 @@ void CAxContainerCtrl::LoadPictureFile(DISPID dispid, CString sFile, WORD flag)
 	phPicture.m_pPict = ipOld;
 	
 	pstm->Release();
-	Invalidate();
+	OnNeedRepaint();
 }
 
 UINT CAxContainerCtrl::ExtractEventInfo(TDclControlPtr pControl, LPOLEOBJECT pIObject, bool bUseAsType)
@@ -892,7 +892,7 @@ void CAxContainerCtrl::LoadPicture(DISPID dispid, int nId)
 	if (nId == -1)
 	{
 		SetPicture(dispid, NULL, DISPATCH_PROPERTYPUT);
-		Invalidate();
+		OnNeedRepaint();
 		return;
 	}
 
@@ -903,7 +903,7 @@ void CAxContainerCtrl::LoadPicture(DISPID dispid, int nId)
 		if (pPicDisp != NULL)
 		{
 			SetPicture(dispid, pPicDisp, DISPATCH_PROPERTYPUT);
-			Invalidate();
+			OnNeedRepaint();
 		}
 	}
 }

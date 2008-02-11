@@ -214,6 +214,29 @@ CString CDialogControl::GetWndCaption() const
 	return mpTemplate->GetStringProperty(Prop::Caption);
 }
 
+void CDialogControl::OnFrameChanged()
+{
+	OnNeedRepaint();
+}
+
+void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= true*/ ) const
+{
+	if( bRepaintBackground &&
+			mpControlWnd->IsWindowVisible() &&
+			(mpControlWnd->GetExStyle() & WS_EX_TRANSPARENT) )
+	{ //force the control's background to be redrawn if it has a transparent background
+		CWnd* pHostDlg = mpControlPane->GetHostDialog();
+		if( pHostDlg )
+		{
+			CRect rcControl;
+			mpControlWnd->GetWindowRect( &rcControl );
+			pHostDlg->ScreenToClient( &rcControl );
+			pHostDlg->InvalidateRect( &rcControl, TRUE );
+		}
+	}
+	mpControlWnd->Invalidate();
+}
+
 void CDialogControl::ApplyPosition()
 {
 	mpControlPane->ApplyPosition( TDialogControlLockedPtr( this ) );
@@ -251,7 +274,7 @@ bool CDialogControl::ApplyPropertiesEnum()
 	if( pAutoSizeProp )
 		OnApplyProperty( pAutoSizeProp );
 	mbEnumProps = false;
-	mpControlWnd->Invalidate();
+	OnNeedRepaint();
 	return bSuccess;
 }
 
@@ -314,35 +337,20 @@ bool CDialogControl::OnApplyForegroundColor( TPropertyPtr pProp )
 	CAcadColorService* pColorService = GetColorService();
 	if( pColorService )
 		pColorService->SetForegroundColor( pProp->GetLongValue() );
-	mpControlWnd->Invalidate();
+	OnNeedRepaint();
 	return true;
 }
 
 bool CDialogControl::OnApplyBackgroundColor( TPropertyPtr pProp )
 {
+	if( pProp->GetLongValue() == -24 ) //-24 = transparent background
+		mpControlWnd->ModifyStyleEx( 0, WS_EX_TRANSPARENT );
+	else
+		mpControlWnd->ModifyStyleEx( WS_EX_TRANSPARENT, 0 );
 	CAcadColorService* pColorService = GetColorService();
 	if( pColorService )
-	{
 		pColorService->SetBackgroundColor( pProp->GetLongValue() );
-		if( pColorService->IsBackgroundTransparent() )
-		{
-			mpControlWnd->ModifyStyleEx( 0, WS_EX_TRANSPARENT );
-			if( mpControlWnd->IsWindowVisible() )
-			{ //force the background to be redrawn
-				CWnd* pHostDlg = mpControlPane->GetHostDialog();
-				if( pHostDlg )
-				{
-					CRect rcControl;
-					mpControlWnd->GetWindowRect( &rcControl );
-					pHostDlg->ScreenToClient( &rcControl );
-					pHostDlg->InvalidateRect( &rcControl, TRUE );
-				}
-			}
-		}
-		else
-			mpControlWnd->ModifyStyleEx( WS_EX_TRANSPARENT, 0 );
-	}
-	mpControlWnd->Invalidate();
+	OnNeedRepaint();
 	return true;
 }
 
@@ -370,6 +378,7 @@ bool CDialogControl::OnApplyBorderStyle( TPropertyPtr pProp )
 bool CDialogControl::OnApplyEnabled( TPropertyPtr pProp )
 {
 	mpControlWnd->EnableWindow( pProp->GetBooleanValue() );
+	OnNeedRepaint();
 	return true;
 }
 
@@ -394,6 +403,7 @@ bool CDialogControl::OnApplyVisible( TPropertyPtr pProp )
 bool CDialogControl::OnApplyCaption( TPropertyPtr pProp )
 {
 	mpControlWnd->SetWindowText( pProp->GetStringValue() );
+	OnNeedRepaint();
 	return true;
 }
 
@@ -427,7 +437,7 @@ bool CDialogControl::OnApplyUseVisualStyle( TPropertyPtr pProp )
 		pThemeHelper->SetWindowTheme( hwnd, NULL, NULL );
 	else
 		pThemeHelper->SetWindowTheme( hwnd, L"", L"" );
-	mpControlWnd->Invalidate();
+	OnNeedRepaint();
 	return true;
 }
 
@@ -441,7 +451,7 @@ bool CDialogControl::OnApplyToolTip( TPropertyPtr pProp )
 bool CDialogControl::OnApplyFont( TPropertyPtr pProp )
 {
 	mpControlWnd->SetFont( theWorkspace.GetFontCollection().GetFont( mpTemplate, mpControlWnd ) );
-	mpControlWnd->Invalidate();
+	OnNeedRepaint();
 	return true;
 }
 

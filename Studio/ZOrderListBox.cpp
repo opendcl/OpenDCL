@@ -173,7 +173,8 @@ void CZOrderListBox::OnMovezToIndex( int idxInsertAt )
 			if( idxIter < idxInsertAt )
 				--idxInsertAt;
 		}
-		++idxIter;
+		else
+			++idxIter;
 	}
 	TDclControlList::iterator iterInsert = mControls.begin();
 	while( idxInsertAt-- > 0 )
@@ -314,7 +315,7 @@ void CZOrderListBox::OnMovezfrontby1()
 
 BOOL CZOrderListBox::PreTranslateMessage(MSG* pMsg) 
 {
-	if( pMsg->message == WM_KEYDOWN ||  pMsg->message == WM_CHAR )
+	if( pMsg->message == WM_KEYDOWN || pMsg->message == WM_CHAR )
 	{
 		if( AfxGetMainWnd()->PreTranslateMessage(pMsg) )
 			return TRUE;
@@ -359,7 +360,7 @@ void CZOrderListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		pDC->DrawText( sControlName, sControlName.GetLength(), &rcDraw, DT_NOPREFIX | DT_SINGLELINE );
 		pDC->RestoreDC( -1 );
 	}
-	if( (lpDrawItemStruct->itemState & ODS_FOCUS) )
+	if( idxItem == GetAnchorIndex() )
 		pDC->DrawFocusRect( &lpDrawItemStruct->rcItem );
 }
 
@@ -375,14 +376,37 @@ void CZOrderListBox::OnLButtonDown(UINT nFlags, CPoint point)
 	int idxSel = ItemFromPoint( point, bOutside );
 	if( !bOutside )
 	{
-		TDclControlList::iterator iter = mControls.begin();
-		int ctIter = idxSel;
-		while( ctIter-- > 0 && iter != mControls.end() )
-			++iter;
-		if( IsControlSelected( *iter ) )
-			mnItemUnselectPending = idxSel;
-		SetControlSelected( *iter, true );
-		theStudioWorkspace.ActivateDclControl( *iter );
+		int idxAnchor = GetAnchorIndex();
+		if( (nFlags & MK_SHIFT) && idxAnchor >= 0 )
+		{
+			int idxStart = (idxAnchor < idxSel)? idxAnchor : idxSel;
+			int idxEnd = (idxAnchor < idxSel)? idxSel : idxAnchor;
+			SelItemRange( TRUE, idxStart, idxEnd );
+			TDclControlList::iterator iter = mControls.begin();
+			int ctIter = idxStart;
+			while( ctIter-- > 0 && iter != mControls.end() )
+				++iter;
+			ctIter = idxEnd - idxStart;
+			while( ctIter-- >= 0 && iter != mControls.end() )
+			{
+				SetControlSelected( *iter, true );
+				theStudioWorkspace.ActivateDclControl( *iter );
+				++iter;
+			}
+			SetAnchorIndex( idxAnchor );
+		}
+		else
+		{
+			TDclControlList::iterator iter = mControls.begin();
+			int ctIter = idxSel;
+			while( ctIter-- > 0 && iter != mControls.end() )
+				++iter;
+			if( IsControlSelected( *iter ) )
+				mnItemUnselectPending = idxSel;
+			SetAnchorIndex( idxSel );
+			SetControlSelected( *iter, true );
+			theStudioWorkspace.ActivateDclControl( *iter );
+		}
 	}
 	mptDragStart = point;
 

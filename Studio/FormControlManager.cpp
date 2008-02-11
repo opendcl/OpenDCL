@@ -99,27 +99,31 @@ __UINT_LRESULT CFormControlManager::OnNcHitTest(CPoint point)
 	if( mptDragStart.x != -1 && mptDragStart.y != -1 )
 		return HTCLIENT; //starting a drag operation, so need to route through OnMouseMove
 
-	const TDclControlList& Controls = mpDlgObject->GetSourceForm()->GetControlList();
-	for( TDclControlList::const_reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
+	bool bShiftPressed = (GetAsyncKeyState( VK_SHIFT ) != 0);
+	if( bShiftPressed || theStudioWorkspace.GetToolboxPane()->IsPointer() )
 	{
-		TDclControlPtr pDclControl = *iter;
-		CDialogControl* pDlgControl = pDclControl->GetControlInstance();
-		if( !pDlgControl )
-			continue;
-		CControlManager* pManager = pDlgControl->GetControlManager();
-		if( pManager == this )
-			continue;
-		//holding [shift] disallows resizing and ignores transparent areas for easier selection
-		LRESULT lhtResult = pManager->HitTest( point, (GetAsyncKeyState( VK_SHIFT ) != 0) );
-		if( lhtResult == HTNOWHERE )
-			continue;
-		if( lhtResult == HTCLIENT )
-			return HTCLIENT;
-		if( lhtResult == HTOBJECT )
-			return HTOBJECT;
-		if( lhtResult >= HTSIZEFIRST && lhtResult <= HTSIZELAST )
-			return lhtResult;
-		return HTBORDER;
+		const TDclControlList& Controls = mpDlgObject->GetSourceForm()->GetControlList();
+		for( TDclControlList::const_reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
+		{
+			TDclControlPtr pDclControl = *iter;
+			CDialogControl* pDlgControl = pDclControl->GetControlInstance();
+			if( !pDlgControl )
+				continue;
+			CControlManager* pManager = pDlgControl->GetControlManager();
+			if( pManager == this )
+				continue;
+			//holding [shift] disallows resizing and ignores transparent areas for easier selection
+			LRESULT lhtResult = pManager->HitTest( point, bShiftPressed );
+			if( lhtResult == HTNOWHERE )
+				continue;
+			if( lhtResult == HTCLIENT )
+				return HTCLIENT;
+			if( lhtResult == HTOBJECT )
+				return HTOBJECT;
+			if( lhtResult >= HTSIZEFIRST && lhtResult <= HTSIZELAST )
+				return lhtResult;
+			return HTBORDER;
+		}
 	}
 	CRect rcDlg;
 	mpDlgObject->GetWindowRect( &rcDlg );

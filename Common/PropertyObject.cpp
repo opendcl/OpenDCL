@@ -560,7 +560,8 @@ public:
 			if( !mpValue )
 				mpValue = new PropVal::TCStringArray;
 			int idxToken = 0;
-			while( idxToken >= 0 )
+			int cchVal = v.GetLength();
+			while( idxToken >= 0 && idxToken < cchVal )
 				mpValue->push_back( v.Tokenize( _T("|"), idxToken ) );
 			return true;
 		}
@@ -695,7 +696,8 @@ public:
 			if( !mpValue )
 				mpValue = new PropVal::TIntArray;
 			int idxToken = 0;
-			while( idxToken >= 0 )
+			int cchVal = v.GetLength();
+			while( idxToken >= 0 && idxToken < cchVal )
 				mpValue->push_back( _tstol( v.Tokenize( _T("|"), idxToken ) ) );
 			return true;
 		}
@@ -1598,6 +1600,7 @@ bool CPropertyObject::SetLongValue( long lValue )
 {
 	OnChanging();
 	bool bSuccess = false;
+/* special case handling is no longer necessary, as control position properties are now always longs
 	if( GetType() == PropBool )
 	{	//special case handling for control positioning properties that can be either long or boolean
 		if( lValue == 0 || lValue == 1 )
@@ -1610,6 +1613,8 @@ bool CPropertyObject::SetLongValue( long lValue )
 	}
 	else
 		bSuccess = mpValue->SetValue( lValue );
+*/
+	bSuccess = mpValue->SetValue( lValue );
 	assert( bSuccess == true );
 	return bSuccess;
 }

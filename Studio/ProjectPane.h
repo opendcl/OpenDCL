@@ -20,6 +20,7 @@ class CProjectPane : public CCtrlView
 	HTREEITEM mhtiDockableParent;
 	HTREEITEM mhtiConfigParent;	
 	HTREEITEM mhtiFileDialogParent;
+	HTREEITEM mhtiPaletteParent;
 	HTREEITEM mhtiAutoLispFileParent;
 	HTREEITEM mhtiAutoLispFile;
 	HTREEITEM mhtiPasswordParent;
@@ -40,6 +41,7 @@ public:
 	HTREEITEM GetDockableParentTreeItem() const { return mhtiDockableParent; }
 	HTREEITEM GetConfigParentTreeItem() const { return mhtiConfigParent; }
 	HTREEITEM GetFileDialogParentTreeItem() const { return mhtiFileDialogParent; }
+	HTREEITEM GetPaletteParentTreeItem() const { return mhtiPaletteParent; }
 	HTREEITEM GetAutoLispFileParentTreeItem() const { return mhtiAutoLispFileParent; }
 	HTREEITEM GetAutoLispFileTreeItem() const { return mhtiAutoLispFile; }
 	HTREEITEM GetPasswordParentTreeItem() const { return mhtiPasswordParent; }
@@ -86,6 +88,8 @@ protected:
 	afx_msg void OnUpdateAddconfig(CCmdUI *pCmdUI);
 	afx_msg void OnAddfiledialogbox();
 	afx_msg void OnUpdateAddfiledialogbox(CCmdUI *pCmdUI);
+	afx_msg void OnAddpalette();
+	afx_msg void OnUpdateAddpalette(CCmdUI *pCmdUI);
 	afx_msg void OnPicturefolder();
 	afx_msg void OnUpdatePicturefolder(CCmdUI *pCmdUI);
 	afx_msg void OnSetautolispfilename();

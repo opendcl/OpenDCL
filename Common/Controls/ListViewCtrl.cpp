@@ -462,7 +462,7 @@ bool CListViewCtrl::SortTextItems( int nCol, bool bAscending )
 		SetItemState( idxRow, RowState.first, ~UINT(0) );
 	}
 	SetRedraw( TRUE );
-	Invalidate();
+	OnNeedRepaint();
 	return true;
 }
 
@@ -536,7 +536,7 @@ bool CListViewCtrl::SortNumericItems( int nCol, bool bAscending )
 		SetItemState( idxRow, RowState.first, ~UINT(0) );
 	}
 	SetRedraw( TRUE );
-	Invalidate();
+	OnNeedRepaint();
 	return true;
 }
 
@@ -671,17 +671,29 @@ HBRUSH CListViewCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 
 void CListViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	__super::OnLButtonDown(nFlags, point);
-
 	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) )
 	{
-		POSITION pos = GetFirstSelectedItemPosition();
-		int mnDragSource = pos? GetNextSelectedItem( pos ) : -1;
+		UINT nHTFlags = 0;
+		int mnDragSource = HitTest( point, &nHTFlags );
 		if( mnDragSource >= 0 )
 		{
+			if( (nFlags & MK_CONTROL) == 0 )
+			{
+				POSITION pos = GetFirstSelectedItemPosition();
+				while( pos )
+				{
+					int idxItem = GetNextSelectedItem( pos );
+					if( idxItem != mnDragSource )
+						SetItemState( mnDragSource, 0, LVIS_SELECTED );
+				}
+			}
+			SetItemState( mnDragSource, LVIS_SELECTED, LVIS_SELECTED );
 			DWORD dwDropEffect = BeginDragDrop( point );
 			if( dwDropEffect == DROPEFFECT_MOVE )
 				DeleteItem( mnDragSource );
+			PostMessage( WM_LBUTTONUP, 0, MAKELPARAM(point.x,point.y) );	
 		}
 	}
+
+	__super::OnLButtonDown(nFlags, point);
 }

@@ -80,7 +80,7 @@ protected:
 
 // CDialogObject Overrides
 public:
-	virtual DclFormType GetType() const;
+	virtual FormType GetType() const;
 	virtual const CControlPane* GetControlPane() const { return &mControlPane; }
 	virtual CControlPane* GetControlPane() { return &mControlPane; }
 	virtual bool IsModeless() const;

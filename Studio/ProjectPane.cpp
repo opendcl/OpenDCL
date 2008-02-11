@@ -69,6 +69,8 @@ BEGIN_MESSAGE_MAP(CProjectPane, CCtrlView)
 	ON_UPDATE_COMMAND_UI(ID_ADDCONFIG, &CProjectPane::OnUpdateAddconfig)
 	ON_COMMAND(ID_ADDFILEDIALOGBOX, &CProjectPane::OnAddfiledialogbox)
 	ON_UPDATE_COMMAND_UI(ID_ADDFILEDIALOGBOX, &CProjectPane::OnUpdateAddfiledialogbox)
+	ON_COMMAND(ID_ADDPALETTE, &CProjectPane::OnAddpalette)
+	ON_UPDATE_COMMAND_UI(ID_ADDPALETTE, &CProjectPane::OnUpdateAddpalette)
 	ON_COMMAND(ID_PICTUREFOLDER, &CProjectPane::OnPicturefolder)
 	ON_UPDATE_COMMAND_UI(ID_PICTUREFOLDER, &CProjectPane::OnUpdatePicturefolder)
 	ON_COMMAND(ID_SETPROJECTPASSWORD, &CProjectPane::OnSetpassword)
@@ -88,6 +90,7 @@ CProjectPane::CProjectPane()
 , mhtiDockableParent( NULL )
 , mhtiConfigParent( NULL )
 , mhtiFileDialogParent( NULL )
+, mhtiPaletteParent( NULL )
 , mhtiAutoLispFileParent( NULL )
 , mhtiAutoLispFile( NULL )
 , mhtiPasswordParent( NULL )
@@ -108,6 +111,7 @@ CProjectPane::CProjectPane()
 	mTreeImageList.Add(LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_PASSWORD)));
 	mTreeImageList.Add(LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_AXFILE)));
 	mTreeImageList.Add(LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_FILEDLG)));
+	mTreeImageList.Add(LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_PALETTE)));
 }
 
 CProjectPane::~CProjectPane()
@@ -269,6 +273,7 @@ void CProjectPane::OnActivateProject(TStudioProjectPtr pProject /*= NULL*/)
 	mhtiPassword = NULL;
 	mhtiAxFilesParent = NULL;
 	mhtiFileDialogParent = NULL;
+	mhtiPaletteParent = NULL;
 
 	if( mpProject && mpProject != pProject )
 	{
@@ -363,7 +368,7 @@ void CProjectPane::AddFormToTree(TDclFormPtr pDcl, bool bForceShow)
 		switch (pDcl->GetType())
 		{
 			
-		case VdclFileDialog:
+		case FrmFileDlg:
 			if (mhtiFileDialogParent == NULL)
 			{
 				sText = theWorkspace.LoadResourceString(IDS_FILEDLGS);
@@ -374,7 +379,7 @@ void CProjectPane::AddFormToTree(TDclFormPtr pDcl, bool bForceShow)
 			GetTreeCtrl().SetItemImage(pDcl->m_htiTreeItem, 9,9);			
 			break;
 
-		case VdclModal:
+		case FrmModalDlg:
 			if (mhtiModalParent == NULL)
 			{
 				sText = theWorkspace.LoadResourceString(IDS_MODALFORMS);
@@ -384,7 +389,7 @@ void CProjectPane::AddFormToTree(TDclFormPtr pDcl, bool bForceShow)
 			pDcl->m_htiTreeItem = GetTreeCtrl().InsertItem(pDcl->GetKeyName(), mhtiModalParent, TVI_SORT);
 			GetTreeCtrl().SetItemImage(pDcl->m_htiTreeItem, 2,2);
 			break;
-		case VdclModeless:
+		case FrmModelessDlg:
 			if (mhtiModelessParent == NULL)
 			{
 				sText = theWorkspace.LoadResourceString(IDS_MODELESSFORMS);
@@ -394,7 +399,7 @@ void CProjectPane::AddFormToTree(TDclFormPtr pDcl, bool bForceShow)
 			pDcl->m_htiTreeItem = GetTreeCtrl().InsertItem(pDcl->GetKeyName(), mhtiModelessParent, TVI_SORT);
 			GetTreeCtrl().SetItemImage(pDcl->m_htiTreeItem, 3,3);
 			break;
-		case VdclDockable:
+		case FrmDockableDlg:
 			if (mhtiDockableParent == NULL)
 			{
 				sText = theWorkspace.LoadResourceString(IDS_DOCKABLEFORMS);
@@ -404,7 +409,7 @@ void CProjectPane::AddFormToTree(TDclFormPtr pDcl, bool bForceShow)
 			pDcl->m_htiTreeItem = GetTreeCtrl().InsertItem(pDcl->GetKeyName(), mhtiDockableParent, TVI_SORT);
 			GetTreeCtrl().SetItemImage(pDcl->m_htiTreeItem, 4,4);
 			break;
-		case VdclConfigTab:
+		case FrmConfigTab:
 			if (mhtiConfigParent == NULL)
 			{
 				sText = theWorkspace.LoadResourceString(IDS_CONFIGTABS);
@@ -414,28 +419,40 @@ void CProjectPane::AddFormToTree(TDclFormPtr pDcl, bool bForceShow)
 			pDcl->m_htiTreeItem = GetTreeCtrl().InsertItem(pDcl->GetKeyName(), mhtiConfigParent, TVI_SORT);
 			GetTreeCtrl().SetItemImage(pDcl->m_htiTreeItem, 5,5);
 			break;
-		case VdclTabForm:
-			HTREEITEM hItem = FindTabParent( pDcl );
-			if (hItem != NULL && hItem != TVI_ROOT)
+		case FrmTabPage:
 			{
-				HTREEITEM hInsertAfter = TVI_FIRST;
-				short idxTab = pDcl->GetTabIndex();
-				for( short idx = idxTab; idx > 0; --idx )
+				HTREEITEM hItem = FindTabParent( pDcl );
+				if (hItem != NULL && hItem != TVI_ROOT)
 				{
-					HTREEITEM hNext =
-						(hInsertAfter == TVI_FIRST)? GetTreeCtrl().GetChildItem( hItem ) : GetTreeCtrl().GetNextSiblingItem( hInsertAfter );
-					if( !hNext )
-						break;
-					if( GetTreeCtrl().GetItemData( hNext ) > (DWORD_PTR)idxTab )
-						break;
-					hInsertAfter = hNext;
+					HTREEITEM hInsertAfter = TVI_FIRST;
+					short idxTab = pDcl->GetTabIndex();
+					for( short idx = idxTab; idx > 0; --idx )
+					{
+						HTREEITEM hNext =
+							(hInsertAfter == TVI_FIRST)? GetTreeCtrl().GetChildItem( hItem ) : GetTreeCtrl().GetNextSiblingItem( hInsertAfter );
+						if( !hNext )
+							break;
+						if( GetTreeCtrl().GetItemData( hNext ) > (DWORD_PTR)idxTab )
+							break;
+						hInsertAfter = hNext;
+					}
+					if( !hInsertAfter )
+						hInsertAfter = TVI_LAST;
+					pDcl->m_htiTreeItem = GetTreeCtrl().InsertItem( FindTabCaption( pDcl ), hItem, hInsertAfter );
+					GetTreeCtrl().SetItemImage( pDcl->m_htiTreeItem, 5, 5 );
+					GetTreeCtrl().SetItemData( pDcl->m_htiTreeItem, pDcl->GetTabIndex() );
 				}
-				if( !hInsertAfter )
-					hInsertAfter = TVI_LAST;
-				pDcl->m_htiTreeItem = GetTreeCtrl().InsertItem( FindTabCaption( pDcl ), hItem, hInsertAfter );
-				GetTreeCtrl().SetItemImage( pDcl->m_htiTreeItem, 5, 5 );
-				GetTreeCtrl().SetItemData( pDcl->m_htiTreeItem, pDcl->GetTabIndex() );
 			}
+			break;
+		case FrmPaletteDlg:
+			if (mhtiPaletteParent == NULL)
+			{
+				sText = theWorkspace.LoadResourceString(IDS_PALETTEFORMS);
+				mhtiPaletteParent = GetTreeCtrl().InsertItem(sText, TVI_ROOT, TVI_SORT);
+				GetTreeCtrl().SetItemImage(mhtiPaletteParent, 1,1);
+			}
+			pDcl->m_htiTreeItem = GetTreeCtrl().InsertItem(pDcl->GetKeyName(), mhtiPaletteParent, TVI_SORT);
+			GetTreeCtrl().SetItemImage(pDcl->m_htiTreeItem, 10, 10);
 			break;
 		}
 		// if the new tree node is to be shown
@@ -570,7 +587,7 @@ void CProjectPane::OnUpdateRemoveForm(CCmdUI* pCmdUI)
 
 void CProjectPane::OnAddmodal() 
 {
-	theStudioWorkspace.GetStudioFrame()->AddNewDclFormView( VdclModal );
+	theStudioWorkspace.GetStudioFrame()->AddNewDclFormView( FrmModalDlg );
 }
 
 void CProjectPane::OnUpdateAddmodal(CCmdUI *pCmdUI)
@@ -580,7 +597,7 @@ void CProjectPane::OnUpdateAddmodal(CCmdUI *pCmdUI)
 
 void CProjectPane::OnAddmodeless() 
 {
-	theStudioWorkspace.GetStudioFrame()->AddNewDclFormView( VdclModeless );
+	theStudioWorkspace.GetStudioFrame()->AddNewDclFormView( FrmModelessDlg );
 }
 
 void CProjectPane::OnUpdateAddmodeless(CCmdUI *pCmdUI)
@@ -590,7 +607,7 @@ void CProjectPane::OnUpdateAddmodeless(CCmdUI *pCmdUI)
 
 void CProjectPane::OnAddconfig() 
 {
-	theStudioWorkspace.GetStudioFrame()->AddNewDclFormView( VdclConfigTab );
+	theStudioWorkspace.GetStudioFrame()->AddNewDclFormView( FrmConfigTab );
 }
 
 void CProjectPane::OnUpdateAddconfig(CCmdUI *pCmdUI)
@@ -600,7 +617,7 @@ void CProjectPane::OnUpdateAddconfig(CCmdUI *pCmdUI)
 
 void CProjectPane::OnAdddockable() 
 {
-	theStudioWorkspace.GetStudioFrame()->AddNewDclFormView( VdclDockable );
+	theStudioWorkspace.GetStudioFrame()->AddNewDclFormView( FrmDockableDlg );
 }
 
 void CProjectPane::OnUpdateAdddockable(CCmdUI *pCmdUI)
@@ -610,10 +627,20 @@ void CProjectPane::OnUpdateAdddockable(CCmdUI *pCmdUI)
 
 void CProjectPane::OnAddfiledialogbox() 
 {
-	theStudioWorkspace.GetStudioFrame()->AddNewDclFormView( VdclFileDialog );
+	theStudioWorkspace.GetStudioFrame()->AddNewDclFormView( FrmFileDlg );
 }
 
 void CProjectPane::OnUpdateAddfiledialogbox(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable( (mpProject != NULL) );
+}
+
+void CProjectPane::OnAddpalette() 
+{
+	theStudioWorkspace.GetStudioFrame()->AddNewDclFormView( FrmPaletteDlg );
+}
+
+void CProjectPane::OnUpdateAddpalette(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable( (mpProject != NULL) );
 }

@@ -46,7 +46,7 @@ bool CSplitterCtrl::OnApplyProperty( TPropertyPtr pProp )
 	switch( pProp->GetID() )
 	{
 	case Prop::SplitterStyle:
-		Invalidate();
+		OnNeedRepaint();
 		break;
 	}
 	return !bFailed;
@@ -140,10 +140,10 @@ void CSplitterCtrl::OnPaint()
 		}
 		break;
 	case Splitter_Raised:
-		dc.DrawEdge( &rcPaint, BDR_RAISEDINNER, BF_RECT | BF_MIDDLE );
+		dc.DrawEdge( &rcPaint, EDGE_RAISED, BF_RECT | BF_MIDDLE );
 		break;
 	case Splitter_Sunken:
-		dc.DrawEdge( &rcPaint, EDGE_BUMP, BF_RECT | BF_MIDDLE );
+		dc.DrawEdge( &rcPaint, EDGE_SUNKEN, BF_RECT | BF_MIDDLE );
 		break;
 	default:
 		dc.FillSolidRect( &rcPaint, GetSysColor( COLOR_BTNFACE ) );

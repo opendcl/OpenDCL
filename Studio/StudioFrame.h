@@ -32,7 +32,7 @@ public:
 	void OnFontChange( const FontSettings& FS ); // change font
 
 	CDclFormView* OpenDclFormView( TDclFormPtr pDclForm );
-	TDclFormPtr AddNewDclFormView( DclFormType nType );
+	TDclFormPtr AddNewDclFormView( FormType nType );
 
 protected:
 	BOOL VerifyBarState( LPCTSTR lpszProfileName );

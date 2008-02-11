@@ -106,6 +106,12 @@ bool GetProjectArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TArxProjectPtr& pPro
 			HandleArgError( pArgs, odcl::argNil );
 		return false; //wrong argument type
 	case RTENAME:
+		if( pArgs->resval.rlname[1] != odcl::ptrDclProject )
+		{
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argWrongType );
+			return false; 
+		}
 		pProject = TArxProjectLockedPtr( (CArxProject*)pArgs->resval.rlname[0] );
 		break;
 	case RTSTR:
@@ -144,6 +150,12 @@ bool GetFormArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TDclFormPtr& pForm, /*i
 		return false; //wrong argument type
 	case RTENAME:
 		{
+			if( pArgs->resval.rlname[1] != odcl::ptrDclControl )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; 
+			}
 			TDclControlLockedPtr pDclControl( (CDclControlObject*)pArgs->resval.rlname[0] );
 			if( pDclControl )
 				pForm = pDclControl->GetOwnerForm();
@@ -173,7 +185,7 @@ bool GetFormArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TDclFormPtr& pForm, /*i
 					HandleArgError( pArgs, odcl::argWrongType );
 				return false; //wrong argument type
 			}
-			pForm = theArxWorkspace.FindForm(pszProjectName, pArgs->resval.rstring);
+			pForm = theArxWorkspace.FindForm( pszProjectName, pArgs->resval.rstring );
 			break;
 		}
 	default:
@@ -208,6 +220,12 @@ bool GetControlArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TDclControlPtr& pCon
 			HandleArgError( pArgs, odcl::argNil );
 		return false; //wrong argument type
 	case RTENAME:
+		if( pArgs->resval.rlname[1] != odcl::ptrDclControl )
+		{
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argWrongType );
+			return false; 
+		}
 		pControl = TDclControlLockedPtr( (CDclControlObject*)pArgs->resval.rlname[0] );
 		break;
 	case RTSTR:
@@ -618,6 +636,12 @@ bool GetHandleArgument( /*in-out*/ resbuf*& pArgs, /*out*/ DWORD_PTR& nArg, /*in
 		nArg = pArgs->resval.rlong;
 		break;
 	case RTENAME:
+		if( pArgs->resval.rlname[1] != odcl::ptrHandle )
+		{
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argWrongType );
+			return false; 
+		}
 		nArg = pArgs->resval.rlname[0];
 		break;
 	default:
@@ -646,6 +670,28 @@ bool GetDoubleArgument( /*in-out*/ resbuf*& pArgs, /*out*/ double& dblArg, /*in*
 		break;
 	case RTSHORT:
 		dblArg = pArgs->resval.rint;
+		break;
+	default:
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argWrongType );
+		return false; //wrong type
+	}
+	pArgs = pArgs->rbnext; //move to the next argument
+	return true;
+}
+
+bool Get2dPointArgument( /*in-out*/ resbuf*& pArgs, /*out*/ AcGePoint2d& pntArg, /*in*/ bool bQuiet /*= false*/ )
+{
+	if( !pArgs )
+	{
+		if( !bQuiet )
+			HandleArgError( pArgs, odcl::argNotEnough );
+		return false; //arguments expected
+	}
+	switch( pArgs->restype )
+	{
+	case RTPOINT:
+		pntArg.set( pArgs->resval.rpoint[X], pArgs->resval.rpoint[Y] );
 		break;
 	default:
 		if( !bQuiet )
@@ -736,6 +782,12 @@ bool GetIUnknownArgument( /*in-out*/ resbuf*& pArgs, /*out*/ IUnknown*& pUnk, /*
 	switch( pArgs->restype )
 	{	
 		case RTENAME:
+			if( pArgs->resval.rlname[1] != odcl::ptrIUnknown )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; 
+			}
 			pUnk = (IUnknown*)pArgs->resval.rlname[0];
 			pArgs = pArgs->rbnext;
 			break;
@@ -753,33 +805,20 @@ bool GetIUnknownArgument( /*in-out*/ resbuf*& pArgs, /*out*/ IUnknown*& pUnk, /*
 
 bool GetIDispatchArgument( /*in-out*/ resbuf*& pArgs, /*out*/ IDispatch*& pDisp, /*in*/ bool bQuiet /*= false*/ )
 {
-	switch( pArgs->restype )
-	{	
-		case RTENAME:
-			{
-				IUnknown* pUnk = (IUnknown*)pArgs->resval.rlname[0];
-				if( !pUnk )
-					pDisp = NULL;
-				else
-				{
-					if( FAILED(pUnk->QueryInterface( IID_IDispatch, (void**)&pDisp )) )
-					{
-						if( !bQuiet )
-							HandleArgError( pArgs, odcl::argWrongType );
-						return false; 
-					}
-				}
-				pArgs = pArgs->rbnext;
-			}
-			break;
-		case RTNIL:
-			pDisp = NULL;
-			pArgs = pArgs->rbnext;
-			break;
-		default:
+	resbuf* pArgC = pArgs;
+	IUnknown* pUnknown = NULL;
+	if( !GetIUnknownArgument( pArgs, pUnknown, bQuiet ) )
+		return false;
+	if( !pUnknown )
+		pDisp = NULL;
+	else
+	{
+		if( FAILED(pUnknown->QueryInterface( IID_IDispatch, (void**)&pDisp )) )
+		{
 			if( !bQuiet )
-				HandleArgError( pArgs, odcl::argWrongType );
+				HandleArgError( pArgC, odcl::argWrongType );
 			return false; 
+		}
 	}
 	return true; 
 }
@@ -926,6 +965,7 @@ bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*
 				return false;
 			}
 			color = RGB(red, green, blue);
+			pArgs = pArgs->rbnext;
 		}
 		break;
 	case RTLB:
@@ -1000,6 +1040,40 @@ bool GetIntArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CArray< int, int >&
 	if( GetNilArgument( pArgs, true ) )
 		return true;
 	bool bLB = GetListBeginArgument( pArgs, true );
+	if( !bLB )
+	{ //could be an array of integers passed as a point
+		resbuf* pArgC = pArgs;
+		AcGePoint2d pnt2IntArray;
+		AcGePoint3d pnt3IntArray;
+		if( Get2dPointArgument( pArgs, pnt2IntArray, true ) )
+		{
+			if( fabs(pnt2IntArray.x - int(pnt2IntArray.x)) > 0.0001 ||
+					fabs(pnt2IntArray.y - int(pnt2IntArray.y)) > 0.0001 )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgC, odcl::argWrongType );
+				return false;
+			}
+			rnArg.Add( int(pnt2IntArray.x) );
+			rnArg.Add( int(pnt2IntArray.y) );
+			return true;
+		}
+		else if( Get3dPointArgument( pArgs, pnt3IntArray, true ) )
+		{
+			if( fabs(pnt3IntArray.x - int(pnt3IntArray.x)) > 0.0001 ||
+					fabs(pnt3IntArray.y - int(pnt3IntArray.y)) > 0.0001 ||
+					fabs(pnt3IntArray.z - int(pnt3IntArray.z)) > 0.0001 )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgC, odcl::argWrongType );
+				return false;
+			}
+			rnArg.Add( int(pnt3IntArray.x) );
+			rnArg.Add( int(pnt3IntArray.y) );
+			rnArg.Add( int(pnt3IntArray.z) );
+			return true;
+		}
+	}
 	int nArg;
 	while( GetIntArgument( pArgs, nArg, true ) )
 		rnArg.Add( nArg );

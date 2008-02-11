@@ -393,7 +393,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 	CWnd* pDwgView = acedGetAcadDwgView();
 
 	bool bUseSendString = true;
-	if (m_pThisArxControl->GetOwnerForm()->GetType() == VdclFileDialog)
+	if (m_pThisArxControl->GetOwnerForm()->GetType() == FrmFileDlg)
 		bUseSendString = false;
 	
 	TDclControlPtr pControl = PasteArxObjectFromClipboard();

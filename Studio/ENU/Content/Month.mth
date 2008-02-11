@@ -1,7 +1,7 @@
 [Method]
 GetCurSel
-[Prefix]
-dcl_Month_
+[Function]
+dcl_Month_GetCurSel
 [Desc]
 This method returns the currently selected date.
 [Arguments Return] as List (Year Month Day)
@@ -10,8 +10,8 @@ This method returns the currently selected date.
 
 [Method]
 GetMonthRangeStart
-[Prefix]
-dcl_Month_
+[Function]
+dcl_Month_GetMonthRangeStart
 [Desc]
 This method gets the lowest allowable date limit of the MonthCalender.
 [Arguments Return] as List (Year Month Day)
@@ -20,8 +20,8 @@ This method gets the lowest allowable date limit of the MonthCalender.
 
 [Method]
 GetMonthRangeEnd
-[Prefix]
-dcl_Month_
+[Function]
+dcl_Month_GetMonthRangeEnd
 [Desc]
 This method gets the largest allowable date limit of the MonthCalender.
 [Arguments Return] as List (Year Month Day)
@@ -30,8 +30,8 @@ This method gets the largest allowable date limit of the MonthCalender.
 
 [Method]
 GetRangeStart
-[Prefix]
-dcl_Month_
+[Function]
+dcl_Month_GetRangeStart
 [Desc]
 This method gets the current minimum dates set in the MonthCalender.
 [Arguments Return] as List (Year Month Day)
@@ -40,8 +40,8 @@ This method gets the current minimum dates set in the MonthCalender.
 
 [Method]
 GetRangeEnd
-[Prefix]
-dcl_Month_
+[Function]
+dcl_Month_GetRangeEnd
 [Desc]
 This method gets the current maximum dates set in the MonthCalender.
 [Arguments Return] as List (Year Month Day)
@@ -50,8 +50,8 @@ This method gets the current maximum dates set in the MonthCalender.
 
 [Method]
 GetSelRangeStart
-[Prefix]
-dcl_Month_
+[Function]
+dcl_Month_GetSelRangeStart
 [Desc]
 This method gets the lowest selected date of the MonthCalender.
 [Arguments Return] as List (Year Month Day)
@@ -60,8 +60,8 @@ This method gets the lowest selected date of the MonthCalender.
 
 [Method]
 GetSelRangeEnd
-[Prefix]
-dcl_Month_
+[Function]
+dcl_Month_GetSelRangeEnd
 [Desc]
 This method gets the highest selected date of the MonthCalender.
 [Arguments Return] as List (Year Month Day)
@@ -70,8 +70,8 @@ This method gets the highest selected date of the MonthCalender.
 
 [Method]
 SetCurSel
-[Prefix]
-dcl_Month_
+[Function]
+dcl_Month_SetCurSel
 [Desc]
 This method sets the currently selected date for a MonthCalender.
 [Arguments]
@@ -89,8 +89,8 @@ This method sets the currently selected date for a MonthCalender.
 
 [Method]
 SetRange
-[Prefix]
-dcl_Month_
+[Function]
+dcl_Month_SetRange
 [Desc]
 This method sets the lowest and highest allowable dates for the MonthCalender.
 [Arguments]
@@ -117,8 +117,8 @@ This method sets the lowest and highest allowable dates for the MonthCalender.
 
 [Method]
 SetSelRange
-[Prefix]
-dcl_Month_
+[Function]
+dcl_Month_SetSelRange
 [Desc]
 This method sets the selection for the MonthCalender to the indicated date range.
 [Arguments]
@@ -145,11 +145,12 @@ This method sets the selection for the MonthCalender to the indicated date range
 
 [Method]
 GetToday
-[Prefix]
-dcl_Month_
+[Function]
+dcl_Month_GetToday
 [Desc]
 This method returns today’s date.
 [Arguments Return] as List
 <CONTROL>
+
 
 [End of File]

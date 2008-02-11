@@ -7,7 +7,7 @@
 #ifdef _DIAGNOSTIC
 
 #include <StrSafe.h>
-#include "DclFormTypes.h"
+#include "FormTypes.h"
 #include "ControlTypes.h"
 #include "PropertyObject.h"
 #include "PropertyIds.h"
@@ -280,24 +280,26 @@ const TCHAR* asString( const std::vector< CString >& rStr )
 
 
 inline
-const TCHAR* asString( DclFormType type )
+const TCHAR* asString( FormType type )
 {
 	switch( type )
 	{
-	case VdclInvalid:
-		return _T("VdclInvalid");
-	case VdclModal:
-		return _T("VdclModal");
-	case VdclModeless:
-		return _T("VdclModeless");
-	case VdclDockable:
-		return _T("VdclDockable");
-	case VdclConfigTab:
-		return _T("VdclConfigTab");
-	case VdclTabForm:
-		return _T("VdclTabForm");
-	case VdclFileDialog:
-		return _T("VdclFileDialog");
+	case _FrmInvalid:
+		return _T("_FrmInvalid");
+	case FrmModalDlg:
+		return _T("FrmModalDlg");
+	case FrmModelessDlg:
+		return _T("FrmModelessDlg");
+	case FrmDockableDlg:
+		return _T("FrmDockableDlg");
+	case FrmConfigTab:
+		return _T("FrmConfigTab");
+	case FrmTabPage:
+		return _T("FrmTabPage");
+	case FrmFileDlg:
+		return _T("FrmFileDlg");
+	case FrmPaletteDlg:
+		return _T("FrmPaletteDlg");
 	};
 	static TCHAR buf[1024];
 	_sntprintf( buf, _elements(buf), _T("<unknown: %s>"), asString( static_cast< int >(type) ) );
@@ -450,7 +452,7 @@ const TCHAR* asString( Prop::Id prop )
 	case Prop::_Private:
 		return _T("Null/Private");
 	};
-	LPCTSTR pszName = GetPropertyName( prop );
+	LPCTSTR pszName = GetPropertyApiName( prop );
 	if( pszName && *pszName )
 		return pszName;
 	static TCHAR buf[1024];

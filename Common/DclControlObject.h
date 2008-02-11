@@ -135,7 +135,7 @@ public:
 
 protected:
 	TPropertyList::iterator FindPropertyInsertPos( LPCTSTR pszName, bool bHidden );
-	TPropertyList::iterator FindPropertyInsertPos( Prop::Id nID, bool bHidden );
+	TPropertyList::iterator FindPropertyInsertPos( Prop::Id id, bool bHidden );
 
 // File I/O
 public:

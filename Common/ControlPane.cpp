@@ -21,7 +21,7 @@ CControlPane::CControlPane()
 , mpDlgObject( NULL )
 , mpHostDlg( NULL )
 , mbRecalcInProgress( false )
-, mhDeferredPos( NULL )
+, mbDeferWindowPos( false )
 {
 }
 
@@ -31,7 +31,7 @@ CControlPane::CControlPane(TDclFormPtr pSourceForm, CWnd* pHostDlg)
 , mpDlgObject( pSourceForm? pSourceForm->GetFormInstance() : NULL )
 , mpHostDlg( pHostDlg )
 , mbRecalcInProgress( false )
-, mhDeferredPos( NULL )
+, mbDeferWindowPos( false )
 {
 }
 
@@ -74,7 +74,7 @@ void CControlPane::AddControl( TDialogControlPtr pDlgControl )
 	mControls.push_back( pDlgControl );
 }
 
-void CControlPane::RemoveControl( TDialogControlPtr pDlgControl )
+void CControlPane::RemoveControl( CDialogControl* pDlgControl )
 {
 	for( TDialogControls::iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
 	{
@@ -88,6 +88,7 @@ void CControlPane::RemoveControl( TDialogControlPtr pDlgControl )
 
 bool CControlPane::CreateControls(UINT& nId)
 {
+	CleanUpControls();
 	TDclControlList& Controls = mpSourceForm->mDclControls;
 	if( Controls.empty() )
 		return true;
@@ -95,7 +96,8 @@ bool CControlPane::CreateControls(UINT& nId)
 	bool bVisible = (mpHostDlg->IsWindowVisible() != FALSE);
 	if( bVisible )
 		mpHostDlg->SetRedraw( FALSE );
-	for( TDclControlList::iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
+	TDialogControls rControls;
+	for( TDclControlList::reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
 	{
 		TDclControlPtr pDclControl = (*iter);
 		if (pDclControl->GetType() <= _CtlForm)
@@ -103,20 +105,23 @@ bool CControlPane::CreateControls(UINT& nId)
 		if (pDclControl->GetType() == CtlFileDlgCtrl)
 			continue;
 		UINT idDlg = pDclControl->GetID();
-		if( idDlg <= 0 || pDclControl->GetType() != CtlSplitter )
+		if( idDlg <= 2 || pDclControl->GetType() != CtlSplitter )
 			idDlg = nId++;
-		TDialogControlPtr pControl = CreateNewDialogControl( pDclControl, idDlg );
-		assert( pControl != NULL );
-		if( pControl )
-			mControls.push_back( pControl );
+		TDialogControlPtr pDlgControl = CreateNewDialogControl( pDclControl, idDlg );
+		assert( pDlgControl != NULL );
+		if( pDlgControl )
+			rControls.push_back( pDlgControl );
 		else
 			bFailed = true;
 	}
+	for( TDialogControls::reverse_iterator iter = rControls.rbegin(); iter != rControls.rend(); ++iter )
+		mControls.push_back( *iter );
 	if( bVisible )
 	{
 		mpHostDlg->RedrawWindow( NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_ALLCHILDREN );
 		mpHostDlg->SetRedraw( TRUE );
 	}
+	ApplyZOrder();
 	return !bFailed;
 }
 
@@ -132,8 +137,6 @@ void CControlPane::RecalcLayout()
 
 	mbRecalcInProgress = true;
 	TDclControlList& Controls = mpSourceForm->mDclControls;
-	assert( mhDeferredPos == NULL );
-	mhDeferredPos = BeginDeferWindowPos( 2 );
 
 	// first lets calc all the control positions for any splitter controls.
 	for( TDclControlList::iterator iter = ++Controls.begin(); iter != Controls.end(); ++iter )
@@ -142,9 +145,6 @@ void CControlPane::RecalcLayout()
 			ResetControlsPos( (*iter) );
 	}
 
-	EndDeferWindowPos( mhDeferredPos );
-	mhDeferredPos = BeginDeferWindowPos( Controls.size() );
-
 	//next lets calc all the control positions for all NON-splitter controls.
 	for( TDclControlList::iterator iter = ++Controls.begin(); iter != Controls.end(); ++iter )
 	{
@@ -152,8 +152,6 @@ void CControlPane::RecalcLayout()
 			ResetControlsPos( (*iter) );
 	}
 
-	EndDeferWindowPos( mhDeferredPos );
-	mhDeferredPos = NULL;
 	InvalidateControls();
 	mbRecalcInProgress = false;
 	//mpHostDlg->Invalidate(); //can't do this: it paints over the controls in Windows XP with Window Classic theme
@@ -196,18 +194,14 @@ void CControlPane::ResetControlsPos( TDclControlPtr pDclControl )
 	if( !pDlgControl )
 		return;
 
-	bool bDeferred = (mhDeferredPos != NULL);
-	if( !bDeferred )
-		mhDeferredPos = BeginDeferWindowPos( 1 );
+	assert( mbDeferWindowPos == false );
+	mbDeferWindowPos = true;
 	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseLeftFromRight ) );
 	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseRightFromRight ) );
 	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseTopFromBottom ) );
 	pDlgControl->OnApplyProperty( pDclControl->GetPropertyObject( Prop::UseBottomFromBottom ) );
-	if( !bDeferred )
-	{
-		EndDeferWindowPos( mhDeferredPos );
-		pDlgControl->GetControlWnd()->RedrawWindow();
-	}
+	mbDeferWindowPos = false;
+	ApplyPosition( TDialogControlLockedPtr( pDlgControl ) );
 
 	//if( (pDclControl->GetType() == CtlComboBox || pDclControl->GetType() == CtlImageComboBox) &&
 	//		((pControl->GetStyle() & CBS_DROPDOWN) != 0) )
@@ -250,6 +244,8 @@ void CControlPane::ApplyZOrder()
 
 void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
 {
+	if( mbDeferWindowPos )
+		return;
 	CWnd* pWndToMove = pDlgControl->GetControlWnd();
 	//if the control is hosted inside another window, find the ancestor that is a child
 	//of the host dialog and move it instead
@@ -258,10 +254,7 @@ void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
 				 pWndToMove->GetParent() != mpHostDlg )
 		pWndToMove = pWndToMove->GetParent();
 	CRect rcNew = pDlgControl->GetWndRect();
-	if( mhDeferredPos )
-		DeferWindowPos( mhDeferredPos, pWndToMove->m_hWnd, NULL, rcNew.left, rcNew.top, rcNew.Width(), rcNew.Height(), SWP_NOZORDER | SWP_NOREDRAW | SWP_NOACTIVATE );
-	else
-		pWndToMove->MoveWindow( &rcNew, TRUE );
+	pWndToMove->MoveWindow( &rcNew, TRUE );
 }
 
 void CControlPane::ApplyVisibility( TDialogControlPtr pDlgControl )
