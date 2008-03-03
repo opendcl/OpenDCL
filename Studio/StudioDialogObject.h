@@ -66,6 +66,7 @@ public:
 	bool IsOnlyFormActive() const;
 	bool IsControlSelected( TDclControlPtr pDclControl ) const;
 	void GetSelectedControls( TDclControlList& SelectedControls, bool bIgnoreForm = true );
+	size_t CountSelected( bool bIgnoreForm = true ) const;
 	bool PromptRemoveChildTabPane( int nIndex );
 	CDialogControl* GetControlAtPoint( const CPoint& pt ); //pt is in screen coordinates
 	int GetNextControlId();

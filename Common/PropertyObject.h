@@ -74,6 +74,7 @@ namespace PropVal
 		//attributes
 		virtual PropertyType GetType() const = 0;
 		virtual LPCTSTR GetName() const { return NULL; }
+		virtual void SetName( LPCTSTR pszName ) { return; }
 		virtual DWORD GetFlags() const { return 0; }
 		virtual DWORD SetFlags(DWORD dwFlags) { return 0; }
 		virtual bool IsReadOnly() const { return false; }
@@ -208,7 +209,8 @@ public:
 	
 	//Implementation
 public:
-	CString GetName() const;
+	virtual CString GetName() const;
+	virtual void SetName( LPCTSTR pszName );
 	CString GetDocumentationDesc() const;
 	
 	void AddStringItem( LPCTSTR pszItem );

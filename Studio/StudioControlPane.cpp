@@ -58,9 +58,9 @@ void CStudioControlPane::ZOrderFront( TDialogControlPtr pDlgControl, HDWP hDefer
 	if( pManager )
 	{
 		if( hDeferred )
-			DeferWindowPos( hDeferred, pManager->m_hWnd, HWND_TOP, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+			DeferWindowPos( hDeferred, pManager->m_hWnd, HWND_TOP, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS );
 		else
-			pManager->SetWindowPos( &CWnd::wndTop, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+			pManager->SetWindowPos( &CWnd::wndTop, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS );
 	}
 	else
 		__super::ZOrderFront( pDlgControl, hDeferred );
@@ -72,9 +72,9 @@ void CStudioControlPane::ZOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferr
 	if( pManager )
 	{
 		if( hDeferred )
-			DeferWindowPos( hDeferred, pManager->m_hWnd, HWND_BOTTOM, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+			DeferWindowPos( hDeferred, pManager->m_hWnd, HWND_BOTTOM, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS );
 		else
-			pManager->SetWindowPos( &CWnd::wndBottom, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+			pManager->SetWindowPos( &CWnd::wndBottom, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS );
 	}
 	else
 		__super::ZOrderBack( pDlgControl, hDeferred );

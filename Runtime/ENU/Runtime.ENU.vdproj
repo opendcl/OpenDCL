@@ -15,7 +15,7 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_8A29144591804BB98139A320BBA88B36"
+        "MsmKey" = "8:_1D99DF928E3C41E993D832432CB9D20C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -112,9 +112,9 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8A29144591804BB98139A320BBA88B36"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1D99DF928E3C41E993D832432CB9D20C"
             {
-            "SourcePath" = "8:..\\OpenDCL.ico"
+            "SourcePath" = "8:..\\..\\Common\\ENU\\Res\\OpenDCL.ico"
             "TargetName" = "8:OpenDCL.ico"
             "Tag" = "8:"
             "Folder" = "8:_DCA8372A944B4B6780F9B78BD25CC17E"
@@ -209,24 +209,24 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Runtime"
-        "ProductCode" = "8:{BEBA3664-EDFB-4745-B01C-789DEEB0C0E2}"
-        "PackageCode" = "8:{A9100566-2E4A-40A6-B830-9F7AAA042F61}"
+        "ProductCode" = "8:{A74E8064-72C8-4744-9486-1635A6559CF7}"
+        "PackageCode" = "8:{66D73455-FA97-4FC7-9514-0FD62DF14482}"
         "UpgradeCode" = "8:{D0AC879B-97D1-49C1-8DD6-70CEAA1950FC}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0004"
+        "ProductVersion" = "8:5.0.0007"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
-        "ARPHELPLINK" = "8:http://sourceforge.net/projects/opendcl/"
+        "ARPHELPLINK" = "8:http://www.opendcl.com"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "ARPCONTACT" = "8:OpenDCL Consortium"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:OpenDCL Runtime (US English)"
-        "ARPURLINFOABOUT" = "8:http://sourceforge.net/projects/opendcl/"
-        "ARPPRODUCTICON" = "8:_8A29144591804BB98139A320BBA88B36"
+        "ARPURLINFOABOUT" = "8:http://www.opendcl.com"
+        "ARPPRODUCTICON" = "8:_1D99DF928E3C41E993D832432CB9D20C"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -252,13 +252,35 @@
                         {
                             "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_7E69F7B279A74207ADF44D6E9BF8E8BF"
                             {
-                            "Name" = "8:[Manufacturer]"
+                            "Name" = "8:OpenDCL"
                             "Condition" = "8:"
                             "AlwaysCreate" = "11:FALSE"
                             "DeleteAtUninstall" = "11:FALSE"
                             "Transitive" = "11:FALSE"
                                 "Keys"
                                 {
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_432307AB04974D83937F7A1F05F815A6"
+                                    {
+                                    "Name" = "8:Runtime"
+                                    "Condition" = "8:"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "DeleteAtUninstall" = "11:FALSE"
+                                    "Transitive" = "11:FALSE"
+                                        "Keys"
+                                        {
+                                        }
+                                        "Values"
+                                        {
+                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_57814F94EC5547C5BF7952973E35CEF8"
+                                            {
+                                            "Name" = "8:Language"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "ValueTypes" = "3:1"
+                                            "Value" = "8:ENU"
+                                            }
+                                        }
+                                    }
                                 }
                                 "Values"
                                 {
@@ -406,10 +428,10 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A6F0C39BAEAD47D6B66ADBBFAB6227E0"
             {
-            "SourcePath" = "8:MSM\\Release\\OpenDCL.Runtime.ENU.msm"
+            "SourcePath" = "8:MSM\\Debug\\OpenDCL.Runtime.ENU.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_DCA8372A944B4B6780F9B78BD25CC17E"
+            "Folder" = "8:_7533197286ED4A179374AF5FB58B54B1"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -452,7 +474,7 @@
                     }
                 "LanguageId" = "3:1033"
                 "Exclude" = "11:FALSE"
-                "Folder" = "8:_DCA8372A944B4B6780F9B78BD25CC17E"
+                "Folder" = "8:_7533197286ED4A179374AF5FB58B54B1"
                 "Feature" = "8:"
                 "IsolateTo" = "8:"
                 }

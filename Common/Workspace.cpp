@@ -63,12 +63,15 @@ HMODULE CWorkspace::GetLocalResourceModule(void) const
 		sResRoot = sResRoot.Mid( sResRoot.SpanExcluding( _T("\\/:") ).GetLength() );
 		sResRoot.MakeReverse();
 		CString sLanguage = GetLanguage();
-		CString sLocalResPath = sResRoot + sLanguage + _T('\\') + sResModuleFilename;
+		CString sLanguageDir = sLanguage;
+		if( !sLanguage.IsEmpty() )
+			sLanguageDir += _T('\\');
+		CString sLocalResPath = sResRoot + sLanguageDir + sResModuleFilename;
 		HMODULE hmodLocalRes = LoadLibrary( sLocalResPath );
 		if( !hmodLocalRes )
 		{
 			hmodLocalRes = LoadLibrary( sResRoot + _T("ENU\\") + sResModuleFilename );
-			if( hmodLocalRes )
+			if( hmodLocalRes && !sLanguage.IsEmpty() )
 			{
 				CString sMsg;
 				sMsg.Format( _T("Missing language: %s\r\nReverting to US English"), (LPCTSTR)sLanguage );
@@ -124,14 +127,15 @@ CString CWorkspace::GetLanguage(void) const
 			sLanguage.ReleaseBuffer( 0 );
 		RegCloseKey( hkReg );
 	}
-	if( !sLanguage.IsEmpty() )
-		return sLanguage;
-	if( 0 != GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_SABBREVLANGNAME, sLanguage.GetBuffer( 64 ), 64 ) )
-	{
-		sLanguage.ReleaseBuffer();
-		return sLanguage;
-	}
-	return _T("ENU");
+	return sLanguage;
+	//if( !sLanguage.IsEmpty() )
+	//	return sLanguage;
+	//if( 0 != GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_SABBREVLANGNAME, sLanguage.GetBuffer( 64 ), 64 ) )
+	//{
+	//	sLanguage.ReleaseBuffer();
+	//	return sLanguage;
+	//}
+	//return _T("ENU");
 }
 
 CString CWorkspace::GetLanguageSubfolderPath(void) const

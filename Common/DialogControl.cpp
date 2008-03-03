@@ -197,7 +197,7 @@ CRect CDialogControl::GetWndRect() const
 
 DWORD CDialogControl::GetWndStyle() const
 {
-	DWORD dwStyle = WS_CHILD /*| WS_VISIBLE | WS_CLIPSIBLINGS*/;
+	DWORD dwStyle = WS_CHILD /*| WS_VISIBLE*/ | WS_CLIPSIBLINGS;
 
 	if( mpTemplate->GetBooleanProperty(Prop::IsTabStop) )
 		dwStyle |= WS_TABSTOP;
@@ -219,7 +219,7 @@ void CDialogControl::OnFrameChanged()
 	OnNeedRepaint();
 }
 
-void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= true*/ ) const
+void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= true*/, bool bUpdateNow /*= false*/ ) const
 {
 	if( bRepaintBackground &&
 			mpControlWnd->IsWindowVisible() &&
@@ -230,11 +230,27 @@ void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= true*/ ) const
 		{
 			CRect rcControl;
 			mpControlWnd->GetWindowRect( &rcControl );
+			if( (pHostDlg->GetExStyle() & WS_EX_TRANSPARENT) )
+			{
+				CWnd* pHostParent = pHostDlg->GetParent();
+				if( pHostParent )
+				{
+					CRect rcInvalid = rcControl;
+					pHostParent->ScreenToClient( &rcInvalid );
+					pHostParent->InvalidateRect( &rcInvalid, TRUE );
+					if( bUpdateNow )
+						pHostParent->UpdateWindow();
+				}
+			}
 			pHostDlg->ScreenToClient( &rcControl );
 			pHostDlg->InvalidateRect( &rcControl, TRUE );
+			if( bUpdateNow )
+				pHostDlg->UpdateWindow();
 		}
 	}
 	mpControlWnd->Invalidate();
+	if( bUpdateNow )
+		mpControlWnd->UpdateWindow();
 }
 
 void CDialogControl::ApplyPosition()
@@ -295,6 +311,8 @@ bool CDialogControl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::Visible: if( !OnApplyVisible( pProp ) ) bSuccess = false; break;
 	case Prop::Caption: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
 	case Prop::TitleBarText: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
+	case Prop::IsTabStop: if( !OnApplyIsTabStop( pProp ) ) bSuccess = false; break;
+	case Prop::BeginGroup: if( !OnApplyBeginGroup( pProp ) ) bSuccess = false; break;
 	case Prop::VScrollBar: if( !OnApplyVScrollBar( pProp ) ) bSuccess = false; break;
 	case Prop::HScrollBar: if( !OnApplyHScrollBar( pProp ) ) bSuccess = false; break;
 	case Prop::UseVisualStyle: if( !OnApplyUseVisualStyle( pProp ) ) bSuccess = false; break;
@@ -404,6 +422,24 @@ bool CDialogControl::OnApplyCaption( TPropertyPtr pProp )
 {
 	mpControlWnd->SetWindowText( pProp->GetStringValue() );
 	OnNeedRepaint();
+	return true;
+}
+
+bool CDialogControl::OnApplyIsTabStop( TPropertyPtr pProp )
+{
+	if( pProp->GetBooleanValue() )
+		mpControlWnd->ModifyStyle( 0, WS_TABSTOP );
+	else
+		mpControlWnd->ModifyStyle( WS_TABSTOP, 0 );
+	return true;
+}
+
+bool CDialogControl::OnApplyBeginGroup( TPropertyPtr pProp )
+{
+	if( pProp->GetBooleanValue() )
+		mpControlWnd->ModifyStyle( 0, WS_GROUP );
+	else
+		mpControlWnd->ModifyStyle( WS_GROUP, 0 );
 	return true;
 }
 

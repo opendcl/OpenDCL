@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by w:\OpenDCL\Build 5.0\Studio\ENU\Studio.Res\Studio.ENU.rc
+// Used by w:\OpenDCL\Build 5.0\Studio\RUS\Studio.Res\Studio.RUS.rc
 //
 #define IDI_ICON1                       115
 #define IDI_PALETTE                     115
@@ -615,6 +615,7 @@
 #define IDS_SPLITTERSTYLE_2             41602
 #define IDS_SPLITTERSTYLE_3             41603
 #define IDS_SPLITTERSTYLE_4             41604
+#define IDS_SPLITTERSTYLE_5             41605
 #define IDS_ORIENTATION_0               41700
 #define IDS_ORIENTATION_1               41701
 #define IDS_SELECTSTYLE_0               41800
@@ -646,6 +647,9 @@
 #define IDS_PROGRESSLEGEND_0            42300
 #define IDS_PROGRESSLEGEND_1            42301
 #define IDS_PROGRESSLEGEND_2            42302
+#define IDS_CHECKSTATE_0                42400
+#define IDS_CHECKSTATE_1                42401
+#define IDS_CHECKSTATE_2                42402
 #define IDS_COMBODESC0                  45000
 #define IDS_COMBODESC1                  45001
 #define IDS_COMBODESC2                  45002

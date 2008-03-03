@@ -8,19 +8,6 @@
 #include "ControlPane.h"
 #include "PropertyIds.h"
 
-#define BP_PUSHBUTTON			0x00000001
-#define BP_RADIOBUTTON			0x00000002
-#define BP_CHECKBOX				0x00000003
-
-#define RBS_UNCHECKEDNORMAL		0x00000001
-#define RBS_UNCHECKEDHOT		0x00000002
-#define RBS_UNCHECKEDPRESSED	0x00000003
-#define RBS_UNCHECKEDDISABLED	0x00000004
-#define RBS_CHECKEDNORMAL		0x00000005
-#define RBS_CHECKEDHOT			0x00000006
-#define RBS_CHECKEDPRESSED		0x00000007
-#define RBS_CHECKEDDISABLED		0x00000008
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CCheckBoxCtrl
@@ -50,7 +37,7 @@ DWORD CCheckBoxCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 
-	dwStyle |= (/*WS_CLIPSIBLINGS | */BS_AUTOCHECKBOX);
+	dwStyle |= (/*WS_CLIPSIBLINGS | */BS_3STATE | BS_NOTIFY);
 	return dwStyle;
 }
 
@@ -74,6 +61,10 @@ bool CCheckBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 
 BEGIN_MESSAGE_MAP(CCheckBoxCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
+	ON_WM_KEYUP()
+	ON_WM_KILLFOCUS()
 END_MESSAGE_MAP()
 
 
@@ -83,18 +74,19 @@ END_MESSAGE_MAP()
 BOOL CCheckBoxCtrl::PreTranslateMessage(MSG* pMsg) 
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
-	if (pMsg->message== WM_KEYDOWN && pMsg->wParam==VK_RETURN)
-		pMsg->wParam = VK_TAB;		
+	if (pMsg->message == WM_KEYDOWN )
+	{
+		if( pMsg->wParam == VK_RETURN )
+			pMsg->wParam = VK_TAB;
+	}
 	return __super::PreTranslateMessage(pMsg);
 }
 
 HBRUSH CCheckBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
-	HBRUSH hbrBackground = mAcadColorService.CtlColor( pDC, nCtlColor );
-	if( GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
-		return NULL; //must use class brush when themes are active, else XP paints a black background
+	HBRUSH hbrBackground = mColorService.CtlColor( pDC, nCtlColor, this );
+	//if( GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
+	//	return NULL; //must use class brush when themes are active, else XP paints a black background
 	return hbrBackground;
 }
 
@@ -102,4 +94,51 @@ void CCheckBoxCtrl::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	delete this;
+}
+
+void CCheckBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	__super::OnLButtonDown(nFlags, point);
+	if( !IsWindowEnabled() )
+		return;
+	//SetState( GetState() | BST_FOCUS );
+	//Invalidate();
+}
+
+void CCheckBoxCtrl::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	if( IsWindowEnabled() )
+	{
+		CRect rcClient;
+		GetClientRect( &rcClient );
+		if( rcClient.PtInRect( point ) )
+		{
+			int nState = (mpTemplate->GetLongProperty( Prop::Value ) != BST_CHECKED? BST_CHECKED : BST_UNCHECKED);
+			mpTemplate->SetLongProperty( Prop::Value, nState );
+			SetCheck( nState );
+			Invalidate();
+		}
+	}
+	__super::OnLButtonUp(nFlags, point);
+}
+
+void CCheckBoxCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	if( IsWindowEnabled() && nChar == _T(' ') )
+	{
+		int nState = (mpTemplate->GetLongProperty( Prop::Value ) != BST_CHECKED? BST_CHECKED : BST_UNCHECKED);
+		mpTemplate->SetLongProperty( Prop::Value, nState );
+		SetCheck( nState );
+		GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), BN_CLICKED), (LPARAM)m_hWnd );
+		Invalidate();
+		return;
+	}
+	__super::OnKeyUp(nChar, nRepCnt, nFlags);
+}
+
+void CCheckBoxCtrl::OnKillFocus(CWnd * pNewWnd)
+{
+	//SetState( GetState() & ~BST_FOCUS );
+	//Invalidate();
+	__super::OnKillFocus( pNewWnd );
 }

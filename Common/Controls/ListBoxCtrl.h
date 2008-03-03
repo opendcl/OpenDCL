@@ -12,7 +12,7 @@
 
 class CListBoxCtrl : public CListBox, public CDialogControl
 {
-	CAcadColorService mAcadColorService;
+	CAcadColorService mColorService;
 	int mnDragSource;
 	CRect mrcDropInsertMark;
 
@@ -28,7 +28,7 @@ public:
 	virtual DWORD GetWndStyle() const;
 	virtual bool ApplyPropertiesEnum();
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData );
 	virtual DROPEFFECT OnDragEnter( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
 	virtual DROPEFFECT OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );

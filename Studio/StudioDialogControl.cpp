@@ -88,6 +88,7 @@ TDialogControlPtr CStudioDialogControl::Create( TDclControlPtr pTemplate, CContr
 	if( pDlgControl )
 	{
 		pDlgControl->GetControlWnd()->ModifyStyle( WS_CLIPSIBLINGS, 0 ); //can't have WS_CLIPSIBLINGS while editing in studio!
+		pDlgControl->GetControlWnd()->ModifyStyleEx( 0, WS_EX_TRANSPARENT );
 		new CControlManager( pDlgControl );
 		if( pTemplate->GetType() == CtlActiveX )
 			pDlgControl->GetActiveXCtrl()->ParseTypeLibInfo();

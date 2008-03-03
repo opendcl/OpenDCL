@@ -396,10 +396,17 @@ BOOL CEventsTabPane::PreTranslateMessage(MSG* pMsg)
 	{
 		if( pMsg->message == WM_KEYDOWN )
 		{
-			if( pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_RETURN )
+			switch( pMsg->wParam )
+			{
+			case VK_ESCAPE:
+			case VK_RETURN:
 				return TRUE; //prevent dialog from closing
-			if( pMsg->wParam == VK_CONTROL || pMsg->wParam == 'C' )
-				return __super::PreTranslateMessage(pMsg); //allow Ctrl-C to copy to clipboard
+			case VK_CONTROL:
+			case VK_DELETE:
+			case 'C':
+			case 'V':
+				return __super::PreTranslateMessage(pMsg); //allow dialog to process these keystrokes
+			}
 		}
 		return AfxGetMainWnd()->PreTranslateMessage( pMsg );
 	}

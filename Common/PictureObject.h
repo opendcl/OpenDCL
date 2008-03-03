@@ -12,11 +12,11 @@ protected:
 	CPictureHolder m_hPicture;
 
 private:
-	CPictureObject(const CPictureObject&);
 	CPictureObject& operator= (const CPictureObject&);
 protected:
 	CPictureObject(void);
 public:
+	CPictureObject( const CPictureObject& );
 	CPictureObject( UINT nID );
 	CPictureObject( UINT nID, LPCTSTR szFile, bool bApplyMask = false );
 	virtual ~CPictureObject(void);
@@ -34,7 +34,7 @@ public:
 	short GetPicType() const;	
 	bool IsValid() const { return (msizePic.cx > 0 && msizePic.cy > 0); }
 	//const CPictureHolder& GetPicture() const { return m_hPicture; }
-	LPDISPATCH GetPictureDisp() const;
+	LPPICTUREDISP GetPictureDisp() const;
 	const HBITMAP GetBitmap() const;
 	const HICON GetIcon() const;
 	HBITMAP CloneBitmap() const;
@@ -47,7 +47,7 @@ public:
 	static CPictureObject* CreatePictureObject( short nID, LPPICTUREDISP NewPicture );
 
 	void Clear();
-	void Render(CDC *pdc, int nPicLeft, int nPicTop, CRect &rcThis, bool bAutoSize = false);
+	void Render( CDC *pdc, int nPicLeft, int nPicTop, CRect &rcThis, bool bAutoSize = false ) const;
 
 	// File I/O
 	virtual void Serialize(CArchive& ar);

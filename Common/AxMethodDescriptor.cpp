@@ -88,10 +88,21 @@ AxMethodDescriptor::~AxMethodDescriptor(void)
 {
 }
 
-HRESULT AxMethodDescriptor::Invoke( IDispatch* pObjectDisp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult ) const
+
+CString AxMethodDescriptor::GetReturnTypeDisplayName() const
+{
+	CString sName;
+	if( mReturnGuid != GUID_NULL )
+		sName = GetAxTypeName( mReturnGuid );
+	if( sName.IsEmpty() )
+		sName = VARTYPEtoString( mReturnType );
+	return sName;
+}
+
+HRESULT AxMethodDescriptor::Invoke( IDispatch* pObjectDisp, const VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult ) const
 {
 	DISPPARAMS dpParams;
-	dpParams.rgvarg = rvarArgs;
+	dpParams.rgvarg = const_cast< VARIANTARG* >( rvarArgs );
 	dpParams.cArgs = ctArgs;
 	dpParams.rgdispidNamedArgs = NULL;
 	dpParams.cNamedArgs = 0;

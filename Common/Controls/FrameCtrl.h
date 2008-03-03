@@ -14,7 +14,7 @@ class CPropertyObject;
 
 class CFrameCtrl : public CButton, public CDialogControl
 {
-	CAcadColorService mAcadColorService;
+	CAcadColorService mColorService;
 
 // Construction
 public:
@@ -26,16 +26,13 @@ public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 protected:
 	DECLARE_MESSAGE_MAP()
 
-// Generated message map functions
-protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual afx_msg void PostNcDestroy();
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
-	//afx_msg void OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result );
+	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 };

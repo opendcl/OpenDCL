@@ -35,20 +35,21 @@ bool CArxOptionListCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 
 BEGIN_MESSAGE_MAP(CArxOptionListCtrl, COptionListCtrl)
-	ON_CONTROL_REFLECT(LBN_SELCHANGE, OnSelchange)
+	ON_CONTROL_REFLECT(LBN_SELCHANGE, OnLbnSelchange)
 	ON_CONTROL_REFLECT(LBN_DBLCLK, OnDblclk)
 	ON_CONTROL_REFLECT(LBN_KILLFOCUS, OnKillfocus)
 	ON_CONTROL_REFLECT(LBN_SETFOCUS, OnSetfocus)
 	ON_WM_MOUSEMOVE()
-  ON_WM_KEYDOWN()
+	ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxOptionListCtrl message handlers
 
-void CArxOptionListCtrl::OnSelchange() 
+void CArxOptionListCtrl::OnLbnSelchange() 
 {
+	__super::OnLbnSelchange();
 	int nCurSel = GetCurSel();
 	CString sString;
 	GetText(nCurSel, sString);

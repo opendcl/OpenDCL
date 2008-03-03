@@ -1,0 +1,495 @@
+[Method]
+GetFirstChildItem
+[Function]
+dcl_Tree_GetFirstChildItem
+[Desc]
+This method gets the key of the first child tree item. Nil is return if no children are found.
+[Arguments Return] as Integer or Nil
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+EnsureVisible
+[Function]
+dcl_Tree_EnsureVisible
+[Desc]
+This method ensures that the indicated tree item is visible.
+[Arguments]
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+IsItemExpanded
+[Function]
+dcl_Tree_IsItemExpanded
+[Desc]
+This method will return a T if the item is expanded and Nil if not expanded.
+[Arguments]
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+SortChildren
+[Function]
+dcl_Tree_SortChildren
+[Desc]
+This method sorts the children of an indicated parent or child tree item.
+[Arguments]
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+EditLabel
+[Function]
+dcl_Tree_EditLabel
+[Desc]
+This method starts the edit process of a tree item by displaying a TextBox on top of the tree item. This method will not start the editing process if the EditLabel property of the control is set to False.
+[Arguments]
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+CancelEditLabel
+[Function]
+dcl_Tree_CancelEditLabel
+[Desc]
+This method cancels the edit process of a tree item.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+SelectSetFirstVisible
+[Function]
+dcl_Tree_SelectSetFirstVisible
+[Desc]
+This method selects the indicated tree item and attempts to make it the first visible item in the control.
+[Arguments]
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+SetExpandedImage
+[Function]
+dcl_Tree_SetExpandedImage
+[Desc]
+This method assigns an image from the image list as the image to be displayed when the tree item is expanded.
+[Arguments]
+<CONTROL>
+\par\tab Key
+[as String or Long]
+\par\tab ExpandImageIndex
+[as Integer]
+
+
+[Method]
+GetExpandedImage
+[Function]
+dcl_Tree_GetExpandedImage
+[Desc]
+This method retrieves the image to be displayed when the tree item is expanded.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+ExpandItem
+[Function]
+dcl_Tree_ExpandItem
+[Desc]
+This method expands any visible node item to display its children. \par
+\par \b ExpandStyle Flags:
+\par \pard\fi-710\li710 \b Flag \tab Description \b0
+\par \pard\fi-710\li710 -1 \tab Collapses the tree branch.	
+\par \pard\fi-710\li710 0 \tab Toggles the tree branch from expanded to collapsed or collapsed to expanded.	
+\par \pard\fi-710\li710 1 \tab Expands the tree branch.	
+\par \pard\fi-0\li0
+[Arguments]
+<CONTROL>
+\par\tab Key
+[as String or Long]
+\par\tab ExpandStyle
+[as Integer]
+
+
+[Method]
+DeleteItem
+[Function]
+dcl_Tree_DeleteItem
+[Desc]
+This method deletes any tree item and its children.
+[Arguments]
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+GetVisibleCount
+[Function]
+dcl_Tree_GetVisibleCount
+[Desc]
+This method gets the total number of visible tree items. 
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+GetItemData
+[Function]
+dcl_Tree_GetItemData
+[Desc]
+This method gets integer item data of any tree item.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+SetItemData
+[Function]
+dcl_Tree_SetItemData
+[Desc]
+This method sets integer item data of any tree item.
+[Arguments]
+<CONTROL>
+\par\tab Key
+[as String or Long]
+\par\tab nItemData
+[as Integer]
+
+
+[Method]
+GetItemText
+[Function]
+dcl_Tree_GetItemText
+[Desc]
+This method gets the text of any tree item.
+[Arguments Return] as String
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+SetItemText
+[Function]
+dcl_Tree_SetItemText
+[Desc]
+This method sets the text of any tree item.
+[Arguments]
+<CONTROL>
+\par\tab Key
+[as String or Long]
+\par\tab Text
+[as String]
+
+
+[Method]
+GetItemImages
+[Function]
+dcl_Tree_GetItemImages
+[Desc]
+This method returns a list indicating the unselected and selected images of the requested tree item.
+[Arguments Return] as List
+<CONTROL>
+Key
+[as String or Long]
+
+
+[Method]
+SetItemImages
+[Function]
+dcl_Tree_SetItemImages
+[Desc]
+This method sets the unselected and selected images of any tree item.
+[Arguments]
+<CONTROL>
+\par\tab Key
+[as String or Long]
+\par\tab ImageIndex 
+[as Integer]
+\par\tab\i{Optional} \i0 SelectedImageIndex
+[as Integer]
+
+
+[Method]
+GetItem
+[Function]
+dcl_Tree_GetItem
+[Desc]
+This method retrieves the information of any tree item. Nil will be returned if the Key argument is invalid.
+[Arguments Return] as List (Text Image SelectedImage Key) or Nil
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+GetRootItem
+[Function]
+dcl_Tree_GetRootItem
+[Desc]
+This method retrieves the key of the first parent tree item.
+[Arguments Return] as String or Long
+<CONTROL>
+
+
+[Method]
+GetSelectedItem
+[Function]
+dcl_Tree_GetSelectedItem
+[Desc]
+This method retrieves the key of the selected tree item.
+[Arguments Return] as String or Long
+<CONTROL>
+
+
+[Method]
+GetFirstVisibleItem
+[Function]
+dcl_Tree_GetFirstVisibleItem
+[Desc]
+This method retrieves the unique key of the first visible tree item.
+[Arguments Return] as String or Long
+<CONTROL>
+
+
+[Method]
+GetNextVisibleItem
+[Function]
+dcl_Tree_GetNextVisibleItem
+[Desc]
+This method retrieves the unique key of the next visible tree item.
+[Arguments Return] as String or Long
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+GetPrevVisibleItem
+[Function]
+dcl_Tree_GetPrevVisibleItem
+[Desc]
+This method retrieves the unique key of the previous visible tree item.
+[Arguments Return] as String or Long
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+GetNextSiblingItem
+[Function]
+dcl_Tree_GetNextSiblingItem
+[Desc]
+This method retrieves the unique key of the next sibling tree item.
+[Arguments Return] as String or Long
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+GetPrevSiblingItem
+[Function]
+dcl_Tree_GetPrevSiblingItem
+[Desc]
+This method retrieves the unique key of the previous sibling tree item.
+[Arguments Return] as String or Long
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+ItemHasChildren
+[Function]
+dcl_Tree_ItemHasChildren
+[Desc]
+This method indicates if a tree item has any children.
+[Arguments Return] as T or Nil
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+SelectItem
+[Function]
+dcl_Tree_SelectItem
+[Desc]
+This method selects the indicated tree item.
+[Arguments]
+<CONTROL>
+\par\tab Key
+[as String or Long]
+
+
+[Method]
+CountItems
+[Function]
+dcl_Tree_CountItems
+[Desc]
+This method counts the number of tree items in the TreeControl.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+GetParent
+[Function]
+dcl_Tree_GetParent
+[Desc]
+This method gets the Key of the item's parent key.
+[Arguments Return] as String or Long
+<CONTROL>
+\par\tab ChildKey
+[as String or Long]
+
+
+[Method]
+AddChild (Using Lists)
+[Function]
+dcl_Tree_AddChild
+[Desc]
+This method adds a child tree item to a top level tree item or other child tree item. 
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab ParentKey
+[as String or Long]
+\par\tab Text 
+[as String]
+\par\tab\i{Optional} \i0 Key 
+[as String]
+\par\tab\i{Optional} \i0 ImageIndex
+[as Integer]
+\par\tab\i{Optional} \i0 SelectedImageIndex 
+[as Integer]
+\par\tab\i{Optional} \i0 ExpandedImageIndex
+[as Integer]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+AddChild (Without Lists)
+[Function]
+dcl_Tree_AddChild
+[Desc]
+This method adds a child tree item to the specified parent item. This method returns the key of the new item.
+[Arguments Return] as String or Long
+<CONTROL>
+\par\tab ParentKey
+[as String or Long]
+\par\tab Text 
+[as String]
+\par\tab\i{Optional} \i0 Key 
+[as String]
+\par\tab\i{Optional} \i0 ImageIndex
+[as Integer]
+\par\tab\i{Optional} \i0 SelectedImageIndex 
+[as Integer]
+\par\tab\i{Optional} \i0 ExpandedImageIndex
+[as Integer]
+
+
+[Method]
+InsertAfter
+[Function]
+dcl_Tree_InsertAfter
+[Desc]
+This method adds a tree item after the specified tree item. This method returns the key of the new item.
+[Arguments Return] as String or Long
+<CONTROL>
+\par\tab ReferenceKey 
+[as String or Long]
+\par\tab Text 
+[as String]
+\par\tab\i{Optional} \i0 Key 
+[as String]
+\par\tab\i{Optional} \i0 ImageIndex
+[as Integer]
+\par\tab\i{Optional} \i0 SelectedImageIndex 
+[as Integer]
+\par\tab\i{Optional} \i0 ExpandedImageIndex
+[as Integer]
+
+
+[Method]
+AddParent (Using Lists)
+[Function]
+dcl_Tree_AddParent
+[Desc]
+This method adds multiple top level tree items.
+[Argument]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab Text 
+[as String]
+\par\tab\i{Optional} \i0 Key 
+[as String]
+\par\tab\i{Optional} \i0 ImageIndex
+[as Integer]
+\par\tab\i{Optional} \i0 SelectedImageIndex 
+[as Integer]
+\par\tab\i{Optional} \i0 ExpandedImageIndex
+[as Integer]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+AddParent (Without Lists)
+[Function]
+dcl_Tree_AddParent
+[Desc]
+This method adds a top level tree item. This method returns the key of the new item.
+[Arguments Return] or Long
+<CONTROL>
+\par\tab Text 
+[as String]
+\par\tab\i{Optional} \i0 Key 
+[as String]
+\par\tab\i{Optional} \i0 ImageIndex
+[as Integer]
+\par\tab\i{Optional} \i0 SelectedImageIndex 
+[as Integer]
+\par\tab\i{Optional} \i0 ExpandedImageIndex
+[as Integer]
+
+
+[Method]
+Clear
+[Function]
+dcl_Tree_Clear
+[Desc]
+This method clears the TreeControl of all node items.
+[Arguments]
+<CONTROL>
+
+
+[End of File]

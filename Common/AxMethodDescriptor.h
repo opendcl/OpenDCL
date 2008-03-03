@@ -29,11 +29,12 @@ public:
 	const CString& GetName() const { return msName; }
 	const CString& GetDesc() const { return msDesc; }
 	VARTYPE GetReturnType() const { return mReturnType; }
+	CString GetReturnTypeDisplayName() const;
 	GUID GetReturnGuid() const { return mReturnGuid; }
 	const std::vector< AxArg >& GetArgs() const { return mrArgs; }
 
 	//Operations
-	HRESULT Invoke( IDispatch* pObjectDisp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult ) const;
+	HRESULT Invoke( IDispatch* pObjectDisp, const VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult ) const;
 
 	//File I/O
 	virtual void Serialize(CArchive& ar, int nPropertyVersion);

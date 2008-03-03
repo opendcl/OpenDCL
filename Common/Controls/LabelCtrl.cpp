@@ -96,7 +96,7 @@ HBRUSH CLabelCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	return mColorService.CtlColor( pDC, nCtlColor );
 }
 
 void CLabelCtrl::PostNcDestroy() 

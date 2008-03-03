@@ -96,7 +96,7 @@ END_MESSAGE_MAP()
 
 bool CAcadPaletteHost::CanFrameworkTakeFocus ()
 {
-	return !(GetCapture() && !mpDlgObject->IsKeepFocus());
+	return (!GetCapture() && !mpDlgObject->IsKeepFocus());
 	// return false to tell AutoCAD not to steal this form's focus on WM_MOUSEMOVE
 	return false;
 }
@@ -110,8 +110,9 @@ void CAcadPaletteHost::SizeChanged( CRect *lpRect, BOOL bFloating, int flags )
 
 bool CAcadPaletteHost::OnClosing()
 {
+	__super::OnClosing();
 	mpDlgObject->OnClosing();
-	return __super::OnClosing();
+	return true;
 }
 
 void CAcadPaletteHost::OnUserSizing(UINT fwSide, LPRECT pRect)

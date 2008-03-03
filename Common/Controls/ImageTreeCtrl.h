@@ -37,7 +37,7 @@ public:
 
 class CImageTreeCtrl : public CTreeCtrl, public CDialogControl
 {
-	CAcadColorService mAcadColorService;
+	CAcadColorService mColorService;
 	CImageList mImageList;
 	std::list< CTreeItem > mTreeItems;
 	HTREEITEM mhtiDragSource;
@@ -54,7 +54,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData );
 	virtual DROPEFFECT OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
 	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );

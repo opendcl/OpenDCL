@@ -172,7 +172,7 @@ public:
 	virtual DWORD GetWndStyle() const; //get window style from properties
 	virtual CString GetWndCaption() const; //get window caption from properties
 	virtual void OnFrameChanged(); //called by member functions that change the non-client size
-	virtual void OnNeedRepaint( bool bRepaintBackground = true ) const; //called when a property change requires a repaint
+	virtual void OnNeedRepaint( bool bRepaintBackground = true, bool bUpdateNow = false ) const; //called when a property change requires a repaint
 	virtual void ApplyPosition(); //move control window to new position
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) = 0;
 
@@ -192,6 +192,8 @@ public:
 	virtual bool OnApplyDragDropAllowDrop( TPropertyPtr pProp ); //Prop::DragDropAllowDrop
 	virtual bool OnApplyVisible( TPropertyPtr pProp ); //Prop::Visible
 	virtual bool OnApplyCaption( TPropertyPtr pProp ); //Prop::Caption, Prop::TitleBarText
+	virtual bool OnApplyIsTabStop( TPropertyPtr pProp ); //Prop::IsTabStop
+	virtual bool OnApplyBeginGroup( TPropertyPtr pProp ); //Prop::BeginGroup
 	virtual bool OnApplyVScrollBar( TPropertyPtr pProp ); //Prop::VScrollBar
 	virtual bool OnApplyHScrollBar( TPropertyPtr pProp ); //Prop::HScrollBar
 	virtual bool OnApplyUseVisualStyle( TPropertyPtr pProp ); //Prop::UseVisualStyle

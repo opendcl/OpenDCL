@@ -7,7 +7,7 @@
 #include "ArgumentsRetrieval.h"
 #include "ArxImageTreeCtrl.h"
 #include "ControlTypes.h"
-#include "Workspace.h"
+#include "ArxWorkspace.h"
 #include "Resource.h"
 
 
@@ -88,7 +88,7 @@ ADSRESULT Tree::AddParent()
 	if( bNestedLists )
 		acedRetT();
 	else
-		acedRetHandle( (DWORD_PTR)hItem );
+		theArxWorkspace.RetHandle( (DWORD_PTR)hItem );
 	return RSRSLT;
 }
 
@@ -157,7 +157,7 @@ ADSRESULT Tree::AddChild()
 		if( bNestedLists )
 			acedRetT();
 		else
-			acedRetHandle( (DWORD_PTR)hItem );
+			theArxWorkspace.RetHandle( (DWORD_PTR)hItem );
 	}
 	return RSRSLT;
 }
@@ -207,7 +207,7 @@ ADSRESULT Tree::InsertAfter()
 		hItem = pCtrl->AddChild( NULL, sLabel, sKey, nImage, nSelectedImage, nExpandedImage, hAddAfter );
 
 	if( hItem )
-		acedRetHandle( (DWORD_PTR)hItem );
+		theArxWorkspace.RetHandle( (DWORD_PTR)hItem );
 	return RSRSLT;
 }
 
@@ -300,7 +300,7 @@ ADSRESULT Tree::GetParent()
 			if( !sKey.IsEmpty() )
 				acedRetStr( sKey );
 			else
-				acedRetHandle( (DWORD_PTR)hParentItem );
+				theArxWorkspace.RetHandle( (DWORD_PTR)hParentItem );
 		}
 	}
 	return RSRSLT;
@@ -362,7 +362,7 @@ ADSRESULT Tree::GetNextSiblingItem()
 			if( !sKey.IsEmpty() )
 				acedRetStr( sKey );
 			else
-				acedRetHandle( (DWORD_PTR)hSiblingItem );
+				theArxWorkspace.RetHandle( (DWORD_PTR)hSiblingItem );
 		}
 	}
 	return RSRSLT;
@@ -398,7 +398,7 @@ ADSRESULT Tree::GetPrevSiblingItem()
 			if( !sKey.IsEmpty() )
 				acedRetStr( sKey );
 			else
-				acedRetHandle( (DWORD_PTR)hSiblingItem );
+				theArxWorkspace.RetHandle( (DWORD_PTR)hSiblingItem );
 		}
 	}
 	return RSRSLT;
@@ -423,7 +423,7 @@ ADSRESULT Tree::GetFirstVisibleItem()
 		if( !sKey.IsEmpty() )
 			acedRetStr( sKey );
 		else
-			acedRetHandle( (DWORD_PTR)hItem );
+			theArxWorkspace.RetHandle( (DWORD_PTR)hItem );
 	}
 	return RSRSLT;
 }
@@ -458,7 +458,7 @@ ADSRESULT Tree::GetNextVisibleItem()
 			if( !sKey.IsEmpty() )
 				acedRetStr( sKey );
 			else
-				acedRetHandle( (DWORD_PTR)hNextItem );
+				theArxWorkspace.RetHandle( (DWORD_PTR)hNextItem );
 		}
 	}
 	return RSRSLT;
@@ -494,7 +494,7 @@ ADSRESULT Tree::GetPrevVisibleItem()
 			if( !sKey.IsEmpty() )
 				acedRetStr( sKey );
 			else
-				acedRetHandle( (DWORD_PTR)hNextItem );
+				theArxWorkspace.RetHandle( (DWORD_PTR)hNextItem );
 		}
 	}
 	return RSRSLT;
@@ -519,7 +519,7 @@ ADSRESULT Tree::GetSelectedItem()
 		if( !sKey.IsEmpty() )
 			acedRetStr( sKey );
 		else
-			acedRetHandle( (DWORD_PTR)hItem );
+			theArxWorkspace.RetHandle( (DWORD_PTR)hItem );
 	}
 	return RSRSLT;
 }
@@ -543,7 +543,7 @@ ADSRESULT Tree::GetRootItem()
 		if( !sKey.IsEmpty() )
 			acedRetStr( sKey );
 		else
-			acedRetHandle( (DWORD_PTR)hItem );
+			theArxWorkspace.RetHandle( (DWORD_PTR)hItem );
 	}
 	return RSRSLT;
 }
@@ -735,7 +735,7 @@ ADSRESULT Tree::GetItemData()
 	CArxImageTreeCtrl* pCtrl = (CArxImageTreeCtrl*)pDlgControl->GetControlWnd();
 	HTREEITEM hItem = ((dwRefKey != -1)? (HTREEITEM)dwRefKey : pCtrl->FindItem( sRefKey ) );
 	if( hItem )
-		acedRetHandle( pCtrl->GetItemData( hItem ) );
+		theArxWorkspace.RetHandle( pCtrl->GetItemData( hItem ) );
 	return RSRSLT;
 }
 
@@ -1077,7 +1077,7 @@ ADSRESULT Tree::GetFirstChildItem()
 			if( !sKey.IsEmpty() )
 				acedRetStr( sKey );
 			else
-				acedRetHandle( (DWORD_PTR)hChildItem );
+				theArxWorkspace.RetHandle( (DWORD_PTR)hChildItem );
 		}
 	}
 	return RSRSLT;

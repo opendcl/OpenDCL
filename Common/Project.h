@@ -90,7 +90,6 @@ class CProject
 protected:		
 	CList< CPictureObject* > mPictures;
 	TDclFormList mDclForms;
-	std::vector< TOleControlPtr > mOleControls;
 	CString msKeyName;
 	CString msProjectFilePath;
 	CString msBaseFileName; //the project file base name (no path, no extension)
@@ -111,7 +110,8 @@ protected:
 	//2007-02-09 [ORW]: save version set to 10
 	//2007-02-14 [ORW]: save version set to 11 (form count changed from short to unsigned long)
 	//2007-06-16 [ORW]: save version set to 12 (removed mbHasPassword and msDistFileName members)
-	ULONG GetCurrentSaveVersion() const { return 12; }
+	//2008-02-15 [ORW]: save version set to 13 (removed mOleControls)
+	ULONG GetCurrentSaveVersion() const { return 13; }
 
 public:
 	static LPCTSTR GetOdclPassword() { return _T("d32afd3aw3aq3fdaw3"); }
@@ -167,17 +167,6 @@ public:
 	TDclFormPtr FindDclTabChildForm( LPCTSTR pszParentFormName, int nTabIndex ) const;
 	TDclFormPtr FindParentDclForm( LPCTSTR pszParentFormName ) const;
 	bool FindChildForms( TDclFormPtr pParentForm, TDclFormList& ChildForms ) const;
-
-
-	// OLE object management
-public:
-	void AddOleObject(const CLSID& clsid, CAxContainerCtrl *pAxCont);
-	bool HasOleObject(const CLSID& clsid);
-	CString GetOleObjectName(const AxPropertyDescriptor *pProperty);
-	TOleControlPtr GetOleObject(const CLSID& clsid);
-	TOleControlPtr GetOleObject(const AxPropertyDescriptor *pProperty);
-	TOleControlPtr GetOleObject(const AxMethodDescriptor *pProperty);
-	TOleControlPtr GetOleObject(const AxEventDescriptor *pEvent);
 
 public:
 	virtual void Serialize(CArchive& ar);

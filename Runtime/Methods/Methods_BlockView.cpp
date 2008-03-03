@@ -374,8 +374,9 @@ ADSRESULT DisplayBlockImp( bool bToScale )
 
 	if( !pArgs )
 	{
-		if( !pCtrl->DisplayBlock( sBlockName ) )
-			return RSRSLT;
+		if( pCtrl->DisplayBlock( sBlockName ) )
+			acedRetT();
+		return RSRSLT;
 	}
 
 	int nPresetView = 0;

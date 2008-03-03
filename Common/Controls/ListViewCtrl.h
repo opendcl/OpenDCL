@@ -36,7 +36,7 @@ protected:
 
 class CListViewCtrl : public CListCtrl, public CDialogControl
 {
-	CAcadColorService mAcadColorService;
+	CAcadColorService mColorService;
 	CImageList mDefaultImageList;
 	bool mbBlockList;
 	int mnDragSource;
@@ -64,7 +64,8 @@ public:
 	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
 	virtual bool OnApplyForegroundColor( TPropertyPtr pProp );
 	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
 
 // Control
 	bool IsBlockList() const { return mbBlockList; }

@@ -17,7 +17,7 @@
 // COptionListCtrl
 
 COptionListCtrl::COptionListCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
-: CListBoxCtrl( pTemplate, pPane, nID, false )
+: CDialogControl( pTemplate, pPane, this )
 , mnRowHeight( 20 )
 {
 	mImageList.Create(13, 13, ILC_COLOR8 | ILC_MASK, 0, 1);
@@ -46,10 +46,19 @@ COptionListCtrl::~COptionListCtrl()
 {
 }
 
+DWORD COptionListCtrl::GetWndStyle() const
+{
+	DWORD dwStyle = CDialogControl::GetWndStyle();
+	dwStyle |= (LBS_HASSTRINGS | LBS_OWNERDRAWFIXED | LBS_NOTIFY | LBS_WANTKEYBOARDINPUT | LBS_NOINTEGRALHEIGHT);
+	return dwStyle;
+}
+
 bool COptionListCtrl::Create( CWnd* pParentWnd, UINT nID ) 
 {
-	bool bSuccess =
-		__super::Create( pParentWnd, nID );
+	bool bSuccess = (__super::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
+
+	if( bSuccess && !ApplyPropertiesEnum() )
+		bSuccess = false;
 
 	SetCaretIndex( GetCurSel() );
 	ResetTooltips();
@@ -57,12 +66,19 @@ bool COptionListCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-DWORD COptionListCtrl::GetWndStyle() const
+bool COptionListCtrl::ApplyPropertiesEnum()
 {
-	DWORD dwStyle = __super::GetWndStyle();
-	dwStyle &= ~(LBS_USETABSTOPS);
-	dwStyle |= LBS_OWNERDRAWFIXED;
-	return dwStyle;
+	bool bSuccess = __super::ApplyPropertiesEnum();
+
+	//The automatic vertical scroll bar doesn't get initialized correctly unless the listbox window is
+	//first resized small enough that the scroll bar would be needed
+	CRect rc;
+	GetWindowRect( &rc );
+	GetParent()->ScreenToClient( &rc );
+	MoveWindow( &CRect( 0, 0, 0, 0 ), FALSE );
+	MoveWindow( &rc );
+
+	return bSuccess;
 }
 
 bool COptionListCtrl::OnApplyProperty( TPropertyPtr pProp )
@@ -138,102 +154,76 @@ void COptionListCtrl::ResetTooltips()
 }
 
 
-BEGIN_MESSAGE_MAP(COptionListCtrl, CListBoxCtrl)
+BEGIN_MESSAGE_MAP(COptionListCtrl, CListBox)
 	ON_WM_MOUSEMOVE()
 	ON_MESSAGE(WM_MOUSELEAVE, OnMouseLeave)   	
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_WM_WINDOWPOSCHANGING()
+	ON_CONTROL_REFLECT(LBN_SELCHANGE, &COptionListCtrl::OnLbnSelchange)
+	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_KILLFOCUS()
 END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
 // COptionListCtrl message handlers
 
+void COptionListCtrl::PostNcDestroy() 
+{
+	__super::PostNcDestroy();
+	delete this;
+}
+
 void COptionListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) 
 {
 	if( lpDrawItemStruct->itemID >= (UINT)GetCount() )
 		return;
 
-	// Lets make a CDC for ease of use
-	CDC *pDC = CDC::FromHandle(lpDrawItemStruct->hDC);
+	CDC *pDC = CDC::FromHandle( lpDrawItemStruct->hDC );
 	ASSERT(pDC); // Attached failed
 	
-	// Save off context attributes
-	int nIndexDC = pDC->SaveDC();
+	pDC->SaveDC();
 	
-	pDC->SetBkColor(GetColorService()->GetBackgroundColor());
+	//pDC->SetBkColor( GetColorService()->GetBackgroundColor() );
 	
-	CRect rc(lpDrawItemStruct->rcItem);
-	
-	// Draw focus rectangle
-	if (lpDrawItemStruct->itemState & ODS_FOCUS)
-		pDC->DrawFocusRect(rc);
+	CRect rc( lpDrawItemStruct->rcItem );
 
-	pDC->SetBkMode(TRANSPARENT);
 	pDC->FillRect(rc, GetColorService()->GetBackgroundCBrush());
 
-	CString strCurFont,strNextFont;
-	GetText(lpDrawItemStruct->itemID, strCurFont);
-
-	int nX = rc.left; // Save for lines
-	int nY = rc.top + 1; // Save for lines
+	CString sCaption;
+	GetText( lpDrawItemStruct->itemID, sCaption );
 
 	rc.left += GLYPH_WIDTH; // Text Position
 	
-	CFont *pOldHeadingFont = pDC->SelectObject(GetFont());
-	
 	pDC->SetTextColor(GetColorService()->GetForegroundColor());
+	pDC->SetBkMode(TRANSPARENT);
 	
 	// draw the text
 	CRect rcText = rc;
 	rcText.top = rcText.top + 2;
+	pDC->DrawText( sCaption, -1, &rcText, DT_TOP | DT_WORDBREAK | DT_LEFT | DT_CALCRECT );	
 	if (lpDrawItemStruct->itemData < 2)
 	{
-		// draw the text as normal
-		int nHeight = ::DrawText(pDC->m_hDC, strCurFont, strCurFont.GetLength(), &rcText, DT_TOP|DT_WORDBREAK|DT_LEFT);	
-		if (GetFocus() == this && (lpDrawItemStruct->itemState & ODS_FOCUS) == ODS_FOCUS )
-		{	
-			// setup the CRect for Focus Rectangle
-			CRect rcCell;
-			rcCell.left = rc.left - 2;
-			rcCell.top = rc.top;
-			rcCell.right = rc.right;
-			rcCell.bottom = rcCell.top + nHeight + 3;
-			::DrawFocusRect(pDC->m_hDC, &rcCell); // draw the solid rectangle
-		}
+		pDC->DrawText( sCaption, -1, &rcText, DT_TOP | DT_WORDBREAK | DT_LEFT );	
 	}
 	else
-	{
-		// draw the text as disabled.
-		::DrawState(pDC->m_hDC, 
-			(HBRUSH)NULL,
-			NULL,
-			(LPARAM)(LPCTSTR)strCurFont, 
-			(WPARAM)strCurFont.GetLength(),
-			rcText.left, rcText.top, 
-			rcText.Width(), rcText.Height(),
-			DSS_DISABLED|(TRUE ? DST_PREFIXTEXT : DST_TEXT)); 
+	{ // draw the text as disabled
+		pDC->DrawState( rcText.TopLeft(), CSize( rcText.Width(), rcText.Height() ),
+										sCaption, DSS_DISABLED, FALSE, 0, (HBRUSH)NULL );
 	}
-	pDC->SelectObject(pOldHeadingFont);
-
-	// lets draw the left side dark gray lines
-	COLORREF rgb = GetSysColor(COLOR_BTNSHADOW);
-	HGDIOBJ pen = ::CreatePen(PS_SOLID, 1, rgb);
-	HGDIOBJ OldPen = SelectObject(pDC->m_hDC, pen);
-	CPoint point;
 
 	int nImageIndex = 0;
 	if (lpDrawItemStruct->itemState & ODS_SELECTED)
 		nImageIndex = 2;
-	//if (m_nLastHighlighted == lpDrawItemStruct->itemID)
-	//	nImageIndex++;
+	mImageList.Draw( pDC, nImageIndex, CPoint( 2, rc.top + 2 ), ILD_NORMAL );
+	
+	// Draw focus rectangle
+	rcText.InflateRect( 2, 2 );
+	rcText.IntersectRect( &rcText, &rc );
+	if( GetFocus() == this && lpDrawItemStruct->itemID == GetCurSel() )
+		pDC->DrawFocusRect( &rcText );
 
-	mImageList.Draw(pDC, nImageIndex, CPoint(2, rc.top+2), ILD_NORMAL);//ILD_TRANSPARENT);
-	
-	::DeleteObject(::SelectObject(pDC->m_hDC, OldPen));
-	// Restore State of context
-	pDC->RestoreDC(nIndexDC);
-	
+	pDC->RestoreDC( -1 );
 	return;
 }
 
@@ -244,58 +234,35 @@ void COptionListCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 
 BOOL COptionListCtrl::PreTranslateMessage(MSG* pMsg) 
 {
-	GetToolTipCtrl().RelayEvent(pMsg);
+	GetToolTipCtrl().RelayEvent( pMsg );
 	
-  //On a return, do a double-click if one is defined. Otherwise, do a tab.
   if (pMsg->message == WM_KEYDOWN)
 	{
 		if (pMsg->wParam == VK_RETURN)
 		{
 			if (mpTemplate->GetBooleanProperty(Prop::ReturnAsTab))
 				pMsg->wParam = VK_TAB;
-			else
-			{
-				SetCurSel(GetCaretIndex());
-				return TRUE;
-			}
-		}
-		else if (pMsg->wParam == VK_SPACE)
-		{
-			SetCurSel(GetCaretIndex());
-			return TRUE;
 		}
 		else if (pMsg->wParam == VK_LEFT || pMsg->wParam == VK_UP)
 		{
-			//int nCaret = GetCaretIndex();
-			//if( nCaret > 0 )
-			//	--nCaret;
-			//else
-			//	nCaret = GetCount() - 1;
-			//SetCaretIndex(nCaret);
-			//OnNeedRepaint();
 			int nCurSel = GetCurSel();
 			if( nCurSel > 0 )
 				--nCurSel;
 			else
 				nCurSel = GetCount() - 1;
 			SetCurSel(nCurSel);
+			OnNeedRepaint();
 			return TRUE;
 		}
 		else if (pMsg->wParam == VK_RIGHT || pMsg->wParam == VK_DOWN)
 		{
-			//int nCaret = GetCaretIndex();
-			//if( nCaret < GetCount() )
-			//	++nCaret;
-			//else
-			//	nCaret = 0;
-			//SetCaretIndex(nCaret);
-			//OnNeedRepaint();
 			int nCurSel = GetCurSel();
 			if( nCurSel < GetCount() - 1 )
 				++nCurSel;
 			else
 				nCurSel = 0;
 			SetCurSel(nCurSel);
+			OnNeedRepaint();
 			return TRUE;
 		}
 	}
@@ -305,7 +272,7 @@ BOOL COptionListCtrl::PreTranslateMessage(MSG* pMsg)
 
 LRESULT COptionListCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
-	RedrawWindow();
+	OnNeedRepaint( true, true );
 	return FALSE;
 }
 
@@ -314,6 +281,7 @@ void COptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	__super::OnMouseMove(nFlags, point);
 
 	CDC *pDC = GetDC();
+	pDC->SaveDC();
 	int nSel = GetCurSel();
 
 	CRect rcClient;
@@ -330,17 +298,34 @@ void COptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		if( rcItem.PtInRect( point ) )
 		{
 			if( nSel == idxItem )
-				mImageList.Draw( pDC, 3, CPoint( 2, rcItem.top + 2), ILD_NORMAL );//ILD_TRANSPARENT);
+				mImageList.Draw( pDC, 3, CPoint( 2, rcItem.top + 2), ILD_NORMAL );
 			else
-				mImageList.Draw( pDC, 1, CPoint( 2, rcItem.top + 2), ILD_NORMAL );//ILD_TRANSPARENT);
+				mImageList.Draw( pDC, 1, CPoint( 2, rcItem.top + 2), ILD_NORMAL );
 		}
 		else
 		{
 			if( nSel == idxItem )
-				mImageList.Draw( pDC, 2, CPoint( 2, rcItem.top + 2), ILD_NORMAL );//ILD_TRANSPARENT);
+				mImageList.Draw( pDC, 2, CPoint( 2, rcItem.top + 2), ILD_NORMAL );
 			else
-				mImageList.Draw( pDC, 0, CPoint( 2, rcItem.top + 2), ILD_NORMAL );//ILD_TRANSPARENT);
+				mImageList.Draw( pDC, 0, CPoint( 2, rcItem.top + 2), ILD_NORMAL );
 		}
 	}
+	pDC->RestoreDC( -1 );
 	ReleaseDC(pDC);
+}
+
+void COptionListCtrl::OnLbnSelchange()
+{
+	OnNeedRepaint( true, true );
+}
+
+HBRUSH COptionListCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
+{
+	return mColorService.CtlColor( pDC, nCtlColor );
+}
+
+void COptionListCtrl::OnKillFocus(CWnd* pNewWnd)
+{
+	__super::OnKillFocus(pNewWnd);
+	OnNeedRepaint();
 }

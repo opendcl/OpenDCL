@@ -70,6 +70,8 @@ CArxWorkspace::CArxWorkspace()
 
 CArxWorkspace::~CArxWorkspace()
 {
+	for( std::list< IUnknown* >::iterator iter =  mUnknowns.begin(); iter != mUnknowns.end(); ++iter )
+		(*iter)->Release();
 }
 
 CString CArxWorkspace::GetUserProfilePrefix() const
@@ -312,6 +314,8 @@ bool CArxWorkspace::AddExtensionTab( TDclFormPtr pDclForm, CAdUiTabExtensionMana
 void CArxWorkspace::UnloadAllProjects()
 {
 	CloseAllDialogs();
+	for( TProjectList::iterator iter = mProjects.begin(); iter != mProjects.end(); ++iter )
+		(*iter)->SetProjectLispSymbols( true );
 	mProjects.clear();
 }
 
@@ -382,30 +386,24 @@ TDclFormPtr CArxWorkspace::FindForm( LPCTSTR pszProjectName, LPCTSTR pszFormName
 	return pProject->FindDclFormWithVarName( CString( pszProjectName ) + _T('_') + pszFormName );
 }
 
-TOleControlPtr CArxWorkspace::GetOleControlFor( const AxPropertyDescriptor* pProperty )
+void CArxWorkspace::AddUnknown( IUnknown* pUnknown )
 {
-	for( TProjectList::const_iterator iter = mProjects.begin(); iter != mProjects.end(); ++iter )
-	{
-		TArxProjectPtr pProject = *iter;
-		TOleControlPtr pObject = pProject->GetOleObject( pProperty );
-		if( pObject )
-			return pObject;
-	}
-	return NULL;
+	if( !pUnknown )
+		return;
+	mUnknowns.push_back( pUnknown );
 }
 
-TOleControlPtr CArxWorkspace::GetOleControlFor( const AxMethodDescriptor* pMethod )
+void CArxWorkspace::RemoveUnknown( IUnknown* pUnknown )
 {
-	for( TProjectList::const_iterator iter = mProjects.begin(); iter != mProjects.end(); ++iter )
+	for( std::list< IUnknown* >::iterator iter =  mUnknowns.begin(); iter != mUnknowns.end(); ++iter )
 	{
-		TArxProjectPtr pProject = *iter;
-		TOleControlPtr pObject = pProject->GetOleObject( pMethod );
-		if( pObject )
-			return pObject;
+		if( (*iter) == pUnknown )
+		{
+			mUnknowns.erase( iter );
+			return;
+		}
 	}
-	return NULL;
 }
-
 
 TArxProjectPtr CArxWorkspace::ImportProject( CFile& src, LPCTSTR pszKeyName /*= NULL*/ )
 {

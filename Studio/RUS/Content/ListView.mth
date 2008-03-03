@@ -1,0 +1,567 @@
+[Method]
+AddColumns
+[Function]
+dcl_ListView_AddColumns
+[Desc]
+This method adds columns to a ListView control with the Report style set. The width, justification, and optional image from the image list can or must be specified for each column.
+\par \par The column justification is to be set using:
+\par 0	Left (default)
+\par 1	Center
+\par 2	Right
+\par \par \b Please Note:\b0 \par Due to limitations in the ListView control, column 0 is always left justified and cannot be changed.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab sColText
+[as String]
+\par\tab \i{Optional} \i0 nJustification
+[as Integer]
+\par\tab \i{Optional} \i0 nColWidth
+[as Integer]
+\par\tab \i{Optional} \i0 nImageListIndex
+[as Integer]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+AddItem (For Report Style)
+[Function]
+dcl_ListView_AddItem
+[Desc]
+This method adds a new item to the end of a ListView control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list. Use \cf1 dcl_ListView_SetItemImage \cf0 to set the icons of any column cell.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab 
+[Begin List]
+\par\tab\i{Optional} \i0 nImageIndex ...
+[as Integer]
+\par\tab sText
+[as String]
+\par\tab\i{Optional} \i0 sColText1 sColText2 sColText3 ...
+[as String]
+[End List]
+
+
+[Method]
+AddItem
+[Function]
+dcl_ListView_AddItem
+[Desc]
+This method adds a new item to the end of a ListView control. 
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab\i{Optional} \i0 nImageIndex ...
+[as Integer]
+\par\tab sText
+[as String]
+
+
+[Method]
+GetColumnImage
+[Function]
+dcl_ListView_GetColumnImage
+[Desc]
+This method returns the image of a column header in a ListView control. 
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nColumn
+[as Integer]
+\par\tab nImageIndex
+[as Integer]
+
+
+[Method]
+SetColumnImage
+[Function]
+dcl_ListView_SetColumnImage
+[Desc]
+This method sets the image of a column header in a ListView control. Set to -1 to show now images.
+[Arguments]
+<CONTROL>
+\par\tab nColumn
+[as Integer]
+\par\tab nImageIndex
+[as Integer]
+
+
+[Method]
+GetColumnCount
+[Function]
+dcl_ListView_GetColumnCount
+[Desc]
+This method returns number of a columns in a ListView control. 
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+GetCount
+[Function]
+dcl_ListView_GetCount
+[Desc]
+This method returns number of items or rows in a ListView control. 
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+InsertItem (For Report Style)
+[Function]
+dcl_ListView_InsertItem
+[Desc]
+This method inserts a new item anywhere in a ListView control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list.  Use \cf2 dcl_ListView_SetItemImage \cf0 to set the icons of any column cell.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nInsertRowIndex
+[as Integer]
+\par\tab 
+[Begin List]
+\par\tab nImageIndex
+[as Integer]
+\par\tab sText
+[as String]
+\par\tab\i{Optional} \i0 sColText1 sColText2 sColText3 ...
+[as String]
+[End List]
+
+
+[Method]
+InsertItem
+[Function]
+dcl_ListView_InsertItem
+[Desc]
+This method inserts a new item anywhere in a ListView control.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nInsertRowIndex
+[as Integer]
+\par\tab\i{Optional} \i0 nImageIndex
+[as Integer]
+\par\tab sText
+[as String]
+
+
+[Method]
+FillList (For Report Style)
+[Function]
+dcl_ListView_FillList
+[Desc]
+This method will clear and fill a ListView control with multiple rows and will fill in the cells in each row according to how many columns have been previously setup. 
+[Arguments]
+<CONTROL>
+[Begin List]
+[Begin List]
+sCol1Text
+[as String]
+\i{Optional} \i0 nImageListIndex1 
+[as Integer]
+sCol2Text
+[as String]
+\i{Optional} \i0 nImageListIndex2
+[as Integer]
+sCol3Text
+[as String]
+\i{Optional} \i0 nImageListIndex3
+[as Integer]
+...
+[End List]
+...
+[End List]
+
+
+[Method]
+FillList
+[Function]
+dcl_ListView_FillList
+[Desc]
+This method will clear and fill a ListView control with multiple items. 
+[Arguments]
+<CONTROL>
+[Begin List]
+[Begin List]
+sItem1Text
+[as String]
+\i{Optional} \i0 nImageListIndex1 
+[as Integer]
+[End List]
+[Begin List]
+sItem2Text
+[as String]
+\i{Optional} \i0 nImageListIndex2 
+[as Integer]
+[End List]
+...
+[End List]
+
+
+[Method]
+CountItems
+[Function]
+dcl_ListView_CountItems
+[Desc]
+This method will return total number of items in the ListView control.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+SetCurSel
+[Function]
+dcl_ListView_SetCurSel
+[Desc]
+This method will force an item to be selected and will also scroll the ListView to ensure the item is displayed. Pass in a -1 if you wish to deselect the current selection.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+GetCurSel
+[Function]
+dcl_Grid_GetCurSel
+[Desc]
+This method will return the index of the currently selected item.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+Clear
+[Function]
+dcl_ListView_Clear
+[Desc]
+This method will clear the ListView of all its items.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+DeleteItems
+[Function]
+dcl_ListView_DeleteItems
+[Desc]
+This method will delete the items specified in a list in the ListView control.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+\par\tab nIndex1
+[as Integer]
+\par\tab nIndex2
+[as Integer]
+\par\tab nIndex3
+[as Integer]
+\par\tab ...
+[End List]
+
+
+[Method]
+DeleteItem
+[Function]
+dcl_ListView_DeleteItem
+[Desc]
+This method will delete the specified item from the ListView control.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+DeleteColumns
+[Function]
+dcl_ListView_DeleteColumns
+[Desc]
+This method will delete the columns specified in a list in the ListView control.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+\par\tab nIndex1
+[as Integer]
+\par\tab nIndex2
+[as Integer]
+\par\tab nIndex3
+[as Integer]
+\par\tab ...
+[End List]
+
+
+[Method]
+DeleteColumn
+[Function]
+dcl_ListView_DeleteColumn
+[Desc]
+This method will delete the specified column from the ListView control.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+Arrange
+[Function]
+dcl_ListView_Arrange
+[Desc]
+This method will format the layout of all the items in the ListView control. \par
+\par \pard\fi-1100\li1100 0   \b Left\b0 \tab Aligns items along the left edge of the ListView
+\par \pard\fi-1100\li1100 1   \b Top\b0 \tab Aligns items along the top edge of the ListView
+\par \pard\fi-1100\li1100 2   \b Default\b0 \tab Aligns items according to the ListView\rquote s current alignment styles (the default value).
+\par \pard\fi-1100\li1100 3   \b GridSnap\b0 \tab Snaps all icons to the nearest grid position 
+\par \pard\fi-0\li0
+[Arguments]
+<CONTROL>
+\par\tab nStyle
+[as Integer]
+
+
+[Method]
+GetSelCount
+[Function]
+dcl_ListView_GetSelCount
+[Desc]
+This method will return the selected item count.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+SetItemData
+[Function]
+dcl_ListView_SetItemData
+[Desc]
+This method will set the associated item data for the indicated list item. The item data will only accept integer values.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+\par\tab IntegerData
+[as Integer]
+
+
+[Method]
+GetItemData
+[Function]
+dcl_ListView_GetItemData
+[Desc]
+This method will retrieve the associated item data for the indicated list item.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+GetItemText
+[Function]
+dcl_ListView_GetItemText
+[Desc]
+This method will return the text of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex \cf0 may need to be used, otherwise it's not required for any other style of ListView.
+[Arguments Return] as String
+<CONTROL>
+\par\tab nRowIndex
+[as Integer]
+\par\tab\i{Optional} \i0 nColIndex 
+[as Integer]
+
+
+[Method]
+GetRowItems
+[Function]
+dcl_ListView_GetRowItems
+[Desc]
+This method will return a list containing the text of a specified row in a ListView control. This method is useful for ListView controls with the Report style set.
+[Arguments Return] as List of Strings
+<CONTROL>
+\par\tab nRowIndex
+[as Integer]
+
+
+[Method]
+GetColumnItems
+[Function]
+dcl_ListView_GetColumnItems
+[Desc]
+This method will return a list containing the strings of a specified column in a ListView control. This method is useful for ListView controls with the Report style set.
+[Arguments Return] as List of Strings
+<CONTROL>
+\par\tab nColIndex
+[as Integer]
+
+
+[Method]
+SetItemText
+[Function]
+dcl_ListView_SetItemText
+[Desc]
+This method will set the text of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex \cf0 may need to be used, otherwise it's not required for any other style of ListView.
+[Arguments]
+<CONTROL>
+\par\tab nRowIndex
+[as Integer]
+\par\tab\i{Optional} \i0 nColIndex 
+[as Integer]
+\par\tab sNewText
+[as String]
+
+
+[Method]
+GetColWidth
+[Function]
+dcl_ListView_GetColWidth
+[Desc]
+This method will return the width of a column.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nColIndex
+[as Integer]
+
+
+[Method]
+SetColWidth
+[Function]
+dcl_ListView_SetColWidth
+[Desc]
+This method will set the width of a column.
+[Arguments]
+<CONTROL>
+\par\tab nColIndex
+[as Integer]
+\par\tab nColWidth
+[as Integer]
+
+
+[Method]
+CalcColWidth
+[Function]
+dcl_ListView_CalcColWidth
+[Desc]
+This method will calculate the minimum required width of a column to ensure the entire text will appear.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab sColText
+[as String]
+
+
+[Method]
+GetSelectedItems
+[Function]
+dcl_ListView_GetSelectedItems
+[Desc]
+This method will return a list of all selected items in the ListView control. 
+[Arguments Return] as List as Strings
+<CONTROL>
+
+
+[Method]
+GetSelectedNths
+[Function]
+dcl_ListView_GetSelectedNths
+[Desc]
+This method will return a list of all indexes of the selected items in the ListView control. 
+[Arguments Return] as List of Integers
+<CONTROL>
+
+
+[Method]
+GetItemImage
+[Function]
+dcl_ListView_GetItemImage
+[Desc]
+This method will retrieve the image of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex \cf0 may need to be used, otherwise it's not required for any other style of ListView. This method is not available for the BlockList control.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nRowIndex 
+[as Integer]
+\par\tab\i{Optional} \i0 nColIndex
+[as Integer]
+
+
+[Method]
+HitPointTest
+[Function]
+dcl_ListView_HitPointTest
+[Desc]
+This method will test to see which row and column (if columns exit) a point belongs to. 
+[Arguments Return] as List
+<CONTROL>
+\par\tab nX
+[as Integer]
+\par\tab nY
+[as Integer]
+
+
+[Method]
+SetItemImage
+[Function]
+dcl_ListView_SetItemImage
+[Desc]
+This method will set the image of an item in a ListView control. If a ListView with a Report style is called the optional \cf1 nColIndex 
+\cf0 may need to be used, otherwise it's not required for any other style of ListView. This method is not available for the BlockList control.
+[Arguments]
+<CONTROL>
+\par\tab nRowIndex
+[as Integer]
+\par\tab\i{Optional} \i0 nColIndex
+[as Integer]
+\par\tab nNewImage
+[as Integer]
+
+
+[Method]
+SortTextItems
+[Function]
+dcl_ListView_SortTextItems
+[Desc]
+This method will sort the columns in ascending or descending order, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
+[Arguments]
+<CONTROL>
+\par\tab nColIndex
+[as Integer]
+\par\tab bAscending
+[as Integer, T or Nil] (1 or T = Ascending, 0 or Nil = Descending) 
+
+
+[Method]
+SortNumericItems
+[Function]
+dcl_ListView_SortNumericItems
+[Desc]
+This method will sort the columns in ascending or descending order using a numeric comparison, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
+[Arguments]
+<CONTROL>
+\par\tab nColIndex
+[as Integer]
+\par\tab bAscending
+[as Integer, T or Nil] (1 or T = Ascending, 0 or Nil = Descending) 
+
+
+[Method]
+StartLabelEdit
+[Function]
+dcl_ListView_StartLabelEdit
+[Desc]
+This method will force the label of an item to show the edit box, so the user may rename the text content of that item.  When using this method on a ListView control with the Report style setting only the item in the first column may be edited.  This method will not start the editing process if the EditLabel property of the control is set to False. This method is not available for BlockList controls.
+[Arguments]
+<CONTROL>
+\par\tab nItemIndex
+[as Integer]
+
+
+[Method]
+CancelLabelEdit
+[Function]
+dcl_ListView_CancelLabelEdit
+[Desc]
+This method will cancel the label editing of an item, so the user may not rename the text content of that item. This is useful when you wish to ensure that some items may be edited while others may not.  This method is not available for BlockList controls.
+[Arguments]
+<CONTROL>
+
+
+[End of File]

@@ -1,0 +1,525 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "..\SharedRes.Local.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Russian resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+#ifdef _WIN32
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_NONE                "<Ionoi>"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_OBJBROWSER          "(A?aoca? iauaeoa)"
+    IDS_COLOR               "Oaao"
+    IDS_ODCFILTER           "I?iaeou OpenDCL (*.odcl,*.lsp)|*.odcl;*.lsp||"
+    IDS_SECONDTEXT          "naeoiaa"
+    IDS_SECONDSTEXT         "naeoiau"
+    IDS_MINUTETEXT          "ieiooa"
+    IDS_MINUTESTEXT         "ieioou"
+    IDS_REMAININGTEXT       "Nio?aiaiea"
+    IDS_COLORDISPLAYTEXT    "Oaao %d"
+    IDS_OPTION1             "Aa?eaio 1"
+    IDS_OPTION2             "Aa?eaio 2"
+    IDS_OPTION3             "Aa?eaio 3"
+    IDS_FILEDLGFILTERDEF    "?enoiie AutoCAD|*.dwg;*.dxf|AutoLISP File (*.lsp,*.fas;*.vlx)|*.lsp;*.fas;*.vlx|"
+    IDS_SELFOLDER           "Auai? iaiee"
+    IDS_OPEN                "Ioe?uou"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_TRUE                "Aa"
+    IDS_FALSE               "Iao"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_DCLFORM             "Oi?ia"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_POINTER             "Oeacaoaeu"
+    IDS_LABEL               "Iaaienu"
+    IDS_TEXTBUTTON          "Oaenoiaay eiiiea"
+    IDS_GRAPHICBUTTON       "A?aoe?aneay eiiiea"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_FRAME               "?aiea"
+    IDS_TEXTBOX             "Iiea"
+    IDS_CHECKBOX            "Oea?ie"
+    IDS_OPTION              "Ia?aee??aoaeu"
+    IDS_COMBOBOX            "Iiea ni nieneii"
+    IDS_LISTBOX             "Nienie"
+    IDS_SCROLLBAR           "Iieina i?ie?ooee"
+    IDS_SLIDERBAR           "Iieina iiecoiea"
+    IDS_PICTUREBOX          "Ecia?a?aiea"
+    IDS_TABS                "Caeeaaea"
+    IDS_MONTHCAL            "Eaeaiaa?u"
+    IDS_TREE                "Aa?aai"
+    IDS_RECT                "I?yiioaieuiee"
+    IDS_PROGRESSBAR         "Iieina aae?aiey"
+    IDS_SPINBUTTON          "N?ao?ee"
+    IDS_URL                 "Aeia?nnueea"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ROUNDSLIDER         "Oaie iiecoiea"
+    IDS_BLOCKVIEW           "Aea aeiea"
+    IDS_SLIDEVIEW           "Aea neaeaa"
+    IDS_HTML                "Html eiiiiiaio"
+    IDS_DWGPREVIEW          "Dwg i?iniio?"
+    IDS_LISTVIEW            "Aea nienea"
+    IDS_BLOCKLIST           "Nienie aeieia"
+    IDS_OPTIONLIST          "Nienie ia?aee??aoaeae"
+    IDS_ACTIVEX             "Anoaaeou ActiveX eiiiiiaio"
+    IDS_DWGLIST             "Dwg nienie"
+    IDS_ANIMATION           "Aieiaoey"
+    IDS_IMAGECOMBOBOX       "Nienie ecia?a?aiee"
+    IDS_GRID                "Oaaeeoa"
+    IDS_SPLITTER            "?acaaeeoaeu"
+    IDS_HATCH               "?aoaoea"
+    IDS_FILEDLGCTRL         "Eeeaio oaeea aeaeiaa"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_NAME           "(Eiy)"
+    IDS_PROP_CUSTOM         "(Eiino?oeoi?)"
+    IDS_PROP_AUTOSIZE       "Aaoi ?acia?"
+    IDS_PROP_BORDERSTYLE    "Aea a?aieou"
+    IDS_PROP_BTNSTYLE       "Noeeu"
+    IDS_PROP_CAPTION        "Iiaienu"
+    IDS_PROP_CANCEL         "Ioiaieou"
+    IDS_PROP_COMBOBOXSTL    "Noeeu"
+    IDS_PROP_DEFAULT        "Ii oiie?aie?"
+    IDS_PROP_ENABLE         "?ac?aoaiea ?aaiou"
+    IDS_EVENT_BTNCLICKED    "Uae?ie ii eiiiea"
+    IDS_EVENT_CLICKED       "Uae?ie"
+    IDS_EVENT_DBLCLICKED    "Aaieiie uae?ie"
+    IDS_EVENT_EDITCHANGED   "Eciaieeinu"
+    IDS_EVENT_NODECLICKED   "Niaia ocea"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_EVENT_SELCHANGED    "Auai? eciaiaiey"
+    IDS_PROP_FILTERSTYLE    "Noeeu oeeuo?a"
+    IDS_PROP_HEIGHT         "Aunioa"
+    IDS_PROP_IMAGELIST      "Nienie ecia?a?aiey"
+    IDS_PROP_LARGECHNGE     "E?oiiue"
+    IDS_PROP_LEFT           "Eaai"
+    IDS_PROP_LIST           "Nienie"
+    IDS_PROP_MAXVAL         "Iaeneiaeuiia cia?aiea"
+    IDS_PROP_MINVAL         "Ieieiaeuiia cia?aiea"
+    IDS_PROP_MULTIROW       "Iii?anoaaiiue auai? no?ie"
+    IDS_PROP_ORIENTATION    "I?eaioaoey"
+    IDS_PROP_PICTURE        "Ea?oeiea"
+    IDS_PROP_RECTSTYLE      "Noeeu"
+    IDS_PROP_SMALLCHNG      "Iaeeee"
+    IDS_PROP_TABSCAPTION    "Ioia?a?aou iiaienu"
+    IDS_PROP_TABSIMAGELIST  "Ioia?a?aou ecia?a?aiea"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_TABSTTTLIST    "Ioia?a?aou iianeaceo"
+    IDS_PROP_TEXT           "Oaeno"
+    IDS_PROP_TICKFRQCY      "?anoia ia?aoea"
+    IDS_PROP_TITLEBARTEXT   "Caaeaaea"
+    IDS_PROP_TTT            "Caaeaaea iianeacee"
+    IDS_PROP_TOP            "Aa?o"
+    IDS_PROP_VALUE          "Cia?aiea"
+    IDS_PROP_VISIBLE        "Ioia?a?aou"
+    IDS_PROP_WIDTH          "Oe?eia"
+    IDS_PROP_SHOWTICKS      "Iieacuaaou iianeaceo"
+    IDS_PROP_READONLY       "Oieuei ?oaiea"
+    IDS_PROP_JUSTIFICATION  "Au?aaieaaiea"
+    IDS_PROP_MARGINLEFT     "Ionooi neaaa"
+    IDS_PROP_MARGINRIGHT    "Ionooi ni?aaa"
+    IDS_PROP_LIMITTEXT      "Ia?aie?aiea oaenoa"
+    IDS_PROP_AUTOHSCROLL    "Aaoi A-i?ie?ooea"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_AUTOVSCROLL    "Aaoi A-i?ie?ooea"
+    IDS_PROP_DROPDOWNHEIGHT "Ia?aoaueou aunioo"
+    IDS_PROP_MULTICOL       "Iii?anoaaiiue auai? eieiiie"
+    IDS_PROP_SELECTSTYLE    "Auai? noeey"
+    IDS_PROP_NOINTEGRALHEIGHT "Ia oaeay aunioa"
+    IDS_PROP_SORTED         "Ni?oe?iaaou"
+    IDS_PROP_USETABSTOPS    "Eniieuciaaou Tab"
+    IDS_PROP_DISABLENOSCROLL "Ia eniieuciaaou i?ie?ooeo"
+    IDS_PROP_HSCROLL        "Ai?eciioaeuiay i?ie?ooea"
+    IDS_PROP_VSCROLL        "Aa?oeeaeuiay i?ie?ooea"
+    IDS_PROP_COLWIDTH       "Oe?eia eieiiee"
+    IDS_PROP_SMOOTHPROG     "Eiaeeaoi? i?ia?anna"
+    IDS_PROP_AUTOWRAP       "Aaoi iaa?oea"
+    IDS_PROP_URLADDRESS     "URL aa?an"
+    IDS_PROP_TAB_JUSTIFIED  "Ioia?a?aou au?aaieaaiea"
+    IDS_PROP_TAB_STYLE      "Ioia?a?aou noeeu"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_TAB_LABEL_ALIGN "Au?aaieaaiea iaaiene"
+    IDS_PROP_TAB_FIXEDWIDTH "Oeene?iaaiiay oe?eia"
+    IDS_PROP_URLLINKTYPE    "Oei ocea"
+    IDS_PROP_MINTABWIDTH    "Ieieiaeuiay oe?eia"
+    IDS_PROP_TABSELECTED    "Ioia?a?aou auai?"
+    IDS_PROP_ITEMDATA       "Cia?aiea aaiiuo"
+    IDS_PROP_TOOLBARBTN_CAPTIONS "Iiaienu eiiiee"
+    IDS_PROP_TOOLBARBTN_IMAGES "?enoiie eiiiee"
+    IDS_PROP_TOOLBARBTN_TTTEXT "Caaeaaea iianeacee eiiiee"
+    IDS_PROP_TOOLBARBTN_STYLES "Noeeu eiiiee"
+    IDS_PROP_USETOPFROMBOTTOM "Eniieuciaaou aa?o io ieca"
+    IDS_PROP_USEBOTTOMFROMBOTTOM "Eniieuciaaou eaai io i?aaa"
+    IDS_PROP_USELEFTFROMRIGHT "Eniieuciaaou iec io ieca"
+    IDS_PROP_USERIGHTFROMRIGHT "Eniieuciaaou i?aai io i?aaa"
+    IDS_PROP_TOPFROMBOTTOM  "Aa?o io ieca"
+    IDS_PROP_BOTTOMFROMBOTTOM "Iec io ieca"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_LEFTFROMRIGHT  "Eaai io i?aaa"
+    IDS_PROP_RIGHTFROMRIGHT "I?aai io i?aaa"
+    IDS_PROP_RESIZABLE      "?ac?aoaou ?anoyaeaaiea"
+    IDS_PROP_FORMCONTROLABILITY "Niauoea"
+    IDS_PROP_MULTISELECT    "Iaeneiaeuiia aua?aiiia eiee?anoai"
+    IDS_EVENT_GETDAYSTATE   "Iieo?eou ninoiyiea aiy"
+    IDS_EVENT_SELECT        "Auai?"
+    IDS_EVENT_KILLFOCUS     "Oa?aou oieon"
+    IDS_EVENT_OUTOFMEM      "Anoaaeou ec iaiyou"
+    IDS_EVENT_RCLICK        "I?aaue uae?ie"
+    IDS_EVENT_RDBLCLICK     "I?aaue aaieiie uae?ie"
+    IDS_EVENT_RETURN        "Aa?ioou"
+    IDS_EVENT_SETFOCUS      "Onoaiiaeou oieon"
+    IDS_EVENT_BGNLBLEDIT    "Ia?aei eciaiaiey"
+    IDS_EVENT_DELETEITEM    "Oaaeeou cia?aiea"
+    IDS_EVENT_EDITLABELITEM "Eiiao eciaiaiey"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_EVENT_ITEMEXPANED   "?anoe?aiiia cia?aiea"
+    IDS_EVENT_ITEMEXPANDING "?anoe?aiea cia?aiea"
+    IDS_EVENT_KEYDOWN       "Ia?aoa eiiiea"
+    IDS_EVENT_SELCHANGING   "Aua?aii eciaiaiea"
+    IDS_EVENT_CHANGED       "Eciaieeinu"
+    IDS_EVENT_MAXTEXT       "Iaeneiaeuiue oaeno"
+    IDS_EVENT_UPDATE        "Iaiiaeaiea"
+    IDS_EVENT_DROPDOWN      "Ia?aoaueou"
+    IDS_EVENT_SCROLL        "I?ie?ooea"
+    IDS_EVENT_RELEASEDCAPTURE "Ioiouaiiue caoaao"
+    IDS_PROP_FONTUNDERLINE  "Iia?a?eiooue o?eoo"
+    IDS_PROP_FONTITALIC     "Iaeeiiiue o?eoo"
+    IDS_PROP_FONTBOLD       "?e?iue o?eoo"
+    IDS_PROP_FONTSIZE       "?acia? o?eooa"
+    IDS_PROP_FONTNAME       "O?eoo"
+    IDS_PROP_FONTSTRIKEOUT  "O?eoo ?ac?yaea"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_FONTCOLOR      "Oaao o?eooa"
+    IDS_PROP_BLOCKNAME      "Eiy aeiea"
+    IDS_PROP_FILENAME       "Eiy oaeea"
+    IDS_PROP_COLOR          "(Oaao)"
+    IDS_PROP_CFGTABCAPTION  "eiioeao?aoey Tab oaenoa"
+    IDS_PROP_ALLOWORBIT     "Iaoia eioa?oaena"
+    IDS_EVENT_FORMCLOSE     "Cae?uou"
+    IDS_EVENT_FORMINIT      "Eieoeaeecaoey"
+    IDS_EVENT_FORMSIZE      "?acia?"
+    IDS_EVENT_FORMSHOW      "Iieacaou"
+    IDS_EVENT_DOCACTIVATE   "Aeoeaece?iaaiiue aieoiaio"
+    IDS_EVENT_CFGCANCEL     "Ioiaieou"
+    IDS_EVENT_CFGOK         "OK"
+    IDS_EVENT_CFGHELP       "Iiiiuu"
+    IDS_EVENT_CFGAPPLY      "I?eiaieou"
+    IDS_PROP_ACADBKCOLOR    "Aoi?inoaiaiiue oaao"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_SHOWSELALWAYS  "Iieacuaaou auai? anaaaa"
+    IDS_PROP_INDENT         "Cayaea"
+    IDS_PROP_HASLINES       "Eiaao eeiee"
+    IDS_PROP_LINESATROOT    "Aa?oeia eeiee"
+    IDS_PROP_HASBUTTONS     "Eiaao eiiiee"
+    IDS_PROP_EDITLABLE      "Eciaieou iaaienu"
+    IDS_PROP_HASCHECKBOXES  "Eiaao oea?ie"
+    IDS_PROP_TITLEBARICON   "Eeiiea caaieiaea"
+    IDS_EVENT_KEYUP         "Ioiouaia eeaaeoa"
+    IDS_EVENT_MOUSEDOWN     "Ia?aoa eiiiea iuoe"
+    IDS_EVENT_MOUSEUP       "Ioiouaia eiiiea iuoe"
+    IDS_EVENT_MOUSEMOVE     "Ia?aiauaiee iuoe"
+    IDS_EVENT_MOUSEMOVEDOFF "Ia?aiauaiee iuoe ioee??aii"
+    IDS_EVENT_MOUSEDBLCLICK "Aaieiie uae?ie iuoe"
+    IDS_EVENT_MOUSEWHEEL    "Eieani iuoe"
+    IDS_EVENT_PAINT         "?eniaaou"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_USEMASK        "Eniieuciaaiea ianee"
+    IDS_PROP_SHOWEDITBOX    "Iieacuaaou iiea"
+    IDS_EVENT_NAVCOMPLETE   "Iieiay iaaeaaoey"
+    IDS_PROP_INPUTFILTER    "Oeeuo? aoiaa"
+    IDS_PROP_TABORDER       "Iacia?eou Tab"
+    IDS_PROP_SHOWORBITCIRCLES "Iieacaou i?aeoo e?oaa"
+    IDS_PROP_ISTABSTOP      "Tab inoaiiaeai"
+    IDS_EVENT_MOUSEENTERED  "Aaaaaiiay iuou"
+    IDS_PROP_GROUP          "Ia?aei a?oiiu"
+    IDS_PROP_MOUSEOVERPICT  "Iuou ii ?enoieo"
+    IDS_PROP_RENDERMODE     "Iieacuaaou aea"
+    IDS_EVENT_RETURNPRESSED "Ia?ao Enter"
+    IDS_EVENT_FORMCANCELCLOSE "Ioiaieou Cae?uou"
+    IDS_EVENT_LMOUSE        "EIuoea"
+    IDS_EVENT_MMOUSE        "NIuoea"
+    IDS_EVENT_RMOUSE        "IIuoea"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_ZORDER         "Iacia?eou Z/Tab"
+    IDS_PROP_LISTVIEWSTYLE  "Noeeu"
+    IDS_PROP_LVSORT         "Ni?oe?iaaou"
+    IDS_PROP_ICONALIGN      "Au?aaieaaiea eeiiee"
+    IDS_PROP_BLOCKLISTSTYLE "Noeeu"
+    IDS_PROP_AUTOARRANGE    "Aaoi ?aniiei?aiea eeiiee"
+    IDS_PROP_COLHEADER      "Iaaienu eieiiee"
+    IDS_PROP_LABELWRAP      "Iaaienu iaa?oea"
+    IDS_PROP_ALLOWSCROLLING "?ac?aoeou i?ie?ooeo"
+    IDS_PROP_MULTISELECTION "Iii?anoaaiiue auai?"
+    IDS_PROP_ICONXSPACING   "Eeiiea X eioa?aae"
+    IDS_PROP_ICONYSPACING   "Eeiiea Y eioa?aae"
+    IDS_EVENT_DRAGDROPTOACAD "Ia?aoaueou a AutoCAD"
+    IDS_EVENT_DRAGDROPFROMCTRL "Ia?aoaueou ec eiiiiiaioa"
+    IDS_EVENT_DRAGDROPFROMACAD "Ia?aoaueou ec a?oaie"
+    IDS_EVENT_DRAGDROPBEGIN "Ia?aei ia?aoaneeaaiey"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_DRAGNDROPALLOWBEGIN "Drag/Drop Ia?aou"
+    IDS_PROP_DRAGNDROPALLOWDROP "Drag/Drop caeii?eou"
+    IDS_PROP_GRIDLINES      "Eeiee oaaeeou"
+    IDS_PROP_FULLROWSELECT  "Iieiue auai? no?iee"
+    IDS_PROP_MINDLGWIDTH    "Ieieiaeuiay oe?eia aeaeiaa"
+    IDS_PROP_MAXDLGWIDTH    "Iaeneiaeuiay oe?eia aeaeiaa"
+    IDS_PROP_MINDLGHEIGHT   "Ieieiaeuiay auniea aeaeiaa"
+    IDS_PROP_MAXDLGHEIGHT   "Iaeneiaeuiay auniea aeaeiaa"
+    IDS_EVENT_COLCLICK      "Uae?ie ii eieiiea"
+    IDS_PROP_FONTSIZESTYLE  "Noeeu ?acia?a o?eooa"
+    IDS_PROP_FORECOLOR      "Aeaaiue oaao"
+    IDS_PROP_TRANSPARENT    "I?ic?a?iue"
+    IDS_EVENT_SCROLLED      "I?ie?ooea"
+    IDS_PROP_DOCSIDES       "Nie?auaiea noi?iiu"
+    IDS_PROP_DOCDEFAULT     "Onoaiiaeou oiie?aiea"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_EVENTINVOKE    "Neo?aeiia ia?auaiea"
+    IDS_PROP_RETURNASTAB    "Aa?ioou eiaaa Tab"
+    IDS_PROP_SINGLEEXPANED  "Aaeiia ?anoe?aiea"
+    IDS_PROP_ACTIVEXPROPPAGES "(ActiveX eiino?oeoi?)"
+    IDS_PROP_ROWHEIGHT      "Aunioa no?iee"
+    IDS_PROP_DEFSELINDEX    "Oiie?aiea auai?a"
+    IDS_PROP_OBJECTBROWSER  "(A?aoca? iauaeoa)"
+    IDS_PROP_VARNAME        "(Eciaiyaiia eiy)"
+    IDS_PROP_FILEDLGSTYLE   "Noeeu"
+    IDS_PROP_ASREADONLY     "Eiaaa oieuei ?oaiea"
+    IDS_PROP_CREATIONPROMPT "Nicaaiea iaiiieiaiey"
+    IDS_PROP_DEFAULTEXTENSION "Iano?ieea ii oiie?aie?"
+    IDS_PROP_EXTCANBEDIFF   "?anoe?aiea ii?ao auou a?oaei"
+    IDS_PROP_FILEMUSTEXIST  "Oaee aie?ai nouanoaiaaou"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_FILTER         "Oeeuo?"
+    IDS_PROP_OVERWRITEPROMPT "Eciaieou iaiiieiaiey"
+    IDS_PROP_PATHMUSTEXIST  "Ioou aie?ai nouanoaiaaou"
+    IDS_PROP_SHOWCANCEL     "Aucaaou ioiaio"
+    IDS_PROP_SHOWHELP       "Iieacaou iiiiuu"
+    IDS_PROP_SHOWNAMELABEL  "Iieacaou eiy iaaiene"
+    IDS_PROP_SHOWNAMETEXTBOX "Iieacaou eiy iiey"
+    IDS_PROP_SHOWOK         "Aucaaou OK"
+    IDS_PROP_SHOWREADONLYCHECKBOX "Iieacaou oea?ie oieuei ?oaiea"
+    IDS_PROP_SHOWTYPECOMBOBOX "Iieacaou oei oea?ea"
+    IDS_PROP_SHOWTYPELABEL  "Iieacaou oei iaaiene"
+    IDS_EVENT_FOLDERCHANGE  "Iaiea eciaieeanu"
+    IDS_EVENT_HELP          "Iiiiuu"
+    IDS_EVENT_TYPECHANGE    "Oei eciaieeny"
+    IDS_PROP_INSERTTYPE     "Anoaaeou ec Xref"
+    IDS_PROP_ROWHEADER      "Iaaienu ?yaa"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_COLUMN_CAPTIONS "Iiaienu eieiiee"
+    IDS_PROP_COLUMN_ALIGNMENTS "Au?aaieaaiea eieiiee"
+    IDS_PROP_COLUMN_IMAGES  "Ecia?a?aiea eieiiee"
+    IDS_PROP_COLUMN_WIDTHS  "Oe?eia eieiiee"
+    IDS_PROP_COLUMN_STYLES  "Noeeu eieiiee"
+    IDS_PROP_COLUMN_DEFAULTIMAGES "Ecia?a?aiea eieiiee ii oiie?aie?"
+    IDS_PROP_COLUMN_ALTERNATEIMAGES "?a?aaiaaou ecia?a?aiea eieiiee"
+    IDS_PROP_COLUMN_LISTITEMS "Cia?aiey auiaaa?uaai nienea eieiiee"
+    IDS_PROP_COLUMN_LISTIMAGES "Eeiiee auiaaa?uaai nienea eieiiee"
+    IDS_PROP_ALTERNATECOLOR "?a?aaiaaou oaao"
+    IDS_PROP_ALTORIENTATION "Alt i?eaioaoey"
+    IDS_PROP_TOOLTIP_MAINTEXT "Ioia?a?aaiue iie oaeno"
+    IDS_PROP_TOOLTIP_PICTURE "Ioia?a?aaiue ea?oeieo"
+    IDS_PROP_TOOLTIP_AVIFILENAME "Ioia?a?aaiue Avi oaee"
+    IDS_PROP_TOOLTIP_LINE   "Ioia?a?aou eeie?"
+    IDS_PROP_TOOLTIP_TITLECOLOR "Ioia?a?aaiue oaao iacaaiey"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_SPLITTERSTYLE  "Noeeu a?aieou"
+    IDS_PROP_CLOSESTINSIDE  "Aioo?e"
+    IDS_PROP_CLOSESTOUTSIDE "Nia?o?e"
+    IDS_PROP_HATCHSCALE     "Ianooaa oo?eoiaee"
+    IDS_EVENT_SPLITTERMOVED "Ia?aiauaiiue ?acaaeeoaeu"
+    IDS_PROP_CAPTION_SECOND "Iiaienu (Naeoiaa)"
+    IDS_PROP_CAPTION_SECONDS "Iiaienu (Naeoiau)"
+    IDS_PROP_CAPTION_MINUTE "Iiaienu (Ieiooa)"
+    IDS_PROP_CAPTION_MINUTES "Iiaienu (Ieioou)"
+    IDS_PROP_DISPLAYSECONDS "Aoi?ie ye?ai"
+    IDS_PROP_DISPLAY_PERCENTAGE "?anou ye?aia"
+    IDS_EVENT_FORM_ONOK     "OK"
+    IDS_PROP_TITLEBAR       "Caaeaaiia iacaaiea"
+    IDS_EVENT_FORM_ONCANCEL "Ioiaieou"
+    IDS_PROP_TOOLTIP_BALLOON "Ioia?a?aou iaiei?eo"
+    IDS_EVENT_FORM_ENTERINGNODOCSTATE "Iao aoiaa ninoiyiey aieoiaioa"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_USEVISUALSTYLE "Eniieucoeoa aecoaeuiue noeeu"
+    IDS_PROP_CAPTION_REMAINING "Iiaienu (Nio?aiaiea)"
+    IDS_PROP_PROGRESSLEGEND "Oei eaaaiau"
+    IDS_PROP_KEEPFOCUS      "Aa??aou oieon"
+END
+
+#endif    // Russian resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "..\\SharedRes.Local.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "Res\\OpenDCL.ico"
+IDI_HELP                ICON                    "Res\\Help.ico"
+IDI_INFO                ICON                    "Res\\Info.ico"
+IDI_WARN                ICON                    "Res\\Warn.ico"
+IDI_ERR                 ICON                    "Res\\Error.ico"
+IDI_LABEL               ICON                    "Res\\Label.ico"
+IDI_FILTER              ICON                    "Res\\Filter.ico"
+IDI_PICK                ICON                    "Res\\Pick.ico"
+IDI_SELECT              ICON                    "Res\\Select.ico"
+IDI_FOLDER              ICON                    "Res\\Folder.ico"
+IDI_PICKSMALL           ICON                    "Res\\PickSmall.ico"
+IDI_SHXFONT             ICON                    "Res\\SHXFont.ico"
+IDI_TTFONT              ICON                    "Res\\TTFont.ico"
+IDI_LARGEBLOCK          ICON                    "Res\\LargeBlock.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_ARROWHEADS          BITMAP                  "Res\\ArrowHeads.bmp"
+IDB_OPTBTN              BITMAP                  "Res\\OptionButton.bmp"
+IDB_OPTBTNSEL           BITMAP                  "Res\\OptionButtonSel.bmp"
+IDB_OPTBTNH             BITMAP                  "Res\\OptionButtonH.bmp"
+IDB_OPTBTNSELH          BITMAP                  "Res\\OptionButtonSelH.bmp"
+IDB_FOLDER              BITMAP                  "Res\\Folder.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_HAND                CURSOR                  "Res\\Hand.cur"
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

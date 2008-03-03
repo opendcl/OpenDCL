@@ -1,7 +1,6 @@
 #include "StdAfx.H"
 #include "VarUtils.H"
 #include "DclControlObject.h"
-//#include "ObjectBrowser.h"
 #include "Project.h"
 
 
@@ -113,7 +112,7 @@ int VTToVTI( VARTYPE vt )
 }
 
 
-CString VARTYPEtoString(VARTYPE vt)
+CString VARTYPEtoString( VARTYPE vt )
 {
 	switch(vt)
 	{
@@ -149,37 +148,6 @@ CString VARTYPEtoString(VARTYPE vt)
 	case VT_UNKNOWN:
 	case VT_DISPATCH:
 		{
-			// * Commented below and just return "OLE Object", otherwise it won't work in "Common" folder [ORW]
-			//
-			//if (pProperty == NULL && pMethod == NULL)
-			//	return _T("OLE Object");
-			//else if (pProperty != NULL)
-			//{
-			//	TDclControlPtr pOleObject = activeProject->GetAxOleObject(pProperty);
-			//	if (pOleObject != NULL)
-			//	{
-			//		CString sType = pOleObject->m_Name;
-			//		if (pObjectBrowser != NULL)
-			//		{
-			//			pObjectBrowser->LoadOleObjectIntoTree(pOleObject);
-			//			return sType;
-			//		}
-			//	}
-			//	return _T("OLE Object");
-			//}
-			//else if (pMethod != NULL)
-			//{
-			//	TDclControlPtr pOleObject = activeProject->GetAxOleObject(pMethod);
-			//	if (pOleObject != NULL)
-			//	{
-			//		if (pObjectBrowser != NULL)
-			//		{
-			//			pObjectBrowser->LoadOleObjectIntoTree(pOleObject);
-			//			return pOleObject->m_Name;
-			//		}
-			//	}			
-			//	return _T("OLE Object");
-			//}
 			return _T("OLE Object");
 			break;
 		}
@@ -386,4 +354,20 @@ CString FuncDescToString( ITypeInfo *lpTypeInfo, FUNCDESC *pFuncDesc, bool bUseA
 	    }
 	}
 	return _T("");
+}
+
+CString GetAxTypeName( const CLSID& clsid )
+{
+	CString sName;
+	WCHAR* pwszProgID = NULL;        
+	HRESULT hr = ProgIDFromCLSID( clsid, &pwszProgID );
+	if( SUCCEEDED(hr) )
+	{
+		sName = pwszProgID;
+		CoTaskMemFree( pwszProgID );
+	}
+	sName.MakeReverse();
+	sName = sName.Right( sName.GetLength() - sName.SpanIncluding( _T("0123456789.") ).GetLength() ).SpanExcluding( _T(".") );
+	sName.MakeReverse();
+	return sName;
 }

@@ -1,0 +1,55 @@
+[Method]
+LoadDwg
+[Function]
+dcl_DwgPreview_LoadDwg
+[Desc]
+This method will load a drawing file’s thumbnail bitmap preview into the DwgPreview control for display.
+[Arguments]
+<CONTROL>
+\par\tab sFileName
+[as String]
+
+
+[Method]
+Clear
+[Function]
+dcl_DwgPreview_Clear
+[Desc]
+This method clears the display.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+GetDwgName
+[Function]
+dcl_DwgPreview_GetDwgName
+[Desc]
+This method will return the name of the drawing file that is currently being displayed.
+[Arguments Return] as String
+<CONTROL>
+
+
+[Method]
+SetHighLight
+[Function]
+dcl_DwgPreview_SetHighLight
+[Desc]
+This method draws a rectangle around the inside of the border as indication that the control has been selected or indicated for some purpose.	
+[Arguments]
+<CONTROL>
+\par\tab ColorIndex
+[as Integer]
+
+
+[Method]
+RemoveHighLight
+[Function]
+dcl_DwgPreview_RemoveHighLight
+[Desc]
+This method removes the drawn rectangle around the inside of the border that indicates the control has been selected or indicated for some purpose
+[Arguments]
+<CONTROL>
+
+
+[End of File]

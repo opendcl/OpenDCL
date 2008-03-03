@@ -95,28 +95,15 @@ END_MESSAGE_MAP()
 BOOL CBaseDlg::OnInitDialog()
 {
 	CRect rectSaved = ReadPosition(); //get the saved position before it gets overwritten during SetWindowPos()
-	if( mbHasTitleBar )
-		ModifyStyle( 0, WS_CAPTION, SWP_FRAMECHANGED );
-	else
-		ModifyStyle( WS_CAPTION, 0, SWP_FRAMECHANGED );
+	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::Resizable ) );
+	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::TitleBar ) );
 
 	__super::OnInitDialog();
 
 	CRect rectWindow;
 	GetWindowRect( &rectWindow );
-	CRect rectClient;
-	GetClientRect( &rectClient );
-	SetNCWidth( rectWindow.Width() - rectClient.Width() );
-	SetNCHeight( rectWindow.Height() - rectClient.Height() );
-	rectWindow.right = rectWindow.left + mpTemplate->GetLongProperty( Prop::Width );
-	rectWindow.bottom = rectWindow.top + mpTemplate->GetLongProperty( Prop::Height );
-	bool bUsesClientRect = mpSourceForm->UsesClientRect();
-	assert( bUsesClientRect ); //should already be converted!
-	if( bUsesClientRect )
-	{
-		rectWindow.right += GetNCWidth();
-		rectWindow.bottom += GetNCHeight();
-	}
+	rectWindow.right = rectWindow.left + mpTemplate->GetLongProperty( Prop::Width ) + GetNCWidth();
+	rectWindow.bottom = rectWindow.top + mpTemplate->GetLongProperty( Prop::Height ) + GetNCHeight();
 
 	CRect rectParent;
 	::GetWindowRect( ::GetParent(m_hWnd), &rectParent );
@@ -142,8 +129,8 @@ BOOL CBaseDlg::OnInitDialog()
 	MoveWindow( &rectWindow, FALSE );
 	mpTemplate->SetLongProperty( Prop::Width, rectWindow.Width() - GetNCWidth() );
 	mpTemplate->SetLongProperty( Prop::Height, rectWindow.Height() - GetNCHeight() );
-	mbIgnoreSizing = false;
 	ApplyPropertiesEnum();
+	mbIgnoreSizing = false;
 
 	UINT nID = 1000;
 	GetControlPane()->CreateControls( nID );
@@ -155,7 +142,7 @@ BOOL CBaseDlg::OnInitDialog()
 											mpTemplate->GetLongProperty( Prop::Height ),
 											false );	
 
-	return TRUE;  // return TRUE  unless you set the focus to a control
+	return FALSE;  // return TRUE  unless you set the focus to a control
 }
 
 BOOL CBaseDlg::OnHelpInfo(HELPINFO* pHelpInfo)

@@ -25,7 +25,6 @@ protected:
 	FormType mType;
 	CString msName;
 	UINT_PTR mnNextId;
-	bool mbUsesClientRect;
 	CDialogObject* mpDlgObject; //informational pointer to the one and only instance of this form (or NULL)
 
 	//for managing tab hierarchy and order
@@ -48,7 +47,8 @@ public:
 	//2007-01-30 [ORW]: save version set to 4 (no change from OpenDCL 3)
 	//2007-02-19 [ORW]: save version set to 5 (image list collection removed from form object)
 	//2007-09-17 [ORW]: save version set to 6 (changed mbUsesClientRect from BOOL to bool)
-	ULONG GetCurrentSaveVersion() const { return 6; }
+	//2008-02-16 [ORW]: save version set to 7 (removed mbUsesClientRect)
+	ULONG GetCurrentSaveVersion() const { return 7; }
 
 // Operations
 public:
@@ -106,8 +106,6 @@ public:
 	void SetParentForm( LPCTSTR pszParentUniqueName );
 	short GetTabIndex() const { return mnTabIndex; }
 	void SetTabIndex( short nIndex ) { mnTabIndex = nIndex; OnModified(); }
-	bool UsesClientRect() const { return mbUsesClientRect; }
-	void SetUsesClientRect( bool bUsesClientRect = true ) { mbUsesClientRect = bUsesClientRect; OnModified(); }
 	LPCTSTR GetTitleText() const;
 	UINT_PTR GetTitleBarIcon();
 	UINT_PTR GetNextId() { if( mnNextId < mDclControls.size() ) mnNextId = mDclControls.size(); return mnNextId++; }

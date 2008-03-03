@@ -50,9 +50,8 @@ CWnd* CDockingDialog::GetTopLevelWnd()
 		HWND hwndTopLevel = ::GetParent( ::GetParent( hwndControlBar ) );
 		if( hwndTopLevel && hwndTopLevel != AfxGetMainWnd()->m_hWnd )
 			return CWnd::FromHandle( hwndTopLevel );
-		return &mHostControlBar;
 	}
-	return mHostControlBar.GetParent();
+	return &mHostControlBar;
 }
 
 bool CDockingDialog::CreateModeless( UINT nID )
@@ -98,8 +97,6 @@ bool CDockingDialog::CreateModeless( UINT nID )
 	mbIgnoreSizing = true;
   if( !mHostControlBar.Create( GetWndCaption(), GetWndRect(), nID ) )
 		return false;
-	if( !CDialog::Create( IDD_DOCKINGDLGHOST, &mHostControlBar ) )
-		return false;
 
 	if( mpSourceForm->GetUUIDAsString().IsEmpty() )
 	{
@@ -114,6 +111,11 @@ bool CDockingDialog::CreateModeless( UINT nID )
 	}			
 	mHostControlBar.EnableDocking( dwDockableSides );
 	mHostControlBar.RestoreControlBar( dwDefaultDockableSide ); // loads the dockable form but does not display it
+	AfxGetMainWnd()->GetTopLevelFrame()->ShowControlBar( &mHostControlBar, TRUE, TRUE );
+
+	if( !CDialog::Create( IDD_DOCKINGDLGHOST, &mHostControlBar ) )
+		return false;
+
 	return true;
 }
 
@@ -240,6 +242,7 @@ BEGIN_MESSAGE_MAP(CDockingDialog, CDialog)
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -260,8 +263,10 @@ int CDockingDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	GetClientArea( rcClient );
 	SetNCWidth( rectWindow.Width() - rcClient.Width() );
 	SetNCHeight( rectWindow.Height() - rcClient.Height() );
-	SetWindowPos( NULL, rcClient.left, rcClient.top, 0, 0,
-								SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+	SetWindowPos( NULL, rcClient.left, rcClient.top, rcClient.Width(), rcClient.Height(),
+								SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+	mpTemplate->SetLongProperty( Prop::Width, rcClient.Width() );
+	mpTemplate->SetLongProperty( Prop::Height, rcClient.Height() );
 
 	ApplyPropertiesEnum();
 	mbIgnoreSizing = false;
@@ -336,4 +341,10 @@ void CDockingDialog::OnDestroy()
 {
 	GetControlPane()->CleanUpControls();
 	__super::OnDestroy();
+}
+
+BOOL CDockingDialog::OnEraseBkgnd(CDC* pDC)
+{
+	return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }

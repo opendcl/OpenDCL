@@ -145,6 +145,7 @@ BEGIN_MESSAGE_MAP(CScrollBarCtrl, CScrollBar)
 	ON_WM_CTLCOLOR_REFLECT()
 END_MESSAGE_MAP()
 
+
 /////////////////////////////////////////////////////////////////////////////
 // CScrollBarCtrl message handlers
 
@@ -180,7 +181,5 @@ BOOL CScrollBarCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CScrollBarCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	return mColorService.CtlColor( pDC, nCtlColor );
 }

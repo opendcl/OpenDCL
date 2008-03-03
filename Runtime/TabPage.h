@@ -45,4 +45,5 @@ protected:
 
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

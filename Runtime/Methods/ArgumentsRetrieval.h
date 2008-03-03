@@ -7,7 +7,6 @@
 #include "ArxProject.h"
 #include "ControlTypes.h"
 #include "AxArg.h"
-#include "LispIO.h"
 
 class CPropertyObject;
 

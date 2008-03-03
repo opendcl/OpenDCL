@@ -43,11 +43,12 @@ static std::map< Prop::Id, TEnumNames >& GetEnumNamesMap()
 		FillEnumNamesList( Map[Prop::RectStyle], IDS_RECTSTYLE_0, 5 );
 		FillEnumNamesList( Map[Prop::RenderMode], IDS_BV_RM_0, 8 );
 		FillEnumNamesList( Map[Prop::SelectionStyle], IDS_SELECTSTYLE_0, 3 );
-		FillEnumNamesList( Map[Prop::SplitterStyle], IDS_SPLITTERSTYLE_0, 4 );
+		FillEnumNamesList( Map[Prop::SplitterStyle], IDS_SPLITTERSTYLE_0, 6 );
 		FillEnumNamesList( Map[Prop::TabJustification], IDS_TAB_JUSTIFY_0, 2 );
 		FillEnumNamesList( Map[Prop::LabelAlignment], IDS_JUSTIFICATION_0, 2 );
 		FillEnumNamesList( Map[Prop::TabStyle], IDS_TABSTYLE_0, 2 );
 		FillEnumNamesList( Map[Prop::URLLinkType], IDS_URL_TYPE_0, 2 );
+		FillEnumNamesList( Map[Prop::Value], IDS_CHECKSTATE_0, 3 );
 		pMap = &Map;
 	}
 	return *pMap;
@@ -67,6 +68,12 @@ const TEnumNames& GetPropEnumNames( Prop::Id id, ControlType type /*= _CtlInvali
 		static TEnumNames ShortComboStylesList = iter->second;
 		ShortComboStylesList.resize( 3 ); //anything except CtlComboBox only uses the first three styles
 		return ShortComboStylesList;
+	}
+	if( id == Prop::Value && type == CtlOptionButton )
+	{
+		static TEnumNames ShortCheckStateList = iter->second;
+		ShortCheckStateList.resize( 2 ); //option button doesn't support indeterminate state
+		return ShortCheckStateList;
 	}
 	return iter->second;
 }

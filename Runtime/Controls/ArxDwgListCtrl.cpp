@@ -510,6 +510,7 @@ void CArxDwgListCtrl::Dir(CString sDir)
 	saFolderNames.RemoveAll();
 	saFolderNames.SetSize(0,1);
 
+	sDir = sDir.TrimRight( _T('\\') );
 	m_sPath = sDir;
 	dr.ClearDirs();         // start clean
 	if (!dr.GetDirs(sDir, true)) // get all folders 
@@ -526,12 +527,8 @@ void CArxDwgListCtrl::Dir(CString sDir)
 		
 		if (sDir == sFileName)
 			continue;
-		int nSlash = sFileName.ReverseFind(*_T("\\"));
+		int nSlash = sFileName.ReverseFind(_T('\\'));
 		sFileName = sFileName.Mid(nSlash+1);
-		
-		if (sDir == (sFileName + _T("\\")))
-			continue;
-		
 		if (sFileName.GetLength() == 0)
 			continue;
 		saFolderNames.Add(sFileName);	

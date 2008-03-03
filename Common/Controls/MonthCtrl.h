@@ -13,7 +13,7 @@
 
 class CMonthCtrl : public CMonthCalCtrl, public CDialogControl
 {
-	CAcadColorService mAcadColorService;
+	CAcadColorService mColorService;
 
 // Construction
 public:
@@ -26,7 +26,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 // Generated message map functions
 protected:

@@ -4,10 +4,14 @@
 #include "stdafx.h"
 #include "SplitterCtrl.h"
 #include "ControlPane.h"
+#include "DialogObject.h"
 
 #define Splitter_Raised 0
 #define Splitter_DoubleRaised 1
-#define Splitter_Sunken 2
+#define Splitter_Etched 2
+#define Splitter_Flat 3
+#define Splitter_Sunken 4
+#define Splitter_Bump 5
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -92,7 +96,7 @@ HBRUSH CSplitterCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	return mColorService.CtlColor( pDC, nCtlColor );
 }
 
 void CSplitterCtrl::PostNcDestroy() 
@@ -145,6 +149,12 @@ void CSplitterCtrl::OnPaint()
 	case Splitter_Sunken:
 		dc.DrawEdge( &rcPaint, EDGE_SUNKEN, BF_RECT | BF_MIDDLE );
 		break;
+	case Splitter_Etched:
+		dc.DrawEdge( &rcPaint, EDGE_ETCHED, BF_RECT | BF_MIDDLE );
+		break;
+	case Splitter_Bump:
+		dc.DrawEdge( &rcPaint, EDGE_BUMP, BF_RECT | BF_MIDDLE );
+		break;
 	default:
 		dc.FillSolidRect( &rcPaint, GetSysColor( COLOR_BTNFACE ) );
 		break;
@@ -156,10 +166,6 @@ void CSplitterCtrl::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );
-	if( mpControlPane->IsRecalcInProgress() )
-		ApplyPosition();
-	else
-		mpControlPane->RecalcLayout();
 }
 
 void CSplitterCtrl::OnMove(int x, int y)
@@ -168,10 +174,7 @@ void CSplitterCtrl::OnMove(int x, int y)
 	CRect rcThis = GetEffectiveWindowRect();
 	mpTemplate->SetLongProperty( Prop::Left, rcThis.left );
 	mpTemplate->SetLongProperty( Prop::Top, rcThis.top );
-	if( mpControlPane->IsRecalcInProgress() )
-		ApplyPosition();
-	else
-		mpControlPane->RecalcLayout();
+	mpControlPane->RecalcLayout();
 }
 
 void CSplitterCtrl::OnNcLButtonDown(UINT nHitTest, CPoint point)
@@ -191,11 +194,27 @@ void CSplitterCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	CPoint ptNew = point - mptDragStart;
 	ClientToScreen( &ptNew );
 	GetParent()->ScreenToClient( &ptNew );
+	CRect rcParent;
+	GetParent()->GetClientRect( &rcParent );
+	long nMin = mpTemplate->GetLongProperty( Prop::SplitterMin );
+	long nMax = mpTemplate->GetLongProperty( Prop::SplitterMax );
 	if( mbVertical )
+	{
+		if( ptNew.x - rcParent.left < nMin )
+			ptNew.x = nMin;
+		else if( rcParent.right - ptNew.x < nMax )
+			ptNew.x = rcParent.right - nMax;
 		mpTemplate->SetLongProperty( Prop::Left, ptNew.x );
+	}
 	else
+	{
+		if( ptNew.y - rcParent.top < nMin )
+			ptNew.y = nMin;
+		else if( rcParent.bottom - ptNew.y < nMax )
+			ptNew.y = rcParent.bottom - nMax;
 		mpTemplate->SetLongProperty( Prop::Top, ptNew.y );
-	mpControlPane->RecalcLayout();
+	}
+	ApplyPosition();
 }
 
 void CSplitterCtrl::OnLButtonUp(UINT nFlags, CPoint point)

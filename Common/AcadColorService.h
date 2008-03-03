@@ -38,5 +38,5 @@ public:
 	static CBrush& GetTransparentBrush();
 
 // Control painting helpers
-	HBRUSH CtlColor( CDC* pDC, UINT nCtlColor );
+	HBRUSH CtlColor( CDC* pDC, UINT nCtlColor, CWnd* pWnd = NULL );
 };

@@ -96,7 +96,7 @@ END_MESSAGE_MAP()
 
 bool CAcadDockBarHost::CanFrameworkTakeFocus ()
 {
-	return !(GetCapture() || !mpDlgObject->IsKeepFocus());
+	return (!GetCapture() && !mpDlgObject->IsKeepFocus());
 	// return false to tell AutoCAD not to steal this form's focus on WM_MOUSEMOVE
 	return false;
 }

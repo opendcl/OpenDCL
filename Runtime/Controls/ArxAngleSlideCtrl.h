@@ -23,12 +23,13 @@ public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 
-	// Generated message map functions
+// CRoundSliderCtrl Interface
+	virtual void PostMessageToParent( const int nTBCode ) const;
+
 protected:
 	DECLARE_MESSAGE_MAP()
 
 	afx_msg void OnOutofmemory(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnReleasedcapture(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };

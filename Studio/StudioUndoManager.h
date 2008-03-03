@@ -23,6 +23,7 @@ public:
 	virtual ~CStudioUndoManager();
 
 	// CUndoManager base class implementation
+	virtual void setEnabled( bool bEnabled = true );
 	virtual size_t size() const { return mUndoStack.size(); }
 	virtual bool AddAction( CUndoAction* pAction );
 	virtual bool Undo( size_t ctActions = 1 );

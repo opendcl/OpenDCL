@@ -382,5 +382,5 @@ HBRUSH CImageTreeCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 	if( !IsWindowEnabled() )
 		return NULL;
 	return NULL;
-	//return mAcadColorService.CtlColor( pDC, nCtlColor );
+	//return mColorService.CtlColor( pDC, nCtlColor );
 }

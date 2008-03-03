@@ -1829,7 +1829,7 @@ public:
 			return RSERR;
 
 		if( SelectLineWeightUI( (AcDb::LineWeight&)newLW, bIncludeMetaTypes ) )
-			acedRetLong( newLW );
+			theArxWorkspace.RetLong( newLW );
 
 		return (RSRSLT) ;
 	}
@@ -2398,7 +2398,7 @@ public:
 		if( !pDlgObject )
 			return RSRSLT; //dialog not found
 
-		acedRetHandle( (DWORD_PTR)pDlgObject->GetHWnd() );
+		theArxWorkspace.RetHandle( (DWORD_PTR)pDlgObject->GetHWnd() );
 
 		return (RSRSLT) ;
 	}
@@ -2562,7 +2562,7 @@ public:
 		if( !AssertOutOfArgs( pArgs ) )
 			return RSERR;
 
-		acedRetHandle( (DWORD_PTR)pDlgControl->GetHWnd() );
+		theArxWorkspace.RetHandle( (DWORD_PTR)pDlgControl->GetHWnd() );
 
 		return (RSRSLT) ;
 	}
@@ -3201,7 +3201,7 @@ public:
 			return RSERR;
 
 		CDC dc;
-		acedRetLong (MulDiv (GetDeviceCaps (dc, LOGPIXELSX), twips, 1440));
+		theArxWorkspace.RetLong (MulDiv (GetDeviceCaps (dc, LOGPIXELSX), twips, 1440));
 		dc.DeleteDC();
 
 		return (RSRSLT) ;
@@ -3220,7 +3220,7 @@ public:
 			return RSERR;
 
 		CDC dc;
-		acedRetLong (MulDiv (GetDeviceCaps (dc, LOGPIXELSY), twips, 1440));
+		theArxWorkspace.RetLong (MulDiv (GetDeviceCaps (dc, LOGPIXELSY), twips, 1440));
 		dc.DeleteDC();
 
 		return (RSRSLT) ;
@@ -3239,7 +3239,7 @@ public:
 			return RSERR;
 
 		CDC dc;
-		acedRetLong (MulDiv (pixels, 1440, GetDeviceCaps (dc, LOGPIXELSX)));
+		theArxWorkspace.RetLong (MulDiv (pixels, 1440, GetDeviceCaps (dc, LOGPIXELSX)));
 		dc.DeleteDC();
 
 		return (RSRSLT) ;
@@ -3258,7 +3258,7 @@ public:
 			return RSERR;
 
 		CDC dc;
-		acedRetLong (MulDiv (pixels, 1440, GetDeviceCaps (dc, LOGPIXELSY)));
+		theArxWorkspace.RetLong (MulDiv (pixels, 1440, GetDeviceCaps (dc, LOGPIXELSY)));
 		dc.DeleteDC();
 
 		return (RSRSLT) ;
@@ -3276,7 +3276,7 @@ public:
 		if( !AssertOutOfArgs( pArgs ) )
 			return RSERR;
 
-		acedRetLong( crArg );
+		theArxWorkspace.RetLong( crArg );
 
 		return (RSRSLT) ;
 	}
@@ -3638,8 +3638,8 @@ public:
 		for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
 		{
 			resbuf* prbForm = acutNewRb( RTENAME );
-			prbForm->resval.rlname[0] = (LONG_PTR)(const CDclFormObject*)(*iter);
-			prbForm->resval.rlname[1] = 0;
+			prbForm->resval.rlname[0] = (LONG_PTR)(const CDclControlObject*)(*iter)->GetControlProperties();
+			prbForm->resval.rlname[1] = odcl::ptrDclControl;
 			if( prbTail )
 				prbTail->rbnext = prbForm;
 			else
@@ -3672,9 +3672,11 @@ public:
 		const TDclControlList& Controls = pDclForm->GetControlList();
 		for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 		{
+			if( (*iter)->GetType() == _CtlForm )
+				continue;
 			resbuf* prbControl = acutNewRb( RTENAME );
 			prbControl->resval.rlname[0] = (LONG_PTR)(const CDclControlObject*)(*iter);
-			prbControl->resval.rlname[1] = 0;
+			prbControl->resval.rlname[1] = odcl::ptrDclControl;
 			if( prbTail )
 				prbTail->rbnext = prbControl;
 			else

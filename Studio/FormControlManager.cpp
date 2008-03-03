@@ -42,9 +42,9 @@ CFormControlManager::CFormControlManager( CStudioDialogObject* pDlgObject )
 {
 	CRect rcControlArea = pDlgObject->GetWndRect();
 	Create( _T(""), WS_CHILD | WS_VISIBLE, rcControlArea, pDlgObject->GetControlWnd() );
-	SetWindowPos( &CWnd::wndTop, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING );
+	SetWindowPos( &CWnd::wndTop, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING | SWP_NOACTIVATE );
 	ModifyStyle( WS_CLIPCHILDREN, 0, 0 );
-	//ModifyStyleEx( 0, WS_EX_TRANSPARENT, 0 );
+	ModifyStyleEx( 0, WS_EX_TRANSPARENT, 0 );
 	//mGripper.Create( _T(""), SS_OWNERDRAW | WS_CHILD | WS_VISIBLE, rcControlArea, this );
 	//ShowWindow( SW_HIDE );
 }
@@ -120,6 +120,8 @@ __UINT_LRESULT CFormControlManager::OnNcHitTest(CPoint point)
 				return HTCLIENT;
 			if( lhtResult == HTOBJECT )
 				return HTOBJECT;
+			if( lhtResult == HTBOTTOMRIGHT )
+				return HTTOPLEFT;
 			if( lhtResult >= HTSIZEFIRST && lhtResult <= HTSIZELAST )
 				return lhtResult;
 			return HTBORDER;
@@ -362,6 +364,11 @@ void CFormControlManager::OnNcLButtonDown(UINT nHitTest, CPoint point)
 			if( pManager )
 			{
 				mpResizeTarget = pManager;
+				if( nHitTest == HTTOPLEFT )
+				{
+					//kludge for problem with HTBOTTOMRIGHT causing mouse messages to go to CStudioDialogObject
+					nHitTest = pManager->HitTest( point );
+				}
 				pManager->StartSizing( nHitTest, point );
 			}
 		}

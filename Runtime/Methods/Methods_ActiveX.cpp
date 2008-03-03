@@ -15,8 +15,7 @@
 #include "AcadColorTable.h"
 
 static void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp = NULL, AxMethodDescriptor *pMethod = NULL, CAxContainerCtrl *pAxContainer = NULL, AxPropertyDescriptor *pAxProp = NULL);
-static bool GetVariantArgumentList( COleVariant argList[],
-																		size_t& ctArgs,
+static bool GetVariantArgumentList( CArray< COleVariant >& rArgs,
 																		size_t ctParams,
 																		resbuf*& pArgs,
 																		AxPropertyDescriptor* pAxProp,
@@ -72,17 +71,15 @@ ADSRESULT AxControl::GetProperty()
 		return RSRSLT;
 	
 	size_t ctParams = pAxProp->GetArgs().size();
-	//Creating this dynamically based upon ctParams would be better than fixing it at 16
-	COleVariant argList[16];
-	size_t ctArgs = 0;
-	if (!GetVariantArgumentList(argList, ctArgs, ctParams, pArgs, pAxProp, NULL))
+	CArray< COleVariant > rArgs;
+	if( !GetVariantArgumentList( rArgs, ctParams, pArgs, pAxProp, NULL ) )
 		return RSRSLT;
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
 	COleVariant varGet;
-	if( !SUCCEEDED(pAxCont->GetProperty( pAxProp, argList, ctArgs, varGet )) )
+	if( !SUCCEEDED(pAxCont->GetProperty( pAxProp, rArgs.GetData(), rArgs.GetSize(), varGet )) )
 		return RSRSLT;
 
 	acedRetOleVar( varGet, pProp, NULL, pAxCont, pAxProp );
@@ -126,16 +123,14 @@ ADSRESULT AxControl::SetProperty()
 		return RSRSLT;
 	
 	size_t ctParams = pAxProp->GetArgs().size();
-	//Creating this dynamically based upon ctParams would be better than fixing it at 16
-	COleVariant argList[16];
-	size_t ctArgs = 0;
-	if (!GetVariantArgumentList(argList, ctArgs, ctParams, pArgs, pAxProp, NULL))
+	CArray< COleVariant > rArgs;
+	if( !GetVariantArgumentList( rArgs, ctParams, pArgs, pAxProp, NULL ) )
 		return RSRSLT;
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	if( !SUCCEEDED(pAxCont->SetProperty( pAxProp, argList, ctArgs )) )
+	if( !SUCCEEDED(pAxCont->SetProperty( pAxProp, rArgs.GetData(), rArgs.GetSize() )) )
 		return RSRSLT;
 
 	acedRetT();
@@ -179,20 +174,21 @@ ADSRESULT AxControl::DoMethod()
 	if( !pMethod )
 		return HandleArgValueError( pArgs, IDS_ERR_NOTAMETHOD, (LPCTSTR)sMethodName );
 
-	//Creating this dynamically based upon ctParams would be better than fixing it at 16
-	COleVariant argList[16];
-	size_t ctArgs = 0;
-	if (!GetVariantArgumentList(argList, ctArgs, pMethod->GetArgs().size(), pArgs, NULL, pMethod))
+	CArray< COleVariant > rArgs;
+	if( !GetVariantArgumentList( rArgs, pMethod->GetArgs().size(), pArgs, NULL, pMethod ) )
 		return RSRSLT;
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	COleVariant varGet;
-	if( !SUCCEEDED(pAxCont->Invoke(pMethod, argList, ctArgs, varGet)) )
+	COleVariant varResult;
+	if( !SUCCEEDED(pAxCont->Invoke( pMethod, rArgs.GetData(), rArgs.GetSize(), varResult )) )
 		return RSRSLT;
 
-	acedRetOleVar(varGet, NULL, pMethod, pAxCont);
+	if( varResult.vt == VT_EMPTY )
+		acedRetT();
+	else
+		acedRetOleVar( varResult, NULL, pMethod, pAxCont );
 	return RSRSLT;
 }
 
@@ -318,7 +314,7 @@ ADSRESULT AxControl::GetOleObject()
 	if( !pAxCont )
 		return RSERR; //invalid input
 
-	acedRetIUnknown( pAxCont->GetControlUnknown() );
+	theArxWorkspace.RetIUnknown( pAxCont->GetControlUnknown() );
 
 	return RSRSLT;
 }
@@ -354,7 +350,7 @@ ADSRESULT AxObject::GetProperty()
 	COleVariant* rvarArgs = (ctArgs > 0? new COleVariant[ctArgs] : NULL);
 	for( size_t idx = 0; idx < ctArgs; ++idx )
 	{
-		if( !GetVariantArgument( pArgs, rvarArgs[idx], AxArg() ) )
+		if( !GetVariantArgument( pArgs, rvarArgs[ctArgs - idx - 1], AxArg() ) )
 		{
 			delete [] rvarArgs;
 			return RSERR;
@@ -424,7 +420,7 @@ ADSRESULT AxObject::SetProperty()
 	COleVariant* rvarArgs = (ctArgs > 0? new COleVariant[ctArgs] : NULL);
 	for( size_t idx = 0; idx < ctArgs; ++idx )
 	{
-		if( !GetVariantArgument( pArgs, rvarArgs[idx], AxArg() ) )
+		if( !GetVariantArgument( pArgs, rvarArgs[ctArgs - idx - 1], AxArg() ) )
 		{
 			delete [] rvarArgs;
 			return RSERR;
@@ -441,6 +437,9 @@ ADSRESULT AxObject::SetProperty()
 	COleVariant varResult;
 	EXCEPINFO exception = { NULL };
 	UINT nErrArg = 0;
+	DISPID d1 = 0;
+	params.cNamedArgs = 1;
+	params.rgdispidNamedArgs = &d1;
 	HRESULT hr =
 		pDisp->Invoke( idDisp, IID_NULL, LOCALE_INVARIANT, DISPATCH_PROPERTYPUT, &params, &varResult, &exception, &nErrArg );
 
@@ -494,7 +493,7 @@ ADSRESULT AxObject::DoMethod()
 	COleVariant* rvarArgs = (ctArgs > 0? new COleVariant[ctArgs] : NULL);
 	for( size_t idx = 0; idx < ctArgs; ++idx )
 	{
-		if( !GetVariantArgument( pArgs, rvarArgs[idx], AxArg() ) )
+		if( !GetVariantArgument( pArgs, rvarArgs[ctArgs - idx - 1], AxArg() ) )
 		{
 			delete [] rvarArgs;
 			return RSERR;
@@ -538,20 +537,16 @@ ADSRESULT AxObject::Close()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
-	IDispatch* pDisp = NULL;
-	if (!GetIDispatchArgument (pArgs, pDisp))
+	IUnknown* pUnknown = NULL;
+	if( !GetIUnknownArgument( pArgs, pUnknown ) )
 		return RSERR; //invalid input
-	if( !pDisp )
-		return RSRSLT;
-
-	CString sMethodName;
-	if( !GetStringArgument( pArgs, sMethodName ) )
-		return RSERR; //invalid input
-
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	pDisp->Release();
+	if( !pUnknown )
+		return RSRSLT;
+
+	theArxWorkspace.RemoveUnknown( pUnknown );
 	acedRetT();
 	return RSRSLT;
 }
@@ -598,9 +593,7 @@ void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, AxMethodDescriptor *
 						}
 					}
 					else
-					{
-						acedRetLong(varGet.vt == VT_UI4? (LONG)varGet.ulVal : varGet.lVal);
-					}				
+						theArxWorkspace.RetLong(varGet.vt == VT_UI4? (LONG)varGet.ulVal : varGet.lVal);
 				}
 				else if (pMethod != NULL)
 				{
@@ -626,16 +619,12 @@ void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, AxMethodDescriptor *
 						}
 					}
 					else
-					{
-						acedRetLong(varGet.vt == VT_UI4? (LONG)varGet.ulVal : varGet.lVal);
-					}
+						theArxWorkspace.RetLong(varGet.vt == VT_UI4? (LONG)varGet.ulVal : varGet.lVal);
 				}
 				else
-				{
-					acedRetLong(varGet.vt == VT_UI4? (LONG)varGet.ulVal : varGet.lVal);
-				}				
-			break;
+					theArxWorkspace.RetLong(varGet.vt == VT_UI4? (LONG)varGet.ulVal : varGet.lVal);
 			}
+			break;
 		case VT_R4:
 			acedRetReal(varGet.fltVal);
 			break;
@@ -644,99 +633,72 @@ void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, AxMethodDescriptor *
 			break;
 		case VT_DATE:
 			{
-			COleDateTime date(varGet.date);
-			ReturnDate(date);
-			break;
+				COleDateTime date(varGet.date);
+				ReturnDate(date);
 			}
+			break;
 		case VT_CY:
 			{
-			CY cy(varGet.cyVal);
-			acedRetReal( cy.Lo);
-			break;
+				CY cy(varGet.cyVal);
+				acedRetReal( cy.Lo);
 			}
+			break;
 		case VT_BSTR:
 #if !defined(_UNICODE) && !defined(OLE2ANSI)
 		case VT_BSTRA:
 #endif
 			{
-			CString sValue = varGet.bstrVal;
-			acedRetStr(sValue);
-			break;
+				CString sValue = varGet.bstrVal;
+				acedRetStr(sValue);
 			}
+			break;
 		case VT_DISPATCH:
 			{
-				TOleControlPtr pObject = NULL;
-				
-				if (pMethod != NULL)
-					pObject = theArxWorkspace.GetOleControlFor(pMethod);
-				else if (pProp != NULL)
-				{
-					if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropGet())
-						pObject = theArxWorkspace.GetOleControlFor(pProp->GetConstAxInterfaceDescriptorPtr()->GetPropGet());
-					else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetProp())
-						pObject = theArxWorkspace.GetOleControlFor(pProp->GetConstAxInterfaceDescriptorPtr()->GetProp());
-					else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPut())
-						pObject = theArxWorkspace.GetOleControlFor(pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPut());
-					else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef())
-						pObject = theArxWorkspace.GetOleControlFor(pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef());					
-				}
-
-				resbuf rbAxObject = { NULL, RTENAME };
 				IUnknown* pUnknown = NULL;
 				if( varGet.pdispVal )
-				{
 					varGet.pdispVal->QueryInterface( IID_IUnknown, (void**)&pUnknown );
-					varGet.pdispVal->Release();
-				}
-				acedRetIUnknown( pUnknown );
+				theArxWorkspace.RetIUnknown( pUnknown );
 			break;
 			}
 		case VT_ERROR:
 			{
-			RetVal.restype = RTLONG;
-			RetVal.resval.rlong = varGet.scode;
-			acedRetVal(&RetVal);
-			break;
+				RetVal.restype = RTLONG;
+				RetVal.resval.rlong = varGet.scode;
+				acedRetVal(&RetVal);
 			}
+			break;
 		case VT_BOOL:			
 			{
-			if (varGet.boolVal == 1)
-				acedRetT();
-			else
-				acedRetNil();
-			break;
+				if (varGet.boolVal == 1)
+					acedRetT();
+				else
+					acedRetNil();
 			}
+			break;
 		case VT_VARIANT:
 			acedRetVoid();
 			//varGet.pvarVal
 			break;
 		case VT_UNKNOWN:
-			RetVal.restype = RTENAME;
-			RetVal.resval.rlname[0] = (LONG_PTR)varGet.punkVal;
-			RetVal.resval.rlname[1] = 0;
+			theArxWorkspace.RetIUnknown( varGet.punkVal );
 			break;
-
 		case VT_I2|VT_BYREF:			
 			acedRetInt(*varGet.piVal);
 			break;
 		case VT_UI1|VT_BYREF:
 			{
-			if (*varGet.pbVal == 1)
-				acedRetT();
-			else
-				acedRetNil();
-			break;
+				if (*varGet.pbVal == 1)
+					acedRetT();
+				else
+					acedRetNil();
 			}
+			break;
 		case VT_UI4|VT_BYREF:
-			{
-			acedRetLong(*varGet.pulVal);
+			theArxWorkspace.RetLong(*varGet.pulVal);
 			break;
-			}
 		case VT_I4|VT_BYREF:
-			{
-			acedRetLong(*varGet.plVal);
+			theArxWorkspace.RetLong(*varGet.plVal);
 			break;
-			}
 		case VT_R4|VT_BYREF:
 			acedRetReal(*varGet.pfltVal);
 			break;
@@ -745,25 +707,29 @@ void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, AxMethodDescriptor *
 			break;
 		case VT_DATE|VT_BYREF:
 			{
-			COleDateTime date(*varGet.pdate);
-			ReturnDate(date);
-			break;
+				COleDateTime date(*varGet.pdate);
+				ReturnDate(date);
 			}
+			break;
 		case VT_CY|VT_BYREF:
 			{
-			CY cy(*varGet.pcyVal);
-			acedRetReal(cy.Lo);
-			break;
+				CY cy(*varGet.pcyVal);
+				acedRetReal(cy.Lo);
 			}
+			break;
 		case VT_BSTR|VT_BYREF:
 			{
-			CString sValue = *varGet.pbstrVal;
-			acedRetStr(sValue);
-			break;
+				CString sValue = *varGet.pbstrVal;
+				acedRetStr(sValue);
 			}
+			break;
 		case VT_DISPATCH|VT_BYREF:
-			acedRetVoid();
-			//varGet.ppdispVal = argList->m_Variant[i].ppdispVal;
+			{
+				IUnknown* pUnknown = NULL;
+				if( varGet.ppdispVal && varGet.ppdispVal )
+					(*varGet.ppdispVal)->QueryInterface( IID_IUnknown, (void**)&pUnknown );
+				theArxWorkspace.RetIUnknown( pUnknown );
+			}
 			break;
 		case VT_ERROR|VT_BYREF:
 			acedRetVoid();
@@ -773,22 +739,17 @@ void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, AxMethodDescriptor *
 			break;
 		case VT_BOOL|VT_BYREF:
 			{
-				if (*varGet.pboolVal == 1)
+				if (*varGet.pboolVal == VARIANT_TRUE)
 					acedRetT();
 				else
 					acedRetNil();
-				// coerce BOOL into VARIANT_BOOL
-				//BOOL* pboolVal = va_arg(argList, BOOL*);
-				//*pboolVal = *pboolVal ? MAKELONG(-1, 0) : 0;
 			}
 			break;
 		case VT_VARIANT|VT_BYREF:
 			acedRetVoid();
-			//varGet.pvarVal = argList->m_Variant[i].pvarVal;
 			break;
 		case VT_UNKNOWN|VT_BYREF:
-			acedRetVoid();
-			//varGet.ppunkVal = argList->m_Variant[i].ppunkVal;
+			theArxWorkspace.RetIUnknown( varGet.ppunkVal? *varGet.ppunkVal : NULL );
 			break;
 
 		default:
@@ -797,8 +758,7 @@ void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, AxMethodDescriptor *
 	}	
 }
 
-bool GetVariantArgumentList( COleVariant argList[],
-														 size_t& ctArgs,
+bool GetVariantArgumentList( CArray< COleVariant >& rArgs,
 														 size_t ctParams,
 														 resbuf*& pArgs,
 														 AxPropertyDescriptor* pAxProp,
@@ -808,9 +768,6 @@ bool GetVariantArgumentList( COleVariant argList[],
 	//I tried reversing the list in SetProperty, but couldn't get variants to copy.
 	//Decided to move out the reversing out here instead.
 
-	//We have a fixed upper limit of 16 variables
-	if (ctParams > 16)
-		return false;
 	if (pAxMethod == NULL && pAxProp == NULL)
 		return false;
 
@@ -820,7 +777,7 @@ bool GetVariantArgumentList( COleVariant argList[],
 	//Determine number of arguments, because it might be less than number
 	//of parameters
 	resbuf* pArgC = pArgs;
-	ctArgs = 0;
+	size_t ctArgs = 0;
 	while( pArgC )
 	{
 		pArgC = pArgC->rbnext;
@@ -828,11 +785,12 @@ bool GetVariantArgumentList( COleVariant argList[],
 	}
 	if( ctArgs > ctParams )
 		ctArgs = ctParams;
+	rArgs.SetSize( ctArgs );
 
 	for (int idxArg = 0; idxArg < ctArgs; idxArg++)
 	{
 		if (!GetVariantArgument( pArgs,
-														 argList[ctArgs - idxArg - 1],
+														 rArgs[ctArgs - idxArg - 1],
 														 pAxProp? pAxProp->GetArgs()[idxArg] : pAxMethod->GetArgs()[idxArg] ))
 		{
 			return false;

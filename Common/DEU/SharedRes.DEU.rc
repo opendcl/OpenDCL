@@ -1,0 +1,530 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "..\SharedRes.Local.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Germany) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+#ifdef _WIN32
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_NONE                "<Keine>"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_OBJBROWSER          "(Objekt-Browser)"
+    IDS_COLOR               "Farbe"
+    IDS_ODCFILTER           "OpenDCL Projekte (*.odcl,*.lsp)|*.odcl;*.lsp||"
+    IDS_SECONDTEXT          "Sekunde"
+    IDS_SECONDSTEXT         "Sekunden"
+    IDS_MINUTETEXT          "Minute"
+    IDS_MINUTESTEXT         "Minuten"
+    IDS_REMAININGTEXT       "verbleibend"
+    IDS_COLORDISPLAYTEXT    "Farbe %d"
+    IDS_OPTION1             "Option 1"
+    IDS_OPTION2             "Option 2"
+    IDS_OPTION3             "Option 3"
+    IDS_FILEDLGFILTERDEF    "AutoCAD Zeichnung|*.dwg;*.dxf|AutoLISP Datei (*.lsp,*.fas;*.vlx)|*.lsp;*.fas;*.vlx|"
+    IDS_SELFOLDER           "Wählen Sie einen Ordner"
+    IDS_OPEN                "Öffnen"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_TRUE                "Ja"
+    IDS_FALSE               "Nein"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_DCLFORM             "Dialog"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_POINTER             "Zeiger"
+    IDS_LABEL               "Bezeichnung"
+    IDS_TEXTBUTTON          "Textschaltfläche"
+    IDS_GRAPHICBUTTON       "Grafikschaltfläche"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_FRAME               "Rahmen"
+    IDS_TEXTBOX             "Textfeld"
+    IDS_CHECKBOX            "Kontrollkästchen"
+    IDS_OPTION              "Optionsfeld"
+    IDS_COMBOBOX            "Kombinationsfeld"
+    IDS_LISTBOX             "Listenfeld"
+    IDS_SCROLLBAR           "Scrollleiste"
+    IDS_SLIDERBAR           "Schieberegler"
+    IDS_PICTUREBOX          "Bild"
+    IDS_TABS                "Registerkarten-Element"
+    IDS_MONTHCAL            "Datumswähler"
+    IDS_TREE                "Baumstruktur"
+    IDS_RECT                "Rechteck"
+    IDS_PROGRESSBAR         "Verlaufsbalken"
+    IDS_SPINBUTTON          "Reglerschaltflächen"
+    IDS_URL                 "Internetverknüpfung"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ROUNDSLIDER         "Winkelwähler"
+    IDS_BLOCKVIEW           "Block"
+    IDS_SLIDEVIEW           "Dia"
+    IDS_HTML                "Webseite"
+    IDS_DWGPREVIEW          "DWG-Vorschau"
+    IDS_LISTVIEW            "Erweiterte Liste"
+    IDS_BLOCKLIST           "Blockliste"
+    IDS_OPTIONLIST          "Optionsliste"
+    IDS_ACTIVEX             "ActiveX-Steuerelement einfügen"
+    IDS_DWGLIST             "DWG-Liste"
+    IDS_ANIMATION           "Video"
+    IDS_IMAGECOMBOBOX       "Kombinationsfeld mit Bildern"
+    IDS_GRID                "Datenblatt"
+    IDS_SPLITTER            "Splitter"
+    IDS_HATCH               "Schraffur"
+    IDS_FILEDLGCTRL         "Benutzerdefinierter Dateiwahl-Dialog"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_NAME           "(Name)"
+    IDS_PROP_CUSTOM         "(Assistent)"
+    IDS_PROP_AUTOSIZE       "Automatisch Skalieren"
+    IDS_PROP_BORDERSTYLE    "Randstil"
+    IDS_PROP_BTNSTYLE       "Stil"
+    IDS_PROP_CAPTION        "Beschriftung"
+    IDS_PROP_CANCEL         "Abbrechen"
+    IDS_PROP_COMBOBOXSTL    "Stil"
+    IDS_PROP_DEFAULT        "Vorgabe"
+    IDS_PROP_ENABLE         "Aktiviert"
+    IDS_EVENT_BTNCLICKED    "ButtonClicked"
+    IDS_EVENT_CLICKED       "Clicked"
+    IDS_EVENT_DBLCLICKED    "DblClicked"
+    IDS_EVENT_EDITCHANGED   "EditChanged"
+    IDS_EVENT_NODECLICKED   "NodeClicked"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_EVENT_SELCHANGED    "SelChanged"
+    IDS_PROP_FILTERSTYLE    "Filter-Stil"
+    IDS_PROP_HEIGHT         "Höhe"
+    IDS_PROP_IMAGELIST      "Bilderliste"
+    IDS_PROP_LARGECHNGE     "Großer Schritt"
+    IDS_PROP_LEFT           "Links"
+    IDS_PROP_LIST           "Liste"
+    IDS_PROP_MAXVAL         "Maximalwert"
+    IDS_PROP_MINVAL         "Minimalwert"
+    IDS_PROP_MULTIROW       "Mehrzeilig"
+    IDS_PROP_ORIENTATION    "Orientierung"
+    IDS_PROP_PICTURE        "Bild"
+    IDS_PROP_RECTSTYLE      "Stil"
+    IDS_PROP_SMALLCHNG      "Kleiner Schritt"
+    IDS_PROP_TABSCAPTION    "Registerkarten-Beschriftung"
+    IDS_PROP_TABSIMAGELIST  "Registerkarten-Bilder"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_TABSTTTLIST    "Registerkarten-ToolTips"
+    IDS_PROP_TEXT           "Text"
+    IDS_PROP_TICKFRQCY      "Skalendichte"
+    IDS_PROP_TITLEBARTEXT   "Titelzeilentext"
+    IDS_PROP_TTT            "ToolTip Titel"
+    IDS_PROP_TOP            "Oben"
+    IDS_PROP_VALUE          "Wert"
+    IDS_PROP_VISIBLE        "Sichtbar"
+    IDS_PROP_WIDTH          "Breite"
+    IDS_PROP_SHOWTICKS      "Skala anzeigen"
+    IDS_PROP_READONLY       "Schreibgeschützt"
+    IDS_PROP_JUSTIFICATION  "Ausrichtung"
+    IDS_PROP_MARGINLEFT     "Rand links"
+    IDS_PROP_MARGINRIGHT    "Rand rechts"
+    IDS_PROP_LIMITTEXT      "Maximale Textlänge"
+    IDS_PROP_AUTOHSCROLL    "Auto H-Scroll"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_AUTOVSCROLL    "Auto V-Scroll"
+    IDS_PROP_DROPDOWNHEIGHT "Höhe der aufgeklappten Auswahlliste"
+    IDS_PROP_MULTICOL       "Mehrspaltig"
+    IDS_PROP_SELECTSTYLE    "Auswahlstil"
+    IDS_PROP_NOINTEGRALHEIGHT "Keine Integrale Höhe"
+    IDS_PROP_SORTED         "Sortiert"
+    IDS_PROP_USETABSTOPS    "Mit Tab-Taste ansteuerbar"
+    IDS_PROP_DISABLENOSCROLL "Scrolling zulassen"
+    IDS_PROP_HSCROLL        "Horizontale Scrollleiste"
+    IDS_PROP_VSCROLL        "Vertikal Scrollleiste"
+    IDS_PROP_COLWIDTH       "Spaltenbreite"
+    IDS_PROP_SMOOTHPROG     "Durchgezogener Verlaufsbalken"
+    IDS_PROP_AUTOWRAP       "Automatischer Zeilenwechsel"
+    IDS_PROP_URLADDRESS     "URL Adresse"
+    IDS_PROP_TAB_JUSTIFIED  "Tab Ausrichtung"
+    IDS_PROP_TAB_STYLE      "Tab Stil"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_TAB_LABEL_ALIGN "Ausrichtung der Beschriftung"
+    IDS_PROP_TAB_FIXEDWIDTH "Tab feste Breite"
+    IDS_PROP_URLLINKTYPE    "Link Typ"
+    IDS_PROP_MINTABWIDTH    "Mind. Tab Breite"
+    IDS_PROP_TABSELECTED    "Gewählter Tab"
+    IDS_PROP_ITEMDATA       "Element-Daten"
+    IDS_PROP_TOOLBARBTN_CAPTIONS "Schaltflächen-Beschriftungen"
+    IDS_PROP_TOOLBARBTN_IMAGES "Schaltflächen-Bilder"
+    IDS_PROP_TOOLBARBTN_TTTEXT "ToolTip Titel von Schaltflächen"
+    IDS_PROP_TOOLBARBTN_STYLES "Schaltflächen-Stile"
+    IDS_PROP_USETOPFROMBOTTOM "Steuerelement-Oberkante von Dialog-Unterkante"
+    IDS_PROP_USEBOTTOMFROMBOTTOM 
+                            "Steuerelement-Unterkante von Dialog-Unterkante"
+    IDS_PROP_USELEFTFROMRIGHT 
+                            "Linke Kante des Steuerelementes von rechter Kante des Dialogs"
+    IDS_PROP_USERIGHTFROMRIGHT 
+                            "Rechte Kante des Steuerelementes von rechter Kante des Dialogs"
+    IDS_PROP_TOPFROMBOTTOM  "Abstand Steuerelement-Oberkante von Dialog-Unterkante"
+    IDS_PROP_BOTTOMFROMBOTTOM 
+                            "Abstand Steuerelement-Unterkante von Dialog-Unterkante"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_LEFTFROMRIGHT  "Abstand Linke Kante des Steuerelementes von rechter Kante des Dialogs"
+    IDS_PROP_RIGHTFROMRIGHT "Abstand Rechte Kante des Steuerelementes von rechter Kante des Dialogs"
+    IDS_PROP_RESIZABLE      "Skalierbar"
+    IDS_PROP_FORMCONTROLABILITY "Bei Ereignis"
+    IDS_PROP_MULTISELECT    "Maximal wählbar"
+    IDS_EVENT_GETDAYSTATE   "GetDayState"
+    IDS_EVENT_SELECT        "Select"
+    IDS_EVENT_KILLFOCUS     "KillFocus"
+    IDS_EVENT_OUTOFMEM      "OutOfMemory"
+    IDS_EVENT_RCLICK        "RightClick"
+    IDS_EVENT_RDBLCLICK     "RightDblClick"
+    IDS_EVENT_RETURN        "Return"
+    IDS_EVENT_SETFOCUS      "SetFocus"
+    IDS_EVENT_BGNLBLEDIT    "BeginLabelEdit"
+    IDS_EVENT_DELETEITEM    "DeleteItem"
+    IDS_EVENT_EDITLABELITEM "EndLabelEdit"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_EVENT_ITEMEXPANED   "ItemExpanded"
+    IDS_EVENT_ITEMEXPANDING "ItemExpanding"
+    IDS_EVENT_KEYDOWN       "KeyDown"
+    IDS_EVENT_SELCHANGING   "SelChanging"
+    IDS_EVENT_CHANGED       "Changed"
+    IDS_EVENT_MAXTEXT       "MaxText"
+    IDS_EVENT_UPDATE        "Update"
+    IDS_EVENT_DROPDOWN      "DropDown"
+    IDS_EVENT_SCROLL        "Scroll"
+    IDS_EVENT_RELEASEDCAPTURE "ReleasedCapture"
+    IDS_PROP_FONTUNDERLINE  "Unterstrichen"
+    IDS_PROP_FONTITALIC     "Kursiv"
+    IDS_PROP_FONTBOLD       "Fett"
+    IDS_PROP_FONTSIZE       "Schriftgröße"
+    IDS_PROP_FONTNAME       "Schriftname"
+    IDS_PROP_FONTSTRIKEOUT  "Durchgestrichen"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_FONTCOLOR      "Farbe"
+    IDS_PROP_BLOCKNAME      "Blockname"
+    IDS_PROP_FILENAME       "Dateiname"
+    IDS_PROP_COLOR          "(Farbe)"
+    IDS_PROP_CFGTABCAPTION  "Text Konfigurations-Tab"
+    IDS_PROP_ALLOWORBIT     "Steuerung der Navigation"
+    IDS_EVENT_FORMCLOSE     "Close"
+    IDS_EVENT_FORMINIT      "Initialize"
+    IDS_EVENT_FORMSIZE      "Size"
+    IDS_EVENT_FORMSHOW      "Show"
+    IDS_EVENT_DOCACTIVATE   "DocActivated"
+    IDS_EVENT_CFGCANCEL     "Cancel"
+    IDS_EVENT_CFGOK         "OK"
+    IDS_EVENT_CFGHELP       "Help"
+    IDS_EVENT_CFGAPPLY      "Apply"
+    IDS_PROP_ACADBKCOLOR    "Hintergrundfarbe"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_SHOWSELALWAYS  "Auswahl immer zeigen"
+    IDS_PROP_INDENT         "Einzug"
+    IDS_PROP_HASLINES       "Linien darstellen"
+    IDS_PROP_LINESATROOT    "Linien zwischen Elternobjekte darstellen"
+    IDS_PROP_HASBUTTONS     "Schaltflächen darstellen"
+    IDS_PROP_EDITLABLE      "Elementnamen editieren"
+    IDS_PROP_HASCHECKBOXES  "Kontrollkästchen darstellen"
+    IDS_PROP_TITLEBARICON   "Titelzeilenbild"
+    IDS_EVENT_KEYUP         "KeyUp"
+    IDS_EVENT_MOUSEDOWN     "MouseDown"
+    IDS_EVENT_MOUSEUP       "MouseUp"
+    IDS_EVENT_MOUSEMOVE     "MouseMove"
+    IDS_EVENT_MOUSEMOVEDOFF "MouseMovedOff"
+    IDS_EVENT_MOUSEDBLCLICK "MouseDblClick"
+    IDS_EVENT_MOUSEWHEEL    "MouseWheel"
+    IDS_EVENT_PAINT         "Paint"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_USEMASK        "Maske verwenden"
+    IDS_PROP_SHOWEDITBOX    "Textfeld darstellen"
+    IDS_EVENT_NAVCOMPLETE   "NavigationComplete"
+    IDS_PROP_INPUTFILTER    "Filter eingeben"
+    IDS_PROP_TABORDER       "Tab Reihenfolge"
+    IDS_PROP_SHOWORBITCIRCLES "Orbit Kreise zeigen"
+    IDS_PROP_ISTABSTOP      "Mit Tab-Taste ansteuerbar"
+    IDS_EVENT_MOUSEENTERED  "MouseEntered"
+    IDS_PROP_GROUP          "Optionsgruppe beginnen"
+    IDS_PROP_MOUSEOVERPICT  "Mouseover Bild"
+    IDS_PROP_RENDERMODE     "Render Modus"
+    IDS_EVENT_RETURNPRESSED "ReturnPressed"
+    IDS_EVENT_FORMCANCELCLOSE "CancelClose"
+    IDS_EVENT_LMOUSE        "LMouse"
+    IDS_EVENT_MMOUSE        "MMouse"
+    IDS_EVENT_RMOUSE        "RMouse"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_ZORDER         "Z/Tab Reihenfolge"
+    IDS_PROP_LISTVIEWSTYLE  "Anzeige-Stil"
+    IDS_PROP_LVSORT         "Sortiert"
+    IDS_PROP_ICONALIGN      "Symbolausrichtung"
+    IDS_PROP_BLOCKLISTSTYLE "Stil der Blockliste"
+    IDS_PROP_AUTOARRANGE    "Symbole automatisch ausrichten"
+    IDS_PROP_COLHEADER      "Spaltenkopf"
+    IDS_PROP_LABELWRAP      "Zeilenumbruch"
+    IDS_PROP_ALLOWSCROLLING "Scrollen zulassen"
+    IDS_PROP_MULTISELECTION "Mehrfachauswahl"
+    IDS_PROP_ICONXSPACING   "Symbol X Zwischenraum"
+    IDS_PROP_ICONYSPACING   "Symbol Y Zwischenraum"
+    IDS_EVENT_DRAGDROPTOACAD "DragnDropToAutoCAD"
+    IDS_EVENT_DRAGDROPFROMCTRL "DragnDropFromControl"
+    IDS_EVENT_DRAGDROPFROMACAD "DragnDropFromOther"
+    IDS_EVENT_DRAGDROPBEGIN "DragnDropBegin"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_DRAGNDROPALLOWBEGIN "Drag/Drop Drag zulassen"
+    IDS_PROP_DRAGNDROPALLOWDROP "Drag/Drop Drop zulassen"
+    IDS_PROP_GRIDLINES      "Gitternetzlinien"
+    IDS_PROP_FULLROWSELECT  "Gesamte Zeilen markieren"
+    IDS_PROP_MINDLGWIDTH    "Mindestbreite des Dialogs"
+    IDS_PROP_MAXDLGWIDTH    "Maximalbreite des Dialogs"
+    IDS_PROP_MINDLGHEIGHT   "Mindesthöhe des Dialogs"
+    IDS_PROP_MAXDLGHEIGHT   "Maximalhöhe des Dialogs"
+    IDS_EVENT_COLCLICK      "ColumnClick"
+    IDS_PROP_FONTSIZESTYLE  "Stil für die Schriftgröße"
+    IDS_PROP_FORECOLOR      "Vordergrundfarbe"
+    IDS_PROP_TRANSPARENT    "Transparent"
+    IDS_EVENT_SCROLLED      "Scrolled"
+    IDS_PROP_DOCSIDES       "Andockbare Seiten"
+    IDS_PROP_DOCDEFAULT     "Vorgabe Andocken"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_EVENTINVOKE    "Ereignis auslösen"
+    IDS_PROP_RETURNASTAB    "Eingabetaste wie Tab-Taste behandeln"
+    IDS_PROP_SINGLEEXPANED  "Einzeln erweitern"
+    IDS_PROP_ACTIVEXPROPPAGES "(ActiveX Assistent)"
+    IDS_PROP_ROWHEIGHT      "Zeilenhöhe"
+    IDS_PROP_DEFSELINDEX    "Vorgabe Auswahl"
+    IDS_PROP_OBJECTBROWSER  "(Objekt-Browser)"
+    IDS_PROP_VARNAME        "(VariablenName)"
+    IDS_PROP_FILEDLGSTYLE   "Stil"
+    IDS_PROP_ASREADONLY     "Schreibgeschützt"
+    IDS_PROP_CREATIONPROMPT "Eingabeaufforderung beim Erzeugen"
+    IDS_PROP_DEFAULTEXTENSION "Vorgabe Dateierweiterung"
+    IDS_PROP_EXTCANBEDIFF   "Abweichende Dateierweiterung zulassen"
+    IDS_PROP_FILEMUSTEXIST  "Datei muss existieren"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_FILTER         "Filter"
+    IDS_PROP_OVERWRITEPROMPT "Eingabeaufforderung beim Überschreiben"
+    IDS_PROP_PATHMUSTEXIST  "Dateipfad muss existieren"
+    IDS_PROP_SHOWCANCEL     "Abbrechen-Schaltfläche zeigen"
+    IDS_PROP_SHOWHELP       "Hilfe-Schaltfläche zeigen"
+    IDS_PROP_SHOWNAMELABEL  "Beschreibung für Dateinamen zeigen"
+    IDS_PROP_SHOWNAMETEXTBOX "Textfeld für Dateinamen zeigen"
+    IDS_PROP_SHOWOK         "OK-Schaltfläche zeigen"
+    IDS_PROP_SHOWREADONLYCHECKBOX 
+                            "Kontrollkästchen für Schreibgeschützt zeigen"
+    IDS_PROP_SHOWTYPECOMBOBOX "Auswahlliste für Dateierweiterung zeigen"
+    IDS_PROP_SHOWTYPELABEL  "Beschreibung für Dateierweiterung zeigen"
+    IDS_EVENT_FOLDERCHANGE  "FolderChange"
+    IDS_EVENT_HELP          "Help"
+    IDS_EVENT_TYPECHANGE    "TypeChange"
+    IDS_PROP_INSERTTYPE     "Block oder XREF"
+    IDS_PROP_ROWHEADER      "Zeilenkopf"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_COLUMN_CAPTIONS "Spaltenbeschreibungen"
+    IDS_PROP_COLUMN_ALIGNMENTS "Spaltenausrichtung"
+    IDS_PROP_COLUMN_IMAGES  "Bilder für Spalten"
+    IDS_PROP_COLUMN_WIDTHS  "Spaltenbreiten"
+    IDS_PROP_COLUMN_STYLES  "Spaltenstile"
+    IDS_PROP_COLUMN_DEFAULTIMAGES "Vorgabebilder"
+    IDS_PROP_COLUMN_ALTERNATEIMAGES "Alternative Bilder"
+    IDS_PROP_COLUMN_LISTITEMS "Auswahllisten-Elemente"
+    IDS_PROP_COLUMN_LISTIMAGES "Auswahllisten-Bilder"
+    IDS_PROP_ALTERNATECOLOR "Alternierende Farbe"
+    IDS_PROP_ALTORIENTATION "Ausrichtung der Alternierenden Farbe"
+    IDS_PROP_TOOLTIP_MAINTEXT "ToolTip Haupttext"
+    IDS_PROP_TOOLTIP_PICTURE "ToolTip Bild"
+    IDS_PROP_TOOLTIP_AVIFILENAME "ToolTip Videodateiname"
+    IDS_PROP_TOOLTIP_LINE   "ToolTip Linie"
+    IDS_PROP_TOOLTIP_TITLECOLOR "ToolTip Titel Farbe"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_SPLITTERSTYLE  "Kantenstil"
+    IDS_PROP_CLOSESTINSIDE  "Minimaler Randabstand nach links bzw. oben"
+    IDS_PROP_CLOSESTOUTSIDE "Minimaler Randabstand nach rechts bzw. unten"
+    IDS_PROP_HATCHSCALE     "Schraffur Skalierung"
+    IDS_EVENT_SPLITTERMOVED "Splitter Moved"
+    IDS_PROP_CAPTION_SECOND "Beschreibung (Sekunde)"
+    IDS_PROP_CAPTION_SECONDS "Beschreibung (Sekunden)"
+    IDS_PROP_CAPTION_MINUTE "Beschreibung (Minute)"
+    IDS_PROP_CAPTION_MINUTES "Beschreibung (Minuten)"
+    IDS_PROP_DISPLAYSECONDS "Sekunden anzeigen"
+    IDS_PROP_DISPLAY_PERCENTAGE "Prozent anzeigen"
+    IDS_EVENT_FORM_ONOK     "OK"
+    IDS_PROP_TITLEBAR       "Titelzeile"
+    IDS_EVENT_FORM_ONCANCEL "Cancel"
+    IDS_PROP_TOOLTIP_BALLOON "ToolTip Ballonartig"
+    IDS_EVENT_FORM_ENTERINGNODOCSTATE "EnteringNoDocState"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_USEVISUALSTYLE "Visuelle Stile verwenden"
+    IDS_PROP_CAPTION_REMAINING "Beschreibung (verbleibend)"
+    IDS_PROP_PROGRESSLEGEND "Legendentyp"
+    IDS_PROP_KEEPFOCUS      "Fokus beibehalten"
+END
+
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "..\\SharedRes.Local.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "Res\\OpenDCL.ico"
+IDI_HELP                ICON                    "Res\\Help.ico"
+IDI_INFO                ICON                    "Res\\Info.ico"
+IDI_WARN                ICON                    "Res\\Warn.ico"
+IDI_ERR                 ICON                    "Res\\Error.ico"
+IDI_LABEL               ICON                    "Res\\Label.ico"
+IDI_FILTER              ICON                    "Res\\Filter.ico"
+IDI_PICK                ICON                    "Res\\Pick.ico"
+IDI_SELECT              ICON                    "Res\\Select.ico"
+IDI_FOLDER              ICON                    "Res\\Folder.ico"
+IDI_PICKSMALL           ICON                    "Res\\PickSmall.ico"
+IDI_SHXFONT             ICON                    "Res\\SHXFont.ico"
+IDI_TTFONT              ICON                    "Res\\TTFont.ico"
+IDI_LARGEBLOCK          ICON                    "Res\\LargeBlock.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_ARROWHEADS          BITMAP                  "Res\\ArrowHeads.bmp"
+IDB_OPTBTN              BITMAP                  "Res\\OptionButton.bmp"
+IDB_OPTBTNSEL           BITMAP                  "Res\\OptionButtonSel.bmp"
+IDB_OPTBTNH             BITMAP                  "Res\\OptionButtonH.bmp"
+IDB_OPTBTNSELH          BITMAP                  "Res\\OptionButtonSelH.bmp"
+IDB_FOLDER              BITMAP                  "Res\\Folder.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_HAND                CURSOR                  "Res\\Hand.cur"
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

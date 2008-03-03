@@ -7,7 +7,7 @@
 #include "ThemeHelperST.h"
 #include "Project.h"
 #include "DclFormObject.h"
-#include <vector>
+#include <list>
 
 class CDialogObject;
 class CFontCollection;
@@ -20,7 +20,7 @@ enum Prop::Id;
 class CControlPane
 {
 public:
-	typedef std::vector< TDialogControlPtr > TDialogControls;
+	typedef std::list< TDialogControlPtr > TDialogControls;
 
 // Attributes
 protected:
@@ -45,9 +45,11 @@ public:
 	TProjectPtr GetProject() const { return mpProject; }
 	TDclFormPtr GetSourceForm() const { return mpSourceForm; }
 	CWnd* GetHostDialog() const { return mpHostDlg; }
+	CDialogObject* GetDialogObject() const { return mpDlgObject; }
 	CRect GetControlArea() const;
 	const TDialogControls& GetControlsList() const { return mControls; }
-	CPoint GetSplitterPos( int nSplitterId );
+	CPoint GetSplitterPos( int nSplitterId ) const;
+	bool HasSplitter( int nSplitterId ) const;
 	bool IsRecalcInProgress() const { return mbRecalcInProgress; }
 
 // Operations

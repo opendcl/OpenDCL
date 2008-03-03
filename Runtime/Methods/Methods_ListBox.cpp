@@ -6,7 +6,7 @@
 #include "ArgumentsRetrieval.h"
 #include "ControlTypes.h"
 #include "ArxListBoxCtrl.h"
-#include "Workspace.h"
+#include "ArxWorkspace.h"
 
 
 ADSRESULT ListBox::AddString()
@@ -319,7 +319,7 @@ ADSRESULT ListBox::GetItemData()
 
 	DWORD_PTR dwData = pCtrl->GetItemData( nItem );
 	if( dwData != CB_ERR  )
-		acedRetHandle( dwData );
+		theArxWorkspace.RetHandle( dwData );
 	return RSRSLT;
 }
 

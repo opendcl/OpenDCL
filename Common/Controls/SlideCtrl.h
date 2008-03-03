@@ -12,7 +12,7 @@
 
 class CSlideCtrl : public CSliderCtrl, public CDialogControl
 {
-	CAcadColorService mAcadColorService;
+	CAcadColorService mColorService;
 
 public:
 	CSlideCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -24,7 +24,8 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
+	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp );
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 	// Generated message map functions
 protected:
@@ -40,4 +41,5 @@ protected:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

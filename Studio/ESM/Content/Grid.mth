@@ -1,0 +1,606 @@
+[Method]
+AddColumns
+[Function]
+dcl_Grid_AddColumns
+[Desc]
+This method adds columns to a Grid control. The width, justification, and optional image from the image list can or must be specified for each column.
+\par \par The column justification is to be set using:
+\par 0	Left (default)
+\par 1	Center
+\par 2	Right
+\par \par \b Please Note:\b0 \par Due to limitations in the grid control, column 0 is always left justified and cannot be changed.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab sColText
+[as String]
+\par\tab \i{Optional} \i0 nJustification
+[as Integer]
+\par\tab \i{Optional} \i0 nColWidth
+[as Integer]
+\par\tab \i{Optional} \i0 nImageListIndex
+[as Integer]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+AddRow
+[Function]
+dcl_Grid_AddRow
+[Desc]
+This method adds a new item to the end of a Grid control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list. Use \cf1 dcl_Grid_SetItemImage \cf0 to set the icons of any column cell.
+\par \b Note:\b0 The style of the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
+\par \par \b \b For example \b0\b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 dcl_Grid_AddString \cf0 or \cf2 dcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab 
+[Begin List]
+\par\tab\i{Optional} \i0 nImageIndex ...
+[as Integer]
+\par\tab sText
+[as String]
+\par\tab\i{Optional} \i0 sColText1 sColText2 sColText3 ...
+[as String]
+[End List]
+
+
+[Method]
+AddString
+[Function]
+dcl_Grid_AddString
+[Desc]
+This method adds a new row to the end of a Grid control and fills in each of the cells using a single delimited string to specify the contents of each cell in the row. 
+If the sDelimiter argument of this function is not specified, "\t" is assumed.
+
+\par \par \b1 Please note: \b0 This function cannot specify image icons for the cells (however \cf2 dcl_Grid_SetItemImage \cf0 can be called afterward).
+\par 
+\par \b Also Note:\b0 The style of the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
+\par \par For example, if you specify a value for a cell with style 33 - Linetype Cell, the value you set must be an existing linetype.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab sString
+[as String]
+\par\tab\i{Optional} \i0 sDelimiters
+[as String]
+
+
+[Method]
+InsertString
+[Function]
+dcl_Grid_InsertString
+[Desc]
+This method inserts a new row at the specified position of a Grid control and fills in each of the cells using a single delimited string to specify the contents of each cell in the row. 
+If the sDelimiter argument of this function is not specified, "\t" is assumed.
+
+\par \par \b1 Please note: \b0 This function cannot specify image icons for the cells (however \cf2 dcl_Grid_SetItemImage \cf0 can be called afterward).
+\par 
+\par \b Also Note:\b0 The style of the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
+\par \par For example, if you specify a value for a cell with style 33 - Linetype Cell, the value you set must be an existing linetype.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+\par\tab sString
+[as String]
+\par\tab \i{Optional} \i0 sDelimiters
+[as String]
+
+
+[Method]
+GetColumnImage
+[Function]
+dcl_Grid_GetColumnImage
+[Desc]
+This method returns the image of a column header in a Grid control. 
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nColumn
+[as Integer]
+
+
+[Method]
+SetColumnImage
+[Function]
+dcl_Grid_SetColumnImage
+[Desc]
+This method sets the image of a column header in a Grid control. Set to -1 for no image.
+[Arguments]
+<CONTROL>
+\par\tab nColumn
+[as Integer]
+\par\tab nImageIndex
+[as Integer]
+
+
+[Method]
+GetColumnCount
+[Function]
+dcl_Grid_GetColumnCount
+[Desc]
+This method returns number of columns in a Grid control. 
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+GetRowCount
+[Function]
+dcl_Grid_GetRowCount
+[Desc]
+This method returns number of rows in a Grid control. 
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+InsertRow
+[Function]
+dcl_Grid_InsertRow
+[Desc]
+This method inserts a new item anywhere in a Grid control and will also fill in the cells in the entire row according to how many columns have been setup. Using this method the very first cell under the first column can be specified to display an image from the image list.  Use \cf2 dcl_Grid_SetItemImage \cf0 to set the icons of any column cell.
+\par \b Note:\b0 The style of the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
+\par \par \b For example \b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 dcl_Grid_AddString \cf0 or \cf2 dcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nInsertIndex
+[as Integer]
+\par\tab 
+[Begin List]
+\par\tab \i{Optional} \i0 nImageIndex
+[as Integer]
+\par\tab sText
+[as String]
+\par\tab\i{Optional} \i0 sColText1 sColText2 sColText3 ...
+[as String]
+[End List]
+
+
+[Method]
+InsertColumn
+[Function]
+dcl_Grid_InsertColumn
+[Desc]
+This method inserts a column in a Grid control. The width, justification, and optional image from the image list can or must be specified for each column.
+\par \par The column justification is to be set using:
+\par 0	Left (default)
+\par 1	Center
+\par 2	Right
+\par \par \b Please Note:\b0 \par Due to limitations in the grid control, column 0 is always left justified and cannot be changed.
+[Arguments]
+<CONTROL>
+\par\tab nInsertIndex
+[as Integer]
+[Begin List]
+\par\tab sColText
+[as String]
+\par\tab \i{Optional} \i0 nJustification
+[as Integer]
+\par\tab \i{Optional} \i0 nColWidth
+[as Integer]
+\par\tab \i{Optional} \i0 nImageListIndex
+[as Integer]
+[End List]
+
+
+[Method]
+FillList
+[Function]
+dcl_Grid_FillList
+[Desc]
+This method will clear and fill a Grid control with multiple rows and will fill in the cells in each row according to how many columns have been previously setup. 
+[Arguments]
+<CONTROL>
+[Begin List]
+[Begin List]
+sItem1Text
+[as String]
+\i{Optional} \i0 nImageListIndex1 
+[as Integer]
+sCol2Text
+[as String]
+\i{Optional} \i0 nImageListIndex2
+[as Integer]
+sCol3Text
+[as String]
+\i{Optional} \i0 nImageListIndex3
+[as Integer]
+...
+[End List]
+...
+[End List]
+
+
+[Method]
+SetCurSel
+[Function]
+dcl_Grid_SetCurSel
+[Desc]
+This method will force a cell (or entire row if nColumn is omitted or set to -1) to be selected and will also scroll the Grid to ensure the item is displayed.
+[Arguments]
+<CONTROL>
+\par\tab nRow
+[as Integer]
+\par\tab \i{Optional} \i0 nColumn
+[as Integer]
+
+
+[Method]
+GetCurSel
+[Function]
+dcl_Grid_GetCurSel
+[Desc]
+This method will return the current row and column indexes of the currently selected cell. If the column index is -1 and the row index is 0 or above, this indicates the entire row is selected.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+Clear
+[Function]
+dcl_Grid_Clear
+[Desc]
+This method will clear the Grid of all its items.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+DeleteRow
+[Function]
+dcl_Grid_DeleteRow
+[Desc]
+This method will delete the specified row from the Grid control.
+[Arguments]
+<CONTROL>
+\par\tab nRow
+[as Integer]
+
+
+[Method]
+DeleteColumn
+[Function]
+dcl_Grid_DeleteColumn
+[Desc]
+This method will delete the specified column from the Grid control.
+\b Note:\b0 A column can only be deleted if that column was not added using the properties wizard. A value of (-1 -1) means now cell has been selected.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+SetItemData
+[Function]
+dcl_Grid_SetItemData
+[Desc]
+This method will set the associated item data for the row. The item data will only accept integer values.
+\par \b Note:\b0 The item data can only be set per individual row and not per cell.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+\par\tab IntegerData
+[as Integer]
+
+
+[Method]
+GetItemData
+[Function]
+dcl_Grid_GetItemData
+[Desc]
+This method will retrieve the associated item data for the indicated row.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+GetItemText
+[Function]
+dcl_Grid_GetItemText
+[Desc]
+This method will return the text of a cell in a Grid control. 
+[Arguments Return] as String
+<CONTROL>
+\par\tab nRowIndex
+[as Integer]
+\par\tab\i{Optional} \i0 nColIndex 
+[as Integer]
+
+
+[Method]
+GetRowItems
+[Function]
+dcl_Grid_GetRowItems
+[Desc]
+This method will return a list containing the text of a specified row in a Grid control. 
+[Arguments Return] as List of Strings
+<CONTROL>
+\par\tab nRowIndex
+[as Integer]
+
+
+[Method]
+GetColumnItems
+[Function]
+dcl_Grid_GetColumnItems
+[Desc]
+This method will return a list containing the strings of a specified column in a Grid control.
+[Arguments Return] as List of Strings
+<CONTROL>
+\par\tab nColIndex
+[as Integer]
+
+
+[Method]
+SetItemText
+[Function]
+dcl_Grid_SetItemText
+[Desc]
+This method will set the text of an item in a Grid control. 
+[Arguments]
+<CONTROL>
+\par\tab nRowIndex
+[as Integer]
+\par\tab nColIndex 
+[as Integer]
+\par\tab NewText
+[as String]
+
+
+[Method]
+GetColWidth
+[Function]
+dcl_Grid_GetColWidth
+[Desc]
+This method will return the width of a column.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nColIndex
+[as Integer]
+
+
+[Method]
+SetColWidth
+[Function]
+dcl_Grid_SetColWidth
+[Desc]
+This method will set the width of a column.
+[Arguments]
+<CONTROL>
+\par\tab nColIndex
+[as Integer]
+\par\tab nColWidth
+[as Integer]
+
+
+[Method]
+CalcColWidth
+[Function]
+dcl_Grid_CalcColWidth
+[Desc]
+This method will calculate the minimum required width of a column to ensure the entire text will appear.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab sColText
+[as String]
+
+
+[Method]
+GetItemImage
+[Function]
+dcl_Grid_GetItemImage
+[Desc]
+This method will retrieve the image index of an item in a Grid control. The image index is also used to represent the index of the current selection in cell styles with a list selection.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nRowIndex 
+[as Integer]
+\par\tab \i{Optional} \i0 nColIndex
+[as Integer]
+
+
+[Method]
+SetItemImage
+[Function]
+dcl_Grid_SetItemImage
+[Desc]
+This method will set the image index of an item in a Grid control. This method is also used to select an item from an indexed list if the cell style offers such a selection. For cell style '31 - True Colors', set the image index to the special values -2 to specify an AutoCAD color book color, or -1 to specify an RGB color as a comma separated list of integers.
+[Arguments]
+<CONTROL>
+\par\tab nRowIndex
+[as Integer]
+\par\tab nColIndex
+[as Integer]
+\par\tab nNewImage
+[as Integer]
+
+
+[Method]
+SortTextItems
+[Function]
+dcl_Grid_SortTextItems
+[Desc]
+This method will sort the columns in ascending or descending order, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
+[Arguments]
+<CONTROL>
+\par\tab nColIndex
+[as Integer]
+\par\tab \i{Optional} \i0 bAscending
+[as Boolean T or Nil] (T = Ascending, Nil = Descending) 
+
+
+[Method]
+SortNumericItems
+[Function]
+dcl_Grid_SortNumericItems
+[Desc]
+This method will sort the columns in ascending or descending order using a numeric comparison, based on the column index provided. This method will not keep track of which column was sorted as ascending or descending, this is up to you.
+[Arguments]
+<CONTROL>
+\par\tab nColIndex
+[as Integer]
+\par\tab \i{Optional} \i0 bAscending
+[as Boolean T or Nil] (T = Ascending, Nil = Descending) 
+
+
+[Method]
+SetItemStyle
+[Function]
+dcl_Grid_SetItemStyle
+[Desc]
+This method will set the editing style of a single cell. The styles that are available are as shown below.
+\par 	
+\par 	 0 - Decide at run time
+\par 	 1 - Check Boxes
+\par 	 2 - Option Buttons
+\par 	 3 - Switchable Icons
+\par 	 4 - Ellipses Buttons
+\par 	 5 - Pick Buttons	
+\par 	 6 - Strings	
+\par 	 7 - AngleUnits	
+\par 	 8 - Integers	
+\par 	 9 - Units		
+\par 	10 - UpperCase	
+\par 	11 - LowerCase	
+\par 	12 - Password	
+\par 	13 - MultiLine	
+\par 	14 - Currency	
+\par 	15 - Date		
+\par 	16 - Time		
+\par 	17 - Percentage	
+\par 	18 - DropDown
+\par 	19 - ArrowHeads
+\par 	20 - Acad Colors
+\par 	21 - TextStyle List
+\par 	22 - PlotStyle Names
+\par 	23 - PlotStyle Tables
+\par 	24 - Plotter List	
+\par 	25 - Fonts		
+\par 	26 - Drive List
+\par 	27 - Layer List	
+\par 	28 - DimStyle List
+\par 	29 - ImageDrop List
+\par 	30 - AcadColor Cell
+\par 	31 - TrueColor Cell
+\par 	32 - LineWeight Cell
+\par 	33 - Linetype Cell	
+\par 	34 - Directories
+\par 	35 - Files
+\par 	36 - Strings Combo
+\par 	37 - AngleUnits Combo
+\par 	38 - Integers Combo
+\par 	39 - Units Combo	
+\par 	40 - UpperCase Combo
+\par 	41 - LowerCase Combo
+
+\par \par \b Note:\b0 For the style: 3 - Switchable Icons, the last two arguements (nData1 and nData2) that must be passed in, identify the two images from the image list that are to be used.
+
+\par \par \b Note:\b0 For the style: 15 - Date, the last argument (nData1) that can be passed in is the identifying date format.  0 through 9 are the allowable arguments.
+
+\par \par \b Note:\b0 For the style: 16 - Time, the last argument (nData1) that can be passed in is the identifying time format.  0 through 5 are the allowable arguments.
+
+\par \par \b Note:\b0 For the style: 35 - Files Cell, the last argument (sString) that can be a string identifying the file extensions to look for. If not found, "dwg;dxf" will be assumed.
+
+\par \par \b Note:\b0 The style change only governs the behavior of the cell and what happens when the user clicks on the cell.
+
+\par \par \b For example \b0if you set the style 33 - Linetype Cell, the current selection for the linetype must be correctly set in the \cf2 dcl_Grid_AddString \cf0 or \cf2 dcl_Grid_AddRow \cf0 functions. The item may not be changed to correctly display one of the listed items.
+
+\par \par \b For example \b0if you set the style 38 - Integers Combo, all the items to be added to the drop list must be provided as strings. You are responsible to ensure the correct text is added.
+[Arguments]
+<CONTROL>
+\par\tab nRow
+[as Integer]
+\par\tab nCol
+[as Integer]
+\par\tab nStyle
+[as Integer]
+\par\tab\i{Optional} \i0 nData1 
+[as Integer]
+\par\tab\i{Optional} \i0 nData2
+[as Integer]
+\par\tab\i{Optional} \i0 sString
+[as String]
+
+
+[Method]
+GetItemCheck
+[Function]
+dcl_Grid_GetItemCheck
+[Desc]
+This method will indicate if a cell of style 1 - Check Boxes or 2 - Option Buttons has been checked off.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nRow
+[as Integer]
+\par\tab nCol
+[as Integer]
+
+
+[Method]
+SetItemCheck
+[Function]
+dcl_Grid_SetItemCheck
+[Desc]
+This method will set a cell of style 1 - Check Boxes or 2 - Option Buttons as checked or unchecked. A value of 1 = checked and 0 = unchecked.
+[Arguments]
+<CONTROL>
+\par\tab nRow
+[as Integer]
+\par\tab nCol
+[as Integer]
+\par\tab nChecked
+[as Integer]
+
+
+[Method]
+SetItemDropList
+[Function]
+dcl_Grid_SetItemDropList
+[Desc]
+This method will set the drop down lists for cells with such styles. If the column has been preset with list items, this function will override the default column list for the specified cell only.
+\par 
+\par \b Note:\b0 The style set to the cell or column only governs the behavior of the cell and what happens when the user clicks on the cell.
+[Arguments]
+<CONTROL>
+\par\tab nRow
+[as Integer]
+\par\tab nCol
+[as Integer]
+\par\tab Strings
+[as List of Strings]
+\par\tab\i{Optional} \i0 nImageIndexes
+[as List of Integers]
+
+
+[Method]
+CancelItemEdit
+[Function]
+dcl_Grid_CancelItemEdit
+[Desc]
+This method will cancel the editing of a cell. This is useful when you wish to ensure that some items may be edited while others may not.  This method is not available for BlockList controls.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+StartItemEdit
+[Function]
+dcl_Grid_StartItemEdit
+[Desc]
+This method will create an appropriate edit control allowing the user to edit the cell contents, just as if the user clicked on the cell. If the cell style is a toggle style, this method will toggle the cell state.
+[Arguments]
+<CONTROL>
+\par\tab nRow
+[as Integer]
+\par\tab nCol
+[as Integer]
+
+
+[End of File]

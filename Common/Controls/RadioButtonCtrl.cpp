@@ -49,14 +49,10 @@ bool CRadioButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 	switch( pProp->GetID() )
 	{
 	case Prop::Caption:
-		{
-			SetWindowText( pProp->GetStringValue() );
-		}
+		SetWindowText( pProp->GetStringValue() );
 		break;
 	case Prop::Value:
-		{
-			SetCheck( pProp->GetBooleanValue()? BST_CHECKED : BST_UNCHECKED );
-		}
+		SetCheck( pProp->GetLongValue() );
 		break;
 	}
 	return !bFailed;
@@ -67,7 +63,6 @@ BEGIN_MESSAGE_MAP(CRadioButtonCtrl, CButton)
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
 	ON_WM_CTLCOLOR_REFLECT()
-	ON_NOTIFY_REFLECT (NM_CUSTOMDRAW, &CRadioButtonCtrl::OnNotifyCustomDraw)
 END_MESSAGE_MAP()
 
 
@@ -85,38 +80,25 @@ BOOL CRadioButtonCtrl::PreTranslateMessage(MSG* pMsg)
 void CRadioButtonCtrl::OnSetFocus(CWnd* pOldWnd) 
 {
 	__super::OnSetFocus(pOldWnd);
-	mpTemplate->SetBooleanProperty( Prop::Value, (GetCheck() != BST_UNCHECKED) );
+	mpTemplate->SetLongProperty( Prop::Value, GetCheck() );
 }
 
 void CRadioButtonCtrl::OnKillFocus(CWnd* pNewWnd) 
 {
 	__super::OnKillFocus(pNewWnd);
-	mpTemplate->SetBooleanProperty( Prop::Value, (GetCheck() != BST_UNCHECKED) );
+	mpTemplate->SetLongProperty( Prop::Value, GetCheck() );
 }
 
 HBRUSH CRadioButtonCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	HBRUSH hbrBackground = mColorService.CtlColor( pDC, nCtlColor, this );
+	//if( GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
+	//	return NULL; //must use class brush when themes are active, else XP paints a black background
+	return hbrBackground;
 }
 
 void CRadioButtonCtrl::PostNcDestroy() 
 {
 	__super::PostNcDestroy();
 	delete this;
-}
-
-void CRadioButtonCtrl::OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result )
-{
-	LPNMCUSTOMDRAW pCustomDraw = (LPNMCUSTOMDRAW)pNotifyStruct;
-	ASSERT (pCustomDraw->hdr.hwndFrom == m_hWnd);
-	ASSERT (pCustomDraw->hdr.code = NM_CUSTOMDRAW);
-
-	if( pCustomDraw->dwDrawStage == CDDS_PREPAINT )
-	{
-		::SetTextColor( pCustomDraw->hdc, mAcadColorService.GetForegroundColor() );
-		::SetBkColor( pCustomDraw->hdc, mAcadColorService.GetBackgroundColor() );
-	}
-	*result = CDRF_DODEFAULT;
 }

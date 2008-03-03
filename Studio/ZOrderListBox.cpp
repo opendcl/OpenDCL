@@ -557,7 +557,6 @@ void CZOrderListBox::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 	TDclControlList::iterator iter = mControls.begin();
 	while( idxItem-- > 0 )
 		++iter;
-	theStudioWorkspace.ActivateDclControl( NULL );
 	theStudioWorkspace.ActivateDclControl( *iter );
 	CMenu menu;
 	if( menu.LoadMenu( IDR_MAINFRAME ) )

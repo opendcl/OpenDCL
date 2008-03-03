@@ -1,0 +1,23 @@
+[Method]
+SetPattern
+[Function]
+dcl_Hatch_SetPattern
+[Desc]
+This method will display the specified hatch pattern.
+[Arguments]
+<CONTROL>
+\par\tab Pattern 
+[as String]
+
+
+[Method]
+Clear
+[Function]
+dcl_Hatch_Clear
+[Desc]
+This method clears the hatch control of its contents.
+[Arguments]
+<CONTROL>
+
+
+[End of File]

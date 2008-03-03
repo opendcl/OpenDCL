@@ -5,8 +5,6 @@
 
 #include "Workspace.h"
 #include "ArxProject.h"
-#include "OleControlObject.h"
-#include "LispIO.h"
 #include <list>
 
 
@@ -19,6 +17,19 @@ class AxMethodDescriptor;
 struct DialogParams;
 
 
+namespace odcl
+{
+	enum PtrType
+	{
+		ptrHandle,
+		ptrDclProject,
+		ptrDclControl,
+		ptrIUnknown,
+		ptrBinFile,
+	};
+};
+
+
 #define theArxWorkspace (*(CArxWorkspace*)&theWorkspace)
 
 typedef CList< CDialogObject* > TDialogList;
@@ -29,6 +40,7 @@ class CArxWorkspace : public CWorkspace
 {
 	TDialogList mDialogs;
 	TProjectList mProjects;
+	std::list< IUnknown* > mUnknowns;
 	class CDocReactor : public AcApDocManagerReactor
 	{
 		const CArxWorkspace* mpWorkspace;
@@ -49,8 +61,6 @@ public:
 public:
 	//CWorkspace overrides
 	virtual CString GetLocalResourceModuleFilename() const { return _T("Runtime.Res.dll"); }
-	virtual TOleControlPtr GetOleControlFor( const AxPropertyDescriptor* pProperty );
-	virtual TOleControlPtr GetOleControlFor( const AxMethodDescriptor* pMethod );
 	virtual CString GetSettingsRegPath(void) const { return _T("Software\\OpenDCL\\Runtime"); }
 	virtual CString GetUserProfilePrefix() const;
 	virtual HMODULE GetThisModule(void) const;
@@ -89,10 +99,42 @@ public:
 	bool OnExtendTabbedDialog( CAdUiTabExtensionManager* pTabXM );
 	bool AddExtensionTab( TDclFormPtr pDclForm, CAdUiTabExtensionManager* pTabXM );
 	void UnloadAllProjects();
+	void AddUnknown( IUnknown* pUnknown );
+	void RemoveUnknown( IUnknown* pUnknown );
+
+	//Lisp I/O
+	void RetPointer( void* ptr, odcl::PtrType type )
+	{
+		struct resbuf rbRet = {NULL,RTENAME};
+		rbRet.resval.rlname[0] = (LONG_PTR)ptr;
+		rbRet.resval.rlname[1] = type;
+		acedRetVal( &rbRet );
+	}
+	void RetLong( LONG lValue )
+	{
+		struct resbuf rbRet = {NULL,RTLONG};
+		rbRet.resval.rlong = lValue;
+		acedRetVal( &rbRet );
+	}
+	void RetHandle( DWORD_PTR hdl )
+	{
+		if( hdl <= LONG_MAX )
+			RetLong( (long)hdl );
+		else
+			RetPointer( (void*)hdl, odcl::ptrHandle );
+	}
+	void RetIUnknown( IUnknown* pUnknown )
+	{
+		if( !pUnknown )
+			acedRetNil();
+		else
+		{
+			AddUnknown( pUnknown );
+			RetPointer( pUnknown, odcl::ptrIUnknown );
+		}
+	}
 
 	//Attributes
 	const TDialogList& GetDialogList() const { return mDialogs; }
 	const TProjectList& GetProjects() const { return mProjects; }
-
-protected:
 };

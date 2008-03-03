@@ -195,29 +195,7 @@ void CObjectBrowser::LoadAllAssociatedOleObjects( TDclControlPtr pControl )
 		if( pAxDesc )
 		{
 			SearchMethods( (*iter) );
-			TOleControlPtr pOleObject;
-
-			// check events
-			pOleObject = pProject->GetOleObject(pAxDesc->GetEvent());
-			if (pOleObject != NULL)
-				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
-			
-			// check each property pointer type
-			pOleObject = pProject->GetOleObject(pAxDesc->GetProp());
-			if (pOleObject != NULL)
-				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
-			
-			pOleObject = pProject->GetOleObject(pAxDesc->GetPropGet());
-			if (pOleObject != NULL)
-				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
-			
-			pOleObject = pProject->GetOleObject(pAxDesc->GetPropPut());
-			if (pOleObject != NULL)
-				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
-			
-			pOleObject = pProject->GetOleObject(pAxDesc->GetPropPutRef());
-			if (pOleObject != NULL)
-				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
+			LoadOleObjectIntoTree(pControl);
 		}
 	}
 }
@@ -225,13 +203,13 @@ void CObjectBrowser::LoadAllAssociatedOleObjects( TDclControlPtr pControl )
 
 void CObjectBrowser::SearchMethods(TPropertyPtr pProp) 
 {
-	size_t idx = pProp->size();
-	while( idx-- > 0 )
-	{
-		TOleControlPtr pOleObject = activeProject->GetOleObject(pProp->GetConstAxInterfaceDescriptorPtr()->GetMethods()->at(idx));
-		if (pOleObject != NULL)
-			LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));			
-	}
+	//size_t idx = pProp->size();
+	//while( idx-- > 0 )
+	//{
+	//	TOleControlPtr pOleObject = activeProject->GetOleObject(pProp->GetConstAxInterfaceDescriptorPtr()->GetMethods()->at(idx));
+	//	if (pOleObject != NULL)
+	//		LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));			
+	//}
 }
 
 void CObjectBrowser::LoadInfoTree(TDclControlPtr pControl, HTREEITEM hParentItem, int nIndex) 
@@ -652,118 +630,110 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 	if (!pProp)
 	{
 		
-		if (pControl->GetType() == CtlActiveX)
-		{
-			LoadFullMethod(_T("AxCtrls.mth"), sItemText, sTitle, sDesc, sDefun1);
-			// call the method to load info from the appropriate method info files.
+		if (pControl->GetType() != CtlFileDlgCtrl)
 			LoadFullMethod(_T("AllCtrls.mth"), sItemText, sTitle, sDesc, sDefun1);					
-		}
-		else if (pControl->GetType() == _CtlForm || pControl->GetID() == -1)
-			LoadFullMethod(_T("Forms.mth"), sItemText, sTitle, sDesc, sDefun1);	
-		else
+
+		// here we need to see which control it being displayed to load the correct method info
+		switch (pControl->GetType())
 		{
-			if (pControl->GetType() != CtlFileDlgCtrl)
-				LoadFullMethod(_T("AllCtrls.mth"), sItemText, sTitle, sDesc, sDefun1);					
+		
+		case CtlFileDlgCtrl:
+			LoadFullMethod(_T("FileDlgCtrl.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			// here we need to see which control it being displayed to load the correct method info
-			switch (pControl->GetType())
-			{
-			
-			case CtlFileDlgCtrl:
-				LoadFullMethod(_T("FileDlgCtrl.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case CtlTabStrip:
+			LoadFullMethod(_T("Tab.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case CtlTabStrip:
-				LoadFullMethod(_T("Tab.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case CtlListBox:
+			LoadFullMethod(_T("ListBox.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case CtlListBox:
-				LoadFullMethod(_T("ListBox.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case CtlListView:
+			LoadFullMethod(_T("ListView.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case CtlListView:
-				LoadFullMethod(_T("ListView.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case CtlGrid:
+			LoadFullMethod(_T("Grid.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case CtlGrid:
-				LoadFullMethod(_T("Grid.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case _CtlForm: // a form
+			if( mpDclControl->GetOwnerForm()->GetType() == FrmFileDlg )
+				LoadFullMethod(_T("FileDlg.mth"), sItemText, sTitle, sDesc, sDefun1);
+			else
+				LoadFullMethod(_T("Forms.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case _CtlForm: // a form
-				if (mpDclControl->GetOwnerForm()->GetType() == FrmFileDlg && pControl->GetType() != CtlFileDlgCtrl)
-					LoadFullMethod(_T("FileDlg.mth"), sItemText, sTitle, sDesc, sDefun1);
-				else
-					LoadFullMethod(_T("Forms.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case CtlImageComboBox:
+			LoadFullMethod(_T("ImageComboBox.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case CtlImageComboBox:
-				LoadFullMethod(_T("ImageComboBox.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case CtlAnimate:
+			LoadFullMethod(_T("AnimationCtrl.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case CtlAnimate:
-				LoadFullMethod(_T("AnimationCtrl.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case CtlDwgList:
+			LoadFullMethod(_T("DwgList.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case CtlDwgList:
-				LoadFullMethod(_T("DwgList.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case CtlBlockList:
+			LoadFullMethod(_T("BlockList.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case CtlBlockList:
-				LoadFullMethod(_T("BlockList.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case CtlPictureBox:
+			LoadFullMethod(_T("PictureBox.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case CtlPictureBox:
-				LoadFullMethod(_T("PictureBox.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case CtlOptionList:
+			LoadFullMethod(_T("OptionList.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case CtlOptionList:
-				LoadFullMethod(_T("OptionList.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case CtlBlockView:
+			LoadFullMethod(_T("BlockView.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
+		
+		case CtlHatch:
+			LoadFullMethod(_T("Hatch.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
+		
+		case CtlSlideView:
+			LoadFullMethod(_T("SlideView.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
+		
+		case CtlTree:
+			LoadFullMethod(_T("TreeCtrl.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
+		
+		case CtlComboBox:
+			LoadFullMethod(_T("ComboBox.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case CtlBlockView:
-				LoadFullMethod(_T("BlockView.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
-			
-			case CtlHatch:
-				LoadFullMethod(_T("Hatch.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
-			
-			case CtlSlideView:
-				LoadFullMethod(_T("SlideView.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
-			
-			case CtlTree:
-				LoadFullMethod(_T("TreeCtrl.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
-			
-			case CtlComboBox:
-				LoadFullMethod(_T("ComboBox.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case CtlTextBox:
+			LoadFullMethod(_T("TextBox.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case CtlTextBox:
-				LoadFullMethod(_T("TextBox.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+		case CtlDwgPreview:
+			LoadFullMethod(_T("DwgPreview.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;
 
-			case CtlDwgPreview:
-				LoadFullMethod(_T("DwgPreview.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
-
-			case CtlActiveX:
+		case CtlActiveX:
+			if( pControl == mpDclControl )
 				LoadFullMethod(_T("AxCtrls.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;
+			else
+				LoadFullMethod(_T("AxObjects.mth"), sItemText, sTitle, sDesc, sDefun1);					
+			break;
 
-			case CtlMonth:
-				LoadFullMethod(_T("Month.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;	
+		case CtlMonth:
+			LoadFullMethod(_T("Month.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;	
 
-			case CtlGraphicButton:
-				LoadFullMethod(_T("GrphicBtn.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;	
+		case CtlGraphicButton:
+			LoadFullMethod(_T("GrphicBtn.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;	
 
-			case CtlHtmlCtrl:
-				LoadFullMethod(_T("Html.mth"), sItemText, sTitle, sDesc, sDefun1);
-				break;	
-			}
+		case CtlHtmlCtrl:
+			LoadFullMethod(_T("Html.mth"), sItemText, sTitle, sDesc, sDefun1);
+			break;	
 		}
 	}
 	else
@@ -776,12 +746,11 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				if (pProp->GetConstAxInterfaceDescriptorPtr() != NULL)
 				{
 					sDesc = pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodDesc(nThisItemData);
-					sVarType = GetTypeName(pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData),
-																 pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethod(nThisItemData));
+					sVarType = pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodReturnTypeDisplayName( nThisItemData );
 					
 					// here we need to put in OleObject closing instructions if required.
-					if (pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_DISPATCH ||
-						pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_UNKNOWN)
+					if( pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_DISPATCH ||
+							pProp->GetConstAxInterfaceDescriptorPtr()->GetAxMethodReturnType(nThisItemData) == VT_UNKNOWN )
 					{
 						if (!sDesc.IsEmpty())
 							sDesc += _T(" \\par \\par ");						
@@ -924,8 +893,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 						CString sCtlType = (pControl != mpDclControl)? _T("AxObject") : _T("AxControl");
 						sDefun1 = _T("\\par(\\cf2 dcl_") + sCtlType + _T("_SetColor \\cf0 \\cf3 ") + sGlobalVarName + _T(" \\cf0 \\cf3  \\b1 \"") + m_ListBox.GetItemText(hItem) + _T("\" \\b0");
 						m_sClipBoardDefun1 = _T("(dcl_") + sCtlType + _T("_SetColor ") + sGlobalVarName + _T(" \"") + m_ListBox.GetItemText(hItem) + _T("\" ");
-			
-						sVarType = GetTypeName(pProp->GetConstAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropPut);
+						sVarType = pAxPropPut->GetTypeDisplayName();
 			
 						sDefun1 += theWorkspace.LoadResourceString(IDS_REDCOLORDESC2);
 						m_sClipBoardDefun1 += theWorkspace.LoadResourceString(IDS_REDCOLORDESC);
@@ -946,8 +914,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 						CString sCtlType = (pControl != mpDclControl)? _T("AxObject") : _T("AxControl");
 						sDefun1 = _T("\\par(\\cf2 dcl_") + sCtlType + _T("_SetProperty \\cf0 \\cf3 ") + sGlobalVarName + _T(" \\cf0 \\cf3\\b \"");
 						m_sClipBoardDefun1 = _T("(dcl_") + sCtlType + _T("_SetProperty ") + sGlobalVarName + _T(" \"");
-
-						sVarType = GetTypeName(pProp->GetConstAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropPut);
+						sVarType = pAxPropPut->GetTypeDisplayName();
 			
 						if (sVarType == theWorkspace.LoadResourceString(IDS_PROP_PICTURE))
 						{
@@ -999,7 +966,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 									sArg = theWorkspace.LoadResourceString(IDS_NEWVAL);
 								sDefun1 += _T(" \\cf1 ") + sArg;
 								m_sClipBoardDefun1 += _T(" ") + sArg;
-								sArgType = GetTypeName(pAxPropPut->GetArgs()[i].vt, NULL, pAxPropPut);
+								sArgType = pAxPropPut->GetArgDisplayName( i );
 								if (sArgType.IsEmpty())
 								{
 									sArgType = theWorkspace.LoadResourceString(IDS_OPTIONALNILASB);
@@ -1031,7 +998,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 
 				if (pAxPropGet)
 				{
-					sVarType = GetTypeName(pProp->GetConstAxInterfaceDescriptorPtr()->GetType(), NULL, pAxPropGet);
+					sVarType = pAxPropGet->GetTypeDisplayName();
 
 					// lets set the get property
 					CString sCtlType = (pControl != mpDclControl)? _T("AxObject") : _T("AxControl");
@@ -1051,8 +1018,8 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 								sArg = theWorkspace.LoadResourceString(IDS_NEWVAL);
 							sDefun2 += _T(" \\cf1 ") + sArg;
 							m_sClipBoardDefun2 += _T(" ") + sArg;
-							sArgType = GetTypeName(pAxPropGet->GetArgs()[i].vt, NULL, pAxPropGet);
-							if (sArgType == CString())
+							sArgType = pAxPropGet->GetArgDisplayName( i );
+							if (sArgType.IsEmpty())
 							{
 								sArgType = theWorkspace.LoadResourceString(IDS_OPTIONALNILASB);
 								sDefun2 += _T(" \\cf5\\i [") + sArgType + _T("]\\i0 ");
@@ -1451,29 +1418,29 @@ void CObjectBrowser::OnCopy3()
 	}
 }
 
-CString CObjectBrowser::GetTypeName( VARTYPE vt, const AxMethodDescriptor *pMethod, const AxPropertyDescriptor *pProperty )
-{
-	CString sType = VARTYPEtoString(vt);
-	if(sType == _T("OLE Object") && (pMethod || pProperty))
-	{
-		if (pProperty != NULL)
-		{
-			TOleControlPtr pOleObject = theWorkspace.GetOleControlFor(pProperty);
-			if (pOleObject != NULL)
-			{
-				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
-				return pOleObject->GetActiveXTypeName();
-			}
-		}
-		else
-		{
-			TOleControlPtr pOleObject = theWorkspace.GetOleControlFor(pMethod);
-			if (pOleObject != NULL)
-			{
-				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
-				return pOleObject->GetActiveXTypeName();
-			}			
-		}
-	}
-	return sType;
-}
+//CString CObjectBrowser::GetTypeName( VARTYPE vt, const AxMethodDescriptor *pMethod, const AxPropertyDescriptor *pProperty )
+//{
+//	CString sType = VARTYPEtoString(vt);
+//	if(sType == _T("OLE Object") && (pMethod || pProperty))
+//	{
+//		if (pProperty != NULL)
+//		{
+//			TOleControlPtr pOleObject = theWorkspace.GetOleControlFor(pProperty);
+//			if (pOleObject != NULL)
+//			{
+//				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
+//				return pOleObject->GetActiveXTypeName();
+//			}
+//		}
+//		else
+//		{
+//			TOleControlPtr pOleObject = theWorkspace.GetOleControlFor(pMethod);
+//			if (pOleObject != NULL)
+//			{
+//				LoadOleObjectIntoTree(TDclControlLockedPtr(pOleObject));
+//				return pOleObject->GetActiveXTypeName();
+//			}			
+//		}
+//	}
+//	return sType;
+//}

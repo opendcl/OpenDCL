@@ -45,8 +45,6 @@ private:
 	virtual void GetMinimumSize(CSize& size);
 	virtual void GetMaximumSize(CSize& size);
 	virtual void TitleBarLocationUpdated( AdUiTitleBarLocation newLoc );
-	virtual BOOL Load(IUnknown* pUnk) { return TRUE; }
-	virtual BOOL Save(IUnknown* pUnk) { return TRUE; }
 
 // Implementation
 protected:

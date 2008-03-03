@@ -69,6 +69,7 @@ public:
 
 	//attributes
 	virtual LPCTSTR GetName() const { return msDisplayName; }
+	virtual void SetName( LPCTSTR pszName ) { msDisplayName = pszName; }
 
 	//operations
 	virtual void clear() { msDisplayName.Empty(); }
@@ -868,7 +869,20 @@ public:
 			CAxContainerCtrl* pAxCtrl = pDlgObject->GetActiveXCtrl();
 			if( !pAxCtrl )
 				return false;
-			if( FAILED(pAxCtrl->SetProperty( pPropPut, &v, 1 )) )
+			const VARIANTARG* pArg = &v;
+			VARIANTARG vBool;
+			if( pPropPut->GetType() == VT_BOOL && pArg->vt == VT_BSTR )
+			{
+				static const CString sTrue = theWorkspace.LoadResourceString( IDS_TRUE );
+				static const CString sFalse = theWorkspace.LoadResourceString( IDS_FALSE );
+				if( sTrue == pArg->bstrVal || sFalse == pArg->bstrVal )
+				{
+					VariantInit( &vBool );
+					vBool.vt = VT_BOOL;
+					vBool.boolVal = (sTrue == pArg->bstrVal? VARIANT_TRUE : VARIANT_FALSE);
+				}
+			}
+			if( FAILED(pAxCtrl->SetProperty( pPropPut, pArg, 1 )) )
 				return false;
 			return true;
 		}
@@ -897,6 +911,11 @@ public:
 			variant_t varValue;
 			if( !GetVariantValue( varValue ) )
 				return false;
+			if( varValue.vt == VT_BOOL )
+			{
+				v = theWorkspace.LoadResourceString( ((bool)varValue)? IDS_TRUE : IDS_FALSE );
+				return true;
+			}
 			if( FAILED(::VariantChangeType( &varValue, &varValue, 0, VT_BSTR ) ) )
 				return false;
 			v = varValue;
@@ -1801,6 +1820,12 @@ CString CPropertyObject::GetName() const
 		return (mpValue? mpValue->GetName() : _T(""));
 	}
 	return GetPropertyName(GetID());
+}
+
+void CPropertyObject::SetName( LPCTSTR pszName )
+{
+	if( mpValue )
+		mpValue->SetName( pszName );
 }
 
 CString CPropertyObject::GetDocumentationDesc() const

@@ -12,7 +12,7 @@
 
 class CScrollBarCtrl : public CScrollBar, public CDialogControl
 {
-	CAcadColorService mAcadColorService;
+	CAcadColorService mColorService;
 
 public:
 	CScrollBarCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -28,7 +28,7 @@ public:
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyForegroundColor( TPropertyPtr pProp ); //Prop::ForegroundColor
-	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 	// Generated message map functions
 protected:

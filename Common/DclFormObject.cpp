@@ -58,7 +58,6 @@ CDclFormObject::CDclFormObject()
 , mpParentForm( NULL )
 , mpDlgObject( NULL )
 , mnNextId( 10 )
-, mbUsesClientRect( true )
 {
 	m_htiTreeItem = NULL;
 }
@@ -70,7 +69,6 @@ CDclFormObject::CDclFormObject( CProject* pProject, FormType type /*= _FrmInvali
 , mpParentForm( NULL )
 , mpDlgObject( NULL )
 , mnNextId( 10 )
-, mbUsesClientRect( true )
 {
 	m_htiTreeItem = NULL;
 	CreateControlProperties();
@@ -139,6 +137,10 @@ void CDclFormObject::AddControl( TDclControlPtr pDclControl, bool bAssignNewID /
 {
 	if( !pDclControl )
 		return;
+	//if( bAssignNewID && !mDclControls.empty() )
+	//		mDclControls.insert( ++mDclControls.begin(), pDclControl );
+	//else
+	//	mDclControls.push_back( pDclControl );
 	mDclControls.push_back( pDclControl );
 	CUndoManager* pUndoManager = GetUndoManager();
 	if( pUndoManager )
@@ -277,10 +279,7 @@ TDclFormPtr CDclFormObject::AddChildForm( FormType type )
 {
 	TDclFormPtr pDclForm = mpProject->AddForm( type, TDclFormLockedPtr( this ) );
 	if( pDclForm )
-	{
-		pDclForm->SetUsesClientRect( true );
 		OnModified();
-	}
 	return pDclForm;
 }
 
@@ -376,7 +375,6 @@ void CDclFormObject::Serialize(CArchive& ar)
 			msUUID = (LPCTSTR)pUUID;
 		}
 		ar << msUUID;
-		ar << mbUsesClientRect;
 		ar << (WORD)mDclControls.size();
 		for( TDclControlList::iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
 		{
@@ -411,24 +409,19 @@ void CDclFormObject::Serialize(CArchive& ar)
 		else
 			msUUID.Empty();
 
-		if (nThisVersion >= 4)
+		if( nThisVersion >= 4 && nThisVersion <= 6 )
 		{
-			if( nThisVersion >= 6 )
-			{
-				ar >> mbUsesClientRect;
-				assert( mbUsesClientRect || mType != FrmTabPage ); //tab form must always use client rect!
-			}
-			else
+			if( nThisVersion < 6 )
 			{
 				BOOL bUsesClientRect;
 				ar >> bUsesClientRect;
-				mbUsesClientRect = (bUsesClientRect != FALSE);
-				if( !mbUsesClientRect && mType == FrmTabPage )
-					mbUsesClientRect = true;
+			}
+			else
+			{
+				bool bUsesClientRect;
+				ar >> bUsesClientRect;
 			}
 		}
-		else
-			mbUsesClientRect = false;
 
 		ar >> nCount;	
 		ClearControls();
@@ -552,7 +545,6 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
   if (!readString(sFile, msUUID)) return statInvalidFormat;
 	BOOL bUsesClientRect;
   if (!readBOOL(sFile, bUsesClientRect)) return statInvalidFormat;
-	mbUsesClientRect = (bUsesClientRect != FALSE);
 
   // get counter for arx controls
   int nCount;

@@ -62,7 +62,7 @@ bool CAngleSlideCtrl::OnApplyProperty( TPropertyPtr pProp )
 BEGIN_MESSAGE_MAP(CAngleSlideCtrl, CRoundSliderCtrl)
 	ON_WM_HSCROLL()
 	ON_WM_CTLCOLOR_REFLECT()
-	ON_WM_PAINT()
+	ON_WM_WINDOWPOSCHANGING()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -88,20 +88,11 @@ BOOL CAngleSlideCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CAngleSlideCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
-	if( !IsWindowEnabled() )
-		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	return mColorService.CtlColor( pDC, nCtlColor );
 }
 
-void CAngleSlideCtrl::OnPaint()
+void CAngleSlideCtrl::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 {
-	//CPaintDC dc(this); // device context for painting
-	CRect rcClient;
-	GetClientRect( &rcClient );
-	CDC* pDC = GetDC();
-	pDC->FillRect( &rcClient, mAcadColorService.GetBackgroundCBrush() );
-	ReleaseDC( pDC );
-	__super::OnPaint();
-	// TODO: Add your message handler code here
-	// Do not call __super::OnPaint() for painting messages
+	//lpwndpos->flags |= SWP_NOACTIVATE;
+	__super::OnWindowPosChanging(lpwndpos);
 }

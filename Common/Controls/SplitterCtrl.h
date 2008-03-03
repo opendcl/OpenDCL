@@ -18,7 +18,7 @@
 
 class CSplitterCtrl : public CStatic, public CDialogControl
 {
-	CAcadColorService mAcadColorService;
+	CAcadColorService mColorService;
 	bool mbVertical;
 	CPoint mptDragStart;
 
@@ -26,6 +26,7 @@ class CSplitterCtrl : public CStatic, public CDialogControl
 public:
 	CSplitterCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CSplitterCtrl();
+	bool IsVertical() const { return mbVertical; }
 
 // DialogControl Interface
 public:
@@ -34,7 +35,7 @@ public:
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyWidth( TPropertyPtr pProp ); //Prop::Width
 	virtual bool OnApplyHeight( TPropertyPtr pProp ); //Prop::Height
-	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 protected:
 	DECLARE_MESSAGE_MAP()

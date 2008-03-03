@@ -5,7 +5,6 @@
 
 #include "ResizableDialog.h"
 #include "AutoRichEditCtrl.h"
-#include "OleControlObject.h"
 #include "PtrTypes.h"
 #include "Resource.h"
 #include <vector>
@@ -62,7 +61,7 @@ public:
 	void LoadMethods(CString sFileName, HTREEITEM hParentItem);
 	bool LoadFullMethod(CString sFileName, CString sMethodName, CString &sTitle, CString &sDesc, CString &sDefun1);
 	CString StripMethodNameOfBrackets(CString sMethodName);
-	CString GetTypeName( VARTYPE vt, const AxMethodDescriptor* pMethod = NULL, const AxPropertyDescriptor* pProperty = NULL );
+	//CString GetTypeName( VARTYPE vt, const AxMethodDescriptor* pMethod = NULL, const AxPropertyDescriptor* pProperty = NULL );
 
 protected:
 	DECLARE_MESSAGE_MAP()

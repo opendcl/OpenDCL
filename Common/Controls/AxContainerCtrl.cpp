@@ -677,7 +677,7 @@ UINT CAxContainerCtrl::ExtractMethodInfo(TDclControlPtr pControl, ITypeInfo* pTy
 	return ctMethods;
 }
 
-BOOL CAxContainerCtrl::ExtractComponentsFromTLB(TOleControlPtr pOleControl, CLSID clsid)
+BOOL CAxContainerCtrl::ExtractComponentsFromTLB( TDclControlPtr pDclControl, CLSID clsid )
 {
 	long lTypeInfoCount = 0;
 	CComBSTR bstrName;
@@ -696,25 +696,23 @@ BOOL CAxContainerCtrl::ExtractComponentsFromTLB(TOleControlPtr pOleControl, CLSI
 	{
 		bSuccess = FALSE;
 	}
-
-	TDclControlLockedPtr pControl = &(*pOleControl);
 	
 	if (clsid == IID_IFont)
 	{
-		pControl->SetAxTypeName( _T("Font") );
-		SetupFont(pControl);
+		pDclControl->SetAxTypeName( _T("Font") );
+		SetupFont(pDclControl);
 		return TRUE;
 	}
 	if (clsid == IID_IFontDisp)
 	{
-		pControl->SetAxTypeName( _T("Font") );
-		SetupFont(pControl);
+		pDclControl->SetAxTypeName( _T("Font") );
+		SetupFont(pDclControl);
 		return TRUE;
 	}
 	if (clsid == IID_IPictureDisp)
 	{
-		pControl->SetAxTypeName( _T("Picture") );
-		SetupPicture(pControl);
+		pDclControl->SetAxTypeName( _T("Picture") );
+		SetupPicture(pDclControl);
 		return TRUE;
 	}
 
@@ -734,13 +732,13 @@ BOOL CAxContainerCtrl::ExtractComponentsFromTLB(TOleControlPtr pOleControl, CLSI
 				
 				if (clsid == TheAttr->guid)
 				{
-					ExtractPropertyInfo(pControl, TheInfo, NULL, true);
-					ExtractMethodInfo(pControl, TheInfo);	
+					ExtractPropertyInfo( pDclControl, TheInfo, NULL, true );
+					ExtractMethodInfo( pDclControl, TheInfo );	
 					
 					CComBSTR bstrDoc;
-					mpTypeLib->GetDocumentation(lIter, &bstrName, &bstrDoc, NULL, NULL);
+					mpTypeLib->GetDocumentation( lIter, &bstrName, &bstrDoc, NULL, NULL );
 					if(bstrName)
-						pControl->SetAxTypeName( CString(bstrName) );
+						pDclControl->SetAxTypeName( CString(bstrName) );
 				}				
 			}			
 		}               
@@ -804,7 +802,7 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 				{ //add a new property object
 					pProp = new CPropertyObject( pControl, PropActiveXEnum );
 					pProp->SetHidden();
-					pProp->SetStringValue( sPropName );
+					pProp->SetName( sPropName );
 					pControl->InsertNamedProperty( pProp );
 				}
 				pProp->GetAxInterfaceDescriptorPtr()->SetProp( pAxPropDesc.release() );
@@ -826,7 +824,7 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 				 pFuncDesc->invkind == INVOKE_PROPERTYPUTREF) &&
 				pFuncDesc->wFuncFlags != FUNCFLAG_FHIDDEN )
 		{
-			std::auto_ptr< AxPropertyDescriptor > pAxPropDesc( new AxPropertyDescriptor( pFuncDesc, pTypeInfo, this, pIObject ) );
+			std::auto_ptr< AxPropertyDescriptor > pAxPropDesc( new AxPropertyDescriptor( pFuncDesc, pTypeInfo, pIObject ) );
 			bool bBrowsable = !(pFuncDesc->wFuncFlags & FUNCFLAG_FNONBROWSABLE);
 
 			if( !pAxPropDesc->GetName().IsEmpty() )
@@ -847,14 +845,14 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 				}
 				if( !pProp )
 				{ //add a new property object
-					if( pAxPropDesc->IsReadOnly() || !bBrowsable )
+					if( /*pAxPropDesc->IsReadOnly() || */!bBrowsable )
 					{
 						pProp = new CPropertyObject( pControl, PropActiveXRunTime );
 						pProp->SetHidden();
 					}
 					else
 						pProp = new CPropertyObject( pControl, PropActiveXProp );
-					pProp->SetStringValue( sPropName );
+					pProp->SetName( sPropName );
 					if( pAxPropDesc->GetInvKind() == INVOKE_PROPERTYGET && !pAxPropDesc->GetArgs().empty() )
 						pProp->SetHidden();
 					pControl->InsertNamedProperty( pProp );
@@ -1057,7 +1055,7 @@ void CAxContainerCtrl::SetImageList(DISPID dispid, LPDISPATCH newValue)
 	InvokeHelper(dispid, DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms, newValue);
 }
 
-HRESULT CAxContainerCtrl::Invoke( AxMethodDescriptor* axMethod, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult )
+HRESULT CAxContainerCtrl::Invoke( AxMethodDescriptor* axMethod, const VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult )
 {
 	CComPtr< IDispatch > pDispatch;
 	HRESULT hr = GetOleDispatch( &pDispatch );

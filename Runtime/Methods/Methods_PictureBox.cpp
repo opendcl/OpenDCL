@@ -890,7 +890,7 @@ ADSRESULT PictureBox::LoadPictureFile()
 
 
 	CArxPictureBoxCtrl* pCtrl = (CArxPictureBoxCtrl*)pDlgControl->GetControlWnd();
-	pCtrl->LoadPictureFile( sFilename, bStretch );
-	acedRetT();
+	if( pCtrl->LoadPictureFile( sFilename, bStretch ) )
+		acedRetT();
 	return RSRSLT;
 }

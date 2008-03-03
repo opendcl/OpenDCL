@@ -460,10 +460,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\LispIO.h"
-				>
-			</File>
-			<File
 				RelativePath="..\MainFileDlg.h"
 				>
 			</File>
@@ -1448,14 +1444,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\MemDC.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\OleControlObject.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\OleControlObject.h"
 				>
 			</File>
 			<File

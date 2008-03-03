@@ -75,38 +75,36 @@ void CZOrderPane::AddTheButtons()
 	m_Buttons.SetBitmapSize(CSize(nDeIconHt,nDeIconHt));
 	m_pTBButtons = new TBBUTTON[nButtonCount];
 
-	
 	m_pTBButtons[0].fsState = TBSTATE_ENABLED;
 	m_pTBButtons[0].fsStyle = BYTE(TBSTYLE_BUTTON|TBSTYLE_TOOLTIPS);
 	m_pTBButtons[0].dwData = 0;
 	m_pTBButtons[0].iBitmap = 0;
-	m_pTBButtons[0].idCommand = ID_SENDTOBACK;
-	m_pTBButtons[0].iString = 0;		
-	VERIFY(m_Buttons.AddButtons(1,&m_pTBButtons[0]));
-
+	m_pTBButtons[0].idCommand = ID_SENDTOFRONT;
+	m_pTBButtons[0].iString = IDS_TTTBRINGTOFRONT	;		
+	VERIFY(m_Buttons.AddButtons(1,&m_pTBButtons[0]));		
 
 	m_pTBButtons[1].fsState = TBSTATE_ENABLED;
 	m_pTBButtons[1].fsStyle = BYTE(TBSTYLE_BUTTON|TBSTYLE_TOOLTIPS);
 	m_pTBButtons[1].dwData = 0;
 	m_pTBButtons[1].iBitmap = 1;
-	m_pTBButtons[1].idCommand = ID_MOVEZBACKBY1;
+	m_pTBButtons[1].idCommand = ID_SENDTOBACK;
 	m_pTBButtons[1].iString = IDS_TTTSENDTOBACK;		
-	VERIFY(m_Buttons.AddButtons(1,&m_pTBButtons[1]));		
+	VERIFY(m_Buttons.AddButtons(1,&m_pTBButtons[1]));
 
 	m_pTBButtons[2].fsState = TBSTATE_ENABLED;
 	m_pTBButtons[2].fsStyle = BYTE(TBSTYLE_BUTTON|TBSTYLE_TOOLTIPS);
 	m_pTBButtons[2].dwData = 0;
 	m_pTBButtons[2].iBitmap = 2;
 	m_pTBButtons[2].idCommand = ID_MOVEZFRONTBY1;
-	m_pTBButtons[2].iString = 0;		
+	m_pTBButtons[2].iString = IDS_ZMOVEUP;		
 	VERIFY(m_Buttons.AddButtons(1,&m_pTBButtons[2]));		
 
 	m_pTBButtons[3].fsState = TBSTATE_ENABLED;
 	m_pTBButtons[3].fsStyle = BYTE(TBSTYLE_BUTTON|TBSTYLE_TOOLTIPS);
 	m_pTBButtons[3].dwData = 0;
 	m_pTBButtons[3].iBitmap = 3;
-	m_pTBButtons[3].idCommand = ID_SENDTOFRONT;
-	m_pTBButtons[3].iString = IDS_TTTSENDTOBACK;		
+	m_pTBButtons[3].idCommand = ID_MOVEZBACKBY1;
+	m_pTBButtons[3].iString = IDS_ZMOVEDOWN;		
 	VERIFY(m_Buttons.AddButtons(1,&m_pTBButtons[3]));		
 
 }

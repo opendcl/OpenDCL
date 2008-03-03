@@ -301,7 +301,6 @@ protected:
 };
 
 
-
 IMPLEMENT_SERIAL(CPictureObject, CObject, 1)
 
 CPictureObject::CPictureObject()
@@ -324,16 +323,22 @@ CPictureObject::CPictureObject( UINT nID, LPCTSTR szFile, bool bApplyMask /*= fa
 	LoadFile( szFile, bApplyMask );
 }
 
+CPictureObject::CPictureObject( const CPictureObject& _Src )
+: mnID( _Src.mnID )
+{
+	m_hPicture.SetPictureDispatch( _Src.GetPictureDisp() );
+	CalcLogicalSize();
+}
+
 CPictureObject::~CPictureObject()
 {
 }
 
 //static
-CPictureObject* CPictureObject::CreatePictureObject(short nID, LPPICTUREDISP NewPicture)
+CPictureObject* CPictureObject::CreatePictureObject( short nID, LPPICTUREDISP pPicDisp )
 {
-	//create new picture object
-	CPictureObject *pPicture = new CPictureObject( nID );
-	pPicture->m_hPicture.SetPictureDispatch(NewPicture);
+	CPictureObject* pPicture = new CPictureObject( nID );
+	pPicture->m_hPicture.SetPictureDispatch( pPicDisp );
 	pPicture->CalcLogicalSize();
 	return pPicture;
 }
@@ -344,7 +349,7 @@ void CPictureObject::Clear()
 		m_hPicture.m_pPict->Release();
 }
 
-LPDISPATCH CPictureObject::GetPictureDisp() const
+LPPICTUREDISP CPictureObject::GetPictureDisp() const
 {
 	if( !m_hPicture.m_pPict )
 		return NULL;
@@ -921,7 +926,7 @@ BOOL CPictureObject::ExchangePersistentProp(CArchive& ar,
 	return TRUE;
 }
 
-void CPictureObject::Render(CDC *pdc, int nPicLeft, int nPicTop, CRect &rcThis, bool bAutoSize)
+void CPictureObject::Render( CDC *pdc, int nPicLeft, int nPicTop, CRect &rcThis, bool bAutoSize ) const
 {
 	// get width and height of picture
 	long hmWidth;
@@ -946,8 +951,8 @@ void CPictureObject::Render(CDC *pdc, int nPicLeft, int nPicTop, CRect &rcThis, 
 		nPicLeft = 0;
 	}
 
-	if (m_hPicture.GetType() == PICTYPE_METAFILE ||
-		m_hPicture.GetType() == PICTYPE_ENHMETAFILE)
+	if( const_cast< CPictureObject* >(this)->m_hPicture.GetType() == PICTYPE_METAFILE ||
+			const_cast< CPictureObject* >(this)->m_hPicture.GetType() == PICTYPE_ENHMETAFILE)
 	{
 		CRect rcCell = CalcFitRect(nPicWidth, nPicHeight,rcThis.Width(), rcThis.Height());
 

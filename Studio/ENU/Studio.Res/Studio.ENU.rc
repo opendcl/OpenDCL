@@ -509,7 +509,7 @@ BEGIN
 END
 
 IDD_STUDIODIALOGOBJECT DIALOGEX 0, 0, 81, 17
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_CHILD | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
@@ -1031,8 +1031,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 5,0,0,4
- PRODUCTVERSION 5,0,0,4
+ FILEVERSION 5,0,0,7
+ PRODUCTVERSION 5,0,0,7
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1049,13 +1049,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL Studio Resources - English"
-            VALUE "FileVersion", "5, 0, 0, 4"
+            VALUE "FileVersion", "5, 0, 0, 7"
             VALUE "InternalName", "OpenDCL.Editor"
             VALUE "LegalCopyright", "Copyright © 2008 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "Studio.Res.dll"
             VALUE "ProductName", "OpenDCL Studio"
-            VALUE "ProductVersion", "5, 0, 0, 4"
+            VALUE "ProductVersion", "5, 0, 0, 7"
         END
     END
     BLOCK "VarFileInfo"
@@ -1134,10 +1134,10 @@ END
 
 IDR_ZTABORDER TOOLBAR  16, 15
 BEGIN
+    BUTTON      ID_SENDTOFRONT
     BUTTON      ID_SENDTOBACK
     BUTTON      ID_MOVEZBACKBY1
     BUTTON      ID_MOVEZFRONTBY1
-    BUTTON      ID_SENDTOFRONT
 END
 
 IDR_TOOLBOX TOOLBAR  21, 21
@@ -1437,7 +1437,7 @@ STRINGTABLE
 BEGIN
     AFX_IDS_SCRESTORE       "Restore the window to normal size"
     AFX_IDS_SCTASKLIST      "Activate Task List"
-    AFX_IDS_MDICHILD        "Activate this window"
+    AFX_IDS_MDICHILD        "Indeterminate"
 END
 
 STRINGTABLE 
@@ -1830,9 +1830,10 @@ STRINGTABLE
 BEGIN
     IDS_SPLITTERSTYLE_0     "0 - Raised"
     IDS_SPLITTERSTYLE_1     "1 - Double Raised"
-    IDS_SPLITTERSTYLE_2     "2 - Sunken"
+    IDS_SPLITTERSTYLE_2     "2 - Etched"
     IDS_SPLITTERSTYLE_3     "3 - Flat"
-    IDS_SPLITTERSTYLE_4     "2 - Sunken"
+    IDS_SPLITTERSTYLE_4     "4 - Sunken"
+    IDS_SPLITTERSTYLE_5     "5 - Bump"
 END
 
 STRINGTABLE 
@@ -2363,6 +2364,13 @@ BEGIN
     IDS_COLOR_PALETURQUOISE "Dark Blue"
     IDS_COLOR_PALEBLUE      "Indigo"
     IDS_COLOR_LAVENDER      "Dark Gray"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_CHECKSTATE_0        "Unchecked"
+    IDS_CHECKSTATE_1        "Checked"
+    IDS_CHECKSTATE_2        "Indeterminate"
 END
 
 #endif    // English (U.S.) resources

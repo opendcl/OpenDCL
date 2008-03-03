@@ -236,10 +236,11 @@ void CArxAxContainerCtrl::FireAxEvent(UINT idCtrl, const CPropertyObject* pProp,
 								TYPEATTR *TheAttr;
 								TheInfo->GetTypeAttr(&TheAttr);
 
-								// Get the CArxControlObject
-								GetTemplate()->GetOwnerProject();
-								TOleControlPtr pOleObject = pProject->GetOleObject(TheAttr->guid);
-								pRB->resval.rlname[0] = (DWORD_PTR)(COleControlObject*)pOleObject;
+								IUnknown* pUnknown = NULL;
+								if( SUCCEEDED(pDisp->QueryInterface( &pUnknown )) )
+									theArxWorkspace.AddUnknown( pUnknown );
+								pRB->resval.rlname[0] = (LONG_PTR)pUnknown;
+								pRB->resval.rlname[1] = odcl::ptrIUnknown;
 
 								// Build up the linked list
 								// Remember that pRBList still points
@@ -346,7 +347,7 @@ CString LongToA(long lValue)
 	if (stat == RTNORM)
 		return sReturn;	
 
-	return "";
+	return _T("");
 }
 
 //*****************************************************************************
@@ -582,9 +583,9 @@ CString acedVarToString(VARIANT *pVarGet)
 	{
 	case VT_UI1:
 		if (pVarGet->bVal == 1)
-			return "1";
+			return _T("1");
 		else
-			return "";
+			return _T("");
 		break;
 	case VT_I2:			
 		return LongToA(pVarGet->iVal);
@@ -621,9 +622,9 @@ CString acedVarToString(VARIANT *pVarGet)
 	case VT_BOOL:			
 		{
 			if (pVarGet->boolVal == 1)
-				return "t";
+				return _T("t");
 			else
-				return "nil";
+				return _T("nil");
 			break;
 		}
 	case VT_I2|VT_BYREF:			
@@ -632,9 +633,9 @@ CString acedVarToString(VARIANT *pVarGet)
 	case VT_UI1|VT_BYREF:
 		{
 			if (*pVarGet->pbVal == 1)
-				return "1";
+				return _T("1");
 			else
-				return "";
+				return _T("");
 			break;
 		}
 	case VT_I4|VT_BYREF:
@@ -661,7 +662,7 @@ CString acedVarToString(VARIANT *pVarGet)
 			break;
 		}
 	case VT_DISPATCH|VT_BYREF:
-		return "VT_DISPATCH|VT_BYREF";
+		return _T("VT_DISPATCH|VT_BYREF");
 		break;
 	case VT_ERROR|VT_BYREF:
 		return LongToA(*pVarGet->pscode);
@@ -669,21 +670,21 @@ CString acedVarToString(VARIANT *pVarGet)
 	case VT_BOOL|VT_BYREF:
 		{
 			if (*pVarGet->pboolVal == 1)
-				return "t";
+				return _T("t");
 			else
-				return "nil";
+				return _T("nil");
 		}
 		break;
 	case VT_VARIANT|VT_BYREF:
-		return "VT_VARIANT|VT_BYREF";
+		return _T("VT_VARIANT|VT_BYREF");
 		break;
 	case VT_UNKNOWN|VT_BYREF:
-		return "VT_UNKNOWN|VT_BYREF";
+		return _T("VT_UNKNOWN|VT_BYREF");
 		break;
 
 	default:
-		return "nil";
+		return _T("nil");
 		break;
 	}	
-	return "nil";
+	return _T("nil");
 }

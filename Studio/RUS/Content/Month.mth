@@ -1,0 +1,156 @@
+[Method]
+GetCurSel
+[Function]
+dcl_Month_GetCurSel
+[Desc]
+This method returns the currently selected date.
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
+
+
+[Method]
+GetMonthRangeStart
+[Function]
+dcl_Month_GetMonthRangeStart
+[Desc]
+This method gets the lowest allowable date limit of the MonthCalender.
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
+
+
+[Method]
+GetMonthRangeEnd
+[Function]
+dcl_Month_GetMonthRangeEnd
+[Desc]
+This method gets the largest allowable date limit of the MonthCalender.
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
+
+
+[Method]
+GetRangeStart
+[Function]
+dcl_Month_GetRangeStart
+[Desc]
+This method gets the current minimum dates set in the MonthCalender.
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
+
+
+[Method]
+GetRangeEnd
+[Function]
+dcl_Month_GetRangeEnd
+[Desc]
+This method gets the current maximum dates set in the MonthCalender.
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
+
+
+[Method]
+GetSelRangeStart
+[Function]
+dcl_Month_GetSelRangeStart
+[Desc]
+This method gets the lowest selected date of the MonthCalender.
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
+
+
+[Method]
+GetSelRangeEnd
+[Function]
+dcl_Month_GetSelRangeEnd
+[Desc]
+This method gets the highest selected date of the MonthCalender.
+[Arguments Return] as List (Year Month Day)
+<CONTROL>
+
+
+[Method]
+SetCurSel
+[Function]
+dcl_Month_SetCurSel
+[Desc]
+This method sets the currently selected date for a MonthCalender.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+\par\tab Year
+[as Integer]
+\par\tab Month
+[as Integer]
+\par\tab Day
+[as Integer]
+[End List]
+
+
+[Method]
+SetRange
+[Function]
+dcl_Month_SetRange
+[Desc]
+This method sets the lowest and highest allowable dates for the MonthCalender.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+\par\tab LowerYear
+[as Integer]
+\par\tab Month
+[as Integer]
+\par\tab Day
+[as Integer]
+[End List]
+\par\tab 
+[Begin List]
+\par\tab HigherYear
+[as Integer]
+\par\tab Month
+[as Integer]
+\par\tab Day
+[as Integer]
+[End List]
+
+
+[Method]
+SetSelRange
+[Function]
+dcl_Month_SetSelRange
+[Desc]
+This method sets the selection for the MonthCalender to the indicated date range.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+\par\tab LowerYear
+[as Integer]
+\par\tab Month
+[as Integer]
+\par\tab Day
+[as Integer]
+[End List]
+\par\tab 
+[Begin List]
+\par\tab HigherYear
+[as Integer]
+\par\tab Month
+[as Integer]
+\par\tab Day
+[as Integer]
+[End List]
+
+
+[Method]
+GetToday
+[Function]
+dcl_Month_GetToday
+[Desc]
+This method returns today’s date.
+[Arguments Return] as List
+<CONTROL>
+
+
+[End of File]

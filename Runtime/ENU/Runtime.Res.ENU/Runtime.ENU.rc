@@ -91,8 +91,8 @@ BEGIN
 END
 
 IDD_TABPAGE DIALOGEX 0, 0, 120, 80
-STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
-EXSTYLE WS_EX_TRANSPARENT
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+EXSTYLE WS_EX_TRANSPARENT | WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
 END
@@ -132,8 +132,8 @@ IDI_PRINTER             ICON                    "Res\\Printer.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 5,0,0,4
- PRODUCTVERSION 5,0,0,4
+ FILEVERSION 5,0,0,7
+ PRODUCTVERSION 5,0,0,7
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -150,13 +150,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL Runtime Resources - English"
-            VALUE "FileVersion", "5, 0, 0, 4"
+            VALUE "FileVersion", "5, 0, 0, 7"
             VALUE "InternalName", "OpenDCL.Runtime"
             VALUE "LegalCopyright", "Copyright © 2008 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "Runtime.Res.dll"
             VALUE "ProductName", "OpenDCL Runtime"
-            VALUE "ProductVersion", "5, 0, 0, 4"
+            VALUE "ProductVersion", "5, 0, 0, 7"
         END
     END
     BLOCK "VarFileInfo"

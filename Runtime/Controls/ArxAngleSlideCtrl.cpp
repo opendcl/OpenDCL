@@ -30,6 +30,12 @@ bool CArxAngleSlideCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
+void CArxAngleSlideCtrl::PostMessageToParent(const int nTBCode) const
+{
+	__super::PostMessageToParent( nTBCode );
+	InvokeMethodInt( mpTemplate->GetStringProperty( Prop::EventScroll ), GetPos(), IsAsyncEvents() );
+}
+
 
 BEGIN_MESSAGE_MAP(CArxAngleSlideCtrl, CAngleSlideCtrl)
 	ON_NOTIFY_REFLECT(NM_OUTOFMEMORY, OnOutofmemory)
@@ -61,10 +67,4 @@ void CArxAngleSlideCtrl::OnMouseMove(UINT nFlags, CPoint point)
 												 point.x,
 												 point.y,
 												 IsAsyncEvents());
-}
-
-void CArxAngleSlideCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
-{
-	__super::OnHScroll(nSBCode, nPos, pScrollBar);
-	InvokeMethodInt( mpTemplate->GetStringProperty( Prop::EventScroll ), nPos, IsAsyncEvents() );
 }

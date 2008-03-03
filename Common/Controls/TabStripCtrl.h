@@ -18,7 +18,7 @@
 
 class CTabStripCtrl : public CTabCtrl, public CDialogControl
 {
-	CAcadColorService mAcadColorService;
+	CAcadColorService mColorService;
 
 // Construction
 public:
@@ -34,7 +34,7 @@ public:
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
 	virtual bool OnApplyToolTip( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 // Interface
 public:

@@ -3,14 +3,16 @@
 
 #pragma once
 
-#include "ListBoxCtrl.h"
+#include "DialogControl.h"
+#include "AcadColorService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // COptionListCtrl window
 
-class COptionListCtrl : public CListBoxCtrl
+class COptionListCtrl : public CListBox, public CDialogControl
 {
+	CAcadColorService mColorService;
 	int mnRowHeight;
 	CImageList mImageList;
 
@@ -21,24 +23,27 @@ public:
 
 // DialogControl Interface
 public:
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
+	virtual bool ApplyPropertiesEnum();
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 // Operations
 public:
 	void ResetTooltips();
 
-// Overrides
-protected:
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-
-// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 
+	virtual void PostNcDestroy();
+	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);	
+	afx_msg void OnLbnSelchange();
+	afx_msg void OnKillFocus(CWnd* pNewWnd);
 };

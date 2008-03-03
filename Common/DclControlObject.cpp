@@ -629,6 +629,32 @@ void CDclControlObject::Serialize(CArchive& ar)
 					continue;
 				}
 				break;
+			case CtlCheckBox:
+				switch( nID )
+				{
+				case Prop::Value:
+					if( (*iterAt)->GetType() == PropBool )
+					{
+						bool bChecked = (*iterAt)->GetBooleanValue();
+						(*iterAt)->SetType( PropLong );
+						(*iterAt)->SetLongValue( bChecked? 1 : 0 );
+					}
+					break;
+				}
+				break;
+			case CtlOptionButton:
+				switch( nID )
+				{
+				case Prop::Value:
+					if( (*iterAt)->GetType() == PropBool )
+					{
+						bool bChecked = (*iterAt)->GetBooleanValue();
+						(*iterAt)->SetType( PropLong );
+						(*iterAt)->SetLongValue( bChecked? 1 : 0 );
+					}
+					break;
+				}
+				break;
 			case _CtlForm:
 				if( mpOwner && mpOwner->GetParentForm() )
 				{

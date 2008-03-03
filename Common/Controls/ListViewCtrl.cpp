@@ -338,6 +338,27 @@ bool CListViewCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 	return true;
 }
 
+DROPEFFECT CListViewCtrl::OnBeginDrag( const CPoint& point, COleDataSource& SourceData )
+{
+	DROPEFFECT dwEffect = __super::OnBeginDrag( point, SourceData );
+	UINT nFlags = 0;
+	int idxItem = HitTest( point, &nFlags );
+	if( idxItem < 0 )
+		return dwEffect;
+	CString sText = GetItemText( idxItem, 0 );
+	if( sText.IsEmpty() )
+		return dwEffect;
+	CStringA sTextA( sText );
+	SIZE_T cchText = sTextA.GetLength() + 1;
+	HGLOBAL hData = GlobalAlloc( GHND, cchText );
+	if( !hData )
+		return dwEffect;
+	lstrcpynA( (char*)GlobalLock( hData ), sTextA, cchText );
+	GlobalUnlock( hData );
+	SourceData.CacheGlobalData( CF_TEXT, hData );
+	return (dwEffect | DROPEFFECT_MOVE | DROPEFFECT_COPY);
+}
+
 
 void CListViewCtrl::SetItemImage( int nRow, int nCol, int nImage)  
 {
@@ -664,9 +685,7 @@ BOOL CListViewCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CListViewCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
-	if( !IsWindowEnabled() )
-		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	return mColorService.CtlColor( pDC, nCtlColor );
 }
 
 void CListViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)

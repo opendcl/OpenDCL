@@ -239,17 +239,14 @@ bool CDialogObject::OnApplyMinMaxSize( TPropertyPtr pProp )
 	mnMinHeight = szMin.cy;
 	mnMaxWidth = szMax.cx;
 	mnMaxHeight = szMax.cy;
-	if( mpSourceForm->UsesClientRect() )
-	{
-		if( mnMinWidth > 0 )
-			mnMinWidth += mnNCWidth;
-		if( mnMinHeight > 0 )
-			mnMinHeight += mnNCHeight;
-		if( mnMaxWidth > 0 )
-			mnMaxWidth += mnNCWidth;
-		if( mnMaxHeight > 0 )
-			mnMaxHeight += mnNCHeight;
-	}
+	if( mnMinWidth > 0 )
+		mnMinWidth += mnNCWidth;
+	if( mnMinHeight > 0 )
+		mnMinHeight += mnNCHeight;
+	if( mnMaxWidth > 0 )
+		mnMaxWidth += mnNCWidth;
+	if( mnMaxHeight > 0 )
+		mnMaxHeight += mnNCHeight;
 	return true;
 }
 
@@ -258,9 +255,12 @@ bool CDialogObject::OnApplyIcon( TPropertyPtr pProp )
 	DestroyIcon( mpControlWnd->SetIcon( NULL, FALSE ) );
 	CPictureObject* pPicture = mpSourceForm->GetProject()->FindPicture( pProp->GetLongValue() );
 	if( pPicture )
+	{
+		mpControlWnd->ModifyStyle( 0, WS_SYSMENU, SWP_FRAMECHANGED );
 		mpControlWnd->SetIcon( pPicture->CloneIcon(), FALSE );
-	else
-		mpControlWnd->SetIcon( CopyIcon( AfxGetApp()->GetMainWnd()->GetIcon( FALSE ) ), FALSE );
+	}
+	//else
+	//	mpControlWnd->SetIcon( CopyIcon( AfxGetMainWnd()->GetIcon( FALSE ) ), FALSE );
 	OnFrameChanged();
 	return true;
 }

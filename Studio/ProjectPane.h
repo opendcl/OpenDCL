@@ -50,6 +50,7 @@ public:
 	void SetAutoLispFilename( LPCTSTR pszLispFilename );
 	void SetPassword( LPCTSTR pszPassword );
 	void OnActivateProject( TStudioProjectPtr pProject = NULL );
+	void OnActivateForm( TDclFormPtr pForm = NULL );
 	TStudioProjectPtr GetProject() const { return mpProject; }
 
 // Operations

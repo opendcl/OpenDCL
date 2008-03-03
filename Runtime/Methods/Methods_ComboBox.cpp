@@ -8,7 +8,7 @@
 #include "ArxLineweightComboBoxCtrl.h"
 #include "ArxFolderComboCtrl.h"
 #include "ControlTypes.h"
-#include "Workspace.h"
+#include "ArxWorkspace.h"
 #include "Resource.h"
 
 
@@ -440,7 +440,7 @@ ADSRESULT ComboBox::GetItemData()
 
 	DWORD_PTR dwData = pCtrl->GetItemData( nItem );
 	if( dwData != CB_ERR  )
-		acedRetHandle( dwData );
+		theArxWorkspace.RetHandle( dwData );
 	return RSRSLT;
 }
 

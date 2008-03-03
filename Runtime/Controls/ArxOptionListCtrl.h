@@ -32,7 +32,7 @@ protected:
 
 // Generated message map functions
 protected:
-	afx_msg void OnSelchange();
+	afx_msg void OnLbnSelchange();
 	afx_msg void OnDblclk();
 	afx_msg void OnKillfocus();
 	afx_msg void OnSetfocus();

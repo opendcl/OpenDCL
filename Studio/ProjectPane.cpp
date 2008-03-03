@@ -337,6 +337,15 @@ void CProjectPane::OnActivateProject(TStudioProjectPtr pProject /*= NULL*/)
 	mhtiPassword = GetTreeCtrl().InsertItem(sText, mhtiPasswordParent);
 }
 
+void CProjectPane::OnActivateForm( TDclFormPtr pForm /*= NULL*/ )
+{
+	if( pForm )
+	{
+		GetTreeCtrl().EnsureVisible( pForm->m_htiTreeItem );
+		GetTreeCtrl().SelectItem( pForm->m_htiTreeItem );
+	}
+}
+
 void CProjectPane::AddActiveXFileTree(CString sFileName)
 {
 	if (sFileName.GetLength() == 0)

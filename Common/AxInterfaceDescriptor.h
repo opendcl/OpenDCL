@@ -93,6 +93,7 @@ public:
 	CString GetAxMethodParamName(size_t nIndex, int nParam) const;
 	CString GetAxMethodParamVarType(size_t nIndex, int nParam) const;
 	VARTYPE GetAxMethodReturnType(size_t nIndex) const;
+	CString GetAxMethodReturnTypeDisplayName( size_t nIndex ) const;
 	const AxMethodDescriptor* GetAxMethod(size_t nIndex) const;
 
 

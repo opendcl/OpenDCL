@@ -117,6 +117,12 @@ TDclFormPtr CStudioFrame::AddNewDclFormView( FormType nType )
 	TDclFormPtr pNewDclForm = pProject->AddForm( nType );
 	if( !pNewDclForm )
 		return NULL;
+	UINT nGridSpacing = theApp.GetGridSpacing();
+	TDclControlPtr pFormProps = pNewDclForm->GetControlProperties();
+	LONG X = pFormProps->GetLongProperty( Prop::Width ) + (nGridSpacing / 2);
+	LONG Y = pFormProps->GetLongProperty( Prop::Height ) + (nGridSpacing / 2);
+	pFormProps->SetLongProperty( Prop::Width, X - (X % nGridSpacing) );
+	pFormProps->SetLongProperty( Prop::Height, Y - (Y % nGridSpacing) );
 	CProjectPane* pProjTree = theStudioWorkspace.GetProjectPane();
 	if( pProjTree )
 		pProjTree->AddFormToTree( pNewDclForm, true ); //add the new dcl form to the project tree
@@ -153,7 +159,7 @@ CDclFormView* CStudioFrame::OpenDclFormView( TDclFormPtr pDclForm )
 		RecalcLayout();
 		pFormView->UpdateWindow();
 	}
-	SetActiveView( pFormView );
+	theStudioWorkspace.ActivateDlgObject( pFormView->GetDialogObject() );
 	pFormView->GetParentFrame()->ActivateFrame();
 	return pFormView;
 }
@@ -183,8 +189,8 @@ int CStudioFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;      // fail to create
 	}
 	
-	if (!m_wndMainToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP
-			| CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
+	if (!m_wndMainToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_ALIGN_TOP
+			| CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
 			!m_wndMainToolBar.LoadToolBar(IDR_MAINFRAME))
 	{
 		TRACE0("Failed to create main toolbar\n");
@@ -543,7 +549,7 @@ void CStudioFrame::OnUndoButtonDropdown()
 	}
 	CRect rc;
 	m_wndMainToolBar.GetWindowRect(&rc);
-	UINT ctUndo = menu.TrackPopupMenu(TPM_RETURNCMD | TPM_NONOTIFY | TPM_LEFTALIGN | TPM_LEFTBUTTON, rc.left + 155, rc.bottom, this);
+	UINT ctUndo = menu.TrackPopupMenu(TPM_RETURNCMD | TPM_NONOTIFY | TPM_LEFTALIGN | TPM_LEFTBUTTON, rc.left + 150, rc.bottom, this);
 	if( ctUndo == 0 )
 		return;
 	((CStudioUndoManager*)pUndoManager)->Undo( ctUndo );
@@ -558,5 +564,5 @@ void CStudioFrame::OnAddFormButtonDropdown()
 	
 	CRect rc;
 	m_wndMainToolBar.GetWindowRect(&rc);
-	pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, rc.left + 200, rc.bottom, this);
+	pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, rc.left + 194, rc.bottom, this);
 }

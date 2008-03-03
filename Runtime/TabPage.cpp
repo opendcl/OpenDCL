@@ -10,6 +10,7 @@
 
 BEGIN_MESSAGE_MAP(CTabPage, CDialog)
 	ON_WM_SIZE()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 CTabPage::CTabPage( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId )
@@ -55,4 +56,25 @@ void CTabPage::OnSize(UINT nType, int cx, int cy)
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );
 	mpControlPane->RecalcLayout();
+}
+
+BOOL CTabPage::OnEraseBkgnd(CDC* pDC)
+{
+	if( mpControlPane->GetThemeHelper() )
+	{
+		TDclFormPtr pParentForm = mpSourceForm->GetParentForm();
+		if( pParentForm )
+		{
+			TDclControlPtr pTabStrip = pParentForm->FindFirstControlOfType( CtlTabStrip );
+			if( pTabStrip && pTabStrip->GetBooleanProperty( Prop::UseVisualStyle ) )
+			{
+				CRect rcClient;
+				GetClientRect( &rcClient );
+				pDC->FillSolidRect( &rcClient, GetSysColor( COLOR_WINDOW ) );
+				return TRUE;
+			}
+		}
+	}
+	//return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }

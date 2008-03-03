@@ -1,0 +1,171 @@
+[Method]
+Navigate
+[Function]
+dcl_Html_Navigate
+[Desc]
+This method loads a web page into the control (e.g. “https://sourceforge.net/projects/opendcl/” or “file://c:/temp”).
+[Arguments]
+<CONTROL>
+\par\tab URL
+[as String]
+
+
+[Method]
+Refresh
+[Function]
+dcl_Html_Refresh
+[Desc]
+This method forces the HtmlControl to reload the current page.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+GoBack
+[Function]
+dcl_Html_GoBack
+[Desc]
+This method loads the previous page in the history list.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+GoForward
+[Function]
+dcl_Html_GoForward
+[Desc]
+This method loads the next page in the history list.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+GoHome
+[Function]
+dcl_Html_GoHome
+[Desc]
+This method loads the default home page.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+GoSearch
+[Function]
+dcl_Html_GoSearch
+[Desc]
+This method loads the default search page.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+GetLocationName
+[Function]
+dcl_Html_GetLocationName
+[Desc]
+This method retrieves the name of the current page.
+[Arguments Return] as String
+<CONTROL>
+
+
+[Method]
+GetLocationURL
+[Function]
+dcl_Html_GetLocationURL
+[Desc]
+This method retrieves the URL of the current page.
+[Arguments Return] as String
+<CONTROL>
+
+
+[Method]
+GetOffline
+[Function]
+dcl_Html_GetOffline
+[Desc]
+This method will return a T or nil indicating whether the browser is currently online (nil) or offline (T).
+[Arguments Return] as Boolean T or Nil
+<CONTROL>
+
+
+[Method]
+SetOffline
+[Function]
+dcl_Html_SetOffline
+[Desc]
+This method sets the browser to online (nil) or offline (T) mode.
+[Arguments]
+<CONTROL>
+\par\tab Offline
+[as Boolean T or Nil]
+
+
+[Method]
+GetBusy
+[Function]
+dcl_Html_GetBusy
+[Desc]
+This method checks whether thr browser is busy waiting for or loading a web page.
+[Arguments Return] as Boolean T or Nil
+<CONTROL>
+
+
+[Method]
+GetFullName
+[Function]
+dcl_Html_GetFullName
+[Desc]
+This method retrieves the complete name (including path) of the current page.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+UpdateHtmlCode
+[Function]
+dcl_Html_UpdateHtmlCode
+[Desc]
+This method replaces the entire HTML code for the current page. Note that this method fails when no document is loaded.
+[Arguments]
+<CONTROL>
+\par\tab NewHtmlCode
+[as String]
+
+
+[Method]
+ReplaceText
+[Function]
+dcl_Html_ReplaceText
+[Desc]
+This method will search and replace a portion of the current page's HTML code.
+[Arguments]
+<CONTROL>
+\par\tab OldHtmlCode
+[as String]
+\par\tab NewHtmlCode
+[as String]
+
+
+[Method]
+GetHtmlDocument
+[Function]
+dcl_Html_GetHtmlDocument
+[Desc]
+This method will retrieve the body of the current page. It will not retrieve document headers.
+[Arguments Return] as String
+<CONTROL>
+
+
+[Method]
+Stop
+[Function]
+dcl_Html_Stop
+[Desc]
+This method forces the control to cancel its current activity.
+[Arguments]
+<CONTROL>
+
+
+[End of File]

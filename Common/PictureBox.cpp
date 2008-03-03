@@ -73,6 +73,133 @@ static CRect CalcFitRect(int nPicWidth, int nPicHeight, int nCtrlWidth, int nCtr
 	return rcCell;
 }
 
+static void DrawTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, int y, int nWidth, int nHeight, COLORREF crTransparent )
+{
+	CDC dcImage, dcTrans;
+
+	// Create two memory dcs for the image and the mask
+	dcImage.CreateCompatibleDC(pDC);
+	dcTrans.CreateCompatibleDC(pDC);
+
+	// Select the image into the appropriate dc
+	CBitmap* pOldBitmapImage = dcImage.SelectObject(pBitmap);
+
+	// Create the mask bitmap
+	CBitmap bitmapTrans;
+	bitmapTrans.CreateBitmap(nWidth, nHeight, 1, 1, NULL);
+
+	// Select the mask bitmap into the appropriate dc
+	CBitmap* pOldBitmapTrans = dcTrans.SelectObject(&bitmapTrans);
+
+	// Build mask based on transparent colour
+	dcImage.SetBkColor(crTransparent);
+	dcTrans.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, SRCCOPY);
+
+	// Do the work - True Mask method - cool if not actual display
+	pDC->BitBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, SRCINVERT);
+	pDC->BitBlt(x, y, nWidth, nHeight, &dcTrans, 0, 0, SRCAND);
+	pDC->BitBlt(x, y, nWidth, nHeight, &dcImage, 0, 0, SRCINVERT);
+
+	// Restore settings
+	dcImage.SelectObject(pOldBitmapImage);
+	dcTrans.SelectObject(pOldBitmapTrans);
+}
+
+static void DrawDisabledTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, int y, int nWidth, int nHeight, COLORREF crTransparent )
+{
+	pDC->SaveDC();
+	CDC dcImage, dcTrans;
+
+	// Create two memory dcs for the image and the mask
+	dcImage.CreateCompatibleDC(pDC);
+	dcTrans.CreateCompatibleDC(pDC);
+
+	// Select the image into the appropriate dc
+	CBitmap* pOldBitmapImage = dcImage.SelectObject(pBitmap);
+
+	// Create the mask bitmap
+	CBitmap bitmapTrans;
+	bitmapTrans.CreateBitmap(nWidth, nHeight, 1, 1, NULL);
+
+	// Select the mask bitmap into the appropriate dc
+	CBitmap* pOldBitmapTrans = dcTrans.SelectObject(&bitmapTrans);
+
+	// Build mask based on transparent colour
+	dcImage.SetBkColor(crTransparent);
+	dcTrans.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, SRCCOPY);
+
+	// Create monochrome DC
+	CDC dcBW;
+	dcBW.CreateCompatibleDC(pDC);
+
+	// Create a monochrome DIB section with a black and white palette
+	struct
+	{
+		BITMAPINFOHEADER	bmiHeader;
+		RGBQUAD				bmiColors[2];
+	} RGBBWBITMAPINFO =
+	{
+		{	// a BITMAPINFOHEADER
+			sizeof(BITMAPINFOHEADER),	// biSize 
+			nWidth, 					// biWidth; 
+			nHeight,					// biHeight; 
+			1,							// biPlanes; 
+			1,							// biBitCount 
+			BI_RGB, 					// biCompression; 
+			0,							// biSizeImage; 
+			0,							// biXPelsPerMeter; 
+			0,							// biYPelsPerMeter; 
+			0,							// biClrUsed; 
+			0							// biClrImportant; 
+		},
+		{
+			{ 0xA0, 0xA0, 0xA0, 0x00 }, //gray color for anything that's not background color
+			{ LOBYTE(crTransparent), LOBYTE(crTransparent>>8), LOBYTE(crTransparent>>16), LOBYTE(crTransparent>>24) }
+		}
+	};
+
+	VOID *pbitsBW;
+	HBITMAP hbmBW = CreateDIBSection(dcBW.m_hDC, (LPBITMAPINFO) &RGBBWBITMAPINFO, DIB_RGB_COLORS, &pbitsBW, NULL, 0);
+
+	ASSERT(hbmBW);
+
+	if (hbmBW)
+	{
+		// Attach the monochrome DIB section and the bitmap to the DCs
+		SelectObject(dcBW.m_hDC, hbmBW);
+
+		// BitBlt the bitmap into the monochrome DIB section
+		dcBW.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, SRCCOPY);
+
+		// BitBlt the black bits in the monochrome bitmap into COLOR_3DHILIGHT bits in the destination DC
+		// The magic ROP comes from the Charles Petzold's book
+		CBrush brush;
+		brush.CreateSolidBrush(GetSysColor(COLOR_3DHILIGHT));
+		CBrush* pOldBrush = dcBW.SelectObject(&brush);
+		dcBW.BitBlt(1, 1, nWidth, nHeight, &dcImage, 0, 0, 0xB8074A);
+
+		// BitBlt the black bits in the monochrome bitmap into COLOR_3DSHADOW bits in the destination DC
+		brush.DeleteObject();
+		brush.CreateSolidBrush(GetSysColor(COLOR_3DSHADOW));
+		dcBW.SelectObject(&brush);
+		dcBW.BitBlt(0, 0, nWidth, nHeight, &dcImage, 0, 0, 0xB8074A);
+
+		dcBW.SelectObject(pOldBrush);
+		brush.DeleteObject();
+		DeleteObject(hbmBW);
+	}
+
+	// Do the work - True Mask method - cool if not actual display
+	pDC->BitBlt(x, y, nWidth, nHeight, &dcBW, 0, 0, SRCINVERT);
+	pDC->BitBlt(x, y, nWidth, nHeight, &dcTrans, 0, 0, SRCAND);
+	pDC->BitBlt(x, y, nWidth, nHeight, &dcBW, 0, 0, SRCINVERT);
+
+	// Restore settings
+	dcImage.SelectObject(pOldBitmapImage);
+	dcTrans.SelectObject(pOldBitmapTrans);
+	pDC->RestoreDC(-1);
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CPictureBox
@@ -81,7 +208,6 @@ CPictureBox::CPictureBox()
 : mpPicture( NULL )
 {
 	m_bMouseTracking = FALSE;
-	m_pPictureHolder = NULL;	
 	m_hbmMem = NULL;
 	m_bStretchLoadedPicture = false;
 	m_cxIcon = 16;
@@ -96,7 +222,6 @@ CPictureBox::CPictureBox( CWnd* pParentWnd, UINT nID, const CRect& rcWnd, UINT n
 : mpPicture( NULL )
 {
 	m_bMouseTracking = FALSE;
-	m_pPictureHolder = NULL;	
 	m_hbmMem = NULL;
 	m_bStretchLoadedPicture = false;
 	m_cxIcon = 16;
@@ -106,57 +231,50 @@ CPictureBox::CPictureBox( CWnd* pParentWnd, UINT nID, const CRect& rcWnd, UINT n
 	if( pColorService )
 		pColorService->SetBackgroundColor( RGB(255,255,255) );
 	Create( _T(""), (WS_CHILD | WS_VISIBLE), rcWnd, pParentWnd, nID );
-	CPictureObject* pPic = new CPictureObject( -1 );
-	pPic->LoadResourceIcon( nIconResId );
-	SetPicture( pPic );
+	SetPicture( nIconResId );
 }
 
 CPictureBox::~CPictureBox()
 {
-	if (m_pPictureHolder != NULL)
-	{
-		m_pPictureHolder->Release();
-		m_pPictureHolder = NULL;
-	}
-	if (m_hbmMem != NULL)
-	{
-		DeleteObject(m_hbmMem);
-		m_hbmMem = NULL;
-	}
+	if( m_hbmMem )
+		DeleteObject( m_hbmMem );
 }
 
 void CPictureBox::SetPictureBlank() 
 {
 	mpPicture = NULL;
-}
-
-void CPictureBox::SetPicture( CPictureObject* pPicture )
-{
-	if (mpPicture != NULL)
+	if( m_hbmMem )
 	{
-		mpPicture = NULL;
-		delete mpPicture;
-	}
-	if (m_pPictureHolder)
-	{
-		m_pPictureHolder->Release();
-		m_pPictureHolder = NULL;
-	}
-	if (m_hbmMem != NULL)
-	{
-		DeleteObject(m_hbmMem);
+		DeleteObject( m_hbmMem );
 		m_hbmMem = NULL;
 	}
+}
 
-	mpPicture = pPicture;
+void CPictureBox::SetPicture( const CPictureObject* pPicture )
+{
+	SetPictureBlank();
+	mpPicture = pPicture? new CPictureObject( *pPicture ) : NULL;
+
 	if( mpPicture )
 	{
 		m_cxIcon = mpPicture->GetWidth();
 		m_cyIcon = mpPicture->GetHeight();
 		AutoSize();
 	}
-	else
-		SetPictureBlank();
+
+	CDC *pdc = GetDC();
+	Refresh(pdc);
+	ReleaseDC(pdc);
+}
+
+void CPictureBox::SetPicture( UINT nIconResId )
+{
+	SetPictureBlank();
+	mpPicture = new CPictureObject( -1 );
+	mpPicture->LoadResourceIcon( nIconResId );
+	m_cxIcon = mpPicture->GetWidth();
+	m_cyIcon = mpPicture->GetHeight();
+	AutoSize();
 
 	CDC *pdc = GetDC();
 	Refresh(pdc);
@@ -172,8 +290,6 @@ void CPictureBox::Refresh()
 
 void CPictureBox::Refresh( CDC* pdc )
 {	
-	AutoSize();
-
 	CRect rcCell;	
 	GetClientRect(&rcCell);
 	if( !mColorService.IsBackgroundTransparent() )
@@ -196,11 +312,11 @@ void CPictureBox::Refresh( CDC* pdc )
 		if( PICTYPE_BITMAP == mpPicture->GetPicType() )
 		{			
 			if( IsWindowEnabled() )
-				pdc->DrawState(	rcPic.TopLeft(), CSize( nPicWidth, nPicHeight ),
-												mpPicture->GetBitmap(), DSS_NORMAL, NULL );
+				DrawTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
+															 rcPic.left, rcPic.top, nPicWidth, nPicHeight, RGB(192,192,192) );
 			else
-				pdc->DrawState(	rcPic.TopLeft(), CSize( nPicWidth, nPicHeight ),
-												mpPicture->GetBitmap(), DSS_DISABLED, NULL );
+				DrawDisabledTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
+																			 rcPic.left, rcPic.top, nPicWidth, nPicHeight, RGB(192,192,192) );
 		}
 		else if( PICTYPE_ICON == mpPicture->GetPicType() )
 		{
@@ -251,106 +367,106 @@ void CPictureBox::Refresh( CDC* pdc )
 	CRect rc;
 	rc = rcCell;
 
-	// if the picture holder object has been set
-	// draw the picture holder object	
-	if (m_pPictureHolder != NULL)
-	{
-		// get width and height of picture
-		long hmWidth;
-		long hmHeight;
-		m_pPictureHolder->get_Width(&hmWidth);
-		m_pPictureHolder->get_Height(&hmHeight);
-		
-		// convert himetric to pixels
-		int nPicWidth	= MulDiv(hmWidth, pdc->GetDeviceCaps(LOGPIXELSX), HIMETRIC_INCH);
-		int nPicHeight	= MulDiv(hmHeight, pdc->GetDeviceCaps(LOGPIXELSY), HIMETRIC_INCH);		
-		
-		m_cxIcon = nPicWidth;
-		m_cyIcon = nPicHeight;
-		AutoSize();
-		int nPicLeft = 0;
-		int nPicTop = 0;
-		if (!IsAutoSized())
-		{
-			int nPicLeft = ((rc.Width() - nPicWidth)/2); // Center the picture horizontally
-			int nPicTop = ((rc.Height() - nPicHeight)/2); // Center the picture vertically
-		}
+	//// if the picture holder object has been set
+	//// draw the picture holder object	
+	//if (m_pPictureHolder != NULL)
+	//{
+	//	// get width and height of picture
+	//	long hmWidth;
+	//	long hmHeight;
+	//	m_pPictureHolder->get_Width(&hmWidth);
+	//	m_pPictureHolder->get_Height(&hmHeight);
+	//	
+	//	// convert himetric to pixels
+	//	int nPicWidth	= MulDiv(hmWidth, pdc->GetDeviceCaps(LOGPIXELSX), HIMETRIC_INCH);
+	//	int nPicHeight	= MulDiv(hmHeight, pdc->GetDeviceCaps(LOGPIXELSY), HIMETRIC_INCH);		
+	//	
+	//	m_cxIcon = nPicWidth;
+	//	m_cyIcon = nPicHeight;
+	//	AutoSize();
+	//	int nPicLeft = 0;
+	//	int nPicTop = 0;
+	//	if (!IsAutoSized())
+	//	{
+	//		int nPicLeft = ((rc.Width() - nPicWidth)/2); // Center the picture horizontally
+	//		int nPicTop = ((rc.Height() - nPicHeight)/2); // Center the picture vertically
+	//	}
 
-		SHORT nPicType;
-		m_pPictureHolder->get_Type(&nPicType);
-	
-		if (nPicType == PICTYPE_METAFILE ||
-			nPicType == PICTYPE_ENHMETAFILE)
-		{
-			rcCell = CalcFitRect(nPicWidth, nPicHeight,rcCell.Width(), rcCell.Height());
+	//	SHORT nPicType;
+	//	m_pPictureHolder->get_Type(&nPicType);
+	//
+	//	if (nPicType == PICTYPE_METAFILE ||
+	//		nPicType == PICTYPE_ENHMETAFILE)
+	//	{
+	//		rcCell = CalcFitRect(nPicWidth, nPicHeight,rcCell.Width(), rcCell.Height());
 
-			// display picture using IPicture::Render
-			m_pPictureHolder->Render(pdc->m_hDC, rcCell.left, rcCell.top, rcCell.Width(), rcCell.Height(), 0, hmHeight, hmWidth, -hmHeight, &rc);
-				
-			// display picture using IPicture::Render
-			//m_pPictureHolder->Render(pdc->m_hDC, 0, 0, rcThis.Width(), rcThis.Height(), 0, hmHeight, hmWidth, -hmHeight, &rc);
-		}
-		else if (nPicWidth <= rc.Width() && nPicHeight <= rc.Height() && !m_bStretchLoadedPicture)
-		{
-			// display picture using IPicture::Render
-			m_pPictureHolder->Render(pdc->m_hDC, nPicLeft, nPicTop, nPicWidth, nPicHeight, 0, hmHeight, hmWidth, -hmHeight, &rc);
-		}
-		else if (nPicWidth > rc.Width() || nPicHeight > rc.Height() || m_bStretchLoadedPicture)
-		{
-			double dFactor;
-			double dH;
-			double dW;
-			rcCell = rc;
+	//		// display picture using IPicture::Render
+	//		m_pPictureHolder->Render(pdc->m_hDC, rcCell.left, rcCell.top, rcCell.Width(), rcCell.Height(), 0, hmHeight, hmWidth, -hmHeight, &rc);
+	//			
+	//		// display picture using IPicture::Render
+	//		//m_pPictureHolder->Render(pdc->m_hDC, 0, 0, rcThis.Width(), rcThis.Height(), 0, hmHeight, hmWidth, -hmHeight, &rc);
+	//	}
+	//	else if (nPicWidth <= rc.Width() && nPicHeight <= rc.Height() && !m_bStretchLoadedPicture)
+	//	{
+	//		// display picture using IPicture::Render
+	//		m_pPictureHolder->Render(pdc->m_hDC, nPicLeft, nPicTop, nPicWidth, nPicHeight, 0, hmHeight, hmWidth, -hmHeight, &rc);
+	//	}
+	//	else if (nPicWidth > rc.Width() || nPicHeight > rc.Height() || m_bStretchLoadedPicture)
+	//	{
+	//		double dFactor;
+	//		double dH;
+	//		double dW;
+	//		rcCell = rc;
 
-			dFactor = (double)nPicHeight / (double)nPicWidth;
-			dH = dFactor;
-			dW = 1.0;
+	//		dFactor = (double)nPicHeight / (double)nPicWidth;
+	//		dH = dFactor;
+	//		dW = 1.0;
 
-			int nDrawWidth = int(dW * rc.Width());
-			int nDrawHeight = int(dH * nDrawWidth);
-			
-			// if the calc height is too large
-			if (nDrawHeight > rc.Height())
-			{
-				dFactor = (double)nPicWidth / (double)nPicHeight;
-				dH = 1.0;
-				dW = dFactor;
+	//		int nDrawWidth = int(dW * rc.Width());
+	//		int nDrawHeight = int(dH * nDrawWidth);
+	//		
+	//		// if the calc height is too large
+	//		if (nDrawHeight > rc.Height())
+	//		{
+	//			dFactor = (double)nPicWidth / (double)nPicHeight;
+	//			dH = 1.0;
+	//			dW = dFactor;
 
-				nDrawHeight = int(dH * rc.Height());
-				nDrawWidth = int(dW * nDrawHeight);
+	//			nDrawHeight = int(dH * rc.Height());
+	//			nDrawWidth = int(dW * nDrawHeight);
 
-				rcCell.left = (rc.Width() - nDrawWidth) / 2;
-				rcCell.right = rc.Width() - rcCell.left;
-			}
-			else if (nDrawHeight < rc.Height())
-			{
-				rcCell.top = (rc.Height() - nDrawHeight) / 2;
-				rcCell.bottom = rc.Height() - rcCell.top;
-			}
-			
-			// if the calc width is too large
-			if (nDrawWidth > rc.Width())
-			{
-				dFactor = (double)nPicHeight / (double)nPicWidth;
-				dH = dFactor;
-				dW = 1.0;
+	//			rcCell.left = (rc.Width() - nDrawWidth) / 2;
+	//			rcCell.right = rc.Width() - rcCell.left;
+	//		}
+	//		else if (nDrawHeight < rc.Height())
+	//		{
+	//			rcCell.top = (rc.Height() - nDrawHeight) / 2;
+	//			rcCell.bottom = rc.Height() - rcCell.top;
+	//		}
+	//		
+	//		// if the calc width is too large
+	//		if (nDrawWidth > rc.Width())
+	//		{
+	//			dFactor = (double)nPicHeight / (double)nPicWidth;
+	//			dH = dFactor;
+	//			dW = 1.0;
 
-				nDrawWidth = int(dW * rc.Width());
-				nDrawHeight = int(nDrawWidth * dH);
-				
-				rcCell.left = 1;
-				rcCell.right = rc.Width();
-				rcCell.top = (rc.Height() - nDrawHeight) / 2;
-				rcCell.bottom = rc.Height() - rcCell.top;
-			}
-			m_pPictureHolder->Render(pdc->m_hDC, rcCell.left, rcCell.top, rcCell.Width(), rcCell.Height(), 0, hmHeight, hmWidth, -hmHeight, &rc);
-		}
-		else
-		{
-			// display picture using IPicture::Render
-			m_pPictureHolder->Render(pdc->m_hDC, nPicLeft, nPicTop, nPicWidth, nPicHeight, 0, hmHeight, hmWidth, -hmHeight, &rc);
-		}
-	}
+	//			nDrawWidth = int(dW * rc.Width());
+	//			nDrawHeight = int(nDrawWidth * dH);
+	//			
+	//			rcCell.left = 1;
+	//			rcCell.right = rc.Width();
+	//			rcCell.top = (rc.Height() - nDrawHeight) / 2;
+	//			rcCell.bottom = rc.Height() - rcCell.top;
+	//		}
+	//		m_pPictureHolder->Render(pdc->m_hDC, rcCell.left, rcCell.top, rcCell.Width(), rcCell.Height(), 0, hmHeight, hmWidth, -hmHeight, &rc);
+	//	}
+	//	else
+	//	{
+	//		// display picture using IPicture::Render
+	//		m_pPictureHolder->Render(pdc->m_hDC, nPicLeft, nPicTop, nPicWidth, nPicHeight, 0, hmHeight, hmWidth, -hmHeight, &rc);
+	//	}
+	//}
 }
 
 void CPictureBox::DrawLine(int sX, int sY, int eX, int eY, COLORREF rgb)
@@ -398,8 +514,8 @@ void CPictureBox::DrawArc(int sX, int sY, int eX, int eY, int saX, int saY, int 
 	
 	// then releasing the DC itself
 	::ReleaseDC(m_hWnd, hdc);
-	
 }
+
 void CPictureBox::DrawCircle(int sX, int sY, int eX, int eY, COLORREF rgb)
 {
 	HDC hdc = ::GetDC(m_hWnd);
@@ -419,8 +535,6 @@ void CPictureBox::DrawCircle(int sX, int sY, int eX, int eY, COLORREF rgb)
 	// then releasing the DC itself
 	::ReleaseDC(m_hWnd, hdc);
 }
-
-
 
 void CPictureBox::DrawText(int sX, int sY, COLORREF crFore, COLORREF crBack, CString sText, CString sJustification, int nEnabled)
 {
@@ -518,7 +632,6 @@ void CPictureBox::DrawText(int sX, int sY, COLORREF crFore, COLORREF crBack, CSt
 	::ReleaseDC(m_hWnd, hdc);
 }
 
-
 int CPictureBox::DrawWrappedText(int sX, int sY, int eX, COLORREF crFore, COLORREF crBack, CString sText, CString sJustification)
 {
 	HDC hdc = ::GetDC(m_hWnd);
@@ -592,8 +705,6 @@ void CPictureBox::GetTextExtent(LPCTSTR pszText, CSize& ext)
 	::GetTextExtentPoint32(hdc, pszText, lstrlen( pszText ), &ext);
 	::ReleaseDC(m_hWnd, hdc);
 }
-
-
 
 void CPictureBox::DrawFillRect(int sX, int sY, int eX, int eY, COLORREF rgb)
 {
@@ -727,13 +838,18 @@ void CPictureBox::DrawHatchRect(int sX, int sY, int eX, int eY, COLORREF rgb, in
 }
 
 // This function loads a file into an IStream.
-void CPictureBox::LoadPictureFile(LPCTSTR szFile, bool bStretch)
+bool CPictureBox::LoadPictureFile(LPCTSTR szFile, bool bStretch)
 {
 	m_bStretchLoadedPicture = bStretch;
+	CString sPicFile = theWorkspace.FindFile( szFile );
+	if( sPicFile.IsEmpty() )
+		sPicFile = szFile;
 
 	// open file
-	HANDLE hFile = CreateFile(szFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
+	HANDLE hFile = CreateFile( sPicFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
 	_ASSERTE(INVALID_HANDLE_VALUE != hFile);
+	if( hFile == INVALID_HANDLE_VALUE )
+		return false;
 
 	// get file size
 	DWORD dwFileSize = GetFileSize(hFile, NULL);
@@ -758,26 +874,32 @@ void CPictureBox::LoadPictureFile(LPCTSTR szFile, bool bStretch)
 	// create IStream* from global memory
 	HRESULT hr = CreateStreamOnHGlobal(hGlobal, TRUE, &pstm);
 	_ASSERTE(SUCCEEDED(hr) && pstm);
+	if( !pstm )
+		return false;
 	
 	// Create IPicture from image file
-	if (m_pPictureHolder)
-	{
-		m_pPictureHolder->Release();
-		m_pPictureHolder = NULL;
-		//delete m_pPictureHolder;
-	}
-	hr = ::OleLoadPicture(pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID *)&m_pPictureHolder);
-	_ASSERTE(SUCCEEDED(hr) && m_pPictureHolder);	
+	CComPtr< IPicture > pPicture;
+	hr = ::OleLoadPicture( pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID*)&pPicture );
+	_ASSERTE(SUCCEEDED(hr) && pPicture);	
 	pstm->Release();
+	if( !pPicture )
+		return false;
 
-	mpPicture = NULL;
-	if (m_hbmMem != NULL)
+	CComPtr< IPictureDisp > pPictureDisp;
+	hr = pPicture->QueryInterface( &pPictureDisp );
+	_ASSERTE(SUCCEEDED(hr) && pPictureDisp);	
+	if( !pPictureDisp )
+		return false;
+
+	mpPicture = CPictureObject::CreatePictureObject( -1, pPictureDisp );
+	if( m_hbmMem )
 	{
-		DeleteObject(m_hbmMem);
+		DeleteObject( m_hbmMem );
 		m_hbmMem = NULL;
 	}
 	
 	Refresh();
+	return true;
 }
 
 void CPictureBox::CopyDC() 
@@ -827,7 +949,6 @@ BEGIN_MESSAGE_MAP(CPictureBox, CButton)
 	ON_WM_SIZE()
 	ON_WM_PAINT()
 	ON_WM_CHAR()
-	ON_WM_DESTROY()
 	ON_WM_CTLCOLOR_REFLECT()
 END_MESSAGE_MAP()
 
@@ -888,6 +1009,8 @@ void CPictureBox::OnSize(UINT nType, int cx, int cy)
 void CPictureBox::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
+	if( !GetParent()->IsWindowVisible() )		
+		return;
 
 	//#ifdef USE_MEM_DC
 		//CMemDC pdc(&dc);
@@ -895,16 +1018,9 @@ void CPictureBox::OnPaint()
 		CDC* pdc = &dc;
 	//#endif
 	
-	if (m_hbmMem == NULL)
-	{
-		
-		if (!GetParent()->IsWindowVisible())		
-			return;
-
-		CPictureBox::Refresh(pdc);
-	}
-
-	if (m_hbmMem != NULL)
+	if( !m_hbmMem )
+		Refresh( pdc );
+	else
 	{
 		if (!GetParent()->IsWindowVisible())		
 			return;
@@ -927,18 +1043,9 @@ void CPictureBox::OnPaint()
 
 void CPictureBox::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	if (nChar != 13 && nChar != 10 )
-		__super::OnChar(nChar, nRepCnt, nFlags);
-}
-
-void CPictureBox::OnDestroy() 
-{
-	if (mpPicture != NULL)
-	{
-		mpPicture = NULL;
-		delete mpPicture;
-	}
-	__super::OnDestroy();
+	if (nChar == 13 || nChar == 10 )
+		return;
+	__super::OnChar(nChar, nRepCnt, nFlags);
 }
 
 HBRUSH CPictureBox::CtlColor(CDC* pDC, UINT nCtlColor) 

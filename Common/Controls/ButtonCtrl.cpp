@@ -29,7 +29,7 @@ void CButtonAcadColorService::ResetButtonBackgroundColor() const
 
 CButtonCtrl::CButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
-, mAcadColorService( *this )
+, mColorService( *this )
 {
 	m_bDrawBorder		= TRUE;
 	if( bCreate )

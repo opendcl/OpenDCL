@@ -166,8 +166,6 @@ bool CStudioDialogObject::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess )
 		ShowWindow( SW_SHOW );
 
-	theStudioWorkspace.ActivateDlgObject( this );
-
 	return bSuccess;
 }
 
@@ -415,6 +413,26 @@ void CStudioDialogObject::GetSelectedControls( TDclControlList& SelectedControls
 	}
 }
 
+size_t CStudioDialogObject::CountSelected( bool bIgnoreForm /*= true*/ ) const
+{
+	size_t ctSelected = 0;
+	const TDclControlList& Controls = mpSourceForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
+	{
+		TDclControlPtr pDclControl = *iter;
+		CDialogControl* pDlgControl = pDclControl->GetControlInstance();
+		if( !pDlgControl || (bIgnoreForm && pDlgControl == this) )
+			continue;
+		CControlManager* pManager = pDlgControl->GetControlManager();
+		if( !pManager )
+			continue;
+		if( !pManager->IsSelected() )
+			continue;
+		++ctSelected;
+	}
+	return ctSelected;
+}
+
 void CStudioDialogObject::SelectControl( TDclControlPtr pDclControl ) 
 {
 	if( !pDclControl )
@@ -578,6 +596,7 @@ BOOL CStudioDialogObject::OnInitDialog()
 {
 	if( IsModeless() )
 		ModifyStyleEx( 0, WS_EX_TOOLWINDOW );
+	//ModifyStyleEx( 0, 0x02000000L/*WS_EX_COMPOSITED*/ | 0x08000000L/*WS_EX_NOACTIVATE*/ );
 
 	DWORD_PTR dwStyle = GetWndStyle();
 	SetWindowLongPtr( m_hWnd, GWL_STYLE, dwStyle );
@@ -586,13 +605,8 @@ BOOL CStudioDialogObject::OnInitDialog()
 
 	CRect rectWindow;
 	rectWindow = GetWndRect();
-	bool bUsesClientRect = mpSourceForm->UsesClientRect();
-	assert( bUsesClientRect ); //should already be converted!
-	if( bUsesClientRect )
-	{
-		rectWindow.right += GetNCWidth();
-		rectWindow.bottom += GetNCHeight();
-	}
+	rectWindow.right += GetNCWidth();
+	rectWindow.bottom += GetNCHeight();
 
 	__super::OnInitDialog();
 
@@ -631,7 +645,7 @@ BOOL CStudioDialogObject::OnInitDialog()
 	}
 	GetControlPane()->RecalcLayout();
 
-	return TRUE;  // return TRUE unless you set the focus to a control
+	return FALSE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
@@ -759,6 +773,7 @@ void CStudioDialogObject::OnEditPaste()
 		size_t ctControls = *(size_t*)pbData;
 		if( ctControls > 0 )
 		{
+			TDclControlList mNewControls;
 			pbData += sizeof(ctControls);
 			size_t cbControlData = cbClipboard - sizeof(cbClipboard) - sizeof(ctControls);
 			if( cbControlData > 0 )
@@ -802,30 +817,43 @@ void CStudioDialogObject::OnEditPaste()
 					}
 					break;
 				}
-				if( pDclControl )
+				if( bDuplicate )
 				{
-					if( bDuplicate )
-					{
-						// if the caption property matches the name, update both
-						CString sCaption = pDclControl->GetStringProperty( Prop::Caption );
-						CString sOldName = pDclControl->GetStringProperty( Prop::Name );
-						CString sNewName = GetNextControlName( GetControlName( pDclControl->GetType() ) );
-						pDclControl->SetStringProperty( Prop::Name, sNewName );
-						if( sOldName == sCaption )
-							pDclControl->SetStringProperty( Prop::Caption, sNewName );
-					}
-					mpSourceForm->AddControl( pDclControl, true );
-					TDialogControlPtr pDlgControl = CreateNewDialogControl( pDclControl, GetNextControlId() );
-					if( pDlgControl )
-					{
-						mpControlPane->AddControl( pDlgControl );
-						theStudioWorkspace.ActivateDclControl( pDclControl );
-					}
-					else
-						mpSourceForm->DeleteControl( pDclControl );
+					// if the caption property matches the name, update both
+					CString sCaption = pDclControl->GetStringProperty( Prop::Caption );
+					CString sOldName = pDclControl->GetStringProperty( Prop::Name );
+					CString sNewName = GetNextControlName( GetControlName( pDclControl->GetType() ) );
+					pDclControl->SetStringProperty( Prop::Name, sNewName );
+					if( sOldName == sCaption )
+						pDclControl->SetStringProperty( Prop::Caption, sNewName );
+				}
+				mpSourceForm->AddControl( pDclControl, true );
+				mNewControls.push_back( pDclControl );
+			}
+			for( TDclControlList::iterator iter = mNewControls.begin(); iter != mNewControls.end(); ++iter )
+			{
+				TDclControlPtr pDclControl = *iter;
+				//fix up controls that are positioned relative to a non-existent splitter
+				long lSplitter = pDclControl->GetLongProperty( Prop::UseTopFromBottom );
+				if( lSplitter > 2 && !mpControlPane->HasSplitter( lSplitter ) )
+					pDclControl->SetLongProperty( Prop::UseTopFromBottom, 0 );
+				lSplitter = pDclControl->GetLongProperty( Prop::UseBottomFromBottom );
+				if( lSplitter > 2 && !mpControlPane->HasSplitter( lSplitter ) )
+					pDclControl->SetLongProperty( Prop::UseBottomFromBottom, 0 );
+				lSplitter = pDclControl->GetLongProperty( Prop::UseLeftFromRight );
+				if( lSplitter > 2 && !mpControlPane->HasSplitter( lSplitter ) )
+					pDclControl->SetLongProperty( Prop::UseLeftFromRight, 0 );
+				lSplitter = pDclControl->GetLongProperty( Prop::UseRightFromRight );
+				if( lSplitter > 2 && !mpControlPane->HasSplitter( lSplitter ) )
+					pDclControl->SetLongProperty( Prop::UseRightFromRight, 0 );
+				TDialogControlPtr pDlgControl = CreateNewDialogControl( pDclControl, GetNextControlId() );
+				if( pDlgControl )
+				{
+					mpControlPane->AddControl( pDlgControl );
+					theStudioWorkspace.ActivateDclControl( pDclControl );
 				}
 				else
-					theStudioWorkspace.ActivateDclControl( mpSourceForm->GetControlProperties() );
+					mpSourceForm->DeleteControl( pDclControl );
 			}
 		}
 	}
@@ -848,9 +876,11 @@ void CStudioDialogObject::OnEditCopy()
 	CMemFile ClipboardMem( 4096 );
 	CArchive ClipboardArchive( &ClipboardMem, CArchive::store );
 	size_t ctControls = 0;
-	for( TDclControlList::const_reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
 		TDclControlPtr pDclControl = *iter;
+		if( pDclControl->GetType() == _CtlForm )
+			continue;
 		CDialogControl* pDlgControl = pDclControl->GetControlInstance();
 		if( !pDlgControl )
 			continue;
@@ -910,8 +940,7 @@ void CStudioDialogObject::OnProperties()
 
 void CStudioDialogObject::OnUpdateProperties(CCmdUI *pCmdUI) 
 {
-	TDclControlPtr pDclControl = theStudioWorkspace.GetActiveDclControl();
-	pCmdUI->Enable( pDclControl && pDclControl->GetType() != _CtlForm );
+	pCmdUI->Enable( CountSelected() == 1 );
 }
 
 void CStudioDialogObject::OnAxProperties() 
@@ -990,15 +1019,12 @@ void CStudioDialogObject::OnEditObjectbrowser()
 
 void CStudioDialogObject::OnUpdateEditObjectbrowser(CCmdUI *pCmdUI) 
 {
-	TDclControlPtr pDclControl = theStudioWorkspace.GetActiveDclControl();
-	pCmdUI->Enable( pDclControl != NULL );
+	pCmdUI->Enable( CountSelected( false ) == 1 );
 }
 
 void CStudioDialogObject::OnContextMenu(CWnd* pWnd, CPoint point) 
 {
 	CDialogControl* pDlgControl = GetControlAtPoint( point );
-	if( !IsOnlyFormActive() )
-		theStudioWorkspace.ActivateDclControl( NULL );
 	theStudioWorkspace.ActivateDclControl( pDlgControl? pDlgControl->GetTemplate() : GetTemplate() );
 	CMenu menu;
 	if( menu.LoadMenu( IDR_MAINFRAME ) )
@@ -1055,32 +1081,42 @@ void CStudioDialogObject::OnUpdateSendtoback(CCmdUI *pCmdUI)
 void CStudioDialogObject::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize( nType, cx, cy );
-	if( mbIgnoreSizing )
-		return;
-	ASSERT( mpSourceForm != NULL );
-	CRect rcForm;
-	if( mpSourceForm->UsesClientRect() )
+	if( !mbIgnoreSizing )
+	{
+		ASSERT( mpSourceForm != NULL );
+		CRect rcForm;
 		GetClientRect( &rcForm );
-	else
-		GetWindowRect( &rcForm );
-	mpTemplate->SetLongProperty( Prop::Width, rcForm.Width() );
-	mpTemplate->SetLongProperty( Prop::Height, rcForm.Height() );
-	mpControlPane->RecalcLayout();
+		mpTemplate->SetLongProperty( Prop::Width, rcForm.Width() );
+		mpTemplate->SetLongProperty( Prop::Height, rcForm.Height() );
+		mpControlPane->RecalcLayout();
+	}
 	CControlManager* pManager = GetControlManager();
 	if( pManager )
 	{
+		CRect rcForm;
 		GetClientRect( &rcForm );
 		pManager->MoveWindow( &rcForm, FALSE );
 	}
-	theStudioWorkspace.ActivateDclControl( mpTemplate );
 }
 
 BOOL CStudioDialogObject::OnEraseBkgnd(CDC* pDC)
 {
-	__super::OnEraseBkgnd(pDC);
+	//__super::OnEraseBkgnd(pDC);
 
 	CRect rcClient;
 	GetClientRect( &rcClient );
+	COLORREF crBackground = GetSysColor( COLOR_BTNFACE );
+	if( mpControlPane->GetThemeHelper() )
+	{
+		TDclFormPtr pParentForm = mpSourceForm->GetParentForm();
+		if( pParentForm )
+		{
+			TDclControlPtr pTabStrip = pParentForm->FindFirstControlOfType( CtlTabStrip );
+			if( pTabStrip && pTabStrip->GetBooleanProperty( Prop::UseVisualStyle ) )
+				crBackground = GetSysColor( COLOR_WINDOW );
+		}
+	}
+	pDC->FillSolidRect( &rcClient, crBackground );
 	SnapToGrid( rcClient.BottomRight() );
 	COLORREF crGrid = GetSysColor( COLOR_GRAYTEXT );
 	for( int iX = rcClient.Width(); iX > 0; iX -= mnGridSpacing )
@@ -1093,54 +1129,53 @@ BOOL CStudioDialogObject::OnEraseBkgnd(CDC* pDC)
 
 void CStudioDialogObject::OnSizing(UINT fwSide, LPRECT pRect)
 {
-	int nXAdjust = GetNCWidth();
-	int nYAdjust = GetNCHeight();
-	int nNewWidth = pRect->right - pRect->left - nXAdjust;
-	int nNewHeight = pRect->bottom - pRect->top - nYAdjust;
-	CPoint ptSnapped( nNewWidth, nNewHeight );
+	CPoint ptSnapped( pRect->right - pRect->left - GetNCWidth(), pRect->bottom - pRect->top - GetNCHeight() );
 	SnapToGrid( ptSnapped );
+	ptSnapped.x += GetNCWidth();
+	ptSnapped.y += GetNCHeight();
 	CSize szMin( 0, 0 );
 	CSize szMax( 0, 0 );
-	GetMinMaxSize( szMin, szMax );
+	//for now, min/max sizes are ignored in the editor
+	//GetMinMaxSize( szMin, szMax );
 
 	if( fwSide == WMSZ_BOTTOMLEFT || fwSide == WMSZ_LEFT || fwSide == WMSZ_TOPLEFT )
 	{
 		if (szMin.cx > 0 && ptSnapped.x < szMin.cx)
-			pRect->left = pRect->right - szMin.cx - nXAdjust;
-		if (szMax.cx > 0 && ptSnapped.x > szMax.cx)
-			pRect->left = pRect->right - szMax.cx - nXAdjust;
+			pRect->left = pRect->right - szMin.cx;
+		else if (szMax.cx > 0 && ptSnapped.x > szMax.cx)
+			pRect->left = pRect->right - szMax.cx;
 		else
-			pRect->left = pRect->right - ptSnapped.x - nXAdjust;
+			pRect->left = pRect->right - ptSnapped.x;
 	}
 
 	if( fwSide == WMSZ_BOTTOMRIGHT || fwSide == WMSZ_RIGHT || fwSide == WMSZ_TOPRIGHT )
 	{
 		if (szMin.cx > 0 && ptSnapped.x < szMin.cx)
-			pRect->right = pRect->left + szMin.cx + nXAdjust;
-		if (szMax.cx > 0 && ptSnapped.x > szMax.cx)
-			pRect->right = pRect->left + szMax.cx + nXAdjust;
+			pRect->right = pRect->left + szMin.cx;
+		else if (szMax.cx > 0 && ptSnapped.x > szMax.cx)
+			pRect->right = pRect->left + szMax.cx;
 		else
-			pRect->right = pRect->left + ptSnapped.x + nXAdjust;
+			pRect->right = pRect->left + ptSnapped.x;
 	}
 
 	if( fwSide == WMSZ_BOTTOMLEFT || fwSide == WMSZ_BOTTOM || fwSide == WMSZ_BOTTOMRIGHT )
 	{
 		if (szMin.cy > 0 && ptSnapped.y < szMin.cy)
-			pRect->bottom = pRect->top + szMin.cy + nYAdjust;
-		if (szMax.cy > 0 && ptSnapped.y > szMax.cy)
-			pRect->bottom = pRect->top + szMax.cy + nYAdjust;
+			pRect->bottom = pRect->top + szMin.cy;
+		else if (szMax.cy > 0 && ptSnapped.y > szMax.cy)
+			pRect->bottom = pRect->top + szMax.cy;
 		else
-			pRect->bottom = pRect->top + ptSnapped.y + nYAdjust;
+			pRect->bottom = pRect->top + ptSnapped.y;
 	}
 
 	if( fwSide == WMSZ_TOPLEFT || fwSide == WMSZ_TOP || fwSide == WMSZ_TOPRIGHT )
 	{
 		if (szMin.cy > 0 && ptSnapped.y < szMin.cy)
-			pRect->top = pRect->bottom - szMin.cy - nYAdjust;
-		if (szMax.cy > 0 && ptSnapped.y > szMax.cy)
-			pRect->top = pRect->bottom - szMax.cy - nYAdjust;
+			pRect->top = pRect->bottom - szMin.cy;
+		else if (szMax.cy > 0 && ptSnapped.y > szMax.cy)
+			pRect->top = pRect->bottom - szMax.cy;
 		else
-			pRect->top = pRect->bottom - ptSnapped.y - nYAdjust;
+			pRect->top = pRect->bottom - ptSnapped.y;
 	}
 
 	if( !mbSizing )
@@ -1193,6 +1228,7 @@ void CStudioDialogObject::OnCaptureChanged(CWnd *pWnd)
 		CUndoManager* pUndoManager = mpSourceForm->GetUndoManager();
 		if( pUndoManager )
 			pUndoManager->EndGroup();
+		theStudioWorkspace.ActivateDclControl( mpTemplate );
 	}
 	__super::OnCaptureChanged(pWnd);
 }

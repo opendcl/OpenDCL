@@ -18,7 +18,7 @@
 
 class CUrlLinkCtrl : public CWnd, public CDialogControl
 {
-	CAcadColorService mAcadColorService;
+	CAcadColorService mColorService;
 	HCURSOR mhHandCursor;
 	CFont mFont;
 
@@ -38,7 +38,7 @@ public:
 	virtual DWORD GetWndStyle() const;
 	virtual CString GetWndCaption() const; //get window caption from properties
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 // Generated message map functions
 protected:

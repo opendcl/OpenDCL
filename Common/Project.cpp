@@ -7,7 +7,6 @@
 #include "PropertyIds.h"
 #include "Resource.h"
 #include "DclControlObject.h"
-#include "OleControlObject.h"
 #include "PropertyObject.h"
 #include "DclControlProp.h"
 #include "UndoManager.h"
@@ -346,132 +345,6 @@ bool CProject::LoadPictureFile( LPCTSTR szFile, UINT_PTR nID, bool bApplyMask /*
 	return true;
 }
 
-void CProject::AddOleObject(const CLSID& clsid, CAxContainerCtrl *pAxCont)
-{
-	if (HasOleObject (clsid))
-		return;
-  TOleControlPtr pObject = new COleControlObject( this, clsid );
-
-  if (clsid == IID_IPictureDisp)
-    pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_PROP_PICTURE) );
-  else if (pObject->m_clsid == IID_IFontDisp)
-    pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_PROP_FONTNAME) );
-  else if (pObject->m_clsid == GUID_COLOR)
-    pObject->SetAxTypeName( theWorkspace.LoadResourceString(IDS_COLOR) );
-  mOleControls.push_back(pObject);	
-  pAxCont->ExtractComponentsFromTLB(pObject, clsid);
-	OnModified();
-}
-
-bool CProject::HasOleObject(const CLSID& clsid)
-{
-	std::vector< TOleControlPtr >::const_iterator pos = mOleControls.begin();
-  while (pos != mOleControls.end())
-  {
-    TOleControlPtr pObject = *pos++;
-		assert( pObject != NULL );
-    if (pObject != NULL && pObject->m_clsid == clsid)
-      return true;
-  }
-  return false;
-}
-
-TOleControlPtr CProject::GetOleObject(const CLSID& clsid)
-{
-	std::vector< TOleControlPtr >::const_iterator pos = mOleControls.begin();
-  while (pos != mOleControls.end())
-  {
-    TOleControlPtr pObject = *pos++;
-		assert( pObject != NULL );
-    if (pObject != NULL && pObject->m_clsid == clsid)
-      return pObject;
-  }
-  return NULL;
-}
-
-CString CProject::GetOleObjectName(const AxPropertyDescriptor *pProperty)
-{
-	TOleControlPtr pOleControl = GetOleObject( pProperty );
-	if( pOleControl )
-		return pOleControl->GetAxTypeName();
-  return _T("OleObject");
-}
-
-
-TOleControlPtr CProject::GetOleObject(const AxEventDescriptor *pEvent)
-{	
-  if (pEvent == NULL)
-    return NULL;
-
-	std::vector< TOleControlPtr >::iterator pos = mOleControls.begin();
-  while (pos != mOleControls.end())
-  {
-    TOleControlPtr pObject = *pos++;
-		assert( pObject != NULL );
-    if (pObject != NULL)
-    {
-      for (size_t idx = 0; idx < pEvent->GetArgs().size(); ++idx)
-      {
-        if (pEvent->GetArgs().at(idx).vt == VT_DISPATCH || pEvent->GetArgs().at(idx).vt == VT_UNKNOWN)
-        {
-          if (pObject->m_clsid == pEvent->GetArgs().at(idx).clsid )
-            return pObject;
-        }
-      }	
-    }
-  }
-  return NULL;
-}
-
-TOleControlPtr CProject::GetOleObject(const AxPropertyDescriptor *pProperty)
-{	
-  if (pProperty == NULL)
-    return NULL;
-
-	std::vector< TOleControlPtr >::iterator pos = mOleControls.begin();
-  while (pos != mOleControls.end())
-  {
-    TOleControlPtr pObject = *pos++;
-		assert( pObject != NULL );
-    if (pObject != NULL)
-    {
-      if (pObject->m_clsid == pProperty->GetGuid())
-        return pObject;
-			size_t idx = pProperty->GetArgs().size();
-      while (idx-- > 0)
-      {
-				if (pObject->m_clsid == pProperty->GetArgs().at(idx).clsid)
-          return pObject;
-      }	
-    }
-  }
-  return NULL;
-}
-
-TOleControlPtr CProject::GetOleObject(const AxMethodDescriptor *pMethod)
-{	
-  if (pMethod == NULL)
-    return NULL;
-
-	std::vector< TOleControlPtr >::iterator pos = mOleControls.begin();
-  while (pos != mOleControls.end())
-  {
-    TOleControlPtr pObject = *pos++;
-		assert( pObject != NULL );
-    if (pObject != NULL)
-    {
-      if (pObject->m_clsid == pMethod->GetReturnGuid())
-        return pObject;
-      for (size_t idx = 0; idx < pMethod->GetArgs().size(); ++idx)
-      {
-				if (pObject->m_clsid == pMethod->GetArgs().at(idx).clsid)
-          return pObject;
-      }	
-    }
-  }
-  return NULL;
-}
-
 TDclFormPtr CProject::FindDclForm( LPCTSTR pszDclFormName ) const
 {
 	for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
@@ -773,8 +646,8 @@ IOStatus CProject::WriteToFile( LPCTSTR pszFilePath )
 // This class is used for deserializing OLE controls from versions 8 and 9 project archives
 // (the class must have the same name as the original, since the original code used MFC's
 // typesafe serialization mechanism, which writes the class name to the archive) [ORW]
-class CArxControlObject : public COleControlObject
-{ CArxControlObject() : COleControlObject( NULL ) {} DECLARE_SERIAL(CArxControlObject); };
+class CArxControlObject : public CDclControlObject
+{ CArxControlObject() : CDclControlObject( NULL ) {} DECLARE_SERIAL(CArxControlObject); };
 	IMPLEMENT_SERIAL(CArxControlObject, CObject, 1);
 
 
@@ -804,11 +677,6 @@ void CProject::Serialize(CArchive& ar)
 		ar << ctAxFiles;
 		for( unsigned long idx = 0; idx < ctAxFiles; ++idx )
 			ar << mrsActiveXFiles.GetAt( idx );
-
-		unsigned long ctOleControls = unsigned long(mOleControls.size());
-		ar << ctOleControls;
-		for( unsigned long idx = 0; idx < ctOleControls; ++idx )
-			mOleControls.at( idx )->Serialize( ar );
 
     ar << unsigned long(mPictures.GetCount());		
     POSITION pos = mPictures.GetHeadPosition();
@@ -923,27 +791,24 @@ void CProject::Serialize(CArchive& ar)
 			}
 		}
 
-		mOleControls.clear();
-    if (nThisVersion >= 8)
+    if( nThisVersion >= 8 )
 		{
-			if (nThisVersion <= 9)
+			if( nThisVersion <= 9 )
 			{
-				CTypedPtrList< CObList, CArxControlObject* > listControls;
-				listControls.Serialize(ar);
-				POSITION pos = listControls.GetHeadPosition();
-				while (pos)
-					mOleControls.push_back(listControls.GetNext(pos));
+				CTypedPtrList< CObList, CArxControlObject* > listDiscardOleControls;
+				listDiscardOleControls.Serialize(ar);
+				POSITION pos = listDiscardOleControls.GetHeadPosition();
+				while( pos )
+					delete listDiscardOleControls.GetNext( pos );
 			}
-			else
+			else if( nThisVersion <= 12 )
 			{
 				unsigned long ctOleControls;
 				ar >> ctOleControls;
+				CDclControlObject* pDiscardOleControl = new CDclControlObject( NULL );
 				for( unsigned long idx = 0; idx < ctOleControls; ++idx )
-				{
-					COleControlObject* pOleControl = new COleControlObject( this );
-					pOleControl->Serialize( ar );
-					mOleControls.push_back( pOleControl );
-				}
+					pDiscardOleControl->Serialize( ar );
+				delete pDiscardOleControl;
 			}
 		}
 
@@ -1105,11 +970,11 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
   }
 
   if (!readInt(sFile, iCount)) return statInvalidFormat;
+  CDclControlObject* pOleControl = new CDclControlObject( NULL );
   for (int i = 0; i < iCount; i++) {
-    COleControlObject* pOleControl = new COleControlObject( this );
 		IOStatus stat = pOleControl->ReadFromTextFile(sFile, fileName);
     if (stat != statOK) return stat;
-    mOleControls.push_back(pOleControl);
+    delete pOleControl;
   }
 
   // set counter
@@ -1168,11 +1033,11 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
 LPCTSTR CProject::toString() const
 {
 	static TCHAR buf[1024];
-	_sntprintf( buf, _elements(buf), _T("CProject [%s] (%s forms, %s images, %s ActiveX controls)"),
+	_sntprintf( buf, _elements(buf), _T("CProject [%s] (%s forms, %s images, %s ActiveX files)"),
 																	 (LPCTSTR)GetKeyName(),
 																	 asString( mDclForms.size() ),
 																	 asString( mPictures.GetCount() ),
-																	 asString( mOleControls.size() ) );
+																	 asString( mrsActiveXFiles.GetCount() ) );
 	return buf;
 }
 

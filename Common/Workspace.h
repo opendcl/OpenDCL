@@ -1,7 +1,6 @@
 #pragma once
 
 #include "FontCollection.h"
-#include "OleControlObject.h"
 #include "Project.h"
 
 class AxPropertyDescriptor;
@@ -49,8 +48,6 @@ public:
 	virtual bool DisplayStatus( LPCTSTR pszMessage ) const; //display modeless status message; returns true if displayed, false if suppressed
 	virtual void SetModified( bool bModified = true );
 	virtual CDocument* GetActiveDocument(void) const { return NULL; }
-	virtual TOleControlPtr GetOleControlFor( const AxPropertyDescriptor* pProperty ) = 0;
-	virtual TOleControlPtr GetOleControlFor( const AxMethodDescriptor* pMethod ) = 0;
 	virtual CString FindFile( LPCTSTR pszFilePath ) const;
 
 	virtual bool GetModuleVersionInfo( DWORD& dwMajor, DWORD&dwMinor, DWORD& dwThird, DWORD& dwFourth, HMODULE hmodTarget = NULL ) const;

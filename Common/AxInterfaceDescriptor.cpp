@@ -396,6 +396,12 @@ VARTYPE AxInterfaceDescriptor::GetAxMethodReturnType( size_t nIndex ) const
 	return 0;
 }
 
+CString AxInterfaceDescriptor::GetAxMethodReturnTypeDisplayName( size_t nIndex ) const
+{
+	if( !mpMethods || nIndex >= mpMethods->size() )
+		return _T("");
+	return mpMethods->at( nIndex )->GetReturnTypeDisplayName();
+}
 
 const AxMethodDescriptor* AxInterfaceDescriptor::GetAxMethod( size_t nIndex ) const
 {

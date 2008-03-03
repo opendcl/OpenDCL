@@ -93,7 +93,7 @@ HBRUSH CUrlLinkCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	return mColorService.CtlColor( pDC, nCtlColor );
 }
 
 __UINT_LRESULT CUrlLinkCtrl::OnNcHitTest(CPoint point) 
@@ -125,7 +125,7 @@ void CUrlLinkCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	HINSTANCE hShell = ShellExecute( 0, _T("open"), sURL, 0, 0, SW_SHOWNORMAL );
 	if ((UINT_PTR)hShell > 32) 
 	{ // success!
-		mAcadColorService.SetForegroundColor( g_colorVisited );
+		mColorService.SetForegroundColor( g_colorVisited );
 		OnNeedRepaint();
 	}
 	else 
@@ -151,7 +151,7 @@ void CUrlLinkCtrl::OnPaint()
 	{
 		CRect rcClient;
 		GetClientRect( &rcClient );
-		mAcadColorService.CtlColor( &dc, CTLCOLOR_STATIC );
+		mColorService.CtlColor( &dc, CTLCOLOR_STATIC );
 		dc.SelectObject( &mFont );
 		dc.ExtTextOut( 0, 0, ETO_CLIPPED, &rcClient, sText, NULL );
 	}
@@ -160,11 +160,11 @@ void CUrlLinkCtrl::OnPaint()
 
 BOOL CUrlLinkCtrl::OnEraseBkgnd(CDC* pDC)
 {
-	if( !mAcadColorService.IsBackgroundTransparent() )
+	if( !mColorService.IsBackgroundTransparent() )
 	{
 		CRect rcClient;
 		GetClientRect( &rcClient );
-		pDC->FillSolidRect( &rcClient, mAcadColorService.GetBackgroundColor() );
+		pDC->FillSolidRect( &rcClient, mColorService.GetBackgroundColor() );
 	}
 	return TRUE;
 }

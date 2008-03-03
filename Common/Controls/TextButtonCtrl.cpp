@@ -60,7 +60,6 @@ bool CTextButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 
 BEGIN_MESSAGE_MAP(CTextButtonCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
-	ON_NOTIFY_REFLECT (NM_CUSTOMDRAW, &CTextButtonCtrl::OnNotifyCustomDraw)
 	ON_WM_KILLFOCUS()
 	ON_WM_NCPAINT()
 END_MESSAGE_MAP()
@@ -77,29 +76,13 @@ BOOL CTextButtonCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CTextButtonCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	return mColorService.CtlColor( pDC, nCtlColor, this );
 }
 
 void CTextButtonCtrl::PostNcDestroy() 
 {
 	__super::PostNcDestroy();
 	delete this;
-}
-
-void CTextButtonCtrl::OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result )
-{
-	LPNMCUSTOMDRAW pCustomDraw = (LPNMCUSTOMDRAW)pNotifyStruct;
-	ASSERT (pCustomDraw->hdr.hwndFrom == m_hWnd);
-	ASSERT (pCustomDraw->hdr.code = NM_CUSTOMDRAW);
-
-	if( pCustomDraw->dwDrawStage == CDDS_PREPAINT )
-	{
-		::SetTextColor( pCustomDraw->hdc, mAcadColorService.GetForegroundColor() );
-		::SetBkColor( pCustomDraw->hdc, mAcadColorService.GetBackgroundColor() );
-	}
-	*result = CDRF_DODEFAULT;
 }
 
 void CTextButtonCtrl::OnKillFocus(CWnd* pNewWnd) 

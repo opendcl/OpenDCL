@@ -236,6 +236,7 @@ public:
 			{ return new CFilteredTextEditCtrl( pGridCtrl, idxCell ); }
 	virtual void ApplyValue( LPCTSTR pszValue )
 		{
+			mpGridCtrl->SetItemText( midxCell, 1, pszValue );
 			CPropertyGridCtrl::TPropertySet& PropSet = mpGridCtrl->GetPropertySet( midxCell );
 			for( CPropertyGridCtrl::TPropertySet::iterator iter = PropSet.begin();
 					 iter != PropSet.end();
@@ -248,7 +249,6 @@ public:
 				if( pDlgControl )
 					CStudioDialogControl::UpdateProperty( pDclControl, pProp->GetID() );
 			}
-			mpGridCtrl->SetItemText( midxCell, 1, pszValue );
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
@@ -723,16 +723,8 @@ static bool IsBooleanProperty( TPropertyPtr pProp )
 	case PropBool:
 		return true;
 	case PropActiveXProp:
-		{
-			const AxInterfaceDescriptor* pDescriptor = pProp->GetConstAxInterfaceDescriptorPtr();
-			if( !pDescriptor )
-				break;
-			const AxPropertyDescriptor* pPropDesc = pDescriptor->GetPropGet();
-			if( !pPropDesc )
-				break;
-			if( GetActiveXPropType( pProp ) == VT_BOOL )
-				return true;
-		}
+		if( GetActiveXPropType( pProp ) == VT_BOOL )
+			return true;
 		break;
 	}
 	return false;
@@ -890,7 +882,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::UseRightFromRight: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::UseTopFromBottom: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::UseVisualStyle: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::Value: if( type == PropLong ) return &CFilteredTextEditCtrl::Create< CIntegerFilter >; return &CBooleanCheckBoxCtrl::Create;
+	case Prop::Value: if( type == PropLong ) return &CFilteredTextEditCtrl::Create< CIntegerFilter >; return &CEnumComboBoxCtrl::Create;
 	case Prop::Visible: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::VScrollBar: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::Width: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
@@ -1011,13 +1003,13 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 			if( PropSet.size() > 1 )
 				nState |= PGIS_DISPLAYONLY;
 			break;
-		case Prop::Icon:
-		case Prop::Picture:
-		case Prop::MouseOverPicture:
-		case Prop::ToolTipPicture:
-			if( bNoPics )
-				nState |= PGIS_DISPLAYONLY;
-			break;
+		//case Prop::Icon:
+		//case Prop::Picture:
+		//case Prop::MouseOverPicture:
+		//case Prop::ToolTipPicture:
+		//	if( bNoPics )
+		//		nState |= PGIS_DISPLAYONLY;
+		//	break;
 		case Prop::_Private:
 			{
 				const AxInterfaceDescriptor* pDescriptor = pFirstProp->GetConstAxInterfaceDescriptorPtr();

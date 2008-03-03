@@ -115,11 +115,7 @@ LRESULT CArxFolderComboCtrl::OnSelchange( WPARAM wParam, LPARAM lParam )
 		GetParent()->EnableWindow( TRUE );
 	}
 	else if( !sEvent.IsEmpty() )
-	{
-		CString sLispSafePath = sPath;
-		sLispSafePath.Replace( _T("\\"), _T("\\\\") );
-		InvokeMethodIntString( sEvent, GetCurSel(), sLispSafePath, IsAsyncEvents() );
-	}
+		InvokeMethodIntString( sEvent, GetCurSel(), sPath, IsAsyncEvents() );
 	return 0;
 }
 

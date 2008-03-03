@@ -29,6 +29,8 @@ public:
 	static void UpdateProperty(TDclControlPtr pTemplate, Prop::Id id);
 
 protected:
+	static TDialogControlPtr CreateImp( TDclControlPtr pTemplate, CControlPane* pPane,
+																			UINT nID, ControlParams* pParams = NULL );
 	static TDialogControlPtr CreateComboExControl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nId);	
 	static TDialogControlPtr CreateEditControl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nId);
 	static TDialogControlPtr CreateComboControl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nId);

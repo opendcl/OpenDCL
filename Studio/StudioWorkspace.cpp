@@ -118,22 +118,6 @@ void CStudioWorkspace::OnGridSpacingChange( UINT nGridSpacing )
 	}
 }
 
-TOleControlPtr CStudioWorkspace::GetOleControlFor( const AxPropertyDescriptor* pProperty )
-{
-	TStudioProjectPtr pProject = GetActiveProject();
-	if( !pProject )
-		return NULL;
-	return pProject->GetOleObject( pProperty );
-}
-
-TOleControlPtr CStudioWorkspace::GetOleControlFor( const AxMethodDescriptor* pMethod )
-{
-	TStudioProjectPtr pProject = GetActiveProject();
-	if( !pProject )
-		return NULL;
-	return pProject->GetOleObject( pMethod );
-}
-
 void CStudioWorkspace::OnFlushUndoGroup()
 {
 	CPropertyPane* pPropertyPane = GetPropertyPane();
@@ -171,12 +155,16 @@ void CStudioWorkspace::ActivateDlgObject( CStudioDialogObject* pDlgObject )
 	}
 	else
 		DeactivateDlgObject( mpActiveDlgObject );
+	CProjectPane* pProjectPane = GetProjectPane();
+	if( pProjectPane )
+		pProjectPane->OnActivateForm( pDlgObject->GetSourceForm() );
 	CToolboxPane* pToolbox = GetToolboxPane();
 	if( pToolbox )
 		pToolbox->ActivateDlgObject( pDlgObject );
 	bool bSetFormProps = (pDlgObject != mpActiveDlgObject);
 	mpActiveDlgObject = pDlgObject;
 	SetActiveFormView( pDlgObject? pDlgObject->GetFormView() : NULL );
+	GetStudioFrame()->SetActiveView( pDlgObject->GetFormView(), TRUE );
 	if( bSetFormProps )
 	{
 		ActivateDclControl( NULL );

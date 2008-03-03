@@ -6,7 +6,7 @@
 #include "ArgumentsRetrieval.h"
 #include "ArxGridCtrl.h"
 #include "Resource.h"
-#include "Workspace.h"
+#include "ArxWorkspace.h"
 
 
 static void ReturnRowCol(int nRow, int nCol)
@@ -260,7 +260,7 @@ ADSRESULT Grid::GetItemData()
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
-	acedRetHandle( pCtrl->GetItemData( nItem ) );
+	theArxWorkspace.RetHandle( pCtrl->GetItemData( nItem ) );
 	return RSRSLT;
 }
 
@@ -1001,7 +1001,9 @@ ADSRESULT Grid::GetItemCheck()
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 	if( pCtrl->IsCellChecked( nRow, nCol ) )
-		acedRetT();
+		acedRetInt( 1 );
+	else
+		acedRetInt( 0 );
 	return RSRSLT;
 }
 

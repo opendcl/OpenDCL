@@ -14,7 +14,7 @@ class CPropertyObject;
 
 class CProgressBarCtrl : public CProgressCtrl, public CDialogControl
 {
-	CAcadColorService mAcadColorService;
+	CAcadColorService mColorService;
   clock_t mStartTime;
 	enum Legend { lgNone = 0, lgTime = 1, lgPercent = 2, };
 	Legend meLegend;
@@ -32,7 +32,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 protected:
   virtual CString GetRemainingText(double lfPercent, double lfSecsRemaining);

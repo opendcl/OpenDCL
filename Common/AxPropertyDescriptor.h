@@ -13,7 +13,7 @@ struct AxPropertyEnum
 
 
 // Struct for holding information about ActiveX properties so we do not
-// have to keep goint back to typeinfo
+// have to keep going back to typeinfo
 class AxPropertyDescriptor
 {
 protected:
@@ -34,7 +34,7 @@ protected:
 public:
 	AxPropertyDescriptor( DISPID dispid, LPCTSTR pszName, LPCTSTR pszDesc, VARTYPE type, INVOKEKIND kind );
 	AxPropertyDescriptor( VARDESC* pVarDesc, ITypeInfo* pTypeInfo );
-	AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo, CAxContainerCtrl* pContainer = NULL, LPOLEOBJECT pIObject = NULL );
+	AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo, LPOLEOBJECT pIObject = NULL );
 	AxPropertyDescriptor( const AxPropertyDescriptor& Src );
 	virtual ~AxPropertyDescriptor(void);
 
@@ -43,12 +43,15 @@ public:
 	const CString& GetName() const { return msName; }
 	const CString& GetDesc() const { return msDesc; }
 	VARTYPE GetType() const { return mType; }
+	CString GetTypeDisplayName() const;
 	bool IsArray() const { return mbArray; }
 	bool IsReadOnly() const { return mbReadOnly; }
 	GUID GetGuid() const { return mGuid; }
 	INVOKEKIND GetInvKind() const { return mInvKind; }
 	const std::vector< AxPropertyEnum >& GetEnum() const { return mrEnum; }
 	const std::vector< AxArg >& GetArgs() const { return mrArgs; }
+	CString GetEnumDisplayName( size_t idxEnum ) const;
+	CString GetArgDisplayName( size_t idxArg ) const;
 
 	// Operations
 	HRESULT Get( IDispatch* pObjectDisp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult ) const;
@@ -56,7 +59,7 @@ public:
 
 protected:
 	HRESULT PerPropertyBrowsing( LPOLEOBJECT pIObject );
-	HRESULT GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype, CAxContainerCtrl* pContainer = NULL );
+	HRESULT GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype );
 
 	// File I/O
 public:

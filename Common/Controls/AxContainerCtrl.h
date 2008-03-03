@@ -36,7 +36,7 @@ public:
 
 // Operations
 public:
-	TDclControlPtr GetOleControl() const { return mpTemplate; }
+	//TDclControlPtr GetOleControl() const { return mpTemplate; }
 	bool ParseTypeLibInfo();
 
 	HRESULT SaveToStream( IStream* pStream );
@@ -72,8 +72,8 @@ public:
 	HRESULT GetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
 	HRESULT SetProperty( AxPropertyDescriptor* axProp, const VARIANTARG* rvarArgs, UINT ctArgs );
 	HRESULT SetProperty( AxPropertyDescriptor* axProp, COleVariant varArg );
-	HRESULT Invoke( AxMethodDescriptor* axMethod, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
-	BOOL ExtractComponentsFromTLB(TOleControlPtr pOleControl, CLSID clsid);
+	HRESULT Invoke( AxMethodDescriptor* axMethod, const VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
+	BOOL ExtractComponentsFromTLB( TDclControlPtr pDclControl, CLSID clsid );
 
 	// Generated message map functions
 protected:

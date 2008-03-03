@@ -24,6 +24,11 @@ public:
 	CArxSplitterCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
 	virtual ~CArxSplitterCtrl();
 
+protected:
+	void SavePosition() const;
+	bool ReadPosition();
+
+
 // DialogControl Interface
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
@@ -34,6 +39,7 @@ protected:
 	DECLARE_MESSAGE_MAP();
 
 protected:
+	afx_msg void OnMove(int x, int y);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);

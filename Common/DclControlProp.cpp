@@ -287,10 +287,6 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 	//Add control specific properties
 	switch( type )
 	{
-	case CtlRectangle:
-		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 2 );
-		break;
-
 	case CtlActiveX:
 		pDclControl->AddStringProperty( Prop::ActiveXPropPages, PropActiveXPropPages );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
@@ -407,7 +403,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
 		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
-		pDclControl->AddBooleanProperty( Prop::Value, PropBool, false );
+		pDclControl->AddLongProperty( Prop::Value, PropEnum, 0 );
 		pDclControl->AddBooleanProperty( Prop::UseVisualStyle, PropBool, true );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::EventDblClicked );
@@ -851,7 +847,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
 		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
-		pDclControl->AddBooleanProperty( Prop::Value, PropBool, false );
+		pDclControl->AddLongProperty( Prop::Value, PropEnum, 0 );
 		pDclControl->AddBooleanProperty( Prop::UseVisualStyle, PropBool, true );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::EventDblClicked );
@@ -902,7 +898,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
 		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
-		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
+		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, false );
 		pDclControl->AddStringProperty( Prop::Picture, PropPicture );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
@@ -961,6 +957,11 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::Value, PropLong, 10 );
 		break;
 
+	case CtlRectangle:
+		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 2 );
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
+		break;
+
 	case CtlScrollBar:
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -16 );
@@ -993,7 +994,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
 		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::UseVisualStyle, PropBool, true );
-		pDclControl->AddLongProperty( Prop::Value, PropLong, 1 );
+		pDclControl->AddLongProperty( Prop::Value, PropLong, 0 );
 		AddControlEvent( pDclControl, Prop::EventScroll );
 		AddControlEvent( pDclControl, Prop::EventReleasedCapture );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
@@ -1050,6 +1051,8 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::SplitterStyle, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::SplitterMin, PropLong, 30 );
 		pDclControl->AddLongProperty( Prop::SplitterMax, PropLong, 30 );
+		AddControlEvent( pDclControl, Prop::EventClicked );
+		AddControlEvent( pDclControl, Prop::EventMouseMove );
 		break;
 
 	case CtlUrlLink:
@@ -1113,7 +1116,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlHiddenProperty( pDclControl, Prop::TabsImageList, _T(""), PropIntArray );
 		AddControlHiddenProperty( pDclControl, Prop::TabsTTT, _T(""), PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
-		pDclControl->AddBooleanProperty( Prop::UseVisualStyle, PropBool, true );
+		pDclControl->AddBooleanProperty( Prop::UseVisualStyle, PropBool, false );
 		AddControlHiddenProperty( pDclControl, Prop::ImageList, _T(""), PropImageList );
 		AddControlEvent( pDclControl, Prop::EventChanged );
 		AddControlEvent( pDclControl, Prop::EventSelChanging );

@@ -51,21 +51,21 @@ void CControlPane::ZOrderFront( TDialogControlPtr pDlgControl, HDWP hDeferred /*
 	if( pControlWnd )
 	{
 		if( hDeferred )
-			DeferWindowPos( hDeferred, pControlWnd->m_hWnd, HWND_TOP, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+			DeferWindowPos( hDeferred, pControlWnd->m_hWnd, HWND_TOP, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS );
 		else
-			pControlWnd->SetWindowPos( &CWnd::wndTop, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+			pControlWnd->SetWindowPos( &CWnd::wndTop, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS );
 	}
 }
 
 void CControlPane::ZOrderBack( TDialogControlPtr pDlgControl, HDWP hDeferred /*= NULL*/ )
 {
-	CWnd* pControlWnd = pDlgControl->GetControlWnd();
+	CWnd* pControlWnd = pDlgControl->GetTopLevelWnd();
 	if( pControlWnd )
 	{
 		if( hDeferred )
-			DeferWindowPos( hDeferred, pControlWnd->m_hWnd, HWND_BOTTOM, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+			DeferWindowPos( hDeferred, pControlWnd->m_hWnd, HWND_BOTTOM, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS );
 		else
-			pControlWnd->SetWindowPos( &CWnd::wndBottom, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE );
+			pControlWnd->SetWindowPos( &CWnd::wndBottom, 0, 0, -1, -1, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS );
 	}
 }
 
@@ -89,6 +89,7 @@ void CControlPane::RemoveControl( CDialogControl* pDlgControl )
 bool CControlPane::CreateControls(UINT& nId)
 {
 	CleanUpControls();
+	//mpHostDlg->ModifyStyleEx( 0, 0x02000000L/*WS_EX_COMPOSITED*/ );
 	TDclControlList& Controls = mpSourceForm->mDclControls;
 	if( Controls.empty() )
 		return true;
@@ -96,7 +97,6 @@ bool CControlPane::CreateControls(UINT& nId)
 	bool bVisible = (mpHostDlg->IsWindowVisible() != FALSE);
 	if( bVisible )
 		mpHostDlg->SetRedraw( FALSE );
-	TDialogControls rControls;
 	for( TDclControlList::reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
 	{
 		TDclControlPtr pDclControl = (*iter);
@@ -110,23 +110,26 @@ bool CControlPane::CreateControls(UINT& nId)
 		TDialogControlPtr pDlgControl = CreateNewDialogControl( pDclControl, idDlg );
 		assert( pDlgControl != NULL );
 		if( pDlgControl )
-			rControls.push_back( pDlgControl );
+			mControls.push_back( pDlgControl );
 		else
 			bFailed = true;
 	}
-	for( TDialogControls::reverse_iterator iter = rControls.rbegin(); iter != rControls.rend(); ++iter )
-		mControls.push_back( *iter );
+	ApplyZOrder();
+	//InvalidateControls();
 	if( bVisible )
 	{
-		mpHostDlg->RedrawWindow( NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_ALLCHILDREN );
 		mpHostDlg->SetRedraw( TRUE );
+		mpHostDlg->RedrawWindow( NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_ALLCHILDREN );
 	}
-	ApplyZOrder();
+	SetFirstControlFocus();
 	return !bFailed;
 }
 
 void CControlPane::RecalcLayout()
 {
+	if( mbRecalcInProgress )
+		return;
+
 	if( !mpSourceForm )
 		return;
 
@@ -139,22 +142,25 @@ void CControlPane::RecalcLayout()
 	TDclControlList& Controls = mpSourceForm->mDclControls;
 
 	// first lets calc all the control positions for any splitter controls.
-	for( TDclControlList::iterator iter = ++Controls.begin(); iter != Controls.end(); ++iter )
+	for( TDclControlList::reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
 	{
 		if( (*iter)->GetType() == CtlSplitter )
 			ResetControlsPos( (*iter) );
 	}
 
 	//next lets calc all the control positions for all NON-splitter controls.
-	for( TDclControlList::iterator iter = ++Controls.begin(); iter != Controls.end(); ++iter )
+	for( TDclControlList::reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
 	{
+		if( (*iter)->GetType() == _CtlForm )
+			continue;
 		if( (*iter)->GetType() != CtlSplitter )
 			ResetControlsPos( (*iter) );
 	}
 
+	mpDlgObject->OnNeedRepaint( true, true );
 	InvalidateControls();
-	mbRecalcInProgress = false;
 	//mpHostDlg->Invalidate(); //can't do this: it paints over the controls in Windows XP with Window Classic theme
+	mbRecalcInProgress = false;
 }
 
 void CControlPane::InvalidateControls()
@@ -162,19 +168,27 @@ void CControlPane::InvalidateControls()
 	if( !mpSourceForm )
 		return;
 
-	const TDclControlList& Controls = mpSourceForm->GetControlList();
-	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
+	TDclControlList& Controls = mpSourceForm->mDclControls;
+	for( TDclControlList::reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
 	{
-		if( (*iter)->GetType() != CtlBlockView && (*iter)->GetType() != CtlHatch )
+		ControlType type = (*iter)->GetType();
+		if( type == _CtlForm )
+			continue;
+		if( type != CtlBlockView && type != CtlHatch )
 		{
-			CWnd* pWnd = (*iter)->GetWindow();
-			if( pWnd )
-				pWnd->Invalidate();
+			const CDialogControl* pDlgControl = (*iter)->GetControlInstance();
+			if( pDlgControl )
+			{
+				//CWnd* pWnd = pDlgControl->GetTopLevelWnd();
+				//if( pWnd )
+				//	pWnd->Invalidate();
+				pDlgControl->OnNeedRepaint( true, false );
+			}
 		}
 	}
 }
 
-CPoint CControlPane::GetSplitterPos( int nSplitterId )
+CPoint CControlPane::GetSplitterPos( int nSplitterId ) const
 {
 	const TDclControlList& Controls = mpSourceForm->GetControlList();
 	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
@@ -184,6 +198,18 @@ CPoint CControlPane::GetSplitterPos( int nSplitterId )
 			return pDclControl->GetWndRect().TopLeft();
 	}
 	return CPoint( 0, 0 );	
+}
+
+bool CControlPane::HasSplitter( int nSplitterId ) const
+{
+	const TDclControlList& Controls = mpSourceForm->GetControlList();
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
+	{
+		TDclControlPtr pDclControl = (*iter);
+		if( pDclControl->GetType() == CtlSplitter && pDclControl->GetID() == nSplitterId )
+			return true;
+	}
+	return false;	
 }
 
 void CControlPane::ResetControlsPos( TDclControlPtr pDclControl )
@@ -213,9 +239,9 @@ void CControlPane::ResetControlsPos( TDclControlPtr pDclControl )
 
 void CControlPane::CleanUpControls() 
 {	
-	for (int idx = mControls.size() - 1; idx >= 0; --idx)
+	for( TDialogControls::iterator iter = mControls.begin(); iter != mControls.end(); ++iter )
 	{
-		CWnd* pControl = mControls[idx]->GetControlWnd();
+		CWnd* pControl = (*iter)->GetControlWnd();
 		if( pControl )
 			pControl->DestroyWindow();
 	}
@@ -226,20 +252,19 @@ void CControlPane::ApplyZOrder()
 {
 	const TDclControlList& Controls = mpSourceForm->GetControlList();
 	HDWP hdwp = (Controls.empty()? NULL : BeginDeferWindowPos( Controls.size() ));
-	for( TDclControlList::const_reverse_iterator iter = Controls.rbegin();
-			 iter != Controls.rend();
-			 ++iter )
+	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
 	{
-		TDclControlPtr pDclControl = *iter;
-		if( !pDclControl->IsZOrderAllowed() )
-			continue;
-		TDialogControlLockedPtr pDlgControl = pDclControl->GetControlInstance();
+		TDialogControlLockedPtr pDlgControl = (*iter)->GetControlInstance();
 		if( !pDlgControl )
 			continue;
-		ZOrderFront( pDlgControl, hdwp );
+		if( !pDlgControl->GetTemplate()->IsZOrderAllowed() )
+			continue;
+		ZOrderFront( pDlgControl/*, hdwp*/ );
 	}
 	if( hdwp )
 		EndDeferWindowPos( hdwp );
+	InvalidateControls();
+	//mpHostDlg->UpdateWindow();
 }
 
 void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
@@ -277,11 +302,12 @@ void CControlPane::SetFirstControlFocus() const
 	if(!mpSourceForm)
 		return;
 	const TDclControlList& Controls = mpSourceForm->GetControlList();
-	TDclControlList::const_iterator iter = Controls.end();
-	while( iter != Controls.begin() )
+	for( TDclControlList::const_reverse_iterator iter = Controls.rbegin(); iter != Controls.rend(); ++iter )
 	{
-		--iter;
-		CWnd* pWnd = (*iter)->GetWindow();
+		TDialogControlLockedPtr pDlgControl = (*iter)->GetControlInstance();
+		if( !pDlgControl )
+			continue;
+		CWnd* pWnd = pDlgControl->GetControlWnd();
 		if( !pWnd )
 			continue;
 		if( (pWnd->GetStyle() & (WS_VISIBLE | WS_TABSTOP | WS_DISABLED)) != (WS_VISIBLE | WS_TABSTOP) )

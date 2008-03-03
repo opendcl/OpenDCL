@@ -1081,14 +1081,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\OleControlObject.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\OleControlObject.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Common\OleFont.cpp"
 				>
 			</File>

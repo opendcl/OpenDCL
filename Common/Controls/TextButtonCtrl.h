@@ -14,7 +14,7 @@ class CPropertyObject;
 
 class CTextButtonCtrl : public CButton, public CDialogControl
 {
-	CAcadColorService mAcadColorService;
+	CAcadColorService mColorService;
 
 // Construction
 public:
@@ -27,7 +27,7 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
-	virtual CAcadColorService* GetColorService() { return &mAcadColorService; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -37,7 +37,6 @@ protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual afx_msg void PostNcDestroy();
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
-	afx_msg void OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result );
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnNcPaint();
 };

@@ -50,9 +50,8 @@ CWnd* CPaletteDialog::GetTopLevelWnd()
 		HWND hwndTopLevel = ::GetParent( ::GetParent( hwndPaletteSet ) );
 		if( hwndTopLevel && hwndTopLevel != AfxGetMainWnd()->m_hWnd )
 			return CWnd::FromHandle( hwndTopLevel );
-		return &mHostPaletteSet;
 	}
-	return mHostPaletteSet.GetParent();
+	return &mHostPaletteSet;
 }
 
 bool CPaletteDialog::CreateModeless( UINT nID )
@@ -98,23 +97,25 @@ bool CPaletteDialog::CreateModeless( UINT nID )
 	mbIgnoreSizing = true;
 	if( !mHostPaletteSet.Create( GetWndCaption(), GetWndRect() ) )
 		return false;
+
+	if( mpSourceForm->GetUUIDAsString().IsEmpty() )
+	{
+		UUID uuid;
+		UuidCreate( &uuid );
+		mHostPaletteSet.SetToolID( &uuid );
+	}
+	else
+	{
+		UUID uuid = mpSourceForm->GetUUID();
+		mHostPaletteSet.SetToolID( &uuid );
+	}			
+	mHostPaletteSet.EnableDocking( dwDockableSides );
+	mHostPaletteSet.RestoreControlBar( dwDefaultDockableSide ); // loads the dockable form but does not display it
+	AfxGetMainWnd()->GetTopLevelFrame()->ShowControlBar( &mHostPaletteSet, TRUE, TRUE );
+
 	if( !CDialog::Create( IDD_DOCKINGDLGHOST, &mHostPaletteSet ) )
 		return false;
 
-
-	//if( mpSourceForm->GetUUIDAsString().IsEmpty() )
-	//{
-	//	UUID uuid;
-	//	UuidCreate( &uuid );
-	//	mHostPaletteSet.SetToolID( &uuid );
-	//}
-	//else
-	//{
-	//	UUID uuid = mpSourceForm->GetUUID();
-	//	mHostPaletteSet.SetToolID( &uuid );
-	//}			
-	mHostPaletteSet.EnableDocking( dwDockableSides );
-	mHostPaletteSet.RestoreControlBar( dwDefaultDockableSide ); // loads the dockable form but does not display it
 	return true;
 }
 
@@ -234,6 +235,7 @@ BEGIN_MESSAGE_MAP(CPaletteDialog, CDialog)
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -251,8 +253,10 @@ int CPaletteDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	GetEffectiveClientRect( rcClient );
 	SetNCWidth( rectWindow.Width() - rcClient.Width() );
 	SetNCHeight( rectWindow.Height() - rcClient.Height() );
-	SetWindowPos( NULL, rcClient.left, rcClient.top, 0, 0,
-								SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+	SetWindowPos( NULL, rcClient.left, rcClient.top, rcClient.Width(), rcClient.Height(),
+								SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+	mpTemplate->SetLongProperty( Prop::Width, rcClient.Width() );
+	mpTemplate->SetLongProperty( Prop::Height, rcClient.Height() );
 
 	ApplyPropertiesEnum();
 	mbIgnoreSizing = false;
@@ -327,4 +331,10 @@ void CPaletteDialog::OnDestroy()
 {
 	GetControlPane()->CleanUpControls();
 	__super::OnDestroy();
+}
+
+BOOL CPaletteDialog::OnEraseBkgnd(CDC* pDC)
+{
+	return TRUE;
+	return __super::OnEraseBkgnd(pDC);
 }

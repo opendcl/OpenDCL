@@ -90,6 +90,13 @@ bool CSlideCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+bool CSlideCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
+{
+	bool bSuccess = __super::OnApplyBackgroundColor( pProp );
+	ClearSel( TRUE ); //force it to repaint its background
+	return bSuccess;
+}
+
 
 BEGIN_MESSAGE_MAP(CSlideCtrl, CSliderCtrl)
 	ON_NOTIFY_REFLECT(NM_RELEASEDCAPTURE, OnReleasedcapture)
@@ -100,6 +107,7 @@ BEGIN_MESSAGE_MAP(CSlideCtrl, CSliderCtrl)
 	ON_WM_KEYDOWN()
 	ON_WM_KEYUP()
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -162,7 +170,13 @@ BOOL CSlideCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CSlideCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	return mColorService.CtlColor( pDC, nCtlColor, (mColorService.IsBackgroundTransparent()? this : NULL) );
+}
+
+BOOL CSlideCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( mColorService.IsBackgroundTransparent() )
+		return TRUE;
+
+	return __super::OnEraseBkgnd(pDC);
 }

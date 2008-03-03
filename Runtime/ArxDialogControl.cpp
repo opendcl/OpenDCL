@@ -105,6 +105,18 @@ CArxDialogControl::~CArxDialogControl()
 TDialogControlPtr CArxDialogControl::Create( TDclControlPtr pTemplate, CControlPane* pPane,
 																						 UINT nID, ControlParams* pParams /*= NULL*/ )
 {
+	TDialogControlPtr pDlgControl = CreateImp( pTemplate, pPane, nID, pParams );
+	//if( pDlgControl )
+	//{
+	//	pDlgControl->GetControlWnd()->ModifyStyleEx( 0, WS_EX_TRANSPARENT );
+	//}
+	return pDlgControl;
+}
+
+//static
+TDialogControlPtr CArxDialogControl::CreateImp( TDclControlPtr pTemplate, CControlPane* pPane,
+																								UINT nID, ControlParams* pParams /*= NULL*/ )
+{
 	// check the control type to determine which control to create
 	switch(pTemplate->GetType())
 	{

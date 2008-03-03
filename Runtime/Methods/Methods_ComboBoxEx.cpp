@@ -6,6 +6,7 @@
 #include "ArgumentsRetrieval.h"
 #include "ControlTypes.h"
 #include "ImageComboBoxCtrl.h"
+#include "ArxWorkspace.h"
 
 
 static void ReturnItem( const COMBOBOXEXITEM& cbi )
@@ -416,7 +417,7 @@ ADSRESULT ImageComboBox::GetItemData()
 
 	DWORD_PTR dwData = pCtrl->GetItemData( nItem );
 	if( dwData != CB_ERR  )
-		acedRetHandle( dwData );
+		theArxWorkspace.RetHandle( dwData );
 	return RSRSLT;
 }
 

@@ -495,13 +495,19 @@ bool GetStringArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CString& sArg, /*in*/
 			HandleArgError( pArgs, odcl::argNotEnough );
 		return false; //arguments expected
 	}
-	if( pArgs->restype != RTSTR )
+	switch( pArgs->restype )
 	{
+	case RTSTR:
+		sArg = pArgs->resval.rstring;
+		break;
+	case RTNIL:
+		sArg.Empty();
+		break;
+	default:
 		if( !bQuiet )
 			HandleArgError( pArgs, odcl::argWrongType );
 		return false; //wrong type
 	}
-	sArg = pArgs->resval.rstring;
 	pArgs = pArgs->rbnext; //move to the next argument
 	return true;
 }
@@ -968,6 +974,30 @@ bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*
 			pArgs = pArgs->rbnext;
 		}
 		break;
+	case 210:
+	case 211:
+	case 212:
+	case 213:
+	case 214:
+	case 215:
+	case 216:
+	case 217:
+	case 218:
+	case 219:
+		{
+			UINT red = pArgs->restype;
+			UINT green = pArgs->resval.rpoint[X];
+			UINT blue = pArgs->resval.rpoint[Y];
+			if( red > 255 || green > 255 || blue > 255 )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argInvalid );
+				return false;
+			}
+			color = RGB(red, green, blue);
+			pArgs = pArgs->rbnext;
+		}
+		break;
 	case RTLB:
 		{
 			resbuf* pArgC = pArgs->rbnext;
@@ -998,10 +1028,23 @@ bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*
 		break;
 	default:
 		{
-			int nColor = 0;
-			if( !GetIntArgument( pArgs, nColor, bQuiet ) )
+			int red = 0;
+			if( !GetIntArgument( pArgs, red, bQuiet ) )
 				return false;
-			color = GetRGBColor( nColor );
+			resbuf* pArgC = pArgs;
+			int green = 0;
+			int blue = 0;
+			if( red >= 0 && red <= 255 &&
+					GetIntArgument( pArgs, green, true ) &&
+					green >= 0 && green <= 255 &&
+					GetIntArgument( pArgs, blue, true ) &&
+					blue >= 0 && blue <= 255 )
+				color = RGB(red, green, blue);
+			else
+			{
+				pArgs = pArgC;
+				color = GetRGBColor( red );
+			}
 		}
 		break;
 	}

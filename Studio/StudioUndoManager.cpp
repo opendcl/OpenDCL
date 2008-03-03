@@ -24,11 +24,17 @@ CStudioUndoManager::~CStudioUndoManager()
 	}
 }
 
+void CStudioUndoManager::setEnabled( bool bEnabled /*= true*/ )
+{
+	theStudioWorkspace.OnFlushUndoGroup(); //end any open undo groups
+	__super::setEnabled( bEnabled );
+}
+
 bool CStudioUndoManager::AddAction( CUndoAction* pAction )
 {
 	TraceFmt( _T("> CStudioUndoManager::AddAction(%s)\r\n"), (LPCTSTR)pAction->toString() );
 	assert( enabled() );
-	if( !enabled() )
+	if( !enabled() && pAction->GetType() != Undo::EndGroup ) //EndGroup still allowed even when disabled
 		return false;
 	mUndoStack.push_back( pAction );
 	if( pAction->GetType() == Undo::BeginGroup )
@@ -52,11 +58,12 @@ bool CStudioUndoManager::Undo( size_t ctActions /*= 1*/ )
 	assert( ctActions > 0 );
 	if( ctActions == 0 )
 		return true;
+	bool bWasEnabled = enabled();
+	setEnabled( false );
 	TDclControlPtr pActiveDclControl = theStudioWorkspace.GetActiveDclControl();
 	theStudioWorkspace.OnFlushUndoGroup(); //end any open undo groups
-	assert( mctGroups == 0 && mGroupProps.empty() );
+	assert( /*mctGroups == 0 &&*/ mGroupProps.empty() );
 	bool bFailed = false;
-	setEnabled( false );
 	size_t ctGroupsActive = 0;
 	while( ctActions > 0 )
 	{
@@ -80,7 +87,7 @@ bool CStudioUndoManager::Undo( size_t ctActions /*= 1*/ )
 		if( ctGroupsActive == 0 )
 			--ctActions;
 	}
-	setEnabled( true );
+	setEnabled( bWasEnabled );
 	TraceFmt( _T("< CStudioUndoManager::Undo()\r\n") );
 	return !bFailed;
 }

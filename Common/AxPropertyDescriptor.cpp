@@ -54,7 +54,6 @@ AxPropertyDescriptor::AxPropertyDescriptor( VARDESC* pVarDesc, ITypeInfo* pTypeI
 }
 
 AxPropertyDescriptor::AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo,
-																						CAxContainerCtrl* pContainer /*= NULL*/,
 																						LPOLEOBJECT pIObject /*= NULL*/ )
 : mDispId( 0 ), mType( 0 ), mbArray( false ), mbReadOnly( true ), mInvKind( (INVOKEKIND)0 )
 {
@@ -89,8 +88,7 @@ AxPropertyDescriptor::AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTyp
 
 		if( mType == VT_USERDEFINED )
 			GetRefGuid( pTypeInfo,
-									(vtVar == VT_PTR)? pFuncDesc->elemdescFunc.tdesc.lptdesc->hreftype : pFuncDesc->elemdescFunc.tdesc.hreftype,
-									pContainer );
+									(vtVar == VT_PTR)? pFuncDesc->elemdescFunc.tdesc.lptdesc->hreftype : pFuncDesc->elemdescFunc.tdesc.hreftype );
 
 		mrArgs.resize( ctParams );
 		BSTR* rbstrNames = new BSTR[ctParams + 1];
@@ -136,6 +134,36 @@ AxPropertyDescriptor::~AxPropertyDescriptor(void)
 {
 }
 
+CString AxPropertyDescriptor::GetTypeDisplayName() const
+{
+	CString sName;
+	if( mGuid != GUID_NULL )
+		sName = GetAxTypeName( mGuid );
+	if( sName.IsEmpty() )
+		sName = VARTYPEtoString( mType );
+	return sName;
+}
+
+CString AxPropertyDescriptor::GetEnumDisplayName( size_t idxEnum ) const
+{
+	if( idxEnum >= mrEnum.size() )
+		return _T("");
+	return VariantToString( mrEnum.at( idxEnum ).Var );
+}
+
+CString AxPropertyDescriptor::GetArgDisplayName( size_t idxArg ) const
+{
+	if( idxArg >= mrArgs.size() )
+		return _T("");
+	const AxArg& arg = mrArgs.at( idxArg );
+	CString sName;
+	if( arg.clsid != GUID_NULL )
+		sName = GetAxTypeName( arg.clsid );
+	if( sName.IsEmpty() )
+		sName = VARTYPEtoString( arg.vt );
+	return sName;
+}
+
 HRESULT AxPropertyDescriptor::Get( IDispatch* pObjectDisp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult ) const
 {
 	DISPPARAMS dpParams;
@@ -146,7 +174,7 @@ HRESULT AxPropertyDescriptor::Get( IDispatch* pObjectDisp, VARIANTARG* rvarArgs,
 
 	EXCEPINFO excepInfo = {0};
 	UINT iArgErr = 0;
-  return pObjectDisp->Invoke( mDispId, IID_NULL, GetUserDefaultLCID(), WORD( INVOKE_PROPERTYGET ),
+  return pObjectDisp->Invoke( mDispId, IID_NULL, GetUserDefaultLCID(), WORD( DISPATCH_PROPERTYGET ),
 															&dpParams, &varResult, &excepInfo, &iArgErr );
 }
 
@@ -207,10 +235,10 @@ HRESULT AxPropertyDescriptor::PerPropertyBrowsing( LPOLEOBJECT pIObject )
 	if (pIObject == NULL)
 		return E_POINTER;
 
-	if ((mType != VT_I2) &&
-		(mType != VT_UI2) &&
-		(mType != VT_I4) &&
-		(mType != VT_UI2))
+	if( (mType != VT_I2) &&
+			(mType != VT_UI2) &&
+			(mType != VT_I4) &&
+			(mType != VT_UI4) )
 		return E_UNEXPECTED; // wrong type
 
 	CComPtr< IPerPropertyBrowsing > pPpb;
@@ -250,7 +278,7 @@ Cleanup:
 }
 
 
-HRESULT AxPropertyDescriptor::GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype, CAxContainerCtrl* pContainer /*= NULL*/ )
+HRESULT AxPropertyDescriptor::GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype )
 {
 	ITypeInfo *TheRefType = NULL;
 	if ((hreftype != -1) &&
@@ -275,8 +303,6 @@ HRESULT AxPropertyDescriptor::GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype,
 			case TKIND_DISPATCH: // font, etc.
 				mType = VT_DISPATCH;
 				mGuid = pTA->guid;
-				if( pContainer )
-					pContainer->GetTemplate()->GetOwnerProject()->AddOleObject(pTA->guid, pContainer); // add this OLE object
 				break;
 			case TKIND_ENUM:
 				{

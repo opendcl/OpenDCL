@@ -90,23 +90,12 @@ void LoadArgsNDesc(Prop::Id nEventId, const TDclControlPtr pControl, CString &sA
 		switch( pControl->GetType())
 		{
 		case CtlGrid:
-			{
-				sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ROWCOL);
-				sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_SELCHANGED);			
-				break;
-			}
+			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_ROWCOL);
+			sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_SELCHANGED);			
+			break;
 		case CtlComboBox:
-			if (pControl->GetLongProperty(Prop::ComboBoxStyle) == 12)
-			{
-				sArgs = theWorkspace.LoadResourceString(IDS_ARG_FOLDER);
-				sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_DIRCHANGED);
-			}
-			else
-			{
-				sArgs = theWorkspace.LoadResourceString(IDS_ARGS_SELTEXT);
-				sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_SELCHANGED);
-			}
-		
+			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_SELTEXT);
+			sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_SELCHANGED);
 			break;
 		case CtlListBox:
 		case CtlOptionList:
@@ -130,7 +119,6 @@ void LoadArgsNDesc(Prop::Id nEventId, const TDclControlPtr pControl, CString &sA
 			sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_SELCHANGED);	
 			break;
 		}
-      
 		break;
       
 	case Prop::EventGetDayState:

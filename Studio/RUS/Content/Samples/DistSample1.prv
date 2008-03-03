@@ -1,0 +1,12 @@
+;;; Visual LISP make file [V1.0] DistSample saved to:[I:/APLANT/MP-Dev/OpenDCL] at:[6/18/07] 
+(PRV-DEF (:target . "DistSample1.vlx")
+	 (:active-x . T)
+	 (:separate-namespace)
+	 (:protected . T)
+	 (:load-file-list (:lsp "DistSample1.lsp"))
+	 (:require-file-list (:txt "DistSample.odcl.lsp"))
+	 (:ob-directory)
+	 (:tmp-directory)
+	 (:optimization . st)
+)
+;; EOF

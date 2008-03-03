@@ -36,7 +36,7 @@ END_MESSAGE_MAP()
 
 BOOL CEventsCheckTree::PreTranslateMessage(MSG* pMsg) 
 {
-	if( pMsg->message == WM_KEYDOWN ||  pMsg->message == WM_CHAR )
+	if( pMsg->message == WM_KEYDOWN || pMsg->message == WM_CHAR )
 	{
 		if( m_pView->PreTranslateMessage(pMsg) )
 			return TRUE;

@@ -58,8 +58,8 @@ void CArxRadioButtonCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 void CArxRadioButtonCtrl::OnClicked() 
 {
-	int nValue = __super::GetCheck();
-	mpTemplate->SetBooleanProperty( Prop::Value, (nValue != BST_UNCHECKED) );
+	int nValue = GetCheck();
+	mpTemplate->SetLongProperty( Prop::Value, nValue );
 	
 	CString sEvent = mpTemplate->GetStringProperty(Prop::EventClicked);
 	if( sEvent.SpanExcluding( _T("_") ) == _T("c:OnActionEvent") )

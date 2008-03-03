@@ -1,0 +1,241 @@
+[Method]
+Dir
+[Function]
+dcl_DwgList_Dir
+[Desc]
+This method list all Dwg files in the specified directory.
+[Arguments]
+<CONTROL>
+\par\tab sDirectory
+[as String]
+
+
+[Method]
+GetDir
+[Function]
+dcl_DwgList_GetDir
+[Desc]
+This method retrieves the current directory.
+[Arguments]
+<CONTROL>
+[as String]
+
+
+[Method]
+GetFileName
+[Function]
+dcl_DwgList_GetFileName
+[Desc]
+This method retrieves the full file name of the currently selected file or directory.
+[Arguments]
+<CONTROL>
+[as String]
+
+
+[Method]
+GetType
+[Function]
+dcl_DwgList_GetType
+[Desc]
+This method will retrieve the type of file indicated. If a 0 is returned, the file is a directory, 1 will indicate a Dwg file.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+GetText
+[Function]
+dcl_DwgList_GetText
+[Desc]
+This method will retrieve the displayed text of a requested list item.
+[Arguments Return] as String
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+GetSelectedItems
+[Function]
+dcl_DwgList_GetSelectedItems
+[Desc]
+This method will return a list of all selected items in the ListBox. This method is useful only for ListBoxes with multiple selection.
+[Arguments Return] as List of Strings
+<CONTROL>
+
+
+[Method]
+GetSelectedNths
+[Function]
+dcl_DwgList_GetSelectedNths
+[Desc]
+This method will return a list of all indexes of the selected items in the ListBox. This method is useful only for ListBoxes with multiple selection.
+[Arguments Return] as List of Integers
+<CONTROL>
+
+
+[Method]
+GetCount
+[Function]
+dcl_DwgList_GetCount
+[Desc]
+This method will return the total number of list items.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+SetCurSel
+[Function]
+dcl_DwgList_SetCurSel
+[Desc]
+This method will set the currently selected list item in a single selection ListBox. Pass in a -1 if you wish to deselect the current selection.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+GetCurSel
+[Function]
+dcl_DwgList_GetCurSel
+[Desc]
+This method will return the index of the currently selected list item in a single selection ListBox. -1 will be returned if nothing is selected.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+GetTopIndex
+[Function]
+dcl_DwgList_GetTopIndex
+[Desc]
+This method retrieves the index of the first visible item in a ListBox.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+SetTopIndex
+[Function]
+dcl_DwgList_SetTopIndex
+[Desc]
+This method ensures that the indicated ListBox item is visible. If it's not the ListBox is scrolled to ensure the item is visible.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+SetSel
+[Function]
+dcl_DwgList_SetSel
+[Desc]
+This method will set the indicated list item in a multiple selection ListBox as selected or unselected. 
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+\par\tab nIsSelected
+[as Integer: 0 = Not Selected, 1 = Selected]
+
+
+[Method]
+GetSel
+[Function]
+dcl_DwgList_GetSel
+[Desc]
+This method is used to determine if an item in the list box is currently selected.  This method is useful in a multiple selection ListBox. 
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+SetFocusIndex
+[Function]
+dcl_DwgList_SetFocusIndex
+[Desc]
+This method sets the focus rectangle of the ListBox to show around item at the specified index in a multiple selection ListBox.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+GetFocusIndex
+[Function]
+dcl_DwgList_GetFocusIndex
+[Desc]
+This method returns the index of the list item that has the focus rectangle in a multiple selection ListBox around it.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+GetSelCount
+[Function]
+dcl_DwgList_GetSelCount
+[Desc]
+This method returns the number of list items currently selected in a multiple selection ListBox.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+SelItemRange
+[Function]
+dcl_DwgList_SelItemRange
+[Desc]
+This method selects or deselects a range of list items in a multiple selection ListBox.
+[Arguments]
+<CONTROL>
+\par\tab nStartIndex 
+[as Integer]
+\par\tab nEndIndex 
+[as Integer]
+\par\tab nIsSelected
+[as Integer: 0 = Not Selected, 1 = Selected]
+
+
+[Method]
+SetAnchorIndex
+[Function]
+dcl_DwgList_SetAnchorIndex
+[Desc]
+This method sets the anchor list item in a multiple selection ListBox to begin an extended selection.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+GetAnchorIndex
+[Function]
+dcl_DwgList_GetAnchorIndex
+[Desc]
+This method retrieves the index of the current anchor list item in a ListBox.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+DeleteString
+[Function]
+dcl_DwgList_DeleteString
+[Desc]
+This method will delete a list item from the control.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[End of File]

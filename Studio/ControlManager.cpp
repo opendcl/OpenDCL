@@ -54,7 +54,7 @@ CControlManager::CControlManager( CDialogControl* pDlgControl, bool bCreate /*= 
 		pTopLevelWnd->SetRedraw( FALSE );
 		CRect rcControl = pDlgControl->GetEffectiveWindowRect();
 		Create( _T(""), WS_CHILD | WS_DISABLED, rcControl, pTopLevelWnd->GetParent() );
-		ModifyStyle( WS_CLIPCHILDREN, 0, 0 );
+		ModifyStyle( WS_CLIPCHILDREN, WS_CLIPSIBLINGS, 0 );
 		ModifyStyleEx( 0, WS_EX_TRANSPARENT, 0 );
 		rcControl.MoveToXY( 0, 0 );
 		mGripper.Create( _T(""), WS_CHILD, rcControl, this );
@@ -62,7 +62,7 @@ CControlManager::CControlManager( CDialogControl* pDlgControl, bool bCreate /*= 
 		//SetWindowPos( mpControlWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING );
 		//mpControlWnd->SetWindowPos( this, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING );
 		pTopLevelWnd->SetParent( this );
-		pTopLevelWnd->SetWindowPos( NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING );
+		pTopLevelWnd->SetWindowPos( NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING );
 		pTopLevelWnd->SetRedraw( TRUE );
 		ShowWindow( SW_SHOW );
 	}
@@ -96,9 +96,9 @@ void CControlManager::OnSelected( bool bSelected )
 	{
 		mGripper.ShowWindow( bSelected? SW_SHOW : SW_HIDE );
 		if( !bSelected )
-			mpControlWnd->RedrawWindow( NULL, NULL, RDW_FRAME | RDW_INVALIDATE );
+			mpControlWnd->RedrawWindow( NULL, NULL, RDW_FRAME | RDW_ERASE | RDW_INVALIDATE | RDW_UPDATENOW );
 		else
-			mGripper.SetWindowPos( mpControlWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING );
+			mGripper.SetWindowPos( mpControlWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING | SWP_NOCOPYBITS );
 	}
 }
 
@@ -242,7 +242,7 @@ void CControlManager::OnControlPositionChanged()
 	mbIgnoreSizing = true;
 	CRect rcCtrl = mpTemplate->GetWndRect();
 	mpControlWnd->SetWindowPos( NULL, 0, 0, rcCtrl.Width(), rcCtrl.Height(),
-															SWP_NOMOVE | SWP_NOZORDER | SWP_NOOWNERZORDER );
+															SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER );
 	CRect rcCtrlNew;
 	mpControlWnd->GetWindowRect( &rcCtrlNew );
 	GetDialogObject()->GetControlWnd()->ScreenToClient( &rcCtrlNew );

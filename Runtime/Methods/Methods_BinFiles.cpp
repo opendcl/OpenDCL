@@ -6,7 +6,7 @@
 #include "Methods_BinFiles.h"
 #include "Methods_ActiveX.h"
 #include "ArgumentsRetrieval.h"
-#include "Workspace.h"
+#include "ArxWorkspace.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // Methods_BinFiles
@@ -81,7 +81,7 @@ int OpenBinFile()
     //set ISOpen
     pFile->m_bIsOpen = true;
 
-    acedRetPointer( pFile, odcl::ptrBinFile );
+    theArxWorkspace.RetPointer( pFile, odcl::ptrBinFile );
     return 0;
 }
 

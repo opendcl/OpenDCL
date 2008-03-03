@@ -1,0 +1,81 @@
+[Method]
+SetCurSel 
+[Function]
+dcl_Tab_SetCurSel
+[Desc]
+This method will set the current tab selection.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+HideTab 
+[Function]
+dcl_Tab_HideTab
+[Desc]
+This method will hide a specified tab of a tab control.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+ShowTab 
+[Function]
+dcl_Tab_ShowTab
+[Desc]
+This method will reshow an already hidden tab of a tab control.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+SetTabText 
+[Function]
+dcl_Tab_SetTabText
+[Desc]
+This method change the text displayed of a specified tab of the tab control.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+\par\tab Text
+[as string]
+
+
+[Method]
+GetCurSel 
+[Function]
+dcl_Tab_GetCurSel
+[Desc]
+This method will get the current tab selection.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+GetRowCount
+[Function]
+dcl_Tab_GetRowCount
+[Desc]
+This method will return the number of tab rows in the tab control.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+GetControlArea
+[Function]
+dcl_Tab_GetControlArea
+[Desc]
+This method returns the size of the tab control's client area.
+[Arguments Return] as List (Width Height)
+<CONTROL>
+
+
+[End of File]

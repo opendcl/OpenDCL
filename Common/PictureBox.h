@@ -4,8 +4,8 @@
 #pragma once
 
 #include "AcadColorService.h"
-
-class CPictureObject;
+#include "RefCountedPtr.h"
+#include "PictureObject.h"
 
 const COLORREF COLOR_TRANSPARENT = (COLORREF)-1;
 const COLORREF COLOR_USEBACKGROUND = (COLORREF)0;
@@ -17,12 +17,11 @@ const COLORREF COLOR_USEBACKGROUND = (COLORREF)0;
 class CPictureBox : public CButton
 {
 	CAcadColorService mColorService;
-	CPictureObject* mpPicture;
+	RefCountedPtr< CPictureObject > mpPicture;
 protected:
 	int				m_cxIcon;
 	int				m_cyIcon;
 	BOOL			m_bMouseTracking;
-	LPPICTURE		m_pPictureHolder;
 	HBITMAP			m_hbmMem;
 	bool			m_bStretchLoadedPicture;
 
@@ -36,7 +35,8 @@ public:
 	virtual void AutoSize() {}
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	void Refresh(CDC *pdc);
-	void SetPicture( CPictureObject* pPicture );
+	void SetPicture( const CPictureObject* pPicture );
+	void SetPicture( UINT nIconResId );
 	void SetPictureBlank();
 	void Refresh();
 	void DrawLine(int sX, int sY, int eX, int eY, COLORREF rgb);
@@ -51,10 +51,9 @@ public:
 	void DrawFocusRect(int sX, int sY, int eX, int eY);
 	void DrawRect(int sX, int sY, int eX, int eY, COLORREF rgb);
 	void GetTextExtent(LPCTSTR pszText, CSize& ext);
-	void LoadPictureFile(LPCTSTR szFile, bool bStretch = false);
+	bool LoadPictureFile(LPCTSTR szFile, bool bStretch = false);
 	void CopyDC();
 
-	// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 
@@ -65,6 +64,5 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnPaint();
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnDestroy();
 	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
 };

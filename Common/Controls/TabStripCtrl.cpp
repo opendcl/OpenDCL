@@ -286,7 +286,7 @@ HBRUSH CTabStripCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	return mColorService.CtlColor( pDC, nCtlColor );
 }
 
 void CTabStripCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)

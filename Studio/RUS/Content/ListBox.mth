@@ -1,0 +1,319 @@
+[Method]
+AddString
+[Function]
+dcl_ListBox_AddString
+[Desc]
+This method will add a string to the specified ListBox. This method will return the index of the new inserted item.
+[Arguments as Integer]
+<CONTROL>
+NewString
+[as String]
+
+
+[Method]
+AddList
+[Function]
+dcl_ListBox_AddList
+[Desc]
+This method will add a list of strings to the specified ListBox.
+[Arguments]
+<CONTROL>
+\par\tab StringList
+[as List of Strings]
+
+
+[Method]
+Dir
+[Function]
+dcl_ListBox_Dir
+[Desc]
+This method will fill the ListBox with a list of files found in the directory search that matches the \cf1 sExtension \cf0 argument.  If the \cf1 sExtension \cf0 is not specified *.* is assumed.
+[Arguments]
+<CONTROL>
+\par\tab sDirectory
+[as String]
+\par\tab\i{Optional} \i0 sExtension
+[as String]
+
+
+[Method]
+Clear
+[Function]
+dcl_ListBox_Clear
+[Desc]
+This method will clear the ListBox of all its items.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+GetText
+[Function]
+dcl_ListBox_GetText
+[Desc]
+This method will retrieve a requested list item.
+[Arguments Return] as String
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+GetSelectedItems
+[Function]
+dcl_ListBox_GetSelectedItems
+[Desc]
+This method will return a list of all selected items in the ListBox. This method is useful only for ListBoxes with multiple selection.
+[Arguments Return] as List of Strings
+<CONTROL>
+
+
+[Method]
+GetSelectedNths
+[Function]
+dcl_ListBox_GetSelectedNths
+[Desc]
+This method will return a list of indices of the selected items in the ListBox. This method is useful only for ListBoxes with multiple selection.
+[Arguments Return] as List of Integers
+<CONTROL>
+
+
+[Method]
+GetCount
+[Function]
+dcl_ListBox_GetCount
+[Desc]
+This method will return the total number of list items.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+SetCurSel
+[Function]
+dcl_ListBox_SetCurSel
+[Desc]
+This method will set the currently selected list item in a single selection ListBox. Pass in a -1 if you wish to deselect the current selection.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+GetCurSel
+[Function]
+dcl_ListBox_GetCurSel
+[Desc]
+This method will return the index of the currently selected list item in a single selection ListBox. -1 will be returned if nothing is selected.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+GetTopIndex
+[Function]
+dcl_ListBox_GetTopIndex
+[Desc]
+This method retrieves the index of the first visible item in a ListBox.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+SetTopIndex
+[Function]
+dcl_ListBox_SetTopIndex
+[Desc]
+This method ensures that the indicated ListBox item is visible. If it's not the ListBox is scrolled to ensure the item is visible.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+SetItemData
+[Function]
+dcl_ListBox_SetItemData
+[Desc]
+This method will set the associated item data for the indicated list item. The item data will only accept integer values.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+\par\tab IntegerData
+[as Integer]
+
+
+[Method]
+GetItemData
+[Function]
+dcl_ListBox_GetItemData
+[Desc]
+This method will retrieve the associated item data for the indicated list item.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+DeleteString
+[Function]
+dcl_ListBox_DeleteString
+[Desc]
+This method will delete a list item from the ListBox.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+InsertString
+[Function]
+dcl_ListBox_InsertString
+[Desc]
+This method will insert a list item in the ListBox.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+\par\tab NewString
+[as String]
+
+
+[Method]
+FindStringExact
+[Function]
+dcl_ListBox_FindStringExact
+[Desc]
+This method finds the first string in a ListBox that contains a list item with the exact string match without changing the ListBox selection. A search for "Example Text" will find "Example Text". Use the dcl_ListBox_SelectString function instead to both find and select a string.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab SearchString
+[as String]
+
+
+[Method]
+FindString
+[Function]
+dcl_ListBox_FindString
+[Desc]
+This method finds the first string in a ListBox that contains a list item with the specified prefix or partial match without changing the ListBox selection. A search for "Text" will find "Example Text". Use the dcl_ListBox_SelectString function instead to both find and select a string.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab SearchString
+[as String]
+
+
+[Method]
+SelectString
+[Function]
+dcl_ListBox_SelectString
+[Desc]
+This method finds the first string in a ListBox that contains the specified prefix and selects this list item in the ListBox.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab SearchString
+[as String]
+
+
+[Method]
+SetSel
+[Function]
+dcl_ListBox_SetSel
+[Desc]
+This method will set the indicated list item in a multiple selection ListBox as selected or unselected. 
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+\par\tab bIsSelected
+[as Boolean (T = selected, Nil = unselected)]
+
+
+[Method]
+GetSel
+[Function]
+dcl_ListBox_GetSel
+[Desc]
+This method is used to determine if an item in the list box is currently selected.  This method is useful in a multiple selection ListBox. 
+[Arguments Return] as Boolean T or nil
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+SetFocusIndex
+[Function]
+dcl_ListBox_SetFocusIndex
+[Desc]
+This method sets the focus rectangle of the ListBox to show around item at the specified index in a multiple selection ListBox.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+GetFocusIndex
+[Function]
+dcl_ListBox_GetFocusIndex
+[Desc]
+This method returns the index of the list item that has the focus rectangle in a multiple selection ListBox around it.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+GetSelCount
+[Function]
+dcl_ListBox_GetSelCount
+[Desc]
+This method returns the number of list items currently selected in a multiple selection ListBox.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+SelItemRange
+[Function]
+dcl_ListBox_SelItemRange
+[Desc]
+This method selects or deselects a range of list items in a multiple selection ListBox.
+[Arguments]
+<CONTROL>
+\par\tab nStartIndex 
+[as Integer]
+\par\tab nEndIndex 
+[as Integer]
+\par\tab nIsSelected
+[as Boolean (T = selected, Nil = unselected)]
+
+
+[Method]
+SetAnchorIndex
+[Function]
+dcl_ListBox_SetAnchorIndex
+[Desc]
+This method sets the anchor list item in a multiple selection ListBox to begin an extended selection.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+GetAnchorIndex
+[Function]
+dcl_ListBox_GetAnchorIndex
+[Desc]
+This method retrieves the index of the current anchor list item in a ListBox.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[End of File]

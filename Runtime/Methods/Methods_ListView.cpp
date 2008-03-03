@@ -7,7 +7,7 @@
 #include "ArxListViewCtrl.h"
 #include "ControlTypes.h"
 #include "Resource.h"
-#include "Workspace.h"
+#include "ArxWorkspace.h"
 
 
 static void ReturnRowCol( int nRow, int nCol )
@@ -205,7 +205,7 @@ ADSRESULT ListView::GetItemData()
 
 	CArxListViewCtrl* pCtrl = (CArxListViewCtrl*)pDlgControl->GetControlWnd();
 
-	acedRetHandle( pCtrl->GetItemData( nItem ) );
+	theArxWorkspace.RetHandle( pCtrl->GetItemData( nItem ) );
 	return RSRSLT;
 }
 

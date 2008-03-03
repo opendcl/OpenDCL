@@ -11,7 +11,7 @@
 
 CFrameCtrl::CFrameCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
-, mAcadColorService( long(-COLOR_CAPTIONTEXT), long(-COLOR_BTNSHADOW) )
+, mColorService( GetSysColor( COLOR_CAPTIONTEXT ), GetSysColor( COLOR_BTNFACE ) )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -24,6 +24,17 @@ CFrameCtrl::~CFrameCtrl()
 bool CFrameCtrl::Create( CWnd* pParentWnd, UINT nID ) 
 {
 	bool bSuccess = (__super::Create( NULL, GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
+
+	if( mpControlPane->GetThemeHelper() )
+	{
+		TDclFormPtr pParentForm = mpTemplate->GetOwnerForm()->GetParentForm();
+		if( pParentForm )
+		{
+			TDclControlPtr pTabStrip = pParentForm->FindFirstControlOfType( CtlTabStrip );
+			if( pTabStrip && pTabStrip->GetBooleanProperty( Prop::UseVisualStyle ) )
+				mColorService.SetBackgroundColor( GetSysColor( COLOR_WINDOW ) );
+		}
+	}
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
@@ -39,26 +50,10 @@ DWORD CFrameCtrl::GetWndStyle() const
 	return dwStyle;
 }
 
-bool CFrameCtrl::OnApplyProperty( TPropertyPtr pProp )
-{
-	if( !__super::OnApplyProperty( pProp ) )
-		return false;
-	bool bFailed = false;
-	//switch( pProp->GetID() )
-	//{
-	//case Prop::Caption:
-	//	{
-	//		SetWindowText( pProp->GetStringValue() );
-	//	}
-	//	break;
-	//}
-	return !bFailed;
-}
-
 
 BEGIN_MESSAGE_MAP(CFrameCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
-	//ON_NOTIFY_REFLECT (NM_CUSTOMDRAW, &CFrameCtrl::OnNotifyCustomDraw)
+	ON_WM_WINDOWPOSCHANGING()
 END_MESSAGE_MAP()
 
 
@@ -73,9 +68,9 @@ BOOL CFrameCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CFrameCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	HBRUSH hbrBackground = mColorService.CtlColor( pDC, nCtlColor );
+	return NULL;
+	//return mColorService.GetTransparentBrush();
 }
 
 void CFrameCtrl::PostNcDestroy() 
@@ -83,17 +78,9 @@ void CFrameCtrl::PostNcDestroy()
 	__super::PostNcDestroy();
 	delete this;
 }
-//
-//void CFrameCtrl::OnNotifyCustomDraw ( NMHDR * pNotifyStruct, LRESULT* result )
-//{
-//	LPNMCUSTOMDRAW pCustomDraw = (LPNMCUSTOMDRAW)pNotifyStruct;
-//	ASSERT (pCustomDraw->hdr.hwndFrom == m_hWnd);
-//	ASSERT (pCustomDraw->hdr.code = NM_CUSTOMDRAW);
-//
-//	if( pCustomDraw->dwDrawStage == CDDS_PREPAINT )
-//	{
-//		::SetTextColor( pCustomDraw->hdc, mAcadColorService.GetForegroundColor() );
-//		::SetBkColor( pCustomDraw->hdc, mAcadColorService.GetBackgroundColor() );
-//	}
-//	*result = CDRF_DODEFAULT;
-//}
+
+void CFrameCtrl::OnWindowPosChanging(WINDOWPOS* lpwndpos)
+{
+	//lpwndpos->flags |= SWP_NOZORDER;
+	__super::OnWindowPosChanging(lpwndpos);
+}

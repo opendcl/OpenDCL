@@ -1,0 +1,525 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "..\SharedRes.Local.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "..\\SharedRes.Local.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "Res\\OpenDCL.ico"
+IDI_HELP                ICON                    "Res\\Help.ico"
+IDI_INFO                ICON                    "Res\\Info.ico"
+IDI_WARN                ICON                    "Res\\Warn.ico"
+IDI_ERR                 ICON                    "Res\\Error.ico"
+IDI_LABEL               ICON                    "Res\\Label.ico"
+IDI_FILTER              ICON                    "Res\\Filter.ico"
+IDI_PICK                ICON                    "Res\\Pick.ico"
+IDI_SELECT              ICON                    "Res\\Select.ico"
+IDI_FOLDER              ICON                    "Res\\Folder.ico"
+IDI_PICKSMALL           ICON                    "Res\\PickSmall.ico"
+IDI_SHXFONT             ICON                    "Res\\SHXFont.ico"
+IDI_TTFONT              ICON                    "Res\\TTFont.ico"
+IDI_LARGEBLOCK          ICON                    "Res\\LargeBlock.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_ARROWHEADS          BITMAP                  "Res\\ArrowHeads.bmp"
+IDB_OPTBTN              BITMAP                  "Res\\OptionButton.bmp"
+IDB_OPTBTNSEL           BITMAP                  "Res\\OptionButtonSel.bmp"
+IDB_OPTBTNH             BITMAP                  "Res\\OptionButtonH.bmp"
+IDB_OPTBTNSELH          BITMAP                  "Res\\OptionButtonSelH.bmp"
+IDB_FOLDER              BITMAP                  "Res\\Folder.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_HAND                CURSOR                  "Res\\Hand.cur"
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Spanish (Mexican) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESM)
+#ifdef _WIN32
+LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_MEXICAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_NONE                "<None>"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_OBJBROWSER          "(Navegador de Objetos)"
+    IDS_COLOR               "Color"
+    IDS_ODCFILTER           "Proyectos de OpenDCL(*.odcl,*.lsp)|*.odcl;*.lsp||"
+    IDS_SECONDTEXT          "segundo"
+    IDS_SECONDSTEXT         "segundos"
+    IDS_MINUTETEXT          "minuto"
+    IDS_MINUTESTEXT         "minutos"
+    IDS_REMAININGTEXT       "restantes"
+    IDS_COLORDISPLAYTEXT    "Color %d"
+    IDS_OPTION1             "Opción 1"
+    IDS_OPTION2             "Opción 2"
+    IDS_OPTION3             "Opción 3"
+    IDS_FILEDLGFILTERDEF    "Dibujo de AutoCAD |*.dwg;*.dxf|Archivo de AutoLISP (*.lsp,*.fas;*.vlx)|*.lsp;*.fas;*.vlx|"
+    IDS_SELFOLDER           "Selecciona una carpeta"
+    IDS_OPEN                "Abrir"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_TRUE                "Verdadero"
+    IDS_FALSE               "Falso"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_DCLFORM             "Formulario"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_POINTER             "Seleccionar Objetos"
+    IDS_LABEL               "Etiqueta"
+    IDS_TEXTBUTTON          "BotondeTexto"
+    IDS_GRAPHICBUTTON       "BotónGráfico"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_FRAME               "Marco"
+    IDS_TEXTBOX             "Caja de Texto"
+    IDS_CHECKBOX            "Casilla de verificación"
+    IDS_OPTION              "Opcion"
+    IDS_COMBOBOX            "Cuadro combinado"
+    IDS_LISTBOX             "Cuadro de lista"
+    IDS_SCROLLBAR           "Barra de desplazamiento"
+    IDS_SLIDERBAR           "Barra de desplazamiento"
+    IDS_PICTUREBOX          "Imagen"
+    IDS_TABS                "Barra de tabulaciones"
+    IDS_MONTHCAL            "Seleccionador de Meses"
+    IDS_TREE                "Control de Arbol"
+    IDS_RECT                "Rectangulo"
+    IDS_PROGRESSBAR         "Barra de Progreso"
+    IDS_SPINBUTTON          "Boton de opción"
+    IDS_URL                 "Liga Url"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ROUNDSLIDER         "Seleccionador de angulos"
+    IDS_BLOCKVIEW           "Visor de Blocks"
+    IDS_SLIDEVIEW           "Visor de diapositivas"
+    IDS_HTML                "Control Html"
+    IDS_DWGPREVIEW          "DwgVista previa"
+    IDS_LISTVIEW            "Cuadro de lista"
+    IDS_BLOCKLIST           "Lista de Bloques"
+    IDS_OPTIONLIST          "OptionList"
+    IDS_ACTIVEX             "Inserta control ActiveX"
+    IDS_DWGLIST             "Lista de Dibujos"
+    IDS_ANIMATION           "Animación"
+    IDS_IMAGECOMBOBOX       "Cuadro combinado"
+    IDS_GRID                "Grid"
+    IDS_SPLITTER            "separador"
+    IDS_HATCH               "Achurado"
+    IDS_FILEDLGCTRL         "DialArchPers"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_NAME           "(Nombre)"
+    IDS_PROP_CUSTOM         "(Asistente)"
+    IDS_PROP_AUTOSIZE       "Tamaño automatico"
+    IDS_PROP_BORDERSTYLE    "Estilo del borde"
+    IDS_PROP_BTNSTYLE       "Estilo"
+    IDS_PROP_CAPTION        "Texto"
+    IDS_PROP_CANCEL         "Cancelar"
+    IDS_PROP_COMBOBOXSTL    "Estilo"
+    IDS_PROP_DEFAULT        "Por defecto"
+    IDS_PROP_ENABLE         "Activado"
+    IDS_EVENT_BTNCLICKED    "ButtonClicked"
+    IDS_EVENT_CLICKED       "Clicked"
+    IDS_EVENT_DBLCLICKED    "DblClicked"
+    IDS_EVENT_EDITCHANGED   "EditChanged"
+    IDS_EVENT_NODECLICKED   "NodeClicked"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_EVENT_SELCHANGED    "SelChanged"
+    IDS_PROP_FILTERSTYLE    "Estilo de filtros"
+    IDS_PROP_HEIGHT         "Altura"
+    IDS_PROP_IMAGELIST      "Lista de Imagenes"
+    IDS_PROP_LARGECHNGE     "Incremento grande"
+    IDS_PROP_LEFT           "Izquierdo"
+    IDS_PROP_LIST           "Lista"
+    IDS_PROP_MAXVAL         "Valor Max"
+    IDS_PROP_MINVAL         "Valor Min"
+    IDS_PROP_MULTIROW       "Fila Multiple"
+    IDS_PROP_ORIENTATION    "Orientación"
+    IDS_PROP_PICTURE        "Imagen"
+    IDS_PROP_RECTSTYLE      "Estilo"
+    IDS_PROP_SMALLCHNG      "Incremento pequeño"
+    IDS_PROP_TABSCAPTION    "Textos tabuladores"
+    IDS_PROP_TABSIMAGELIST  "Imagenes tabuladores"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_TABSTTTLIST    "Sugerencias Tabuladores"
+    IDS_PROP_TEXT           "Texto"
+    IDS_PROP_TICKFRQCY      "Frecuencia del marcador"
+    IDS_PROP_TITLEBARTEXT   "Texto de la barra de titulo"
+    IDS_PROP_TTT            "Titulo sugerencia"
+    IDS_PROP_TOP            "Arruba"
+    IDS_PROP_VALUE          "Valor"
+    IDS_PROP_VISIBLE        "Visible"
+    IDS_PROP_WIDTH          "Ancho"
+    IDS_PROP_SHOWTICKS      "Mostrar marcadores"
+    IDS_PROP_READONLY       "Solo lectura"
+    IDS_PROP_JUSTIFICATION  "Justificación"
+    IDS_PROP_MARGINLEFT     "Margen izquierdo"
+    IDS_PROP_MARGINRIGHT    "Margen derecho"
+    IDS_PROP_LIMITTEXT      "Texto límite"
+    IDS_PROP_AUTOHSCROLL    "Auto Barra-H"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_AUTOVSCROLL    "Auto Barra-V-"
+    IDS_PROP_DROPDOWNHEIGHT "Altura libre despegable"
+    IDS_PROP_MULTICOL       "Column multiple"
+    IDS_PROP_SELECTSTYLE    "Estilo de selection"
+    IDS_PROP_NOINTEGRALHEIGHT "Altura no integral"
+    IDS_PROP_SORTED         "Ordenado"
+    IDS_PROP_USETABSTOPS    "Usar parada de tabulador"
+    IDS_PROP_DISABLENOSCROLL "Deshabilitar no desplazamiento"
+    IDS_PROP_HSCROLL        "Barras de desplazamiento horizontal"
+    IDS_PROP_VSCROLL        "Barras de desplazamiento vertical"
+    IDS_PROP_COLWIDTH       "Ancho de columna"
+    IDS_PROP_SMOOTHPROG     "Progreso suave"
+    IDS_PROP_AUTOWRAP       "Ajuste de linea automático"
+    IDS_PROP_URLADDRESS     "Dirección URL"
+    IDS_PROP_TAB_JUSTIFIED  "Justificacion del Tabulador"
+    IDS_PROP_TAB_STYLE      "Estilo del Tabulador"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_TAB_LABEL_ALIGN "Alineacion de la etiqueta"
+    IDS_PROP_TAB_FIXEDWIDTH "Ancho fijo de tabulador"
+    IDS_PROP_URLLINKTYPE    "Tipo de Link"
+    IDS_PROP_MINTABWIDTH    "Ancho mínimo de tabulador"
+    IDS_PROP_TABSELECTED    "Tabulador seleccionado"
+    IDS_PROP_ITEMDATA       "Elemento de datos"
+    IDS_PROP_TOOLBARBTN_CAPTIONS "Botón mensaje"
+    IDS_PROP_TOOLBARBTN_IMAGES "Boton imagenes"
+    IDS_PROP_TOOLBARBTN_TTTEXT "Títulos de las sugerencias del boton"
+    IDS_PROP_TOOLBARBTN_STYLES "Estilos del botón"
+    IDS_PROP_USETOPFROMBOTTOM "Usar la parte superior desde abajo"
+    IDS_PROP_USEBOTTOMFROMBOTTOM "Usar la parte inferior desde abajo"
+    IDS_PROP_USELEFTFROMRIGHT "Usar de izquierda a derecha"
+    IDS_PROP_USERIGHTFROMRIGHT "Usar de derecha a izquierda"
+    IDS_PROP_TOPFROMBOTTOM  "De la parte superior hacia abajo"
+    IDS_PROP_BOTTOMFROMBOTTOM "De la parte inferior hacia abajo"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_LEFTFROMRIGHT  "De izquierda a derecha"
+    IDS_PROP_RIGHTFROMRIGHT "Derecha a izquierda"
+    IDS_PROP_RESIZABLE      "Permitir redimensionamiento"
+    IDS_PROP_FORMCONTROLABILITY "En el evento"
+    IDS_PROP_MULTISELECT    "Cantidad de seleccion máxima"
+    IDS_EVENT_GETDAYSTATE   "GetDayState"
+    IDS_EVENT_SELECT        "Select"
+    IDS_EVENT_KILLFOCUS     "KillFocus"
+    IDS_EVENT_OUTOFMEM      "OutOfMemory"
+    IDS_EVENT_RCLICK        "RightClick"
+    IDS_EVENT_RDBLCLICK     "RightDblClick"
+    IDS_EVENT_RETURN        "Return"
+    IDS_EVENT_SETFOCUS      "SetFocus"
+    IDS_EVENT_BGNLBLEDIT    "BeginLabelEdit"
+    IDS_EVENT_DELETEITEM    "DeleteItem"
+    IDS_EVENT_EDITLABELITEM "EndLabelEdit"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_EVENT_ITEMEXPANED   "ItemExpanded"
+    IDS_EVENT_ITEMEXPANDING "ItemExpanding"
+    IDS_EVENT_KEYDOWN       "KeyDown"
+    IDS_EVENT_SELCHANGING   "SelChanging"
+    IDS_EVENT_CHANGED       "Changed"
+    IDS_EVENT_MAXTEXT       "MaxText"
+    IDS_EVENT_UPDATE        "Update"
+    IDS_EVENT_DROPDOWN      "DropDown"
+    IDS_EVENT_SCROLL        "Scroll"
+    IDS_EVENT_RELEASEDCAPTURE "ReleasedCapture"
+    IDS_PROP_FONTUNDERLINE  "Fuente subrayada"
+    IDS_PROP_FONTITALIC     "Fuente Itálica"
+    IDS_PROP_FONTBOLD       "Fuente Negrita"
+    IDS_PROP_FONTSIZE       "Tamaño de fuente"
+    IDS_PROP_FONTNAME       "Fuente"
+    IDS_PROP_FONTSTRIKEOUT  "Fuente tachada"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_FONTCOLOR      "Fuente Color"
+    IDS_PROP_BLOCKNAME      "Nombre de bloque"
+    IDS_PROP_FILENAME       "Nombre de archivo"
+    IDS_PROP_COLOR          "(Color)"
+    IDS_PROP_CFGTABCAPTION  "Textp Tab Config"
+    IDS_PROP_ALLOWORBIT     "Modo de Interfaz"
+    IDS_EVENT_FORMCLOSE     "Close"
+    IDS_EVENT_FORMINIT      "Initialize"
+    IDS_EVENT_FORMSIZE      "Size"
+    IDS_EVENT_FORMSHOW      "Show"
+    IDS_EVENT_DOCACTIVATE   "DocActivated"
+    IDS_EVENT_CFGCANCEL     "Cancel"
+    IDS_EVENT_CFGOK         "OK"
+    IDS_EVENT_CFGHELP       "Help"
+    IDS_EVENT_CFGAPPLY      "Apply"
+    IDS_PROP_ACADBKCOLOR    "Color de fondo"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_SHOWSELALWAYS  "Siempre muestra seleccionar"
+    IDS_PROP_INDENT         "Indentación"
+    IDS_PROP_HASLINES       "Tiene lineas"
+    IDS_PROP_LINESATROOT    "Lineas como ruta"
+    IDS_PROP_HASBUTTONS     "Tiene botones"
+    IDS_PROP_EDITLABLE      "Editar etiqueta"
+    IDS_PROP_HASCHECKBOXES  "Tiene casillas de verificación"
+    IDS_PROP_TITLEBARICON   "Icono de la barra de título"
+    IDS_EVENT_KEYUP         "KeyUp"
+    IDS_EVENT_MOUSEDOWN     "MouseDown"
+    IDS_EVENT_MOUSEUP       "MouseUp"
+    IDS_EVENT_MOUSEMOVE     "MouseMove"
+    IDS_EVENT_MOUSEMOVEDOFF "MouseMovedOff"
+    IDS_EVENT_MOUSEDBLCLICK "MouseDblClick"
+    IDS_EVENT_MOUSEWHEEL    "MouseWheel"
+    IDS_EVENT_PAINT         "Paint"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_USEMASK        "Usar Mascara"
+    IDS_PROP_SHOWEDITBOX    "Mostrar caja de edición"
+    IDS_EVENT_NAVCOMPLETE   "NavigationComplete"
+    IDS_PROP_INPUTFILTER    "Filtro para entrada de datos"
+    IDS_PROP_TABORDER       "Orden de tabuladores"
+    IDS_PROP_SHOWORBITCIRCLES "Mostrar Orbit Circles"
+    IDS_PROP_ISTABSTOP      "Es parada de Tab"
+    IDS_EVENT_MOUSEENTERED  "MouseEntered"
+    IDS_PROP_GROUP          "Inicio de grupo"
+    IDS_PROP_MOUSEOVERPICT  "Imagen para Mouse-Over"
+    IDS_PROP_RENDERMODE     "Modo de representacion"
+    IDS_EVENT_RETURNPRESSED "ReturnPressed"
+    IDS_EVENT_FORMCANCELCLOSE "CancelClose"
+    IDS_EVENT_LMOUSE        "LMouse"
+    IDS_EVENT_MMOUSE        "MMouse"
+    IDS_EVENT_RMOUSE        "RMouse"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_ZORDER         "Orden Z/Tab"
+    IDS_PROP_LISTVIEWSTYLE  "Estilo"
+    IDS_PROP_LVSORT         "Ordenando"
+    IDS_PROP_ICONALIGN      "Alineación de icono"
+    IDS_PROP_BLOCKLISTSTYLE "Estilo"
+    IDS_PROP_AUTOARRANGE    "Auto ordenado de iconos"
+    IDS_PROP_COLHEADER      "Encabezado de columnas"
+    IDS_PROP_LABELWRAP      "Ajeste de etiqueta"
+    IDS_PROP_ALLOWSCROLLING "Permitir desplazamiento"
+    IDS_PROP_MULTISELECTION "Selección multiple"
+    IDS_PROP_ICONXSPACING   "Espaciado X del icono"
+    IDS_PROP_ICONYSPACING   "Espaciado Y del icono"
+    IDS_EVENT_DRAGDROPTOACAD "DragnDropToAutoCAD"
+    IDS_EVENT_DRAGDROPFROMCTRL "DragnDropFromControl"
+    IDS_EVENT_DRAGDROPFROMACAD "DragnDropFromOther"
+    IDS_EVENT_DRAGDROPBEGIN "DragnDropBegin"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_DRAGNDROPALLOWBEGIN "Permitir iniciar Arratrar/Soltar"
+    IDS_PROP_DRAGNDROPALLOWDROP "Permitir terminar Drag/Drop "
+    IDS_PROP_GRIDLINES      "Malla"
+    IDS_PROP_FULLROWSELECT  "Seleccionar Toda la fila"
+    IDS_PROP_MINDLGWIDTH    "Ancho mínimo del cuadro"
+    IDS_PROP_MAXDLGWIDTH    "Ancho máximo del cuadro"
+    IDS_PROP_MINDLGHEIGHT   "Altura mínima del cuadro"
+    IDS_PROP_MAXDLGHEIGHT   "Altura máxima del cuadro"
+    IDS_EVENT_COLCLICK      "ColumnClick"
+    IDS_PROP_FONTSIZESTYLE  "Estilo del tamaño de la fuente"
+    IDS_PROP_FORECOLOR      "Color del frente"
+    IDS_PROP_TRANSPARENT    "Transparente"
+    IDS_EVENT_SCROLLED      "Desplazado"
+    IDS_PROP_DOCSIDES       "Lados para el anclaje"
+    IDS_PROP_DOCDEFAULT     "Anclado por defecto"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_EVENTINVOKE    "Event Invoke"
+    IDS_PROP_RETURNASTAB    "Enter como tabulador"
+    IDS_PROP_SINGLEEXPANED  "Expandido sencillo"
+    IDS_PROP_ACTIVEXPROPPAGES "(Asistente ActiveX)"
+    IDS_PROP_ROWHEIGHT      "Altura de fila"
+    IDS_PROP_DEFSELINDEX    "Seleccion por defecto"
+    IDS_PROP_OBJECTBROWSER  "(Explorador de Objetos)"
+    IDS_PROP_VARNAME        "(NombreVar)"
+    IDS_PROP_FILEDLGSTYLE   "Estilo"
+    IDS_PROP_ASREADONLY     "Como solo lectura"
+    IDS_PROP_CREATIONPROMPT "Mensaje de creación"
+    IDS_PROP_DEFAULTEXTENSION "Extensión por defecto"
+    IDS_PROP_EXTCANBEDIFF   "La extension puede ser diferente"
+    IDS_PROP_FILEMUSTEXIST  "El archivo debe existir"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_FILTER         "Filtro"
+    IDS_PROP_OVERWRITEPROMPT "Mensaje de sobreescritura"
+    IDS_PROP_PATHMUSTEXIST  "La ruta debe existir"
+    IDS_PROP_SHOWCANCEL     "Mostrar cancelar"
+    IDS_PROP_SHOWHELP       "Mostrar ayuda"
+    IDS_PROP_SHOWNAMELABEL  "Mostrar nombre de etiqueta"
+    IDS_PROP_SHOWNAMETEXTBOX "Mostar nombre de caja de texto"
+    IDS_PROP_SHOWOK         "Mostrar OK"
+    IDS_PROP_SHOWREADONLYCHECKBOX "Mostar verificación de sólo lectura"
+    IDS_PROP_SHOWTYPECOMBOBOX "Mostrar lista de tipos"
+    IDS_PROP_SHOWTYPELABEL  "Mostrar etiqueta de tipos"
+    IDS_EVENT_FOLDERCHANGE  "FolderChange"
+    IDS_EVENT_HELP          "Ayuda"
+    IDS_EVENT_TYPECHANGE    "TypeChange"
+    IDS_PROP_INSERTTYPE     "Bloque o Xref"
+    IDS_PROP_ROWHEADER      "Encabezado de fila"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_COLUMN_CAPTIONS "Columna Texto"
+    IDS_PROP_COLUMN_ALIGNMENTS "Columna Alineacion de columnas"
+    IDS_PROP_COLUMN_IMAGES  "Imagen para columnas"
+    IDS_PROP_COLUMN_WIDTHS  "Ancho de columna"
+    IDS_PROP_COLUMN_STYLES  "Estilo de columna"
+    IDS_PROP_COLUMN_DEFAULTIMAGES "Imagenes por defecto para columna"
+    IDS_PROP_COLUMN_ALTERNATEIMAGES "imagenes alternativas para columna"
+    IDS_PROP_COLUMN_LISTITEMS "Elemnto de lista para columna"
+    IDS_PROP_COLUMN_LISTIMAGES "Imagenes para la lista de columna"
+    IDS_PROP_ALTERNATECOLOR "Color alternativo"
+    IDS_PROP_ALTORIENTATION "Orientación Alternativa"
+    IDS_PROP_TOOLTIP_MAINTEXT "Sugerencia Encabezado"
+    IDS_PROP_TOOLTIP_PICTURE "Sugerencia Imagen"
+    IDS_PROP_TOOLTIP_AVIFILENAME "sugerencia Nombre de archivo AVI"
+    IDS_PROP_TOOLTIP_LINE   "sugerencia línea"
+    IDS_PROP_TOOLTIP_TITLECOLOR "sugerencia Color para titulo"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_SPLITTERSTYLE  "Estilo de arista"
+    IDS_PROP_CLOSESTINSIDE  "Mas cercano interior"
+    IDS_PROP_CLOSESTOUTSIDE "Mas cercano exterior"
+    IDS_PROP_HATCHSCALE     "Escala achurado"
+    IDS_EVENT_SPLITTERMOVED "Splitter Moved"
+    IDS_PROP_CAPTION_SECOND "Mensaje (Segundo)"
+    IDS_PROP_CAPTION_SECONDS "Mensaje Segundos)"
+    IDS_PROP_CAPTION_MINUTE "Memsaje (Minutos)"
+    IDS_PROP_CAPTION_MINUTES "Mensaje (Minutos)"
+    IDS_PROP_DISPLAYSECONDS "Muestra segundos"
+    IDS_PROP_DISPLAY_PERCENTAGE "Muestra porcentajes"
+    IDS_EVENT_FORM_ONOK     "Aceptar"
+    IDS_PROP_TITLEBAR       "Barra de título"
+    IDS_EVENT_FORM_ONCANCEL "Cancelar"
+    IDS_PROP_TOOLTIP_BALLOON "Globo de sugerencia"
+    IDS_EVENT_FORM_ENTERINGNODOCSTATE "EnteringNoDocState"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PROP_USEVISUALSTYLE "Usar estilo visual"
+    IDS_PROP_CAPTION_REMAINING "Mensaje (Restante)"
+    IDS_PROP_PROGRESSLEGEND "Tipo de leyenda"
+    IDS_PROP_KEEPFOCUS      "Mantener atención"
+END
+
+#endif    // Spanish (Mexican) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

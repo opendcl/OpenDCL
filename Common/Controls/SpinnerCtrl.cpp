@@ -132,7 +132,5 @@ BOOL CSpinnerCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CSpinnerCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	if( !IsWindowEnabled() )
-		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	return mColorService.CtlColor( pDC, nCtlColor, this );
 }

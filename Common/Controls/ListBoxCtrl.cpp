@@ -84,54 +84,42 @@ bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	switch( pProp->GetID() )
 	{
 	case Prop::Sorted:
-		{
-			if( pProp->GetBooleanValue() )
-				ModifyStyle( 0, LBS_SORT, 0 );
-			else
-				ModifyStyle( LBS_SORT, 0, 0 );
-			OnNeedRepaint();
-		}
+		if( pProp->GetBooleanValue() )
+			ModifyStyle( 0, LBS_SORT, 0 );
+		else
+			ModifyStyle( LBS_SORT, 0, 0 );
+		OnNeedRepaint();
 		break;
 	case Prop::ColumnWidth:
-		{
-			SetColumnWidth( pProp->GetLongValue() );
-		}
+		SetColumnWidth( pProp->GetLongValue() );
 		break;
 	case Prop::DisableNoScroll:
-		{
-			if( pProp->GetBooleanValue() )
-				ModifyStyle( 0, LBS_DISABLENOSCROLL, SWP_FRAMECHANGED );
-			else
-				ModifyStyle( LBS_DISABLENOSCROLL, 0, SWP_FRAMECHANGED );
-		}
+		if( pProp->GetBooleanValue() )
+			ModifyStyle( 0, LBS_DISABLENOSCROLL, SWP_FRAMECHANGED );
+		else
+			ModifyStyle( LBS_DISABLENOSCROLL, 0, SWP_FRAMECHANGED );
 		break;
 	case Prop::MultiColumn:
-		{
-			if( pProp->GetBooleanValue() )
-				ModifyStyle( 0, LBS_MULTICOLUMN, SWP_FRAMECHANGED );
-			else
-				ModifyStyle( LBS_MULTICOLUMN, 0, SWP_FRAMECHANGED );
-		}
+		if( pProp->GetBooleanValue() )
+			ModifyStyle( 0, LBS_MULTICOLUMN, SWP_FRAMECHANGED );
+		else
+			ModifyStyle( LBS_MULTICOLUMN, 0, SWP_FRAMECHANGED );
 		break;
 	case Prop::SelectionStyle:
+		switch( pProp->GetLongValue() )
 		{
-			switch( pProp->GetLongValue() )
-			{
-			case 1:
-				ModifyStyle( LBS_MULTIPLESEL, LBS_EXTENDEDSEL, SWP_FRAMECHANGED );
-				break;
-			case 2:
-				ModifyStyle( LBS_EXTENDEDSEL, LBS_MULTIPLESEL, SWP_FRAMECHANGED );
-				break;
-			}
+		case 1:
+			ModifyStyle( LBS_MULTIPLESEL, LBS_EXTENDEDSEL, SWP_FRAMECHANGED );
+			break;
+		case 2:
+			ModifyStyle( LBS_EXTENDEDSEL, LBS_MULTIPLESEL, SWP_FRAMECHANGED );
+			break;
 		}
 		break;
 	case Prop::List:
-		{
-			ResetContent();
-			for (size_t idx = 0; idx < pProp->size(); idx++)
-				AddString( pProp->GetStringItem( idx ) );
-		}
+		ResetContent();
+		for (size_t idx = 0; idx < pProp->size(); idx++)
+			AddString( pProp->GetStringItem( idx ) );
 		break;
 	}
 	return !bFailed;
@@ -231,10 +219,15 @@ bool CListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 	GlobalFree( hData );
 	BOOL bOutside = TRUE;
 	UINT idxItem = ItemFromPoint( point, bOutside );
-	CRect rcItem;
-	GetItemRect( idxItem, &rcItem );
-	if( point.y > ((rcItem.top + rcItem.bottom) / 2) )
-		++idxItem;
+	if( (short)idxItem < 0 )
+		idxItem = 0;
+	else
+	{
+		CRect rcItem;
+		GetItemRect( idxItem, &rcItem );
+		if( point.y > ((rcItem.top + rcItem.bottom) / 2) )
+			++idxItem;
+	}
 	if( mnDragSource >= 0 && dropEffect == DROPEFFECT_MOVE )
 	{
 		DeleteString( mnDragSource );
@@ -298,5 +291,5 @@ HBRUSH CListBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	if( !IsWindowEnabled() )
 		return NULL;
-	return mAcadColorService.CtlColor( pDC, nCtlColor );
+	return mColorService.CtlColor( pDC, nCtlColor );
 }

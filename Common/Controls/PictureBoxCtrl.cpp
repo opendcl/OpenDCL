@@ -68,12 +68,36 @@ static CRect CalcFitRect(int nPicWidth, int nPicHeight, int nCtrlWidth, int nCtr
 	return rcCell;
 }
 
+static bool IsButtonLikeRequired( TDclControlPtr pDclControl )
+{
+	if( !pDclControl->GetStringProperty( Prop::EventClicked ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventDblClicked ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::DragnDropBegin ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventKeyDown ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventKeyUp ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventKillFocus ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventSetFocus ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventMouseDown ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventMouseEntered ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventMouseMove ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventMouseMovedOff ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventMouseUp ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventMouseWheel ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventRClick ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventRDblClick ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::ToolTipTitle ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::ToolTipBody ).IsEmpty() )
+		return true;
+	return false;
+};
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CPictureBoxCtrl
 
 CPictureBoxCtrl::CPictureBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
+, mbButtonLike( IsButtonLikeRequired( pTemplate ) )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -81,6 +105,13 @@ CPictureBoxCtrl::CPictureBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane,
 
 CPictureBoxCtrl::~CPictureBoxCtrl()
 {
+}
+
+DWORD CPictureBoxCtrl::GetWndStyle() const
+{
+	DWORD dwStyle = (__super::GetWndStyle() | WS_CLIPCHILDREN);
+
+	return dwStyle;
 }
 
 bool CPictureBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
@@ -103,15 +134,30 @@ bool CPictureBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 		case Prop::Picture:
 			SetPictureID( pProp->GetLongValue() );
 			break;
+		case Prop::EventClicked:
+		case Prop::EventDblClicked:
+		case Prop::DragnDropBegin:
+		case Prop::EventKeyDown:
+		case Prop::EventKeyUp:
+		case Prop::EventKillFocus:
+		case Prop::EventSetFocus:
+		case Prop::EventMouseDown:
+		case Prop::EventMouseEntered:
+		case Prop::EventMouseMove:
+		case Prop::EventMouseMovedOff:
+		case Prop::EventMouseUp:
+		case Prop::EventMouseWheel:
+		case Prop::EventRClick:
+		case Prop::EventRDblClick:
+		case Prop::ToolTipTitle:
+		case Prop::ToolTipBody:
+			if( pProp->GetStringValue().IsEmpty() )
+				mbButtonLike = IsButtonLikeRequired( mpTemplate );
+			else
+				mbButtonLike = true;
+			break;
 	}
 	return !bFailed;
-}
-
-DWORD CPictureBoxCtrl::GetWndStyle() const
-{
-	DWORD dwStyle = (__super::GetWndStyle() | WS_CLIPCHILDREN);
-
-	return dwStyle;
 }
 
 void CPictureBoxCtrl::SetPictureID(int nPictureID)
@@ -152,19 +198,6 @@ void CPictureBoxCtrl::Clear()
 	// set the picture ID to a value that indicates it's blank
 	mpTemplate->SetLongProperty(Prop::Picture, 0);
 	SetPictureBlank();
-	
-	if (m_pPictureHolder)
-	{
-		m_pPictureHolder->Release();
-		m_pPictureHolder = NULL;
-		//delete m_pPictureHolder;
-	}
-
-	if (m_hbmMem != NULL)
-	{
-		DeleteObject(m_hbmMem);
-		m_hbmMem = NULL;
-	}
 	
 	//RedrawWindow();
 	CAcadColorService* pColorService = GetColorService();
@@ -286,8 +319,31 @@ void CPictureBoxCtrl::PostNcDestroy()
 	delete this;
 }
 
+BEGIN_MESSAGE_MAP(CPictureBoxCtrl, CPictureBox)
+	ON_WM_NCHITTEST()
+	ON_WM_WINDOWPOSCHANGING()
+END_MESSAGE_MAP()
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CPictureBoxCtrl message handlers
+
 BOOL CPictureBoxCtrl::PreTranslateMessage(MSG* pMsg)
 {
 	GetToolTipCtrl().RelayEvent( pMsg );
 	return __super::PreTranslateMessage( pMsg );
+}
+
+__UINT_LRESULT CPictureBoxCtrl::OnNcHitTest(CPoint point)
+{
+	if( !mbButtonLike )
+		return HTTRANSPARENT;
+
+	return CButton::OnNcHitTest(point);
+}
+
+void CPictureBoxCtrl::OnWindowPosChanging(WINDOWPOS* lpwndpos)
+{
+	//lpwndpos->flags |= SWP_NOZORDER;
+	__super::OnWindowPosChanging(lpwndpos);
 }
