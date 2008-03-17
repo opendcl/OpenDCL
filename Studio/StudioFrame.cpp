@@ -23,10 +23,6 @@ IMPLEMENT_DYNCREATE(CStudioFrame, CMDIFrameWnd)
 BEGIN_MESSAGE_MAP(CStudioFrame, CMDIFrameWnd)
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
-	ON_COMMAND(ID_HELP_FINDER, &__super::OnHelpFinder)
-	ON_COMMAND(ID_HELP, &__super::OnHelp)
-	ON_COMMAND(ID_CONTEXT_HELP, &__super::OnContextHelp)
-	ON_COMMAND(ID_DEFAULT_HELP, &__super::OnHelpFinder)
 	ON_COMMAND(ID_EDIT_UNDO, &CStudioFrame::OnEditUndo)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_UNDO, &CStudioFrame::OnUpdateEditUndo)
 	ON_COMMAND(ID_WINDOW_CLOSE, &CStudioFrame::OnWindowClose)
@@ -98,15 +94,15 @@ BOOL CStudioFrame::VerifyBarState( LPCTSTR lpszProfileName )
 	return TRUE;
 }
 
-void CStudioFrame::OnFontChange( const FontSettings& FS )
+void CStudioFrame::OnFontChange( const FontSettings& FS, UINT flags /*= fontAll*/ )
 {
 	if( !FS )
 		return;
 	CStudioDialogObject* pDlgObject = theStudioWorkspace.GetActiveDlgObject();
 	if( pDlgObject )
-		pDlgObject->OnFontChange( FS );
+		pDlgObject->OnFontChange( FS, flags );
 	else
-		theApp.SetDefaultFontSettings( FS );
+		theApp.SetDefaultFontSettings( FS, flags );
 }
 
 TDclFormPtr CStudioFrame::AddNewDclFormView( FormType nType )

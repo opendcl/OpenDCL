@@ -104,7 +104,7 @@ public:
 	size_t CountPropertyListItems( Prop::Id nID );
 	CString GetPropertyListItem( Prop::Id nID, size_t nIndex );
 	CRect GetWndRect() const;
-	void SetFontProperties( const FontSettings& FS );
+	void SetFontProperties( const FontSettings& FS, UINT flags = fontAll );
 
 	bool SetStringProperty( Prop::Id nID, LPCTSTR pszValue );
 	TPropertyPtr AddStringProperty( Prop::Id nID,

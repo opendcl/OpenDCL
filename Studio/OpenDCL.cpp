@@ -7,6 +7,7 @@
 #include "OpenDCLDoc.h"
 #include "ProjectPane.h"
 #include "StudioWorkspace.h"
+#include "FontSettings.h"
 #include "FontPropPage.h"
 #include "GridSpacingDlg.h"
 
@@ -70,17 +71,28 @@ FontSettings COpenDCLApp::GetDefaultFontSettings() const
 	return FS;
 }
 
-void COpenDCLApp::SetDefaultFontSettings( const FontSettings& FS )
+void COpenDCLApp::SetDefaultFontSettings( const FontSettings& FS, UINT flags /*= fontAll*/ )
 {
   if( !FS )
 		return;
 	CWinApp* pApp = AfxGetApp();
 	static const LPCTSTR pszSection = theWorkspace.GetAppKey();
-	pApp->WriteProfileString( pszSection, S_DefaultFontName, FS.name() );
-	pApp->WriteProfileInt( pszSection, S_DefaultFontSize, FS.size() );
-	pApp->WriteProfileInt( pszSection, S_DefaultFontBold, FS.isBold() );
-	pApp->WriteProfileInt( pszSection, S_DefaultFontUnderLine, FS.isUnderlined() );
-	pApp->WriteProfileInt( pszSection, S_DefaultFontItalic, FS.isItalic() );
+	if( flags & fontName )
+		pApp->WriteProfileString( pszSection, S_DefaultFontName, FS.name() );
+	if( flags & fontSize )
+		pApp->WriteProfileInt( pszSection, S_DefaultFontSize, FS.size() );
+	else if( flags & fontScaled )
+	{
+		long lSize = pApp->GetProfileInt( pszSection, S_DefaultFontSize, -10 );
+		if( (lSize > 0) ^ FS.isScaled() )
+			pApp->WriteProfileInt( pszSection, S_DefaultFontSize, -lSize );
+	}
+	if( flags & fontBold )
+		pApp->WriteProfileInt( pszSection, S_DefaultFontBold, FS.isBold() );
+	if( flags & fontUnderlined )
+		pApp->WriteProfileInt( pszSection, S_DefaultFontUnderLine, FS.isUnderlined() );
+	if( flags & fontItalic )
+		pApp->WriteProfileInt( pszSection, S_DefaultFontItalic, FS.isItalic() );
 }
 
 UINT COpenDCLApp::GetGridSpacing() const

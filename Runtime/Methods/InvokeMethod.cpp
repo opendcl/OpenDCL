@@ -40,6 +40,7 @@ CString EscapeLispStringArgument( LPCTSTR pszString )
 	return sResult;
 }
 
+extern "C" int ads_queueexpr( const ACHAR* pszCommand );
 Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand = false, AcApDocument* pDoc = NULL )
 {
 	if( !pDoc )
@@ -49,7 +50,13 @@ Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand = false,
 		return Acad::eNoDocument;
 	//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
 	//CmdBarWnd->SetFocus();		
-	return acDocManager->sendStringToExecute( pDoc, pszCommand, false, true, bShowCommand );
+	Acad::ErrorStatus es = acDocManager->sendStringToExecute( pDoc, pszCommand, false, true, bShowCommand );
+	if( es == Acad::eNoDocument && !acDocManager->isApplicationContext() )
+	{
+		if( RTNORM == ads_queueexpr( pszCommand ) )
+			es = Acad::eOk;
+	}
+	return es;
 }
 
 int acedInvokeNoDocStateSafe(const struct resbuf *args, struct resbuf **result)

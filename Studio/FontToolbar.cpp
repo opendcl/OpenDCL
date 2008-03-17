@@ -368,7 +368,7 @@ void CFontToolbar::OnFontName()
 	CString sName;
 	m_FontNames.GetLBText( m_FontNames.GetCurSel(), sName );
 	mSettings.setName( sName );
-	mpStudioFrame->OnFontChange( mSettings );
+	mpStudioFrame->OnFontChange( mSettings, fontName );
 }
 
 void CFontToolbar::OnFontSize()
@@ -379,30 +379,34 @@ void CFontToolbar::OnFontSize()
 	if( !mSettings.isScaled() )
 		lSize = -lSize;
 	mSettings.setSize( lSize );
-	mpStudioFrame->OnFontChange( mSettings );
+	mpStudioFrame->OnFontChange( mSettings, fontSize );
 }
 
 void CFontToolbar::OnFontBold()
 {		
 	mSettings.setBold( (m_Buttons.IsButtonChecked(ID_FONTBOLDBTN) != FALSE) );
-	mpStudioFrame->OnFontChange( mSettings );
+	mpStudioFrame->OnFontChange( mSettings, fontBold );
+	m_Buttons.SetState( ID_FONTBOLDBTN, m_Buttons.GetState( ID_FONTBOLDBTN ) & ~TBSTATE_INDETERMINATE );
 }
 
 void CFontToolbar::OnFontItalic()
 {
 	mSettings.setItalic( (m_Buttons.IsButtonChecked(ID_FONTITALICBTN) != FALSE) );
-	mpStudioFrame->OnFontChange( mSettings );
+	mpStudioFrame->OnFontChange( mSettings, fontItalic );
+	m_Buttons.SetState( ID_FONTITALICBTN, m_Buttons.GetState( ID_FONTITALICBTN ) & ~TBSTATE_INDETERMINATE );
 }
 
 void CFontToolbar::OnFontUnderline()
 {
 	mSettings.setUnderlined( (m_Buttons.IsButtonChecked(ID_FONTUNDERLINEBTN) != FALSE) );
-	mpStudioFrame->OnFontChange( mSettings );
+	mpStudioFrame->OnFontChange( mSettings, fontUnderlined );
+	m_Buttons.SetState( ID_FONTUNDERLINEBTN, m_Buttons.GetState( ID_FONTUNDERLINEBTN ) & ~TBSTATE_INDETERMINATE );
 }
 
 void CFontToolbar::OnFontScaled()
 {
 	if( (m_Buttons.IsButtonChecked(ID_FONTSCALED) != FALSE) ^ (mSettings.size() > 0) )
 		mSettings.setSize( -mSettings.size() );
-	mpStudioFrame->OnFontChange( mSettings );
+	mpStudioFrame->OnFontChange( mSettings, fontScaled );
+	m_Buttons.SetState( ID_FONTSCALED, m_Buttons.GetState( ID_FONTSCALED ) & ~TBSTATE_INDETERMINATE );
 }

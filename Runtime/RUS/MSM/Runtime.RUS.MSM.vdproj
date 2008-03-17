@@ -16,6 +16,12 @@
         "Entry"
         {
         "MsmKey" = "8:_069C76D99BB6898F923786DF47B3B77F"
+        "OwnerKey" = "8:_3D3B242B158B4106B90389D92D84B6B6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_069C76D99BB6898F923786DF47B3B77F"
         "OwnerKey" = "8:_7D79132D052B4409A232C4C22DFBDD7D"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -27,14 +33,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_069C76D99BB6898F923786DF47B3B77F"
-        "OwnerKey" = "8:_3D3B242B158B4106B90389D92D84B6B6"
+        "MsmKey" = "8:_1DF50947313A85511D39A79BDC0F2E25"
+        "OwnerKey" = "8:_7D79132D052B4409A232C4C22DFBDD7D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_1DF50947313A85511D39A79BDC0F2E25"
-        "OwnerKey" = "8:_7D79132D052B4409A232C4C22DFBDD7D"
+        "MsmKey" = "8:_21131BD118E54A61890FAEAB1A2E49FA"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -57,14 +63,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_5078CC854669401B9266A28B50D8AD6D"
-        "OwnerKey" = "8:_7D79132D052B4409A232C4C22DFBDD7D"
+        "MsmKey" = "8:_666B983C452C43D6AF1EA26F88ED947A"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_666B983C452C43D6AF1EA26F88ED947A"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_692B0391F33A3441C82BCF09E5E9528C"
+        "OwnerKey" = "8:_3D3B242B158B4106B90389D92D84B6B6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -77,12 +83,6 @@
         {
         "MsmKey" = "8:_692B0391F33A3441C82BCF09E5E9528C"
         "OwnerKey" = "8:_666B983C452C43D6AF1EA26F88ED947A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_692B0391F33A3441C82BCF09E5E9528C"
-        "OwnerKey" = "8:_3D3B242B158B4106B90389D92D84B6B6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -105,19 +105,19 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A9B121445B3B443BBDE3CD24EE4DD8A6"
+        "MsmKey" = "8:_B7078AA308B140798BFE62640DBF7101"
         "OwnerKey" = "8:_7D79132D052B4409A232C4C22DFBDD7D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_CF65613BCBE84E9E96CA87AE51C8B29D"
+        "MsmKey" = "8:_CE9F8C9217E545F2B9032E29E2BC27EC"
         "OwnerKey" = "8:_7D79132D052B4409A232C4C22DFBDD7D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_D7528274A4A8429FA5D87EA732DFF89B"
+        "MsmKey" = "8:_D35261D5CD8740178739FCE52C60228E"
         "OwnerKey" = "8:_7D79132D052B4409A232C4C22DFBDD7D"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -125,6 +125,18 @@
         {
         "MsmKey" = "8:_E59ACD0D8B394880893EEB7BF886688D"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_ED106A8AAC8444D5A61C5C3C12B62730"
+        "OwnerKey" = "8:_7D79132D052B4409A232C4C22DFBDD7D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F37BA674223F66CC0B91747D21B718FE"
+        "OwnerKey" = "8:_3D3B242B158B4106B90389D92D84B6B6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -137,12 +149,6 @@
         {
         "MsmKey" = "8:_F37BA674223F66CC0B91747D21B718FE"
         "OwnerKey" = "8:_666B983C452C43D6AF1EA26F88ED947A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F37BA674223F66CC0B91747D21B718FE"
-        "OwnerKey" = "8:_3D3B242B158B4106B90389D92D84B6B6"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -207,6 +213,34 @@
     {
         "CustomAction"
         {
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_BFDC9388BED748E69C955F8AA3C610B3"
+            {
+            "Name" = "8:Remove Demandload"
+            "Condition" = "8:"
+            "Object" = "8:_21131BD118E54A61890FAEAB1A2E49FA"
+            "FileType" = "3:1"
+            "InstallAction" = "3:4"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:RxUninstall"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_D4B802BE_216A_43E5_8318_E2A0DFAD092D"
+            "InstallerClass" = "11:FALSE"
+            "CustomActionData" = "8:"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_E673D047CA8846639136E8A857A66E55"
+            {
+            "Name" = "8:Configure Demandload"
+            "Condition" = "8:"
+            "Object" = "8:_21131BD118E54A61890FAEAB1A2E49FA"
+            "FileType" = "3:1"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:RxInstall"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_27220765_6EA6_467A_B7B3_85CFEFA58E6E"
+            "InstallerClass" = "11:FALSE"
+            "CustomActionData" = "8:"
+            }
         }
         "DefaultFeature"
         {
@@ -415,29 +449,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_5078CC854669401B9266A28B50D8AD6D"
-            {
-            "UseDynamicProperties" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_mfc.msm"
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_A9B121445B3B443BBDE3CD24EE4DD8A6"
-            {
-            "UseDynamicProperties" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_stl.msm"
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_CF65613BCBE84E9E96CA87AE51C8B29D"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_B7078AA308B140798BFE62640DBF7101"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -448,7 +460,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_D7528274A4A8429FA5D87EA732DFF89B"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_CE9F8C9217E545F2B9032E29E2BC27EC"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -459,11 +471,33 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_D35261D5CD8740178739FCE52C60228E"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:vc_stl.msm"
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_ED106A8AAC8444D5A61C5C3C12B62730"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:vc_mfc.msm"
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
         }
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.92044D4D29F24A31AFF9809FA627803C"
-        "Version" = "8:5.0.0.7"
+        "Version" = "8:5.0.0.9"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"
@@ -478,9 +512,37 @@
         }
         "ProjectOutput"
         {
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_21131BD118E54A61890FAEAB1A2E49FA"
+            {
+            "SourcePath" = "8:..\\..\\RxInstall\\Release\\RxInstall.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_12262FCA39C844D18DEA77CDC1DEBAB6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{C721C46D-7378-43B2-86ED-19538DF46D05}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3D3B242B158B4106B90389D92D84B6B6"
             {
-            "SourcePath" = "8:..\\..\\ARX.17\\Debug\\OpenDCL.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.17\\Release\\OpenDCL.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_82E94BE912864022A5E16CC01AFCFAEE"
@@ -508,7 +570,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_666B983C452C43D6AF1EA26F88ED947A"
             {
-            "SourcePath" = "8:..\\..\\ARX.x64.17\\Debug\\OpenDCL.x64.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.x64.17\\Release\\OpenDCL.x64.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_82E94BE912864022A5E16CC01AFCFAEE"
@@ -536,7 +598,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7D79132D052B4409A232C4C22DFBDD7D"
             {
-            "SourcePath" = "8:..\\..\\ARX.16\\Debug\\OpenDCL.16.arx"
+            "SourcePath" = "8:..\\..\\ARX.16\\Release\\OpenDCL.16.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_82E94BE912864022A5E16CC01AFCFAEE"
@@ -564,7 +626,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_826CB2B4518742BF8F1C6F64900700F3"
             {
-            "SourcePath" = "8:..\\runtime.res.rus\\debug\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\Runtime.Res.RUS\\Release\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_808310A532354DCC973F874197E857B6"
@@ -592,7 +654,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E59ACD0D8B394880893EEB7BF886688D"
             {
-            "SourcePath" = "8:..\\..\\RxInstall\\Debug\\RxInstall.dll"
+            "SourcePath" = "8:..\\..\\RxInstall\\Release\\RxInstall.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_82E94BE912864022A5E16CC01AFCFAEE"

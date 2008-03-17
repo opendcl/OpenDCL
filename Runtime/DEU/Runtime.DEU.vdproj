@@ -25,6 +25,12 @@
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
+        "Entry"
+        {
+        "MsmKey" = "8:_D1BB49C0032845F8AF97D777F95281DD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
     }
     "Configurations"
     {
@@ -97,6 +103,34 @@
     {
         "CustomAction"
         {
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_76ED4CAC7E1D47D98CFFF8A3F6B85BDD"
+            {
+            "Name" = "8:Remove Demandload"
+            "Condition" = "8:"
+            "Object" = "8:_D1BB49C0032845F8AF97D777F95281DD"
+            "FileType" = "3:1"
+            "InstallAction" = "3:4"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:RxUninstall"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_2DCA8D03_618B_46E9_A8C2_1C74872465BD"
+            "InstallerClass" = "11:FALSE"
+            "CustomActionData" = "8:"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_B7EF6BFCA0024AE293A911811BB50EC9"
+            {
+            "Name" = "8:Configure Demandload"
+            "Condition" = "8:"
+            "Object" = "8:_D1BB49C0032845F8AF97D777F95281DD"
+            "FileType" = "3:1"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:RxInstall"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_DAD293F2_8037_444F_AC53_DB1996B2B519"
+            "InstallerClass" = "11:FALSE"
+            "CustomActionData" = "8:"
+            }
         }
         "DefaultFeature"
         {
@@ -209,14 +243,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Runtime"
-        "ProductCode" = "8:{2A5CB23C-5B62-4A3C-8243-EF4C2F5E5A01}"
-        "PackageCode" = "8:{5CC3D673-8386-497F-95FE-0CBF2E8FA36D}"
+        "ProductCode" = "8:{12476B8E-6EB7-45F6-ACD1-3CB89ED4086E}"
+        "PackageCode" = "8:{FAAF444F-75E8-43C8-9CAE-833F91E08F26}"
         "UpgradeCode" = "8:{BBD87611-B55B-4D45-B863-0B4D0F140E4C}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0007"
+        "ProductVersion" = "8:5.0.0009"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -752,7 +786,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CDF200E84BFE46AFB0D027F51366FDDA"
             {
-            "SourcePath" = "8:MSM\\Debug\\OpenDCL.Runtime.DEU.msm"
+            "SourcePath" = "8:MSM\\Release\\OpenDCL.Runtime.DEU.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_05B53B7C3F2144BBBD82F606EB9101FB"
@@ -801,6 +835,34 @@
                 "Folder" = "8:_05B53B7C3F2144BBBD82F606EB9101FB"
                 "Feature" = "8:"
                 "IsolateTo" = "8:"
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D1BB49C0032845F8AF97D777F95281DD"
+            {
+            "SourcePath" = "8:..\\RxInstall\\Release\\RxInstall.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_30E122E202684B8492710DAFD0A254D7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{C721C46D-7378-43B2-86ED-19538DF46D05}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
                 }
             }
         }

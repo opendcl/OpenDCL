@@ -1039,6 +1039,7 @@ ADSRESULT ListView::SetCurSel()
 	CArxListViewCtrl* pCtrl = (CArxListViewCtrl*)pDlgControl->GetControlWnd();
 	if( nRow > -1 )
 	{
+		pCtrl->SetSelectionMark( nRow );
 		pCtrl->SetItem( nRow, 0, LVIF_STATE, NULL, 0, LVIS_SELECTED, LVIS_SELECTED, 0 );		
 		pCtrl->EnsureVisible( nRow, TRUE );
 	}

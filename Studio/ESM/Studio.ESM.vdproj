@@ -2884,14 +2884,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{0DFE7A7E-DCCC-48FE-BF74-A4009924BB61}"
-        "PackageCode" = "8:{29E0A6E0-358C-4D60-A53B-4E761E9BA7F3}"
+        "ProductCode" = "8:{731E61BE-215C-4783-A21B-5DB1EEC31C32}"
+        "PackageCode" = "8:{EF6F33C6-9FD8-4A29-ABE5-C1F2E137E951}"
         "UpgradeCode" = "8:{13AE30FE-5152-40D5-B724-3BE317FC4DF2}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0007"
+        "ProductVersion" = "8:5.0.0009"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -2925,20 +2925,6 @@
                     "Transitive" = "11:FALSE"
                         "Keys"
                         {
-                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_55DA77825D5C43D684116671734FA95D"
-                            {
-                            "Name" = "8:[Manufacturer]"
-                            "Condition" = "8:"
-                            "AlwaysCreate" = "11:FALSE"
-                            "DeleteAtUninstall" = "11:FALSE"
-                            "Transitive" = "11:FALSE"
-                                "Keys"
-                                {
-                                }
-                                "Values"
-                                {
-                                }
-                            }
                             "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_A318E345D911458986B37A0B33093193"
                             {
                             "Name" = "8:OpenDCL"
@@ -2948,6 +2934,28 @@
                             "Transitive" = "11:FALSE"
                                 "Keys"
                                 {
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_4BEAC374DABA4D52B121DA3756D5D760"
+                                    {
+                                    "Name" = "8:Runtime"
+                                    "Condition" = "8:"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "DeleteAtUninstall" = "11:FALSE"
+                                    "Transitive" = "11:FALSE"
+                                        "Keys"
+                                        {
+                                        }
+                                        "Values"
+                                        {
+                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_FD4A02FE765C4A0D81C2D2C387451CAD"
+                                            {
+                                            "Name" = "8:Language"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "ValueTypes" = "3:1"
+                                            "Value" = "8:ESM"
+                                            }
+                                        }
+                                    }
                                 }
                                 "Values"
                                 {
@@ -2996,34 +3004,6 @@
             {
                 "Keys"
                 {
-                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_BFD0EA88408E4A6181285D54264CF135"
-                    {
-                    "Name" = "8:Software"
-                    "Condition" = "8:"
-                    "AlwaysCreate" = "11:FALSE"
-                    "DeleteAtUninstall" = "11:FALSE"
-                    "Transitive" = "11:FALSE"
-                        "Keys"
-                        {
-                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_98F0871C118E43F8BB726931433393C4"
-                            {
-                            "Name" = "8:[Manufacturer]"
-                            "Condition" = "8:"
-                            "AlwaysCreate" = "11:FALSE"
-                            "DeleteAtUninstall" = "11:FALSE"
-                            "Transitive" = "11:FALSE"
-                                "Keys"
-                                {
-                                }
-                                "Values"
-                                {
-                                }
-                            }
-                        }
-                        "Values"
-                        {
-                        }
-                    }
                 }
             }
             "HKCR"
@@ -3731,7 +3711,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_26E20AD026CC4B8B9AF6DEAE7C78218A"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\ESM\\MSM\\Debug\\OpenDCL.Runtime.ESM.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\ESM\\MSM\\Release\\OpenDCL.Runtime.ESM.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_6E8F0FAA9D3A414FA40C6C4907E4C3BE"
@@ -3761,7 +3741,21 @@
                 "UseDynamicProperties" = "11:TRUE"
                 "IsDependency" = "11:FALSE"
                 "SourcePath" = "8:..\\..\\Runtime\\ESM\\MSM\\Debug\\OpenDCL.Runtime.ESM.msm"
-                "LanguageId" = "3:0"
+                    "Properties"
+                    {
+                        "_DF1D605AAA19473AB1296070B4978DFC.717209059AC14CA38A7B4FE9D885A6D3"
+                        {
+                        "Name" = "8:_DF1D605AAA19473AB1296070B4978DFC.717209059AC14CA38A7B4FE9D885A6D3"
+                        "DisplayName" = "8:Module Retargetable Folder"
+                        "Description" = "8:"
+                        "Type" = "3:32769"
+                        "ContextData" = "8:_RetargetableFolder"
+                        "Attributes" = "3:6"
+                        "Setting" = "3:1"
+                        "UsePlugInResources" = "11:FALSE"
+                        }
+                    }
+                "LanguageId" = "3:3082"
                 "Exclude" = "11:FALSE"
                 "Folder" = "8:_6E8F0FAA9D3A414FA40C6C4907E4C3BE"
                 "Feature" = "8:"
@@ -3770,7 +3764,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_37DEF53DCE0D46B1917A8802B27617AB"
             {
-            "SourcePath" = "8:studio.res\\debug\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_BF925880594447ADA8EE6F7018173408"
@@ -3798,7 +3792,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C8C5E9444C474B7D863DEF04E4D144B1"
             {
-            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_6E8F0FAA9D3A414FA40C6C4907E4C3BE"

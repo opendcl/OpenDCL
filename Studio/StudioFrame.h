@@ -1,7 +1,6 @@
 // StudioFrame.h : interface of the CStudioFrame class
 //
 
-
 #pragma once
 
 #include "SCBarG.h"
@@ -29,7 +28,7 @@ public:
 
 // Operations
 public:
-	void OnFontChange( const FontSettings& FS ); // change font
+	void OnFontChange( const FontSettings& FS, UINT flags = fontAll ); // change font
 
 	CDclFormView* OpenDclFormView( TDclFormPtr pDclForm );
 	TDclFormPtr AddNewDclFormView( FormType nType );

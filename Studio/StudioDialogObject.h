@@ -52,7 +52,7 @@ public:
 // Operations
 public:
 	virtual CPoint& SnapToGrid( CPoint& pt, bool bLimitToControlArea = false ) const;
-	virtual void OnFontChange( const FontSettings& FS ); // change font
+	virtual void OnFontChange( const FontSettings& FS, UINT flags = fontAll ); // change font
 	virtual void OnGridSpacingChange( UINT nGridSpacing ); // change grid spacing
 	virtual void OnUpdateZOrder() { GetControlPane()->ApplyZOrder(); Invalidate(); }
 	virtual void OnActivateDclControl( TDclControlPtr pDclControl ) { SelectControl( pDclControl ); }

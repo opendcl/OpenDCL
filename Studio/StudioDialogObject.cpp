@@ -202,7 +202,7 @@ CPoint& CStudioDialogObject::SnapToGrid( CPoint& pt, bool bLimitToControlArea /*
 	return pt;
 }
 
-void CStudioDialogObject::OnFontChange( const FontSettings& FS )
+void CStudioDialogObject::OnFontChange( const FontSettings& FS, UINT flags /*= fontAll*/ )
 {
 	if( !FS )
 		return;
@@ -222,7 +222,7 @@ void CStudioDialogObject::OnFontChange( const FontSettings& FS )
 		{
 			if( pUndoManager )
 				pUndoManager->SelectControl( pDclControl );
-			pDclControl->SetFontProperties( FS );
+			pDclControl->SetFontProperties( FS, flags );
 			CStudioDialogControl::UpdateProperty( pDclControl, Prop::FontName );
 		}
 	}

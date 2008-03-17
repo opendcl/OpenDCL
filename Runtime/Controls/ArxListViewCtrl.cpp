@@ -589,14 +589,14 @@ void CArxListViewCtrl::OnContextMenu( CWnd* pTarget, CPoint point )
 
 void CArxListViewCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	char sChar = nChar;
+	TCHAR sChar = nChar;
 	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, IsAsyncEvents());
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void CArxListViewCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	char sChar = nChar;
+	TCHAR sChar = nChar;
 	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, IsAsyncEvents());
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }

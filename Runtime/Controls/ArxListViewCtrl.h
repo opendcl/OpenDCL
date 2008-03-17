@@ -52,6 +52,7 @@ public:
 // DialogControl Interface
 public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
 
 // Implementation

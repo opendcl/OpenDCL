@@ -1199,6 +1199,8 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::DragnDropFromAutoCAD );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
 		AddControlEvent( pDclControl, Prop::EventDblClicked );
+		AddControlEvent( pDclControl, Prop::EventKeyDown );
+		AddControlEvent( pDclControl, Prop::EventKeyUp );
 		AddControlEvent( pDclControl, Prop::EventKillFocus );
 		AddControlEvent( pDclControl, Prop::EventSetFocus );
 		AddControlEvent( pDclControl, Prop::EventSelChanged );

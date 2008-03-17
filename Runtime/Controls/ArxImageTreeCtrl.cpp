@@ -89,6 +89,7 @@ bool CArxImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData
 
 BEGIN_MESSAGE_MAP(CArxImageTreeCtrl, CImageTreeCtrl)
 	ON_WM_KEYDOWN()
+	ON_WM_KEYUP()
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
 	ON_WM_MOUSEMOVE()
@@ -119,6 +120,16 @@ void CArxImageTreeCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 														nFlags,
 														IsAsyncEvents() );
 	__super::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
+void CArxImageTreeCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	InvokeMethodStringIntInt( mpTemplate->GetStringProperty( Prop::EventKeyUp ),
+														CString( (TCHAR)nChar ),
+														nRepCnt,
+														nFlags,
+														IsAsyncEvents() );
+	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 void CArxImageTreeCtrl::OnRButtonDown(UINT nFlags, CPoint point)

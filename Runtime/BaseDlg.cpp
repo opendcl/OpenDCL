@@ -8,6 +8,7 @@
 #include "DclControlObject.h"
 #include "PictureObject.h"
 #include "InvokeMethod.h"
+#include "MultiMon.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -105,17 +106,29 @@ BOOL CBaseDlg::OnInitDialog()
 	rectWindow.right = rectWindow.left + mpTemplate->GetLongProperty( Prop::Width ) + GetNCWidth();
 	rectWindow.bottom = rectWindow.top + mpTemplate->GetLongProperty( Prop::Height ) + GetNCHeight();
 
+	CRect rcDesktop;
+	GetDesktopWindow()->GetClientRect( &rcDesktop );
+#if defined(SM_CXVIRTUALSCREEN)
+	int nVirtualScreenWidth = ::GetSystemMetrics( SM_CXVIRTUALSCREEN );
+	if( nVirtualScreenWidth > 0 ) //We have virtual screen support
+	{
+		rcDesktop.left = ::GetSystemMetrics( SM_XVIRTUALSCREEN );
+		rcDesktop.top = ::GetSystemMetrics( SM_YVIRTUALSCREEN );
+		rcDesktop.right = rcDesktop.left + nVirtualScreenWidth;
+		rcDesktop.bottom = rcDesktop.top + ::GetSystemMetrics( SM_CYVIRTUALSCREEN );
+	}
+#endif //SM_CXVIRTUALSCREEN
 	CRect rectParent;
 	::GetWindowRect( ::GetParent(m_hWnd), &rectParent );
 	if( mnInitialX >= 0 )
 		rectWindow.MoveToX( mnInitialX );
-	else if( rectSaved.left >= -10 && rectSaved.left < (::GetSystemMetrics( SM_CXSCREEN ) - 10) )
+	else if( rectSaved.left >= rcDesktop.left - 10 && rectSaved.left < rcDesktop.right - 10 )
 		rectWindow.MoveToX( rectSaved.left );
 	else
 		rectWindow.MoveToX( rectParent.left + (rectParent.Width() - rectWindow.Width()) / 2 );
 	if( mnInitialY >= 0 )
 		rectWindow.MoveToY( mnInitialY );
-	else if( rectSaved.top >= -10 && rectSaved.top < (::GetSystemMetrics( SM_CYSCREEN ) - 10) )
+	else if( rectSaved.top >= rcDesktop.top - 10 && rectSaved.top < rcDesktop.right - 10 )
 		rectWindow.MoveToY( rectSaved.top );
 	else
 		rectWindow.MoveToY( rectParent.top + (rectParent.Height() - rectWindow.Height()) / 2 );

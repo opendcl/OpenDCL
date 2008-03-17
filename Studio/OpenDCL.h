@@ -24,7 +24,7 @@ public:
 
 // Attributes
 	FontSettings GetDefaultFontSettings() const;
-	void SetDefaultFontSettings( const FontSettings& FS );
+	void SetDefaultFontSettings( const FontSettings& FS, UINT flags = fontAll );
 	UINT GetGridSpacing() const;
 	void SetGridSpacing( UINT nGridSpacing );
 

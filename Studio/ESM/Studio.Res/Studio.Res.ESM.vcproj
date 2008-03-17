@@ -218,6 +218,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\Common\SharedRes.Local.h"
 				>
 			</File>
@@ -248,11 +252,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\ESM\Res\ArrowHeads.bmp"
+				RelativePath="..\..\..\Common\Res\arrowheads.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\arrowheads.bmp"
+				RelativePath="..\..\..\Common\ESM\Res\ArrowHeads.bmp"
 				>
 			</File>
 			<File
@@ -348,19 +352,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\ESM\Res\Filter.ico"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\Common\Res\Filter.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\Folder.bmp"
+				RelativePath="..\..\..\Common\ESM\Res\Filter.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\Common\ESM\Res\Folder.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Common\Res\Folder.bmp"
 				>
 			</File>
 			<File
@@ -436,11 +440,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\Label.ico"
+				RelativePath="..\..\..\Common\ESM\Res\Label.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\ESM\Res\Label.ico"
+				RelativePath="..\..\..\Common\Res\Label.ico"
 				>
 			</File>
 			<File
@@ -536,19 +540,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\ESM\Res\Pick.ico"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\Common\Res\pick.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\PickSmall.ico"
+				RelativePath="..\..\..\Common\ESM\Res\Pick.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\Common\ESM\Res\PickSmall.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Common\Res\PickSmall.ico"
 				>
 			</File>
 			<File
@@ -596,11 +600,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\ESM\Res\SHXFont.ico"
+				RelativePath="..\..\..\Common\Res\SHXFont.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\SHXFont.ico"
+				RelativePath="..\..\..\Common\ESM\Res\SHXFont.ico"
 				>
 			</File>
 			<File
@@ -652,11 +656,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\ESM\Res\Warn.ico"
+				RelativePath=".\res\Warn.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\Warn.ico"
+				RelativePath="..\..\..\Common\ESM\Res\Warn.ico"
 				>
 			</File>
 			<File

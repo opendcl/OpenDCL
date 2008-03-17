@@ -23,6 +23,7 @@ public:
 
 // DialogControl Interface
 public:
+	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 
 	// Generated message map functions
 protected:

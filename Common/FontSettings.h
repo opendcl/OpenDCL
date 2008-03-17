@@ -6,6 +6,18 @@
 class CAxContainerCtrl;
 
 
+enum
+{
+	fontName = 1,
+	fontSize = 2,
+	fontBold = 4,
+	fontUnderlined = 8,
+	fontItalic = 16,
+	fontScaled = 32,
+	fontAll = 255,
+};
+
+
 class FontSettings
 {
 protected:

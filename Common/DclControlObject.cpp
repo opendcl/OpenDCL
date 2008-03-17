@@ -14,6 +14,7 @@
 #include "PropertyIds.h"
 #include "ControlTypes.h"
 #include "DialogControl.h"
+#include "FontSettings.h"
 #include "PropertyNames.h"
 #include "AcadColorTable.h"
 #include "DclControlProp.h"
@@ -862,13 +863,24 @@ CRect CDclControlObject::GetWndRect() const
 	return CRect( ptThis, sizeThis );
 }
 
-void CDclControlObject::SetFontProperties( const FontSettings& FS )
+void CDclControlObject::SetFontProperties( const FontSettings& FS, UINT flags /*= fontAll*/ )
 {
-	SetStringProperty( Prop::FontName, FS.name() );
-	SetLongProperty( Prop::FontSize, FS.size() );
-	SetBooleanProperty( Prop::FontBold, FS.isBold() );
-	SetBooleanProperty( Prop::FontItalic, FS.isItalic() );
-	SetBooleanProperty( Prop::FontUnderline, FS.isUnderlined() );
+	if( flags & fontName )
+		SetStringProperty( Prop::FontName, FS.name() );
+	if( flags & fontSize )
+		SetLongProperty( Prop::FontSize, FS.size() );
+	else if( flags & fontScaled )
+	{
+		long lSize = GetLongProperty( Prop::FontSize );
+		if( (lSize > 0) ^ FS.isScaled() )
+			SetLongProperty( Prop::FontSize, -lSize );
+	}
+	if( flags & fontBold )
+		SetBooleanProperty( Prop::FontBold, FS.isBold() );
+	if( flags & fontItalic )
+		SetBooleanProperty( Prop::FontItalic, FS.isItalic() );
+	if( flags & fontUnderlined )
+		SetBooleanProperty( Prop::FontUnderline, FS.isUnderlined() );
 }
 
 void CDclControlObject::SetGlobalVariableName( LPCTSTR pszParentName /*= NULL*/ )	

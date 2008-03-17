@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by w:\OpenDCL\Build 5.0\Common\DEU\SharedRes.DEU.rc
+// Used by w:\OpenDCL\Build 5.0\Common\RUS\SharedRes.RUS.rc
 //
 #define IDR_MAINFRAME                   10
 #define IDS_NONE                        30
