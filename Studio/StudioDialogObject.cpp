@@ -183,10 +183,13 @@ TDialogControlPtr CStudioDialogObject::CreateNewDialogControl( TDclControlPtr pT
 
 CPoint& CStudioDialogObject::SnapToGrid( CPoint& pt, bool bLimitToControlArea /*= false*/ ) const
 {
-	LONG X = pt.x + (mnGridSpacing / 2);
-	LONG Y = pt.y + (mnGridSpacing / 2);
-	pt.x = X - (X % mnGridSpacing);
-	pt.y = Y - (Y % mnGridSpacing);
+	if( mnGridSpacing > 1 )
+	{
+		LONG X = pt.x + (mnGridSpacing / 2);
+		LONG Y = pt.y + (mnGridSpacing / 2);
+		pt.x = X - (X % mnGridSpacing);
+		pt.y = Y - (Y % mnGridSpacing);
+	}
 	if( bLimitToControlArea )
 	{
 		CRect rcControlArea = GetWndRect();
@@ -1117,12 +1120,15 @@ BOOL CStudioDialogObject::OnEraseBkgnd(CDC* pDC)
 		}
 	}
 	pDC->FillSolidRect( &rcClient, crBackground );
-	SnapToGrid( rcClient.BottomRight() );
-	COLORREF crGrid = GetSysColor( COLOR_GRAYTEXT );
-	for( int iX = rcClient.Width(); iX > 0; iX -= mnGridSpacing )
+	if( mnGridSpacing > 1 )
 	{
-		for( int iY = rcClient.Height(); iY > 0; iY -= mnGridSpacing )
-			pDC->SetPixel( iX, iY, crGrid );
+		SnapToGrid( rcClient.BottomRight() );
+		COLORREF crGrid = GetSysColor( COLOR_GRAYTEXT );
+		for( int iX = rcClient.Width(); iX > 0; iX -= mnGridSpacing )
+		{
+			for( int iY = rcClient.Height(); iY > 0; iY -= mnGridSpacing )
+				pDC->SetPixel( iX, iY, crGrid );
+		}
 	}
 	return TRUE;
 }

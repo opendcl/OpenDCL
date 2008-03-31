@@ -51,6 +51,12 @@ bool CFolderTreeCtrl::Create( CFolderComboBox* pFolderCombo, const CRect& rectWn
 										pFolderCombo->GetParent()->m_hWnd, NULL, theWorkspace.GetThisModule(), NULL );
 	if( !hwndTreeCtrl )
 		return false;
+#ifdef _UNICODE
+	BOOL bUnicode = TRUE;
+#else
+	BOOL bUnicode = FALSE;
+#endif
+	::SendMessage( hwndTreeCtrl, CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
 	if( !SubclassWindow( hwndTreeCtrl ) )
 		return false;
 

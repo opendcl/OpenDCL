@@ -24,6 +24,15 @@ bool CMonthCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	CRect rcCtrl = GetWndRect();
 	bool bSuccess = (__super::Create( GetWndStyle(), rcCtrl, pParentWnd, nID ) != FALSE);
+	if( bSuccess )
+	{
+	#ifdef _UNICODE
+		BOOL bUnicode = TRUE;
+	#else
+		BOOL bUnicode = FALSE;
+	#endif
+		SendMessage( CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
+	}
 
 	if( bSuccess )
 	{

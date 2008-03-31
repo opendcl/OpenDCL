@@ -76,23 +76,23 @@ void COpenDCLApp::SetDefaultFontSettings( const FontSettings& FS, UINT flags /*=
   if( !FS )
 		return;
 	CWinApp* pApp = AfxGetApp();
-	static const LPCTSTR pszSection = theWorkspace.GetAppKey();
+	const CString sSection = theWorkspace.GetAppKey();
 	if( flags & fontName )
-		pApp->WriteProfileString( pszSection, S_DefaultFontName, FS.name() );
+		pApp->WriteProfileString( sSection, S_DefaultFontName, FS.name() );
 	if( flags & fontSize )
-		pApp->WriteProfileInt( pszSection, S_DefaultFontSize, FS.size() );
+		pApp->WriteProfileInt( sSection, S_DefaultFontSize, FS.size() );
 	else if( flags & fontScaled )
 	{
-		long lSize = pApp->GetProfileInt( pszSection, S_DefaultFontSize, -10 );
+		long lSize = pApp->GetProfileInt( sSection, S_DefaultFontSize, -10 );
 		if( (lSize > 0) ^ FS.isScaled() )
-			pApp->WriteProfileInt( pszSection, S_DefaultFontSize, -lSize );
+			pApp->WriteProfileInt( sSection, S_DefaultFontSize, -lSize );
 	}
 	if( flags & fontBold )
-		pApp->WriteProfileInt( pszSection, S_DefaultFontBold, FS.isBold() );
+		pApp->WriteProfileInt( sSection, S_DefaultFontBold, FS.isBold() );
 	if( flags & fontUnderlined )
-		pApp->WriteProfileInt( pszSection, S_DefaultFontUnderLine, FS.isUnderlined() );
+		pApp->WriteProfileInt( sSection, S_DefaultFontUnderLine, FS.isUnderlined() );
 	if( flags & fontItalic )
-		pApp->WriteProfileInt( pszSection, S_DefaultFontItalic, FS.isItalic() );
+		pApp->WriteProfileInt( sSection, S_DefaultFontItalic, FS.isItalic() );
 }
 
 UINT COpenDCLApp::GetGridSpacing() const
@@ -128,6 +128,13 @@ BOOL COpenDCLApp::InitInstance()
 	InitCommonControlsEx(&InitCtrls);
 
 	CWinApp::InitInstance();
+
+	// Initialize OLE libraries
+	if (!AfxOleInit())
+	{
+		AfxMessageBox(IDP_OLE_INIT_FAILED);
+		return FALSE;
+	}
 
 	AfxEnableControlContainer();
 	EnableHtmlHelp();

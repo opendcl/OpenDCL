@@ -114,11 +114,14 @@ TDclFormPtr CStudioFrame::AddNewDclFormView( FormType nType )
 	if( !pNewDclForm )
 		return NULL;
 	UINT nGridSpacing = theApp.GetGridSpacing();
-	TDclControlPtr pFormProps = pNewDclForm->GetControlProperties();
-	LONG X = pFormProps->GetLongProperty( Prop::Width ) + (nGridSpacing / 2);
-	LONG Y = pFormProps->GetLongProperty( Prop::Height ) + (nGridSpacing / 2);
-	pFormProps->SetLongProperty( Prop::Width, X - (X % nGridSpacing) );
-	pFormProps->SetLongProperty( Prop::Height, Y - (Y % nGridSpacing) );
+	if( nGridSpacing > 1 )
+	{
+		TDclControlPtr pFormProps = pNewDclForm->GetControlProperties();
+		LONG X = pFormProps->GetLongProperty( Prop::Width ) + (nGridSpacing / 2);
+		LONG Y = pFormProps->GetLongProperty( Prop::Height ) + (nGridSpacing / 2);
+		pFormProps->SetLongProperty( Prop::Width, X - (X % nGridSpacing) );
+		pFormProps->SetLongProperty( Prop::Height, Y - (Y % nGridSpacing) );
+	}
 	CProjectPane* pProjTree = theStudioWorkspace.GetProjectPane();
 	if( pProjTree )
 		pProjTree->AddFormToTree( pNewDclForm, true ); //add the new dcl form to the project tree

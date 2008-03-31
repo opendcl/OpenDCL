@@ -329,6 +329,9 @@ void CStudioDialogControl::UpdateAllProperties( TDclControlPtr pTemplate )
 //static
 void CStudioDialogControl::UpdateProperty( TDclControlPtr pTemplate, Prop::Id id )
 {
+	assert( pTemplate != NULL );
+	if( !pTemplate )
+		return;
 	CDialogControl* pDlgControl = pTemplate->GetControlInstance();
 	if( !pDlgControl )
 		return;

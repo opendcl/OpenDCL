@@ -319,6 +319,9 @@ void CArxDialogControl::UpdateAllProperties( TDclControlPtr pTemplate )
 //static
 void CArxDialogControl::UpdateProperty( TDclControlPtr pTemplate, Prop::Id id )
 {
+	assert( pTemplate != NULL );
+	if( !pTemplate )
+		return;
 	CDialogControl* pDlgControl = pTemplate->GetControlInstance();
 	if( !pDlgControl )
 		return;

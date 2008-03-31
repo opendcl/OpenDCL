@@ -64,32 +64,34 @@ END_MESSAGE_MAP()
 
 BOOL CInsertControlDlg::OnInitDialog()
 {
-   HRESULT hResult;
-   CATID catid;
+	HRESULT hResult;
+	CATID catid;
 
-   BeginWaitCursor();
-   hResult = m_pCatInfo.CreateInstance( CLSID_StdComponentCategoriesMgr, NULL,
-	  CLSCTX_INPROC_SERVER );
-   if( FAILED( hResult ) )
-   {
-	  EndDialog( IDCANCEL );
+	BeginWaitCursor();
+	hResult = m_pCatInfo.CreateInstance( CLSID_StdComponentCategoriesMgr );
+	if( FAILED( hResult ) )
+	{
+		CString sErr;
+		sErr.Format( L"%x", hResult );
+		MessageBox( sErr, L"Failed!" );
+		EndDialog( IDCANCEL );
 	  return( TRUE );
-   }
+	}
 
 	CDialog::OnInitDialog();
 
-   catid = CATID_Control;
-   //catid = CATID_Insertable;
-   //catid = CATID_Programmable;
-   m_aImplementedCategories.Add( catid );
+	catid = CATID_Control;
+	//catid = CATID_Insertable;
+	//catid = CATID_Programmable;
+	m_aImplementedCategories.Add( catid );
 
-   m_lbControls.ModifyStyle( 0, WS_HSCROLL );
+	m_lbControls.ModifyStyle( 0, WS_HSCROLL );
 
-   RefreshControlList();
+	RefreshControlList();
 
-   m_lbControls.SetFocus();
+	m_lbControls.SetFocus();
 
-   EndWaitCursor();
+	EndWaitCursor();
 	return( FALSE );
 }
 

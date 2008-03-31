@@ -514,12 +514,11 @@ void CToolboxPane::OnToolboxOptionList()
 
 void CToolboxPane::OnToolboxActivex() 
 {
+	m_nSelectedCtrl = CtlActiveX;	
 	CInsertControlDlg dlg;
-	int nResult;
-
-	nResult = dlg.DoModal();
-	if( nResult != IDOK )
+	if( dlg.DoModal() != IDOK )
 	{
+		ResetToPointer();
 		return;
 	}
 
@@ -532,8 +531,6 @@ void CToolboxPane::OnToolboxActivex()
 		m_sLicenseKey = strLicenseKey;
 	else
 		m_sLicenseKey.Empty();
-	
-	m_nSelectedCtrl = CtlActiveX;	
 	
 }
 

@@ -339,6 +339,7 @@ bool CDockingDialog::OnClosing()
 
 void CDockingDialog::OnDestroy() 
 {
+	OnClosing();
 	GetControlPane()->CleanUpControls();
 	__super::OnDestroy();
 }

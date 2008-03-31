@@ -25,6 +25,15 @@ CImageComboBoxCtrl::~CImageComboBoxCtrl()
 bool CImageComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess = __super::Create( pParentWnd, GetWndRect(), GetWndStyle(), nID );
+	if( bSuccess )
+	{
+	#ifdef _UNICODE
+		BOOL bUnicode = TRUE;
+	#else
+		BOOL bUnicode = FALSE;
+	#endif
+		SendMessage( CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
+	}
 
 	if( bSuccess && GetComboHandler() )
 		ResetContent();  //populate list

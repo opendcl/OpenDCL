@@ -32,6 +32,13 @@ CImageTreeCtrl::~CImageTreeCtrl()
 bool CImageTreeCtrl::Create( CWnd* pParentWnd, UINT nID ) 
 {
 	bool bSuccess = (__super::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
+#ifdef _UNICODE
+	BOOL bUnicode = TRUE;
+#else
+	BOOL bUnicode = FALSE;
+#endif
+	if( bSuccess )
+		SendMessage( CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
@@ -328,6 +335,7 @@ void CImageTreeCtrl::OnDestroy()
 
 void CImageTreeCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	__super::OnLButtonDown(nFlags, point);
 	HTREEITEM hItem = HitTest( point, &nFlags );
 	SetFocus();
 	if( hItem )
@@ -335,7 +343,6 @@ void CImageTreeCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		Select( hItem, TVGN_CARET );
 		mhtiDragSource = hItem;
 	}
-	__super::OnLButtonDown(nFlags, point);
 	DROPEFFECT dwDropEffect = BeginDragDrop( point );
 	//if( dwDropEffect != DROPEFFECT_NONE )
 	//	SendMessage( WM_LBUTTONUP, 0, MAKELPARAM(point.x,point.y) );	

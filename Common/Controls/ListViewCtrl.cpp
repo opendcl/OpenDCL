@@ -59,6 +59,15 @@ CListViewCtrl::~CListViewCtrl()
 bool CListViewCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess = (__super::Create( GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
+	if( bSuccess )
+	{
+	#ifdef _UNICODE
+		BOOL bUnicode = TRUE;
+	#else
+		BOOL bUnicode = FALSE;
+	#endif
+		SendMessage( CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
+	}
 
 	if( bSuccess && !IsBlockList() )
 		SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );

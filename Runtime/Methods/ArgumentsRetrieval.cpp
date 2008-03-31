@@ -750,6 +750,7 @@ bool GetDateArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleDateTime& dtArg, /*
 		nYear = pArgs->resval.rpoint[X];
 		nMonth = pArgs->resval.rpoint[Y];
 		nDay = pArgs->resval.rpoint[Z];
+		pArgs = pArgs->rbnext;
 		break;
 	case RTLB:
 		{

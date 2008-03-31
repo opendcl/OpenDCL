@@ -329,6 +329,7 @@ bool CPaletteDialog::OnClosing()
 
 void CPaletteDialog::OnDestroy() 
 {
+	OnClosing();
 	GetControlPane()->CleanUpControls();
 	__super::OnDestroy();
 }

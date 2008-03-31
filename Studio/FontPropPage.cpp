@@ -5,6 +5,7 @@
 #include "FontPropPage.h"
 #include "PropertyObject.h"
 #include "StudioWorkspace.h"
+#include "OpenDCL.h"
 #include "DclControlObject.h"
 #include "StudioDialogControl.h"
 #include "Resource.h"
@@ -129,7 +130,7 @@ BOOL CFontPropertyPage::OnInitDialog()
 
 	FontSettings FS( mpDclControl );
 	if( !FS )
-		FS = theStudioWorkspace.GetDefaultFontSettings();
+		FS = theApp.GetDefaultFontSettings();
 	if( FS )
 		m_sFont = FS;
 
@@ -328,8 +329,13 @@ BOOL CFontPropertyPage::OnApply()
 		break;
 	}
 
-	mpDclControl->SetFontProperties( FS );
-	CStudioDialogControl::UpdateProperty(mpDclControl,Prop::FontName);
+	if( mpDclControl )
+	{
+		mpDclControl->SetFontProperties( FS );
+		CStudioDialogControl::UpdateProperty(mpDclControl,Prop::FontName);
+	}
+	else
+		theApp.SetDefaultFontSettings( FS );
 
 	return CPropertyPage::OnApply();
 }

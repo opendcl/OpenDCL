@@ -2884,14 +2884,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{D16815C6-082D-4B02-B5D9-198FB9F7E4DA}"
-        "PackageCode" = "8:{4FF4794E-7F5C-4B3B-845A-E6F0CE9E35C7}"
+        "ProductCode" = "8:{0AEB3C16-A4E9-4F34-9E6D-60F39270D8B5}"
+        "PackageCode" = "8:{80784F6F-2896-4B87-846B-80A5648C704F}"
         "UpgradeCode" = "8:{AF16E7D3-800C-4BE7-BA12-B9C62FF78F51}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0009"
+        "ProductVersion" = "8:5.0.0011"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -3717,7 +3717,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3C8D288100B24DD89D5D4CFC9048980B"
             {
-            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_68DCE7B648DB477F994B67FEC95873AE"
@@ -3745,7 +3745,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9E90278BEFF24FEBB30DEB0CFCE182D1"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\CHS\\MSM\\Release\\OpenDCL.Runtime.CHS.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\CHS\\MSM\\Debug\\OpenDCL.Runtime.CHS.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_68DCE7B648DB477F994B67FEC95873AE"
@@ -3798,7 +3798,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D5411C478C764DD3B6FC1878FEE06B40"
             {
-            "SourcePath" = "8:studio.res\\release\\Studio.Res.dll"
+            "SourcePath" = "8:studio.res\\debug\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_0E15D904D703428E8193A14F2823ED5C"

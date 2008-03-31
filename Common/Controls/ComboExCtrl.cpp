@@ -27,6 +27,15 @@ bool CComboExCtrl::Create( CWnd* pParentWnd, const CRect& rectWnd, DWORD dwCombo
 {
 	DWORD dwStyle = (WS_CHILD | WS_VISIBLE | WS_VSCROLL | dwComboStyle);
 	bool bSuccess = (__super::Create( dwStyle, rectWnd, pParentWnd, nID ) != FALSE);
+	if( bSuccess )
+	{
+	#ifdef _UNICODE
+		BOOL bUnicode = TRUE;
+	#else
+		BOOL bUnicode = FALSE;
+	#endif
+		SendMessage( CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
+	}
 
 	CComboBox* pComboCtrl = GetComboBoxCtrl();
 	if( pComboCtrl )
