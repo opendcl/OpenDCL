@@ -121,6 +121,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("Control_GetCurPos"),			Control::GetCurPos},
 	{_T("Control_SetPos"),				Control::SetPos},
 	{_T("Control_ForceUpdateNow"),		Control::ForceUpdateNow},
+	{_T("Control_GetName"),		Control::GetName},
 
 	{_T("ProgressBar_SetPos"),	ProgressBar::SetPos},
 

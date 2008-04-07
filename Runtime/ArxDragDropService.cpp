@@ -81,7 +81,12 @@ DROPEFFECT CArxDragDropService::BeginDragDrop( const CPoint& point )
 	DWORD dwSupportedDropEffects = mpDlgControl->OnBeginDrag( point, SourceData );
 	if( dwSupportedDropEffects == DROPEFFECT_NONE )
 		return DROPEFFECT_NONE;
-	InvokeMethod( pDclControl->GetStringProperty( Prop::DragnDropBegin ), mpDlgControl->IsAsyncEvents() );
+	CString sDragBeginEvent = pDclControl->GetStringProperty( Prop::DragnDropBegin );
+	if( !sDragBeginEvent.IsEmpty() )
+	{
+		InvokeMethod( sDragBeginEvent, mpDlgControl->IsAsyncEvents() );
+		dwSupportedDropEffects &= ~DROPEFFECT_MOVE;
+	}
 	CPoint ptScreen( point );
 	mpDlgControl->GetControlWnd()->ClientToScreen( &ptScreen );
 	CRect rcDragRegion( ptScreen, CSize( GetSystemMetrics( SM_CXDOUBLECLK ) / 2, GetSystemMetrics( SM_CYDOUBLECLK ) / 2 ) );

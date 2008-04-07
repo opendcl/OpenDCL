@@ -42,7 +42,7 @@ bool CArxImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData
 			HGLOBAL hData = pSourceData->GetGlobalData( CDragDropService::GetDclControlClipboardFormat() );
 			if( !hData )
 				return false;
-			CDclControlObject* pSourceDclControl = (CDclControlObject*)GlobalLock( hData );
+			CDclControlObject* pSourceDclControl = *(CDclControlObject**)GlobalLock( hData );
 			GlobalUnlock( hData );
 			GlobalFree( hData );
 			if( !pSourceDclControl )

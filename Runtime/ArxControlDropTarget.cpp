@@ -65,6 +65,8 @@ DROPEFFECT CArxControlDropTarget::OnDragOver( CWnd* pWnd, COleDataObject* pDataO
 BOOL CArxControlDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject, 
 																		DROPEFFECT dropEffect, CPoint point )
 {
+	if( mpDlgControl->OnDrop( point, pDataObject, dropEffect ) )
+		return TRUE;
 	TDclControlPtr pDclControl = mpDlgControl->GetTemplate();
 	if( pDclControl->GetBooleanProperty( Prop::DragnDropAllowDrop ) )
 	{
@@ -102,8 +104,6 @@ BOOL CArxControlDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject,
 			return TRUE;
 		}
 	}
-	if( mpDlgControl->OnDrop( point, pDataObject, dropEffect ) )
-		return TRUE;
 
 	return __super::OnDrop( pWnd, pDataObject, dropEffect, point );
 /*

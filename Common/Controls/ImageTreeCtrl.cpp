@@ -309,6 +309,7 @@ BEGIN_MESSAGE_MAP(CImageTreeCtrl, CTreeCtrl)
 	ON_NOTIFY_REFLECT(TVN_DELETEITEM, &CImageTreeCtrl::OnTvnDeleteitem)
 	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, &CImageTreeCtrl::OnTvnItemexpanding)
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
 
 
@@ -390,4 +391,11 @@ HBRUSH CImageTreeCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 		return NULL;
 	return NULL;
 	//return mColorService.CtlColor( pDC, nCtlColor );
+}
+
+void CImageTreeCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	__super::OnLButtonDblClk(nFlags, point);
 }

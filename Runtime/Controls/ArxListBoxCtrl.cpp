@@ -34,6 +34,48 @@ bool CArxListBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
+bool CArxListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
+															DROPEFFECT dropEffect )
+{
+	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowDrop ) )
+	{
+		CString sDropControlEvent = mpTemplate->GetStringProperty( Prop::DragnDropFromControl );
+		if( !sDropControlEvent.IsEmpty() && pSourceData->IsDataAvailable( CDragDropService::GetDclControlClipboardFormat() ) )
+		{
+			HGLOBAL hData = pSourceData->GetGlobalData( CDragDropService::GetDclControlClipboardFormat() );
+			if( !hData )
+				return FALSE;
+			CDclControlObject* pSourceDclControl = *(CDclControlObject**)GlobalLock( hData );
+			GlobalUnlock( hData );
+			GlobalFree( hData );
+			if( !pSourceDclControl )
+				return FALSE;
+			CString sProject = pSourceDclControl->GetOwnerProject()->GetKeyName();
+			CString sForm = pSourceDclControl->GetOwnerForm()->GetKeyName();
+			CString sControl;
+			if( pSourceDclControl->GetType() != _CtlForm )
+				sControl = pSourceDclControl->GetKeyName();
+			InvokeMethod3StringsPoint( sDropControlEvent,
+																 sProject,
+																 sForm,
+																 sControl,
+																 point,
+																 IsAsyncEvents() );
+			return TRUE;
+		}
+
+		CString sDropAcadWndPointEvent = mpTemplate->GetStringProperty( Prop::DragnDropFromAutoCAD );
+		if( !sDropAcadWndPointEvent.IsEmpty() )
+		{
+			InvokeMethodPoint( sDropAcadWndPointEvent,
+												 point,
+												 IsAsyncEvents() );
+			return TRUE;
+		}
+	}
+	return __super::OnDrop( point, pSourceData, dropEffect )  ;
+}
+
 
 BEGIN_MESSAGE_MAP(CArxListBoxCtrl, CListBoxCtrl)
 	ON_WM_CREATE()

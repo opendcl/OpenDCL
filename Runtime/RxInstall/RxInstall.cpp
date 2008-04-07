@@ -479,8 +479,12 @@ UINT __stdcall RxInstall( MSIHANDLE hInstall )
 	EnumerateRegTargets( 16, _T("R16.2"), bHKLM );
 	EnumerateRegTargets( 17, _T("R17.0"), bHKLM );
 	EnumerateRegTargets( 17, _T("R17.1"), bHKLM );
+	EnumerateRegTargets( 17, _T("R17.2"), bHKLM );
 	if( IsWow64() )
+	{
 		EnumerateRegTargets( 17, _T("R17.1"), bHKLM, true );
+		EnumerateRegTargets( 17, _T("R17.2"), bHKLM, true );
+	}
 	return ERROR_SUCCESS;
 }
 
@@ -543,10 +547,14 @@ UINT __stdcall RxUninstall( MSIHANDLE hInstall )
 	RemoveAllRegTargets( _T("AutoCAD\\R17.0"), HKEY_CURRENT_USER );
 	RemoveAllRegTargets( _T("AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE );
 	RemoveAllRegTargets( _T("AutoCAD\\R17.1"), HKEY_CURRENT_USER );
+	RemoveAllRegTargets( _T("AutoCAD\\R17.2"), HKEY_LOCAL_MACHINE );
+	RemoveAllRegTargets( _T("AutoCAD\\R17.2"), HKEY_CURRENT_USER );
 	if( IsWow64() )
 	{
 		RemoveAllRegTargets( _T("AutoCAD\\R17.1"), HKEY_LOCAL_MACHINE, true );
 		RemoveAllRegTargets( _T("AutoCAD\\R17.1"), HKEY_CURRENT_USER, true );
+		RemoveAllRegTargets( _T("AutoCAD\\R17.2"), HKEY_LOCAL_MACHINE, true );
+		RemoveAllRegTargets( _T("AutoCAD\\R17.2"), HKEY_CURRENT_USER, true );
 	}
 	return ERROR_SUCCESS;
 }

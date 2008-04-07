@@ -817,6 +817,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::MinValue: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::MouseOverPicture: return &CPicFolderComboBoxCtrl::Create;
 	case Prop::MultiColumn: return &CBooleanCheckBoxCtrl::Create;
+	case Prop::MultiRow: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::MultiSelect: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::Name: if( bMultiple ) return NULL; return &CControlNameEditCtrl::Create;
 	case Prop::NoIntegralHeight: return &CBooleanCheckBoxCtrl::Create;

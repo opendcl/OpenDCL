@@ -19,6 +19,7 @@ ADSRESULT ZOrder();
 ADSRESULT GetCurPos();
 ADSRESULT SetPos();
 ADSRESULT ForceUpdateNow();
+ADSRESULT GetName();
 };
 
 namespace ProgressBar

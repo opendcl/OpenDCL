@@ -303,6 +303,21 @@ ADSRESULT Control::ForceUpdateNow()
 	return RSRSLT;
 }
 
+ADSRESULT Control::GetName()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	TDclControlPtr pControl;
+	if( !GetControlArgument( pArgs, pControl ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	acedRetStr( pControl->GetStringProperty( Prop::Name ) );
+	return RSRSLT;
+}
+
 ADSRESULT Control::ShowToolTip()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
