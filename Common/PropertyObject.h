@@ -209,6 +209,7 @@ public:
 	
 	//Implementation
 public:
+	virtual CString GetApiName() const;
 	virtual CString GetName() const;
 	virtual void SetName( LPCTSTR pszName );
 	CString GetDocumentationDesc() const;

@@ -89,6 +89,11 @@ CString CWorkspace::LoadResourceString(int nResId, HMODULE hmodRes /*= NULL*/) c
 	CString sRes;
 	if( !hmodRes )
 	{
+		//CStringW sResW;
+		//sResW.LoadString( GetLocalResourceModule(), nResId );
+		//CStringA sResA;
+		//int cchResA = WideCharToMultiByte( 936, 0, sResW, sResW.GetLength(), sResA.GetBuffer( 2000 ), 2000, NULL, NULL );
+		//sResA.ReleaseBuffer( cchResA );
 		sRes.LoadString( GetLocalResourceModule(), nResId );
 		if( sRes.IsEmpty() )
 			sRes.LoadString( GetResourceModule(), nResId );
@@ -114,6 +119,21 @@ CString CWorkspace::GetLanguage(void) const
 			sLanguage.ReleaseBuffer( 0 );
 		RegCloseKey( hkReg );
 	}
+#ifdef _WIN64
+	if( !sLanguage.IsEmpty() )
+		return sLanguage;
+	if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_CURRENT_USER, GetSettingsRegPath(), 0, KEY_QUERY_VALUE | KEY_WOW64_32KEY, &hkReg ) )
+	{
+		DWORD dwType = 0;
+		DWORD cbValue = 64 - sizeof(TCHAR);
+		if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszRKLanguage, NULL, &dwType, (BYTE*)sLanguage.GetBuffer( 64 ), &cbValue ) &&
+				dwType == REG_SZ )
+			sLanguage.ReleaseBuffer();
+		else
+			sLanguage.ReleaseBuffer( 0 );
+		RegCloseKey( hkReg );
+	}
+#endif //_WIN64
 	if( !sLanguage.IsEmpty() )
 		return sLanguage;
 	if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_LOCAL_MACHINE, GetSettingsRegPath(), 0, KEY_QUERY_VALUE, &hkReg ) )
@@ -127,6 +147,21 @@ CString CWorkspace::GetLanguage(void) const
 			sLanguage.ReleaseBuffer( 0 );
 		RegCloseKey( hkReg );
 	}
+#ifdef _WIN64
+	if( !sLanguage.IsEmpty() )
+		return sLanguage;
+	if( ERROR_SUCCESS == RegOpenKeyEx( HKEY_LOCAL_MACHINE, GetSettingsRegPath(), 0, KEY_QUERY_VALUE | KEY_WOW64_32KEY, &hkReg ) )
+	{
+		DWORD dwType = 0;
+		DWORD cbValue = 64 - sizeof(TCHAR);
+		if( ERROR_SUCCESS == RegQueryValueEx( hkReg, pszRKLanguage, NULL, &dwType, (BYTE*)sLanguage.GetBuffer( 64 ), &cbValue ) &&
+				dwType == REG_SZ )
+			sLanguage.ReleaseBuffer();
+		else
+			sLanguage.ReleaseBuffer( 0 );
+		RegCloseKey( hkReg );
+	}
+#endif //_WIN64
 	return sLanguage;
 	//if( !sLanguage.IsEmpty() )
 	//	return sLanguage;

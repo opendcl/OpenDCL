@@ -198,17 +198,7 @@ void CPictureBoxCtrl::Clear()
 	// set the picture ID to a value that indicates it's blank
 	mpTemplate->SetLongProperty(Prop::Picture, 0);
 	SetPictureBlank();
-	
-	//RedrawWindow();
-	CAcadColorService* pColorService = GetColorService();
-	if( pColorService )
-	{
-		CRect rcCell;	
-		GetClientRect(&rcCell);
-		HDC hdc = ::GetDC(m_hWnd);
-		FillRect(hdc, rcCell, pColorService->GetBackgroundBrush());	
-		::ReleaseDC(m_hWnd, hdc);
-	}
+	OnNeedRepaint();
 }
 
 void CPictureBoxCtrl::PaintPicture(int sX, int sY, int nPictureID, int nEnabled, int nUseMask)

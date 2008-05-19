@@ -82,8 +82,6 @@ void CColumnsPage::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STYLETITLE, m_StyleTitle);
 	DDX_Control(pDX, IDC_INDEX_EDIT, m_IndexEdit);
 	DDX_Control(pDX, IDC_FILEEXT, m_FileExt);
-	DDX_Control(pDX, IDC_TIME, m_Times);
-	DDX_Control(pDX, IDC_DATE, m_Dates);
 	DDX_Control(pDX, IDC_DROPLISTBTN, m_DropListBtn);
 	DDX_Control(pDX, IDC_ALTICONLABEL, m_AltLabel);
 	DDX_Control(pDX, IDC_DEFICONLABEL, m_DefLabel);
@@ -115,8 +113,6 @@ BEGIN_MESSAGE_MAP(CColumnsPage, CPropertyPage)
 	ON_CBN_SELCHANGE(IDC_ALTERNATE, OnSelchangeAlternate)
 	ON_BN_CLICKED(IDC_DROPLISTBTN, OnDroplistbtn)
 	ON_WM_DESTROY()
-	ON_CBN_SELCHANGE(IDC_DATE, OnSelchangeDate)
-	ON_CBN_SELCHANGE(IDC_TIME, OnSelchangeTime)
 	ON_EN_CHANGE(IDC_FILEEXT, OnChangeFileext)
 	ON_EN_SETFOCUS(IDC_INDEX_EDIT, OnSetfocusIndexEdit)
 END_MESSAGE_MAP()
@@ -375,8 +371,6 @@ void CColumnsPage::SetControls(INT_PTR nIndex)
 	INT_PTR nColCount = m_ColData.GetCount();
 	m_Spin.SetRange(0, nColCount> 0? nColCount - 1 : 0);
 
-	m_Times.ShowWindow(FALSE);
-	m_Dates.ShowWindow(FALSE);
 	m_DropListBtn.ShowWindow(FALSE);
 	m_FileExt.ShowWindow(FALSE);
 	m_DefLabel.ShowWindow(FALSE);
@@ -447,8 +441,6 @@ void CColumnsPage::SetControls(INT_PTR nIndex)
 		{
 			if (m_ColData[nIndex].m_Image == -1)
 				m_ColData[nIndex].m_Image = 0;
-			m_Dates.SetCurSel(m_ColData[nIndex].m_Image);
-			m_Dates.ShowWindow(TRUE);			
 			CString sLoad;
 			sLoad = theWorkspace.LoadResourceString(IDS_DATEFORMAT);
 			m_DefLabel.SetWindowText(sLoad);
@@ -459,8 +451,6 @@ void CColumnsPage::SetControls(INT_PTR nIndex)
 		{
 			if (m_ColData[nIndex].m_Image == -1)
 				m_ColData[nIndex].m_Image = 0;
-			m_Times.SetCurSel(m_ColData[nIndex].m_Image);
-			m_Times.ShowWindow(TRUE);
 			CString sLoad;
 			sLoad = theWorkspace.LoadResourceString(IDS_TIMEFORMAT);
 			m_DefLabel.SetWindowText(sLoad);
@@ -638,8 +628,6 @@ void CColumnsPage::OnSelchangeStyle()
 
 	m_ColData[m_nIndex].m_Style = m_Style.GetCurSel();
 
-	m_Times.ShowWindow(FALSE);
-	m_Dates.ShowWindow(FALSE);
 	m_DefLabel.ShowWindow(FALSE);
 	m_FileExt.ShowWindow(FALSE);
 	m_DropListBtn.ShowWindow(FALSE);
@@ -648,11 +636,7 @@ void CColumnsPage::OnSelchangeStyle()
 		case 15:
 		{
 			if (m_ColData[m_nIndex].m_Image == -1)
-			{
 				m_ColData[m_nIndex].m_Image = 0;
-			}			
-			m_Dates.SetCurSel(m_ColData[m_nIndex].m_Image);
-			m_Dates.ShowWindow(TRUE);			
 			CString sLoad;
 			sLoad = theWorkspace.LoadResourceString(IDS_DATEFORMAT);
 			m_DefLabel.SetWindowText(sLoad);
@@ -663,11 +647,7 @@ void CColumnsPage::OnSelchangeStyle()
 		case 16:
 		{
 			if (m_ColData[m_nIndex].m_Image == -1)
-			{
 				m_ColData[m_nIndex].m_Image = 0;
-			}
-			m_Times.SetCurSel(m_ColData[m_nIndex].m_Image);			
-			m_Times.ShowWindow(TRUE);			
 			CString sLoad;
 			sLoad = theWorkspace.LoadResourceString(IDS_TIMEFORMAT);
 			m_DefLabel.SetWindowText(sLoad);
@@ -919,18 +899,6 @@ void CColumnsPage::OnDestroy()
 {
 	CPropertyPage::OnDestroy();
 	m_ColData.RemoveAll();
-}
-
-void CColumnsPage::OnSelchangeDate() 
-{	
-	m_ColData[m_nIndex].m_Image = m_Dates.GetCurSel();	
-	SetModified();
-}
-
-void CColumnsPage::OnSelchangeTime() 
-{
-	m_ColData[m_nIndex].m_Image = m_Times.GetCurSel();	
-	SetModified();
 }
 
 void CColumnsPage::OnChangeFileext() 

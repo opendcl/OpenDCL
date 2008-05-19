@@ -30,6 +30,7 @@ class CModelessDlg : public CBaseDlg
 	CWnd* mpParent;
 	bool mbKeepFocus;
 	bool mbTrackingMouse;
+	bool mbMouseLeft;
 	bool mbInMenuLoop;
 	HWND mhwndKeyboardFocus;
 	
@@ -75,4 +76,5 @@ protected:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+	afx_msg void OnCaptureChanged(CWnd *pWnd);
 };

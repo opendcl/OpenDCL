@@ -37,6 +37,7 @@ CAcadPaletteHost::CAcadPaletteHost( CPaletteDialog* pDlgObject, CWnd *pParent /*
 , mpDlgObject( pDlgObject )
 , mpParent( pParent? pParent : acedGetAcadFrame() )
 , mbTrackingMouse( false )
+, mbMouseLeft( true )
 , mbInMenuLoop( false )
 , mhwndKeyboardFocus( NULL )
 {
@@ -87,6 +88,7 @@ BEGIN_MESSAGE_MAP(CAcadPaletteHost, CAdUiDockControlBar)
 	ON_WM_TIMER()
 	ON_WM_NCHITTEST()
 	ON_WM_SETCURSOR()
+	ON_WM_CAPTURECHANGED()
 END_MESSAGE_MAP()
 
 
@@ -277,6 +279,11 @@ LRESULT CAcadPaletteHost::OnMouseEnter(WPARAM wParam, LPARAM lParam)
 		ReleaseCapture();
 		mhwndKeyboardFocus = NULL;
 	}
+	if( mbMouseLeft )
+	{
+		mpDlgObject->OnMouseEnter();
+		mbMouseLeft = false;
+	}
 	return 0;
 }
 
@@ -299,6 +306,9 @@ LRESULT CAcadPaletteHost::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
 		}
 	}
+	mbMouseLeft = (GetCapture() != this);
+	if( mbMouseLeft )
+		mpDlgObject->OnMouseLeave();
 	return 0;
 }
 
@@ -354,4 +364,10 @@ void CAcadPaletteHost::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	//delete this;
+}
+
+void CAcadPaletteHost::OnCaptureChanged(CWnd *pWnd)
+{
+	OnTimer( WM_MOUSELEAVE );
+	__super::OnCaptureChanged(pWnd);
 }

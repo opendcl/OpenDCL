@@ -47,8 +47,6 @@ class CColumnsPage : public CPropertyPage
 	CStatic	m_StyleTitle;
 	CEdit	m_IndexEdit;
 	CEdit	m_FileExt;
-	CComboBox	m_Times;
-	CComboBox	m_Dates;
 	CButton	m_DropListBtn;
 	CStatic	m_AltLabel;
 	CStatic	m_DefLabel;
@@ -121,8 +119,6 @@ protected:
 	afx_msg void OnSelchangeAlternate();
 	afx_msg void OnDroplistbtn();
 	afx_msg void OnDestroy();
-	afx_msg void OnSelchangeDate();
-	afx_msg void OnSelchangeTime();
 	afx_msg void OnChangeFileext();
 	afx_msg void OnSetfocusIndexEdit();
 

@@ -843,7 +843,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::ShowNameLabel: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ShowNameTextBox: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ShowOK: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::ShowOrbitCirlces: return &CBooleanCheckBoxCtrl::Create;
+	case Prop::ShowOrbitCircles: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ShowReadOnlyCheckBox: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ShowSelectAlways: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ShowTicks: return &CBooleanCheckBoxCtrl::Create;

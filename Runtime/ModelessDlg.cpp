@@ -44,6 +44,7 @@ CModelessDlg::CModelessDlg( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/, Di
 , mpParent( pParent )
 , mbKeepFocus( true )
 , mbTrackingMouse( false )
+, mbMouseLeft( true )
 , mbInMenuLoop( false )
 , mhwndKeyboardFocus( NULL )
 {
@@ -101,6 +102,7 @@ BEGIN_MESSAGE_MAP(CModelessDlg, CBaseDlg)
 	ON_WM_TIMER()
 	ON_WM_NCHITTEST()
 	ON_WM_SETCURSOR()
+	ON_WM_CAPTURECHANGED()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -243,13 +245,18 @@ LRESULT CModelessDlg::OnMouseEnter(WPARAM wParam, LPARAM lParam)
 		ReleaseCapture();
 		mhwndKeyboardFocus = NULL;
 	}
+	if( mbMouseLeft )
+	{
+		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseEntered ), true );
+		mbMouseLeft = false;
+	}
 	return 0;
 }
 
 LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 {
 	mbTrackingMouse = false;
-	if( !mbInMenuLoop && mbKeepFocus &&  !::GetCapture() )
+	if( !mbInMenuLoop && mbKeepFocus && !::GetCapture() )
 	{
 		CWnd* pFocusWnd = GetFocus();
 		if( !pFocusWnd || ((pFocusWnd->SendMessage( WM_GETDLGCODE, 0, 0 ) & (DLGC_WANTCHARS | DLGC_WANTARROWS)) == 0) )
@@ -265,6 +272,9 @@ LRESULT CModelessDlg::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
 		}
 	}
+	mbMouseLeft = (GetCapture() != this);
+	if( mbMouseLeft )
+		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseMovedOff ), true );
 	return 0;
 }
 
@@ -314,4 +324,10 @@ BOOL CModelessDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 			SendMessage( refWM_MOUSEENTER(), 0, 0 );
 	}
 	return __super::OnSetCursor(pWnd, nHitTest, message);
+}
+
+void CModelessDlg::OnCaptureChanged(CWnd *pWnd)
+{
+	OnTimer( WM_MOUSELEAVE );
+	__super::OnCaptureChanged(pWnd);
 }

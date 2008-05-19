@@ -235,6 +235,16 @@ bool CDockingDialog::OnApplyResizable( TPropertyPtr pProp )
 	return true; //skip base class
 }
 
+void CDockingDialog::OnMouseEnter()
+{
+  InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseEntered ), true );
+};
+
+void CDockingDialog::OnMouseLeave()
+{
+  InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseMovedOff ), true );
+};
+
 
 BEGIN_MESSAGE_MAP(CDockingDialog, CDialog)
 	ON_WM_HELPINFO()

@@ -1,0 +1,413 @@
+[Method]
+StoreImage
+[Function]
+dcl_PictureBox_StoreImage
+[Desc]
+This method is used to store what has been drawn or printed to the PictureBox’s paint-able area to memory.  What this does is makes all lines, arcs, text, etc. become part of the stored picture that the PictureBox uses to paint from.  This method must be called after all objects have been drawn to the PictureBox, or possible errors could occur, especially if another dialog box is moved of the PictureBox and what has been drawn will be erased.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+GetPictureSize
+[Function]
+dcl_GetPictureSize
+[Desc]
+This method will return the size of a picture, indicated by its Id.
+[Arguments Return] as List
+ProjectName
+\par\tab PictureID
+[as Integer]
+
+
+[Method]
+Refresh
+[Function]
+dcl_PictureBox_Refresh
+[Desc]
+This method repaints the PictureBox using the image last stored by dcl_PictureBox_StoreImage.  Any pictures set using the Picture property or dcl_PictureBox_LoadPicture  will not be removed. 
+[Arguments]
+<CONTROL>
+
+
+[Method]
+DrawLine
+[Function]
+dcl_PictureBox_DrawLine
+[Desc]
+This method draws a list of lines in the control.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab StartX
+[as Integer]
+\par\tab StartY
+[as Integer]
+\par\tab EndX
+[as Integer]
+\par\tab EndY
+[as Integer]
+\par\tab LineColor
+[as Integer or (R G B)]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+DrawArc
+[Function]
+dcl_PictureBox_DrawArc
+[Desc]
+This method draws an arc on the control by specifying a center point, radius, and start and end points to calculate the start and end angles of the arc. Start and end points don’t need to fall directly on the arc -- they are only used to calculate the start and end angles.
+[Arguments]
+<CONTROL>
+\par\tab
+[Begin List]
+[Begin List]
+\par\tab CenterX
+[as Integer]
+\par\tab CenterY
+[as Integer]
+\par\tab Radius
+[as Integer]
+\par\tab StartAngleX
+[as Integer]
+\par\tab StartAngleY
+[as Integer]
+\par\tab EndAngleX
+[as Integer]
+\par\tab EndAngleY
+[as Integer]
+\par\tab Color
+[as Integer or (R G B)]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+DrawCircle
+[Function]
+dcl_PictureBox_DrawCircle
+[Desc]
+This method draws a circle on the control. A rectangle is used because it allows both circles and ellipses to be drawn using the same method.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab UpperLeftX
+[as Integer]
+\par\tab UpperLeftY
+[as Integer]
+\par\tab Width
+[as Integer]
+\par\tab Height
+[as Integer]
+\par\tab Color
+[as Integer or (R G B)]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+DrawFillRect
+[Function]
+dcl_PictureBox_DrawFillRect
+[Desc]
+This method draws a solid rectangle on the control.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab UpperLeftX
+[as Integer]
+\par\tab UpperLeftY
+[as Integer]
+\par\tab Width
+[as Integer]
+\par\tab Height
+[as Integer]
+\par\tab Color
+[as Integer or (R G B)]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+DrawHatchRect
+[Function]
+dcl_PictureBox_DrawHatchRect
+[Desc]
+This method draws a hatched rectangle on the control. There are five styles of windows hatches available, an integer of 1 - 5 will indicate which one is to be drawn. \par
+\par \b Hatch Pattern Flags:
+\par \pard\fi-710\li710 \b Flag\tab Description\b0 
+\par \pard\fi-710\li710 1 \tab Vertical lines.	
+\par \pard\fi-710\li710 2 \tab Right slanted lines.	
+\par \pard\fi-710\li710 3 \tab Left slanted lines.	
+\par \pard\fi-710\li710 4 \tab Horizontal, vertical grid pattern.	
+\par \pard\fi-710\li710 5 \tab Diagonal grid pattern.	
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab UpperLeftX
+[as Integer]
+\par\tab UpperLeftY
+[as Integer]
+\par\tab Width
+[as Integer]
+\par\tab Height
+[as Integer]
+\par\tab LineColor
+[as Integer or (R G B)]
+\par\tab HatchPattern
+[as Integer]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+DrawEdge
+[Function]
+dcl_PictureBox_DrawEdge
+[Desc]
+This method draws various standard windows control borders. Color control is automatically handled by this method.\par
+\par \b Border Flags:
+\par \pard\fi-710\li710 \b Flag\tab Description\b0 
+\par \pard\fi-710\li710 1 \tab Raised Inner-border.	
+\par \pard\fi-710\li710 2 \tab Sunken inner-border.	
+\par \pard\fi-710\li710 3 \tab Raised outer-border.	
+\par \pard\fi-710\li710 4 \tab Edge bump.	
+\par \pard\fi-710\li710 5 \tab Edge etched.	
+\par \pard\fi-710\li710 6 \tab Edge raised.	
+\par \pard\fi-710\li710 7 \tab Edge sunken.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab UpperLeftX
+[as Integer]
+\par\tab UpperLeftY
+[as Integer]
+\par\tab Width
+[as Integer]
+\par\tab Height
+[as Integer]
+\par\tab BorderFlag
+[as Integer]
+\par\tab [End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+DrawFocusRect
+[Function]
+dcl_PictureBox_DrawFocusRect
+[Desc]
+This method draws a focus rectangle used to indicate the control has focus. This method is a Boolean XOR function, calling this function a second time with the same rectangle removes the rectangle from the display. 
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab UpperLeftX
+[as Integer]
+\par\tab UpperLeftY
+[as Integer]
+\par\tab Width
+[as Integer]
+\par\tab Height
+[as Integer]
+\par\tab [End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+DrawRect
+[Function]
+dcl_PictureBox_DrawRect
+[Desc]
+This method draws a standard rectangle.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab UpperLeftX
+[as Integer]
+\par\tab UpperLeftY
+[as Integer]
+\par\tab Width
+[as Integer]
+\par\tab Height
+[as Integer]
+\par\tab Color
+[as Integer or (R G B)]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+DrawWrappedText
+[Function]
+dcl_PictureBox_DrawWrappedText
+[Desc]
+This method draws text on the control. If the text is going to be drawn outside the allowable width area the text is automatically wrapped around to the next line or lines. A bounding rectangle is used to define where the text is to be drawn.
+\par If BackColor is 0, the text is drawn transparently.
+\par \par \b Note:\b0
+\par \pard\fi-310\li310 1.\tab The height parameter is automatically calculated and returned with the method. If the BackColor argument is not passed the PictureBox’s BackColor property is used.
+\par \pard\fi-0\li0  
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab UpperLeftX
+[as Integer]
+\par\tab UpperLeftY
+[as Integer]
+\par\tab Width
+[as Integer]
+\par\tab ForeColor
+[as Integer or (R G B)]
+\par\tab\i{Optional} \i0 BackColor 
+[as Integer or (R G B)]
+\par\tab Text
+[as String]
+\par\tab Justification
+[as String: L = Left, C = Center, R = Right]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+DrawText
+[Function]
+dcl_PictureBox_DrawText
+[Desc]
+This method draws text on the control. If the BackColor argument is not passed the PictureBox’s BackColor property is used. 
+\par If BackColor is 0, the text is drawn transparently.
+\par \par \b Justification \b0
+\par \pard\fi-410\li410 TL \tab Top Left	
+\par \pard\fi-410\li410 TC \tab Top Center	
+\par \pard\fi-410\li410 TR \tab Top Right	
+\par \pard\fi-410\li410 BL \tab Bottom Left	
+\par \pard\fi-410\li410 BC \tab Bottom Center	
+\par \pard\fi-410\li410 BR \tab Bottom Right	
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab UpperLeftX
+[as Integer]
+\par\tab UpperLeftY
+[as Integer]
+\par\tab ForeColor
+[as Integer or (R G B)]
+\par\tab\i{Optional} \i0 BackColor 
+[as Integer or (R G B)]
+\par\tab Text
+[as String]
+\par\tab Justification
+[as String]
+\par\tab\i{Optional} \i0 Disabled
+[as Boolean (T = Disabled, Nil = Enabled)]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+GetTextExtent
+[Function]
+dcl_PictureBox_GetTextExtent
+[Desc]
+This method will return the height and width of the text passed in for calculation.
+[Arguments Return] as List (Width Height)
+<CONTROL>
+\par\tab Text
+[as String]
+
+
+[Method]
+PaintPicture
+[Function]
+dcl_PictureBox_PaintPicture
+[Desc]
+This method will paint a picture anywhere on the control. The dialog box must be visible. If you intend to use this method to show a picture of pictures on the the PictureBox, make this call from the OnPaint event of the PictureBox so that the image is shown at the correct time.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab UpperLeftX
+[as Integer]
+\par\tab UpperLeftY
+[as Integer]
+\par\tab PictureID
+[as Integer]
+\par\tab\i{Optional} \i0 Enabled
+[as Boolean (T = Enabled, Nil = Disabled)]
+\par\tab\i{Optional} \i0 UseMask
+[as Boolean (T = Use, Nil = Don't Use)]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+LoadPictureFile
+[Function]
+dcl_PictureBox_LoadPictureFile
+[Desc]
+This method will load a picture file of type .bmp, .ico, .jpg, and .wmf, into the PictureBox control.
+[Arguments]
+<CONTROL>
+\par\tab FileName
+[as String]
+\par\tab\i{Optional} \i0 Stretch
+[as Boolean T or Nil]
+
+
+[Method]
+DrawPoint
+[Function]
+dcl_PictureBox_DrawPoint
+[Desc]
+This method will paint a single point on the control any specified color. Note: this method does not accept lists passed in to specify a group of points to be drawn.  Due to ObjectARX limitations in lists, at this time, small lists cannot be supported.
+[Arguments]
+<CONTROL>
+\par\tab nX
+[as Integer]
+\par\tab nY
+[as Integer]
+\par\tab Color
+[as Integer or (R G B)]
+
+
+[Method]
+Clear
+[Function]
+dcl_PictureBox_Clear
+[Desc]
+This method clears the control, including any pictures set using the Picture property.
+[Arguments]
+<CONTROL>
+
+
+[End of File]

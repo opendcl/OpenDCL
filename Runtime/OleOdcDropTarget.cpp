@@ -19,7 +19,17 @@
 
 const TCHAR *formatname = _T("CDclControlObject");
 
-void ReadExternalDWGfile(CString sPath, CString sFile, acedDwgPoint ptPoint, bool bXref)
+static CString RtoS( double dValue )
+{
+	static CString sDefault = _T("0.0");
+	CString sReturn;
+	if( RTNORM != acdbRToS( dValue, 2,8, sReturn.GetBuffer( 32 ) ) )
+		return sDefault;
+	sReturn.ReleaseBuffer();
+	return sReturn;
+}
+
+static void ReadExternalDWGfile(CString sPath, CString sFile, acedDwgPoint ptPoint, bool bXref)
 {
 	CString sFileName;
 	if (sPath.Right(1) != _T("\\"))
@@ -71,7 +81,7 @@ void ReadExternalDWGfile(CString sPath, CString sFile, acedDwgPoint ptPoint, boo
 	es = acDocManager->sendStringToExecute(pDoc, sCommand, false, true, false);		
 }
 
-Adesk::Boolean append(AcDbDatabase*pDb, AcDbEntity* pEntity, int vport)
+static Adesk::Boolean append(AcDbDatabase*pDb, AcDbEntity* pEntity, int vport)
 {
 	AcDbBlockTableRecord *pBlockRec;
 	Acad::ErrorStatus es = acdbOpenObject( pBlockRec, pDb->currentSpaceId(), AcDb::kForWrite );
@@ -93,7 +103,7 @@ Adesk::Boolean append(AcDbDatabase*pDb, AcDbEntity* pEntity, int vport)
 }
 
 
-BOOL PasteFromData(COleDataObject* pDataObject, CRect& resRect, int& objType)
+static BOOL PasteFromData(COleDataObject* pDataObject, CRect& resRect, int& objType)
 {
 	STGMEDIUM medium;
 
@@ -195,9 +205,10 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 			//if (CmdBarWnd != NULL)
 			//	CmdBarWnd->SetFocus();		
 
-			InvokeMethodPoint3D(
+			InvokeMethodPoint3DInt(
 				sEventDefun,
 				dwgPt,
+				windnum,
 				bUseSendString);	
 
 			// return here on purpose to skip the insert if we are to fire the event.
@@ -229,9 +240,10 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 
 		if (sEventName.GetLength() > 0)
 		{
-			InvokeMethodPoint3D(
+			InvokeMethodPoint3DInt(
 				sEventName,
 				dwgPt,
+				windnum,
 				bUseSendString);
 
 			return -1;
@@ -278,9 +290,10 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 	}
 	else
 	{
-		InvokeMethodPoint3D(
+		InvokeMethodPoint3DInt(
 			m_pThisArxControl->GetStringProperty(Prop::DragnDropToAutoCAD),
 			dwgPt,
+			windnum,
 			bUseSendString);
 	}
   return -1; // calls OnDrop();

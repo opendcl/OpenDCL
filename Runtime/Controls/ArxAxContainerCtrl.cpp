@@ -17,6 +17,16 @@ static int acedGetRtType(VARIANT *pVarGet);
 static double acedVarToDouble(VARIANT *pVarGet);
 static CString LongToA(long lValue);
 
+static CString RtoS( double dValue )
+{
+	static CString sDefault = _T("0.0");
+	CString sReturn;
+	if( RTNORM != acdbRToS( dValue, 2,8, sReturn.GetBuffer( 32 ) ) )
+		return sDefault;
+	sReturn.ReleaseBuffer();
+	return sReturn;
+}
+
 
 CArxAxContainerCtrl::CArxAxContainerCtrl(TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate) 
 : CAxContainerCtrl(pTemplate, pPane, nID, false)

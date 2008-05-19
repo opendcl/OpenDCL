@@ -37,6 +37,7 @@ CAcadDockBarHost::CAcadDockBarHost( CDockingDialog* pDlgObject, CWnd *pParent /*
 , mpDlgObject( pDlgObject )
 , mpParent( pParent )
 , mbTrackingMouse( false )
+, mbMouseLeft( true )
 , mbInMenuLoop( false )
 , mhwndKeyboardFocus( NULL )
 {
@@ -87,6 +88,7 @@ BEGIN_MESSAGE_MAP(CAcadDockBarHost, CAdUiDockControlBar)
 	ON_WM_TIMER()
 	ON_WM_NCHITTEST()
 	ON_WM_SETCURSOR()
+	ON_WM_CAPTURECHANGED()
 END_MESSAGE_MAP()
 
 
@@ -287,6 +289,11 @@ LRESULT CAcadDockBarHost::OnMouseEnter(WPARAM wParam, LPARAM lParam)
 		ReleaseCapture();
 		mhwndKeyboardFocus = NULL;
 	}
+	if( mbMouseLeft )
+	{
+		mpDlgObject->OnMouseEnter();
+		mbMouseLeft = false;
+	}
 	return 0;
 }
 
@@ -309,6 +316,9 @@ LRESULT CAcadDockBarHost::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
 		}
 	}
+	mbMouseLeft = (GetCapture() != this);
+	if( mbMouseLeft )
+		mpDlgObject->OnMouseLeave();
 	return 0;
 }
 
@@ -364,4 +374,10 @@ void CAcadDockBarHost::PostNcDestroy()
 {
 	__super::PostNcDestroy();
 	//delete this;
+}
+
+void CAcadDockBarHost::OnCaptureChanged(CWnd *pWnd)
+{
+	OnTimer( WM_MOUSELEAVE );
+	__super::OnCaptureChanged(pWnd);
 }

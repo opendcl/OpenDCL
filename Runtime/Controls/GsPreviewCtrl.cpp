@@ -1101,7 +1101,7 @@ BOOL CGsPreviewCtrl::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID)
 	BOOL RetVal = CStatic::Create(_T(""), dwStyle, ArxRect, pParentWnd, nID);
 	
 	m_pInterfaceMode = m_ArxControl->GetPropertyObject(Prop::AllowOrbiting);
-	m_pAllowCircles = m_ArxControl->GetPropertyObject(Prop::ShowOrbitCirlces);
+	m_pAllowCircles = m_ArxControl->GetPropertyObject(Prop::ShowOrbitCircles);
 	m_pRenderMode = m_ArxControl->GetPropertyObject(Prop::RenderMode);
 
 	m_ToolTip.Create(this);

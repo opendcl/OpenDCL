@@ -104,6 +104,13 @@ void CArxSplitterCtrl::OnMove(int x, int y)
 {
 	__super::OnMove(x, y);
 	SavePosition();
+	CRect rcWnd = GetEffectiveWindowRect();
+	InvokeMethodIntIntIntInt( mpTemplate->GetStringProperty( Prop::EventSplitterMoved ),
+														rcWnd.left,
+														rcWnd.top,
+														rcWnd.Width(),
+														rcWnd.Height(),
+														IsAsyncEvents() );
 }
 
 void CArxSplitterCtrl::OnMouseMove(UINT nFlags, CPoint point)

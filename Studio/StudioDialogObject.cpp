@@ -630,7 +630,7 @@ BOOL CStudioDialogObject::OnInitDialog()
 		TDclControlPtr pFileDlgCtrl = mpSourceForm->FindFirstControlOfType( CtlFileDlgCtrl );
 		if( pFileDlgCtrl )
 		{
-			CDialogControl* pCtrlObj = CreateNewDialogControl( pFileDlgCtrl, GetNextControlId() );
+			TDialogControlPtr pCtrlObj = CreateNewDialogControl( pFileDlgCtrl, GetNextControlId() );
 			mpControlPane->AddControl( pCtrlObj );
 		}
 		else
@@ -943,6 +943,12 @@ void CStudioDialogObject::OnProperties()
 
 void CStudioDialogObject::OnUpdateProperties(CCmdUI *pCmdUI) 
 {
+	TDclControlPtr pDclControl = theStudioWorkspace.GetActiveDclControl();
+	if( !pDclControl || pDclControl->GetType() == CtlFileDlgCtrl )
+	{
+		pCmdUI->Enable( false );
+		return;
+	}
 	pCmdUI->Enable( CountSelected() == 1 );
 }
 
@@ -1028,6 +1034,7 @@ void CStudioDialogObject::OnUpdateEditObjectbrowser(CCmdUI *pCmdUI)
 void CStudioDialogObject::OnContextMenu(CWnd* pWnd, CPoint point) 
 {
 	CDialogControl* pDlgControl = GetControlAtPoint( point );
+	theStudioWorkspace.ActivateDclControl( NULL );
 	theStudioWorkspace.ActivateDclControl( pDlgControl? pDlgControl->GetTemplate() : GetTemplate() );
 	CMenu menu;
 	if( menu.LoadMenu( IDR_MAINFRAME ) )

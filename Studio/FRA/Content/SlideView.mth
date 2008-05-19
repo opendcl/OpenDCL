@@ -1,0 +1,137 @@
+[Method]
+Load
+[Function]
+dcl_SlideView_Load
+[Desc]
+This method loads a slide image or slide library and then displays the slide in the control.
+[Arguments]
+<CONTROL>
+\par\tab FileName
+[as String]
+\par\tab\i{Optional} \i0 SlideLibraryImageName
+[as String]
+
+
+[Method]
+Clear
+[Function]
+dcl_SlideView_Clear
+[Desc]
+This method clears the control.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+SlideImage
+[Function]
+dcl_SlideView_SlideImage
+[Desc]
+This method will load a slide image from a slide file or slide library file and paint it anywhere on the control.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab UpperLeftX
+[as Integer]
+\par\tab UpperLeftY
+[as Integer]
+\par\tab Width
+[as Integer]
+\par\tab Height
+[as Integer]
+\par\tab FileName
+[as String]
+\par\tab\i{Optional} \i0 SlideLibraryImageName
+[as String]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+VectorImage
+[Function]
+dcl_SlideView_VectorImage
+[Desc]
+This method draws a list of lines in the control.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab StartX
+[as Integer]
+\par\tab StartY
+[as Integer]
+\par\tab EndX
+[as Integer]
+\par\tab EndY
+[as Integer]
+\par\tab LineColor
+[as Integer or (R G B)]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+FillImage
+[Function]
+dcl_SlideView_FillImage
+[Desc]
+This method draws a solid rectangle on the control.
+[Arguments]
+<CONTROL>
+\par\tab 
+[Begin List]
+[Begin List]
+\par\tab UpperLeftX
+[as Integer]
+\par\tab UpperLeftY
+[as Integer]
+\par\tab Width
+[as Integer]
+\par\tab Height
+[as Integer]
+\par\tab Color
+[as Integer or (R G B)]
+[End List]
+\par\tab ...
+[End List]
+
+
+[Method]
+EndImage
+[Function]
+dcl_SlideView_EndImage
+[Desc]
+This method is used to store what has been drawn or painted to the SlideView’s paint able area to memory.  What this does is make all lines, arcs, text, etc. become part of the stored picture that the SlideView uses to paint from.  This method must be called after all objects have been drawn to the SlideView, or possible visual errors could occur, especially if another dialog box is moved over the SlideView and what has been drawn will be erased.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+SetHighLight
+[Function]
+dcl_SlideView_SetHighLight
+[Desc]
+This method draws a rectangle around the inside of the border as indication that the control has been selected or highlighted for some purpose. 
+[Arguments]
+<CONTROL>
+\par\tab ColorIndex
+[as Integer]
+
+
+[Method]
+RemoveHighLight
+[Function]
+dcl_SlideView_RemoveHighLight
+[Desc]
+This method removes the drawn rectangle around the inside of the border that indicates the control has been selected or highlighted for some purpose.
+[Arguments]
+<CONTROL>
+
+
+[End of File]

@@ -96,18 +96,18 @@ bool CListViewCtrl::OnApplyProperty( TPropertyPtr pProp )
 				SetImageList( &pImageList->GetImageList(), TVSIL_NORMAL );
 				SetImageList( &pImageList->GetImageList(), LVSIL_SMALL );
 			}
-			else
-			{
-				if( !mDefaultImageList.m_hImageList )
-				{
-					CRect rcIcon( 0, 0, 16, 16 );
-					GetItemRect( 0, &rcIcon, LVIR_ICON );
-					mDefaultImageList.Create( rcIcon.Width(), rcIcon.Height(), ILC_COLOR, 1, 1 );
-				}
-				mDefaultImageList.SetBkColor( ::GetSysColor( COLOR_WINDOW ) );
-				SetImageList( &mDefaultImageList, TVSIL_NORMAL );
-				SetImageList( &mDefaultImageList, LVSIL_SMALL );
-			}
+			//else
+			//{
+			//	if( !mDefaultImageList.m_hImageList )
+			//	{
+			//		CRect rcIcon( 0, 0, 16, 16 );
+			//		GetItemRect( 0, &rcIcon, LVIR_ICON );
+			//		mDefaultImageList.Create( rcIcon.Width(), rcIcon.Height(), ILC_COLOR, 1, 1 );
+			//	}
+			//	mDefaultImageList.SetBkColor( ::GetSysColor( COLOR_WINDOW ) );
+			//	SetImageList( &mDefaultImageList, TVSIL_NORMAL );
+			//	SetImageList( &mDefaultImageList, LVSIL_SMALL );
+			//}
 		}
 		break;
 	case Prop::BlockListStyle:

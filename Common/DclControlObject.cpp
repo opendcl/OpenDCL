@@ -1114,10 +1114,10 @@ TPropertyList::iterator CDclControlObject::FindPropertyInsertPos( LPCTSTR pszNam
 	do
 	{
 		--iter;
-		assert( (*iter)->GetName() != pszName ); //trying to insert a property with a duplicate name?
+		assert( (*iter)->GetApiName() != pszName ); //trying to insert a property with a duplicate name?
 		if( (*iter)->IsHidden() != bHidden )
 			continue;
-		if( (*iter)->GetName() < pszName )
+		if( (*iter)->GetApiName() < pszName )
 			break;
 	}
 	while( iter != mProperties.begin() );
@@ -1135,11 +1135,12 @@ bool CDclControlObject::InsertNamedProperty( TPropertyPtr pProp )
 		mProperties.push_back( pProp );
 		return true;
 	}
+	assert( *pProp->GetApiName() != _T('\0') );
 
-	TPropertyList::iterator iter = FindPropertyInsertPos( pProp->GetName(), pProp->IsHidden() );
-	if( iter != mProperties.end() && pProp->GetName() == (*iter)->GetName() )
+	TPropertyList::iterator iter = FindPropertyInsertPos( pProp->GetApiName(), pProp->IsHidden() );
+	if( iter != mProperties.end() && pProp->GetApiName() == (*iter)->GetApiName() )
 	{
-		TraceFmt( _T("* Attempt to insert duplicate property (%s) failed!\r\n"), (LPCTSTR)pProp->GetName() );
+		TraceFmt( _T("* Attempt to insert duplicate property (%s) failed!\r\n"), (LPCTSTR)pProp->GetApiName() );
 		return false;
 	}
 	mProperties.insert( iter, pProp );

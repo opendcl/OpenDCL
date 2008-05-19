@@ -21,12 +21,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_07E74863A25C45ABADED6AC647FE3C9F"
-        "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_0A4E08D031F86C069BEE10EEFE7F70EF"
         "OwnerKey" = "8:_49F006177DB04D1581073B6DD5359E77"
         "MsmSig" = "8:_UNDEFINED"
@@ -58,6 +52,18 @@
         "Entry"
         {
         "MsmKey" = "8:_359AEFE10E7C0D3CEDB6E184B09BAADC"
+        "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_38F2501DE2D948428DF99D48F025F2CC"
+        "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_39D3EA2AD7374BD3885ED7663E94D056"
         "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -75,19 +81,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_5DCD568067C54157B50332E642F7A79F"
-        "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_6AF4FC33DE474D29A9996B50A2C34E73"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_7A97A89526974BF69E5D505F7F01705D"
+        "MsmKey" = "8:_814396CB6990494493DC88FE0CCCEE85"
         "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -99,7 +99,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_AFE7922F67A143A195EE4B1558D959BF"
+        "MsmKey" = "8:_A6A6617307CE4A0FAD95AD6B2ECEE1A9"
         "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -443,7 +443,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_07E74863A25C45ABADED6AC647FE3C9F"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_38F2501DE2D948428DF99D48F025F2CC"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -454,7 +454,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_5DCD568067C54157B50332E642F7A79F"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_39D3EA2AD7374BD3885ED7663E94D056"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -465,7 +465,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_7A97A89526974BF69E5D505F7F01705D"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_814396CB6990494493DC88FE0CCCEE85"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -476,7 +476,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_AFE7922F67A143A195EE4B1558D959BF"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_A6A6617307CE4A0FAD95AD6B2ECEE1A9"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -491,7 +491,7 @@
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.717209059AC14CA38A7B4FE9D885A6D3"
-        "Version" = "8:5.0.0.12"
+        "Version" = "8:5.0.0.15"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"

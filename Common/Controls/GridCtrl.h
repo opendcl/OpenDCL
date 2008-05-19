@@ -70,30 +70,26 @@ struct _CellData
 	CellStyle mType;
 	int midxImage;
 	int midxAltImage;
-	int mnDateTimeStyle;
 	std::vector< tstring > mrsComboList;
 	std::vector< int > mrnComboImage;
 	_CellData()
 		: mType( Grid_Undefined )
 		, midxImage( -1 )
 		, midxAltImage( -1 )
-		, mnDateTimeStyle( -1 )
 	{
 	} 
 	_CellData( const _CellData& _Right )
 		: mType( _Right.mType )
 		, midxImage( _Right.midxImage )
 		, midxAltImage( _Right.midxAltImage )
-		, mnDateTimeStyle( _Right.mnDateTimeStyle )
 		, mrsComboList( _Right.mrsComboList )
 		, mrnComboImage( _Right.mrnComboImage )
 	{
 	} 
-	_CellData( CellStyle type, int image = -1, int altImage = -1, int dateTimeStyle = -1 )
+	_CellData( CellStyle type, int image = -1, int altImage = -1 )
 		: mType( type )
 		, midxImage( image )
 		, midxAltImage( altImage )
-		, mnDateTimeStyle( dateTimeStyle )
 	{
 	} 
 	virtual ~_CellData() {}
@@ -102,7 +98,6 @@ struct _CellData
 		mType = _Right.mType;
 		midxImage = _Right.midxImage;
 		midxAltImage = _Right.midxAltImage;
-		mnDateTimeStyle = _Right.mnDateTimeStyle;
 		mrsComboList = _Right.mrsComboList;
 		mrnComboImage = _Right.mrnComboImage;
 		return *this;
@@ -181,7 +176,7 @@ public:
 	CellStyle GetCellStyle( int nRow, int nCol );
 	CellStyle GetCurCellStyle();
 	void SetCellStyle( int nRow, int nCol, CellStyle nStyle, int image = -1, int altImage = -1,
-										 int dateTimeStyle = -1, LPCTSTR pszListText = NULL );
+										 LPCTSTR pszListText = NULL );
 	CString GetCellText( int nRow, int nCol ) const;
 	CString GetCurCellText() const;
 	void SetCurCellText( LPCTSTR pszText );
@@ -195,6 +190,7 @@ public:
 	bool IsCellChecked( int nRow, int nCol );
 	bool SetCellChecked( int nRow, int nCol, bool bChecked );
 	bool SetCellListData( int nRow, int nCol, const CArray<int, int>& rnImage, const CStringArray& rsList );
+	bool GetCellListData( int nRow, int nCol, CArray<int, int>& rnImage, CStringArray& rsList );
 	bool GetCellComboListItems( int nRow, int nCol, std::vector< tstring >& rsList, std::vector< int >& ridxImage );
 	UINT GetCellState( int nRow, int nCol );
 	bool ToggleCellState( int nRow, int nCol );

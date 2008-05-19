@@ -218,10 +218,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\resource.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\RuntimeRes.Local.h"
 				>
 			</File>
@@ -276,11 +272,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\ENU\Res\LargeBlock.ico"
+				RelativePath=".\Res\LargeBlock.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Res\LargeBlock.ico"
+				RelativePath="..\..\..\Common\ENU\Res\LargeBlock.ico"
 				>
 			</File>
 			<File

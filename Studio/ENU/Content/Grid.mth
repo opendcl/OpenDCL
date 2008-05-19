@@ -560,6 +560,24 @@ This method will set a cell of style 1 - Check Boxes or 2 - Option Buttons as ch
 
 
 [Method]
+GetItemDropList
+[Function]
+dcl_Grid_GetItemDropList
+[Desc]
+This method will get the drop down list for cells with drop list styles.
+[Arguments Return] as ((List of Strings)(List of Integers))
+<CONTROL>
+\par\tab nRow
+[as Integer]
+\par\tab nCol
+[as Integer]
+\par\tab Strings
+[as List of Strings]
+\par\tab\i{Optional} \i0 nImageIndexes
+[as List of Integers]
+
+
+[Method]
 SetItemDropList
 [Function]
 dcl_Grid_SetItemDropList

@@ -96,21 +96,28 @@ ADSRESULT ListView::AddItem()
 	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlListView))
 		return RSERR; //invalid input
 
-	if( !GetListBeginArgument( pArgs ) )
-		return RSERR; //invalid input
-
 	int nImage = -1;
-	GetIntArgument( pArgs, nImage, true );
-
 	CString sItemText;
-	if( !GetStringArgument( pArgs, sItemText ) )
-		return RSERR; //invalid input
-
 	CStringArray rsText;
-	GetStringArrayArgument( pArgs, rsText, true );
+	if( GetListBeginArgument( pArgs, true ) )
+	{
+		GetIntArgument( pArgs, nImage, true );
 
-	if( !GetListEndArgument( pArgs ) )
-		return RSERR; //invalid input
+		if( !GetStringArgument( pArgs, sItemText ) )
+			return RSERR; //invalid input
+
+		GetStringArrayArgument( pArgs, rsText, true );
+
+		if( !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+	}
+	else
+	{
+		GetIntArgument( pArgs, nImage, true );
+
+		if( !GetStringArgument( pArgs, sItemText ) )
+			return RSERR; //invalid input
+	}
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;

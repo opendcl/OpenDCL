@@ -471,7 +471,7 @@ void LoadArgsNDesc(Prop::Id nEventId, const TDclControlPtr pControl, CString &sA
 		break;
 
 	case Prop::DragnDropToAutoCAD:
-		sArgs = theWorkspace.LoadResourceString(IDS_ARG_3DPOINT);
+		sArgs = theWorkspace.LoadResourceString(IDS_ARG_3DPOINTVP);
 		sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_DRAGTOACAD);
 		break;
 

@@ -61,6 +61,8 @@ protected:
 protected:
 friend class CAcadPaletteHost;
 	virtual bool OnClosing();
+	virtual void OnMouseEnter();
+	virtual void OnMouseLeave();
 
 protected:
 	DECLARE_MESSAGE_MAP()

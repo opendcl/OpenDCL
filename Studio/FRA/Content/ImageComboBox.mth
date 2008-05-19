@@ -1,0 +1,256 @@
+[Method]
+AddString
+[Function]
+dcl_ImageComboBox_AddString
+[Desc]
+This method will add a new item to the specified ComboBox. This method will return the index of the new inserted item.  
+[Arguments as Integer]
+<CONTROL>
+\par\tab NewString
+[as String]
+\par\tab Image
+[as Integer]
+\par\tab SelectedImage
+[as Integer]
+\par\tab\i{Optional} \i0 Indent
+[as Integer]
+\par\tab\i{Optional} \i0 Index
+[as Integer]
+
+
+[Method]
+GetTBText
+[Function]
+dcl_ImageComboBox_GetTBText
+[Desc]
+This method gets the text in the control's internal edit control.
+[Arguments Return] as String
+<CONTROL>
+
+
+[Method]
+GetItem
+[Function]
+dcl_ImageComboBox_GetItem
+[Desc]
+This method gets the text, image, selected image and indent of the indicated item. A list is returned indicating (String, Image, Selected Image and Indent).
+[Arguments as List]
+<CONTROL>
+\par\tab Index 
+[as Integer]
+
+
+[Method]
+SetItem
+[Function]
+dcl_ImageComboBox_SetItem
+[Desc]
+This method sets the text, image, selected image and indent of the indicated item.
+[Arguments]
+<CONTROL>
+\par\tab Index 
+[as Integer]
+\par\tab wString
+[as String]
+\par\tab Image
+[as Integer]
+\par\tab SelectedImage
+[as Integer]
+\par\tab\i{Optional} \i0 Indent
+[as Integer]
+
+
+[Method]
+SetDroppedWidth
+[Function]
+dcl_ImageComboBox_SetDroppedWidth
+[Desc]
+This method sets the minimum allowable width for the control's drop-down ListBox.
+[Arguments]
+<CONTROL>
+\par\tab Width
+[as Integer]
+
+
+[Method]
+GetDroppedWidth
+[Function]
+dcl_ImageComboBox_GetDroppedWidth
+[Desc]
+This method retrieves the minimum allowable width for the control's drop-down ListBox.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+SetEditSel
+[Function]
+dcl_ImageComboBox_SetEditSel
+[Desc]
+This method highlights characters in the edit control of a ComboBox using a start and end position.
+[Arguments]
+<CONTROL>
+\par\tab StartIndex 
+[as Integer]
+\par\tab EndIndex
+[as Integer]
+
+
+[Method]
+GetEditSel
+[Function]
+dcl_ImageComboBox_GetEditSel
+[Desc]
+This method will return a list indicating the start and end position of the selected characters in the edit control of a ComboBox.
+[Arguments Return] as List of Integers
+<CONTROL>
+
+
+[Method]
+Clear
+[Function]
+dcl_ImageComboBox_Clear
+[Desc]
+This method will clear the ComboBox of all its items.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+GetCount
+[Function]
+dcl_ImageComboBox_GetCount
+[Desc]
+This method will return the total number of list items.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+SetCurSel
+[Function]
+dcl_ImageComboBox_SetCurSel
+[Desc]
+This method will set the currently selected list item in a single selection ComboBox. Pass in a -1 if you wish to deselect the current selection.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+GetCurSel
+[Function]
+dcl_ImageComboBox_GetCurSel
+[Desc]
+This method will return the index of the currently selected list item in a single selection ComboBox. -1 will be returned if nothing is selected.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+GetTopIndex
+[Function]
+dcl_ImageComboBox_GetTopIndex
+[Desc]
+This method retrieves the index of the first visible item in a ComboBox.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+SetTopIndex
+[Function]
+dcl_ImageComboBox_SetTopIndex
+[Desc]
+This method ensures that the indicated ComboBox item is visible. If it's not the ComboBox is scrolled to ensure the item is visible.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+SetItemData
+[Function]
+dcl_ImageComboBox_SetItemData
+[Desc]
+This method will set the associated item data for the indicated list item. The item data will only accept integer values.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+\par\tab IntegerData
+[as Integer]
+
+
+[Method]
+GetItemData
+[Function]
+dcl_ImageComboBox_GetItemData
+[Desc]
+This method will retrieve the associated item data for the indicated list item.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+DeleteItem
+[Function]
+dcl_ImageComboBox_DeleteItem
+[Desc]
+This method will delete an item from the ComboBox.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+FindStringExact
+[Function]
+dcl_ImageComboBox_FindStringExact
+[Desc]
+This method finds the first string in a ComboBox that contains a list item with the exact string match without changing the ComboBox selection. A search for "Example Text" will find "Example Text". Use the dcl_ImageComboBox_SelectString function instead to both find and select a string.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab SearchString
+[as String]
+
+
+[Method]
+FindString
+[Function]
+dcl_ImageComboBox_FindString
+[Desc]
+This method finds the first string in a ComboBox that contains a list item with the specified prefix or partial match without changing the ComboBox selection. A search for "Text" will find "Example Text". Use the dcl_ImageComboBox_SelectString function instead to both find and select a string.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab SearchString
+[as String]
+
+
+[Method]
+SelectString
+[Function]
+dcl_ImageComboBox_SelectString
+[Desc]
+This method finds the first string in a ComboBox that contains the specified prefix and selects this list item in the ComboBox.
+[Arguments Return] as Integer
+<CONTROL>
+\par\tab SearchString
+[as String]
+
+
+[Method]
+ClearEdit
+[Function]
+dcl_ImageComboBox_ClearEdit
+[Desc]
+This method clears the control's internal TextBox selection (if any)
+[Arguments]
+<CONTROL>
+
+[End of File]

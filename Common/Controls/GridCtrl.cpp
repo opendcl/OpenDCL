@@ -434,13 +434,12 @@ bool CGridCtrl::SetCellText( int nRow, int nCol, LPCTSTR pszText )
 }
 
 void CGridCtrl::SetCellStyle( int nRow, int nCol, CellStyle nStyle, int image /*= -1*/, int altImage /*= -1*/,
-															int dateTimeStyle /*= -1*/, LPCTSTR pszListText /*= NULL*/ )
+															LPCTSTR pszListText /*= NULL*/ )
 {
 	_CellData& CellData = GetCellDataRef( nRow, nCol );
 	CellData.mType = nStyle;
 	CellData.midxImage = image;
 	CellData.midxAltImage = altImage;
-	CellData.mnDateTimeStyle = dateTimeStyle;
 	CellData.mrnComboImage.clear();
 	CellData.mrsComboList.clear();
 	if( pszListText && *pszListText )
@@ -586,6 +585,22 @@ bool CGridCtrl::SetCellListData( int nRow, int nCol, const CArray<int, int>& rnI
 		}
 		rList.push_back( (LPCTSTR)sText );
 	}
+	return true;
+}
+
+bool CGridCtrl::GetCellListData( int nRow, int nCol, CArray<int, int>& rnImage, CStringArray& rsList )
+{
+	rnImage.RemoveAll();
+	rsList.RemoveAll();
+	const _CellData* pCellData = GetCellData( nRow, nCol );
+	if( !pCellData )
+		return true;
+	const std::vector< int >& ridxImage = pCellData->mrnComboImage;
+	const std::vector< tstring >& rsText = pCellData->mrsComboList;
+	for( std::vector< int >::const_iterator iter = ridxImage.begin(); iter != ridxImage.end(); ++iter )
+		rnImage.Add( *iter );
+	for( std::vector< tstring >::const_iterator iter = rsText.begin(); iter != rsText.end(); ++iter )
+		rsList.Add( iter->c_str() );
 	return true;
 }
 

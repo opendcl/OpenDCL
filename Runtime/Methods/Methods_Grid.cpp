@@ -479,7 +479,7 @@ ADSRESULT Grid::SetItemStyle()
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
-	pCtrl->SetCellStyle( nRow, nCol, (CellStyle)nStyle, nData1, nData2, nData2, sOptionalText );
+	pCtrl->SetCellStyle( nRow, nCol, (CellStyle)nStyle, nData1, nData2, sOptionalText );
 	acedRetT();
 	return RSRSLT;
 }			
@@ -510,6 +510,55 @@ ADSRESULT Grid::HitPointTest()
 	ReturnRowCol( nRow, nCol );
 	return RSRSLT;
 }
+
+ADSRESULT Grid::GetItemDropList()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlGrid))
+		return RSERR; //invalid input
+
+	int nRow = -1;
+	if( !GetIntArgument( pArgs, nRow ) )
+		return RSERR; //invalid input
+
+	int nCol = -1;
+	if( !GetIntArgument( pArgs, nCol ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
+
+	CStringArray rsText;
+	CArray< int, int > rnImage;
+	if( pCtrl->GetCellListData( nRow, nCol, rnImage, rsText ) )
+	{
+		resbuf* prbResult = acutNewRb( RTLB );
+		resbuf* prbTail = prbResult;
+		for( int idx = rsText.GetCount() - 1; idx >= 0; --idx )
+		{
+			prbTail->rbnext = acutNewRb( RTSTR );
+			prbTail = prbTail->rbnext;
+			acutNewString( rsText.GetAt( idx ), prbTail->resval.rstring );
+		}
+		prbTail->rbnext = acutNewRb( RTLE );
+		prbTail = prbTail->rbnext;
+		prbTail->rbnext = acutNewRb( RTLB );
+		prbTail = prbTail->rbnext;
+		for( int idx = rnImage.GetCount() - 1; idx >= 0; --idx )
+		{
+			prbTail->rbnext = acutNewRb( RTSHORT );
+			prbTail = prbTail->rbnext;
+			prbTail->resval.rint = rnImage.GetAt( idx );
+		}
+		prbTail->rbnext = acutNewRb( RTLE );
+		acedRetList( prbResult );
+	}
+	return RSRSLT;
+}			
 
 ADSRESULT Grid::SetItemDropList()
 {

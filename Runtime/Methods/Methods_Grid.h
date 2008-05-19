@@ -13,6 +13,7 @@ ADSRESULT InsertRow();
 ADSRESULT InsertString();
 ADSRESULT StartItemEdit();
 ADSRESULT SetItemStyle();
+ADSRESULT GetItemDropList();
 ADSRESULT SetItemDropList();
 ADSRESULT GetItemCheck();
 ADSRESULT SetItemCheck();

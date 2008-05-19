@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by w:\OpenDCL\Build 5.0\Studio\RUS\Studio.Res\Studio.RUS.rc
+// Used by w:\OpenDCL\Build 5.0\Studio\FRA\Studio.Res\Studio.FRA.rc
 //
 #define IDR_MAINFRAME                   10
 #define IDP_OLE_INIT_FAILED             11
@@ -526,8 +526,7 @@
 #define IDC_ALTERNATE                   14091
 #define IDC_DEFICONLABEL                14092
 #define IDC_ALTICONLABEL                14093
-#define IDC_DATE                        14094
-#define IDC_TIME                        14095
+#define IDC_TIME                        14094
 #define IDC_THELIST                     14096
 #define IDC_TRUEBTN                     14098
 #define IDC_TITLE                       14099
@@ -811,7 +810,7 @@
 #define IDS_ARGS_SIZE                   21021
 #define IDS_ARG_CANCELLING              21022
 #define IDS_ARGS_MOUSE                  21023
-#define IDS_ARG_3DPOINT                 21024
+#define IDS_ARG_3DPOINTVP               21024
 #define IDS_ARGS_CTRLKEY                21025
 #define IDS_ARGS_CTRLPOINT              21026
 #define IDS_ARG_ITEMKEY                 21027

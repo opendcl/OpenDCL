@@ -222,7 +222,6 @@ void CDialogControl::OnFrameChanged()
 void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= true*/, bool bUpdateNow /*= false*/ ) const
 {
 	if( bRepaintBackground &&
-			mpControlWnd->IsWindowVisible() &&
 			(mpControlWnd->GetExStyle() & WS_EX_TRANSPARENT) )
 	{ //force the control's background to be redrawn if it has a transparent background
 		CWnd* pHostDlg = mpControlPane->GetHostDialog();
@@ -415,6 +414,7 @@ bool CDialogControl::OnApplyDragDropAllowDrop( TPropertyPtr pProp )
 bool CDialogControl::OnApplyVisible( TPropertyPtr pProp )
 {
 	mpControlWnd->ShowWindow( pProp->GetBooleanValue()? SW_SHOW : SW_HIDE );
+	OnNeedRepaint();
 	return true;
 }
 

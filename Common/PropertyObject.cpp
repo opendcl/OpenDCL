@@ -1805,6 +1805,23 @@ size_t CPropertyObject::size() const
 	return mpValue? mpValue->size() : 0;
 }
 
+CString CPropertyObject::GetApiName() const
+{
+	switch( GetType() )
+	{
+	case PropActiveXMethods:
+		return _T("(ActiveX Browser)");
+	case PropActiveXPropPages:
+		return _T("(ActiveX Wizard)");
+	case PropActiveXProp:
+	case PropActiveXEnum:
+	case PropActiveXEvent:
+	case PropActiveXRunTime:
+		return (mpValue? mpValue->GetName() : _T(""));
+	}
+	return GetPropertyApiName(GetID());
+}
+
 CString CPropertyObject::GetName() const
 {
 	switch( GetType() )

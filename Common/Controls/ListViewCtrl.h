@@ -37,7 +37,7 @@ protected:
 class CListViewCtrl : public CListCtrl, public CDialogControl
 {
 	CAcadColorService mColorService;
-	CImageList mDefaultImageList;
+	//CImageList mDefaultImageList;
 	bool mbBlockList;
 	int mnDragSource;
 

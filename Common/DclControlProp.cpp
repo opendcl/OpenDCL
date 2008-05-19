@@ -130,7 +130,10 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::FormEventCancelClose );
 		AddControlEvent( pDclControl, Prop::DocEventActivated );
 		AddControlEvent( pDclControl, Prop::DocEventEnteringNoDocState );
+		AddControlEvent( pDclControl, Prop::EventMouseEntered );
+		AddControlEvent( pDclControl, Prop::EventMouseMovedOff );
 		AddControlEvent( pDclControl, Prop::EventOnHelp );
+		break;
 		break;
 	case FrmDockableDlg:
 		AddDefaultFormName( pDclControl );
@@ -152,6 +155,8 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::FormEventSize );
 		AddControlEvent( pDclControl, Prop::DocEventActivated );
 		AddControlEvent( pDclControl, Prop::DocEventEnteringNoDocState );
+		AddControlEvent( pDclControl, Prop::EventMouseEntered );
+		AddControlEvent( pDclControl, Prop::EventMouseMovedOff );
 		AddControlEvent( pDclControl, Prop::EventOnHelp );
 		break;
 	case FrmConfigTab:
@@ -208,6 +213,8 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::FormEventSize );
 		AddControlEvent( pDclControl, Prop::DocEventActivated );
 		AddControlEvent( pDclControl, Prop::DocEventEnteringNoDocState );
+		AddControlEvent( pDclControl, Prop::EventMouseEntered );
+		AddControlEvent( pDclControl, Prop::EventMouseMovedOff );
 		AddControlEvent( pDclControl, Prop::EventOnHelp );
 		break;
 	default:
@@ -366,7 +373,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::AllowOrbiting, PropEnum, 1 );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::RenderMode, PropEnum, 5 );
-		pDclControl->AddBooleanProperty( Prop::ShowOrbitCirlces, PropBool, false );
+		pDclControl->AddBooleanProperty( Prop::ShowOrbitCircles, PropBool, false );
 		pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
 		pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
@@ -1053,6 +1060,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::SplitterMax, PropLong, 30 );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
+		AddControlEvent( pDclControl, Prop::EventSplitterMoved );
 		break;
 
 	case CtlUrlLink:

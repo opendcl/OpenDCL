@@ -18,35 +18,26 @@
 
 static void ReturnPropertyValue( TPropertyPtr pProperty )
 {
-	PropertyType nType = pProperty->GetType();
-	if (nType == PropBool)
+	switch( pProperty->GetType() )
 	{
-		if (pProperty->GetBooleanValue() == TRUE)
+	case PropBool:
+		if( pProperty->GetBooleanValue() )
 			acedRetT();
 		else
 			acedRetNil();
-		return;
-	}
-	
-	if (pProperty->GetType() == PropLong ||
-		pProperty->GetType() == PropEnum ||
-		pProperty->GetType() == PropPicture)
-	{
-		acedRetInt(pProperty->GetLongValue());
-		return;
-	}
-	
-	if (pProperty->GetType() == PropString ||
-			pProperty->GetType() == PropEvent)
-	{
-		acedRetStr(pProperty->GetStringValue());
-		return;
-	}
-	
-	if (pProperty->GetType() == PropDouble)
-	{
-		acedRetReal(pProperty->GetDoubleValue());
-		return;
+		break;
+	case PropLong:
+	case PropEnum:
+	case PropPicture:
+		acedRetInt( pProperty->GetLongValue() );
+		break;
+	case PropString:
+	case PropEvent:
+		acedRetStr( pProperty->GetStringValue() );
+		break;
+	case PropDouble:
+		acedRetReal( pProperty->GetDoubleValue() );
+		break;
 	}	
 }
 

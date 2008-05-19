@@ -1,0 +1,45 @@
+[Method]
+Load
+[Function]
+dcl_Animate_Load
+[Desc]
+This method will load an animated file and activate it.
+[Arguments]
+<CONTROL>
+\par\tab sFileName
+[as String]
+
+
+[Method]
+Stop
+[Function]
+dcl_Animate_Stop
+[Desc]
+This stops the animation from playing.
+[Arguments Return] as String
+<CONTROL>
+
+
+[Method]
+Seek
+[Function]
+dcl_Animate_Seek
+[Desc]
+This method will display a specific frame of the animation file.
+[Arguments]
+<CONTROL>
+\par\tab FrameIndex
+[as Integer]
+
+
+[Method]
+Close
+[Function]
+dcl_Animate_Close
+[Desc]
+This method closes the animate file previously opened.
+[Arguments]
+<CONTROL>
+
+
+[End of File]

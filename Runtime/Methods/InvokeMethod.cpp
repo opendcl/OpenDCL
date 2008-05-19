@@ -14,24 +14,6 @@ static char THIS_FILE[] = __FILE__;
 
 extern bool IsOnlyModalForm();
 
-const int nCancelCheckLength = 6;
-const int nCancelRemoveLength = 4;
-const TCHAR sCancelIndicator[] = _T("^C^CC:");
-const TCHAR sCColan[] = _T("C:");
-const TCHAR sBracket[] = _T("(");
-const TCHAR sQuoteSpace[] = _T("\" ");
-const TCHAR sSpaceQuote[] = _T(" \"");
-const TCHAR sQuoteSpaceQuote[] = _T("\" \"");
-const TCHAR sAddSpace[] = _T(" ");
-const TCHAR sComma[] = _T(",");
-const TCHAR sSingleQuote[] = _T("'");
-const TCHAR sQuoteEndBracket[] = _T("\") ");
-const TCHAR sEndBracket[] = _T(") ");
-const TCHAR sDoubleEndBracket[] = _T(")) ");
-const TCHAR sCancelStr[] = _T("\x1B\x1B");
-const TCHAR sNewLine[] = _T("\n");
-const TCHAR sList[] = _T(" (list ");
-
 CString EscapeLispStringArgument( LPCTSTR pszString )
 {
 	CString sResult = pszString;
@@ -45,15 +27,28 @@ Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand = false,
 {
 	if( !pDoc )
 		pDoc = acDocManager->curDocument();
-	//assert( pDoc != NULL );
 	if( !pDoc )
 		return Acad::eNoDocument;
 	//CWnd* CmdBarWnd = acedGetAcadDockCmdLine();
-	//CmdBarWnd->SetFocus();		
-	Acad::ErrorStatus es = acDocManager->sendStringToExecute( pDoc, pszCommand, false, true, bShowCommand );
+	//CmdBarWnd->SetFocus();
+	CString sCmd = pszCommand;
+	if( sCmd.GetLength() > 256 )
+	{
+		//see if we can shorten it by replacing the first string with "..."
+		int cchStart = sCmd.Find( _T('"') );
+		if( cchStart > 0 )
+		{
+			int cchEnd = sCmd.Find( _T('"'), cchStart + 1 );
+			if( cchEnd > cchStart )
+				sCmd = sCmd.Left( cchStart + 1 ) + _T("<...>") + sCmd.Mid( cchEnd );
+		}
+		if( sCmd.GetLength() > 256 ) //still too long?
+			return Acad::eStringTooLong;
+	}
+	Acad::ErrorStatus es = acDocManager->sendStringToExecute( pDoc, sCmd, false, true, bShowCommand );
 	if( es == Acad::eNoDocument && !acDocManager->isApplicationContext() )
 	{
-		if( RTNORM == ads_queueexpr( pszCommand ) )
+		if( RTNORM == ads_queueexpr( sCmd ) )
 			es = Acad::eOk;
 	}
 	return es;
@@ -79,20 +74,20 @@ CString FireCancel(CString sLispFunction)
 {
 	sLispFunction.MakeUpper();
 	
-	//int nTest = _tcsicmp(sLispFunction.Left(2), sCColan);
+	//int nTest = _tcsicmp(sLispFunction.Left(2), _T("C:"));
 	//!???
-	if (_tcsicmp(sLispFunction.Left(2), sCColan) > -1)
+	if (_tcsicmp(sLispFunction.Left(2), _T("C:")) > -1)
 		return sLispFunction;
 
-	//nTest = _tcsicmp(sLispFunction.Left(nCancelCheckLength), sCancelIndicator);
+	//nTest = _tcsicmp(sLispFunction.Left(6), _T("^C^CC:"));
 
-	if (_tcsicmp(sLispFunction.Left(nCancelCheckLength), sCancelIndicator) != 0)
+	if (_tcsicmp(sLispFunction.Left(6), _T("^C^CC:")) != 0)
 		return sLispFunction;
 
-	CString CancelStr = (sCancelStr);
+	CString CancelStr = (_T("\x1B\x1B"));
 
 	Acad::ErrorStatus es = ExecuteCommand(CancelStr);
-	return sLispFunction.Mid(nCancelRemoveLength);
+	return sLispFunction.Mid(4);
 }
 
 bool InvokeCancelMethod(CString sLispFunction, bool bUserPressedEsc)
@@ -149,16 +144,16 @@ void InvokeMethodStringInt(CString sLispFunction, CString sString, int nInt, boo
 			
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket)
+			CString sCommand = CString(_T("("))
 				+ sLispFunction
-				+ sSpaceQuote
+				+ _T(" \"")
 				+ sString 
-				+ sQuoteSpace 
+				+ _T("\" ") 
 				+ sInt
-				+ sEndBracket;
+				+ _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -196,17 +191,17 @@ void InvokeMethodStringLong(CString sLispFunction, CString sString, DWORD_PTR lL
 			int stat = acdbRToS(adsValue, 2,0, fmtval); 
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket)
+			CString sCommand = CString(_T("("))
 				+ sLispFunction
-				+ sSpaceQuote
+				+ _T(" \"")
 				+ sString 
-				+ sQuoteSpace 
+				+ _T("\" ") 
 				+ fmtval
-				+ sEndBracket;
+				+ _T(") ");
 			
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -246,14 +241,14 @@ void InvokeMethodLong(CString sLispFunction, DWORD_PTR lLong, bool UseSendString
 			int stat = acdbRToS(adsValue, 2,0, fmtval); 
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket)
+			CString sCommand = CString(_T("("))
 				+ sLispFunction
-				+ sAddSpace
+				+ _T(" ")
 				+ fmtval
-				+ sEndBracket;
+				+ _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -295,18 +290,18 @@ void InvokeMethodStringIntInt(CString sLispFunction, CString sString, int nInt1,
 			
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket)
+			CString sCommand = CString(_T("("))
 				+ sLispFunction
-				+ sSpaceQuote
+				+ _T(" \"")
 				+ sString 
-				+ sQuoteSpace 
+				+ _T("\" ") 
 				+ sInt1
-				+ sAddSpace 
+				+ _T(" ") 
 				+ sInt2
-				+ sEndBracket;
+				+ _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -337,20 +332,20 @@ void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc)
 	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
 	if (sLispFunction.GetLength() > 0)
 	{
-		if (UseSendString || (sLispFunction.Left(1) == sSingleQuote))
+		if (UseSendString || (sLispFunction.Left(1) == _T("'")))
 		{
 			bool bShowCommand = false;
 
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket) + sLispFunction + sEndBracket;
+			CString sCommand = CString(_T("(")) + sLispFunction + _T(") ");
 
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 			
-			if (sLispFunction.Left(1) == sSingleQuote)
+			if (sLispFunction.Left(1) == _T("'"))
 			{
-				sCommand = sLispFunction + sAddSpace;
+				sCommand = sLispFunction + _T(" ");
 				bShowCommand = true;
 			}
 			
@@ -389,10 +384,10 @@ void InvokeMethodIntString(CString sLispFunction, int nInt, CString sString, boo
 			sInt.Format( _T("%d"), nInt );
 			
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket) + sLispFunction + sAddSpace + sInt + sSpaceQuote + sString + sQuoteEndBracket;
+			CString sCommand = CString(_T("(")) + sLispFunction + _T(" ") + sInt + _T(" \"") + sString + _T("\") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -427,17 +422,17 @@ void InvokeMethodIntList(CString sLispFunction, int nInt, CStringList *pList, bo
 			CString sInt;
 			sInt.Format( _T("%d"), nInt );
 			
-			CString sCommand = CString(sBracket) + FireCancel(sLispFunction) + sAddSpace + sInt + sSpaceQuote;
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			CString sCommand = CString(_T("(")) + FireCancel(sLispFunction) + _T(" ") + sInt + _T(" \"");
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			for (int i=0; i<pList->GetCount(); i++)
 			{
 				POSITION pos = pList->FindIndex(i);				
 				CString sItem = EscapeLispStringArgument( pList->GetAt(pos) );
-				sCommand = sCommand + sItem + sAddSpace;
+				sCommand = sCommand + sItem + _T(" ");
 			}
-			sCommand = sCommand + sQuoteEndBracket;
+			sCommand = sCommand + _T("\") ");
 			
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -495,10 +490,10 @@ void InvokeMethodString(CString sLispFunction, CString sString, bool UseSendStri
 		if (UseSendString)
 		{
 			sString = EscapeLispStringArgument( sString );
-			CString sCommand = CString(sBracket) + FireCancel(sLispFunction) + sSpaceQuote + sString + sQuoteEndBracket;
+			CString sCommand = CString(_T("(")) + FireCancel(sLispFunction) + _T(" \"") + sString + _T("\") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -535,10 +530,10 @@ void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString)
 			sInt.Format( _T("%d"), nInt );
 			
 			sLispFunction = FireCancel(sLispFunction);
-			CString sCommand = CString(sBracket) + sLispFunction + sAddSpace + sInt + sEndBracket;
+			CString sCommand = CString(_T("(")) + sLispFunction + _T(" ") + sInt + _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -575,10 +570,10 @@ void InvokeMethodIntInt(CString sLispFunction, int nInt1, int nInt2, bool UseSen
 			
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket) + sLispFunction + sAddSpace + sInt1 + sAddSpace + sInt2 +sEndBracket;
+			CString sCommand = CString(_T("(")) + sLispFunction + _T(" ") + sInt1 + _T(" ") + sInt2 +_T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 
@@ -626,10 +621,10 @@ void InvokeMethodIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt
 			
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket) + sLispFunction + sAddSpace + sInt1 + sAddSpace + sInt2 + sAddSpace + sInt3 + sEndBracket;
+			CString sCommand = CString(_T("(")) + sLispFunction + _T(" ") + sInt1 + _T(" ") + sInt2 + _T(" ") + sInt3 + _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -673,10 +668,10 @@ void InvokeMethodIntIntIntInt(CString sLispFunction, int nInt1, int nInt2, int n
 			
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket) + sLispFunction + sAddSpace + sInt1 + sAddSpace + sInt2 + sAddSpace + sInt3 + sAddSpace + sInt4 + sEndBracket;
+			CString sCommand = CString(_T("(")) + sLispFunction + _T(" ") + sInt1 + _T(" ") + sInt2 + _T(" ") + sInt3 + _T(" ") + sInt4 + _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -715,10 +710,10 @@ void InvokeMethodStringString(CString sLispFunction, CString sString1, CString s
 			sString2 = EscapeLispStringArgument( sString2 );
 
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket) + sLispFunction + sSpaceQuote + sString1 + sQuoteSpaceQuote + sString2 + sQuoteEndBracket;
+			CString sCommand = CString(_T("(")) + sLispFunction + _T(" \"") + sString1 + _T("\" \"") + sString2 + _T("\") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -755,10 +750,10 @@ void InvokeMethod3Strings(CString sLispFunction, CString sString1, CString sStri
 			sString3 = EscapeLispStringArgument( sString3 );
 
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket) + sLispFunction + sSpaceQuote + sString1 + sQuoteSpaceQuote + sString2 + sQuoteSpaceQuote +  sString3 + sQuoteEndBracket;
+			CString sCommand = CString(_T("(")) + sLispFunction + _T(" \"") + sString1 + _T("\" \"") + sString2 + _T("\" \"") +  sString3 + _T("\") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -797,10 +792,10 @@ void InvokeMethod4Strings(CString sLispFunction, CString sString1, CString sStri
 			sString4 = EscapeLispStringArgument( sString4 );
 
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket) + sLispFunction + sSpaceQuote + sString1 + sQuoteSpaceQuote + sString2 + sQuoteSpaceQuote +  sString3 + sQuoteSpaceQuote + sString4 + sQuoteEndBracket;
+			CString sCommand = CString(_T("(")) + sLispFunction + _T(" \"") + sString1 + _T("\" \"") + sString2 + _T("\" \"") +  sString3 + _T("\" \"") + sString4 + _T("\") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -847,7 +842,7 @@ void InvokeMethod3StringsPoint(
 			
 			sLispFunction = FireCancel(sLispFunction);
 			CString sCommand;
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
 				sCommand = sLispFunction + _T(" ");
 			else
 				sCommand.Format( _T("(%s \"%s\" \"%s\" \"%s\" '(%d %d))"), (LPCTSTR)sLispFunction,
@@ -908,16 +903,16 @@ void InvokeMethod3StringsLong(
 			sInt.Format( _T("%d"), lValue );
 			
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket) 
+			CString sCommand = CString(_T("(")) 
 				+ sLispFunction 
-				+ sSpaceQuote + sString1 
-				+ sQuoteSpaceQuote + sString2 
-				+ sQuoteSpaceQuote + sString3 + sQuoteSpace
+				+ _T(" \"") + sString1 
+				+ _T("\" \"") + sString2 
+				+ _T("\" \"") + sString3 + _T("\" ")
 				+ sInt 
-				+ sEndBracket;
+				+ _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -967,8 +962,8 @@ void InvokeMethodPoint(
 			CString sCommand;
 			sCommand.Format( _T("(%s '(%d %d)) "), (LPCTSTR)sLispFunction, ptPoint.x, ptPoint.y );
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -998,9 +993,10 @@ void InvokeMethodPoint(
 }
 
 
-void InvokeMethodPoint3D(
+void InvokeMethodPoint3DInt(
 					CString sLispFunction, 
 					acedDwgPoint ptPoint,
+					int nViewport,
 					bool UseSendString)
 {
 	CAcAppContextModuleResourceOverride resOverride( acedGetAcadResourceInstance() );
@@ -1028,18 +1024,23 @@ void InvokeMethodPoint3D(
 				2,
 				8,
 				sZ);
+
+			CString sVP;
+			sVP.Format( _T("%d"), nViewport );
 			
 			// this code if for the dockable dialog only
 			sLispFunction = FireCancel(sLispFunction);			
-			CString sCommand = CString(sBracket) 
+			CString sCommand = CString(_T("(")) 
 				+ sLispFunction
-				+ sList
-				+ sX + sAddSpace
-				+ sY + sAddSpace
-				+ sZ + sDoubleEndBracket;
+				+ _T(" (list ")
+				+ sX + _T(" ")
+				+ sY + _T(" ")
+				+ sZ + _T(") ")
+				+ sVP +
+				_T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), sCColan) != 0)
-				sCommand = sLispFunction + sAddSpace;
+			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
 		}
@@ -1057,6 +1058,7 @@ void InvokeMethodPoint3D(
 			list = acutBuildList(
 				RTSTR, FireCancel(sLispFunction), 
 				RT3DPOINT, pt,
+				RTSHORT, nViewport,
 				RTNONE);
 
 			if (list != NULL) { 
@@ -1066,17 +1068,4 @@ void InvokeMethodPoint3D(
 			} 
 		}
 	}
-}
-
-CString RtoS(double dValue)
-{
-	CString sReturn;
-	ads_real adsValue = dValue;
-	TCHAR fmtval[26]; 
-	int stat = acdbRToS(adsValue, 2,8, fmtval); 
-	sReturn = fmtval;
-	if (stat == RTNORM)
-		return sReturn;
-	else
-		return _T("0.0");
 }

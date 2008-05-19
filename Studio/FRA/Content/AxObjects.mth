@@ -1,0 +1,53 @@
+[Method]
+Close
+[Function]
+dcl_AxObject_Close
+[Desc]
+Call this method to release an OLE object from memory.
+[Arguments]
+\par\tab OleObject
+[as OLEObject]
+
+
+[Method]
+GetProperty
+[Function]
+dcl_AxObject_GetProperty
+[Desc]
+Gets the value of any property of an OLE object. The type of the return value will depend on the type of the property.
+[Arguments Return] as Varied
+\par\tab OleObject
+[as OLEObject]
+\par\tab PropName
+[as String]
+
+
+[Method]
+SetProperty
+[Function]
+dcl_AxObject_SetProperty
+[Desc]
+Sets the value of any property of an OLE object. The type of the argument should match (or be convertable to) the type of the property.
+[Arguments Return] as Varied
+\par\tab OleObject
+[as OLEObject]
+\par\tab PropName
+[as String]
+\par \tab ...
+
+
+[Method]
+DoMethod
+[Function]
+dcl_AxObject_DoMethod
+[Desc]
+Calls any method of an OLE object. The type of the arguments should match (or be convertable to) the argument types of the method.
+[Arguments Return] as Varied
+\par\tab OleObject
+[as OLEObject]
+\par\tab MethodName
+[as String]
+\par \tab ...
+
+
+[End of File]

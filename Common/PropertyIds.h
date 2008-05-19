@@ -178,7 +178,7 @@ enum Id
 	EventNavigateComplete = 146,
 	InputFilter = 147,
 	TabOrder = 148,
-	ShowOrbitCirlces = 149,
+	ShowOrbitCircles = 149,
 	IsTabStop = 150,
 	EventMouseEntered = 151,
 	BeginGroup = 152,

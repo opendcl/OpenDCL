@@ -1,0 +1,126 @@
+[Method]
+CountItems
+[Function]
+dcl_ListView_CountItems
+[Desc]
+This method will return total number of items in the ListView control.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+SetCurSel
+[Function]
+dcl_ListView_SetCurSel
+[Desc]
+This method will force an item to be selected and will also scroll the ListView to ensure the item is displayed. Pass in a -1 if you wish to deselect the current selection.
+[Arguments]
+<CONTROL>
+\par\tab nIndex
+[as Integer]
+
+
+[Method]
+Arrange
+[Function]
+dcl_ListView_Arrange
+[Desc]
+This method will format the layout of all the items in the ListView control. \par
+\par \pard\fi-1100\li1100 0   \b Left\b0 \tab Aligns items along the left edge of the ListView
+\par \pard\fi-1100\li1100 1   \b Top\b0 \tab Aligns items along the top edge of the ListView
+\par \pard\fi-1100\li1100 2   \b Default\b0 \tab Aligns items according to the ListView\rquote s current alignment styles (the default value).
+\par \pard\fi-1100\li1100 3   \b GridSnap\b0 \tab Snaps all icons to the nearest grid position 
+\par \pard\fi-0\li0
+[Arguments]
+<CONTROL>
+\par\tab nStyle
+[as Integer]
+
+
+[Method]
+GetSelCount
+[Function]
+dcl_ListView_GetSelCount
+[Desc]
+This method will return the selected item count.
+[Arguments Return] as Integer
+<CONTROL>
+
+
+[Method]
+GetItemText
+[Function]
+dcl_ListView_GetItemText
+[Desc]
+This method will return the text of an item in a ListView control. 
+[Arguments Return] as String
+<CONTROL>
+\par\tab nRowIndex
+[as Integer]
+
+
+[Method]
+GetSelectedItems
+[Function]
+dcl_ListView_GetSelectedItems
+[Desc]
+This method will return a list of all selected items in the ListView control. 
+[Arguments Return] as List as Strings
+<CONTROL>
+
+
+[Method]
+GetSelectedNths
+[Function]
+dcl_ListView_GetSelectedNths
+[Desc]
+This method will return a list of all indexes of the selected items in the ListView control. 
+[Arguments Return] as List of Integers
+<CONTROL>
+
+
+[Method]
+SortTextItems
+[Function]
+dcl_ListView_SortTextItems
+[Desc]
+This method will sort the columns in ascending or descending order, based on the column index provided.  
+[Arguments]
+<CONTROL>
+\par\tab bAscending
+[as Boolean T or Nil] (T = Ascending, Nil = Descending) 
+
+
+[Method]
+LoadDwg
+[Function]
+dcl_BlockList_LoadDwg
+[Desc]
+This method will load an external Dwg file and list the blocks available in it. 
+[Arguments]
+<CONTROL>
+\par\tab sFileName
+[as String]
+
+
+[Method]
+Reset
+[Function]
+dcl_BlockList_Reset
+[Desc]
+This method will reset the BlockList to display the blocks of the current Dwg file.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+GetFileName
+[Function]
+dcl_BlockList_GetFileName
+[Desc]
+This method will return the file name of the external loaded Dwg file. If Nil is returned no external Dwg file was loaded.
+[Arguments Return] as String or Nil
+<CONTROL>
+
+
+[End of File]

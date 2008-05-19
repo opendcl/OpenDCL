@@ -1,0 +1,294 @@
+[Method]
+CloseAll
+[Function]
+dcl_Form_CloseAll
+[Desc]
+This method will close all open dialogs of the specified type, even those created by another application. Use with care. \par   0 	Closes all dialog boxes. \par   1 	Closes all Modal dialog boxes. \par   2 	Closes all Modeless dialog boxes. \par   4 	Closes all Dockable. 
+\par   8 	Closes all File Dialog Boxes. 
+[Arguments]
+\par\tab DialogBitStyle
+[as Integer]
+
+
+[Method]
+Project_Load
+[Function]
+dcl_Project_Load
+[Desc]
+This method loads the requested project file into memory. If you specify a T after the file name, the file will be reloaded if it is already loaded. The ProjectAlias specifies an alias to use in place of the saved project name 
+\par\par For example:
+\par(Setq rValue (dcl_Project_Load  "MySuperSpecialProject" nil "Proj01")) 
+\par will load the project if it isn't loaded and allow you to refer to it as Proj01, so a call to show one of its forms might be:
+\par (dcl_Form_Show Proj01_Form)*
+\par\par * If you specify explicit values for the VarName property of a form or control, then you must use that symbol name regardless of the project name.
+[Arguments Return] as String "ProjectName"
+ProjectName
+\par\tab \i [Optional] \i0 Reload
+[as T]
+\par\tab \i [Optional] \i0 AliasProjectName
+[as String]
+
+
+[Method]
+Project_UnLoad
+[Function]
+dcl_Project_UnLoad
+[Desc]
+This method unloads the requested project from memory, freeing any resources that it used.
+[Arguments Return] as T or Nil 
+ProjectName
+
+
+[Method]
+Project_SaveAs
+[Function]
+dcl_Project_SaveAs
+[Desc]
+This method writes a project from memory to an ODC file. The password must match the project password, or the call will fail.
+[Arguments Return] as T or Nil
+ProjectName
+\par\tab FilePath
+[as String]
+\par\tab \i [Optional] \i0 Password
+[as String]
+
+
+[Method]
+Project_Import
+[Function]
+dcl_Project_Import
+[Desc]
+This method loads a project from base64 encoded binary data. The encoded data can be any base64 encoded .odcl file, but normally it will the contents of an .odcle file that is embedded in the lisp code either by compiling the .odcle file as a VLX resource or by including the encoded data as a literal string in the lisp code. You can specify a new password for the project, overriding the saved password (the password is verified before exporting the project data). The ProjectAlias specifies an alias to use in place of the saved project name. See dcl_Project_Load for more information about the AliasProjectName argument.
+[Arguments Return] as String "ProjectName"
+\par\tab Base64EncodedData
+[as String]
+\par\tab \i [Optional] \i0 NewPassword
+[as String]
+\par\tab \i [Optional] \i0 AliasProjectName
+[as String]
+
+
+[Method]
+Project_Export
+[Function]
+dcl_Project_Export
+[Desc]
+This method exports the specified project to base64 encoded binary data. The password must match the project password, or the export will fail.
+[Arguments Return] as String "Base64EncodedData"
+ProjectName
+\par\tab \i [Optional] \i0 Password
+[as String]
+
+
+[Method]
+GetProjects
+[Function]
+dcl_GetProjects
+[Desc]
+Returns a list of all loaded projects.
+[Arguments Return] as List of Loaded Projects
+
+
+[Method]
+Project_GetForms
+[Function]
+dcl_Project_GetForms
+[Desc]
+Returns a list of all forms in the project.
+[Arguments Return] as List of Forms
+ProjectName
+\par\tab \i [Optional] \i0 Password
+[as String]
+
+
+[Method]
+GetControls
+[Function]
+dcl_Form_GetControls
+[Desc]
+Returns a list of all controls on the form.
+[Arguments Return] as List of Controls
+<CONTROL>
+
+
+[Method]
+Close
+[Function]
+dcl_Form_Close
+[Desc]
+This method will close the indicated dialog. This method returns a list indicating the last upper left coordinates of Modal or Modeless dialog boxes. The optional 'DialogStatus' will be the return value for (dcl_Form_Show) if showing a modal form.
+[Arguments]
+<CONTROL>
+\par\tab \i [Optional] \i0 DialogStatus
+[as Integer]
+
+
+[Method]
+Enable
+[Function]
+dcl_Form_Enable
+[Desc]
+This method will disable or enable a dialog box, or config tab (but not the dockable form) to be enabled or disabled. Nil = Disabled, T = Enabled. When using this call with a Modal dialog box ensure you have the means re-enable the dialog box otherwise AutoCAD will be permantly locked.
+[Arguments]
+<CONTROL>
+\par\tab Enabled
+[as Boolean]
+
+
+[Method]
+IsEnabled
+[Function]
+dcl_Form_IsEnabled
+[Desc]
+This method will return T if the form is enabled and Nil if the form is disabled.
+[Arguments Return] as T or Nil
+<CONTROL>
+
+
+[Method]
+Center
+[Function]
+dcl_Form_Center
+[Desc]
+This method will center only modal dialogs requested to the center of the screen.
+[Arguments]
+<CONTROL>
+
+
+[Method]
+GetHwnd
+[Function]
+dcl_Form_GetHwnd
+[Desc]
+This method will return the Hwnd value of the dialog box. This may be required by an ActiveX control.
+[Arguments Return] as Handle
+<CONTROL>
+
+
+[Method]
+GetTitleBarText
+[Function]
+dcl_Form_GetTitleBarText
+[Desc]
+This method will retrieve the title bar text or config tab text of the dialog requested. 
+[Arguments Return] as String
+<CONTROL>
+
+
+[Method]
+GetControlArea
+[Function]
+dcl_Form_GetControlArea
+[Desc]
+This method returns a list indicating the width and height of the form's control area. The control area is the area where you can place child controls (i.e. it does not include a form's title bar or border). Coordinates are in client coordinates of the host form.
+[Arguments Return] as List (Left Top Width height)
+<CONTROL>
+
+
+[Method]
+IsActive
+[Function]
+dcl_Form_IsActive
+[Desc]
+All dialog boxes that are displayed are referenced in an active dialog list.  To find out if a dialog box is active, (as in the case where a secondary Modeless dialog box has been closed by the user and you need to know if you should call the dcl_Form_Close method) use this method to query the active dialog list for the dialog box you need to ensure is present.
+[Arguments Return] as T or Nil
+<CONTROL>
+
+
+[Method]
+IsFloating
+[Function]
+dcl_Form_IsFloating
+[Desc]
+This method is for dockable forms only. It will indicate if the dockable form is (T) floating or (Nil) docked to the AutoCAD frame.
+[Arguments Return] as T or Nil
+<CONTROL>
+
+
+[Method]
+Resize
+[Function]
+dcl_Form_Resize
+[Desc]
+This method will resize a form by setting both its Width and Height properties simultaneously.
+[Arguments]
+<CONTROL>
+\par\tab Width
+[as Integer]
+\par\tab Height
+[as Integer]
+
+
+[Method]
+GetRectangle
+[Function]
+dcl_Form_GetRectangle
+[Desc]
+This method returns a list indicating the left, top, width and height values of the form window including its non-client area (title bar and border). If the form window is a child window, the coordinates are client coordinates of its parent window, otherwise they are screen coordinates.
+[Arguments Return] as List (Left Top Width Height)
+<CONTROL>
+
+
+[Method]
+SetPos
+[Function]
+dcl_Form_SetPos
+[Desc]
+This method will move a form to a new position. Optional width and height parameters can be specified to change the form's size. If the form window is a child window, the coordinates are interpreted as client coordinates of its parent window, otherwise they are screen coordinates.
+[Arguments]
+<CONTROL>
+\par\tab Left
+[as Integer]
+\par\tab Top
+[as Integer]
+\par\tab\i{Optional} \i0 Width
+[as Integer]
+\par\tab\i{Optional} \i0 Height
+[as Integer]
+
+
+[Method]
+SetDialogMinMaxSizes
+[Function]
+dcl_Form_SetDialogMinMaxSizes
+[Desc]
+This method sets the minimum and maximum sizes when the user resizes a resizable form. Set a value to zero to permit any size. Note that these properties are ignored when setting the form size programmatically.
+[Arguments]
+<CONTROL>
+\par\tab MinWidth
+[as Integer]
+\par\tab MinHeight
+[as Integer]
+\par\tab MaxWidth
+[as Integer]
+\par\tab MaxHeight
+[as Integer]
+
+
+[Method]
+SetTitleBarText
+[Function]
+dcl_Form_SetTitleBarText
+[Desc]
+This method will change the title bar text of any modal or modeless dockable dialog box indicated.
+[Arguments]
+<CONTROL>
+\par\tab NewText
+[as String]
+
+
+[Method]
+Show
+[Function]
+dcl_Form_Show
+[Desc]
+This method displays a dialog box from a loaded project. \par \par \b *Important  Notes: \b0 \par \pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-720\li720 The optional upper left coordinates only affect Modal and Modeless dialog boxes. \par {\pntext\f1\'B7\tab} If the dialog box being shown is a modal dialog box, this method will wait until the user has exited the dialog box before returning to AutoLISP. \par{\pntext\f1\'B7\tab}Do not call this method from within a MouseDown event of any control. \par{\pntext\f1\'B7\tab}File Dialog Box forms use an alternate function signature that expects the form name followed by optional string arguments for the initial folder, the initial filename, and the default file extension. \par \pard
+[Arguments Return] as Integer DialogStatus
+<CONTROL>
+\par\tab \i [Optional] \i0 UpperLeftXCoordinate
+[as Integer]
+\par\tab \i [Optional] \i0 UpperLeftYCoordinate
+[as Integer]
+
+
+[End of File]

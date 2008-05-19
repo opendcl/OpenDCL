@@ -23,6 +23,7 @@ class CAcadDockBarHost : public CAdUiDockControlBar
 	CDockingDialog* mpDlgObject;
 	CWnd* mpParent;
 	bool mbTrackingMouse;
+	bool mbMouseLeft;
 	bool mbInMenuLoop;
 	HWND mhwndKeyboardFocus;
 
@@ -60,4 +61,5 @@ protected:
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	afx_msg void PostNcDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnCaptureChanged(CWnd *pWnd);
 };

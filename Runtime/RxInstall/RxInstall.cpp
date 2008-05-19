@@ -1,6 +1,6 @@
 // RxInstall.cpp : Install-time AutoCAD ObjectARX module demand-load setup
 //
-// Copyright 2007 ManuSoft. All Rights Reserved.
+// Copyright 2008 ManuSoft. All Rights Reserved.
 // http://www.manusoft.com
 //
 // A license to use the code in this file for the OpenDCL project has been granted
@@ -417,7 +417,7 @@ HKEY GetRootRegKey( UINT nAcadTarget, bool bHKLM = true )
 void RxSelfInstallImp( UINT nAcadTarget, LPCTSTR pszTargetKey, bool bHKLM = true, bool bX64 = false )
 {
 	RegKey rkRoot( pszTargetKey, HKEY_LOCAL_MACHINE, false, KEY_READ | (bX64? KEY_WOW64_64KEY : 0) );
-	RegKey rkDemandLoad( String( pszTargetKey ) + _T("\\Applications\\") +  GetAppLongName(),
+	RegKey rkDemandLoad( String( pszTargetKey ) + _T("\\Applications\\") + GetAppLongName(),
 											 GetRootRegKey( nAcadTarget, bHKLM ),
 											 true,
 											 KEY_WRITE | (bX64? KEY_WOW64_64KEY : 0) );

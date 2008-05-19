@@ -161,7 +161,8 @@ END_MESSAGE_MAP()
 void CScrollBarCtrl::OnSetFocus(CWnd* pOldWnd) 
 {
 	__super::OnSetFocus(pOldWnd);
-	pOldWnd->SetFocus();
+	if( pOldWnd )
+		pOldWnd->SetFocus();
 }
 
 

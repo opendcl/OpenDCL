@@ -61,6 +61,8 @@ protected:
 friend class CAcadDockBarHost;
 	virtual void GetClientArea(CRect &rect);
 	virtual bool OnClosing();
+	virtual void OnMouseEnter();
+	virtual void OnMouseLeave();
 
 protected:
 	DECLARE_MESSAGE_MAP()

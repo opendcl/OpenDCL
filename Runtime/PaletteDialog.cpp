@@ -228,6 +228,16 @@ bool CPaletteDialog::OnApplyResizable( TPropertyPtr pProp )
 	return true; //skip base class
 }
 
+void CPaletteDialog::OnMouseEnter()
+{
+  InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseEntered ), true );
+};
+
+void CPaletteDialog::OnMouseLeave()
+{
+  InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseMovedOff ), true );
+};
+
 
 BEGIN_MESSAGE_MAP(CPaletteDialog, CDialog)
 	ON_WM_HELPINFO()

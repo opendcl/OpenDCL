@@ -60,9 +60,13 @@ BOOL CArxControlAcadDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject,
 		mpDlgControl->GetTemplate()->GetStringProperty( Prop::DragnDropToAutoCAD );
 	if( !sDropOnAcadWndPointEvent.IsEmpty() )
 	{
-		InvokeMethodPoint( sDropOnAcadWndPointEvent,
-											 point,
-											 mpDlgControl->IsAsyncEvents() );
+		acedDwgPoint dwgPt;
+		int nViewport = acedGetWinNum( point.x, point.y );
+		acedCoordFromPixelToWorld( nViewport, point, dwgPt );
+		InvokeMethodPoint3DInt( sDropOnAcadWndPointEvent,
+														dwgPt,
+														nViewport,
+														mpDlgControl->IsAsyncEvents() );
 		return TRUE;
 	}
 	return FALSE;
@@ -76,9 +80,13 @@ DROPEFFECT CArxControlAcadDropTarget::OnDropEx( CWnd* pWnd, COleDataObject* pDat
 		mpDlgControl->GetTemplate()->GetStringProperty( Prop::DragnDropToAutoCAD );
 	if( !sDropOnAcadWndPointEvent.IsEmpty() )
 	{
-		InvokeMethodPoint( sDropOnAcadWndPointEvent,
-											 point,
-											 mpDlgControl->IsAsyncEvents() );
+		acedDwgPoint dwgPt;
+		int nViewport = acedGetWinNum( point.x, point.y );
+		acedCoordFromPixelToWorld( nViewport, point, dwgPt );
+		InvokeMethodPoint3DInt( sDropOnAcadWndPointEvent,
+														dwgPt,
+														nViewport,
+														mpDlgControl->IsAsyncEvents() );
 		return DROPEFFECT_NONE;
 	}
 	return DROPEFFECT_NONE;

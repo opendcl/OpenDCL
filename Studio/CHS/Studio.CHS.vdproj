@@ -2884,14 +2884,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{9538F98D-7487-4A91-A9E5-21B8A2CD7749}"
-        "PackageCode" = "8:{E54B1179-F63B-436F-9A61-8297D23FB861}"
+        "ProductCode" = "8:{7C6277FB-5B0E-4010-913E-54ABD5C3BE40}"
+        "PackageCode" = "8:{0477E0CF-4CDF-4200-B1E1-487FFA7F4C59}"
         "UpgradeCode" = "8:{AF16E7D3-800C-4BE7-BA12-B9C62FF78F51}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0012"
+        "ProductVersion" = "8:5.0.0015"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -2934,6 +2934,28 @@
                             "Transitive" = "11:FALSE"
                                 "Keys"
                                 {
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_7FEC1D6A9D18467E85640D1C832624E6"
+                                    {
+                                    "Name" = "8:Runtime"
+                                    "Condition" = "8:"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "DeleteAtUninstall" = "11:FALSE"
+                                    "Transitive" = "11:FALSE"
+                                        "Keys"
+                                        {
+                                        }
+                                        "Values"
+                                        {
+                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_001C2EF00AB048BA8192EB00EA8E92CE"
+                                            {
+                                            "Name" = "8:Language"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "ValueTypes" = "3:1"
+                                            "Value" = "8:CHS"
+                                            }
+                                        }
+                                    }
                                 }
                                 "Values"
                                 {
@@ -3798,7 +3820,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D5411C478C764DD3B6FC1878FEE06B40"
             {
-            "SourcePath" = "8:studio.res\\debug\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_0E15D904D703428E8193A14F2823ED5C"

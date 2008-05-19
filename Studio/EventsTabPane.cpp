@@ -587,7 +587,7 @@ CString CEventsTabPane::GetEvent( Prop::Id nEventId )
 	if( sEventSymbol.IsEmpty() )
 	{
 		CString sEventName = m_pControl->GetVarName();
-		sEventSymbol.Format( _T("c:%s_On%s"), (LPCTSTR)sEventName, GetPropertyName( nEventId ) );
+		sEventSymbol.Format( _T("c:%s_On%s"), (LPCTSTR)sEventName, GetPropertyApiName( nEventId ) );
 	}
 
 	return sEventSymbol;

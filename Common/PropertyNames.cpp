@@ -135,7 +135,9 @@ void PropNameMap::Initialize()
 			mmapIdToName[id] = sName;
 	}
 
-	// hardcode API names for all properties that expose lisp callable get/set functions
+	// hardcode API names for events and all properties that expose lisp callable get/set functions
+	mmapIdToApiName[Prop::Name] = _T("(Name)");
+	mmapIdToApiName[Prop::Custom] = _T("(Custom)");
 	mmapIdToApiName[Prop::AutoSize] = _T("AutoSize");
 	mmapIdToApiName[Prop::BorderStyle] = _T("BorderStyle");
 	mmapIdToApiName[Prop::ButtonStyle] = _T("Style");
@@ -147,6 +149,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::EventDblClicked] = _T("DblClicked");
 	mmapIdToApiName[Prop::EventEditChanged] = _T("EditChanged");
 	mmapIdToApiName[Prop::EventNodeClicked] = _T("NodeClicked");
+	mmapIdToApiName[Prop::EventSelChanged] = _T("SelChanged");
 	mmapIdToApiName[Prop::FilterStyle] = _T("FilterStyle");
 	mmapIdToApiName[Prop::Height] = _T("Height");
 	mmapIdToApiName[Prop::ImageList] = _T("ImageList");
@@ -179,6 +182,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::LimitText] = _T("LimitText");
 	mmapIdToApiName[Prop::AutoHScroll] = _T("AutoHScroll");
 	mmapIdToApiName[Prop::AutoVScroll] = _T("AutoVScroll");
+	mmapIdToApiName[Prop::DropDownHeight] = _T("DropDownHeight");
 	mmapIdToApiName[Prop::MultiColumn] = _T("MultiColumn");
 	mmapIdToApiName[Prop::SelectionStyle] = _T("SelectionStyle");
 	mmapIdToApiName[Prop::NoIntegralHeight] = _T("NoIntegralHeight");
@@ -278,6 +282,8 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::EventNavigateComplete] = _T("NavigationComplete");
 	mmapIdToApiName[Prop::InputFilter] = _T("InputFilter");
 	mmapIdToApiName[Prop::TabOrder] = _T("TabOrder");
+	mmapIdToApiName[Prop::ShowOrbitCircles] = _T("ShowOrbitCircles");
+	mmapIdToApiName[Prop::IsTabStop] = _T("IsTabStop");
 	mmapIdToApiName[Prop::EventMouseEntered] = _T("MouseEntered");
 	mmapIdToApiName[Prop::BeginGroup] = _T("BeginGroup");
 	mmapIdToApiName[Prop::MouseOverPicture] = _T("MouseOverPicture");
@@ -323,6 +329,8 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::SingleExpanded] = _T("SingleExpanded");
 	mmapIdToApiName[Prop::RowHeight] = _T("RowHeight");
 	mmapIdToApiName[Prop::DefSelIndex] = _T("DefaultSelection");
+	mmapIdToApiName[Prop::ObjectBrowser] = _T("(ObjectBrowser)");
+	mmapIdToApiName[Prop::GlobalVarName] = _T("GlobalVarName");
 	mmapIdToApiName[Prop::FileDlgStyle] = _T("Style");
 	mmapIdToApiName[Prop::AsReadOnly] = _T("AsReadOnly");
 	mmapIdToApiName[Prop::CreationPrompt] = _T("CreationPrompt");
