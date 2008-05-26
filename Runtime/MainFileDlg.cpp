@@ -87,7 +87,6 @@ void CMainFileDlg::OnDestroy()
 	CRect rcThis;
 	GetWindowRect( &rcThis );
 	InvokeMethodIntInt(mpDlgObject->GetTemplate()->GetStringProperty(Prop::FormEventClose), rcThis.left, rcThis.top, false);	
-	mpDlgObject->GetControlPane()->CleanUpControls();	
 	__super::OnDestroy();
 }
 

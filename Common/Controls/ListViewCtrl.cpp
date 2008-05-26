@@ -12,6 +12,8 @@
 
 #undef SubclassWindow
 
+#define WM_SETSELECTEDSTATE (WM_USER + 45)
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CLVEdit
@@ -46,7 +48,6 @@ void CLVEdit::OnSetfocus()
 CListViewCtrl::CListViewCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , mbBlockList( pTemplate->GetType() == CtlBlockList )
-, mnDragSource( -1 )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -599,8 +600,6 @@ void CListViewCtrl::OnDestroy()
 void CListViewCtrl::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize(nType, cx, cy);
-	//Arrange(LVA_DEFAULT);
-	//return;
 	int nPropIconStyle = mpTemplate->GetLongProperty(Prop::ListViewStyle);
 	if (nPropIconStyle == 0 || nPropIconStyle == 1 || mpTemplate->GetLongProperty(Prop::BlockListStyle) > -1)
 	{	
@@ -702,8 +701,8 @@ void CListViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) )
 	{
 		UINT nHTFlags = 0;
-		int mnDragSource = HitTest( point, &nHTFlags );
-		if( mnDragSource >= 0 )
+		int nDragSource = HitTest( point, &nHTFlags );
+		if( nDragSource >= 0 )
 		{
 			if( (nFlags & MK_CONTROL) == 0 )
 			{
@@ -711,17 +710,31 @@ void CListViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 				while( pos )
 				{
 					int idxItem = GetNextSelectedItem( pos );
-					if( idxItem != mnDragSource )
-						SetItemState( mnDragSource, 0, LVIS_SELECTED );
+					if( idxItem != nDragSource )
+						SetItemState( nDragSource, 0, LVIS_SELECTED );
 				}
 			}
-			SetItemState( mnDragSource, LVIS_SELECTED, LVIS_SELECTED );
+			bool bWasSelected = (GetItemState( nDragSource, LVIS_SELECTED ) != 0);
+			SetItemState( nDragSource, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED );
 			DWORD dwDropEffect = BeginDragDrop( point );
 			if( dwDropEffect == DROPEFFECT_MOVE )
-				DeleteItem( mnDragSource );
-			PostMessage( WM_LBUTTONUP, 0, MAKELPARAM(point.x,point.y) );	
+				DeleteItem( nDragSource );
+			else if( (nFlags & MK_CONTROL) != 0 )
+				PostMessage( WM_SETSELECTEDSTATE, (WPARAM)nDragSource, (LPARAM)bWasSelected );	
+			PostMessage( WM_LBUTTONUP, nFlags, MAKELPARAM(point.x, point.y) );	
 		}
 	}
 
 	__super::OnLButtonDown(nFlags, point);
+}
+
+LRESULT CListViewCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if( message == WM_SETSELECTEDSTATE )
+	{
+		SetItemState( (int)wParam, lParam? LVIS_SELECTED : 0, LVIS_SELECTED );
+		return 0;
+	}
+
+	return __super::WindowProc(message, wParam, lParam);
 }

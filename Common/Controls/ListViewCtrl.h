@@ -39,7 +39,6 @@ class CListViewCtrl : public CListCtrl, public CDialogControl
 	CAcadColorService mColorService;
 	//CImageList mDefaultImageList;
 	bool mbBlockList;
-	int mnDragSource;
 
 	CLVEdit				m_LVEdit;
 
@@ -93,4 +92,5 @@ protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

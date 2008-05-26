@@ -259,11 +259,23 @@ BOOL CAboutDlg::OnInitDialog()
 	{
 		CStdioFile file( sLicenseTxt, CFile::modeRead | CFile::shareDenyNone );
 		UINT cbText = (UINT)file.GetLength();
-		CStringA sText;
-		cbText = file.Read( sText.GetBuffer( cbText ), cbText );
-		sText.ReleaseBuffer( cbText );
+		WORD wchUnicodeTest;
+		if( sizeof(WORD) == file.Read( &wchUnicodeTest, sizeof(WORD) ) && wchUnicodeTest == 0xFEFF )
+		{
+			CStringW sText;
+			cbText = file.Read( sText.GetBuffer( cbText / 2 ), cbText );
+			sText.ReleaseBuffer( cbText / 2 );
+			::SetWindowTextW( ::GetDlgItem( m_hWnd, IDC_LICENSETXT ), sText );
+		}
+		else
+		{
+			file.SeekToBegin();
+			CStringA sText;
+			cbText = file.Read( sText.GetBuffer( cbText ), cbText );
+			sText.ReleaseBuffer( cbText );
+			::SetWindowTextA( ::GetDlgItem( m_hWnd, IDC_LICENSETXT ), sText );
+		}
 		CRichEditCtrl* pTextBox = (CRichEditCtrl*)GetDlgItem(IDC_LICENSETXT);
-		::SetWindowTextA( ::GetDlgItem( m_hWnd, IDC_LICENSETXT ), sText );
 		pTextBox->SetOptions(ECOOP_OR, ECO_SAVESEL);
 		pTextBox->SetSel(0, 0);
 	}

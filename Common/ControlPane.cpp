@@ -88,7 +88,6 @@ void CControlPane::RemoveControl( CDialogControl* pDlgControl )
 
 bool CControlPane::CreateControls(UINT& nId)
 {
-	CleanUpControls();
 	//mpHostDlg->ModifyStyleEx( 0, 0x02000000L/*WS_EX_COMPOSITED*/ );
 	TDclControlList& Controls = mpSourceForm->mDclControls;
 	if( Controls.empty() )
@@ -274,9 +273,9 @@ void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
 	CWnd* pWndToMove = pDlgControl->GetControlWnd();
 	//if the control is hosted inside another window, find the ancestor that is a child
 	//of the host dialog and move it instead
-	assert( mpHostDlg->IsChild( pWndToMove ) );
+	assert( mpHostDlg->IsChild( pWndToMove ) || mpHostDlg == pWndToMove );
 	while( (pWndToMove->GetControlUnknown() || (pWndToMove->GetStyle() & WS_CHILD)) &&
-				 pWndToMove->GetParent() != mpHostDlg )
+				 (pWndToMove != mpHostDlg && pWndToMove->GetParent() != mpHostDlg) )
 		pWndToMove = pWndToMove->GetParent();
 	CRect rcNew = pDlgControl->GetWndRect();
 	pWndToMove->MoveWindow( &rcNew, TRUE );

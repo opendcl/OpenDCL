@@ -170,6 +170,12 @@ INT_PTR CCustomFileDialog::DoModal()
 	return nResult;
 }
 
+bool CCustomFileDialog::OnApplyResizable( TPropertyPtr pProp )
+{
+	GetOFN().Flags |= OFN_ENABLESIZING;
+	return true;
+}
+
 void CCustomFileDialog::SavePosition()
 {
 	if( !IsWindow( m_hWnd ) )
@@ -229,7 +235,7 @@ void CCustomFileDialog::OnInitializationComplete()
 	}
 #endif //SM_CXVIRTUALSCREEN
 	CRect rectParent;
-	::GetWindowRect( ::GetParent(m_hWnd), &rectParent );
+	::GetWindowRect( ::GetParent(mMainFileDlg.m_hWnd), &rectParent );
 	if( mnInitialX >= 0 )
 		rectWindow.MoveToX( mnInitialX );
 	else if( rectSaved.left >= rcDesktop.left - 10 && rectSaved.left < rcDesktop.right - 10 )

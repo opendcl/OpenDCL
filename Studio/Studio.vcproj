@@ -483,6 +483,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\StdioUnicodeFile.h"
+				>
+			</File>
+			<File
 				RelativePath=".\StudioControlPane.h"
 				>
 			</File>
@@ -790,6 +794,10 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\StdioUnicodeFile.cpp"
+				>
 			</File>
 			<File
 				RelativePath=".\StudioControlPane.cpp"

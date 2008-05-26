@@ -209,14 +209,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Runtime"
-        "ProductCode" = "8:{1C3BD991-036C-4D41-AB02-5D3100E304EC}"
-        "PackageCode" = "8:{BD015F86-C34C-43B1-873A-79CEC7371EF4}"
+        "ProductCode" = "8:{C6C9D859-3326-4640-9C94-51BAD1D8D475}"
+        "PackageCode" = "8:{9FE8C04D-27FF-43E0-8DC1-A8F2659AE01C}"
         "UpgradeCode" = "8:{CBDA31D8-026A-4643-AADA-6FB281D9E205}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0015"
+        "ProductVersion" = "8:5.0.0016"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -400,7 +400,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_93B845E2E2B84A7386A29C6D11069B4D"
             {
-            "SourcePath" = "8:MSM\\Debug\\OpenDCL.Runtime.FRA.msm"
+            "SourcePath" = "8:MSM\\Release\\OpenDCL.Runtime.FRA.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7533197286ED4A179374AF5FB58B54B1"
@@ -432,9 +432,9 @@
                 "SourcePath" = "8:MSM\\Debug\\OpenDCL.Runtime.FRA.msm"
                     "Properties"
                     {
-                        "_10FD5B20D4014991923B475A68C93866.AB3E18A6FF0546C88AF1C135EBDD6FCF"
+                        "_10FD5B20D4014991923B475A68C93866.FA3FDEBC1A9D4E06A436C908EA10A7C6"
                         {
-                        "Name" = "8:_10FD5B20D4014991923B475A68C93866.AB3E18A6FF0546C88AF1C135EBDD6FCF"
+                        "Name" = "8:_10FD5B20D4014991923B475A68C93866.FA3FDEBC1A9D4E06A436C908EA10A7C6"
                         "DisplayName" = "8:Module Retargetable Folder"
                         "Description" = "8:"
                         "Type" = "3:32769"
@@ -444,7 +444,7 @@
                         "UsePlugInResources" = "11:FALSE"
                         }
                     }
-                "LanguageId" = "3:1033"
+                "LanguageId" = "3:1036"
                 "Exclude" = "11:FALSE"
                 "Folder" = "8:_7533197286ED4A179374AF5FB58B54B1"
                 "Feature" = "8:"

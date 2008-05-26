@@ -77,6 +77,7 @@ public:
 	virtual bool Show(bool bShow = true) { return false; }
 protected:
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
+	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::Resizable
 
 protected:	
 	DECLARE_MESSAGE_MAP()

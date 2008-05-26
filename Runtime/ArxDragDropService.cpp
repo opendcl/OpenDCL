@@ -36,17 +36,13 @@ CArxDragDropService::~CArxDragDropService()
 		RevokeControlAsDropTarget();
 	if( mbMustDeleteDropTarget )
 		delete mpDropTarget;
+	delete mpDropOnAcadTarget;
 }
 
 bool CArxDragDropService::RegisterControlAsDropTarget()
 {
 	if( !mpDropTarget )
 		return false;
-	if( mpDropOnAcadTarget )
-	{
-		if( !acedAddDropTarget( mpDropOnAcadTarget ) )
-			return false;
-	}
 	mpDropTarget->Register( mpDlgControl->GetControlWnd() );
 	mbRegistered = true;
 	return true;
@@ -56,11 +52,6 @@ bool CArxDragDropService::RevokeControlAsDropTarget()
 {
 	if( !mpDropTarget )
 		return false;
-	if( mpDropOnAcadTarget )
-	{
-		if( !acedRemoveDropTarget( mpDropOnAcadTarget ) )
-			return false;
-	}
 	mpDropTarget->Revoke();
 	mbRegistered = false;
 	return true;
@@ -71,27 +62,33 @@ DROPEFFECT CArxDragDropService::BeginDragDrop( const CPoint& point )
 	TDclControlPtr pDclControl = mpDlgControl->GetTemplate();
 	if( !pDclControl->GetBooleanProperty( Prop::DragnDropAllowBegin ) )
 		return DROPEFFECT_NONE;
+	if( mpDropOnAcadTarget )
+		acedAddDropTarget( mpDropOnAcadTarget );
 	COleDropTarget* pAcadDropTarget = GetCustomAcadDropTarget();
 	if( pAcadDropTarget )
 	{
 		if( !acedStartOverrideDropTarget( pAcadDropTarget ) )
 			pAcadDropTarget = NULL;
 	}
+	DWORD dwEffect = DROPEFFECT_NONE;
 	COleDataSource SourceData;
 	DWORD dwSupportedDropEffects = mpDlgControl->OnBeginDrag( point, SourceData );
-	if( dwSupportedDropEffects == DROPEFFECT_NONE )
-		return DROPEFFECT_NONE;
-	CString sDragBeginEvent = pDclControl->GetStringProperty( Prop::DragnDropBegin );
-	if( !sDragBeginEvent.IsEmpty() )
+	if( dwSupportedDropEffects != DROPEFFECT_NONE )
 	{
-		InvokeMethod( sDragBeginEvent, mpDlgControl->IsAsyncEvents() );
-		dwSupportedDropEffects &= ~DROPEFFECT_MOVE;
+		CString sDragBeginEvent = pDclControl->GetStringProperty( Prop::DragnDropBegin );
+		if( !sDragBeginEvent.IsEmpty() )
+		{
+			InvokeMethod( sDragBeginEvent, mpDlgControl->IsAsyncEvents() );
+			dwSupportedDropEffects &= ~DROPEFFECT_MOVE;
+		}
+		CPoint ptScreen( point );
+		mpDlgControl->GetControlWnd()->ClientToScreen( &ptScreen );
+		CRect rcDragRegion( ptScreen, CSize( GetSystemMetrics( SM_CXDOUBLECLK ) / 2, GetSystemMetrics( SM_CYDOUBLECLK ) / 2 ) );
+		dwEffect = SourceData.DoDragDrop( dwSupportedDropEffects, &rcDragRegion, mpDropSource );
 	}
-	CPoint ptScreen( point );
-	mpDlgControl->GetControlWnd()->ClientToScreen( &ptScreen );
-	CRect rcDragRegion( ptScreen, CSize( GetSystemMetrics( SM_CXDOUBLECLK ) / 2, GetSystemMetrics( SM_CYDOUBLECLK ) / 2 ) );
-	DWORD dwEffect = SourceData.DoDragDrop( dwSupportedDropEffects, &rcDragRegion, mpDropSource );
 	if( pAcadDropTarget )
 		acedEndOverrideDropTarget( pAcadDropTarget );
+	if( mpDropOnAcadTarget )
+		acedRemoveDropTarget( mpDropOnAcadTarget );
 	return dwEffect;
 }

@@ -21,6 +21,7 @@
 #include "AxInterfaceDescriptor.h"
 #include "AxContainerCtrl.h"
 #include "StudioDialogControl.h"
+#include "StdioUnicodeFile.h"
 #include "LoadArgs.h"
 
 
@@ -376,7 +377,7 @@ void CObjectBrowser::LoadMethods(CString sFileName, HTREEITEM hParentItem)
 
 	try
 	{
-		CStdioFile fMthFile(sMethodFile, CFile::shareDenyWrite|CFile::modeRead);
+		CStdioUnicodeFile fMthFile(sMethodFile, CFile::shareDenyWrite|CFile::modeRead);
 		
 		CString sLine;
 		fMthFile.ReadString(sLine);
@@ -428,7 +429,7 @@ bool CObjectBrowser::LoadFullMethod(CString sFileName, CString sMethodName, CStr
 
 	try
 	{
-		CStdioFile fMthFile(sMethodFile, CFile::shareDenyWrite|CFile::modeRead);
+		CStdioUnicodeFile fMthFile(sMethodFile, CFile::shareDenyWrite|CFile::modeRead);
 		
 		CString sLine;
 		fMthFile.ReadString(sLine);
