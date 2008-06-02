@@ -71,10 +71,11 @@ bool CListViewCtrl::Create( CWnd* pParentWnd, UINT nID )
 	}
 
 	if( bSuccess && !IsBlockList() )
+	{
 		SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
-
-	if( bSuccess && !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::ImageList ) ) )
-		bSuccess = false;
+		if( !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::ImageList ) ) )
+			bSuccess = false;
+	}
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 

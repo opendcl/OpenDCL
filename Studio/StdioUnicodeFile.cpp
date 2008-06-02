@@ -13,7 +13,7 @@ CStdioUnicodeFile::CStdioUnicodeFile(FILE* pOpenStream)
 }
 
 CStdioUnicodeFile::CStdioUnicodeFile(LPCTSTR lpszFileName, UINT nOpenFlags)
-: CStdioFile( lpszFileName, nOpenFlags )
+: CStdioFile( lpszFileName, nOpenFlags | CFile::typeBinary )
 , mfReadType( Unknown )
 {
 }
@@ -65,16 +65,20 @@ LPCTSTR FindEol( LPCTSTR pszSearch, ULONG cchLimit )
 
 BOOL CStdioUnicodeFile::ReadUnicodeString( CStringW& rString )
 {
-	static wchar_t szBuffer[4096];
+	static wchar_t szBuffer[4097];
 	BOOL bReadData = FALSE;
 	rString.Empty();
 	ULONGLONG nPos = GetPosition();
+	ULONGLONG nLen = GetLength();
 	ULONGLONG cchTotalRead = 0;
 
 	UINT cchRead = 4096;
 	while( cchRead == 4096 )
 	{
-		cchRead = Read( szBuffer, 4096 );
+		cchRead = Read( szBuffer, sizeof(szBuffer) ) >> 1;
+		if( cchRead > 4096 )
+			cchRead = 4096;
+		szBuffer[cchRead] = L'\0';
 		wchar_t* pszEol = (LPTSTR)FindEol( szBuffer, cchRead );
 		if( pszEol )
 		{
@@ -84,14 +88,14 @@ BOOL CStdioUnicodeFile::ReadUnicodeString( CStringW& rString )
 			{
 				*pszEol = L'\0';
 				++cchTotalRead; //skip the \r
-				if( cchLine < cchRead && *++pszEol == L'\n' )
+				if( *++pszEol == L'\n' )
 					++cchTotalRead; //skip the \n
 			}
 			else if( *pszEol == L'\n' )
 			{
 				*pszEol = L'\0';
 				++cchTotalRead; //skip the \n
-				if( cchLine < cchRead && *++pszEol == L'\r' )
+				if( *++pszEol == L'\r' )
 					++cchTotalRead; //skip the \r
 			}
 			cchRead = 1;
@@ -101,8 +105,11 @@ BOOL CStdioUnicodeFile::ReadUnicodeString( CStringW& rString )
 			bReadData = TRUE;
 			rString += szBuffer;
 		}
+		nPos += (cchTotalRead << 1);
+		if( nPos >= nLen )
+			break;
+		Seek( nPos, FILE_BEGIN );
 	}
-	Seek( nPos + (cchTotalRead * sizeof(TCHAR)), FILE_BEGIN );
 
 	return bReadData;
 }

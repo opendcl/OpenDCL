@@ -283,18 +283,18 @@ void CPictureBoxCtrl::PaintPicture(int sX, int sY, int nPictureID, int nEnabled,
 			CRect rcCell = CalcFitRect(lWidth, lHeight,rcThis.Width(), rcThis.Height());
 
 			// display picture using IPicture::Render
-			pPicture->Render(CDC::FromHandle(hdc), rcCell.left, rcCell.top, rcThis);				
+			pPicture->Render(CDC::FromHandle(hdc), rcCell);				
 		}
 		else if (lWidth > rcThis.Width() || lHeight > rcThis.Height())
 		{
 			// display picture using IPicture::Render
-			pPicture->Render(CDC::FromHandle(hdc), 0, 0, rcThis);
+			pPicture->Render(CDC::FromHandle(hdc), rcThis);
 		}
 	
 		else
 		{
 			// display picture using IPicture::Render
-			pPicture->Render(CDC::FromHandle(hdc), sX, sY, iconRect);
+			pPicture->Render(CDC::FromHandle(hdc), iconRect);
 		}		
 	}
 

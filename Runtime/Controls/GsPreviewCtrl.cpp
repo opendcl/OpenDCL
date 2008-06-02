@@ -300,7 +300,7 @@ void CGsPreviewCtrl::clearAll()
 	{
 		if (mpView)
 		{
-			mpView->eraseAll();
+			//mpView->eraseAll(); //causes crash if displayed block's host drawing was closed
 			if (mpDevice)
 				mpDevice->erase(mpView);
 		}

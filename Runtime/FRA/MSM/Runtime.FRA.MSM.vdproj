@@ -63,7 +63,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_598DDFACCC5349BD956BE92898560A79"
+        "MsmKey" = "8:_5B0CEA7929F94D5BB0355194677566F3"
         "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -71,6 +71,12 @@
         {
         "MsmKey" = "8:_6CDF45B99B0749C7A381B69B2CDDF2C4"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_790D0113FDF84085916CEFB1D2131BF8"
+        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -88,6 +94,12 @@
         "Entry"
         {
         "MsmKey" = "8:_836509EA009262CE7116380579D81874"
+        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8558BF01850B46009D6FDACEEEDBE8EF"
         "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -117,18 +129,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_B8477998C1A2427E9C4BC9E54D5AC9B5"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D24B96BB1FF34E03872EF4A6BF8EE1EB"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -141,7 +141,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_EB304330126E42D28E78F7D8D27251F6"
+        "MsmKey" = "8:_F0EFA932727646A8BC59229002F94056"
         "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -443,7 +443,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_598DDFACCC5349BD956BE92898560A79"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_5B0CEA7929F94D5BB0355194677566F3"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -454,7 +454,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_B8477998C1A2427E9C4BC9E54D5AC9B5"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_790D0113FDF84085916CEFB1D2131BF8"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -465,18 +465,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_D24B96BB1FF34E03872EF4A6BF8EE1EB"
-            {
-            "UseDynamicProperties" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_stl.msm"
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_EB304330126E42D28E78F7D8D27251F6"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_8558BF01850B46009D6FDACEEEDBE8EF"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -487,11 +476,22 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_F0EFA932727646A8BC59229002F94056"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:vc_stl.msm"
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
         }
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.FA3FDEBC1A9D4E06A436C908EA10A7C6"
-        "Version" = "8:5.0.0.16"
+        "Version" = "8:5.0.0.17"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"

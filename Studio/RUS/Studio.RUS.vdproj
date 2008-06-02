@@ -2799,6 +2799,29 @@
         }
         "FileType"
         {
+            "{5EB83D71-FA18-4901-BE56-DE22E13CC478}:_083795C8EB414B49A1230C6334BAA386"
+            {
+            "Name" = "8:OpenDCL.Project"
+            "Description" = "8:OpenDCL Project"
+            "Extensions" = "8:.odcl"
+            "MIME" = "8:"
+            "Icon" = "8:_4BA9EDD6A0E04EBCB447C736C760A9C5"
+            "IconIndex" = "3:0"
+                "Command"
+                {
+                "Command" = "8:_1FD20FF3AFB343A886AACDFE8C1E525A"
+                }
+                "Verbs"
+                {
+                    "{95C0C507-CBF0-42B8-B119-07219E384A4A}:_9FA994EC51484E789667F231B72675F2"
+                    {
+                    "Command" = "8:&Open"
+                    "Verb" = "8:open"
+                    "Arguments" = "8:\"%1\""
+                    "Order" = "3:0"
+                    }
+                }
+            }
         }
         "Folder"
         {
@@ -2884,14 +2907,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{78CEE362-D8E9-4BEE-BD16-64B900E22D3A}"
-        "PackageCode" = "8:{2E1C75B0-1DCC-4085-B6E3-D0630092BA35}"
+        "ProductCode" = "8:{5DF49B45-5C55-45A1-BAAD-4A607449147F}"
+        "PackageCode" = "8:{E59BC46B-A68E-4A29-B33B-EB6977928E01}"
         "UpgradeCode" = "8:{30C0C78D-D3B1-4C36-B37E-357F50E691D3}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0016"
+        "ProductVersion" = "8:5.0.0017"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"

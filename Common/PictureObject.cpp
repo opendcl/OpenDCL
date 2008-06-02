@@ -926,45 +926,16 @@ BOOL CPictureObject::ExchangePersistentProp(CArchive& ar,
 	return TRUE;
 }
 
-void CPictureObject::Render( CDC *pdc, int nPicLeft, int nPicTop, CRect &rcThis, bool bAutoSize ) const
+void CPictureObject::Render( CDC* pDC, const CRect& rcDest ) const
 {
+	if( !m_hPicture.m_pPict )
+		return;
 	// get width and height of picture
 	long hmWidth;
 	long hmHeight;
-	m_hPicture.m_pPict->get_Width(&hmWidth);
-	m_hPicture.m_pPict->get_Height(&hmHeight);
-	
-	// convert himetric to pixels
-	int nPicWidth	= MulDiv(hmWidth, pdc->GetDeviceCaps(LOGPIXELSX), HIMETRIC_INCH);
-	int nPicHeight	= MulDiv(hmHeight, pdc->GetDeviceCaps(LOGPIXELSY), HIMETRIC_INCH);		
-	int cxIcon = nPicWidth;
-	int cyIcon = nPicHeight;
-	if (bAutoSize == TRUE)
-	{
-		// Center the icon horizontally
-		nPicLeft = ((rcThis.Width() - nPicWidth)/2);
-	
-		// Center the icon vertically
-		nPicTop = ((rcThis.Height() - nPicHeight)/2);           
-	
-		nPicTop = 0;
-		nPicLeft = 0;
-	}
-
-	if( const_cast< CPictureObject* >(this)->m_hPicture.GetType() == PICTYPE_METAFILE ||
-			const_cast< CPictureObject* >(this)->m_hPicture.GetType() == PICTYPE_ENHMETAFILE)
-	{
-		CRect rcCell = CalcFitRect(nPicWidth, nPicHeight,rcThis.Width(), rcThis.Height());
-
-		// display picture using IPicture::Render
-		m_hPicture.m_pPict->Render(pdc->m_hDC, rcCell.left, rcCell.top, rcCell.Width(), rcCell.Height(), 0, hmHeight, hmWidth, -hmHeight, &rcThis);
-		
-	}
-	else
-	{
-		// display picture using IPicture::Render
-		m_hPicture.m_pPict->Render(pdc->m_hDC, nPicLeft, nPicTop, nPicWidth, nPicHeight, 0, hmHeight, hmWidth, -hmHeight, &rcThis);
-	}
+	m_hPicture.m_pPict->get_Width( &hmWidth );
+	m_hPicture.m_pPict->get_Height( &hmHeight );
+	m_hPicture.m_pPict->Render( pDC->m_hDC, rcDest.left, rcDest.top, rcDest.Width(), rcDest.Height(), 0, hmHeight, hmWidth, -hmHeight, &rcDest );
 }
 
 void CPictureObject::CalcLogicalSize()

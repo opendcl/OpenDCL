@@ -47,7 +47,7 @@ public:
 	static CPictureObject* CreatePictureObject( short nID, LPPICTUREDISP NewPicture );
 
 	void Clear();
-	void Render( CDC *pdc, int nPicLeft, int nPicTop, CRect &rcThis, bool bAutoSize = false ) const;
+	void Render( CDC* pDC, const CRect& rcDest ) const;
 
 	// File I/O
 	virtual void Serialize(CArchive& ar);

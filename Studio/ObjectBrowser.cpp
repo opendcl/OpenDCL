@@ -1154,6 +1154,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 
 	if (sDesc.IsEmpty())
 		sDesc = theWorkspace.LoadResourceString(IDS_DESCNOTSET);
+	sDesc.Replace( _T("\\"), _T("\\\\") );
 
 	CHARFORMAT cf;
 

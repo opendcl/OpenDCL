@@ -298,68 +298,59 @@ void CPictureBox::Refresh( CDC* pdc )
 		
 	if (mpPicture)
 	{
-		int nPicWidth = m_cxIcon;
-		int nPicHeight = m_cyIcon;
+		// get width and height of picture
+		long nPicWidth = mpPicture->GetWidth();
+		long nPicHeight = mpPicture->GetHeight();
+		m_cxIcon = nPicWidth;
+		m_cyIcon = nPicHeight;
 		int nPicLeft = 0;
-		int nPicTop = 0;           
-		if (!IsAutoSized())
+		int nPicTop = 0;
+		CRect rcPic = rcCell;
+		if( !m_bStretchLoadedPicture )
 		{
-			nPicTop = ((rcCell.Height() - nPicHeight)/2); // Center the icon vertically
-			nPicLeft = ((rcCell.Width() - nPicWidth)/2); // Center the icon horizontally
-		}
-
-		CRect rcPic( nPicLeft, nPicTop, nPicLeft + nPicWidth, nPicTop + nPicHeight );
-		if( PICTYPE_BITMAP == mpPicture->GetPicType() )
-		{			
-			if( IsWindowEnabled() )
-				DrawTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
-															 rcPic.left, rcPic.top, nPicWidth, nPicHeight, RGB(192,192,192) );
-			else
-				DrawDisabledTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
-																			 rcPic.left, rcPic.top, nPicWidth, nPicHeight, RGB(192,192,192) );
-		}
-		else if( PICTYPE_ICON == mpPicture->GetPicType() )
-		{
-			if( IsWindowEnabled() )
-				pdc->DrawState(	rcPic.TopLeft(), CSize( nPicWidth, nPicHeight ),
-												mpPicture->GetIcon(), DSS_NORMAL, (HBRUSH)NULL );
-			else
-				pdc->DrawState(	rcPic.TopLeft(), CSize( nPicWidth, nPicHeight ),
-												mpPicture->GetIcon(), DSS_DISABLED, (HBRUSH)NULL );
-		}
-		else
-		{
-			// get width and height of picture
-			long lWidth = mpPicture->GetWidth();
-			long lHeight = mpPicture->GetHeight();
-			
-			m_cxIcon = lWidth;
-			m_cyIcon = lHeight;
-			int nPicLeft = 0;
-			int nPicTop = 0;           
 			if (!IsAutoSized())
 			{
 				nPicTop = ((rcCell.Height() - nPicHeight)/2); // Center the icon vertically
 				nPicLeft = ((rcCell.Width() - nPicWidth)/2); // Center the icon horizontally
 			}
-
+			rcPic.SetRect( nPicLeft, nPicTop, nPicLeft + nPicWidth, nPicTop + nPicHeight );
+		}
+		if( PICTYPE_BITMAP == mpPicture->GetPicType() && !m_bStretchLoadedPicture )
+		{			
+			if( IsWindowEnabled() )
+				DrawTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
+															 rcPic.left, rcPic.top, rcPic.Width(), rcPic.Height(), RGB(192,192,192) );
+			else
+				DrawDisabledTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
+																			 rcPic.left, rcPic.top, rcPic.Width(), rcPic.Height(), RGB(192,192,192) );
+		}
+		else if( PICTYPE_ICON == mpPicture->GetPicType() )
+		{
+			if( IsWindowEnabled() )
+				pdc->DrawState(	rcPic.TopLeft(), rcPic.Size(),
+												mpPicture->GetIcon(), DSS_NORMAL, (HBRUSH)NULL );
+			else
+				pdc->DrawState(	rcPic.TopLeft(), rcPic.Size(),
+												mpPicture->GetIcon(), DSS_DISABLED, (HBRUSH)NULL );
+		}
+		else
+		{
 			if (mpPicture->GetPicType() == PICTYPE_METAFILE ||
 				mpPicture->GetPicType() == PICTYPE_ENHMETAFILE)
 			{
-				rcCell = CalcFitRect(lWidth, lHeight,rcCell.Width(), rcCell.Height());
-
+				rcCell = CalcFitRect(nPicWidth, nPicHeight, rcPic.Width(), rcPic.Height());
 				// display picture using IPicture::Render
-				mpPicture->Render(pdc, rcCell.left, rcCell.top, rcCell);				
+				mpPicture->Render(pdc, rcPic);				
 			}
-			else if (lWidth > rcCell.Width() || lHeight > rcCell.Height() || m_bStretchLoadedPicture)
+			else if (nPicWidth > rcCell.Width() || nPicHeight > rcCell.Height() || m_bStretchLoadedPicture)
 			{
 				// display picture using IPicture::Render
-				mpPicture->Render(pdc, 0, 0, rcCell);
+				mpPicture->Render(pdc, rcPic);
 			}		
 			else
 			{
 				// display picture using IPicture::Render
-				mpPicture->Render(pdc, nPicLeft, nPicTop, rcCell);
+				mpPicture->Render(pdc, rcPic);
 			}
 		}
 	}
