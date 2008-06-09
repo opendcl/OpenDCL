@@ -1074,6 +1074,7 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 				}		
 				sTitle = _T("\\b0 ") + theWorkspace.LoadResourceString(IDS_PROPERTY) + _T(" \\b ") + GetPropertyName( pProp->GetID() ) + _T(" \\b0 \\cf0");
 				sDesc = pProp->GetDocumentationDesc();
+				sDesc.Replace( _T("\\"), _T("\\\\") );
 				bool bHidden = pProp->IsHidden();
 				switch( pProp->GetID() )
 				{
@@ -1126,8 +1127,8 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 								// lets set the Put property
 								sDefun1 = CString(_T("\\par (\\cf2 dcl_Control_Set")) + GetPropertyApiName( pProp->GetID() ) + _T(" \\cf0 \\cf3") + sGlobalVarName + _T(" ");
 								m_sClipBoardDefun1 = CString("(dcl_Control_Set") + GetPropertyApiName( pProp->GetID() ) + _T(" ");
-								sDefun1 += _T("\\par \\cf1 newValue [as ") + sVarType + _T("]\\cf0 ) ") + _T(" \\par ");
-								m_sClipBoardDefun1 += sGlobalVarName + _T("\r\n\t newValue [as ") + sVarType + _T("])");
+								sDefun1 += _T("\\par \\cf1 newValue [") + theWorkspace.LoadResourceString(IDS_AS) + _T(" ") + sVarType + _T("]\\cf0 ) ") + _T(" \\par ");
+								m_sClipBoardDefun1 += sGlobalVarName + _T("\r\n\t newValue [") + theWorkspace.LoadResourceString(IDS_AS) + _T(" ") + sVarType + _T("])");
 								
 								// lets set the get property
 								sDefun2 = CString(_T("\\par (\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_Control_Get")) + GetPropertyApiName( pProp->GetID() ) + _T(" \\cf0 \\cf3");
@@ -1154,7 +1155,6 @@ void CObjectBrowser::SelectionChanged(HTREEITEM hItem)
 
 	if (sDesc.IsEmpty())
 		sDesc = theWorkspace.LoadResourceString(IDS_DESCNOTSET);
-	sDesc.Replace( _T("\\"), _T("\\\\") );
 
 	CHARFORMAT cf;
 

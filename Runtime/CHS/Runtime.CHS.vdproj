@@ -215,14 +215,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Runtime"
-        "ProductCode" = "8:{4E5E95EF-1308-4540-B483-98598E6D89EA}"
-        "PackageCode" = "8:{BBA96CE7-4830-41F5-AFB6-F554E2ED6F64}"
+        "ProductCode" = "8:{BB668B57-3911-46B4-8A8D-5FC8946E1631}"
+        "PackageCode" = "8:{A7AB7B32-4CDB-4263-B466-059CA74A67FF}"
         "UpgradeCode" = "8:{4253DE18-3CCF-4985-ABE8-73FF553EB8E8}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0017"
+        "ProductVersion" = "8:5.0.0018"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -434,7 +434,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_60D5B4E6E9484FBC9787F43B8537A41D"
             {
-            "SourcePath" = "8:..\\RxInstall\\Release\\RxInstall.dll"
+            "SourcePath" = "8:..\\RxInstall\\Debug\\RxInstall.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3AE4DEF098B44E8BBE91AE2B243715D5"
@@ -462,7 +462,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_F9D63EF46F344A32B04C236714CFC6E0"
             {
-            "SourcePath" = "8:MSM\\Release\\OpenDCL.Runtime.CHS.msm"
+            "SourcePath" = "8:MSM\\Debug\\OpenDCL.Runtime.CHS.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3AE4DEF098B44E8BBE91AE2B243715D5"

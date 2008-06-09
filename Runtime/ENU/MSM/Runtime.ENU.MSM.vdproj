@@ -57,20 +57,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_36FBE11D62DF446988FC625483F8F91D"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_436F30F4FD774E29AF69CE552865F84D"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_640CC7F556D244529BD6F2181FEACE56"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -123,7 +111,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_BA49759BB3924F2E8CB093A86586C952"
+        "MsmKey" = "8:_BA4EBE76C25549DC8724280E7339262F"
         "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -135,7 +123,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D70D2165863C4A7C81521A78D2229BB7"
+        "MsmKey" = "8:_DA7B71678BB04F4CBB528829DE1A2C5A"
         "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -143,6 +131,18 @@
         {
         "MsmKey" = "8:_DDA70A22CCDF4F128166522E85F39C56"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E0793A9D60B34EE58DE77F1514D17949"
+        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E4123C970E204E379E2B107FB4F398F7"
+        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -443,40 +443,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_36FBE11D62DF446988FC625483F8F91D"
-            {
-            "UseDynamicProperties" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_mfc.msm"
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_640CC7F556D244529BD6F2181FEACE56"
-            {
-            "UseDynamicProperties" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_atl70.msm"
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_BA49759BB3924F2E8CB093A86586C952"
-            {
-            "UseDynamicProperties" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_crt.msm"
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_D70D2165863C4A7C81521A78D2229BB7"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_BA4EBE76C25549DC8724280E7339262F"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -487,11 +454,44 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_DA7B71678BB04F4CBB528829DE1A2C5A"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:vc_mfc.msm"
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_E0793A9D60B34EE58DE77F1514D17949"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:vc_atl70.msm"
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_E4123C970E204E379E2B107FB4F398F7"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:vc_crt.msm"
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
         }
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.AB3E18A6FF0546C88AF1C135EBDD6FCF"
-        "Version" = "8:5.0.0.17"
+        "Version" = "8:5.0.0.18"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"
@@ -508,7 +508,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_436F30F4FD774E29AF69CE552865F84D"
             {
-            "SourcePath" = "8:..\\..\\ARX.17\\Release\\OpenDCL.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.17\\Debug\\OpenDCL.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
@@ -536,7 +536,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6CDF45B99B0749C7A381B69B2CDDF2C4"
             {
-            "SourcePath" = "8:..\\..\\RxInstall\\Release\\RxInstall.dll"
+            "SourcePath" = "8:..\\..\\RxInstall\\Debug\\RxInstall.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
@@ -564,7 +564,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9D3B2F700D5B4AEC82D9773DBC342E4F"
             {
-            "SourcePath" = "8:..\\Runtime.Res.ENU\\Release\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\Runtime.Res.ENU\\Debug\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_87824347B7B34AA9A5B8909B6563D4BC"
@@ -592,7 +592,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D33787FAC7DF4D278BEBDDCA23DD682E"
             {
-            "SourcePath" = "8:..\\..\\ARX.16\\Release\\OpenDCL.16.arx"
+            "SourcePath" = "8:..\\..\\ARX.16\\Debug\\OpenDCL.16.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
@@ -620,7 +620,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_DDA70A22CCDF4F128166522E85F39C56"
             {
-            "SourcePath" = "8:..\\..\\ARX.x64.17\\Release\\OpenDCL.x64.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.x64.17\\Debug\\OpenDCL.x64.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"

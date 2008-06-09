@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by w:\OpenDCL\Build 5.0\Studio\CHS\Studio.Res\Studio.CHS.rc
+// Used by w:\OpenDCL\Build 5.0\Studio\RUS\Studio.Res\Studio.RUS.rc
 //
 #define IDR_MAINFRAME                   10
 #define IDP_OLE_INIT_FAILED             11

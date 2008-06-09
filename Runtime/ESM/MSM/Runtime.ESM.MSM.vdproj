@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_00C71540C66F4E0CA8126DBEB9568E21"
+        "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_022792D2A40B49C48024DACDA923EAB4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -75,19 +81,19 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_8E6E3518E699428790079DEC863F2835"
+        "MsmKey" = "8:_9031D7BBFA984940B18F8DE13876E1E5"
+        "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9A697E03C097464A83FF0A91D06F9044"
         "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_A0C5BAB2FADA7D5B16EBADF8119E4757"
-        "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_A65C963709D64217BC27703ED6A5DD4A"
         "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -101,12 +107,6 @@
         {
         "MsmKey" = "8:_CCE65A3168624F81A94FAB1785FEDBB5"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D2EF4DCE73F344C9A4FC40A5044F3465"
-        "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -141,7 +141,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_FC8816AF42A04B9BB3FF3AC945C98A6F"
+        "MsmKey" = "8:_EE88A8EADA32477689C2272DC46ED784"
         "OwnerKey" = "8:_4FA71ADB577F493B8342912E1D5C6180"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -443,18 +443,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_8E6E3518E699428790079DEC863F2835"
-            {
-            "UseDynamicProperties" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_stl.msm"
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_A65C963709D64217BC27703ED6A5DD4A"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_00C71540C66F4E0CA8126DBEB9568E21"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -465,18 +454,18 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_D2EF4DCE73F344C9A4FC40A5044F3465"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_9031D7BBFA984940B18F8DE13876E1E5"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_atl70.msm"
+            "SourcePath" = "8:vc_stl.msm"
             "LanguageId" = "3:0"
             "Exclude" = "11:TRUE"
             "Folder" = "8:"
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_FC8816AF42A04B9BB3FF3AC945C98A6F"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_9A697E03C097464A83FF0A91D06F9044"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -487,11 +476,22 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_EE88A8EADA32477689C2272DC46ED784"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:vc_atl70.msm"
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
         }
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.717209059AC14CA38A7B4FE9D885A6D3"
-        "Version" = "8:5.0.0.17"
+        "Version" = "8:5.0.0.18"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"
@@ -508,7 +508,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_022792D2A40B49C48024DACDA923EAB4"
             {
-            "SourcePath" = "8:..\\..\\RxInstall\\Release\\RxInstall.dll"
+            "SourcePath" = "8:..\\..\\RxInstall\\Debug\\RxInstall.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_2BE08FCE6CF14881B60BC9A26D3FCD0C"
@@ -536,7 +536,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_49F006177DB04D1581073B6DD5359E77"
             {
-            "SourcePath" = "8:..\\..\\ARX.x64.17\\Release\\OpenDCL.x64.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.x64.17\\Debug\\OpenDCL.x64.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_2BE08FCE6CF14881B60BC9A26D3FCD0C"
@@ -564,7 +564,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_4FA71ADB577F493B8342912E1D5C6180"
             {
-            "SourcePath" = "8:..\\..\\ARX.16\\Release\\OpenDCL.16.arx"
+            "SourcePath" = "8:..\\..\\ARX.16\\Debug\\OpenDCL.16.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_2BE08FCE6CF14881B60BC9A26D3FCD0C"
@@ -592,7 +592,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_BC27FA480CDC404BB536BBE5C6B67030"
             {
-            "SourcePath" = "8:..\\..\\ARX.17\\Release\\OpenDCL.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.17\\Debug\\OpenDCL.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_2BE08FCE6CF14881B60BC9A26D3FCD0C"
@@ -620,7 +620,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D3AE9BFA3AF9424C8E5A89BF160D6D27"
             {
-            "SourcePath" = "8:..\\Runtime.Res.ESM\\Release\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\Runtime.Res.ESM\\Debug\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_D8AC37728C5A4D97A1E0397803E93D94"
