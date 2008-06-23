@@ -45,13 +45,11 @@ protected:
 
 // Implementation
 protected:
+	DECLARE_MESSAGE_MAP()
+
 	virtual BOOL OnInitDialog();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-	afx_msg BOOL OnNotify_ToolTipTitle(UINT  id, NMHDR *pNMHDR, LRESULT *pResult);
-
-protected:
-	DECLARE_MESSAGE_MAP()
 };

@@ -2408,8 +2408,20 @@ public:
 	// ----- ads_dcl_form_isenabled symbol (do not rename)
 	static int ads_dcl_form_isenabled(void)
 	{
-		if( !GetCtrlProperty( Prop::Enabled ) )
+		struct resbuf *pArgs =acedGetArgs () ;
+
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
+			return RSERR; //arguments expected
+
+		if( !AssertOutOfArgs( pArgs ) )
 			return RSERR;
+
+		if( !pDlgObject )
+			return RSRSLT; //dialog not found
+
+		if( pDlgObject->GetTopLevelWnd()->IsWindowEnabled() )
+			acedRetT();
 
 		return (RSRSLT) ;
 	}
@@ -2417,8 +2429,20 @@ public:
 	// ----- ads_dcl_form_isvisible symbol (do not rename)
 	static int ads_dcl_form_isvisible(void)
 	{
-		if( !GetCtrlProperty( Prop::Visible ) )
+		struct resbuf *pArgs =acedGetArgs () ;
+
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
+			return RSERR; //arguments expected
+
+		if( !AssertOutOfArgs( pArgs ) )
 			return RSERR;
+
+		if( !pDlgObject )
+			return RSRSLT; //dialog not found
+
+		if( pDlgObject->GetTopLevelWnd()->IsWindowVisible() )
+			acedRetT();
 
 		return (RSRSLT) ;
 	}
@@ -2426,8 +2450,23 @@ public:
 	// ----- ads_dcl_form_enable symbol (do not rename)
 	static int ads_dcl_form_enable(void)
 	{
-		if( !SetCtrlProperty( Prop::Enabled ) )
+		struct resbuf *pArgs =acedGetArgs () ;
+
+		CDialogObject* pDlgObject = NULL;
+		if( !GetDialogArgument( pArgs, pDlgObject ) )
+			return RSERR; //arguments expected
+
+		bool bEnable = true;
+		GetBoolArgument( pArgs, bEnable, true );
+
+		if( !AssertOutOfArgs( pArgs ) )
 			return RSERR;
+
+		if( !pDlgObject )
+			return RSRSLT; //dialog not found
+
+		if( pDlgObject->GetTopLevelWnd()->EnableWindow( bEnable? TRUE : FALSE ) )
+			acedRetT();
 
 		return (RSRSLT) ;
 	}
@@ -2640,11 +2679,9 @@ public:
 		CString sInitialFolder;
 		CString sRootFolder;
 		UINT nFlags = BIF_RETURNONLYFSDIRS;
-		if( GetStringArgument( pArgs, sInitialFolder, true ) )
-		{
-			if( GetStringArgument( pArgs, sRootFolder, true ) )
-				GetUIntArgument( pArgs, nFlags, true );
-		}
+		GetStringArgument( pArgs, sInitialFolder, true );
+		GetStringArgument( pArgs, sRootFolder, true );
+		GetUIntArgument( pArgs, nFlags, true );
 
 		if( !AssertOutOfArgs( pArgs ) )
 			return RSERR;

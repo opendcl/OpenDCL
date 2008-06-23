@@ -18,6 +18,6 @@ public:
 	virtual ~CComboFilter() { delete mpFilter; }
 
 public:
-	virtual bool PopulateList( CComboBox* pCombo ) { return true; }
+	virtual bool PopulateList( CComboBox* pCombo ) { return false; }
 	virtual CInputFilter* GetInputFilter() const { return mpFilter; }
 };

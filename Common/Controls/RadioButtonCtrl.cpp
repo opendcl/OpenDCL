@@ -37,7 +37,7 @@ DWORD CRadioButtonCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 
-	dwStyle |= (/*WS_CLIPSIBLINGS | */BS_AUTORADIOBUTTON);
+	dwStyle |= (/*WS_CLIPSIBLINGS | */BS_AUTORADIOBUTTON | BS_NOTIFY);
 	return dwStyle;
 }
 

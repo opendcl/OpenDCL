@@ -56,11 +56,8 @@ public:
 			mClippingWnd.ShowWindow( SW_SHOW );
 			CString sText = pGridCtrl->GetCellText( nRow, nCol );
 			int idxMatch = -1;
-			if( pHandler )
-			{
-				pHandler->PopulateList( this );
+			if( pHandler && pHandler->PopulateList( this ) )
 				idxMatch = FindStringExact( 0, sText );
-			}
 			else
 			{
 				std::vector< int > rImage;

@@ -47,6 +47,7 @@ BEGIN_MESSAGE_MAP(CArxPictureBoxCtrl, CPictureBoxCtrl)
 	ON_WM_LBUTTONDBLCLK()
 	ON_CONTROL_REFLECT(BN_CLICKED, OnClicked)
 	ON_WM_CHAR()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 
@@ -336,4 +337,10 @@ void CArxPictureBoxCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (nChar == 13 || nChar == 10 )
 		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventClicked), IsAsyncEvents());
+}
+
+void CArxPictureBoxCtrl::OnPaint()
+{
+	__super::OnPaint();
+	InvokeMethodInt( mpTemplate->GetStringProperty( Prop::EventPaint ), (GetFocus() == this? 1 : 0), IsAsyncEvents() );
 }

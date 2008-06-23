@@ -41,6 +41,7 @@ CGraphicButtonCtrl::~CGraphicButtonCtrl()
 DWORD CGraphicButtonCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
+	dwStyle |= BS_NOTIFY;
 	return dwStyle;
 }
 

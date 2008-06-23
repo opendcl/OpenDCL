@@ -261,10 +261,7 @@ void CPictureBox::SetPicture( const CPictureObject* pPicture )
 		m_cyIcon = mpPicture->GetHeight();
 		AutoSize();
 	}
-
-	CDC *pdc = GetDC();
-	Refresh(pdc);
-	ReleaseDC(pdc);
+	Refresh();
 }
 
 void CPictureBox::SetPicture( UINT nIconResId )
@@ -275,47 +272,40 @@ void CPictureBox::SetPicture( UINT nIconResId )
 	m_cxIcon = mpPicture->GetWidth();
 	m_cyIcon = mpPicture->GetHeight();
 	AutoSize();
-
-	CDC *pdc = GetDC();
-	Refresh(pdc);
-	ReleaseDC(pdc);
+	Refresh();
 }
 
 void CPictureBox::Refresh()
 {
-	CDC *pdc = GetDC();
-	CPictureBox::Refresh(pdc);
-	ReleaseDC(pdc);
+	DrawPicture( mpPicture, m_bStretchLoadedPicture );
 }
 
-void CPictureBox::Refresh( CDC* pdc )
+void CPictureBox::DrawPicture( CPictureObject* pPicture, bool bStretchToFit /*= false*/ )
 {	
+	CDC *pdc = GetDC();
 	CRect rcCell;	
 	GetClientRect(&rcCell);
 	if( !mColorService.IsBackgroundTransparent() )
 		pdc->FillSolidRect(rcCell, mColorService.GetBackgroundColor());
-	pdc->IntersectClipRect( &rcCell );
-		
-	if (mpPicture)
+	if( pPicture )
 	{
+		pdc->IntersectClipRect( &rcCell );
+
 		// get width and height of picture
-		long nPicWidth = mpPicture->GetWidth();
-		long nPicHeight = mpPicture->GetHeight();
-		m_cxIcon = nPicWidth;
-		m_cyIcon = nPicHeight;
-		int nPicLeft = 0;
-		int nPicTop = 0;
+		long nPicWidth = pPicture->GetWidth();
+		long nPicHeight = pPicture->GetHeight();
+		long nPicLeft = 0;
+		long nPicTop = 0;
 		CRect rcPic = rcCell;
-		if( !m_bStretchLoadedPicture )
+		if( bStretchToFit )
+			rcPic = CalcFitRect( nPicWidth, nPicHeight, rcCell.Width(), rcCell.Height() );
+		else
 		{
-			if (!IsAutoSized())
-			{
-				nPicTop = ((rcCell.Height() - nPicHeight)/2); // Center the icon vertically
-				nPicLeft = ((rcCell.Width() - nPicWidth)/2); // Center the icon horizontally
-			}
+			nPicTop = ( (rcCell.Height() - nPicHeight) / 2 ); // Center the icon vertically
+			nPicLeft = ( (rcCell.Width() - nPicWidth) / 2 ); // Center the icon horizontally
 			rcPic.SetRect( nPicLeft, nPicTop, nPicLeft + nPicWidth, nPicTop + nPicHeight );
 		}
-		if( PICTYPE_BITMAP == mpPicture->GetPicType() && !m_bStretchLoadedPicture )
+		if( PICTYPE_BITMAP == mpPicture->GetPicType() && !bStretchToFit )
 		{			
 			if( IsWindowEnabled() )
 				DrawTransparentBitmap( CBitmap::FromHandle( mpPicture->GetBitmap() ), pdc,
@@ -334,130 +324,9 @@ void CPictureBox::Refresh( CDC* pdc )
 												mpPicture->GetIcon(), DSS_DISABLED, (HBRUSH)NULL );
 		}
 		else
-		{
-			if (mpPicture->GetPicType() == PICTYPE_METAFILE ||
-				mpPicture->GetPicType() == PICTYPE_ENHMETAFILE)
-			{
-				rcCell = CalcFitRect(nPicWidth, nPicHeight, rcPic.Width(), rcPic.Height());
-				// display picture using IPicture::Render
-				mpPicture->Render(pdc, rcPic);				
-			}
-			else if (nPicWidth > rcCell.Width() || nPicHeight > rcCell.Height() || m_bStretchLoadedPicture)
-			{
-				// display picture using IPicture::Render
-				mpPicture->Render(pdc, rcPic);
-			}		
-			else
-			{
-				// display picture using IPicture::Render
-				mpPicture->Render(pdc, rcPic);
-			}
-		}
+			mpPicture->Render( pdc, rcPic );
+		ReleaseDC(pdc);
 	}
-
-	CRect rc;
-	rc = rcCell;
-
-	//// if the picture holder object has been set
-	//// draw the picture holder object	
-	//if (m_pPictureHolder != NULL)
-	//{
-	//	// get width and height of picture
-	//	long hmWidth;
-	//	long hmHeight;
-	//	m_pPictureHolder->get_Width(&hmWidth);
-	//	m_pPictureHolder->get_Height(&hmHeight);
-	//	
-	//	// convert himetric to pixels
-	//	int nPicWidth	= MulDiv(hmWidth, pdc->GetDeviceCaps(LOGPIXELSX), HIMETRIC_INCH);
-	//	int nPicHeight	= MulDiv(hmHeight, pdc->GetDeviceCaps(LOGPIXELSY), HIMETRIC_INCH);		
-	//	
-	//	m_cxIcon = nPicWidth;
-	//	m_cyIcon = nPicHeight;
-	//	AutoSize();
-	//	int nPicLeft = 0;
-	//	int nPicTop = 0;
-	//	if (!IsAutoSized())
-	//	{
-	//		int nPicLeft = ((rc.Width() - nPicWidth)/2); // Center the picture horizontally
-	//		int nPicTop = ((rc.Height() - nPicHeight)/2); // Center the picture vertically
-	//	}
-
-	//	SHORT nPicType;
-	//	m_pPictureHolder->get_Type(&nPicType);
-	//
-	//	if (nPicType == PICTYPE_METAFILE ||
-	//		nPicType == PICTYPE_ENHMETAFILE)
-	//	{
-	//		rcCell = CalcFitRect(nPicWidth, nPicHeight,rcCell.Width(), rcCell.Height());
-
-	//		// display picture using IPicture::Render
-	//		m_pPictureHolder->Render(pdc->m_hDC, rcCell.left, rcCell.top, rcCell.Width(), rcCell.Height(), 0, hmHeight, hmWidth, -hmHeight, &rc);
-	//			
-	//		// display picture using IPicture::Render
-	//		//m_pPictureHolder->Render(pdc->m_hDC, 0, 0, rcThis.Width(), rcThis.Height(), 0, hmHeight, hmWidth, -hmHeight, &rc);
-	//	}
-	//	else if (nPicWidth <= rc.Width() && nPicHeight <= rc.Height() && !m_bStretchLoadedPicture)
-	//	{
-	//		// display picture using IPicture::Render
-	//		m_pPictureHolder->Render(pdc->m_hDC, nPicLeft, nPicTop, nPicWidth, nPicHeight, 0, hmHeight, hmWidth, -hmHeight, &rc);
-	//	}
-	//	else if (nPicWidth > rc.Width() || nPicHeight > rc.Height() || m_bStretchLoadedPicture)
-	//	{
-	//		double dFactor;
-	//		double dH;
-	//		double dW;
-	//		rcCell = rc;
-
-	//		dFactor = (double)nPicHeight / (double)nPicWidth;
-	//		dH = dFactor;
-	//		dW = 1.0;
-
-	//		int nDrawWidth = int(dW * rc.Width());
-	//		int nDrawHeight = int(dH * nDrawWidth);
-	//		
-	//		// if the calc height is too large
-	//		if (nDrawHeight > rc.Height())
-	//		{
-	//			dFactor = (double)nPicWidth / (double)nPicHeight;
-	//			dH = 1.0;
-	//			dW = dFactor;
-
-	//			nDrawHeight = int(dH * rc.Height());
-	//			nDrawWidth = int(dW * nDrawHeight);
-
-	//			rcCell.left = (rc.Width() - nDrawWidth) / 2;
-	//			rcCell.right = rc.Width() - rcCell.left;
-	//		}
-	//		else if (nDrawHeight < rc.Height())
-	//		{
-	//			rcCell.top = (rc.Height() - nDrawHeight) / 2;
-	//			rcCell.bottom = rc.Height() - rcCell.top;
-	//		}
-	//		
-	//		// if the calc width is too large
-	//		if (nDrawWidth > rc.Width())
-	//		{
-	//			dFactor = (double)nPicHeight / (double)nPicWidth;
-	//			dH = dFactor;
-	//			dW = 1.0;
-
-	//			nDrawWidth = int(dW * rc.Width());
-	//			nDrawHeight = int(nDrawWidth * dH);
-	//			
-	//			rcCell.left = 1;
-	//			rcCell.right = rc.Width();
-	//			rcCell.top = (rc.Height() - nDrawHeight) / 2;
-	//			rcCell.bottom = rc.Height() - rcCell.top;
-	//		}
-	//		m_pPictureHolder->Render(pdc->m_hDC, rcCell.left, rcCell.top, rcCell.Width(), rcCell.Height(), 0, hmHeight, hmWidth, -hmHeight, &rc);
-	//	}
-	//	else
-	//	{
-	//		// display picture using IPicture::Render
-	//		m_pPictureHolder->Render(pdc->m_hDC, nPicLeft, nPicTop, nPicWidth, nPicHeight, 0, hmHeight, hmWidth, -hmHeight, &rc);
-	//	}
-	//}
 }
 
 void CPictureBox::DrawLine(int sX, int sY, int eX, int eY, COLORREF rgb)
@@ -1003,19 +872,19 @@ void CPictureBox::OnPaint()
 	if( !GetParent()->IsWindowVisible() )		
 		return;
 
-	//#ifdef USE_MEM_DC
-		//CMemDC pdc(&dc);
-	//#else
-		CDC* pdc = &dc;
-	//#endif
 	
 	if( !m_hbmMem )
-		Refresh( pdc );
+		Refresh();
 	else
 	{
 		if (!GetParent()->IsWindowVisible())		
 			return;
 
+	#ifdef USE_MEM_DC
+		CMemDC pdc(&dc);
+	#else
+		CDC* pdc = &dc;
+	#endif
 		CDC memdc;
     // Create a compatible memory DC
     memdc.CreateCompatibleDC( pdc );

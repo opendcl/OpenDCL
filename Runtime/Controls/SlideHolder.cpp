@@ -50,7 +50,7 @@ bool CSlideHolder::Create( CWnd* pParentWnd, UINT nID )
 DWORD CSlideHolder::GetWndStyle() const
 {
 	DWORD dwStyle = CArxDialogControl::GetWndStyle();
-	return (dwStyle | BS_OWNERDRAW);
+	return (dwStyle | BS_OWNERDRAW | BS_NOTIFY);
 }
 
 

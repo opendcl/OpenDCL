@@ -71,7 +71,7 @@ BOOL CDwgPreviewCtrl::Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID
 	ArxRect.bottom = pControl->GetPropertyObject(Prop::Height)->GetLongValue() + ArxRect.top;
 	ArxRect.right = pControl->GetPropertyObject(Prop::Width)->GetLongValue() + ArxRect.left;
 	
-	DWORD dwStyle = WS_CHILD|WS_VISIBLE/*|WS_CLIPSIBLINGS*/|WS_GROUP|BS_OWNERDRAW;
+	DWORD dwStyle = WS_CHILD|WS_VISIBLE/*|WS_CLIPSIBLINGS*/| WS_GROUP | BS_OWNERDRAW | BS_NOTIFY;
 
 	if (pControl->GetBooleanProperty(Prop::IsTabStop) != FALSE)
 		dwStyle = dwStyle | WS_TABSTOP;

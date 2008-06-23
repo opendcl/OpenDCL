@@ -47,7 +47,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CArxOptionListCtrl message handlers
 
-void CArxOptionListCtrl::OnLbnSelchange() 
+void CArxOptionListCtrl::OnLbnSelchange()
 {
 	__super::OnLbnSelchange();
 	int nCurSel = GetCurSel();

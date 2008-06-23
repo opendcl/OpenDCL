@@ -130,58 +130,6 @@ static void LoadPicture(CArchive& ar, COleVariant& varSrc) {
   }
 }
 
-static CRect CalcFitRect(int nPicWidth, int nPicHeight, int nCtrlWidth, int nCtrlHeight)
-{
-	CRect rcCell(0, 0, nCtrlWidth, nCtrlHeight);
-	double dFactor;
-	double dH;
-	double dW;
-
-	dFactor = (double)nPicHeight / (double)nPicWidth;
-	dH = dFactor;
-	dW = 1.0;
-
-	int nDrawWidth = int(dW * nCtrlWidth);
-	int nDrawHeight = int(dH * nDrawWidth);
-	
-	// if the calc height is too large
-	if (nDrawHeight > nCtrlHeight)
-	{
-		dFactor = (double)nPicWidth / (double)nPicHeight;
-		dH = 1.0;
-		dW = dFactor;
-
-		nDrawHeight = int(dH * nCtrlHeight);
-		nDrawWidth = int(dW * nDrawHeight);
-
-		rcCell.left = (nCtrlWidth - nDrawWidth) / 2;
-		rcCell.right = nCtrlWidth - rcCell.left;
-	}
-	else if (nDrawHeight < nCtrlHeight)
-	{
-		rcCell.top = (nCtrlHeight - nDrawHeight) / 2;
-		rcCell.bottom = nCtrlHeight - rcCell.top;
-	}
-	
-	// if the calc width is too large
-	if (nDrawWidth > nCtrlWidth)
-	{
-		dFactor = (double)nPicHeight / (double)nPicWidth;
-		dH = dFactor;
-		dW = 1.0;
-
-		nDrawWidth = int(dW * nCtrlWidth);
-		nDrawHeight = int((double)nDrawWidth * dH);
-		
-		rcCell.left = 1;
-		rcCell.right = nCtrlWidth;
-		rcCell.top = (nCtrlHeight - nDrawHeight) / 2;
-		rcCell.bottom = nCtrlHeight - rcCell.top;
-	}
-
-	return rcCell;
-}
-
 
 static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList, CSize& ImageSize, bool bApplyMask)
 {

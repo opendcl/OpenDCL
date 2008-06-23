@@ -37,7 +37,7 @@ DWORD CTextButtonCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = CDialogControl::GetWndStyle();
 
-	dwStyle |= (/*WS_CLIPSIBLINGS | */BS_PUSHBUTTON | BS_MULTILINE);
+	dwStyle |= (/*WS_CLIPSIBLINGS | */BS_PUSHBUTTON | BS_MULTILINE | BS_NOTIFY);
 	return dwStyle;
 }
 

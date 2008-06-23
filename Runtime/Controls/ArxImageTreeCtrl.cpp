@@ -213,6 +213,7 @@ void CArxImageTreeCtrl::OnTvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 														(DWORD_PTR)hItem,
 														IsAsyncEvents() );
 	*pResult = 0;
+	__super::OnTvnDeleteitem( pNMHDR, pResult );
 }
 
 void CArxImageTreeCtrl::OnTvnBeginlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
@@ -229,6 +230,7 @@ void CArxImageTreeCtrl::OnTvnBeginlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 											(DWORD_PTR)hItem,
 											IsAsyncEvents() );
 	*pResult = 0;
+	//__super::OnTvnBeginlabeledit( pNMHDR, pResult );
 }
 
 void CArxImageTreeCtrl::OnTvnEndlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
@@ -247,6 +249,7 @@ void CArxImageTreeCtrl::OnTvnEndlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 														(DWORD_PTR)hItem,
 														IsAsyncEvents() );
 	*pResult = 0;
+	//__super::OnTvnEndlabeledit( pNMHDR, pResult );
 }
 
 void CArxImageTreeCtrl::OnTvnItemexpanding(NMHDR *pNMHDR, LRESULT *pResult)
@@ -265,6 +268,7 @@ void CArxImageTreeCtrl::OnTvnItemexpanding(NMHDR *pNMHDR, LRESULT *pResult)
 														(DWORD_PTR)hItem,
 														IsAsyncEvents() );
 	*pResult = 0;
+	__super::OnTvnItemexpanding( pNMHDR, pResult );
 }
 
 void CArxImageTreeCtrl::OnTvnItemexpanded(NMHDR *pNMHDR, LRESULT *pResult)
@@ -283,6 +287,7 @@ void CArxImageTreeCtrl::OnTvnItemexpanded(NMHDR *pNMHDR, LRESULT *pResult)
 														(DWORD_PTR)hItem,
 														IsAsyncEvents() );
 	*pResult = 0;
+	//__super::OnTvnItemexpanded( pNMHDR, pResult );
 }
 
 void CArxImageTreeCtrl::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
@@ -303,4 +308,5 @@ void CArxImageTreeCtrl::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 	SelectDropTarget( hItem );
 	OnNeedRepaint();
 	*pResult = 0;
+	//__super::OnTvnSelchanged( pNMHDR, pResult );
 }

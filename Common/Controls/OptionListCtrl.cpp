@@ -251,7 +251,7 @@ BOOL COptionListCtrl::PreTranslateMessage(MSG* pMsg)
 			else
 				nCurSel = GetCount() - 1;
 			SetCurSel(nCurSel);
-			OnNeedRepaint();
+			GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(0,LBN_SELCHANGE), (LPARAM)m_hWnd );
 			return TRUE;
 		}
 		else if (pMsg->wParam == VK_RIGHT || pMsg->wParam == VK_DOWN)
@@ -262,7 +262,7 @@ BOOL COptionListCtrl::PreTranslateMessage(MSG* pMsg)
 			else
 				nCurSel = 0;
 			SetCurSel(nCurSel);
-			OnNeedRepaint();
+			GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(0,LBN_SELCHANGE), (LPARAM)m_hWnd );
 			return TRUE;
 		}
 	}

@@ -58,17 +58,13 @@ INT_PTR CModalDlg::DoModal()
 void CModalDlg::DoDataExchange(CDataExchange* pDX)
 {
 	__super::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CModalDlg)
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CModalDlg, CBaseDlg)
-	//{{AFX_MSG_MAP(CModalDlg)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
 	ON_WM_SHOWWINDOW()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -91,11 +87,6 @@ int CModalDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	EnableToolTips (TRUE);
 	return 0;
-}
-
-BOOL CModalDlg::OnNotify_ToolTipTitle(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
-{
-	return FALSE;
 }
 
 void CModalDlg::OnSize(UINT nType, int cx, int cy) 

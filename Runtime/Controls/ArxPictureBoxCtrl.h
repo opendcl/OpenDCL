@@ -47,4 +47,6 @@ protected:
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnClicked();
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+public:
+	afx_msg void OnPaint();
 };
