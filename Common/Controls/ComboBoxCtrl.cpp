@@ -3,6 +3,7 @@
 #include "DclControlObject.h"
 #include "ControlPane.h"
 #include "ComboHandler.h"
+#include "ComboStyles.h"
 
 
 /////////////////////////////////////////////////////////////////////////////

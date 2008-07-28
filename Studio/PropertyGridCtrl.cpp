@@ -127,6 +127,7 @@ public:
 	size_t GetCell() const { return midxCell; }
 	bool IsCancelled() const { return mbCancelled; }
 	bool IsChanged() const { return mbChanged; }
+	void SetChanged( bool bChanged = true ) { mbChanged = bChanged; }
 	bool IsVaried() const
 		{
 			return ((mpGridCtrl->GetItemState( midxCell, LVIS_STATEIMAGEMASK ) & INDEXTOSTATEIMAGEMASK(PGIS_INDETERMINATE)) != 0);
@@ -138,6 +139,9 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
+			mbChanged = false;
+			if( mpUndoManager && mpUndoManager->IsMultiplePropsChanged() )
+				theStudioWorkspace.ActivateDclControl( theStudioWorkspace.GetActiveDclControl() );
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -236,8 +240,9 @@ public:
 			{ return new CFilteredTextEditCtrl( pGridCtrl, idxCell ); }
 	virtual void ApplyValue( LPCTSTR pszValue )
 		{
+			SetChanged( false );
 			mpGridCtrl->SetItemText( midxCell, 1, pszValue );
-			CPropertyGridCtrl::TPropertySet& PropSet = mpGridCtrl->GetPropertySet( midxCell );
+			CPropertyGridCtrl::TPropertySet PropSet = mpGridCtrl->GetPropertySet( midxCell );
 			for( CPropertyGridCtrl::TPropertySet::iterator iter = PropSet.begin();
 					 iter != PropSet.end();
 					 ++iter )
@@ -252,7 +257,6 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			__super::OnApply();
 			CString sText;
 			GetWindowText( sText );
 			CInputFilter* pFilter = GetInputFilter();
@@ -265,6 +269,7 @@ public:
 				}
 			}
 			ApplyValue( sText );
+			__super::OnApply();
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -328,7 +333,7 @@ public:
 		{ return new CControlNameEditCtrl( pGridCtrl, idxCell ); }
 	void ApplyValue( LPCTSTR pszValue )
 		{
-			CPropertyGridCtrl::TPropertySet& PropSet = mpGridCtrl->GetPropertySet( midxCell );
+			CPropertyGridCtrl::TPropertySet PropSet = mpGridCtrl->GetPropertySet( midxCell );
 			assert( PropSet.size() == 1 );
 			TPropertyPtr pProp = PropSet.front();
 			TDclControlPtr pDclControl = pProp->GetOwnerControl();
@@ -399,13 +404,14 @@ public:
 		{ return new CBooleanCheckBoxCtrl( pGridCtrl, idxCell ); }
 	void ApplyValue( bool bValue )
 		{
+			SetChanged( false );
 			SetWindowText( bValue? msTrue : msFalse );
 			mpGridCtrl->SetItemText( midxCell, 1, bValue? msTrue : msFalse );
 			int nNewState = 0;
 			if( GetCheck() == BST_CHECKED )
 				nNewState = INDEXTOSTATEIMAGEMASK(PGIS_CHECKED);
 			mpGridCtrl->SetItemState( midxCell, nNewState, INDEXTOSTATEIMAGEMASK(PGIS_CHECKED | PGIS_INDETERMINATE) );
-			CPropertyGridCtrl::TPropertySet& PropSet = mpGridCtrl->GetPropertySet( midxCell );
+			CPropertyGridCtrl::TPropertySet PropSet = mpGridCtrl->GetPropertySet( midxCell );
 			for( CPropertyGridCtrl::TPropertySet::iterator iter = PropSet.begin();
 					 iter != PropSet.end();
 					 ++iter )
@@ -423,8 +429,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			__super::OnApply();
 			ApplyValue( GetCheck() == BST_CHECKED );
+			__super::OnApply();
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -496,10 +502,11 @@ public:
 		{ return new CEnumComboBoxCtrl( pGridCtrl, idxCell ); }
 	void ApplyValue( int nValue )
 		{
+			SetChanged( false );
 			CString sValue;
 			GetLBText( nValue, sValue );
 			mpGridCtrl->SetItemText( midxCell, 1, sValue );
-			CPropertyGridCtrl::TPropertySet& PropSet = mpGridCtrl->GetPropertySet( midxCell );
+			CPropertyGridCtrl::TPropertySet PropSet = mpGridCtrl->GetPropertySet( midxCell );
 			for( CPropertyGridCtrl::TPropertySet::iterator iter = PropSet.begin();
 					 iter != PropSet.end();
 					 ++iter )
@@ -517,8 +524,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			__super::OnApply();
 			ApplyValue( GetCurSel() );
+			__super::OnApply();
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -593,11 +600,12 @@ public:
 		{ return new CPicFolderComboBoxCtrl( pGridCtrl, idxCell ); }
 	void ApplyValue( int nValue )
 		{
+			SetChanged( false );
 			CString sValue;
 			if( GetCurSel() > 0 )
 				GetLBText( nValue, sValue );
 			mpGridCtrl->SetItemText( midxCell, 1, sValue );
-			CPropertyGridCtrl::TPropertySet& PropSet = mpGridCtrl->GetPropertySet( midxCell );
+			CPropertyGridCtrl::TPropertySet PropSet = mpGridCtrl->GetPropertySet( midxCell );
 			for( CPropertyGridCtrl::TPropertySet::iterator iter = PropSet.begin();
 					 iter != PropSet.end();
 					 ++iter )
@@ -615,8 +623,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			__super::OnApply();
 			ApplyValue( GetCurSel() );
+			__super::OnApply();
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{

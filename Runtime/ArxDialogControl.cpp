@@ -48,6 +48,8 @@
 #include "ArxTextButtonCtrl.h"
 #include "ArxUrlLinkCtrl.h"
 
+#include "ComboStyles.h"
+#include "TextBoxFilterTypes.h"
 #include "AngleFilter.h"
 #include "CurrencyFilter.h"
 #include "CustomFilter.h"
@@ -208,15 +210,15 @@ TDialogControlPtr CArxDialogControl::CreateEditControl(TDclControlPtr pTemplate,
 	// check the control type to determine which control to create
 	switch( pTemplate->GetLongProperty( Prop::FilterStyle ) )
 	{
-	case EditFilter::String: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CCustomFilter, AC_ES_STRING );
-	case EditFilter::Angle: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CAngleFilter, (AC_ES_ANGLE | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
-	case EditFilter::Integer: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CIntegerFilter, (AC_ES_NUMERIC | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
-	case EditFilter::Numeric: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CNumericFilter, (AC_ES_NUMERIC | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
-	case EditFilter::Symbol: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CSymbolNameFilter, (AC_ES_SYMBOL | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
-	case EditFilter::UpperCase: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CUpperCaseFilter );
-	case EditFilter::LowerCase: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CUpperCaseFilter );
-	case EditFilter::Password: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CPasswordFilter );
-	case EditFilter::Multiline: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CMultilineFilter );
+	case TextBoxFilter::String: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CCustomFilter, AC_ES_STRING );
+	case TextBoxFilter::Angle: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CAngleFilter, (AC_ES_ANGLE | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
+	case TextBoxFilter::Integer: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CIntegerFilter, (AC_ES_NUMERIC | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
+	case TextBoxFilter::Numeric: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CNumericFilter, (AC_ES_NUMERIC | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
+	case TextBoxFilter::Symbol: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CSymbolNameFilter, (AC_ES_SYMBOL | AC_ES_VAL_ONKILLFOCUS | AC_ES_CONV_ONKILLFOCUS) );
+	case TextBoxFilter::UpperCase: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CUpperCaseFilter );
+	case TextBoxFilter::LowerCase: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CUpperCaseFilter );
+	case TextBoxFilter::Password: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CPasswordFilter );
+	case TextBoxFilter::Multiline: return *new CArxTextBoxCtrl( pTemplate, pPane, nID, new CMultilineFilter );
 	}
 	return NULL;
 }

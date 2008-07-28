@@ -147,12 +147,15 @@ BOOL CEditCtrl::PreTranslateMessage( MSG* pMsg )
 		if( pFilter )
 		{
 			TCHAR ch = (TCHAR)pMsg->wParam;
-			if( !pFilter->FilterInput( ch ) )
+			if( ch >= _T(' ') || ch == _T('\n') || ch == _T('\r') ) //ignore control characters (except CR)
 			{
-				pFilter->OnBadInput();
-				return TRUE; //discard it
+				if( !pFilter->FilterInput( ch ) )
+				{
+					pFilter->OnBadInput();
+					return TRUE; //discard it
+				}
+				pMsg->wParam = (WPARAM)ch;
 			}
-			pMsg->wParam = (WPARAM)ch;
 		}
 	}
 	return __super::PreTranslateMessage( pMsg );

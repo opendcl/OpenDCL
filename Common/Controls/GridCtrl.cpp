@@ -24,6 +24,7 @@
 #include "NumericFilter.h"
 #include "PasswordFilter.h"
 #include "PercentageFilter.h"
+#include "SymbolNameFilter.h"
 #include "TimeFilter.h"
 #include "UpperCaseFilter.h"
 #include "ComboFilter.h"
@@ -344,15 +345,15 @@ void CGridCtrl::SetCurCell( int nRow, int nCol )
 	}
 }
 
-enum CellStyle CGridCtrl::GetCurCellStyle()
+enum Grid::CellStyle CGridCtrl::GetCurCellStyle()
 {
 	return GetCellStyle( mCurrentCell.row(), mCurrentCell.col() );
 }
 
-enum CellStyle CGridCtrl::GetCellStyle( int nRow, int nCol )
+enum Grid::CellStyle CGridCtrl::GetCellStyle( int nRow, int nCol )
 {
 	const _CellData* pCellData = GetCellData( nRow, nCol );
-	if( pCellData && pCellData->mType != Grid_Undefined )
+	if( pCellData && pCellData->mType != Grid::Undefined )
 		return pCellData->mType;
 
 	// otherwise return the default style for the column
@@ -360,10 +361,10 @@ enum CellStyle CGridCtrl::GetCellStyle( int nRow, int nCol )
 	if( pColStyles )
 	{
 		if( nCol >= 0 && (size_t)nCol < pColStyles->size() )
-			return (CellStyle)pColStyles->at( nCol );
+			return (Grid::CellStyle)pColStyles->at( nCol );
 	}
 
-	return Grid_Undefined;
+	return Grid::Undefined;
 }
 
 const _RowData* CGridCtrl::GetRowData( size_t nRow ) const
@@ -418,22 +419,22 @@ bool CGridCtrl::SetCellText( int nRow, int nCol, LPCTSTR pszText )
 	bool bSuccess = (__super::SetItemText( nRow, nCol, pszText ) != FALSE);
 	switch( GetCellStyle( nRow, nCol ) )
 	{
-	case Grid_ArrowHead:
-	case Grid_AcadColors:
-	case Grid_ImageDropList:
-	case Grid_AcadColorCell:
-	case Grid_TrueColorCell:
-	case Grid_LineWeightCell:
-	case Grid_LinetypeCell:
-	case Grid_DirectoryCell:
-	case Grid_DwgFilesCell:
+	case Grid::ArrowHead:
+	case Grid::AcadColors:
+	case Grid::ImageDropList:
+	case Grid::AcadColorCell:
+	case Grid::TrueColorCell:
+	case Grid::LineWeightCell:
+	case Grid::LinetypeCell:
+	case Grid::DirectoryCell:
+	case Grid::DwgFilesCell:
 		SetCellImage( nRow, nCol, GetCellListImage( nRow, nCol, pszText ) );
 		break;
 	}
 	return bSuccess;
 }
 
-void CGridCtrl::SetCellStyle( int nRow, int nCol, CellStyle nStyle, int image /*= -1*/, int altImage /*= -1*/,
+void CGridCtrl::SetCellStyle( int nRow, int nCol, Grid::CellStyle nStyle, int image /*= -1*/, int altImage /*= -1*/,
 															LPCTSTR pszListText /*= NULL*/ )
 {
 	_CellData& CellData = GetCellDataRef( nRow, nCol );
@@ -446,34 +447,34 @@ void CGridCtrl::SetCellStyle( int nRow, int nCol, CellStyle nStyle, int image /*
 		CellData.mrsComboList.push_back( pszListText );
 	switch(nStyle)
 	{
-	case Grid_CheckBoxes:
+	case Grid::CheckBoxes:
 		{
 			LVITEM lvi = { LVIF_STATE, nRow, nCol, (1 << 12), LVIS_STATEIMAGEMASK };
 			SetItem( &lvi );
 			break;
 		}	
-	case Grid_OptionButtons:
+	case Grid::OptionButtons:
 		{
 			LVITEM lvi = { LVIF_STATE, nRow, nCol, (1 << 12), LVIS_STATEIMAGEMASK };
 			SetItem( &lvi );
 			break;
 		}	
-	case Grid_SwitchableIcons:
+	case Grid::SwitchableIcons:
 		{
 			LVITEM lvi = { LVIF_STATE, nRow, nCol, (altImage << 12), LVIS_STATEIMAGEMASK };
 			SetItem( &lvi );
 			break;
 		}	
-	case Grid_UpperCase:
-	case Grid_UpperCase_Combo:
+	case Grid::UpperCase:
+	case Grid::UpperCase_Combo:
 		{
 			CString sText = GetCellText( nRow, nCol );
 			sText.MakeUpper();
 			SetCellText( nRow, nCol, sText );
 			break;
 		}	
-	case Grid_LowerCase:
-	case Grid_LowerCase_Combo:
+	case Grid::LowerCase:
+	case Grid::LowerCase_Combo:
 		{
 			CString sText = GetCellText( nRow, nCol );
 			sText.MakeLower();
@@ -574,12 +575,12 @@ bool CGridCtrl::SetCellListData( int nRow, int nCol, const CArray<int, int>& rnI
 		CString sText = rsList.GetAt( idx );
 		switch( CellData.mType )
 		{
-		case Grid_UpperCase:
-		case Grid_UpperCase_Combo:
+		case Grid::UpperCase:
+		case Grid::UpperCase_Combo:
 			sText.MakeUpper();
 			break;
-		case Grid_LowerCase:
-		case Grid_LowerCase_Combo:
+		case Grid::LowerCase:
+		case Grid::LowerCase_Combo:
 			sText.MakeLower();					
 			break;
 		}
@@ -609,7 +610,7 @@ bool CGridCtrl::GetCellComboListItems( int nRow, int nCol,
 																			 std::vector< int >& ridxImage )
 {
 	const _CellData* pCellData = GetCellData( nRow, nCol );
-	if( pCellData && pCellData->mType != Grid_Undefined )
+	if( pCellData && pCellData->mType != Grid::Undefined )
 	{
 		ridxImage = pCellData->mrnComboImage;
 		rsList = pCellData->mrsComboList;
@@ -728,11 +729,11 @@ int CGridCtrl::InsertColumn( int nCol, LPCTSTR lpszColumnHeading, int nFormat /*
 		{
 			_ColumnData& ColumnData = mRowData.at( idxRow ).mCellData;
 			if( ColumnData.size() > (size_t)nRet )
-				ColumnData.insert( ColumnData.begin() + (size_t)nRet, _CellData( Grid_Runtime ) );
+				ColumnData.insert( ColumnData.begin() + (size_t)nRet, _CellData( Grid::Runtime ) );
 			else
 			{
 				ColumnData.resize( (size_t)nRet );
-				ColumnData.push_back( _CellData( Grid_Runtime ) );
+				ColumnData.push_back( _CellData( Grid::Runtime ) );
 			}
 		}
 	}
@@ -858,49 +859,51 @@ CGridCellEditCtrl* CGridCtrl::CreateEditControl( int nRow, int nCol )
 {
 	switch( GetCellStyle( nRow, nCol ) )
 	{
-		case Grid_CheckBoxes: return new CToggleEditCtrl( this, nRow, nCol );
-		case Grid_OptionButtons: return new CRadioEditCtrl( this, nRow, nCol );
-		case Grid_SwitchableIcons: return new CToggleEditCtrl( this, nRow, nCol );
-		case Grid_EllipsesButtons: return new CButtonEditCtrl( this, nRow, nCol, _T("..."), ID_CELLBUTTON );
-		case Grid_PickButtons: return new CButtonEditCtrl( this, nRow, nCol, IDI_PICKSMALL, ID_CELLBUTTON );
-		case Grid_Strings: return new CTextBoxEditCtrl( this, nRow, nCol );
-		case Grid_AngleUnits: return new CTextBoxEditCtrl( this, nRow, nCol, new CAngleFilter );
-		case Grid_Integers: return new CTextBoxEditCtrl( this, nRow, nCol, new CIntegerFilter );
-		case Grid_Units: return new CTextBoxEditCtrl( this, nRow, nCol, new CNumericFilter );
-		case Grid_UpperCase: return new CTextBoxEditCtrl( this, nRow, nCol, new CUpperCaseFilter );
-		case Grid_LowerCase: return new CTextBoxEditCtrl( this, nRow, nCol, new CLowerCaseFilter );
-		case Grid_Password: return new CTextBoxEditCtrl( this, nRow, nCol, new CPasswordFilter );
-		case Grid_MultiLine: return new CTextBoxEditCtrl( this, nRow, nCol, new CMultilineFilter );
-		case Grid_Currency: return new CTextBoxEditCtrl( this, nRow, nCol, new CCurrencyFilter );
-		case Grid_Date: return new CDateTimeEditCtrl( this, nRow, nCol, true );
-		case Grid_Time: return new CDateTimeEditCtrl( this, nRow, nCol, false );
-		case Grid_Percentage: return new CTextBoxEditCtrl( this, nRow, nCol, new CPercentageFilter );
-		case Grid_DropDown: return new CComboDropdownListEditCtrl( this, nRow, nCol );
-		case Grid_ArrowHead:
-		case Grid_AcadColors:
-		case Grid_TextStyleList:
-		case Grid_PlotStyleNames:
-		case Grid_PlotStyleTables:
-		case Grid_PlotterList:
-		case Grid_Fonts:
+		case Grid::CheckBoxes: return new CToggleEditCtrl( this, nRow, nCol );
+		case Grid::OptionButtons: return new CRadioEditCtrl( this, nRow, nCol );
+		case Grid::SwitchableIcons: return new CToggleEditCtrl( this, nRow, nCol );
+		case Grid::EllipsesButtons: return new CButtonEditCtrl( this, nRow, nCol, _T("..."), ID_CELLBUTTON );
+		case Grid::PickButtons: return new CButtonEditCtrl( this, nRow, nCol, IDI_PICKSMALL, ID_CELLBUTTON );
+		case Grid::Strings: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid::AngleUnits: return new CTextBoxEditCtrl( this, nRow, nCol, new CAngleFilter );
+		case Grid::Integers: return new CTextBoxEditCtrl( this, nRow, nCol, new CIntegerFilter );
+		case Grid::Units: return new CTextBoxEditCtrl( this, nRow, nCol, new CNumericFilter );
+		case Grid::UpperCase: return new CTextBoxEditCtrl( this, nRow, nCol, new CUpperCaseFilter );
+		case Grid::LowerCase: return new CTextBoxEditCtrl( this, nRow, nCol, new CLowerCaseFilter );
+		case Grid::Password: return new CTextBoxEditCtrl( this, nRow, nCol, new CPasswordFilter );
+		case Grid::MultiLine: return new CTextBoxEditCtrl( this, nRow, nCol, new CMultilineFilter );
+		case Grid::Currency: return new CTextBoxEditCtrl( this, nRow, nCol, new CCurrencyFilter );
+		case Grid::Date: return new CDateTimeEditCtrl( this, nRow, nCol, true );
+		case Grid::Time: return new CDateTimeEditCtrl( this, nRow, nCol, false );
+		case Grid::Percentage: return new CTextBoxEditCtrl( this, nRow, nCol, new CPercentageFilter );
+		case Grid::DropDown: return new CComboDropdownListEditCtrl( this, nRow, nCol );
+		case Grid::ArrowHead:
+		case Grid::AcadColors:
+		case Grid::TextStyleList:
+		case Grid::PlotStyleNames:
+		case Grid::PlotStyleTables:
+		case Grid::PlotterList:
+		case Grid::Fonts:
 			return new CComboDropdownListEditCtrl( this, nRow, nCol );
-		case Grid_DriveList: return new CDriveComboDropdownListEditCtrl( this, nRow, nCol );
-		case Grid_LayerList:
-		case Grid_DimStyleList:
+		case Grid::DriveList: return new CDriveComboDropdownListEditCtrl( this, nRow, nCol );
+		case Grid::LayerList:
+		case Grid::DimStyleList:
 			return new CComboDropdownListEditCtrl( this, nRow, nCol );
-		case Grid_ImageDropList: return new CImageComboDropdownListEditCtrl( this, nRow, nCol );
-		case Grid_AcadColorCell: return new CTextBoxEditCtrl( this, nRow, nCol );
-		case Grid_TrueColorCell: return new CTextBoxEditCtrl( this, nRow, nCol );
-		case Grid_LineWeightCell: return new CTextBoxEditCtrl( this, nRow, nCol );
-		case Grid_LinetypeCell: return new CTextBoxEditCtrl( this, nRow, nCol );
-		case Grid_DirectoryCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
-		case Grid_DwgFilesCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
-		case Grid_Strings_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol );
-		case Grid_AngleUnits_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CAngleFilter ) );
-		case Grid_Integers_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CIntegerFilter ) );
-		case Grid_Units_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol );
-		case Grid_UpperCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CUpperCaseFilter ) );
-		case Grid_LowerCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CLowerCaseFilter ) );
+		case Grid::ImageDropList: return new CImageComboDropdownListEditCtrl( this, nRow, nCol );
+		case Grid::AcadColorCell: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid::TrueColorCell: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid::LineWeightCell: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid::LinetypeCell: return new CTextBoxEditCtrl( this, nRow, nCol );
+		case Grid::DirectoryCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
+		case Grid::DwgFilesCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
+		case Grid::Strings_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol );
+		case Grid::AngleUnits_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CAngleFilter ) );
+		case Grid::Integers_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CIntegerFilter ) );
+		case Grid::Units_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol );
+		case Grid::UpperCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CUpperCaseFilter ) );
+		case Grid::LowerCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CLowerCaseFilter ) );
+		case Grid::Symbols: return new CTextBoxEditCtrl( this, nRow, nCol, new CSymbolNameFilter );
+		case Grid::Symbols_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CSymbolNameFilter ) );
 		//default: return new CTextBoxEditCtrl( this, nRow, nCol );
 	}
 	return NULL;
@@ -1005,7 +1008,7 @@ bool CGridCtrl::ToggleCellState( int nRow, int nCol )
 
 void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 {
-	CellStyle nCellStyle = GetCellStyle( nRow, nCol );
+	Grid::CellStyle nCellStyle = GetCellStyle( nRow, nCol );
 	LV_ITEM lvi = { LVIF_STATE, nRow, nCol, 0, (UINT)-1, };
   GetItem( &lvi );
 	bool bHighlight = false;
@@ -1092,7 +1095,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 	cdc.SetBkMode( TRANSPARENT );
 	switch( nCellStyle )
 	{
-	case Grid_CheckBoxes:
+	case Grid::CheckBoxes:
 		{
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
@@ -1104,7 +1107,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
 		break;
-	case Grid_OptionButtons:
+	case Grid::OptionButtons:
 		{
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
@@ -1116,7 +1119,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
 		break;
-	case Grid_ArrowHead:
+	case Grid::ArrowHead:
 		{
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
@@ -1126,7 +1129,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
 		break;
-	case Grid_AcadColors:
+	case Grid::AcadColors:
 		{
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
@@ -1136,7 +1139,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
 		break;
-	case Grid_Fonts:
+	case Grid::Fonts:
 		{
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
@@ -1146,8 +1149,8 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
 		break;
-	case Grid_AcadColorCell:
-	case Grid_TrueColorCell:
+	case Grid::AcadColorCell:
+	case Grid::TrueColorCell:
 		{
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 14;
@@ -1157,7 +1160,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 			rcLabel.left = rcIcon.right + 4; //shift label rect to leave space for image
 		}
 		break;
-	case Grid_LineWeightCell:
+	case Grid::LineWeightCell:
 		{
 			rcIcon += CSize( 4, 4 );
 			rcIcon.right = rcIcon.left + 48;
@@ -1170,7 +1173,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 	default:
 		{
 			int nCellImage = GetCellImage( nRow, nCol );;
-			if( nCellStyle == Grid_SwitchableIcons )
+			if( nCellStyle == Grid::SwitchableIcons )
 			{
 				nCellImage = ((lvi.state & LVIS_STATEIMAGEMASK) >> 12) - 1;
 				int nCheckedImage = GetCellCheckedImage( nRow, nCol );
@@ -1208,7 +1211,7 @@ void CGridCtrl::DrawCell( int nRow, int nCol, const CRect& rectCell, CDC& cdc )
 		rcLabel.left += 4;
 		cdc.SetBkMode( TRANSPARENT );
 		UINT fWordBreak = (bWordWrap? DT_WORDBREAK : (DT_SINGLELINE | DT_END_ELLIPSIS));
-		if( nCellStyle == Grid_Password )
+		if( nCellStyle == Grid::Password )
 		{
 			int cchLabel = sLabel.GetLength();
 			sLabel.Empty();

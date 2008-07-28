@@ -13,6 +13,7 @@
 #include "Resource.h"
 
 #include "ControlTypes.h"
+
 #include "AngleSlideCtrl.h"
 #include "AxContainerCtrl.h"
 #include "CheckBoxCtrl.h"
@@ -41,6 +42,8 @@
 #include "TextButtonCtrl.h"
 #include "UrlLinkCtrl.h"
 
+#include "ComboStyles.h"
+#include "TextBoxFilterTypes.h"
 #include "AngleFilter.h"
 #include "CurrencyFilter.h"
 #include "CustomFilter.h"
@@ -89,7 +92,17 @@ TDialogControlPtr CStudioDialogControl::Create( TDclControlPtr pTemplate, CContr
 	{
 		pDlgControl->GetControlWnd()->ModifyStyle( WS_CLIPSIBLINGS, 0 ); //can't have WS_CLIPSIBLINGS while editing in studio!
 		pDlgControl->GetControlWnd()->ModifyStyleEx( 0, WS_EX_TRANSPARENT );
-		new CControlManager( pDlgControl );
+		//CRect rcOriginal = pDlgControl->GetWndRect();
+		//CRect rcActual = pDlgControl->GetEffectiveWindowRect();
+		//if( rcOriginal != rcActual )
+		//{
+		//	pTemplate->SetLongProperty( Prop::Left, rcActual.left );
+		//	pTemplate->SetLongProperty( Prop::Width, rcActual.Width() );
+		//	pTemplate->SetLongProperty( Prop::Top, rcActual.top );
+		//	pTemplate->SetLongProperty( Prop::Height, rcActual.Height() );
+		//}
+		CControlManager* pManager = new CControlManager( pDlgControl );
+		pManager->OnControlPositionChanged();
 		if( pTemplate->GetType() == CtlActiveX )
 			pDlgControl->GetActiveXCtrl()->ParseTypeLibInfo();
 	}
@@ -211,15 +224,15 @@ TDialogControlPtr CStudioDialogControl::CreateEditControl(TDclControlPtr pTempla
 	// check the control type to determine which control to create
 	switch( pTemplate->GetLongProperty( Prop::FilterStyle ) )
 	{
-	case EditFilter::String: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CCustomFilter );
-	case EditFilter::Angle: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CAngleFilter );
-	case EditFilter::Integer: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CIntegerFilter );
-	case EditFilter::Numeric: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CNumericFilter );
-	case EditFilter::Symbol: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CSymbolNameFilter );
-	case EditFilter::UpperCase: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CUpperCaseFilter );
-	case EditFilter::LowerCase: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CUpperCaseFilter );
-	case EditFilter::Password: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CPasswordFilter );
-	case EditFilter::Multiline: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CMultilineFilter );
+	case TextBoxFilter::String: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CCustomFilter );
+	case TextBoxFilter::Angle: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CAngleFilter );
+	case TextBoxFilter::Integer: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CIntegerFilter );
+	case TextBoxFilter::Numeric: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CNumericFilter );
+	case TextBoxFilter::Symbol: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CSymbolNameFilter );
+	case TextBoxFilter::UpperCase: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CUpperCaseFilter );
+	case TextBoxFilter::LowerCase: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CUpperCaseFilter );
+	case TextBoxFilter::Password: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CPasswordFilter );
+	case TextBoxFilter::Multiline: return *new CTextBoxCtrl( pTemplate, pPane, nID, new CMultilineFilter );
 	}
 	return NULL;
 }

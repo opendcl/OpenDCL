@@ -2829,14 +2829,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{2255F7B9-1C74-4B9B-A724-AAA1913191DF}"
-        "PackageCode" = "8:{4C634101-45AA-4167-896B-C61277559AFD}"
+        "ProductCode" = "8:{01EDB607-43C1-409B-B1C9-18051AFC8909}"
+        "PackageCode" = "8:{011F4D9C-56F4-4E09-B293-F29B5017A68F}"
         "UpgradeCode" = "8:{9BE5DB7C-1263-4235-90AC-B4E5E907789D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0019"
+        "ProductVersion" = "8:5.0.0020"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -3656,7 +3656,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_07AC6249E69446CD9D758B9252704A40"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\DEU\\MSM\\Debug\\OpenDCL.Runtime.DEU.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\DEU\\MSM\\Release\\OpenDCL.Runtime.DEU.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_388900515A4744599E058DA609E4770D"
@@ -3709,7 +3709,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_1D0903E28C774B368A798721B41E8E1C"
             {
-            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7E7FFE9C6B4D412E9FBF76F59A1F7A33"
@@ -3737,7 +3737,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_FDB2ABC5CC62416389847706827F8059"
             {
-            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_388900515A4744599E058DA609E4770D"

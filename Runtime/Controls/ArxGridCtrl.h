@@ -31,7 +31,7 @@ public:
 	//void ShowImageComboBox(int nRow, int nCol, CStringArray &sStrings, CArray<int, int> &nItems);
 
 protected:
-	void DoFileDlg(CellStyle nStyle);
+	void DoFileDlg( Grid::CellStyle nStyle );
 	//void DrawLineWeights(CDC* pDC, CRect rc, AcDb::LineWeight LW);
 	//void DrawArrowHeads(CDC* pDC, CRect rc, int &nImage, CString &sText);
 	//void ShowTextBox(int nRow, int nCol, int nStyle, UINT nChar = 0);

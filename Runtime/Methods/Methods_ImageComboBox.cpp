@@ -1,8 +1,8 @@
-// Methods_ComboBox.cpp : implementation file
+// Methods_ImageComboBox.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "Methods_ComboBoxEx.h"
+#include "Methods_ImageComboBox.h"
 #include "ArgumentsRetrieval.h"
 #include "ControlTypes.h"
 #include "ImageComboBoxCtrl.h"
@@ -52,22 +52,26 @@ ADSRESULT ImageComboBox::AddString()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
+	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
+	pItemList->AddStringItem( sToAdd );
 
-	COMBOBOXEXITEM cbi =
+	if( pDlgControl->OnApplyProperty( pItemList ) )
 	{
-		(CBEIF_IMAGE | CBEIF_INDENT | CBEIF_OVERLAY | CBEIF_SELECTEDIMAGE | CBEIF_TEXT),
-		nItem,
-		sToAdd.LockBuffer(),
-		-1,
-		nImage,
-		nSelectedImage,
-		2,
-		nIndent
-	};
-	int idx = pCtrl->InsertItem( &cbi );
-	if( idx != CB_ERR )
-		acedRetInt( idx );
+		CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
+		COMBOBOXEXITEM cbi =
+		{
+			(CBEIF_IMAGE | CBEIF_INDENT | CBEIF_OVERLAY | CBEIF_SELECTEDIMAGE),
+			nItem,
+			NULL,
+			-1,
+			nImage,
+			nSelectedImage,
+			2,
+			nIndent
+		};
+		if( pCtrl->SetItem( &cbi ) )
+			acedRetInt( pItemList->size() - 1 );
+	}
 	return RSRSLT;
 }
 
@@ -106,6 +110,10 @@ ADSRESULT ImageComboBox::SetItem()
 	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlImageComboBox ) )
 		return RSERR; //invalid input
 
+	int nItem = -1;
+	if( !GetIntArgument( pArgs, nItem ) )
+		return RSERR; //invalid input
+
 	CString sText;
 	if( !GetStringArgument( pArgs, sText ) )
 		return RSERR; //invalid input
@@ -120,11 +128,14 @@ ADSRESULT ImageComboBox::SetItem()
 	int nIndent = 0;
 	GetIntArgument( pArgs, nIndent, true );
 
-	int nItem = -1;
-	GetIntArgument( pArgs, nItem, true );
-
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
+
+	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
+	if( nItem < 0 || nItem >= pItemList->size() )
+		return RSRSLT;
+	PropVal::TCStringArray* pItems = pItemList->GetStringArrayPtr();
+	pItems->at( nItem ) = sText;
 
 	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
 
@@ -156,10 +167,10 @@ ADSRESULT ImageComboBox::Clear()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
-
-	pCtrl->ResetContent();
-	acedRetT();
+	TPropertyPtr pOptionList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
+	pOptionList->clear();
+	if( pDlgControl->OnApplyProperty( pOptionList ) )
+		acedRetT();
 	return RSRSLT;
 }
 
@@ -212,10 +223,16 @@ ADSRESULT ImageComboBox::DeleteString()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
+	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
+	if( nIndex < 0 || nIndex >= pItemList->size() )
+		return RSRSLT;
+	PropVal::TCStringArray* pItems = pItemList->GetStringArrayPtr();
+	PropVal::TCStringArray::iterator iterAt = pItems->begin();
+	while( nIndex-- > 0 ) iterAt++;
+	pItems->erase( iterAt );
 
-	pCtrl->DeleteItem( nIndex );
-	acedRetT();
+	if( pDlgControl->OnApplyProperty( pItemList ) )
+		acedRetT();
 	return RSRSLT;
 }
 

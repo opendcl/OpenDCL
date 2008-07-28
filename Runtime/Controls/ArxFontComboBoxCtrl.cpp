@@ -4,6 +4,7 @@
 #include "Stdafx.h"
 #include "ArxFontComboBoxCtrl.h"
 #include "FontComboHandler.h"
+#include "ComboStyles.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "PropertyIds.h"

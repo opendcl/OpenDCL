@@ -18,62 +18,67 @@ typedef std::string tstring;
 
 #define ID_CELLBUTTON 191
 
-enum CellStyle
+namespace Grid
 {
-	Grid_Undefined = -1,
-	Grid_Runtime = 0,
-	Grid_CheckBoxes		= 1,
-	Grid_OptionButtons	= 2,
-	Grid_SwitchableIcons	= 3,
-	Grid_EllipsesButtons	= 4,
-	Grid_PickButtons		= 5,
-	Grid_Strings			= 6,
-	Grid_AngleUnits		= 7,
-	Grid_Integers			= 8,
-	Grid_Units			= 9,
-	Grid_UpperCase		= 10,
-	Grid_LowerCase		= 11,
-	Grid_Password			= 12,
-	Grid_MultiLine		= 13,
-	Grid_Currency			= 14,
-	Grid_Date				= 15,
-	Grid_Time				= 16,
-	Grid_Percentage		= 17,
-	Grid_DropDown			= 18,
-	Grid_ArrowHead		= 19,
-	Grid_AcadColors		= 20,
-	Grid_TextStyleList	= 21,
-	Grid_PlotStyleNames	= 22,
-	Grid_PlotStyleTables	= 23,
-	Grid_PlotterList		= 24,
-	Grid_Fonts			= 25,
-	Grid_DriveList		= 26,
-	Grid_LayerList		= 27,
-	Grid_DimStyleList		= 28,
-	Grid_ImageDropList	= 29,
-	Grid_AcadColorCell	= 30,
-	Grid_TrueColorCell	= 31,
-	Grid_LineWeightCell	= 32,
-	Grid_LinetypeCell		= 33,
-	Grid_DirectoryCell	= 34,
-	Grid_DwgFilesCell		= 35,
-	Grid_Strings_Combo	= 36,
-	Grid_AngleUnits_Combo	= 37,
-	Grid_Integers_Combo	= 38,
-	Grid_Units_Combo		= 39,
-	Grid_UpperCase_Combo	= 40,
-	Grid_LowerCase_Combo	= 41,
+	enum CellStyle
+	{
+		Undefined       = -1,
+		Runtime         = 0,
+		CheckBoxes      = 1,
+		OptionButtons   = 2,
+		SwitchableIcons = 3,
+		EllipsesButtons = 4,
+		PickButtons     = 5,
+		Strings         = 6,
+		AngleUnits      = 7,
+		Integers        = 8,
+		Units           = 9,
+		UpperCase       = 10,
+		LowerCase       = 11,
+		Password        = 12,
+		MultiLine       = 13,
+		Currency        = 14,
+		Date            = 15,
+		Time            = 16,
+		Percentage      = 17,
+		DropDown        = 18,
+		ArrowHead       = 19,
+		AcadColors      = 20,
+		TextStyleList   = 21,
+		PlotStyleNames  = 22,
+		PlotStyleTables = 23,
+		PlotterList     = 24,
+		Fonts           = 25,
+		DriveList       = 26,
+		LayerList       = 27,
+		DimStyleList    = 28,
+		ImageDropList   = 29,
+		AcadColorCell   = 30,
+		TrueColorCell   = 31,
+		LineWeightCell  = 32,
+		LinetypeCell    = 33,
+		DirectoryCell   = 34,
+		DwgFilesCell    = 35,
+		Strings_Combo   = 36,
+		AngleUnits_Combo = 37,
+		Integers_Combo  = 38,
+		Units_Combo     = 39,
+		UpperCase_Combo = 40,
+		LowerCase_Combo = 41,
+		Symbols         = 42,
+		Symbols_Combo   = 43,
+	};
 };
 
 struct _CellData
 {
-	CellStyle mType;
+	Grid::CellStyle mType;
 	int midxImage;
 	int midxAltImage;
 	std::vector< tstring > mrsComboList;
 	std::vector< int > mrnComboImage;
 	_CellData()
-		: mType( Grid_Undefined )
+		: mType( Grid::Undefined )
 		, midxImage( -1 )
 		, midxAltImage( -1 )
 	{
@@ -86,7 +91,7 @@ struct _CellData
 		, mrnComboImage( _Right.mrnComboImage )
 	{
 	} 
-	_CellData( CellStyle type, int image = -1, int altImage = -1 )
+	_CellData( Grid::CellStyle type, int image = -1, int altImage = -1 )
 		: mType( type )
 		, midxImage( image )
 		, midxAltImage( altImage )
@@ -173,9 +178,9 @@ public:
 	int GetCurRow() const { return mCurrentCell.row(); }
 	int GetCurColumn() const { return mCurrentCell.col(); }
 	ULONG GetColumnCount() const { return mcColumns; }
-	CellStyle GetCellStyle( int nRow, int nCol );
-	CellStyle GetCurCellStyle();
-	void SetCellStyle( int nRow, int nCol, CellStyle nStyle, int image = -1, int altImage = -1,
+	Grid::CellStyle GetCellStyle( int nRow, int nCol );
+	Grid::CellStyle GetCurCellStyle();
+	void SetCellStyle( int nRow, int nCol, Grid::CellStyle nStyle, int image = -1, int altImage = -1,
 										 LPCTSTR pszListText = NULL );
 	CString GetCellText( int nRow, int nCol ) const;
 	CString GetCurCellText() const;

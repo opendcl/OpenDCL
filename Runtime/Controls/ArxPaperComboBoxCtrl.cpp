@@ -4,6 +4,7 @@
 #include "Stdafx.h"
 #include "ArxPaperComboBoxCtrl.h"
 #include "PaperComboHandler.h"
+#include "ComboStyles.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "PropertyIds.h"

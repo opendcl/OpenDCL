@@ -2,6 +2,7 @@
 #include "ImageComboBoxCtrl.h"
 #include "DclControlObject.h"
 #include "ControlPane.h"
+#include "ComboStyles.h"
 #include "ComboHandler.h"
 
 

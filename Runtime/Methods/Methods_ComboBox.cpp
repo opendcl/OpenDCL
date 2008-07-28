@@ -8,6 +8,8 @@
 #include "ArxLineweightComboBoxCtrl.h"
 #include "ArxFolderComboCtrl.h"
 #include "ControlTypes.h"
+#include "TextBoxFilterTypes.h"
+#include "ComboStyles.h"
 #include "ArxWorkspace.h"
 #include "Resource.h"
 
@@ -129,14 +131,13 @@ ADSRESULT ComboBox::AddString()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CComboBox* pCtrl = (CComboBox*)pDlgControl->GetControlWnd();
-
-	int idxLastAdded = -1;
+	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
 	INT_PTR ctArgs = rsToAdd.GetSize();
 	for( INT_PTR idx = 0; idx < ctArgs; ++idx )
-		idxLastAdded = pCtrl->AddString( rsToAdd.GetAt( idx ) );
-	if( idxLastAdded != CB_ERR )
-		acedRetInt( idxLastAdded );
+		pItemList->AddStringItem( rsToAdd.GetAt( idx ) );
+
+	if( pDlgControl->OnApplyProperty( pItemList ) )
+		acedRetInt( pItemList->size() - 1 );
 	return RSRSLT;
 }
 
@@ -156,10 +157,10 @@ ADSRESULT ComboBox::Clear()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CComboBox* pCtrl = (CComboBox*)pDlgControl->GetControlWnd();
-
-	pCtrl->ResetContent();
-	acedRetT();
+	TPropertyPtr pOptionList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
+	pOptionList->clear();
+	if( pDlgControl->OnApplyProperty( pOptionList ) )
+		acedRetT();
 	return RSRSLT;
 }
 
@@ -212,10 +213,16 @@ ADSRESULT ComboBox::DeleteString()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CComboBox* pCtrl = (CComboBox*)pDlgControl->GetControlWnd();
+	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
+	if( nIndex < 0 || nIndex >= pItemList->size() )
+		return RSRSLT;
+	PropVal::TCStringArray* pItems = pItemList->GetStringArrayPtr();
+	PropVal::TCStringArray::iterator iterAt = pItems->begin();
+	while( nIndex-- > 0 ) iterAt++;
+	pItems->erase( iterAt );
 
-	pCtrl->DeleteString( nIndex );
-	acedRetT();
+	if( pDlgControl->OnApplyProperty( pItemList ) )
+		acedRetT();
 	return RSRSLT;
 }
 
@@ -238,10 +245,15 @@ ADSRESULT ComboBox::InsertString()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CComboBox* pCtrl = (CComboBox*)pDlgControl->GetControlWnd();
+	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
+	if( nIndex < 0 || nIndex > pItemList->size() )
+		return RSRSLT;
+	PropVal::TCStringArray* pItems = pItemList->GetStringArrayPtr();
+	PropVal::TCStringArray::iterator iterAt = pItems->begin();
+	while( nIndex-- > 0 ) iterAt++;
+	pItems->insert( iterAt, sToAdd );
 
-	int idx = pCtrl->InsertString( nIndex, sToAdd );
-	if( idx >= 0 )
+	if( pDlgControl->OnApplyProperty( pItemList ) )
 		acedRetT();
 	return RSRSLT;
 }

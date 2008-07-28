@@ -1,4 +1,4 @@
-// Methods_ComboBoxEx.h : header file
+// Methods_ImageComboBox.h : header file
 //
 
 #pragma once

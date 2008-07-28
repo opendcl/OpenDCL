@@ -79,6 +79,7 @@ public:
 typedef CAcUiTextBoxEditCtrl< CAcUiStringEdit > CAcUiStringEditCtrl;
 typedef CAcUiTextBoxEditCtrl< CAcUiNumericEdit > CAcUiUnitsEditCtrl;
 typedef CAcUiTextBoxEditCtrl< CAcUiAngleEdit > CAcUiAngleEditCtrl;
+typedef CAcUiTextBoxEditCtrl< CAcUiSymbolEdit > CAcUiSymbolEditCtrl;
 
 
 template< typename TAcUiBase >
@@ -197,8 +198,21 @@ public:
 			std::vector< tstring > rsComboList;
 			std::vector< int > rImage;
 			pGridCtrl->GetCellComboListItems( nRow, nCol, rsComboList, rImage );
+			int nMinWidth = 0;
 			for( size_t idx = 0; idx < rsComboList.size(); ++idx )
-				AddString( rsComboList.at( idx ).c_str() );
+			{
+				LPCTSTR pszItem = rsComboList.at( idx ).c_str();
+				AddString( pszItem );
+				int nTextWidth = 0;
+				int nTextHeight = 0;
+				GetTextExtent( pszItem, nTextWidth, nTextHeight );
+				if( nTextWidth > nMinWidth )
+					nMinWidth = nTextWidth;
+			}
+			if( nMinWidth > (rcClip.Width() * 3) )
+				nMinWidth = rcClip.Width() * 3;
+			if( nMinWidth > 0 )
+				SetDroppedWidth( nMinWidth );
 			if( GetCount() == 0 )
 			{
 				CRect rcWnd;
@@ -226,7 +240,7 @@ typedef CAcUiComboEditCtrl< CAcUiPlotStyleTablesComboBox, (CBS_OWNERDRAWFIXED | 
 typedef CAcUiComboEditCtrl< CAcUiStringComboBox, CBS_DROPDOWN > CAcUiStringComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiNumericComboBox, CBS_DROPDOWN > CAcUiUnitsComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiAngleComboBox, CBS_DROPDOWN > CAcUiAngleComboEditCtrl;
-typedef CAcUiComboEditCtrl< CAcUiSymbolComboBox, CBS_DROPDOWN > CAcUiIntegerComboEditCtrl;
+typedef CAcUiComboEditCtrl< CAcUiSymbolComboBox, CBS_DROPDOWN > CAcUiSymbolComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiColorComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiColorComboEditCtrl;
 typedef CAcUiComboEditCtrl< CAcUiLineWeightComboBox, (CBS_OWNERDRAWFIXED | CBS_DROPDOWNLIST) > CAcUiLineWeightComboEditCtrl;
 #if (_ACADTARGET >= 17)
@@ -434,18 +448,18 @@ void CArxGridCtrl::OnEndEditCurCell()
 }
 
 
-void CArxGridCtrl::DoFileDlg(CellStyle nStyle) 
+void CArxGridCtrl::DoFileDlg( Grid::CellStyle nStyle ) 
 {
 	switch (nStyle)
 	{
-		case Grid_DirectoryCell:
+		case Grid::DirectoryCell:
 		{			
 			CDirDialog dlg( theWorkspace.LoadResourceString(IDS_SELFOLDER), GetItemText(mCurrentCell.row(), mCurrentCell.col()) );
 			if (dlg.DoBrowse(this) == TRUE)
 				SetCellTextImage( mCurrentCell.row(), mCurrentCell.col(), dlg.GetSelectedFolder(), -1 );
 			break;
 		}
-		case Grid_DwgFilesCell:
+		case Grid::DwgFilesCell:
 		{
 			if( !acDocManager->curDocument() )
 				break; //ARX docs say you can't call acedGetFileD in zero doc state
@@ -485,52 +499,54 @@ CGridCellEditCtrl* CArxGridCtrl::CreateEditControl( int nRow, int nCol )
 {
 	switch( GetCellStyle( nRow, nCol ) )
 	{
-		//case Grid_CheckBoxes: return new CToggleEditCtrl( this, nRow, nCol );
-		//case Grid_OptionButtons: return new CRadioEditCtrl( this, nRow, nCol );
-		//case Grid_SwitchableIcons: return new CToggleEditCtrl( this, nRow, nCol );
-		//case Grid_EllipsesButtons: return new CButtonEditCtrl( this, nRow, nCol, _T("..."), ID_CELLBUTTON );
-		//case Grid_PickButtons: return new CButtonEditCtrl( this, nRow, nCol, IDI_PICKSMALL, ID_CELLBUTTON );
-		case Grid_Strings: return new CAcUiStringEditCtrl( this, nRow, nCol );
-		case Grid_AngleUnits: return new CAcUiAngleEditCtrl( this, nRow, nCol );
-		case Grid_Integers: return new CTextBoxEditCtrl( this, nRow, nCol, new CIntegerFilter );
-		case Grid_Units: return new CTextBoxEditCtrl( this, nRow, nCol, new CUnitsNumericFilter );
-		case Grid_UpperCase: return new CTextBoxEditCtrl( this, nRow, nCol, new CUpperCaseFilter );
-		case Grid_LowerCase: return new CTextBoxEditCtrl( this, nRow, nCol, new CLowerCaseFilter );
-		case Grid_Password: return new CTextBoxEditCtrl( this, nRow, nCol, new CPasswordFilter );
-		case Grid_MultiLine: return new CTextBoxEditCtrl( this, nRow, nCol, new CMultilineFilter );
-		case Grid_Currency: return new CTextBoxEditCtrl( this, nRow, nCol, new CCurrencyFilter );
-		//case Grid_Date: return new CDateTimeEditCtrl( this, nRow, nCol, true );
-		//case Grid_Time: return new CDateTimeEditCtrl( this, nRow, nCol, false );
-		case Grid_Percentage: return new CTextBoxEditCtrl( this, nRow, nCol, new CPercentageFilter );
-		//case Grid_DropDown: return new CComboDropdownListEditCtrl( this, nRow, nCol );
-		case Grid_ArrowHead: return new CAcUiArrowComboEditCtrl( this, nRow, nCol );
-		case Grid_AcadColors: return new CAcUiColorComboEditCtrl( this, nRow, nCol );
-		case Grid_TextStyleList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CTextStyleComboHandler );
-		case Grid_PlotStyleNames: return new CAcUiPlotStyleNameComboEditCtrl( this, nRow, nCol );
-		case Grid_PlotStyleTables: return new CAcUiPlotStyleTableComboEditCtrl( this, nRow, nCol );
-		case Grid_PlotterList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CPrinterComboHandler );
-		case Grid_Fonts: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CFontComboHandler );
-		//case Grid_DriveList: return __super::CreateEditControl( nRow, nCol );
-		case Grid_LayerList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CLayerComboHandler );
-		case Grid_DimStyleList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CDimStyleComboHandler );
-		//case Grid_ImageDropList: return new CImageComboDropdownListEditCtrl( this, nRow, nCol );
-		case Grid_AcadColorCell: return new CAcadColorEditCtrl( this, nRow, nCol );
-		case Grid_TrueColorCell: return new CTrueColorEditCtrl( this, nRow, nCol );
-		case Grid_LineWeightCell: return new CAcUiLineWeightComboEditCtrl( this, nRow, nCol );
-		case Grid_LinetypeCell:
+		//case Grid::CheckBoxes: return new CToggleEditCtrl( this, nRow, nCol );
+		//case Grid::OptionButtons: return new CRadioEditCtrl( this, nRow, nCol );
+		//case Grid::SwitchableIcons: return new CToggleEditCtrl( this, nRow, nCol );
+		//case Grid::EllipsesButtons: return new CButtonEditCtrl( this, nRow, nCol, _T("..."), ID_CELLBUTTON );
+		//case Grid::PickButtons: return new CButtonEditCtrl( this, nRow, nCol, IDI_PICKSMALL, ID_CELLBUTTON );
+		case Grid::Strings: return new CAcUiStringEditCtrl( this, nRow, nCol );
+		case Grid::AngleUnits: return new CAcUiAngleEditCtrl( this, nRow, nCol );
+		case Grid::Integers: return new CTextBoxEditCtrl( this, nRow, nCol, new CIntegerFilter );
+		case Grid::Units: return new CTextBoxEditCtrl( this, nRow, nCol, new CUnitsNumericFilter );
+		case Grid::UpperCase: return new CTextBoxEditCtrl( this, nRow, nCol, new CUpperCaseFilter );
+		case Grid::LowerCase: return new CTextBoxEditCtrl( this, nRow, nCol, new CLowerCaseFilter );
+		case Grid::Password: return new CTextBoxEditCtrl( this, nRow, nCol, new CPasswordFilter );
+		case Grid::MultiLine: return new CTextBoxEditCtrl( this, nRow, nCol, new CMultilineFilter );
+		case Grid::Currency: return new CTextBoxEditCtrl( this, nRow, nCol, new CCurrencyFilter );
+		//case Grid::Date: return new CDateTimeEditCtrl( this, nRow, nCol, true );
+		//case Grid::Time: return new CDateTimeEditCtrl( this, nRow, nCol, false );
+		case Grid::Percentage: return new CTextBoxEditCtrl( this, nRow, nCol, new CPercentageFilter );
+		//case Grid::DropDown: return new CComboDropdownListEditCtrl( this, nRow, nCol );
+		case Grid::ArrowHead: return new CAcUiArrowComboEditCtrl( this, nRow, nCol );
+		case Grid::AcadColors: return new CAcUiColorComboEditCtrl( this, nRow, nCol );
+		case Grid::TextStyleList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CTextStyleComboHandler );
+		case Grid::PlotStyleNames: return new CAcUiPlotStyleNameComboEditCtrl( this, nRow, nCol );
+		case Grid::PlotStyleTables: return new CAcUiPlotStyleTableComboEditCtrl( this, nRow, nCol );
+		case Grid::PlotterList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CPrinterComboHandler );
+		case Grid::Fonts: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CFontComboHandler );
+		//case Grid::DriveList: return __super::CreateEditControl( nRow, nCol );
+		case Grid::LayerList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CLayerComboHandler );
+		case Grid::DimStyleList: return new CComboDropdownListEditCtrl( this, nRow, nCol, new CDimStyleComboHandler );
+		//case Grid::ImageDropList: return new CImageComboDropdownListEditCtrl( this, nRow, nCol );
+		case Grid::AcadColorCell: return new CAcadColorEditCtrl( this, nRow, nCol );
+		case Grid::TrueColorCell: return new CTrueColorEditCtrl( this, nRow, nCol );
+		case Grid::LineWeightCell: return new CAcUiLineWeightComboEditCtrl( this, nRow, nCol );
+		case Grid::LinetypeCell:
 	#if (_ACADTARGET >= 17)
 			return new CAcUiLineTypeComboEditCtrl( this, nRow, nCol );
 	#else //line type combo was not introduced until R2006
 			return new CTextBoxEditCtrl( this, nRow, nCol, new CSymbolNameFilter );
 	#endif //(_ACADTARGET >= 17)
-		case Grid_DirectoryCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
-		case Grid_DwgFilesCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
-		case Grid_Strings_Combo: return new CAcUiStringComboEditCtrl( this, nRow, nCol );
-		case Grid_AngleUnits_Combo: return new CAcUiAngleComboEditCtrl( this, nRow, nCol );
-		case Grid_Integers_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CIntegerFilter ) );
-		case Grid_Units_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CUnitsNumericFilter ) );
-		//case Grid_UpperCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CUpperCaseFilter ) );
-		//case Grid_LowerCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CLowerCaseFilter ) );
+		case Grid::DirectoryCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
+		case Grid::DwgFilesCell: return new CButtonEditCtrl( this, nRow, nCol, IDI_FOLDER, ID_CELLBUTTON );
+		case Grid::Strings_Combo: return new CAcUiStringComboEditCtrl( this, nRow, nCol );
+		case Grid::AngleUnits_Combo: return new CAcUiAngleComboEditCtrl( this, nRow, nCol );
+		case Grid::Integers_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CIntegerFilter ) );
+		case Grid::Units_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CUnitsNumericFilter ) );
+		//case Grid::UpperCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CUpperCaseFilter ) );
+		//case Grid::LowerCase_Combo: return new CComboDropdownEditCtrl( this, nRow, nCol, new CComboFilter( new CLowerCaseFilter ) );
+		case Grid::Symbols: return new CAcUiSymbolEditCtrl( this, nRow, nCol );
+		case Grid::Symbols_Combo: return new CAcUiSymbolComboEditCtrl( this, nRow, nCol );
 		//default: return new CTextBoxEditCtrl( this, nRow, nCol );
 	}
 	return __super::CreateEditControl( nRow, nCol );
@@ -586,8 +602,8 @@ void CArxGridCtrl::OnCellButtonClicked(void)
 {
 	switch( GetCurCellStyle() )
 	{
-	case Grid_DirectoryCell: return DoFileDlg( Grid_DirectoryCell );
-	case Grid_DwgFilesCell: return DoFileDlg( Grid_DwgFilesCell );
+	case Grid::DirectoryCell: return DoFileDlg( Grid::DirectoryCell );
+	case Grid::DwgFilesCell: return DoFileDlg( Grid::DwgFilesCell );
 	}
 	InvokeMethodIntInt( mpTemplate->GetStringProperty(Prop::EventBtnClicked),
 											mCurrentCell.row(),

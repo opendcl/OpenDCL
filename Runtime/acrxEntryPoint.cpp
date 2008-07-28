@@ -43,7 +43,7 @@
 #include "Methods_Edit.h"
 #include "Methods_Tab.h"
 #include "Methods_ComboBox.h"
-#include "Methods_ComboBoxEx.h"
+#include "Methods_ImageComboBox.h"
 #include "Methods_Html.h"
 #include "Methods_Month.h"
 #include "Methods_BlockView.h"

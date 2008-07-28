@@ -1510,6 +1510,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\ComboStyles.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\CurrencyFilter.h"
 					>
 				</File>
@@ -1798,6 +1802,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\TextBoxFilterTypes.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\TextButtonCtrl.cpp"
 					>
 				</File>
@@ -1879,10 +1887,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_ComboBoxEx.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Methods\Methods_DwgList.h"
 					>
 				</File>
@@ -1908,6 +1912,10 @@
 				</File>
 				<File
 					RelativePath="..\Methods\Methods_Html.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_ImageComboBox.h"
 					>
 				</File>
 				<File
@@ -1984,10 +1992,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_ComboBoxEx.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\Methods\Methods_DwgList.cpp"
 					>
 				</File>
@@ -2013,6 +2017,10 @@
 				</File>
 				<File
 					RelativePath="..\Methods\Methods_Html.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_ImageComboBox.cpp"
 					>
 				</File>
 				<File

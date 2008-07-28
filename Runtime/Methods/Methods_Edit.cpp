@@ -234,12 +234,15 @@ ADSRESULT TextBox::SetSel()
 	if( !GetIntArgument( pArgs, nEnd ) )
 		return RSERR; //invalid input
 
+	bool bNoScroll = false;
+	GetBoolArgument( pArgs, bNoScroll, true );
+
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
 	CEdit* pCtrl = (CEdit*)pDlgControl->GetControlWnd();
 
-	pCtrl->SetSel( nStart, nEnd, TRUE );
+	pCtrl->SetSel( nStart, nEnd, bNoScroll? TRUE : FALSE );
 	pCtrl->SetFocus();
 	acedRetT();
 	return RSRSLT;

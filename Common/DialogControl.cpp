@@ -297,7 +297,7 @@ bool CDialogControl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !pProp )
 		return false;
-	DisableUndoManager DisableUndo( mpTemplate->GetUndoManager() );
+	//DisableUndoManager DisableUndo( mpTemplate->GetUndoManager() );
 	bool bSuccess = true;
 	switch( pProp->GetID() )
 	{

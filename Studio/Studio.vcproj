@@ -1372,6 +1372,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Common\Controls\ComboStyles.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Controls\CurrencyFilter.h"
 					>
 				</File>
@@ -1675,6 +1679,10 @@
 				</File>
 				<File
 					RelativePath="..\Common\Controls\TextBoxEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\TextBoxFilterTypes.h"
 					>
 				</File>
 				<File

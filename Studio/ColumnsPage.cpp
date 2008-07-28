@@ -264,9 +264,6 @@ bool CColumnsPage::IsImageListValid()
 {
 	if (mpImageListPage != NULL)
 	{
-		if (mpImageListPage->m_hWnd == NULL)
-			return false;
-		
 		if (mpImageListPage->GetImageList()->m_hImageList == NULL)
 			return false;
 	}
