@@ -15,6 +15,7 @@ class CInputFilter;
 
 class CTextBoxCtrl : public CFilteredEditCtrl, public CDialogControl
 {
+	bool mbDragging;
 
 public:
 	CTextBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, CInputFilter* pFilter = NULL, bool bCreate = true );
@@ -27,6 +28,8 @@ public:
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return CFilteredEditCtrl::GetColorService(); }
+	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData );
+	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
 
 public:
 
@@ -37,4 +40,5 @@ protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual afx_msg void PostNcDestroy();
 	afx_msg void OnChange();
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };

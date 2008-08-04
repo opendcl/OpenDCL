@@ -11,6 +11,7 @@ CTextBoxCtrl::CTextBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT 
 														CInputFilter* pFilter /*= NULL*/, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
 , CFilteredEditCtrl( pFilter )
+, mbDragging( false )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -122,6 +123,78 @@ bool CTextBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
+DROPEFFECT CTextBoxCtrl::OnBeginDrag( const CPoint& point, COleDataSource& SourceData )
+{
+	DROPEFFECT dwEffect = __super::OnBeginDrag( point, SourceData );
+	int nStartChar = -1;
+	int nEndChar = -1;
+	GetSel( nStartChar, nEndChar );
+	if( nStartChar != nEndChar )
+	{
+		CString sText;
+		GetWindowText( sText );
+		if( nEndChar < nStartChar )
+		{
+			int nTemp = nEndChar;
+			nEndChar = nStartChar;
+			nStartChar = nTemp;
+		}
+		sText = sText.Mid( nStartChar, nEndChar - nStartChar );
+		CStringA sTextA( sText );
+		SIZE_T cchText = sTextA.GetLength() + 1;
+		HGLOBAL hData = GlobalAlloc( GHND, cchText );
+		if( hData )
+		{
+			lstrcpynA( (char*)GlobalLock( hData ), sTextA, cchText );
+			GlobalUnlock( hData );
+			SourceData.CacheGlobalData( CF_TEXT, hData );
+		}
+	}
+
+	return (dwEffect | DROPEFFECT_MOVE | DROPEFFECT_COPY);
+}
+
+bool CTextBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
+													 DROPEFFECT dropEffect )
+{
+	HGLOBAL hData = pSourceData->GetGlobalData( CF_TEXT );
+	if( !hData )
+		return __super::OnDrop( point, pSourceData, dropEffect )  ;
+	CStringA sTextA = (char*)GlobalLock( hData );
+	GlobalUnlock( hData );
+	GlobalFree( hData );
+	CPoint ptIns = point;
+	if( mbDragging )
+	{
+		if( dropEffect == DROPEFFECT_MOVE )
+		{
+			DWORD posIns = CharFromPos( point );
+			int nInsPos = LOWORD(posIns);
+			int nLine = HIWORD(posIns);
+			if( nLine > 0 )
+				nInsPos += LineIndex( nLine );
+			int nStartChar = -1;
+			int nEndChar = -1;
+			GetSel( nStartChar, nEndChar );
+			ReplaceSel( _T(""), TRUE );
+			if( nInsPos > nEndChar )
+			{
+				nInsPos -= (nEndChar - nStartChar);
+				ptIns = PosFromChar( nInsPos );
+				if( ptIns.x == -1 && ptIns.y == -1 )
+					ptIns = point; //dropped after last character, so just tack it on the end
+			}
+			else if( nInsPos >= nStartChar )
+				ptIns = PosFromChar( nStartChar );
+		}
+		mbDragging = false;
+	}
+	SendMessage( WM_LBUTTONDOWN, 0, MAKELPARAM(ptIns.x,ptIns.y) );
+	SendMessage( WM_LBUTTONUP, 0, MAKELPARAM(ptIns.x,ptIns.y) );
+	ReplaceSel( CString( sTextA ), TRUE );
+	return true;
+}
+
 BEGIN_MESSAGE_MAP(CTextBoxCtrl, CFilteredEditCtrl)
 	ON_CONTROL_REFLECT(EN_CHANGE, &CTextBoxCtrl::OnChange)
 END_MESSAGE_MAP()
@@ -153,4 +226,30 @@ void CTextBoxCtrl::OnChange()
 	GetWindowText( sText );
 	if( mpTemplate->GetStringProperty( Prop::Text ) != sText )
 		mpTemplate->SetStringProperty( Prop::Text, sText );
+}
+
+void CTextBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) && nFlags == MK_LBUTTON )
+	{
+		//only start drag if there is a selection
+		int nStartChar = -1;
+		int nEndChar = -1;
+		GetSel( nStartChar, nEndChar );
+		if( nStartChar != nEndChar )
+		{
+			mbDragging = true;
+			DROPEFFECT dwDropEffect = BeginDragDrop( point );
+			if( mbDragging ) //if drop was on this control, mbDragging gets reset to false
+			{
+				PostMessage( WM_LBUTTONUP, 0, MAKELPARAM(point.x,point.y) );
+				if( dwDropEffect == DROPEFFECT_MOVE )
+					ReplaceSel( _T(""), TRUE );
+				mbDragging = false;
+			}
+			else
+				return;
+		}
+	}
+	__super::OnLButtonDown(nFlags, point);
 }

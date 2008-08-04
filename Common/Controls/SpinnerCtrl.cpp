@@ -104,7 +104,7 @@ void CSpinnerCtrl::OnDeltapos(NMHDR* pNMHDR, LRESULT* pResult)
 	int nMaxPos = mpTemplate->GetLongProperty( Prop::MaxValue );
 	int nNewPos = mpTemplate->GetLongProperty( Prop::Value );
 
-	nNewPos -= pNMUpDown->iDelta;
+	nNewPos += pNMUpDown->iDelta;
 	if( mpTemplate->GetBooleanProperty( Prop::AutoWrap ) )
 	{	
 		if( nNewPos < nMinPos )

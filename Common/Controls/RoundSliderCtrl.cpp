@@ -290,7 +290,6 @@ void CRoundSliderCtrl::OnPaint()
 	// Draw (clear) the background
 	CRect rc;
 	GetClientRect(rc);
-	pDC->SelectStockObject(NULL_BRUSH);
 	pDC->FillSolidRect(rc, ::GetSysColor(COLOR_BTNFACE));
 
 	// Draw the sliders channel

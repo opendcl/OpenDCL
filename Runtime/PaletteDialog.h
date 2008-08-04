@@ -5,6 +5,7 @@
 
 #include "ArxDialogObject.h"
 #include "AcadPaletteHost.h"
+#include "AcadColorService.h"
 #include "Resource.h"
 
 
@@ -25,6 +26,7 @@ class CPaletteDialog : public CDialog, public CArxDialogObject
 	bool mbKeepFocus;
 	bool mbResizable;
 	//bool mbHiding;
+	CAcadColorService mColorService;
 
 // Construction
 public:
@@ -37,6 +39,7 @@ public:
 
 // CDialogObject overrides
 public:
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual FormType GetType() const { return FrmPaletteDlg; }
 	virtual CWnd* GetTopLevelWnd();
 	virtual bool IsModeless() const { return true; }

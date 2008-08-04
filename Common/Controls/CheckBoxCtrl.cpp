@@ -9,6 +9,11 @@
 #include "PropertyIds.h"
 
 
+//from CommCtrl.h
+#define BCN_FIRST               (0U-1250U)
+#define BCN_HOTITEMCHANGE       (BCN_FIRST + 0x0001)
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CCheckBoxCtrl
 
@@ -61,10 +66,13 @@ bool CCheckBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 
 BEGIN_MESSAGE_MAP(CCheckBoxCtrl, CButton)
 	ON_WM_CTLCOLOR_REFLECT()
+	ON_WM_ERASEBKGND()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_KEYUP()
+	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
+	ON_NOTIFY_REFLECT(BCN_HOTITEMCHANGE, &CCheckBoxCtrl::OnBnHotItemChange)
 END_MESSAGE_MAP()
 
 
@@ -84,10 +92,19 @@ BOOL CCheckBoxCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CCheckBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	HBRUSH hbrBackground = mColorService.CtlColor( pDC, nCtlColor, this );
+	return mColorService.CtlColor( pDC, nCtlColor, (mColorService.IsBackgroundTransparent()? this : NULL) );
+	//HBRUSH hbrBackground = mColorService.CtlColor( pDC, nCtlColor, this );
 	//if( GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
 	//	return NULL; //must use class brush when themes are active, else XP paints a black background
-	return hbrBackground;
+	//return hbrBackground;
+}
+
+BOOL CCheckBoxCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	if( mColorService.IsBackgroundTransparent() )
+		return TRUE;
+
+	return __super::OnEraseBkgnd(pDC);
 }
 
 void CCheckBoxCtrl::PostNcDestroy() 
@@ -98,9 +115,11 @@ void CCheckBoxCtrl::PostNcDestroy()
 
 void CCheckBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	OnNeedRepaint(); //must erase background here or focus rectangle gets erased afterward
 	__super::OnLButtonDown(nFlags, point);
 	if( !IsWindowEnabled() )
 		return;
+	OnNeedRepaint( false, true );
 	//SetState( GetState() | BST_FOCUS );
 	//Invalidate();
 }
@@ -116,10 +135,10 @@ void CCheckBoxCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 			int nState = (mpTemplate->GetLongProperty( Prop::Value ) != BST_CHECKED? BST_CHECKED : BST_UNCHECKED);
 			mpTemplate->SetLongProperty( Prop::Value, nState );
 			SetCheck( nState );
-			Invalidate();
 		}
 	}
 	__super::OnLButtonUp(nFlags, point);
+	OnNeedRepaint();
 }
 
 void CCheckBoxCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -129,16 +148,27 @@ void CCheckBoxCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 		int nState = (mpTemplate->GetLongProperty( Prop::Value ) != BST_CHECKED? BST_CHECKED : BST_UNCHECKED);
 		mpTemplate->SetLongProperty( Prop::Value, nState );
 		SetCheck( nState );
-		GetParent()->SendMessage( WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), BN_CLICKED), (LPARAM)m_hWnd );
-		Invalidate();
+		GetParent()->PostMessage( WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), BN_CLICKED), (LPARAM)m_hWnd );
 		return;
 	}
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
+}
+
+void CCheckBoxCtrl::OnSetFocus(CWnd* pOldWnd) 
+{
+	__super::OnSetFocus(pOldWnd);
 }
 
 void CCheckBoxCtrl::OnKillFocus(CWnd * pNewWnd)
 {
 	//SetState( GetState() & ~BST_FOCUS );
 	//Invalidate();
+	OnNeedRepaint();
 	__super::OnKillFocus( pNewWnd );
+}
+
+void CCheckBoxCtrl::OnBnHotItemChange(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	*pResult = 0;
+	OnNeedRepaint();
 }

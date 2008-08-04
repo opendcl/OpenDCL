@@ -7,6 +7,7 @@
 #pragma once
 
 #include "ArxDialogObject.h"
+#include "AcadColorService.h"
 
 class CFontCollection;
 
@@ -22,6 +23,7 @@ class CFontCollection;
 
 class CBaseDlg : public CDialog, public CArxDialogObject
 {
+	CAcadColorService mColorService;
 	int mnInitialX;
 	int mnInitialY;
 	bool mbHasTitleBar;
@@ -37,6 +39,7 @@ public:
 
 // CDialogObject overrides
 public:
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual const CDialogObject& GetDialogObject() const { return *this; }
 	virtual CDialogObject& GetDialogObject() { return *this; }
 	virtual bool IsResizable() const { return mbResizable; }
@@ -63,4 +66,5 @@ protected:
   afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 	afx_msg void PostNcDestroy();
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

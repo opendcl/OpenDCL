@@ -5,7 +5,7 @@
 
 #include "TextBoxCtrl.h"
 #include "ArxControlServices.h"
-#include "OleOdcDropTarget.h"
+#include "ArxDragDropService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -14,9 +14,8 @@
 class CArxTextBoxCtrl : public CTextBoxCtrl
 {
 	CArxControlServices	mArxServices;
+	CArxDragDropService mDragDropService;
 	bool mbFocusClick;
-
-	COleOdcDropTarget m_DropTarget;
 
 public:
 	CArxTextBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID,
@@ -26,12 +25,8 @@ public:
 // DialogControl Interface
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
+	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
-
-// Operations
-public:
-	void SetDragnDrop(BOOL bRegister);
 
 protected:
 	DECLARE_MESSAGE_MAP();
@@ -48,5 +43,4 @@ protected:
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };

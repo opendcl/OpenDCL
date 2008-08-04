@@ -89,6 +89,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddDefaultFormName( pDclControl );
 		pDclControl->AddStringProperty( Prop::ObjectBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, false );
 		pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth > 0? lWidth : 350 );
 		pDclControl->AddLongProperty( Prop::Height, PropLong, lHeight > 0? lHeight : 250 );
@@ -111,6 +112,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddDefaultFormName( pDclControl );
 		pDclControl->AddStringProperty( Prop::ObjectBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddBooleanProperty( Prop::KeepFocus, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
 		pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );
@@ -139,6 +141,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddDefaultFormName( pDclControl );
 		pDclControl->AddStringProperty( Prop::ObjectBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddBooleanProperty( Prop::KeepFocus, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
 		pDclControl->AddLongProperty( Prop::MinDialogWidth, PropLong, 0 );
@@ -197,6 +200,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddDefaultFormName( pDclControl );
 		pDclControl->AddStringProperty( Prop::ObjectBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddBooleanProperty( Prop::KeepFocus, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
 		pDclControl->AddLongProperty( Prop::MinDialogWidth, PropLong, 0 );
@@ -673,7 +677,9 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddStringProperty( Prop::ImageList, PropImageList );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
+		pDclControl->AddStringProperty( Prop::ItemData, PropIntArray );
 		pDclControl->AddLongProperty( Prop::LimitText, PropLong, 256 );
+		pDclControl->AddStringProperty( Prop::List, PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::ReturnAsTab, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::Sorted, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ComboBoxStyle, PropEnum, 0 );

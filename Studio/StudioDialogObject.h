@@ -7,6 +7,7 @@
 #include "DialogObject.h"
 #include "StudioControlPane.h"
 #include "StudioProject.h"
+#include "AcadColorService.h"
 #include "SelectedControl.h"
 #include "FontSettings.h"
 #include <set>
@@ -27,6 +28,7 @@ class CStudioDialogObject : public CDialog, public CDialogObject
 {
 	CStudioControlPane mControlPane;
 	CDclFormView* mpFormView;
+	CAcadColorService mColorService;
 	bool mbDrawing;
 	bool mbMoving;
 	bool mbSizing;
@@ -84,6 +86,7 @@ public:
 	virtual FormType GetType() const;
 	virtual const CControlPane* GetControlPane() const { return &mControlPane; }
 	virtual CControlPane* GetControlPane() { return &mControlPane; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual bool IsModeless() const;
 	virtual bool IsDockable() const { return false; }
 	virtual bool IsResizable() const;

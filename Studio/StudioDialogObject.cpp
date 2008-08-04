@@ -94,6 +94,7 @@ END_MESSAGE_MAP()
 CStudioDialogObject::CStudioDialogObject( TDclFormPtr pSourceForm, CDclFormView* pFormView, bool bCreate /*= true*/ )
 : CDialogObject( pSourceForm, &mControlPane, this )
 , mpFormView( pFormView )
+, mColorService( long( -16 ) /*COLOR_BTNFACE*/, long( -24 ) /*transparent*/ )
 , mControlPane( pSourceForm, this )
 , mbDrawing( false )
 , mbMoving( false )
@@ -949,7 +950,7 @@ void CStudioDialogObject::OnUpdateProperties(CCmdUI *pCmdUI)
 		pCmdUI->Enable( false );
 		return;
 	}
-	pCmdUI->Enable( CountSelected() == 1 );
+	pCmdUI->Enable( CountSelected() <= 1 );
 }
 
 void CStudioDialogObject::OnAxProperties() 
@@ -1115,7 +1116,9 @@ BOOL CStudioDialogObject::OnEraseBkgnd(CDC* pDC)
 
 	CRect rcClient;
 	GetClientRect( &rcClient );
-	COLORREF crBackground = GetSysColor( COLOR_BTNFACE );
+	COLORREF crBackground = mColorService.IsBackgroundTransparent()?
+														mColorService.GetForegroundColor() :
+														mColorService.GetBackgroundColor();
 	if( mpControlPane->GetThemeHelper() )
 	{
 		TDclFormPtr pParentForm = mpSourceForm->GetParentForm();

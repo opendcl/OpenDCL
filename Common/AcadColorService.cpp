@@ -67,7 +67,7 @@ COLORREF CAcadColorService::GetForegroundColor() const
 
 COLORREF CAcadColorService::GetBackgroundColor() const
 {
-	return (mclrBackground & 0x0FFFFFF);
+	return (mclrBackground & 0x00FFFFFF);
 }
 
 HBRUSH CAcadColorService::GetBackgroundBrush() const
@@ -102,12 +102,12 @@ HBRUSH CAcadColorService::CtlColor( CDC* pDC, UINT nCtlColor, CWnd* pWnd /*= NUL
 	{
 		if( pWnd )
 		{
-			CRect rcDlg;
-			pWnd->GetWindowRect( &rcDlg );
+			CRect rcCtrl;
+			pWnd->GetWindowRect( &rcCtrl );
 			CWnd* pParentWnd = pWnd->GetParent();
-			pParentWnd->ScreenToClient( &rcDlg );
+			pParentWnd->ScreenToClient( &rcCtrl );
 			CDC* pParentDC = pParentWnd->GetDC();
-			pDC->BitBlt( 0, 0, rcDlg.Width(), rcDlg.Height(), pParentDC, rcDlg.left, rcDlg.top, SRCCOPY );
+			pDC->BitBlt( 0, 0, rcCtrl.Width(), rcCtrl.Height(), pParentDC, rcCtrl.left, rcCtrl.top, SRCCOPY );
 			pParentWnd->ReleaseDC( pParentDC );
 		}
 		pDC->SetBkMode( TRANSPARENT );

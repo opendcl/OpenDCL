@@ -13,6 +13,7 @@ CArxTextBoxCtrl::CArxTextBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane,
 																	bool bCreate /*= true*/ )
 : CTextBoxCtrl( pTemplate, pPane, nID, pFilter, false )
 , mArxServices( this )
+, mDragDropService( this )
 , mbFocusClick( false )
 {
 	SetStyleMask( dwAcUiStyle );
@@ -30,34 +31,6 @@ bool CArxTextBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 		__super::Create( pParentWnd, nID );
 
 	return bSuccess;
-}
-
-bool CArxTextBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
-{
-	if( !__super::OnApplyProperty( pProp ) )
-		return false;
-	bool bFailed = false;
-	switch( pProp->GetID() )
-	{
-	case Prop::DragnDropAllowDrop:
-		{
-			SetDragnDrop( pProp->GetBooleanValue() );
-			break;
-		}
-	}
-	return !bFailed;
-}
-
-void CArxTextBoxCtrl::SetDragnDrop(BOOL bRegister)
-{
-	if (bRegister == TRUE)
-	{
-		BOOL success = m_DropTarget.Register(this);
-		m_DropTarget.m_pThisArxControl = mpTemplate;
-		m_DropTarget.m_pParent = this;
-	}
-	else
-		m_DropTarget.Revoke();
 }
 
 BEGIN_MESSAGE_MAP(CArxTextBoxCtrl, CTextBoxCtrl)
@@ -181,11 +154,4 @@ void CArxTextBoxCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventSetFocus ), IsAsyncEvents() );
 		mbFocusClick = true;
 	}
-}
-
-void CArxTextBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) && nFlags == MK_LBUTTON )
-		BeginDragnDrop( mpTemplate, point, IsAsyncEvents() );
-	__super::OnLButtonDown(nFlags, point);
 }

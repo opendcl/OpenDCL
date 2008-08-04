@@ -5,6 +5,7 @@
 
 #include "AcadDockBarHost.h"
 #include "ArxDialogObject.h"
+#include "AcadColorService.h"
 #include "Resource.h"
 
 
@@ -25,6 +26,7 @@ class CDockingDialog : public CDialog, public CArxDialogObject
 	bool mbKeepFocus;
 	bool mbResizable;
 	bool mbHiding;
+	CAcadColorService mColorService;
 
 // Construction
 public:
@@ -37,6 +39,7 @@ public:
 
 // CDialogObject overrides
 public:
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual FormType GetType() const { return FrmDockableDlg; }
 	virtual CWnd* GetTopLevelWnd();
 	virtual bool IsModeless() const { return true; }

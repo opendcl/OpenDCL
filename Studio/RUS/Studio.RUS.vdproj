@@ -2907,14 +2907,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{4D3FCEE3-BE9F-4EE6-A702-5594A809D17A}"
-        "PackageCode" = "8:{C494FB76-165E-4C5B-B02D-7A202B1C5F14}"
+        "ProductCode" = "8:{800C1FA1-18CF-4B5E-A313-EC5E07907FAA}"
+        "PackageCode" = "8:{D8446C03-7D34-4E05-A02C-43D90B2D471D}"
         "UpgradeCode" = "8:{30C0C78D-D3B1-4C36-B37E-357F50E691D3}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0020"
+        "ProductVersion" = "8:5.0.0021"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -3734,7 +3734,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_1FD20FF3AFB343A886AACDFE8C1E525A"
             {
-            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_A2278D01B3844DF083DFDAC95D53CB95"
@@ -3762,7 +3762,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_53AD037AF9124FBEA4EA87D86BDC7A69"
             {
-            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_0FD7E2DF4F2446829B2C474C098BE954"
@@ -3790,7 +3790,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_EAB229CCCBF64197A5F804AD94EDF89B"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\RUS\\MSM\\Release\\OpenDCL.Runtime.RUS.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\RUS\\MSM\\Debug\\OpenDCL.Runtime.RUS.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_A2278D01B3844DF083DFDAC95D53CB95"

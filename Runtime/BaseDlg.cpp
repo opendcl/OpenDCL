@@ -87,6 +87,7 @@ BEGIN_MESSAGE_MAP(CBaseDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_NCHITTEST()
 	ON_WM_WINDOWPOSCHANGED()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -275,6 +276,18 @@ void CBaseDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 		return;
 	if( (lpwndpos->flags & (SWP_NOSIZE | SWP_NOMOVE) != (SWP_NOSIZE | SWP_NOMOVE)) )
 		SavePosition();
+}
+
+BOOL CBaseDlg::OnEraseBkgnd(CDC* pDC)
+{
+	if( !mColorService.IsBackgroundTransparent() )
+	{
+		CRect rcClient;
+		GetClientRect( &rcClient );
+		pDC->FillSolidRect( &rcClient, mColorService.GetBackgroundColor() );
+		return TRUE;
+	}
+	return __super::OnEraseBkgnd(pDC);
 }
 
 void CBaseDlg::PostNcDestroy() 

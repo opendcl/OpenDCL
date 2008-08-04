@@ -52,26 +52,22 @@ ADSRESULT ImageComboBox::AddString()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
-	pItemList->AddStringItem( sToAdd );
+	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
 
-	if( pDlgControl->OnApplyProperty( pItemList ) )
+	COMBOBOXEXITEM cbi =
 	{
-		CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
-		COMBOBOXEXITEM cbi =
-		{
-			(CBEIF_IMAGE | CBEIF_INDENT | CBEIF_OVERLAY | CBEIF_SELECTEDIMAGE),
-			nItem,
-			NULL,
-			-1,
-			nImage,
-			nSelectedImage,
-			2,
-			nIndent
-		};
-		if( pCtrl->SetItem( &cbi ) )
-			acedRetInt( pItemList->size() - 1 );
-	}
+		(CBEIF_IMAGE | CBEIF_INDENT | CBEIF_OVERLAY | CBEIF_SELECTEDIMAGE | CBEIF_TEXT),
+		nItem,
+		sToAdd.LockBuffer(),
+		-1,
+		nImage,
+		nSelectedImage,
+		2,
+		nIndent
+	};
+	int idx = pCtrl->InsertItem( &cbi );
+	if( idx != CB_ERR )
+		acedRetInt( idx );
 	return RSRSLT;
 }
 
@@ -131,12 +127,6 @@ ADSRESULT ImageComboBox::SetItem()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
-	if( nItem < 0 || nItem >= pItemList->size() )
-		return RSRSLT;
-	PropVal::TCStringArray* pItems = pItemList->GetStringArrayPtr();
-	pItems->at( nItem ) = sText;
-
 	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
 
 	COMBOBOXEXITEM cbi =
@@ -167,10 +157,9 @@ ADSRESULT ImageComboBox::Clear()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	TPropertyPtr pOptionList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
-	pOptionList->clear();
-	if( pDlgControl->OnApplyProperty( pOptionList ) )
-		acedRetT();
+	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
+	pCtrl->ResetContent();
+	acedRetT();
 	return RSRSLT;
 }
 
@@ -223,16 +212,10 @@ ADSRESULT ImageComboBox::DeleteString()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
-	if( nIndex < 0 || nIndex >= pItemList->size() )
-		return RSRSLT;
-	PropVal::TCStringArray* pItems = pItemList->GetStringArrayPtr();
-	PropVal::TCStringArray::iterator iterAt = pItems->begin();
-	while( nIndex-- > 0 ) iterAt++;
-	pItems->erase( iterAt );
+	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
 
-	if( pDlgControl->OnApplyProperty( pItemList ) )
-		acedRetT();
+	pCtrl->DeleteItem( nIndex );
+	acedRetT();
 	return RSRSLT;
 }
 

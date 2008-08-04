@@ -346,6 +346,12 @@ void CPaletteDialog::OnDestroy()
 
 BOOL CPaletteDialog::OnEraseBkgnd(CDC* pDC)
 {
+	if( !mColorService.IsBackgroundTransparent() )
+	{
+		CRect rcClient;
+		GetClientRect( &rcClient );
+		pDC->FillSolidRect( &rcClient, mColorService.GetBackgroundColor() );
+	}
 	return TRUE;
 	return __super::OnEraseBkgnd(pDC);
 }

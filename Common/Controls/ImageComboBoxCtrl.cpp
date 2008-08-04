@@ -104,35 +104,15 @@ bool CImageComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 				SetImageList( NULL );
 		}
 		break;
-	case Prop::List:
-		if( !GetComboHandler() )
-		{
-			const PropVal::TCStringArray* prString = pProp->GetConstStringArrayPtr();
-			ResetContent();
-			if( prString )
-			{
-				for( int idx = 0; (size_t)idx < prString->size(); ++idx )
-					AddString( prString->at( idx ) );
-			}
-			if( IsEnumeratingProperties() )
-			{
-				const PropVal::TIntArray* prInt = mpTemplate->GetPropertyObject( Prop::ItemData )->GetConstIntArrayPtr();
-				if( prInt )
-				{
-					for( int idx = 0; (size_t)idx < prInt->size(); ++idx )
-						SetItemData( idx, (DWORD_PTR)prInt->at( idx ) );
-				}
-			}
-		}
-		break;
 	case Prop::ItemData:
 		if( !IsEnumeratingProperties() || GetComboHandler() )
 		{
 			const PropVal::TIntArray* prInt = pProp->GetConstIntArrayPtr();
 			if( prInt )
 			{
+				CComboBox* pComboCtrl = GetComboBoxCtrl();
 				for( int idx = 0; (size_t)idx < prInt->size(); ++idx )
-					SetItemData( idx, (DWORD_PTR)prInt->at( idx ) );
+					pComboCtrl->SetItemData( idx, (DWORD_PTR)prInt->at( idx ) );
 			}
 		}
 		break;

@@ -86,6 +86,4 @@ protected:
 	afx_msg void OnTvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnTvnItemexpanding(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
-public:
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 };
