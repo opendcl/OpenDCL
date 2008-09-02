@@ -9,8 +9,6 @@ namespace AxControl
 ADSRESULT GetProperty();
 ADSRESULT SetProperty();
 ADSRESULT DoMethod();
-ADSRESULT SetColorProperty();
-ADSRESULT SetPictureProperty();
 ADSRESULT GetOleObject();
 };
 
@@ -20,4 +18,10 @@ ADSRESULT GetProperty();
 ADSRESULT SetProperty();
 ADSRESULT DoMethod();
 ADSRESULT Close();
+};
+
+namespace AxGeneral
+{
+ADSRESULT GetOlePictureFromId();
+ADSRESULT GetOlePictureFromFile();
 };

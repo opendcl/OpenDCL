@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "Methods_Hatch.h"
 #include "ArgumentsRetrieval.h"
-#include "GsPreviewCtrl.h"
+#include "ArxGsViewCtrl.h"
 #include "ControlTypes.h"
 
 
@@ -19,7 +19,7 @@ ADSRESULT Hatch::Clear()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
 	pCtrl->clearAll();	
 	pCtrl->m_Line[0] = NULL;
 	pCtrl->m_Line[1] = NULL;
@@ -53,7 +53,7 @@ ADSRESULT Hatch::SetPattern()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CGsPreviewCtrl* pCtrl = (CGsPreviewCtrl*)pDlgControl->GetControlWnd();
+	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
 	pCtrl->clearAll();	
 	pCtrl->m_Line[0] = NULL;
 	pCtrl->m_Line[1] = NULL;

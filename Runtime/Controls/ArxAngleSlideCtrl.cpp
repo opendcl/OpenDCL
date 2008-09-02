@@ -41,7 +41,6 @@ BEGIN_MESSAGE_MAP(CArxAngleSlideCtrl, CAngleSlideCtrl)
 	ON_NOTIFY_REFLECT(NM_OUTOFMEMORY, OnOutofmemory)
 	ON_NOTIFY_REFLECT(NM_RELEASEDCAPTURE, OnReleasedcapture)
 	ON_WM_MOUSEMOVE()
-	ON_WM_HSCROLL()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

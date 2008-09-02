@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "Methods_SlideView.h"
 #include "ArgumentsRetrieval.h"
-#include "SlideHolder.h"
+#include "ArxAcadSlideCtrl.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
 
@@ -34,7 +34,7 @@ ADSRESULT SlideView::Load()
 	if( sSlidePath.IsEmpty() )
 		return RSRSLT;
 
-	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+	CArxAcadSlideCtrl* pCtrl = (CArxAcadSlideCtrl*)pDlgControl->GetControlWnd();
 
 	if( pCtrl->SetFileName( sSlidePath, sSlideName.IsEmpty()? NULL : (LPCTSTR)sSlideName ) )
 		acedRetT();
@@ -52,7 +52,7 @@ ADSRESULT SlideView::Clear()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+	CArxAcadSlideCtrl* pCtrl = (CArxAcadSlideCtrl*)pDlgControl->GetControlWnd();
 
 	pCtrl->Clear();
 	acedRetT();
@@ -74,7 +74,7 @@ ADSRESULT SlideView::SetHighLight()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+	CArxAcadSlideCtrl* pCtrl = (CArxAcadSlideCtrl*)pDlgControl->GetControlWnd();
 
 	pCtrl->SetHighLight( nColor );
 	acedRetT();
@@ -92,7 +92,7 @@ ADSRESULT SlideView::RemoveHighLight()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+	CArxAcadSlideCtrl* pCtrl = (CArxAcadSlideCtrl*)pDlgControl->GetControlWnd();
 
 	pCtrl->RemoveHighLight();
 	acedRetT();
@@ -107,7 +107,7 @@ ADSRESULT SlideView::VectorImage()
 	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlSlideView))
 		return RSERR; //invalid input
 
-	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+	CArxAcadSlideCtrl* pCtrl = (CArxAcadSlideCtrl*)pDlgControl->GetControlWnd();
 
 	if( GetNilArgument( pArgs, true ) )
 	{
@@ -171,7 +171,7 @@ ADSRESULT SlideView::FillImage()
 	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlSlideView))
 		return RSERR; //invalid input
 
-	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+	CArxAcadSlideCtrl* pCtrl = (CArxAcadSlideCtrl*)pDlgControl->GetControlWnd();
 
 	if( GetNilArgument( pArgs, true ) )
 	{
@@ -238,7 +238,7 @@ ADSRESULT SlideView::EndImage()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+	CArxAcadSlideCtrl* pCtrl = (CArxAcadSlideCtrl*)pDlgControl->GetControlWnd();
 
 	pCtrl->CopyDC();
 	acedRetT();
@@ -254,7 +254,7 @@ ADSRESULT SlideView::SlideImage()
 	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlSlideView))
 		return RSERR; //invalid input
 
-	CSlideHolder* pCtrl = (CSlideHolder*)pDlgControl->GetControlWnd();
+	CArxAcadSlideCtrl* pCtrl = (CArxAcadSlideCtrl*)pDlgControl->GetControlWnd();
 
 	if( GetNilArgument( pArgs, true ) )
 	{

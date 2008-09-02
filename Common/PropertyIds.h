@@ -225,7 +225,7 @@ enum Id
 	SingleExpanded = 196,
 	ActiveXPropPages = 197,
 	RowHeight = 198,
-	DefSelIndex = 199,
+	CurSelIndex = 199,
 	ObjectBrowser = 200,
 	GlobalVarName = 201,
 	FileDlgStyle = 202,

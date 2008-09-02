@@ -22,6 +22,7 @@
 #include "FrameCtrl.h"
 #include "GraphicButtonCtrl.h"
 #include "GridCtrl.h"
+#include "HtmlCtrl.h"
 #include "ImageComboBoxCtrl.h"
 #include "ImageTreeCtrl.h"
 #include "LabelCtrl.h"
@@ -90,17 +91,13 @@ TDialogControlPtr CStudioDialogControl::Create( TDclControlPtr pTemplate, CContr
 	TDialogControlPtr pDlgControl = CreateImp( pTemplate, pPane, nID, pParams );
 	if( pDlgControl )
 	{
+		if( !pDlgControl->GetControlWnd()->GetSafeHwnd() )
+		{
+			pDlgControl->GetControlWnd()->DestroyWindow();
+			return NULL; //no window created for some reason
+		}
 		pDlgControl->GetControlWnd()->ModifyStyle( WS_CLIPSIBLINGS, 0 ); //can't have WS_CLIPSIBLINGS while editing in studio!
 		pDlgControl->GetControlWnd()->ModifyStyleEx( 0, WS_EX_TRANSPARENT );
-		//CRect rcOriginal = pDlgControl->GetWndRect();
-		//CRect rcActual = pDlgControl->GetEffectiveWindowRect();
-		//if( rcOriginal != rcActual )
-		//{
-		//	pTemplate->SetLongProperty( Prop::Left, rcActual.left );
-		//	pTemplate->SetLongProperty( Prop::Width, rcActual.Width() );
-		//	pTemplate->SetLongProperty( Prop::Top, rcActual.top );
-		//	pTemplate->SetLongProperty( Prop::Height, rcActual.Height() );
-		//}
 		CControlManager* pManager = new CControlManager( pDlgControl );
 		pManager->OnControlPositionChanged();
 		if( pTemplate->GetType() == CtlActiveX )
@@ -156,38 +153,12 @@ TDialogControlPtr CStudioDialogControl::CreateImp( TDclControlPtr pTemplate, CCo
 			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
 		}
 	case CtlTree: return *new CImageTreeCtrl( pTemplate, pPane, nID );
-/*
-		{
-			DWORD dwStyle = WS_CHILD | WS_VISIBLE | 
-				TVS_DISABLEDRAGDROP | TVS_INFOTIP | WS_TABSTOP;
-			if (pTemplate->GetBooleanProperty(Prop::ShowSelectAlways))
-				dwStyle = dwStyle | TVS_SHOWSELALWAYS;
-			if (pTemplate->GetBooleanProperty(Prop::HasLines))
-				dwStyle = dwStyle | TVS_HASLINES;
-			if (pTemplate->GetBooleanProperty(Prop::LinesAtRoot))
-				dwStyle = dwStyle | TVS_LINESATROOT;
-			if (pTemplate->GetBooleanProperty(Prop::HasButtons))
-				dwStyle = dwStyle | TVS_HASBUTTONS;
-			if (pTemplate->GetBooleanProperty(Prop::EditLabels))
-				dwStyle = dwStyle | TVS_EDITLABELS;
-			if (pTemplate->GetBooleanProperty(Prop::CheckBoxes))
-				dwStyle = dwStyle | TVS_CHECKBOXES;
-			CTreeCtrl *pControl = new CTreeCtrl;
-			pControl->Create(dwStyle, rc, pHostWnd, nID);
-			pControl->ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
-			CString sNodeText = theWorkspace.LoadResourceString(IDS_SAMPLENODE);
-			HTREEITEM hti = pControl->InsertItem( TVIF_TEXT, sNodeText, 0, 0, TVIS_EXPANDEDONCE, TVIF_TEXT, 0, NULL, 0 );
-			pControl->InsertItem( TVIF_TEXT, sNodeText, 0, 0, TVIS_EXPANDEDONCE, TVIF_TEXT, 0, hti, 0 );
-			pControl->InsertItem( TVIF_TEXT, sNodeText, 0, 0, 0, TVIF_TEXT, 0, hti, 0 );
-			pControl->InsertItem( TVIF_TEXT, sNodeText, 0, 0, 0, TVIF_TEXT, 0, NULL, 0 );
-			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
-		}
-*/
-	case CtlHtmlCtrl:
-		{
-			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_HTML );
-			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
-		}
+	case CtlHtmlCtrl: return *new CHtmlCtrl( pTemplate, pPane, nID );
+	//case CtlHtmlCtrl:
+	//	{
+	//		CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_HTML );
+	//		return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
+	//	}
 	case CtlDwgPreview:
 		{
 			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_DWGPREVIEW );
@@ -276,63 +247,7 @@ void CStudioDialogControl::UpdateAllProperties( TDclControlPtr pTemplate )
 	if( !pDlgControl )
 		return;
 	pDlgControl->ApplyPropertiesEnum();
-
-	switch( pTemplate->GetType() )
-	{ //these controls implement the new CDialogControl interface, so use that
-	case _CtlForm:
-	case CtlActiveX:
-	case CtlAngleSlider:
-	case CtlBlockList:
-	case CtlCheckBox:
-	case CtlComboBox:
-	case CtlDwgList:
-	case CtlFrame:
-	case CtlGraphicButton:
-	case CtlGrid:
-	case CtlImageComboBox:
-	case CtlLabel:
-	case CtlListBox:
-	case CtlListView:
-	case CtlMonth:
-	case CtlOptionButton:
-	case CtlOptionList:
-	case CtlPictureBox:
-	case CtlProgress:
-	case CtlRectangle:
-	case CtlScrollBar:
-	case CtlSlider:
-	case CtlSlideView:
-	case CtlSpinButton:
-	case CtlSplitter:
-	case CtlStdButton:
-	case CtlTabStrip:
-	case CtlTextBox:
-	case CtlTree:
-	case CtlUrlLink:
-		break;
-	default:
-		{
-			const TPropertyList& Props = pTemplate->GetPropertyList();
-			for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
-			{
-				Prop::Id id = (*iter)->GetID();
-				switch( id )
-				{
-				case Prop::ToolTipBalloon:
-				case Prop::ToolTipLine:
-				case Prop::ToolTipBody:
-				case Prop::ToolTipPicture:
-				case Prop::ToolTipAviFileName:
-				case Prop::ToolTipTitleColor:
-					break; //skip related properties that all get set at once with the main property of the group
-				default:
-					UpdateProperty( pTemplate, id );
-				}
-			}
-			pDlgControl->OnNeedRepaint();
-		}
-		break;
-	};
+	pDlgControl->OnNeedRepaint( true, true );
 	CControlManager* pManager = pDlgControl->GetControlManager();
 	if( pManager && pManager->IsSelected() )
 		pManager->Invalidate();
@@ -348,95 +263,8 @@ void CStudioDialogControl::UpdateProperty( TDclControlPtr pTemplate, Prop::Id id
 	CDialogControl* pDlgControl = pTemplate->GetControlInstance();
 	if( !pDlgControl )
 		return;
-	switch( pTemplate->GetType() )
-	{ //these controls implement the new CDialogControl interface, so use that
-	case _CtlForm:
-	case CtlActiveX:
-	case CtlAngleSlider:
-	case CtlBlockList:
-	case CtlCheckBox:
-	case CtlComboBox:
-	case CtlDwgList:
-	case CtlFrame:
-	case CtlGraphicButton:
-	case CtlGrid:
-	case CtlImageComboBox:
-	case CtlLabel:
-	case CtlListBox:
-	case CtlListView:
-	case CtlMonth:
-	case CtlOptionButton:
-	case CtlOptionList:
-	case CtlPictureBox:
-	case CtlProgress:
-	case CtlRectangle:
-	case CtlScrollBar:
-	case CtlSlider:
-	case CtlSlideView:
-	case CtlSpinButton:
-	case CtlSplitter:
-	case CtlStdButton:
-	case CtlTabStrip:
-	case CtlTextBox:
-	case CtlTree:
-	case CtlUrlLink:
-		pDlgControl->OnApplyProperty( pTemplate->GetPropertyObject( id ) );
-		break;
-	default:
-		UpdatePropertyInt( pTemplate, id );
-		break;
-	};
+	pDlgControl->OnApplyProperty( pTemplate->GetPropertyObject( id ) );
 	CControlManager* pManager = pDlgControl->GetControlManager();
 	if( pManager && pManager->IsSelected() )
 		pManager->Invalidate();
-}
-
-//static
-void CStudioDialogControl::UpdatePropertyInt( TDclControlPtr pTemplate, Prop::Id id )
-{
-	//I'm moving pPane logic into the child control's Create() function as I work on individual controls. Controls 
-	//that don't have their own class I'll leave here for now. 2007-02-05 [ORW]
-	TPropertyPtr pProp = pTemplate->GetPropertyObject( id );
-	if( !pProp )
-		return;
-	CWnd* pControlWnd = pTemplate->GetWindow();
-
-	// set the appropriate property
-	switch( id )
-	{
-		case Prop::Left:
-		case Prop::Top:
-		case Prop::Width:
-		case Prop::Height:
-		case Prop::LeftFromRight:
-		case Prop::RightFromRight:
-		case Prop::TopFromBottom:
-		case Prop::BottomFromBottom:
-		case Prop::BorderStyle:
-		case Prop::Enabled:
-		case Prop::HScrollBar:
-		case Prop::TitleBarText:
-		case Prop::Visible:
-		{
-			CDialogControl* pDlgControl = pTemplate->GetControlInstance();
-			assert( pDlgControl != NULL );
-			pDlgControl->OnApplyProperty( pTemplate->GetPropertyObject( id ) );
-		}
-		break;
-		case Prop::BackgroundColor:
-		{
-		switch (pTemplate->GetType())
-			{
-			case CtlBlockView:
-			case CtlHatch:
-				((CPictureBoxCtrl*)pControlWnd)->GetColorService()->SetBackgroundColor(pTemplate->GetLongProperty(Prop::BackgroundColor));
-				break;
-			case CtlDwgPreview:
-				((CPictureBoxCtrl*)pControlWnd)->GetColorService()->SetBackgroundColor(pTemplate->GetLongProperty(Prop::BackgroundColor));
-				break;
-			}
-			break;
-			
-		}
-	}	
 }

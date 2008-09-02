@@ -60,7 +60,7 @@ bool CAngleSlideCtrl::OnApplyProperty( TPropertyPtr pProp )
 
 
 BEGIN_MESSAGE_MAP(CAngleSlideCtrl, CRoundSliderCtrl)
-	ON_WM_HSCROLL()
+	ON_WM_HSCROLL_REFLECT()
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_WINDOWPOSCHANGING()
 END_MESSAGE_MAP()
@@ -68,10 +68,9 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CAngleSlideCtrl message handlers
 
-void CAngleSlideCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+void CAngleSlideCtrl::HScroll(UINT nSBCode, UINT nPos)
 {
 	mpTemplate->SetLongProperty( Prop::Value, GetPos() );
-	__super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 void CAngleSlideCtrl::PostNcDestroy() 

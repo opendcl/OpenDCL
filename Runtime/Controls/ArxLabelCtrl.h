@@ -5,7 +5,7 @@
 
 #include "LabelCtrl.h"
 #include "ArxControlServices.h"
-#include "OleOdcDropTarget.h"
+#include "ArxDragDropService.h"
 
 #if (_MFC_VER < 0x0800)
 #define __UINT_LRESULT UINT
@@ -20,7 +20,7 @@
 class CArxLabelCtrl : public CLabelCtrl
 {
 	CArxControlServices	mArxServices;
-	COleOdcDropTarget mDropTarget;	
+	CArxDragDropService mDragDropService;
 
 public:
 	CArxLabelCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -29,10 +29,7 @@ public:
 // DialogControl Interface
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
-
-public:
-	void SetDragnDrop(BOOL bRegister);
+	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
 
 // Generated message map functions
 protected:

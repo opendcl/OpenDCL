@@ -6,14 +6,17 @@
 #include "Resource.h"
 #include "ControlTypes.h"
 #include "DclControlObject.h"
+#include "PropertyObject.h"
 #include "PropertyIds.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
 #include "DclFormObject.h"
 
 
-void LoadArgsNDesc(Prop::Id nEventId, const TDclControlPtr pControl, CString &sArgs, CString &sDesc)
+void LoadArgsNDesc( const TPropertyPtr pEventProp, CString& sArgs, CString& sDesc )
 {
+	int nEventId = pEventProp->GetID();
+	TDclControlPtr pControl = pEventProp->GetOwnerControl();
 	// here we need to test the event defun id type to see what arguments need to be added.
 	switch (nEventId)
 	{

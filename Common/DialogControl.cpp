@@ -107,6 +107,8 @@ bool CDialogControl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 CWnd* CDialogControl::GetTopLevelWnd()
 {
 	CWnd* pTopLevelWnd = mpControlWnd;
+	if( !pTopLevelWnd->m_hWnd )
+		return pTopLevelWnd;
 	//if the control is hosted inside another window, find the ancestor
 	//that is a child of the host dialog
 	CWnd* pHostDlg = GetControlPane()->GetHostDialog();
@@ -160,10 +162,13 @@ CRect CDialogControl::GetEffectiveWindowRect() const
 	{
 		CWnd* pWndChildOfHost = mpControlWnd;
 		//if the control is hosted inside another window, use the parent instead
-		if( (pWndChildOfHost->GetControlUnknown() || (pWndChildOfHost->GetStyle() & WS_CHILD)) &&
-				pWndChildOfHost->GetParent() != mpControlPane->GetHostDialog() )
-			pWndChildOfHost = pWndChildOfHost->GetParent();
-
+		bool bWindowLess = (pWndChildOfHost->m_hWnd == NULL);
+		if( !bWindowLess )
+		{
+			if( (pWndChildOfHost->GetControlUnknown() || (pWndChildOfHost->GetStyle() & WS_CHILD)) &&
+					pWndChildOfHost->GetParent() != mpControlPane->GetHostDialog() )
+				pWndChildOfHost = pWndChildOfHost->GetParent();
+		}
 		pWndChildOfHost->GetWindowRect( &rcWnd );
 		mpControlPane->GetHostDialog()->ScreenToClient( &rcWnd );
 	}
@@ -177,10 +182,13 @@ CRect CDialogControl::GetEffectiveClientRect() const
 	{
 		CWnd* pWndChildOfHost = mpControlWnd;
 		//if the control is hosted inside another window, use the parent instead
-		if( (pWndChildOfHost->GetStyle() & WS_CHILD) &&
-				pWndChildOfHost->GetParent() != mpControlPane->GetHostDialog() )
-			pWndChildOfHost = pWndChildOfHost->GetParent();
-
+		bool bWindowLess = (pWndChildOfHost->m_hWnd == NULL);
+		if( !bWindowLess )
+		{
+			if( (pWndChildOfHost->GetStyle() & WS_CHILD) &&
+					pWndChildOfHost->GetParent() != mpControlPane->GetHostDialog() )
+				pWndChildOfHost = pWndChildOfHost->GetParent();
+		}
 		pWndChildOfHost->GetClientRect( &rcClient );
 	}
 	return rcClient;
@@ -247,9 +255,22 @@ void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= true*/, bool bUp
 				pHostDlg->UpdateWindow();
 		}
 	}
-	mpControlWnd->Invalidate();
-	if( bUpdateNow )
-		mpControlWnd->UpdateWindow();
+	if( mpControlWnd->m_hWnd )
+	{
+		mpControlWnd->Invalidate();
+		if( bUpdateNow )
+			mpControlWnd->UpdateWindow();
+	}
+	else
+	{
+		CWnd* pHostDlg = mpControlPane->GetHostDialog();
+		if( pHostDlg )
+		{
+			CDC* pdc = pHostDlg->GetDC();
+			mpControlWnd->PaintWindowlessControls( pdc );
+			pHostDlg->ReleaseDC( pdc );
+		}
+	}
 }
 
 void CDialogControl::ApplyPosition()

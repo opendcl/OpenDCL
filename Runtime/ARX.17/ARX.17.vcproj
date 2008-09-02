@@ -517,11 +517,11 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="..\..\Common\Res\Folder.bmp"
+				RelativePath="..\Res\Folder.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\Res\Folder.bmp"
+				RelativePath="..\..\Common\Res\Folder.bmp"
 				>
 			</File>
 			<File
@@ -621,11 +621,27 @@
 			Name="Controls"
 			>
 			<File
+				RelativePath="..\Controls\ArxAcadSlideCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxAcadSlideCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxAngleSlideCtrl.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\Controls\ArxAngleSlideCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxAnimationCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxAnimationCtrl.h"
 				>
 			</File>
 			<File
@@ -677,6 +693,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Controls\ArxDwgPreviewCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxDwgPreviewCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxFolderComboCtrl.cpp"
 				>
 			</File>
@@ -714,6 +738,22 @@
 			</File>
 			<File
 				RelativePath="..\Controls\ArxGridCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxGsViewCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxGsViewCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxHtmlCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxHtmlCtrl.h"
 				>
 			</File>
 			<File
@@ -953,31 +993,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Controls\DwgPreviewCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\DwgPreviewCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Controls\FontComboHandler.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\GsPreviewCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\GsPreviewCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\HtmlCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\HtmlCtrl.h"
 				>
 			</File>
 			<File
@@ -998,14 +1014,6 @@
 			</File>
 			<File
 				RelativePath="..\Controls\R2006AcUiMRUComboBoxFixup.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\SlideHolder.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\SlideHolder.h"
 				>
 			</File>
 			<File
@@ -1676,6 +1684,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\AnimationCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\AnimationCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\AxContainerCtrl.cpp"
 					>
 				</File>
@@ -1849,6 +1865,14 @@
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\GridCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\HtmlCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\HtmlCtrl.h"
 					>
 				</File>
 				<File

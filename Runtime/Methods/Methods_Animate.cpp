@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "Methods_Animate.h"
+#include "ArxAnimationCtrl.h"
 #include "ArgumentsRetrieval.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
@@ -35,7 +36,7 @@ ADSRESULT Animate::Load()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CAnimateCtrl* pCtrl = (CAnimateCtrl*)pDlgControl->GetControlWnd();
+	CArxAnimationCtrl* pCtrl = (CArxAnimationCtrl*)pDlgControl->GetControlWnd();
 
 	if( sFileName.Right( 4 ).CompareNoCase( _T(".avi") ) != 0 )
 		sFileName += _T(".avi");
@@ -59,7 +60,6 @@ ADSRESULT Animate::Load()
 	return RSRSLT;
 }
 
-
 ADSRESULT Animate::Seek()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
@@ -75,9 +75,36 @@ ADSRESULT Animate::Seek()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CAnimateCtrl* pCtrl = (CAnimateCtrl*)pDlgControl->GetControlWnd();
+	CArxAnimationCtrl* pCtrl = (CArxAnimationCtrl*)pDlgControl->GetControlWnd();
 
 	if( pCtrl->Seek( nFrame ) )
+		acedRetT();
+	return RSRSLT;
+}
+
+ADSRESULT Animate::Play()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimate ) )
+		return RSERR; //invalid input
+
+	int nFirstFrame = 0;
+	int nLastFrame = -1;
+	int nRepeat = -1;
+	if( GetIntArgument( pArgs, nFirstFrame, true ) )
+	{
+		if( GetIntArgument( pArgs, nLastFrame, true ) )
+			GetIntArgument( pArgs, nRepeat, true );
+	}
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxAnimationCtrl* pCtrl = (CArxAnimationCtrl*)pDlgControl->GetControlWnd();
+
+	if( pCtrl->Play( nFirstFrame, nLastFrame, nRepeat ) )
 		acedRetT();
 	return RSRSLT;
 }
@@ -93,7 +120,7 @@ ADSRESULT Animate::Close()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CAnimateCtrl* pCtrl = (CAnimateCtrl*)pDlgControl->GetControlWnd();
+	CArxAnimationCtrl* pCtrl = (CArxAnimationCtrl*)pDlgControl->GetControlWnd();
 
 	if( pCtrl->Close() )
 		acedRetT();
@@ -111,7 +138,7 @@ ADSRESULT Animate::Stop()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CAnimateCtrl* pCtrl = (CAnimateCtrl*)pDlgControl->GetControlWnd();
+	CArxAnimationCtrl* pCtrl = (CArxAnimationCtrl*)pDlgControl->GetControlWnd();
 
 	if( pCtrl->Stop() )
 		acedRetT();

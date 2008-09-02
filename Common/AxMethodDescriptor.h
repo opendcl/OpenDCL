@@ -15,6 +15,7 @@ class AxMethodDescriptor
 	CString msParams;
 	VARTYPE mReturnType;
 	GUID mReturnGuid;	
+	CString msReturnTypeName;
 	std::vector< AxArg > mrArgs;
 
 protected:

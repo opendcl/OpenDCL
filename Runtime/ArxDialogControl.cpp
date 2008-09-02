@@ -10,17 +10,22 @@
 #include "PropertyObject.h"
 
 #include "ControlTypes.h"
+#include "ArxAcadSlideCtrl.h"
+#include "ArxAnimationCtrl.h"
 #include "ArxArrowComboBoxCtrl.h"
 #include "ArxAngleSlideCtrl.h"
 #include "ArxAxContainerCtrl.h"
 #include "ArxColorComboBoxCtrl.h"
 #include "ArxDwgListCtrl.h"
+#include "ArxDwgPreviewCtrl.h"
 #include "ArxCheckBoxCtrl.h"
 #include "ArxFolderComboCtrl.h"
 #include "ArxFontComboBoxCtrl.h"
 #include "ArxFrameCtrl.h"
 #include "ArxGraphicButtonCtrl.h"
 #include "ArxGridCtrl.h"
+#include "ArxGsViewCtrl.h"
+#include "ArxHtmlCtrl.h"
 #include "ArxImageComboBoxCtrl.h"
 #include "ArxImageTreeCtrl.h"
 #include "ArxLabelCtrl.h"
@@ -63,11 +68,6 @@
 #include "TimeFilter.h"
 #include "UpperCaseFilter.h"
 
-#include "GsPreviewCtrl.h"
-#include "DwgPreviewCtrl.h"
-#include "SlideHolder.h"
-#include "HtmlCtrl.h"
-
 
 static TDclControlPtr FindPaperCombo( TDclFormPtr pForm )
 {
@@ -108,10 +108,15 @@ TDialogControlPtr CArxDialogControl::Create( TDclControlPtr pTemplate, CControlP
 																						 UINT nID, ControlParams* pParams /*= NULL*/ )
 {
 	TDialogControlPtr pDlgControl = CreateImp( pTemplate, pPane, nID, pParams );
-	//if( pDlgControl )
-	//{
-	//	pDlgControl->GetControlWnd()->ModifyStyleEx( 0, WS_EX_TRANSPARENT );
-	//}
+	if( pDlgControl )
+	{
+		if( !pDlgControl->GetControlWnd()->GetSafeHwnd() )
+		{
+			pDlgControl->GetControlWnd()->DestroyWindow();
+			return NULL; //no window created for some reason
+		}
+		//pDlgControl->GetControlWnd()->ModifyStyleEx( 0, WS_EX_TRANSPARENT );
+	}
 	return pDlgControl;
 }
 
@@ -122,82 +127,40 @@ TDialogControlPtr CArxDialogControl::CreateImp( TDclControlPtr pTemplate, CContr
 	// check the control type to determine which control to create
 	switch(pTemplate->GetType())
 	{
-	case CtlAnimate:
-		{
-			CAnimateCtrl *pControl = new CAnimateCtrl;
-			CRect rc;
-			// get the rectangle of the new control
-			rc.top = pTemplate->GetPropertyObject(Prop::Top)->GetLongValue();
-			rc.left = pTemplate->GetPropertyObject(Prop::Left)->GetLongValue();
-			rc.bottom = pTemplate->GetPropertyObject(Prop::Height)->GetLongValue() + rc.top;
-			rc.right = pTemplate->GetPropertyObject(Prop::Width)->GetLongValue() + rc.left;
-			pControl->Create(
-				WS_VISIBLE|WS_CHILD/*|WS_CLIPSIBLINGS*/ |
-				ACS_CENTER |ACS_AUTOPLAY|ACS_TRANSPARENT, 
-				rc, pPane->GetHostDialog(), nID);
-			return new CAutoArxDialogControl( pTemplate, pPane, pControl );
-		}
-
-	case CtlImageComboBox: return CreateComboExControl(pTemplate, pPane, nID);
-	case CtlSplitter: return *new CArxSplitterCtrl( pTemplate, pPane, nID );
-	case CtlDwgList: return *new CArxDwgListCtrl( pTemplate, pPane, nID );
-	case CtlOptionList: return *new CArxOptionListCtrl( pTemplate, pPane, nID );
 	case CtlActiveX: return *new CArxAxContainerCtrl( pTemplate, pPane, nID );
-	case CtlRectangle: return *new CArxRectangleCtrl( pTemplate, pPane, nID );
-
-	case CtlHatch:
-		{
-			CGsPreviewCtrl *pControl = new CGsPreviewCtrl;
-			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
-			return new CAutoArxDialogControl( pTemplate, pPane, pControl );
-		}	
-	
-	case CtlBlockView:	
-		{
-			CGsPreviewCtrl *pControl = new CGsPreviewCtrl;
-			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
-			return new CAutoArxDialogControl( pTemplate, pPane, pControl );
-		}	
-	
-	case CtlGrid: return *new CArxGridCtrl( pTemplate, pPane, nID );
-	case CtlListView: return *new CArxListViewCtrl( pTemplate, pPane, nID );
+	case CtlAngleSlider: return *new CArxAngleSlideCtrl( pTemplate, pPane, nID );
+	case CtlAnimate: return *new CArxAnimationCtrl( pTemplate, pPane, nID );
 	case CtlBlockList: return *new CArxListViewCtrl( pTemplate, pPane, nID );
+	case CtlBlockView: return *new CArxGsViewCtrl( pTemplate, pPane, nID );
 	case CtlCheckBox: return *new CArxCheckBoxCtrl( pTemplate, pPane, nID );
 	case CtlComboBox: return CreateComboControl(pTemplate, pPane, nID);
-
-	case CtlDwgPreview:
-		{
-			CDwgPreviewCtrl *pControl = new CDwgPreviewCtrl;
-			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
-			return new CAutoArxDialogControl( pTemplate, pPane, pControl );
-		}	
-	
+	case CtlDwgList: return *new CArxDwgListCtrl( pTemplate, pPane, nID );
+	case CtlDwgPreview: return *new CArxDwgPreviewCtrl( pTemplate, pPane, nID );
 	case CtlFrame: return *new CArxFrameCtrl( pTemplate, pPane, nID );
 	case CtlGraphicButton: return *new CArxGraphicButtonCtrl( pTemplate, pPane, nID );
-	case CtlMonth: return *new CArxMonthCtrl( pTemplate, pPane, nID );
+	case CtlGrid: return *new CArxGridCtrl( pTemplate, pPane, nID );
+	case CtlHatch: return *new CArxGsViewCtrl( pTemplate, pPane, nID );
+	case CtlHtmlCtrl: return *new CArxHtmlCtrl( pTemplate, pPane, nID );
+	case CtlImageComboBox: return CreateComboExControl(pTemplate, pPane, nID);
 	case CtlLabel: return *new CArxLabelCtrl( pTemplate, pPane, nID );
 	case CtlListBox: return *new CArxListBoxCtrl( pTemplate, pPane, nID );
+	case CtlListView: return *new CArxListViewCtrl( pTemplate, pPane, nID );
+	case CtlMonth: return *new CArxMonthCtrl( pTemplate, pPane, nID );
 	case CtlOptionButton: return *new CArxRadioButtonCtrl( pTemplate, pPane, nID );
+	case CtlOptionList: return *new CArxOptionListCtrl( pTemplate, pPane, nID );
 	case CtlPictureBox: return *new CArxPictureBoxCtrl( pTemplate, pPane, nID );
 	case CtlProgress: return *new CArxProgressBarCtrl( pTemplate, pPane, nID );
-	case CtlAngleSlider: return *new CArxAngleSlideCtrl( pTemplate, pPane, nID );
+	case CtlRectangle: return *new CArxRectangleCtrl( pTemplate, pPane, nID );
 	case CtlScrollBar: return *new CArxScrollBarCtrl( pTemplate, pPane, nID );
 	case CtlSlider: return *new CArxSlideCtrl( pTemplate, pPane, nID );
-	case CtlSlideView: return *new CSlideHolder( *pPane, pTemplate, nID );
+	case CtlSlideView: return *new CArxAcadSlideCtrl( *pPane, pTemplate, nID );
 	case CtlSpinButton: return *new CArxSpinnerCtrl( pTemplate, pPane, nID );
-	case CtlUrlLink: return *new CArxUrlLinkCtrl( pTemplate, pPane, nID );
-
-	case CtlHtmlCtrl:
-		{
-			CHtmlCtrl *pControl = new CHtmlCtrl;
-			pControl->Create(pTemplate, pPane->GetHostDialog(), nID);
-			return new CAutoArxDialogControl( pTemplate, pPane, pControl );
-		}
-
+	case CtlSplitter: return *new CArxSplitterCtrl( pTemplate, pPane, nID );
 	case CtlStdButton: return *new CArxTextButtonCtrl( pTemplate, pPane, nID );
-	case CtlTextBox: return CreateEditControl(pTemplate, pPane, nID);
 	case CtlTabStrip: return *new CArxTabStripCtrl( pTemplate, pPane, nID );
+	case CtlTextBox: return CreateEditControl(pTemplate, pPane, nID);
 	case CtlTree: return *new CArxImageTreeCtrl( pTemplate, pPane, nID );
+	case CtlUrlLink: return *new CArxUrlLinkCtrl( pTemplate, pPane, nID );
 	}
 	return NULL;
 }
@@ -262,58 +225,6 @@ void CArxDialogControl::UpdateAllProperties( TDclControlPtr pTemplate )
 	if( !pDlgControl )
 		return;
 	pDlgControl->ApplyPropertiesEnum();
-
-	switch( pTemplate->GetType() )
-	{ //these controls implement the new CDialogControl interface, so use that
-	case _CtlForm:
-	case CtlActiveX:
-	case CtlAngleSlider:
-	case CtlBlockList:
-	case CtlCheckBox:
-	case CtlComboBox:
-	case CtlDwgList:
-	case CtlFrame:
-	case CtlGraphicButton:
-	case CtlGrid:
-	case CtlImageComboBox:
-	case CtlLabel:
-	case CtlListBox:
-	case CtlListView:
-	case CtlMonth:
-	case CtlOptionButton:
-	case CtlOptionList:
-	case CtlPictureBox:
-	case CtlProgress:
-	case CtlRectangle:
-	case CtlScrollBar:
-	case CtlSlider:
-	case CtlSlideView:
-	case CtlSpinButton:
-	case CtlStdButton:
-	case CtlTabStrip:
-	case CtlTextBox:
-	case CtlTree:
-	case CtlUrlLink:
-		pDlgControl->OnNeedRepaint();
-		return;
-	};
-	const TPropertyList& Props = pTemplate->GetPropertyList();
-	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
-	{
-		Prop::Id id = (*iter)->GetID();
-		switch( id )
-		{
-		case Prop::ToolTipBalloon:
-		case Prop::ToolTipLine:
-		case Prop::ToolTipBody:
-		case Prop::ToolTipPicture:
-		case Prop::ToolTipAviFileName:
-		case Prop::ToolTipTitleColor:
-			break; //skip related properties that all get set at once with the main property of the group
-		default:
-			UpdateProperty( pTemplate, id );
-		}
-	}
 	pDlgControl->OnNeedRepaint();
 }
 
@@ -327,160 +238,6 @@ void CArxDialogControl::UpdateProperty( TDclControlPtr pTemplate, Prop::Id id )
 	CDialogControl* pDlgControl = pTemplate->GetControlInstance();
 	if( !pDlgControl )
 		return;
-	switch( pTemplate->GetType() )
-	{ //these controls implement the new CDialogControl interface, so use that
-	case _CtlForm:
-	case CtlActiveX:
-	case CtlAngleSlider:
-	case CtlBlockList:
-	case CtlCheckBox:
-	case CtlComboBox:
-	case CtlDwgList:
-	case CtlFrame:
-	case CtlGraphicButton:
-	case CtlGrid:
-	case CtlImageComboBox:
-	case CtlLabel:
-	case CtlListBox:
-	case CtlListView:
-	case CtlMonth:
-	case CtlOptionButton:
-	case CtlOptionList:
-	case CtlPictureBox:
-	case CtlProgress:
-	case CtlRectangle:
-	case CtlScrollBar:
-	case CtlSlider:
-	case CtlSlideView:
-	case CtlSpinButton:
-	case CtlStdButton:
-	case CtlTabStrip:
-	case CtlTextBox:
-	case CtlTree:
-	case CtlUrlLink:
-		pDlgControl->OnApplyProperty( pTemplate->GetPropertyObject( id ) );
-		pDlgControl->OnNeedRepaint();
-		return;
-	};
-	UpdatePropertyInt( pTemplate, id );
+	pDlgControl->OnApplyProperty( pTemplate->GetPropertyObject( id ) );
 	pDlgControl->OnNeedRepaint();
-}
-
-//static
-void CArxDialogControl::UpdatePropertyInt(TDclControlPtr pControl, Prop::Id id)
-{
-	//I'm moving pPane logic into the child control's Create() function as I work on individual controls. Controls 
-	//that don't have their own class I'll leave here for now. 2007-02-05 [ORW]
-	TPropertyPtr pProp = pControl->GetPropertyObject( id );
-	if( !pProp )
-		return;
-	CWnd* pControlWnd = pControl->GetWindow();
-
-	// set the appropriate property
-	switch( id )
-	{
-		case Prop::Left:
-		case Prop::Top:
-		case Prop::Width:
-		case Prop::Height:
-		case Prop::LeftFromRight:
-		case Prop::RightFromRight:
-		case Prop::TopFromBottom:
-		case Prop::BottomFromBottom:
-		case Prop::BorderStyle:
-		case Prop::Enabled:
-		case Prop::HScrollBar:
-		case Prop::TitleBarText:
-		case Prop::Visible:
-		{ //these properties are set in CArxDialogControl::ApplyPropertiesEnum()
-			CDialogControl* pDlgControl = pControl->GetControlInstance();
-			assert( pDlgControl != NULL );
-			pDlgControl->OnApplyProperty( pControl->GetPropertyObject( id ) );
-		}
-		break;
-		case Prop::BackgroundColor:
-		{
-		switch (pControl->GetType())
-			{
-			case CtlBlockView:
-			case CtlHatch:
-				((CGsPreviewCtrl*)pControlWnd)->SetAcadColor(pControl->GetLongProperty(Prop::BackgroundColor));
-				break;
-			case CtlDwgPreview:
-				((CDwgPreviewCtrl*)pControlWnd)->SetAcadColor(pControl->GetLongProperty(Prop::BackgroundColor));
-				break;
-			}
-		if (pControl->GetType() != CtlSlideView)
-				pControlWnd->Invalidate();
-			break;
-			
-		}
-
-		case Prop::AllowOrbiting:
-		{
-			if (pControl->GetBooleanProperty(Prop::AllowOrbiting))
-				((CGsPreviewCtrl*)pControlWnd)->AllowOrbiting(true);
-			else
-				((CGsPreviewCtrl*)pControlWnd)->AllowOrbiting(false);
-			break;
-		}
-		
-		case Prop::BlockName:
-		{
-			((CGsPreviewCtrl*)pControlWnd)->DisplayBlock(pControl->GetStringProperty(Prop::BlockName));
-			break;
-		}
-
-		case Prop::DragnDropAllowDrop:
-		{
-			switch (pControl->GetType())
-			{
-			case CtlBlockView:
-			case CtlHatch:
-				((CGsPreviewCtrl*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
-				break;
-			case CtlDwgPreview:
-				((CDwgPreviewCtrl*)pControlWnd)->SetDragnDrop(pControl->GetBooleanProperty(Prop::DragnDropAllowDrop));
-				break;
-			}
-			break;
-		} 
-
-		case Prop::RenderMode:
-		{			
-			((CGsPreviewCtrl*)pControlWnd)->SetRenderMode();
-			((CGsPreviewCtrl*)pControlWnd)->Invalidate();
-			break;
-		}
-
-		case Prop::BtnTTText:
-		case Prop::ToolTipTitle:
-		case Prop::ToolTipBalloon:
-		case Prop::ToolTipLine:
-		case Prop::ToolTipBody:
-		case Prop::ToolTipPicture:
-		case Prop::ToolTipAviFileName:
-		case Prop::ToolTipTitleColor:
-		{
-			UpdateToolTip(pControl);
-			break;
-		}
-	}	
-}
-
-// This function is being phased out as control classes are changed to implement their own CDialogControl interface
-//static
-void CArxDialogControl::UpdateToolTip(TDclControlPtr pControl)
-{
-	CString sToolTipTitle = pControl->GetStringProperty( Prop::ToolTipTitle );
-	CWnd* pCtrl = pControl->GetWindow();
-	switch( pControl->GetType() )
-	{
-	case CtlDwgPreview:
-		SetToolTipEx(pCtrl, ((CDwgPreviewCtrl*)pCtrl)->m_ToolTip, pControl);
-		break;
-	case CtlHatch:
-		SetToolTipEx(pCtrl, ((CGsPreviewCtrl*)pCtrl)->m_ToolTip, pControl);
-		break;
-	}
 }

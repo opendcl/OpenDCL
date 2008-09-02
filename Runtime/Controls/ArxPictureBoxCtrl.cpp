@@ -18,6 +18,7 @@
 CArxPictureBoxCtrl::CArxPictureBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CPictureBoxCtrl( pTemplate, pPane, nID, false )
 , mArxServices( this )
+, mDragDropService( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -56,8 +57,12 @@ END_MESSAGE_MAP()
 
 void CArxPictureBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	if( nFlags == MK_LBUTTON && mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE )
-		BeginDragnDrop(mpTemplate, point, IsAsyncEvents());
+	if( nFlags == MK_LBUTTON && mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) )
+	{
+		DROPEFFECT dwDropEffect = BeginDragDrop( point );
+		if( dwDropEffect != DROPEFFECT_NONE )
+			return;
+	}
 
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseDown),

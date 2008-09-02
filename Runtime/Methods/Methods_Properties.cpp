@@ -12,9 +12,6 @@
 #include "Resource.h"
 #include "ArxDialogControl.h"
 
-#include "DwgPreviewCtrl.h"
-#include "GsPreviewCtrl.h"
-
 
 static void ReturnPropertyValue( TPropertyPtr pProperty )
 {
@@ -335,30 +332,8 @@ ADSRESULT Control::ShowToolTip()
 	}
 
 	PPTOOLTIP_INFO TI;
-	switch( pControl->GetType() )
-	{
-	case CtlDwgPreview:
-		{
-			CDwgPreviewCtrl* pCtrl = (CDwgPreviewCtrl*)pCtrlWnd;
-			if( pCtrl->m_ToolTip.GetToolInfo( TI, pCtrlWnd, DWORD(0) ) )
-				pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
-		}
-		break;
-	case CtlBlockView:
-	case CtlHatch:
-		{
-			CGsPreviewCtrl *pCtrl = (CGsPreviewCtrl*)pCtrlWnd;
-			if( pCtrl->m_ToolTip.GetToolInfo( TI, pCtrlWnd, DWORD(0) ) )
-				pCtrl->m_ToolTip.ShowHelpTooltip(&pt, TI);
-		}
-		break;
-	default:
-		{
-			if( pControl->GetControlInstance()->GetToolTipCtrl().GetToolInfo( TI, pCtrlWnd, DWORD(0) ) )
-				pControl->GetControlInstance()->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
-		}
-		break;
-	}
+	if( pControl->GetControlInstance()->GetToolTipCtrl().GetToolInfo( TI, pCtrlWnd, DWORD(0) ) )
+		pControl->GetControlInstance()->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
 
 	acedRetT();
 	return RSRSLT;

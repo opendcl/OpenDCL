@@ -22,6 +22,7 @@ CControlGripper::~CControlGripper()
 
 BEGIN_MESSAGE_MAP(CControlGripper, CStatic)
 	ON_WM_PAINT()
+	ON_WM_NCPAINT()
 END_MESSAGE_MAP()
 
 
@@ -34,22 +35,25 @@ void CControlGripper::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	// TODO: Add your message handler code here
 	// Do not call CStatic::OnPaint() for painting messages
-	CDC* pDC = &dc;
+}
+
+void CControlGripper::OnNcPaint()
+{
+	// TODO: Add your message handler code here
+	// Do not call CStatic::OnNcPaint() for painting messages
+	CDC* pDC = GetWindowDC();
 	CRect rcManager;
 	GetClientRect( &rcManager );
-	static const COLORREF crBG = RGB(220, 220, 220);
-	//pDC->FillSolidRect( 0, 0, 4, rcManager.bottom, crBG );
-	//pDC->FillSolidRect( rcManager.right - 4, 0, 4, rcManager.bottom, crBG );
-	//pDC->FillSolidRect( 4, 0, rcManager.right - 8, 4, crBG );
-	//pDC->FillSolidRect( 4, rcManager.bottom - 4, rcManager.right - 8, 4, crBG );
-	pDC->DrawFocusRect( &rcManager );
+	static const COLORREF crFocus = RGB(20, 20, 220);
+	pDC->Draw3dRect( &rcManager, crFocus, crFocus );
 	rcManager.DeflateRect( 1, 1 );
-	pDC->DrawFocusRect( &rcManager );
+	pDC->Draw3dRect( &rcManager, crFocus, crFocus );
 	if( mbThickFrame )
 	{
 		rcManager.DeflateRect( 1, 1 );
-		pDC->DrawFocusRect( &rcManager );
+		pDC->Draw3dRect( &rcManager, crFocus, crFocus );
 		rcManager.DeflateRect( 1, 1 );
-		pDC->DrawFocusRect( &rcManager );
+		pDC->Draw3dRect( &rcManager, crFocus, crFocus );
 	}
+	ReleaseDC( pDC );
 }

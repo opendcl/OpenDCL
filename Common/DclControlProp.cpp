@@ -887,7 +887,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		}
 		pDclControl->AddStringProperty( Prop::BtnTTText, PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
-		pDclControl->AddLongProperty( Prop::DefSelIndex, PropLong, 0 );
+		pDclControl->AddLongProperty( Prop::CurSelIndex, PropLong, 0 );
 		pDclControl->AddStringProperty( Prop::FontName, PropString, FS.name() );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::RowHeight, PropLong, -1 );

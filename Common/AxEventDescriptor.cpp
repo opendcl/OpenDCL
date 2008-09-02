@@ -52,7 +52,7 @@ AxEventDescriptor::AxEventDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo,
 					if (vt == VT_USERDEFINED) 
 						SetRefType( vt, pTypeInfo,
 												(bNotByVal? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
-												&mrArgs[n].clsid );
+												mrArgs[n].clsid );
 					mrArgs[n].vt = vt;
 					if( !!rbstrNames[n] && n < ctNames - 1 )	
 						mrArgs[n].name = (LPCTSTR)bstr_t( rbstrNames[n + 1] );

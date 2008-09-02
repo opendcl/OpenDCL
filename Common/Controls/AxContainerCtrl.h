@@ -49,7 +49,7 @@ public:
 	UINT ExtractMethodInfo( TDclControlPtr pControl, LPOLEOBJECT pIObject );
 	UINT ExtractMethodInfo( TDclControlPtr pControl, ITypeInfo* pTypeInfo );
 
-	IDispatch *GetChildIDispatch(DISPID dispid);
+	IDispatch* GetChildIDispatch( DISPID dispid );
 
 	bool Create(CWnd* pParentWnd, UINT nID, CRect ArxRect, bool bAddPropInfo);
 	COleFont GetFont(DISPID dispid);
@@ -68,12 +68,12 @@ public:
 	//ActiveX Helpers
 public:
 	bool SetProperty( TPropertyPtr pProp, LPCTSTR pszValue );
-	HRESULT GetProperty(AxPropertyDescriptor* axProp, CString &strReturnValue);
-	HRESULT GetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
-	HRESULT SetProperty( AxPropertyDescriptor* axProp, const VARIANTARG* rvarArgs, UINT ctArgs );
-	HRESULT SetProperty( AxPropertyDescriptor* axProp, COleVariant varArg );
+	HRESULT GetProperty( const AxPropertyDescriptor* axProp, CString &strReturnValue );
+	HRESULT GetProperty( const AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
+	HRESULT SetProperty( const AxPropertyDescriptor* axProp, const VARIANTARG* rvarArgs, UINT ctArgs );
+	HRESULT SetProperty( const AxPropertyDescriptor* axProp, COleVariant varArg );
 	HRESULT Invoke( AxMethodDescriptor* axMethod, const VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
-	BOOL ExtractComponentsFromTLB( TDclControlPtr pDclControl, CLSID clsid );
+	bool ExtractComponentsFromTLB( TDclControlPtr pDclControl, CLSID clsid );
 
 	// Generated message map functions
 protected:

@@ -45,14 +45,6 @@ CRect CComboBoxCtrl::GetWndRect() const
 	if( (GetComboStyle() & CBS_DROPDOWN) != 0 )
 	{
 		long nListHeight = mpTemplate->GetLongProperty( Prop::DropDownHeight );
-		//if( nListHeight < 40 )
-		//	nListHeight = 40;
-		//long nItemHeight = 16;
-		//CComboHandler* pHandler = const_cast< CComboBoxCtrl* >(this)->GetComboHandler();
-		//if( pHandler )
-		//	nItemHeight = pHandler->GetItemHeight();
-		//nListHeight = nItemHeight * ((nListHeight + nItemHeight - 3) / nItemHeight) + 2; //make it an integral height, + 2 pixels for the border
-		//mpTemplate->SetLongProperty( Prop::DropDownHeight, nListHeight );
 		rectCombo.bottom += nListHeight;
 	}
 	return rectCombo;

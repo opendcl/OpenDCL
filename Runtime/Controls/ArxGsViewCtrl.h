@@ -1,15 +1,16 @@
-// GsPreviewCtrl.h : header file
+// ArxGsViewCtrl.h : header file
 //
 
 #pragma once
 
-#include "PPToolTip.h"
-#include "OleOdcDropTarget.h"
-#include "AcadColorTable.h"
+#include "DialogControl.h"
+#include "AcadColorService.h"
+#include "ArxControlServices.h"
+#include "ArxDragDropService.h"
 
 class CAcadDocReactor;
 class CAcadBlockReactor;
-class CPropertyObject;
+
 
 #if (_MFC_VER < 0x0800)
 #define __UINT_LRESULT UINT
@@ -71,27 +72,53 @@ public:
     }
 };
 
-/////////////////////////////////////////////////////////////////////////////
-// CGsPreviewCtrl window
 
-class CGsPreviewCtrl : public CStatic
+/////////////////////////////////////////////////////////////////////////////
+// CArxGsViewCtrl window
+
+class CArxGsViewCtrl : public CStatic, public CDialogControl
 {
 	class CDocReactor : public AcApDocManagerReactor
 	{
-		CGsPreviewCtrl* mpPreviewCtrl;
+		CArxGsViewCtrl* mpGsViewCtrl;
 	public:
-		CDocReactor( CGsPreviewCtrl* pPreviewCtrl )
-			: mpPreviewCtrl( pPreviewCtrl )
+		CDocReactor( CArxGsViewCtrl* pGsViewCtrl )
+			: mpGsViewCtrl( pGsViewCtrl )
 			{ acDocManager->addReactor( this ); }
 		~CDocReactor()
 			{ acDocManager->removeReactor( this ); }
 		void documentActivated(AcApDocument* pActivatedDoc)
-			{ if( mpPreviewCtrl ) mpPreviewCtrl->UpdateBlock(); }
+			{ if( mpGsViewCtrl ) mpGsViewCtrl->UpdateBlock(); }
 		void documentDestroyed(const char* filename)
-			{ if( mpPreviewCtrl ) mpPreviewCtrl->UpdateBlock(); }
+			{ if( mpGsViewCtrl ) mpGsViewCtrl->UpdateBlock(); }
 	} mDocReactor;
 
+protected:
+	CAcadColorService mColorService;
+	CArxControlServices	mArxServices;
+	CArxDragDropService mDragDropService;
+
+
+private:
+	HCURSOR mhSavedCursor;
+	HCURSOR mhZoomCursor;
+	HCURSOR mhPanCursor;
+	HCURSOR mhCrossCursor;
+	HCURSOR mhOrbitCursor;
+	HCURSOR mhArrowCursor;
+	AcGsDevice* mpDevice;
+	AcGsView* mpView;
+	AcGsModel* mpModel;
+	AcGsModel* mpGhostModel;
+	OrbitGadget mOrbitGadget;
+	bool mbModelCreated;
+	bool mbZooming;
+	bool mbPanning;
+	bool mbOrbiting;
+	CPoint mStartPt;
+
 public:
+	CRect m_rcFocus;
 	bool				m_bBeingLDblClicked;
 	bool				m_bBeingRDblClicked;
 	AcDbDatabase		*m_pLoadedDwg;
@@ -107,18 +134,27 @@ public:
 	AcDbObjectId		m_HatchId;
 	CString				m_sHatchPattern;
 
-	CStdioFile			*m_pLog;
-	
+
+public:
+	CArxGsViewCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
+	virtual ~CArxGsViewCtrl();
+
+// DialogControl Interface
+public:
+	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
+	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
+	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
+	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual bool OnApplyProperty( TPropertyPtr pProp );
+
 public:
 	void UpdateBlock();
 	void ResizeHatch();
 
-	void SetAcadColor(long nColor);
 	bool GetActiveViewPortInfo (ads_real &height, ads_real &width, AcGePoint3d &target, AcGeVector3d &viewDir, ads_real &viewTwist, bool getViewCenter);
 	void SetHighLight(int nColorIndex);
 	void RemoveHighLight();	
 	void DoHighLight(CDC *pdc);
-	void Refresh(CDC *pdc);
 	AcDbBlockTableRecord *m_pHatchBlock;
 	BOOL DisplayHatchPattern(CString sPattern);
 	BOOL DisplayExternalBlock(
@@ -156,109 +192,13 @@ public:
 		double dCameraY, 
 		double dCameraZ);
 	void DrawOrbitCircles(CDC* pDC = NULL);
-    void DrawOrbitQuadCircle(CDC *pdc, int nX, int nY);
-	void AllowOrbiting(bool bOrbiting);
+	void DrawOrbitQuadCircle(CDC *pdc, int nX, int nY);
 	void Zoom(double dZfactor);
-	void SetRenderMode();
-	void SetDragnDrop(BOOL bRegister);
-
-// Implementation
-public:
-	//*****
-    // COleOdcDropTarget, derived from COleDropTarget gives us
-    // the functionality to be an OLE drop target.
-    //*****
-    COleOdcDropTarget m_DropTarget;
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CGsPreviewCtrl)
-	public:
-	virtual BOOL Create(TDclControlPtr pControl, CWnd* pParentWnd, UINT nID);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);	
-	//}}AFX_VIRTUAL
-
-
-public:
-  CGsPreviewCtrl()
-	: CStatic()
-	, mDocReactor( this )
-	, mpDevice( NULL )
-	, mpView( NULL )
-	, mpGhostModel( NULL )
-	, mpModel( NULL )
-	, mbModelCreated( false )
-	, mbZooming( false )
-	, mbPanning( false )
-	, mbOrbiting( false )
-	{
-		// No tooltip created
-		m_ToolTip.m_hWnd = NULL;
-		m_bSelectedRect = false;
-		m_pRenderMode = NULL;
-		m_pAllowCircles = NULL;
-		m_pInterfaceMode = NULL;
-		m_dPreviousZoomScale = 1.0;
-		m_bBeingLDblClicked = false;
-		m_bBeingRDblClicked = false;
-		m_FileName = CString();
-		m_pBlockReactor = NULL;	
-		m_pStaticBrush = new CBrush();			
-		m_pStaticBrush->CreateSolidBrush(GetRGBColor(-22));
-		m_pLoadedDwg = NULL;
-		mhSavedCursor = NULL;
-		mhZoomCursor = NULL;
-		mhPanCursor = NULL;
-		mhCrossCursor = NULL;
-		mhOrbitCursor = NULL;
-		mhArrowCursor = NULL;
-    m_Line[0] = NULL;
-    m_Line[1] = NULL;
-    m_Line[2] = NULL;
-    m_Line[3] = NULL;
-		m_pLog = NULL;
-	}
-
-	CBrush *m_pStaticBrush;		
-	COLORREF m_BackColor;	
-	
-	CPPToolTip m_ToolTip;
-	
-	virtual ~CGsPreviewCtrl() 
-	{ 
-		erasePreview(); 
-		clearAll();
-		if (m_pBlockReactor != NULL)
-		{
-			delete m_pBlockReactor;
-			m_pBlockReactor = NULL;
-		}
-		if (m_pStaticBrush)
-			delete m_pStaticBrush;
-	
-		if (mhSavedCursor != NULL)
-			DeleteObject(mhSavedCursor);
-		
-		if (mhZoomCursor != NULL)
-			DeleteObject(mhZoomCursor);
-		
-		if (mhPanCursor != NULL)
-			DeleteObject(mhPanCursor);
-		
-		if (mhCrossCursor != NULL)
-			DeleteObject(mhCrossCursor);
-		
-		if (mhOrbitCursor != NULL)
-			DeleteObject(mhOrbitCursor);
-		
-		if (mhArrowCursor != NULL)
-			DeleteObject(mhArrowCursor);		
-	}
+	void SetRenderMode( long lMode );
 
 	void init(HMODULE hRes, bool bCreateModel = true);
 	void erasePreview();
 	void clearAll();
-	void ClearScreenArea();
 	bool PreLoadDwg(CString sFileName);
 	bool GetBlockSize( LPCTSTR pszBlockName, AcDbExtents& ext );
 	bool GetDwgSize( AcDbExtents& ext );
@@ -279,9 +219,14 @@ public:
     AcGsModel*  model()     { return mpModel; }
     void setModel(AcGsModel* pModel);
 	double mdScale,mdExtentsScale;
+
 	// Generated message map functions
 protected:
-	//{{AFX_MSG(CGsPreviewCtrl)
+	DECLARE_MESSAGE_MAP()
+
+	virtual afx_msg void PostNcDestroy();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
@@ -292,40 +237,11 @@ protected:
   afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnDestroy();
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnMButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
-	//}}AFX_MSG
-
-	DECLARE_MESSAGE_MAP()
-
-private:
-	HCURSOR				mhSavedCursor;
-	HCURSOR				mhZoomCursor;
-	HCURSOR				mhPanCursor;
-    HCURSOR				mhCrossCursor;
-    HCURSOR				mhOrbitCursor;
-	HCURSOR				mhArrowCursor;
-    AcGsDevice          *mpDevice;
-    AcGsView            *mpView;
-    AcGsModel           *mpModel;
-    AcGsModel           *mpGhostModel;
-    OrbitGadget         mOrbitGadget;
-    bool				mbModelCreated;
-    bool				mbZooming;
-    bool				mbPanning;
-    bool				mbOrbiting;
-    CPoint				mStartPt;
-public:
-	TDclControlPtr m_ArxControl;
-	TPropertyPtr m_pInterfaceMode;
-	TPropertyPtr m_pAllowCircles;
-	TPropertyPtr m_pRenderMode;
-	CRect				m_rcFocus;
 };

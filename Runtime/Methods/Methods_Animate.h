@@ -8,6 +8,7 @@ namespace Animate
 {
 ADSRESULT Load();
 ADSRESULT Seek();
+ADSRESULT Play();
 ADSRESULT Stop();
 ADSRESULT Close();
 };

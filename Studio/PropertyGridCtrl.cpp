@@ -475,7 +475,7 @@ public:
 		, CPropertyEditCtrl( pGridCtrl, idxCell )
 		{
 			CString sValue = mpGridCtrl->GetItemText( idxCell, 1 );
-			__super::Create( WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, CalcRect( pGridCtrl->GetEditRect( idxCell ) ), pGridCtrl, 100 );
+			__super::Create( WS_CHILD | WS_VISIBLE | WS_VSCROLL | CBS_DROPDOWNLIST, CalcRect( pGridCtrl->GetEditRect( idxCell ) ), pGridCtrl, 100 );
 			SetFont( pGridCtrl->GetFont() );
 			ControlType nCtrlType = _CtlInvalid;
 			TDclControlPtr pActiveControl = theStudioWorkspace.GetActiveDclControl();
@@ -569,7 +569,7 @@ public:
 		, CPropertyEditCtrl( pGridCtrl, idxCell )
 		{
 			CString sValue = mpGridCtrl->GetItemText( idxCell, 1 );
-			__super::Create( WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, CalcRect( pGridCtrl->GetEditRect( idxCell ) ), pGridCtrl, 100 );
+			__super::Create( WS_CHILD | WS_VISIBLE | WS_VSCROLL | CBS_DROPDOWNLIST, CalcRect( pGridCtrl->GetEditRect( idxCell ) ), pGridCtrl, 100 );
 			SetFont( pGridCtrl->GetFont() );
 			AddString( theStudioWorkspace.LoadResourceString( IDS_NONE ) );
 			TStudioProjectPtr pProject = theStudioWorkspace.GetActiveProject();
@@ -768,7 +768,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::ComboBoxStyle: return &CEnumComboBoxCtrl::Create;
 	case Prop::CreationPrompt: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::Custom: if( bMultiple ) return NULL; return &CCommandButtonEditCtrl::Create< ID_PROPERTIES >;
-	case Prop::DefSelIndex: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
+	case Prop::CurSelIndex: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::DisableNoScroll: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::DockableSides: return &CEnumComboBoxCtrl::Create;
 	case Prop::DragnDropAllowBegin: return &CBooleanCheckBoxCtrl::Create;

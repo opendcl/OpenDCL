@@ -328,7 +328,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::ReturnAsTab] = _T("ReturnAsTab");
 	mmapIdToApiName[Prop::SingleExpanded] = _T("SingleExpanded");
 	mmapIdToApiName[Prop::RowHeight] = _T("RowHeight");
-	mmapIdToApiName[Prop::DefSelIndex] = _T("DefaultSelection");
+	mmapIdToApiName[Prop::CurSelIndex] = _T("CurrentSelection");
 	mmapIdToApiName[Prop::ObjectBrowser] = _T("(ObjectBrowser)");
 	mmapIdToApiName[Prop::GlobalVarName] = _T("GlobalVarName");
 	mmapIdToApiName[Prop::FileDlgStyle] = _T("Style");

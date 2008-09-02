@@ -23,7 +23,6 @@ const VARIANT_BOOL VAR_TRUE = ~VARIANT_FALSE;
 const VARIANT_BOOL VAR_FALSE = VARIANT_FALSE;
 class AxPropertyDescriptor;
 class AxMethodDescriptor;
-class CObjectBrowser;
 
 
 LPCTSTR InvokeKindToString( INVOKEKIND invokekind );
@@ -33,6 +32,7 @@ LPCTSTR VTToString( VARTYPE vt );
 int VTToVTI( VARTYPE vt );
 CString VARTYPEtoString( VARTYPE vt );
 CString VariantToString( const VARIANT& var );
-void SetRefType(VARTYPE &vtType, ITypeInfo* TheInfo, HREFTYPE hreftype, CLSID *pClsid = NULL);
+HRESULT GetNameOfRefType( ITypeInfo* pTypeInfo, HREFTYPE hreftype, CString& sTypeName );
+void SetRefType( VARTYPE& vtType, ITypeInfo* TheInfo, HREFTYPE hreftype, CLSID& Clsid );
 CString FuncDescToString( ITypeInfo *lpTypeInfo, FUNCDESC *pFuncDesc, bool bUseAsType );
 CString GetAxTypeName( const CLSID& clsid );

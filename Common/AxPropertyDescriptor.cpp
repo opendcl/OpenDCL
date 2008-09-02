@@ -87,8 +87,11 @@ AxPropertyDescriptor::AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTyp
 			PerPropertyBrowsing( pIObject );
 
 		if( mType == VT_USERDEFINED )
-			GetRefGuid( pTypeInfo,
-									(vtVar == VT_PTR)? pFuncDesc->elemdescFunc.tdesc.lptdesc->hreftype : pFuncDesc->elemdescFunc.tdesc.hreftype );
+		{
+			HREFTYPE href = (vtVar == VT_PTR)? pFuncDesc->elemdescFunc.tdesc.lptdesc->hreftype : pFuncDesc->elemdescFunc.tdesc.hreftype;
+			GetRefGuid( pTypeInfo, href );
+			GetNameOfRefType( pTypeInfo, href, msTypeName );
+		}
 
 		mrArgs.resize( ctParams );
 		BSTR* rbstrNames = new BSTR[ctParams + 1];
@@ -109,7 +112,7 @@ AxPropertyDescriptor::AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTyp
 					if (vt == VT_USERDEFINED) 
 						SetRefType( vt, pTypeInfo,
 												(bNotByVal? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
-												&mrArgs[n].clsid );
+												mrArgs[n].clsid );
 					mrArgs[n].vt = vt;
 					if( !!rbstrNames[n] && n < ctNames - 1 )	
 						mrArgs[n].name = (LPCTSTR)bstr_t( rbstrNames[n + 1] );
@@ -136,6 +139,8 @@ AxPropertyDescriptor::~AxPropertyDescriptor(void)
 
 CString AxPropertyDescriptor::GetTypeDisplayName() const
 {
+	if( !msTypeName.IsEmpty() )
+		return msTypeName;
 	CString sName;
 	if( mGuid != GUID_NULL )
 		sName = GetAxTypeName( mGuid );

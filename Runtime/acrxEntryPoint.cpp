@@ -59,13 +59,13 @@
 #include "LayeredWindowHelperST.h"
 #include "ControlTypes.h"
 #include "ArchiveEx.h"
-#include "SlideHolder.h"
 #include "InvokeMethod.h"
 #include "DelayedInvoke.h"
-#include "DialogControl.h"
+#include "ArxDialogControl.h"
 #include "StringCompare.h"
 #include "DirDialog.h"
 #include "PictureObject.h"
+#include "ArxAcadSlideCtrl.h"
 #include "AcadColorTable.h"
 #include "LineWeightDlg.h"
 #include "LinetypeDlg.h"
@@ -128,6 +128,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	// animation control methods
 	{_T("Animate_Load"),			Animate::Load},
 	{_T("Animate_Seek"),			Animate::Seek},
+	{_T("Animate_Play"),			Animate::Play},
 	{_T("Animate_Stop"),			Animate::Stop},
 	{_T("Animate_Close"),			Animate::Close},
 
@@ -146,11 +147,11 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("FileDlg_GetFolderName"),		FileDlg::GetFolderName},
 
 	// ActiveX control methods
+	{_T("GetOlePictureFromId"),		AxGeneral::GetOlePictureFromId},
+	{_T("GetOlePictureFromFile"),		AxGeneral::GetOlePictureFromFile},
 	{_T("AxControl_GetProperty"),		AxControl::GetProperty},
 	{_T("AxControl_SetProperty"),		AxControl::SetProperty},
 	{_T("AxControl_DoMethod"),		AxControl::DoMethod},
-	{_T("AxControl_SetColor"),		AxControl::SetColorProperty},
-	{_T("AxControl_SetPicture"),		AxControl::SetPictureProperty},
 	{_T("AxControl_GetOleObject"),		AxControl::GetOleObject},
 	{_T("AxObject_GetProperty"),		AxObject::GetProperty},
 	{_T("AxObject_SetProperty"),		AxObject::SetProperty},
@@ -1385,7 +1386,7 @@ public:
 				{
 					if (pCtrl->GetType() == CtlSlideView)
 					{
-						CSlideHolder *pSlide = (CSlideHolder*)pCtrl->GetWindow();
+						CArxAcadSlideCtrl *pSlide = (CArxAcadSlideCtrl*)pCtrl->GetWindow();
 						pSlide->m_bSelectedRect = !pSlide->m_bSelectedRect;
 						pSlide->Invalidate();
 					}
@@ -1459,7 +1460,7 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
-		((CSlideHolder*)pCtrl->GetWindow())->Clear();
+		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->Clear();
 
 		return (RSRSLT) ;
 	}
@@ -1540,7 +1541,7 @@ public:
 			break;
 		}
 
-		((CSlideHolder*)pCtrl->GetWindow())->DrawLine(nStartX, nStartY, nEndX, nEndY, nLineColor);
+		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->DrawLine(nStartX, nStartY, nEndX, nEndY, nLineColor);
 
 		return (RSRSLT) ;
 	}
@@ -1621,7 +1622,7 @@ public:
 			break;
 		}
 
-		((CSlideHolder*)pCtrl->GetWindow())->DrawFillRect(nStartX, nStartY, nStartX + nEndX, nStartY + nEndY, nLineColor);
+		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->DrawFillRect(nStartX, nStartY, nStartX + nEndX, nStartY + nEndY, nLineColor);
 
 		return (RSRSLT) ;
 	}
@@ -1646,7 +1647,7 @@ public:
 			return RSERR;
 
 		CRect rc;
-		((CSlideHolder*)pCtrl->GetWindow())->GetClientRect(&rc);
+		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->GetClientRect(&rc);
 		acedRetInt(rc.Width());
 
 		return (RSRSLT) ;
@@ -1672,7 +1673,7 @@ public:
 			return RSERR;
 
 		CRect rc;
-		((CSlideHolder*)pCtrl->GetWindow())->GetClientRect(&rc);
+		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->GetClientRect(&rc);
 		acedRetInt(rc.Height());
 
 		return (RSRSLT) ;
@@ -1697,7 +1698,7 @@ public:
 		if( !pCtrl)
 			return RSERR;
 
-		((CSlideHolder*)pCtrl->GetWindow())->CopyDC();
+		((CArxAcadSlideCtrl*)pCtrl->GetWindow())->CopyDC();
 
 		return (RSRSLT) ;
 	}
@@ -1775,7 +1776,7 @@ public:
 				acedRetInt(-1);
 				return RSRSLT;
 			}
-			((CSlideHolder*)pCtrl->GetWindow())->DrawASlide(nX, nY, nWidth, nHeight, sPath, NULL);
+			((CArxAcadSlideCtrl*)pCtrl->GetWindow())->DrawASlide(nX, nY, nWidth, nHeight, sPath, NULL);
 		}
 		else
 		{ //displaying a slide library
@@ -1791,7 +1792,7 @@ public:
 				acedRetInt(-1);
 				return RSRSLT;
 			}
-			((CSlideHolder*)pCtrl->GetWindow())->DrawASlide(nX, nY, nWidth, nHeight, sPath, sLibName);
+			((CArxAcadSlideCtrl*)pCtrl->GetWindow())->DrawASlide(nX, nY, nWidth, nHeight, sPath, sLibName);
 		}
 
 		return (RSRSLT) ;
@@ -2742,8 +2743,8 @@ public:
 		{
 			//----- Put it into a block table record of the current database
 			es = acdbCurDwg()->insert (blockId, sBlockName, pDwg, Adesk::kFalse) ;
-			delete pDwg;
 		}
+		delete pDwg;
 		if (es != Acad::eOk)
 			return RSRSLT; //failed to insert block
 
@@ -3303,8 +3304,8 @@ public:
 		return (RSRSLT) ;
 	}
 
-	// ----- ads_dcl_getcolorvalue symbol (do not rename)
-	static int ads_dcl_getcolorvalue(void)
+	// ----- ads_dcl_getolecolorvalue symbol (do not rename)
+	static int ads_dcl_getolecolorvalue(void)
 	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
@@ -3948,7 +3949,7 @@ ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_xtwipstopixels, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_ytwipstopixels, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_xpixelstotwips, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_ypixelstotwips, true)
-ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getcolorvalue, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getolecolorvalue, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_registeractivexctrl, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_files_dir, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_project_load, true)

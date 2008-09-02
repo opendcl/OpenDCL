@@ -273,10 +273,14 @@ void CControlPane::ApplyPosition( TDialogControlPtr pDlgControl )
 	CWnd* pWndToMove = pDlgControl->GetControlWnd();
 	//if the control is hosted inside another window, find the ancestor that is a child
 	//of the host dialog and move it instead
-	assert( mpHostDlg->IsChild( pWndToMove ) || mpHostDlg == pWndToMove );
-	while( (pWndToMove->GetControlUnknown() || (pWndToMove->GetStyle() & WS_CHILD)) &&
-				 (pWndToMove != mpHostDlg && pWndToMove->GetParent() != mpHostDlg) )
-		pWndToMove = pWndToMove->GetParent();
+	bool bWindowLess = (pWndToMove->m_hWnd == NULL);
+	assert( bWindowLess || mpHostDlg->IsChild( pWndToMove ) || mpHostDlg == pWndToMove );
+	if( !bWindowLess )
+	{
+		while( (pWndToMove->GetControlUnknown() || (pWndToMove->GetStyle() & WS_CHILD)) &&
+					 (pWndToMove != mpHostDlg && pWndToMove->GetParent() != mpHostDlg) )
+			pWndToMove = pWndToMove->GetParent();
+	}
 	CRect rcNew = pDlgControl->GetWndRect();
 	pWndToMove->MoveWindow( &rcNew, TRUE );
 }

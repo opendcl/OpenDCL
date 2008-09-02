@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by w:\OpenDCL\Build 5.0\Runtime\CHS\Runtime.Res.CHS\Runtime.CHS.rc
+// Used by w:\OpenDCL\Build 5.0\Runtime\RUS\Runtime.Res.RUS\Runtime.RUS.rc
 //
 #define IDD_DOCKINGDLGHOST              101
 #define IDB_R14LARGE                    10000
@@ -22,7 +22,6 @@
 #define IDD_CUSTOM_FILE_DIALOG          15004
 #define IDS_OLDERSLD                    20001
 #define IDS_DWGNOTLOADING               20002
-#define IDS_BLANKHTML                   20003
 #define IDS_ERR_INVALIDARGUMENTTYPE     20004
 #define IDS_AUTOUPDATECHECK             20005
 #define IDS_CLOSEMENU                   20006

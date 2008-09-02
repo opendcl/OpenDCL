@@ -22,6 +22,7 @@ BEGIN_MESSAGE_MAP(CFormControlManager, CControlManager)
 	ON_WM_CANCELMODE()
 	ON_WM_CAPTURECHANGED()
 	ON_WM_NCPAINT()
+	ON_WM_PAINT()
 	ON_WM_SETCURSOR()
 	ON_WM_NCLBUTTONDOWN()
 	ON_WM_NCRBUTTONUP()
@@ -271,6 +272,12 @@ void CFormControlManager::OnNcPaint()
 {
 	// TODO: Add your message handler code here
 	// Do not call __super::OnNcPaint() for painting messages
+}
+
+void CFormControlManager::OnPaint() 
+{
+	CPaintDC dc(this); // device context for painting
+	return;
 }
 
 BOOL CFormControlManager::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)

@@ -106,9 +106,7 @@ ADSRESULT OptionList::GetCurSel()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
-
-	int nSel = pCtrl->GetCurSel();
+	int nSel = pDlgControl->GetTemplate()->GetLongProperty( Prop::CurSelIndex );
 	if( nSel >= 0 )
 		acedRetInt( nSel );
 	return RSRSLT;
@@ -127,7 +125,7 @@ ADSRESULT OptionList::GetCount()
 
 	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
 
-	acedRetInt( pCtrl->GetCount() );
+	acedRetInt( pDlgControl->GetTemplate()->GetPropertyObject( Prop::BtnCaption )->size() );
 	return RSRSLT;
 }
 
@@ -146,9 +144,10 @@ ADSRESULT OptionList::SetCurSel()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
+	TPropertyPtr pCurSel = pDlgControl->GetTemplate()->GetPropertyObject( Prop::CurSelIndex );
+	pCurSel->SetLongValue( nCurSel );
 
-	if( LB_ERR != pCtrl->SetCurSel( nCurSel ) )
+	if( pDlgControl->OnApplyProperty( pCurSel ) )
 		acedRetT();
 	return RSRSLT;
 }

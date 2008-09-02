@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "Methods_DwgPreview.h"
 #include "ArgumentsRetrieval.h"
-#include "DwgPreviewCtrl.h"
+#include "ArxDwgPreviewCtrl.h"
 #include "ControlTypes.h"
 #include "Workspace.h"
 
@@ -25,7 +25,7 @@ ADSRESULT DwgPreview::LoadDwg()
 	if( sPath.IsEmpty() )
 		return RSRSLT;
 
-	CDwgPreviewCtrl* pCtrl = (CDwgPreviewCtrl*)pDlgControl->GetControlWnd();
+	CArxDwgPreviewCtrl* pCtrl = (CArxDwgPreviewCtrl*)pDlgControl->GetControlWnd();
 
 	pCtrl->LoadDwg( sFileName );
 	acedRetT();
@@ -40,9 +40,9 @@ ADSRESULT DwgPreview::GetDwgName()
 	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlDwgPreview ) )
 		return RSERR; //invalid input
 
-	CDwgPreviewCtrl* pCtrl = (CDwgPreviewCtrl*)pDlgControl->GetControlWnd();
+	CArxDwgPreviewCtrl* pCtrl = (CArxDwgPreviewCtrl*)pDlgControl->GetControlWnd();
 
-	acedRetStr( pCtrl->m_filename );
+	acedRetStr( pCtrl->GetFilename() );
 	return RSRSLT;
 }
 
@@ -61,7 +61,7 @@ ADSRESULT DwgPreview::SetHighLight()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CDwgPreviewCtrl* pCtrl = (CDwgPreviewCtrl*)pDlgControl->GetControlWnd();
+	CArxDwgPreviewCtrl* pCtrl = (CArxDwgPreviewCtrl*)pDlgControl->GetControlWnd();
 	pCtrl->SetHighLight( nColor );
 
 	acedRetT();
@@ -79,7 +79,7 @@ ADSRESULT DwgPreview::RemoveHighLight()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CDwgPreviewCtrl* pCtrl = (CDwgPreviewCtrl*)pDlgControl->GetControlWnd();
+	CArxDwgPreviewCtrl* pCtrl = (CArxDwgPreviewCtrl*)pDlgControl->GetControlWnd();
 	pCtrl->RemoveHighLight();
 
 	acedRetT();
@@ -97,10 +97,8 @@ ADSRESULT DwgPreview::Clear()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CDwgPreviewCtrl* pCtrl = (CDwgPreviewCtrl*)pDlgControl->GetControlWnd();
-	pCtrl->m_filename.Empty();
-	pCtrl->m_bSelectedRect = false;
-	pCtrl->Invalidate();
+	CArxDwgPreviewCtrl* pCtrl = (CArxDwgPreviewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->Clear();
 
 	acedRetT();
 	return RSRSLT;

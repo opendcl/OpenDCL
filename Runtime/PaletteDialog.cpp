@@ -78,7 +78,7 @@ bool CPaletteDialog::CreateModeless( UINT nID )
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_TOP;
 		break;
 	case 4:
-		// set the form to only dock on the any side
+		// set the form to only dock on the left, right, or top sides
 		dwDockableSides = CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT | CBRS_ALIGN_TOP;				
 		dwDefaultDockableSide = AFX_IDW_DOCKBAR_LEFT;
 		break;
@@ -351,7 +351,7 @@ BOOL CPaletteDialog::OnEraseBkgnd(CDC* pDC)
 		CRect rcClient;
 		GetClientRect( &rcClient );
 		pDC->FillSolidRect( &rcClient, mColorService.GetBackgroundColor() );
+		return TRUE;
 	}
-	return TRUE;
 	return __super::OnEraseBkgnd(pDC);
 }

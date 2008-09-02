@@ -13,13 +13,17 @@
 #include "ArgumentsRetrieval.h"
 #include "ArxWorkspace.h"
 #include "AcadColorTable.h"
+#include "PictureObject.h"
 
-static void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp = NULL, AxMethodDescriptor *pMethod = NULL, CAxContainerCtrl *pAxContainer = NULL, AxPropertyDescriptor *pAxProp = NULL);
+
+static void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp = NULL, const AxMethodDescriptor *pMethod = NULL, CAxContainerCtrl *pAxContainer = NULL, const AxPropertyDescriptor *pAxProp = NULL);
 static bool GetVariantArgumentList( CArray< COleVariant >& rArgs,
 																		size_t ctParams,
 																		resbuf*& pArgs,
-																		AxPropertyDescriptor* pAxProp,
-																		AxMethodDescriptor* pAxMethod );
+																		const AxPropertyDescriptor* pAxProp,
+																		const AxMethodDescriptor* pAxMethod );
+static LPPICTUREDISP GetPictureFromId( TProjectPtr pProject, UINT nPicId );
+static LPPICTUREDISP GetPictureFromFilename( LPCTSTR pszFilename );
 
 
 static void ReturnDate( const COleDateTime& Date )
@@ -55,7 +59,7 @@ ADSRESULT AxControl::GetProperty()
 	if( !pProp )
 		return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, (LPCTSTR)sPropName );
 
-	RefCountedPtr< AxPropertyDescriptor > pAxProp = NULL;
+	const AxPropertyDescriptor* pAxProp = NULL;
 	if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef() &&
 		(pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_DISPATCH || 
 		 pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_UNKNOWN ||
@@ -107,7 +111,7 @@ ADSRESULT AxControl::SetProperty()
 	if( !pProp )
 		return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, (LPCTSTR)sPropName );
 
-	RefCountedPtr< AxPropertyDescriptor > pAxProp = NULL;
+	const AxPropertyDescriptor* pAxProp = NULL;
 	if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef() &&
 			(pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_DISPATCH || 
 			 pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_UNKNOWN ||
@@ -189,111 +193,6 @@ ADSRESULT AxControl::DoMethod()
 		acedRetT();
 	else
 		acedRetOleVar( varResult, NULL, pMethod, pAxCont );
-	return RSRSLT;
-}
-
-ADSRESULT AxControl::SetColorProperty()
-{
-	struct resbuf *pArgs =acedGetArgs () ;
-
-	TDclControlPtr pControl = NULL;
-	if (!GetControlArgument (pArgs, pControl))
-		return RSERR; //invalid input
-	CDialogControl* pDlgControl = pControl->GetControlInstance();
-	if( !pDlgControl )
-		return RSERR; //invalid input
-	CAxContainerCtrl* pAxCont = pDlgControl->GetActiveXCtrl();
-	if( !pAxCont )
-		return RSERR; //invalid input
-
-	CString sPropName = _T("Color");
-	GetStringArgument( pArgs, sPropName, true );
-	TPropertyPtr pProp = pControl->FindPropertyObject(sPropName);
-	if( !pProp )
-		return RSRSLT;
-
-	RefCountedPtr< AxPropertyDescriptor > pAxProp = NULL;
-	if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef() &&
-		(pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_DISPATCH || 
-		 pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_UNKNOWN ||
-		 pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_VOID))
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef();
-	else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPut())
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPut();
-	else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef())
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef();
-	else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetProp())
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetProp();
-	if( !pAxProp )
-		return RSRSLT;
-	
-	if( pAxProp->GetArgs().size() == 0 )
-		return RSRSLT;
-
-	COLORREF color;
-	if( !GetColorArgument( pArgs, color ) )
-		return RSERR;
-
-	if( !AssertOutOfArgs( pArgs ) )
-		return RSERR;
-
-	pAxCont->SetColor( pAxProp->GetDispId(), color );
-	acedRetT();
-	return RSRSLT;
-}
-
-ADSRESULT AxControl::SetPictureProperty()
-{
-	struct resbuf *pArgs =acedGetArgs () ;
-
-	TDclControlPtr pControl = NULL;
-	if (!GetControlArgument (pArgs, pControl))
-		return RSERR; //invalid input
-	CDialogControl* pDlgControl = pControl->GetControlInstance();
-	if( !pDlgControl )
-		return RSERR; //invalid input
-	CAxContainerCtrl* pAxCont = pDlgControl->GetActiveXCtrl();
-	if( !pAxCont )
-		return RSERR; //invalid input
-
-	CString sPropName = _T("Picture");
-	GetStringArgument( pArgs, sPropName, true );
-	TPropertyPtr pProp = pControl->FindPropertyObject(sPropName);
-	if( !pProp )
-		return RSRSLT;
-
-	RefCountedPtr< AxPropertyDescriptor > pAxProp = NULL;
-	if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef() &&
-		(pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_DISPATCH || 
-		 pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_UNKNOWN ||
-		 pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_VOID))
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef();
-	else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPut())
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPut();
-	else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef())
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef();
-	else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetProp())
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetProp();
-	if( !pAxProp )
-		return RSRSLT;
-	
-	if( pAxProp->GetArgs().size() == 0 )
-		return RSRSLT;
-
-	UINT nPicId = -1;
-	CString sPicFilename;
-	if( !GetStringArgument( pArgs, sPicFilename, true ) &&
-			!GetUIntArgument( pArgs, nPicId ) )
-		return RSERR;
-
-	if( !AssertOutOfArgs( pArgs ) )
-		return RSERR;
-
-	if( !sPicFilename.IsEmpty() )
-		pAxCont->LoadPictureFile( pAxProp->GetDispId(), sPicFilename, 0 );
-	else
-		pAxCont->LoadPicture( pAxProp->GetDispId(), nPicId );
-	acedRetT();
 	return RSRSLT;
 }
 
@@ -551,7 +450,97 @@ ADSRESULT AxObject::Close()
 	return RSRSLT;
 }
 
-void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, AxMethodDescriptor *pMethod, CAxContainerCtrl *pAxContainer, AxPropertyDescriptor *pAxProp)
+ADSRESULT AxGeneral::GetOlePictureFromId()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	TArxProjectPtr pProject;
+	if( !GetProjectArgument( pArgs, pProject ) )
+		return RSERR; //invalid argument
+
+	long nPicId = -1;
+	if( !GetLongArgument( pArgs, nPicId ) )
+		return RSERR; //invalid argument
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	const CPictureObject* pPicture = pProject->FindPicture( nPicId );
+	if( !pPicture )
+		return RSRSLT; //no picture with that id
+
+	IDispatch* pPictureDisp = pPicture->GetPictureDisp();
+	if( pPictureDisp )
+	{
+		IUnknown* pUnknown = NULL;
+		pPictureDisp->QueryInterface( IID_IUnknown, (void**)&pUnknown );
+		pPictureDisp->Release();
+		theArxWorkspace.RetIUnknown( pUnknown );
+	}
+	return RSRSLT;
+}
+
+ADSRESULT AxGeneral::GetOlePictureFromFile()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CString sFilename;
+	if( !GetStringArgument( pArgs, sFilename ) )
+		return RSERR; //invalid input
+
+	if( sFilename.IsEmpty() )
+		return HandleArgValueError( pArgs );
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	// open file
+	HANDLE hFile = CreateFile( sFilename, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL );
+	if( hFile == INVALID_HANDLE_VALUE )
+		return RSRSLT;
+
+	LPPICTURE lpPicture = NULL;
+
+	// get file size
+	DWORD dwFileSize = GetFileSize(hFile, NULL);
+	if( dwFileSize > 0 )
+	{
+		LPVOID pvData = NULL;
+		// alloc memory based on file size
+		HGLOBAL hGlobal = GlobalAlloc( GMEM_MOVEABLE, dwFileSize );
+		_ASSERTE(NULL != hGlobal);
+
+		pvData = GlobalLock( hGlobal );
+		_ASSERTE(NULL != pvData);
+
+		DWORD dwBytesRead = 0;
+		// read file and store in global memory
+		BOOL bRead = ReadFile( hFile, pvData, dwFileSize, &dwBytesRead, NULL );
+		_ASSERTE(FALSE != bRead);
+		GlobalUnlock( hGlobal );
+
+		LPSTREAM pstm = NULL;
+		// create IStream* from global memory
+		HRESULT hr = CreateStreamOnHGlobal( hGlobal, TRUE, &pstm );
+		_ASSERTE(SUCCEEDED(hr) && pstm);
+		
+		// Create IPicture from image file
+		hr = ::OleLoadPicture( pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID *)&lpPicture );
+		_ASSERTE(SUCCEEDED(hr) && lpPicture);	
+		pstm->Release();
+	}
+	CloseHandle( hFile );
+	if( lpPicture )
+	{
+		IUnknown* pUnknown = NULL;
+		lpPicture->QueryInterface( IID_IUnknown, (void**)&pUnknown );
+		lpPicture->Release();
+		theArxWorkspace.RetIUnknown( pUnknown );
+	}
+	return RSRSLT;
+}
+
+void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, const AxMethodDescriptor *pMethod, CAxContainerCtrl *pAxContainer, const AxPropertyDescriptor *pAxProp)
 {
 	struct resbuf RetVal;
 			
@@ -761,8 +750,8 @@ void acedRetOleVar(COleVariant &varGet, TPropertyPtr pProp, AxMethodDescriptor *
 bool GetVariantArgumentList( CArray< COleVariant >& rArgs,
 														 size_t ctParams,
 														 resbuf*& pArgs,
-														 AxPropertyDescriptor* pAxProp,
-														 AxMethodDescriptor* pAxMethod )
+														 const AxPropertyDescriptor* pAxProp,
+														 const AxMethodDescriptor* pAxMethod )
 {
 	//[DPR] argList must be built backward for SetProperty to work properly.
 	//I tried reversing the list in SetProperty, but couldn't get variants to copy.

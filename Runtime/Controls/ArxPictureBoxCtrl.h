@@ -5,7 +5,7 @@
 
 #include "PictureBoxCtrl.h"
 #include "ArxControlServices.h"
-#include "OleOdcDropTarget.h"
+#include "ArxDragDropService.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -14,7 +14,7 @@
 class CArxPictureBoxCtrl : public CPictureBoxCtrl
 {
 	CArxControlServices	mArxServices;
-	COleOdcDropTarget mDropTarget;	
+	CArxDragDropService mDragDropService;
 
 // Construction
 public:
@@ -24,6 +24,7 @@ public:
 // DialogControl Interface
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
+	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
 
 	// Generated message map functions
 protected:
@@ -47,6 +48,5 @@ protected:
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnClicked();
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
-public:
 	afx_msg void OnPaint();
 };

@@ -44,6 +44,7 @@ protected:
 	afx_msg void OnCancelMode();
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg void OnNcPaint();
+	afx_msg void OnPaint();
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
 	afx_msg void OnNcRButtonUp(UINT nHitTest, CPoint point);

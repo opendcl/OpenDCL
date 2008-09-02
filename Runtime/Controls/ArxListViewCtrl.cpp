@@ -294,6 +294,7 @@ bool CArxListViewCtrl::LoadDwg(CString sFileName)
 		
 		if (m_pLoadedDwg==NULL)
 			return false;			
+		m_pLoadedDwg->closeInput( true );
 	}
 	catch(...)
 	{

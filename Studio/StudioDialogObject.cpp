@@ -21,7 +21,7 @@
 #include "ControlName.h"
 #include "FormControlManager.h"
 #include "PropertyWizard.h"
-#include "ObjectBrowser.h"
+#include "ControlBrowser.h"
 #include "FormVarNameUpdate.h"
 
 #ifdef _DEBUG
@@ -1023,7 +1023,8 @@ void CStudioDialogObject::OnEditObjectbrowser()
 		return;
 
 	AfxInitRichEdit();
-	CObjectBrowser IntelHelp( pActiveControl );
+	CControlBrowser IntelHelp( pActiveControl );
+	//CObjectBrowser IntelHelp( pActiveControl );
 	IntelHelp.DoModal();
 }
 

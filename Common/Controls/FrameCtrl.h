@@ -6,8 +6,6 @@
 #include "DialogControl.h"
 #include "AcadColorService.h"
 
-class CPropertyObject;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CFrameCtrl window

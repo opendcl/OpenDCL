@@ -1,21 +1,23 @@
-// CSlideHolder.h : header file
+// ArxAcadSlideCtrl.h : header file
 //
 
 #pragma once
 
+#include "DialogControl.h"
 #include "CxAcadSlide.h"
 #include "OleOdcDropTarget.h"
 #include "PPToolTip.h"
-#include "ArxDialogControl.h"
+#include "ArxControlServices.h"
 
 class CControlPane;
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CSlideHolder window
+// CArxAcadSlideCtrl window
 
-class CSlideHolder : public CButton, public CArxDialogControl
+class CArxAcadSlideCtrl : public CButton, public CDialogControl
 {
+	CArxControlServices	mArxServices;
 	CxAcadSlide mSlideCtrl;
 
 public:
@@ -30,11 +32,12 @@ public:
 
 // Construction
 public:
-	CSlideHolder( CControlPane& Pane, TDclControlPtr pTemplate, UINT nID );
-	virtual ~CSlideHolder();
+	CArxAcadSlideCtrl( CControlPane& Pane, TDclControlPtr pTemplate, UINT nID, bool bCreate = true );
+	virtual ~CArxAcadSlideCtrl();
 
 // DialogControl Interface
 public:
+	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;

@@ -49,17 +49,17 @@ bool CArxFontComboBoxCtrl::Create( CWnd* pParentWnd, UINT nID )
 CRect CArxFontComboBoxCtrl::GetWndRect() const
 {
 	CRect rcWnd = __super::GetWndRect();
-	switch( mpTemplate->GetLongProperty( Prop::ComboBoxStyle ) )
-	{
-	case 8:
-		{
-			long lListHeight = mpTemplate->GetLongProperty( Prop::DropDownHeight );
-			long lNewHeight = 16 * ((lListHeight + 13) / 16) + 2; //make it an integral height, + 2 pixels for the border
-			mpTemplate->SetLongProperty( Prop::DropDownHeight, lNewHeight );
-			rcWnd.bottom += lNewHeight;
-			break;
-		}
-	}
+	//switch( mpTemplate->GetLongProperty( Prop::ComboBoxStyle ) )
+	//{
+	//case 8: //font dropdown
+	//	{
+	//		long lListHeight = mpTemplate->GetLongProperty( Prop::DropDownHeight );
+	//		long lNewHeight = 16 * ((lListHeight + 13) / 16) + 3; //make it an integral height, + 2 pixels for the border
+	//		mpTemplate->SetLongProperty( Prop::DropDownHeight, lNewHeight );
+	//		rcWnd.bottom += (lNewHeight - lListHeight); //to prevent autoscrolling
+	//		break;
+	//	}
+	//}
 	return rcWnd;
 }
 

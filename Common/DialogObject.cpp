@@ -7,6 +7,7 @@
 #include "DclFormObject.h"
 #include "DclControlObject.h"
 #include "PictureObject.h"
+#include "AcadColorService.h"
 #include "PropertyIds.h"
 
 
@@ -202,6 +203,15 @@ bool CDialogObject::OnApplyProperty( TPropertyPtr pProp )
 	default: bSuccess = __super::OnApplyProperty( pProp ); break;
 	}
 	return bSuccess;
+}
+
+bool CDialogObject::OnApplyBackgroundColor( TPropertyPtr pProp )
+{
+	CAcadColorService* pColorService = GetColorService();
+	if( pColorService )
+		pColorService->SetBackgroundColor( pProp->GetLongValue() );
+	OnNeedRepaint();
+	return true;
 }
 
 bool CDialogObject::OnApplyResizable( TPropertyPtr pProp )

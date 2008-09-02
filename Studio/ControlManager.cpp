@@ -51,7 +51,8 @@ CControlManager::CControlManager( CDialogControl* pDlgControl, bool bCreate /*= 
 	pDlgControl->SetControlManager( this );
 	if( bCreate )
 	{
-		pTopLevelWnd->SetRedraw( FALSE );
+		if( pTopLevelWnd->m_hWnd )
+			pTopLevelWnd->SetRedraw( FALSE );
 		CRect rcControl = pDlgControl->GetEffectiveWindowRect();
 		Create( _T(""), WS_CHILD | WS_DISABLED, rcControl, pTopLevelWnd->GetParent() );
 		ModifyStyle( WS_CLIPCHILDREN, WS_CLIPSIBLINGS, 0 );
@@ -63,7 +64,8 @@ CControlManager::CControlManager( CDialogControl* pDlgControl, bool bCreate /*= 
 		//mpControlWnd->SetWindowPos( this, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING );
 		pTopLevelWnd->SetParent( this );
 		pTopLevelWnd->SetWindowPos( NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING );
-		pTopLevelWnd->SetRedraw( TRUE );
+		if( pTopLevelWnd->m_hWnd )
+			pTopLevelWnd->SetRedraw( TRUE );
 		ShowWindow( SW_SHOW );
 	}
 }
@@ -96,9 +98,10 @@ void CControlManager::OnSelected( bool bSelected )
 	{
 		mGripper.ShowWindow( bSelected? SW_SHOW : SW_HIDE );
 		if( !bSelected )
-			mpControlWnd->RedrawWindow( NULL, NULL, RDW_FRAME | RDW_ERASE | RDW_INVALIDATE | RDW_UPDATENOW );
-		else
-			mGripper.SetWindowPos( mpControlWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING | SWP_NOCOPYBITS );
+		{
+			ShowWindow( SW_HIDE );
+			ShowWindow( SW_SHOW );
+		}
 	}
 }
 
@@ -330,9 +333,11 @@ void CControlManager::AutoSize()
 void CControlManager::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
+	//CRect rcThis;
+	//GetClientRect( &rcThis );
+	//dc.FillSolidRect( &rcThis, GetSysColor( COLOR_GRAYTEXT ) );
 	return;
 }
-
 
 void CControlManager::OnDestroy() 
 {
@@ -343,10 +348,6 @@ void CControlManager::OnDestroy()
 BOOL CControlManager::OnEraseBkgnd(CDC* pDC)
 {
 	return __super::OnEraseBkgnd( pDC );
-	//CRect rcThis;
-	//GetClientRect( &rcThis );
-	//pDC->FillSolidRect( &rcThis, GetSysColor( COLOR_GRAYTEXT ) );
-	return TRUE;
 }
 
 void CControlManager::PostNcDestroy()

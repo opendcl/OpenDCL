@@ -210,7 +210,22 @@ CString VariantToString( const VARIANT& var )
 }
 
 
-void SetRefType(VARTYPE &vtType, ITypeInfo* TheInfo, HREFTYPE hreftype, CLSID *pClsid /*= NULL*/)
+HRESULT GetNameOfRefType( ITypeInfo* pTypeInfo, HREFTYPE hreftype, CString& sTypeName )
+{
+	ITypeInfo* pRefTypeInfo = NULL;
+	HRESULT hr = pTypeInfo->GetRefTypeInfo( hreftype, &pRefTypeInfo );
+	if( FAILED(hr) )
+		return hr;
+	CComBSTR bstrName;
+	hr = pRefTypeInfo->GetDocumentation( MEMBERID_NIL, &bstrName, NULL, NULL, NULL );
+	if( FAILED(hr) )
+		return hr;
+	sTypeName = bstrName;
+	return S_OK;
+}
+
+
+void SetRefType( VARTYPE& vtType, ITypeInfo* TheInfo, HREFTYPE hreftype, CLSID& Clsid )
 {
 	ITypeInfo *TheRefType = NULL;
 	if ((hreftype != -1) &&
@@ -230,12 +245,11 @@ void SetRefType(VARTYPE &vtType, ITypeInfo* TheInfo, HREFTYPE hreftype, CLSID *p
 				if (vtType == VT_USERDEFINED)
 					SetRefType(vtType, TheRefType, 
 						(pTA->tdescAlias.vt == VT_PTR) ? 
-							pTA->tdescAlias.lptdesc->hreftype : pTA->tdescAlias.hreftype, pClsid);
+							pTA->tdescAlias.lptdesc->hreftype : pTA->tdescAlias.hreftype, Clsid);
 				break;
 			case TKIND_DISPATCH: // font, etc.
 				vtType = VT_DISPATCH;
-				if (pClsid != NULL)
-					*pClsid = pTA->guid;
+				Clsid = pTA->guid;
 				break;
 			case TKIND_ENUM: {
 				vtType = VT_I4; // better than nothing
@@ -261,7 +275,7 @@ void SetRefType(VARTYPE &vtType, ITypeInfo* TheInfo, HREFTYPE hreftype, CLSID *p
 static CString BuildParam(VARTYPE vt, BOOL bUseAsType, BOOL bNotByVal,
 													LPCTSTR szName, BOOL optional, LPVOID pFunc /*=NULL*/) 
 {
-	// it looks like this function ws never implemenetd. [ORW]
+	// it looks like this function was never implemenetd. [ORW]
 	return VARTYPEtoString(vt);
 }
 
@@ -310,8 +324,11 @@ CString FuncDescToString( ITypeInfo *lpTypeInfo, FUNCDESC *pFuncDesc, bool bUseA
 			BOOL bNotByVal = (e.tdesc.vt == VT_PTR);
 			VARTYPE vt = (bNotByVal ? e.tdesc.lptdesc->vt : e.tdesc.vt);
 			if (vt == VT_USERDEFINED) 
-				SetRefType(vt, lpTypeInfo,
-					(bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype);
+			{
+				CLSID clsid;
+				HREFTYPE href = bNotByVal? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype;
+				SetRefType( vt, lpTypeInfo, href, clsid );
+			}
 			CString sDecl = BuildParam(vt, bUseAsType, bNotByVal, lpsz, FALSE, NULL);
 	        if (sDecl.IsEmpty()) bError = TRUE;
 			//sParams += sDecl;

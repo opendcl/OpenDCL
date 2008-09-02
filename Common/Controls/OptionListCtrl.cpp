@@ -95,7 +95,7 @@ bool COptionListCtrl::OnApplyProperty( TPropertyPtr pProp )
 			SetItemHeight( 0, mnRowHeight );
 			break;
 		}
-	case Prop::DefSelIndex:
+	case Prop::CurSelIndex:
 		{
 			SetCurSel( pProp->GetLongValue() );
 			break;
@@ -316,6 +316,7 @@ void COptionListCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 void COptionListCtrl::OnLbnSelchange()
 {
+	mpTemplate->SetLongProperty( Prop::CurSelIndex, GetCurSel() );
 	OnNeedRepaint( true, true );
 }
 

@@ -354,7 +354,7 @@ CString CEventsTabPane::GetDefunArguments()
 	UINT_PTR nEventId = m_EventsTree.GetItemData(m_EventsTree.GetCurSel());
 
 	if (m_pControl->GetType() != CtlActiveX)
-		LoadArgsNDesc((Prop::Id)nEventId, m_pControl, sArgs, strDesc);
+		LoadArgsNDesc( m_pControl->GetPropertyObject( (Prop::Id)nEventId ), sArgs, strDesc );
 	else
 	{
 		TPropertyList::const_iterator iter = m_pControl->GetPropertyList().begin();

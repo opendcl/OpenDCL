@@ -33,7 +33,7 @@ protected:
 
 	virtual afx_msg void PostNcDestroy();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void HScroll(UINT nSBCode, UINT nPos);
 	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 };

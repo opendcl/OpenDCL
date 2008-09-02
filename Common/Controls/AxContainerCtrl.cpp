@@ -386,7 +386,7 @@ bool CAxContainerCtrl::SetProperty( TPropertyPtr pProp, LPCTSTR pszValue )
 }
 
 //[DPR] Recreated for methods_activex.cpp
-HRESULT CAxContainerCtrl::GetProperty( AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult )
+HRESULT CAxContainerCtrl::GetProperty( const AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult )
 {
 	if( !axProp )
 		return E_POINTER;
@@ -397,7 +397,7 @@ HRESULT CAxContainerCtrl::GetProperty( AxPropertyDescriptor* axProp, VARIANTARG*
 	return axProp->Get( pDispatch, rvarArgs, ctArgs, varResult );
 }
 
-HRESULT CAxContainerCtrl::GetProperty(AxPropertyDescriptor* axProp, CString &strReturnValue)
+HRESULT CAxContainerCtrl::GetProperty( const AxPropertyDescriptor* axProp, CString &strReturnValue )
 {
 	if( !axProp )
 		return E_POINTER;
@@ -422,7 +422,7 @@ HRESULT CAxContainerCtrl::GetProperty(AxPropertyDescriptor* axProp, CString &str
 	return S_OK;
 }
 
-HRESULT CAxContainerCtrl::SetProperty( AxPropertyDescriptor* axProp, const VARIANTARG* rvarArgs, UINT ctArgs )
+HRESULT CAxContainerCtrl::SetProperty( const AxPropertyDescriptor* axProp, const VARIANTARG* rvarArgs, UINT ctArgs )
 {
 	if( !axProp )
 		return E_POINTER;
@@ -438,12 +438,12 @@ HRESULT CAxContainerCtrl::SetProperty( AxPropertyDescriptor* axProp, const VARIA
 	return S_OK;
 }
 
-HRESULT CAxContainerCtrl::SetProperty( AxPropertyDescriptor* axProp, COleVariant varArg )
+HRESULT CAxContainerCtrl::SetProperty( const AxPropertyDescriptor* axProp, COleVariant varArg )
 {
 	return SetProperty( axProp, &varArg, 1 );
 }
 
-IDispatch * CAxContainerCtrl::GetChildIDispatch(DISPID dispid)
+IDispatch* CAxContainerCtrl::GetChildIDispatch( DISPID dispid )
 {
 	LPDISPATCH pDispatch;
 	InvokeHelper(dispid, DISPATCH_PROPERTYGET, VT_DISPATCH, (void*)&pDispatch, NULL);
@@ -638,7 +638,7 @@ UINT CAxContainerCtrl::ExtractMethodInfo(TDclControlPtr pControl, ITypeInfo* pTy
 	pTypeInfo->ReleaseTypeAttr( pTypeAttr );
 
 	//Remove any existing ActiveX methods properties before inserting the new ones
-	TPropertyList& Props = mpTemplate->GetPropertyList();
+	TPropertyList& Props = pControl->GetPropertyList();
 	TPropertyList::iterator iter = Props.begin();
 	while( iter != Props.end() )
 	{
@@ -677,73 +677,56 @@ UINT CAxContainerCtrl::ExtractMethodInfo(TDclControlPtr pControl, ITypeInfo* pTy
 	return ctMethods;
 }
 
-BOOL CAxContainerCtrl::ExtractComponentsFromTLB( TDclControlPtr pDclControl, CLSID clsid )
+bool CAxContainerCtrl::ExtractComponentsFromTLB( TDclControlPtr pDclControl, CLSID clsid )
 {
-	long lTypeInfoCount = 0;
-	CComBSTR bstrName;
-	BOOL bSuccess = TRUE;
-
-
 	if (mpTypeLib == NULL)
-		return FALSE;
+		return false;
+	long lTypeInfoCount = mpTypeLib->GetTypeInfoCount();
+	if( lTypeInfoCount == 0 )
+		return false; //no type information
 	
-	//Get the type information count
-	lTypeInfoCount = mpTypeLib->GetTypeInfoCount();
+	//if (clsid == IID_IFont)
+	//{
+	//	pDclControl->SetAxTypeName( _T("Font") );
+	//	SetupFont( pDclControl );
+	//	return true;
+	//}
+	//else if (clsid == IID_IFontDisp)
+	//{
+	//	pDclControl->SetAxTypeName( _T("Font") );
+	//	SetupFont( pDclControl );
+	//	return true;
+	//}
+	//else if (clsid == IID_IPictureDisp)
+	//{
+	//	pDclControl->SetAxTypeName( _T("Picture") );
+	//	SetupPicture( pDclControl );
+	//	return true;
+	//}
 
-
-	//Make sure that we have type information
-	if(lTypeInfoCount == 0)
+	//Get the help string and help file for each TypeInfo
+	for(long lIter = 0; lIter  < lTypeInfoCount ; lIter++)
 	{
-		bSuccess = FALSE;
-	}
-	
-	if (clsid == IID_IFont)
-	{
-		pDclControl->SetAxTypeName( _T("Font") );
-		SetupFont(pDclControl);
-		return TRUE;
-	}
-	if (clsid == IID_IFontDisp)
-	{
-		pDclControl->SetAxTypeName( _T("Font") );
-		SetupFont(pDclControl);
-		return TRUE;
-	}
-	if (clsid == IID_IPictureDisp)
-	{
-		pDclControl->SetAxTypeName( _T("Picture") );
-		SetupPicture(pDclControl);
-		return TRUE;
-	}
-
-	if(bSuccess)
-	{
-		
-		//Get the help string and help file for each TypeInfo
-		for(long lIter = 0; lIter  < lTypeInfoCount ; lIter++)
+		ITypeInfo *TheInfo = NULL;
+		TYPEATTR *TheAttr;
+		mpTypeLib->GetTypeInfo( lIter, &TheInfo );
+		if( TheInfo != NULL )
 		{
-			ITypeInfo *TheInfo = NULL;
-			TYPEATTR *TheAttr;
+			TheInfo->GetTypeAttr( &TheAttr );
 			
-			mpTypeLib->GetTypeInfo(lIter, &TheInfo);
-			if (TheInfo != NULL)
+			if( clsid == TheAttr->guid )
 			{
-				TheInfo->GetTypeAttr(&TheAttr);
-				
-				if (clsid == TheAttr->guid)
-				{
-					ExtractPropertyInfo( pDclControl, TheInfo, NULL, true );
-					ExtractMethodInfo( pDclControl, TheInfo );	
-					
-					CComBSTR bstrDoc;
-					mpTypeLib->GetDocumentation( lIter, &bstrName, &bstrDoc, NULL, NULL );
-					if(bstrName)
-						pDclControl->SetAxTypeName( CString(bstrName) );
-				}				
-			}			
-		}               
-	}
-	return TRUE;
+				ExtractPropertyInfo( pDclControl, TheInfo, NULL, true );
+				ExtractMethodInfo( pDclControl, TheInfo );	
+				CComBSTR bstrDoc;
+				CComBSTR bstrName;
+				mpTypeLib->GetDocumentation( lIter, &bstrName, &bstrDoc, NULL, NULL );
+				if( bstrName.Length() > 0 )
+					pDclControl->SetAxTypeName( CString( bstrName ) );
+			}				
+		}			
+	}               
+	return true;
 }
 
 UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, LPOLEOBJECT pIObject, bool bEnumList /*=false*/ )
@@ -853,8 +836,8 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 					else
 						pProp = new CPropertyObject( pControl, PropActiveXProp );
 					pProp->SetName( sPropName );
-					if( pAxPropDesc->GetInvKind() == INVOKE_PROPERTYGET && !pAxPropDesc->GetArgs().empty() )
-						pProp->SetHidden();
+					//if( pAxPropDesc->GetInvKind() == INVOKE_PROPERTYGET && !pAxPropDesc->GetArgs().empty() )
+					//	pProp->SetHidden();
 					pControl->InsertNamedProperty( pProp );
 				}
 				switch( pAxPropDesc->GetInvKind() )
@@ -883,10 +866,6 @@ UINT CAxContainerCtrl::ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* 
 
 void CAxContainerCtrl::LoadPicture(DISPID dispid, int nId)
 {
-	//[DPR] To convert to Ctrl format, I removed mpParent from this class.
-	//This is the only place it was used.
-	//In its place, I get the current project from the workspace.
-	//I assume that this will work correctly but have not tested it.
 	if (nId == -1)
 	{
 		SetPicture(dispid, NULL, DISPATCH_PROPERTYPUT);
@@ -1078,5 +1057,5 @@ BOOL CAxContainerCtrl::DestroyWindow()
 {
 	__super::DestroyWindow();
 	delete this;
-	return true;
+	return TRUE;
 }

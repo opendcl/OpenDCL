@@ -50,7 +50,7 @@ AxMethodDescriptor::AxMethodDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInf
 					if (vt == VT_USERDEFINED) 
 						SetRefType( vt, pTypeInfo,
 												(bNotByVal? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
-												&mrArgs[n].clsid );
+												mrArgs[n].clsid );
 					mrArgs[n].vt = vt;
 					if( !!rbstrNames[n] && n < ctNames - 1 )	
 						mrArgs[n].name = (LPCTSTR)bstr_t( rbstrNames[n + 1] );
@@ -72,7 +72,11 @@ AxMethodDescriptor::AxMethodDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInf
 			if( !bReadOnly || mDispId == -552 ) 
 			{
 				if( vt == VT_USERDEFINED ) 
-					SetRefType( vt, pTypeInfo, (bNotByVal) ? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype, &mReturnGuid );						
+				{
+					HREFTYPE href = bNotByVal? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype;
+					SetRefType( vt, pTypeInfo, href, mReturnGuid );
+					GetNameOfRefType( pTypeInfo, href, msReturnTypeName );
+				}
 			}
 			mReturnType = vt;
 
@@ -91,6 +95,8 @@ AxMethodDescriptor::~AxMethodDescriptor(void)
 
 CString AxMethodDescriptor::GetReturnTypeDisplayName() const
 {
+	if( !msReturnTypeName.IsEmpty() )
+		return msReturnTypeName;
 	CString sName;
 	if( mReturnGuid != GUID_NULL )
 		sName = GetAxTypeName( mReturnGuid );

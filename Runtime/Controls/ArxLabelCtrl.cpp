@@ -17,6 +17,7 @@ CArxLabelCtrl::CArxLabelCtrl( TDclControlPtr pTemplate,
 															bool bCreate /*= true*/ )
 : CLabelCtrl( pTemplate, pPane, nID, false )
 , mArxServices( this )
+, mDragDropService( this )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -24,34 +25,6 @@ CArxLabelCtrl::CArxLabelCtrl( TDclControlPtr pTemplate,
 
 CArxLabelCtrl::~CArxLabelCtrl()
 {
-}
-
-bool CArxLabelCtrl::OnApplyProperty( TPropertyPtr pProp )
-{
-	if( !__super::OnApplyProperty( pProp ) )
-		return false;
-	bool bFailed = false;
-	switch( pProp->GetID() )
-	{
-	case Prop::DragnDropAllowDrop:
-		{
-			SetDragnDrop( pProp->GetBooleanValue() );
-			break;
-		}
-	}
-	return !bFailed;
-}
-
-void CArxLabelCtrl::SetDragnDrop(BOOL bRegister)
-{
-	if( bRegister )
-	{
-		BOOL success = mDropTarget.Register( this );
-		mDropTarget.m_pThisArxControl = mpTemplate;
-		mDropTarget.m_pParent = this;
-	}
-	else
-		mDropTarget.Revoke();
 }
 
 BEGIN_MESSAGE_MAP(CArxLabelCtrl, CLabelCtrl)
@@ -62,7 +35,7 @@ END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// VdclTextButton message handlers
+// CArxLabelCtrl message handlers
 
 void CArxLabelCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
@@ -80,7 +53,7 @@ void CArxLabelCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventClicked ), IsAsyncEvents() );
 	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) && nFlags == MK_LBUTTON )
-		BeginDragnDrop( mpTemplate, point, IsAsyncEvents() );
+		BeginDragDrop( point );
 }
 
 __UINT_LRESULT CArxLabelCtrl::OnNcHitTest(CPoint point)

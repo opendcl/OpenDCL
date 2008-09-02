@@ -49,7 +49,7 @@ DWORD CUrlLinkCtrl::GetWndStyle() const
 
 CString CUrlLinkCtrl::GetWndCaption() const
 {
-	return mpTemplate->GetStringProperty( Prop::URLAddress );
+	return mpTemplate->GetStringProperty( Prop::Caption );
 }
 
 bool CUrlLinkCtrl::OnApplyProperty( TPropertyPtr pProp )
@@ -61,7 +61,7 @@ bool CUrlLinkCtrl::OnApplyProperty( TPropertyPtr pProp )
 	{
 	case Prop::URLLinkType:
 		break;
-	case Prop::URLAddress:
+	case Prop::Caption:
 		SetWindowText( pProp->GetStringValue() );
 		OnNeedRepaint();
 		break;

@@ -283,6 +283,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ControlBrowser.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ControlDropSource.h"
 				>
 			</File>
@@ -392,10 +396,6 @@
 			</File>
 			<File
 				RelativePath=".\LocalRes.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ObjectBrowser.h"
 				>
 			</File>
 			<File
@@ -592,6 +592,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ControlBrowser.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ControlDropSource.cpp"
 				>
 			</File>
@@ -697,10 +701,6 @@
 			</File>
 			<File
 				RelativePath=".\LoadArgs.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ObjectBrowser.cpp"
 				>
 			</File>
 			<File
@@ -1300,6 +1300,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Common\Controls\AnimationCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\AnimationCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Controls\AxContainerCtrl.cpp"
 					>
 				</File>
@@ -1473,6 +1481,14 @@
 				</File>
 				<File
 					RelativePath="..\Common\Controls\GridCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\HtmlCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\HtmlCtrl.h"
 					>
 				</File>
 				<File

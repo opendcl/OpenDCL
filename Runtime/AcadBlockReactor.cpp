@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "AcadBlockReactor.h"
 #include "ArxListViewCtrl.h"
-#include "GsPreviewCtrl.h"
+#include "ArxGsViewCtrl.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -30,7 +30,7 @@ void CAcadBlockReactor::endInsert(AcDbDatabase* pTo)
 		((CArxListViewCtrl*)m_pParentBlockList)->RefreshBlockList();
 
 	if (m_pParentBlockView != NULL)
-		((CGsPreviewCtrl*)m_pParentBlockView)->UpdateBlock();
+		((CArxGsViewCtrl*)m_pParentBlockView)->UpdateBlock();
 }
 
 void CAcadBlockReactor::endDeepClone(AcDbIdMapping& idMap)
@@ -39,7 +39,7 @@ void CAcadBlockReactor::endDeepClone(AcDbIdMapping& idMap)
 		((CArxListViewCtrl*)m_pParentBlockList)->RefreshBlockList();
 
 	if (m_pParentBlockView != NULL)
-		((CGsPreviewCtrl*)m_pParentBlockView)->UpdateBlock();
+		((CArxGsViewCtrl*)m_pParentBlockView)->UpdateBlock();
 }
 
 
@@ -52,6 +52,6 @@ void CAcadBlockReactor::commandEnded(const char * cmdStr)
 			((CArxListViewCtrl*)m_pParentBlockList)->RefreshBlockList();
 
 		if (m_pParentBlockView != NULL)
-			((CGsPreviewCtrl*)m_pParentBlockView)->UpdateBlock();
+			((CArxGsViewCtrl*)m_pParentBlockView)->UpdateBlock();
 	}
 }

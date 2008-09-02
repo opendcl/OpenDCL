@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by w:\OpenDCL\Build 5.0\Common\RUS\SharedRes.RUS.rc
+// Used by w:\OpenDCL\Build 5.0\Common\ENU\SharedRes.ENU.rc
 //
 #define IDR_MAINFRAME                   10
 #define IDS_NONE                        30
@@ -33,6 +33,7 @@
 #define IDI_SHXFONT                     1109
 #define IDI_TTFONT                      1110
 #define IDI_PICKSMALL                   1111
+#define IDI_LARGEBLOCK                  1112
 #define IDB_ARROWHEADS                  1200
 #define IDB_OPTBTN                      1201
 #define IDB_OPTBTNSEL                   1202
@@ -77,6 +78,7 @@
 #define IDS_SPLITTER                    3133
 #define IDS_HATCH                       3134
 #define IDS_FILEDLGCTRL                 3135
+#define IDS_BLANKHTML                   3136
 #define IDS_PROP_NAME                   3201
 #define IDS_PROP_CUSTOM                 3202
 #define IDS_PROP_AUTOSIZE               3203
@@ -272,7 +274,7 @@
 #define IDS_PROP_SINGLEEXPANED          3396
 #define IDS_PROP_ACTIVEXPROPPAGES       3397
 #define IDS_PROP_ROWHEIGHT              3398
-#define IDS_PROP_DEFSELINDEX            3399
+#define IDS_PROP_CURSELINDEX            3399
 #define IDS_PROP_OBJECTBROWSER          3400
 #define IDS_PROP_VARNAME                3401
 #define IDS_PROP_FILEDLGSTYLE           3402
@@ -333,4 +335,3 @@
 #define IDS_PROP_CAPTION_REMAINING      3457
 #define IDS_PROP_PROGRESSLEGEND         3458
 #define IDS_PROP_KEEPFOCUS              3459
-#define IDI_LARGEBLOCK                  12004

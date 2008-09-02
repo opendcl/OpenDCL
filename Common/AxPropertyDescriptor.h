@@ -24,6 +24,7 @@ protected:
 	bool mbArray;
 	bool mbReadOnly;
 	GUID mGuid;
+	CString msTypeName;
 	INVOKEKIND mInvKind;
 	std::vector< AxPropertyEnum > mrEnum;
 	std::vector< AxArg > mrArgs;

@@ -1,8 +1,8 @@
-// 3DRect.cpp : implementation file
+// ArxAcadSlideCtrl.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "SlideHolder.h"
+#include "ArxAcadSlideCtrl.h"
 #include "DclControlObject.h"
 #include "PropertyObject.h"
 #include "AcadColorTable.h"
@@ -10,30 +10,31 @@
 #include "ControlPane.h"
 #include "PropertyIds.h"
 
-const int nReturnChar = 13;
-const int nHardReturnChar = 10;
-
 
 /////////////////////////////////////////////////////////////////////////////
-// CSlideHolder
+// CArxAcadSlideCtrl
 
-CSlideHolder::CSlideHolder( CControlPane& Pane, TDclControlPtr pTemplate, UINT nID )
-: CArxDialogControl( pTemplate, &Pane, this )
+CArxAcadSlideCtrl::CArxAcadSlideCtrl( CControlPane& Pane, TDclControlPtr pTemplate,
+																			UINT nID, bool bCreate /*= true*/ )
+: CDialogControl( pTemplate, &Pane, this )
+, mArxServices( this )
 {
 	m_bMouseTracking = FALSE;
 	m_bHasFocus = false;
 	m_bSelectedRect = false;
 	m_hbmMem = NULL;
-	Create( Pane.GetHostDialog(), nID );
+
+	if( bCreate )
+		Create( Pane.GetHostDialog(), nID );
 }
 
-CSlideHolder::~CSlideHolder()
+CArxAcadSlideCtrl::~CArxAcadSlideCtrl()
 {
 	if(m_hbmMem)
 		::DeleteObject(m_hbmMem);
 }
 
-bool CSlideHolder::Create( CWnd* pParentWnd, UINT nID )
+bool CArxAcadSlideCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess = (CButton::Create( NULL, GetWndStyle(), GetWndRect(), pParentWnd, nID ) != FALSE);
 
@@ -47,15 +48,15 @@ bool CSlideHolder::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-DWORD CSlideHolder::GetWndStyle() const
+DWORD CArxAcadSlideCtrl::GetWndStyle() const
 {
-	DWORD dwStyle = CArxDialogControl::GetWndStyle();
+	DWORD dwStyle = __super::GetWndStyle();
 	return (dwStyle | BS_OWNERDRAW | BS_NOTIFY);
 }
 
 
-BEGIN_MESSAGE_MAP(CSlideHolder, CButton)
-	//{{AFX_MSG_MAP(CSlideHolder)
+BEGIN_MESSAGE_MAP(CArxAcadSlideCtrl, CButton)
+	//{{AFX_MSG_MAP(CArxAcadSlideCtrl)
 	ON_WM_PAINT()
 	ON_WM_CREATE()
 	ON_WM_RBUTTONDBLCLK()
@@ -85,9 +86,9 @@ END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CSlideHolder message handlers
+// CArxAcadSlideCtrl message handlers
 
-void CSlideHolder::OnPaint() 
+void CArxAcadSlideCtrl::OnPaint() 
 {
 	if (!GetParent()->IsWindowVisible())		
 		return;
@@ -127,13 +128,13 @@ void CSlideHolder::OnPaint()
 	}
 }
 
-void CSlideHolder::SetAcadColor(long nColor)
+void CArxAcadSlideCtrl::SetAcadColor(long nColor)
 {	
 	m_BkColor = GetRGBColor(nColor);
 	Invalidate();
 }
 
-bool CSlideHolder::SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide )
+bool CArxAcadSlideCtrl::SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide )
 {	
 	if (!mSlideCtrl.Load(pszFilename, pszSlide))
 		return false;
@@ -141,7 +142,7 @@ bool CSlideHolder::SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide )
 	return true;
 }
 
-void CSlideHolder::Clear()
+void CArxAcadSlideCtrl::Clear()
 {
 	// delete the bitmap is valid
 	if (m_hbmMem != NULL)
@@ -162,7 +163,7 @@ void CSlideHolder::Clear()
 	}
 }
 
-void CSlideHolder::PaintControl(CDC *pdc)
+void CArxAcadSlideCtrl::PaintControl(CDC *pdc)
 {
 	
 	CRect rcCell;
@@ -263,7 +264,7 @@ void CSlideHolder::PaintControl(CDC *pdc)
 	
 }
 
-void CSlideHolder::DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight, LPCTSTR pszFilename, LPCTSTR pszSlideName)
+void CArxAcadSlideCtrl::DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight, LPCTSTR pszFilename, LPCTSTR pszSlideName)
 {
 	HDC hdc = ::GetDC(m_hWnd);
 
@@ -282,7 +283,7 @@ void CSlideHolder::DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight,
 	// then releasing the DC itself
 	::ReleaseDC(m_hWnd, hdc);
 }
-int CSlideHolder::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+int CArxAcadSlideCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
@@ -292,7 +293,7 @@ int CSlideHolder::OnCreate(LPCREATESTRUCT lpCreateStruct)
 }
 
 
-void CSlideHolder::OnRButtonDblClk(UINT nFlags, CPoint point) 
+void CArxAcadSlideCtrl::OnRButtonDblClk(UINT nFlags, CPoint point) 
 {
 	 InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseDblClick),
@@ -317,7 +318,7 @@ void CSlideHolder::OnRButtonDblClk(UINT nFlags, CPoint point)
 	CWnd::OnRButtonDblClk(nFlags, point);
 }
 
-void CSlideHolder::OnRButtonUp(UINT nFlags, CPoint point) 
+void CArxAcadSlideCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseUp),
@@ -344,10 +345,9 @@ void CSlideHolder::OnRButtonUp(UINT nFlags, CPoint point)
 	CWnd::OnRButtonUp(nFlags, point);
 }
 
-void CSlideHolder::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CArxAcadSlideCtrl::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	if (nChar != nReturnChar &&
-		nChar != nHardReturnChar )
+	if( nChar != _T('\n') && nChar != _T('\r') )
 	{
 		CButton::OnChar(nChar, nRepCnt, nFlags);
 	}
@@ -359,7 +359,7 @@ void CSlideHolder::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	
 }
 
-void CSlideHolder::OnClicked() 
+void CArxAcadSlideCtrl::OnClicked() 
 {
 	CString sEvent = mpTemplate->GetStringProperty(Prop::EventClicked);
 	if( sEvent.SpanExcluding( _T("_") ) == _T("c:OnActionEvent") )
@@ -378,7 +378,7 @@ void CSlideHolder::OnClicked()
 		InvokeMethod( sEvent, IsAsyncEvents() );	
 }
 
-void CSlideHolder::OnDoubleclicked() 
+void CArxAcadSlideCtrl::OnDoubleclicked() 
 {
 	// call methods to invoke the event
 	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());	
@@ -386,7 +386,7 @@ void CSlideHolder::OnDoubleclicked()
 	
 }
 
-void CSlideHolder::OnDestroy() 
+void CArxAcadSlideCtrl::OnDestroy() 
 {
 	// delete the bitmap is valid
 	if (m_hbmMem != NULL)
@@ -400,7 +400,7 @@ void CSlideHolder::OnDestroy()
 	CButton::OnDestroy();
 }
 
-void CSlideHolder::OnSetFocus(CWnd* pOldWnd) 
+void CArxAcadSlideCtrl::OnSetFocus(CWnd* pOldWnd) 
 {
 	CButton::OnSetFocus(pOldWnd);
 	
@@ -422,7 +422,7 @@ void CSlideHolder::OnSetFocus(CWnd* pOldWnd)
 	
 }
 
-void CSlideHolder::OnKillFocus(CWnd* pNewWnd) 
+void CArxAcadSlideCtrl::OnKillFocus(CWnd* pNewWnd) 
 {
 	CButton::OnKillFocus(pNewWnd);
 	
@@ -435,26 +435,26 @@ void CSlideHolder::OnKillFocus(CWnd* pNewWnd)
 	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }
 
-void CSlideHolder::SetHighLight(const COLORREF& rgb)
+void CArxAcadSlideCtrl::SetHighLight(const COLORREF& rgb)
 {
 	m_bSelectedRect = true;
 	m_HighlightColor = rgb;		
 	Invalidate();
 }
 
-void CSlideHolder::RemoveHighLight()
+void CArxAcadSlideCtrl::RemoveHighLight()
 {
 	m_bSelectedRect = false;
 	Invalidate();
 }
 
-BOOL CSlideHolder::PreTranslateMessage(MSG* pMsg) 
+BOOL CArxAcadSlideCtrl::PreTranslateMessage(MSG* pMsg) 
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
 	return __super::PreTranslateMessage(pMsg);
 }
 
-void CSlideHolder::DrawLine(int sX, int sY, int eX, int eY, const COLORREF& rgb)
+void CArxAcadSlideCtrl::DrawLine(int sX, int sY, int eX, int eY, const COLORREF& rgb)
 {
 	HDC hdc = ::GetDC(m_hWnd);
 	CPoint point;
@@ -475,7 +475,7 @@ void CSlideHolder::DrawLine(int sX, int sY, int eX, int eY, const COLORREF& rgb)
 
 }
 
-void CSlideHolder::DrawFillRect(int sX, int sY, int eX, int eY, const COLORREF& rgb)
+void CArxAcadSlideCtrl::DrawFillRect(int sX, int sY, int eX, int eY, const COLORREF& rgb)
 {
 	HDC hdc = ::GetDC(m_hWnd);
 
@@ -496,7 +496,7 @@ void CSlideHolder::DrawFillRect(int sX, int sY, int eX, int eY, const COLORREF& 
 
 }
 
-void CSlideHolder::CopyDC() 
+void CArxAcadSlideCtrl::CopyDC() 
 {
 	if (!GetParent()->IsWindowVisible())		
 		return;
@@ -538,7 +538,7 @@ void CSlideHolder::CopyDC()
 		
 }
 
-void CSlideHolder::OnSize(UINT nType, int cx, int cy) 
+void CArxAcadSlideCtrl::OnSize(UINT nType, int cx, int cy) 
 {
 	CButton::OnSize(nType, cx, cy);
 	
@@ -551,7 +551,7 @@ void CSlideHolder::OnSize(UINT nType, int cx, int cy)
 		
 }
 
-void CSlideHolder::SetDragnDrop(BOOL bRegister)
+void CArxAcadSlideCtrl::SetDragnDrop(BOOL bRegister)
 {
 	if (bRegister == TRUE)
 	{
@@ -565,7 +565,7 @@ void CSlideHolder::SetDragnDrop(BOOL bRegister)
 
 
 
-void CSlideHolder::OnLButtonDown(UINT nFlags, CPoint point) 
+void CArxAcadSlideCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	SetFocus();
 	if (mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) == TRUE && nFlags == MK_LBUTTON)
@@ -595,7 +595,7 @@ void CSlideHolder::OnLButtonDown(UINT nFlags, CPoint point)
 	CButton::OnLButtonDown(nFlags, point);
 }
 
-void CSlideHolder::OnLButtonUp(UINT nFlags, CPoint point) 
+void CArxAcadSlideCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseUp),
@@ -616,7 +616,7 @@ void CSlideHolder::OnLButtonUp(UINT nFlags, CPoint point)
 	CButton::OnLButtonUp(nFlags, point);
 }
 
-void CSlideHolder::OnMButtonDblClk(UINT nFlags, CPoint point) 
+void CArxAcadSlideCtrl::OnMButtonDblClk(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseDblClick),
@@ -637,7 +637,7 @@ void CSlideHolder::OnMButtonDblClk(UINT nFlags, CPoint point)
 	CButton::OnMButtonDblClk(nFlags, point);
 }
 
-void CSlideHolder::OnMButtonDown(UINT nFlags, CPoint point) 
+void CArxAcadSlideCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
 {
 
 	InvokeMethodIntIntIntInt(
@@ -659,7 +659,7 @@ void CSlideHolder::OnMButtonDown(UINT nFlags, CPoint point)
 	CButton::OnMButtonDown(nFlags, point);
 }
 
-void CSlideHolder::OnMButtonUp(UINT nFlags, CPoint point) 
+void CArxAcadSlideCtrl::OnMButtonUp(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseUp),
@@ -680,7 +680,7 @@ void CSlideHolder::OnMButtonUp(UINT nFlags, CPoint point)
 	CButton::OnMButtonUp(nFlags, point);
 }
 
-void CSlideHolder::OnMouseMove(UINT nFlags, CPoint point) 
+void CArxAcadSlideCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	CRect rcThis;
 	GetWindowRect(&rcThis);
@@ -722,7 +722,7 @@ void CSlideHolder::OnMouseMove(UINT nFlags, CPoint point)
 	CButton::OnMouseMove(nFlags, point);
 }
 
-BOOL CSlideHolder::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
+BOOL CArxAcadSlideCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseDblClick),
@@ -736,7 +736,7 @@ BOOL CSlideHolder::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	return CButton::OnMouseWheel(nFlags, zDelta, pt);
 }
 
-void CSlideHolder::OnRButtonDown(UINT nFlags, CPoint point) 
+void CArxAcadSlideCtrl::OnRButtonDown(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseDown),
@@ -759,7 +759,7 @@ void CSlideHolder::OnRButtonDown(UINT nFlags, CPoint point)
 	CButton::OnRButtonDown(nFlags, point);
 }
 
-void CSlideHolder::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CArxAcadSlideCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
 	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyDown), sChar, nRepCnt, nFlags, IsAsyncEvents());
@@ -767,7 +767,7 @@ void CSlideHolder::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	CButton::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
-void CSlideHolder::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CArxAcadSlideCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
 	char sChar = nChar;
 	InvokeMethodStringIntInt(mpTemplate->GetStringProperty(Prop::EventKeyUp), sChar, nRepCnt, nFlags, IsAsyncEvents());
@@ -777,7 +777,7 @@ void CSlideHolder::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 }
 
 
-LRESULT CSlideHolder::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
+LRESULT CArxAcadSlideCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
 {
 	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventMouseMovedOff), IsAsyncEvents());
 	
@@ -786,7 +786,7 @@ LRESULT CSlideHolder::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 	
 }
 
-void CSlideHolder::OnLButtonDblClk(UINT nFlags, CPoint point) 
+void CArxAcadSlideCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseDblClick),
@@ -808,7 +808,7 @@ void CSlideHolder::OnLButtonDblClk(UINT nFlags, CPoint point)
 	CButton::OnLButtonDblClk(nFlags, point);
 }
 
-void CSlideHolder::OnSysColorChange() 
+void CArxAcadSlideCtrl::OnSysColorChange() 
 {
 	CButton::OnSysColorChange();
 	
@@ -817,7 +817,7 @@ void CSlideHolder::OnSysColorChange()
 	Invalidate();	
 }
 
-void CSlideHolder::PostNcDestroy() 
+void CArxAcadSlideCtrl::PostNcDestroy() 
 {
 	CButton::PostNcDestroy();
 	delete this;
