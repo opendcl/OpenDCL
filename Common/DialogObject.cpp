@@ -134,7 +134,7 @@ DWORD CDialogObject::GetWndStyle() const
 
 CString CDialogObject::GetWndCaption() const
 {
-	assert(mpTemplate != NULL);
+	assert( mpTemplate != NULL );
 	if( mpSourceForm->GetParentForm() )
 	{
 		CString sParentName = mpSourceForm->GetParentName();
@@ -147,15 +147,14 @@ CString CDialogObject::GetWndCaption() const
 				if( !pDclControl )
 					break;
 				CString sTabCaption = pDclControl->GetPropertyListItem( Prop::TabsCaption, mpSourceForm->GetTabIndex() );
-				CString sParent = (*iter)->GetControlProperties()->GetStringProperty(Prop::TitleBarText);
+				CString sParent = (*iter)->GetControlProperties()->GetStringProperty( Prop::TitleBarText );
 				CString sCaption;
-				//sCaption.Format( _T("%s / %s"), (LPCTSTR)sParent, (LPCTSTR)sTabCaption );
 				sCaption.Format( _T("%s (%s)"), (LPCTSTR)sTabCaption, (LPCTSTR)sParent );
 				return sCaption;
 			}
 		}
 	}
-	return mpTemplate->GetStringProperty(Prop::TitleBarText);
+	return mpTemplate->GetStringProperty( Prop::TitleBarText );
 }
 
 void CDialogObject::OnFrameChanged()
@@ -263,7 +262,7 @@ bool CDialogObject::OnApplyMinMaxSize( TPropertyPtr pProp )
 bool CDialogObject::OnApplyIcon( TPropertyPtr pProp )
 {
 	DestroyIcon( mpControlWnd->SetIcon( NULL, FALSE ) );
-	CPictureObject* pPicture = mpSourceForm->GetProject()->FindPicture( pProp->GetLongValue() );
+	TPicturePtr pPicture = mpSourceForm->GetProject()->FindPicture( pProp->GetLongValue() );
 	if( pPicture )
 	{
 		mpControlWnd->ModifyStyle( 0, WS_SYSMENU, SWP_FRAMECHANGED );

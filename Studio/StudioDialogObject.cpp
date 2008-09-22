@@ -67,8 +67,8 @@ BEGIN_MESSAGE_MAP(CStudioDialogObject, CDialog)
 	ON_UPDATE_COMMAND_UI(ID_ALTCOLORPROPERTIES, &CStudioDialogObject::OnUpdateProperties)
 	ON_COMMAND(ID_IMAGELISTPROPERTIES, &CStudioDialogObject::OnImageListProperties)
 	ON_UPDATE_COMMAND_UI(ID_IMAGELISTPROPERTIES, &CStudioDialogObject::OnUpdateProperties)
-	ON_COMMAND(ID_OBJECTBROWSER, &CStudioDialogObject::OnEditObjectbrowser)
-	ON_UPDATE_COMMAND_UI(ID_OBJECTBROWSER, &CStudioDialogObject::OnUpdateEditObjectbrowser)
+	ON_COMMAND(ID_CONTROLBROWSER, &CStudioDialogObject::OnEditObjectbrowser)
+	ON_UPDATE_COMMAND_UI(ID_CONTROLBROWSER, &CStudioDialogObject::OnUpdateEditObjectbrowser)
 	ON_COMMAND(ID_TOOLS_SETLISPSYMBOLNAMES, &CStudioDialogObject::OnToolsSetlispsymbolnames)
 	ON_UPDATE_COMMAND_UI(ID_TOOLS_SETLISPSYMBOLNAMES, &CStudioDialogObject::OnUpdateToolsSetlispsymbolnames)
 	ON_COMMAND(ID_TOOLS_CLEARLISPSYMBOLNAMES, &CStudioDialogObject::OnToolsClearlispsymbolnames)
@@ -161,6 +161,9 @@ bool CStudioDialogObject::Create( CWnd* pParentWnd, UINT nID )
 	bool bSuccess = (CreateDlg( MAKEINTRESOURCE(nID), pParentWnd ) != FALSE);
 	SetControlManager( new CFormControlManager( this ) );
 	mbIgnoreSizing = false;
+
+	if( bSuccess )
+		SetWindowText( GetWndCaption() );
 
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
@@ -292,8 +295,8 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 	TDclControlPtr pDclControl = NULL;
 	switch( type )
 	{
-	case CtlFileDlgCtrl:
-		pDclControl = mpSourceForm->AddControl( CtlFileDlgCtrl, GetControlName( CtlFileDlgCtrl ), rcControl );
+	case CtlFileExplorer:
+		pDclControl = mpSourceForm->AddControl( CtlFileExplorer, GetControlName( CtlFileExplorer ), rcControl );
 		break;
 	case CtlActiveX:
 		{
@@ -303,10 +306,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 			theStudioWorkspace.GetToolboxPane()->GetActiveXControlInfo( clsid, sLicenseKey, sFilename );
 			pDclControl = mpSourceForm->AddControl( CtlActiveX, GetNextControlName( GetControlName( clsid ) ), rcControl );
 			if( pDclControl )
-			{
-				pDclControl->m_clsid = clsid;
-				pDclControl->m_sLicenseKey = sLicenseKey;
-			}
+				pDclControl->SetAxCtrlInfo( clsid, sLicenseKey );
 		}
 		break;
 	case CtlTabStrip:
@@ -628,7 +628,7 @@ BOOL CStudioDialogObject::OnInitDialog()
 	GetControlPane()->CreateControls( nID );
 	if( mpSourceForm->GetType() == FrmFileDlg )
 	{
-		TDclControlPtr pFileDlgCtrl = mpSourceForm->FindFirstControlOfType( CtlFileDlgCtrl );
+		TDclControlPtr pFileDlgCtrl = mpSourceForm->FindFirstControlOfType( CtlFileExplorer );
 		if( pFileDlgCtrl )
 		{
 			TDialogControlPtr pCtrlObj = CreateNewDialogControl( pFileDlgCtrl, GetNextControlId() );
@@ -637,7 +637,7 @@ BOOL CStudioDialogObject::OnInitDialog()
 		else
 		{
 			CRect rcFileCtrl( 0, 0, 556, 386 );
-			InsertControl( CtlFileDlgCtrl, rcFileCtrl, false );
+			InsertControl( CtlFileExplorer, rcFileCtrl, false );
 		}
 	}
 	if( pUndoManager )
@@ -801,7 +801,7 @@ void CStudioDialogObject::OnEditPaste()
 				bool bDuplicate = (mpSourceForm->FindControl( pDclControl->GetKeyName() ) != NULL);
 				switch( pDclControl->GetType() )
 				{
-				case CtlFileDlgCtrl:
+				case CtlFileExplorer:
 					if( bDuplicate )
 					{
 						pDclControl = NULL; //can't add a second file dialog control!
@@ -944,9 +944,23 @@ void CStudioDialogObject::OnProperties()
 
 void CStudioDialogObject::OnUpdateProperties(CCmdUI *pCmdUI) 
 {
-	TDclControlPtr pDclControl = theStudioWorkspace.GetActiveDclControl();
-	if( !pDclControl || pDclControl->GetType() == CtlFileDlgCtrl )
+	TDclControlPtr pActiveControl = theStudioWorkspace.GetActiveDclControl();
+	if( !pActiveControl )
 	{
+		pCmdUI->Enable( false );
+		return;
+	}
+	switch( pActiveControl->GetType() )
+	{
+	case _CtlForm:
+		{
+			if( pActiveControl->GetPropertyObject( Prop::Name ) )
+				break;
+			pCmdUI->Enable( false );
+			return;
+		}
+		break;
+	case CtlFileExplorer:
 		pCmdUI->Enable( false );
 		return;
 	}
@@ -961,8 +975,33 @@ void CStudioDialogObject::OnAxProperties()
 	CAxContainerCtrl* pAxCtrl = pActiveCtrl->GetActiveXCtrl();
 	if( !pAxCtrl )
 		return;
-	pAxCtrl->ShowPropertyPages();
-	SetFocus();
+	CArray< CLSID, CLSID& > rCtrlPages;
+	if( !pAxCtrl->GetPropertyPageCLSIDs( rCtrlPages ) || rCtrlPages.IsEmpty() )
+		return;
+	CWnd* pFocusWnd = GetFocus();
+	CLSID FAR * pPropPages = rCtrlPages.GetData();
+	ULONG ctPropPages = rCtrlPages.GetCount();
+	LPUNKNOWN pUnknown = pAxCtrl->GetControlUnknown();
+	OCPFIPARAMS params = 
+	{
+		sizeof(OCPFIPARAMS),
+		pActiveCtrl->GetHWnd(),
+		0,
+		0,
+		NULL,
+		1,
+		&pUnknown,
+		ctPropPages,
+		pPropPages,
+		GetUserDefaultLCID(),
+		DISPID_UNKNOWN,
+	};
+	if( S_OK == OleCreatePropertyFrameIndirect( &params ) )
+	{
+		if( pFocusWnd )
+			pFocusWnd->SetFocus();
+		pAxCtrl->SaveToStream();
+	}
 }
 
 void CStudioDialogObject::OnUpdateAxProperties(CCmdUI *pCmdUI) 
@@ -1023,13 +1062,24 @@ void CStudioDialogObject::OnEditObjectbrowser()
 		return;
 
 	AfxInitRichEdit();
-	CControlBrowser IntelHelp( pActiveControl );
-	//CObjectBrowser IntelHelp( pActiveControl );
-	IntelHelp.DoModal();
+	CControlBrowser ControlBrowserDlg( pActiveControl );
+	ControlBrowserDlg.DoModal();
 }
 
 void CStudioDialogObject::OnUpdateEditObjectbrowser(CCmdUI *pCmdUI) 
 {
+	TDclControlPtr pActiveControl = theStudioWorkspace.GetActiveDclControl();
+	switch( pActiveControl->GetType() )
+	{
+	case _CtlForm:
+		{
+			if( pActiveControl->GetPropertyObject( Prop::Name ) )
+				break;
+			pCmdUI->Enable( false );
+			return;
+		}
+		break;
+	}
 	pCmdUI->Enable( CountSelected( false ) == 1 );
 }
 

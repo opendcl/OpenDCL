@@ -21,8 +21,8 @@ class CButtonStyles : public CPropertyPage
 	CListBox	m_PicList;
 	CStatic	m_Desc;
 
-	UINT_PTR m_nHighestId;
-	UINT_PTR m_SelectedPic;
+	UINT m_nHighestId;
+	UINT m_SelectedPic;
 	int m_SelectedStyle;
 
 public:

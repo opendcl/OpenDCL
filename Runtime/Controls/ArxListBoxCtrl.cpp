@@ -64,7 +64,7 @@ bool CArxListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 			return TRUE;
 		}
 
-		CString sDropAcadWndPointEvent = mpTemplate->GetStringProperty( Prop::DragnDropFromAutoCAD );
+		CString sDropAcadWndPointEvent = mpTemplate->GetStringProperty( Prop::DragnDropFromOther );
 		if( !sDropAcadWndPointEvent.IsEmpty() )
 		{
 			InvokeMethodPoint( sDropAcadWndPointEvent,

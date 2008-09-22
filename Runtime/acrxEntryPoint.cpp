@@ -45,7 +45,7 @@
 #include "Methods_ComboBox.h"
 #include "Methods_ImageComboBox.h"
 #include "Methods_Html.h"
-#include "Methods_Month.h"
+#include "Methods_Calendar.h"
 #include "Methods_BlockView.h"
 #include "Methods_DwgPreview.h"
 #include "Methods_ActiveX.h"
@@ -100,10 +100,111 @@ static int DumpControl(void);
 static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHandler) (); } grAdsFunctionTable[] =
 {
 #ifdef _DIAGNOSTIC
-	{_T("Project_Dump"),	DumpProject},
-	{_T("Form_Dump"),			DumpForm},
-	{_T("Control_Dump"),	DumpControl},
+	{_T("Project_Dump"),                 DumpProject},
+	{_T("Form_Dump"),                    DumpForm},
+	{_T("Control_Dump"),                 DumpControl},
 #endif //_DIAGNOSTIC
+
+	// general control methods
+	{_T("Control_GetName"),              Control::GetName},
+	{_T("Control_GetProperty"),          Control::GetProperty}, // this method is used to get any property of any control
+	{_T("Control_GetPos"),               Control::GetPos},
+	{_T("Control_Redraw"),               Control::Redraw},
+	{_T("Control_SetFocus"),             Control::SetFocus},
+	{_T("Control_SetPos"),               Control::SetPos},
+	{_T("Control_SetProperty"),          Control::SetProperty}, // this method is used to set any property of any control
+	{_T("Control_ShowToolTip"),          Control::ShowToolTip},
+	{_T("Control_ZOrder"),               Control::ZOrder},
+	{_T("Control_GetCurPos"),            Control::GetPos}, //left for backward compatibility
+	{_T("Control_ForceUpdateNow"),       Control::Redraw}, //left for backward compatibility
+
+	// Animation control methods
+	{_T("Animate_Close"),                Animate::Close},
+	{_T("Animate_Load"),                 Animate::Load},
+	{_T("Animate_Play"),                 Animate::Play},
+	{_T("Animate_Seek"),                 Animate::Seek},
+	{_T("Animate_Stop"),                 Animate::Stop},
+
+	// ActiveX control methods
+	{_T("AxControl_Get"),                AxControl::Get},
+	{_T("AxControl_GetAxObject"),        AxControl::GetAxObject},
+	{_T("AxControl_Invoke"),             AxControl::Invoke},
+	{_T("AxControl_Put"),                AxControl::Put},
+	{_T("AxControl_GetProperty"),        AxControl::Get}, //left for backward compatibility
+	{_T("AxControl_SetProperty"),        AxControl::Put}, //left for backward compatibility
+	{_T("AxControl_DoMethod"),           AxControl::Invoke}, //left for backward compatibility
+	{_T("AxControl_GetOleObject"),       AxControl::GetAxObject}, //left for backward compatibility
+
+	// ActiveX general functions
+	{_T("GetOlePictureFromId"),          AxGeneral::GetOlePictureFromId},
+	{_T("GetOlePictureFromFile"),        AxGeneral::GetOlePictureFromFile},
+
+	// ActiveX object methods
+	{_T("AxObject_Get"),                 AxObject::Get},
+	{_T("AxObject_Invoke"),              AxObject::Invoke},
+	{_T("AxObject_Put"),                 AxObject::Put},
+	{_T("AxObject_Release"),             AxObject::Release},
+	{_T("AxObject_Close"),               AxObject::Release}, //left for backward compatibility
+	{_T("AxObject_DoMethod"),            AxObject::Invoke}, //left for backward compatibility
+	{_T("AxObject_GetProperty"),         AxObject::Get}, //left for backward compatibility
+	{_T("AxObject_SetProperty"),         AxObject::Put}, //left for backward compatibility
+
+	// BlockList control methods 
+	{_T("BlockList_Arrange"),            BlockList::Arrange},
+	{_T("BlockList_GetCount"),           BlockList::GetCount},
+	{_T("BlockList_GetCurSel"),          BlockList::GetCurSel},
+	{_T("BlockList_GetFileName"),        BlockList::GetFileName},
+	{_T("BlockList_GetItemText"),        BlockList::GetItemText},
+	{_T("BlockList_GetSelCount"),        BlockList::GetSelCount},
+	{_T("BlockList_GetSelectedItems"),   BlockList::GetSelectedItems},
+	{_T("BlockList_GetSelectedNths"),    BlockList::GetSelectedNths},
+	{_T("BlockList_LoadDwg"),            BlockList::LoadDwg},
+	{_T("BlockList_Reset"),              BlockList::Reset},
+	{_T("BlockList_SetCurSel"),          BlockList::SetCurSel},
+	{_T("BlockList_SortTextItems"),      BlockList::SortTextItems},
+
+	// BlockView control methods
+	{_T("BlockView_Clear"),              BlockView::Clear},
+	{_T("BlockView_DisplayBlock"),       BlockView::DisplayBlock},
+	{_T("BlockView_DisplayBlockToScale"),BlockView::DisplayBlockToScale},
+	{_T("BlockView_DisplayDwg"),         BlockView::DisplayDwg},
+	{_T("BlockView_DisplayDwgToScale"),  BlockView::DisplayDwgToScale},
+	{_T("BlockView_DisplayPaperSpace"),  BlockView::DisplayPaperSpace},
+	{_T("BlockView_GetBlockList"),       BlockView::GetBlockList},
+	{_T("BlockView_GetDwgSize"),         BlockView::GetDwgSize},
+	{_T("BlockView_PreLoadDwg"),         BlockView::PreLoadDwg},
+	{_T("BlockView_RefreshBlock"),       BlockView::RefreshBlock},
+	{_T("BlockView_RemoveHighlight"),    BlockView::RemoveHighlight},
+	{_T("BlockView_SetHighlight"),       BlockView::SetHighlight},
+	{_T("BlockView_Zoom"),               BlockView::Zoom},
+	{_T("BlockView_LoadDwg"),            BlockView::DisplayDwg}, //left for backward compatibility
+	{_T("BlockView_LoadDwgToScale"),     BlockView::DisplayDwgToScale}, //left for backward compatibility
+
+	// Calendar control methods
+	{_T("Calendar_GetCurSel"),           Calendar::GetCurSel},
+	{_T("Calendar_GetMonthRangeEnd"),    Calendar::GetMonthRangeEnd},
+	{_T("Calendar_GetMonthRangeStart"),  Calendar::GetMonthRangeStart},
+	{_T("Calendar_GetRangeEnd"),         Calendar::GetRangeEnd},
+	{_T("Calendar_GetRangeStart"),       Calendar::GetRangeStart},
+	{_T("Calendar_GetSelRangeEnd"),      Calendar::GetSelRangeEnd},
+	{_T("Calendar_GetSelRangeStart"),    Calendar::GetSelRangeStart},
+	{_T("Calendar_GetToday"),            Calendar::GetToday},
+	{_T("Calendar_SetCurSel"),           Calendar::SetCurSel},
+	{_T("Calendar_SetRange"),            Calendar::SetRange},
+	{_T("Calendar_SetSelRange"),         Calendar::SetSelRange},
+
+	// Calendar control deprecated method names
+	{_T("Month_GetCurSel"),              Calendar::GetCurSel},
+	{_T("Month_GetMonthRangeEnd"),       Calendar::GetMonthRangeEnd},
+	{_T("Month_GetMonthRangeStart"),     Calendar::GetMonthRangeStart},
+	{_T("Month_GetRangeEnd"),            Calendar::GetRangeEnd},
+	{_T("Month_GetRangeStart"),          Calendar::GetRangeStart},
+	{_T("Month_GetSelRangeEnd"),         Calendar::GetSelRangeEnd},
+	{_T("Month_GetSelRangeStart"),       Calendar::GetSelRangeStart},
+	{_T("Month_GetToday"),               Calendar::GetToday},
+	{_T("Month_SetCurSel"),              Calendar::SetCurSel},
+	{_T("Month_SetRange"),               Calendar::SetRange},
+	{_T("Month_SetSelRange"),            Calendar::SetSelRange},
 
 	// binary file read write calls
 	{_T("OpenBin"),				OpenBinFile},
@@ -112,25 +213,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("CloseBin"),			CloseBinFile},						
 	{_T("CheckBin"),			CheckBinFile},						
 
-	// general control methods
-	{_T("Control_SetProperty"),			Control::SetProperty}, // this method is used to set any property of any control
-	{_T("Control_GetProperty"),			Control::GetProperty}, // this method is used to get any property of any control
-	{_T("Control_ShowToolTip"),			Control::ShowToolTip},
-	{_T("Control_SetFocus"),				Control::SetFocus},
-	{_T("Control_ZOrder"),				Control::ZOrder},
-	{_T("Control_GetCurPos"),			Control::GetCurPos},
-	{_T("Control_SetPos"),				Control::SetPos},
-	{_T("Control_ForceUpdateNow"),		Control::ForceUpdateNow},
-	{_T("Control_GetName"),		Control::GetName},
-
 	{_T("ProgressBar_SetPos"),	ProgressBar::SetPos},
-
-	// animation control methods
-	{_T("Animate_Load"),			Animate::Load},
-	{_T("Animate_Seek"),			Animate::Seek},
-	{_T("Animate_Play"),			Animate::Play},
-	{_T("Animate_Stop"),			Animate::Stop},
-	{_T("Animate_Close"),			Animate::Close},
 
 	{_T("Hatch_Clear"),			Hatch::Clear},
 	{_T("Hatch_SetPattern"), Hatch::SetPattern},
@@ -145,35 +228,6 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("FileDlg_SetOkButtonText"),	FileDlg::SetOkButtonText},
 	{_T("FileDlg_GetFileExt"),		FileDlg::GetFileExt},
 	{_T("FileDlg_GetFolderName"),		FileDlg::GetFolderName},
-
-	// ActiveX control methods
-	{_T("GetOlePictureFromId"),		AxGeneral::GetOlePictureFromId},
-	{_T("GetOlePictureFromFile"),		AxGeneral::GetOlePictureFromFile},
-	{_T("AxControl_GetProperty"),		AxControl::GetProperty},
-	{_T("AxControl_SetProperty"),		AxControl::SetProperty},
-	{_T("AxControl_DoMethod"),		AxControl::DoMethod},
-	{_T("AxControl_GetOleObject"),		AxControl::GetOleObject},
-	{_T("AxObject_GetProperty"),		AxObject::GetProperty},
-	{_T("AxObject_SetProperty"),		AxObject::SetProperty},
-	{_T("AxObject_DoMethod"),		AxObject::DoMethod},
-	{_T("AxObject_Close"),		AxObject::Close},
-
-	// block view control methods
-	{_T("BlockView_Clear"),				BlockView::Clear},
-	{_T("BlockView_SetHighLight"),		BlockView::SetHighLight},
-	{_T("BlockView_RemoveHighLight"),	BlockView::RemoveHighLight},
-	{_T("BlockView_Zoom"),				BlockView::Zoom},
-	{_T("BlockView_DisplayBlock"),			BlockView::DisplayBlock},
-	{_T("BlockView_DisplayBlockToScale"),	BlockView::DisplayBlockToScale},
-	{_T("BlockView_DisplayPaperSpace"),		BlockView::DisplayPaperSpace},											
-	{_T("BlockView_LoadDwg"),			BlockView::LoadDwg},	
-	{_T("BlockView_LoadDwgToScale"),		BlockView::LoadDwgToScale},
-	{_T("BlockView_PreLoadDwg"),			BlockView::PreLoadDwg},
-	{_T("BlockView_GetBlockList"),		BlockView::GetBlockList},
-	{_T("BlockView_GetDwgSize"),			BlockView::GetDwgSize},
-	{_T("BlockView_RefreshBlock"),		BlockView::RefreshBlock},
-	//{_T("BlockView_GetViewInfo"),		BlockView_GetViewInfo},
-	//{_T("BlockView_SetView"),			BlockView_SetView},
 
 	// dwg preview control methods 
 	{_T("DwgPreview_LoadDwg"),			DwgPreview::LoadDwg},
@@ -299,7 +353,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("ListView_Arrange"),			ListView::Arrange},
 	{_T("ListView_CalcColWidth"), ListView::CalcColWidth},
 	{_T("ListView_Clear"),			ListView::Clear},
-	{_T("ListView_CountItems"),		ListView::CountItems},
+	{_T("ListView_CountItems"),		ListView::GetCount}, //left for backward compatibility
 	{_T("ListView_DeleteItem"),	ListView::DeleteItem},
 	{_T("ListView_DeleteItems"),	ListView::DeleteItems},
 	{_T("ListView_DeleteColumn"),	ListView::DeleteColumn},
@@ -330,11 +384,6 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("ListView_SetColumnImage"),	ListView::SetColumnImage},
 	{_T("ListView_GetCount"),		ListView::GetCount},
 	{_T("ListView_GetColumnCount"),	ListView::GetColumnCount},
-
-	// blocklist control methods 
-	{_T("BlockList_LoadDwg"),			BlockList::LoadDwg},
-	{_T("BlockList_Reset"),			BlockList::Reset},											
-	{_T("BlockList_GetFileName"),		BlockList::GetFileName},
 
 	// combo box control methods 
 	{_T("ComboBox_Dir"),					ComboBox::Dir},
@@ -388,19 +437,6 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("ImageComboBox_ClearEdit"),			ImageComboBox::ClearEdit},
 	{_T("ImageComboBox_GetLBText"),			ImageComboBox::GetLBText},
 	{_T("ImageComboBox_GetTBText"),			ImageComboBox::GetTBText},
-
-	// month control methods 
-	{_T("Month_SetCurSel"),				Month::SetCurSel},
-	{_T("Month_GetCurSel"),				Month::GetCurSel},
-	{_T("Month_SetRange"),				Month::SetRange},
-	{_T("Month_GetRangeStart"),			Month::GetRangeStart},
-	{_T("Month_GetRangeEnd"),			Month::GetRangeEnd},
-	{_T("Month_GetMonthRangeStart"),		Month::GetMonthRangeStart},
-	{_T("Month_GetMonthRangeEnd"),		Month::GetMonthRangeEnd},
-	{_T("Month_SetSelRange"),			Month::SetSelRange},
-	{_T("Month_GetSelRangeStart"),		Month::GetSelRangeStart},
-	{_T("Month_GetSelRangeEnd"),			Month::GetSelRangeEnd},
-	{_T("Month_GetToday"),				Month::GetToday},
 
 	// slide view control methods 
 	{_T("SlideView_Load"),		SlideView::Load},
@@ -1224,7 +1260,7 @@ public:
 
 		switch(pCtrl->GetType())
 		{
-		case CtlStdButton:
+		case CtlTextButton:
 		case CtlCheckBox:
 		case CtlGraphicButton:
 		case CtlOptionButton:
@@ -3822,6 +3858,7 @@ static int DumpProject(void)
 		return RSRSLT; //project not found
 
 	pProject->dump( bDeep );
+	acedRetT();
 
 	return RSRSLT;
 }
@@ -3845,6 +3882,7 @@ static int DumpForm(void)
 		return RSRSLT; //form not found
 
 	pForm->dump( bDeep );
+	acedRetT();
 
 	return RSRSLT;
 }
@@ -3868,6 +3906,7 @@ static int DumpControl(void)
 		return RSRSLT; //control not found
 
 	pDclControl->dump( bDeep );
+	acedRetT();
 
 	return RSRSLT;
 }

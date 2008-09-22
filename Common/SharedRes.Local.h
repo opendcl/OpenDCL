@@ -4,7 +4,6 @@
 //
 #define IDR_MAINFRAME                   10
 #define IDS_NONE                        30
-#define IDS_OBJBROWSER                  32
 #define IDS_COLOR                       33
 #define IDS_ODCFILTER                   34
 #define IDS_SECONDTEXT                  35
@@ -56,13 +55,13 @@
 #define IDS_SLIDERBAR                   3111
 #define IDS_PICTUREBOX                  3112
 #define IDS_TABS                        3113
-#define IDS_MONTHCAL                    3114
+#define IDS_CALENDAR                    3114
 #define IDS_TREE                        3115
-#define IDS_RECT                        3116
+#define IDS_RECTANGLE                   3116
 #define IDS_PROGRESSBAR                 3117
 #define IDS_SPINBUTTON                  3118
-#define IDS_URL                         3119
-#define IDS_ROUNDSLIDER                 3120
+#define IDS_URLLINK                     3119
+#define IDS_ANGLESLIDER                 3120
 #define IDS_BLOCKVIEW                   3121
 #define IDS_SLIDEVIEW                   3122
 #define IDS_HTML                        3123
@@ -195,7 +194,7 @@
 #define IDS_PROP_FILENAME               3314
 #define IDS_PROP_COLOR                  3315
 #define IDS_PROP_CFGTABCAPTION          3316
-#define IDS_PROP_ALLOWORBIT             3317
+#define IDS_PROP_INTERFACEMODE          3317
 #define IDS_EVENT_FORMCLOSE             3318
 #define IDS_EVENT_FORMINIT              3319
 #define IDS_EVENT_FORMSIZE              3320
@@ -252,7 +251,7 @@
 #define IDS_PROP_ICONYSPACING           3371
 #define IDS_EVENT_DRAGDROPTOACAD        3372
 #define IDS_EVENT_DRAGDROPFROMCTRL      3373
-#define IDS_EVENT_DRAGDROPFROMACAD      3374
+#define IDS_EVENT_DRAGDROPFROMOTHER     3374
 #define IDS_EVENT_DRAGDROPBEGIN         3375
 #define IDS_PROP_DRAGNDROPALLOWBEGIN    3376
 #define IDS_PROP_DRAGNDROPALLOWDROP     3377
@@ -275,7 +274,7 @@
 #define IDS_PROP_ACTIVEXPROPPAGES       3397
 #define IDS_PROP_ROWHEIGHT              3398
 #define IDS_PROP_CURSELINDEX            3399
-#define IDS_PROP_OBJECTBROWSER          3400
+#define IDS_PROP_CONTROLBROWSER         3400
 #define IDS_PROP_VARNAME                3401
 #define IDS_PROP_FILEDLGSTYLE           3402
 #define IDS_PROP_ASREADONLY             3403

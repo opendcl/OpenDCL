@@ -91,7 +91,7 @@ CCustomFileDialog::CCustomFileDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=
 , mnInitialX( pParams? pParams->position.x : -1 )
 , mnInitialY( pParams? pParams->position.y : -1 )
 , mMainFileDlg( this, pParent )
-, mpFileDlgCtrl( pSourceForm->FindFirstControlOfType(CtlFileDlgCtrl) )
+, mpFileDlgCtrl( pSourceForm->FindFirstControlOfType(CtlFileExplorer) )
 , mnRightBorder( 0 )
 , mnBottomBorder( 0 )
 {

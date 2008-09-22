@@ -44,16 +44,18 @@ AxMethodDescriptor::AxMethodDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInf
 			{
 				if( n < (UINT)ctParams )
 				{
+					AxArg& arg = mrArgs[n];
 					const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
 					bool bNotByVal = (e.tdesc.vt == VT_PTR);
 					VARTYPE vt = (bNotByVal? e.tdesc.lptdesc->vt : e.tdesc.vt);
 					if (vt == VT_USERDEFINED) 
 						SetRefType( vt, pTypeInfo,
 												(bNotByVal? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
-												mrArgs[n].clsid );
-					mrArgs[n].vt = vt;
+												arg.clsid );
+					arg.vt = vt;
+					arg.optional = ((e.paramdesc.wParamFlags & PARAMFLAG_FOPT) != 0);
 					if( !!rbstrNames[n] && n < ctNames - 1 )	
-						mrArgs[n].name = (LPCTSTR)bstr_t( rbstrNames[n + 1] );
+						arg.name = (LPCTSTR)bstr_t( rbstrNames[n + 1] );
 				}
 			}
 			for( SHORT idx = ctParams; idx >= 0; --idx )
@@ -65,11 +67,8 @@ AxMethodDescriptor::AxMethodDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInf
 			bool bNotByVal = (e.tdesc.vt == VT_PTR);
 			VARTYPE vt = ((bNotByVal) ? e.tdesc.lptdesc->vt : e.tdesc.vt);
 
-			bool bReadOnly = false;
-			if( pFuncDesc->wFuncFlags & (FUNCFLAG_FNONBROWSABLE|FUNCFLAG_FHIDDEN) )
-				bReadOnly = true; 
-
-			if( !bReadOnly || mDispId == -552 ) 
+			bool bHidden = ((pFuncDesc->wFuncFlags & (FUNCFLAG_FNONBROWSABLE | FUNCFLAG_FHIDDEN)) != 0);
+			if( !bHidden || mDispId == -552 ) 
 			{
 				if( vt == VT_USERDEFINED ) 
 				{
@@ -101,7 +100,7 @@ CString AxMethodDescriptor::GetReturnTypeDisplayName() const
 	if( mReturnGuid != GUID_NULL )
 		sName = GetAxTypeName( mReturnGuid );
 	if( sName.IsEmpty() )
-		sName = VARTYPEtoString( mReturnType );
+		sName = VariantTypeToDisplayableLispType( mReturnType );
 	return sName;
 }
 
@@ -135,7 +134,11 @@ void AxMethodDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 		SerializeCLSID(ar, mReturnGuid);
 		for (size_t i = 0; i < mrArgs.size(); ++i)
 		{
-			ar << mrArgs[i].vt;
+			//embed the new "optional" member in the VARTYPE in order to preserve file format
+			VARTYPE vt = mrArgs[i].vt;
+			if( mrArgs[i].optional )
+				vt |= VT_RESERVED;
+			ar << vt;
 			ar << mrArgs[i].name;
 			SerializeCLSID(ar, mrArgs[i].clsid);
 		}
@@ -155,7 +158,10 @@ void AxMethodDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 		mrArgs.resize( ctArgs );
 		for (size_t i = 0; i < ctArgs; ++i)
 		{
-			ar >> mrArgs[i].vt;
+			VARTYPE vt;
+			ar >> vt;
+			mrArgs[i].optional = ((vt & VT_RESERVED) != 0);
+			mrArgs[i].vt = (vt & VT_ILLEGALMASKED);
 			ar >> mrArgs[i].name;
 			if (nThisVersion >= 2)
 				SerializeCLSID(ar, mrArgs[i].clsid);

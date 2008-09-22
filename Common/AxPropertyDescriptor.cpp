@@ -78,9 +78,8 @@ AxPropertyDescriptor::AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTyp
 		mInvKind = pFuncDesc->invkind;
 
 		mType = vtProp;
-		mbReadOnly = ((pFuncDesc->wFuncFlags & FUNCFLAG_FNONBROWSABLE) ||
-									(pFuncDesc->invkind != INVOKE_PROPERTYPUT && pFuncDesc->invkind != INVOKE_PROPERTYPUTREF) ||
-									pFuncDesc->cParams != 1);
+		mbReadOnly = ( (pFuncDesc->wFuncFlags & FUNCFLAG_FNONBROWSABLE) ||
+									 (pFuncDesc->invkind != INVOKE_PROPERTYPUT && pFuncDesc->invkind != INVOKE_PROPERTYPUTREF) );
 		mbArray = true; //not really, but this was being set in the original code [ORW]
 
 		if( pIObject )
@@ -106,16 +105,18 @@ AxPropertyDescriptor::AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTyp
 			{
 				if( n < (UINT)ctParams )
 				{
+					AxArg& arg = mrArgs[n];
 					const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
 					bool bNotByVal = (e.tdesc.vt == VT_PTR);
 					VARTYPE vt = (bNotByVal? e.tdesc.lptdesc->vt : e.tdesc.vt);
 					if (vt == VT_USERDEFINED) 
 						SetRefType( vt, pTypeInfo,
 												(bNotByVal? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
-												mrArgs[n].clsid );
-					mrArgs[n].vt = vt;
+												arg.clsid );
+					arg.vt = vt;
+					arg.optional = ((e.paramdesc.wParamFlags & PARAMFLAG_FOPT) != 0);
 					if( !!rbstrNames[n] && n < ctNames - 1 )	
-						mrArgs[n].name = (LPCTSTR)bstr_t( rbstrNames[n + 1] );
+						arg.name = (LPCTSTR)bstr_t( rbstrNames[n + 1] );
 				}
 			}
 			for( SHORT idx = ctParams; idx >= 0; --idx )
@@ -145,7 +146,7 @@ CString AxPropertyDescriptor::GetTypeDisplayName() const
 	if( mGuid != GUID_NULL )
 		sName = GetAxTypeName( mGuid );
 	if( sName.IsEmpty() )
-		sName = VARTYPEtoString( mType );
+		sName = VariantTypeToDisplayableLispType( mType );
 	return sName;
 }
 
@@ -165,7 +166,7 @@ CString AxPropertyDescriptor::GetArgDisplayName( size_t idxArg ) const
 	if( arg.clsid != GUID_NULL )
 		sName = GetAxTypeName( arg.clsid );
 	if( sName.IsEmpty() )
-		sName = VARTYPEtoString( arg.vt );
+		sName = VariantTypeToDisplayableLispType( arg.vt );
 	return sName;
 }
 
@@ -193,31 +194,33 @@ HRESULT AxPropertyDescriptor::Set( IDispatch* pObjectDisp, const VARIANTARG* rva
 		rArgs[idxArg] = rvarArgs[idxArg];
 	if( ctArgTypes == 0 && ctArgs > 0 )
 	{
+		COleVariant& arg = rArgs[0];
 		if( mType == VT_BOOL && rvarArgs[0].vt == VT_BSTR )
 		{
-			rArgs[0].vt = VT_BOOL;
-			rArgs[0].boolVal = (lstrcmpi( bstr_t( rvarArgs[0].bstrVal ), _T("True") ) == 0)? VARIANT_TRUE : VARIANT_FALSE;
+			arg.vt = VT_BOOL;
+			arg.boolVal = (lstrcmpi( bstr_t( rvarArgs[0].bstrVal ), _T("True") ) == 0)? VARIANT_TRUE : VARIANT_FALSE;
 		}
 		else
-			rArgs[0].ChangeType( mType );
+			VariantChangeType( &arg, &arg, 0, mType );
 	}
 	else
 	{
 		for( size_t idxArg = 0; idxArg < ctArgs && idxArg < ctArgTypes; ++idxArg )
 		{
 			size_t idxRvar = ctArgs - idxArg - 1;
-			if( mrArgs[idxArg].vt == VT_BOOL && rArgs[idxRvar].vt == VT_BSTR )
+			COleVariant& arg = rArgs[idxRvar];
+			if( mrArgs[idxArg].vt == VT_BOOL && arg.vt == VT_BSTR )
 			{
-				rArgs[idxRvar].vt = VT_BOOL;
-				rArgs[idxRvar].boolVal = (lstrcmpi( bstr_t( rvarArgs[idxRvar].bstrVal ), _T("True") ) == 0)? VARIANT_TRUE : VARIANT_FALSE;
+				arg.vt = VT_BOOL;
+				arg.boolVal = (lstrcmpi( bstr_t( rvarArgs[idxRvar].bstrVal ), _T("True") ) == 0)? VARIANT_TRUE : VARIANT_FALSE;
 			}
 			else
-				rArgs[idxRvar].ChangeType( mrArgs[idxArg].vt );
+				VariantChangeType( &arg, &arg, 0, mrArgs[idxArg].vt );
 		}
 	}
 
 	WORD wFlags = mInvKind;//INVOKE_PROPERTYPUT;
-	if( wFlags != INVOKE_PROPERTYPUT && wFlags != DISPATCH_PROPERTYPUT && wFlags != INVOKE_PROPERTYPUTREF )
+	if( wFlags != INVOKE_PROPERTYPUT && wFlags != INVOKE_PROPERTYPUTREF )
 		wFlags = INVOKE_PROPERTYPUT;
    
 	DISPID dispidPropset = DISPID_PROPERTYPUT;
@@ -361,7 +364,11 @@ void AxPropertyDescriptor::Serialize( CArchive& ar, int nPropertyVersion )
 		}
 		for (size_t i = 0; i < mrArgs.size(); ++i)
 		{
-			ar << mrArgs[i].vt;
+			//embed the new "optional" member in the VARTYPE in order to preserve file format
+			VARTYPE vt = mrArgs[i].vt;
+			if( mrArgs[i].optional )
+				vt |= VT_RESERVED;
+			ar << vt;
 			ar << mrArgs[i].name;
 			SerializeCLSID(ar, mrArgs[i].clsid);
 		}
@@ -398,7 +405,10 @@ void AxPropertyDescriptor::Serialize( CArchive& ar, int nPropertyVersion )
 		}
 		for (size_t i = 0; i < ctParams; ++i)
 		{
-			ar >> mrArgs[i].vt;
+			VARTYPE vt;
+			ar >> vt;
+			mrArgs[i].optional = ((vt & VT_RESERVED) != 0);
+			mrArgs[i].vt = (vt & VT_ILLEGALMASKED);
 			ar >> mrArgs[i].name;
 			if (nPropertyVersion >= 4)
 				SerializeCLSID(ar, mrArgs[i].clsid);

@@ -51,6 +51,7 @@ void CArxMonthCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 void CArxMonthCtrl::OnGetdaystate(NMHDR* pNMHDR, LRESULT* pResult) 
 {
+	NMDAYSTATE* pDayState= (NMDAYSTATE *)pNMHDR;
 	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventGetDayState ), IsAsyncEvents() );
 	*pResult = 0;
 }

@@ -14,7 +14,7 @@ ADSRESULT Animate::Load()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimate ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimation ) )
 		return RSERR; //invalid input
 
 	CString sFileName;
@@ -65,7 +65,7 @@ ADSRESULT Animate::Seek()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimate ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimation ) )
 		return RSERR; //invalid input
 
 	int nFrame;
@@ -87,7 +87,7 @@ ADSRESULT Animate::Play()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimate ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimation ) )
 		return RSERR; //invalid input
 
 	int nFirstFrame = 0;
@@ -114,7 +114,7 @@ ADSRESULT Animate::Close()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimate ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimation ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -132,7 +132,7 @@ ADSRESULT Animate::Stop()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimate ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlAnimation ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )

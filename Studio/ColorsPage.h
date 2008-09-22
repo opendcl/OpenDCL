@@ -13,9 +13,9 @@
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CColors dialog
+// CColorsPage dialog
 
-class CColors : public CPropertyPage
+class CColorsPage : public CPropertyPage
 {
 	Prop::Id midProp;
 	TDclControlPtr mpControl;
@@ -24,33 +24,28 @@ class CColors : public CPropertyPage
 	
 // Construction
 public:
-	CColors(Prop::Id idProp, TDclControlPtr pControl);
-	~CColors();
+	CColorsPage(Prop::Id idProp, TDclControlPtr pControl);
+	~CColorsPage();
 
 // Dialog Data
-	//{{AFX_DATA(CColors)
 	enum { IDD = IDD_BACKCOLORS };
 	CColorPickerCB	m_ColorCB;
 	CFilteredEditCtrl	m_Edit;
 	CColorListBox	m_SystemColors;
 	CColorPatch		m_Color;
-	//}}AFX_DATA
 
 	void DisplayColor();
 
 // Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CColors)
-	public:
+public:
 	virtual BOOL OnApply();
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CColors)
+	DECLARE_MESSAGE_MAP()
+
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSelchangeSystemcolorlist();
 	afx_msg void OnSelchangeColorcombo();
@@ -58,7 +53,4 @@ protected:
 	afx_msg void OnKillfocusEdit();
 	afx_msg void OnTruebtn();
 	afx_msg void OnPaint();
-	DECLARE_EVENTSINK_MAP()
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
 };

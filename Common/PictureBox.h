@@ -34,8 +34,8 @@ public:
 	virtual bool IsAutoSized() { return false; }
 	virtual void AutoSize() {}
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
-	void DrawPicture( CPictureObject* pPicture, bool bStretchToFit = false );
-	void SetPicture( const CPictureObject* pPicture );
+	void DrawPicture( TPicturePtr, bool bStretchToFit = false );
+	void SetPicture( TPicturePtr pPicture );
 	void SetPicture( UINT nIconResId );
 	void SetPictureBlank();
 	void Refresh();

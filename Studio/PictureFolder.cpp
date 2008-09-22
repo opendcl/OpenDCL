@@ -85,7 +85,7 @@ void CPictureFolder::OnDelete()
 	else
 		m_PictureList.SetCurSel( -1 );
 	m_PictureBox.SetPicture( GetSelectedPictureObject() );
-	for( std::list< CPictureObject* >::const_iterator iterPict = mlistPicsToAdd.begin();
+	for( std::list< TPicturePtr >::const_iterator iterPict = mlistPicsToAdd.begin();
 			 iterPict != mlistPicsToAdd.end();
 			 ++iterPict )
 	{
@@ -102,10 +102,21 @@ void CPictureFolder::OnOK()
 {
 	m_PictureBox.SetPictureBlank();
 
+	for( std::list< TPicturePtr >::const_iterator iterNewPic = mlistPicsToAdd.begin();
+			 iterNewPic != mlistPicsToAdd.end();
+			 ++iterNewPic )
+	{
+		//std::set< int >::const_iterator iterPic = msetIdsToDelete.find( (*iterNewPic)->GetID() );
+		//if( iterPic != msetIdsToDelete.end() )
+		//	msetIdsToDelete.erase( iterPic );
+		msetIdsToDelete.erase( (*iterNewPic)->GetID() );
+	}
 	for( std::set< int >::const_iterator iterToDelete = msetIdsToDelete.begin();
 			 iterToDelete != msetIdsToDelete.end();
 			 ++iterToDelete )
+	{
 		mpProject->DeletePicture( *iterToDelete );
+	}
 	while( !mlistPicsToAdd.empty() )
 	{
 		mpProject->AddPicture( mlistPicsToAdd.back() );
@@ -124,14 +135,13 @@ void CPictureFolder::OnCancel()
 BOOL CPictureFolder::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
-
-	POSITION pos = mpProject->GetPictureList().GetHeadPosition();
-	while( pos )
+	const TPictureMap& Pictures = mpProject->GetPictureMap();
+	for( TPictureMap::const_iterator iter = Pictures.begin(); iter != Pictures.end(); ++iter )
 	{
-		int nID = mpProject->GetPictureList().GetNext( pos )->GetID();
-		CString sVal;
-		sVal.Format( _T("%d"), nID );
-		m_PictureList.SetItemData( m_PictureList.AddString( sVal ), nID );
+		UINT nId = iter->first;
+		CString sID;
+		sID.Format( _T("%u"), nId );
+		m_PictureList.SetItemData( m_PictureList.AddString( sID ), nId );
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -168,13 +178,10 @@ void CPictureFolder::MultiFileDialog()
 		{
 			// load the picture into the picture list collection
 			int nID = nLargestId++;
-			CPictureObject* pPict = new CPictureObject( nID, BrowseWnd.GetNextPathName( pos ) );
+			TPicturePtr pPict = new CPictureObject( nID, BrowseWnd.GetNextPathName( pos ) );
 			if( !pPict->IsValid() )
-			{
-				delete pPict;
 				continue;
-			}
-			for( std::list< CPictureObject* >::const_iterator iterPict = mlistPicsToAdd.begin();
+			for( std::list< TPicturePtr >::const_iterator iterPict = mlistPicsToAdd.begin();
 					 iterPict != mlistPicsToAdd.end();
 					 ++iterPict )
 			{
@@ -213,13 +220,10 @@ void CPictureFolder::UpdateSingleFileDialog()
 
 	if( BrowseWnd.DoModal() == IDOK )
 	{
-		CPictureObject* pPict = new CPictureObject( nCurSelId, BrowseWnd.GetPathName() );
+		TPicturePtr pPict = new CPictureObject( nCurSelId, BrowseWnd.GetPathName() );
 		if( !pPict->IsValid() )
-		{
-			delete pPict;
 			return;
-		}
-		for( std::list< CPictureObject* >::const_iterator iterPict = mlistPicsToAdd.begin();
+		for( std::list< TPicturePtr >::const_iterator iterPict = mlistPicsToAdd.begin();
 				 iterPict != mlistPicsToAdd.end();
 				 ++iterPict )
 		{
@@ -230,15 +234,16 @@ void CPictureFolder::UpdateSingleFileDialog()
 			}
 		}
 		mlistPicsToAdd.push_back( pPict );
+		m_PictureBox.SetPicture( pPict );
 	}
 }
 
-CPictureObject * CPictureFolder::GetSelectedPictureObject()
+TPicturePtr CPictureFolder::GetSelectedPictureObject()
 {
-	if (m_PictureList.GetCurSel() == -1)
+	if( m_PictureList.GetCurSel() == -1 )
 		return NULL;
 	int nID = m_PictureList.GetItemData( m_PictureList.GetCurSel() );
-	for( std::list< CPictureObject* >::const_iterator iterPict = mlistPicsToAdd.begin();
+	for( std::list< TPicturePtr >::const_iterator iterPict = mlistPicsToAdd.begin();
 			 iterPict != mlistPicsToAdd.end();
 			 ++iterPict )
 	{
@@ -250,8 +255,6 @@ CPictureObject * CPictureFolder::GetSelectedPictureObject()
 
 void CPictureFolder::OnSelchangePicturelist() 
 {
-	if (m_PictureList.GetCurSel() == -1)
-		return;
 	m_PictureBox.SetPicture( GetSelectedPictureObject() );
 }
 

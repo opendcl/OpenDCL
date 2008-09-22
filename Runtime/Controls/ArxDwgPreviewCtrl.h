@@ -32,6 +32,7 @@ public:
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;

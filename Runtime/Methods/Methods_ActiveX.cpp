@@ -38,15 +38,12 @@ static void ReturnDate( const COleDateTime& Date )
 }
 
 
-ADSRESULT AxControl::GetProperty()
+ADSRESULT AxControl::Get()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
-	TDclControlPtr pControl = NULL;
-	if (!GetControlArgument (pArgs, pControl))
-		return RSERR; //invalid input
-	CDialogControl* pDlgControl = pControl->GetControlInstance();
-	if( !pDlgControl )
+	CDialogControl* pDlgControl;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, _CtlInvalid ) )
 		return RSERR; //invalid input
 	CAxContainerCtrl* pAxCont = pDlgControl->GetActiveXCtrl();
 	if( !pAxCont )
@@ -55,7 +52,7 @@ ADSRESULT AxControl::GetProperty()
 	CString sPropName;
 	if( !GetStringArgument( pArgs, sPropName ) )
 		return RSERR; //invalid input
-	TPropertyPtr pProp = pControl->FindPropertyObject(sPropName);
+	TPropertyPtr pProp = pDlgControl->GetTemplate()->FindPropertyObject( sPropName );
 	if( !pProp )
 		return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, (LPCTSTR)sPropName );
 
@@ -90,15 +87,12 @@ ADSRESULT AxControl::GetProperty()
 	return RSRSLT;
 }
 
-ADSRESULT AxControl::SetProperty()
+ADSRESULT AxControl::Put()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
-	TDclControlPtr pControl = NULL;
-	if (!GetControlArgument (pArgs, pControl))
-		return RSERR; //invalid input
-	CDialogControl* pDlgControl = pControl->GetControlInstance();
-	if( !pDlgControl )
+	CDialogControl* pDlgControl;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, _CtlInvalid ) )
 		return RSERR; //invalid input
 	CAxContainerCtrl* pAxCont = pDlgControl->GetActiveXCtrl();
 	if( !pAxCont )
@@ -107,7 +101,7 @@ ADSRESULT AxControl::SetProperty()
 	CString sPropName;
 	if( !GetStringArgument( pArgs, sPropName ) )
 		return RSERR; //invalid input
-	TPropertyPtr pProp = pControl->FindPropertyObject(sPropName);
+	TPropertyPtr pProp = pDlgControl->GetTemplate()->FindPropertyObject( sPropName );
 	if( !pProp )
 		return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, (LPCTSTR)sPropName );
 
@@ -141,15 +135,12 @@ ADSRESULT AxControl::SetProperty()
 	return RSRSLT;
 }
 
-ADSRESULT AxControl::DoMethod()
+ADSRESULT AxControl::Invoke()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
-	TDclControlPtr pControl = NULL;
-	if (!GetControlArgument (pArgs, pControl))
-		return RSERR; //invalid input
-	CDialogControl* pDlgControl = pControl->GetControlInstance();
-	if( !pDlgControl )
+	CDialogControl* pDlgControl;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, _CtlInvalid ) )
 		return RSERR; //invalid input
 	CAxContainerCtrl* pAxCont = pDlgControl->GetActiveXCtrl();
 	if( !pAxCont )
@@ -159,7 +150,7 @@ ADSRESULT AxControl::DoMethod()
 	if( !GetStringArgument( pArgs, sMethodName ) )
 		return RSERR; //invalid input
 
-	TPropertyPtr pProp = pControl->GetMethods();
+	TPropertyPtr pProp = pDlgControl->GetTemplate()->GetMethods();
 	if( !pProp || pProp->GetType() != PropActiveXMethods )
 		return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, _T("ActiveX Methods") );
 
@@ -196,15 +187,12 @@ ADSRESULT AxControl::DoMethod()
 	return RSRSLT;
 }
 
-ADSRESULT AxControl::GetOleObject()
+ADSRESULT AxControl::GetAxObject()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
-	TDclControlPtr pControl = NULL;
-	if (!GetControlArgument (pArgs, pControl))
-		return RSERR; //invalid input
-	CDialogControl* pDlgControl = pControl->GetControlInstance();
-	if( !pDlgControl )
+	CDialogControl* pDlgControl;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, _CtlInvalid ) )
 		return RSERR; //invalid input
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
@@ -219,7 +207,7 @@ ADSRESULT AxControl::GetOleObject()
 }
 
 
-ADSRESULT AxObject::GetProperty()
+ADSRESULT AxObject::Get()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -289,7 +277,7 @@ ADSRESULT AxObject::GetProperty()
 	return RSRSLT;
 }
 
-ADSRESULT AxObject::SetProperty()
+ADSRESULT AxObject::Put()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -362,7 +350,7 @@ ADSRESULT AxObject::SetProperty()
 	return RSRSLT;
 }
 
-ADSRESULT AxObject::DoMethod()
+ADSRESULT AxObject::Invoke()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -432,7 +420,7 @@ ADSRESULT AxObject::DoMethod()
 	return RSRSLT;
 }
 
-ADSRESULT AxObject::Close()
+ADSRESULT AxObject::Release()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -465,7 +453,7 @@ ADSRESULT AxGeneral::GetOlePictureFromId()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	const CPictureObject* pPicture = pProject->FindPicture( nPicId );
+	TPicturePtr pPicture = pProject->FindPicture( nPicId );
 	if( !pPicture )
 		return RSRSLT; //no picture with that id
 

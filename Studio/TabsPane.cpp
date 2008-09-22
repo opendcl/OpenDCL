@@ -360,8 +360,8 @@ BOOL CTabsPane::OnApply()
 					{
 						CRect rcTab = pTabStripCtrl->GetUsedArea();
 						TDclControlPtr pFormProps = pTab->mpChildForm->GetControlProperties();
-						pFormProps->AddLongProperty(Prop::Height, PropLong, rcTab.Height(), true);
-						pFormProps->AddLongProperty(Prop::Width, PropLong, rcTab.Width(), true);
+						pFormProps->AddLongProperty( Prop::Height, PropLong, rcTab.Height(), true );
+						pFormProps->AddLongProperty( Prop::Width, PropLong, rcTab.Width(), true );
 					}
 				}
 			}

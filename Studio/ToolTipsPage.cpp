@@ -101,26 +101,19 @@ BOOL CToolTipsPage::OnInitDialog()
 	m_Pictures.AddString(_T("<  i  >"));
 	m_Pictures.AddString(_T("<  !  >"));
 	m_Pictures.AddString(_T("< X >"));
-	
-	int nIndex=0;
-	TStudioProjectPtr pProjectList = activeProject;
-	int n = pProjectList->GetPictureList().GetCount();
-	while(nIndex < pProjectList->GetPictureList().GetCount())
+
+	const TPictureMap& Pictures = mpDclControl->GetOwnerProject()->GetPictureMap();
+	for( TPictureMap::const_iterator iter = Pictures.begin(); iter != Pictures.end(); ++iter )
 	{
-		POSITION pos = pProjectList->GetPictureList().FindIndex(nIndex);
-		if (pos != NULL)
-		{
-			CPictureObject *pPic = pProjectList->GetPictureList().GetAt(pos);
-			TCHAR Value[80];
-			_ltot(pPic->GetID(), Value, 10);
-			int n = m_Pictures.AddString(Value);
-			m_Pictures.SetItemData(n, pPic->GetID());
-			if (m_SelectedPic == pPic->GetID())
-				m_Pictures.SetCurSel(n);
-			if (pPic->GetID() > m_nHighestId)
-				m_nHighestId = pPic->GetID();
-		}
-		nIndex++;
+		UINT nId = iter->first;
+		CString sID;
+		sID.Format( _T("%u"), nId );
+		int idx = m_Pictures.AddString( sID );
+		m_Pictures.SetItemData( idx, nId );
+		if( m_SelectedPic == nId )
+			m_Pictures.SetCurSel( idx );
+		if( nId > m_nHighestId )
+			m_nHighestId = nId;
 	}
 
 	switch (m_pToolTipPicture->GetLongValue())

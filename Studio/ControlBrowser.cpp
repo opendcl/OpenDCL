@@ -174,7 +174,7 @@ protected:
 			CString sDefun;
 			sDefun.Format( _T("(\\cf2 dcl_Control_Set%s \\cf0 \\cf3<CONTROL>\\cf0\\par\\tab\\cf1 NewValue [%s %s]\\cf0)"), sApiName, theWorkspace.LoadResourceString( IDS_AS ), propType() );
 			CString sLisp;
-			sLisp.Format( _T("(dcl_Control_Get%s <CONTROL> \r\n\tNewValue [%s %s])"), sApiName, theWorkspace.LoadResourceString( IDS_AS ), propType() );
+			sLisp.Format( _T("(dcl_Control_Set%s <CONTROL> \r\n\tNewValue [%s %s])"), sApiName, theWorkspace.LoadResourceString( IDS_AS ), propType() );
 			setCopy1Lisp( sLisp );
 			return sDefun;
 		}
@@ -183,7 +183,7 @@ protected:
 		{
 			switch( prop()->GetOwnerControl()->GetType() )
 			{
-			case CtlFileDlgCtrl: return true;
+			case CtlFileExplorer: return true;
 			}
 			return false;
 		}
@@ -406,7 +406,7 @@ public:
 	virtual int image() const { return 5; }
 	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent )
 		{
-			addMethodsFileChildItems( Browser, hParent, _T("AxObjects.mth") );
+			addMethodsFileChildItems( Browser, hParent, _T("AxObject.mth") );
 			addPropertyChildItems( Browser, hParent, mpAxCont );
 			return true;
 		}
@@ -455,14 +455,14 @@ protected:
 			if( pAxPropGet )
 			{
 				if( !pAxPropGet->GetEnum().empty() )
-					return VARTYPEtoString( VT_I4 ); //use Long type for enums
+					return VariantTypeToDisplayableLispType( VT_I4 ); //use Long type for enums
 				return pAxPropGet->GetTypeDisplayName();
 			}
 			AxPropertyDescriptor* pAxPropPut = mpIDesc->GetPutDescriptor();
 			if( pAxPropPut )
 			{
 				if( !pAxPropPut->GetEnum().empty() )
-					return VARTYPEtoString( VT_I4 ); //use Long type for enums
+					return VariantTypeToDisplayableLispType( VT_I4 ); //use Long type for enums
 				return pAxPropPut->GetTypeDisplayName();
 			}
 			return NULL;
@@ -482,12 +482,14 @@ protected:
 				{
 					const AxArg& arg = *iter;
 					CString sArg = arg.name;
-					CString sType = VARTYPEtoString( arg.vt );
-					sArg += _T(" ");
+					CString sType = VariantTypeToDisplayableLispType( arg.vt );
+					sArg += _T(" [");
 					if( sType.IsEmpty() )
-						sArg += theWorkspace.LoadResourceString( IDS_OPTIONALNILASB );
-					else
-						sArg += _T("[") + theWorkspace.LoadResourceString( IDS_AS ) + _T(" ") + sType + _T("]");
+						sType = _T("??");
+					if( arg.optional )
+						sType += _T(" ") + theWorkspace.LoadResourceString( IDS_OPTIONALNILASB );
+					sArg += theWorkspace.LoadResourceString( IDS_AS ) + _T(" ") + sType;
+					sArg += _T("]");
 					sArgList += _T(" ") + sArg;
 				}
 			}
@@ -508,12 +510,14 @@ protected:
 				{
 					const AxArg& arg = *iter;
 					CString sArg = arg.name;
-					CString sType = VARTYPEtoString( arg.vt );
-					sArg += _T(" ");
+					CString sType = VariantTypeToDisplayableLispType( arg.vt );
+					sArg += _T(" [");
 					if( sType.IsEmpty() )
-						sArg += theWorkspace.LoadResourceString( IDS_OPTIONALNILASB );
-					else
-						sArg += _T("[") + theWorkspace.LoadResourceString( IDS_AS ) + _T(" ") + sType + _T("]");
+						sType = _T("??");
+					if( arg.optional )
+						sType += _T(" ") + theWorkspace.LoadResourceString( IDS_OPTIONALNILASB );
+					sArg += theWorkspace.LoadResourceString( IDS_AS ) + _T(" ") + sType;
+					sArg += _T("]");
 					sArgList += _T(" ") + sArg;
 				}
 			}
@@ -531,11 +535,11 @@ protected:
 					sArgsDesc.Format( _T("\\cf1 %s\\cf0"), (LPCTSTR)sArgsLisp );
 				CString sApiName = name();
 				CString sLisp;
-				bool bOleObject = !prop()->GetOwnerControl()->GetOwnerForm();
-				if( bOleObject )
+				bool bAxObject = !prop()->GetOwnerControl()->GetOwnerForm();
+				if( bAxObject )
 				{
-					sDefun.Format( _T("(\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_AxObject_GetProperty\\cf0\\cf1\\b\\i  OleObject \\cf0\\i0\\cf3 \"%s\"\\cf0\\b0 %s))"), (LPCTSTR)sApiName, (LPCTSTR)sArgsDesc );
-					sLisp.Format( _T("(Setq Value (dcl_AxObject_GetProperty OleObject \"%s\"%s))"), (LPCTSTR)sApiName, (LPCTSTR)sArgsLisp );
+					sDefun.Format( _T("(\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_AxObject_GetProperty\\cf0\\cf1\\b\\i  AxObject \\cf0\\i0\\cf3 \"%s\"\\cf0\\b0 %s))"), (LPCTSTR)sApiName, (LPCTSTR)sArgsDesc );
+					sLisp.Format( _T("(Setq Value (dcl_AxObject_GetProperty AxObject \"%s\"%s))"), (LPCTSTR)sApiName, (LPCTSTR)sArgsLisp );
 				}
 				else
 				{
@@ -559,24 +563,14 @@ protected:
 				CString sApiName = name();
 				CString sNewValArgDesc;
 				CString sNewValArgLisp;
-				if( mpIDesc->GetGuid() == GUID_COLOR )
-				{
-					sNewValArgDesc += _T(" ");
-					sNewValArgDesc += theWorkspace.LoadResourceString( IDS_REDCOLORDESC2 );
-					sNewValArgLisp += _T(" ");
-					sNewValArgLisp += theWorkspace.LoadResourceString( IDS_REDCOLORDESC );
-				}
-				else
-				{
-					sNewValArgDesc.Format( _T(" \\cf1 NewValue [%s %s]\\cf0"), (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ), (LPCTSTR)propType() );
-					sNewValArgLisp.Format( _T(" NewValue [%s %s]"), (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ), (LPCTSTR)propType() );
-				}
+				sNewValArgDesc.Format( _T(" \\cf1 NewValue [%s %s]\\cf0"), (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ), (LPCTSTR)propType() );
+				sNewValArgLisp.Format( _T(" NewValue [%s %s]"), (LPCTSTR)theWorkspace.LoadResourceString( IDS_AS ), (LPCTSTR)propType() );
 				CString sLisp;
-				bool bOleObject = !prop()->GetOwnerControl()->GetOwnerForm();
-				if( bOleObject )
+				bool bAxObject = !prop()->GetOwnerControl()->GetOwnerForm();
+				if( bAxObject )
 				{
-					sDefun.Format( _T("(\\cf2 dcl_AxObject_SetProperty\\cf0\\cf1\\b\\i  OleObject \\cf0\\i0\\cf3 \"%s\"\\cf0\\b0 %s %s)"), (LPCTSTR)sApiName, (LPCTSTR)sArgsDesc, (LPCTSTR)sNewValArgDesc );
-					sLisp.Format( _T("(dcl_AxObject_SetProperty OleObject \"%s\"%s %s)"), (LPCTSTR)sApiName, (LPCTSTR)sNewValArgLisp, (LPCTSTR)sArgsLisp );
+					sDefun.Format( _T("(\\cf2 dcl_AxObject_SetProperty\\cf0\\cf1\\b\\i  AxObject \\cf0\\i0\\cf3 \"%s\"\\cf0\\b0 %s %s)"), (LPCTSTR)sApiName, (LPCTSTR)sArgsDesc, (LPCTSTR)sNewValArgDesc );
+					sLisp.Format( _T("(dcl_AxObject_SetProperty AxObject \"%s\"%s %s)"), (LPCTSTR)sApiName, (LPCTSTR)sNewValArgLisp, (LPCTSTR)sArgsLisp );
 				}
 				else
 				{
@@ -584,8 +578,6 @@ protected:
 					sLisp.Format( _T("(dcl_AxControl_SetProperty <CONTROL> \"%s\"%s %s)"), (LPCTSTR)sApiName, (LPCTSTR)sNewValArgLisp, (LPCTSTR)sArgsLisp );
 				}
 				setCopy1Lisp( sLisp );
-				if( mpIDesc->GetGuid() == GUID_COLOR )
-					sDefun += theWorkspace.LoadResourceString( IDS_SETCOLORDESC );
 			}
 			return sDefun;
 		}
@@ -668,12 +660,14 @@ protected:
 			{
 				const AxArg& arg = *iter;
 				CString sArg = arg.name;
-				CString sType = VARTYPEtoString( arg.vt );
-				sArg += _T(" ");
+				CString sType = VariantTypeToDisplayableLispType( arg.vt );
+				sArg += _T(" [");
 				if( sType.IsEmpty() )
-					sArg += theWorkspace.LoadResourceString( IDS_OPTIONALNIL );
-				else
-					sArg += _T("[") + theWorkspace.LoadResourceString( IDS_AS ) + _T(" ") + sType + _T("]");
+					sType = _T("??");
+				if( arg.optional )
+					sType += _T(" ") + theWorkspace.LoadResourceString( IDS_OPTIONALNILASB );
+				sArg += theWorkspace.LoadResourceString( IDS_AS ) + _T(" ") + sType;
+				sArg += _T("]");
 				sArgList += _T("\\par\\tab ") + sArg;
 			}
 			return sArgList;
@@ -693,11 +687,11 @@ protected:
 			CString sApiName = name();
 			CString sDefun;
 			CString sLisp;
-			bool bOleObject = !control()->GetOwnerForm();
-			if( bOleObject )
+			bool bAxObject = !control()->GetOwnerForm();
+			if( bAxObject )
 			{
-				sDefun.Format( _T("(\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_AxObject_DoMethod\\cf1\\b\\i  OleObject \\cf0\\i0\\cf3 \"%s\"\\cf0\\b0 %s))"), (LPCTSTR)sApiName, (LPCTSTR)sArgsDesc );
-				sLisp.Format( _T("(Setq Value (dcl_AxObject_DoMethod OleObject \"%s\"%s))"), (LPCTSTR)sApiName, (LPCTSTR)sArgsLisp );
+				sDefun.Format( _T("(\\cf2 Setq \\cf1 Value \\cf0 (\\cf2 dcl_AxObject_DoMethod\\cf1\\b\\i  AxObject \\cf0\\i0\\cf3 \"%s\"\\cf0\\b0 %s))"), (LPCTSTR)sApiName, (LPCTSTR)sArgsDesc );
+				sLisp.Format( _T("(Setq Value (dcl_AxObject_DoMethod AxObject \"%s\"%s))"), (LPCTSTR)sApiName, (LPCTSTR)sArgsLisp );
 			}
 			else
 			{
@@ -722,11 +716,11 @@ protected:
 			CString sApiName = name();
 			CString sDefun;
 			CString sLisp;
-			bool bOleObject = !control()->GetOwnerForm();
-			if( bOleObject )
+			bool bAxObject = !control()->GetOwnerForm();
+			if( bAxObject )
 			{
-				sDefun.Format( _T("(\\cf2 dcl_AxObject_DoMethod\\cf1\\b\\i  OleObject \\cf0\\i0\\cf3 \"%s\"\\cf0\\b0 %s)"), (LPCTSTR)sApiName, (LPCTSTR)sArgsDesc );
-				sLisp.Format( _T("(dcl_AxObject_DoMethod OleObject \"%s\"%s)"), (LPCTSTR)sApiName, (LPCTSTR)sArgsLisp );
+				sDefun.Format( _T("(\\cf2 dcl_AxObject_DoMethod\\cf1\\b\\i  AxObject \\cf0\\i0\\cf3 \"%s\"\\cf0\\b0 %s)"), (LPCTSTR)sApiName, (LPCTSTR)sArgsDesc );
+				sLisp.Format( _T("(dcl_AxObject_DoMethod AxObject \"%s\"%s)"), (LPCTSTR)sApiName, (LPCTSTR)sArgsLisp );
 			}
 			else
 			{
@@ -811,7 +805,7 @@ protected:
 			{
 				const AxArg& arg = *iter;
 				CString sArg = arg.name;
-				CString sType = VARTYPEtoString( arg.vt );
+				CString sType = VariantTypeToDisplayableLispType( arg.vt );
 				if( !sType.IsEmpty() )
 					sArg += _T(" [") + theWorkspace.LoadResourceString( IDS_AS ) + _T(" ") + sType + _T("]");
 				sArgList += _T(" ") + sArg;
@@ -861,15 +855,15 @@ bool CDclControlNode::addChildItems( CControlBrowser& Browser, HTREEITEM hParent
 		pAxCont = pDlgControl->GetActiveXCtrl();
 	addPropertyChildItems( Browser, hParent, pAxCont );
 	ControlType type = mpDclControl->GetType();
-	if( type != CtlFileDlgCtrl )
-		addMethodsFileChildItems( Browser, hParent, _T("AllCtrls.mth") );
+	if( type != CtlFileExplorer )
+		addMethodsFileChildItems( Browser, hParent, _T("Control.mth") );
 	switch( type )
 	{
-		case CtlFileDlgCtrl:
-			addMethodsFileChildItems( Browser, hParent, _T("FileDlgCtrl.mth") );
+		case CtlFileExplorer:
+			addMethodsFileChildItems( Browser, hParent, _T("FileExplorer.mth") );
 			break;
 		case CtlTabStrip:
-			addMethodsFileChildItems( Browser, hParent, _T("Tab.mth") );
+			addMethodsFileChildItems( Browser, hParent, _T("TabStrip.mth") );
 			break;
 		case CtlListBox:
 			addMethodsFileChildItems( Browser, hParent, _T("ListBox.mth") );
@@ -883,8 +877,8 @@ bool CDclControlNode::addChildItems( CControlBrowser& Browser, HTREEITEM hParent
 		case CtlImageComboBox:
 			addMethodsFileChildItems( Browser, hParent, _T("ImageComboBox.mth") );
 			break;
-		case CtlAnimate:
-			addMethodsFileChildItems( Browser, hParent, _T("AnimationCtrl.mth") );
+		case CtlAnimation:
+			addMethodsFileChildItems( Browser, hParent, _T("Animation.mth") );
 			break;
 		case CtlDwgList:
 			addMethodsFileChildItems( Browser, hParent, _T("DwgList.mth") );
@@ -907,8 +901,8 @@ bool CDclControlNode::addChildItems( CControlBrowser& Browser, HTREEITEM hParent
 		case CtlSlideView:
 			addMethodsFileChildItems( Browser, hParent, _T("SlideView.mth") );
 			break;
-		case CtlTree:
-			addMethodsFileChildItems( Browser, hParent, _T("TreeCtrl.mth") );
+		case CtlImageTree:
+			addMethodsFileChildItems( Browser, hParent, _T("ImageTree.mth") );
 			break;
 		case CtlComboBox:
 			addMethodsFileChildItems( Browser, hParent, _T("ComboBox.mth") );
@@ -920,13 +914,13 @@ bool CDclControlNode::addChildItems( CControlBrowser& Browser, HTREEITEM hParent
 			addMethodsFileChildItems( Browser, hParent, _T("DwgPreview.mth") );
 			break;
 		case CtlActiveX:
-			addMethodsFileChildItems( Browser, hParent, _T("AxCtrls.mth") );
+			addMethodsFileChildItems( Browser, hParent, _T("AxControl.mth") );
 			break;
-		case CtlMonth:
-			addMethodsFileChildItems( Browser, hParent, _T("Month.mth") );
+		case CtlCalendar:
+			addMethodsFileChildItems( Browser, hParent, _T("Calendar.mth") );
 			break;
 		case CtlGraphicButton:
-			addMethodsFileChildItems( Browser, hParent, _T("GrphicBtn.mth") );
+			addMethodsFileChildItems( Browser, hParent, _T("GraphicButton.mth") );
 			break;
 		case CtlHtmlCtrl:
 			addMethodsFileChildItems( Browser, hParent, _T("Html.mth") );
@@ -1276,10 +1270,10 @@ BOOL CControlBrowser::OnInitDialog()
 	mImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE( IDI_EVENT ) ) );
 	mImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE( IDI_METHOD ) ) );
 	mImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE( IDI_PROPERTY ) ) );
-	mImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE( IDI_OLEOBJECT ) ) );
+	mImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE( IDI_AXOBJECT ) ) );
 	mImageList.SetBkColor( mObjectTree.GetBkColor() );
 	mObjectTree.SetImageList( &mImageList, TVSIL_NORMAL );
-	EnableSaveRestore( _T("ObjectBrowser"), _T("Size") );
+	EnableSaveRestore( _T("ControlBrowser"), _T("Size") );
 
 	CTreeNode* pMain = NULL;
 	if( mpDclControl->GetType() == _CtlForm )

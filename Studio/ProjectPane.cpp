@@ -346,29 +346,7 @@ void CProjectPane::OnActivateForm( TDclFormPtr pForm /*= NULL*/ )
 	}
 }
 
-void CProjectPane::AddActiveXFileTree(CString sFileName)
-{
-	if (sFileName.GetLength() == 0)
-		return;
-
-	sFileName = StripPathFromFileName(sFileName);
-
-	if( !mpProject->AddActiveXFile( sFileName ) )
-		return; //it's already in the list
-
-	// add the parent tree item
-	if (mhtiAxFilesParent == NULL)
-	{
-		mhtiAxFilesParent = GetTreeCtrl().InsertItem(theWorkspace.LoadResourceString(IDS_AXFILEPARENT), TVI_ROOT, TVI_SORT);
-		GetTreeCtrl().SetItemImage(mhtiAxFilesParent, 1,1);
-	}	
-	
-	// add the child item now.
-	HTREEITEM htiTreeItem = GetTreeCtrl().InsertItem(sFileName, mhtiAxFilesParent, TVI_SORT);
-	GetTreeCtrl().SetItemImage(htiTreeItem, 8,8);
-}
-
-void CProjectPane::AddFormToTree(TDclFormPtr pDcl, bool bForceShow)
+void CProjectPane::AddFormToTree( TDclFormPtr pDcl, bool bForceShow )
 {
 	CString sText;
 	

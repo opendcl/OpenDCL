@@ -69,17 +69,10 @@ CProject::CProject( LPCTSTR pszKeyName )
 
 CProject::~CProject()
 {
-  // clear pictures
-  POSITION posPicture = mPictures.GetHeadPosition();	
-	while (posPicture)
-		try{ delete mPictures.GetNext(posPicture); } catch(...){}
-	mPictures.RemoveAll();
 }
 
 void CProject::Initialize()
 {
-  mrsActiveXFiles.RemoveAll();
-  mrsActiveXFiles.SetSize(0,1);
   msPassword.Empty();
   msLispFileName.Empty();	
   mnAutoCADVersion = theWorkspace.GetMinSupportedAcadVersion();
@@ -210,105 +203,43 @@ TDclFormPtr CProject::GetRefCountedPtr( CDclFormObject* pDclForm ) const
 	return TDclFormLockedPtr( pDclForm );
 }
 
-bool CProject::AddActiveXFile( LPCTSTR pszFileName )
-{
-	if( HasActiveXFile( pszFileName ) )
-		return false; //can't add (case insensitive) duplicate filename
-	mrsActiveXFiles.Add( pszFileName );
-	OnModified();
-	return true;
-}
-
-bool CProject::RemoveActiveXFile( LPCTSTR pszFileName )
-{
-	INT_PTR idx = mrsActiveXFiles.GetCount();
-	while( idx-- > 0 )
-	{
-		if( mrsActiveXFiles.GetAt( idx ).CompareNoCase( pszFileName ) == 0 )
-		{
-			mrsActiveXFiles.RemoveAt( idx );
-			OnModified();
-			return true;
-		}
-	}
-	return false;
-}
-
-bool CProject::HasActiveXFile( LPCTSTR pszFileName ) const
-{
-	INT_PTR idx = mrsActiveXFiles.GetCount();
-	while( idx-- > 0 )
-	{
-		if( mrsActiveXFiles.GetAt( idx ).CompareNoCase( pszFileName ) == 0 )
-			return true;
-	}
-	return false;
-}
-
-bool CProject::AddPicture( CPictureObject* pPicture ) 
+bool CProject::AddPicture( TPicturePtr pPicture ) 
 {
 	assert( pPicture != NULL );
 	if( !pPicture )
 		return false;
 	OnModified();
-	UINT_PTR nID = pPicture->GetID();
-	POSITION posInsert = NULL;
-	POSITION posPic = mPictures.GetHeadPosition();
-	while( posPic )
+	UINT nID = pPicture->GetID();
+	bool bFound = (mPictures.find( nID ) != mPictures.end());
+	mPictures[nID] = pPicture;
+	if( bFound )
 	{
-		POSITION posAt = posPic;
-		CPictureObject* pPictureAt = mPictures.GetNext( posPic );
-		assert( pPictureAt != NULL );
-		UINT id = pPictureAt->GetID();
-		if( id == nID )
+		//update any instances of controls or forms referencing the updated picture
+		for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
 		{
-			delete pPictureAt;
-			mPictures.SetAt( posAt, pPicture );
-			//update any instances of controls or forms referencing the updated picture
-			for( TDclFormList::const_iterator iterForm = mDclForms.begin(); iterForm != mDclForms.end(); ++iterForm )
+			const TDclControlList& Controls = (*iterForm)->GetControlList();
+			for( TDclControlList::const_iterator iterControl = Controls.begin(); iterControl != Controls.end(); ++iterControl )
 			{
-				const TDclControlList& Controls = (*iterForm)->GetControlList();
-				for( TDclControlList::const_iterator iterControl = Controls.begin(); iterControl != Controls.end(); ++iterControl )
+				if( !(*iterControl)->GetControlInstance() )
+					continue; //no instance of this control, so skip it
+				const TPropertyList& Props = (*iterControl)->GetPropertyList();
+				for( TPropertyList::const_iterator iterProp = Props.begin(); iterProp != Props.end(); ++iterProp )
 				{
-					if( !(*iterControl)->GetControlInstance() )
-						continue; //no instance of this control, so skip it
-					const TPropertyList& Props = (*iterControl)->GetPropertyList();
-					for( TPropertyList::const_iterator iterProp = Props.begin(); iterProp != Props.end(); ++iterProp )
-					{
-						if( (*iterProp)->GetType() == PropPicture && (*iterProp)->GetLongValue() == nID )
-							(*iterControl)->GetControlInstance()->OnApplyProperty( (*iterProp) ); //apply the updated picture
-					}
+					if( (*iterProp)->GetType() == PropPicture && (*iterProp)->GetLongValue() == nID )
+						(*iterControl)->GetControlInstance()->OnApplyProperty( (*iterProp) ); //apply the updated picture
 				}
 			}
-			return true;
 		}
-		else if( !posInsert && id > nID )
-			posInsert = posAt;
 	}
-	if( posInsert )
-		mPictures.InsertBefore( posInsert, pPicture );
-	else
-		mPictures.AddTail( pPicture );
 	return true;
 }
 
 void CProject::DeletePicture( int nID )
 {
-	POSITION posPicToDelete = NULL;
-	POSITION posPic = mPictures.GetHeadPosition();
-	while( posPic )
-	{
-		POSITION posAt = posPic;
-		CPictureObject* pPicture = mPictures.GetNext( posPic );
-		assert( pPicture != NULL );
-		if( pPicture->GetID() == nID )
-		{
-			posPicToDelete = posAt;
-			break;
-		}
-	}
-	if( !posPicToDelete )
+	bool bFound = (mPictures.find( nID ) != mPictures.end());
+	if( !bFound )
 		return;
+	mPictures.erase( nID );
 	OnModified();
 
 	//remove all references to this picture before deleting it
@@ -329,13 +260,11 @@ void CProject::DeletePicture( int nID )
 			}
 		}
 	}
-	delete mPictures.GetAt( posPicToDelete );
-	mPictures.RemoveAt( posPicToDelete );
 }
 
 bool CProject::LoadPictureFile( LPCTSTR szFile, UINT_PTR nID, bool bApplyMask /*= false*/ )
 {
-	CPictureObject* pPic = FindPicture( nID );
+	TPicturePtr pPic = FindPicture( nID );
 	if( !pPic )
 	{
 		pPic = new CPictureObject( nID );
@@ -396,40 +325,34 @@ TDclFormPtr CProject::FindDclTabChildForm( LPCTSTR pszParentFormName, int nTabIn
   return NULL;
 }
 
-HBITMAP CProject::CloneBitmap(UINT_PTR nID, CSize &sz) const
+HBITMAP CProject::CloneBitmap( UINT nID, CSize &sz ) const
 {
-	CPictureObject* pPicture = FindPicture( nID );
+	TPicturePtr pPicture = FindPicture( nID );
 	if( !pPicture )
 		return NULL;
 	sz.SetSize( pPicture->GetWidth(), pPicture->GetHeight() );
 	return pPicture->CloneBitmap();
 }
 
-HICON CProject::CloneIcon(UINT_PTR nID) const
+HICON CProject::CloneIcon(UINT nID) const
 {
-	CPictureObject* pPicture = FindPicture( nID );
+	TPicturePtr pPicture = FindPicture( nID );
 	if( !pPicture )
 		return NULL;
 	return pPicture->CloneIcon();
 }
 
-CPictureObject* CProject::FindPicture( UINT_PTR nID ) const
+TPicturePtr CProject::FindPicture( UINT nID ) const
 {
-	POSITION pos = mPictures.GetHeadPosition();
-	while (pos)
-	{
-		CPictureObject* pPicture = mPictures.GetNext(pos);
-		assert (pPicture != NULL);
-		if (pPicture->GetID() == nID)
-			return pPicture;
-	}
+	TPictureMap::const_iterator iter = mPictures.find( nID );
+	if( iter != mPictures.end() )
+		return iter->second;
 	return NULL;
 }
 
-
-bool CProject::GetPictureSize( UINT_PTR nID, CSize& size ) const
+bool CProject::GetPictureSize( UINT nID, CSize& size ) const
 {
-	CPictureObject* pPicture = FindPicture( nID );
+	TPicturePtr pPicture = FindPicture( nID );
 	if( !pPicture )
 		return false;
 	if (!pPicture->IsValid())
@@ -673,15 +596,9 @@ void CProject::Serialize(CArchive& ar)
 		#endif
     }
 
-		unsigned long ctAxFiles = unsigned long(mrsActiveXFiles.GetCount());
-		ar << ctAxFiles;
-		for( unsigned long idx = 0; idx < ctAxFiles; ++idx )
-			ar << mrsActiveXFiles.GetAt( idx );
-
-    ar << unsigned long(mPictures.GetCount());		
-    POSITION pos = mPictures.GetHeadPosition();
-    while (pos != NULL)
-      mPictures.GetNext(pos)->Serialize(ar);
+    ar << unsigned long(mPictures.size());
+		for( TPictureMap::const_iterator iter = mPictures.begin(); iter != mPictures.end(); ++iter )
+			iter->second->Serialize( ar );
   }
   else
   {		
@@ -773,20 +690,21 @@ void CProject::Serialize(CArchive& ar)
 		#endif
     }
 
-		mrsActiveXFiles.RemoveAll();
     if (nThisVersion >= 7)
 		{
 			if( nThisVersion <= 9 )
-				mrsActiveXFiles.Serialize(ar);
-			else
+			{
+				CStringArray rsActiveXFiles;
+				rsActiveXFiles.Serialize(ar); //discard it
+			}
+			else if( nThisVersion <= 13 )
 			{
 				unsigned long ctAxFiles;
 				ar >> ctAxFiles;
 				for( unsigned long idx = 0; idx < ctAxFiles; ++idx )
 				{
 					CString sFile;
-					ar >> sFile;
-					mrsActiveXFiles.Add( sFile );
+					ar >> sFile; //discard it
 				}
 			}
 		}
@@ -812,31 +730,26 @@ void CProject::Serialize(CArchive& ar)
 			}
 		}
 
-		POSITION posPic = mPictures.GetHeadPosition();
-		while( posPic )
-			delete mPictures.GetNext( posPic );
-    mPictures.RemoveAll();
-
-    if (nThisVersion < 9)
+    mPictures.clear();
+    if( nThisVersion < 9 )
 		{
 			try
 			{
-				mPictures.Serialize(ar);
-
-			// this has been added to cleanup picture objects with a blank picture.
-			POSITION pos = mPictures.GetHeadPosition();
-			while( pos )
-			{
-				POSITION posAt = pos;
-				CPictureObject* pPict = mPictures.GetNext(pos);
-				if (pPict == NULL)
-					mPictures.RemoveAt( posAt );
-				else if( pPict->GetID() <= -1 || pPict->GetID() >= 3000 )
+				CList< CPictureObject* > Pictures;
+				Pictures.Serialize( ar );
+				POSITION pos = Pictures.GetHeadPosition();
+				while( pos )
 				{
-					delete pPict;
-					mPictures.RemoveAt( posAt );
+					CPictureObject* pPict = Pictures.GetNext( pos );
+					if( !pPict )
+						continue; //skip empty picture objects
+					if( pPict->GetID() <= -1 || pPict->GetID() >= 3000 )
+					{ //looks corrupted
+						//delete pPict;
+						continue;
+					}
+					mPictures[pPict->GetID()] = pPict;
 				}
-			}
 			}
 			catch(...) {}
 		}
@@ -852,11 +765,11 @@ void CProject::Serialize(CArchive& ar)
 			else
 				ar >> nCount;
 
-      while (nCount-- > 0)
+      while( nCount-- > 0 )
       {
-        CPictureObject* pPictureObj = new CPictureObject( -1 );
-        pPictureObj->Serialize(ar);
-        mPictures.AddTail(pPictureObj);							
+        TPicturePtr pPict = new CPictureObject( -1 );
+        pPict->Serialize( ar );
+        mPictures[pPict->GetID()] = pPict;							
       }
     }
   }
@@ -907,7 +820,6 @@ IOStatus CProject::ReadFromTextFile(std::ifstream &sFile, const CString &fileNam
 IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileName)
 {
   int nCount;
-  POSITION pos;
 
 	BOOL bHasPassword;
   if (!readBOOL(sFile, bHasPassword)) return statInvalidFormat; //discard
@@ -960,13 +872,11 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
 
   }	
 
-	mrsActiveXFiles.RemoveAll();
   int iCount;
   if (!readInt(sFile, iCount)) return statInvalidFormat;
   for (int i = 0; i < iCount; i++) {
     CString str;
     if (!readString(sFile, str)) return statInvalidFormat;
-    mrsActiveXFiles.Add(str);
   }
 
   if (!readInt(sFile, iCount)) return statInvalidFormat;
@@ -980,49 +890,26 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
   // set counter
   if (!readInt(sFile, nCount)) return statInvalidFormat;
 
-	POSITION posPic = mPictures.GetHeadPosition();
-	while( posPic )
-		delete mPictures.GetNext( posPic );
-  mPictures.RemoveAll();
+  mPictures.clear();
   // do loop to navigate images
   while (nCount-- > 0)
   {
     // get current images
-    CPictureObject* pPictureObj = new CPictureObject( -1 );
+    TPicturePtr pPict = new CPictureObject( -1 );
+		if( !pPict )
+			continue;
     try
     {	
       // get image into archive
-			IOStatus stat = pPictureObj->ReadFromTextFile(sFile, fileName);
+			IOStatus stat = pPict->ReadFromTextFile(sFile, fileName);
       if (stat != statOK) return stat;
 
       // add this image to the list object
-      mPictures.AddTail(pPictureObj);							
+      mPictures[pPict->GetID()] = pPict;
     }
     catch(...)
     {
       // do nothing
-    }
-  }
-
-  // this has been added to cleanup picture objects with a blank picture.
-  nCount = mPictures.GetCount() - 1;
-  for (int i=nCount; i>=0; i--)
-  {
-    pos = mPictures.FindIndex(i);
-    if (pos != NULL)
-    {
-      CPictureObject *pPict = mPictures.GetAt(pos);
-
-      if (pPict == NULL)
-        mPictures.RemoveAt(pos);
-      if (pPict != NULL)
-      {
-        if (pPict->GetID() <= -1 || pPict->GetID() >= 3000)
-        {
-          delete pPict;
-          mPictures.RemoveAt(pos);
-        }
-      }
     }
   }
   return statOK;
@@ -1033,11 +920,10 @@ IOStatus CProject::ReadFromTextFile9(std::ifstream &sFile, const CString &fileNa
 LPCTSTR CProject::toString() const
 {
 	static TCHAR buf[1024];
-	_sntprintf( buf, _elements(buf), _T("CProject [%s] (%s forms, %s images, %s ActiveX files)"),
+	_sntprintf( buf, _elements(buf), _T("CProject [%s] (%s forms, %s images)"),
 																	 (LPCTSTR)GetKeyName(),
 																	 asString( mDclForms.size() ),
-																	 asString( mPictures.GetCount() ),
-																	 asString( mrsActiveXFiles.GetCount() ) );
+																	 asString( mPictures.size() ) );
 	return buf;
 }
 

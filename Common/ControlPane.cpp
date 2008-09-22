@@ -88,6 +88,7 @@ void CControlPane::RemoveControl( CDialogControl* pDlgControl )
 
 bool CControlPane::CreateControls(UINT& nId)
 {
+	DisableUndoManager DisableUndo( mpSourceForm->GetUndoManager() );
 	//mpHostDlg->ModifyStyleEx( 0, 0x02000000L/*WS_EX_COMPOSITED*/ );
 	TDclControlList& Controls = mpSourceForm->mDclControls;
 	if( Controls.empty() )
@@ -101,7 +102,7 @@ bool CControlPane::CreateControls(UINT& nId)
 		TDclControlPtr pDclControl = (*iter);
 		if (pDclControl->GetType() <= _CtlForm)
 			continue;
-		if (pDclControl->GetType() == CtlFileDlgCtrl)
+		if (pDclControl->GetType() == CtlFileExplorer)
 			continue;
 		UINT idDlg = pDclControl->GetID();
 		if( idDlg <= 2 || pDclControl->GetType() != CtlSplitter )
@@ -181,7 +182,7 @@ void CControlPane::InvalidateControls()
 				//CWnd* pWnd = pDlgControl->GetTopLevelWnd();
 				//if( pWnd )
 				//	pWnd->Invalidate();
-				pDlgControl->OnNeedRepaint( true, false );
+				pDlgControl->OnNeedRepaint( false, false );
 			}
 		}
 	}
@@ -232,7 +233,7 @@ void CControlPane::ResetControlsPos( TDclControlPtr pDclControl )
 	//		((pControl->GetStyle() & CBS_DROPDOWN) != 0) )
 	//	rcControl.bottom += pDclControl->GetLongProperty( Prop::DropDownHeight );
 	
-	//if (pDclControl->GetType() == CtlMonth)
+	//if (pDclControl->GetType() == CtlCalendar)
 	//	((CMonthCalCtrl*)pControl)->SizeMinReq(TRUE);
 }
 
@@ -258,7 +259,7 @@ void CControlPane::ApplyZOrder()
 			continue;
 		if( !pDlgControl->GetTemplate()->IsZOrderAllowed() )
 			continue;
-		ZOrderFront( pDlgControl/*, hdwp*/ );
+		ZOrderFront( pDlgControl, hdwp );
 	}
 	if( hdwp )
 		EndDeferWindowPos( hdwp );

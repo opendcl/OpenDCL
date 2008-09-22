@@ -112,7 +112,7 @@ int VTToVTI( VARTYPE vt )
 }
 
 
-CString VARTYPEtoString( VARTYPE vt )
+CString VariantTypeToDisplayableLispType( VARTYPE vt )
 {
 	switch(vt)
 	{
@@ -161,6 +161,7 @@ CString VARTYPEtoString( VARTYPE vt )
 		break;
 
 	case VT_VARIANT:	
+		return _T("Variant");
 		break;
 
 	default:
@@ -172,41 +173,13 @@ CString VARTYPEtoString( VARTYPE vt )
 
 CString VariantToString( const VARIANT& var )
 {
-    
-	USES_CONVERSION;
-   CString strResult;
-   COleVariant varString;
-   BOOL tHandled;
-
-   tHandled = FALSE;
-   switch( var.vt )
-   {
-   case VT_BOOL:	   
-	  if( var.boolVal == VARIANT_FALSE )
-			strResult = _T("FALSE");
-	  else
-			strResult = _T("TRUE");
-	  tHandled = TRUE;
-	  break;
-   }
-
-   if( !tHandled )
-   {
-	  varString = var;
-	  TRY
-	  {
-		 varString.ChangeType( VT_BSTR );
-	  }
-	  CATCH( COleException, e )
-	  {
-		 
-	  }
-	  END_CATCH
-
-	  strResult = varString.bstrVal;
-   }
-
-   return( strResult );
+	switch( var.vt )
+	{
+	case VT_BOOL: return (var.boolVal == VARIANT_FALSE? _T("False") : _T("True"));   
+	}
+	COleVariant varString = var;
+	VariantChangeType( &varString, &varString, 0, var.vt );
+	return varString.bstrVal;
 }
 
 
@@ -276,7 +249,7 @@ static CString BuildParam(VARTYPE vt, BOOL bUseAsType, BOOL bNotByVal,
 													LPCTSTR szName, BOOL optional, LPVOID pFunc /*=NULL*/) 
 {
 	// it looks like this function was never implemenetd. [ORW]
-	return VARTYPEtoString(vt);
+	return VariantTypeToDisplayableLispType(vt);
 }
 
 

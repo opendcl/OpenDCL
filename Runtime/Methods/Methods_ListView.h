@@ -16,7 +16,6 @@ ADSRESULT AddItem();
 ADSRESULT Arrange();
 ADSRESULT CalcColWidth();
 ADSRESULT Clear();
-ADSRESULT CountItems();
 ADSRESULT DeleteItem();
 ADSRESULT DeleteItems();
 ADSRESULT DeleteColumn();

@@ -47,7 +47,6 @@ void CLVEdit::OnSetfocus()
 
 CListViewCtrl::CListViewCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
-, mbBlockList( pTemplate->GetType() == CtlBlockList )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -70,12 +69,8 @@ bool CListViewCtrl::Create( CWnd* pParentWnd, UINT nID )
 		SendMessage( CCM_SETUNICODEFORMAT, (WPARAM)bUnicode, 0 );
 	}
 
-	if( bSuccess && !IsBlockList() )
-	{
+	if( bSuccess && HasSubItemImages() )
 		SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
-		if( !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::ImageList ) ) )
-			bSuccess = false;
-	}
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
@@ -112,20 +107,6 @@ bool CListViewCtrl::OnApplyProperty( TPropertyPtr pProp )
 			//}
 		}
 		break;
-	case Prop::BlockListStyle:
-		{
-			assert( mbBlockList == true );
-			//create a default icon for blocks without a preview image
-			mBlockViewImageList.Create( 32, 32, ILC_COLOR4, 1, 1 );
-			mBlockViewImageList.SetBkColor( GetBkColor() );
-
-			HICON hIcon = (HICON)::LoadImage( theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(IDI_LARGEBLOCK), IMAGE_ICON, 0, 0, 0 );
-			mBlockViewImageList.Add( hIcon );
-			DestroyIcon( hIcon );
-			SetImageList( &mBlockViewImageList, LVSIL_NORMAL );
-			SetImageList( &mBlockViewImageList, LVSIL_SMALL );
-			break;
-		}
 	case Prop::ListViewStyle:
 		{
 			break;
@@ -255,40 +236,27 @@ DWORD CListViewCtrl::GetWndStyle() const
 {
 	DWORD dwStyle = __super::GetWndStyle();
 
-	switch( mpTemplate->GetLongProperty( Prop::BlockListStyle ) ) //returns -1 if not found
+	dwStyle |= LVS_SHAREIMAGELISTS; //normal listview always uses a shared image list
+	LONG fListViewStyle = mpTemplate->GetLongProperty( Prop::ListViewStyle ); //returns -1 if not found
+	switch( fListViewStyle )
 	{
 	case 0:
 		dwStyle |= (LVS_ICON | LVS_NOCOLUMNHEADER);
 		break;
 	case 1:
-		dwStyle |= (LVS_LIST| LVS_NOCOLUMNHEADER);
+		dwStyle |= (LVS_SMALLICON | LVS_NOCOLUMNHEADER);
 		break;
-	case -1:
-		{ //block list style property not found, so it is not a blockview list
-			dwStyle |= LVS_SHAREIMAGELISTS; //normal listview always uses a shared image list
-			LONG fListViewStyle = mpTemplate->GetLongProperty( Prop::ListViewStyle ); //returns -1 if not found
-			switch( fListViewStyle )
-			{
-			case 0:
-				dwStyle |= (LVS_ICON | LVS_NOCOLUMNHEADER);
-				break;
-			case 1:
-				dwStyle |= (LVS_SMALLICON | LVS_NOCOLUMNHEADER);
-				break;
-			case 2:
-				dwStyle |= (LVS_LIST | LVS_NOCOLUMNHEADER);
-				break;
-			default:
-				dwStyle |= (LVS_REPORT);
-				if( !mpTemplate->GetBooleanProperty( Prop::ColHeader ) )
-					dwStyle |= (LVS_NOCOLUMNHEADER);
-				break;
-			}
-			if( fListViewStyle < 4 && mpTemplate->GetBooleanProperty( Prop::EditLabels ) )
-				dwStyle |= (LVS_EDITLABELS);			
-			break;
-		}
+	case 2:
+		dwStyle |= (LVS_LIST | LVS_NOCOLUMNHEADER);
+		break;
+	default:
+		dwStyle |= (LVS_REPORT);
+		if( !mpTemplate->GetBooleanProperty( Prop::ColHeader ) )
+			dwStyle |= (LVS_NOCOLUMNHEADER);
+		break;
 	}
+	if( fListViewStyle < 4 && mpTemplate->GetBooleanProperty( Prop::EditLabels ) )
+		dwStyle |= (LVS_EDITLABELS);			
 
 	switch( mpTemplate->GetLongProperty( Prop::ListViewSort ) )
 	{
@@ -424,6 +392,12 @@ void CListViewCtrl::SetItemTextImage( int nRow,int nCol, CString sText, int nIma
 	SetItem(&lvItem);
 }
 
+CEdit* CListViewCtrl::EditLabel( int nItem )
+{
+	mnEditSubItem = 0;
+	return __super::EditLabel( nItem );
+}
+
 bool CListViewCtrl::SortTextItems( int nCol, bool bAscending )
 {
 	CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
@@ -435,7 +409,7 @@ bool CListViewCtrl::SortTextItems( int nCol, bool bAscending )
 	size_t ctRows = GetItemCount();
 	if( ctRows <= 1 )
 		return true;
-	std::vector< size_t > rnSortXForm;
+	std::vector< UINT > rnSortXForm;
 	rnSortXForm.resize( ctRows );
 	size_t idx = ctRows;
 	while( idx-- > 0 )
@@ -601,16 +575,12 @@ void CListViewCtrl::OnDestroy()
 void CListViewCtrl::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize(nType, cx, cy);
-	int nPropIconStyle = mpTemplate->GetLongProperty(Prop::ListViewStyle);
-	if (nPropIconStyle == 0 || nPropIconStyle == 1 || mpTemplate->GetLongProperty(Prop::BlockListStyle) > -1)
-	{	
-		GetWorkAreas(0, NULL);
-		CRect rcThis;
-		GetClientRect(&rcThis);
-		CRect rcWorkArea[1];
-		rcWorkArea[0].SetRect(0,0,rcThis.Width(), 36000);
-		SetWorkAreas(1, rcWorkArea);
-	}
+	GetWorkAreas( 0, NULL );
+	CRect rcThis;
+	GetClientRect( &rcThis );
+	CRect rcWorkArea[1];
+	rcWorkArea[0].SetRect( 0, 0, rcThis.Width(), 36000 );
+	SetWorkAreas( 1, rcWorkArea );
 }
 
 void CListViewCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -628,19 +598,19 @@ void CListViewCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 
 	int nItem = pDispInfo->item.iItem;
 
-	if (m_nEditSubItem > -1)
+	if( mnEditSubItem > -1 )
 	{
 		CRect rcItem;
-		GetSubItemRect(nItem,m_nEditSubItem, LVIR_LABEL, rcItem);
+		GetSubItemRect( nItem, mnEditSubItem, LVIR_LABEL, rcItem );
 
-		HWND hWnd=(HWND)SendMessage(LVM_GETEDITCONTROL);
+		HWND hWnd = (HWND)SendMessage( LVM_GETEDITCONTROL );
 		ASSERT(hWnd!=NULL);
-		VERIFY(m_LVEdit.SubclassWindow(hWnd));
+		VERIFY(mLVEdit.SubclassWindow( hWnd ));
 
-		m_LVEdit.m_x=rcItem.left;
-		m_LVEdit.m_y=rcItem.top-1;
-		m_LVEdit.m_pParent = this;
-		m_LVEdit.SetWindowText(GetItemText(nItem,m_nEditSubItem));
+		mLVEdit.m_x=rcItem.left;
+		mLVEdit.m_y=rcItem.top-1;
+		mLVEdit.m_pParent = this;
+		mLVEdit.SetWindowText( GetItemText( nItem, mnEditSubItem ) );
 	}
 	*pResult = 0;
 }

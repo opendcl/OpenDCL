@@ -675,6 +675,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Controls\ArxBlockListCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxBlockListCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxCheckBoxCtrl.cpp"
 				>
 			</File>
@@ -1099,6 +1107,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Methods\Methods_Calendar.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Methods\Methods_ComboBox.h"
 					>
 				</File>
@@ -1144,10 +1156,6 @@
 				</File>
 				<File
 					RelativePath="..\Methods\Methods_ListView.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Month.h"
 					>
 				</File>
 				<File
@@ -1208,6 +1216,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Methods\Methods_Calendar.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Methods\Methods_ComboBox.cpp"
 					>
 				</File>
@@ -1249,10 +1261,6 @@
 				</File>
 				<File
 					RelativePath="..\Methods\Methods_ListView.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Methods\Methods_Month.cpp"
 					>
 				</File>
 				<File
@@ -1731,6 +1739,14 @@
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\AxContainerCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\BlockListCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\BlockListCtrl.h"
 					>
 				</File>
 				<File

@@ -69,7 +69,7 @@ bool CArxImageTreeCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData
 			return true;
 		}
 
-		CString sDropAcadWndPointEvent = mpTemplate->GetStringProperty( Prop::DragnDropFromAutoCAD );
+		CString sDropAcadWndPointEvent = mpTemplate->GetStringProperty( Prop::DragnDropFromOther );
 		if( !sDropAcadWndPointEvent.IsEmpty() )
 		{
 			if( !sKey.IsEmpty() )

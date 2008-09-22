@@ -14,3 +14,6 @@ typedef LockedPtr< class CDclControlObject > TDclControlLockedPtr;
 
 typedef RefCountedPtr< class CPropertyObject > TPropertyPtr;
 typedef LockedPtr< class CPropertyObject > TPropertyLockedPtr;
+
+typedef RefCountedPtr< class CPictureObject > TPicturePtr;
+typedef LockedPtr< class CPictureObject > TPictureLockedPtr;

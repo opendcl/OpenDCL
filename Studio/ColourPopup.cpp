@@ -804,14 +804,6 @@ void CColourPopup::EndSelection(int nMessage)
 
     if (nMessage == CPN_SELENDCANCEL)
         m_crColour = m_crInitialColour;
-	else
-	{
-		if (m_pProp != NULL && m_pCtrl != NULL)
-		{
-			m_pCtrl->GetActiveXCtrl()->SetColor(m_pProp->GetConstAxInterfaceDescriptorPtr()->GetPutDispId(), m_crColour);
-			m_pParent->Invalidate();
-		}
-	}
     m_pParent->SendMessage(nMessage, (WPARAM) m_crColour, 0);
     
     // Kill focus bug fixed by Martin Wawrusch

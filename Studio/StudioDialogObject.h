@@ -56,7 +56,7 @@ public:
 	virtual CPoint& SnapToGrid( CPoint& pt, bool bLimitToControlArea = false ) const;
 	virtual void OnFontChange( const FontSettings& FS, UINT flags = fontAll ); // change font
 	virtual void OnGridSpacingChange( UINT nGridSpacing ); // change grid spacing
-	virtual void OnUpdateZOrder() { GetControlPane()->ApplyZOrder(); Invalidate(); }
+	virtual void OnUpdateZOrder() { GetControlPane()->ApplyZOrder(); }
 	virtual void OnActivateDclControl( TDclControlPtr pDclControl ) { SelectControl( pDclControl ); }
 	virtual UINT HitTest( const CPoint& point ) const;
 	virtual TDclControlPtr InsertControl( ControlType type, const CRect& rcControl, bool bActivateNow = true );

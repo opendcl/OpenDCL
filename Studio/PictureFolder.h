@@ -6,11 +6,11 @@
 #include "Resource.h"
 #include "PictureBox.h"
 #include "StudioProject.h"
+#include "PtrTypes.h"
 #include <set>
 #include <list>
 
 class CDclFormObject;
-class CPictureObject;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -20,7 +20,7 @@ class CPictureFolder : public CDialog
 {
 	TStudioProjectPtr mpProject;
 	std::set< int > msetIdsToDelete;
-	std::list< CPictureObject* > mlistPicsToAdd;
+	std::list< TPicturePtr > mlistPicsToAdd;
 
 // Construction
 public:
@@ -37,7 +37,7 @@ public:
 public:
 	void UpdateSingleFileDialog();
 	void MultiFileDialog();
-	CPictureObject *GetSelectedPictureObject();
+	TPicturePtr GetSelectedPictureObject();
 	void CheckPictureRefs();
 	void SearchPictureRefs(TDclFormPtr pDclObject);
 

@@ -375,7 +375,7 @@ void COleOdcDropTarget::OnDragLeave(CWnd* pWnd)
 DROPEFFECT COleOdcDropTarget::OnDragOver(CWnd* pWnd, COleDataObject* 
            pDataObject, DWORD dwKeyState, CPoint point )
 {          
-	if (m_pThisArxControl->GetType() == CtlTree)
+	if (m_pThisArxControl->GetType() == CtlImageTree)
 	{
 		HTREEITEM	hitem;
 		UINT		flags = 0;
@@ -413,7 +413,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 	if (m_pThisArxControl->GetType() == CtlDwgList)
 		CArxDwgListCtrl *pDwgList = (CArxDwgListCtrl*)pControl->GetWindow();
 	
-	if (m_pThisArxControl->GetType() == CtlTree)
+	if (m_pThisArxControl->GetType() == CtlImageTree)
 	{
 		HTREEITEM	hitem;
 		UINT		flags = 0;
@@ -431,7 +431,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 			{
 				// From AcadDwgView
 				InvokeMethodLong(
-					m_pThisArxControl->GetStringProperty(Prop::DragnDropFromAutoCAD),
+					m_pThisArxControl->GetStringProperty(Prop::DragnDropFromOther),
 					(DWORD_PTR)hitem,
 					(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 			}
@@ -439,7 +439,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 			{
 				// From AcadDwgView
 				InvokeMethodString(
-					m_pThisArxControl->GetStringProperty(Prop::DragnDropFromAutoCAD),
+					m_pThisArxControl->GetStringProperty(Prop::DragnDropFromOther),
 					sTreeItemKey,
 					(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 			}
@@ -477,7 +477,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 		{
 			// From AcadDwgView
 			InvokeMethodPoint(
-				m_pThisArxControl->GetStringProperty(Prop::DragnDropFromAutoCAD),
+				m_pThisArxControl->GetStringProperty(Prop::DragnDropFromOther),
 				point,
 				(m_pThisArxControl->GetLongProperty(Prop::EventInvoke) == 1));
 		}

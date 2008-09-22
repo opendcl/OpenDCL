@@ -249,8 +249,6 @@ protected:
 };
 
 
-IMPLEMENT_SERIAL(CPictureObject, CObject, 1)
-
 CPictureObject::CPictureObject()
 : mnID( -1 )
 {
@@ -490,8 +488,6 @@ void CPictureObject::LoadFile( LPCTSTR szFile, bool bApplyMask /*= false*/ )
 
 void CPictureObject::Serialize(CArchive& ar)
 {
-  CObject::Serialize( ar );
-
   if (ar.IsStoring())
   {
     ar << GetCurrentSaveVersion();

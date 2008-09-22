@@ -5,5 +5,6 @@ struct AxArg
 	VARTYPE vt;
 	CString name;
 	CLSID clsid;
-	AxArg() : vt( VT_EMPTY ) {}
+	bool optional;
+	AxArg() : vt( VT_EMPTY ), optional( false ) {}
 };

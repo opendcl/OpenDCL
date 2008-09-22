@@ -1316,6 +1316,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Common\Controls\BlockListCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\BlockListCtrl.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Controls\ButtonCtrl.cpp"
 					>
 				</File>

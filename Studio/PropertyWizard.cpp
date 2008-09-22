@@ -84,21 +84,21 @@ bool CPropertyWizard::Initialize(void)
 	// Background Color page
 	if( mpDclControl->GetPropertyObject( Prop::BackgroundColor ) )
 	{
-		mpBackColorsPage = new CColors( Prop::BackgroundColor, mpDclControl );
+		mpBackColorsPage = new CColorsPage( Prop::BackgroundColor, mpDclControl );
 		AddPage( mpBackColorsPage );
 	}
 
 	// Foreground Color page
 	if( mpDclControl->GetPropertyObject( Prop::ForegroundColor ) )
 	{
-		mpForeColorsPage = new CColors( Prop::ForegroundColor, mpDclControl );
+		mpForeColorsPage = new CColorsPage( Prop::ForegroundColor, mpDclControl );
 		AddPage( mpForeColorsPage );
 	}
 
 	// Alternate Color page
 	if( mpDclControl->GetPropertyObject( Prop::AlternateColor ) )
 	{
-		mpAltColorsPage = new CColors( Prop::AlternateColor, mpDclControl );
+		mpAltColorsPage = new CColorsPage( Prop::AlternateColor, mpDclControl );
 		AddPage( mpAltColorsPage );
 	}
 

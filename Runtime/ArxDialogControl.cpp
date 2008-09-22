@@ -15,6 +15,7 @@
 #include "ArxArrowComboBoxCtrl.h"
 #include "ArxAngleSlideCtrl.h"
 #include "ArxAxContainerCtrl.h"
+#include "ArxBlockListCtrl.h"
 #include "ArxColorComboBoxCtrl.h"
 #include "ArxDwgListCtrl.h"
 #include "ArxDwgPreviewCtrl.h"
@@ -129,9 +130,10 @@ TDialogControlPtr CArxDialogControl::CreateImp( TDclControlPtr pTemplate, CContr
 	{
 	case CtlActiveX: return *new CArxAxContainerCtrl( pTemplate, pPane, nID );
 	case CtlAngleSlider: return *new CArxAngleSlideCtrl( pTemplate, pPane, nID );
-	case CtlAnimate: return *new CArxAnimationCtrl( pTemplate, pPane, nID );
-	case CtlBlockList: return *new CArxListViewCtrl( pTemplate, pPane, nID );
+	case CtlAnimation: return *new CArxAnimationCtrl( pTemplate, pPane, nID );
+	case CtlBlockList: return *new CArxBlockListCtrl( pTemplate, pPane, nID );
 	case CtlBlockView: return *new CArxGsViewCtrl( pTemplate, pPane, nID );
+	case CtlCalendar: return *new CArxMonthCtrl( pTemplate, pPane, nID );
 	case CtlCheckBox: return *new CArxCheckBoxCtrl( pTemplate, pPane, nID );
 	case CtlComboBox: return CreateComboControl(pTemplate, pPane, nID);
 	case CtlDwgList: return *new CArxDwgListCtrl( pTemplate, pPane, nID );
@@ -145,21 +147,20 @@ TDialogControlPtr CArxDialogControl::CreateImp( TDclControlPtr pTemplate, CContr
 	case CtlLabel: return *new CArxLabelCtrl( pTemplate, pPane, nID );
 	case CtlListBox: return *new CArxListBoxCtrl( pTemplate, pPane, nID );
 	case CtlListView: return *new CArxListViewCtrl( pTemplate, pPane, nID );
-	case CtlMonth: return *new CArxMonthCtrl( pTemplate, pPane, nID );
 	case CtlOptionButton: return *new CArxRadioButtonCtrl( pTemplate, pPane, nID );
 	case CtlOptionList: return *new CArxOptionListCtrl( pTemplate, pPane, nID );
 	case CtlPictureBox: return *new CArxPictureBoxCtrl( pTemplate, pPane, nID );
-	case CtlProgress: return *new CArxProgressBarCtrl( pTemplate, pPane, nID );
+	case CtlProgressBar: return *new CArxProgressBarCtrl( pTemplate, pPane, nID );
 	case CtlRectangle: return *new CArxRectangleCtrl( pTemplate, pPane, nID );
 	case CtlScrollBar: return *new CArxScrollBarCtrl( pTemplate, pPane, nID );
-	case CtlSlider: return *new CArxSlideCtrl( pTemplate, pPane, nID );
 	case CtlSlideView: return *new CArxAcadSlideCtrl( *pPane, pTemplate, nID );
 	case CtlSpinButton: return *new CArxSpinnerCtrl( pTemplate, pPane, nID );
 	case CtlSplitter: return *new CArxSplitterCtrl( pTemplate, pPane, nID );
-	case CtlStdButton: return *new CArxTextButtonCtrl( pTemplate, pPane, nID );
+	case CtlStraightSlider: return *new CArxSlideCtrl( pTemplate, pPane, nID );
 	case CtlTabStrip: return *new CArxTabStripCtrl( pTemplate, pPane, nID );
 	case CtlTextBox: return CreateEditControl(pTemplate, pPane, nID);
-	case CtlTree: return *new CArxImageTreeCtrl( pTemplate, pPane, nID );
+	case CtlTextButton: return *new CArxTextButtonCtrl( pTemplate, pPane, nID );
+	case CtlImageTree: return *new CArxImageTreeCtrl( pTemplate, pPane, nID );
 	case CtlUrlLink: return *new CArxUrlLinkCtrl( pTemplate, pPane, nID );
 	}
 	return NULL;

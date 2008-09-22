@@ -317,8 +317,8 @@ const TCHAR* asString( ControlType type )
 		return _T("_CtlForm");
 	case CtlLabel:
 		return _T("CtlLabel");
-	case CtlStdButton:
-		return _T("CtlStdButton");
+	case CtlTextButton:
+		return _T("CtlTextButton");
 	case CtlGraphicButton:
 		return _T("CtlGraphicButton");
 	case CtlFrame:
@@ -335,20 +335,20 @@ const TCHAR* asString( ControlType type )
 		return _T("CtlListBox");
 	case CtlScrollBar:
 		return _T("CtlScrollBar");
-	case CtlSlider:
-		return _T("CtlSlider");
+	case CtlStraightSlider:
+		return _T("CtlStraightSlider");
 	case CtlPictureBox:
 		return _T("CtlPictureBox");
 	case CtlTabStrip:
 		return _T("CtlTabStrip");
-	case CtlMonth:
-		return _T("CtlMonth");
-	case CtlTree:
-		return _T("CtlTree");
+	case CtlCalendar:
+		return _T("CtlCalendar");
+	case CtlImageTree:
+		return _T("CtlImageTree");
 	case CtlRectangle:
 		return _T("CtlRectangle");
-	case CtlProgress:
-		return _T("CtlProgress");
+	case CtlProgressBar:
+		return _T("CtlProgressBar");
 	case CtlSpinButton:
 		return _T("CtlSpinButton");
 	case CtlUrlLink:
@@ -373,8 +373,8 @@ const TCHAR* asString( ControlType type )
 		return _T("CtlActiveX");
 	case CtlDwgList:
 		return _T("CtlDwgList");
-	case CtlAnimate:
-		return _T("CtlAnimate");
+	case CtlAnimation:
+		return _T("CtlAnimation");
 	case CtlImageComboBox:
 		return _T("CtlImageComboBox");
 	case CtlGrid:
@@ -383,8 +383,10 @@ const TCHAR* asString( ControlType type )
 		return _T("CtlSplitter");
 	case CtlHatch:
 		return _T("CtlHatch");
-	case CtlFileDlgCtrl:
-		return _T("CtlFileDlgCtrl");
+	case CtlFileExplorer:
+		return _T("CtlFileExplorer");
+	case _CtlOldFileExplorer:
+		return _T("_CtlOldFileExplorer");
 	};
 	static TCHAR buf[1024];
 	_sntprintf( buf, _elements(buf), _T("<unknown: %s>"), asString( static_cast< int >(type) ) );

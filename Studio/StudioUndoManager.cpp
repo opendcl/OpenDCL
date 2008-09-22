@@ -26,7 +26,8 @@ CStudioUndoManager::~CStudioUndoManager()
 
 void CStudioUndoManager::setEnabled( bool bEnabled /*= true*/ )
 {
-	theStudioWorkspace.OnFlushUndoGroup(); //end any open undo groups
+	if( bEnabled != enabled() )
+		theStudioWorkspace.OnFlushUndoGroup(); //end any open undo groups
 	__super::setEnabled( bEnabled );
 }
 

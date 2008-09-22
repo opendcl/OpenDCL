@@ -216,7 +216,6 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::LeftFromRight] = _T("LeftFromRight");
 	mmapIdToApiName[Prop::RightFromRight] = _T("RightFromRight");
 	mmapIdToApiName[Prop::Resizable] = _T("AllowResizing");
-	mmapIdToApiName[Prop::OnEvent] = _T("OnEvent");
 	mmapIdToApiName[Prop::MultiSelection] = _T("MaxSelectCount");
 	mmapIdToApiName[Prop::EventGetDayState] = _T("GetDayState");
 	mmapIdToApiName[Prop::EventSelect] = _T("Select");
@@ -250,7 +249,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::FileName] = _T("FileName");
 	mmapIdToApiName[Prop::Color] = _T("Color");
 	mmapIdToApiName[Prop::CfgTabCaption] = _T("CfgTabText");
-	mmapIdToApiName[Prop::AllowOrbiting] = _T("InterfaceMode");
+	mmapIdToApiName[Prop::InterfaceMode] = _T("InterfaceMode");
 	mmapIdToApiName[Prop::FormEventClose] = _T("Close");
 	mmapIdToApiName[Prop::FormEventInitialize] = _T("Initialize");
 	mmapIdToApiName[Prop::FormEventSize] = _T("Size");
@@ -307,7 +306,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::IconYSpacing] = _T("IconYSpacing");
 	mmapIdToApiName[Prop::DragnDropToAutoCAD] = _T("DragnDropToAutoCAD");
 	mmapIdToApiName[Prop::DragnDropFromControl] = _T("DragnDropFromControl");
-	mmapIdToApiName[Prop::DragnDropFromAutoCAD] = _T("DragnDropFromOther");
+	mmapIdToApiName[Prop::DragnDropFromOther] = _T("DragnDropFromOther");
 	mmapIdToApiName[Prop::DragnDropBegin] = _T("DragnDropBegin");
 	mmapIdToApiName[Prop::DragnDropAllowBegin] = _T("DragnDropAllowBegin");
 	mmapIdToApiName[Prop::DragnDropAllowDrop] = _T("DragnDropAllowDrop");
@@ -329,7 +328,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::SingleExpanded] = _T("SingleExpanded");
 	mmapIdToApiName[Prop::RowHeight] = _T("RowHeight");
 	mmapIdToApiName[Prop::CurSelIndex] = _T("CurrentSelection");
-	mmapIdToApiName[Prop::ObjectBrowser] = _T("(ObjectBrowser)");
+	mmapIdToApiName[Prop::ControlBrowser] = _T("(ControlBrowser)");
 	mmapIdToApiName[Prop::GlobalVarName] = _T("GlobalVarName");
 	mmapIdToApiName[Prop::FileDlgStyle] = _T("Style");
 	mmapIdToApiName[Prop::AsReadOnly] = _T("AsReadOnly");

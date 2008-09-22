@@ -13,7 +13,7 @@ ADSRESULT FileDlg::GetFileName()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileExplorer ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -30,7 +30,7 @@ ADSRESULT FileDlg::GetFileTitle()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileExplorer ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -47,7 +47,7 @@ ADSRESULT FileDlg::GetFileExt()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileExplorer ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -64,7 +64,7 @@ ADSRESULT FileDlg::GetPathName()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileExplorer ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -81,7 +81,7 @@ ADSRESULT FileDlg::GetFolderPath()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileExplorer ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -98,7 +98,7 @@ ADSRESULT FileDlg::GetFolderName()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileExplorer ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -115,7 +115,7 @@ ADSRESULT FileDlg::GetSelectionCount()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileExplorer ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -137,7 +137,7 @@ ADSRESULT FileDlg::GetFileNameList()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileExplorer ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -179,7 +179,7 @@ ADSRESULT FileDlg::SetOkButtonText()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileDlgCtrl ) )
+	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlFileExplorer ) )
 		return RSERR; //invalid input
 
 	CString sCaption;

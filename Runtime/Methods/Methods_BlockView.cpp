@@ -8,7 +8,7 @@
 #include "ArxGsViewCtrl.h"
 
 
-static ADSRESULT LoadDwgImp( bool bToScale );
+static ADSRESULT DisplayDwgImp( bool bToScale );
 static ADSRESULT DisplayBlockImp( bool bToScale );
 
 
@@ -39,7 +39,7 @@ ADSRESULT BlockView::Clear()
 	return RSRSLT;
 }
 
-ADSRESULT BlockView::SetHighLight()
+ADSRESULT BlockView::SetHighlight()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -47,21 +47,21 @@ ADSRESULT BlockView::SetHighLight()
 	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlBlockView ) )
 		return RSERR; //invalid input
 
-	int nColor = 0;
-	if( !GetIntArgument( pArgs, nColor ) )
+	COLORREF clrHighlight;
+	if( !GetColorArgument( pArgs, clrHighlight ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
 	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
-	pCtrl->SetHighLight( nColor );
+	pCtrl->SetHighlight( clrHighlight );
 
 	acedRetT();
 	return RSRSLT;
 }
 
-ADSRESULT BlockView::RemoveHighLight()
+ADSRESULT BlockView::RemoveHighlight()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -73,7 +73,7 @@ ADSRESULT BlockView::RemoveHighLight()
 		return RSERR;
 
 	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
-	pCtrl->RemoveHighLight();
+	pCtrl->RemoveHighlight();
 
 	acedRetT();
 	return RSRSLT;
@@ -127,10 +127,8 @@ ADSRESULT BlockView::PreLoadDwg()
 		pCtrl->m_pLoadedDwg = NULL;
 	}
 	pCtrl->RedrawWindow();
-	if( !pCtrl->PreLoadDwg( sFileName ) )
-		return RSRSLT;
-
-	acedRetT();
+	if( pCtrl->PreLoadDwg( sFileName ) )
+		acedRetT();
 	return RSRSLT;
 }
 
@@ -245,7 +243,7 @@ ADSRESULT BlockView::GetBlockList()
 	return RSRSLT;
 }
 
-ADSRESULT LoadDwgImp( bool bToScale )
+ADSRESULT DisplayDwgImp( bool bToScale )
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -348,14 +346,14 @@ ADSRESULT LoadDwgImp( bool bToScale )
 	return RSRSLT;
 }
 
-ADSRESULT BlockView::LoadDwg()
+ADSRESULT BlockView::DisplayDwg()
 {
-	return LoadDwgImp( false );
+	return DisplayDwgImp( false );
 }
 
-ADSRESULT BlockView::LoadDwgToScale()
+ADSRESULT BlockView::DisplayDwgToScale()
 {
-	return LoadDwgImp( true );
+	return DisplayDwgImp( true );
 }
 
 ADSRESULT DisplayBlockImp( bool bToScale )
@@ -443,7 +441,7 @@ ADSRESULT DisplayBlockImp( bool bToScale )
 		return RSERR;
 	if( !GetDoubleArgument( pArgs, dblCameraZ ) )
 		return RSERR;
-	if( !GetDoubleArgument( pArgs, dblZoom ) )
+	if( !GetDoubleArgument( pArgs, dblZoom, true ) )
 	{
 		dblZoom = dblCameraZ;
 		dblCameraZ = 0;

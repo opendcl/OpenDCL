@@ -22,7 +22,7 @@ static std::map< Prop::Id, TEnumNames >& GetEnumNamesMap()
 	if( !pMap )
 	{
 		static std::map< Prop::Id, TEnumNames > Map;
-		FillEnumNamesList( Map[Prop::AllowOrbiting], IDS_BV_UM_0, 4 );
+		FillEnumNamesList( Map[Prop::InterfaceMode], IDS_BV_UM_0, 4 );
 		FillEnumNamesList( Map[Prop::AlternateOrient], IDS_ORIENTATION_0, 2 );
 		FillEnumNamesList( Map[Prop::BlockListStyle], IDS_BL_STYLE_0, 2 );
 		FillEnumNamesList( Map[Prop::BorderStyle], IDS_BORDERSTYLE_0, 3 );

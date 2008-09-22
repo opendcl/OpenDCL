@@ -10,6 +10,7 @@
 #include "PPToolTip.h"
 #include "DclControlObject.h"
 #include <list>
+#include <vector>
 
 class CControlPane;
 class CAcadColorService;
@@ -178,6 +179,7 @@ public:
 
 	// control properties
 	virtual bool ApplyPropertiesEnum(); //iterate through all template properties and apply them to the control
+	virtual void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast );
 	virtual bool IsEnumeratingProperties() const { return mbEnumProps; }
 
 	// for properties without specific handlers

@@ -21,7 +21,7 @@
 #include "NumericFilter.h"
 #include "SymbolNameFilter.h"
 #include "AxInterfaceDescriptor.h"
-
+#include <MSStkPPg.H>
 
 static VARTYPE GetActiveXPropType( TPropertyPtr pProp );
 static bool IsBooleanProperty( TPropertyPtr pProp );
@@ -158,7 +158,7 @@ public:
 		}
 };
 
-typedef CPropertyEditCtrl* (*F_EditControlCreator)( CPropertyGridCtrl* pGridCtrl, size_t idxCell );
+typedef CPropertyEditCtrl* (*F_EditControlCreator)( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple );
 
 class CCommandButtonEditCtrl : public CDynamicButtonCtrl, public CPropertyEditCtrl
 {
@@ -183,10 +183,21 @@ public:
 		}
 	virtual ~CCommandButtonEditCtrl()
 		{
+			if( !IsCancelled() )
+			{
+				CString sOldValue = mpGridCtrl->GetItemText( midxCell, 1 );
+				CString sNewValue = mpGridCtrl->GetDisplayableValue( midxCell );
+				if( sOldValue != sNewValue )
+				{
+					mpGridCtrl->SetItemText( midxCell, 1, sNewValue );
+					SetChanged();
+				};
+			}
+			DestroyWindow();
 		}
 	virtual CWnd* GetControlWnd() { return this; }
 	template< UINT CommandId >
-		static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
+		static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 			{ return new CCommandButtonEditCtrl( pGridCtrl, idxCell, CommandId ); }
 	virtual BOOL PreTranslateMessage( MSG* pMsg )
 		{
@@ -233,10 +244,10 @@ public:
 	virtual CWnd* GetControlWnd() { return this; }
 	class NullInputFilter{};
 	template< typename TInputFilter >
-		static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
+		static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 			{ return new CFilteredTextEditCtrl( pGridCtrl, idxCell, new TInputFilter ); }
 	template<>
-		static CPropertyEditCtrl* Create< NullInputFilter >( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
+		static CPropertyEditCtrl* Create< NullInputFilter >( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 			{ return new CFilteredTextEditCtrl( pGridCtrl, idxCell ); }
 	virtual void ApplyValue( LPCTSTR pszValue )
 		{
@@ -257,6 +268,7 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
+			__super::OnApply();
 			CString sText;
 			GetWindowText( sText );
 			CInputFilter* pFilter = GetInputFilter();
@@ -269,7 +281,6 @@ public:
 				}
 			}
 			ApplyValue( sText );
-			__super::OnApply();
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -329,7 +340,7 @@ public:
 	virtual ~CControlNameEditCtrl()
 		{
 		}
-	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
+	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 		{ return new CControlNameEditCtrl( pGridCtrl, idxCell ); }
 	void ApplyValue( LPCTSTR pszValue )
 		{
@@ -400,7 +411,7 @@ public:
 			DestroyWindow();
 		}
 	virtual CWnd* GetControlWnd() { return this; }
-	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
+	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 		{ return new CBooleanCheckBoxCtrl( pGridCtrl, idxCell ); }
 	void ApplyValue( bool bValue )
 		{
@@ -429,8 +440,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			ApplyValue( GetCheck() == BST_CHECKED );
 			__super::OnApply();
+			ApplyValue( GetCheck() == BST_CHECKED );
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -498,7 +509,7 @@ public:
 			DestroyWindow();
 		}
 	virtual CWnd* GetControlWnd() { return this; }
-	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
+	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 		{ return new CEnumComboBoxCtrl( pGridCtrl, idxCell ); }
 	void ApplyValue( int nValue )
 		{
@@ -524,8 +535,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			ApplyValue( GetCurSel() );
 			__super::OnApply();
+			ApplyValue( GetCurSel() );
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -568,19 +579,18 @@ public:
 		: CComboBox()
 		, CPropertyEditCtrl( pGridCtrl, idxCell )
 		{
-			CString sValue = mpGridCtrl->GetItemText( idxCell, 1 );
+			CString sValue = pGridCtrl->GetItemText( idxCell, 1 );
 			__super::Create( WS_CHILD | WS_VISIBLE | WS_VSCROLL | CBS_DROPDOWNLIST, CalcRect( pGridCtrl->GetEditRect( idxCell ) ), pGridCtrl, 100 );
 			SetFont( pGridCtrl->GetFont() );
 			AddString( theStudioWorkspace.LoadResourceString( IDS_NONE ) );
 			TStudioProjectPtr pProject = theStudioWorkspace.GetActiveProject();
-			const CList< CPictureObject* >& Pictures = pProject->GetPictureList();
-			POSITION pos = Pictures.GetHeadPosition();
-			while( pos )
+			const TPictureMap& Pictures = pProject->GetPictureMap();
+			for( TPictureMap::const_iterator iter = Pictures.begin(); iter != Pictures.end(); ++iter )
 			{
-				CString sPicID;
-				sPicID.Format( _T("%d"), Pictures.GetNext( pos )->GetID() );
-				if( !sPicID.IsEmpty() )
-					AddString( sPicID );
+				UINT nId = iter->first;
+				CString sID;
+				sID.Format( _T("%u"), nId );
+				AddString( sID );
 			}
 			int nState = pGridCtrl->GetItemState( idxCell, LVIS_STATEIMAGEMASK );
 			if( (nState & INDEXTOSTATEIMAGEMASK(PGIS_INDETERMINATE)) != 0 )
@@ -596,7 +606,7 @@ public:
 			DestroyWindow();
 		}
 	virtual CWnd* GetControlWnd() { return this; }
-	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
+	static CPropertyEditCtrl* Create( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 		{ return new CPicFolderComboBoxCtrl( pGridCtrl, idxCell ); }
 	void ApplyValue( int nValue )
 		{
@@ -623,8 +633,8 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			ApplyValue( GetCurSel() );
 			__super::OnApply();
+			ApplyValue( GetCurSel() );
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
@@ -659,29 +669,208 @@ END_MESSAGE_MAP()
 static const F_EditControlCreator PF_UnfilteredTextEditCreator =
 	&CFilteredTextEditCtrl::Create< CFilteredTextEditCtrl::NullInputFilter >;
 
-static CPropertyEditCtrl* PF_CreateActiveXPropEditor( CPropertyGridCtrl* pGridCtrl, size_t idxCell )
+static CPropertyEditCtrl* PF_CreateActiveXPropEditor( CPropertyGridCtrl* pGridCtrl, size_t idxCell, bool bMultiple )
 {
 	CPropertyGridCtrl::TPropertySet& PropertySet = pGridCtrl->GetPropertySet( idxCell );
 	if( PropertySet.empty() )
 		return NULL;
-	switch( GetActiveXPropType( PropertySet.front() ) )
+	TPropertyPtr pFirstProp = PropertySet.front();
+	const AxInterfaceDescriptor* pIDesc = pFirstProp->GetConstAxInterfaceDescriptorPtr();
+	if( pIDesc )
+	{
+		AxPropertyDescriptor* pPropDesc = pIDesc->GetGetDescriptor();
+		if( pPropDesc )
+		{
+			if( pPropDesc->GetGuid() == GUID_COLOR )
+			{
+				static const F_EditControlCreator PF_OleColorTextEditCreator =
+					&CFilteredTextEditCtrl::Create< CIntegerFilter >;
+				bool bSupportsColorPropPage = true;
+				bool bSupportsStockColorPropPage = true;
+				for( CPropertyGridCtrl::TPropertySet::const_iterator iter = PropertySet.begin();
+						 iter != PropertySet.end();
+						 ++iter )
+				{
+					TPropertyPtr pProp = *iter;
+					const AxInterfaceDescriptor* pIDesc = pFirstProp->GetConstAxInterfaceDescriptorPtr();
+					if( !pIDesc )
+						return PF_OleColorTextEditCreator( pGridCtrl, idxCell, bMultiple );
+					AxPropertyDescriptor* pPropDesc = pIDesc->GetGetDescriptor();
+					if( !pPropDesc )
+						return PF_OleColorTextEditCreator( pGridCtrl, idxCell, bMultiple );
+					TDclControlPtr pControl = pProp->GetOwnerControl();
+					if( !pControl )
+						return PF_OleColorTextEditCreator( pGridCtrl, idxCell, bMultiple );
+					CDialogControl* pDlgControl = pControl->GetControlInstance();
+					if( !pDlgControl )
+						return PF_OleColorTextEditCreator( pGridCtrl, idxCell, bMultiple );
+					CAxContainerCtrl* pAxCtrl = pDlgControl->GetActiveXCtrl();
+					if( !pAxCtrl )
+						return PF_OleColorTextEditCreator( pGridCtrl, idxCell, bMultiple );
+					CArray< CLSID, CLSID& > rclsidPages;
+					if( !pAxCtrl->GetPropertyPageCLSIDs( rclsidPages ) )
+						return PF_OleColorTextEditCreator( pGridCtrl, idxCell, bMultiple );
+					bool bFoundColorPropPage = false;
+					bool bFoundStockColorPropPage = false;
+					for( INT_PTR idx = rclsidPages.GetUpperBound(); idx >= 0; --idx )
+					{
+						const CLSID& clsid = rclsidPages.GetAt( idx );
+						if( clsid == CLSID_CColorPropPage )
+						{
+							bFoundColorPropPage = true;
+							if( bFoundStockColorPropPage )
+								break;
+						}
+						else if( clsid == CLSID_StockColorPage )
+						{
+							bFoundStockColorPropPage = true;
+							if( bFoundColorPropPage )
+								break;
+						}
+					}
+					if( !bFoundColorPropPage )
+						bSupportsColorPropPage = false;
+					if( !bFoundStockColorPropPage )
+						bSupportsStockColorPropPage = false;
+					if( !bSupportsColorPropPage && !bSupportsStockColorPropPage )
+						return PF_OleColorTextEditCreator( pGridCtrl, idxCell, bMultiple );
+				}
+				if( bSupportsStockColorPropPage )
+					return CCommandButtonEditCtrl::Create< ID_AXSTOCKCOLORPROPERTYPAGE >( pGridCtrl, idxCell, bMultiple );
+				return CCommandButtonEditCtrl::Create< ID_AXCOLORPROPERTYPAGE >( pGridCtrl, idxCell, bMultiple );
+			}
+			else if( pPropDesc->GetGuid() == IID_IFontDisp )
+			{
+				bool bSupportsFontPropPage = true;
+				bool bSupportsStockFontPropPage = true;
+				for( CPropertyGridCtrl::TPropertySet::const_iterator iter = PropertySet.begin();
+						 iter != PropertySet.end();
+						 ++iter )
+				{
+					TPropertyPtr pProp = *iter;
+					const AxInterfaceDescriptor* pIDesc = pFirstProp->GetConstAxInterfaceDescriptorPtr();
+					if( !pIDesc )
+						return PF_UnfilteredTextEditCreator( pGridCtrl, idxCell, bMultiple );
+					AxPropertyDescriptor* pPropDesc = pIDesc->GetGetDescriptor();
+					if( !pPropDesc )
+						return PF_UnfilteredTextEditCreator( pGridCtrl, idxCell, bMultiple );
+					TDclControlPtr pControl = pProp->GetOwnerControl();
+					if( !pControl )
+						return PF_UnfilteredTextEditCreator( pGridCtrl, idxCell, bMultiple );
+					CDialogControl* pDlgControl = pControl->GetControlInstance();
+					if( !pDlgControl )
+						return PF_UnfilteredTextEditCreator( pGridCtrl, idxCell, bMultiple );
+					CAxContainerCtrl* pAxCtrl = pDlgControl->GetActiveXCtrl();
+					if( !pAxCtrl )
+						return PF_UnfilteredTextEditCreator( pGridCtrl, idxCell, bMultiple );
+					CArray< CLSID, CLSID& > rclsidPages;
+					if( !pAxCtrl->GetPropertyPageCLSIDs( rclsidPages ) )
+						return PF_UnfilteredTextEditCreator( pGridCtrl, idxCell, bMultiple );
+					bool bFoundFontPropPage = false;
+					bool bFoundStockFontPropPage = false;
+					for( INT_PTR idx = rclsidPages.GetUpperBound(); idx >= 0; --idx )
+					{
+						const CLSID& clsid = rclsidPages.GetAt( idx );
+						if( clsid == CLSID_CFontPropPage )
+						{
+							bFoundFontPropPage = true;
+							if( bFoundStockFontPropPage )
+								break;
+						}
+						else if( clsid == CLSID_StockFontPage )
+						{
+							bFoundStockFontPropPage = true;
+							if( bFoundFontPropPage )
+								break;
+						}
+					}
+					if( !bFoundFontPropPage )
+						bSupportsFontPropPage = false;
+					if( !bFoundStockFontPropPage )
+						bSupportsStockFontPropPage = false;
+					if( !bSupportsFontPropPage && !bSupportsStockFontPropPage )
+						return PF_UnfilteredTextEditCreator( pGridCtrl, idxCell, bMultiple );
+				}
+				if( bSupportsStockFontPropPage )
+					return CCommandButtonEditCtrl::Create< ID_AXSTOCKFONTPROPERTYPAGE >( pGridCtrl, idxCell, bMultiple );
+				return CCommandButtonEditCtrl::Create< ID_AXFONTPROPERTYPAGE >( pGridCtrl, idxCell, bMultiple );
+			}
+			else if( pPropDesc->GetGuid() == IID_IPictureDisp )
+			{
+				bool bSupportsPicturePropPage = true;
+				bool bSupportsStockPicturePropPage = true;
+				for( CPropertyGridCtrl::TPropertySet::const_iterator iter = PropertySet.begin();
+						 iter != PropertySet.end();
+						 ++iter )
+				{
+					TPropertyPtr pProp = *iter;
+					const AxInterfaceDescriptor* pIDesc = pFirstProp->GetConstAxInterfaceDescriptorPtr();
+					if( !pIDesc )
+						return NULL;
+					AxPropertyDescriptor* pPropDesc = pIDesc->GetGetDescriptor();
+					if( !pPropDesc )
+						return NULL;
+					TDclControlPtr pControl = pProp->GetOwnerControl();
+					if( !pControl )
+						return NULL;
+					CDialogControl* pDlgControl = pControl->GetControlInstance();
+					if( !pDlgControl )
+						return NULL;
+					CAxContainerCtrl* pAxCtrl = pDlgControl->GetActiveXCtrl();
+					if( !pAxCtrl )
+						return NULL;
+					CArray< CLSID, CLSID& > rclsidPages;
+					if( !pAxCtrl->GetPropertyPageCLSIDs( rclsidPages ) )
+						return NULL;
+					bool bFoundPicturePropPage = false;
+					bool bFoundStockPicturePropPage = false;
+					for( INT_PTR idx = rclsidPages.GetUpperBound(); idx >= 0; --idx )
+					{
+						const CLSID& clsid = rclsidPages.GetAt( idx );
+						if( clsid == CLSID_CPicturePropPage )
+						{
+							bFoundPicturePropPage = true;
+							if( bFoundStockPicturePropPage )
+								break;
+						}
+						else if( clsid == CLSID_StockPicturePage )
+						{
+							bFoundStockPicturePropPage = true;
+							if( bFoundPicturePropPage )
+								break;
+						}
+					}
+					if( !bFoundPicturePropPage )
+						bSupportsPicturePropPage = false;
+					if( !bFoundStockPicturePropPage )
+						bSupportsStockPicturePropPage = false;
+					if( !bSupportsPicturePropPage && !bSupportsStockPicturePropPage )
+						return NULL;
+				}
+				if( bSupportsStockPicturePropPage )
+					return CCommandButtonEditCtrl::Create< ID_AXSTOCKPICTUREPROPERTYPAGE >( pGridCtrl, idxCell, bMultiple );
+				return CCommandButtonEditCtrl::Create< ID_AXPICTUREPROPERTYPAGE >( pGridCtrl, idxCell, bMultiple );
+			}
+		}
+	}
+	switch( GetActiveXPropType( pFirstProp ) )
 	{
 	case VT_BOOL:
-		return CBooleanCheckBoxCtrl::Create( pGridCtrl, idxCell );
+		return CBooleanCheckBoxCtrl::Create( pGridCtrl, idxCell, bMultiple );
 	case VT_INT:
 	case VT_I1:
 	case VT_I2:
 	case VT_I4:
 	case VT_I8:
-		return CFilteredTextEditCtrl::Create< CIntegerFilter >( pGridCtrl, idxCell );
+		return CFilteredTextEditCtrl::Create< CIntegerFilter >( pGridCtrl, idxCell, bMultiple );
 	case VT_UINT:
 	case VT_UI1:
 	case VT_UI2:
 	case VT_UI4:
 	case VT_UI8:
-		return CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >( pGridCtrl, idxCell );
+		return CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >( pGridCtrl, idxCell, bMultiple );
 	}
-	return PF_UnfilteredTextEditCreator( pGridCtrl, idxCell );
+	return PF_UnfilteredTextEditCreator( pGridCtrl, idxCell, bMultiple );
 }
 
 
@@ -697,6 +886,31 @@ static CString GetDisplayablePropertyValue( TPropertyPtr pProperty, ControlType 
 			if( nVal < 0 || nVal >= (long)Names.size() )
 				return pProperty->GetStringValue();
 			return Names.at( nVal );
+		}
+	case PropActiveXProp:
+		{
+			AxPropertyDescriptor* pPropDesc = pProperty->GetConstAxInterfaceDescriptorPtr()->GetGetDescriptor();
+			if( pPropDesc && pPropDesc->GetGuid() == GUID_COLOR )
+			{
+				OLE_COLOR color = pProperty->GetOLEColorValue();
+				switch( color >> 24 )
+				{
+				case 0:
+					{
+						CString sColor;
+						sColor.Format( _T("%d, %d, %d"), GetRValue(color), GetGValue(color), GetBValue(color) );
+						return sColor;
+					}
+					break;
+				case 0x80:
+					{
+						CString sColor;
+						sColor.Format( _T("%d"), -(long)GetRValue(color) );
+						return sColor;
+					}
+					break;
+				}
+			}
 		}
 	}
 	return pProperty->GetStringValue();
@@ -742,7 +956,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 {
 	switch( id )
 	{
-	case Prop::AllowOrbiting: return &CEnumComboBoxCtrl::Create;
+	case Prop::InterfaceMode: return &CEnumComboBoxCtrl::Create;
 	case Prop::AlternateColor: if( bMultiple ) return &CFilteredTextEditCtrl::Create< CIntegerFilter >; return &CCommandButtonEditCtrl::Create< ID_ALTCOLORPROPERTIES >;
 	case Prop::AlternateOrient: return &CEnumComboBoxCtrl::Create;
 	case Prop::AsReadOnly: return &CBooleanCheckBoxCtrl::Create;
@@ -829,7 +1043,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::MultiSelect: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::Name: if( bMultiple ) return NULL; return &CControlNameEditCtrl::Create;
 	case Prop::NoIntegralHeight: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::ObjectBrowser: if( bMultiple ) return NULL; return &CCommandButtonEditCtrl::Create< ID_OBJECTBROWSER >;
+	case Prop::ControlBrowser: if( bMultiple ) return NULL; return &CCommandButtonEditCtrl::Create< ID_CONTROLBROWSER >;
 	case Prop::Orientation: return &CEnumComboBoxCtrl::Create;
 	case Prop::OverWritePrompt: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::PathMustExist: return &CBooleanCheckBoxCtrl::Create;
@@ -965,10 +1179,21 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 			TPropertyPtr pProp = *iterProp;
 			if( pProp->IsHidden() )
 				continue;
+			if( pProp->GetType() == PropActiveXProp )
+			{
+				AxPropertyDescriptor* pPropPutDesc = pProp->GetConstAxInterfaceDescriptorPtr()->GetPutDescriptor();
+				if( pPropPutDesc && pPropPutDesc->GetArgs().size() != 1 )
+					continue;
+				AxPropertyDescriptor* pPropGetDesc = pProp->GetConstAxInterfaceDescriptorPtr()->GetGetDescriptor();
+				if( pPropGetDesc && !pPropGetDesc->GetArgs().empty() )
+					continue;
+				if( !pPropPutDesc && pPropGetDesc->GetType() == VT_DISPATCH )
+					continue;
+			}
 			mProperties[pProp->GetName()].push_back( pProp );
 		}
 	}
-	bool bNoPics = (pDclControl->GetOwnerProject()->GetPictureList().GetCount() <= 0);
+	bool bNoPics = (pDclControl->GetOwnerProject()->GetPictureMap().empty());
 	//SetRedraw( FALSE );
 	for( TPropertyMap::const_iterator iterPropName = mProperties.begin();
 			 iterPropName != mProperties.end();
@@ -983,7 +1208,7 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 		mrPropIndex.push_back( sPropName );
 		InsertItem( idxProp, sPropName );
 		TPropertyPtr pFirstProp = PropSet.front();
-		CString sPropVal = GetDisplayablePropertyValue( pFirstProp, pDclControl->GetType() );
+		CString sPropVal = ::GetDisplayablePropertyValue( pFirstProp, pDclControl->GetType() );
 		UINT nState = 0;
 		if( IsBooleanProperty( pFirstProp ) )
 		{
@@ -1005,7 +1230,7 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 		}
 		switch( pFirstProp->GetID() )
 		{
-		case Prop::ObjectBrowser:
+		case Prop::ControlBrowser:
 		case Prop::Name:
 		case Prop::GlobalVarName:
 		case Prop::ActiveXPropPages:
@@ -1033,11 +1258,6 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 					nState |= PGIS_DISPLAYONLY;
 					break;
 				}
-				if( pPropDesc->GetArgs().size() != 1 )
-				{
-					nState |= PGIS_DISPLAYONLY;
-					break;
-				}
 				switch( pPropDesc->GetArgs().front().vt )
 				{ //if it's not a type we can set in the property grid, make it display-only
 				case VT_I2:
@@ -1055,6 +1275,13 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 				case VT_UI8:
 				case VT_INT:
 				case VT_UINT:
+					break;
+				case VT_DISPATCH:
+					if( pPropDesc->GetArgs().front().clsid == IID_IPictureDisp )
+						break;
+					if( pPropDesc->GetArgs().front().clsid == IID_IFontDisp )
+						break;
+					nState |= PGIS_DISPLAYONLY;
 					break;
 				default:
 					nState |= PGIS_DISPLAYONLY;
@@ -1132,7 +1359,7 @@ CPropertyEditCtrl* CPropertyGridCtrl::CreateEditControl( size_t idxCell )
 	F_EditControlCreator pfCreator = GetEditControlCreator( id, type, bMultiple );
 	if( !pfCreator )
 		return NULL;
-	return pfCreator( this, idxCell );
+	return pfCreator( this, idxCell, bMultiple );
 }
 
 Prop::Id CPropertyGridCtrl::GetPropertyId( size_t idxCell )
@@ -1165,6 +1392,27 @@ CRect CPropertyGridCtrl::GetEditRect(	size_t idxCell  )
 	CRect rcCell;
 	GetSubItemRect( idxCell, 1, LVIR_BOUNDS, rcCell );
 	return rcCell;
+}
+
+CString CPropertyGridCtrl::GetDisplayableValue( size_t idxCell )
+{
+	const TPropertySet& PropSet = GetPropertySet( idxCell );
+	if( PropSet.empty() )
+		return NULL;
+	TPropertyPtr pFirstProp = PropSet.front();
+	CString sPropVal = GetDisplayablePropertyValue( pFirstProp, pFirstProp->GetOwnerControl()->GetType() );
+	const CString sVariesText = theWorkspace.LoadResourceString( IDS_VARIES );
+	for( TPropertySet::const_iterator iterProp = PropSet.begin() + 1;
+			 iterProp != PropSet.end();
+			 ++iterProp )
+	{
+		if( sPropVal == GetDisplayablePropertyValue( *iterProp, (*iterProp)->GetOwnerControl()->GetType() ) )
+			continue;
+		//found one property with a different value, so display indeterminate
+		sPropVal = sVariesText;
+		break; //no need to keep checking
+	}
+	return sPropVal;
 }
 
 CRect CPropertyGridCtrl::GetCellRect( int nRow, int nCol, int area /*= LVIR_BOUNDS*/ )
@@ -1294,6 +1542,125 @@ void CPropertyGridCtrl::DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, co
 */
 }
 
+void CPropertyGridCtrl::ShowPropertyPages( ULONG ctPages, CLSID FAR* lpPages, LPCTSTR pszCaption )
+{
+	if( !mpPropertyEditCtrl )
+		return;
+	TPropertySet& PropertySet = GetPropertySet( mpPropertyEditCtrl->GetCell() );
+	if( PropertySet.empty() )
+		return;
+	CArray< IUnknown*, IUnknown* > rpUnknown;
+	HWND hwndHost = NULL;
+	DISPID dispid = DISPID_UNKNOWN;
+	CArray< CLSID, CLSID& > rPages;
+	for( TPropertySet::const_iterator iter = PropertySet.begin();
+			 iter != PropertySet.end();
+			 ++iter )
+	{
+		TPropertyPtr pProp = *iter;
+		if( dispid == DISPID_UNKNOWN )
+		{
+			const AxInterfaceDescriptor* pPropDesc = pProp->GetConstAxInterfaceDescriptorPtr();
+			if( pPropDesc )
+			{
+				AxPropertyDescriptor* pPutDesc = pPropDesc->GetPutDescriptor();
+				if( pPutDesc )
+					dispid = pPutDesc->GetDispId();
+			}
+		}
+		TDclControlPtr pControl = pProp->GetOwnerControl();
+		if( pControl )
+		{
+			CDialogControl* pDlgControl = pControl->GetControlInstance();
+			if( pDlgControl )
+			{
+				if( !hwndHost )
+					hwndHost = pDlgControl->GetControlPane()->GetHostDialog()->m_hWnd;
+				CAxContainerCtrl* pAxCtrl = pDlgControl->GetActiveXCtrl();
+				if( pAxCtrl )
+				{
+					if( ctPages == 0 )
+					{
+						CArray< CLSID, CLSID& > rCtrlPages;
+						if( !pAxCtrl->GetPropertyPageCLSIDs( rCtrlPages ) || rCtrlPages.IsEmpty() )
+							return;
+						if( rPages.IsEmpty() )
+							rPages.Append( rCtrlPages );
+						else
+						{
+							for( INT_PTR idx = rPages.GetUpperBound(); idx >= 0; --idx )
+							{
+								const CLSID& clsid = rPages.GetAt( idx );
+								INT_PTR idxCtrlPage;
+								for( idxCtrlPage = rCtrlPages.GetUpperBound(); idxCtrlPage >= 0; --idxCtrlPage )
+								{
+									if( rCtrlPages.GetAt( idxCtrlPage ) != clsid )
+										continue;
+									break;
+								}
+								if( idxCtrlPage >= 0 )
+									continue;
+								rPages.RemoveAt( idx );
+								if( rPages.IsEmpty() )
+									return;
+							}
+						}
+					}
+					IUnknown* pUnknown = pAxCtrl->GetControlUnknown(); //not ref counted; no need to addref/release
+					if( pUnknown )
+						rpUnknown.Add( pUnknown );
+				}
+			}
+		}
+	}
+	CWnd* pFocusWnd = GetFocus();
+	CLSID FAR * pPropPages = lpPages;
+	ULONG ctPropPages = ctPages;
+	if( ctPropPages == 0 )
+	{
+		ctPropPages = rPages.GetCount();
+		pPropPages = rPages.GetData();
+	}
+	OCPFIPARAMS params = 
+	{
+		sizeof(OCPFIPARAMS),
+		hwndHost,
+		0,
+		0,
+		bstr_t( pszCaption ),
+		rpUnknown.GetSize(),
+		rpUnknown.GetData(),
+		ctPropPages,
+		pPropPages,
+		GetUserDefaultLCID(),
+		dispid,
+	};
+	if( S_OK == OleCreatePropertyFrameIndirect( &params ) )
+	{
+		if( pFocusWnd )
+			pFocusWnd->SetFocus();
+		for( TPropertySet::const_iterator iter = PropertySet.begin();
+				 iter != PropertySet.end();
+				 ++iter )
+		{
+			TPropertyPtr pProp = *iter;
+			TDclControlPtr pControl = pProp->GetOwnerControl();
+			if( pControl )
+			{
+				CDialogControl* pDlgControl = pControl->GetControlInstance();
+				if( pDlgControl )
+				{
+					if( !hwndHost )
+						hwndHost = pDlgControl->GetControlPane()->GetHostDialog()->m_hWnd;
+					CAxContainerCtrl* pAxCtrl = pDlgControl->GetActiveXCtrl();
+					if( pAxCtrl )
+						pAxCtrl->SaveToStream();
+				}
+			}
+		}
+	}
+}
+
 
 BEGIN_MESSAGE_MAP(CPropertyGridCtrl, CListCtrl)
 	ON_WM_NCCALCSIZE()	
@@ -1311,8 +1678,14 @@ BEGIN_MESSAGE_MAP(CPropertyGridCtrl, CListCtrl)
 	ON_COMMAND(ID_BACKCOLORPROPERTIES, &CPropertyGridCtrl::OnBackColorProperties)
 	ON_COMMAND(ID_ALTCOLORPROPERTIES, &CPropertyGridCtrl::OnAltColorProperties)
 	ON_COMMAND(ID_IMAGELISTPROPERTIES, &CPropertyGridCtrl::OnImageListProperties)
-	ON_COMMAND(ID_OBJECTBROWSER, &CPropertyGridCtrl::OnObjectbrowser)
+	ON_COMMAND(ID_CONTROLBROWSER, &CPropertyGridCtrl::OnObjectbrowser)
 	ON_COMMAND(ID_AXPROPERTIES, &CPropertyGridCtrl::OnAxProperties)
+	ON_COMMAND(ID_AXCOLORPROPERTYPAGE, &CPropertyGridCtrl::OnAxColorPropertyPage)
+	ON_COMMAND(ID_AXSTOCKCOLORPROPERTYPAGE, &CPropertyGridCtrl::OnAxStockColorPropertyPage)
+	ON_COMMAND(ID_AXFONTPROPERTYPAGE, &CPropertyGridCtrl::OnAxFontPropertyPage)
+	ON_COMMAND(ID_AXSTOCKFONTPROPERTYPAGE, &CPropertyGridCtrl::OnAxStockFontPropertyPage)
+	ON_COMMAND(ID_AXPICTUREPROPERTYPAGE, &CPropertyGridCtrl::OnAxPicturePropertyPage)
+	ON_COMMAND(ID_AXSTOCKPICTUREPROPERTYPAGE, &CPropertyGridCtrl::OnAxStockPicturePropertyPage)
 END_MESSAGE_MAP()
 
 
@@ -1544,47 +1917,85 @@ void CPropertyGridCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 void CPropertyGridCtrl::OnProperties() 
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_PROPERTIES, (LPARAM)0 );
+	OnEndEditCurCell();
 }
 
 void CPropertyGridCtrl::OnFontProperties() 
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_FONTPROPERTIES, (LPARAM)0 );
+	OnEndEditCurCell();
 }
 
 void CPropertyGridCtrl::OnForeColorProperties() 
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_FORECOLORPROPERTIES, (LPARAM)0 );
+	OnEndEditCurCell();
 }
 
 void CPropertyGridCtrl::OnBackColorProperties() 
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_BACKCOLORPROPERTIES, (LPARAM)0 );
+	OnEndEditCurCell();
 }
 
 void CPropertyGridCtrl::OnAltColorProperties() 
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_ALTCOLORPROPERTIES, (LPARAM)0 );
+	OnEndEditCurCell();
 }
 
 void CPropertyGridCtrl::OnImageListProperties() 
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_IMAGELISTPROPERTIES, (LPARAM)0 );
+	OnEndEditCurCell();
 }
 
 void CPropertyGridCtrl::OnObjectbrowser() 
 {
-	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_OBJECTBROWSER, (LPARAM)0 );
+	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_CONTROLBROWSER, (LPARAM)0 );
+	OnEndEditCurCell();
 }
 
 void CPropertyGridCtrl::OnAxProperties() 
 {
-	CDialogControl* pActiveCtrl = theStudioWorkspace.GetActiveDclControl()->GetControlInstance();
-	if( !pActiveCtrl )
-		return;
-	CAxContainerCtrl* pAxCtrl = pActiveCtrl->GetActiveXCtrl();
-	if( !pAxCtrl )
-		return;
-	pAxCtrl->ShowPropertyPages();
+	ShowPropertyPages( 0, NULL, NULL );
+	OnEndEditCurCell();
+}
+
+void CPropertyGridCtrl::OnAxColorPropertyPage() 
+{
+	ShowPropertyPages( 1, &CLSID( CLSID_CColorPropPage ), NULL );
+	OnEndEditCurCell();
+}
+
+void CPropertyGridCtrl::OnAxStockColorPropertyPage() 
+{
+	ShowPropertyPages( 1, &CLSID( CLSID_StockColorPage ), NULL );
+	OnEndEditCurCell();
+}
+
+void CPropertyGridCtrl::OnAxFontPropertyPage() 
+{
+	ShowPropertyPages( 1, &CLSID( CLSID_CFontPropPage ), NULL );
+	OnEndEditCurCell();
+}
+
+void CPropertyGridCtrl::OnAxStockFontPropertyPage() 
+{
+	ShowPropertyPages( 1, &CLSID( CLSID_StockFontPage ), NULL );
+	OnEndEditCurCell();
+}
+
+void CPropertyGridCtrl::OnAxPicturePropertyPage() 
+{
+	ShowPropertyPages( 1, &CLSID( CLSID_CPicturePropPage ), NULL );
+	OnEndEditCurCell();
+}
+
+void CPropertyGridCtrl::OnAxStockPicturePropertyPage() 
+{
+	ShowPropertyPages( 1, &CLSID( CLSID_StockPicturePage ), NULL );
+	OnEndEditCurCell();
 }
 
 void CPropertyGridCtrl::OnLvnItemchanged(NMHDR *pNMHDR, LRESULT *pResult)

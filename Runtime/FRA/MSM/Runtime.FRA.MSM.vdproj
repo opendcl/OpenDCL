@@ -15,12 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_15D6D4BF73AB4D4BAA26AD7B3FB6B8F6"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_1D2D6CCCFE9F4E07AD5C7C5D0345BF57"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -75,12 +69,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_78108DD3ED4D4874A691D633AA19771C"
-        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_836509EA009262CE7116380579D81874"
         "OwnerKey" = "8:_436F30F4FD774E29AF69CE552865F84D"
         "MsmSig" = "8:_UNDEFINED"
@@ -99,7 +87,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_8FF4F0C0456849C6B3F9AE93DDA2FE06"
+        "MsmKey" = "8:_8867857778E14F7CAC9C63376EED2356"
         "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -129,7 +117,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_B349DEBD93944E37AB5D416B11B3B390"
+        "MsmKey" = "8:_A99D1F9B455A4588A54FB72FA0F78D75"
+        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BC0D5978D50C4A348E3EA06232211140"
         "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -143,6 +137,12 @@
         {
         "MsmKey" = "8:_DDA70A22CCDF4F128166522E85F39C56"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EFD140D8D52F44AB9A656B8C26DB1F7A"
+        "OwnerKey" = "8:_D33787FAC7DF4D278BEBDDCA23DD682E"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -443,7 +443,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_15D6D4BF73AB4D4BAA26AD7B3FB6B8F6"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_8867857778E14F7CAC9C63376EED2356"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -454,18 +454,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_78108DD3ED4D4874A691D633AA19771C"
-            {
-            "UseDynamicProperties" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_crt.msm"
-            "LanguageId" = "3:0"
-            "Exclude" = "11:TRUE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_8FF4F0C0456849C6B3F9AE93DDA2FE06"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_A99D1F9B455A4588A54FB72FA0F78D75"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -476,7 +465,18 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_B349DEBD93944E37AB5D416B11B3B390"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_BC0D5978D50C4A348E3EA06232211140"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:vc_crt.msm"
+            "LanguageId" = "3:0"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_EFD140D8D52F44AB9A656B8C26DB1F7A"
             {
             "UseDynamicProperties" = "11:FALSE"
             "IsDependency" = "11:TRUE"
@@ -491,7 +491,7 @@
         "Module"
         {
         "ModuleSignature" = "8:MergeModule.FA3FDEBC1A9D4E06A436C908EA10A7C6"
-        "Version" = "8:5.0.0.23"
+        "Version" = "8:5.0.0.25"
         "Title" = "8:OpenDCL Runtime"
         "Subject" = "8:"
         "Author" = "8:OpenDCL Consortium"
@@ -508,7 +508,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_436F30F4FD774E29AF69CE552865F84D"
             {
-            "SourcePath" = "8:..\\..\\ARX.17\\Debug\\OpenDCL.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.17\\Release\\OpenDCL.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
@@ -536,7 +536,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6CDF45B99B0749C7A381B69B2CDDF2C4"
             {
-            "SourcePath" = "8:..\\..\\RxInstall\\Debug\\RxInstall.dll"
+            "SourcePath" = "8:..\\..\\RxInstall\\Release\\RxInstall.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
@@ -564,7 +564,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9D3B2F700D5B4AEC82D9773DBC342E4F"
             {
-            "SourcePath" = "8:..\\Runtime.Res.FRA\\Debug\\Runtime.Res.dll"
+            "SourcePath" = "8:..\\Runtime.Res.FRA\\Release\\Runtime.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_87824347B7B34AA9A5B8909B6563D4BC"
@@ -592,7 +592,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D33787FAC7DF4D278BEBDDCA23DD682E"
             {
-            "SourcePath" = "8:..\\..\\ARX.16\\Debug\\OpenDCL.16.arx"
+            "SourcePath" = "8:..\\..\\ARX.16\\Release\\OpenDCL.16.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"
@@ -620,7 +620,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_DDA70A22CCDF4F128166522E85F39C56"
             {
-            "SourcePath" = "8:..\\..\\ARX.x64.17\\Debug\\OpenDCL.x64.17.arx"
+            "SourcePath" = "8:..\\..\\ARX.x64.17\\Release\\OpenDCL.x64.17.arx"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B357D182FE974F7DA1439F3184F99D8E"

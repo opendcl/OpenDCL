@@ -4,7 +4,7 @@ class CStgFile;
 enum IOStatus;
 
 
-class CPictureObject : public CObject
+class CPictureObject
 {
 protected:
 	UINT mnID;
@@ -63,6 +63,4 @@ protected:
 	BOOL AFX_CDECL PX_IUnknown2(CPropExchange* pPX, LPCTSTR pszPropName, LPUNKNOWN& pUnk,
 		REFIID iid, LPUNKNOWN pUnkDefault = NULL);
 	BOOL AFX_CDECL PX_Picture(CPropExchange* pPX, LPCTSTR pszPropName, CPictureHolder& pict);
-
-	DECLARE_SERIAL(CPictureObject)
 };

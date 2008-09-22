@@ -209,14 +209,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Runtime"
-        "ProductCode" = "8:{7E8733BD-6CB5-460C-A43F-0C58084D67AC}"
-        "PackageCode" = "8:{42C30FBC-AE0D-4E54-BDB1-92F47D9E9B63}"
+        "ProductCode" = "8:{14136C57-42F5-45DF-9E2E-6C61364A27D8}"
+        "PackageCode" = "8:{97051DE0-22CF-4C0D-8753-5CEE410B9B9E}"
         "UpgradeCode" = "8:{D0AC879B-97D1-49C1-8DD6-70CEAA1950FC}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0023"
+        "ProductVersion" = "8:5.0.0025"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -400,7 +400,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A6F0C39BAEAD47D6B66ADBBFAB6227E0"
             {
-            "SourcePath" = "8:MSM\\Debug\\OpenDCL.Runtime.ENU.msm"
+            "SourcePath" = "8:MSM\\Release\\OpenDCL.Runtime.ENU.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7533197286ED4A179374AF5FB58B54B1"

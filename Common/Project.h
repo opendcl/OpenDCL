@@ -57,8 +57,8 @@ and the subject control. It would make sense to define a standard name rendition
 class that all named objects derive from or export. This I leave as an exercise for the future.
 */
 
-#include <vector>
 #include <list>
+#include <map>
 #include "PtrTypes.h"
 #include "FontSettings.h"
 
@@ -71,6 +71,7 @@ class AxEventDescriptor;
 class CAxContainerCtrl;
 
 typedef std::list< TDclFormPtr > TDclFormList;
+typedef std::map< UINT, TPicturePtr > TPictureMap;
 
 
 //Error status returned by file I/O functions
@@ -88,12 +89,11 @@ enum IOStatus
 class CProject
 {
 protected:		
-	CList< CPictureObject* > mPictures;
+	TPictureMap mPictures;
 	TDclFormList mDclForms;
 	CString msKeyName;
 	CString msProjectFilePath;
 	CString msBaseFileName; //the project file base name (no path, no extension)
-	CStringArray mrsActiveXFiles;
 	CString msLispFileName;
 	CString msPassword;
 	DWORD mnAutoCADVersion;
@@ -111,16 +111,17 @@ protected:
 	//2007-02-14 [ORW]: save version set to 11 (form count changed from short to unsigned long)
 	//2007-06-16 [ORW]: save version set to 12 (removed mbHasPassword and msDistFileName members)
 	//2008-02-15 [ORW]: save version set to 13 (removed mOleControls)
-	ULONG GetCurrentSaveVersion() const { return 13; }
+	//2008-09-15 [ORW]: save version set to 14 (removed mrsActiveXFiles)
+	ULONG GetCurrentSaveVersion() const { return 14; }
 
 public:
 	static LPCTSTR GetOdclPassword() { return _T("d32afd3aw3aq3fdaw3"); }
 	virtual bool IsInUse() const;
 
-	HBITMAP CloneBitmap( UINT_PTR nID, CSize& sz ) const;
-	HICON CloneIcon( UINT_PTR nID ) const;
-	bool GetPictureSize( UINT_PTR nID, CSize& size ) const; //return true if found
-	CPictureObject* FindPicture( UINT_PTR nID ) const;
+	HBITMAP CloneBitmap( UINT nID, CSize& sz ) const;
+	HICON CloneIcon( UINT nID ) const;
+	bool GetPictureSize( UINT nID, CSize& size ) const; //return true if found
+	TPicturePtr FindPicture( UINT nID ) const;
 
 	//Centralized File I/O
 	virtual IOStatus ReadFromFile( LPCTSTR pszFilePath ); //read a project from any supported file format
@@ -134,8 +135,8 @@ protected:
 public:
 	virtual CDocument* GetDocument() const { return NULL; }
 	virtual CUndoManager* GetUndoManager() { return NULL; }
-	const CList<CPictureObject*>& GetPictureList() const { return mPictures; }
-	CList<CPictureObject*>& GetPictureList() { return mPictures; }
+	const TPictureMap& GetPictureMap() const { return mPictures; }
+	TPictureMap& GetPictureMap() { return mPictures; }
 	const TDclFormList& GetDclFormList() const { return mDclForms; }
 	const CString& GetKeyName() const { return msKeyName; }
 	void SetKeyName( LPCTSTR pszKeyName );
@@ -155,10 +156,7 @@ public:
 	virtual void SetGlobalVariableNames( LPCTSTR pszRootName = NULL );
 	virtual void ClearGlobalVariableNames();
 	TDclFormPtr GetRefCountedPtr( CDclFormObject* pDclForm ) const;
-	bool AddActiveXFile( LPCTSTR pszFileName );
-	bool RemoveActiveXFile( LPCTSTR pszFileName );
-	bool HasActiveXFile( LPCTSTR pszFileName ) const;
-	bool AddPicture( CPictureObject* pPicture );
+	bool AddPicture( TPicturePtr pPicture );
 	void DeletePicture( int nID );
 	bool LoadPictureFile( LPCTSTR szFile, UINT_PTR nID, bool bApplyMask = false );
 	TDclFormPtr FindDclForm( LPCTSTR pszDclFormName ) const;

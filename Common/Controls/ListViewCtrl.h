@@ -37,17 +37,8 @@ protected:
 class CListViewCtrl : public CListCtrl, public CDialogControl
 {
 	CAcadColorService mColorService;
-	//CImageList mDefaultImageList;
-	bool mbBlockList;
-
-	CLVEdit				m_LVEdit;
-
-public:
-	int					m_nEditSubItem;
-
-protected:
-	// only for CtlBlockList
-	CImageList mBlockViewImageList;
+	int mnEditSubItem;
+	CLVEdit mLVEdit;
 
 // Construction
 public:
@@ -66,11 +57,13 @@ public:
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData ); //called to get drag data from this control
 
-// Control
-	bool IsBlockList() const { return mbBlockList; }
+protected:
+	int GetCurrentSubItem() const { return mnEditSubItem; }
+	virtual bool HasSubItemImages() const { return true; }
 
 // Implementation
 public:
+	CEdit* EditLabel( int nItem );
 	bool SortTextItems( int nCol, bool bAscending );
 	bool SortNumericItems( int nCol, bool bAscending );
 	int GetItemImage(int nRow, int nCol);

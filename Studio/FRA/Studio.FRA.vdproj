@@ -760,8 +760,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_02E097A19E5D4F3A86B7EB011D3FE4CD"
             {
-            "SourcePath" = "8:Content\\AnimationCtrl.mth"
-            "TargetName" = "8:AnimationCtrl.mth"
+            "SourcePath" = "8:Content\\Animation.mth"
+            "TargetName" = "8:Animation.mth"
             "Tag" = "8:"
             "Folder" = "8:_2877147D5ADB47C69C658D91D7072C6D"
             "Condition" = "8:"
@@ -1000,8 +1000,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2A4228BFE09D485E85554200EB7E0ECD"
             {
-            "SourcePath" = "8:Content\\GrphicBtn.mth"
-            "TargetName" = "8:GrphicBtn.mth"
+            "SourcePath" = "8:Content\\GraphicButton.mth"
+            "TargetName" = "8:GraphicButton.mth"
             "Tag" = "8:"
             "Folder" = "8:_2877147D5ADB47C69C658D91D7072C6D"
             "Condition" = "8:"
@@ -1120,8 +1120,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_345DDB6FCD2F4CA9B1E9CA5E38D6C007"
             {
-            "SourcePath" = "8:Content\\AllCtrls.mth"
-            "TargetName" = "8:AllCtrls.mth"
+            "SourcePath" = "8:Content\\Control.mth"
+            "TargetName" = "8:Control.mth"
             "Tag" = "8:"
             "Folder" = "8:_2877147D5ADB47C69C658D91D7072C6D"
             "Condition" = "8:"
@@ -1140,8 +1140,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_366F1B95EC9945CE9B39CDABC9439D1F"
             {
-            "SourcePath" = "8:Content\\AxObjects.mth"
-            "TargetName" = "8:AxObjects.mth"
+            "SourcePath" = "8:Content\\AxObject.mth"
+            "TargetName" = "8:AxObject.mth"
             "Tag" = "8:"
             "Folder" = "8:_2877147D5ADB47C69C658D91D7072C6D"
             "Condition" = "8:"
@@ -1440,8 +1440,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6252B991126549448F60D1D6FBC7FEE4"
             {
-            "SourcePath" = "8:Content\\AxCtrls.mth"
-            "TargetName" = "8:AxCtrls.mth"
+            "SourcePath" = "8:Content\\AxControl.mth"
+            "TargetName" = "8:AxControl.mth"
             "Tag" = "8:"
             "Folder" = "8:_2877147D5ADB47C69C658D91D7072C6D"
             "Condition" = "8:"
@@ -1480,8 +1480,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_65616F4434E941E9A2F97EFA735093DE"
             {
-            "SourcePath" = "8:Content\\FileDlgCtrl.mth"
-            "TargetName" = "8:FileDlgCtrl.mth"
+            "SourcePath" = "8:Content\\FileExplorer.mth"
+            "TargetName" = "8:FileExplorer.mth"
             "Tag" = "8:"
             "Folder" = "8:_2877147D5ADB47C69C658D91D7072C6D"
             "Condition" = "8:"
@@ -1840,8 +1840,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8E2362D1EDA546BC8EDD9B769B1F7573"
             {
-            "SourcePath" = "8:Content\\Tab.mth"
-            "TargetName" = "8:Tab.mth"
+            "SourcePath" = "8:Content\\TabStrip.mth"
+            "TargetName" = "8:TabStrip.mth"
             "Tag" = "8:"
             "Folder" = "8:_2877147D5ADB47C69C658D91D7072C6D"
             "Condition" = "8:"
@@ -2220,8 +2220,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B32AA6EF35704F71ABFADD707DF48EB9"
             {
-            "SourcePath" = "8:Content\\TreeCtrl.mth"
-            "TargetName" = "8:TreeCtrl.mth"
+            "SourcePath" = "8:Content\\ImageTree.mth"
+            "TargetName" = "8:ImageTree.mth"
             "Tag" = "8:"
             "Folder" = "8:_2877147D5ADB47C69C658D91D7072C6D"
             "Condition" = "8:"
@@ -2400,8 +2400,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C3E1CD3B9B644093B19ED2A8B6D8060F"
             {
-            "SourcePath" = "8:Content\\Month.mth"
-            "TargetName" = "8:Month.mth"
+            "SourcePath" = "8:Content\\Calendar.mth"
+            "TargetName" = "8:Calendar.mth"
             "Tag" = "8:"
             "Folder" = "8:_2877147D5ADB47C69C658D91D7072C6D"
             "Condition" = "8:"
@@ -2829,14 +2829,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{BFF0A140-93A4-4279-A5EA-9D48E9BC92A8}"
-        "PackageCode" = "8:{60D00CB9-78D2-40D7-9D71-5937B3726AED}"
+        "ProductCode" = "8:{A606EACD-C2DC-4905-8C6C-15CA7C11F626}"
+        "PackageCode" = "8:{12521B2A-8370-4279-88E1-2209AAEC4B99}"
         "UpgradeCode" = "8:{140D3C25-5463-4688-8A52-FEA8E9FA4940}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0023"
+        "ProductVersion" = "8:5.0.0025"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -3684,7 +3684,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3BAA3B3B23A64B5D9D3E59D2F57A0F6B"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\FRA\\MSM\\Debug\\OpenDCL.Runtime.FRA.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\FRA\\MSM\\Release\\OpenDCL.Runtime.FRA.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
@@ -3737,7 +3737,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_85BC6CDD6D9D4640B552D54485E9371E"
             {
-            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_2877147D5ADB47C69C658D91D7072C6D"
@@ -3765,7 +3765,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D2E30088FE6F44CDA911B5E5558D3661"
             {
-            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"

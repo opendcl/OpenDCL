@@ -887,6 +887,24 @@ public:
 			return true;
 		}
 
+	virtual bool GetValue( unsigned long& v ) const
+		{
+			v = ~0;
+			COleVariant varValue;
+			if( !GetVariantValue( varValue ) )
+				return false;
+			if( S_OK != VariantChangeType( &varValue, &varValue, 0, VT_UI4 ) )
+				return false;
+			v = varValue.ulVal;
+			return true;
+		}
+	virtual bool SetValue( const unsigned long& v )
+		{
+			const COleVariant varValue( (long)v, VT_UI4 );
+			if( !SetVariantValue( varValue ) )
+				return false;
+			return true;
+		}
 	virtual bool GetValue( bool& v ) const
 		{
 			v = false;
@@ -1593,7 +1611,7 @@ bool CPropertyObject::SetStringValue( LPCTSTR pszValue )
 
 OLE_COLOR CPropertyObject::GetOLEColorValue() const
 {
-	OLE_COLOR dwValue = 0;
+	OLE_COLOR dwValue = ~0;
 	bool bSuccess = mpValue->GetValue( dwValue );
 	assert( bSuccess == true );
 	return dwValue;
@@ -1810,7 +1828,7 @@ CString CPropertyObject::GetApiName() const
 	switch( GetType() )
 	{
 	case PropActiveXMethods:
-		return _T("(ActiveX Browser)");
+		return _T("(Control Browser)");
 	case PropActiveXPropPages:
 		return _T("(ActiveX Wizard)");
 	case PropActiveXProp:
@@ -1827,9 +1845,9 @@ CString CPropertyObject::GetName() const
 	switch( GetType() )
 	{
 	case PropActiveXMethods:
-		return theWorkspace.LoadResourceString(IDS_OBJBROWSER); //"(ActiveX Browser)"
+		return theWorkspace.LoadResourceString( IDS_PROP_CONTROLBROWSER ); //"(Control Browser)"
 	case PropActiveXPropPages:
-		return theWorkspace.LoadResourceString(IDS_PROP_ACTIVEXPROPPAGES); //"(ActiveX Wizard)"
+		return theWorkspace.LoadResourceString( IDS_PROP_ACTIVEXPROPPAGES ); //"(ActiveX Wizard)"
 	case PropActiveXProp:
 	case PropActiveXEnum:
 	case PropActiveXEvent:

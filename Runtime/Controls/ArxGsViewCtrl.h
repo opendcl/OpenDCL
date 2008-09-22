@@ -143,6 +143,7 @@ public:
 public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual CDragDropService* GetDragDropService() { return &mDragDropService; }
+	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
@@ -152,8 +153,8 @@ public:
 	void ResizeHatch();
 
 	bool GetActiveViewPortInfo (ads_real &height, ads_real &width, AcGePoint3d &target, AcGeVector3d &viewDir, ads_real &viewTwist, bool getViewCenter);
-	void SetHighLight(int nColorIndex);
-	void RemoveHighLight();	
+	void SetHighlight( const COLORREF& clrHighlight );
+	void RemoveHighlight();	
 	void DoHighLight(CDC *pdc);
 	AcDbBlockTableRecord *m_pHatchBlock;
 	BOOL DisplayHatchPattern(CString sPattern);

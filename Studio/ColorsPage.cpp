@@ -34,10 +34,10 @@ static UINT GetTitleResource( Prop::Id idProp )
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CColors property page
+// CColorsPage property page
 
 
-CColors::CColors(Prop::Id idProp, TDclControlPtr pControl)
+CColorsPage::CColorsPage(Prop::Id idProp, TDclControlPtr pControl)
 : CPropertyPage( GetDialogResourceId( idProp ) )
 , midProp( idProp )
 , mpControl( pControl )
@@ -47,11 +47,11 @@ CColors::CColors(Prop::Id idProp, TDclControlPtr pControl)
 {
 }
 
-CColors::~CColors()
+CColorsPage::~CColorsPage()
 {
 }
 
-void CColors::DoDataExchange(CDataExchange* pDX)
+void CColorsPage::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COLORCOMBO, m_ColorCB);
@@ -61,21 +61,19 @@ void CColors::DoDataExchange(CDataExchange* pDX)
 }
 
 
-BEGIN_MESSAGE_MAP(CColors, CPropertyPage)
-	//{{AFX_MSG_MAP(CColors)
+BEGIN_MESSAGE_MAP(CColorsPage, CPropertyPage)
 	ON_LBN_SELCHANGE(IDC_SYSTEMCOLORLIST, OnSelchangeSystemcolorlist)	
 	ON_CBN_SELCHANGE(IDC_COLORCOMBO, OnSelchangeColorcombo)
 	ON_EN_CHANGE(IDC_EDIT, OnChangeEdit)
 	ON_EN_KILLFOCUS(IDC_EDIT, OnKillfocusEdit)	
 	ON_BN_CLICKED(IDC_TRUEBTN, OnTruebtn)
 	ON_WM_PAINT()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CColors message handlers
+// CColorsPage message handlers
 
-BOOL CColors::OnInitDialog() 
+BOOL CColorsPage::OnInitDialog() 
 {
 	CPropertyPage::OnInitDialog();
 	
@@ -107,6 +105,7 @@ BOOL CColors::OnInitDialog()
 		m_SystemColors.AddColor( theWorkspace.LoadResourceString( IDS_TRANSPARENT ), RGB(255,255,255) );
 
 	m_ColorCB.ResetContent();
+	m_ColorCB.AddColor( theWorkspace.LoadResourceString( IDS_COLOR_BLACK ), RGB(0,0,0) );
 	m_ColorCB.AddColor( theWorkspace.LoadResourceString( IDS_COLOR_RED ), RGB(255,0,0) );
 	m_ColorCB.AddColor( theWorkspace.LoadResourceString( IDS_COLOR_YELLOW ), RGB(255,255,0) );
 	m_ColorCB.AddColor( theWorkspace.LoadResourceString( IDS_COLOR_GREEN ), RGB(0,255,0) );
@@ -117,16 +116,17 @@ BOOL CColors::OnInitDialog()
 
 	m_Edit.SetLimitText(3);
 	m_Edit.SetWindowText(mpColor->GetStringValue());
-	if (mpColor->GetLongValue() < 0)
-		m_SystemColors.SetCurSel((mpColor->GetLongValue() * -1)-1);
+	long lColor = mpColor->GetLongValue();
+	if( lColor < 0 )
+		m_SystemColors.SetCurSel( (-lColor) - 1 );
 	else
-		m_ColorCB.SetCurSel(mpColor->GetLongValue()-1);
+		m_ColorCB.SetCurSel( lColor );
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
 }
 
-BOOL CColors::OnApply() 
+BOOL CColorsPage::OnApply() 
 {
 	CString sValue;
 	m_Edit.GetWindowText(sValue);
@@ -138,14 +138,8 @@ BOOL CColors::OnApply()
 	return CPropertyPage::OnApply();
 }
 
-BEGIN_EVENTSINK_MAP(CColors, CPropertyPage)
-    //{{AFX_EVENTSINK_MAP(CColors)
-	//ON_EVENT(CColors, IDC_ACADCOLORCTRL, 1 /* OnSelChange */, OnOnSelChangeAcadcolorctrl, VTS_I4 VTS_I4)
-	//}}AFX_EVENTSINK_MAP
-END_EVENTSINK_MAP()
 
-
-void CColors::OnSelchangeSystemcolorlist() 
+void CColorsPage::OnSelchangeSystemcolorlist() 
 {
 	int nCurSel = m_SystemColors.GetCurSel();
 	nCurSel = (nCurSel * -1) - 1;
@@ -154,42 +148,38 @@ void CColors::OnSelchangeSystemcolorlist()
 	m_Edit.SetWindowText(sVal);
 	SetModified(TRUE);
 
-	m_ColorCB.SetCurSel(-1);
+	m_ColorCB.SetCurSel( -1 );
 	DisplayColor();
 }
 
 
-void CColors::OnSelchangeColorcombo() 
+void CColorsPage::OnSelchangeColorcombo() 
 {
-	TCHAR Value[80];
-	_ltot(m_ColorCB.GetCurSel()+1, Value, 10);
-	m_Edit.SetWindowText(Value);
-	SetModified(TRUE);
+	CString sVal;
+	sVal.Format( _T("%d"), m_ColorCB.GetCurSel() );
+	m_Edit.SetWindowText( sVal );
+	SetModified( TRUE );
 
-	m_SystemColors.SetCurSel(-1);
+	m_SystemColors.SetCurSel( -1 );
 	DisplayColor();
 }
 
-void CColors::OnChangeEdit() 
+void CColorsPage::OnChangeEdit() 
 {
 	CString sValue;
-	m_Edit.GetWindowText(sValue);
-	int nThisValue = _tstol(sValue);
-	if (nThisValue < 0)
-	{
-		m_SystemColors.SetCurSel((nThisValue * -1)-1);
-	}
-	else if (nThisValue > 0 && nThisValue < 8)
-	{
-		m_ColorCB.SetCurSel(nThisValue-1);
-	}
+	m_Edit.GetWindowText( sValue );
+	int nThisValue = _tstol( sValue );
+	if( nThisValue < 0 )
+		m_SystemColors.SetCurSel( (-nThisValue) - 1 );
+	else if (nThisValue >= 0 && nThisValue < 8)
+		m_ColorCB.SetCurSel( nThisValue );
 	
 	DisplayColor();
-	SetModified(TRUE);
+	SetModified( TRUE );
 	
 }
 
-void CColors::OnKillfocusEdit() 
+void CColorsPage::OnKillfocusEdit() 
 {
 	CString sValue;
 	m_Edit.GetWindowText(sValue);
@@ -209,7 +199,7 @@ void CColors::OnKillfocusEdit()
 
 
 
-void CColors::OnTruebtn() 
+void CColorsPage::OnTruebtn() 
 {
 	
 	CColorDialog colorDlg;
@@ -224,13 +214,13 @@ void CColors::OnTruebtn()
 }
 
 
-void CColors::OnPaint() 
+void CColorsPage::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
 
 }
 
-void CColors::DisplayColor() 
+void CColorsPage::DisplayColor() 
 {
 	CString sValue;
 	m_Edit.GetWindowText(sValue);

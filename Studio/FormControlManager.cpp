@@ -185,7 +185,7 @@ void CFormControlManager::OnLButtonUp(UINT nFlags, CPoint point)
 	if( mptDragStart.x != -1 && mptDragStart.y != -1 )
 	{
 		mptDragStart.SetPoint( -1, -1 );
-		mpDlgObject->OnUpdateZOrder();
+		//mpDlgObject->OnUpdateZOrder();
 	}
 	__super::OnLButtonUp(nFlags, point);
 }
@@ -193,7 +193,7 @@ void CFormControlManager::OnLButtonUp(UINT nFlags, CPoint point)
 void CFormControlManager::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonDblClk(nFlags, point);
-	AfxGetMainWnd()->PostMessage( WM_COMMAND, ID_OBJECTBROWSER, (LPARAM)0 );
+	AfxGetMainWnd()->PostMessage( WM_COMMAND, ID_CONTROLBROWSER, (LPARAM)0 );
 }
 
 void CFormControlManager::OnMouseMove(UINT nFlags, CPoint point)
@@ -401,5 +401,5 @@ void CFormControlManager::OnNcRButtonUp(UINT nHitTest, CPoint point)
 void CFormControlManager::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 {
 	__super::OnNcLButtonDblClk(nHitTest, point);
-	AfxGetMainWnd()->PostMessage( WM_COMMAND, ID_OBJECTBROWSER, (LPARAM)0 );
+	AfxGetMainWnd()->PostMessage( WM_COMMAND, ID_CONTROLBROWSER, (LPARAM)0 );
 }

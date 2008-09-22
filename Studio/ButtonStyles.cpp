@@ -272,24 +272,18 @@ BOOL CButtonStyles::OnInitDialog()
 	sAdd = theWorkspace.LoadResourceString(IDS_ADD);
 	m_PicList.AddString(sAdd);
 	TProjectPtr pProject = mpControl->GetOwnerProject();
-	INT_PTR nIndex = 0;
-	INT_PTR ctPic = pProject->GetPictureList().GetCount();
-	while(nIndex < ctPic)
+	const TPictureMap& Pictures = pProject->GetPictureMap();
+	for( TPictureMap::const_iterator iter = Pictures.begin(); iter != Pictures.end(); ++iter )
 	{
-		POSITION pos = pProject->GetPictureList().FindIndex(nIndex);
-		if (pos != NULL)
-		{
-			CPictureObject *pPic = pProject->GetPictureList().GetAt(pos);
-			TCHAR Value[80];
-			_ui64tot(pPic->GetID(), Value, 10);
-			int n = m_PicList.AddString(Value);
-			m_PicList.SetItemData(n, pPic->GetID());
-			if (m_SelectedPic == pPic->GetID())
-				m_PicList.SetCurSel(n);
-			if (pPic->GetID() > m_nHighestId)
-				m_nHighestId = pPic->GetID();
-		}
-		nIndex++;
+		UINT nId = iter->first;
+		CString sID;
+		sID.Format( _T("%u"), nId );
+		int idx = m_PicList.AddString( sID );
+		m_PicList.SetItemData( idx, nId );
+		if( m_SelectedPic == nId )
+			m_PicList.SetCurSel( idx );
+		if( nId > m_nHighestId )
+			m_nHighestId = nId;
 	}
 	OnSelchangePiclist();
 	

@@ -30,7 +30,7 @@ public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
-	virtual void ApplyPosition(); //move control window to new position
+	virtual void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast );
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyCaption( TPropertyPtr pProp ) { return true; }
 	virtual bool OnApplyToolTip( TPropertyPtr pProp );
@@ -42,8 +42,11 @@ public:
 	const CTabCtrl& GetTabCtrl() const { return *this; }
 	CRect GetUsedArea() const;
 	virtual int GetTabItemIndex( size_t nPageIndex ) const { return (int)nPageIndex; }
+
+protected:
 	virtual void SetupTabs();
 	virtual void ResetTooltips();
+	virtual void OnUsedAreaChanged();
 
 	// Generated message map functions
 protected:

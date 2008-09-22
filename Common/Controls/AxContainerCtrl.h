@@ -36,34 +36,17 @@ public:
 
 // Operations
 public:
-	//TDclControlPtr GetOleControl() const { return mpTemplate; }
-	bool ParseTypeLibInfo();
+	bool Create( CWnd* pParentWnd, UINT nID, CRect ArxRect, bool bAddPropInfo );
 
-	HRESULT SaveToStream( IStream* pStream );
+	HRESULT SaveToStream();
+	void ClearStream();
 	HRESULT GetOleDispatch( IDispatch** ppDispatch );
 	HRESULT GetOleObject( IOleObject** ppOleObject );
-	UINT ExtractPropertyInfo( TDclControlPtr pControl, LPOLEOBJECT pIObject, bool bEnumList = false );
+
+protected:
 	UINT ExtractPropertyInfo( TDclControlPtr pControl, ITypeInfo* pTI, LPOLEOBJECT pIObject = NULL, bool bEnumList = false );
-	UINT ExtractEventInfo( TDclControlPtr pControl, LPOLEOBJECT pIObject, bool bUseAsType );
 	UINT ExtractEventInfo( TDclControlPtr pControl, ITypeInfo* pTypeInfo, bool bUseAsType );
-	UINT ExtractMethodInfo( TDclControlPtr pControl, LPOLEOBJECT pIObject );
 	UINT ExtractMethodInfo( TDclControlPtr pControl, ITypeInfo* pTypeInfo );
-
-	IDispatch* GetChildIDispatch( DISPID dispid );
-
-	bool Create(CWnd* pParentWnd, UINT nID, CRect ArxRect, bool bAddPropInfo);
-	COleFont GetFont(DISPID dispid);
-	void SetFont(DISPID dispid, LPDISPATCH newValue);
-	unsigned long GetColor(DISPID dispid);
-	void SetColor(DISPID dispid, unsigned long propVal);
-	void LoadPictureFile(DISPID dispid, CString sFile, WORD flag);
-	void LoadPicture(DISPID dispid, int nId);
-	void SetPicture(DISPID dispid, LPDISPATCH newValue, WORD flag);
-	BOOL GetPropertyPageCLSIDs( CArray< CLSID, CLSID& >& aclsidPages );
-	void ShowPropertyPages();
-
-	void SetRefImageList(DISPID dispid, LPDISPATCH newValue);
-	void SetImageList(DISPID dispid, LPDISPATCH newValue);
 
 	//ActiveX Helpers
 public:
@@ -71,9 +54,10 @@ public:
 	HRESULT GetProperty( const AxPropertyDescriptor* axProp, CString &strReturnValue );
 	HRESULT GetProperty( const AxPropertyDescriptor* axProp, VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
 	HRESULT SetProperty( const AxPropertyDescriptor* axProp, const VARIANTARG* rvarArgs, UINT ctArgs );
-	HRESULT SetProperty( const AxPropertyDescriptor* axProp, COleVariant varArg );
 	HRESULT Invoke( AxMethodDescriptor* axMethod, const VARIANTARG* rvarArgs, UINT ctArgs, VARIANT& varResult );
 	bool ExtractComponentsFromTLB( TDclControlPtr pDclControl, CLSID clsid );
+	bool GetPropertyPageCLSIDs( CArray< CLSID, CLSID& >& aclsidPages );
+	bool ParseTypeLibInfo();
 
 	// Generated message map functions
 protected:

@@ -425,7 +425,7 @@ void CToolboxPane::OnToolboxListview()
 void CToolboxPane::OnToolboxMonthpicker() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlMonth;
+	m_nSelectedCtrl = CtlCalendar;
 }
 
 void CToolboxPane::OnToolboxOption() 
@@ -443,7 +443,7 @@ void CToolboxPane::OnToolboxPicturebox()
 void CToolboxPane::OnToolboxProgressbar() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlProgress;
+	m_nSelectedCtrl = CtlProgressBar;
 }
 
 void CToolboxPane::OnToolboxRectangle() 
@@ -461,7 +461,7 @@ void CToolboxPane::OnToolboxScrollbar()
 void CToolboxPane::OnToolboxSlider() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlSlider;	
+	m_nSelectedCtrl = CtlStraightSlider;	
 }
 
 void CToolboxPane::OnToolboxSlideview() 
@@ -491,13 +491,13 @@ void CToolboxPane::OnToolboxTextbox()
 void CToolboxPane::OnToolboxTextbutton() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlStdButton;
+	m_nSelectedCtrl = CtlTextButton;
 }
 
 void CToolboxPane::OnToolboxTree() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlTree;
+	m_nSelectedCtrl = CtlImageTree;
 }
 
 void CToolboxPane::OnToolboxUrllink() 
@@ -544,7 +544,7 @@ void CToolboxPane::OnToolboxDwglist()
 void CToolboxPane::OnToolboxAnimate() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlAnimate;
+	m_nSelectedCtrl = CtlAnimation;
 }
 
 void CToolboxPane::OnToolboxImagecombobox() 

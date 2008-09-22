@@ -313,7 +313,9 @@ void AxInterfaceDescriptor::DoActiveXFontPropDlg(CAxContainerCtrl *axContainer)
 {	
 	try
 	{
-		COleFont font = axContainer->GetFont(GetGetDispId());
+		LPDISPATCH pDispatch;
+		axContainer->InvokeHelper( GetGetDispId(), DISPATCH_PROPERTYGET, VT_DISPATCH, (void*)&pDispatch, NULL );
+		COleFont font( pDispatch );
 		CString		sFontName = font.GetName();
 		CY			cyFontSize = font.GetSize();
 		BOOL		bFontBold = font.GetBold();
@@ -345,8 +347,10 @@ void AxInterfaceDescriptor::DoActiveXFontPropDlg(CAxContainerCtrl *axContainer)
 		font.SetUnderline(dlg.m_cf.lpLogFont->lfUnderline);
 		font.SetItalic(dlg.m_cf.lpLogFont->lfItalic);
 		font.SetStrikethrough(dlg.m_cf.lpLogFont->lfStrikeOut);		
-		
-		axContainer->SetFont(GetPutDispId(), font);
+
+		static BYTE parms[] = VTS_DISPATCH;
+		axContainer->InvokeHelper(GetPutDispId(), DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, parms, font);
+		axContainer->SaveToStream();
 	}
 	catch(...)
 	{
@@ -373,8 +377,6 @@ CString AxInterfaceDescriptor::GetAxMethodDesc( size_t nIndex ) const
 	return CString();
 }
 
-
-
 size_t AxInterfaceDescriptor::CountAxMethodParams( size_t nIndex ) const
 {
 	if (mpMethods && nIndex < mpMethods->size())
@@ -382,48 +384,11 @@ size_t AxInterfaceDescriptor::CountAxMethodParams( size_t nIndex ) const
 	return 0;
 }
 
-CString AxInterfaceDescriptor::GetAxMethodParamName( size_t nIndex, int nParam ) const
-{
-	if (mpMethods && nIndex < mpMethods->size())
-		return mpMethods->at(nIndex)->GetArgs().at(nParam).name;
-	return CString();
-}
-
-VARTYPE AxInterfaceDescriptor::GetAxMethodReturnType( size_t nIndex ) const
-{
-	if (mpMethods && nIndex < mpMethods->size())
-		return mpMethods->at(nIndex)->GetReturnType();
-	return 0;
-}
-
-CString AxInterfaceDescriptor::GetAxMethodReturnTypeDisplayName( size_t nIndex ) const
-{
-	if( !mpMethods || nIndex >= mpMethods->size() )
-		return _T("");
-	return mpMethods->at( nIndex )->GetReturnTypeDisplayName();
-}
-
 const AxMethodDescriptor* AxInterfaceDescriptor::GetAxMethod( size_t nIndex ) const
 {
 	if (mpMethods && nIndex < mpMethods->size())
 		return mpMethods->at(nIndex);
 	return NULL;
-}
-
-CString AxInterfaceDescriptor::GetAxMethodParamVarType( size_t nIndex, int nParam ) const
-{
-	if (mpMethods && nIndex < mpMethods->size())
-		return VARTYPEtoString(mpMethods->at(nIndex)->GetArgs().at(nParam).vt);
-	return CString();
-}
-
-GUID AxInterfaceDescriptor::GetAxMethodParamGUID( size_t nIndex, int nParam ) const
-{
-	if (mpMethods && nIndex < mpMethods->size())
-		return mpMethods->at(nIndex)->GetArgs().at(nParam).clsid;
-	GUID guid;
-	::memset(&guid, 0, sizeof(GUID));	
-	return guid;
 }
 	
 VARTYPE AxInterfaceDescriptor::GetType() const

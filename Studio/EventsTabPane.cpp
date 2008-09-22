@@ -217,7 +217,7 @@ void CEventsTabPane::UpdateEvents(TDclControlPtr pControl)
 	TryToAddEvent(Prop::DragnDropBegin);
 	TryToAddEvent(Prop::DragnDropToAutoCAD);
 	TryToAddEvent(Prop::DragnDropFromControl);
-	TryToAddEvent(Prop::DragnDropFromAutoCAD);
+	TryToAddEvent(Prop::DragnDropFromOther);
 	TryToAddEvent(Prop::FormEventCancelClose);
 	TryToAddEvent(Prop::FormEventClose);
   TryToAddEvent(Prop::FormEventOnOk);
@@ -329,7 +329,7 @@ void CEventsTabPane::SetDefunPreview()
 		sArgs += _T(" /");
 
 		CString sDefunBody;
-		if (nEventId == Prop::DragnDropFromAutoCAD && m_pControl->GetOwnerForm()->GetType() != FrmFileDlg)
+		if (nEventId == Prop::DragnDropFromOther && m_pControl->GetOwnerForm()->GetType() != FrmFileDlg)
 			sDefunBody = _T("     (setq ssDragnDropSelectionSet (ssget \"P\"))"); //get the 'Previous' selection set
 		else
 		{

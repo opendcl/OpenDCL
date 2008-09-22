@@ -21,8 +21,6 @@ const int NUM_VARTYPES = 19;
 
 const VARIANT_BOOL VAR_TRUE = ~VARIANT_FALSE;
 const VARIANT_BOOL VAR_FALSE = VARIANT_FALSE;
-class AxPropertyDescriptor;
-class AxMethodDescriptor;
 
 
 LPCTSTR InvokeKindToString( INVOKEKIND invokekind );
@@ -30,7 +28,7 @@ LPCTSTR VTIToString( int iType );
 VARTYPE VTIToVT( int iType );
 LPCTSTR VTToString( VARTYPE vt );
 int VTToVTI( VARTYPE vt );
-CString VARTYPEtoString( VARTYPE vt );
+CString VariantTypeToDisplayableLispType( VARTYPE vt );
 CString VariantToString( const VARIANT& var );
 HRESULT GetNameOfRefType( ITypeInfo* pTypeInfo, HREFTYPE hreftype, CString& sTypeName );
 void SetRefType( VARTYPE& vtType, ITypeInfo* TheInfo, HREFTYPE hreftype, CLSID& Clsid );

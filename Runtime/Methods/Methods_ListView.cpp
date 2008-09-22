@@ -377,22 +377,6 @@ ADSRESULT ListView::GetSelectedNths()
 	return RSRSLT;
 }
 
-ADSRESULT ListView::CountItems()
-{
-	struct resbuf *pArgs =acedGetArgs () ;
-
-	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlListView))
-		return RSERR; //invalid input
-
-	if( !AssertOutOfArgs( pArgs ) )
-		return RSERR;
-
-	CArxListViewCtrl* pCtrl = (CArxListViewCtrl*)pDlgControl->GetControlWnd();
-	acedRetInt( pCtrl->GetSelectedCount() );
-	return RSRSLT;
-}
-
 ADSRESULT ListView::GetRowItems()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
@@ -1082,7 +1066,6 @@ ADSRESULT ListView::StartLabelEdit()
 
 	CArxListViewCtrl* pCtrl = (CArxListViewCtrl*)pDlgControl->GetControlWnd();
 	pCtrl->SetFocus();
-	pCtrl->m_nEditSubItem = 0;		
 	pCtrl->EditLabel( nRow );
 	acedRetT();
 	return RSRSLT;

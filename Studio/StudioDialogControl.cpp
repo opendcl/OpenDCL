@@ -16,6 +16,7 @@
 
 #include "AngleSlideCtrl.h"
 #include "AxContainerCtrl.h"
+#include "BlockListCtrl.h"
 #include "CheckBoxCtrl.h"
 #include "ComboBoxCtrl.h"
 #include "FolderComboCtrl.h"
@@ -115,77 +116,69 @@ TDialogControlPtr CStudioDialogControl::CreateImp( TDclControlPtr pTemplate, CCo
 	CWnd* pHostWnd = pPane->GetHostDialog();
 	switch( pTemplate->GetType() )
 	{		
-	case CtlAnimate:
+	case CtlActiveX: return *new CAxContainerCtrl( pTemplate, pPane, nID );
+	case CtlAngleSlider: return *new CAngleSlideCtrl( pTemplate, pPane, nID );
+	case CtlAnimation:
 		{	
 			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_ANIMATE );
 			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
 		}
-
-	case CtlLabel: return *new CLabelCtrl( pTemplate, pPane, nID );
-	case CtlStdButton: return *new CTextButtonCtrl( pTemplate, pPane, nID );
-	case CtlGraphicButton: return *new CGraphicButtonCtrl( pTemplate, pPane, nID );
-	case CtlFrame: return *new CFrameCtrl( pTemplate, pPane, nID );
-	case CtlTextBox: return CreateEditControl( pTemplate, pPane, nID );
-	case CtlCheckBox: return *new CCheckBoxCtrl( pTemplate, pPane, nID );
-	case CtlOptionButton: return *new CRadioButtonCtrl( pTemplate, pPane, nID );
-	case CtlComboBox: return CreateComboControl( pTemplate, pPane, nID );
-	case CtlListBox: return *new CListBoxCtrl( pTemplate, pPane, nID );
-	case CtlScrollBar: return *new CScrollBarCtrl( pTemplate, pPane, nID );
-	case CtlSlider: return *new CSlideCtrl( pTemplate, pPane, nID );
-	case CtlSpinButton: return *new CSpinnerCtrl( pTemplate, pPane, nID );
-	case CtlPictureBox: return *new CPictureBoxCtrl( pTemplate, pPane, nID );
-	case CtlTabStrip: return *new CTabStripCtrl( pTemplate, pPane, nID );
-	case CtlMonth: return *new CMonthCtrl( pTemplate, pPane, nID );
-	case CtlImageComboBox: return CreateComboExControl( pTemplate, pPane, nID );
-	case CtlRectangle: return *new CRectangleCtrl( pTemplate, pPane, nID );
-	case CtlProgress: return *new CProgressBarCtrl( pTemplate, pPane, nID );
-	case CtlAngleSlider: return *new CAngleSlideCtrl( pTemplate, pPane, nID );
-	case CtlUrlLink: return *new CUrlLinkCtrl( pTemplate, pPane, nID );
-
+	case CtlBlockList: return *new CBlockListCtrl( pTemplate, pPane, nID );
 	case CtlBlockView:
 		{
 			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_BLOCKVIEW );
 			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
 		}
-	case CtlSlideView:
-		{
-			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_SLIDEVW );
-			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
-		}
-	case CtlTree: return *new CImageTreeCtrl( pTemplate, pPane, nID );
-	case CtlHtmlCtrl: return *new CHtmlCtrl( pTemplate, pPane, nID );
-	//case CtlHtmlCtrl:
-	//	{
-	//		CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_HTML );
-	//		return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
-	//	}
+	case CtlCalendar: return *new CMonthCtrl( pTemplate, pPane, nID );
+	case CtlCheckBox: return *new CCheckBoxCtrl( pTemplate, pPane, nID );
+	case CtlComboBox: return CreateComboControl( pTemplate, pPane, nID );
+	case CtlDwgList: return *new CListBoxCtrl( pTemplate, pPane, nID );
 	case CtlDwgPreview:
 		{
 			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_DWGPREVIEW );
 			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
 		}
-
-	case CtlGrid: return *new CGridCtrl( pTemplate, pPane, nID );
-	case CtlListView: return *new CListViewCtrl( pTemplate, pPane, nID );
-	case CtlBlockList: return *new CListViewCtrl( pTemplate, pPane, nID );
-	case CtlOptionList: return *new COptionListCtrl( pTemplate, pPane, nID );
-	case CtlActiveX: return *new CAxContainerCtrl( pTemplate, pPane, nID );
-	case CtlDwgList: return *new CListBoxCtrl( pTemplate, pPane, nID );
-	case CtlSplitter: return *new CSplitterCtrl( pTemplate, pPane, nID );
-
-	case CtlHatch:
-		{
-			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_HATCH );
-			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
-		}
-	case CtlFileDlgCtrl:
+	case CtlFileExplorer:
 		{
 			DWORD dwStyle = WS_CHILD | WS_VISIBLE/* | WS_CLIPSIBLINGS*/;
 			CFileDlgCtrls *pControl = new CFileDlgCtrls;
 			pControl->Create( CString(), dwStyle, rc, pHostWnd, nID);
 			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
 		}
+	case CtlFrame: return *new CFrameCtrl( pTemplate, pPane, nID );
+	case CtlGraphicButton: return *new CGraphicButtonCtrl( pTemplate, pPane, nID );
+	case CtlGrid: return *new CGridCtrl( pTemplate, pPane, nID );
+	case CtlHatch:
+		{
+			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_HATCH );
+			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
+		}
+	case CtlHtmlCtrl: return *new CHtmlCtrl( pTemplate, pPane, nID );
+	case CtlImageComboBox: return CreateComboExControl( pTemplate, pPane, nID );
+	case CtlLabel: return *new CLabelCtrl( pTemplate, pPane, nID );
+	case CtlListBox: return *new CListBoxCtrl( pTemplate, pPane, nID );
+	case CtlListView: return *new CListViewCtrl( pTemplate, pPane, nID );
+	case CtlOptionButton: return *new CRadioButtonCtrl( pTemplate, pPane, nID );
+	case CtlOptionList: return *new COptionListCtrl( pTemplate, pPane, nID );
+	case CtlPictureBox: return *new CPictureBoxCtrl( pTemplate, pPane, nID );
+	case CtlProgressBar: return *new CProgressBarCtrl( pTemplate, pPane, nID );
+	case CtlRectangle: return *new CRectangleCtrl( pTemplate, pPane, nID );
+	case CtlScrollBar: return *new CScrollBarCtrl( pTemplate, pPane, nID );
+	case CtlSlideView:
+		{
+			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_SLIDEVW );
+			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
+		}
+	case CtlSpinButton: return *new CSpinnerCtrl( pTemplate, pPane, nID );
+	case CtlSplitter: return *new CSplitterCtrl( pTemplate, pPane, nID );
+	case CtlStraightSlider: return *new CSlideCtrl( pTemplate, pPane, nID );
+	case CtlTabStrip: return *new CTabStripCtrl( pTemplate, pPane, nID );
+	case CtlTextBox: return CreateEditControl( pTemplate, pPane, nID );
+	case CtlTextButton: return *new CTextButtonCtrl( pTemplate, pPane, nID );
+	case CtlImageTree: return *new CImageTreeCtrl( pTemplate, pPane, nID );
+	case CtlUrlLink: return *new CUrlLinkCtrl( pTemplate, pPane, nID );
 	}
+
 	return NULL;
 }
 

@@ -68,7 +68,7 @@ bool CGraphicButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 	return !bFailed;
 }
 
-void CGraphicButtonCtrl::SetPicture( CPictureObject* pPict )
+void CGraphicButtonCtrl::SetPicture( TPicturePtr pPict )
 {
 	mpPicture = pPict;
 	if( pPict && !mpMouseOverPicture )
@@ -76,7 +76,7 @@ void CGraphicButtonCtrl::SetPicture( CPictureObject* pPict )
 	UpdateButtonGraphic();
 }
 
-void CGraphicButtonCtrl::SetMouseOverPicture( CPictureObject* pPict )
+void CGraphicButtonCtrl::SetMouseOverPicture( TPicturePtr pPict )
 {
 	if( !pPict && mpPicture )
 		mpMouseOverPicture = mpPicture;

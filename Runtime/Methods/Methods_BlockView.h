@@ -7,13 +7,13 @@
 namespace BlockView
 {
 ADSRESULT Clear();
-ADSRESULT SetHighLight();
-ADSRESULT RemoveHighLight();
+ADSRESULT SetHighlight();
+ADSRESULT RemoveHighlight();
 ADSRESULT Zoom();
 ADSRESULT DisplayBlock();
 ADSRESULT DisplayBlockToScale();
-ADSRESULT LoadDwg();
-ADSRESULT	LoadDwgToScale();
+ADSRESULT DisplayDwg();
+ADSRESULT	DisplayDwgToScale();
 ADSRESULT PreLoadDwg();
 ADSRESULT GetBlockList();
 ADSRESULT GetBlockSize();	

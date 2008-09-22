@@ -166,14 +166,14 @@ void CArxGsViewCtrl::SetRenderMode( long lMode )
 	}
 }
 
-void CArxGsViewCtrl::SetHighLight(int nColorIndex)
+void CArxGsViewCtrl::SetHighlight( const COLORREF& clrHighlight )
 {
 	m_bSelectedRect = true;
-	m_HighlightColor = GetRGBColor(nColorIndex);		
+	m_HighlightColor = clrHighlight;		
 	Invalidate();
 }
 
-void CArxGsViewCtrl::RemoveHighLight()
+void CArxGsViewCtrl::RemoveHighlight()
 {
 	m_bSelectedRect = false;
 	Invalidate();
@@ -218,7 +218,7 @@ void CArxGsViewCtrl::DrawOrbitCircles(CDC* pDC)
 	if (mbPanning)
 		return;
     
-	if( mpTemplate->GetLongProperty( Prop::AllowOrbiting ) != 1 )
+	if( mpTemplate->GetLongProperty( Prop::InterfaceMode ) != 1 )
 		return;
 
 	CDC* pdc;
@@ -500,14 +500,13 @@ void CArxGsViewCtrl::ResizeHatch()
 			pHatch->evaluateHatch(); 
 			pHatch->close();
 		}
-		
 	}
 }
 
 void CArxGsViewCtrl::Zoom(double dZfactor)
 {
-    mpView->zoom(dZfactor);
-    Invalidate();
+	mpView->zoom(dZfactor);
+	Invalidate();
 	if (GetFocus() == this)
 	{
 		CDC *pdc = GetDC();
@@ -861,20 +860,20 @@ BOOL CArxGsViewCtrl::DisplayBlock(
 		return FALSE;
 	}
 	if (!pTab->has(sBlockName))
-    {
-        pTab->close();
-	    sBlockName.Empty();
-		m_BlockName.Empty();
-        return FALSE;
-    }
-    if ((es = pTab->getAt(sBlockName,pRec,AcDb::kForWrite)) !=Acad::eOk)
-    {
+	{
+		pTab->close();
 		sBlockName.Empty();
 		m_BlockName.Empty();
-        pTab->close();
-	    return FALSE;
-    }
-    pTab->close();	
+		return FALSE;
+	}
+  if ((es = pTab->getAt(sBlockName,pRec,AcDb::kForWrite)) !=Acad::eOk)
+  {
+		sBlockName.Empty();
+		m_BlockName.Empty();
+		pTab->close();
+		return FALSE;
+	}
+  pTab->close();
 	DisplayTheBlock(
 		pRec,		
 		dZoomFactor, 
@@ -1330,8 +1329,13 @@ void CArxGsViewCtrl::DisplayTheBlock(
 
 	// add the new object to the viewer
 	m_pRec = pRec;
-    pView->add(pRec,model()); 
-    pRec->close();
+	pView->add(pRec,model()); 
+	pRec->close();
+
+	const ACHAR* pszName = NULL;
+	pRec->getName( pszName );
+	mpTemplate->SetStringProperty( Prop::BlockName, pszName );
+
 	Invalidate();
 	if (mpTemplate->GetBooleanProperty( Prop::ShowOrbitCircles ))
 		DrawOrbitCircles();
@@ -1509,9 +1513,6 @@ BOOL CArxGsViewCtrl::OnEraseBkgnd(CDC* pDC)
 void CArxGsViewCtrl::OnPaint() 
 {
   CPaintDC dc(this);
-	CRect rcThis;
-	GetClientRect( &rcThis );
-	dc.FillRect( rcThis, mColorService.GetBackgroundCBrush() );
 
 	if( m_BlockName.GetLength() > 0 || m_pLoadedDwg != NULL )
 	{
@@ -1583,7 +1584,7 @@ void CArxGsViewCtrl::OnSize(UINT nType, int cx, int cy)
 
 BOOL CArxGsViewCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
-	if( mpTemplate->GetLongProperty( Prop::AllowOrbiting ) == 0 )
+	if( mpTemplate->GetLongProperty( Prop::InterfaceMode ) == 0 )
 		return TRUE;
 
     if (mpView)
@@ -1649,7 +1650,7 @@ void CArxGsViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 	
 		// zoom mode
-		if( mpTemplate->GetLongProperty( Prop::AllowOrbiting ) == 3 )
+		if( mpTemplate->GetLongProperty( Prop::InterfaceMode ) == 3 )
 		{
 			mbZooming = true;
 			mbPanning = false;
@@ -1665,7 +1666,7 @@ void CArxGsViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		
 		// pan mode
-		if( mpTemplate->GetLongProperty( Prop::AllowOrbiting ) == 2 )
+		if( mpTemplate->GetLongProperty( Prop::InterfaceMode ) == 2 )
 		{
 			mbZooming = false;
 			mbPanning = true;
@@ -1678,7 +1679,7 @@ void CArxGsViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 			mStartPt = point;
 		}
 		// orbit mode
-		if( mpTemplate->GetLongProperty( Prop::AllowOrbiting ) == 1 )
+		if( mpTemplate->GetLongProperty( Prop::InterfaceMode ) == 1 )
 		{
 			//start orbit
 			mbZooming = false;
@@ -1711,7 +1712,7 @@ void CArxGsViewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 	mbPanning = false;
 		
 	// zoom mode
-	switch (mpTemplate->GetLongProperty( Prop::AllowOrbiting ))
+	switch (mpTemplate->GetLongProperty( Prop::InterfaceMode ))
 	{
 	case 2:
 		{	
@@ -1791,7 +1792,7 @@ void CArxGsViewCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 		return;
 	}
 	if (m_BlockName.GetLength() > 0 && 
-		mpTemplate->GetLongProperty( Prop::AllowOrbiting ) != 0)
+		mpTemplate->GetLongProperty( Prop::InterfaceMode ) != 0)
 	{
 		//start pan
 		mbPanning = true;
@@ -1860,7 +1861,7 @@ void CArxGsViewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			return;
 		}
 		// static
-		if (mpTemplate->GetLongProperty( Prop::AllowOrbiting ) == 0)
+		if (mpTemplate->GetLongProperty( Prop::InterfaceMode ) == 0)
 		{
 			mbOrbiting = false;
 			mbPanning = false;
@@ -1876,7 +1877,7 @@ void CArxGsViewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 			return;
 		}
 		// zoom mode
-		switch (mpTemplate->GetLongProperty( Prop::AllowOrbiting ))
+		switch (mpTemplate->GetLongProperty( Prop::InterfaceMode ))
 		{
 		case 2:
 			{	

@@ -16,9 +16,9 @@ ADSRESULT GetProperty();
 ADSRESULT ShowToolTip();
 ADSRESULT SetFocus();
 ADSRESULT ZOrder();
-ADSRESULT GetCurPos();
+ADSRESULT GetPos();
 ADSRESULT SetPos();
-ADSRESULT ForceUpdateNow();
+ADSRESULT Redraw();
 ADSRESULT GetName();
 };
 

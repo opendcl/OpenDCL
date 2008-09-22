@@ -250,11 +250,10 @@ void CPictureBox::SetPictureBlank()
 	}
 }
 
-void CPictureBox::SetPicture( const CPictureObject* pPicture )
+void CPictureBox::SetPicture( TPicturePtr pPicture )
 {
 	SetPictureBlank();
-	mpPicture = pPicture? new CPictureObject( *pPicture ) : NULL;
-
+	mpPicture = pPicture;
 	if( mpPicture )
 	{
 		m_cxIcon = mpPicture->GetWidth();
@@ -280,7 +279,7 @@ void CPictureBox::Refresh()
 	DrawPicture( mpPicture, m_bStretchLoadedPicture );
 }
 
-void CPictureBox::DrawPicture( CPictureObject* pPicture, bool bStretchToFit /*= false*/ )
+void CPictureBox::DrawPicture( TPicturePtr pPicture, bool bStretchToFit /*= false*/ )
 {	
 	CDC *pdc = GetDC();
 	CRect rcCell;	

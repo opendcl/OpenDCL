@@ -112,7 +112,7 @@ enum Id
 	LeftFromRight = 80,
 	RightFromRight = 81,
 	Resizable = 82,
-	OnEvent = 83, //unused
+	Event = 83, //unused
 	MultiSelection = 84,
 	EventGetDayState = 85,
 	EventSelect = 86,
@@ -146,7 +146,7 @@ enum Id
 	FileName = 114, //unused
 	Color = 115, //unused
 	CfgTabCaption = 116,
-	AllowOrbiting = 117,
+	InterfaceMode = 117,
 	FormEventClose = 118,
 	FormEventInitialize = 119,
 	FormEventSize = 120,
@@ -203,7 +203,7 @@ enum Id
 	IconYSpacing = 171,
 	DragnDropToAutoCAD = 172,
 	DragnDropFromControl = 173,
-	DragnDropFromAutoCAD = 174,
+	DragnDropFromOther = 174,
 	DragnDropBegin = 175,
 	DragnDropAllowBegin = 176,
 	DragnDropAllowDrop = 177,
@@ -226,7 +226,7 @@ enum Id
 	ActiveXPropPages = 197,
 	RowHeight = 198,
 	CurSelIndex = 199,
-	ObjectBrowser = 200,
+	ControlBrowser = 200,
 	GlobalVarName = 201,
 	FileDlgStyle = 202,
 	AsReadOnly = 203,

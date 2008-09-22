@@ -30,8 +30,6 @@ bool CTabStripCtrl::Create( CWnd* pParentWnd, UINT nID )
 	if( bSuccess )
 		ModifyStyleEx( 0, WS_EX_CONTROLPARENT ); //this prevents the TAB key from locking up the dialog!
 
-	if( bSuccess && !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::ImageList ) ) )
-		bSuccess = false;
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
@@ -60,11 +58,6 @@ DWORD CTabStripCtrl::GetWndStyle() const
 		dwStyle |= (TCS_FORCEICONLEFT | TCS_FORCELABELLEFT);
 
 	return dwStyle;
-}
-
-void CTabStripCtrl::ApplyPosition()
-{
-	__super::ApplyPosition();
 }
 
 bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
@@ -117,7 +110,8 @@ bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
 			ModifyStyle( TCS_BUTTONS, TCS_TABS, SWP_FRAMECHANGED );
 		else
 			ModifyStyle( TCS_TABS, TCS_BUTTONS, SWP_FRAMECHANGED );
-		ResetTooltips();
+		if( !IsEnumeratingProperties() )
+			ResetTooltips();
 		break;
 	case Prop::TabJustification: //not used
 		break;
@@ -126,7 +120,8 @@ bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
 			ModifyStyle( TCS_MULTILINE, TCS_SINGLELINE, SWP_FRAMECHANGED );
 		else
 			ModifyStyle( TCS_SINGLELINE, TCS_MULTILINE, SWP_FRAMECHANGED );
-		ResetTooltips();
+		if( !IsEnumeratingProperties() )
+			ResetTooltips();
 		break;
 	case Prop::LabelAlignment:
 		if( pProp->GetLongValue() == 0 )
@@ -160,6 +155,14 @@ bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
 		break;
 	}
 	return true;
+}
+
+void CTabStripCtrl::ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast )
+{
+	__super::ApplyPropertiesOrder( ridFirst, ridLast );
+	ridFirst.push_back( Prop::ImageList );
+	ridFirst.push_back( Prop::TabsCaption );
+	ridLast.push_back( Prop::TabsTTT );
 }
 
 bool CTabStripCtrl::OnApplyToolTip( TPropertyPtr pProp )
@@ -232,6 +235,7 @@ void CTabStripCtrl::SetupTabs()
 
 void CTabStripCtrl::ResetTooltips()
 {
+	OnUsedAreaChanged();
 	TPropertyPtr pTabsTTTProperty = mpTemplate->GetPropertyObject( Prop::TabsTTT );
 	GetToolTipCtrl().RemoveAllTools();
 	TPropertyPtr pToolTipBalloon = mpTemplate->GetPropertyObject( Prop::ToolTipBalloon );
@@ -253,6 +257,33 @@ void CTabStripCtrl::ResetTooltips()
 			GetItemRect(i, &rectTab);
 			GetToolTipCtrl().AddTool(this, sToolTipTitle, &rectTab, i);
 		}
+	}
+}
+
+void CTabStripCtrl::OnUsedAreaChanged()
+{
+	TPropertyPtr pTabsProp = mpTemplate->GetPropertyObject( Prop::TabsCaption );
+	if( !pTabsProp )
+		return;
+	const TProjectPtr pProject = mpTemplate->GetOwnerProject();
+	TDclFormPtr pOwnerForm = mpTemplate->GetOwnerForm();
+	CRect rcControlArea = GetUsedArea();
+	long lNewWidth = rcControlArea.Width();
+	long lNewHeight = rcControlArea.Height();
+	for( size_t idxTab = pTabsProp->size(); idxTab > 0; --idxTab )
+	{
+		TDclFormPtr pChildForm = pProject->FindDclTabChildForm( pOwnerForm->GetUniqueName(), idxTab - 1 );
+		if( !pChildForm )
+			continue;
+		TDclControlPtr pFormProps = pChildForm->GetControlProperties();
+		if( lNewWidth != pFormProps->GetLongProperty( Prop::Width ) )
+			pFormProps->SetLongProperty( Prop::Width, lNewWidth );
+		if( lNewHeight != pFormProps->GetLongProperty( Prop::Height ) )
+			pFormProps->SetLongProperty( Prop::Height, lNewHeight );
+		CDialogObject* pDlgObject = pChildForm->GetFormInstance();
+		if( !pDlgObject )
+			continue;
+		pDlgObject->ApplyPosition();
 	}
 }
 
@@ -318,32 +349,8 @@ LRESULT CTabStripCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_WINDOWPOSCHANGED:
 		break;
-	case WM_SIZE:
-		{ //subclass' OnSize() never gets called, so intercept it here
-			TPropertyPtr pTabsProp = mpTemplate->GetPropertyObject( Prop::TabsCaption );
-			if( !pTabsProp )
-				return lResult;
-			const TProjectPtr pProject = mpTemplate->GetOwnerProject();
-			TDclFormPtr pOwnerForm = mpTemplate->GetOwnerForm();
-			CRect rcControlArea = GetUsedArea();
-			long lNewWidth = rcControlArea.Width();
-			long lNewHeight = rcControlArea.Height();
-			for( size_t idxTab = pTabsProp->size(); idxTab > 0; --idxTab )
-			{
-				TDclFormPtr pChildForm = pProject->FindDclTabChildForm( pOwnerForm->GetUniqueName(), idxTab - 1 );
-				if( !pChildForm )
-					continue;
-				TDclControlPtr pFormProps = pChildForm->GetControlProperties();
-				if( lNewWidth != pFormProps->GetLongProperty( Prop::Width ) )
-					pFormProps->SetLongProperty( Prop::Width, lNewWidth );
-				if( lNewHeight != pFormProps->GetLongProperty( Prop::Height ) )
-					pFormProps->SetLongProperty( Prop::Height, lNewHeight );
-				CDialogObject* pDlgObject = pChildForm->GetFormInstance();
-				if( !pDlgObject )
-					continue;
-				pDlgObject->ApplyPosition();
-			}
-		}
+	case WM_SIZE: //subclass' OnSize() never gets called, so intercept it here
+		OnUsedAreaChanged();
 		break;
 	}
 	return lResult;

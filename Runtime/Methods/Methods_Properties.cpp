@@ -163,14 +163,14 @@ ADSRESULT Control::SetFocus()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
-	TDclControlPtr pControl;
-	if( !GetControlArgument( pArgs, pControl ) )
+	CDialogControl* pDlgControl;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, _CtlInvalid ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CWnd* pCtrl = pControl->GetWindow();
+	CWnd* pCtrl = pDlgControl->GetControlWnd();
 	if( !pCtrl || !pCtrl->IsWindowVisible() )		
 		return RSRSLT;
 
@@ -183,18 +183,21 @@ ADSRESULT Control::ZOrder()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
-	TDclControlPtr pControl;
-	if( !GetControlArgument( pArgs, pControl ) )
+	CDialogControl* pDlgControl;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, _CtlInvalid ) )
 		return RSERR; //invalid input
 
 	int nDirection;
 	if( !GetIntArgument( pArgs, nDirection ) )
 		return RSERR; //invalid input
 
+	if( nDirection < 0 || nDirection > 1 )
+		return HandleArgValueError( pArgs );
+
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CWnd* pCtrl = pControl->GetWindow();
+	CWnd* pCtrl = pDlgControl->GetControlWnd();
 	if( !pCtrl || !pCtrl->IsWindowVisible() )		
 		return RSRSLT;
 
@@ -204,7 +207,7 @@ ADSRESULT Control::ZOrder()
 	return RSRSLT;
 }
 
-ADSRESULT Control::GetCurPos()
+ADSRESULT Control::GetPos()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -275,18 +278,18 @@ ADSRESULT Control::SetPos()
 	return RSRSLT;
 }
 
-ADSRESULT Control::ForceUpdateNow()
+ADSRESULT Control::Redraw()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
-	TDclControlPtr pControl;
-	if( !GetControlArgument( pArgs, pControl ) )
+	CDialogControl* pDlgControl;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, _CtlInvalid ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	if( pControl->GetWindow()->RedrawWindow() )
+	if( pDlgControl->GetControlWnd()->RedrawWindow() )
 		acedRetT();
 	return RSRSLT;
 }
@@ -310,8 +313,8 @@ ADSRESULT Control::ShowToolTip()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
-	TDclControlPtr pControl;
-	if( !GetControlArgument( pArgs, pControl ) )
+	CDialogControl* pDlgControl;
+	if( !GetDlgControlArgument( pArgs, pDlgControl, _CtlInvalid ) )
 		return RSERR; //invalid input
 
 	int nX = -1;
@@ -322,7 +325,7 @@ ADSRESULT Control::ShowToolTip()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CWnd* pCtrlWnd = pControl->GetWindow();
+	CWnd* pCtrlWnd = pDlgControl->GetControlWnd();
 	CPoint pt( nX, nY );
 	if( pt.x == -1 && pt.y == -1 )
 	{
@@ -332,8 +335,8 @@ ADSRESULT Control::ShowToolTip()
 	}
 
 	PPTOOLTIP_INFO TI;
-	if( pControl->GetControlInstance()->GetToolTipCtrl().GetToolInfo( TI, pCtrlWnd, DWORD(0) ) )
-		pControl->GetControlInstance()->GetToolTipCtrl().ShowHelpTooltip(&pt, TI);
+	if( pDlgControl->GetToolTipCtrl().GetToolInfo( TI, pCtrlWnd, DWORD(0) ) )
+		pDlgControl->GetToolTipCtrl().ShowHelpTooltip( &pt, TI );
 
 	acedRetT();
 	return RSRSLT;
@@ -344,7 +347,7 @@ ADSRESULT ProgressBar::SetPos()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlProgress))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlProgressBar))
 		return RSERR; //invalid input
 
 	int nPos;

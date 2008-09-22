@@ -206,7 +206,7 @@ void CPictureBoxCtrl::PaintPicture(int sX, int sY, int nPictureID, int nEnabled,
 
 	CRect iconRect;
 
-	CPictureObject* pPicture = mpTemplate->GetOwnerProject()->FindPicture( nPictureID );
+	TPicturePtr pPicture = mpTemplate->GetOwnerProject()->FindPicture( nPictureID );
 	if( !pPicture )
 		return;
 

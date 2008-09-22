@@ -12,6 +12,7 @@
 #include "ToolTips.h"
 #include "UndoManager.h"
 #include "DragDropService.h"
+#include <algorithm>
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -282,36 +283,45 @@ bool CDialogControl::ApplyPropertiesEnum()
 {
 	bool bSuccess = true;
 	mbEnumProps = true;
-	//make sure the position offsets are corrected before changing anything else
+	std::vector< Prop::Id > ridFirst;
+	std::vector< Prop::Id > ridLast;
+	ApplyPropertiesOrder( ridFirst, ridLast );
+	for( std::vector< Prop::Id >::const_iterator iter = ridFirst.begin();
+			 iter != ridFirst.end();
+			 ++iter )
+		OnApplyProperty( mpTemplate->GetPropertyObject( *iter ) );
 	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::UseLeftFromRight ) );
 	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::UseRightFromRight ) );
 	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::UseTopFromBottom ) );
 	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::UseBottomFromBottom ) );
-	TPropertyPtr pAutoSizeProp = NULL;
 	const TPropertyList& Props = mpTemplate->GetPropertyList();
 	for( TPropertyList::const_iterator iter = Props.begin(); iter != Props.end(); ++iter )
 	{
 		TPropertyPtr pProp = (*iter);
-		switch( pProp->GetID() )
-		{
-		case Prop::AutoSize: //save autosize for last
-			pAutoSizeProp = pProp;
-			break;
-		case Prop::UseLeftFromRight: //already applied these
-		case Prop::UseRightFromRight:
-		case Prop::UseTopFromBottom:
-		case Prop::UseBottomFromBottom:
-			break;
-		default:
-			OnApplyProperty( pProp );
-			break;
-		}
+		Prop::Id id = pProp->GetID();
+		if( std::find( ridFirst.begin(), ridFirst.end(), id ) != ridFirst.end() || 
+				std::find( ridLast.begin(), ridLast.end(), id ) != ridLast.end() )
+			continue; //skip first/last properties
+		OnApplyProperty( pProp );
 	}
-	if( pAutoSizeProp )
-		OnApplyProperty( pAutoSizeProp );
+	for( std::vector< Prop::Id >::const_iterator iter = ridLast.begin();
+			 iter != ridLast.end();
+			 ++iter )
+		OnApplyProperty( mpTemplate->GetPropertyObject( *iter ) );
 	mbEnumProps = false;
 	OnNeedRepaint();
 	return bSuccess;
+}
+
+void CDialogControl::ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast )
+{
+	//make sure the position offsets are corrected before changing anything else
+	ridFirst.push_back( Prop::UseLeftFromRight );
+	ridFirst.push_back( Prop::UseRightFromRight );
+	ridFirst.push_back( Prop::UseTopFromBottom );
+	ridFirst.push_back( Prop::UseBottomFromBottom );
+	ridFirst.push_back( Prop::ImageList );
+	ridLast.push_back( Prop::AutoSize ); //save autosize for last
 }
 
 bool CDialogControl::OnApplyProperty( TPropertyPtr pProp )

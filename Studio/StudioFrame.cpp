@@ -146,12 +146,13 @@ CDclFormView* CStudioFrame::OpenDclFormView( TDclFormPtr pDclForm )
 		ctxtFormView.m_pNewDocTemplate = NULL;
 		ctxtFormView.m_pLastView = NULL;
 		ctxtFormView.m_pCurrentFrame = this;
-		CDclFormFrame* pDclFormFrame = (CDclFormFrame*)theStudioWorkspace.GetStudioFrame()->CreateNewChild( RUNTIME_CLASS(CDclFormFrame), IDD_FORMVIEW );
+		CDclFormFrame* pDclFormFrame = (CDclFormFrame*)theStudioWorkspace.GetStudioFrame()->CreateNewChild( RUNTIME_CLASS(CDclFormFrame), IDD_FORMVIEWFRAME );
 		if( !theStudioWorkspace.GetActiveFormView() )
 			pDclFormFrame->MDIMaximize();
 		pFormView = (CDclFormView*)pDclFormFrame->CreateView( &ctxtFormView );
 		if( !pFormView )
 			return NULL;
+		pFormView->SetScaleToFitSize( CSize( 1200, 800 ) );
 		pFormView->SetSourceForm( pDclForm );
 		pDclFormFrame->SetDialogObject( pFormView->GetDialogObject() );
 		pFormView->SendMessage( WM_INITIALUPDATE, 0, 0 );

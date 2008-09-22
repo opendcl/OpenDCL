@@ -70,12 +70,12 @@ void COpenDCLDoc::OnCloseDocument()
 	CDocument::OnCloseDocument();
 }
 
-BOOL COpenDCLDoc::OnOpenDocument(LPCTSTR lpszPathName)
+BOOL COpenDCLDoc::OnOpenDocument( LPCTSTR lpszPathName )
 {
-	if (!CDocument::OnOpenDocument(lpszPathName))
+	if( !CDocument::OnOpenDocument( lpszPathName ) )
 		return FALSE;
 
-	SetTitle(lpszPathName);
+	SetTitle( lpszPathName );
 	SetModifiedFlag();  // dirty during de-serialize
 
 	// begin reading
@@ -87,36 +87,39 @@ BOOL COpenDCLDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	IOStatus stat = mpProject->ReadFromFile( lpszPathName );
 	if( stat != statOK )
 	{
-		ReportSaveLoadException(lpszPathName, NULL, FALSE, AFX_IDP_FAILED_TO_OPEN_DOC);
+		ReportSaveLoadException( lpszPathName, NULL, FALSE, AFX_IDP_FAILED_TO_OPEN_DOC );
 		return FALSE;
 	}
 
-	SetModifiedFlag(FALSE);     // start off with unmodified
+	SetModifiedFlag( FALSE );     // start off with unmodified
 	theStudioWorkspace.ActivateProject( mpProject, this );
   return TRUE;
 }
 
-BOOL COpenDCLDoc::OnSaveDocument(LPCTSTR lpszPathName) 
+BOOL COpenDCLDoc::OnSaveDocument( LPCTSTR lpszPathName ) 
 {
   //Get and open text file with basic information
 	CString sFileName = lpszPathName;
-	if (sFileName.IsEmpty())
+	if( sFileName.IsEmpty() )
 	{
-		if (!AfxGetApp()->DoPromptFileName(sFileName, AFX_IDS_SAVEFILE,
-			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, FALSE, NULL)) return FALSE;	
+		if( !AfxGetApp()->DoPromptFileName( sFileName, AFX_IDS_SAVEFILE,
+																				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+																				FALSE, NULL ) )
+			return FALSE;	
 	}
-  CopyFile(sFileName, sFileName + _T(".bak"), FALSE);
+  CopyFile( sFileName, sFileName + _T(".bak"), FALSE );
 
 	// begin saving.
 	CWaitCursor wait;
 
 	mpProject->SetKeyName( lpszPathName ); //updating the key name *before* saving
-	if (mpProject->WriteToFile(sFileName) != statOK)
+	if( mpProject->WriteToFile( sFileName ) != statOK )
 	{
-		ReportSaveLoadException(sFileName, NULL, TRUE, AFX_IDP_FAILED_TO_SAVE_DOC);
+		ReportSaveLoadException( sFileName, NULL, TRUE, AFX_IDP_FAILED_TO_SAVE_DOC );
 		return FALSE;
 	}
-	SetModifiedFlag(FALSE);     // back to unmodified
+	m_strTitle = mpProject->GetKeyName();
+	SetModifiedFlag( FALSE );     // back to unmodified
 	((CStudioFrame*)AfxGetApp()->GetMainWnd())->DelayUpdateFrameTitle();
 
 	return TRUE;

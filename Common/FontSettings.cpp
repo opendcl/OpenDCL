@@ -114,7 +114,9 @@ void FontSettings::setFrom( CAxContainerCtrl* pAxControl, DISPID dispid )
 		clear();
 		return;
 	}
-	COleFont font = pAxControl->GetFont( dispid );
+	LPDISPATCH pDispatch;
+	pAxControl->InvokeHelper( dispid, DISPATCH_PROPERTYGET, VT_DISPATCH, (void*)&pDispatch, NULL );
+	COleFont font( pDispatch );
 	msName = font.GetName();
 	CY cyFontSize = font.GetSize();
 	mlSize = cyFontSize.Lo / -10000;		

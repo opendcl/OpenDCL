@@ -6,18 +6,18 @@
 
 namespace AxControl
 {
-ADSRESULT GetProperty();
-ADSRESULT SetProperty();
-ADSRESULT DoMethod();
-ADSRESULT GetOleObject();
+ADSRESULT Get();
+ADSRESULT Put();
+ADSRESULT Invoke();
+ADSRESULT GetAxObject();
 };
 
 namespace AxObject
 {
-ADSRESULT GetProperty();
-ADSRESULT SetProperty();
-ADSRESULT DoMethod();
-ADSRESULT Close();
+ADSRESULT Get();
+ADSRESULT Put();
+ADSRESULT Invoke();
+ADSRESULT Release();
 };
 
 namespace AxGeneral

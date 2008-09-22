@@ -95,7 +95,7 @@ BOOL CArxControlDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject,
 			return TRUE;
 		}
 
-		CString sDropAcadWndPointEvent = pDclControl->GetStringProperty( Prop::DragnDropFromAutoCAD );
+		CString sDropAcadWndPointEvent = pDclControl->GetStringProperty( Prop::DragnDropFromOther );
 		if( !sDropAcadWndPointEvent.IsEmpty() )
 		{
 			InvokeMethodPoint( sDropAcadWndPointEvent,
@@ -117,7 +117,7 @@ BOOL CArxControlDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject,
 	if (mpDclControl->GetType() == CtlDwgList)
 		CArxDwgListCtrl *pDwgList = (CArxDwgListCtrl*)pControl->GetWindow();
 	
-	if (mpDclControl->GetType() == CtlTree)
+	if (mpDclControl->GetType() == CtlImageTree)
 	{
 		HTREEITEM	hitem;
 		UINT		flags = 0;
@@ -135,7 +135,7 @@ BOOL CArxControlDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject,
 			{
 				// From AcadDwgView
 				InvokeMethodLong(
-					mpDclControl->GetStringProperty(Prop::DragnDropFromAutoCAD),
+					mpDclControl->GetStringProperty(Prop::DragnDropFromOther),
 					(DWORD_PTR)hitem,
 					(mpDclControl->GetLongProperty(Prop::EventInvoke) == 1));
 			}
@@ -143,7 +143,7 @@ BOOL CArxControlDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject,
 			{
 				// From AcadDwgView
 				InvokeMethodString(
-					mpDclControl->GetStringProperty(Prop::DragnDropFromAutoCAD),
+					mpDclControl->GetStringProperty(Prop::DragnDropFromOther),
 					sTreeItemKey,
 					(mpDclControl->GetLongProperty(Prop::EventInvoke) == 1));
 			}
@@ -181,7 +181,7 @@ BOOL CArxControlDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject,
 		{
 			// From AcadDwgView
 			InvokeMethodPoint(
-				mpDclControl->GetStringProperty(Prop::DragnDropFromAutoCAD),
+				mpDclControl->GetStringProperty(Prop::DragnDropFromOther),
 				point,
 				(mpDclControl->GetLongProperty(Prop::EventInvoke) == 1));
 		}

@@ -3,7 +3,7 @@
 #include "PtrTypes.h"
 
 class CGeometry;
-class CColors;
+class CColorsPage;
 class CComboBoxPage;
 class CTextBoxFilters;
 class CFontPropertyPage;
@@ -28,9 +28,9 @@ private:
 	TDclControlPtr mpDclControl;
 	PropPage mnDefaultPage;
 	CGeometry* mpGeometryPage;
-	CColors* mpBackColorsPage;
-	CColors* mpForeColorsPage;
-	CColors* mpAltColorsPage;
+	CColorsPage* mpBackColorsPage;
+	CColorsPage* mpForeColorsPage;
+	CColorsPage* mpAltColorsPage;
 	CComboBoxPage* mpComboBoxPage;
 	CTextBoxFilters* mpTextBoxPage;
 	CFontPropertyPage* mpFontPage;

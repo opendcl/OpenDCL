@@ -5,8 +5,7 @@
 #pragma once
 
 #include "ButtonCtrl.h"
-
-class CPictureObject;
+#include "PtrTypes.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -14,8 +13,8 @@ class CPictureObject;
 
 class CGraphicButtonCtrl : public CButtonCtrl
 {
-	CPictureObject* mpPicture;
-	CPictureObject* mpMouseOverPicture;
+	TPicturePtr mpPicture;
+	TPicturePtr mpMouseOverPicture;
 
 public:
 	CGraphicButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -27,10 +26,10 @@ public:
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
 public:
-	void SetPicture( CPictureObject* pPict );
-	CPictureObject* GetPicture() const { return mpPicture; }
-	void SetMouseOverPicture( CPictureObject* pPict );
-	CPictureObject* GetMouseOverPicture() const { return mpMouseOverPicture; }
+	void SetPicture( TPicturePtr pPict );
+	TPicturePtr GetPicture() const { return mpPicture; }
+	void SetMouseOverPicture( TPicturePtr pPict );
+	TPicturePtr GetMouseOverPicture() const { return mpMouseOverPicture; }
 
 protected:
 	void UpdateButtonGraphic();

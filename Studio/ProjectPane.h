@@ -59,7 +59,6 @@ public:
 	void AddFormToTree(TDclFormPtr pDcl, bool bForceShow);
 	void RemoveChildren(HTREEITEM hParent);
 	void CleanupParents();
-	void AddActiveXFileTree(CString sFileName);
 
 public:
 	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);

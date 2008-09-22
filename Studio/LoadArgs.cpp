@@ -105,15 +105,15 @@ void LoadArgsNDesc( const TPropertyPtr pEventProp, CString& sArgs, CString& sDes
 			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_SELTEXT);
 			sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_SELCHANGED);
 			break;
-		case CtlTree:
+		case CtlImageTree:
 			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_TEXTKEY);
 			sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_SELCHANGED);
 			break;
-		case CtlFileDlgCtrl:
+		case CtlFileExplorer:
 			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_SELTEXT);
 			sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_SELCHANGED);
 			break;
-		case CtlMonth:
+		case CtlCalendar:
 			sArgs.Empty();
 			sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_SELCHANGED);
 			break;
@@ -195,7 +195,7 @@ void LoadArgsNDesc( const TPropertyPtr pEventProp, CString& sArgs, CString& sDes
 		case CtlListView:
 			sArgs = theWorkspace.LoadResourceString(IDS_ARG_ITEM);
 			break;
-		case CtlTree:
+		case CtlImageTree:
 			sArgs = theWorkspace.LoadResourceString(IDS_ARG_KEY);
 			break;
 		}
@@ -218,7 +218,7 @@ void LoadArgsNDesc( const TPropertyPtr pEventProp, CString& sArgs, CString& sDes
 			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_TEXTROWCOL);
 			sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_ENDLABELEDIT);
 			break;
-		case CtlTree:
+		case CtlImageTree:
 			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_TEXTKEY);
 			sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_ENDLABELEDIT);
 			break;
@@ -481,7 +481,7 @@ void LoadArgsNDesc( const TPropertyPtr pEventProp, CString& sArgs, CString& sDes
 	case Prop::DragnDropFromControl:
 		switch(pControl->GetType())
 		{
-		case CtlTree:
+		case CtlImageTree:
 			sArgs = theWorkspace.LoadResourceString(IDS_ARGS_CTRLKEY);
 			break;
 		default:
@@ -491,8 +491,8 @@ void LoadArgsNDesc( const TPropertyPtr pEventProp, CString& sArgs, CString& sDes
 		sDesc = theWorkspace.LoadResourceString(IDS_EVENTD_DRAGFROMCONTROL);
 		break;
 
-	case Prop::DragnDropFromAutoCAD:
-		if( pControl->GetType() == CtlTree )
+	case Prop::DragnDropFromOther:
+		if( pControl->GetType() == CtlImageTree )
 			sArgs = theWorkspace.LoadResourceString(IDS_ARG_ITEMKEY);			
 		else
 			sArgs = theWorkspace.LoadResourceString(IDS_ARG_ITEMPOINT);

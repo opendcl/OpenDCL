@@ -26,21 +26,15 @@ protected:
 	ControlType mType;
 
 private:
-	CString msAxTypeName; //this should be moved to AxContainer -- unfortunately it's filed from here [ORW]
 	TPropertyList mProperties;
 	RefCountedPtr< CImageListObject > mpImageList;
 	int mnID;
 
-public:
-	// ActiveX members
-	CString m_sLicenseKey;
-	CLSID   m_clsid;
-
-	//storage stream
-	CComPtr<IStream> m_pStream;
-	void SaveToStream(CAxContainerCtrl *pCtrl);
-	IStream *GetLoadStream();
-	void ClearStream();
+	//ActiveX control info
+	CComPtr< IStream > mpStream; //for persisting ActiveX controls
+	CString msLicenseKey;
+	CLSID mClsid;
+	CString msAxTypeName; //this should be moved to AxContainer -- unfortunately it's filed from here [ORW]
 
 protected:
 	CDclControlObject();
@@ -77,6 +71,13 @@ public:
 	void SetAxTypeName( LPCTSTR pszAxTypeName ) { msAxTypeName = pszAxTypeName; }
 	int GetID() const { return mnID; }
 	virtual bool IsZOrderAllowed() const;
+	const CComPtr< IStream >& GetIStream() const { return mpStream; }
+	CComPtr< IStream >& GetIStream() { return mpStream; }
+	LPCTSTR GetAxCtrlLicenseKey() const { return msLicenseKey; }
+	const CLSID& GetAxCtrlClsid() const { return mClsid; }
+	void SetAxCtrlInfo( const CLSID& clsid, LPCTSTR pszLicenseKey = NULL ) { mClsid = clsid; msLicenseKey = pszLicenseKey; }
+	CString GetActiveXTypeName() const;
+	bool IsMicrosoftActiveXCtrl() const;
 
 protected: //for use by parent form only
 	friend class CDclFormObject;
@@ -129,10 +130,6 @@ public:
 	COLORREF GetColorProperty(Prop::Id nID) const;
 
 // Implementation
-public:
-	CString GetActiveXTypeName() const;
-	bool IsMicrosoftActiveXCtrl() const;
-
 protected:
 	TPropertyList::iterator FindPropertyInsertPos( LPCTSTR pszName, bool bHidden );
 	TPropertyList::iterator FindPropertyInsertPos( Prop::Id id, bool bHidden );

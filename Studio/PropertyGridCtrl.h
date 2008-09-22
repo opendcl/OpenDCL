@@ -46,6 +46,7 @@ public:
 	Prop::Id GetPropertyId( size_t idxCell );
 	PropertyType GetPropertyType( size_t idxCell );
 	TPropertySet& GetPropertySet( size_t idxCell );
+	CString GetDisplayableValue( size_t idxCell );
 	CRect GetEditRect( size_t idxCell );
 	CStudioUndoManager* GetUndoManager() const;
 	void HideEditControls();
@@ -69,6 +70,7 @@ protected:
 protected:
 	void DrawBooleanProperty( CDC& cdc, const CRect& rcIcon, int nState );
 	void DrawColor( CDC& cdc, const CRect& rcIcon, int nColor, const CString& sText );
+	void ShowPropertyPages( ULONG ctPages, CLSID FAR* lpPages, LPCTSTR pszCaption );
 
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -93,5 +95,11 @@ protected:
 	afx_msg void OnImageListProperties();
 	afx_msg void OnObjectbrowser();
 	afx_msg void OnAxProperties();
+	afx_msg void OnAxColorPropertyPage();
+	afx_msg void OnAxStockColorPropertyPage();
+	afx_msg void OnAxFontPropertyPage();
+	afx_msg void OnAxStockFontPropertyPage();
+	afx_msg void OnAxPicturePropertyPage();
+	afx_msg void OnAxStockPicturePropertyPage();
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 };

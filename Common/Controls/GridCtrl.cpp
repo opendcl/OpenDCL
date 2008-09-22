@@ -168,8 +168,6 @@ bool CGridCtrl::Create( CWnd* pParentWnd, UINT nID )
 
 	//SetExtendedStyle( GetExtendedStyle() | LVS_EX_SUBITEMIMAGES );
 
-	if( bSuccess && !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::ImageList ) ) )
-		bSuccess = false;
 	if( bSuccess && !ApplyPropertiesEnum() )
 		bSuccess = false;
 
@@ -1516,7 +1514,7 @@ bool CGridCtrl::SortTextItems( int nCol, bool bAscending )
 	size_t ctRows = mRowData.size();
 	if( ctRows <= 1 )
 		return true;
-	std::vector< size_t > rnSortXForm;
+	std::vector< UINT > rnSortXForm;
 	rnSortXForm.resize( ctRows );
 	size_t idx = ctRows;
 	while( idx-- > 0 )

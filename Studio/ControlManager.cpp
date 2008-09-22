@@ -97,7 +97,7 @@ void CControlManager::OnSelected( bool bSelected )
 	if( mGripper.m_hWnd )
 	{
 		mGripper.ShowWindow( bSelected? SW_SHOW : SW_HIDE );
-		if( !bSelected )
+		if( !bSelected && mbSelected )
 		{
 			ShowWindow( SW_HIDE );
 			ShowWindow( SW_SHOW );
@@ -297,7 +297,7 @@ void CControlManager::AutoSize()
 	default:
 		{
 			CRect rcControl;
-			if( mpTemplate->GetType() == CtlMonth )
+			if( mpTemplate->GetType() == CtlCalendar )
 				((CMonthCalCtrl*)mpControlWnd)->GetMinReqRect( &rcControl );
 			else
 				mpControlWnd->GetWindowRect( &rcControl );

@@ -236,7 +236,6 @@ void CStudioWorkspace::ActivateDclControl( TDclControlPtr pDclControl )
 	}
 	else
 	{
-		mpStudioFrame->GetFontToolbar().ClearFont();
 		CZOrderPane* pZOrderPane = GetZOrderPane();
 		if( pZOrderPane )
 			pZOrderPane->OnActivateDclControl( NULL );
