@@ -95,8 +95,7 @@ ADSRESULT Grid::InsertColumn()
 	if( !GetIntArgument( pArgs, nInsertIdx ) )
 		return RSERR; //invalid input
 
-	if( !GetListBeginArgument( pArgs ) )
-		return RSERR; //invalid input
+	bool bListBegin = GetListBeginArgument( pArgs, true ) ;
 
 	CString sCaption;
 	if( !GetStringArgument( pArgs, sCaption ) )
@@ -128,7 +127,7 @@ ADSRESULT Grid::InsertColumn()
 			GetIntArgument( pArgs, nImage, true );
 	}
 
-	if( !GetListEndArgument( pArgs ) )
+	if( bListBegin && !GetListEndArgument( pArgs ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -161,7 +160,7 @@ ADSRESULT Grid::AddRow()
 	if( !GetStringArgument( pArgs, sItemText ) )
 		return RSERR; //invalid input
 
-	CStringArray rsText;
+	PropVal::TCStringArray rsText;
 	GetStringArrayArgument( pArgs, rsText, true );
 
 	if( !GetListEndArgument( pArgs ) )
@@ -175,8 +174,8 @@ ADSRESULT Grid::AddRow()
 	int nRow = pCtrl->InsertItem( pCtrl->GetItemCount(), sItemText, nImage );
 	if( nRow == -1 )
 		return RSRSLT;
-	for( int idx = rsText.GetCount() - 1; idx >= 0; --idx )
-		pCtrl->SetCellText( nRow, idx + 1, rsText.GetAt( idx ) );
+	for( size_t idx = rsText.size(); idx > 0; --idx )
+		pCtrl->SetCellText( nRow, idx, rsText[idx - 1] );
 
 	acedRetInt( nRow );
 	return RSRSLT;
@@ -194,8 +193,7 @@ ADSRESULT Grid::InsertRow()
 	if( !GetIntArgument( pArgs, nInsertIdx ) )
 		return RSERR; //invalid input
 
-	if( !GetListBeginArgument( pArgs ) )
-		return RSERR; //invalid input
+	bool bListBegin = GetListBeginArgument( pArgs, true ) ;
 
 	int nImage = -1;
 	GetIntArgument( pArgs, nImage, true );
@@ -204,10 +202,10 @@ ADSRESULT Grid::InsertRow()
 	if( !GetStringArgument( pArgs, sItemText ) )
 		return RSERR; //invalid input
 
-	CStringArray rsText;
+	PropVal::TCStringArray rsText;
 	GetStringArrayArgument( pArgs, rsText, true );
 
-	if( !GetListEndArgument( pArgs ) )
+	if( bListBegin && !GetListEndArgument( pArgs ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -218,8 +216,8 @@ ADSRESULT Grid::InsertRow()
 	int nRow = pCtrl->InsertItem( nInsertIdx, sItemText, nImage );
 	if( nRow == -1 )
 		return RSRSLT;
-	for( int idx = rsText.GetCount() - 1; idx >= 0; --idx )
-		pCtrl->SetCellText( nRow, idx + 1, rsText.GetAt( idx ) );
+	for( size_t idx = rsText.size(); idx > 0; --idx )
+		pCtrl->SetCellText( nRow, idx, rsText[idx - 1] );
 
 	acedRetT();
 	return RSRSLT;
@@ -243,7 +241,7 @@ ADSRESULT Grid::Clear()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::GetItemData()
+ADSRESULT Grid::GetRowData()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -264,7 +262,7 @@ ADSRESULT Grid::GetItemData()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::SetItemData()
+ADSRESULT Grid::SetRowData()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -290,7 +288,7 @@ ADSRESULT Grid::SetItemData()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::GetItemImage()
+ADSRESULT Grid::GetCellImage()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -314,7 +312,7 @@ ADSRESULT Grid::GetItemImage()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::GetItemText()
+ADSRESULT Grid::GetCellText()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -338,7 +336,7 @@ ADSRESULT Grid::GetItemText()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::GetRowItems()
+ADSRESULT Grid::GetRowCells()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -377,7 +375,7 @@ ADSRESULT Grid::GetRowItems()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::GetColumnItems()
+ADSRESULT Grid::GetColumnCells()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -416,7 +414,7 @@ ADSRESULT Grid::GetColumnItems()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::SetItemText()
+ADSRESULT Grid::SetCellText()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -446,7 +444,7 @@ ADSRESULT Grid::SetItemText()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::SetItemStyle()
+ADSRESULT Grid::SetCellStyle()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -511,7 +509,7 @@ ADSRESULT Grid::HitPointTest()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::GetItemDropList()
+ADSRESULT Grid::GetCellDropList()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -560,7 +558,7 @@ ADSRESULT Grid::GetItemDropList()
 	return RSRSLT;
 }			
 
-ADSRESULT Grid::SetItemDropList()
+ADSRESULT Grid::SetCellDropList()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -576,11 +574,11 @@ ADSRESULT Grid::SetItemDropList()
 	if( !GetIntArgument( pArgs, nCol ) )
 		return RSERR; //invalid input
 
-	CStringArray rsText;
+	PropVal::TCStringArray rsText;
 	if( !GetStringArrayArgument( pArgs, rsText ) )
 		return RSERR; //invalid input
 
-	CArray< int, int > rnImage;
+	PropVal::TIntArray rnImage;
 	GetIntArrayArgument( pArgs, rnImage, true );
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -588,12 +586,22 @@ ADSRESULT Grid::SetItemDropList()
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
-	if( pCtrl->SetCellListData( nRow, nCol, rnImage, rsText ) )
+	CStringArray crsText;
+	for( PropVal::TCStringArray::const_iterator iter = rsText.begin();
+			 iter != rsText.end();
+			 ++iter )
+		crsText.Add( *iter );
+	CArray< int, int > crnImage;
+	for( PropVal::TIntArray::const_iterator iter = rnImage.begin();
+			 iter != rnImage.end();
+			 ++iter )
+		crnImage.Add( *iter );
+	if( pCtrl->SetCellListData( nRow, nCol, crnImage, crsText ) )
 		acedRetT();
 	return RSRSLT;
 }			
 
-ADSRESULT Grid::SetItemImage()
+ADSRESULT Grid::SetCellImage()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -623,7 +631,7 @@ ADSRESULT Grid::SetItemImage()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::GetColWidth()
+ADSRESULT Grid::GetColumnWidth()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -644,7 +652,7 @@ ADSRESULT Grid::GetColWidth()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::SetColWidth()
+ADSRESULT Grid::SetColumnWidth()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -670,7 +678,7 @@ ADSRESULT Grid::SetColWidth()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::CalcColWidth()
+ADSRESULT Grid::CalcColumnWidth()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -772,7 +780,7 @@ ADSRESULT Grid::FillList()
 			{
 				if( bVisible )
 					pCtrl->SetRedraw( TRUE );
-				pCtrl->OnNeedRepaint();
+				pCtrl->OnNeedRepaint( true, true );
 				return RSERR; //invalid input
 			}
 
@@ -788,13 +796,12 @@ ADSRESULT Grid::FillList()
 		++nRow;
 	} while( GetListBeginArgument( pArgs, true ) );
 
-	if( !GetListEndArgument( pArgs ) )
-		return RSERR; //invalid input
-
 	if( bVisible )
 		pCtrl->SetRedraw( TRUE );
-	pCtrl->OnNeedRepaint();
-	pCtrl->UpdateWindow(); 
+	pCtrl->OnNeedRepaint( true, true );
+
+	if( !GetListEndArgument( pArgs ) )
+		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
@@ -803,7 +810,7 @@ ADSRESULT Grid::FillList()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::GetCurSel()
+ADSRESULT Grid::GetCurCell()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -819,7 +826,7 @@ ADSRESULT Grid::GetCurSel()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::CancelItemEdit()
+ADSRESULT Grid::CancelCellEdit()
 {	
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -836,7 +843,7 @@ ADSRESULT Grid::CancelItemEdit()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::SortTextItems()
+ADSRESULT Grid::SortTextCells()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -861,7 +868,7 @@ ADSRESULT Grid::SortTextItems()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::SortNumericItems()
+ADSRESULT Grid::SortNumericCells()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -979,7 +986,7 @@ ADSRESULT Grid::GetColumnCount()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::SetCurSel()
+ADSRESULT Grid::SetCurCell()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -1003,7 +1010,7 @@ ADSRESULT Grid::SetCurSel()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::StartItemEdit()
+ADSRESULT Grid::StartCellEdit()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -1012,24 +1019,22 @@ ADSRESULT Grid::StartItemEdit()
 		return RSERR; //invalid input
 
 	int nRow = -1;
-	if( !GetIntArgument( pArgs, nRow ) )
-		return RSERR; //invalid input
-
 	int nCol = -1;
-	GetIntArgument( pArgs, nCol, true );
+	if( GetIntArgument( pArgs, nRow, true ) )
+		GetIntArgument( pArgs, nCol, true );
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
-	pCtrl->SetCurCell( nRow, nCol );
+	pCtrl->SetCurCell( (nRow < 0)? pCtrl->GetCurRow() : nRow, (nCol < 0)? pCtrl->GetCurColumn() : nCol );
 	pCtrl->EditCurCell();
 	acedRetT();
 	return RSRSLT;
 }
 
 
-ADSRESULT Grid::GetItemCheck()
+ADSRESULT Grid::GetCellCheckState()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -1056,7 +1061,7 @@ ADSRESULT Grid::GetItemCheck()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::SetItemCheck()
+ADSRESULT Grid::SetCellCheckState()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 

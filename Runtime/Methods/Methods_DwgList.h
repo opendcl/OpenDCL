@@ -18,9 +18,9 @@ ADSRESULT SetCurSel();
 ADSRESULT GetCount();
 ADSRESULT GetTopIndex();
 ADSRESULT SetTopIndex();
-ADSRESULT DeleteString();
-ADSRESULT SetSel();
-ADSRESULT GetSel();
+ADSRESULT DeleteItem();
+ADSRESULT SelectItem();
+ADSRESULT IsItemSelected();
 ADSRESULT SetFocusIndex(); // SetCaretIndex
 ADSRESULT GetFocusIndex(); // GetCaretIndex
 ADSRESULT GetSelCount();

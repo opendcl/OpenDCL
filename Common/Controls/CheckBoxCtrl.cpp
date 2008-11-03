@@ -92,7 +92,8 @@ BOOL CCheckBoxCtrl::PreTranslateMessage(MSG* pMsg)
 
 HBRUSH CCheckBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	return mColorService.CtlColor( pDC, nCtlColor, (mColorService.IsBackgroundTransparent()? this : NULL) );
+	return mColorService.CtlColor( pDC, nCtlColor );
+	//return mColorService.CtlColor( pDC, nCtlColor, (mColorService.IsBackgroundTransparent()? this : NULL) );
 	//HBRUSH hbrBackground = mColorService.CtlColor( pDC, nCtlColor, this );
 	//if( GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
 	//	return NULL; //must use class brush when themes are active, else XP paints a black background
@@ -102,7 +103,15 @@ HBRUSH CCheckBoxCtrl::CtlColor(CDC* pDC, UINT nCtlColor)
 BOOL CCheckBoxCtrl::OnEraseBkgnd(CDC* pDC)
 {
 	if( mColorService.IsBackgroundTransparent() )
+	{
+		CRect rcClip;
+		pDC->GetClipBox( &rcClip );
+		ClientToScreen( &rcClip );
+		CWnd* pParentWnd = GetParent();
+		pParentWnd->ScreenToClient( &rcClip );
+		pParentWnd->RedrawWindow( &rcClip, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_NOCHILDREN | RDW_UPDATENOW );
 		return TRUE;
+	}
 
 	return __super::OnEraseBkgnd(pDC);
 }
@@ -119,7 +128,7 @@ void CCheckBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	__super::OnLButtonDown(nFlags, point);
 	if( !IsWindowEnabled() )
 		return;
-	OnNeedRepaint( false, true );
+	//OnNeedRepaint( false, true );
 	//SetState( GetState() | BST_FOCUS );
 	//Invalidate();
 }
@@ -138,7 +147,7 @@ void CCheckBoxCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		}
 	}
 	__super::OnLButtonUp(nFlags, point);
-	OnNeedRepaint();
+	////OnNeedRepaint();
 }
 
 void CCheckBoxCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -163,7 +172,7 @@ void CCheckBoxCtrl::OnKillFocus(CWnd * pNewWnd)
 {
 	//SetState( GetState() & ~BST_FOCUS );
 	//Invalidate();
-	OnNeedRepaint();
+	//OnNeedRepaint();
 	__super::OnKillFocus( pNewWnd );
 }
 

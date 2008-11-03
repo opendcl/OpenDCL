@@ -112,7 +112,8 @@ protected:
 	//2007-06-16 [ORW]: save version set to 12 (removed mbHasPassword and msDistFileName members)
 	//2008-02-15 [ORW]: save version set to 13 (removed mOleControls)
 	//2008-09-15 [ORW]: save version set to 14 (removed mrsActiveXFiles)
-	ULONG GetCurrentSaveVersion() const { return 14; }
+	//2008-11-02 [ORW]: save version set to 15 (changed version from ULONG to BYTE)
+	BYTE GetCurrentSaveVersion() const { return 15; }
 
 public:
 	static LPCTSTR GetOdclPassword() { return _T("d32afd3aw3aq3fdaw3"); }

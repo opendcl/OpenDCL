@@ -33,7 +33,7 @@ public:
 public:
 	const CPropertyGridCtrl& GetPropertiesCtrl() const { return mPropGridCtrl; }
 	CPropertyGridCtrl& GetPropertiesCtrl() { return mPropGridCtrl; }
-	void ActivateProperty( Prop::Id id );
+	void ActivateProperty( TPropertyPtr pProp );
 
 // Overrides
 public:

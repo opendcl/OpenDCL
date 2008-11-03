@@ -98,7 +98,7 @@ CCustomFileDialog::CCustomFileDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=
 	SetTemplate(IDD_CUSTOM_FILE_DIALOG, IDD_CUSTOM_FILE_DIALOG);
 	OPENFILENAME& ofn = GetOFN();
 	TDclControlPtr pProps = pSourceForm->GetControlProperties();
-	if (pProps->GetBooleanProperty(Prop::Resizable))
+	if (pProps->GetBooleanProperty(Prop::AllowResizing))
 		ofn.Flags |= OFN_ENABLESIZING;
 	if( pSourceForm )
 	{
@@ -394,7 +394,7 @@ void CCustomFileDialog::OnTypeChange()
 	if( !mpFileDlgCtrl )
 		return;
 	CString sText;
-	GetParent()->GetDlgItem(cmb1)->GetWindowText(sText);
+	GetParent()->GetDlgItem(cmb1)->GetWindowText( sText );
 	InvokeMethodString(mpFileDlgCtrl->GetStringProperty(Prop::EventOnTypeChange), sText, false);
 }
 

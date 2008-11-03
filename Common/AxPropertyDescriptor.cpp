@@ -107,11 +107,13 @@ AxPropertyDescriptor::AxPropertyDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTyp
 				{
 					AxArg& arg = mrArgs[n];
 					const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
-					bool bNotByVal = (e.tdesc.vt == VT_PTR);
-					VARTYPE vt = (bNotByVal? e.tdesc.lptdesc->vt : e.tdesc.vt);
+					VARTYPE vt = e.tdesc.vt;
+					bool bPtr = (vt == VT_PTR);
+					if( bPtr )
+						vt = (VT_BYREF | e.tdesc.lptdesc->vt);
 					if (vt == VT_USERDEFINED) 
 						SetRefType( vt, pTypeInfo,
-												(bNotByVal? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
+												(bPtr? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
 												arg.clsid );
 					arg.vt = vt;
 					arg.optional = ((e.paramdesc.wParamFlags & PARAMFLAG_FOPT) != 0);
@@ -146,7 +148,7 @@ CString AxPropertyDescriptor::GetTypeDisplayName() const
 	if( mGuid != GUID_NULL )
 		sName = GetAxTypeName( mGuid );
 	if( sName.IsEmpty() )
-		sName = VariantTypeToDisplayableLispType( mType );
+		sName = AxTypeToDisplayableLispType( mType, mGuid );
 	return sName;
 }
 
@@ -154,7 +156,7 @@ CString AxPropertyDescriptor::GetEnumDisplayName( size_t idxEnum ) const
 {
 	if( idxEnum >= mrEnum.size() )
 		return _T("");
-	return VariantToString( mrEnum.at( idxEnum ).Var );
+	return mrEnum.at( idxEnum ).Name;
 }
 
 CString AxPropertyDescriptor::GetArgDisplayName( size_t idxArg ) const
@@ -166,7 +168,7 @@ CString AxPropertyDescriptor::GetArgDisplayName( size_t idxArg ) const
 	if( arg.clsid != GUID_NULL )
 		sName = GetAxTypeName( arg.clsid );
 	if( sName.IsEmpty() )
-		sName = VariantTypeToDisplayableLispType( arg.vt );
+		sName = AxTypeToDisplayableLispType( arg.vt, arg.clsid );
 	return sName;
 }
 
@@ -343,19 +345,22 @@ HRESULT AxPropertyDescriptor::GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype 
 }
 
 
-void AxPropertyDescriptor::Serialize( CArchive& ar, int nPropertyVersion )
+void AxPropertyDescriptor::Serialize( CArchive& ar, BYTE nPropertyVersion )
 {
+	BYTE nThisVersion = GetCurrentSaveVersion();
+	
 	if (ar.IsStoring())
 	{
+		ar << nThisVersion;
 		ar << mDispId;
 		ar << msName;
 		ar << msDesc;
 		ar << mType;
-		ar << BOOL(mbArray);
-		ar << BOOL(!mbReadOnly);
+		ar << bool(mbArray);
+		ar << bool(mbReadOnly);
 		SerializeCLSID(ar, mGuid);
-		ar << mrEnum.size();
-		ar << mrArgs.size();
+		ar << unsigned short(mrEnum.size());
+		ar << unsigned short(mrArgs.size());
 		ar << int(mInvKind);
 		for (size_t i = 0; i < mrEnum.size(); ++i)
 		{
@@ -375,23 +380,51 @@ void AxPropertyDescriptor::Serialize( CArchive& ar, int nPropertyVersion )
 	}
 	else
 	{
+		if (nPropertyVersion <= 7)
+			nThisVersion = 1;
+		else
+			ar >> nThisVersion;
 		ar >> mDispId;
 		ar >> msName;
 		ar >> msDesc;
 		ar >> mType;
-		BOOL bArray;
-		ar >> bArray;
-		mbArray = (bArray != FALSE);
-		BOOL bNotReadOnly;
-		ar >> bNotReadOnly;
-		mbReadOnly = (bNotReadOnly == FALSE);
+		if( nPropertyVersion <= 7)
+		{
+			BOOL bArray;
+			ar >> bArray;
+			mbArray = (bArray != FALSE);
+		}
+		else
+			ar >> mbArray;
+		if( nPropertyVersion <= 7)
+		{
+			BOOL bNotReadOnly;
+			ar >> bNotReadOnly;
+			mbReadOnly = (bNotReadOnly == FALSE);
+		}
+		else
+			ar >> mbReadOnly;
 		SerializeCLSID(ar, mGuid);
-		size_t ctEnum;
-		ar >> ctEnum;
+		unsigned short ctEnum;
+		if( nPropertyVersion <= 7)
+		{
+			unsigned long lEnum;
+			ar >> lEnum;
+			ctEnum = unsigned short(lEnum);
+		}
+		else
+			ar >> ctEnum;
 		assert( ctEnum < 0x7FFFFFFF ); //found one .odc file where this value was -2! --ORW [2007-11-13]
 		mrEnum.resize( ctEnum );
-		size_t ctParams;
-		ar >> ctParams;
+		unsigned short ctParams;
+		if( nPropertyVersion <= 7)
+		{
+			unsigned long lParams;
+			ar >> lParams;
+			ctParams = unsigned short(lParams);
+		}
+		else
+			ar >> ctParams;
 		mrArgs.resize( ctParams );
 		int iKind;
 		ar >> iKind;
@@ -417,7 +450,7 @@ void AxPropertyDescriptor::Serialize( CArchive& ar, int nPropertyVersion )
 
 }
 
-IOStatus AxPropertyDescriptor::ReadFromTextFile( std::ifstream &sFile, ULONG nPropertyVersion )
+IOStatus AxPropertyDescriptor::ReadFromTextFile( std::ifstream &sFile, BYTE nPropertyVersion )
 {
   if (!readDISPIDAsLong(sFile, mDispId)) return statInvalidFormat;
   if (!readString(sFile, msName)) return statInvalidFormat;

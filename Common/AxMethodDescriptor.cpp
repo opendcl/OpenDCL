@@ -46,11 +46,13 @@ AxMethodDescriptor::AxMethodDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInf
 				{
 					AxArg& arg = mrArgs[n];
 					const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
-					bool bNotByVal = (e.tdesc.vt == VT_PTR);
-					VARTYPE vt = (bNotByVal? e.tdesc.lptdesc->vt : e.tdesc.vt);
+					VARTYPE vt = e.tdesc.vt;
+					bool bPtr = (vt == VT_PTR);
+					if( bPtr )
+						vt = (VT_BYREF | e.tdesc.lptdesc->vt);
 					if (vt == VT_USERDEFINED) 
 						SetRefType( vt, pTypeInfo,
-												(bNotByVal? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
+												(bPtr? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
 												arg.clsid );
 					arg.vt = vt;
 					arg.optional = ((e.paramdesc.wParamFlags & PARAMFLAG_FOPT) != 0);
@@ -60,19 +62,20 @@ AxMethodDescriptor::AxMethodDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInf
 			}
 			for( SHORT idx = ctParams; idx >= 0; --idx )
 				SysFreeString( rbstrNames[idx] );
-			msParams = FuncDescToString( pTypeInfo, pFuncDesc, bUseAsType );
 
 			// pick up return type
 			const ELEMDESC& e = pFuncDesc->elemdescFunc; 
-			bool bNotByVal = (e.tdesc.vt == VT_PTR);
-			VARTYPE vt = ((bNotByVal) ? e.tdesc.lptdesc->vt : e.tdesc.vt);
+			VARTYPE vt = e.tdesc.vt;
+			bool bPtr = (vt == VT_PTR);
+			if( bPtr )
+				vt = (VT_BYREF | e.tdesc.lptdesc->vt);
 
 			bool bHidden = ((pFuncDesc->wFuncFlags & (FUNCFLAG_FNONBROWSABLE | FUNCFLAG_FHIDDEN)) != 0);
 			if( !bHidden || mDispId == -552 ) 
 			{
 				if( vt == VT_USERDEFINED ) 
 				{
-					HREFTYPE href = bNotByVal? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype;
+					HREFTYPE href = bPtr? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype;
 					SetRefType( vt, pTypeInfo, href, mReturnGuid );
 					GetNameOfRefType( pTypeInfo, href, msReturnTypeName );
 				}
@@ -91,7 +94,6 @@ AxMethodDescriptor::~AxMethodDescriptor(void)
 {
 }
 
-
 CString AxMethodDescriptor::GetReturnTypeDisplayName() const
 {
 	if( !msReturnTypeName.IsEmpty() )
@@ -100,7 +102,7 @@ CString AxMethodDescriptor::GetReturnTypeDisplayName() const
 	if( mReturnGuid != GUID_NULL )
 		sName = GetAxTypeName( mReturnGuid );
 	if( sName.IsEmpty() )
-		sName = VariantTypeToDisplayableLispType( mReturnType );
+		sName = AxTypeToDisplayableLispType( mReturnType, mReturnGuid );
 	return sName;
 }
 
@@ -120,17 +122,16 @@ HRESULT AxMethodDescriptor::Invoke( IDispatch* pObjectDisp, const VARIANTARG* rv
 
 void AxMethodDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 {
-	int nThisVersion = 2;
+	BYTE nThisVersion = GetCurrentSaveVersion();
 	
 	if (ar.IsStoring())
 	{
 		ar << nThisVersion;
 		ar << mDispId;		
 		ar << msName;
-		ar << msParams;
 		ar << msDesc;
 		ar << mReturnType;
-		ar << mrArgs.size();		
+		ar << unsigned short(mrArgs.size());
 		SerializeCLSID(ar, mReturnGuid);
 		for (size_t i = 0; i < mrArgs.size(); ++i)
 		{
@@ -145,26 +146,44 @@ void AxMethodDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
 	}
 	else
 	{
-		ar >> nThisVersion;
+		if( nPropertyVersion <= 7 )
+		{
+			int nVer;
+			ar >> nVer;
+			nThisVersion = (BYTE)nVer;
+		}
+		else
+			ar >> nThisVersion;
 		ar >> mDispId;
 		ar >> msName;
-		ar >> msParams;
+		if( nThisVersion <= 2 )
+		{
+			CString sUnusedParams;
+			ar >> sUnusedParams;
+		}
 		ar >> msDesc;
 		ar >> mReturnType;
-		size_t ctArgs;
-		ar >> ctArgs;
-		if (nThisVersion >= 2)
-			SerializeCLSID(ar, mReturnGuid);
+		unsigned short ctArgs;
+		if( nThisVersion <= 2 )
+		{
+			unsigned long lArgs;
+			ar >> lArgs;
+			ctArgs = (unsigned short)lArgs;
+		}
+		else
+			ar >> ctArgs;
+		if( nThisVersion >= 2 )
+			SerializeCLSID( ar, mReturnGuid );
 		mrArgs.resize( ctArgs );
-		for (size_t i = 0; i < ctArgs; ++i)
+		for( size_t i = 0; i < ctArgs; ++i )
 		{
 			VARTYPE vt;
 			ar >> vt;
 			mrArgs[i].optional = ((vt & VT_RESERVED) != 0);
 			mrArgs[i].vt = (vt & VT_ILLEGALMASKED);
 			ar >> mrArgs[i].name;
-			if (nThisVersion >= 2)
-				SerializeCLSID(ar, mrArgs[i].clsid);
+			if( nThisVersion >= 2 )
+				SerializeCLSID( ar, mrArgs[i].clsid );
 		}
 	}
 }
@@ -208,7 +227,8 @@ IOStatus AxMethodDescriptor::ReadFromTextFile2(std::ifstream &sFile)
 {
   if (!readDISPIDAsLong(sFile, mDispId)) return statInvalidFormat;
 	if (!readString(sFile, msName)) return statInvalidFormat;
-  if (!readString(sFile, msParams)) return statInvalidFormat;
+	CString sUnusedParams;
+  if (!readString(sFile, sUnusedParams)) return statInvalidFormat;
   if (!readString(sFile, msDesc)) return statInvalidFormat;
   if (!readVARTYPE(sFile, mReturnType)) return statInvalidFormat;
 	int ctArgs;
@@ -229,8 +249,8 @@ IOStatus AxMethodDescriptor::ReadFromTextFile2(std::ifstream &sFile)
 LPCTSTR AxMethodDescriptor::toString() const
 {
 	static TCHAR buf[1024];
-	_sntprintf( buf, _elements(buf), _T("{DISPID: %s, \"%s\", \"%s\", \"%s\"}"),
-							asString( mDispId ), (LPCTSTR)msName, (LPCTSTR)msDesc, (LPCTSTR)msParams );
+	_sntprintf( buf, _elements(buf), _T("{DISPID: %s, \"%s\", \"%s\"}"),
+							asString( mDispId ), (LPCTSTR)msName, (LPCTSTR)msDesc );
 	return buf;
 }
 #endif

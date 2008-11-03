@@ -91,9 +91,7 @@ bool CArxSplitterCtrl::ReadPosition()
 
 BEGIN_MESSAGE_MAP(CArxSplitterCtrl, CSplitterCtrl)
 	ON_WM_MOVE()
-	ON_WM_MOUSEMOVE()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_NCHITTEST()
+	ON_WM_NCLBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -113,28 +111,8 @@ void CArxSplitterCtrl::OnMove(int x, int y)
 														IsAsyncEvents() );
 }
 
-void CArxSplitterCtrl::OnMouseMove(UINT nFlags, CPoint point)
+void CArxSplitterCtrl::OnNcLButtonDown(UINT nHitTest, CPoint point)
 {
-	InvokeMethodIntIntInt( mpTemplate->GetStringProperty( Prop::EventMouseMove ),
-												 nFlags,
-												 point.x,
-												 point.y,
-												 IsAsyncEvents() );
-	__super::OnMouseMove( nFlags, point );
-}
-
-void CArxSplitterCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
-{
-	__super::OnLButtonDown( nFlags, point );
-
 	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventClicked ), IsAsyncEvents() );
-}
-
-__UINT_LRESULT CArxSplitterCtrl::OnNcHitTest(CPoint point)
-{
-	if( !mpTemplate->GetStringProperty(Prop::EventMouseMove).IsEmpty() ||
-			!mpTemplate->GetStringProperty(Prop::EventClicked).IsEmpty() ||
-			mpTemplate->GetBooleanProperty(Prop::DragnDropAllowBegin) )
-		return HTCLIENT;
-	return __super::OnNcHitTest( point );
+	__super::OnNcLButtonDown( nHitTest, point );
 }

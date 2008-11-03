@@ -87,9 +87,7 @@ static bool AddDefaultFormName( TDclControlPtr pDclControl )
 		bool bFoundUnusedName = false;
 		while( !bFoundUnusedName )
 		{
-			sFormName.Format( _T("%s%d"),
-												theWorkspace.LoadResourceString( IDS_DCLFORM ),
-												nFormId++ );
+			sFormName.Format( _T("Form%d"), nFormId++ );
 			bFoundUnusedName = !pProject->FindDclForm( sFormName );
 		}
 		pDclControl->AddStringProperty( Prop::Name, PropString, sFormName );
@@ -104,21 +102,27 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 	assert( pOwnerForm != NULL );
 	if( !pOwnerForm )
 		return false;
-	switch( pOwnerForm->GetType() )
+	FormType eFormType = pOwnerForm->GetType();
+	if( eFormType != FrmTabPage )
 	{
-	case FrmModalDlg:
 		AddDefaultFormName( pDclControl );
 		pDclControl->AddStringProperty( Prop::ControlBrowser, PropActiveXMethods );
-		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		pDclControl->AddStringProperty( Prop::VarName ); // now setting to empty string by default  2007-02-15 [ORW]
+		TPropertyPtr pProp = pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );
+		pProp->SetHidden( !pOwnerForm->IsModeless() );
+	}
+	switch( eFormType )
+	{
+	case FrmModalDlg:
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
-		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, false );
+		pDclControl->AddBooleanProperty( Prop::AllowResizing, PropBool, false );
 		pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth > 0? lWidth : 350 );
 		pDclControl->AddLongProperty( Prop::Height, PropLong, lHeight > 0? lHeight : 250 );
 		pDclControl->AddLongProperty( Prop::MinDialogWidth, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MinDialogHeight, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MaxDialogWidth, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MaxDialogHeight, PropLong, 0 );
-		pDclControl->AddLongProperty( Prop::Icon, PropPicture, -1 );
+		pDclControl->AddLongProperty( Prop::TitleBarIcon, PropPicture, -1 );
 		pDclControl->AddBooleanProperty( Prop::TitleBar, PropBool, true );
 		pDclControl->AddStringProperty( Prop::TitleBarText, PropString, pOwnerForm->GetKeyName() );
 		AddControlEvent( pDclControl, Prop::FormEventInitialize );
@@ -130,13 +134,9 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::EventOnHelp );
 		break;
 	case FrmModelessDlg:
-		AddDefaultFormName( pDclControl );
-		pDclControl->AddStringProperty( Prop::ControlBrowser, PropActiveXMethods );
-		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddBooleanProperty( Prop::KeepFocus, PropBool, true );
-		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
-		pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );
+		pDclControl->AddBooleanProperty( Prop::AllowResizing, PropBool, true );
 		pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth > 0? lWidth : 250 );
 		pDclControl->AddLongProperty( Prop::Height, PropLong, lHeight > 0? lHeight : 150 );
 		pDclControl->AddLongProperty( Prop::MinDialogWidth, PropLong, 0 );
@@ -158,18 +158,14 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::EventOnHelp );
 		break;
 		break;
-	case FrmDockableDlg:
-		AddDefaultFormName( pDclControl );
-		pDclControl->AddStringProperty( Prop::ControlBrowser, PropActiveXMethods );
-		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+	case FrmControlBar:
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddBooleanProperty( Prop::KeepFocus, PropBool, true );
-		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
+		pDclControl->AddBooleanProperty( Prop::AllowResizing, PropBool, true );
 		pDclControl->AddLongProperty( Prop::MinDialogWidth, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MinDialogHeight, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MaxDialogWidth, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MaxDialogHeight, PropLong, 0 );
-		pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth > 0? lWidth : 250 );
 		pDclControl->AddLongProperty( Prop::Height, PropLong, lHeight > 0? lHeight : 450 );
 		pDclControl->AddStringProperty( Prop::TitleBarText, PropString, pOwnerForm->GetKeyName() );
@@ -183,27 +179,23 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::EventMouseMovedOff );
 		AddControlEvent( pDclControl, Prop::EventOnHelp );
 		break;
-	case FrmConfigTab:
-		AddDefaultFormName( pDclControl );
-		pDclControl->AddStringProperty( Prop::ControlBrowser, PropActiveXMethods );
-		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
-		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
+	case FrmOptionsTab:
+		pDclControl->AddBooleanProperty( Prop::AllowResizing, PropBool, true );
 		pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth > 0? lWidth : 600 );
 		pDclControl->AddLongProperty( Prop::Height, PropLong, lHeight > 0? lHeight : 380 );
 		pDclControl->AddLongProperty( Prop::MinDialogWidth, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MinDialogHeight, PropLong, 0 );
-		pDclControl->AddStringProperty( Prop::CfgTabCaption, PropString, pOwnerForm->GetKeyName() );
+		pDclControl->AddStringProperty( Prop::OptionsTabCaption, PropString, pOwnerForm->GetKeyName() );
 		AddControlEvent( pDclControl, Prop::FormEventInitialize );
 		AddControlEvent( pDclControl, Prop::FormEventShow );
-		AddControlEvent( pDclControl, Prop::CfgEventCancel );
-		AddControlEvent( pDclControl, Prop::CfgEventHelp );
-		AddControlEvent( pDclControl, Prop::CfgEventOK );
+		AddControlEvent( pDclControl, Prop::EventOptionsCancel );
+		AddControlEvent( pDclControl, Prop::EventOptionsApply );
+		AddControlEvent( pDclControl, Prop::EventOptionsHelp );
+		AddControlEvent( pDclControl, Prop::EventOptionsOK );
+		AddControlEvent( pDclControl, Prop::FormEventSize );
 		break;
 	case FrmFileDlg:
-		AddDefaultFormName( pDclControl );
-		pDclControl->AddStringProperty( Prop::ControlBrowser, PropActiveXMethods );
-		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
-		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
+		pDclControl->AddBooleanProperty( Prop::AllowResizing, PropBool, true );
 		pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth > 0? lWidth : 556 );
 		pDclControl->AddLongProperty( Prop::Height, PropLong, lHeight > 0? lHeight : 386 );
 		pDclControl->AddStringProperty( Prop::TitleBarText, PropString, theWorkspace.LoadResourceString( IDS_OPEN ) );
@@ -218,17 +210,13 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlHiddenProperty( pDclControl, Prop::Height, lHeight > 0? lHeight : 380, PropLong );
 		break;
 	case FrmPaletteDlg:
-		AddDefaultFormName( pDclControl );
-		pDclControl->AddStringProperty( Prop::ControlBrowser, PropActiveXMethods );
-		pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddBooleanProperty( Prop::KeepFocus, PropBool, true );
-		pDclControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
+		pDclControl->AddBooleanProperty( Prop::AllowResizing, PropBool, true );
 		pDclControl->AddLongProperty( Prop::MinDialogWidth, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MinDialogHeight, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MaxDialogWidth, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MaxDialogHeight, PropLong, 0 );
-		pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::Width, PropLong, lWidth > 0? lWidth : 250 );
 		pDclControl->AddLongProperty( Prop::Height, PropLong, lHeight > 0? lHeight : 450 );
 		pDclControl->AddStringProperty( Prop::TitleBarText, PropString, pOwnerForm->GetKeyName() );
@@ -270,7 +258,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 	pDclControl->AddStringProperty( Prop::Name, PropString, pDclControl->GetKeyName() );
 	pDclControl->AddStringProperty( Prop::ControlBrowser, PropActiveXMethods );
 	pDclControl->AddStringProperty( Prop::Custom, PropCustom ); // add the Custom property
-	pDclControl->AddStringProperty( Prop::GlobalVarName ); // now setting to empty string by default  2007-02-15 [ORW]
+	pDclControl->AddStringProperty( Prop::VarName ); // now setting to empty string by default  2007-02-15 [ORW]
 	if( lWidth <= 0 )
 		lWidth = 32;
 	if( lHeight <= 0 )
@@ -305,14 +293,9 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 	while( pTopLevelParentForm->GetParentForm() )
 		pTopLevelParentForm = pTopLevelParentForm->GetParentForm();
 	FormType eFormType = pTopLevelParentForm->GetType();
-	switch( eFormType )
-	{
-	case FrmDockableDlg:
-	case FrmModelessDlg:
-	case FrmPaletteDlg:
-		pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );
-		break;
-	}
+
+	TPropertyPtr pPropEventInvoke = pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );
+	pPropEventInvoke->SetHidden( !pTopLevelParentForm->IsModeless() );
 
 	FontSettings FS = theWorkspace.GetDefaultFontSettings();
 
@@ -422,7 +405,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlFontProperties( pDclControl, FS );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddStringProperty( Prop::ItemData, PropIntArray );
-		pDclControl->AddLongProperty( Prop::LimitText, PropLong, 256 );
+		pDclControl->AddLongProperty( Prop::TextLimit, PropLong, 256 );
 		pDclControl->AddStringProperty( Prop::List, PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::ReturnAsTab, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::Sorted, PropBool, false );
@@ -453,7 +436,6 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlTooltipProperties( pDclControl );
 		pDclControl->AddBooleanProperty( Prop::VScrollBar, PropBool, true );
 		AddControlEvent( pDclControl, Prop::EventFolderChanged );
-		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
@@ -536,7 +518,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 	case CtlGrid:
 		pDclControl->AddBooleanProperty( Prop::RowHeader, PropBool, true );
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -6 );
-		pDclControl->AddLongProperty( Prop::AlternateColor, PropLong, -6 );
+		pDclControl->AddLongProperty( Prop::AlternatingColor, PropLong, -6 );
 		pDclControl->AddLongProperty( Prop::AlternateOrient, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 1 );
 		pDclControl->AddBooleanProperty( Prop::ColHeader, PropBool, true );
@@ -595,11 +577,22 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventMouseDblClick );
 		break;
 
-	case CtlHtmlCtrl:
+	case CtlHtml:
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 1 );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		AddControlEvent( pDclControl, Prop::EventNavigateComplete );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
+		break;
+
+	case CtlHyperlink:
+		pDclControl->AddLongProperty( Prop::ForegroundColor, PropLong, 5 );
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
+		pDclControl->AddStringProperty( Prop::Caption, PropString, pDclControl->GetKeyName() );
+		AddControlFontProperties( pDclControl, FS );
+		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
+		//pDclControl->AddLongProperty( Prop::URLLinkType, PropEnum, 0 );
+		AddControlTooltipProperties( pDclControl );
+		pDclControl->AddStringProperty( Prop::Hyperlink, PropString, _T("http://www.OpenDCL.com") );
 		break;
 
 	case CtlImageComboBox:
@@ -608,7 +601,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddStringProperty( Prop::ImageList, PropImageList );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddStringProperty( Prop::ItemData, PropIntArray );
-		pDclControl->AddLongProperty( Prop::LimitText, PropLong, 256 );
+		pDclControl->AddLongProperty( Prop::TextLimit, PropLong, 256 );
 		pDclControl->AddStringProperty( Prop::List, PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::ReturnAsTab, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::Sorted, PropBool, false );
@@ -643,24 +636,24 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		break;
 
 	case CtlListBox:
-		pDclControl->AddLongProperty( Prop::ForegroundColor, PropLong, -19 );
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -6 );
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 1 );
-		pDclControl->AddLongProperty( Prop::ColumnWidth, PropLong, 25 );
-		pDclControl->AddBooleanProperty( Prop::DisableNoScroll, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
-		AddControlFontProperties( pDclControl, FS );
+		pDclControl->AddLongProperty( Prop::ForegroundColor, PropLong, -19 );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
+		pDclControl->AddBooleanProperty( Prop::VScrollBar, PropBool, false );
+		AddControlFontProperties( pDclControl, FS );
+		AddControlTooltipProperties( pDclControl );
+		pDclControl->AddLongProperty( Prop::ColumnWidth, PropLong, 25 );
+		pDclControl->AddBooleanProperty( Prop::DisableNoScroll, PropBool, false );
 		pDclControl->AddStringProperty( Prop::ItemData, PropIntArray );
 		pDclControl->AddStringProperty( Prop::List, PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::MultiColumn, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::NoIntegralHeight, PropBool, true );
 		pDclControl->AddLongProperty( Prop::SelectionStyle, PropEnum, 0 );
 		pDclControl->AddBooleanProperty( Prop::Sorted, PropBool, false );
-		AddControlTooltipProperties( pDclControl );
-		pDclControl->AddBooleanProperty( Prop::UseTabStops, PropBool, false );
-		pDclControl->AddBooleanProperty( Prop::VScrollBar, PropBool, false );
+		//pDclControl->AddBooleanProperty( Prop::UseTabStops, PropBool, false );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
@@ -676,11 +669,13 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 	case CtlListView:
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -6 );
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 1 );
-		pDclControl->AddBooleanProperty( Prop::ColHeader, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
-		pDclControl->AddBooleanProperty( Prop::EditLabels, PropBool, true );
+		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		AddControlFontProperties( pDclControl, FS );
+		AddControlTooltipProperties( pDclControl );
+		pDclControl->AddBooleanProperty( Prop::ColHeader, PropBool, true );
+		pDclControl->AddBooleanProperty( Prop::EditLabels, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::FullRowSelect, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::GridLines, PropBool, false );
 		pDclControl->AddLongProperty( Prop::IconXSpacing, PropLong, 20 );
@@ -689,12 +684,10 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::ListViewIconAlign, PropEnum, 0 );
 		pDclControl->AddBooleanProperty( Prop::AutoArrange, PropBool, false );
 		pDclControl->AddStringProperty( Prop::ImageList, PropImageList );
-		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::MultiSelect, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::ShowSelectAlways, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ListViewSort, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::ListViewStyle, PropEnum, 3 );
-		AddControlTooltipProperties( pDclControl );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::EventRClick );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
@@ -706,7 +699,6 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventKillFocus );
 		AddControlEvent( pDclControl, Prop::EventSetFocus );
 		AddControlEvent( pDclControl, Prop::EventReturnPressed );
-		AddControlEvent( pDclControl, Prop::EventKeyDown );
 		AddControlEvent( pDclControl, Prop::EventBeginLabelEdit );
 		AddControlEvent( pDclControl, Prop::EventEndLabelEdit );
 		AddControlEvent( pDclControl, Prop::EventColumnClick );
@@ -736,6 +728,9 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::ForegroundColor, PropLong, -19 );
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 0 );
+		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
+		pDclControl->AddBooleanProperty( Prop::VScrollBar, PropBool, false );
+		AddControlFontProperties( pDclControl, FS );
 		{
 			TPropertyPtr pProp = pDclControl->AddStringProperty( Prop::BtnCaption, PropStringArray );
 			if( pProp->size() == 0 )
@@ -745,13 +740,10 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 				pProp->GetStringArrayPtr()->push_back( theWorkspace.LoadResourceString( IDS_OPTION3 ) );
 			}
 		}
-		pDclControl->AddStringProperty( Prop::BtnTTText, PropStringArray );
+		pDclControl->AddStringProperty( Prop::BtnToolTips, PropStringArray );
 		pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
 		pDclControl->AddLongProperty( Prop::CurSelIndex, PropLong, 0 );
-		AddControlFontProperties( pDclControl, FS );
-		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::RowHeight, PropLong, -1 );
-		pDclControl->AddBooleanProperty( Prop::VScrollBar, PropBool, false );
 		AddControlEvent( pDclControl, Prop::EventDblClicked );
 		AddControlEvent( pDclControl, Prop::EventKillFocus );
 		AddControlEvent( pDclControl, Prop::EventSetFocus );
@@ -760,15 +752,15 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		break;
 
 	case CtlPictureBox:
-		pDclControl->AddBooleanProperty( Prop::AutoSize, PropBool, false );
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -6 );
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 1 );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
-		AddControlFontProperties( pDclControl, FS );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, false );
-		pDclControl->AddStringProperty( Prop::Picture, PropPicture );
+		AddControlFontProperties( pDclControl, FS );
 		AddControlTooltipProperties( pDclControl );
+		pDclControl->AddBooleanProperty( Prop::AutoSize, PropBool, false );
+		pDclControl->AddStringProperty( Prop::Picture, PropPicture );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
@@ -792,11 +784,11 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		break;
 
 	case CtlProgressBar:
-		pDclControl->AddStringProperty( Prop::SecondText, PropString );
-		pDclControl->AddStringProperty( Prop::SecondsText, PropString );
-		pDclControl->AddStringProperty( Prop::MinuteText, PropString );
-		pDclControl->AddStringProperty( Prop::MinutesText, PropString );
-		pDclControl->AddStringProperty( Prop::RemainingText, PropString );
+		pDclControl->AddStringProperty( Prop::CaptionSecond, PropString );
+		pDclControl->AddStringProperty( Prop::CaptionSeconds, PropString );
+		pDclControl->AddStringProperty( Prop::CaptionMinute, PropString );
+		pDclControl->AddStringProperty( Prop::CaptionMinutes, PropString );
+		pDclControl->AddStringProperty( Prop::CaptionRemaining, PropString );
 		pDclControl->AddLongProperty( Prop::ProgressLegend, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 2 );
 		pDclControl->AddLongProperty( Prop::MaxValue, PropLong, 100 );
@@ -825,6 +817,24 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::Value, PropLong, 1 );
 		AddControlEvent( pDclControl, Prop::EventScroll );
 		AddControlEvent( pDclControl, Prop::EventScrolled );
+		break;
+
+	case CtlSlider:
+		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
+		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -16 );
+		pDclControl->AddLongProperty( Prop::LargeChange, PropLong, 5 );
+		pDclControl->AddLongProperty( Prop::MaxValue, PropLong, 100 );
+		pDclControl->AddLongProperty( Prop::MinValue, PropLong, 1 );
+		pDclControl->AddLongProperty( Prop::Orientation, PropEnum, (lWidth >= lHeight)? 0 : 1 );
+		pDclControl->AddBooleanProperty( Prop::ShowTicks, PropBool, true );
+		pDclControl->AddLongProperty( Prop::SmallChange, PropLong, 1 );
+		pDclControl->AddLongProperty( Prop::TickFrequency, PropLong, 10 );
+		AddControlTooltipProperties( pDclControl );
+		pDclControl->AddBooleanProperty( Prop::UseVisualStyle, PropBool, true );
+		pDclControl->AddLongProperty( Prop::Value, PropLong, 0 );
+		AddControlEvent( pDclControl, Prop::EventScroll );
+		AddControlEvent( pDclControl, Prop::EventReleasedCapture );
+		AddControlEvent( pDclControl, Prop::EventMouseMove );
 		break;
 
 	case CtlSlideView:
@@ -877,24 +887,6 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventSplitterMoved );
 		break;
 
-	case CtlStraightSlider:
-		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
-		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -16 );
-		pDclControl->AddLongProperty( Prop::LargeChange, PropLong, 5 );
-		pDclControl->AddLongProperty( Prop::MaxValue, PropLong, 100 );
-		pDclControl->AddLongProperty( Prop::MinValue, PropLong, 1 );
-		pDclControl->AddLongProperty( Prop::Orientation, PropEnum, (lWidth >= lHeight)? 0 : 1 );
-		pDclControl->AddBooleanProperty( Prop::ShowTicks, PropBool, true );
-		pDclControl->AddLongProperty( Prop::SmallChange, PropLong, 1 );
-		pDclControl->AddLongProperty( Prop::TickFrequency, PropLong, 10 );
-		AddControlTooltipProperties( pDclControl );
-		pDclControl->AddBooleanProperty( Prop::UseVisualStyle, PropBool, true );
-		pDclControl->AddLongProperty( Prop::Value, PropLong, 0 );
-		AddControlEvent( pDclControl, Prop::EventScroll );
-		AddControlEvent( pDclControl, Prop::EventReleasedCapture );
-		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		break;
-
 	case CtlTabStrip:
 		AddControlFontProperties( pDclControl, FS );
 		pDclControl->AddLongProperty( Prop::LabelAlignment, PropEnum, 1 );
@@ -926,7 +918,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::HScrollBar, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::Justification, PropEnum, 0 );
-		pDclControl->AddLongProperty( Prop::LimitText, PropLong, 32760 );
+		pDclControl->AddLongProperty( Prop::TextLimit, PropLong, 32760 );
 		pDclControl->AddLongProperty( Prop::MarginLeft, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MarginRight, PropLong, 0 );
 		pDclControl->AddBooleanProperty( Prop::ReadOnly, PropBool, false );
@@ -963,7 +955,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
 		break;
 
-	case CtlImageTree:
+	case CtlTree:
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 1 );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowBegin, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
@@ -997,17 +989,6 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventEndLabelEdit );
 		AddControlEvent( pDclControl, Prop::EventItemExpanded );
 		AddControlEvent( pDclControl, Prop::EventItemExpanding );
-		break;
-
-	case CtlUrlLink:
-		pDclControl->AddLongProperty( Prop::ForegroundColor, PropLong, 5 );
-		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
-		pDclControl->AddStringProperty( Prop::Caption, PropString, pDclControl->GetKeyName() );
-		AddControlFontProperties( pDclControl, FS );
-		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
-		pDclControl->AddLongProperty( Prop::URLLinkType, PropEnum, 0 );
-		AddControlTooltipProperties( pDclControl );
-		pDclControl->AddStringProperty( Prop::URLAddress, PropString, _T("www.OpenDCL.com") );
 		break;
 
 	default:

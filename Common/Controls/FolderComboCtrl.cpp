@@ -81,7 +81,7 @@ bool CFolderComboCtrl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::Text:
 		SetWindowText( pProp->GetStringValue() );
 		break;
-	case Prop::LimitText:
+	case Prop::TextLimit:
 		LimitText( pProp->GetLongValue() );
 		break;
 	}

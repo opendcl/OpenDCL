@@ -40,7 +40,5 @@ protected:
 
 protected:
 	afx_msg void OnMove(int x, int y);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg __UINT_LRESULT OnNcHitTest(CPoint point);
+	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
 };

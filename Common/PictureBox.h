@@ -21,7 +21,6 @@ class CPictureBox : public CButton
 protected:
 	int				m_cxIcon;
 	int				m_cyIcon;
-	BOOL			m_bMouseTracking;
 	HBITMAP			m_hbmMem;
 	bool			m_bStretchLoadedPicture;
 
@@ -34,6 +33,7 @@ public:
 	virtual bool IsAutoSized() { return false; }
 	virtual void AutoSize() {}
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
+	virtual void OnMouseEntered() {}
 	void DrawPicture( TPicturePtr, bool bStretchToFit = false );
 	void SetPicture( TPicturePtr pPicture );
 	void SetPicture( UINT nIconResId );
@@ -59,8 +59,6 @@ protected:
 
 	afx_msg void OnEnable(BOOL bEnable);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);	
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnPaint();
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);

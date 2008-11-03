@@ -13,6 +13,7 @@
 CArxAngleSlideCtrl::CArxAngleSlideCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CAngleSlideCtrl( pTemplate, pPane, nID, false )
 , mArxServices( this )
+, mnLastReportedPosition( 0 )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -26,6 +27,8 @@ bool CArxAngleSlideCtrl::Create( CWnd* pParentWnd, UINT nID )
 {
 	bool bSuccess =
 		__super::Create( pParentWnd, nID );
+	if( bSuccess )
+		mnLastReportedPosition = GetPos();
 
 	return bSuccess;
 }
@@ -33,7 +36,12 @@ bool CArxAngleSlideCtrl::Create( CWnd* pParentWnd, UINT nID )
 void CArxAngleSlideCtrl::PostMessageToParent(const int nTBCode) const
 {
 	__super::PostMessageToParent( nTBCode );
-	InvokeMethodInt( mpTemplate->GetStringProperty( Prop::EventScroll ), GetPos(), IsAsyncEvents() );
+	int nNewPos = GetPos();
+	if( nNewPos != mnLastReportedPosition )
+	{
+		const_cast< CArxAngleSlideCtrl* >(this)->mnLastReportedPosition = nNewPos;
+		InvokeMethodInt( mpTemplate->GetStringProperty( Prop::EventScroll ), nNewPos, IsAsyncEvents() );
+	}
 }
 
 

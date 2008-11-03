@@ -68,7 +68,7 @@ bool CArxPlotStyleNameComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 				SetItemData( idx, (DWORD_PTR)rInt.at( idx ) );
 		}
 		break;
-	case Prop::LimitText:
+	case Prop::TextLimit:
 		LimitText( pProp->GetLongValue() );
 		break;
 	case Prop::Sorted:

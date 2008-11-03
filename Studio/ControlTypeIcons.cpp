@@ -21,19 +21,19 @@ static std::map< ControlType, UINT >& GetIconResIdMap()
 		Map[CtlComboBox] = IDI_COMBOBOX;
 		Map[CtlListBox] = IDI_LISTBOX;
 		Map[CtlScrollBar] = IDI_SCROLLBAR;
-		Map[CtlStraightSlider] = IDI_SLIDERBAR;
+		Map[CtlSlider] = IDI_SLIDERBAR;
 		Map[CtlPictureBox] = IDI_PICTUREBOX;
 		Map[CtlTabStrip] = IDI_TABS;
 		Map[CtlCalendar] = IDI_MONTH;
-		Map[CtlImageTree] = IDI_TREE;
+		Map[CtlTree] = IDI_TREE;
 		Map[CtlRectangle] = IDI_3DRECT;
 		Map[CtlProgressBar] = IDI_PROGRESSBAR;
 		Map[CtlSpinButton] = IDI_SPINBUTTON;
-		Map[CtlUrlLink] = IDI_URL;
+		Map[CtlHyperlink] = IDI_URL;
 		Map[CtlAngleSlider] = IDI_ANGLESLIDER;
 		Map[CtlBlockView] = IDI_BLOCKVIEW;
 		Map[CtlSlideView] = IDI_SLIDEVW;
-		Map[CtlHtmlCtrl] = IDI_HTML;
+		Map[CtlHtml] = IDI_HTML;
 		Map[CtlDwgPreview] = IDI_DWGPREVIEW;
 		Map[CtlListView] = IDI_LISTVIEW;
 		Map[CtlBlockList] = IDI_BLOCKLIST;
@@ -74,7 +74,7 @@ static std::map< ControlType, HICON >& GetIconMap()
 		Map[CtlGraphicButton] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlGraphicButton )) );
 		Map[CtlGrid] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlGrid )) );
 		Map[CtlHatch] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlHatch )) );
-		Map[CtlHtmlCtrl] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlHtmlCtrl )) );
+		Map[CtlHtml] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlHtml )) );
 		Map[CtlImageComboBox] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlImageComboBox )) );
 		Map[CtlLabel] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlLabel )) );
 		Map[CtlListBox] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlListBox )) );
@@ -88,12 +88,12 @@ static std::map< ControlType, HICON >& GetIconMap()
 		Map[CtlSlideView] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlSlideView )) );
 		Map[CtlSpinButton] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlSpinButton )) );
 		Map[CtlSplitter] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlSplitter )) );
-		Map[CtlStraightSlider] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlStraightSlider )) );
+		Map[CtlSlider] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlSlider )) );
 		Map[CtlTabStrip] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlTabStrip )) );
 		Map[CtlTextBox] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlTextBox )) );
 		Map[CtlTextButton] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlTextButton )) );
-		Map[CtlImageTree] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlImageTree )) );
-		Map[CtlUrlLink] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlUrlLink )) );
+		Map[CtlTree] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlTree )) );
+		Map[CtlHyperlink] = LoadIcon( hmodRes, MAKEINTRESOURCE(GetControlTypeIconResId( CtlHyperlink )) );
 		pMap = &Map;
 	}
 	return *pMap;

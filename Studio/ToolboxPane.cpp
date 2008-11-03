@@ -401,7 +401,7 @@ void CToolboxPane::OnToolboxGraphicbutton()
 void CToolboxPane::OnToolboxHtml() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlHtmlCtrl;
+	m_nSelectedCtrl = CtlHtml;
 }
 
 void CToolboxPane::OnToolboxLabel() 
@@ -461,7 +461,7 @@ void CToolboxPane::OnToolboxScrollbar()
 void CToolboxPane::OnToolboxSlider() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlStraightSlider;	
+	m_nSelectedCtrl = CtlSlider;	
 }
 
 void CToolboxPane::OnToolboxSlideview() 
@@ -497,13 +497,13 @@ void CToolboxPane::OnToolboxTextbutton()
 void CToolboxPane::OnToolboxTree() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlImageTree;
+	m_nSelectedCtrl = CtlTree;
 }
 
 void CToolboxPane::OnToolboxUrllink() 
 {
 	mbToolSelected = true;
-	m_nSelectedCtrl = CtlUrlLink;
+	m_nSelectedCtrl = CtlHyperlink;
 }
 
 void CToolboxPane::OnToolboxOptionList() 

@@ -78,7 +78,7 @@ bool CImageTreeCtrl::OnApplyProperty( TPropertyPtr pProp )
 	{
 	case Prop::ImageList:
 		{
-			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
+			TImageListPtr pImageList = mpTemplate->GetImageList();
 			if (pImageList && pImageList->GetImageList().GetSafeHandle())
 			{
 				CImageList& ImageList = pImageList->GetImageList();

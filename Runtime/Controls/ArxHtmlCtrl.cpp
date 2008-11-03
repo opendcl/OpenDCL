@@ -64,6 +64,6 @@ void CArxHtmlCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonDown( nFlags, point );
 
-	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) && nFlags == MK_LBUTTON )
+	if( (nFlags & MK_LBUTTON) != 0 && mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) )
 		BeginDragDrop( point );
 }

@@ -30,6 +30,9 @@ public:
 		{}
 	virtual ~AxInterfaceDescriptor() { clear(); }
 
+	//2008-11-02 [ORW]: save version set to 2 (started filing bool flags and version number)
+	BYTE GetCurrentSaveVersion() const { return 2; }
+
 	//Attributes
 public:
 	AxPropertyDescriptor*& GetProp()
@@ -84,8 +87,6 @@ public:
 	AxPropertyDescriptor* GetPutDescriptor() const;
 	AxPropertyDescriptor* GetEnumDescriptor() const;
 	AxPropertyDescriptor* GetArgDescriptor() const;
-	CString GetEnumDesc(CString sValue) const;
-	CString GetEnumValue(int nEnumIndex) const;
 	void DoActiveXFontPropDlg(CAxContainerCtrl *axContainer);
 	CString GetAxMethodDesc(size_t nIndex) const;
 	size_t CountAxMethodParams(size_t nIndex) const;
@@ -93,7 +94,7 @@ public:
 
 
 	// FIle I/O
-	virtual void Serialize(CArchive& ar, int nPropertyVersion);
+	virtual void Serialize(CArchive& ar, BYTE nPropertyVersion);
   IOStatus ReadFromTextFile5(std::ifstream &sFile);
   //IOStatus WriteToTextFile(FILE* pFile) const;
 

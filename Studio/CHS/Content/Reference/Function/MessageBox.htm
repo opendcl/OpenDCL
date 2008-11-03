@@ -1,0 +1,144 @@
+<html>
+<head>
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<script type="text/javascript" src="../../Utility.js"></script>
+<title>MessageBox</title>
+</head>
+<body>
+	<table width="100%">
+		<tr>
+			<td nowrap>
+				<div id="title">
+                  <img border="0" src="../images/Function.png" width="16" height="16"> 
+                  MessageBox</div>
+			</td>
+			<td align="right" valign="top">
+				<div id="hdrlink">&nbsp;</div>
+			</td>
+		</tr>
+	</table>
+	<hr />
+	<div id="content">
+        <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Function Name</th>
+            <td bgcolor="#CCFF99">dcl_MessageBox</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
+&nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
+<td bgcolor="#CCFF99">
+<p align="left"><code id="syntax">(dcl_MessageBox
+<font color="#FF0000">Message [as
+<a href="../DataType/String.htm">String</a>]</font>
+<font color="#FF0000">{Title [as
+<a href="../DataType/String.htm">String</a>]} {ButtonStyle [as
+<a href="../DataType/Integer.htm">Integer</a>]} {IconStyle [as
+<a href="../DataType/Integer.htm">Integer</a>]} {ShowHelpButton [as
+<a href="../DataType/Boolean.htm">Boolean</a>]}</font>)</code></td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Return Type</th>
+            <td bgcolor="#CCFF99"><a href="../DataType/Integer.htm">Integer</a></td>
+          </tr>
+          </table>
+		<p>This function displays a standard Windows message box with the 
+        message text specified in&nbsp; Message. The Title argument specifies 
+        the message box title, and the remaining arguments control the number 
+        and type of buttons, and the icon displayed beside the message. The 
+        default message box displays only an [OK] button with no icon.</p>
+	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber4">
+          <tr>
+            <th nowrap>Button Style</th>
+            <th nowrap>Description</th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>[Abort] [Retry] [Ignore] (Abort as default)</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>[OK]</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>[OK] [Cancel] (OK as default)</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>[Abort] [Retry] (Abort as default)</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>[Yes] [No] (Yes as default)</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>[Yes] [No] [Cancel] (Yes as default)</td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td>[Abort] [Retry] [Ignore] (Retry as default)</td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td>[OK] [Cancel] (Cancel as default)</td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td>[Retry] [Cancel] (Cancel as default)</td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td>[Yes] [No] (No as default)</td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td>[Yes] [No] [Cancel] (No as default)</td>
+          </tr>
+          <tr>
+            <td>21</td>
+            <td>[Abort] [Retry] [Ignore] (Ignore as default)</td>
+          </tr>
+          <tr>
+            <td>26</td>
+            <td>[Yes] [No] [Cancel] (Cancel as default)</td>
+          </tr>
+        </table>
+        <br />
+	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
+          <tr>
+            <th nowrap>Icon Style</th>
+            <th nowrap>Description</th>
+          </tr>
+          <tr>
+            <td>0</td>
+            <td>No icon</td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>Warning icon</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Information icon</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Question icon</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Error icon</td>
+          </tr>
+          </table>
+	</div>
+	<hr />
+	<div id="footer">
+		<p>Copyright © 2008 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		All rights reserved.</p>
+		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+	</div>
+</body>
+</html>

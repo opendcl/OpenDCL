@@ -183,7 +183,10 @@ ADSRESULT SlideView::FillImage()
 		return RSERR; //invalid input
 
 	if( GetListEndArgument( pArgs, true ) )
+	{
+		acedRetT();
 		return RSRSLT;
+	}
 
 	if( !GetListBeginArgument( pArgs ) )
 		return RSERR; //invalid input

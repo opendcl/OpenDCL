@@ -452,7 +452,8 @@ UINT CAxContainerCtrl::ExtractEventInfo(TDclControlPtr pControl, ITypeInfo* pTyp
 		std::auto_ptr< AxEventDescriptor > pAxEventDesc( new AxEventDescriptor( pFuncDesc, pTypeInfo, bUseAsType ) );
 		pTypeInfo->ReleaseFuncDesc( pFuncDesc );
 
-		if( !pAxEventDesc->GetName().IsEmpty() )
+		CString sEventName = pAxEventDesc->GetName();
+		if( !sEventName.IsEmpty() )
 		{
 			TPropertyList& Props = pControl->GetPropertyList();
 			bool bFoundIt = false;
@@ -461,7 +462,7 @@ UINT CAxContainerCtrl::ExtractEventInfo(TDclControlPtr pControl, ITypeInfo* pTyp
 				if( (*iter)->GetType() == PropActiveXEvent )
 				{
 					const AxEventDescriptor* pAxEvent = (*iter)->GetConstAxInterfaceDescriptorPtr()->GetEvent();
-					if( pAxEvent->GetName() == pAxEventDesc->GetName() )
+					if( pAxEvent->GetName() == sEventName )
 					{
 						bFoundIt = true; //event already exists
 						break;

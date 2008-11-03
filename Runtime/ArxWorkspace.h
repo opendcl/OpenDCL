@@ -25,6 +25,7 @@ namespace odcl
 		ptrDclProject,
 		ptrDclControl,
 		ptrIUnknown,
+		ptrImageList,
 		ptrBinFile,
 	};
 };

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ResizableDialog.h"
-#include "AutoRichEditCtrl.h"
+#include "HtmlBrowser.h"
 #include "Resource.h"
+#include <map>
 
 class CTreeNode;
 
@@ -14,10 +15,49 @@ class CControlBrowser : public CResizableDialog
 	TDclControlPtr mpDclControl;
 	CImageList mImageList;
 	CTreeCtrl mObjectTree;
+	bool mbClosing;
 	CSize mszPrevious;
-	CAutoRichEditCtrl mDescription;
-	CString msCopy1Lisp;
-	CString msCopy2Lisp;
+	std::map< CString, CString > mParams;
+	class NoNavigateBrowser : public CHtmlBrowser
+	{
+		CControlBrowser& mBrowser;
+		bool mbEnableNavigate;
+	public:
+		NoNavigateBrowser( CControlBrowser& Browser ) : mBrowser( Browser ), mbEnableNavigate( false ) {}
+	protected:
+		virtual void OnDocumentComplete(LPCTSTR lpszURL);
+		virtual void OnBeforeNavigate2(LPCTSTR lpszURL, DWORD nFlags,
+																	 LPCTSTR lpszTargetFrameName, CByteArray& baPostedData,
+																	 LPCTSTR lpszHeaders, BOOL* pbCancel);
+		virtual void OnNavigateError(LPCTSTR lpszURL, LPCTSTR lpszFrame, DWORD dwError, BOOL *pbCancel);
+	public:
+		void Navigate(LPCTSTR URL, DWORD dwFlags = 0,
+									LPCTSTR lpszTargetFrameName = NULL,
+									LPCTSTR lpszHeaders = NULL, LPVOID lpvPostData = NULL,
+									DWORD dwPostDataLen = 0)
+			{
+				mbEnableNavigate = true;
+				__super::Navigate( URL, dwFlags, lpszTargetFrameName, lpszHeaders, lpvPostData, dwPostDataLen );
+			}
+		void Navigate2(LPITEMIDLIST pIDL, DWORD dwFlags = 0, LPCTSTR lpszTargetFrameName = NULL)
+			{
+				mbEnableNavigate = true;
+				__super::Navigate2( pIDL, dwFlags, lpszTargetFrameName );
+			}
+		void Navigate2(LPCTSTR lpszURL, DWORD dwFlags = 0,
+									 LPCTSTR lpszTargetFrameName = NULL,	LPCTSTR lpszHeaders = NULL,
+									 LPVOID lpvPostData = NULL, DWORD dwPostDataLen = 0)
+			{
+				mbEnableNavigate = true;
+				__super::Navigate2( lpszURL, dwFlags, lpszTargetFrameName, lpszHeaders, lpvPostData, dwPostDataLen );
+			}
+		void Navigate2(LPCTSTR lpszURL, DWORD dwFlags, CByteArray& baPostedData,
+									 LPCTSTR lpszTargetFrameName = NULL, LPCTSTR lpszHeader = NULL)
+			{
+				mbEnableNavigate = true;
+				__super::Navigate2( lpszURL, dwFlags, baPostedData, lpszTargetFrameName, lpszHeader );
+			}
+	} mDescription;
 
 // Dialog Data
 	enum { IDD = IDD_CONTROLBROWSER };
@@ -30,12 +70,12 @@ public:
 	HTREEITEM InsertItem( HTREEITEM hParent, CTreeNode* pItem );
 	void RemoveItem( HTREEITEM hTarget );
 	TDclControlPtr GetMainControl() const { return mpDclControl; }
-	void SetDescription( LPCTSTR pszDescription ) { mDescription.SetRTF( pszDescription ); }
-	void SetCopy1Lisp( LPCTSTR pszLisp ) { msCopy1Lisp = pszLisp; }
-	void SetCopy2Lisp( LPCTSTR pszLisp ) { msCopy2Lisp = pszLisp; }
+	void SetDescription( LPCTSTR pszDescription, const std::map< CString, CString >& params );
+
+	virtual void OnDocumentLoaded();
 
 protected:
-	bool OnBeginClipboardCopy();
+	//bool OnBeginClipboardCopy();
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -49,7 +89,4 @@ protected:
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnSelchanged(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnCopy1();
-	afx_msg void OnCopy2();
-	afx_msg void OnCopy3();
 };

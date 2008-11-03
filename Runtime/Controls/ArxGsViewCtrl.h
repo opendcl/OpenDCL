@@ -8,9 +8,6 @@
 #include "ArxControlServices.h"
 #include "ArxDragDropService.h"
 
-class CAcadDocReactor;
-class CAcadBlockReactor;
-
 
 #if (_MFC_VER < 0x0800)
 #define __UINT_LRESULT UINT
@@ -19,121 +16,25 @@ class CAcadBlockReactor;
 #endif
 
 
-// Simple lighweight drawable to do orbit glyph
-//
-class OrbitGadget : public AcGiDrawable
-{
-    AcGsNode* m_pNode;
-    AcGsView* m_pAcGsView;
-public:	
-
-	OrbitGadget():m_pNode(NULL) {}
-    void setGsView(AcGsView* pView) {m_pAcGsView=pView;}
-
-	virtual Adesk::UInt32   setAttributes   (AcGiDrawableTraits * traits)
-    {
-        traits->setTrueColor (AcCmEntityColor(0,200,0));
-        return kDrawableNone;
-    }
-    virtual Adesk::Boolean  worldDraw       (AcGiWorldDraw * wd)
-    {
-        return Adesk::kFalse;
-    }
-    virtual void            viewportDraw    (AcGiViewportDraw * pViewportDraw)
-    {
-        AcGsDCRect view_rect;
-        m_pAcGsView->getViewport (view_rect);
-
-        int nViewportX = (view_rect.m_max.x - view_rect.m_min.x) + 1;
-        int nViewportY = (view_rect.m_max.y - view_rect.m_min.y) + 1;
-        AcGeMatrix3d scale = m_pAcGsView->viewingMatrix() * m_pAcGsView->worldToDeviceMatrix().inverse();
-        AcGeVector3d viewDir = m_pAcGsView->target()-m_pAcGsView->position();
-        const double radius  = min (nViewportX, nViewportY) * 0.4f*scale.scale();
-
-		// I removed this line because it was causing problems with loaded drawings.
-        //pViewportDraw->geometry().circle(m_pAcGsView->target(),radius,viewDir);
-        return;
-    }
-    virtual Adesk::Boolean  isPersistent    (void) const
-    { 
-        return Adesk::kFalse;
-    };                 
-    virtual AcDbObjectId    id              (void) const
-    {
-        return AcDbObjectId::kNull;
-    }
-    virtual void            setGsNode       (AcGsNode * gsnode)
-    {
-        m_pNode = gsnode;
-    }
-    virtual AcGsNode*       gsNode          (void) const
-    {
-        return m_pNode;
-    }
-};
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CArxGsViewCtrl window
 
 class CArxGsViewCtrl : public CStatic, public CDialogControl
 {
-	class CDocReactor : public AcApDocManagerReactor
-	{
-		CArxGsViewCtrl* mpGsViewCtrl;
-	public:
-		CDocReactor( CArxGsViewCtrl* pGsViewCtrl )
-			: mpGsViewCtrl( pGsViewCtrl )
-			{ acDocManager->addReactor( this ); }
-		~CDocReactor()
-			{ acDocManager->removeReactor( this ); }
-		void documentActivated(AcApDocument* pActivatedDoc)
-			{ if( mpGsViewCtrl ) mpGsViewCtrl->UpdateBlock(); }
-		void documentDestroyed(const char* filename)
-			{ if( mpGsViewCtrl ) mpGsViewCtrl->UpdateBlock(); }
-	} mDocReactor;
-
 protected:
 	CAcadColorService mColorService;
 	CArxControlServices	mArxServices;
 	CArxDragDropService mDragDropService;
 
-
 private:
-	HCURSOR mhSavedCursor;
-	HCURSOR mhZoomCursor;
-	HCURSOR mhPanCursor;
-	HCURSOR mhCrossCursor;
-	HCURSOR mhOrbitCursor;
-	HCURSOR mhArrowCursor;
 	AcGsDevice* mpDevice;
 	AcGsView* mpView;
 	AcGsModel* mpModel;
 	AcGsModel* mpGhostModel;
-	OrbitGadget mOrbitGadget;
-	bool mbModelCreated;
-	bool mbZooming;
-	bool mbPanning;
-	bool mbOrbiting;
-	CPoint mStartPt;
-
-public:
-	CRect m_rcFocus;
-	bool				m_bBeingLDblClicked;
-	bool				m_bBeingRDblClicked;
-	AcDbDatabase		*m_pLoadedDwg;
-	CString				m_BlockName;
-	CString				m_FileName;
-	bool				m_bSelectedRect;
-	COLORREF			m_HighlightColor;
-	double				m_dPreviousZoomScale;
-	CAcadBlockReactor	*m_pBlockReactor;	
-	AcDbBlockTableRecord *m_pRec;
-
-	AcDbObjectId		m_Line[4];
-	AcDbObjectId		m_HatchId;
-	CString				m_sHatchPattern;
-
+	bool mbLDblClick;
+	bool mbRDblClick;
+	COLORREF mclrHighlight;
+	bool mbHighlighted;
 
 public:
 	CArxGsViewCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -146,80 +47,33 @@ public:
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
-	virtual bool OnApplyProperty( TPropertyPtr pProp );
 
-public:
-	void UpdateBlock();
-	void ResizeHatch();
-
-	bool GetActiveViewPortInfo (ads_real &height, ads_real &width, AcGePoint3d &target, AcGeVector3d &viewDir, ads_real &viewTwist, bool getViewCenter);
-	void SetHighlight( const COLORREF& clrHighlight );
-	void RemoveHighlight();	
-	void DoHighLight(CDC *pdc);
-	AcDbBlockTableRecord *m_pHatchBlock;
-	BOOL DisplayHatchPattern(CString sPattern);
-	BOOL DisplayExternalBlock(
-		CString sBlockName, 
-		double dZoomFactor, 
-		bool   bZoomExtents,
-		int	   nScaleType,
-		double dVectorX, 
-		double dVectorY, 
-		double dVectorZ,
-		double dCameraX, 
-		double dCameraY, 
-		double dCameraZ);
-	void DisplayTheBlock(
-		AcDbBlockTableRecord *pRec,
-		double dZoomFactor, 
-		bool   bZoomExtents,
-		int	   nScaleType,		
-		double dVectorX, 
-		double dVectorY, 
-		double dVectorZ,
-		double dCameraX, 
-		double dCameraY, 
-		double dCameraZ);
-	bool LoadPreviewDwg(CString sFileName);
-	bool LoadPreviewDwg(
-		CString sFileName, 
-		double dZoomFactor, 
-		bool   bZoomExtents,
-		int	   nScaleType,
-		double dVectorX, 
-		double dVectorY, 
-		double dVectorZ,
-		double dCameraX, 
-		double dCameraY, 
-		double dCameraZ);
-	void DrawOrbitCircles(CDC* pDC = NULL);
-	void DrawOrbitQuadCircle(CDC *pdc, int nX, int nY);
-	void Zoom(double dZfactor);
-	void SetRenderMode( long lMode );
-
+protected:
+	AcGsView* GetGsView() { return mpView; }
+	virtual bool CanShowHighlight() const { return true; }
+	virtual void PaintUI( CDC* pdc = NULL ) {}
+	virtual void AddUIDrawable( AcGsModel* pModel, AcGsView* pView ) {}
+	virtual AcGsView::RenderMode GetRenderMode() { return AcGsView::k2DOptimized; }
 	void init(HMODULE hRes, bool bCreateModel = true);
 	void erasePreview();
+	bool GetActiveViewPortInfo( ads_real &height, ads_real &width, AcGePoint3d &target, AcGeVector3d &viewDir, ads_real &viewTwist, bool getViewCenter );
 	void clearAll();
-	bool PreLoadDwg(CString sFileName);
-	bool GetBlockSize( LPCTSTR pszBlockName, AcDbExtents& ext );
-	bool GetDwgSize( AcDbExtents& ext );
-	BOOL DisplayBlock(CString sBlockName);
-	BOOL DisplayBlock(CString sBlockName, 
-						double dZoomFactor,
-						bool   bZoomExtents,
-						int	   nScaleType,
-						double dVectorX, 
-						double dVectorY, 
-						double dVectorZ,
-						double dCameraX,
-						double dCameraY,
-						double dCameraZ);
+	bool UpdateModel( AcGiDrawable* pDrawable );
 
-    AcGsView*   view()      { return mpView; }
-    AcGsDevice* device()    { return mpDevice; }
-    AcGsModel*  model()     { return mpModel; }
-    void setModel(AcGsModel* pModel);
-	double mdScale,mdExtentsScale;
+public:
+	void SetHighlight( const COLORREF& clrHighlight );
+	void RemoveHighlight();	
+	void DisplayTheBlock( AcDbBlockTableRecord *pRec,
+												double dZoomFactor, 
+												bool   bZoomExtents,
+												int	   nScaleType,		
+												double dVectorX, 
+												double dVectorY, 
+												double dVectorZ,
+												double dCameraX, 
+												double dCameraY, 
+												double dCameraZ );
+	void Zoom( double dZfactor );
 
 	// Generated message map functions
 protected:

@@ -115,10 +115,10 @@ namespace PropVal
 		virtual size_t size() const { return 0; }
 
 		//filing
-		virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const = 0;
-		virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) = 0;
-		//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const = 0;
-		virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) = 0;
+		virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const = 0;
+		virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) = 0;
+		//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const = 0;
+		virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) = 0;
 
 	#ifdef _DIAGNOSTIC
 	public:
@@ -155,7 +155,8 @@ public:
 	//2007-01-30 [ORW]: save version set to 5 (no change from OpenDCL 3)
 	//2007-02-08 [ORW]: save version set to 6 (eliminate MFC serialized classes)
 	//2007-02-08 [ORW]: save version set to 7 (added subtype to filed data)
-	ULONG GetCurrentSaveVersion() const { return 7; }
+	//2008-10-16 [ORW]: save version set to 8 (fixed size_t filing bug -- now filing short)
+	BYTE GetCurrentSaveVersion() const { return 8; }
 
 	//Attributes
 protected:
@@ -182,7 +183,7 @@ public:
 	long GetLongValue() const;
 	bool SetLongValue( long lValue );
 	long GetEnumValue() const { return GetLongValue(); }
-	bool SetEnumValue( int nValue ) { SetLongValue( (long)nValue ); }
+	bool SetEnumValue( int nValue ) { return SetLongValue( (long)nValue ); }
 	bool GetBooleanValue() const;
 	bool SetBooleanValue( bool bValue );
 	double GetDoubleValue() const;

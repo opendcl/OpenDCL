@@ -303,6 +303,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ControlName.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ControlTypeIcons.h"
 				>
 			</File>
@@ -359,6 +363,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FormName.h"
+				>
+			</File>
+			<File
 				RelativePath=".\FormVarNameUpdate.h"
 				>
 			</File>
@@ -391,10 +399,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\LoadArgs.h"
-				>
-			</File>
-			<File
 				RelativePath=".\LocalRes.h"
 				>
 			</File>
@@ -404,6 +408,10 @@
 			</File>
 			<File
 				RelativePath=".\OpenDCLDoc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ParseFuncHelp.h"
 				>
 			</File>
 			<File
@@ -612,6 +620,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ControlName.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ControlTypeIcons.cpp"
 				>
 			</File>
@@ -668,6 +680,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FormName.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\FormVarNameUpdate.cpp"
 				>
 			</File>
@@ -700,15 +716,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\LoadArgs.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\OpenDCL.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\OpenDCLDoc.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ParseFuncHelp.cpp"
 				>
 			</File>
 			<File
@@ -966,14 +982,6 @@
 			</File>
 			<File
 				RelativePath="..\Common\CeXDib.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\ControlName.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\ControlName.h"
 				>
 			</File>
 			<File
@@ -1492,11 +1500,27 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Common\Controls\HtmlBrowser.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\HtmlBrowser.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Controls\HtmlCtrl.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\Common\Controls\HtmlCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\HyperlinkCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Controls\HyperlinkCtrl.h"
 					>
 				</File>
 				<File
@@ -1731,14 +1755,6 @@
 				</File>
 				<File
 					RelativePath="..\Common\Controls\UpperCaseFilter.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Common\Controls\UrlLinkCtrl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Common\Controls\UrlLinkCtrl.h"
 					>
 				</File>
 				<File

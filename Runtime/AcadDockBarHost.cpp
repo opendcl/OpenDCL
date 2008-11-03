@@ -47,11 +47,6 @@ CAcadDockBarHost::CAcadDockBarHost( CDockingDialog* pDlgObject, CWnd *pParent /*
 
 CAcadDockBarHost::~CAcadDockBarHost()
 {
-	if( mbTrackingMouse )
-	{
-		TRACKMOUSEEVENT tm = { sizeof(TRACKMOUSEEVENT), TME_CANCEL | TME_LEAVE, NULL, 0 };
-		_TrackMouseEvent( &tm );
-	}
 }
 
 void CAcadDockBarHost::GetClientArea( CRect& rect )

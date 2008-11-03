@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="HTMLHelp.ENU"
+	ProjectGUID="{5783A6A0-7850-4A77-B36B-BC792E16DEA4}"
+	RootNamespace="HTMLHelp.ENU"
+	Keyword="MakeFileProj"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+		<DefaultToolFile
+			FileName="HTMLHelp.rules"
+		/>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="$(ProjectDir)Content"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="0"
+			DeleteExtensionsOnClean="$(TargetPath)"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="nmake /f &quot;$(ProjectDir)..\BuildCHM.mak&quot; TargetName=$(TargetName)"
+				ReBuildCommandLine="nmake /a /f &quot;$(ProjectDir)..\BuildCHM.mak&quot; TargetName=$(TargetName)"
+				CleanCommandLine="CMD /c DEL /Q &amp;quot;$(TargetPath)&amp;quot;"
+				Output="$(OutDir)\OpenDCL.chm"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(ProjectDir)Content"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="0"
+			DeleteExtensionsOnClean="$(TargetPath)"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="nmake /f &quot;$(ProjectDir)..\BuildCHM.mak&quot; TargetName=$(TargetName)"
+				ReBuildCommandLine="nmake /a /f &quot;$(ProjectDir)..\BuildCHM.mak&quot; TargetName=$(TargetName)"
+				CleanCommandLine="CMD /c DEL /Q &quot;$(TargetPath)&quot;"
+				Output="$(OutDir)\OpenDCL.chm"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="Project Files"
+			Filter="hhp;hhc"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
+			<File
+				RelativePath=".\Content\OpenDCL.hhc"
+				>
+			</File>
+			<File
+				RelativePath=".\Content\OpenDCL.hhp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Source Files"
+			Filter="htm;html;js;css;png"
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
+		</Filter>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

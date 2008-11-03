@@ -134,7 +134,7 @@ bool CStudioDialogObject::IsModeless() const
 
 bool CStudioDialogObject::IsResizable() const
 {
-	return mpTemplate->GetBooleanProperty( Prop::Resizable );
+	return mpTemplate->GetBooleanProperty( Prop::AllowResizing );
 }
 
 void CStudioDialogObject::CloseDialog(int nStatus /*= -1*/)
@@ -296,7 +296,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 	switch( type )
 	{
 	case CtlFileExplorer:
-		pDclControl = mpSourceForm->AddControl( CtlFileExplorer, GetControlName( CtlFileExplorer ), rcControl );
+		pDclControl = mpSourceForm->AddControl( CtlFileExplorer, GetControlApiName( CtlFileExplorer ), rcControl );
 		break;
 	case CtlActiveX:
 		{
@@ -304,13 +304,13 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 			CString sLicenseKey;
 			CString sFilename;
 			theStudioWorkspace.GetToolboxPane()->GetActiveXControlInfo( clsid, sLicenseKey, sFilename );
-			pDclControl = mpSourceForm->AddControl( CtlActiveX, GetNextControlName( GetControlName( clsid ) ), rcControl );
+			pDclControl = mpSourceForm->AddControl( CtlActiveX, GetNextControlName( GetControlApiName( clsid ) ), rcControl );
 			if( pDclControl )
 				pDclControl->SetAxCtrlInfo( clsid, sLicenseKey );
 		}
 		break;
 	case CtlTabStrip:
-		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlName( CtlTabStrip ) ), rcControl );
+		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlApiName( CtlTabStrip ) ), rcControl );
 		//if( pDclControl )
 		//{
 		//	pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB1 ) );
@@ -319,7 +319,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 		//}
 		break;
 	default:
-		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlName( type ) ), rcControl );
+		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlApiName( type ) ), rcControl );
 		break;
 	}
 	assert( pDclControl != NULL );
@@ -826,7 +826,7 @@ void CStudioDialogObject::OnEditPaste()
 					// if the caption property matches the name, update both
 					CString sCaption = pDclControl->GetStringProperty( Prop::Caption );
 					CString sOldName = pDclControl->GetStringProperty( Prop::Name );
-					CString sNewName = GetNextControlName( GetControlName( pDclControl->GetType() ) );
+					CString sNewName = GetNextControlName( GetControlApiName( pDclControl->GetType() ) );
 					pDclControl->SetStringProperty( Prop::Name, sNewName );
 					if( sOldName == sCaption )
 						pDclControl->SetStringProperty( Prop::Caption, sNewName );

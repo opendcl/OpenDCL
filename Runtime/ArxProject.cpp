@@ -36,7 +36,7 @@ bool CArxProject::OnExtendTabbedDialog( CAdUiTabExtensionManager* pTabXM ) const
 	bool bFailed = false;
 	for( TDclFormList::const_iterator iter = mDclForms.begin(); iter != mDclForms.end(); ++iter )
 	{
-		if( (*iter)->GetType() == FrmConfigTab && !theArxWorkspace.AddExtensionTab( *iter, pTabXM ) )
+		if( (*iter)->GetType() == FrmOptionsTab && !theArxWorkspace.AddExtensionTab( *iter, pTabXM ) )
 			bFailed = true;
 	}
 	return !bFailed;

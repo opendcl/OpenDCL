@@ -10,6 +10,7 @@
 #include "FontSettings.h"
 #include "FontPropPage.h"
 #include "GridSpacingDlg.h"
+#include "HtmlBrowser.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -198,6 +199,8 @@ BOOL COpenDCLApp::InitInstance()
 
 class CAboutDlg : public CDialog
 {
+	CHtmlBrowser mBrowser;
+
 public:
 	CAboutDlg();
 
@@ -220,6 +223,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_LICENSETXT, mBrowser);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -247,13 +251,13 @@ BOOL CAboutDlg::OnInitDialog()
 
 	CString sLicenseTxt;
 #ifdef _DEBUG
-	//in the development environment, License.txt is not in the app folder, so search for it
-	sLicenseTxt = theWorkspace.FindFile( _T("License.txt") );
+	//in the development environment, License.htm is not in the app folder, so search for it
+	sLicenseTxt = theWorkspace.FindFile( _T("License.htm") );
 #else
 	GetModuleFileName( NULL, sLicenseTxt.GetBuffer( MAX_PATH ), MAX_PATH );
 	sLicenseTxt.ReleaseBuffer();
 	sLicenseTxt = sLicenseTxt.Mid( sLicenseTxt.MakeReverse().SpanExcluding( _T("\\/:") ).GetLength() );
-	sLicenseTxt.MakeReverse() += _T("License.txt");
+	sLicenseTxt.MakeReverse() += _T("License.htm");
 #endif //_DEBUG
 	try
 	{
@@ -265,7 +269,8 @@ BOOL CAboutDlg::OnInitDialog()
 			CStringW sText;
 			cbText = file.Read( sText.GetBuffer( cbText / 2 ), cbText );
 			sText.ReleaseBuffer( cbText / 2 );
-			::SetWindowTextW( ::GetDlgItem( m_hWnd, IDC_LICENSETXT ), sText );
+			CString sHtml( sText );
+			mBrowser.LoadHtmlCode( sHtml );
 		}
 		else
 		{
@@ -273,11 +278,9 @@ BOOL CAboutDlg::OnInitDialog()
 			CStringA sText;
 			cbText = file.Read( sText.GetBuffer( cbText ), cbText );
 			sText.ReleaseBuffer( cbText );
-			::SetWindowTextA( ::GetDlgItem( m_hWnd, IDC_LICENSETXT ), sText );
+			CString sHtml( sText );
+			mBrowser.LoadHtmlCode( sHtml );
 		}
-		CRichEditCtrl* pTextBox = (CRichEditCtrl*)GetDlgItem(IDC_LICENSETXT);
-		pTextBox->SetOptions(ECOOP_OR, ECO_SAVESEL);
-		pTextBox->SetSel(0, 0);
 	}
 	catch( CFileException* e )
 	{

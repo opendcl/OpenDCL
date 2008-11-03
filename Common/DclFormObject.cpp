@@ -49,8 +49,6 @@ static void MoveImageListsToControls( std::vector< CImageListObject* >& rImageLi
 /////////////////////////////////////////////////////////////////////////////
 // CDclFormObject
 
-IMPLEMENT_SERIAL(CDclFormObject, CObject, 1)
-
 CDclFormObject::CDclFormObject()
 : mpProject( NULL )
 , mType( _FrmInvalid )
@@ -258,7 +256,7 @@ void CDclFormObject::SetGlobalVariableName( LPCTSTR pszRootName /*= NULL*/, bool
 	if( sRootName.IsEmpty() )
 		sRootName = mpProject->GetKeyName();
 	CString sFormName = sRootName + _T('_') + GetKeyName();
-	GetControlProperties()->AddStringProperty( Prop::GlobalVarName, PropString, sFormName, true );
+	GetControlProperties()->AddStringProperty( Prop::VarName, PropString, sFormName, true );
 	if( !bUpdateChildren )
 		return;
 	for( TDclControlList::iterator iter = ++mDclControls.begin(); iter != mDclControls.end(); ++iter )
@@ -268,7 +266,7 @@ void CDclFormObject::SetGlobalVariableName( LPCTSTR pszRootName /*= NULL*/, bool
 void CDclFormObject::ClearGlobalVariableName( bool bUpdateChildren /*= true*/ )	
 {	
 	OnModified();
-	GetControlProperties()->SetStringProperty( Prop::GlobalVarName, NULL );
+	GetControlProperties()->SetStringProperty( Prop::VarName, NULL );
 	if( !bUpdateChildren )
 		return;
 	for( TDclControlList::iterator iter = ++mDclControls.begin(); iter != mDclControls.end(); ++iter )
@@ -295,7 +293,7 @@ LPCTSTR CDclFormObject::GetTitleText() const
 UINT_PTR CDclFormObject::GetTitleBarIcon()
 {
 	TDclControlPtr pControl = GetControlProperties();
-	return (UINT_PTR)pControl->GetLongProperty(Prop::Icon);
+	return (UINT_PTR)pControl->GetLongProperty(Prop::TitleBarIcon);
 }
 
 //IOStatus CDclFormObject::WriteToTextFile(FILE* pFile, const CString &fileName) const
@@ -346,9 +344,7 @@ UINT_PTR CDclFormObject::GetTitleBarIcon()
 
 void CDclFormObject::Serialize(CArchive& ar)
 {
-	CObject::Serialize( ar );
-	short nCount;
-	DWORD nThisVersion = GetCurrentSaveVersion();
+	BYTE nThisVersion = GetCurrentSaveVersion();
 
 	if (ar.IsStoring())
 	{
@@ -389,6 +385,16 @@ void CDclFormObject::Serialize(CArchive& ar)
 	{
 		OnModified();
 		ar >> nThisVersion;
+		if( nThisVersion <= 7 )
+		{
+			BYTE bSkip;
+			ar >> bSkip;
+			assert( bSkip == 0 );
+			ar >> bSkip;
+			assert( bSkip == 0 );
+			ar >> bSkip;
+			assert( bSkip == 0 );
+		}
 		if (nThisVersion > GetCurrentSaveVersion())
 			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
 		ar >> msName;
@@ -423,6 +429,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 			}
 		}
 
+		unsigned short nCount;
 		ar >> nCount;	
 		ClearControls();
 		while (nCount-- > 0)
@@ -605,8 +612,8 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 			pControl->AddLongProperty( Prop::MaxDialogWidth, PropLong, 0 );
 			pControl->AddLongProperty( Prop::MaxDialogHeight, PropLong, 0 );
 			break;
-		//case FrmDockableDlg:
-		//	pControl->AddBooleanProperty( Prop::Resizable, PropBool, true );
+		//case FrmControlBar:
+		//	pControl->AddBooleanProperty( Prop::AllowResizing, PropBool, true );
 		//	pControl->RemoveProperty( Prop::MinDialogWidth );
 		//	pControl->RemoveProperty( Prop::MinDialogHeight );
 		//	pControl->RemoveProperty( Prop::MaxDialogWidth );
@@ -666,8 +673,8 @@ bool CDclFormObject::IsModeless() const
 	case _FrmInvalid: return false;
 	case FrmModalDlg: return false;
 	case FrmModelessDlg: return true;
-	case FrmDockableDlg: return true;
-	case FrmConfigTab: return false;
+	case FrmControlBar: return true;
+	case FrmOptionsTab: return false;
 	case FrmTabPage: return true;
 	case FrmFileDlg: return false;
 	case FrmPaletteDlg: return true;
@@ -759,7 +766,7 @@ TDclControlPtr CDclFormObject::FindControlWithVarName( LPCTSTR pszVarName ) cons
 {
 	for( TDclControlList::const_iterator iter = mDclControls.begin(); iter != mDclControls.end(); ++iter )
 	{
-		if( (*iter)->GetStringProperty( Prop::GlobalVarName ).CompareNoCase( pszVarName ) == 0 )
+		if( (*iter)->GetStringProperty( Prop::VarName ).CompareNoCase( pszVarName ) == 0 )
 			return *iter;
 	}
 	return NULL;

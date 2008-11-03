@@ -8,7 +8,7 @@
 // class CMyObject;
 // RefCountedPtr< MyObject > pMyObject = new CMyObject;
 //
-// Copyright 2007 ManuSoft. All Rights Reserved.
+// Copyright 2007 - 2008 ManuSoft. All Rights Reserved.
 // http://www.manusoft.com
 //
 // A license to use the code in this file for the OpenDCL project has been granted
@@ -189,4 +189,36 @@ private:
 public:
 	LockedPtr( T* pTarget ) : _base( pTarget ) { Lock(); }
 	virtual ~LockedPtr(void) {}
+};
+
+template< typename _RefCountedPtr >
+class RefCountedPtrAsIUnknown : public IUnknown, public RefCounterBase
+{
+protected:
+	_RefCountedPtr R;
+
+public:
+	RefCountedPtrAsIUnknown< _RefCountedPtr >( _RefCountedPtr& Src )
+	: R( Src )
+		{}
+
+	operator _RefCountedPtr() { return R; }
+
+	//IUnknown interface
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface( /*[in]*/ REFIID riid,
+																										/*[iid_is][out]*/ void __RPC_FAR *__RPC_FAR *ppvObject )
+		{
+			if( !ppvObject )
+				return E_POINTER;
+			if( riid == IID_IUnknown )
+			{
+				*ppvObject = this;
+				AddRef();
+				return S_OK;
+			}
+			*ppvObject = NULL;
+			return E_NOINTERFACE;
+		}
+	virtual ULONG STDMETHODCALLTYPE AddRef( void ) { return RefCounterBase::AddRef(); }
+	virtual ULONG STDMETHODCALLTYPE Release( void ) { return RefCounterBase::Release(); }
 };

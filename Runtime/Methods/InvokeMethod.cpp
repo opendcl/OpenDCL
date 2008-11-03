@@ -6,11 +6,7 @@
 #include "ArgumentsRetrieval.h"
 #include "acutmem.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+extern "C" int ads_queueexpr( const ACHAR* pszCommand );
 
 extern bool IsOnlyModalForm();
 
@@ -22,7 +18,6 @@ CString EscapeLispStringArgument( LPCTSTR pszString )
 	return sResult;
 }
 
-extern "C" int ads_queueexpr( const ACHAR* pszCommand );
 Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand = false, AcApDocument* pDoc = NULL )
 {
 	if( !pDoc )
@@ -59,35 +54,26 @@ int acedInvokeNoDocStateSafe(const struct resbuf *args, struct resbuf **result)
 	AcApDocument* pDoc = acDocManager->curDocument();
 	//assert( pDoc != NULL );
 	if( !pDoc )
-		return RSERR;
+		return RTERROR;
 	try
 	{ //if the invoked function closes the current document, an exception will occur before acedInvoke returns
 		return acedInvoke( args, result );
 	}
 	catch( ... )
 	{}
-	return RSERR;
+	return RTERROR;
 }
 
 
-CString FireCancel(CString sLispFunction)
+CString FireCancel( LPCTSTR pszLispFunction )
 {
-	sLispFunction.MakeUpper();
+	CString sLispFunction = pszLispFunction;
 	
-	//int nTest = _tcsicmp(sLispFunction.Left(2), _T("C:"));
-	//!???
-	if (_tcsicmp(sLispFunction.Left(2), _T("C:")) > -1)
+	if( sLispFunction.Left( 4 ).CompareNoCase( _T("^C^C") ) != 0 )
 		return sLispFunction;
 
-	//nTest = _tcsicmp(sLispFunction.Left(6), _T("^C^CC:"));
-
-	if (_tcsicmp(sLispFunction.Left(6), _T("^C^CC:")) != 0)
-		return sLispFunction;
-
-	CString CancelStr = (_T("\x1B\x1B"));
-
-	Acad::ErrorStatus es = ExecuteCommand(CancelStr);
-	return sLispFunction.Mid(4);
+	Acad::ErrorStatus es = ExecuteCommand( _T("\x1B\x1B") );
+	return sLispFunction.Mid( 4 );
 }
 
 bool InvokeCancelMethod(CString sLispFunction, bool bUserPressedEsc)
@@ -152,7 +138,7 @@ void InvokeMethodStringInt(CString sLispFunction, CString sString, int nInt, boo
 				+ sInt
 				+ _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -200,7 +186,7 @@ void InvokeMethodStringLong(CString sLispFunction, CString sString, DWORD_PTR lL
 				+ _T(") ");
 			
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -247,7 +233,7 @@ void InvokeMethodLong(CString sLispFunction, DWORD_PTR lLong, bool UseSendString
 				+ fmtval
 				+ _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -300,7 +286,7 @@ void InvokeMethodStringIntInt(CString sLispFunction, CString sString, int nInt1,
 				+ sInt2
 				+ _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -340,10 +326,9 @@ void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc)
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(_T("(")) + sLispFunction + _T(") ");
 
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
-			
-			if (sLispFunction.Left(1) == _T("'"))
+			else if (sLispFunction.Left(1) == _T("'"))
 			{
 				sCommand = sLispFunction + _T(" ");
 				bShowCommand = true;
@@ -360,12 +345,10 @@ void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc)
 			list = acutBuildList(RTSTR, FireCancel(sLispFunction), 0);
 			if (list != NULL) 
 			{ 
-		        stat = acedInvokeNoDocStateSafe(list, &result); 
-			    acutRelRb(list); 
-			    if(result != NULL) 
-				{
+				stat = acedInvokeNoDocStateSafe(list, &result); 
+				acutRelRb(list); 
+				if(result != NULL) 
 					acutRelRb(result); 
-				}
 			}
 		}
 	}
@@ -386,7 +369,7 @@ void InvokeMethodIntString(CString sLispFunction, int nInt, CString sString, boo
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(_T("(")) + sLispFunction + _T(" ") + sInt + _T(" \"") + sString + _T("\") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -423,7 +406,7 @@ void InvokeMethodIntList(CString sLispFunction, int nInt, CStringList *pList, bo
 			sInt.Format( _T("%d"), nInt );
 			
 			CString sCommand = CString(_T("(")) + FireCancel(sLispFunction) + _T(" ") + sInt + _T(" \"");
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			for (int i=0; i<pList->GetCount(); i++)
@@ -492,7 +475,7 @@ void InvokeMethodString(CString sLispFunction, CString sString, bool UseSendStri
 			sString = EscapeLispStringArgument( sString );
 			CString sCommand = CString(_T("(")) + FireCancel(sLispFunction) + _T(" \"") + sString + _T("\") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -532,7 +515,7 @@ void InvokeMethodInt(CString sLispFunction, int nInt, bool UseSendString)
 			sLispFunction = FireCancel(sLispFunction);
 			CString sCommand = CString(_T("(")) + sLispFunction + _T(" ") + sInt + _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -572,7 +555,7 @@ void InvokeMethodIntInt(CString sLispFunction, int nInt1, int nInt2, bool UseSen
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(_T("(")) + sLispFunction + _T(" ") + sInt1 + _T(" ") + sInt2 +_T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -623,7 +606,7 @@ void InvokeMethodIntIntInt(CString sLispFunction, int nInt1, int nInt2, int nInt
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(_T("(")) + sLispFunction + _T(" ") + sInt1 + _T(" ") + sInt2 + _T(" ") + sInt3 + _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -670,7 +653,7 @@ void InvokeMethodIntIntIntInt(CString sLispFunction, int nInt1, int nInt2, int n
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(_T("(")) + sLispFunction + _T(" ") + sInt1 + _T(" ") + sInt2 + _T(" ") + sInt3 + _T(" ") + sInt4 + _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -712,7 +695,7 @@ void InvokeMethodStringString(CString sLispFunction, CString sString1, CString s
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(_T("(")) + sLispFunction + _T(" \"") + sString1 + _T("\" \"") + sString2 + _T("\") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -752,7 +735,7 @@ void InvokeMethod3Strings(CString sLispFunction, CString sString1, CString sStri
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(_T("(")) + sLispFunction + _T(" \"") + sString1 + _T("\" \"") + sString2 + _T("\" \"") +  sString3 + _T("\") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -794,7 +777,7 @@ void InvokeMethod4Strings(CString sLispFunction, CString sString1, CString sStri
 			sLispFunction = FireCancel(sLispFunction);			
 			CString sCommand = CString(_T("(")) + sLispFunction + _T(" \"") + sString1 + _T("\" \"") + sString2 + _T("\" \"") +  sString3 + _T("\" \"") + sString4 + _T("\") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -842,7 +825,7 @@ void InvokeMethod3StringsPoint(
 			
 			sLispFunction = FireCancel(sLispFunction);
 			CString sCommand;
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 			else
 				sCommand.Format( _T("(%s \"%s\" \"%s\" \"%s\" '(%d %d))"), (LPCTSTR)sLispFunction,
@@ -911,7 +894,7 @@ void InvokeMethod3StringsLong(
 				+ sInt 
 				+ _T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -962,7 +945,7 @@ void InvokeMethodPoint(
 			CString sCommand;
 			sCommand.Format( _T("(%s '(%d %d)) "), (LPCTSTR)sLispFunction, ptPoint.x, ptPoint.y );
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);
@@ -1039,7 +1022,7 @@ void InvokeMethodPoint3DInt(
 				+ sVP +
 				_T(") ");
 			
-			if (_tcsicmp(sLispFunction.Left(2), _T("C:")) != 0)
+			if (sLispFunction.Left(2).CompareNoCase( _T("C:") ) != 0)
 				sCommand = sLispFunction + _T(" ");
 
 			Acad::ErrorStatus es = ExecuteCommand(sCommand);

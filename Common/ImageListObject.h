@@ -2,6 +2,8 @@
 
 enum IOStatus;
 
+#include "RefCountedPtr.h"
+
 
 class CImageListObject : public CObject
 {
@@ -44,3 +46,6 @@ public:
 protected:
 	DECLARE_SERIAL(CImageListObject)
 };
+
+typedef RefCountedPtr< CImageListObject > TImageListPtr;
+typedef RefCountedPtrAsIUnknown< TImageListPtr > TImageListPtrIUnknown;

@@ -71,18 +71,21 @@ bool CButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 			switch( pProp->GetLongValue() )
 			{
 			case ButtonStyle_Raised:
+				mbUsingPresetGraphic = false;
 				SetFlat( FALSE );
 				m_bDrawBorder = TRUE;
 				DrawAsToolbar( FALSE, FALSE );
 				SetThemeHelper( NULL );
 				break;
 			case ButtonStyle_Flat:
+				mbUsingPresetGraphic = false;
 				SetFlat( TRUE );
 				m_bDrawBorder = TRUE;
 				DrawAsToolbar( TRUE, FALSE );
 				SetThemeHelper( NULL );
 				break;
 			case ButtonStyle_Pick:
+				mbUsingPresetGraphic = true;
 				SetFlat( FALSE );
 				m_bDrawBorder = TRUE;
 				DrawAsToolbar( FALSE, FALSE );
@@ -90,6 +93,7 @@ bool CButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 				SetThemeHelper( NULL );
 				break;
 			case ButtonStyle_Select:
+				mbUsingPresetGraphic = true;
 				SetFlat( FALSE );
 				m_bDrawBorder = TRUE;
 				DrawAsToolbar( FALSE, FALSE );
@@ -97,6 +101,7 @@ bool CButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 				SetThemeHelper( NULL );
 				break;
 			case ButtonStyle_Filter:
+				mbUsingPresetGraphic = true;
 				SetFlat( FALSE );
 				m_bDrawBorder = TRUE;
 				DrawAsToolbar( FALSE, FALSE );
@@ -104,21 +109,25 @@ bool CButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 				SetThemeHelper( NULL );
 				break;
 			case ButtonStyle_NoBorder:
+				mbUsingPresetGraphic = false;
 				SetFlat( TRUE );
 				m_bDrawBorder = FALSE;
 				DrawAsToolbar( FALSE, FALSE );
 				SetThemeHelper( NULL );
 				break;
 			case ButtonStyle_XPTheme:
+				mbUsingPresetGraphic = false;
 				SetFlat( FALSE );
 				m_bDrawBorder = TRUE;
 				DrawAsToolbar( FALSE, FALSE );
 				SetThemeHelper( mpControlPane->GetThemeHelper() );
 				break;
 			default:
+				mbUsingPresetGraphic = false;
 				bFailed = true;
 				break;
 			}
+			UpdateButtonGraphic();
 			break;
 		}
 	}

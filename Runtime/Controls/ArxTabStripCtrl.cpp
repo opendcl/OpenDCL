@@ -263,8 +263,23 @@ void CArxTabStripCtrl::OnSelchange( NMHDR* pNMHDR, LRESULT* pResult )
 
 void CArxTabStripCtrl::OnSelchanging( NMHDR* pNMHDR, LRESULT* pResult ) 
 {
-	InvokeMethodInt( mpTemplate->GetStringProperty(Prop::EventSelChanging), GetCurTabPage(), IsAsyncEvents() );
-	*pResult = 0;
+	*pResult = FALSE;
+	CString sSelChangingEvent = mpTemplate->GetStringProperty( Prop::EventSelChanging );
+	if( !sSelChangingEvent.IsEmpty() )
+	{
+		resbuf rbCurrentPage = { NULL, RTSHORT };
+		rbCurrentPage.resval.rint = GetCurTabPage();
+		resbuf rbEventName = { &rbCurrentPage, RTSTR };
+		rbEventName.resval.rstring = sSelChangingEvent.LockBuffer();
+		resbuf* prbResult = NULL;
+		int nResult = acedInvokeNoDocStateSafe( &rbEventName, &prbResult );
+		if( nResult == RTNORM && prbResult )
+		{
+			if( !prbResult->rbnext && prbResult->restype == RTT )
+				*pResult = TRUE; //prevent change
+			acutRelRb( prbResult );
+		}
+	}
 }
 
 void CArxTabStripCtrl::OnKillFocus( CWnd* pNewWnd ) 

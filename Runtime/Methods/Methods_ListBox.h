@@ -9,7 +9,7 @@ namespace ListBox
 ADSRESULT Dir();
 ADSRESULT AddString();
 ADSRESULT AddList();
-ADSRESULT GetText();
+ADSRESULT GetItemText();
 ADSRESULT GetSelectedItems();
 ADSRESULT GetSelectedNths();
 ADSRESULT GetCurSel();
@@ -20,13 +20,13 @@ ADSRESULT GetTopIndex();
 ADSRESULT SetTopIndex();
 ADSRESULT SetItemData();
 ADSRESULT GetItemData();
-ADSRESULT DeleteString();
+ADSRESULT DeleteItem();
 ADSRESULT InsertString();
 ADSRESULT FindString();
 ADSRESULT SelectString();
 ADSRESULT FindStringExact();
-ADSRESULT SetSel();
-ADSRESULT GetSel();
+ADSRESULT SelectItem();
+ADSRESULT IsItemSelected();
 ADSRESULT SetFocusIndex(); // SetCaretIndex
 ADSRESULT GetFocusIndex(); // GetCaretIndex
 ADSRESULT GetSelCount();

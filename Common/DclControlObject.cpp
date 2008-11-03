@@ -212,19 +212,17 @@ void CDclControlObject::SetControlInstance( CDialogControl* pDlgControl )
 
 void CDclControlObject::Serialize(CArchive& ar)
 {
-	DWORD nThisVersion = GetCurrentSaveVersion();
-	short nCount;
-	BOOL bImageList;
+	BYTE nThisVersion = GetCurrentSaveVersion();
 	CObject::Serialize( ar );
 	if (ar.IsStoring())
 	{
-		ar << unsigned long(nThisVersion);
+		ar << nThisVersion;
 		ar << msAxTypeName;
 		ar << long(mType);
 		ar << mnID;
 
 		// serialize the image if it exists
-		ar << BOOL(mpImageList != NULL);
+		ar << bool(mpImageList != NULL);
 		if( mpImageList )
 			mpImageList->Serialize(ar);
 			
@@ -237,8 +235,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 			SerializeCLSID(ar, mClsid);
 			try
 			{		
-				BOOL bHasStream = (!!mpStream);
-				ar << bHasStream;
+				ar << bool(mpStream != NULL);
 				if (mpStream)
 				{
 					ULARGE_INTEGER iSeekPtr;
@@ -268,7 +265,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 			}
 		}
 		// write property list
-		ar << (WORD)mProperties.size();
+		ar << unsigned short(mProperties.size());
 		for( TPropertyList::iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 		{
 			(*iter)->Serialize(ar);
@@ -280,8 +277,17 @@ void CDclControlObject::Serialize(CArchive& ar)
 	}
 	else
 	{
-		// clear these temp storage variables
 		ar >> nThisVersion;
+		if( nThisVersion <= 10 )
+		{
+			BYTE bSkip;
+			ar >> bSkip;
+			assert( bSkip == 0 );
+			ar >> bSkip;
+			assert( bSkip == 0 );
+			ar >> bSkip;
+			assert( bSkip == 0 );
+		}
 		if (nThisVersion > GetCurrentSaveVersion())
 			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
 
@@ -315,10 +321,18 @@ void CDclControlObject::Serialize(CArchive& ar)
 				mnID += 100;
 		}
 		mpImageList = NULL;
-		if (nThisVersion >= 5)
+		if( nThisVersion >= 5 )
 		{
-			ar >> bImageList;
-			if (bImageList == TRUE)
+			bool bImageList;
+			if( nThisVersion <= 10 )
+			{
+				BOOL bImageListTemp;
+				ar >> bImageListTemp;
+				bImageList = (bImageListTemp != FALSE);
+			}
+			else
+				ar >> bImageList;
+			if( bImageList )
 			{
 				mpImageList = new CImageListObject();
 				mpImageList->Serialize(ar);		
@@ -343,53 +357,45 @@ void CDclControlObject::Serialize(CArchive& ar)
 
 				SerializeCLSID(ar, mClsid);
 
-				LARGE_INTEGER nDisplacement;
-				ULONG nBytesLeft;
-				BYTE abData[512];
-   
-				mpStream = NULL;
-				
-				try
+				bool bHasStream;
+				if( nThisVersion <= 10 )
 				{
-					ULONG nBytesToRead;
-					BOOL bHasStream;
-   
+					BOOL bHasStreamTemp;
+					ar >> bHasStreamTemp;
+					bHasStream = (bHasStreamTemp != FALSE);
+				}
+				else
 					ar >> bHasStream;
 
-					if (bHasStream)
-					{
-						HRESULT hResult = CreateStreamOnHGlobal( NULL, TRUE, &mpStream );
-						if( FAILED( hResult ) )
-							return;
-
-						ULONG cbStream;
-						ar >> cbStream;
-						nBytesLeft = cbStream;
-					
-						while( nBytesLeft > 0 )
-						{
-							nBytesToRead = std::min<ULONG>( nBytesLeft, sizeof( abData ) );
-							ar.Read( abData, nBytesToRead );
-							mpStream->Write( abData, nBytesToRead, NULL );
-							nBytesLeft -= nBytesToRead;
-						}
-
-						nDisplacement.QuadPart = 0;
-						mpStream->Seek( nDisplacement, STREAM_SEEK_SET, NULL );						
-					}
-				}
-				catch( CFileException* pException )
+				if( bHasStream )
 				{
-					pException->Delete();
-					return;
-				}						
+					mpStream = NULL;
+					HRESULT hResult = CreateStreamOnHGlobal( NULL, TRUE, &mpStream );
+					if( FAILED( hResult ) )
+						return;
+
+					ULONG cbStream;
+					ar >> cbStream;
+					while( cbStream > 0 )
+					{
+						BYTE abData[512];
+						ULONG nBytesToRead = std::min<ULONG>( cbStream, sizeof( abData ) );
+						ar.Read( abData, nBytesToRead );
+						mpStream->Write( abData, nBytesToRead, NULL );
+						cbStream -= nBytesToRead;
+					}
+
+					LARGE_INTEGER nDisplacement;
+					nDisplacement.QuadPart = 0;
+					mpStream->Seek( nDisplacement, STREAM_SEEK_SET, NULL );						
+				}
 			}	
 		}
 
 		mProperties.clear();
 		if (nThisVersion >= 2)
 		{
-			// get counter for objects
+			unsigned short nCount;
 			ar >> nCount;		
 			while (nCount-- > 0)
 			{
@@ -510,6 +516,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				switch( nID )
 				{
 				case Prop::HScrollBar:
+				case Prop::UseTabStops:
 				case Prop::EventClicked:
 					mProperties.erase( iterAt );
 					continue;
@@ -550,27 +557,27 @@ void CDclControlObject::Serialize(CArchive& ar)
 							AddLongProperty( Prop::ProgressLegend, PropEnum, 2 );
 						continue;
 					}
-				case Prop::SecondText:
+				case Prop::CaptionSecond:
 					{
 						CString sVal = (*iterAt)->GetStringValue();
 						if( sVal == _T("second") || sVal == _T("second remaining") )
 							(*iterAt)->SetStringValue( _T("") ); //revert to default from resources
 						break;
 					}
-				case Prop::SecondsText:
+				case Prop::CaptionSeconds:
 					{
 						CString sVal = (*iterAt)->GetStringValue();
 						if( sVal == _T("seconds") || sVal == _T("seconds remaining") )
 							(*iterAt)->SetStringValue( _T("") ); //revert to default from resources
 						break;
 					}
-				case Prop::MinuteText:
+				case Prop::CaptionMinute:
 					{
 						if( (*iterAt)->GetStringValue() == _T("minute") )
 							(*iterAt)->SetStringValue( _T("") ); //revert to default from resources
 						break;
 					}
-				case Prop::MinutesText:
+				case Prop::CaptionMinutes:
 					{
 						if( (*iterAt)->GetStringValue() == _T("minutes") )
 							(*iterAt)->SetStringValue( _T("") ); //revert to default from resources
@@ -620,6 +627,14 @@ void CDclControlObject::Serialize(CArchive& ar)
 					continue;
 				}
 				break;
+			case CtlDwgList:
+				switch( nID )
+				{
+				case Prop::EventClicked:
+					mProperties.erase( iterAt );
+					continue;
+				}
+				break;
 			case _CtlForm:
 				if( mpOwner && mpOwner->GetParentForm() )
 				{
@@ -627,7 +642,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 					{
 					case Prop::Name:
 					case Prop::ControlBrowser:
-					case Prop::GlobalVarName:
+					case Prop::VarName:
 					case Prop::Custom:
 					case Prop::UseBottomFromBottom:
 					case Prop::UseTopFromBottom:
@@ -643,34 +658,27 @@ void CDclControlObject::Serialize(CArchive& ar)
 				}
 				switch( eFormType )
 				{
-				case FrmConfigTab:
+				case FrmOptionsTab:
 					switch( nID )
 					{
 					case Prop::Custom:
 					case Prop::DockableSides:
 					case Prop::EventOnHelp:
-					case Prop::EventInvoke:
 						mProperties.erase( iterAt );
 						continue;
 					}
 					break;
 				case FrmModalDlg:
-					switch( nID )
-					{
-					case Prop::EventInvoke:
-						mProperties.erase( iterAt );
-						continue;
-					}
 					break;
 				case FrmModelessDlg:
 					switch( nID )
 					{
-					case Prop::Icon:
+					case Prop::TitleBarIcon:
 						mProperties.erase( iterAt );
 						continue;
 					}
 					break;
-				case FrmDockableDlg:
+				case FrmControlBar:
 					//switch( nID )
 					//{
 					//case Prop::MinDialogWidth:
@@ -721,6 +729,28 @@ void CDclControlObject::Serialize(CArchive& ar)
 			case Prop::ZOrder:
 				mProperties.erase( iterAt );
 				continue;
+			case Prop::URLLinkType:
+				{
+					CString sURL = GetStringProperty( Prop::Hyperlink );
+					CString sPrefix;
+					switch( (*iter)->GetEnumValue() )
+					{
+					case 1:
+						sPrefix = _T("mailto:");
+						break;
+					default:
+						sPrefix = _T("http://");
+						break;
+					}
+					if( sURL.Left( sPrefix.GetLength() ) != sPrefix )
+					{
+						sURL = sPrefix + sURL;
+						SetStringProperty( Prop::Hyperlink, sURL );
+					}
+					mProperties.erase( iterAt );
+					continue;
+				}
+				break;
 			case Prop::InterfaceMode:
 				if( (*iterAt)->GetType() == PropBool )
 				{
@@ -751,18 +781,21 @@ void CDclControlObject::Serialize(CArchive& ar)
 					//ActiveX props with extra arguments were being erroneously hidden
 					if( (*iterAt)->IsHidden() )
 						(*iterAt)->SetHidden( false );
-					continue;
 				}
 				break;
-			}
-			switch( eFormType )
-			{
-			case FrmModalDlg:
-				switch( nID )
+			case Prop::EventInvoke:
+				switch( eFormType )
 				{
-				case Prop::EventInvoke:
-					mProperties.erase( iterAt );
-					continue;
+				case FrmControlBar:
+				case FrmModelessDlg:
+				case FrmPaletteDlg:
+					if( (*iterAt)->IsHidden() )
+						(*iterAt)->SetHidden( false );
+					break;
+				default:
+					if( !(*iterAt)->IsHidden() )
+						(*iterAt)->SetHidden();
+					break;
 				}
 				break;
 			}
@@ -819,11 +852,11 @@ TPropertyPtr CDclControlObject::GetPropertyObject( Prop::Id nID )
 	return NULL;
 }
 
-TPropertyPtr CDclControlObject::FindPropertyObject( LPCTSTR pszName ) const
+TPropertyPtr CDclControlObject::FindPropertyObject( LPCTSTR pszApiName ) const
 {
 	for( TPropertyList::const_iterator iter = mProperties.begin(); iter != mProperties.end(); ++iter )
 	{
-		if( (*iter)->GetName() == pszName )
+		if( (*iter)->GetApiName() == pszApiName )
 			return (*iter);
 	}
 	return NULL;
@@ -862,12 +895,12 @@ void CDclControlObject::SetGlobalVariableName( LPCTSTR pszParentName /*= NULL*/ 
 	if( sParentName.IsEmpty() )
 		sParentName = mpOwner->GetKeyPath();
 	CString sControlName = sParentName + _T('_') + GetKeyName();
-	AddStringProperty( Prop::GlobalVarName, PropString, sControlName, true );
+	AddStringProperty( Prop::VarName, PropString, sControlName, true );
 }
 
 void CDclControlObject::ClearGlobalVariableName()	
 {	
-	SetStringProperty( Prop::GlobalVarName, NULL );
+	SetStringProperty( Prop::VarName, NULL );
 }
 
 bool CDclControlObject::SetStringProperty( Prop::Id nID, LPCTSTR pszValue )	
@@ -1009,7 +1042,7 @@ CString CDclControlObject::GetStringProperty(Prop::Id nID) const
 	return sValue;
 }
 
-long CDclControlObject::GetLongProperty(Prop::Id nID) const
+long CDclControlObject::GetLongProperty( Prop::Id nID ) const
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( pProp )
@@ -1026,22 +1059,30 @@ long CDclControlObject::GetLongProperty(Prop::Id nID) const
 	return -1;
 }
 
-void CDclControlObject::SetColorProperty(Prop::Id nID, COLORREF color)
+void CDclControlObject::SetColorProperty( Prop::Id nID, COLORREF color )
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( pProp )
 		pProp->SetOLEColorValue(color);
 }
 
-COLORREF CDclControlObject::GetColorProperty(Prop::Id nID) const
+COLORREF CDclControlObject::GetColorProperty( Prop::Id nID ) const
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( pProp )
 		return GetRGBColor( pProp->GetLongValue() );
 	return RGB(0,0,0);
 }
+
+double CDclControlObject::GetDoubleProperty( Prop::Id nID ) const
+{
+	TPropertyPtr pProp = GetPropertyObject( nID );
+	if( pProp )
+		return pProp->GetDoubleValue();
+	return 0.0;
+}
 	
-bool CDclControlObject::GetBooleanProperty(Prop::Id nID) const
+bool CDclControlObject::GetBooleanProperty( Prop::Id nID ) const
 {
 	TPropertyPtr pProp = GetPropertyObject( nID );
 	if( pProp )
@@ -1277,7 +1318,7 @@ CString CDclControlObject::GetKeyPath() const
 
 CString CDclControlObject::GetVarName() const
 {
-	CString sName = GetStringProperty( Prop::GlobalVarName );
+	CString sName = GetStringProperty( Prop::VarName );
 	if( sName.IsEmpty() )
 		sName = GetKeyPath();
 	return sName;

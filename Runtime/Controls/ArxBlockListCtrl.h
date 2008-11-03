@@ -23,26 +23,39 @@ protected:
 
 	class CDocReactor : public AcApDocManagerReactor
 	{
-		CArxBlockListCtrl* mpListCtrl;
+		CArxBlockListCtrl* mpCtrl;
 	public:
-		CDocReactor( CArxBlockListCtrl* pListCtrl )
-			: mpListCtrl( pListCtrl )
+		CDocReactor( CArxBlockListCtrl* pCtrl )
+			: mpCtrl( pCtrl )
 			{ acDocManager->addReactor( this ); }
 		~CDocReactor()
 			{ acDocManager->removeReactor( this ); }
 		void documentActivated(AcApDocument* pActivatedDoc)
-			{ if( mpListCtrl ) mpListCtrl->RefreshBlockList(); }
+			{ mpCtrl->RefreshBlockList(); }
 		void documentDestroyed(const char* filename)
-			{ if( mpListCtrl ) mpListCtrl->RefreshBlockList(); }
-	};
+			{ mpCtrl->RefreshBlockList(); }
+	} mDocReactor;
 
-protected:
-	CDocReactor* mpDocReactor;
-	CAcadBlockReactor* mpBlockReactor;	
+	class CEdReactor : public AcEditorReactor 
+	{
+		CArxBlockListCtrl* mpCtrl;
+	public:
+		CEdReactor( CArxBlockListCtrl* pCtrl )
+			: mpCtrl( pCtrl )
+			{ acedEditor->addReactor( this ); }
+		~CEdReactor()
+			{ acedEditor->removeReactor( this ); }
+
+		virtual void endInsert( AcDbDatabase* pTo )
+			{ if( pTo ) mpCtrl->RefreshBlockList(); }
+		virtual void endDeepClone( AcDbIdMapping& idMap )
+			{ mpCtrl->RefreshBlockList(); }
+		virtual void commandEnded( LPCTSTR cmdStr )
+			{ if( lstrcmp( cmdStr, _T("PURGE") ) == 0 ) mpCtrl->RefreshBlockList(); }
+	} mEdReactor;
 
 public:
 	AcDbDatabase		*m_pLoadedDwg;
-	CString				m_FileName;
 
 // Construction
 public:
@@ -65,7 +78,6 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	afx_msg void OnDestroy();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnClick(NMHDR* pNMHDR, LRESULT* pResult);

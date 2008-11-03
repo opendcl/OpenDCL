@@ -41,7 +41,7 @@ ADSRESULT ListView::AddColumns()
 		int nFormat = LVCFMT_CENTER;
 		int nColWidth = -1;
 		int nImage = -1;
-		int nJustification;
+		int nJustification = -1;
 		if( GetIntArgument( pArgs, nJustification, true ) )
 		{
 			switch( nJustification )
@@ -98,7 +98,7 @@ ADSRESULT ListView::AddItem()
 
 	int nImage = -1;
 	CString sItemText;
-	CStringArray rsText;
+	PropVal::TCStringArray rsText;
 	if( GetListBeginArgument( pArgs, true ) )
 	{
 		GetIntArgument( pArgs, nImage, true );
@@ -127,8 +127,8 @@ ADSRESULT ListView::AddItem()
 	int nRow = pCtrl->InsertItem( pCtrl->GetItemCount(), sItemText, nImage );
 	if( nRow == -1 )
 		return RSRSLT;
-	for( int idx = rsText.GetCount() - 1; idx >= 0; --idx )
-		pCtrl->SetItemText( nRow, idx + 1, rsText.GetAt( idx ) );
+	for( size_t idx = rsText.size(); idx > 0; --idx )
+		pCtrl->SetItemText( nRow, idx, rsText[idx - 1] );
 
 	acedRetInt( nRow );
 	return RSRSLT;
@@ -146,8 +146,7 @@ ADSRESULT ListView::InsertItem()
 	if( !GetIntArgument( pArgs, nInsertIdx ) )
 		return RSERR; //invalid input
 
-	if( !GetListBeginArgument( pArgs ) )
-		return RSERR; //invalid input
+	bool bListBegin = GetListBeginArgument( pArgs, true );
 
 	int nImage = -1;
 	GetIntArgument( pArgs, nImage, true );
@@ -156,10 +155,10 @@ ADSRESULT ListView::InsertItem()
 	if( !GetStringArgument( pArgs, sItemText ) )
 		return RSERR; //invalid input
 
-	CStringArray rsText;
+	PropVal::TCStringArray rsText;
 	GetStringArrayArgument( pArgs, rsText, true );
 
-	if( !GetListEndArgument( pArgs ) )
+	if( bListBegin && !GetListEndArgument( pArgs ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -170,8 +169,8 @@ ADSRESULT ListView::InsertItem()
 	int nRow = pCtrl->InsertItem( nInsertIdx, sItemText, nImage );
 	if( nRow == -1 )
 		return RSRSLT;
-	for( int idx = rsText.GetCount() - 1; idx >= 0; --idx )
-		pCtrl->SetItemText( nRow, idx + 1, rsText.GetAt( idx ) );
+	for( size_t idx = rsText.size(); idx > 0; --idx )
+		pCtrl->SetItemText( nRow, idx, rsText[idx - 1] );
 
 	acedRetT();
 	return RSRSLT;
@@ -471,9 +470,8 @@ ADSRESULT ListView::SetItemText()
 	if( !GetIntArgument( pArgs, nRow ) )
 		return RSERR; //invalid input
 
-	int nCol = -1;
-	if( !GetIntArgument( pArgs, nCol ) )
-		return RSERR; //invalid input
+	int nCol = 0;
+	GetIntArgument( pArgs, nCol, true );
 
 	CString sText;
 	if( !GetStringArgument( pArgs, sText ) )
@@ -528,13 +526,13 @@ ADSRESULT ListView::SetItemImage()
 	if( !GetIntArgument( pArgs, nRow ) )
 		return RSERR; //invalid input
 
-	int nCol = -1;
+	int nCol = 0;
 	if( !GetIntArgument( pArgs, nCol ) )
 		return RSERR; //invalid input
 
-	int nImage;
-	if( !GetIntArgument( pArgs, nImage ) )
-		return RSERR; //invalid input
+	int nImage = nCol;
+	if( !GetIntArgument( pArgs, nImage, true ) )
+		nCol = 0;
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
@@ -546,7 +544,7 @@ ADSRESULT ListView::SetItemImage()
 	return RSRSLT;
 }
 
-ADSRESULT ListView::GetColWidth()
+ADSRESULT ListView::GetColumnWidth()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -567,7 +565,7 @@ ADSRESULT ListView::GetColWidth()
 	return RSRSLT;
 }
 
-ADSRESULT ListView::SetColWidth()
+ADSRESULT ListView::SetColumnWidth()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -593,7 +591,7 @@ ADSRESULT ListView::SetColWidth()
 	return RSRSLT;
 }
 
-ADSRESULT ListView::CalcColWidth()
+ADSRESULT ListView::CalcColumnWidth()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -684,7 +682,7 @@ ADSRESULT ListView::DeleteItems()
 	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlListView))
 		return RSERR; //invalid input
 
-	CArray< int, int > rnItem;
+	PropVal::TIntArray rnItem;
 	if( !GetIntArrayArgument( pArgs, rnItem ) )
 		return RSERR; //invalid input
 
@@ -694,24 +692,24 @@ ADSRESULT ListView::DeleteItems()
 	CArxListViewCtrl* pCtrl = (CArxListViewCtrl*)pDlgControl->GetControlWnd();
 
 	//sort the indices in ascending order first
-	bool bStillSorting = (rnItem.GetCount() > 1);
+	bool bStillSorting = (rnItem.size() > 1);
 	while( bStillSorting )
 	{
 		bStillSorting = false;
-		for( int idx = 1; idx < rnItem.GetCount(); ++idx )
+		for( size_t idx = 1; idx < rnItem.size(); ++idx )
 		{
-			int nLow = rnItem.GetAt( idx - 1 );
-			int nHigh = rnItem.GetAt( idx );
+			int nLow = rnItem[idx - 1];
+			int nHigh = rnItem[idx];
 			if( nLow > nHigh )
 			{
 				bStillSorting = true;
-				rnItem.SetAt( idx - 1, nHigh );
-				rnItem.SetAt( idx, nLow );
+				rnItem[idx - 1] = nHigh;
+				rnItem[idx] = nLow;
 			}
 		}
 	}
-	for( int idx = rnItem.GetCount() - 1; idx >= 0; --idx )
-		pCtrl->DeleteItem( rnItem.GetAt( idx ) );
+	for( size_t idx = rnItem.size(); idx > 0; --idx )
+		pCtrl->DeleteItem( rnItem[idx - 1] );
 	acedRetT();
 	return RSRSLT;
 }
@@ -746,7 +744,7 @@ ADSRESULT ListView::DeleteColumns()
 	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlListView))
 		return RSERR; //invalid input
 
-	CArray< int, int > rnCol;
+	PropVal::TIntArray rnCol;
 	if( !GetIntArrayArgument( pArgs, rnCol ) )
 		return RSERR; //invalid input
 
@@ -756,24 +754,24 @@ ADSRESULT ListView::DeleteColumns()
 	CArxListViewCtrl* pCtrl = (CArxListViewCtrl*)pDlgControl->GetControlWnd();
 
 	//sort the indices in ascending order first
-	bool bStillSorting = (rnCol.GetCount() > 1);
+	bool bStillSorting = (rnCol.size() > 1);
 	while( bStillSorting )
 	{
 		bStillSorting = false;
-		for( int idx = 1; idx < rnCol.GetCount(); ++idx )
+		for( size_t idx = 1; idx < rnCol.size(); ++idx )
 		{
-			int nLow = rnCol.GetAt( idx - 1 );
-			int nHigh = rnCol.GetAt( idx );
+			int nLow = rnCol[idx - 1];
+			int nHigh = rnCol[idx];
 			if( nLow > nHigh )
 			{
 				bStillSorting = true;
-				rnCol.SetAt( idx - 1, nHigh );
-				rnCol.SetAt( idx, nLow );
+				rnCol[idx - 1] = nHigh;
+				rnCol[idx] = nLow;
 			}
 		}
 	}
-	for( int idx = rnCol.GetCount() - 1; idx >= 0; --idx )
-		pCtrl->DeleteColumn( rnCol.GetAt( idx ) );
+	for( size_t idx = rnCol.size(); idx > 0; --idx )
+		pCtrl->DeleteColumn( rnCol[idx - 1] );
 	acedRetT();
 	return RSRSLT;
 }
@@ -1057,9 +1055,6 @@ ADSRESULT ListView::StartLabelEdit()
 	int nRow = -1;
 	if( !GetIntArgument( pArgs, nRow ) )
 		return RSERR; //invalid input
-
-	int nCol = -1;
-	GetIntArgument( pArgs, nCol, true );
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;

@@ -12,7 +12,6 @@ class AxMethodDescriptor
 	DISPID mDispId;
 	CString msName;
 	CString msDesc;
-	CString msParams;
 	VARTYPE mReturnType;
 	GUID mReturnGuid;	
 	CString msReturnTypeName;
@@ -24,6 +23,9 @@ protected:
 public:
 	AxMethodDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo, bool bUseAsType = true );
 	virtual ~AxMethodDescriptor(void);
+
+	//2008-11-02 [ORW]: save version set to 3 (removed msParams and changed arg count to unsigned short)
+	BYTE GetCurrentSaveVersion() const { return 3; }
 
 	// Attributes
 	DISPID GetDispId() const { return mDispId; }

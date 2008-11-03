@@ -70,6 +70,7 @@ public:
 class CButtonCtrl : public CXPStyleButtonST, public CDialogControl
 {
 	CButtonAcadColorService mColorService;
+	bool mbUsingPresetGraphic;
 
 public:
 	CButtonCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -82,7 +83,9 @@ public:
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
 
-public:
+protected:
+	virtual bool IsUsingPresetGraphic() const { return mbUsingPresetGraphic; }
+	virtual void UpdateButtonGraphic() {}
 	void SetResourceIcon(UINT idIcon);
 
 protected:

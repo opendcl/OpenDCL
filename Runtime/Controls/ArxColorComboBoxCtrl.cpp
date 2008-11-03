@@ -70,7 +70,7 @@ bool CArxColorComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 		break;
 	case Prop::ItemData:
 		break;
-	case Prop::LimitText:
+	case Prop::TextLimit:
 		LimitText( pProp->GetLongValue() );
 		break;
 	case Prop::Sorted:

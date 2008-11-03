@@ -124,7 +124,7 @@ ADSRESULT ComboBox::AddString()
 	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlComboBox ) )
 		return RSERR; //invalid input
 
-	CStringArray rsToAdd;
+	PropVal::TCStringArray rsToAdd;
 	if( !GetStringArrayArgument( pArgs, rsToAdd ) )
 		return RSERR; //invalid input
 
@@ -132,9 +132,9 @@ ADSRESULT ComboBox::AddString()
 		return RSERR;
 
 	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
-	INT_PTR ctArgs = rsToAdd.GetSize();
-	for( INT_PTR idx = 0; idx < ctArgs; ++idx )
-		pItemList->AddStringItem( rsToAdd.GetAt( idx ) );
+	size_t ctArgs = rsToAdd.size();
+	for( size_t idx = 0; idx < ctArgs; ++idx )
+		pItemList->AddStringItem( rsToAdd[idx] );
 
 	if( pDlgControl->OnApplyProperty( pItemList ) )
 		acedRetInt( pItemList->size() - 1 );
@@ -157,9 +157,9 @@ ADSRESULT ComboBox::Clear()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	TPropertyPtr pOptionList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
-	pOptionList->clear();
-	if( pDlgControl->OnApplyProperty( pOptionList ) )
+	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::List );
+	pItemList->clear();
+	if( pDlgControl->OnApplyProperty( pItemList ) )
 		acedRetT();
 	return RSRSLT;
 }
@@ -198,7 +198,7 @@ ADSRESULT ComboBox::GetCount()
 	return RSRSLT;
 }
 
-ADSRESULT ComboBox::DeleteString()
+ADSRESULT ComboBox::DeleteItem()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 

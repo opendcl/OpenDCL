@@ -47,11 +47,6 @@ CAcadPaletteHost::CAcadPaletteHost( CPaletteDialog* pDlgObject, CWnd *pParent /*
 
 CAcadPaletteHost::~CAcadPaletteHost()
 {
-	if( mbTrackingMouse )
-	{
-		TRACKMOUSEEVENT tm = { sizeof(TRACKMOUSEEVENT), TME_CANCEL | TME_LEAVE, NULL, 0 };
-		_TrackMouseEvent( &tm );
-	}
 }
 
 void CAcadPaletteHost::GetClientArea( CRect& rect )

@@ -4,7 +4,8 @@
 #pragma once
 
 
-CString FireCancel(CString sLispFunction);
+CString FireCancel( LPCTSTR pszLispFunction );
+int acedInvokeNoDocStateSafe( const struct resbuf *args, struct resbuf **result );
 bool InvokeCancelMethod(CString sLispFunction, bool bUserPressedEsc);
 void InvokeMethod(CString sLispFunction, bool UseSendString, AcApDocument* pDoc = NULL);
 void InvokeMethodIntString(CString sLispFunction, int nInt, CString sString, bool UseSendString);

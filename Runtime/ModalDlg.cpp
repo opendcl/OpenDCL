@@ -17,7 +17,7 @@
 static UINT GetDialogTemplateIdFromForm( TDclFormPtr pSourceForm )
 {
 	TDclControlPtr pDclProperties = pSourceForm->GetControlProperties();
-	if (pDclProperties->GetBooleanProperty(Prop::Resizable))
+	if (pDclProperties->GetBooleanProperty(Prop::AllowResizing))
 		return IDD_RESIZEABLE;
 	return IDD_MODALDIALOG;
 }

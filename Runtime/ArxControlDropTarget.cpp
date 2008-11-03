@@ -117,7 +117,7 @@ BOOL CArxControlDropTarget::OnDrop( CWnd* pWnd, COleDataObject* pDataObject,
 	if (mpDclControl->GetType() == CtlDwgList)
 		CArxDwgListCtrl *pDwgList = (CArxDwgListCtrl*)pControl->GetWindow();
 	
-	if (mpDclControl->GetType() == CtlImageTree)
+	if (mpDclControl->GetType() == CtlTree)
 	{
 		HTREEITEM	hitem;
 		UINT		flags = 0;

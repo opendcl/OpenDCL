@@ -112,14 +112,14 @@ void CArxDwgPreviewCtrl::PaintCtrl( CDC *pdc )
 		pdc->DrawFocusRect(m_rcFocus);
 }
 
-void CArxDwgPreviewCtrl::SetHighLight( int nColorIndex )
+void CArxDwgPreviewCtrl::SetHighlight( const COLORREF& clrHighlight )
 {
 	m_bSelectedRect = true;
-	m_HighlightColor = GetRGBColor(nColorIndex);		
+	m_HighlightColor = clrHighlight;		
 	Invalidate();
 }
 
-void CArxDwgPreviewCtrl::RemoveHighLight()
+void CArxDwgPreviewCtrl::RemoveHighlight()
 {
 	m_bSelectedRect = false;
 	Invalidate();

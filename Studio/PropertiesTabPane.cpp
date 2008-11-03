@@ -3,8 +3,8 @@
 
 #include "stdafx.h"
 #include "PropertiesTabPane.h"
+#include "ParseFuncHelp.h"
 #include "Workspace.h"
-#include "Resource.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -21,14 +21,17 @@ CPropertiesTabPane::CPropertiesTabPane( const std::vector< TDclControlPtr >& Act
 	m_bInitialized = false;
 }
 
-void CPropertiesTabPane::ActivateProperty( Prop::Id id )
+void CPropertiesTabPane::ActivateProperty( TPropertyPtr pProp )
 {
 	CString sName;
 	CString sDesc;
-	if( id >= Prop::_MinId && id <= Prop::_MaxId )
+	if( pProp )
 	{
-		sName = GetPropertyName( id );
-		sDesc = theWorkspace.LoadResourceString( IDS_PROPD_NAME + id - 1 );
+		sName = pProp->GetName();
+		CString sUnused;
+		ParseHelpInfo( pProp, sUnused, sDesc );
+		if( sDesc.IsEmpty() )
+			sDesc = theWorkspace.LoadResourceString( IDS_PROPD_NAME + pProp->GetID() - 1 );
 	}
 	GetDlgItem( IDC_PROPERTYTITLE )->SetWindowText( sName );
 	GetDlgItem( IDC_PROPDESCEDIT )->SetWindowText( sDesc );

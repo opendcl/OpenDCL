@@ -217,7 +217,8 @@ void CArxWorkspace::CloseAllDialogs( DWORD dwMask /*= (DWORD)-1*/ )
 	{
 		CDialogObject* pDialog = mDialogs.GetNext(posDialog);
 		assert(pDialog != NULL);
-		pDialog->CloseDialog(); //this call should result in the dialog being removed from the list
+		if( dwMask == 0 || (DWORD( 1 ) << pDialog->GetSourceForm()->GetType()) & dwMask != 0 )
+			pDialog->CloseDialog(); //this call should result in the dialog being removed from the list
 	}
 }
 
@@ -296,13 +297,13 @@ bool CArxWorkspace::AddExtensionTab( TDclFormPtr pDclForm, CAdUiTabExtensionMana
 		return false; //need to register the tab extension manager first!
 	if( pDclForm->GetFormInstance() )
 		return true; //it's already there
-	assert( pDclForm->GetType() == FrmConfigTab );
+	assert( pDclForm->GetType() == FrmOptionsTab );
 
 	CDialogObject* pDialog = CArxDialogObject::Create( pDclForm );
 	assert( pDialog != NULL );
 	if( !pDialog )
 		return false;
-	CString sTabCaption = pDclForm->GetControlProperties()->GetStringProperty(Prop::CfgTabCaption);
+	CString sTabCaption = pDclForm->GetControlProperties()->GetStringProperty(Prop::OptionsTabCaption);
 	if( !pTabXM->AddTab( theWorkspace.GetLocalResourceModule(),
 											 IDD_CFGTAB,
 											 sTabCaption,
@@ -399,6 +400,7 @@ void CArxWorkspace::RemoveUnknown( IUnknown* pUnknown )
 	{
 		if( (*iter) == pUnknown )
 		{
+			(*iter)->Release();
 			mUnknowns.erase( iter );
 			return;
 		}
@@ -539,7 +541,7 @@ int CArxWorkspace::ActivateDclForm( TDclFormPtr pDclForm, DialogParams* pParams 
 	assert (pDclForm != NULL);
 	if( pDclForm->GetParentForm() )
 		return -1; //can only activate top level forms from here!
-	if( pDclForm->GetType() == FrmConfigTab )
+	if( pDclForm->GetType() == FrmOptionsTab )
 		return -1; //cannot directly activate config tabs
 	CDialogObject* pDlgObject = pDclForm->GetFormInstance();
 	if( pDlgObject ) //form already created?

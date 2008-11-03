@@ -299,6 +299,7 @@ bool GetControlArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TDclControlPtr& pCon
 
 bool GetDialogArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CDialogObject*& pDialog, /*in*/ bool bQuiet /*= false*/ )
 {
+	resbuf* pArgsC = pArgs;
 	TDclFormPtr pForm;
 	if( !GetFormArgument( pArgs, pForm, bQuiet ) )
 		return false;
@@ -306,7 +307,7 @@ bool GetDialogArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CDialogObject*& pDial
 	if( !pDialog )
 	{
 		if( !bQuiet )
-			HandleArgError( pArgs, odcl::argNoInstance );
+			HandleArgError( pArgsC, odcl::argNoInstance );
 		return false;
 	}
 	return true;
@@ -314,20 +315,21 @@ bool GetDialogArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CDialogObject*& pDial
 
 bool GetDlgControlArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CDialogControl*& pDlgControl, /*in*/ ControlType type, /*in*/ bool bQuiet /*= false*/ )
 {
+	resbuf* pArgsC = pArgs;
 	TDclControlPtr pControl;
 	if( !GetControlArgument( pArgs, pControl, bQuiet ) )
 		return false;
 	if( !pControl || (type != _CtlInvalid && pControl->GetType() != type) )
 	{
 		if( !bQuiet )
-			HandleArgError( pArgs, odcl::argWrongType );
+			HandleArgError( pArgsC, odcl::argWrongType );
 		return false;
 	}
 	pDlgControl = pControl->GetControlInstance();
 	if( !pDlgControl )
 	{
 		if( !bQuiet )
-			HandleArgError( pArgs, odcl::argNoInstance );
+			HandleArgError( pArgsC, odcl::argNoInstance );
 		return false;
 	}
 	return true;
@@ -357,9 +359,24 @@ bool GetPropertyArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TPropertyPtr& pProp
 			}
 		}
 		return true;
+	case PropImageList:
+		{
+			TImageListPtr pImageList;
+			if( !GetImageListArgument( pArgs, pImageList, bQuiet ) )
+				return false;
+			TDclControlPtr pDclControl = pProperty->GetOwnerControl();
+			if( !pDclControl )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argNoInstance );
+				return false; //property doesn't belong to a control
+			}
+			pDclControl->SetImageList( pImageList );
+		}
+		return true;
 	case PropStringArray:
 		{
-			CStringArray rsArg;
+			PropVal::TCStringArray rsArg;
 			if( !GetStringArrayArgument( pArgs, rsArg, bQuiet ) )
 				return false;
 			PropVal::TCStringArray* prProp = pProperty->GetStringArrayPtr();
@@ -370,14 +387,12 @@ bool GetPropertyArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TPropertyPtr& pProp
 				return false; //wrong type
 			}
 			prProp->clear();
-			INT_PTR ctArg = rsArg.GetSize();
-			for( INT_PTR idx = 0; idx < ctArg; ++idx )
-				prProp->push_back( rsArg.GetAt( idx ) );
+			(*prProp) = rsArg;
 		}
 		return true;
 	case PropIntArray:
 		{
-			CArray< int, int > rnArg;
+			PropVal::TIntArray rnArg;
 			if( !GetIntArrayArgument( pArgs, rnArg, bQuiet ) )
 				return false;
 			PropVal::TIntArray* prProp = pProperty->GetIntArrayPtr();
@@ -388,9 +403,57 @@ bool GetPropertyArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TPropertyPtr& pProp
 				return false; //wrong type
 			}
 			prProp->clear();
-			INT_PTR ctArg = rnArg.GetSize();
-			for( INT_PTR idx = 0; idx < ctArg; ++idx )
-				prProp->push_back( rnArg.GetAt( idx ) );
+			(*prProp) = rnArg;
+		}
+		return true;
+	case PropIntArrayList:
+		{
+			PropVal::TIntArrayList rrnArg;
+			if( GetNilArgument( pArgs, true ) )
+				return true;
+			if( !GetListBeginArgument( pArgs, bQuiet ) )
+				return false;
+			while( !GetListEndArgument( pArgs, true ) )
+			{
+				PropVal::TIntArray rnArg;
+				if( !GetIntArrayArgument( pArgs, rnArg, bQuiet ) )
+					return false;
+				rrnArg.push_back( rnArg );
+			}
+			PropVal::TIntArrayList* prrProp = pProperty->GetIntArrayListPtr();
+			if( !prrProp )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong type
+			}
+			prrProp->clear();
+			(*prrProp) = rrnArg;
+		}
+		return true;
+	case PropStringArrayList:
+		{
+			PropVal::TCStringArrayList rrsArg;
+			if( GetNilArgument( pArgs, true ) )
+				return true;
+			if( !GetListBeginArgument( pArgs, bQuiet ) )
+				return false;
+			while( !GetListEndArgument( pArgs, true ) )
+			{
+				PropVal::TCStringArray rsArg;
+				if( !GetStringArrayArgument( pArgs, rsArg, bQuiet ) )
+					return false;
+				rrsArg.push_back( rsArg );
+			}
+			PropVal::TCStringArrayList* prrProp = pProperty->GetStringArrayListPtr();
+			if( !prrProp )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; //wrong type
+			}
+			prrProp->clear();
+			(*prrProp) = rrsArg;
 		}
 		return true;
 	default:
@@ -784,6 +847,58 @@ bool GetDateArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleDateTime& dtArg, /*
 	return true;
 }
 
+bool GetImageListArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TImageListPtr& pImageList, /*in*/ bool bQuiet /*= false*/ )
+{
+	switch( pArgs->restype )
+	{	
+		case RTENAME:
+			if( pArgs->resval.rlname[1] != odcl::ptrImageList )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; 
+			}
+			pImageList = *(TImageListPtrIUnknown*)pArgs->resval.rlname[0];
+			pArgs = pArgs->rbnext;
+			break;
+		case RTNIL:
+			pImageList = NULL;
+			pArgs = pArgs->rbnext;
+			break;
+		default:
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argWrongType );
+			return false; 
+	}
+	return true; 
+}
+
+bool GetBinFileArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CBinFile*& pFile, /*in*/ bool bQuiet /*= false*/ )
+{
+	switch( pArgs->restype )
+	{	
+		case RTENAME:
+			if( pArgs->resval.rlname[1] != odcl::ptrBinFile )
+			{
+				if( !bQuiet )
+					HandleArgError( pArgs, odcl::argWrongType );
+				return false; 
+			}
+			pFile = (CBinFile*)pArgs->resval.rlname[0];
+			pArgs = pArgs->rbnext;
+			break;
+		case RTNIL:
+			pFile = NULL;
+			pArgs = pArgs->rbnext;
+			break;
+		default:
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argWrongType );
+			return false; 
+	}
+	return true; 
+}
+
 bool GetIUnknownArgument( /*in-out*/ resbuf*& pArgs, /*out*/ IUnknown*& pUnk, /*in*/ bool bQuiet /*= false*/ )
 {
 	switch( pArgs->restype )
@@ -859,7 +974,7 @@ bool GetVariantArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleVariant& varArg,
 			}
 		case RTENAME:
 			{
-				if (type.vt == VT_UNKNOWN)
+				if ((type.vt & VT_TYPEMASK) == VT_UNKNOWN)
 				{
 					varArg.vt = VT_UNKNOWN;
 					varArg.punkVal = (IUnknown*)pArgs->resval.rlname[0];
@@ -888,7 +1003,7 @@ bool GetVariantArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleVariant& varArg,
 			}
 		case RTNIL:
 			{
-				if (type.vt == VT_VARIANT)
+				if ((type.vt & VT_TYPEMASK) == VT_VARIANT)
 				{
 					varArg.vt = VT_VARIANT|VT_BYREF;
 					varArg.pvarVal = NULL;
@@ -901,11 +1016,10 @@ bool GetVariantArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleVariant& varArg,
 				pArgs = pArgs->rbnext;
 				break;
 			}
-			// must be a list
 		case RT3DPOINT:
 		case RTPOINT:
 			{
-				switch (type.vt)
+				switch (type.vt & VT_TYPEMASK)
 				{
 				case VT_DATE:
 					{
@@ -936,8 +1050,8 @@ bool GetVariantArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleVariant& varArg,
 				return false; 
 			}		
 	}
-	bool bSuccess = (type.vt == VT_VARIANT ||
-									 type.vt == VT_EMPTY ||
+	bool bSuccess = ((type.vt & VT_TYPEMASK) == VT_VARIANT ||
+									 (type.vt & VT_TYPEMASK) == VT_EMPTY ||
 									 S_OK == VariantChangeType( &varArg, &varArg, 0, type.vt ));
 	if (!bSuccess)
 	{
@@ -1052,7 +1166,7 @@ bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*
 	return true;
 }
 
-bool GetStringArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CStringArray& rsArg, /*in*/ bool bQuiet /*= false*/ )
+bool GetStringArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ PropVal::TCStringArray& rsArg, /*in*/ bool bQuiet /*= false*/ )
 {
 	if( !pArgs )
 	{
@@ -1060,19 +1174,19 @@ bool GetStringArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CStringArray& rs
 			HandleArgError( pArgs, odcl::argNotEnough );
 		return false; //arguments expected
 	}
-	rsArg.RemoveAll();
+	rsArg.clear();
 	if( GetNilArgument( pArgs, true ) )
 		return true;
 	bool bLB = GetListBeginArgument( pArgs, true );
 	CString sArg;
 	while( GetStringArgument( pArgs, sArg, true ) )
-		rsArg.Add( sArg );
+		rsArg.push_back( sArg );
 	if( bLB )
 		return GetListEndArgument( pArgs );
 	return true;
 }
 
-bool GetIntArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CArray< int, int >& rnArg, /*in*/ bool bQuiet /*= false*/ )
+bool GetIntArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ PropVal::TIntArray& rnArg, /*in*/ bool bQuiet /*= false*/ )
 {
 	if( !pArgs )
 	{
@@ -1080,7 +1194,7 @@ bool GetIntArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CArray< int, int >&
 			HandleArgError( pArgs, odcl::argNotEnough );
 		return false; //arguments expected
 	}
-	rnArg.RemoveAll();
+	rnArg.clear();
 	if( GetNilArgument( pArgs, true ) )
 		return true;
 	bool bLB = GetListBeginArgument( pArgs, true );
@@ -1098,8 +1212,8 @@ bool GetIntArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CArray< int, int >&
 					HandleArgError( pArgC, odcl::argWrongType );
 				return false;
 			}
-			rnArg.Add( int(pnt2IntArray.x) );
-			rnArg.Add( int(pnt2IntArray.y) );
+			rnArg.push_back( int(pnt2IntArray.x) );
+			rnArg.push_back( int(pnt2IntArray.y) );
 			return true;
 		}
 		else if( Get3dPointArgument( pArgs, pnt3IntArray, true ) )
@@ -1112,17 +1226,17 @@ bool GetIntArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CArray< int, int >&
 					HandleArgError( pArgC, odcl::argWrongType );
 				return false;
 			}
-			rnArg.Add( int(pnt3IntArray.x) );
-			rnArg.Add( int(pnt3IntArray.y) );
-			rnArg.Add( int(pnt3IntArray.z) );
+			rnArg.push_back( int(pnt3IntArray.x) );
+			rnArg.push_back( int(pnt3IntArray.y) );
+			rnArg.push_back( int(pnt3IntArray.z) );
 			return true;
 		}
 	}
 	int nArg;
 	while( GetIntArgument( pArgs, nArg, true ) )
-		rnArg.Add( nArg );
+		rnArg.push_back( nArg );
 	if( bLB )
-		return GetListEndArgument( pArgs );
+		return GetListEndArgument( pArgs, bQuiet );
 	return true;
 }
 

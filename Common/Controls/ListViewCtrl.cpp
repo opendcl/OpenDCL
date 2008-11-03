@@ -86,7 +86,7 @@ bool CListViewCtrl::OnApplyProperty( TPropertyPtr pProp )
 	{
 	case Prop::ImageList:
 		{
-			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
+			TImageListPtr pImageList = mpTemplate->GetImageList();
 			if (pImageList && pImageList->GetImageList().GetSafeHandle())
 			{
 				pImageList->GetImageList().SetBkColor( ::GetSysColor( COLOR_BTNFACE ) );
@@ -118,7 +118,7 @@ bool CListViewCtrl::OnApplyProperty( TPropertyPtr pProp )
 				nImageListIconSizeX = 32;
 			else
 			{
-				RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
+				TImageListPtr pImageList = mpTemplate->GetImageList();
 				if( pImageList )
 					nImageListIconSizeX = pImageList->GetSize().cx;
 			}
@@ -134,7 +134,7 @@ bool CListViewCtrl::OnApplyProperty( TPropertyPtr pProp )
 				nImageListIconSizeY = 32;
 			else
 			{
-				RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
+				TImageListPtr pImageList = mpTemplate->GetImageList();
 				if( pImageList )
 					nImageListIconSizeY = pImageList->GetSize().cy;
 			}

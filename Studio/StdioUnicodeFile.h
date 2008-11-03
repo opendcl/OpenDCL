@@ -15,6 +15,7 @@ public:
 	virtual BOOL ReadString(CString& rString);
 
 protected:
+	BOOL ReadAnsiString( CStringA& rString );
 	BOOL ReadUnicodeString( CStringW& rString );
 	BOOL IsUnicode();
 };

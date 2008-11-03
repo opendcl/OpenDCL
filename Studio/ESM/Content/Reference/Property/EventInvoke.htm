@@ -1,0 +1,104 @@
+<html>
+<head>
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<script type="text/javascript" src="../../Utility.js"></script>
+<title>Event Invoke</title>
+</head>
+<body>
+	<table width="100%">
+		<tr>
+			<td nowrap>
+				<div id="title">
+                  <img border="0" src="../images/Property.png" width="16" height="16"> 
+                  Event Invoke</div>
+			</td>
+			<td align="right" valign="top">
+				<div id="hdrlink">&nbsp;</div>
+			</td>
+		</tr>
+	</table>
+	<hr />
+	<div id="content">
+        <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Friendly Name</th>
+            <td bgcolor="#CCFF99">Event Invoke</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>API Name</th>
+            <td bgcolor="#CCFF99">EventInvoke</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Type</th>
+            <td bgcolor="#CCFF99">Integer</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Restrictions</th>
+            <td bgcolor="#CCFF99">Range is 0 - 1</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Get Function
+&nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(getprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
+<td bgcolor="#CCFF99"><code id="getprop">(dcl_Control_GetEventInvoke <i>&lt;CONTROL&gt;</i>)</code></td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Set Function
+&nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(setprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
+<td bgcolor="#CCFF99"><code id="setprop">(dcl_Control_SetEventInvoke <i>&lt;CONTROL&gt;</i>
+            <font color="#FF0000">NewValue [as <a href="../DataType/Integer.htm">
+            Integer</a>]</font>)</code></td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Applies To</th>
+            <td bgcolor="#CCFF99">All <a href="../Control/Index.htm">Controls</a> 
+            and <a href="../Form/Index.htm">Forms</a></td>
+          </tr>
+        </table>
+		<p>This property controls whether event handlers are called 
+        synchronously or asynchronously. A synchronous call causes the dialog 
+        code wait until the event handler returns before resuming; an 
+        asynchronous event call allows the dialog code to continue running, and 
+        the event handler is not executed until AutoCAD is ready to process 
+        commands. This property is hidden and ignored for controls on modal 
+        forms.</p>
+	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
+          <tr>
+            <th nowrap>Value</th>
+            <th nowrap>Meaning</th>
+          </tr>
+          <tr>
+            <td>0</td>
+            <td>Synchronous</td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>Asynchronous</td>
+          </tr>
+        </table>
+		<p>Event handlers that are called synchronously are limited in what they 
+        can safely do, because they run while the dialog code is in a suspended 
+        state and AutoCAD cannot process commands. For example, it is not 
+        possible to call the AutoLISP (command) function from a synchronous 
+        event handler.</p>
+		<p>Asynchronous event handlers may not execute until after the event 
+        that triggered it has passed, however an asynchronous event handler can 
+        safely call the AutoLISP (command) function to process AutoCAD commands. 
+        When a modeless dialog control's event handlers need to use the AutoLISP 
+        (command) function, the Event Invoke property for the control must be 
+        set to 1.</p>
+		<p>Any events that have return values are always called synchronously 
+        (otherwise the return value would be lost). Events called from modal 
+        forms are always called synchronously, since modal forms by their nature 
+        prevent AutoCAD from executing commands while they are active. Event 
+        handlers in these cases must conform to the requirements for synchronous 
+        events regardless of the Event Invoke property setting.</p>
+	</div>
+	<hr />
+	<div id="footer">
+		<p>Copyright © 2008 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		All rights reserved.</p>
+		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+	</div>
+</body>
+</html>

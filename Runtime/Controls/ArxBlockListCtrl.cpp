@@ -3,12 +3,7 @@
 
 #include "stdafx.h"
 #include "ArxBlockListCtrl.h"
-#include "ArxBlockListCtrl.h"
-//#include "DclControlObject.h"
-//#include "PropertyObject.h"
-//#include "PropertyIds.h"
 #include "Resource.h"
-#include "AcadBlockReactor.h"
 #include "InvokeMethod.h"
 #include "Workspace.h"
 #include "ControlPane.h"
@@ -115,8 +110,8 @@ CArxBlockListCtrl::CArxBlockListCtrl( TDclControlPtr pTemplate, CControlPane* pP
 : CBlockListCtrl( pTemplate, pPane, nID, false )
 , mArxServices( this )
 , mDragDropService( this )
-, mpDocReactor( NULL )
-, mpBlockReactor( NULL )
+, mDocReactor( this )
+, mEdReactor( this )
 {
 	m_pLoadedDwg = NULL;
 	if( bCreate )
@@ -125,8 +120,6 @@ CArxBlockListCtrl::CArxBlockListCtrl( TDclControlPtr pTemplate, CControlPane* pP
 
 CArxBlockListCtrl::~CArxBlockListCtrl()
 {
-	delete mpBlockReactor;
-	delete mpDocReactor;
 }
 
 bool CArxBlockListCtrl::Create( CWnd* pParentWnd, UINT nID )
@@ -134,12 +127,7 @@ bool CArxBlockListCtrl::Create( CWnd* pParentWnd, UINT nID )
 	bool bSuccess = __super::Create( pParentWnd, nID );
 
 	if( bSuccess )
-	{
-		mpBlockReactor = new CAcadBlockReactor( this );
-		acedEditor->addReactor( mpBlockReactor );
-		mpDocReactor = new CDocReactor( this );
 		RefreshBlockList();
-	}
 
 	return bSuccess;
 }
@@ -204,7 +192,6 @@ bool CArxBlockListCtrl::LoadDwg(CString sFileName)
 			// delete it.
 			delete m_pLoadedDwg;
 			m_pLoadedDwg = NULL;
-			m_FileName = CString();
 		}
 
 		Acad::ErrorStatus es;
@@ -223,8 +210,6 @@ bool CArxBlockListCtrl::LoadDwg(CString sFileName)
 			m_pLoadedDwg = NULL;
 			return false;
 		}
-		// set the file name for future use
-		m_FileName = sPath;
 		
 		if (m_pLoadedDwg==NULL)
 			return false;			
@@ -308,7 +293,6 @@ void CArxBlockListCtrl::RefreshBlockList()
 
 
 BEGIN_MESSAGE_MAP(CArxBlockListCtrl, CBlockListCtrl)
-	ON_WM_DESTROY()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_NOTIFY_REFLECT(NM_CLICK, OnClick)
@@ -334,17 +318,6 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CArxBlockListCtrl message handlers
-
-void CArxBlockListCtrl::OnDestroy() 
-{
-	if( mpBlockReactor )
-	{
-		acedEditor->removeReactor( mpBlockReactor );		
-		delete mpBlockReactor;
-		mpBlockReactor = NULL;
-	}
-	__super::OnDestroy();
-}
 
 void CArxBlockListCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {

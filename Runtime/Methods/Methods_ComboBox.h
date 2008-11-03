@@ -15,7 +15,7 @@ ADSRESULT AddList();
 ADSRESULT Clear();
 ADSRESULT GetCurSel();
 ADSRESULT GetCount();
-ADSRESULT DeleteString();
+ADSRESULT DeleteItem();
 ADSRESULT InsertString();
 ADSRESULT SelectString();
 ADSRESULT FindString();

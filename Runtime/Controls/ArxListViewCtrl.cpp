@@ -7,7 +7,6 @@
 #include "PropertyObject.h"
 #include "PropertyIds.h"
 #include "Resource.h"
-#include "AcadBlockReactor.h"
 #include "InvokeMethod.h"
 #include "Workspace.h"
 #include "ControlPane.h"
@@ -107,15 +106,32 @@ void CArxListViewCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CArxListViewCtrl::OnClick(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	LV_DISPINFO* plvdi = (LV_DISPINFO*)pNMHDR;
-	int nItem = plvdi->item.iItem;
-	if( nItem < GetItemCount() && nItem >= 0 )
+	LPNMITEMACTIVATE plvia = (LPNMITEMACTIVATE)pNMHDR;
+	int nRow = plvia->iItem;
+	int nCol = plvia->iSubItem;
+	if( nRow < 0 )
+	{
+		LVHITTESTINFO lvhti = 
+		{
+			plvia->ptAction.x,
+			plvia->ptAction.y,
+			0,
+			0,
+			0,
+		};
+		if( SubItemHitTest( &lvhti ) >= 0 )
+		{
+			nRow = lvhti.iItem;
+			nCol = lvhti.iSubItem;
+		}
+	}
+	if( nRow >= 0 && nRow < GetItemCount() )
 	{
 		InvokeMethodIntInt(
 			mpTemplate->GetStringProperty( Prop::EventClicked ),  
-			nItem,
-			plvdi->item.iSubItem,
-			IsAsyncEvents());			
+			nRow,
+			nCol,
+			IsAsyncEvents() );			
 	}
 	*pResult = 0;
 }
@@ -175,11 +191,10 @@ void CArxListViewCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 
 	if (pDispInfo->item.iItem >= 0)
 	{
-		InvokeMethodStringIntInt(
+		InvokeMethodStringInt(
 			mpTemplate->GetStringProperty(Prop::EventEndLabelEdit),
 			plvItem->pszText,
 			plvItem->iItem,
-			plvItem->iSubItem,
 			IsAsyncEvents());
 	}
 	__super::OnEndlabeledit( pNMHDR, pResult );
@@ -189,10 +204,9 @@ void CArxListViewCtrl::OnEndlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 void CArxListViewCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
-	InvokeMethodIntInt(		
+	InvokeMethodInt(		
 		mpTemplate->GetStringProperty(Prop::EventBeginLabelEdit),
 		pDispInfo->item.iItem,
-		GetCurrentSubItem(),
 		IsAsyncEvents());
 	*pResult = 0;
 }

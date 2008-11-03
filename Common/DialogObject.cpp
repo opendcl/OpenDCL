@@ -126,7 +126,7 @@ DWORD CDialogObject::GetWndStyle() const
 	assert(mpTemplate != NULL);
 	if( mpTemplate->GetBooleanProperty(Prop::TitleBar) )
 		dwStyle |= WS_CAPTION;
-	if( mpTemplate->GetBooleanProperty(Prop::Resizable) )
+	if( mpTemplate->GetBooleanProperty(Prop::AllowResizing) )
 		dwStyle |= WS_THICKFRAME;
 
 	return dwStyle;
@@ -176,7 +176,7 @@ void CDialogObject::ApplyPosition()
 	GetTopLevelWnd()->SetWindowPos( NULL, 0, 0,
 																	mpTemplate->GetLongProperty(Prop::Width) + GetNCWidth(),
 																	mpTemplate->GetLongProperty(Prop::Height) + GetNCHeight(),
-																	SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER );
+																	SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | /*SWP_NOCOPYBITS | */SWP_NOOWNERZORDER );
 	mpControlPane->RecalcLayout();
 	mbIgnoreSizing = false;
 }
@@ -188,7 +188,7 @@ bool CDialogObject::OnApplyProperty( TPropertyPtr pProp )
 	bool bSuccess = true;
 	switch( pProp->GetID() )
 	{
-	case Prop::Resizable: if( !OnApplyResizable( pProp ) ) bSuccess = false; break;
+	case Prop::AllowResizing: if( !OnApplyResizable( pProp ) ) bSuccess = false; break;
 	case Prop::Width: if( !OnApplyWidth( pProp ) ) bSuccess = false; break;
 	case Prop::Height: if( !IsEnumeratingProperties() && !OnApplyHeight( pProp ) ) bSuccess = false; break;
 	case Prop::MinDialogWidth: if( !OnApplyMinMaxSize( pProp ) ) bSuccess = false; break;
@@ -196,8 +196,8 @@ bool CDialogObject::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::MaxDialogWidth: if( !IsEnumeratingProperties() && !OnApplyMinMaxSize( pProp ) ) bSuccess = false; break;
 	case Prop::MaxDialogHeight: if( !IsEnumeratingProperties() && !OnApplyMinMaxSize( pProp ) ) bSuccess = false; break;
 	case Prop::TitleBarText: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
-	case Prop::CfgTabCaption: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
-	case Prop::Icon: if( !OnApplyIcon( pProp ) ) bSuccess = false; break;
+	case Prop::OptionsTabCaption: if( !OnApplyCaption( pProp ) ) bSuccess = false; break;
+	case Prop::TitleBarIcon: if( !OnApplyIcon( pProp ) ) bSuccess = false; break;
 	case Prop::TitleBar: if( !OnApplyTitleBar( pProp ) ) bSuccess = false; break;
 	default: bSuccess = __super::OnApplyProperty( pProp ); break;
 	}

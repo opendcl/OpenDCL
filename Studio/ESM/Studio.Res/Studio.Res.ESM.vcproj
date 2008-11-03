@@ -264,6 +264,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Res\AxObject.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\BlockList.ico"
 				>
 			</File>
@@ -296,11 +300,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ConfigTab.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\res\DockableForm.ico"
+				RelativePath=".\Res\ControlBar.ico"
 				>
 			</File>
 			<File
@@ -364,11 +364,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\Folder.ico"
+				RelativePath="..\..\..\Common\ESM\Res\Folder.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\ESM\Res\Folder.ico"
+				RelativePath="..\..\..\Common\Res\Folder.ico"
 				>
 			</File>
 			<File
@@ -392,15 +392,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\Hand.cur"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\Common\Res\Hand.cur"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\Common\ESM\Res\Hand.cur"
+				>
+			</File>
+			<File
+				RelativePath=".\res\Hand.cur"
 				>
 			</File>
 			<File
@@ -424,11 +424,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\Info.ico"
+				RelativePath="..\..\..\Common\ESM\Res\Info.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\ESM\Res\Info.ico"
+				RelativePath=".\res\Info.ico"
 				>
 			</File>
 			<File
@@ -524,6 +524,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Res\OptionsTab.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\Res\Palette.ico"
 				>
 			</File>
@@ -584,6 +588,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\Common\Res\Select.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\Common\ESM\Res\Select.ico"
 				>
 			</File>
@@ -592,15 +600,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\Select.ico"
+				RelativePath="..\..\..\Common\Res\SHXFont.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\Common\ESM\Res\SHXFont.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\Common\Res\SHXFont.ico"
 				>
 			</File>
 			<File
@@ -652,11 +656,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\ESM\Res\Warn.ico"
+				RelativePath=".\res\Warn.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\Warn.ico"
+				RelativePath="..\..\..\Common\ESM\Res\Warn.ico"
 				>
 			</File>
 			<File

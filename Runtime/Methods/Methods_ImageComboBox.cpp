@@ -197,7 +197,7 @@ ADSRESULT ImageComboBox::GetCount()
 	return RSRSLT;
 }
 
-ADSRESULT ImageComboBox::DeleteString()
+ADSRESULT ImageComboBox::DeleteItem()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -540,7 +540,7 @@ ADSRESULT ImageComboBox::GetLBText()
 	return RSRSLT;
 }
 
-ADSRESULT ImageComboBox::GetTBText()
+ADSRESULT ImageComboBox::GetEBText()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 

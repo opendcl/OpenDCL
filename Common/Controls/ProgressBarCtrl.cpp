@@ -74,42 +74,59 @@ bool CProgressBarCtrl::OnApplyProperty( TPropertyPtr pProp )
 		meLegend = (Legend)pProp->GetLongValue();
 		break;
 	case Prop::SmoothProgress:
-		{
-			if( pProp->GetBooleanValue() )
-				ModifyStyle( 0, PBS_SMOOTH, SWP_FRAMECHANGED );
-			else
-				ModifyStyle( PBS_SMOOTH, 0, SWP_FRAMECHANGED );
-		}
+		if( pProp->GetBooleanValue() )
+			ModifyStyle( 0, PBS_SMOOTH, SWP_FRAMECHANGED );
+		else
+			ModifyStyle( PBS_SMOOTH, 0, SWP_FRAMECHANGED );
+		OnFrameChanged();
 		break;
 	case Prop::Orientation:
-		{
-			int nPos = GetPos();
-			if( pProp->GetLongValue() == 1 )
-				ModifyStyle( 0, PBS_VERTICAL, SWP_FRAMECHANGED );
-			else
-				ModifyStyle( PBS_VERTICAL, 0, SWP_FRAMECHANGED );
-			SetPos( nPos );
-		}
+		if( pProp->GetLongValue() == 1 )
+			ModifyStyle( 0, PBS_VERTICAL, SWP_FRAMECHANGED );
+		else
+			ModifyStyle( PBS_VERTICAL, 0, SWP_FRAMECHANGED );
+		OnFrameChanged();
 		break;
 	case Prop::Value:
-		SetRange( (short)mpTemplate->GetLongProperty( Prop::MinValue ),
-							(short)mpTemplate->GetLongProperty( Prop::MaxValue ) );
+		if( IsEnumeratingProperties() )
+		{
+			SetRange32( mpTemplate->GetLongProperty( Prop::MinValue ),
+									mpTemplate->GetLongProperty( Prop::MaxValue ) );
+		}
 		SetPos( pProp->GetLongValue() );
 		break;
 	case Prop::MinValue:
+		if( !IsEnumeratingProperties() )
 		{
-			if( !IsEnumeratingProperties() )
-				bFailed = !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::Value ) );
+			SetRange32( pProp->GetLongValue(),
+									mpTemplate->GetLongProperty( Prop::MaxValue ) );
+			bFailed = !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::Value ) );
 		}
 		break;
 	case Prop::MaxValue:
+		if( !IsEnumeratingProperties() )
 		{
-			if( !IsEnumeratingProperties() )
-				bFailed = !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::Value ) );
+			SetRange32( mpTemplate->GetLongProperty( Prop::MinValue ),
+									pProp->GetLongValue() );
+			bFailed = !OnApplyProperty( mpTemplate->GetPropertyObject( Prop::Value ) );
 		}
 		break;
 	}
 	return !bFailed;
+}
+
+void CProgressBarCtrl::ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst,
+																						 std::vector< Prop::Id >& ridLast )
+{
+	ridLast.push_back( Prop::Value );
+}
+
+void CProgressBarCtrl::Reset(void)
+{
+  ResetStartTime();
+	long lMinValue = mpTemplate->GetLongProperty( Prop::MinValue );
+	mpTemplate->SetLongProperty( Prop::Value, lMinValue );
+	SetPos( lMinValue );
 }
 
 void CProgressBarCtrl::ResetStartTime(void)
@@ -144,9 +161,9 @@ CString CProgressBarCtrl::GetRemainingText( double lfPercent, double lfSecsRemai
 				lfSecsRemaining -= (nMinutes * 60);
 				CString sMinutes;
 				if( nMinutes == 1 )
-					sMinutes.Format( _T("%d %s"), nMinutes, (LPCTSTR)GetDisplayText( mpTemplate, Prop::MinuteText, IDS_MINUTETEXT ) );
+					sMinutes.Format( _T("%d %s"), nMinutes, (LPCTSTR)GetDisplayText( mpTemplate, Prop::CaptionMinute, IDS_MINUTETEXT ) );
 				else
-					sMinutes.Format( _T("%d %s"), nMinutes, (LPCTSTR)GetDisplayText( mpTemplate, Prop::MinutesText, IDS_MINUTESTEXT ) );
+					sMinutes.Format( _T("%d %s"), nMinutes, (LPCTSTR)GetDisplayText( mpTemplate, Prop::CaptionMinutes, IDS_MINUTESTEXT ) );
 				sResult += sMinutes;
 			}
 			if( lfSecsRemaining > 0 )
@@ -154,9 +171,9 @@ CString CProgressBarCtrl::GetRemainingText( double lfPercent, double lfSecsRemai
 				int nMinutes = (int)lfSecsRemaining;
 				CString sSeconds;
 				if( lfSecsRemaining == 1 )
-					sSeconds.Format( _T("%d %s"), nMinutes, (LPCTSTR)GetDisplayText( mpTemplate, Prop::SecondText, IDS_SECONDTEXT ) );
+					sSeconds.Format( _T("%d %s"), nMinutes, (LPCTSTR)GetDisplayText( mpTemplate, Prop::CaptionSecond, IDS_SECONDTEXT ) );
 				else
-					sSeconds.Format( _T("%d %s"), nMinutes, (LPCTSTR)GetDisplayText( mpTemplate, Prop::SecondsText, IDS_SECONDSTEXT ) );
+					sSeconds.Format( _T("%d %s"), nMinutes, (LPCTSTR)GetDisplayText( mpTemplate, Prop::CaptionSeconds, IDS_SECONDSTEXT ) );
 				if( !sResult.IsEmpty() )
 					sResult += _T(", ");
 				sResult += sSeconds;
@@ -164,7 +181,7 @@ CString CProgressBarCtrl::GetRemainingText( double lfPercent, double lfSecsRemai
 			if( !sResult.IsEmpty() )
 			{
 				sResult += _T(' ');
-				sResult += GetDisplayText( mpTemplate, Prop::RemainingText, IDS_REMAININGTEXT );
+				sResult += GetDisplayText( mpTemplate, Prop::CaptionRemaining, IDS_REMAININGTEXT );
 			}
 		}
 		break;
@@ -207,28 +224,23 @@ void CProgressBarCtrl::OnPaint()
 {
 	if( mpTemplate->GetBooleanProperty( Prop::UseVisualStyle ) )
 	{
-		Default();
+		__super::OnPaint();
 		return;
 	}
-	CPaintDC dcPaint(this);
-	CBrush   brush(::GetSysColor(COLOR_HIGHLIGHT));
-	LONG     lStyle;
-	int      nGapWidth = 2;
-	int      nLoop, nBlocks;
-	clock_t  now = clock();
-	CString  strRemaining;
+	CPaintDC dcPaint( this );
+	CBrush brush( ::GetSysColor( COLOR_HIGHLIGHT ) );
 
-	int      nRange, nLower, nUpper;
-	GetRange(nLower, nUpper);
-	CRect    rcClient, rcBlock, rcComplete;
-	GetClientRect(&rcClient);
+	int nLower, nUpper;
+	GetRange( nLower, nUpper );
+	CRect rcClient, rcBlock, rcComplete;
+	GetClientRect( &rcClient );
 	rcBlock = rcClient;
 
-	CMemDC   dc(&dcPaint, rcClient);
+	CMemDC dc( &dcPaint, rcClient );
     
-  nRange      = nUpper - nLower;
-  double lfPercent = (double)GetPos() / (double)nRange;
-  lStyle = GetStyle();
+  int nRange = nUpper - nLower;
+  double lfPercent = (double)(GetPos() - nLower) / (double)(nRange - nLower);
+  LONG lStyle = GetStyle();
 
   if ((lStyle & PBS_VERTICAL) == PBS_VERTICAL)
     rcBlock.top = rcBlock.bottom - (int)(rcBlock.Height() * lfPercent);
@@ -236,50 +248,50 @@ void CProgressBarCtrl::OnPaint()
     rcBlock.right = rcBlock.left + (int)(rcBlock.Width() * lfPercent);
   rcComplete = rcBlock;
 
-  if ((lStyle & PBS_SMOOTH) == PBS_SMOOTH)
-    nBlocks = 1;
-  else
+	static const int nGapWidth = 2;
+	int nBlocks = 1;
+  if( (lStyle & PBS_SMOOTH) == 0 )
   {
     rcBlock = rcClient;
     if ((lStyle & PBS_VERTICAL) == PBS_VERTICAL)
-      rcBlock.top = rcBlock.bottom - (int)((rcClient.Height()-(9*nGapWidth)) / 18.0);
+      rcBlock.top = rcBlock.bottom - (int)((rcClient.Height() - ( 9 * nGapWidth)) / 18.0);
     else
-      rcBlock.right = rcBlock.left + (int)((rcClient.Width()-(9*nGapWidth)) / 18.0);
+      rcBlock.right = rcBlock.left + (int)((rcClient.Width() - ( 9 * nGapWidth)) / 18.0);
     nBlocks = (int)((lfPercent*18.0)+0.9);
   }
 
-  if (this->GetParent() != NULL)
-    ::FillRect(dc, &rcClient, (HBRUSH)this->GetParent()->SendMessage(WM_CTLCOLORSTATIC, (WPARAM)(HDC)dc, (LPARAM)this->GetSafeHwnd()));
+  if (GetParent() != NULL)
+    ::FillRect(dc, &rcClient, (HBRUSH)GetParent()->SendMessage(WM_CTLCOLORSTATIC, (WPARAM)(HDC)dc, (LPARAM)this->GetSafeHwnd()));
 
-  for (nLoop=1; nLoop<=nBlocks; nLoop++)
+  for( int nLoop = 1; nLoop <= nBlocks; nLoop++ )
   {
     ::FillRect(dc, &rcBlock, brush);
     if ((lStyle & PBS_VERTICAL) == PBS_VERTICAL)
     {
       rcComplete.top = rcBlock.top;
-      rcBlock.OffsetRect(0, -(rcBlock.Height()+nGapWidth));
+      rcBlock.OffsetRect( 0, - (rcBlock.Height() + nGapWidth) );
     }
     else
     {
       rcComplete.right = rcBlock.right;
-      rcBlock.OffsetRect(rcBlock.Width()+nGapWidth, 0);
+      rcBlock.OffsetRect( rcBlock.Width() + nGapWidth, 0 );
     }
   }
 
   if (lfPercent > 0.02)
   {
-    CFont  *pFount;
-    double  lfSecsSoFar = (double)(now - mStartTime) / CLOCKS_PER_SEC;
-    strRemaining = GetRemainingText(lfPercent, (lfSecsSoFar / lfPercent) * (1.0 - lfPercent));
+    double  lfSecsSoFar = (double)(clock() - mStartTime) / CLOCKS_PER_SEC;
+    CString strRemaining = GetRemainingText(lfPercent, (lfSecsSoFar / lfPercent) * (1.0 - lfPercent));
     dc.SetBkMode(TRANSPARENT);
 
     if ((lStyle & PBS_VERTICAL) == PBS_VERTICAL)
     {
+      dc.SaveDC();
       CSize  szExt;
       CPoint ptText;
 
       // draw the vertical text centred in the control
-      pFount = dc.SelectObject(&mfontVert);
+      dc.SelectObject(&mfontVert);
       szExt  = dc.GetTextExtent(strRemaining);
       ptText.x = (rcClient.Width() - szExt.cy) >> 1;
       ptText.y = rcClient.bottom - ((rcClient.Height() - szExt.cx) >> 1);
@@ -290,20 +302,17 @@ void CProgressBarCtrl::OnPaint()
       dc.ExtTextOut(ptText.x, ptText.y, ETO_CLIPPED, rcClient, strRemaining, NULL);
       dc.RestoreDC(-1);
 
-      dc.SaveDC();
       dc.ExcludeClipRect(rcComplete);
       dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
       dc.ExtTextOut(ptText.x, ptText.y, ETO_CLIPPED, rcClient, strRemaining, NULL);
       dc.RestoreDC(-1);
-
-      dc.SelectObject(pFount);
     }
     else
     {
-      // horizontal text is easier
-      pFount = dc.SelectObject(&mfontHoriz);
-
       dc.SaveDC();
+
+      // horizontal text is easier
+      dc.SelectObject(&mfontHoriz);
       dc.IntersectClipRect(rcComplete);
       dc.SetTextColor(::GetSysColor(COLOR_HIGHLIGHTTEXT));
       dc.DrawText(strRemaining, rcClient, DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER | DT_CENTER);
@@ -314,8 +323,18 @@ void CProgressBarCtrl::OnPaint()
       dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
       dc.DrawText(strRemaining, rcClient, DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER | DT_CENTER);
       dc.RestoreDC(-1);
-
-      dc.SelectObject(pFount);
     }
   }
+}
+
+LRESULT CProgressBarCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if( message == WM_STYLECHANGED )
+	{ //for some reason the position gets reset when handling WM_STYLECHANGED, so force it back
+		int nOldPos = GetPos();
+		LRESULT lResult = __super::WindowProc(message, wParam, lParam);
+		SetPos( nOldPos );
+		return lResult;
+	}
+	return __super::WindowProc(message, wParam, lParam);
 }

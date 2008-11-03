@@ -1,0 +1,111 @@
+<html>
+<head>
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<script type="text/javascript" src="../../Utility.js"></script>
+<title>Filter Style</title>
+</head>
+<body>
+	<table width="100%">
+		<tr>
+			<td nowrap>
+				<div id="title">
+                  <img border="0" src="../images/Property.png" width="16" height="16"> 
+                  Filter Style</div>
+			</td>
+			<td align="right" valign="top">
+				<div id="hdrlink">&nbsp;</div>
+			</td>
+		</tr>
+	</table>
+	<hr />
+	<div id="content">
+        <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Friendly Name</th>
+            <td bgcolor="#CCFF99">Filter Style</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>API Name</th>
+            <td bgcolor="#CCFF99">FilterStyle</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Type</th>
+            <td bgcolor="#CCFF99">Integer</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Restrictions</th>
+            <td bgcolor="#CCFF99">Range is 0 - 8</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Get Function
+&nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(getprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
+<td bgcolor="#CCFF99"><code id="getprop">(dcl_Control_GetFilterStyle <i>&lt;CONTROL&gt;</i>)</code></td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Set Function
+&nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(setprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
+<td bgcolor="#CCFF99"><code id="setprop">(dcl_Control_SetFilterStyle <i>&lt;CONTROL&gt;</i>
+            <font color="#FF0000">NewValue [as <a href="../DataType/Integer.htm">
+            Integer</a>]</font>)</code></td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Applies To</th>
+            <td bgcolor="#CCFF99"><a href="../Control/TextBox.htm">Text Box</a></td>
+          </tr>
+        </table>
+		<p>This property assigns a predefined filter to the text box input. Note 
+        that a custom filter set via <a href="../Method/TextBox/SetFilter.htm">
+        TextBox_SetFilter</a> is used when the Filter Style property is set to 
+        zero (the custom filter is ignored for other predefined filter styles).</p>
+	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
+          <tr>
+            <th nowrap>Style</th>
+            <th nowrap>Description</th>
+          </tr>
+          <tr>
+            <td>0</td>
+            <td>Non-control characters (or custom filter)</td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>AutoCAD angle units only</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Signed integers only</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>AutoCAD distance units only</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>AutoCAD symbol table names only</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Upper case only</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Lower case only</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>Password (hides input text)</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>All characters allowed (including [Enter])</td>
+          </tr>
+          </table>
+	</div>
+	<hr />
+	<div id="footer">
+		<p>Copyright © 2008 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		All rights reserved.</p>
+		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+	</div>
+</body>
+</html>

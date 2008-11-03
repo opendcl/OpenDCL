@@ -63,13 +63,13 @@ BOOL CProgressBarPage::OnInitDialog()
 	}
 	m_Time.SetCheck(mpDclControl->GetBooleanProperty(Prop::DisplaySeconds));
 		
-	m_Minute.SetWindowText(mpDclControl->GetStringProperty(Prop::MinuteText));
-	m_Minutes.SetWindowText(mpDclControl->GetStringProperty(Prop::MinutesText));
+	m_Minute.SetWindowText(mpDclControl->GetStringProperty(Prop::CaptionMinute));
+	m_Minutes.SetWindowText(mpDclControl->GetStringProperty(Prop::CaptionMinutes));
 
-	m_Second.SetWindowText(mpDclControl->GetStringProperty(Prop::SecondText));
-	m_Seconds.SetWindowText(mpDclControl->GetStringProperty(Prop::SecondsText));
+	m_Second.SetWindowText(mpDclControl->GetStringProperty(Prop::CaptionSecond));
+	m_Seconds.SetWindowText(mpDclControl->GetStringProperty(Prop::CaptionSeconds));
 	
-	m_Progress.m_sText = CString("15 ") + mpDclControl->GetStringProperty(Prop::SecondsText);
+	m_Progress.m_sText = CString("15 ") + mpDclControl->GetStringProperty(Prop::CaptionSeconds);
 
 	// setup display progress bar.
 	m_Progress.SetRange(0,100);
@@ -86,19 +86,19 @@ BOOL CProgressBarPage::OnApply()
 {
 	CString sValue;
 	m_Minute.GetWindowText(sValue);
-	mpDclControl->SetStringProperty(Prop::MinuteText, sValue);
+	mpDclControl->SetStringProperty(Prop::CaptionMinute, sValue);
 	m_Minutes.GetWindowText(sValue);
-	mpDclControl->SetStringProperty(Prop::MinutesText, sValue);
+	mpDclControl->SetStringProperty(Prop::CaptionMinutes, sValue);
 	m_Second.GetWindowText(sValue);
-	mpDclControl->SetStringProperty(Prop::SecondText, sValue);
+	mpDclControl->SetStringProperty(Prop::CaptionSecond, sValue);
 	m_Seconds.GetWindowText(sValue);
-	mpDclControl->SetStringProperty(Prop::SecondsText, sValue);
+	mpDclControl->SetStringProperty(Prop::CaptionSeconds, sValue);
 	mpDclControl->SetBooleanProperty(Prop::DisplayPercentage, m_Percentage.GetCheck() != 0);
 	mpDclControl->SetBooleanProperty(Prop::DisplaySeconds, m_Time.GetCheck() != 0);
-	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::MinuteText);
-	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::MinutesText);
-	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::SecondText);
-	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::SecondsText);
+	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::CaptionMinute);
+	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::CaptionMinutes);
+	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::CaptionSecond);
+	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::CaptionSeconds);
 	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::DisplayPercentage);
 	CStudioDialogControl::UpdateProperty(mpDclControl, Prop::DisplaySeconds);
 

@@ -54,9 +54,9 @@ public:
 	virtual bool GetEffectiveWindowRect( CRect& rcDlg ) const;
 	virtual bool GetEffectiveClientRect( CRect& rcDlg ) const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
-	virtual bool OnApplyCaption( TPropertyPtr pProp ); //Prop::Caption, Prop::TitleBarText
-	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::Resizable
 protected:
+	virtual bool OnApplyCaption( TPropertyPtr pProp ); //Prop::Caption, Prop::TitleBarText
+	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::AllowResizing
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
 	virtual void OnFrameChanged(); //called by member functions that change the non-client size
 	virtual void ApplyPosition(); //move control window to new position

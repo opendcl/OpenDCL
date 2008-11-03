@@ -15,6 +15,7 @@ class COptionListCtrl : public CListBox, public CDialogControl
 	CAcadColorService mColorService;
 	int mnRowHeight;
 	CImageList mImageList;
+	bool mbTrackingMouse;
 
 // Construction
 public:
@@ -38,7 +39,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	virtual void PostNcDestroy();
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
@@ -46,4 +46,7 @@ protected:
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);	
 	afx_msg void OnLbnSelchange();
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void DrawItem(LPDRAWITEMSTRUCT /*lpDrawItemStruct*/);
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

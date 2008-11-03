@@ -47,11 +47,13 @@ AxEventDescriptor::AxEventDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo,
 				if( n < (UINT)ctParams )
 				{
 					const ELEMDESC &e = pFuncDesc->lprgelemdescParam[n];
-					bool bNotByVal = (e.tdesc.vt == VT_PTR);
-					VARTYPE vt = (bNotByVal? e.tdesc.lptdesc->vt : e.tdesc.vt);
+					VARTYPE vt = e.tdesc.vt;
+					bool bPtr = (vt == VT_PTR);
+					if( bPtr )
+						vt = (VT_BYREF | e.tdesc.lptdesc->vt);
 					if (vt == VT_USERDEFINED) 
 						SetRefType( vt, pTypeInfo,
-												(bNotByVal? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
+												(bPtr? e.tdesc.lptdesc->hreftype : e.tdesc.hreftype), 
 												mrArgs[n].clsid );
 					mrArgs[n].vt = vt;
 					if( !!rbstrNames[n] && n < ctNames - 1 )	
@@ -60,7 +62,6 @@ AxEventDescriptor::AxEventDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo,
 			}
 			for( SHORT idx = ctParams; idx >= 0; --idx )
 				SysFreeString( rbstrNames[idx] );
-			msParams = FuncDescToString( pTypeInfo, pFuncDesc, bUseAsType );
 			msName = bstrName; //set name last and only if no errors, then it can be used to check for constructor errors
 		}
 		delete [] rbstrNames;
@@ -68,29 +69,42 @@ AxEventDescriptor::AxEventDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo,
 }
 
 
-void AxEventDescriptor::Serialize( CArchive& ar, int nPropertyVersion )
+void AxEventDescriptor::Serialize( CArchive& ar, BYTE nPropertyVersion )
 {
+	BYTE nThisVersion = GetCurrentSaveVersion();
+	
 	if (ar.IsStoring())
 	{
+		ar << nThisVersion;
 		ar << mDispId;
 		ar << msName;
 		ar << msDesc;
-		ar << mrArgs.size();
+		ar << unsigned short(mrArgs.size());
 		for (size_t i = 0; i < mrArgs.size(); ++i)
 		{
 			ar << mrArgs[i].vt;
 			ar << mrArgs[i].name;
 			SerializeCLSID(ar, mrArgs[i].clsid);
 		}
-		ar << msParams;
 	}
 	else
 	{
+		if( nPropertyVersion <= 7 )
+			nThisVersion = 1;
+		else
+			ar >> nThisVersion;
 		ar >> mDispId;
 		ar >> msName;
 		ar >> msDesc;
-		size_t ctParams;
-		ar >> ctParams;
+		unsigned short ctParams;
+		if (nPropertyVersion <= 7)
+		{
+			unsigned long lParams;
+			ar >> lParams;
+			ctParams = (unsigned short)lParams;
+		}
+		else
+			ar >> ctParams;
 		mrArgs.resize( ctParams );
 		for( size_t i = 0; i < ctParams; ++i )
 		{
@@ -111,11 +125,15 @@ void AxEventDescriptor::Serialize( CArchive& ar, int nPropertyVersion )
 					SerializeCLSID(ar, discard.clsid);
 			}
 		}
-		ar >> msParams;
+		if( nThisVersion <= 1 )
+		{
+			CString sUnusedParams;
+			ar >> sUnusedParams;
+		}
 	}
 }
 
-IOStatus AxEventDescriptor::ReadFromTextFile( std::ifstream &sFile, ULONG nPropertyVersion )
+IOStatus AxEventDescriptor::ReadFromTextFile( std::ifstream &sFile, BYTE nPropertyVersion )
 {
   if (!readDISPID(sFile, mDispId)) return statInvalidFormat;
   if (!readString(sFile, msName)) return statInvalidFormat;
@@ -142,7 +160,8 @@ IOStatus AxEventDescriptor::ReadFromTextFile( std::ifstream &sFile, ULONG nPrope
 			if (!readCLSID(sFile, tempArg.clsid)) return statInvalidFormat;
 		}
 	}
-  if (!readString(sFile, msParams)) return statInvalidFormat;
+	CString sUnusedParams;
+  if (!readString(sFile, sUnusedParams)) return statInvalidFormat;
 
 	return statOK;
 }

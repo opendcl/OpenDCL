@@ -157,8 +157,8 @@ void CControlPane::RecalcLayout()
 			ResetControlsPos( (*iter) );
 	}
 
-	mpDlgObject->OnNeedRepaint( true, true );
-	InvalidateControls();
+	//mpDlgObject->OnNeedRepaint( true, true );
+	//InvalidateControls();
 	//mpHostDlg->Invalidate(); //can't do this: it paints over the controls in Windows XP with Window Classic theme
 	mbRecalcInProgress = false;
 }

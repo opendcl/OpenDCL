@@ -12,7 +12,6 @@ class AxEventDescriptor
 	DISPID mDispId;
 	CString msName;
 	CString msDesc;
-	CString msParams;
 	std::vector< AxArg > mrArgs;
 
 protected:
@@ -22,6 +21,9 @@ public:
 	AxEventDescriptor( FUNCDESC* pFuncDesc, ITypeInfo* pTypeInfo, bool bUseAsType = true );
 	virtual ~AxEventDescriptor(void);
 
+	//2008-11-02 [ORW]: save version set to 2 (removed msParams and changed arg count to unsigned short)
+	BYTE GetCurrentSaveVersion() const { return 2; }
+
 	// Attributes
 	DISPID GetDispId() const { return mDispId; }
 	const CString& GetName() const { return msName; }
@@ -30,8 +32,8 @@ public:
 
 	// File I/O
 public:
-	void Serialize( CArchive& ar, int nPropertyVersion );
-	IOStatus ReadFromTextFile( std::ifstream &sFile, ULONG nPropertyVersion );
+	void Serialize( CArchive& ar, BYTE nPropertyVersion );
+	IOStatus ReadFromTextFile( std::ifstream &sFile, BYTE nPropertyVersion );
 	//IOStatus WriteToTextFile( FILE* pFile ) const;
 
 #ifdef _DIAGNOSTIC

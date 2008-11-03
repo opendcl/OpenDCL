@@ -1,0 +1,63 @@
+<html>
+<head>
+<link rel="StyleSheet" href="../../../WinHelp.css" type="text/css" media="screen,print">
+<script type="text/javascript" src="../../../Utility.js"></script>
+<title>BlockView_DisplayDwg (Camera)</title>
+</head>
+<body>
+	<table width="100%">
+		<tr>
+			<td nowrap>
+				<div id="title">
+                  <img border="0" src="../../images/Method.png" width="16" height="16"> 
+                  BlockView_DisplayDwg (Camera)</div>
+			</td>
+			<td align="right" valign="top">
+				<div id="hdrlink">&nbsp;</div>
+			</td>
+		</tr>
+	</table>
+	<hr />
+	<div id="content">
+        <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Function Name</th>
+            <td bgcolor="#CCFF99">dcl_BlockView_DisplayDwg</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
+&nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../../images/Clipboard.png" width="15" height="13" /></button></th>
+<td bgcolor="#CCFF99"><code id="syntax">(dcl_BlockView_DisplayDwg <i>
+            <a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i>
+            <font color="#FF0000">DwgFileName [as
+            <a href="../../DataType/String.htm">String</a>] CameraX [as
+            <a href="../../DataType/Float.htm">Float</a>] CameraY [as
+            <a href="../../DataType/Float.htm">Float</a>] {CameraZ [as
+            <a href="../../DataType/Float.htm">Float</a>]} {ZoomFactor [as
+            <a href="../../DataType/Float.htm">Float</a>]}</font>)</code></td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Return Type</th>
+            <td bgcolor="#CCFF99"><a href="../../DataType/Boolean.htm">Boolean</a> (T if successful; otherwise NIL)</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Applies To</th>
+            <td bgcolor="#CCFF99"><a href="../../Control/BlockView.htm">Block 
+            View</a></td>
+          </tr>
+        </table>
+		<p>This method displays a drawing file using the specified camera location relative to the 
+        origin of the drawing. ZoomFactor sets the zoom factor for the view.&nbsp; 
+        Larger values for ZoomFactor display the drawing at a larger scale, with a 
+        factor of 1.0 displaying the drawing zoomed to its extents (the default if 
+        the argument is omitted).</p>
+	</div>
+	<hr />
+	<div id="footer">
+		<p>Copyright © 2008 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		All rights reserved.</p>
+		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+	</div>
+</body>
+</html>

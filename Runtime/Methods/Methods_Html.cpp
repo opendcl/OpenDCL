@@ -13,7 +13,7 @@ ADSRESULT Html::Navigate()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	CString sNavigateDest;
@@ -34,7 +34,7 @@ ADSRESULT Html::Stop()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -51,7 +51,7 @@ ADSRESULT Html::Refresh()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -68,7 +68,7 @@ ADSRESULT Html::GoBack()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -85,7 +85,7 @@ ADSRESULT Html::GoForward()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -102,7 +102,7 @@ ADSRESULT Html::GoHome()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -119,7 +119,7 @@ ADSRESULT Html::GoSearch()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -136,7 +136,7 @@ ADSRESULT Html::GetLocationName()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -152,7 +152,7 @@ ADSRESULT Html::GetLocationURL()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -168,7 +168,7 @@ ADSRESULT Html::GetOffline()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -187,12 +187,11 @@ ADSRESULT Html::SetOffline()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	bool bOffline = true;
-	if (!GetBoolArgument (pArgs, bOffline))
-		return RSERR; //invalid input
+	GetBoolArgument (pArgs, bOffline, true);
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
@@ -208,7 +207,7 @@ ADSRESULT Html::GetBusy()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -227,7 +226,7 @@ ADSRESULT Html::GetFullName()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -243,7 +242,7 @@ ADSRESULT Html::GetHtmlDocument()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -259,7 +258,7 @@ ADSRESULT Html::ReplaceText()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	CString sOldText;
@@ -284,7 +283,7 @@ ADSRESULT Html::UpdateHtmlCode()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtmlCtrl))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlHtml))
 		return RSERR; //invalid input
 
 	CString sHtmlCode;

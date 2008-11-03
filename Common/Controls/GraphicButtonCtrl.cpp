@@ -64,6 +64,14 @@ bool CGraphicButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 			SetMouseOverPicture( mpTemplate->GetOwnerProject()->FindPicture( pProp->GetLongValue() ) );
 			break;
 		}
+	case Prop::BackgroundColor:
+		{
+			if( GetColorService()->IsBackgroundTransparent() )
+				DrawTransparent();
+			else
+				m_bDrawTransparent = FALSE;
+			break;
+		}
 	}
 	return !bFailed;
 }
@@ -87,6 +95,8 @@ void CGraphicButtonCtrl::SetMouseOverPicture( TPicturePtr pPict )
 
 void CGraphicButtonCtrl::UpdateButtonGraphic()
 {
+	if( IsUsingPresetGraphic() )
+		return;
 	if( (!mpPicture || mpPicture->GetPicType() == PICTYPE_BITMAP) &&
 			(!mpMouseOverPicture || mpMouseOverPicture->GetPicType() == PICTYPE_BITMAP) )
 		SetBitmaps( mpMouseOverPicture? mpMouseOverPicture->CloneBitmap() : NULL, RGB(192,192,192),
@@ -103,9 +113,3 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CGraphicButtonCtrl message handlers
-
-BOOL CGraphicButtonCtrl::PreTranslateMessage(MSG* pMsg)
-{
-	GetToolTipCtrl().RelayEvent( pMsg );
-	return __super::PreTranslateMessage( pMsg );
-}

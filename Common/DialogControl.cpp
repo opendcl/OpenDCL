@@ -141,6 +141,13 @@ CString CDialogControl::GetKeyPath() const
 	return CString();
 }
 
+CString CDialogControl::GetVarName() const
+{
+	if( mpTemplate )
+		return mpTemplate->GetVarName();
+	return CString();
+}
+
 CAxContainerCtrl* CDialogControl::GetActiveXCtrl() const
 {
 	if( mpTemplate->GetType() != CtlActiveX )

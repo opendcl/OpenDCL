@@ -576,11 +576,11 @@ class CArxControlObject : public CDclControlObject
 
 void CProject::Serialize(CArchive& ar)
 {
-  ULONG nThisVersion = GetCurrentSaveVersion();
+  BYTE nThisVersion = GetCurrentSaveVersion();
 
   if (ar.IsStoring())
   {
-    ar << GetCurrentSaveVersion();
+    ar << nThisVersion;
     ar << msPassword;
     ar << msLispFileName;
     ar << msKeyName; //project key
@@ -603,6 +603,16 @@ void CProject::Serialize(CArchive& ar)
   else
   {		
     ar >> nThisVersion;
+		if( nThisVersion <= 14 )
+		{
+			BYTE bSkip;
+			ar >> bSkip;
+			assert( bSkip == 0 );
+			ar >> bSkip;
+			assert( bSkip == 0 );
+			ar >> bSkip;
+			assert( bSkip == 0 );
+		}
 		if (nThisVersion > GetCurrentSaveVersion())
 			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
 

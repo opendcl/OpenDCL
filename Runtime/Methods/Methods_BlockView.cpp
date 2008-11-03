@@ -5,7 +5,7 @@
 #include "Methods_BlockView.h"
 #include "ArgumentsRetrieval.h"
 #include "ControlTypes.h"
-#include "ArxGsViewCtrl.h"
+#include "ArxBlockViewCtrl.h"
 
 
 static ADSRESULT DisplayDwgImp( bool bToScale );
@@ -23,16 +23,8 @@ ADSRESULT BlockView::Clear()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
-	pCtrl->clearAll();				
-	pCtrl->m_BlockName.Empty();
-	pCtrl->m_FileName.Empty();
-	pCtrl->m_bSelectedRect = false;
-	if( pCtrl->m_pLoadedDwg )
-	{
-		delete pCtrl->m_pLoadedDwg;
-		pCtrl->m_pLoadedDwg = NULL;
-	}
+	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->Clear();				
 	pCtrl->RedrawWindow();
 
 	acedRetT();
@@ -54,7 +46,7 @@ ADSRESULT BlockView::SetHighlight()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
+	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
 	pCtrl->SetHighlight( clrHighlight );
 
 	acedRetT();
@@ -72,7 +64,7 @@ ADSRESULT BlockView::RemoveHighlight()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
+	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
 	pCtrl->RemoveHighlight();
 
 	acedRetT();
@@ -94,7 +86,7 @@ ADSRESULT BlockView::Zoom()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
+	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
 	pCtrl->Zoom(dblZoomFactor);
 
 	acedRetT();
@@ -116,16 +108,8 @@ ADSRESULT BlockView::PreLoadDwg()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
-	pCtrl->clearAll();				
-	pCtrl->m_BlockName.Empty();
-	pCtrl->m_FileName.Empty();
-	pCtrl->m_bSelectedRect = false;
-	if( pCtrl->m_pLoadedDwg )
-	{
-		delete pCtrl->m_pLoadedDwg;
-		pCtrl->m_pLoadedDwg = NULL;
-	}
+	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->Clear();				
 	pCtrl->RedrawWindow();
 	if( pCtrl->PreLoadDwg( sFileName ) )
 		acedRetT();
@@ -147,7 +131,7 @@ ADSRESULT BlockView::GetBlockSize()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
+	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
 	AcDbExtents ext;
 	if( !pCtrl->GetBlockSize( sBlockName, ext ) )
 		return RSRSLT;
@@ -172,7 +156,7 @@ ADSRESULT BlockView::GetDwgSize()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
+	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
 	AcDbExtents ext;
 	if( !pCtrl->GetDwgSize( ext ) )
 		return RSRSLT;
@@ -198,8 +182,10 @@ ADSRESULT BlockView::GetBlockList()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
-	AcDbDatabase* pDb = (pCtrl->m_pLoadedDwg? pCtrl->m_pLoadedDwg : acdbCurDwg());
+	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
+	AcDbDatabase* pDb = pCtrl->GetSourceDb();
+	if( !pDb )
+		pDb = acdbCurDwg();
 	if( !pDb )
 		return RSRSLT;
   AcDbBlockTable* pBlockTable;
@@ -255,7 +241,7 @@ ADSRESULT DisplayDwgImp( bool bToScale )
 	if( !GetStringArgument( pArgs, sFileName ) )
 		return RSERR; //invalid input
 
-	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
+	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
 
 	if( !pArgs )
 	{
@@ -368,7 +354,7 @@ ADSRESULT DisplayBlockImp( bool bToScale )
 	if( !GetStringArgument( pArgs, sBlockName ) )
 		return RSERR; //invalid input
 
-	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
+	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
 
 	if( !pArgs )
 	{
@@ -480,7 +466,7 @@ ADSRESULT BlockView::DisplayPaperSpace()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
+	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
 	if( pCtrl->DisplayBlock( ACDB_PAPER_SPACE, 1.0, false, 0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 ) )
 		acedRetT();
 	return RSRSLT;
@@ -497,8 +483,8 @@ ADSRESULT BlockView::RefreshBlock()
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
-	CArxGsViewCtrl* pCtrl = (CArxGsViewCtrl*)pDlgControl->GetControlWnd();
-	pCtrl->UpdateBlock();
+	CArxBlockViewCtrl* pCtrl = (CArxBlockViewCtrl*)pDlgControl->GetControlWnd();
+	pCtrl->RefreshBlock();
 	acedRetT();
 	return RSRSLT;
 }
@@ -507,7 +493,7 @@ ADSRESULT BlockView::RefreshBlock()
 ADSRESULT BlockView::GetViewInfo()
 {
 	int nIndex = 0;
-	CArxGsViewCtrl *pControl = (CArxGsViewCtrl*)GetControlPointer(CtlBlockView, sBlockView::GetViewInfo, &nIndex);
+	CArxBlockViewCtrl *pControl = (CArxBlockViewCtrl*)GetControlPointer(CtlBlockView, sBlockView::GetViewInfo, &nIndex);
 	
 	if (pControl != NULL && pControl->view() != NULL)
 	{
@@ -571,7 +557,7 @@ ADSRESULT BlockView::SetView()
 		return 0;
 	}
 
-	CArxGsViewCtrl *pControl = (CArxGsViewCtrl*)pArxObject->GetWindow();
+	CArxBlockViewCtrl *pControl = (CArxBlockViewCtrl*)pArxObject->GetWindow();
 	
 	ListData = ListData->rbnext;
 	

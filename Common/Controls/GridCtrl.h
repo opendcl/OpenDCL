@@ -268,8 +268,8 @@ protected:
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp);
 	afx_msg void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void HScroll(UINT nSBCode, UINT nPos);
+	afx_msg void VScroll(UINT nSBCode, UINT nPos);
 	afx_msg void OnLvnBeginScroll(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg LRESULT OnCheckFocus( WPARAM wParam, LPARAM lParam );
 };

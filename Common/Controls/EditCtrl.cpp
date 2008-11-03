@@ -63,6 +63,8 @@ BEGIN_MESSAGE_MAP(CEditCtrl, _TEditBase)
 	ON_WM_KILLFOCUS()
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
+	ON_CONTROL_REFLECT(EN_HSCROLL, &CEditCtrl::OnEnHscroll)
+	ON_CONTROL_REFLECT(EN_VSCROLL, &CEditCtrl::OnEnVscroll)
 END_MESSAGE_MAP()
 
 
@@ -163,13 +165,33 @@ BOOL CEditCtrl::PreTranslateMessage( MSG* pMsg )
 
 HBRUSH CEditCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	return mColorService.CtlColor( pDC, nCtlColor, (mColorService.IsBackgroundTransparent()? this : NULL) );
+	return mColorService.CtlColor( pDC, nCtlColor );
 }
 
 BOOL CEditCtrl::OnEraseBkgnd(CDC* pDC)
 {
 	if( mColorService.IsBackgroundTransparent() )
+	{
+		CRect rcClip;
+		pDC->GetClipBox( &rcClip );
+		ClientToScreen( &rcClip );
+		CWnd* pParentWnd = GetParent();
+		pParentWnd->ScreenToClient( &rcClip );
+		pParentWnd->RedrawWindow( &rcClip, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_NOCHILDREN | RDW_UPDATENOW );
 		return TRUE;
+	}
 
 	return __super::OnEraseBkgnd(pDC);
+}
+
+void CEditCtrl::OnEnHscroll()
+{
+	if( mColorService.IsBackgroundTransparent() )
+		Invalidate(); //copying pixels won't work; need to repaint the entire window
+}
+
+void CEditCtrl::OnEnVscroll()
+{
+	if( mColorService.IsBackgroundTransparent() )
+		Invalidate(); //copying pixels won't work; need to repaint the entire window
 }

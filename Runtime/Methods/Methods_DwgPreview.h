@@ -9,6 +9,6 @@ namespace DwgPreview
 ADSRESULT LoadDwg();
 ADSRESULT GetDwgName();
 ADSRESULT Clear();
-ADSRESULT SetHighLight();
-ADSRESULT RemoveHighLight();
+ADSRESULT SetHighlight();
+ADSRESULT RemoveHighlight();
 };

@@ -207,7 +207,6 @@ static void DrawDisabledTransparentBitmap( CBitmap* pBitmap, CDC* pDC, int x, in
 CPictureBox::CPictureBox()
 : mpPicture( NULL )
 {
-	m_bMouseTracking = FALSE;
 	m_hbmMem = NULL;
 	m_bStretchLoadedPicture = false;
 	m_cxIcon = 16;
@@ -221,7 +220,6 @@ CPictureBox::CPictureBox()
 CPictureBox::CPictureBox( CWnd* pParentWnd, UINT nID, const CRect& rcWnd, UINT nIconResId /*= -1*/ )
 : mpPicture( NULL )
 {
-	m_bMouseTracking = FALSE;
 	m_hbmMem = NULL;
 	m_bStretchLoadedPicture = false;
 	m_cxIcon = 16;
@@ -803,8 +801,6 @@ void CPictureBox::CopyDC()
 BEGIN_MESSAGE_MAP(CPictureBox, CButton)
 	ON_WM_ENABLE()
 	ON_WM_LBUTTONDOWN()
-	ON_WM_MOUSEMOVE()
-	ON_MESSAGE(WM_MOUSELEAVE, OnMouseLeave)   
 	ON_WM_SIZE()
 	ON_WM_PAINT()
 	ON_WM_CHAR()
@@ -831,28 +827,6 @@ void CPictureBox::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	SetFocus();
 	__super::OnLButtonDown(nFlags, point);
-}
-
-void CPictureBox::OnMouseMove(UINT nFlags, CPoint point) 
-{
-	// setup the mouse tracking event reactor
-	if (!m_bMouseTracking)       
-	{
-		TRACKMOUSEEVENT tme;        
-		tme.cbSize = sizeof(TRACKMOUSEEVENT);
-		tme.dwFlags = TME_LEAVE;
-		tme.hwndTrack = m_hWnd;
-		if (::_TrackMouseEvent(&tme))                
-			m_bMouseTracking = TRUE;
-	}
-	__super::OnMouseMove(nFlags, point);
-}
-
-LRESULT CPictureBox::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
-{
-	m_bMouseTracking = FALSE;        
-	//return __super::OnMouseMove(wParam, lParam);
-	return FALSE;
 }
 
 void CPictureBox::OnSize(UINT nType, int cx, int cy) 

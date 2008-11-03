@@ -32,7 +32,10 @@ ADSRESULT PictureBox::DrawLine()
 		return RSERR; //invalid input
 
 	if( GetListEndArgument( pArgs, true ) )
+	{
+		acedRetT();
 		return RSRSLT;
+	}
 
 	if( !GetListBeginArgument( pArgs ) )
 		return RSERR; //invalid input
@@ -88,22 +91,48 @@ ADSRESULT PictureBox::DrawPoint()
 	if( !pCtrl->IsWindowVisible() )
 		return RSRSLT;
 
-	int nX;
-	if( !GetIntArgument( pArgs, nX ) )
-		return RSERR; //invalid input
+	if( GetNilArgument( pArgs, true ) )
+	{
+		acedRetT();
+		return RSRSLT;
+	}
 
-	int nY;
-	if( !GetIntArgument( pArgs, nY ) )
-		return RSERR; //invalid input
+	bool bListBegin = GetListBeginArgument( pArgs, true );
 
-	COLORREF crColor;
-	if( !GetColorArgument( pArgs, crColor ) )
+	if( bListBegin && GetListEndArgument( pArgs, true ) )
+	{
+		acedRetT();
+		return RSRSLT;
+	}
+
+	bool bNestedList = GetListBeginArgument( pArgs, true );
+
+	do
+	{
+		int nX;
+		if( !GetIntArgument( pArgs, nX ) )
+			return RSERR; //invalid input
+
+		int nY;
+		if( !GetIntArgument( pArgs, nY ) )
+			return RSERR; //invalid input
+
+		COLORREF crColor;
+		if( !GetColorArgument( pArgs, crColor ) )
+			return RSERR; //invalid input
+
+		if( bNestedList && !GetListEndArgument( pArgs ) )
+			return RSERR; //invalid input
+
+		pCtrl->DrawPoint( nX, nY, crColor );
+		
+	} while( bNestedList = GetListBeginArgument( pArgs, true ) );
+
+	if( bListBegin && !GetListEndArgument( pArgs ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
-
-	pCtrl->DrawPoint( nX, nY, crColor );
 
 	acedRetT();
 	return RSRSLT;
@@ -131,7 +160,10 @@ ADSRESULT PictureBox::DrawEdge()
 		return RSERR; //invalid input
 
 	if( GetListEndArgument( pArgs, true ) )
+	{
+		acedRetT();
 		return RSRSLT;
+	}
 
 	if( !GetListBeginArgument( pArgs ) )
 		return RSERR; //invalid input
@@ -197,7 +229,10 @@ ADSRESULT PictureBox::DrawFocusRect()
 		return RSERR; //invalid input
 
 	if( GetListEndArgument( pArgs, true ) )
+	{
+		acedRetT();
 		return RSRSLT;
+	}
 
 	if( !GetListBeginArgument( pArgs ) )
 		return RSERR; //invalid input
@@ -259,7 +294,10 @@ ADSRESULT PictureBox::DrawRect()
 		return RSERR; //invalid input
 
 	if( GetListEndArgument( pArgs, true ) )
+	{
+		acedRetT();
 		return RSRSLT;
+	}
 
 	if( !GetListBeginArgument( pArgs ) )
 		return RSERR; //invalid input
@@ -303,7 +341,7 @@ ADSRESULT PictureBox::DrawRect()
 	return RSRSLT;
 }
 
-ADSRESULT PictureBox::DrawFillRect()
+ADSRESULT PictureBox::DrawSolidRect()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -325,7 +363,10 @@ ADSRESULT PictureBox::DrawFillRect()
 		return RSERR; //invalid input
 
 	if( GetListEndArgument( pArgs, true ) )
+	{
+		acedRetT();
 		return RSRSLT;
+	}
 
 	if( !GetListBeginArgument( pArgs ) )
 		return RSERR; //invalid input
@@ -442,7 +483,10 @@ ADSRESULT PictureBox::DrawArc()
 		return RSERR; //invalid input
 
 	if( GetListEndArgument( pArgs, true ) )
+	{
+		acedRetT();
 		return RSRSLT;
+	}
 
 	if( !GetListBeginArgument( pArgs ) )
 		return RSERR; //invalid input
@@ -521,7 +565,10 @@ ADSRESULT PictureBox::DrawCircle()
 		return RSERR; //invalid input
 
 	if( GetListEndArgument( pArgs, true ) )
+	{
+		acedRetT();
 		return RSRSLT;
+	}
 
 	if( !GetListBeginArgument( pArgs ) )
 		return RSERR; //invalid input
@@ -587,7 +634,10 @@ ADSRESULT PictureBox::DrawHatchRect()
 		return RSERR; //invalid input
 
 	if( GetListEndArgument( pArgs, true ) )
+	{
+		acedRetT();
 		return RSRSLT;
+	}
 
 	if( !GetListBeginArgument( pArgs ) )
 		return RSERR; //invalid input
@@ -657,7 +707,10 @@ ADSRESULT PictureBox::DrawWrappedText()
 		return RSERR; //invalid input
 
 	if( GetListEndArgument( pArgs, true ) )
+	{
+		acedRetT();
 		return RSRSLT;
+	}
 
 	if( !GetListBeginArgument( pArgs ) )
 		return RSERR; //invalid input
@@ -688,8 +741,19 @@ ADSRESULT PictureBox::DrawWrappedText()
 			return RSERR; //invalid input
 
 		CString sJustification;
-		if( !GetStringArgument( pArgs, sJustification ) )
-			return RSERR; //invalid input
+		if( !GetStringArgument( pArgs, sJustification, true ) )
+		{ //could be specified as an integer value instead
+			int nJustification = -1;
+			if( !GetIntArgument( pArgs, nJustification ) )
+				return RSERR; //invalid input
+			switch( nJustification )
+			{
+			case 0: sJustification = _T("L"); break;
+			case 1: sJustification = _T("C"); break;
+			case 2: sJustification = _T("R"); break;
+			default: return HandleArgValueError( pArgs );
+			}
+		}
 
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input
@@ -756,7 +820,10 @@ ADSRESULT PictureBox::DrawText()
 		return RSERR; //invalid input
 
 	if( GetListEndArgument( pArgs, true ) )
+	{
+		acedRetT();
 		return RSRSLT;
+	}
 
 	if( !GetListBeginArgument( pArgs ) )
 		return RSERR; //invalid input
@@ -783,8 +850,22 @@ ADSRESULT PictureBox::DrawText()
 			return RSERR; //invalid input
 
 		CString sJustification;
-		if( !GetStringArgument( pArgs, sJustification ) )
-			return RSERR; //invalid input
+		if( !GetStringArgument( pArgs, sJustification, true ) )
+		{ //could be specified as an integer value instead
+			int nJustification = -1;
+			if( !GetIntArgument( pArgs, nJustification ) )
+				return RSERR; //invalid input
+			switch( nJustification )
+			{
+			case 0: sJustification = _T("TL"); break;
+			case 1: sJustification = _T("TC"); break;
+			case 2: sJustification = _T("TR"); break;
+			case 3: sJustification = _T("BL"); break;
+			case 4: sJustification = _T("BC"); break;
+			case 5: sJustification = _T("BR"); break;
+			default: return HandleArgValueError( pArgs );
+			}
+		}
 
 		bool bDisabled = false;
 		GetBoolArgument( pArgs, bDisabled, true );
@@ -847,11 +928,10 @@ ADSRESULT PictureBox::PaintPicture()
 		if( !GetIntArgument( pArgs, nPicID ) )
 			return RSERR; //invalid input
 
-		bool bEnabled = false;
-		GetBoolArgument( pArgs, bEnabled, true );
-
+		bool bEnabled = true;
 		bool bMasked = false;
-		GetBoolArgument( pArgs, bMasked, true );
+		if( GetBoolArgument( pArgs, bEnabled, true ) )
+			GetBoolArgument( pArgs, bMasked, true );
 
 		if( !GetListEndArgument( pArgs ) )
 			return RSERR; //invalid input

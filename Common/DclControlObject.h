@@ -27,7 +27,7 @@ protected:
 
 private:
 	TPropertyList mProperties;
-	RefCountedPtr< CImageListObject > mpImageList;
+	TImageListPtr mpImageList;
 	int mnID;
 
 	//ActiveX control info
@@ -50,7 +50,8 @@ public:
 	//2007-06-16 [ORW]: save version set to 8 (removed purchase state)
 	//2007-09-17 [ORW]: save version set to 9 (removed m_ClientHeight member)
 	//2008-01-12 [ORW]: save version set to 10 (removed m_bLicenseChecked, m_sBaseCode members)
-	ULONG GetCurrentSaveVersion() const { return 10; }
+	//2008-11-02 [ORW]: save version set to 11 (changed version from ULONG to BYTE)
+	BYTE GetCurrentSaveVersion() const { return 11; }
 
 // Attributes
 public:
@@ -65,8 +66,8 @@ public:
 	virtual const TProjectPtr GetOwnerProject() const;
 	const TPropertyList& GetPropertyList() const { return mProperties; }
 	TPropertyList& GetPropertyList() { return mProperties; }
-	RefCountedPtr< CImageListObject > GetImageList() const { return mpImageList; }
-	void SetImageList( RefCountedPtr< CImageListObject > pImageList ) { mpImageList = pImageList; }
+	TImageListPtr GetImageList() const { return mpImageList; }
+	void SetImageList( TImageListPtr pImageList ) { mpImageList = pImageList; }
 	const CString& GetAxTypeName() const { return msAxTypeName; }
 	void SetAxTypeName( LPCTSTR pszAxTypeName ) { msAxTypeName = pszAxTypeName; }
 	int GetID() const { return mnID; }
@@ -97,7 +98,7 @@ public:
 	TPropertyPtr GetRefCountedPtr( const CPropertyObject* pProperty ) const;
 	const TPropertyPtr GetPropertyObject( Prop::Id nID ) const;
 	TPropertyPtr GetPropertyObject( Prop::Id nID );
-	TPropertyPtr FindPropertyObject( LPCTSTR pszName ) const;
+	TPropertyPtr FindPropertyObject( LPCTSTR pszApiName ) const;
 	bool InsertNamedProperty( TPropertyPtr pProp );
 	void RemoveProperty( Prop::Id nId );
 	void ResetProperty( Prop::Id nId );
@@ -122,12 +123,13 @@ public:
 																PropertyType type = PropLong,
 																long lValue = -1,
 																bool bResetExisting = false );
+	void SetColorProperty( Prop::Id nID, COLORREF color );
 
-	CString GetStringProperty(Prop::Id nID) const;
-	long GetLongProperty(Prop::Id nID) const;
-	bool GetBooleanProperty(Prop::Id nID) const;
-	void SetColorProperty(Prop::Id nID, COLORREF color);
-	COLORREF GetColorProperty(Prop::Id nID) const;
+	CString GetStringProperty( Prop::Id nID ) const;
+	long GetLongProperty( Prop::Id nID ) const;
+	bool GetBooleanProperty( Prop::Id nID ) const;
+	COLORREF GetColorProperty( Prop::Id nID ) const;
+	double GetDoubleProperty( Prop::Id nID ) const;
 
 // Implementation
 protected:

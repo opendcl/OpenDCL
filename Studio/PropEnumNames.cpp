@@ -40,7 +40,7 @@ static std::map< Prop::Id, TEnumNames >& GetEnumNamesMap()
 		FillEnumNamesList( Map[Prop::ListViewIconAlign], IDS_LV_IA_0, 2 );
 		FillEnumNamesList( Map[Prop::Orientation], IDS_ORIENTATION_0, 2 );
 		FillEnumNamesList( Map[Prop::ProgressLegend], IDS_PROGRESSLEGEND_0, 3 );
-		FillEnumNamesList( Map[Prop::RectStyle], IDS_RECTSTYLE_0, 5 );
+		FillEnumNamesList( Map[Prop::RectangleStyle], IDS_RECTSTYLE_0, 5 );
 		FillEnumNamesList( Map[Prop::RenderMode], IDS_BV_RM_0, 8 );
 		FillEnumNamesList( Map[Prop::SelectionStyle], IDS_SELECTSTYLE_0, 3 );
 		FillEnumNamesList( Map[Prop::SplitterStyle], IDS_SPLITTERSTYLE_0, 6 );

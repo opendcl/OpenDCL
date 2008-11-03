@@ -31,12 +31,9 @@ public:
 	virtual DROPEFFECT OnBeginDrag( const CPoint& point, COleDataSource& SourceData );
 	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
 
-public:
-
 protected:
 	DECLARE_MESSAGE_MAP();
 
-protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual afx_msg void PostNcDestroy();
 	afx_msg void OnChange();

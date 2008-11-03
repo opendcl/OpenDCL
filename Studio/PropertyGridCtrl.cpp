@@ -492,9 +492,42 @@ public:
 			TDclControlPtr pActiveControl = theStudioWorkspace.GetActiveDclControl();
 			if( pActiveControl )
 				nCtrlType = pActiveControl->GetType();
-			const TEnumNames& Names = GetPropEnumNames( pGridCtrl->GetPropertyId( idxCell ), nCtrlType );
-			for( TEnumNames::const_iterator iter = Names.begin(); iter != Names.end(); ++iter )
-				AddString( *iter );
+			Prop::Id id = pGridCtrl->GetPropertyId( idxCell );
+			if( id == Prop::_Private )
+			{
+				CPropertyGridCtrl::TPropertySet& PropertySet = pGridCtrl->GetPropertySet( idxCell );
+				if( !PropertySet.empty() )
+				{
+					TPropertyPtr pFirstProp = PropertySet.front();
+					const AxInterfaceDescriptor* pIDesc = pFirstProp->GetConstAxInterfaceDescriptorPtr();
+					if( pIDesc )
+					{
+						AxPropertyDescriptor* pPropDesc = pIDesc->GetGetDescriptor();
+						if( pPropDesc )
+						{
+							const std::vector< AxPropertyEnum >& Enums( pPropDesc->GetEnum() );
+							for( std::vector< AxPropertyEnum >::const_iterator iter = Enums.begin();
+									 iter != Enums.end();
+									 ++iter )
+							{
+								const AxPropertyEnum& Enum( *iter );
+								int nItem = AddString( Enum.Name );
+								LONG lValue = _variant_t( Enum.Var );
+								SetItemData( nItem, lValue );
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				const TEnumNames& Names = GetPropEnumNames( id, nCtrlType );
+				for( TEnumNames::const_iterator iter = Names.begin(); iter != Names.end(); ++iter )
+				{
+					int nItem = AddString( *iter );
+					SetItemData( nItem, nItem );
+				}
+			}
 			int nState = pGridCtrl->GetItemState( idxCell, LVIS_STATEIMAGEMASK );
 			if( (nState & INDEXTOSTATEIMAGEMASK(PGIS_INDETERMINATE)) != 0 )
 				SetCurSel( -1 );
@@ -523,7 +556,7 @@ public:
 					 ++iter )
 			{
 				TPropertyPtr pProp = *iter;
-				pProp->SetLongValue( nValue );
+				pProp->SetLongValue( GetItemData( nValue ) );
 				TDclControlPtr pDclControl = pProp->GetOwnerControl();
 				if( pDclControl )
 				{
@@ -851,6 +884,10 @@ static CPropertyEditCtrl* PF_CreateActiveXPropEditor( CPropertyGridCtrl* pGridCt
 					return CCommandButtonEditCtrl::Create< ID_AXSTOCKPICTUREPROPERTYPAGE >( pGridCtrl, idxCell, bMultiple );
 				return CCommandButtonEditCtrl::Create< ID_AXPICTUREPROPERTYPAGE >( pGridCtrl, idxCell, bMultiple );
 			}
+			else if( !pPropDesc->GetEnum().empty() )
+			{
+				return CEnumComboBoxCtrl::Create( pGridCtrl, idxCell, bMultiple );
+			}
 		}
 	}
 	switch( GetActiveXPropType( pFirstProp ) )
@@ -890,25 +927,34 @@ static CString GetDisplayablePropertyValue( TPropertyPtr pProperty, ControlType 
 	case PropActiveXProp:
 		{
 			AxPropertyDescriptor* pPropDesc = pProperty->GetConstAxInterfaceDescriptorPtr()->GetGetDescriptor();
-			if( pPropDesc && pPropDesc->GetGuid() == GUID_COLOR )
+			if( pPropDesc )
 			{
-				OLE_COLOR color = pProperty->GetOLEColorValue();
-				switch( color >> 24 )
+				if( pPropDesc->GetGuid() == GUID_COLOR )
 				{
-				case 0:
+					OLE_COLOR color = pProperty->GetOLEColorValue();
+					switch( color >> 24 )
 					{
-						CString sColor;
-						sColor.Format( _T("%d, %d, %d"), GetRValue(color), GetGValue(color), GetBValue(color) );
-						return sColor;
+					case 0:
+						{
+							CString sColor;
+							sColor.Format( _T("%d, %d, %d"), GetRValue(color), GetGValue(color), GetBValue(color) );
+							return sColor;
+						}
+						break;
+					case 0x80:
+						{
+							CString sColor;
+							sColor.Format( _T("%d"), -(long)GetRValue(color) );
+							return sColor;
+						}
+						break;
 					}
-					break;
-				case 0x80:
-					{
-						CString sColor;
-						sColor.Format( _T("%d"), -(long)GetRValue(color) );
-						return sColor;
-					}
-					break;
+				}
+				if( !pPropDesc->GetEnum().empty() )
+				{
+					CString sEnumName = pPropDesc->GetEnumDisplayName( pProperty->GetLongValue() );
+					if( !sEnumName.IsEmpty() )
+						return sEnumName;
 				}
 			}
 		}
@@ -957,7 +1003,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	switch( id )
 	{
 	case Prop::InterfaceMode: return &CEnumComboBoxCtrl::Create;
-	case Prop::AlternateColor: if( bMultiple ) return &CFilteredTextEditCtrl::Create< CIntegerFilter >; return &CCommandButtonEditCtrl::Create< ID_ALTCOLORPROPERTIES >;
+	case Prop::AlternatingColor: if( bMultiple ) return &CFilteredTextEditCtrl::Create< CIntegerFilter >; return &CCommandButtonEditCtrl::Create< ID_ALTCOLORPROPERTIES >;
 	case Prop::AlternateOrient: return &CEnumComboBoxCtrl::Create;
 	case Prop::AsReadOnly: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::AutoArrange: return &CBooleanCheckBoxCtrl::Create;
@@ -973,10 +1019,10 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::BorderStyle: return &CEnumComboBoxCtrl::Create;
 	case Prop::BottomFromBottom: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::BtnCaption: return PF_UnfilteredTextEditCreator;
-	case Prop::BtnTTText: return PF_UnfilteredTextEditCreator;
+	case Prop::BtnToolTips: return PF_UnfilteredTextEditCreator;
 	case Prop::ButtonStyle: return &CEnumComboBoxCtrl::Create;
 	case Prop::Caption: return PF_UnfilteredTextEditCreator;
-	case Prop::CfgTabCaption: return PF_UnfilteredTextEditCreator;
+	case Prop::OptionsTabCaption: return PF_UnfilteredTextEditCreator;
 	case Prop::ColHeader: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ColumnWidth: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::ComboBoxStyle: return &CEnumComboBoxCtrl::Create;
@@ -999,14 +1045,14 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::FontName: if( bMultiple ) return NULL; return &CCommandButtonEditCtrl::Create< ID_FONTPROPERTIES >;
 	case Prop::ForegroundColor: if( bMultiple ) return &CFilteredTextEditCtrl::Create< CIntegerFilter >; return &CCommandButtonEditCtrl::Create< ID_FORECOLORPROPERTIES >;
 	case Prop::FullRowSelect: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::GlobalVarName: if( bMultiple ) return NULL; return &CFilteredTextEditCtrl::Create< CSymbolNameFilter >;
+	case Prop::VarName: if( bMultiple ) return NULL; return &CFilteredTextEditCtrl::Create< CSymbolNameFilter >;
 	case Prop::GridLines: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::HasButtons: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::HasLines: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::HatchScale: return &CFilteredTextEditCtrl::Create< CNumericFilter >;
 	case Prop::Height: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::HScrollBar: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::Icon: return &CPicFolderComboBoxCtrl::Create;
+	case Prop::TitleBarIcon: return &CPicFolderComboBoxCtrl::Create;
 	case Prop::IconXSpacing: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::IconYSpacing: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::ImageList: if( bMultiple ) return NULL; return &CCommandButtonEditCtrl::Create< ID_IMAGELISTPROPERTIES >;
@@ -1020,7 +1066,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::LargeChange: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::Left: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::LeftFromRight: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
-	case Prop::LimitText: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
+	case Prop::TextLimit: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::LinesAtRoot: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::List: return PF_UnfilteredTextEditCreator;
 	case Prop::ListViewIconAlign: return &CEnumComboBoxCtrl::Create;
@@ -1032,8 +1078,8 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::MaxDialogHeight: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::MaxValue: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::MinDialogWidth: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
-	case Prop::MinuteText: return PF_UnfilteredTextEditCreator;
-	case Prop::MinutesText: return PF_UnfilteredTextEditCreator;
+	case Prop::CaptionMinute: return PF_UnfilteredTextEditCreator;
+	case Prop::CaptionMinutes: return PF_UnfilteredTextEditCreator;
 	case Prop::MinDialogHeight: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::MinTabWidth: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::MinValue: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
@@ -1050,15 +1096,15 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::Picture: return &CPicFolderComboBoxCtrl::Create;
 	case Prop::ProgressLegend: return &CEnumComboBoxCtrl::Create;
 	case Prop::ReadOnly: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::RemainingText: return PF_UnfilteredTextEditCreator;
+	case Prop::CaptionRemaining: return PF_UnfilteredTextEditCreator;
 	case Prop::RenderMode: return &CEnumComboBoxCtrl::Create;
-	case Prop::Resizable: return &CBooleanCheckBoxCtrl::Create;
+	case Prop::AllowResizing: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ReturnAsTab: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::RightFromRight: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::RowHeader: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::RowHeight: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
-	case Prop::SecondText: return PF_UnfilteredTextEditCreator;
-	case Prop::SecondsText: return PF_UnfilteredTextEditCreator;
+	case Prop::CaptionSecond: return PF_UnfilteredTextEditCreator;
+	case Prop::CaptionSeconds: return PF_UnfilteredTextEditCreator;
 	case Prop::SelectionStyle: return &CEnumComboBoxCtrl::Create;
 	case Prop::ShowCancel: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ShowHelp: return &CBooleanCheckBoxCtrl::Create;
@@ -1098,7 +1144,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::ToolTipTitle: return PF_UnfilteredTextEditCreator;
 	case Prop::ToolTipTitleColor: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::TopFromBottom: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
-	case Prop::URLAddress: return PF_UnfilteredTextEditCreator;
+	case Prop::Hyperlink: return PF_UnfilteredTextEditCreator;
 	case Prop::URLLinkType: return &CEnumComboBoxCtrl::Create;
 	case Prop::UseBottomFromBottom: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::UseLeftFromRight: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
@@ -1232,12 +1278,12 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 		{
 		case Prop::ControlBrowser:
 		case Prop::Name:
-		case Prop::GlobalVarName:
+		case Prop::VarName:
 		case Prop::ActiveXPropPages:
 			if( PropSet.size() > 1 )
 				nState |= PGIS_DISPLAYONLY;
 			break;
-		//case Prop::Icon:
+		//case Prop::TitleBarIcon:
 		//case Prop::Picture:
 		//case Prop::MouseOverPicture:
 		//case Prop::ToolTipPicture:
@@ -2002,6 +2048,11 @@ void CPropertyGridCtrl::OnLvnItemchanged(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	if( pNMLV->uNewState & LVIS_SELECTED )
-		mpParent->ActivateProperty( GetPropertyId( pNMLV->iItem ) );
+	{
+		TPropertySet& PropSet = GetPropertySet( pNMLV->iItem );
+		assert( !PropSet.empty() );
+		if( !PropSet.empty() )
+			mpParent->ActivateProperty( PropSet.front() );
+	}
 	*pResult = 0;
 }

@@ -13,7 +13,7 @@ ADSRESULT DrawLine();
 ADSRESULT DrawPoint();
 ADSRESULT DrawArc();
 ADSRESULT DrawCircle();
-ADSRESULT DrawFillRect();
+ADSRESULT DrawSolidRect();
 ADSRESULT DrawEdge();
 ADSRESULT DrawHatchRect();
 ADSRESULT DrawWrappedText();

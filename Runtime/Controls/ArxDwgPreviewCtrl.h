@@ -42,8 +42,8 @@ public:
 	void PaintCtrl( CDC *pdc );
 	LPCTSTR GetFilename() const { return (m_filename.IsEmpty()? NULL : (LPCTSTR)m_filename); }
 	void Clear() { m_filename.Empty(); m_bSelectedRect = false; OnNeedRepaint(); }
-	void SetHighLight( int nColorIndex );
-	void RemoveHighLight();
+	void SetHighlight( const COLORREF& clrHighlight );
+	void RemoveHighlight();
 	void Refresh( CDC *pdc );
 	void LoadDwg( LPCTSTR pszFilename );
 

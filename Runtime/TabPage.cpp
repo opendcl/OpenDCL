@@ -11,12 +11,14 @@
 BEGIN_MESSAGE_MAP(CTabPage, CDialog)
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
+	ON_WM_WINDOWPOSCHANGING()
 END_MESSAGE_MAP()
 
 CTabPage::CTabPage( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane, UINT& nId )
 : CDialog(CTabPage::IDD, pTabCtrl)
 , CDialogObject( pSourceForm, &mControlPane, this )
 , mControlPane( pSourceForm, this )
+, mbRecalcQueued( false )
 {
 	mbIgnoreSizing = true;
 	CDialog::Create( CTabPage::IDD, pTabCtrl );
@@ -32,6 +34,20 @@ CTabPage::CTabPage( TDclFormPtr pSourceForm, CTabCtrl* pTabCtrl, CRect rectPane,
 
 CTabPage::~CTabPage()
 {
+}
+
+void CTabPage::ApplyPosition()
+{
+	mbIgnoreSizing = true;
+	GetTopLevelWnd()->SetWindowPos( NULL, 0, 0,
+																	mpTemplate->GetLongProperty(Prop::Width) + GetNCWidth(),
+																	mpTemplate->GetLongProperty(Prop::Height) + GetNCHeight(),
+																	SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | /*SWP_NOCOPYBITS | */SWP_NOOWNERZORDER );
+	if( GetTopLevelWnd()->IsWindowVisible() )
+		mpControlPane->RecalcLayout();
+	else
+		mbRecalcQueued = true;
+	mbIgnoreSizing = false;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -55,7 +71,10 @@ void CTabPage::OnSize(UINT nType, int cx, int cy)
 		return;
 	mpTemplate->SetLongProperty( Prop::Width, cx );
 	mpTemplate->SetLongProperty( Prop::Height, cy );
-	mpControlPane->RecalcLayout();
+	if( IsWindowVisible() )
+		mpControlPane->RecalcLayout();
+	else
+		mbRecalcQueued = true;
 }
 
 BOOL CTabPage::OnEraseBkgnd(CDC* pDC)
@@ -77,4 +96,12 @@ BOOL CTabPage::OnEraseBkgnd(CDC* pDC)
 	}
 	//return TRUE;
 	return __super::OnEraseBkgnd(pDC);
+}
+
+void CTabPage::OnWindowPosChanging(WINDOWPOS* lpwndpos)
+{
+	__super::OnWindowPosChanging(lpwndpos);
+
+	if( (lpwndpos->flags & SWP_SHOWWINDOW) != 0 && mbRecalcQueued )
+		mpControlPane->RecalcLayout();
 }

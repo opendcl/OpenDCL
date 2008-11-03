@@ -252,7 +252,7 @@ DROPEFFECT CMyOverrideDropTarget::OnDropEx(CWnd* pWnd, COleDataObject* pDataObje
 		AcDbObjectId recordId;
 		AcDbBlockTable *pTable;
 
-		// Get the object ID of the m_BlockName block definition.
+		// Get the object ID of the block definition.
 		AcDbDatabase *pDb = AcApGetDatabase((CView*)pWnd);
 		CAutoDocWriteLock CurDocLock( pDb );
 
@@ -375,7 +375,7 @@ void COleOdcDropTarget::OnDragLeave(CWnd* pWnd)
 DROPEFFECT COleOdcDropTarget::OnDragOver(CWnd* pWnd, COleDataObject* 
            pDataObject, DWORD dwKeyState, CPoint point )
 {          
-	if (m_pThisArxControl->GetType() == CtlImageTree)
+	if (m_pThisArxControl->GetType() == CtlTree)
 	{
 		HTREEITEM	hitem;
 		UINT		flags = 0;
@@ -413,7 +413,7 @@ BOOL COleOdcDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject,
 	if (m_pThisArxControl->GetType() == CtlDwgList)
 		CArxDwgListCtrl *pDwgList = (CArxDwgListCtrl*)pControl->GetWindow();
 	
-	if (m_pThisArxControl->GetType() == CtlImageTree)
+	if (m_pThisArxControl->GetType() == CtlTree)
 	{
 		HTREEITEM	hitem;
 		UINT		flags = 0;

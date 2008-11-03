@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by w:\OpenDCL\Build 5.0\Runtime\RUS\Runtime.Res.RUS\Runtime.RUS.rc
+// Used by w:\OpenDCL\Build 5.0\Runtime\ENU\Runtime.Res.ENU\Runtime.ENU.rc
 //
 #define IDD_DOCKINGDLGHOST              101
 #define IDB_R14LARGE                    10000

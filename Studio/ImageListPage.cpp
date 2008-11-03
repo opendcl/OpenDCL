@@ -23,7 +23,7 @@ CImageListPage::CImageListPage( TDclControlPtr pDclControl )
 , nCurrentWidth( 0 )
 , nCurrentHeight( 0 )
 {
-	RefCountedPtr< CImageListObject > pImageList = pDclControl->GetImageList();
+	TImageListPtr pImageList = pDclControl->GetImageList();
 	if( pImageList && pImageList->GetImageList().GetSafeHandle() )
 	{
 		mpImageList->Create( &pImageList->GetImageList() );

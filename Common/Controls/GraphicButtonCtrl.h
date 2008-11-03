@@ -32,10 +32,8 @@ public:
 	TPicturePtr GetMouseOverPicture() const { return mpMouseOverPicture; }
 
 protected:
-	void UpdateButtonGraphic();
+	virtual void UpdateButtonGraphic();
 
 protected:
 	DECLARE_MESSAGE_MAP();
-
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

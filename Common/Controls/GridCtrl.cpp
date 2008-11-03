@@ -132,7 +132,7 @@ CGridCtrl::CGridCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, b
 , mbHasRowHeader( pTemplate->GetBooleanProperty( Prop::RowHeader ) )
 , mbHasGridLines( pTemplate->GetBooleanProperty( Prop::GridLines ) )
 , mbAlternateColumnColors( pTemplate->GetLongProperty( Prop::AlternateOrient ) != 0 )
-, mclrAlternate( pTemplate->GetColorProperty( Prop::AlternateColor ) )
+, mclrAlternate( pTemplate->GetColorProperty( Prop::AlternatingColor ) )
 , mpCellEditCtrl( NULL )
 {
 	mColorService.SetForegroundColor( GetSysColor(COLOR_BTNTEXT) );
@@ -207,7 +207,7 @@ bool CGridCtrl::OnApplyProperty( TPropertyPtr pProp )
 	{
 	case Prop::ImageList:
 		{
-			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
+			TImageListPtr pImageList = mpTemplate->GetImageList();
 			if (pImageList && pImageList->GetImageList().GetSafeHandle())
 			{
 				pImageList->GetImageList().SetBkColor( CLR_NONE );
@@ -304,7 +304,7 @@ bool CGridCtrl::OnApplyProperty( TPropertyPtr pProp )
 		mbAlternateColumnColors = (pProp->GetLongValue() != 0);
 		OnNeedRepaint();
 		break;
-	case Prop::AlternateColor:
+	case Prop::AlternatingColor:
 		mclrAlternate = GetRGBColor( pProp->GetLongValue() );
 		OnNeedRepaint();
 		break;
@@ -706,6 +706,8 @@ int CGridCtrl::InsertColumn( int nCol, LPCTSTR lpszColumnHeading, int nFormat /*
 	if( nCol < 0 )
 		return -1;
 	CString sHeading = lpszColumnHeading;
+	if( nWidth < 0 )
+		nWidth = GetStringWidth( lpszColumnHeading ) + 20;
 	LVCOLUMN lvColumn = 
 	{
 		(LVCF_FMT | LVCF_TEXT | LVCF_WIDTH),
@@ -1686,8 +1688,8 @@ BEGIN_MESSAGE_MAP(CGridCtrl, CListCtrl)
 	ON_WM_NCCALCSIZE()	
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_WM_LBUTTONDOWN()
-	ON_WM_HSCROLL()
-	ON_WM_VSCROLL()
+	ON_WM_HSCROLL_REFLECT()
+	ON_WM_VSCROLL_REFLECT()
 	ON_NOTIFY_REFLECT(LVN_BEGINSCROLL, &CGridCtrl::OnLvnBeginScroll)
 	ON_REGISTERED_MESSAGE(refWM_CHECKFOCUS(), &CGridCtrl::OnCheckFocus)
 END_MESSAGE_MAP()
@@ -1763,20 +1765,18 @@ void CGridCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	lpMeasureItemStruct->itemHeight = mpTemplate->GetLongProperty( Prop::RowHeight );
 }
 
-void CGridCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void CGridCtrl::HScroll(UINT nSBCode, UINT nPos) 
 {
 	if( GetFocus() != this) 
 		SetFocus();
 	PostMessage( refWM_CHECKFOCUS(), 0, 0 );
-	__super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
-void CGridCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void CGridCtrl::VScroll(UINT nSBCode, UINT nPos) 
 {
 	if( GetFocus() != this) 
 		SetFocus();
 	PostMessage( refWM_CHECKFOCUS(), 0, 0 );
-	__super::OnVScroll(nSBCode, nPos, pScrollBar);
 }
 
 void CGridCtrl::PostNcDestroy() 
@@ -1821,7 +1821,17 @@ void CGridCtrl::OnLvnBeginScroll(NMHDR *pNMHDR, LRESULT *pResult)
 LRESULT CGridCtrl::OnCheckFocus( WPARAM wParam, LPARAM lParam )
 {
 	CWnd* pFocusWnd = GetFocus();
-	if( !pFocusWnd || pFocusWnd->GetParent() != this )
+	if( !pFocusWnd )
 		HideEditControls();
+	else
+	{
+		CWnd* pFocusParent = pFocusWnd->GetParent();
+		if( pFocusParent != this )
+		{ //need to account for CDateTimeCtrl popup window in WinXP (it is a popup owned by the dialog)
+			if( pFocusParent != GetControlPane()->GetHostDialog() ||
+					(pFocusWnd->GetStyle() & WS_POPUP) == 0 )
+				HideEditControls();
+		}
+	}
 	return 0;
 }

@@ -32,7 +32,11 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual DWORD GetWndStyle() const;
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
+	virtual void ApplyPropertiesOrder( std::vector< Prop::Id >& ridFirst, std::vector< Prop::Id >& ridLast );
 	virtual CAcadColorService* GetColorService() { return &mColorService; }
+
+public:
+	void Reset();
 
 protected:
   virtual CString GetRemainingText(double lfPercent, double lfSecsRemaining);
@@ -41,10 +45,9 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-// Generated message map functions
-protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual afx_msg void PostNcDestroy();
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg void OnPaint();
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

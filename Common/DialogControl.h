@@ -145,6 +145,7 @@ public:
 public:
 	virtual CString GetKeyName() const;
 	virtual CString GetKeyPath() const;
+	virtual CString GetVarName() const;
 
 	// Implementation
 public:

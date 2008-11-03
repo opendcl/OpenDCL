@@ -6,7 +6,7 @@
 #include "DclFormObject.h"
 #include "ModalDlg.h"
 #include "ModelessDlg.h"
-#include "CfgTabPane.h"
+#include "OptionsTabPane.h"
 #include "DockingDialog.h"
 #include "CustomFileDialog.h"
 #include "PaletteDialog.h"
@@ -85,8 +85,8 @@ CDialogObject* CArxDialogObject::Create( TDclFormPtr pDclForm, CWnd* pParent /*=
 	{
 	case FrmModalDlg: return new CModalDlg( pDclForm, pParent, pParams );
 	case FrmModelessDlg: return new CModelessDlg( pDclForm, pParent, pParams );
-	case FrmConfigTab: return new CfgTabPane( pDclForm, pParent, pParams );
-	case FrmDockableDlg: return new CDockingDialog( pDclForm, pParent, pParams );
+	case FrmOptionsTab: return new COptionsTabPane( pDclForm, pParent, pParams );
+	case FrmControlBar: return new CDockingDialog( pDclForm, pParent, pParams );
 	case FrmFileDlg: return new CCustomFileDialog( pDclForm, pParent, pParams );
 	case FrmPaletteDlg: return new CPaletteDialog( pDclForm, pParent, pParams );
 	}

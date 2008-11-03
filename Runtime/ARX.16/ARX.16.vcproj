@@ -209,10 +209,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\AcadBlockReactor.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\AcadDockBarHost.cpp"
 				>
 			</File>
@@ -273,10 +269,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\CfgTabPane.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\CustomFileDialog.cpp"
 				>
 			</File>
@@ -325,6 +317,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\OptionsTabPane.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\PaletteDialog.cpp"
 				>
 			</File>
@@ -351,10 +347,6 @@
 			>
 			<File
 				RelativePath="..\AcadBlockInsertDropTarget.h"
-				>
-			</File>
-			<File
-				RelativePath="..\AcadBlockReactor.h"
 				>
 			</File>
 			<File
@@ -410,10 +402,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\CfgTabPane.h"
-				>
-			</File>
-			<File
 				RelativePath="..\CustomFileDialog.h"
 				>
 			</File>
@@ -459,6 +447,10 @@
 			</File>
 			<File
 				RelativePath="..\OleOdcDropTarget.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OptionsTabPane.h"
 				>
 			</File>
 			<File
@@ -655,6 +647,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Controls\ArxBlockViewCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxBlockViewCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxCheckBoxCtrl.cpp"
 				>
 			</File>
@@ -743,11 +743,27 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Controls\ArxHatchCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxHatchCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxHtmlCtrl.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\Controls\ArxHtmlCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxHyperlinkCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Controls\ArxHyperlinkCtrl.h"
 				>
 			</File>
 			<File
@@ -781,20 +797,6 @@
 			<File
 				RelativePath="..\Controls\ArxLinetypeComboBoxCtrl.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\Controls\ArxLineweightComboBoxCtrl.cpp"
@@ -961,14 +963,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Controls\ArxUrlLinkCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Controls\ArxUrlLinkCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Common\Controls\ComboFilter.h"
 				>
 			</File>
@@ -1102,14 +1096,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\CeXDib.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\ControlName.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\ControlName.h"
 				>
 			</File>
 			<File
@@ -1255,20 +1241,6 @@
 			<File
 				RelativePath="..\..\Common\PictureBox.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Common\PictureObject.cpp"
@@ -1646,11 +1618,27 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\Controls\HtmlBrowser.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\HtmlBrowser.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Common\Controls\HtmlCtrl.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\HtmlCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\HyperlinkCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\Controls\HyperlinkCtrl.h"
 					>
 				</File>
 				<File
@@ -1870,14 +1858,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\Common\Controls\UrlLinkCtrl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Controls\UrlLinkCtrl.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\Common\Controls\XPStyleButtonST.cpp"
 					>
 				</File>
@@ -1907,11 +1887,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_Animate.h"
+					RelativePath="..\Methods\Methods_Animation.h"
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_BinFiles.h"
+					RelativePath="..\Methods\Methods_BinFile.h"
 					>
 				</File>
 				<File
@@ -1931,6 +1911,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Methods\Methods_Control.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Methods\Methods_DwgList.h"
 					>
 				</File>
@@ -1939,11 +1923,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_Edit.h"
+					RelativePath="..\Methods\Methods_FileExplorer.h"
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_FileDlg.h"
+					RelativePath="..\Methods\Methods_Form.h"
 					>
 				</File>
 				<File
@@ -1979,7 +1963,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_Properties.h"
+					RelativePath="..\Methods\Methods_ProgressBar.h"
 					>
 				</File>
 				<File
@@ -1987,7 +1971,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_Tab.h"
+					RelativePath="..\Methods\Methods_TabStrip.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_TextBox.h"
 					>
 				</File>
 				<File
@@ -2012,11 +2000,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_Animate.cpp"
+					RelativePath="..\Methods\Methods_Animation.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_BinFiles.cpp"
+					RelativePath="..\Methods\Methods_BinFile.cpp"
 					>
 				</File>
 				<File
@@ -2036,6 +2024,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Methods\Methods_Control.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Methods\Methods_DwgList.cpp"
 					>
 				</File>
@@ -2044,11 +2036,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_Edit.cpp"
+					RelativePath="..\Methods\Methods_FileExplorer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_FileDlg.cpp"
+					RelativePath="..\Methods\Methods_Form.cpp"
 					>
 				</File>
 				<File
@@ -2084,7 +2076,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_Properties.cpp"
+					RelativePath="..\Methods\Methods_ProgressBar.cpp"
 					>
 				</File>
 				<File
@@ -2092,7 +2084,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Methods\Methods_Tab.cpp"
+					RelativePath="..\Methods\Methods_TabStrip.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_TextBox.cpp"
 					>
 				</File>
 				<File

@@ -1,0 +1,74 @@
+<html>
+<head>
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<script type="text/javascript" src="../../Utility.js"></script>
+<title>Column Images</title>
+</head>
+<body>
+	<table width="100%">
+		<tr>
+			<td nowrap>
+				<div id="title">
+                  <img border="0" src="../images/Property.png" width="16" height="16"> 
+                  Column  Images</div>
+			</td>
+			<td align="right" valign="top">
+				<div id="hdrlink">&nbsp;</div>
+			</td>
+		</tr>
+	</table>
+	<hr />
+	<div id="content">
+        <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Friendly Name</th>
+            <td bgcolor="#CCFF99">Column  Images</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>API Name</th>
+            <td bgcolor="#CCFF99">ColumnImageList</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Type</th>
+            <td bgcolor="#CCFF99">List of <a href="../DataType/Integer.htm">
+            Integers</a> 
+            as (Column0HeaderImageIndex Column1HeaderImageIndex ...)</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Restrictions</th>
+            <td bgcolor="#CCFF99">Image index values must be valid images from 
+            the control's image list, or -1 for no image</td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Get Function
+&nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(getprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
+<td bgcolor="#CCFF99"><code id="getprop">(dcl_Control_GetColumnImageList <i>
+            <a href="../DataType/Control.htm">&lt;CONTROL&gt;</a></i>)</code></td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Set Function
+&nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(setprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
+<td bgcolor="#CCFF99"><code id="setprop">(dcl_Control_SetColumnImageList <i>
+            <a href="../DataType/Control.htm">&lt;CONTROL&gt;</a></i>
+            <font color="#FF0000">NewValue [as List of
+            <a href="../DataType/Integer.htm">Integers</a>]</font>)</code></td>
+          </tr>
+          <tr>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Applies To</th>
+            <td bgcolor="#CCFF99">
+      <a href="../Control/Grid.htm">Grid</a></td>
+          </tr>
+        </table>
+		<p>This property contains a list of header images for each column. 
+        The header image is displayed in the column header along with the column 
+        header caption.</p>
+	</div>
+	<hr />
+	<div id="footer">
+		<p>Copyright © 2008 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		All rights reserved.</p>
+		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+	</div>
+</body>
+</html>

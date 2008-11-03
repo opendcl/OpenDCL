@@ -43,7 +43,7 @@ public:
 	virtual const CDialogObject& GetDialogObject() const { return *this; }
 	virtual CDialogObject& GetDialogObject() { return *this; }
 	virtual bool IsResizable() const { return mbResizable; }
-	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::Resizable
+	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::AllowResizing
 
 protected:
 	void SavePosition();

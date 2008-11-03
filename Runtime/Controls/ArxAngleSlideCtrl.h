@@ -13,6 +13,7 @@
 class CArxAngleSlideCtrl : public CAngleSlideCtrl
 {
 	CArxControlServices	mArxServices;
+	int mnLastReportedPosition;
 
 public:
 	CArxAngleSlideCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );

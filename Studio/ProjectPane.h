@@ -17,8 +17,8 @@ class CProjectPane : public CCtrlView
 	CImageList mTreeImageList;
 	HTREEITEM mhtiModalParent;
 	HTREEITEM mhtiModelessParent;
-	HTREEITEM mhtiDockableParent;
-	HTREEITEM mhtiConfigParent;	
+	HTREEITEM mhtiControlBarParent;
+	HTREEITEM mhtiOptionsTabParent;	
 	HTREEITEM mhtiFileDialogParent;
 	HTREEITEM mhtiPaletteParent;
 	HTREEITEM mhtiAutoLispFileParent;
@@ -38,8 +38,8 @@ public:
 	bool IsFormSelected() const;
 	HTREEITEM GetModalParentTreeItem() const { return mhtiModalParent; }
 	HTREEITEM GetModelessParentTreeItem() const { return mhtiModelessParent; }
-	HTREEITEM GetDockableParentTreeItem() const { return mhtiDockableParent; }
-	HTREEITEM GetConfigParentTreeItem() const { return mhtiConfigParent; }
+	HTREEITEM GetControlBarParentTreeItem() const { return mhtiControlBarParent; }
+	HTREEITEM GetOptionsTabParentTreeItem() const { return mhtiOptionsTabParent; }
 	HTREEITEM GetFileDialogParentTreeItem() const { return mhtiFileDialogParent; }
 	HTREEITEM GetPaletteParentTreeItem() const { return mhtiPaletteParent; }
 	HTREEITEM GetAutoLispFileParentTreeItem() const { return mhtiAutoLispFileParent; }
@@ -82,8 +82,8 @@ protected:
 	afx_msg void OnUpdateAddmodal(CCmdUI *pCmdUI);
 	afx_msg void OnAddmodeless();
 	afx_msg void OnUpdateAddmodeless(CCmdUI *pCmdUI);
-	afx_msg void OnAdddockable();
-	afx_msg void OnUpdateAdddockable(CCmdUI *pCmdUI);
+	afx_msg void OnAddcontrolbar();
+	afx_msg void OnUpdateAddcontrolbar(CCmdUI *pCmdUI);
 	afx_msg void OnAddconfig();
 	afx_msg void OnUpdateAddconfig(CCmdUI *pCmdUI);
 	afx_msg void OnAddfiledialogbox();

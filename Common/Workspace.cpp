@@ -183,7 +183,14 @@ CString CWorkspace::GetLanguageSubfolderPath(void) const
 	sLangSubfolder.MakeReverse();
 	sLangSubfolder = sLangSubfolder.Mid( sLangSubfolder.SpanExcluding( _T("\\/:") ).GetLength() );
 	sLangSubfolder.MakeReverse();
-	sLangSubfolder = sLangSubfolder + GetLanguage() + _T("\\");
+	CString sLanguage = GetLanguage();
+#ifdef _DEBUG
+	//when running under the debugger, use the build project's language subfolder
+	int cchBuildFolder = sLangSubfolder.MakeReverse().Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
+	sLangSubfolder = sLangSubfolder.Mid( cchBuildFolder + 1 ).MakeReverse();
+	sLanguage += _T("\\Content");
+#endif
+	sLangSubfolder = sLangSubfolder + sLanguage + _T("\\");
 	return sLangSubfolder;
 }
 

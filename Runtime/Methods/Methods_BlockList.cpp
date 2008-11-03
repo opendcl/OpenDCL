@@ -37,7 +37,11 @@ ADSRESULT BlockList::GetFileName()
 
 	CArxBlockListCtrl* pCtrl = (CArxBlockListCtrl*)pDlgControl->GetControlWnd();
 	if( pCtrl->m_pLoadedDwg )
-		acedRetStr( pCtrl->m_FileName );
+	{
+		LPCTSTR pszFilename = NULL;
+		pCtrl->m_pLoadedDwg->getFilename( pszFilename );
+		acedRetStr( pszFilename );
+	}
 	return RSRSLT;
 }
 
@@ -78,7 +82,6 @@ ADSRESULT BlockList::Reset()
 	{
 		delete pCtrl->m_pLoadedDwg;
 		pCtrl->m_pLoadedDwg = NULL;
-		pCtrl->m_FileName.Empty();
 		pCtrl->RefreshBlockList();
 		acedRetT();
 	}

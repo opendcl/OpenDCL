@@ -42,7 +42,7 @@ ADSRESULT Tree::AddParent()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CArxImageTreeCtrl* pCtrl = (CArxImageTreeCtrl*)pDlgControl->GetControlWnd();
@@ -97,7 +97,7 @@ ADSRESULT Tree::AddChild()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CArxImageTreeCtrl* pCtrl = (CArxImageTreeCtrl*)pDlgControl->GetControlWnd();
@@ -162,12 +162,12 @@ ADSRESULT Tree::AddChild()
 	return RSRSLT;
 }
 
-ADSRESULT Tree::InsertAfter()
+ADSRESULT Tree::AddSibling()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CArxImageTreeCtrl* pCtrl = (CArxImageTreeCtrl*)pDlgControl->GetControlWnd();
@@ -216,7 +216,7 @@ ADSRESULT Tree::Clear()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -228,12 +228,12 @@ ADSRESULT Tree::Clear()
 	return RSRSLT;
 }
 
-ADSRESULT Tree::CountItems()
+ADSRESULT Tree::GetCount()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -249,7 +249,7 @@ ADSRESULT Tree::SelectItem()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -270,12 +270,12 @@ ADSRESULT Tree::SelectItem()
 	return RSRSLT;
 }
 
-ADSRESULT Tree::GetParent()
+ADSRESULT Tree::GetParentItem()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -311,7 +311,7 @@ ADSRESULT Tree::ItemHasChildren()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -337,7 +337,7 @@ ADSRESULT Tree::GetNextSiblingItem()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -373,7 +373,7 @@ ADSRESULT Tree::GetPrevSiblingItem()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -409,7 +409,7 @@ ADSRESULT Tree::GetFirstVisibleItem()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -433,7 +433,7 @@ ADSRESULT Tree::GetNextVisibleItem()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -469,7 +469,7 @@ ADSRESULT Tree::GetPrevVisibleItem()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -505,7 +505,7 @@ ADSRESULT Tree::GetSelectedItem()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -529,7 +529,7 @@ ADSRESULT Tree::GetRootItem()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -553,7 +553,7 @@ ADSRESULT Tree::GetItem()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -588,7 +588,7 @@ ADSRESULT Tree::GetItemImages()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -609,7 +609,10 @@ ADSRESULT Tree::GetItemImages()
 		int nImage = -1;
 		int nSelectedImage = -1;
 		pCtrl->GetItemImage( hItem, nImage, nSelectedImage );
-		resbuf rbSelectedImage = { NULL, RTSHORT };
+		int nExpandedImage = pCtrl->GetExpandedImage( hItem );
+		resbuf rbExpandedImage = { NULL, RTSHORT };
+		rbExpandedImage.resval.rint = nExpandedImage;
+		resbuf rbSelectedImage = { &rbExpandedImage, RTSHORT };
 		rbSelectedImage.resval.rint = nSelectedImage;
 		resbuf rbImage = { &rbSelectedImage, RTSHORT };
 		rbImage.resval.rint = nImage;
@@ -623,7 +626,7 @@ ADSRESULT Tree::SetItemImages()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -639,17 +642,23 @@ ADSRESULT Tree::SetItemImages()
 		return RSERR; //invalid input
 
 	int nSelectedImage = nImage;
-	GetIntArgument( pArgs, nSelectedImage, true );
+	int nExpandedImage = nImage;
+	if( GetIntArgument( pArgs, nSelectedImage, true ) )
+		GetIntArgument( pArgs, nExpandedImage, true );
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
 	CArxImageTreeCtrl* pCtrl = (CArxImageTreeCtrl*)pDlgControl->GetControlWnd();
 	HTREEITEM hItem = ((dwRefKey != -1)? (HTREEITEM)dwRefKey : pCtrl->FindItem( sRefKey ) );
-	if( hItem && pCtrl->SetItemImage( hItem, nImage, nSelectedImage ) )
+	if( hItem )
 	{
-		pCtrl->OnNeedRepaint();
-		acedRetT();
+		if( pCtrl->SetItemImage( hItem, nImage, nSelectedImage ) )
+		{
+			pCtrl->SetExpandedImage( hItem, nExpandedImage );
+			pCtrl->OnNeedRepaint();
+			acedRetT();
+		}
 	}
 	return RSRSLT;
 }
@@ -659,7 +668,7 @@ ADSRESULT Tree::SetExpandedImage()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -692,7 +701,7 @@ ADSRESULT Tree::GetExpandedImage()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -713,12 +722,59 @@ ADSRESULT Tree::GetExpandedImage()
 	return RSRSLT;
 }
 
+ADSRESULT Tree::GetItemKey()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
+		return RSERR; //invalid input
+
+	DWORD_PTR dwRefKey = -1;
+	if( !GetHandleArgument( pArgs, dwRefKey ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxImageTreeCtrl* pCtrl = (CArxImageTreeCtrl*)pDlgControl->GetControlWnd();
+	if( dwRefKey )
+	{
+		CString sKey = pCtrl->GetItemKey( (HTREEITEM)dwRefKey );
+		if( !sKey.IsEmpty() )
+			acedRetStr( sKey );
+	}
+	return RSRSLT;
+}
+
+ADSRESULT Tree::GetItemHandle()
+{
+	struct resbuf *pArgs =acedGetArgs () ;
+
+	CDialogControl* pDlgControl = NULL;
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
+		return RSERR; //invalid input
+
+	CString sRefKey;
+	if( !GetStringArgument( pArgs, sRefKey ) )
+		return RSERR; //invalid input
+
+	if( !AssertOutOfArgs( pArgs ) )
+		return RSERR;
+
+	CArxImageTreeCtrl* pCtrl = (CArxImageTreeCtrl*)pDlgControl->GetControlWnd();
+	HTREEITEM hItem = pCtrl->FindItem( sRefKey );
+	if( hItem )
+		theArxWorkspace.RetHandle( (DWORD_PTR)hItem );
+	return RSRSLT;
+}
+
 ADSRESULT Tree::GetItemData()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -744,7 +800,7 @@ ADSRESULT Tree::SetItemData()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -769,12 +825,12 @@ ADSRESULT Tree::SetItemData()
 	return RSRSLT;
 }
 
-ADSRESULT Tree::GetItemText()
+ADSRESULT Tree::GetItemLabel()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -795,12 +851,12 @@ ADSRESULT Tree::GetItemText()
 	return RSRSLT;
 }
 
-ADSRESULT Tree::SetItemText()
+ADSRESULT Tree::SetItemLabel()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -830,7 +886,7 @@ ADSRESULT Tree::GetVisibleCount()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -846,7 +902,7 @@ ADSRESULT Tree::DeleteItem()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -872,7 +928,7 @@ ADSRESULT Tree::ExpandItem()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -924,7 +980,7 @@ ADSRESULT Tree::SelectSetFirstVisible()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -945,12 +1001,12 @@ ADSRESULT Tree::SelectSetFirstVisible()
 	return RSRSLT;
 }
 
-ADSRESULT Tree::EditLabel()
+ADSRESULT Tree::StartLabelEdit()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -971,12 +1027,12 @@ ADSRESULT Tree::EditLabel()
 	return RSRSLT;
 }
 
-ADSRESULT Tree::CancelEditLabel()
+ADSRESULT Tree::CancelLabelEdit()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -997,7 +1053,7 @@ ADSRESULT Tree::SortChildren()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -1026,7 +1082,7 @@ ADSRESULT Tree::EnsureVisible()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -1052,7 +1108,7 @@ ADSRESULT Tree::GetFirstChildItem()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;
@@ -1088,7 +1144,7 @@ ADSRESULT Tree::IsItemExpanded()
 	struct resbuf *pArgs =acedGetArgs () ;
 
 	CDialogControl* pDlgControl = NULL;
-	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlImageTree))
+	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlTree))
 		return RSERR; //invalid input
 
 	CString sRefKey;

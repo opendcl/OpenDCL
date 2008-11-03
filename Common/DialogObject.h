@@ -116,10 +116,10 @@ public:
 
 	// handlers for specific properties
 	virtual bool OnApplyBackgroundColor( TPropertyPtr pProp ); //Prop::BackgroundColor
-	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::Resizable
+	virtual bool OnApplyResizable( TPropertyPtr pProp ); //Prop::AllowResizing
 	virtual bool OnApplyWidth( TPropertyPtr pProp ); //Prop::Width
 	virtual bool OnApplyHeight( TPropertyPtr pProp ); //Prop::Height
 	virtual bool OnApplyMinMaxSize( TPropertyPtr pProp ); //min/max width properties
-	virtual bool OnApplyIcon( TPropertyPtr pProp ); //Prop::Icon
+	virtual bool OnApplyIcon( TPropertyPtr pProp ); //Prop::TitleBarIcon
 	virtual bool OnApplyTitleBar( TPropertyPtr pProp ); //Prop::TitleBar
 };

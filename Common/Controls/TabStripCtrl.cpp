@@ -77,7 +77,7 @@ bool CTabStripCtrl::OnApplyProperty( TPropertyPtr pProp )
 		break;
 	case Prop::ImageList:
 		{
-			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
+			TImageListPtr pImageList = mpTemplate->GetImageList();
 			if (pImageList && pImageList->GetImageList().GetSafeHandle())
 			{
 				CImageList& ImageList = pImageList->GetImageList();
@@ -276,10 +276,19 @@ void CTabStripCtrl::OnUsedAreaChanged()
 		if( !pChildForm )
 			continue;
 		TDclControlPtr pFormProps = pChildForm->GetControlProperties();
+		bool bChanged = false;
 		if( lNewWidth != pFormProps->GetLongProperty( Prop::Width ) )
+		{
+			bChanged = true;
 			pFormProps->SetLongProperty( Prop::Width, lNewWidth );
+		}
 		if( lNewHeight != pFormProps->GetLongProperty( Prop::Height ) )
+		{
+			bChanged = true;
 			pFormProps->SetLongProperty( Prop::Height, lNewHeight );
+		}
+		if( !bChanged )
+			continue;
 		CDialogObject* pDlgObject = pChildForm->GetFormInstance();
 		if( !pDlgObject )
 			continue;

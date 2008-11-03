@@ -16,7 +16,7 @@ static UINT GetDialogResourceId( Prop::Id idProp )
 	switch( idProp )
 	{
 	case Prop::BackgroundColor: return IDD_BACKCOLORS;
-	case Prop::AlternateColor: return IDD_ALTCOLORS;
+	case Prop::AlternatingColor: return IDD_ALTCOLORS;
 	case Prop::ForegroundColor: return IDD_FORECOLORS;
 	}
 	return (UINT)-1;
@@ -27,7 +27,7 @@ static UINT GetTitleResource( Prop::Id idProp )
 	switch( idProp )
 	{
 	case Prop::BackgroundColor: return IDS_BGCOLOR;
-	case Prop::AlternateColor: return IDS_ALTCOLOR;
+	case Prop::AlternatingColor: return IDS_ALTCOLOR;
 	case Prop::ForegroundColor: return IDS_FGCOLOR;
 	}
 	return (UINT)-1;

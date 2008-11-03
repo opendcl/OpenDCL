@@ -96,9 +96,9 @@ bool CPropertyWizard::Initialize(void)
 	}
 
 	// Alternate Color page
-	if( mpDclControl->GetPropertyObject( Prop::AlternateColor ) )
+	if( mpDclControl->GetPropertyObject( Prop::AlternatingColor ) )
 	{
-		mpAltColorsPage = new CColorsPage( Prop::AlternateColor, mpDclControl );
+		mpAltColorsPage = new CColorsPage( Prop::AlternatingColor, mpDclControl );
 		AddPage( mpAltColorsPage );
 	}
 

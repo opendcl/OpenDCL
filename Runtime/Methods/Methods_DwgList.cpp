@@ -307,7 +307,7 @@ ADSRESULT DwgList::SetTopIndex()
 	return RSRSLT;
 }
 
-ADSRESULT DwgList::DeleteString()
+ADSRESULT DwgList::DeleteItem()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -329,7 +329,7 @@ ADSRESULT DwgList::DeleteString()
 	return RSRSLT;
 }
 
-ADSRESULT DwgList::SetSel()
+ADSRESULT DwgList::SelectItem()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -342,8 +342,7 @@ ADSRESULT DwgList::SetSel()
 		return RSERR; //invalid input
 
 	bool bSelected = true;
-	if( !GetBoolArgument( pArgs, bSelected ) )
-		return RSERR; //invalid input
+	GetBoolArgument( pArgs, bSelected, true );
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
@@ -355,7 +354,7 @@ ADSRESULT DwgList::SetSel()
 	return RSRSLT;
 }
 
-ADSRESULT DwgList::GetSel()
+ADSRESULT DwgList::IsItemSelected()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 

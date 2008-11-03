@@ -34,7 +34,9 @@ public:
 	virtual void CloseDialog(int nStatus);
 	virtual INT_PTR DoModal();
 	//virtual bool Show(bool bShow = true) { return false; }
+protected:
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
+	virtual bool IsAsyncEvents() const { return false; }
 
 // Overrides
 protected:

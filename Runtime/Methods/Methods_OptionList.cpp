@@ -9,7 +9,7 @@
 #include "Workspace.h"
 
 
-ADSRESULT OptionList::SetEnabled()
+ADSRESULT OptionList::SetButtonEnabled()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -22,8 +22,7 @@ ADSRESULT OptionList::SetEnabled()
 		return RSERR; //invalid input
 
 	bool bEnabled = true;
-	if( !GetBoolArgument( pArgs, bEnabled ) )
-		return RSERR; //invalid input
+	GetBoolArgument( pArgs, bEnabled, true );
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
@@ -42,7 +41,7 @@ ADSRESULT OptionList::SetEnabled()
 	return RSRSLT;
 }
 
-ADSRESULT OptionList::AddString()
+ADSRESULT OptionList::AddButton()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -50,7 +49,7 @@ ADSRESULT OptionList::AddString()
 	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlOptionList ) )
 		return RSERR; //invalid input
 
-	CStringArray rsToAdd;
+	PropVal::TCStringArray rsToAdd;
 	if( !GetStringArrayArgument( pArgs, rsToAdd ) )
 		return RSERR; //invalid input
 
@@ -58,9 +57,9 @@ ADSRESULT OptionList::AddString()
 		return RSERR;
 
 	TPropertyPtr pItemList = pDlgControl->GetTemplate()->GetPropertyObject( Prop::BtnCaption );
-	INT_PTR ctArgs = rsToAdd.GetSize();
-	for( INT_PTR idx = 0; idx < ctArgs; ++idx )
-		pItemList->AddStringItem( rsToAdd.GetAt( idx ) );
+	size_t ctArgs = rsToAdd.size();
+	for( size_t idx = 0; idx < ctArgs; ++idx )
+		pItemList->AddStringItem( rsToAdd[idx] );
 
 	if( pDlgControl->OnApplyProperty( pItemList ) )
 		acedRetInt( pItemList->size() - 1 );
@@ -69,10 +68,10 @@ ADSRESULT OptionList::AddString()
 
 ADSRESULT OptionList::AddList()
 {
-	return OptionList::AddString();
+	return OptionList::AddButton();
 }
 
-ADSRESULT OptionList::GetText()
+ADSRESULT OptionList::GetButtonCaption()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -209,7 +208,7 @@ ADSRESULT OptionList::SetTopIndex()
 	return RSRSLT;
 }
 
-ADSRESULT OptionList::DeleteString()
+ADSRESULT OptionList::DeleteButton()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -237,7 +236,7 @@ ADSRESULT OptionList::DeleteString()
 	return RSRSLT;
 }
 
-ADSRESULT OptionList::InsertString()
+ADSRESULT OptionList::InsertButton()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -269,7 +268,7 @@ ADSRESULT OptionList::InsertString()
 	return RSRSLT;
 }
 
-ADSRESULT OptionList::SetTttTitle()
+ADSRESULT OptionList::SetButtonTooltip()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -294,7 +293,7 @@ ADSRESULT OptionList::SetTttTitle()
 	if( !pCaptionProp || nItem >= pCaptionProp->size() )
 		return RSRSLT;
 
-	TPropertyPtr pTTTProp = pDlgControl->GetTemplate()->GetPropertyObject( Prop::BtnTTText );
+	TPropertyPtr pTTTProp = pDlgControl->GetTemplate()->GetPropertyObject( Prop::BtnToolTips );
 	if( !pTTTProp )
 		return RSRSLT;
 

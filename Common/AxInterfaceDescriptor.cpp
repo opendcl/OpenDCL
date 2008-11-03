@@ -149,104 +149,132 @@ IOStatus AxInterfaceDescriptor::ReadFromTextFile5(std::ifstream &sFile)
 //}
 
 
-void AxInterfaceDescriptor::Serialize(CArchive& ar, int nPropertyVersion)
+void AxInterfaceDescriptor::Serialize(CArchive& ar, BYTE nPropertyVersion)
 {
-	BOOL bProp;
-	BOOL bPropGet;
-	BOOL bPropPut;
-	BOOL bPropPutRef;
-	BOOL bPropEvent;
-	BOOL bPropMethod;
-
+	BYTE nThisVersion = GetCurrentSaveVersion();
+	
 	if (ar.IsStoring())
 	{
-		bProp = (mpProp != NULL);
-		ar << bProp;
-		if (bProp)
-			mpProp->Serialize(ar, nPropertyVersion);
-
-		bPropGet = (mpPropGet != NULL);
-		ar << bPropGet;
-		if (bPropGet)
-			mpPropGet->Serialize(ar, nPropertyVersion);
-
-		bPropPut = (mpPropPut != NULL);
-		ar << bPropPut;
-		if (bPropPut)
-			mpPropPut->Serialize(ar, nPropertyVersion);
-
-		bPropPutRef = (mpPropPutRef != NULL);
-		ar << bPropPutRef;
-		if (bPropPutRef)
-			mpPropPutRef->Serialize(ar, nPropertyVersion);
-
-		bPropEvent = (mpEvent != NULL);
-		ar << bPropEvent;
-		if (bPropEvent)
-			mpEvent->Serialize(ar, nPropertyVersion);
-		bPropMethod = (mpMethods != NULL);
-		ar << bPropMethod;
-		if (mpMethods != NULL)
+		ar << nThisVersion;
+		ar << bool(mpProp != NULL);
+		if( mpProp )
+			mpProp->Serialize( ar, nPropertyVersion );
+		ar << bool(mpPropGet != NULL);
+		if( mpPropGet )
+			mpPropGet->Serialize( ar, nPropertyVersion );
+		ar << bool(mpPropPut != NULL);
+		if( mpPropPut )
+			mpPropPut->Serialize( ar, nPropertyVersion );
+		ar << bool(mpPropPutRef != NULL);
+		if( mpPropPutRef )
+			mpPropPutRef->Serialize( ar, nPropertyVersion );
+		ar << bool(mpEvent != NULL);
+		if( mpEvent )
+			mpEvent->Serialize( ar, nPropertyVersion );
+		ar << bool(mpMethods != NULL);
+		if( mpMethods )
 		{
-			short nSize = mpMethods->size();
-			ar << short(nSize);
-			for (int idx = 0; idx < nSize; ++idx)
-				mpMethods->at(idx)->Serialize(ar, nPropertyVersion);
+			unsigned short nSize = mpMethods->size();
+			ar << nSize;
+			for( int idx = 0; idx < nSize; ++idx )
+				mpMethods->at( idx )->Serialize( ar, nPropertyVersion );
 		}
 	}
 	else
 	{
-		ar >> bProp;
-		if (bProp)
+		if( nPropertyVersion <= 7 )
+			nThisVersion = 1;
+		else
+			ar >> nThisVersion;
+		bool bProp;
+		BOOL bTemp;
+		if( nThisVersion <= 1 )
+		{
+			ar >> bTemp;
+			bProp = (bTemp != FALSE);
+		}
+		else
+			ar >> bProp;
+		if( bProp )
 		{
 			delete mpProp;
 			mpProp = new AxPropertyDescriptor;
 			mpProp->Serialize(ar, nPropertyVersion);
 		}
 
-		ar >> bPropGet;
-		if (bPropGet)
+		if( nThisVersion <= 1 )
+		{
+			ar >> bTemp;
+			bProp = (bTemp != FALSE);
+		}
+		else
+			ar >> bProp;
+		if( bProp )
 		{
 			delete mpPropGet;
 			mpPropGet = new AxPropertyDescriptor;
 			mpPropGet->Serialize(ar, nPropertyVersion);
 		}
 
-		ar >> bPropPut;
-		if (bPropPut)
+		if( nThisVersion <= 1 )
+		{
+			ar >> bTemp;
+			bProp = (bTemp != FALSE);
+		}
+		else
+			ar >> bProp;
+		if( bProp )
 		{
 			delete mpPropPut;
 			mpPropPut = new AxPropertyDescriptor;
 			mpPropPut->Serialize(ar, nPropertyVersion);
 		}
 
-		ar >> bPropPutRef;
-		if (bPropPutRef)
+		if( nThisVersion <= 1 )
+		{
+			ar >> bTemp;
+			bProp = (bTemp != FALSE);
+		}
+		else
+			ar >> bProp;
+		if( bProp )
 		{
 			delete mpPropPutRef;
 			mpPropPutRef = new AxPropertyDescriptor;
 			mpPropPutRef->Serialize(ar, nPropertyVersion);
 		}
 
-		ar >> bPropEvent;
-		if (bPropEvent)
+		if( nThisVersion <= 1 )
+		{
+			ar >> bTemp;
+			bProp = (bTemp != FALSE);
+		}
+		else
+			ar >> bProp;
+		if( bProp )
 		{
 			delete mpEvent;
 			mpEvent = new AxEventDescriptor;
 			mpEvent->Serialize(ar, nPropertyVersion);
 		}
-		ar >> bPropMethod;
-		if (bPropMethod)
+		if( nThisVersion <= 1 )
+		{
+			ar >> bTemp;
+			bProp = (bTemp != FALSE);
+		}
+		else
+			ar >> bProp;
+		if( bProp )
 		{
 			delete mpMethods;
 			mpMethods = new std::vector< RefCountedPtr< AxMethodDescriptor > >;
-			short nCount;
+			unsigned short nCount;
 			ar >> nCount;		
-			while (nCount-- > 0)
+			while( nCount-- > 0 )
 			{
 				AxMethodDescriptor* pMethod = new AxMethodDescriptor;
-				pMethod->Serialize(ar, nPropertyVersion);
-				mpMethods->push_back(pMethod);		
+				pMethod->Serialize( ar, nPropertyVersion );
+				mpMethods->push_back( pMethod );		
 			}
 		}
 	}
@@ -263,29 +291,6 @@ AxPropertyDescriptor* AxInterfaceDescriptor::GetEnumDescriptor() const
 	if (mpPropPutRef && !mpPropPutRef->GetEnum().empty())
 		return mpPropPutRef;
 	return NULL;
-}
-
-CString AxInterfaceDescriptor::GetEnumDesc(CString sValue) const
-{
-	AxPropertyDescriptor* pPropDesc = GetEnumDescriptor();
-	if (pPropDesc == NULL)
-		return sValue;
-
-	size_t idx = pPropDesc->GetEnum().size();
-	while (idx-- > 0)
-	{
-		if (VariantToString( pPropDesc->GetEnum().at(idx).Var ) == sValue)				
-			return sValue + _T('-') + pPropDesc->GetEnum().at(idx).Name;		
-	}
-	return CString();
-}
-
-CString AxInterfaceDescriptor::GetEnumValue(int nEnumIndex) const
-{	
-	AxPropertyDescriptor* pPropDesc = GetEnumDescriptor();
-	if (pPropDesc == NULL)
-		return CString();
-	return VariantToString(pPropDesc->GetEnum().at(nEnumIndex).Var);
 }
 
 AxPropertyDescriptor* AxInterfaceDescriptor::GetArgDescriptor() const

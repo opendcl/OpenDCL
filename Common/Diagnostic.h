@@ -290,10 +290,10 @@ const TCHAR* asString( FormType type )
 		return _T("FrmModalDlg");
 	case FrmModelessDlg:
 		return _T("FrmModelessDlg");
-	case FrmDockableDlg:
-		return _T("FrmDockableDlg");
-	case FrmConfigTab:
-		return _T("FrmConfigTab");
+	case FrmControlBar:
+		return _T("FrmControlBar");
+	case FrmOptionsTab:
+		return _T("FrmOptionsTab");
 	case FrmTabPage:
 		return _T("FrmTabPage");
 	case FrmFileDlg:
@@ -335,32 +335,32 @@ const TCHAR* asString( ControlType type )
 		return _T("CtlListBox");
 	case CtlScrollBar:
 		return _T("CtlScrollBar");
-	case CtlStraightSlider:
-		return _T("CtlStraightSlider");
+	case CtlSlider:
+		return _T("CtlSlider");
 	case CtlPictureBox:
 		return _T("CtlPictureBox");
 	case CtlTabStrip:
 		return _T("CtlTabStrip");
 	case CtlCalendar:
 		return _T("CtlCalendar");
-	case CtlImageTree:
-		return _T("CtlImageTree");
+	case CtlTree:
+		return _T("CtlTree");
 	case CtlRectangle:
 		return _T("CtlRectangle");
 	case CtlProgressBar:
 		return _T("CtlProgressBar");
 	case CtlSpinButton:
 		return _T("CtlSpinButton");
-	case CtlUrlLink:
-		return _T("CtlUrlLink");
+	case CtlHyperlink:
+		return _T("CtlHyperlink");
 	case CtlAngleSlider:
 		return _T("CtlAngleSlider");
 	case CtlBlockView:
 		return _T("CtlBlockView");
 	case CtlSlideView:
 		return _T("CtlSlideView");
-	case CtlHtmlCtrl:
-		return _T("CtlHtmlCtrl");
+	case CtlHtml:
+		return _T("CtlHtml");
 	case CtlDwgPreview:
 		return _T("CtlDwgPreview");
 	case CtlListView:

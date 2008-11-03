@@ -17,9 +17,10 @@ typedef RefCountedPtr< class CTabPage > TTabPagePtr;
 
 class CTabPage : public CDialog, public CDialogObject
 {
-protected:
 	CArxControlPane mControlPane;
+	bool mbRecalcQueued;
 
+protected:
 	enum { IDD = IDD_TABPAGE };
 
 // Construction
@@ -39,6 +40,7 @@ public:
 	virtual bool IsResizable() const { return false; }
 	virtual void CloseDialog(int nStatus) {}
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
+	virtual void ApplyPosition(); //move control window to new position
 
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -46,4 +48,6 @@ protected:
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+public:
+	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 };

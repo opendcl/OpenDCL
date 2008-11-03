@@ -6,17 +6,17 @@
 
 namespace OptionList
 {
-ADSRESULT SetEnabled();
-ADSRESULT AddString();
+ADSRESULT SetButtonEnabled();
+ADSRESULT AddButton();
 ADSRESULT AddList();
-ADSRESULT GetText();
+ADSRESULT GetButtonCaption();
 ADSRESULT GetCount();
 ADSRESULT SetCurSel();
 ADSRESULT GetCurSel();
 ADSRESULT GetTopIndex();
 ADSRESULT SetTopIndex();
-ADSRESULT DeleteString();
-ADSRESULT InsertString();
-ADSRESULT SetTttTitle();
+ADSRESULT DeleteButton();
+ADSRESULT InsertButton();
+ADSRESULT SetButtonTooltip();
 ADSRESULT Clear();
 };

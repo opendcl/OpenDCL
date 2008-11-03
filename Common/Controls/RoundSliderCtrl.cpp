@@ -479,7 +479,7 @@ void CRoundSliderCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	switch(nChar)
 	{
 	case VK_LEFT:
-	case VK_UP:
+	case VK_DOWN:
 		{
 			int nNewPos = GetPos()-GetLineSize();
 			while(nNewPos < nMin) nNewPos += (nMax - nMin);
@@ -490,7 +490,7 @@ void CRoundSliderCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		break;
 	
 	case VK_RIGHT:
-	case VK_DOWN:
+	case VK_UP:
 		{
 			int nNewPos = GetPos()+GetLineSize();
 			while(nNewPos >= nMax) nNewPos -= (nMax - nMin);
@@ -500,7 +500,7 @@ void CRoundSliderCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 		break;
 
-	case VK_PRIOR:
+	case VK_NEXT:
 		{
 			int nNewPos = GetPos()-GetPageSize();
 			while(nNewPos < nMin) nNewPos += (nMax - nMin);
@@ -510,7 +510,7 @@ void CRoundSliderCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 		break;
 
-	case VK_NEXT:
+	case VK_PRIOR:
 		{
 			int nNewPos = GetPos()+GetPageSize();
 			while(nNewPos >= nMax) nNewPos -= (nMax - nMin);

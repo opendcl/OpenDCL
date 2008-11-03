@@ -8,41 +8,32 @@
 class CDclFormObject;
 class CStudioDialogObject;
 
-enum Prop::Id;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CEventsTabPane dialog
 
 class CEventsTabPane : public CDialog
 {
-// Construction
-public:
-	CEventsTabPane(CWnd* pParent = NULL);   // standard constructor
+	TDclControlPtr mpDclControl;
+	CCheckListBox mEventsList;
+	CEdit mEventDesc;
+	CEdit mDefunPreview;
+	CEdit mDefunEdit;
+	CSize mszDlg;
 
-private:
-// Dialog Data
 	enum { IDD = IDD_EVENTS };
 
-	CEdit				m_EventDesc;
-	CEdit				m_DefunPreview;
-	CEdit				m_DefunEdit;
-	CCheckListBox		m_EventsTree;
-	bool m_bInitialized;
-	TDclControlPtr m_pControl;
-	CSize mszDlg;
 public:
+	CEventsTabPane( CWnd* pParent = NULL );   // standard constructor
 	
 // operations
 public:
 	void UpdateEvents(TDclControlPtr pControl);
-	void AddAnyActiveXEvents();
-	void TryToAddEvent(Prop::Id nEvent);
+	void AddEvents();
 	void ClearEvents();
 	void SetDefunPreview();
-	CString GetDefunArguments();
-	void SetEvent(Prop::Id nEventId, CString sEventDefun);
-	CString GetEvent(Prop::Id nEventId);
+	void SetEvent( size_t idxProp, LPCTSTR pszEventDefun );
+	CString GetEvent( size_t idxProp );
 
 // Overrides
 	// ClassWizard generated virtual function overrides

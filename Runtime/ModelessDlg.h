@@ -52,6 +52,7 @@ public:
 	virtual bool IsDockable() const { return false; }
 	virtual bool CreateModeless( UINT nID );
 	virtual void CloseDialog(int nStatus);
+protected:
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 

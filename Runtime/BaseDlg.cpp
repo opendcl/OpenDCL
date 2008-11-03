@@ -20,7 +20,7 @@ CBaseDlg::CBaseDlg(TDclFormPtr pSourceForm, UINT idd, CWnd* pParent /*=NULL*/, D
 , mnInitialX( pParams? pParams->position.x : -1 )
 , mnInitialY( pParams? pParams->position.y : -1 )
 , mbHasTitleBar( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::TitleBar ) )
-, mbResizable( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::Resizable ) )
+, mbResizable( pSourceForm->GetControlProperties()->GetBooleanProperty( Prop::AllowResizing ) )
 {
 	m_szGripSize.cx = GetSystemMetrics(SM_CXVSCROLL);
 	m_szGripSize.cy = GetSystemMetrics(SM_CYHSCROLL);
@@ -97,7 +97,7 @@ END_MESSAGE_MAP()
 BOOL CBaseDlg::OnInitDialog()
 {
 	CRect rectSaved = ReadPosition(); //get the saved position before it gets overwritten during SetWindowPos()
-	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::Resizable ) );
+	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::AllowResizing ) );
 	OnApplyProperty( mpTemplate->GetPropertyObject( Prop::TitleBar ) );
 
 	__super::OnInitDialog();

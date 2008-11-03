@@ -46,7 +46,7 @@ ADSRESULT DwgPreview::GetDwgName()
 	return RSRSLT;
 }
 
-ADSRESULT DwgPreview::SetHighLight()
+ADSRESULT DwgPreview::SetHighlight()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -54,21 +54,21 @@ ADSRESULT DwgPreview::SetHighLight()
 	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlDwgPreview ) )
 		return RSERR; //invalid input
 
-	int nColor = 0;
-	if( !GetIntArgument( pArgs, nColor ) )
+	COLORREF clrHighlight;
+	if( !GetColorArgument( pArgs, clrHighlight ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
 	CArxDwgPreviewCtrl* pCtrl = (CArxDwgPreviewCtrl*)pDlgControl->GetControlWnd();
-	pCtrl->SetHighLight( nColor );
+	pCtrl->SetHighlight( clrHighlight );
 
 	acedRetT();
 	return RSRSLT;
 }
 
-ADSRESULT DwgPreview::RemoveHighLight()
+ADSRESULT DwgPreview::RemoveHighlight()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -80,7 +80,7 @@ ADSRESULT DwgPreview::RemoveHighLight()
 		return RSERR;
 
 	CArxDwgPreviewCtrl* pCtrl = (CArxDwgPreviewCtrl*)pDlgControl->GetControlWnd();
-	pCtrl->RemoveHighLight();
+	pCtrl->RemoveHighlight();
 
 	acedRetT();
 	return RSRSLT;

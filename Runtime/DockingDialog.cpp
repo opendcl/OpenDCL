@@ -26,7 +26,7 @@ CDockingDialog::CDockingDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=NULL*/
 , mbHiding( false )
 {
 	TDclControlPtr pProps = pSourceForm->GetControlProperties();
-	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::Resizable );
+	TPropertyPtr pResizableProp = pProps->GetPropertyObject( Prop::AllowResizing );
 	mbResizable = (!pResizableProp || pResizableProp->GetBooleanValue());
 }
 

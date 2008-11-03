@@ -41,10 +41,10 @@ public:
 	//operations
 	virtual void clear() = 0;
 
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const = 0;
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) = 0;
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const = 0;
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) = 0;
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const = 0;
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) = 0;
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const = 0;
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) = 0;
 
 #ifdef _DIAGNOSTIC
 	virtual LPCTSTR toString() const
@@ -102,10 +102,10 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropInvalid; }
 	virtual void clear() {}
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const { fprintf(pFile, "PropInvalid"); return statOK; }
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) { return statOK; }
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { return statOK; }
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const { fprintf(pFile, "PropInvalid"); return statOK; }
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) { return statOK; }
 
 #ifdef _DIAGNOSTIC
 	virtual LPCTSTR toStringPropVal() const { return _T("<void value>"); }
@@ -122,15 +122,15 @@ public:
 	virtual PropertyType GetType() const { return PropLong; }
 	virtual void clear() { mValue = -1; }
 
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropLong");
 	//		writeLong( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			return readLong( sFile, mValue )? statOK : statInvalidFormat;
 		}
@@ -157,15 +157,15 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropString; }
 	virtual void clear() { mValue.Empty(); }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropString");
 	//		writeString( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			return readString( sFile, mValue )? statOK : statInvalidFormat;
 		}
@@ -195,15 +195,15 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropDouble; }
 	virtual void clear() { mValue = 0; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropDouble");
 	//		writeDouble( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			return readDouble( sFile, mValue )? statOK : statInvalidFormat;
 		}
@@ -239,26 +239,26 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropBool; }
 	virtual void clear() { mValue = false; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
 	{
 		BOOL bVal = mValue? TRUE : FALSE;
 		ar << bVal;
 		return statOK;
 	}
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
 	{
 		BOOL bVal;
 		ar >> bVal;
 		mValue = (bVal != FALSE);
 		return statOK;
 	}
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropBool");
 	//		writeBool( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			return readBool( sFile, mValue )? statOK : statInvalidFormat;
 		}
@@ -284,15 +284,15 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropEnum; }
 	virtual void clear() { mValue = -1; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropEnum");
 	//		writeLong( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			return readLong( sFile, mValue )? statOK : statInvalidFormat;
 		}
@@ -317,15 +317,15 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropEvent; }
 	virtual void clear() { mValue.Empty(); }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropEvent");
 	//		writeString( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			return readString( sFile, mValue )? statOK : statInvalidFormat;
 		}
@@ -348,15 +348,15 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropPicture; }
 	virtual void clear() { mValue = -1; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropPicture");
 	//		writeLong( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			return readLong( sFile, mValue )? statOK : statInvalidFormat;
 		}
@@ -381,10 +381,10 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropCustom; }
 	virtual void clear() {}
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const { fprintf(pFile, "PropCustom"); return statOK; }
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion ) { return statOK; }
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { return statOK; }
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const { fprintf(pFile, "PropCustom"); return statOK; }
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion ) { return statOK; }
 
 	virtual bool GetValue( long& v ) const { v = 0; return true; }
 	virtual bool GetValue( CString& v ) const { v.Empty(); return true; }
@@ -403,15 +403,15 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropImageList; }
 	virtual void clear() { PropVal::CNamedPropertyValue::clear(); mValue = -1; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropImageList");
 	//		writeShort( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			return readShort( sFile, mValue )? statOK : statInvalidFormat;
 		}
@@ -435,15 +435,15 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropOLEColor; }
 	virtual void clear() { mValue = -1; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const { ar << mValue; return statOK; }
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion ) { ar >> mValue; return statOK; }
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const { ar << mValue; return statOK; }
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion ) { ar >> mValue; return statOK; }
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropOLEColor");
 	//		writeDWORD( pFile, mValue );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			return readDWORD( sFile, mValue )? statOK : statInvalidFormat;
 		}
@@ -467,7 +467,7 @@ public:
 	virtual PropertyType GetType() const { return PropStringArray; }
 	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
 	virtual size_t size() const { return mpValue? mpValue->size() : 0; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
 		{ //changing from CStringList to std::vector< CString > in version 6 [ORW]
 			if (nVersion <= 5)
 			{
@@ -486,7 +486,7 @@ public:
 			}
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
 		{ //changing from CStringList to std::vector< CString > in version 6 [ORW]
 			clear();
 			if (nVersion <= 5)
@@ -514,7 +514,7 @@ public:
 			}
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropStringArray");
 	//		int nSize = (int)(mpValue? mpValue->size() : 0);
@@ -523,7 +523,7 @@ public:
 	//			writeString(pFile, mpValue->at(idx));
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
       int iCount;
@@ -589,7 +589,7 @@ public:
 	virtual PropertyType GetType() const { return PropIntArray; }
 	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
 	virtual size_t size() const { return mpValue? mpValue->size() : 0; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
 		{ //changing from CArray< int, int > to std::vector< int > in version 6 [ORW]
 			if (nVersion <= 5)
 			{
@@ -608,7 +608,7 @@ public:
 			}
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
 		{ //changing from CArray< int, int > to std::vector< int > in version 6 [ORW]
 			clear();
 			if (nVersion <= 5)
@@ -647,7 +647,7 @@ public:
 			}
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropIntArray");
 	//		int nSize = (int)(mpValue? mpValue->size() : 0);
@@ -656,7 +656,7 @@ public:
  //       writeInt(pFile, mpValue->at(i));
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
       int iCount;
@@ -724,7 +724,7 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropActiveXPropPages; }
 	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
 		{
 			if( !mpValue )
 				AxInterfaceDescriptor().Serialize( ar, nVersion );
@@ -732,7 +732,7 @@ public:
 				const_cast<CPropertyValueActiveXPropPages*>(this)->mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
 		{
 			clear();
 			if( !mpValue )
@@ -740,7 +740,7 @@ public:
 			mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropActiveXPropPages");
 	//		if( !mpValue )
@@ -749,7 +749,7 @@ public:
 	//			mpValue->WriteToTextFile( pFile );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
 			if( !mpValue )
@@ -785,7 +785,7 @@ public:
 	virtual PropertyType GetType() const { return PropActiveXProp; }
 	virtual bool IsReadOnly() const { return (mpValue? !(mpValue->GetPropPut() || mpValue->GetPropPutRef()) : true); }
 	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
 		{
 			ar << msDisplayName;
 			if( !mpValue )
@@ -794,7 +794,7 @@ public:
 				const_cast<CPropertyValueActiveXProp*>(this)->mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
 		{
 			clear();
 			ar >> msDisplayName;
@@ -805,7 +805,7 @@ public:
 				msDisplayName = mpValue->GetName();
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropActiveXProp");
 	//		writeString(pFile, msDisplayName);
@@ -814,7 +814,7 @@ public:
 	//		mpValue->WriteToTextFile( pFile );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
 			msDisplayName.Empty();
@@ -887,6 +887,24 @@ public:
 			return true;
 		}
 
+	virtual bool GetValue( long& v ) const
+		{
+			v = -1;
+			COleVariant varValue;
+			if( !GetVariantValue( varValue ) )
+				return false;
+			if( S_OK != VariantChangeType( &varValue, &varValue, 0, VT_I4 ) )
+				return false;
+			v = varValue.lVal;
+			return true;
+		}
+	virtual bool SetValue( const long& v )
+		{
+			const COleVariant varValue( v, VT_I4 );
+			if( !SetVariantValue( varValue ) )
+				return false;
+			return true;
+		}
 	virtual bool GetValue( unsigned long& v ) const
 		{
 			v = ~0;
@@ -974,7 +992,7 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropActiveXEnum; }
 	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
 		{
 			if( !mpValue )
 				AxInterfaceDescriptor().Serialize( ar, nVersion );
@@ -982,7 +1000,7 @@ public:
 				const_cast<CPropertyValueActiveXEnum*>(this)->mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
 		{
 			clear();
 			if( !mpValue )
@@ -991,7 +1009,7 @@ public:
 			msDisplayName = mpValue->GetName();
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropActiveXEnum");
 	//		if( !mpValue )
@@ -999,7 +1017,7 @@ public:
 	//		mpValue->WriteToTextFile( pFile );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
 			if( !mpValue )
@@ -1032,9 +1050,15 @@ protected:
 	CPropertyValueActiveXEvent( CPropertyObject* pProperty ) : PropVal::CNamedPropertyValue( pProperty ), mpValue( NULL ) {}
 	~CPropertyValueActiveXEvent(){ delete mpValue; }
 public:
+	virtual LPCTSTR GetName() const
+		{
+			if( !mpValue )
+				return NULL;
+			return mpValue->GetEvent()->GetName();
+		}
 	virtual PropertyType GetType() const { return PropActiveXEvent; }
 	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
 		{
 			ar << msDisplayName;
 			if( !mpValue )
@@ -1043,7 +1067,7 @@ public:
 				const_cast<CPropertyValueActiveXEvent*>(this)->mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
 		{
 			clear();
 			ar >> msDisplayName;
@@ -1052,7 +1076,7 @@ public:
 			mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropActiveXEvent");
 	//		writeString(pFile, msDisplayName);
@@ -1061,7 +1085,7 @@ public:
 	//		mpValue->WriteToTextFile( pFile );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
 			msDisplayName.Empty();
@@ -1098,7 +1122,7 @@ protected:
 public:
 	virtual PropertyType GetType() const { return PropActiveXRunTime; }
 	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
 		{
 			if( !mpValue )
 				AxInterfaceDescriptor().Serialize( ar, nVersion );
@@ -1106,7 +1130,7 @@ public:
 				const_cast<CPropertyValueActiveXRunTime*>(this)->mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
 		{
 			clear();
 			if( !mpValue )
@@ -1115,7 +1139,7 @@ public:
 			msDisplayName = mpValue->GetName();
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropActiveXRunTime");
 	//		if( !mpValue )
@@ -1123,7 +1147,7 @@ public:
 	//		mpValue->WriteToTextFile( pFile );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
 			if( !mpValue )
@@ -1160,7 +1184,7 @@ public:
 	virtual PropertyType GetType() const { return PropActiveXMethods; }
 	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
 	virtual size_t size() const { return ((mpValue && mpValue->GetMethods())? mpValue->GetMethods()->size() : 0); }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
 		{
 			if( !mpValue )
 				AxInterfaceDescriptor().Serialize( ar, nVersion );
@@ -1168,7 +1192,7 @@ public:
 				const_cast<CPropertyValueActiveXMethods*>(this)->mpValue->Serialize( ar, nVersion );
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
 		{
 			clear();
 			if( !mpValue )
@@ -1177,7 +1201,7 @@ public:
 			msDisplayName = mpValue->GetName();
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropActiveXMethods");
 	//		if( !mpValue )
@@ -1185,7 +1209,7 @@ public:
 	//		mpValue->WriteToTextFile( pFile );
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
 			if( !mpValue )
@@ -1222,7 +1246,7 @@ public:
 	virtual PropertyType GetType() const { return PropStringArrayList; }
 	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
 	virtual size_t size() const { return mpValue? mpValue->size() : 0; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
 		{ //changing from CTypedPtrList< CObList, CStringArray* > to std::vector< std::vector< CString > > in version 6 [ORW]
 			if (nVersion <= 5)
 			{
@@ -1262,7 +1286,7 @@ public:
 			}
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
 		{ //changing from CTypedPtrList< CObList, CStringArray* > to std::vector< std::vector< CString > > in version 6 [ORW]
 			clear();
 			if (nVersion <= 5)
@@ -1308,7 +1332,7 @@ public:
 			}
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropStringArrayList");
 	//		writeInt(pFile, (int)(mpValue? mpValue->size() : 0));
@@ -1325,7 +1349,7 @@ public:
 	//		}
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
       int iArrayCount;
@@ -1367,7 +1391,7 @@ public:
 	virtual PropertyType GetType() const { return PropIntArrayList; }
 	virtual void clear() { PropVal::CNamedPropertyValue::clear(); delete mpValue; mpValue = NULL; }
 	virtual size_t size() const { return mpValue? mpValue->size() : 0; }
-	virtual IOStatus FileOut( CArchive& ar, ULONG nVersion ) const
+	virtual IOStatus FileOut( CArchive& ar, BYTE nVersion ) const
 		{ //changing from CList< CArray< int, int >* > to std::vector< std::vector< int > > in version 6 [ORW]
 			ar << unsigned long(mpValue? mpValue->size() : 0);
 			if( mpValue )
@@ -1384,7 +1408,7 @@ public:
 			}
 			return statOK;
 		}
-	virtual IOStatus FileIn( CArchive& ar, ULONG nVersion )
+	virtual IOStatus FileIn( CArchive& ar, BYTE nVersion )
 		{ //changing from CList< CArray< int, int >* > to std::vector< std::vector< int > > in version 6 [ORW]
 			clear();
 			unsigned long nSize;
@@ -1406,7 +1430,7 @@ public:
 			}
 			return statOK;
 		}
-	//virtual IOStatus FileOut( FILE* pFile, ULONG nVersion ) const
+	//virtual IOStatus FileOut( FILE* pFile, BYTE nVersion ) const
 	//	{
 	//		fprintf(pFile, "PropIntArrayList");
 	//		writeInt(pFile, (int)(mpValue? mpValue->size() : 0));
@@ -1423,7 +1447,7 @@ public:
 	//		}
 	//		return statOK;
 	//	}
-	virtual IOStatus FileIn( std::ifstream &sFile, ULONG nVersion )
+	virtual IOStatus FileIn( std::ifstream &sFile, BYTE nVersion )
 		{
 			clear();
       int nCounter;
@@ -1837,7 +1861,7 @@ CString CPropertyObject::GetApiName() const
 	case PropActiveXRunTime:
 		return (mpValue? mpValue->GetName() : _T(""));
 	}
-	return GetPropertyApiName(GetID());
+	return GetPropertyApiName( GetID() );
 }
 
 CString CPropertyObject::GetName() const
@@ -1854,7 +1878,7 @@ CString CPropertyObject::GetName() const
 	case PropActiveXRunTime:
 		return (mpValue? mpValue->GetName() : _T(""));
 	}
-	return GetPropertyName(GetID());
+	return GetPropertyName( GetID() );
 }
 
 void CPropertyObject::SetName( LPCTSTR pszName )
@@ -1902,10 +1926,10 @@ CString CPropertyObject::GetStringItem( size_t idxItem )
 
 void CPropertyObject::Serialize(CArchive& ar)
 {
-	ULONG nThisVersion = GetCurrentSaveVersion();
+	BYTE nThisVersion = GetCurrentSaveVersion();
 	if (ar.IsStoring())
 	{
-		ar << unsigned long(nThisVersion);
+		ar << nThisVersion;
 		if (nThisVersion <= 5) //changing from long to short in version 6 [ORW]
 			ar << long(mnID);
 		else
@@ -1920,7 +1944,17 @@ void CPropertyObject::Serialize(CArchive& ar)
 	}
 	else
 	{
-		ar >> unsigned long(nThisVersion);
+		ar >> nThisVersion;
+		if( nThisVersion <= 7 )
+		{
+			BYTE bSkip;
+			ar >> bSkip;
+			assert( bSkip == 0 );
+			ar >> bSkip;
+			assert( bSkip == 0 );
+			ar >> bSkip;
+			assert( bSkip == 0 );
+		}
 		if (nThisVersion > GetCurrentSaveVersion())
 			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
 

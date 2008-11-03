@@ -92,7 +92,7 @@ bool CImageComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	{
 	case Prop::ImageList:
 		{
-			RefCountedPtr< CImageListObject > pImageList = mpTemplate->GetImageList();
+			TImageListPtr pImageList = mpTemplate->GetImageList();
 			if (pImageList && pImageList->GetImageList().GetSafeHandle())
 			{
 				CImageList& ImageList = pImageList->GetImageList();
@@ -119,7 +119,7 @@ bool CImageComboBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 	case Prop::Text:
 		SetWindowText( pProp->GetStringValue() );
 		break;
-	case Prop::LimitText:
+	case Prop::TextLimit:
 		LimitText( pProp->GetLongValue() );
 		break;
 	}

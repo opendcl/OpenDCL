@@ -19,6 +19,7 @@ CArxPictureBoxCtrl::CArxPictureBoxCtrl( TDclControlPtr pTemplate, CControlPane* 
 : CPictureBoxCtrl( pTemplate, pPane, nID, false )
 , mArxServices( this )
 , mDragDropService( this )
+, mbTrackingMouse( false )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -73,7 +74,7 @@ void CArxPictureBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::OnLMouseEvent),
+		mpTemplate->GetStringProperty(Prop::EventLMouse),
 		0,
 		nFlags,
 		point.x,
@@ -106,7 +107,7 @@ void CArxPictureBoxCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 		IsAsyncEvents());
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::OnLMouseEvent),
+		mpTemplate->GetStringProperty(Prop::EventLMouse),
 		1,
 		nFlags,
 		point.x,
@@ -127,7 +128,7 @@ void CArxPictureBoxCtrl::OnMButtonDblClk(UINT nFlags, CPoint point)
 		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::OnMMouseEvent),
+		mpTemplate->GetStringProperty(Prop::EventMMouse),
 		2,
 		nFlags,
 		point.x,
@@ -148,7 +149,7 @@ void CArxPictureBoxCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 		IsAsyncEvents());
 	
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::OnMMouseEvent),
+		mpTemplate->GetStringProperty(Prop::EventMMouse),
 		0,
 		nFlags,
 		point.x,
@@ -169,7 +170,7 @@ void CArxPictureBoxCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 		IsAsyncEvents());
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::OnMMouseEvent),
+		mpTemplate->GetStringProperty(Prop::EventMMouse),
 		1,
 		nFlags,
 		point.x,
@@ -181,27 +182,28 @@ void CArxPictureBoxCtrl::OnMButtonUp(UINT nFlags, CPoint point)
 
 void CArxPictureBoxCtrl::OnMouseMove(UINT nFlags, CPoint point) 
 {
-	CRect rcThis;
-	GetWindowRect(&rcThis);
-	if (point.x < 0 || point.y < 0 || point.x > rcThis.Width() || point.y > rcThis.Height())
+	if( !mbTrackingMouse )
 	{
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventMouseMovedOff), IsAsyncEvents());
-		return;
+		TRACKMOUSEEVENT tm = { sizeof(TRACKMOUSEEVENT), TME_LEAVE, m_hWnd, 0 };
+		if( _TrackMouseEvent( &tm ) )
+			mbTrackingMouse = true;
+		InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseEntered ), IsAsyncEvents() );
 	}
 
-	if (!m_bMouseTracking)       
-		InvokeMethod(
-			mpTemplate->GetStringProperty(Prop::EventMouseEntered),
-			IsAsyncEvents());
-
-	InvokeMethodIntIntInt(
-		mpTemplate->GetStringProperty(Prop::EventMouseMove),
-		nFlags,
-		point.x,
-		point.y,
-		IsAsyncEvents());
+	InvokeMethodIntIntInt( mpTemplate->GetStringProperty( Prop::EventMouseMove ),
+												 nFlags,
+												 point.x,
+												 point.y,
+												 IsAsyncEvents() );
 
 	__super::OnMouseMove(nFlags, point);
+}
+
+LRESULT CArxPictureBoxCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
+{
+	mbTrackingMouse = false;        
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventMouseMovedOff ), IsAsyncEvents() );
+	return FALSE;
 }
 
 BOOL CArxPictureBoxCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
@@ -232,7 +234,7 @@ void CArxPictureBoxCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
 		IsAsyncEvents());
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::OnRMouseEvent),
+		mpTemplate->GetStringProperty(Prop::EventRMouse),
 		2,
 		nFlags,
 		point.x,
@@ -253,7 +255,7 @@ void CArxPictureBoxCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 		IsAsyncEvents());
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::OnRMouseEvent),
+		mpTemplate->GetStringProperty(Prop::EventRMouse),
 		0,
 		nFlags,
 		point.x,
@@ -278,7 +280,7 @@ void CArxPictureBoxCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 		IsAsyncEvents());	
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::OnRMouseEvent),
+		mpTemplate->GetStringProperty(Prop::EventRMouse),
 		1,
 		nFlags,
 		point.x,
@@ -302,12 +304,6 @@ void CArxPictureBoxCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
-LRESULT CArxPictureBoxCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam) 
-{
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventMouseMovedOff), IsAsyncEvents());
-	return __super::OnMouseLeave(wParam, lParam);
-}
-
 void CArxPictureBoxCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
 	InvokeMethodIntIntIntInt(
@@ -323,7 +319,7 @@ void CArxPictureBoxCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 		IsAsyncEvents());
 
 	InvokeMethodIntIntIntInt(
-		mpTemplate->GetStringProperty(Prop::OnLMouseEvent),
+		mpTemplate->GetStringProperty(Prop::EventLMouse),
 		2,
 		nFlags,
 		point.x,

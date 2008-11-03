@@ -42,7 +42,7 @@
 #include "TabStripCtrl.h"
 #include "TextBoxCtrl.h"
 #include "TextButtonCtrl.h"
-#include "UrlLinkCtrl.h"
+#include "HyperlinkCtrl.h"
 
 #include "ComboStyles.h"
 #include "TextBoxFilterTypes.h"
@@ -153,7 +153,7 @@ TDialogControlPtr CStudioDialogControl::CreateImp( TDclControlPtr pTemplate, CCo
 			CPictureBox* pControl = new CPictureBox( pHostWnd, nID, rc, IDI_HATCH );
 			return new CAutoStudioDialogControl( pTemplate, pPane, pControl );
 		}
-	case CtlHtmlCtrl: return *new CHtmlCtrl( pTemplate, pPane, nID );
+	case CtlHtml: return *new CHtmlCtrl( pTemplate, pPane, nID );
 	case CtlImageComboBox: return CreateComboExControl( pTemplate, pPane, nID );
 	case CtlLabel: return *new CLabelCtrl( pTemplate, pPane, nID );
 	case CtlListBox: return *new CListBoxCtrl( pTemplate, pPane, nID );
@@ -171,12 +171,12 @@ TDialogControlPtr CStudioDialogControl::CreateImp( TDclControlPtr pTemplate, CCo
 		}
 	case CtlSpinButton: return *new CSpinnerCtrl( pTemplate, pPane, nID );
 	case CtlSplitter: return *new CSplitterCtrl( pTemplate, pPane, nID );
-	case CtlStraightSlider: return *new CSlideCtrl( pTemplate, pPane, nID );
+	case CtlSlider: return *new CSlideCtrl( pTemplate, pPane, nID );
 	case CtlTabStrip: return *new CTabStripCtrl( pTemplate, pPane, nID );
 	case CtlTextBox: return CreateEditControl( pTemplate, pPane, nID );
 	case CtlTextButton: return *new CTextButtonCtrl( pTemplate, pPane, nID );
-	case CtlImageTree: return *new CImageTreeCtrl( pTemplate, pPane, nID );
-	case CtlUrlLink: return *new CUrlLinkCtrl( pTemplate, pPane, nID );
+	case CtlTree: return *new CImageTreeCtrl( pTemplate, pPane, nID );
+	case CtlHyperlink: return *new CHyperlinkCtrl( pTemplate, pPane, nID );
 	}
 
 	return NULL;

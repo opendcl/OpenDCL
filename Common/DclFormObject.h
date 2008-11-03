@@ -15,7 +15,7 @@ typedef std::list< TDclControlPtr > TDclControlList;
 /////////////////////////////////////////////////////////////////////////////
 // CDclFormObject document
 
-class CDclFormObject : public CObject
+class CDclFormObject
 {
 	friend class CControlPane;
 
@@ -48,7 +48,8 @@ public:
 	//2007-02-19 [ORW]: save version set to 5 (image list collection removed from form object)
 	//2007-09-17 [ORW]: save version set to 6 (changed mbUsesClientRect from BOOL to bool)
 	//2008-02-16 [ORW]: save version set to 7 (removed mbUsesClientRect)
-	ULONG GetCurrentSaveVersion() const { return 7; }
+	//2008-11-02 [ORW]: save version set to 8 (changed version from ULONG to BYTE)
+	BYTE GetCurrentSaveVersion() const { return 8; }
 
 // Operations
 public:
@@ -124,9 +125,6 @@ public:
 	CString GetKeyName() const;
 	CString GetKeyPath() const;
 	CString GetVarName() const;
-
-protected:
-	DECLARE_SERIAL(CDclFormObject)
 
 #ifdef _DIAGNOSTIC
 public:

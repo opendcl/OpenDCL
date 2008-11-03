@@ -39,6 +39,9 @@ public:
 	AxPropertyDescriptor( const AxPropertyDescriptor& Src );
 	virtual ~AxPropertyDescriptor(void);
 
+	//2008-11-02 [ORW]: save version set to 2 (started filing version number)
+	BYTE GetCurrentSaveVersion() const { return 2; }
+
 	// Attributes
 	DISPID GetDispId() const { return mDispId; }
 	const CString& GetName() const { return msName; }
@@ -64,8 +67,8 @@ protected:
 
 	// File I/O
 public:
-	void Serialize( CArchive& ar, int nPropertyVersion );
-	IOStatus ReadFromTextFile( std::ifstream &sFile, ULONG nPropertyVersion );
+	void Serialize( CArchive& ar, BYTE nPropertyVersion );
+	IOStatus ReadFromTextFile( std::ifstream &sFile, BYTE nPropertyVersion );
 	//IOStatus WriteToTextFile( FILE* pFile ) const;
 
 #ifdef _DIAGNOSTIC

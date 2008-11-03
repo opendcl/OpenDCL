@@ -1,0 +1,95 @@
+<!--#include virtual="header.shtml" -->
+
+<CENTER><H3><FONT COLOR="#AOAO99">
+
+CAutoRichEditCtrl - automate rich edit formatting and RTF handling.
+
+</FONT></H3></CENTER><HR>
+
+<!-- Author and contact details -->
+This article was contributed by <A HREF="mailto:jeremy@dragonmount.net">Jeremy Iverson</A>.
+
+
+<!-- Text / source code -->
+<p>
+<!-- The 'p' starts a paragraph of normal text -->
+
+While MFC does provide a rich edit control, it does not provide a quick and easy way to handle formatting and RTF codes. CAutoRichEditCtrl is a derivative of CRichEditCtrl. This new class adds several functions that allow you to add formatting quickly. It also provides two functions to let you retrieve the formatted text (RTF) in a CString, and to insert an RTF CString into the control.
+<p>
+
+To use CAutoRichEditCtrl in a dialog box, follow these instructions.
+<ol>
+	<li>Insert a normal rich edit control in your dialog box.
+	<li>Using ClassWizard, attach a control variable of type CRichEditCtrl to your control.
+	<li>Copy AutoRichEditCtrl.cpp and AutoRichEditCtrl.h (download below) to your source directory, and #include "AutoRichEditCtrl.h" in your dialog's header.
+	<li>In your dialog's header, change CRichEditCtrl to CAutoRichEditCtrl.
+	<li>In your application's InitInstance (CMyApp::InitInstance()), include a call to AfxInitRichEdit() - this is needed for all rich edit controls.
+	<li>Add interface elements that use CAutoRichEditCtrls's functions - see below.
+</ol>
+<p>
+
+Once you've inserted the control into your project, you can add toolbar buttons, menu commands, or other elements to call the following functions:
+
+<ul>
+	<li><b>GetRTF()</b> - returns a CString holding the text of the control (including the RTF formatting code).
+	<li><b>SetRTF(CString sRTF)</b> - parameter sRTF is an RTF formatted CString. Calling this will insert and format the string. If a CString is passed that does not have valid RTF code, the control will be cleared.
+<p>
+	<li><b>SelectionIsBold()</b> - returns true if the current selection is bold, otherwise false.
+	<li><b>SelectionIsItalic()</b>- returns true if the current selection is italic, else false.
+	<li><b>SelectionIsUnderlined()</b> - returns true if the current selection is underlined, else false.
+<p>
+	<li><b>SetSelectionBold()</b> - sets the current selection to be bold <i>(Note: this will actually act like pressing the Bold toolbar button in Wordpad - if the text is not bold, it will become bold; if the text is already bold, it will remove the bold formatting; if part of the selection is bold, the entire selection will become bold; if there is not anything selected, the format is changed to bold so when the user starts typing, it will be in bold).</i>
+	<li><b>SetSelectionItalic()</b> - sets the current selection to italic (see note in SetSelectionBold()).
+	<li><b>SetSelectionUnderlined()</b> - sets the current selection to underlined (see note in SetSelectionBold()).
+<p>
+	<li><b>SetParagraphCenter()</b> - sets the current paragraph to be centered.
+	<li><b>SetParagraphLeft()</b> - sets the current paragraph to be left justified.
+	<li><b>SetParagraphRight()</b> - sets the current paragraph to be right justified.
+<p>
+	<li><b>ParagraphIsCentered()</b> - returns true if the current paragraph is centered, else false.
+	<li><b>ParagraphIsLeft()</b> - returns true if the current paragraph is left justified, else false.
+	<li><b>ParagraphIsRight()</b> - returns true if the current paragraph is right justified, else false.
+<p>
+	<li><b>SetParagraphBulleted()</b> - sets the bullet style (see note in SetSelectionBold()).
+	<li><b>ParagraphIsBulleted()</b> - returns true if the current selection is bulleted, else false.
+<p>
+	<li><b>SelectColor()</b> - displays a color selection dialog box and sets the selection to the chosen color (if OK is pressed).
+<p>
+	<li><b>SetFontName(CString sFontName)</b> - sets the selected font to sFontName.
+	<li><b>SetFontSize(int nPointSize)</b> - sets the selection to nPointSize.
+<p>
+	<li><b>GetSelectionFontName()</b> - returns a CString holding the selection's font name.
+	<li><b>GetSelectionFontSize()</b> - returns a long holding the selection's font size.
+<p>
+	<li><b>GetSystemFonts(CStringArray &saFontList)</b> - saFontList will hold an array of all true-type fonts available on the system.
+<p>
+	<li><b>GetCharFormat()</b> - returns the CHARFORMAT structure of the current selection.
+</ul>
+<p>
+
+To see examples of these functions, download the demo app. The source code that shows examples of how to use each function is located in CRichEdDlg::OnExecute(). 
+<p>
+
+A quick example here: if you want a rich edit control in a dialog to use formatting, you may create a toolbar with the typical bold, italic, and underline buttons. Just use ClassWizard to add a function for when the user presses the button (like OnBold), then call the right function (like m_richedit.SetSelectionBold();, assuming your rich edit control is named m_richedit). That's all it takes to set up the formatting correctly. 
+<p>
+When you want to save the text, just do a CString sText = m_richedit.GetRTF();, then save the string however you like - when you call m_richedit.SetRTF(sText) with the same string, the formatting will be just like it was when you saved it.
+<p>
+
+Two thank you's are in order for Zafir Anjum and Girish Bharadwaj. The code that streams the RTF string into the control was taken from Zafir's article, <a href="http://www.codeguru.com/richedit/rtf_string_streamin.shtml">Inserting an RTF string using StreamIn</a>. The code that retrieves all the fonts on the system was derived from Girish's article, <a href="http://www.codeguru.com/combobox/font_selection_combo.shtml">Owner Drawn Font Selection ComboBox</a>.
+<p>
+
+You are free to use/modify this source code for whatever you like. If you do make any modifications or additions, I would appreciate it you let me know (or better, let everybody know by posting a comment). Of course, this control is provided as is, and no warranty is expressed or implied as to its fitness for any particular purpose.
+<p>
+Hope this helps you out!
+
+
+<!-- demo project -->
+<p><A HREF="AutoRichEditCtrl_Demo.zip">Download demo project - 56 KB</A>
+
+<!-- Zipped source -->
+<p><A HREF="AutoRichEditCtrl.zip">Download source - 6 KB</A>
+
+<!-- Posted / Update  date Month day, year (eg August 11, 1998) - add to the list -->
+<p>Date Posted:  November 1, 1999
+
+<!--#include virtual="footer.shtml" -->

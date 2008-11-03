@@ -7,6 +7,7 @@
 #include "ArxProject.h"
 #include "ControlTypes.h"
 #include "AxArg.h"
+#include "ImageListObject.h"
 
 class CPropertyObject;
 
@@ -44,12 +45,14 @@ bool GetDoubleArgument( /*in-out*/ resbuf*& pArgs, /*out*/ double& dblArg, /*in*
 bool Get3dPointArgument( /*in-out*/ resbuf*& pArgs, /*out*/ AcGePoint3d& pntArg, /*in*/ bool bQuiet = false );
 bool Get2dPointArgument( /*in-out*/ resbuf*& pArgs, /*out*/ AcGePoint2d& pntArg, /*in*/ bool bQuiet = false );
 bool GetDateArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleDateTime& dtArg, /*in*/ bool bQuiet = false );
+bool GetImageListArgument( /*in-out*/ resbuf*& pArgs, /*out*/ TImageListPtr& pImageList, /*in*/ bool bQuiet = false );
+bool GetBinFileArgument( /*in-out*/ resbuf*& pArgs, /*out*/ class CBinFile*& pFile, /*in*/ bool bQuiet = false );
 bool GetIUnknownArgument( /*in-out*/ resbuf*& pArgs, /*out*/ IUnknown*& pUnk, /*in*/ bool bQuiet = false );
 bool GetIDispatchArgument( /*in-out*/ resbuf*& pArgs, /*out*/ IDispatch*& pDisp, /*in*/ bool bQuiet = false );
 bool GetVariantArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COleVariant& varArg, /*in*/ const AxArg& type, /*in*/ bool bQuiet = false );
 bool GetColorArgument( /*in-out*/ resbuf*& pArgs, /*out*/ COLORREF& color, /*in*/ bool bQuiet = false );
-bool GetStringArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CStringArray& rsArg, /*in*/ bool bQuiet = false );
-bool GetIntArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ CArray< int, int >& rnArg, /*in*/ bool bQuiet = false );
+bool GetStringArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ PropVal::TCStringArray& rsArg, /*in*/ bool bQuiet = false );
+bool GetIntArrayArgument( /*in-out*/ resbuf*& pArgs, /*out*/ PropVal::TIntArray& rnArg, /*in*/ bool bQuiet = false );
 
 bool GetTArgument( /*in-out*/ resbuf*& pArgs, /*in*/ bool bQuiet = false );
 bool GetNilArgument( /*in-out*/ resbuf*& pArgs, /*in*/ bool bQuiet = false );

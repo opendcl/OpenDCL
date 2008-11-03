@@ -17,7 +17,7 @@ ADSRESULT ListBox::AddString()
 	if( !GetDlgControlArgument( pArgs, pDlgControl, CtlListBox ) )
 		return RSERR; //invalid input
 
-	CStringArray rsToAdd;
+	PropVal::TCStringArray rsToAdd;
 	if( !GetStringArrayArgument( pArgs, rsToAdd ) )
 		return RSERR; //invalid input
 
@@ -27,9 +27,9 @@ ADSRESULT ListBox::AddString()
 	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
 
 	int idxLastAdded = -1;
-	INT_PTR ctArgs = rsToAdd.GetSize();
-	for( INT_PTR idx = 0; idx < ctArgs; ++idx )
-		idxLastAdded = pCtrl->AddString( rsToAdd.GetAt( idx ) );
+	size_t ctArgs = rsToAdd.size();
+	for( size_t idx = 0; idx < ctArgs; ++idx )
+		idxLastAdded = pCtrl->AddString( rsToAdd[idx] );
 	if( idxLastAdded != CB_ERR )
 		acedRetInt( idxLastAdded );
 	return RSRSLT;
@@ -40,7 +40,7 @@ ADSRESULT ListBox::AddList()
 	return ListBox::AddString();
 }
 
-ADSRESULT ListBox::GetText()
+ADSRESULT ListBox::GetItemText()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -323,7 +323,7 @@ ADSRESULT ListBox::GetItemData()
 	return RSRSLT;
 }
 
-ADSRESULT ListBox::DeleteString()
+ADSRESULT ListBox::DeleteItem()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -447,7 +447,7 @@ ADSRESULT ListBox::FindStringExact()
 	return RSRSLT;
 }
 
-ADSRESULT ListBox::SetSel()
+ADSRESULT ListBox::SelectItem()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -460,8 +460,7 @@ ADSRESULT ListBox::SetSel()
 		return RSERR; //invalid input
 
 	bool bSelected = true;
-	if( !GetBoolArgument( pArgs, bSelected ) )
-		return RSERR; //invalid input
+	GetBoolArgument( pArgs, bSelected, true );
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
@@ -473,7 +472,7 @@ ADSRESULT ListBox::SetSel()
 	return RSRSLT;
 }
 
-ADSRESULT ListBox::GetSel()
+ADSRESULT ListBox::IsItemSelected()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 

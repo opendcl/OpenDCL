@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by w:\OpenDCL\Build 5.0\Studio\DEU\Studio.Res\Studio.DEU.rc
+// Used by w:\OpenDCL\Build 5.0\Studio\ENU\Studio.Res\Studio.ENU.rc
 //
 #define DLG_COLOR                       10
 #define IDR_MAINFRAME                   10
@@ -37,6 +37,7 @@
 #define COLOR_SOLID_LEFT                730
 #define COLOR_SOLID_RIGHT               731
 #define IDC_CONTROLTREE                 1007
+#define IDC_LICENSETEXT                 1008
 #define ctlFirst                        0x0400
 #define psh1                            0x0400
 #define psh2                            0x0401
@@ -222,6 +223,43 @@
 #define FORMATDLGORD31                  1543
 #define FORMATDLGORD30                  1544
 #define RUNDLGORD                       1545
+#define IDS_DCLFORM                     3000
+#define IDS_POINTER                     3100
+#define IDS_LABEL                       3101
+#define IDS_TEXTBUTTON                  3102
+#define IDS_GRAPHICBUTTON               3103
+#define IDS_FRAME                       3104
+#define IDS_TEXTBOX                     3105
+#define IDS_CHECKBOX                    3106
+#define IDS_OPTIONBUTTON                3107
+#define IDS_COMBOBOX                    3108
+#define IDS_LISTBOX                     3109
+#define IDS_SCROLLBAR                   3110
+#define IDS_SLIDER                      3111
+#define IDS_PICTUREBOX                  3112
+#define IDS_TABSTRIP                    3113
+#define IDS_CALENDAR                    3114
+#define IDS_TREE                        3115
+#define IDS_RECTANGLE                   3116
+#define IDS_PROGRESSBAR                 3117
+#define IDS_SPINBUTTON                  3118
+#define IDS_HYPERLINK                   3119
+#define IDS_ANGLESLIDER                 3120
+#define IDS_BLOCKVIEW                   3121
+#define IDS_SLIDEVIEW                   3122
+#define IDS_HTML                        3123
+#define IDS_DWGPREVIEW                  3124
+#define IDS_LISTVIEW                    3125
+#define IDS_BLOCKLIST                   3126
+#define IDS_OPTIONLIST                  3127
+#define IDS_ACTIVEX                     3128
+#define IDS_DWGLIST                     3129
+#define IDS_ANIMATION                   3130
+#define IDS_IMAGECOMBOBOX               3131
+#define IDS_GRID                        3132
+#define IDS_SPLITTER                    3133
+#define IDS_HATCH                       3134
+#define IDS_FILEEXPLORER                3135
 #define IDR_TOOLBOX                     10001
 #define IDR_POPUPMENUS                  10002
 #define IDR_ZTABORDER                   10003
@@ -237,9 +275,9 @@
 #define ID_ZORDERHELP                   12005
 #define ID_ADDMODAL                     12006
 #define ID_ADDMODELESS                  12007
-#define ID_ADDDOCKABLE                  12008
-#define ID_ADDCONFIG                    12009
-#define ID_ADDFILEDIALOGBOX             12010
+#define ID_ADDCONTROLBAR                12008
+#define ID_ADDOPTIONS                   12009
+#define ID_ADDFILEDIALOG                12010
 #define ID_SETAUTOLISPFILENAME          12011
 #define ID_REMOVEFORM                   12012
 #define ID_TOOLS_DEFAULTFONT            12013
@@ -388,7 +426,7 @@
 #define IDC_LABEL                       14068
 #define IDC_LIST                        14069
 #define IDC_COPYTOCLIPBOARD             14070
-#define IDC_RICHEDIT                    14071
+#define IDC_DESCRIPTIONHTML             14071
 #define IDC_SPIN                        14072
 #define IDC_ADD                         14073
 #define IDC_DELETE                      14074
@@ -446,8 +484,8 @@
 #define IDI_TEXTCOLOR                   16004
 #define IDI_MODAL                       16005
 #define IDI_MODELESS                    16006
-#define IDI_DOCKABLE                    16007
-#define IDI_TABFOLDER                   16008
+#define IDI_CONTROLBAR                  16007
+#define IDI_OPTIONSTAB                  16008
 #define IDI_FILEDLG                     16009
 #define IDI_OPENFOLDER                  16010
 #define IDI_CLOSEDFOLDER                16011
@@ -617,30 +655,19 @@
 #define IDS_SETDEFAULTFONT              20100
 #define IDS_PICNOTVALID                 20101
 #define IDS_VARIES                      20102
-#define IDS_OLENOTE3                    20103
 #define IDS_FUNCADDED                   20104
 #define IDS_TAB                         20105
 #define IDS_DESIGNTIMEONLY              20106
 #define IDS_HIDDENPROP                  20107
 #define IDS_GRIDSPACING                 20108
 #define IDS_MSG_TODOLISPFUNC            20109
-#define IDS_COPYTOCLIP                  20110
-#define IDS_COPYGETTOCLIP               20111
 #define IDS_RENAMEPROJECT               20112
 #define IDS_SERVERNOTFOUND              20113
 #define IDS_FILTERAUTOLISPFILE          20114
-#define IDS_OLENOTE1                    20115
-#define IDS_OLENOTE2                    20116
 #define IDS_AS                          20117
-#define IDS_FORMOREINFO                 20118
-#define IDS_TOFINDIT                    20119
-#define IDS_ALISPSYN                    20122
-#define IDS_ALSPS                       20123
-#define IDS_ALGPS                       20124
-#define IDS_OPTIONALNILASB              20125
-#define IDS_NEWVAL                      20126
-#define IDS_WHENFIN                     20127
-#define IDS_WHENFIN2                    20128
+#define IDS_AXMETHODMOREINFO            20118
+#define IDS_AXMETHODMSDN                20119
+#define IDS_AXNOTERELEASEOBJECT         20127
 #define IDS_STATEFLAGDESC               20133
 #define IDS_ALTCOLORS                   20134
 #define IDS_ALTCOLOR                    20134
@@ -697,14 +724,14 @@
 #define IDS_ARG_TYPE                    21030
 #define IDS_MODALFORM                   25000
 #define IDS_MODELESSFORM                25001
-#define IDS_DOCKABLEFORM                25002
-#define IDS_CONFIGTAB                   25003
+#define IDS_CONTROLBAR                  25002
+#define IDS_OPTIONSTAB                  25003
 #define IDS_FILEDLG                     25004
 #define IDS_PALETTEFORM                 25005
 #define IDS_MODALFORMS                  25100
 #define IDS_MODELESSFORMS               25101
-#define IDS_DOCKABLEFORMS               25102
-#define IDS_CONFIGTABS                  25103
+#define IDS_CONTROLBARS                 25102
+#define IDS_OPTIONSTABS                 25103
 #define IDS_FILEDLGS                    25104
 #define IDS_PALETTEFORMS                25105
 #define IDS_COLOR_RED                   27000
@@ -965,7 +992,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        116
 #define _APS_NEXT_COMMAND_VALUE         40017
-#define _APS_NEXT_CONTROL_VALUE         1008
+#define _APS_NEXT_CONTROL_VALUE         1009
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

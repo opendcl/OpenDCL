@@ -7,7 +7,8 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
+#include "afxres.h"
+
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -50,8 +51,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 5,0,0,25
- PRODUCTVERSION 5,0,0,25
+ FILEVERSION 5,0,1,0
+ PRODUCTVERSION 5,0,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -68,13 +69,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL Studio Dialog Editor"
-            VALUE "FileVersion", "5, 0, 0, 25"
+            VALUE "FileVersion", "5, 0, 1, 1"
             VALUE "InternalName", "OpenDCL.Editor"
             VALUE "LegalCopyright", "Copyright © 2008 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL Studio.exe"
             VALUE "ProductName", "OpenDCL Studio"
-            VALUE "ProductVersion", "5, 0, 0, 25"
+            VALUE "ProductVersion", "5, 0, 1, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -100,7 +101,8 @@ END
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-#include "AfxRes.rc"
+#include "AfxRes.rc"
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

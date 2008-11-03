@@ -86,7 +86,7 @@ int CPropertyPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_EventsTabPane.SetFont(&m_font);
 	m_PropertiesTabPane.SetFont(&m_font);
 	m_PropertiesTabPane.GetPropertiesCtrl().SetFont( &m_font );
-	m_PropertiesTabPane.ActivateProperty( Prop::_Private );
+	m_PropertiesTabPane.ActivateProperty( NULL );
 	m_EventsTabPane.ShowWindow( SW_HIDE );
 	m_PropertiesTabPane.ShowWindow( SW_SHOW );
 	m_PropertiesTabPane.RedrawWindow();
@@ -156,7 +156,7 @@ void CPropertyPane::OnActivateDclControl( TDclControlPtr pDclControl )
 			return; //shutting down
 		mControls.clear();
 		m_PropertiesTabPane.GetPropertiesCtrl().OnActivateDclControl( NULL );
-		m_PropertiesTabPane.ActivateProperty( Prop::_Private );
+		m_PropertiesTabPane.ActivateProperty( NULL );
 		m_EventsTabPane.ClearEvents();
 		theStudioWorkspace.GetStudioFrame()->GetStatusBar().SetWindowText( _T("") );
 		return;
@@ -186,7 +186,7 @@ void CPropertyPane::OnActivateDclControl( TDclControlPtr pDclControl )
 			m_TabCtrl.InsertItem( 1, sEventTabText );
 		}
 		m_EventsTabPane.UpdateEvents( pDclControl );
-		CString sControlType = GetControlName(pDclControl);
+		CString sControlType = GetControlDisplayName(pDclControl);
 		CString sName = pDclControl->GetVarName();
 		if (!sControlType.IsEmpty())
 			sStatusBarText.Format( _T("%s [%s]"), (LPCTSTR)sName, (LPCTSTR)sControlType );

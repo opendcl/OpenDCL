@@ -19,6 +19,7 @@ class CArxAcadSlideCtrl : public CButton, public CDialogControl
 {
 	CArxControlServices	mArxServices;
 	CxAcadSlide mSlideCtrl;
+	bool mbTrackingMouse;
 
 public:
 	CRect				m_rcFocus;
@@ -26,7 +27,6 @@ public:
 	COLORREF			m_HighlightColor;
 	HBITMAP				m_hbmMem;
 	COLORREF			m_BkColor;
-	BOOL				m_bMouseTracking;
 	bool				m_bHasFocus;
 	COleOdcDropTarget m_DropTarget;
 
@@ -66,7 +66,6 @@ public:
 protected:
 	afx_msg LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);	
 	afx_msg void OnPaint();
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnRButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);

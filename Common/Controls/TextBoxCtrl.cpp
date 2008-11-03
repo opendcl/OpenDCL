@@ -98,7 +98,7 @@ bool CTextBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 				ModifyStyle( ES_AUTOHSCROLL, 0, 0 );
 			break;
 		}
-	case Prop::LimitText:
+	case Prop::TextLimit:
 		{
 			SetLimitText( pProp->GetLongValue() );
 			break;
