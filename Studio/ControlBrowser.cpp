@@ -92,6 +92,7 @@ public:
 	virtual CString description( std::map< CString, CString >& params ) const { return NULL; }
 	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) { return true; }
 	static bool addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR pszControlType, bool bControlMethods = true );
+	static bool addEvent( CControlBrowser& Browser, HTREEITEM hParent, TPropertyPtr pEvent );
 };
 
 class CDclControlNode : public CTreeNode
@@ -173,7 +174,7 @@ protected:
 			switch( prop()->GetID() )
 			{
 			case Prop::ComboBoxStyle:
-			case Prop::ButtonStyle:
+			case Prop::GraphicButtonStyle:
 			case Prop::FilterStyle:
 			case Prop::MultiRow:
 			case Prop::Orientation:
@@ -191,13 +192,12 @@ protected:
 class CMethodNode : public CTreeNode
 {
 	TDclControlPtr mpDclControl;
-	CString msName;
 	CString msFilename;
+
 public:
 	CMethodNode( TDclControlPtr pDclControl, LPCTSTR pszName, LPCTSTR pszFilename )
 		: CTreeNode( pszName )
 		, mpDclControl( pDclControl )
-		, msName( pszName )
 		, msFilename( pszFilename )
 		{}
 	virtual ~CMethodNode() {}
@@ -217,10 +217,13 @@ public:
 class CEventNode : public CTreeNode
 {
 	TPropertyPtr mpProp;
+	CString msFilename;
+
 public:
-	CEventNode( TPropertyPtr pProp )
+	CEventNode( TPropertyPtr pProp, LPCTSTR pszFilename )
 		: CTreeNode( pProp->GetType() == PropActiveXEvent? pProp->GetConstAxInterfaceDescriptorPtr()->GetName() : pProp->GetName() )
 		, mpProp( pProp )
+		, msFilename( pszFilename )
 		{
 		}
 	virtual ~CEventNode() {}
@@ -231,9 +234,9 @@ public:
 		{
 			params[_T("<CONTROL-NAME>")] = mpProp->GetOwnerControl()->GetVarName();
 			CString sPath;
-			sPath.Format( _T("file://%sReference/Event/%s.htm"),
+			sPath.Format( _T("file://%sReference/Event/%s"),
 										(LPCTSTR)theWorkspace.GetLanguageSubfolderPath(),
-										(LPCTSTR)mpProp->GetName() );
+										(LPCTSTR)msFilename );
 			return sPath;
 		}
 };
@@ -571,7 +574,7 @@ class CAxEventNode : public CEventNode
 public:
 	CAxEventNode( TPropertyPtr pProp, const AxEventDescriptor* pEventDesc,
 								CAxContainerCtrl* pAxCont = NULL )
-		: CEventNode( pProp )
+		: CEventNode( pProp, NULL )
 		, mpEventDesc( pEventDesc )
 		, mpAxCont( pAxCont )
 		{
@@ -669,7 +672,7 @@ bool CDclControlNode::addPropertyChildItems( CControlBrowser& Browser, HTREEITEM
 		switch( pProp->GetType() )
 		{
 		case PropEvent:
-			Browser.InsertItem( hParent, new CEventNode( pProp ) );
+			addEvent( Browser, hParent, pProp );
 			break;
 		case PropActiveXEvent:
 			Browser.InsertItem( hParent, new CAxEventNode( pProp, pProp->GetConstAxInterfaceDescriptorPtr()->GetEvent(), pAxCont ) );
@@ -741,19 +744,19 @@ bool CTreeNode::addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR
 		int nControlMethods = sMethodsHtml.Find( _T("<a name=\"Control\"") );
 		if( nControlMethods >= 0 )
 		{
-			int nStart = sMethodsHtml.Find( _T("<ul>"), nControlMethods );
+			int nStart = sMethodsHtml.Find( _T("<ul"), nControlMethods );
 			if( nStart >= nControlMethods )
 			{
 				int nEnd = sMethodsHtml.Find( _T("</ul>"), nStart );
 				if( nEnd > nStart )
 				{
-					for( int nLineStart = sMethodsHtml.Find( _T("<li>"), nStart );
+					for( int nLineStart = sMethodsHtml.Find( _T("<li"), nStart );
 							 nLineStart < nEnd;
-							 nLineStart = sMethodsHtml.Find( _T("<li>"), nLineStart + 4 ) )
+							 nLineStart = sMethodsHtml.Find( _T("<li"), nLineStart + 4 ) )
 					{
 						int nLineEnd = sMethodsHtml.Find( _T("</li>"), nLineStart );
 						if( nLineEnd < nLineStart )
-							nLineEnd = sMethodsHtml.Find( _T("<li>"), nLineStart );
+							nLineEnd = sMethodsHtml.Find( _T("<li"), nLineStart );
 						if( nLineEnd < nLineStart )
 							break;
 						CString sLine = sMethodsHtml.Mid( nLineStart, nLineEnd - nLineStart );
@@ -778,19 +781,19 @@ bool CTreeNode::addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR
 	int nControlMethods = sMethodsHtml.Find( CString( _T("<a name=\"") ) + pszControlType + _T("\"") );
 	if( nControlMethods >= 0 )
 	{
-		int nStart = sMethodsHtml.Find( _T("<ul>"), nControlMethods );
+		int nStart = sMethodsHtml.Find( _T("<ul"), nControlMethods );
 		if( nStart >= nControlMethods )
 		{
 			int nEnd = sMethodsHtml.Find( _T("</ul>"), nStart );
 			if( nEnd > nStart )
 			{
-				for( int nLineStart = sMethodsHtml.Find( _T("<li>"), nStart );
+				for( int nLineStart = sMethodsHtml.Find( _T("<li"), nStart );
 						 nLineStart < nEnd;
-						 nLineStart = sMethodsHtml.Find( _T("<li>"), nLineStart + 4 ) )
+						 nLineStart = sMethodsHtml.Find( _T("<li"), nLineStart + 4 ) )
 				{
 					int nLineEnd = sMethodsHtml.Find( _T("</li>"), nLineStart );
 					if( nLineEnd < nLineStart )
-						nLineEnd = sMethodsHtml.Find( _T("<li>"), nLineStart );
+						nLineEnd = sMethodsHtml.Find( _T("<li"), nLineStart );
 					if( nLineEnd < nLineStart )
 						break;
 					CString sLine = sMethodsHtml.Mid( nLineStart, nLineEnd - nLineStart );
@@ -813,6 +816,62 @@ bool CTreeNode::addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR
 			}
 		}
 	}
+	return true;
+}
+
+bool CTreeNode::addEvent( CControlBrowser& Browser, HTREEITEM hParent, TPropertyPtr pEvent )
+{
+	TDclControlPtr pDclControl = pEvent->GetOwnerControl();
+	CString sControlFile;
+	if( pDclControl->GetType() == _CtlForm )
+		sControlFile.Format( _T("Reference\\Form\\%s.htm"), (LPCTSTR)GetFormApiName( pDclControl->GetOwnerForm() ) );
+	else
+		sControlFile.Format( _T("Reference\\Control\\%s.htm"), (LPCTSTR)GetControlApiName( pDclControl ) );
+	CString sControlHtml;
+	if( !ReadLocalizedFile( sControlFile, sControlHtml ) )
+		return false;
+
+	CString sTargetEvent = pEvent->GetApiName();
+	CString sFilename = sTargetEvent + _T(".htm");
+	int nControlMethods = sControlHtml.Find( CString( _T("<a name=\"Events\"") ) );
+	if( nControlMethods >= 0 )
+	{
+		int nStart = sControlHtml.Find( _T("<table"), nControlMethods );
+		if( nStart >= nControlMethods )
+		{
+			int nEnd = sControlHtml.Find( _T("</table>"), nStart );
+			if( nEnd > nStart )
+			{
+				for( int nLineStart = sControlHtml.Find( _T("<li"), nStart );
+						 nLineStart >= 0 && nLineStart < nEnd;
+						 nLineStart = sControlHtml.Find( _T("<li"), nLineStart + 4 ) )
+				{
+					int nLineEnd = sControlHtml.Find( _T("</li>"), nLineStart );
+					if( nLineEnd < nLineStart )
+						nLineEnd = sControlHtml.Find( _T("<li"), nLineStart );
+					if( nLineEnd < nLineStart )
+						break;
+					CString sLine = sControlHtml.Mid( nLineStart, nLineEnd - nLineStart );
+					int nEventFile = sLine.Find( _T("href=\"") );
+					if( nEventFile < 0 )
+						continue;
+					sLine = sLine.Mid( nEventFile + 6 );
+					CString sHref = sLine.SpanExcluding( _T("\"") );
+					sLine = sLine.Mid( sLine.SpanExcluding( _T(">") ).GetLength() + 1 );
+					CString sEventName = sLine.SpanExcluding( _T(" <") );
+					if( sEventName.CompareNoCase( sTargetEvent ) == 0 )
+					{
+						sFilename = sHref.MakeReverse().SpanExcluding( _T("\\/") ).MakeReverse();
+						break;
+					}
+				}
+			}
+		}
+	}
+	HTREEITEM hItem = Browser.InsertItem( hParent, new CEventNode( pEvent, sFilename ) );
+	assert( hItem != NULL );
+	if( !hItem )
+		return false;
 	return true;
 }
 
@@ -943,30 +1002,6 @@ void CControlBrowser::OnDocumentLoaded()
 		mDescription.ReplaceText( iter->first, iter->second );
 	}
 }
-
-//bool CControlBrowser::OnBeginClipboardCopy() 
-//{
-//	if( !theWorkspace.GetActiveDocument()->GetPathName().IsEmpty() )
-//		return true;
-//	int nWhatNext = MessageBox( theWorkspace.LoadResourceString(IDS_RENAMEPROJECT),
-//															theWorkspace.GetAppKey(),
-//															MB_YESNOCANCEL | MB_ICONEXCLAMATION | MB_DEFBUTTON1 );
-//	if( nWhatNext != IDNO )
-//		return false;
-//	if( nWhatNext == IDYES )
-//	{
-//		if( !theWorkspace.GetActiveDocument()->DoFileSave() )
-//			return false;
-//		HTREEITEM hItem = mObjectTree.GetSelectedItem();
-//		if( hItem != NULL )
-//		{
-//			CTreeNode* pItem = (CTreeNode*)mObjectTree.GetItemData( hItem );
-//			if( pItem )
-//				pItem->onSelected( *this );
-//		}
-//	}
-//	return true;
-//}
 
 void CControlBrowser::DoDataExchange(CDataExchange* pDX)
 {

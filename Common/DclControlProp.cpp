@@ -49,13 +49,14 @@ static TPropertyPtr AddControlHiddenProperty( TDclControlPtr pDclControl,
 
 static void AddControlTooltipProperties( TDclControlPtr pDclControl )
 {
-	pDclControl->AddStringProperty( Prop::ToolTipTitle, PropString );
+	AddControlHiddenProperty( pDclControl, Prop::ToolTipTitle, _T(""), PropString );
 	pDclControl->AddStringProperty( Prop::ToolTipBody, PropString );
 	pDclControl->AddStringProperty( Prop::ToolTipPicture, PropPicture );
+	AddControlHiddenProperty( pDclControl, Prop::ToolTipPicture, long(-1), PropPicture );
 	AddControlHiddenProperty( pDclControl, Prop::ToolTipAviFileName, _T(""), PropString );
-	pDclControl->AddBooleanProperty( Prop::ToolTipLine, PropBool, false );
-	pDclControl->AddLongProperty( Prop::ToolTipTitleColor, PropLong, 0 );
-	pDclControl->AddBooleanProperty( Prop::ToolTipBalloon, PropBool, true );
+	AddControlHiddenProperty( pDclControl, Prop::ToolTipLine, false, PropBool );
+	AddControlHiddenProperty( pDclControl, Prop::ToolTipTitleColor, long(0), PropLong );
+	AddControlHiddenProperty( pDclControl, Prop::ToolTipBalloon, true, PropBool );
 }
 
 static void AddControlFontProperties( TDclControlPtr pDclControl, const FontSettings& FS )
@@ -131,7 +132,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::FormEventOnOk );
 		AddControlEvent( pDclControl, Prop::FormEventOnCancel );
 		AddControlEvent( pDclControl, Prop::FormEventCancelClose );
-		AddControlEvent( pDclControl, Prop::EventOnHelp );
+		AddControlEvent( pDclControl, Prop::EventHelp );
 		break;
 	case FrmModelessDlg:
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
@@ -155,7 +156,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::DocEventEnteringNoDocState );
 		AddControlEvent( pDclControl, Prop::EventMouseEntered );
 		AddControlEvent( pDclControl, Prop::EventMouseMovedOff );
-		AddControlEvent( pDclControl, Prop::EventOnHelp );
+		AddControlEvent( pDclControl, Prop::EventHelp );
 		break;
 		break;
 	case FrmControlBar:
@@ -177,7 +178,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::DocEventEnteringNoDocState );
 		AddControlEvent( pDclControl, Prop::EventMouseEntered );
 		AddControlEvent( pDclControl, Prop::EventMouseMovedOff );
-		AddControlEvent( pDclControl, Prop::EventOnHelp );
+		AddControlEvent( pDclControl, Prop::EventHelp );
 		break;
 	case FrmOptionsTab:
 		pDclControl->AddBooleanProperty( Prop::AllowResizing, PropBool, true );
@@ -203,7 +204,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::FormEventCancelClose );
 		AddControlEvent( pDclControl, Prop::FormEventClose );
 		AddControlEvent( pDclControl, Prop::FormEventSize );
-		AddControlEvent( pDclControl, Prop::EventOnHelp );
+		AddControlEvent( pDclControl, Prop::EventHelp );
 		break;
 	case FrmTabPage:
 		AddControlHiddenProperty( pDclControl, Prop::Width, lWidth > 0? lWidth : 600, PropLong );
@@ -228,7 +229,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		AddControlEvent( pDclControl, Prop::DocEventEnteringNoDocState );
 		AddControlEvent( pDclControl, Prop::EventMouseEntered );
 		AddControlEvent( pDclControl, Prop::EventMouseMovedOff );
-		AddControlEvent( pDclControl, Prop::EventOnHelp );
+		AddControlEvent( pDclControl, Prop::EventHelp );
 		break;
 	default:
 		TraceFmt( _T("* AddDefaultFormProperties() called with unknown form type (%d)\r\n"), pOwnerForm->GetType() );
@@ -371,8 +372,8 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventMouseDown );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
 		AddControlEvent( pDclControl, Prop::EventMouseUp );
-		AddControlEvent( pDclControl, Prop::EventRClick );
-		AddControlEvent( pDclControl, Prop::EventRDblClick );
+		AddControlEvent( pDclControl, Prop::EventRightClick );
+		AddControlEvent( pDclControl, Prop::EventRightDblClick );
 		AddControlEvent( pDclControl, Prop::EventSetFocus );
 		break;
 
@@ -484,8 +485,8 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::ShowTypeLabel, PropBool, true );
 		pDclControl->AddLongProperty( Prop::FileDlgStyle, PropEnum, 1 );
 		AddControlEvent( pDclControl, Prop::EventFolderChanged );
-		AddControlEvent( pDclControl, Prop::EventOnHelp );
-		AddControlEvent( pDclControl, Prop::EventOnTypeChange );
+		AddControlEvent( pDclControl, Prop::EventHelp );
+		AddControlEvent( pDclControl, Prop::EventTypeChanged );
 		AddControlEvent( pDclControl, Prop::EventSelChanged );
 		break;
 
@@ -505,7 +506,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddStringProperty( Prop::Picture, PropPicture );
 		pDclControl->AddStringProperty( Prop::MouseOverPicture, PropPicture );
-		pDclControl->AddLongProperty( Prop::ButtonStyle, PropEnum, 0 );
+		pDclControl->AddLongProperty( Prop::GraphicButtonStyle, PropEnum, 0 );
 		AddControlTooltipProperties( pDclControl );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
@@ -570,8 +571,8 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventKillFocus );
 		AddControlEvent( pDclControl, Prop::EventSetFocus );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlEvent( pDclControl, Prop::EventRClick );
-		AddControlEvent( pDclControl, Prop::EventRDblClick );
+		AddControlEvent( pDclControl, Prop::EventRightClick );
+		AddControlEvent( pDclControl, Prop::EventRightDblClick );
 		AddControlEvent( pDclControl, Prop::EventMouseDown );
 		AddControlEvent( pDclControl, Prop::EventMouseUp );
 		AddControlEvent( pDclControl, Prop::EventMouseDblClick );
@@ -662,7 +663,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventKillFocus );
 		AddControlEvent( pDclControl, Prop::EventSetFocus );
 		AddControlEvent( pDclControl, Prop::EventSelChanged );
-		AddControlEvent( pDclControl, Prop::EventRClick );
+		AddControlEvent( pDclControl, Prop::EventRightClick );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
 		break;
 
@@ -689,13 +690,13 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::ListViewSort, PropEnum, 0 );
 		pDclControl->AddLongProperty( Prop::ListViewStyle, PropEnum, 3 );
 		AddControlEvent( pDclControl, Prop::EventClicked );
-		AddControlEvent( pDclControl, Prop::EventRClick );
+		AddControlEvent( pDclControl, Prop::EventRightClick );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
 		AddControlEvent( pDclControl, Prop::DragnDropFromControl );
 		AddControlEvent( pDclControl, Prop::DragnDropFromOther );
 		AddControlEvent( pDclControl, Prop::DragnDropBegin );
 		AddControlEvent( pDclControl, Prop::EventDblClicked );
-		AddControlEvent( pDclControl, Prop::EventRDblClick );
+		AddControlEvent( pDclControl, Prop::EventRightDblClick );
 		AddControlEvent( pDclControl, Prop::EventKillFocus );
 		AddControlEvent( pDclControl, Prop::EventSetFocus );
 		AddControlEvent( pDclControl, Prop::EventReturnPressed );
@@ -779,8 +780,8 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventMouseWheel );
 		AddControlEvent( pDclControl, Prop::EventPaint );
 		AddControlEvent( pDclControl, Prop::EventMouseEntered );
-		AddControlEvent( pDclControl, Prop::EventRClick );
-		AddControlEvent( pDclControl, Prop::EventRDblClick );
+		AddControlEvent( pDclControl, Prop::EventRightClick );
+		AddControlEvent( pDclControl, Prop::EventRightDblClick );
 		break;
 
 	case CtlProgressBar:
@@ -862,8 +863,8 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventMouseWheel );
 		AddControlEvent( pDclControl, Prop::EventPaint );
 		AddControlEvent( pDclControl, Prop::EventMouseEntered );
-		AddControlEvent( pDclControl, Prop::EventRClick );
-		AddControlEvent( pDclControl, Prop::EventRDblClick );
+		AddControlEvent( pDclControl, Prop::EventRightClick );
+		AddControlEvent( pDclControl, Prop::EventRightDblClick );
 		break;
 
 	case CtlSpinButton:
@@ -982,8 +983,8 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventSetFocus );
 		AddControlEvent( pDclControl, Prop::EventSelChanged );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
-		AddControlEvent( pDclControl, Prop::EventRClick );
-		AddControlEvent( pDclControl, Prop::EventRDblClick );
+		AddControlEvent( pDclControl, Prop::EventRightClick );
+		AddControlEvent( pDclControl, Prop::EventRightDblClick );
 		AddControlEvent( pDclControl, Prop::EventBeginLabelEdit );
 		AddControlEvent( pDclControl, Prop::EventDeleteItem );
 		AddControlEvent( pDclControl, Prop::EventEndLabelEdit );

@@ -432,12 +432,16 @@ ADSRESULT Form::Show()
 	CString sDefaultDirectory;
 	CString sDefaultFileName;
 	CString sDefaultExtension;
-	if( GetStringArgument( pArgs, sDefaultDirectory, true ) )
+	bool bHasFileParams = (pDclForm->GetType() == FrmFileDlg);
+	if( bHasFileParams )
 	{
-		if( !GetStringArgument( pArgs, sDefaultFileName ) )
-			return RSERR; //invalid input
-		if( !GetStringArgument( pArgs, sDefaultExtension ) )
-			return RSERR; //invalid input
+		if( GetStringArgument( pArgs, sDefaultDirectory, true ) )
+		{
+			if( !GetStringArgument( pArgs, sDefaultFileName ) )
+				return RSERR; //invalid input
+			if( !GetStringArgument( pArgs, sDefaultExtension ) )
+				return RSERR; //invalid input
+		}
 	}
 	else if( GetIntArgument( pArgs, nX, true ) )
 	{
@@ -453,7 +457,6 @@ ADSRESULT Form::Show()
 
 	// call method to display the requested form
 	FileDialogParams fdp( TRUE, NULL, NULL, 0, NULL );
-	bool bHasFileParams = (pDclForm->GetType() == FrmFileDlg);
 	if( bHasFileParams )
 	{
 		CString sFilename = sDefaultDirectory;

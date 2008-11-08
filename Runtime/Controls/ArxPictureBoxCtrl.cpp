@@ -230,7 +230,7 @@ void CArxPictureBoxCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
 		IsAsyncEvents());
 
 	InvokeMethod(
-		mpTemplate->GetStringProperty(Prop::EventRDblClick),
+		mpTemplate->GetStringProperty(Prop::EventRightDblClick),
 		IsAsyncEvents());
 
 	InvokeMethodIntIntIntInt(
@@ -276,7 +276,7 @@ void CArxPictureBoxCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 		IsAsyncEvents());
 
 	InvokeMethod(
-		mpTemplate->GetStringProperty(Prop::EventRClick),
+		mpTemplate->GetStringProperty(Prop::EventRightClick),
 		IsAsyncEvents());	
 
 	InvokeMethodIntIntIntInt(

@@ -69,13 +69,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
             VALUE "FileDescription", "OpenDCL ARX Interface"
-            VALUE "FileVersion", "5, 0, 1, 1"
+            VALUE "FileVersion", "5, 0, 1, 2"
             VALUE "InternalName", "OpenDCL.Runtime"
             VALUE "LegalCopyright", "Copyright © 2008 OpenDCL Consortium.  All rights reserved."
             VALUE "LegalTrademarks", "OpenDCL(tm)"
             VALUE "OriginalFilename", "OpenDCL.*.arx"
             VALUE "ProductName", "OpenDCL Runtime"
-            VALUE "ProductVersion", "5, 0, 1, 1"
+            VALUE "ProductVersion", "5, 0, 1, 2"
         END
     END
     BLOCK "VarFileInfo"

@@ -98,12 +98,12 @@ CString GetControlApiName( ControlType type )
 	case CtlDwgPreview: return _T("DwgPreview");
 	case CtlFileExplorer: return _T("FileExplorer");
 	case CtlFrame: return _T("Frame");
-	case CtlGraphicButton: _T("GraphicButton");
+	case CtlGraphicButton: return _T("GraphicButton");
 	case CtlGrid: return _T("Grid");
 	case CtlHatch: return _T("Hatch");
 	case CtlHtml: return _T("Html");
 	case CtlHyperlink: return _T("Hyperlink");
-	case CtlImageComboBox: _T("ImageComboBox");
+	case CtlImageComboBox: return _T("ImageComboBox");
 	case CtlLabel: return _T("Label");
 	case CtlListBox: return _T("ListBox");
 	case CtlListView: return _T("ListView");

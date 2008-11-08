@@ -309,7 +309,7 @@ void CDockingDialog::OnSize(UINT nType, int cx, int cy)
 
 BOOL CDockingDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventOnHelp), true);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), true);
 	return TRUE;
 }
 

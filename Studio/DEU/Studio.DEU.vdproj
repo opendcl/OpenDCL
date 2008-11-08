@@ -801,12 +801,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_2944809F0E224182A4031EEE794E6B03"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_295F2B07E8D14A4E909AA077C9DD3674"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2121,6 +2115,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_693D4005FF6E4DC78BC472588CD3622C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_697860AC020E4D8FBD4B8499860A8DB5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3262,12 +3262,6 @@
         "Entry"
         {
         "MsmKey" = "8:_9B12E911808C4383B4A7B410687DDF00"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9B17DD5A67D84BE598478BCA227484FE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4552,6 +4546,12 @@
         "Entry"
         {
         "MsmKey" = "8:_DB39C73451664D51A1E66798BCFB4BA1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DB6515C09A4A41838CA74D8543BA383B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -7910,26 +7910,6 @@
             "TargetName" = "8:GetDwgMouseCoords.htm"
             "Tag" = "8:"
             "Folder" = "8:_7CE38A074BD64064AE777434D4890A67"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2944809F0E224182A4031EEE794E6B03"
-            {
-            "SourcePath" = "8:Content\\Reference\\Event\\RClick.htm"
-            "TargetName" = "8:RClick.htm"
-            "Tag" = "8:"
-            "Folder" = "8:_2EC3A8CCFB98422CBE1BA9069B23D90E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -12324,6 +12304,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_693D4005FF6E4DC78BC472588CD3622C"
+            {
+            "SourcePath" = "8:Content\\Reference\\Event\\RightClick.htm"
+            "TargetName" = "8:RightClick.htm"
+            "Tag" = "8:"
+            "Folder" = "8:_2EC3A8CCFB98422CBE1BA9069B23D90E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_697860AC020E4D8FBD4B8499860A8DB5"
             {
             "SourcePath" = "8:Content\\Samples\\DragNDrop.lsp"
@@ -16130,26 +16130,6 @@
             "TargetName" = "8:OverwritePrompt.htm"
             "Tag" = "8:"
             "Folder" = "8:_2A1F150E417C4BB68E549270290710BF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9B17DD5A67D84BE598478BCA227484FE"
-            {
-            "SourcePath" = "8:Content\\Reference\\Event\\RDblClick.htm"
-            "TargetName" = "8:RDblClick.htm"
-            "Tag" = "8:"
-            "Folder" = "8:_2EC3A8CCFB98422CBE1BA9069B23D90E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -20444,6 +20424,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DB6515C09A4A41838CA74D8543BA383B"
+            {
+            "SourcePath" = "8:Content\\Reference\\Event\\RightDblClick.htm"
+            "TargetName" = "8:RightDblClick.htm"
+            "Tag" = "8:"
+            "Folder" = "8:_2EC3A8CCFB98422CBE1BA9069B23D90E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DC2C3DE5C03943A5B5D74B5B2D3BC5CB"
             {
             "SourcePath" = "8:Content\\Reference\\Event\\SelChanged-CountValue.htm"
@@ -23271,14 +23271,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{13A2933F-54AB-4B46-9A86-5C99C5955AD7}"
-        "PackageCode" = "8:{365DCB97-5E88-43C0-AA1D-F1DBCFCDD687}"
+        "ProductCode" = "8:{741AEBA1-267A-4E9D-9ACD-CB27CCB48347}"
+        "PackageCode" = "8:{BF7CBAC0-EBD2-4D0F-B1A9-9E57F1CF4568}"
         "UpgradeCode" = "8:{9BE5DB7C-1263-4235-90AC-B4E5E907789D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0101"
+        "ProductVersion" = "8:5.0.0102"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -24098,7 +24098,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_07AC6249E69446CD9D758B9252704A40"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\DEU\\MSM\\Release\\OpenDCL.Runtime.DEU.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\DEU\\MSM\\Debug\\OpenDCL.Runtime.DEU.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_388900515A4744599E058DA609E4770D"
@@ -24151,7 +24151,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_1D0903E28C774B368A798721B41E8E1C"
             {
-            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7E7FFE9C6B4D412E9FBF76F59A1F7A33"
@@ -24179,7 +24179,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_FDB2ABC5CC62416389847706827F8059"
             {
-            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_388900515A4744599E058DA609E4770D"

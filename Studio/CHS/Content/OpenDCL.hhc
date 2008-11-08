@@ -861,7 +861,7 @@
 				<param name="Local" value="Reference\Property\ToolTipLine.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Tooltip Main Text">
+				<param name="Name" value="Tooltip">
 				<param name="Local" value="Reference\Property\ToolTipMainText.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
@@ -2864,11 +2864,11 @@
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="RClick">
-				<param name="Local" value="Reference\Event\RClick.htm">
+				<param name="Local" value="Reference\Event\RightClick.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="RDblClick">
-				<param name="Local" value="Reference\Event\RDblClick.htm">
+				<param name="Local" value="Reference\Event\RightDblClick.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="ReleasedCapture">

@@ -687,8 +687,8 @@ Reference\Event\OptionsCancel.htm
 Reference\Event\OptionsHelp.htm
 Reference\Event\OptionsOk.htm
 Reference\Event\Paint.htm
-Reference\Event\RClick.htm
-Reference\Event\RDblClick.htm
+Reference\Event\RightClick.htm
+Reference\Event\RightDblClick.htm
 Reference\Event\ReleasedCapture-Value.htm
 Reference\Event\ReturnPressed.htm
 Reference\Event\Scroll.htm

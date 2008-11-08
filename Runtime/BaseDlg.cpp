@@ -161,7 +161,7 @@ BOOL CBaseDlg::OnInitDialog()
 
 BOOL CBaseDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventOnHelp), false);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), false);
 	return TRUE;
 }
 

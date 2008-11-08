@@ -2,6 +2,7 @@
 
 
 CString VTToString( VARTYPE vt );
+CString AxTypeToApiLispType( VARTYPE vt, const GUID& guid = GUID_NULL );
 CString AxTypeToDisplayableLispType( VARTYPE vt, const GUID& guid = GUID_NULL );
 HRESULT GetNameOfRefType( ITypeInfo* pTypeInfo, HREFTYPE hreftype, CString& sTypeName );
 void SetRefType( VARTYPE& vtType, ITypeInfo* TheInfo, HREFTYPE hreftype, CLSID& Clsid );

@@ -20,6 +20,15 @@
 #define IDS_OPEN                        47
 #define IDS_TRUE                        48
 #define IDS_FALSE                       49
+#define IDS_LISPTYPE_BOOLEAN            60
+#define IDS_LISPTYPE_INTEGER            61
+#define IDS_LISPTYPE_LONG               62
+#define IDS_LISPTYPE_FLOAT              63
+#define IDS_LISPTYPE_STRING             64
+#define IDS_LISPTYPE_HANDLE             65
+#define IDS_LISPTYPE_VARIANT            66
+#define IDS_LISPTYPE_AXOBJECT           67
+#define IDS_LISPTYPE_OLECOLOR           68
 #define IDI_HELP                        1100
 #define IDI_INFO                        1101
 #define IDI_WARN                        1102
@@ -255,9 +264,9 @@
 #define IDS_PROP_SHOWREADONLYCHECKBOX   3416
 #define IDS_PROP_SHOWTYPECOMBOBOX       3417
 #define IDS_PROP_SHOWTYPELABEL          3418
-#define IDS_EVENT_FOLDERCHANGE          3419
+#define IDS_EVENT_FOLDERCHANGED         3419
 #define IDS_EVENT_HELP                  3420
-#define IDS_EVENT_TYPECHANGE            3421
+#define IDS_EVENT_TYPECHANGED           3421
 #define IDS_PROP_INSERTTYPE             3422
 #define IDS_PROP_ROWHEADER              3423
 #define IDS_PROP_COLUMN_CAPTIONS        3424

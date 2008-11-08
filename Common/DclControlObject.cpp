@@ -663,7 +663,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 					{
 					case Prop::Custom:
 					case Prop::DockableSides:
-					case Prop::EventOnHelp:
+					case Prop::EventHelp:
 						mProperties.erase( iterAt );
 						continue;
 					}

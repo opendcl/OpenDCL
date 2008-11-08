@@ -1277,7 +1277,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\VarUtils.Cpp"
+				RelativePath="..\Common\VarUtils.cpp"
 				>
 			</File>
 			<File

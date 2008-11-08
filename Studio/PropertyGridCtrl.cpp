@@ -1020,7 +1020,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::BottomFromBottom: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::BtnCaption: return PF_UnfilteredTextEditCreator;
 	case Prop::BtnToolTips: return PF_UnfilteredTextEditCreator;
-	case Prop::ButtonStyle: return &CEnumComboBoxCtrl::Create;
+	case Prop::GraphicButtonStyle: return &CEnumComboBoxCtrl::Create;
 	case Prop::Caption: return PF_UnfilteredTextEditCreator;
 	case Prop::OptionsTabCaption: return PF_UnfilteredTextEditCreator;
 	case Prop::ColHeader: return &CBooleanCheckBoxCtrl::Create;
@@ -1138,7 +1138,8 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::Top: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::ToolTipAviFileName: return PF_UnfilteredTextEditCreator;
 	case Prop::ToolTipBalloon: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::ToolTipBody: return PF_UnfilteredTextEditCreator;
+	//case Prop::ToolTipBody: return PF_UnfilteredTextEditCreator;
+	case Prop::ToolTipBody: if( bMultiple ) return NULL; return &CCommandButtonEditCtrl::Create< ID_TOOLTIPPROPERTIES >;
 	case Prop::ToolTipLine: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ToolTipPicture: return &CPicFolderComboBoxCtrl::Create;
 	case Prop::ToolTipTitle: return PF_UnfilteredTextEditCreator;
@@ -1720,6 +1721,7 @@ BEGIN_MESSAGE_MAP(CPropertyGridCtrl, CListCtrl)
 	ON_NOTIFY_REFLECT(LVN_ITEMCHANGED, &CPropertyGridCtrl::OnLvnItemchanged)
 	ON_COMMAND(ID_PROPERTIES, &CPropertyGridCtrl::OnProperties)
 	ON_COMMAND(ID_FONTPROPERTIES, &CPropertyGridCtrl::OnFontProperties)
+	ON_COMMAND(ID_TOOLTIPPROPERTIES, &CPropertyGridCtrl::OnTooltipProperties)
 	ON_COMMAND(ID_FORECOLORPROPERTIES, &CPropertyGridCtrl::OnForeColorProperties)
 	ON_COMMAND(ID_BACKCOLORPROPERTIES, &CPropertyGridCtrl::OnBackColorProperties)
 	ON_COMMAND(ID_ALTCOLORPROPERTIES, &CPropertyGridCtrl::OnAltColorProperties)
@@ -1969,6 +1971,12 @@ void CPropertyGridCtrl::OnProperties()
 void CPropertyGridCtrl::OnFontProperties() 
 {
 	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_FONTPROPERTIES, (LPARAM)0 );
+	OnEndEditCurCell();
+}
+
+void CPropertyGridCtrl::OnTooltipProperties() 
+{
+	theStudioWorkspace.GetStudioFrame()->PostMessage( WM_COMMAND, ID_TOOLTIPPROPERTIES, (LPARAM)0 );
 	OnEndEditCurCell();
 }
 

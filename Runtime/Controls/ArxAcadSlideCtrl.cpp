@@ -294,7 +294,7 @@ void CArxAcadSlideCtrl::OnRButtonDblClk(UINT nFlags, CPoint point)
 		IsAsyncEvents());
 	
 	InvokeMethod(
-		mpTemplate->GetStringProperty(Prop::EventRDblClick),
+		mpTemplate->GetStringProperty(Prop::EventRightDblClick),
 		IsAsyncEvents());
 	
 	CWnd::OnRButtonDblClk(nFlags, point);
@@ -311,7 +311,7 @@ void CArxAcadSlideCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 		IsAsyncEvents());
 	
 	InvokeMethod(
-		mpTemplate->GetStringProperty(Prop::EventRClick),
+		mpTemplate->GetStringProperty(Prop::EventRightClick),
 		IsAsyncEvents());	
 	
 

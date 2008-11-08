@@ -20,7 +20,7 @@ CButtonStyles::CButtonStyles( TDclControlPtr pControl )
 : CPropertyPage(CButtonStyles::IDD)
 , mpControl( pControl )
 {
-	m_pStyle = pControl->GetPropertyObject(Prop::ButtonStyle);
+	m_pStyle = pControl->GetPropertyObject(Prop::GraphicButtonStyle);
 	m_pPicture = pControl->GetPropertyObject(Prop::Picture);
 	m_nHighestId = 99;
 }
@@ -155,7 +155,7 @@ BOOL CButtonStyles::OnApply()
 {
 	m_pStyle->SetLongValue(m_SelectedStyle);
 	m_pPicture->SetLongValue(static_cast< long >(m_SelectedPic));
-	CStudioDialogControl::UpdateProperty(mpControl, Prop::ButtonStyle);
+	CStudioDialogControl::UpdateProperty(mpControl, Prop::GraphicButtonStyle);
 	CStudioDialogControl::UpdateProperty(mpControl, Prop::Picture);
 	return CPropertyPage::OnApply();
 }

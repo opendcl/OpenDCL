@@ -89,6 +89,7 @@ protected:
 	afx_msg void OnLvnItemchanged(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnProperties();
 	afx_msg void OnFontProperties();
+	afx_msg void OnTooltipProperties();
 	afx_msg void OnForeColorProperties();
 	afx_msg void OnBackColorProperties();
 	afx_msg void OnAltColorProperties();

@@ -154,7 +154,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::BottomFromBottom] = _T("BottomFromBottom");
 	mmapIdToApiName[Prop::BtnCaption] = _T("ButtonCaptionList");
 	mmapIdToApiName[Prop::BtnToolTips] = _T("ButtonToolTipList");
-	mmapIdToApiName[Prop::ButtonStyle] = _T("ButtonStyle");
+	mmapIdToApiName[Prop::GraphicButtonStyle] = _T("GraphicButtonStyle");
 	mmapIdToApiName[Prop::Caption] = _T("Caption");
 	mmapIdToApiName[Prop::CaptionMinute] = _T("CaptionMinute");
 	mmapIdToApiName[Prop::CaptionMinutes] = _T("CaptionMinutes");
@@ -206,7 +206,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::EventDropDown] = _T("DropDown");
 	mmapIdToApiName[Prop::EventEditChanged] = _T("EditChanged");
 	mmapIdToApiName[Prop::EventEndLabelEdit] = _T("EndLabelEdit");
-	mmapIdToApiName[Prop::EventFolderChanged] = _T("FolderChange");
+	mmapIdToApiName[Prop::EventFolderChanged] = _T("FolderChanged");
 	mmapIdToApiName[Prop::EventGetDayState] = _T("GetDayState");
 	mmapIdToApiName[Prop::EventInvoke] = _T("EventInvoke");
 	mmapIdToApiName[Prop::EventItemExpanded] = _T("ItemExpanded");
@@ -226,16 +226,15 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::EventMouseWheel] = _T("MouseWheel");
 	mmapIdToApiName[Prop::EventNavigateComplete] = _T("NavigationComplete");
 	mmapIdToApiName[Prop::EventNodeClicked] = _T("NodeClicked");
-	mmapIdToApiName[Prop::EventOnHelp] = _T("Help");
-	mmapIdToApiName[Prop::EventOnTypeChange] = _T("TypeChange");
+	mmapIdToApiName[Prop::EventHelp] = _T("Help");
 	mmapIdToApiName[Prop::EventOptionsApply] = _T("OptionsApply");
 	mmapIdToApiName[Prop::EventOptionsCancel] = _T("OptionsCancel");
 	mmapIdToApiName[Prop::EventOptionsHelp] = _T("OptionsHelp");
 	mmapIdToApiName[Prop::EventOptionsOK] = _T("OptionsOk");
 	mmapIdToApiName[Prop::EventOutOfMemory] = _T("OutOfMemory");
 	mmapIdToApiName[Prop::EventPaint] = _T("Paint");
-	mmapIdToApiName[Prop::EventRClick] = _T("RightClick");
-	mmapIdToApiName[Prop::EventRDblClick] = _T("RightDblClick");
+	mmapIdToApiName[Prop::EventRightClick] = _T("RightClick");
+	mmapIdToApiName[Prop::EventRightDblClick] = _T("RightDblClick");
 	mmapIdToApiName[Prop::EventReleasedCapture] = _T("ReleasedCapture");
 	mmapIdToApiName[Prop::EventReturn] = _T("Return");
 	mmapIdToApiName[Prop::EventReturnPressed] = _T("ReturnPressed");
@@ -247,6 +246,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::EventSelect] = _T("Select");
 	mmapIdToApiName[Prop::EventSetFocus] = _T("SetFocus");
 	mmapIdToApiName[Prop::EventSplitterMoved] = _T("SplitterMoved");
+	mmapIdToApiName[Prop::EventTypeChanged] = _T("TypeChanged");
 	mmapIdToApiName[Prop::EventUpdate] = _T("Update");
 	mmapIdToApiName[Prop::ExtCanBeDiff] = _T("ExtCanBeDiff");
 	mmapIdToApiName[Prop::FileDlgStyle] = _T("FileExplorerStyle");

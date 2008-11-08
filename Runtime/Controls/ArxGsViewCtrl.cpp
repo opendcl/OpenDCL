@@ -623,11 +623,11 @@ void CArxGsViewCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 {
 	if( mbRDblClick )
 	{
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventRDblClick), IsAsyncEvents());	
+		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventRightDblClick), IsAsyncEvents());	
 		mbRDblClick = false;
 	}
 	else
-		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventRClick), IsAsyncEvents());	
+		InvokeMethod(mpTemplate->GetStringProperty(Prop::EventRightClick), IsAsyncEvents());	
 	
 	InvokeMethodIntIntIntInt(
 		mpTemplate->GetStringProperty(Prop::EventMouseUp),

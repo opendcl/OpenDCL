@@ -309,7 +309,7 @@ void CPaletteDialog::OnSize(UINT nType, int cx, int cy)
 
 BOOL CPaletteDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventOnHelp), true);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), true);
 	return TRUE;
 }
 

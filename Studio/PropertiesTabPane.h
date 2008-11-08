@@ -19,12 +19,10 @@
 class CPropertiesTabPane : public CDialog
 {
 	CPropertyGridCtrl	mPropGridCtrl;
+	CFont mFont;
+	bool mbInitialized;
 
 	enum { IDD = IDD_TABPAGE_PROPERTIES };
-
-public:
-	CFont				m_font;
-	bool m_bInitialized;
 
 // Construction
 public:
@@ -44,9 +42,7 @@ protected:
 // Implementation
 protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	virtual BOOL OnInitDialog();
-	afx_msg void OnDestroy();
 
 protected:
 	DECLARE_MESSAGE_MAP()

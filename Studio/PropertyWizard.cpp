@@ -124,7 +124,7 @@ bool CPropertyWizard::Initialize(void)
 	}
 
 	// Button Styles page
-	if( mpDclControl->GetPropertyObject( Prop::ButtonStyle ) )
+	if( mpDclControl->GetPropertyObject( Prop::GraphicButtonStyle ) )
 	{
 		mpButtonPage = new CButtonStyles( mpDclControl );
 		AddPage( mpButtonPage );

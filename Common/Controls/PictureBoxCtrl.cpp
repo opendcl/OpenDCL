@@ -83,8 +83,8 @@ static bool IsButtonLikeRequired( TDclControlPtr pDclControl )
 			!pDclControl->GetStringProperty( Prop::EventMouseMovedOff ).IsEmpty() ||
 			!pDclControl->GetStringProperty( Prop::EventMouseUp ).IsEmpty() ||
 			!pDclControl->GetStringProperty( Prop::EventMouseWheel ).IsEmpty() ||
-			!pDclControl->GetStringProperty( Prop::EventRClick ).IsEmpty() ||
-			!pDclControl->GetStringProperty( Prop::EventRDblClick ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventRightClick ).IsEmpty() ||
+			!pDclControl->GetStringProperty( Prop::EventRightDblClick ).IsEmpty() ||
 			!pDclControl->GetStringProperty( Prop::ToolTipTitle ).IsEmpty() ||
 			!pDclControl->GetStringProperty( Prop::ToolTipBody ).IsEmpty() )
 		return true;
@@ -147,8 +147,8 @@ bool CPictureBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 		case Prop::EventMouseMovedOff:
 		case Prop::EventMouseUp:
 		case Prop::EventMouseWheel:
-		case Prop::EventRClick:
-		case Prop::EventRDblClick:
+		case Prop::EventRightClick:
+		case Prop::EventRightDblClick:
 		case Prop::ToolTipTitle:
 		case Prop::ToolTipBody:
 			if( pProp->GetStringValue().IsEmpty() )

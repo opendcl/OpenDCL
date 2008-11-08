@@ -66,7 +66,7 @@ bool CButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 				SizeToContent();
 			break;
 		}
-	case Prop::ButtonStyle:
+	case Prop::GraphicButtonStyle:
 		{
 			switch( pProp->GetLongValue() )
 			{

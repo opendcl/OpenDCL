@@ -141,7 +141,7 @@ void CArxImageTreeCtrl::OnRButtonDown(UINT nFlags, CPoint point)
 
 void CArxImageTreeCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventRClick ), IsAsyncEvents() );
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventRightClick ), IsAsyncEvents() );
 	__super::OnRButtonUp(nFlags, point);
 }
 
@@ -169,13 +169,13 @@ void CArxImageTreeCtrl::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CArxImageTreeCtrl::OnNMRclick(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventRClick ), IsAsyncEvents() );
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventRightClick ), IsAsyncEvents() );
 	*pResult = 0;
 }
 
 void CArxImageTreeCtrl::OnNMRdblclk(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventRDblClick ), IsAsyncEvents() );
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventRightDblClick ), IsAsyncEvents() );
 	*pResult = 0;
 }
 

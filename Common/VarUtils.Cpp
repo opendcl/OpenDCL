@@ -1,5 +1,7 @@
-#include "StdAfx.H"
-#include "VarUtils.H"
+#include "StdAfx.h"
+#include "VarUtils.h"
+#include "Workspace.h"
+#include "Resource.h"
 
 
 static struct _VARTYPENAME_ENTRY { VARTYPE vt; LPCTSTR pszName; } g_aVarTypes[] =
@@ -66,7 +68,7 @@ CString VTToString( VARTYPE vt )
 }
 
 
-CString AxTypeToDisplayableLispType( VARTYPE vt, const GUID& guid /*= GUID_NULL*/ )
+CString AxTypeToApiLispType( VARTYPE vt, const GUID& guid /*= GUID_NULL*/ )
 {
 	CString sPrefix;
 	if( (vt & VT_BYREF) != 0 )
@@ -121,6 +123,71 @@ CString AxTypeToDisplayableLispType( VARTYPE vt, const GUID& guid /*= GUID_NULL*
 
 	case VT_VARIANT:	
 		return sPrefix + _T("Variant");
+		break;
+
+	default:
+		break;
+	}
+		
+	return sPrefix;
+}
+
+
+CString AxTypeToDisplayableLispType( VARTYPE vt, const GUID& guid /*= GUID_NULL*/ )
+{
+	CString sPrefix;
+	if( (vt & VT_BYREF) != 0 )
+		sPrefix += _T("'");
+	if( guid == GUID_COLOR )
+		return sPrefix + theWorkspace.LoadResourceString( IDS_LISPTYPE_OLECOLOR );
+	switch( vt & VT_TYPEMASK )
+	{
+	case VT_BOOL:
+	case VT_I1:
+	case VT_UI1:
+		return sPrefix + theWorkspace.LoadResourceString( IDS_LISPTYPE_BOOLEAN );
+		break;                         
+
+	case VT_I2:
+	case VT_UI2:
+	case VT_INT:
+	case VT_UINT:
+		return sPrefix + theWorkspace.LoadResourceString( IDS_LISPTYPE_INTEGER );
+		break;
+
+	case VT_CY:
+	case VT_I4:
+	case VT_UI4:
+		return sPrefix + theWorkspace.LoadResourceString( IDS_LISPTYPE_LONG );
+		break;
+
+	case VT_R4:
+	case VT_R8:
+		return sPrefix + theWorkspace.LoadResourceString( IDS_LISPTYPE_FLOAT );
+		break;
+
+	case VT_BSTR:
+	case VT_LPSTR:
+		return sPrefix + theWorkspace.LoadResourceString( IDS_LISPTYPE_STRING );
+		break;
+
+	case VT_UNKNOWN:
+	case VT_DISPATCH:
+		{
+			return sPrefix + theWorkspace.LoadResourceString( IDS_LISPTYPE_AXOBJECT );
+			break;
+		}
+	case VT_VOID:
+	case VT_EMPTY:
+	case VT_NULL:
+		break;
+
+	case VT_PTR:
+		return sPrefix + theWorkspace.LoadResourceString( IDS_LISPTYPE_HANDLE );
+		break;
+
+	case VT_VARIANT:	
+		return sPrefix + theWorkspace.LoadResourceString( IDS_LISPTYPE_VARIANT );
 		break;
 
 	default:

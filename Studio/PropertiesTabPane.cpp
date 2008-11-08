@@ -14,11 +14,8 @@
 CPropertiesTabPane::CPropertiesTabPane( const std::vector< TDclControlPtr >& ActiveControls, CWnd* pParent /*=NULL*/ )
 : CDialog(CPropertiesTabPane::IDD, pParent)
 , mPropGridCtrl( this, ActiveControls )
+, mbInitialized( false )
 {
-	//{{AFX_DATA_INIT(CPropertiesTabPane)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
-	m_bInitialized = false;
 }
 
 void CPropertiesTabPane::ActivateProperty( TPropertyPtr pProp )
@@ -28,10 +25,23 @@ void CPropertiesTabPane::ActivateProperty( TPropertyPtr pProp )
 	if( pProp )
 	{
 		sName = pProp->GetName();
-		CString sUnused;
-		ParseHelpInfo( pProp, sUnused, sDesc );
-		if( sDesc.IsEmpty() )
-			sDesc = theWorkspace.LoadResourceString( IDS_PROPD_NAME + pProp->GetID() - 1 );
+		//Handle pseudo-properties manually
+		switch( pProp->GetID() )
+		{
+		case Prop::ControlBrowser:
+			sDesc = theWorkspace.LoadResourceString( IDS_PROPD_CONTROLBROWSER );
+			break;
+		case Prop::Custom:
+			sDesc = theWorkspace.LoadResourceString( IDS_PROPD_CUSTOMWIZARD );
+			break;
+		case Prop::ActiveXPropPages:
+			sDesc = theWorkspace.LoadResourceString( IDS_PROPD_AXPROPPAGES );
+			break;
+		default:
+			CString sUnused;
+			ParseHelpInfo( pProp, sUnused, sDesc );
+			break;
+		}
 	}
 	GetDlgItem( IDC_PROPERTYTITLE )->SetWindowText( sName );
 	GetDlgItem( IDC_PROPDESCEDIT )->SetWindowText( sDesc );
@@ -45,8 +55,6 @@ void CPropertiesTabPane::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CPropertiesTabPane, CDialog)
 	ON_WM_SIZE()
-	ON_WM_CREATE()
-	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -56,7 +64,7 @@ void CPropertiesTabPane::OnSize(UINT nType, int cx, int cy)
 {
 	CDialog::OnSize(nType, cx, cy);
 	
-	if (!m_bInitialized) 
+	if (!mbInitialized) 
 		return;
 
 	CRect rcPropertyTitle (0,cy-nPropertyListHeight,cx,cy - nPropertyDescWidth);
@@ -67,16 +75,6 @@ void CPropertiesTabPane::OnSize(UINT nType, int cx, int cy)
 		
 	CRect rcList (0,0,cx,cy-nPropertyListHeight);
 	mPropGridCtrl.MoveWindow(rcList, FALSE);
-}
-
-int CPropertiesTabPane::OnCreate(LPCREATESTRUCT lpCreateStruct) 
-{
-	if (CDialog::OnCreate(lpCreateStruct) == -1)
-		return -1;
-	
-	// TODO: Add your specialized creation code here
-	
-	return 0;
 }
 
 BOOL CPropertiesTabPane::OnInitDialog() 
@@ -95,19 +93,12 @@ BOOL CPropertiesTabPane::OnInitDialog()
 	lf.lfHeight = -::MulDiv(nDeFontSize, pDC->GetDeviceCaps(LOGPIXELSY), nDePixels); // create font size as scaled
 	lf.lfQuality = PROOF_QUALITY;
 	lf.lfWeight = FW_BOLD;
-	m_font.CreateFontIndirect(&lf);
+	mFont.CreateFontIndirect(&lf);
 
-	m_bInitialized = true;
+	mbInitialized = true;
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
-}
-
-void CPropertiesTabPane::OnDestroy() 
-{
-	CDialog::OnDestroy();
-	
-	m_font.DeleteObject();	
 }
 
 BOOL CPropertiesTabPane::PreTranslateMessage(MSG* pMsg) 

@@ -41,7 +41,7 @@ END_MESSAGE_MAP()
 
 BOOL CMainFileDlg::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpDlgObject->GetTemplate()->GetStringProperty(Prop::EventOnHelp), false);
+	InvokeMethod(mpDlgObject->GetTemplate()->GetStringProperty(Prop::EventHelp), false);
 	return TRUE;
 }
 

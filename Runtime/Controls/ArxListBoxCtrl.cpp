@@ -174,7 +174,7 @@ void CArxListBoxCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CArxListBoxCtrl::OnRButtonUp(UINT nFlags, CPoint point) 
 {
-	CString sEventName = mpTemplate->GetStringProperty(Prop::EventRClick);
+	CString sEventName = mpTemplate->GetStringProperty(Prop::EventRightClick);
 	if( !sEventName.IsEmpty() )
 	{
 		// see if the user has right clicked on a list item.

@@ -149,7 +149,7 @@ void CArxListViewCtrl::OnRclick(NMHDR* pNMHDR, LRESULT* pResult)
 	if( nItem < GetItemCount() && nItem >= 0 )
 	{
 		InvokeMethodIntInt(
-			mpTemplate->GetStringProperty( Prop::EventRClick ),  
+			mpTemplate->GetStringProperty( Prop::EventRightClick ),  
 			nItem,
 			plvdi->item.iSubItem,
 			IsAsyncEvents());			
@@ -164,7 +164,7 @@ void CArxListViewCtrl::OnRdblclk(NMHDR* pNMHDR, LRESULT* pResult)
 	if( nItem < GetItemCount() && nItem >= 0 )
 	{
 		InvokeMethodIntInt(
-			mpTemplate->GetStringProperty( Prop::EventRDblClick ),  
+			mpTemplate->GetStringProperty( Prop::EventRightDblClick ),  
 			nItem,
 			plvdi->item.iSubItem,
 			IsAsyncEvents());			

@@ -395,18 +395,18 @@ void CCustomFileDialog::OnTypeChange()
 		return;
 	CString sText;
 	GetParent()->GetDlgItem(cmb1)->GetWindowText( sText );
-	InvokeMethodString(mpFileDlgCtrl->GetStringProperty(Prop::EventOnTypeChange), sText, false);
+	InvokeMethodString(mpFileDlgCtrl->GetStringProperty(Prop::EventTypeChanged), sText, false);
 }
 
 BOOL CCustomFileDialog::OnHelpInfo(HELPINFO* pHelpInfo)
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventOnHelp), false);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), false);
 	return TRUE; 
 }
 
 void CCustomFileDialog::OnHelp()
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventOnHelp), false);
+	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventHelp), false);
 }
 
 void CCustomFileDialog::OnFolderChange()

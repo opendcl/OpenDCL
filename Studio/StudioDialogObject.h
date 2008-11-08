@@ -95,6 +95,7 @@ public:
 	virtual void CloseDialog(int nStatus = -1);
 protected:
 	virtual bool CreateModeless( UINT nID );
+	virtual DWORD GetWndStyle() const; //get window style from properties
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 	virtual TDialogControlPtr CreateNewDialogControl( TDclControlPtr pTemplate, UINT nID );
 	virtual bool OnApplyName( TPropertyPtr pProp ); //Prop::Name
@@ -132,6 +133,7 @@ protected:
 	afx_msg void OnAxProperties();
 	afx_msg void OnUpdateAxProperties(CCmdUI *pCmdUI);
 	afx_msg void OnFontProperties();
+	afx_msg void OnTooltipProperties();
 	afx_msg void OnForeColorProperties();
 	afx_msg void OnBackColorProperties();
 	afx_msg void OnAltColorProperties();

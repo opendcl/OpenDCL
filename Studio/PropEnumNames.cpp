@@ -26,7 +26,7 @@ static std::map< Prop::Id, TEnumNames >& GetEnumNamesMap()
 		FillEnumNamesList( Map[Prop::AlternateOrient], IDS_ORIENTATION_0, 2 );
 		FillEnumNamesList( Map[Prop::BlockListStyle], IDS_BL_STYLE_0, 2 );
 		FillEnumNamesList( Map[Prop::BorderStyle], IDS_BORDERSTYLE_0, 3 );
-		FillEnumNamesList( Map[Prop::ButtonStyle], IDS_BUTTONSTYLE_0, 7 );
+		FillEnumNamesList( Map[Prop::GraphicButtonStyle], IDS_BUTTONSTYLE_0, 7 );
 		FillEnumNamesList( Map[Prop::ComboBoxStyle], IDS_COMBOBOXSTYLE_0, 15 );
 		FillEnumNamesList( Map[Prop::DefaultDockedSide], IDS_DOCK_DEFAULT_0, 4 );
 		FillEnumNamesList( Map[Prop::DockableSides], IDS_DOCK_SIDES_0, 6 );

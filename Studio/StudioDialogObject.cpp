@@ -59,6 +59,8 @@ BEGIN_MESSAGE_MAP(CStudioDialogObject, CDialog)
 	ON_UPDATE_COMMAND_UI(ID_AXPROPERTIES, &CStudioDialogObject::OnUpdateAxProperties)
 	ON_COMMAND(ID_FONTPROPERTIES, &CStudioDialogObject::OnFontProperties)
 	ON_UPDATE_COMMAND_UI(ID_FONTPROPERTIES, &CStudioDialogObject::OnUpdateProperties)
+	ON_COMMAND(ID_TOOLTIPPROPERTIES, &CStudioDialogObject::OnTooltipProperties)
+	ON_UPDATE_COMMAND_UI(ID_TOOLTIPPROPERTIES, &CStudioDialogObject::OnUpdateProperties)
 	ON_COMMAND(ID_FORECOLORPROPERTIES, &CStudioDialogObject::OnForeColorProperties)
 	ON_UPDATE_COMMAND_UI(ID_FORECOLORPROPERTIES, &CStudioDialogObject::OnUpdateProperties)
 	ON_COMMAND(ID_BACKCOLORPROPERTIES, &CStudioDialogObject::OnBackColorProperties)
@@ -153,6 +155,16 @@ FormType CStudioDialogObject::GetType() const
 bool CStudioDialogObject::CreateModeless( UINT nID )
 {
 	return Create( mpFormView, nID );
+}
+
+DWORD CStudioDialogObject::GetWndStyle() const
+{
+	DWORD dwStyle = __super::GetWndStyle();
+
+	if( GetType() == FrmFileDlg )
+		dwStyle |= WS_CAPTION;
+
+	return dwStyle;
 }
 
 bool CStudioDialogObject::Create( CWnd* pParentWnd, UINT nID )
@@ -1016,6 +1028,15 @@ void CStudioDialogObject::OnFontProperties()
 	if( !pActiveControl )
 		return;
 	CPropertyWizard PropWiz( pActiveControl, CPropertyWizard::Font );
+	PropWiz.DoModal();
+}
+
+void CStudioDialogObject::OnTooltipProperties() 
+{
+	TDclControlPtr pActiveControl = theStudioWorkspace.GetActiveDclControl();
+	if( !pActiveControl )
+		return;
+	CPropertyWizard PropWiz( pActiveControl, CPropertyWizard::Tooltip );
 	PropWiz.DoModal();
 }
 
