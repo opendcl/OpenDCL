@@ -108,13 +108,8 @@ bool CSlideCtrl::OnApplyBackgroundColor( TPropertyPtr pProp )
 
 
 BEGIN_MESSAGE_MAP(CSlideCtrl, CSliderCtrl)
-	ON_NOTIFY_REFLECT(NM_RELEASEDCAPTURE, OnReleasedcapture)
-	ON_WM_MOUSEMOVE()
-	ON_WM_LBUTTONDBLCLK()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_LBUTTONUP()
-	ON_WM_KEYDOWN()
-	ON_WM_KEYUP()
+	ON_WM_HSCROLL_REFLECT()
+	ON_WM_VSCROLL_REFLECT()
 	ON_WM_CTLCOLOR_REFLECT()
 	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
@@ -122,47 +117,18 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CSlideCtrl message handlers
 
-void CSlideCtrl::OnReleasedcapture(NMHDR* pNMHDR, LRESULT* pResult) 
+void CSlideCtrl::HScroll(UINT nSBCode, UINT nPos)
 {
-	mpTemplate->SetLongProperty( Prop::Value, GetPos() );
-	*pResult = 0;
+	int nNewPos = GetPos();
+	mpTemplate->SetLongProperty( Prop::Value, nNewPos );
+	OnPositionChanged( nNewPos );
 }
 
-void CSlideCtrl::OnMouseMove(UINT nFlags, CPoint point) 
+void CSlideCtrl::VScroll(UINT nSBCode, UINT nPos)
 {
-	if( nFlags != 0 )
-		mpTemplate->SetLongProperty( Prop::Value, GetPos() );
-	__super::OnMouseMove(nFlags, point);
-}
-
-void CSlideCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
-{
-	mpTemplate->SetLongProperty( Prop::Value, GetPos() );
-	__super::OnLButtonDblClk(nFlags, point);
-}
-
-void CSlideCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
-{
-	mpTemplate->SetLongProperty( Prop::Value, GetPos() );
-	__super::OnLButtonDown(nFlags, point);
-}
-
-void CSlideCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
-{
-	mpTemplate->SetLongProperty( Prop::Value, GetPos() );
-	__super::OnLButtonUp(nFlags, point);
-}
-
-void CSlideCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
-{
-	mpTemplate->SetLongProperty( Prop::Value, GetPos() );
-	__super::OnKeyDown(nChar, nRepCnt, nFlags);
-}
-
-void CSlideCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
-{
-	mpTemplate->SetLongProperty( Prop::Value, GetPos() );
-	__super::OnKeyUp(nChar, nRepCnt, nFlags);
+	int nNewPos = GetPos();
+	mpTemplate->SetLongProperty( Prop::Value, nNewPos );
+	OnPositionChanged( nNewPos );
 }
 
 void CSlideCtrl::PostNcDestroy() 

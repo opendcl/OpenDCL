@@ -41,8 +41,6 @@ CArxBlockViewCtrl::CArxBlockViewCtrl( TDclControlPtr pTemplate,
 
 CArxBlockViewCtrl::~CArxBlockViewCtrl()
 {
-	erasePreview(); 
-
 	if( mhSavedCursor )
 		DeleteObject( mhSavedCursor );
 
@@ -372,9 +370,11 @@ bool CArxBlockViewCtrl::DisplayBlock( LPCTSTR pszBlockName,
 																			double dCameraY, 
 																			double dCameraZ)
 {
-	clearAll();
 	if( !pszBlockName || !*pszBlockName )
+	{
+		clearAll();
 		return false;
+	}
 	AcDbDatabase* pDb = (mpSourceDb? mpSourceDb : acdbCurDwg());
 	if( !pDb )
 		return false;

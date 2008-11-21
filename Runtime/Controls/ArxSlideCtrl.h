@@ -13,6 +13,7 @@
 class CArxSlideCtrl : public CSlideCtrl
 {
 	CArxControlServices	mArxServices;
+	int mnLastReportedPosition;
 
 public:
 	CArxSlideCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate = true );
@@ -23,6 +24,8 @@ public:
 	virtual const CArxControlServices* GetArxServices() const { return &mArxServices; }
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 
+	virtual void OnPositionChanged( int nNewPos );
+
 	// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -30,9 +33,4 @@ protected:
 	afx_msg void OnOutofmemory(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnReleasedcapture(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 };

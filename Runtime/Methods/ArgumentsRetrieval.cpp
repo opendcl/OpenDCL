@@ -591,6 +591,19 @@ bool GetIntArgument( /*in-out*/ resbuf*& pArgs, /*out*/ int& nArg, /*in*/ bool b
 	case RTLONG:
 		nArg = pArgs->resval.rlong;
 		break;
+	case RTREAL:
+	case RTANG:
+	case RTORINT:
+		if( pArgs->resval.rreal < INT_MIN ||
+				pArgs->resval.rreal > INT_MAX ||
+				fabs( pArgs->resval.rreal - (ads_real)(int)pArgs->resval.rreal ) > 0.00000001 )
+		{
+			if( !bQuiet )
+				HandleArgError( pArgs, odcl::argInvalid );
+			return false;
+		}
+		nArg = (unsigned int)pArgs->resval.rreal;
+		break;
 	default:
 		if( !bQuiet )
 			HandleArgError( pArgs, odcl::argWrongType );
@@ -632,7 +645,7 @@ bool GetUIntArgument( /*in-out*/ resbuf*& pArgs, /*out*/ unsigned int& nArg, /*i
 	case RTANG:
 	case RTORINT:
 		if( pArgs->resval.rreal < 0 ||
-				pArgs->resval.rreal < UINT_MAX ||
+				pArgs->resval.rreal > UINT_MAX ||
 				fabs( pArgs->resval.rreal - (ads_real)(unsigned int)pArgs->resval.rreal ) > 0.00000001 )
 		{
 			if( !bQuiet )

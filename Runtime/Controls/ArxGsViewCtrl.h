@@ -4,6 +4,7 @@
 #pragma once
 
 #include "DialogControl.h"
+#include "Workspace.h"
 #include "AcadColorService.h"
 #include "ArxControlServices.h"
 #include "ArxDragDropService.h"
@@ -26,11 +27,144 @@ protected:
 	CArxControlServices	mArxServices;
 	CArxDragDropService mDragDropService;
 
+	class GsViewReactor : public AcGsReactor
+	{
+		AcDbDatabase* mpDb;
+		CArxGsViewCtrl* mpCtrl;
+		AcGsManager* mpManager;
+		AcGsClassFactory* mpFactory;
+		AcGsDevice* mpDevice;
+		AcGsModel* mpModel;
+		AcGsModel* mpGhostModel;
+		AcGsView* mpView;
+	public:
+		GsViewReactor( CArxGsViewCtrl* pCtrl, AcDbDatabase* pDb )
+			: mpDb( pDb )
+			, mpCtrl( pCtrl )
+			, mpManager( NULL )
+			, mpDevice( NULL )
+			, mpModel( NULL )
+			, mpGhostModel( NULL )
+			, mpView( NULL )
+			{
+				assert( mpCtrl != NULL );
+				if( pDb )
+				{
+					mpManager = acgsGetGsManager();
+					assert( mpManager != NULL );
+					if( !mpManager )
+						return;
+					mpFactory = mpManager->getGSClassFactory();
+					mpFactory->addReactor( this );
+					//a device with standard autocad color palette
+					mpDevice = mpManager->createAutoCADDevice( mpCtrl->m_hWnd );
+					TPropertyPtr pAcadColor = mpCtrl->GetTemplate()->GetPropertyObject(Prop::BackgroundColor);
+					if( pAcadColor )
+					{
+						AcGsColor color = mpDevice->getBackgroundColor();
+						COLORREF aColor = GetRGBColor( pAcadColor->GetLongValue() );
+						//AcGsColor color;
+						color.m_red = GetRValue( aColor );
+						color.m_green = GetGValue( aColor );
+						color.m_blue = GetBValue( aColor );
+						mpDevice->setBackgroundColor( color );
+					}	
+				      
+					CRect rect;
+					mpCtrl->GetClientRect( &rect);
+					mpDevice->onSize( rect.Width(), rect.Height() );   
+					//a simple view
+					mpView = mpFactory->createView();
+					mpModel = mpManager->createAutoCADModel(); //a model with open/close protocol
+
+					//another model without open/close for the orbit gadget
+					mpGhostModel = mpFactory->createModel(AcGsModel::kDirect, 0, 0,	0);
+					mpCtrl->AddUIDrawable( mpGhostModel, mpView );
+					mpDevice->add(mpView);
+
+					// get the view port information - see parameter list
+					ads_real height = 0.0, width = 0.0, viewTwist = 0.0;
+					AcGePoint3d targetView;
+					AcGeVector3d viewDir;
+					mpCtrl->GetActiveViewPortInfo( height, width, targetView, viewDir, viewTwist, true );
+					mpView->setView( targetView + viewDir, targetView, AcGeVector3d( 0.0, 1.0, 0.0 ), 1.0, 1.0 );
+				}
+			}
+		~GsViewReactor()
+			{
+				clear();
+			}
+	protected:
+		void clear()
+			{
+				if( mpDb )
+				{
+					if( mpManager )
+					{
+						if( mpFactory )
+						{
+							mpFactory->removeReactor( this );
+							if( mpView )
+							{
+								mpFactory->deleteView( mpView );
+								mpView = NULL;
+							}
+							if( mpGhostModel )
+							{
+								mpFactory->deleteModel( mpGhostModel );
+								mpGhostModel = NULL;
+							}
+							mpFactory = NULL;
+						}
+						if( mpModel )
+						{
+							mpManager->destroyAutoCADModel( mpModel );
+							mpModel = NULL;
+						}
+						if( mpDevice )
+						{
+							mpManager->destroyAutoCADDevice( mpDevice );
+							mpDevice = NULL;
+						}
+						mpManager = NULL;
+					}
+				}
+				mpDb = NULL;
+				mpCtrl->Invalidate();
+			}
+	public:
+		AcDbDatabase* database() const { return mpDb; }
+		void setDrawable( AcGiDrawable* pDrawable )
+			{
+				if( mpView )
+				{
+					mpView->eraseAll();
+					if( pDrawable )
+						mpView->add( pDrawable, mpModel );
+				}
+			}
+		void zoom( double dblZoomFactor )
+			{
+				if( mpView )
+					mpView->zoom( dblZoomFactor );
+			}
+		void onSize( int cx, int cy )
+			{
+				if( mpDevice )
+					mpDevice->onSize( cx, cy );
+			}
+		AcGsView* GetGsView() const { return mpView; }
+		AcGsModel* GetGsModel() const { return mpModel; }
+	protected:
+		virtual void gsToBeUnloaded( AcGsClassFactory* pClassFactory )
+			{
+				assert( mpFactory == pClassFactory );
+				clear();
+			}
+	};
+	GsViewReactor* mpGsReactor;
+
 private:
-	AcGsDevice* mpDevice;
-	AcGsView* mpView;
-	AcGsModel* mpModel;
-	AcGsModel* mpGhostModel;
 	bool mbLDblClick;
 	bool mbRDblClick;
 	COLORREF mclrHighlight;
@@ -49,13 +183,12 @@ public:
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
 
 protected:
-	AcGsView* GetGsView() { return mpView; }
+	AcGsView* GetGsView() { return (mpGsReactor? mpGsReactor->GetGsView() : NULL); }
+	AcGsModel* GetGsModel() { return (mpGsReactor? mpGsReactor->GetGsModel() : NULL); }
 	virtual bool CanShowHighlight() const { return true; }
 	virtual void PaintUI( CDC* pdc = NULL ) {}
 	virtual void AddUIDrawable( AcGsModel* pModel, AcGsView* pView ) {}
 	virtual AcGsView::RenderMode GetRenderMode() { return AcGsView::k2DOptimized; }
-	void init(HMODULE hRes, bool bCreateModel = true);
-	void erasePreview();
 	bool GetActiveViewPortInfo( ads_real &height, ads_real &width, AcGePoint3d &target, AcGeVector3d &viewDir, ads_real &viewTwist, bool getViewCenter );
 	void clearAll();
 	bool UpdateModel( AcGiDrawable* pDrawable );

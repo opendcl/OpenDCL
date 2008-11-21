@@ -102,12 +102,11 @@ void CArxHatchCtrl::ResizeHatch()
 
 bool CArxHatchCtrl::DisplayHatchPattern( LPCTSTR pszPattern )
 {
-	Clear();
 	msHatchPattern = pszPattern;
 
 	AcDbDatabase* pWorkingDb = new AcDbDatabase( true, true );
 	if( !pWorkingDb )
-		return FALSE;
+		return false;
 	
 	AcDbBlockTable* pBlockTable = NULL;
 	Acad::ErrorStatus es = pWorkingDb->getSymbolTable( pBlockTable, AcDb::kForRead );

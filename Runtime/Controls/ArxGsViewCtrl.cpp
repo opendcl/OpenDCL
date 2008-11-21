@@ -18,10 +18,7 @@ CArxGsViewCtrl::CArxGsViewCtrl( TDclControlPtr pTemplate,
 , mColorService( long(-19), long(-22) )
 , mArxServices( this )
 , mDragDropService( this )
-, mpDevice( NULL )
-, mpView( NULL )
-, mpGhostModel( NULL )
-, mpModel( NULL )
+, mpGsReactor( NULL )
 , mbHighlighted( false )
 , mbLDblClick( false )
 , mbRDblClick( false )
@@ -32,7 +29,6 @@ CArxGsViewCtrl::CArxGsViewCtrl( TDclControlPtr pTemplate,
 
 CArxGsViewCtrl::~CArxGsViewCtrl()
 {
-	erasePreview(); 
 	clearAll();
 }
 
@@ -59,122 +55,25 @@ void CArxGsViewCtrl::RemoveHighlight()
 	Invalidate();
 }
 
-// Erase view and delete model
-void CArxGsViewCtrl::erasePreview()
-{
-	if( mpView )
-		mpView->eraseAll();
-	if( mpModel )
-	{  
-		AcGsManager* pManager = acgsGetGsManager();
-		if( pManager )
-			pManager->destroyAutoCADModel( mpModel );
-		mpModel = NULL;
-	}
-}
-
 void CArxGsViewCtrl::clearAll()
-{	
-	if( mpView )
-	{
-		//mpView->eraseAll(); //causes crash if displayed block's host drawing was closed
-		if( mpDevice )
-			mpDevice->erase( mpView );
-	}
-	AcGsManager* pManager = acgsGetGsManager();
-	if( pManager )
-	{
-		AcGsClassFactory* pFactory = pManager->getGSClassFactory();
-		if( pFactory )    
-		{
-			if( mpView )  
-			{
-				pFactory->deleteView( mpView );
-				mpView = NULL;
-			}
-			if( mpGhostModel ) 
-			{
-				pFactory->deleteModel( mpGhostModel );
-				mpGhostModel = NULL;
-			}
-		}
-		if( mpModel ) 
-		{
-			pManager->destroyAutoCADModel( mpModel );
-			mpModel = NULL;
-		}
-		if( mpDevice )    
-		{
-			pManager->destroyAutoCADDevice( mpDevice );
-			mpDevice = NULL;
-		}
-	}    
-	mbHighlighted = false;
-}
-
-void CArxGsViewCtrl::init(HMODULE hRes, bool bCreateModel)
 {
-  //Instantiate view, a device and a model object
-  AcGsManager* pManager = acgsGetGsManager();
-	assert( pManager != NULL );
-	if( !pManager )
-		return;
-  AcGsClassFactory* pFactory = pManager->getGSClassFactory();
-  //a device with standard autocad color palette
-  mpDevice = pManager->createAutoCADDevice(m_hWnd);
-	TPropertyPtr pAcadColor = mpTemplate->GetPropertyObject(Prop::BackgroundColor);
-	if (pAcadColor)
-	{
-		AcGsColor color = mpDevice->getBackgroundColor();
-		COLORREF aColor = GetRGBColor(pAcadColor->GetLongValue());
-		//AcGsColor color;
-		color.m_red = GetRValue(aColor);
-		color.m_green = GetGValue(aColor);
-		color.m_blue = GetBValue(aColor);
-		mpDevice->setBackgroundColor(color);
-	}	
-      
-  CRect rect;
-  GetClientRect( &rect);
-  mpDevice->onSize( rect.Width(), rect.Height() );   
-  //a simple view
-  mpView = pFactory->createView();
-  if( bCreateModel )
-    mpModel = pManager->createAutoCADModel(); //a model with open/close protocol
-
-	//another model without open/close for the orbit gadget
-	mpGhostModel = pFactory->createModel(AcGsModel::kDirect, 0, 0,	0);
-	AddUIDrawable( mpGhostModel, mpView );
-	mpDevice->add(mpView);
-
-	// get the view port information - see parameter list
-	ads_real height = 0.0, width = 0.0, viewTwist = 0.0;
-	AcGePoint3d targetView;
-	AcGeVector3d viewDir;
-	GetActiveViewPortInfo (height, width, targetView, viewDir, viewTwist, true);
-	mpView->setView( targetView + viewDir, targetView, AcGeVector3d( 0.0, 1.0, 0.0 ), 1.0, 1.0 );
-	/*
-      mpView->setView(AcGePoint3d(0.0, 0.0, 1.0),
-                     AcGePoint3d(0.0, 0.0,  0.0),
-                     AcGeVector3d(0.0, 1.0,  0.0),
-                     1.0, 1.0); 
-				   */
+	delete mpGsReactor;
+	mpGsReactor = NULL;
+	mbHighlighted = false;
 }
 
 bool CArxGsViewCtrl::UpdateModel( AcGiDrawable* pDrawable )
 {
-	if( !mpView )
+	if( !mpGsReactor )
 		return false;
-	mpView->eraseAll();
-	mpView->add( pDrawable, mpModel ); 
+	mpGsReactor->setDrawable( pDrawable );
 	return true;
 }
 
-void CArxGsViewCtrl::Zoom(double dZfactor)
+void CArxGsViewCtrl::Zoom( double dZfactor )
 {
-	if( !mpView )
-		return;
-	mpView->zoom(dZfactor);
+	if( mpGsReactor )
+		mpGsReactor->zoom( dZfactor );
 	Invalidate();
 }
 
@@ -190,12 +89,17 @@ void CArxGsViewCtrl::DisplayTheBlock(
 		double dCameraY, 
 		double dCameraZ)
 {
-	//initialize the preview control
-	init(theWorkspace.GetLocalResourceModule(),true);
+	AcDbDatabase* pDb = pRec->database();
+	if( !pDb )
+		pDb = acdbCurDwg();
+	if( !mpGsReactor || mpGsReactor->database() != pDb )
+	{
+		delete mpGsReactor;
+		mpGsReactor = new GsViewReactor( this, pDb );
+	}
 	AcDbExtents extents;
 	AcGePoint3d extMax;
 	AcGePoint3d extMin;
-	AcDbDatabase* pDb;
 
 	// now create a way of looping through the entities in the block using iterators
 	AcDbBlockTableRecordIterator *pBlockIterator;
@@ -348,10 +252,9 @@ void CArxGsViewCtrl::DisplayTheBlock(
 		}
 	}
 	pView->setMode( GetRenderMode() );
-	pView->eraseAll();
 
-	// add the new object to the viewer
-	pView->add( pRec, mpModel );
+	if( mpGsReactor )
+		mpGsReactor->setDrawable( pRec );
 
 	Invalidate();
 	PaintUI();
@@ -460,11 +363,12 @@ void CArxGsViewCtrl::OnPaint()
 {
   CPaintDC dc(this);
 
-	if( mpView )
+	AcGsView* pView = GetGsView();
+	if( pView )
 	{
 		//update the gs view
-		mpView->invalidate(); 
-		mpView->update();
+		pView->invalidate(); 
+		pView->update();
 	}
 	PaintUI( &dc );
 	if( mbHighlighted && CanShowHighlight() )
@@ -491,11 +395,11 @@ void CArxGsViewCtrl::OnPaint()
 void CArxGsViewCtrl::OnSize(UINT nType, int cx, int cy) 
 {
 	__super::OnSize( nType, cx, cy );
-	if( mpDevice ) 
+	if( mpGsReactor ) 
 	{
 		CRect rect;
 		GetClientRect( &rect);
-		mpDevice->onSize(rect.Width(), rect.Height());
+		mpGsReactor->onSize( rect.Width(), rect.Height() );
 	}
 }
 
@@ -509,7 +413,7 @@ void CArxGsViewCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		point.y,
 		IsAsyncEvents());
 
-	if( !mpView )
+	if( !GetGsView() )
 		return;
 	
 	if( (nFlags & MK_LBUTTON) != 0 && mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) )

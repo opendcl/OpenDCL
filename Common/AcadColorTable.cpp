@@ -326,5 +326,5 @@ COLORREF GetRGBColor( long nColorIndex )
 	if( nColorIndex < 0 )
 		return GetSysColor( -nColorIndex - 1 );
 
-	return (COLORREF)nColorIndex;
+	return (COLORREF)(nColorIndex & 0x00FFFFFF);
 }

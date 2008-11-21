@@ -74,6 +74,22 @@ static CString ConstructTypeNameHtml( LPCTSTR pszTypeName, LPCTSTR pszDisplayNam
 }
 
 
+static void CompactWhiteSpace( CString& sHtml )
+{
+	sHtml.Trim( _T(" \t") );
+	sHtml.Remove( _T('\r') );
+	sHtml.Remove( _T('\n') );
+	CString sCompact;
+	int nSpace = 0;
+	do
+	{
+		sCompact += sHtml.Tokenize( _T(" \t"), nSpace );
+		sCompact += _T(" ");
+	} while( nSpace >= 0 );
+	sHtml = sCompact.Trim();
+}
+
+
 class CTreeNode
 {
 	CString msName;
@@ -742,6 +758,7 @@ bool CTreeNode::addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR
 	if( bControlMethods )
 	{
 		int nControlMethods = sMethodsHtml.Find( _T("<a name=\"Control\"") );
+		assert( nControlMethods >= 0 ); //control not found? must be an HTML problem
 		if( nControlMethods >= 0 )
 		{
 			int nStart = sMethodsHtml.Find( _T("<ul"), nControlMethods );
@@ -767,6 +784,7 @@ bool CTreeNode::addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR
 						CString sMethodFile = sLine.SpanExcluding( _T("\"") );
 						sLine = sLine.Mid( sLine.SpanExcluding( _T(">") ).GetLength() + 1 );
 						CString sMethodName = sLine.SpanExcluding( _T("<") );
+						CompactWhiteSpace( sMethodName );
 
 						CMethodNode* pItem = new CMethodNode( Browser.GetMainControl(), sMethodName, sMethodFile );
 						HTREEITEM hItem = Browser.InsertItem( hParent, pItem );
@@ -779,6 +797,7 @@ bool CTreeNode::addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR
 		}
 	}
 	int nControlMethods = sMethodsHtml.Find( CString( _T("<a name=\"") ) + pszControlType + _T("\"") );
+	assert( nControlMethods >= 0 ); //control not found? must be an HTML problem
 	if( nControlMethods >= 0 )
 	{
 		int nStart = sMethodsHtml.Find( _T("<ul"), nControlMethods );
@@ -804,6 +823,7 @@ bool CTreeNode::addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR
 					CString sMethodFile = sLine.SpanExcluding( _T("\"") );
 					sLine = sLine.Mid( sLine.SpanExcluding( _T(">") ).GetLength() + 1 );
 					CString sMethodName = sLine.SpanExcluding( _T("<") );
+					CompactWhiteSpace( sMethodName );
 					if( sMethodName == _T("Dump") )
 						continue; //don't need to show this one in the browser
 
@@ -859,6 +879,7 @@ bool CTreeNode::addEvent( CControlBrowser& Browser, HTREEITEM hParent, TProperty
 					CString sHref = sLine.SpanExcluding( _T("\"") );
 					sLine = sLine.Mid( sLine.SpanExcluding( _T(">") ).GetLength() + 1 );
 					CString sEventName = sLine.SpanExcluding( _T(" <") );
+					CompactWhiteSpace( sEventName );
 					if( sEventName.CompareNoCase( sTargetEvent ) == 0 )
 					{
 						sFilename = sHref.MakeReverse().SpanExcluding( _T("\\/") ).MakeReverse();

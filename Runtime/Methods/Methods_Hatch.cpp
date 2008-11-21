@@ -44,5 +44,7 @@ ADSRESULT Hatch::SetPattern()
 	CArxHatchCtrl* pCtrl = (CArxHatchCtrl*)pDlgControl->GetControlWnd();
 	if( pCtrl->DisplayHatchPattern( sPattern ) )
 		acedRetT();
+	else
+		pCtrl->Clear();
 	return RSRSLT;
 }
