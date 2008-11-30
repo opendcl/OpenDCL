@@ -14,8 +14,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // CImageListPage property page
 
-//IMPLEMENT_DYNCREATE(CImageListPage, CPropertyPage)
-
 CImageListPage::CImageListPage( TDclControlPtr pDclControl )
 : CPropertyPage(CImageListPage::IDD)
 , mpDclControl( pDclControl )
@@ -40,81 +38,64 @@ CImageListPage::~CImageListPage()
 void CImageListPage::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CImageListPage)
 	DDX_Control(pDX, IDC_EDITHEIGHT, m_DispHeight);
 	DDX_Control(pDX, IDC_EDITWIDTH, m_DispWidth);
 	DDX_Control(pDX, IDC_PICLIST, m_PicList);
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CImageListPage, CPropertyPage)
-	//{{AFX_MSG_MAP(CImageListPage)
 	ON_BN_CLICKED(IDC_ADDIMAGE, OnAddimage)
 	ON_BN_CLICKED(IDC_REMOVEIMAGE, OnRemoveimage)
-	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_CHANGEIMAGE, OnChangeimage)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CImageListPage message handlers
 
+void CImageListPage::OnSelchange() 
+{
+	int nSelCount = m_PicList.GetSelectedCount();
+	GetDlgItem( IDC_REMOVEIMAGE )->EnableWindow( (nSelCount > 0)? TRUE : FALSE );
+	GetDlgItem( IDC_CHANGEIMAGE )->EnableWindow( (nSelCount == 1)? TRUE : FALSE );
+}
+
 void CImageListPage::OnAddimage() 
 {
-	CString sFilter;
-	CStringList m_FileList;
-
-	sFilter = theWorkspace.LoadResourceString(IDS_IMAGEFILEFILTER);
-
-	m_FileList.RemoveAll();
-
-	// create the open dialog box
 	CPreviewFileDlg BrowseWnd(
 		TRUE, 
 		NULL,
 		NULL, 
 		OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
-		sFilter,
-		CWnd::GetActiveWindow());
-
-	// proceed to setup the file buffer size
-	BrowseWnd.m_ofn.nMaxFile = MAX_PATH;
-	TCHAR* pc = new TCHAR[MAX_PATH];
-	BrowseWnd.m_ofn.lpstrFile = pc;
+		theWorkspace.LoadResourceString(IDS_IMAGEFILEFILTER),
+		CWnd::GetActiveWindow() );
+	TCHAR szFileBuf[8192];
+	BrowseWnd.m_ofn.nMaxFile = _elements(szFileBuf);
+	BrowseWnd.m_ofn.lpstrFile = szFileBuf;
 	BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
 
-	// call method to invoke the file dialog box
-	int iReturn = BrowseWnd.DoModal();
-		
-	
-	if(iReturn == IDOK)   
+	if( IDOK == BrowseWnd.DoModal() )   
 	{
-		CString szPathName;
-		POSITION pos;
-
-		// do loop to get all selected files
-		for (pos = BrowseWnd.GetStartPosition(); pos != NULL; )
+		POSITION pos = BrowseWnd.GetStartPosition();
+		while( pos )
 		{
-			// get the file name 
-			szPathName = BrowseWnd.GetNextPathName(pos);
-	
-			// add the file name to the file list
-			m_FileList.AddTail(szPathName);				
-			LoadPictureFile(szPathName);
+			CString sPathName = BrowseWnd.GetNextPathName( pos );
+			LPPICTURE lpPicture = LoadPictureFile( sPathName );
+			if( lpPicture )
+			{
+				CPictureHolder phPicture;
+				phPicture.m_pPict = lpPicture;
+				ImageListAddPicture( phPicture.GetPictureDispatch() );
+			}
 		}
 	}
-
-	delete [] pc; 
-	
-	int nCount = m_FileList.GetCount();
 	SetModified();
-	GetDlgItem( IDC_REMOVEIMAGE )->EnableWindow( TRUE );
+	OnSelchange();
 }
 
-void CImageListPage::LoadPictureFile(LPCTSTR szFile)
+LPPICTURE CImageListPage::LoadPictureFile(LPCTSTR szFile)
 {
-	LPPICTURE		lpPicture;
-	lpPicture		= NULL;
-	CPictureHolder	phPicture;
+	LPPICTURE lpPicture = NULL;
 	
 	// open file
 	HANDLE hFile = CreateFile(szFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
@@ -149,17 +130,8 @@ void CImageListPage::LoadPictureFile(LPCTSTR szFile)
 		lpPicture->Release();
 	hr = ::OleLoadPicture(pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID *)&lpPicture);
 	_ASSERTE(SUCCEEDED(hr) && lpPicture);	
-
-	IPicture *ipOld = phPicture.m_pPict;
-	phPicture.m_pPict = lpPicture;
-
-	// chad this has to be fixed later
-	ImageListAddPicture(phPicture.GetPictureDispatch());
-	phPicture.m_pPict = ipOld;
-	
-
 	pstm->Release();
-
+	return lpPicture;
 }
 
 BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
@@ -296,14 +268,97 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 	// insert the row item
 	int nInsertIndex = m_PicList.InsertItem(&lvItem);
 	m_PicList.SetItemData(nPicIndex, nImage);
-		
-	
-	
 	m_PicList.SetIconSpacing(nCurrentWidth + 16);
 	return (bRetVal);
 }
 
+BOOL CImageListPage::ImageListReplacePicture( int idxPic, LPPICTUREDISP iPic )
+{
+	BOOL bRetVal = TRUE;
 
+	CPictureHolder NewPicture;
+	NewPicture.SetPictureDispatch(iPic);
+	long lPicHeight = 0;
+	long lPicWidth = 0;
+	CDC * cdc = GetDC();
+	CSize sizePic;
+	int nRetVal;
+
+
+	if (NULL == NewPicture.m_pPict)
+	{
+		return FALSE;
+	}
+
+	// if picture is a bitmap
+	if (PICTYPE_BITMAP == NewPicture.GetType())
+	{
+		HBITMAP hBitmap = NULL;
+
+		// get handle of the bitmap
+		NewPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hBitmap);
+
+		// get dimensions of bitmap
+		NewPicture.m_pPict->get_Width(&lPicWidth);
+		NewPicture.m_pPict->get_Height(&lPicHeight);
+
+		sizePic.cx = (int)lPicWidth;
+		sizePic.cy = (int)lPicHeight;
+
+		// convert coordinates from units to logical units
+		cdc->HIMETRICtoLP(&sizePic);
+
+		// if image list has not been created
+		if (NULL == GetImageList()->m_hImageList)
+			return FALSE;
+		nRetVal = GetImageList()->Replace( idxPic, CBitmap::FromHandle( hBitmap ), NULL ) ;
+		bRetVal = (nRetVal != -1);			
+		DeleteObject( hBitmap );
+	}
+	// else if picture is an icon
+	else if (PICTYPE_ICON == NewPicture.GetType())
+	{
+		HICON hIcon;
+
+		// get handle of the icon
+		NewPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hIcon);
+
+		// get dimensions of icon
+		NewPicture.m_pPict->get_Width(&lPicWidth);
+		NewPicture.m_pPict->get_Height(&lPicHeight);
+
+		CDC * cdc = GetDC();
+
+		sizePic.cx = (int)lPicWidth;
+		sizePic.cy = (int)lPicHeight;
+
+		// convert coordinates from units to logical units
+		cdc->HIMETRICtoLP(&sizePic);
+
+		// if image list has not been created
+		if (NULL == GetImageList()->m_hImageList)
+			return FALSE;
+		
+		// add icon to image list
+		nRetVal = GetImageList()->Replace( idxPic, hIcon );
+		bRetVal = (nRetVal != -1);
+		//DestroyIcon(hIcon);		
+	}
+	else
+	{
+		bRetVal = FALSE;
+		return bRetVal;
+	}
+
+	LV_ITEM lvItem;
+	lvItem.mask = LVIF_IMAGE;
+	lvItem.iItem = idxPic;
+	lvItem.iSubItem = 0;
+	lvItem.iImage = idxPic;
+	m_PicList.SetItem( &lvItem );
+	m_PicList.Invalidate();
+	return (bRetVal);
+}
 
 void CImageListPage::OnRemoveimage() 
 {
@@ -318,8 +373,6 @@ void CImageListPage::OnRemoveimage()
 			m_PicList.DeleteItem(nItem);
 		GetImageList()->Remove(nItem);
 	}
-	
-
 	m_PicList.Arrange(LVA_ALIGNLEFT);
 	for (int i=0; i < m_PicList.GetItemCount(); i++)
 	{
@@ -341,7 +394,6 @@ void CImageListPage::OnRemoveimage()
 		m_DispHeight.SetWindowText(_T(""));
 		m_DispWidth.SetWindowText(_T(""));
 		mpImageList = new CImageList;
-		GetDlgItem( IDC_REMOVEIMAGE )->EnableWindow( FALSE );
 	}
 
 	if (nItem >= m_PicList.GetItemCount())
@@ -355,6 +407,48 @@ void CImageListPage::OnRemoveimage()
 	}
 
 	SetModified();
+	OnSelchange();
+}
+
+void CImageListPage::OnChangeimage() 
+{
+	int nItem=-1;
+	POSITION pos = m_PicList.GetFirstSelectedItemPosition();
+	if (pos == NULL)
+		return;
+	nItem = m_PicList.GetNextSelectedItem( pos );
+	if( nItem < 0 )
+		return;
+
+	CPreviewFileDlg BrowseWnd(
+		TRUE, 
+		NULL,
+		NULL, 
+		OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,
+		theWorkspace.LoadResourceString(IDS_IMAGEFILEFILTER),
+		CWnd::GetActiveWindow() );
+	TCHAR szFileBuf[8192];
+	BrowseWnd.m_ofn.nMaxFile = _elements(szFileBuf);
+	BrowseWnd.m_ofn.lpstrFile = szFileBuf;
+	BrowseWnd.m_ofn.lpstrFile[0] = _T('\0');
+
+	if( IDOK == BrowseWnd.DoModal() )   
+	{
+		POSITION pos = BrowseWnd.GetStartPosition();
+		CString sPathName = BrowseWnd.GetNextPathName( pos );
+		LPPICTURE lpPicture = LoadPictureFile( sPathName );
+		if( lpPicture )
+		{
+			CPictureHolder phPicture;
+			phPicture.m_pPict = lpPicture;
+			ImageListReplacePicture( nItem, phPicture.GetPictureDispatch() );
+		}
+	}
+
+	m_PicList.EnsureVisible(nItem, TRUE);
+	m_PicList.Arrange(LVA_ALIGNLEFT);
+	SetModified();
+	OnSelchange();
 }
 
 BOOL CImageListPage::OnApply() 
@@ -400,8 +494,15 @@ BOOL CImageListPage::OnInitDialog()
 			m_PicList.SetItemData(i, i);
 		}
 	}
-	else
-		GetDlgItem( IDC_REMOVEIMAGE )->EnableWindow( FALSE );
+	OnSelchange();
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX PropertyObject Pages should return FALSE
+}
+
+BOOL CImageListPage::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
+{
+	if( wParam == IDC_PICLIST && ((NMHDR*)lParam)->code == LVN_ITEMCHANGED )
+		OnSelchange();
+
+	return __super::OnNotify(wParam, lParam, pResult);
 }

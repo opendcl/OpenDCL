@@ -12,6 +12,20 @@
 		<param name="Name" value="Introduction To OpenDCL">
 		<param name="Local" value="Intro\Index.htm">
 		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="License and Credits">
+			<param name="Local" value="License.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Installation">
+			<param name="Local" value="Intro\Installation.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Glossary">
+			<param name="Local" value="Intro\Glossary.htm">
+			</OBJECT>
+	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="OpenDCL Concepts">
 		<param name="Local" value="Concepts\Index.htm">

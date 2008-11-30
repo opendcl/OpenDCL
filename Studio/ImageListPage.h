@@ -14,50 +14,42 @@ class CImageListObject;
 
 class CImageListPage : public CPropertyPage
 {
-	//DECLARE_DYNCREATE(CImageListPage)
-
 	friend class CPropertyListCtrl;
 
 	TDclControlPtr mpDclControl;
 	RefCountedPtr< CImageList > mpImageList;
 
-// Construction
-//protected:
-public:
-	CImageListPage( TDclControlPtr pDclControl );
-	~CImageListPage();
-
-// Dialog Data
-	//{{AFX_DATA(CImageListPage)
+	int nCurrentWidth;
+	int nCurrentHeight;
 	enum { IDD = IDD_IMAGELIST };
 	CEdit	m_DispHeight;
 	CEdit	m_DispWidth;
 	CListCtrl	m_PicList;
-	//}}AFX_DATA
+
+public:
+	CImageListPage( TDclControlPtr pDclControl );
+	~CImageListPage();
 
 	RefCountedPtr< CImageList >& GetImageList() { return mpImageList; }
 
-	void LoadPictureFile(LPCTSTR szFile);
-	BOOL ImageListAddPicture(LPPICTUREDISP iPic);
-	int nCurrentWidth;
-	int nCurrentHeight;
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CImageListPage)
-	public:
+protected:
+	LPPICTURE LoadPictureFile( LPCTSTR szFile );
+	BOOL ImageListAddPicture( LPPICTUREDISP iPic );
+	BOOL ImageListReplacePicture( int idxPic, LPPICTUREDISP iPic );
+
+public:
 	virtual BOOL OnApply();
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CImageListPage)
-	afx_msg void OnAddimage();
-	afx_msg void OnRemoveimage();
-	virtual BOOL OnInitDialog();
-	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
+	afx_msg void OnSelchange();
+	afx_msg void OnAddimage();
+	afx_msg void OnRemoveimage();
+	afx_msg void OnChangeimage();
+	virtual BOOL OnInitDialog();
+	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
 };

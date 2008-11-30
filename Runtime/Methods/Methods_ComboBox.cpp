@@ -297,7 +297,7 @@ ADSRESULT ComboBox::FindString()
 
 	CComboBox* pCtrl = (CComboBox*)pDlgControl->GetControlWnd();
 
-	int nStartIndex = pCtrl->GetCurSel();
+	int nStartIndex = -1;
 	GetIntArgument( pArgs, nStartIndex, true );
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -322,7 +322,7 @@ ADSRESULT ComboBox::FindStringExact()
 
 	CComboBox* pCtrl = (CComboBox*)pDlgControl->GetControlWnd();
 
-	int nStartIndex = pCtrl->GetCurSel();
+	int nStartIndex = -1;
 	GetIntArgument( pArgs, nStartIndex, true );
 
 	if( !AssertOutOfArgs( pArgs ) )

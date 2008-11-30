@@ -159,7 +159,7 @@ HRESULT CHtmlBrowser::LoadWebBrowserFromStream(IWebBrowser* pWebBrowser, IStream
   // Retrieve the document object.
 	CComPtr< IDispatch > pHtmlDoc;
   HRESULT hr = pWebBrowser->get_Document( &pHtmlDoc );
-	if( hr == S_FALSE && !pHtmlDoc )
+	if( !pHtmlDoc )
 	{
 		Navigate2( _T("about:blank") );
 		if( SUCCEEDED(hr) )
@@ -312,4 +312,17 @@ BOOL CHtmlBrowser::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD d
 {
 	mbSubclassedControl = false;
 	return __super::Create(lpszClassName, lpszWindowName, dwStyle, rect, pParentWnd, nID, pContext);
+}
+
+BOOL CHtmlBrowser::PreTranslateMessage(MSG* pMsg)
+{
+	// check if the browser control wants to handle the message
+	if(m_pBrowserApp != NULL)
+	{
+		CComQIPtr<IOleInPlaceActiveObject> spInPlace = m_pBrowserApp;
+		if( spInPlace && spInPlace->TranslateAccelerator(pMsg) == S_OK )
+			return TRUE;
+	}
+
+	return CWnd::PreTranslateMessage(pMsg); //skip CView
 }

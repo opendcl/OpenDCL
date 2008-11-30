@@ -56,7 +56,7 @@
         </table>
 		<p>This property controls whether event handlers are called 
         synchronously or asynchronously. A synchronous call causes the dialog 
-        code wait until the event handler returns before resuming; an 
+        code to wait until the event handler returns before resuming; an 
         asynchronous event call allows the dialog code to continue running, and 
         the event handler is not executed until AutoCAD is ready to process 
         commands. This property is hidden and ignored for controls on modal 
@@ -77,10 +77,10 @@
         </table>
 		<p>Event handlers that are called synchronously are limited in what they 
         can safely do, because they run while the dialog code is in a suspended 
-        state and AutoCAD cannot process commands. For example, it is not 
+        state and AutoCAD is unable to process commands. For example, it is not 
         possible to call the AutoLISP (command) function from a synchronous 
         event handler.</p>
-		<p>Asynchronous event handlers may not execute until after the event 
+		<p>Asynchronous event handlers in most cases will not execute until after the event 
         that triggered it has passed, however an asynchronous event handler can 
         safely call the AutoLISP (command) function to process AutoCAD commands. 
         When a modeless dialog control's event handlers need to use the AutoLISP 

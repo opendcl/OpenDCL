@@ -451,6 +451,7 @@
 #define IDC_DEFICONLABEL                14092
 #define IDC_ALTICONLABEL                14093
 #define IDC_TIME                        14094
+#define IDC_CHANGEIMAGE                 14095
 #define IDC_THELIST                     14096
 #define IDC_TRUEBTN                     14098
 #define IDC_TITLE                       14099

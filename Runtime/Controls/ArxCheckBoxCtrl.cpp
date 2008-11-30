@@ -57,10 +57,11 @@ void CArxCheckBoxCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 void CArxCheckBoxCtrl::OnClicked() 
 {
+	__super::OnClicked();
 	int nValue = GetCheck();
 	mpTemplate->SetLongProperty( Prop::Value, nValue );
 
-  CString sEvent = mpTemplate->GetStringProperty(Prop::EventClicked);
+  CString sEvent = mpTemplate->GetStringProperty( Prop::EventClicked );
 	if( sEvent.SpanExcluding( _T("_") ) == _T("c:OnActionEvent") )
 	{
 		GetParent()->GetParent()->EnableWindow( TRUE );
@@ -84,5 +85,12 @@ void CArxCheckBoxCtrl::OnClicked()
 
 void CArxCheckBoxCtrl::OnDoubleclicked() 
 {
-	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventDblClicked), IsAsyncEvents());
+	__super::OnDoubleclicked();
+	CString sDblClickEvent = mpTemplate->GetStringProperty( Prop::EventDblClicked );
+	if( sDblClickEvent.IsEmpty() )
+	{
+		//just treat it as a second single click unless there's a double-click event handler
+		sDblClickEvent = mpTemplate->GetStringProperty( Prop::EventClicked );
+	}
+	InvokeMethod( sDblClickEvent, IsAsyncEvents() );
 }

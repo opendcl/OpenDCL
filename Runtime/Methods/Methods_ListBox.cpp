@@ -411,7 +411,7 @@ ADSRESULT ListBox::FindString()
 
 	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
 
-	int nStartIndex = pCtrl->GetCurSel();
+	int nStartIndex = -1;
 	GetIntArgument( pArgs, nStartIndex, true );
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -436,7 +436,7 @@ ADSRESULT ListBox::FindStringExact()
 
 	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
 
-	int nStartIndex = pCtrl->GetCurSel();
+	int nStartIndex = -1;
 	GetIntArgument( pArgs, nStartIndex, true );
 
 	if( !AssertOutOfArgs( pArgs ) )

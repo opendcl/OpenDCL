@@ -39,10 +39,7 @@ CPictureFolder::CPictureFolder(TStudioProjectPtr pProject, CWnd* pParent /*=NULL
 CPictureFolder::~CPictureFolder()
 {
 	while( !mlistPicsToAdd.empty() )
-	{
-		delete mlistPicsToAdd.back();
 		mlistPicsToAdd.pop_back();
-	}
 }
 
 void CPictureFolder::DoDataExchange(CDataExchange* pDX)

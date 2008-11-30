@@ -107,7 +107,7 @@ public:
 	virtual int image() const { return -1; }
 	virtual CString description( std::map< CString, CString >& params ) const { return NULL; }
 	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent ) { return true; }
-	static bool addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR pszControlType, bool bControlMethods = true );
+	static bool addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR pszControlType, CString& sMethodsHtml );
 	static bool addEvent( CControlBrowser& Browser, HTREEITEM hParent, TPropertyPtr pEvent );
 };
 
@@ -155,6 +155,27 @@ public:
 			sPath.Format( _T("file://%sReference/Form/%s.htm"),
 										(LPCTSTR)theWorkspace.GetLanguageSubfolderPath(),
 										(LPCTSTR)GetFormApiName( mpDclForm ) );
+			return sPath;
+		}
+	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent );
+};
+
+class CDclProjectNode : public CTreeNode
+{
+	TProjectPtr mpProject;
+
+public:
+	CDclProjectNode( TProjectPtr pProject )
+		: CTreeNode( pProject->GetKeyName() )
+		, mpProject( pProject )
+		{}
+	virtual ~CDclProjectNode() {}
+	virtual int image() const { return 1; }
+	virtual CString description( std::map< CString, CString >& params ) const
+		{
+			CString sPath;
+			sPath.Format( _T("file://%sReference/DataType/Project.htm"),
+										(LPCTSTR)theWorkspace.GetLanguageSubfolderPath() );
 			return sPath;
 		}
 	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent );
@@ -271,7 +292,8 @@ public:
 	virtual int image() const { return 5; }
 	virtual bool addChildItems( CControlBrowser& Browser, HTREEITEM hParent )
 		{
-			addMethods( Browser, hParent, _T("AxObject"), false );
+			CString sMethodsHtml;
+			addMethods( Browser, hParent, _T("AxObject"), sMethodsHtml );
 			addPropertyChildItems( Browser, hParent, mpAxCont );
 			return true;
 		}
@@ -668,7 +690,10 @@ bool CDclControlNode::addChildItems( CControlBrowser& Browser, HTREEITEM hParent
 		pAxCont = pDlgControl->GetActiveXCtrl();
 	addPropertyChildItems( Browser, hParent, pAxCont );
 	ControlType type = mpDclControl->GetType();
-	addMethods( Browser, hParent, GetControlApiName( type ), (type != CtlFileExplorer) );
+	CString sMethodsHtml;
+	addMethods( Browser, hParent, GetControlApiName( type ), sMethodsHtml );
+	if( type != CtlFileExplorer )
+		addMethods( Browser, hParent, _T("Control"), sMethodsHtml );
 	return true;
 }
 
@@ -713,8 +738,8 @@ bool CDclControlNode::addPropertyChildItems( CControlBrowser& Browser, HTREEITEM
 		case PropActiveXRunTime:
 		case PropActiveXEnum:
 			{
-				if( pProp->IsHidden() )
-					continue;
+				//if( pProp->IsHidden() )
+				//	continue;
 				const AxInterfaceDescriptor* pPropDesc = pProp->GetConstAxInterfaceDescriptorPtr();
 				if( !pPropDesc )
 					continue;
@@ -745,59 +770,31 @@ bool CDclControlNode::addPropertyChildItems( CControlBrowser& Browser, HTREEITEM
 bool CDclFormNode::addChildItems( CControlBrowser& Browser, HTREEITEM hParent )
 {
 	addPropertyChildItems( Browser, hParent );
-	addMethods( Browser, hParent, _T("Form") );
+	CString sMethodsHtml;
+	addMethods( Browser, hParent, _T("Form"), sMethodsHtml );
+	//addMethods( Browser, hParent, _T("Project"), sMethodsHtml );
+	CDclProjectNode* pItem = new CDclProjectNode( mpDclForm->GetProject() );
+	HTREEITEM hItem = Browser.InsertItem( TVI_ROOT, pItem );
+	assert( hItem != NULL );
 	return true;
 }
 
-bool CTreeNode::addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR pszControlType, bool bControlMethods /*= true*/ )
+bool CDclProjectNode::addChildItems( CControlBrowser& Browser, HTREEITEM hParent )
 {
 	CString sMethodsHtml;
-	if( !ReadLocalizedFile( _T("Reference\\Method\\Index.htm"), sMethodsHtml ) )
-		return false;
+	addMethods( Browser, hParent, _T("Project"), sMethodsHtml );
+	return true;
+}
 
-	if( bControlMethods )
+bool CTreeNode::addMethods( CControlBrowser& Browser, HTREEITEM hParent, LPCTSTR pszControlType, CString& sMethodsHtml )
+{
+	if( sMethodsHtml.IsEmpty() )
 	{
-		int nControlMethods = sMethodsHtml.Find( _T("<a name=\"Control\"") );
-		assert( nControlMethods >= 0 ); //control not found? must be an HTML problem
-		if( nControlMethods >= 0 )
-		{
-			int nStart = sMethodsHtml.Find( _T("<ul"), nControlMethods );
-			if( nStart >= nControlMethods )
-			{
-				int nEnd = sMethodsHtml.Find( _T("</ul>"), nStart );
-				if( nEnd > nStart )
-				{
-					for( int nLineStart = sMethodsHtml.Find( _T("<li"), nStart );
-							 nLineStart < nEnd;
-							 nLineStart = sMethodsHtml.Find( _T("<li"), nLineStart + 4 ) )
-					{
-						int nLineEnd = sMethodsHtml.Find( _T("</li>"), nLineStart );
-						if( nLineEnd < nLineStart )
-							nLineEnd = sMethodsHtml.Find( _T("<li"), nLineStart );
-						if( nLineEnd < nLineStart )
-							break;
-						CString sLine = sMethodsHtml.Mid( nLineStart, nLineEnd - nLineStart );
-						int nMethodFile = sLine.Find( _T("href=\"") );
-						if( nMethodFile < 0 )
-							continue;
-						sLine = sLine.Mid( nMethodFile + 6 );
-						CString sMethodFile = sLine.SpanExcluding( _T("\"") );
-						sLine = sLine.Mid( sLine.SpanExcluding( _T(">") ).GetLength() + 1 );
-						CString sMethodName = sLine.SpanExcluding( _T("<") );
-						CompactWhiteSpace( sMethodName );
-
-						CMethodNode* pItem = new CMethodNode( Browser.GetMainControl(), sMethodName, sMethodFile );
-						HTREEITEM hItem = Browser.InsertItem( hParent, pItem );
-						assert( hItem != NULL );
-						if( !hItem )
-							return false;
-					}
-				}
-			}
-		}
+		if( !ReadLocalizedFile( _T("Reference\\Method\\Index.htm"), sMethodsHtml ) )
+			return false;
 	}
+
 	int nControlMethods = sMethodsHtml.Find( CString( _T("<a name=\"") ) + pszControlType + _T("\"") );
-	assert( nControlMethods >= 0 ); //control not found? must be an HTML problem
 	if( nControlMethods >= 0 )
 	{
 		int nStart = sMethodsHtml.Find( _T("<ul"), nControlMethods );

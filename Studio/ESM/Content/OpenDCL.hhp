@@ -15,8 +15,13 @@ Standard="OpenDCL(tm) Help","OpenDCL.hhc",,"Index.htm","Index.htm",,,,,0x42420,,
 
 
 [FILES]
+Utility.js
+WinHelp.css
 Index.htm
+License.htm
 Intro\Index.htm
+Intro\Installation.htm
+Intro\Glossary.htm
 Concepts\Index.htm
 Usage\Index.htm
 Advanced\Index.htm

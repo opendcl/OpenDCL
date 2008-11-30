@@ -72,6 +72,8 @@ BEGIN_MESSAGE_MAP(CCheckBoxCtrl, CButton)
 	ON_WM_KEYUP()
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
+	ON_CONTROL_REFLECT(BN_CLICKED, &CCheckBoxCtrl::OnClicked)
+	ON_CONTROL_REFLECT(BN_DOUBLECLICKED, &CCheckBoxCtrl::OnDoubleclicked)
 	ON_NOTIFY_REFLECT(BCN_HOTITEMCHANGE, &CCheckBoxCtrl::OnBnHotItemChange)
 END_MESSAGE_MAP()
 
@@ -122,8 +124,23 @@ void CCheckBoxCtrl::PostNcDestroy()
 	delete this;
 }
 
+void CCheckBoxCtrl::OnClicked() 
+{
+	int nState = (mpTemplate->GetLongProperty( Prop::Value ) != BST_CHECKED? BST_CHECKED : BST_UNCHECKED);
+	mpTemplate->SetLongProperty( Prop::Value, nState );
+	SetCheck( nState );
+}
+
+void CCheckBoxCtrl::OnDoubleclicked() 
+{
+	int nState = (mpTemplate->GetLongProperty( Prop::Value ) != BST_CHECKED? BST_CHECKED : BST_UNCHECKED);
+	mpTemplate->SetLongProperty( Prop::Value, nState );
+	SetCheck( nState );
+}
+
 void CCheckBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
+OutputDebugString( _T("OnLButtonDown\r\n") );
 	OnNeedRepaint(); //must erase background here or focus rectangle gets erased afterward
 	__super::OnLButtonDown(nFlags, point);
 	if( !IsWindowEnabled() )
@@ -135,17 +152,6 @@ void CCheckBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CCheckBoxCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	if( IsWindowEnabled() )
-	{
-		CRect rcClient;
-		GetClientRect( &rcClient );
-		if( rcClient.PtInRect( point ) )
-		{
-			int nState = (mpTemplate->GetLongProperty( Prop::Value ) != BST_CHECKED? BST_CHECKED : BST_UNCHECKED);
-			mpTemplate->SetLongProperty( Prop::Value, nState );
-			SetCheck( nState );
-		}
-	}
 	__super::OnLButtonUp(nFlags, point);
 	////OnNeedRepaint();
 }
@@ -154,9 +160,6 @@ void CCheckBoxCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if( IsWindowEnabled() && nChar == _T(' ') )
 	{
-		int nState = (mpTemplate->GetLongProperty( Prop::Value ) != BST_CHECKED? BST_CHECKED : BST_UNCHECKED);
-		mpTemplate->SetLongProperty( Prop::Value, nState );
-		SetCheck( nState );
 		GetParent()->PostMessage( WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), BN_CLICKED), (LPARAM)m_hWnd );
 		return;
 	}

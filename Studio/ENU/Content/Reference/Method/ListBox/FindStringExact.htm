@@ -31,7 +31,7 @@
             <a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i>
             <font color="#FF0000">Search [as <a href="../../DataType/String.htm">
             String</a>]</font>
-            <font color="#FF0000">{StartIndex [as
+            <font color="#FF0000">{StartAfter [as
             <a href="../../DataType/Long.htm">Long</a>]}</font>)</code></td>
           </tr>
           <tr>
@@ -44,11 +44,14 @@
       <a href="../../Control/ListBox.htm">List Box</a></td>
           </tr>
         </table>
-		<p>This method searches for an item in the  list that matches 
-        Search, starting with the item at StartIndex. If StartIndex is not 
-        specified, the entire list is searched. The return value 
-        is the index (zero based) of the first item that matches Search, or -1 
-        if no item is found.</p>
+		<p>This method performs a case  sensitive search for an item in the  list 
+        that exactly matches Search. The search starts with the item after 
+        StartAfter 
+        and continues past the last item back to the first item until the entire 
+        list has been searched. If StartAfter is not specified, the search 
+        begins with the first item in the list. The return value 
+        is the index (zero based) of the first matching item, or -1 if no match 
+        is found.</p>
 	</div>
 	<hr />
 	<div id="footer">

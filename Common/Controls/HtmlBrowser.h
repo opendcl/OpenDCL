@@ -52,6 +52,7 @@ protected:
 	virtual afx_msg void PostNcDestroy();
 	virtual void PreSubclassWindow();
 	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };
 
  // Microsoft Systems Journal -- January 2000

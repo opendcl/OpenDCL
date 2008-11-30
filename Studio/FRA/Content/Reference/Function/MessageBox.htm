@@ -43,10 +43,12 @@
           </tr>
           </table>
 		<p>This function displays a standard Windows message box with the 
-        message text specified in&nbsp; Message. The Title argument specifies 
+        message text specified in Message. The Title argument specifies 
         the message box title, and the remaining arguments control the number 
         and type of buttons, and the icon displayed beside the message. The 
-        default message box displays only an [OK] button with no icon.</p>
+        default message box displays only an [OK] button with no icon. The 
+        return value indicates which button was pressed to close the message 
+        box.</p>
 	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber4">
           <tr>
             <th nowrap>Button Style</th>
@@ -131,7 +133,42 @@
             <td>4</td>
             <td>Error icon</td>
           </tr>
-          </table>
+        </table>
+        <br />
+	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
+          <tr>
+            <th nowrap>Return Value</th>
+            <th nowrap>Button</th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>[OK]</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>[Cancel]</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>[Abort]</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>[Retry]</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>[Ignore]</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>[Yes]</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>[No]</td>
+          </tr>
+        </table>
 	</div>
 	<hr />
 	<div id="footer">
