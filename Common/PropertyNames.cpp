@@ -298,6 +298,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::LeftFromRight] = _T("LeftFromRight");
 	mmapIdToApiName[Prop::LinesAtRoot] = _T("LinesAtRoot");
 	mmapIdToApiName[Prop::List] = _T("List");
+	mmapIdToApiName[Prop::ListImages] = _T("ListImages");
 	mmapIdToApiName[Prop::ListViewIconAlign] = _T("IconAlignment");
 	mmapIdToApiName[Prop::ListViewSort] = _T("Sorting");
 	mmapIdToApiName[Prop::ListViewStyle] = _T("ListViewStyle");
@@ -343,7 +344,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::ShowTicks] = _T("ShowTicks");
 	mmapIdToApiName[Prop::ShowTypeComboBox] = _T("ShowTypeComboBox");
 	mmapIdToApiName[Prop::ShowTypeLabel] = _T("ShowTypeLabel");
-	mmapIdToApiName[Prop::SingleExpanded] = _T("SingleExpanded");
+	mmapIdToApiName[Prop::SingleClickExpand] = _T("SingleClickExpand");
 	mmapIdToApiName[Prop::SmallChange] = _T("SmallChange");
 	mmapIdToApiName[Prop::SmoothProgress] = _T("SmoothProgress");
 	mmapIdToApiName[Prop::Sorted] = _T("Sorted");

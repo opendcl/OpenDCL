@@ -19,10 +19,16 @@ Utility.js
 WinHelp.css
 Index.htm
 License.htm
+Intro\Glossary.htm
 Intro\Index.htm
 Intro\Installation.htm
-Intro\Glossary.htm
+Intro\Resources.htm
+Concepts\ErrorHandling.htm
+Concepts\EventDriven.htm
 Concepts\Index.htm
+Concepts\Modality.htm
+Concepts\ObjectModel.htm
+Concepts\ProjectStructure.png
 Usage\Index.htm
 Advanced\Index.htm
 Reference\Index.htm
@@ -177,6 +183,7 @@ Reference\Property\LeftFromRight.htm
 Reference\Property\LegendType.htm
 Reference\Property\LinesAtRoot.htm
 Reference\Property\List.htm
+Reference\Property\ListImages.htm
 Reference\Property\ListViewStyle.htm
 Reference\Property\MarginLeft.htm
 Reference\Property\MarginRight.htm
@@ -673,7 +680,7 @@ Reference\Event\Help.htm
 Reference\Event\Index.htm
 Reference\Event\Initialize.htm
 Reference\Event\ItemExpanded-Key.htm
-Reference\Event\ItemExpanding.htm
+Reference\Event\ItemExpanding-Key.htm
 Reference\Event\KeyDown.htm
 Reference\Event\KeyUp.htm
 Reference\Event\KillFocus.htm

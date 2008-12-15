@@ -451,7 +451,7 @@ bool EnumerateRegTargets( UINT nAcadTarget, LPCTSTR pszRegKey, bool bHKLM = true
 	{
 		idxSubkey++;
 		sSubkey.ReleaseBuffer();
-		String sAcadTargetKey = sAcadRootKey;
+		String sAcadTargetKey( (LPCTSTR)sAcadRootKey );
 		sAcadTargetKey += _T('\\');
 		sAcadTargetKey += sSubkey;
 		RxSelfInstallImp( nAcadTarget, sAcadTargetKey, bHKLM, bX64 );

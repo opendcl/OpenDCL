@@ -67,6 +67,8 @@ public:
 											 int nSelImage = -1, int nExpImage = -1 );
 	HTREEITEM AddChild( HTREEITEM hParent, LPCTSTR pszCaption, LPCTSTR pszKey = NULL, int nImage = -1,
 											int nSelImage = -1, int nExpImage = -1, HTREEITEM hAddAfter = TVI_LAST );
+	BOOL GetItemImage( HTREEITEM hItem, int& nImage, int& nSelImage ) const;
+	BOOL SetItemImage( HTREEITEM hItem, int nImage, int nSelImage );
 	void Clear();
 	int GetExpandedImage( HTREEITEM hItem ) const;
 	bool SetExpandedImage( HTREEITEM hItem, int nExpImage );
@@ -84,6 +86,6 @@ protected:
 	afx_msg void OnDestroy();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnTvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnTvnItemexpanding(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnTvnGetdispinfo(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg HBRUSH CtlColor(CDC* /*pDC*/, UINT /*nCtlColor*/);
 };

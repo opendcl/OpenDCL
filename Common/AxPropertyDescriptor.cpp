@@ -325,11 +325,8 @@ HRESULT AxPropertyDescriptor::GetRefGuid( ITypeInfo* TheInfo, HREFTYPE hreftype 
 	   					CComBSTR  bstrName;
 							if (SUCCEEDED(TheRefType->GetDocumentation(pVarDesc->memid, &bstrName, NULL,NULL,NULL ))) 
 							{   
-#ifdef MAINWIN
-								if (i == 0) mType = pVarDesc->lpvarValue->n2.vt;
-#else
-								if (i == 0) mType = pVarDesc->lpvarValue->vt;
-#endif
+								if (i == 0)
+									mType = pVarDesc->lpvarValue->vt;
 								mrEnum[i].Name = bstrName;
 								mrEnum[i].Var = *pVarDesc->lpvarValue;
 							}

@@ -177,6 +177,8 @@ bool CArxTabStripCtrl::CreateTabPages( UINT& nId )
 {
 	bool bFailed = false;
 
+	std::vector< CTabPage* > rTabPages;
+
 	CRect rectPage = GetUsedArea();
 	const TDclFormList& Forms = mpTemplate->GetOwnerProject()->GetDclFormList();
 	for( TDclFormList::const_iterator iter = Forms.begin(); iter != Forms.end(); ++iter )
@@ -185,11 +187,21 @@ bool CArxTabStripCtrl::CreateTabPages( UINT& nId )
 		{
 			CTabPage* pNewPage = new CTabPage( (*iter), this, rectPage, nId );
 			short nTabIndex = (*iter)->GetTabIndex();
-			if( nTabIndex >= mTabPages.size() )
-				mTabPages.push_back( pNewPage );
-			else
-				mTabPages.insert( mTabPages.begin() + nTabIndex, pNewPage );
+			if( rTabPages.size() <= nTabIndex )
+				rTabPages.resize( nTabIndex + 1 );
+			CTabPage*& pPage = rTabPages[nTabIndex];
+			assert( pPage == NULL ); //duplicate tab index!
+			pPage = pNewPage;
 		}
+	}
+	for( std::vector< CTabPage* >::const_iterator iter = rTabPages.begin();
+			 iter != rTabPages.end();
+			 ++iter )
+	{
+		CTabPage* pPage = *iter;
+		if( !pPage )
+			continue;
+		mTabPages.push_back( pPage );
 	}
 	return !bFailed;
 }

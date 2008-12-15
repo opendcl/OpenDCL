@@ -181,7 +181,7 @@ void CArxImageTreeCtrl::OnNMRdblclk(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CArxImageTreeCtrl::OnNMReturn(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventReturn ), IsAsyncEvents() );
+	InvokeMethod( mpTemplate->GetStringProperty( Prop::EventReturnPressed ), IsAsyncEvents() );
 	*pResult = 0;
 }
 
@@ -212,12 +212,13 @@ void CArxImageTreeCtrl::OnTvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 														GetItemText( hItem ),
 														(DWORD_PTR)hItem,
 														IsAsyncEvents() );
-	*pResult = 0;
 	__super::OnTvnDeleteitem( pNMHDR, pResult );
+	*pResult = 0;
 }
 
 void CArxImageTreeCtrl::OnTvnBeginlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 {
+	//__super::OnTvnBeginlabeledit( pNMHDR, pResult );
 	LPNMTVDISPINFO pTVDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
 	HTREEITEM hItem = pTVDispInfo->item.hItem;
 	CString sKey = GetItemKey( hItem );
@@ -230,11 +231,11 @@ void CArxImageTreeCtrl::OnTvnBeginlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 											(DWORD_PTR)hItem,
 											IsAsyncEvents() );
 	*pResult = 0;
-	//__super::OnTvnBeginlabeledit( pNMHDR, pResult );
 }
 
 void CArxImageTreeCtrl::OnTvnEndlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 {
+	//__super::OnTvnEndlabeledit( pNMHDR, pResult );
 	LPNMTVDISPINFO pTVDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
 	HTREEITEM hItem = pTVDispInfo->item.hItem;
 	CString sKey = GetItemKey( hItem );
@@ -249,11 +250,11 @@ void CArxImageTreeCtrl::OnTvnEndlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 														(DWORD_PTR)hItem,
 														IsAsyncEvents() );
 	*pResult = 0;
-	//__super::OnTvnEndlabeledit( pNMHDR, pResult );
 }
 
 void CArxImageTreeCtrl::OnTvnItemexpanding(NMHDR *pNMHDR, LRESULT *pResult)
 {
+	//__super::OnTvnItemexpanding( pNMHDR, pResult );
 	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 	HTREEITEM hItem = pNMTreeView->itemNew.hItem;
 	CString sKey = GetItemKey( hItem );
@@ -268,11 +269,11 @@ void CArxImageTreeCtrl::OnTvnItemexpanding(NMHDR *pNMHDR, LRESULT *pResult)
 														(DWORD_PTR)hItem,
 														IsAsyncEvents() );
 	*pResult = 0;
-	__super::OnTvnItemexpanding( pNMHDR, pResult );
 }
 
 void CArxImageTreeCtrl::OnTvnItemexpanded(NMHDR *pNMHDR, LRESULT *pResult)
 {
+	//__super::OnTvnItemexpanded( pNMHDR, pResult );
 	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 	HTREEITEM hItem = pNMTreeView->itemNew.hItem;
 	CString sKey = GetItemKey( hItem );
@@ -287,11 +288,11 @@ void CArxImageTreeCtrl::OnTvnItemexpanded(NMHDR *pNMHDR, LRESULT *pResult)
 														(DWORD_PTR)hItem,
 														IsAsyncEvents() );
 	*pResult = 0;
-	//__super::OnTvnItemexpanded( pNMHDR, pResult );
 }
 
 void CArxImageTreeCtrl::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 {
+	//__super::OnTvnSelchanged( pNMHDR, pResult );
 	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 	HTREEITEM hItem = pNMTreeView->itemNew.hItem;
 	CString sKey = GetItemKey( hItem );
@@ -308,5 +309,4 @@ void CArxImageTreeCtrl::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 	SelectDropTarget( hItem );
 	OnNeedRepaint();
 	*pResult = 0;
-	//__super::OnTvnSelchanged( pNMHDR, pResult );
 }

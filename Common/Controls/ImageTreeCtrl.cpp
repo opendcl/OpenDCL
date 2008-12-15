@@ -63,7 +63,7 @@ DWORD CImageTreeCtrl::GetWndStyle() const
 		dwStyle |= TVS_HASBUTTONS;
 	if( mpTemplate->GetBooleanProperty( Prop::EditLabels ) )
 		dwStyle |= TVS_EDITLABELS;
-	if( mpTemplate->GetBooleanProperty( Prop::SingleExpanded ) )
+	if( mpTemplate->GetBooleanProperty( Prop::SingleClickExpand ) )
 		dwStyle |= TVS_SINGLEEXPAND;
 
 	return dwStyle;
@@ -123,7 +123,7 @@ bool CImageTreeCtrl::OnApplyProperty( TPropertyPtr pProp )
 		else
 			ModifyStyle( TVS_EDITLABELS, 0 );
 		break;
-	case Prop::SingleExpanded:
+	case Prop::SingleClickExpand:
 		if( pProp->GetBooleanValue() )
 			ModifyStyle( 0, TVS_SINGLEEXPAND );
 		else
@@ -229,7 +229,7 @@ HTREEITEM CImageTreeCtrl::AddParent( LPCTSTR pszCaption, LPCTSTR pszKey /*= NULL
 {
 	if( pszKey && *pszKey && FindItem( pszKey ) )
 		return NULL; //duplicate key!
-	HTREEITEM hItem = InsertItem( pszCaption, nImage, nSelImage );
+	HTREEITEM hItem = InsertItem( pszCaption, I_IMAGECALLBACK, I_IMAGECALLBACK );
 	if( !hItem )
 		return NULL;
 	mTreeItems.push_back( CTreeItem( hItem, pszKey, nImage, nSelImage, nExpImage ) );
@@ -244,11 +244,31 @@ HTREEITEM CImageTreeCtrl::AddChild( HTREEITEM hParent, LPCTSTR pszCaption, LPCTS
 		return NULL; //duplicate key!
 	if( hAddAfter && !hParent )
 		hParent = GetParentItem( hAddAfter );
-	HTREEITEM hItem = InsertItem( pszCaption, nImage, nSelImage, hParent, hAddAfter );
+	HTREEITEM hItem = InsertItem( pszCaption, I_IMAGECALLBACK, I_IMAGECALLBACK, hParent, hAddAfter );
 	if( !hItem )
 		return NULL;
 	mTreeItems.push_back( CTreeItem( hItem, pszKey, nImage, nSelImage, nExpImage ) );
 	return hItem;
+}
+
+BOOL CImageTreeCtrl::GetItemImage( HTREEITEM hItem, int& nImage, int& nSelImage ) const
+{
+	const CTreeItem* pItem = GetTreeItem( hItem );
+	if( !pItem )
+		return FALSE;
+	nImage = pItem->mnImage;
+	nSelImage = pItem->mnSelImage;
+	return TRUE;
+}
+
+BOOL CImageTreeCtrl::SetItemImage( HTREEITEM hItem, int nImage, int nSelImage )
+{
+	CTreeItem* pItem = GetTreeItem( hItem );
+	if( !pItem )
+		return FALSE;
+	pItem->mnImage = nImage;
+	pItem->mnSelImage = nSelImage;
+	return __super::SetItemImage( hItem, I_IMAGECALLBACK, I_IMAGECALLBACK ); //force it to redraw
 }
 
 void CImageTreeCtrl::Clear()
@@ -271,11 +291,7 @@ bool CImageTreeCtrl::SetExpandedImage( HTREEITEM hItem, int nExpImage )
 	if( !pItem )
 		return false;
 	pItem->mnExpImage = nExpImage;
-	UINT nState = GetItemState( hItem, TVIS_EXPANDED );
-	if( nState & TVIS_EXPANDED )
-		SetItemImage( hItem, pItem->mnExpImage, pItem->mnSelImage );
-	else
-		SetItemImage( hItem, pItem->mnImage, pItem->mnSelImage );
+	__super::SetItemImage( hItem, I_IMAGECALLBACK, I_IMAGECALLBACK ); //force it to redraw
 	return true;
 }
 
@@ -308,7 +324,7 @@ BEGIN_MESSAGE_MAP(CImageTreeCtrl, CTreeCtrl)
 	ON_WM_DESTROY()
 	ON_WM_LBUTTONDOWN()
 	ON_NOTIFY_REFLECT(TVN_DELETEITEM, &CImageTreeCtrl::OnTvnDeleteitem)
-	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, &CImageTreeCtrl::OnTvnItemexpanding)
+	ON_NOTIFY_REFLECT(TVN_GETDISPINFO, &CImageTreeCtrl::OnTvnGetdispinfo)
 	ON_WM_CTLCOLOR_REFLECT()
 END_MESSAGE_MAP()
 
@@ -369,20 +385,20 @@ void CImageTreeCtrl::OnTvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
-void CImageTreeCtrl::OnTvnItemexpanding(NMHDR *pNMHDR, LRESULT *pResult)
+void CImageTreeCtrl::OnTvnGetdispinfo(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
-	HTREEITEM hItem = pNMTreeView->itemNew.hItem;
+	*pResult = 0;
+	LPNMTVDISPINFO pTVDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
+	HTREEITEM hItem = pTVDispInfo->item.hItem;
 	const CTreeItem* pItem = GetTreeItem( hItem );
 	if( pItem )
 	{
-		UINT nState = pNMTreeView->itemNew.state;
-		if( nState & TVIS_EXPANDED )
-			SetItemImage( hItem, pItem->mnExpImage, pItem->mnSelImage );
-		else
-			SetItemImage( hItem, pItem->mnImage, pItem->mnSelImage );
+		UINT nState = pTVDispInfo->item.state;
+		int nImage = ((nState & TVIS_EXPANDED) != 0)? pItem->mnExpImage : pItem->mnImage;
+		pTVDispInfo->item.iImage = nImage;
+		pTVDispInfo->item.iSelectedImage = (pItem->mnSelImage < 0)? nImage : pItem->mnSelImage;
+		*pResult = 1;
 	}
-	*pResult = 0;
 }
 
 HBRUSH CImageTreeCtrl::CtlColor(CDC* pDC, UINT nCtlColor)

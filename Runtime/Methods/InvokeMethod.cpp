@@ -57,7 +57,8 @@ int acedInvokeNoDocStateSafe(const struct resbuf *args, struct resbuf **result)
 		return RTERROR;
 	try
 	{ //if the invoked function closes the current document, an exception will occur before acedInvoke returns
-		return acedInvoke( args, result );
+		int nResult = acedInvoke( args, result );
+		assert( nResult == RTNORM );
 	}
 	catch( ... )
 	{}

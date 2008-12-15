@@ -351,7 +351,7 @@ ADSRESULT ComboBox::SetCurSel()
 	CComboBox* pCtrl = (CComboBox*)pDlgControl->GetControlWnd();
 
 	int idx = pCtrl->SetCurSel( nIndex );
-	if( idx == CB_ERR && nIndex != -1 )
+	if( idx == nIndex )
 		acedRetT();
 	return RSRSLT;
 }

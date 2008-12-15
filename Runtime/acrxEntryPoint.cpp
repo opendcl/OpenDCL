@@ -108,6 +108,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	// General control methods
 	{_T("Control_GetHWND"),              Control::GetHWND},
 	{_T("Control_GetName"),              Control::GetName},
+	{_T("Control_GetProperties"),        Control::GetProperties},
 	{_T("Control_GetProperty"),          Control::GetProperty}, //used to get any property of any control
 	{_T("Control_GetPos"),               Control::GetPos},
 	{_T("Control_Redraw"),               Control::Redraw},
@@ -130,6 +131,8 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("Control_SetEditLabel"),         T_SetCtrlProperty< Prop::EditLabels >},
 	{_T("Control_GetURLAddress"),        T_GetCtrlProperty< Prop::Hyperlink >},
 	{_T("Control_SetURLAddress"),        T_SetCtrlProperty< Prop::Hyperlink >},
+	{_T("Control_GetSingleExpanded"),    T_GetCtrlProperty< Prop::SingleClickExpand >},
+	{_T("Control_SetSingleExpanded"),    T_SetCtrlProperty< Prop::SingleClickExpand >},
 
 	// General form methods
 	{_T("Form_Center"),                  Form::Center},

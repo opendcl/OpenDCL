@@ -22,6 +22,10 @@
 			<param name="Local" value="Intro\Installation.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Resources">
+			<param name="Local" value="Intro\Resources.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Glossary">
 			<param name="Local" value="Intro\Glossary.htm">
 			</OBJECT>
@@ -30,6 +34,24 @@
 		<param name="Name" value="OpenDCL Concepts">
 		<param name="Local" value="Concepts\Index.htm">
 		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Object Model">
+			<param name="Local" value="Concepts\ObjectModel.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Event Driven Programming">
+			<param name="Local" value="Concepts\EventDriven.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Modal vs. Modeless">
+			<param name="Local" value="Concepts\Modality.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Error Handling">
+			<param name="Local" value="Concepts\ErrorHandling.htm">
+			</OBJECT>
+	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Using OpenDCL">
 		<param name="Local" value="Usage\Index.htm">
@@ -629,6 +651,10 @@
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="List">
 				<param name="Local" value="Reference\Property\List.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="List Images">
+				<param name="Local" value="Reference\Property\ListImages.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Margin Left">
@@ -2802,7 +2828,7 @@
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="ItemExpanding (Key)">
-				<param name="Local" value="Reference\Event\ItemExpanding.htm">
+				<param name="Local" value="Reference\Event\ItemExpanding-Key.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="KeyDown">

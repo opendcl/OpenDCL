@@ -181,7 +181,7 @@
 #define IDS_PROP_HASLINES               3330
 #define IDS_PROP_LINESATROOT            3331
 #define IDS_PROP_HASBUTTONS             3332
-#define IDS_PROP_EDITLABLES             3333
+#define IDS_PROP_EDITLABELS             3333
 #define IDS_PROP_HASCHECKBOXES          3334
 #define IDS_PROP_TITLEBARICON           3335
 #define IDS_EVENT_KEYUP                 3336
@@ -241,7 +241,7 @@
 #define IDS_PROP_DOCDEFAULT             3390
 #define IDS_PROP_EVENTINVOKE            3394
 #define IDS_PROP_RETURNASTAB            3395
-#define IDS_PROP_SINGLEEXPANED          3396
+#define IDS_PROP_SINGLECLICKEXPAND          3396
 #define IDS_PROP_ACTIVEXPROPPAGES       3397
 #define IDS_PROP_ROWHEIGHT              3398
 #define IDS_PROP_CURSELINDEX            3399
@@ -305,3 +305,4 @@
 #define IDS_PROP_CAPTION_REMAINING      3457
 #define IDS_PROP_PROGRESSLEGEND         3458
 #define IDS_PROP_KEEPFOCUS              3459
+#define IDS_PROP_LISTIMAGES             3460

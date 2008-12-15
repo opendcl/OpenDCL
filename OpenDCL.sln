@@ -116,7 +116,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Studio.Res.ENU", "Studio\EN
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.ENU", "Runtime\ENU\Runtime.Res.ENU\Runtime.Res.ENU.vcproj", "{93B7675D-D34D-4371-8EF2-CDAEB0ACA23E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.ENU", "Runtime\ENU\Runtime.Res\Runtime.Res.ENU.vcproj", "{93B7675D-D34D-4371-8EF2-CDAEB0ACA23E}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -128,7 +128,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DEU", "DEU", "{F2DBEBE7-490
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.DEU", "Runtime\DEU\Runtime.Res.DEU\Runtime.Res.DEU.vcproj", "{92646CC2-82A5-45E2-AB6C-39EA728A25EB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.DEU", "Runtime\DEU\Runtime.Res\Runtime.Res.DEU.vcproj", "{92646CC2-82A5-45E2-AB6C-39EA728A25EB}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -191,7 +191,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ESM", "ESM", "{1BDCE1F1-139
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.RUS", "Runtime\RUS\Runtime.Res.RUS\Runtime.Res.RUS.vcproj", "{B8AE1599-687F-46B6-9019-5B612CBDFE3C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.RUS", "Runtime\RUS\Runtime.Res\Runtime.Res.RUS.vcproj", "{B8AE1599-687F-46B6-9019-5B612CBDFE3C}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -209,7 +209,7 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Runtime.RUS", "Runtime\RUS\
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.ESM", "Runtime\ESM\Runtime.Res.ESM\Runtime.Res.ESM.vcproj", "{44899681-3A1A-417C-B580-1062BB5A5EE2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.ESM", "Runtime\ESM\Runtime.Res\Runtime.Res.ESM.vcproj", "{44899681-3A1A-417C-B580-1062BB5A5EE2}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -269,7 +269,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CHS", "CHS", "{1A768B0F-A52
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.CHS", "Runtime\CHS\Runtime.Res.CHS\Runtime.Res.CHS.vcproj", "{6DD50A1A-0BB5-417F-A0A2-84059B780F05}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.CHS", "Runtime\CHS\Runtime.Res\Runtime.Res.CHS.vcproj", "{6DD50A1A-0BB5-417F-A0A2-84059B780F05}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -308,7 +308,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FRA", "FRA", "{59DF26B6-BE6
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.FRA", "Runtime\FRA\Runtime.Res.FRA\Runtime.Res.FRA.vcproj", "{44058890-63BA-4A34-BB09-C32261548897}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime.Res.FRA", "Runtime\FRA\Runtime.Res\Runtime.Res.FRA.vcproj", "{44058890-63BA-4A34-BB09-C32261548897}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -477,8 +477,7 @@ Global
 		{5B5F4E62-05F3-44D3-A1CA-35B48D80C17E}.Debug|x64.Build.0 = Debug|x64
 		{5B5F4E62-05F3-44D3-A1CA-35B48D80C17E}.Release|Mixed Platforms.ActiveCfg = Release|x64
 		{5B5F4E62-05F3-44D3-A1CA-35B48D80C17E}.Release|Mixed Platforms.Build.0 = Release|x64
-		{5B5F4E62-05F3-44D3-A1CA-35B48D80C17E}.Release|Win32.ActiveCfg = Release|Win32
-		{5B5F4E62-05F3-44D3-A1CA-35B48D80C17E}.Release|Win32.Build.0 = Release|Win32
+		{5B5F4E62-05F3-44D3-A1CA-35B48D80C17E}.Release|Win32.ActiveCfg = Release|x64
 		{5B5F4E62-05F3-44D3-A1CA-35B48D80C17E}.Release|x64.ActiveCfg = Release|x64
 		{5B5F4E62-05F3-44D3-A1CA-35B48D80C17E}.Release|x64.Build.0 = Release|x64
 		{A459EF20-FC54-44D3-B922-9D872E52A1FD}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
@@ -866,16 +865,16 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{4CD64E85-C523-4BDB-AB33-6FE973C8B8ED} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
-		{4CD64E85-C522-4BDB-AB33-6FE973C8B8ED} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{F97F1A1F-A92A-4B86-9A5F-FE215C9644DC} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
-		{C721C46D-7378-43B2-86ED-19538DF46D05} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
-		{5B5F4E62-05F3-44D3-A1CA-35B48D80C17E} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{F2DBEBE7-4909-421E-BED3-41C27BF68982} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{7DB67511-5CD1-40E2-A3E5-A0E47269B451} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{3C8F161D-A043-4A5B-A908-85B1A5BA9B08} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{8907C6DA-9BC9-4109-99E0-D2E3F82E5BAD} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{59DF26B6-BE6A-4B99-B5C2-D0B4EDB9A1AD} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
+		{C721C46D-7378-43B2-86ED-19538DF46D05} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
+		{4CD64E85-C522-4BDB-AB33-6FE973C8B8ED} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
+		{4CD64E85-C523-4BDB-AB33-6FE973C8B8ED} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
+		{5B5F4E62-05F3-44D3-A1CA-35B48D80C17E} = {C8C0FDA1-0A13-41F8-826B-C69F16C4660C}
 		{5D5E3904-B40B-42C0-A7C5-D492A90017E8} = {CFCBE5A7-5E6D-4386-84EA-0050A0870151}
 		{5AF84D9B-53AA-4ACB-A44A-B0159A12992E} = {CFCBE5A7-5E6D-4386-84EA-0050A0870151}
 		{80C19EA0-F824-4A11-8E1D-95079E346B90} = {CFCBE5A7-5E6D-4386-84EA-0050A0870151}

@@ -729,6 +729,14 @@ void CDclControlObject::Serialize(CArchive& ar)
 			case Prop::ZOrder:
 				mProperties.erase( iterAt );
 				continue;
+			case Prop::EventReturn:
+				{
+					CString sEvent = (*iterAt)->GetStringValue();
+					mProperties.erase( iterAt );
+					TPropertyPtr pNewEvent = AddStringProperty( Prop::EventReturnPressed, PropEvent, sEvent );
+					pNewEvent->SetHidden();
+				}
+				continue;
 			case Prop::URLLinkType:
 				{
 					CString sURL = GetStringProperty( Prop::Hyperlink );

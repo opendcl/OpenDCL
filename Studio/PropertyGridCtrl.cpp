@@ -1069,6 +1069,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::TextLimit: return &CFilteredTextEditCtrl::Create< CUnsignedIntegerFilter >;
 	case Prop::LinesAtRoot: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::List: return PF_UnfilteredTextEditCreator;
+	case Prop::ListImages: return &CFilteredTextEditCtrl::Create< CIntegerListFilter >;
 	case Prop::ListViewIconAlign: return &CEnumComboBoxCtrl::Create;
 	case Prop::ListViewSort: return &CEnumComboBoxCtrl::Create;
 	case Prop::ListViewStyle: return &CEnumComboBoxCtrl::Create;
@@ -1117,7 +1118,7 @@ static F_EditControlCreator GetEditControlCreator( Prop::Id id, PropertyType typ
 	case Prop::ShowTicks: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ShowTypeComboBox: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::ShowTypeLabel: return &CBooleanCheckBoxCtrl::Create;
-	case Prop::SingleExpanded: return &CBooleanCheckBoxCtrl::Create;
+	case Prop::SingleClickExpand: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::SmallChange: return &CFilteredTextEditCtrl::Create< CIntegerFilter >;
 	case Prop::SmoothProgress: return &CBooleanCheckBoxCtrl::Create;
 	case Prop::Sorted: return &CBooleanCheckBoxCtrl::Create;

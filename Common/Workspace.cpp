@@ -66,8 +66,36 @@ HMODULE CWorkspace::GetLocalResourceModule(void) const
 		CString sLanguageDir = sLanguage;
 		if( !sLanguage.IsEmpty() )
 			sLanguageDir += _T('\\');
+	#ifdef _DEBUG
+		//when running under the debugger, use the build project's language resource module
+	#ifdef EDITOR
+		CString sResRootDbg = sResRoot;
+		int cchBuildFolder = sResRootDbg.MakeReverse().Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
+		sResRootDbg = sResRootDbg.Mid( cchBuildFolder + 1 ).MakeReverse();
+		CString sLanguageDirDbg;
+		sLanguageDirDbg.Format( _T("%s\\Studio.Res\\Debug\\"), (LPCTSTR)sLanguage );
+		CString sLocalResPathDbg = sResRootDbg + sLanguageDirDbg + sResModuleFilename;
+		HMODULE hmodLocalRes = LoadLibrary( sLocalResPathDbg );
+	#else
+		CString sResRootDbg = sResRoot;
+		int cchBuildFolder = sResRootDbg.MakeReverse().Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
+		sResRootDbg = sResRootDbg.Mid( cchBuildFolder + 1 );
+		cchBuildFolder = sResRootDbg.Mid( 1 ).SpanExcluding( _T("\\/:") ).GetLength();
+		sResRootDbg = sResRootDbg.Mid( cchBuildFolder + 1 ).MakeReverse();
+		CString sLanguageDirDbg;
+		sLanguageDirDbg.Format( _T("%s\\Runtime.Res\\Debug\\"), (LPCTSTR)sLanguage );
+		CString sLocalResPathDbg = sResRootDbg + sLanguageDirDbg + sResModuleFilename;
+		HMODULE hmodLocalRes = LoadLibrary( sLocalResPathDbg );
+	#endif
+		if( !hmodLocalRes )
+		{
+			CString sLocalResPath = sResRoot + sLanguageDir + sResModuleFilename;
+			hmodLocalRes = LoadLibrary( sLocalResPath );
+		}
+	#else
 		CString sLocalResPath = sResRoot + sLanguageDir + sResModuleFilename;
 		HMODULE hmodLocalRes = LoadLibrary( sLocalResPath );
+	#endif
 		if( !hmodLocalRes )
 		{
 			hmodLocalRes = LoadLibrary( sResRoot + _T("ENU\\") + sResModuleFilename );

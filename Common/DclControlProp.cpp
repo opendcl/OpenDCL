@@ -604,6 +604,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddStringProperty( Prop::ItemData, PropIntArray );
 		pDclControl->AddLongProperty( Prop::TextLimit, PropLong, 256 );
 		pDclControl->AddStringProperty( Prop::List, PropStringArray );
+		pDclControl->AddStringProperty( Prop::ListImages, PropIntArray );
 		pDclControl->AddBooleanProperty( Prop::ReturnAsTab, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::Sorted, PropBool, false );
 		pDclControl->AddLongProperty( Prop::ComboBoxStyle, PropEnum, 0 );
@@ -969,7 +970,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::LinesAtRoot, PropBool, true );
 		pDclControl->AddBooleanProperty( Prop::ShowSelectAlways, PropBool, false );
-		pDclControl->AddBooleanProperty( Prop::SingleExpanded, PropBool, false );
+		pDclControl->AddBooleanProperty( Prop::SingleClickExpand, PropBool, false );
 		AddControlTooltipProperties( pDclControl );
 		AddControlEvent( pDclControl, Prop::EventClicked );
 		AddControlEvent( pDclControl, Prop::DragnDropToAutoCAD );
@@ -983,6 +984,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		AddControlEvent( pDclControl, Prop::EventSetFocus );
 		AddControlEvent( pDclControl, Prop::EventSelChanged );
 		AddControlEvent( pDclControl, Prop::EventMouseMove );
+		AddControlEvent( pDclControl, Prop::EventReturnPressed );
 		AddControlEvent( pDclControl, Prop::EventRightClick );
 		AddControlEvent( pDclControl, Prop::EventRightDblClick );
 		AddControlEvent( pDclControl, Prop::EventBeginLabelEdit );

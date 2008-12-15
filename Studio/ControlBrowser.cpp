@@ -730,9 +730,9 @@ bool CDclControlNode::addPropertyChildItems( CControlBrowser& Browser, HTREEITEM
 			break;
 		case PropActiveXPropPages:
 		case PropCustom:
-		case PropImageList:
-		case PropStringArray:
-		case PropIntArray:
+		//case PropImageList:
+		//case PropStringArray:
+		//case PropIntArray:
 			break;
 		case PropActiveXProp:
 		case PropActiveXRunTime:

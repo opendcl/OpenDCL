@@ -999,6 +999,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_350F7B09BCDD4C5588AED1CABAD8DD4D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3558B5FD1ADE481EA9EE880BCAF442F4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3489,12 +3495,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_ADC13A8CFAD8417AA0270BBA89210573"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_ADC8E29F25D944158F5A5F4D2C952785"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3544,6 +3544,12 @@
         "Entry"
         {
         "MsmKey" = "8:_AFE4F552738245638AD071E3032A74AE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B011AB483F614F7982215FB410FAFF5C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -8588,6 +8594,26 @@
             {
             "SourcePath" = "8:Content\\Reference\\Property\\TabImageList.htm"
             "TargetName" = "8:TabImageList.htm"
+            "Tag" = "8:"
+            "Folder" = "8:_3B0DB9BABD244149A5EDB21BDDEC8944"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_350F7B09BCDD4C5588AED1CABAD8DD4D"
+            {
+            "SourcePath" = "8:Content\\Reference\\Property\\ListImages.htm"
+            "TargetName" = "8:ListImages.htm"
             "Tag" = "8:"
             "Folder" = "8:_3B0DB9BABD244149A5EDB21BDDEC8944"
             "Condition" = "8:"
@@ -16884,26 +16910,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ADC13A8CFAD8417AA0270BBA89210573"
-            {
-            "SourcePath" = "8:Content\\Reference\\Event\\ItemExpanding.htm"
-            "TargetName" = "8:ItemExpanding.htm"
-            "Tag" = "8:"
-            "Folder" = "8:_197FF385CDC64A29A1E43E03B9F30F2E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ADC8E29F25D944158F5A5F4D2C952785"
             {
             "SourcePath" = "8:Content\\Reference\\Method\\Html\\GoBack.htm"
@@ -17070,6 +17076,26 @@
             "TargetName" = "8:AddButton.htm"
             "Tag" = "8:"
             "Folder" = "8:_529BA292908346B9A008D9CC18F4A223"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B011AB483F614F7982215FB410FAFF5C"
+            {
+            "SourcePath" = "8:Content\\Reference\\Event\\ItemExpanding-Key.htm"
+            "TargetName" = "8:ItemExpanding-Key.htm"
+            "Tag" = "8:"
+            "Folder" = "8:_197FF385CDC64A29A1E43E03B9F30F2E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -23271,14 +23297,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{6D1AA31E-A0F7-4C32-A8EE-ECB8B448C969}"
-        "PackageCode" = "8:{08853D18-68B5-4B4C-B8E9-95CB3D60BD96}"
+        "ProductCode" = "8:{2E06FF0E-0BBF-4BB0-BAF2-2F57B942A42B}"
+        "PackageCode" = "8:{7FEE6200-C74E-41FF-AA34-CE0E72B8EEEB}"
         "UpgradeCode" = "8:{13AE30FE-5152-40D5-B724-3BE317FC4DF2}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0104"
+        "ProductVersion" = "8:5.0.0105"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -24098,7 +24124,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_26E20AD026CC4B8B9AF6DEAE7C78218A"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\ESM\\MSM\\Debug\\OpenDCL.Runtime.ESM.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\ESM\\MSM\\Release\\OpenDCL.Runtime.ESM.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_6E8F0FAA9D3A414FA40C6C4907E4C3BE"
@@ -24151,7 +24177,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_37DEF53DCE0D46B1917A8802B27617AB"
             {
-            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_BF925880594447ADA8EE6F7018173408"
@@ -24179,7 +24205,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C8C5E9444C474B7D863DEF04E4D144B1"
             {
-            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_6E8F0FAA9D3A414FA40C6C4907E4C3BE"

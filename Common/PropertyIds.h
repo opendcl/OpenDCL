@@ -8,19 +8,16 @@
 // 2) Define an API name for the new property by adding it at the bottom of PropertyNames.cpp
 // 3) Add a localizable string resource for the property display name to all shared local language
 //    resource files (SharedRes.*.rc). The resource ID must be [3200 + property id].
-// 4) Add a localizable string resource for the property description to all studio local language
-//    resource files (Studio.*.rc). The resource ID must be [55000 + property id].
-// 5) If the property is not hidden, edit GetEditControlCreator() in PropertyGridCtrl.cpp
+// 4) If the property is not hidden, edit GetEditControlCreator() in PropertyGridCtrl.cpp
 //    to return a function that creates an appropriate edit control for the property.
-// 6) If the new property is an enumeration value, add resource strings for the display name of
+// 5) If the new property is an enumeration value, add resource strings for the display name of
 //    each possible value to each local language resource file (SharedRes.*.rc), then add an
 //    entry in PropEnumNames.cpp for defining the list of enumeration names.
-// 7) If the new property is an event, add it to the list of events in the
-//    CEventsTabPane::UpdateEvents() function (in EventsTabPane.cpp) and to the LoadArgsNDesc()
-//    function (in LoadArgs.cpp).
-// 8) Edit DclControlProp.cpp and add the property to any controls that support it.
-// 9) Edit the relevant controls' OnApplyProperty() function to apply the value of the new
+// 6) Edit DclControlProp.cpp and add the property to any controls that support it.
+// 7) Edit the relevant controls' OnApplyProperty() function to apply the value of the new
 //    property to an instance of the control.
+// 8) Document the new property in the HTML help runtime reference, then update the OpenDCL.hhp
+//    and OpenDCL.hhc files.
 
 
 namespace Prop
@@ -222,7 +219,7 @@ enum Id
 	DefaultDockedSide = 190,
 	EventInvoke = 194,
 	ReturnAsTab = 195,
-	SingleExpanded = 196,
+	SingleClickExpand = 196,
 	ActiveXPropPages = 197,
 	RowHeight = 198,
 	CurSelIndex = 199,
@@ -286,8 +283,9 @@ enum Id
 	CaptionRemaining = 257,
 	ProgressLegend = 258,
 	KeepFocus = 259,
+	ListImages = 260,
 	_MinId = 1,
-	_MaxId = 259
+	_MaxId = 260
 };
 
 /* property ids in alphabetical order for easy manual lookup
@@ -452,6 +450,7 @@ enum Id
 	LeftFromRight = 80,
 	LinesAtRoot = 131,
 	List = 22,
+	ListImages = 260,
 	ListViewIconAlign = 163,
 	ListViewSort = 162,
 	ListViewStyle = 161,
@@ -505,7 +504,7 @@ enum Id
 	ShowTicks = 41,
 	ShowTypeComboBox = 217,
 	ShowTypeLabel = 218,
-	SingleExpanded = 196,
+	SingleClickExpand = 196,
 	SmallChange = 29,
 	SmoothProgress = 59,
 	Sorted = 53,

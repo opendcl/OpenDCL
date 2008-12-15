@@ -249,11 +249,7 @@ void SetRefType( VARTYPE& vtType, ITypeInfo* TheInfo, HREFTYPE hreftype, CLSID& 
 					{ // try to determine real type
 						if(SUCCEEDED(TheRefType->GetVarDesc(0, &pVarDesc )))
 						{
-						#ifdef MAINWIN
-							vtType = pVarDesc->lpvarValue->n2.vt;
-						#else
 							vtType = pVarDesc->lpvarValue->vt;
-						#endif
 							TheRefType->ReleaseVarDesc(pVarDesc);
 						}
 					}

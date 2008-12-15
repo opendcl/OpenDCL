@@ -212,7 +212,7 @@ ADSRESULT ListBox::SetCurSel()
 
 	CListBox* pCtrl = (CListBox*)pDlgControl->GetControlWnd();
 
-	if( LB_ERR != pCtrl->SetCurSel( nCurSel ) )
+	if( nCurSel == pCtrl->SetCurSel( nCurSel ) )
 		acedRetT();
 	return RSRSLT;
 }

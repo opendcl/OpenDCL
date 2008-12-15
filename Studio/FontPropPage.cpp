@@ -89,7 +89,7 @@ END_MESSAGE_MAP()
 BOOL CFontPropertyPage::OnInitDialog() 
 {
 	CPropertyPage::OnInitDialog();
-	TStudioProjectPtr pProject = activeProject;
+	TProjectPtr pProject = mpDclControl->GetOwnerProject();
 
 	try
 	{
@@ -281,7 +281,7 @@ void CFontPropertyPage::OnDestroy()
 BOOL CFontPropertyPage::OnApply() 
 {
 	CWinApp* pApp = AfxGetApp();
-	TStudioProjectPtr pProject = activeProject;
+	TProjectPtr pProject = mpDclControl->GetOwnerProject();
 	
 	FontSettings FS;
 
@@ -301,7 +301,7 @@ BOOL CFontPropertyPage::OnApply()
 	else
 		m_comboSize.GetWindowText(sFontSize);
 	long lSize = _tstol( sFontSize );
-	if( (m_ScaledOpt.GetCheck() == BST_CHECKED) )
+	if( (m_PixelOpt.GetCheck() == BST_CHECKED) )
 		lSize = -lSize;
 	FS.setSize( lSize );
 
