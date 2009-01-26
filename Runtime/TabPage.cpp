@@ -105,3 +105,8 @@ void CTabPage::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 	if( (lpwndpos->flags & SWP_SHOWWINDOW) != 0 && mbRecalcQueued )
 		mpControlPane->RecalcLayout();
 }
+
+BOOL CTabPage::PreTranslateMessage(MSG* pMsg)
+{
+	return CWnd::PreTranslateMessage(pMsg); //bypass CDialog
+}

@@ -462,16 +462,16 @@ CString AxInterfaceDescriptor::GetName() const
 
 AxPropertyDescriptor* AxInterfaceDescriptor::GetGetDescriptor() const
 {
-	if (mpPropGet != NULL)
+	if( mpPropGet )
 		return mpPropGet;
 	return mpProp;
 }
 
 AxPropertyDescriptor* AxInterfaceDescriptor::GetPutDescriptor() const
 {
-	if (mpPropPutRef != NULL)
+	if( mpPropPutRef )
 		return mpPropPutRef;
-	if (mpPropPut != NULL)
+	if( mpPropPut )
 		return mpPropPut;
 	return mpProp;
 }

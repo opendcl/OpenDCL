@@ -56,18 +56,8 @@ ADSRESULT AxControl::Get()
 	if( !pProp )
 		return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, (LPCTSTR)sPropName );
 
-	const AxPropertyDescriptor* pAxProp = NULL;
-	if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef() &&
-		(pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_DISPATCH || 
-		 pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_UNKNOWN ||
-		 pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_VOID))
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef();
-	else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPut())
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPut();
-	else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef())
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef();
-	else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetProp())
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetProp();
+	const AxPropertyDescriptor* pAxProp =
+		pProp->GetConstAxInterfaceDescriptorPtr()->GetGetDescriptor();
 	if( !pAxProp )
 		return RSRSLT;
 	
@@ -105,18 +95,8 @@ ADSRESULT AxControl::Put()
 	if( !pProp )
 		return HandleArgValueError( pArgs, IDS_ERR_NOTAPROPERTY, (LPCTSTR)sPropName );
 
-	const AxPropertyDescriptor* pAxProp = NULL;
-	if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef() &&
-			(pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_DISPATCH || 
-			 pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_UNKNOWN ||
-			 pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef()->GetType() == VT_VOID))
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef();
-	else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPut())
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPut();
-	else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef())
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetPropPutRef();
-	else if (pProp->GetConstAxInterfaceDescriptorPtr()->GetProp())
-		pAxProp = pProp->GetConstAxInterfaceDescriptorPtr()->GetProp();
+	const AxPropertyDescriptor* pAxProp =
+		pProp->GetConstAxInterfaceDescriptorPtr()->GetPutDescriptor();
 	if( !pAxProp )
 		return RSRSLT;
 	

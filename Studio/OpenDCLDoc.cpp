@@ -118,7 +118,8 @@ BOOL COpenDCLDoc::OnSaveDocument( LPCTSTR lpszPathName )
 		ReportSaveLoadException( sFileName, NULL, TRUE, AFX_IDP_FAILED_TO_SAVE_DOC );
 		return FALSE;
 	}
-	m_strTitle = mpProject->GetKeyName();
+	SetTitle( mpProject->GetKeyName() );
+	theStudioWorkspace.ActivateProject( mpProject, this ); //to update the main fram title
 	SetModifiedFlag( FALSE );     // back to unmodified
 	((CStudioFrame*)AfxGetApp()->GetMainWnd())->DelayUpdateFrameTitle();
 

@@ -48,6 +48,6 @@ protected:
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-public:
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

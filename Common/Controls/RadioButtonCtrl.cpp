@@ -76,6 +76,14 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CRadioButtonCtrl message handlers
 
+LRESULT CRadioButtonCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	LRESULT lResult = __super::WindowProc(message, wParam, lParam);
+	if( message == BM_SETCHECK )
+		mpTemplate->SetLongProperty( Prop::Value, wParam );
+	return lResult;
+}
+
 BOOL CRadioButtonCtrl::PreTranslateMessage(MSG* pMsg) 
 {
 	GetToolTipCtrl().RelayEvent(pMsg);
@@ -87,7 +95,6 @@ BOOL CRadioButtonCtrl::PreTranslateMessage(MSG* pMsg)
 void CRadioButtonCtrl::OnSetFocus(CWnd* pOldWnd) 
 {
 	__super::OnSetFocus(pOldWnd);
-	mpTemplate->SetLongProperty( Prop::Value, GetCheck() );
 	OnNeedRepaint();
 }
 
@@ -95,7 +102,6 @@ void CRadioButtonCtrl::OnKillFocus(CWnd* pNewWnd)
 {
 	OnNeedRepaint();
 	__super::OnKillFocus(pNewWnd);
-	mpTemplate->SetLongProperty( Prop::Value, GetCheck() );
 }
 
 HBRUSH CRadioButtonCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 

@@ -33,6 +33,7 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual afx_msg void PostNcDestroy();
 	afx_msg void OnSetFocus(CWnd* pOldWnd);

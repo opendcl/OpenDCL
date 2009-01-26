@@ -329,7 +329,7 @@ bool CArxBlockViewCtrl::LoadPreviewDwg( LPCTSTR pszFilename,
 		return false;
 	}
 
-	es = pTab->getAt( mpTemplate->GetStringProperty( Prop::BlockName ), pRec, AcDb::kForRead );
+	es = pTab->getAt( ACDB_MODEL_SPACE, pRec, AcDb::kForRead );
 	pTab->close();
 	if( es != Acad::eOk )
 	{
@@ -338,6 +338,7 @@ bool CArxBlockViewCtrl::LoadPreviewDwg( LPCTSTR pszFilename,
     return false;
 	}
 			
+	mpTemplate->SetStringProperty( Prop::BlockName, ACDB_MODEL_SPACE );
 	DisplayTheBlock(
 		pRec,		
 		dZoomFactor, 
