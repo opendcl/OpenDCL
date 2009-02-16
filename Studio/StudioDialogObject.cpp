@@ -323,12 +323,12 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 		break;
 	case CtlTabStrip:
 		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlApiName( CtlTabStrip ) ), rcControl );
-		//if( pDclControl )
-		//{
-		//	pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB1 ) );
-		//	pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB2 ) );
-		//	pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB3 ) );
-		//}
+		if( pDclControl )
+		{
+			pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB1 ) );
+			pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB2 ) );
+			pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB3 ) );
+		}
 		break;
 	default:
 		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlApiName( type ) ), rcControl );

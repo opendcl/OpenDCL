@@ -417,14 +417,14 @@ void CArxAcadSlideCtrl::OnKillFocus(CWnd* pNewWnd)
 	InvokeMethod(mpTemplate->GetStringProperty(Prop::EventKillFocus), IsAsyncEvents());
 }
 
-void CArxAcadSlideCtrl::SetHighLight(const COLORREF& rgb)
+void CArxAcadSlideCtrl::SetHighlight(const COLORREF& rgb)
 {
 	m_bSelectedRect = true;
 	m_HighlightColor = rgb;		
 	Invalidate();
 }
 
-void CArxAcadSlideCtrl::RemoveHighLight()
+void CArxAcadSlideCtrl::RemoveHighlight()
 {
 	m_bSelectedRect = false;
 	Invalidate();

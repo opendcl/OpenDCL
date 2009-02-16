@@ -48,10 +48,6 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
-				BufferSecurityCheck="true"
-				TreatWChar_tAsBuiltInType="true"
-				ForceConformanceInForLoopScope="true"
-				RuntimeTypeInfo="true"
 				WarningLevel="1"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
@@ -140,10 +136,6 @@
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="2"
-				BufferSecurityCheck="true"
-				TreatWChar_tAsBuiltInType="true"
-				ForceConformanceInForLoopScope="true"
-				RuntimeTypeInfo="true"
 				WarningLevel="1"
 				Detect64BitPortabilityProblems="true"
 			/>
@@ -509,11 +501,11 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="..\..\Common\Res\Folder.bmp"
+				RelativePath="..\Res\Folder.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\Res\Folder.bmp"
+				RelativePath="..\..\Common\Res\Folder.bmp"
 				>
 			</File>
 			<File

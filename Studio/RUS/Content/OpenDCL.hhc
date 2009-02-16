@@ -40,26 +40,42 @@
 			<param name="Local" value="Concepts\ObjectModel.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Event Driven Programming">
-			<param name="Local" value="Concepts\EventDriven.htm">
+			<param name="Name" value="Application Structure">
+			<param name="Local" value="Concepts\Development.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Modal vs. Modeless">
 			<param name="Local" value="Concepts\Modality.htm">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Error Handling">
-			<param name="Local" value="Concepts\ErrorHandling.htm">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Using OpenDCL">
 		<param name="Local" value="Usage\Index.htm">
 		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="OpenDCL Studio">
+			<param name="Local" value="Usage\Studio.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AutoLISP Code">
+			<param name="Local" value="Usage\AutoLISP.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Error Handling">
+			<param name="Local" value="Usage\ErrorHandling.htm">
+			</OBJECT>
+	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Advanced OpenDCL">
 		<param name="Local" value="Advanced\Index.htm">
 		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Deployment">
+			<param name="Local" value="Advanced\Deployment.htm">
+			</OBJECT>
+	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="OpenDCL Reference">
 		<param name="Local" value="Reference\Index.htm">
@@ -809,8 +825,8 @@
 				<param name="Local" value="Reference\Property\ShowTypeLabel.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Single Expanded">
-				<param name="Local" value="Reference\Property\SingleExpanded.htm">
+				<param name="Name" value="Single Click Expand">
+				<param name="Local" value="Reference\Property\SingleClickExpand.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Small Change">

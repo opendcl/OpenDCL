@@ -1,0 +1,91 @@
+<html>
+<head>
+<link rel="StyleSheet" href="../WinHelp.css" type="text/css" media="screen,print">
+<script type="text/javascript" src="../../../Utility.js"></script>
+<title>Application Development</title>
+</head>
+<body>
+	<table width="100%">
+		<tr>
+			<td nowrap>
+				<div id="title">Application Development</div>
+			</td>
+			<td align="right" valign="top">
+				<div id="hdrlink">&nbsp;</div>
+			</td>
+		</tr>
+	</table>
+	<hr />
+	<div id="content">
+		<p>An OpenDCL application consists of AutoLISP code and OpenDCL project 
+        data. The OpenDCL project data is created and edited in OpenDCL Studio, 
+        and can exist either as a separate .odcl file or as data within the 
+        AutoLISP code. Embedding the project data within the AutoLISP code is an 
+        advanced topic that is covered elsewhere.</p>
+		<p>OpenDCL uses an event driven programming model, where user interface 
+        events trigger calls to event handlers that perform the work of the 
+        application. A typical OpenDCL application includes code to load and 
+        display a form, along with event handlers that manage the form once it 
+        is displayed. Event handlers respond to user actions such as pressing a 
+        button or selecting an item in a list.</p>
+		<p>The AutoLISP code that displays an OpenDCL form must first ensure 
+        that the OpenDCL Runtime module is loaded. This is done by utilizing 
+        AutoCAD's demand loading feature by executing the OPENDCL command. There 
+        is no need to check whether the runtime is already loaded -- if it is, 
+        the command does nothing.</p>
+	    <blockquote>
+          <pre>(command &quot;_OPENDCL&quot;)</pre>
+        </blockquote>
+		<p>The next step is to load the project data. If the project data is 
+        stored in a file, it can be loaded by calling the
+        <a href="../Reference/Method/Project/Load.htm">(dcl_Project_Load)</a> 
+        function. If you choose to embed the project data within the AutoLISP 
+        code, it can be loaded by calling the
+        <a href="../Reference/Method/Project/Import.htm">(dcl_Project_Import)</a> 
+        function.</p>
+		<p>Once the project data is loaded, a call to
+        <a href="../Reference/Method/Form/Show.htm">(dcl_Form_Show)</a> will 
+        create a dialog and display it on the screen. After the dialog is 
+        displayed, AutoLISP event handlers take over and manage the form until 
+        it is closed. Initializing the dialog must be done in an event handler 
+        called <a href="../Reference/Event/Initialize.htm">OnInitialize</a>. 
+        Following is typical code for displaying a simple modal dialog:</p>
+	    <blockquote>
+          <pre>(command &quot;_OPENDCL&quot;)
+(defun MyProject_MyForm_OnInitialize (/)
+  (dcl_Control_SetCaption MyProject_MyForm_Label1 &quot;Hello World!&quot;)
+)
+(defun MyProject_MyForm_CloseButton_OnClicked (/)
+  (dcl_Form_Close MyProject_MyForm)
+)
+(defun MyCommand (/ Result)
+  (command &quot;_OPENDCL&quot;) ; Load OpenDCL Runtime
+  (if (dcl_Project_Load &quot;MyProject&quot;) ; Load project data from MyProject.odcl
+    (progn
+      (setq Result (dcl_Form_Show MyProject_MyForm))
+      ; Note that this code does not execute until *after* the dialog is closed!
+      (if (= Result 1) (DoSomething))
+    )
+  )
+  (princ)
+)</pre>
+        </blockquote>
+        <p>As you can see, the code for displaying the dialog is very simple. 
+        The work of initializing, managing, and responding to the dialog events 
+        all happens in separate event handlers that get called while the dialog 
+        is active. The dialog is closed when an event handler calls
+        <a href="../Reference/Method/Form/Close.htm">(dcl_Form_Close)</a>. Note 
+        that <a href="../Reference/Method/Form/Close.htm">(dcl_Form_Close)</a> 
+        can be given an optional dialog status code that is subsequently 
+        returned by the <a href="../Reference/Method/Form/Show.htm">
+        (dcl_Form_Show)</a> function. This status code can be used to determine 
+        what, if anything, should be done after the dialog has closed.</div>
+	<hr />
+	<div id="footer">
+		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		All rights reserved.</p>
+		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+	</div>
+</body>
+</html>

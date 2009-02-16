@@ -17,11 +17,49 @@
 	</table>
 	<hr />
 	<div id="content">
-		<p>CONTENT</p>
-	</div>
+		<p>Modal dialogs disable the AutoCAD window until they are closed. By 
+        their nature, modal dialogs are easier to manage because the AutoCAD 
+        state remains unchanged for the life of the dialog. Modal dialogs return 
+        a dialog status code when they close, and typically the main application 
+        code performs additional actions based on the status code returned from 
+        the dialog.</p>
+		<p>Modeless dialogs present additional challenges. Since modeless 
+        dialogs can remain open for the lifetime of the AutoCAD application, 
+        they must deal with changing AutoCAD state such as documents opening and 
+        closing. In addition, since every AutoCAD drawing has its own AutoLISP 
+        namespace, activating a new document means that event handlers defined 
+        in the deactivated document will no longer be accessible in the newly 
+        activated document.</p>
+		<p>These realities mean that the only way to manage a modeless dialog is 
+        by ensuring that the event handlers are defined in every new drawing 
+        file. In practice, this usually means that the application lisp file (or 
+        files) must be loaded via the acaddoc.lsp file or a similar method that 
+        loads the files as part of new document initialization.</p>
+		<p>Furthermore, since the dialog may already be active when startup code 
+        executes (after opening a second drawing file, for example), it must act 
+        accordingly. For example, if the application must read some 
+        initialization settings from the registry, it likely needs to do that 
+        only when the modeless dialog is initially activated. If such 
+        initialization is performed in the dialog's OnInitialize event, it will 
+        only get executed once when the dialog is first activated. If the 
+        application needs to determine at runtime whether the dialog is already 
+        active it can use an expression like the following:</p>
+	    <blockquote>
+          <pre>(and (MyProject_MyForm (dcl_Form_IsActive MyProject_MyForm))</pre>
+        </blockquote>
+        <p>In addition to programming startup code to act appropriately when 
+        more than one drawing is opened, modeless dialogs must also behave 
+        correctly when all open drawings are closed (resulting in a state 
+        referred to as a &quot;no doc state&quot;) or when the user switches between 
+        multiple active drawings. If the modeless dialog contains controls whose 
+        settings or properties depend on the drawing contents, then it must 
+        define event handlers for the
+        <a href="../Reference/Event/DocActivated.htm">OnDocActivated</a> and
+        <a href="../Reference/Event/EnteringNoDocState.htm">OnEnteringNoDocState</a> 
+        events to update the controls as the document state changes.</div>
 	<hr />
 	<div id="footer">
-		<p>Copyright © 2008 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
 		All rights reserved.</p>
 		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
 		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>

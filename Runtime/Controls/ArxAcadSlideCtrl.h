@@ -47,9 +47,9 @@ public:
 public:
 	void DrawLine(int sX, int sY, int eX, int eY, const COLORREF& rgb);
 	void DrawFillRect(int sX, int sY, int eX, int eY, const COLORREF& rgb);
-	void SetHighLight(const COLORREF& rgb);
+	void SetHighlight(const COLORREF& rgb);
 	void DrawASlide(int nX, int nY, int nSlideWidth, int nSlideHeight, LPCTSTR pszFilename, LPCTSTR pszSlideName);
-	void RemoveHighLight();
+	void RemoveHighlight();
 	void SetAcadColor(long nColor);
 	bool SetFileName( LPCTSTR pszFilename, LPCTSTR pszSlide );
 	void Clear();

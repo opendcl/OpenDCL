@@ -1248,10 +1248,10 @@ DWORD CButtonST::SetIcon(int nIconIn, int nCxDesiredIn, int nCyDesiredIn, int nI
 	{
 		case NULL:
 			break;
-		case (int)BTNST_AUTO_GRAY:
+		case BTNST_AUTO_GRAY:
 			hIconOut = BTNST_AUTO_GRAY;
 			break;
-		case (int)BTNST_AUTO_DARKER:
+		case BTNST_AUTO_DARKER:
 			hIconOut = BTNST_AUTO_DARKER;
 			break;
 		default:
@@ -1338,12 +1338,12 @@ DWORD CButtonST::SetIcon(HICON hIconIn, HICON hIconOut)
 		// Icon when mouse outside button?
 		if (hIconOut)
 		{
-			switch ((int)hIconOut)
+			switch (reinterpret_cast<LONG_PTR>(hIconOut))
 			{
-				case (int)BTNST_AUTO_GRAY:
+				case BTNST_AUTO_GRAY:
 					hIconOut = CreateGrayscaleIcon(hIconIn);
 					break;
-				case (int)BTNST_AUTO_DARKER:
+				case BTNST_AUTO_DARKER:
 					hIconOut = CreateDarkerIcon(hIconIn);
 					break;
 			} // switch
@@ -1410,10 +1410,10 @@ DWORD CButtonST::SetBitmaps(int nBitmapIn, COLORREF crTransColorIn, int nBitmapO
 	{
 		case NULL:
 			break;
-		case (int)BTNST_AUTO_GRAY:
+		case BTNST_AUTO_GRAY:
 			hBitmapOut = (HBITMAP)BTNST_AUTO_GRAY;
 			break;
-		case (int)BTNST_AUTO_DARKER:
+		case BTNST_AUTO_DARKER:
 			hBitmapOut = (HBITMAP)BTNST_AUTO_DARKER;
 			break;
 		default:

@@ -354,10 +354,9 @@ void CImageTreeCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	__super::OnLButtonDown(nFlags, point);
 	HTREEITEM hItem = HitTest( point, &nFlags );
-	SetFocus();
 	if( hItem )
 	{
-		Select( hItem, TVGN_CARET );
+		//Select( hItem, TVGN_CARET );
 		mhtiDragSource = hItem;
 	}
 	DROPEFFECT dwDropEffect = BeginDragDrop( point );

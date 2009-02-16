@@ -59,7 +59,7 @@ ADSRESULT SlideView::Clear()
 	return RSRSLT;
 }
 
-ADSRESULT SlideView::SetHighLight()
+ADSRESULT SlideView::SetHighlight()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -67,8 +67,8 @@ ADSRESULT SlideView::SetHighLight()
 	if (!GetDlgControlArgument (pArgs, pDlgControl, CtlSlideView))
 		return RSERR; //invalid input
 
-	int nColor;
-	if( !GetIntArgument( pArgs, nColor ) )
+	COLORREF crHighlight;
+	if( !GetColorArgument( pArgs, crHighlight ) )
 		return RSERR; //invalid input
 
 	if( !AssertOutOfArgs( pArgs ) )
@@ -76,12 +76,12 @@ ADSRESULT SlideView::SetHighLight()
 
 	CArxAcadSlideCtrl* pCtrl = (CArxAcadSlideCtrl*)pDlgControl->GetControlWnd();
 
-	pCtrl->SetHighLight( nColor );
+	pCtrl->SetHighlight( crHighlight );
 	acedRetT();
 	return RSRSLT;
 }
 
-ADSRESULT SlideView::RemoveHighLight()
+ADSRESULT SlideView::RemoveHighlight()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -94,7 +94,7 @@ ADSRESULT SlideView::RemoveHighLight()
 
 	CArxAcadSlideCtrl* pCtrl = (CArxAcadSlideCtrl*)pDlgControl->GetControlWnd();
 
-	pCtrl->RemoveHighLight();
+	pCtrl->RemoveHighlight();
 	acedRetT();
 	return RSRSLT;
 }

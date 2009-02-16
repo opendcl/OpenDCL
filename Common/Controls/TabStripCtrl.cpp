@@ -240,16 +240,16 @@ void CTabStripCtrl::ResetTooltips()
 	GetToolTipCtrl().RemoveAllTools();
 	TPropertyPtr pToolTipBalloon = mpTemplate->GetPropertyObject( Prop::ToolTipBalloon );
 	GetToolTipCtrl().SetDefaultSizes( !pToolTipBalloon || pToolTipBalloon->GetBooleanValue() );
-	size_t nTabQty = pTabsTTTProperty->size();
-	for (size_t i = 0; i < (size_t)GetItemCount(); i++)
+	size_t nTTQty = pTabsTTTProperty->size();
+	size_t nTabQty = (size_t)GetItemCount();
+	if( nTTQty < nTabQty )
+		nTabQty = nTTQty;
+	for (size_t i = 0; i < nTabQty; i++)
 	{
 		TC_ITEM tcItem;
 		tcItem.mask = TCIF_PARAM;
 		GetItem( i, &tcItem );
 		size_t idx = tcItem.lParam;
-		assert( idx < nTabQty );
-		if( idx >= nTabQty )
-			continue;
 		CString sToolTipTitle = mpTemplate->GetPropertyListItem( Prop::TabsTTT, idx );
 		if( !sToolTipTitle.IsEmpty() )
 		{

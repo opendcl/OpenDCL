@@ -8,8 +8,8 @@ namespace SlideView
 {
 ADSRESULT Load();
 ADSRESULT Clear();
-ADSRESULT SetHighLight();
-ADSRESULT RemoveHighLight();
+ADSRESULT SetHighlight();
+ADSRESULT RemoveHighlight();
 ADSRESULT VectorImage();
 ADSRESULT FillImage();
 ADSRESULT EndImage();

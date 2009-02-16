@@ -78,7 +78,11 @@
 #define ADSFUNCBASE 1000 //the externally defined ADS functions will be defined starting at this function index
 #define ADSPROPFUNCBASE 2000 //the property functions will be defined starting at this function index
 
+#ifdef _BRXTARGET
+#define theRxApp singleInstanceEpObject
+#else
 #define theRxApp entryPointObject
+#endif
 
 static LPCTSTR gpszDclEventsLspFileName = _T("DclEvents.lsp");
 static LPCTSTR gpszOnActionEventLispFunction = _T("(defun c:OnActionEvent_%s()%s)(princ)\n");
@@ -425,7 +429,7 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("Grid_GetRowItems"),             Grid::GetRowCells},
 	{_T("Grid_SetColImage"),             Grid::SetColumnImage},
 	{_T("Grid_SetColWidth"),             Grid::SetColumnWidth},
-	{_T("Grid_SetCurSel"),               Grid::SetCurCell},
+	{_T("Grid_SelCurCell"),              Grid::SetCurCell},
 	{_T("Grid_SetItemCheck"),            Grid::SetCellCheckState},
 	{_T("Grid_SetItemData"),             Grid::SetRowData},
 	{_T("Grid_SetItemDropList"),         Grid::SetCellDropList},
@@ -621,8 +625,8 @@ static const struct AdsFunctionTableEntry { LPCTSTR pszFunctionName; int (*pfHan
 	{_T("SlideView_EndImage"),           SlideView::EndImage},
 	{_T("SlideView_FillImage"),          SlideView::FillImage},
 	{_T("SlideView_Load"),               SlideView::Load},
-	{_T("SlideView_RemoveHighLight"),    SlideView::RemoveHighLight},
-	{_T("SlideView_SetHighLight"),       SlideView::SetHighLight},
+	{_T("SlideView_RemoveHighlight"),    SlideView::RemoveHighlight},
+	{_T("SlideView_SetHighlight"),       SlideView::SetHighlight},
 	{_T("SlideView_SlideImage"),         SlideView::SlideImage},											
 	{_T("SlideView_VectorImage"),        SlideView::VectorImage},
 
@@ -791,6 +795,10 @@ public:
 			}
 			else
 			{
+			#ifdef _BRXTARGET
+				if( nFunctionCode >= 0 && nFunctionCode < __adsRegisteredSymbols.length() )
+					return __adsRegisteredSymbols[nFunctionCode].getName();
+			#else
 				_ADSSYMBOL_ENTRY** ppAdsSymbolMapEntryFirst = &__pAdsSymbolMapEntryFirst + 1;
 				_ADSSYMBOL_ENTRY** ppAdsSymbolMapEntryLast = &__pAdsSymbolMapEntryLast;
         int paramIter = 0;
@@ -803,6 +811,7 @@ public:
 					if( paramIter++ == nFunctionCode )
 						return (*ppEntry)->pszName;
 				}
+			#endif
 			}
 			return _T("");
 		}

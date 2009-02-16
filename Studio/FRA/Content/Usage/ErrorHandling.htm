@@ -51,9 +51,9 @@
   ; Note that this function returns NIL if no errors were found
 )
 
-(defun c:Project1_Form1_OnCancelClose( bCancelling /)
-  ;; Return T to prevent form closing if not cancelling, and unresolved errors found
-  (and (not bCancelling) (HighlightFormErrors)) ; Always allow form to close when cancelling
+(defun c:Project1_Form1_OnCancelClose( Canceling /)
+  ;; Return T to prevent form closing if not canceling, and unresolved errors found
+  (and (not Canceling) (HighlightFormErrors)) ; Always allow form to close when canceling
 )</pre>
         <h4>OpenDCL Runtime Errors</h4>
         <p>Calling OpenDCL Runtime functions can result in two types of error 
@@ -74,7 +74,7 @@
         ignored.</div>
 	<hr />
 	<div id="footer">
-		<p>Copyright © 2008 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
 		All rights reserved.</p>
 		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
 		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>

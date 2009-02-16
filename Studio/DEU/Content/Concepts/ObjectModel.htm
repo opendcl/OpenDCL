@@ -33,7 +33,7 @@
         forms and controls determines the name of the AutoLISP symbol used to 
         reference the object. For example, showing a form is accomplished by 
         calling the <a href="../Reference/Method/Form/Show.htm">Form_Show</a> 
-        method with the form as the first argument:</p>
+        method with the form handle as the first argument:</p>
 	    <pre>(dcl_Form_Show Project1_Form1)</pre>
         <p>In this example, Project1_Form1 is an AutoLISP symbol that is 
         automatically set by OpenDCL to point to the form when the project is 
@@ -74,11 +74,25 @@
         number of projects to be loaded simultaneously, so that multiple 
         independent OpenDCL applications can function inside AutoCAD without 
         interfering with each other.</p>
-		<p><img border="0" src="ProjectStructure.png" width="541" height="358"></p>
-	</div>
+		<p><img border="0" src="ProjectStructure.png" width="554" height="438"></p>
+		<h4>OpenDCL Control Handles</h4>
+		<p>Controls (and forms) are referenced in AutoLISP code by AutoLISP 
+        symbols that contain a <a href="../Reference/DataType/Control.htm">
+        handle for the control</a>. These symbols are automatically created in 
+        the AutoLISP namespace of every AutoCAD drawing when an instance of a 
+        form is active. The default AutoLISP symbol name for this handle is 
+        constructed by concatenating the project key, form name, and control 
+        name, all separated by an underscore character, as follows:</p>
+        <blockquote>
+          <pre>ProjectKey_FormName_ControlName</pre>
+        </blockquote>
+        <p>This default symbol name can be overridden by setting the control's
+        <a href="../Reference/Property/VarName.htm">VarName property</a>, but 
+        using the default naming convention is recommended to minimize the risk 
+        of symbol name collisions between applications.</div>
 	<hr />
 	<div id="footer">
-		<p>Copyright © 2008 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
 		All rights reserved.</p>
 		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
 		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>

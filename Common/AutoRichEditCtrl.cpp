@@ -37,7 +37,7 @@ CString CAutoRichEditCtrl::GetRTF()
 
 	CString sRTF = CString();
 
-	es.dwCookie = reinterpret_cast<DWORD>(&sRTF);	// so sRTF receives the string
+	es.dwCookie = reinterpret_cast<DWORD_PTR>(&sRTF);	// so sRTF receives the string
 	
 	StreamOut(SF_RTF, es);			// Call CRichEditCtrl::StreamOut to get the string.
 	///
@@ -55,7 +55,7 @@ void CAutoRichEditCtrl::SetRTF(LPCTSTR pszRTF)
 	EDITSTREAM es;
 	es.dwError = 0;
 	es.pfnCallback = CBStreamIn;
-	es.dwCookie = reinterpret_cast<DWORD>(&sRtfA);
+	es.dwCookie = reinterpret_cast<DWORD_PTR>(&sRtfA);
 	StreamIn(SF_RTF, es);	// Do it.
 }
 

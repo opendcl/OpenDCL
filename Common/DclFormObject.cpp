@@ -724,6 +724,16 @@ TDclControlPtr CDclFormObject::FindControl( LPCTSTR pszControlName ) const
 		if( (*iter)->GetKeyName().CompareNoCase( pszControlName ) == 0 )
 			return *iter;
 	}
+	TDclFormList ChildForms;
+	if( mpProject->FindChildForms( TDclFormLockedPtr( const_cast< CDclFormObject* >( this ) ), ChildForms ) )
+	{
+		for( TDclFormList::const_iterator iter = ChildForms.begin(); iter != ChildForms.end(); ++iter )
+		{
+			TDclControlPtr pCtrl = (*iter)->FindControl( pszControlName );
+			if( pCtrl )
+				return pCtrl;
+		}
+	}
 	return NULL;
 }
 
@@ -736,6 +746,16 @@ TDclControlPtr CDclFormObject::FindControl( LPCTSTR pszControlName, ControlType 
 			if( (*iter)->GetType() == eType )
 				return *iter;
 			break;
+		}
+	}
+	TDclFormList ChildForms;
+	if( mpProject->FindChildForms( TDclFormLockedPtr( const_cast< CDclFormObject* >( this ) ), ChildForms ) )
+	{
+		for( TDclFormList::const_iterator iter = ChildForms.begin(); iter != ChildForms.end(); ++iter )
+		{
+			TDclControlPtr pCtrl = (*iter)->FindControl( pszControlName, eType );
+			if( pCtrl )
+				return pCtrl;
 		}
 	}
 	return NULL;
