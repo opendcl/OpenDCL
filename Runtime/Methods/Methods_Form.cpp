@@ -437,10 +437,8 @@ ADSRESULT Form::Show()
 	{
 		if( GetStringArgument( pArgs, sDefaultDirectory, true ) )
 		{
-			if( !GetStringArgument( pArgs, sDefaultFileName ) )
-				return RSERR; //invalid input
-			if( !GetStringArgument( pArgs, sDefaultExtension ) )
-				return RSERR; //invalid input
+			if( GetStringArgument( pArgs, sDefaultFileName, true ) )
+				GetStringArgument( pArgs, sDefaultExtension, true );
 		}
 	}
 	else if( GetIntArgument( pArgs, nX, true ) )

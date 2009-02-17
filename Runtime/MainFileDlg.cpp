@@ -136,8 +136,12 @@ void CMainFileDlg::OnSizing(UINT fwSide, LPRECT pRect)
 void CMainFileDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 {
 	__super::OnWindowPosChanged(lpwndpos);
-	if( mbInitialized && (lpwndpos->flags & (SWP_NOSIZE | SWP_NOMOVE) != (SWP_NOSIZE | SWP_NOMOVE)) )
+	if( mbInitialized && ((lpwndpos->flags & (SWP_NOSIZE | SWP_NOMOVE)) != (SWP_NOSIZE | SWP_NOMOVE)) )
 	{
+		CRect rcMain;
+		GetClientRect( &rcMain );
+		rcMain.MoveToXY( 0, 0 );
+		mpDlgObject->MoveWindow( &rcMain );
 		CRect rcDlg = mpDlgObject->GetEffectiveClientRect();
 		int nNewWidth = rcDlg.Width();
 		int nNewHeight = rcDlg.Height();

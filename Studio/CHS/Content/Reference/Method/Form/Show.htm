@@ -37,8 +37,8 @@
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax2);" style="width: 22px; height: 20px"><img src="../../images/Clipboard.png" width="15" height="13" /></button><br />(File Dialog)</th>
 <td bgcolor="#CCFF99"><code id="syntax2">(dcl_Form_Show <i>
             <a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i>
-            <font color="#FF0000">{DefaultDirectory [as
-<a href="../../DataType/String.htm">String</a>]} {DefaultFilename [as
+            <font color="#FF0000">{InitialDirectory [as
+<a href="../../DataType/String.htm">String</a>]} {InitialFilename [as
 <a href="../../DataType/String.htm">String</a>]} {DefaultExtension [as
 <a href="../../DataType/String.htm">String</a>]}</font>)</code></td>
           </tr>
@@ -60,7 +60,7 @@
         PositionY arguments are included, the form's initial position is at 
         PositionX, PositionY (specified in parent window client coordinates). 
         File dialogs use an alternate syntax, with optional arguments for 
-        the default directory, default filename, and default file extension, 
+        the initial directory, initial filename, and default file extension, 
         respectively.</p>
 		<p>If the specified form is a modal dialog, this function does not 
         return until the dialog is closed, and it returns a long value that 

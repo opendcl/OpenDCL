@@ -368,6 +368,7 @@ enum Id
 	EventEndLabelEdit = 95,
 	EventFolderChanged = 219,
 	EventGetDayState = 85,
+	EventHelp = 220,
 	EventInvoke = 194,
 	EventItemExpanded = 96,
 	EventItemExpanding = 97,
@@ -384,8 +385,7 @@ enum Id
 	EventMouseWheel = 142,
 	EventNavigateComplete = 146,
 	EventNodeClicked = 15, //unused
-	EventHelp = 220,
-	EventTypeChanged
+	EventTypeChanged = 221,
 	EventOutOfMemory = 88,
 	EventPaint = 143,
 	EventRightClick = 89,

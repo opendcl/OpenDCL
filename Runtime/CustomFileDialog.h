@@ -91,6 +91,7 @@ protected:
 	virtual void OnTypeChange();
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	virtual BOOL OnInitDialog();
+	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 
 	//custom file dialog messages
 	afx_msg LRESULT OnGetFileName( WPARAM wParam, LPARAM lParam );

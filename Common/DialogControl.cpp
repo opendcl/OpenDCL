@@ -263,20 +263,23 @@ void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= true*/, bool bUp
 				pHostDlg->UpdateWindow();
 		}
 	}
-	if( mpControlWnd->m_hWnd )
+	if( mpControlWnd )
 	{
-		mpControlWnd->Invalidate();
-		if( bUpdateNow )
-			mpControlWnd->UpdateWindow();
-	}
-	else
-	{
-		CWnd* pHostDlg = mpControlPane->GetHostDialog();
-		if( pHostDlg )
+		if( mpControlWnd->m_hWnd )
 		{
-			CDC* pdc = pHostDlg->GetDC();
-			mpControlWnd->PaintWindowlessControls( pdc );
-			pHostDlg->ReleaseDC( pdc );
+			mpControlWnd->Invalidate();
+			if( bUpdateNow )
+				mpControlWnd->UpdateWindow();
+		}
+		else
+		{
+			CWnd* pHostDlg = mpControlPane->GetHostDialog();
+			if( pHostDlg )
+			{
+				CDC* pdc = pHostDlg->GetDC();
+				mpControlWnd->PaintWindowlessControls( pdc );
+				pHostDlg->ReleaseDC( pdc );
+			}
 		}
 	}
 }

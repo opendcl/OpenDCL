@@ -93,7 +93,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="XCOPY &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Studio\$(ConfigurationName)\RUS&quot; /S /Y&#x0D;&#x0A;"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
@@ -175,7 +175,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="XCOPY &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Studio\$(ConfigurationName)\RUS&quot; /S /Y&#x0D;&#x0A;"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>
@@ -248,11 +248,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\RUS\Res\ArrowHeads.bmp"
+				RelativePath="..\..\..\Common\Res\arrowheads.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\arrowheads.bmp"
+				RelativePath="..\..\..\Common\RUS\Res\ArrowHeads.bmp"
 				>
 			</File>
 			<File
@@ -348,19 +348,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\RUS\Res\Filter.ico"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\Common\Res\Filter.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\Folder.bmp"
+				RelativePath="..\..\..\Common\RUS\Res\Filter.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\Common\RUS\Res\Folder.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Common\Res\Folder.bmp"
 				>
 			</File>
 			<File
@@ -436,19 +436,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\Label.ico"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\Common\RUS\Res\Label.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\RUS\Res\LargeBlock.ico"
+				RelativePath="..\..\..\Common\Res\Label.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\Res\LargeBlock.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Common\RUS\Res\LargeBlock.ico"
 				>
 			</File>
 			<File
@@ -540,19 +540,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\RUS\Res\Pick.ico"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\Common\Res\pick.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\PickSmall.ico"
+				RelativePath="..\..\..\Common\RUS\Res\Pick.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\Common\RUS\Res\PickSmall.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Common\Res\PickSmall.ico"
 				>
 			</File>
 			<File
@@ -600,11 +600,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\SHXFont.ico"
+				RelativePath="..\..\..\Common\RUS\Res\SHXFont.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\RUS\Res\SHXFont.ico"
+				RelativePath="..\..\..\Common\Res\SHXFont.ico"
 				>
 			</File>
 			<File
@@ -656,11 +656,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\Warn.ico"
+				RelativePath="..\..\..\Common\RUS\Res\Warn.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\RUS\Res\Warn.ico"
+				RelativePath=".\res\Warn.ico"
 				>
 			</File>
 			<File

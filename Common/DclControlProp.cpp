@@ -212,7 +212,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 		break;
 	case FrmPaletteDlg:
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
-		pDclControl->AddBooleanProperty( Prop::KeepFocus, PropBool, true );
+		pDclControl->AddBooleanProperty( Prop::KeepFocus, PropBool, false );
 		pDclControl->AddBooleanProperty( Prop::AllowResizing, PropBool, true );
 		pDclControl->AddLongProperty( Prop::MinDialogWidth, PropLong, 0 );
 		pDclControl->AddLongProperty( Prop::MinDialogHeight, PropLong, 0 );
@@ -485,7 +485,6 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::ShowTypeLabel, PropBool, true );
 		pDclControl->AddLongProperty( Prop::FileDlgStyle, PropEnum, 1 );
 		AddControlEvent( pDclControl, Prop::EventFolderChanged );
-		AddControlEvent( pDclControl, Prop::EventHelp );
 		AddControlEvent( pDclControl, Prop::EventTypeChanged );
 		AddControlEvent( pDclControl, Prop::EventSelChanged );
 		break;

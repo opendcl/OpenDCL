@@ -502,6 +502,15 @@ void CDclControlObject::Serialize(CArchive& ar)
 					if( !(*iterAt)->IsHidden() )
 						(*iterAt)->SetHidden();
 					break;
+				case Prop::EventHelp:
+					if( !(*iterAt)->GetStringValue().IsEmpty() && mpOwner )
+					{ //transfer it to the parent form if possible
+						CString sFormHelp = mpOwner->GetControlProperties()->GetStringProperty( Prop::EventHelp );
+						if( sFormHelp.IsEmpty() )
+							mpOwner->GetControlProperties()->SetStringProperty( Prop::EventHelp, (*iterAt)->GetStringValue() );
+					}
+					mProperties.erase( iterAt );
+					continue;
 				}
 				break;
 			case CtlLabel:

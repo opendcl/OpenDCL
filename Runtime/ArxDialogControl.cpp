@@ -96,8 +96,8 @@ CArxDialogControl::CArxDialogControl( TDclControlPtr pTemplate, CControlPane* pP
 {
 	TraceFmt( _T("> CArxDialogControl::CArxDialogControl(%s [%p], [%p], %s [HWND: %p]) [this: %p]\r\n"),
 						(LPCTSTR)pTemplate->GetKeyPath(), (const CDclControlObject*)pTemplate, pPane,
-						(LPCTSTR)CString(pControl->GetRuntimeClass()->m_lpszClassName),
-						pControl->m_hWnd, this );
+						(LPCTSTR)CString(pControl? pControl->GetRuntimeClass()->m_lpszClassName : "<null>"),
+						pControl? pControl->m_hWnd : NULL, this );
 }
 
 CArxDialogControl::~CArxDialogControl()

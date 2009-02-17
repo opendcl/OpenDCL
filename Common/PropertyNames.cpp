@@ -208,6 +208,7 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::EventEndLabelEdit] = _T("EndLabelEdit");
 	mmapIdToApiName[Prop::EventFolderChanged] = _T("FolderChanged");
 	mmapIdToApiName[Prop::EventGetDayState] = _T("GetDayState");
+	mmapIdToApiName[Prop::EventHelp] = _T("Help");
 	mmapIdToApiName[Prop::EventInvoke] = _T("EventInvoke");
 	mmapIdToApiName[Prop::EventItemExpanded] = _T("ItemExpanded");
 	mmapIdToApiName[Prop::EventItemExpanding] = _T("ItemExpanding");
@@ -226,7 +227,6 @@ void PropNameMap::Initialize()
 	mmapIdToApiName[Prop::EventMouseWheel] = _T("MouseWheel");
 	mmapIdToApiName[Prop::EventNavigateComplete] = _T("NavigationComplete");
 	mmapIdToApiName[Prop::EventNodeClicked] = _T("NodeClicked");
-	mmapIdToApiName[Prop::EventHelp] = _T("Help");
 	mmapIdToApiName[Prop::EventOptionsApply] = _T("OptionsApply");
 	mmapIdToApiName[Prop::EventOptionsCancel] = _T("OptionsCancel");
 	mmapIdToApiName[Prop::EventOptionsHelp] = _T("OptionsHelp");

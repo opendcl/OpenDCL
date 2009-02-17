@@ -26,13 +26,19 @@ const UINT WM_FILEDLG_GETSELECTEDFILECOUNT = RegisterWindowMessage( _T("OpenDCL.
 const UINT WM_FILEDLG_GETSELECTEDFILES = RegisterWindowMessage( _T("OpenDCL.FileDialog.GetSelectedFiles") );
 
 
-class CArxFileDialogControl : public CArxDialogControl
-{
-public:
-	CArxFileDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl )
-		: CArxDialogControl( pTemplate, pPane, pControl ) {}
-	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
-};
+//class CArxFileDialogControl : public CArxDialogControl
+//{
+//public:
+//	CArxFileDialogControl( TDclControlPtr pTemplate, CControlPane* pPane, CWnd* pControl )
+//		: CArxDialogControl( pTemplate, pPane, pControl ) {}
+//	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
+//	virtual CRect GetWndRect() const
+//		{
+//			return CRect( 0, 0,
+//										mpTemplate->GetLongProperty(Prop::Width),
+//										mpTemplate->GetLongProperty(Prop::Height) );
+//		}
+//};
 
 
 static bool IsWindows98orLater()
@@ -113,8 +119,18 @@ CCustomFileDialog::CCustomFileDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=
 		msFilterList = mpFileDlgCtrl->GetStringProperty(Prop::Filter);
 		if( mpParams && !mpParams->sFilterList.IsEmpty() )
 			msFilterList = mpParams->sFilterList;
+		CStringArray rsFilters;
 		if( !msFilterList.IsEmpty() )
 		{
+			int nStart = 0;
+			while( nStart >= 0 )
+			{
+				CString sDesc = msFilterList.Tokenize( _T("|"), nStart );
+				if( nStart < 0 )
+					break;
+				rsFilters.Add( msFilterList.Tokenize( _T("|"), nStart ) );
+			}
+			msFilterList += _T('\0');
 			msFilterList.Replace(_T('|'), _T('\0'));
 			ofn.lpstrFilter = msFilterList.LockBuffer();
 		}
@@ -124,6 +140,7 @@ CCustomFileDialog::CCustomFileDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=
 			mpParams->dwFlags |= ofn.Flags; //keep the flags we have so far, just add the new ones
 			ofn.Flags = mpParams->dwFlags;
 			msDefaultExtension = mpParams->sDefaultExtension;
+			msDefaultExtension.TrimLeft( _T(".") );
 			ofn.lpstrDefExt = msDefaultExtension.LockBuffer();
 			DWORD cchBuffer = (ofn.Flags & OFN_ALLOWMULTISELECT)? 0x800 : MAX_PATH;
 			ofn.lpstrFile = msResultBuf.GetBuffer( cchBuffer );
@@ -134,7 +151,36 @@ CCustomFileDialog::CCustomFileDialog( TDclFormPtr pSourceForm, CWnd* pParent /*=
 				ofn.lpstrInitialDir = msInitialDirectory.LockBuffer();
 			}
 			else
+			{
 				lstrcpyn( ofn.lpstrFile, mpParams->sFilename, cchBuffer );
+				if( !rsFilters.IsEmpty() )
+				{ //search the filter list for a match
+					CString sFilename = mpParams->sFilename;
+					sFilename = sFilename.MakeReverse().SpanExcluding( _T("\\/:") );
+					sFilename.MakeReverse();
+					sFilename.MakeUpper();
+					INT_PTR ctFilter = rsFilters.GetCount();
+					for( INT_PTR idx = 0; idx < ctFilter; ++idx )
+					{
+						CString sFilter = rsFilters.GetAt( idx );
+						int nStart = 0;
+						while( nStart >= 0 )
+						{
+							CString sPattern = sFilter.Tokenize( _T(";"), nStart );
+							if( sPattern.IsEmpty() )
+								continue;
+							sPattern.MakeUpper();
+							sPattern.Replace( _T("."), _T("`.") );
+							if( acutWcMatch( sFilename, sPattern ) == RTNORM )
+							{
+								ofn.nFilterIndex = idx + 1;
+								idx = ctFilter;
+								break;
+							}
+						}
+					}
+				}
+			}
 			ofn.nMaxFile = cchBuffer;
 		}
 	}
@@ -273,7 +319,21 @@ BEGIN_MESSAGE_MAP(CCustomFileDialog, CFileDialog)
 	ON_MESSAGE(WM_FILEDLG_GETSELECTEDFILECOUNT, OnGetSelectedFileCount)
 	ON_MESSAGE(WM_FILEDLG_GETSELECTEDFILES, OnGetSelectedFiles)
 	ON_COMMAND(ID_HELP, OnHelp)
+	ON_WM_WINDOWPOSCHANGED()
 END_MESSAGE_MAP()
+
+void CCustomFileDialog::OnWindowPosChanged(WINDOWPOS* lpwndpos)
+{
+	__super::OnWindowPosChanged(lpwndpos);
+	if( ((lpwndpos->flags & (SWP_NOSIZE | SWP_NOMOVE)) != (SWP_NOSIZE | SWP_NOMOVE)) )
+	{
+		CRect rcDlg = GetEffectiveClientRect();
+		int nNewWidth = rcDlg.Width();
+		int nNewHeight = rcDlg.Height();
+		mpFileDlgCtrl->SetLongProperty( Prop::Width, nNewWidth - mnRightBorder );
+		mpFileDlgCtrl->SetLongProperty( Prop::Height, nNewHeight - mnBottomBorder );
+	}
+}
 
 
 void CCustomFileDialog::CtrlModifyStyle(int nCtrl) 
@@ -337,9 +397,9 @@ BOOL CCustomFileDialog::OnInitDialog()
 		rectWindow.bottom += mnBottomBorder;
 		mMainFileDlg.MoveWindow( &rectWindow, TRUE );
 
-		CControlPane* pCtrlPane = GetControlPane();
-		CArxDialogControl* pCtrlObj = new CArxFileDialogControl( mpFileDlgCtrl, pCtrlPane, this );
-		pCtrlPane->AddControl( pCtrlObj );
+		//CControlPane* pCtrlPane = GetControlPane();
+		//CArxDialogControl* pCtrlObj = new CArxFileDialogControl( mpFileDlgCtrl, pCtrlPane, NULL );
+		//pCtrlPane->AddControl( pCtrlObj );
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control

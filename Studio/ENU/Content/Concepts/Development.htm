@@ -51,14 +51,13 @@
         called <a href="../Reference/Event/Initialize.htm">OnInitialize</a>. 
         Following is typical code for displaying a simple modal dialog:</p>
 	    <blockquote>
-          <pre>(command &quot;_OPENDCL&quot;)
-(defun MyProject_MyForm_OnInitialize (/)
+          <pre>(defun MyProject_MyForm_OnInitialize (/)
   (dcl_Control_SetCaption MyProject_MyForm_Label1 &quot;Hello World!&quot;)
 )
 (defun MyProject_MyForm_CloseButton_OnClicked (/)
   (dcl_Form_Close MyProject_MyForm)
 )
-(defun MyCommand (/ Result)
+(defun C:MyCommand (/ Result)
   (command &quot;_OPENDCL&quot;) ; Load OpenDCL Runtime
   (if (dcl_Project_Load &quot;MyProject&quot;) ; Load project data from MyProject.odcl
     (progn

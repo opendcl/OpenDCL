@@ -53,7 +53,7 @@
 
 (defun c:Project1_Form1_OnCancelClose( Canceling /)
   ;; Return T to prevent form closing if not canceling, and unresolved errors found
-  (and (not Canceling) (HighlightFormErrors)) ; Always allow form to close when canceling
+  (and (/= 1 Canceling) (HighlightFormErrors)) ; Always allow form to close when canceling
 )</pre>
         <h4>OpenDCL Runtime Errors</h4>
         <p>Calling OpenDCL Runtime functions can result in two types of error 
