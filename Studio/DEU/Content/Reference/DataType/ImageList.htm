@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
 <title>Image List</title>
 </head>
@@ -17,19 +17,15 @@
 	</table>
 	<hr />
 	<div id="content">
-		<p>Image lists are Windows system objects for holding an ordered list of 
-        icons, and they are represented by handles in Windows. OpenDCL encodes 
-        image list handles as entity names when 
-        returning them to AutoLISP. These values are not really entity names, 
-        but they can be passed to OpenDCL functions that expect an image list, and OpenDCL will interpret them correctly as 
-        image list handles.</p>
-	</div>
+		<p>Image lists sind Windows-Systemobjekte (Collections), die dazu dienen eine geordneten Liste von Bildern, Symbolen (Icons) zu speichern. Sie werden in Windows als Speicheradressen vorgehalten. OpenDCL stellt die Elemente der Bildliste als Objektzeiger zur Verf&uuml;gung, wenn sie AutoLISP zur&uuml;ckgegeben werden. Diese Werte sind keine wirklichen Entitynames (die AutoLISP-Funktion (entget) kann hier also nicht angewandt werden), wie man sie von AutoCAD kennt. Sie k&ouml;nnen jedoch OpenDCL-Funktionen &uuml;bergeben werden, die eine Image List erwarten und OpenDCL interpretiert sie korrekterweise als Speicheradresse einer Image List.</p>
+</div>
 	<hr />
 	<div id="footer">
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		Alle Rechte vorbehalten.</p>
+		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
 	</div>
 </body>
 </html>

@@ -1,7 +1,7 @@
 <html>
 <head>
-<link rel="StyleSheet" href="../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../../../Utility.js"></script>
+<link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
+<script type="text/javascript" src="../Utility.js"></script>
 <title>Error Handling</title>
 </head>
 <body>
@@ -39,21 +39,21 @@
         be used to check input on the form and prevent the dialog from closing 
         if invalid input is found.</p>
 		<p>Following is a typical usage scenario for the CancelClose event:</p>
-	    <pre>(defun HighlightFormErrors () ; Return T if there was an error, NIL otherwise
-  (if (CheckForFormInputErrors) ; Call function that does the checking
+	    <pre>(defun HighlightFormErrors () <span class="codecomment">; Return T if there was an error, NIL otherwise</span>
+  (if (CheckForFormInputErrors) <span class="codecomment">; Call function that does the checking</span>
     (progn
-      ;; Here you can highlight the error, display a message box with more information,
-      ;; or do something to fix the error (then return NIL if the error is fixed!)
+      <span class="codecomment">;; Here you can highlight the error, display a message box with more information,</span>
+      <span class="codecomment">;; or do something to fix the error (then return NIL if the error is fixed!)</span>
       (dcl_MessageBox &quot;Form contains invalid input!&quot; &quot;Error&quot; 2 4)
-      T ; Signal error found and not resolved by returning T
+      T <span class="codecomment">; Signal error found and not resolved by returning T</span>
     )
   )
-  ; Note that this function returns NIL if no errors were found
+  <span class="codecomment">; Note that this function returns NIL if no errors were found</span>
 )
 
 (defun c:Project1_Form1_OnCancelClose( Canceling /)
-  ;; Return T to prevent form closing if not canceling, and unresolved errors found
-  (and (/= 1 Canceling) (HighlightFormErrors)) ; Always allow form to close when canceling
+  <span class="codecomment">;; Return T to prevent form closing if not canceling, and unresolved errors found</span>
+  (and (/= 1 Canceling) (HighlightFormErrors)) <span class="codecomment">; Always allow form to close when canceling</span>
 )</pre>
         <h4>OpenDCL Runtime Errors</h4>
         <p>Calling OpenDCL Runtime functions can result in two types of error 
@@ -77,7 +77,8 @@
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
 		All rights reserved.</p>
 		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in the United States and other countries.</p>
 	</div>
 </body>
 </html>

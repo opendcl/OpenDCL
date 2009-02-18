@@ -5,13 +5,12 @@ Contents file=OpenDCL.hhc
 Default Window=Standard
 Default topic=Index.htm
 Display compile progress=No
-Error log file=
 Full-text search=Yes
-Language=0x409 English (United States)
-Title=OpenDCL(tm) Help
+Language=0x407 Deutsch (Deutschland)
+Title=OpenDCL(tm) Hilfe
 
 [WINDOWS]
-Standard="OpenDCL(tm) Help","OpenDCL.hhc",,"Index.htm","Index.htm",,,,,0x42420,,0x304e,[160,80,800,680],0x10c90000,,,,,,0
+Standard="OpenDCL(tm) Hilfe","OpenDCL.hhc",,"Index.htm","Index.htm",,,,,0x63420,,0x304e,[160,80,800,680],0x10ca0000,,,,,,0
 
 
 [FILES]

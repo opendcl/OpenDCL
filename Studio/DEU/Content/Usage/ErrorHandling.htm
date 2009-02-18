@@ -1,7 +1,7 @@
 <html>
 <head>
-<link rel="StyleSheet" href="../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../../../Utility.js"></script>
+<link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
+<script type="text/javascript" src="../Utility.js"></script>
 <title>Error Handling</title>
 </head>
 <body>
@@ -17,67 +17,44 @@
 	</table>
 	<hr />
 	<div id="content">
-		<p>There are several different error handling situations encountered in 
-        OpenDCL programming: standard AutoLISP error handling, user input error 
-        handling, and OpenDCL Runtime error handling. Handling standard AutoLISP 
-        errors is not covered here.</p>
-		<h4>User Input Error Handling</h4>
-		<p>A properly designed graphical user interface design should, to the 
-        extent possible, prevent user input errors from occurring in the first 
-        place. OpenDCL allows controls to be dynamically disabled (or hidden) at 
-        runtime, which makes it possible to reconfigure inter-dependent controls 
-        as conditions change to ensure that only valid user input is possible. 
-        The user interface should be the first line of defense against invalid 
-        input.</p>
-		<p>Handling user input errors in OpenDCL forms must be done via event 
-        handlers for individual controls or for the form as a whole. Some 
-        controls, such as the text box control, support input filters to prevent 
-        erroneous input from being entered into the text box. Using controls 
-        like dropdown combo boxes or option buttons can limit the user's input 
-        to predetermined values. For forms that support it, the
-        <a href="../Reference/Event/CancelClose.htm">CancelClose</a> event can 
-        be used to check input on the form and prevent the dialog from closing 
-        if invalid input is found.</p>
-		<p>Following is a typical usage scenario for the CancelClose event:</p>
-	    <pre>(defun HighlightFormErrors () ; Return T if there was an error, NIL otherwise
-  (if (CheckForFormInputErrors) ; Call function that does the checking
+		<p>Bei der Arbeit mit OpenDCL k&ouml;nnen verschiedene Arten der Fehlerbehandlung zum Einsatz kommen: Standard AutoLISP Error Handling, die Behandlung fehlerhafter Nutzereingaben sowie die Fehlerbehandlung der OpenDCL Laufzeitumgebung. Das Standard AutoLISP Error Handling wird an dieser Stelle nicht n&auml;her erl&auml;utert.</p>
+		<h4>Fehlerbehandlung von Nutzereingaben </h4>
+		<p>Ein optimal designtes und gut durchdachtes Benutzerinterface sollte den Endanwender weitestgehend von fehlerhaften Eingaben abhalten. Mit OpenDCL k&ouml;nnen Sie zur Laufzeit Steuerelemente dynamisch deaktivieren (oder verstecken). Auf diesem Wege ist es m&ouml;glich, Abh&auml;ngigkeiten der Steuerelemente untereinander zu visualisieren und so zu verdeutlichen, dass nur g&uuml;ltige Nutzereingaben zul&auml;ssig sind. </p>
+		<p>Die Behandlung von Nutzereingaben wird in OpenDCL &uuml;ber Ereignisse (Events) der jeweiligen Steuerelemente oder der Dialogbox selbst realisiert. Einige Steuerelemente, wie das Textfeld, unterst&uuml;tzen Eingabefilter, um fehlerhafte Eingaben von vornherein zu umgehen. Steuerelemente wie die Auswahlliste schr&auml;nken die Nutzereingabe auf wenige, g&uuml;ltige Werte ein. Bei einigen Dialogen steht das Ereignis <a href="../Reference/Event/CancelClose.htm">CancelClose</a> zur Verf&uuml;gung, mit dem es m&ouml;glich ist, zun&auml;chst die Nutzereingaben zu validieren und gegebenenfalls das Schlie&szlig;en des Dialogs zu verhindern. </p>
+		<p>Das nachfolgende Beispiel zeigt ein typisches Szenario f&uuml;r das Ereignis CancelClose:</p>
+		<pre>(defun HighlightFormErrors () <span class="codecomment">; T zur&uuml;ckgeben, wenn ein Fehler auftrat, ansonsten NIL</span>
+  (if (CheckForFormInputErrors) <span class="codecomment">; Funktion aufrufen, die die Wertepr&uuml;fung &uuml;bernimmt</span>
     (progn
-      ;; Here you can highlight the error, display a message box with more information,
-      ;; or do something to fix the error (then return NIL if the error is fixed!)
-      (dcl_MessageBox &quot;Form contains invalid input!&quot; &quot;Error&quot; 2 4)
-      T ; Signal error found and not resolved by returning T
+      <span class="codecomment">;; Hier kann der Fehler angezeigt werden, z.B. durch einen Hinweistext, wie der Fehler behoben werden kann,</span>
+      <span class="codecomment">;; (anschlie&szlig;end NIL zur&uuml;ckgeben, wenn der Fehler beseitigt wurde!)</span>
+      (dcl_MessageBox &quot;Dialog enth&auml;lt ung&uuml;ltige Eingaben!&quot; &quot;Fehler&quot; 2 4)
+      T <span class="codecomment">; Mit T wird angezeigt, dass ein Fehler gefunden und nicht behoben wurde</span>
     )
   )
-  ; Note that this function returns NIL if no errors were found
+  <span class="codecomment">; Diese Funktion gibt NIL zur&uuml;ck, wenn keine Fehler gefunden wurden</span>
 )
 
-(defun c:Project1_Form1_OnCancelClose( Canceling /)
-  ;; Return T to prevent form closing if not canceling, and unresolved errors found
-  (and (/= 1 Canceling) (HighlightFormErrors)) ; Always allow form to close when canceling
+(defun c:Project1_Form1_OnCancelClose( intESCWasPressed /)
+  <span class="codecomment">;; T zur&uuml;ckgeben, um zu vermeiden, dass der Dialog geschlossen wird, </span>
+  <span class="codecomment">;;   sofern nicht Abbrechen gedr&uuml;ckt wurde und noch immer ungel&ouml;ste Fehler im Dialog zu finden sind.</span>
+  (and (/= intESCWasPressed 1) (HighlightFormErrors)) <span class="codecomment">; Das Schlie&szlig;en des Dialogs durch Abbruch sollte immmer m&ouml;glich sein</span>
 )</pre>
-        <h4>OpenDCL Runtime Errors</h4>
-        <p>Calling OpenDCL Runtime functions can result in two types of error 
-        conditions: exceptions and function failures.</p>
-        <p>Exceptions indicate a bug in your code, such as passing an incorrect 
-        argument type, or an argument with an illegal value. Unless OpenDCL 
-        messages are suppressed (see
-        <a href="../Reference/Function/SuppressMessages.htm">SuppressMessages</a>), 
-        exceptions result in a message box that describes the location and 
-        nature of the exception, followed by an AutoLISP error that causes the 
-        program to stop running. Argument processing exceptions display the 
-        function name and zero-based argument index where the exception 
-        occurred.</p>
-        <p>Function failures are normally indicated by the function returning 
-        NIL. For example, attempting to set the current selection of a list box 
-        to a nonexistent list item results in a return value of NIL. These types 
-        of errors can be handled in code if desired, or in some cases simply 
-        ignored.</div>
+        <h4>Fehler der OpenDCL Laufzeitumgebung </h4>
+        <p>Der Aufruf von Funktionen der OpenDCL Laufzeitumgebung kann in zwei Arten von Fehlern m&uuml;nden: 
+
+
+ Ausnahmefehler und Funktionsabbr&uuml;che.</p>
+        <p>Ausnahmefehler deuten auf einen Fehler im Quellcode hin. Typische Beispiele sind die &Uuml;bergabe falscher Argumenttypen (z.B. Zeichenkette statt Ganzzahl) oder falscher Argumentwerte, z.B. wenn ein Argument obligatorisch, der &uuml;bergebene Wert jedoch NIL ist. Selbst wenn die OpenDCL Fehlermeldungen ausgeschalten sind (siehe <a href="../Reference/Function/SuppressMessages.htm">SuppressMessages</a>), werden Ausnahmefehler immer in einer Dialogbox angezeigt. Dabei werden die Stelle und Art des Ausnahemfehlers angezeigt und anschlie&szlig;end ein AutoLISP-Fehler ausgel&ouml;st, der das Programm zum Anhalten zwingt. Die Fehlermeldung zeigt den Namen der fehlerproduzierenden Funktion an und die Nummer des Arguments beim Aufruf (beginnend mit 0). </p>
+		<p><img border="0" src="ErrorHandling1.png" width="320" height="171"></p>
+        <p>Funktionsabbr&uuml;che erkennen Sie in der Regel daran, dass der R&uuml;ckgabewert entgegen den Erwartungen NIL ist. Wollen Sie beispielsweise die aktuelle Auswahl in einer Listbox auf einen nicht existierenden Wert setzen, erhalten Sie das Ergebnis NIL. Diese Art von Fehlern k&ouml;nnen auf Wunsch im Quellcode abgehandelt oder einfach ignoriert werden.</p>
+</div>
 	<hr />
 	<div id="footer">
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		Alle Rechte vorbehalten.</p>
+		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
 	</div>
 </body>
 </html>

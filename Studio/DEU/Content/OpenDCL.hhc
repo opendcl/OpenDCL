@@ -9,12 +9,12 @@
 </OBJECT>
 <UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Introduction To OpenDCL">
+		<param name="Name" value="Einf&uuml;hrung in OpenDCL">
 		<param name="Local" value="Intro\Index.htm">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="License and Credits">
+			<param name="Name" value="Lizenzen und Danksagungen">
 			<param name="Local" value="License.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
@@ -22,34 +22,34 @@
 			<param name="Local" value="Intro\Installation.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Resources">
+			<param name="Name" value="Ressourcen">
 			<param name="Local" value="Intro\Resources.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Glossary">
+			<param name="Name" value="Begriffserl&auml;uterung">
 			<param name="Local" value="Intro\Glossary.htm">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="OpenDCL Concepts">
+		<param name="Name" value="OpenDCL Konzepte">
 		<param name="Local" value="Concepts\Index.htm">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Object Model">
+			<param name="Name" value="Objektmodell">
 			<param name="Local" value="Concepts\ObjectModel.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Application Development">
+			<param name="Name" value="Eine Anwendung entwickeln">
 			<param name="Local" value="Concepts\Development.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Modal vs. Modeless">
+			<param name="Name" value="Modal vs. Nichtmodal">
 			<param name="Local" value="Concepts\Modality.htm">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Using OpenDCL">
+		<param name="Name" value="OpenDCL einsetzen">
 		<param name="Local" value="Usage\Index.htm">
 		</OBJECT>
 	<UL>
@@ -67,43 +67,43 @@
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Advanced OpenDCL">
+		<param name="Name" value="OpenDCL f&uuml;r Fortgeschrittene">
 		<param name="Local" value="Advanced\Index.htm">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Deployment">
+			<param name="Name" value="Software-Verteilung">
 			<param name="Local" value="Advanced\Deployment.htm">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="OpenDCL Reference">
+		<param name="Name" value="OpenDCL Befehlsreferenz">
 		<param name="Local" value="Reference\Index.htm">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Form Types">
+			<param name="Name" value="Dialoge">
 			<param name="Local" value="Reference\Form\Index.htm">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Control Bar">
+				<param name="Name" value="Andockbares Fenster">
 				<param name="Local" value="Reference\Form\ControlBar.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="File Dialog">
+				<param name="Name" value="Dateidialog">
 				<param name="Local" value="Reference\Form\FileDialog.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Modal Dialog">
+				<param name="Name" value="Modaler Dialog">
 				<param name="Local" value="Reference\Form\ModalDialog.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Modeless Dialog">
+				<param name="Name" value="Nichtmodaler Dialog">
 				<param name="Local" value="Reference\Form\ModelessDialog.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Options Tab">
+				<param name="Name" value="Karteikarte in den Optionen">
 				<param name="Local" value="Reference\Form\OptionsTab.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
@@ -112,167 +112,171 @@
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Control Types">
+			<param name="Name" value="Steuerlemente">
 			<param name="Local" value="Reference\Control\Index.htm">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ActiveX Control">
+				<param name="Name" value="ActiveX Steuerelement">
 				<param name="Local" value="Reference\Control\AxControl.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Angle Slider">
-				<param name="Local" value="Reference\Control\AngleSlider.htm">
+				<param name="Name" value="Baumstruktur">
+				<param name="Local" value="Reference\Control\Tree.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Animation">
-				<param name="Local" value="Reference\Control\Animation.htm">
+				<param name="Name" value="Bezeichnung">
+				<param name="Local" value="Reference\Control\Label.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Block List">
-				<param name="Local" value="Reference\Control\BlockList.htm">
+				<param name="Name" value="Bild">
+				<param name="Local" value="Reference\Control\PictureBox.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Block View">
-				<param name="Local" value="Reference\Control\BlockView.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Calendar">
-				<param name="Local" value="Reference\Control\Calendar.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Check Box">
-				<param name="Local" value="Reference\Control\CheckBox.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Combo Box">
-				<param name="Local" value="Reference\Control\ComboBox.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DWG List">
-				<param name="Local" value="Reference\Control\DWGList.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DWG Preview">
-				<param name="Local" value="Reference\Control\DWGPreview.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="File Explorer">
-				<param name="Local" value="Reference\Control\FileExplorer.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Frame">
-				<param name="Local" value="Reference\Control\Frame.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graphic Button">
+				<param name="Name" value="Bildschaltfl&auml;che">
 				<param name="Local" value="Reference\Control\GraphicButton.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Grid">
+				<param name="Name" value="Block">
+				<param name="Local" value="Reference\Control\BlockView.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Blockliste">
+				<param name="Local" value="Reference\Control\BlockList.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Datei-Explorer">
+				<param name="Local" value="Reference\Control\FileExplorer.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Datenblatt">
 				<param name="Local" value="Reference\Control\Grid.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Hatch">
-				<param name="Local" value="Reference\Control\Hatch.htm">
+				<param name="Name" value="Dia">
+				<param name="Local" value="Reference\Control\SlideView.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="HTML">
-				<param name="Local" value="Reference\Control\Html.htm">
+				<param name="Name" value="DWG-Liste">
+				<param name="Local" value="Reference\Control\DWGList.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="DWG-Vorschau">
+				<param name="Local" value="Reference\Control\DWGPreview.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Hyperlink">
 				<param name="Local" value="Reference\Control\Hyperlink.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Image Combo Box">
+				<param name="Name" value="Kalendar">
+				<param name="Local" value="Reference\Control\Calendar.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Karteikarten">
+				<param name="Local" value="Reference\Control\TabStrip.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Kombinationsfeld">
+				<param name="Local" value="Reference\Control\ComboBox.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Kombinationsfeld mit Bildern">
 				<param name="Local" value="Reference\Control\ImageComboBox.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Label">
-				<param name="Local" value="Reference\Control\Label.htm">
+				<param name="Name" value="Kontrollk&auml;stchen">
+				<param name="Local" value="Reference\Control\CheckBox.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="List Box">
+				<param name="Name" value="Listenfeld">
 				<param name="Local" value="Reference\Control\ListBox.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="List View">
+				<param name="Name" value="Erweiterte Liste">
 				<param name="Local" value="Reference\Control\ListView.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Option Button">
+				<param name="Name" value="Optionsfeld">
 				<param name="Local" value="Reference\Control\OptionButton.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Option List">
+				<param name="Name" value="Optionsliste">
 				<param name="Local" value="Reference\Control\OptionList.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Picture Box">
-				<param name="Local" value="Reference\Control\PictureBox.htm">
+				<param name="Name" value="Rahmen">
+				<param name="Local" value="Reference\Control\Frame.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Progress Bar">
-				<param name="Local" value="Reference\Control\ProgressBar.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Rectangle">
+				<param name="Name" value="Rechteck">
 				<param name="Local" value="Reference\Control\Rectangle.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Scroll Bar">
-				<param name="Local" value="Reference\Control\ScrollBar.htm">
+				<param name="Name" value="Reglerschaltfl&auml;chen">
+				<param name="Local" value="Reference\Control\SpinButton.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Slide View">
-				<param name="Local" value="Reference\Control\SlideView.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Slider">
+				<param name="Name" value="Schieberegler">
 				<param name="Local" value="Reference\Control\Slider.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Spin Button">
-				<param name="Local" value="Reference\Control\SpinButton.htm">
+				<param name="Name" value="Schraffur">
+				<param name="Local" value="Reference\Control\Hatch.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Scrollleiste">
+				<param name="Local" value="Reference\Control\ScrollBar.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Splitter">
 				<param name="Local" value="Reference\Control\Splitter.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Tab Strip">
-				<param name="Local" value="Reference\Control\TabStrip.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Text Box">
+				<param name="Name" value="Textfeld">
 				<param name="Local" value="Reference\Control\TextBox.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Text Button">
+				<param name="Name" value="Textschaltfl&auml;che">
 				<param name="Local" value="Reference\Control\TextButton.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Tree">
-				<param name="Local" value="Reference\Control\Tree.htm">
+				<param name="Name" value="Verlaufsbalken">
+				<param name="Local" value="Reference\Control\ProgressBar.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Video">
+				<param name="Local" value="Reference\Control\Animation.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Webseite">
+				<param name="Local" value="Reference\Control\Html.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Winkelw&auml;hler">
+				<param name="Local" value="Reference\Control\AngleSlider.htm">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Data Types">
+			<param name="Name" value="Datentypen">
 			<param name="Local" value="Reference\DataType\Index.htm">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="2DPoint">
+				<param name="Name" value="2DPunkt">
 				<param name="Local" value="Reference\DataType\2DPoint.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="3DPoint">
+				<param name="Name" value="3DPunkt">
 				<param name="Local" value="Reference\DataType\3DPoint.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="AxObject">
 				<param name="Local" value="Reference\DataType\AxObject.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Bildliste">
+				<param name="Local" value="Reference\DataType\ImageList.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Bitflag">
@@ -283,16 +287,12 @@
 				<param name="Local" value="Reference\DataType\Boolean.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Color">
-				<param name="Local" value="Reference\DataType\Color.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Control">
-				<param name="Local" value="Reference\DataType\Control.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Date">
+				<param name="Name" value="Datum">
 				<param name="Local" value="Reference\DataType\Date.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Farbe">
+				<param name="Local" value="Reference\DataType\Color.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Float">
@@ -301,10 +301,6 @@
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Handle">
 				<param name="Local" value="Reference\DataType\Handle.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Image List">
-				<param name="Local" value="Reference\DataType\ImageList.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Integer">
@@ -323,8 +319,12 @@
 				<param name="Local" value="Reference\DataType\PictureID.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Project">
+				<param name="Name" value="Projekt">
 				<param name="Local" value="Reference\DataType\Project.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Steuerelement">
+				<param name="Local" value="Reference\DataType\Control.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="String">
@@ -332,7 +332,7 @@
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Properties">
+			<param name="Name" value="Eigenschaften">
 			<param name="Local" value="Reference\Property\Index.htm">
 			</OBJECT>
 		<UL>
@@ -982,12 +982,12 @@
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Methods">
+			<param name="Name" value="Methoden">
 			<param name="Local" value="Reference\Method\Index.htm">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ActiveX Control">
+				<param name="Name" value="ActiveX Steuerelement">
 				<param name="Local" value="Reference\Method\Index.htm#ActiveXControl">
 				</OBJECT>
 			<UL>
@@ -1009,7 +1009,7 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ActiveX Object">
+				<param name="Name" value="ActiveX Objekt">
 				<param name="Local" value="Reference\Method\Index.htm#AxObject">
 				</OBJECT>
 			<UL>
@@ -1031,33 +1031,219 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Animation">
-				<param name="Local" value="Reference\Method\Index.htm#Animation">
+				<param name="Name" value="Baumstruktur">
+				<param name="Local" value="Reference\Method\Index.htm#Tree">
 				</OBJECT>
 			<UL>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Close">
-					<param name="Local" value="Reference\Method\Animation/Close.htm">
+					<param name="Name" value="AddChild">
+					<param name="Local" value="Reference\Method\Tree/AddChild.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Load">
-					<param name="Local" value="Reference\Method\Animation/Load.htm">
+					<param name="Name" value="AddParent">
+					<param name="Local" value="Reference\Method\Tree/AddParent.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Play">
-					<param name="Local" value="Reference\Method\Animation/Play.htm">
+					<param name="Name" value="AddSibling">
+					<param name="Local" value="Reference\Method\Tree/AddSibling.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Seek">
-					<param name="Local" value="Reference\Method\Animation/Seek.htm">
+					<param name="Name" value="CancelLabelEdit">
+					<param name="Local" value="Reference\Method\Tree/CancelLabelEdit.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Stop">
-					<param name="Local" value="Reference\Method\Animation/Stop.htm">
+					<param name="Name" value="Clear">
+					<param name="Local" value="Reference\Method\Tree/Clear.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DeleteItem">
+					<param name="Local" value="Reference\Method\Tree/DeleteItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="EnsureVisible">
+					<param name="Local" value="Reference\Method\Tree/EnsureVisible.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="ExpandItem">
+					<param name="Local" value="Reference\Method\Tree/ExpandItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetCount">
+					<param name="Local" value="Reference\Method\Tree/GetCount.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetFirstChildItem">
+					<param name="Local" value="Reference\Method\Tree/GetFirstChildItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetFirstVisibleItem">
+					<param name="Local" value="Reference\Method\Tree/GetFirstVisibleItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetItemData">
+					<param name="Local" value="Reference\Method\Tree/GetItemData.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetItemHandle">
+					<param name="Local" value="Reference\Method\Tree/GetItemHandle.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetItemImages">
+					<param name="Local" value="Reference\Method\Tree/GetItemImages.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetItemKey">
+					<param name="Local" value="Reference\Method\Tree/GetItemKey.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetItemLabel">
+					<param name="Local" value="Reference\Method\Tree/GetItemLabel.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetNextSiblingItem">
+					<param name="Local" value="Reference\Method\Tree/GetNextSiblingItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetNextVisibleItem">
+					<param name="Local" value="Reference\Method\Tree/GetNextVisibleItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetParentItem">
+					<param name="Local" value="Reference\Method\Tree/GetParentItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetPrevSiblingItem">
+					<param name="Local" value="Reference\Method\Tree/GetPrevSiblingItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetPrevVisibleItem">
+					<param name="Local" value="Reference\Method\Tree/GetPrevVisibleItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetRootItem">
+					<param name="Local" value="Reference\Method\Tree/GetRootItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetSelectedItem">
+					<param name="Local" value="Reference\Method\Tree/GetSelectedItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetVisibleCount">
+					<param name="Local" value="Reference\Method\Tree/GetVisibleCount.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="IsItemExpanded">
+					<param name="Local" value="Reference\Method\Tree/IsItemExpanded.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="ItemHasChildren">
+					<param name="Local" value="Reference\Method\Tree/ItemHasChildren.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SelectItem">
+					<param name="Local" value="Reference\Method\Tree/SelectItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SelectSetFirstVisible">
+					<param name="Local" value="Reference\Method\Tree/SelectSetFirstVisible.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetItemData">
+					<param name="Local" value="Reference\Method\Tree/SetItemData.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetItemImages">
+					<param name="Local" value="Reference\Method\Tree/SetItemImages.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetItemLabel">
+					<param name="Local" value="Reference\Method\Tree/SetItemLabel.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SortChildren">
+					<param name="Local" value="Reference\Method\Tree/SortChildren.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="StartLabelEdit">
+					<param name="Local" value="Reference\Method\Tree/StartLabelEdit.htm">
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Binary File">
+				<param name="Name" value="Bild">
+				<param name="Local" value="Reference\Method\Index.htm#PictureBox">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Clear">
+					<param name="Local" value="Reference\Method\PictureBox/Clear.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DrawArc">
+					<param name="Local" value="Reference\Method\PictureBox/DrawArc.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DrawCircle">
+					<param name="Local" value="Reference\Method\PictureBox/DrawCircle.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DrawEdge">
+					<param name="Local" value="Reference\Method\PictureBox/DrawEdge.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DrawFocusRect">
+					<param name="Local" value="Reference\Method\PictureBox/DrawFocusRect.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DrawHatchRect">
+					<param name="Local" value="Reference\Method\PictureBox/DrawHatchRect.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DrawLine">
+					<param name="Local" value="Reference\Method\PictureBox/DrawLine.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DrawPoint">
+					<param name="Local" value="Reference\Method\PictureBox/DrawPoint.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DrawRect">
+					<param name="Local" value="Reference\Method\PictureBox/DrawRect.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DrawSolidRect">
+					<param name="Local" value="Reference\Method\PictureBox/DrawSolidRect.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DrawText">
+					<param name="Local" value="Reference\Method\PictureBox/DrawText.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DrawWrappedText">
+					<param name="Local" value="Reference\Method\PictureBox/DrawWrappedText.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetTextExtent">
+					<param name="Local" value="Reference\Method\PictureBox/GetTextExtent.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="LoadPictureFile">
+					<param name="Local" value="Reference\Method\PictureBox/LoadPictureFile.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="PaintPicture">
+					<param name="Local" value="Reference\Method\PictureBox/PaintPicture.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Refresh">
+					<param name="Local" value="Reference\Method\PictureBox/Refresh.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="StoreImage">
+					<param name="Local" value="Reference\Method\PictureBox/StoreImage.htm">
+					</OBJECT>
+			</UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Bin&auml;rdatei">
 				<param name="Local" value="Reference\Method\Index.htm#BinFile">
 				</OBJECT>
 			<UL>
@@ -1083,61 +1269,7 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Block List">
-				<param name="Local" value="Reference\Method\Index.htm#BlockList">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Arrange">
-					<param name="Local" value="Reference\Method\BlockList/Arrange.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetCount">
-					<param name="Local" value="Reference\Method\BlockList/GetCount.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetCurSel">
-					<param name="Local" value="Reference\Method\BlockList/GetCurSel.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetFileName">
-					<param name="Local" value="Reference\Method\BlockList/GetFileName.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetItemText">
-					<param name="Local" value="Reference\Method\BlockList/GetItemText.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetSelCount">
-					<param name="Local" value="Reference\Method\BlockList/GetSelCount.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetSelectedItems">
-					<param name="Local" value="Reference\Method\BlockList/GetSelectedItems.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetSelectedNths">
-					<param name="Local" value="Reference\Method\BlockList/GetSelectedNths.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="LoadDWG">
-					<param name="Local" value="Reference\Method\BlockList/LoadDWG.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Reset">
-					<param name="Local" value="Reference\Method\BlockList/Reset.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetCurSel">
-					<param name="Local" value="Reference\Method\BlockList/SetCurSel.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SortTextItems">
-					<param name="Local" value="Reference\Method\BlockList/SortTextItems.htm">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Block View">
+				<param name="Name" value="Block">
 				<param name="Local" value="Reference\Method\Index.htm#BlockView">
 				</OBJECT>
 			<UL>
@@ -1211,341 +1343,61 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Calendar">
-				<param name="Local" value="Reference\Method\Index.htm#Calendar">
+				<param name="Name" value="Blockliste">
+				<param name="Local" value="Reference\Method\Index.htm#BlockList">
 				</OBJECT>
 			<UL>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetCurSel">
-					<param name="Local" value="Reference\Method\Calendar/GetCurSel.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetMonthRangeEnd">
-					<param name="Local" value="Reference\Method\Calendar/GetMonthRangeEnd.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetMonthRangeStart">
-					<param name="Local" value="Reference\Method\Calendar/GetMonthRangeStart.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetRangeEnd">
-					<param name="Local" value="Reference\Method\Calendar/GetRangeEnd.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetRangeStart">
-					<param name="Local" value="Reference\Method\Calendar/GetRangeStart.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetSelRangeEnd">
-					<param name="Local" value="Reference\Method\Calendar/GetSelRangeEnd.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetSelRangeStart">
-					<param name="Local" value="Reference\Method\Calendar/GetSelRangeStart.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetToday">
-					<param name="Local" value="Reference\Method\Calendar/GetToday.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetCurSel">
-					<param name="Local" value="Reference\Method\Calendar/SetCurSel.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetRange">
-					<param name="Local" value="Reference\Method\Calendar/SetRange.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetSelRange">
-					<param name="Local" value="Reference\Method\Calendar/SetSelRange.htm">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Combo Box">
-				<param name="Local" value="Reference\Method\Index.htm#ComboBox">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AddColor">
-					<param name="Local" value="Reference\Method\ComboBox/AddColor.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AddList">
-					<param name="Local" value="Reference\Method\ComboBox/AddList.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AddPath">
-					<param name="Local" value="Reference\Method\ComboBox/AddPath.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AddString">
-					<param name="Local" value="Reference\Method\ComboBox/AddString.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Clear">
-					<param name="Local" value="Reference\Method\ComboBox/Clear.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ClearEdit">
-					<param name="Local" value="Reference\Method\ComboBox/ClearEdit.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DeleteItem">
-					<param name="Local" value="Reference\Method\ComboBox/DeleteItem.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Dir">
-					<param name="Local" value="Reference\Method\ComboBox/Dir.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FindColor">
-					<param name="Local" value="Reference\Method\ComboBox/FindColor.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FindLineWeight">
-					<param name="Local" value="Reference\Method\ComboBox/FindLineWeight.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FindString">
-					<param name="Local" value="Reference\Method\ComboBox/FindString.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FindStringExact">
-					<param name="Local" value="Reference\Method\ComboBox/FindStringExact.htm">
+					<param name="Name" value="Arrange">
+					<param name="Local" value="Reference\Method\BlockList/Arrange.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetCount">
-					<param name="Local" value="Reference\Method\ComboBox/GetCount.htm">
+					<param name="Local" value="Reference\Method\BlockList/GetCount.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetCurSel">
-					<param name="Local" value="Reference\Method\ComboBox/GetCurSel.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetDir">
-					<param name="Local" value="Reference\Method\ComboBox/GetDir.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetDroppedWidth">
-					<param name="Local" value="Reference\Method\ComboBox/GetDroppedWidth.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetEBText">
-					<param name="Local" value="Reference\Method\ComboBox/GetEBText.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetEditSel">
-					<param name="Local" value="Reference\Method\ComboBox/GetEditSel.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetItemData">
-					<param name="Local" value="Reference\Method\ComboBox/GetItemData.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetLBText">
-					<param name="Local" value="Reference\Method\ComboBox/GetLBText.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetTopIndex">
-					<param name="Local" value="Reference\Method\ComboBox/GetTopIndex.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="InsertString">
-					<param name="Local" value="Reference\Method\ComboBox/InsertString.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SelectString">
-					<param name="Local" value="Reference\Method\ComboBox/SelectString.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetCurSel">
-					<param name="Local" value="Reference\Method\ComboBox/SetCurSel.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetDroppedWidth">
-					<param name="Local" value="Reference\Method\ComboBox/SetDroppedWidth.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetEditSel">
-					<param name="Local" value="Reference\Method\ComboBox/SetEditSel.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetItemData">
-					<param name="Local" value="Reference\Method\ComboBox/SetItemData.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetTopIndex">
-					<param name="Local" value="Reference\Method\ComboBox/SetTopIndex.htm">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Control">
-				<param name="Local" value="Reference\Method\Index.htm#Control">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Dump">
-					<param name="Local" value="Reference\Method\Control/Dump.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetHWND">
-					<param name="Local" value="Reference\Method\Control/GetHWND.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetPos">
-					<param name="Local" value="Reference\Method\Control/GetPos.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetProperties">
-					<param name="Local" value="Reference\Method\Control/GetProperties.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetProperty">
-					<param name="Local" value="Reference\Method\Control/GetProperty.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Redraw">
-					<param name="Local" value="Reference\Method\Control/Redraw.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetFocus">
-					<param name="Local" value="Reference\Method\Control/SetFocus.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetPos">
-					<param name="Local" value="Reference\Method\Control/SetPos.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetProperty">
-					<param name="Local" value="Reference\Method\Control/SetProperty.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ShowToolTip">
-					<param name="Local" value="Reference\Method\Control/ShowToolTip.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ZOrder">
-					<param name="Local" value="Reference\Method\Control/ZOrder.htm">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DWG List">
-				<param name="Local" value="Reference\Method\Index.htm#DWGList">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DeleteItem">
-					<param name="Local" value="Reference\Method\DWGList/DeleteItem.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Dir">
-					<param name="Local" value="Reference\Method\DWGList/Dir.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetAnchorIndex">
-					<param name="Local" value="Reference\Method\DWGList/GetAnchorIndex.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetCount">
-					<param name="Local" value="Reference\Method\DWGList/GetCount.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetCurSel">
-					<param name="Local" value="Reference\Method\DWGList/GetCurSel.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetDir">
-					<param name="Local" value="Reference\Method\DWGList/GetDir.htm">
+					<param name="Local" value="Reference\Method\BlockList/GetCurSel.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetFileName">
-					<param name="Local" value="Reference\Method\DWGList/GetFileName.htm">
+					<param name="Local" value="Reference\Method\BlockList/GetFileName.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetFocusIndex">
-					<param name="Local" value="Reference\Method\DWGList/GetFocusIndex.htm">
+					<param name="Name" value="GetItemText">
+					<param name="Local" value="Reference\Method\BlockList/GetItemText.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetSelCount">
-					<param name="Local" value="Reference\Method\DWGList/GetSelCount.htm">
+					<param name="Local" value="Reference\Method\BlockList/GetSelCount.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetSelectedItems">
-					<param name="Local" value="Reference\Method\DWGList/GetSelectedItems.htm">
+					<param name="Local" value="Reference\Method\BlockList/GetSelectedItems.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetSelectedNths">
-					<param name="Local" value="Reference\Method\DWGList/GetSelectedNths.htm">
+					<param name="Local" value="Reference\Method\BlockList/GetSelectedNths.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetText">
-					<param name="Local" value="Reference\Method\DWGList/GetText.htm">
+					<param name="Name" value="LoadDWG">
+					<param name="Local" value="Reference\Method\BlockList/LoadDWG.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetTopIndex">
-					<param name="Local" value="Reference\Method\DWGList/GetTopIndex.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetType">
-					<param name="Local" value="Reference\Method\DWGList/GetType.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="IsItemSelected">
-					<param name="Local" value="Reference\Method\DWGList/IsItemSelected.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SelectItem">
-					<param name="Local" value="Reference\Method\DWGList/SelectItem.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SelItemRange">
-					<param name="Local" value="Reference\Method\DWGList/SelItemRange.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetAnchorIndex">
-					<param name="Local" value="Reference\Method\DWGList/SetAnchorIndex.htm">
+					<param name="Name" value="Reset">
+					<param name="Local" value="Reference\Method\BlockList/Reset.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="SetCurSel">
-					<param name="Local" value="Reference\Method\DWGList/SetCurSel.htm">
+					<param name="Local" value="Reference\Method\BlockList/SetCurSel.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetFocusIndex">
-					<param name="Local" value="Reference\Method\DWGList/SetFocusIndex.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetTopIndex">
-					<param name="Local" value="Reference\Method\DWGList/SetTopIndex.htm">
+					<param name="Name" value="SortTextItems">
+					<param name="Local" value="Reference\Method\BlockList/SortTextItems.htm">
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DWG Preview">
-				<param name="Local" value="Reference\Method\Index.htm#DWGPreview">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Clear">
-					<param name="Local" value="Reference\Method\DWGPreview/Clear.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetDwgName">
-					<param name="Local" value="Reference\Method\DWGPreview/GetDwgName.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="LoadDwg">
-					<param name="Local" value="Reference\Method\DWGPreview/LoadDwg.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RemoveHighlight">
-					<param name="Local" value="Reference\Method\DWGPreview/RemoveHighlight.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetHighlight">
-					<param name="Local" value="Reference\Method\DWGPreview/SetHighlight.htm">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="File Explorer">
+				<param name="Name" value="Datei-Explorer">
 				<param name="Local" value="Reference\Method\Index.htm#FileExplorer">
 				</OBJECT>
 			<UL>
@@ -1587,85 +1439,7 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Form">
-				<param name="Local" value="Reference\Method\Index.htm#Form">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Center">
-					<param name="Local" value="Reference\Method\Form/Center.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Close">
-					<param name="Local" value="Reference\Method\Form/Close.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CloseAll">
-					<param name="Local" value="Reference\Method\Form/CloseAll.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Dump">
-					<param name="Local" value="Reference\Method\Form/Dump.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Enable">
-					<param name="Local" value="Reference\Method\Form/Enable.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetControlArea">
-					<param name="Local" value="Reference\Method\Form/GetControlArea.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetControls">
-					<param name="Local" value="Reference\Method\Form/GetControls.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Hide">
-					<param name="Local" value="Reference\Method\Form/Hide.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="IsActive">
-					<param name="Local" value="Reference\Method\Form/IsActive.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="IsApplyEnabled">
-					<param name="Local" value="Reference\Method\Form/IsApplyEnabled.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="IsEnabled">
-					<param name="Local" value="Reference\Method\Form/IsEnabled.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="IsFloating">
-					<param name="Local" value="Reference\Method\Form/IsFloating.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="IsVisible">
-					<param name="Local" value="Reference\Method\Form/IsVisible.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RecalcLayout">
-					<param name="Local" value="Reference\Method\Form/RecalcLayout.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Resize">
-					<param name="Local" value="Reference\Method\Form/Resize.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetApplyEnabled">
-					<param name="Local" value="Reference\Method\Form/SetApplyEnabled.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetMinMaxSizes">
-					<param name="Local" value="Reference\Method\Form/SetMinMaxSizes.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Show">
-					<param name="Local" value="Reference\Method\Form/Show.htm">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Grid">
+				<param name="Name" value="Datenblatt">
 				<param name="Local" value="Reference\Method\Index.htm#Grid">
 				</OBJECT>
 			<UL>
@@ -1819,91 +1593,441 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Hatch">
-				<param name="Local" value="Reference\Method\Index.htm#Hatch">
+				<param name="Name" value="Dia">
+				<param name="Local" value="Reference\Method\Index.htm#SlideView">
 				</OBJECT>
 			<UL>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="Clear">
-					<param name="Local" value="Reference\Method\Hatch/Clear.htm">
+					<param name="Local" value="Reference\Method\SlideView/Clear.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetPattern">
-					<param name="Local" value="Reference\Method\Hatch/SetPattern.htm">
+					<param name="Name" value="EndImage">
+					<param name="Local" value="Reference\Method\SlideView/EndImage.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="FillImage">
+					<param name="Local" value="Reference\Method\SlideView/FillImage.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Load">
+					<param name="Local" value="Reference\Method\SlideView/Load.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="RemoveHighlight">
+					<param name="Local" value="Reference\Method\SlideView/RemoveHighlight.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetHighlight">
+					<param name="Local" value="Reference\Method\SlideView/SetHighlight.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SlideImage">
+					<param name="Local" value="Reference\Method\SlideView/SlideImage.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="VectorImage">
+					<param name="Local" value="Reference\Method\SlideView/VectorImage.htm">
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="HTML">
-				<param name="Local" value="Reference\Method\Index.htm#Html">
+				<param name="Name" value="Dialog">
+				<param name="Local" value="Reference\Method\Index.htm#Form">
 				</OBJECT>
 			<UL>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetBusy">
-					<param name="Local" value="Reference\Method\Html/GetBusy.htm">
+					<param name="Name" value="Center">
+					<param name="Local" value="Reference\Method\Form/Center.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetFullName">
-					<param name="Local" value="Reference\Method\Html/GetFullName.htm">
+					<param name="Name" value="Close">
+					<param name="Local" value="Reference\Method\Form/Close.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetHtmlDocument">
-					<param name="Local" value="Reference\Method\Html/GetHtmlDocument.htm">
+					<param name="Name" value="CloseAll">
+					<param name="Local" value="Reference\Method\Form/CloseAll.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetLocationName">
-					<param name="Local" value="Reference\Method\Html/GetLocationName.htm">
+					<param name="Name" value="Dump">
+					<param name="Local" value="Reference\Method\Form/Dump.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetLocationURL">
-					<param name="Local" value="Reference\Method\Html/GetLocationURL.htm">
+					<param name="Name" value="Enable">
+					<param name="Local" value="Reference\Method\Form/Enable.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetOffline">
-					<param name="Local" value="Reference\Method\Html/GetOffline.htm">
+					<param name="Name" value="GetControlArea">
+					<param name="Local" value="Reference\Method\Form/GetControlArea.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GoBack">
-					<param name="Local" value="Reference\Method\Html/GoBack.htm">
+					<param name="Name" value="GetControls">
+					<param name="Local" value="Reference\Method\Form/GetControls.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GoForward">
-					<param name="Local" value="Reference\Method\Html/GoForward.htm">
+					<param name="Name" value="Hide">
+					<param name="Local" value="Reference\Method\Form/Hide.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GoHome">
-					<param name="Local" value="Reference\Method\Html/GoHome.htm">
+					<param name="Name" value="IsActive">
+					<param name="Local" value="Reference\Method\Form/IsActive.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GoSearch">
-					<param name="Local" value="Reference\Method\Html/GoSearch.htm">
+					<param name="Name" value="IsApplyEnabled">
+					<param name="Local" value="Reference\Method\Form/IsApplyEnabled.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Navigate">
-					<param name="Local" value="Reference\Method\Html/Navigate.htm">
+					<param name="Name" value="IsEnabled">
+					<param name="Local" value="Reference\Method\Form/IsEnabled.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Refresh">
-					<param name="Local" value="Reference\Method\Html/Refresh.htm">
+					<param name="Name" value="IsFloating">
+					<param name="Local" value="Reference\Method\Form/IsFloating.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReplaceText">
-					<param name="Local" value="Reference\Method\Html/ReplaceText.htm">
+					<param name="Name" value="IsVisible">
+					<param name="Local" value="Reference\Method\Form/IsVisible.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetOffline">
-					<param name="Local" value="Reference\Method\Html/SetOffline.htm">
+					<param name="Name" value="RecalcLayout">
+					<param name="Local" value="Reference\Method\Form/RecalcLayout.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Stop">
-					<param name="Local" value="Reference\Method\Html/Stop.htm">
+					<param name="Name" value="Resize">
+					<param name="Local" value="Reference\Method\Form/Resize.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="UpdateHtmlCode">
-					<param name="Local" value="Reference\Method\Html/UpdateHtmlCode.htm">
+					<param name="Name" value="SetApplyEnabled">
+					<param name="Local" value="Reference\Method\Form/SetApplyEnabled.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetMinMaxSizes">
+					<param name="Local" value="Reference\Method\Form/SetMinMaxSizes.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Show">
+					<param name="Local" value="Reference\Method\Form/Show.htm">
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Image Combo Box">
+				<param name="Name" value="DWG-Liste">
+				<param name="Local" value="Reference\Method\Index.htm#DWGList">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DeleteItem">
+					<param name="Local" value="Reference\Method\DWGList/DeleteItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Dir">
+					<param name="Local" value="Reference\Method\DWGList/Dir.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetAnchorIndex">
+					<param name="Local" value="Reference\Method\DWGList/GetAnchorIndex.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetCount">
+					<param name="Local" value="Reference\Method\DWGList/GetCount.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetCurSel">
+					<param name="Local" value="Reference\Method\DWGList/GetCurSel.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetDir">
+					<param name="Local" value="Reference\Method\DWGList/GetDir.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetFileName">
+					<param name="Local" value="Reference\Method\DWGList/GetFileName.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetFocusIndex">
+					<param name="Local" value="Reference\Method\DWGList/GetFocusIndex.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetSelCount">
+					<param name="Local" value="Reference\Method\DWGList/GetSelCount.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetSelectedItems">
+					<param name="Local" value="Reference\Method\DWGList/GetSelectedItems.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetSelectedNths">
+					<param name="Local" value="Reference\Method\DWGList/GetSelectedNths.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetText">
+					<param name="Local" value="Reference\Method\DWGList/GetText.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetTopIndex">
+					<param name="Local" value="Reference\Method\DWGList/GetTopIndex.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetType">
+					<param name="Local" value="Reference\Method\DWGList/GetType.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="IsItemSelected">
+					<param name="Local" value="Reference\Method\DWGList/IsItemSelected.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SelectItem">
+					<param name="Local" value="Reference\Method\DWGList/SelectItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SelItemRange">
+					<param name="Local" value="Reference\Method\DWGList/SelItemRange.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetAnchorIndex">
+					<param name="Local" value="Reference\Method\DWGList/SetAnchorIndex.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetCurSel">
+					<param name="Local" value="Reference\Method\DWGList/SetCurSel.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetFocusIndex">
+					<param name="Local" value="Reference\Method\DWGList/SetFocusIndex.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetTopIndex">
+					<param name="Local" value="Reference\Method\DWGList/SetTopIndex.htm">
+					</OBJECT>
+			</UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="DWG-Vorschau">
+				<param name="Local" value="Reference\Method\Index.htm#DWGPreview">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Clear">
+					<param name="Local" value="Reference\Method\DWGPreview/Clear.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetDwgName">
+					<param name="Local" value="Reference\Method\DWGPreview/GetDwgName.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="LoadDwg">
+					<param name="Local" value="Reference\Method\DWGPreview/LoadDwg.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="RemoveHighlight">
+					<param name="Local" value="Reference\Method\DWGPreview/RemoveHighlight.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetHighlight">
+					<param name="Local" value="Reference\Method\DWGPreview/SetHighlight.htm">
+					</OBJECT>
+			</UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Kalendar">
+				<param name="Local" value="Reference\Method\Index.htm#Calendar">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetCurSel">
+					<param name="Local" value="Reference\Method\Calendar/GetCurSel.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetMonthRangeEnd">
+					<param name="Local" value="Reference\Method\Calendar/GetMonthRangeEnd.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetMonthRangeStart">
+					<param name="Local" value="Reference\Method\Calendar/GetMonthRangeStart.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetRangeEnd">
+					<param name="Local" value="Reference\Method\Calendar/GetRangeEnd.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetRangeStart">
+					<param name="Local" value="Reference\Method\Calendar/GetRangeStart.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetSelRangeEnd">
+					<param name="Local" value="Reference\Method\Calendar/GetSelRangeEnd.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetSelRangeStart">
+					<param name="Local" value="Reference\Method\Calendar/GetSelRangeStart.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetToday">
+					<param name="Local" value="Reference\Method\Calendar/GetToday.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetCurSel">
+					<param name="Local" value="Reference\Method\Calendar/SetCurSel.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetRange">
+					<param name="Local" value="Reference\Method\Calendar/SetRange.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetSelRange">
+					<param name="Local" value="Reference\Method\Calendar/SetSelRange.htm">
+					</OBJECT>
+			</UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Karteikarte">
+				<param name="Local" value="Reference\Method\Index.htm#TabStrip">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetControlArea">
+					<param name="Local" value="Reference\Method\TabStrip/GetControlArea.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetCurSel">
+					<param name="Local" value="Reference\Method\TabStrip/GetCurSel.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetRowCount">
+					<param name="Local" value="Reference\Method\TabStrip/GetRowCount.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="HideTab">
+					<param name="Local" value="Reference\Method\TabStrip/HideTab.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetCurSel">
+					<param name="Local" value="Reference\Method\TabStrip/SetCurSel.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetTabCaption">
+					<param name="Local" value="Reference\Method\TabStrip/SetTabCaption.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="ShowTab">
+					<param name="Local" value="Reference\Method\TabStrip/ShowTab.htm">
+					</OBJECT>
+			</UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Kombinationsfeld">
+				<param name="Local" value="Reference\Method\Index.htm#ComboBox">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="AddColor">
+					<param name="Local" value="Reference\Method\ComboBox/AddColor.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="AddList">
+					<param name="Local" value="Reference\Method\ComboBox/AddList.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="AddPath">
+					<param name="Local" value="Reference\Method\ComboBox/AddPath.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="AddString">
+					<param name="Local" value="Reference\Method\ComboBox/AddString.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Clear">
+					<param name="Local" value="Reference\Method\ComboBox/Clear.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="ClearEdit">
+					<param name="Local" value="Reference\Method\ComboBox/ClearEdit.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="DeleteItem">
+					<param name="Local" value="Reference\Method\ComboBox/DeleteItem.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Dir">
+					<param name="Local" value="Reference\Method\ComboBox/Dir.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="FindColor">
+					<param name="Local" value="Reference\Method\ComboBox/FindColor.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="FindLineWeight">
+					<param name="Local" value="Reference\Method\ComboBox/FindLineWeight.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="FindString">
+					<param name="Local" value="Reference\Method\ComboBox/FindString.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="FindStringExact">
+					<param name="Local" value="Reference\Method\ComboBox/FindStringExact.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetCount">
+					<param name="Local" value="Reference\Method\ComboBox/GetCount.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetCurSel">
+					<param name="Local" value="Reference\Method\ComboBox/GetCurSel.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetDir">
+					<param name="Local" value="Reference\Method\ComboBox/GetDir.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetDroppedWidth">
+					<param name="Local" value="Reference\Method\ComboBox/GetDroppedWidth.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetEBText">
+					<param name="Local" value="Reference\Method\ComboBox/GetEBText.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetEditSel">
+					<param name="Local" value="Reference\Method\ComboBox/GetEditSel.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetItemData">
+					<param name="Local" value="Reference\Method\ComboBox/GetItemData.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetLBText">
+					<param name="Local" value="Reference\Method\ComboBox/GetLBText.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetTopIndex">
+					<param name="Local" value="Reference\Method\ComboBox/GetTopIndex.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="InsertString">
+					<param name="Local" value="Reference\Method\ComboBox/InsertString.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SelectString">
+					<param name="Local" value="Reference\Method\ComboBox/SelectString.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetCurSel">
+					<param name="Local" value="Reference\Method\ComboBox/SetCurSel.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetDroppedWidth">
+					<param name="Local" value="Reference\Method\ComboBox/SetDroppedWidth.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetEditSel">
+					<param name="Local" value="Reference\Method\ComboBox/SetEditSel.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetItemData">
+					<param name="Local" value="Reference\Method\ComboBox/SetItemData.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetTopIndex">
+					<param name="Local" value="Reference\Method\ComboBox/SetTopIndex.htm">
+					</OBJECT>
+			</UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Kombinationsfeld mit Bildern">
 				<param name="Local" value="Reference\Method\Index.htm#ImageComboBox">
 				</OBJECT>
 			<UL>
@@ -1997,7 +2121,7 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="List Box">
+				<param name="Name" value="Listenfeld">
 				<param name="Local" value="Reference\Method\Index.htm#ListBox">
 				</OBJECT>
 			<UL>
@@ -2111,7 +2235,7 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="List View">
+				<param name="Name" value="Erweiterte Liste">
 				<param name="Local" value="Reference\Method\Index.htm#ListView">
 				</OBJECT>
 			<UL>
@@ -2261,7 +2385,7 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Option List">
+				<param name="Name" value="Optionsliste">
 				<param name="Local" value="Reference\Method\Index.htm#OptionList">
 				</OBJECT>
 			<UL>
@@ -2319,91 +2443,7 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Picture Box">
-				<param name="Local" value="Reference\Method\Index.htm#PictureBox">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Clear">
-					<param name="Local" value="Reference\Method\PictureBox/Clear.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DrawArc">
-					<param name="Local" value="Reference\Method\PictureBox/DrawArc.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DrawCircle">
-					<param name="Local" value="Reference\Method\PictureBox/DrawCircle.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DrawEdge">
-					<param name="Local" value="Reference\Method\PictureBox/DrawEdge.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DrawFocusRect">
-					<param name="Local" value="Reference\Method\PictureBox/DrawFocusRect.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DrawHatchRect">
-					<param name="Local" value="Reference\Method\PictureBox/DrawHatchRect.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DrawLine">
-					<param name="Local" value="Reference\Method\PictureBox/DrawLine.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DrawPoint">
-					<param name="Local" value="Reference\Method\PictureBox/DrawPoint.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DrawRect">
-					<param name="Local" value="Reference\Method\PictureBox/DrawRect.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DrawSolidRect">
-					<param name="Local" value="Reference\Method\PictureBox/DrawSolidRect.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DrawText">
-					<param name="Local" value="Reference\Method\PictureBox/DrawText.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DrawWrappedText">
-					<param name="Local" value="Reference\Method\PictureBox/DrawWrappedText.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetTextExtent">
-					<param name="Local" value="Reference\Method\PictureBox/GetTextExtent.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="LoadPictureFile">
-					<param name="Local" value="Reference\Method\PictureBox/LoadPictureFile.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="PaintPicture">
-					<param name="Local" value="Reference\Method\PictureBox/PaintPicture.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Refresh">
-					<param name="Local" value="Reference\Method\PictureBox/Refresh.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="StoreImage">
-					<param name="Local" value="Reference\Method\PictureBox/StoreImage.htm">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Progress Bar">
-				<param name="Local" value="Reference\Method\Index.htm#ProgressBar">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Reset">
-					<param name="Local" value="Reference\Method\ProgressBar/Reset.htm">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Project">
+				<param name="Name" value="Projekt">
 				<param name="Local" value="Reference\Method\Index.htm#Project">
 				</OBJECT>
 			<UL>
@@ -2437,79 +2477,71 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Slide View">
-				<param name="Local" value="Reference\Method\Index.htm#SlideView">
+				<param name="Name" value="Schraffur">
+				<param name="Local" value="Reference\Method\Index.htm#Hatch">
 				</OBJECT>
 			<UL>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="Clear">
-					<param name="Local" value="Reference\Method\SlideView/Clear.htm">
+					<param name="Local" value="Reference\Method\Hatch/Clear.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="EndImage">
-					<param name="Local" value="Reference\Method\SlideView/EndImage.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FillImage">
-					<param name="Local" value="Reference\Method\SlideView/FillImage.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Load">
-					<param name="Local" value="Reference\Method\SlideView/Load.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RemoveHighlight">
-					<param name="Local" value="Reference\Method\SlideView/RemoveHighlight.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetHighlight">
-					<param name="Local" value="Reference\Method\SlideView/SetHighlight.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SlideImage">
-					<param name="Local" value="Reference\Method\SlideView/SlideImage.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="VectorImage">
-					<param name="Local" value="Reference\Method\SlideView/VectorImage.htm">
+					<param name="Name" value="SetPattern">
+					<param name="Local" value="Reference\Method\Hatch/SetPattern.htm">
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Tab Strip">
-				<param name="Local" value="Reference\Method\Index.htm#TabStrip">
+				<param name="Name" value="Steuerelement">
+				<param name="Local" value="Reference\Method\Index.htm#Control">
 				</OBJECT>
 			<UL>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetControlArea">
-					<param name="Local" value="Reference\Method\TabStrip/GetControlArea.htm">
+					<param name="Name" value="Dump">
+					<param name="Local" value="Reference\Method\Control/Dump.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetCurSel">
-					<param name="Local" value="Reference\Method\TabStrip/GetCurSel.htm">
+					<param name="Name" value="GetHWND">
+					<param name="Local" value="Reference\Method\Control/GetHWND.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetRowCount">
-					<param name="Local" value="Reference\Method\TabStrip/GetRowCount.htm">
+					<param name="Name" value="GetPos">
+					<param name="Local" value="Reference\Method\Control/GetPos.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="HideTab">
-					<param name="Local" value="Reference\Method\TabStrip/HideTab.htm">
+					<param name="Name" value="GetProperties">
+					<param name="Local" value="Reference\Method\Control/GetProperties.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetCurSel">
-					<param name="Local" value="Reference\Method\TabStrip/SetCurSel.htm">
+					<param name="Name" value="GetProperty">
+					<param name="Local" value="Reference\Method\Control/GetProperty.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetTabCaption">
-					<param name="Local" value="Reference\Method\TabStrip/SetTabCaption.htm">
+					<param name="Name" value="Redraw">
+					<param name="Local" value="Reference\Method\Control/Redraw.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ShowTab">
-					<param name="Local" value="Reference\Method\TabStrip/ShowTab.htm">
+					<param name="Name" value="SetFocus">
+					<param name="Local" value="Reference\Method\Control/SetFocus.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetPos">
+					<param name="Local" value="Reference\Method\Control/SetPos.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetProperty">
+					<param name="Local" value="Reference\Method\Control/SetProperty.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="ShowToolTip">
+					<param name="Local" value="Reference\Method\Control/ShowToolTip.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="ZOrder">
+					<param name="Local" value="Reference\Method\Control/ZOrder.htm">
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Text Box">
+				<param name="Name" value="Textfeld">
 				<param name="Local" value="Reference\Method\Index.htm#TextBox">
 				</OBJECT>
 			<UL>
@@ -2567,146 +2599,114 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Tree">
-				<param name="Local" value="Reference\Method\Index.htm#Tree">
+				<param name="Name" value="Verlaufsbalken">
+				<param name="Local" value="Reference\Method\Index.htm#ProgressBar">
 				</OBJECT>
 			<UL>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AddChild">
-					<param name="Local" value="Reference\Method\Tree/AddChild.htm">
+					<param name="Name" value="Reset">
+					<param name="Local" value="Reference\Method\ProgressBar/Reset.htm">
+					</OBJECT>
+			</UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Video">
+				<param name="Local" value="Reference\Method\Index.htm#Animation">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Close">
+					<param name="Local" value="Reference\Method\Animation/Close.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AddParent">
-					<param name="Local" value="Reference\Method\Tree/AddParent.htm">
+					<param name="Name" value="Load">
+					<param name="Local" value="Reference\Method\Animation/Load.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AddSibling">
-					<param name="Local" value="Reference\Method\Tree/AddSibling.htm">
+					<param name="Name" value="Play">
+					<param name="Local" value="Reference\Method\Animation/Play.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CancelLabelEdit">
-					<param name="Local" value="Reference\Method\Tree/CancelLabelEdit.htm">
+					<param name="Name" value="Seek">
+					<param name="Local" value="Reference\Method\Animation/Seek.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Clear">
-					<param name="Local" value="Reference\Method\Tree/Clear.htm">
+					<param name="Name" value="Stop">
+					<param name="Local" value="Reference\Method\Animation/Stop.htm">
+					</OBJECT>
+			</UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Webseite">
+				<param name="Local" value="Reference\Method\Index.htm#Html">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetBusy">
+					<param name="Local" value="Reference\Method\Html/GetBusy.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DeleteItem">
-					<param name="Local" value="Reference\Method\Tree/DeleteItem.htm">
+					<param name="Name" value="GetFullName">
+					<param name="Local" value="Reference\Method\Html/GetFullName.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="EnsureVisible">
-					<param name="Local" value="Reference\Method\Tree/EnsureVisible.htm">
+					<param name="Name" value="GetHtmlDocument">
+					<param name="Local" value="Reference\Method\Html/GetHtmlDocument.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ExpandItem">
-					<param name="Local" value="Reference\Method\Tree/ExpandItem.htm">
+					<param name="Name" value="GetLocationName">
+					<param name="Local" value="Reference\Method\Html/GetLocationName.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetCount">
-					<param name="Local" value="Reference\Method\Tree/GetCount.htm">
+					<param name="Name" value="GetLocationURL">
+					<param name="Local" value="Reference\Method\Html/GetLocationURL.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetFirstChildItem">
-					<param name="Local" value="Reference\Method\Tree/GetFirstChildItem.htm">
+					<param name="Name" value="GetOffline">
+					<param name="Local" value="Reference\Method\Html/GetOffline.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetFirstVisibleItem">
-					<param name="Local" value="Reference\Method\Tree/GetFirstVisibleItem.htm">
+					<param name="Name" value="GoBack">
+					<param name="Local" value="Reference\Method\Html/GoBack.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetItemData">
-					<param name="Local" value="Reference\Method\Tree/GetItemData.htm">
+					<param name="Name" value="GoForward">
+					<param name="Local" value="Reference\Method\Html/GoForward.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetItemHandle">
-					<param name="Local" value="Reference\Method\Tree/GetItemHandle.htm">
+					<param name="Name" value="GoHome">
+					<param name="Local" value="Reference\Method\Html/GoHome.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetItemImages">
-					<param name="Local" value="Reference\Method\Tree/GetItemImages.htm">
+					<param name="Name" value="GoSearch">
+					<param name="Local" value="Reference\Method\Html/GoSearch.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetItemKey">
-					<param name="Local" value="Reference\Method\Tree/GetItemKey.htm">
+					<param name="Name" value="Navigate">
+					<param name="Local" value="Reference\Method\Html/Navigate.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetItemLabel">
-					<param name="Local" value="Reference\Method\Tree/GetItemLabel.htm">
+					<param name="Name" value="Refresh">
+					<param name="Local" value="Reference\Method\Html/Refresh.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetNextSiblingItem">
-					<param name="Local" value="Reference\Method\Tree/GetNextSiblingItem.htm">
+					<param name="Name" value="ReplaceText">
+					<param name="Local" value="Reference\Method\Html/ReplaceText.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetNextVisibleItem">
-					<param name="Local" value="Reference\Method\Tree/GetNextVisibleItem.htm">
+					<param name="Name" value="SetOffline">
+					<param name="Local" value="Reference\Method\Html/SetOffline.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetParentItem">
-					<param name="Local" value="Reference\Method\Tree/GetParentItem.htm">
+					<param name="Name" value="Stop">
+					<param name="Local" value="Reference\Method\Html/Stop.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetPrevSiblingItem">
-					<param name="Local" value="Reference\Method\Tree/GetPrevSiblingItem.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetPrevVisibleItem">
-					<param name="Local" value="Reference\Method\Tree/GetPrevVisibleItem.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetRootItem">
-					<param name="Local" value="Reference\Method\Tree/GetRootItem.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetSelectedItem">
-					<param name="Local" value="Reference\Method\Tree/GetSelectedItem.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetVisibleCount">
-					<param name="Local" value="Reference\Method\Tree/GetVisibleCount.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="IsItemExpanded">
-					<param name="Local" value="Reference\Method\Tree/IsItemExpanded.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ItemHasChildren">
-					<param name="Local" value="Reference\Method\Tree/ItemHasChildren.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SelectItem">
-					<param name="Local" value="Reference\Method\Tree/SelectItem.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SelectSetFirstVisible">
-					<param name="Local" value="Reference\Method\Tree/SelectSetFirstVisible.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetItemData">
-					<param name="Local" value="Reference\Method\Tree/SetItemData.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetItemImages">
-					<param name="Local" value="Reference\Method\Tree/SetItemImages.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetItemLabel">
-					<param name="Local" value="Reference\Method\Tree/SetItemLabel.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SortChildren">
-					<param name="Local" value="Reference\Method\Tree/SortChildren.htm">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="StartLabelEdit">
-					<param name="Local" value="Reference\Method\Tree/StartLabelEdit.htm">
+					<param name="Name" value="UpdateHtmlCode">
+					<param name="Local" value="Reference\Method\Html/UpdateHtmlCode.htm">
 					</OBJECT>
 			</UL>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Events">
+			<param name="Name" value="Ereignisse">
 			<param name="Local" value="Reference\Event\Index.htm">
 			</OBJECT>
 		<UL>
@@ -2992,7 +2992,7 @@
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Functions">
+			<param name="Name" value="Funktionen">
 			<param name="Local" value="Reference\Function\Index.htm">
 			</OBJECT>
 		<UL>
@@ -3132,6 +3132,7 @@
 				<param name="Name" value="YTwipsToPixels">
 				<param name="Local" value="Reference\Function\YTwipsToPixels.htm">
 				</OBJECT>
+		</UL>
 	</UL>
 </UL>
 </BODY></HTML>

@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
 <title>GetOLEColorValue</title>
 </head>
@@ -18,33 +18,47 @@
 		</tr>
 	</table>
 	<hr />
-	<div id="content">
+<div id="content">
         <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
           <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Function Name</th>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Funktionsname</th>
             <td bgcolor="#CCFF99">dcl_GetOLEColorValue</td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="syntax">(dcl_GetOLEColorValue
-            <font color="#FF0000">AcadColor [as <a href="../DataType/Color.htm">
+            <font color="#FF0000">AcadColor [als <a href="../DataType/Color.htm">
             Color</a>]</font>)</code></td>
           </tr>
           <tr>
-            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Return Type</th>
+            <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
             <td bgcolor="#CCFF99"><a href="../DataType/OLEColor.htm">OLEColor</a></td>
           </tr>
-          </table>
-		<p>This function converts an AutoCAD color or system color into an 
-        OLEColor for use with ActiveX properties and methods.</p>
-	</div>
+      </table>
+	<p>Diese Funktion konvertiert einen AutoCAD-ACI-Farbwert bzw. eine Windows-Systemfarbe in einen OLEColor-Farbwert f&uuml;r Anwendungen mit ActiveX-Eigenschaften und -Methoden.</p>
+		<p>Bitte beachten Sie, dass der OLEColor-Farbwert entgegen der Beschreibung in der AutoLISP-Hilfe nicht mit der AutoLISP-Funktion (acad_truecolordlg) verwendet werden kann. Autodesk verwendet hier einen anderen Farbwert.</p>
+		<blockquote>
+<pre>(setq lstRGB (list 123 234 56)) <span class="codecomment">;; Diese Farbe soll abgebildet werden</span> 
+(setq lstRGBForAcad (reverse lstRGB)) <span class="codecomment">;; Die Liste der RGB-Farbe muss zun&auml;chst umgedreht werden</span>
+(setq intRGBForAcad (+ (+ (lsh (caddr lstRGBForAcad) 16) (lsh (cadr lstRGBForAcad) 8)) (car lstRGBForAcad))) <span class="codecomment">;; Daraus l&auml;sst sich der Farbwert ableiten</span>
+(acad_truecolordlg (cons 420 intRGBForAcad) nil)</pre>
+	  </blockquote>
+          <p>
+          Wollen Sie einem Bild-Steuerlemenent eine RGB-Farbe als Hintergrundfarbe zuweisen, verwenden Sie die Liste aus Rot, Gr&uuml;n, Blau direkt: </p>
+          <blockquote>
+            <pre><span class="codecomment">;; Bei OpenDCL-Steuerelementen kann gleich die Liste zur Anwendung kommen</span>
+(setq lstRGBForODCL lstRGB)
+(setq intRGBForODCL (+ (+ (lsh (caddr lstRGBForODCL) 16) (lsh (cadr lstRGBForODCL) 8)) (car lstRGBForODCL)))  </pre>
+          </blockquote>
+</div>
 	<hr />
 	<div id="footer">
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		Alle Rechte vorbehalten.</p>
+		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
 	</div>
 </body>
 </html>

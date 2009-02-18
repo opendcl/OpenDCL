@@ -1,7 +1,7 @@
 <html>
 <head>
-<link rel="StyleSheet" href="../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../../../Utility.js"></script>
+<link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
+<script type="text/javascript" src="../Utility.js"></script>
 <title>Application Development</title>
 </head>
 <body>
@@ -58,11 +58,11 @@
   (dcl_Form_Close MyProject_MyForm)
 )
 (defun C:MyCommand (/ Result)
-  (command &quot;_OPENDCL&quot;) ; Load OpenDCL Runtime
-  (if (dcl_Project_Load &quot;MyProject&quot;) ; Load project data from MyProject.odcl
+  (command &quot;_OPENDCL&quot;) <span class="codecomment">; Load OpenDCL Runtime</span>
+  (if (dcl_Project_Load &quot;MyProject&quot;) <span class="codecomment">; Load project data from MyProject.odcl</span>
     (progn
       (setq Result (dcl_Form_Show MyProject_MyForm))
-      ; Note that this code does not execute until *after* the dialog is closed!
+      <span class="codecomment">; Note that this code does not execute until *after* the dialog is closed!</span>
       (if (= Result 1) (DoSomething))
     )
   )
@@ -84,7 +84,8 @@
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
 		All rights reserved.</p>
 		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		<p>AutoCAD and AutoLISP are registered trademarks of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows is a registered trademark of <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in the United States and other countries.</p>
 	</div>
 </body>
 </html>

@@ -89,7 +89,6 @@ END_MESSAGE_MAP()
 BOOL CFontPropertyPage::OnInitDialog() 
 {
 	CPropertyPage::OnInitDialog();
-	TProjectPtr pProject = mpDclControl->GetOwnerProject();
 
 	try
 	{

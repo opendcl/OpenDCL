@@ -90,3 +90,39 @@ td
 {
 font-size: small;
 }
+
+.codecomment
+{
+color: #666666;
+background-color: #E4E4E4;
+}
+
+a:link
+{
+color:#000066;
+border-bottom: #000066 1px dotted;
+text-decoration: none;
+}
+
+a:visited
+{
+color:#000066;
+border-bottom: #000066 1px dotted;
+text-decoration: none;
+}
+
+a:hover
+{
+color:#000066;
+background-color: #E4E4E4;
+border-bottom: #000066 1px dotted;
+text-decoration: none;
+}
+
+a:active
+{
+color: #000066;
+background-color: #E4E4E4;
+border-bottom: #000066 1px dotted;
+text-decoration: none;
+}

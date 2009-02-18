@@ -1,14 +1,14 @@
 <html>
 <head>
-<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
-<title>Color</title>
+<title>Farbe</title>
 </head>
 <body>
 	<table width="100%">
 		<tr>
 			<td nowrap>
-				<div id="title">Color</div>
+				<div id="title">Farbe</div>
 			</td>
 			<td align="right" valign="top">
 				<div id="hdrlink">&nbsp;</div>
@@ -17,134 +17,125 @@
 	</table>
 	<hr />
 	<div id="content">
-		<p>Color types represent an AutoCAD color in the range 1 through 256, 
-        including the &quot;logical&quot; ByLayer color 256. In OpenDCL, additional logical colors can be specified by negative values, 
-        as shown in the following table. If the color value is outside the range 
-        of logical and AutoCAD colors, it is interpreted as a bit coded RGB 
-        color value.</p>
-		<p>A color may also be represented by a list of three integers in the 
-        range 0 - 255 representing the Red, Green, and Blue components of the 
-        color in the form (Red Green Blue).</p>
-		<p>To convert an AutoCAD color to an <a href="OLEColor.htm">OLEColor</a> 
-        for use with an ActiveX object, use the
-        <a href="../Function/GetOLEColorValue.htm">GetOLEColorValue</a> 
-        function.</p>
-	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber1">
+		<p>Farbwerte stellen die AutoCAD-ACI-Farben im Bereich 1 bis 256, inklusive der Farbe 256 f&uuml;r VonLayer. Windows-Systemfarben werden als negative Werte verwaltet, wie Sie der nachfolgenden Tabelle entnehmen k&ouml;nnen. Ist der Farbwert au&szlig;erhalb dieser Bereiche, wird er als bitcodierte RGB-Farbe interpretiert. </p>
+		<p>Eine Farbe kann auch als Liste von 3 Ganzzahlen f&uuml;r eine RGB-Farbe &uuml;bergeben werden, wobei die erste Rot, die zweite Gr&uuml;n und der Dritte Blau abbildet und jeder der drei Werte im Bereich 0 bis 255 liegt. </p>
+		<p>Um eine AutoCAD-Farbe in eine <a href="OLEColor.htm">OLEColor</a> zu wandeln, um sie beispielsweise in Verbindung mit einem <a href="AxObject.htm">ActiveX Objekt</a> zu verwenden, nutzen Sie die <a href="../Function/GetOLEColorValue.htm">GetOLEColorValue</a> Funktion . </p>
+		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber1">
           <tr>
-            <th nowrap>Color Value</th>
-            <th nowrap>Description</th>
+            <th width="68" nowrap>Farbwert</th>
+            <th width="431" nowrap>Bedeutung</th>
           </tr>
           <tr>
             <td>-24</td>
-            <td>Transparent (background color shows through)</td>
+            <td>Transparent (durchsichtige Hintergrundfarbe)</td>
           </tr>
           <tr>
             <td>-23</td>
-            <td>AutoCAD layout background color</td>
+            <td>AutoCAD Layout Hintergrund</td>
           </tr>
           <tr>
             <td>-22</td>
-            <td>AutoCAD model space background color</td>
+            <td>AutoCAD Modellbereich Hintergrund</td>
           </tr>
           <tr>
             <td>-21</td>
-            <td>Windows button highlight color</td>
+            <td>Windows Hervorgehobene Schaltfl&auml;che </td>
           </tr>
           <tr>
             <td>-20</td>
-            <td>Windows inactive caption color</td>
+            <td>Windows Inaktiver Titelzeilentext </td>
           </tr>
           <tr>
             <td>-19</td>
-            <td>Windows button text color</td>
+            <td>Windows Schaltfl&auml;chentext </td>
           </tr>
           <tr>
             <td>-18</td>
-            <td>Windows grayed text color</td>
+            <td>Windows Ausgegrauter Text </td>
           </tr>
           <tr>
             <td>-17</td>
-            <td>Windows button shadow color</td>
+            <td>Windows Schatten </td>
           </tr>
           <tr>
             <td>-16</td>
-            <td>Windows button face color</td>
+            <td>Windows 3D-Objekte </td>
           </tr>
           <tr>
             <td>-15</td>
-            <td>Windows highlighted text color</td>
+            <td>Windows Text ausgew&auml;hlter Elemente </td>
           </tr>
           <tr>
             <td>-14</td>
-            <td>Windows highlight color</td>
+            <td>Windows Ausgew&auml;hlte Elemente </td>
           </tr>
           <tr>
             <td>-13</td>
-            <td>Windows application workspace color</td>
+            <td>Windows Hintergrund der Anwendungen </td>
           </tr>
           <tr>
             <td>-12</td>
-            <td>Windows inactive border color</td>
+            <td>Windows Rahmen des inaktiven Fensters </td>
           </tr>
           <tr>
             <td>-11</td>
-            <td>Windows active border color</td>
+            <td>Windows Rahmen des aktiven Fensters </td>
           </tr>
           <tr>
             <td>-10</td>
-            <td>Windows caption text color</td>
+            <td>Windows Aktiver Titelzeilentext </td>
           </tr>
           <tr>
             <td>-9</td>
-            <td>Windows window text color</td>
+            <td>Windows Dialogfeld </td>
           </tr>
           <tr>
             <td>-8</td>
-            <td>Windows menu text color</td>
+            <td>Windows Men&uuml;titel </td>
           </tr>
           <tr>
             <td>-7</td>
-            <td>Windows window frame color</td>
+            <td>Windows Fensterrahmenf&uuml;llung </td>
           </tr>
           <tr>
             <td>-6</td>
-            <td>Windows default window color</td>
+            <td>Windows Fenster </td>
           </tr>
           <tr>
             <td>-5</td>
-            <td>Windows menu color</td>
+            <td>Windows Men&uuml;</td>
           </tr>
           <tr>
             <td>-4</td>
-            <td>Windows inactive caption color</td>
+            <td>Windows Titelzeile des inaktiven Fensters </td>
           </tr>
           <tr>
             <td>-3</td>
-            <td>Windows active caption color</td>
+            <td>Windows Titelzeile des aktiven Fensters </td>
           </tr>
           <tr>
             <td>-2</td>
-            <td>Windows desktop color</td>
+            <td>Windows Desktop </td>
           </tr>
           <tr>
             <td>-1</td>
-            <td>Windows scroll bar color</td>
+            <td>Windows Scrollleiste </td>
           </tr>
           <tr>
             <td>0</td>
-            <td>Black</td>
+            <td>Schwarz</td>
           </tr>
           <tr>
             <td>1</td>
-            <td>Red</td>
+            <td>Rot</td>
           </tr>
           <tr>
             <td>2</td>
-            <td>Yellow</td>
+            <td>Gelb</td>
           </tr>
           <tr>
             <td>3</td>
-            <td>Green</td>
+            <td>Gr&uuml;n</td>
           </tr>
           <tr>
             <td>4</td>
@@ -152,7 +143,7 @@
           </tr>
           <tr>
             <td>5</td>
-            <td>Blue</td>
+            <td>Blau</td>
           </tr>
           <tr>
             <td>6</td>
@@ -160,29 +151,30 @@
           </tr>
           <tr>
             <td>7</td>
-            <td>White</td>
+            <td>Wei&szlig;</td>
           </tr>
           <tr>
             <td>8 - 255</td>
-            <td>AutoCAD color table color</td>
+            <td>AutoCAD ACI-Farben</td>
           </tr>
           <tr>
             <td>256</td>
-            <td>AutoCAD ByLayer color (i.e. default color of current layer)</td>
+            <td>AutoCAD VonLayer-Farbe (z.B. Farbe des aktuellen Layers)</td>
           </tr>
           <tr>
             <td>&gt; 256</td>
-            <td>Color is interpreted as an RGB color (see <a href="OLEColor.htm">
-            OLEColor</a> type)</td>
+            <td>Farbe wird als RGB-Farbe interpretiert  (siehe<a href="OLEColor.htm">
+            OLEColor</a>)</td>
           </tr>
         </table>
 	</div>
 	<hr />
 	<div id="footer">
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		Alle Rechte vorbehalten.</p>
+		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
 	</div>
 </body>
 </html>

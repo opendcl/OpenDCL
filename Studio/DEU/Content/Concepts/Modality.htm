@@ -1,14 +1,14 @@
 <html>
 <head>
-<link rel="StyleSheet" href="../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../../../Utility.js"></script>
-<title>Modal vs. Modeless</title>
+<link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
+<script type="text/javascript" src="../Utility.js"></script>
+<title>Modal vs. Nichtmodal</title>
 </head>
 <body>
 	<table width="100%">
 		<tr>
 			<td nowrap>
-				<div id="title">Modal vs. Modeless</div>
+				<div id="title">Modal vs. Nichtmodal</div>
 			</td>
 			<td align="right" valign="top">
 				<div id="hdrlink">&nbsp;</div>
@@ -17,52 +17,22 @@
 	</table>
 	<hr />
 	<div id="content">
-		<p>Modal dialogs disable the AutoCAD window until they are closed. By 
-        their nature, modal dialogs are easier to manage because the AutoCAD 
-        state remains unchanged for the life of the dialog. Modal dialogs return 
-        a dialog status code when they close, and typically the main application 
-        code performs additional actions based on the status code returned from 
-        the dialog.</p>
-		<p>Modeless dialogs present additional challenges. Since modeless 
-        dialogs can remain open for the lifetime of the AutoCAD application, 
-        they must deal with changing AutoCAD state such as documents opening and 
-        closing. In addition, since every AutoCAD drawing has its own AutoLISP 
-        namespace, activating a new document means that event handlers defined 
-        in the deactivated document will no longer be accessible in the newly 
-        activated document.</p>
-		<p>These realities mean that the only way to manage a modeless dialog is 
-        by ensuring that the event handlers are defined in every new drawing 
-        file. In practice, this usually means that the application lisp file (or 
-        files) must be loaded via the acaddoc.lsp file or a similar method that 
-        loads the files as part of new document initialization.</p>
-		<p>Furthermore, since the dialog may already be active when startup code 
-        executes (after opening a second drawing file, for example), it must act 
-        accordingly. For example, if the application must read some 
-        initialization settings from the registry, it likely needs to do that 
-        only when the modeless dialog is initially activated. If such 
-        initialization is performed in the dialog's OnInitialize event, it will 
-        only get executed once when the dialog is first activated. If the 
-        application needs to determine at runtime whether the dialog is already 
-        active it can use an expression like the following:</p>
-	    <blockquote>
-          <pre>(and (MyProject_MyForm (dcl_Form_IsActive MyProject_MyForm))</pre>
+		<p>Modale Dialoge sperren das AutoCAD-Fenster, bis die modalen Dialoge geschlossen werden. Naturgem&auml;&szlig; k&ouml;nnen modale Dialoge einfacher verwaltet werden, weil AutoCAD in der Zwischenzeit unver&auml;ndert bleibt. Modale Dialoge geben einen Statuswert zur&uuml;ck, wenn sie geschlossen werden. Die Hauptfunktion der Applikation f&uuml;hrt dann auf den R&uuml;ckgabewert basierend weiterf&uuml;hrenden Code aus. </p>
+		<p>Nichtmodale Dialoge stellen eine gr&ouml;&szlig;ere Herausforderung dar. Da nichtmodale Dialoge w&auml;hrend der gesamten AutoCAD-Sitzung aktiv sein k&ouml;nnen, m&uuml;ssen sie mit dem wechselnden AutoCAD-Status umgehen k&ouml;nnen. Dazu geh&ouml;ren wechselnde aktive Dokumente genauso wie offene oder geschlossene Zeichnungen. Da dar&uuml;berhinaus jede AutoCAD-Zeichnung seinen eigenen AutoLISP Namensraum verwendet, bedeutet das Aktivieren eines neuen Dokuments, dass in dem nun daktivierten Dokument die Ereignisse nicht mehr ausgel&ouml;st und auf sie zugegriffen werden k&ouml;nnen. </p>
+		<p>Das bedeutet, dass nichtmodale Dialoge nur verwaltet werden k&ouml;nnen, wenn sichergestellt ist, dass die Ereignisse in jeder neuen Zeichnung definiert sind. In der Praxis muss die LSP-, FAS- oder VLX-Datei der Applikation mit der acaddoc.lsp oder einer &auml;hnlichen Methode als Teil der Zeichnungsinitialisierung geladen werden. </p>
+		<p>Zudem muss beim &Ouml;ffnen einer weiteren Zeichnung auf einen bereits ge&ouml;ffneten nichtmodalen Dialog reagiert werden. Liest beispielsweise die Applikation einige initialisierende Einstellungen aus der Windows-Registrierung, sollte dies nur geschehen, wenn der Dialog tats&auml;chlich erstmals aufgerufen wird. Eine derartige Initialisierung kann zum Beispiel in dem OnInitialize-Ereignis Anwendung finden, dann wird es nur einmal ausgef&uuml;hrt, wenn der Dialog eingeblendet wird. Um herauszufinden, ob der Dialog zur Laufzeit bereits aktiv ist, k&ouml;nnen Sie mit dem folgenden beispielhaften Ausdruck pr&uuml;fen: </p>
+		<blockquote>
+          <pre>(and MyProject_MyForm (dcl_Form_IsActive MyProject_MyForm))</pre>
         </blockquote>
-        <p>In addition to programming startup code to act appropriately when 
-        more than one drawing is opened, modeless dialogs must also behave 
-        correctly when all open drawings are closed (resulting in a state 
-        referred to as a &quot;no doc state&quot;) or when the user switches between 
-        multiple active drawings. If the modeless dialog contains controls whose 
-        settings or properties depend on the drawing contents, then it must 
-        define event handlers for the
-        <a href="../Reference/Event/DocActivated.htm">OnDocActivated</a> and
-        <a href="../Reference/Event/EnteringNoDocState.htm">OnEnteringNoDocState</a> 
-        events to update the controls as the document state changes.</div>
+      <p>Zus&auml;tzlich zum Programmstart muss der Programmablauf auch mit mehreren Zeichnungen umgehen k&ouml;nnen und auf den Zustand reagieren, wenn alle Zeichnungen geschlossen werden (sogenannter &quot;NoDocState&quot;) oder wenn der Anwender zwischen mehreren offenen Zeichnungen hin- und herschaltet. Enth&auml;lt der nichtmodale Dialog zeichnungsabh&auml;ngige Einstellungen und Eigenschaften, sollten diese in den Ereignisfunktionen der aktivierten Ereignisse <a href="../Reference/Event/DocActivated.htm">OnDocActivated</a> und <a href="../Reference/Event/EnteringNoDocState.htm">OnEnteringNoDocState</a> aktualisiert und auf die neue Zeichnung angepasst werden.
+</div>
 	<hr />
 	<div id="footer">
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
-		All rights reserved.</p>
-		<p>OpenDCL is a trademark of <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
-		<p>AutoCAD is a registered trademark of <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		Alle Rechte vorbehalten.</p>
+		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
 	</div>
 </body>
 </html>
