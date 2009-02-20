@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
 <title>KeyUp</title>
 </head>
@@ -28,58 +28,55 @@
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="syntax">(<font color="brown">defun</font> c:<i>&lt;CONTROL-NAME&gt;</i>_OnKeyUp 
-            (<font color="red">Character [as <a href="../DataType/String.htm">String</a>] 
-            RepeatCount [as <a href="../DataType/Integer.htm">Integer</a>] Flags 
-            [as <a href="../DataType/Bitflag.htm">Bitflag</a>] </font>/)<br />)</code></td>
+            (<font color="red">strCharacter [als <a href="../DataType/String.htm">String</a>] 
+            intRepeatCount [als <a href="../DataType/Integer.htm">Integer</a>] intFlags [als <a href="../DataType/Bitflag.htm">Bitflag</a>] </font>/)<br />
+            )</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99">Ignored</td>
+            <td bgcolor="#CCFF99">nicht verwendet</td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Ausgelöst durch</th>
             <td bgcolor="#CCFF99">
-            <a href="../Control/ListView.htm">List View</a>,
-            <a href="../Control/PictureBox.htm">Picture Box</a>,
-            <a href="../Control/SlideView.htm">Slide View</a>,
-            <a href="../Control/TextBox.htm">Text Box</a>,
-            <a href="../Control/Tree.htm">Tree</a></td>
+            <a href="../Control/ListView.htm">Erweiterte Liste</a>,
+            <a href="../Control/PictureBox.htm">Bild</a>,
+            <a href="../Control/SlideView.htm">Dia</a>,
+            <a href="../Control/TextBox.htm">Textfeld</a>,
+            <a href="../Control/Tree.htm">Baumstruktur</a></td>
           </tr>
         </table>
-		<p>This event is triggered when the user releases a key. Character is the 
-        key, RepeatCount is the number of times the key was repeated while it was 
-        held down. Flags describes the state of the [Shift] and [Ctrl] keys, and 
-        the mouse buttons.</p>
+		<p>Wird ausgel&ouml;st, wenn der Anwender eine Taste losgelassen hat. Bitte beachten Sie, dass in nicht-modalen Dialogen das Event u.U. nicht ausgel&ouml;st wird, wenn die Dialogeigenschaft KeepFocus auf Ja gestellt ist. Mit intRepeatCount wird die Anzahl zur&uuml;ckgegeben, wenn die Taste gedr&uuml;ckt gehalten wird. Das intFlags Argument ist ein Bitcode, der den Status von Steuerung (Strg) und Umschalttaste (Shift) wiedregibt und sich aus folgenden Werten zusammensetzt:</p>
 	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
-            <th nowrap>Flags bit</th>
-            <th nowrap>Value</th>
-            <th nowrap>Meaning</th>
+            <th nowrap>Bits</th>
+            <th nowrap>Werte</th>
+            <th nowrap>Bedeutung</th>
           </tr>
           <tr>
             <td>0</td>
             <td>1</td>
-            <td>Left mouse button pressed</td>
+            <td>Linke Taste gedr&uuml;ckt</td>
           </tr>
           <tr>
             <td>1</td>
             <td>2</td>
-            <td>Right mouse button pressed</td>
+            <td>Rechte Taste gedr&uuml;ckt</td>
           </tr>
           <tr>
             <td>2</td>
             <td> 4</td>
-            <td> [Shift] key pressed</td>
+            <td> Umschalttaste gedr&uuml;ckt</td>
           </tr>
           <tr>
             <td>3</td>
             <td> 8</td>
-            <td> [Ctrl] key pressed</td>
+            <td> Strg-Taste gedr&uuml;ckt</td>
           </tr>
           <tr>
             <td>4</td>
             <td> 16</td>
-            <td> Middle mouse button pressed</td>
+            <td> Mittlere Taste gedr&uuml;ckt</td>
           </tr>
         </table>
 	</div>

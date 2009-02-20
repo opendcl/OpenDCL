@@ -2352,6 +2352,12 @@ public:
 	// ----- ads_dcl_browsefolder symbol (do not rename)
 	static int ads_dcl_browsefolder(void)
 	{
+		return ads_dcl_selectfolder();
+	}
+
+	// ----- ads_dcl_selectfolder symbol (do not rename)
+	static int ads_dcl_selectfolder(void)
+	{
 		struct resbuf *pArgs =acedGetArgs () ;
 
 		CString sCaption;
@@ -2745,9 +2751,10 @@ public:
 		acedRetVal(&rbPoint);
 */
 
-		resbuf rbPoint = {NULL, RTPOINT};
+		resbuf rbPoint = {NULL, RT3DPOINT};
 		rbPoint.resval.rpoint[X] = cpt[X];
 		rbPoint.resval.rpoint[Y] = cpt[Y];
+		rbPoint.resval.rpoint[Z] = cpt[Z];
 		acedRetVal(&rbPoint);
 
 		return (RSRSLT) ;
@@ -3525,6 +3532,7 @@ ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_getblocksize, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_navigatetourl, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_activateemail, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_browsefolder, true)
+ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_selectfolder, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_insert, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_insertblock, true)
 ACED_ADSSYMBOL_ENTRY_AUTO(CARXApp, dcl_loadxref, true)

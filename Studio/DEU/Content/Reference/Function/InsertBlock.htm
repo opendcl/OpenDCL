@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
 <title>InsertBlock</title>
 </head>
@@ -28,27 +28,21 @@
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="syntax">(dcl_InsertBlock
-            <font color="#FF0000">DwgFilePath [as
-<a href="../DataType/String.htm">String</a>] {InsertionPoint [as
-<a href="../DataType/3DPoint.htm">3DPoint</a>]} {Rotation [as
+            <font color="#FF0000">strDwgFilePath [als
+<a href="../DataType/String.htm">String</a>] {ptInsertionPoint [als
+<a href="../DataType/3DPoint.htm">3DPoint</a>]} {reaRotation [als
 <a href="../DataType/Float.htm">Float</a>]}</font>
-            <font color="#FF0000">{BlockName [as
+            <font color="#FF0000">{strBlockName [als
 <a href="../DataType/String.htm">String</a>]</font>})</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99"><a href="../DataType/Boolean.htm">Boolean</a> (T if successful; otherwise NIL)</td>
+            <td bgcolor="#CCFF99"><a href="../DataType/Boolean.htm">Boolean</a> (T wenn erfolgreich; ansonsten NIL)</td>
           </tr>
-          </table>
-		<p>This function inserts the model space of DwgFilepath into the current 
-        drawing's active layout. If InsertionPoint is not specified, the block 
-        is inserted at the origin. If Rotation is not specified, the block is 
-        inserted with a rotation angle of zero. If BlockName is not specified, 
-        the drawing filename will be used as the block name in the current 
-        drawing.</p>
-		<p>This function can be used to insert a block in cases when the INSERT 
-        command can not be used (e.g. from an event handler function).</p>
-	</div>
+      </table>
+		<p>Diese Funktion f&uuml;gt den Modellbereich einer Zeichnungsdatei (strDwgFilePath) in den aktuellen Bereich der aktuellen Zeichnungsdatei. Wird kein Einf&uuml;gepunkt (ptInsertionPoint) angegeben, wird der Block am Koordinatenursprung eingef&uuml;gt. Wird keine Drehung (reaRotation) angegeben, wird der Block mit dem Drehwinkel 0&deg; eingef&uuml;gt. Wird kein alternativer Blockname (strBlockName) angegeben, wird der Dateiname als Blockname in der aktuellen Zeichnungsdatei verwendet. </p>
+		<p>Diese Funktion dann sinnvoll einzusetzen, wenn der INSERT-Befehl nicht ausgef&uuml;hrt werden kann (z.B. zur Laufzeit eines OpenDCL-Ereignisses).</p>
+</div>
 	<hr />
 	<div id="footer">
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.

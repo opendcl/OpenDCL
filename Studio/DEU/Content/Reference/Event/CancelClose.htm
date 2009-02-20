@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
 <title>CancelClose</title>
 </head>
@@ -18,7 +18,7 @@
 		</tr>
 	</table>
 	<hr />
-	<div id="content">
+<div id="content">
         <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Funktionsname</th>
@@ -28,7 +28,8 @@
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="syntax">(<font color="brown">defun</font> c:<i>&lt;CONTROL-NAME&gt;</i>_OnCancelClose 
-            (<font color="red"><font color="#FF0000">Canceling [as <a href="../DataType/Integer.htm">Integer</a>] </font></font>/)<br />)</code></td>
+            (<font color="red"><font color="#FF0000">intIsESC</font><font color="#FF0000"> [als <a href="../DataType/Integer.htm">Integer</a>] </font></font>/)<br />
+            )</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
@@ -37,16 +38,12 @@
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Ausgelöst durch</th>
             <td bgcolor="#CCFF99">
-      <a href="../Form/FileDialog.htm">File Dialog</a>,
-      <a href="../Form/ModalDialog.htm">Modal Dialog</a>,
-      <a href="../Form/ModelessDialog.htm">Modeless Dialog</a></td>
+      <a href="../Form/FileDialog.htm">Dateiwahldialog</a>,
+      <a href="../Form/ModalDialog.htm">Modaler Dialog</a>,
+      <a href="../Form/ModelessDialog.htm">Nichtmodaler Dialog</a></td>
           </tr>
         </table>
-		<p>This event is triggered when the user attempts to close the dialog. 
-        Canceling is 1 if the dialog is closing because the user wants to 
-        cancel changes; otherwise it is 0. A return value of T 
-        prevents the dialog from closing; otherwise the 
-        dialog is closed.</p>
+	<p>Dieses Ereignis f&auml;ngt ab, ob der Dialog wirklich geschlossen werden soll (ausgel&ouml;st durch ESC-Taste oder Eingabetaste in Eingabefeldern). Der R&uuml;ckgabewert dieser Funktion sollte T (/= intIsESC 1) sein, wenn der Dialog nicht geschlossen werden soll, NIL wenn doch.</p>
 	</div>
 	<hr />
 	<div id="footer">

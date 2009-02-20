@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
 <title>AttachXref</title>
 </head>
@@ -28,25 +28,19 @@
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="syntax">(dcl_AttachXref
-            <font color="#FF0000">DwgFilePath [as
-<a href="../DataType/String.htm">String</a>] {BlockName [as
-<a href="../DataType/String.htm">String</a>]} {InsertionPoint [as
-<a href="../DataType/3DPoint.htm">3DPoint</a>]} {Rotation [as
+            <font color="#FF0000">strDwgFilePath [als
+<a href="../DataType/String.htm">String</a>] {strBlockName [als
+<a href="../DataType/String.htm">String</a>]} {ptInsertionPoint [als
+<a href="../DataType/3DPoint.htm">3DPoint</a>]} {reaRotation [als
 <a href="../DataType/Float.htm">Float</a>]}</font>)</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99"><a href="../DataType/Boolean.htm">Boolean</a> (T if successful; otherwise NIL)</td>
+            <td bgcolor="#CCFF99"><a href="../DataType/Boolean.htm">Boolean</a> (T wenn erfolgreich; ansonsten NIL)</td>
           </tr>
-          </table>
-		<p>This function attaches DwgFilePath as an xref into the current 
-        drawing. If InsertionPoint is not specified, the xref 
-        is inserted at the origin. If Rotation is not specified, the xref is 
-        inserted with a rotation angle of zero. If BlockName is not specified, 
-        the drawing filename will be used as the xref name in the current 
-        drawing.</p>
-		<p>This function can be used to attach an xref in cases when the XREF 
-        command can not be used (e.g. from an event handler function).</p>
+      </table>
+		<p>Diese Funktion ordnet die Datei strDwgFilePath als externe Referenz der aktuellen Zeichnungsdatei zu. ist der Einf&uuml;gepunkt ptInsertionPoint nicht belegt, wird die externe Referenz am Koordinatenursprung eingef&uuml;gt. Ist die Drehung reaRotation nicht definiert, wird die externe Referenz mit der Drehung 0&deg; eingef&uuml;gt. Wird kein alternativer Blockname f&uuml;r strBlockName &uuml;bergeben, wird der zeichnungsinterne Name des XRef-Blocks der Name der XRef-Datei sein.</p>
+		<p>Diese Funktion dann sinnvoll einzusetzen, wenn der XREF-Befehl nicht ausgef&uuml;hrt werden kann (z.B. zur Laufzeit eines OpenDCL-Ereignisses).</p>
 	</div>
 	<hr />
 	<div id="footer">

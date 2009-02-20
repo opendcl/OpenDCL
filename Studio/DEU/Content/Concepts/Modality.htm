@@ -1,7 +1,7 @@
 <html>
 <head>
-<link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
-<script type="text/javascript" src="../Utility.js"></script>
+<link rel="StyleSheet" href="../WinHelp.css" type="text/css" media="screen,print">
+<script type="text/javascript" src="../../../Utility.js"></script>
 <title>Modal vs. Nichtmodal</title>
 </head>
 <body>
@@ -22,7 +22,7 @@
 		<p>Das bedeutet, dass nichtmodale Dialoge nur verwaltet werden k&ouml;nnen, wenn sichergestellt ist, dass die Ereignisse in jeder neuen Zeichnung definiert sind. In der Praxis muss die LSP-, FAS- oder VLX-Datei der Applikation mit der acaddoc.lsp oder einer &auml;hnlichen Methode als Teil der Zeichnungsinitialisierung geladen werden. </p>
 		<p>Zudem muss beim &Ouml;ffnen einer weiteren Zeichnung auf einen bereits ge&ouml;ffneten nichtmodalen Dialog reagiert werden. Liest beispielsweise die Applikation einige initialisierende Einstellungen aus der Windows-Registrierung, sollte dies nur geschehen, wenn der Dialog tats&auml;chlich erstmals aufgerufen wird. Eine derartige Initialisierung kann zum Beispiel in dem OnInitialize-Ereignis Anwendung finden, dann wird es nur einmal ausgef&uuml;hrt, wenn der Dialog eingeblendet wird. Um herauszufinden, ob der Dialog zur Laufzeit bereits aktiv ist, k&ouml;nnen Sie mit dem folgenden beispielhaften Ausdruck pr&uuml;fen: </p>
 		<blockquote>
-          <pre>(and MyProject_MyForm (dcl_Form_IsActive MyProject_MyForm))</pre>
+          <pre>(and (MyProject_MyForm (dcl_Form_IsActive MyProject_MyForm))</pre>
         </blockquote>
       <p>Zus&auml;tzlich zum Programmstart muss der Programmablauf auch mit mehreren Zeichnungen umgehen k&ouml;nnen und auf den Zustand reagieren, wenn alle Zeichnungen geschlossen werden (sogenannter &quot;NoDocState&quot;) oder wenn der Anwender zwischen mehreren offenen Zeichnungen hin- und herschaltet. Enth&auml;lt der nichtmodale Dialog zeichnungsabh&auml;ngige Einstellungen und Eigenschaften, sollten diese in den Ereignisfunktionen der aktivierten Ereignisse <a href="../Reference/Event/DocActivated.htm">OnDocActivated</a> und <a href="../Reference/Event/EnteringNoDocState.htm">OnEnteringNoDocState</a> aktualisiert und auf die neue Zeichnung angepasst werden.
 </div>

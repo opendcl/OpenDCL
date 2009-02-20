@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
 <title>ItemExpanded (Key)</title>
 </head>
@@ -28,24 +28,22 @@
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="syntax">(<font color="brown">defun</font> c:<i>&lt;CONTROL-NAME&gt;</i>_OnItemExpanded 
-(<font color="red">Label [as <a href="../DataType/String.htm">String</a>] Key [as
-            <a href="../DataType/Handle.htm">Handle</a> or
-            <a href="../DataType/String.htm">String</a>] </font>/)<br />)</code></td>
+(<font color="red">strLabel [als <a href="../DataType/String.htm">String</a>] uKey [als <a href="../DataType/Handle.htm">Handle</a> oder
+<a href="../DataType/String.htm">String</a>] </font>/)<br />
+)</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99">Ignored</td>
+            <td bgcolor="#CCFF99">nicht verwendet</td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Ausgelöst durch</th>
             <td bgcolor="#CCFF99">
-            <a href="../Control/Tree.htm">Tree</a></td>
+            <a href="../Control/Tree.htm">Baumstruktur</a></td>
           </tr>
         </table>
-		<p>This event is triggered when  the specified item was expanded or 
-        collapsed. Label is the expanded or collapsed item's label. Key identifies the item; it is a string if the control uses 
-        string keys; otherwise it is a unique handle that identifies the item.</p>
-	</div>
+		<p>Dieses Ereignis wird ausgel&ouml;st, wenn der Anwender einen Zweig in einer Baumstruktur erweitert/aufgeklappt hat. strLabel gibt die Bezeichnung des Eintrags zur&uuml;ck. uKey bezeichnet hierbei das Element, das auf- oder zugeklappt wurde. Verwendet das Steuerelement Zeichenketten, wird eine Zeichenkette, andernfalls ein eindeutiges <a href="../DataType/Handle.htm">Handle</a> zur&uuml;ckgegeben.</p>
+		 </div>
 	<hr />
 	<div id="footer">
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.

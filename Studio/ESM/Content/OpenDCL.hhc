@@ -2755,6 +2755,10 @@
 				<param name="Local" value="Reference\Event\Clicked-Value.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Clicked (Row/Column)">
+				<param name="Local" value="Reference\Event\Clicked-RowColumn.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Close">
 				<param name="Local" value="Reference\Event\Close.htm">
 				</OBJECT>
@@ -2923,8 +2927,16 @@
 				<param name="Local" value="Reference\Event\RightClick.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="RClick (Row/Column)">
+				<param name="Local" value="Reference\Event\RightClick-RowColumn.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="RDblClick">
 				<param name="Local" value="Reference\Event\RightDblClick.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="RDblClick (Row/Column)">
+				<param name="Local" value="Reference\Event\RightDblClick-RowColumn.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="ReleasedCapture">

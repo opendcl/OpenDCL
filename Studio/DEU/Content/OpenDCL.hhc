@@ -91,7 +91,7 @@
 				<param name="Local" value="Reference\Form\ControlBar.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Dateidialog">
+				<param name="Name" value="Dateiwahldialog">
 				<param name="Local" value="Reference\Form\FileDialog.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
@@ -103,7 +103,7 @@
 				<param name="Local" value="Reference\Form\ModelessDialog.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Karteikarte in den Optionen">
+				<param name="Name" value="Karteikartenreiter in den Optionen">
 				<param name="Local" value="Reference\Form\OptionsTab.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
@@ -271,12 +271,8 @@
 				<param name="Local" value="Reference\DataType\3DPoint.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AxObject">
+				<param name="Name" value="ActiveX Objekt">
 				<param name="Local" value="Reference\DataType\AxObject.htm">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Bildliste">
-				<param name="Local" value="Reference\DataType\ImageList.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Bitflag">
@@ -303,6 +299,10 @@
 				<param name="Local" value="Reference\DataType\Handle.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Image List">
+				<param name="Local" value="Reference\DataType\ImageList.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Integer">
 				<param name="Local" value="Reference\DataType\Integer.htm">
 				</OBJECT>
@@ -323,7 +323,8 @@
 				<param name="Local" value="Reference\DataType\Project.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Steuerelement">
+				<param name="Name" value="Control
+ö">
 				<param name="Local" value="Reference\DataType\Control.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">

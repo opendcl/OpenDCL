@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
 <title>DocActivated</title>
 </head>
@@ -31,22 +31,17 @@
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99">Ignored</td>
+            <td bgcolor="#CCFF99">nicht verwendet</td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Ausgelöst durch</th>
-            <td bgcolor="#CCFF99"><a href="../Form/ControlBar.htm">Control Bar</a>,
-            <a href="../Form/ModelessDialog.htm">Modeless Dialog</a>,
+            <td bgcolor="#CCFF99"><a href="../Form/ControlBar.htm">Andockbares Fenster </a>,
+            <a href="../Form/ModelessDialog.htm">Nichtmodaler Dialog</a>,
             <a href="../Form/Palette.htm">Palette</a></td>
           </tr>
         </table>
-		<p>This event is triggered when the user switches to a different open 
-        AutoCAD drawing. Note that opening a new drawing will not trigger any 
-        event. An application that uses modeless dialogs must be installed so 
-        that its code is loaded into each newly created drawing document, and 
-        the application's initialization code must check for already active 
-        dialogs that it must manage.</p>
-	</div>
+		<p>Dieses Ereignis wird in einem nicht-modalen Dialog ausgel&ouml;st, wenn der Anwender zwischen den offenen Zeichnungsdateien wechselt. Bitte beachten Sie, dass das &Ouml;ffnen einer Zeichnung dieses Ereignis nicht ausl&ouml;st. Eine Applikation, die nichtmodale Dialoge verwendet, muss so installiert und im AutoCAD eingerichtet sein, dass der Programmteil automatisch in jeder neuen Zeichnung geladen wird und &uuml;berpr&uuml;ft, ob nichtmodale Dialoge aktiv sind.</p>
+</div>
 	<hr />
 	<div id="footer">
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.

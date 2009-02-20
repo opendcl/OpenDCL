@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
 <title>ReleasedCapture (Value)</title>
 </head>
@@ -18,7 +18,7 @@
 		</tr>
 	</table>
 	<hr />
-	<div id="content">
+<div id="content">
         <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Funktionsname</th>
@@ -28,20 +28,19 @@
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="syntax">(<font color="brown">defun</font> c:<i>&lt;CONTROL-NAME&gt;</i>_OnReleasedCapture 
-         <font color="red">Value [as <a href="../DataType/Long.htm">Long</a>] </font>/)<br />)</code></td>
+         <font color="red">intValue [als <a href="../DataType/Long.htm">Long</a>] </font>/)<br />
+         )</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99">Ignored</td>
+            <td bgcolor="#CCFF99">nicht verwendet</td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Ausgelöst durch</th>
-            <td bgcolor="#CCFF99"><a href="../Control/Slider.htm">Slider</a></td>
+            <td bgcolor="#CCFF99"><a href="../Control/Slider.htm">Schieberegler</a></td>
           </tr>
         </table>
-		<p>This event is triggered when the user releases the button after 
-        dragging it to a new position. Value is the new value property for the 
-        control.</p>
+	<p>Wird umgehend ausgel&ouml;st, sobald der Anwender die Maustaste zur neuen Position verschoben hat, also noch vor OnScroll. Der Wert von intValue entsprocht dem neuen Wert des Steuerelements. </p>
 	</div>
 	<hr />
 	<div id="footer">

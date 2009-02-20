@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
 <title>EnteringNoDocState</title>
 </head>
@@ -18,7 +18,7 @@
 		</tr>
 	</table>
 	<hr />
-	<div id="content">
+<div id="content">
         <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Funktionsname</th>
@@ -31,22 +31,16 @@
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99">Ignored</td>
+            <td bgcolor="#CCFF99">nicht verwendet</td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Ausgelöst durch</th>
-            <td bgcolor="#CCFF99"><a href="../Form/ControlBar.htm">Control Bar</a>,
-            <a href="../Form/ModelessDialog.htm">Modeless Dialog</a>,
+            <td bgcolor="#CCFF99"><a href="../Form/ControlBar.htm">Andockbares Fenster </a>,
+            <a href="../Form/ModelessDialog.htm">Nichtmodaler Dialog</a>,
             <a href="../Form/Palette.htm">Palette</a></td>
           </tr>
         </table>
-		<p>This event is triggered when the user closes the last open AutoCAD 
-        drawing. If any of the modeless dialog's controls are dependent on the 
-        state or contents of the current drawing file, they should be cleared at 
-        this time. Once the drawing is closed, no AutoLISP code can execute 
-        since there is no document context for it to execute in; this event 
-        handler will be the last opportunity to execute code until a new 
-        document is opened.</p>
+	<p>Dieses Ereignis wird ausgel&ouml;st, wenn der Anwender die letzte offene Zeichnungsdatei schlie&szlig;en will. Ist irgendeine aktive nichtmodale Dialogbox von den Inhalten der aktuellen Zeichnungsdatei abh&auml;ngig, m&uuml;ssen diese jetzt bereinigt oder die Dialogbox ganz geschlossen werden. Ist einmal die Zeichnung geschlossen, kann kein AutoLISP-Code mehr ausgef&uuml;hrt werden, da keine Zeichnungskontext mehr gegeben ist. Dieses Ereignis ist die letzte M&ouml;glichkeit, Programmcode auszuf&uuml;hren, solange die Zeichnung noch ge&ouml;ffnet ist. </p>
 	</div>
 	<hr />
 	<div id="footer">

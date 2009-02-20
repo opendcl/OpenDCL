@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
 <title>Size</title>
 </head>
@@ -27,28 +27,26 @@
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
-<td bgcolor="#CCFF99"><code id="syntax">(<font color="brown">defun</font> c:<i>&lt;CONTROL-NAME&gt;</i>_OnSize (<font color="red">NewWidth 
-            [as 
-            <a href="../DataType/Long.htm">Long</a>] NewHeight [as 
-            <a href="../DataType/Long.htm">Long</a>] </font>/)<br />)</code></td>
+<td bgcolor="#CCFF99"><code id="syntax">(<font color="brown">defun</font> c:<i>&lt;CONTROL-NAME&gt;</i>_OnSize (<font color="red">intNewWidth [als <a href="../DataType/Long.htm">Long</a>] intNewHeight [als <a href="../DataType/Long.htm">Long</a>] </font>/)<br />
+    )</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99">Ignored</td>
+            <td bgcolor="#CCFF99">nicht verwendet</td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Ausgelöst durch</th>
-            <td bgcolor="#CCFF99"><a href="../Form/ControlBar.htm">Control Bar</a>,
-            <a href="../Form/FileDialog.htm">File Dialog</a>,
-            <a href="../Form/ModalDialog.htm">Modal Dialog</a>,
-            <a href="../Form/ModelessDialog.htm">Modeless Dialog</a>,
-            <a href="../Form/OptionsTab.htm">Options Tab</a>,
+            <td bgcolor="#CCFF99"><a href="../Form/ControlBar.htm">Andockbares Fenster </a>,
+            <a href="../Form/FileDialog.htm">Dateiwahldialog</a>,
+            <a href="../Form/ModalDialog.htm">Modaler Dialog</a>,
+            <a href="../Form/ModelessDialog.htm">Nichtmodaler Dialog</a>,
+            <a href="../Form/OptionsTab.htm">Karteikartenreiter in den Optionen</a>,
             <a href="../Form/Palette.htm">Palette</a></td>
           </tr>
         </table>
-		<p>This event is triggered when the dialog is being resized. NewWidth 
-        and NewHeight contain the new width and height.</p>
-	</div>
+		<p>Wird ausgel&ouml;st, wenn der Anwender den Dialog in der Gr&ouml;&szlig;e &auml;ndert. Wird aber auch automatisch nach Abschluss der Dialoginitialisierung ausgef&uuml;hrt. intNewWidth 
+        und intNewHeight geben die neue Breite und H&ouml;he der Dialogbox zur&uuml;ck.</p>
+		</div>
 	<hr />
 	<div id="footer">
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.

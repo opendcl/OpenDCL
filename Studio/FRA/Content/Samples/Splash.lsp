@@ -1,0 +1,26 @@
+(IF (NOT *MasterDemo*)
+  (princ "\nOpenDCL sample programs.\nEnter \"SPLASH\" to run the sample.\n ")
+)
+
+(DEFUN c:splash ()
+  (or LoadRunTime (load "_OpenDclUtils.lsp") (exit)) 
+  (LoadRunTime)
+  (LoadODCLProj "splash.odcl")
+    
+  (dcl_Form_Show splash_Form1)
+  (setq *Count* 4)
+  (C:CloseSplash)
+  (princ)
+)
+
+
+(defun C:CloseSplash ()
+  (dcl_Control_SetCaption splash_Form1_Label1 (strcat "Loading..." (itoa *Count*)))
+  (setq *Count* (1- *Count*))
+  (if (/= *Count* -1)
+    (dcl_DelayedInvoke 1000 "C:CloseSplash")
+    (dcl_Form_close splash_Form1)
+  )
+  (princ)
+)
+(princ)

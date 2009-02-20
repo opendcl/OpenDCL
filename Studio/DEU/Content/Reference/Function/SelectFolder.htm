@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
 <title>SelectFolder</title>
 </head>
@@ -28,125 +28,101 @@
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="syntax">(dcl_SelectFolder
-<font color="#FF0000">Title [as
+<font color="#FF0000">strTitle [als
 <a href="../DataType/String.htm">String</a>]</font>
-            <font color="#FF0000">{DefaultDirectory [as
+            <font color="#FF0000">{strDefaultDirectory [als
 <a href="../DataType/String.htm">String</a>]}</font>
-            <font color="#FF0000">{RootFolder [as
+            <font color="#FF0000">{strRootFolder [als
 <a href="../DataType/String.htm">String</a>]}</font>
-            <font color="#FF0000">{Flags [as <a href="../DataType/BitFlag.htm">
+            <font color="#FF0000">{intFlags [als <a href="../DataType/BitFlag.htm">
 BitFlag</a>]}</font>)</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
             <td bgcolor="#CCFF99"><a href="../DataType/String.htm">String</a></td>
           </tr>
-          </table>
-		<p>This function prompts the user to select a folder. The function 
-        returns the name of the selected folder, or NIL if the dialog is 
-        cancelled. The default value for Flags is 1 if it is omitted.</p>
+      </table>
+		<p>Diese Funktion fordert den Anwender auf, ein Verzeichnis zu w&auml;hlen und gibt anschlie&szlig;end das gew&auml;hlte Verzeichnis zur&uuml;ck oder NIL, wenn der Dialog abgebrochen wird. Wird kein Wert f&uuml;r intFlags angegeben wird vorgabem&auml;&szlig;ig 1 verwendet.</p>
 	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
-            <th nowrap>Flags Value</th>
+            <th nowrap>Bitwert</th>
             <th nowrap>Bit</th>
-            <th nowrap>Meaning</th>
+            <th nowrap>Bedeutung</th>
           </tr>
           <tr>
             <td>1</td>
             <td>0</td>
-            <td>Only return file system directories. If the user selects folders 
-            that are not part of the file system, the OK button is disabled.</td>
+            <td>L&auml;sst nur Dateisystemverzeichnisse zu. W&auml;hlt der Anwender ein Verzeichnis, dass nicht zum Dateisystem geh&ouml;rt, wird die Schaltfl&auml;che OK deaktiviert.</td>
           </tr>
           <tr>
             <td>2</td>
             <td>1</td>
-            <td>Do not include network folders below the domain level in the 
-            dialog box's tree view control.</td>
+            <td>F&uuml;gt keine Netzlaufwerke unter der obersten Ebene der Baumstruktur ein.</td>
           </tr>
           <tr>
             <td>4</td>
             <td>2</td>
-            <td>Include a status area in the dialog box. The callback function 
-            can set the status text by sending messages to the dialog box. This 
-            flag is not supported when 6 is set.</td>
+            <td>F&uuml;gt einen Statusbereich in der Dialogbox ein. Die Callback-Funktion kann nun Meldungstext an die Dialogbox setzen und so einen Statustext setzen. Das wird nicht unterst&uuml;tzt, wenn das Bit 6 gesetzt ist.</td>
           </tr>
           <tr>
             <td>8</td>
             <td>3</td>
-            <td>Only return file system ancestors. An ancestor is a subfolder 
-            that is beneath the root folder in the namespace hierarchy. If the 
-            user selects an ancestor of the root folder that is not part of the 
-            file system, the OK button is disabled.</td>
+            <td>Gibt nur verwandte Ordner aus. Ein verwandter Ordner ist ein Ordner unterhalb des Stammordners des Namensraums. W&auml;hlt der Anwender einen verwandten Ordner, der nicht Bestandteil des Dateisystems ist, wird die Schaltfl&auml;che OK deaktiviert. Nicht ausgew&auml;hlt werden k&ouml;nnen beispielsweise &quot;Netzwerkumgebung&quot;, &quot;Meine Webseiten&quot; usw.). </td>
           </tr>
           <tr>
             <td>16</td>
             <td>4</td>
-            <td>Include an edit control in the browse dialog box that allows the 
-            user to type the name of an item.</td>
+            <td>F&uuml;gt ein Textfeld in den Auswahldialog ein, damit der Anwender den Namen eines Eintrags w&auml;hlen kann.</td>
           </tr>
           <tr>
             <td>32</td>
             <td>5</td>
-            <td>Not used.</td>
+            <td>Nicht verwendet. </td>
           </tr>
           <tr>
             <td>64</td>
             <td>6</td>
-            <td>Use the new user interface. Setting this flag provides the user 
-            with a larger dialog box that can be resized. The dialog box has 
-            several new capabilities, including: drag-and-drop capability within 
-            the dialog box, reordering, shortcut menus, new folders, delete, and 
-            other shortcut menu commands.</td>
+            <td>Verwendet eine neue Schnittstelle, mit der es m&ouml;glich ist, den Dialog zu vergr&ouml;&szlig;ern, Ordner per Drag&amp;Drop zu verschieben, kopieren, oder neu zu sortieren. Au&szlig;erdem k&ouml;nnen neue Ordner erstellt, bestehende umbenannt oder Verkn&uuml;pfungen darauf erstellt werden.</td>
           </tr>
           <tr>
             <td>128</td>
             <td>7</td>
-            <td>The browse dialog box can display URLs. Bits 6, 4, and 13 must 
-            also be set. If any of these bits are not set, the browser dialog 
-            box rejects URLs. Even when these bits are set, the browse dialog 
-            box displays URLs only if the folder that contains the selected item 
-            supports URLs.</td>
+            <td>Der Auswahldialog unterst&uuml;tzt die Anzeige von URL's, allerdings m&uuml;ssen die Bits 4, 6 und 13 ebenfalls gesetzt sein, andernfalls werden URL's unterdr&uuml;ckt. Und selbst wenn diese gesetzt sind, werden sie nur angezeigt, wenn der Ordner, in dem sich das anzuzeigende Element befindet, URL's unterst&uuml;tzt.</td>
           </tr>
           <tr>
             <td>256</td>
             <td>8</td>
-            <td>When combined with bit 6, adds a usage hint to the dialog box, 
-            in place of the edit box. Bit 4 overrides this bit.</td>
+            <td>In Kombination mit dem Bit 6 wird an der Stelle des Textfelds ein Hinweis zur Anwendung ausgegeben. Das Bit 4 unterdr&uuml;ckt diese Ausgabe.</td>
           </tr>
           <tr>
             <td>512</td>
             <td>9</td>
-            <td>Do not include the New Folder button in the browse dialog box.</td>
+            <td>F&uuml;gt die Schaltfl&auml;che zum Erzeugen neuer Ordner nicht in die Dialogbox ein.</td>
           </tr>
           <tr>
             <td>1024</td>
             <td>10</td>
-            <td>When the selected item is a shortcut, return the name of the 
-            shortcut itself rather than its target.</td>
+            <td>Ist das ausgew&auml;hlte Element eine Verkn&uuml;pfung, dann soll statt dem Ziel der Name der Verkn&uuml;pfung zur&uuml;ckgegeben werden.</td>
           </tr>
           <tr>
             <td>2048</td>
             <td>11</td>
-            <td>Only return computers. If the user selects anything other than a 
-            computer, the OK button is disabled.</td>
+            <td>Gibt ausschlie&szlig;lich Computernamen zur&uuml;ck. Wird stattdessen irgendwas anderes ausgew&auml;hlt, bleibt die Schaltfl&auml;che OK deaktiviert.</td>
           </tr>
           <tr>
             <td>4096</td>
             <td>12</td>
-            <td>Only allow the selection of printers. If the user selects 
-            anything other than a printer, the OK button is disabled.</td>
+            <td>L&auml;sst ausschlie&szlig;lich die Auswahl von Druckern und Plottern zu. Wird stattdessen irgendwas anderes ausgew&auml;hlt, bleibt die Schaltfl&auml;che OK deaktiviert.</td>
           </tr>
           <tr>
             <td>8192</td>
             <td>13</td>
-            <td>The browse dialog box displays files as well as folders.</td>
+            <td>Die Dialogbox zeigt sowohl Ordner als auch Dateien. </td>
           </tr>
           <tr>
             <td>16384</td>
             <td>14</td>
-            <td>The browse dialog box can display shareable resources on remote 
-            systems. This is intended for applications that want to expose 
-            remote shares on a local system. Bit 6 must also be set.</td>
+            <td>Der Auswahldialog kann freigegebene Ressourcen auf Remotsystemen anzeigen. Das ist f&uuml;r Applicationen sinnvoll, die Freigaben auf andere Rechner publuzieren wollen. Das Bit 6 muss auch gesetzt sein.</td>
           </tr>
         </table>
 	</div>

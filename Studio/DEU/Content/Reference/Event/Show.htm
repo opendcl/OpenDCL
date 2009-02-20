@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="stylesheet" href="../../WinHelp.css" type="text/css" media="screen,print">
+<link rel="StyleSheet" href="../../WinHelp.css" type="text/css" media="screen,print">
 <script type="text/javascript" src="../../Utility.js"></script>
 <title>Show</title>
 </head>
@@ -27,22 +27,20 @@
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
-<td bgcolor="#CCFF99"><code id="syntax">(<font color="brown">defun</font> c:<i>&lt;CONTROL-NAME&gt;</i>_OnShow (<font color="red"><font color="#FF0000">Showing 
-            [as <a href="../DataType/Boolean.htm">
-            Boolean</a>] </font></font>/)<br />)</code></td>
+<td bgcolor="#CCFF99"><code id="syntax">(<font color="brown">defun</font> c:<i>&lt;CONTROL-NAME&gt;</i>_OnShow (<font color="red"><font color="#FF0000">isShowing [als <a href="../DataType/Boolean.htm">
+            Boolean</a>] </font></font>/)<br />
+            )</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99">Ignored</td>
+            <td bgcolor="#CCFF99">nicht verwendet</td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Ausgelöst durch</th>
-            <td bgcolor="#CCFF99"><a href="../Form/OptionsTab.htm">Options Tab</a></td>
+            <td bgcolor="#CCFF99"><a href="../Form/OptionsTab.htm">Karteikartenreiter in den Optionen</a></td>
           </tr>
         </table>
-		<p>This event is triggered when the tab page is being shown or hidden 
-        (i.e. when the user chooses a different tab). Showing is T when this 
-        page is being shown, NIL when it is being hidden.</p>
+		<p>Dieses Ereignis wird ausgel&ouml;st, wenn der Dialog versteckt oder wieder angezeigt wird (z.B. wenn der Anwender eine eine Karteikarte anw&auml;hlt). Der R&uuml;ckgabewert isShowing ist T, wenn die Karteikarte angezeigt wird, ansonsten NIL.</p>
 	</div>
 	<hr />
 	<div id="footer">
