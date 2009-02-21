@@ -14,7 +14,6 @@
 
 CListBoxCtrl::CListBoxCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UINT nID, bool bCreate /*= true*/ )
 : CDialogControl( pTemplate, pPane, this )
-, mnDragSource( -1 )
 , mrcDropInsertMark( 0, 0, 0, 0 )
 {
 	if( bCreate )
@@ -128,14 +127,32 @@ bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 DROPEFFECT CListBoxCtrl::OnBeginDrag( const CPoint& point, COleDataSource& SourceData )
 {
 	DROPEFFECT dwEffect = __super::OnBeginDrag( point, SourceData );
-	int nCurSel = GetCurSel();
-	if( nCurSel < 0 )
-		return dwEffect;
-	CString sText;
-	GetText( nCurSel, sText );
-	if( sText.IsEmpty() )
-		return dwEffect;
-	CStringA sTextA( sText );
+	CString sDragText;
+	if( IsMultiSelect() )
+	{
+		int ctSel = GetSelCount();
+		if( ctSel <= 0 )
+			return dwEffect;
+		int* rnSel = new int[ctSel];
+		GetSelItems( ctSel, rnSel );
+		for( int idx = 0; idx < ctSel; ++idx )
+		{
+			CString sText;
+			GetText( rnSel[idx], sText );
+			if( !sDragText.IsEmpty() )
+				sDragText += _T('\n');
+			sDragText += sText;
+		}
+		delete[] rnSel;
+	}
+	else
+	{
+		int nCurSel = GetCurSel();
+		if( nCurSel < 0 )
+			return dwEffect;
+		GetText( nCurSel, sDragText );
+	}
+	CStringA sTextA( sDragText );
 	SIZE_T cchText = sTextA.GetLength() + 1;
 	HGLOBAL hData = GlobalAlloc( GHND, cchText );
 	if( !hData )
@@ -228,15 +245,37 @@ bool CListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 		if( point.y > ((rcItem.top + rcItem.bottom) / 2) )
 			++idxItem;
 	}
-	if( mnDragSource >= 0 && dropEffect == DROPEFFECT_MOVE )
+	if( !setnDragSource.empty() && dropEffect == DROPEFFECT_MOVE )
 	{
-		DeleteString( mnDragSource );
-		if( (UINT)mnDragSource < idxItem )
-			--idxItem;
-		mnDragSource = -1;
+		for( std::set< UINT >::const_reverse_iterator iter = setnDragSource.rbegin();
+				 iter != setnDragSource.rend();
+				 ++iter )
+		{
+			UINT nIdx = *iter;
+			DeleteString( nIdx );
+			if( nIdx < idxItem )
+				--idxItem;
+		}
+		setnDragSource.clear();
 	}
-	int idxInsert = InsertString( idxItem, CString( sTextA ) );
-	SetCurSel( idxInsert );
+	int idxInsert = idxItem;
+	CString sInsText( sTextA );
+	int nIdxToken = 0;
+	bool bFirst = true;
+	while( nIdxToken >= 0 )
+	{
+		CString sText = sInsText.Tokenize( _T("\r\n"), nIdxToken );
+		if( sText.IsEmpty() && nIdxToken < 0 )
+			break;
+		idxInsert = InsertString( idxInsert, sText );
+		if( bFirst )
+		{
+			SetCurSel( idxInsert );
+			bFirst = false;
+		}
+		SetSel( idxInsert );
+		++idxInsert;
+	}
 	return true;
 }
 
@@ -262,28 +301,54 @@ BOOL CListBoxCtrl::PreTranslateMessage(MSG* pMsg)
 
 void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {	
-	__super::OnLButtonDown(nFlags, point);
-
-	if( mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) )
+	if( !mpTemplate->GetBooleanProperty( Prop::DragnDropAllowBegin ) )
 	{
-		mnDragSource = GetCurSel();
-		if( mnDragSource >= 0 )
+		__super::OnLButtonDown( nFlags, point );
+		return;
+	}
+
+	if( IsMultiSelect() )
+	{
+		int ctSel = GetSelCount();
+		int* rnSel = new int[ctSel];
+		GetSelItems( ctSel, rnSel );
+		for( int idx = 0; idx < ctSel; ++idx )
+			setnDragSource.insert( rnSel[idx] );
+		delete[] rnSel;
+	}
+	else
+	{
+		int nCurSel = GetCurSel();
+		if( nCurSel >= 0 )
+			setnDragSource.insert( nCurSel );
+	}
+	if( setnDragSource.empty() )
+	{
+		__super::OnLButtonDown( nFlags, point );
+		return;
+	}
+
+	DWORD dwDropEffect = BeginDragDrop( point );
+	if( dwDropEffect == DROPEFFECT_NONE )
+		__super::OnLButtonDown( nFlags, point );
+	if( !setnDragSource.empty() ) //if drop was on this control, mnDragSource gets reset to -1
+	{
+		// We need to send WM_LBUTTONUP to control or else the selection rectangle 
+		// will "follow" the mouse (like when you hold the left mouse down and 
+		// scroll through a regular listbox). WM_LBUTTONUP was sent to window that 
+		// received the drag/drop, not the one that initiated it, so we simulate
+		// an WM_LBUTTONUP to the initiating window.
+		SendMessage( WM_LBUTTONUP, 0, MAKELPARAM(point.x,point.y) );	
+		if( dwDropEffect == DROPEFFECT_MOVE )
 		{
-			DWORD dwDropEffect = BeginDragDrop( point );
-			if( mnDragSource >= 0 ) //if drop was on this control, mnDragSource gets reset to -1
+			for( std::set< UINT >::const_reverse_iterator iter = setnDragSource.rbegin();
+					 iter != setnDragSource.rend();
+					 ++iter )
 			{
-				// We need to send WM_LBUTTONUP to control or else the selection rectangle 
-				// will "follow" the mouse (like when you hold the left mouse down and 
-				// scroll through a regular listbox). WM_LBUTTONUP was sent to window that 
-				// received the drag/drop, not the one that initiated it, so we simulate
-				// an WM_LBUTTONUP to the initiating window.
-				if( dwDropEffect != DROPEFFECT_NONE )
-					SendMessage( WM_LBUTTONUP, 0, MAKELPARAM(point.x,point.y) );	
-				if( dwDropEffect == DROPEFFECT_MOVE )
-					DeleteString( mnDragSource );
-				mnDragSource = -1;
+				DeleteString( *iter );
 			}
 		}
+		setnDragSource.clear();
 	}
 }
 

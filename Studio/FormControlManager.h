@@ -16,6 +16,7 @@ class CFormControlManager : public CControlManager, public COleDataSource, publi
 	CControlDropSource mDropSource;
 	CControlDropTarget mDropTarget;
 	CPoint mptDragStart;
+	bool mbDragInitiated;
 	bool mbSnapTracker;
 	CControlManager* mpResizeTarget;
 

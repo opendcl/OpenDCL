@@ -38,6 +38,7 @@ CFormControlManager::CFormControlManager( CStudioDialogObject* pDlgObject )
 , mDropSource( this )
 , mDropTarget( this )
 , mptDragStart( -1, -1 )
+, mbDragInitiated( false )
 , mbSnapTracker( false )
 , mpResizeTarget( NULL )
 {
@@ -153,7 +154,7 @@ void CFormControlManager::OnLButtonDown(UINT nFlags, CPoint point)
 		CDialogControl* pDlgControl = mpDlgObject->GetControlAtPoint( ptScreen );
 		if( pDlgControl )
 		{
-			if( ((nFlags & MK_CONTROL) == 0) || mpDlgObject->IsOnlyFormActive() )
+			if( mpDlgObject->IsOnlyFormActive() )
 				theStudioWorkspace.ActivateDclControl( NULL );
 			theStudioWorkspace.ActivateDclControl( pDlgControl->GetTemplate() );
 		}
@@ -185,8 +186,20 @@ void CFormControlManager::OnLButtonUp(UINT nFlags, CPoint point)
 	if( mptDragStart.x != -1 && mptDragStart.y != -1 )
 	{
 		mptDragStart.SetPoint( -1, -1 );
-		//mpDlgObject->OnUpdateZOrder();
+		if( !mbDragInitiated )
+		{
+			CPoint ptScreen( point );
+			ClientToScreen( &ptScreen );
+			CDialogControl* pDlgControl = mpDlgObject->GetControlAtPoint( ptScreen );
+			if( pDlgControl )
+			{
+				theStudioWorkspace.ActivateDclControl( NULL );
+				theStudioWorkspace.ActivateDclControl( pDlgControl->GetTemplate() );
+			}
+		}
 	}
+	if( mbDragInitiated )
+		mbDragInitiated = false;
 	__super::OnLButtonUp(nFlags, point);
 }
 
@@ -221,6 +234,7 @@ void CFormControlManager::OnMouseMove(UINT nFlags, CPoint point)
 					mbUndoGroupActive = true;
 				}
 				SetCapture();
+				mbDragInitiated = true;
 			}
 		}
 		if( bDragging )

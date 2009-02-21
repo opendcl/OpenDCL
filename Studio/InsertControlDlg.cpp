@@ -72,8 +72,8 @@ BOOL CInsertControlDlg::OnInitDialog()
 	if( FAILED( hResult ) )
 	{
 		CString sErr;
-		sErr.Format( L"%x", hResult );
-		MessageBox( sErr, L"Failed!" );
+		sErr.Format( _T("Failed to create Component Categories Manager!\r\nHRESULT: %X"), hResult );
+		MessageBox( sErr, _T("Error") );
 		EndDialog( IDCANCEL );
 	  return( TRUE );
 	}
@@ -81,8 +81,6 @@ BOOL CInsertControlDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	catid = CATID_Control;
-	//catid = CATID_Insertable;
-	//catid = CATID_Programmable;
 	m_aImplementedCategories.Add( catid );
 
 	m_lbControls.ModifyStyle( 0, WS_HSCROLL );
@@ -242,7 +240,7 @@ void CInsertControlDlg::RefreshControlList()
 
 void CInsertControlDlg::OnControlsDblClk()
 {
-	OnControlsSelChange();
+	OnOK();
 }
 
 
@@ -252,11 +250,6 @@ void CInsertControlDlg::OnControlsSelChange()
    POSITION posControl;
    CString strServerPath;
    CLSID clsid;
-   CDC dc;
-   CFont* pFont;
-   LPTSTR pszServerPath;
-   CRect rect;
-   CFont* pOldFont;
 
    iItem = m_lbControls.GetCurSel();
    if( iItem != LB_ERR )
@@ -268,21 +261,7 @@ void CInsertControlDlg::OnControlsSelChange()
 	  BSTR str;
 	  StringFromCLSID(clsid, &str);
 	  CString sId = CString(str);
-	  //::SysFreeString(str);
-
-	  dc.CreateCompatibleDC( NULL );
-
-	  pFont = m_staticServerPath.GetFont();
-	  pOldFont = dc.SelectObject( pFont );
-
-	  // Workaround for SHLWAPI bug (in weird cases, PathCompactPath actually
-	  // expands the pathname)
-	  pszServerPath = strServerPath.GetBuffer( MAX_PATH+2 );
-	  m_staticServerPath.GetWindowRect( &rect );
-	  //PathCompactPath( dc, pszServerPath, rect.Width() );
-	  strServerPath.ReleaseBuffer();
-
-	  dc.SelectObject( pOldFont );
+	  ::SysFreeString(str);
 
 	  m_staticServerPath.SetWindowText( strServerPath );
 	  m_FileName = strServerPath;

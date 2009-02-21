@@ -5,6 +5,7 @@
 
 #include "DialogControl.h"
 #include "AcadColorService.h"
+#include <set>
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -13,7 +14,7 @@
 class CListBoxCtrl : public CListBox, public CDialogControl
 {
 	CAcadColorService mColorService;
-	int mnDragSource;
+	std::set< UINT > setnDragSource;
 	CRect mrcDropInsertMark;
 
 // Construction
@@ -34,6 +35,8 @@ public:
 	virtual DROPEFFECT OnDragOver( const CPoint& point, COleDataObject* pSourceData, DWORD dwKeyState );
 	virtual void OnDragLeave();
 	virtual bool OnDrop( const CPoint& point, COleDataObject* pSourceData, DROPEFFECT dropEffect );
+
+	bool IsMultiSelect() const { return ((GetStyle() & (LBS_EXTENDEDSEL | LBS_MULTIPLESEL)) != 0); }
 
 protected:
 	DECLARE_MESSAGE_MAP()
