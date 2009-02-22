@@ -215,5 +215,7 @@ bool CPropertyChangeUA::Undo()
 	CArchive Value( &mValue, CArchive::load, 256 );
 	pProp->Serialize( Value );
 	CStudioDialogControl::UpdateProperty( mpDclControl, mId );
+	if( mpDclControl == theStudioWorkspace.GetActiveDclControl() )
+		theStudioWorkspace.ActivateDclControl( mpDclControl );
 	return true;
 }

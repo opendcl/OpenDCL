@@ -17,7 +17,57 @@
 	</table>
 	<hr />
 	<div id="content">
-		<p>CONTENT</p>
+		<p>Writing AutoLISP code is typically done in an IDE such as the Visual 
+        LISP IDE included with AutoCAD, and this is where most of the work takes 
+        place when implementing an OpenDCL application's AutoLISP functions. 
+        OpenDCL Studio includes several tools to help programmers with the 
+        AutoLISP component of an OpenDCL application.</p>
+		<p>The OpenDCL Studio control browser provides a context sensitive 
+        reference of all supported properties, methods, and events for a 
+        specific control. In addition, the control browser makes it easy to copy 
+        function signatures to the Windows clipboard for pasting directly into 
+        AutoLISP code. The control browser's context sensitive function 
+        signatures include the correct control handle for the selected control, 
+        thus minimizing typographical errors.</p>
+		<p>The control browser can be opened by double-clicking on a control in 
+        the OpenDCL Studio workspace. Selecting a property, method, or event 
+        from the list displays syntax and reference documentation in the control 
+        browser's main frame. Pressing the Copy-To-Clipboard button (<img border="0" src="Clipboard.png" width="17" height="17">) 
+        copies the function signature to the Windows clipboard.</p>
+		<p>Handling events is the primary task of an OpenDCL application's 
+        AutoLISP code, so the process of implementing event handlers has been 
+        streamlined as much as possible. In OpenDCL Studio, the property pane's 
+        events tab displays the selected event handler function name in a text 
+        box below the event list for the selected control. It also displays a 
+        complete event handler skeleton function that opens a message box 
+        warning that the event handler has not yet been completed. Either the 
+        function name or the event handler skeleton function can be selected for 
+        copying and pasting into the application's AutoLISP code.</p>
+		<p>Specific events can be enabled by checking the toggle in front of its 
+        name in the event list. Enabling an event exposes two additional ways to 
+        incorporate the event handler skeleton function into the associated 
+        AutoLISP code. The [Clipboard Copy] button copies the event handler 
+        skeleton function to the Windows clipboard for pasting into the code. 
+        The [Add to File] button appends the event handler skeleton function 
+        directly to the project lisp file. These latter two buttons are 
+        displayed only if the &quot;Copy Events to Clipboard&quot; and &quot;Write Events to 
+        Lisp File&quot; options, respectively, are enabled in the OpenDCL Studio 
+        Tools menu.</p>
+		<h4>Style Guidelines</h4>
+		<p>Best practices for the AutoLISP code that uses an OpenDCL dialog 
+        include making event handlers global, and ensuring that the OpenDCL 
+        runtime is loaded before any OpenDCL functions are loaded. Using unique 
+        project names (ideally prefixed with a unique developer symbol) helps 
+        ensure that name collisions between multiple applications will be 
+        avoided. Following consistent control naming conventions helps with 
+        project organization and code maintenance. For example, prefixing 
+        control names with a three-character control type prefix and naming the 
+        control based on its function (&quot;btnOk&quot; for an [OK] button, for example) 
+        is a common technique used to make code more readable.</p>
+		<p>A recommended approach for a typical application is to utilize one 
+        AutoLISP file per form, with the lisp code arranged within the file so 
+        that the main function is at the top, followed by utility functions, 
+        then event handlers.</p>
 	</div>
 	<hr />
 	<div id="footer">

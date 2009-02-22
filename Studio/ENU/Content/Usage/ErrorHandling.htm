@@ -38,20 +38,21 @@
         <a href="../Reference/Event/CancelClose.htm">CancelClose</a> event can 
         be used to check input on the form and prevent the dialog from closing 
         if invalid input is found.</p>
-		<p>Following is a typical usage scenario for the CancelClose event:</p>
+		<p>Following is a typical usage scenario for the 
+        <a href="../Reference/Event/CancelClose.htm">CancelClose</a> event:</p>
 	    <pre>(defun HighlightFormErrors () <span class="codecomment">; Return T if there was an error, NIL otherwise</span>
   (if (CheckForFormInputErrors) <span class="codecomment">; Call function that does the checking</span>
     (progn
       <span class="codecomment">;; Here you can highlight the error, display a message box with more information,</span>
       <span class="codecomment">;; or do something to fix the error (then return NIL if the error is fixed!)</span>
-      (dcl_MessageBox &quot;Form contains invalid input!&quot; &quot;Error&quot; 2 4)
+      (<a href="../Reference/Function/MessageBox.htm">dcl_MessageBox</a> &quot;Form contains invalid input!&quot; &quot;Error&quot; 2 4)
       T <span class="codecomment">; Signal error found and not resolved by returning T</span>
     )
   )
   <span class="codecomment">; Note that this function returns NIL if no errors were found</span>
 )
 
-(defun c:Project1_Form1_OnCancelClose( Canceling /)
+(defun <a href="../Reference/Event/CancelClose.htm">c:Project1_Form1_OnCancelClose</a>( Canceling /)
   <span class="codecomment">;; Return T to prevent form closing if not canceling, and unresolved errors found</span>
   (and (/= 1 Canceling) (HighlightFormErrors)) <span class="codecomment">; Always allow form to close when canceling</span>
 )</pre>

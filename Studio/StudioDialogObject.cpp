@@ -346,10 +346,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 		{
 			mpControlPane->AddControl( pDlgControl );
 			if( bActivateNow )
-			{
-				theStudioWorkspace.ActivateDclControl( NULL );
-				theStudioWorkspace.ActivateDclControl( pDclControl );
-			}
+				theStudioWorkspace.ActivateDclControl( pDclControl, true );
 			CControlManager* pManager = pDlgControl->GetControlManager();
 			if( pManager )
 				pManager->Invalidate();
@@ -475,23 +472,6 @@ void CStudioDialogObject::SelectControl( TDclControlPtr pDclControl )
 
 void CStudioDialogObject::ShiftSelection( long lHoriz, long lVert )
 {
-	const TDclControlList& Controls = mpSourceForm->GetControlList();
-	for( TDclControlList::const_iterator iter = Controls.begin(); iter != Controls.end(); ++iter )
-	{
-		TDclControlPtr pDclControl = *iter;
-		CDialogControl* pDlgControl = pDclControl->GetControlInstance();
-		if( !pDlgControl )
-			continue;
-		if( pDlgControl == this )
-			continue; //ignore the form
-		CControlManager* pManager = pDlgControl->GetControlManager();
-		if( !pManager )
-			continue;
-		if( pManager->IsSelected() )
-		{
-		}
-	}
-
 	TDclControlList SelectedControls;
 	GetSelectedControls( SelectedControls );
 	if( SelectedControls.empty() )
@@ -512,9 +492,9 @@ void CStudioDialogObject::ShiftSelection( long lHoriz, long lVert )
 		CStudioDialogControl::UpdateProperty( pDclControl, Prop::Top );
 		CStudioDialogControl::UpdateProperty( pDclControl, Prop::Width );
 		CStudioDialogControl::UpdateProperty( pDclControl, Prop::Height );
+		theStudioWorkspace.ActivateDclControl( pDclControl );
 		//pManager->RedrawWindow( NULL, NULL, RDW_FRAME | RDW_ERASE | RDW_INVALIDATE | RDW_UPDATENOW );
 	}
-	theStudioWorkspace.ActivateDlgObject( this );
 }
 
 bool CStudioDialogObject::HasSelection() const
@@ -1107,8 +1087,7 @@ void CStudioDialogObject::OnUpdateEditObjectbrowser(CCmdUI *pCmdUI)
 void CStudioDialogObject::OnContextMenu(CWnd* pWnd, CPoint point) 
 {
 	CDialogControl* pDlgControl = GetControlAtPoint( point );
-	theStudioWorkspace.ActivateDclControl( NULL );
-	theStudioWorkspace.ActivateDclControl( pDlgControl? pDlgControl->GetTemplate() : GetTemplate() );
+	theStudioWorkspace.ActivateDclControl( pDlgControl? pDlgControl->GetTemplate() : GetTemplate(), true );
 	CMenu menu;
 	if( menu.LoadMenu( IDR_MAINFRAME ) )
 	{

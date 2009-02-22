@@ -1242,7 +1242,6 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 		}
 	}
 	bool bNoPics = (pDclControl->GetOwnerProject()->GetPictureMap().empty());
-	//SetRedraw( FALSE );
 	for( TPropertyMap::const_iterator iterPropName = mProperties.begin();
 			 iterPropName != mProperties.end();
 			 ++iterPropName )
@@ -1344,8 +1343,6 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 		SetItemText( idxProp, 1, sPropVal );
 	}
 	RecalcLayout();
-	//SetRedraw( TRUE );
-	//RedrawWindow( NULL, NULL, RDW_FRAME | RDW_INVALIDATE );
 }
 
 void CPropertyGridCtrl::HideEditControls()
@@ -1363,7 +1360,7 @@ void CPropertyGridCtrl::RecalcLayout()
 		nWidth = 100;
 	SetColumnWidth( 1, nWidth / 2 );
 	SetColumnWidth( 0, nWidth / 2 );
-	RedrawWindow();
+	Invalidate();
 }
 
 int CPropertyGridCtrl::GetCurItem() const
@@ -1893,7 +1890,7 @@ void CPropertyGridCtrl::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 			nWidth = 100;
 		SetColumnWidth( 0, nWidth / 2 );
 		SetColumnWidth( 1, nWidth / 2 );
-		RedrawWindow();
+		Invalidate();
 	}
 	__super::OnWindowPosChanging(lpwndpos);
 }

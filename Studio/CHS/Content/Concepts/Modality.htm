@@ -40,12 +40,13 @@
         accordingly. For example, if the application must read some 
         initialization settings from the registry, it likely needs to do that 
         only when the modeless dialog is initially activated. If such 
-        initialization is performed in the dialog's OnInitialize event, it will 
+        initialization is performed in the dialog's 
+        <a href="../Reference/Event/Initialize.htm">OnInitialize</a> event, it will 
         only get executed once when the dialog is first activated. If the 
         application needs to determine at runtime whether the dialog is already 
         active it can use an expression like the following:</p>
 	    <blockquote>
-          <pre>(and MyProject_MyForm (dcl_Form_IsActive MyProject_MyForm))</pre>
+          <pre>(and MyProject_MyForm (<a href="../Reference/Method/Form/IsActive.htm">dcl_Form_IsActive</a> MyProject_MyForm))</pre>
         </blockquote>
         <p>In addition to programming startup code to act appropriately when 
         more than one drawing is opened, modeless dialogs must also behave 
@@ -56,7 +57,19 @@
         define event handlers for the
         <a href="../Reference/Event/DocActivated.htm">OnDocActivated</a> and
         <a href="../Reference/Event/EnteringNoDocState.htm">OnEnteringNoDocState</a> 
-        events to update the controls as the document state changes.</div>
+        events to update the controls as the document state changes.<p>Modeless 
+        dialog event handlers are normally invoked in the AutoCAD application 
+        context instead of the document context. AutoLISP code running in the 
+        application context cannot call document-dependent functions like the 
+        (command) function. To deal with this problem, the control's '<a href="../Reference/Property/EventInvoke.htm">Event 
+        Invoke</a>' property may be used to trigger the event handler 
+        asynchronously in the document context, thus allowing calls to (command) 
+        to succeed. Alternatively, the event handler may be executed 
+        synchronously, but instead of calling document-dependent functions 
+        within the handler function, it can simply trigger a new command to 
+        execute in the document context via the
+        <a href="../Reference/Function/SendString.htm">(dcl_SendString)</a> 
+        function.</div>
 	<hr />
 	<div id="footer">
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.

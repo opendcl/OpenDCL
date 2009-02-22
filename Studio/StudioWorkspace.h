@@ -61,7 +61,7 @@ public:
 	void ActivateProject( TStudioProjectPtr pProject, CDocument* pDoc );
 	void ActivateDlgObject( CStudioDialogObject* pDlgObject );
 	void DeactivateDlgObject( CStudioDialogObject* pDlgObject );
-	void ActivateDclControl( TDclControlPtr pDclControl );
+	void ActivateDclControl( TDclControlPtr pDclControl, bool bDeactivateCurrent = false );
 	CStudioDialogObject* GetActiveDlgObject() const { return mpActiveDlgObject; }
 	TDclControlPtr GetActiveDclControl() const { return mpActiveDclControl; }
 };

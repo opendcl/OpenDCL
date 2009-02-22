@@ -192,11 +192,14 @@ void CStudioWorkspace::DeactivateDlgObject( CStudioDialogObject* pDlgObject )
 	SetActiveFormView( NULL );
 }
 
-void CStudioWorkspace::ActivateDclControl( TDclControlPtr pDclControl )
+void CStudioWorkspace::ActivateDclControl( TDclControlPtr pDclControl, bool bDeactivateCurrent /*= false*/ )
 {
-	TraceFmt( _T("> CStudioWorkspace::ActivateDclControl(%s [%p])\r\n"),
+	TraceFmt( _T("> CStudioWorkspace::ActivateDclControl(%s [%p], %s)\r\n"),
 						(LPCTSTR)(pDclControl? pDclControl->GetKeyPath() : NULL),
-						(const CDclControlObject*)pDclControl );
+						(const CDclControlObject*)pDclControl,
+						bDeactivateCurrent? _T("true") : _T("false") );
+	if( pDclControl && bDeactivateCurrent )
+		ActivateDclControl( NULL, false );
 	if( pDclControl == mpActiveDclControl )
 	{
 		CPropertyPane* pPropertyPane = GetPropertyPane();

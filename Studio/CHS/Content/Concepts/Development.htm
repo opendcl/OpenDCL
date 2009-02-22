@@ -51,23 +51,24 @@
         called <a href="../Reference/Event/Initialize.htm">OnInitialize</a>. 
         Following is typical code for displaying a simple modal dialog:</p>
 	    <blockquote>
-          <pre>(defun MyProject_MyForm_OnInitialize (/)
-  (dcl_Control_SetCaption MyProject_MyForm_Label1 &quot;Hello World!&quot;)
-)
-(defun MyProject_MyForm_CloseButton_OnClicked (/)
-  (dcl_Form_Close MyProject_MyForm)
-)
-(defun C:MyCommand (/ Result)
+          <pre>(defun C:MyCommand (/ Result)
   (command &quot;_OPENDCL&quot;) <span class="codecomment">; Load OpenDCL Runtime</span>
-  (if (dcl_Project_Load &quot;MyProject&quot;) <span class="codecomment">; Load project data from MyProject.odcl</span>
+  (if (<a href="../Reference/Method/Project/Load.htm">dcl_Project_Load</a> &quot;MyProject&quot;) <span class="codecomment">; Load project data from MyProject.odcl</span>
     (progn
-      (setq Result (dcl_Form_Show MyProject_MyForm))
+      (setq Result (<a href="../Reference/Method/Form/Show.htm">dcl_Form_Show</a> MyProject_MyForm))
       <span class="codecomment">; Note that this code does not execute until *after* the dialog is closed!</span>
       (if (= Result 1) (DoSomething))
     )
   )
   (princ)
 )</pre>
+          <pre>(defun <a href="../Reference/Event/Initialize.htm">MyProject_MyForm_OnInitialize</a> (/)
+  (<a href="../Reference/Property/Caption.htm">dcl_Control_SetCaption</a> MyProject_MyForm_Label1 &quot;Hello World!&quot;)
+)</pre>
+          <pre>(defun <a href="../Reference/Event/Clicked.htm">MyProject_MyForm_CloseButton_OnClicked</a> (/)
+  (<a href="../Reference/Method/Form/Close.htm">dcl_Form_Close</a> MyProject_MyForm)
+)
+</pre>
         </blockquote>
         <p>As you can see, the code for displaying the dialog is very simple. 
         The work of initializing, managing, and responding to the dialog events 

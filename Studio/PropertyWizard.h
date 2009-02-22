@@ -48,6 +48,7 @@ public:
 
 public:
 	virtual INT_PTR DoModal();
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 
 protected:
 	bool Initialize(void);

@@ -201,5 +201,19 @@ END_MESSAGE_MAP()
 INT_PTR CPropertyWizard::DoModal()
 {
 	AutoUndoGroup UndoGroup( mpDclControl->GetUndoManager(), IDS_UNDO_CHANGEPROPERTIES );
-	return __super::DoModal();
+	INT_PTR nResult = __super::DoModal();
+	if( mpDclControl == theStudioWorkspace.GetActiveDclControl() )
+		theStudioWorkspace.ActivateDclControl( mpDclControl );
+	return nResult;
+}
+
+LRESULT CPropertyWizard::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	LRESULT lResult = __super::WindowProc(message, wParam, lParam);
+	if( message == WM_COMMAND && wParam == ID_APPLY_NOW )
+	{
+		if( mpDclControl == theStudioWorkspace.GetActiveDclControl() )
+			theStudioWorkspace.ActivateDclControl( mpDclControl );
+	}
+	return lResult;
 }
