@@ -75,8 +75,8 @@
 			<param name="Name" value="Software-Verteilung">
 			<param name="Local" value="Advanced\Deployment.htm">
 			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Tips and Techniques">
+                <LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Tipps und Technicken">
 			<param name="Local" value="Advanced\Tips.htm">
 			</OBJECT>
 	</UL>

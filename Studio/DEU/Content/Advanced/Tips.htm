@@ -1,0 +1,93 @@
+<html>
+<head>
+<link rel="stylesheet" href="../WinHelp.css" type="text/css" media="screen,print">
+<script type="text/javascript" src="../../../Utility.js"></script>
+<title>Tipps und Techniken</title>
+</head>
+<body>
+	<table width="100%">
+		<tr>
+			<td nowrap>
+				<div id="title">Tipps und Techniken </div>
+			</td>
+			<td align="right" valign="top">
+				<div id="hdrlink">&nbsp;</div>
+			</td>
+		</tr>
+	</table>
+	<hr />
+	<div id="content">
+		<h4>Dialog and Control Appearance</h4>
+		<p>Many controls support background and foreground colors. Setting the 
+        background color to to -24 (Transparent) causes the control to appear 
+        transparent. Setting a foreground color in some cases depends on the '<a href="../Reference/Property/UseVisualStyle.htm">Use 
+        Visual Style</a>' property. When controls use a visual style, the style 
+        may override the explicit foreground color. If color control is 
+        important, disable the use of the visual style. Note that visual styles 
+        are available only in Windows XP and later, and only if visual styles 
+        are enabled in Windows settings.</p>
+		<p>Graphic buttons and picture box controls draw a transparent image by 
+        masking out pixels with the gray color value RGB 192, 192, 192. Any 
+        pixels with that color will be masked out when the image is painted.</p>
+		<p>A control's font setting includes the usual settings for font face, 
+        size, and style, however in OpenDCL there is an additional property that 
+        determines how the font size is calculated at runtime. The default 
+        setting for this property is &quot;Font Size in Pixels&quot;. Using the 
+        alternative &quot;Font Size Scaled to Monitor&quot; causes font size calculations 
+        to be scaled up or down depending on the size of the display. This 
+        alternative size algorithm must be used with caution, as it can result 
+        in controls too small or too large for the text inside.</p>
+		<h4>Modifying Properties at Runtime</h4>
+		<p>Modifying control and form properties at runtime is a powerful 
+        capability that enables OpenDCL applications to literally change their 
+        user interface dynamically at runtime. Controls can be enabled and 
+        disabled, or even hidden and shown, depending on changes in dialog or 
+        application state. This capability even allows distinctly different 
+        controls to occupy the same space on a form, allowing runtime code to 
+        alternatively show and hide them so that one or the other is visible at 
+        a given time.</p>
+		<p>Most form and control properties are stored in the project data. Such 
+        property values persist between invocations of the same form. This is 
+        important to remember, because in some cases the previous dialog state 
+        should be reset between invocations. In such cases, the project data 
+        could be reloaded from the saved project file, or the persisted 
+        properties can be reset directly to their initial values. For example, 
+        code that populates a list box during
+        <a href="../Reference/Event/Initialize.htm">OnInitialize</a> must 
+        consider that it may already have been initialized once before, either 
+        by checking first, or by simply clearing it every time before 
+        repopulating it.</p>
+		<p>In some cases, it may be useful to write AutoLISP code to automate a 
+        series of changes to an existing OpenDCL project, then save the changes 
+        back to a file. For example, the following code opens an OpenDCL 
+        project, iterates through every control on every form, and sets the font 
+        scaling method for each one (note that font scaling is controlled by the 
+        sign of the '<a href="../Reference/Property/FontSize.htm">FontSize</a>' 
+        property), then saves the modified project data to a new file.</p>
+	    <blockquote>
+          <pre>(defun SetOdclFontSizeUnscaled (odclfile password newodclpath / project props fontsize)
+  (setq project (<a href="../Reference/Method/Project/Load.htm">dcl_Project_Load</a> odclfile))
+  (if (not project) (exit))
+  (foreach
+    form (<a href="../Reference/Method/Project/GetForms.htm">dcl_Project_GetForms</a> project)
+    (foreach
+      control (<a href="../Reference/Method/Form/GetControls.htm">dcl_Form_GetControls</a> form)
+      (progn (setq props (<a href="../Reference/Method/Control/GetProperties.htm">dcl_Control_GetProperties</a> control))
+        (if (member &quot;FontSize&quot; props)
+          (progn (setq fontsize (<a href="../Reference/Method/Control/GetProperty.htm">dcl_Control_GetProperty</a> control &quot;FontSize&quot;))
+            (if (&gt; fontsize 0)
+              (<a href="../Reference/Method/Control/SetProperty.htm">dcl_Control_SetProperty</a> control &quot;FontSize&quot; (- 0 fontsize))))))))
+  (<a href="../Reference/Method/Project/SaveAs.htm">dcl_Project_SaveAs</a> project newodclpath password)
+)</pre>
+        </blockquote>
+	</div>
+	<hr />
+	<div id="footer">
+		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.
+		Alle Rechte vorbehalten.</p>
+		<p>OpenDCL ist ein Markenzeichen des <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.</p>
+		<p>AutoCAD und AutoLISP sind eingetragene Markenzeichen der <a href="http://www.autodesk.com" target="_blank">Autodesk, Inc.</a></p>
+		<p>Windows ist ein eingetragenes Markenzeichen der <a href="http://www.microsoft.com" target="_blank">Microsoft Corporation</a> in den USA und anderen Staaten.</p>
+	</div>
+</body>
+</html>

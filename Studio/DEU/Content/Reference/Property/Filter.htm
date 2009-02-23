@@ -47,21 +47,15 @@
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(setprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="setprop">(dcl_Control_SetFilter <i>
             <a href="../DataType/Control.htm">&lt;CONTROL&gt;</a></i>
-            <font color="#FF0000">NewValue [als <a href="../DataType/String.htm">String</a>]</font>)</code></td>
+            <font color="#FF0000">strNewValue [als <a href="../DataType/String.htm">String</a>]</font>)</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Anwendbar auf</th>
             <td bgcolor="#CCFF99"><a href="../Control/FileExplorer.htm">Datei-Explorer</a></td>
           </tr>
         </table>
-		<p>The filter property is used to initialize the list of file types 
-        displayed in the file type combo box. The filter string consists of 
-        pairs of strings, where the first string is the displayed file type name 
-        and the second string is a semicolon delimited set of wildcards for 
-        filtering files of the desired type. The strings are delimited by a 
-        vertical bar character as follows:</p>
-		<p><samp>&quot;<font color="#008080">Type 1 Files</font>|<font color="#000080">*.ft1;*.abc</font>|<font color="#008080">Type 
-        2 Files</font>|<font color="#000080">*.ft2</font>|&quot;</samp></p>
+		<p>Diese Eigenschaft beinhaltet die Liste der Dateierweiterungen, die in der Auswahlliste Dateityp angezeigt werden. Der Filter ist eine Zeichenkette, die aus Paaren zusammengesetzt ist, die sich ihrerseits durch einen senkrechten Strich &quot;|&quot; voneinander abgrenzen lassen. Der linke Teil des Paares ist die Bezeichnung des Dateifilters und der rechte Teil ist der Dateifilter, bestehend aus Buchstaben und Platzhaltern der gew&uuml;nschten Dateierweiterung, die die auszufilternden Dateien erf&uuml;llen m&uuml;ssen. Mehrere verschiedene Dateierweiterungen innerhalb eines Filters werden durch einen Semikolon voneinander abgegrenzt, zum Beispiel: </p>
+		<p><samp>&quot;<font color="#008080">Dateityp 1 </font>|<font color="#000080">*.dt1;*.abc</font>|<font color="#008080">Dateityp 2</font>|<font color="#000080">*.dt2</font>|&quot;</samp></p>
 	</div>
 	<hr />
 	<div id="footer">

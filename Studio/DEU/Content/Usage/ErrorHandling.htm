@@ -21,20 +21,20 @@
 		<h4>Fehlerbehandlung von Nutzereingaben </h4>
 		<p>Ein optimal designtes und gut durchdachtes Benutzerinterface sollte den Endanwender weitestgehend von fehlerhaften Eingaben abhalten. Mit OpenDCL k&ouml;nnen Sie zur Laufzeit Steuerelemente dynamisch deaktivieren (oder verstecken). Auf diesem Wege ist es m&ouml;glich, Abh&auml;ngigkeiten der Steuerelemente untereinander zu visualisieren und so zu verdeutlichen, dass nur g&uuml;ltige Nutzereingaben zul&auml;ssig sind. </p>
 		<p>Die Behandlung von Nutzereingaben wird in OpenDCL &uuml;ber Ereignisse (Events) der jeweiligen Steuerelemente oder der Dialogbox selbst realisiert. Einige Steuerelemente, wie das Textfeld, unterst&uuml;tzen Eingabefilter, um fehlerhafte Eingaben von vornherein zu umgehen. Steuerelemente wie die Auswahlliste schr&auml;nken die Nutzereingabe auf wenige, g&uuml;ltige Werte ein. Bei einigen Dialogen steht das Ereignis <a href="../Reference/Event/CancelClose.htm">CancelClose</a> zur Verf&uuml;gung, mit dem es m&ouml;glich ist, zun&auml;chst die Nutzereingaben zu validieren und gegebenenfalls das Schlie&szlig;en des Dialogs zu verhindern. </p>
-		<p>Das nachfolgende Beispiel zeigt ein typisches Szenario f&uuml;r das Ereignis CancelClose:</p>
+		<p>Das nachfolgende Beispiel zeigt ein typisches Szenario f&uuml;r das Ereignis <a href="../Reference/Event/CancelClose.htm">CancelClose</a>:</p>
 		<pre>(defun HighlightFormErrors () <span class="codecomment">; T zur&uuml;ckgeben, wenn ein Fehler auftrat, ansonsten NIL</span>
   (if (CheckForFormInputErrors) <span class="codecomment">; Funktion aufrufen, die die Wertepr&uuml;fung &uuml;bernimmt</span>
     (progn
       <span class="codecomment">;; Hier kann der Fehler angezeigt werden, z.B. durch einen Hinweistext, wie der Fehler behoben werden kann,</span>
       <span class="codecomment">;; (anschlie&szlig;end NIL zur&uuml;ckgeben, wenn der Fehler beseitigt wurde!)</span>
-      (dcl_MessageBox &quot;Dialog enth&auml;lt ung&uuml;ltige Eingaben!&quot; &quot;Fehler&quot; 2 4)
+      (<a href="../Reference/Function/MessageBox.htm">dcl_MessageBox</a> &quot;Dialog enth&auml;lt ung&uuml;ltige Eingaben!&quot; &quot;Fehler&quot; 2 4)
       T <span class="codecomment">; Mit T wird angezeigt, dass ein Fehler gefunden und nicht behoben wurde</span>
     )
   )
   <span class="codecomment">; Diese Funktion gibt NIL zur&uuml;ck, wenn keine Fehler gefunden wurden</span>
 )
 
-(defun c:Project1_Form1_OnCancelClose( intESCWasPressed /)
+(defun <a href="../Reference/Event/CancelClose.htm">c:Project1_Form1_OnCancelClose</a>( intESCWasPressed /)
   <span class="codecomment">;; T zur&uuml;ckgeben, um zu vermeiden, dass der Dialog geschlossen wird, </span>
   <span class="codecomment">;;   sofern nicht Abbrechen gedr&uuml;ckt wurde und noch immer ungel&ouml;ste Fehler im Dialog zu finden sind.</span>
   (and (/= intESCWasPressed 1) (HighlightFormErrors)) <span class="codecomment">; Das Schlie&szlig;en des Dialogs durch Abbruch sollte immmer m&ouml;glich sein</span>

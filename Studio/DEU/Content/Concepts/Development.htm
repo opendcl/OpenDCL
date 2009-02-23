@@ -27,46 +27,49 @@
 		<p>Sobald das Projekt geladen ist, kann der gew&uuml;nschte Dialog mit der Methode <a href="../Reference/Method/Form/Show.htm">(dcl_Form_Show)</a> auf dem Bildschirm angezeigt werden. Mit der Anzeige des Dialogs auf dem Bildschirm &uuml;bernehmen die AutoLISP Ereignisfunktionen die Kontrolle &uuml;ber den Dialog, bis dieser geschlossen wird. Die Initialisierung des Dialogs wird in der Ereignisfunktion <a href="../Reference/Event/Initialize.htm">OnInitialize</a> vorgenommen. 
     Der folgende Code-Ausschnitt zeigt einen typischen Programmablauf f&uuml;r die Anzeige eines einfachen modalen Dialogs:</p>
 		<blockquote>
-          <pre>
-(defun c:MyProject_MyForm_OnInitialize (/)
-  (dcl_Control_SetCaption MyProject_MyForm_Label1 &quot;Hello World!&quot;)
-)
-(defun c:MyProject_MyForm_CloseButton_OnClicked (/)
-  (dcl_Form_Close MyProject_MyForm)
-)
-(defun c:MyCommand (/ Result)
+          <pre>(defun c:MyCommand (/ Result c:MyProject_MyForm_OnInitialize MyProject_MyForm_CloseButton_OnClicked)
   (command &quot;_OPENDCL&quot;) <span class="codecomment">; Load OpenDCL Runtime</span>
-  (if (dcl_Project_Load &quot;MyProject&quot;) <span class="codecomment">; Load project data from MyProject.odcl</span>
+
+  (defun <a href="../Reference/Event/Initialize.htm">c:MyProject_MyForm_OnInitialize</a> (/)
+    (<a href="../Reference/Property/Caption.htm">dcl_Control_SetCaption</a> MyProject_MyForm_Label1 &quot;Hello World!&quot;)
+  )<span class="codecomment">; c:MyProject_MyForm_OnInitialize</span>
+
+  (defun <a href="../Reference/Event/Clicked.htm">c:MyProject_MyForm_CloseButton_OnClicked</a> (/)
+    (<a href="../Reference/Method/Form/Close.htm">dcl_Form_Close</a> MyProject_MyForm)
+  )<span class="codecomment">; c:MyProject_MyForm_CloseButton_OnClicked</span>
+
+
+  (if (<a href="../Reference/Method/Project/Load.htm">dcl_Project_Load</a> &quot;MyProject&quot;) <span class="codecomment">; Load project data from MyProject.odcl</span>
     (progn
-      (setq Result (dcl_Form_Show MyProject_MyForm))
+      (setq Result (<a href="../Reference/Method/Form/Show.htm">dcl_Form_Show</a> MyProject_MyForm))
       <span class="codecomment">; Note that this code does not execute until *after* the dialog is closed!</span>
       (if (= Result 1) (DoSomething))
     )
-  )
+  )<span class="codecomment">; if</span>
   (princ)
-)</pre>
-        </blockquote>
+)<span class="codecomment">; c:MyCommand</span></pre>
+  </blockquote>
     <p>Wie Sie sehen k&ouml;nnen, der Programmablauf zum Anzeigen von Dialogen ist sehr einfach. Die gesamte Arbeit des Initialisierens, Verwaltens und Steuern von Dialogereignissen wird &uuml;ber separate Ereignisfunktionen realisiert, die zur Laufzeit des Dialogs ausgef&uuml;hrt werden. Der Dialog wird geschlossen, wenn eine der Ereignisfunktionen die methode <a href="../Reference/Method/Form/Close.htm">(dcl_Form_Close)</a> aufruft. Beachten Sie, dass der Funktion <a href="../Reference/Method/Form/Close.htm">(dcl_Form_Close)</a> 
         optional ein Argument mit dem finalen Dialogstatus mitgegeben werden kann, der als R&uuml;ckgabewert der Methode <a href="../Reference/Method/Form/Show.htm">
         (dcl_Form_Show)</a> &uuml;bergeben wird. Dieser Statuscode kann dazu dienen, dass etwas Bestimmtes passieren solle, sobald der Dialog geschlossen wurde. 
     <p>Der folgende Code-Ausschnitt zeigt einen typischen Programmablauf f&uuml;r das kurzfristige Ausblenden eines einfachen modalen Dialogs zur Wahl eines Punktes oder Objektes:               
-    <blockquote><pre>(defun c:proj_form_OnInitialize ()<br>  (princ &quot;Hier wird der komplette Dialog mit Inhalt gef&uuml;llt.&quot;)<br>);  c:proj_form_OnInitialize
+    <blockquote><pre>(defun <a href="../Reference/Event/Initialize.htm">c:proj_form_OnInitialize</a> ()<br>  (princ &quot;Hier wird der komplette Dialog mit Inhalt gef&uuml;llt.&quot;)<br>);  c:proj_form_OnInitialize
 
-(defun c:proj_form_pb_accept ()
+(defun <a href="../Reference/Event/Clicked.htm">c:proj_form_pb_accept</a> ()
   (dcl_form_close proj_form 0)<br>); c:proj_form_pb_accept 
 
-(defun c:proj_form_pb_select ()
+(defun <a href="../Reference/Event/Clicked.htm">c:proj_form_pb_select</a> ()
   (dcl_form_close proj_form 1)
 ); c:proj_form_pb_select 
 
-(defun c:proj_form_pb_cancel ()
-  (dcl_form_close proj_form 2)
+(defun <a href="../Reference/Event/Clicked.htm">c:proj_form_pb_cancel</a> ()
+  (<a href="../Reference/Method/Form/Close.htm">dcl_form_close</a> proj_form 2)
 ); c:proj_form_pb_cancel 
 
 (setq isSchleife T)
 (while isSchleife
   (setq isSchleife nil) <span class="codecomment">;; um Endlosschleife bei ESC zu vermeiden</span>
-  (setq intErgebnis (dcl_form_show proj_form))
+  (setq intErgebnis (<a href="../Reference/Method/Form/Show.htm">dcl_form_show</a> proj_form))
   (cond
     ((= intErgebnis 0) (princ &quot;Hier passiert was.&quot;))
     ((= intErgebnis 1) (princ &quot;Hier wird ein Objekt oder Punkt gew&auml;hlt.&quot;) (setq isSchleife T))
@@ -74,7 +77,7 @@
   ); cond
 ); while</pre>
     </blockquote>
-        </div>
+</div>
 	<hr />
 	<div id="footer">
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.

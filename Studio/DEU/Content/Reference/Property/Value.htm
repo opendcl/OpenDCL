@@ -47,7 +47,7 @@
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(setprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="setprop">(dcl_Control_SetValue <i>
             <a href="../DataType/Control.htm">&lt;CONTROL&gt;</a></i>
-            <font color="#FF0000">NewValue [als <a href="../DataType/Long.htm">
+            <font color="#FF0000">intNewValue [als <a href="../DataType/Long.htm">
             Long</a>]</font>)</code></td>
           </tr>
           <tr>
@@ -60,48 +60,47 @@
             <a href="../Control/Slider.htm">Schieberegler</a></td>
           </tr>
         </table>
-		<p>This property represents the current value of the control. The 
-        allowable range of values varies depending on the control type.</p>
+		<p>Diese Eigenschaft bestimmt den Wert des Steuerelements. Der g&uuml;ltige Bereich der Werte ist abh&auml;ngig von den einezelnen Arten der Steuerelemente:</p>
 	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
-            <th nowrap>Control</th>
-            <th nowrap>Range</th>
-            <th nowrap>Meaning</th>
+            <th nowrap>Steuerelement</th>
+            <th nowrap>Bereich</th>
+            <th nowrap>Bedeutung</th>
           </tr>
           <tr>
             <td><a href="../Control/AngleSlider.htm">Winkelw&auml;hler</a></td>
             <td>0 - 359</td>
-            <td>Selected angle in degrees</td>
+            <td>Ausgew&auml;hlter Winkel in Altgrad </td>
           </tr>
           <tr>
             <td><a href="../Control/CheckBox.htm">Kontrollk&auml;stchen</a></td>
             <td>0 - 2</td>
-            <td>0 = Unchecked; 1 = Checked; 2 = Indeterminate</td>
+            <td>0 = deaktiviert; 1 = aktiviert; 2 = unbestimmt </td>
           </tr>
           <tr>
             <td><a href="../Control/OptionButton.htm">Optionsfeld</a></td>
             <td>0 - 1</td>
-            <td>0 = Unchecked; 1 = Checked</td>
+            <td>0 = deaktiviert; 1 = aktiviert </td>
           </tr>
           <tr>
             <td><a href="../Control/ProgressBar.htm">Verlaufsbalken</a></td>
-            <td>R(min) - R(max)</td>
-            <td>Current position of progress bar relative to range</td>
+            <td><a href="MinValue.htm">R(min)</a> - <a href="MaxValue.htm">R(max)</a></td>
+            <td>Aktuelle Position des Verlaufsbalkens in Abh&auml;nigkeit des definierten Bereichs </td>
           </tr>
           <tr>
             <td><a href="../Control/ScrollBar.htm">Scrollleiste</a></td>
-            <td>R(min) - R(max)</td>
-            <td>Current position of scroll button relative to range</td>
+            <td><a href="MinValue.htm">R(min)</a> - <a href="MaxValue.htm">R(max)</a></td>
+            <td>Aktuelle Scrollposition in Abh&auml;nigkeit des definierten Bereichs</td>
           </tr>
           <tr>
             <td><a href="../Control/SpinButton.htm">Reglerschaltfl&auml;chen</a></td>
-            <td>R(min) - R(max)</td>
-            <td>Current value of spin button</td>
+            <td><a href="MinValue.htm">R(min)</a> - <a href="MaxValue.htm">R(max)</a></td>
+            <td>Aktueller Wert  in Abh&auml;nigkeit des definierten Bereichs</td>
           </tr>
           <tr>
             <td><a href="../Control/Slider.htm">Schieberegler</a></td>
-            <td>R(min) - R(max)</td>
-            <td>Current position of slider</td>
+            <td><a href="MinValue.htm">R(min)</a> - <a href="MaxValue.htm">R(max)</a></td>
+            <td>Aktuelle Position in Abh&auml;nigkeit des definierten Bereichs</td>
           </tr>
         </table>
 	</div>

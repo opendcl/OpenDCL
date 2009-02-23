@@ -247,7 +247,7 @@ bool CListBoxCtrl::OnDrop( const CPoint& point, COleDataObject* pSourceData,
 	}
 	if( !setnDragSource.empty() && dropEffect == DROPEFFECT_MOVE )
 	{
-		for( std::set< UINT >::const_reverse_iterator iter = setnDragSource.rbegin();
+		for( std::set< UINT >::reverse_iterator iter = setnDragSource.rbegin();
 				 iter != setnDragSource.rend();
 				 ++iter )
 		{
@@ -341,7 +341,7 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		SendMessage( WM_LBUTTONUP, 0, MAKELPARAM(point.x,point.y) );	
 		if( dwDropEffect == DROPEFFECT_MOVE )
 		{
-			for( std::set< UINT >::const_reverse_iterator iter = setnDragSource.rbegin();
+			for( std::set< UINT >::reverse_iterator iter = setnDragSource.rbegin();
 					 iter != setnDragSource.rend();
 					 ++iter )
 			{

@@ -34,7 +34,7 @@
 			ziehen Sie ein Fenster auf, um die Lage und Größe des gewählten Steuerelements 
 			zu bestimmen. Die Lage und Größe eines Steuerelements können Sie nachträglich 
 			mit gedrückter linker Maustaste auf dem Steuerelement oder an seinen Kanten 
-			einstellen. Den ausgewählten Steuerelementen können Sie eine andere 
+			einstellen oder die Position mit Hilfe der Pfeiltasten Pixel f&uuml;r Pixel ver&auml;ndern. Den ausgewählten Steuerelementen können Sie eine andere 
 			Vorgabe-Schriftart zuweisen, indem Sie eine andere Schriftart aus dem entsprechenden Werkzeugkasten auswählen. Im Eigenschaftenfenster können Sie alle anderen
 			Eigenschaften der gewählten Steuerelemente ändern oder im Kontextmenü der rechten
 			Maustaste den Befehl Eigenschaften auswählen.
@@ -47,6 +47,48 @@
 			Bitte beachten Sie, dass die Anzeigereihenfolge im Editor unter Umständen nicht
 			korrekt angezeigt wird!
 	  </p>
+	  		<p>When the control selection button (<img border="0" src="Pointer.png" width="16" height="16">) 
+        is selected in the control toolbox, one or more controls can be selected 
+        for editing. Clicking on a control selects the control. If the [Ctrl] 
+        key is pressed while clicking, the control is added to the current 
+        selection; otherwise any previously selected controls are unselected. 
+        Clicking on a blank area of active form begins a drag operation that 
+        selects all controls inside or intersecting the drag rectangle.</p>
+		<p>When multiple controls are selected, property changes in the property 
+        pane are applied to all selected controls. This provides a convenient 
+        way to synchronize control properties among multiple controls. For 
+        example, left aligning multiple controls can be accomplished by 
+        selecting the controls, then entering a new value for their 'Left' 
+        property.</p>
+		<p>Changing design time control properties can be done in multiple ways. 
+        The most straightforward way to change control properties is by 
+        selecting the control, then editing the property value in the property 
+        pane. Clicking on the desired property name initiates an editor control 
+        for the property. For text or numeric property types, the edit control 
+        is a text box where new values can be typed, followed by [Enter] to 
+        apply the new value. Properties that accept an enumerated list display a 
+        dropdown combo box where a new value can be selected. List properties 
+        accept a list of values separated by vertical bar (&quot;|&quot;) characters. 
+        Boolean properties simply display a check box that can be toggled on or 
+        off. Some properties, such as the '<a href="../Reference/Property/Font.htm">Font</a>' 
+        property, open a separate dialog box for making changes.</p>
+		<p>The control properties dialog provides a user friendly interface for 
+        many properties. The control properties dialog opens when double 
+        clicking on a control in the tab / z-order pane, by selecting Properties 
+        in the control's right click context menu in the form workspace, or by 
+        clicking in the '(Wizard)' property field in the property pane. For some 
+        common control properties such as tooltips, fonts, and control alignment 
+        properties, the control properties dialog is the primary interface for 
+        making changes. For some controls such as the grid, tab control, and 
+        image combo box, the control properties dialog provides access to hidden 
+        properties that cannot be changed via the properties pane.</p>
+		<p>Creating resizable forms is an important end user feature, and this 
+        can be easily done in OpenDCL Studio. The form's '<a href="../Reference/Property/AllowResizing.htm">Allow 
+        Resizing</a>' property must be 'True' to enable form resizing. When 
+        designing a resizable form, its controls must change with the form as it 
+        is resized by the user. The properties that control the resizing 
+        behavior of controls can be changed visually in the Geometry tab of the 
+        control properties dialog.</p>
 	</div>
 	<hr />
 	<div id="footer">

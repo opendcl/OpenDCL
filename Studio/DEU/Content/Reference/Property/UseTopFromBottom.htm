@@ -34,7 +34,7 @@
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Gültigkeit</th>
-            <td bgcolor="#CCFF99">Must be 0, 1, or valid splitter ID</td>
+            <td bgcolor="#CCFF99">G&uuml;ltig sind die Werte 0, 1 oder eine g&uuml;ltige Splitter-ID</td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Get Funktion
@@ -47,7 +47,7 @@
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(setprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="setprop">(dcl_Control_SetUseTopFromBottom <i>
             <a href="../DataType/Control.htm">&lt;CONTROL&gt;</a></i>
-            <font color="#FF0000">NewValue [als <a href="../DataType/Long.htm">Long</a>]</font>)</code></td>
+            <font color="#FF0000">intNewValue [als <a href="../DataType/Long.htm">Long</a>]</font>)</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Anwendbar auf</th>
@@ -55,9 +55,9 @@
             <a href="../Control/Index.htm">Steuerelemente</a></td>
           </tr>
         </table>
-		<p>This property controls the relationship between the <a href="Top.htm">
-        Top</a>, <a href="TopFromBottom.htm">Top From Bottom</a>, and
-        <a href="Height.htm">Height</a> properties, as follows:</p>
+		<p>Diese Eigenschaft steuert das Verh&auml;ltnis zwischen den Eigenschaften<a href="Top.htm">
+        Top</a>, <a href="TopFromBottom.htm">Top From Bottom</a> und
+        <a href="Height.htm">Height</a> wie folgt: </p>
 	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
             <th nowrap>Value</th>
@@ -65,26 +65,16 @@
           </tr>
           <tr>
             <td>0</td>
-            <td>Control is positioned relative to the top edge of the parent 
-            window. <a href="TopFromBottom.htm">Top From Bottom</a> property 
-            changes when <a href="Top.htm">Top</a> is changed, or when parent 
-            window's height changes.</td>
+            <td>Das Steuerelement wird in Bezug zur oberen Kante des &uuml;bergeordneten Fensterelements positioniert. Die Eigenschaft <a href="TopFromBottom.htm">Top From Bottom</a> &auml;ndert sich, wenn sich die Eigenschaft <a href="Top.htm">Top</a> &auml;ndert oder wenn sich die H&ouml;he des &uuml;bergeordneten Fensters &auml;ndert.</td>
           </tr>
           <tr>
             <td>1</td>
-            <td>Control is positioned relative to the bottom edge of the parent 
-            window. <a href="Top.htm">Top</a> property changes when
-            <a href="TopFromBottom.htm">Top From Bottom</a> is changed, or when 
-            parent window's height changes.</td>
+            <td>Das Steuerelement wird in Bezug zur unteren Kante des &uuml;bergeordneten Fensterelements ge&auml;ndert. Die Eigenschaft <a href="Top.htm">Top</a> &auml;ndert sich, wenn sich die Eigenschaft <a href="TopFromBottom.htm">Top From Bottom</a> &auml;ndert oder wenn sich die H&ouml;he des &uuml;bergeordneten Fensters &auml;ndert.</td>
           </tr>
           <tr>
             <td>&gt; 10</td>
-            <td>Control is positioned relative to a splitter. The value 
-            represents the splitter ID. <a href="TopFromBottom.htm">Top From 
-            Bottom</a> property changes when <a href="Top.htm">Top</a> is 
-            changed, or when splitter position changes, or parent window's 
-            height 
-            changes.</td>
+            <td>Die Position des Steuerelements ist von einem Splitter abh&auml;ngig. Der Wert entspricht der Splitter-ID. Die Eigenschaft <a href="TopFromBottom.htm">Top From 
+            Bottom</a> &auml;ndert sich, wenn sich die Eigenschaft <a href="Top.htm">Top</a> &auml;ndert oder wenn der Spiltter bewegt wird oder sich die H&ouml;he des &uuml;bergeordneten Fensterobjekts &auml;ndert.</td>
           </tr>
         </table>
 	</div>

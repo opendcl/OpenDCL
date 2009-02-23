@@ -34,7 +34,7 @@
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Gültigkeit</th>
-            <td bgcolor="#CCFF99">Range is 0 - 8</td>
+            <td bgcolor="#CCFF99">G&uuml;ltige werte sind Ganzzahlen von 0 bis 8 </td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Get Funktion
@@ -45,7 +45,7 @@
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Set Funktion
 &nbsp;<button title="Copy To Clipboard" onclick="javascript:copyclip(setprop);" style="width: 22px; height: 20px"><img src="../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="setprop">(dcl_Control_SetFilterStyle <i>&lt;CONTROL&gt;</i>
-            <font color="#FF0000">NewValue [als <a href="../DataType/Integer.htm">
+            <font color="#FF0000">intNewValue [als <a href="../DataType/Integer.htm">
             Integer</a>]</font>)</code></td>
           </tr>
           <tr>
@@ -53,52 +53,49 @@
             <td bgcolor="#CCFF99"><a href="../Control/TextBox.htm">Textfeld</a></td>
           </tr>
         </table>
-		<p>This property assigns a predefined filter to the text box input. Note 
-        that a custom filter set via <a href="../Method/TextBox/SetFilter.htm">
-        TextBox_SetFilter</a> is used when the Filter Style property is set to 
-        zero (the custom filter is ignored for other predefined filter styles).</p>
-	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
+		<p>Diese Eigenschaft bestimmt den vordefinierten Filter eines Eingabefelds. Bitte beachten Sie, dass Sie einen benutzerspezifischen Filter mit der Methode <a href="../Method/TextBox/SetFilter.htm"> TextBox_SetFilter</a> nur zuweisen k&ouml;nnen, wenn der Vorgabefilterstil auf 0 gesetzt ist. Die Zuweisung benutzerspezifischer Filter werden ignoriert, wenn dem Textfeld ein anderer Vorgabefilterstil zugewiesen wurde.</p>
+		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
-            <th nowrap>Style</th>
-            <th nowrap>Description</th>
+            <th nowrap>Stil</th>
+            <th nowrap>Beschreibung</th>
           </tr>
           <tr>
             <td>0</td>
-            <td>Non-control characters (or custom filter)</td>
+            <td>Kein oder benutzerspezifischer Filter </td>
           </tr>
           <tr>
             <td>1</td>
-            <td>AutoCAD angle units only</td>
+            <td>Winkel</td>
           </tr>
           <tr>
             <td>2</td>
-            <td>Signed integers only</td>
+            <td>Ganzzahlen (ohne f&uuml;hrende Nullen) </td>
           </tr>
           <tr>
             <td>3</td>
-            <td>AutoCAD distance units only</td>
+            <td>Realzahlen</td>
           </tr>
           <tr>
             <td>4</td>
-            <td>AutoCAD symbol table names only</td>
+            <td>Symbolnamen (z.B. Layernamen) </td>
           </tr>
           <tr>
             <td>5</td>
-            <td>Upper case only</td>
+            <td>Gro&szlig;buchstaben</td>
           </tr>
           <tr>
             <td>6</td>
-            <td>Lower case only</td>
+            <td>Kleinbuchstaben</td>
           </tr>
           <tr>
             <td>7</td>
-            <td>Password (hides input text)</td>
+            <td>Passowort (verstackt den eingegebenen Text) </td>
           </tr>
           <tr>
             <td>8</td>
-            <td>All characters allowed (including [Enter])</td>
+            <td>Mehrzeiliger Text; es sind alle Zeichen einschlie&szlig;lich dem Enter zul&auml;ssig. </td>
           </tr>
-          </table>
+      </table>
 	</div>
 	<hr />
 	<div id="footer">
