@@ -75,7 +75,7 @@
 			<param name="Name" value="Software-Verteilung">
 			<param name="Local" value="Advanced\Deployment.htm">
 			</OBJECT>
-                <LI> <OBJECT type="text/sitemap">
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Tipps und Technicken">
 			<param name="Local" value="Advanced\Tips.htm">
 			</OBJECT>
@@ -327,8 +327,7 @@
 				<param name="Local" value="Reference\DataType\Project.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Control
-ö">
+				<param name="Name" value="Control">
 				<param name="Local" value="Reference\DataType\Control.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
@@ -2931,7 +2930,7 @@
 				<param name="Name" value="RightClick">
 				<param name="Local" value="Reference\Event\RightClick.htm">
 				</OBJECT>
- 			<LI> <OBJECT type="text/sitemap">
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="RightClick (Row/Column)">
 				<param name="Local" value="Reference\Event\RightClick-RowColumn.htm">
 				</OBJECT>
@@ -2939,7 +2938,7 @@
 				<param name="Name" value="RightDblClick">
 				<param name="Local" value="Reference\Event\RightDblClick.htm">
 				</OBJECT>
- 			<LI> <OBJECT type="text/sitemap">
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="RightDblClick (Row/Column)">
 				<param name="Local" value="Reference\Event\RightDblClick-RowColumn.htm">
 				</OBJECT>

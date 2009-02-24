@@ -1,6 +1,6 @@
 #title
 {
-font-size: 120%;
+font-size: 140%;
 color: #800000;
 font-weight: bold;
 margin: 5px;
@@ -23,14 +23,13 @@ text-align: left;
 #content table
 {
 left: 30pt;
-font-size: 100%;
 }
 
 #footer
 {
 background-color: #eeeeee;
 border: 1px solid #7026c6;
-font-size: 80%;
+font-size: 60%;
 text-align: left;
 margin: 20pt;
 padding: 5px 5px 5px 5px;
@@ -45,7 +44,6 @@ margin-bottom: 2pt;
 body
 {
 font-family: Arial, Sans-Serif;
-font-size: 80%;
 }
 
 hr
@@ -86,6 +84,11 @@ li.small
 font-size: small;
 margin-top: 0pt;
 margin-bottom: 5px;
+}
+
+td
+{
+font-size: small;
 }
 
 .codecomment
