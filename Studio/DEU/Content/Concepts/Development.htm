@@ -44,7 +44,7 @@
       (setq Result (<a href="../Reference/Method/Form/Show.htm">dcl_Form_Show</a> MyProject_MyForm))
       <span class="codecomment">; Note that this code does not execute until *after* the dialog is closed!</span>
       (if (= Result 1) (DoSomething))
-    )
+    )<span class="codecomment">; progn</span>
   )<span class="codecomment">; if</span>
   (princ)
 )<span class="codecomment">; c:MyCommand</span></pre>
@@ -53,18 +53,18 @@
         optional ein Argument mit dem finalen Dialogstatus mitgegeben werden kann, der als R&uuml;ckgabewert der Methode <a href="../Reference/Method/Form/Show.htm">
         (dcl_Form_Show)</a> &uuml;bergeben wird. Dieser Statuscode kann dazu dienen, dass etwas Bestimmtes passieren solle, sobald der Dialog geschlossen wurde. 
     <p>Der folgende Code-Ausschnitt zeigt einen typischen Programmablauf f&uuml;r das kurzfristige Ausblenden eines einfachen modalen Dialogs zur Wahl eines Punktes oder Objektes:               
-    <blockquote><pre>(defun <a href="../Reference/Event/Initialize.htm">c:proj_form_OnInitialize</a> ()<br>  (princ &quot;Hier wird der komplette Dialog mit Inhalt gef&uuml;llt.&quot;)<br>);  c:proj_form_OnInitialize
+    <blockquote><pre>(defun <a href="../Reference/Event/Initialize.htm">c:proj_form_OnInitialize</a> ()<br>  (princ &quot;Hier wird der komplette Dialog mit Inhalt gef&uuml;llt.&quot;)<br>)<span class="codecomment">;  c:proj_form_OnInitialize</span>
 
 (defun <a href="../Reference/Event/Clicked.htm">c:proj_form_pb_accept</a> ()
-  (dcl_form_close proj_form 0)<br>); c:proj_form_pb_accept 
+  (dcl_form_close proj_form 0)<br>)<span class="codecomment">; c:proj_form_pb_accept</span> 
 
 (defun <a href="../Reference/Event/Clicked.htm">c:proj_form_pb_select</a> ()
   (dcl_form_close proj_form 1)
-); c:proj_form_pb_select 
+)<span class="codecomment">; c:proj_form_pb_select </span>
 
 (defun <a href="../Reference/Event/Clicked.htm">c:proj_form_pb_cancel</a> ()
   (<a href="../Reference/Method/Form/Close.htm">dcl_form_close</a> proj_form 2)
-); c:proj_form_pb_cancel 
+)<span class="codecomment">; c:proj_form_pb_cancel </span>
 
 (setq isSchleife T)
 (while isSchleife
@@ -74,8 +74,8 @@
     ((= intErgebnis 0) (princ &quot;Hier passiert was.&quot;))
     ((= intErgebnis 1) (princ &quot;Hier wird ein Objekt oder Punkt gew&auml;hlt.&quot;) (setq isSchleife T))
     ((= intErgebnis 2) (princ &quot;Hier passiert nichts.&quot;))
-  ); cond
-); while</pre>
+  )<span class="codecomment">; cond</span>
+)<span class="codecomment">; while</span></pre>
     </blockquote>
 </div>
 	<hr />

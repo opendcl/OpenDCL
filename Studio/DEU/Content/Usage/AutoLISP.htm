@@ -17,57 +17,15 @@
 	</table>
 	<hr />
 	<div id="content">
-				<p>Writing AutoLISP code is typically done in an IDE such as the Visual 
-        LISP IDE included with AutoCAD, and this is where most of the work takes 
-        place when implementing an OpenDCL application's AutoLISP functions. 
-        OpenDCL Studio includes several tools to help programmers with the 
-        AutoLISP component of an OpenDCL application.</p>
-		<p>The OpenDCL Studio control browser provides a context sensitive 
-        reference of all supported properties, methods, and events for a 
-        specific control. In addition, the control browser makes it easy to copy 
-        function signatures to the Windows clipboard for pasting directly into 
-        AutoLISP code. The control browser's context sensitive function 
-        signatures include the correct control handle for the selected control, 
-        thus minimizing typographical errors.</p>
-		<p>The control browser can be opened by double-clicking on a control in 
-        the OpenDCL Studio workspace. Selecting a property, method, or event 
-        from the list displays syntax and reference documentation in the control 
-        browser's main frame. Pressing the Copy-To-Clipboard button (<img border="0" src="Clipboard.png" width="17" height="17">) 
-        copies the function signature to the Windows clipboard.</p>
-		<p>Handling events is the primary task of an OpenDCL application's 
-        AutoLISP code, so the process of implementing event handlers has been 
-        streamlined as much as possible. In OpenDCL Studio, the property pane's 
-        events tab displays the selected event handler function name in a text 
-        box below the event list for the selected control. It also displays a 
-        complete event handler skeleton function that opens a message box 
-        warning that the event handler has not yet been completed. Either the 
-        function name or the event handler skeleton function can be selected for 
-        copying and pasting into the application's AutoLISP code.</p>
-		<p>Specific events can be enabled by checking the toggle in front of its 
-        name in the event list. Enabling an event exposes two additional ways to 
-        incorporate the event handler skeleton function into the associated 
-        AutoLISP code. The [Clipboard Copy] button copies the event handler 
-        skeleton function to the Windows clipboard for pasting into the code. 
-        The [Add to File] button appends the event handler skeleton function 
-        directly to the project lisp file. These latter two buttons are 
-        displayed only if the &quot;Copy Events to Clipboard&quot; and &quot;Write Events to 
-        Lisp File&quot; options, respectively, are enabled in the OpenDCL Studio 
-        Tools menu.</p>
-		<h4>Style Guidelines</h4>
-		<p>Best practices for the AutoLISP code that uses an OpenDCL dialog 
-        include making event handlers global, and ensuring that the OpenDCL 
-        runtime is loaded before any OpenDCL functions are loaded. Using unique 
-        project names (ideally prefixed with a unique developer symbol) helps 
-        ensure that name collisions between multiple applications will be 
-        avoided. Following consistent control naming conventions helps with 
-        project organization and code maintenance. For example, prefixing 
-        control names with a three-character control type prefix and naming the 
-        control based on its function (&quot;btnOk&quot; for an [OK] button, for example) 
-        is a common technique used to make code more readable.</p>
-		<p>A recommended approach for a typical application is to utilize one 
-        AutoLISP file per form, with the lisp code arranged within the file so 
-        that the main function is at the top, followed by utility functions, 
-        then event handlers.</p>
+				<p>Der AutoLISP-Quellcode wird typischerweise in einer Entwicklungsumgebung geschrieben, beispielsweise im Visual LISP-Editor, der mit AutoCAD standardm&auml;&szlig;ig mit ausgeliefert wird. Die Arbeit in der AutoLISP Entwicklungsumgebung nimmt den gr&ouml;&szlig;ten Teil der Entwicklung OpenDCL-Applikation ein, denn hier werden die AutoLISP-Funktionen mit Leben gef&uuml;llt, die Dialoge und Steuerelemente steuern und auf Ereignisse reagieren. Das OpenDCL Studio verf&uuml;gt &uuml;ber eine Reihe von verschiedenen Werkzeugen, die den AutoLISP-Entwicklern im Umgang mit der AutoLISP-Komponente von OpenDCL unterst&uuml;tzen. </p>
+				<p>Die kontextsensitive Hilfe im OpenDCL Studio zeigt eine objektspezifische Referenz aller unterst&uuml;tzten Eigenschaften, Methoden und Ereignisse. Au&szlig;erdem vereinfacht die kontextsensitive Hilfe das Kopieren der gew&uuml;nschten Funktion in die Zwischenablage von Windows, um sie direkt im AutoLISP-Quellcode einzuf&uuml;gen und so Schreibfehler zu minimieren. </p>
+				<p>Ein Doppelklick auf das Steuerelement im Arbeitsbereich von OpenDCL Studio &ouml;ffnet kontextsensitive Hilfe. Klicken Sie eine Eigenschaft, Methode oder Ereignis in der Liste an, erscheint die Syntax und Referenz in der kontextsensitiven Hilfe. Klicken Sie daraufhin die Schaltfl&auml;che &quot;In die Zwischenablage kopieren&quot; (<img border="0" src="Clipboard.png" width="17" height="17">), wird der beispielhafte Ausdruck in die Zwischenablage kopiert. </p>
+				<p>Der Umgang mit Ereignissen geh&ouml;rt zu den wichtigsten Aufgaben im AutoLISP-Quellcode einer OpenDCL-Applikation und so wurde der Implementierungsprozess so weit wie m&ouml;glich optimiert. Das Eigenschaftsfenster listet in der Karteikarte Ereignisse alle Ereignisse des gew&auml;hlten Steuerelements auf. Das aktivierte Ereignis wird mit einem Haken im entsprechenden Kontrollk&auml;stchen hervorgehoben. Der dazugeh&ouml;rige Funktionsname wird automatisch im Eingabefeld unter der Liste der Ereignisse eingetragen. Durch Dr&uuml;cken der Schaltfl&auml;che Kopieren unterhalb des Textfelds wird die Grundstruktur einer Ereignisfunktion mit allen Argumenten in die Zwischenablage kopiert, die zun&auml;chst einen einfachen Warndialog anzeigt, der daraufhinweist, dass diese Funktion noch nicht mit sinnvollem Inhalt gef&uuml;llt ist. Sie k&ouml;nnen aber auch nur den Kopfbereich der Ereignisfunktion in die Zwischenablage kopieren und manuell im Quellcode einf&uuml;gen. </p>
+				<p>Die einzelnen Ereignisse k&ouml;nnen durch Aktivieren der entsprechenden Kontrollk&auml;stchen in der Liste der Ereignisse aktiviert werden. Durch das Aktivieren eines Events kann auf zwei zus&auml;tzlichen Wegen die Grundstruktur der Ereignisfunktion in den AutoLISP-Quellcode &uuml;berf&uuml;hrt werden. Die Schaltfl&auml;che Kopieren kopiert wie bereits bekannt die Ereignisfunktion in die Zwischenablage, um sie manuell im Quellcode einzuf&uuml;gen. Die Schaltfl&auml;che AutoLISP f&uuml;gt die Ereignisfunktion am Ende einer im Projektfenster definierten AutoLISP-Datei ein. Die Schaltfl&auml;che Kopieren wird nur angezeigt, wenn die Option &quot;Ereignisse in die Zwischenablage kopieren&quot; im Men&uuml; Extras von OpenDCL Studio aktiviert ist. Die Schaltfl&auml;che AutoLISP wird nur angezeigt, wenn im Projektfenster des aktuellen Projekts eine AutoLISP-Datei zugeordnet ist und die Option &quot;Ereignisse in die AutoLISP-Datei schreiben&quot; im Men&uuml; Extras von OpenDCL Studio aktiviert ist.</p>
+		<h4>Hinweise zum Quellcodestil </h4>
+	<p>Die gute fachliche Praxis f&uuml;r den AutoLISP-Quellcode, der einen OpenDCL-Dialog anzeigt ber&uuml;cksichtigt auch, dass zumindest die Ereignisfunktionen der nichtmodalen Dialoge stets global definiert sind und die OpenDCL-Laufzeitumgebung geladen wird, bevor irgendeine OpenDCL-Funktion geladen bzw. aufgerufen wird. Eindeutige Projektnamen (idealerweise mit einem herstellerabh&auml;ngigen Pr&auml;fix) stellt sicher, dass &Uuml;berschneidungen mit anderen Applikationen vermieden werden. Die konsequente Anwendung einer Konvention zur Bezeichnung von Steuerelementen optmieert die Projektorganisation und Pflege des Quellcodes. Die Anwendung der ungarischen Notation und ihrer adaption auf OpenDCL-Steuerelemente, z.B. durch Verwenden eines 2- bis 3-stelligen Pr&auml;fix f&uuml;r die Art des Steuerelements erg&auml;nzt um die zugrundeliegende Funktion ist eine allgemein angewandte Technik und macht den Quellcode lesbar (z.B. &quot;btnOk&quot; f&uuml;r eine OK-Schaltfl&auml;che).</p>
+		<p>Ein empfohlener Ansatz f&uuml;r eine typische Applikation ist die Verwendung einer AutoLISP-Datei pro Dialog. In dieser steht die Hauptfunktion an oberste Stelle, gefolgt von den unterst&uuml;tzenden Dienstprogrammen und am Ende den Ereignisfunktionen. </p>
+
 	</div>
 	<hr />
 	<div id="footer">
