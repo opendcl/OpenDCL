@@ -2,20 +2,20 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="BRX.9"
-	ProjectGUID="{398C9D4E-6EA4-4DF4-9939-DB556045758F}"
-	RootNamespace="BRX.9"
+	Name="ARX.x64.18"
+	ProjectGUID="{0D455168-BC70-41E5-B27E-93FE6E5A742C}"
+	RootNamespace="ARX.x64.18"
 	>
 	<Platforms>
 		<Platform
-			Name="Win32"
+			Name="x64"
 		/>
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
+			Name="Debug|x64"
 			ConfigurationType="2"
 			InheritedPropertySheets=".\VI\VC8.vsprops"
 			UseOfMFC="2"
@@ -37,13 +37,14 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
+				TargetEnvironment="3"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\;..\Controls;..\Methods;.\VI;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
-				AdditionalUsingDirectories="C:\Program Files\Bricsys\Bricscad V9"
-				PreprocessorDefinitions="WIN32;_WINDOWS;ARX_MODULE;_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE"
+				AdditionalUsingDirectories="C:\Program Files\AutoCAD 2010"
+				PreprocessorDefinitions="_WIN64;_WINDOWS;ARX_MODULE;_DEBUG;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE"
 				StringPooling="false"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -53,8 +54,7 @@
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
 				WarningLevel="1"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -71,7 +71,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="rpcrt4.lib VFW32.LIB"
-				OutputFile="$(OutDir)/OpenDCL.9.brx"
+				OutputFile="$(OutDir)/OpenDCL.x64.18.arx"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
 				GenerateManifest="false"
@@ -79,7 +79,6 @@
 				DelayLoadDLLs="avifil32.dll"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -107,7 +106,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Win32"
+			Name="Release|x64"
 			ConfigurationType="2"
 			InheritedPropertySheets=".\VI\VC8.vsprops"
 			UseOfMFC="2"
@@ -129,13 +128,14 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
+				TargetEnvironment="3"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				AdditionalIncludeDirectories="..\;..\Controls;..\Methods;.\VI;&quot;$(SolutionDir)ZLib&quot;;&quot;$(SolutionDir)Common&quot;;&quot;$(SolutionDir)Common\Controls&quot;"
-				AdditionalUsingDirectories="C:\Program Files\Bricsys\Bricscad V9"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;ARX_MODULE;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE"
+				AdditionalUsingDirectories="C:\Program Files\AutoCAD 2010"
+				PreprocessorDefinitions="_WIN64;_WINDOWS;NDEBUG;ARX_MODULE;_AFXEXT;_ACRXAPP;_CRT_SECURE_NO_DEPRECATE;_PRERELEASE"
 				StringPooling="true"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -145,7 +145,6 @@
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
 				WarningLevel="1"
-				Detect64BitPortabilityProblems="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -162,12 +161,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="rpcrt4.lib VFW32.LIB"
-				OutputFile="$(OutDir)/OpenDCL.9.brx"
+				OutputFile="$(OutDir)/OpenDCL.x64.18.arx"
 				AdditionalLibraryDirectories=""
 				GenerateManifest="false"
 				DelayLoadDLLs=""
 				SubSystem="2"
-				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -323,6 +321,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\ResizableDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\SADirRead.cpp"
 				>
 			</File>
@@ -330,7 +332,7 @@
 				RelativePath="..\StdAfx.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Debug|x64"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -338,7 +340,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Release|x64"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -448,6 +450,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\LocalRes.h"
+				>
+			</File>
+			<File
 				RelativePath="..\MainFileDlg.h"
 				>
 			</File>
@@ -469,6 +475,10 @@
 			</File>
 			<File
 				RelativePath="..\PaletteDialog.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\ResizableDialog.h"
 				>
 			</File>
 			<File
@@ -509,11 +519,11 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="..\Res\Folder.bmp"
+				RelativePath="..\..\Common\Res\Folder.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\Res\Folder.bmp"
+				RelativePath="..\Res\Folder.bmp"
 				>
 			</File>
 			<File
@@ -905,10 +915,30 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Controls\ArxR16LinetypeComboBoxCtrl.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\Controls\ArxR16LinetypeComboBoxCtrl.h"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Debug|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -916,7 +946,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -994,6 +1024,10 @@
 			</File>
 			<File
 				RelativePath="..\Controls\ArxTextButtonCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\Controls\ComboFilter.h"
 				>
 			</File>
 			<File
@@ -1101,6 +1135,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Methods\Methods_Edit.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_FileDlg.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Methods\Methods_FileExplorer.h"
 					>
 				</File>
@@ -1142,6 +1184,10 @@
 				</File>
 				<File
 					RelativePath="..\Methods\Methods_ProgressBar.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Methods\Methods_Properties.h"
 					>
 				</File>
 				<File
@@ -1399,6 +1445,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\DclFormTypes.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\Diagnostic.h"
 				>
 			</File>
@@ -1575,14 +1625,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\ResizableDialog.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\ResizableDialog.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Common\SafeImageListWrite.cpp"
 				>
 			</File>
@@ -1598,7 +1640,7 @@
 				RelativePath="..\..\Common\SharedRes.rc"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Debug|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1606,7 +1648,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1771,10 +1813,6 @@
 				</File>
 				<File
 					RelativePath="..\..\Common\Controls\ComboExCtrl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\Controls\ComboFilter.h"
 					>
 				</File>
 				<File
@@ -2143,7 +2181,7 @@
 		/>
 		<Global
 			Name="VCBuildHookBuildToolVersion"
-			Value="VC8"
+			Value="VC9"
 		/>
 	</Globals>
 </VisualStudioProject>

@@ -308,7 +308,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 	switch( type )
 	{
 	case CtlFileExplorer:
-		pDclControl = mpSourceForm->AddControl( CtlFileExplorer, GetControlApiName( CtlFileExplorer ), rcControl );
+		pDclControl = mpSourceForm->AddControl( CtlFileExplorer, GetControlDisplayName( CtlFileExplorer ), rcControl );
 		break;
 	case CtlActiveX:
 		{
@@ -322,7 +322,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 		}
 		break;
 	case CtlTabStrip:
-		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlApiName( CtlTabStrip ) ), rcControl );
+		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlDisplayName( CtlTabStrip ) ), rcControl );
 		if( pDclControl )
 		{
 			pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB1 ) );
@@ -331,7 +331,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 		}
 		break;
 	default:
-		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlApiName( type ) ), rcControl );
+		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlDisplayName( type ) ), rcControl );
 		break;
 	}
 	assert( pDclControl != NULL );
@@ -818,7 +818,7 @@ void CStudioDialogObject::OnEditPaste()
 					// if the caption property matches the name, update both
 					CString sCaption = pDclControl->GetStringProperty( Prop::Caption );
 					CString sOldName = pDclControl->GetStringProperty( Prop::Name );
-					CString sNewName = GetNextControlName( GetControlApiName( pDclControl->GetType() ) );
+					CString sNewName = GetNextControlName( GetControlDisplayName( pDclControl->GetType() ) );
 					pDclControl->SetStringProperty( Prop::Name, sNewName );
 					if( sOldName == sCaption )
 						pDclControl->SetStringProperty( Prop::Caption, sNewName );

@@ -1263,7 +1263,6 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 			if( pFirstProp->GetBooleanValue() )
 				nState |= PGIS_CHECKED;
 		}
-		const CString sVariesText = theWorkspace.LoadResourceString( IDS_VARIES );
 		for( TPropertySet::const_iterator iterProp = PropSet.begin() + 1;
 				 iterProp != PropSet.end();
 				 ++iterProp )
@@ -1272,7 +1271,7 @@ void CPropertyGridCtrl::OnActivateDclControl( TDclControlPtr pDclControl )
 				continue;
 			//found one property with a different value, so display indeterminate
 			nState = PGIS_INDETERMINATE;
-			sPropVal = sVariesText;
+			sPropVal = theWorkspace.LoadResourceString( IDS_VARIES );
 			break; //no need to keep checking
 		}
 		switch( pFirstProp->GetID() )
@@ -1446,7 +1445,6 @@ CString CPropertyGridCtrl::GetDisplayableValue( size_t idxCell )
 		return NULL;
 	TPropertyPtr pFirstProp = PropSet.front();
 	CString sPropVal = GetDisplayablePropertyValue( pFirstProp, pFirstProp->GetOwnerControl()->GetType() );
-	const CString sVariesText = theWorkspace.LoadResourceString( IDS_VARIES );
 	for( TPropertySet::const_iterator iterProp = PropSet.begin() + 1;
 			 iterProp != PropSet.end();
 			 ++iterProp )
@@ -1454,7 +1452,7 @@ CString CPropertyGridCtrl::GetDisplayableValue( size_t idxCell )
 		if( sPropVal == GetDisplayablePropertyValue( *iterProp, (*iterProp)->GetOwnerControl()->GetType() ) )
 			continue;
 		//found one property with a different value, so display indeterminate
-		sPropVal = sVariesText;
+		sPropVal = theWorkspace.LoadResourceString( IDS_VARIES );
 		break; //no need to keep checking
 	}
 	return sPropVal;

@@ -6,7 +6,7 @@
 #include "ArgumentsRetrieval.h"
 #include "acutmem.h"
 
-extern "C" int ads_queueexpr( const ACHAR* pszCommand );
+//extern "C" int ads_queueexpr( const ACHAR* pszCommand );
 
 extern bool IsOnlyModalForm();
 
@@ -43,7 +43,7 @@ Acad::ErrorStatus ExecuteCommand( LPCTSTR pszCommand, bool bShowCommand = false,
 	Acad::ErrorStatus es = acDocManager->sendStringToExecute( pDoc, sCmd, false, true, bShowCommand );
 	if( es == Acad::eNoDocument && !acDocManager->isApplicationContext() )
 	{
-		if( RTNORM == ads_queueexpr( sCmd ) )
+		if( RTNORM == ads_queueexpr( sCmd.LockBuffer() ) )
 			es = Acad::eOk;
 	}
 	return es;

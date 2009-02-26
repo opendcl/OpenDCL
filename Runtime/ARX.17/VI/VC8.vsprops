@@ -7,7 +7,7 @@
 	IntermediateDirectory="$(ConfigurationName)">
 	<Tool
 		Name="VCCLCompilerTool"
-		AdditionalIncludeDirectories=".\;..\;&quot;$(ARX2007)\VI&quot;;&quot;$(ARX2007)\Inc&quot;;&quot;$(MSVC8)\Include&quot;;&quot;$(MSVC8)\ATLMFC\Include&quot;"
+		AdditionalIncludeDirectories=".\;..\;&quot;.\VI&quot;;&quot;$(ARX2007)\Inc&quot;;&quot;$(MSVC8)\Include&quot;;&quot;$(MSVC8)\ATLMFC\Include&quot;"
 		PreprocessorDefinitions="_ACADTARGET=17"
 		UsePrecompiledHeader="2"
 	/>

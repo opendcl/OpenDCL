@@ -5,6 +5,12 @@
 
 #include "ArxGsViewCtrl.h"
 
+#if (_ACADTARGET == 18)
+#define setAttributes subSetAttributes
+#define worldDraw subWorldDraw
+#define viewportDraw subViewportDraw
+#endif
+
 
 // Simple lighweight drawable to do orbit glyph
 //

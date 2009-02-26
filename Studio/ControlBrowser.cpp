@@ -755,6 +755,11 @@ bool CDclControlNode::addPropertyChildItems( CControlBrowser& Browser, HTREEITEM
 			case Prop::FontItalic:
 			case Prop::FontStrikeout:
 			case Prop::FontUnderline:
+			case Prop::ToolTipPicture:
+			case Prop::ToolTipBalloon:
+			case Prop::ToolTipTitleColor:
+			case Prop::ToolTipLine:
+			case Prop::ToolTipTitle:
 				bHidden = false; //these hidden properties should be treated like normal properties
 				break;
 			}

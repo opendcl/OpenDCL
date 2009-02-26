@@ -90,7 +90,12 @@ bool CListBoxCtrl::OnApplyProperty( TPropertyPtr pProp )
 		OnNeedRepaint();
 		break;
 	case Prop::ColumnWidth:
-		SetColumnWidth( pProp->GetLongValue() );
+		{
+			long lWidth = pProp->GetLongValue();
+			if( lWidth <= 0 )
+				lWidth = 1;
+			SetColumnWidth( lWidth );
+		}
 		break;
 	case Prop::DisableNoScroll:
 		if( pProp->GetBooleanValue() )
@@ -307,6 +312,7 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		return;
 	}
 
+	bool bSuperMessage = false;
 	if( IsMultiSelect() )
 	{
 		int ctSel = GetSelCount();
@@ -315,21 +321,22 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		for( int idx = 0; idx < ctSel; ++idx )
 			setnDragSource.insert( rnSel[idx] );
 		delete[] rnSel;
+		bSuperMessage = (ctSel > 0);
+		if( !bSuperMessage )
+			__super::OnLButtonDown( nFlags, point );
 	}
 	else
 	{
+		__super::OnLButtonDown( nFlags, point );
 		int nCurSel = GetCurSel();
 		if( nCurSel >= 0 )
 			setnDragSource.insert( nCurSel );
 	}
 	if( setnDragSource.empty() )
-	{
-		__super::OnLButtonDown( nFlags, point );
 		return;
-	}
 
 	DWORD dwDropEffect = BeginDragDrop( point );
-	if( dwDropEffect == DROPEFFECT_NONE )
+	if( bSuperMessage && dwDropEffect == DROPEFFECT_NONE )
 		__super::OnLButtonDown( nFlags, point );
 	if( !setnDragSource.empty() ) //if drop was on this control, mnDragSource gets reset to -1
 	{

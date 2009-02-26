@@ -152,7 +152,7 @@ bool CDeleteControlUA::Undo()
 		TDialogControlPtr pDlgControl =
 			CStudioDialogControl::Create( mpDclControl, pPane, pDlgObject->GetNextControlId() );
 		pPane->AddControl( pDlgControl );
-		theStudioWorkspace.ActivateDclControl( mpDclControl );
+		theStudioWorkspace.ActivateDclControl( mpDclControl, true );
 	}
 	return true;
 }

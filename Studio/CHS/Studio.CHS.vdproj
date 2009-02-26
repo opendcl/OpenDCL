@@ -23297,14 +23297,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{D765F2E0-FEB4-44A0-89B7-DDE1DF7BA859}"
-        "PackageCode" = "8:{A7AEE45D-62FA-4F5E-A857-21496D7B1A81}"
+        "ProductCode" = "8:{74C00B48-0B83-4988-AC4F-EF08F7BA96E2}"
+        "PackageCode" = "8:{E6183DCC-0E27-40FB-A66E-9A8C5AB37076}"
         "UpgradeCode" = "8:{AF16E7D3-800C-4BE7-BA12-B9C62FF78F51}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0108"
+        "ProductVersion" = "8:5.0.0109"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -24152,7 +24152,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3C8D288100B24DD89D5D4CFC9048980B"
             {
-            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_68DCE7B648DB477F994B67FEC95873AE"
@@ -24180,7 +24180,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9E90278BEFF24FEBB30DEB0CFCE182D1"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\CHS\\MSM\\Release\\OpenDCL.Runtime.CHS.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\CHS\\MSM\\Debug\\OpenDCL.Runtime.CHS.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_68DCE7B648DB477F994B67FEC95873AE"
@@ -24233,7 +24233,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D5411C478C764DD3B6FC1878FEE06B40"
             {
-            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_0E15D904D703428E8193A14F2823ED5C"

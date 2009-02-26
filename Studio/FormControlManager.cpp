@@ -186,8 +186,8 @@ void CFormControlManager::OnLButtonUp(UINT nFlags, CPoint point)
 			CDialogControl* pDlgControl = mpDlgObject->GetControlAtPoint( ptScreen );
 			if( pDlgControl )
 			{
-				theStudioWorkspace.ActivateDclControl( NULL );
-				theStudioWorkspace.ActivateDclControl( pDlgControl->GetTemplate() );
+				bool bDeactivateCurrent = (((nFlags & MK_CONTROL) == 0) || mpDlgObject->IsOnlyFormActive());
+				theStudioWorkspace.ActivateDclControl( pDlgControl->GetTemplate(), bDeactivateCurrent );
 			}
 		}
 	}

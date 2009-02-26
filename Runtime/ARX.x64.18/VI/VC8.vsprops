@@ -2,22 +2,22 @@
 <VisualStudioPropertySheet 
 	ProjectType="Visual C++" 
 	Version="8.00" 
-	Name="ObjectARX 2008 x64"
+	Name="ObjectARX 2010 x64"
 	OutputDirectory="$(ConfigurationName)"
 	IntermediateDirectory="$(ConfigurationName)">
 	<Tool
 		Name="VCCLCompilerTool"
-		AdditionalIncludeDirectories=".\;..\;&quot;.\VI&quot;;&quot;$(ARX2008#64)\Inc&quot;;&quot;$(MSVC8)\Include&quot;;&quot;$(MSVC8)\ATLMFC\Include&quot;"
-		PreprocessorDefinitions="_ACADTARGET=17"
+		AdditionalIncludeDirectories=".\;..\;&quot;.\VI&quot;;&quot;$(ARX2010)\Inc-x64&quot;;&quot;$(ARX2010)\Inc&quot;;&quot;$(MSVC9)\Include&quot;;&quot;$(MSVC9)\ATLMFC\Include&quot;"
+		PreprocessorDefinitions="_ACADTARGET=18"
 		UsePrecompiledHeader="2"
 	/>
 	<Tool
 		Name="VCResourceCompilerTool"
-		PreprocessorDefinitions="_ACADTARGET=17"
+		PreprocessorDefinitions="_ACADTARGET=18"
 	/>
 	<Tool
 		Name="VCLinkerTool"
-		AdditionalLibraryDirectories="&quot;$(ARX2008#64)\Lib&quot;;&quot;$(MSVC8)\Lib\AMD64&quot;;&quot;$(MSVC8)\ATLMFC\Lib\AMD64&quot;"
+		AdditionalLibraryDirectories="&quot;$(ARX2010)\Lib-x64&quot;;&quot;$(MSVC9)\Lib\AMD64&quot;;&quot;$(MSVC9)\ATLMFC\Lib\AMD64&quot;"
 		AdditionalDependencies="&quot;$(VCInstallDir)Lib\DelayImp.lib&quot;"
 		OutputFile="$(OutDir)/$(ProjectName).arx"
 		ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
@@ -25,8 +25,8 @@
 	/>
 	<Tool
 		Name="VCMIDLTool"
-		PreprocessorDefinitions="_ACADTARGET=17"
-		AdditionalIncludeDirectories="&quot;$(ARX2008#64)\Inc&quot;;&quot;$(MSVC8)\Include&quot;"
+		PreprocessorDefinitions="_ACADTARGET=18"
+		AdditionalIncludeDirectories="&quot;$(ARX2010)\Inc-x64&quot;;&quot;$(ARX2010)\Inc&quot;;&quot;$(MSVC9)\Include&quot;"
 		GenerateStublessProxies="true"
 		HeaderFileName="$(InputName).h"
 		InterfaceIdentifierFileName="$(InputName)_i.c"
