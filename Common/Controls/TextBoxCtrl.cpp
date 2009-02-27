@@ -47,6 +47,10 @@ DWORD CTextBoxCtrl::GetWndStyle() const
 		dwStyle |= ES_RIGHT;
 		break;
 	}
+	if( mpTemplate->GetBooleanProperty( Prop::AutoVScroll ) )
+		dwStyle |= ES_AUTOVSCROLL;
+	if( mpTemplate->GetBooleanProperty( Prop::AutoHScroll ) )
+		dwStyle |= ES_AUTOHSCROLL;
 	return dwStyle;
 }
 
