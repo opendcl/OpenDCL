@@ -6,8 +6,6 @@
 #include "ArgumentsRetrieval.h"
 #include "acutmem.h"
 
-//extern "C" int ads_queueexpr( const ACHAR* pszCommand );
-
 extern bool IsOnlyModalForm();
 
 CString EscapeLispStringArgument( LPCTSTR pszString )
