@@ -28,8 +28,8 @@
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
 &nbsp;<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="syntax">(dcl_BinFile_Open
-            <font color="#FF0000">Filename [als <a href="../../DataType/String.htm">String</a>]</font>
-            <font color="#FF0000">OpenMode [als <a href="../../DataType/String.htm">String</a>]</font>)</code></td>
+            <font color="#FF0000">strFilename [als <a href="../../DataType/String.htm">String</a>]</font>
+            <font color="#FF0000">strOpenMode [als <a href="../../DataType/String.htm">String</a>]</font>)</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
@@ -38,24 +38,23 @@
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Anwendbar auf</th>
-            <td bgcolor="#CCFF99">
-      &nbsp;</td>
+            <td bgcolor="#CCFF99">&nbsp;
+      </td>
           </tr>
         </table>
-		<p>This method opens a binary file for reading or writing. The function 
-        returns NIL if the file could not be opened or created.</p>
-	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
+		<p>Diese Methode &ouml;ffnet eine bin&auml;re Datei im Lese- oder Schreibmodus. Die Methode gibt NIL zur&uuml;ck, wenn die Datei nicht ge&ouml;ffnet oder erzeugt werden kann. </p>
+		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
-            <th nowrap>Mode</th>
-            <th nowrap>Meaning</th>
+            <th nowrap>Modus</th>
+            <th nowrap>Bedeutung</th>
           </tr>
           <tr>
             <td>&quot;r&quot;</td>
-            <td>Open for reading</td>
+            <td>&Ouml;ffnen im Lesemodus </td>
           </tr>
           <tr>
             <td>&quot;w&quot;</td>
-            <td>Open for writing</td>
+            <td>&Ouml;ffnen im Schreibmodus</td>
           </tr>
         </table>
 	</div>

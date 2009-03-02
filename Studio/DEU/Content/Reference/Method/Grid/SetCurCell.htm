@@ -18,7 +18,7 @@
 		</tr>
 	</table>
 	<hr />
-	<div id="content">
+<div id="content">
         <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Funktionsname</th>
@@ -28,12 +28,12 @@
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Syntax
 &nbsp;<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="syntax">(dcl_Grid_SetCurCell <i>
-            <a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i><font color="#FF0000"> Row [als <a href="../../DataType/Long.htm">Long</a>] 
-            {Column [als <a href="../../DataType/Long.htm">Long</a>]}</font>)</code></td>
+            <a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i><font color="#FF0000"> intRow [als <a href="../../DataType/Long.htm">Long</a>] 
+            {intColumn [als <a href="../../DataType/Long.htm">Long</a>]}</font>)</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99"><a href="../../DataType/Boolean.htm">Boolean</a> (T if successful; otherwise NIL)</td>
+            <td bgcolor="#CCFF99"><a href="../../DataType/Boolean.htm">Boolean</a> (T, wenn erfolgreich, ansonsten NIL)</td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Anwendbar auf</th>
@@ -41,10 +41,7 @@
       <a href="../../Control/Grid.htm">Grid</a></td>
           </tr>
         </table>
-		<p>This method sets the active cell. If Row is -1, an entire column 
-        is activated. If Column is omitted or -1, an entire row is activated. 
-        The grid will be scrolled, if necessary, to ensure that the active cell 
-        is displayed.</p>
+	<p>Diese Methode bestimmt die aktive/markierte Zelle. Wird dem Argument intRow der Wert -1 &uuml;bergeben, wird die gesamte Spalte ausgew&auml;hlt. Wird dem Argument intColumn der Wert -1 &uuml;bergeben, wird die gesamte Zeile ausgew&auml;hlt. Sofern n&ouml;tig, wird automatisch auf die markierte Zelle gescrollt, damit diese sichtbar ist. </p>
 	</div>
 	<hr />
 	<div id="footer">

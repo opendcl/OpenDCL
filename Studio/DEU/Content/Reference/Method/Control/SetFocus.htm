@@ -18,7 +18,7 @@
 		</tr>
 	</table>
 	<hr />
-	<div id="content">
+<div id="content">
         <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Funktionsname</th>
@@ -32,20 +32,16 @@
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99"><a href="../../DataType/Boolean.htm">Boolean</a> (T if successful; otherwise NIL)</td>
+            <td bgcolor="#CCFF99"><a href="../../DataType/Boolean.htm">Boolean</a> (T, wenn erfolgreich, ansonsten NIL)</td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Anwendbar auf</th>
-            <td bgcolor="#CCFF99">All <a href="../../Control/Index.htm">Controls</a> 
-            and <a href="../../Form/Index.htm">Forms</a></td>
+            <td bgcolor="#CCFF99">Alle <a href="../../Control/Index.htm">Steuerelemente</a> und <a href="../../Form/Index.htm">Dialoge</a></td>
           </tr>
         </table>
-		<p>This method sets the keyboard focus to the control if it is visible.</p>
-		<h3>Note</h3>
-		<p>Do not call this function inside your 
-        <a href="../../Event/Initialize.htm">OnInitialize</a> event handler to 
-        set the initial focus to a specific control. Instead, use the SetZOrder 
-        function to put the desired focus control at the top of the Z/Tab order.</p>
+	<p>Diese Methode erzwingt den Wechsel des Fokus zum angegebenen Steuerelement, sofern dieses sichtbar ist. </p>
+		<h3>Hinweis</h3>
+	<p>Verwenden Sie diese Methode nicht innerhalb des <a href="../../Event/Initialize.htm">OnInitialize</a>-Ereignisses. Soll beim Start ein bestimmtes Steuerelement den Fokus erhalten, verwenden Sie die <a href="ZOrder.htm">ZOrder</a>-Methode, um das Steuerelement in der Reihenfolge ganz nach oben zu bewegen. Auf diese Weise erh&auml;lt das Steuerelement automatisch den Fokus beim Aufruf des Dialogs. </p>
 	</div>
 	<hr />
 	<div id="footer">

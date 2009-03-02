@@ -18,7 +18,7 @@
 		</tr>
 	</table>
 	<hr />
-	<div id="content">
+<div id="content">
         <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Funktionsname</th>
@@ -29,13 +29,13 @@
 &nbsp;<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="syntax">(dcl_ListView_HitPointTest <i>
             <a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i>
-            <font color="#FF0000">X [als <a href="../../DataType/Long.htm">Long</a>]</font>
-            <font color="#FF0000">Y [als <a href="../../DataType/Long.htm">Long</a>]</font>)</code></td>
+            <font color="#FF0000">intX [als <a href="../../DataType/Long.htm">Long</a>]</font>
+            <font color="#FF0000">intY [als <a href="../../DataType/Long.htm">Long</a>]</font>)</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99">List of <a href="../../DataType/Long.htm">Longs</a> 
-            as (Row Column)</td>
+            <td bgcolor="#CCFF99">Liste von <a href="../../DataType/Long.htm">Longs</a> 
+            in der Form (intRow intColumn)</td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Anwendbar auf</th>
@@ -43,8 +43,7 @@
       <a href="../../Control/ListView.htm">List View</a></td>
           </tr>
         </table>
-		<p>This method returns the  cell at the  point X, Y (specified in the 
-        control's client coordinates).</p>
+	<p>Diese Methode gibt die Zelle an der Position intX, intY zur&uuml;ck. Die Koordinaten beziehen sich auf den linken, oberen Eckpunkt des Steuerelements.</p>
 	</div>
 	<hr />
 	<div id="footer">

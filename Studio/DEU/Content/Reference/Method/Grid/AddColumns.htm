@@ -18,7 +18,7 @@
 		</tr>
 	</table>
 	<hr />
-	<div id="content">
+<div id="content">
         <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Funktionsname</th>
@@ -29,11 +29,11 @@
 &nbsp;<button title="In die Zwischenablage kopieren" onclick="javascript:copyclip(syntax);" style="width: 22px; height: 20px"><img src="../../images/Clipboard.png" width="15" height="13" /></button></th>
 <td bgcolor="#CCFF99"><code id="syntax">(dcl_Grid_AddColumns <i>
             <a href="../../DataType/Control.htm">&lt;CONTROL&gt;</a></i>
-            <font color="#FF0000">NewColumns [als Liste von Lists as ((Caption [als <a href="../../DataType/String.htm">String</a>] {Justification [als <a href="../../DataType/Integer.htm">Integer</a>]} {ColumnWidth [als <a href="../../DataType/Long.htm">Long</a>]} {ColumnImageIndex [als <a href="../../DataType/Integer.htm">Integer</a>]}) ...)]</font>)</code></td>
+            <font color="#FF0000">lstNewColumns [als Liste von Listen in der Form ((strCaption [als <a href="../../DataType/String.htm">String</a>] {intJustification [als <a href="../../DataType/Integer.htm">Integer</a>]} {intColumnWidth [als <a href="../../DataType/Long.htm">Long</a>]} {intColumnImageIndex [als <a href="../../DataType/Integer.htm">Integer</a>]}) ...)]</font>)</code></td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Rückgabewert</th>
-            <td bgcolor="#CCFF99"><a href="../../DataType/Boolean.htm">Boolean</a> (T if successful; otherwise NIL)</td>
+            <td bgcolor="#CCFF99"><a href="../../DataType/Boolean.htm">Boolean</a> (T, wenn erfolgreich, ansonsten NIL)</td>
           </tr>
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Anwendbar auf</th>
@@ -41,30 +41,23 @@
       <a href="../../Control/Grid.htm">Grid</a></td>
           </tr>
         </table>
-		<p>This method appends new columns to the grid. Caption is the column 
-        header caption, Justification is the column header caption justification 
-        style (default is left justified), ColumnWidth is the width (in pixels) 
-        of the new column (default is fit to caption), and ColumnImageIndex is 
-        the image from the control's image list to display beside the column 
-        header caption (default is none). Note that due to limitations in the 
-        Windows grid control, the first column in the control is always left 
-        justified and the justification style is ignored for that column.</p>
-	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
+		<p>Diese Methode f&uuml;gt neue Spalten zum Datenblatt hinzu. Die Bezeichnung der Spalte wird &uuml;ber das Argument strCaption angegeben, intJustification definiert, wie die Spaltenbezeichnung ausgerichtet ist (Vorgabe: linksb&uuml;ndig). Das Argument intColumnWidth bestimmt die Spaltenbreite. Lassen Sie das Argument intColumnWidth aus, wird die Spaltenbreite aus der Breite der Spaltenbezeichnung berechnet. Mit intColumnImageIndex kann optional ein Bild aus der <a href="../../DataType/ImageList.htm">Bildliste</a> des Steuerelements &uuml;bergeben werden, das neben der Bezeichnung angezeigt wird (Vorgabe: kein Bild). Bitte beachten Sie, dass aufgrund von Einschr&auml;nkungen im Windows-ListView-Steuerelement die Spalte 0 immer links ausgerichtet ist und dies kann nicht ge&auml;ndert werden.</p>
+		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
-            <th nowrap>Justification</th>
-            <th nowrap>Style</th>
+            <th nowrap>Ausrichtung</th>
+            <th nowrap>Stil</th>
           </tr>
           <tr>
             <td>0</td>
-            <td>Left justified</td>
+            <td>linksb&uuml;ndig</td>
           </tr>
           <tr>
             <td>1</td>
-            <td>Centered</td>
+            <td>zentriert</td>
           </tr>
           <tr>
             <td>2</td>
-            <td>Right justified</td>
+            <td>rechtsb&uuml;ndig</td>
           </tr>
         </table>
 	</div>
