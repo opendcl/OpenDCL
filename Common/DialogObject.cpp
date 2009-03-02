@@ -278,7 +278,10 @@ bool CDialogObject::OnApplyTitleBar( TPropertyPtr pProp )
 {
 	mbIgnoreSizing = true;
 	if( pProp->GetBooleanValue() )
+	{
 		mpControlWnd->ModifyStyle( 0, WS_CAPTION, SWP_FRAMECHANGED );
+		mpControlWnd->RedrawWindow( NULL, NULL, RDW_FRAME | RDW_UPDATENOW );
+	}
 	else
 		mpControlWnd->ModifyStyle( WS_CAPTION, 0, SWP_FRAMECHANGED );
 	mbIgnoreSizing = false;

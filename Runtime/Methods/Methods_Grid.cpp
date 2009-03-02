@@ -288,7 +288,7 @@ ADSRESULT Grid::SetRowData()
 	return RSRSLT;
 }
 
-ADSRESULT Grid::GetCellImage()
+ADSRESULT Grid::GetCellImages()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -308,7 +308,11 @@ ADSRESULT Grid::GetCellImage()
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
-	acedRetInt( pCtrl->GetCellImage( nRow, nCol ) );
+	resbuf rbAltImage = { NULL, RTSHORT };
+	rbAltImage.resval.rint = pCtrl->GetCellAltImage( nRow, nCol );
+	resbuf rbImage = { &rbAltImage, RTSHORT };
+	rbImage.resval.rint = pCtrl->GetCellImage( nRow, nCol );
+	acedRetList( &rbImage );
 	return RSRSLT;
 }
 
@@ -601,7 +605,7 @@ ADSRESULT Grid::SetCellDropList()
 	return RSRSLT;
 }			
 
-ADSRESULT Grid::SetCellImage()
+ADSRESULT Grid::SetCellImages()
 {
 	struct resbuf *pArgs =acedGetArgs () ;
 
@@ -621,12 +625,15 @@ ADSRESULT Grid::SetCellImage()
 	if( !GetIntArgument( pArgs, nImage ) )
 		return RSERR; //invalid input
 
+	int nAltImage = -2;
+	GetIntArgument( pArgs, nImage, true );
+
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;
 
 	CArxGridCtrl* pCtrl = (CArxGridCtrl*)pDlgControl->GetControlWnd();
 
-	pCtrl->SetCellImage( nRow, nCol, nImage );
+	pCtrl->SetCellImages( nRow, nCol, nImage, nAltImage );
 	acedRetT();
 	return RSRSLT;
 }

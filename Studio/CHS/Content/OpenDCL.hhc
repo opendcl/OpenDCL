@@ -1718,8 +1718,8 @@
 					<param name="Local" value="Reference\Method\Grid/GetCellDropList.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetCellImage">
-					<param name="Local" value="Reference\Method\Grid/GetCellImage.htm">
+					<param name="Name" value="GetCellImages">
+					<param name="Local" value="Reference\Method\Grid/GetCellImages.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="GetCellText">
@@ -1782,8 +1782,8 @@
 					<param name="Local" value="Reference\Method\Grid/SetCellDropList.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetCellImage">
-					<param name="Local" value="Reference\Method\Grid/SetCellImage.htm">
+					<param name="Name" value="SetCellImages">
+					<param name="Local" value="Reference\Method\Grid/SetCellImages.htm">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
 					<param name="Name" value="SetCellStyle">

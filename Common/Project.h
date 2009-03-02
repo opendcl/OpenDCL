@@ -151,9 +151,9 @@ public:
 	//Services
 public:
 	virtual void DeleteForm( TDclFormPtr pDclForm );
-	virtual TDclFormPtr AddForm( FormType nType );
+	virtual TDclFormPtr AddForm( FormType nType, LPCTSTR pszName );
 	virtual TDclFormPtr AddForm( FormType nType, TDclFormPtr pParentForm );
-	virtual void AddInitializedForm( TDclFormPtr pForm );
+	virtual void AddInitializedForm( TDclFormPtr pForm, LPCTSTR pszName = NULL );
 	virtual void SetGlobalVariableNames( LPCTSTR pszRootName = NULL );
 	virtual void ClearGlobalVariableNames();
 	TDclFormPtr GetRefCountedPtr( CDclFormObject* pDclForm ) const;

@@ -8,6 +8,7 @@
 #include "DclFormView.h"
 #include "DclFormFrame.h"
 #include "DclControlProp.h"
+#include "ControlName.h"
 #include "StudioWorkspace.h"
 #include "StudioDialogControl.h"
 #include "StudioDialogObject.h"
@@ -110,7 +111,18 @@ TDclFormPtr CStudioFrame::AddNewDclFormView( FormType nType )
 	TStudioProjectPtr pProject = theStudioWorkspace.GetActiveProject();
 	if( !pProject )
 		return NULL;
-	TDclFormPtr pNewDclForm = pProject->AddForm( nType );
+
+	UINT nFormId = 1;
+	CString sFormName;
+	bool bFoundUnusedName = false;
+	CString sFormBase = GetControlDisplayName( _CtlForm );
+	while( !bFoundUnusedName )
+	{
+		sFormName.Format( _T("%s%d"), (LPCTSTR)sFormBase, nFormId++ );
+		bFoundUnusedName = !pProject->FindDclForm( sFormName );
+	}
+
+	TDclFormPtr pNewDclForm = pProject->AddForm( nType, sFormName );
 	if( !pNewDclForm )
 		return NULL;
 	UINT nGridSpacing = theApp.GetGridSpacing();

@@ -349,11 +349,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 	if (ar.IsStoring())
 	{
 		ar << nThisVersion;
-		
-		// put this dcl form's name and type into archive
-		ar << msName;
 		ar << mType;
-		
 		ar << msUniqueName;
 		ar << CString(GetParentName());
 		ar << mnTabIndex;
@@ -397,7 +393,11 @@ void CDclFormObject::Serialize(CArchive& ar)
 		}
 		if (nThisVersion > GetCurrentSaveVersion())
 			AfxThrowArchiveException(CArchiveException::badSchema, ar.m_strFileName );
-		ar >> msName;
+		if (nThisVersion < 9)
+		{
+			CString sNameDiscard;
+			ar >> sNameDiscard;
+		}
 		long lType;
 		ar >> lType;
 		if (lType < -1)
@@ -536,7 +536,8 @@ IOStatus CDclFormObject::ReadFromTextFile4(std::ifstream &sFile, const CString &
 {
 	OnModified();
 	// Get this dcl form's name and type from archive
-  if (!readString(sFile, msName)) return statInvalidFormat;
+	CString sNameDiscard;
+  if (!readString(sFile, sNameDiscard)) return statInvalidFormat;
 	long lType;
   if (!readLong(sFile, lType)) return statInvalidFormat;
   if (lType < -1)

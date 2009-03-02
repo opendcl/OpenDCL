@@ -420,7 +420,7 @@ Reference\Method\Grid\DeleteRow.htm
 Reference\Method\Grid\FillList.htm
 Reference\Method\Grid\GetCellCheckState.htm
 Reference\Method\Grid\GetCellDropList.htm
-Reference\Method\Grid\GetCellImage.htm
+Reference\Method\Grid\GetCellImages.htm
 Reference\Method\Grid\GetCellText.htm
 Reference\Method\Grid\GetColumnCells.htm
 Reference\Method\Grid\GetColumnCount.htm
@@ -436,7 +436,7 @@ Reference\Method\Grid\InsertRow.htm
 Reference\Method\Grid\InsertString.htm
 Reference\Method\Grid\SetCellCheckState.htm
 Reference\Method\Grid\SetCellDropList.htm
-Reference\Method\Grid\SetCellImage.htm
+Reference\Method\Grid\SetCellImages.htm
 Reference\Method\Grid\SetCellStyle.htm
 Reference\Method\Grid\SetCellText.htm
 Reference\Method\Grid\SetColumnImage.htm

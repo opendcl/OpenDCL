@@ -316,14 +316,20 @@ void CListBoxCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	if( IsMultiSelect() )
 	{
 		int ctSel = GetSelCount();
-		int* rnSel = new int[ctSel];
-		GetSelItems( ctSel, rnSel );
-		for( int idx = 0; idx < ctSel; ++idx )
-			setnDragSource.insert( rnSel[idx] );
-		delete[] rnSel;
 		bSuperMessage = (ctSel > 0);
 		if( !bSuperMessage )
+		{
 			__super::OnLButtonDown( nFlags, point );
+			ctSel = GetSelCount();
+		}
+		if( ctSel > 0 )
+		{
+			int* rnSel = new int[ctSel];
+			GetSelItems( ctSel, rnSel );
+			for( int idx = 0; idx < ctSel; ++idx )
+				setnDragSource.insert( rnSel[idx] );
+			delete[] rnSel;
+		}
 	}
 	else
 	{

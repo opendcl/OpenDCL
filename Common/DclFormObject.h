@@ -23,7 +23,6 @@ protected:
 	TProjectLockedPtr mpProject;
 	TDclControlList mDclControls;
 	FormType mType;
-	CString msName;
 	UINT_PTR mnNextId;
 	CDialogObject* mpDlgObject; //informational pointer to the one and only instance of this form (or NULL)
 
@@ -49,7 +48,8 @@ public:
 	//2007-09-17 [ORW]: save version set to 6 (changed mbUsesClientRect from BOOL to bool)
 	//2008-02-16 [ORW]: save version set to 7 (removed mbUsesClientRect)
 	//2008-11-02 [ORW]: save version set to 8 (changed version from ULONG to BYTE)
-	BYTE GetCurrentSaveVersion() const { return 8; }
+	//2009-03-03 [ORW]: save version set to 9 (removed msName)
+	BYTE GetCurrentSaveVersion() const { return 9; }
 
 // Operations
 public:

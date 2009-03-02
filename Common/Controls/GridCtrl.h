@@ -187,9 +187,10 @@ public:
 	void SetCurCellText( LPCTSTR pszText );
 	bool SetCellText( int nRow, int nCol, LPCTSTR pszText );
 	CRect GetCellRect( int nRow, int nCol, int area = LVIR_BOUNDS );
-	void SetCellImage( int nRow, int nCol, int nImage );
+	void SetCellImages( int nRow, int nCol, int nImage, int nAltImage = -2 );
 	void SetCellTextImage( int nRow, int nCol, LPCTSTR pszText, int nImage );
 	int GetCellImage( int nRow, int nCol );
+	int GetCellAltImage( int nRow, int nCol );
 	int GetCellUncheckedImage( int nRow, int nCol );
 	int GetCellCheckedImage( int nRow, int nCol );
 	bool IsCellChecked( int nRow, int nCol );

@@ -1021,10 +1021,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\DclFormTypes.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Common\Diagnostic.h"
 				>
 			</File>
@@ -1082,6 +1078,10 @@
 			</File>
 			<File
 				RelativePath="..\Common\FontSettings.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\FormTypes.h"
 				>
 			</File>
 			<File

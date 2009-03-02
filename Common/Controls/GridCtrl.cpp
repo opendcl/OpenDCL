@@ -426,7 +426,7 @@ bool CGridCtrl::SetCellText( int nRow, int nCol, LPCTSTR pszText )
 	case Grid::LinetypeCell:
 	case Grid::DirectoryCell:
 	case Grid::DwgFilesCell:
-		SetCellImage( nRow, nCol, GetCellListImage( nRow, nCol, pszText ) );
+		SetCellImages( nRow, nCol, GetCellListImage( nRow, nCol, pszText ) );
 		break;
 	}
 	return bSuccess;
@@ -499,13 +499,26 @@ int CGridCtrl::GetCellImage( int nRow, int nCol )
 	return -1;
 }
 
-void CGridCtrl::SetCellImage( int nRow, int nCol, int nImage)  
+int CGridCtrl::GetCellAltImage( int nRow, int nCol )  
+{
+	//LV_ITEM lvItem = { LVIF_IMAGE, nRow, nCol };
+	//GetItem( &lvItem );
+	//return lvItem.iImage;
+	const _CellData* pCellData = GetCellData( nRow, nCol );
+	if( pCellData )
+		return pCellData->midxAltImage;
+	return -1;
+}
+
+void CGridCtrl::SetCellImages( int nRow, int nCol, int nImage, int nAltImage/* = -2*/ )  
 {
 	//LV_ITEM lvItem = { LVIF_IMAGE, nRow, nCol };
 	//lvItem.iImage = nImage;	
 	//SetItem( &lvItem );
 	_CellData& CellData = GetCellDataRef( nRow, nCol );
 	CellData.midxImage = nImage;
+	if( nAltImage >= -1 )
+		CellData.midxAltImage = nAltImage;
 	InvalidateCell( nRow, nCol );
 }
 
@@ -695,7 +708,7 @@ DWORD_PTR CGridCtrl::GetItemData( int nRow ) const
 int CGridCtrl::InsertItem( int nRow, LPCTSTR lpszText, int nImageIndex /*= -1*/ )
 {
 	int nNewItem = __super::InsertItem( nRow, lpszText );
-	SetCellImage( nNewItem, 0, nImageIndex );
+	SetCellImages( nNewItem, 0, nImageIndex );
 	InvalidateCell( nRow, -1 );
 	return nNewItem;
 }
@@ -973,7 +986,7 @@ void CGridCtrl::SetCellTextImage( int nRow, int nCol, LPCTSTR pszText, int nImag
 	if( nRow < 0 || nCol <= 0 ) //CListCtrl won't allow images in the first column
 		return;
 	SetCellText( nRow, nCol, pszText );
-	SetCellImage( nRow, nCol, nImage );
+	SetCellImages( nRow, nCol, nImage );
 }
 
 UINT CGridCtrl::GetCellState( int nRow, int nCol )

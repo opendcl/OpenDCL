@@ -7372,8 +7372,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1BB525211A804B778F9F8D8035B17B52"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\Grid\\GetCellImage.htm"
-            "TargetName" = "8:GetCellImage.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\Grid\\GetCellImages.htm"
+            "TargetName" = "8:GetCellImages.htm"
             "Tag" = "8:"
             "Folder" = "8:_3E4DFE0A9F6C495DB6D14406165E92A7"
             "Condition" = "8:"
@@ -22492,8 +22492,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FADD488044314BC885A0CC6595F4C3A3"
             {
-            "SourcePath" = "8:Content\\Reference\\Method\\Grid\\SetCellImage.htm"
-            "TargetName" = "8:SetCellImage.htm"
+            "SourcePath" = "8:Content\\Reference\\Method\\Grid\\SetCellImages.htm"
+            "TargetName" = "8:SetCellImages.htm"
             "Tag" = "8:"
             "Folder" = "8:_3E4DFE0A9F6C495DB6D14406165E92A7"
             "Condition" = "8:"
@@ -23297,14 +23297,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OpenDCL Studio"
-        "ProductCode" = "8:{5DAD79AF-693E-454C-90A8-2264D64FF9BB}"
-        "PackageCode" = "8:{70E027FC-2BDB-4BA2-BCF9-5459C5D4B107}"
+        "ProductCode" = "8:{52D6FE1B-C264-496C-9B2B-954AC6BD74E6}"
+        "PackageCode" = "8:{6E0F5E93-0E06-496A-9A00-5B4EA847F91E}"
         "UpgradeCode" = "8:{140D3C25-5463-4688-8A52-FEA8E9FA4940}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.0.0201"
+        "ProductVersion" = "8:5.0.0202"
         "Manufacturer" = "8:OpenDCL Consortium"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.opendcl.com"
@@ -24152,7 +24152,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3BAA3B3B23A64B5D9D3E59D2F57A0F6B"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\FRA\\MSM\\Release\\OpenDCL.Runtime.FRA.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\FRA\\MSM\\Debug\\OpenDCL.Runtime.FRA.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"
@@ -24205,7 +24205,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_85BC6CDD6D9D4640B552D54485E9371E"
             {
-            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_2877147D5ADB47C69C658D91D7072C6D"
@@ -24233,7 +24233,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D2E30088FE6F44CDA911B5E5558D3661"
             {
-            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E79FD28A43E246DEBA6AF02218988801"

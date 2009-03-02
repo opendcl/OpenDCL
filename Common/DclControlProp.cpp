@@ -78,24 +78,6 @@ static TPropertyPtr AddControlEvent( TDclControlPtr pDclControl, Prop::Id nID )
 	return pProp;
 }
 
-static bool AddDefaultFormName( TDclControlPtr pDclControl )
-{
-	if( !pDclControl->GetPropertyObject( Prop::Name ) )
-	{
-		TProjectPtr pProject = pDclControl->GetOwnerProject();
-		UINT nFormId = 1;
-		CString sFormName;
-		bool bFoundUnusedName = false;
-		while( !bFoundUnusedName )
-		{
-			sFormName.Format( _T("Form%d"), nFormId++ );
-			bFoundUnusedName = !pProject->FindDclForm( sFormName );
-		}
-		pDclControl->AddStringProperty( Prop::Name, PropString, sFormName );
-	}
-	return true;
-}
-
 static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*= 32*/, long lHeight /*= 32*/ )
 {
 	assert( pDclControl->GetType() == _CtlForm );
@@ -106,7 +88,7 @@ static bool AddDefaultFormProperties( TDclControlPtr pDclControl, long lWidth /*
 	FormType eFormType = pOwnerForm->GetType();
 	if( eFormType != FrmTabPage )
 	{
-		AddDefaultFormName( pDclControl );
+		pDclControl->AddStringProperty( Prop::Name, PropString, pOwnerForm->GetKeyName() );
 		pDclControl->AddStringProperty( Prop::ControlBrowser, PropActiveXMethods );
 		pDclControl->AddStringProperty( Prop::VarName ); // now setting to empty string by default  2007-02-15 [ORW]
 		TPropertyPtr pProp = pDclControl->AddLongProperty( Prop::EventInvoke, PropEnum, 0 );

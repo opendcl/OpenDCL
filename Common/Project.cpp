@@ -126,11 +126,11 @@ void CProject::DeleteForm( TDclFormPtr pDclForm )
 	}
 }
 
-TDclFormPtr CProject::AddForm( FormType nType )
+TDclFormPtr CProject::AddForm( FormType nType, LPCTSTR pszName )
 {
 	TDclFormPtr pNewDclForm = new CDclFormObject( this, nType );
 	pNewDclForm->SetUniqueName( CreateUniqueName() );
-	AddInitializedForm( pNewDclForm );
+	AddInitializedForm( pNewDclForm, pszName );
 	return pNewDclForm;
 }
 
@@ -160,7 +160,7 @@ bool CProject::FindChildForms( TDclFormPtr pParentForm, TDclFormList& ChildForms
 	return bFoundOne;
 }
 
-void CProject::AddInitializedForm( TDclFormPtr pForm )
+void CProject::AddInitializedForm( TDclFormPtr pForm, LPCTSTR pszName /*= NULL*/ )
 {
 	if( !pForm )
 		return;
@@ -169,6 +169,12 @@ void CProject::AddInitializedForm( TDclFormPtr pForm )
 		pUndoManager->setEnabled( false );
 	mDclForms.push_back( pForm );
 	AddDefaultProperties( pForm->GetControlProperties(), -1, -1 ); //add properties to the new dcl form object
+	if( pszName && *pszName )
+	{
+		TDclControlPtr pFormProps = pForm->GetControlProperties();
+		pFormProps->SetStringProperty( Prop::Name, pszName );
+		pFormProps->SetStringProperty( Prop::TitleBarText, pForm->GetKeyName() );
+	}
 	if( pUndoManager )
 	{
 		pUndoManager->setEnabled();

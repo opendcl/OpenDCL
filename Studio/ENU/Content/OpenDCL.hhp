@@ -5,13 +5,12 @@ Contents file=OpenDCL.hhc
 Default Window=Standard
 Default topic=Index.htm
 Display compile progress=No
-Error log file=
 Full-text search=Yes
 Language=0x409 English (United States)
 Title=OpenDCL(tm) Help
 
 [WINDOWS]
-Standard="OpenDCL(tm) Help","OpenDCL.hhc",,"Index.htm","Index.htm",,,,,0x42420,,0x304e,[160,80,800,680],0x10c90000,,,,,,0
+Standard="OpenDCL(tm) Help","OpenDCL.hhc",,"Index.htm","Index.htm",,,,,0x42520,,0x304e,[160,80,800,680],0x10ca0000,,,,,,0
 
 
 [FILES]
@@ -421,7 +420,7 @@ Reference\Method\Grid\DeleteRow.htm
 Reference\Method\Grid\FillList.htm
 Reference\Method\Grid\GetCellCheckState.htm
 Reference\Method\Grid\GetCellDropList.htm
-Reference\Method\Grid\GetCellImage.htm
+Reference\Method\Grid\GetCellImages.htm
 Reference\Method\Grid\GetCellText.htm
 Reference\Method\Grid\GetColumnCells.htm
 Reference\Method\Grid\GetColumnCount.htm
@@ -437,7 +436,7 @@ Reference\Method\Grid\InsertRow.htm
 Reference\Method\Grid\InsertString.htm
 Reference\Method\Grid\SetCellCheckState.htm
 Reference\Method\Grid\SetCellDropList.htm
-Reference\Method\Grid\SetCellImage.htm
+Reference\Method\Grid\SetCellImages.htm
 Reference\Method\Grid\SetCellStyle.htm
 Reference\Method\Grid\SetCellText.htm
 Reference\Method\Grid\SetColumnImage.htm
