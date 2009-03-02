@@ -159,6 +159,27 @@ bool CListViewCtrl::OnApplyProperty( TPropertyPtr pProp )
 				SetExtendedStyle( GetExtendedStyle() & ~LVS_EX_FULLROWSELECT );
 			break;
 		}
+	case Prop::EditLabels:
+		{
+			if( pProp->GetBooleanValue() && mpTemplate->GetLongProperty( Prop::ListViewStyle ) < 4 )
+				ModifyStyle( 0, LVS_EDITLABELS );
+			else
+				ModifyStyle( LVS_EDITLABELS, 0 );
+			break;
+		}
+	case Prop::ListViewSort:
+		{
+			switch( pProp->GetLongValue() )
+			{
+			case 1:
+				ModifyStyle( LVS_SORTASCENDING, LVS_SORTDESCENDING );
+				break;
+			case 2:
+				ModifyStyle( LVS_SORTDESCENDING, LVS_SORTASCENDING );
+				break;
+			}
+			break;
+		}
 	case Prop::MultiSelect:
 		{
 			if( pProp->GetBooleanValue() )

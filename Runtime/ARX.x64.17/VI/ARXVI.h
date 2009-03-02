@@ -10,4 +10,4 @@
 	ACED_ARXCOMMAND_ENTRY_PRAGMA(group, key)
 
 
-extern "C" int ads_queueexpr( ACHAR* pszCommand );
+extern "C" int ads_queueexpr( wchar_t* pszCommand );
