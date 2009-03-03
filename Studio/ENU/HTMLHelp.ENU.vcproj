@@ -12,11 +12,6 @@
 			Name="Win32"
 		/>
 	</Platforms>
-	<ToolFiles>
-		<DefaultToolFile
-			FileName="HTMLHelp.rules"
-		/>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
