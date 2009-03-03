@@ -49,12 +49,12 @@
 		<p>Most form and control properties are stored in the project data. Such 
         property values persist between invocations of the same form. This is 
         important to remember, because in some cases the previous dialog state 
-        should be reset between invocations. In such cases, the project data 
-        could be reloaded from the saved project file, or the persisted 
+        needs to be reset between invocations. To reset the dialog state, the project data 
+        could be reloaded from the  project file or the persisted 
         properties can be reset directly to their initial values. For example, 
         code that populates a list box during
         <a href="../Reference/Event/Initialize.htm">OnInitialize</a> must 
-        consider that it may already have been initialized once before, either 
+        handle the possibility that the list is already initialized either 
         by checking first, or by simply clearing it every time before 
         repopulating it.</p>
 		<p>In some cases, it may be useful to write AutoLISP code to automate a 
