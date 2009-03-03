@@ -173,7 +173,7 @@
 				<param name="Local" value="Reference\Control\Hyperlink.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Kalendar">
+				<param name="Name" value="Kalender">
 				<param name="Local" value="Reference\Control\Calendar.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
@@ -257,7 +257,7 @@
 				<param name="Local" value="Reference\Control\Html.htm">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Winkelw&auml;hler">
+				<param name="Name" value="Winkel">
 				<param name="Local" value="Reference\Control\AngleSlider.htm">
 				</OBJECT>
 		</UL>
@@ -1829,7 +1829,7 @@
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Kalendar">
+				<param name="Name" value="Kalender">
 				<param name="Local" value="Reference\Method\Index.htm#Calendar">
 				</OBJECT>
 			<UL>
