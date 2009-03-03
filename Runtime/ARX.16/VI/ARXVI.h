@@ -8,6 +8,8 @@ typedef char ACHAR;
 
 #include <TChar.h> //needed by acrxEntryPoint.cpp
 
+typedef unsigned char __RPC_FAR *RPC_CSTR;
+
 
 //custom macro for use with command names that include special characters (e.g. hyphens)
 #define ACED_ARXCOMMAND_ENTRY_KEY_AUTO(classname, key, group, globCmd, locCmd, cmdFlags, UIContext) \

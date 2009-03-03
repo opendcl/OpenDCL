@@ -7,7 +7,7 @@
 	IntermediateDirectory="$(ConfigurationName)">
 	<Tool
 		Name="VCCLCompilerTool"
-		AdditionalIncludeDirectories=".\;..\;&quot;.\VI&quot;;&quot;$(ARX2008#64)\Inc&quot;;&quot;$(MSVC8)\Include&quot;;&quot;$(MSVC8)\ATLMFC\Include&quot;"
+		AdditionalIncludeDirectories=".\;..\;&quot;.\VI&quot;;&quot;$(ARX2008#64)\Inc&quot;;&quot;$(MSVC8)\Include&quot;;&quot;$(MSVC8)\ATLMFC\Include&quot;;&quot;$(MSVC8)\PlatformSDK\Include&quot;"
 		PreprocessorDefinitions="_ACADTARGET=17"
 		UsePrecompiledHeader="2"
 	/>
@@ -17,7 +17,7 @@
 	/>
 	<Tool
 		Name="VCLinkerTool"
-		AdditionalLibraryDirectories="&quot;$(ARX2008#64)\Lib&quot;;&quot;$(MSVC8)\Lib\AMD64&quot;;&quot;$(MSVC8)\ATLMFC\Lib\AMD64&quot;"
+		AdditionalLibraryDirectories="&quot;$(ARX2008#64)\Lib&quot;;&quot;$(MSVC8)\Lib\AMD64&quot;;&quot;$(MSVC8)\ATLMFC\Lib\AMD64&quot;;&quot;$(MSVC8)\PlatformSDK\Lib\AMD64&quot;"
 		AdditionalDependencies="&quot;$(VCInstallDir)Lib\DelayImp.lib&quot;"
 		OutputFile="$(OutDir)/$(ProjectName).arx"
 		ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
