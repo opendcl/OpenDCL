@@ -7,7 +7,7 @@
 	IntermediateDirectory="$(ConfigurationName)">
 	<Tool
 		Name="VCCLCompilerTool"
-		AdditionalIncludeDirectories=".\;..\;&quot;.\VI&quot;;&quot;$(ARX2010)\Inc-Win32&quot;;&quot;$(ARX2010)\Inc&quot;;&quot;$(MSVC9)\Include&quot;;&quot;$(MSVC9)\ATLMFC\Include&quot;;&quot;$(MSVC9)\PlatformSDK\Include&quot;"
+		AdditionalIncludeDirectories=".\;..\;&quot;.\VI&quot;;&quot;$(ARX2010)\Inc-Win32&quot;;&quot;$(ARX2010)\Inc&quot;;&quot;$(MSVC9)\Include&quot;;&quot;$(MSVC9)\ATLMFC\Include&quot;;&quot;$(MSSDK)\Include&quot;"
 		PreprocessorDefinitions="_ACADTARGET=18"
 		UsePrecompiledHeader="2"
 	/>
@@ -17,7 +17,7 @@
 	/>
 	<Tool
 		Name="VCLinkerTool"
-		AdditionalLibraryDirectories="&quot;$(ARX2010)\Lib-Win32&quot;;&quot;$(MSVC9)\Lib&quot;;&quot;$(MSVC9)\ATLMFC\Lib&quot;;&quot;$(MSVC9)\PlatformSDK\Lib&quot;"
+		AdditionalLibraryDirectories="&quot;$(ARX2010)\Lib-Win32&quot;;&quot;$(MSVC9)\Lib&quot;;&quot;$(MSVC9)\ATLMFC\Lib&quot;;&quot;$(MSSDK)\Lib&quot;"
 		AdditionalDependencies="&quot;$(VCInstallDir)Lib\DelayImp.lib&quot;"
 		OutputFile="$(OutDir)/$(ProjectName).arx"
 		ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
