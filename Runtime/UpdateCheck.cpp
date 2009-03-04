@@ -397,7 +397,7 @@ LRESULT CALLBACK TrayIconWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 			NI.uCallbackMessage = WM_MMTRAY_NOTIFY;
 			NI.hIcon = LoadIcon( theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE(IDR_MAINFRAME) );
 			lstrcpyn( NI.szTip, CString( pParams->sMessage ), _elements(NI.szTip) );
-		#if (_WIN32_IE >= 0x0500)
+		#if (_WIN32_WINNT >= 0x0500)
 			if( !isUsingShellV1() )
 			{
 				NI.uFlags |= NIF_INFO;
@@ -408,7 +408,7 @@ LRESULT CALLBACK TrayIconWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 			}
 		#endif
 			Shell_NotifyIcon( NIM_ADD, &NI );
-		#if (_WIN32_IE >= 0x0500)
+		#if (_WIN32_WINNT >= 0x0500)
 			if( !isUsingShellV1() )
 			{
 				UINT nTimeout = NI.uTimeout;
@@ -436,19 +436,19 @@ LRESULT CALLBACK TrayIconWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 		}
 		case WM_ACTIVATEAPP:
 		{
-		#if (_WIN32_IE >= 0x0501)
+		#if (_WIN32_WINNT >= 0x0501)
 			if( !((UpdateNotificationParams_t*)GetWindowLongPtr( hwnd, GWLP_USERDATA ))->sAction.IsEmpty() )
 				SendMessage( hwnd, WM_MMTRAY_NOTIFY, 0, NIN_BALLOONUSERCLICK );
-		#endif //(_WIN32_IE >= 0x0501)
+		#endif //(_WIN32_WINNT >= 0x0501)
 			break;
 		}
 		case WM_MMTRAY_NOTIFY:
 		{
 			switch( lParam )
 			{
-			#if (_WIN32_IE >= 0x0501)
+			#if (_WIN32_WINNT >= 0x0501)
 				case NIN_BALLOONUSERCLICK:
-			#endif //(_WIN32_IE >= 0x0501)
+			#endif //(_WIN32_WINNT >= 0x0501)
 				case WM_LBUTTONDOWN:
 				{
 					CString sAction = ((UpdateNotificationParams_t*)GetWindowLongPtr( hwnd, GWLP_USERDATA ))->sAction;

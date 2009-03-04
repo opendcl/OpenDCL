@@ -1205,30 +1205,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\SharedRes.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\SharedRes.rc"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCResourceCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCResourceCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\Common\StdDropSource.cpp"
 				>
 			</File>
