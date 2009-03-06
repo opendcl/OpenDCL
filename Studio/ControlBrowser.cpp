@@ -1075,6 +1075,7 @@ void CControlBrowser::OnDestroy()
 
 BOOL CControlBrowser::OnInitDialog()
 {
+	SetIcon( LoadIcon( theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE( IDI_CONTROLBROWSER ) ), FALSE );
 	__super::OnInitDialog();
 
 	mImageList.Create( 16, 16, ILC_COLOR | ILC_MASK, 1, 1 );

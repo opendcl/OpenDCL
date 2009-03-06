@@ -164,6 +164,7 @@ CDclFormView* CStudioFrame::OpenDclFormView( TDclFormPtr pDclForm )
 		pFormView = (CDclFormView*)pDclFormFrame->CreateView( &ctxtFormView );
 		if( !pFormView )
 			return NULL;
+
 		pFormView->SetScaleToFitSize( CSize( 1200, 800 ) );
 		pFormView->SetSourceForm( pDclForm );
 		pDclFormFrame->SetDialogObject( pFormView->GetDialogObject() );

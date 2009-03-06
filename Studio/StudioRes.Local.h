@@ -533,6 +533,8 @@
 #define IDI_SPLITTER                    16532
 #define IDI_HATCH                       16533
 #define IDI_ACTIVEX                     16534
+#define IDI_FORMEDITOR                  16535
+#define IDI_CONTROLBROWSER              16536
 #define IDC_HANDICON                    17000
 #define IDD_WINCOLORDIALOG              18000
 #define IDD_TOOLTIPS                    18001

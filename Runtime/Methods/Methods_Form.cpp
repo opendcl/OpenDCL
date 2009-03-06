@@ -67,8 +67,10 @@ ADSRESULT Form::Close()
 
 	CPoint ptXlate( 0, 0 );
 	pDlgObject->GetControlWnd()->ClientToScreen( &ptXlate );
-	ads_point ptUL = { ptXlate.x, ptXlate.y, 0 };
-	acedRetPoint( ptUL ); //return the upper left corner as a 2D point
+	resbuf rbPosition = { NULL, RTPOINT };
+	rbPosition.resval.rpoint[X] = ptXlate.x;
+	rbPosition.resval.rpoint[Y] = ptXlate.y;
+	acedRetVal( &rbPosition );
 
 	pDlgObject->CloseDialog( nStatus );
 

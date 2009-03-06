@@ -40,8 +40,9 @@ public:
 // Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
-	afx_msg BOOL OnNcActivate(BOOL bActive);
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
+	afx_msg BOOL OnNcActivate(BOOL bActive);
 	afx_msg void OnWindowMinimize();
 	afx_msg void OnUpdateWindowMinimize(CCmdUI *pCmdUI);
 	afx_msg void OnWindowMaximize();

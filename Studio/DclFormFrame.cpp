@@ -16,8 +16,9 @@
 IMPLEMENT_DYNCREATE(CDclFormFrame, CMDIChildWnd)
 
 BEGIN_MESSAGE_MAP(CDclFormFrame, CMDIChildWnd)
-	ON_WM_NCACTIVATE()
+	ON_WM_CREATE()
 	ON_WM_DESTROY()
+	ON_WM_NCACTIVATE()
 	ON_COMMAND(AFX_IDS_SCMINIMIZE, &CDclFormFrame::OnWindowMinimize)
 	ON_UPDATE_COMMAND_UI(AFX_IDS_SCMINIMIZE, &CDclFormFrame::OnUpdateWindowMinimize)
 	ON_COMMAND(AFX_IDS_SCMAXIMIZE, &CDclFormFrame::OnWindowMaximize)
@@ -66,6 +67,16 @@ void CDclFormFrame::Dump(CDumpContext& dc) const
 
 // CDclFormFrame message handlers
 
+
+int CDclFormFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CMDIChildWnd::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	SetIcon( LoadIcon( theWorkspace.GetLocalResourceModule(), MAKEINTRESOURCE( IDI_FORMEDITOR ) ), FALSE );
+
+	return 0;
+}
 
 void CDclFormFrame::OnDestroy()
 {
