@@ -91,6 +91,42 @@ HMODULE CArxWorkspace::GetResourceModule() const
 	return _hdllInstance;
 }
 
+CString CArxWorkspace::GetLanguage(void) const
+{
+	CString sLanguage = __super::GetLanguage();
+	if( !sLanguage.IsEmpty() )
+		return sLanguage;
+	resbuf rbLocale = { NULL };
+	if( RTNORM != acedGetVar( _T("LOCALE"), &rbLocale ) )
+		return sLanguage;
+	CString sLocale = rbLocale.resval.rstring;
+	
+	CString sRootFolder;
+	int cchPath = ::GetModuleFileName( GetResourceModule(), sRootFolder.GetBuffer( MAX_PATH ), MAX_PATH );
+	sRootFolder.ReleaseBuffer( cchPath );
+	if( !sRootFolder.IsEmpty() )
+	{
+		sRootFolder.MakeReverse();
+		sRootFolder = sRootFolder.Mid( sRootFolder.SpanExcluding( _T("\\/:") ).GetLength() );
+		sRootFolder.MakeReverse();
+		if( INVALID_FILE_ATTRIBUTES != GetFileAttributes( sRootFolder + sLocale ) )
+			sLanguage = sLocale;
+		else
+		{ //search for something close
+			CString sFind = sRootFolder + sLocale.Left( 2 ) + _T("?.");
+			WIN32_FIND_DATA FD;
+			HANDLE hFF = FindFirstFile( sFind, &FD );
+			if( hFF != INVALID_HANDLE_VALUE )
+			{
+				sLanguage = FD.cFileName;
+				FindClose( hFF );
+			}
+		}
+	}
+
+	return sLanguage;
+}
+
 CString CArxWorkspace::FindFile( LPCTSTR pszFilePath ) const
 {
 	CString sPath;

@@ -88,10 +88,13 @@ ADSRESULT ImageComboBox::GetItem()
 
 	CComboBoxEx* pCtrl = (CComboBoxEx*)pDlgControl->GetControlWnd();
 
+	TCHAR szText[1024];
 	COMBOBOXEXITEM cbi =
 	{
 		(CBEIF_TEXT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE | CBEIF_INDENT),
 		nItem,
+		szText,
+		_elements(szText),
 	};
 	if( pCtrl->GetItem( &cbi ) )
 		ReturnItem( cbi );

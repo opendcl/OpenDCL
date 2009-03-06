@@ -5,7 +5,6 @@
 #include "Methods_FileExplorer.h"
 #include "ArgumentsRetrieval.h"
 #include "CustomFileDialog.h"
-#include "UserMessageId.h"
 
 
 ADSRESULT FileExplorer::GetFileName()

@@ -37,26 +37,23 @@ public:
 
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CEventsTabPane)
 	public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
 	// Generated message map functions
-	//{{AFX_MSG(CEventsTabPane)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnChangeDefunedit();
 	afx_msg void OnAddcancel();
 	afx_msg void OnAddtolisp();
 	afx_msg void OnCopytoclipboard();
+	afx_msg void OnDblClkEventstree();
 	afx_msg void OnSelchangeEventstree();
-	//}}AFX_MSG
 	afx_msg void OnCheckChanged();
 	DECLARE_MESSAGE_MAP()
 };

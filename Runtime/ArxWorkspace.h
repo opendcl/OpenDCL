@@ -66,6 +66,7 @@ public:
 	virtual CString GetUserProfilePrefix() const;
 	virtual HMODULE GetThisModule(void) const;
 	virtual HMODULE GetResourceModule() const;
+	virtual CString GetLanguage(void) const;
 	virtual FontSettings GetDefaultFontSettings() const;
 	virtual bool DisplayAlert( LPCTSTR pszMessage ) const; //display alert dialog; returns true if displayed, false if suppressed
 	virtual bool DisplayStatus( LPCTSTR pszMessage ) const; //display modeless status message; returns true if displayed, false if suppressed

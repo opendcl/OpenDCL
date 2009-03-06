@@ -13,6 +13,7 @@ class CTreeNode;
 class CControlBrowser : public CResizableDialog
 {
 	TDclControlPtr mpDclControl;
+	Prop::Id mnInitialProp;
 	CImageList mImageList;
 	CTreeCtrl mObjectTree;
 	bool mbClosing;
@@ -63,7 +64,8 @@ class CControlBrowser : public CResizableDialog
 	enum { IDD = IDD_CONTROLBROWSER };
 
 public:
-	CControlBrowser(TDclControlPtr pDclControl, CWnd* pParent = NULL);   // standard constructor
+	CControlBrowser( TDclControlPtr pDclControl, CWnd* pParent = NULL );   // standard constructor
+	CControlBrowser( TPropertyPtr pProp, CWnd* pParent = NULL );   // standard constructor
 	virtual ~CControlBrowser();
 
 public:

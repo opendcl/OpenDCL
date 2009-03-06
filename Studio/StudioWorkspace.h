@@ -39,6 +39,7 @@ public:
 	virtual CString GetLocalResourceModuleFilename() const { return _T("Studio.Res.dll"); }
 	virtual void SetModified( bool bModified = true );
 	virtual TStudioProjectPtr GetActiveProject() const;
+	virtual CString GetLanguage(void) const;
 	virtual FontSettings GetDefaultFontSettings() const;
 	virtual void OnGridSpacingChange( UINT nGridSpacing ); // change grid spacing
 

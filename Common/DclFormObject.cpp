@@ -5,7 +5,6 @@
 #include "DclFormObject.h"
 #include "DclControlObject.h"
 #include "UndoManager.h"
-#include "UserMessageID.h"
 #include "PropertyIds.h"
 #include "PropertyObject.h"
 #include "ArchiveEx.h"

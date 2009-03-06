@@ -58,17 +58,17 @@ bool CAcadPaletteHost::Create( LPCTSTR lpszTitle, CRect rect )
 {
 	bool bDisabled = (mpParent && !mpParent->IsWindowEnabled());
 	if( !CAdUiPaletteSet::Create( lpszTitle,
-																WS_OVERLAPPED | WS_DLGFRAME | WS_VISIBLE | (bDisabled? WS_DISABLED : 0) /*| WS_CLIPCHILDREN*/,
+																WS_OVERLAPPED/* | WS_DLGFRAME*/ | WS_VISIBLE | (bDisabled? WS_DISABLED : 0) /*| WS_CLIPCHILDREN*/,
 																rect, mpParent,
-																PSS_AUTO_ROLLUP/* | PSS_PROPERTIES_MENU*/ | PSS_CLOSE_BUTTON | PSS_SNAP ) )
+																PSS_AUTO_ROLLUP | PSS_PROPERTIES_MENU | PSS_CLOSE_BUTTON | PSS_SNAP | PSS_USE_SINGLE_PALETTE_TAB_NAME ) )
 		return false;
 	ModifyStyleEx( 0, WS_EX_CONTROLPARENT );
-	__if_exists(idPinBtn)
-	{
-	CWnd* pPinBtn = GetDlgItem( idPinBtn );
-	if( pPinBtn )
-		pPinBtn->DestroyWindow();
-	}
+	//__if_exists(idPinBtn)
+	//{
+	//CWnd* pPinBtn = GetDlgItem( idPinBtn );
+	//if( pPinBtn )
+	//	pPinBtn->DestroyWindow();
+	//}
 	return true;
 }
 
@@ -90,6 +90,17 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CAcadPaletteHost message handlers
 
+
+BOOL CAcadPaletteHost::OnCommand (WPARAM wParam, LPARAM lParam)
+{
+	if( wParam == ID_ADUI_HIDEBAR )
+	{ //ignore Hide command and close instead
+		__super::OnClosing();
+		mpDlgObject->CloseDialog( IDCANCEL );
+		return TRUE;
+	}
+	return __super::OnCommand( wParam, lParam );
+}
 
 bool CAcadPaletteHost::CanFrameworkTakeFocus ()
 {

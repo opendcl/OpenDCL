@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "OleOdcDropTarget.h"
 #include "InvokeMethod.h"
-#include "UserMessageId.h"
 #include "ArxDwgListCtrl.h"
 #include "ImageTreectrl.h"
 #include "AxContainerCtrl.h"

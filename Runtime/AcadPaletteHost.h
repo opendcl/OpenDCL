@@ -51,6 +51,7 @@ private:
 protected:
 	DECLARE_MESSAGE_MAP()
 
+  virtual BOOL OnCommand (WPARAM wParam, LPARAM lParam);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnDestroy();
 	afx_msg LRESULT OnMouseEnter(WPARAM wParam, LPARAM lParam);

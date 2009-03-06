@@ -9,6 +9,7 @@
 #include "DclFormObject.h"
 #include "Resource.h"
 #include "PropertyObject.h"
+#include "ControlBrowser.h"
 #include "AxEventDescriptor.h"
 #include "AxInterfaceDescriptor.h"
 #include "OpenDCLDoc.h"
@@ -49,6 +50,7 @@ void CEventsTabPane::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CEventsTabPane, CDialog)
 	ON_WM_SIZE()
 	ON_LBN_SELCHANGE(IDC_EVENTSTREE, OnSelchangeEventstree)
+	ON_LBN_DBLCLK(IDC_EVENTSTREE, OnDblClkEventstree)
 	ON_CLBN_CHKCHANGE(IDC_EVENTSTREE, OnCheckChanged)
 	ON_EN_CHANGE(IDC_DEFUNEDIT, OnChangeDefunedit)
 	ON_BN_CLICKED(IDC_ADDCANCEL, OnAddcancel)
@@ -439,7 +441,29 @@ void CEventsTabPane::OnAddtolisp()
 		e->Delete();
 	}
 
-	MessageBox( theWorkspace.LoadResourceString( IDS_FUNCADDED ), theWorkspace.GetAppKey(), MB_OK );
+	theWorkspace.DisplayAlert( IDS_FUNCADDED );
+}
+
+void CEventsTabPane::OnDblClkEventstree() 
+{
+	if( !mpDclControl )
+		return;
+	
+	int nCurSel = mEventsList.GetCurSel();
+	if( nCurSel < 0 )
+		return;
+
+	CString sItemText;
+	mEventsList.GetText( nCurSel, sItemText );   		
+	if( sItemText.IsEmpty() )
+		return;
+
+	TPropertyPtr pProp = mpDclControl->FindPropertyObject( sItemText );
+	if( !pProp )
+		return;
+
+	CControlBrowser ControlBrowserDlg( pProp );
+	ControlBrowserDlg.DoModal();
 }
 
 void CEventsTabPane::OnSelchangeEventstree() 
@@ -451,7 +475,6 @@ void CEventsTabPane::OnSelchangeEventstree()
 	if( nCurSel < 0 )
 		return;
 
-	// get the selected item's text
 	CString sItemText;
 	mEventsList.GetText( nCurSel, sItemText );   		
 	if( sItemText.IsEmpty() )

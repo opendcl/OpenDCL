@@ -335,10 +335,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\EventsCheckTree.h"
-				>
-			</File>
-			<File
 				RelativePath=".\EventsTabPane.h"
 				>
 			</File>
@@ -649,10 +645,6 @@
 			</File>
 			<File
 				RelativePath=".\DropListContents.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\EventsCheckTree.cpp"
 				>
 			</File>
 			<File
@@ -1246,10 +1238,6 @@
 			</File>
 			<File
 				RelativePath="..\Common\UndoManager.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\UserMessageID.h"
 				>
 			</File>
 			<File

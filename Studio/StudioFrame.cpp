@@ -115,7 +115,7 @@ TDclFormPtr CStudioFrame::AddNewDclFormView( FormType nType )
 	UINT nFormId = 1;
 	CString sFormName;
 	bool bFoundUnusedName = false;
-	CString sFormBase = GetControlDisplayName( _CtlForm );
+	CString sFormBase = GetControlSimpleName( _CtlForm );
 	while( !bFoundUnusedName )
 	{
 		sFormName.Format( _T("%s%d"), (LPCTSTR)sFormBase, nFormId++ );

@@ -308,7 +308,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 	switch( type )
 	{
 	case CtlFileExplorer:
-		pDclControl = mpSourceForm->AddControl( CtlFileExplorer, GetControlDisplayName( CtlFileExplorer ), rcControl );
+		pDclControl = mpSourceForm->AddControl( CtlFileExplorer, GetControlSimpleName( CtlFileExplorer ), rcControl );
 		break;
 	case CtlActiveX:
 		{
@@ -316,13 +316,13 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 			CString sLicenseKey;
 			CString sFilename;
 			theStudioWorkspace.GetToolboxPane()->GetActiveXControlInfo( clsid, sLicenseKey, sFilename );
-			pDclControl = mpSourceForm->AddControl( CtlActiveX, GetNextControlName( GetControlApiName( clsid ) ), rcControl );
+			pDclControl = mpSourceForm->AddControl( CtlActiveX, GetNextControlName( GetControlSimpleName( clsid ) ), rcControl );
 			if( pDclControl )
 				pDclControl->SetAxCtrlInfo( clsid, sLicenseKey );
 		}
 		break;
 	case CtlTabStrip:
-		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlDisplayName( CtlTabStrip ) ), rcControl );
+		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlSimpleName( CtlTabStrip ) ), rcControl );
 		if( pDclControl )
 		{
 			pDclControl->GetPropertyObject( Prop::TabsCaption )->AddStringItem( theWorkspace.LoadResourceString( IDS_TAB1 ) );
@@ -331,7 +331,7 @@ TDclControlPtr CStudioDialogObject::InsertControl( ControlType type, const CRect
 		}
 		break;
 	default:
-		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlDisplayName( type ) ), rcControl );
+		pDclControl = mpSourceForm->AddControl( type, GetNextControlName( GetControlSimpleName( type ) ), rcControl );
 		break;
 	}
 	assert( pDclControl != NULL );
@@ -818,7 +818,7 @@ void CStudioDialogObject::OnEditPaste()
 					// if the caption property matches the name, update both
 					CString sCaption = pDclControl->GetStringProperty( Prop::Caption );
 					CString sOldName = pDclControl->GetStringProperty( Prop::Name );
-					CString sNewName = GetNextControlName( GetControlDisplayName( pDclControl->GetType() ) );
+					CString sNewName = GetNextControlName( GetControlSimpleName( pDclControl->GetType() ) );
 					pDclControl->SetStringProperty( Prop::Name, sNewName );
 					if( sOldName == sCaption )
 						pDclControl->SetStringProperty( Prop::Caption, sNewName );
@@ -1061,8 +1061,6 @@ void CStudioDialogObject::OnEditObjectbrowser()
 	TDclControlPtr pActiveControl = theStudioWorkspace.GetActiveDclControl();
 	if( !pActiveControl )
 		return;
-
-	AfxInitRichEdit();
 	CControlBrowser ControlBrowserDlg( pActiveControl );
 	ControlBrowserDlg.DoModal();
 }

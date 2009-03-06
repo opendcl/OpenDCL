@@ -5,6 +5,7 @@
 #include "OpenDCL.h"
 #include "StudioFrame.h"
 #include "OpenDCLDoc.h"
+#include "StdioUnicodeFile.h"
 #include "ProjectPane.h"
 #include "StudioWorkspace.h"
 #include "FontSettings.h"
@@ -143,8 +144,6 @@ BOOL COpenDCLApp::InitInstance()
 	m_pszHelpFilePath = new TCHAR[MAX_PATH];
 	lstrcpyn( (LPTSTR)m_pszHelpFilePath, theWorkspace.FindFile( _T("OpenDCL.chm") ), MAX_PATH );
 
-	AfxInitRichEdit();
-
 	// Standard initialization
 	// If you are not using these features and wish to reduce the size
 	// of your final executable, you should remove from the following
@@ -249,38 +248,15 @@ BOOL CAboutDlg::OnInitDialog()
 	sAppVersion.Format( _T("%d.%d.%d.%d"), dwMajor, dwMinor, dwThird, dwFourth );
 	SetDlgItemText( IDC_APPVERSION, sAppVersion );
 
-	CString sLicenseTxt;
-#ifdef _DEBUG
-	//in the development environment, License.htm is not in the app folder, so search for it
-	sLicenseTxt = theWorkspace.FindFile( _T("License.htm") );
-#else
-	GetModuleFileName( NULL, sLicenseTxt.GetBuffer( MAX_PATH ), MAX_PATH );
-	sLicenseTxt.ReleaseBuffer();
-	sLicenseTxt = sLicenseTxt.Mid( sLicenseTxt.MakeReverse().SpanExcluding( _T("\\/:") ).GetLength() );
-	sLicenseTxt.MakeReverse() += _T("License.htm");
-#endif //_DEBUG
+	CString sLicenseFile = theWorkspace.GetLanguageSubfolderPath() + _T("License.htm");
 	try
 	{
-		CStdioFile file( sLicenseTxt, CFile::modeRead | CFile::shareDenyNone );
-		UINT cbText = (UINT)file.GetLength();
-		WORD wchUnicodeTest;
-		if( sizeof(WORD) == file.Read( &wchUnicodeTest, sizeof(WORD) ) && wchUnicodeTest == 0xFEFF )
-		{
-			CStringW sText;
-			cbText = file.Read( sText.GetBuffer( cbText / 2 ), cbText );
-			sText.ReleaseBuffer( cbText / 2 );
-			CString sHtml( sText );
-			mBrowser.LoadHtmlCode( sHtml );
-		}
-		else
-		{
-			file.SeekToBegin();
-			CStringA sText;
-			cbText = file.Read( sText.GetBuffer( cbText ), cbText );
-			sText.ReleaseBuffer( cbText );
-			CString sHtml( sText );
-			mBrowser.LoadHtmlCode( sHtml );
-		}
+		CString sHtml;
+		CStdioUnicodeFile File( sLicenseFile, CFile::modeRead | CFile::shareDenyNone );
+		CString sLine;
+		while( File.ReadString( sLine ) )
+			sHtml += sLine;
+		mBrowser.LoadHtmlCode( sHtml );
 	}
 	catch( CFileException* e )
 	{

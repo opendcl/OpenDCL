@@ -1572,10 +1572,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\UserMessageID.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Common\VarUtils.Cpp"
 				>
 			</File>

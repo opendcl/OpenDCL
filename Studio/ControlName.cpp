@@ -81,6 +81,39 @@ CString GetControlDisplayName( CLSID clsid )
 }
 
 
+CString GetControlSimpleName( ControlType type )
+{
+	CString sDisplayName = GetControlDisplayName( type );
+	CString sSimpleName;
+	int cchDisplayName = sDisplayName.GetLength();
+	for( int idx = 0; idx < cchDisplayName; ++idx )
+	{
+		TCHAR chThis = sDisplayName.GetAt( idx );
+		if( (chThis >= _T('A') && chThis <= _T('Z')) ||
+				(chThis >= _T('a') && chThis <= _T('z')) )
+			sSimpleName += chThis;
+	}
+	if( !sSimpleName.IsEmpty() )
+		return sSimpleName;
+	return GetControlApiName( type );
+}
+
+
+CString GetControlSimpleName( CLSID clsid )
+{
+	static const TCHAR szAllowedChars[] = _T("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_-");
+	CString sApiName;
+	CString sDisplayName = GetControlDisplayName( clsid );
+	while( !sDisplayName.IsEmpty() )
+	{
+		CString sApiNamePart = sDisplayName.SpanIncluding( szAllowedChars );
+		sDisplayName = sDisplayName.Mid( sApiNamePart.GetLength() + sDisplayName.SpanExcluding( szAllowedChars ).GetLength() );
+		sApiName += sApiNamePart;
+	}
+	return sApiName;
+}
+
+
 CString GetControlApiName( ControlType type )
 {
 	switch (type)
@@ -131,19 +164,4 @@ CString GetControlApiName( TDclControlPtr pDclControl )
 	if( !pDclControl )
 		return NULL;
 	return GetControlApiName( pDclControl->GetType() );
-}
-
-
-CString GetControlApiName( CLSID clsid )
-{
-	static const TCHAR szAllowedChars[] = _T("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_-");
-	CString sApiName;
-	CString sDisplayName = GetControlDisplayName( clsid );
-	while( !sDisplayName.IsEmpty() )
-	{
-		CString sApiNamePart = sDisplayName.SpanIncluding( szAllowedChars );
-		sDisplayName = sDisplayName.Mid( sApiNamePart.GetLength() + sDisplayName.SpanExcluding( szAllowedChars ).GetLength() );
-		sApiName += sApiNamePart;
-	}
-	return sApiName;
 }

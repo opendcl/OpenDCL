@@ -901,14 +901,24 @@ bool CTreeNode::addEvent( CControlBrowser& Browser, HTREEITEM hParent, TProperty
 
 // CControlBrowser dialog
 
-CControlBrowser::CControlBrowser(TDclControlPtr pDclControl, CWnd* pParent /*=NULL*/)
-	: CResizableDialog(CControlBrowser::IDD, pParent)
+CControlBrowser::CControlBrowser( TDclControlPtr pDclControl, CWnd* pParent /*=NULL*/ )
+	: CResizableDialog( CControlBrowser::IDD, pParent )
 	, mpDclControl( pDclControl )
+	, mnInitialProp( Prop::_Private )
 	, mDescription( *this )
 	, mbClosing( false )
 	, mszPrevious( -1, -1 )
 {
+}
 
+CControlBrowser::CControlBrowser( TPropertyPtr pProp, CWnd* pParent /*=NULL*/ )
+	: CResizableDialog( CControlBrowser::IDD, pParent )
+	, mpDclControl( pProp->GetOwnerControl() )
+	, mnInitialProp( pProp->GetID() )
+	, mDescription( *this )
+	, mbClosing( false )
+	, mszPrevious( -1, -1 )
+{
 }
 
 CControlBrowser::~CControlBrowser()
@@ -1085,8 +1095,29 @@ BOOL CControlBrowser::OnInitDialog()
 	else
 		pMain = new CDclControlNode( mpDclControl );
 	HTREEITEM htiControl = InsertItem( TVI_ROOT, pMain );
-	mObjectTree.SelectItem( htiControl );
 	mObjectTree.Expand( htiControl, TVE_EXPAND );
+	if( mnInitialProp != Prop::_Private )
+	{
+		CString sPropName = GetPropertyName( mnInitialProp );
+		HTREEITEM hCursor = NULL;
+		for( hCursor = mObjectTree.GetChildItem( htiControl );
+				 hCursor;
+				 hCursor = mObjectTree.GetNextSiblingItem( hCursor ) )
+		{
+			int nImage = -1;
+			int nSelImage = -1;
+			mObjectTree.GetItemImage( hCursor, nImage, nSelImage );
+			if( (nImage == 4 || nImage == 2) && sPropName == mObjectTree.GetItemText( hCursor ) )
+			{
+				mObjectTree.SelectItem( hCursor );
+				break;
+			}
+		}
+		if( !hCursor )
+			mObjectTree.SelectItem( htiControl );
+	}
+	else
+		mObjectTree.SelectItem( htiControl );
 
 	ShowSizeGrip( TRUE );
 

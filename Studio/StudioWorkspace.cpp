@@ -38,6 +38,14 @@ CStudioWorkspace::~CStudioWorkspace()
 {
 }
 
+CString CStudioWorkspace::GetLanguage(void) const
+{
+	CString sLanguage = __super::GetLanguage();
+	if( !sLanguage.IsEmpty() )
+		return sLanguage;
+	return _T("ENU");
+}
+
 TStudioProjectPtr CStudioWorkspace::GetActiveProject() const
 {
 	COpenDCLDoc* pDoc = (COpenDCLDoc*)GetActiveDocument();

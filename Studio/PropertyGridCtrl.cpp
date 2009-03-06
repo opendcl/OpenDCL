@@ -14,6 +14,7 @@
 #include "StudioUndoManager.h"
 #include "AxContainerCtrl.h"
 #include "PropEnumNames.h"
+#include "ControlBrowser.h"
 #include "FilteredEditCtrl.h"
 #include "DynamicButtonCtrl.h"
 #include "UnsignedIntegerFilter.h"
@@ -1709,6 +1710,7 @@ BEGIN_MESSAGE_MAP(CPropertyGridCtrl, CListCtrl)
 	ON_WM_NCCALCSIZE()	
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONDBLCLK()
 	ON_WM_HSCROLL()
 	ON_WM_VSCROLL()
 	ON_WM_WINDOWPOSCHANGING()
@@ -1784,7 +1786,6 @@ BOOL CPropertyGridCtrl::PreTranslateMessage(MSG* pMsg)
 
 void CPropertyGridCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-
 	int nRow = -1;
 	int nCol = -1;
 	if( CellHitTest( point, nRow, nCol ) )
@@ -1807,6 +1808,26 @@ void CPropertyGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	HideEditControls();
 	__super::OnLButtonDown(nFlags, point);
+}
+
+void CPropertyGridCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
+{
+	int nRow = -1;
+	int nCol = -1;
+	if( !CellHitTest( point, nRow, nCol ) || nRow < 0 || nCol != 0 )
+	{
+		__super::OnLButtonDblClk(nFlags, point);
+		return;
+	}
+	TPropertySet Props = GetPropertySet( nRow );
+	if( Props.size() != 1 )
+	{
+		__super::OnLButtonDblClk(nFlags, point);
+		return;
+	}
+	HideEditControls();
+	CControlBrowser ControlBrowserDlg( Props.front() );
+	ControlBrowserDlg.DoModal();
 }
 
 void CPropertyGridCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
