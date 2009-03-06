@@ -23651,7 +23651,7 @@
             {
             "Name" = "8:OpenDCL Studio"
             "Arguments" = "8:"
-            "Description" = "8:"
+            "Description" = "8:Launch OpenDCL Studio"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:10"
             "Transitive" = "11:FALSE"
@@ -23679,7 +23679,7 @@
             {
             "Name" = "8:OpenDCL Studio"
             "Arguments" = "8:"
-            "Description" = "8:"
+            "Description" = "8:Launch OpenDCL Studio"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:10"
             "Transitive" = "11:FALSE"
