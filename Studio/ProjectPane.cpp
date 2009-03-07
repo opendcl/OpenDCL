@@ -97,7 +97,7 @@ CProjectPane::CProjectPane()
 , mhtiPassword( NULL )
 , mhtiAxFilesParent( NULL )
 {
-	mTreeImageList.Create( 16, 16, ILC_COLOR | ILC_MASK, 11, 0 );
+	mTreeImageList.Create( 16, 16, ILC_COLOR4 | ILC_MASK, 11, 0 );
 	
 	HINSTANCE hInstResource = AfxFindResourceHandle(MAKEINTRESOURCE(IDI_OPENFOLDER), RT_GROUP_ICON);
 	mTreeImageList.Add(LoadIcon(hInstResource, MAKEINTRESOURCE(IDI_OPENFOLDER)));

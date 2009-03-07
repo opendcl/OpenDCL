@@ -1324,11 +1324,11 @@ void CGridCtrl::DrawOptionButton( CDC& cdc, const CRect& rcIcon, bool bPressed, 
 		{
 			mOptionButtonImageList.Create( 13, 13, ILC_COLOR8 | ILC_MASK, 0, 1 );
 			CBitmap bmpNon;
-			bmpNon.LoadBitmap(IDB_OPTBTN);
+			bmpNon.LoadBitmap( IDB_OPTBTN );
 			mOptionButtonImageList.Add( &bmpNon, RGB(255,0,255) );
 
 			CBitmap bmpSel;
-			bmpSel.LoadBitmap(IDB_OPTBTNSEL);
+			bmpSel.LoadBitmap( IDB_OPTBTNSEL );
 			mOptionButtonImageList.Add( &bmpSel, RGB(255,0,255) );
 
 			//CBitmap bmpNonH;

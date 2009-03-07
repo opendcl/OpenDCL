@@ -65,7 +65,7 @@ CZOrderListBox::CZOrderListBox()
 , mptDragStart( -1, -1 )
 , midxInsertAt( -1 )
 {
-	mImageList.Create( 16, 16, ILC_COLOR | ILC_MASK, _CtlMax - _CtlFirst + 1, 1 );
+	mImageList.Create( 16, 16, ILC_COLOR4 | ILC_MASK, _CtlMax - _CtlFirst + 1, 1 );
 	for( ControlType nCtrlType = _CtlFirst; nCtrlType <= _CtlMax; ++(int&)nCtrlType )
 		mImageList.Add( GetControlTypeIcon( nCtrlType ) );
 	if( !mFont.CreatePointFont( 80, theStudioWorkspace.GetDefaultFontName() ) )

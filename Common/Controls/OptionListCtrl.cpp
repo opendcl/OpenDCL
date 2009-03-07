@@ -21,7 +21,7 @@ COptionListCtrl::COptionListCtrl( TDclControlPtr pTemplate, CControlPane* pPane,
 , mnRowHeight( 20 )
 , mbTrackingMouse( false )
 {
-	mImageList.Create(13, 13, ILC_COLOR8 | ILC_MASK, 0, 1);
+	mImageList.Create( 13, 13, ILC_COLOR8 | ILC_MASK, 4, 1 );
 	
 	CBitmap bitmap1;
 	bitmap1.LoadBitmap(IDB_OPTBTN);

@@ -476,9 +476,9 @@ bool CArxDwgListCtrl::OnApplyProperty( TPropertyPtr pProp )
 void CArxDwgListCtrl::CreateImageList()
 {
 	CBitmap bitmap;
-	bitmap.LoadBitmap(IDB_FOLDER);
-	m_imageList.Create(16, 16, ILC_COLOR24, 10, 5);
-	m_imageList.Add(&bitmap, RGB(0,0,0));
+	bitmap.LoadBitmap( IDB_FOLDER );
+	m_imageList.Create( 16, 16, ILC_COLOR24, 10, 5 );
+	m_imageList.Add( &bitmap, RGB(0,0,0) );
 }
 
 void CArxDwgListCtrl::ClearThumbnailList()

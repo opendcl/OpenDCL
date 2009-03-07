@@ -167,7 +167,7 @@ static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList,
 			}
 
 			// create the image list
-			if( !ImageList.Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | (bApplyMask? ILC_MASK : 0), 0, 1) )
+			if( !ImageList.Create(sizePic.cx, sizePic.cy, ILC_COLOR32 | (bApplyMask? ILC_MASK : 0), 0, 1) )
 				bSuccess = false;
 
 			// set the background color of the image list
@@ -207,11 +207,12 @@ static bool ImageListAddPicture(CPictureHolder* pPicture, CImageList& ImageList,
 			}
 
 			// create the image list
-			if( !ImageList.Create(sizePic.cx, sizePic.cy, ILC_COLOR8 | (bApplyMask? ILC_MASK : 0), 1, 1) )
+			if( !ImageList.Create(sizePic.cx, sizePic.cy, ILC_COLOR32 | (bApplyMask? ILC_MASK : 0), 1, 1) )
 				bSuccess = false;
 
 			// set the background color of the image list
-			ImageList.SetBkColor(RGB(255,255,255));		
+			if( !bApplyMask )
+				ImageList.SetBkColor(RGB(255,255,255));		
 		}
 		// add icon to image list
 		if( ImageList.Add(hIcon) == -1 )
@@ -338,7 +339,7 @@ HICON CPictureObject::CloneIcon() const
 			{
 				// add the bitmap to a image list for extraction
 				CImageList ImageList;
-				ImageList.Create(msizePic.cx, msizePic.cy, ILC_COLOR | ILC_MASK, 1, 1);
+				ImageList.Create(msizePic.cx, msizePic.cy, ILC_COLOR32 | ILC_MASK, 1, 1);
 				ImageList.Add(CBitmap::FromHandle(hbmpClone), rgbLightGrey);
 				HICON hIcon = ImageList.ExtractIcon(0);
 				ImageList.DeleteImageList();
@@ -477,7 +478,7 @@ void CPictureObject::LoadFile( LPCTSTR szFile, bool bApplyMask /*= false*/ )
 //		m_hPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hIconPic);
 //
 //		CImageList il;
-//		il.Create(msizePic.cx, msizePic.cy, ILC_COLOR8 | ILC_MASK, 1, 1);
+//		il.Create(msizePic.cx, msizePic.cy, ILC_COLOR32 | ILC_MASK, 1, 1);
 //		il.Add(hIconPic);
 //    writeImageList(pFile, fileName, il);
 //		il.DeleteImageList();
@@ -512,7 +513,7 @@ void CPictureObject::Serialize(CArchive& ar)
 				HICON hIconPic = NULL;
 				m_hPicture.m_pPict->get_Handle((OLE_HANDLE FAR *) &hIconPic); // get handle of the icon
 				CImageList ImageList;
-				ImageList.Create(msizePic.cx, msizePic.cy, ILC_COLOR8 | ILC_MASK, 1, 1);
+				ImageList.Create(msizePic.cx, msizePic.cy, ILC_COLOR32 | ILC_MASK, 1, 1);
 				ImageList.Add(hIconPic);
 				ar.Flush();
 				ULONGLONG lPos1 = ar.GetFile()->GetPosition();

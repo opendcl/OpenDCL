@@ -39,7 +39,7 @@ const int SHX_FONTTYPE = 6;
 CFontCombo::CFontCombo()
 {
 	// Load up glyphs
-	m_img.Create(15,13,ILC_COLOR | ILC_MASK, 1, 1);
+	m_img.Create( 15, 13, ILC_COLOR4 | ILC_MASK, 1, 1 );
 	HINSTANCE hInstResource = AfxFindResourceHandle(MAKEINTRESOURCE(IDI_TTFONT), RT_GROUP_ICON);
 	HICON hIcon = (HICON)::LoadImage(hInstResource, MAKEINTRESOURCE(IDI_TTFONT), IMAGE_ICON, 0, 0, 0);	
 	m_img.Add(hIcon);

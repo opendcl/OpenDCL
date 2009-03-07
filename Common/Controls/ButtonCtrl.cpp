@@ -145,8 +145,8 @@ void CButtonCtrl::SetResourceIcon(UINT idIcon)
 	//dimensions (the default cursor hotspot for resource loaded icons is the lower right corner, which 
 	//causes CButtonST::SetIcon() to calculate incorrect icon dimensions)  2007-03-01 [ORW]
 	CImageList imglistIcon;
-	imglistIcon.Create( ii.xHotspot, ii.yHotspot, ILC_COLOR | ILC_MASK, 0, 1 );
-	imglistIcon.Add(hIcon);
+	imglistIcon.Create( ii.xHotspot, ii.yHotspot, ILC_COLOR32 | ILC_MASK, 0, 1 );
+	imglistIcon.Add( hIcon );
 	SetIcon( imglistIcon.ExtractIcon( 0 ) );
 	imglistIcon.DeleteImageList();
 }

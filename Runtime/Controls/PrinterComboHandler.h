@@ -20,7 +20,7 @@ class CPrinterComboHandler : public CComboHandler
 public:
 	CPrinterComboHandler()
 		{
-			mImageList.Create( 16, 14, ILC_COLOR4 | ILC_MASK, 3, 1 );
+			mImageList.Create( 16, 14, ILC_COLOR4 | ILC_MASK, 2, 1 );
 			HMODULE hRes = theWorkspace.GetLocalResourceModule();
 			mImageList.Add( LoadIcon( hRes, MAKEINTRESOURCE(IDI_PRINTER) ) );
 			mImageList.Add( LoadIcon( hRes, MAKEINTRESOURCE(IDI_PLOTTER) ) );

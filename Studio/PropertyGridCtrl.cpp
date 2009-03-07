@@ -1802,7 +1802,10 @@ void CPropertyGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 				CPoint ptCtrl = point;
 				ClientToScreen( &ptCtrl );
 				pCtrlWnd->ScreenToClient( &ptCtrl );
-				pCtrlWnd->SendMessage( WM_LBUTTONDOWN, nFlags, MAKELPARAM(ptCtrl.x, ptCtrl.y) );
+				CRect rcClient;
+				pCtrlWnd->GetClientRect( &rcClient );
+				if( rcClient.PtInRect( ptCtrl ) )
+					pCtrlWnd->SendMessage( WM_LBUTTONDOWN, nFlags, MAKELPARAM(ptCtrl.x, ptCtrl.y) );
 			}
 		}
 		return;

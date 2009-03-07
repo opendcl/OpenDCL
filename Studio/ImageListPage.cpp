@@ -180,7 +180,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 			}
 
 			// create the image list
-			bRetVal = GetImageList()->Create( sizePic.cx, sizePic.cy, ILC_COLOR | ILC_MASK, 1, 1 );
+			bRetVal = GetImageList()->Create( sizePic.cx, sizePic.cy, ILC_COLOR32 | ILC_MASK, 1, 1 );
 			m_PicList.SetImageList(GetImageList(), TVSIL_NORMAL);
 			m_PicList.SetImageList(GetImageList(), LVSIL_SMALL);
 			TCHAR Value[80];
@@ -227,7 +227,7 @@ BOOL CImageListPage::ImageListAddPicture(LPPICTUREDISP iPic)
 			}
 			
 			// create the image list
-			bRetVal = GetImageList()->Create( sizePic.cx, sizePic.cy, ILC_COLOR | ILC_MASK, 1, 1 );
+			bRetVal = GetImageList()->Create( sizePic.cx, sizePic.cy, ILC_COLOR32 | ILC_MASK, 1, 1 );
 			m_PicList.SetImageList(GetImageList(), TVSIL_NORMAL);
 			m_PicList.SetImageList(GetImageList(), LVSIL_SMALL);
 			TCHAR Value[80];
