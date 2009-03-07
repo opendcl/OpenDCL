@@ -35,14 +35,11 @@ public:
 	const std::vector< TDclControlPtr >& GetActiveControls() const { return mControls; }
 
 protected:
-	void SetupTabs();
 
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CPropertyPane)
-	public:
+public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
 
 // Implementation
 public:
@@ -50,12 +47,10 @@ public:
 
 	// Generated message map functions
 protected:
-	//{{AFX_MSG(CPropertyPane)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnSelchange(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnDestroy();
-	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()
 };

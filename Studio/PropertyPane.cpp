@@ -39,25 +39,6 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CPropertyPane message handlers
 
-void CPropertyPane::SetupTabs()
-{
-	TC_ITEM TabCtrlItem;
-	CString sTTT;
-	CString sCaptionText;
-
-	TabCtrlItem.mask = TCIF_TEXT;
-	
-	// delete all previos tabs
-	m_TabCtrl.DeleteAllItems();
-	
-	
-	sCaptionText = theWorkspace.LoadResourceString(IDS_PROPERTIES);
-	// set the tab caption
-	TabCtrlItem.pszText = sCaptionText.GetBuffer(256);
-	// add the new tab
-	m_TabCtrl.InsertItem(0, &TabCtrlItem );	
-}
-
 int CPropertyPane::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
 	if (CDialog::OnCreate(lpCreateStruct) == -1)
@@ -69,7 +50,9 @@ int CPropertyPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (!m_TabCtrl.Create(dwStyle, CRect(0,0,10,10), this, ID_TABCTRL))
 		return -1;
 
-	SetupTabs();
+	m_TabCtrl.DeleteAllItems();
+	m_TabCtrl.InsertItem( 0, theWorkspace.LoadResourceString( IDS_PROPERTIES ) );
+	m_TabCtrl.InsertItem( 1, theWorkspace.LoadResourceString( IDS_EVENTS ) );
 
 	if (!m_font.CreateStockObject(DEFAULT_GUI_FONT) && !m_font.CreatePointFont(80, _T("MS Sans Serif")))
 		return -1;
@@ -174,16 +157,12 @@ void CPropertyPane::OnActivateDclControl( TDclControlPtr pDclControl )
 		mControls.push_back( pDclControl );
 
 	m_PropertiesTabPane.GetPropertiesCtrl().OnActivateDclControl( pDclControl );
-	m_EventsTabPane.ClearEvents();
 	CString sStatusBarText;
 	if( mControls.size() == 1 )
 	{
-		if( m_TabCtrl.GetItemCount() == 1 )
-		{
-			static const CString sEventTabText = theWorkspace.LoadResourceString( IDS_EVENTS );
-			m_TabCtrl.InsertItem( 1, sEventTabText );
-		}
+		m_EventsTabPane.ClearEvents();
 		m_EventsTabPane.UpdateEvents( pDclControl );
+		m_EventsTabPane.EnableWindow( TRUE );
 		CString sControlType = GetControlDisplayName(pDclControl);
 		CString sName = pDclControl->GetVarName();
 		if (!sControlType.IsEmpty())
@@ -193,13 +172,16 @@ void CPropertyPane::OnActivateDclControl( TDclControlPtr pDclControl )
 	}
 	else
 	{
-		m_TabCtrl.SetCurSel( 0 );
-		m_TabCtrl.DeleteItem( 1 );
-		m_EventsTabPane.ShowWindow( SW_HIDE );
-		m_PropertiesTabPane.ShowWindow(TRUE);
+		//m_TabCtrl.SetCurSel( 0 );
+		//m_TabCtrl.DeleteItem( 1 );
+		//m_EventsTabPane.ShowWindow( SW_HIDE );
+		//m_PropertiesTabPane.ShowWindow(TRUE);
 		CString sFmt = theWorkspace.LoadResourceString( IDS_MULTISELECTIONSTATUS );
 		if( !sFmt.IsEmpty() )
+		{
 			sStatusBarText.Format( sFmt, mControls.size() );
+			m_EventsTabPane.ClearEvents( sStatusBarText );
+		}
 	}
 	theStudioWorkspace.GetStudioFrame()->GetStatusBar().SetWindowText( sStatusBarText );
 }

@@ -40,6 +40,7 @@ CEventsTabPane::CEventsTabPane(CWnd* pParent /*=NULL*/)
 void CEventsTabPane::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_DISABLED, mStatusMsg);
 	DDX_Control(pDX, IDC_EVENTDESC, mEventDesc);
 	DDX_Control(pDX, IDC_DEFUNPREVIEW, mDefunPreview);
 	DDX_Control(pDX, IDC_DEFUNEDIT, mDefunEdit);
@@ -65,6 +66,7 @@ BOOL CEventsTabPane::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+	mStatusMsg.ShowWindow( SW_HIDE );
 	if (!AfxGetApp()->GetProfileInt(theWorkspace.GetAppKey(), _T("EventsCopyToClipboard"), TRUE))
 		GetDlgItem(IDC_COPYTOCLIPBOARD)->ShowWindow( SW_HIDE );
 	if (!AfxGetApp()->GetProfileInt(theWorkspace.GetAppKey(), _T("EventsWriteToLispFile"), FALSE))
@@ -101,6 +103,7 @@ void CEventsTabPane::OnSize(UINT nType, int cx, int cy)
 	ScreenToClient( &rcEventsTree );
 	rcEventsTree.top = 1;
 	GetDlgItem(IDC_EVENTSTREE)->MoveWindow(rcEventsTree, TRUE);
+	GetDlgItem(IDC_DISABLED)->MoveWindow(rcEventsTree, TRUE);
 
 	rcLabel.top += vecOffset.cy;
 	rcLabel.bottom += vecOffset.cy;
@@ -158,6 +161,8 @@ void CEventsTabPane::UpdateEvents( TDclControlPtr pControl )
 {
 	mpDclControl = pControl;
 	mEventsList.ResetContent();
+	mEventsList.EnableWindow( TRUE );
+	mStatusMsg.ShowWindow( SW_HIDE );
 
 	if( pControl && pControl->GetOwnerForm()->IsModeless() )
 		GetDlgItem( IDC_ADDCANCEL )->ShowWindow( SW_SHOW );
@@ -168,7 +173,7 @@ void CEventsTabPane::UpdateEvents( TDclControlPtr pControl )
 		return;
 
 	AddEvents();
-	if( IsWindowVisible() && mEventsList.GetCount() > 0 )
+	if( IsWindowVisible() && mEventsList.IsWindowEnabled() && mEventsList.GetCount() > 0 )
 		mEventsList.SetFocus();
 	mDefunEdit.SetWindowText( NULL );
 }
@@ -265,58 +270,24 @@ void CEventsTabPane::SetDefunPreview()
 	mDefunPreview.SetWindowText( sPreview + _T("\r\n") );
 	mEventDesc.SetWindowText( sDesc );
 	return;
-
-/*
-		CString sEventDefun;
-		mDefunEdit.GetWindowText( sEventDefun );
-		if( sEventDefun.IsEmpty() )
-			sEventDefun = GetEvent( idxProp );
-
-		// if the ^C^C has been added, remove it for the defun preview
-		if( sEventDefun.Left( 4 ).CompareNoCase( _T("^C^C") ) == 0 )
-			sEventDefun = sEventDefun.Mid( 4 );
-		
-		// get the arguments
-		CString sArgs = GetDefunArguments();
-		if( sArgs.IsEmpty() )
-			sArgs += _T("/");
-		else
-			sArgs += _T(" /");
-
-		TPropertyList::iterator iterProp = mpDclControl->GetPropertyList().begin();
-		while( idxProp-- > 0 )
-			++iterProp;
-		Prop::Id id = (*iterProp)->GetID();
-
-		CString sDefunBody;
-		if( id == Prop::DragnDropFromOther && mpDclControl->GetOwnerForm()->GetType() != FrmFileDlg )
-			sDefunBody = _T("     (setq ssDragnDropSelectionSet (ssget \"P\"))"); //get the 'Previous' selection set
-		else
-		{
-			// add the default message box to show the programmer the event has not been updated
-			CString sToDoMsgBox;
-			sToDoMsgBox.Format( theWorkspace.LoadResourceString( IDS_MSG_TODOLISPFUNC ), (LPCTSTR)sEventDefun );
-			sDefunBody.Format( _T("     %s"), (LPCTSTR)sToDoMsgBox );
-		}
-
-		sPreview.Format( _T("(defun %s (%s)\r\n%s\r\n)\r\n"), (LPCTSTR)sEventDefun, (LPCTSTR)sArgs, (LPCTSTR)sDefunBody );
-	}
-*/
 }
 
-void CEventsTabPane::ClearEvents()
+void CEventsTabPane::ClearEvents( LPCTSTR pszErrMsg /*= NULL*/ )
 {
 	GetDlgItem( IDC_ADDCANCEL )->EnableWindow( FALSE );
 	GetDlgItem( IDC_COPYTOCLIPBOARD )->EnableWindow( FALSE );
 	GetDlgItem( IDC_ADDTOLISP )->EnableWindow( FALSE );
-	if( !mpDclControl )
-		return;
 
 	mEventDesc.SetWindowText( NULL );
 	mEventsList.ResetContent();
 	mDefunEdit.SetWindowText( NULL );
 	mDefunPreview.SetWindowText( NULL );
 	mpDclControl = NULL;
+
+	mEventsList.EnableWindow( (pszErrMsg == NULL) );
+	if( pszErrMsg )
+		mStatusMsg.SetWindowText( pszErrMsg );
+	mStatusMsg.ShowWindow( pszErrMsg? SW_SHOW : SW_HIDE );
 }
 
 BOOL CEventsTabPane::PreTranslateMessage(MSG* pMsg) 

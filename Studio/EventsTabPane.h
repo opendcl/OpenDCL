@@ -16,6 +16,7 @@ class CEventsTabPane : public CDialog
 {
 	TDclControlPtr mpDclControl;
 	CCheckListBox mEventsList;
+	CStatic mStatusMsg;
 	CEdit mEventDesc;
 	CEdit mDefunPreview;
 	CEdit mDefunEdit;
@@ -30,7 +31,7 @@ public:
 public:
 	void UpdateEvents(TDclControlPtr pControl);
 	void AddEvents();
-	void ClearEvents();
+	void ClearEvents( LPCTSTR pszErrMsg = NULL );
 	void SetDefunPreview();
 	void SetEvent( size_t idxProp, LPCTSTR pszEventDefun );
 	CString GetEvent( size_t idxProp );
