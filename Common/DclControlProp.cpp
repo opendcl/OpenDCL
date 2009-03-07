@@ -625,7 +625,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddBooleanProperty( Prop::DragnDropAllowDrop, PropBool, true );
 		pDclControl->AddLongProperty( Prop::ForegroundColor, PropLong, -19 );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
-		pDclControl->AddBooleanProperty( Prop::VScrollBar, PropBool, false );
+		pDclControl->AddBooleanProperty( Prop::VScrollBar, PropBool, true );
 		AddControlFontProperties( pDclControl, FS );
 		AddControlTooltipProperties( pDclControl );
 		pDclControl->AddLongProperty( Prop::ColumnWidth, PropLong, 25 );
@@ -712,7 +712,7 @@ bool AddDefaultProperties( TDclControlPtr pDclControl, long lWidth /*= -1*/, lon
 		pDclControl->AddLongProperty( Prop::BackgroundColor, PropLong, -24 );
 		pDclControl->AddLongProperty( Prop::BorderStyle, PropEnum, 0 );
 		pDclControl->AddBooleanProperty( Prop::IsTabStop, PropBool, true );
-		pDclControl->AddBooleanProperty( Prop::VScrollBar, PropBool, false );
+		pDclControl->AddBooleanProperty( Prop::VScrollBar, PropBool, true );
 		AddControlFontProperties( pDclControl, FS );
 		{
 			TPropertyPtr pProp = pDclControl->AddStringProperty( Prop::BtnCaption, PropStringArray );

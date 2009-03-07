@@ -626,7 +626,7 @@ ADSRESULT Grid::SetCellImages()
 		return RSERR; //invalid input
 
 	int nAltImage = -2;
-	GetIntArgument( pArgs, nImage, true );
+	GetIntArgument( pArgs, nAltImage, true );
 
 	if( !AssertOutOfArgs( pArgs ) )
 		return RSERR;

@@ -29,8 +29,8 @@ public:
 	int		m_Image;	
 	int		m_Style;	
 	int		m_Alignment;	
-	int		m_Default;	
-	int		m_Alternate;
+	int		m_DefImage;	
+	int		m_AltImage;
 	CStringArray m_ListItems;
 	CArray<int, int> m_ImageItems;	
 };
@@ -50,9 +50,8 @@ class CColumnsPage : public CPropertyPage
 	CButton	m_DropListBtn;
 	CStatic	m_AltLabel;
 	CStatic	m_DefLabel;
-	CComboBox	m_Disabled;
-	CComboBoxEx	m_Default;
-	CComboBoxEx	m_Alternate;
+	CComboBoxEx	m_DefImage;
+	CComboBoxEx	m_AltImage;
 	CEdit	m_WidthTextBox;
 	CEdit	m_WidthEdit;
 	CComboBoxEx	m_Image;

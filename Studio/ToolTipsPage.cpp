@@ -35,7 +35,6 @@ CToolTipsPage::~CToolTipsPage()
 void CToolTipsPage::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CToolTipsPage)
 	DDX_Control(pDX, IDC_COLOR2, m_Color2);
 	DDX_Control(pDX, IDC_UNDERLINE, m_UnderLine);
 	DDX_Control(pDX, IDC_BOLD, m_Bold);
@@ -47,12 +46,10 @@ void CToolTipsPage::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LINE, m_Line);
 	DDX_Control(pDX, IDC_COLOR, m_Color);
 	DDX_Control(pDX, IDC_BALLOON, m_Balloon);
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CToolTipsPage, CPropertyPage)
-	//{{AFX_MSG_MAP(CToolTipsPage)
 	ON_BN_CLICKED(IDC_PREVIEW, OnPreview)
 	ON_BN_CLICKED(IDC_BOLD, OnBold)
 	ON_BN_CLICKED(IDC_ITALIC, OnItalic)
@@ -62,9 +59,9 @@ BEGIN_MESSAGE_MAP(CToolTipsPage, CPropertyPage)
 	ON_BN_CLICKED(IDC_COLOR, OnColor)
 	ON_BN_CLICKED(IDC_LINE, OnLine)
 	ON_EN_CHANGE(IDC_MAINTEXT, OnChangeMaintext)
+	ON_EN_CHANGE(IDC_TITLE, OnChangeTitle)
 	ON_LBN_SELCHANGE(IDC_PICLIST, OnSelchangePiclist)
 	ON_BN_CLICKED(IDC_BALLOON, OnBalloon)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -323,6 +320,11 @@ void CToolTipsPage::OnLine()
 }
 
 void CToolTipsPage::OnChangeMaintext() 
+{
+	SetModified();
+}
+
+void CToolTipsPage::OnChangeTitle() 
 {
 	SetModified();
 }

@@ -269,9 +269,9 @@ public:
 		}
 	virtual void OnApply() //must override in derived class to apply new property value
 		{
-			__super::OnApply();
 			CString sText;
 			GetWindowText( sText );
+			__super::OnApply();
 			CInputFilter* pFilter = GetInputFilter();
 			if( pFilter )
 			{
@@ -295,6 +295,7 @@ public:
 				{
 					case VK_RETURN:
 						pMsg->wParam = 0;
+						assert( m_hWnd != NULL );
 						OnApply();
 						return TRUE;
 					case VK_ESCAPE:

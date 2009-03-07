@@ -557,7 +557,7 @@ int CGridCtrl::GetCellCheckedImage( int nRow, int nCol )
 				nImage = prnAltImage->at( nCol );
 		}
 	}
-	if( nImage < 1 )
+	if( nImage < 0 )
 		nImage = 1;
 	return nImage;
 }

@@ -68,7 +68,7 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "OpenDCL Consortium"
-            VALUE "FileDescription", "OpenDCL Studio Dialog Editor"
+            VALUE "FileDescription", "OpenDCL Studio"
             VALUE "FileVersion", "5, 0, 2, 2"
             VALUE "InternalName", "OpenDCL.Editor"
             VALUE "LegalCopyright", "Copyright © 2009 OpenDCL Consortium.  All rights reserved."

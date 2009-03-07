@@ -78,6 +78,7 @@ protected:
 	afx_msg void OnColor();
 	afx_msg void OnLine();
 	afx_msg void OnChangeMaintext();
+	afx_msg void OnChangeTitle();
 	afx_msg void OnSelchangePiclist();
 	afx_msg void OnBalloon();
 };

@@ -22787,7 +22787,7 @@
                 }
                 "Verbs"
                 {
-                    "{95C0C507-CBF0-42B8-B119-07219E384A4A}:_BE9FA98F090E49C78F7DBF05DC5066D6"
+                    "{95C0C507-CBF0-42B8-B119-07219E384A4A}:_EC91C568D80748E1A4A4EA773EA1C17E"
                     {
                     "Command" = "8:&Open"
                     "Verb" = "8:open"
@@ -23292,7 +23292,7 @@
         "Subject" = "8:"
         "ARPCONTACT" = "8:OpenDCL Consortium"
         "Keywords" = "8:"
-        "ARPCOMMENTS" = "8:OpenDCL Studio (German)"
+        "ARPCOMMENTS" = "8:OpenDCL Studio (Deutsch)"
         "ARPURLINFOABOUT" = "8:http://www.opendcl.com"
         "ARPPRODUCTICON" = "8:"
         "ARPIconIndex" = "3:0"
@@ -24090,7 +24090,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6EF0E4A8AFA94935BAB16FE4BA890004"
             {
-            "SourcePath" = "8:Studio.Res\\Release\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_487033F9EABD4B2CBE28062474924C4F"
@@ -24146,7 +24146,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_EFEAA11A7FB34DABA7378353D9CAA185"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Release\\OpenDCL.Runtime.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Debug\\OpenDCL.Runtime.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_388900515A4744599E058DA609E4770D"
@@ -24199,7 +24199,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_FDB2ABC5CC62416389847706827F8059"
             {
-            "SourcePath" = "8:..\\Release\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_388900515A4744599E058DA609E4770D"

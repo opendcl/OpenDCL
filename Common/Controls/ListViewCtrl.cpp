@@ -89,7 +89,7 @@ bool CListViewCtrl::OnApplyProperty( TPropertyPtr pProp )
 			TImageListPtr pImageList = mpTemplate->GetImageList();
 			if (pImageList && pImageList->GetImageList().GetSafeHandle())
 			{
-				pImageList->GetImageList().SetBkColor( ::GetSysColor( COLOR_BTNFACE ) );
+				pImageList->GetImageList().SetBkColor( RGB(255,255,255) );
 				SetImageList( &pImageList->GetImageList(), TVSIL_NORMAL );
 				SetImageList( &pImageList->GetImageList(), LVSIL_SMALL );
 			}

@@ -24,6 +24,20 @@ CStudioUndoManager::~CStudioUndoManager()
 	}
 }
 
+bool CStudioUndoManager::IsMultiplePropsChanged() const
+{
+	if( mGroupProps.size() <= 1 )
+		return false;
+	std::set< TPropertyPtr >::const_iterator iter = mGroupProps.begin();
+	Prop::Id id = (*iter)->GetID();
+	while( ++iter != mGroupProps.end() )
+	{
+		if( (*iter)->GetID() != id )
+			return true;
+	}
+	return false;
+}
+
 void CStudioUndoManager::setEnabled( bool bEnabled /*= true*/ )
 {
 	if( bEnabled != enabled() )

@@ -30,12 +30,10 @@ CPropertyPane::~CPropertyPane()
 
 
 BEGIN_MESSAGE_MAP(CPropertyPane, CDialog)
-	//{{AFX_MSG_MAP(CPropertyPane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
 	ON_NOTIFY(TCN_SELCHANGE, ID_TABCTRL, OnSelchange)	
 	ON_WM_DESTROY()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

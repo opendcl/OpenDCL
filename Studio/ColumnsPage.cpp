@@ -18,8 +18,8 @@ CColumnData::CColumnData()
 	m_Image = 0;	
 	m_Style = 0;	
 	m_Alignment = 0;	
-	m_Default = 0;	
-	m_Alternate = 0;
+	m_DefImage = 0;	
+	m_AltImage = 0;
 }
 
 CColumnData::~CColumnData()
@@ -32,8 +32,8 @@ CColumnData& CColumnData::operator=(const CColumnData &Other)
 	m_Image = Other.m_Image;	
 	m_Style = Other.m_Style;	
 	m_Alignment = Other.m_Alignment;	
-	m_Default = Other.m_Default;	
-	m_Alternate = Other.m_Alternate;
+	m_DefImage = Other.m_DefImage;	
+	m_AltImage = Other.m_AltImage;
 	return *this;
 }
 
@@ -43,8 +43,8 @@ CColumnData::CColumnData(const CColumnData &Other)
 	m_Image = Other.m_Image;	
 	m_Style = Other.m_Style;	
 	m_Alignment = Other.m_Alignment;	
-	m_Default = Other.m_Default;	
-	m_Alternate = Other.m_Alternate;
+	m_DefImage = Other.m_DefImage;	
+	m_AltImage = Other.m_AltImage;
 }
 
 
@@ -78,17 +78,15 @@ CColumnsPage::~CColumnsPage()
 void CColumnsPage::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CColumnsPage)
 	DDX_Control(pDX, IDC_STYLETITLE, m_StyleTitle);
 	DDX_Control(pDX, IDC_INDEX_EDIT, m_IndexEdit);
 	DDX_Control(pDX, IDC_FILEEXT, m_FileExt);
 	DDX_Control(pDX, IDC_DROPLISTBTN, m_DropListBtn);
-	DDX_Control(pDX, IDC_ALTICONLABEL, m_AltLabel);
-	DDX_Control(pDX, IDC_DEFICONLABEL, m_DefLabel);
-	DDX_Control(pDX, IDC_DISABLED, m_Disabled);
-	DDX_Control(pDX, IDC_DEFAULT, m_Default);
-	DDX_Control(pDX, IDC_ALTERNATE, m_Alternate);
-	DDX_Control(pDX, 1211, m_WidthTextBox);
+	DDX_Control(pDX, IDC_ALTIMAGELABEL, m_AltLabel);
+	DDX_Control(pDX, IDC_DEFIMAGELABEL, m_DefLabel);
+	DDX_Control(pDX, IDC_DEFIMAGE, m_DefImage);
+	DDX_Control(pDX, IDC_ALTIMAGE, m_AltImage);
+	DDX_Control(pDX, IDC_WIDTH, m_WidthTextBox);
 	DDX_Control(pDX, IDC_IMAGE, m_Image);
 	DDX_Control(pDX, IDC_TEXT, m_Text);
 	DDX_Control(pDX, IDC_STYLE, m_Style);
@@ -96,21 +94,20 @@ void CColumnsPage::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST, m_List);
 	DDX_Control(pDX, IDC_INDEX, m_Index);
 	DDX_Control(pDX, IDC_ALIGNMENT, m_Alignment);
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CColumnsPage, CPropertyPage)
 	ON_BN_CLICKED(IDC_INSERT, OnInsert)
 	ON_EN_CHANGE(IDC_TEXT, OnChangeText)
-	ON_EN_CHANGE(1211, OnChangeWidth)
+	ON_EN_CHANGE(IDC_WIDTH, OnChangeWidth)
 	ON_CBN_SELCHANGE(IDC_ALIGNMENT, OnSelchangeAlignment)
 	ON_CBN_SELCHANGE(IDC_STYLE, OnSelchangeStyle)
 	ON_CBN_SELCHANGE(IDC_IMAGE, OnSelchangeImage)
 	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN, OnDeltaposSpin)
 	ON_BN_CLICKED(IDC_DELETE, OnDelete)
-	ON_CBN_SELCHANGE(IDC_DEFAULT, OnSelchangeDefault)
-	ON_CBN_SELCHANGE(IDC_ALTERNATE, OnSelchangeAlternate)
+	ON_CBN_SELCHANGE(IDC_DEFIMAGE, OnSelchangeDefault)
+	ON_CBN_SELCHANGE(IDC_ALTIMAGE, OnSelchangeAlternate)
 	ON_BN_CLICKED(IDC_DROPLISTBTN, OnDroplistbtn)
 	ON_WM_DESTROY()
 	ON_EN_CHANGE(IDC_FILEEXT, OnChangeFileext)
@@ -152,9 +149,9 @@ BOOL CColumnsPage::OnInitDialog()
 		if( i < m_pColAlignment->size() )
 			m_ColData[i].m_Alignment = m_pColAlignment->GetConstIntArrayPtr()->at(i);
 		if( i < m_pColDefault->size() )
-			m_ColData[i].m_Default = m_pColDefault->GetConstIntArrayPtr()->at(i);
+			m_ColData[i].m_DefImage = m_pColDefault->GetConstIntArrayPtr()->at(i);
 		if( i < m_pColAlternate->size() )
-			m_ColData[i].m_Alternate = m_pColAlternate->GetConstIntArrayPtr()->at(i);
+			m_ColData[i].m_AltImage = m_pColAlternate->GetConstIntArrayPtr()->at(i);
 		m_ColData[i].m_ListItems.RemoveAll();
 		if( i < m_pColListItems->size() )
 		{
@@ -234,8 +231,8 @@ void CColumnsPage::CommitLists()
 		m_pColImages->GetIntArrayPtr()->push_back(m_ColData[i].m_Image);
 		m_pColStyles->GetIntArrayPtr()->push_back(m_ColData[i].m_Style);
 		m_pColAlignment->GetIntArrayPtr()->push_back(m_ColData[i].m_Alignment);
-		m_pColDefault->GetIntArrayPtr()->push_back(m_ColData[i].m_Default);
-		m_pColAlternate->GetIntArrayPtr()->push_back(m_ColData[i].m_Alternate);
+		m_pColDefault->GetIntArrayPtr()->push_back(m_ColData[i].m_DefImage);
+		m_pColAlternate->GetIntArrayPtr()->push_back(m_ColData[i].m_AltImage);
 		PropVal::TCStringArray rStr;
 		for( int idx = 0; idx < m_ColData[i].m_ListItems.GetSize(); idx++ )
 			rStr.push_back(m_ColData[i].m_ListItems[idx]);
@@ -262,76 +259,64 @@ void CColumnsPage::OnOK()
 
 bool CColumnsPage::IsImageListValid()
 {
-	if (mpImageListPage != NULL)
-	{
-		if (mpImageListPage->GetImageList()->m_hImageList == NULL)
-			return false;
-	}
-	else
+	if( !mpImageListPage )
 		return false;
-	m_List.SetImageList(mpImageListPage->GetImageList(), TVSIL_NORMAL);
-	m_List.SetImageList(mpImageListPage->GetImageList(), LVSIL_SMALL);
+	if( !mpImageListPage->GetImageList()->m_hImageList )
+		return false;
+	m_List.SetImageList( mpImageListPage->GetImageList(), TVSIL_NORMAL );
+	m_List.SetImageList( mpImageListPage->GetImageList(), LVSIL_SMALL );
 	return true;
 }
 
 BOOL CColumnsPage::OnSetActive() 
 {
 	int nSel = m_Image.GetCurSel();
-	int nSel2 = m_Default.GetCurSel();
-	int nSel3 = m_Alternate.GetCurSel();
+	int nSel2 = m_DefImage.GetCurSel();
+	int nSel3 = m_AltImage.GetCurSel();
 	
 	m_Image.ResetContent();
-	m_Default.ResetContent();
-	m_Alternate.ResetContent();
+	m_DefImage.ResetContent();
+	m_AltImage.ResetContent();
 	if (IsImageListValid())
 	{
 		CImageList* pImageList = mpImageListPage->GetImageList();
 		m_Image.SetImageList(pImageList);
-		m_Default.SetImageList(pImageList);	
-		m_Alternate.SetImageList(pImageList);
+		m_DefImage.SetImageList(pImageList);	
+		m_AltImage.SetImageList(pImageList);
 		
-		int i;
-		for (i=0; i < pImageList->GetImageCount(); i++)
+		for (int i=0; i < pImageList->GetImageCount(); i++)
 		{
-			TCHAR value[80];
-			_ltot(i, value, 10);
+			CString sImageName;
+			sImageName.Format( _T("%d"), i );
 			
-			COMBOBOXEXITEM cbi;
-
-			cbi.mask = CBEIF_IMAGE | //CBEIF_OVERLAY |
-			 CBEIF_TEXT | CBEIF_SELECTEDIMAGE;
-
-			cbi.iItem = i;
-			cbi.pszText = value;
-			cbi.cchTextMax = lstrlen(value);
-			cbi.iImage = i;
-			cbi.iSelectedImage = i;
-			cbi.iOverlay = i;
-			cbi.iIndent = 0;
-
+			COMBOBOXEXITEM cbi = 
+			{
+				CBEIF_TEXT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE,
+				i,
+				sImageName.LockBuffer(),
+				-1,
+				i,
+				i,
+			};
 			m_Image.InsertItem(&cbi);
-			m_Default.InsertItem(&cbi);
-			m_Alternate.InsertItem(&cbi);
+			m_DefImage.InsertItem(&cbi);
+			m_AltImage.InsertItem(&cbi);
 		}
 
-		COMBOBOXEXITEM cbi;
-
-		cbi.mask = //CBEIF_OVERLAY |
-		 CBEIF_TEXT ;
-
-		CString value;
-		value = theWorkspace.LoadResourceString(IDS_NONE);
-		cbi.iItem = i;
-		cbi.pszText = (LPTSTR)(LPCTSTR)value;
-		cbi.cchTextMax = lstrlen(value);
-		cbi.iImage = -1;
-		cbi.iSelectedImage = -1;
-		cbi.iOverlay = i;
-		cbi.iIndent = 0;
+		CString sNone = theWorkspace.LoadResourceString( IDS_NONE );
+		COMBOBOXEXITEM cbi = 
+		{
+			CBEIF_TEXT,
+			0,
+			sNone.LockBuffer(),
+			-1,
+		};
 		m_Image.InsertItem(&cbi);
+		m_DefImage.InsertItem(&cbi);
+		m_AltImage.InsertItem(&cbi);
 		m_Image.SetCurSel(nSel);
-		m_Default.SetCurSel(nSel2);
-		m_Alternate.SetCurSel(nSel3);
+		m_DefImage.SetCurSel(nSel2);
+		m_AltImage.SetCurSel(nSel3);
 	}
 	SetControls(m_nIndex);
 	return CPropertyPage::OnSetActive();
@@ -351,8 +336,8 @@ void CColumnsPage::OnInsert()
 	data.m_Image = -1;	
 	data.m_Style = 0;	
 	data.m_Alignment = 0;	
-	data.m_Default = 0;	
-	data.m_Alternate = 0;
+	data.m_DefImage = -1;	
+	data.m_AltImage = -1;
 	SetControls(nIndex);
 	SetColumn(m_nIndex);
 	m_Spin.SetPos( m_nIndex );
@@ -371,15 +356,14 @@ void CColumnsPage::SetControls(INT_PTR nIndex)
 	m_DropListBtn.ShowWindow(FALSE);
 	m_FileExt.ShowWindow(FALSE);
 	m_DefLabel.ShowWindow(FALSE);
-	m_Default.ShowWindow(FALSE);
+	m_DefImage.ShowWindow(FALSE);
 	m_AltLabel.ShowWindow(FALSE);
-	m_Alternate.ShowWindow(FALSE);
+	m_AltImage.ShowWindow(FALSE);
 	if (nIndex < 0)
 	{
 		m_Spin.EnableWindow(FALSE);
 		m_IndexEdit.ShowWindow(FALSE);
 		m_Alignment.EnableWindow(FALSE);
-		m_Disabled.EnableWindow(FALSE);
 		m_Image.EnableWindow(FALSE);
 		m_WidthTextBox.EnableWindow(FALSE);
 		m_Text.EnableWindow(FALSE);
@@ -404,16 +388,6 @@ void CColumnsPage::SetControls(INT_PTR nIndex)
 			m_ColData[nIndex].m_Image >= m_Image.GetCount())
 		m_ColData[nIndex].m_Image = -1;
 
-	if (IsImageListValid())
-	{
-		m_Disabled.ShowWindow(FALSE);
-		m_Image.ShowWindow(TRUE);
-	}
-	else
-	{
-		m_Disabled.ShowWindow(TRUE);
-		m_Image.ShowWindow(FALSE);
-	}
 	m_Alignment.EnableWindow(TRUE);		
 	m_WidthTextBox.EnableWindow(TRUE);
 	m_Text.EnableWindow(TRUE);
@@ -432,26 +406,34 @@ void CColumnsPage::SetControls(INT_PTR nIndex)
 	m_Style.SetCurSel(m_ColData[nIndex].m_Style);
 	m_Alignment.SetCurSel(m_ColData[nIndex].m_Alignment);
 
+	m_DefLabel.ShowWindow(TRUE);
+	m_DefLabel.SetWindowText( theWorkspace.LoadResourceString( IDS_DEFICON ) );
+	m_DefImage.ShowWindow(TRUE);
+	m_DefImage.EnableWindow( (m_AltImage.GetCount() > 1) );
+	m_DefImage.SetCurSel(m_ColData[m_nIndex].m_DefImage + 1);
+	m_AltImage.ShowWindow(FALSE);
+	m_AltImage.EnableWindow( (m_AltImage.GetCount() > 1) );
+	m_AltImage.SetCurSel(m_ColData[m_nIndex].m_AltImage + 1);
+	m_Image.SetCurSel(m_ColData[nIndex].m_Image + 1);
+
 	switch(m_ColData[nIndex].m_Style)
 	{
 		case 15:
 		{
+			m_DefLabel.ShowWindow( SW_HIDE );
+			m_DefImage.ShowWindow( SW_HIDE );
 			if (m_ColData[nIndex].m_Image == -1)
 				m_ColData[nIndex].m_Image = 0;
-			CString sLoad;
-			sLoad = theWorkspace.LoadResourceString(IDS_DATEFORMAT);
-			m_DefLabel.SetWindowText(sLoad);
-			m_DefLabel.ShowWindow(TRUE);
+			m_DefLabel.SetWindowText( theWorkspace.LoadResourceString(IDS_DATEFORMAT) );
 			break;
 		}
 		case 16:
 		{
+			m_DefLabel.ShowWindow( SW_HIDE );
+			m_DefImage.ShowWindow( SW_HIDE );
 			if (m_ColData[nIndex].m_Image == -1)
 				m_ColData[nIndex].m_Image = 0;
-			CString sLoad;
-			sLoad = theWorkspace.LoadResourceString(IDS_TIMEFORMAT);
-			m_DefLabel.SetWindowText(sLoad);
-			m_DefLabel.ShowWindow(TRUE);
+			m_DefLabel.SetWindowText( theWorkspace.LoadResourceString(IDS_TIMEFORMAT) );
 			break;
 		}
 		case 18:
@@ -464,60 +446,26 @@ void CColumnsPage::SetControls(INT_PTR nIndex)
 		case 41:
 		{
 			m_DropListBtn.ShowWindow(TRUE);
-			m_Image.SetCurSel(m_ColData[nIndex].m_Image);
 			break;
 		}
 
 		case 3:
 		{
-			if (m_Alternate.GetCount() > 0)
-			{
-				m_Default.ShowWindow(TRUE);
-				m_Alternate.ShowWindow(TRUE);
-				m_DefLabel.ShowWindow(TRUE);
-				m_AltLabel.ShowWindow(TRUE);
-				m_Default.SetCurSel(m_ColData[nIndex].m_Default);
-				m_Alternate.SetCurSel(m_ColData[nIndex].m_Alternate);
-				CString sLoad;
-				sLoad = theWorkspace.LoadResourceString(IDS_DEFICON);
-				m_DefLabel.SetWindowText(sLoad);
-				m_Image.SetCurSel(m_ColData[nIndex].m_Image);
-			}
+			m_AltLabel.ShowWindow(TRUE);
+			m_AltImage.ShowWindow(TRUE);		
 			break;
 		}
 		
 		case 35:
 		{
-			m_Default.ShowWindow(FALSE);
-			m_Alternate.ShowWindow(FALSE);
-			m_DefLabel.ShowWindow(FALSE);
-			m_AltLabel.ShowWindow(FALSE);
-			m_Default.SetCurSel(-1);
-			m_Alternate.SetCurSel(-1);				
-			CString sLoad;
-			sLoad = theWorkspace.LoadResourceString(IDS_FILETYPE);
-			m_DefLabel.SetWindowText(sLoad);
+			m_DefImage.ShowWindow( SW_HIDE );
+			m_DefLabel.SetWindowText( theWorkspace.LoadResourceString(IDS_FILETYPE) );
 			m_FileExt.ShowWindow(TRUE);			
-			m_DefLabel.ShowWindow(TRUE);
-			m_Image.SetCurSel(m_ColData[nIndex].m_Image);
-
 			if (m_ColData[nIndex].m_ListItems.GetSize() > 0)
 				m_FileExt.SetWindowText(m_ColData[nIndex].m_ListItems.GetAt(0));
 			break;
 		}
-		default:
-		{
-			m_Default.SetCurSel(-1);
-			m_Alternate.SetCurSel(-1);
-			m_Default.ShowWindow(FALSE);
-			m_Alternate.ShowWindow(FALSE);
-			m_DefLabel.ShowWindow(FALSE);
-			m_AltLabel.ShowWindow(FALSE);
-			m_Image.SetCurSel(m_ColData[nIndex].m_Image);
-			break;			
-		}
 	}
-	m_Image.SetCurSel(m_ColData[nIndex].m_Image);
 
 	m_bChangingIndex = false;
 }
@@ -563,7 +511,6 @@ void CColumnsPage::OnColumnHeaderClicked(int nIndex)
 	m_Spin.SetPos(nIndex);
 	m_nIndex = nIndex;
 	SetControls(nIndex);
-	//SetColumn(m_nIndex);
 }
 
 void CColumnsPage::ResetWidths() 
@@ -602,53 +549,37 @@ void CColumnsPage::OnSelchangeAlignment()
 
 void CColumnsPage::OnSelchangeStyle() 
 {
-	if (m_Style.GetCurSel() == 3 || m_Style.GetCurSel() == 29)
-	{
-		if (mpImageListPage == NULL)
-		{
-			m_Style.SetCurSel(0);
-			return;
-		}
-
-		if (mpImageListPage->GetImageList()->m_hImageList == NULL)
-		{
-			m_Style.SetCurSel(0);
-			return;
-		}
-
-		if (mpImageListPage->GetImageList()->GetImageCount() == 0)
-		{
-			m_Style.SetCurSel(0);
-			return;
-		}
-	}
-
 	m_ColData[m_nIndex].m_Style = m_Style.GetCurSel();
 
-	m_DefLabel.ShowWindow(FALSE);
 	m_FileExt.ShowWindow(FALSE);
 	m_DropListBtn.ShowWindow(FALSE);
+	m_DefLabel.ShowWindow(TRUE);
+	m_DefLabel.SetWindowText( theWorkspace.LoadResourceString( IDS_DEFICON ) );
+	m_DefImage.ShowWindow(TRUE);
+	m_DefImage.EnableWindow( (m_AltImage.GetCount() > 1) );
+	m_DefImage.SetCurSel(m_ColData[m_nIndex].m_DefImage + 1);
+	m_AltLabel.ShowWindow(FALSE);
+	m_AltImage.ShowWindow(FALSE);
+	m_AltImage.EnableWindow( (m_AltImage.GetCount() > 1) );
+	m_AltImage.SetCurSel(m_ColData[m_nIndex].m_AltImage + 1);					
 	switch(m_Style.GetCurSel())
 	{
 		case 15:
 		{
+			m_DefLabel.ShowWindow( SW_HIDE );
+			m_DefImage.ShowWindow( SW_HIDE );
 			if (m_ColData[m_nIndex].m_Image == -1)
 				m_ColData[m_nIndex].m_Image = 0;
-			CString sLoad;
-			sLoad = theWorkspace.LoadResourceString(IDS_DATEFORMAT);
-			m_DefLabel.SetWindowText(sLoad);
-			m_DefLabel.ShowWindow(TRUE);
-
+			m_DefLabel.SetWindowText( theWorkspace.LoadResourceString(IDS_DATEFORMAT) );
 			break;
 		}
 		case 16:
 		{
+			m_DefLabel.ShowWindow( SW_HIDE );
+			m_DefImage.ShowWindow( SW_HIDE );
 			if (m_ColData[m_nIndex].m_Image == -1)
 				m_ColData[m_nIndex].m_Image = 0;
-			CString sLoad;
-			sLoad = theWorkspace.LoadResourceString(IDS_TIMEFORMAT);
-			m_DefLabel.SetWindowText(sLoad);
-			m_DefLabel.ShowWindow(TRUE);
+			m_DefLabel.SetWindowText( theWorkspace.LoadResourceString(IDS_TIMEFORMAT) );
 			break;
 		}
 		case 18:			
@@ -663,46 +594,18 @@ void CColumnsPage::OnSelchangeStyle()
 			m_DropListBtn.ShowWindow(TRUE);
 			break;
 		}
-	
 		case 3:
 		{
-			if (m_Alternate.GetCount() > 0)
-			{
-				m_Default.ShowWindow(TRUE);
-				m_Alternate.ShowWindow(TRUE);		
-				m_DefLabel.ShowWindow(TRUE);
-				m_AltLabel.ShowWindow(TRUE);
-				m_Default.SetCurSel(m_ColData[m_nIndex].m_Default);
-				m_Alternate.SetCurSel(m_ColData[m_nIndex].m_Alternate);					
-				CString sLoad;
-				sLoad = theWorkspace.LoadResourceString(IDS_DEFICON);
-				m_DefLabel.SetWindowText(sLoad);				
-			}
+			m_AltLabel.ShowWindow(TRUE);
+			m_AltImage.ShowWindow(TRUE);		
 			break;
 		}
 		case 35:
 		{
-			m_Default.ShowWindow(FALSE);
-			m_Alternate.ShowWindow(FALSE);
-			m_DefLabel.ShowWindow(FALSE);
-			m_AltLabel.ShowWindow(FALSE);
-			m_Default.SetCurSel(-1);
-			m_Alternate.SetCurSel(-1);				
-			CString sLoad;
-			sLoad = theWorkspace.LoadResourceString(IDS_FILETYPE);
-			m_DefLabel.SetWindowText(sLoad);
+			m_DefImage.ShowWindow( SW_HIDE );
+			m_DefLabel.SetWindowText( theWorkspace.LoadResourceString(IDS_FILETYPE) );
 			m_FileExt.SetWindowText(sDwg);
 			m_FileExt.ShowWindow(TRUE);			
-			m_DefLabel.ShowWindow(TRUE);
-			break;
-		}
-			
-		default:
-		{
-			m_Default.ShowWindow(FALSE);
-			m_Alternate.ShowWindow(FALSE);		
-			m_DefLabel.ShowWindow(FALSE);
-			m_AltLabel.ShowWindow(FALSE);
 			break;
 		}
 	}
@@ -730,7 +633,7 @@ void CColumnsPage::SetColumn(INT_PTR nIndex)
 
 	if (m_ColData[m_nIndex].m_Image == -1 || m_ColData[m_nIndex].m_Image >= m_Image.GetCount())
 	{
-		curItem.mask= HDI_TEXT | HDI_FORMAT;
+		curItem.mask= HDI_TEXT | HDI_IMAGE | HDI_FORMAT;
 		curItem.iImage = -1;
 	}
 	else
@@ -773,6 +676,8 @@ void CColumnsPage::OnSelchangeImage()
 		return;
 
 	int nSel = m_Image.GetCurSel();
+	if( nSel >= 0 )
+		--nSel;
 
 	m_ColData[m_nIndex].m_Image = nSel;
 
@@ -816,13 +721,19 @@ void CColumnsPage::OnDelete()
 
 void CColumnsPage::OnSelchangeDefault() 
 {
-	m_ColData[m_nIndex].m_Default = m_Default.GetCurSel();
+	int nSel = m_DefImage.GetCurSel();
+	if( nSel >= 0 )
+		--nSel;
+	m_ColData[m_nIndex].m_DefImage = nSel;
 	SetModified();
 }
 
 void CColumnsPage::OnSelchangeAlternate() 
 {
-	m_ColData[m_nIndex].m_Alternate = m_Alternate.GetCurSel();
+	int nSel = m_AltImage.GetCurSel();
+	if( nSel >= 0 )
+		--nSel;
+	m_ColData[m_nIndex].m_AltImage = nSel;
 	SetModified();
 }
 

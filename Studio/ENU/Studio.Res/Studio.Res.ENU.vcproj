@@ -304,6 +304,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Res\ControlBrowser.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\DropDown.ico"
 				>
 			</File>
@@ -356,15 +360,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\Folder.bmp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\Common\ENU\Res\Folder.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\ENU\Res\Folder.ico"
+				RelativePath="..\..\..\Common\Res\Folder.bmp"
 				>
 			</File>
 			<File
@@ -372,7 +372,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\Common\ENU\Res\Folder.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\Font.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\Res\FormEditor.ico"
 				>
 			</File>
 			<File
@@ -392,15 +400,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\Hand.cur"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\Common\ENU\Res\Hand.cur"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\Common\Res\Hand.cur"
-				>
-			</File>
-			<File
-				RelativePath=".\res\Hand.cur"
 				>
 			</File>
 			<File
@@ -424,11 +432,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\Info.ico"
+				RelativePath="..\..\..\Common\ENU\Res\Info.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\ENU\Res\Info.ico"
+				RelativePath=".\res\Info.ico"
 				>
 			</File>
 			<File
@@ -436,19 +444,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\Res\Label.ico"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\Common\ENU\Res\Label.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Res\LargeBlock.ico"
+				RelativePath="..\..\..\Common\Res\Label.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\Common\ENU\Res\LargeBlock.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Res\LargeBlock.ico"
 				>
 			</File>
 			<File
@@ -588,15 +596,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\Select.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\Common\Res\Select.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\Common\ENU\Res\Select.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\res\Select.ico"
 				>
 			</File>
 			<File
@@ -656,11 +664,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\ENU\Res\Warn.ico"
+				RelativePath=".\res\Warn.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\Warn.ico"
+				RelativePath="..\..\..\Common\ENU\Res\Warn.ico"
 				>
 			</File>
 			<File

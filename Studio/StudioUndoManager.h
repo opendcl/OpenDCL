@@ -22,7 +22,7 @@ public:
 	CStudioUndoManager( CStudioProject* pProject );
 	virtual ~CStudioUndoManager();
 
-	virtual bool IsMultiplePropsChanged() const { return (mGroupProps.size() > 1); }
+	virtual bool IsMultiplePropsChanged() const;
 
 	// CUndoManager base class implementation
 	virtual void setEnabled( bool bEnabled = true );
