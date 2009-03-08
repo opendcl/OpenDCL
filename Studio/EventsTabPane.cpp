@@ -176,7 +176,6 @@ void CEventsTabPane::UpdateEvents( TDclControlPtr pControl )
 		mEventsList.EnableWindow( TRUE );
 		GetDlgItem( IDC_LABEL )->EnableWindow( TRUE );
 		mDefunEdit.EnableWindow( TRUE );
-		mEventsList.SetFocus();
 	}
 	mDefunEdit.SetWindowText( NULL );
 }

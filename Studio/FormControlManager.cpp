@@ -408,6 +408,8 @@ void CFormControlManager::OnNcLButtonDown(UINT nHitTest, CPoint point)
 				mpDlgObject->SnapToGrid( m_rect.TopLeft() );
 				mpDlgObject->SnapToGrid( m_rect.BottomRight() );
 				mpDlgObject->InsertControl( theStudioWorkspace.GetToolboxPane()->GetSelectedTool(), m_rect );
+				CWnd* pFocus = GetFocus();
+				int n = 1;
 			}
 			else if( !ActivateControlsInRect( m_rect ) )
 				theStudioWorkspace.ActivateDclControl( GetTemplate() );

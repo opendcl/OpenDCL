@@ -271,7 +271,6 @@ public:
 		{
 			CString sText;
 			GetWindowText( sText );
-			__super::OnApply();
 			CInputFilter* pFilter = GetInputFilter();
 			if( pFilter )
 			{
@@ -282,6 +281,7 @@ public:
 				}
 			}
 			ApplyValue( sText );
+			__super::OnApply();
 		}
 	virtual void OnCancel() //must override in derived class to revert to original property value
 		{
