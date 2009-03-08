@@ -69,7 +69,11 @@ BOOL CFrameCtrl::PreTranslateMessage(MSG* pMsg)
 HBRUSH CFrameCtrl::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
 	HBRUSH hbrBackground = mColorService.CtlColor( pDC, nCtlColor );
-	return NULL;
+	//return NULL;
+	if( (LOBYTE(LOWORD(GetVersion())) < 6) &&
+			!(GetThemeHelper() && mpTemplate->GetBooleanProperty( Prop::UseVisualStyle )) )
+		return NULL; //must use class brush in XP when themes are inactive (else XP paints text same color as background)
+	return hbrBackground;
 	//return mColorService.GetTransparentBrush();
 }
 
