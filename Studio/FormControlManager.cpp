@@ -153,7 +153,13 @@ void CFormControlManager::OnLButtonDown(UINT nFlags, CPoint point)
 		ClientToScreen( &ptScreen );
 		CDialogControl* pDlgControl = mpDlgObject->GetControlAtPoint( ptScreen );
 		if( pDlgControl )
-			theStudioWorkspace.ActivateDclControl( pDlgControl->GetTemplate(), mpDlgObject->IsOnlyFormActive() );
+		{
+			if( !pDlgControl->GetControlManager()->IsSelected() )
+			{
+				bool bDeactivateCurrent = (((nFlags & MK_CONTROL) == 0) || mpDlgObject->IsOnlyFormActive());
+				theStudioWorkspace.ActivateDclControl( pDlgControl->GetTemplate(), bDeactivateCurrent );
+			}
+		}
 		else if( !TrackRubberBand( this, mpDlgObject->SnapToGrid( point ) ) )
 			theStudioWorkspace.ActivateDclControl( mpDlgObject->GetTemplate(), ((nFlags & MK_CONTROL) == 0) && !mpDlgObject->IsOnlyFormActive() );
 		else
@@ -187,7 +193,8 @@ void CFormControlManager::OnLButtonUp(UINT nFlags, CPoint point)
 			if( pDlgControl )
 			{
 				bool bDeactivateCurrent = (((nFlags & MK_CONTROL) == 0) || mpDlgObject->IsOnlyFormActive());
-				theStudioWorkspace.ActivateDclControl( pDlgControl->GetTemplate(), bDeactivateCurrent );
+				if( !pDlgControl->GetControlManager()->IsSelected() || (bDeactivateCurrent && (mpDlgObject->CountSelected( false ) > 1)) )
+					theStudioWorkspace.ActivateDclControl( pDlgControl->GetTemplate(), bDeactivateCurrent );
 			}
 		}
 	}

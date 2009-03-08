@@ -1035,6 +1035,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_373C64D7FF8C59D393AFACD2943692DF"
+        "OwnerKey" = "8:_FDB2ABC5CC62416389847706827F8059"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_373D05F7D0FD46CEB814E9839B523B32"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1235,6 +1241,12 @@
         {
         "MsmKey" = "8:_3EE670C507D048068AC0A1DA82619D1F"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3EEFD1830E2485EB66BBA926365531E9"
+        "OwnerKey" = "8:_FDB2ABC5CC62416389847706827F8059"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -4191,6 +4203,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_CD5D698A00F8D6032D9E99B9D076D211"
+        "OwnerKey" = "8:_FDB2ABC5CC62416389847706827F8059"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_CD7D4BC894524691B1D6BF5597E194C6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -5105,6 +5123,12 @@
         {
         "MsmKey" = "8:_F8E4068A6F94433DA52BE0D89118D307"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F93831739492CE98BD9A12C6FCD13100"
+        "OwnerKey" = "8:_FDB2ABC5CC62416389847706827F8059"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -8726,6 +8750,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_373C64D7FF8C59D393AFACD2943692DF"
+            {
+            "SourcePath" = "8:RPCRT4.dll"
+            "TargetName" = "8:RPCRT4.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_388900515A4744599E058DA609E4770D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_373D05F7D0FD46CEB814E9839B523B32"
             {
             "SourcePath" = "8:Content\\Reference\\Method\\ComboBox\\GetCurSel.htm"
@@ -9404,6 +9448,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3EEFD1830E2485EB66BBA926365531E9"
+            {
+            "SourcePath" = "8:comdlg32.dll"
+            "TargetName" = "8:comdlg32.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_388900515A4744599E058DA609E4770D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3F298952E7824726A49C98184E48B149"
@@ -19226,6 +19290,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CD5D698A00F8D6032D9E99B9D076D211"
+            {
+            "SourcePath" = "8:VERSION.dll"
+            "TargetName" = "8:VERSION.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_388900515A4744599E058DA609E4770D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CD7D4BC894524691B1D6BF5597E194C6"
             {
             "SourcePath" = "8:Content\\Reference\\Method\\ListView\\GetSelCount.htm"
@@ -22246,6 +22330,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F93831739492CE98BD9A12C6FCD13100"
+            {
+            "SourcePath" = "8:oledlg.dll"
+            "TargetName" = "8:oledlg.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_388900515A4744599E058DA609E4770D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F946D2DDF6364042903971EB0261B1F8"
             {
             "SourcePath" = "8:Content\\Reference\\Event\\DocActivated.htm"
@@ -23612,7 +23716,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_A8361C58329D485681B1DB1E164808CC"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Status"
+                    "DisplayName" = "8:Progress"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminProgressDlg.wid"
@@ -23656,7 +23760,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_D763CA0E6877420FB5DD437A591BF447"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Status"
+                    "DisplayName" = "8:Progress"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdProgressDlg.wid"
@@ -23700,7 +23804,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_2FF78800DDBC42CDA568DA58C9F459C5"
                     {
                     "Sequence" = "3:200"
-                    "DisplayName" = "8:Installationsordner"
+                    "DisplayName" = "8:Installation Folder"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdFolderDlg.wid"
@@ -23735,7 +23839,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_EB241A339D9A418E8DEFCB5FFDB17D5D"
                     {
                     "Sequence" = "3:300"
-                    "DisplayName" = "8:Installation bestätigen"
+                    "DisplayName" = "8:Confirm Installation"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdConfirmDlg.wid"
@@ -23757,7 +23861,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_FA3D7FB08D0A405FA8055751689548EE"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Willkommen"
+                    "DisplayName" = "8:Welcome"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdWelcomeDlg.wid"
@@ -23820,7 +23924,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_07146DDAE83247A8808D0EFF67F9776C"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Fertig"
+                    "DisplayName" = "8:Finished"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminFinishedDlg.wid"
@@ -23851,7 +23955,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_A8D027A8BC69418F858B528268C0117B"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Fertig"
+                    "DisplayName" = "8:Finished"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdFinishedDlg.wid"
@@ -23895,7 +23999,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_77848BECC66245E298E61CE34FA02CCE"
                     {
                     "Sequence" = "3:300"
-                    "DisplayName" = "8:Installation bestätigen"
+                    "DisplayName" = "8:Confirm Installation"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminConfirmDlg.wid"
@@ -23917,7 +24021,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_9B70ECF7A4B343C09E265B2A61A930A2"
                     {
                     "Sequence" = "3:200"
-                    "DisplayName" = "8:Installationsordner"
+                    "DisplayName" = "8:Installation Folder"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminFolderDlg.wid"
@@ -23939,7 +24043,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_EC780BEFD3A94A60858EF2447BE0E0B4"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Willkommen"
+                    "DisplayName" = "8:Welcome"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminWelcomeDlg.wid"
@@ -23994,7 +24098,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6EF0E4A8AFA94935BAB16FE4BA890004"
             {
-            "SourcePath" = "8:studio.res\\release\\Studio.Res.dll"
+            "SourcePath" = "8:Studio.Res\\Debug\\Studio.Res.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_487033F9EABD4B2CBE28062474924C4F"
@@ -24050,7 +24154,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_EFEAA11A7FB34DABA7378353D9CAA185"
             {
-            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Release\\OpenDCL.Runtime.msm"
+            "SourcePath" = "8:..\\..\\Runtime\\Install\\MSM\\Debug\\OpenDCL.Runtime.msm"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_388900515A4744599E058DA609E4770D"
@@ -24103,7 +24207,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_FDB2ABC5CC62416389847706827F8059"
             {
-            "SourcePath" = "8:..\\release\\OpenDCL Studio.exe"
+            "SourcePath" = "8:..\\Debug\\OpenDCL Studio.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_388900515A4744599E058DA609E4770D"
@@ -24129,6 +24233,9 @@
                 {
                 }
             }
+        }
+        "VJSharpPlugin"
+        {
         }
     }
 }

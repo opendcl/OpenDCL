@@ -71,6 +71,7 @@ BOOL CEventsTabPane::OnInitDialog()
 		GetDlgItem(IDC_COPYTOCLIPBOARD)->ShowWindow( SW_HIDE );
 	if (!AfxGetApp()->GetProfileInt(theWorkspace.GetAppKey(), _T("EventsWriteToLispFile"), FALSE))
 		GetDlgItem(IDC_ADDTOLISP)->ShowWindow( SW_HIDE );
+	ClearEvents();
 
 	CRect rectDlg;
 	GetWindowRect( &rectDlg );
@@ -161,20 +162,22 @@ void CEventsTabPane::UpdateEvents( TDclControlPtr pControl )
 {
 	mpDclControl = pControl;
 	mEventsList.ResetContent();
-	mEventsList.EnableWindow( TRUE );
 	mStatusMsg.ShowWindow( SW_HIDE );
-
-	if( pControl && pControl->GetOwnerForm()->IsModeless() )
-		GetDlgItem( IDC_ADDCANCEL )->ShowWindow( SW_SHOW );
-	else
-		GetDlgItem( IDC_ADDCANCEL )->ShowWindow( SW_HIDE );
 
 	if( !mpDclControl )
 		return;
 
 	AddEvents();
-	if( IsWindowVisible() && mEventsList.IsWindowEnabled() && mEventsList.GetCount() > 0 )
+	if( mEventsList.GetCount() > 0 )
+	{
+		mEventsList.EnableWindow( TRUE );
+		if( pControl && pControl->GetOwnerForm()->IsModeless() )
+			GetDlgItem( IDC_ADDCANCEL )->ShowWindow( SW_SHOW );
+		mEventsList.EnableWindow( TRUE );
+		GetDlgItem( IDC_LABEL )->EnableWindow( TRUE );
+		mDefunEdit.EnableWindow( TRUE );
 		mEventsList.SetFocus();
+	}
 	mDefunEdit.SetWindowText( NULL );
 }
 
@@ -274,17 +277,20 @@ void CEventsTabPane::SetDefunPreview()
 
 void CEventsTabPane::ClearEvents( LPCTSTR pszErrMsg /*= NULL*/ )
 {
+	mpDclControl = NULL;
+	mEventsList.EnableWindow( FALSE );
+	mEventsList.ResetContent();
+	GetDlgItem( IDC_LABEL )->EnableWindow( FALSE );
+	mDefunEdit.EnableWindow( FALSE );
 	GetDlgItem( IDC_ADDCANCEL )->EnableWindow( FALSE );
 	GetDlgItem( IDC_COPYTOCLIPBOARD )->EnableWindow( FALSE );
 	GetDlgItem( IDC_ADDTOLISP )->EnableWindow( FALSE );
+	GetDlgItem( IDC_ADDCANCEL )->ShowWindow( SW_HIDE );
 
 	mEventDesc.SetWindowText( NULL );
-	mEventsList.ResetContent();
 	mDefunEdit.SetWindowText( NULL );
 	mDefunPreview.SetWindowText( NULL );
-	mpDclControl = NULL;
 
-	mEventsList.EnableWindow( (pszErrMsg == NULL) );
 	if( pszErrMsg )
 		mStatusMsg.SetWindowText( pszErrMsg );
 	mStatusMsg.ShowWindow( pszErrMsg? SW_SHOW : SW_HIDE );

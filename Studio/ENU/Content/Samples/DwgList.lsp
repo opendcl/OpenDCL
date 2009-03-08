@@ -20,7 +20,7 @@
     (if (equal (strcase (substr fileName (- (strlen fileName) 3) 4)) ".DWG")
       (progn
         ;(dcl_SetCmdBarFocus)
-        (dcl_sendstring (strcat "-insert " fileName "\n"))
+        (dcl_sendstring (strcat "_-INSERT " fileName "\n"))
       )
     )
     (princ)
