@@ -39,6 +39,7 @@ CFormControlManager::CFormControlManager( CStudioDialogObject* pDlgObject )
 , mDropTarget( this )
 , mptDragStart( -1, -1 )
 , mbDragInitiated( false )
+, mbPickSelected( false )
 , mbSnapTracker( false )
 , mpResizeTarget( NULL )
 {
@@ -144,11 +145,11 @@ __UINT_LRESULT CFormControlManager::OnNcHitTest(CPoint point)
 
 void CFormControlManager::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	mbPickSelected = false;
 	mptDragStart = point;
 	mbSnapTracker = (!theStudioWorkspace.GetToolboxPane()->IsPointer());
 	if( !GetCapture() )
 	{
-		//DoDragDrop( (DROPEFFECT_MOVE | DROPEFFECT_COPY), NULL, &mDropSource );
 		CPoint ptScreen( point );
 		ClientToScreen( &ptScreen );
 		CDialogControl* pDlgControl = mpDlgObject->GetControlAtPoint( ptScreen );
@@ -156,24 +157,25 @@ void CFormControlManager::OnLButtonDown(UINT nFlags, CPoint point)
 		{
 			if( !pDlgControl->GetControlManager()->IsSelected() )
 			{
+				mbPickSelected = true;
 				bool bDeactivateCurrent = (((nFlags & MK_CONTROL) == 0) || mpDlgObject->IsOnlyFormActive());
 				theStudioWorkspace.ActivateDclControl( pDlgControl->GetTemplate(), bDeactivateCurrent );
 			}
 		}
 		else if( !TrackRubberBand( this, mpDlgObject->SnapToGrid( point ) ) )
-			theStudioWorkspace.ActivateDclControl( mpDlgObject->GetTemplate(), ((nFlags & MK_CONTROL) == 0) && !mpDlgObject->IsOnlyFormActive() );
+			theStudioWorkspace.ActivateDclControl( GetTemplate(), ((nFlags & MK_CONTROL) == 0) && !mpDlgObject->IsOnlyFormActive() );
 		else
 		{
 			bool bDeactivateCurrent = (((nFlags & MK_CONTROL) == 0) || mpDlgObject->IsOnlyFormActive());
 			if( bDeactivateCurrent )
-				theStudioWorkspace.ActivateDclControl( NULL );
+				theStudioWorkspace.ActivateDclControl( GetTemplate(), true );
 			if( mbSnapTracker )
 			{
 				mpDlgObject->SnapToGrid( m_rect.BottomRight() );
 				mpDlgObject->InsertControl( theStudioWorkspace.GetToolboxPane()->GetSelectedTool(), m_rect );
 			}
 			else if( !ActivateControlsInRect( m_rect ) )
-				theStudioWorkspace.ActivateDclControl( mpDlgObject->GetTemplate(), true );
+				theStudioWorkspace.ActivateDclControl( GetTemplate(), true );
 		}
 	}
 
@@ -192,14 +194,47 @@ void CFormControlManager::OnLButtonUp(UINT nFlags, CPoint point)
 			CDialogControl* pDlgControl = mpDlgObject->GetControlAtPoint( ptScreen );
 			if( pDlgControl )
 			{
-				bool bDeactivateCurrent = (((nFlags & MK_CONTROL) == 0) || mpDlgObject->IsOnlyFormActive());
-				if( !pDlgControl->GetControlManager()->IsSelected() || (bDeactivateCurrent && (mpDlgObject->CountSelected( false ) > 1)) )
-					theStudioWorkspace.ActivateDclControl( pDlgControl->GetTemplate(), bDeactivateCurrent );
+				TDclControlPtr pSelControl = pDlgControl->GetTemplate();
+				bool bSelected = pDlgControl->GetControlManager()->IsSelected();
+				bool bLoneSelection = (bSelected && (mpDlgObject->CountSelected( false ) == 1));
+				if( (nFlags & MK_CONTROL) != 0 )
+				{
+					if( bLoneSelection )
+					{
+						if( !mbPickSelected )
+							theStudioWorkspace.ActivateDclControl( GetTemplate(), true );
+					}
+					else if( !bSelected )
+						theStudioWorkspace.ActivateDclControl( pSelControl, false );
+					else if( !mbPickSelected )
+					{
+						TDclControlList SelectedControls;
+						mpDlgObject->GetSelectedControls( SelectedControls );
+						bool bDeactivateSel = true;
+						for( TDclControlList::const_iterator iter = SelectedControls.begin();
+								 iter != SelectedControls.end();
+								 ++iter )
+						{
+							if( (*iter) == pSelControl )
+								continue; //skip the picked control in order to unselect it
+							theStudioWorkspace.ActivateDclControl( *iter, bDeactivateSel );
+							bDeactivateSel = false;
+						}
+					}
+				}
+				else
+				{
+					if( !bSelected )
+						theStudioWorkspace.ActivateDclControl( pSelControl, true );
+					else if( !bLoneSelection )
+						theStudioWorkspace.ActivateDclControl( pSelControl, true );
+				}
 			}
 		}
 	}
 	if( mbDragInitiated )
 		mbDragInitiated = false;
+	mbPickSelected = false;
 	__super::OnLButtonUp(nFlags, point);
 }
 
@@ -358,7 +393,10 @@ void CFormControlManager::OnNcLButtonDown(UINT nHitTest, CPoint point)
 		if( mbSnapTracker )
 			mpDlgObject->SnapToGrid( point );
 		if( !TrackRubberBand( this, point ) )
-			theStudioWorkspace.ActivateDclControl( mpDlgObject->GetTemplate() );
+		{
+			if( !mpDlgObject->IsOnlyFormActive() )
+				theStudioWorkspace.ActivateDclControl( GetTemplate() );
+		}
 		else
 		{
 			m_rect.NormalizeRect();
@@ -372,7 +410,7 @@ void CFormControlManager::OnNcLButtonDown(UINT nHitTest, CPoint point)
 				mpDlgObject->InsertControl( theStudioWorkspace.GetToolboxPane()->GetSelectedTool(), m_rect );
 			}
 			else if( !ActivateControlsInRect( m_rect ) )
-				theStudioWorkspace.ActivateDclControl( mpDlgObject->GetTemplate() );
+				theStudioWorkspace.ActivateDclControl( GetTemplate() );
 		}
 	}
 	else if( nHitTest >= HTSIZEFIRST && nHitTest <= HTSIZELAST )
