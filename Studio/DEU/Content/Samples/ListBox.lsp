@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"ListBox\" to run the sample.\n")
+    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"ListBox\" ein, um das Beispiel zu starten.\n")
 )
 
 (DEFUN c:ListBox (/
@@ -11,9 +11,9 @@
               )
   ;;----------------------------------------------------
   (DEFUN c:ListBox_form1_selectfiles_onclicked (/ bs_getfilem bs_filelist fn)
-    (IF (SETQ bs_getfilem (dcl_MULTIFILEDIALOG "Drawing files (*.dwg)|*.dwg||"
+    (IF (SETQ bs_getfilem (dcl_MULTIFILEDIALOG "Zeichnungsdateien (*.dwg)|*.dwg||"
                                                             ; ExtensionFilters
-                                                "Select files" ; Title
+                                                "Dateien wählen" ; Title
                                                 (IF g:lastfolder
                                                   g:lastfolder
                                                   (GETVAR "DWGPREFIX")

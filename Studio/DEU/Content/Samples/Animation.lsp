@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"AVI\" to run the sample.\n")
+    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"AVI\" ein, um das Beispiel zu starten.\n")
 )
 
 
@@ -32,7 +32,7 @@
            (dcl_Animate_Load Animation_DclForm1_Animation1 (strcat fn avi))
        ))
       ;; Can't find it..
-       (T (alert (strcat "Cant find \"" avi "\", you may need to add it to an Acad support path!"))
+       (T (alert (strcat "Ich kann die Videodatei \"" avi "\", fügen Sie den Pfad zu den AutoCAD-Supportpfaden hinzu!"))
          (EXIT)
        )
     )

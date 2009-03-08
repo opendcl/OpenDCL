@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"Modeless\" to run the sample.\n")
+    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"Modeless\" ein, um das Beispiel zu starten.\n")
 )
 
 

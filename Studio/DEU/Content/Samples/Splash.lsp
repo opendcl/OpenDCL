@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-  (princ "\nOpenDCL sample programs.\nEnter \"SPLASH\" to run the sample.\n ")
+  (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"SPLASH\" ein, um das Beispiel zu starten.\n")
 )
 
 (DEFUN c:splash ()
@@ -15,7 +15,7 @@
 
 
 (defun C:CloseSplash ()
-  (dcl_Control_SetCaption splash_Form1_Label1 (strcat "Loading..." (itoa *Count*)))
+  (dcl_Control_SetCaption splash_Form1_Label1 (strcat "Laden..." (itoa *Count*)))
   (setq *Count* (1- *Count*))
   (if (/= *Count* -1)
     (dcl_DelayedInvoke 1000 "C:CloseSplash")

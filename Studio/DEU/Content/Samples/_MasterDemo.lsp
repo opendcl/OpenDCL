@@ -1,4 +1,4 @@
-(PRINC "\nOpenDCL sample programs.\nEnter \"DEMO\" to run the sample.\n")
+(PRINC "\nOpenDCL Beispielanwendungen.\nGeben Sie \"DEMO\", um die Beispiele zu aufzurufen.\n")
 
 
 (defun LspLoader (lspFileName / fn)
@@ -10,13 +10,15 @@
       ;; Load the .LSP file from the default installed "Samples" folder.
        ( (if
            (or
+             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
              (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
+             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
              (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
            )
            (LOAD (strcat fn lspFileName))
        ))
       ;; The lsp failed to load, so report or log the error exit now (or take corrective action and try again)
-       (T (alert (strcat "\"" lspFileName "\" failed to load, you may need to add it to an Acad support path for it to load correctly!"))
+       (T (alert (strcat "\"" lspFileName "\" kann nicht geladen werden, fügen Sie den Pfad zu den AutoCAD-Supportpfaden hinzu, damit es geladen werden kann!"))
          (EXIT)
        )
     )
@@ -29,7 +31,7 @@
         (WHILE (< 0 (GETVAR "cmdactive")) (COMMAND))
         ;; do error stuff
         (IF _MasterDemo_DCLMaster (dcl_FORM_CLOSE _MasterDemo_DCLMaster))
-        (PRINC (STRCAT "\nApplication Error: " (itoa (GETVAR "errno")) " :- " msg))        
+        (PRINC (STRCAT "\nAnwendungsfehler: " (itoa (GETVAR "errno")) " :- " msg))        
         (PRINC)
     )
 
@@ -43,7 +45,7 @@
     (IF (NOT (dcl_FORM_ISACTIVE _MasterDemo_DCLMaster))
           (dcl_FORM_SHOW _MasterDemo_DCLMaster) 
         ;; The Event handlers manage the form here.
-        (PROMPT "\nForm is already active.")
+        (PROMPT "\nDer Dialog ist bereits aktiv.")
     )
     (PRINC)
 )
@@ -247,7 +249,7 @@
            (startapp "notepad" (strcat fn txt))
        ))
       ;; Can't find it..
-       (T (alert (strcat "Cant find \"" txt "\", you may need to add it to an Acad support path!"))
+       (T (alert (strcat "Ich kann \"" txt "\" nicht finden, you may need to add it to an Acad support path!"))
          (EXIT)
        )
     )
@@ -305,7 +307,7 @@
            (startapp "notepad" (strcat fn txt))
        ))
       ;; Can't find it..
-       (T (alert (strcat "Cant find \"" txt "\", you may need to add it to an Acad support path!"))
+       (T (alert (strcat "Ich kann die Datei \"" txt "\" nicht finden, fügen Sie den Pfad zu den AutoCAD-Supportpfaden hinzu!"))
          (EXIT)
        )
     )

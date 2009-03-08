@@ -41,6 +41,7 @@
           </tr>
         </table>
 		<p>Diese Methode setzt den Stil der angegebenen Zelle. Jede Zelle einer neuen Zeile verwendet zun&auml;chst den Stil aus der Vorgabe der Spaltendefinition. Mit der Methode SelCellStyle kann die Vorgabe &uuml;berschrieben werden. </p>
+		<p>Die Systemvariable DIMZIN beeinflusst die Darstellung von Realzahlen im Eingabefeld (Stil 9 und 39). Ist das Bit 3 gesetzt (Wert 4), werden f&uuml;hrende Nullen unterdr&uuml;ckt. Die Systemvariable DIMZIN wird beim Wechsel des aktiven Bema&szlig;ungsstils ge&auml;ndert. </p>
 		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
             <th nowrap>Stil</th>
@@ -84,7 +85,8 @@
           </tr>
           <tr>
             <td>9</td>
-            <td>Dezimalzahlen</td>
+            <td>Dezimalzahlen<br> 
+            (durch Systemvariable DIMZIN beeinflusst) </td>
           </tr>
           <tr>
             <td>10</td>
@@ -204,7 +206,7 @@
           </tr>
           <tr>
             <td>39</td>
-            <td>Dezimalzahlen-Kombinationsfeld</td>
+            <td>Dezimalzahlen-Kombinationsfeld<br>(durch Systemvariable DIMZIN beeinflusst) </td>
           </tr>
           <tr>
             <td>40</td>

@@ -44,10 +44,10 @@
             
             (cond
                 (   (null (setq arxpath (findfile arxname)))
-                    (alert (strcat "Couldn't find " arxname ".\nYou may need to add it to an Acad support path"))
+                    (alert (strcat "Ich kann die Datei " arxname " nicht finden.\nMöglicherweise müssen Sie den Pfad zu den AutoCAD-Supportpfaden hinzufügen."))
                 )
                 (   (null (arxload arxpath 'nil))
-                    (alert (strcat "Failed to load " arxname "."))
+                    (alert (strcat "Ich kann die Datei " arxname " nicht laden."))
                 )
                 (   t   ) 
             )

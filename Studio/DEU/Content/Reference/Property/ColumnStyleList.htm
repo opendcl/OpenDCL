@@ -18,7 +18,7 @@
 		</tr>
 	</table>
 	<hr />
-	<div id="content">
+<div id="content">
         <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2">
           <tr>
             <th bgcolor="#FFCC99" align="left" valign="top" nowrap>Lokaler Name</th>
@@ -55,56 +55,191 @@
       <a href="../Control/Grid.htm">Datenblatt</a></td>
           </tr>
         </table>
-		<p>Beinhaltet die Liste der voreingestellten Zellenstile jeder Spalte. Die Zellen jeder Spalte verwenden den Vorgabestil, wenn dieser nicht f&uuml;r entsprechende Zellen individuell &uuml;berschrieben werden.</p>
-	    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
+	<p>Beinhaltet die Liste der voreingestellten Zellenstile jeder Spalte. Die Zellen jeder Spalte verwenden den Vorgabestil, wenn dieser nicht f&uuml;r entsprechende Zellen individuell &uuml;berschrieben werden.</p>
+		<p>Die Systemvariable DIMZIN beeinflusst die Darstellung von Realzahlen im Eingabefeld (Stil 9 und 39). Ist das Bit 3 gesetzt (Wert 4), werden f&uuml;hrende Nullen unterdr&uuml;ckt. Die Systemvariable DIMZIN wird beim Wechsel des aktiven Bema&szlig;ungsstils ge&auml;ndert. </p>
+		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
             <th nowrap>Stil</th>
             <th nowrap>Beschreibung</th>
           </tr>
-         <tr><td>0</td><td>Nicht editierbar</td></tr>
-<tr><td>1</td><td>Kontrollk‰stchen</td></tr>
-<tr><td>2</td><td>Optionsfelder</td></tr>
-<tr><td>3</td><td>Schaltbare Bilder</td></tr>
-<tr><td>4</td><td>Schaltfl‰chen</td></tr>
-<tr><td>5</td><td>Auswahl-Schaltfl‰chen</td></tr>
-<tr><td>6</td><td>Texte</td></tr>
-<tr><td>7</td><td>Winkel</td></tr>
-<tr><td>8</td><td>Ganzzahlen</td></tr>
-<tr><td>9</td><td>Dezimalzahlen</td></tr>
-<tr><td>10</td><td>Groﬂbuchstaben</td></tr>
-<tr><td>11</td><td>Kleinbuchstaben</td></tr>
-<tr><td>12</td><td>Passwort</td></tr>
-<tr><td>13</td><td>Mehrzeiliger Text</td></tr>
-<tr><td>14</td><td>W‰hrung</td></tr>
-<tr><td>15</td><td>Datum</td></tr>
-<tr><td>16</td><td>Zeit</td></tr>
-<tr><td>17</td><td>Prozent</td></tr>
-<tr><td>18</td><td>Auswahlliste</td></tr>
-<tr><td>19</td><td>Pfeilspitzen</td></tr>
-<tr><td>20</td><td>ACI-Farbenliste</td></tr>
-<tr><td>21</td><td>Textstile</td></tr>
-<tr><td>22</td><td>Plotstilnamen</td></tr>
-<tr><td>23</td><td>Plotstiltabellen</td></tr>
-<tr><td>24</td><td>Plotter</td></tr>
-<tr><td>25</td><td>Schriftartenliste</td></tr>
-<tr><td>26</td><td>Laufwerke</td></tr>
-<tr><td>27</td><td>Layer</td></tr>
-<tr><td>28</td><td>Bemaﬂungsstile</td></tr>
-<tr><td>29</td><td>Bilderliste</td></tr>
-<tr><td>30</td><td>ACI-Farben</td></tr>
-<tr><td>31</td><td>RGB-Farben</td></tr>
-<tr><td>32</td><td>Linienst‰rken</td></tr>
-<tr><td>33</td><td>Linientypen</td></tr>
-<tr><td>34</td><td>Ordner</td></tr>
-<tr><td>35</td><td>Dateien</td></tr>
-<tr><td>36</td><td>Text-Kombinationsfeld</td></tr>
-<tr><td>37</td><td>Winkel-Kombinationsfeld</td></tr>
-<tr><td>38</td><td>Ganzzahlen-Kombinationsfeld</td></tr>
-<tr><td>39</td><td>Dezimalzahlen-Kombinationsfeld</td></tr>
-<tr><td>40</td><td>Groﬂbuchstaben-Kombinationsfeld</td></tr>
-<tr><td>41</td><td>Kleinbuchstaben-Kombinationsfeld</td></tr>
-<tr><td>42</td><td>Symbolnamen</td></tr>
-<tr><td>43</td><td>Symbolnamen-Kombinationsfeld</td></tr>
+          <tr>
+            <td>0</td>
+            <td>Nicht editierbar</td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>Kontrollk&auml;stchen</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Optionsfelder</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Schaltbare Bilder</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Schaltfl&auml;chen</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Auswahl-Schaltfl&auml;chen</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Texte</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>Winkel</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>Ganzzahlen</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>Dezimalzahlen<br>
+      (durch Systemvariable DIMZIN beeinflusst) </td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>Gro&szlig;buchstaben</td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td>Kleinbuchstaben</td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td>Passwort</td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td>Mehrzeiliger Text</td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td>W&auml;hrung</td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td>Datum</td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td>Zeit</td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td>Prozent</td>
+          </tr>
+          <tr>
+            <td>18</td>
+            <td>Auswahlliste</td>
+          </tr>
+          <tr>
+            <td>19</td>
+            <td>Pfeilspitzen</td>
+          </tr>
+          <tr>
+            <td>20</td>
+            <td>ACI-Farbenliste</td>
+          </tr>
+          <tr>
+            <td>21</td>
+            <td>Textstile</td>
+          </tr>
+          <tr>
+            <td>22</td>
+            <td>Plotstilnamen</td>
+          </tr>
+          <tr>
+            <td>23</td>
+            <td>Plotstiltabellen</td>
+          </tr>
+          <tr>
+            <td>24</td>
+            <td>Plotter</td>
+          </tr>
+          <tr>
+            <td>25</td>
+            <td>Schriftartenliste</td>
+          </tr>
+          <tr>
+            <td>26</td>
+            <td>Laufwerke</td>
+          </tr>
+          <tr>
+            <td>27</td>
+            <td>Layer</td>
+          </tr>
+          <tr>
+            <td>28</td>
+            <td>Bema&szlig;ungsstile</td>
+          </tr>
+          <tr>
+            <td>29</td>
+            <td>Bilderliste</td>
+          </tr>
+          <tr>
+            <td>30</td>
+            <td>ACI-Farben</td>
+          </tr>
+          <tr>
+            <td>31</td>
+            <td>RGB-Farben</td>
+          </tr>
+          <tr>
+            <td>32</td>
+            <td>Linienst&auml;rken</td>
+          </tr>
+          <tr>
+            <td>33</td>
+            <td>Linientypen</td>
+          </tr>
+          <tr>
+            <td>34</td>
+            <td>Ordner</td>
+          </tr>
+          <tr>
+            <td>35</td>
+            <td>Dateien</td>
+          </tr>
+          <tr>
+            <td>36</td>
+            <td>Text-Kombinationsfeld</td>
+          </tr>
+          <tr>
+            <td>37</td>
+            <td>Winkel-Kombinationsfeld</td>
+          </tr>
+          <tr>
+            <td>38</td>
+            <td>Ganzzahlen-Kombinationsfeld</td>
+          </tr>
+          <tr>
+            <td>39</td>
+            <td>Dezimalzahlen-Kombinationsfeld<br>
+              (durch Systemvariable DIMZIN beeinflusst) </td>
+          </tr>
+          <tr>
+            <td>40</td>
+            <td>Gro&szlig;buchstaben-Kombinationsfeld</td>
+          </tr>
+          <tr>
+            <td>41</td>
+            <td>Kleinbuchstaben-Kombinationsfeld</td>
+          </tr>
+          <tr>
+            <td>42</td>
+            <td>Symbolnamen</td>
+          </tr>
+          <tr>
+            <td>43</td>
+            <td>Symbolnamen-Kombinationsfeld</td>
+          </tr>
         </table>
 	</div>
 	<hr />

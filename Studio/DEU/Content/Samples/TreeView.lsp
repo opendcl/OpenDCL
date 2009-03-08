@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-  (princ "\nOpenDCL sample programs.\nEnter \"TREE\" to run the sample.\n")
+  (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"TREE\" ein, um das Beispiel zu starten.\n")
 )
 
 
@@ -27,25 +27,25 @@
 
 
 (defun c:TreeView_Main_OnInitialize	(/ P1 P2)
-  (setq P1 (dcl_Tree_AddParent TreeView_Main_tree "First Parent" 0 -1 1))
+  (setq P1 (dcl_Tree_AddParent TreeView_Main_tree "Erstes Eltern-Element" 0 -1 1))
   (dcl_Tree_AddChild TreeView_Main_tree
     (list
-      (list P1 "Child 1" 2 3)
-      (list P1 "Child 2" 2 3)
-      (list P1 "Child 3" 2 3)
+      (list P1 "Element 1" 2 3)
+      (list P1 "Element 2" 2 3)
+      (list P1 "Element 3" 2 3)
     )
   )
-  (setq P2 (dcl_Tree_AddParent TreeView_Main_tree "Second Parent" 0 -1 8))
+  (setq P2 (dcl_Tree_AddParent TreeView_Main_tree "Zweites Eltern-Element" 0 -1 8))
   (dcl_Tree_AddChild TreeView_Main_tree
     (list
-      (list P2 "Child C" 4 5)
-      (list P2 "Child B" 4 5)
-      (list P2 "Child A" 4 5)
+      (list P2 "Element C" 4 5)
+      (list P2 "Element B" 4 5)
+      (list P2 "Element A" 4 5)
     )
   )
   (dcl_Tree_AddParent TreeView_Main_tree
-    '(("Third Parent" 0 -1 1)
-      ("Fourth Parent" 0 -1 1)
+    '(("Drittes Eltern-Element" 0 -1 1)
+      ("Viertes Eltern-Element" 0 -1 1)
      )
   )
   (dcl_Tree_SelectItem TreeView_Main_tree P1)

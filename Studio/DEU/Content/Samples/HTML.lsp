@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"HTML\" to run the sample.\n")
+    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"HTML\" ein, um das Beispiel zu starten.\n")
 )
 
 (defun c:html (/ )
@@ -36,7 +36,7 @@
 ;Get HTML code of document  
 (Setq htmlCode (dcl_Html_GetHtmlDocument HTML_Dcl1_Html))
 (princ htmlCode)
-(alert "HTML code has been printed in command bar")
+(alert "Der HTML-Quelltext wurde in die Befehlszeile geschrieben.")
 )
 
 
@@ -45,7 +45,7 @@
 (Setq status (dcl_Html_GetOffline HTML_Dcl1_Html)
       info (if status "Browser OFFLINE" "Browser ONLINE") ; T - offline, NIL - online
       )
-(dcl_MessageBox info "Browser status" 0 2)
+(dcl_MessageBox info "Browser-Status" 0 2)
 )
 
 
@@ -62,14 +62,14 @@
 
 (defun c:HTML_Dcl1_TB-GetFullName_OnClicked ()
 ;Get Full Name   
-(dcl_MessageBox (dcl_Html_GetFullName HTML_Dcl1_Html) "Full Name" 0 2)
+(dcl_MessageBox (dcl_Html_GetFullName HTML_Dcl1_Html) "Gesamter Name" 0 2)
 )
 
 
 (defun c:HTML_Dcl1_TB-LoadingStatus_OnClicked ( / status info)
 ;get loading status  
 (Setq status (dcl_Html_GetBusy HTML_Dcl1_Html)
-      info (if status "Page is loading" "-----------")
+      info (if status "Webseite wird geladen" "-----------")
       )
 (dcl_MessageBox info "Info" 0 2)  
 )
@@ -77,7 +77,7 @@
 
 (defun c:HTML_Dcl1_TB-PageTitle_OnClicked ()
 ; get title of website
-(dcl_MessageBox (dcl_Html_GetLocationName HTML_Dcl1_Html) "Page title" 0 2)    
+(dcl_MessageBox (dcl_Html_GetLocationName HTML_Dcl1_Html) "Webseiten-Titel" 0 2)    
 )
 
   
@@ -100,13 +100,13 @@
 
 (defun c:HTML_Dcl1_TB-UpdateHtml_OnClicked ()
  ; update html code  
- (dcl_Html_UpdateHtmlCode HTML_Dcl1_Html "<b>New code....</b>")
+ (dcl_Html_UpdateHtmlCode HTML_Dcl1_Html "<b>Neuer Quelltext....</b>")
 )
 
 
 ; triger when website is loaded
 (defun c:HTML_Dcl1_Html_OnNavigationComplete (sUrl)
-(princ (strcat "\nNavigation completed, URL: " sUrl))
+(princ (strcat "\nNavigation abgeschlossen, URL: " sUrl))
 )
 
 ; triger when mouse pointer is moving over the html control

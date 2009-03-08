@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"Hatches\" to run the sample.\n")
+    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"Hatches\" ein, um das Beispiel zu starten.\n")
 )
 
 (defun c:Hatches ( / )

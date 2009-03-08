@@ -53,7 +53,8 @@
             <td bgcolor="#CCFF99"><a href="../Control/TextBox.htm">Textfeld</a></td>
           </tr>
         </table>
-		<p>Diese Eigenschaft bestimmt den vordefinierten Filter eines Eingabefelds. Bitte beachten Sie, dass Sie einen benutzerspezifischen Filter mit der Methode <a href="../Method/TextBox/SetFilter.htm"> TextBox_SetFilter</a> nur zuweisen k&ouml;nnen, wenn der Vorgabefilterstil auf 0 gesetzt ist. Die Zuweisung benutzerspezifischer Filter werden ignoriert, wenn dem Textfeld ein anderer Vorgabefilterstil zugewiesen wurde.</p>
+		<p>Diese Eigenschaft bestimmt den vordefinierten Filter eines Eingabefelds. Bitte beachten Sie, dass Sie einen benutzerspezifischen Filter mit der Methode <a href="../Method/TextBox/SetFilter.htm"> TextBox_SetFilter</a> nur zuweisen k&ouml;nnen, wenn der Vorgabefilterstil auf 0 gesetzt ist. Die Zuweisung benutzerspezifischer Filter werden ignoriert, wenn dem Textfeld ein anderer Vorgabefilterstil zugewiesen wurde. </p>
+		<p>Die Systemvariable DIMZIN beeinflusst die Darstellung von Realzahlen im Eingabefeld. Ist das Bit 3 gesetzt (Wert 4), werden f&uuml;hrende Nullen unterdr&uuml;ckt. Die Systemvariable DIMZIN wird beim Wechsel des aktiven Bema&szlig;ungsstils ge&auml;ndert. </p>
 		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
             <th nowrap>Stil</th>
@@ -73,7 +74,7 @@
           </tr>
           <tr>
             <td>3</td>
-            <td>Realzahlen (f&uuml;hrende Nullen werden durch die Systemvariable DIMZIN gesteuert; ist das Bit 3 gesetzt (Wert 4), werden f&uuml;hrende Nullen unterdr&uuml;ckt) </td>
+            <td>Realzahlen (durch Systemvariable DIMZIN beeinflusst) </td>
           </tr>
           <tr>
             <td>4</td>

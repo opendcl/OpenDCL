@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"ListView\" to run the sample.\n")
+    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"ListView\" ein, um das Beispiel zu starten.\n")
 )
 
 
@@ -18,28 +18,28 @@
 
 (defun c:ListViewDlg_OnInitialize ( / Col0Width Col1Width Col2Width Col3Width)
     ;; calculate the required column widths
-    (setq Col0Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Column 0     ")
-          Col1Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Column 1     ")
-          Col2Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Column 2     ")
-          Col3Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Column 3     ")
+    (setq Col0Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Spalte 0     ")
+          Col1Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Spalte 1     ")
+          Col2Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Spalte 2     ")
+          Col3Width (dcl_ListView_CalcColWidth ListView_ListViewDlg_ListView1 "Spalte 3     ")
     )
     ;; add columns of the calculated widths
     (dcl_ListView_AddColumns ListView_ListViewDlg_ListView1
-                              (list (list "Column 0" 0 Col0Width)
-                                    (list "Column 1" 0 Col1Width)
-                                    (list "Column 2" 0 Col2Width)
-                                    (list "Column 3" 0 Col3Width)
+                              (list (list "Spalte 0" 0 Col0Width)
+                                    (list "Spalte 1" 0 Col1Width)
+                                    (list "Spalte 2" 0 Col2Width)
+                                    (list "Spalte 3" 0 Col3Width)
                               )
     )
     ;; clear and fill the list
     (dcl_ListView_FillList
         ListView_ListViewDlg_ListView1
         (list ;; add row 1 items
-              (list "List 1a" 0 "List 2a" 0 "List 3a" 0 "List 4a" 0)
+              (list "Zelle 1a" 0 "Zelle 2a" 0 "Zelle 3a" 0 "Zelle 4a" 0)
               ;; add row 2 items
-              (list "List 1b" 1 "List 2b" 1 "List 3b" 1 "List 4b" 1)
+              (list "Zelle 1b" 1 "Zelle 2b" 1 "Zelle 3b" 1 "Zelle 4b" 1)
               ;; add row 3 items
-              (list "List 1c" 2 "List 2c" 2 "List 3c" 2 "List 4c" 2)
+              (list "Zelle 1c" 2 "Zelle 2c" 2 "Zelle 3c" 2 "Zelle 4c" 2)
         )
     )
 )
@@ -47,8 +47,8 @@
 ;;-----------------------------------------------------------
 
 (defun c:ListView_ListViewDlg_ListView1_OnClicked (nRow nCol /)
-     (dcl_MessageBox (strcat "Column " (itoa nCol) ", Row " (itoa nRow))
-                      "Clicked Location"
+     (dcl_MessageBox (strcat "Spalte " (itoa nCol) ", Zeile " (itoa nRow))
+                      "Geklickte Position"
      )
 )
 

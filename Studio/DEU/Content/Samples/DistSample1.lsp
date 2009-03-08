@@ -203,10 +203,10 @@
             
                 (princ 
                     (strcat
-                        "Error: "
+                        "Fehler: "
                         (if arxpath 
-                            (strcat arxpath " <failed to load>")
-                            "OpenDCL runtime <not found>"
+                            (strcat arxpath " <kann nicht geladen werden>")
+                            "OpenDCL Laufzeitumgebung <wurde nicht gefunden>"
                         )
                         ".\n" 
                     )
@@ -237,7 +237,7 @@
 
             (   (null dcl_project_import)
 
-                (princ "OpenDCL version 4.0, beta 18 or newer is required.\n")
+                (princ "Es wird mindestens die Version OpenDCL Version 4.0, Beta 18 oder höher benötigt.\n")
 
                 nil
             )
@@ -253,9 +253,9 @@
 
                 (princ
                     (strcat
-                        "Failed to load <"
+                        "kann nicht geladen werden <"
                         projname
-                        "> ODCL resource from vlx file.\n"
+                        "> OpenDCL-Projektdaten aus einer VLX-Datei.\n"
                     )
                 )
 
@@ -284,7 +284,7 @@
 
     (defun c:DistSample_MainForm_OkButton_OnClicked ( )
 
-        (dcl_MessageBox "Press [Ok] to terminate ..." "About to exit ...")
+        (dcl_MessageBox "Drücken Sie die Schaltfläche OK, um abzubrechen" "Info-Dialog schließen ...")
 
         (dcl_form_close DistSample_MainForm)
 
@@ -326,7 +326,7 @@
                     )
                 )
 
-                (princ "Failed to show form: DistSample_MainForm")
+                (princ "Dialog konnte nicht angezeigt werden: DistSample_MainForm")
             )
         )
 
@@ -344,6 +344,6 @@
 
 )
 
-(princ "DistSample1 (ver 1.2) loaded, type DistSample1 to execute.")
+(princ "DistSample1 (ver 1.2) geladen, geben Sie DistSample1 ein, um das Beispiel zu starten.")
 
 (princ)

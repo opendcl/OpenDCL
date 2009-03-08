@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-  (princ "\nOpenDCL sample programs.\nEnter \"Events\" to run the sample.\n ")
+  (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"Events\" ein, um das Beispiel zu starten.\n")
 )
 
 
@@ -20,7 +20,7 @@
 
 (defun c:EventHandling_OK_Clicked ()
   (if (null sVariable)
-    (setq sVariable "Not set")
+    (setq sVariable "ist leer")
   )
   (alert (strcat "sVariable=" sVariable))
 )

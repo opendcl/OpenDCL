@@ -2,7 +2,7 @@
 ;;It uses (dcl_DelayedInvoke) to wait a few milliseconds before moving the form to appear animated.
 
 (IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"MOVER\" to run the sample.\n")
+    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"MOVER\" ein, um das Beispiel zu starten.\n")
 )
 
 (defun c:FormMover_Form1_GraphicButton1_OnClicked ( /)

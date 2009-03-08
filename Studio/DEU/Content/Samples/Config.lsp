@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-  (princ "\nOpenDCL sample programs.\nEnter \"ConfigTab\" to run the sample.\n ")
+  (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"ConfigTab\" ein, um das Beispiel zu starten.\n")
 )
 
 (DEFUN c:ConfigTab ( / )
@@ -7,20 +7,20 @@
   (LoadRunTime)
   (LoadODCLProj "Config.odcl")
 
-  (dcl_MESSAGEBOX "Please navigate to the \"Demo Config Page\" tab" "OpenDCL")
+  (dcl_MESSAGEBOX "Bewegen Sie sich bitte zur Karteikarte \"OpenDCL Demokarteikarte\"" "OpenDCL")
   (COMMAND "._OPTIONS")
   (PRINC)
 )
 
 
 (defun c:DemoConfigPage_OnOK ( / tmp)
-  (dcl_MessageBox (strcat "You typed: " (dcl_Control_GetText Config_DemoConfigPage_txtOptTabDemo)) "OpenDCL")
+  (dcl_MessageBox (strcat "Ihre Eingabe: " (dcl_Control_GetText Config_DemoConfigPage_txtOptTabDemo)) "OpenDCL")
   (setq tmp (dcl_Control_GetValue Config_DemoConfigPage_chkOptTabDemo))
   (if (= 1 tmp)
-    (setq OnOff "ON")
-    (setq OnOff "OFF")
+    (setq OnOff "EIN")
+    (setq OnOff "AUS")
   )
-  (dcl_MessageBox (strcat "The check box is set to: " OnOff))
+  (dcl_MessageBox (strcat "Die Einstellung des Kontrollkästchen ist: " OnOff))
 )
 
 (princ)

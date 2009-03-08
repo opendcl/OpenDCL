@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"Misc\" to run the sample.\n")
+    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"Misc\" ein, um das Beispiel zu starten.\n")
 )
 
 ;; this function loads the project & shows the form
@@ -7,7 +7,7 @@
     (DEFUN *error* (msg)
         (WHILE (< 0 (GETVAR "cmdactive")) (COMMAND))
         ;; do error stuff
-        (PRINC (STRCAT "\nApplication Error: " (GETVAR "errno") " :- " msg))
+        (PRINC (STRCAT "\nProgrammfehler: " (GETVAR "errno") " :- " msg))
         (PRINC)
     )
 
@@ -35,16 +35,16 @@
          (SETQ nCount (dcl_TREE_COUNTITEMS Misc_DemoModal_TreeControl1))
          (IF (= nCount 0)
              (PROGN
-                 (dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1 "slide1" "t1")
+                 (dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1 "Dia1" "t1")
                  (dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1
-                                      "slide library"
+                                      "Diabibliothek"
                                       "t2"
                  )
-                 (dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1 "slide3" "t3")
+                 (dcl_TREE_ADDPARENT Misc_DemoModal_TreeControl1 "Dia3" "t3")
                  (dcl_TREE_ADDCHILD Misc_DemoModal_TreeControl1
-                                     '(("t2" "Child1" "C1")
-                                       ("t2" "Child2" "C2")
-                                       ("t2" "Child3" "C3")
+                                     '(("t2" "Element1" "C1")
+                                       ("t2" "Element2" "C2")
+                                       ("t2" "Element3" "C3")
                                       )
                  )
                  (dcl_TREE_SELECTITEM Misc_DemoModal_TreeControl1 "t1")
@@ -113,7 +113,7 @@
 
 
 (DEFUN c:DemoModal_BrowseFolders_Clicked (/ path)
-    (IF (SETQ path (dcl_BROWSEFOLDER "Pick a Directory:" "c:\\Program Files" nil 81))
+    (IF (SETQ path (dcl_BROWSEFOLDER "Wählen Sie ein Verzeichnis:" "c:\\Programme" nil 81))
         (ALERT path)
     )
 )

@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"SEL\" to run the sample.\n")
+    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"SEL\" ein, um das Beispiel zu starten.\n")
 )
 
 ;; This function is used to demonstrate how to create a modal dialog box
@@ -45,13 +45,13 @@
                  '("console break" "function cancelled" "quit / exit abort")
              )
              ;; just for the Demo ...
-             (dcl_MESSAGEBOX ".... Quit/Exit/Abort/*Cancelled*"
-                              "Inside Error Handler" ; Form Caption
+             (dcl_MESSAGEBOX ".... Funktionsabbruch"
+                              "Innerhalb der Ereignisfunktion" ; Form Caption
                               2                   ; OK Button Only
                               1                   ; exclamation point icon is displayed in the message box.
              )
             )
-            ((PRINC (STRCAT "\nApplication Error: " (itoa (GETVAR "errno")) " :- " msg "\n"))
+            ((PRINC (STRCAT "\nProgrammfehler: " (itoa (GETVAR "errno")) " :- " msg "\n"))
             )
         )
         (SETVAR "errno" 0)
@@ -99,17 +99,17 @@
         (SETQ bflag T)
         (dcl_FORM_CLOSE Selections_Form)
         (SETVAR "BLIPMODE" 1)
-        (SETQ pt     (GETPOINT "\nSelect point: ")
+        (SETQ pt     (GETPOINT "\nPunkt wählen: ")
               ptList '()
         )
         (WHILE pt
             (SETQ ptList (CONS (VL-PRINC-TO-STRING pt) ptList))
-            (PROMPT (STRCAT "\n Selected another Point : "
+            (PROMPT (STRCAT "\nEinen anderen Punkt wählen: "
                             (VL-PRINC-TO-STRING pt)
-                            "\nEnter to Return to Form or ESC to cancel. "
+                            "\nDrücken Sie die Eingabetexte, um zum Dialog zurückzukrehren, oder ESC um abzubrechen. "
                     )
             )
-            (SETQ pt (GETPOINT "\nSelect other point."))
+            (SETQ pt (GETPOINT "\nEinen anderen Punkt wählen: "))
         )
         (SETVAR "BLIPMODE" 0)
         (VL-CMDF "._REDRAW")
@@ -127,7 +127,7 @@
         ;;
         ;; Call the method to close the dialog box
         (dcl_FORM_CLOSE Selections_Form)
-        (PROMPT "\n Select Objects, or \n Enter to Return to Form.")
+        (PROMPT "\nObjekte wählen oder Eingabetaste drücken, um zum Dialog zurückzukehren")
         (SETQ ss (SSGET))
         ;;
         (FOREACH obj (SS->OBJLIST ss)

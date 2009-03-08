@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"Methods\" to run the sample.\n")
+    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"Methods\" ein, um das Beispiel zu starten.\n")
 )
 
 
@@ -70,11 +70,11 @@
 (defun c:DemoMethods_DrawText_Clicked ()
    (dcl_PictureBox_Clear Methods_DemoMethods_PictureBox)
    (dcl_PictureBox_DrawText Methods_DemoMethods_PictureBox
-      (List (List 10 10 -19 20 "Line 1" "TL")
-	(List 10 25 -19 30 "Line 2" "TL")
-	(List 10 40 -19 40 "Line 3" "TL")
-	(List 10 55 -19 50 "Line 4" "TL" T)
-	(List 10 70 -19 56 "Line 5" "TL" T)
+      (List (List 10 10 -19 20 "Linie 1" "TL")
+	(List 10 25 -19 30 "Linie 2" "TL")
+	(List 10 40 -19 40 "Linie 3" "TL")
+	(List 10 55 -19 50 "Linie 4" "TL" T)
+	(List 10 70 -19 56 "Linie 5" "TL" T)
       )
    )
 )
@@ -82,9 +82,9 @@
 (defun c:DemoMethods_DrawWrappedText_Clicked ()
    (dcl_PictureBox_Clear Methods_DemoMethods_PictureBox)
    (dcl_PictureBox_DrawWrappedText Methods_DemoMethods_PictureBox
-      '((10 10 220 -19 "This sample text is supposed to wrap around if the width of the text is going to exceed the allowed width given." "L")
-	(10 70 220 -19 "This sample text is also supposed to wrap around if the width of the text is going to exceed the allowed width given." "C"	)
-	(10 130 220 -19 "This sample text is also supposed to wrap around if the width of the text is going to exceed the allowed width given." "R"	)
+      '((10 10 220 -19 "Dieser Beispieltext soll umgebrochen werden, wenn die Breite des Textes die zulässige Breite übersteigt." "L")
+	(10 70 220 -19 "Dieser Beispieltext soll umgebrochen werden, wenn die Breite des Textes die zulässige Breite übersteigt." "C"	)
+	(10 130 220 -19 "Dieser Beispieltext soll umgebrochen werden, wenn die Breite des Textes die zulässige Breite übersteigt." "R"	)
        )
    )  
 )
@@ -210,7 +210,7 @@
 )
 
 (defun c:DemoMethods_LoadPictureFile_Clicked (/ sFileName)
-   (setq sFileName (GetFiled "Select a picture file" "" "bmp;ico;jpg;gif;wmf" 8))
+   (setq sFileName (GetFiled "Wählen Sie eine Bilddatei" "" "bmp;ico;jpg;gif;wmf" 8))
    (if (/= sFileName nil)
       (dcl_PictureBox_LoadPictureFile Methods_DemoMethods_PictureBox sFileName)
       (dcl_PictureBox_StoreImage Methods_DemoMethods_PictureBox)

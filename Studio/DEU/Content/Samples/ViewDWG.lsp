@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"ViewDwg\" to run the sample.\n")
+    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"ViewDWG\" ein, um das Beispiel zu starten.\n")
 )
 
 ;; this function loads the project & shows the form
@@ -18,7 +18,7 @@
 )
 
 (defun c:DwgPreview_Browse_Clicked ( / )
-   (setq sFileName (GetFiled "Select a drawing file" "" "dwg" 8));_ get the path to a dwg file
+   (setq sFileName (GetFiled "Eine Zeichnung wählen" "" "dwg" 8));_ get the path to a dwg file
    (if sFileName
      (progn
        (dcl_DwgPreview_LoadDwg ViewDWG_DwgPreview_ViewDwg sFileName);_ load the DWG Thumbnail preview into the control

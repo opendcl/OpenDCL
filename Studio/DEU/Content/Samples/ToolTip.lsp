@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"TOOL\" to run the sample.\n")
+    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"TOOL\" ein, um das Beispiel zu starten.\n")
 )
 
 (defun c:Tool ( / )
@@ -13,11 +13,11 @@
 
 (defun c:ToolTip_dclToolTip_OnInitialize ( /)
   (dcl_ComboBox_SetCurSel ToolTip_dclToolTip_cboColor 1)
-  (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "<None>" -1 -1)
-  (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Question" 1 1)
+  (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "<KeinBild>" -1 -1)
+  (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Fragezeichen" 1 1)
   (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Information" 0 0)
-  (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Exclamation" 2 2)
-  (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Error" 3 3)
+  (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Warnsymbol" 2 2)
+  (dcl_ImageComboBox_AddString ToolTip_dclToolTip_cboIcon "Fehler" 3 3)
   (dcl_ImageComboBox_SetCurSel ToolTip_dclToolTip_cboIcon 0)
 )
 

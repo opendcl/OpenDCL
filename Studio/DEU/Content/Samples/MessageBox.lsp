@@ -1,5 +1,5 @@
 (IF (NOT *MasterDemo*)
-    (princ "\nOpenDCL sample programs.\nEnter \"MsgBox\" to run the sample.\n")
+    (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"MsgBox\" ein, um das Beispiel zu starten.\n")
 )
 
 (DEFUN c:MsgBox (/ )
@@ -31,10 +31,10 @@
 )
 
 (defun c:MessageBox_MessageBoxes_OnHelp ( /)
-     (dcl_MessageBox (strcat "You requested help for this form!\r\n\r\n"
-                              "Note that pressing the [Help] button in a child message box generates "
-                              "a call to the OnHelp event handler in the message box parent form, and "
-                              "the message box remains on the screen.") "MsgBox Sample")
+     (dcl_MessageBox (strcat "Sie haben für diesen Dialog eine Hilfe angefordert!\r\n\r\n"
+                              "Beachten Sie bitte, dass das Drücken der Hilfe-Schaltfläche in einem untergeordneten"
+			      "Meldungsdialog das Ereignis OnHelp in der übergeordneten Dialogbox auslöst und"
+			      "der Meldungssdialog am Bildschirm stehen bleibt.") "MsgBox Beispiel")
 )
 
 (princ)

@@ -199,10 +199,10 @@
             
                 (princ 
                     (strcat
-                        "Error: "
+                        "Fehler: "
                         (if arxpath 
-                            (strcat arxpath " <failed to load>")
-                            "OpenDCL runtime <not found>"
+                            (strcat arxpath " <kann nicht geladen werden>")
+                            "OpenDCL Laufzeitumgebung <wurde nicht gefunden>"
                         )
                         ".\n" 
                     )
@@ -224,33 +224,31 @@
         ;;  length so it looks tidy.
     
         (setq project
-            '(
-                "YWt6A20SAADAoypBBuKTKTUSKztmgFDDvn83WlYjKwzT3hP22gg0l0u45lXk1sPKQLS8Mz0RRSxX"
-                "U3/a5uamutpQoubmSue6e3VKT29h8/G6K5281uP71Qg9adp1MnsXSdh364+FmaKgDbHKexIeP7xy"
-                "DbCC8YeBEYC5l5s/Cb3fwshgOkEwn0oguW9iuXdy3nFnfgESeFwv7L+JkEI0Fj1R5M5hUxa47SLD"
-                "okO7I3VxkfmYkHabeRY8BhOaiz8v0ffqiOwskqb3uxjKLNn5jGxLjUKtlZOZg5d9oveTSLSlwjuv"
-                "FZjQ+yRDQq80EfRESwY+8hguYMv2TKbOMi9qa9en8T/C9l/imkvdIc8dJyAo8iA9aCtdBEFPhlmP"
-                "OEVshMK2ATIW0YEDPoFurqF7iiycMXqv+abCMol0gyaUdDPVm1f5eAqeXuA5RYlZt0e7dcC9I7c1"
-                "hdanvdn6K+BHYfpisI6KJ8BLF8+t9gP2ADWHBRZLAaMmb7b4migRDGmD9TO16eziOuF4iuf+gGdl"
-                "1fz+lhxeYXCWlX8DSDOFPNY/R9UFKWo8efDfvnbjmGKcQyhV+nP2VDeUNtCpVorY6sfzUZ4PeMzh"
-                "uNwR/IyHSDaRqP5gMiekKBreDSI5Z5h/sGKtRP7JLiMIBZqiJh4ZGVwBKZaw+sBaitX/gtHqIToF"
-                "bIcf72E0lj08wWzqEwU+aX2Em/44WPNJIxgLySkYoybvxln8RiprnC/fydt03d/62c8gIbxnGu1z"
-                "LtE658osigsu9ml8hNX+gIxo+0EuxzEyYXWWneuFG4Dvsa8uXgFF3kF0giPTukPYEVqEQAABeZnR"
-                "KkA5T8NFRgFTv11xoQbcX7O50HZkETVF3aKdFQVHoMkUw9SRkcIiRiV3JlLRFLM/0haz+aEeZzbE"
-                "DSJZlkyAXBThmoYlR7aKkMUF84Ut/JEUjokd2aan5aJZEpojNkmMTecKXQUHK51A9AqdAP5FrsaX"
-                "OAOaCOUZ6zqh2isJGyjKlCMTU5GBWNNLwfCojEhvgavQvzWTZwS3DBCZ2kfJu0EbavTTGzWMEJ6F"
-                "R9CToA7Hji3LJkM4gkHy8rpR56IyMjIenJx6mAGB4kH7GtYG7NbT0zsjI2OUlZWvpqb20NBQavU7"
-                "anR7mo0H8sKZrqeXjnfYntAmgkwLcy3pUZ2dUVBOmxwzDWdQdREi8lSMagc0BlAor5oVEEqH5AKT"
-                "nB34Aj3AXx+2SbDl/Fuh7BG3yRomjGMXOaQnEaiHJRZQvTtgR3w3V8dlh7re9j8vpz1ceDty9GZq"
-                "T1Ycjk73P2/9XHg7cvRmQgocLrre9j9v/Vx4O3n0RmoPVvG9u6mNNhpkULWbnFVt9dgNMznkOEvP"
-                "hk4u1sevutz3u/n7RkoPFpyuOAZQcGsPFhyuut73PzzZ9z1t/Vh4VYmYrfnuAJwXtZ8rYO8vPMVG"
-                "qooT9reu1999PTL4wHP7+DjybyVQMPmJM0CDZYRJilFXTIoR+jFy+GbyDUATD1jKiVC2WsPoZlKD"
-                "JxzNuh+XsdkoDk546EbSnp67AsQHtmz1W2g1buhwA3du9Zs/NVs1+FtoV3VVJuZtNVIonJ/PNks2"
-                "aPJRWzly8GZiT0YcDrqetfdmUk9GHA66Hve/6WZPRhwOup72v299Mw3vMXLwZmJPRlWBL99zZA1C"
-                "ltbay5r2BwqcPRL18Jhphk0KCQkdBgZm3d3dZmVlvZqaWri5uU9DQ/Pn52eysLAcEBBwdXV1JiIi"
-                "uoIL+Y2ZsM/x290Drw3HhlstJgIazSfp02QVA1+oZImEB2nygQUAFxe3UyvzhZmR4cHpsGn0segJ"
-                "jDCBFPYBxvLSDwxjswy5uQG0K+fe"
-            )        
+            '("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")   
         )
         
         (cond
@@ -263,7 +261,7 @@
 
             (   (null dcl_project_import)
 
-                (princ "OpenDCL version 4.0, beta 18 or newer is required.\n")
+                (princ "Es wird mindestens die Version OpenDCL Version 4.0, Beta 18 oder höher benötigt.\n")
 
                 nil
             )
@@ -278,7 +276,7 @@
 
     (defun c:DistSample_MainForm_OkButton_OnClicked ( )
 
-        (dcl_MessageBox "Press [Ok] to terminate ..." "About to exit ...")
+        (dcl_MessageBox "Drücken Sie die Schaltfläche OK, um abzubrechen" "Info-Dialog schließen ...")
 
         (dcl_form_close DistSample_MainForm)
 
@@ -308,7 +306,7 @@
                     )
                 )
 
-                (princ "Failed to show form: DistSample_MainForm")
+                (princ "Dialog konnte nicht angezeigt werden: DistSample_MainForm")
             )
         )
 
@@ -326,6 +324,6 @@
 
 )
 
-(princ "DistSample2 (ver 1.2) loaded, type DistSample2 to execute.")
+(princ "DistSample2 (ver 1.2) geladen, geben Sie DistSample2 ein, um das Beispiel zu starten.")
 
 (princ)
