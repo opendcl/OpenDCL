@@ -371,7 +371,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 		{
 			(*iter)->Serialize(ar);
 		#ifdef _DIAGNOSTIC
-			if( (GetAsyncKeyState( VK_CONTROL ) & 0x8000) == 0x8000 )
+			if( (GetAsyncKeyState( VK_CONTROL ) & KF_UP) == KF_UP )
 				TraceFmt( _T("> %s\r\n"), (*iter)->toString() );
 		#endif //_DIAGNOSTIC
 		}		
@@ -437,7 +437,7 @@ void CDclFormObject::Serialize(CArchive& ar)
 			pDclControl->Serialize(ar);
 			AddControl( pDclControl );
 			#ifdef _DIAGNOSTIC
-				if( (GetAsyncKeyState( VK_CONTROL ) & 0x8000) == 0x8000 )
+				if( (GetAsyncKeyState( VK_CONTROL ) & KF_UP) == KF_UP )
 					TraceFmt( _T("< %s\r\n"), pDclControl->toString() );
 			#endif //_DIAGNOSTIC
 			// Add new properties that have been added since this file was created

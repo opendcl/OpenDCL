@@ -270,7 +270,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 		{
 			(*iter)->Serialize(ar);
 			#ifdef _DIAGNOSTIC
-				if( (GetAsyncKeyState( VK_CONTROL ) & 0x8000) == 0x8000 )
+				if( (GetAsyncKeyState( VK_CONTROL ) & KF_UP) == KF_UP )
 					TraceFmt( _T("> %s\r\n"), (*iter)->toString() );
 			#endif //_DIAGNOSTIC
 		}
@@ -403,7 +403,7 @@ void CDclControlObject::Serialize(CArchive& ar)
 				pProp->Serialize(ar);
 				InsertNamedProperty( pProp );
 			#ifdef _DIAGNOSTIC
-				if( (GetAsyncKeyState( VK_CONTROL ) & 0x8000) == 0x8000 )
+				if( (GetAsyncKeyState( VK_CONTROL ) & KF_UP) == KF_UP )
 					TraceFmt( _T("< %s\r\n"), pProp->toString() );
 			#endif //_DIAGNOSTIC
 			}

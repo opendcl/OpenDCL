@@ -102,7 +102,7 @@ __UINT_LRESULT CFormControlManager::OnNcHitTest(CPoint point)
 	if( mptDragStart.x != -1 && mptDragStart.y != -1 )
 		return HTCLIENT; //starting a drag operation, so need to route through OnMouseMove
 
-	bool bShiftPressed = (GetAsyncKeyState( VK_SHIFT ) != 0);
+	bool bShiftPressed = ((GetAsyncKeyState( VK_SHIFT ) & KF_UP) == KF_UP);
 	if( bShiftPressed || theStudioWorkspace.GetToolboxPane()->IsPointer() )
 	{
 		const TDclControlList& Controls = mpDlgObject->GetSourceForm()->GetControlList();
@@ -400,7 +400,7 @@ void CFormControlManager::OnNcLButtonDown(UINT nHitTest, CPoint point)
 		else
 		{
 			m_rect.NormalizeRect();
-			bool bDeactivateCurrent = ((GetAsyncKeyState( VK_CONTROL ) == 0) || mpDlgObject->IsOnlyFormActive());
+			bool bDeactivateCurrent = (((GetAsyncKeyState( VK_CONTROL ) & KF_UP) != KF_UP) || mpDlgObject->IsOnlyFormActive());
 			if( bDeactivateCurrent )
 				theStudioWorkspace.ActivateDclControl( NULL );
 			if( mbSnapTracker )
@@ -437,7 +437,7 @@ void CFormControlManager::OnNcLButtonDown(UINT nHitTest, CPoint point)
 		CDialogControl* pDlgControl = mpDlgObject->GetControlAtPoint( point );
 		if( pDlgControl )
 		{
-			bool bDeactivateCurrent = ((GetAsyncKeyState( VK_CONTROL ) == 0) || mpDlgObject->IsOnlyFormActive());
+			bool bDeactivateCurrent = (((GetAsyncKeyState( VK_CONTROL ) & KF_UP) != KF_UP) || mpDlgObject->IsOnlyFormActive());
 			theStudioWorkspace.ActivateDclControl( pDlgControl->GetTemplate(), bDeactivateCurrent );
 		}
 	}

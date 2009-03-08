@@ -224,7 +224,10 @@ void CArxTabStripCtrl::ActivateTabPage( TTabPagePtr pTabPage, bool bFireEvent /*
 	mpActiveTabPage = pTabPage;
 	bool bNewPage = (pPreviousTabPage != pTabPage);
 	if( bNewPage && pPreviousTabPage )
+	{
 		pPreviousTabPage->ShowWindow( SW_HIDE );
+		OnNeedRepaint( true, true );
+	}
 	if( !pTabPage )
 		return;
 
