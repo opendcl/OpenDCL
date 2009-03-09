@@ -284,6 +284,11 @@ void CDialogControl::OnNeedRepaint( bool bRepaintBackground /*= true*/, bool bUp
 	}
 }
 
+CRect CDialogControl::ValidatePosition( const CRect& rcProposed ) const
+{
+	return rcProposed;
+}
+
 void CDialogControl::ApplyPosition()
 {
 	mpControlPane->ApplyPosition( TDialogControlLockedPtr( this ) );

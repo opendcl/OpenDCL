@@ -21,6 +21,7 @@ CSplitterCtrl::CSplitterCtrl( TDclControlPtr pTemplate, CControlPane* pPane, UIN
 : CDialogControl( pTemplate, pPane, this )
 , mbVertical( pTemplate->GetLongProperty( Prop::Width ) <= pTemplate->GetLongProperty( Prop::Height ) )
 , mptDragStart( 0, 0 )
+, mbIgnoreMove( false )
 {
 	if( bCreate )
 		Create( pPane->GetHostDialog(), nID );
@@ -42,28 +43,48 @@ bool CSplitterCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
-void CSplitterCtrl::ApplyPosition()
+CRect CSplitterCtrl::ValidatePosition( const CRect& rcProposed ) const
 {
-	CRect rcParent;
-	GetParent()->GetClientRect( &rcParent );
+	CRect rcValid = __super::ValidatePosition( rcProposed );
+	CRect rcParent = mpControlPane->GetControlArea();
 	long nMin = mpTemplate->GetLongProperty( Prop::SplitterMin );
 	long nMax = mpTemplate->GetLongProperty( Prop::SplitterMax );
 	if( mbVertical )
 	{
-		long lLeft = mpTemplate->GetLongProperty( Prop::Left );
-		if( lLeft - rcParent.left < nMin )
-			mpTemplate->SetLongProperty( Prop::Left, nMin + rcParent.left );
-		else if( rcParent.right - lLeft < nMax )
-			mpTemplate->SetLongProperty( Prop::Left, rcParent.right - nMax );
+		if( rcProposed.left - rcParent.left < nMin )
+			rcValid.MoveToX( nMin + rcParent.left );
+		else if( rcParent.right - rcProposed.left < nMax )
+		{
+			long lLeft = rcParent.right - nMax;
+			if( lLeft - rcParent.left >= nMin )
+				rcValid.MoveToX( lLeft );
+			else
+				rcValid.MoveToX( nMin + rcParent.left );
+		}
 	}
 	else
 	{
-		long lTop = mpTemplate->GetLongProperty( Prop::Top );
-		if( lTop - rcParent.top < nMin )
-			mpTemplate->SetLongProperty( Prop::Top, nMin + rcParent.top );
-		else if( rcParent.bottom - lTop < nMax )
-			mpTemplate->SetLongProperty( Prop::Top, rcParent.bottom - nMax );
+		if( rcProposed.top - rcParent.top < nMin )
+			rcValid.MoveToY( nMin + rcParent.top );
+		else if( rcParent.bottom - rcProposed.top < nMax )
+		{
+			long lTop = rcParent.bottom - nMax;
+			if( lTop - rcParent.top >= nMin )
+				rcValid.MoveToY( lTop );
+			else
+				rcValid.MoveToY( nMin + rcParent.top );
+		}
 	}
+	return rcValid;
+}
+
+void CSplitterCtrl::ApplyPosition()
+{
+	CRect rcNew = ValidatePosition( GetWndRect() );
+	if( mbVertical )
+		mpTemplate->SetLongProperty( Prop::Left, rcNew.left );
+	else
+		mpTemplate->SetLongProperty( Prop::Top, rcNew.top );
 	__super::ApplyPosition();
 }
 
@@ -196,11 +217,14 @@ void CSplitterCtrl::OnSize(UINT nType, int cx, int cy)
 void CSplitterCtrl::OnMove(int x, int y)
 {
 	__super::OnMove(x, y);
-	CRect rcThis = GetEffectiveWindowRect();
-	mpTemplate->SetLongProperty( Prop::Left, rcThis.left );
-	mpTemplate->SetLongProperty( Prop::Top, rcThis.top );
-	OnApplyLeft( mpTemplate->GetPropertyObject( Prop::Left ) );
-	OnApplyTop( mpTemplate->GetPropertyObject( Prop::Top ) );
+	if( !mbIgnoreMove )
+	{
+		CRect rcThis = GetEffectiveWindowRect();
+		mpTemplate->SetLongProperty( Prop::Left, rcThis.left );
+		mpTemplate->SetLongProperty( Prop::Top, rcThis.top );
+		OnApplyLeft( mpTemplate->GetPropertyObject( Prop::Left ) );
+		OnApplyTop( mpTemplate->GetPropertyObject( Prop::Top ) );
+	}
 	mpControlPane->RecalcLayout();
 }
 
@@ -220,12 +244,23 @@ void CSplitterCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	__super::OnMouseMove(nFlags, point);
 	CPoint ptNew = point - mptDragStart;
 	ClientToScreen( &ptNew );
-	GetParent()->ScreenToClient( &ptNew );
+	mpControlPane->GetHostDialog()->ScreenToClient( &ptNew );
+	CRect rcNew = ValidatePosition( CRect( ptNew, CSize( 0, 0 ) ) );
 	if( mbVertical )
-		mpTemplate->SetLongProperty( Prop::Left, ptNew.x );
+	{
+		if( rcNew.left == mpTemplate->GetLongProperty( Prop::Left ) )
+			return;
+		mpTemplate->SetLongProperty( Prop::Left, rcNew.left );
+	}
 	else
-		mpTemplate->SetLongProperty( Prop::Top, ptNew.y );
+	{
+		if( rcNew.top == mpTemplate->GetLongProperty( Prop::Top ) )
+			return;
+		mpTemplate->SetLongProperty( Prop::Top, rcNew.top );
+	}
+	mbIgnoreMove = true;
 	ApplyPosition();
+	mbIgnoreMove = false;
 }
 
 void CSplitterCtrl::OnLButtonUp(UINT nFlags, CPoint point)

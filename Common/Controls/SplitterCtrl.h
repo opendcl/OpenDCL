@@ -21,6 +21,7 @@ class CSplitterCtrl : public CStatic, public CDialogControl
 	CAcadColorService mColorService;
 	bool mbVertical;
 	CPoint mptDragStart;
+	bool mbIgnoreMove;
 
 // Construction
 public:
@@ -32,6 +33,7 @@ public:
 public:
 	operator TDialogControlPtr () { return TDialogControlLockedPtr( this ); } //to ensure it doesn't get auto deleted
 	virtual bool Create( CWnd* pParentWnd, UINT nID );
+	virtual CRect ValidatePosition( const CRect& rcProposed ) const;
 	virtual void ApplyPosition(); //move control window to new position
 	virtual bool OnApplyProperty( TPropertyPtr pProp );
 	virtual bool OnApplyWidth( TPropertyPtr pProp ); //Prop::Width

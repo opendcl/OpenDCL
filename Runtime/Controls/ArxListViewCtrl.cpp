@@ -335,5 +335,10 @@ void CArxListViewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 UINT CArxListViewCtrl::OnGetDlgCode()
 {
-	return (DLGC_WANTALLKEYS | __super::OnGetDlgCode());
+	UINT nResult = __super::OnGetDlgCode();
+	if( !mpTemplate->GetStringProperty( Prop::EventReturnPressed ).IsEmpty() ||
+			!mpTemplate->GetStringProperty( Prop::EventKeyDown ).IsEmpty() ||
+			!mpTemplate->GetStringProperty( Prop::EventKeyUp ).IsEmpty() )
+		nResult |= DLGC_WANTALLKEYS;
+	return nResult;
 }

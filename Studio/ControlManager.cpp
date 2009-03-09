@@ -530,7 +530,7 @@ void CControlManager::OnMouseMove(UINT nFlags, CPoint point)
 		}
 		break;
 	default:
-		assert( false ); //should be called with anything other than standard sizing values!
+		assert( false ); //shouldn't be called with anything other than standard sizing values!
 	}
 	MoveWindow( &rcManager );
 }

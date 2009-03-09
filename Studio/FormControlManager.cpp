@@ -296,6 +296,7 @@ void CFormControlManager::OnMouseMove(UINT nFlags, CPoint point)
 				mpDlgObject->ScreenToClient( &rcManager );
 				pManager->CheckNewWindowPosition( rcManager );
 				assert( pManager->GetParent() == mpDlgObject );
+				rcManager = pDlgControl->ValidatePosition( rcManager );
 				pManager->MoveWindow( &rcManager );
 				mpDlgObject->InvalidateRect( &rcManager );
 			}
