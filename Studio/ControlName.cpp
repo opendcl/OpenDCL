@@ -89,8 +89,7 @@ CString GetControlSimpleName( ControlType type )
 	for( int idx = 0; idx < cchDisplayName; ++idx )
 	{
 		TCHAR chThis = sDisplayName.GetAt( idx );
-		if( (chThis >= _T('A') && chThis <= _T('Z')) ||
-				(chThis >= _T('a') && chThis <= _T('z')) )
+		if( IsCharAlpha( chThis ) )
 			sSimpleName += chThis;
 	}
 	if( !sSimpleName.IsEmpty() )

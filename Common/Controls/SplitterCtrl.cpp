@@ -221,8 +221,6 @@ void CSplitterCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	CPoint ptNew = point - mptDragStart;
 	ClientToScreen( &ptNew );
 	GetParent()->ScreenToClient( &ptNew );
-	long nMin = mpTemplate->GetLongProperty( Prop::SplitterMin );
-	long nMax = mpTemplate->GetLongProperty( Prop::SplitterMax );
 	if( mbVertical )
 		mpTemplate->SetLongProperty( Prop::Left, ptNew.x );
 	else
