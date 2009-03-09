@@ -42,6 +42,31 @@ bool CSplitterCtrl::Create( CWnd* pParentWnd, UINT nID )
 	return bSuccess;
 }
 
+void CSplitterCtrl::ApplyPosition()
+{
+	CRect rcParent;
+	GetParent()->GetClientRect( &rcParent );
+	long nMin = mpTemplate->GetLongProperty( Prop::SplitterMin );
+	long nMax = mpTemplate->GetLongProperty( Prop::SplitterMax );
+	if( mbVertical )
+	{
+		long lLeft = mpTemplate->GetLongProperty( Prop::Left );
+		if( lLeft - rcParent.left < nMin )
+			mpTemplate->SetLongProperty( Prop::Left, nMin + rcParent.left );
+		else if( rcParent.right - lLeft < nMax )
+			mpTemplate->SetLongProperty( Prop::Left, rcParent.right - nMax );
+	}
+	else
+	{
+		long lTop = mpTemplate->GetLongProperty( Prop::Top );
+		if( lTop - rcParent.top < nMin )
+			mpTemplate->SetLongProperty( Prop::Top, nMin + rcParent.top );
+		else if( rcParent.bottom - lTop < nMax )
+			mpTemplate->SetLongProperty( Prop::Top, rcParent.bottom - nMax );
+	}
+	__super::ApplyPosition();
+}
+
 bool CSplitterCtrl::OnApplyProperty( TPropertyPtr pProp )
 {
 	if( !__super::OnApplyProperty( pProp ) )
@@ -174,6 +199,8 @@ void CSplitterCtrl::OnMove(int x, int y)
 	CRect rcThis = GetEffectiveWindowRect();
 	mpTemplate->SetLongProperty( Prop::Left, rcThis.left );
 	mpTemplate->SetLongProperty( Prop::Top, rcThis.top );
+	OnApplyLeft( mpTemplate->GetPropertyObject( Prop::Left ) );
+	OnApplyTop( mpTemplate->GetPropertyObject( Prop::Top ) );
 	mpControlPane->RecalcLayout();
 }
 
@@ -194,26 +221,12 @@ void CSplitterCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	CPoint ptNew = point - mptDragStart;
 	ClientToScreen( &ptNew );
 	GetParent()->ScreenToClient( &ptNew );
-	CRect rcParent;
-	GetParent()->GetClientRect( &rcParent );
 	long nMin = mpTemplate->GetLongProperty( Prop::SplitterMin );
 	long nMax = mpTemplate->GetLongProperty( Prop::SplitterMax );
 	if( mbVertical )
-	{
-		if( ptNew.x - rcParent.left < nMin )
-			ptNew.x = nMin;
-		else if( rcParent.right - ptNew.x < nMax )
-			ptNew.x = rcParent.right - nMax;
 		mpTemplate->SetLongProperty( Prop::Left, ptNew.x );
-	}
 	else
-	{
-		if( ptNew.y - rcParent.top < nMin )
-			ptNew.y = nMin;
-		else if( rcParent.bottom - ptNew.y < nMax )
-			ptNew.y = rcParent.bottom - nMax;
 		mpTemplate->SetLongProperty( Prop::Top, ptNew.y );
-	}
 	ApplyPosition();
 }
 
