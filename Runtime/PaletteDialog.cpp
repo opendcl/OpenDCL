@@ -9,6 +9,7 @@
 #include "ArxProject.h"
 #include "ArxDialogControl.h"
 #include "DclControlObject.h"
+#include "PictureObject.h"
 
 extern bool AcadIsQuitting(void);
 
@@ -56,11 +57,10 @@ CWnd* CPaletteDialog::GetTopLevelWnd()
 
 bool CPaletteDialog::CreateModeless( UINT nID )
 {
-	TDclControlPtr pProps = mpTemplate;
 	DWORD dwDockableSides = 0;
 	DWORD dwDefaultDockableSide = 0;
 
-	switch (pProps->GetLongProperty(Prop::DockableSides))
+	switch (mpTemplate->GetLongProperty(Prop::DockableSides))
 	{
 	case 1:
 		// set the form to only dock on the top side
@@ -110,6 +110,10 @@ bool CPaletteDialog::CreateModeless( UINT nID )
 		mHostPaletteSet.SetToolID( &uuid );
 	}			
 	mHostPaletteSet.EnableDocking( dwDockableSides );
+
+	//SetIcon must be called before RestoreControlBar!
+	OnApplyIcon( mpTemplate->GetPropertyObject( Prop::TitleBarIcon ) );
+
 	mHostPaletteSet.RestoreControlBar( dwDefaultDockableSide ); // loads the dockable form but does not display it
 	AfxGetMainWnd()->GetTopLevelFrame()->ShowControlBar( &mHostPaletteSet, TRUE, TRUE );
 
@@ -226,6 +230,15 @@ bool CPaletteDialog::OnApplyResizable( TPropertyPtr pProp )
 {
 	mbResizable = pProp->GetBooleanValue();
 	return true; //skip base class
+}
+
+bool CPaletteDialog::OnApplyIcon( TPropertyPtr pProp )
+{
+	DestroyIcon( mHostPaletteSet.SetIcon( NULL, FALSE ) );
+	TPicturePtr pPicture = mpSourceForm->GetProject()->FindPicture( pProp->GetLongValue() );
+	if( pPicture )
+		mHostPaletteSet.SetIcon( pPicture->CloneIcon(), FALSE );
+	return true;
 }
 
 void CPaletteDialog::OnMouseEnter()

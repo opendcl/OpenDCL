@@ -60,6 +60,7 @@ protected:
 	virtual bool Create( CWnd* pParentWnd, UINT nID ) { return false; }
 	virtual void OnFrameChanged(); //called by member functions that change the non-client size
 	virtual void ApplyPosition(); //move control window to new position
+	virtual bool OnApplyIcon( TPropertyPtr pProp ); //Prop::TitleBarIcon
 
 protected:
 friend class CAcadPaletteHost;

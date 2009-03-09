@@ -56,11 +56,10 @@ CWnd* CDockingDialog::GetTopLevelWnd()
 
 bool CDockingDialog::CreateModeless( UINT nID )
 {
-	TDclControlPtr pProps = mpTemplate;
 	DWORD dwDockableSides = 0;
 	DWORD dwDefaultDockableSide = 0;
 
-	switch (pProps->GetLongProperty(Prop::DockableSides))
+	switch (mpTemplate->GetLongProperty(Prop::DockableSides))
 	{
 	case 1:
 		// set the form to only dock on the top side
