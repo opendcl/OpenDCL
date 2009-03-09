@@ -8,8 +8,11 @@
   (or LoadRunTime (load "_OpenDclUtils.lsp") (exit))
   (LoadRunTime)
   (LoadODCLProj "DwgList.odcl")
+  
+;; An dieser Stelle bleibt der Ablauf dieses Programms stehen bis der Dialog geschlossen wird
+;; In der Zwischenzeit verwalten die Ereignisfunktionen den Dialog.
   (dcl_FORM_SHOW DwgList_DwgListForm)
-  ;; The Event handlers manage the form here.
+    
   (princ)
 )
 

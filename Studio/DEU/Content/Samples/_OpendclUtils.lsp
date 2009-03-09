@@ -1,7 +1,11 @@
 
 
 (defun LoadRunTime ( / )
-    ;; Demand load the OpenDCL.##.ARX. This requires the OpenDCL Runtime or Studio to be installed on each PC first.
+    ;; Laden der Laufzeitumgebung über den OPENDCL-Befehl. Das setzt aber voraus,
+    ;; dass an jedem PC vor dem Start von AutoCAD die Laufzeitumgebung bzw. das Studio
+    ;; installiert wurde. Wurde AutoCAD nach der OpenDCL Laufzeitumgebung installiert,
+    ;; muss die Installation der Laufzeitumgebung "repariert" werden, wobei nur zusätzliche
+    ;; Registry-Einträge für die neue AutoCAD-Version ergänzt werden.
     (cond
       ( (= 'EXRXSUBR (type dcl_getversionex)) )
       ( (= 2 (boole 1 (getvar "DEMANDLOAD") 2))
@@ -23,24 +27,25 @@
 
 
 (defun LoadODCLProj (proj / fn)
-    ;; Call (dcl_PROJECT_LOAD with the <CONTROL>. No re-load, no ProjectAliasName
-    ;; Note that without the re-load flag the ODCL is only loaded once, each time (dcl_PROJECT_LOAD is called it tests first if the sProject is already loaded.
+    ;; Aufruf von (dcl_PROJECT_LOAD mit dem  <CONTROL>. Kein Neuladen, kein Projektalias
+    ;; Beachten Sie, dass ohne das Neuladenargument, das Projekt nur einmal geladen wird
+    ;; Bei jedem erneuten Laden wird zuerst geprüft, ob das Projekt bereits geladen ist.
     (cond
-      ;; Search the support paths for the .ODCL file & load it.
+      ;; Supportpfade nach der .ODCL-Datei durchsuchen und neuladen
        ( (if (setq fn (findfile proj))
            (dcl_PROJECT_LOAD fn)
        ))
-      ;; Load the .ODCL file from the default installed "Samples" folder.
+      ;; .ODCL-Datei aus dem Ordner der Beispieldateien des Installationsverzeichnisses von OpenDCL-Studio laden
        ( (if 
            (or
-             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
-             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
+             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
+             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
+             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
+             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
            )
            (dcl_PROJECT_LOAD (strcat fn proj))
        ))
-      ;; The project failed to load, so report or log the error exit now (or take corrective action and try again)
+      ;; Die Projektdatei kann nicht geladen werden, Ausgabe einer Fehlermeldung mit Hinweis auf die notwendigen Änderungen
       (T (alert (strcat "\"" proj "\" kann nicht geladen werden, fügen Sie den Pfad zu den AutoCAD-Supportpfaden hinzu, damit es geladen werden kann!"))
         (EXIT)
       )

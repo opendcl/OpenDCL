@@ -46,6 +46,9 @@
           </tr>
         </table>
 		<p>Diese Methode zeichnet einen oder mehrere schraffierte Rechtecke, beginnend am Punkt intUpperLeftX, intUpperLeftY mit der Breite intWidth und der H&ouml;he intHeight. Alle Punkte beziehen sich auf den linken, oberen Eckpunkt des Steuerelements.</p>
+		<p>Die OpenDCL Laufzeitumgebung erwartet, dass gr&ouml;&szlig;ere Listen in bereits ausgewerteter Form &uuml;bergeben werden. &Uuml;bergeben Sie die Listen nicht in dieser Form:<br>
+'((nValue11 nValue12 ...) (nValue21 nValue22 ...)), sondern statt dessen dringend in der Form<br>
+(list (list nValue11 nValue12 ...) (list nValue21 nValue22 ...)).</p>
 		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
             <th nowrap>Schraffur</th>

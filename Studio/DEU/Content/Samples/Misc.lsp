@@ -2,11 +2,11 @@
     (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"Misc\" ein, um das Beispiel zu starten.\n")
 )
 
-;; this function loads the project & shows the form
+;; Diese Funktion lädt das Projekt und zeigt den Dialog an
 (DEFUN c:Misc (/  *error*)
     (DEFUN *error* (msg)
         (WHILE (< 0 (GETVAR "cmdactive")) (COMMAND))
-        ;; do error stuff
+        ;; Errorhandling
         (PRINC (STRCAT "\nProgrammfehler: " (GETVAR "errno") " :- " msg))
         (PRINC)
     )
@@ -14,23 +14,24 @@
   (or LoadRunTime (load "_OpenDclUtils.lsp") (exit))
   (LoadRunTime)
   (LoadODCLProj "Misc.odcl")
-  ;; Show the modal dialog .. (dcl_Form_IsActive test is not required anymore
+  
+;; An dieser Stelle bleibt der Ablauf dieses Programms stehen bis der Dialog geschlossen wird
+;; In der Zwischenzeit verwalten die Ereignisfunktionen den Dialog. 
   (dcl_FORM_SHOW Misc_DemoModal)
-  ;; The Event handlers manage the form here.
   (PRINC)
 )
 
 
 
-;; this function gets fired when a tab gets changed
+;; Wird beim Wechsel der Karteikarten ausgelöst
 (DEFUN c:DemoModal_TabControl1_Changed (nSelIndex / nCount)
     (COND
        
-        ;; cond tab 1
+        ;; Karteikarte 1
         ((= nSelIndex 1)
 	  (AddBlocksToListBox)
 	)
-        ;; cond tab 2
+        ;; Karteikarte 2
         ((= nSelIndex 2)
          (SETQ nCount (dcl_TREE_COUNTITEMS Misc_DemoModal_TreeControl1))
          (IF (= nCount 0)
@@ -51,7 +52,7 @@
              )
          )
         )
-        ;; cond tab 3
+        ;; Karteikarte 3
         ((= nSelIndex 3)
          (dcl_COMBOBOX_ADDCOLOR Misc_DemoModal_ComboBox4 156)
         )
@@ -81,34 +82,34 @@
 
 
 
-;; this function gets fired when the BlockNameList selection is changed
+;; Wird ausgelöst, wenn sich die Auswahl in BlockNameList ändert
 (DEFUN c:DemoModal_BlockNameList_SelectionChanged (nSelCount sSelText /)
     (dcl_CONTROL_SETBLOCKNAME Misc_DemoModal_BlockView sSelText)
 )
 
-;; this function gets fired when the TreeControl selection is changed
+;; Wird ausgelöst, wenn sich die Auswahl in der Baumstruktur ändert
 (DEFUN c:DemoModal_TreeControl1_SelectionChanged
        (sSelText sSelKey / sParent FileName Path)
-    ;; get the parent info
+    ;; Übergeordnetes Element
     (SETQ sParent (dcl_TREE_GETPARENT Misc_DemoModal_TreeControl1 sSelKey))
     (or
-        (setq Path (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
-        (setq Path (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
-        (setq Path (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
-        (setq Path (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
+        (setq Path (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
+        (setq Path (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
+        (setq Path (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
+        (setq Path (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
     )
     (setq FileName
         (strcat Path
             (IF (NULL sParent)
                 (strcat sSelText ".sld")
-                ;; else
+                ;; ansonsten
                 (strcat (dcl_TREE_GETITEMTEXT Misc_DemoModal_TreeControl1 sParent) ".slb")
             )
         )
     )
     (IF (FINDFILE FileName)
         (dcl_SLIDEVIEW_LOAD Misc_DemoModal_SlideView1 FileName (IF (NULL sParent) "" sSelText))
-        ;; else
+        ;; ansonsten
         (dcl_SLIDEVIEW_CLEAR Misc_DemoModal_SlideView1)
     )
 )
@@ -121,16 +122,16 @@
 )
 
 
-;; this function retrieves all the blocks and adds their names to the BlockName ListBox
+;; Diese Funktion liest alle Blöcke der Zeichnung aus und fügt ihre Namen zur Liste hinzu
 (DEFUN AddBlocksToListBox (/ BlockInfo BlkLst Blk)
     (dcl_LISTBOX_CLEAR Misc_DemoModal_BlockNameList)
     (SETQ BlockInfo (TBLNEXT "BLOCK" T))
-    ;; get the first block in the block table record
-    ;; loop through all block records
-    ;; get block name
-    ;; ignore anonymous blocks, dim's, xref's, etc...
-    ;; add the block name to the list 'BlkLst
-    ;; goto next block
+    ;; ersten Block der Blocktabelle holen
+    ;; Alle Blöcke der Objektsammlung durchlaufen
+    ;; Blocknamen holen
+    ;; Anonyme Blöcke, Bemaßungen, XREF's usw. ignorieren
+    ;; Blockname zur Liste 'BlkLst hinzufügen
+    ;; zum nächsten Block gehen
     (WHILE BlockInfo
         (SETQ blk (CDR (ASSOC 2 BlockInfo)))
         (IF (NOT (WCMATCH blk "`*U*,`*D*,`*X*,`*T*,_*,*|*,A$*"))
@@ -144,17 +145,17 @@
     )
     (dcl_LISTBOX_ADDLIST Misc_DemoModal_BlockNameList BlkLst)
     ;;
-    ;;_ alternate method adding one string at a time to the BlockList 
-;;;   ; get the first block in the block table record
+    ;;_ Alternative Methode zum Hinzufügen der Blocknamen zur Liste
+;;;   ; ersten Block der Blocktabelle holen
 ;;;   (setq BlockInfo (tblnext "BLOCK" T))
-;;;   ; add the first item to the BlockName ListBox with Add String
+;;;   ; Blocknamen mit AddString dem Listenfeld hinzufügen
 ;;;   (if BlockInfo 
 ;;;      (dcl_ListBox_AddString Misc_DemoModal_BlockNameList (cdr (assoc 2 BlockInfo)))
 ;;;   );_ if
-;;;   ; do loop until all the blocks have been added
+;;;   ; in einer Schleife den Vorgang für alle Blöcke durchlaufen
 ;;;   (while BlockInfo
 ;;;      (setq BlockInfo (tblnext "BLOCK"))
-;;;      ; add the item to the BlockName ListBox
+;;;      ; zum Listenfeld hinzufügen
 ;;;      (if BlockInfo
 ;;;	 (dcl_ListBox_AddString Misc_DemoModal_BlockNameList (cdr (assoc 2 BlockInfo)))
 ;;;      );_ if

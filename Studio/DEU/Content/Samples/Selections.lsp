@@ -2,22 +2,23 @@
     (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"SEL\" ein, um das Beispiel zu starten.\n")
 )
 
-;; This function is used to demonstrate how to create a modal dialog box
-;; that closes to allow the user to select objects or pick points, then reopens
-;; and updates its state based on the user's actions.
-;; If the users presses the [Esc] key while interacting with AutoCAD, the
-;; dialog box will not reopen.
+;; In diesem Beispiel wird der Aufruf einer modalen Dialogbox demonstriert,
+;; die geschlossen wird, damit der Anwender Punkte oder Objekte wählen kann,
+;; um hernach wieder geöffnet zu werden und den Inhalt der Listen zu aktualisieren
+;; Drückt der Anwender während der Punkt- bzw. Objektwahl die ESC-Taste, wird der
+;; Dialog anschließend nicht wieder geöffnet, sondern das Programm abgebrochen.
 ;;
-;; For Testing, reset the <Project_Form> VarName
+;; Zum Testen können Sie den Dialog wie folgt zurücksetzen
 ;; (dcl_Project_Load "Selections" T "Selections")
-;;
+
+
 (DEFUN c:sel (/                              fn
               bflag                          blipper
               echo                           PtList
               ObjList
-              ;; local Sub Functions
+              ;; lokale Unterfunktionen
               *error*                        ss->objlist
-              ;; local Sub Event handlers for Modal Form.
+              ;; Lokale Ereignisfunktionen
               c:Selections_Form_OnInitialize
               c:Selections_Form_Close_OnClicked
               c:Selections_Form_GraphicButton1_OnClicked
@@ -33,22 +34,21 @@
     (vl-load-com)
     (SETVAR "CMDECHO" 0)
     ;;------------------------------------------------------------------
-    ;;   Standard error trap
+    ;;   Standard-Fehler-Funktion
     ;;
-    ;; This sub function is called by AutoCAD when the user presses
-    ;; the [Esc] key during the getpoint prompt
+    ;; Diese Funktion wird ausgeführt, wenn der Anwender im Programmverlauf die ESC-Taste drückt.
     (DEFUN *error* (msg)
         (COND
-            ((NOT msg))                           ; no error, do nothing
+            ((NOT msg))                           ; kein Fehler, macht nichts
             ((VL-POSITION
-                 (STRCASE msg T)                  ; cancel
+                 (STRCASE msg T)                  ; Abbruch
                  '("console break" "function cancelled" "quit / exit abort")
              )
-             ;; just for the Demo ...
+             ;; zu Demonstrationszwecken ...
              (dcl_MESSAGEBOX ".... Funktionsabbruch"
-                              "Innerhalb der Ereignisfunktion" ; Form Caption
-                              2                   ; OK Button Only
-                              1                   ; exclamation point icon is displayed in the message box.
+                              "Innerhalb der Ereignisfunktion" ; Titelzeile
+                              2                   ; Nur eine OK-Taste
+                              1                   ; Ausrufungszeichen im Dialog
              )
             )
             ((PRINC (STRCAT "\nProgrammfehler: " (itoa (GETVAR "errno")) " :- " msg "\n"))
@@ -57,7 +57,7 @@
         (SETVAR "errno" 0)
         ;;
         ;;        
-        (SETQ bflag nil) ; So the dialog box doesn't reopen
+        (SETQ bflag nil) ; Dialog soll nicht mehr geöffnet werden
         (SETVAR "BLIPMODE" blipper)
         (VL-CMDF "._REDRAW")
         (SETVAR "CMDECHO" echo)
@@ -84,18 +84,18 @@
     ;;------------------------------------------------------------------
     ;;  
     (DEFUN c:Selections_Form_Close_OnClicked ()
-        (SETQ bflag nil) ; So the dialog box doesn't reopen
+        (SETQ bflag nil) ; Auf diesem Weg wird der Dialog nicht mehr geöffnet, wenn der Anwender rechts oben das Schließen-Symbol oder die ESC-Taste drückt
         (dcl_FORM_CLOSE Selections_Form)
     )
     ;;------------------------------------------------------------------
     ;;   
-    ;; this sub function receives the clicked event of the PickPointButton
+    ;; Wird ausgelöst, wenn die Schaltfläche PickPointButton geklickt wird
     ;;
     (DEFUN c:Selections_Form_PickPointButton_OnClicked (/ pt)
         ;;
-        ;; Call the Form_Close method to close the dialog while the user picks the point.
-        ;; Set bflag to true so the while loop in Main will reshow the dialog box 
-        ;; once the point has been picked.       
+        ;; Ruft die Methode Form_Close auf, um den Dialog zu schließen, wenn der Anwender einen Punkt klickt
+        ;; bflag T setzen, damit die Schleife wieder durchlaufen und der Dialog wieder angezeigt wird
+        ;; wenn der Punkt gepickt wurde.
         (SETQ bflag T)
         (dcl_FORM_CLOSE Selections_Form)
         (SETVAR "BLIPMODE" 1)
@@ -116,16 +116,16 @@
     )
     ;;------------------------------------------------------------------
     ;;
-    ;; this sub function receives the clicked event of the PickObjectButton  
+    ;; Wird ausgelöst, wenn die Schaltfläche PickObjectButton geklickt wird
     (DEFUN c:Selections_Form_PickObjectButton_OnClicked (/ ss)
         ;;
-        ;; set bflag to true so the while loop in Main will reshow the dialog box 
-        ;; once the objects have been selected.
+        ;; bflag T setzen, damit die Schleife wieder durchlaufen und der Dialog wieder angezeigt wird
+        ;; wenn das Objekt gewählt wurde.
         (SETQ bflag T
               ObjList '()
         )
         ;;
-        ;; Call the method to close the dialog box
+        ;; Ruft die Methode Form_Close auf, um den Dialog zu schließen, wenn der Anwender ein Objekt wählt
         (dcl_FORM_CLOSE Selections_Form)
         (PROMPT "\nObjekte wählen oder Eingabetaste drücken, um zum Dialog zurückzukehren")
         (SETQ ss (SSGET))
@@ -147,18 +147,21 @@
     )
     ;;------------------------------------------------------------------
     ;;   
-    ;;  Main Entry Point
+    ;;  Haupteinstiegspunkt
     ;;------------------------------------------------------------------
 
     (LoadODCLProj "Selections.odcl")
+
+    ;; Dialog anzeigen und alle nötigen Einstellungen zur Initialiiserung
+    ;; setzen, bevor dcl_Form_Show aufgerufen wird
     
-    ;; show the form here, and make any calls required to
-    ;; initialize/reinitialize the dialog box controls before dcl_Form_Show
     (SETQ bflag T)
-    (WHILE bflag                                  ; To fire it up
-        (SETQ bflag nil)
+    (WHILE bflag                                  ; Beginn der Schleife
+        (SETQ bflag nil)			  ; Auf diesem Weg wird der Dialog nicht mehr geöffnet, wenn der Anwender rechts oben das Schließen-Symbol oder die ESC-Taste drückt
+
+        ;; An dieser Stelle bleibt der Ablauf dieses Programms stehen bis der Dialog geschlossen wird
+        ;; In der Zwischenzeit verwalten die Ereignisfunktionen den Dialog.
         (dcl_FORM_SHOW Selections_Form)
-        ;; The Event handlers manage the form here.
         ;; 
     )
     ;;------------------------------------------------------------------

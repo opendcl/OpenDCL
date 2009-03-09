@@ -3,13 +3,15 @@
 )
 
 
-;; this function loads the project & shows the form
+;; Diese Funktion lädt das Projekt und zeigt den Dialog an
 (DEFUN c:Methods (/ )
   (or LoadRunTime (load "_OpenDclUtils.lsp") (exit))
   (LoadRunTime)
   (LoadODCLProj "Methods.odcl")
+  
+;; An dieser Stelle bleibt der Ablauf dieses Programms stehen bis der Dialog geschlossen wird
+;; In der Zwischenzeit verwalten die Ereignisfunktionen den Dialog.
   (dcl_FORM_SHOW Methods_DemoMethods)
-  ;; The Event handlers manage the form here.
   (PRINC)
 )
 
@@ -48,7 +50,7 @@
 
 (defun c:DemoMethods_TabControl_Changed	(nSelIndex / BottomFromBottom RightFromRight TopFromBottom LeftFromRight nLeft nTop nWidth nHeight)
    
-   (if (= nSelIndex 1);_ Sliders Tab
+   (if (= nSelIndex 1);_ Karteikarte Schieberegler
       (progn
 	 (dcl_Control_SetValue Methods_DemoMethods_AngleSlider1 (atoi (dcl_Control_GetText Methods_DemoMethods_AngleBox)))
          (dcl_Control_SetValue Methods_DemoMethods_ScrollBar1 (atoi (dcl_Control_GetText Methods_DemoMethods_VScrollLabel)))
@@ -59,13 +61,13 @@
       )
    );_ if
   
-   (if (= nSelIndex 2);_ Manipulation Tab
+   (if (= nSelIndex 2);_ Karteikarte Elemente steuern
       (PopulateManipulationTabFields)
    ); _if
 )
 
 
-;; ------------------- PictureBox Tab -------------------------------
+;; ------------------- Karteikarte Bild -------------------------------
 
 (defun c:DemoMethods_DrawText_Clicked ()
    (dcl_PictureBox_Clear Methods_DemoMethods_PictureBox)
@@ -108,10 +110,12 @@
    (dcl_PictureBox_Clear Methods_DemoMethods_PictureBox)
    (setq nBoundingLeft 50)
    (setq nBoundingTop 50)
-   ; OpenDCLARX is requires larger lists to be created in a  certain format, ensure you create list in the manor shown below
-   ; we have experienced errors when specifying a list as follows
-   ; '((nBoundingLeft nBoundingTop ...) (nBoundingLeft nBoundingTop ...)),
-   ; For some unknown reason OpenDCLARX cannot handle list created in this manor.
+
+   ;; Die OpenDCL Laufzeitumgebung erwartet, dass größere Listen unten angewandten Art und Weise erzeugt werden
+   ;; Wir haben die Erfahrung gemacht, dass es zu Fehlern kommen kann, wenn die Listen wie folgt generiert werden:
+   ;; '((nBoundingLeft nBoundingTop ...) (nBoundingLeft nBoundingTop ...))
+   ;; Aus bisher unbekannten Gründen, kann die laufzeitumgebung mit solchen Listen nicht umgehen.
+    
    (setq ArgumentList
 	   (list
 	      (list
@@ -222,7 +226,7 @@
 )
 
 
-;; ------------------- Sliders Tab -------------------------------
+;; ------------------- Karteikarte Schieberegler -------------------------------
 
 (defun c:DemoMethods_ScrollBar1_Scroll (nValue /)
   (dcl_Control_SetText Methods_DemoMethods_VScrollLabel (itoa nValue))
@@ -274,7 +278,7 @@
 )
 
 
-;; ------------------- Manipulation Tab -------------------------------
+;; ------------------- Karteikarte Elemente steuern -------------------------------
 
 (defun c:DemoMethods_LeftBox_EditChanged (sText / curPos tabSize nVal)
   (setq curPos (dcl_Control_GetCurPos Methods_DemoMethods_SampleControl)

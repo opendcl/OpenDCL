@@ -3,13 +3,15 @@
 )
 
 
-;; this function loads the project & shows the form
+;; Diese Funktion lädt das Projekt und zeigt den Dialog an
 (defun c:TREE (/)
   (or LoadRunTime (load "_OpenDclUtils.lsp") (exit))
   (LoadRunTime)
   (LoadODCLProj "TreeView.odcl")
+    
+;; An dieser Stelle bleibt der Ablauf dieses Programms stehen bis der Dialog geschlossen wird
+;; In der Zwischenzeit verwalten die Ereignisfunktionen den Dialog. 
   (dcl_FORM_SHOW TreeView_Main)
-  ;; The event handlers manage the form until it is dismissed
   (PRINC)
 )
 
@@ -289,7 +291,7 @@
 
 
 (defun c:TreeView_Main_Tree_OnMouseMove (Flags X Y /)
-  ; Commented out to reduce log traffic
+  ; Auskommentiert, um den LOG-Traffic zu minimieren
   NIL ;(TreeView_LogEvent (strcat "OnMouseMove (" (itoa Flags) " " (itoa X) " " (itoa Y) ")"))
 )
 

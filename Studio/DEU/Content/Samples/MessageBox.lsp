@@ -6,8 +6,11 @@
   (or LoadRunTime (load "_OpenDclUtils.lsp") (exit)) 
   (LoadRunTime)
   (LoadODCLProj "MessageBox.odcl")
+  
+;; An dieser Stelle bleibt der Ablauf dieses Programms stehen bis der Dialog geschlossen wird
+;; In der Zwischenzeit verwalten die Ereignisfunktionen den Dialog. 
   (dcl_FORM_SHOW MessageBox_MessageBoxes)
-  ;; The Event handlers manage the form here. 
+    
   (PRINC)
 )
 

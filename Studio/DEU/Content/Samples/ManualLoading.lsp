@@ -1,22 +1,22 @@
 ;;; ManualLoading.lsp
-;;; For OpenDCL Ver 4.0
-;;; Edit kwb 20070225 GMT00:00:00
-;;; Edit orw 20070518 GMT07:30:xx :: added 64 bit arx file selection
+;;; für OpenDCL Ver 4.0
+;;; Verändert kwb 20070225 GMT00:00:00
+;;; Verändert orw 20070518 GMT07:30:xx :: added 64 bit arx file selection
 ;;;                                       returns "OpenDCL.x64.17.ARX"
-;;; Last Edit kwb as suggested by MichaelP 20070608 GMT00:30:xx
+;;; Verändert Edit kwb as suggested by MichaelP 20070608 GMT00:30:xx
 ;;;                :: change location of dcl_GETVERSIONEX test.
 ;; 
 
-;; This code block loads the OpenDCL.##.arx files if not already loaded
-;; Note, Loader will return T if loaded or nil otherwise.
+;; Dieser Quellcode-Ausschnitt lädt die OpenDCL.##.arx-Dateien, sofern sie nicht bereits geladen sind.
+;; Die Funktion gibt T zurück, wenn die ARX-Dateien geladen sind.
 ;;
-;; If the OpenDCL.##.arx is loaded at startup or demand loaded
-;; this routine need never run.
+;; Diese Funktion braucht nicht ausgeführt zu werden,
+;; wenn die OpenDCL.##.arx bereits beim Start oder per OPENDCL-Befehl geladen wird
 (OR dcl_GETVERSIONEX
     (   (lambda ( / proc_arch arxname arxpath )
 
-            ;;  Determine the appropriate arx module for
-            ;;  the processor and the AutoCAD version.
+            ;;  Ermittle die geeignete Laufzeitumgebung
+            ;;  aus der Prozessorarchitektur und AutoCAD-Version
 
             (setq arxname
                 (strcat "OpenDCL"
@@ -33,14 +33,14 @@
                     ".arx"
                 )
             )            
-            ;;  Alert the user of a failure to:
+            ;;  Den Anwender darauf aufmerksam machen, dass er
             ;;
-            ;;      (A) Find the arxfile, or 
-            ;;      (B) Load the arxfile.
+            ;;      (A) die ARX-Datei suchen soll
+            ;;      (B) die ARX-Datei laden soll
             ;;
-            ;;      and return nil.
+            ;;      und NIL zurückgeben
             ;;
-            ;;  Otherwise just quietly return t.
+            ;;  Ansonsten ohne Meldung T zurückgeben
             
             (cond
                 (   (null (setq arxpath (findfile arxname)))

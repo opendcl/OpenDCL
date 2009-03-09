@@ -1,5 +1,7 @@
-;;This sample demonstrates how to move or resize a form after it's been shown.
-;;It uses (dcl_DelayedInvoke) to wait a few milliseconds before moving the form to appear animated.
+;; Dieses Beispiel demonstriert, wie ein Dialog verschoben oder skaliert werden
+;; kann, nachdem er angezeigt wurde.
+;; In diesem Beispiel wird die Funktion (dcl_DelayedInvoke) verwendet, um ein
+;; paar Millisekunden zu warten, bevor der Dialog bewegt wird, um einen animierten Effekt zu erzielen
 
 (IF (NOT *MasterDemo*)
     (princ "\nOpenDCL Beispiel-Programm.\nGeben Sie \"MOVER\" ein, um das Beispiel zu starten.\n")
@@ -10,7 +12,7 @@
   (C:FormMover)
 )
 
-;;This function moves the form to the 4 corners of the screen, then to the center.
+;; Diese Funktion bewegt den Dialog zu den 4 Ecken des Bildschirms und anschlieﬂend ins Zentrum
 (defun C:FormMover ( / ce FormSize delay wd ht ScreenSize ScreenX ScreenY)
   (Setq FormSize (dcl_Form_GetRectangle FormMover_Form1))
   (setq wd (caddr FormSize))
@@ -37,14 +39,14 @@
     )   
   );_ cond
 
-  (setq *FormPos* (1+ *FormPos*));_ bump the form position count
+  (setq *FormPos* (1+ *FormPos*));_ den Z‰hler inkrementieren
   (if (<= *FormPos* 4)
     (dcl_DelayedInvoke 800 "C:FormMover");_ repeat
   )
   (princ)
 )
 
-;;This function moves & resizes the form to the bottom left corner of the screen or back to the center.
+;; Diese Funktion bewegt und skaliert den Dialog zur linken unteren Ecke des Bildschirms oder zur¸ck ins Zewntrum
 (defun C:FormMinMax ( / FormSize lf tp wd ht ScreenSize ScreenX ScreenY)
   (Setq FormSize (dcl_Form_GetRectangle FormMover_Form1))
   (setq lf (car FormSize))
@@ -121,7 +123,7 @@
    (dcl_Form_Close FormMover_Form1)
 )
 
-;;Expand or Collapse the form
+;; Dialog erweitern oder zuklappen
 (defun c:FormMover_Form1_cmdExpand_OnClicked ( / );_ expand
    (if (= (Car (dcl_Form_GetControlArea FormMover_Form1)) 300)
      (progn

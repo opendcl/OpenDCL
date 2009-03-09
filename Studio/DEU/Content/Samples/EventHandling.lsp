@@ -7,8 +7,10 @@
   (or LoadRunTime (load "_OpenDclUtils.lsp") (exit))
   (LoadRunTime)
   (LoadODCLProj "EventHandling.odcl")
+  
+;; An dieser Stelle bleibt der Ablauf dieses Programms stehen bis der Dialog geschlossen wird
+;; In der Zwischenzeit verwalten die Ereignisfunktionen den Dialog.   
   (dcl_FORM_SHOW EventHandling_EventHandling)
-  ;; The Event handlers manage the form here.   
   (PRINC)
 )
 

@@ -47,7 +47,10 @@
         </table>
 	<p>Diese Methode zeichnet ein oder mehrere Rechtecke im Steuerelement beginnend bei intUpperLeftX, 
     intUpperLeftY mit der Breite intWidth und der H&ouml;he intHeight. Alle Punkte beziehen sich auf den linken, oberen Eckpunkt des Steuerelements.</p>
-	</div>
+	<p>Die OpenDCL Laufzeitumgebung erwartet, dass gr&ouml;&szlig;ere Listen in bereits ausgewerteter Form &uuml;bergeben werden. &Uuml;bergeben Sie die Listen nicht in dieser Form:<br>
+'((nValue11 nValue12 ...) (nValue21 nValue22 ...)), sondern statt dessen dringend in der Form<br>
+(list (list nValue11 nValue12 ...) (list nValue21 nValue22 ...)).</p>
+</div>
 	<hr />
 	<div id="footer">
 		<p>Copyright © 2009 <a href="http://www.opendcl.com" target="_blank">OpenDCL Consortium</a>.

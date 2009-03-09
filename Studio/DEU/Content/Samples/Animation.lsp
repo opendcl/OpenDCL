@@ -7,9 +7,10 @@
   (or LoadRunTime (load "_OpenDclUtils.lsp") (exit))
   (LoadRunTime)
   (LoadODCLProj "Animation.odcl")
+
+;; An dieser Stelle bleibt der Ablauf dieses Programms stehen bis der Dialog geschlossen wird
+;; In der Zwischenzeit verwalten die Ereignisfunktionen den Dialog.  
   (dcl_FORM_SHOW Animation_DclForm1)
-    
-  ;; The Event handlers manage the form here.
   (PRINC)
 )
 
@@ -19,21 +20,21 @@
 (defun c:DclForm1_OnInitialize ( / fn avi)
     (setq avi "clock.avi")
     (cond
-      ;; Search the support paths for the file
+      ;; Supportpfade nach der Datei durchsuchen
        ( (if (setq fn (findfile avi))
            (dcl_Animate_Load Animation_DclForm1_Animation1 fn)
        ))
-      ;; Load the file from the default installed "Samples" folder.
+      ;; Datei aus dem Ordner der Beispieldateien des Installationsverzeichnisses von OpenDCL-Studio laden
        ( (if
            (or
-             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
-             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
+             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
+             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
+             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
+             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
            )
            (dcl_Animate_Load Animation_DclForm1_Animation1 (strcat fn avi))
        ))
-      ;; Can't find it..
+      ;; Kann's nicht finden
        (T (alert (strcat "Ich kann die Videodatei \"" avi "\", fügen Sie den Pfad zu den AutoCAD-Supportpfaden hinzu!"))
          (EXIT)
        )

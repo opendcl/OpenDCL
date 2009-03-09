@@ -9,7 +9,9 @@
   (LoadRunTime)
   (LoadODCLProj "GRID.odcl")
   (dcl_FORM_SHOW GRID_Dcl-1)
-  ;; The Event handlers manage the form here.
+  
+;; An dieser Stelle bleibt der Ablauf dieses Programms stehen bis der Dialog geschlossen wird
+;; In der Zwischenzeit verwalten die Ereignisfunktionen den Dialog.
   (princ)
 )
 

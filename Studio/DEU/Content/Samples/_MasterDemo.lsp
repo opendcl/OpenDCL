@@ -3,21 +3,22 @@
 
 (defun LspLoader (lspFileName / fn)
     (cond
-      ;; Search the support paths for the .LSP file & load it.
+      ;; Supportpfad nach der .LSP-Datei durchsuchen und laden
        ( (if (setq fn (findfile lspFileName))
            (LOAD fn)
        ))
-      ;; Load the .LSP file from the default installed "Samples" folder.
+      ;; Die .LSP-Datei aus dem Vorgabeverzeichnis für Beispieldateien laden.
        ( (if
            (or
-             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
-             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
+             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
+             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
+             (setq fn (vl-registry-read "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
+             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
            )
            (LOAD (strcat fn lspFileName))
        ))
-      ;; The lsp failed to load, so report or log the error exit now (or take corrective action and try again)
+       ;; Kann die .LSP-Datei nicht geladen werden, soll ein Fehler ausgegeben
+       ;; werden, jetzt abbrechen (oder Änderung vornehmen und erneut versuchen
        (T (alert (strcat "\"" lspFileName "\" kann nicht geladen werden, fügen Sie den Pfad zu den AutoCAD-Supportpfaden hinzu, damit es geladen werden kann!"))
          (EXIT)
        )
@@ -29,7 +30,7 @@
 (DEFUN c:Demo (/ project-name *error*)
     (DEFUN *error* (msg)
         (WHILE (< 0 (GETVAR "cmdactive")) (COMMAND))
-        ;; do error stuff
+        ;; Errorhandling
         (IF _MasterDemo_DCLMaster (dcl_FORM_CLOSE _MasterDemo_DCLMaster))
         (PRINC (STRCAT "\nAnwendungsfehler: " (itoa (GETVAR "errno")) " :- " msg))        
         (PRINC)
@@ -40,12 +41,11 @@
     (LoadODCLProj "_MasterDemo.odcl")
 
     
-    ;; The Dialog is based on a dockable Modeless form,
-    ;; so test if it is already active .. otherwise show the form.  
+    ;; Der Dialog basiert auf einem nichtmodalen andockbaren Dialog,
+    ;; deshalb wird hier erst einmal geprüft ob vielleicht der Dialog schon aktiv ist ... ansonsten anzeigen
     (IF (NOT (dcl_FORM_ISACTIVE _MasterDemo_DCLMaster))
           (dcl_FORM_SHOW _MasterDemo_DCLMaster) 
-        ;; The Event handlers manage the form here.
-        (PROMPT "\nDer Dialog ist bereits aktiv.")
+          (PROMPT "\nDer Dialog ist bereits aktiv.")
     )
     (PRINC)
 )
@@ -236,19 +236,19 @@
 (defun c:_MasterDemo_DCLMaster_cmd21_OnClicked ( / txt fn)
     (setq txt "DistSampleReadMe.txt")
     (cond
-      ;; Search the support paths for the file
+      ;; Supportpfade nach der Datei durchsuchen
        ( (if (setq fn (findfile txt))
            (startapp "notepad" fn)
        ))
-      ;; Load the file from the default installed "Samples" folder.
+      ;; Datei aus dem Ordner der Beispieldateien des Installationsverzeichnisses von OpenDCL-Studio laden
        ( (if 
            (or
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
+             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
+             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
            )
            (startapp "notepad" (strcat fn txt))
        ))
-      ;; Can't find it..
+      ;; Kann's nicht finden.
        (T (alert (strcat "Ich kann \"" txt "\" nicht finden, you may need to add it to an Acad support path!"))
          (EXIT)
        )
@@ -294,19 +294,19 @@
 (defun c:_MasterDemo_DCLMaster_cmdReadme_OnClicked ( / txt fn)
     (setq txt "_ReadME.txt")
     (cond
-      ;; Search the support paths for the file
+      ;; ;; Supportpfade nach der Datei durchsuchen
        ( (if (setq fn (findfile txt))
            (startapp "notepad" fn)
        ))
-      ;; Load the file from the default installed "Samples" folder.
+      ;; Datei aus dem Ordner der Beispieldateien des Installationsverzeichnisses von OpenDCL-Studio laden
        ( (if 
            (or
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit location
-             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit location
+             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenDCL" "SamplesFolder")) ;_ 32-bit Position
+             (setq fn (vl-registry-read "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\OpenDCL" "SamplesFolder")) ;_ 64-bit Position
            )
            (startapp "notepad" (strcat fn txt))
        ))
-      ;; Can't find it..
+      ;; Kann's nicht finden.
        (T (alert (strcat "Ich kann die Datei \"" txt "\" nicht finden, fügen Sie den Pfad zu den AutoCAD-Supportpfaden hinzu!"))
          (EXIT)
        )

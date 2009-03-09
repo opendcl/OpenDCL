@@ -46,6 +46,9 @@
         </table>
 		<p>Diese Methode erzeugt einen oder mehrere mehrzeilige Texte im Steuerelement beginnend bei StartX, 
         StartY mit der angegebenen Breite. Das Argument Color bestimmt die Farbe des Texts und das optionale Argument BackgroundColor die Hintergrundfarbe. intJustification bestimmt die Ausrichtung in Abh&auml;ngigkeit zum Startpunkt. Alle Punkte beziehen sich auf den linken, oberen Eckpunkt des Steuerelements.</p>
+		<p>Die OpenDCL Laufzeitumgebung erwartet, dass gr&ouml;&szlig;ere Listen in bereits ausgewerteter Form &uuml;bergeben werden. &Uuml;bergeben Sie die Listen nicht in dieser Form:<br>
+'((nValue11 nValue12 ...) (nValue21 nValue22 ...)), sondern statt dessen dringend in der Form<br>
+(list (list nValue11 nValue12 ...) (list nValue21 nValue22 ...)).</p>
 		<table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3">
           <tr>
             <th nowrap>Ausrichtung</th>

@@ -12,12 +12,12 @@
   ;;----------------------------------------------------
   (DEFUN c:ListBox_form1_selectfiles_onclicked (/ bs_getfilem bs_filelist fn)
     (IF (SETQ bs_getfilem (dcl_MULTIFILEDIALOG "Zeichnungsdateien (*.dwg)|*.dwg||"
-                                                            ; ExtensionFilters
-                                                "Dateien wählen" ; Title
+                                                            ; Dateierweiterung
+                                                "Dateien wählen" ; Titel
                                                 (IF g:lastfolder
                                                   g:lastfolder
                                                   (GETVAR "DWGPREFIX")
-                                                )           ; Default Folder
+                                                )           ; Vorgabeverzeichnis
                           )
         )
       (SETQ g:lastfolder (VL-FILENAME-DIRECTORY (CAR bs_getfilem))
@@ -67,7 +67,7 @@
   (DEFUN c:ListBox_form1_exitdialog_onclicked (/) (dcl_FORM_CLOSE ListBox_form1))
   ;;----------------------------------------------------
   ;;----------------------------------------------------
-  ;;Main
+  ;;Hauptprogramm
   (or LoadRunTime (load "_OpenDclUtils.lsp") (exit))
   (LoadRunTime)
   (LoadODCLProj "ListBox.odcl")
