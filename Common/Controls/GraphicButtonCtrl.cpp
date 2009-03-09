@@ -79,17 +79,12 @@ bool CGraphicButtonCtrl::OnApplyProperty( TPropertyPtr pProp )
 void CGraphicButtonCtrl::SetPicture( TPicturePtr pPict )
 {
 	mpPicture = pPict;
-	if( pPict && !mpMouseOverPicture )
-		mpMouseOverPicture = pPict;
 	UpdateButtonGraphic();
 }
 
 void CGraphicButtonCtrl::SetMouseOverPicture( TPicturePtr pPict )
 {
-	if( !pPict && mpPicture )
-		mpMouseOverPicture = mpPicture;
-	else
-		mpMouseOverPicture = pPict;
+	mpMouseOverPicture = pPict;
 	UpdateButtonGraphic();
 }
 
@@ -99,11 +94,29 @@ void CGraphicButtonCtrl::UpdateButtonGraphic()
 		return;
 	if( (!mpPicture || mpPicture->GetPicType() == PICTYPE_BITMAP) &&
 			(!mpMouseOverPicture || mpMouseOverPicture->GetPicType() == PICTYPE_BITMAP) )
-		SetBitmaps( mpMouseOverPicture? mpMouseOverPicture->CloneBitmap() : NULL, RGB(192,192,192),
-								mpPicture? mpPicture->CloneBitmap() : NULL, RGB(192,192,192) );
+	{
+		HBITMAP hbmpIn = NULL;
+		if( mpMouseOverPicture )
+			hbmpIn = mpMouseOverPicture->CloneBitmap();
+		else if( mpPicture )
+			hbmpIn = mpPicture->CloneBitmap();
+		HBITMAP hbmpOut = NULL;
+		if( mpPicture )
+			hbmpOut = mpPicture->CloneBitmap();
+		SetBitmaps( hbmpIn, RGB(192,192,192), hbmpOut, RGB(192,192,192) );
+	}
 	else
-		SetIcon( mpMouseOverPicture? mpMouseOverPicture->CloneIcon() : NULL,
-						 mpPicture? mpPicture->CloneIcon() : NULL );
+	{
+		HICON hIn = NULL;
+		if( mpMouseOverPicture )
+			hIn = mpMouseOverPicture->CloneIcon();
+		else if( mpPicture )
+			hIn = mpPicture->CloneIcon();
+		HICON hOut = NULL;
+		if( mpPicture )
+			hOut = mpPicture->CloneIcon();
+		SetIcon( hIn, hOut );
+	}
 }
 
 

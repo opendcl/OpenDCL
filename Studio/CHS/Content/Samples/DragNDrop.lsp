@@ -13,9 +13,9 @@
 )
 
 
-(defun c:DragNDrop_DclForm1_ListView1_OnDragnDropToAutoCAD (3dPoint /)
+(defun c:DragNDrop_DclForm1_ListView1_OnDragnDropToAutoCAD (3dPoint Viewport /)
   (Setq rValue (dcl_ListView_GetSelectedItems DragNDrop_Form1_ListView1))
-  (dcl_MessageBox (strcat "You drug \"" (car rValue) "\" into the Acad window\nand dropped it at " (rtos (car 3dPoint) 2 4) "," (rtos (cadr 3dPoint) 2 4)) "Drag-N-Drop")
+  (dcl_MessageBox (strcat "You dropped \"" (car rValue) "\" at (" (rtos (car 3dPoint) 2 4) ", " (rtos (cadr 3dPoint) 2 4) ", " (rtos (caddr 3dPoint) 2 4) ") in viewport number " (itoa Viewport) ".") "Drag-N-Drop")
   (princ)
 )
 

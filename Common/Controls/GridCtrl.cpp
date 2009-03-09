@@ -1434,7 +1434,7 @@ void CGridCtrl::DrawFontIcons( CDC& cdc, const CRect& rcIcon, int nImage, const 
 	if( !mFontImageList.m_hImageList )
 	{
 		HMODULE hmodRes = theWorkspace.GetLocalResourceModule();
-		mFontImageList.Create( 15, 13, ILC_COLOR4 | ILC_MASK, 3, 1 );
+		mFontImageList.Create( 15, 13, ILC_COLOR32 | ILC_MASK, 2, 1 );
 		mFontImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE(IDI_TTFONT) ) );
 		mFontImageList.Add( LoadIcon( hmodRes, MAKEINTRESOURCE(IDI_SHXFONT) ) );
 	}
