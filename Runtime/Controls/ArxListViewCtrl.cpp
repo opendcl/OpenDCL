@@ -29,7 +29,7 @@ CArxListViewCtrl::~CArxListViewCtrl()
 }
 
 
-BEGIN_MESSAGE_MAP(CArxListViewCtrl, CListCtrl)
+BEGIN_MESSAGE_MAP(CArxListViewCtrl, CListViewCtrl)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_NOTIFY_REFLECT(NM_CLICK, OnClick)
@@ -50,6 +50,7 @@ BEGIN_MESSAGE_MAP(CArxListViewCtrl, CListCtrl)
 	ON_WM_KEYDOWN()
 	ON_WM_KEYUP()
 	ON_WM_MOUSEMOVE()
+	ON_WM_GETDLGCODE()
 END_MESSAGE_MAP()
 
 
@@ -208,6 +209,7 @@ void CArxListViewCtrl::OnBeginlabeledit(NMHDR* pNMHDR, LRESULT* pResult)
 		mpTemplate->GetStringProperty(Prop::EventBeginLabelEdit),
 		pDispInfo->item.iItem,
 		IsAsyncEvents());
+	__super::OnBeginlabeledit( pNMHDR, pResult );
 	*pResult = 0;
 }
 
@@ -329,4 +331,9 @@ void CArxListViewCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		point.y,
 		IsAsyncEvents());
 	__super::OnMouseMove(nFlags, point);
+}
+
+UINT CArxListViewCtrl::OnGetDlgCode()
+{
+	return (DLGC_WANTALLKEYS | __super::OnGetDlgCode());
 }
